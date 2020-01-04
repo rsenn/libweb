@@ -7,41 +7,48 @@ DOCDIR=$(realpath --relative-to "$PWD" "$THISDIR/../doc")
 . require.sh
 require url
 
-. "$DOCDIR/api.sh"
+#. "$DOCDIR/api.sh"
 
 trap '[ "$FAIL_CMD" ] && echo "Failed command was: $FAIL_CMD"; exit' EXIT
 IFS="
 "
 
-STARDEV_HOST='http://starlottery.club:8080'
-STARDEV_LOCATION='/'
-STARDEV_CMD='curl -s -L -k --cookie stardev.cookie --cookie-jar stardev.cookie'
-STARDEV_HEADERS='stardev.headers'
-STARDEV_OUTPUT='stardev.out'
+get_ips() {
+  (ip addr || ifconfig) |sed 's,.*inet \([^/ ]*\).*,\1,p' -n
+}
+
+: ${DEV_PORT=5555}
+DEV_HOST="http://$(get_ips | tail -n1):${DEV_PORT}"
+DEV_LOCATION='/'
+DEV_CMD='curl -s -L -k --cookie dev.cookie --cookie-jar dev.cookie'
+DEV_HEADERS='dev.headers'
+DEV_OUTPUT='dev.out'
 
 # http_request <url> <data>
 http_request() {
- (: ${NS:=STARDEV}; URL=${1##*.ASP}; shift; DATA="$*"; eval 'set -- "$'$NS'_HOST$'$NS'_LOCATION$URL"'
+ (: ${NS:=DEV}; URL=${1##*.ASP}; shift; DATA="$*"; eval 'set -- "$'$NS'_HOST$'$NS'_LOCATION$URL"'
  eval "HEADERS=\${${NS}_HEADERS} CURL_CMD=\${${NS}_CMD} OUTPUT=\${${NS}_OUTPUT}"
   T=${DATA:+POST}
   IFS="
  "
   #trap 'rm -f "$HEADERS" "$OUTPUT"' EXIT
    #echo "${T:-GET} $1${DATA:+ $DATA}" 1>&2
-  $CURL_CMD $CURL_ARGS \
+  set -- $CURL_CMD $CURL_ARGS \
       -o "$OUTPUT" \
       -D "$HEADERS" \
         ${PREV_URL:+--referer
 "$PREV_URL"} \
      -H "Content-type: application/json" \
        ${DATA:+--data-ascii "$DATA"} \
-        "$1" && FAIL_CMD= || FAIL_CMD="$*"
+        "$1"
+
+   "$@" && FAIL_CMD= || FAIL_CMD="$*"
    PREV_URL="$1"
 
   #grep -iE '(^HTTP|cookie|session|type|key|token|Access-Control)' "$HEADERS" 1>&2
-  #echo
+  echo "$@" 1>&2
   echo >>"$OUTPUT"
-  OUT=$(cat <"$OUTPUT")
+  OUT=$(<"$OUTPUT")
  echo "$OUT"
   )
 }
@@ -55,8 +62,7 @@ check-server-up() {
   (set -e . require.sh
   require var
   require xml
-  rm -f "stardev.cookie"
-
+  rm -f "dev.cookie"
 
   for PAGE in "" about account admin confirmation deposit drawings games guide index login picks play profile register withdraw
   do 
