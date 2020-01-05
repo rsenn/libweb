@@ -1,5 +1,25 @@
 import React from "react";
-import dom, { TRBL, CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, Line, Matrix, Point, PointList, Rect, RGBA, Size, SVG, Timer, ReactComponent, Node } from "../utils/dom.js";
+import dom, {
+  TRBL,
+  CSS,
+  CSSTransformSetters,
+  Element,
+  ElementRectProxy,
+  ElementSizeProps,
+  ElementTransformation,
+  ElementXYProps,
+  Line,
+  Matrix,
+  Point,
+  PointList,
+  Rect,
+  RGBA,
+  Size,
+  SVG,
+  Timer,
+  ReactComponent,
+  Node
+} from "../utils/dom.js";
 import { SvgOverlay, SvgPathTracer } from "./svg-overlay.js";
 import { SvgPath } from "./svg-path.js";
 import Util from "./util.js";
@@ -79,7 +99,7 @@ export const colors = (() => {
   var elements = [];
   return function colors(map) {
     let args = Util.map(map);
-    console.log('colors map(', args, ')');
+    console.log("colors map(", args, ")");
     const left = elements.length ? Element.rect(elements[0]).x2 + stepX : stepX;
     let e = Element.create("div", {
       parent: Element.find("body"),
@@ -94,18 +114,19 @@ export const colors = (() => {
     let f = Element.factory({}, e);
     let prev = 0;
     let entries = args.entries();
-    let i = 0, len = entries.length;
+    let i = 0,
+      len = entries.length;
     for(let [key, color] of entries) {
       let diff = key - prev;
       prev = key;
-      const c =  new RGBA(color.r, color.g, color.b, color.a);
-       console.log("colors ",{ key, c });
+      const c = new RGBA(color.r, color.g, color.b, color.a);
+      console.log("colors ", { key, c });
       f("div", {
         innerHTML: ((typeof key == "number" ? key.toFixed(2) : key) + ": " + c.toString()).replace(/ /g, "&nbsp;"),
         style: {
           margin: "auto",
           //  opacity: c.a / 255,
-          height: diff > 0 ? `${diff * 100}%` : '100px',
+          height: diff > 0 ? `${diff * 100}%` : "100px",
           overflow: "hidden",
           fontFamily: "Arial",
           fontWeight: "bold",
@@ -549,7 +570,8 @@ export async function img(name, arg = {}) {
   let list = root.images
     ? root.images
     : (root.images = new HashList(
-        obj => (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, "$1XX$2"),
+        obj =>
+          (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, "$1XX$2"),
         function(arg) {
           let e = Element.find(arg);
           let svg = Element.find("svg", e);

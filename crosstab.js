@@ -25,12 +25,13 @@
 /* global define */
 /* global global */
 (function(window, define) {
-  define('crosstab', function(require, exports, module) {
-    'use strict';
+  define("crosstab", function(require, exports, module) {
+    "use strict";
 
     //--- Handle Support ---
     //See: http://detectmobilebrowsers.com/about
-    var useragent = (window.navigator && (window.navigator.userAgent || window.navigator.vendor)) || window.opera || 'none';
+    var useragent =
+      (window.navigator && (window.navigator.userAgent || window.navigator.vendor)) || window.opera || "none";
     var isMobile =
       /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(
         useragent
@@ -42,7 +43,7 @@
     var localStorage;
     try {
       localStorage = window.localStorage;
-      localStorage = window['ie8-eventlistener/storage'] || window.localStorage;
+      localStorage = window["ie8-eventlistener/storage"] || window.localStorage;
     } catch(e) {
       //New versions of Firefox throw a Security exception
       //if cookies are disabled. See
@@ -56,8 +57,8 @@
     //to add something to storage that exceeded the quota."
     var setItemAllowed = true;
     try {
-      localStorage.setItem('__crosstab', '');
-      localStorage.removeItem('__crosstab');
+      localStorage.setItem("__crosstab", "");
+      localStorage.removeItem("__crosstab");
     } catch(e) {
       setItemAllowed = false;
     }
@@ -67,26 +68,26 @@
 
     function notSupported() {
       if(crosstab.supported) return;
-      var errorMsg = 'crosstab not supported';
+      var errorMsg = "crosstab not supported";
       var reasons = [];
       if(!localStorage) {
-        reasons.push('localStorage not availabe');
+        reasons.push("localStorage not availabe");
       }
       if(!window.addEventListener) {
-        reasons.push('addEventListener not available');
+        reasons.push("addEventListener not available");
       }
       if(isMobile) {
-        reasons.push('mobile browser');
+        reasons.push("mobile browser");
       }
       if(frozenTabEnvironment) {
-        reasons.push('frozen tab environment detected');
+        reasons.push("frozen tab environment detected");
       }
       if(!setItemAllowed) {
-        reasons.push('localStorage.setItem not allowed');
+        reasons.push("localStorage.setItem not allowed");
       }
 
       if(reasons.length > 0) {
-        errorMsg += ': ' + reasons.join(', ');
+        errorMsg += ": " + reasons.join(", ");
       }
 
       throw new Error(errorMsg);
@@ -95,11 +96,11 @@
     //--- Utility ---
     var util = {
       keys: {
-        MESSAGE_KEY: 'crosstab.MESSAGE_KEY',
-        TABS_KEY: 'crosstab.TABS_KEY',
-        MASTER_TAB: 'MASTER_TAB',
-        SUPPORTED_KEY: 'crosstab.SUPPORTED',
-        FROZEN_TAB_ENVIRONMENT: 'crosstab.FROZEN_TAB_ENVIRONMENT'
+        MESSAGE_KEY: "crosstab.MESSAGE_KEY",
+        TABS_KEY: "crosstab.TABS_KEY",
+        MASTER_TAB: "MASTER_TAB",
+        SUPPORTED_KEY: "crosstab.SUPPORTED",
+        FROZEN_TAB_ENVIRONMENT: "crosstab.FROZEN_TAB_ENVIRONMENT"
       }
     };
 
@@ -110,11 +111,11 @@
       };
 
     util.isNumber = function(num) {
-      return typeof num === 'number';
+      return typeof num === "number";
     };
 
     util.isFunction = function(fn) {
-      return typeof fn === 'function';
+      return typeof fn === "function";
     };
 
     util.forEachObj = function(obj, fn) {
@@ -192,11 +193,11 @@
     util.tabs = getStoredTabs();
 
     util.eventTypes = {
-      becomeMaster: 'becomeMaster',
-      demoteFromMaster: 'demotedFromMaster',
-      tabUpdated: 'tabUpdated',
-      tabClosed: 'tabClosed',
-      tabPromoted: 'tabPromoted'
+      becomeMaster: "becomeMaster",
+      demoteFromMaster: "demotedFromMaster",
+      tabUpdated: "tabUpdated",
+      tabClosed: "tabClosed",
+      tabPromoted: "tabPromoted"
     };
 
     util.storageEventKeys = util.reduce(
@@ -458,8 +459,8 @@
 
     function swapUnloadEvents() {
       //`beforeunload` replaced by `unload` (IE11 will be smart now)
-      window.removeEventListener('beforeunload', unload, false);
-      window.addEventListener('unload', unload, false);
+      window.removeEventListener("beforeunload", unload, false);
+      window.addEventListener("unload", unload, false);
       restoreLoop();
     }
 
@@ -583,7 +584,7 @@
     });
 
     function pad(num, width, padChar) {
-      padChar = padChar || '0';
+      padChar = padChar || "0";
       var numStr = num.toString();
 
       if(numStr.length >= width) {
@@ -630,7 +631,7 @@
 
     //---- Return ----
     var setupComplete = false;
-    util.events.once('setupComplete', function() {
+    util.events.once("setupComplete", function() {
       setupComplete = true;
     });
 
@@ -638,7 +639,7 @@
       if(setupComplete) {
         fn();
       } else {
-        util.events.once('setupComplete', fn);
+        util.events.once("setupComplete", fn);
       }
     };
 
@@ -678,7 +679,7 @@
         } else if(supported === false || supported === true) {
           //As long as it is explicitely set, use the value
           crosstab.supported = supported;
-          util.events.emit('setupComplete');
+          util.events.emit("setupComplete");
         }
       }
     }
@@ -741,13 +742,13 @@
           var timeout;
           var start;
 
-          crosstab.util.events.once('PONG', function() {
+          crosstab.util.events.once("PONG", function() {
             if(!setupComplete) {
               clearTimeout(timeout);
               //set supported to true / frozen to false
               setLocalStorageItem(util.keys.SUPPORTED_KEY, true);
               setLocalStorageItem(util.keys.FROZEN_TAB_ENVIRONMENT, false);
-              util.events.emit('setupComplete');
+              util.events.emit("setupComplete");
             }
           });
 
@@ -763,7 +764,7 @@
             if(!setupComplete) {
               if(iters <= 0 && diff > PING_TIMEOUT) {
                 frozenTabEnvironmentDetected();
-                util.events.emit('setupComplete');
+                util.events.emit("setupComplete");
               } else {
                 timeout = setTimeout(function() {
                   recursiveTimeout(iters - 1);
@@ -776,9 +777,9 @@
           timeout = setTimeout(function() {
             recursiveTimeout(5);
           }, PING_TIMEOUT - 5 * iterations);
-          crosstab.broadcastMaster('PING');
+          crosstab.broadcastMaster("PING");
         } else if(master && master.id === myTab.id) {
-          util.events.emit('setupComplete');
+          util.events.emit("setupComplete");
         }
       }
     }
@@ -794,20 +795,20 @@
       crosstab.broadcast = notSupported;
     } else {
       //---- Setup Storage Listener
-      window.addEventListener('storage', onStorageEvent, false);
+      window.addEventListener("storage", onStorageEvent, false);
       //start with the `beforeunload` event due to IE11
-      window.addEventListener('beforeunload', unload, false);
+      window.addEventListener("beforeunload", unload, false);
       //swap `beforeunload` to `unload` after DOM is loaded
-      window.addEventListener('DOMContentLoaded', swapUnloadEvents, false);
+      window.addEventListener("DOMContentLoaded", swapUnloadEvents, false);
 
-      util.events.on('PING', function(message) {
+      util.events.on("PING", function(message) {
         //only handle direct messages
         if(!message.destination || message.destination !== crosstab.id) {
           return;
         }
 
         if(util.now() - message.timestamp < PING_TIMEOUT) {
-          crosstab.broadcast('PONG', null, message.origin);
+          crosstab.broadcast("PONG", null, message.origin);
         }
       });
 
@@ -832,13 +833,13 @@
   });
 })(
   //First arg -- the global object in the browser or node
-  typeof window === 'object' ? window : global,
+  typeof window === "object" ? window : global,
   //Second arg -- the define object
-  typeof define === 'function' && define.amd
+  typeof define === "function" && define.amd
     ? define
     : (function(context) {
-        'use strict';
-        return typeof module === 'object'
+        "use strict";
+        return typeof module === "object"
           ? function(name, factory) {
               factory(require, exports, module);
             }
@@ -847,8 +848,8 @@
                 exports: {}
               };
               var require = function(n) {
-                if(n === 'jquery') {
-                  n = 'jQuery';
+                if(n === "jquery") {
+                  n = "jQuery";
                 }
                 return context[n];
               };

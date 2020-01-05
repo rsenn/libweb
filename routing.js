@@ -1,4 +1,4 @@
-import Router from 'next/router';
+import Router from "next/router";
 
 //An event handler.
 handlePanelSelect = e => {

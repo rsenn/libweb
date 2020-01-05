@@ -19,23 +19,23 @@ export function Currency({ name, key, symbol, toSats, fromSats, round, format, .
 
 export class CurrencyList {
   static mapping = [
-    'BTC', // 1
-    'mBTC', // 2
-    'SAT', // 3
-    'USD', // 4
-    'EUR', // 5
-    'TOM' // 6
+    "BTC", // 1
+    "mBTC", // 2
+    "SAT", // 3
+    "USD", // 4
+    "EUR", // 5
+    "TOM" // 6
   ];
   static currencies = {
     BTC: Currency({
-      name: 'BitCoin',
-      key: 'BTC',
+      name: "BitCoin",
+      key: "BTC",
       symbol: String.fromCharCode(0x20bf),
       before: true,
       format: function(am) {
-        if(am == NaN || am == 'NaN') return '...';
+        if(am == NaN || am == "NaN") return "...";
         am = this.round(am);
-        return `${this.symbol}${am.toLocaleString('en', {
+        return `${this.symbol}${am.toLocaleString("en", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 10
         })}`;
@@ -45,8 +45,8 @@ export class CurrencyList {
       round: v => Math.round(v * 1.0e8) * 1.0e-8
     }),
     SAT: Currency({
-      name: 'Satoishi',
-      key: 'SAT',
+      name: "Satoishi",
+      key: "SAT",
       symbol: String.fromCharCode(0x218),
       before: false,
       format: (am, cu) => `${am} satoshis`,
@@ -56,9 +56,9 @@ export class CurrencyList {
       format: v => `${v} satoshis`
     }),
     USD: Currency({
-      name: 'US Dollar',
-      key: 'USD',
-      symbol: '$',
+      name: "US Dollar",
+      key: "USD",
+      symbol: "$",
       before: true,
       format: (am, cu) => `${this.symbol}${am}`,
       round: v => Math.round(v * 100) / 100,
@@ -66,14 +66,14 @@ export class CurrencyList {
       toSats: NaN
     }),
     EUR: Currency({
-      name: 'Euro',
-      key: 'EUR',
+      name: "Euro",
+      key: "EUR",
       symbol: String.fromCharCode(0x20ac),
       before: false,
       format: function(am) {
-        if(am == NaN || am == 'NaN') return '...';
+        if(am == NaN || am == "NaN") return "...";
         am = Math.round(am * 100) / 100;
-        var value = this.symbol + '' + am.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        var value = this.symbol + "" + am.toLocaleString("en", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         return value;
       },
       round: v => Math.round(v * 100) / 100,
@@ -81,13 +81,13 @@ export class CurrencyList {
       toSats: NaN
     }),
     TOM: Currency({
-      name: 'Iranian Toman',
-      key: 'TOM',
-      symbol: 'TOM',
+      name: "Iranian Toman",
+      key: "TOM",
+      symbol: "TOM",
       before: true,
       format: function(am) {
-        if(am == NaN || am == 'NaN') return '...';
-        if(typeof am === 'number') am = this.round(am);
+        if(am == NaN || am == "NaN") return "...";
+        if(typeof am === "number") am = this.round(am);
         return `TOM ${am}`;
       },
       fromSats: NaN,
@@ -97,10 +97,10 @@ export class CurrencyList {
   };
 
   static icons = {
-    BTC: '/static/img/sign-bitcoin.svg',
-    USD: '/static/img/sign-dollar.svg',
-    EUR: '/static/img/sign-euro.svg',
-    IRR: '/static/img/sign-rial.svg',
+    BTC: "/static/img/sign-bitcoin.svg",
+    USD: "/static/img/sign-dollar.svg",
+    EUR: "/static/img/sign-euro.svg",
+    IRR: "/static/img/sign-rial.svg",
     TOM: ({ width = 120.879, height = 47.649, color, style }) => (
       <svg style={style} viewBox="0 0 129.749 51.145" xmlns="http://www.w3.org/2000/svg">
         <defs />
@@ -137,8 +137,8 @@ Currency.find = function(arg, def = null) {
   return key == null ? null : CurrencyList.currencies[key];
 };
 Currency.findKey = function(arg, def = null) {
-  if(typeof arg === 'object') return arg;
-  const key = typeof arg === 'string' ? Currency.index(arg, def) : null;
+  if(typeof arg === "object") return arg;
+  const key = typeof arg === "string" ? Currency.index(arg, def) : null;
   return key;
 };
 

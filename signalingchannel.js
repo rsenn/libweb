@@ -1,5 +1,5 @@
 window.SignalingChannel = (function() {
-  'use strict';
+  "use strict";
 
   //This class implements a signaling channel based on WebSocket.
   function SignalingChannel(wssUrl) {
@@ -18,26 +18,26 @@ window.SignalingChannel = (function() {
   };
   SignalingChannel.prototype.open = function() {
     if(this.websocket_) {
-      trace('ERROR: SignalingChannel has already opened.');
+      trace("ERROR: SignalingChannel has already opened.");
       return;
     }
     if(!this.wssUrl_) {
-      throw new Error('No wss url was set');
+      throw new Error("No wss url was set");
     }
-    trace('Opening signaling channel.');
+    trace("Opening signaling channel.");
     return new Promise(
       function(resolve, reject) {
         this.websocket_ = new WebSocket(this.wssUrl_);
 
         this.websocket_.onopen = function() {
-          trace('Signaling channel opened.');
+          trace("Signaling channel opened.");
 
           this.websocket_.onerror = function() {
-            trace('Signaling channel error.');
+            trace("Signaling channel error.");
           };
           this.websocket_.onclose = function(event) {
             //TODO(tkchin): reconnect to WSS.
-            trace('Channel closed with code:' + event.code + ' reason:' + event.reason);
+            trace("Channel closed with code:" + event.code + " reason:" + event.reason);
             this.websocket_ = null;
             this.registered_ = false;
           }.bind(this);
@@ -50,14 +50,14 @@ window.SignalingChannel = (function() {
         }.bind(this);
 
         this.websocket_.onmessage = function(event) {
-          trace('WSS->C: ' + event.data);
+          trace("WSS->C: " + event.data);
 
           var message = JSON.parse(event.data);
-          this.emit('message', message);
+          this.emit("message", message);
         }.bind(this);
 
         this.websocket_.onerror = function() {
-          reject(Error('WebSocket error.'));
+          reject(Error("WebSocket error."));
         };
       }.bind(this)
     );
@@ -65,7 +65,7 @@ window.SignalingChannel = (function() {
 
   SignalingChannel.prototype.register = function(roomId, clientId) {
     if(this.registered_) {
-      trace('ERROR: SignalingChannel has already registered.');
+      trace("ERROR: SignalingChannel has already registered.");
       return;
     }
 
@@ -73,19 +73,19 @@ window.SignalingChannel = (function() {
     this.clientId_ = clientId;
 
     if(!this.roomId_) {
-      trace('ERROR: missing roomId.');
+      trace("ERROR: missing roomId.");
     }
     if(!this.clientId_) {
-      trace('ERROR: missing clientId.');
+      trace("ERROR: missing clientId.");
     }
     if(!this.websocket_ || this.websocket_.readyState !== WebSocket.OPEN) {
-      trace('WebSocket not open yet; saving the IDs to register later.');
+      trace("WebSocket not open yet; saving the IDs to register later.");
       return;
     }
-    trace('Registering signaling channel.');
+    trace("Registering signaling channel.");
     var registerMessage = {
-      cmd: 'register',
-      device: 'chrome',
+      cmd: "register",
+      device: "chrome",
       roomid: this.roomId_,
       clientid: this.clientId_
     };
@@ -94,7 +94,7 @@ window.SignalingChannel = (function() {
 
     //TODO(tkchin): Better notion of whether registration succeeded. Basically
     //check that we don't get an error message back from the socket.
-    trace('Signaling channel registered.');
+    trace("Signaling channel registered.");
   };
 
   SignalingChannel.prototype.close = function() {
@@ -114,15 +114,15 @@ window.SignalingChannel = (function() {
 
   SignalingChannel.prototype.send = function(message) {
     if(!this.roomId_ || !this.clientId_) {
-      trace('ERROR: SignalingChannel has not registered.');
+      trace("ERROR: SignalingChannel has not registered.");
       return;
     }
-    trace('C->WSS: ' + message);
+    trace("C->WSS: " + message);
 
     if(this.websocket_ && this.websocket_.readyState === WebSocket.OPEN) {
       this.websocket_.send(message);
     } else {
-      throw new Error('Websocket is not ready!');
+      throw new Error("Websocket is not ready!");
     }
   };
 
