@@ -13,7 +13,7 @@ httpClient.interceptors.response.use(
   },
   err => {
     console.error("axios ERROR:", err.request.path);
-    throw new Error(err.response.data.message);
+   // throw new Error(err.response.data.message);
   }
 );
 

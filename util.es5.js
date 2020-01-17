@@ -1735,9 +1735,9 @@ Util.getImageAverageColor = function(imageElement, options) {
 
   return o;
 };
-/*
+
 if (module) {
   module.exports = Util;
   module.exports.default = Util;
 }
-*/
+

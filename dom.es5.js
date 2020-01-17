@@ -1,3 +1,5 @@
+const Util = require('./util.es5.js');
+
 function dom() {
   let args = [...arguments];
   let ret = Util.array();
@@ -16,6 +18,7 @@ function dom() {
 
   args = args.map(arg => (typeof arg == "string" ? Element.findAll(arg) : arg));
 
+/*
   for(let e of args) {
     if(e instanceof SVGSVGElement) extend(e, SVG);
     else if(e instanceof HTMLElement) {
@@ -25,7 +28,7 @@ function dom() {
     }
 
     ret.push(e);
-  }
+  }*/
   if(ret.length == 1) ret = ret[0];
   return ret;
 }
@@ -2380,18 +2383,25 @@ function Tree(root) {
 }
 
 Tree.walk = function walk(node, fn, accu = {}) {
-  const root = node;
-  const up = function(n) {
-    const stopNode = root.parentNode;
-    while(n != stopNode && (n = node.parentNode) && !n.nextSibling);
-    return n ? n.nextSibling : null;
-  };
-  do {
-    //console.log('walk: accu=', accu, ', node=', node);
-    accu = fn(node, root, accu);
-  } while((node = node.firstChild || node.nextSibling || up(node)));
-  return accu;
-};
+var elem = node;
+    const root = elem;
+    let depth = 0;
+    while(elem) {
+      accu = fn(elem, accu, root, depth);
+      if(elem.firstChild) depth++;
+      elem =
+        elem.firstChild ||
+        elem.nextSibling ||
+        (function() {
+          do {
+            if(!(elem = elem.parentNode)) break;
+            depth--;
+          } while(depth > 0 && !elem.nextSibling);
+          return elem && elem != root ? elem.nextSibling : null;
+        })();
+    }
+    return accu;
+  }
 
 const ifdef = (value, def, nodef) => (value !== undefined ? def : nodef);
 
@@ -2481,7 +2491,7 @@ class Element extends Node {
         : {};
 
     let ns =
-      (arguments[1] ? arguments[1].namespaceURI : document.body.namespaceURI) != e.namespaceURI
+      (arguments[1] ? arguments[1].namespaceURI : (document.body && document.body.namespaceURI)) != e.namespaceURI
         ? { ns: e.namespaceURI }
         : {};
     let { /*style,*/ ...attributes } = Element.attr(e);
@@ -2531,7 +2541,7 @@ class Element extends Node {
     } else if(typeof attrs_or_name === "string") {
       attrs_or_name = [attrs_or_name];
     } else {
-      attrs_or_name = e.getAttributeNames();
+      attrs_or_name = e.getAttributeNames ? e.getAttributeNames() : Array.from(e.attributes).map(a => a.name);
     }
     let ret = attrs_or_name.reduce((acc, name) => {
       const key = /*Util.camelize*/ name;
@@ -3567,3 +3577,10 @@ dom.Transition = Transition;
 dom.TransitionList = TransitionList;
 dom.TRBL = TRBL;
 dom.Tree = Tree;
+
+
+if (module) {
+  module.exports = dom;
+  module.exports.default = dom;
+}
+

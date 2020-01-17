@@ -2380,19 +2380,27 @@ export function Tree(root) {
   if(!(this instanceof Tree)) return tree;
 }
 
+
 Tree.walk = function walk(node, fn, accu = {}) {
-  const root = node;
-  const up = function(n) {
-    const stopNode = root.parentNode;
-    while(n != stopNode && (n = node.parentNode) && !n.nextSibling);
-    return n ? n.nextSibling : null;
-  };
-  do {
-    //console.log('walk: accu=', accu, ', node=', node);
-    accu = fn(node, root, accu);
-  } while((node = node.firstChild || node.nextSibling || up(node)));
-  return accu;
-};
+var elem = node;
+    const root = elem;
+    let depth = 0;
+    while(elem) {
+      accu = fn(elem, accu, root, depth);
+      if(elem.firstChild) depth++;
+      elem =
+        elem.firstChild ||
+        elem.nextSibling ||
+        (function() {
+          do {
+            if(!(elem = elem.parentNode)) break;
+            depth--;
+          } while(depth > 0 && !elem.nextSibling);
+          return elem && elem != root ? elem.nextSibling : null;
+        })();
+    }
+    return accu;
+  }
 
 const ifdef = (value, def, nodef) => (value !== undefined ? def : nodef);
 
