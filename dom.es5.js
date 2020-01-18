@@ -296,7 +296,7 @@ Point.toString = point => {
   //  return Point.prototype.toString.call(point);
 };
 Point.prototype.toString = function(prec) {
-  return this.x.toFixed(prec) + " " + this.y.toFixed(prec);
+  return `${this.x},${this.y}`;
 };
 Point.prototype.toSource = function() {
   return "{x:" + this.x.toFixed(3) + ",y:" + this.y.toFixed(3) + "}";
