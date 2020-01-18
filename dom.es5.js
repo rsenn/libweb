@@ -3820,9 +3820,9 @@ dom.TRBL = TRBL;
 dom.BBox = BBox;
 dom.Tree = Tree;
 
-if (window) {
-  window.dom = dom;
-} else if(module) {
+if(typeof(module) == 'object') {
   module.exports = dom;
   module.exports.default = dom;
+} else if(typeof(window) == 'object') {
+  window.dom = dom;
 }
