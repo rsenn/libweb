@@ -2790,7 +2790,7 @@ export class Element extends Node {
       }
       if(element.style) { if(element.style.setProperty)
          element.style.setProperty(propName, value);
-         else element.style[Util.camelize(propName)] =
+         else element.style[Util.camelize(propName)] = value;
        }
     }
     return element;
