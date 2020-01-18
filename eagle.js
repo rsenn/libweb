@@ -10,9 +10,11 @@ class Node {
     this.objects.push(obj);
   }
 
-  iter(x = 0, y = 0, angle = 0) {
-    let list = this.objects && this.objects.length ? this.objects : [];
+  iter(_x, _y, _angle) {
+    let acc = { x: _x || 0, y: _y || 0, angle: _angle || 0 };
+    const list = this.objects && this.objects.length ? this.objects : [];
     return (function*() {
+      const { x, y, angle } = acc;
       let p;
       for(let o of list) {
         let ctor = o.constructor;

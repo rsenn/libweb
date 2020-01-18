@@ -1,10 +1,3 @@
-//var useragent = require('useragent');
-
-/**
- * Class for utility.
- *
- * @class      Util (name)
- */
 function Util() {}
 
 Util.formatAnnotatedObject = (
@@ -109,20 +102,20 @@ Util.isDebug = function() {
   return true;
 };
 
-/*Util.log = function(message) {
-  const args = [...arguments];
-  if(!this.logFile) {
-    if(process.browser === undefined) {
-      if(globals && globals.require !== undefined) {
-        this.fs = globals.require('fs');
-        this.logFile = this.fs.openSync('logs/node.log', 'a');
-      }
-    }
-  }
+// Util.log = function(message) {
+//   const args = [...arguments];
+//   if(!this.logFile) {
+//     if(process.browser === undefined) {
+//       if(globals && globals.require !== undefined) {
+//         this.fs = globals.require('fs');
+//         this.logFile = this.fs.openSync('logs/node.log', 'a');
+//       }
+//     }
+//   }
 
-  return this.logFile !== undefined ? fs.writeSync(this.logFile, args.join('') + '\n') : null;
-};
-*/
+//   return this.logFile !== undefined ? fs.writeSync(this.logFile, args.join('') + '\n') : null;
+// };
+
 Util.log = (function() {
   var log = Math.log;
   return function(n, base) {
@@ -375,9 +368,6 @@ Util.defineGetterSetter = (obj, key, get, set, enumerable = false) =>
   });
 
 Util.extendArray = (arr = Array.prototype) => {
-  /*  Util.define(arr, 'tail', function() {
-    return this[this.length - 1];
-  });*/
   Util.define(arr, "match", function(pred) {
     return Util.match(this, pred);
   });
@@ -399,9 +389,6 @@ Util.extendArray = (arr = Array.prototype) => {
       else this[this.length - 1] = value;
     }
   );
-  /*Util.define(arr, 'inspect', function(opts = {}) {
-    return Util.inspect(this, { depth: 100, ...opts });
-  });*/
 };
 Util.adapter = function(
   obj,
@@ -468,11 +455,6 @@ Util.map = function(hash = {}) {
   let m = hash[Symbol.iterator] !== undefined ? hash : new Map(Object.entries(hash));
 
   if(m instanceof Array) m[Symbol.iterator] = m.entries;
-  /*
-  try {
-    //if(m.toObject === undefined) Util.extendMap();
-    if(m.toObject === undefined) Util.extendMap(m);
-  } catch(err) {}*/
   return m;
 };
 Util.extendMap = function(map) {
@@ -528,14 +510,6 @@ Util.repeat = (n, what) => {
   return ret;
 };
 
-/*Util.define(
-  String.prototype,
-  'splice',
-  function(index, delcount, insert) {
-    return Util.splice.apply(this, [this, ...arguments]);
-  }
-);*/
-
 Util.fnName = (f, parent) => {
   if(f !== undefined && f.name !== undefined) return f.name;
   const s = f.toSource ? f.toSource() : f + "";
@@ -584,14 +558,7 @@ Util.find = (arr, value, prop = "id", acc = Util.array()) => {
   for(let k = 0; k < arr.length; k++) {
     let v = arr[k];
     // console.log("v: ", v, "k:", k);
-    /*if(Util.isArray(v)) {
-      for(let i = 0; i < v.length; i++)
-        if(pred(v[i]))
-          return v[i];
-
-    } else */ {
-      if(pred(v)) return v;
-    }
+    if(pred(v)) return v;
   }
   return null;
 };
@@ -647,14 +614,6 @@ Util.indexOf = (obj, prop) => {
   }
   return undefined;
 };
-/*
-Util.injectProps = (options) => {
-  return function(InitialComponent) {
-    return function DndStateInjector() {
-      return <InitialComponent {...options} />;
-    }
-  }
-}*/
 Util.toString = function() {};
 
 Util.dump = function(name, props) {
@@ -679,13 +638,6 @@ Util.ucfirst = function(str) {
 Util.lcfirst = function(str) {
   return str.substring(0, 1).toLowerCase() + str.substring(1);
 };
-/**
- * Camelize a string, cutting the string by multiple separators like
- * hyphens, underscores and spaces.
- *
- * @param {text} string Text to camelize
- * @return string Camelized text
- */
 Util.camelize = function(text, sep = "") {
   return text.replace(/^([A-Z])|[\s-_]+(\w)/g, function(match, p1, p2, offset) {
     if(p2) return sep + p2.toUpperCase();
@@ -1319,7 +1271,10 @@ Util.roundTo = function(value, prec) {
   return Math.round(value / prec) * prec;
 };
 Util.base64 = {
-  encode: utf8 => window.btoa(unescape(encodeURIComponent(utf8))),
+  encode: utf8 => {
+    if(global.window) return window.btoa(unescape(encodeURIComponent(utf8)));
+    return Buffer.from(utf8).toString("base64");
+  },
   decode: base64 => decodeURIComponent(escape(window.atob(base64)))
 };
 

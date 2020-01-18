@@ -1,6 +1,7 @@
-const Util = require("./util.es5.js");
-
-function dom() {
+if (!process.browser) {
+  Util = require("./util.es5.js");
+}
+function DOM() {
   let args = [...arguments];
   let ret = Util.array();
 
@@ -33,13 +34,15 @@ function dom() {
   return ret;
 }
 
+if (typeof window == "object") window.dom = { fn: DOM };
+
 /**
  * Determines if number.
  *
  * @return     {(Object|Point|boolean|string)}  True if number, False otherwise.
  */
 
-dom.isNumber = a => {
+DOM.isNumber = a => {
   return String(a).replace(/^[0-9]*$/, "") == "";
 };
 
@@ -1401,7 +1404,7 @@ class BBox {
     if(Object.keys(updated)) console.log(`BBox update ${x},${y} `, updated);
   }
   get center() {
-    return new dom.Point({ x: this.x + this.width / 2, y: this.y + this.height / 2 });
+    return new Point({ x: this.x + this.width / 2, y: this.y + this.height / 2 });
   }
   relative_to(x, y) {
     return new BBox(this.x1 - x, this.y1 - y, this.x2 - x, this.y2 - y);
@@ -1435,7 +1438,7 @@ class BBox {
     this.y2 = this.y1 + h;
   }
   get rect() {
-    return new dom.Rect({ x: this.x1, y: this.y1, width: this.x2 - this.x1, height: this.y2 - this.y1 });
+    return new Rect({ x: this.x1, y: this.y1, width: this.x2 - this.x1, height: this.y2 - this.y1 });
   }
   toString() {
     return `[${this.x1},${this.y1}] - [${this.x2},${this.y2}]`;
@@ -3774,55 +3777,62 @@ const isCSS = inst => {};
 const isContainer = inst => {};
 const isSVG = inst => inst.tagName.toLowerCase() == "svg";
 
-dom.Align = Align;
-dom.Anchor = Anchor;
-dom.Container = Container;
-dom.CSS = CSS;
-dom.CSSTransformSetters = CSSTransformSetters;
-dom.Element = Element;
-dom.ElementPosProps = ElementPosProps;
-dom.ElementRectProps = ElementRectProps;
-dom.ElementRectProxy = ElementRectProxy;
-dom.ElementSizeProps = ElementSizeProps;
-dom.ElementTransformation = ElementTransformation;
-dom.ElementWHProps = ElementWHProps;
-dom.ElementXYProps = ElementXYProps;
-dom.HSLA = HSLA;
-dom.isContainer = isContainer;
-dom.isCSS = isCSS;
-dom.isElement = isElement;
-dom.isHSLA = isHSLA;
-dom.isLine = isLine;
-dom.isMatrix = isMatrix;
-dom.isPoint = isPoint;
-dom.isPointList = isPointList;
-dom.isRect = isRect;
-dom.isRGBA = isRGBA;
-dom.isSize = isSize;
-dom.isSVG = isSVG;
-dom.isTimer = isTimer;
-dom.isTRBL = isTRBL;
-dom.isTree = isTree;
-dom.Line = Line;
-dom.Matrix = Matrix;
-dom.MatrixProps = MatrixProps;
-dom.Node = Node;
-dom.Point = Point;
-dom.PointList = PointList;
-dom.Rect = Rect;
-dom.RGBA = RGBA;
-dom.Size = Size;
-dom.SVG = SVG;
-dom.Timer = Timer;
-dom.Transition = Transition;
-dom.TransitionList = TransitionList;
-dom.TRBL = TRBL;
-dom.BBox = BBox;
-dom.Tree = Tree;
+const classes = {
+  Align,
+  Anchor,
+  Node,
+  Container,
+  CSS,
+  CSSTransformSetters,
+  Element,
+  ElementPosProps,
+  ElementRectProps,
+  ElementRectProxy,
+  ElementSizeProps,
+  ElementTransformation,
+  ElementWHProps,
+  ElementXYProps,
+  HSLA,
+  isContainer,
+  isCSS,
+  isElement,
+  isHSLA,
+  isLine,
+  isMatrix,
+  isPoint,
+  isPointList,
+  isRect,
+  isRGBA,
+  isSize,
+  isSVG,
+  isTimer,
+  isTRBL,
+  isTree,
+  Line,
+  Matrix,
+  MatrixProps,
+  Node,
+  Point,
+  PointList,
+  Rect,
+  RGBA,
+  Size,
+  SVG,
+  Timer,
+  Transition,
+  TransitionList,
+  TRBL,
+  BBox,
+  Tree
+};
+//Object.assign(DOM, classes);
 
-if (typeof module == "object") {
-  module.exports = dom;
-  module.exports.default = dom;
-} else if(typeof window == "object") {
-  window.dom = dom;
+//DOMClasses = classes;
+
+if (process.browser || typeof window == "object") {
+  window.dom = DOM;
+  Object.assign(window, classes);
+} else if(typeof module == "object") {
+  module.exports = { dom: DOM, ...classes };
+  module.exports.default = module.exports.dom;
 }

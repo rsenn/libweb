@@ -1318,10 +1318,12 @@ Util.roundTo = function(value, prec) {
   return Math.round(value / prec) * prec;
 };
 Util.base64 = {
-  encode: utf8 => window.btoa(unescape(encodeURIComponent(utf8))),
+  encode: utf8 => {
+    if(global.window) return window.btoa(unescape(encodeURIComponent(utf8)));
+    return Buffer.from(utf8).toString("base64");
+  },
   decode: base64 => decodeURIComponent(escape(window.atob(base64)))
 };
-
 Util.formatRecord = function(obj) {
   let ret = {};
   for(let key in obj) {
