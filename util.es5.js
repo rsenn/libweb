@@ -1,6 +1,5 @@
 //var useragent = require('useragent');
 
-
 /**
  * Class for utility.
  *
@@ -86,7 +85,8 @@ Util.formatAnnotatedObject = (
     } else if(subject[k] && subject[k].toSource !== undefined) {
       s = subject[k].toSource();
     } else if(opts.depth >= 0) {
-      s = s.length > maxlen ? "[Object " + Util.objName(subject[k]) + "]" : Util.formatAnnotatedObject(subject[k], opts);
+      s =
+        s.length > maxlen ? "[Object " + Util.objName(subject[k]) + "]" : Util.formatAnnotatedObject(subject[k], opts);
     }
     r.push([k, s]);
   }
@@ -1741,10 +1741,9 @@ Util.getImageAverageColor = function(imageElement, options) {
   return o;
 };
 
-
-if(typeof(window) == 'object') {
+if (typeof window == "object") {
   window.Util = Util;
-} else  if (typeof(module) == 'object') {
+} else if(typeof module == "object") {
   module.exports = Util;
   module.exports.default = Util;
 }
