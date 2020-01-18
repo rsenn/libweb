@@ -1,25 +1,6 @@
 import React from "react";
-import dom, {
-  TRBL,
-  CSS,
-  CSSTransformSetters,
-  Element,
-  ElementRectProxy,
-  ElementSizeProps,
-  ElementTransformation,
-  ElementXYProps,
-  Line,
-  Matrix,
-  Point,
-  PointList,
-  Rect,
-  RGBA,
-  Size,
-  SVG,
-  Timer,
-  ReactComponent,
-  Node
-} from "../utils/dom.js";
+// prettier-ignore
+import dom, {TRBL, CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, Line, Matrix, Point, PointList, Rect, RGBA, Size, SVG, Timer, ReactComponent, Node } from "../utils/dom.js";
 import { SvgOverlay, SvgPathTracer } from "./svg-overlay.js";
 import { SvgPath } from "./svg-path.js";
 import Util from "./util.js";
@@ -31,18 +12,11 @@ import { TouchListener } from "./touchHandler.js";
 import { makeLocalStorage } from "./autoStore.js";
 var root = global.window ? window : global;
 
-//uire('./svg-path.js');
-//console.log(SvgPath);
-//
-//
-//
 const env = "development";
 
-//
 if (["development", "test", "local"].indexOf(env) != -1 && "window" in global) {
   window.accumulateClasses = () => {
     var st = storage("dev");
-
     var classes = st.get("classes") || [];
     var newClasses = dom.Element.walk(
       document.body,
@@ -56,11 +30,8 @@ if (["development", "test", "local"].indexOf(env) != -1 && "window" in global) {
       .split(/\s+/g)
       .unique()
       .match(/bp3/);
-
     dom.Element.findAll("*[class~=bp3]").forEach(e => newClasses.concat(String(e.class).split(/ /g)));
-
     newClasses = newClasses.filter(i => classes.indexOf(i) == -1);
-
     if(newClasses.length) {
       st.set("classes", (classes = Util.unique(classes.concat(newClasses))));
       console.log("dev.classes ", newClasses);
@@ -265,26 +236,21 @@ export function starAnim() {
     }
   });
   let f = SVG.factory(c, Size(rect));
-
   /* Element.attr(c.root, { width: '100%', height: '100%' });
 Element.setCSS(c.root, { width: '100%', height: '100%' });
 */ let r = 100;
-
   const edges = 5 * 2;
-
   const MakePointList = r => {
     let ret = new PointList();
     for(let i = 0; i < edges; i++) {
       let angle = (Math.PI * 2 * i) / edges;
       const rad = r[i & 1];
-
       let pt = new Point(Math.cos(angle) * rad, Math.sin(angle) * rad);
       ret.push(pt.round());
     }
     return ret;
   };
   let path = SVG.path();
-
   let points = MakePointList([r, r / 2.5]);
   let d = points.toPath({ close: true });
   points.draw(path, true);
@@ -292,7 +258,6 @@ Element.setCSS(c.root, { width: '100%', height: '100%' });
   points.reverse();
   points.draw(path, true);
   d += points.toPath({ close: true });
-
   let g = SVG.gradient(f, {
     type: "radial",
     id: "page1-halo",
@@ -302,7 +267,6 @@ Element.setCSS(c.root, { width: '100%', height: '100%' });
     ]
   });
   console.log("PointList: ", { d, g });
-
   //f.root.parentElement.removeChild(f.root);
   console.log("path: ", path.str());
   let p = f("path", {
@@ -350,7 +314,6 @@ export function gettext(elem, done) {
     else txt = "";
     return txt;
   };
-
   return new Promise(function(resolve, reject) {
     let e = elem;
     console.log("gettext ", { e });
@@ -387,7 +350,6 @@ export function select() {
       const e = Element.find("#__next");
       e.style.cursor = "crosshair";
       select.element = null;
-
       const abortsel = () => {
         select.promise = undefined;
         e.style.cursor = "default";
