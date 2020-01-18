@@ -1633,7 +1633,7 @@ Util.flatTree = function(tree, addOutput) {
 };
 Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
-  if(typeof tree.children == "object" && tree.children.length)
+  if(typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children.length)
     for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
 };
 Util.getImageAverageColor = function(imageElement, options) {

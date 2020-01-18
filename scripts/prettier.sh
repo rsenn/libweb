@@ -15,8 +15,9 @@ EXPR="$EXPR; s|\s${KW}\s*(| ${KW}(|"
 done
 
 for SOURCE in  ${@:-$(find components utils stores pages -name "*.js")}; do
-  
-  prettier "$SOURCE"
+  ARG=${SOURCE//"["/"\\["}
+  ARG=${ARG//"]"/"\\]"}
+  prettier "$ARG"
    sed -i  "$EXPR" "$SOURCE"
  done
 
