@@ -167,23 +167,21 @@ export default class devpane {
 
   toggleOpenClose() {
     this.open = !this.open;
-    
+
     // console.log("devpane.toggleOpenClose open=" + this.open);
-    
+
     this.config.assign({ open: this.open });
 
     if(this.pane()) {
       this.pane().style.display = this.open ? "inline-block" : "none";
     }
     if(this.open) {
-
       //this.pane.style.display = 'inline-block';
       //if(global.window)  this.rectList = this.buildRectList(document.body);
       this.root();
       this.pane();
     }
     this.handleToggle();
-
   }
 
   setPosition(x, y) {
@@ -304,7 +302,7 @@ export default class devpane {
         if(rect.x == 0 && rect.y == 0) {
           const { offsetParent } = elem;
           const offsetRect = offsetParent ? Element.getRect(offsetParent) : null;
-        //  console.log("Zero ", { elem, rect, offsetParent, offsetRect });
+          //  console.log("Zero ", { elem, rect, offsetParent, offsetRect });
         }
 
         const ns = elem.namespaceURI.replace(/.*\//, "");
@@ -459,20 +457,17 @@ export default class devpane {
         //   pointerEvents: "none",
         ...css
       }
-  });
+    });
 
   createSVGElement = (tag, attr, parent) => SVG.create(tag, attr, parent);
   handleToggle(event, checked) {
-  
-//    const { currentTarget } = event;
-    if(checked === undefined)
-    checked = this.open;
+    //    const { currentTarget } = event;
+    if(checked === undefined) checked = this.open;
     const what = checked ? "add" : "remove";
     const fn = what + "EventListener";
 
-   console.log("devpane.handleToggle "+fn);
-    const mouseEvents = elem =>
-      ["mouseenter", "mouseleave"].forEach(listener => elem[fn](listener, this.mouseEvent));
+    console.log("devpane.handleToggle " + fn);
+    const mouseEvents = elem => ["mouseenter", "mouseleave"].forEach(listener => elem[fn](listener, this.mouseEvent));
 
     window[what + "EventListener"]("mousemove", this.mouseMove);
 
@@ -900,7 +895,7 @@ export default class devpane {
 
     rects.sort((a, b) => Rect.area(b) - Rect.area(a));
     rects = rects.filter(item => Rect.area(item) > 0);
-    
+
     console.log("devp.mouseMove", { target, clientX, clientY, rects });
     //this.log().innerHTML =target.outerHTML;
 
@@ -908,7 +903,7 @@ export default class devpane {
     let svg = this.svg();
     [...svg.querySelectorAll("rect")].forEach(e => e.parentElement.removeChild(e));
     let f = SVG.factory(svg);
-  
+
     this.svgRects = rects;
     rects = rects.map((rect, index) => ({
       color: new HSLA((60 + (index * 360) / 10) % 360, 100, 50, 1),
@@ -919,8 +914,9 @@ export default class devpane {
     });
     var selectedList = Element.find("#selected-list");
     Element.setCSS(selectedList, { display: "block", backgroundColor: "black", padding: "2px", overflow: "scroll" });
-  // prettier-ignore
-    selectedList.innerHTML = "<pre>" + rects .map(rect => `<span style="color: ${rect.color.toString()};">` + Element.xpath(rect.e, document.body) + `</span>` ) .reverse() .join("\n") + `</pre>`; if(rects[0]) {
+    // prettier-ignore
+    selectedList.innerHTML = "<pre>" + rects .map(rect => `<span style="color: ${rect.color.toString()};">` + Element.xpath(rect.e, document.body) + `</span>` ) .reverse() .join("\n") + `</pre>`;
+    if(rects[0]) {
       this.rect = rects[0];
       // this.renderPaneLayer();
     }

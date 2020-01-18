@@ -2788,10 +2788,10 @@ export class Element extends Node {
           value = value();
         }
       }
-      if(element.style) { if(element.style.setProperty)
-         element.style.setProperty(propName, value);
-         else element.style[Util.camelize(propName)] = value;
-       }
+      if(element.style) {
+        if(element.style.setProperty) element.style.setProperty(propName, value);
+        else element.style[Util.camelize(propName)] = value;
+      }
     }
     return element;
   };
