@@ -687,7 +687,7 @@ export function setpos(element) {
 
 export function dump(element) {
   let e = Element.find(element);
-  //console.log(Element.dump(e));
+  console.error(Element.dump(e));
 }
 
 export function walk(element) {
@@ -755,7 +755,7 @@ export function walk(element) {
         if(text.length > 0 && !(key.startsWith("style") || key.startsWith("script"))) {
           const ch = text.charCodeAt(0);
           let line = texts.add({ e, id, lang, key, text, rect });
-          //console.log("Text ", line[line.length - 1]);
+          console.log("Text ", line[line.length - 1]);
         }
       }
     })
@@ -799,9 +799,10 @@ export function walk(element) {
 export function measure(element) {
   let e = Element.find(element);
   let r = Element.rect(e);
-  //console.log('Element ', Element.xpath(e));
-  //console.log('    rect: ', r);
-  //console.log('     css: ', Element.getCSS(e));
+
+  console.log("Element ", Element.xpath(e));
+  console.log("    rect: ", r);
+  console.log("     css: ", Element.getCSS(e));
 }
 
 export function trackElements() {
@@ -821,15 +822,23 @@ export function trackElements() {
 }
 
 export function rect(arg) {
-  if(typeof arg == "object" && arg.length !== undefined) {
-    return [...arg].map(r => __rect(r));
+  let args = [...arguments];
+  let r;
+  let a = [];
+  while(args.length > 0) {
+    r = new dom.Rect(args);
+
+    a.push(__rect(r));
   }
-  function __rect() {
-    let args = [...arguments];
+
+  return a;
+
+  function __rect(rect) {
     let body = Element.find("body");
     let parent = null;
 
-    let rect = args.shift();
+    /*   let args = [...arguments];
+    let rect = args.shift();*/
     if(typeof rect == "string" || rect.tagName !== undefined) {
       parent = rect;
       rect = Element.rect(rect);
@@ -842,7 +851,7 @@ export function rect(arg) {
     let css = Rect.toCSS(rect) || {};
     if(typeof parent == "string") parent = Element.find(parent);
 
-    if(parent != body && !parent.style.position) parent.style.setProperty("position", "relative");
+    if(parent != body && parent.style && !parent.style.position) parent.style.setProperty("position", "relative");
 
     let e = Element.create("div", {
       parent,
@@ -950,46 +959,36 @@ export function storage(name) {
 
   return self;
 }
-
+// prettier-ignore
 export function assign_to(obj) {
-  return Object.assign(obj, {
-    process,
-    boxes,
-    res,
-    select,
-    img,
-    createsvg,
-    setpos,
-    measure,
-    dump,
-    borders,
-    rect,
-    storage,
-    //devpane,
-    stores,
-    walk,
-    ws,
-    settext,
-    gettext,
-    gradient,
-    colors,
-    getStars,
-    Util,
-    toJS,
-    root,
-    dom,
-    starAnim,
-    stylesheets,
-    /*    CommonStoreFunctions,*/
-    SvgOverlay,
-    parseDate: Util.parseDate,
-    Polygon,
-    TouchListener,
-    SvgPathTracer,
-    React,
-    ReactComponent,
-    trackElements
-  });
+  // prettier-ignore  
+  Object.assign(obj, { devtools});
+  Object.assign(obj,  devtools);
 }
 
-export default assign_to;
+export const devtools = {
+  arrayBuffer2String,
+  assign_to,
+  borders,
+  boxes,
+  createsvg,
+  dump,
+  gettext,
+  gradient,
+  measure,
+  rect,
+  res,
+  select,
+  setpos,
+  settext,
+  starAnim,
+  storage,
+  stores,
+  stylesheets,
+  trackElements,
+  walk,
+  ws,
+  assign_to
+};
+
+export default devtools;

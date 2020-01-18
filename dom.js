@@ -80,7 +80,7 @@ export function Point(arg) {
   } else if(typeof arg == "object" && arg !== null && (arg.x !== undefined || arg.y !== undefined)) {
     p.x = arg.x;
     p.y = arg.y;
-  } else if(typeof arg == "object" && arg !== null && arg.length > 0 && arg[0] !== undefined && arg[1] !== undefined) {
+  } else if(typeof arg == "object" && arg !== null && arg.length > 0 && x !== undefined && y !== undefined) {
     p.x = parseFloat(arg.shift());
     p.y = parseFloat(arg.shift());
   } else if(typeof args[0] === "number" && typeof args[1] === "number") {
@@ -772,18 +772,13 @@ export function Rect(arg) {
   let args = arg instanceof Array ? arg : [...arguments];
   let ret;
 
-  if(typeof args[0] == "number") {
-    arg = args;
-  } else {
-    arg = args.shift();
-    if(arg && arg[0] && arg[0].length == 4) arg = arg[0];
-  }
+  if(typeof args[0] == "number") arg = args;
+  else if(args[0].length !== undefined) arg = args.shift();
 
-  /*
-  ['x', 'y', 'width', 'height'].forEach(field => {
-    if(typeof obj[field] != 'number') obj[field] = 0;
+  ["x", "y", "width", "height"].forEach(field => {
+    if(typeof obj[field] != "number") obj[field] = 0;
   });
-*/
+
   if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
     const { x1, y1, x2, y2 } = arg;
     obj.x = x1;
@@ -805,20 +800,24 @@ export function Rect(arg) {
     obj.height = parseFloat(arg.height);
     ret = 1;
   } else if(arg && arg.length >= 4 && arg.slice(0, 4).every(arg => !isNaN(parseFloat(arg)))) {
-    obj.x = typeof arg[0] === "number" ? arg[0] : parseFloat(arg[0]);
-    obj.y = typeof arg[1] === "number" ? arg[1] : parseFloat(arg[1]);
-    obj.width = typeof arg[2] === "number" ? arg[2] : parseFloat(arg[2]);
-    obj.height = typeof arg[3] === "number" ? arg[3] : parseFloat(arg[3]);
+    let x = arg.shift();
+    let y = arg.shift();
+    let w = arg.shift();
+    let h = arg.shift();
+    obj.x = typeof x === "number" ? x : parseFloat(x);
+    obj.y = typeof y === "number" ? y : parseFloat(y);
+    obj.width = typeof w === "number" ? w : parseFloat(w);
+    obj.height = typeof h === "number" ? h : parseFloat(h);
     ret = 4;
   } else if(arg && arg.length >= 2 && arg.slice(0, 2).every(arg => !isNaN(parseFloat(arg)))) {
-    obj.width = typeof arg[0] === "number" ? arg[0] : parseFloat(arg[0]);
-    obj.height = typeof arg[1] === "number" ? arg[1] : parseFloat(arg[1]);
+    obj.width = typeof x === "number" ? x : parseFloat(x);
+    obj.height = typeof y === "number" ? y : parseFloat(y);
     ret = 2;
   } else if(arg instanceof Array) {
     let argc;
     let argi = 0;
     if(arg.length >= 4) {
-      argc = typeof arg[0] == "number" ? 2 : 1;
+      argc = typeof x == "number" ? 2 : 1;
       Point.apply(obj, arg.slice(0, argc));
       argi = argc;
     }
@@ -1203,10 +1202,10 @@ export function TRBL(arg) {
     if(typeof arg === "string") arg = [...arg.matchAll(/^[0-9.]+(|px|em|rem|pt|cm|mm)$/g)];
     else if(arg.length == 4) arg = arg.map(v => parseInt(v));
 
-    ret.top = arg[0];
-    ret.right = arg[1];
-    ret.bottom = arg[2];
-    ret.left = arg[3];
+    ret.top = x;
+    ret.right = y;
+    ret.bottom = w;
+    ret.left = h;
   }
 
   if(isNaN(ret.top)) ret.top = 0;
@@ -1783,10 +1782,10 @@ export function Line(x1, y1, x2, y2) {
     obj.y2 = parseFloat(args[1].y);
     ret = 2;
   } else if(arg && arg.length >= 4 && arg.slice(0, 4).every(arg => !isNaN(parseFloat(arg)))) {
-    obj.x1 = typeof arg[0] === "number" ? arg[0] : parseFloat(arg[0]);
-    obj.y1 = typeof arg[1] === "number" ? arg[1] : parseFloat(arg[1]);
-    obj.x2 = typeof arg[2] === "number" ? arg[2] : parseFloat(arg[2]);
-    obj.y2 = typeof arg[3] === "number" ? arg[3] : parseFloat(arg[3]);
+    obj.x1 = typeof x === "number" ? x : parseFloat(x);
+    obj.y1 = typeof y === "number" ? y : parseFloat(y);
+    obj.x2 = typeof w === "number" ? w : parseFloat(w);
+    obj.y2 = typeof h === "number" ? h : parseFloat(h);
     ret = 4;
   } else {
     ret = 0;
@@ -2624,9 +2623,9 @@ export class Element extends Node {
     const prect = Element.rect(pelement, { round: false });
     //Rect.align(rect, prect, anchor);
 
-    /* const stack = Util.getCallers(3, 4);
+    /* const stack = Util.getCallers(3, 4);*/
     const ptrbl = Rect.toTRBL(prect);
-    const trbl = Rect.toTRBL(rect);*/
+    const trbl = Rect.toTRBL(rect);
     //console.log('Element.setRect ', { trbl, ptrbl, stack });
     let css = {};
     let remove;
@@ -2789,7 +2788,10 @@ export class Element extends Node {
           value = value();
         }
       }
-      element.style.setProperty(propName, value);
+      if(element.style) { if(element.style.setProperty)
+         element.style.setProperty(propName, value);
+         else element.style[Util.camelize(propName)] =
+       }
     }
     return element;
   };
