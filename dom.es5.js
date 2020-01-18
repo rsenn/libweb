@@ -1,4 +1,4 @@
-const Util = require('./util.es5.js');
+const Util = require("./util.es5.js");
 
 function dom() {
   let args = [...arguments];
@@ -18,7 +18,7 @@ function dom() {
 
   args = args.map(arg => (typeof arg == "string" ? Element.findAll(arg) : arg));
 
-/*
+  /*
   for(let e of args) {
     if(e instanceof SVGSVGElement) extend(e, SVG);
     else if(e instanceof HTMLElement) {
@@ -217,6 +217,13 @@ Point.prototype.round = function(precision = 1.0) {
   return this;
 };
 
+Point.prototype.equal = function(other) {
+  return typeof other == "object" && other !== null && this.x == other.x && this.y == other.y;
+};
+Point.prototype.diff = function(other) {
+  return new Point(this.x - other.x, this.y - other.y);
+};
+
 Point.sides = p => ({
   top: p.y,
   right: p.x + p.w1idth,
@@ -344,6 +351,32 @@ PointList.prototype.push = function() {
   args.forEach(arg => {
     if(!(arg instanceof Point)) arg = new Point(arg);
     Array.prototype.push.call(this, arg);
+  });
+};
+PointList.prototype.last = function() {
+  return this.length > 0 ? this[this.length - 1] : null;
+};
+
+PointList.prototype.indexOf = function(point) {
+  for(let i = 0; i < this.length; i++) {
+    if(this[i].x == point.x && this[i].y == point.y) return i;
+  }
+  return -1;
+};
+PointList.prototype.lastIndexOf = function(point) {
+  for(let i = this.length - 1; i >= 0; i--) {
+    if(this[i].x == point.x && this[i].y == point.y) return i;
+  }
+  return -1;
+};
+PointList.prototype.pushUnique = function() {
+  const args = [...arguments];
+  const list = this;
+  args.forEach(arg => {
+    if(list.indexOf(arg) == -1) {
+      if(!(arg instanceof Point)) arg = new Point(arg);
+      Array.prototype.push.call(this, arg);
+    }
   });
 };
 PointList.push = (plist, points) => {
@@ -611,14 +644,10 @@ PointList.prototype.lines = function(closed = false) {
 };
 
 PointList.prototype.toString = function() {
-  return (
-    "[" +
-    this.map(
-      point =>
-        Point.toString(point) /*.toString && !(point instanceof DOMPoint) ? point.toString() : Point.toString(point))*/
-    ).join(",\n  ") +
-    "]"
-  );
+  return this.map(
+    point =>
+      Point.toString(point) /*.toString && !(point instanceof DOMPoint) ? point.toString() : Point.toString(point))*/
+  ).join(" ");
 };
 
 PointList.toString = pointList => {
@@ -1899,19 +1928,54 @@ Util.defineGetterSetter(Line.prototype, 'x2', function() { return this.b.x; }, f
 Util.defineGetterSetter(Line.prototype, 'y2', function() { return this.b.y; }, function(v) { this.b.y = v; }, true);
 
 */
+Line.prototype.bounds = function() {
+  return {
+    x1: this.x1 < this.x2 ? this.x1 : this.x2,
+    x2: this.x1 > this.x2 ? this.x1 : this.x2,
+    y1: this.y1 < this.y2 ? this.y1 : this.y2,
+    y2: this.y1 > this.y2 ? this.y1 : this.y2
+  };
+};
+
 Line.prototype.direction = function() {
-  var dist = Point.distance(this.a, this.b);
-  return Point.diff(this.a, this.b) / dist;
+  const a = { x: this.x1, y: this.y1 };
+  const b = { x: this.x2, y: this.y2 };
+
+  var dist = Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+  return {
+    x: (a.x - b.x) / dist,
+    y: (a.y - b.y) / dist
+  };
+  //return Point.diff(this.a, this.b) / dist;
 };
 Line.prototype.slope = function() {
-  return Point.diff(this.a, this.b);
+  const a = { x: this.x1, y: this.y1 };
+  const b = { x: this.x2, y: this.y2 };
+  return {
+    x: a.x - b.x,
+    y: a.y - b.y
+  };
 };
 Line.prototype.angle = function() {
-  return Point.angle(this.a, this.b);
+  const a = { x: this.x1, y: this.y1 };
+  const b = { x: this.x2, y: this.y2 };
+  return Math.atan2(a.x - b.x, a.y - b.y);
 };
 
 Line.prototype.length = function() {
-  return Point.distance(this.a, this.b);
+  const a = { x: this.x1, y: this.y1 };
+  const b = { x: this.x2, y: this.y2 };
+  return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+};
+
+Line.prototype.swap = function() {
+  const a = { x: this.x1, y: this.y1 };
+  const b = { x: this.x2, y: this.y2 };
+  this.x1 = b.x;
+  this.y1 = b.y;
+  this.x2 = a.x;
+  this.y2 = b.y;
+  return this;
 };
 
 Line.prototype.pointAt = function(pos) {
@@ -1937,6 +2001,16 @@ Line.transform = (line, matrix) => {
 Line.prototype.inspect = function() {
   const { x1, y1, x2, y2 } = this;
   return "Line{ " + inspect({ x1, y1, x2, y2 }) + " }";
+};
+Line.prototype.toString = function() {
+  const { x1, y1, x2, y2 } = this;
+  return `Line ` + Util.padLeft(`${x1},${y1}`, 8) + ` -> ` + Util.padLeft(`${x2},${y2}`, 8);
+};
+Line.prototype.toPoints = function() {
+  const a = { x: this.x1, y: this.y1 };
+  const b = { x: this.x2, y: this.y2 };
+
+  return new PointList([a, b]);
 };
 
 /*
@@ -2383,25 +2457,25 @@ function Tree(root) {
 }
 
 Tree.walk = function walk(node, fn, accu = {}) {
-var elem = node;
-    const root = elem;
-    let depth = 0;
-    while(elem) {
-      accu = fn(elem, accu, root, depth);
-      if(elem.firstChild) depth++;
-      elem =
-        elem.firstChild ||
-        elem.nextSibling ||
-        (function() {
-          do {
-            if(!(elem = elem.parentNode)) break;
-            depth--;
-          } while(depth > 0 && !elem.nextSibling);
-          return elem && elem != root ? elem.nextSibling : null;
-        })();
-    }
-    return accu;
+  var elem = node;
+  const root = elem;
+  let depth = 0;
+  while(elem) {
+    accu = fn(elem, accu, root, depth);
+    if(elem.firstChild) depth++;
+    elem =
+      elem.firstChild ||
+      elem.nextSibling ||
+      (function() {
+        do {
+          if(!(elem = elem.parentNode)) break;
+          depth--;
+        } while(depth > 0 && !elem.nextSibling);
+        return elem && elem != root ? elem.nextSibling : null;
+      })();
   }
+  return accu;
+};
 
 const ifdef = (value, def, nodef) => (value !== undefined ? def : nodef);
 
@@ -2426,6 +2500,12 @@ class Node {
       node = node.parentNode;
     }
     return r;
+  }
+
+  static attrs(node) {
+    return node.attributes && node.attributes.length > 0
+      ? Array.from(node.attributes).reduce((acc, attr) => ({ ...acc, [attr.name]: attr.value }), {})
+      : {};
   }
 }
 
@@ -2483,15 +2563,15 @@ class Element extends Node {
     return accu;
   }
 
-  static toObject(elem) {
+  static toObject(elem, ns) {
     let e = Element.find(elem);
     let children =
       e.children && e.children.length
         ? { children: Util.array(e.children).map(child => Element.toObject(child, e)) }
         : {};
 
-    let ns =
-      (arguments[1] ? arguments[1].namespaceURI : (document.body && document.body.namespaceURI)) != e.namespaceURI
+    ns =
+      (arguments[1] ? arguments[1].namespaceURI : document.body && document.body.namespaceURI) != e.namespaceURI
         ? { ns: e.namespaceURI }
         : {};
     let { /*style,*/ ...attributes } = Element.attr(e);
@@ -3578,9 +3658,7 @@ dom.TransitionList = TransitionList;
 dom.TRBL = TRBL;
 dom.Tree = Tree;
 
-
 if (module) {
   module.exports = dom;
   module.exports.default = dom;
 }
-

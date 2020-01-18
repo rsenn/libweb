@@ -321,6 +321,8 @@ Util.onoff = val => {
   return undefined;
 };
 
+Util.toBoolean = val => ["true", true, 1, "on", "yes"].indexOf(val) != -1;
+
 Util.numbersToBits = arr => arr.reduce((bits, num) => bits + Util.bitValue(num), 0);
 
 Util.randomNumbers = ([start, end], draws) => {
@@ -332,6 +334,8 @@ Util.randomNumbers = ([start, end], draws) => {
 Util.randomBits = (r = [1, 50], n = 5) => Util.numbersToBits(Util.randomNumbers(r, n));
 
 Util.pad = (s, n, char = " ") => (s.length < n ? char.repeat(n - s.length) : "");
+Util.padRight = (s, n, char = " ") => (s.length < n ? s + char.repeat(n - s.length) : s);
+Util.padLeft = (s, n, char = " ") => (s.length < n ? char.repeat(n - s.length) + s : s);
 
 Util.abbreviate = function(str, max, suffix = "...") {
   if(str.length > max) {
@@ -463,11 +467,11 @@ Util.map = function(hash = {}) {
   let m = hash[Symbol.iterator] !== undefined ? hash : new Map(Object.entries(hash));
 
   if(m instanceof Array) m[Symbol.iterator] = m.entries;
-
+  /*
   try {
     //if(m.toObject === undefined) Util.extendMap();
     if(m.toObject === undefined) Util.extendMap(m);
-  } catch(err) {}
+  } catch(err) {}*/
   return m;
 };
 Util.extendMap = function(map) {
@@ -1740,4 +1744,3 @@ if (module) {
   module.exports = Util;
   module.exports.default = Util;
 }
-

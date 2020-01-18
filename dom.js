@@ -2380,27 +2380,26 @@ export function Tree(root) {
   if(!(this instanceof Tree)) return tree;
 }
 
-
 Tree.walk = function walk(node, fn, accu = {}) {
-var elem = node;
-    const root = elem;
-    let depth = 0;
-    while(elem) {
-      accu = fn(elem, accu, root, depth);
-      if(elem.firstChild) depth++;
-      elem =
-        elem.firstChild ||
-        elem.nextSibling ||
-        (function() {
-          do {
-            if(!(elem = elem.parentNode)) break;
-            depth--;
-          } while(depth > 0 && !elem.nextSibling);
-          return elem && elem != root ? elem.nextSibling : null;
-        })();
-    }
-    return accu;
+  var elem = node;
+  const root = elem;
+  let depth = 0;
+  while(elem) {
+    accu = fn(elem, accu, root, depth);
+    if(elem.firstChild) depth++;
+    elem =
+      elem.firstChild ||
+      elem.nextSibling ||
+      (function() {
+        do {
+          if(!(elem = elem.parentNode)) break;
+          depth--;
+        } while(depth > 0 && !elem.nextSibling);
+        return elem && elem != root ? elem.nextSibling : null;
+      })();
   }
+  return accu;
+};
 
 const ifdef = (value, def, nodef) => (value !== undefined ? def : nodef);
 
@@ -2425,6 +2424,15 @@ export class Node {
       node = node.parentNode;
     }
     return r;
+  }
+
+  static attrs(node) {
+    return node.attributes && node.attributes.length > 0
+      ? Array.from(node.attributes).reduce(
+          (acc, attr) => ({ ...acc, [attr.name]: isNaN(parseFloat(attr.value)) ? attr.value : parseFloat(attr.value) }),
+          {}
+        )
+      : {};
   }
 }
 

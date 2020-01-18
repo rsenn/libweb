@@ -714,12 +714,9 @@ Util.isEmptyString = function(v) {
   return false;
 };
 Util.isEmpty = function(v) {
-  if(v.constructor == Object && Object.keys(v).length == 0)
-    return true;
-    if(!v || v === null)
-    return true;
-   if(typeof(v) == 'object' && v.length !== undefined && v.length === 0)
-       return true;
+  if(v.constructor == Object && Object.keys(v).length == 0) return true;
+  if(!v || v === null) return true;
+  if(typeof v == "object" && v.length !== undefined && v.length === 0) return true;
   return false;
 };
 Util.notEmpty = function(v) {
@@ -1105,13 +1102,20 @@ Util.encodeQuery = function(data) {
 Util.parseURL = function(href = this.getURL()) {
   const matches = /^([^:]*):\/\/([^/:]*)(:[0-9]*)?(\/?.*)/.exec(href);
   if(!matches) return null;
-  const argstr = matches[4].replace(/^[^?]*\?/, "")/* + "&test=1"*/;
-  const pmatches = typeof argstr === "string" ?  argstr.split(/&/g).map(part => { let a=part.split(/=/); let b = a.shift(); return [b, a.join('=')]; }) : Util.array();
+  const argstr = matches[4].replace(/^[^?]*\?/, ""); /* + "&test=1"*/
+  const pmatches =
+    typeof argstr === "string"
+      ? argstr.split(/&/g).map(part => {
+          let a = part.split(/=/);
+          let b = a.shift();
+          return [b, a.join("=")];
+        })
+      : Util.array();
   const params = [...pmatches].reduce((acc, m) => {
     acc[m[0]] = m[1];
     return acc;
   }, {});
-  console.log('PARAMS: ', { argstr, pmatches, params });
+  console.log("PARAMS: ", { argstr, pmatches, params });
   return {
     protocol: matches[1],
     host: matches[2],
@@ -1738,4 +1742,3 @@ Util.getImageAverageColor = function(imageElement, options) {
 
 module.exports = Util;
 module.exports.default = Util;
-

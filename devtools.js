@@ -99,6 +99,9 @@ export const colors = (() => {
   var elements = [];
   return function colors(map) {
     let args = Util.map(map);
+    args = args.map(arg => new RGBA(arg));
+
+    let count = args.length;
     console.log("colors map(", args, ")");
     const left = elements.length ? Element.rect(elements[0]).x2 + stepX : stepX;
     let e = Element.create("div", {
@@ -107,7 +110,7 @@ export const colors = (() => {
         position: "fixed",
         left: left + "px",
         top: "82px",
-        height: "300px",
+        height: "80vh",
         zIndex: 100000
       }
     });
@@ -126,7 +129,7 @@ export const colors = (() => {
         style: {
           margin: "auto",
           //  opacity: c.a / 255,
-          height: diff > 0 ? `${diff * 100}%` : "100px",
+          height: /* diff > 0 ? `${diff * 100}%` :*/ "1.5em",
           overflow: "hidden",
           fontFamily: "Arial",
           fontWeight: "bold",
