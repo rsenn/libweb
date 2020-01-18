@@ -109,7 +109,7 @@ Point.move_to = (p, x, y) => {
   p.y = other.y;
   return p;
 };
-Point.move_rel = (p, x, y) => {
+Point.move = (p, x, y) => {
   let other = Point(x, y);
   p.x += other.x;
   p.y += other.y;
@@ -119,8 +119,8 @@ Point.move_rel = (p, x, y) => {
 Point.prototype.move_to = function(x, y) {
   return Point.move_to.apply(Point, [this, ...arguments]);
 };
-Point.prototype.move_rel = function(x, y) {
-  return Point.move_rel.apply(Point, [this, ...arguments]);
+Point.prototype.move = function(x, y) {
+  return Point.move.apply(Point, [this, ...arguments]);
 };
 
 Point.set = (p, fn) => {
@@ -890,7 +890,7 @@ Rect.extrema = () => {
   );
 };
 /*
-Rect.move_rel = (rect, point) => {
+Rect.move = (rect, point) => {
   let args = [...arguments];
   args.shift();
   let to = Point.call(Point, args);

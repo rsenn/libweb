@@ -1,6 +1,14 @@
 //var useragent = require('useragent');
 
-const formatAnnotatedObject = (
+
+/**
+ * Class for utility.
+ *
+ * @class      Util (name)
+ */
+function Util() {}
+
+Util.formatAnnotatedObject = (
   subject,
   { indent = "  ", spacing = " ", separator = ",", newline = "\n", maxlen = 30, depth = 1 }
 ) => {
@@ -39,7 +47,7 @@ const formatAnnotatedObject = (
       "[" +
       nl +
       /*(opts.depth <= 0) ? subject.length + '' : */ subject
-        .map(i => formatAnnotatedObject(i, opts))
+        .map(i => Util.formatAnnotatedObject(i, opts))
         .join(separator + nl) +
       "]"
     );
@@ -71,14 +79,14 @@ const formatAnnotatedObject = (
         s =
           depth <= 0
             ? `Array(${subject[k].length})`
-            : "[ " + subject[k].map(item => formatAnnotatedObject(item, opts)).join(", ") + " ]";
+            : "[ " + subject[k].map(item => Util.formatAnnotatedObject(item, opts)).join(", ") + " ]";
       } catch(err) {
         s = "[" + subject[k] + "]";
       }
     } else if(subject[k] && subject[k].toSource !== undefined) {
       s = subject[k].toSource();
     } else if(opts.depth >= 0) {
-      s = s.length > maxlen ? "[Object " + Util.objName(subject[k]) + "]" : formatAnnotatedObject(subject[k], opts);
+      s = s.length > maxlen ? "[Object " + Util.objName(subject[k]) + "]" : Util.formatAnnotatedObject(subject[k], opts);
     }
     r.push([k, s]);
   }
@@ -95,13 +103,6 @@ const formatAnnotatedObject = (
     "{" + opts.newline + r.map(arr => padding(arr[0]) + arr[0] + ":" + spacing + arr[1]).join(j) + opts.newline + "}";
   return ret;
 };
-/**
- * Class for utility.
- *
- * @class      Util (name)
- */
-function Util() {}
-
 Util.isDebug = function() {
   if(process !== undefined && process.env.NODE_ENV === "production") return false;
 
@@ -272,7 +273,7 @@ Util.inspect = function(
     spacing: " "
   }
 ) {
-  return formatAnnotatedObject(obj, opts);
+  return Util.formatAnnotatedObject(obj, opts);
 };
 
 Util.bitArrayToNumbers = function(arr) {
@@ -1740,7 +1741,10 @@ Util.getImageAverageColor = function(imageElement, options) {
   return o;
 };
 
-if (module) {
+
+if(window) {
+  window.Util = Util;
+} else  if (module) {
   module.exports = Util;
   module.exports.default = Util;
 }

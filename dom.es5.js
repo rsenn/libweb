@@ -107,8 +107,10 @@ Point.move_to = (p, x, y) => {
   p.y = other.y;
   return p;
 };
-Point.move_rel = (p, x, y) => {
-  let other = Point(x, y);
+Point.move = (p, x, y) => {
+  let args = [...arguments];
+  args.shift();
+  let other = Point.apply(Point, args);
   p.x += other.x;
   p.y += other.y;
   return p;
@@ -117,8 +119,41 @@ Point.move_rel = (p, x, y) => {
 Point.prototype.move_to = function(x, y) {
   return Point.move_to.apply(Point, [this, ...arguments]);
 };
-Point.prototype.move_rel = function(x, y) {
-  return Point.move_rel.apply(Point, [this, ...arguments]);
+Point.prototype.move = function(x, y) {
+  let other = Point.apply(Point, [...arguments]);
+  this.x += other.x;
+  this.y += other.y;
+  return this;
+};
+
+Point.prototype.rotate = function(angle, origin) {
+  let { x, y } = this;
+  let s = Math.sin(angle);
+  let c = Math.cos(angle);
+  if(origin) {
+    x -= origin.x;
+    y -= origin.y;
+    this.x = origin.x + x * c - y * s;
+    this.y = origin.y + x * s + y * c;
+  } else {
+    this.x = x * c - y * s;
+    this.y = x * s + y * c;
+  }
+  return this;
+};
+Point.rotate = function(point, angle, origin) {
+  let { x, y } = point;
+  let s = Math.sin(angle);
+  let c = Math.cos(angle);
+  if(origin) {
+    x -= origin.x;
+    y -= origin.y;
+    return {
+      x: origin.x + x * c - y * s,
+      y: origin.y + x * s + y * c
+    };
+  }
+  return { x: x * c - y * s, y: x * s + y * c };
 };
 
 Point.set = (p, fn) => {
@@ -917,7 +952,7 @@ Rect.extrema = () => {
   );
 };
 /*
-Rect.move_rel = (rect, point) => {
+Rect.move = (rect, point) => {
   let args = [...arguments];
   args.shift();
   let to = Point.call(Point, args);
@@ -1325,6 +1360,99 @@ TRBL.prototype.toString = function(unit = "px") {
 TRBL.prototype.toSource = function() {
   return "{top:" + this.top + ",right:" + this.right + ",bottom:" + this.bottom + ",left:" + this.left + "}";
 };
+
+class BBox {
+  x1 = 0;
+  y1 = 0;
+  x2 = 0;
+  y2 = 0;
+  constructor(x1 = 0, y1 = 0, x2 = 0, y2 = 0) {
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
+  }
+  update(list, offset = 0.0) {
+    for(let arg of list) {
+      if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset);
+      if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0);
+      if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0);
+    }
+  }
+  updateXY(x, y, offset = 0) {
+    let updated = {};
+    if(this.x1 > x - offset) {
+      this.x1 = x - offset;
+      updated.x1 = true;
+    }
+    if(this.x2 < x + offset) {
+      this.x2 = x + offset;
+      updated.x2 = true;
+    }
+    if(this.y1 > y - offset) {
+      this.y1 = y - offset;
+      updated.y1 = true;
+    }
+    if(this.y2 < y + offset) {
+      this.y2 = y + offset;
+      updated.y2 = true;
+    }
+    if(Object.keys(updated)) console.log(`BBox update ${x},${y} `, updated);
+  }
+  get center() {
+    return new dom.Point({ x: this.x + this.width / 2, y: this.y + this.height / 2 });
+  }
+  relative_to(x, y) {
+    return new BBox(this.x1 - x, this.y1 - y, this.x2 - x, this.y2 - y);
+  }
+  get x() {
+    return this.x1;
+  }
+  get width() {
+    return Math.abs(this.x2 - this.x1);
+  }
+  get y() {
+    return this.y1 < this.y2 ? this.y1 : this.y2;
+  }
+  get height() {
+    return Math.abs(this.y2 - this.y1);
+  }
+  set x(x) {
+    let ix = x - this.x1;
+    this.x1 += ix;
+    this.x2 += ix;
+  }
+  set width(w) {
+    this.x2 = this.x1 + w;
+  }
+  set y(y) {
+    let iy = y - this.y1;
+    this.y1 += iy;
+    this.y2 += iy;
+  }
+  set height(h) {
+    this.y2 = this.y1 + h;
+  }
+  get rect() {
+    return new dom.Rect({ x: this.x1, y: this.y1, width: this.x2 - this.x1, height: this.y2 - this.y1 });
+  }
+  toString() {
+    return `[${this.x1},${this.y1}] - [${this.x2},${this.y2}]`;
+  }
+  transform(fn = arg => arg, out) {
+    if(!out) out = this;
+    for(let prop of ["x1", "y1", "x2", "y2"]) {
+      const v = this[prop];
+      out[prop] = fn(v);
+    }
+    return this;
+  }
+  round() {
+    let ret = new BBox();
+    this.transform(arg => Math.round(arg), ret);
+    return ret;
+  }
+}
 
 /**
  * Class for matrix.
@@ -2006,11 +2134,32 @@ Line.prototype.toString = function() {
   const { x1, y1, x2, y2 } = this;
   return `Line ` + Util.padLeft(`${x1},${y1}`, 8) + ` -> ` + Util.padLeft(`${x2},${y2}`, 8);
 };
+1;
+
 Line.prototype.toPoints = function() {
   const a = { x: this.x1, y: this.y1 };
   const b = { x: this.x2, y: this.y2 };
 
   return new PointList([a, b]);
+};
+Line.move = (l, x, y) => {
+  let args = [...arguments];
+  l = args.shift();
+  let other = Point.call(Line, args);
+  return {
+    x1: l.x1 + other.x,
+    y1: l.y1 + other.y,
+    x2: l.x2 + other.x,
+    y2: l.y2 + other.y
+  };
+};
+Line.prototype.move = function(x, y) {
+  let other = new Point([...arguments]);
+  this.x1 += other.x;
+  this.y1 += other.y;
+  this.x2 += other.x;
+  this.y2 += other.y;
+  return this;
 };
 
 /*
@@ -3208,6 +3357,14 @@ class Container {
   }
 }
 
+function* tracePath(path, steps = 100) {
+  const len = path.getTotalLength();
+  for(let i = 0; i < steps; i++) {
+    const pos = (i * len) / (steps - 1);
+    yield path.getPointAtLength(pos);
+  }
+}
+
 class SVG extends Element {
   static ns = "http://www.w3.org/2000/svg";
 
@@ -3317,6 +3474,10 @@ class SVG extends Element {
 
   static path() {
     return new SvgPath();
+  }
+
+  static *trace(elem, steps) {
+    for(let p of tracePath(elem, steps)) yield p;
   }
 }
 
@@ -3656,9 +3817,12 @@ dom.Timer = Timer;
 dom.Transition = Transition;
 dom.TransitionList = TransitionList;
 dom.TRBL = TRBL;
+dom.BBox = BBox;
 dom.Tree = Tree;
 
-if (module) {
+if (window) {
+  window.dom = dom;
+} else if(module) {
   module.exports = dom;
   module.exports.default = dom;
 }

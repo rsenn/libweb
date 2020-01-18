@@ -1,5 +1,6 @@
 const Util = require("./util.es5.js");
 const dom = require("./dom.es5.js");
+const { Point, Line, Rect, BBox } = dom;
 
 class Node {
   constructor() {}
@@ -8,7 +9,40 @@ class Node {
     if(!this.objects) this.objects = [];
     this.objects.push(obj);
   }
+
+  iter(x = 0, y = 0, angle = 0) {
+    let list = this.objects && this.objects.length ? this.objects : [];
+    return (function*() {
+      let p;
+      for(let o of list) {
+        let ctor = o.constructor;
+        o = { ...o };
+        o.constructor = ctor;
+        if(o.x !== undefined && o.y !== undefined) {
+          Point.rotate(o, angle);
+          Point.move(o, x, y);
+        }
+        if(o.x1 !== undefined && o.y1 !== undefined) {
+          p = new Point({ x: o.x1, y: o.y1 });
+          p.rotate(angle);
+          p.move(x, y);
+          o.x1 = p.x;
+          o.y1 = p.y;
+        }
+        if(o.x2 !== undefined && o.y2 !== undefined) {
+          p = new Point({ x: o.x2, y: o.y2 });
+          p.rotate(angle);
+          p.move(x, y);
+          o.x2 = p.x;
+          o.y2 = p.y;
+        }
+        yield o;
+      }
+    })();
+  }
 }
+
+Node.prototype[Symbol.iterator] = Node.prototype.iter;
 
 class Circle {
   x = 0;
@@ -111,6 +145,7 @@ class Element extends Node {
   library = "";
   package = "";
   value = "";
+  rot = "";
   x = 0;
   y = 0;
 
@@ -128,30 +163,38 @@ class Element extends Node {
     return Element.instances[name];
   }
 
+  getRotation() {
+    if(typeof this.rot == "string" && /^R/.test(this.rot)) return parseInt(this.rot.replace(/^R/, ""));
+    return undefined;
+  }
   getLibrary() {
     return Library.get(this.library);
   }
   getPackage() {
     return Package.get(this.package);
   }
+  *children(pred = child => !(child instanceof Rect)) {
+    const pkg = this.getPackage();
+    const angle = (this.getRotation() * Math.PI) / 180;
+
+    for(let child of pkg.iter(this.x, this.y, angle)) {
+      if(pred(child)) yield child;
+    }
+  }
+  bbox() {
+    const pkg = this.getPackage();
+    const angle = (this.getRotation() * Math.PI) / 180;
+
+    return pkg.bbox(this.x, this.y, angle);
+  }
 
   getBounds() {
     const pkg = this.getPackage();
-    const r = { x1: 0, x2: 0, y1: 0, y2: 0 };
+    let r = new BBox();
     if(pkg) {
       //console.log("this: ", Object.keys(pkg), Object.keys(this));
       for(let o of pkg.objects) {
-        /*if(o instanceof Wire) {
-          const l = new dom.Line(o);
-          const pts = l.toPoints();
-
-          console.log("pts:", pts);
-          for(let o of pts) if(o.x !== undefined && o.y !== undefined) updateRect(r, o);
-        } else */ if(
-          o instanceof Pad
-        ) {
-          updateRect(r, o);
-        }
+        r.update([o]);
       }
     }
     function updateRect(r, pt) {
@@ -160,7 +203,6 @@ class Element extends Node {
       if(r.y1 > pt.y - 0.5) r.y1 = pt.y - 0.5;
       if(r.y2 < pt.y + 0.5) r.y2 = pt.y + 0.5;
     }
-
     return r;
   }
 }
@@ -195,6 +237,18 @@ class Package extends Node {
         this[lname].push(obj);
       }
     }
+  }
+
+  bbox(_x = 0, _y = 0, _angle = 0, pred = child => child.x !== undefined) {
+    let r = new BBox();
+
+    for(let o of this.iter(_x, _y, _angle)) {
+      if(!pred(o)) continue;
+
+      r.update([o]);
+    }
+
+    return r;
   }
 }
 
@@ -368,6 +422,7 @@ class Wire {
     this.layer = layer;
     Signal.add(signal, this);
   }
+  g;
   getLayer() {
     return Layer.get(this.layer);
   }
