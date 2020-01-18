@@ -38,7 +38,8 @@ function dom() {
  *
  * @return     {(Object|Point|boolean|string)}  True if number, False otherwise.
  */
-const isNumber = a => {
+
+dom.isNumber = a => {
   return String(a).replace(/^[0-9]*$/, "") == "";
 };
 
@@ -3793,7 +3794,6 @@ dom.isElement = isElement;
 dom.isHSLA = isHSLA;
 dom.isLine = isLine;
 dom.isMatrix = isMatrix;
-dom.isNumber = isNumber;
 dom.isPoint = isPoint;
 dom.isPointList = isPointList;
 dom.isRect = isRect;
