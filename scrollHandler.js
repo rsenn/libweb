@@ -86,7 +86,7 @@ export function ScrollDisabler(disabledfn = () => true, element = global.window)
         if(event.cancelable) event.preventDefault();
       }
 
-      //  console.log('ScrollDisabler.event ', { disabled, event });
+      //console.log('ScrollDisabler.event ', { disabled, event });
     }
     return true;
   });

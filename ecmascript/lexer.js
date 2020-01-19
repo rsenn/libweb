@@ -467,7 +467,7 @@ l.lexRegExp = function() {
   };
   const print = () => {
     word = this.source.substring(this.start, this.pos);
-    //  console.log('word: ' + word + " lexText: "+this.source.substring(this.start, this.pos));
+    //console.log('word: ' + word + " lexText: "+this.source.substring(this.start, this.pos));
   };
 
   // if(this.accept(oneOf('/')))

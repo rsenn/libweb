@@ -287,7 +287,7 @@ class ClassDeclaration extends Declaration {
 class FunctionDeclaration extends Function {
   constructor(id, params, body, exported = false) {
     super("FunctionDeclaration", id, params, body, exported);
-    // console.log('New FunctionDeclaration: ', JSON.stringify({ id, params, exported }));
+    //console.log('New FunctionDeclaration: ', JSON.stringify({ id, params, exported }));
   }
 }
 

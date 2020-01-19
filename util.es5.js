@@ -557,7 +557,7 @@ Util.find = (arr, value, prop = "id", acc = Util.array()) => {
 
   for(let k = 0; k < arr.length; k++) {
     let v = arr[k];
-    // console.log("v: ", v, "k:", k);
+    //console.log("v: ", v, "k:", k);
     if(pred(v)) return v;
   }
   return null;
@@ -582,7 +582,7 @@ Util.match = (arg, pred) => {
       return acc;
     }, Util.array());
   } else if(Util.isMap(arg)) {
-    // console.log('Util.match ', { arg });
+    //console.log('Util.match ', { arg });
     return [...arg.keys()].reduce(
       (acc, key) => (match(arg.get(key), key, arg) ? acc.set(key, arg.get(key)) : acc),
       new Map()

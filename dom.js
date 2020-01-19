@@ -411,7 +411,7 @@ PointList.prototype.toPolar = function(tfn) {
     ret.length,
     ...this.map(p => {
       const angle = Point.toAngle(p);
-      // console.log("Angle: ", angle);
+      //console.log("Angle: ", angle);
       return t(angle, Point.distance(p));
     })
   ]);
@@ -2814,7 +2814,7 @@ export class Element extends Node {
 
     let style = Util.removeEqual(estyle, pstyle);
     let keys = Object.keys(style).filter(k => !/^__/.test(k));
-    // console.log('style: ', style);
+    //console.log('style: ', style);
 
     let ret = {};
     if(receiver == null) {

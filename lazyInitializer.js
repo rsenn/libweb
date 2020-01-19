@@ -30,7 +30,7 @@ export function lazyInitializer(fn, opts = {}) {
       if(!instance()) {
         const initVal = fn(instance);
         instance(initVal);
-        // console.log("initialized to: ", initVal);
+        //console.log("initialized to: ", initVal);
       }
       return instance();
     }

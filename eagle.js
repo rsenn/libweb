@@ -495,7 +495,7 @@ function eagle(obj, parentObj) {
   let ret = null,
     ctor = null;
   let args = [...arguments];
-  //  console.log("eagle: ", { parentObj, obj });
+  //console.log("eagle: ", { parentObj, obj });
   if(typeof obj == "object") {
     const t = obj.tagName || obj.tag;
     if(t && eagleProps.elementMap[t] !== undefined) {

@@ -73,13 +73,13 @@ export function autofillEvent(window, changeHandler) {
     var val = el.value;
     var $$currentValue = el.$$currentValue;
 
-    //  console.log('valueMarked ', { el, val, $$currentValue });
+    //console.log('valueMarked ', { el, val, $$currentValue });
 
     return (!val && !$$currentValue) || val === $$currentValue;
   }
 
   function markValue(el) {
-    //    console.log("markValue ", { el });
+    //console.log("markValue ", { el });
     el.$$currentValue = el.value;
   }
   /*
@@ -141,7 +141,7 @@ export function autofillEvent(window, changeHandler) {
 
     event.initEvent("change", true, true);
 
-    //    console.log("triggerChangeEvent ", { element, doc, event });
+    //console.log("triggerChangeEvent ", { element, doc, event });
 
     if(handler) {
       handler(event);
