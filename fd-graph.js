@@ -1,4 +1,4 @@
-import { Point, Line, Timer } from "./dom.js";
+import { Point, Line, Timer, Element } from "./dom.js";
 import Util from "./util.js";
 
 /* From https://github.com/ehayon/FDGraph */
@@ -69,11 +69,13 @@ export function Graph({
 }
 
 Graph.prototype.addNode = function(n) {
+  n.index = this.nodes.length;
   this.nodes.push(n);
   this.checkRedraw();
 };
 
 Graph.prototype.addEdge = function(e) {
+  e.index = this.edges.length;
   this.edges.push(e);
 };
 
@@ -130,7 +132,7 @@ Graph.prototype.checkRedraw = function() {
 
     node.netforce = new Point(0, 0);
     node.velocity = new Point(0, 0);
-    if(1) {
+    if(1 /*!isLeaf*/) {
       //this.config.canvas.selection == null || this.config.canvas.selection != node) {
       if(this.gravitate_to_origin) {
         // gravitate to, and repel from origin
@@ -173,18 +175,93 @@ Graph.prototype.checkRedraw = function() {
     this.kineticenergy += node.mass * (velocity * velocity);
   }
 
-  for(let node of this.branchNodes()) {
-    let connections = [...this.getConnections(node)];
+  function findBiggestGap(angles) {
+    let ret = [];
+    let bdiff = 0;
+    for(let i = 0; i < angles.length; i++) {
+      let a = angles[i];
+      let b = angles[(i + 1) % angles.length];
 
-    let lines = connections.map(c => new Line(node, c));
+      let diff = Math.abs(b - a);
 
-    //let indexes = Object.keys(lines).sort((a, b) => lines[a].angle() - lines[b].angle());
-
-    console.log("connections: ", lines);
+      if(diff > bdiff) {
+        bdiff = diff;
+        ret = [a, b];
+      }
+    }
+    return ret;
   }
+  let newPositions = [];
+
+  const distributeLeafNodes = () => {
+    for(let node of this.branchNodes()) {
+      let connections = [...this.getConnections(node)];
+      let nonLeafNodes = connections.filter(c => !this.isLeafNode(c));
+      let leafNodes = connections.filter(c => this.isLeafNode(c));
+
+      let lines = nonLeafNodes.map(c => new Line(node, c));
+      let angles = lines.map(l => l.angle());
+      let middleAngle;
+      let gapLen;
+
+      if(leafNodes.length) {
+        if(angles.length >= 2) {
+          let gap = findBiggestGap(angles);
+          middleAngle = (gap[1] + gap[0]) / 2;
+          gapLen = Math.abs(gap[1] - gap[0]);
+        } else if(angles.length == 1) {
+          middleAngle = angles[0] + Math.PI;
+          if(middleAngle > Math.PI) middleAngle -= Math.PI;
+          gapLen = Math.PI;
+        }
+
+        if(Math.abs(middleAngle) > 0) {
+          //  console.log("middleAngle: ", middleAngle);
+
+          let gapStep = gapLen / leafNodes.length;
+          let gapPos = middleAngle - gapLen / 2;
+
+          for(let j = 0; j < leafNodes.length; j++) {
+            let leaf = leafNodes[j];
+            let index = leaf.index;
+            let l = new Line(node, leaf);
+            let len = l.length();
+
+            let rel = Point.diff(leaf, node);
+            /*let nodeId = `#node-${leafNodes[j].index}`;
+          let nodeElem = document.querySelector(nodeId);
+         */
+            //console.log("line: ", { j, index, l, len, gapPos });
+            //    console.log("leaf: ", this.nodes[index]);
+            /* this.nodes[index].x += 10;
+          this.nodes[index].y += 10;*/
+            newPositions.push({
+              index,
+              old: rel,
+              x: node.x + Math.cos(gapPos) * 50,
+              y: node.y + Math.sin(gapPos) * 50
+            });
+            gapPos += gapStep;
+          }
+        }
+      }
+
+      //let indexes = Object.keys(lines).sort((a, b) => lines[a].angle() - lines[b].angle());
+    }
+  };
 
   if(this.total_node_velocity < 0.0001) {
     this.done_rendering = true;
+
+    distributeLeafNodes();
+
+    for(let i = 0; i < newPositions.length; i++) {
+      let newPos = newPositions[i];
+
+      this.nodes[newPos.index].x = newPos.x;
+      this.nodes[newPos.index].y = newPos.y;
+    }
+    console.log("newPositions: ", newPositions);
   } else {
     this.done_rendering = false;
   }
@@ -196,8 +273,8 @@ Graph.prototype.checkRedraw = function() {
 };
 
 Graph.prototype.updateAll = function() {
-  for(var j = 0; j < this.edges.length; j++) this.update.edge(this.edges[j]);
-  for(var j = 0; j < this.nodes.length; j++) this.update.node(this.nodes[j]);
+  for(var j = 0; j < this.edges.length; j++) this.update.edge(this.edges[j], j);
+  for(var j = 0; j < this.nodes.length; j++) this.update.node(this.nodes[j], j);
 };
 
 /**
