@@ -90,6 +90,32 @@ Graph.prototype.resetNodes = function() {
   }
 };
 
+Graph.prototype.getConnections = function*(node, exclude = null) {
+  for(var i = 0; i < this.edges.length; i++) {
+    let edge = this.edges[i];
+    let r = null;
+
+    if(edge.a.equal(node)) r = edge.b;
+    if(edge.b.equal(node)) r = edge.a;
+
+    if(r !== null) {
+      if(exclude !== null && Point.equal(exclude, r)) continue;
+      yield r;
+    }
+  }
+};
+
+Graph.prototype.isLeafNode = function(node) {
+  let c = [...this.getConnections(node)];
+  return c.length <= 1;
+};
+
+Graph.prototype.branchNodes = function*() {
+  for(var i = 0; i < this.nodes.length; i++) {
+    if(!this.isLeafNode(this.nodes[i])) yield this.nodes[i];
+  }
+};
+
 Graph.prototype.checkRedraw = function() {
   // compute the force on each connection
   // only update if net force is greater than threshold
@@ -98,6 +124,10 @@ Graph.prototype.checkRedraw = function() {
 
   for(var i = 0; i < this.nodes.length; i++) {
     var node = this.nodes[i];
+
+    var isLeaf = this.isLeafNode(node);
+    //    console.log("node: ", { isLeaf });
+
     node.netforce = new Point(0, 0);
     node.velocity = new Point(0, 0);
     if(1) {
@@ -142,6 +172,17 @@ Graph.prototype.checkRedraw = function() {
     this.total_node_velocity += velocity;
     this.kineticenergy += node.mass * (velocity * velocity);
   }
+
+  for(let node of this.branchNodes()) {
+    let connections = [...this.getConnections(node)];
+
+    let lines = connections.map(c => new Line(node, c));
+
+    //let indexes = Object.keys(lines).sort((a, b) => lines[a].angle() - lines[b].angle());
+
+    console.log("connections: ", lines);
+  }
+
   if(this.total_node_velocity < 0.0001) {
     this.done_rendering = true;
   } else {
@@ -166,14 +207,14 @@ Graph.prototype.updateAll = function() {
  * @param      {String}  label        A label
  * @param      {number}  [charge=60]  The charge
  */
-export function Node(label, charge = 60) {
+export function Node(label, charge = 60, mass = 100) {
   //console.log(`Node(${label},${charge})`);
 
   this.x = Math.floor(Math.random() * 1000);
   this.y = Math.floor(Math.random() * 1000);
 
   this.charge = charge;
-  this.mass = 100;
+  this.mass = mass;
   this.velocity = new Point(0, 0);
   this.netforce = new Point(0, 0);
   this.label = label;

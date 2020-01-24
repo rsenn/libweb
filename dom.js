@@ -207,6 +207,11 @@ Point.prototype.distance = function(other = { x: 0, y: 0 }) {
   return Point.distance(this, other);
 };
 
+Point.equal = (a, b) => a.x == b.x && a.y == b.y;
+Point.prototype.equal = function(other) {
+  return Point.equal(this, other);
+};
+
 Point.round = (p, precision = 1.0) => {
   p.x = Math.round(p.x / precision) * precision;
   p.y = Math.round(p.y / precision) * precision;
@@ -2073,9 +2078,10 @@ Line.intersect = (a, b) => {
     y: (ma * mb * (b[0].x - a[0].x) + mb * a[0].y - ma * b[0].y) / (mb - ma)
   });
 };
+/*
 Line.prototype.a = new Point();
 Line.prototype.b = new Point();
-
+*/
 /*Util.defineGetter(Line.prototype, 0, function() { return this.a; });
 Util.defineGetter(Line.prototype, 1, function() { return this.b; });
 */
@@ -2159,9 +2165,10 @@ Util.defineGetterSetter(
   Line.prototype,
   "x1",
   function() {
-    return this.a.x;
+    return this.a && this.a.x;
   },
   function(v) {
+    if(!this.a) this.a = new Point();
     this.a.x = v;
   },
   true
@@ -2170,9 +2177,10 @@ Util.defineGetterSetter(
   Line.prototype,
   "y1",
   function() {
-    return this.a.y;
+    return this.a && this.a.y;
   },
   function(v) {
+    if(!this.a) this.a = new Point();
     this.a.y = v;
   },
   true
@@ -2181,9 +2189,10 @@ Util.defineGetterSetter(
   Line.prototype,
   "x2",
   function() {
-    return this.b.x;
+    return this.b && this.b.x;
   },
   function(v) {
+    if(!this.b) this.b = new Point();
     this.b.x = v;
   },
   true
@@ -2192,9 +2201,10 @@ Util.defineGetterSetter(
   Line.prototype,
   "y2",
   function() {
-    return this.b.y;
+    return this.b && this.b.y;
   },
   function(v) {
+    if(!this.b) this.b = new Point();
     this.b.y = v;
   },
   true
