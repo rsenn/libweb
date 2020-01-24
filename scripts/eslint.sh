@@ -15,7 +15,7 @@ var_dump ()
 }
 
 
-[ $# -gt 0 ] || set -- $(find components pages utils stores -name "*.js")
+[ $# -gt 0 ] || set -- $(find components pages lib stores -name "*.js")
 
 
 
