@@ -2328,7 +2328,7 @@ RGBA.prototype.hex = function() {
   return (
     "#" +
     ("0000000" + ((r << 16) | (g << 8) | b).toString(16)).slice(-6) +
-    (a !== undefined ? ("0" + a.toString(16)).slice(-2) : "")
+    (a !== undefined && a != 255 ? ("0" + a.toString(16)).slice(-2) : "")
   );
 };
 
@@ -2794,25 +2794,49 @@ export class Element extends Node {
     return accu;
   }
 
-  static toObject(elem) {
+  static toObject(elem, opts = { children: true }) {
     let e = Element.find(elem);
-    let children =
-      e.children && e.children.length
+    let children = opts.children
+      ? e.children && e.children.length
         ? { children: Util.array(e.children).map(child => Element.toObject(child, e)) }
-        : {};
-
+        : {}
+      : {};
     let ns =
       (arguments[1] ? arguments[1].namespaceURI : document.body.namespaceURI) != e.namespaceURI
         ? { ns: e.namespaceURI }
         : {};
-    let { /*style,*/ ...attributes } = Element.attr(e);
-
+    let attributes = {};
+    let a = Element.attr(e);
+    for(let key in a) {
+      let value = a[key];
+      attributes[Util.camelize(key)] = value;
+    }
     return {
       tagName: e.tagName,
       ...attributes,
       ...children,
       ...ns
     };
+  }
+
+  static toCommand(elem, parent = "") {
+    let o = Element.toObject(elem, { children: false });
+    console.log("o:", o);
+    let s = "";
+    let { tagName, ns, children, ...attrs } = o;
+    let v = "";
+    if(elem.firstElementChild) {
+      v = parent ? String.fromCharCode(parent.charCodeAt(0) + 1) : "e";
+      s += `${v} = `;
+    }
+    s += `Element.create('${tagName}', { ${Object.entries(attrs)
+      .map(([k, v]) => `${k}: ${JSON.stringify(v)}`)
+      .join(", ")} }${parent ? `, ${parent}` : ""});`;
+    let child;
+    for(child = elem.firstElementChild; child; child = child.nextElementSibling) {
+      s += "\n" + Element.toCommand(child, v);
+    }
+    return s;
   }
 
   static find(arg, parent) {
