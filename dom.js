@@ -710,9 +710,12 @@ Size.convertUnits = (size, w = "window" in global ? window : null) => {
   return size;
 };
 
-Size.aspect = function aspect(size) {
+Size.aspect = size =>  {
   size = this instanceof Size ? this : size;
   return size.width / size.height;
+};
+Size.prototype.aspect = function() {
+  return Size.aspect(this);
 };
 
 Size.toCSS = function(arg) {
@@ -1102,7 +1105,7 @@ Rect.inset = function(rect, trbl) {
 Rect.prototype.inset = function(trbl) {
   if(typeof trbl == "number") trbl = new TRBL(trbl, trbl, trbl, trbl);
 
-  if(trbl.left + trbl.right > this.width && trbl.top + trbl.bottom > this.height) {
+  if(trbl.left + trbl.right < this.width && trbl.top + trbl.bottom < this.height) {
     this.x += trbl.left;
     this.y += trbl.top;
     this.width -= trbl.left + trbl.right;
@@ -1199,10 +1202,10 @@ export function TRBL(arg) {
     if(typeof arg === "string") arg = [...arg.matchAll(/^[0-9.]+(|px|em|rem|pt|cm|mm)$/g)];
     else if(arg.length == 4) arg = arg.map(v => parseInt(v));
 
-    ret.top = x;
-    ret.right = y;
-    ret.bottom = w;
-    ret.left = h;
+    ret.top = arg[0];
+    ret.right = arg[1];
+    ret.bottom = arg[2];
+    ret.left = arg[3];
   }
 
   if(isNaN(ret.top)) ret.top = 0;
@@ -2070,13 +2073,13 @@ Line.intersect = (a, b) => {
     y: (ma * mb * (b[0].x - a[0].x) + mb * a[0].y - ma * b[0].y) / (mb - ma)
   });
 };
-
-Line.prototype[0] = Line.prototype.a = new Point();
-Line.prototype[1] = Line.prototype.b = new Point();
+Line.prototype.a = new Point();
+Line.prototype.b = new Point();
 
 /*Util.defineGetter(Line.prototype, 0, function() { return this.a; });
 Util.defineGetter(Line.prototype, 1, function() { return this.b; });
 */
+/*
 ["a", 0].forEach(prop =>
   Util.defineGetterSetter(
     Line.prototype,
@@ -2150,15 +2153,53 @@ Util.defineGetter(Line.prototype, 1, function() { return this.b; });
     },
     false
   )
+);*/
+
+Util.defineGetterSetter(
+  Line.prototype,
+  "x1",
+  function() {
+    return this.a.x;
+  },
+  function(v) {
+    this.a.x = v;
+  },
+  true
+);
+Util.defineGetterSetter(
+  Line.prototype,
+  "y1",
+  function() {
+    return this.a.y;
+  },
+  function(v) {
+    this.a.y = v;
+  },
+  true
+);
+Util.defineGetterSetter(
+  Line.prototype,
+  "x2",
+  function() {
+    return this.b.x;
+  },
+  function(v) {
+    this.b.x = v;
+  },
+  true
+);
+Util.defineGetterSetter(
+  Line.prototype,
+  "y2",
+  function() {
+    return this.b.y;
+  },
+  function(v) {
+    this.b.y = v;
+  },
+  true
 );
 
-/*
-Util.defineGetterSetter(Line.prototype, 'x1', function() { return this.a.x; }, function(v) { this.a.x = v; }, true);
-Util.defineGetterSetter(Line.prototype, 'y1', function() { return this.a.y; }, function(v) { this.a.y = v; }, true);
-Util.defineGetterSetter(Line.prototype, 'x2', function() { return this.b.x; }, function(v) { this.b.x = v; }, true);
-Util.defineGetterSetter(Line.prototype, 'y2', function() { return this.b.y; }, function(v) { this.b.y = v; }, true);
-
-*/
 Line.prototype.direction = function() {
   var dist = Point.distance(this.a, this.b);
   return Point.diff(this.a, this.b) / dist;
@@ -3408,6 +3449,11 @@ export class SVG extends Element {
 
   static create(name, attr, parent) {
     var svg = document.createElementNS(SVG.ns, name);
+    let text;
+    if(attr.text !== undefined) {
+      text = attr.text;
+      delete attr.text;
+    }
 
     if(name == "svg") {
       attr.version = "1.1";
@@ -3415,7 +3461,11 @@ export class SVG extends Element {
     }
 
     Util.foreach(attr, (value, name) => svg.setAttribute(Util.decamelize(name, "-"), value));
+
     if(parent && parent.appendChild) parent.appendChild(svg);
+
+    if(text) svg.innerHTML = text;
+
     return svg;
   }
 

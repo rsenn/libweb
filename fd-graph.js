@@ -1,41 +1,65 @@
 import { Point, Line, Timer } from "./dom.js";
+import Util from "./util.js";
 
 /* From https://github.com/ehayon/FDGraph */
 
-export function Graph(origin = new Point(0, 0), gravitate_to_origin = true) {
+/**
+ * { function_description }
+ *
+ * @class      Graph (name)
+ * @param      {Object}   options
+ * @param      {Point}    [options.origin=new Point(0,0)]     origin
+ * @param      {boolean}  [options.gravitate_to_origin=true]  gravitate to origin
+ * @param      {number}   [options.spacing=1]                 spacing
+ * @param      {number}   [options.timestep=150]              time step
+ * @param      {number}   [options.kineticenergy=1]           kinetic energy
+ * @param      {number}   [options.damping=0.000005]          damping
+ * @param      {number}   [options.total_node_velocity=0]     The total node velocity
+ * @param      {function} [options.onUpdateNode=node=>{}]     update node callback
+ * @param      {function} [options.onUpdateEdge=edge=>{}]     update edge callback
+ */
+
+export function Graph({
+  origin = new Point(0, 0),
+  gravitate_to_origin = true,
+  spacing = 1,
+  timestep = 150,
+  kineticenergy = 1,
+  damping = 0.000005,
+  total_node_velocity = 0,
+  onUpdateNode = node => {},
+  onUpdateEdge = edge => {},
+  onRenderGraph = graph => {}
+}) {
   console.log(`Graph(${origin},${gravitate_to_origin})`);
   this.nodes = [];
   this.edges = [];
-  this.config = { origin };
-  console.log("origin: ", this.config.origin);
-  //this.config.canvas = c;
-  //this.config.origin = new Point(this.config.canvas.canvas.width / 2, this.config.canvas.canvas.height / 2);
-  //this.config.canvas.add(new Circle(this.config.origin.x, this.config.origin.y, 2));
-  this.damping = 0.000005;
-  this.timestep = 150;
-  this.kineticenergy = 1;
-  this.total_node_velocity = 0;
+  this.config = { origin, spacing };
+  this.update = { node: onUpdateNode, edge: onUpdateEdge };
+
+  this.damping = damping;
+  this.timestep = timestep;
+  this.kineticenergy = kineticenergy;
+  this.total_node_velocity = total_node_velocity;
   this.gravitate_to_origin = typeof gravitate_to_origin == "undefined" ? true : gravitate_to_origin;
   this.done_rendering = false;
+
   var g = this;
   var seq = 0;
-  // set up a hover event for the nodes
-  /*this.config.canvas.hoverFunction = function(e) {
-    //var x = e.x + document.body.scrollLeft - $(g.config.canvas.canvas).offset().left;
-    //var y = e.y + document.body.scrollTop - $(g.config.canvas.canvas).offset().top;
-    for(var i = 0; i < g.nodes.length; i++) {
-      if(g.nodes[i].contains(x, y)) {
-        // the node g.nodes[i] is currently being hovered
-      }
-    }
-  };*/
-  this.timer = Timer.interval(3000, function() {
+
+  this.timer = Timer.interval(5, function() {
     // console.log("Graph timer", seq);
     if(!g.done_rendering) {
       g.checkRedraw();
-    } else {
-      g.resetNodes();
     }
+    if(g.done_rendering) {
+      g.updateAll();
+
+      g.timer.stop();
+
+      onRenderGraph(g);
+    }
+
     seq++;
     /*if(g.config.canvas.dragging) {
       g.resetNodes();
@@ -65,6 +89,7 @@ Graph.prototype.checkRedraw = function() {
   // only update if net force is greater than threshold
   this.kineticenergy = 0;
   this.total_node_velocity = 0;
+
   for(var i = 0; i < this.nodes.length; i++) {
     var node = this.nodes[i];
     node.netforce = new Point(0, 0);
@@ -92,7 +117,7 @@ Graph.prototype.checkRedraw = function() {
       // calculate the repulsive force between nodes
       for(var k = 0; k < this.nodes.length; k++) {
         var rep_node = this.nodes[k];
-        node.applyRepulsiveForce(rep_node);
+        node.applyRepulsiveForce(rep_node, this.config.spacing || 1);
       }
       // we eventually want to stop the nodes from moving
       node.netforce.x = Math.abs(node.netforce.x) < 1 ? 0 : node.netforce.x;
@@ -104,30 +129,44 @@ Graph.prototype.checkRedraw = function() {
     // move the nodes scaled by constant timestep
     node.x += node.velocity.x * this.timestep;
     node.y += node.velocity.y * this.timestep;
+
     // magnitude of the velocity vector
     var velocity = Math.abs(Math.sqrt(node.velocity.x * node.velocity.x + node.velocity.y * node.velocity.y));
     // keep track of the net velocity of the entire system
     this.total_node_velocity += velocity;
     this.kineticenergy += node.mass * (velocity * velocity);
   }
-  if(this.total_node_velocity == 0) {
+  if(this.total_node_velocity < 0.0001) {
     this.done_rendering = true;
   } else {
     this.done_rendering = false;
   }
+
+  const { kineticenergy, total_node_velocity } = this;
+
+  //if(this.done_rendering)    this.timer.stop();
+  // console.log("checkRedraw", { kineticenergy, total_node_velocity });
 };
 
-/*
+Graph.prototype.updateAll = function() {
+  for(var j = 0; j < this.edges.length; j++) this.update.edge(this.edges[j]);
+  for(var j = 0; j < this.nodes.length; j++) this.update.node(this.nodes[j]);
+};
+
+/**
  * Node
+ *
+ * @class      Node (name)
+ * @param      {String}  label        A label
+ * @param      {number}  [charge=60]  The charge
  */
-export function Node(label, charge) {
-  console.log(`Edge(${label},${charge})`);
+export function Node(label, charge = 60) {
+  //console.log(`Node(${label},${charge})`);
   var pos = new Point(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
-  // Circle.call(this, this.x, this.y, 10);
+
   Point.call(this, pos.x, pos.y);
-  //  this.x = this.position.x; // makes it easier to access the point
-  // this.y = this.position.y; // makes it easier to access the point
-  this.charge = charge || 60;
+
+  this.charge = charge;
   this.mass = 100;
   this.velocity = new Point(0, 0);
   this.netforce = new Point(0, 0);
@@ -142,29 +181,44 @@ Node.prototype.reset = function() {
   this.netforce.y = 0;
 };
 
-Node.prototype.applyAttractiveForce = function(n) {
+Node.prototype.applyAttractiveForce = function(n, scale = 0.1) {
   var distance = this.distance(n);
-  var force = 0.1 * Math.max(distance + 200, 1);
+  var force = scale * Math.max(distance + 200, 1);
   this.netforce.x += force * Math.sin((n.x - this.x) / distance);
   this.netforce.y += force * Math.sin((n.y - this.y) / distance);
 };
 
-Node.prototype.applyRepulsiveForce = function(n) {
+Node.prototype.applyRepulsiveForce = function(n, scale = 1) {
   var d = Math.max(this.distance(n), 1);
   // calculate repulsion force between nodes
-  var f = -1 * ((this.charge * n.charge) / (d * d));
+  var f = -1 * scale * ((this.charge * n.charge) / (d * d));
   this.netforce.x += f * Math.sin((n.x - this.x) / d);
   this.netforce.y += f * Math.sin((n.y - this.y) / d);
 };
 
+/**
+ * { function_description }
+ *
+ * @class      Edge (name)
+ * @param      {Point}  a
+ * @param      {Point}  b
+ */
 export function Edge(a, b) {
-  console.log(`Edge(${a},${b})`);
-  Line.call(this, a.x, a.y, b.x, b.y);
-  //  Line.call(this, a, b);
+  this.a = a;
+  this.b = b;
+
   this.draggable = false;
 }
 
 Edge.prototype = Object.create(new Line());
+
+// prettier-ignore
+if(Util.defineGetterSetter) {
+  Util.defineGetterSetter(Edge.prototype, "x1", function() {return this.a.x; }, function(v) {this.a.x = v; }, true );
+  Util.defineGetterSetter(Edge.prototype, "y1", function() {return this.a.y; }, function(v) {this.a.y = v; }, true );
+  Util.defineGetterSetter(Edge.prototype, "x2", function() {return this.b.x; }, function(v) {this.b.x = v; }, true );
+  Util.defineGetterSetter(Edge.prototype, "y2", function() {return this.b.y; }, function(v) {this.b.y = v; }, true );
+}
 
 // we need to override the draw method so it updates on a redraw
 Edge.prototype.draw = function(ctx) {
