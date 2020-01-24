@@ -710,7 +710,7 @@ Size.convertUnits = (size, w = "window" in global ? window : null) => {
   return size;
 };
 
-Size.aspect = size =>  {
+Size.aspect = size => {
   size = this instanceof Size ? this : size;
   return size.width / size.height;
 };
