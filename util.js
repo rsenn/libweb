@@ -258,6 +258,11 @@ Util.clearBit = (num, bit) => {
 };
 
 Util.range = (start, end) => {
+  if(start > end) {
+    let ret = [];
+    while(start >= end) ret.push(start--);
+    return ret;
+  }
   const r = Array.from({ length: end - start + 1 }, (v, k) => k + start);
   //console.log("Util.range ", r);
   return r;

@@ -2614,6 +2614,7 @@ HSLA.prototype.toString = function() {
 Timer.interval = (timeout, fn, props) => Timer(timeout, fn, props, {});
 
 Timer.once = (timeout, fn, props) => Timer(timeout, fn, props, { create: setTimeout, destroy: clearTimeout });
+Timer.until = (deadline, fn, props) => Timer.once(deadline - Date.now(), fn, props);
 
 Timer.promise = timeout =>
   new Promise((resolve, reject) =>
