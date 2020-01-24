@@ -1684,7 +1684,7 @@ Matrix.prototype.inverse = function() {
   Matrix.prototype[method + "_self"] = function() {
     let dom = Matrix.toDOMMatrix(this);
     Matrix.call(this, dom[method + "Self"].apply(dom, arguments));
-    console.log(method + "_self ", this);
+    //console.log(method + "_self ", this);
     return this;
   };
   Matrix.prototype[method] = function() {
@@ -2930,7 +2930,7 @@ class Element extends Node {
     let e = Element.find(args.shift());
     let size = new Size(args);
     const css = Size.toCSS(size);
-    console.log("Element.resize: ", { e, size, css });
+    //console.log("Element.resize: ", { e, size, css });
     Element.setCSS(e, css);
     return e;
   }

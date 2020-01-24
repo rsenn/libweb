@@ -1588,7 +1588,7 @@ Matrix.multiply = function(a, b, fn = m => m) {
 Matrix.prototype.multiply = function(m) {
   // if(!(m instanceof Matrix)) m = new Matrix(m);
 
-  console.log("Matrix multiply");
+  //console.log("Matrix multiply");
 
   const r = {
     xx: this.xx * m.xx + this.xy * m.yx,
@@ -1598,9 +1598,9 @@ Matrix.prototype.multiply = function(m) {
     x0: this.xx * m.x0 + this.xy * m.y0 + this.x0,
     y0: this.yx * m.x0 + this.yy * m.y0 + this.y0
   };
-  console.log("a: ", this);
-  console.log("b: ", m);
-  console.log("r: ", r);
+  //console.log("a: ", this);
+  //console.log("b: ", m);
+  //console.log("r: ", r);
 
   this.xx = r.xx;
   this.xy = r.xy;
@@ -1710,8 +1710,8 @@ Matrix.prototype.translate = function(tx, ty) {
 
   //this.multiply(m);
   Matrix.prototype.multiply.call(this, m);
-  console.log(Matrix.prototype.multiply);
-  console.log("translate matrix:", m, " result:", this.toString());
+  //console.log(Matrix.prototype.multiply);
+  //console.log("translate matrix:", m, " result:", this.toString());
   return this;
 };
 
@@ -1719,7 +1719,7 @@ Matrix.scale = (m, sx, sy) => Matrix.multiply(m, Matrix.init_scale(sx, sy));
 
 Matrix.prototype.scale = function(sx, sy) {
   const m = Matrix.init_scale(sx, sy);
-  console.log("scale matrix:", m);
+  //console.log("scale matrix:", m);
 
   Matrix.prototype.multiply.call(this, m);
   return this;
@@ -1729,7 +1729,7 @@ Matrix.rotate = (m, rad) => Matrix.multiply(m, Matrix.init_rotate(rad));
 
 Matrix.prototype.rotate = function(rad) {
   const m = Matrix.init_rotate(rad);
-  console.log("rotation matrix:", m);
+  //console.log("rotation matrix:", m);
   Matrix.prototype.multiply.call(this, m);
   return this;
 };
@@ -1995,7 +1995,7 @@ if (Util.isBrowser()) {
       Matrix.prototype[method + "_self"] = function() {
         let dom = Matrix.toDOMMatrix(this);
         Matrix.call(this, dom[method + "Self"].apply(dom, arguments));
-        console.log(method + "_self ", this);
+        //console.log(method + "_self ", this);
         return this;
       };
     if(Matrix.prototype[method] === undefined)
@@ -2968,7 +2968,7 @@ export class Element extends Node {
     let e = Element.find(args.shift());
     let size = new Size(args);
     const css = Size.toCSS(size);
-    console.log("Element.resize: ", { e, size, css });
+    //console.log("Element.resize: ", { e, size, css });
     Element.setCSS(e, css);
     return e;
   }
