@@ -203,8 +203,8 @@ Point.prototype.neg = function() {
 };
 
 Point.distance = (p1, p2 = { x: 0, y: 0 }) => Math.sqrt((p1.y - p2.y) * (p1.y - p2.y) + (p1.x - p2.x) * (p1.x - p2.x));
-Point.prototype.distance = function() {
-  return Point.distance(this);
+Point.prototype.distance = function(other = { x: 0, y: 0 }) {
+  return Point.distance(this, other);
 };
 
 Point.round = (p, precision = 1.0) => {
@@ -2611,7 +2611,7 @@ HSLA.prototype.toString = function() {
   return `hsla(${this.h},${this.s}%,${this.l}%,${this.a})`;
 };
 
-Timer.interval = (timeout, fn, props) => Timer(timeout, fn, props, {});
+Timer.interval = (timeout, fn, props) => Timer(timeout, fn, props, { destroy: clearTimeout });
 
 Timer.once = (timeout, fn, props) => Timer(timeout, fn, props, { create: setTimeout, destroy: clearTimeout });
 Timer.until = (deadline, fn, props) => Timer.once(deadline - Date.now(), fn, props);
