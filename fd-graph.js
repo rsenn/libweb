@@ -77,6 +77,12 @@ Graph.prototype.addEdge = function(e) {
   this.edges.push(e);
 };
 
+Graph.prototype.add = function(o) {
+  if(o instanceof Node) this.nodes.push(o);
+  if(o instanceof Edge) this.edges.push(o);
+};
+Graph.prototype.push = Graph.prototype.add;
+
 Graph.prototype.resetNodes = function() {
   for(var i = 0; i < this.nodes.length; i++) {
     var n = this.nodes[i];
@@ -162,9 +168,9 @@ Graph.prototype.updateAll = function() {
  */
 export function Node(label, charge = 60) {
   //console.log(`Node(${label},${charge})`);
-  var pos = new Point(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
 
-  Point.call(this, pos.x, pos.y);
+  this.x = Math.floor(Math.random() * 1000);
+  this.y = Math.floor(Math.random() * 1000);
 
   this.charge = charge;
   this.mass = 100;
