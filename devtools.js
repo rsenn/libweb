@@ -821,6 +821,42 @@ export function trackElements() {
   });
 }
 
+export function polyline(points, closed = false) {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  if(typeof points == "object" && points.toPoints) points = points.toPoints();
+
+  if(!window.svg)
+    window.svg = SVG.create(
+      "svg",
+      { width, height, viewBox: `0 0 ${width} ${height}`, style: `position: fixed; left: 0; top: 0; z-index: 999999;` },
+      document.body
+    );
+  SVG.create(
+    closed ? "polygon" : "polyline",
+    { points: points.toString(3), fill: "none", stroke: "red", strokeWidth: 1.5 },
+    window.svg
+  );
+}
+
+export function circle(point, radius = 10) {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  if(!window.svg)
+    window.svg = SVG.create(
+      "svg",
+      { width, height, viewBox: `0 0 ${width} ${height}`, style: `position: fixed; left: 0; top: 0; z-index: 999999;` },
+      document.body
+    );
+  SVG.create(
+    "circle",
+    { cx: point.x, cy: point.y, r: radius, fill: "none", stroke: "red", strokeWidth: 1.5 },
+    window.svg
+  );
+}
+
 export function rect(arg) {
   let args = [...arguments];
   let r;
@@ -988,7 +1024,9 @@ export const devtools = {
   trackElements,
   walk,
   ws,
-  assign_to
+  assign_to,
+  polyline,
+  circle
 };
 
 export default devtools;

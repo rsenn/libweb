@@ -79,7 +79,7 @@ get_modules() {
   echo "${*##*/}"
 }
 package_modules() {
-  sed 's,^\s*"\([^"]*\)": "^*[0-9].*,\1,p' -n "$ABSDIR/package.json"
+  sed 's,^\s*"\([^"]*\)": "^*[0-9].*,\1,p' -n "$ABSDIR/../package.json"
 }
 
 main() {
