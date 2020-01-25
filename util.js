@@ -1641,6 +1641,34 @@ Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
   if(typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children.length)
     for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
 };
+Util.isPromise = obj => Boolean(obj) && typeof obj.then === "function";
+
+/* eslint-disable no-use-before-define */
+if (typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
+
+Util.next = (iter, observer, prev = undefined) => {
+  let item;
+  try {
+    item = iter.next(prev);
+  } catch(err) {
+    return observer.error(err);
+  }
+  const value = item.value;
+  if(item.done) return observer.complete();
+  if(isPromise(value)) {
+    value
+      .then(val => {
+        observer.next(val);
+        setImmediate(() => Util.next(iter, observer, val));
+      })
+      .catch(err => {
+        return observer.error(err);
+      });
+  } else {
+    observer.next(value);
+    setImmediate(() => Util.next(iter, observer, value));
+  }
+};
 Util.getImageAverageColor = function(imageElement, options) {
   if(!imageElement) {
     return false;
