@@ -1,4 +1,4 @@
-import { Point, Line, Timer, Element } from "./dom.js";
+import { Point, Line, Timer, Element, BBox } from "./dom.js";
 import Util from "./util.js";
 
 /* From https://github.com/ehayon/FDGraph */
@@ -118,6 +118,10 @@ Graph.prototype.branchNodes = function*() {
   }
 };
 
+Graph.prototype.getBBox = function() {
+  return BBox.from(this.nodes);
+};
+
 Graph.prototype.checkRedraw = function() {
   // compute the force on each connection
   // only update if net force is greater than threshold
@@ -208,7 +212,7 @@ Graph.prototype.checkRedraw = function() {
         if(angles.length >= 2) {
           let gap = findBiggestGap(angles);
           middleAngle = (gap[1] + gap[0]) / 2;
-          gapLen = Math.abs(gap[1] - gap[0]);
+          gapLen = gap[1] - gap[0];
         } else if(angles.length == 1) {
           middleAngle = angles[0] + Math.PI;
           if(middleAngle > Math.PI) middleAngle -= Math.PI;
@@ -228,19 +232,9 @@ Graph.prototype.checkRedraw = function() {
             let len = l.length();
 
             let rel = Point.diff(leaf, node);
-            /*let nodeId = `#node-${leafNodes[j].index}`;
-          let nodeElem = document.querySelector(nodeId);
-         */
-            //console.log("line: ", { j, index, l, len, gapPos });
-            //    console.log("leaf: ", this.nodes[index]);
-            /* this.nodes[index].x += 10;
-          this.nodes[index].y += 10;*/
-            newPositions.push({
-              index,
-              old: rel,
-              x: node.x + Math.cos(gapPos) * 50,
-              y: node.y + Math.sin(gapPos) * 50
-            });
+
+            // prettier-ignore
+            newPositions.push({index, old: rel, x: node.x + Math.cos(gapPos) * 50, y: node.y + Math.sin(gapPos) * 50 });
             gapPos += gapStep;
           }
         }
@@ -258,8 +252,8 @@ Graph.prototype.checkRedraw = function() {
     for(let i = 0; i < newPositions.length; i++) {
       let newPos = newPositions[i];
 
-      this.nodes[newPos.index].x = newPos.x;
-      this.nodes[newPos.index].y = newPos.y;
+      /*  this.nodes[newPos.index].x = newPos.x;
+      this.nodes[newPos.index].y = newPos.y;*/
     }
     console.log("newPositions: ", newPositions);
   } else {

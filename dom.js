@@ -1118,9 +1118,11 @@ Rect.prototype.inset = function(trbl) {
   }
   return this;
 };
-Rect.align = function(rect, align_to, a) {
+Rect.align = function(rect, align_to, a = 0) {
   const xdiff = align_to.width - rect.width;
   const ydiff = align_to.height - rect.height;
+  let oldx = rect.x;
+  let oldy = rect.y;
 
   switch (Align.horizontal(a)) {
     case Align.LEFT:
@@ -1144,6 +1146,8 @@ Rect.align = function(rect, align_to, a) {
       rect.y = align_to.y + ydiff / 2;
       break;
   }
+  rect.tx = rect.x - oldx;
+  rect.ty = rect.y - oldy;
   return rect;
 };
 
@@ -1299,17 +1303,19 @@ TRBL.prototype.toSource = function() {
   return "{top:" + this.top + ",right:" + this.right + ",bottom:" + this.bottom + ",left:" + this.left + "}";
 };
 
-class BBox {
+export class BBox {
   x1 = 0;
   y1 = 0;
   x2 = 0;
   y2 = 0;
-  constructor(x1 = 0, y1 = 0, x2 = 0, y2 = 0) {
+
+  constructor(x1, y1, x2, y2) {
     this.x1 = x1;
     this.y1 = y1;
     this.x2 = x2;
     this.y2 = y2;
   }
+
   update(list, offset = 0.0) {
     for(let arg of list) {
       if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset);
@@ -1317,6 +1323,7 @@ class BBox {
       if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0);
     }
   }
+
   updateXY(x, y, offset = 0) {
     let updated = {};
     if(this.x1 > x - offset) {
@@ -1337,12 +1344,15 @@ class BBox {
     }
     if(Object.keys(updated)) console.log(`BBox update ${x},${y} `, updated);
   }
+
   get center() {
     return new Point({ x: this.x + this.width / 2, y: this.y + this.height / 2 });
   }
+
   relative_to(x, y) {
     return new BBox(this.x1 - x, this.y1 - y, this.x2 - x, this.y2 - y);
   }
+
   get x() {
     return this.x1;
   }
@@ -1389,6 +1399,31 @@ class BBox {
     let ret = new BBox();
     this.transform(arg => Math.round(arg), ret);
     return ret;
+  }
+
+  static from(iter, tp = p => p) {
+    if(typeof iter == "object" && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
+
+    let r = new BBox();
+    let result = iter.next();
+    let p;
+    if(result.value) {
+      p = tp(result.value);
+      r.x1 = p.x;
+      r.x2 = p.x;
+      r.y1 = p.y;
+      r.y2 = p.y;
+    }
+    while(true) {
+      result = iter.next();
+      if(!result.value) break;
+      p = tp(result.value);
+      if(r.x1 > p.x) r.x1 = p.x;
+      if(r.x2 < p.x) r.x2 = p.x;
+      if(r.y1 > p.y) r.y1 = p.y;
+      if(r.y2 < p.y) r.y2 = p.y;
+    }
+    return r;
   }
 }
 
@@ -3402,6 +3437,29 @@ export class Element extends Node {
     });
   }
 }
+
+Element.children = function*(elem, tfn = e => e) {
+  if(typeof elem == "string") elem = Element.find(elem);
+  for(let e = elem.firstElementChild; e; e = e.nextElementSibling) yield tfn(e);
+};
+
+Element.recurse = function*(elem, tfn = e => e) {
+  if(typeof elem == "string") elem = Element.find(elem);
+  let root = elem;
+  do {
+    elem =
+      elem.firstElementChild ||
+      elem.nextElementSibling ||
+      (function() {
+        do {
+          if(!(elem = elem.parentElement)) break;
+        } while(!elem.nextSibling);
+        return elem && elem != root ? elem.nextElementSibling : null;
+      })();
+
+    if(elem !== null) yield tfn(elem);
+  } while(elem);
+};
 
 export class CSS {
   static list(doc) {
