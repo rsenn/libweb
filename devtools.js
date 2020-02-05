@@ -862,7 +862,10 @@ export function rect(arg) {
   let r;
   let a = [];
   while(args.length > 0) {
-    r = new dom.Rect(args);
+    if(args[0] instanceof dom.Rect)
+      r = args.shift();
+    else
+      r = new dom.Rect(args);
 
     a.push(__rect(r));
   }
@@ -870,6 +873,7 @@ export function rect(arg) {
   return a;
 
   function __rect(rect) {
+    console.log("__rect ", rect);
     let body = Element.find("body");
     let parent = null;
 
