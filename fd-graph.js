@@ -19,18 +19,7 @@ import Util from "./util.js";
  * @param      {function} [options.onUpdateEdge=edge=>{}]     update edge callback
  */
 
-export function Graph({
-  origin = new Point(0, 0),
-  gravitate_to_origin = true,
-  spacing = 1,
-  timestep = 150,
-  kineticenergy = 1,
-  damping = 0.000005,
-  total_node_velocity = 0,
-  onUpdateNode = node => {},
-  onUpdateEdge = edge => {},
-  onRenderGraph = graph => {}
-}) {
+export function Graph({ origin = new Point(0, 0), gravitate_to_origin = true, spacing = 1, timestep = 150, kineticenergy = 1, damping = 0.000005, total_node_velocity = 0, onUpdateNode = node => {}, onUpdateEdge = edge => {}, onRenderGraph = graph => {} }) {
   console.log(`Graph(${origin},${gravitate_to_origin})`);
   this.nodes = [];
   this.edges = [];

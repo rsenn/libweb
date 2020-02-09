@@ -1303,13 +1303,7 @@ Util.effectiveDeviceWidth = function() {
   return deviceWidth;
 };
 Util.getFormFields = function(initialState) {
-  return Util.mergeObjects([
-    initialState,
-    [...document.forms].reduce(
-      (acc, form) => [...form.elements].reduce((acc2, e) => (e.name == "" || e.value == undefined || e.value == "undefined" ? acc2 : Object.assign(acc2, { [e.name]: e.value })), acc),
-      {}
-    )
-  ]);
+  return Util.mergeObjects([initialState, [...document.forms].reduce((acc, form) => [...form.elements].reduce((acc2, e) => (e.name == "" || e.value == undefined || e.value == "undefined" ? acc2 : Object.assign(acc2, { [e.name]: e.value })), acc), {})]);
 };
 Util.mergeObjects = function(objArr, predicate = (dst, src, key) => (src[key] == "" ? undefined : src[key])) {
   let args = objArr;
@@ -1439,9 +1433,7 @@ Util.weakAssign = function(obj) {
 };
 Util.getCallerStack = function(position = 2) {
   if(position >= Error.stackTraceLimit) {
-    throw new TypeError(
-      "getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: `" + position + "` and Error.stackTraceLimit was: `" + Error.stackTraceLimit + "`"
-    );
+    throw new TypeError("getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: `" + position + "` and Error.stackTraceLimit was: `" + Error.stackTraceLimit + "`");
   }
 
   const oldPrepareStackTrace = Error.prepareStackTrace;
@@ -1498,20 +1490,7 @@ Util.getCallerFunctionNames = function(position = 2) {
 };
 Util.getCaller = function(position = 2) {
   let stack = Util.getCallerStack(position + 1);
-  const methods = [
-    "getColumnNumber",
-    "getEvalOrigin",
-    "getFileName",
-    "getFunction",
-    "getFunctionName",
-    "getLineNumber",
-    "getMethodName",
-    "getPosition",
-    "getPromiseIndex",
-    "getScriptNameOrSourceURL",
-    "getThis",
-    "getTypeName"
-  ];
+  const methods = ["getColumnNumber", "getEvalOrigin", "getFileName", "getFunction", "getFunctionName", "getLineNumber", "getMethodName", "getPosition", "getPromiseIndex", "getScriptNameOrSourceURL", "getThis", "getTypeName"];
   if(stack !== null && typeof stack === "object") {
     const frame = stack[0];
     return methods.reduce((acc, m) => {
@@ -1571,6 +1550,14 @@ Util.flatTree = function(tree, addOutput) {
 Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
   if(typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children.length) for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
+};
+Util.walkTree = function*(node, depth = 0, parent = null) {
+  yield { node, depth, parent };
+  if(typeof node == "object" && node !== null && typeof node.children == "object" && node.children.length) {
+    for(let child of [...node.children]) {
+      Util.walkTree(child, depth + 1, node);
+    }
+  }
 };
 Util.isPromise = obj => Boolean(obj) && typeof obj.then === "function";
 
