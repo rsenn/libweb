@@ -535,8 +535,7 @@ export async function img(name, arg = {}) {
   let list = root.images
     ? root.images
     : (root.images = new HashList(
-        obj =>
-          (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, "$1XX$2"),
+        obj => (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, "$1XX$2"),
         function(arg) {
           let e = Element.find(arg);
           let svg = Element.find("svg", e);
@@ -827,34 +826,16 @@ export function polyline(points, closed = false) {
 
   if(typeof points == "object" && points.toPoints) points = points.toPoints();
 
-  if(!window.svg)
-    window.svg = SVG.create(
-      "svg",
-      { width, height, viewBox: `0 0 ${width} ${height}`, style: `position: fixed; left: 0; top: 0; z-index: 999999;` },
-      document.body
-    );
-  SVG.create(
-    closed ? "polygon" : "polyline",
-    { points: points.toString(3), fill: "none", stroke: "red", strokeWidth: 1.5 },
-    window.svg
-  );
+  if(!window.svg) window.svg = SVG.create("svg", { width, height, viewBox: `0 0 ${width} ${height}`, style: `position: fixed; left: 0; top: 0; z-index: 999999;` }, document.body);
+  SVG.create(closed ? "polygon" : "polyline", { points: points.toString(3), fill: "none", stroke: "red", strokeWidth: 1.5 }, window.svg);
 }
 
 export function circle(point, radius = 10) {
   const width = window.innerWidth;
   const height = window.innerHeight;
 
-  if(!window.svg)
-    window.svg = SVG.create(
-      "svg",
-      { width, height, viewBox: `0 0 ${width} ${height}`, style: `position: fixed; left: 0; top: 0; z-index: 999999;` },
-      document.body
-    );
-  SVG.create(
-    "circle",
-    { cx: point.x, cy: point.y, r: radius, fill: "none", stroke: "red", strokeWidth: 1.5 },
-    window.svg
-  );
+  if(!window.svg) window.svg = SVG.create("svg", { width, height, viewBox: `0 0 ${width} ${height}`, style: `position: fixed; left: 0; top: 0; z-index: 999999;` }, document.body);
+  SVG.create("circle", { cx: point.x, cy: point.y, r: radius, fill: "none", stroke: "red", strokeWidth: 1.5 }, window.svg);
 }
 
 export function rect(arg) {
@@ -862,10 +843,8 @@ export function rect(arg) {
   let r;
   let a = [];
   while(args.length > 0) {
-    if(args[0] instanceof dom.Rect)
-      r = args.shift();
-    else
-      r = new dom.Rect(args);
+    if(args[0] instanceof dom.Rect) r = args.shift();
+    else r = new dom.Rect(args);
 
     a.push(__rect(r));
   }

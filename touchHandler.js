@@ -110,8 +110,7 @@ export function MovementListener(handler, options) {
       //devp.logEntry(`EVENT: ${index} ${Math.round(angle)} ${move.x} ${move.y}`);
       move.prev = prev;
 
-      (move.time = Date.now() - starttime),
-        (move.timediff = prev && prev.time !== undefined ? move.time - prev.time : 0);
+      (move.time = Date.now() - starttime), (move.timediff = prev && prev.time !== undefined ? move.time - prev.time : 0);
 
       if(/*prev && prev.time === 0 &&*/ Math.abs(90 - Math.abs(angle)) < 45) {
         if(self.handler.start() === null) self.handler.start(move);

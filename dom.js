@@ -2862,13 +2862,13 @@ export class Element extends Node {
       r.y -= off.y;
     }
 
-    console.log("Element.rect(", r, ")");
+    // console.log("Element.rect(", r, ")");
 
     if(options.border) {
       const border = Element.border(e);
       Rect.outset(r, border);
 
-      console.log("Element.rect(", r, ") // with border = ", border);
+      // console.log("Element.rect(", r, ") // with border = ", border);
     }
 
     const { scrollTop, scrollY } = window;

@@ -79,13 +79,7 @@ export class HashList {
       typeof a === "function"
         ? (arg, i, arr) => a(arg, arg.name, this)
         : (arg, i, arr) =>
-            (a && arr[i] && a == arr[i].e) ||
-            (a instanceof RegExp &&
-              (key.match(a) ||
-                String(arr[i]).match(a) ||
-                arr[i].id == a ||
-                arr[i].e == a ||
-                Rect.equal(arr[i].rect, arr[i].rect)))
+            (a && arr[i] && a == arr[i].e) || (a instanceof RegExp && (key.match(a) || String(arr[i]).match(a) || arr[i].id == a || arr[i].e == a || Rect.equal(arr[i].rect, arr[i].rect)))
     );
   }
 

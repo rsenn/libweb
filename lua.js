@@ -38,8 +38,7 @@ class Node {
     for(let prop in node) {
       if(prop == "type") continue;
       var value = node[prop];
-      if(value instanceof Array || (value && value.map !== undefined))
-        value = value.map(v => indent + "  " + (v.toString ? v.toString() : "" + v)).join("\n");
+      if(value instanceof Array || (value && value.map !== undefined)) value = value.map(v => indent + "  " + (v.toString ? v.toString() : "" + v)).join("\n");
       else value = node[prop] && node[prop].toString ? node[prop].toString() : node[prop];
       str += indent + `  ${prop}:${value}\n`;
     }
@@ -279,11 +278,7 @@ ${js(node.body)}
 
     function js_table_expression(node) {
       let list = 0;
-      const fields = node.fields
-        .map(field =>
-          field.type == "Recfield" ? `"${js(field.key)}": ${js(field.value)}` : `"${list++}": ${js(field.value)}`
-        )
-        .join(", ");
+      const fields = node.fields.map(field => (field.type == "Recfield" ? `"${js(field.key)}": ${js(field.value)}` : `"${list++}": ${js(field.value)}`)).join(", ");
       return `{${fields}}`;
     }
 
@@ -579,17 +574,10 @@ class MoonScriptGenerator {
         let key = generator.subtree(field.key, false);
         let num = parseInt(key);
         if(!isNaN(num)) key = num;
-        if(field.type == "Recfield")
-          return `['${key}']: ` + generator.subtree(field.value, false, indent + "  ").replace(/\n/g, "\n" + indent);
+        if(field.type == "Recfield") return `['${key}']: ` + generator.subtree(field.value, false, indent + "  ").replace(/\n/g, "\n" + indent);
         return generator.str(field.value, node.multiline, indent);
       });
-      return (
-        "{" +
-        (generator.multiline ? "\n" + indent : " ") +
-        fields.join(generator.multiline ? "\n" + indent : ", ") +
-        (generator.multiline ? "\n" + generator.indent : " ") +
-        "}"
-      );
+      return "{" + (generator.multiline ? "\n" + indent : " ") + fields.join(generator.multiline ? "\n" + indent : ", ") + (generator.multiline ? "\n" + generator.indent : " ") + "}";
     }
 
     function moonscript_member_expression(node) {
@@ -1253,11 +1241,7 @@ class Parser {
     let args = [...arguments];
     let stack = Util.getCallers(0, 10);
 
-    stack = stack.filter(
-      s =>
-        (s.typeName == "Parser" || (s.methodName || s.functionName || "").indexOf("parse") != -1) &&
-        s.methodName != "log"
-    );
+    stack = stack.filter(s => (s.typeName == "Parser" || (s.methodName || s.functionName || "").indexOf("parse") != -1) && s.methodName != "log");
     const names = stack.filter(f => !f.functionName.startsWith("Parser.")).map(f => f.functionName);
 
     stack = stack.map(s => ({

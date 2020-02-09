@@ -458,8 +458,7 @@ export const Behave = function(userOpts) {
             }
           }
 
-          var edited =
-            left + newLine + ourIndent + closingBreak + ourIndent.substring(0, ourIndent.length - tab.length) + right;
+          var edited = left + newLine + ourIndent + closingBreak + ourIndent.substring(0, ourIndent.length - tab.length) + right;
           utils.editor.set(edited);
           utils.cursor.set(pos + finalCursorPos);
           utils._callHook("enter:after");
