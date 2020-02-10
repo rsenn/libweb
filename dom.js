@@ -1354,7 +1354,7 @@ export class BBox {
       this.y2 = y + offset;
       updated.y2 = true;
     }
-    if(Object.keys(updated)) console.log(`BBox update ${x},${y} `, updated);
+   // if(Object.keys(updated)) console.log(`BBox update ${x},${y} `, updated);
   }
 
   get center() {
