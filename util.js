@@ -677,7 +677,7 @@ Util.isEmptyString = function(v) {
   return false;
 };
 Util.isEmpty = function(v) {
-  if(v.constructor == Object && Object.keys(v).length == 0) return true;
+  if(typeof v == "object" && !!v && v.constructor == Object && Object.keys(v).length == 0) return true;
   if(!v || v === null) return true;
   if(typeof v == "object" && v.length !== undefined && v.length === 0) return true;
   return false;
@@ -1551,11 +1551,14 @@ Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
   if(typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children.length) for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
 };
-Util.walkTree = function*(node, depth = 0, parent = null) {
-  yield { node, depth, parent };
+Util.walkTree = function*(node, depth = 0, parent = null, pred) {
+  if(!pred) pred = i => true;
+
+  if(pred(node, depth, parent)) yield node;
   if(typeof node == "object" && node !== null && typeof node.children == "object" && node.children.length) {
     for(let child of [...node.children]) {
-      Util.walkTree(child, depth + 1, node);
+      /*   if(pred(child, depth + 1, node))*/
+      yield* Util.walkTree(child, depth + 1, node, pred);
     }
   }
 };
