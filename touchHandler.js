@@ -1,4 +1,4 @@
-import { isPoint, Point, PointList } from "./dom.js";
+import { isPoint, Point, PointList, Line, Rect, Element } from "./dom.js";
 import { trkl } from "./trkl.js";
 import { ScrollDisabler } from "../utils/scrollHandler.js";
 
@@ -300,6 +300,64 @@ export function TurnListener(handler, options) {
     }, options),
     { num: 1, ...options }
   );
+}
+
+export function SelectionListener(handler, options) {
+  var start = null,
+    position,
+    line;
+  var element = null;
+
+  var options = {
+    step: 1,
+    round: false,
+    noscroll: true
+  };
+  var callback = function(event) {
+    let x = event.nativeEvent.clientX;
+    let y = event.nativeEvent.clientY;
+
+    let dx = event.x;
+    let dy = event.y;
+    let type = event.nativeEvent ? event.nativeEvent.type : event.type;
+
+    if(type.endsWith("start") || type.endsWith("down")) {
+      start = new Point(event.client);
+      console.log("Touch ", event.type, start);
+    } else if(start && start.x !== undefined) {
+      position = new Point(Point.sum(start, event));
+      line = new Line(start.round(), position.round());
+
+      let rect = Rect.round(line.bbox());
+
+      event.line = line;
+
+      if(element == null) {
+        let id = SelectionListener.id === undefined ? 1 : SelectionListener.id + 1;
+        SelectionListener.id = id;
+
+        element = Element.create("div", { id: `select_${id}` }, global.window ? window.document.body : null);
+        Element.setCSS(element, { position: "fixed", border: "2px dashed white", filter: "drop-shadow(1px 1px 1px  rgba(0,0,0,1))", zIndex: 999999999 });
+      }
+
+      //    Element.rect(element, rect, { position: 'absolute' });
+      Element.setCSS(element, { left: `${rect.x}px`, top: `${rect.y}px` });
+
+      if(dx !== undefined && dy !== undefined) Element.setCSS(element, { width: `${rect.width}px`, height: `${rect.height}px` });
+    }
+    console.log("Touch ", type);
+
+    if(type.endsWith("end") || type.endsWith("up")) {
+      if(element) {
+        Element.remove(element);
+        element = null;
+      }
+    }
+
+    if(typeof handler == "function") return handler(event);
+  };
+
+  return TouchListener(callback, { listener: MovementListener, ...options });
 }
 
 export const TouchEvents = listener => ({

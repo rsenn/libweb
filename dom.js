@@ -512,6 +512,11 @@ PointList.prototype.minmax = function() {
 };
 PointList.minmax = list => PointList.prototype.minmax.call(list);
 
+PointList.rect = list => new Rect(PointList.minmax(list));
+PointList.prototype.rect = function() {
+  return PointList.rect(this);
+};
+
 PointList.prototype.xrange = function() {
   const minmax = this.minmax();
   return [minmax.x1, minmax.x2];
@@ -541,6 +546,10 @@ PointList.prototype.normalizeY = function(newVal = y => y) {
 
 PointList.prototype.boundingRect = function() {
   return new Rect(this.minmax());
+};
+PointList.prototype.translate = function(x, y) {
+  for(let i = 0; i < this.length; i++) Point.move(this[i], x, y);
+  return this;
 };
 
 PointList.prototype.transform = function(arg) {
@@ -1298,11 +1307,25 @@ export class BBox {
   x2 = 0;
   y2 = 0;
 
+  static fromPoints(pts) {
+    let pt = pts.shift();
+    let bb = new BBox(pt.x, pt.y, pt.x, pt.y);
+    bb.update(pts);
+    return bb;
+  }
+
   constructor(x1, y1, x2, y2) {
-    this.x1 = x1;
-    this.y1 = y1;
-    this.x2 = x2;
-    this.y2 = y2;
+    if(x1 !== undefined && y1 !== undefined && x2 !== undefined && y2 !== undefined) {
+      this.x1 = Math.min(x1, x2);
+      this.y1 = Math.min(y1, y2);
+      this.x2 = Math.max(x1, x2);
+      this.y2 = Math.max(y1, y2);
+    } else {
+      this.x1 = 0;
+      this.y1 = 0;
+      this.x2 = 0;
+      this.y2 = 0;
+    }
   }
 
   update(list, offset = 0.0) {
@@ -2189,9 +2212,33 @@ Line.transform = (line, matrix) => {
   };
 };
 
+Line.bbox = line => BBox.fromPoints(Line.points(line));
+Line.prototype.bbox = function() {
+  return BBox.fromPoints(this.points());
+};
+
+Line.points = line => {
+  const { a, b } = line;
+  return [a, b];
+};
+Line.prototype.points = function() {
+  return Line.points(this);
+};
+
 Line.prototype.inspect = function() {
   const { x1, y1, x2, y2 } = this;
   return "Line{ " + inspect({ x1, y1, x2, y2 }) + " }";
+};
+Line.prototype.toString = function() {
+  let { a, b } = this;
+
+  if(a.x > b.x) {
+    let tmp = this.b;
+    this.b = this.a;
+    this.a = tmp;
+  }
+
+  return Point.prototype.toString.call(this.a) + " -> " + Point.prototype.toString.call(this.b);
 };
 
 /*

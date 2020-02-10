@@ -1,4 +1,4 @@
-import { Point, isPoint, Line, Timer, Element, BBox } from "./dom.js";
+import { Point, isPoint, PointList, Line, Timer, Element, BBox } from "./dom.js";
 import Util from "./util.js";
 
 /* From https://github.com/ehayon/FDGraph */
@@ -281,6 +281,29 @@ export class Graph {
 
     return data;
   }
+
+  get rect() {
+    let ret = new PointList(this.nodes);
+    return ret.rect();
+  }
+
+  get center() {
+    return this.rect.center;
+  }
+
+  translate(x, y) {
+    let p = typeof y == "number" ? new Point(x, y) : x;
+    for(let i = 0; i < this.nodes.length; i++) {
+      Point.move(this.nodes[i], p.x, p.y);
+    }
+  }
+
+  get points() {
+    let ret = new PointList(this.nodes);
+    let rect = ret.rect();
+    let center = rect.center;
+    return ret.translate(-center.x, -center.y);
+  }
 }
 
 class Node extends Point {
@@ -392,10 +415,7 @@ class Edge extends Line {
     };
   }
   toIdx(graph) {
-    return [
-      graph.nodes.indexOf(this.a),
-       graph.nodes.indexOf(this.b)
-    ];
+    return [graph.nodes.indexOf(this.a), graph.nodes.indexOf(this.b)];
   }
   // we need to override the draw method so it updates on a redraw
   draw(ctx) {
