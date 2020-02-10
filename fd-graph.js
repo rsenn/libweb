@@ -1,4 +1,4 @@
-import { Point, Line, Timer, Element, BBox } from "./dom.js";
+import { Point, isPoint, Line, Timer, Element, BBox } from "./dom.js";
 import Util from "./util.js";
 
 /* From https://github.com/ehayon/FDGraph */
@@ -61,9 +61,13 @@ export class Graph {
     return this.nodes[this.nodes.length - 1];
   }
 
+  findNode(value, key = "label") {
+    return Util.find(this.nodes, value, key);
+  }
+
   addEdge(e) {
     let args = [...arguments];
-    if(!(e instanceof Edge)) e = new Edge(...args);
+    if(!(e instanceof Edge)) e = new Edge(args[0], args[1]);
     e.index = this.edges.length;
     this.edges.push(e);
     return this.edges[this.edges.length - 1];
@@ -133,11 +137,10 @@ export class Graph {
           // gravitate to, and repel from origin
           var d = node.distance(this.config.origin);
           var af = 0.02 * Math.max(d, 1);
-          node.netforce.x += af * Math.sin((this.config.origin.x - node.x) / d);
-          node.netforce.y += af * Math.sin((this.config.origin.y - node.y) / d);
+          Point.move(node.netforce, af * Math.sin((this.config.origin.x - node.x) / d), af * Math.sin((this.config.origin.y - node.y) / d));
+
           var rf = -1 * (node.charge / (d * d));
-          node.netforce.x += rf * Math.sin((this.config.origin.x - node.x) / d);
-          node.netforce.y += rf * Math.sin((this.config.origin.y - node.y) / d);
+          Point.move(node.netforce, rf * Math.sin((this.config.origin.x - node.x) / d), rf * Math.sin((this.config.origin.y - node.y) / d));
         }
         for(var j = 0; j < this.edges.length; j++) {
           var con = this.edges[j];
@@ -160,8 +163,7 @@ export class Graph {
         node.velocity.y = node.netforce.y == 0 ? 0 : (node.velocity.y + this.timestep * node.netforce.y) * this.damping;
       }
       // move the nodes scaled by constant timestep
-      node.x += node.velocity.x * this.timestep;
-      node.y += node.velocity.y * this.timestep;
+      Point.move(node, node.velocity.x * this.timestep, node.velocity.y * this.timestep);
 
       // magnitude of the velocity vector
       var velocity = Math.abs(Math.sqrt(node.velocity.x * node.velocity.x + node.velocity.y * node.velocity.y));
@@ -261,9 +263,33 @@ export class Graph {
     for(var j = 0; j < this.edges.length; j++) this.update.edge(this.edges[j], j);
     for(var j = 0; j < this.nodes.length; j++) this.update.node(this.nodes[j], j);
   }
+
+  roundAll(prec) {
+    for(var j = 0; j < this.nodes.length; j++) {
+      Point.round(this.nodes[j], prec);
+      Point.round(this.nodes[j].velocity, prec);
+      Point.round(this.nodes[j].netforce, prec);
+    }
+  }
+
+  serialize() {
+    let data = {
+      nodes: this.nodes.map(node => Node.prototype.toJS.call(node)),
+
+      edges: this.edges.map(edge => Edge.prototype.toIdx.call(edge, this))
+    };
+
+    return data;
+  }
 }
 
 class Node extends Point {
+  charge = 0;
+  mass = 0;
+  velocity = null;
+  netforce = null;
+  label = null;
+
   /**
    * Node
    *
@@ -272,16 +298,18 @@ class Node extends Point {
    * @param      {number}  [charge=60]  The charge
    */
   constructor(label, charge = 60, mass = 100) {
-    //console.log(`Node(${label},${charge})`);
-
-    super();
-    this.move_to(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
+    //
+    super(0, 0);
+    this.x = Math.floor(Math.random() * 1000);
+    this.y = Math.floor(Math.random() * 1000);
 
     this.charge = charge;
     this.mass = mass;
     this.velocity = new Point(0, 0);
     this.netforce = new Point(0, 0);
     this.label = label;
+
+    console.log(`Node(${label},${charge})`, this);
   }
 
   reset() {
@@ -290,18 +318,27 @@ class Node extends Point {
   }
 
   applyAttractiveForce(n, scale = 0.1) {
-    var distance = this.distance(n);
-    var force = scale * Math.max(distance + 200, 1);
+    if(isPoint(n)) {
+      var distance = Point.distance(this, n);
+      var force = scale * Math.max(distance + 200, 1);
 
-    this.netforce.move(force * Math.sin((n.x - this.x) / distance), force * Math.sin((n.y - this.y) / distance));
+      var p = new Point(this);
+
+      Point.move(this.netforce, force * Math.sin((n.x - p.x) / distance), force * Math.sin((n.y - p.y) / distance));
+    }
   }
 
   applyRepulsiveForce(n, scale = 1) {
-    var d = Math.max(this.distance(n), 1);
+    var d = Math.max(Point.distance(this, n), 1);
     // calculate repulsion force between nodes
     var f = -1 * scale * ((this.charge * n.charge) / (d * d));
+    var p = new Point(this);
 
-    this.netforce.move(f * Math.sin((n.x - this.x) / d), f * Math.sin((n.y - this.y) / d));
+    Point.move(this.netforce, f * Math.sin((n.x - p.x) / d), f * Math.sin((n.y - p.y) / d));
+  }
+
+  toJS() {
+    return Util.filterKeys(this, key => ["charge", "mass", "velocity", "netforce", "label", "x", "y", "id"].indexOf(key) != -1);
   }
 }
 
@@ -318,9 +355,12 @@ class Edge extends Line {
    */
   constructor(node_a, node_b) {
     super();
-    if(node_a) this.a = node_a;
+    if(node_a) this.a = node_a instanceof Node ? node_a : new Node(node_a);
+    if(node_b) this.b = node_b instanceof Node ? node_b : new Node(node_b);
 
-    if(node_b) this.b = node_b;
+    if(!(node_a && node_b)) {
+      throw new Error("Edge requires 2 nodes");
+    }
 
     // super(node_a ? node_a.x : 0, node_a ? node_a.y : 0, node_b ? node_b.x :0 , node_b ? node_b.y :0);
 
@@ -345,6 +385,18 @@ class Edge extends Line {
   // prettier-ignore
   set y2(v) {if(this.b)  this.b.y = v; }
 
+  toJS() {
+    return {
+      a: Node.prototype.toJS.call(this.a),
+      b: Node.prototype.toJS.call(this.b)
+    };
+  }
+  toIdx(graph) {
+    return [
+      graph.nodes.indexOf(this.a),
+       graph.nodes.indexOf(this.b)
+    ];
+  }
   // we need to override the draw method so it updates on a redraw
   draw(ctx) {
     /* ctx.strokeStyle = "#B2B2B2";

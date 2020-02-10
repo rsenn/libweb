@@ -1551,14 +1551,15 @@ Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
   if(typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children.length) for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
 };
-Util.walkTree = function*(node, depth = 0, parent = null, pred) {
+Util.walkTree = function*(node, depth = 0, parent = null, pred, t) {
   if(!pred) pred = i => true;
+  if(!t) t = i => i;
 
-  if(pred(node, depth, parent)) yield node;
+  if(pred(node, depth, parent)) yield t(node);
   if(typeof node == "object" && node !== null && typeof node.children == "object" && node.children.length) {
     for(let child of [...node.children]) {
       /*   if(pred(child, depth + 1, node))*/
-      yield* Util.walkTree(child, depth + 1, node, pred);
+      yield* Util.walkTree(child, depth + 1, node, pred, t);
     }
   }
 };

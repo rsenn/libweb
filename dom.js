@@ -106,9 +106,8 @@ Point.move_to = (p, x, y) => {
   return p;
 };
 Point.move = (p, x, y) => {
-  let other = Point(x, y);
-  p.x += other.x;
-  p.y += other.y;
+  p.x += x;
+  p.y += y;
   return p;
 };
 
@@ -207,7 +206,13 @@ Point.prototype.neg = function() {
   return this;
 };
 
-Point.distance = (p1, p2 = { x: 0, y: 0 }) => Math.sqrt((p1.y - p2.y) * (p1.y - p2.y) + (p1.x - p2.x) * (p1.x - p2.x));
+Point.distance = (p1, p2) => {
+  if(!p1) p1 = { x: 0, y: 0 };
+  if(!p2) p2 = { x: 0, y: 0 };
+
+  return Math.sqrt((p1.y - p2.y) * (p1.y - p2.y) + (p1.x - p2.x) * (p1.x - p2.x));
+};
+
 Point.prototype.distance = function(other = { x: 0, y: 0 }) {
   return Point.distance(this, other);
 };
