@@ -399,36 +399,7 @@ e.ObjectBinding = ObjectBinding;
 
 Node.prototype.toString = function() {
   let s = "";
-  [
-    "alternate",
-    "argument",
-    "arguments",
-    "body",
-    "callee",
-    "computed",
-    "consequent",
-    "declarations",
-    "exported",
-    "expression",
-    "expressions",
-    "id",
-    "identifiers",
-    "init",
-    "kind",
-    "left",
-    "loc",
-    "members",
-    "object",
-    "operator",
-    "params",
-    "prefix",
-    "property",
-    "right",
-    "source",
-    "test",
-    "update",
-    "value"
-  ].forEach(field => {
+  ["alternate", "argument", "arguments", "body", "callee", "computed", "consequent", "declarations", "exported", "expression", "expressions", "id", "identifiers", "init", "kind", "left", "loc", "members", "object", "operator", "params", "prefix", "property", "right", "source", "test", "update", "value"].forEach(field => {
     if(this[field]) {
       let value = this[field];
       if(value.value !== undefined) {

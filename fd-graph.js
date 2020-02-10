@@ -53,14 +53,20 @@ export class Graph {
   }
 
   addNode(n) {
+    let args = [...arguments];
+    if(!(n instanceof Node)) n = new Node(...args);
     n.index = this.nodes.length;
     this.nodes.push(n);
     this.checkRedraw();
+    return this.nodes[this.nodes.length - 1];
   }
 
   addEdge(e) {
+    let args = [...arguments];
+    if(!(e instanceof Edge)) e = new Edge(...args);
     e.index = this.edges.length;
     this.edges.push(e);
+    return this.edges[this.edges.length - 1];
   }
 
   add(o) {
@@ -82,8 +88,8 @@ export class Graph {
       let edge = this.edges[i];
       let r = null;
 
-      if(edge.a.equal(node)) r = edge.b;
-      if(edge.b.equal(node)) r = edge.a;
+      if(edge.a && Point.equal(edge.a, node)) r = edge.b;
+      if(edge.b && Point.equal(edge.b, node)) r = edge.a;
 
       if(r !== null) {
         if(exclude !== null && Point.equal(exclude, r)) continue;
@@ -268,7 +274,8 @@ class Node extends Point {
   constructor(label, charge = 60, mass = 100) {
     //console.log(`Node(${label},${charge})`);
 
-    super(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
+    super();
+    this.move_to(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
 
     this.charge = charge;
     this.mass = mass;
@@ -278,29 +285,30 @@ class Node extends Point {
   }
 
   reset() {
-    this.velocity.x = 0;
-    this.velocity.y = 0;
-    this.netforce.x = 0;
-    this.netforce.y = 0;
+    this.velocity.clear();
+    this.netforce.clear();
   }
 
   applyAttractiveForce(n, scale = 0.1) {
     var distance = this.distance(n);
     var force = scale * Math.max(distance + 200, 1);
-    this.netforce.x += force * Math.sin((n.x - this.x) / distance);
-    this.netforce.y += force * Math.sin((n.y - this.y) / distance);
+
+    this.netforce.move(force * Math.sin((n.x - this.x) / distance), force * Math.sin((n.y - this.y) / distance));
   }
 
   applyRepulsiveForce(n, scale = 1) {
     var d = Math.max(this.distance(n), 1);
     // calculate repulsion force between nodes
     var f = -1 * scale * ((this.charge * n.charge) / (d * d));
-    this.netforce.x += f * Math.sin((n.x - this.x) / d);
-    this.netforce.y += f * Math.sin((n.y - this.y) / d);
+
+    this.netforce.move(f * Math.sin((n.x - this.x) / d), f * Math.sin((n.y - this.y) / d));
   }
 }
 
 class Edge extends Line {
+  a = null;
+  b = null;
+
   /**
    * { function_description }
    *
@@ -308,30 +316,34 @@ class Edge extends Line {
    * @param      {Point}  a
    * @param      {Point}  b
    */
-  constructor(a, b) {
-    this.a = a;
-    this.b = b;
+  constructor(node_a, node_b) {
+    super();
+    if(node_a) this.a = node_a;
+
+    if(node_b) this.b = node_b;
+
+    // super(node_a ? node_a.x : 0, node_a ? node_a.y : 0, node_b ? node_b.x :0 , node_b ? node_b.y :0);
 
     this.draggable = false;
   }
 
   // prettier-ignore
-  get x1() {return this.a.x; }
+  get x1() {return this.a ? this.a.x : 0; }
   // prettier-ignore
-  get y1() {return this.a.y; }
+  get y1() {return this.a ? this.a.y : 0; }
   // prettier-ignore
-  get x2() {return this.b.x; }
+  get x2() {return this.b ? this.b.x : 0; }
   // prettier-ignore
-  get y2() {return this.b.y; }
+  get y2() {return this.b ?  this.b.y : 0; }
 
   // prettier-ignore
-  set x1(v) {this.a.x = v; }
+  set x1(v) {if(this.a)  this.a.x = v; }
   // prettier-ignore
-  set y1(v) {this.a.y = v; }
+  set y1(v) {if(this.a)  this.a.y = v; }
   // prettier-ignore
-  set x2(v) {this.b.x = v; }
+  set x2(v) {if(this.b)  this.b.x = v; }
   // prettier-ignore
-  set y2(v) {this.b.y = v; }
+  set y2(v) {if(this.b)  this.b.y = v; }
 
   // we need to override the draw method so it updates on a redraw
   draw(ctx) {

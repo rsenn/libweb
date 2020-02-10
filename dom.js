@@ -113,10 +113,19 @@ Point.move = (p, x, y) => {
 };
 
 Point.prototype.move_to = function(x, y) {
-  return Point.move_to.apply(Point, [this, ...arguments]);
+  this.x = x;
+  this.y = y;
+  return this;
+};
+Point.prototype.clear = function(x, y) {
+  this.x = 0;
+  this.y = 0;
+  return this;
 };
 Point.prototype.move = function(x, y) {
-  return Point.move.apply(Point, [this, ...arguments]);
+  this.x += x;
+  this.y += y;
+  return this;
 };
 
 Point.set = (p, fn) => {
@@ -204,6 +213,7 @@ Point.prototype.distance = function(other = { x: 0, y: 0 }) {
 };
 
 Point.equal = (a, b) => a.x == b.x && a.y == b.y;
+
 Point.prototype.equal = function(other) {
   return Point.equal(this, other);
 };

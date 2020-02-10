@@ -80,10 +80,7 @@ function toStr(a) {
     while(this.stack.length > len) this.stack.pop();
     return ret;
   };
-*/ const stackFunc = (
-  name,
-  fn
-) => fn;
+*/ const stackFunc = (name, fn) => fn;
 
 const e = exports;
 
