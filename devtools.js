@@ -96,7 +96,7 @@ export const colors = (() => {
       let diff = key - prev;
       prev = key;
       const c = new RGBA(color.r, color.g, color.b, color.a);
-      console.log("colors ", { key, c });
+      console.log("%c colors ", `background-color: ${c.toString()}`, { key, c });
       f("div", {
         innerHTML: `<div style="opacity:0;">${((typeof key == "number" ? key.toFixed(2) : key) + ": " + c.toString()).replace(/ /g, "&nbsp;")}</div>`,
         style: {
