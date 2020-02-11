@@ -17,7 +17,8 @@ function reduce(obj, fn, accu) {
   return accu;
 }
 
-//const sequelize = new Sequelize('mysql://lotto:tD51o7xf@127.0.0.1:3306/lotto');
+// const sequelize = new
+// Sequelize('mysql://lotto:tD51o7xf@127.0.0.1:3306/lotto');
 
 let tables = {};
 tables.drawings = require("../models/drawings.js")(sequelize, Sequelize);
@@ -38,7 +39,7 @@ function toString(type) {
       ret = "ENUM(" + type.values.map(v => "'" + v + "'").join(",") + ")";
     } else ret = String(type);
   } catch(err) {
-    //console.log("type: ", type);
+    // console.log("type: ", type);
     ret = "err";
   }
   return ret;
@@ -85,7 +86,7 @@ function toSource(obj) {
 
 let out = "";
 for (let table in tables) {
-  //console.log(table);
+  // console.log(table);
   let maxLen = 0;
 
   let fields = reduce(
@@ -100,12 +101,12 @@ for (let table in tables) {
     {}
   );
 
-  //console.log(table +" ", fields);
+  // console.log(table +" ", fields);
   let model = reduce(
     fields,
     (acc, item, key) => {
       key = decamelize(key);
-      //console.log(key +": "+item);
+      // console.log(key +": "+item);
       item = toSource(toObject(item));
       acc.push(key + ":" + pad(key, maxLen + 1, " ") + " " + item);
       return acc;
@@ -117,7 +118,7 @@ for (let table in tables) {
   out += table + ": {\n    " + model.join(",\n    ") + "\n  }";
 }
 
-//console.log("{\n" + out + "}\n");
+// console.log("{\n" + out + "}\n");
 
 process.exit(0);
 process.abort();

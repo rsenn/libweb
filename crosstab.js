@@ -29,7 +29,7 @@
     "use strict";
 
     //--- Handle Support ---
-    //See: http://detectmobilebrowsers.com/about
+    // See: http://detectmobilebrowsers.com/about
     var useragent = (window.navigator && (window.navigator.userAgent || window.navigator.vendor)) || window.opera || "none";
     var isMobile =
       /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(useragent) ||
@@ -42,16 +42,16 @@
       localStorage = window.localStorage;
       localStorage = window["ie8-eventlistener/storage"] || window.localStorage;
     } catch(e) {
-      //New versions of Firefox throw a Security exception
-      //if cookies are disabled. See
-      //https://bugzilla.mozilla.org/show_bug.cgi?id=1028153
+      // New versions of Firefox throw a Security exception
+      // if cookies are disabled. See
+      // https://bugzilla.mozilla.org/show_bug.cgi?id=1028153
     }
 
-    //When Safari on OS X or iOS is in private browsing mode,
-    //calling localStorage.setItem throws an exception.
+    // When Safari on OS X or iOS is in private browsing mode,
+    // calling localStorage.setItem throws an exception.
     //
     //"QUOTA_EXCEEDED_ERR: DOM Exception 22: An attempt was made
-    //to add something to storage that exceeded the quota."
+    // to add something to storage that exceeded the quota."
     var setItemAllowed = true;
     try {
       localStorage.setItem("__crosstab", "");
@@ -60,7 +60,7 @@
       setItemAllowed = false;
     }
 
-    //Other reasons
+    // Other reasons
     var frozenTabEnvironment = false;
 
     function notSupported() {
@@ -207,8 +207,8 @@
     );
 
     //--- Events ---
-    //node.js style events, with the main difference being able
-    //to add/remove events by key.
+    // node.js style events, with the main difference being able
+    // to add/remove events by key.
     util.createEventHandler = function() {
       var events = {};
       var subscribeKeyToListener = {};
@@ -306,7 +306,7 @@
       };
 
       var once = function(event, listener, key) {
-        //Generate a unique id for this listener
+        // Generate a unique id for this listener
         while(!key || findHandlerByKey(event, key) !== undefined) {
           key = util.generateId();
         }
@@ -359,8 +359,8 @@
     //--- Setup Events ---
     var eventHandler = util.createEventHandler();
 
-    //wrap eventHandler so that setting it will not blow up
-    //any of the internal workings
+    // wrap eventHandler so that setting it will not blow up
+    // any of the internal workings
     util.events = {
       addListener: eventHandler.addListener,
       on: eventHandler.on,
@@ -376,7 +376,7 @@
     var lastNewValue;
     var lastOldValue;
     function onStorageEvent(event) {
-      //Only handle crosstab events
+      // Only handle crosstab events
       if(!event || !(event.key in util.storageEventKeys)) {
         return;
       }
@@ -388,18 +388,18 @@
         eventValue = {};
       }
       if(!eventValue || !eventValue.id || eventValue.id === crosstab.id) {
-        //This is to force IE to behave properly
+        // This is to force IE to behave properly
         return;
       }
       if(event.newValue === lastNewValue && event.oldValue === lastOldValue) {
-        //Fix bug in IE11 where StorageEvents in iframes are sent twice.
+        // Fix bug in IE11 where StorageEvents in iframes are sent twice.
         return;
       }
       lastNewValue = event.newValue;
       lastOldValue = event.oldValue;
       if(event.key === util.keys.MESSAGE_KEY) {
         var message = eventValue.data;
-        //only handle if this message was meant for this tab.
+        // only handle if this message was meant for this tab.
         if(!message.destination || message.destination === crosstab.id) {
           eventHandler.emit(message.event, message);
         }
@@ -412,11 +412,7 @@
     }
 
     function setLocalStorageItem(key, data) {
-      var storageItem = {
-        id: crosstab.id,
-        data: data,
-        timestamp: util.now()
-      };
+      var storageItem = { id: crosstab.id, data: data, timestamp: util.now() };
 
       localStorage.setItem(key, JSON.stringify(storageItem));
     }
@@ -491,22 +487,19 @@
         }
       });
 
-      //only broadcast the promotion if I am the new master
+      // only broadcast the promotion if I am the new master
       if(maxId === crosstab.id) {
         broadcast(util.eventTypes.tabPromoted, crosstab.id);
       } else {
-        //this is done so that in the case where multiple tabs are being
-        //started at the same time, and there is no current saved tab
-        //information, we will still have a value set for the master tab
-        setMaster({
-          id: maxId,
-          lastUpdated: util.now()
-        });
+        // this is done so that in the case where multiple tabs are being
+        // started at the same time, and there is no current saved tab
+        // information, we will still have a value set for the master tab
+        setMaster({ id: maxId, lastUpdated: util.now() });
       }
     }
 
-    //Handle other tabs closing by updating internal tab model, and promoting
-    //self if we are the lowest tab id
+    // Handle other tabs closing by updating internal tab model, and promoting
+    // self if we are the lowest tab id
     eventHandler.addListener(util.eventTypes.tabClosed, function(message) {
       var id = message.data;
       if(id in util.tabs) {
@@ -515,14 +508,14 @@
 
       var master = getMaster();
       if(!master || master.id === id) {
-        //If the master was the closed tab, delete it and the highest
-        //tab ID becomes the new master, which will save the tabs
+        // If the master was the closed tab, delete it and the highest
+        // tab ID becomes the new master, which will save the tabs
         if(master) {
           deleteMaster();
         }
         masterTabElection();
       } else if(master.id === crosstab.id) {
-        //If I am master, save the new tabs out
+        // If I am master, save the new tabs out
         setStoredTabs();
       }
     });
@@ -531,7 +524,7 @@
       var tab = message.data;
       util.tabs[tab.id] = tab;
 
-      //If there is no master, hold an election
+      // If there is no master, hold an election
       if(!getMaster()) {
         masterTabElection();
       }
@@ -540,7 +533,7 @@
         setMaster(tab);
       }
       if(isMaster()) {
-        //If I am master, save the new tabs out
+        // If I am master, save the new tabs out
         setStoredTabs();
       }
     });
@@ -551,7 +544,7 @@
       var lastUpdated = message.timestamp;
       var previousMaster = getMasterId();
 
-      //Bully out competing broadcasts if our id is lower
+      // Bully out competing broadcasts if our id is lower
       if(crosstab.id < id) {
         if(!bullying) {
           bullying = setTimeout(function() {
@@ -562,20 +555,17 @@
         return;
       }
 
-      setMaster({
-        id: id,
-        lastUpdated: lastUpdated
-      });
+      setMaster({ id: id, lastUpdated: lastUpdated });
 
       if(isMaster()) {
-        //set the tabs in localStorage
+        // set the tabs in localStorage
         setStoredTabs();
       }
       if(isMaster() && previousMaster !== crosstab.id) {
-        //emit the become master event so we can handle it accordingly
+        // emit the become master event so we can handle it accordingly
         util.events.emit(util.eventTypes.becomeMaster);
       } else if(!isMaster() && previousMaster === crosstab.id) {
-        //emit the demoted from master event so we can clean up resources
+        // emit the demoted from master event so we can clean up resources
         util.events.emit(util.eventTypes.demoteFromMaster);
       }
     });
@@ -611,8 +601,8 @@
         timestamp: util.now()
       };
 
-      //If the destination differs from the origin send it out, otherwise
-      //handle it locally
+      // If the destination differs from the origin send it out, otherwise
+      // handle it locally
       if(message.destination !== message.origin) {
         setLocalStorageItem(util.keys.MESSAGE_KEY, message);
       }
@@ -649,11 +639,12 @@
     crosstab.once = util.events.once;
     crosstab.off = util.events.off;
 
-    //10 minute timeout
+    // 10 minute timeout
     var CACHE_TIMEOUT = 10 * 60 * 1000;
 
     //--- Crosstab supported ---
-    //Check to see if the global frozen tab environment key or supported key has been set.
+    // Check to see if the global frozen tab environment key or supported key has
+    // been set.
     if(!setupComplete && crosstab.supported) {
       var frozenTabsRaw = getLocalStorageRaw(util.keys.FROZEN_TAB_ENVIRONMENT);
 
@@ -674,7 +665,7 @@
         if(util.now() - supportedRaw.timestamp > CACHE_TIMEOUT) {
           localStorage.removeItem(util.keys.SUPPORTED_KEY);
         } else if(supported === false || supported === true) {
-          //As long as it is explicitely set, use the value
+          // As long as it is explicitely set, use the value
           crosstab.supported = supported;
           util.events.emit("setupComplete");
         }
@@ -689,11 +680,11 @@
     }
 
     //--- Tab Setup ---
-    //3 second keepalive
+    // 3 second keepalive
     var TAB_KEEPALIVE = 3 * 1000;
-    //5 second timeout
+    // 5 second timeout
     var TAB_TIMEOUT = 5 * 1000;
-    //500 ms ping timeout
+    // 500 ms ping timeout
     var PING_TIMEOUT = 500;
 
     function getStoredTabs() {
@@ -709,15 +700,12 @@
     function keepalive() {
       var now = util.now();
 
-      var myTab = {
-        id: crosstab.id,
-        lastUpdated: now
-      };
+      var myTab = { id: crosstab.id, lastUpdated: now };
 
-      //broadcast tabUpdated event
+      // broadcast tabUpdated event
       broadcast(util.eventTypes.tabUpdated, myTab);
 
-      //broadcast tabClosed event for each tab that timed out
+      // broadcast tabClosed event for each tab that timed out
       function stillAlive(tab) {
         return now - tab.lastUpdated < TAB_TIMEOUT;
       }
@@ -731,10 +719,10 @@
         broadcast(util.eventTypes.tabClosed, tab.id);
       });
 
-      //check to see if setup is complete
+      // check to see if setup is complete
       if(!setupComplete) {
         var master = getMaster();
-        //ping master
+        // ping master
         if(master && master.id !== myTab.id) {
           var timeout;
           var start;
@@ -742,7 +730,7 @@
           crosstab.util.events.once("PONG", function() {
             if(!setupComplete) {
               clearTimeout(timeout);
-              //set supported to true / frozen to false
+              // set supported to true / frozen to false
               setLocalStorageItem(util.keys.SUPPORTED_KEY, true);
               setLocalStorageItem(util.keys.FROZEN_TAB_ENVIRONMENT, false);
               util.events.emit("setupComplete");
@@ -751,10 +739,10 @@
 
           start = util.now();
 
-          //There is a nested timeout here. We'll give it 100ms
-          //timeout, with iters "yields" to the event loop. So at least
-          //iters number of blocks of javascript will be able to run
-          //covering at least 100ms
+          // There is a nested timeout here. We'll give it 100ms
+          // timeout, with iters "yields" to the event loop. So at least
+          // iters number of blocks of javascript will be able to run
+          // covering at least 100ms
           var recursiveTimeout = function(iters) {
             var diff = util.now() - start;
 
@@ -793,13 +781,13 @@
     } else {
       //---- Setup Storage Listener
       window.addEventListener("storage", onStorageEvent, false);
-      //start with the `beforeunload` event due to IE11
+      // start with the `beforeunload` event due to IE11
       window.addEventListener("beforeunload", unload, false);
-      //swap `beforeunload` to `unload` after DOM is loaded
+      // swap `beforeunload` to `unload` after DOM is loaded
       window.addEventListener("DOMContentLoaded", swapUnloadEvents, false);
 
       util.events.on("PING", function(message) {
-        //only handle direct messages
+        // only handle direct messages
         if(!message.destination || message.destination !== crosstab.id) {
           return;
         }
@@ -829,9 +817,9 @@
      */
   });
 })(
-  //First arg -- the global object in the browser or node
+  // First arg -- the global object in the browser or node
   typeof window === "object" ? window : global,
-  //Second arg -- the define object
+  // Second arg -- the define object
   typeof define === "function" && define.amd
     ? define
     : (function(context) {
@@ -841,9 +829,7 @@
               factory(require, exports, module);
             }
           : function(name, factory) {
-              var module = {
-                exports: {}
-              };
+              var module = { exports: {} };
               var require = function(n) {
                 if(n === "jquery") {
                   n = "jQuery";

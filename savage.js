@@ -32,12 +32,7 @@
     if(typeof E === "string") {
       E = D.querySelector(E);
     }
-    var cnv = el("svg", {
-      height: h,
-      width: w,
-      version: 1.1,
-      xmlns: xm
-    });
+    var cnv = el("svg", { height: h, width: w, version: 1.1, xmlns: xm });
     E.appendChild(cnv);
     this.E = cnv;
   };

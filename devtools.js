@@ -75,13 +75,15 @@ export const colors = (() => {
     let count = args.length;
     console.log("colors map(", args, ")");
     const left = elements.length ? Element.rect(elements[0]).x2 + stepX : stepX;
+
+    let dim = Element.rect('.item-box-size') || new Rect({ width: 80, height: 300 });
     let e = Element.create("div", {
       parent: Element.find("body"),
       style: {
         position: "fixed",
         left: left + "px",
         top: "82px",
-        height: "80vh",
+        height: `${dim.height}px`,
         zIndex: 100000
       }
     });
@@ -96,16 +98,21 @@ export const colors = (() => {
       const c = new RGBA(color.r, color.g, color.b, color.a);
       console.log("colors ", { key, c });
       f("div", {
-        innerHTML: ((typeof key == "number" ? key.toFixed(2) : key) + ": " + c.toString()).replace(/ /g, "&nbsp;"),
+        innerHTML: `<div style="opacity:0;">${((typeof key == "number" ? key.toFixed(2) : key) + ": " + c.toString()).replace(/ /g, "&nbsp;")}</div>`,
         style: {
           margin: "auto",
           //  opacity: c.a / 255,
           height: /* diff > 0 ? `${diff * 100}%` :*/ "1.5em",
           overflow: "hidden",
           fontFamily: "Arial",
+          fontSize: '0.6em',
           fontWeight: "bold",
           color: c.toHSLA().l > 50 ? "black" : "white",
-          backgroundColor: c.toString()
+          backgroundColor: c.toString(),
+          display: 'flex',
+          padding: '2px',
+          justifyContent: 'flex-start',
+          alignItems: 'center'
         }
       });
     }
@@ -1009,7 +1016,7 @@ export const devtools = {
   ws,
   assign_to,
   polyline,
-  circle
+  circle,colors
 };
 
 export default devtools;

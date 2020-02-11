@@ -3,10 +3,7 @@ function Util() {}
 Util.formatAnnotatedObject = (subject, { indent = "  ", spacing = " ", separator = ",", newline = "\n", maxlen = 30, depth = 1 }) => {
   const i = indent.repeat(Math.abs(1 - depth));
   let nl = newline != "" ? newline + i : spacing;
-  const opts = {
-    newline: depth >= 0 ? newline : "",
-    depth: depth - 1
-  };
+  const opts = { newline: depth >= 0 ? newline : "", depth: depth - 1 };
   if(subject && subject.toSource !== undefined) return subject.toSource();
   if(subject instanceof Date) return `new Date('${new Date().toISOString()}')`;
   if(typeof subject == "string") return `'${subject}'`;
@@ -15,8 +12,8 @@ Util.formatAnnotatedObject = (subject, { indent = "  ", spacing = " ", separator
     return "rect[" + spacing + subject["x"] + separator + subject["y"] + " | " + subject["x2"] + separator + subject["y2"] + " (" + subject["w"] + "x" + subject["h"] + ")" + " ]";
   }
   if("map" in subject && typeof subject.map == "function") {
-    //subject instanceof Array || (subject && subject.length !== undefined)) {
-    return "[" + nl + /*(opts.depth <= 0) ? subject.length + '' : */ subject.map(i => Util.formatAnnotatedObject(i, opts)).join(separator + nl) + "]";
+    // subject instanceof Array || (subject && subject.length !== undefined)) {
+    return "[" + nl /*(opts.depth <= 0) ? subject.length + '' : */ + subject.map(i => Util.formatAnnotatedObject(i, opts)).join(separator + nl) + "]";
   }
   if(typeof subject === "string" || subject instanceof String) {
     return "'" + subject + "'";
@@ -27,7 +24,7 @@ Util.formatAnnotatedObject = (subject, { indent = "  ", spacing = " ", separator
     if(k.length > longest.length) longest = k;
     let s = "";
 
-    //if(typeof(subject[k]) == 'string') s = subject[k];
+    // if(typeof(subject[k]) == 'string') s = subject[k];
 
     if(typeof subject[k] === "symbol") {
       s = "Symbol";
@@ -53,14 +50,14 @@ Util.formatAnnotatedObject = (subject, { indent = "  ", spacing = " ", separator
     }
     r.push([k, s]);
   }
-  //console.log("longest: ", longest)
+  // console.log("longest: ", longest)
   let padding = x => Util.pad(x, longest.length, spacing);
   let j = separator + spacing;
   if(r.length > 6) {
     nl = opts.newline + i;
     j = separator + (opts.newline || spacing) + i;
   }
-  //padding = x => '';
+  // padding = x => '';
 
   let ret = "{" + opts.newline + r.map(arr => padding(arr[0]) + arr[0] + ":" + spacing + arr[1]).join(j) + opts.newline + "}";
   return ret;
@@ -82,7 +79,8 @@ Util.isDebug = function() {
 //     }
 //   }
 
-//   return this.logFile !== undefined ? fs.writeSync(this.logFile, args.join('') + '\n') : null;
+//   return this.logFile !== undefined ? fs.writeSync(this.logFile,
+//   args.join('') + '\n') : null;
 // };
 
 Util.log = (function() {
@@ -120,10 +118,10 @@ Util.debug = function(message) {
     .map(arg => (typeof arg === "object" ? JSON.stringify(arg, removeCircular) : arg))
     .join(" ")
     .replace(/\n/g, "");
-  //console.log("STR: "+str);
+  // console.log("STR: "+str);
 
   console.log.call(console, str);
-  //Util.log.apply(Util, args)
+  // Util.log.apply(Util, args)
 };
 
 Util.type = obj => (obj.type && String(obj.type).split(/[ ()]/)[1]) || "";
@@ -166,13 +164,13 @@ Util.minmax = (num, min, max) => Math.min(Math.max(num, min), max);
 Util.getExponential = function(num) {
   let str = typeof num == "string" ? num : num.toExponential();
   const matches = /e\+?(.*)$/.exec(str);
-  //console.log("matches: ", matches);
+  // console.log("matches: ", matches);
   return parseInt(matches[1]);
 };
 Util.getNumberParts = function(num) {
   let str = typeof num == "string" ? num : num.toExponential();
   const matches = /^(-?)(.*)e\+?(.*)$/.exec(str);
-  //console.log("matches: ", matches);
+  // console.log("matches: ", matches);
   const negative = matches[1] == "-";
   return {
     negative,
@@ -222,7 +220,7 @@ Util.clearBit = (num, bit) => {
 
 Util.range = (start, end) => {
   const r = Array.from({ length: end - start + 1 }, (v, k) => k + start);
-  //console.log("Util.range ", r);
+  // console.log("Util.range ", r);
   return r;
 };
 
@@ -250,7 +248,7 @@ Util.bitArrayToNumbers = function(arr) {
 Util.bitsToNumbers = bits => {
   let a = Util.toBinary(bits).split("");
   let r = Util.array();
-  //return a;
+  // return a;
   a.forEach((val, key, arr) => val == "1" && r.unshift(a.length - key));
   return r;
 };
@@ -261,13 +259,13 @@ Util.shuffle = (arr, rnd = Util.rng) => {
 };
 Util.sortNum = arr => {
   arr.sort((a, b) => a - b);
-  //console.log("Util.sortNum ", { arr });
+  // console.log("Util.sortNum ", { arr });
   return arr;
 };
 
 Util.draw = (arr, n, rnd = Util.rng) => {
   const r = Util.shuffle(arr, rnd).splice(0, n);
-  //console.log("Util.draw ", { arr, n, r });
+  // console.log("Util.draw ", { arr, n, r });
   return r;
 };
 
@@ -290,7 +288,7 @@ Util.numbersToBits = arr => arr.reduce((bits, num) => bits + Util.bitValue(num),
 
 Util.randomNumbers = ([start, end], draws) => {
   const r = Util.sortNum(Util.draw(Util.range(start, end), draws));
-  //console.log("Util.randomNumbers ", { start, end, draws, r });
+  // console.log("Util.randomNumbers ", { start, end, draws, r });
   return r;
 };
 
@@ -313,28 +311,9 @@ Util.trim = function(str, charset) {
   return str.replace(r1, "").replace(r2, "");
 };
 
-Util.define = (obj, key, value, enumerable = false) =>
-  obj[key] === undefined &&
-  Object.defineProperty(obj, key, {
-    enumerable,
-    configurable: false,
-    writable: false,
-    value
-  });
-Util.defineGetter = (obj, key, get, enumerable = false) =>
-  obj[key] === undefined &&
-  Object.defineProperty(obj, key, {
-    enumerable,
-    configurable: false,
-    get
-  });
-Util.defineGetterSetter = (obj, key, get, set, enumerable = false) =>
-  obj[key] === undefined &&
-  Object.defineProperty(obj, key, {
-    get,
-    set,
-    enumerable
-  });
+Util.define = (obj, key, value, enumerable = false) => obj[key] === undefined && Object.defineProperty(obj, key, { enumerable, configurable: false, writable: false, value });
+Util.defineGetter = (obj, key, get, enumerable = false) => obj[key] === undefined && Object.defineProperty(obj, key, { enumerable, configurable: false, get });
+Util.defineGetterSetter = (obj, key, get, set, enumerable = false) => obj[key] === undefined && Object.defineProperty(obj, key, { get, set, enumerable });
 
 Util.extendArray = (arr = Array.prototype) => {
   Util.define(arr, "match", function(pred) {
@@ -520,7 +499,7 @@ Util.find = (arr, value, prop = "id", acc = Util.array()) => {
 
   for(let k = 0; k < arr.length; k++) {
     let v = arr[k];
-    //console.log("v: ", v, "k:", k);
+    // console.log("v: ", v, "k:", k);
     if(pred(v)) return v;
   }
   return null;
@@ -542,7 +521,7 @@ Util.match = (arg, pred) => {
       return acc;
     }, Util.array());
   } else if(Util.isMap(arg)) {
-    //console.log('Util.match ', { arg });
+    // console.log('Util.match ', { arg });
     return [...arg.keys()].reduce((acc, key) => (match(arg.get(key), key, arg) ? acc.set(key, arg.get(key)) : acc), new Map());
   } else {
     let i = 0;
@@ -551,7 +530,8 @@ Util.match = (arg, pred) => {
       if(match(item, i, arg)) ret.push(item);
     }
     return ret;
-    //    return Object.keys(arg).reduce((acc, key) => (match(arg[key], key, arg) ? { ...acc, [key]: arg[key] } : {}), {});
+    //    return Object.keys(arg).reduce((acc, key) => (match(arg[key], key,
+    //    arg) ? { ...acc, [key]: arg[key] } : {}), {});
   }
 };
 
@@ -582,8 +562,8 @@ Util.dump = function(name, props) {
   }
 
   if("window" in global !== false) {
-    //if(window.alert !== undefined)
-    //alert(args);
+    // if(window.alert !== undefined)
+    // alert(args);
 
     if(window.console !== undefined) console.log(...args);
   }
@@ -646,7 +626,7 @@ Util.hasProps = function(obj) {
 Util.validatePassword = function(value) {
   return value.length > 7 && /^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]/.test(value) && !/\s/.test(value);
 };
-//deep copy
+// deep copy
 Util.deepClone = function(data) {
   return JSON.parse(JSON.stringify(data));
 };
@@ -666,7 +646,7 @@ Util.findVal = (object, propName, maxDepth = 10) => {
     }
   }
 };
-//Deep copy for ObservableArray/Object == There is a problem
+// Deep copy for ObservableArray/Object == There is a problem
 Util.deepCloneObservable = function(data) {
   let o;
   const t = typeof data;
@@ -690,7 +670,7 @@ Util.deepCloneObservable = function(data) {
   }
 };
 
-//Convert ObservableArray to Array
+// Convert ObservableArray to Array
 Util.toArray = function(observableArray) {
   return observableArray.slice();
 };
@@ -759,7 +739,7 @@ Util.removeEqual = function(a, b) {
   return c;
 };
 
-//Remove the storage when logging out
+// Remove the storage when logging out
 Util.logOutClearStorage = function() {
   localStorage.removeItem("userToken");
   localStorage.removeItem("userLoginPermission");
@@ -770,7 +750,7 @@ Util.logOutClearStorage = function() {
   localStorage.removeItem("gameAuthList");
 };
 
-//Take the cookies
+// Take the cookies
 Util.getCookie = function(cookie, name) {
   let arr = cookie.match(new RegExp("(^| )" + name + "=([^;]*)(;|$)"));
   if(arr != null) return unescape(arr[2]);
@@ -849,7 +829,7 @@ Util.accAdd = function(arg1, arg2) {
   m = Math.pow(10, Math.max(r1, r2));
   return (arg1 * m + arg2 * m) / m;
 };
-//js subtraction calculation
+// js subtraction calculation
 //
 Util.Subtr = function(arg1, arg2) {
   var r1, r2, m, n;
@@ -864,13 +844,13 @@ Util.Subtr = function(arg1, arg2) {
     r2 = 0;
   }
   m = Math.pow(10, Math.max(r1, r2));
-  //last modify by deeka
+  // last modify by deeka
   //动态控制精度长度
   n = r1 >= r2 ? r1 : r2;
   return (arg1 * m - arg2 * m) / m;
 };
 
-//js division function
+// js division function
 //
 Util.accDiv = function(arg1, arg2) {
   var t1 = 0;
@@ -888,7 +868,7 @@ Util.accDiv = function(arg1, arg2) {
   return (r1 / r2) * Math.pow(10, t2 - t1);
 };
 
-//js multiplication function
+// js multiplication function
 //
 Util.accMul = function(arg1, arg2) {
   var m = 0;
@@ -945,7 +925,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
     if(object === Object(object)) {
       for(var property in object) {
         const desc = Object.getOwnPropertyDescriptor(object, property);
-        //console.log('x ', {property, desc})
+        // console.log('x ', {property, desc})
         if(property.indexOf("$") !== 0 && typeof object[property] !== "function" && !desc.get && !desc.set) {
           if(typeof object[property] === "object") {
             try {
@@ -954,7 +934,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
               continue;
             }
           }
-          //if (Object.prototype.hasOwnProperty.call(object, property)) {
+          // if(Object.prototype.hasOwnProperty.call(object, property)) {
           Util.searchObject(object[property], matchCallback, currentPath + "." + property, result, searched);
           //}
         }
@@ -962,7 +942,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
     }
   } catch(e) {
     console.log(object);
-    //throw e;
+    // throw e;
   }
   return result;
 };
@@ -1017,7 +997,7 @@ Util.parseURL = function(href = this.getURL()) {
     acc[m[1]] = m[2];
     return acc;
   }, {});
-  //console.log('PARAMS: ', { argstr, pmatches, params });
+  // console.log('PARAMS: ', { argstr, pmatches, params });
   return {
     protocol: matches[1],
     host: matches[2],
@@ -1243,8 +1223,8 @@ Util.isMap = function(obj) {
 };
 Util.effectiveDeviceWidth = function() {
   var deviceWidth = window.orientation == 0 ? window.screen.width : window.screen.height;
-  //iOS returns available pixels, Android returns pixels / pixel ratio
-  //http://www.quirksmode.org/blog/archives/2012/07/more_about_devi.html
+  // iOS returns available pixels, Android returns pixels / pixel ratio
+  // http://www.quirksmode.org/blog/archives/2012/07/more_about_devi.html
   if(navigator.userAgent.indexOf("Android") >= 0 && window.devicePixelRatio) {
     deviceWidth = deviceWidth / window.devicePixelRatio;
   }
@@ -1396,9 +1376,9 @@ Util.getCallerFile = function(position = 2) {
 
   if(stack !== null && typeof stack === "object") {
     const frame = stack[position];
-    //stack[0] holds this file
-    //stack[1] holds where this function was called
-    //stack[2] holds the file we're interested in
+    // stack[0] holds this file
+    // stack[1] holds where this function was called
+    // stack[2] holds the file we're interested in
     return frame ? frame.getFileName() + ":" + frame.getLineNumber() : undefined;
   }
 };
@@ -1407,9 +1387,9 @@ Util.getCallerFunction = function(position = 2) {
 
   if(stack !== null && typeof stack === "object") {
     const frame = stack[0];
-    //stack[0] holds this file
-    //stack[1] holds where this function was called
-    //stack[2] holds the file we're interested in
+    // stack[0] holds this file
+    // stack[1] holds where this function was called
+    // stack[2] holds the file we're interested in
     return frame ? frame.getFunction() : undefined;
   }
 };
@@ -1418,9 +1398,9 @@ Util.getCallerFunctionName = function(position = 2) {
 
   if(stack !== null && typeof stack === "object") {
     const frame = stack[0];
-    //stack[0] holds this file
-    //stack[1] holds where this function was called
-    //stack[2] holds the file we're interested in
+    // stack[0] holds this file
+    // stack[1] holds where this function was called
+    // stack[2] holds the file we're interested in
     return frame ? frame.getMethodName() || frame.getFunctionName() : undefined;
   }
 };
@@ -1521,21 +1501,12 @@ Util.getImageAverageColor = function(imageElement, options) {
   // Extract the rgba data for the image from the canvas
   var subpixels = context.getImageData(0, 0, w, h).data;
 
-  var pixels = {
-    r: 0,
-    g: 0,
-    b: 0,
-    a: 0
-  };
+  var pixels = { r: 0, g: 0, b: 0, a: 0 };
   var processedPixels = 0;
 
-  var pixel = {
-    r: 0,
-    g: 0,
-    b: 0,
-    a: 0
-  };
-  var luma = 0; // Having luma in the pixel object caused ~10% performance penalty for some reason
+  var pixel = { r: 0, g: 0, b: 0, a: 0 };
+  var luma = 0; // Having luma in the pixel object caused ~10% performance
+  // penalty for some reason
 
   // Loop through the rgba data
   for(var i = 0, l = w * h * 4; i < l; i += 4) {
@@ -1547,7 +1518,8 @@ Util.getImageAverageColor = function(imageElement, options) {
     // Only consider pixels that aren't black, white, or too transparent
     if(
       pixel.a > settings.tooAlpha &&
-      (luma = pixel.r + pixel.g + pixel.b) > settings.tooDark && // Luma is assigned inside the conditional to avoid re-calculation when alpha is not met
+      (luma = pixel.r + pixel.g + pixel.b) > settings.tooDark && // Luma is assigned inside the conditional to
+      // avoid re-calculation when alpha is not met
       luma < settings.tooLight
     ) {
       pixels.r += pixel.r;
@@ -1560,12 +1532,7 @@ Util.getImageAverageColor = function(imageElement, options) {
   }
 
   // Values of the channels that make up the average color
-  var channels = {
-    r: null,
-    g: null,
-    b: null,
-    a: null
-  };
+  var channels = { r: null, g: null, b: null, a: null };
 
   if(processedPixels > 0) {
     channels = {

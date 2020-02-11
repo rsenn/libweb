@@ -60,7 +60,7 @@ LottoNumbers.prototype.toSource = function() {
 };
 
 export function parseLottoNumbers(arg) {
-  //console.log("parseLottoNumbers: ", arg);
+  // console.log("parseLottoNumbers: ", arg);
   if(arg instanceof LottoNumbers) return arg;
   if(arg instanceof Array) return new LottoNumbers(arg);
   if(/^[0-9]+$/.test(arg)) return new LottoNumbers(parseFloat(arg));

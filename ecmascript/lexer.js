@@ -48,8 +48,8 @@ l.next = function() {
     }
     this.column++;
     this.pos++;
-    //const { pos, line, column } = this;
-    //console.log("Lexer.next { ", { pos, line, column }, " }");
+    // const { pos, line, column } = this;
+    // console.log("Lexer.next { ", { pos, line, column }, " }");
   }
   this.c = c;
   return c;
@@ -387,12 +387,13 @@ l.lexRegExp = function() {
       return c == "g" || c == "i";
     }
     if(last == ";") return false;
-    //console.log('last: ' + last + " slashes: "+slashes);
+    // console.log('last: ' + last + " slashes: "+slashes);
     return true;
   };
   const print = () => {
     word = this.source.substring(this.start, this.pos);
-    //console.log('word: ' + word + " lexText: "+this.source.substring(this.start, this.pos));
+    // console.log('word: ' + word + " lexText:
+    // "+this.source.substring(this.start, this.pos));
   };
 
   // if(this.accept(oneOf('/')))
@@ -448,7 +449,8 @@ l.lexQuote = function(quoteChar) {
       prevChar = c;
       c = this.next();
       if(c === null) {
-        // If we reached EOF without the closing quote char, then this string is incomplete.
+        // If we reached EOF without the closing quote char, then this string is
+        // incomplete.
         throw new SyntaxError(this.position() + "Illegal token: " + this.source.substring(this.start, this.pos));
       } else if(!escapeEncountered) {
         if(quoteChar === "`" && c == "{" && prevChar == "$") {

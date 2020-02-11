@@ -1,6 +1,6 @@
 import Router from "next/router";
 
-//An event handler.
+// An event handler.
 handlePanelSelect = e => {
   const id = getCurrentUser();
   const view = getViewName();

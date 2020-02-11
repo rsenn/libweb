@@ -194,7 +194,7 @@ class Element extends Node {
     const pkg = this.getPackage();
     let r = new BBox();
     if(pkg) {
-      //console.log("this: ", Object.keys(pkg), Object.keys(this));
+      // console.log("this: ", Object.keys(pkg), Object.keys(this));
       for(let o of pkg.objects) {
         r.update([o]);
       }
@@ -494,7 +494,7 @@ function eagle(obj, parentObj) {
   let ret = null,
     ctor = null;
   let args = [...arguments];
-  //console.log("eagle: ", { parentObj, obj });
+  // console.log("eagle: ", { parentObj, obj });
   if(typeof obj == "object") {
     const t = obj.tagName || obj.tag;
     if(t && eagleProps.elementMap[t] !== undefined) {

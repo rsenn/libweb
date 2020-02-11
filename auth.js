@@ -1,7 +1,8 @@
-import { Component } from "react";
-import Router from "next/router";
-//import cookie, { Cookie } from 'js-cookie';
+// import cookie, { Cookie } from 'js-cookie';
 import { axios } from "axios";
+import Router from "next/router";
+import { Component } from "react";
+
 import { getStore } from "../stores/createStore.js";
 
 const cookieKey = "email";
@@ -30,7 +31,7 @@ export const getUserFromCookie = req => {
 
 export const setUserCookie = user => Cookie.set(cookieKey, JSON.stringify(user));
 
-//Gets the display name of a JSX component for dev tools
+// Gets the display name of a JSX component for dev tools
 const getDisplayName = Component => Component.displayName || Component.name || "Component";
 /*
 export const auth = ctx => {
@@ -151,15 +152,13 @@ export class AuthService {
   }
 }
 */
-//utils/withAuth.js - a HOC for protected pages
+// utils/withAuth.js - a HOC for protected pages
 export function withAuth(AuthComponent) {
   const Auth = new AuthService("http://localhost:5000");
   return class Authenticated extends Component {
     constructor(props) {
       super(props);
-      this.state = {
-        isLoading: true
-      };
+      this.state = { isLoading: true };
     }
 
     componentDidMount() {
@@ -170,7 +169,7 @@ export function withAuth(AuthComponent) {
     }
 
     render() {
-      return <div>{this.state.isLoading ? <div>LOADING....</div> : <AuthComponent {...this.props} auth={Auth} />}</div>;
+      return <div>{this.state.isLoading ? <div>LOADING... .</div> : <AuthComponent {...this.props} auth={Auth} />} </div>;
     }
   };
 }

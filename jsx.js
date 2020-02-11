@@ -66,19 +66,16 @@ function lexer(string, getOne) {
     var arr = getCloseTag(string);
 
     if(arr) {
-      //Handle the close tag
+      // Handle the close tag
       string = string.replace(arr[0], "");
       const node = stack.pop();
-      //Handle the following two special cases:
-      //1. option will automatically remove element nodes, and their nodeValue will form a new text node.
-      //2. table will collect tr or text nodes that are not wrapped by thead, tbody, tfoot into a new tbody element.
+      // Handle the following two special cases:
+      // 1. option will automatically remove element nodes, and their nodeValue
+      // will form a new text node.
+      // 2. table will collect tr or text nodes that are not wrapped by thead,
+      // tbody, tfoot into a new tbody element.
       if(node.type === "option") {
-        node.children = [
-          {
-            type: "#text",
-            nodeValue: getText(node)
-          }
-        ];
+        node.children = [{ type: "#text", nodeValue: getText(node) }];
       } else if(node.type === "table") {
         insertTbody(node.children);
       }
@@ -96,7 +93,7 @@ function lexer(string, getOne) {
       addNode(node);
       var selfClose = !!(node.isVoidTag || specalTag[node.type]);
       if(!selfClose) {
-        //Place here to add children
+        // Place here to add children
         stack.push(node);
       }
       if(getOne && selfClose && !stack.length) {
@@ -108,7 +105,7 @@ function lexer(string, getOne) {
 
     var text = "";
     do {
-      //Handling <div><<--<<--div>
+      // Handling <div><<--<<--div>
       const index = string.indexOf("<");
       if(index === 0) {
         text += string.slice(0, 1);
@@ -117,7 +114,7 @@ function lexer(string, getOne) {
         break;
       }
     } while(string.length);
-    //Handle <div>{aaa}</div>, <div>xxx{aaa}xxx</div>, <div>xxx</div>{aaa}sss
+    // Handle <div>{aaa}</div>, <div>xxx{aaa}xxx</div>, <div>xxx</div>{aaa}sss
     const index = string.indexOf("<"); // Determine whether there is a label behind it
     const bindex = string.indexOf("{"); // Determine whether there is jsx behind it
     const aindex = string.indexOf("}");
@@ -125,16 +122,16 @@ function lexer(string, getOne) {
     let hasJSX = bindex < aindex && (index === -1 || bindex < index);
     if(hasJSX) {
       if(bindex !== 0) {
-        //Collect text nodes before jsx
+        // Collect text nodes before jsx
         text += string.slice(0, bindex);
         string = string.slice(bindex);
       }
       addText(lastNode, text, addNode);
-      string = string.slice(1); //Remove the front {
+      string = string.slice(1); // Remove the front {
       var arr = parseCode(string);
       addNode(makeJSX(arr[1]));
       lastNode = false;
-      string = string.slice(arr[0].length + 1); //Remove the following}
+      string = string.slice(arr[0].length + 1); // Remove the following}
     } else {
       if(index === -1) {
         text = string;
@@ -154,16 +151,14 @@ function addText(lastNode, text, addNode) {
     if(lastNode && lastNode.type === "#text") {
       lastNode.text += text;
     } else {
-      lastNode = {
-        type: "#text",
-        nodeValue: text
-      };
+      lastNode = { type: "#text", nodeValue: text };
       addNode(lastNode);
     }
   }
 }
 
-//It is used to parse the content in {}, if it encounters a mismatch, then it returns, according to the contents of the label cut
+// It is used to parse the content in {}, if it encounters a mismatch, then it
+// returns, according to the contents of the label cut
 function parseCode(string) {
   //<div id={ function(){<div/>} }>
   var word = ""; // used to match the previous word
@@ -204,7 +199,7 @@ function parseCode(string) {
             empty = false;
             word = c + word;
             if(word.length > 7) {
-              //Performance optimization
+              // Performance optimization
               break;
             }
           } while(--index >= 0);
@@ -213,7 +208,7 @@ function parseCode(string) {
             collectJSX(string, codeIndex, i, nodes);
             var chunk = lexer(chunkString, true);
             nodes.push(chunk[1]);
-            i += chunk[0].length - 1; //Because already included <, need to subtract 1
+            i += chunk[0].length - 1; // Because already included <, need to subtract 1
             codeIndex = i + 1;
           }
         }
@@ -232,11 +227,8 @@ function parseCode(string) {
 function collectJSX(string, codeIndex, i, nodes) {
   var nodeValue = string.slice(codeIndex, i);
   if(/\S/.test(nodeValue)) {
-    //put the things in front of {
-    nodes.push({
-      type: "#jsx",
-      nodeValue: nodeValue
-    });
+    // put the things in front of {
+    nodes.push({ type: "#jsx", nodeValue: nodeValue });
   }
 }
 
@@ -258,11 +250,7 @@ function insertTbody(nodes) {
         n--;
         i--;
       } else {
-        tbody = {
-          nodeName: "tbody",
-          props: {},
-          children: [node]
-        };
+        tbody = { nodeName: "tbody", props: {}, children: [node] };
         nodes.splice(i, 1, tbody);
       }
     } else if(tbody) {
@@ -280,12 +268,7 @@ function getCloseTag(string) {
     if(match) {
       var tag = match[1];
       string = string.slice(3 + tag.length);
-      return [
-        match[0],
-        {
-          type: tag
-        }
-      ];
+      return [match[0], { type: tag }];
     }
   }
   return null;
@@ -293,31 +276,24 @@ function getCloseTag(string) {
 
 function getOpenTag(string) {
   if(string.indexOf("<") === 0) {
-    var i = string.indexOf("<!--"); //Process annotation node
+    var i = string.indexOf("<!--"); // Process annotation node
     if(i === 0) {
       var l = string.indexOf("-->");
       if(l === -1) {
         throw "Comment node is not closed " + string.slice(0, 100);
       }
-      var node = {
-        type: "#comment",
-        nodeValue: string.slice(4, l)
-      };
+      var node = { type: "#comment", nodeValue: string.slice(4, l) };
 
       return [string.slice(0, l + 3), node];
     }
-    var match = string.match(/\<(\w[^\s\/\>]*)/); //Processing element nodes
+    var match = string.match(/\<(\w[^\s\/\>]*)/); // Processing element nodes
     if(match) {
       var leftContent = match[0];
       var tag = match[1];
-      var node = {
-        type: tag,
-        props: {},
-        children: []
-      };
+      var node = { type: tag, props: {}, children: [] };
 
-      string = string.replace(leftContent, ""); //Remove the tag name (rightContent)
-      var arr = getAttrs(string); //Processing properties
+      string = string.replace(leftContent, ""); // Remove the tag name (rightContent)
+      var arr = getAttrs(string); // Processing properties
       if(arr) {
         node.props = arr[1];
         string = string.replace(arr[0], "");
@@ -325,29 +301,26 @@ function getOpenTag(string) {
       }
 
       if(string[0] === ">") {
-        //Handle the boundary of the open label
+        // Handle the boundary of the open label
         leftContent += ">";
         string = string.slice(1);
         if(voidTag[node.type]) {
           node.isVoidTag = true;
         }
       } else if(string.slice(0, 2) === "/>") {
-        //Handle the boundary of the open label
+        // Handle the boundary of the open label
         leftContent += "/>";
         string = string.slice(2);
         node.isVoidTag = true;
       }
 
       if(!node.isVoidTag && specalTag[tag]) {
-        //If it is a script, style, xmp, etc.
+        // If it is a script, style, xmp, etc.
         var closeTag = "</" + tag + ">";
         var j = string.indexOf(closeTag);
         var nodeValue = string.slice(0, j);
         leftContent += nodeValue + closeTag;
-        node.children.push({
-          type: "#text",
-          nodeValue: nodeValue
-        });
+        node.children.push({ type: "#text", nodeValue: nodeValue });
       }
 
       return [leftContent, node];

@@ -13,7 +13,7 @@
  * Legacy browser support
  */
 
-//Map array support
+// Map array support
 if (![].map) {
   Array.prototype.map = function(callback, self) {
     var array = this;
@@ -28,7 +28,7 @@ if (![].map) {
   };
 }
 
-//Filter array support
+// Filter array support
 if (![].filter) {
   Array.prototype.filter = function(callback) {
     if(this == null) throw new TypeError();
@@ -47,7 +47,7 @@ if (![].filter) {
   };
 }
 
-//Index of array support
+// Index of array support
 if (![].indexOf) {
   Array.prototype.indexOf = function(searchElement) {
     if(this == null) throw new TypeError();

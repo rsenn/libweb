@@ -4,7 +4,8 @@
  * by Gaëtan Renaudeau 2014 - 2015 – MIT License
  */
 
-// These values are established by empiricism with tests (tradeoff: performance VS precision)
+// These values are established by empiricism with tests (tradeoff: performance
+// VS precision)
 var NEWTON_ITERATIONS = 4;
 var NEWTON_MIN_SLOPE = 0.001;
 var SUBDIVISION_PRECISION = 0.0000001;
@@ -107,7 +108,8 @@ module.exports = function bezier(mX1, mY1, mX2, mY2) {
   }
 
   return function BezierEasing(x) {
-    // Because JavaScript number are imprecise, we should guarantee the extremes are right.
+    // Because JavaScript number are imprecise, we should guarantee the extremes
+    // are right.
     if(x === 0) {
       return 0;
     }

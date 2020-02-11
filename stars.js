@@ -1,18 +1,15 @@
 (function() {
   console.clear();
   var stage = new PIXI.Stage();
-  var renderer = PIXI.autoDetectRecommendedRenderer(window.innerWidth, window.innerHeight, {
-    view: document.getElementById("canvas"),
-    transparent: true
-  });
+  var renderer = PIXI.autoDetectRecommendedRenderer(window.innerWidth, window.innerHeight, { view: document.getElementById("canvas"), transparent: true });
 
   var starTexture = PIXI.Texture.fromImage("https://s3-us-west-2.amazonaws.com/s.cdpn.io/167451/Feedbin-Icon-star.svg");
 
   var colours = [
     0x3498db, // Blue
     0x9b59b6, // Purple
-    //0xf1c40f,  // Yellow
-    //0xd35400,  // Orange
+    // 0xf1c40f,  // Yellow
+    // 0xd35400,  // Orange
     0xfa2323 // Red
   ];
 
@@ -25,10 +22,7 @@
     star.scaleDecay = 0;
     star.alphaDecay = 0;
     star.speed = 0;
-    star.velocity = {
-      x: 0,
-      y: 0
-    };
+    star.velocity = { x: 0, y: 0 };
     starPool[i] = star;
     stage.addChild(star);
   }

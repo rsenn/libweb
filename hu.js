@@ -121,7 +121,8 @@ var hu = (function() {
   };
 
   fn.width = function(v) {
-    // window.getComputedStyle is the only thing that seems to work on FF when there are nested svg elements
+    // window.getComputedStyle is the only thing that seems to work on FF when
+    // there are nested svg elements
     if(v === undefined) return this.n.getBBox().width || parseInt(window.getComputedStyle(this.n).width);
     return this.attrnv("width", v);
   };
@@ -183,9 +184,11 @@ var hu = (function() {
   fn.animate = function(dst, duration, cb) {
     var u = this,
       vars = [];
-    // the goal of this iteration is to build an array of objects for the animable properties, with
+    // the goal of this iteration is to build an array of objects for the
+    // animable properties, with
     //  - v.k : the key
-    //  - v.f : the function used to set the style or attribute (fn.css or fn.attr)
+    //  - v.f : the function used to set the style or attribute (fn.css or
+    //  fn.attr)
     //  - v.s : the start value
     //  - v.e  : the end value
     for(var k in dst) {

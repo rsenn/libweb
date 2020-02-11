@@ -7,7 +7,7 @@ export class ScrollController {
     e = e || this.element.event;
     e.returnValue = false;
 
-    //console.log('preventDefault ', Util.className(e));
+    // console.log('preventDefault ', Util.className(e));
     if(e.preventDefault) e.preventDefault();
   }
 
@@ -30,13 +30,11 @@ export class ScrollController {
 
   disable() {
     if(this.element.addEventListener) {
-      //older FF
+      // older FF
       this.element.addEventListener("DOMMouseScroll", this.constructor.preventDefault, false);
     }
     ["wheel", "mousemove", /*'touchstart','touchcancel','touchend',*/ "touchmove"].forEach(name => this.element.addEventListener(name, this.constructor.preventDefault, { passive: false }));
-    this.element.addEventListener("keydown", this.constructor.preventDefaultForScrollKeys, {
-      passive: true
-    });
+    this.element.addEventListener("keydown", this.constructor.preventDefaultForScrollKeys, { passive: true });
     this.element.document.onkeydown = this.constructor.preventDefaultForScrollKeys;
     console.log("Scrolling disabled");
     this.disabled = true;

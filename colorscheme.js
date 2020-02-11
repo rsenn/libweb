@@ -1,4 +1,4 @@
-import { Element, RGBA, HSLA } from "../utils/dom.js";
+import { Element, HSLA, RGBA } from "../utils/dom.js";
 
 export class ColorScheme {
   static nextTheme =
@@ -40,8 +40,8 @@ export class ColorScheme {
           if(parent.innerHTML == "name") p = parent.nextElementSibling;
         }
       }
-      /* if(p == null) 
-    console.log("node: ", node.parentElement);   
+      /* if(p == null)
+    console.log("node: ", node.parentElement);
 */
       if(p == null) return path;
       path.unshift(p.innerHTML);
@@ -51,11 +51,12 @@ export class ColorScheme {
       let color = new RGBA(node.cnode.innerHTML);
       let knode = node.cnode.previousSibling;
       let hsla = new HSLA(Util.randInt(0, 360, rng), 100, 50, 1.0);
-      let rgba = hsla.toRGBA(); //new RGBA(Util.randInt(0, 1) * 255, Util.randInt(0, 1) * 255, Util.randInt(0, 1) * 255, 255);
+      let rgba = hsla.toRGBA(); // new RGBA(Util.randInt(0, 1) * 255, Util.randInt(0,
+      // 1) * 255, Util.randInt(0, 1) * 255, 255);
       const path = getPath(node.cnode).join("/");
       const newColor = /background|gutter/i.test(path) ? "#000" : RGBA.toHex(hsla.toRGBA()); /*.slice(0, 7)*/
       node.cnode.innerHTML = newColor;
-      //console.log(knode);
+      // console.log(knode);
       console.log(path + ": ", rgba, hsla);
     });
     const s = new XMLSerializer();
@@ -67,7 +68,10 @@ export class ColorScheme {
     ta.select();
     document.execCommand("copy");
     axios
-      .post("/api/put", { filename: `static/New-${rng.uint32() % 10000}.tmTheme`, data: btoa(text) })
+      .post("/api/put", {
+        filename: `static/New-${rng.uint32() % 10000}.tmTheme`,
+        data: btoa(text)
+      })
       .then(res => console.log("result: ", res))
       .catch(err => console.error("error: ", err));
     // clipboardCopy(text);

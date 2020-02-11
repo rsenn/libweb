@@ -1,6 +1,7 @@
-import { Point, Rect } from "../utils/dom.js";
 import { rect } from "../utils/devtools.js";
+import { Point, Rect } from "../utils/dom.js";
 import Util from "../utils/util.js";
+
 import { trkl } from "./trkl.js";
 
 export class SwipeTracker {
@@ -30,7 +31,10 @@ export class SwipeTracker {
     if(global.window) {
       const mouseObserver = trkl.from(observable => {
         window.addEventListener("mousemove", e => {
-          const pos = { x: e.clientX + window.pageXOffset, y: e.clientY + window.pageYOffset };
+          const pos = {
+            x: e.clientX + window.pageXOffset,
+            y: e.clientY + window.pageYOffset
+          };
           observable(pos);
         });
       });
@@ -158,11 +162,7 @@ export class SwipeTracker {
     if(vec.x < 0) amount *= 10;
     if(vec.x > 0) amount *= 0.1;
     this.setState({ amount });
-    console.log("Payment.handleSwipeDirection ", {
-      event,
-      direction,
-      vec
-    });
+    console.log("Payment.handleSwipeDirection ", { event, direction, vec });
   };
 
   getEventHandlers() {
@@ -182,7 +182,7 @@ export class SwipeTracker {
           if(inst.position == null) inst.position = new Point(pos.x, pos.y);
           else inst.position.set(pos);
 
-          //inst.position.add(inst.start);
+          // inst.position.add(inst.start);
 
           if(inst.start instanceof Point) {
             inst.delta = inst.position.diff(inst.start);
@@ -200,8 +200,9 @@ export class SwipeTracker {
 
             const { start, position, delta, quadrant } = inst;
             inst.active = true;
-            //console.log(`Swipe move: position=` + position, 'delta=' + delta, 'quadrant=' + quadrant);
-            //console.log('New event: ', inst.emitEvent(name).toSource());
+            // console.log(`Swipe move: position=` + position, 'delta=' + delta,
+            // 'quadrant=' + quadrant); console.log('New event: ',
+            // inst.emitEvent(name).toSource());
           }
         },
         onSwipeEnd: function(pos, event) {

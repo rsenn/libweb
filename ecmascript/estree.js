@@ -5,7 +5,8 @@ const e = exports;
 class Node {
   constructor(type) {
     this.type = type;
-    this.loc = null; // TODO: For now avoid dealing with location information. Fix it later.
+    this.loc = null; // TODO: For now avoid dealing with location information.
+    // Fix it later.
   }
 }
 
@@ -280,14 +281,16 @@ class ClassDeclaration extends Declaration {
     this.extending = extending;
     this.body = body;
     this.exported = exported;
-    //console.log('New ClassDeclaration: ', JSON.stringify({ id, extending, exported }));
+    // console.log('New ClassDeclaration: ', JSON.stringify({ id, extending,
+    // exported }));
   }
 }
 
 class FunctionDeclaration extends Function {
   constructor(id, params, body, exported = false) {
     super("FunctionDeclaration", id, params, body, exported);
-    //console.log('New FunctionDeclaration: ', JSON.stringify({ id, params, exported }));
+    // console.log('New FunctionDeclaration: ', JSON.stringify({ id, params,
+    // exported }));
   }
 }
 
@@ -297,7 +300,8 @@ class VariableDeclaration extends Declaration {
     this.declarations = declarations;
     this.kind = kind;
     this.exported = exported;
-    //console.log('New VariableDeclaration: ', JSON.stringify({ kind, exported }));
+    // console.log('New VariableDeclaration: ', JSON.stringify({ kind, exported
+    // }));
   }
 }
 
@@ -306,7 +310,8 @@ class VariableDeclarator extends Node {
     super("VariableDeclarator");
     this.id = identifier;
     this.init = initialValue;
-    //console.log('New VariableDeclarator: ', JSON.stringify({ identifier: identifier.value }));
+    // console.log('New VariableDeclarator: ', JSON.stringify({ identifier:
+    // identifier.value }));
   }
 }
 
@@ -314,7 +319,7 @@ class ObjectLiteral extends Node {
   constructor(members) {
     super("ObjectLiteral");
     this.members = members;
-    //console.log('New ObjectLiteral: ', Object.keys(members));
+    // console.log('New ObjectLiteral: ', Object.keys(members));
   }
 }
 
@@ -322,7 +327,7 @@ class ArrayLiteral extends Node {
   constructor(members) {
     super("ArrayLiteral");
     this.members = members;
-    //console.log('New ArrayLiteral: ', Object.keys(members));
+    // console.log('New ArrayLiteral: ', Object.keys(members));
   }
 }
 
@@ -331,7 +336,7 @@ class JSXLiteral extends Node {
     super("JSXLiteral");
     this.tag = tag;
     this.attributes = attributes;
-    //console.log('New JSXLiteral: ', tag, JSX.keys(attributes));
+    // console.log('New JSXLiteral: ', tag, JSX.keys(attributes));
   }
 }
 

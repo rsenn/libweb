@@ -37,10 +37,10 @@ function backTrace() {
         };
         let fn = getFn(name);
         let caller = fn ? (fn.caller ? Util.fnName(fn.caller, Parser.prototype) : fn.caller) : undefined;
-        //this.log("name: '" +name+"'");
+        // this.log("name: '" +name+"'");
         if(typeof fn === "function") {
-          //this.log("fn: ", Util.fnName(fn, Parser.prototype, Parser));
-          //this.log("fn.caller: ", caller);
+          // this.log("fn: ", Util.fnName(fn, Parser.prototype, Parser));
+          // this.log("fn.caller: ", caller);
         }
         return r;
       }
@@ -80,7 +80,8 @@ function toStr(a) {
     while(this.stack.length > len) this.stack.pop();
     return ret;
   };
-*/ const stackFunc = (name, fn) => fn;
+*/
+const stackFunc = (name, fn) => fn;
 
 const e = exports;
 
@@ -157,7 +158,9 @@ p.log = function log() {
   let name = Util.abbreviate(Util.trim(args.join(""), "'\""), width);
   let stack = this.stack.map((name, i) => `${i}:${name}`).join(", ");
   const posstr = this.prefix + String(this.pos);
-  //console.log.apply(console, [posstr + Util.pad(posstr, this.prefix.length + 8), name + Util.pad(name, width), this.printtoks(), 'stack: ' + this.stack.length]);
+  // console.log.apply(console, [posstr + Util.pad(posstr, this.prefix.length +
+  // 8), name + Util.pad(name, width), this.printtoks(), 'stack: ' +
+  // this.stack.length]);
 };
 
 p.position = function position(tok = null) {
@@ -180,7 +183,7 @@ p.expectIdentifier = function expectIdentifier(no_keyword = false) {
   }
   this.log("expectIdentifier2(", no_keyword, ") ", token.value);
 
-  //backTrace(p.expectIdentifier);
+  // backTrace(p.expectIdentifier);
 
   return new estree.Identifier(token.value);
 };
@@ -241,7 +244,7 @@ p.matchKeywords = function matchKeywords(keywords) {
 
 p.matchPunctuators = function matchPunctuators(punctuators) {
   const token = this.next();
-  //this.log('matchPunctuators(' +punctuators +') ');
+  // this.log('matchPunctuators(' +punctuators +') ');
   if(token.type !== tokenTypes.punctuator) {
     return false;
   }
@@ -254,7 +257,7 @@ p.matchPunctuators = function matchPunctuators(punctuators) {
 
 p.matchIdentifier = function matchIdentifier(no_keyword = false) {
   const token = this.next();
-  //this.log('matchIdentifier() ');
+  // this.log('matchIdentifier() ');
   return token.type === tokenTypes.identifier || (no_keyword && token.type === tokenTypes.keyword);
 };
 
@@ -332,11 +335,12 @@ p.parseArguments = function parseArguments() {
 
 p.parseRemainingMemberExpression = function parseRemainingMemberExpression(object) {
   while(this.matchPunctuators([".", "["])) {
-    //this.log('parseRemainingMemberExpression(', object, ')');
+    // this.log('parseRemainingMemberExpression(', object, ')');
     if(this.matchPunctuators(".")) {
       this.expectPunctuators(".");
       const identifier = this.expectIdentifier(true);
-      // this.log('parseRemainingMemberExpression2(', object.value, ') ', identifier.value);
+      // this.log('parseRemainingMemberExpression2(', object.value, ') ',
+      // identifier.value);
 
       object = new estree.MemberExpression(object, identifier, false);
 
@@ -401,10 +405,7 @@ p.parseNewOrCallOrMemberExpression = function parseNewOrCallOrMemberExpression(c
     couldBeNewExpression = false;
     object = this.parseRemainingCallExpression(object);
   }
-  return {
-    object: object,
-    couldBeNewExpression: couldBeNewExpression
-  };
+  return { object: object, couldBeNewExpression: couldBeNewExpression };
 };
 
 p.parseLeftHandSideExpression = stackFunc("parseLeftHandSideExpression", function parseLeftHandSideExpression() {
@@ -428,10 +429,7 @@ p.parsePostfixExpression = stackFunc("parsePostfixExpression", function parsePos
     this.expectPunctuators("--");
     expression = new estree.UpdateExpression("--", expression, false);
   }
-  return {
-    ast: expression,
-    lhs: lhs
-  };
+  return { ast: expression, lhs: lhs };
 });
 
 p.parseUnaryExpression = stackFunc("parseUnaryExpression", function parseUnaryExpression() {
@@ -454,10 +452,7 @@ p.parseUnaryExpression = stackFunc("parseUnaryExpression", function parseUnaryEx
     } else {
       ast = new estree.UnaryExpression(operatorToken.value, argument.ast, true);
     }
-    return {
-      ast: ast,
-      lhs: false
-    };
+    return { ast: ast, lhs: false };
   } else {
     return this.parsePostfixExpression();
   }
@@ -478,7 +473,7 @@ p.parseBinaryExpression = stackFunc("parseBinaryExpression", function parseBinar
   //  if(tok.value == 'instanceof')
   //  this.log('TOKEN: ', tok);
   while((this.matchKeywords("instanceof") || this.matchPunctuators(punctuators) || tok.value == "instanceof") && operatorPrecedence[(tok = this.next()).value] >= minPrecedence) {
-    //this.log('VALUE: ', value);
+    // this.log('VALUE: ', value);
     // If any operator is encountered, then the result cannot be
     // LeftHandSideExpression anymore
     lhs = false;
@@ -491,10 +486,7 @@ p.parseBinaryExpression = stackFunc("parseBinaryExpression", function parseBinar
       ast = new estree.BinaryExpression(operatorToken.value, ast, right.ast);
     }
   }
-  return {
-    ast: ast,
-    lhs: lhs
-  };
+  return { ast: ast, lhs: lhs };
 });
 
 p.parseConditionalExpression = function parseConditionalExpression() {
@@ -505,16 +497,13 @@ p.parseConditionalExpression = function parseConditionalExpression() {
   if(this.matchPunctuators("?")) {
     this.expectPunctuators("?");
     const consequent = this.parseAssignmentExpression();
-    //this.log('consequent: ', consequent);
+    // this.log('consequent: ', consequent);
     this.expectPunctuators(":");
     const alternate = this.parseAssignmentExpression();
     ast = new estree.ConditionalExpression(ast, consequent, alternate);
     lhs = false;
   }
-  return {
-    ast: ast,
-    lhs: lhs
-  };
+  return { ast: ast, lhs: lhs };
 };
 
 p.parseAssignmentExpression = function parseAssignmentExpression() {
@@ -625,10 +614,7 @@ p.parseVariableDeclaration = function parseVariableDeclaration() {
       throw new SyntaxError(`${this.position()} Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`);
     }
   }
-  return {
-    identifier: identifier,
-    assignment: assignment
-  };
+  return { identifier: identifier, assignment: assignment };
 };
 
 p.parseVariableDeclarationList = stackFunc("parseVariableDeclarationList", function parseVariableDeclarationList(kind = "var", exported = false) {
@@ -863,14 +849,15 @@ p.parseForStatement = stackFunc("parseForStatement", function(insideFunction) {
   let update = null;
   if(this.matchKeywords(["var", "let", "const"])) {
     // Can be either of the following forms:
-    // for( var VariableDeclarationList ; Expression(opt) ; Expression(opt) ) Statement
-    // for( var Identifier Initializer(opt) in Expression ) Statement
+    // for( var VariableDeclarationList ; Expression(opt) ; Expression(opt) )
+    // Statement for( var Identifier Initializer(opt) in Expression ) Statement
     let keyw = this.expectKeywords(["var", "let", "const"]);
     const ast = this.parseVariableDeclarationList(keyw.value, false);
     if((keyw = this.matchKeywords(["in", "of"]))) {
       isForInStatement = true;
       left = ast;
-      // Make sure the ast contains only one identifier and at most one initializer
+      // Make sure the ast contains only one identifier and at most one
+      // initializer
       if(ast.declarations.length !== 1) {
         throw new SyntaxError(`${this.position()} Expecting only one Identifier and at most one Initializer in a ForIn statement`);
       }

@@ -1,7 +1,7 @@
-//var Util = require('./utils/util.js');
+// var Util = require('./utils/util.js');
 
 var Util = require("./util.js");
-//var mysql = require("mysql");
+// var mysql = require("mysql");
 const mysql = require("mysql2/promise");
 const pool = mysql.createPool({
   host: "localhost",
@@ -126,11 +126,7 @@ const queries = {
     pool.query(q).then(set => {
       var pending = [...set[0]].map(row => {
         let activationCode = String(row["password_reset_token"]).replace(/.*:/, "");
-        let obj = {
-          email: row["email"],
-          id: row["user_id"],
-          step: 2
-        };
+        let obj = { email: row["email"], id: row["user_id"], step: 2 };
         if(activationCode != "null" && activationCode != "") obj.activate = activationCode;
         return obj;
       });
@@ -145,5 +141,5 @@ const queries = {
 };
 
 queries[process.argv[2]](process.argv.slice(3));
-//sleep(10);
-//connection.end();
+// sleep(10);
+// connection.end();
