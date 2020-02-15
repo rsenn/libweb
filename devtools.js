@@ -76,14 +76,15 @@ export const colors = (() => {
     console.log("colors map(", args, ")");
     const left = elements.length ? Element.rect(elements[0]).x2 + stepX : stepX;
 
-    let dim = Element.rect(".item-box-size") || new Rect({ width: 80, height: 300 });
+    let dim = Element.rect(".item-box-size") || new Rect({ width: 80, height: 322 });
     let e = Element.create("div", {
       parent: Element.find("body"),
+      class: "colors-palette",
       style: {
-        position: "fixed",
+        position: "absolute",
         left: left + "px",
-        top: "82px",
-        height: `${dim.height}px`,
+        top: "134px",
+        height: `${dim.height || 322}px`,
         zIndex: 100000
       }
     });
@@ -98,21 +99,23 @@ export const colors = (() => {
       const c = new RGBA(color.r, color.g, color.b, color.a);
       console.log("%c colors ", `background-color: ${c.toString()}`, { key, c });
       f("div", {
-        innerHTML: `<div style="opacity:0;">${((typeof key == "number" ? key.toFixed(2) : key) + ": " + c.toString()).replace(/ /g, "&nbsp;")}</div>`,
+        innerHTML: `<div class="colors-text" style="opacity:0;">${((typeof key == "number" ? key.toFixed(2) : key) + ": " + c.toString()).replace(/ /g, "&nbsp;")}</div>`,
+        class: "colors-item",
         style: {
           margin: "auto",
           //  opacity: c.a / 255,
-          height: /* diff > 0 ? `${diff * 100}%` :*/ "1.5em",
+          height: `${322 / 16}px`,
           overflow: "hidden",
           fontFamily: "Arial",
-          fontSize: "0.6em",
+          fontSize: "0.4em",
           fontWeight: "bold",
           color: c.toHSLA().l > 50 ? "black" : "white",
           backgroundColor: c.toString(),
           display: "flex",
           padding: "2px",
           justifyContent: "flex-start",
-          alignItems: "center"
+          alignItems: "center",
+          transition: "opacity 1s linear"
         }
       });
     }
