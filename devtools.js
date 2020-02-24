@@ -1020,7 +1020,9 @@ export const devtools = {
   assign_to,
   polyline,
   circle,
-  colors
+  colors,
+  Util,
+  toJS
 };
 
 export default devtools;

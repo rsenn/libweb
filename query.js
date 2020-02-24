@@ -90,7 +90,7 @@ const queries = {
       for(let i = id; i < num; i++) {
         let user_profile = {
           user_id: i,
-          locale: "fa-IR",
+          locale: "en",
           cash_unit: "IRR",
           alt_show: 1,
           alt_unit: "EUR"

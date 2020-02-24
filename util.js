@@ -14,7 +14,7 @@ const formatAnnotatedObject = (subject, { indent = "  ", spacing = " ", separato
   if(subject != null && subject["y2"] !== undefined) {
     return "rect[" + spacing + subject["x"] + separator + subject["y"] + " | " + subject["x2"] + separator + subject["y2"] + " (" + subject["w"] + "x" + subject["h"] + ")" + " ]";
   }
-  if("map" in subject && typeof subject.map == "function") {
+  if(typeof(subject) == 'object' && "map" in subject && typeof subject.map == "function") {
     //subject instanceof Array || (subject && subject.length !== undefined)) {
     return "[" + nl + /*(opts.depth <= 0) ? subject.length + '' : */ subject.map(i => formatAnnotatedObject(i, opts)).join(separator + nl) + "]";
   }
