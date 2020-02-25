@@ -528,6 +528,44 @@ Util.repeat = (n, what) => {
   return ret;
 };
 
+Util.arrayDim = function(dimensions, init) {
+  let args = [...dimensions];
+  args.reverse();
+  let ret = init;
+  while(args.length > 0) {
+    const n = args.shift();
+    ret = Util.repeat(n, ret);
+  }
+  return ret;
+};
+
+Util.flatten = arr => {
+  let ret = [];
+  for(let i = 0; i < arr.length; i++) {
+    ret = [...ret, ...arr[i]];
+  }
+  return ret;
+};
+Util.chunkArray = (myArray, chunk_size) => {
+  var index = 0;
+  var arrayLength = myArray.length;
+  var tempArray = [];
+
+  for(index = 0; index < arrayLength; index += chunk_size) {
+    myChunk = myArray.slice(index, index + chunk_size);
+    // Do something if you want with the group
+    tempArray.push(myChunk);
+  }
+
+  return tempArray;
+};
+Util.chances = function(numbers, matches) {
+  const f = Util.factorial;
+  return f(numbers) / (f(matches) * f(numbers - matches));
+};
+
+Util.sum = arr => arr.reduce((acc, n) => acc + n, 0);
+
 /*Util.define(
   String.prototype,
   'splice',
