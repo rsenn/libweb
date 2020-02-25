@@ -4,11 +4,7 @@ export const COOKIE_DEFAULT_LANGUAGE_FULL_CODE = 'i18nDefaultLanguageFullCode';
 export const langFromCookie = (cookie, full = false) => {
   if(cookie) {
     if(typeof cookie == 'string') {
-      const pattern = new RegExp(
-        `${
-          full ? COOKIE_DEFAULT_LANGUAGE_FULL_CODE : COOKIE_DEFAULT_LANGUAGE_SHORT_CODE
-        }=([a-zA-Z0-9]*(-[a-zA-Z0-9]*)?)+`
-      );
+      const pattern = new RegExp(`${full ? COOKIE_DEFAULT_LANGUAGE_FULL_CODE : COOKIE_DEFAULT_LANGUAGE_SHORT_CODE}=([a-zA-Z0-9]*(-[a-zA-Z0-9]*)?)+`);
       const match = cookie.match(pattern);
       if(match) {
         return match[1];
@@ -24,16 +20,10 @@ export const setDefaultLanguageFromCookie = (languageCode, full = false) => {
   if(typeof window === 'undefined') {
     throw new Error('This method is ment to be used only client side');
   }
-  document.cookie = `${
-    full ? 'COOKIE_DEFAULT_LANGUAGE_FULL_CODE' : 'COOKIE_DEFAULT_LANGUAGE_SHORT_CODE'
-  }=${languageCode}; path=/`;
+  document.cookie = `${full ? 'COOKIE_DEFAULT_LANGUAGE_FULL_CODE' : 'COOKIE_DEFAULT_LANGUAGE_SHORT_CODE'}=${languageCode}; path=/`;
 };
 
-export const languageManagerMiddleware = ({ defaultLanguageShortCode, defaultLanguageFullCode }) => (
-  req,
-  res,
-  next
-) => {
+export const languageManagerMiddleware = ({ defaultLanguageShortCode, defaultLanguageFullCode }) => (req, res, next) => {
   /**
    * At the very first visit, force default language, set the custom cookies
    * that will be used by the LanguageManager

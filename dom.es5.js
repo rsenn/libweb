@@ -6,11 +6,7 @@ function DOM() {
   let ret = Util.array();
 
   const extend = (e, functions) => {
-    const keys = [...Util.members(functions)].filter(
-      key =>
-        ['callee', 'caller', 'arguments', 'call', 'bind', 'apply', 'prototype', 'constructor', 'length'].indexOf(key) ==
-          -1 && typeof functions[key] == 'function'
-    );
+    const keys = [...Util.members(functions)].filter(key => ['callee', 'caller', 'arguments', 'call', 'bind', 'apply', 'prototype', 'constructor', 'length'].indexOf(key) == -1 && typeof functions[key] == 'function');
     for(let key of keys) if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
     /* function() {
           return functions[key].apply(functions, [this, ...arguments]);
@@ -352,10 +348,7 @@ function Unit(str) {
 
 function ScalarValue() {}
 
-const isPoint = o =>
-  o &&
-  ((o.x !== undefined && o.y !== undefined) ||
-    ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)));
+const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)));
 
 function PointList(points) {
   let args = [...arguments];
@@ -428,11 +421,7 @@ PointList.prototype.splice = function() {
   let args = [...arguments];
   const start = args.shift();
   const remove = args.shift();
-  return Array.prototype.splice.apply(this, [
-    start,
-    remove,
-    ...args.map(arg => (arg instanceof Point ? arg : new Point(arg)))
-  ]);
+  return Array.prototype.splice.apply(this, [start, remove, ...args.map(arg => (arg instanceof Point ? arg : new Point(arg)))]);
 };
 PointList.splice = (plist, start, remove, points) => {
   let args = [...arguments];
@@ -440,11 +429,7 @@ PointList.splice = (plist, start, remove, points) => {
   return PointList.prototype.splice.apply(plist, args);
 };
 PointList.prototype.removeSegment = function(index) {
-  let indexes = [
-    PointList.prototype.getLineIndex.call(this, index - 1),
-    PointList.prototype.getLineIndex.call(this, index),
-    PointList.prototype.getLineIndex.call(this, index + 1)
-  ];
+  let indexes = [PointList.prototype.getLineIndex.call(this, index - 1), PointList.prototype.getLineIndex.call(this, index), PointList.prototype.getLineIndex.call(this, index + 1)];
 
   let lines = indexes.map(i => PointList.prototype.getLine.call(this, i));
 
@@ -683,10 +668,7 @@ PointList.prototype.lines = function(closed = false) {
 };
 
 PointList.prototype.toString = function() {
-  return this.map(
-    point =>
-      Point.toString(point) /*.toString && !(point instanceof DOMPoint) ? point.toString() : Point.toString(point))*/
-  ).join(' ');
+  return this.map(point => Point.toString(point) /*.toString && !(point instanceof DOMPoint) ? point.toString() : Point.toString(point))*/).join(' ');
 };
 
 PointList.toString = pointList => {
@@ -791,19 +773,13 @@ Size.toCSS = function(arg) {
   const size = arg && arg.width !== undefined ? arg : this;
   let ret = {};
 
-  if(size.width !== undefined)
-    ret.width = size.width + (size.units && 'width' in size.units ? size.units.width : 'px');
-  if(size.height !== undefined)
-    ret.height = size.height + (size.units && 'height' in size.units ? size.units.height : 'px');
+  if(size.width !== undefined) ret.width = size.width + (size.units && 'width' in size.units ? size.units.width : 'px');
+  if(size.height !== undefined) ret.height = size.height + (size.units && 'height' in size.units ? size.units.height : 'px');
   return ret;
 };
 Size.prototype.toCSS = Size.toCSS;
 
-const isSize = o =>
-  o &&
-  ((o.width !== undefined && o.height !== undefined) ||
-    (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) ||
-    (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
+const isSize = o => o && ((o.width !== undefined && o.height !== undefined) || (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) || (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
 
 Size.transform = (s, m) => ({
   width: m.xx * s.width + m.yx * s.height,
@@ -1106,9 +1082,7 @@ Object.defineProperty(Rect.prototype, 'center', {
 });
 
 Rect.path = (r, clockwise = true) => ({
-  d: clockwise
-    ? 'M' + r.x + ' ' + r.y + ' h' + r.width + ' v' + r.height + ' h-' + r.width + 'z'
-    : 'M' + r.x + ' ' + r.y + ' v' + r.height + ' h' + r.width + ' v-' + r.height + 'z'
+  d: clockwise ? 'M' + r.x + ' ' + r.y + ' h' + r.width + ' v' + r.height + ' h-' + r.width + 'z' : 'M' + r.x + ' ' + r.y + ' v' + r.height + ' h' + r.width + ' v-' + r.height + 'z'
 });
 
 Object.assign(Rect.prototype, {
@@ -1207,8 +1181,7 @@ Rect.align = function(rect, align_to, a) {
   return rect;
 };
 
-Rect.inside = (rect, point) =>
-  point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
+Rect.inside = (rect, point) => point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
 
 Rect.prototype.inside = function(point) {
   return Rect.inside(this, point);
@@ -1357,9 +1330,7 @@ TRBL.union = (trbl, other) => ({
 TRBL.toRect = trbl => new Rect(trbl.left, trbl.top, trbl.right - trbl.left, trbl.bottom - trbl.top);
 
 TRBL.prototype.toString = function(unit = 'px') {
-  return (
-    '' + this.top + '' + unit + ' ' + this.right + '' + unit + ' ' + this.bottom + '' + unit + ' ' + this.left + unit
-  );
+  return '' + this.top + '' + unit + ' ' + this.right + '' + unit + ' ' + this.bottom + '' + unit + ' ' + this.left + unit;
 };
 TRBL.prototype.toSource = function() {
   return '{top:' + this.top + ',right:' + this.right + ',bottom:' + this.bottom + ',left:' + this.left + '}';
@@ -1511,15 +1482,7 @@ function Matrix(arg) {
     ret.yy = arg.d;
     ret.x0 = arg.e;
     ret.y0 = arg.f;
-  } else if(
-    arg !== undefined &&
-    arg.a !== undefined &&
-    arg.b !== undefined &&
-    arg.c !== undefined &&
-    arg.d !== undefined &&
-    arg.e !== undefined &&
-    arg.f !== undefined
-  ) {
+  } else if(arg !== undefined && arg.a !== undefined && arg.b !== undefined && arg.c !== undefined && arg.d !== undefined && arg.e !== undefined && arg.f !== undefined) {
     Matrix.init(ret, arg.a, arg.b, arg.c, arg.d, arg.e, arg.f);
   } else if(arg !== undefined && arg.tx !== undefined) {
     Matrix.init(ret, arg.a, arg.b, arg.c, arg.d, arg.tx, arg.ty);
@@ -1534,8 +1497,7 @@ function Matrix(arg) {
   if(!(this instanceof Matrix)) return Object.assign(ret, Matrix.prototype);
 }
 
-const isMatrix = m =>
-  m instanceof Matrix || (m.length !== undefined && m.length == 6 && m.every(el => typeof el == 'number'));
+const isMatrix = m => m instanceof Matrix || (m.length !== undefined && m.length == 6 && m.every(el => typeof el == 'number'));
 
 Matrix.keys = ['xx', 'xy', 'x0', 'yx', 'yy', 'y0'];
 Matrix.keySeq = ['xx', 'yx', 'xy', 'yy', 'x0', 'y0'];
@@ -1670,17 +1632,7 @@ Matrix.prototype.inverse = function() {
   return Matrix.fromDOMMatrix(this, Matrix.toDOMMatrix(this).inverse());
 };
 
-[
-  'multiply',
-  'translate',
-  'scale',
-  'scale3d',
-  'rotate',
-  'rotateFromVector',
-  'rotateAxisAngle',
-  'skewX',
-  'skewY'
-].forEach(method => {
+['multiply', 'translate', 'scale', 'scale3d', 'rotate', 'rotateFromVector', 'rotateAxisAngle', 'skewX', 'skewY'].forEach(method => {
   Matrix.prototype[method + '_self'] = function() {
     let dom = Matrix.toDOMMatrix(this);
     Matrix.call(this, dom[method + 'Self'].apply(dom, arguments));
@@ -1779,24 +1731,9 @@ Matrix.toString = m => {
 };
 
 Matrix.prototype.toDOMMatrix = function() {
-  return new DOMMatrix([
-    this[Matrix.keyIndex.a],
-    this[Matrix.keyIndex.b],
-    this[Matrix.keyIndex.c],
-    this[Matrix.keyIndex.d],
-    this[Matrix.keyIndex.e],
-    this[Matrix.keyIndex.f]
-  ]);
+  return new DOMMatrix([this[Matrix.keyIndex.a], this[Matrix.keyIndex.b], this[Matrix.keyIndex.c], this[Matrix.keyIndex.d], this[Matrix.keyIndex.e], this[Matrix.keyIndex.f]]);
 };
-Matrix.toDOMMatrix = m =>
-  new DOMMatrix([
-    m[Matrix.keyIndex.a],
-    m[Matrix.keyIndex.b],
-    m[Matrix.keyIndex.c],
-    m[Matrix.keyIndex.d],
-    m[Matrix.keyIndex.e],
-    m[Matrix.keyIndex.f]
-  ]);
+Matrix.toDOMMatrix = m => new DOMMatrix([m[Matrix.keyIndex.a], m[Matrix.keyIndex.b], m[Matrix.keyIndex.c], m[Matrix.keyIndex.d], m[Matrix.keyIndex.e], m[Matrix.keyIndex.f]]);
 
 Matrix.fromDOMMatrix = dom => {
   let ret = new Matrix();
@@ -1888,12 +1825,8 @@ Matrix.prototype.decompose = function() {
     toString: function() {
       return `scale(${this.x.toFixed(6)} ${this.y.toFixed(6)})`;
     },
-    x:
-      Math.sign(this[Matrix.keyIndex.a]) *
-      Math.sqrt(Math.pow(this[Matrix.keyIndex.a], 2) + Math.pow(this[Matrix.keyIndex.b], 2)),
-    y:
-      Math.sign(this[Matrix.keyIndex.d]) *
-      Math.sqrt(Math.pow(this[Matrix.keyIndex.c], 2) + Math.pow(this[Matrix.keyIndex.d], 2))
+    x: Math.sign(this[Matrix.keyIndex.a]) * Math.sqrt(Math.pow(this[Matrix.keyIndex.a], 2) + Math.pow(this[Matrix.keyIndex.b], 2)),
+    y: Math.sign(this[Matrix.keyIndex.d]) * Math.sqrt(Math.pow(this[Matrix.keyIndex.c], 2) + Math.pow(this[Matrix.keyIndex.d], 2))
   };
 
   let rotate = {
@@ -2196,10 +2129,7 @@ function RGBA(r = 0, g = 0, b = 0, a = 255) {
     const arg = args[0];
     if(typeof arg === 'string') {
       if(arg.startsWith('#')) {
-        c =
-          arg.length >= 7
-            ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(arg)
-            : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(arg);
+        c = arg.length >= 7 ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(arg) : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(arg);
 
         let mul = arg.length >= 7 ? 1 : 17;
 
@@ -2236,11 +2166,7 @@ RGBA.properties = ['r', 'g', 'b', 'a'];
 const isRGBA = obj => RGBA.properties.every(prop => obj.hasOwnProperty(prop));
 
 RGBA.fromHex = (hex, alpha = 255) => {
-  const matches =
-    hex &&
-    (hex.length >= 7
-      ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(hex)
-      : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(hex));
+  const matches = hex && (hex.length >= 7 ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(hex) : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(hex));
   if(matches === null) return null;
   let mul = hex.length >= 7 ? 1 : 17;
 
@@ -2251,11 +2177,7 @@ RGBA.fromHex = (hex, alpha = 255) => {
 
 RGBA.prototype.hex = function() {
   const { r, g, b, a } = RGBA.clamp(RGBA.round(this));
-  return (
-    '#' +
-    ('0000000' + ((r << 16) | (g << 8) | b).toString(16)).slice(-6) +
-    (a !== undefined && a != 255 ? ('0' + a.toString(16)).slice(-2) : '')
-  );
+  return '#' + ('0000000' + ((r << 16) | (g << 8) | b).toString(16)).slice(-6) + (a !== undefined && a != 255 ? ('0' + a.toString(16)).slice(-2) : '');
 };
 
 RGBA.prototype.toRGB = function() {
@@ -2265,13 +2187,7 @@ RGBA.prototype.toRGB = function() {
 
 RGBA.toHex = rgba => RGBA.prototype.hex.call(rgba);
 
-RGBA.clamp = rgba =>
-  RGBA(
-    Math.min(Math.max(rgba.r, 0), 255),
-    Math.min(Math.max(rgba.g, 0), 255),
-    Math.min(Math.max(rgba.b, 0), 255),
-    Math.min(Math.max(rgba.a, 0), 255)
-  );
+RGBA.clamp = rgba => RGBA(Math.min(Math.max(rgba.r, 0), 255), Math.min(Math.max(rgba.g, 0), 255), Math.min(Math.max(rgba.b, 0), 255), Math.min(Math.max(rgba.a, 0), 255));
 RGBA.round = rgba => RGBA.prototype.round.call(rgba);
 RGBA.prototype.round = function() {
   this.r = Math.round(this.r);
@@ -2286,8 +2202,7 @@ RGBA.normalize = (rgba, from = 255, to = 1.0) => ({
   b: (rgba.b * to) / from,
   a: (rgba.a * to) / from
 });
-RGBA.prototype.css = () => prop =>
-  (prop ? prop + ':' : '') + 'rgba(' + this.r + ', ' + this.g + ', ' + this.b + ', ' + (this.a / 255).toFixed(3) + ')';
+RGBA.prototype.css = () => prop => (prop ? prop + ':' : '') + 'rgba(' + this.r + ', ' + this.g + ', ' + this.b + ', ' + (this.a / 255).toFixed(3) + ')';
 
 RGBA.prototype.toString = function(a) {
   if(a === undefined) a = this.a;
@@ -2307,12 +2222,7 @@ RGBA.prototype.normalize = function(from = 255, to = 1.0) {
 RGBA.blend = (a, b, o = 0.5) => {
   a = new RGBA(a);
   b = new RGBA(b);
-  return new RGBA(
-    Math.round(a.r * o + b.r * (1 - o)),
-    Math.round(a.g * o + b.g * (1 - o)),
-    Math.round(a.b * o + b.b * (1 - o)),
-    Math.round(a.a * o + b.a * (1 - o))
-  );
+  return new RGBA(Math.round(a.r * o + b.r * (1 - o)), Math.round(a.g * o + b.g * (1 - o)), Math.round(a.b * o + b.b * (1 - o)), Math.round(a.a * o + b.a * (1 - o)));
 };
 
 RGBA.prototype.toAlpha = function(color) {
@@ -2423,9 +2333,7 @@ function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
   } else {
     const arg = args[0];
     if(typeof arg === 'string') {
-      const matches =
-        /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) ||
-        /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
+      const matches = /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) || /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
 
       if(matches != null) matches = [...matches].slice(1);
     }
@@ -2447,8 +2355,7 @@ function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
 HSLA.properties = ['h', 's', 'l', 'a'];
 const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(prop));
 
-HSLA.setcss = hsla => prop =>
-  (prop ? prop + ':' : '') + 'hsla(' + hsla.h + ',' + hsla.s + '%,' + hsla.l + '%,' + hsla.a + ')';
+HSLA.setcss = hsla => prop => (prop ? prop + ':' : '') + 'hsla(' + hsla.h + ',' + hsla.s + '%,' + hsla.l + '%,' + hsla.a + ')';
 
 HSLA.prototype.css = function() {
   const hsla = HSLA.clamp(HSLA.round(this));
@@ -2459,13 +2366,7 @@ HSLA.prototype.toHSL = function() {
   return new HSLA(h, s, l, 1.0);
 };
 
-HSLA.clamp = hsla =>
-  HSLA(
-    hsla.h % 360,
-    Math.min(Math.max(hsla.s, 0), 100),
-    Math.min(Math.max(hsla.l, 0), 100),
-    Math.min(Math.max(hsla.a, 0), 1)
-  );
+HSLA.clamp = hsla => HSLA(hsla.h % 360, Math.min(Math.max(hsla.s, 0), 100), Math.min(Math.max(hsla.l, 0), 100), Math.min(Math.max(hsla.a, 0), 1));
 HSLA.round = hsla => HSLA(Math.round(hsla.h), Math.round(hsla.s), Math.round(hsla.l), hsla.a);
 
 HSLA.random = function(rand = Math.random) {
@@ -2656,9 +2557,7 @@ class Node {
   }
 
   static attrs(node) {
-    return node.attributes && node.attributes.length > 0
-      ? Array.from(node.attributes).reduce((acc, attr) => ({ ...acc, [attr.name]: attr.value }), {})
-      : {};
+    return node.attributes && node.attributes.length > 0 ? Array.from(node.attributes).reduce((acc, attr) => ({ ...acc, [attr.name]: attr.value }), {}) : {};
   }
 }
 
@@ -2670,8 +2569,7 @@ class Node {
 class Element extends Node {
   static create() {
     let args = [...arguments];
-    let { tagName, ns, children, ...props } =
-      typeof args[0] == 'object' ? args.shift() : { tagName: args.shift(), ...args.shift() };
+    let { tagName, ns, children, ...props } = typeof args[0] == 'object' ? args.shift() : { tagName: args.shift(), ...args.shift() };
     let parent = args.shift();
 
     //console.log('Element.create ', { tagName, props, parent });
@@ -2718,15 +2616,9 @@ class Element extends Node {
 
   static toObject(elem, ns) {
     let e = Element.find(elem);
-    let children =
-      e.children && e.children.length
-        ? { children: Util.array(e.children).map(child => Element.toObject(child, e)) }
-        : {};
+    let children = e.children && e.children.length ? { children: Util.array(e.children).map(child => Element.toObject(child, e)) } : {};
 
-    ns =
-      (arguments[1] ? arguments[1].namespaceURI : document.body && document.body.namespaceURI) != e.namespaceURI
-        ? { ns: e.namespaceURI }
-        : {};
+    ns = (arguments[1] ? arguments[1].namespaceURI : document.body && document.body.namespaceURI) != e.namespaceURI ? { ns: e.namespaceURI } : {};
     let { /*style,*/ ...attributes } = Element.attr(e);
 
     return {
@@ -2743,9 +2635,7 @@ class Element extends Node {
 
   static findAll(arg, parent) {
     parent = Element.find(parent);
-    return Util.array(
-      parent && parent.querySelectorAll ? parent.querySelectorAll(arg) : document.querySelectorAll(arg)
-    );
+    return Util.array(parent && parent.querySelectorAll ? parent.querySelectorAll(arg) : document.querySelectorAll(arg));
   }
 
   /**
@@ -3030,10 +2920,7 @@ class Element extends Node {
     let parent = element.parentElement ? element.parentElement : element.parentNode;
 
     const estyle = Util.toHash(w && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element));
-    const pstyle =
-      parent && parent.tagName
-        ? Util.toHash(w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent))
-        : {};
+    const pstyle = parent && parent.tagName ? Util.toHash(w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {};
     //console.log('Element.getCSS ', { estyle, pstyle });
 
     let style = Util.removeEqual(estyle, pstyle);
@@ -3389,8 +3276,7 @@ class SVG extends Element {
     let delegate = {
       create: tag => document.createElementNS(SVG.ns, tag),
       append_to: elem => parent.appendChild(elem),
-      setattr: (elem, name, value) =>
-        name != 'ns' && elem.setAttributeNS(document.namespaceURI, Util.decamelize(name, '-'), value),
+      setattr: (elem, name, value) => name != 'ns' && elem.setAttributeNS(document.namespaceURI, Util.decamelize(name, '-'), value),
       setcss: (elem, css) => elem.setAttributeNS(null, 'style', css)
     };
     if(size == null) size = Size(Rect.round(Element.rect(parent)));

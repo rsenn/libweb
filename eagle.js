@@ -361,8 +361,7 @@ class Layer extends Node {
 
   static get(number_or_name) {
     let layer = Layer.find(number_or_name);
-    if(layer === null && typeof number_or_name == 'string')
-      layer = Layer.instances[number_or_name] = new Layer(number_or_name);
+    if(layer === null && typeof number_or_name == 'string') layer = Layer.instances[number_or_name] = new Layer(number_or_name);
     return layer;
   }
 

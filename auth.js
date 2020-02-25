@@ -169,9 +169,7 @@ export function withAuth(AuthComponent) {
     }
 
     render() {
-      return (
-        <div>{this.state.isLoading ? <div>LOADING... .</div> : <AuthComponent {...this.props} auth={Auth} />} </div>
-      );
+      return <div>{this.state.isLoading ? <div>LOADING... .</div> : <AuthComponent {...this.props} auth={Auth} />} </div>;
     }
   };
 }

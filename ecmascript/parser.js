@@ -192,9 +192,7 @@ p.expectKeywords = function expectKeywords(keywords) {
   this.log('expectKeywords(' + keywords + ') ');
   const token = this.consume();
   if(token.type !== tokenTypes.keyword) {
-    throw new SyntaxError(
-      `${this.position()} ${this.position()} Expecting Keyword, but got ${token.type} with value: ${token.value}`
-    );
+    throw new SyntaxError(`${this.position()} ${this.position()} Expecting Keyword, but got ${token.type} with value: ${token.value}`);
   }
   if(Array.isArray(keywords)) {
     if(keywords.indexOf(token.value) < 0) {
@@ -264,13 +262,7 @@ p.matchIdentifier = function matchIdentifier(no_keyword = false) {
 };
 
 function isLiteral(token) {
-  return (
-    token.type === tokenTypes.stringLiteral ||
-    token.type === tokenTypes.numericLiteral ||
-    token.type === tokenTypes.regexpLiteral ||
-    token.type === tokenTypes.nullLiteral ||
-    token.type === tokenTypes.booleanLiteral
-  );
+  return token.type === tokenTypes.stringLiteral || token.type === tokenTypes.numericLiteral || token.type === tokenTypes.regexpLiteral || token.type === tokenTypes.nullLiteral || token.type === tokenTypes.booleanLiteral;
 }
 
 p.matchLiteral = function matchLiteral() {
@@ -280,35 +272,11 @@ p.matchLiteral = function matchLiteral() {
 };
 
 p.matchStatement = function() {
-  return (
-    this.matchPunctuators(';') ||
-    this.matchKeywords([
-      'if',
-      'var',
-      'let',
-      'const',
-      'with',
-      'while',
-      'do',
-      'for',
-      'continue',
-      'break',
-      'return',
-      'switch',
-      'import',
-      'export'
-    ]) ||
-    this.matchAssignmentExpression()
-  );
+  return this.matchPunctuators(';') || this.matchKeywords(['if', 'var', 'let', 'const', 'with', 'while', 'do', 'for', 'continue', 'break', 'return', 'switch', 'import', 'export']) || this.matchAssignmentExpression();
 };
 
 p.matchPrimaryExpression = function matchPrimaryExpression() {
-  return (
-    this.matchKeywords('this') ||
-    this.matchLiteral() ||
-    this.matchIdentifier() ||
-    this.matchPunctuators(['(', '[', '{', '<'])
-  );
+  return this.matchKeywords('this') || this.matchLiteral() || this.matchIdentifier() || this.matchPunctuators(['(', '[', '{', '<']);
 };
 
 p.matchUnaryExpression = function matchUnaryExpression() {
@@ -376,12 +344,7 @@ p.parseRemainingMemberExpression = function parseRemainingMemberExpression(objec
 
       object = new estree.MemberExpression(object, identifier, false);
 
-      this.log(
-        'parseRemainingMemberExpression2(',
-        object.toString(),
-        ')',
-        Util.fnName(p.parseRemainingMemberExpression.caller)
-      );
+      this.log('parseRemainingMemberExpression2(', object.toString(), ')', Util.fnName(p.parseRemainingMemberExpression.caller));
     } else if(this.matchPunctuators('[')) {
       this.expectPunctuators('[');
       const expression = this.parseExpression(true);
@@ -392,9 +355,7 @@ p.parseRemainingMemberExpression = function parseRemainingMemberExpression(objec
   return object;
 };
 
-p.parseRemainingCallExpression = stackFunc('parseRemainingCallExpression', function parseRemainingCallExpression(
-  object
-) {
+p.parseRemainingCallExpression = stackFunc('parseRemainingCallExpression', function parseRemainingCallExpression(object) {
   let args = this.parseArguments();
   object = new estree.CallExpression(object, args);
   while(this.matchPunctuators(['.', '[', '('])) {
@@ -415,10 +376,7 @@ p.parseRemainingCallExpression = stackFunc('parseRemainingCallExpression', funct
   return object;
 });
 
-p.parseNewOrCallOrMemberExpression = function parseNewOrCallOrMemberExpression(
-  couldBeNewExpression,
-  couldBeCallExpression
-) {
+p.parseNewOrCallOrMemberExpression = function parseNewOrCallOrMemberExpression(couldBeNewExpression, couldBeCallExpression) {
   this.log('parseNewOrCallOrMemberExpression(', couldBeNewExpression, couldBeCallExpression, ')');
   let object = null;
   if(this.matchKeywords('new')) {
@@ -440,12 +398,7 @@ p.parseNewOrCallOrMemberExpression = function parseNewOrCallOrMemberExpression(
   }
   //  this.log('Object:', object);
   object = this.parseRemainingMemberExpression(object);
-  this.log(
-    'parseNewOrCallOrMemberExpression(',
-    couldBeNewExpression,
-    couldBeCallExpression,
-    ') ' + Util.fnName(p.parseNewOrCallOrMemberExpression.caller)
-  );
+  this.log('parseNewOrCallOrMemberExpression(', couldBeNewExpression, couldBeCallExpression, ') ' + Util.fnName(p.parseNewOrCallOrMemberExpression.caller));
   // If at the end of trying to parse MemberExpression we see Arguments
   // again, then that means this is a CallExpression instead.
   if(this.matchPunctuators('(') && couldBeCallExpression) {
@@ -510,29 +463,7 @@ p.parseUnaryExpression = stackFunc('parseUnaryExpression', function parseUnaryEx
 p.parseBinaryExpression = stackFunc('parseBinaryExpression', function parseBinaryExpression(minPrecedence) {
   this.log('parseBinaryExpression() ' + Util.fnName(p.parseBinaryExpression.caller));
 
-  const punctuators = [
-    '||',
-    '&&',
-    '|',
-    '^',
-    '&',
-    '===',
-    '==',
-    '!==',
-    '!=',
-    '<',
-    '>',
-    '<=',
-    '>=',
-    '<<',
-    '>>',
-    '-->>',
-    '+',
-    '-',
-    '*',
-    '/',
-    '%'
-  ];
+  const punctuators = ['||', '&&', '|', '^', '&', '===', '==', '!==', '!=', '<', '>', '<=', '>=', '<<', '>>', '-->>', '+', '-', '*', '/', '%'];
   const result = this.parseUnaryExpression();
   let ast = result.ast;
   let lhs = result.lhs;
@@ -541,17 +472,13 @@ p.parseBinaryExpression = stackFunc('parseBinaryExpression', function parseBinar
   let value = tok.value;
   //  if(tok.value == 'instanceof')
   //  this.log('TOKEN: ', tok);
-  while(
-    (this.matchKeywords('instanceof') || this.matchPunctuators(punctuators) || tok.value == 'instanceof') &&
-    operatorPrecedence[(tok = this.next()).value] >= minPrecedence
-  ) {
+  while((this.matchKeywords('instanceof') || this.matchPunctuators(punctuators) || tok.value == 'instanceof') && operatorPrecedence[(tok = this.next()).value] >= minPrecedence) {
     // this.log('VALUE: ', value);
     // If any operator is encountered, then the result cannot be
     // LeftHandSideExpression anymore
     lhs = false;
     const precedenceLevel = operatorPrecedence[this.next().value];
-    const operatorToken =
-      value == 'instanceof' ? this.expectKeywords('instanceof') : this.expectPunctuators(punctuators);
+    const operatorToken = value == 'instanceof' ? this.expectKeywords('instanceof') : this.expectPunctuators(punctuators);
     const right = this.parseBinaryExpression(precedenceLevel + 1);
     if(operatorToken.value === '||' || operatorToken.value === '&&') {
       ast = new estree.LogicalExpression(operatorToken.value, ast, right.ast);
@@ -628,9 +555,7 @@ p.parseExpression = function parseExpression(optional) {
     expressions.push(expression);
   } else if(!optional) {
     const token = this.next();
-    throw new SyntaxError(
-      `${this.position()} Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`
-    );
+    throw new SyntaxError(`${this.position()} Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`);
   }
   while(this.matchPunctuators(',')) {
     this.expectPunctuators(',');
@@ -639,9 +564,7 @@ p.parseExpression = function parseExpression(optional) {
       expressions.push(expression);
     } else if(!optional) {
       const token = this.next();
-      throw new SyntaxError(
-        `${this.position()} Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`
-      );
+      throw new SyntaxError(`${this.position()} Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`);
     }
   }
   if(expressions.length > 1) {
@@ -688,18 +611,13 @@ p.parseVariableDeclaration = function parseVariableDeclaration() {
     assignment = this.parseAssignmentExpression();
     if(assignment === null) {
       const token = this.next();
-      throw new SyntaxError(
-        `${this.position()} Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`
-      );
+      throw new SyntaxError(`${this.position()} Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`);
     }
   }
   return { identifier: identifier, assignment: assignment };
 };
 
-p.parseVariableDeclarationList = stackFunc('parseVariableDeclarationList', function parseVariableDeclarationList(
-  kind = 'var',
-  exported = false
-) {
+p.parseVariableDeclarationList = stackFunc('parseVariableDeclarationList', function parseVariableDeclarationList(kind = 'var', exported = false) {
   this.log('parseVariableDeclarationList() ' + Util.fnName(p.parseVariableDeclarationList.caller));
   const declarations = []; // Destructuring not yet on by default in nodejs
   let declarator = this.parseVariableDeclaration();
@@ -727,11 +645,7 @@ p.parseBlock = stackFunc('parseBlock', function parseBlock(insideIteration, insi
   return new estree.BlockStatement(statements);
 });
 
-p.parseList = stackFunc('parseList', function parseList(
-  insideIteration = false,
-  insideFunction = false,
-  check = p => false
-) {
+p.parseList = stackFunc('parseList', function parseList(insideIteration = false, insideFunction = false, check = p => false) {
   this.log('parseList() ' + Util.fnName(p.parseList.caller));
   const statements = [];
   while(this.matchStatement()) {
@@ -945,9 +859,7 @@ p.parseForStatement = stackFunc('parseForStatement', function(insideFunction) {
       // Make sure the ast contains only one identifier and at most one
       // initializer
       if(ast.declarations.length !== 1) {
-        throw new SyntaxError(
-          `${this.position()} Expecting only one Identifier and at most one Initializer in a ForIn statement`
-        );
+        throw new SyntaxError(`${this.position()} Expecting only one Identifier and at most one Initializer in a ForIn statement`);
       }
       this.expectKeywords(['in', 'of']);
       right = this.parseExpression();
