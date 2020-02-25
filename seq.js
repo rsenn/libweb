@@ -92,7 +92,12 @@ for (let table in tables) {
   let fields = reduce(
     tables[table].tableAttributes,
     (acc, item, key, obj) => {
-      let s = toString(item.type) + (item.allowNull ? '' : ' NOT NULL') + (typeof item.defaultValue === 'string' && item.defaultValue.length > 0 ? " DEFAULT '" + item.defaultValue + "'" : '');
+      let s =
+        toString(item.type) +
+        (item.allowNull ? '' : ' NOT NULL') +
+        (typeof item.defaultValue === 'string' && item.defaultValue.length > 0
+          ? " DEFAULT '" + item.defaultValue + "'"
+          : '');
       key = decamelize(key);
       if(key.length > maxLen) maxLen = key.length;
       acc[key] = s;

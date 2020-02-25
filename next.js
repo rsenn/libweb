@@ -21,7 +21,23 @@ export const setRouteChangeHandler = handleRouteChange => {
   Router.events.on('routeChangeStart', handleRouteChange);
   if(Router.beforePopState !== undefined) {
     Router.beforePopState(({ url, as, options }) => {
-      const pages = ['/about', '/account', '/admin', '/play', '/confirmation', '/deposit', '/drawings', '/games', '/guide', '/index', '/login', '/picks', '/profile', '/register', '/withdraw'];
+      const pages = [
+        '/about',
+        '/account',
+        '/admin',
+        '/play',
+        '/confirmation',
+        '/deposit',
+        '/drawings',
+        '/games',
+        '/guide',
+        '/index',
+        '/login',
+        '/picks',
+        '/profile',
+        '/register',
+        '/withdraw'
+      ];
       const page = url.replace(/[?&=:].*/, '');
       //I only want to allow these routes!
       //Have SSR render bad routes as a 404.    window.location.href = as;
@@ -55,7 +71,8 @@ export const isConstructor = (() => {
 
 /* global process */
 export const NODE_ENV = (() => {
-  const NODE_ENV = typeof process !== 'undefined' && typeof process.env === 'object' && process.env ? process.env.NODE_ENV : undefined;
+  const NODE_ENV =
+    typeof process !== 'undefined' && typeof process.env === 'object' && process.env ? process.env.NODE_ENV : undefined;
   if(typeof NODE_ENV === 'undefined') {
     console.warn('NODE_ENV is undefined');
   }

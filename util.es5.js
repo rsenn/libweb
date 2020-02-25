@@ -1,6 +1,9 @@
 function Util() {}
 
-Util.formatAnnotatedObject = (subject, { indent = '  ', spacing = ' ', separator = ',', newline = '\n', maxlen = 30, depth = 1 }) => {
+Util.formatAnnotatedObject = (
+  subject,
+  { indent = '  ', spacing = ' ', separator = ',', newline = '\n', maxlen = 30, depth = 1 }
+) => {
   const i = indent.repeat(Math.abs(1 - depth));
   let nl = newline != '' ? newline + i : spacing;
   const opts = { newline: depth >= 0 ? newline : '', depth: depth - 1 };
@@ -9,11 +12,32 @@ Util.formatAnnotatedObject = (subject, { indent = '  ', spacing = ' ', separator
   if(typeof subject == 'string') return `'${subject}'`;
 
   if(subject != null && subject['y2'] !== undefined) {
-    return 'rect[' + spacing + subject['x'] + separator + subject['y'] + ' | ' + subject['x2'] + separator + subject['y2'] + ' (' + subject['w'] + 'x' + subject['h'] + ')' + ' ]';
+    return (
+      'rect[' +
+      spacing +
+      subject['x'] +
+      separator +
+      subject['y'] +
+      ' | ' +
+      subject['x2'] +
+      separator +
+      subject['y2'] +
+      ' (' +
+      subject['w'] +
+      'x' +
+      subject['h'] +
+      ')' +
+      ' ]'
+    );
   }
   if('map' in subject && typeof subject.map == 'function') {
     // subject instanceof Array || (subject && subject.length !== undefined)) {
-    return '[' + nl /*(opts.depth <= 0) ? subject.length + '' : */ + subject.map(i => Util.formatAnnotatedObject(i, opts)).join(separator + nl) + ']';
+    return (
+      '[' +
+      nl /*(opts.depth <= 0) ? subject.length + '' : */ +
+      subject.map(i => Util.formatAnnotatedObject(i, opts)).join(separator + nl) +
+      ']'
+    );
   }
   if(typeof subject === 'string' || subject instanceof String) {
     return "'" + subject + "'";
@@ -39,14 +63,18 @@ Util.formatAnnotatedObject = (subject, { indent = '  ', spacing = ' ', separator
       s = 'null';
     } else if(subject[k] && subject[k].length !== undefined) {
       try {
-        s = depth <= 0 ? `Array(${subject[k].length})` : '[ ' + subject[k].map(item => Util.formatAnnotatedObject(item, opts)).join(', ') + ' ]';
+        s =
+          depth <= 0
+            ? `Array(${subject[k].length})`
+            : '[ ' + subject[k].map(item => Util.formatAnnotatedObject(item, opts)).join(', ') + ' ]';
       } catch(err) {
         s = '[' + subject[k] + ']';
       }
     } else if(subject[k] && subject[k].toSource !== undefined) {
       s = subject[k].toSource();
     } else if(opts.depth >= 0) {
-      s = s.length > maxlen ? '[Object ' + Util.objName(subject[k]) + ']' : Util.formatAnnotatedObject(subject[k], opts);
+      s =
+        s.length > maxlen ? '[Object ' + Util.objName(subject[k]) + ']' : Util.formatAnnotatedObject(subject[k], opts);
     }
     r.push([k, s]);
   }
@@ -59,7 +87,8 @@ Util.formatAnnotatedObject = (subject, { indent = '  ', spacing = ' ', separator
   }
   // padding = x => '';
 
-  let ret = '{' + opts.newline + r.map(arr => padding(arr[0]) + arr[0] + ':' + spacing + arr[1]).join(j) + opts.newline + '}';
+  let ret =
+    '{' + opts.newline + r.map(arr => padding(arr[0]) + arr[0] + ':' + spacing + arr[1]).join(j) + opts.newline + '}';
   return ret;
 };
 Util.isDebug = function() {
@@ -311,9 +340,13 @@ Util.trim = function(str, charset) {
   return str.replace(r1, '').replace(r2, '');
 };
 
-Util.define = (obj, key, value, enumerable = false) => obj[key] === undefined && Object.defineProperty(obj, key, { enumerable, configurable: false, writable: false, value });
-Util.defineGetter = (obj, key, get, enumerable = false) => obj[key] === undefined && Object.defineProperty(obj, key, { enumerable, configurable: false, get });
-Util.defineGetterSetter = (obj, key, get, set, enumerable = false) => obj[key] === undefined && Object.defineProperty(obj, key, { get, set, enumerable });
+Util.define = (obj, key, value, enumerable = false) =>
+  obj[key] === undefined &&
+  Object.defineProperty(obj, key, { enumerable, configurable: false, writable: false, value });
+Util.defineGetter = (obj, key, get, enumerable = false) =>
+  obj[key] === undefined && Object.defineProperty(obj, key, { enumerable, configurable: false, get });
+Util.defineGetterSetter = (obj, key, get, set, enumerable = false) =>
+  obj[key] === undefined && Object.defineProperty(obj, key, { get, set, enumerable });
 
 Util.extendArray = (arr = Array.prototype) => {
   Util.define(arr, 'match', function(pred) {
@@ -338,7 +371,13 @@ Util.extendArray = (arr = Array.prototype) => {
     }
   );
 };
-Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index) => obj.key(index), getItem = (obj, key) => obj[key], setItem = (obj, index, value) => (obj[index] = value)) {
+Util.adapter = function(
+  obj,
+  getLength = obj => obj.length,
+  getKey = (obj, index) => obj.key(index),
+  getItem = (obj, key) => obj[key],
+  setItem = (obj, index, value) => (obj[index] = value)
+) {
   var adapter = {
     get length() {
       return getLength(obj);
@@ -510,7 +549,10 @@ Util.match = (arg, pred) => {
 
   if(pred instanceof RegExp) {
     const re = pred;
-    match = (val, key) => (val && val.tagName !== undefined && re.test(val.tagName)) || (typeof key === 'string' && re.test(key)) || (typeof val === 'string' && re.test(val));
+    match = (val, key) =>
+      (val && val.tagName !== undefined && re.test(val.tagName)) ||
+      (typeof key === 'string' && re.test(key)) ||
+      (typeof val === 'string' && re.test(val));
   }
 
   if(Util.isArray(arg)) {
@@ -522,7 +564,10 @@ Util.match = (arg, pred) => {
     }, Util.array());
   } else if(Util.isMap(arg)) {
     // console.log('Util.match ', { arg });
-    return [...arg.keys()].reduce((acc, key) => (match(arg.get(key), key, arg) ? acc.set(key, arg.get(key)) : acc), new Map());
+    return [...arg.keys()].reduce(
+      (acc, key) => (match(arg.get(key), key, arg) ? acc.set(key, arg.get(key)) : acc),
+      new Map()
+    );
   } else {
     let i = 0;
     let ret = [];
@@ -624,7 +669,9 @@ Util.hasProps = function(obj) {
   return keys.length > 0;
 };
 Util.validatePassword = function(value) {
-  return value.length > 7 && /^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]/.test(value) && !/\s/.test(value);
+  return (
+    value.length > 7 && /^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]/.test(value) && !/\s/.test(value)
+  );
 };
 // deep copy
 Util.deepClone = function(data) {
@@ -808,7 +855,13 @@ Util.setCookies = c =>
     console.log(`Setting cookie[${key}] = ${value}`);
   });
 
-Util.clearCookies = c => Util.setCookies(Object.keys(Util.parseCookie(c)).reduce((acc, name) => Object.assign(acc, { [name]: '; max-age=0; expires=' + new Date().toUTCString() }), {}));
+Util.clearCookies = c =>
+  Util.setCookies(
+    Object.keys(Util.parseCookie(c)).reduce(
+      (acc, name) => Object.assign(acc, { [name]: '; max-age=0; expires=' + new Date().toUTCString() }),
+      {}
+    )
+  );
 
 Util.deleteCookie = name => {
   if(global.window) document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
@@ -1007,7 +1060,13 @@ Util.parseURL = function(href = this.getURL()) {
     href(override) {
       if(typeof override === 'object') Object.assign(this, override);
       const qstr = Util.encodeQuery(this.query);
-      return (this.protocol ? `${this.protocol}://` : '') + (this.host ? this.host : '') + (this.port ? ':' + this.port : '') + `${this.location}` + (qstr != '' ? '?' + qstr : '');
+      return (
+        (this.protocol ? `${this.protocol}://` : '') +
+        (this.host ? this.host : '') +
+        (this.port ? ':' + this.port : '') +
+        `${this.location}` +
+        (qstr != '' ? '?' + qstr : '')
+      );
     }
   };
 };
@@ -1231,7 +1290,20 @@ Util.effectiveDeviceWidth = function() {
   return deviceWidth;
 };
 Util.getFormFields = function(initialState) {
-  return Util.mergeObjects([initialState, [...document.forms].reduce((acc, form) => [...form.elements].reduce((acc2, e) => (e.name == '' || e.value == undefined || e.value == 'undefined' ? acc2 : Object.assign(acc2, { [e.name]: e.value })), acc), {})]);
+  return Util.mergeObjects([
+    initialState,
+    [...document.forms].reduce(
+      (acc, form) =>
+        [...form.elements].reduce(
+          (acc2, e) =>
+            e.name == '' || e.value == undefined || e.value == 'undefined'
+              ? acc2
+              : Object.assign(acc2, { [e.name]: e.value }),
+          acc
+        ),
+      {}
+    )
+  ]);
 };
 Util.mergeObjects = function(objArr, predicate = (dst, src, key) => (src[key] == '' ? undefined : src[key])) {
   let args = objArr;
@@ -1361,7 +1433,13 @@ Util.weakAssign = function(obj) {
 };
 Util.getCallerStack = function(position = 2) {
   if(position >= Error.stackTraceLimit) {
-    throw new TypeError('getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: `' + position + '` and Error.stackTraceLimit was: `' + Error.stackTraceLimit + '`');
+    throw new TypeError(
+      'getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: `' +
+        position +
+        '` and Error.stackTraceLimit was: `' +
+        Error.stackTraceLimit +
+        '`'
+    );
   }
 
   const oldPrepareStackTrace = Error.prepareStackTrace;
@@ -1418,7 +1496,20 @@ Util.getCallerFunctionNames = function(position = 2) {
 };
 Util.getCaller = function(position = 2) {
   let stack = Util.getCallerStack(position + 1);
-  const methods = ['getColumnNumber', 'getEvalOrigin', 'getFileName', 'getFunction', 'getFunctionName', 'getLineNumber', 'getMethodName', 'getPosition', 'getPromiseIndex', 'getScriptNameOrSourceURL', 'getThis', 'getTypeName'];
+  const methods = [
+    'getColumnNumber',
+    'getEvalOrigin',
+    'getFileName',
+    'getFunction',
+    'getFunctionName',
+    'getLineNumber',
+    'getMethodName',
+    'getPosition',
+    'getPromiseIndex',
+    'getScriptNameOrSourceURL',
+    'getThis',
+    'getTypeName'
+  ];
   if(stack !== null && typeof stack === 'object') {
     const frame = stack[0];
     return methods.reduce((acc, m) => {
@@ -1472,12 +1563,14 @@ Util.flatTree = function(tree, addOutput) {
 
   addOutput(Util.filterKeys(tree, key => key !== 'children'));
 
-  if(typeof tree.children == 'object' && tree.children.length) for(let child of tree.children) Util.flatTree(child, addOutput);
+  if(typeof tree.children == 'object' && tree.children.length)
+    for(let child of tree.children) Util.flatTree(child, addOutput);
   return ret;
 };
 Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
-  if(typeof tree.children == 'object' && tree.children.length) for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
+  if(typeof tree.children == 'object' && tree.children.length)
+    for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
 };
 Util.getImageAverageColor = function(imageElement, options) {
   if(!imageElement) {

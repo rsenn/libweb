@@ -100,7 +100,11 @@ export default class devpane {
   svg = lazyInitializer(() => {
     var rect = Element.rect(document.body);
 
-    var svg = this.createSVGElement('svg', { width: rect.width, height: rect.height, viewBox: `0 0 ${rect.width} ${rect.height}` }, this.root());
+    var svg = this.createSVGElement(
+      'svg',
+      { width: rect.width, height: rect.height, viewBox: `0 0 ${rect.width} ${rect.height}` },
+      this.root()
+    );
     this.createSVGElement('defs', {}, svg);
     this.createSVGElement('rect', { x: 100, y: 100, w: 100, h: 100, fill: '#f0f' }, svg);
 
@@ -376,7 +380,9 @@ export default class devpane {
 
   handleKeypress(e) {
     const { key, keyCode, charCode } = e;
-    const modifiers = ['alt', 'shift', 'ctrl', 'meta'].reduce((mod, key) => (e[key + 'Key'] === true ? [...mod, key] : mod), []).toString();
+    const modifiers = ['alt', 'shift', 'ctrl', 'meta']
+      .reduce((mod, key) => (e[key + 'Key'] === true ? [...mod, key] : mod), [])
+      .toString();
     //console.log('keypress: ', { key, keyCode, charCode, modifiers });
 
     if(e.key == 'D' && (e.metaKey || e.ctrlKey || e.altKey) && e.shiftKey) {
@@ -385,7 +391,10 @@ export default class devpane {
       select().then(e => console.log('select() = ', e));
     } /* if(e.key == 'g') {
       gettext().then(r => console.log("gettext() = ", r));
-    } else*/ else if(e.key == 't' && e.ctrlKey) {
+    } else*/ else if(
+      e.key == 't' &&
+      e.ctrlKey
+    ) {
       console.log('devpane ', this);
       this.renderTranslateLayer();
 
@@ -505,7 +514,9 @@ export default class devpane {
       return parent;
     };
     createRow(table, 'th', header, { backgroundColor: '#000000', color: '#ffffff' });
-    rows.forEach((columns, i) => createRow(table, 'td', columns, { backgroundColor: i % 2 == 0 ? '#ffffff' : '#c0c0c0' }));
+    rows.forEach((columns, i) =>
+      createRow(table, 'td', columns, { backgroundColor: i % 2 == 0 ? '#ffffff' : '#c0c0c0' })
+    );
     return table;
   }
 
@@ -778,7 +789,15 @@ export default class devpane {
         <input type="checkbox" onChange={this.handleToggle} />
         Bounding boxes
         <br />
-        <pre id={'bbox'}>{[`x: ${rect.x || 0}`, `y: ${rect.y || 0}`, `width: ${rect.w || 0}`, `height: ${rect.h || 0}`, `font-size: ${fontSize || 0}`].join(',\n')}</pre>
+        <pre id={'bbox'}>
+          {[
+            `x: ${rect.x || 0}`,
+            `y: ${rect.y || 0}`,
+            `width: ${rect.w || 0}`,
+            `height: ${rect.h || 0}`,
+            `font-size: ${fontSize || 0}`
+          ].join(',\n')}
+        </pre>
       </form>
     );
   }
@@ -855,7 +874,13 @@ export default class devpane {
       const hue = (360 * idx) / arr.length;
       if(inside && !rect.box) {
         if(!rect.boxes) rect.boxes = this.svg.factory('g');
-        rect.bounds.forEach((r, i, a) => this.svg.factory('rect', { ...Rect(rect), stroke: HSLA(hue, 100, 25 + (50 * i) / a.length).toString(), fill: 'none' }, rect.boxes));
+        rect.bounds.forEach((r, i, a) =>
+          this.svg.factory(
+            'rect',
+            { ...Rect(rect), stroke: HSLA(hue, 100, 25 + (50 * i) / a.length).toString(), fill: 'none' },
+            rect.boxes
+          )
+        );
       } else if(!inside && rect.boxes) {
         //console.log('parent: ', rect.boxes.parentNode, ' boxes: ', rect.boxes);
         while(rect.boxes.firstChild) rect.boxes.removeChild(rect.boxes.firstChild);

@@ -34,11 +34,8 @@ export class CurrencyList {
       before: true,
       format: function(am) {
         if(am == NaN || am == 'NaN') return '...';
-        am = this.round(am);
-        return `${this.symbol}${am.toLocaleString('en', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 10
-        })}`;
+        am = this.round(am) + '';
+        return `${this.symbol}${am}`;
       },
       fromSats: 1.0e-8,
       toSats: 1.0e8,

@@ -21,7 +21,13 @@ var select = {
     pool.query('SELECT id FROM ' + table + ' ORDER BY id').then(res => rfn([...res[0]].map(r => r.id)));
   },
   insertRow(table, values, rfn) {
-    pool.query('INSERT INTO ' + table + ' (user_id,drawing_id,numbers,stars,start_date,end_date) VALUES (' + [values.user_id, values.drawing_id, values.numbers, values.stars, values.start_date, values.end_date].join(','), (error, results) => console.log({ error, results }));
+    pool.query(
+      'INSERT INTO ' +
+        table +
+        ' (user_id,drawing_id,numbers,stars,start_date,end_date) VALUES (' +
+        [values.user_id, values.drawing_id, values.numbers, values.stars, values.start_date, values.end_date].join(','),
+      (error, results) => console.log({ error, results })
+    );
   },
   next_id(table, rfn) {
     pool.query('SELECT id FROM ' + table + ' ORDER BY id DESC LIMIT 1').then((res = rfn([...res[0]])));
@@ -120,7 +126,8 @@ const queries = {
         .map(kv => kv.join('='))
         .join('&');
 
-    let q = 'SELECT user_id,email,password,balance,password_reset_token FROM users INNER JOIN user_profiles ON users.id=user_profiles.user_id WHERE (user_profiles.password_reset_token LIKE "act%") OR (user_profiles.first_name="" AND user_profiles.last_name="")';
+    let q =
+      'SELECT user_id,email,password,balance,password_reset_token FROM users INNER JOIN user_profiles ON users.id=user_profiles.user_id WHERE (user_profiles.password_reset_token LIKE "act%") OR (user_profiles.first_name="" AND user_profiles.last_name="")';
     console.log({ q });
 
     pool.query(q).then(set => {

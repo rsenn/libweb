@@ -110,7 +110,8 @@ export function MovementListener(handler, options) {
       //devp.logEntry(`EVENT: ${index} ${Math.round(angle)} ${move.x} ${move.y}`);
       move.prev = prev;
 
-      (move.time = Date.now() - starttime), (move.timediff = prev && prev.time !== undefined ? move.time - prev.time : 0);
+      (move.time = Date.now() - starttime),
+        (move.timediff = prev && prev.time !== undefined ? move.time - prev.time : 0);
 
       if(/*prev && prev.time === 0 &&*/ Math.abs(90 - Math.abs(angle)) < 45) {
         if(self.handler.start() === null) self.handler.start(move);
@@ -334,11 +335,17 @@ export function SelectionListener(handler, options) {
         let id = SelectionListener.id === undefined ? 1 : SelectionListener.id + 1;
         SelectionListener.id = id;
         element = Element.create('div', { id: `select_${id}` }, global.window ? window.document.body : null);
-        Element.setCSS(element, { position: 'fixed', border: '2px dashed ' + options.color, filter: `drop-shadow(1px 1px 1px ${options.shadow})`, zIndex: 999999999 });
+        Element.setCSS(element, {
+          position: 'fixed',
+          border: '2px dashed ' + options.color,
+          filter: `drop-shadow(1px 1px 1px ${options.shadow})`,
+          zIndex: 999999999
+        });
       }
       //    Element.rect(element, rect, { position: 'absolute' });
       Element.setCSS(element, { left: `${rect.x}px`, top: `${rect.y}px` });
-      if(dx !== undefined && dy !== undefined) Element.setCSS(element, { width: `${rect.width}px`, height: `${rect.height}px` });
+      if(dx !== undefined && dy !== undefined)
+        Element.setCSS(element, { width: `${rect.width}px`, height: `${rect.height}px` });
     }
     // console.log("Touch ", type);
     if(type.endsWith('end') || type.endsWith('up')) {

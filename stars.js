@@ -1,7 +1,10 @@
 (function() {
   console.clear();
   var stage = new PIXI.Stage();
-  var renderer = PIXI.autoDetectRecommendedRenderer(window.innerWidth, window.innerHeight, { view: document.getElementById('canvas'), transparent: true });
+  var renderer = PIXI.autoDetectRecommendedRenderer(window.innerWidth, window.innerHeight, {
+    view: document.getElementById('canvas'),
+    transparent: true
+  });
 
   var starTexture = PIXI.Texture.fromImage('https://s3-us-west-2.amazonaws.com/s.cdpn.io/167451/Feedbin-Icon-star.svg');
 

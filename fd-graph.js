@@ -20,7 +20,18 @@ import Util from './util.js';
  */
 
 export class Graph {
-  constructor({ origin = new Point(0, 0), gravitate_to_origin = true, spacing = 1, timestep = 150, kineticenergy = 1, damping = 0.000005, total_node_velocity = 0, onUpdateNode = node => {}, onUpdateEdge = edge => {}, onRenderGraph = graph => {} }) {
+  constructor({
+    origin = new Point(0, 0),
+    gravitate_to_origin = true,
+    spacing = 1,
+    timestep = 150,
+    kineticenergy = 1,
+    damping = 0.000005,
+    total_node_velocity = 0,
+    onUpdateNode = node => {},
+    onUpdateEdge = edge => {},
+    onRenderGraph = graph => {}
+  }) {
     console.log(`Graph(${origin},${gravitate_to_origin})`);
     this.nodes = [];
     this.edges = [];
@@ -137,10 +148,18 @@ export class Graph {
           // gravitate to, and repel from origin
           var d = node.distance(this.config.origin);
           var af = 0.02 * Math.max(d, 1);
-          Point.move(node.netforce, af * Math.sin((this.config.origin.x - node.x) / d), af * Math.sin((this.config.origin.y - node.y) / d));
+          Point.move(
+            node.netforce,
+            af * Math.sin((this.config.origin.x - node.x) / d),
+            af * Math.sin((this.config.origin.y - node.y) / d)
+          );
 
           var rf = -1 * (node.charge / (d * d));
-          Point.move(node.netforce, rf * Math.sin((this.config.origin.x - node.x) / d), rf * Math.sin((this.config.origin.y - node.y) / d));
+          Point.move(
+            node.netforce,
+            rf * Math.sin((this.config.origin.x - node.x) / d),
+            rf * Math.sin((this.config.origin.y - node.y) / d)
+          );
         }
         for(var j = 0; j < this.edges.length; j++) {
           var con = this.edges[j];
@@ -361,7 +380,10 @@ class Node extends Point {
   }
 
   toJS() {
-    return Util.filterKeys(this, key => ['charge', 'mass', 'velocity', 'netforce', 'label', 'x', 'y', 'id'].indexOf(key) != -1);
+    return Util.filterKeys(
+      this,
+      key => ['charge', 'mass', 'velocity', 'netforce', 'label', 'x', 'y', 'id'].indexOf(key) != -1
+    );
   }
 }
 
