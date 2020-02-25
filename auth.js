@@ -1,16 +1,16 @@
 // import cookie, { Cookie } from 'js-cookie';
-import { axios } from "axios";
-import Router from "next/router";
-import { Component } from "react";
+import { axios } from 'axios';
+import Router from 'next/router';
+import { Component } from 'react';
 
-import { getStore } from "../stores/createStore.js";
+import { getStore } from '../stores/createStore.js';
 
-const cookieKey = "email";
+const cookieKey = 'email';
 
 export const destroyUserCookie = () => Cookie.remove(cookieKey);
 
 export const cookieMap = cookie => {
-  if(typeof cookie !== "string") return {};
+  if(typeof cookie !== 'string') return {};
   const parts = cookie.split(/;\s*/g);
   if(!parts) return {};
   return parts.reduce((acc, p) => {
@@ -23,7 +23,7 @@ export const cookieMap = cookie => {
 export const getUserFromCookie = req => {
   const { cookie } = req.headers;
   if(!cookie) return null;
-  const userCookie = cookie.split(";").find(c => c.trim().startsWith(`${cookieKey}=`));
+  const userCookie = cookie.split(';').find(c => c.trim().startsWith(`${cookieKey}=`));
   if(!userCookie) return null;
   const user = decodeURIComponent(userCookie.split(`${cookieKey}=`)[1]);
   return JSON.parse(user);
@@ -32,7 +32,7 @@ export const getUserFromCookie = req => {
 export const setUserCookie = user => Cookie.set(cookieKey, JSON.stringify(user));
 
 // Gets the display name of a JSX component for dev tools
-const getDisplayName = Component => Component.displayName || Component.name || "Component";
+const getDisplayName = Component => Component.displayName || Component.name || 'Component';
 /*
 export const auth = ctx => {
   const { token, user } = ctx;
@@ -154,7 +154,7 @@ export class AuthService {
 */
 // utils/withAuth.js - a HOC for protected pages
 export function withAuth(AuthComponent) {
-  const Auth = new AuthService("http://localhost:5000");
+  const Auth = new AuthService('http://localhost:5000');
   return class Authenticated extends Component {
     constructor(props) {
       super(props);
@@ -163,7 +163,7 @@ export function withAuth(AuthComponent) {
 
     componentDidMount() {
       if(!Auth.loggedIn()) {
-        this.props.url.replaceTo("/");
+        this.props.url.replaceTo('/');
       }
       this.setState({ isLoading: false });
     }

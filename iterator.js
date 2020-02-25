@@ -1,9 +1,9 @@
 export const isIterator = arg => {
-  return typeof arg == "object" && arg !== null && typeof arg.next == "function";
+  return typeof arg == 'object' && arg !== null && typeof arg.next == 'function';
 };
 
 export const isIterable = arg => {
-  return typeof arg == "object" && arg !== null && arg[Symbol.iterator] !== undefined;
+  return typeof arg == 'object' && arg !== null && arg[Symbol.iterator] !== undefined;
 };
 
 export function Iterator(arg) {
@@ -12,11 +12,11 @@ export function Iterator(arg) {
     return (function*() {
       yield* arg;
     })();
-  if(((typeof arg == "object" && arg !== null) || typeof arg == "string") && arg.length !== undefined)
+  if(((typeof arg == 'object' && arg !== null) || typeof arg == 'string') && arg.length !== undefined)
     return (function*() {
       for(let i = 0; i < arg.length; i++) yield arg[i];
     })();
-  if(typeof arg == "number")
+  if(typeof arg == 'number')
     return (function*() {
       for(let i = 0; i < arg; i++) yield i;
     })();

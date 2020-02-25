@@ -1,4 +1,4 @@
-const axios = require("axios");
+const axios = require('axios');
 
 const httpClient = axios.create({
   withCredentials: true
@@ -12,7 +12,7 @@ httpClient.interceptors.response.use(
     return res;
   },
   err => {
-    console.error("axios ERROR:", err.request.path);
+    console.error('axios ERROR:', err.request.path);
     // throw new Error(err.response.data.message);
   }
 );
