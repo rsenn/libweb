@@ -574,9 +574,9 @@ class MoonScriptGenerator {
 
     function moonscript_table_expression(node) {
       let list = 0;
-     // const types = Util.histogram(node.fields.map(f => f.type));
+      // const types = Util.histogram(node.fields.map(f => f.type));
       var indent = generator.indent + '  ';
-     // console.error('TYPES: ', types);
+      // console.error('TYPES: ', types);
       const fields = node.fields.map(field => {
         let key = generator.subtree(field.key, false);
         let num = parseInt(key);
@@ -796,9 +796,13 @@ class Token {
   }
   get position() {
     const { line, column } = this;
-    return {  line, column, toString() {
-    return `${this.line}:${this.column}`;
-    }};
+    return {
+      line,
+      column,
+      toString() {
+        return `${this.line}:${this.column}`;
+      }
+    };
   }
   toString() {
     return `Token { ${this.type}, value:'${this.value}', line:${this.line}, column:${this.column} }`;
@@ -1355,7 +1359,7 @@ class Parser {
       this.anchor();
       return this.ast.program(this.parse_chunk());
     } catch(err) {
-   err.token = this.cur_token;
+      err.token = this.cur_token;
       console.error('ERROR:', err);
       console.log('ERROR:', err);
       throw err;
