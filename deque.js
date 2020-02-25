@@ -184,12 +184,12 @@ Deque.prototype.enqueue = Deque.prototype.push;
 Deque.prototype.dequeue = Deque.prototype.shift;
 Deque.prototype.toJSON = Deque.prototype.toArray;
 
-Object.defineProperty(Deque.prototype, "length", {
+Object.defineProperty(Deque.prototype, 'length', {
   get: function() {
     return this._length;
   },
   set: function() {
-    throw new RangeError("");
+    throw new RangeError('');
   }
 });
 
@@ -231,7 +231,7 @@ function pow2AtLeast(n) {
 }
 
 function getCapacity(capacity) {
-  if(typeof capacity !== "number") {
+  if(typeof capacity !== 'number') {
     if(isArray(capacity)) {
       capacity = capacity.length;
     } else {

@@ -1,10 +1,10 @@
 (function() {
-  "use strict";
+  'use strict';
   function EventEmitter() {}
 
   EventEmitter.prototype.on = function(event, handler) {
-    if(typeof event !== "string") throw new TypeError("The 1st argument is not a string");
-    if(typeof handler !== "function") throw new TypeError("The 2nd argument is not a function");
+    if(typeof event !== 'string') throw new TypeError('The 1st argument is not a string');
+    if(typeof handler !== 'function') throw new TypeError('The 2nd argument is not a function');
 
     if(!this._events) {
       this._events = { __proto__: null };
@@ -18,8 +18,8 @@
   };
 
   EventEmitter.prototype.once = function(event, handler) {
-    if(typeof event !== "string") throw new TypeError("The 1st argument is not a string");
-    if(typeof handler !== "function") throw new TypeError("The 2nd argument is not a function");
+    if(typeof event !== 'string') throw new TypeError('The 1st argument is not a string');
+    if(typeof handler !== 'function') throw new TypeError('The 2nd argument is not a function');
 
     var emitFn = function() {
       handler.apply(this, arguments);
@@ -30,8 +30,8 @@
   };
 
   EventEmitter.prototype.bindEventEmitter = function(target, event) {
-    if(event !== undefined && typeof event !== "string") {
-      throw new TypeError("The 2nd argument is not a string");
+    if(event !== undefined && typeof event !== 'string') {
+      throw new TypeError('The 2nd argument is not a string');
     }
     if(!target._events) {
       target._events = { __proto__: null };
@@ -41,11 +41,11 @@
   };
 
   EventEmitter.prototype.off = function(event, handler) {
-    if(event !== undefined && typeof event !== "string") {
-      throw new TypeError("The 1st argument is not a string");
+    if(event !== undefined && typeof event !== 'string') {
+      throw new TypeError('The 1st argument is not a string');
     }
-    if(handler !== undefined && typeof handler !== "function") {
-      throw new TypeError("The 2nd argument is not a function");
+    if(handler !== undefined && typeof handler !== 'function') {
+      throw new TypeError('The 2nd argument is not a function');
     }
     if(!this._events) return this;
 
@@ -72,8 +72,8 @@
   };
 
   EventEmitter.prototype.emit = function(event, args) {
-    if(event !== undefined && typeof event !== "string") {
-      throw new TypeError("The 1st argument is not a string");
+    if(event !== undefined && typeof event !== 'string') {
+      throw new TypeError('The 1st argument is not a string');
     }
 
     if(!this._events || !this._events[event]) {

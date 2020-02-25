@@ -1,5 +1,5 @@
-import { Point, isPoint, PointList, Line, Timer, Element, BBox } from "./dom.js";
-import Util from "./util.js";
+import { Point, isPoint, PointList, Line, Timer, Element, BBox } from './dom.js';
+import Util from './util.js';
 
 /* From https://github.com/ehayon/FDGraph */
 
@@ -20,7 +20,18 @@ import Util from "./util.js";
  */
 
 export class Graph {
-  constructor({ origin = new Point(0, 0), gravitate_to_origin = true, spacing = 1, timestep = 150, kineticenergy = 1, damping = 0.000005, total_node_velocity = 0, onUpdateNode = node => {}, onUpdateEdge = edge => {}, onRenderGraph = graph => {} }) {
+  constructor({
+    origin = new Point(0, 0),
+    gravitate_to_origin = true,
+    spacing = 1,
+    timestep = 150,
+    kineticenergy = 1,
+    damping = 0.000005,
+    total_node_velocity = 0,
+    onUpdateNode = node => {},
+    onUpdateEdge = edge => {},
+    onRenderGraph = graph => {}
+  }) {
     console.log(`Graph(${origin},${gravitate_to_origin})`);
     this.nodes = [];
     this.edges = [];
@@ -31,7 +42,7 @@ export class Graph {
     this.timestep = timestep;
     this.kineticenergy = kineticenergy;
     this.total_node_velocity = total_node_velocity;
-    this.gravitate_to_origin = typeof gravitate_to_origin == "undefined" ? true : gravitate_to_origin;
+    this.gravitate_to_origin = typeof gravitate_to_origin == 'undefined' ? true : gravitate_to_origin;
     this.done_rendering = false;
 
     var g = this;
@@ -61,7 +72,7 @@ export class Graph {
     return this.nodes[this.nodes.length - 1];
   }
 
-  findNode(value, key = "label") {
+  findNode(value, key = 'label') {
     return Util.find(this.nodes, value, key);
   }
 
@@ -137,10 +148,18 @@ export class Graph {
           // gravitate to, and repel from origin
           var d = node.distance(this.config.origin);
           var af = 0.02 * Math.max(d, 1);
-          Point.move(node.netforce, af * Math.sin((this.config.origin.x - node.x) / d), af * Math.sin((this.config.origin.y - node.y) / d));
+          Point.move(
+            node.netforce,
+            af * Math.sin((this.config.origin.x - node.x) / d),
+            af * Math.sin((this.config.origin.y - node.y) / d)
+          );
 
           var rf = -1 * (node.charge / (d * d));
-          Point.move(node.netforce, rf * Math.sin((this.config.origin.x - node.x) / d), rf * Math.sin((this.config.origin.y - node.y) / d));
+          Point.move(
+            node.netforce,
+            rf * Math.sin((this.config.origin.x - node.x) / d),
+            rf * Math.sin((this.config.origin.y - node.y) / d)
+          );
         }
         for(var j = 0; j < this.edges.length; j++) {
           var con = this.edges[j];
@@ -248,7 +267,7 @@ export class Graph {
         /*  this.nodes[newPos.index].x = newPos.x;
       this.nodes[newPos.index].y = newPos.y;*/
       }
-      console.log("newPositions: ", newPositions);
+      console.log('newPositions: ', newPositions);
     } else {
       this.done_rendering = false;
     }
@@ -292,7 +311,7 @@ export class Graph {
   }
 
   translate(x, y) {
-    let p = typeof y == "number" ? new Point(x, y) : x;
+    let p = typeof y == 'number' ? new Point(x, y) : x;
     for(let i = 0; i < this.nodes.length; i++) {
       Point.move(this.nodes[i], p.x, p.y);
     }
@@ -361,7 +380,10 @@ class Node extends Point {
   }
 
   toJS() {
-    return Util.filterKeys(this, key => ["charge", "mass", "velocity", "netforce", "label", "x", "y", "id"].indexOf(key) != -1);
+    return Util.filterKeys(
+      this,
+      key => ['charge', 'mass', 'velocity', 'netforce', 'label', 'x', 'y', 'id'].indexOf(key) != -1
+    );
   }
 }
 
@@ -382,7 +404,7 @@ class Edge extends Line {
     if(node_b) this.b = node_b instanceof Node ? node_b : new Node(node_b);
 
     if(!(node_a && node_b)) {
-      throw new Error("Edge requires 2 nodes");
+      throw new Error('Edge requires 2 nodes');
     }
 
     // super(node_a ? node_a.x : 0, node_a ? node_a.y : 0, node_b ? node_b.x :0 , node_b ? node_b.y :0);
