@@ -39,13 +39,13 @@ if (['development', 'test', 'local'].indexOf(env) != -1 && 'window' in global) {
     }
     return newClasses;
   };
-
+/*
   window.addEventListener('load', () => {
     Timer.once(3000, () => {
       console.log('running accumulateClasses');
       accumulateClasses();
     });
-  });
+  });*/
 }
 /*
  */
