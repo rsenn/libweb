@@ -4,12 +4,13 @@ import dom, {TRBL, CSS, CSSTransformSetters, Element, ElementRectProxy, ElementS
 import { SvgOverlay, SvgPathTracer } from './svg-overlay.js';
 import { SvgPath } from './svg-path.js';
 import Util from './util.js';
-import { toJS } from 'mobx';
+import { toJS, set, get, values, keys, entries, remove, has } from 'mobx';
 import { trkl } from './trkl.js';
 import HashList from './hashList.js';
 import { Polygon } from './polygon.js';
 import { TouchListener } from './touchHandler.js';
 import { makeLocalStorage } from './autoStore.js';
+import { parseDate, Models, ParseRecord, ParseRecords, UpdateRecords, UpdateRecord } from '../stores/Models.js';
 var root = global.window ? window : global;
 
 const env = 'development';
@@ -38,13 +39,13 @@ if (['development', 'test', 'local'].indexOf(env) != -1 && 'window' in global) {
     }
     return newClasses;
   };
-
+/*
   window.addEventListener('load', () => {
     Timer.once(3000, () => {
       console.log('running accumulateClasses');
       accumulateClasses();
     });
-  });
+  });*/
 }
 /*
  */
@@ -1022,7 +1023,14 @@ export const devtools = {
   circle,
   colors,
   Util,
-  toJS
+  toJS,
+  parseDate,
+  Models,
+  ParseRecord,
+  ParseRecords,
+  UpdateRecords,
+  UpdateRecord,
+  mobx: { set, get, values, keys, entries, remove, has }
 };
 
 export default devtools;

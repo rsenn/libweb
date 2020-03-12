@@ -100,7 +100,26 @@ export class CurrencyList {
   };
 
   static icons = {
-    BTC: '/static/img/sign-bitcoin.svg',
+    BTC: ({ width = '1em', height = 'auto', stroke = 'none', fill = 'inherit', ...props }) => (
+      <svg
+        height="48"
+        width="48"
+        className={'icon-btc'}
+        viewBox={'0 0 48 48'}
+        style={{
+          position: 'relative' /*, verticalAlign: 'baseline', transform: 'translate(3px, 7px)'*/,
+          width,
+          height
+        }}>
+        <path
+          style={{ isolation: 'isolate' }}
+          d="M38.209 25.07a7.557 7.557 0 00-4.49-2.641c3.647-1.541 4.475-6.43 2.504-9.584-1.71-3.082-6.19-3.07-8.617-4.066V2.621h-4.042v6.372H20.42V2.64h-3.955v6.475H8.523v4.231c1.281.06 2.596-.132 3.85.122 1.173.394 1.395 1.696 1.278 2.768v6.21c.641-.283-.346.452.017 1.163-.024 3.155.049 6.318-.036 9.469-.235 1.126-1.499 1.1-2.4 1.043H9.318l-.829 4.696h7.944v6.563h3.955v-6.493h3.142v6.458h3.955v-6.562c5.467.349 12.278-2.671 12.008-9.04.127-1.579-.348-3.609-1.283-4.672zm-17.63-11.465c2.753.068 5.795-.416 8.133 1.346 1.548 1.38 1.523 4.277-.384 5.332-2.32 1.417-5.137 1.133-7.75 1.162v-7.893zm10.809 17.51c-1.03 2.372-3.989 2.732-6.277 2.956-1.507.128-3.022.042-4.533.067v-8.636c3.3.05 6.893-.33 9.774 1.572 1.247.782 1.745 3.438 1.036 4.042z"
+          strokeWidth={0}
+          fill={fill}
+          stroke={stroke}
+        />
+      </svg>
+    ),
     USD: '/static/img/sign-dollar.svg',
     EUR: '/static/img/sign-euro.svg',
     IRR: '/static/img/sign-rial.svg',

@@ -535,7 +535,7 @@ class MoonScriptGenerator {
 
       ////console.error('node: ', generator.stack[1].type);
       const callee = moonscript(node.callee);
-      const params = node.params.map(param => moonscript(param)).join(', ');
+      const params = node.params && node.params.map ? node.params.map(param => moonscript(param)).join(', ') : '';
       return paren ? `${callee}(${params})` : `${callee} ${params}`;
     }
 
@@ -572,6 +572,7 @@ class MoonScriptGenerator {
       // const types = Util.histogram(node.fields.map(f => f.type));
       var indent = generator.indent + '  ';
       // console.error('TYPES: ', types);
+
       const fields = node.fields.map(field => {
         let key = generator.subtree(field.key, false);
         let num = parseInt(key);
