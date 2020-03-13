@@ -182,7 +182,12 @@ Point.prototype.normalize = function(minmax) {
 };
 
 Point.distance = point => Point.prototype.distance.call(point);
-Point.move = point => Point.prototype.move.call(point);
+Point.move = (point, x, y) => Point.prototype.move.call(point, x, y);
+Point.angle = point => Point.prototype.angle.call(point);
+Point.distance = point => Point.prototype.distance.call(point);
+Point.inside = (point, rect) => Point.prototype.inside.call(point, rect);
+Point.add = (point, other) => Point.prototype.add.call(point, other);
+Point.sub = (point, other) => Point.prototype.sub.call(point, other);
 Point.sum = (a, b) => Point.prototype.sum.call(a, b);
 Point.diff = (a, b) => Point.prototype.diff.call(a, b);
 Point.prod = (a, b) => Point.prototype.prod.call(a, b);
