@@ -18,7 +18,6 @@ convert_to_es5() {
     esac
   done
 
-
   while [ $# -gt 0 ]; do
     IN=$1
     shift
@@ -38,5 +37,7 @@ convert_to_es5() {
     set -- "$@" $ADDFILES
   done
 }
+
+set -- $(echo "$*" | grep -v es5.js)
 
 convert_to_es5 "$@"
