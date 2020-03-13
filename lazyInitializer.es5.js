@@ -10,7 +10,7 @@ exports.Instance = Instance;
 exports.lazyInitializer = lazyInitializer;
 exports.valueInitializer = valueInitializer;
 
-var _trkl.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js = require("./trkl.es5.js");
+var _trkl = require("./trkl.es5.js");
 
 function Instance(_ref) {
   var _ref$trackable = _ref.trackable,

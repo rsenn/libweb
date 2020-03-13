@@ -70,7 +70,6 @@ export class SVG extends Element {
   static bbox(element, options = { parent: null, absolute: false }) {
     let e = typeof element === "string" ? Element.find(element, options.parent) : element;
     let bb;
-    f;
     if(e && e.getBBox) {
       bb = new Rect(e.getBBox());
       if(options.absolute) {

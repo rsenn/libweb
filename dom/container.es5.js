@@ -14,7 +14,7 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime-corejs2/he
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/createClass"));
 
-var _element.es5.js = require("./element.js");
+var _element = require("./element.js");
 
 var Container = /*#__PURE__*/function () {
   function Container() {

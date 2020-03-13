@@ -180,7 +180,14 @@
    */
   SvgPath.prototype.arc = function(rx, ry, rotation, large, sweep, x, y) {
     var point = typeof x === "object" ? x : { x: x, y: y };
-    return this._cmd("A")(rx, ry, rotation, large, sweep, point.x, point.y);
+    return this._cmd("A")(rx, ry, rotation, large ? 1 : 0, sweep ? 1 : 0, point.x, point.y);
+  };
+
+  SvgPath.prototype.cmd = function(cmd) {
+    let args = [...arguments];
+    let command = args.shift();
+    let fn = this._cmd(command);
+    return fn.apply(null, args);
   };
 
   /**

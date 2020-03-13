@@ -36,7 +36,8 @@ convert_to_es5() {
   OPTS=
   while :; do
     case "$1" in
-      --force) FORCE=true; shift ;;
+      --force|-f) FORCE=true; shift ;;
+      --debug|-x) DEBUG=true; shift ;;
       -*) OPTS="${OPTS:+$OPTS$NL}$1"; shift ;;
        *) break ;;
     esac
@@ -50,7 +51,7 @@ convert_to_es5() {
     OUT=${IN%.js}.es5.js
 
     isin $IN $ALLFILES && continue 
-    echo "File: ${IN}" 1>&2
+    [ "$DEBUG" = true ] && echo "File: ${IN}" 1>&2
 
     pushv_unique ALLFILES "$IN"
 
@@ -70,12 +71,11 @@ convert_to_es5() {
       FILE=${FILE%.es5}
       pushv_unique ADDFILES "${FILE}.js"
       FILE=${FILE#$DIR/}
-      pushv SUBST "/require(/ s|$FILE|${FILE%.js}.es5.js|"
+      SUBST="$SUBST ;; /require(/ s|${FILE%.js}.js\"|${FILE%.js}.es5.js\"|"
     done
-   ( sed -i -e "$SUBST" "$OUT")
+   (set -x; sed -i -e "$SUBST" "$OUT")
 
     set -- "$@" $ADDFILES
-
   done
 }
 

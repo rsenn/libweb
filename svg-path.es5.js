@@ -217,7 +217,16 @@
       x: x,
       y: y
     };
-    return this._cmd("A")(rx, ry, rotation, large, sweep, point.x, point.y);
+    return this._cmd("A")(rx, ry, rotation, large ? 1 : 0, sweep ? 1 : 0, point.x, point.y);
+  };
+
+  SvgPath.prototype.cmd = function (cmd) {
+    var args = Array.prototype.slice.call(arguments);
+    var command = args.shift();
+
+    var fn = this._cmd(command);
+
+    return fn.apply(null, args);
   };
   /**
    * String representation of command chain

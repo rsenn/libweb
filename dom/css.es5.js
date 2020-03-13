@@ -16,7 +16,7 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime-corejs2/he
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/createClass"));
 
-var _util = _interopRequireDefault(require("../util.es5.js.js"));
+var _util = _interopRequireDefault(require("../util.es5.js"));
 
 var CSS = /*#__PURE__*/function () {
   function CSS() {
