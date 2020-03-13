@@ -16,11 +16,11 @@ var _iterator = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/s
 
 var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/toConsumableArray"));
 
-var _point = require("./point.js");
+var _point = require("./point.es5.js");
 
-var _rect = require("./rect.js");
+var _rect = require("./rect.es5.js");
 
-var _util = _interopRequireDefault(require("../util.js"));
+var _util = _interopRequireDefault(require("../util.es5.js"));
 
 function PointList(points) {
   var args = Array.prototype.slice.call(arguments);

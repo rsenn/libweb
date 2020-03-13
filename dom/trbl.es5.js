@@ -20,7 +20,7 @@ var _parseInt2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/
 
 var _keys = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/keys"));
 
-var _rect = require("./rect.js");
+var _rect = require("./rect.es5.js");
 
 var _this = void 0;
 

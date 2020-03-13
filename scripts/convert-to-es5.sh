@@ -7,7 +7,16 @@ IFS="$NL"
 pushv() { 
     eval "shift;$1=\"\${$1+\"\$$1\${IFS%\"\${IFS#?}\"}\"}\$*\""
 }
+isin() { 
+ (needle="$1"
+  while [ "$#" -gt 1 ]; do
+    shift
+    test "$needle" = "$1" && exit 0
+  done;
+  exit 1)
+}
 
+ALLFILES=
 
 convert_to_es5() {
   OPTS=
@@ -20,6 +29,11 @@ convert_to_es5() {
 
   while [ $# -gt 0 ]; do
     IN=$1
+
+    if isin $IN $ALLFILES; then
+      continue
+    fi
+    DIR=`dirname "$1"`
     shift
     OUT=${IN%.js}.es5.js
      (set -x; babel -o "$OUT" "$IN" )
@@ -27,14 +41,18 @@ convert_to_es5() {
     SUBST=
     ADDFILES=
     for FILE in $REQUIRES; do
-      test -e "$FILE" || continue
       FILE=${FILE#./}
+      FILE=$DIR/$FILE
+      test -e "$FILE" || continue
+      pushv ADDFILES "$FILE"
+      FILE=${FILE#$DIR/}
       pushv SUBST "/require(/ s|$FILE|${FILE%.js}.es5.js|"
-     pushv ADDFILES "$FILE"
     done
-    sed -i -e "$SUBST" "$OUT"
+   (set -x;  sed -i -e "$SUBST" "$OUT")
 
     set -- "$@" $ADDFILES
+
+    pushv ALLFILES "$IN"
   done
 }
 

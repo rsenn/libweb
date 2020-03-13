@@ -15,7 +15,7 @@ var _parseFloat2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-j
 
 var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/toConsumableArray"));
 
-var _rgba = require("./rgba.js");
+var _rgba = require("./rgba.es5.js");
 
 /**
  * @brief [brief description]

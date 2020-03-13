@@ -19,7 +19,7 @@ var _parseFloat2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-j
 
 var _parseInt2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/parse-int"));
 
-var _hsla = require("./hsla.js");
+var _hsla = require("./hsla.es5.js");
 
 var _this = void 0;
 

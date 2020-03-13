@@ -27,11 +27,11 @@ var _defineProperty3 = _interopRequireDefault(require("@babel/runtime-corejs2/co
 
 var _parseFloat2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/parse-float"));
 
-var _point = require("./point.js");
+var _point = require("./point.es5.js");
 
-var _pointList = require("./pointList.js");
+var _pointList = require("./pointList.es5.js");
 
-var _size = require("./size.js");
+var _size = require("./size.es5.js");
 
 function ownKeys(object, enumerableOnly) { var keys = (0, _keys["default"])(object); if (_getOwnPropertySymbols["default"]) { var symbols = (0, _getOwnPropertySymbols["default"])(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return (0, _getOwnPropertyDescriptor["default"])(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
