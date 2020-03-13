@@ -68,15 +68,17 @@ export function stylesheets() {
 export const colors = (() => {
   var stepX = 20;
   var elements = [];
-  return function colors(map) {
+  return function colors(map, opts) {
     let args = Util.map(map);
     args = args.map(arg => new RGBA(arg));
+
+    opts = opts || { height: 322, width: 80 };
 
     let count = args.length;
     console.log("colors map(", args, ")");
     const left = elements.length ? Element.rect(elements[0]).x2 + stepX : stepX;
 
-    let dim = Element.rect(".item-box-size") || new Rect({ width: 80, height: 322 });
+    let dim = Element.rect(".item-box-size") || new Rect(opts);
     let e = Element.create("div", {
       parent: Element.find("body"),
       class: "colors-palette",
@@ -84,7 +86,8 @@ export const colors = (() => {
         position: "absolute",
         left: left + "px",
         top: "134px",
-        height: `${dim.height || 322}px`,
+        width: `${opts.width}px`,
+        height: `${dim.height || opts.height}px`,
         zIndex: 100000
       }
     });
@@ -104,7 +107,7 @@ export const colors = (() => {
         style: {
           margin: "auto",
           //  opacity: c.a / 255,
-          height: `${322 / 16}px`,
+          height: `${opts.height / 16}px`,
           overflow: "hidden",
           fontFamily: "Arial",
           fontSize: "0.4em",
