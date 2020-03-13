@@ -138,13 +138,9 @@ Point.prototype.fromAngle = function(angle, dist = 1.0) {
 Point.prototype.toAngle = function(deg = false) {
   return Math.atan2(this.x, this.y) * (deg ? 180 / Math.PI : 1);
 };
-Point.prototype.angle = function(
-  p2 = {
-    x: 0,
-    y: 0
-  }
-) {
-  return Point.prototype.diff.call(p1, p2).toAngle();
+Point.prototype.angle = function(other) {
+  other = other || { x: 0, y: 0 };
+  return Point.prototype.diff.call(this, other).toAngle();
 };
 Point.prototype.dimension = function() {
   return [this.width, this.height];

@@ -232,8 +232,8 @@ Rect.prototype.align = function(align_to, a = 0) {
 
 Rect.prototype.round = function(precision = 0) {
   let { x, y, x2, y2 } = this;
-  this.x = +x.toFixed(precision);
-  this.y = +y.toFixed(precision);
+  this.x = +(0 + x).toFixed(precision);
+  this.y = +(0 + y).toFixed(precision);
   this.width = +x2.toFixed(precision) - this.x;
   this.height = +y2.toFixed(precision) - this.y;
   return this;
