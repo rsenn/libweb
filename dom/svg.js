@@ -1,6 +1,6 @@
-import { Element, isElement } from "./element.js";
-import { Size, isSize } from "./size.js";
-import { Rect, isRect } from "./rect.js";
+import { Element } from "./element.js";
+import { Size } from "./size.js";
+import { Rect } from "./rect.js";
 import Util from "../util.js";
 
 

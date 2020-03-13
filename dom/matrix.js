@@ -1,4 +1,3 @@
-import { Rect, isRect } from "./rect.js";
 
 export function Matrix(arg) {
   let ret = this instanceof Matrix ? this : [undefined, 0, 0, undefined, 0, 0, undefined, 0, 0];
