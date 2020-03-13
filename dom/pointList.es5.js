@@ -16,9 +16,9 @@ var _iterator = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/s
 
 var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/toConsumableArray"));
 
-var _point.es5.js = require("./point.js");
+var _point.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js = require("./point.js");
 
-var _rect.es5.js = require("./rect.js");
+var _rect.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js = require("./rect.js");
 
 var _util = _interopRequireDefault(require("../util.es5.js.js"));
 

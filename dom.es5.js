@@ -291,7 +291,7 @@ var _reactDom = _interopRequireDefault(require("react-dom"));
 
 var _svgPath = require("./svg-path.es5.js.js");
 
-var _util.es5.js = _interopRequireDefault(require("./util.js"));
+var _util.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js = _interopRequireDefault(require("./util.js"));
 
 var _point = require("./dom/point.es5.js.js");
 

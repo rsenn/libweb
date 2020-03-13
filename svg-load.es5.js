@@ -17,7 +17,7 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime-corejs2/he
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/createClass"));
 
-var _axios = _interopRequireDefault(require("./axios.es5.js"));
+var _axios.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js = _interopRequireDefault(require("./axios.es5.js"));
 
 var _temp;
 

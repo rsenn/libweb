@@ -36,9 +36,9 @@ var _createClass2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpe
 
 var _react = _interopRequireDefault(require("react"));
 
-var _element = require("./element.es5.js");
+var _element.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js = require("./element.js");
 
-var _util = _interopRequireDefault(require("../util.es5.js"));
+var _util = _interopRequireDefault(require("../util.es5.js.js"));
 
 var __jsx = _react["default"].createElement;
 

@@ -31,11 +31,11 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime-corejs2/regene
 
 var _react = _interopRequireDefault(require("react"));
 
-var _dom = require("./dom.es5.js");
+var _dom.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js = require("./dom.es5.js");
 
-var _trkl = require("./trkl.es5.js");
+var _trkl.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js = require("./trkl.es5.js");
 
-var _lazyInitializer = require("./lazyInitializer.es5.js");
+var _lazyInitializer.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js = require("./lazyInitializer.es5.js");
 
 var __jsx = _react["default"].createElement;
 
