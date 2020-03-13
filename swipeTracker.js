@@ -1,6 +1,6 @@
-import { rect } from "../utils/devtools.js";
-import { Point, Rect } from "../utils/dom.js";
-import Util from "../utils/util.js";
+import { rect } from "../lib/devtools.js";
+import { Point, Rect } from "../lib/dom.js";
+import Util from "../lib/util.js";
 
 import { trkl } from "./trkl.js";
 

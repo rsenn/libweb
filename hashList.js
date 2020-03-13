@@ -1,4 +1,4 @@
-import { Element, Rect } from "../utils/dom.js";
+import { Element, Rect } from "../lib/dom.js";
 
 export class HashList {
   constructor(keyfn, ctor) {

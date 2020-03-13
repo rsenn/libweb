@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
-import { Element, HSLA, Point, Rect, Renderer, Select, SVG } from "../utils/dom.js";
-import axios from "../utils/axios.js";
+import { Element, HSLA, Point, Rect, Renderer, Select, SVG } from "../lib/dom.js";
+import axios from "./axios.js";
 import Util from "./util.js";
 import { Polygon } from "./polygon.js";
 import devtools, { storage, select } from "./devtools.js";

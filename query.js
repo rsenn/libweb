@@ -1,4 +1,4 @@
-// var Util = require('./utils/util.js');
+// var Util = require('./lib/util.js');
 
 var Util = require("./util.js");
 // var mysql = require("mysql");

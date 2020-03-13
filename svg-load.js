@@ -3,7 +3,7 @@
  * https://blobfolio.com/2018/06/lazy-loading-sprites-inline/
  */
 
-import axios from "../utils/axios.js";
+import axios from "./axios.js";
 
 /**
  * Process SVGs onLoad

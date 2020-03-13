@@ -1136,6 +1136,9 @@ Util.toUnixTime = function(dateObj, utc = false) {
   if(utc) epoch += dateObj.getTimezoneOffset() * 60;
   return epoch;
 };
+
+Util.unixTime = (utc = false) => Util.toUnixTime(new Date(), utc);
+
 Util.fromUnixTime = function(epoch, utc = false) {
   let t = parseInt(epoch);
   let d = new Date(0);

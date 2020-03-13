@@ -1,6 +1,6 @@
 import { isPoint, Point, PointList, Line, Rect, Element } from "./dom.js";
 import { trkl } from "./trkl.js";
-import { ScrollDisabler } from "../utils/scrollHandler.js";
+import { ScrollDisabler } from "../lib/scrollHandler.js";
 
 export function MovementListener(handler, options) {
   var start = null;

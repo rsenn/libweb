@@ -1,4 +1,4 @@
-import { Element, HSLA, RGBA } from "../utils/dom.js";
+import { Element, HSLA, RGBA } from "../lib/dom.js";
 
 export class ColorScheme {
   static nextTheme =
