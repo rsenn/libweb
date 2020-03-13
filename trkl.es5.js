@@ -211,7 +211,7 @@ function remove(array, item) {
   }
 }
 
-if (typeof module === "object") {
+if(typeof module === "object") {
   var from = trkl.from,
     computed = trkl.computed,
     property = trkl.property; //console.log("trkl.property ", trkl.property);

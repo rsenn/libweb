@@ -142,7 +142,7 @@ function remove(array, item) {
   }
 }
 
-if (typeof module === "object") {
+if(typeof module === "object") {
   const { from, computed, property } = trkl;
   //console.log("trkl.property ", trkl.property);
   module.exports = { from, computed, property, trkl };

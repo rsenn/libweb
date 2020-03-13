@@ -610,16 +610,16 @@ export const Behave = function(userOpts) {
   init(userOpts);
 };
 
-if (typeof module !== "undefined" && module.exports) {
+if(typeof module !== "undefined" && module.exports) {
   module.exports = { Behave, BehaveHooks };
 }
 
 /*
-if (typeof ender === "undefined") {
+if(typeof ender === "undefined") {
   this.Behave = Behave;
   this.BehaveHooks = BehaveHooks;
 }
-if (typeof define === "function" && define.amd) {
+if(typeof define === "function" && define.amd) {
   define("behave", [], function() {
     return Behave;
   });

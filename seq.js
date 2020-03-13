@@ -85,7 +85,7 @@ function toSource(obj) {
 }
 
 let out = "";
-for (let table in tables) {
+for(let table in tables) {
   // console.log(table);
   let maxLen = 0;
 

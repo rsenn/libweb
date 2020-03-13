@@ -535,7 +535,7 @@ function eagle(obj, parentObj) {
   return ret;
 }
 
-if (module) {
+if(module) {
   Object.assign(module.exports, { eagle }, { eagleProps }, { allElements: eagleProps.allElements }, eagleProps.classes);
   module.exports.instances = {};
   for(let c in eagleProps.classes) {

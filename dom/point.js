@@ -194,6 +194,10 @@ Point.quot = (a, b) => Point.prototype.quot.call(a, b);
 Point.equal = (a, b) => Point.prototype.equal.call(a, b);
 Point.round = (a, b) => Point.prototype.round.call(a, b);
 
+for(let name of ["clone", "comp", "neg", "sides", "dimension", "toString", "toSource", "toCSS"]) {
+  Point[name] = points => Point.prototype[name].call(points);
+}
+
 export const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)));
 
 Point.isPoint = isPoint;

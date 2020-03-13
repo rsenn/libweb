@@ -205,3 +205,7 @@ RGBA.prototype.toHSLA = function() {
 
   return new HSLA(h, s, l, a);
 };
+
+for(let name of ["hex", "toRGB", "round", "toHSLA"]) {
+  RGBA[name] = points => RGBA.prototype[name].call(points);
+}

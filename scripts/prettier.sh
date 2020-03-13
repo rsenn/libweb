@@ -12,13 +12,14 @@ prettier() {
 EXPR='1 { /@format/ { N; /\n$/ { d } } }'
 for KW in "if" "for" "do" "while" "catch"; do
 EXPR="$EXPR; s|\s${KW}\s*(| ${KW}(|"
+EXPR="$EXPR; s|^${KW}\s*(|${KW}(|"
 done
 
 for SOURCE in  ${@:-$(find components utils stores pages -name "*.js")}; do
   ARG=${SOURCE//"["/"\\["}
   ARG=${ARG//"]"/"\\]"}
   prettier "$ARG"
-   sed -i  "$EXPR" "$SOURCE"
+  (set -x; sed -i  "$EXPR" "$SOURCE")
  done
 
 

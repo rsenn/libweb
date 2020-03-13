@@ -332,7 +332,7 @@ class Node extends Point {
     this.netforce = new Point(0, 0);
     this.label = label;
 
-    console.log(`Node(${label},${charge})`, this);
+    console.log(`Node(${label},${charge})`, Util.inspect(this, { newline: "", indent: "", spacing: " " }));
   }
 
   reset() {
@@ -427,7 +427,7 @@ class Edge extends Line {
   }
 }
 
-if (module.exports) {
+if(module.exports) {
   module.exports.Node = Node;
   module.exports.Edge = Edge;
   module.exports.Graph = Graph;

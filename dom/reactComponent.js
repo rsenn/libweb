@@ -5,7 +5,7 @@ import Util from "../util.js";
 export class ReactComponent {
   static create() {
     let args = [...arguments];
-    let Tag, props;    
+    let Tag, props;
     if(typeof args[0] == "string") {
       Tag = args.shift();
       props = args.shift();
@@ -51,18 +51,18 @@ export class ReactComponent {
     for(let arg of [...arguments]) {
       if(!typeof arg == "object" || arg === null || !arg) continue;
 
-      const tagName = typeof(arg.type) == 'string' ? arg.type : (typeof(arg.type) == 'function'  ) ? arg.type.name : 'React.Fragment';
+      const tagName = typeof arg.type == "string" ? arg.type : typeof arg.type == "function" ? arg.type.name : "React.Fragment";
       let { children, ...props } = arg.props || {};
       let obj = { tagName, ...props };
       if(typeof arg.key == "string") obj.key = arg.key;
       if(!children) children = arg.children;
-        const arr = React.Children.toArray(children);
+      const arr = React.Children.toArray(children);
 
       const numChildren = React.Children.count(children);
 
-  /*    if(obj.tagName == 'React.Fragment' && numChildren == 1) {
+      /*    if(obj.tagName == 'React.Fragment' && numChildren == 1) {
  obj =  ReactComponent.toObject(arr[0]);
-      } else*/  if(numChildren > 0) {
+      } else*/ if(numChildren > 0) {
         obj.children = ReactComponent.toObject(...arr);
       }
       ret.push(obj);

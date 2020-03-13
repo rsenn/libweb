@@ -33,50 +33,82 @@ var _pointList = require("./pointList.es5.js");
 
 var _size = require("./size.es5.js");
 
-function ownKeys(object, enumerableOnly) { var keys = (0, _keys["default"])(object); if (_getOwnPropertySymbols["default"]) { var symbols = (0, _getOwnPropertySymbols["default"])(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return (0, _getOwnPropertyDescriptor["default"])(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+function ownKeys(object, enumerableOnly) {
+  var keys = (0, _keys["default"])(object);
+  if(_getOwnPropertySymbols["default"]) {
+    var symbols = (0, _getOwnPropertySymbols["default"])(object);
+    if(enumerableOnly)
+      symbols = symbols.filter(function(sym) {
+        return (0, _getOwnPropertyDescriptor["default"])(object, sym).enumerable;
+      });
+    keys.push.apply(keys, symbols);
+  }
+  return keys;
+}
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2["default"])(target, key, source[key]); }); } else if (_getOwnPropertyDescriptors["default"]) { (0, _defineProperties["default"])(target, (0, _getOwnPropertyDescriptors["default"])(source)); } else { ownKeys(Object(source)).forEach(function (key) { (0, _defineProperty3["default"])(target, key, (0, _getOwnPropertyDescriptor["default"])(source, key)); }); } } return target; }
+function _objectSpread(target) {
+  for(var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+    if(i % 2) {
+      ownKeys(Object(source), true).forEach(function(key) {
+        (0, _defineProperty2["default"])(target, key, source[key]);
+      });
+    } else if(_getOwnPropertyDescriptors["default"]) {
+      (0, _defineProperties["default"])(target, (0, _getOwnPropertyDescriptors["default"])(source));
+    } else {
+      ownKeys(Object(source)).forEach(function(key) {
+        (0, _defineProperty3["default"])(target, key, (0, _getOwnPropertyDescriptor["default"])(source, key));
+      });
+    }
+  }
+  return target;
+}
 
 function Rect(arg) {
   var obj = this instanceof Rect ? this : {};
   var args = arg instanceof Array ? arg : Array.prototype.slice.call(arguments);
   var ret;
-  if (typeof args[0] == "number") arg = args;else if (args[0].length !== undefined) arg = args.shift();
-  ["x", "y", "width", "height"].forEach(function (field) {
-    if (typeof obj[field] != "number") obj[field] = 0;
+  if(typeof args[0] == "number") arg = args;
+  else if(args[0].length !== undefined) arg = args.shift();
+  ["x", "y", "width", "height"].forEach(function(field) {
+    if(typeof obj[field] != "number") obj[field] = 0;
   });
 
-  if (arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
+  if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
     var _arg = arg,
-        x1 = _arg.x1,
-        y1 = _arg.y1,
-        x2 = _arg.x2,
-        y2 = _arg.y2;
+      x1 = _arg.x1,
+      y1 = _arg.y1,
+      x2 = _arg.x2,
+      y2 = _arg.y2;
     obj.x = x1;
     obj.y = y1;
     obj.width = x2 - x1;
     obj.height = y2 - y1;
     ret = 1;
-  } else if (arg && arg.x !== undefined && arg.y !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
+  } else if(arg && arg.x !== undefined && arg.y !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
     var _arg2 = arg,
-        _x = _arg2.x,
-        _y = _arg2.y,
-        _x2 = _arg2.x2,
-        _y2 = _arg2.y2;
+      _x = _arg2.x,
+      _y = _arg2.y,
+      _x2 = _arg2.x2,
+      _y2 = _arg2.y2;
     obj.x = _x;
     obj.y = _y;
     obj.width = _x2 - _x;
     obj.height = _y2 - _y;
     ret = 1;
-  } else if ((0, _point.isPoint)(arg) && arg.y !== undefined && arg.width !== undefined && arg.height !== undefined) {
+  } else if((0, _point.isPoint)(arg) && arg.y !== undefined && arg.width !== undefined && arg.height !== undefined) {
     obj.x = (0, _parseFloat2["default"])(arg.x);
     obj.y = (0, _parseFloat2["default"])(arg.y);
     obj.width = (0, _parseFloat2["default"])(arg.width);
     obj.height = (0, _parseFloat2["default"])(arg.height);
     ret = 1;
-  } else if (arg && arg.length >= 4 && arg.slice(0, 4).every(function (arg) {
-    return !isNaN((0, _parseFloat2["default"])(arg));
-  })) {
+  } else if(
+    arg &&
+    arg.length >= 4 &&
+    arg.slice(0, 4).every(function(arg) {
+      return !isNaN((0, _parseFloat2["default"])(arg));
+    })
+  ) {
     var _x3 = arg.shift();
 
     var _y3 = arg.shift();
@@ -88,17 +120,21 @@ function Rect(arg) {
     obj.width = typeof w === "number" ? w : (0, _parseFloat2["default"])(w);
     obj.height = typeof h === "number" ? h : (0, _parseFloat2["default"])(h);
     ret = 4;
-  } else if (arg && arg.length >= 2 && arg.slice(0, 2).every(function (arg) {
-    return !isNaN((0, _parseFloat2["default"])(arg));
-  })) {
+  } else if(
+    arg &&
+    arg.length >= 2 &&
+    arg.slice(0, 2).every(function(arg) {
+      return !isNaN((0, _parseFloat2["default"])(arg));
+    })
+  ) {
     obj.width = typeof x === "number" ? x : (0, _parseFloat2["default"])(x);
     obj.height = typeof y === "number" ? y : (0, _parseFloat2["default"])(y);
     ret = 2;
-  } else if (arg instanceof Array) {
+  } else if(arg instanceof Array) {
     var argc;
     var argi = 0;
 
-    if (arg.length >= 4) {
+    if(arg.length >= 4) {
       argc = typeof x == "number" ? 2 : 1;
 
       _point.Point.apply(obj, arg.slice(0, argc));
@@ -113,7 +149,7 @@ function Rect(arg) {
     ret = argi + argc;
   }
 
-  if (obj.round === undefined) {
+  if(obj.round === undefined) {
     (0, _defineProperty3["default"])(obj, "round", {
       value: function value() {
         return Rect.round(this);
@@ -123,7 +159,7 @@ function Rect(arg) {
     });
   }
 
-  if (!(this instanceof Rect)) {
+  if(!(this instanceof Rect)) {
     return obj;
     return ret;
   }
@@ -131,44 +167,49 @@ function Rect(arg) {
 
 Rect.prototype = _objectSpread({}, _point.Point.prototype, {}, _size.Size.prototype, {}, Rect.prototype);
 
-Rect.prototype.clone = function () {
+Rect.prototype.clone = function() {
   return new Rect(this.x, this.y, this.width, this.height);
 };
 
-Rect.prototype.corners = function () {
+Rect.prototype.corners = function() {
   var rect = this;
-  return [{
-    x: rect.x,
-    y: rect.y
-  }, {
-    x: rect.x + rect.width,
-    y: rect.y
-  }, {
-    x: rect.x + rect.width,
-    y: rect.y + rect.height
-  }, {
-    x: rect.x,
-    y: rect.y + rect.height
-  }];
+  return [
+    {
+      x: rect.x,
+      y: rect.y
+    },
+    {
+      x: rect.x + rect.width,
+      y: rect.y
+    },
+    {
+      x: rect.x + rect.width,
+      y: rect.y + rect.height
+    },
+    {
+      x: rect.x,
+      y: rect.y + rect.height
+    }
+  ];
 };
 
-if (Rect.prototype.isSquare === undefined) {
-  Rect.prototype.isSquare = function () {
+if(Rect.prototype.isSquare === undefined) {
+  Rect.prototype.isSquare = function() {
     return Math.abs(this.width - this.height) < 1;
   };
 }
 
 Rect.prototype.constructor = Rect;
 
-Rect.prototype.getArea = function () {
+Rect.prototype.getArea = function() {
   return this.width * this.height;
 };
 
-Rect.prototype.toString = function () {
+Rect.prototype.toString = function() {
   return (this.x + "").padStart(4, " ") + "," + (this.y + "").padEnd(4, " ") + " " + (this.width + "").padStart(4, " ") + "x" + (this.height + "").padEnd(4, " ");
 };
 
-Rect.prototype.toSource = function () {
+Rect.prototype.toSource = function() {
   return "new Rect(" + (this ? this.x + "," + this.y + "," + this.width + "," + this.height : "") + ")";
 };
 
@@ -221,15 +262,15 @@ Rect.prototype.toSource = function () {
   }
 });
 
-Rect.prototype.points = function () {
+Rect.prototype.points = function() {
   var c = this.corners();
   return new _pointList.PointList(c);
 };
 
 Rect.prototype.toCSS = Rect.toCSS;
 
-Rect.prototype.outset = function (trbl) {
-  if (typeof trbl == "number") trbl = new TRBL(trbl, trbl, trbl, trbl);
+Rect.prototype.outset = function(trbl) {
+  if(typeof trbl == "number") trbl = new TRBL(trbl, trbl, trbl, trbl);
   this.x -= trbl.left;
   this.y -= trbl.top;
   this.width += trbl.left + trbl.right;
@@ -237,10 +278,10 @@ Rect.prototype.outset = function (trbl) {
   return this;
 };
 
-Rect.prototype.inset = function (trbl) {
-  if (typeof trbl == "number") trbl = new TRBL(trbl, trbl, trbl, trbl);
+Rect.prototype.inset = function(trbl) {
+  if(typeof trbl == "number") trbl = new TRBL(trbl, trbl, trbl, trbl);
 
-  if (trbl.left + trbl.right < this.width && trbl.top + trbl.bottom < this.height) {
+  if(trbl.left + trbl.right < this.width && trbl.top + trbl.bottom < this.height) {
     this.x += trbl.left;
     this.y += trbl.top;
     this.width -= trbl.left + trbl.right;
@@ -250,11 +291,11 @@ Rect.prototype.inset = function (trbl) {
   return this;
 };
 
-Rect.prototype.inside = function (point) {
+Rect.prototype.inside = function(point) {
   return Rect.inside(this, point);
 };
 
-Rect.prototype.pointFromCenter = function (point) {
+Rect.prototype.pointFromCenter = function(point) {
   _point.Point.prototype.sub.call(point, this.center);
 
   point.x /= this.width;
@@ -262,11 +303,11 @@ Rect.prototype.pointFromCenter = function (point) {
   return point;
 };
 
-Rect.prototype.toCSS = function () {
+Rect.prototype.toCSS = function() {
   return _objectSpread({}, _point.Point.prototype.toCSS.call(this), {}, _size.Size.prototype.toCSS.call(this));
 };
 
-Rect.prototype.toPoints = function () {
+Rect.prototype.toPoints = function() {
   var list = new _pointList.PointList();
   list.push(new _point.Point(this.x, this.y));
   list.push(new _point.Point(this.x, this.y2));
@@ -275,7 +316,7 @@ Rect.prototype.toPoints = function () {
   return list;
 };
 
-Rect.prototype.align = function (align_to) {
+Rect.prototype.align = function(align_to) {
   var a = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
   var xdiff = align_to.width - this.width;
   var ydiff = align_to.height - this.height;
@@ -315,12 +356,12 @@ Rect.prototype.align = function (align_to) {
   return this;
 };
 
-Rect.prototype.round = function () {
+Rect.prototype.round = function() {
   var precision = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
   var x = this.x,
-      y = this.y,
-      x2 = this.x2,
-      y2 = this.y2;
+    y = this.y,
+    x2 = this.x2,
+    y2 = this.y2;
   this.x = +(0 + x).toFixed(precision);
   this.y = +(0 + y).toFixed(precision);
   this.width = +x2.toFixed(precision) - this.x;
@@ -328,32 +369,32 @@ Rect.prototype.round = function () {
   return this;
 };
 
-Rect.round = function (rect) {
+Rect.round = function(rect) {
   return Rect.prototype.round.call(rect);
 };
 
-Rect.align = function (rect, align_to) {
+Rect.align = function(rect, align_to) {
   var a = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
   return Rect.prototype.align.call(rect, align_to, a);
 };
 
-Rect.toCSS = function (rect) {
+Rect.toCSS = function(rect) {
   return Rect.prototype.toCSS.call(rect);
 };
 
-Rect.inset = function (rect, trbl) {
+Rect.inset = function(rect, trbl) {
   return Rect.prototype.inset.call(rect, trbl);
 };
 
-Rect.outset = function (rect, trbl) {
+Rect.outset = function(rect, trbl) {
   return Rect.prototype.outset.call(rect, trbl);
 };
 
-Rect.center = function (rect) {
+Rect.center = function(rect) {
   return new _point.Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 };
 
-Rect.inside = function (rect, point) {
+Rect.inside = function(rect, point) {
   return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
 };
 

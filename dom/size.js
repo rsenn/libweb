@@ -86,3 +86,7 @@ Size.area = sz => Size.prototype.area.call(sz);
 Size.aspect = sz => Size.prototype.aspect.call(sz);
 
 export const isSize = o => o && ((o.width !== undefined && o.height !== undefined) || (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) || (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
+
+for(let name of ["toCSS", "isSquare"]) {
+  Size[name] = points => Size.prototype[name].call(points);
+}

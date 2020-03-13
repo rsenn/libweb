@@ -133,4 +133,8 @@ HSLA.prototype.toString = function() {
   return `hsla(${this.h},${this.s}%,${this.l}%,${this.a})`;
 };
 
+for(let name of ["css", "toHSL", "clamp", "round", "hex", "toRGBA", "toString"]) {
+  HSLA[name] = points => HSLA.prototype[name].call(points);
+}
+
 export const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(prop));

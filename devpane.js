@@ -9,7 +9,7 @@ import { lazyInitializer } from "./lazyInitializer.js";
 
 var SvgPath = require("./svg-path.js");
 /*
-if (global.window) {
+if(global.window) {
   window.addEventListener('load', () => {
     console.log('New cookie: ', document.cookie);
   });

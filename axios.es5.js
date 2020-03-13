@@ -18,7 +18,7 @@ httpClient.interceptors.response.use(
     console.error("axios ERROR:", err.request.path); // throw new Error(err.response.data.message);
   }
 );
-if (global.window) window.axios = httpClient;
+if(global.window) window.axios = httpClient;
 module.exports = httpClient;
 module.exports["default"] = httpClient;
 module.exports.axios = httpClient;

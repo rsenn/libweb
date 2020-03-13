@@ -17,7 +17,7 @@ httpClient.interceptors.response.use(
   }
 );
 
-if (global.window) window.axios = httpClient;
+if(global.window) window.axios = httpClient;
 
 module.exports = httpClient;
 

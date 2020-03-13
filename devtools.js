@@ -14,7 +14,7 @@ var root = global.window ? window : global;
 
 const env = "development";
 
-if (["development", "test", "local"].indexOf(env) != -1 && "window" in global) {
+if(["development", "test", "local"].indexOf(env) != -1 && "window" in global) {
   window.accumulateClasses = () => {
     var st = storage("dev");
     var classes = st.get("classes") || [];
@@ -49,7 +49,7 @@ if (["development", "test", "local"].indexOf(env) != -1 && "window" in global) {
 /*
  */
 
-if (!Array.prototype.last) {
+if(!Array.prototype.last) {
   Array.prototype.last = function() {
     return this[this.length - 1];
   };
