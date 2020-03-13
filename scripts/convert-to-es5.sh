@@ -44,11 +44,12 @@ convert_to_es5() {
       FILE=${FILE#./}
       FILE=$DIR/$FILE
       test -e "$FILE" || continue
+      FILE=${FILE#./}
       pushv ADDFILES "$FILE"
       FILE=${FILE#$DIR/}
       pushv SUBST "/require(/ s|$FILE|${FILE%.js}.es5.js|"
     done
-   (set -x;  sed -i -e "$SUBST" "$OUT")
+   ( sed -i -e "$SUBST" "$OUT")
 
     set -- "$@" $ADDFILES
 
