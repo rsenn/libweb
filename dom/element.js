@@ -300,27 +300,19 @@ export class Element extends Node {
     return e;
   }
 
-  static EDGES = {
-    upperLeft: 0,
-    upperCenter: 0.5,
-    upperRight: 1,
-    centerRight: 1.5,
-    lowerRight: 2,
-    lowerCenter: 2.5,
-    lowerLeft: 3,
-    centerLeft: 3.5
-  };
 
-  static edges = arg => Element.getEdgesXYWH(Element.rect(arg));
 
-  static getEdgesXYWH = ({ x, y, w, h }) => [
+  static getEdgesXYWH({ x, y, w, h }) {
+    return [
     { x, y },
     { x: x + w, y },
     { x: x + w, y: y + h },
     { x, y: y + h }
   ];
-  static getEdge = ({ x, y, w, h }, which) =>
-    [
+}
+
+  static getEdge({ x, y, w, h }, which) {
+    return  [
       { x, y },
       { x: x + w / 2, y },
       { x: x + w, y },
@@ -330,15 +322,17 @@ export class Element extends Node {
       { x, y: y + h },
       { x, y: y + h / 2 }
     ][Math.floor(which * 2)];
+  }
 
-  static Axis = { H: 0, V: 2 };
 
-  static getPointsXYWH = ({ x, y, w, h }) => [
+  static getPointsXYWH({ x, y, w, h }) {
+  return [
     { x, y },
     { x: x + w, y: y + h }
   ];
+}
 
-  static cumulativeOffset = (element, relative_to = null) => {
+  static cumulativeOffset(element, relative_to = null) {
     if(typeof element == "string") element = Element.find(element);
     let p = { x: 0, y: 0 };
     do {
@@ -362,11 +356,7 @@ export class Element extends Node {
     return Element.setCSS(element, attrs);
   }
 
-  static margin = element => Element.getTRBL(element, "margin");
-  static padding = element => Element.getTRBL(element, "padding");
-  static border = element => Element.getTRBL(element, "border");
-
-  static setCSS = (element, prop, value) => {
+  static setCSS (element, prop, value)  {
     if(typeof element == "string") element = Element.find(element);
     if(typeof prop == "string" && typeof value == "string") prop = { [prop]: value };
 
@@ -388,7 +378,7 @@ export class Element extends Node {
     return element;
   };
 
-  static getCSS = (element, property = undefined, receiver = null) => {
+  static getCSS(element, property = undefined, receiver = null) {
     element = typeof element === "string" ? Element.find(element) : element;
 
     const w = window !== undefined ? window : global.window;
@@ -507,8 +497,8 @@ export class Element extends Node {
     };
   }
 
-  static prev_sibling = sib => sib.previousElementSibling;
-  static next_sibling = sib => sib.nextElementSibling;
+  static prev_sibling(sib) { return sib.previousElementSibling; }
+  static next_sibling( sib) {return  sib.nextElementSibling; }
 
   static idx(elt) {
     let count = 1;
@@ -706,6 +696,26 @@ Element.recurse = function*(elem, tfn = e => e) {
     if(elem !== null) yield tfn(elem);
   } while(elem);
 };
+
+
+  Element.EDGES = {
+    upperLeft: 0,
+    upperCenter: 0.5,
+    upperRight: 1,
+    centerRight: 1.5,
+    lowerRight: 2,
+    lowerCenter: 2.5,
+    lowerLeft: 3,
+    centerLeft: 3.5
+  };
+
+    Element.edges = arg => Element.getEdgesXYWH(Element.rect(arg));
+  Element.Axis = { H: 0, V: 2 };
+
+  Element.margin = element => Element.getTRBL(element, "margin");
+  Element.padding = element => Element.getTRBL(element, "padding");
+  Element.border = element => Element.getTRBL(element, "border");
+
 
 export function isElement(e) {
   return e.tagName !== undefined;
