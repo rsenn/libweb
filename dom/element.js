@@ -1,6 +1,7 @@
 import { Node } from "./node.js";
 import { TRBL } from "./trbl.js";
 import { Rect } from "./rect.js";
+import Util from "../util.js";
 
 /**
  * Class for element.
