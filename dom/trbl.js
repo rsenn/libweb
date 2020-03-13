@@ -1,3 +1,6 @@
+
+import { Rect, isRect } from "./rect.js";
+
 /**
  * Type for TopRightBottomLeft (paddings and margins)
  *

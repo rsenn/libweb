@@ -176,5 +176,11 @@ Point.prototype.normalize = function(minmax) {
     y: (this.y - minmax.y1) / (minmax.y2 - minmax.y1)
   });
 };
+
+
+Point.distance = point => Point.prototype.distance.call(point);
+Point.sum = (a,b) => Point.prototype.sum.call(a, b);
+
 export const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)));
+
 Point.isPoint = isPoint;

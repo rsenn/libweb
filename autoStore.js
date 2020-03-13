@@ -1,4 +1,4 @@
-import { autorun } from 'mobx';
+import { autorun } from "mobx";
 
 export const makeLocalStorage = () => ({
   get: name => JSON.parse(localStorage.getItem(name)),
@@ -32,7 +32,7 @@ export const makeAutoStoreHandler = (name, _class) => {
             _class.setState({ [name]: existingStore });
           else*/
           _this[_member] = existingStore;
-          _class.setSource('local', _member);
+          _class.setSource("local", _member);
           //console.log("AUTO RUN localStore '" + name + "' READ " + Object.keys(existingStore).length + ' keys');
         }
       }

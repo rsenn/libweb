@@ -35,7 +35,9 @@ export function Line(x1, y1, x2, y2) {
   if(!isLine(obj)) console.log("ERROR: is not a line: ", [...arguments]);
   if(!(this instanceof Line)) return obj;
 }
+
 export const isLine = obj => ["x1", "y1", "x2", "y2"].every(prop => obj[prop] !== undefined);
+
 Line.prototype.intersect = function(other) {
   const ma = (this[0].y - this[1].y) / (this[0].x - this[1].x);
   const mb = (other[0].y - other[1].y) / (other[0].x - other[1].x);
@@ -108,10 +110,10 @@ Line.prototype.transform = function(m) {
 };
 Line.prototype.bbox = function() {
   return {
-    x1: x1 < x2 ? x1 : x2,
-    x2: x1 > x2 ? x1 : x2,
-    y1: y1 < y2 ? y1 : y2,
-    y2: y1 > y2 ? y1 : y2
+    x1: this.x1 < this.x2 ? this.x1 : this.x2,
+    x2: this.x1 > this.x2 ? this.x1 : this.x2,
+    y1: this.y1 < this.y2 ? this.y1 : this.y2,
+    y2: this.y1 > this.y2 ? this.y1 : this.y2
   };
 };
 

@@ -67,9 +67,9 @@ class AleaClass {
 
     // Apply the seeding algorithm from Baagoe.
     this.c = 1;
-    this.s0 = mash(' ');
-    this.s1 = mash(' ');
-    this.s2 = mash(' ');
+    this.s0 = mash(" ");
+    this.s1 = mash(" ");
+    this.s2 = mash(" ");
     this.s0 -= mash(seed);
     if(this.s0 < 0) {
       this.s0 += 1;
@@ -102,7 +102,7 @@ class AleaClass {
     };
     prng.quick = prng;
     if(state) {
-      if(typeof state == 'object') copy(state, xg);
+      if(typeof state == "object") copy(state, xg);
       prng.state = function() {
         return copy(xg, {});
       };

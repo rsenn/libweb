@@ -205,3 +205,4 @@ RGBA.prototype.toHSLA = function() {
 
   return new HSLA(h, s, l, a);
 };
+

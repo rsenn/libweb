@@ -132,3 +132,5 @@ HSLA.prototype.toString = function() {
   if(this.a == 1) return `hsl(${this.h},${this.s}%,${this.l}%)`;
   return `hsla(${this.h},${this.s}%,${this.l}%,${this.a})`;
 };
+
+export const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(prop));
