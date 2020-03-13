@@ -39,6 +39,4 @@ convert_to_es5() {
   done
 }
 
-
-
 convert_to_es5 "$@"
