@@ -182,15 +182,6 @@ PointList.prototype.translate = function(x, y) {
   for(let i = 0; i < this.length; i++) Point.prototype.move.call(this[i], x, y);
   return this;
 };
-PointList.prototype.transform = function(arg) {
-  const fn = typeof arg == "function" ? arg : p => Point.prototype.transform.call(p, arg);
-  for(let i = 0; i < this.length; i++) {
-    const p = fn(this[i]);
-    this[i].x = p.x;
-    this[i].y = p.y;
-  }
-  return this;
-};
 PointList.prototype.filter = function(pred) {
   let ret = new PointList();
   this.forEach((p, i, l) => pred(p, i, l) && ret.push(new Point(l[i])));

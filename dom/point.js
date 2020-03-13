@@ -149,7 +149,11 @@ Point.prototype.angle = function(
 Point.prototype.dimension = function() {
   return [this.width, this.height];
 };
-Point.prototype.toString = function(asArray = false) {
+Point.prototype.toString = function(prec = 3) {
+  return `${this.x.toFixed(prec)},${this.y.toFixed(prec)}`;
+};
+
+Point.prototype.toSource = function(asArray = false) {
   let x = (this.x + "").padStart(4, " ");
   let y = (this.y + "").padStart(4, " ");
 
@@ -166,10 +170,10 @@ Point.prototype.toCSS = function() {
 Point.prototype.inside = function(rect) {
   return this.x >= rect.x && this.x < rect.x + rect.width && this.y >= rect.y && this.y < rect.y + rect.height;
 };
-Point.prototype.transform = function(m) {
+/*Point.prototype.transform = function(m) {
   Matrix.prototype.transform_point.call(m, this);
   return this;
-};
+};*/
 Point.prototype.normalize = function(minmax) {
   return new Point({
     x: (this.x - minmax.x1) / (minmax.x2 - minmax.x1),
@@ -178,7 +182,13 @@ Point.prototype.normalize = function(minmax) {
 };
 
 Point.distance = point => Point.prototype.distance.call(point);
+Point.move = point => Point.prototype.move.call(point);
 Point.sum = (a, b) => Point.prototype.sum.call(a, b);
+Point.diff = (a, b) => Point.prototype.diff.call(a, b);
+Point.prod = (a, b) => Point.prototype.prod.call(a, b);
+Point.quot = (a, b) => Point.prototype.quot.call(a, b);
+Point.equal = (a, b) => Point.prototype.equal.call(a, b);
+Point.round = (a, b) => Point.prototype.round.call(a, b);
 
 export const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)));
 

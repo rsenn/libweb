@@ -219,6 +219,15 @@ Matrix.prototype.transform_point = function(p) {
   return p;
 };
 
+Matrix.prototype.transform_points = function(pointList) {
+  for(let i = 0; i < pointList.length; i++) {
+    const p = Matrix.prototype.transform_point.call(this, pointList[i]);
+    pointList[i].x = p.x;
+    pointList[i].y = p.y;
+  }
+  return this;
+};
+
 Matrix.prototype.transform_size = function(s) {
   const w = this[0] * s.width + this[1] * s.height;
   const h = this[3] * s.width + this[4] * s.height;
@@ -310,4 +319,11 @@ Matrix.prototype.affine_transform = function(a, b) {
   this.set_row.call(this, 2, 0, 0, 1);
   return this;
 };
+
+Matrix.getAffineTransform = (a, b) => {
+  var matrix = new Matrix();
+  matrix.affine_transform(a, b);
+  return matrix;
+};
+
 export const isMatrix = m => m instanceof Matrix || (m.length !== undefined && m.length == 6 && m.every(el => typeof el == "number"));

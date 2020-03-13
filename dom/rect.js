@@ -1,4 +1,5 @@
 import { Point, isPoint } from "./point.js";
+import { PointList } from "./pointList.js";
 import { Size, isSize } from "./size.js";
 
 export function Rect(arg) {
@@ -188,7 +189,17 @@ Rect.prototype.toCSS = function() {
   return { ...Point.prototype.toCSS.call(this), ...Size.prototype.toCSS.call(this) };
 };
 
+Rect.prototype.toPoints = function() {
+  var list = new PointList();
+  list.push(new Point(this.x, this.y));
+  list.push(new Point(this.x, this.y2));
+  list.push(new Point(this.x2, this.y2));
+  list.push(new Point(this.x2, this.y));
+  return list;
+};
+
 Rect.round = rect => Rect.prototype.round.call(rect);
 Rect.toCSS = rect => Rect.prototype.toCSS.call(rect);
+Rect.center = rect => new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 
 export const isRect = rect => isPoint(rect) && isSize(rect);
