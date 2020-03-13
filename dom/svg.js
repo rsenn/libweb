@@ -3,7 +3,6 @@ import { Size } from "./size.js";
 import { Rect } from "./rect.js";
 import Util from "../util.js";
 
-
 export class SVG extends Element {
   static ns = "http://www.w3.org/2000/svg";
 

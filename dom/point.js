@@ -149,8 +149,11 @@ Point.prototype.angle = function(
 Point.prototype.dimension = function() {
   return [this.width, this.height];
 };
-Point.prototype.toString = function(prec = 3) {
-  return `${this.x.toFixed(prec)},${this.y.toFixed(prec)}`;
+Point.prototype.toString = function() {
+  let x = "" + this.x;
+  let y = "" + this.y;
+
+  return `${x},${y}`;
 };
 
 Point.prototype.toSource = function(asArray = false) {
