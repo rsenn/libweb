@@ -4,7 +4,6 @@ import { Rect } from "./rect.js";
 import Util from "../util.js";
 
 export class SVG extends Element {
-
   static create(name, attr, parent) {
     var svg = document.createElementNS(SVG.ns, name);
     let text;
@@ -122,4 +121,4 @@ export class SVG extends Element {
     return new SvgPath();
   }
 }
-  SVG.ns = "http://www.w3.org/2000/svg";
+SVG.ns = "http://www.w3.org/2000/svg";

@@ -109,7 +109,7 @@ export class Container {
 }
 
 export class ReactComponent {
-  static factory = (render_to, root) => {
+  static factory(render_to, root) {
     if(typeof render_to === "string") render_to = Element.find(append_to);
     if(typeof render_to !== "function") {
       root = root || render_to;
@@ -135,7 +135,7 @@ export class ReactComponent {
     };
     ret.root = root;
     return ret.bind(ret);
-  };
+  }
 
   static object() {
     let ret = [];

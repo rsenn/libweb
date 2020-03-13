@@ -1,36 +1,120 @@
-import Util from "../util.js";
-export class CSS {
-  static list(doc) {
-    if (!doc) doc = window.document;
+"use strict";
 
-    const getStyleMap = (obj, key) => {
-      let rule = Util.find(obj, item => item["selectorText"] == key);
-      return Util.adapter(rule, obj => obj && obj.styleMap && obj.styleMap.size !== undefined ? obj.styleMap.size : 0, (obj, i) => [...obj.styleMap.keys()][i], (obj, key) => obj.styleMap.getAll(key).map(v => String(v)).join(" "));
-    };
+var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
 
-    const getStyleSheet = (obj, key) => {
-      let sheet = Util.find(obj, entry => entry.href == key || entry.ownerNode.id == key) || obj[key];
-      return Util.adapter(sheet.rules, obj => obj && obj.length !== undefined ? obj.length : 0, (obj, i) => obj[i].selectorText, getStyleMap);
-    };
+var _Object$defineProperty = require("@babel/runtime-corejs2/core-js/object/define-property");
 
-    return Util.adapter([...doc.styleSheets], obj => obj.length, (obj, i) => obj[i].href || obj[i].ownerNode.id || i, getStyleSheet);
+_Object$defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.CSS = void 0;
+
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/toConsumableArray"));
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/createClass"));
+
+var _util = _interopRequireDefault(require("../util.es5.js"));
+
+var CSS = /*#__PURE__*/ (function() {
+  function CSS() {
+    (0, _classCallCheck2["default"])(this, CSS);
   }
 
-  static styles(stylesheet) {
-    const list = stylesheet && stylesheet.cssRules ? [stylesheet] : CSS.list(stylesheet);
-    let ret = Util.array();
-    list.forEach(s => {
-      let rules = [...s.cssRules];
-      rules.forEach(rule => {
-        ret.push(rule.cssText);
-      });
-    });
-    return ret;
-  }
+  (0, _createClass2["default"])(CSS, null, [
+    {
+      key: "list",
+      value: function list(doc) {
+        if(!doc) doc = window.document;
 
-  static classes(selector = "*") {
-    return Element.findAll(selector).filter(e => e.classList.length).map(e => [...e.classList]).flat().unique();
-  }
+        var getStyleMap = function getStyleMap(obj, key) {
+          var rule = _util["default"].find(obj, function(item) {
+            return item["selectorText"] == key;
+          });
 
-}
+          return _util["default"].adapter(
+            rule,
+            function(obj) {
+              return obj && obj.styleMap && obj.styleMap.size !== undefined ? obj.styleMap.size : 0;
+            },
+            function(obj, i) {
+              return (0, _toConsumableArray2["default"])(obj.styleMap.keys())[i];
+            },
+            function(obj, key) {
+              return obj.styleMap
+                .getAll(key)
+                .map(function(v) {
+                  return String(v);
+                })
+                .join(" ");
+            }
+          );
+        };
 
+        var getStyleSheet = function getStyleSheet(obj, key) {
+          var sheet =
+            _util["default"].find(obj, function(entry) {
+              return entry.href == key || entry.ownerNode.id == key;
+            }) || obj[key];
+          return _util["default"].adapter(
+            sheet.rules,
+            function(obj) {
+              return obj && obj.length !== undefined ? obj.length : 0;
+            },
+            function(obj, i) {
+              return obj[i].selectorText;
+            },
+            getStyleMap
+          );
+        };
+
+        return _util["default"].adapter(
+          (0, _toConsumableArray2["default"])(doc.styleSheets),
+          function(obj) {
+            return obj.length;
+          },
+          function(obj, i) {
+            return obj[i].href || obj[i].ownerNode.id || i;
+          },
+          getStyleSheet
+        );
+      }
+    },
+    {
+      key: "styles",
+      value: function styles(stylesheet) {
+        var list = stylesheet && stylesheet.cssRules ? [stylesheet] : CSS.list(stylesheet);
+
+        var ret = _util["default"].array();
+
+        list.forEach(function(s) {
+          var rules = (0, _toConsumableArray2["default"])(s.cssRules);
+          rules.forEach(function(rule) {
+            ret.push(rule.cssText);
+          });
+        });
+        return ret;
+      }
+    },
+    {
+      key: "classes",
+      value: function classes() {
+        var selector = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "*";
+        return Element.findAll(selector)
+          .filter(function(e) {
+            return e.classList.length;
+          })
+          .map(function(e) {
+            return (0, _toConsumableArray2["default"])(e.classList);
+          })
+          .flat()
+          .unique();
+      }
+    }
+  ]);
+  return CSS;
+})();
+
+exports.CSS = CSS;
