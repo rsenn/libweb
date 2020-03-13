@@ -1,4 +1,3 @@
-
 import { Rect, isRect } from "./rect.js";
 
 /**

@@ -81,7 +81,6 @@ export function Unit(str) {
 
 export function ScalarValue() {}
 
-
 export function Timer(timeout, fn, props = {}, { create = setInterval, destroy = clearInterval }) {
   let t = {
     timeout,
@@ -102,7 +101,6 @@ export function Timer(timeout, fn, props = {}, { create = setInterval, destroy =
   if(this instanceof Timer) Object.assign(this, t);
   else return t;
 }
-
 
 Timer.interval = (timeout, fn, props) => new Timer(timeout, fn, props, { destroy: clearTimeout });
 

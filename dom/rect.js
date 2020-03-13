@@ -191,5 +191,4 @@ Rect.prototype.toCSS = function() {
 Rect.round = rect => Rect.prototype.round.call(rect);
 Rect.toCSS = rect => Rect.prototype.toCSS.call(rect);
 
-
 export const isRect = rect => isPoint(rect) && isSize(rect);
