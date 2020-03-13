@@ -54,7 +54,7 @@ const formatAnnotatedObject = (subject, { indent = "  ", spacing = " ", separato
     r.push([k, s]);
   }
   //console.log("longest: ", longest)
-  let padding = x => Util.pad(x, longest.length, spacing);
+  let padding = x => opts.newline != '' ? Util.pad(x, longest.length, spacing) : spacing;
   let j = separator + spacing;
   if(r.length > 6) {
     nl = opts.newline + i;
@@ -1584,12 +1584,13 @@ Util.flatTree = function(tree, addOutput) {
 
   addOutput(Util.filterKeys(tree, key => key !== "children"));
 
-  if(typeof tree.children == "object" && tree.children.length) for(let child of tree.children) Util.flatTree(child, addOutput);
+  if(typeof tree.children == "object" && tree.children !== null && tree.children.length) for(let child of tree.children) Util.flatTree(child, addOutput);
   return ret;
 };
 Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
-  if(typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children.length) for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
+  if(typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children !== null && tree.children.length) for(let child of tree.children) 
+    Util.traverseTree(child, fn, depth + 1, tree);
 };
 Util.walkTree = function*(node, depth = 0, parent = null, pred, t) {
   if(!pred) pred = i => true;

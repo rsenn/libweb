@@ -3,22 +3,31 @@ import { Element } from "./element.js";
 import Util from "../util.js";
 
 export class ReactComponent {
-  static create(Tag, { parent, children, ...props }, is_root = true) {
+  static create() {
+    let args = [...arguments];
+    let Tag, props;    
+    if(typeof args[0] == "string") {
+      Tag = args.shift();
+      props = args.shift();
+    } else {
+      props = args.shift();
+      Tag = props.tagName;
+      delete props.tagName;
+    }
+    let { children, parent, ...restOfProps } = props;
+    if(!children) children = args.shift();
+    if(!Array.isArray(children)) children = [children];
     const elem = (
-      <Tag {...props}>
-        {Array.isArray(children)
-          ? children.map((child, key) => {
-              if(typeof child === "object") {
-                const { tagName, ...props } = child;
-                return render_factory(tagName, { key, ...props }, false);
-              }
-              return child;
-            })
-          : undefined}
+      <Tag {...restOfProps}>
+        {children.map((child, key) => {
+          if(typeof child === "object" && child.tagName !== undefined) {
+            const { tagName, ...props } = child;
+            return ReactComponent.create(tagName, { key, ...props });
+          }
+          return child;
+        })}
       </Tag>
     );
-    //console.log('elem: ', elem);
-    if(is_root && render_to) render_to(elem, parent || this.root);
     return elem;
   }
 
@@ -37,20 +46,24 @@ export class ReactComponent {
     return ret.bind(ret);
   }
 
-  static object() {
+  static toObject() {
     let ret = [];
     for(let arg of [...arguments]) {
       if(!typeof arg == "object" || arg === null || !arg) continue;
 
-      const tagName = arg.type && arg.type.name;
+      const tagName = typeof(arg.type) == 'string' ? arg.type : (typeof(arg.type) == 'function'  ) ? arg.type.name : 'React.Fragment';
       let { children, ...props } = arg.props || {};
       let obj = { tagName, ...props };
       if(typeof arg.key == "string") obj.key = arg.key;
       if(!children) children = arg.children;
-
-      if(React.Children.count(children) > 0) {
         const arr = React.Children.toArray(children);
-        obj.children = ReactComponent.object(...arr);
+
+      const numChildren = React.Children.count(children);
+
+  /*    if(obj.tagName == 'React.Fragment' && numChildren == 1) {
+ obj =  ReactComponent.toObject(arr[0]);
+      } else*/  if(numChildren > 0) {
+        obj.children = ReactComponent.toObject(...arr);
       }
       ret.push(obj);
     }

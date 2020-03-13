@@ -65,7 +65,7 @@
    * @returns {SvgPath}
    */
   SvgPath.prototype.close = function() {
-    return this.Z();
+    return this._cmd("Z")();
   };
 
   /**
@@ -242,7 +242,7 @@
    * @returns {string}
    */
   Command.prototype.toString = function() {
-    return this.name + " " + this.args.join(" ");
+    return this.name + /*" " +*/ this.args.join(" ");
   };
 
   return SvgPath;

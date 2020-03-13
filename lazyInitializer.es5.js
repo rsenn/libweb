@@ -14,16 +14,17 @@ var _trkl = require("./trkl.es5.js");
 
 function Instance(_ref) {
   var _ref$trackable = _ref.trackable,
-      trackable = _ref$trackable === void 0 ? false : _ref$trackable,
-      callback = _ref.callback,
-      _ref$initVal = _ref.initVal,
-      initVal = _ref$initVal === void 0 ? null : _ref$initVal;
+    trackable = _ref$trackable === void 0 ? false : _ref$trackable,
+    callback = _ref.callback,
+    _ref$initVal = _ref.initVal,
+    initVal = _ref$initVal === void 0 ? null : _ref$initVal;
   var inst = trackable && trackable.subscribe !== undefined ? trackable : (0, _trkl.trkl)(initVal);
-  if (callback) inst.subscribe(function (value) {
-    return callback(value, inst);
-  });
-  inst.subscribe(function (newVal) {
-    if (newVal) console.log("new instance: ", value);
+  if(callback)
+    inst.subscribe(function(value) {
+      return callback(value, inst);
+    });
+  inst.subscribe(function(newVal) {
+    if(newVal) console.log("new instance: ", value);
   });
   /*else*/
 
@@ -57,8 +58,8 @@ function lazyInitializer(fn) {
   var ret = function ret() {
     var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
-    if (value === null) {
-      if (!instance()) {
+    if(value === null) {
+      if(!instance()) {
         var initVal = fn(instance);
         instance(initVal); //console.log("initialized to: ", initVal);
       }

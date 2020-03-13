@@ -47,7 +47,7 @@ convert_to_es5() {
   while [ $# -gt 0 ]; do
     IN=$1
     shift
-    DIR=`dirname "$1"`
+    DIR=`dirname "$IN"`
     OUT=${IN%.js}.es5.js
 
     isin $IN $ALLFILES && continue 
@@ -64,9 +64,9 @@ convert_to_es5() {
     unset ADDFILES
     for FILE in $REQUIRES; do
       FILE=${FILE#./}
-      FILE=$DIR/$FILE
+      FILE="$DIR/$FILE"
       test -e "$FILE" || continue
-      FILE=${FILE#./}
+      echo "FILE=$FILE" 1>&2
       FILE=${FILE%.js}
       FILE=${FILE%.es5}
       pushv_unique ADDFILES "${FILE}.js"
