@@ -1591,15 +1591,20 @@ Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
   if(typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children !== null && tree.children.length) for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
 };
-Util.walkTree = function*(node, depth = 0, parent = null, pred, t) {
+Util.walkTree = function*(node, pred, t, depth = 0, parent = null) {
   if(!pred) pred = i => true;
-  if(!t) t = i => i;
+  if(!t) t = i => { i.depth = depth; /*if(parent) i.parent = parent; */return i; };
+/*      let thisNode = node;
+      let nodeId = node.id;*/
 
-  if(pred(node, depth, parent)) yield t(node);
-  if(typeof node == "object" && node !== null && typeof node.children == "object" && node.children.length) {
-    for(let child of [...node.children]) {
-      /*   if(pred(child, depth + 1, node))*/
-      yield* Util.walkTree(child, depth + 1, node, pred, t);
+  //node = t(node);
+  if(pred(node, depth, parent)) {
+    yield t(node);
+    if(typeof node == "object" && node !== null && typeof node.children == "object" && node.children.length) {
+      for(let child of [...node.children]) {
+        /*   if(pred(child, depth + 1, node))*/
+        yield* Util.walkTree(child, pred, t, depth + 1, node.parent_id);
+      }
     }
   }
 };

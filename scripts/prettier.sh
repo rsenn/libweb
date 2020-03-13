@@ -19,7 +19,7 @@ for SOURCE in  ${@:-$(find components utils stores pages -name "*.js")}; do
   ARG=${SOURCE//"["/"\\["}
   ARG=${ARG//"]"/"\\]"}
   prettier "$ARG"
-  (set -x; sed -i  "$EXPR" "$SOURCE")
+  (: set -x; sed -i  "$EXPR" "$SOURCE")
  done
 
 

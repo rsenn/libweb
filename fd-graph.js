@@ -297,13 +297,13 @@ export class Graph {
       Point.move(this.nodes[i], p.x, p.y);
     }
   }
-
+  /*
   get points() {
     let ret = new PointList(this.nodes);
     let rect = ret.rect();
     let center = rect.center;
     return ret.translate(-center.x, -center.y);
-  }
+  }*/
 }
 
 class Node extends Point {
