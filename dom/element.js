@@ -1,3 +1,6 @@
+import { Node } from "./node.js";
+import { TRBL } from "./trbl.js";
+import { Rect } from "./rect.js";
 
 /**
  * Class for element.
@@ -702,7 +705,6 @@ Element.recurse = function*(elem, tfn = e => e) {
     if(elem !== null) yield tfn(elem);
   } while(elem);
 };
-
 
 export function isElement(e) {
   return e.tagName !== undefined;

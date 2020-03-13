@@ -1,4 +1,3 @@
-
 export class Node {
   static parents(node) {
     return (function*() {
@@ -22,3 +21,5 @@ export class Node {
     return node.attributes && node.attributes.length > 0 ? Array.from(node.attributes).reduce((acc, attr) => ({ ...acc, [attr.name]: isNaN(parseFloat(attr.value)) ? attr.value : parseFloat(attr.value) }), {}) : {};
   }
 }
+
+export default Node;

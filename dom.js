@@ -16,7 +16,7 @@ import { TRBL } from "./dom/trbl.js";
 import { Timer } from "./dom/timer.js";
 import { Tree } from "./dom/tree.js";
 import { Node } from "./dom/node.js";
-import { Element,isElement } from "./dom/element.js";
+import { Element, isElement } from "./dom/element.js";
 import { CSS } from "./dom/css.js";
 import { SVG } from "./dom/svg.js";
 
@@ -87,10 +87,7 @@ export function Unit(str) {
 
 export function ScalarValue() {}
 
-
 const ifdef = (value, def, nodef) => (value !== undefined ? def : nodef);
-
-
 
 export class Container {
   static factory(parent, size = null) {
@@ -517,7 +514,7 @@ export const RandomColor = () => {
       element.transformation[transform_name]
       element.style.transform =
     }*/
-export const isPointList = inst => {};
+/*export const isPointList = inst => {};
 export const isTRBL = inst => {};
 export const isTimer = inst => {};
 export const isTree = inst => {};
@@ -528,7 +525,7 @@ export const isSVG = inst => inst.tagName.toLowerCase() == "svg";
 export const isReactComponent = inst => {};
 export const isRenderer = inst => {};
 export const isSelect = inst => {};
-
+*/
 
 export { Point, isPoint } from "./dom/point.js";
 export { Size, isSize } from "./dom/size.js";
@@ -543,10 +540,9 @@ export { TRBL } from "./dom/trbl.js";
 export { Timer } from "./dom/timer.js";
 export { Tree } from "./dom/tree.js";
 export { Node } from "./dom/node.js";
-export { Element,isElement } from "./dom/element.js";
+export { Element, isElement } from "./dom/element.js";
 export { CSS } from "./dom/css.js";
 export { SVG } from "./dom/svg.js";
-
 
 export default Object.assign(dom, {
   Align,
@@ -564,25 +560,15 @@ export default Object.assign(dom, {
   ElementWHProps,
   ElementXYProps,
   HSLA,
-  isContainer,
-  isCSS,
   isElement,
   isHSLA,
   isLine,
   isMatrix,
   isNumber,
   isPoint,
-  isPointList,
-  isReactComponent,
   isRect,
-  isRenderer,
   isRGBA,
-  isSelect,
   isSize,
-  isSVG,
-  isTimer,
-  isTRBL,
-  isTree,
   Line,
   Matrix,
   MatrixProps,

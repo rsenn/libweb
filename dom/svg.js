@@ -1,5 +1,6 @@
-import { Element,isElement } from "./element.js";
-
+import { Element, isElement } from "./element.js";
+import { Size, isSize } from "./size.js";
+import { Rect, isRect } from "./rect.js";
 
 export class SVG extends Element {
   static ns = "http://www.w3.org/2000/svg";

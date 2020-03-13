@@ -1,4 +1,3 @@
-
 /**
  * DOM Tree
  * @param {[type]} root [description]
