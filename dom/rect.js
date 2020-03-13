@@ -242,8 +242,13 @@ Rect.prototype.round = function(precision = 0) {
 Rect.round = rect => Rect.prototype.round.call(rect);
 Rect.align = (rect, align_to, a = 0) => Rect.prototype.align.call(rect, align_to, a);
 Rect.toCSS = rect => Rect.prototype.toCSS.call(rect);
-Rect.center = rect => new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 Rect.inset = (rect, trbl) => Rect.prototype.inset.call(rect, trbl);
 Rect.outset = (rect, trbl) => Rect.prototype.outset.call(rect, trbl);
+
+Rect.center = rect => new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
+
+Rect.inside = (rect, point) => {
+  return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
+};
 
 export const isRect = rect => isPoint(rect) && isSize(rect);
