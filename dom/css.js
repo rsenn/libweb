@@ -1,5 +1,3 @@
-
-
 export class CSS {
   static list(doc) {
     if(!doc) doc = window.document;
