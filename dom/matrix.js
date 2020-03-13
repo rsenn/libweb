@@ -326,4 +326,13 @@ Matrix.getAffineTransform = (a, b) => {
   return matrix;
 };
 
+Matrix.init_identity = matrix => Matrix.prototype.init_identity.call(matrix);
+Matrix.init_translate = (matrix, tx, ty) => Matrix.prototype.init_translate.call(matrix, tx, ty);
+Matrix.init_scale = (matrix, sx, sy) => Matrix.prototype.init_identity.call(matrix, sx, sy);
+Matrix.init_rotate = (matrix, rad) => Matrix.prototype.init_rotate.call(matrix, rad);
+
+Matrix.translate = (matrix, tx, ty) => Matrix.prototype.translate.call(matrix, tx, ty);
+Matrix.scale = (matrix, sx, sy) => Matrix.prototype.identity.call(matrix, sx, sy);
+Matrix.rotate = (matrix, rad) => Matrix.prototype.rotate.call(matrix, rad);
+
 export const isMatrix = m => m instanceof Matrix || (m.length !== undefined && m.length == 6 && m.every(el => typeof el == "number"));

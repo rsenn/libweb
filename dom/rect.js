@@ -197,9 +197,53 @@ Rect.prototype.toPoints = function() {
   list.push(new Point(this.x2, this.y));
   return list;
 };
+Rect.prototype.align = function(align_to, a = 0) {
+  const xdiff = align_to.width - this.width;
+  const ydiff = align_to.height - this.height;
+  let oldx = this.x;
+  let oldy = this.y;
+
+  switch (Align.horizontal(a)) {
+    case Align.LEFT:
+      this.x = align_to.x;
+      break;
+    case Align.RIGHT:
+      this.x = align_to.x + xdiff;
+      break;
+    default:
+      this.x = align_to.x + xdiff / 2;
+      break;
+  }
+  switch (Align.vertical(a)) {
+    case Align.TOP:
+      this.y = align_to.y;
+      break;
+    case Align.BOTTOM:
+      this.y = align_to.y + ydiff;
+      break;
+    default:
+      this.y = align_to.y + ydiff / 2;
+      break;
+  }
+  this.tx = this.x - oldx;
+  this.ty = this.y - oldy;
+  return this;
+};
+
+Rect.prototype.round = function(precision = 0) {
+  let { x, y, x2, y2 } = this;
+  this.x = +x.toFixed(precision);
+  this.y = +y.toFixed(precision);
+  this.width = +x2.toFixed(precision) - this.x;
+  this.height = +y2.toFixed(precision) - this.y;
+  return this;
+};
 
 Rect.round = rect => Rect.prototype.round.call(rect);
+Rect.align = (rect, align_to, a = 0) => Rect.prototype.align.call(rect, align_to, a);
 Rect.toCSS = rect => Rect.prototype.toCSS.call(rect);
 Rect.center = rect => new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
+Rect.inset = (rect, trbl) => Rect.prototype.inset.call(rect, trbl);
+Rect.outset = (rect, trbl) => Rect.prototype.outset.call(rect, trbl);
 
 export const isRect = rect => isPoint(rect) && isSize(rect);
