@@ -1,18 +1,18 @@
-import { trkl } from './trkl.js';
+import { trkl } from "./trkl.js";
 
 export function Instance({ trackable = false, callback, initVal = null }) {
   let inst = trackable && trackable.subscribe !== undefined ? trackable : trkl(initVal);
 
   if(callback) inst.subscribe(value => callback(value, inst));
   inst.subscribe(newVal => {
-    if(newVal) console.log('new instance: ', value);
+    if(newVal) console.log("new instance: ", value);
   });
   /*else*/
   /*  inst.subscribe(value => {
     if(value) inst.current = value; 
   });
 */
-  trkl.property(inst, 'current', inst);
+  trkl.property(inst, "current", inst);
   return inst;
 }
 

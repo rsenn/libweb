@@ -3,14 +3,14 @@ var SvgPath = require("./svg-path.js");
 
 import Util from "./util.js";
 
-import { Point } from "./dom/point.js";
-import { Size } from "./dom/size.js";
-import { Line } from "./dom/line.js";
-import { Rect } from "./dom/rect.js";
+import { Point, isPoint } from "./dom/point.js";
+import { Size, isSize } from "./dom/size.js";
+import { Line, isLine } from "./dom/line.js";
+import { Rect, isRect } from "./dom/rect.js";
 import { PointList } from "./dom/pointList.js";
-import { RGBA } from "./dom/rgba.js";
-import { HSLA } from "./dom/hsla.js";
-import { Matrix } from "./dom/matrix.js";
+import { RGBA, isRGBA } from "./dom/rgba.js";
+import { HSLA, isHSLA } from "./dom/hsla.js";
+import { Matrix, isMatrix, MatrixProps } from "./dom/matrix.js";
 import { BBox } from "./dom/bbox.js";
 import { TRBL } from "./dom/trbl.js";
 
@@ -81,7 +81,26 @@ export function Unit(str) {
 
 export function ScalarValue() {}
 
-export const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)));
+export function Timer(timeout, fn, props = {}, { create = setInterval, destroy = clearInterval }) {
+  let t = {
+    timeout,
+    fn,
+    running: true,
+    id: create(() => fn.call(t, t), timeout, fn, t),
+    started: Date.now(),
+    stop() {
+      if(this.id !== null) {
+        destroy(this.id);
+        this.id = null;
+        this.running = false;
+      }
+    },
+    ...props
+  };
+
+  if(this instanceof Timer) Object.assign(this, t);
+  else return t;
+}
 
 Timer.interval = (timeout, fn, props) => new Timer(timeout, fn, props, { destroy: clearTimeout });
 
@@ -1504,6 +1523,17 @@ export const isReactComponent = inst => {};
 export const isRenderer = inst => {};
 export const isSelect = inst => {};
 
+export { Point, isPoint } from "./dom/point.js";
+export { Size, isSize } from "./dom/size.js";
+export { Line, isLine } from "./dom/line.js";
+export { Rect, isRect } from "./dom/rect.js";
+export { PointList } from "./dom/pointList.js";
+export { RGBA, isRGBA } from "./dom/rgba.js";
+export { HSLA, isHSLA } from "./dom/hsla.js";
+export { Matrix, isMatrix, MatrixProps } from "./dom/matrix.js";
+export { BBox } from "./dom/bbox.js";
+export { TRBL } from "./dom/trbl.js";
+
 export default Object.assign(dom, {
   Align,
   Anchor,
@@ -1548,6 +1578,7 @@ export default Object.assign(dom, {
   Rect,
   Renderer,
   RGBA,
+  HSLA,
   Select,
   Size,
   SVG,

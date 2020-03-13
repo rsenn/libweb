@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Convert a series of points to a monotone cubic spline
@@ -69,7 +69,7 @@ module.exports = {
    * @returns {String}
    */
   svgPath(points) {
-    let p = '';
+    let p = "";
 
     for(let i = 0; i < points.length; i++) {
       const point = points[i];

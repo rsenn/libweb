@@ -17,9 +17,9 @@ function trkl(initValue) {
   };
 
   //Using string keys tells Uglify that we intend to export these symbols
-  self['subscribe'] = subscribe;
+  self["subscribe"] = subscribe;
 
-  self['bind_to'] = (obj, prop) => {
+  self["bind_to"] = (obj, prop) => {
     Object.defineProperty(obj, prop, {
       enumerable: true,
       configurable: true,
@@ -39,14 +39,14 @@ function trkl(initValue) {
     }
   }
 
-  self['unsubscribe'] = function(subscriber) {
+  self["unsubscribe"] = function(subscriber) {
     remove(subscribers, subscriber);
   };
 
   function write(newValue) {
     var oldValue = value;
 
-    if(newValue === oldValue && (newValue === null || typeof newValue !== 'object')) {
+    if(newValue === oldValue && (newValue === null || typeof newValue !== "object")) {
       return; // bail out
     }
 
@@ -75,7 +75,7 @@ function trkl(initValue) {
   return self;
 }
 
-trkl['computed'] = function(fn) {
+trkl["computed"] = function(fn) {
   var self = trkl();
   var computationToken = {
     _subscriber: runComputed
@@ -101,7 +101,7 @@ trkl['computed'] = function(fn) {
   }
 };
 
-trkl['from'] = function(executor) {
+trkl["from"] = function(executor) {
   var self = trkl();
   executor(self);
   return self;
@@ -131,7 +131,7 @@ trkl.bind = function(object, name, handler) {
 
 function detectCircularity(token) {
   if(computedTracker.indexOf(token) !== -1) {
-    throw Error('Circular computation detected');
+    throw Error("Circular computation detected");
   }
 }
 
@@ -142,10 +142,10 @@ function remove(array, item) {
   }
 }
 
-if (typeof module === 'object') {
+if (typeof module === "object") {
   const { from, computed, property } = trkl;
   //console.log("trkl.property ", trkl.property);
   module.exports = { from, computed, property, trkl };
 } else {
-  window['trkl'] = trkl;
+  window["trkl"] = trkl;
 }

@@ -1,3 +1,5 @@
+import { Rect, isRect } from "./rect.js";
+
 export function Matrix(arg) {
   let ret = this instanceof Matrix ? this : [undefined, 0, 0, undefined, 0, 0, undefined, 0, 0];
   if(typeof arg === "string") {
@@ -308,3 +310,4 @@ Matrix.prototype.affine_transform = function(a, b) {
   this.set_row.call(this, 2, 0, 0, 1);
   return this;
 };
+export const isMatrix = m => m instanceof Matrix || (m.length !== undefined && m.length == 6 && m.every(el => typeof el == "number"));

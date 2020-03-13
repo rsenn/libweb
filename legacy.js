@@ -34,7 +34,7 @@ if (![].filter) {
     if(this == null) throw new TypeError();
     var t = Object(this);
     var len = t.length >>> 0;
-    if(typeof callback !== 'function') throw new TypeError();
+    if(typeof callback !== "function") throw new TypeError();
     var newArray = [];
     var thisp = arguments[1];
     for(var i = 0; i < len; i++) {
@@ -79,23 +79,23 @@ if (![].indexOf) {
  * http://blog.stevenlevithan.com/archives/cross-browser-split
  */
 var nativeSplit = String.prototype.split;
-var compliantExecNpcg = /()??/.exec('')[1] === undefined;
+var compliantExecNpcg = /()??/.exec("")[1] === undefined;
 String.prototype.split = function(separator, limit) {
   var str = this;
-  if(Object.prototype.toString.call(separator) !== '[object RegExp]') {
+  if(Object.prototype.toString.call(separator) !== "[object RegExp]") {
     return nativeSplit.call(str, separator, limit);
   }
   var output = [];
-  var flags = (separator.ignoreCase ? 'i' : '') + (separator.multiline ? 'm' : '') + (separator.extended ? 'x' : '') + (separator.sticky ? 'y' : '');
+  var flags = (separator.ignoreCase ? "i" : "") + (separator.multiline ? "m" : "") + (separator.extended ? "x" : "") + (separator.sticky ? "y" : "");
   var lastLastIndex = 0;
   var separator2;
   var match;
   var lastIndex;
   var lastLength;
-  separator = new RegExp(separator.source, flags + 'g');
-  str += '';
+  separator = new RegExp(separator.source, flags + "g");
+  str += "";
   if(!compliantExecNpcg) {
-    separator2 = new RegExp('^' + separator.source + '$(?!\\s)', flags);
+    separator2 = new RegExp("^" + separator.source + "$(?!\\s)", flags);
   }
   limit = limit === undefined ? -1 >>> 0 : limit >>> 0;
   while((match = separator.exec(str))) {
@@ -125,8 +125,8 @@ String.prototype.split = function(separator, limit) {
     }
   }
   if(lastLastIndex === str.length) {
-    if(lastLength || !separator.test('')) {
-      output.push('');
+    if(lastLength || !separator.test("")) {
+      output.push("");
     }
   } else {
     output.push(str.slice(lastLastIndex));

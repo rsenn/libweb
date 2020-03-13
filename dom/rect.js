@@ -1,5 +1,5 @@
-import { Point } from "./point.js";
-import { Size } from "./size.js";
+import { Point, isPoint } from "./point.js";
+import { Size, isSize } from "./size.js";
 
 export function Rect(arg) {
   let obj = this instanceof Rect ? this : {};
@@ -183,3 +183,12 @@ Rect.prototype.pointFromCenter = function(point) {
   point.y /= this.height;
   return point;
 };
+
+Rect.prototype.toCSS = function() {
+  return { ...Point.prototype.toCSS.call(this), ...Size.prototype.toCSS.call(this) };
+};
+
+Rect.round = rect => Rect.prototype.round.call(rect);
+Rect.toCSS = rect => Rect.prototype.toCSS.call(rect);
+
+export const isRect = rect => isPoint(rect) && isSize(rect);

@@ -1,4 +1,4 @@
-import Util from './util.js';
+import Util from "./util.js";
 
 export function LottoNumbers() {
   let args = [...arguments];
@@ -8,7 +8,7 @@ export function LottoNumbers() {
   if(ret.add === undefined) ret.add = ret.push;
   if(args.length == 1) {
     if(args[0] && args[0].length !== undefined) args = args[0];
-    else if(typeof args[0] === 'number') args = Util.bitsToNumbers(args[0]);
+    else if(typeof args[0] === "number") args = Util.bitsToNumbers(args[0]);
   }
   LottoNumbers.prototype.add.apply(ret, args);
   /*  for(let i = 0; i < args.length; i++)
@@ -32,9 +32,9 @@ LottoNumbers.prototype.add = function() {
 
 LottoNumbers.prototype.toBits = function() {
   let bit = Math.max.apply(Math, [...this]);
-  let bin = '';
+  let bin = "";
   for(let i = 0; i < bit; i++) {
-    bin = (this.indexOf(i + 1) != -1 ? '1' : '0') + bin;
+    bin = (this.indexOf(i + 1) != -1 ? "1" : "0") + bin;
   }
   return bin;
 };
@@ -44,7 +44,7 @@ LottoNumbers.prototype.isEmpty = function() {
 };
 
 LottoNumbers.prototype.toBitArray = function() {
-  let bitarr = this.toBits().split('');
+  let bitarr = this.toBits().split("");
   bitarr.reverse();
   return bitarr.map(str => parseInt(str));
 };
@@ -53,10 +53,10 @@ LottoNumbers.prototype.toArray = function() {
   return [...this];
 };
 LottoNumbers.prototype.toString = function() {
-  return this.join(',');
+  return this.join(",");
 };
 LottoNumbers.prototype.toSource = function() {
-  return '[' + this.join(',') + ']';
+  return "[" + this.join(",") + "]";
 };
 
 export function parseLottoNumbers(arg) {
@@ -65,7 +65,7 @@ export function parseLottoNumbers(arg) {
   if(arg instanceof Array) return new LottoNumbers(arg);
   if(/^[0-9]+$/.test(arg)) return new LottoNumbers(parseFloat(arg));
   if(arg && arg.replace) {
-    arg = arg.replace(/.*\[([^\]]*)\].*/, '$1');
+    arg = arg.replace(/.*\[([^\]]*)\].*/, "$1");
     let matches = [...arg.matchAll(/[0-9]+/g)];
     return new LottoNumbers(matches.map(m => parseFloat(m)));
   }
@@ -79,7 +79,7 @@ export function arrayToLottoNumber(arr) {
     if(arr[i]) numbers.push(number);
   }
   const ln = new LottoNumbers(numbers);
-  console.log('arr: ', { arr, ln });
+  console.log("arr: ", { arr, ln });
   return ln;
 }
 
@@ -89,7 +89,7 @@ export function LottoBet(numbers, stars) {
 
   while(ret.length < 2) ret.push(new LottoNumbers());
 
-  if(args.length == 1 && typeof args[0] === 'object') {
+  if(args.length == 1 && typeof args[0] === "object") {
     const arg = args[0];
 
     if(arg.numbers !== undefined && arg.stars !== undefined) {
@@ -106,13 +106,13 @@ export function LottoBet(numbers, stars) {
 
 LottoBet.prototype = new Array();
 
-Object.defineProperty(LottoBet.prototype, 'numbers', {
+Object.defineProperty(LottoBet.prototype, "numbers", {
   get: function() {
     return this[0];
   },
   enumerable: false
 });
-Object.defineProperty(LottoBet.prototype, 'stars', {
+Object.defineProperty(LottoBet.prototype, "stars", {
   get: function() {
     return this[1];
   },
@@ -132,8 +132,8 @@ Object.assign(LottoBet.prototype, {
   },
   toString() {
     return this.toArray()
-      .map(nums => nums.join(','))
-      .join('|');
+      .map(nums => nums.join(","))
+      .join("|");
   },
   toSource() {
     return `new LottoBet([${this[0]}],[${this[1]}])`;
@@ -148,11 +148,11 @@ Object.assign(LottoBet.prototype, {
   },
   toBitString() {
     return (
-      '[' +
+      "[" +
       this.toArray()
-        .map(nums => '[' + nums.toBitArray().join(',') + ']')
-        .join(',') +
-      ']'
+        .map(nums => "[" + nums.toBitArray().join(",") + "]")
+        .join(",") +
+      "]"
     );
   }
 });
