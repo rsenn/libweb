@@ -1593,8 +1593,12 @@ Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
 };
 Util.walkTree = function*(node, pred, t, depth = 0, parent = null) {
   if(!pred) pred = i => true;
-  if(!t) t = i => { i.depth = depth; /*if(parent) i.parent = parent; */return i; };
-/*      let thisNode = node;
+  if(!t)
+    t = i => {
+      i.depth = depth;
+      /*if(parent) i.parent = parent; */ return i;
+    };
+  /*      let thisNode = node;
       let nodeId = node.id;*/
 
   //node = t(node);
