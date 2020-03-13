@@ -9,7 +9,7 @@ _Object$defineProperty(exports, "__esModule", {
 exports.ElementRectProxy = ElementRectProxy;
 exports.ElementRectProps = exports.ElementSizeProps = exports.ElementPosProps = exports.ElementWHProps = exports.ElementXYProps = void 0;
 
-var _element.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js = require("./element.js");
+var _element.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js = require("./element.js");
 
 function ElementRectProxy(element) {
   this.element = element;

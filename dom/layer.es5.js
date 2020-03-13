@@ -18,7 +18,7 @@ var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime
 
 var _inherits2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/inherits"));
 
-var _element.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js = require("./element.js");
+var _element.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js.es5.js = require("./element.js");
 
 /**
  *

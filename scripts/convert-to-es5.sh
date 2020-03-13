@@ -41,7 +41,7 @@ convert_to_es5() {
        *) break ;;
     esac
   done
-echo ARGS: $@ 1>&2
+  #echo ARGS: $@ 1>&2
 
   while [ $# -gt 0 ]; do
     IN=$1
