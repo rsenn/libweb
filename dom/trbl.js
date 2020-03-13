@@ -1,4 +1,4 @@
-import { Rect, isRect } from "./rect.js";
+import { Rect } from "./rect.js";
 
 /**
  * Type for TopRightBottomLeft (paddings and margins)
