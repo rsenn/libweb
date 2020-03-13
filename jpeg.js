@@ -1,4 +1,6 @@
-function isJpeg(buf) { return (typeof buf == "object" && buf !== null && buf.length >= 10 ? buf.readUInt32LE(6) == 0x4649464a : false); }
+function isJpeg(buf) {
+  return typeof buf == "object" && buf !== null && buf.length >= 10 ? buf.readUInt32LE(6) == 0x4649464a : false;
+}
 
 const jpegProps = data => {
   var ret = {};
@@ -34,6 +36,6 @@ const jpegProps = data => {
   }
   if(ret.depth === undefined) return null;
   return ret;
-}
+};
 
 module.exports = { isJpeg, jpegProps };

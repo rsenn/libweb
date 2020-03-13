@@ -34,8 +34,11 @@ convert_to_es5() {
     if isin $IN $ALLFILES; then
       continue
     fi
+
     DIR=`dirname "$1"`
     OUT=${IN%.js}.es5.js
+    [ "$OUT" -ot "$IN" ] || continue
+
      (set -x; babel -o "$OUT" "$IN" )
     REQUIRES=$( sed '/require(/ { s,.*require(\([^)]*\)).*,\1, ; s,^"\(.*\)"$,\1, ; p }' -n "$OUT" )
     SUBST=

@@ -37,7 +37,6 @@ var _trkl = require("./trkl.es5.js");
 
 var _lazyInitializer = require("./lazyInitializer.es5.js");
 
-var _jsxFileName = "/home/roman/the-wild-beauty-company/lib/svg-overlay.js";
 var __jsx = _react["default"].createElement;
 
 function SvgPathTracer(path) {
@@ -213,12 +212,7 @@ var SvgOverlay = /*#__PURE__*/function (_React$Component) {
           width: "100vw",
           height: "100%",
           pointerEvents: "none"
-        },
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 118
-        },
-        __self: this
+        }
       });
     }
   }]);
