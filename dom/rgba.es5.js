@@ -19,7 +19,7 @@ var _parseFloat2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-j
 
 var _parseInt2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/parse-int"));
 
-var _hsla = require("./hsla.es5.js");
+var _hsla.es5.js = require("./hsla.js");
 
 var _this = void 0;
 
@@ -41,16 +41,16 @@ function RGBA() {
   var ret = this instanceof RGBA ? this : {};
   var c = []; //console.log('RGBA(', args, ')');
 
-  if(args.length >= 3) {
+  if (args.length >= 3) {
     ret.r = r;
     ret.g = g;
     ret.b = b;
     ret.a = a;
-  } else if(args.length == 1) {
+  } else if (args.length == 1) {
     var arg = args[0];
 
-    if(typeof arg === "string") {
-      if(arg.startsWith("#")) {
+    if (typeof arg === "string") {
+      if (arg.startsWith("#")) {
         c = arg.length >= 7 ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(arg) : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(arg);
         var mul = arg.length >= 7 ? 1 : 17; //console.log('RGBA match:', c, ' mul:', mul);
 
@@ -58,8 +58,8 @@ function RGBA() {
         ret.g = (0, _parseInt2["default"])(c[2], 16) * mul;
         ret.b = (0, _parseInt2["default"])(c[3], 16) * mul;
         ret.a = c.length > 3 ? (0, _parseInt2["default"])(c[4], 16) * mul : 255;
-      } else if(arg.toLowerCase().startsWith("rgb")) {
-        c = arg.match(new RegExp("/[d.]+/g")).map(function(x) {
+      } else if (arg.toLowerCase().startsWith("rgb")) {
+        c = arg.match(new RegExp("/[d.]+/g")).map(function (x) {
           return (0, _parseFloat2["default"])(x);
         });
         c = (0, _toConsumableArray2["default"])(c).slice(1);
@@ -67,7 +67,7 @@ function RGBA() {
         ret.g = Math.round(c[1]);
         ret.b = Math.round(c[2]);
         ret.a = Math.round(c.length > 3 && !isNaN(c[3]) ? c[3] : 255);
-      } else if(typeof arg === "object" && arg.r !== undefined) {
+      } else if (typeof arg === "object" && arg.r !== undefined) {
         ret.r = arg.r;
         ret.g = arg.g;
         ret.b = arg.b;
@@ -76,71 +76,70 @@ function RGBA() {
     }
   }
 
-  if(isNaN(ret.a)) ret.a = 255; //console.log('RGBA ', {c, ret, args});
+  if (isNaN(ret.a)) ret.a = 255; //console.log('RGBA ', {c, ret, args});
 
-  if(!(ret instanceof RGBA)) return ret; //Object.setPrototypeOf(ret, RGBA.prototype);
+  if (!(ret instanceof RGBA)) return ret; //Object.setPrototypeOf(ret, RGBA.prototype);
 }
 
 RGBA.properties = ["r", "g", "b", "a"];
 
 var isRGBA = function isRGBA(obj) {
-  return RGBA.properties.every(function(prop) {
+  return RGBA.properties.every(function (prop) {
     return obj.hasOwnProperty(prop);
   });
 };
 
 exports.isRGBA = isRGBA;
 
-RGBA.fromHex = function(hex) {
+RGBA.fromHex = function (hex) {
   var alpha = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 255;
   var matches = hex && (hex.length >= 7 ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(hex) : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(hex));
-  if(matches === null) return null;
+  if (matches === null) return null;
   var mul = hex.length >= 7 ? 1 : 17;
 
-  var _slice$map = (0, _toConsumableArray2["default"])(matches)
-      .slice(1)
-      .map(function(x) {
-        return (0, _parseInt2["default"])(x, 16) * mul;
-      }),
-    _slice$map2 = (0, _slicedToArray2["default"])(_slice$map, 4),
-    r = _slice$map2[0],
-    g = _slice$map2[1],
-    b = _slice$map2[2],
-    a = _slice$map2[3]; //console.log('RGBA.fromHex', { hex, matches, r, g, b, a });
+  var _slice$map = (0, _toConsumableArray2["default"])(matches).slice(1).map(function (x) {
+    return (0, _parseInt2["default"])(x, 16) * mul;
+  }),
+      _slice$map2 = (0, _slicedToArray2["default"])(_slice$map, 4),
+      r = _slice$map2[0],
+      g = _slice$map2[1],
+      b = _slice$map2[2],
+      a = _slice$map2[3]; //console.log('RGBA.fromHex', { hex, matches, r, g, b, a });
+
 
   return new RGBA(r, g, b, matches.length > 3 && !isNaN(a) ? a : alpha);
 };
 
-RGBA.prototype.hex = function() {
+RGBA.prototype.hex = function () {
   var _RGBA$clamp = RGBA.clamp(RGBA.round(this)),
-    r = _RGBA$clamp.r,
-    g = _RGBA$clamp.g,
-    b = _RGBA$clamp.b,
-    a = _RGBA$clamp.a;
+      r = _RGBA$clamp.r,
+      g = _RGBA$clamp.g,
+      b = _RGBA$clamp.b,
+      a = _RGBA$clamp.a;
 
-  return "#" + ("0000000" + ((r << 16) | (g << 8) | b).toString(16)).slice(-6) + (a !== undefined && a != 255 ? ("0" + a.toString(16)).slice(-2) : "");
+  return "#" + ("0000000" + (r << 16 | g << 8 | b).toString(16)).slice(-6) + (a !== undefined && a != 255 ? ("0" + a.toString(16)).slice(-2) : "");
 };
 
-RGBA.prototype.toRGB = function() {
+RGBA.prototype.toRGB = function () {
   var r = this.r,
-    g = this.g,
-    b = this.b;
+      g = this.g,
+      b = this.b;
   return new RGBA(r, g, b, 255);
 };
 
-RGBA.toHex = function(rgba) {
+RGBA.toHex = function (rgba) {
   return RGBA.prototype.hex.call(rgba);
 };
 
-RGBA.clamp = function(rgba) {
+RGBA.clamp = function (rgba) {
   return RGBA(Math.min(Math.max(rgba.r, 0), 255), Math.min(Math.max(rgba.g, 0), 255), Math.min(Math.max(rgba.b, 0), 255), Math.min(Math.max(rgba.a, 0), 255));
 };
 
-RGBA.round = function(rgba) {
+RGBA.round = function (rgba) {
   return RGBA.prototype.round.call(rgba);
 };
 
-RGBA.prototype.round = function() {
+RGBA.prototype.round = function () {
   this.r = Math.round(this.r);
   this.g = Math.round(this.g);
   this.b = Math.round(this.b);
@@ -148,31 +147,30 @@ RGBA.prototype.round = function() {
   return this;
 };
 
-RGBA.normalize = function(rgba) {
+RGBA.normalize = function (rgba) {
   var from = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 255;
   var to = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1.0;
   return {
-    r: (rgba.r * to) / from,
-    g: (rgba.g * to) / from,
-    b: (rgba.b * to) / from,
-    a: (rgba.a * to) / from
+    r: rgba.r * to / from,
+    g: rgba.g * to / from,
+    b: rgba.b * to / from,
+    a: rgba.a * to / from
   };
 };
 
-RGBA.prototype.css = function() {
-  return function(prop) {
+RGBA.prototype.css = function () {
+  return function (prop) {
     return (prop ? prop + ":" : "") + "rgba(" + _this.r + ", " + _this.g + ", " + _this.b + ", " + (_this.a / 255).toFixed(3) + ")";
   };
 };
 
-RGBA.prototype.toString = function() {
+RGBA.prototype.toString = function () {
   var sep = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : ", ";
   var a = this.a;
-  if(a >= 255) return "rgb(" + this.r + sep + this.g + sep + this.b + ")";
-  else return "rgba(" + this.r + sep + this.g + sep + this.b + sep + (a / 255).toFixed(3) + ")";
+  if (a >= 255) return "rgb(" + this.r + sep + this.g + sep + this.b + ")";else return "rgba(" + this.r + sep + this.g + sep + this.b + sep + (a / 255).toFixed(3) + ")";
 };
 
-RGBA.prototype.normalize = function() {
+RGBA.prototype.normalize = function () {
   var from = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 255;
   var to = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1.0;
   var mul = to / from;
@@ -183,43 +181,34 @@ RGBA.prototype.normalize = function() {
   return this;
 };
 
-RGBA.blend = function(a, b) {
+RGBA.blend = function (a, b) {
   var o = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0.5;
   a = new RGBA(a);
   b = new RGBA(b);
   return new RGBA(Math.round(a.r * o + b.r * (1 - o)), Math.round(a.g * o + b.g * (1 - o)), Math.round(a.b * o + b.b * (1 - o)), Math.round(a.a * o + b.a * (1 - o)));
 };
 
-RGBA.prototype.toAlpha = function(color) {
+RGBA.prototype.toAlpha = function (color) {
   var src = RGBA.normalize(this);
   var alpha = {};
   alpha.a = src.a;
-  if(color.r < 0.0001) alpha.r = src.r;
-  else if(src.r > color.r) alpha.r = (src.r - color.r) / (1.0 - color.r);
-  else if(src.r < color.r) alpha.r = (color.r - src.r) / color.r;
-  else alpha.r = 0.0;
-  if(color.g < 0.0001) alpha.g = src.g;
-  else if(src.g > color.g) alpha.g = (src.g - color.g) / (1.0 - color.g);
-  else if(src.g < color.g) alpha.g = (color.g - src.g) / color.g;
-  else alpha.g = 0.0;
-  if(color.b < 0.0001) alpha.b = src.b;
-  else if(src.b > color.b) alpha.b = (src.b - color.b) / (1.0 - color.b);
-  else if(src.b < color.b) alpha.b = (color.b - src.b) / color.b;
-  else alpha.b = 0.0;
+  if (color.r < 0.0001) alpha.r = src.r;else if (src.r > color.r) alpha.r = (src.r - color.r) / (1.0 - color.r);else if (src.r < color.r) alpha.r = (color.r - src.r) / color.r;else alpha.r = 0.0;
+  if (color.g < 0.0001) alpha.g = src.g;else if (src.g > color.g) alpha.g = (src.g - color.g) / (1.0 - color.g);else if (src.g < color.g) alpha.g = (color.g - src.g) / color.g;else alpha.g = 0.0;
+  if (color.b < 0.0001) alpha.b = src.b;else if (src.b > color.b) alpha.b = (src.b - color.b) / (1.0 - color.b);else if (src.b < color.b) alpha.b = (color.b - src.b) / color.b;else alpha.b = 0.0;
 
-  if(alpha.r > alpha.g) {
-    if(alpha.r > alpha.b) {
+  if (alpha.r > alpha.g) {
+    if (alpha.r > alpha.b) {
       src.a = alpha.r;
     } else {
       src.a = alpha.b;
     }
-  } else if(alpha.g > alpha.b) {
+  } else if (alpha.g > alpha.b) {
     src.a = alpha.g;
   } else {
     src.a = alpha.b;
   }
 
-  if(src.a >= 0.0001) {
+  if (src.a >= 0.0001) {
     src.r = (src.r - color.r) / src.a + color.r;
     src.g = (src.g - color.g) / src.a + color.g;
     src.b = (src.b - color.b) / src.a + color.b;
@@ -232,11 +221,11 @@ RGBA.prototype.toAlpha = function(color) {
   return new RGBA(dst.r, dst.g, dst.b, dst.a);
 };
 
-RGBA.prototype.toHSLA = function() {
+RGBA.prototype.toHSLA = function () {
   var r = this.r,
-    g = this.g,
-    b = this.b,
-    a = this.a;
+      g = this.g,
+      b = this.b,
+      a = this.a;
   r /= 255;
   g /= 255;
   b /= 255;
@@ -247,7 +236,7 @@ RGBA.prototype.toHSLA = function() {
   var s;
   var l = (max + min) / 2;
 
-  if(max == min) {
+  if (max == min) {
     h = s = 0; // achromatic
   } else {
     var d = max - min;

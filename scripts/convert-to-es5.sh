@@ -15,6 +15,20 @@ isin() {
   done;
   exit 1)
 }
+pushv_unique() { 
+  __V=$1
+  old_IFS=$IFS
+  IFS=${IFS%${IFS#?}}
+  shift
+  for __S; do
+    if eval "! isin \$__S \${$__V}"; then
+      pushv "$__V" "$__S"
+    else
+      return 1
+    fi
+  done
+  IFS=$old_IFS
+}
 
 ALLFILES=
 
@@ -37,9 +51,7 @@ convert_to_es5() {
 
     DIR=`dirname "$1"`
     OUT=${IN%.js}.es5.js
-    [ "$OUT" -ot "$IN" ] || continue
-
-     (set -x; babel -o "$OUT" "$IN" )
+    [ "$OUT" -ot "$IN" ] && (set -x; babel -o "$OUT" "$IN" )
     REQUIRES=$( sed '/require(/ { s,.*require(\([^)]*\)).*,\1, ; s,^"\(.*\)"$,\1, ; p }' -n "$OUT" )
     SUBST=
     ADDFILES=
@@ -48,7 +60,9 @@ convert_to_es5() {
       FILE=$DIR/$FILE
       test -e "$FILE" || continue
       FILE=${FILE#./}
-      pushv ADDFILES "$FILE"
+      FILE=${FILE%.js}
+      FILE=${FILE%.es5}
+      pushv_unique ADDFILES "${FILE}.js"
       FILE=${FILE#$DIR/}
       pushv SUBST "/require(/ s|$FILE|${FILE%.js}.es5.js|"
     done

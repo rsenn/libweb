@@ -34,56 +34,28 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime-corejs2/he
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/createClass"));
 
-function ownKeys(object, enumerableOnly) {
-  var keys = (0, _keys["default"])(object);
-  if(_getOwnPropertySymbols["default"]) {
-    var symbols = (0, _getOwnPropertySymbols["default"])(object);
-    if(enumerableOnly)
-      symbols = symbols.filter(function(sym) {
-        return (0, _getOwnPropertyDescriptor["default"])(object, sym).enumerable;
-      });
-    keys.push.apply(keys, symbols);
-  }
-  return keys;
-}
+function ownKeys(object, enumerableOnly) { var keys = (0, _keys["default"])(object); if (_getOwnPropertySymbols["default"]) { var symbols = (0, _getOwnPropertySymbols["default"])(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return (0, _getOwnPropertyDescriptor["default"])(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) {
-  for(var i = 1; i < arguments.length; i++) {
-    var source = arguments[i] != null ? arguments[i] : {};
-    if(i % 2) {
-      ownKeys(Object(source), true).forEach(function(key) {
-        (0, _defineProperty3["default"])(target, key, source[key]);
-      });
-    } else if(_getOwnPropertyDescriptors["default"]) {
-      (0, _defineProperties["default"])(target, (0, _getOwnPropertyDescriptors["default"])(source));
-    } else {
-      ownKeys(Object(source)).forEach(function(key) {
-        (0, _defineProperty2["default"])(target, key, (0, _getOwnPropertyDescriptor["default"])(source, key));
-      });
-    }
-  }
-  return target;
-}
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty3["default"])(target, key, source[key]); }); } else if (_getOwnPropertyDescriptors["default"]) { (0, _defineProperties["default"])(target, (0, _getOwnPropertyDescriptors["default"])(source)); } else { ownKeys(Object(source)).forEach(function (key) { (0, _defineProperty2["default"])(target, key, (0, _getOwnPropertyDescriptor["default"])(source, key)); }); } } return target; }
 
-var Node = /*#__PURE__*/ (function() {
+var Node = /*#__PURE__*/function () {
   function Node() {
     (0, _classCallCheck2["default"])(this, Node);
   }
 
-  (0, _createClass2["default"])(Node, null, [
-    {
-      key: "parents",
-      value: function parents(node) {
-        return /*#__PURE__*/ _regenerator["default"].mark(function _callee() {
+  (0, _createClass2["default"])(Node, null, [{
+    key: "parents",
+    value: function parents(node) {
+      return (/*#__PURE__*/_regenerator["default"].mark(function _callee() {
           var n;
           return _regenerator["default"].wrap(function _callee$(_context) {
-            while(1) {
-              switch ((_context.prev = _context.next)) {
+            while (1) {
+              switch (_context.prev = _context.next) {
                 case 0:
                   n = node;
 
                 case 1:
-                  if(!n) {
+                  if (!n) {
                     _context.next = 4;
                     break;
                   }
@@ -92,7 +64,7 @@ var Node = /*#__PURE__*/ (function() {
                   return n;
 
                 case 4:
-                  if(n && (n = n.parentNode)) {
+                  if (n && (n = n.parentNode)) {
                     _context.next = 1;
                     break;
                   }
@@ -103,35 +75,31 @@ var Node = /*#__PURE__*/ (function() {
               }
             }
           }, _callee);
-        })();
-      }
-    },
-    {
-      key: "depth",
-      value: function depth(node) {
-        var r = 0;
-
-        while(node && node.parentNode) {
-          r++;
-          node = node.parentNode;
-        }
-
-        return r;
-      }
-    },
-    {
-      key: "attrs",
-      value: function attrs(node) {
-        return node.attributes && node.attributes.length > 0
-          ? (0, _from["default"])(node.attributes).reduce(function(acc, attr) {
-              return _objectSpread({}, acc, (0, _defineProperty3["default"])({}, attr.name, isNaN((0, _parseFloat2["default"])(attr.value)) ? attr.value : (0, _parseFloat2["default"])(attr.value)));
-            }, {})
-          : {};
-      }
+        })()
+      );
     }
-  ]);
+  }, {
+    key: "depth",
+    value: function depth(node) {
+      var r = 0;
+
+      while (node && node.parentNode) {
+        r++;
+        node = node.parentNode;
+      }
+
+      return r;
+    }
+  }, {
+    key: "attrs",
+    value: function attrs(node) {
+      return node.attributes && node.attributes.length > 0 ? (0, _from["default"])(node.attributes).reduce(function (acc, attr) {
+        return _objectSpread({}, acc, (0, _defineProperty3["default"])({}, attr.name, isNaN((0, _parseFloat2["default"])(attr.value)) ? attr.value : (0, _parseFloat2["default"])(attr.value)));
+      }, {}) : {};
+    }
+  }]);
   return Node;
-})();
+}();
 
 exports.Node = Node;
 var _default = Node;

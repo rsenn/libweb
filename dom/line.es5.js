@@ -17,7 +17,7 @@ var _epsilon = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/nu
 
 var _parseFloat2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/parse-float"));
 
-var _point = require("./point.es5.js");
+var _point.es5.js = require("./point.js");
 
 function Line(x1, y1, x2, y2) {
   var obj = this instanceof Line ? this : {};

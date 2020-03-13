@@ -289,51 +289,51 @@ var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime-corejs2
 
 var _reactDom = _interopRequireDefault(require("react-dom"));
 
-var _svgPath = require("./svg-path.es5.js");
+var _svgPath = require("./svg-path.es5.js.js");
 
-var _util = _interopRequireDefault(require("./util.es5.js"));
+var _util.es5.js = _interopRequireDefault(require("./util.js"));
 
-var _point = require("./dom/point.es5.js");
+var _point = require("./dom/point.es5.js.js");
 
-var _size = require("./dom/size.es5.js");
+var _size = require("./dom/size.es5.js.js");
 
-var _line = require("./dom/line.es5.js");
+var _line = require("./dom/line.es5.js.js");
 
-var _rect = require("./dom/rect.es5.js");
+var _rect = require("./dom/rect.es5.js.js");
 
-var _pointList = require("./dom/pointList.es5.js");
+var _pointList = require("./dom/point.es5.jsList.js");
 
-var _rgba = require("./dom/rgba.es5.js");
+var _rgba = require("./dom/rgba.es5.js.js");
 
-var _hsla = require("./dom/hsla.es5.js");
+var _hsla = require("./dom/hsla.es5.js.js");
 
-var _matrix = require("./dom/matrix.es5.js");
+var _matrix = require("./dom/matrix.es5.js.js");
 
-var _bbox = require("./dom/bbox.es5.js");
+var _bbox = require("./dom/bbox.es5.js.js");
 
-var _trbl = require("./dom/trbl.es5.js");
+var _trbl = require("./dom/trbl.es5.js.js");
 
-var _timer = require("./dom/timer.es5.js");
+var _timer = require("./dom/timer.es5.js.js");
 
-var _tree = require("./dom/tree.es5.js");
+var _tree = require("./dom/tree.es5.js.js");
 
-var _node = require("./dom/node.es5.js");
+var _node = require("./dom/node.es5.js.js");
 
-var _element = require("./dom/element.es5.js");
+var _element = require("./dom/element.es5.js.js");
 
-var _css = require("./dom/css.es5.js");
+var _css = require("./dom/css.es5.js.js");
 
-var _svg = require("./dom/svg.es5.js");
+var _svg = require("./dom/svg.es5.js.js");
 
-var _reactComponent = require("./dom/reactComponent.es5.js");
+var _reactComponent = require("./dom/reactComponent.es5.js.js");
 
-var _container = require("./dom/container.es5.js");
+var _container = require("./dom/container.es5.js.js");
 
-var _layer = require("./dom/layer.es5.js");
+var _layer = require("./dom/layer.es5.js.js");
 
-var _select = require("./dom/select.es5.js");
+var _select = require("./dom/select.es5.js.js");
 
-var _elementRect = require("./dom/elementRect.es5.js");
+var _elementRect = require("./dom/element.es5.jsRect.js");
 
 var _Object$assign2;
 
