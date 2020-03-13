@@ -29,12 +29,12 @@ convert_to_es5() {
 
   while [ $# -gt 0 ]; do
     IN=$1
+    shift
 
     if isin $IN $ALLFILES; then
       continue
     fi
     DIR=`dirname "$1"`
-    shift
     OUT=${IN%.js}.es5.js
      (set -x; babel -o "$OUT" "$IN" )
     REQUIRES=$( sed '/require(/ { s,.*require(\([^)]*\)).*,\1, ; s,^"\(.*\)"$,\1, ; p }' -n "$OUT" )
