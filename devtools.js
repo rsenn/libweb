@@ -4,7 +4,7 @@ import dom, {TRBL, CSS, CSSTransformSetters, Element, ElementRectProxy, ElementS
 import { SvgOverlay, SvgPathTracer } from "./svg-overlay.js";
 import { SvgPath } from "./svg-path.js";
 import Util, { parseDate } from "./util.js";
-import { toJS, set, get, values, keys, entries, remove, has } from "mobx";
+import { toJS } from "mobx";
 import { trkl } from "./trkl.js";
 import HashList from "./hashList.js";
 import { Polygon } from "./polygon.js";
@@ -100,7 +100,9 @@ export const colors = (() => {
       let diff = key - prev;
       prev = key;
       const c = new RGBA(color.r, color.g, color.b, color.a);
-      console.log("%c colors ", `background-color: ${c.toString()}`, { key, c });
+
+      //console.log("%c colors ", `background-color: ${c.toString()}`, { key, c });
+
       f("div", {
         innerHTML: `<div class="colors-text" style="opacity:0;">${((typeof key == "number" ? key.toFixed(2) : key) + ": " + c.toString()).replace(/ /g, "&nbsp;")}</div>`,
         class: "colors-item",
@@ -1027,7 +1029,7 @@ export const devtools = {
   Util,
   toJS,
   parseDate,
-  mobx: { set, get, values, keys, entries, remove, has }
+  mobx: { toJS }
 };
 
 export default devtools;

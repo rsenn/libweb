@@ -2,36 +2,9 @@ var _defineProperty = require("@babel/runtime/helpers/defineProperty");
 
 var _objectWithoutProperties = require("@babel/runtime/helpers/objectWithoutProperties");
 
-function ownKeys(object, enumerableOnly) {
-  var keys = Object.keys(object);
-  if(Object.getOwnPropertySymbols) {
-    var symbols = Object.getOwnPropertySymbols(object);
-    if(enumerableOnly)
-      symbols = symbols.filter(function(sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      });
-    keys.push.apply(keys, symbols);
-  }
-  return keys;
-}
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) {
-  for(var i = 1; i < arguments.length; i++) {
-    var source = arguments[i] != null ? arguments[i] : {};
-    if(i % 2) {
-      ownKeys(Object(source), true).forEach(function(key) {
-        _defineProperty(target, key, source[key]);
-      });
-    } else if(Object.getOwnPropertyDescriptors) {
-      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-    } else {
-      ownKeys(Object(source)).forEach(function(key) {
-        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-      });
-    }
-  }
-  return target;
-}
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 var computedTracker = []; //We will need to copy subscriptions here during writes, so that subscriptions can edit their original subscription lists
 //safely. This is necessary for subscriptions that remove themselves.
@@ -43,16 +16,17 @@ function trkl(initValue) {
   var subscribers = [];
 
   var self = function self(writeValue) {
-    if(arguments.length) {
+    if (arguments.length) {
       write(writeValue);
     } else {
       return read();
     }
   }; //Using string keys tells Uglify that we intend to export these symbols
 
+
   self["subscribe"] = subscribe;
 
-  self["bind_to"] = function(obj, prop) {
+  self["bind_to"] = function (obj, prop) {
     Object.defineProperty(obj, prop, {
       enumerable: true,
       configurable: true,
@@ -62,24 +36,25 @@ function trkl(initValue) {
     return self;
   }; //declaring as a private function means the minifier can scrub its name on internal references
 
+
   function subscribe(subscriber, immediate) {
-    if(!~subscribers.indexOf(subscriber)) {
+    if (!~subscribers.indexOf(subscriber)) {
       subscribers.push(subscriber);
     }
 
-    if(immediate) {
+    if (immediate) {
       subscriber(value);
     }
   }
 
-  self["unsubscribe"] = function(subscriber) {
+  self["unsubscribe"] = function (subscriber) {
     remove(subscribers, subscriber);
   };
 
   function write(newValue) {
     var oldValue = value;
 
-    if(newValue === oldValue && (newValue === null || typeof newValue !== "object")) {
+    if (newValue === oldValue && (newValue === null || typeof newValue !== "object")) {
       return; // bail out
     }
 
@@ -90,7 +65,7 @@ function trkl(initValue) {
 
     var subCount = subscribers.length;
 
-    for(var i = 0; i < subCount; i++) {
+    for (var i = 0; i < subCount; i++) {
       //If a sub throws an error, the effects array will just keep growing and growing.
       //It won't stop operating properly, but it might eat memory. We're okay with this, I guess?
       effects.pop()(value, oldValue);
@@ -100,7 +75,7 @@ function trkl(initValue) {
   function read() {
     var runningComputation = computedTracker[computedTracker.length - 1];
 
-    if(runningComputation) {
+    if (runningComputation) {
       subscribe(runningComputation._subscriber);
     }
 
@@ -110,7 +85,7 @@ function trkl(initValue) {
   return self;
 }
 
-trkl["computed"] = function(fn) {
+trkl["computed"] = function (fn) {
   var self = trkl();
   var computationToken = {
     _subscriber: runComputed
@@ -125,13 +100,13 @@ trkl["computed"] = function(fn) {
 
     try {
       result = fn();
-    } catch(e) {
+    } catch (e) {
       errors = e;
     }
 
     computedTracker.pop();
 
-    if(errors) {
+    if (errors) {
       throw errors;
     }
 
@@ -139,37 +114,30 @@ trkl["computed"] = function(fn) {
   }
 };
 
-trkl["from"] = function(executor) {
+trkl["from"] = function (executor) {
   var self = trkl();
   executor(self);
   return self;
 };
 
-trkl.property = function(object, name) {
-  var options =
-    arguments.length > 2 && arguments[2] !== undefined
-      ? arguments[2]
-      : {
-          enumerable: true,
-          configurable: true
-        };
+trkl.property = function (object, name) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {
+    enumerable: true,
+    configurable: true
+  };
 
   var value = options.value,
-    opts = _objectWithoutProperties(options, ["value"]);
+      opts = _objectWithoutProperties(options, ["value"]);
 
   var self = trkl(value);
-  Object.defineProperty(
-    object,
-    name,
-    _objectSpread({}, opts, {
-      get: self,
-      set: self
-    })
-  );
+  Object.defineProperty(object, name, _objectSpread({}, opts, {
+    get: self,
+    set: self
+  }));
   return self;
 };
 
-trkl.bind = function(object, name, handler) {
+trkl.bind = function (object, name, handler) {
   var self = handler;
   Object.defineProperty(object, name, {
     enumerable: true,
@@ -181,7 +149,7 @@ trkl.bind = function(object, name, handler) {
 };
 
 function detectCircularity(token) {
-  if(computedTracker.indexOf(token) !== -1) {
+  if (computedTracker.indexOf(token) !== -1) {
     throw Error("Circular computation detected");
   }
 }
@@ -189,15 +157,15 @@ function detectCircularity(token) {
 function remove(array, item) {
   var position = array.indexOf(item);
 
-  if(position !== -1) {
+  if (position !== -1) {
     array.splice(position, 1);
   }
 }
 
-if(typeof module === "object") {
+if (typeof module === "object") {
   var from = trkl.from,
-    computed = trkl.computed,
-    property = trkl.property; //console.log("trkl.property ", trkl.property);
+      computed = trkl.computed,
+      property = trkl.property; //console.log("trkl.property ", trkl.property);
 
   module.exports = {
     from: from,

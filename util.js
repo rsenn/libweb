@@ -1053,7 +1053,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
 
 Util.getURL = function(req = {}) {
   let proto = process.env.NODE_ENV === "production" ? "https" : "http";
-  let port = process.env.NODE_ENV === "production" ? 443 : 8080;
+  let port = process.env.PORT ? parseInt(process.env.PORT) : process.env.NODE_ENV === "production" ? 443 : 8080;
 
   let host = global.ip || global.host || "localhost";
   if(req && req.headers && req.headers.host !== undefined) {
@@ -1095,14 +1095,17 @@ Util.encodeQuery = function(data) {
 Util.parseURL = function(href = this.getURL()) {
   const matches = /^([^:]*):\/\/([^/:]*)(:[0-9]*)?(\/?.*)/.exec(href);
   if(!matches) return null;
-  const argstr = matches[4].replace(/^[^?]*\?/, ""); /* + "&test=1"*/
+  const argstr = matches[4].indexOf("?") != -1 ? matches[4].replace(/^[^?]*\?/, "") : ""; /* + "&test=1"*/
   const pmatches =
     typeof argstr === "string"
-      ? argstr.split(/&/g).map(part => {
-          let a = part.split(/=/);
-          let b = a.shift();
-          return [b, a.join("=")];
-        })
+      ? argstr
+          .split(/&/g)
+          .map(part => {
+            let a = part.split(/=/);
+            let b = a.shift();
+            return [b, a.join("=")];
+          })
+          .filter(([k, v]) => !(k.length == 0 && v.length == 0))
       : Util.array();
   const params = [...pmatches].reduce((acc, m) => {
     acc[m[0]] = m[1];
@@ -1124,15 +1127,22 @@ Util.parseURL = function(href = this.getURL()) {
 };
 
 Util.makeURL = function() {
-  const args = [...arguments];
+  let args = [...arguments];
+  let href = typeof args[0] == "string" ? args.shift() : Util.getURL();
+  let url = Util.parseURL(href);
+
+  let obj = typeof args[0] == "object" ? args.shift() : {};
+
+  Object.assign(url, obj);
+  return url.href();
+
+  /*
   let href = typeof args[0] === "string" ? args.shift() : this.getURL();
   let urlObj = null;
-  let host = global.ip || global.host || "localhost";
-  if(String(href).indexOf("://") == -1) href = `http://${host}:8080`;
-
+ 
   urlObj = this.parseURL(href);
 
-  return urlObj ? urlObj.href(args[0]) : null;
+  return urlObj ? urlObj.href(args[0]) : null;*/
 };
 Util.numberFromURL = function(url, fn) {
   const obj = typeof url === "object" ? url : this.parseURL(url);
@@ -1228,7 +1238,7 @@ Util.entriesToObj = function(arr) {
     return acc;
   }, {});
 };
-Util.isDate = d => /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d);
+Util.isDate = d => d instanceof Date || typeof(d) == 'string' && /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d);
 
 Util.parseDate = d => {
   if(Util.isDate(d)) {
