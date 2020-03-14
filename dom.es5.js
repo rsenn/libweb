@@ -299,7 +299,7 @@ function dom() {
   var ret = _util["default"].array();
 
   var extend = function extend(e, functions) {
-    var keys = (0, _toConsumableArray2["default"])(_util["default"].members(functions)).filter(function (key) {
+    var keys = (0, _toConsumableArray2["default"])(_util["default"].members(functions)).filter(function(key) {
       return ["callee", "caller", "arguments", "call", "bind", "apply", "prototype", "constructor", "length"].indexOf(key) == -1 && typeof functions[key] == "function";
     });
     var _iteratorNormalCompletion = true;
@@ -307,27 +307,27 @@ function dom() {
     var _iteratorError = undefined;
 
     try {
-      for (var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      for(var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
         var key = _step.value;
-        if (e[key] === undefined) e[key] = functions[key].bind(functions, e);
+        if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
       }
-    } catch (err) {
+    } catch(err) {
       _didIteratorError = true;
       _iteratorError = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+        if(!_iteratorNormalCompletion && _iterator["return"] != null) {
           _iterator["return"]();
         }
       } finally {
-        if (_didIteratorError) {
+        if(_didIteratorError) {
           throw _iteratorError;
         }
       }
     }
   };
 
-  args = args.map(function (arg) {
+  args = args.map(function(arg) {
     return typeof arg == "string" ? _element.Element.findAll(arg) : arg;
   });
   var _iteratorNormalCompletion2 = true;
@@ -335,31 +335,32 @@ function dom() {
   var _iteratorError2 = undefined;
 
   try {
-    for (var _iterator2 = args[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+    for(var _iterator2 = args[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
       var e = _step2.value;
-      if (e instanceof SVGSVGElement) extend(e, _svg.SVG);else if (e instanceof HTMLElement) {
+      if(e instanceof SVGSVGElement) extend(e, _svg.SVG);
+      else if(e instanceof HTMLElement) {
         extend(e, _element.Element);
         (0, _elementRect.ElementPosProps)(e);
         (0, _elementRect.ElementSizeProps)(e);
       }
       ret.push(e);
     }
-  } catch (err) {
+  } catch(err) {
     _didIteratorError2 = true;
     _iteratorError2 = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+      if(!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
         _iterator2["return"]();
       }
     } finally {
-      if (_didIteratorError2) {
+      if(_didIteratorError2) {
         throw _iteratorError2;
       }
     }
   }
 
-  if (ret.length == 1) ret = ret[0];
+  if(ret.length == 1) ret = ret[0];
   return ret;
 }
 
@@ -378,11 +379,11 @@ Align.MIDDLE = 0;
 Align.TOP = 4;
 Align.BOTTOM = 8;
 
-Align.horizontal = function (alignment) {
+Align.horizontal = function(alignment) {
   return alignment & (Align.LEFT | Align.RIGHT);
 };
 
-Align.vertical = function (alignment) {
+Align.vertical = function(alignment) {
   return alignment & (Align.TOP | Align.BOTTOM);
 };
 
@@ -390,11 +391,14 @@ var Anchor = Align;
 exports.Anchor = Anchor;
 
 function Unit(str) {
-  var u = this instanceof Unit ? this : {
-    format: function format(number) {
-      return "".concat(number).concat(this.name);
-    }
-  };
+  var u =
+    this instanceof Unit
+      ? this
+      : {
+          format: function format(number) {
+            return "".concat(number).concat(this.name);
+          }
+        };
   u.name = str.replace(/^[a-z]*/, "");
   return u;
 }
@@ -412,9 +416,14 @@ var ElementTransformation = function ElementTransformation() {
     scale: new _size.Size(0, 0),
     toString: function toString() {
       var rotate = this.rotate,
-          translate = this.translate,
-          scale = this.scale;
-      return "rotate(".concat(rotate, "deg) translate(").concat(translate.x, ", ").concat(translate.y, ") scale(").concat(scale.w, ",").concat(scale.h, ")");
+        translate = this.translate,
+        scale = this.scale;
+      return "rotate("
+        .concat(rotate, "deg) translate(")
+        .concat(translate.x, ", ")
+        .concat(translate.y, ") scale(")
+        .concat(scale.w, ",")
+        .concat(scale.h, ")");
     }
   };
 };
@@ -458,7 +467,7 @@ var CSSTransformSetters = function CSSTransformSetters(element) {
 
 exports.CSSTransformSetters = CSSTransformSetters;
 
-var Transition = /*#__PURE__*/function () {
+var Transition = /*#__PURE__*/ (function() {
   function Transition(property, delay, duration, timing) {
     (0, _classCallCheck2["default"])(this, Transition);
     this.property = "none";
@@ -471,18 +480,20 @@ var Transition = /*#__PURE__*/function () {
     this.timing = timing;
   }
 
-  (0, _createClass2["default"])(Transition, null, [{
-    key: "list",
-    value: function list() {
-      return (0, _construct2["default"])(TransitionList, Array.prototype.slice.call(arguments));
+  (0, _createClass2["default"])(Transition, null, [
+    {
+      key: "list",
+      value: function list() {
+        return (0, _construct2["default"])(TransitionList, Array.prototype.slice.call(arguments));
+      }
     }
-  }]);
+  ]);
   return Transition;
-}();
+})();
 
 exports.Transition = Transition;
 
-var TransitionList = /*#__PURE__*/function (_Array) {
+var TransitionList = /*#__PURE__*/ (function(_Array) {
   (0, _inherits2["default"])(TransitionList, _Array);
 
   function TransitionList() {
@@ -490,32 +501,35 @@ var TransitionList = /*#__PURE__*/function (_Array) {
 
     (0, _classCallCheck2["default"])(this, TransitionList);
     var args = Array.prototype.slice.call(arguments);
-    args.forEach(function (arg) {
+    args.forEach(function(arg) {
       return _this.push(arg);
     });
     return (0, _possibleConstructorReturn2["default"])(_this);
   }
 
-  (0, _createClass2["default"])(TransitionList, [{
-    key: "propertyList",
-    value: function propertyList(name) {
-      return this.map(function (transition) {
-        return transition[name];
-      });
+  (0, _createClass2["default"])(TransitionList, [
+    {
+      key: "propertyList",
+      value: function propertyList(name) {
+        return this.map(function(transition) {
+          return transition[name];
+        });
+      }
+    },
+    {
+      key: "css",
+      get: function get() {
+        return {
+          transitionDelay: this.propertyList("delay").join(", "),
+          transitionDuration: this.propertyList("duration").join(", "),
+          transitionProperty: this.propertyList("property").join(", "),
+          transitionTimingFunction: this.propertyList("timing").join(", ")
+        };
+      }
     }
-  }, {
-    key: "css",
-    get: function get() {
-      return {
-        transitionDelay: this.propertyList("delay").join(", "),
-        transitionDuration: this.propertyList("duration").join(", "),
-        transitionProperty: this.propertyList("property").join(", "),
-        transitionTimingFunction: this.propertyList("timing").join(", ")
-      };
-    }
-  }]);
+  ]);
   return TransitionList;
-}( /*#__PURE__*/(0, _wrapNativeSuper2["default"])(Array));
+})(/*#__PURE__*/ (0, _wrapNativeSuper2["default"])(Array));
 
 exports.TransitionList = TransitionList;
 
@@ -537,43 +551,55 @@ export const isRenderer = inst => {};
 export const isSelect = inst => {};
 */
 
-
 exports.RandomColor = RandomColor;
 
-var _default = Object.assign(dom, (_Object$assign = {
-  Align: Align,
-  Anchor: Anchor,
-  Container: _container.Container,
-  CSS: _css.CSS,
-  CSSTransformSetters: CSSTransformSetters,
-  Node: _node.Node,
-  Element: _element.Element,
-  ElementPosProps: _elementRect.ElementPosProps,
-  ElementRectProps: _elementRect.ElementRectProps,
-  ElementRectProxy: _elementRect.ElementRectProxy,
-  ElementSizeProps: _elementRect.ElementSizeProps,
-  ElementTransformation: ElementTransformation,
-  ElementWHProps: _elementRect.ElementWHProps,
-  ElementXYProps: _elementRect.ElementXYProps,
-  HSLA: _hsla.HSLA,
-  isElement: _element.isElement,
-  isHSLA: _hsla.isHSLA,
-  isLine: _line.isLine,
-  isMatrix: _matrix.isMatrix,
-  isNumber: isNumber,
-  isPoint: _point.isPoint,
-  isRect: _rect.isRect,
-  isRGBA: _rgba.isRGBA,
-  isSize: _size.isSize,
-  Line: _line.Line,
-  Matrix: _matrix.Matrix,
-  MatrixProps: _matrix.MatrixProps,
-  Point: _point.Point,
-  PointList: _pointList.PointList,
-  ReactComponent: _reactComponent.ReactComponent,
-  Rect: _rect.Rect,
-  Renderer: _layer.Renderer,
-  RGBA: _rgba.RGBA
-}, (0, _defineProperty2["default"])(_Object$assign, "HSLA", _hsla.HSLA), (0, _defineProperty2["default"])(_Object$assign, "Select", _select.Select), (0, _defineProperty2["default"])(_Object$assign, "Size", _size.Size), (0, _defineProperty2["default"])(_Object$assign, "SVG", _svg.SVG), (0, _defineProperty2["default"])(_Object$assign, "Timer", _timer.Timer), (0, _defineProperty2["default"])(_Object$assign, "Transition", Transition), (0, _defineProperty2["default"])(_Object$assign, "TransitionList", TransitionList), (0, _defineProperty2["default"])(_Object$assign, "TRBL", _trbl.TRBL), (0, _defineProperty2["default"])(_Object$assign, "Tree", _tree.Tree), _Object$assign));
+var _default = Object.assign(
+  dom,
+  ((_Object$assign = {
+    Align: Align,
+    Anchor: Anchor,
+    Container: _container.Container,
+    CSS: _css.CSS,
+    CSSTransformSetters: CSSTransformSetters,
+    Node: _node.Node,
+    Element: _element.Element,
+    ElementPosProps: _elementRect.ElementPosProps,
+    ElementRectProps: _elementRect.ElementRectProps,
+    ElementRectProxy: _elementRect.ElementRectProxy,
+    ElementSizeProps: _elementRect.ElementSizeProps,
+    ElementTransformation: ElementTransformation,
+    ElementWHProps: _elementRect.ElementWHProps,
+    ElementXYProps: _elementRect.ElementXYProps,
+    HSLA: _hsla.HSLA,
+    isElement: _element.isElement,
+    isHSLA: _hsla.isHSLA,
+    isLine: _line.isLine,
+    isMatrix: _matrix.isMatrix,
+    isNumber: isNumber,
+    isPoint: _point.isPoint,
+    isRect: _rect.isRect,
+    isRGBA: _rgba.isRGBA,
+    isSize: _size.isSize,
+    Line: _line.Line,
+    Matrix: _matrix.Matrix,
+    MatrixProps: _matrix.MatrixProps,
+    Point: _point.Point,
+    PointList: _pointList.PointList,
+    ReactComponent: _reactComponent.ReactComponent,
+    Rect: _rect.Rect,
+    Renderer: _layer.Renderer,
+    RGBA: _rgba.RGBA
+  }),
+  (0, _defineProperty2["default"])(_Object$assign, "HSLA", _hsla.HSLA),
+  (0, _defineProperty2["default"])(_Object$assign, "Select", _select.Select),
+  (0, _defineProperty2["default"])(_Object$assign, "Size", _size.Size),
+  (0, _defineProperty2["default"])(_Object$assign, "SVG", _svg.SVG),
+  (0, _defineProperty2["default"])(_Object$assign, "Timer", _timer.Timer),
+  (0, _defineProperty2["default"])(_Object$assign, "Transition", Transition),
+  (0, _defineProperty2["default"])(_Object$assign, "TransitionList", TransitionList),
+  (0, _defineProperty2["default"])(_Object$assign, "TRBL", _trbl.TRBL),
+  (0, _defineProperty2["default"])(_Object$assign, "Tree", _tree.Tree),
+  _Object$assign)
+);
 
 exports["default"] = _default;

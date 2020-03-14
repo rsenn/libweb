@@ -1238,7 +1238,7 @@ Util.entriesToObj = function(arr) {
     return acc;
   }, {});
 };
-Util.isDate = d => d instanceof Date || typeof(d) == 'string' && /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d);
+Util.isDate = d => d instanceof Date || (typeof d == "string" && /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d));
 
 Util.parseDate = d => {
   if(Util.isDate(d)) {

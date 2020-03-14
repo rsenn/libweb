@@ -26,7 +26,7 @@ const httpClient = (() => {
       if(typeof args[0] == "string" && args[0].startsWith("/")) {
         args[0] = Util.makeURL({ location: args[0] });
       }
-      console.error(`axios ${name}:`, args);
+    //  console.error(`axios ${name}:`, args);
 
       return await fn.apply(client, args);
     };
@@ -35,6 +35,7 @@ const httpClient = (() => {
 
   ret.post = request(client.post, "post");
   ret.get = request(client.get, "get");
+  ret.head = request(client.head, "head");
 
   return ret;
 })();
