@@ -1228,8 +1228,14 @@ Util.entriesToObj = function(arr) {
     return acc;
   }, {});
 };
+Util.isDate = d => /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d);
+
 Util.parseDate = d => {
-  return /^[0-9]+$/.test(d) ? Util.fromUnixTime(d) : new Date(d);
+  if(Util.isDate(d)) {
+    d = new Date(d);
+  }
+  return d;
+  //  return /^[0-9]+$/.test(d) ? Util.fromUnixTime(d) : new Date(d);
 };
 Util.isoDate = function(date) {
   try {

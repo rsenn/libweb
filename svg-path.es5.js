@@ -64,7 +64,7 @@
    */
 
   SvgPath.prototype.close = function() {
-    return this.Z();
+    return this._cmd("Z")();
   };
   /**
    * Moves pen (M or m command)
@@ -283,7 +283,11 @@
    */
 
   Command.prototype.toString = function() {
-    return this.name + " " + this.args.join(" ");
+    return (
+      this.name +
+      /*" " +*/
+      this.args.join(" ")
+    );
   };
 
   return SvgPath;

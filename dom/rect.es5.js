@@ -1,31 +1,14 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty2 = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty2(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.Rect = Rect;
 exports.isRect = void 0;
 
-var _defineProperties = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/define-properties"));
-
-var _getOwnPropertyDescriptors = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/get-own-property-descriptors"));
-
-var _getOwnPropertyDescriptor = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/get-own-property-descriptor"));
-
-var _getOwnPropertySymbols = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/get-own-property-symbols"));
-
-var _keys = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/keys"));
-
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/defineProperty"));
-
-var _defineProperty3 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/define-property"));
-
-var _parseFloat2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/parse-float"));
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
 var _point = require("./point.es5.js");
 
@@ -34,12 +17,12 @@ var _pointList = require("./pointList.es5.js");
 var _size = require("./size.es5.js");
 
 function ownKeys(object, enumerableOnly) {
-  var keys = (0, _keys["default"])(object);
-  if(_getOwnPropertySymbols["default"]) {
-    var symbols = (0, _getOwnPropertySymbols["default"])(object);
+  var keys = Object.keys(object);
+  if(Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
     if(enumerableOnly)
       symbols = symbols.filter(function(sym) {
-        return (0, _getOwnPropertyDescriptor["default"])(object, sym).enumerable;
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
       });
     keys.push.apply(keys, symbols);
   }
@@ -53,11 +36,11 @@ function _objectSpread(target) {
       ownKeys(Object(source), true).forEach(function(key) {
         (0, _defineProperty2["default"])(target, key, source[key]);
       });
-    } else if(_getOwnPropertyDescriptors["default"]) {
-      (0, _defineProperties["default"])(target, (0, _getOwnPropertyDescriptors["default"])(source));
+    } else if(Object.getOwnPropertyDescriptors) {
+      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
     } else {
       ownKeys(Object(source)).forEach(function(key) {
-        (0, _defineProperty3["default"])(target, key, (0, _getOwnPropertyDescriptor["default"])(source, key));
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
       });
     }
   }
@@ -97,16 +80,16 @@ function Rect(arg) {
     obj.height = _y2 - _y;
     ret = 1;
   } else if((0, _point.isPoint)(arg) && arg.y !== undefined && arg.width !== undefined && arg.height !== undefined) {
-    obj.x = (0, _parseFloat2["default"])(arg.x);
-    obj.y = (0, _parseFloat2["default"])(arg.y);
-    obj.width = (0, _parseFloat2["default"])(arg.width);
-    obj.height = (0, _parseFloat2["default"])(arg.height);
+    obj.x = parseFloat(arg.x);
+    obj.y = parseFloat(arg.y);
+    obj.width = parseFloat(arg.width);
+    obj.height = parseFloat(arg.height);
     ret = 1;
   } else if(
     arg &&
     arg.length >= 4 &&
     arg.slice(0, 4).every(function(arg) {
-      return !isNaN((0, _parseFloat2["default"])(arg));
+      return !isNaN(parseFloat(arg));
     })
   ) {
     var _x3 = arg.shift();
@@ -115,20 +98,20 @@ function Rect(arg) {
 
     var w = arg.shift();
     var h = arg.shift();
-    obj.x = typeof _x3 === "number" ? _x3 : (0, _parseFloat2["default"])(_x3);
-    obj.y = typeof _y3 === "number" ? _y3 : (0, _parseFloat2["default"])(_y3);
-    obj.width = typeof w === "number" ? w : (0, _parseFloat2["default"])(w);
-    obj.height = typeof h === "number" ? h : (0, _parseFloat2["default"])(h);
+    obj.x = typeof _x3 === "number" ? _x3 : parseFloat(_x3);
+    obj.y = typeof _y3 === "number" ? _y3 : parseFloat(_y3);
+    obj.width = typeof w === "number" ? w : parseFloat(w);
+    obj.height = typeof h === "number" ? h : parseFloat(h);
     ret = 4;
   } else if(
     arg &&
     arg.length >= 2 &&
     arg.slice(0, 2).every(function(arg) {
-      return !isNaN((0, _parseFloat2["default"])(arg));
+      return !isNaN(parseFloat(arg));
     })
   ) {
-    obj.width = typeof x === "number" ? x : (0, _parseFloat2["default"])(x);
-    obj.height = typeof y === "number" ? y : (0, _parseFloat2["default"])(y);
+    obj.width = typeof x === "number" ? x : parseFloat(x);
+    obj.height = typeof y === "number" ? y : parseFloat(y);
     ret = 2;
   } else if(arg instanceof Array) {
     var argc;
@@ -150,7 +133,7 @@ function Rect(arg) {
   }
 
   if(obj.round === undefined) {
-    (0, _defineProperty3["default"])(obj, "round", {
+    Object.defineProperty(obj, "round", {
       value: function value() {
         return Rect.round(this);
       },
@@ -213,7 +196,7 @@ Rect.prototype.toSource = function() {
   return "new Rect(" + (this ? this.x + "," + this.y + "," + this.width + "," + this.height : "") + ")";
 };
 
-(0, _defineProperty3["default"])(Rect.prototype, "x1", {
+Object.defineProperty(Rect.prototype, "x1", {
   get: function get() {
     return this.x;
   },
@@ -224,7 +207,7 @@ Rect.prototype.toSource = function() {
   },
   enumerable: true
 });
-(0, _defineProperty3["default"])(Rect.prototype, "x2", {
+Object.defineProperty(Rect.prototype, "x2", {
   get: function get() {
     return this.x + this.width;
   },
@@ -233,7 +216,7 @@ Rect.prototype.toSource = function() {
   },
   enumerable: true
 });
-(0, _defineProperty3["default"])(Rect.prototype, "y1", {
+Object.defineProperty(Rect.prototype, "y1", {
   get: function get() {
     return this.y;
   },
@@ -243,7 +226,7 @@ Rect.prototype.toSource = function() {
     this.y -= extend;
   }
 });
-(0, _defineProperty3["default"])(Rect.prototype, "y2", {
+Object.defineProperty(Rect.prototype, "y2", {
   get: function get() {
     return this.y + this.height;
   },
@@ -251,12 +234,12 @@ Rect.prototype.toSource = function() {
     this.height = value - this.y;
   }
 });
-(0, _defineProperty3["default"])(Rect.prototype, "area", {
+Object.defineProperty(Rect.prototype, "area", {
   get: function get() {
     return Rect.prototype.getArea.call(this);
   }
 });
-(0, _defineProperty3["default"])(Rect.prototype, "center", {
+Object.defineProperty(Rect.prototype, "center", {
   get: function get() {
     return Rect.center(this);
   }
@@ -397,6 +380,18 @@ Rect.center = function(rect) {
 Rect.inside = function(rect, point) {
   return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
 };
+
+var _loop = function _loop() {
+  var name = _arr[_i];
+
+  Rect[name] = function(points) {
+    return Rect.prototype[name].call(points);
+  };
+};
+
+for(var _i = 0, _arr = ["clone", "corners", "isSquare", "getArea", "toString", "toSource", "points", "toCSS", "toPoints"]; _i < _arr.length; _i++) {
+  _loop();
+}
 
 var isRect = function isRect(rect) {
   return (0, _point.isPoint)(rect) && (0, _size.isSize)(rect);

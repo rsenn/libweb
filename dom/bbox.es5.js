@@ -1,22 +1,15 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.BBox = void 0;
 
-var _iterator2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/symbol/iterator"));
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _getIterator2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/get-iterator"));
-
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
 var BBox = /*#__PURE__*/ (function() {
   (0, _createClass2["default"])(BBox, null, [
@@ -59,7 +52,7 @@ var BBox = /*#__PURE__*/ (function() {
           var _iteratorError = undefined;
 
           try {
-            for(var _iterator = (0, _getIterator2["default"])(list), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            for(var _iterator = list[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
               var arg = _step.value;
               if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset);
               if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0);
@@ -227,7 +220,7 @@ var BBox = /*#__PURE__*/ (function() {
                   return p;
                 };
           return (function() {
-            if(typeof iter == "object" && iter[_iterator2["default"]]) iter = (0, _getIterator2["default"])(iter);
+            if(typeof iter == "object" && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
             var r = new BBox();
             var result = iter.next();
             var p;

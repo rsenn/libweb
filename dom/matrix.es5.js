@@ -1,45 +1,26 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty2 = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty2(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.Matrix = Matrix;
 exports.isMatrix = exports.MatrixProps = void 0;
 
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/define-property"));
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _getOwnPropertyDescriptors = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/get-own-property-descriptors"));
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
-var _getOwnPropertyDescriptor = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/get-own-property-descriptor"));
-
-var _getOwnPropertySymbols = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/get-own-property-symbols"));
-
-var _defineProperties = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/define-properties"));
-
-var _defineProperty3 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/defineProperty"));
-
-var _keys = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/keys"));
-
-var _assign = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/assign"));
-
-var _parseFloat2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/parse-float"));
-
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/toConsumableArray"));
-
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/slicedToArray"));
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
 function ownKeys(object, enumerableOnly) {
-  var keys = (0, _keys["default"])(object);
-  if(_getOwnPropertySymbols["default"]) {
-    var symbols = (0, _getOwnPropertySymbols["default"])(object);
+  var keys = Object.keys(object);
+  if(Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
     if(enumerableOnly)
       symbols = symbols.filter(function(sym) {
-        return (0, _getOwnPropertyDescriptor["default"])(object, sym).enumerable;
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
       });
     keys.push.apply(keys, symbols);
   }
@@ -51,13 +32,13 @@ function _objectSpread(target) {
     var source = arguments[i] != null ? arguments[i] : {};
     if(i % 2) {
       ownKeys(Object(source), true).forEach(function(key) {
-        (0, _defineProperty3["default"])(target, key, source[key]);
+        (0, _defineProperty2["default"])(target, key, source[key]);
       });
-    } else if(_getOwnPropertyDescriptors["default"]) {
-      (0, _defineProperties["default"])(target, (0, _getOwnPropertyDescriptors["default"])(source));
+    } else if(Object.getOwnPropertyDescriptors) {
+      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
     } else {
       ownKeys(Object(source)).forEach(function(key) {
-        (0, _defineProperty2["default"])(target, key, (0, _getOwnPropertyDescriptor["default"])(source, key));
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
       });
     }
   }
@@ -70,7 +51,7 @@ function Matrix(arg) {
   if(typeof arg === "string") {
     if(/matrix\([^)]*\)/.test(arg)) {
       var _map = (0, _toConsumableArray2["default"])(arg.matchAll(/[-.0-9]+/g)).map(function(m) {
-          return (0, _parseFloat2["default"])(m[0]);
+          return parseFloat(m[0]);
         }),
         _map2 = (0, _slicedToArray2["default"])(_map, 6),
         xx = _map2[0],
@@ -120,7 +101,7 @@ function Matrix(arg) {
   if(ret[0] === undefined) Matrix.prototype.set_row.call(ret, 0, 1, 0, 0);
   if(ret[3] === undefined) Matrix.prototype.set_row.call(ret, 1, 0, 1, 0);
   if(ret[6] === undefined) Matrix.prototype.set_row.call(ret, 2, 0, 0, 1);
-  if(!(this instanceof Matrix)) return (0, _assign["default"])(ret, Matrix.prototype);
+  if(!(this instanceof Matrix)) return Object.assign(ret, Matrix.prototype);
 }
 
 Matrix.prototype = [1, 0, 0, 0, 1, 0, 0, 0, 1];
@@ -147,9 +128,9 @@ Matrix.prototype.at = function(key) {
   return this[Matrix.prototype.keyIndex[key]];
 };
 
-var MatrixProps = (0, _keys["default"])(Matrix.prototype.keyIndex).reduce(function (acc, k) {
+var MatrixProps = Object.keys(Matrix.prototype.keyIndex).reduce(function (acc, k) {
   var i = Matrix.prototype.keyIndex[k];
-  return _objectSpread({}, acc, (0, _defineProperty3["default"])({}, k, {
+  return _objectSpread({}, acc, (0, _defineProperty2["default"])({}, k, {
     get: function get() {
       return this[i];
     },
@@ -161,7 +142,7 @@ var MatrixProps = (0, _keys["default"])(Matrix.prototype.keyIndex).reduce(functi
 }, {}); // prettier-ignore
 
 exports.MatrixProps = MatrixProps;
-(0, _defineProperties["default"])(Matrix.prototype, {
+Object.defineProperties(Matrix.prototype, {
   xx: {
     get: function get() {
       return this[0];
@@ -571,6 +552,18 @@ Matrix.scale = function(matrix, sx, sy) {
 Matrix.rotate = function(matrix, rad) {
   return Matrix.prototype.rotate.call(matrix, rad);
 };
+
+var _loop = function _loop() {
+  var name = _arr[_i];
+
+  Matrix[name] = function(points) {
+    return Matrix.prototype[name].call(points);
+  };
+};
+
+for(var _i = 0, _arr = ["toArray", "toString", "toSVG", "point_transformer"]; _i < _arr.length; _i++) {
+  _loop();
+}
 
 var isMatrix = function isMatrix(m) {
   return (

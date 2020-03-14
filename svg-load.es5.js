@@ -1,21 +1,18 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.loadSVGs = loadSVGs;
 exports.inlineSVG = inlineSVG;
 
-var _regenerator = _interopRequireDefault(require("@babel/runtime-corejs2/regenerator"));
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
 var _axios = _interopRequireDefault(require("./axios.es5.js"));
 
@@ -55,7 +52,7 @@ var CacheSVG = new ((_temp = /*#__PURE__*/ (function() {
               switch ((_context.prev = _context.next)) {
                 case 0:
                   if(!(this.instace !== null)) {
-                    _context.next = 12;
+                    _context.next = 11;
                     break;
                   }
 
@@ -64,16 +61,15 @@ var CacheSVG = new ((_temp = /*#__PURE__*/ (function() {
                   return _regenerator["default"].awrap(this.instance);
 
                 case 4:
-                  _context.t1 = url;
-                  _context.t2 = _context.sent.match(_context.t1);
-                  _context.next = 8;
-                  return _context.t0.awrap.call(_context.t0, _context.t2);
+                  _context.t1 = _context.sent.match(url);
+                  _context.next = 7;
+                  return _context.t0.awrap.call(_context.t0, _context.t1);
 
-                case 8:
+                case 7:
                   match = _context.sent;
 
                   if(!(match && match.ok)) {
-                    _context.next = 12;
+                    _context.next = 11;
                     break;
                   }
 
@@ -83,17 +79,19 @@ var CacheSVG = new ((_temp = /*#__PURE__*/ (function() {
                   });
                   return _context.abrupt("return", match.text());
 
-                case 12:
+                case 11:
                   return _context.abrupt("return", null);
 
-                case 13:
+                case 12:
                 case "end":
                   return _context.stop();
               }
             }
           },
           null,
-          this
+          this,
+          null,
+          Promise
         );
       }
     },
@@ -128,81 +126,87 @@ _temp)();
 
 function inlineSVG(url, el) {
   var data, parser, parsed, svg, attr, attrLen, i, classes, classesLen, j;
-  return _regenerator["default"].async(function inlineSVG$(_context2) {
-    while(1) {
-      switch ((_context2.prev = _context2.next)) {
-        case 0:
-          _context2.next = 2;
-          return _regenerator["default"].awrap(CacheSVG.get(url));
+  return _regenerator["default"].async(
+    function inlineSVG$(_context2) {
+      while(1) {
+        switch ((_context2.prev = _context2.next)) {
+          case 0:
+            _context2.next = 2;
+            return _regenerator["default"].awrap(CacheSVG.get(url));
 
-        case 2:
-          data = _context2.sent;
+          case 2:
+            data = _context2.sent;
 
-          if(data) {
-            _context2.next = 9;
-            break;
-          }
-
-          console.log("fetchSVG(".concat(url, ")"));
-          _context2.next = 7;
-          return _regenerator["default"].awrap(
-            _axios["default"].get(url).then(function(response) {
-              return response.data;
-            })
-          );
-
-        case 7:
-          data = _context2.sent;
-          CacheSVG.put(url, data);
-
-        case 9:
-          // This response should be an XML document we can parse.
-          parser = new DOMParser();
-          parsed = parser.parseFromString(data, "image/svg+xml"); // The file might not actually begin with "<svg>", and
-          // for that matter there could be none, or many.
-
-          svg = parsed.getElementsByTagName("svg");
-
-          if(svg.length) {
-            // But we only want the first.
-            svg = svg[0]; // Copy over the attributes first.
-
-            attr = svg.attributes;
-            attrLen = attr.length;
-
-            for(i = 0; i < attrLen; ++i) {
-              if(attr[i].specified) {
-                // Merge classes.
-                if(attr[i].name === "class") {
-                  classes = attr[i].value
-                    .replace(/\s+/g, " ")
-                    .trim()
-                    .split(" ");
-                  classesLen = classes.length;
-
-                  for(j = 0; j < classesLen; ++j) {
-                    el.classList.add(classes[j]);
-                  }
-                } // Add/replace anything else.
-                else {
-                  el.setAttribute(attr[i].name, attr[i].value);
-                }
-              }
-            } // Now transfer over the children. Note: IE does not
-            // assign an innerHTML property to SVGs, so we need to
-            // go node by node.
-
-            while(svg.childNodes.length) {
-              el.appendChild(svg.childNodes[0]);
+            if(data) {
+              _context2.next = 9;
+              break;
             }
-          }
 
-        case 13:
-        case "end":
-          return _context2.stop();
+            console.log("fetchSVG(".concat(url, ")"));
+            _context2.next = 7;
+            return _regenerator["default"].awrap(
+              _axios["default"].get(url).then(function(response) {
+                return response.data;
+              })
+            );
+
+          case 7:
+            data = _context2.sent;
+            CacheSVG.put(url, data);
+
+          case 9:
+            // This response should be an XML document we can parse.
+            parser = new DOMParser();
+            parsed = parser.parseFromString(data, "image/svg+xml"); // The file might not actually begin with "<svg>", and
+            // for that matter there could be none, or many.
+
+            svg = parsed.getElementsByTagName("svg");
+
+            if(svg.length) {
+              // But we only want the first.
+              svg = svg[0]; // Copy over the attributes first.
+
+              attr = svg.attributes;
+              attrLen = attr.length;
+
+              for(i = 0; i < attrLen; ++i) {
+                if(attr[i].specified) {
+                  // Merge classes.
+                  if(attr[i].name === "class") {
+                    classes = attr[i].value
+                      .replace(/\s+/g, " ")
+                      .trim()
+                      .split(" ");
+                    classesLen = classes.length;
+
+                    for(j = 0; j < classesLen; ++j) {
+                      el.classList.add(classes[j]);
+                    }
+                  } // Add/replace anything else.
+                  else {
+                    el.setAttribute(attr[i].name, attr[i].value);
+                  }
+                }
+              } // Now transfer over the children. Note: IE does not
+              // assign an innerHTML property to SVGs, so we need to
+              // go node by node.
+
+              while(svg.childNodes.length) {
+                el.appendChild(svg.childNodes[0]);
+              }
+            }
+
+          case 13:
+          case "end":
+            return _context2.stop();
+        }
       }
-    }
-  });
+    },
+    null,
+    null,
+    null,
+    Promise
+  );
 }
 
 inlineSVG.cache = CacheSVG;

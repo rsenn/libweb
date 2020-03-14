@@ -1,38 +1,23 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty2 = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty2(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.ReactComponent = void 0;
 
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/define-property"));
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
-var _defineProperties = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/define-properties"));
+var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends"));
 
-var _getOwnPropertyDescriptors = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/get-own-property-descriptors"));
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _getOwnPropertyDescriptor = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/get-own-property-descriptor"));
+var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
 
-var _getOwnPropertySymbols = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/get-own-property-symbols"));
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _keys = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/keys"));
-
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/toConsumableArray"));
-
-var _defineProperty3 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/defineProperty"));
-
-var _isArray = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/array/is-array"));
-
-var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/objectWithoutProperties"));
-
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
 var _react = _interopRequireDefault(require("react"));
 
@@ -40,15 +25,16 @@ var _element = require("./element.es5.js");
 
 var _util = _interopRequireDefault(require("../util.es5.js"));
 
+var _jsxFileName = "/home/roman/the-wild-beauty-company/lib/dom/reactComponent.js";
 var __jsx = _react["default"].createElement;
 
 function ownKeys(object, enumerableOnly) {
-  var keys = (0, _keys["default"])(object);
-  if(_getOwnPropertySymbols["default"]) {
-    var symbols = (0, _getOwnPropertySymbols["default"])(object);
+  var keys = Object.keys(object);
+  if(Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
     if(enumerableOnly)
       symbols = symbols.filter(function(sym) {
-        return (0, _getOwnPropertyDescriptor["default"])(object, sym).enumerable;
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
       });
     keys.push.apply(keys, symbols);
   }
@@ -60,13 +46,13 @@ function _objectSpread(target) {
     var source = arguments[i] != null ? arguments[i] : {};
     if(i % 2) {
       ownKeys(Object(source), true).forEach(function(key) {
-        (0, _defineProperty3["default"])(target, key, source[key]);
+        (0, _defineProperty2["default"])(target, key, source[key]);
       });
-    } else if(_getOwnPropertyDescriptors["default"]) {
-      (0, _defineProperties["default"])(target, (0, _getOwnPropertyDescriptors["default"])(source));
+    } else if(Object.getOwnPropertyDescriptors) {
+      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
     } else {
       ownKeys(Object(source)).forEach(function(key) {
-        (0, _defineProperty2["default"])(target, key, (0, _getOwnPropertyDescriptor["default"])(source, key));
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
       });
     }
   }
@@ -81,63 +67,69 @@ var ReactComponent = /*#__PURE__*/ (function() {
   (0, _createClass2["default"])(ReactComponent, null, [
     {
       key: "create",
-      value: function create(Tag, _ref) {
-        var is_root = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-        var parent = _ref.parent,
-          children = _ref.children,
-          props = (0, _objectWithoutProperties2["default"])(_ref, ["parent", "children"]);
+      value: function create() {
+        var args = Array.prototype.slice.call(arguments);
+        var Tag, props;
+
+        if(typeof args[0] == "string") {
+          Tag = args.shift();
+          props = args.shift();
+        } else {
+          props = args.shift();
+          Tag = props.tagName;
+          delete props.tagName;
+        }
+
+        var _props = props,
+          children = _props.children,
+          parent = _props.parent,
+          restOfProps = (0, _objectWithoutProperties2["default"])(_props, ["children", "parent"]);
+        if(!children) children = args.shift();
+        if(!Array.isArray(children)) children = [children];
 
         var elem = __jsx(
           Tag,
-          props,
-          (0, _isArray["default"])(children)
-            ? children.map(function(child, key) {
-                if(typeof child === "object") {
-                  var tagName = child.tagName,
-                    _props = (0, _objectWithoutProperties2["default"])(child, ["tagName"]);
+          (0, _extends2["default"])({}, restOfProps, {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 21
+            },
+            __self: this
+          }),
+          children.map(function(child, key) {
+            if(typeof child === "object" && child.tagName !== undefined) {
+              var tagName = child.tagName,
+                _props2 = (0, _objectWithoutProperties2["default"])(child, ["tagName"]);
 
-                  return render_factory(
-                    tagName,
-                    _objectSpread(
-                      {
-                        key: key
-                      },
-                      _props
-                    ),
-                    false
-                  );
-                }
+              return ReactComponent.create(
+                tagName,
+                _objectSpread(
+                  {
+                    key: key
+                  },
+                  _props2
+                )
+              );
+            }
 
-                return child;
-              })
-            : undefined
-        ); //console.log('elem: ', elem);
+            return child;
+          })
+        );
 
-        if(is_root && render_to) render_to(elem, parent || this.root);
         return elem;
       }
     },
     {
       key: "factory",
-      value: function factory(render_to, root) {
-        if(typeof render_to === "string") render_to = _element.Element.find(append_to);
+      value: function factory(_render_to, root) {
+        if(typeof _render_to === "string") _render_to = _element.Element.find(append_to);
 
-        if(typeof render_to !== "function") {
-          root = root || render_to;
+        if(typeof _render_to !== "function") {
+          root = root || _render_to;
 
-          render_to = (function(_render_to) {
-            function render_to(_x) {
-              return _render_to.apply(this, arguments);
-            }
-
-            render_to.toString = function() {
-              return _render_to.toString();
-            };
-
-            return render_to;
-          })(function(component) {
-            return require("react-dom").render(component, root || render_to);
-          });
+          _render_to = function render_to(component) {
+            return require("react-dom").render(component, root || _render_to);
+          };
         }
 
         var ret = function ret() {
@@ -151,18 +143,18 @@ var ReactComponent = /*#__PURE__*/ (function() {
       }
     },
     {
-      key: "object",
-      value: function object() {
+      key: "toObject",
+      value: function toObject() {
         var ret = [];
 
         for(var _i = 0, _arr = Array.prototype.slice.call(arguments); _i < _arr.length; _i++) {
           var arg = _arr[_i];
           if(!typeof arg == "object" || arg === null || !arg) continue;
-          var tagName = arg.type && arg.type.name;
+          var tagName = typeof arg.type == "string" ? arg.type : typeof arg.type == "function" ? arg.type.name : "React.Fragment";
 
-          var _ref2 = arg.props || {},
-            children = _ref2.children,
-            props = (0, _objectWithoutProperties2["default"])(_ref2, ["children"]);
+          var _ref = arg.props || {},
+            children = _ref.children,
+            props = (0, _objectWithoutProperties2["default"])(_ref, ["children"]);
 
           var obj = _objectSpread(
             {
@@ -174,10 +166,15 @@ var ReactComponent = /*#__PURE__*/ (function() {
           if(typeof arg.key == "string") obj.key = arg.key;
           if(!children) children = arg.children;
 
-          if(_react["default"].Children.count(children) > 0) {
-            var arr = _react["default"].Children.toArray(children);
+          var arr = _react["default"].Children.toArray(children);
 
-            obj.children = ReactComponent.object.apply(ReactComponent, (0, _toConsumableArray2["default"])(arr));
+          var numChildren = _react["default"].Children.count(children);
+          /*    if(obj.tagName == 'React.Fragment' && numChildren == 1) {
+        obj =  ReactComponent.toObject(arr[0]);
+        } else*/
+
+          if(numChildren > 0) {
+            obj.children = ReactComponent.toObject.apply(ReactComponent, (0, _toConsumableArray2["default"])(arr));
           }
 
           ret.push(obj);

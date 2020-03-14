@@ -1,19 +1,14 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.Size = Size;
 exports.isSize = void 0;
 
-var _parseFloat2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/parse-float"));
-
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/toConsumableArray"));
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
 function Size(arg) {
   var obj = this instanceof Size ? this : {};
@@ -49,8 +44,8 @@ function Size(arg) {
       var h = args.shift();
       if(typeof w == "object" && "baseVal" in w) w = w.baseVal.value;
       if(typeof h == "object" && "baseVal" in h) h = h.baseVal.value;
-      obj.width = typeof w == "number" ? w : (0, _parseFloat2["default"])(w.replace(/[^-.0-9]*$/, ""));
-      obj.height = typeof h == "number" ? h : (0, _parseFloat2["default"])(h.replace(/[^-.0-9]*$/, ""));
+      obj.width = typeof w == "number" ? w : parseFloat(w.replace(/[^-.0-9]*$/, ""));
+      obj.height = typeof h == "number" ? h : parseFloat(h.replace(/[^-.0-9]*$/, ""));
       obj.units = {
         width: typeof w == "number" ? "px" : w.replace(obj.width.toString(), ""),
         height: typeof h == "number" ? "px" : h.replace(obj.height.toString(), "")
@@ -124,3 +119,15 @@ var isSize = function isSize(o) {
 };
 
 exports.isSize = isSize;
+
+var _loop = function _loop() {
+  var name = _arr[_i];
+
+  Size[name] = function(points) {
+    return Size.prototype[name].call(points);
+  };
+};
+
+for(var _i = 0, _arr = ["toCSS", "isSquare"]; _i < _arr.length; _i++) {
+  _loop();
+}

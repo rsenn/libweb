@@ -1,26 +1,14 @@
-var _Object$defineProperties = require("@babel/runtime-corejs2/core-js/object/define-properties");
+var _defineProperty = require("@babel/runtime/helpers/defineProperty");
 
-var _Object$getOwnPropertyDescriptors = require("@babel/runtime-corejs2/core-js/object/get-own-property-descriptors");
-
-var _Object$getOwnPropertyDescriptor = require("@babel/runtime-corejs2/core-js/object/get-own-property-descriptor");
-
-var _Object$getOwnPropertySymbols = require("@babel/runtime-corejs2/core-js/object/get-own-property-symbols");
-
-var _Object$keys = require("@babel/runtime-corejs2/core-js/object/keys");
-
-var _defineProperty = require("@babel/runtime-corejs2/helpers/defineProperty");
-
-var _objectWithoutProperties = require("@babel/runtime-corejs2/helpers/objectWithoutProperties");
-
-var _Object$defineProperty = require("@babel/runtime-corejs2/core-js/object/define-property");
+var _objectWithoutProperties = require("@babel/runtime/helpers/objectWithoutProperties");
 
 function ownKeys(object, enumerableOnly) {
-  var keys = _Object$keys(object);
-  if(_Object$getOwnPropertySymbols) {
-    var symbols = _Object$getOwnPropertySymbols(object);
+  var keys = Object.keys(object);
+  if(Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
     if(enumerableOnly)
       symbols = symbols.filter(function(sym) {
-        return _Object$getOwnPropertyDescriptor(object, sym).enumerable;
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
       });
     keys.push.apply(keys, symbols);
   }
@@ -34,11 +22,11 @@ function _objectSpread(target) {
       ownKeys(Object(source), true).forEach(function(key) {
         _defineProperty(target, key, source[key]);
       });
-    } else if(_Object$getOwnPropertyDescriptors) {
-      _Object$defineProperties(target, _Object$getOwnPropertyDescriptors(source));
+    } else if(Object.getOwnPropertyDescriptors) {
+      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
     } else {
       ownKeys(Object(source)).forEach(function(key) {
-        _Object$defineProperty(target, key, _Object$getOwnPropertyDescriptor(source, key));
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
       });
     }
   }
@@ -65,13 +53,12 @@ function trkl(initValue) {
   self["subscribe"] = subscribe;
 
   self["bind_to"] = function(obj, prop) {
-    _Object$defineProperty(obj, prop, {
+    Object.defineProperty(obj, prop, {
       enumerable: true,
       configurable: true,
       get: self,
       set: self
     });
-
     return self;
   }; //declaring as a private function means the minifier can scrub its name on internal references
 
@@ -171,8 +158,7 @@ trkl.property = function(object, name) {
     opts = _objectWithoutProperties(options, ["value"]);
 
   var self = trkl(value);
-
-  _Object$defineProperty(
+  Object.defineProperty(
     object,
     name,
     _objectSpread({}, opts, {
@@ -180,20 +166,17 @@ trkl.property = function(object, name) {
       set: self
     })
   );
-
   return self;
 };
 
 trkl.bind = function(object, name, handler) {
   var self = handler;
-
-  _Object$defineProperty(object, name, {
+  Object.defineProperty(object, name, {
     enumerable: true,
     configurable: true,
     get: self,
     set: self
   });
-
   return self;
 };
 

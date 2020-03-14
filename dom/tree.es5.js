@@ -1,16 +1,9 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
-
-var _Object$defineProperty = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.Tree = Tree;
-
-var _assign = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/assign"));
 
 /**
  * DOM Tree
@@ -18,7 +11,7 @@ var _assign = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/obj
  */
 function Tree(root) {
   if(this instanceof Tree) {
-    root = (0, _assign["default"])(this, root, {
+    root = Object.assign(this, root, {
       realNode: root
     });
   }

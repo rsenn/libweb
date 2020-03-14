@@ -1,42 +1,21 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty2 = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty2(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.Timer = Timer;
 
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/define-property"));
-
-var _defineProperties = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/define-properties"));
-
-var _getOwnPropertyDescriptors = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/get-own-property-descriptors"));
-
-var _getOwnPropertyDescriptor = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/get-own-property-descriptor"));
-
-var _getOwnPropertySymbols = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/get-own-property-symbols"));
-
-var _keys = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/keys"));
-
-var _promise = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/promise"));
-
-var _assign = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/assign"));
-
-var _now = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/date/now"));
-
-var _defineProperty3 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/defineProperty"));
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
 function ownKeys(object, enumerableOnly) {
-  var keys = (0, _keys["default"])(object);
-  if(_getOwnPropertySymbols["default"]) {
-    var symbols = (0, _getOwnPropertySymbols["default"])(object);
+  var keys = Object.keys(object);
+  if(Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
     if(enumerableOnly)
       symbols = symbols.filter(function(sym) {
-        return (0, _getOwnPropertyDescriptor["default"])(object, sym).enumerable;
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
       });
     keys.push.apply(keys, symbols);
   }
@@ -48,13 +27,13 @@ function _objectSpread(target) {
     var source = arguments[i] != null ? arguments[i] : {};
     if(i % 2) {
       ownKeys(Object(source), true).forEach(function(key) {
-        (0, _defineProperty3["default"])(target, key, source[key]);
+        (0, _defineProperty2["default"])(target, key, source[key]);
       });
-    } else if(_getOwnPropertyDescriptors["default"]) {
-      (0, _defineProperties["default"])(target, (0, _getOwnPropertyDescriptors["default"])(source));
+    } else if(Object.getOwnPropertyDescriptors) {
+      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
     } else {
       ownKeys(Object(source)).forEach(function(key) {
-        (0, _defineProperty2["default"])(target, key, (0, _getOwnPropertyDescriptor["default"])(source, key));
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
       });
     }
   }
@@ -83,7 +62,7 @@ function Timer(timeout, fn) {
         fn,
         t
       ),
-      started: (0, _now["default"])(),
+      started: Date.now(),
       stop: function stop() {
         if(this.id !== null) {
           destroy(this.id);
@@ -95,7 +74,7 @@ function Timer(timeout, fn) {
     props
   );
 
-  if(this instanceof Timer) (0, _assign["default"])(this, t);
+  if(this instanceof Timer) Object.assign(this, t);
   else return t;
 }
 
@@ -113,7 +92,7 @@ Timer.once = function(timeout, fn, props) {
 };
 
 Timer.until = function(deadline, fn, props) {
-  return Timer.once(deadline - (0, _now["default"])(), fn, props);
+  return Timer.once(deadline - Date.now(), fn, props);
 };
 
 Timer.std = {
@@ -155,7 +134,7 @@ Timer.promise = function(timeout) {
   var impl = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Timer.std;
   return (
     /*Timer.debug(Timer.std)*/
-    new _promise["default"](function(resolve, reject) {
+    new Promise(function(resolve, reject) {
       return Timer(
         timeout,
         resolve,

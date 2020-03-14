@@ -1,20 +1,15 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.PointList = PointList;
 
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/defineProperty"));
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _iterator = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/symbol/iterator"));
-
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/toConsumableArray"));
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
 var _point = require("./point.es5.js");
 
@@ -337,7 +332,7 @@ PointList.prototype.lines = function() {
   var closed = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
   var points = this;
   var n = points.length - (closed ? 0 : 1);
-  var iterableObj = (0, _defineProperty2["default"])({}, _iterator["default"], function() {
+  var iterableObj = (0, _defineProperty2["default"])({}, Symbol.iterator, function() {
     var step = 0;
     return {
       next: function next() {
@@ -404,3 +399,15 @@ PointList.prototype.diff = function(pt) {
   var ret = this.clone();
   return PointList.prototype.sub.apply(ret, arguments);
 };
+
+var _loop = function _loop() {
+  var name = _arr[_i3];
+
+  PointList[name] = function(points) {
+    return PointList.prototype[name].call(points);
+  };
+};
+
+for(var _i3 = 0, _arr = ["push", "splice", "clone", "area", "centroid", "avg", "bbox", "rect", "xrange", "yrange", "boundingRect"]; _i3 < _arr.length; _i3++) {
+  _loop();
+}

@@ -1,291 +1,247 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.dom = dom;
 exports.Align = Align;
 exports.Unit = Unit;
 exports.ScalarValue = ScalarValue;
-
-_Object$defineProperty(exports, "Point", {
+Object.defineProperty(exports, "Point", {
   enumerable: true,
   get: function get() {
     return _point.Point;
   }
 });
-
-_Object$defineProperty(exports, "isPoint", {
+Object.defineProperty(exports, "isPoint", {
   enumerable: true,
   get: function get() {
     return _point.isPoint;
   }
 });
-
-_Object$defineProperty(exports, "Size", {
+Object.defineProperty(exports, "Size", {
   enumerable: true,
   get: function get() {
     return _size.Size;
   }
 });
-
-_Object$defineProperty(exports, "isSize", {
+Object.defineProperty(exports, "isSize", {
   enumerable: true,
   get: function get() {
     return _size.isSize;
   }
 });
-
-_Object$defineProperty(exports, "Line", {
+Object.defineProperty(exports, "Line", {
   enumerable: true,
   get: function get() {
     return _line.Line;
   }
 });
-
-_Object$defineProperty(exports, "isLine", {
+Object.defineProperty(exports, "isLine", {
   enumerable: true,
   get: function get() {
     return _line.isLine;
   }
 });
-
-_Object$defineProperty(exports, "Rect", {
+Object.defineProperty(exports, "Rect", {
   enumerable: true,
   get: function get() {
     return _rect.Rect;
   }
 });
-
-_Object$defineProperty(exports, "isRect", {
+Object.defineProperty(exports, "isRect", {
   enumerable: true,
   get: function get() {
     return _rect.isRect;
   }
 });
-
-_Object$defineProperty(exports, "PointList", {
+Object.defineProperty(exports, "PointList", {
   enumerable: true,
   get: function get() {
     return _pointList.PointList;
   }
 });
-
-_Object$defineProperty(exports, "RGBA", {
+Object.defineProperty(exports, "RGBA", {
   enumerable: true,
   get: function get() {
     return _rgba.RGBA;
   }
 });
-
-_Object$defineProperty(exports, "isRGBA", {
+Object.defineProperty(exports, "isRGBA", {
   enumerable: true,
   get: function get() {
     return _rgba.isRGBA;
   }
 });
-
-_Object$defineProperty(exports, "HSLA", {
+Object.defineProperty(exports, "HSLA", {
   enumerable: true,
   get: function get() {
     return _hsla.HSLA;
   }
 });
-
-_Object$defineProperty(exports, "isHSLA", {
+Object.defineProperty(exports, "isHSLA", {
   enumerable: true,
   get: function get() {
     return _hsla.isHSLA;
   }
 });
-
-_Object$defineProperty(exports, "Matrix", {
+Object.defineProperty(exports, "Matrix", {
   enumerable: true,
   get: function get() {
     return _matrix.Matrix;
   }
 });
-
-_Object$defineProperty(exports, "isMatrix", {
+Object.defineProperty(exports, "isMatrix", {
   enumerable: true,
   get: function get() {
     return _matrix.isMatrix;
   }
 });
-
-_Object$defineProperty(exports, "MatrixProps", {
+Object.defineProperty(exports, "MatrixProps", {
   enumerable: true,
   get: function get() {
     return _matrix.MatrixProps;
   }
 });
-
-_Object$defineProperty(exports, "BBox", {
+Object.defineProperty(exports, "BBox", {
   enumerable: true,
   get: function get() {
     return _bbox.BBox;
   }
 });
-
-_Object$defineProperty(exports, "TRBL", {
+Object.defineProperty(exports, "TRBL", {
   enumerable: true,
   get: function get() {
     return _trbl.TRBL;
   }
 });
-
-_Object$defineProperty(exports, "Timer", {
+Object.defineProperty(exports, "Timer", {
   enumerable: true,
   get: function get() {
     return _timer.Timer;
   }
 });
-
-_Object$defineProperty(exports, "Tree", {
+Object.defineProperty(exports, "Tree", {
   enumerable: true,
   get: function get() {
     return _tree.Tree;
   }
 });
-
-_Object$defineProperty(exports, "Node", {
+Object.defineProperty(exports, "Node", {
   enumerable: true,
   get: function get() {
     return _node.Node;
   }
 });
-
-_Object$defineProperty(exports, "Element", {
+Object.defineProperty(exports, "Element", {
   enumerable: true,
   get: function get() {
     return _element.Element;
   }
 });
-
-_Object$defineProperty(exports, "isElement", {
+Object.defineProperty(exports, "isElement", {
   enumerable: true,
   get: function get() {
     return _element.isElement;
   }
 });
-
-_Object$defineProperty(exports, "CSS", {
+Object.defineProperty(exports, "CSS", {
   enumerable: true,
   get: function get() {
     return _css.CSS;
   }
 });
-
-_Object$defineProperty(exports, "SVG", {
+Object.defineProperty(exports, "SVG", {
   enumerable: true,
   get: function get() {
     return _svg.SVG;
   }
 });
-
-_Object$defineProperty(exports, "ReactComponent", {
+Object.defineProperty(exports, "ReactComponent", {
   enumerable: true,
   get: function get() {
     return _reactComponent.ReactComponent;
   }
 });
-
-_Object$defineProperty(exports, "Container", {
+Object.defineProperty(exports, "Container", {
   enumerable: true,
   get: function get() {
     return _container.Container;
   }
 });
-
-_Object$defineProperty(exports, "Layer", {
+Object.defineProperty(exports, "Layer", {
   enumerable: true,
   get: function get() {
     return _layer.Layer;
   }
 });
-
-_Object$defineProperty(exports, "Renderer", {
+Object.defineProperty(exports, "Renderer", {
   enumerable: true,
   get: function get() {
     return _layer.Renderer;
   }
 });
-
-_Object$defineProperty(exports, "Select", {
+Object.defineProperty(exports, "Select", {
   enumerable: true,
   get: function get() {
     return _select.Select;
   }
 });
-
-_Object$defineProperty(exports, "ElementPosProps", {
+Object.defineProperty(exports, "ElementPosProps", {
   enumerable: true,
   get: function get() {
     return _elementRect.ElementPosProps;
   }
 });
-
-_Object$defineProperty(exports, "ElementRectProps", {
+Object.defineProperty(exports, "ElementRectProps", {
   enumerable: true,
   get: function get() {
     return _elementRect.ElementRectProps;
   }
 });
-
-_Object$defineProperty(exports, "ElementRectProxy", {
+Object.defineProperty(exports, "ElementRectProxy", {
   enumerable: true,
   get: function get() {
     return _elementRect.ElementRectProxy;
   }
 });
-
-_Object$defineProperty(exports, "ElementSizeProps", {
+Object.defineProperty(exports, "ElementSizeProps", {
   enumerable: true,
   get: function get() {
     return _elementRect.ElementSizeProps;
   }
 });
-
-_Object$defineProperty(exports, "ElementWHProps", {
+Object.defineProperty(exports, "ElementWHProps", {
   enumerable: true,
   get: function get() {
     return _elementRect.ElementWHProps;
   }
 });
-
-_Object$defineProperty(exports, "ElementXYProps", {
+Object.defineProperty(exports, "ElementXYProps", {
   enumerable: true,
   get: function get() {
     return _elementRect.ElementXYProps;
   }
 });
-
 exports["default"] = exports.RandomColor = exports.TransitionList = exports.Transition = exports.CSSTransformSetters = exports.ElementTransformation = exports.Anchor = exports.isNumber = void 0;
 
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/defineProperty"));
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _assign = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/assign"));
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/possibleConstructorReturn"));
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _inherits2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/inherits"));
+var _wrapNativeSuper2 = _interopRequireDefault(require("@babel/runtime/helpers/wrapNativeSuper"));
 
-var _wrapNativeSuper2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/wrapNativeSuper"));
+var _construct2 = _interopRequireDefault(require("@babel/runtime/helpers/construct"));
 
-var _construct2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/construct"));
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/classCallCheck"));
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/createClass"));
-
-var _getIterator2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/get-iterator"));
-
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/toConsumableArray"));
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
 var _reactDom = _interopRequireDefault(require("react-dom"));
 
@@ -335,7 +291,7 @@ var _select = require("./dom/select.es5.js");
 
 var _elementRect = require("./dom/elementRect.es5.js");
 
-var _Object$assign2;
+var _Object$assign;
 
 function dom() {
   var args = Array.prototype.slice.call(arguments);
@@ -351,7 +307,7 @@ function dom() {
     var _iteratorError = undefined;
 
     try {
-      for(var _iterator = (0, _getIterator2["default"])(keys), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      for(var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
         var key = _step.value;
         if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
       }
@@ -379,7 +335,7 @@ function dom() {
   var _iteratorError2 = undefined;
 
   try {
-    for(var _iterator2 = (0, _getIterator2["default"])(args), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+    for(var _iterator2 = args[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
       var e = _step2.value;
       if(e instanceof SVGSVGElement) extend(e, _svg.SVG);
       else if(e instanceof HTMLElement) {
@@ -597,9 +553,9 @@ export const isSelect = inst => {};
 
 exports.RandomColor = RandomColor;
 
-var _default = (0, _assign["default"])(
+var _default = Object.assign(
   dom,
-  ((_Object$assign2 = {
+  ((_Object$assign = {
     Align: Align,
     Anchor: Anchor,
     Container: _container.Container,
@@ -634,16 +590,16 @@ var _default = (0, _assign["default"])(
     Renderer: _layer.Renderer,
     RGBA: _rgba.RGBA
   }),
-  (0, _defineProperty2["default"])(_Object$assign2, "HSLA", _hsla.HSLA),
-  (0, _defineProperty2["default"])(_Object$assign2, "Select", _select.Select),
-  (0, _defineProperty2["default"])(_Object$assign2, "Size", _size.Size),
-  (0, _defineProperty2["default"])(_Object$assign2, "SVG", _svg.SVG),
-  (0, _defineProperty2["default"])(_Object$assign2, "Timer", _timer.Timer),
-  (0, _defineProperty2["default"])(_Object$assign2, "Transition", Transition),
-  (0, _defineProperty2["default"])(_Object$assign2, "TransitionList", TransitionList),
-  (0, _defineProperty2["default"])(_Object$assign2, "TRBL", _trbl.TRBL),
-  (0, _defineProperty2["default"])(_Object$assign2, "Tree", _tree.Tree),
-  _Object$assign2)
+  (0, _defineProperty2["default"])(_Object$assign, "HSLA", _hsla.HSLA),
+  (0, _defineProperty2["default"])(_Object$assign, "Select", _select.Select),
+  (0, _defineProperty2["default"])(_Object$assign, "Size", _size.Size),
+  (0, _defineProperty2["default"])(_Object$assign, "SVG", _svg.SVG),
+  (0, _defineProperty2["default"])(_Object$assign, "Timer", _timer.Timer),
+  (0, _defineProperty2["default"])(_Object$assign, "Transition", Transition),
+  (0, _defineProperty2["default"])(_Object$assign, "TransitionList", TransitionList),
+  (0, _defineProperty2["default"])(_Object$assign, "TRBL", _trbl.TRBL),
+  (0, _defineProperty2["default"])(_Object$assign, "Tree", _tree.Tree),
+  _Object$assign)
 );
 
 exports["default"] = _default;

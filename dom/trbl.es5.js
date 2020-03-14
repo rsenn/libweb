@@ -1,24 +1,13 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty2 = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty2(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.TRBL = TRBL;
 
-var _defineProperty = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/define-property"));
-
-var _assign = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/assign"));
-
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/toConsumableArray"));
-
-var _parseInt2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/parse-int"));
-
-var _keys = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/keys"));
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
 var _rect = require("./rect.es5.js");
 
@@ -34,16 +23,16 @@ function TRBL(arg) {
   var args = Array.prototype.slice.call(arguments);
 
   if(typeof arg === "object") {
-    (0, _keys["default"])(arg).forEach(function(k) {
+    Object.keys(arg).forEach(function(k) {
       var matches = /(top|right|bottom|left)/i.exec(k);
-      ret[matches[0].toLowerCase()] = (0, _parseInt2["default"])(arg[k]);
+      ret[matches[0].toLowerCase()] = parseInt(arg[k]);
     });
   } else if(arg) {
     if(args.length > 1) arg = args;
     if(typeof arg === "string") arg = (0, _toConsumableArray2["default"])(arg.matchAll(/^[0-9.]+(|px|em|rem|pt|cm|mm)$/g));
     else if(arg.length == 4)
       arg = arg.map(function(v) {
-        return (0, _parseInt2["default"])(v);
+        return parseInt(v);
       });
     ret.top = arg[0];
     ret.right = arg[1];
@@ -60,7 +49,7 @@ function TRBL(arg) {
   ); */
   //console.log('ret: ', ret);
 
-  if(!this || this === TRBL) return (0, _assign["default"])(ret, TRBL.prototype);
+  if(!this || this === TRBL) return Object.assign(ret, TRBL.prototype);
 }
 
 TRBL.prototype["null"] = function() {
@@ -85,7 +74,7 @@ TRBL.prototype.isNaN = function() {
   return isNaN(this.top) || isNaN(this.right) || isNaN(this.bottom) || isNaN(this.left);
 };
 
-(0, _defineProperty["default"])(TRBL.prototype, "inset", {
+Object.defineProperty(TRBL.prototype, "inset", {
   get: function get() {
     var _this2 = this;
 
@@ -94,7 +83,7 @@ TRBL.prototype.isNaN = function() {
     };
   }
 });
-(0, _defineProperty["default"])(TRBL.prototype, "outset", {
+Object.defineProperty(TRBL.prototype, "outset", {
   get: function get() {
     var _this3 = this;
 
@@ -151,3 +140,15 @@ TRBL.prototype.toString = function() {
 TRBL.prototype.toSource = function() {
   return "{top:" + this.top + ",right:" + this.right + ",bottom:" + this.bottom + ",left:" + this.left + "}";
 };
+
+var _loop = function _loop() {
+  var name = _arr[_i];
+
+  TRBL[name] = function(points) {
+    return TRBL.prototype[name].call(points);
+  };
+};
+
+for(var _i = 0, _arr = ["null", "isNaN", "outset", "toRect", "toSource"]; _i < _arr.length; _i++) {
+  _loop();
+}

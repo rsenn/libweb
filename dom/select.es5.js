@@ -1,29 +1,29 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.Select = void 0;
 
-var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/objectWithoutProperties"));
+var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends"));
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/classCallCheck"));
+var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/createClass"));
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/possibleConstructorReturn"));
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/getPrototypeOf"));
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _inherits2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/inherits"));
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
 var _react = _interopRequireDefault(require("react"));
 
+var _jsxFileName = "/home/roman/the-wild-beauty-company/lib/dom/select.js";
 var __jsx = _react["default"].createElement;
 
 var Select = /*#__PURE__*/ (function(_React$Component) {
@@ -46,7 +46,17 @@ var Select = /*#__PURE__*/ (function(_React$Component) {
           var children = _ref.children,
             props = (0, _objectWithoutProperties2["default"])(_ref, ["children"]);
           //console.log('Select.render Option ', { children, props });
-          return __jsx("option", props, children);
+          return __jsx(
+            "option",
+            (0, _extends2["default"])({}, props, {
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 14
+              },
+              __self: this
+            }),
+            children
+          );
         }; //return <select {...props}>{
         //Object.keys(options).map(key =>
         //<Option value={key}>{options[key]}</Option>

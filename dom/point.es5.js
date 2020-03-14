@@ -1,21 +1,14 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.Point = Point;
 exports.isPoint = void 0;
 
-var _assign = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/assign"));
-
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/toConsumableArray"));
-
-var _parseFloat2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/parse-float"));
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
 function Point(arg) {
   var args = arg instanceof Array ? arg : Array.prototype.slice.call(arguments);
@@ -23,18 +16,18 @@ function Point(arg) {
   arg = args.shift();
 
   if(typeof arg === "number") {
-    p.x = (0, _parseFloat2["default"])(arg);
-    p.y = (0, _parseFloat2["default"])(args.shift());
+    p.x = parseFloat(arg);
+    p.y = parseFloat(args.shift());
   } else if(typeof arg === "string") {
     var matches = (0, _toConsumableArray2["default"])(arg.matchAll(new RegExp("/([-+]?d*.?d+)(?:[eE]([-+]?d+))?/g")));
-    p.x = (0, _parseFloat2["default"])(matches[0]);
-    p.y = (0, _parseFloat2["default"])(matches[1]);
+    p.x = parseFloat(matches[0]);
+    p.y = parseFloat(matches[1]);
   } else if(typeof arg == "object" && arg !== null && (arg.x !== undefined || arg.y !== undefined)) {
     p.x = arg.x;
     p.y = arg.y;
   } else if(typeof arg == "object" && arg !== null && arg.length > 0 && x !== undefined && y !== undefined) {
-    p.x = (0, _parseFloat2["default"])(arg.shift());
-    p.y = (0, _parseFloat2["default"])(arg.shift());
+    p.x = parseFloat(arg.shift());
+    p.y = parseFloat(arg.shift());
   } else if(typeof args[0] === "number" && typeof args[1] === "number") {
     p.x = args[0];
     p.y = args[1];
@@ -49,7 +42,7 @@ function Point(arg) {
 
   if(!this || this === Point) {
     if(p.prototype == Object) p.prototype = Point.prototype;
-    else (0, _assign["default"])(p, Point.prototype);
+    else Object.assign(p, Point.prototype);
     return p;
   }
 }
@@ -310,6 +303,18 @@ Point.equal = function(a, b) {
 Point.round = function(a, b) {
   return Point.prototype.round.call(a, b);
 };
+
+var _loop = function _loop() {
+  var name = _arr[_i];
+
+  Point[name] = function(points) {
+    return Point.prototype[name].call(points);
+  };
+};
+
+for(var _i = 0, _arr = ["clone", "comp", "neg", "sides", "dimension", "toString", "toSource", "toCSS"]; _i < _arr.length; _i++) {
+  _loop();
+}
 
 var isPoint = function isPoint(o) {
   return o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)));

@@ -1,23 +1,16 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.RGBA = RGBA;
 exports.isRGBA = void 0;
 
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/slicedToArray"));
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/toConsumableArray"));
-
-var _parseFloat2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/parse-float"));
-
-var _parseInt2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/parse-int"));
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
 var _hsla = require("./hsla.es5.js");
 
@@ -54,13 +47,13 @@ function RGBA() {
         c = arg.length >= 7 ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(arg) : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(arg);
         var mul = arg.length >= 7 ? 1 : 17; //console.log('RGBA match:', c, ' mul:', mul);
 
-        ret.r = (0, _parseInt2["default"])(c[1], 16) * mul;
-        ret.g = (0, _parseInt2["default"])(c[2], 16) * mul;
-        ret.b = (0, _parseInt2["default"])(c[3], 16) * mul;
-        ret.a = c.length > 3 ? (0, _parseInt2["default"])(c[4], 16) * mul : 255;
+        ret.r = parseInt(c[1], 16) * mul;
+        ret.g = parseInt(c[2], 16) * mul;
+        ret.b = parseInt(c[3], 16) * mul;
+        ret.a = c.length > 3 ? parseInt(c[4], 16) * mul : 255;
       } else if(arg.toLowerCase().startsWith("rgb")) {
         c = arg.match(new RegExp("/[d.]+/g")).map(function(x) {
-          return (0, _parseFloat2["default"])(x);
+          return parseFloat(x);
         });
         c = (0, _toConsumableArray2["default"])(c).slice(1);
         ret.r = Math.round(c[0]);
@@ -100,7 +93,7 @@ RGBA.fromHex = function(hex) {
   var _slice$map = (0, _toConsumableArray2["default"])(matches)
       .slice(1)
       .map(function(x) {
-        return (0, _parseInt2["default"])(x, 16) * mul;
+        return parseInt(x, 16) * mul;
       }),
     _slice$map2 = (0, _slicedToArray2["default"])(_slice$map, 4),
     r = _slice$map2[0],
@@ -276,3 +269,15 @@ RGBA.prototype.toHSLA = function() {
 
   return new _hsla.HSLA(h, s, l, a);
 };
+
+var _loop = function _loop() {
+  var name = _arr[_i];
+
+  RGBA[name] = function(points) {
+    return RGBA.prototype[name].call(points);
+  };
+};
+
+for(var _i = 0, _arr = ["hex", "toRGB", "round", "toHSLA"]; _i < _arr.length; _i++) {
+  _loop();
+}

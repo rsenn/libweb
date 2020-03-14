@@ -1,42 +1,10 @@
-var _Object$getPrototypeOf = require("@babel/runtime-corejs2/core-js/object/get-prototype-of");
+var _toConsumableArray = require("@babel/runtime/helpers/toConsumableArray");
 
-var _Object$getOwnPropertyNames = require("@babel/runtime-corejs2/core-js/object/get-own-property-names");
+var _defineProperty = require("@babel/runtime/helpers/defineProperty");
 
-var _Date$now = require("@babel/runtime-corejs2/core-js/date/now");
+var _regeneratorRuntime = require("@babel/runtime/regenerator");
 
-var _Set = require("@babel/runtime-corejs2/core-js/set");
-
-var _Object$getOwnPropertyDescriptor = require("@babel/runtime-corejs2/core-js/object/get-own-property-descriptor");
-
-var _Object$keys = require("@babel/runtime-corejs2/core-js/object/keys");
-
-var _Object$entries = require("@babel/runtime-corejs2/core-js/object/entries");
-
-var _toConsumableArray = require("@babel/runtime-corejs2/helpers/toConsumableArray");
-
-var _defineProperty = require("@babel/runtime-corejs2/helpers/defineProperty");
-
-var _Map = require("@babel/runtime-corejs2/core-js/map");
-
-var _Symbol$iterator = require("@babel/runtime-corejs2/core-js/symbol/iterator");
-
-var _getIterator = require("@babel/runtime-corejs2/core-js/get-iterator");
-
-var _regeneratorRuntime = require("@babel/runtime-corejs2/regenerator");
-
-var _Object$defineProperty = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-var _slicedToArray = require("@babel/runtime-corejs2/helpers/slicedToArray");
-
-var _Object$assign = require("@babel/runtime-corejs2/core-js/object/assign");
-
-var _Array$from = require("@babel/runtime-corejs2/core-js/array/from");
-
-var _parseInt = require("@babel/runtime-corejs2/core-js/parse-int");
-
-var _parseFloat = require("@babel/runtime-corejs2/core-js/parse-float");
-
-var _JSON$stringify = require("@babel/runtime-corejs2/core-js/json/stringify");
+var _slicedToArray = require("@babel/runtime/helpers/slicedToArray");
 
 //var useragent = require('useragent');
 var formatAnnotatedObject = function formatAnnotatedObject(subject, _ref) {
@@ -128,7 +96,7 @@ var formatAnnotatedObject = function formatAnnotatedObject(subject, _ref) {
   } //console.log("longest: ", longest)
 
   var padding = function padding(x) {
-    return Util.pad(x, longest.length, spacing);
+    return opts.newline != "" ? Util.pad(x, longest.length, spacing) : spacing;
   };
 
   var j = separator + spacing;
@@ -219,7 +187,7 @@ Util.debug = function(message) {
 
   var str = args
     .map(function(arg) {
-      return typeof arg === "object" ? _JSON$stringify(arg, removeCircular) : arg;
+      return typeof arg === "object" ? JSON.stringify(arg, removeCircular) : arg;
     })
     .join(" ")
     .replace(/\n/g, ""); //console.log("STR: "+str);
@@ -268,8 +236,7 @@ Util.count = function(s, ch) {
 };
 
 Util.parseNum = function(str) {
-  var num = _parseFloat(str);
-
+  var num = parseFloat(str);
   if(isNaN(num)) num = 0;
   return num;
 };
@@ -282,7 +249,7 @@ Util.getExponential = function(num) {
   var str = typeof num == "string" ? num : num.toExponential();
   var matches = /e\+?(.*)$/.exec(str); //console.log("matches: ", matches);
 
-  return _parseInt(matches[1]);
+  return parseInt(matches[1]);
 };
 
 Util.getNumberParts = function(num) {
@@ -292,8 +259,8 @@ Util.getNumberParts = function(num) {
   var negative = matches[1] == "-";
   return {
     negative: negative,
-    mantissa: _parseFloat(matches[2]),
-    exponent: _parseInt(matches[3])
+    mantissa: parseFloat(matches[2]),
+    exponent: parseInt(matches[3])
   };
 };
 
@@ -310,15 +277,15 @@ Util.bitValue = function(n) {
 };
 
 Util.toBinary = function(num) {
-  return _parseInt(num).toString(2);
+  return parseInt(num).toString(2);
 };
 
 Util.toBits = function(num) {
   var a = Util.toBinary(num)
     .split("")
     .reverse();
-  return _Array$from(
-    _Object$assign({}, a, {
+  return Array.from(
+    Object.assign({}, a, {
       length: 50
     }),
     function(bit) {
@@ -329,7 +296,7 @@ Util.toBits = function(num) {
 
 Util.getBit = function(v, n) {
   var s = v.toString(2);
-  return n < s.length ? _parseInt(s[s.length - n - 1]) : 0;
+  return n < s.length ? parseInt(s[s.length - n - 1]) : 0;
 };
 
 Util.isSet = function(v, n) {
@@ -366,7 +333,7 @@ Util.range = function(start, end) {
     return ret;
   }
 
-  var r = _Array$from(
+  var r = Array.from(
     {
       length: end - start + 1
     },
@@ -504,7 +471,7 @@ Util.define = function(obj, key, value) {
   var enumerable = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
   return (
     obj[key] === undefined &&
-    _Object$defineProperty(obj, key, {
+    Object.defineProperty(obj, key, {
       enumerable: enumerable,
       configurable: false,
       writable: false,
@@ -517,7 +484,7 @@ Util.defineGetter = function(obj, key, get) {
   var enumerable = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
   return (
     obj[key] === undefined &&
-    _Object$defineProperty(obj, key, {
+    Object.defineProperty(obj, key, {
       enumerable: enumerable,
       configurable: false,
       get: get
@@ -529,7 +496,7 @@ Util.defineGetterSetter = function(obj, key, get, set) {
   var enumerable = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
   return (
     obj[key] === undefined &&
-    _Object$defineProperty(obj, key, {
+    Object.defineProperty(obj, key, {
       get: get,
       set: set,
       enumerable: enumerable
@@ -659,7 +626,7 @@ Util.adapter = function(obj) {
                   _didIteratorError = false;
                   _iteratorError = undefined;
                   _context2.prev = 3;
-                  _iterator = _getIterator(this.keys());
+                  _iterator = this.keys()[Symbol.iterator]();
 
                 case 5:
                   if((_iteratorNormalCompletion = (_step = _iterator.next()).done)) {
@@ -725,14 +692,14 @@ Util.adapter = function(obj) {
         );
       })
     }),
-    _defineProperty(_adapter, _Symbol$iterator, function() {
+    _defineProperty(_adapter, Symbol.iterator, function() {
       return this.entries();
     }),
     _defineProperty(_adapter, "toObject", function toObject() {
       return Object.fromEntries(this.entries());
     }),
     _defineProperty(_adapter, "toMap", function toMap() {
-      return new _Map(this.entries());
+      return new Map(this.entries());
     }),
     _adapter);
   return adapter;
@@ -752,7 +719,7 @@ Util.adapter.localStorage = function() {
       return JSON.parse(l.getItem(key));
     },
     function(l, key, v) {
-      return l.setItem(key, _JSON$stringify(v));
+      return l.setItem(key, JSON.stringify(v));
     }
   );
 };
@@ -771,8 +738,8 @@ Util.array = function() {
 
 Util.map = function() {
   var hash = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var m = hash[_Symbol$iterator] !== undefined ? hash : new _Map(_Object$entries(hash));
-  if(m instanceof Array) m[_Symbol$iterator] = m.entries;
+  var m = hash[Symbol.iterator] !== undefined ? hash : new Map(Object.entries(hash));
+  if(m instanceof Array) m[Symbol.iterator] = m.entries;
 
   try {
     //if(m.toObject === undefined) Util.extendMap();
@@ -796,7 +763,7 @@ Util.extendMap = function(map) {
                 _didIteratorError2 = false;
                 _iteratorError2 = undefined;
                 _context3.prev = 3;
-                _iterator2 = _getIterator(map);
+                _iterator2 = map[Symbol.iterator]();
 
               case 5:
                 if((_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done)) {
@@ -902,7 +869,7 @@ Util.extendMap = function(map) {
 Util.objectFrom = function(any) {
   if("toJS" in any) any = any.toJS();
   if("entries" in any) return Object.fromEntries(any.entries());
-  return _Object$assign({}, any);
+  return Object.assign({}, any);
 };
 
 Util.tail = function(arr) {
@@ -916,7 +883,7 @@ Util.splice = function(str, index, delcount, insert) {
 };
 
 Util.keyOf = function(obj, prop) {
-  var keys = _Object$keys(obj);
+  var keys = Object.keys(obj);
 
   for(var k in keys) {
     if(obj[k] === prop) return k;
@@ -1090,7 +1057,7 @@ Util.match = function(arg, pred) {
     //console.log('Util.match ', { arg });
     return _toConsumableArray(arg.keys()).reduce(function(acc, key) {
       return match(arg.get(key), key, arg) ? acc.set(key, arg.get(key)) : acc;
-    }, new _Map());
+    }, new Map());
   } else {
     var i = 0;
     var ret = [];
@@ -1099,7 +1066,7 @@ Util.match = function(arg, pred) {
     var _iteratorError3 = undefined;
 
     try {
-      for(var _iterator3 = _getIterator(arg), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+      for(var _iterator3 = arg[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
         var item = _step3.value;
         if(match(item, i, arg)) ret.push(item);
       }
@@ -1233,7 +1200,7 @@ Util.isEmptyString = function(v) {
 };
 
 Util.isEmpty = function(v) {
-  if(typeof v == "object" && !!v && v.constructor == Object && _Object$keys(v).length == 0) return true;
+  if(typeof v == "object" && !!v && v.constructor == Object && Object.keys(v).length == 0) return true;
   if(!v || v === null) return true;
   if(typeof v == "object" && v.length !== undefined && v.length === 0) return true;
   return false;
@@ -1244,8 +1211,7 @@ Util.notEmpty = function(v) {
 };
 
 Util.hasProps = function(obj) {
-  var keys = _Object$keys(obj);
-
+  var keys = Object.keys(obj);
   return keys.length > 0;
 };
 
@@ -1254,7 +1220,7 @@ Util.validatePassword = function(value) {
 }; //deep copy
 
 Util.deepClone = function(data) {
-  return JSON.parse(_JSON$stringify(data));
+  return JSON.parse(JSON.stringify(data));
 }; // Function
 
 Util.findVal = function(object, propName) {
@@ -1290,7 +1256,7 @@ Util.deepCloneObservable = function(data) {
       var _iteratorError4 = undefined;
 
       try {
-        for(var _iterator4 = _getIterator(data), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+        for(var _iterator4 = data[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
           var value = _step4.value;
           o.push(this.deepCloneObservable(value));
         }
@@ -1385,7 +1351,7 @@ Util.arrRemove = function(arr, i) {
 Util.removeEqual = function(a, b) {
   var c = {};
 
-  for(var key in _Object$assign({}, a)) {
+  for(var key in Object.assign({}, a)) {
     if(b[key] === a[key]) continue;
     c[key] = a[key];
   }
@@ -1469,7 +1435,7 @@ Util.parseCookie = function() {
   };*/
 
 Util.encodeCookie = function(c) {
-  return _Object$entries(c)
+  return Object.entries(c)
     .map(function(_ref4) {
       var _ref5 = _slicedToArray(_ref4, 2),
         key = _ref5[0],
@@ -1481,7 +1447,7 @@ Util.encodeCookie = function(c) {
 };
 
 Util.setCookies = function(c) {
-  return _Object$entries(c).forEach(function(_ref6) {
+  return Object.entries(c).forEach(function(_ref6) {
     var _ref7 = _slicedToArray(_ref6, 2),
       key = _ref7[0],
       value = _ref7[1];
@@ -1493,8 +1459,8 @@ Util.setCookies = function(c) {
 
 Util.clearCookies = function(c) {
   return Util.setCookies(
-    _Object$keys(Util.parseCookie(c)).reduce(function(acc, name) {
-      return _Object$assign(acc, _defineProperty({}, name, "; max-age=0; expires=" + new Date().toUTCString()));
+    Object.keys(Util.parseCookie(c)).reduce(function(acc, name) {
+      return Object.assign(acc, _defineProperty({}, name, "; max-age=0; expires=" + new Date().toUTCString()));
     }, {})
   );
 };
@@ -1629,12 +1595,12 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
   try {
     if(object === Object(object)) {
       for(var property in object) {
-        var desc = _Object$getOwnPropertyDescriptor(object, property); //console.log('x ', {property, desc})
+        var desc = Object.getOwnPropertyDescriptor(object, property); //console.log('x ', {property, desc})
 
         if(property.indexOf("$") !== 0 && typeof object[property] !== "function" && !desc.get && !desc.set) {
           if(typeof object[property] === "object") {
             try {
-              _JSON$stringify(object[property]);
+              JSON.stringify(object[property]);
             } catch(err) {
               continue;
             }
@@ -1736,11 +1702,11 @@ Util.parseURL = function() {
   return {
     protocol: matches[1],
     host: matches[2],
-    port: typeof matches[3] === "string" ? _parseInt(matches[3].substring(1)) : 443,
+    port: typeof matches[3] === "string" ? parseInt(matches[3].substring(1)) : 443,
     location: matches[4].replace(/\?.*/, ""),
     query: params,
     href: function href(override) {
-      if(typeof override === "object") _Object$assign(this, override);
+      if(typeof override === "object") Object.assign(this, override);
       var qstr = Util.encodeQuery(this.query);
       return (this.protocol ? "".concat(this.protocol, "://") : "") + (this.host ? this.host : "") + (this.port ? ":" + this.port : "") + "".concat(this.location) + (qstr != "" ? "?" + qstr : "");
     }
@@ -1761,9 +1727,7 @@ Util.numberFromURL = function(url, fn) {
   var obj = typeof url === "object" ? url : this.parseURL(url);
   var nr_match = RegExp(".*[^0-9]([0-9]+)$").exec(url.location);
   var nr_arg = nr_match ? nr_match[1] : undefined;
-
-  var nr = nr_arg && _parseInt(nr_arg);
-
+  var nr = nr_arg && parseInt(nr_arg);
   if(!isNaN(nr) && typeof fn === "function") fn(nr);
   return nr;
 };
@@ -1781,7 +1745,7 @@ Util.isMobile = function() {
 };
 
 Util.unique = function(arr) {
-  return _Array$from(new _Set(arr));
+  return Array.from(new Set(arr));
 };
 
 Util.distinct = function(arr) {
@@ -1801,10 +1765,10 @@ Util.rangeMinMax = function(arr, field) {
 Util.mergeLists = function(arr1, arr2) {
   var key = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "id";
   var hash = arr1.reduce(function(acc, it) {
-    return _Object$assign(_defineProperty({}, it[key], it), acc);
+    return Object.assign(_defineProperty({}, it[key], it), acc);
   }, {});
   hash = arr2.reduce(function(acc, it) {
-    return _Object$assign(_defineProperty({}, it[key], it), acc);
+    return Object.assign(_defineProperty({}, it[key], it), acc);
   }, {});
   var ret = Util.array();
 
@@ -1816,12 +1780,11 @@ Util.mergeLists = function(arr1, arr2) {
 };
 
 Util.throttle = function(fn, wait) {
-  var time = _Date$now();
-
+  var time = Date.now();
   return function() {
-    if(time + wait - _Date$now() < 0) {
+    if(time + wait - Date.now() < 0) {
       fn();
-      time = _Date$now();
+      time = Date.now();
     }
   };
 };
@@ -1920,9 +1883,7 @@ Util.unixTime = function() {
 
 Util.fromUnixTime = function(epoch) {
   var utc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-  var t = _parseInt(epoch);
-
+  var t = parseInt(epoch);
   var d = new Date(0);
   utc ? d.setUTCSeconds(t) : d.setSeconds(t);
   return d;
@@ -1991,7 +1952,7 @@ Util.randInt = function(min) {
 
 Util.hex = function(num) {
   var numDigits = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-  var n = typeof num == "number" ? num : _parseInt(num);
+  var n = typeof num == "number" ? num : parseInt(num);
   return ("0".repeat(numDigits) + n.toString(16)).slice(-numDigits);
 };
 
@@ -2018,8 +1979,8 @@ Util.formatRecord = function(obj) {
       val = val.map(function(item) {
         return Util.formatRecord(item);
       });
-    else if(/^-?[0-9]+$/.test(val)) val = _parseInt(val);
-    else if(/^-?[.0-9]+$/.test(val)) val = _parseFloat(val);
+    else if(/^-?[0-9]+$/.test(val)) val = parseInt(val);
+    else if(/^-?[.0-9]+$/.test(val)) val = parseFloat(val);
     else if(val == "true" || val == "false") val = Boolean(val);
     ret[key] = val;
   }
@@ -2032,7 +1993,7 @@ Util.isArray = function(obj) {
 };
 
 Util.isMap = function(obj) {
-  return (obj && obj.get !== undefined && obj.keys !== undefined) || obj instanceof _Map;
+  return (obj && obj.get !== undefined && obj.keys !== undefined) || obj instanceof Map;
 };
 
 Util.effectiveDeviceWidth = function() {
@@ -2051,7 +2012,7 @@ Util.getFormFields = function(initialState) {
     initialState,
     _toConsumableArray(document.forms).reduce(function(acc, form) {
       return _toConsumableArray(form.elements).reduce(function(acc2, e) {
-        return e.name == "" || e.value == undefined || e.value == "undefined" ? acc2 : _Object$assign(acc2, _defineProperty({}, e.name, e.value));
+        return e.name == "" || e.value == undefined || e.value == "undefined" ? acc2 : Object.assign(acc2, _defineProperty({}, e.name, e.value));
       }, acc);
     }, {})
   ]);
@@ -2177,10 +2138,9 @@ Util.members = function(obj) {
     if(names.indexOf(name) == -1) names.push(name);
   };
 
-  _Object$getOwnPropertyNames(obj).forEach(adder);
-
+  Object.getOwnPropertyNames(obj).forEach(adder);
   Util.getPrototypeChain(obj).forEach(function(proto) {
-    return _Object$getOwnPropertyNames(proto).forEach(adder);
+    return Object.getOwnPropertyNames(proto).forEach(adder);
   });
   return names;
 };
@@ -2196,7 +2156,7 @@ Util.getMethodNames = function(obj) {
 Util.getMethods = function(obj) {
   var names = Util.getMethodNames(obj);
   return names.reduce(function(ret, method) {
-    return _Object$assign(ret, _defineProperty({}, method, obj[method]));
+    return Object.assign(ret, _defineProperty({}, method, obj[method]));
   }, {});
 };
 
@@ -2226,7 +2186,7 @@ Util.getPrototypeChain = function(obj) {
   var ret = Util.array();
   var proto;
 
-  while((proto = _Object$getPrototypeOf(obj))) {
+  while((proto = Object.getPrototypeOf(obj))) {
     if(proto === Object.prototype) break;
     ret.push(fn(proto));
     obj = proto;
@@ -2395,13 +2355,13 @@ Util.flatTree = function(tree, addOutput) {
     })
   );
 
-  if(typeof tree.children == "object" && tree.children.length) {
+  if(typeof tree.children == "object" && tree.children !== null && tree.children.length) {
     var _iteratorNormalCompletion5 = true;
     var _didIteratorError5 = false;
     var _iteratorError5 = undefined;
 
     try {
-      for(var _iterator5 = _getIterator(tree.children), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+      for(var _iterator5 = tree.children[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
         var child = _step5.value;
         Util.flatTree(child, addOutput);
       }
@@ -2429,13 +2389,13 @@ Util.traverseTree = function(tree, fn) {
   var parent = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
   fn(tree, depth, parent);
 
-  if(typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children.length) {
+  if(typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children !== null && tree.children.length) {
     var _iteratorNormalCompletion6 = true;
     var _didIteratorError6 = false;
     var _iteratorError6 = undefined;
 
     try {
-      for(var _iterator6 = _getIterator(tree.children), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+      for(var _iterator6 = tree.children[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
         var child = _step6.value;
         Util.traverseTree(child, fn, depth + 1, tree);
       }
@@ -2456,11 +2416,9 @@ Util.traverseTree = function(tree, fn) {
   }
 };
 
-Util.walkTree = /*#__PURE__*/ _regeneratorRuntime.mark(function _callee(node) {
+Util.walkTree = /*#__PURE__*/ _regeneratorRuntime.mark(function _callee(node, pred, t) {
   var depth,
     parent,
-    pred,
-    t,
     _i,
     _arr,
     child,
@@ -2470,50 +2428,54 @@ Util.walkTree = /*#__PURE__*/ _regeneratorRuntime.mark(function _callee(node) {
     while(1) {
       switch ((_context4.prev = _context4.next)) {
         case 0:
-          depth = _args4.length > 1 && _args4[1] !== undefined ? _args4[1] : 0;
-          parent = _args4.length > 2 && _args4[2] !== undefined ? _args4[2] : null;
-          pred = _args4.length > 3 ? _args4[3] : undefined;
-          t = _args4.length > 4 ? _args4[4] : undefined;
+          depth = _args4.length > 3 && _args4[3] !== undefined ? _args4[3] : 0;
+          parent = _args4.length > 4 && _args4[4] !== undefined ? _args4[4] : null;
           if(!pred)
             pred = function pred(i) {
               return true;
             };
           if(!t)
             t = function t(i) {
+              i.depth = depth;
+              /*if(parent) i.parent = parent; */
+
               return i;
             };
+          /*      let thisNode = node;
+              let nodeId = node.id;*/
+          //node = t(node);
 
           if(!pred(node, depth, parent)) {
-            _context4.next = 9;
+            _context4.next = 15;
             break;
           }
 
-          _context4.next = 9;
+          _context4.next = 7;
           return t(node);
 
-        case 9:
+        case 7:
           if(!(typeof node == "object" && node !== null && typeof node.children == "object" && node.children.length)) {
-            _context4.next = 17;
+            _context4.next = 15;
             break;
           }
 
           (_i = 0), (_arr = _toConsumableArray(node.children));
 
-        case 11:
+        case 9:
           if(!(_i < _arr.length)) {
-            _context4.next = 17;
+            _context4.next = 15;
             break;
           }
 
           child = _arr[_i];
-          return _context4.delegateYield(Util.walkTree(child, depth + 1, node, pred, t), "t0", 14);
+          return _context4.delegateYield(Util.walkTree(child, pred, t, depth + 1, node.parent_id), "t0", 12);
 
-        case 14:
+        case 12:
           _i++;
-          _context4.next = 11;
+          _context4.next = 9;
           break;
 
-        case 17:
+        case 15:
         case "end":
           return _context4.stop();
       }
@@ -2634,7 +2596,7 @@ Util.getImageAverageColor = function(imageElement, options) {
     };
   }
 
-  var o = _Object$assign({}, channels, {
+  var o = Object.assign({}, channels, {
     toStringRgb: function toStringRgb() {
       // Returns a CSS compatible RGB string (e.g. '255, 255, 255')
       var r = this.r,
@@ -2668,7 +2630,6 @@ Util.getImageAverageColor = function(imageElement, options) {
       return [toHex(r), toHex(g), toHex(b)].join("");
     }
   });
-
   return o;
 };
 

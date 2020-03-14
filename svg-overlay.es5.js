@@ -1,33 +1,28 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.SvgPathTracer = SvgPathTracer;
 exports["default"] = exports.SvgOverlay = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/possibleConstructorReturn"));
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/getPrototypeOf"));
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/assertThisInitialized"));
+var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
 
-var _inherits2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/inherits"));
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/defineProperty"));
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _iterator = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/symbol/iterator"));
-
-var _regenerator = _interopRequireDefault(require("@babel/runtime-corejs2/regenerator"));
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
 var _react = _interopRequireDefault(require("react"));
 
@@ -37,6 +32,7 @@ var _trkl = require("./trkl.es5.js");
 
 var _lazyInitializer = require("./lazyInitializer.es5.js");
 
+var _jsxFileName = "/home/roman/the-wild-beauty-company/lib/svg-overlay.js";
 var __jsx = _react["default"].createElement;
 
 function SvgPathTracer(path) {
@@ -64,7 +60,7 @@ function SvgPathTracer(path) {
         }, entries);
       })
     },
-    _iterator["default"],
+    Symbol.iterator,
     /*#__PURE__*/ _regenerator["default"].mark(function _callee() {
       var i, offset, point, relative, angle, distance;
       return _regenerator["default"].wrap(function _callee$(_context2) {
@@ -225,7 +221,12 @@ var SvgOverlay = /*#__PURE__*/ (function(_React$Component) {
             width: "100vw",
             height: "100%",
             pointerEvents: "none"
-          }
+          },
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 118
+          },
+          __self: this
         });
       }
     }

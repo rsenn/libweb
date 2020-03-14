@@ -1,57 +1,32 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty2 = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty2(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.isElement = isElement;
 exports.Element = void 0;
 
-var _defineProperties = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/define-properties"));
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
-var _getOwnPropertyDescriptors = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/get-own-property-descriptors"));
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
-var _getOwnPropertyDescriptor = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/get-own-property-descriptor"));
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
-var _getOwnPropertySymbols = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/get-own-property-symbols"));
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _regenerator = _interopRequireDefault(require("@babel/runtime-corejs2/regenerator"));
+var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
 
-var _promise = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/promise"));
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _assign = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/assign"));
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/toConsumableArray"));
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/define-property"));
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _keys = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/keys"));
-
-var _parseFloat2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/parse-float"));
-
-var _stringify = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/json/stringify"));
-
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/slicedToArray"));
-
-var _entries = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/entries"));
-
-var _defineProperty3 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/defineProperty"));
-
-var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/objectWithoutProperties"));
-
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/createClass"));
-
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/possibleConstructorReturn"));
-
-var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/getPrototypeOf"));
-
-var _inherits2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/inherits"));
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
 var _node = require("./node.es5.js");
 
@@ -62,12 +37,12 @@ var _rect = require("./rect.es5.js");
 var _util = _interopRequireDefault(require("../util.es5.js"));
 
 function ownKeys(object, enumerableOnly) {
-  var keys = (0, _keys["default"])(object);
-  if(_getOwnPropertySymbols["default"]) {
-    var symbols = (0, _getOwnPropertySymbols["default"])(object);
+  var keys = Object.keys(object);
+  if(Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
     if(enumerableOnly)
       symbols = symbols.filter(function(sym) {
-        return (0, _getOwnPropertyDescriptor["default"])(object, sym).enumerable;
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
       });
     keys.push.apply(keys, symbols);
   }
@@ -79,13 +54,13 @@ function _objectSpread(target) {
     var source = arguments[i] != null ? arguments[i] : {};
     if(i % 2) {
       ownKeys(Object(source), true).forEach(function(key) {
-        (0, _defineProperty3["default"])(target, key, source[key]);
+        (0, _defineProperty2["default"])(target, key, source[key]);
       });
-    } else if(_getOwnPropertyDescriptors["default"]) {
-      (0, _defineProperties["default"])(target, (0, _getOwnPropertyDescriptors["default"])(source));
+    } else if(Object.getOwnPropertyDescriptors) {
+      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
     } else {
       ownKeys(Object(source)).forEach(function(key) {
-        (0, _defineProperty2["default"])(target, key, (0, _getOwnPropertyDescriptor["default"])(source, key));
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
       });
     }
   }
@@ -248,13 +223,13 @@ var Element = /*#__PURE__*/ (function(_Node) {
         s += "Element.create('"
           .concat(tagName, "', { ")
           .concat(
-            (0, _entries["default"])(attrs)
+            Object.entries(attrs)
               .map(function(_ref2) {
                 var _ref3 = (0, _slicedToArray2["default"])(_ref2, 2),
                   k = _ref3[0],
                   v = _ref3[1];
 
-                return "".concat(k, ": ").concat((0, _stringify["default"])(v));
+                return "".concat(k, ": ").concat(JSON.stringify(v));
               })
               .join(", "),
             " }"
@@ -325,7 +300,7 @@ var Element = /*#__PURE__*/ (function(_Node) {
             /*Util.camelize*/
             name;
           var value = e && e.getAttribute ? e.getAttribute(name) : e[key];
-          acc[key] = isNaN((0, _parseFloat2["default"])(value)) ? value : (0, _parseFloat2["default"])(value);
+          acc[key] = isNaN(parseFloat(value)) ? value : parseFloat(value);
           return acc;
         }, {});
         if(typeof arguments[1] == "string") return ret[attrs_or_name[0]];
@@ -515,7 +490,7 @@ var Element = /*#__PURE__*/ (function(_Node) {
           if(property === undefined) return undefined;
           var matches = /([-0-9.]+)(.*)/.exec(property) || []; //console.log({ match, value, unit });
 
-          return (0, _parseFloat2["default"])(matches[1]);
+          return parseFloat(matches[1]);
         };
 
         var current = new Point({
@@ -682,7 +657,7 @@ var Element = /*#__PURE__*/ (function(_Node) {
         var prefix = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "margin";
         var attrs = ["Top", "Right", "Bottom", "Left"].reduce(function(acc, pos) {
           var name = prefix + (prefix == "" ? pos.toLowerCase() : pos);
-          return _objectSpread({}, acc, (0, _defineProperty3["default"])({}, name, trbl[pos.toLowerCase()]));
+          return _objectSpread({}, acc, (0, _defineProperty2["default"])({}, name, trbl[pos.toLowerCase()]));
         }, {}); //console.log('Element.setTRBL ', attrs);
 
         return Element.setCSS(element, attrs);
@@ -692,7 +667,7 @@ var Element = /*#__PURE__*/ (function(_Node) {
       key: "setCSS",
       value: function setCSS(element, prop, value) {
         if(typeof element == "string") element = Element.find(element);
-        if(typeof prop == "string" && typeof value == "string") prop = (0, _defineProperty3["default"])({}, prop, value); //console.log('Element.setCSS ', { element, toCSS });
+        if(typeof prop == "string" && typeof value == "string") prop = (0, _defineProperty2["default"])({}, prop, value); //console.log('Element.setCSS ', { element, toCSS });
 
         var _loop = function _loop(key) {
           var value = prop[key];
@@ -739,7 +714,7 @@ var Element = /*#__PURE__*/ (function(_Node) {
 
         var style = _util["default"].removeEqual(estyle, pstyle);
 
-        var keys = (0, _keys["default"])(style).filter(function(k) {
+        var keys = Object.keys(style).filter(function(k) {
           return !/^__/.test(k);
         }); //console.log('style: ', style);
 
@@ -749,9 +724,9 @@ var Element = /*#__PURE__*/ (function(_Node) {
           receiver = function receiver(result) {
             if(typeof result == "object") {
               try {
-                (0, _defineProperty2["default"])(result, "cssText", {
+                Object.defineProperty(result, "cssText", {
                   get: function get() {
-                    return (0, _entries["default"])(this)
+                    return Object.entries(this)
                       .map(function(_ref9) {
                         var _ref10 = (0, _slicedToArray2["default"])(_ref9, 2),
                           k = _ref10[0],
@@ -1007,7 +982,7 @@ var Element = /*#__PURE__*/ (function(_Node) {
 
         if(!delegate.setcss)
           delegate.setcss = function(elem, css) {
-            return (0, _assign["default"])(elem.style, css);
+            return Object.assign(elem.style, css);
           }; // Element.setCSS(elem, css);
 
         delegate.bound_factory = function(tag) {
@@ -1100,7 +1075,7 @@ var Element = /*#__PURE__*/ (function(_Node) {
               if(ret === null || depth >= ret.depth) ret = e;
             };
         var ret = null;
-        return new _promise["default"](function(resolve, reject) {
+        return new Promise(function(resolve, reject) {
           var element = null;
           Element.walk(d.body, function(e, accu, root, depth) {
             var r = Element.rect(e, {
@@ -1144,7 +1119,7 @@ var Element = /*#__PURE__*/ (function(_Node) {
 
         var tlist = a.join(", "); //console.log("Element.transition", ctx);
 
-        return new _promise["default"](function(resolve, reject) {
+        return new Promise(function(resolve, reject) {
           var tend = function tend(e) {
             this.event = e; //console.log("Element.transitionEnd event", this);
 
@@ -1158,7 +1133,7 @@ var Element = /*#__PURE__*/ (function(_Node) {
           if(e.style && e.style.setProperty) e.style.setProperty("transition", tlist);
           else e.style.transition = tlist;
           e.addEventListener("transitionend", tend.bind(ctx));
-          (0, _assign["default"])(e.style, css);
+          Object.assign(e.style, css);
         });
       }
     }

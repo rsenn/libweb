@@ -1,21 +1,10 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
-
-var _Object$defineProperty2 = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty2(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.Line = Line;
 exports.isLine = void 0;
-
-var _defineProperty = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/object/define-property"));
-
-var _epsilon = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/number/epsilon"));
-
-var _parseFloat2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/parse-float"));
 
 var _point = require("./point.es5.js");
 
@@ -28,7 +17,7 @@ function Line(x1, y1, x2, y2) {
   if(
     args.length >= 4 &&
     args.every(function(arg) {
-      return !isNaN((0, _parseFloat2["default"])(arg));
+      return !isNaN(parseFloat(arg));
     })
   ) {
     arg = {
@@ -47,28 +36,28 @@ function Line(x1, y1, x2, y2) {
       _y = _arg.y1,
       _x2 = _arg.x2,
       _y2 = _arg.y2;
-    obj.x1 = (0, _parseFloat2["default"])(_x);
-    obj.y1 = (0, _parseFloat2["default"])(_y);
-    obj.x2 = (0, _parseFloat2["default"])(_x2);
-    obj.y2 = (0, _parseFloat2["default"])(_y2);
+    obj.x1 = parseFloat(_x);
+    obj.y1 = parseFloat(_y);
+    obj.x2 = parseFloat(_x2);
+    obj.y2 = parseFloat(_y2);
     ret = 1;
   } else if((0, _point.isPoint)(args[0]) && (0, _point.isPoint)(args[1])) {
-    obj.x1 = (0, _parseFloat2["default"])(args[0].x);
-    obj.y1 = (0, _parseFloat2["default"])(args[0].y);
-    obj.x2 = (0, _parseFloat2["default"])(args[1].x);
-    obj.y2 = (0, _parseFloat2["default"])(args[1].y);
+    obj.x1 = parseFloat(args[0].x);
+    obj.y1 = parseFloat(args[0].y);
+    obj.x2 = parseFloat(args[1].x);
+    obj.y2 = parseFloat(args[1].y);
     ret = 2;
   } else if(
     arg &&
     arg.length >= 4 &&
     arg.slice(0, 4).every(function(arg) {
-      return !isNaN((0, _parseFloat2["default"])(arg));
+      return !isNaN(parseFloat(arg));
     })
   ) {
-    obj.x1 = typeof x === "number" ? x : (0, _parseFloat2["default"])(x);
-    obj.y1 = typeof y === "number" ? y : (0, _parseFloat2["default"])(y);
-    obj.x2 = typeof w === "number" ? w : (0, _parseFloat2["default"])(w);
-    obj.y2 = typeof h === "number" ? h : (0, _parseFloat2["default"])(h);
+    obj.x1 = typeof x === "number" ? x : parseFloat(x);
+    obj.y1 = typeof y === "number" ? y : parseFloat(y);
+    obj.x2 = typeof w === "number" ? w : parseFloat(w);
+    obj.y2 = typeof h === "number" ? h : parseFloat(h);
     ret = 4;
   } else {
     ret = 0;
@@ -89,14 +78,14 @@ exports.isLine = isLine;
 Line.prototype.intersect = function(other) {
   var ma = (this[0].y - this[1].y) / (this[0].x - this[1].x);
   var mb = (other[0].y - other[1].y) / (other[0].x - other[1].x);
-  if(ma - mb < _epsilon["default"]) return undefined;
+  if(ma - mb < Number.EPSILON) return undefined;
   return new _point.Point({
     x: (ma * this[0].x - mb * other[0].x + other[0].y - this[0].y) / (ma - mb),
     y: (ma * mb * (other[0].x - this[0].x) + mb * this[0].y - ma * other[0].y) / (mb - ma)
   });
 };
 
-(0, _defineProperty["default"])(Line.prototype, "x1", {
+Object.defineProperty(Line.prototype, "x1", {
   get: function get() {
     return this.a && this.a.x;
   },
@@ -106,7 +95,7 @@ Line.prototype.intersect = function(other) {
   },
   enumerable: true
 });
-(0, _defineProperty["default"])(Line.prototype, "y1", {
+Object.defineProperty(Line.prototype, "y1", {
   get: function get() {
     return this.a && this.a.y;
   },
@@ -116,7 +105,7 @@ Line.prototype.intersect = function(other) {
   },
   enumerable: true
 });
-(0, _defineProperty["default"])(Line.prototype, "x2", {
+Object.defineProperty(Line.prototype, "x2", {
   get: function get() {
     return this.b && this.b.x;
   },
@@ -126,7 +115,7 @@ Line.prototype.intersect = function(other) {
   },
   enumerable: true
 });
-(0, _defineProperty["default"])(Line.prototype, "y2", {
+Object.defineProperty(Line.prototype, "y2", {
   get: function get() {
     return this.b && this.b.y;
   },
@@ -209,3 +198,15 @@ Line.prototype.toString = function() {
 
   return _point.Point.prototype.toString.call(this.a) + " -> " + _point.Point.prototype.toString.call(this.b);
 };
+
+var _loop = function _loop() {
+  var name = _arr[_i];
+
+  Line[name] = function(points) {
+    return Line.prototype[name].call(points);
+  };
+};
+
+for(var _i = 0, _arr = ["direction", "slope", "angle", "bbox", "points", "inspect", "toString"]; _i < _arr.length; _i++) {
+  _loop();
+}

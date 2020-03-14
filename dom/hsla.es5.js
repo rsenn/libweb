@@ -1,19 +1,14 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime-corejs2/helpers/interopRequireDefault");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _Object$defineProperty = require("@babel/runtime-corejs2/core-js/object/define-property");
-
-_Object$defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 exports.HSLA = HSLA;
 exports.isHSLA = void 0;
 
-var _parseFloat2 = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/parse-float"));
-
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/toConsumableArray"));
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
 var _rgba = require("./rgba.es5.js");
 
@@ -54,8 +49,8 @@ function HSLA() {
     ret.l = c[2];
     ret.a = c[3] !== undefined ? c[3] : 1.0;
     ["h", "s", "l", "a"].forEach(function(channel) {
-      if(String(ret[channel]).endsWith("%")) ret[channel] = (0, _parseFloat2["default"])(ret[channel].slice(0, ret[channel].length - 1));
-      else ret[channel] = (0, _parseFloat2["default"])(ret[channel]);
+      if(String(ret[channel]).endsWith("%")) ret[channel] = parseFloat(ret[channel].slice(0, ret[channel].length - 1));
+      else ret[channel] = parseFloat(ret[channel]);
     });
   } //console.log('HSLA ', { c, ret, args });
 
@@ -159,6 +154,18 @@ HSLA.prototype.toString = function() {
     .concat(this.l, "%,")
     .concat(this.a, ")");
 };
+
+var _loop = function _loop() {
+  var name = _arr[_i];
+
+  HSLA[name] = function(points) {
+    return HSLA.prototype[name].call(points);
+  };
+};
+
+for(var _i = 0, _arr = ["css", "toHSL", "clamp", "round", "hex", "toRGBA", "toString"]; _i < _arr.length; _i++) {
+  _loop();
+}
 
 var isHSLA = function isHSLA(obj) {
   return HSLA.properties.every(function(prop) {
