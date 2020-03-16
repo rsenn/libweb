@@ -179,9 +179,7 @@ Matrix.prototype.init_identity = function() {
 };
 
 Matrix.prototype.init_translate = function(tx, ty) {
-  Matrix.prototype.set_row.call(this, 0, 1, 0, tx);
-  Matrix.prototype.set_row.call(this, 1, 0, 1, ty);
-  Matrix.prototype.set_row.call(this, 2, 0, 0, 1);
+  Matrix.prototype.splice.call(this, 0, this.length, 1, 0, tx, 0, 1, ty, 0, 0, 1);
   return this;
 };
 

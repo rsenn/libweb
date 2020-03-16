@@ -2,7 +2,11 @@ export function Point(arg) {
   let args = arg instanceof Array ? arg : [...arguments];
   let p = !this || this === Point ? {} : this;
   arg = args.shift();
-  if(typeof arg === "number") {
+  
+  if(typeof arg === 'undefined') {
+    p.x = arg;
+    p.y = args.shift();
+  } else  if(typeof arg === "number") {
     p.x = parseFloat(arg);
     p.y = parseFloat(args.shift());
   } else if(typeof arg === "string") {
@@ -193,6 +197,7 @@ Point.prod = (a, b) => Point.prototype.prod.call(a, b);
 Point.quot = (a, b) => Point.prototype.quot.call(a, b);
 Point.equal = (a, b) => Point.prototype.equal.call(a, b);
 Point.round = (a, b) => Point.prototype.round.call(a, b);
+Point.fromAngle = (angle, f) => Point.prototype.fromAngle.call(new Point(0,0), angle, f);
 
 for(let name of ["clone", "comp", "neg", "sides", "dimension", "toString", "toSource", "toCSS"]) {
   Point[name] = points => Point.prototype[name].call(points);
@@ -201,3 +206,6 @@ for(let name of ["clone", "comp", "neg", "sides", "dimension", "toString", "toSo
 export const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)));
 
 Point.isPoint = isPoint;
+
+
+export default Point;
