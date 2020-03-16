@@ -1,4 +1,6 @@
 #!/bin/sh
+#
+# sed -n  '/^\s*import/ { s,.*from\s,, ; s|["'\'';]||g; \|/|! { /\.js$/! p }  }' "
 
 check_imports() {
   SCRIPT="${ARG##*/}.sed"

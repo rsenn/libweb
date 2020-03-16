@@ -890,9 +890,9 @@ export function rect(arg) {
     let e = Element.create("div", {
       parent,
       style: {
-        display: "inline-block",
+        /*display: "inline-block",
         class: "tracker-rect",
-        position: "absolute",
+        position: "absolute",*/
         border: `1px dashed ${typeof borderColor == "string" ? borderColor : "#0f0"}`,
         borderRadius: "0px",
         backgroundColor: typeof color == "string" ? color : "#ffff0030",
