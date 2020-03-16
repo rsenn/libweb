@@ -55,9 +55,11 @@ convert_to_es5() {
 
     pushv_unique ALLFILES "$IN"
 
-      
+    run_babel() {
+      (set -x;  babel --compact auto --no-comments ${2:+-o "$2"} "${1:-"-"}" )
+    }
 
-    [ "$FORCE" = true -o "$OUT" -ot "$IN" ] && (set -x; babel --compact auto --no-comments -o "$OUT" "$IN" )
+    [ "$FORCE" = true -o "$OUT" -ot "$IN" ] && run_babel "$IN" "$OUT"
 
     REQUIRES=$( sed '/require(/ { s,.*require(\([^)]*\)).*,\1, ; s,^"\(.*\)"$,\1, ; p }' -n "$OUT" )
     SUBST=
