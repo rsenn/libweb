@@ -57,7 +57,7 @@ convert_to_es5() {
 
       
 
-    [ "$FORCE" = true -o "$OUT" -ot "$IN" ] && (set -x; babel --compact true --no-comments -o "$OUT" "$IN" )
+    [ "$FORCE" = true -o "$OUT" -ot "$IN" ] && (set -x; babel --compact auto --no-comments -o "$OUT" "$IN" )
 
     REQUIRES=$( sed '/require(/ { s,.*require(\([^)]*\)).*,\1, ; s,^"\(.*\)"$,\1, ; p }' -n "$OUT" )
     SUBST=
@@ -71,7 +71,7 @@ convert_to_es5() {
       FILE=${FILE%.es5}
       pushv_unique ADDFILES "${FILE}.js"
       FILE=${FILE#$DIR/}
-      SUBST="$SUBST ;; /require(/ s|${FILE%.js}.js\"|${FILE%.js}.es5.js\"|"
+      SUBST="$SUBST ;; /require(/ s|${FILE%.js}.js\"|${FILE%.js}.es5.js\"|g"
     done
    (set -x; sed -i -e "$SUBST" "$OUT")
 
