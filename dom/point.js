@@ -2,11 +2,11 @@ export function Point(arg) {
   let args = arg instanceof Array ? arg : [...arguments];
   let p = !this || this === Point ? {} : this;
   arg = args.shift();
-  
-  if(typeof arg === 'undefined') {
+
+  if(typeof arg === "undefined") {
     p.x = arg;
     p.y = args.shift();
-  } else  if(typeof arg === "number") {
+  } else if(typeof arg === "number") {
     p.x = parseFloat(arg);
     p.y = parseFloat(args.shift());
   } else if(typeof arg === "string") {
@@ -118,9 +118,10 @@ Point.prototype.distance = function(
 Point.prototype.equal = function(other) {
   return this.x == other.x && this.y == other.y;
 };
-Point.prototype.round = function(precision = 1.0) {
-  this.x = Math.round(this.x / precision) * precision;
-  this.y = Math.round(this.y / precision) * precision;
+Point.prototype.round = function(precision = 0.001) {
+  const prec = -Math.ceil(Math.log10(precision));
+  this.x = +this.x.toFixed(prec);
+  this.y = +this.y.toFixed(prec);
   return this;
 };
 Point.prototype.sides = function() {
@@ -149,10 +150,10 @@ Point.prototype.angle = function(other) {
 Point.prototype.dimension = function() {
   return [this.width, this.height];
 };
-Point.prototype.toString = function() {
-  let x = "" + this.x;
-  let y = "" + this.y;
-
+Point.prototype.toString = function(precision = 0.001) {
+  const prec = -Math.ceil(Math.log10(precision));
+  const x = this.x.toFixed(prec);
+  const y = this.y.toFixed(prec);
   return `${x},${y}`;
 };
 
@@ -167,8 +168,10 @@ Point.prototype.toSource = function(asArray = false) {
 Point.prototype.toSource = function() {
   return "{x:" + this.x.toFixed(3) + ",y:" + this.y.toFixed(3) + "}";
 };
-Point.prototype.toCSS = function() {
-  return { left: this.x + "px", top: this.y + "px" };
+Point.prototype.toCSS = function(precision = 0.001) {
+  const prec = -Math.ceil(Math.log10(precision));
+
+  return { left: this.x.toFixed(prec) + "px", top: this.y.toFixed(prec) + "px" };
 };
 Point.prototype.inside = function(rect) {
   return this.x >= rect.x && this.x < rect.x + rect.width && this.y >= rect.y && this.y < rect.y + rect.height;
@@ -197,7 +200,7 @@ Point.prod = (a, b) => Point.prototype.prod.call(a, b);
 Point.quot = (a, b) => Point.prototype.quot.call(a, b);
 Point.equal = (a, b) => Point.prototype.equal.call(a, b);
 Point.round = (a, b) => Point.prototype.round.call(a, b);
-Point.fromAngle = (angle, f) => Point.prototype.fromAngle.call(new Point(0,0), angle, f);
+Point.fromAngle = (angle, f) => Point.prototype.fromAngle.call(new Point(0, 0), angle, f);
 
 for(let name of ["clone", "comp", "neg", "sides", "dimension", "toString", "toSource", "toCSS"]) {
   Point[name] = points => Point.prototype[name].call(points);
@@ -206,6 +209,5 @@ for(let name of ["clone", "comp", "neg", "sides", "dimension", "toString", "toSo
 export const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)));
 
 Point.isPoint = isPoint;
-
 
 export default Point;

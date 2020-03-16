@@ -12,15 +12,6 @@ var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers
 
 var _rgba = require("./rgba.es5.js");
 
-/**
- * @brief [brief description]
- * @param h  hue value 0-360
- * @param s  saturation 0-100%
- * @param l  luminance 0-100%
- * @param a  alpha 0-1.0
- *
- * @return [description]
- */
 function HSLA() {
   var h = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
   var s = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
@@ -29,7 +20,6 @@ function HSLA() {
   var args = Array.prototype.slice.call(arguments);
   var c = [];
   var ret = this instanceof HSLA ? this : {};
-  /*  if(!this) return Object.assign({}, HSLA.prototype, { h, s, l, a });*/
 
   if (args.length >= 3) {
     ret.h = Math.round(h);
@@ -51,13 +41,12 @@ function HSLA() {
     ["h", "s", "l", "a"].forEach(function (channel) {
       if (String(ret[channel]).endsWith("%")) ret[channel] = parseFloat(ret[channel].slice(0, ret[channel].length - 1));else ret[channel] = parseFloat(ret[channel]);
     });
-  } //console.log('HSLA ', { c, ret, args });
-
+  }
 
   if (!(ret instanceof HSLA)) return ret;
 }
 
-HSLA.prototype.properties = ["h", "s", "l", "a"]; //export const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(prop));
+HSLA.prototype.properties = ["h", "s", "l", "a"];
 
 HSLA.prototype.css = function () {
   var hsla = HSLA.clamp(HSLA.round(this));

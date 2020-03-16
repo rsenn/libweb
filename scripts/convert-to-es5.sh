@@ -57,7 +57,7 @@ convert_to_es5() {
 
       
 
-    [ "$FORCE" = true -o "$OUT" -ot "$IN" ] && (set -x; babel -o "$OUT" "$IN" )
+    [ "$FORCE" = true -o "$OUT" -ot "$IN" ] && (set -x; babel --compact true --no-comments -o "$OUT" "$IN" )
 
     REQUIRES=$( sed '/require(/ { s,.*require(\([^)]*\)).*,\1, ; s,^"\(.*\)"$,\1, ; p }' -n "$OUT" )
     SUBST=

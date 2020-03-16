@@ -40,12 +40,7 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2["default"])(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-/**
- * Class for element.
- *
- * @class      Element (name)
- */
-var Element = /*#__PURE__*/function (_Node) {
+var Element = function (_Node) {
   (0, _inherits2["default"])(Element, _Node);
 
   function Element() {
@@ -66,8 +61,7 @@ var Element = /*#__PURE__*/function (_Node) {
           children = _ref.children,
           props = (0, _objectWithoutProperties2["default"])(_ref, ["tagName", "ns", "children"]);
 
-      var parent = args.shift(); //console.log('Element.create ', { tagName, props, parent });
-
+      var parent = args.shift();
       var d = document || window.document;
       var e = ns ? d.createElementNS(ns, tagName) : d.createElement(tagName);
 
@@ -187,14 +181,6 @@ var Element = /*#__PURE__*/function (_Node) {
       parent = Element.find(parent);
       return _util["default"].array(parent && parent.querySelectorAll ? parent.querySelectorAll(arg) : document.querySelectorAll(arg));
     }
-    /**
-     * Sets or gets attributes
-     *
-     * @param      {<type>}  element       The element
-     * @param      {<type>}  [attrs=null]  The attributes
-     * @return     {<type>}  { description_of_the_return_value }
-     */
-
   }, {
     key: "attr",
     value: function attr(element, attrs_or_name) {
@@ -205,9 +191,6 @@ var Element = /*#__PURE__*/function (_Node) {
           var name = _util["default"].decamelize(key, "-");
 
           var value = attrs_or_name[key];
-          /*        console.log('attr(', e, ', ', { name, key, value, }, ')')
-           */
-
           if (key.startsWith("on") && !/svg/.test(e.namespaceURI)) e[key] = value;else if (e.setAttribute) e.setAttribute(name, value);else e[key] = value;
         }
 
@@ -224,9 +207,7 @@ var Element = /*#__PURE__*/function (_Node) {
       }
 
       var ret = attrs_or_name.reduce(function (acc, name) {
-        var key =
-        /*Util.camelize*/
-        name;
+        var key = name;
         var value = e && e.getAttribute ? e.getAttribute(name) : e[key];
         acc[key] = isNaN(parseFloat(value)) ? value : parseFloat(value);
         return acc;
@@ -249,8 +230,7 @@ var Element = /*#__PURE__*/function (_Node) {
         e = e.offsetParent || e.parentNode;
       }
 
-      var bbrect = elem.getBoundingClientRect(); //console.log('getRect: ', { bbrect });
-
+      var bbrect = elem.getBoundingClientRect();
       return {
         x: bbrect.left + window.scrollX,
         y: bbrect.top + window.scrollY,
@@ -258,14 +238,6 @@ var Element = /*#__PURE__*/function (_Node) {
         height: bbrect.bottom - bbrect.top
       };
     }
-    /**
-     * Gets the rectangle.
-     *
-     * @param      {<type>}  e
-     * lement  The element
-     * @return     {Object}  The rectangle.
-     */
-
   }, {
     key: "rect",
     value: function rect(elem) {
@@ -289,20 +261,16 @@ var Element = /*#__PURE__*/function (_Node) {
 
       var r = _trbl.TRBL.toRect(bb);
 
-      if (relative_to && relative_to !== null
-      /*&& Element.isElement(relative_to)*/
-      ) {
+      if (relative_to && relative_to !== null) {
           var off = Element.rect(relative_to);
           r.x -= off.x;
           r.y -= off.y;
-        } // console.log("Element.rect(", r, ")");
-
+        }
 
       if (options.border) {
         var border = Element.border(e);
 
-        _rect.Rect.outset(r, border); // console.log("Element.rect(", r, ") // with border = ", border);
-
+        _rect.Rect.outset(r, border);
       }
 
       var _window = window,
@@ -313,29 +281,24 @@ var Element = /*#__PURE__*/function (_Node) {
         r.y += scrollY;
       }
 
-      r = new _rect.Rect(round ? _rect.Rect.round(r) : r); //console.log('Element.rect(', element, ') =', r);
-
+      r = new _rect.Rect(round ? _rect.Rect.round(r) : r);
       return r;
     }
   }, {
     key: "setRect",
     value: function setRect(element, rect) {
       var anchor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : Anchor.LEFT | Anchor.TOP;
-      var e = typeof element === "string" ? Element.find(element) : element; //console.log('Element.setRect(', element, ',', rect, ', ', anchor, ') ');
-
+      var e = typeof element === "string" ? Element.find(element) : element;
       if (typeof anchor == "string") e.style.position = anchor;
       var position = e.style.position || rect.position || "relative";
       var pelement = position == "fixed" ? e.documentElement || document.body : e.parentNode;
       var prect = Element.rect(pelement, {
         round: false
-      }); //Rect.align(rect, prect, anchor);
-
-      /* const stack = Util.getCallers(3, 4);*/
+      });
 
       var ptrbl = _rect.Rect.toTRBL(prect);
 
-      var trbl = _rect.Rect.toTRBL(rect); //console.log('Element.setRect ', { trbl, ptrbl, stack });
-
+      var trbl = _rect.Rect.toTRBL(rect);
 
       var css = {};
       var remove;
@@ -369,8 +332,7 @@ var Element = /*#__PURE__*/function (_Node) {
       if (e.style.removeProperty) e.style.removeProperty(remove);else e.style[remove] = undefined;
       css.position = position;
       css.width = Math.round(isNaN(rect.width) ? rect.width : prect.width) + "px";
-      css.height = Math.round(isNaN(rect.height) ? rect.height : prect.height) + "px"; //console.log('Element.setRect ', css);
-
+      css.height = Math.round(isNaN(rect.height) ? rect.height : prect.height) + "px";
       Element.setCSS(e, css);
       return e;
     }
@@ -407,13 +369,12 @@ var Element = /*#__PURE__*/function (_Node) {
         y: y
       };
       var position = pos || Element.getCSS(element, "position") || "relative";
-      var off; //console.log('Element.move ', { element, to, position });
+      var off;
 
       var getValue = function getValue(prop) {
         var property = dom.Element.getCSS(element, prop);
         if (property === undefined) return undefined;
-        var matches = /([-0-9.]+)(.*)/.exec(property) || []; //console.log({ match, value, unit });
-
+        var matches = /([-0-9.]+)(.*)/.exec(property) || [];
         return parseFloat(matches[1]);
       };
 
@@ -423,18 +384,9 @@ var Element = /*#__PURE__*/function (_Node) {
       });
       off = new Point(Element.rect(element, {
         round: false
-      })); //   off = Point.diff(off, current);
-
+      }));
       Point.add(current, Point.diff(to, off));
-      /*
-      if(position == 'relative') {
-        to.x -= off.x;
-        to.y -= off.y;
-      }*/
-
-      var css = Point.toCSS(current); //console.log("Element.move: ", { position, to, css, off, current });
-      //console.log('move newpos: ', Point.toCSS(pt));
-
+      var css = Point.toCSS(current);
       Element.setCSS(element, _objectSpread({}, css, {
         position: position
       }));
@@ -446,8 +398,7 @@ var Element = /*#__PURE__*/function (_Node) {
       var args = Array.prototype.slice.call(arguments);
       var e = Element.find(args.shift());
       var size = new Size(args);
-      var css = Size.toCSS(size); //console.log("Element.resize: ", { e, size, css });
-
+      var css = Size.toCSS(size);
       Element.setCSS(e, css);
       return e;
     }
@@ -553,15 +504,14 @@ var Element = /*#__PURE__*/function (_Node) {
       var attrs = ["Top", "Right", "Bottom", "Left"].reduce(function (acc, pos) {
         var name = prefix + (prefix == "" ? pos.toLowerCase() : pos);
         return _objectSpread({}, acc, (0, _defineProperty2["default"])({}, name, trbl[pos.toLowerCase()]));
-      }, {}); //console.log('Element.setTRBL ', attrs);
-
+      }, {});
       return Element.setCSS(element, attrs);
     }
   }, {
     key: "setCSS",
     value: function setCSS(element, prop, value) {
       if (typeof element == "string") element = Element.find(element);
-      if (typeof prop == "string" && typeof value == "string") prop = (0, _defineProperty2["default"])({}, prop, value); //console.log('Element.setCSS ', { element, toCSS });
+      if (typeof prop == "string" && typeof value == "string") prop = (0, _defineProperty2["default"])({}, prop, value);
 
       var _loop = function _loop(key) {
         var value = prop[key];
@@ -596,20 +546,18 @@ var Element = /*#__PURE__*/function (_Node) {
       var receiver = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
       element = typeof element === "string" ? Element.find(element) : element;
       var w = window !== undefined ? window : global.window;
-      var d = document !== undefined ? document : global.document; //console.log('Element.getCSS ', { w, d, element });
-
+      var d = document !== undefined ? document : global.document;
       var parent = element.parentElement ? element.parentElement : element.parentNode;
 
       var estyle = _util["default"].toHash(w && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element));
 
-      var pstyle = parent && parent.tagName ? _util["default"].toHash(w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {}; //console.log('Element.getCSS ', { estyle, pstyle });
+      var pstyle = parent && parent.tagName ? _util["default"].toHash(w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {};
 
       var style = _util["default"].removeEqual(estyle, pstyle);
 
       var keys = Object.keys(style).filter(function (k) {
         return !/^__/.test(k);
-      }); //console.log('style: ', style);
-
+      });
       var ret = {};
 
       if (receiver == null) {
@@ -657,7 +605,7 @@ var Element = /*#__PURE__*/function (_Node) {
     key: "xpath",
     value: function xpath(elt) {
       var relative_to = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-      var path = ""; //console.log('relative_to: ', relative_to);
+      var path = "";
 
       for (; elt && elt.nodeType == 1; elt = elt.parentNode) {
         var xname = Element.unique(elt);
@@ -789,7 +737,7 @@ var Element = /*#__PURE__*/function (_Node) {
           use_id = _opts$use_id2 === void 0 ? true : _opts$use_id2;
       var name = elem.tagName.toLowerCase();
       if (use_id && elem.id && elem.id.length) return name + "#" + elem.id;
-      var classNames = (0, _toConsumableArray2["default"])(elem.classList); //String(elem.className).split(new RegExp("/[ \t]/"));
+      var classNames = (0, _toConsumableArray2["default"])(elem.classList);
 
       for (var i = 0; i < classNames.length; i++) {
         var res = document.getElementsByClassName(classNames[i]);
@@ -842,14 +790,13 @@ var Element = /*#__PURE__*/function (_Node) {
 
       if (!delegate.setattr) {
         delegate.setattr = function (elem, attr, value) {
-          //console.log('setattr ', { attr, value });
           elem.setAttribute(attr, value);
         };
       }
 
       if (!delegate.setcss) delegate.setcss = function (elem, css) {
         return Object.assign(elem.style, css);
-      }; // Element.setCSS(elem, css);
+      };
 
       delegate.bound_factory = function (tag) {
         var attr = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -881,21 +828,12 @@ var Element = /*#__PURE__*/function (_Node) {
         for (var k in props) {
           delegate.setattr(elem, k, props[k]);
         }
-        /*console.log("bound_factory: ", { _this: this, tag, style, children, parent, props, to, append_to: this.append_to });*/
-
 
         if (delegate.append_to) delegate.append_to(elem, parent);
         return elem;
       };
-      /*  console.log("delegate: ", delegate);*/
 
-      /*    let proxy = function() {
-        let obj = this && this.create ? this : delegate;
-        return obj.bound_factory.apply(obj, arguments);
-      };*/
-
-
-      return delegate.bound_factory; //.bind(delegate);
+      return delegate.bound_factory;
     }
   }, {
     key: "remove",
@@ -973,12 +911,10 @@ var Element = /*#__PURE__*/function (_Node) {
         ctx.to[name] = css[prop];
       }
 
-      var tlist = a.join(", "); //console.log("Element.transition", ctx);
-
+      var tlist = a.join(", ");
       return new Promise(function (resolve, reject) {
         var tend = function tend(e) {
-          this.event = e; //console.log("Element.transitionEnd event", this);
-
+          this.event = e;
           this.e.removeEventListener("transitionend", this.fn);
           this.e.style.setProperty("transition", "");
           delete this.fn;
@@ -996,7 +932,7 @@ var Element = /*#__PURE__*/function (_Node) {
 }(_node.Node);
 
 exports.Element = Element;
-Element.children = /*#__PURE__*/_regenerator["default"].mark(function _callee(elem) {
+Element.children = _regenerator["default"].mark(function _callee(elem) {
   var tfn,
       e,
       _args = arguments;
@@ -1031,7 +967,7 @@ Element.children = /*#__PURE__*/_regenerator["default"].mark(function _callee(el
     }
   }, _callee);
 });
-Element.recurse = /*#__PURE__*/_regenerator["default"].mark(function _callee2(elem) {
+Element.recurse = _regenerator["default"].mark(function _callee2(elem) {
   var tfn,
       root,
       _args2 = arguments;

@@ -5,10 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Tree = Tree;
 
-/**
- * DOM Tree
- * @param {[type]} root [description]
- */
 function Tree(root) {
   if (this instanceof Tree) {
     root = Object.assign(this, root, {

@@ -32,7 +32,7 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2["default"])(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-var ReactComponent = /*#__PURE__*/function () {
+var ReactComponent = function () {
   function ReactComponent() {
     (0, _classCallCheck2["default"])(this, ReactComponent);
   }
@@ -126,10 +126,6 @@ var ReactComponent = /*#__PURE__*/function () {
         var arr = _react["default"].Children.toArray(children);
 
         var numChildren = _react["default"].Children.count(children);
-        /*    if(obj.tagName == 'React.Fragment' && numChildren == 1) {
-        obj =  ReactComponent.toObject(arr[0]);
-        } else*/
-
 
         if (numChildren > 0) {
           obj.children = ReactComponent.toObject.apply(ReactComponent, (0, _toConsumableArray2["default"])(arr));

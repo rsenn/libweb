@@ -17,10 +17,7 @@ var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits
 
 var _element = require("./element.es5.js");
 
-/**
- *
- */
-var Layer = /*#__PURE__*/function (_Element) {
+var Layer = function (_Element) {
   (0, _inherits2["default"])(Layer, _Element);
 
   function Layer(arg, attr) {
@@ -37,7 +34,7 @@ var Layer = /*#__PURE__*/function (_Element) {
 
 exports.Layer = Layer;
 
-var Renderer = /*#__PURE__*/function () {
+var Renderer = function () {
   function Renderer(component, root_node) {
     (0, _classCallCheck2["default"])(this, Renderer);
     this.component = component;
@@ -51,8 +48,7 @@ var Renderer = /*#__PURE__*/function () {
       ReactDOM.render(this.component, this.root_node);
       var e = this.element = this.root_node.firstChild;
 
-      var xpath = _element.Element.xpath(e); //console.log('Renderer.refresh ', { xpath, e });
-
+      var xpath = _element.Element.xpath(e);
 
       return e;
     }

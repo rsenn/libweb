@@ -53,19 +53,13 @@ ElementRectProxy.prototype = {
     }
 
     _element.Element.rect(this.element, rect);
-    /*    rect = new Rect(rect);
-    Element.setCSS(this.element, { ...rect.toCSS(rect), position: 'absolute' });
-    */
-
   }
 };
 
 var propSetter = function propSetter(prop, proxy) {
   return function (value) {
-    //proxy.changeRect(rect => { rect[prop] = value; return rect; })
     var r = proxy.getRect();
-    r[prop] = value; //console.log('New rect: ', r);
-
+    r[prop] = value;
     proxy.setRect(r);
   };
 };
@@ -205,9 +199,6 @@ var ElementSizeProps = function ElementSizeProps(element, proxy) {
 
 exports.ElementSizeProps = ElementSizeProps;
 
-var ElementRectProps = function ElementRectProps(element, proxy) {
-  /*Util.defineGetterSetter(element, 'w', () => proxy.getRect().width, propSetter('width', proxy)); Util.defineGetterSetter(element, 'width', () => proxy.getRect().width, propSetter('width', proxy));
-    Util.defineGetterSetter(element, 'h', () => proxy.getRect().height, propSetter('height', proxy)); Util.defineGetterSetter(element, 'height', () => proxy.getRect().height, propSetter('height', proxy) });*/
-};
+var ElementRectProps = function ElementRectProps(element, proxy) {};
 
 exports.ElementRectProps = ElementRectProps;

@@ -15,7 +15,7 @@ var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/creat
 
 var _util = _interopRequireDefault(require("../util.es5.js"));
 
-var CSS = /*#__PURE__*/function () {
+var CSS = function () {
   function CSS() {
     (0, _classCallCheck2["default"])(this, CSS);
   }

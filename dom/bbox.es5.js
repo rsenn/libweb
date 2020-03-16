@@ -11,7 +11,7 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var BBox = /*#__PURE__*/function () {
+var BBox = function () {
   (0, _createClass2["default"])(BBox, null, [{
     key: "fromPoints",
     value: function fromPoints(pts) {
@@ -92,8 +92,7 @@ var BBox = /*#__PURE__*/function () {
       if (this.y2 < y + offset) {
         this.y2 = y + offset;
         updated.y2 = true;
-      } // if(Object.keys(updated)) console.log(`BBox update ${x},${y} `, updated);
-
+      }
     }
   }, {
     key: "relative_to",

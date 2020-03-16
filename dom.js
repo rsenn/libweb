@@ -1,4 +1,4 @@
-import ReactDOM from "react-dom";
+//import ReactDOM from "react-dom";
 import { SvgPath } from "./svg-path.js";
 import Util from "./util.js";
 import { Point, isPoint } from "./dom/point.js";

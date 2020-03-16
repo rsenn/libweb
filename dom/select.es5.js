@@ -26,7 +26,7 @@ var _react = _interopRequireDefault(require("react"));
 var _jsxFileName = "/home/roman/the-wild-beauty-company/lib/dom/select.js";
 var __jsx = _react["default"].createElement;
 
-var Select = /*#__PURE__*/function (_React$Component) {
+var Select = function (_React$Component) {
   (0, _inherits2["default"])(Select, _React$Component);
 
   function Select(props) {
@@ -39,12 +39,11 @@ var Select = /*#__PURE__*/function (_React$Component) {
     value: function render() {
       var _this$props = this.props,
           options = _this$props.options,
-          props = (0, _objectWithoutProperties2["default"])(_this$props, ["options"]); //console.log('Select.render ', { options, props });
+          props = (0, _objectWithoutProperties2["default"])(_this$props, ["options"]);
 
       var Option = function Option(_ref) {
         var children = _ref.children,
             props = (0, _objectWithoutProperties2["default"])(_ref, ["children"]);
-        //console.log('Select.render Option ', { children, props });
         return __jsx("option", (0, _extends2["default"])({}, props, {
           __source: {
             fileName: _jsxFileName,
@@ -52,12 +51,7 @@ var Select = /*#__PURE__*/function (_React$Component) {
           },
           __self: this
         }), children);
-      }; //return <select {...props}>{
-      //Object.keys(options).map(key =>
-      //<Option value={key}>{options[key]}</Option>
-      //)
-      //}</select>
-
+      };
     }
   }]);
   return Select;

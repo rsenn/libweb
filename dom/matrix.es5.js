@@ -50,17 +50,12 @@ function Matrix(arg) {
       ret[4] = arg.yy;
       ret[5] = arg.y0;
     } else if (arg.a !== undefined && arg.b !== undefined && arg.c !== undefined && arg.d !== undefined && arg.e !== undefined && arg.f !== undefined) {
-      ret[0] = arg.a; // xx
-
-      ret[3] = arg.b; // yx
-
-      ret[1] = arg.c; // xy
-
-      ret[4] = arg.d; // yy
-
-      ret[2] = arg.e; // x0
-
-      ret[5] = arg.f; // y0
+      ret[0] = arg.a;
+      ret[3] = arg.b;
+      ret[1] = arg.c;
+      ret[4] = arg.d;
+      ret[2] = arg.e;
+      ret[5] = arg.f;
     }
   } else {
     ret[0] = 1;
@@ -112,8 +107,7 @@ var MatrixProps = Object.keys(Matrix.prototype.keyIndex).reduce(function (acc, k
     },
     enumerable: true
   }));
-}, {}); // prettier-ignore
-
+}, {});
 exports.MatrixProps = MatrixProps;
 Object.defineProperties(Matrix.prototype, {
   xx: {
@@ -420,7 +414,6 @@ Matrix.prototype.decompose = function () {
       };
       skew.x = Math.atan(d / b);
     } else {
-      // a = b = 0
       scale = {
         x: c,
         y: d
@@ -428,7 +421,6 @@ Matrix.prototype.decompose = function () {
       skew.x = Math.PI * 0.25;
     }
   } else {
-    // Apply the QR-like decomposition.
     if (a || b) {
       r = Math.sqrt(a * a + b * b);
       rotation = b > 0 ? Math.acos(a / r) : -Math.acos(a / r);
@@ -446,7 +438,6 @@ Matrix.prototype.decompose = function () {
       };
       skew.y = Math.atan((a * c + b * d) / (s * s));
     } else {
-      // a = b = c = d = 0
       scale = {
         x: 0,
         y: 0

@@ -19,7 +19,7 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2["default"])(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-var Node = /*#__PURE__*/function () {
+var Node = function () {
   function Node() {
     (0, _classCallCheck2["default"])(this, Node);
   }
@@ -27,37 +27,36 @@ var Node = /*#__PURE__*/function () {
   (0, _createClass2["default"])(Node, null, [{
     key: "parents",
     value: function parents(node) {
-      return (/*#__PURE__*/_regenerator["default"].mark(function _callee() {
-          var n;
-          return _regenerator["default"].wrap(function _callee$(_context) {
-            while (1) {
-              switch (_context.prev = _context.next) {
-                case 0:
-                  n = node;
+      return _regenerator["default"].mark(function _callee() {
+        var n;
+        return _regenerator["default"].wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                n = node;
 
-                case 1:
-                  if (!n) {
-                    _context.next = 4;
-                    break;
-                  }
-
+              case 1:
+                if (!n) {
                   _context.next = 4;
-                  return n;
+                  break;
+                }
 
-                case 4:
-                  if (n && (n = n.parentNode)) {
-                    _context.next = 1;
-                    break;
-                  }
+                _context.next = 4;
+                return n;
 
-                case 5:
-                case "end":
-                  return _context.stop();
-              }
+              case 4:
+                if (n && (n = n.parentNode)) {
+                  _context.next = 1;
+                  break;
+                }
+
+              case 5:
+              case "end":
+                return _context.stop();
             }
-          }, _callee);
-        })()
-      );
+          }
+        }, _callee);
+      })();
     }
   }, {
     key: "depth",

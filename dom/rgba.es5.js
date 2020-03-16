@@ -16,15 +16,6 @@ var _hsla = require("./hsla.es5.js");
 
 var _this = void 0;
 
-/**
- * @brief [brief description]
- * @param r  red value 0-255
- * @param g  green value 0-255
- * @param b  blue value 0-255
- * @param a  alpha value 0-1
- *
- * @return [description]
- */
 function RGBA() {
   var r = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
   var g = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
@@ -32,7 +23,7 @@ function RGBA() {
   var a = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 255;
   var args = Array.prototype.slice.call(arguments);
   var ret = this instanceof RGBA ? this : {};
-  var c = []; //console.log('RGBA(', args, ')');
+  var c = [];
 
   if (args.length >= 3) {
     ret.r = r;
@@ -45,8 +36,7 @@ function RGBA() {
     if (typeof arg === "string") {
       if (arg.startsWith("#")) {
         c = arg.length >= 7 ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(arg) : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(arg);
-        var mul = arg.length >= 7 ? 1 : 17; //console.log('RGBA match:', c, ' mul:', mul);
-
+        var mul = arg.length >= 7 ? 1 : 17;
         ret.r = parseInt(c[1], 16) * mul;
         ret.g = parseInt(c[2], 16) * mul;
         ret.b = parseInt(c[3], 16) * mul;
@@ -69,9 +59,8 @@ function RGBA() {
     }
   }
 
-  if (isNaN(ret.a)) ret.a = 255; //console.log('RGBA ', {c, ret, args});
-
-  if (!(ret instanceof RGBA)) return ret; //Object.setPrototypeOf(ret, RGBA.prototype);
+  if (isNaN(ret.a)) ret.a = 255;
+  if (!(ret instanceof RGBA)) return ret;
 }
 
 RGBA.properties = ["r", "g", "b", "a"];
@@ -97,8 +86,7 @@ RGBA.fromHex = function (hex) {
       r = _slice$map2[0],
       g = _slice$map2[1],
       b = _slice$map2[2],
-      a = _slice$map2[3]; //console.log('RGBA.fromHex', { hex, matches, r, g, b, a });
-
+      a = _slice$map2[3];
 
   return new RGBA(r, g, b, matches.length > 3 && !isNaN(a) ? a : alpha);
 };
@@ -208,8 +196,7 @@ RGBA.prototype.toAlpha = function (color) {
     src.a *= alpha.a;
   }
 
-  var dst = RGBA.normalize(src, 1.0, 255); //console.log({ src, dst });
-
+  var dst = RGBA.normalize(src, 1.0, 255);
   RGBA.round(dst);
   return new RGBA(dst.r, dst.g, dst.b, dst.a);
 };
@@ -230,7 +217,7 @@ RGBA.prototype.toHSLA = function () {
   var l = (max + min) / 2;
 
   if (max == min) {
-    h = s = 0; // achromatic
+    h = s = 0;
   } else {
     var d = max - min;
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
@@ -254,8 +241,7 @@ RGBA.prototype.toHSLA = function () {
 
   h *= 360;
   s *= 100;
-  l *= 100; //console.log("RGBA.toHSLA ", { h, s, l, a });
-
+  l *= 100;
   return new _hsla.HSLA(h, s, l, a);
 };
 

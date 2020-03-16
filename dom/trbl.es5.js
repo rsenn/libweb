@@ -13,11 +13,6 @@ var _rect = require("./rect.es5.js");
 
 var _this = void 0;
 
-/**
- * Type for TopRightBottomLeft (paddings and margins)
- *
- * @param {string,object,array} arg [description]
- */
 function TRBL(arg) {
   var ret = this instanceof TRBL ? this : {};
   var args = Array.prototype.slice.call(arguments);
@@ -42,11 +37,6 @@ function TRBL(arg) {
   if (isNaN(ret.right)) ret.right = 0;
   if (isNaN(ret.bottom)) ret.bottom = 0;
   if (isNaN(ret.left)) ret.left = 0;
-  /*   ['toString','toSource'].forEach((name) =>
-    Object.defineProperty(ret, name, { enumerable: true, value: TRBL.prototype[name] })
-  ); */
-  //console.log('ret: ', ret);
-
   if (!this || this === TRBL) return Object.assign(ret, TRBL.prototype);
 }
 
@@ -90,9 +80,6 @@ Object.defineProperty(TRBL.prototype, "outset", {
     };
   }
 });
-/*TRBL.prototype.outset = function() {
-  return this.inset.call(TRBL.neg(this));
-};*/
 
 TRBL.prototype.add = function (other) {
   this.top += other.top;

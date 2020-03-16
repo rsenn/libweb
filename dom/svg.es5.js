@@ -7,6 +7,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.SVG = void 0;
 
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
 var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
@@ -25,6 +27,8 @@ var _element = require("./element.es5.js");
 
 var _size2 = require("./size.es5.js");
 
+var _point = require("./point.es5.js");
+
 var _rect = require("./rect.es5.js");
 
 var _util = _interopRequireDefault(require("../util.es5.js"));
@@ -33,7 +37,7 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2["default"])(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-var SVG = /*#__PURE__*/function (_Element) {
+var SVG = function (_Element) {
   (0, _inherits2["default"])(SVG, _Element);
 
   function SVG() {
@@ -106,7 +110,7 @@ var SVG = /*#__PURE__*/function (_Element) {
           root = root.querySelector("defs");
         }
 
-        if (typeof root.append == "function") root.append(elem);else root.appendChild(elem); //console.log('append_to ', elem, ', root=', root);
+        if (typeof root.append == "function") root.append(elem);else root.appendChild(elem);
       };
 
       return _element.Element.factory(delegate);
@@ -168,12 +172,10 @@ var SVG = /*#__PURE__*/function (_Element) {
           x2: rect.x2,
           y2: rect.y2
         };
-      } //    const { x1, y1, x2, y2 } = line;
-
+      }
 
       var grad = factory(type + "-gradient", _objectSpread({}, props, {}, rect), defs);
       map.forEach(function (color, o) {
-        //console.log('color:' + color + ' o:' + o);
         factory("stop", {
           offset: Math.round(o * 100) + "%",
           stopColor: color
@@ -202,6 +204,50 @@ var SVG = /*#__PURE__*/function (_Element) {
     value: function path() {
       return new SvgPath();
     }
+  }, {
+    key: "path_iterator",
+    value: _regenerator["default"].mark(function path_iterator(path) {
+      var numPoints,
+          tr,
+          len,
+          i,
+          pos,
+          point,
+          _args = arguments;
+      return _regenerator["default"].wrap(function path_iterator$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              numPoints = _args.length > 1 && _args[1] !== undefined ? _args[1] : 100;
+              tr = _args.length > 2 && _args[2] !== undefined ? _args[2] : function (p) {
+                return new _point.Point(p);
+              };
+              len = e.getTotalLength();
+              i = 0;
+
+            case 4:
+              if (!(i < numPoints)) {
+                _context.next = 12;
+                break;
+              }
+
+              pos = i * len / numPoints;
+              point = e.getPointAtLength(pos);
+              _context.next = 9;
+              return tr(point);
+
+            case 9:
+              i++;
+              _context.next = 4;
+              break;
+
+            case 12:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, path_iterator);
+    })
   }]);
   return SVG;
 }(_element.Element);

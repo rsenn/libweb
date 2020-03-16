@@ -96,18 +96,15 @@ Timer.debug = function () {
 
 Timer.promise = function (timeout) {
   var impl = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Timer.std;
-  return (
-    /*Timer.debug(Timer.std)*/
-    new Promise(function (resolve, reject) {
-      return Timer(timeout, resolve, {}, {
-        create: function create(fn, timeout) {
-          return impl.create(fn, timeout);
-        },
-        destroy: function destroy(id) {
-          impl.destroy(id);
-          reject();
-        }
-      });
-    })
-  );
+  return new Promise(function (resolve, reject) {
+    return Timer(timeout, resolve, {}, {
+      create: function create(fn, timeout) {
+        return impl.create(fn, timeout);
+      },
+      destroy: function destroy(id) {
+        impl.destroy(id);
+        reject();
+      }
+    });
+  });
 };

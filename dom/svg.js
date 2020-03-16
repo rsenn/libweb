@@ -1,5 +1,6 @@
 import { Element } from "./element.js";
 import { Size } from "./size.js";
+import { Point } from "./point.js";
 import { Rect } from "./rect.js";
 import Util from "../util.js";
 
@@ -118,6 +119,17 @@ export class SVG extends Element {
 
   static path() {
     return new SvgPath();
+  }
+
+  static *path_iterator(path, numPoints = 100, tr = p => new Point(p)) {
+    const len = e.getTotalLength();
+
+    for(let i = 0; i < numPoints; i++) {
+      const pos = (i * len) / numPoints;
+      const point = e.getPointAtLength(pos);
+
+      yield tr(point);
+    }
   }
 }
 SVG.ns = "http://www.w3.org/2000/svg";
