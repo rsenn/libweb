@@ -1,5 +1,5 @@
-const Util = require("./util.es5.js");
-const dom = require("./dom.es5.js");
+import Util from "./util.es5.js";
+import dom from "./dom.es5.js";
 const { Point, Line, Rect, BBox } = dom;
 
 class Node {
@@ -47,11 +47,6 @@ class Node {
 Node.prototype[Symbol.iterator] = Node.prototype.iter;
 
 class Circle {
-  x = 0;
-  y = 0;
-  radius = "";
-  width = 0;
-  layer = -1;
 
   constructor(x, y, radius, width, layer) {
     this.x = x;
@@ -67,11 +62,8 @@ class Circle {
 }
 
 class Polygon {
-  width = 0;
-  layer = -1;
-  isolate = "";
 
-  constructor(width, layer, isolate) {
+  constructor(width = 0, layer = -1, isolate = '') {
     this.width = width;
     this.layer = layer;
     this.isolate = isolate;
@@ -83,23 +75,20 @@ class Polygon {
 }
 
 class Vertex {
-  x = 0;
-  y = 0;
-
-  constructor(x, y) {
+  constructor(x = 0, y = 0) {
     this.x = x;
     this.y = y;
   }
 }
 
 class Via {
-  x = 0;
+  /*x = 0;
   y = 0;
   extent = "";
   drill = "";
-  shape = "";
+  shape = "";*/
 
-  constructor(x, y, extent, drill, shape, signal) {
+  constructor(x = 0, y = 0, extent = '', drill = '', shape = '', signal = '') {
     this.x = x;
     this.y = y;
     this.extent = extent;
@@ -110,13 +99,13 @@ class Via {
 }
 
 class Rectangle {
-  x1 = 0;
+  /*x1 = 0;
   y1 = 0;
   x2 = 0;
   y2 = 0;
-  layer = -1;
+  layer = -1;*/
 
-  constructor(x1, y1, x2, y2, layer) {
+  constructor(x1, y1, x2, y2, layer = -1) {
     this.x1 = x1;
     this.y1 = y1;
     this.x2 = x2;
@@ -130,9 +119,9 @@ class Rectangle {
 }
 
 class Library extends Node {
-  name = "";
+  /*name = "";*/
 
-  constructor(name) {
+  constructor(name = '') {
     super();
     this.name = name;
   }
@@ -143,15 +132,15 @@ class Library extends Node {
 }
 
 class Element extends Node {
-  name = "";
+  /*name = "";
   library = "";
   package = "";
   value = "";
   rot = "";
   x = 0;
-  y = 0;
+  y = 0;*/
 
-  constructor(name, library, pkg, value, x, y) {
+  constructor(name = '', library = '', pkg = '', value = '', x = 0, y = 0) {
     super();
     this.name = name;
     this.library = library;
@@ -210,17 +199,17 @@ class Element extends Node {
 }
 
 class Description {
-  language = "";
+  /*language = "";*/
 
-  constructor(language) {
+  constructor(language = '') {
     this.language = language;
   }
 }
 
 class Package extends Node {
-  name = "";
+  /*name = "";*/
 
-  constructor(name) {
+  constructor(name = '') {
     super();
     this.name = name;
   }
@@ -255,9 +244,9 @@ class Package extends Node {
 }
 
 class Signal extends Node {
-  name = "";
+  /*name = "";*/
 
-  constructor(name) {
+  constructor(name = '') {
     super();
     this.name = name;
   }
@@ -294,15 +283,15 @@ class Signal extends Node {
 }
 
 class Pad {
-  name = "";
+  /*name = "";
   x = 0;
   y = 0;
   drill = "";
   // diameter = 0;
   // shape = "";
-  // rot = "";
+  // rot = "";*/
 
-  constructor(name, x, y, drill, diameter, shape, rot) {
+  constructor(name = '', x = 0, y = 0, drill = '', diameter = 0, shape = '', rot = '') {
     this.name = name;
     this.x = x;
     this.y = y;
@@ -318,10 +307,10 @@ class Pad {
 }
 
 class ContactRef {
-  element = "";
-  pad = "";
+  /*element = "";
+  pad = "";*/
 
-  constructor(element, pad, signal) {
+  constructor(element = '', pad = '', signal = '') {
     this.element = element;
     this.pad = pad;
     Signal.add(signal, this);
