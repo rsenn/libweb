@@ -380,9 +380,8 @@ Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index
   return adapter;
 };
 Util.adapter.localStorage = function(s) {
-  if(!s && global.window)
-    s = window.localStorage;
-  
+  if(!s && global.window) s = window.localStorage;
+
   return Util.adapter(
     s,
     l => l.length,
@@ -620,19 +619,20 @@ Util.lcfirst = function(str) {
  * @param {text} string Text to camelize
  * @return string Camelized text
  */
-Util.camelize = function(text, sep = "") {
-  return text.replace(/^([A-Z])|[\s-_]+(\w)/g, function(match, p1, p2, offset) {
+Util.camelize = (text, sep = "") =>
+  text.replace(/^([A-Z])|[\s-_]+(\w)/g, function(match, p1, p2, offset) {
     if(p2) return sep + p2.toUpperCase();
     return p1.toLowerCase();
   });
-};
-Util.decamelize = (str, separator = "-") =>
+
+Util.decamelize = function(str, separator = "-") {
   /[A-Z]/.test(str)
     ? str
         .replace(/([a-z\d])([A-Z])/g, `$1${separator}$2`)
         .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, `$1${separator}$2`)
         .toLowerCase()
     : str;
+};
 Util.isEmail = function(v) {
   return /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(v);
 };
