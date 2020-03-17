@@ -239,7 +239,7 @@ require("core-js/modules/es6.symbol");
 
 require("core-js/modules/web.dom.iterable");
 
-var _svgPath = require("./svg-path.es5.js");
+var _path = require("./svg/path.es5.js");
 
 var _util = _interopRequireDefault(require("./util.es5.js"));
 

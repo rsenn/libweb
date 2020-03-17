@@ -1,7 +1,6 @@
 import { rect } from "../lib/devtools.js";
 import { Point, Rect } from "../lib/dom.js";
 import Util from "../lib/util.js";
-
 import { trkl } from "./trkl.js";
 
 export class SwipeTracker {
@@ -222,8 +221,11 @@ export class SwipeTracker {
       inst
     );
   }
+
+  get events() {
+    return this.getEventHandlers();
+  }
 }
 
-Util.defineGetter(SwipeTracker.prototype, "events", SwipeTracker.prototype.getEventHandlers);
 
 export default SwipeTracker;

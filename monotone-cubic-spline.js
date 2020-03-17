@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * Convert a series of points to a monotone cubic spline
  * Algorithm based on https://github.com/mbostock/d3
@@ -8,15 +6,13 @@
  * @license MIT
  */
 
-const ε = 1e-6;
-
-module.exports = {
+export class CubicSpline {
   /**
    * Convert 'points' to bezier
    * @param {Array} points
    * @returns {Array}
    */
-  points(points) {
+  static points(points) {
     const tgts = tangents(points);
 
     const p = points[1];
@@ -37,7 +33,7 @@ module.exports = {
     }
 
     return pts;
-  },
+  }
 
   /**
    * Slice out a segment of 'points'
@@ -46,7 +42,7 @@ module.exports = {
    * @param {Number} end
    * @returns {Array}
    */
-  slice(points, start, end) {
+  static slice(points, start, end) {
     const pts = points.slice(start, end);
 
     if(start) {
@@ -61,18 +57,17 @@ module.exports = {
     }
 
     return pts;
-  },
+  }
 
   /**
    * Convert 'points' to svg path
    * @param {Array} points
    * @returns {String}
    */
-  svgPath(points) {
+  static svgPath(points) {
     let p = "";
 
-    for(let i = 0; i < points.length; i++) {
-      const point = points[i];
+    points.forEach((point, i) => {
       const n = point.length;
 
       if(!i) {
@@ -85,11 +80,13 @@ module.exports = {
         p += `S${point[0]}, ${point[1]}`;
         p += `, ${point[2]}, ${point[3]}`;
       }
-    }
+    });
 
     return p;
   }
-};
+}
+
+CubicSpline.ε = 1e-6;
 
 /**
  * Generate tangents for 'points'
@@ -106,7 +103,7 @@ function tangents(points) {
   for(let i = 0; i < n; i++) {
     d = slope(points[i], points[i + 1]);
 
-    if(Math.abs(d) < ε) {
+    if(Math.abs(d) < CubicSpline.ε) {
       m[i] = m[i + 1] = 0;
     } else {
       a = m[i] / d;
@@ -159,3 +156,5 @@ function finiteDifferences(points) {
 
   return m;
 }
+
+export default CubicSpline;
