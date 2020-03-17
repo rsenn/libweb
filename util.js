@@ -99,8 +99,12 @@ Util.log = (function() {
   };
 })();
 
-Util.logBase = (n, base) => { return Math.log(n) / Math.log(base); }
-Util.generalLog = (n, x) => { return Math.log(x) / Math.log(n); }
+Util.logBase = function(n, base) {
+  return Math.log(n) / Math.log(base);
+};
+Util.generalLog = function(n, x) {
+  return Math.log(x) / Math.log(n);
+};
 Util.toSource = function(arg) {
   if(typeof arg == "string") return "'" + arg + "'";
   if(arg && arg.x !== undefined && arg.y !== undefined) {
@@ -133,7 +137,9 @@ Util.debug = function(message) {
   //Util.log.apply(Util, args)
 };
 
-Util.type = obj => { return (obj.type && String(obj.type).split(/[ ()]/)[1]) || ""; }
+Util.type = function(obj) {
+  return (obj.type && String(obj.type).split(/[ ()]/)[1]) || "";
+};
 
 Util.functionName = function(fn) {
   const matches = /function\s*([^(]*)\(.*/g.exec(String(fn));
@@ -141,7 +147,9 @@ Util.functionName = function(fn) {
   return null;
 };
 
-Util.className = obj => { return Util.functionName(obj.constructor); }
+Util.className = function(obj) {
+  return Util.functionName(obj.constructor);
+};
 
 Util.unwrapComponent = function(c) {
   for(;;) {
@@ -162,14 +170,18 @@ Util.componentName = function(c) {
   return Util.fnName(c);
 };
 
-Util.count = (s, ch) => { return (String(s).match(new RegExp(ch, "g")) || Util.array()).length; }
+Util.count = function(s, ch) {
+  return (String(s).match(new RegExp(ch, "g")) || Util.array()).length;
+};
 
 Util.parseNum = function(str) {
   let num = parseFloat(str);
   if(isNaN(num)) num = 0;
   return num;
 };
-Util.minmax = (num, min, max) => { return Math.min(Math.max(num, min), max); }
+Util.minmax = function(num, min, max) {
+  return Math.min(Math.max(num, min), max);
+};
 Util.getExponential = function(num) {
   let str = typeof num == "string" ? num : num.toExponential();
   const matches = /e\+?(.*)$/.exec(str);
@@ -187,12 +199,20 @@ Util.getNumberParts = function(num) {
     exponent: parseInt(matches[3])
   };
 };
-Util.pow2 = n => { return Math.pow(2, n); }
-Util.pow10 = n => { return (n >= 0 ? Math.pow(10, n) : 1 / Math.pow(10, -n)); }
+Util.pow2 = function(n) {
+  return Math.pow(2, n);
+};
+Util.pow10 = function(n) {
+  return n >= 0 ? Math.pow(10, n) : 1 / Math.pow(10, -n);
+};
 
-Util.bitValue = n => { return Util.pow2(n - 1); }
+Util.bitValue = function(n) {
+  return Util.pow2(n - 1);
+};
 
-Util.toBinary = num => { return parseInt(num).toString(2); }
+Util.toBinary = function(num) {
+  return parseInt(num).toString(2);
+};
 
 Util.toBits = function(num) {
   let a = Util.toBinary(num)
@@ -210,7 +230,9 @@ Util.isSet = function(v, n) {
   return Util.getBit(v, n) == 1;
 };
 
-Util.bitCount = n => {return Util.count(Util.toBinary(n), "1"); }
+Util.bitCount = function(n) {
+  return Util.count(Util.toBinary(n), "1");
+};
 
 Util.toggleBit = function(num, bit) {
   const n = Number(num);
@@ -296,7 +318,9 @@ Util.onoff = function(val) {
   return undefined;
 };
 
-Util.numbersToBits = arr => { return arr.reduce((bits, num) => bits + Util.bitValue(num), 0); }
+Util.numbersToBits = function(arr) {
+  return arr.reduce((bits, num) => bits + Util.bitValue(num), 0);
+};
 
 Util.randomNumbers = function([start, end], draws) {
   const r = Util.sortNum(Util.draw(Util.range(start, end), draws));
@@ -304,9 +328,13 @@ Util.randomNumbers = function([start, end], draws) {
   return r;
 };
 
-Util.randomBits = (r = [1, 50], n = 5) => { return Util.numbersToBits(Util.randomNumbers(r, n)); }
+Util.randomBits = function(r = [1, 50], n = 5) {
+  return Util.numbersToBits(Util.randomNumbers(r, n));
+};
 
-Util.pad = (s, n, char = " ") => { return (s.length < n ? char.repeat(n - s.length) : ""); }
+Util.pad = function(s, n, char = " ") {
+  return s.length < n ? char.repeat(n - s.length) : "";
+};
 
 Util.abbreviate = function(str, max, suffix = "...") {
   if(str.length > max) {
@@ -410,14 +438,15 @@ Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index
   return adapter;
 };
 
-Util.adapter.localStorage = (s = localStorage) =>
-  Util.adapter(
+Util.adapter.localStorage = function(s = localStorage) {
+  return Util.adapter(
     s,
     l => l.length,
     (l, i) => l.key(i),
     (l, key) => JSON.parse(l.getItem(key)),
     (l, key, v) => l.setItem(key, JSON.stringify(v))
   );
+};
 
 Util.array = function(enumerable = []) {
   let a = enumerable instanceof Array ? enumerable : [...enumerable];
@@ -528,7 +557,9 @@ Util.chances = function(numbers, matches) {
   return f(numbers) / (f(matches) * f(numbers - matches));
 };
 
-Util.sum = arr => { return arr.reduce((acc, n) => acc + n, 0); }
+Util.sum = function(arr) {
+  return arr.reduce((acc, n) => acc + n, 0);
+};
 
 /*Util.define(
   String.prototype,
@@ -627,7 +658,7 @@ Util.match = function(arg, pred) {
   }
 };
 
-Util.toHash = function(map, keyTransform = k => Util.camelize(k)) => {
+Util.toHash = function(map, keyTransform = k => Util.camelize(k)) {
   let ret = {};
 
   for(let i = 0; i < map.length; i++) {
@@ -868,7 +899,7 @@ Util.parseCookie = function(c = document.cookie) {
   const ws = " \r\n\t";
   let i = 0;
   let ret = {};
-  const skip = (pred = char => ws.indexOf(char) != function(-1)) {
+  const skip = (pred = char => ws.indexOf(char) != -1) => {
     let start = i;
     while(i < c.length && pred(c[i])) i++;
     let r = c.substring(start, i);
@@ -912,7 +943,9 @@ Util.setCookies = c =>
     console.log(`Setting cookie[${key}] = ${value}`);
   });
 
-Util.clearCookies = c => { return Util.setCookies(Object.keys(Util.parseCookie(c)).reduce((acc, name) => Object.assign(acc, { [name]: "; max-age=0; expires=" + new Date().toUTCString() }), {})); }
+Util.clearCookies = function(c) {
+  return Util.setCookies(Object.keys(Util.parseCookie(c)).reduce((acc, name) => Object.assign(acc, { [name]: "; max-age=0; expires=" + new Date().toUTCString() }), {}));
+};
 
 Util.deleteCookie = function(name) {
   if(global.window) document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
@@ -1238,7 +1271,9 @@ Util.entriesToObj = function(arr) {
     return acc;
   }, {});
 };
-Util.isDate = d => { return d instanceof Date || (typeof d == "string" && /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d)); }
+Util.isDate = function(d) {
+  return d instanceof Date || (typeof d == "string" && /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d));
+};
 
 Util.parseDate = function(d) {
   if(Util.isDate(d)) {
@@ -1263,7 +1298,9 @@ Util.toUnixTime = function(dateObj, utc = false) {
   if(utc) epoch += dateObj.getTimezoneOffset() * 60;
   return epoch;
 };
-Util.unixTime = (utc = false) => { return Util.toUnixTime(new Date(), utc); }
+Util.unixTime = function(utc = false) {
+  return Util.toUnixTime(new Date(), utc);
+};
 
 Util.fromUnixTime = function(epoch, utc = false) {
   let t = parseInt(epoch);
@@ -1616,7 +1653,9 @@ Util.walkTree = function(node, pred, t, depth = 0, parent = null) {
     }
   })();
 };
-Util.isPromise = obj => { return Boolean(obj) && typeof obj.then === "function"; }
+Util.isPromise = function(obj) {
+  return Boolean(obj) && typeof obj.then === "function";
+};
 
 /* eslint-disable no-use-before-define */
 if(typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
