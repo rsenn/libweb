@@ -46,7 +46,6 @@ class Node {
 Node.prototype[Symbol.iterator] = Node.prototype.iter;
 
 class Circle {
-
   constructor(x, y, radius, width, layer) {
     this.x = x;
     this.y = y;
@@ -61,8 +60,7 @@ class Circle {
 }
 
 class Polygon {
-
-  constructor(width = 0, layer = -1, isolate = '') {
+  constructor(width = 0, layer = -1, isolate = "") {
     this.width = width;
     this.layer = layer;
     this.isolate = isolate;
@@ -87,7 +85,7 @@ class Via {
   drill = "";
   shape = "";*/
 
-  constructor(x = 0, y = 0, extent = '', drill = '', shape = '', signal = '') {
+  constructor(x = 0, y = 0, extent = "", drill = "", shape = "", signal = "") {
     this.x = x;
     this.y = y;
     this.extent = extent;
@@ -120,7 +118,7 @@ class Rectangle {
 class Library extends Node {
   /*name = "";*/
 
-  constructor(name = '') {
+  constructor(name = "") {
     super();
     this.name = name;
   }
@@ -139,7 +137,7 @@ class Element extends Node {
   x = 0;
   y = 0;*/
 
-  constructor(name = '', library = '', pkg = '', value = '', x = 0, y = 0) {
+  constructor(name = "", library = "", pkg = "", value = "", x = 0, y = 0) {
     super();
     this.name = name;
     this.library = library;
@@ -187,7 +185,7 @@ class Element extends Node {
         r.update([o]);
       }
     }
-    function updateRect(r, {x, y}) {
+    function updateRect(r, { x, y }) {
       if(r.x1 > x - 0.5) r.x1 = x - 0.5;
       if(r.x2 < x + 0.5) r.x2 = x + 0.5;
       if(r.y1 > y - 0.5) r.y1 = y - 0.5;
@@ -200,7 +198,7 @@ class Element extends Node {
 class Description {
   /*language = "";*/
 
-  constructor(language = '') {
+  constructor(language = "") {
     this.language = language;
   }
 }
@@ -208,7 +206,7 @@ class Description {
 class Package extends Node {
   /*name = "";*/
 
-  constructor(name = '') {
+  constructor(name = "") {
     super();
     this.name = name;
   }
@@ -229,7 +227,7 @@ class Package extends Node {
     }
   }
 
-  bbox(_x = 0, _y = 0, _angle = 0, pred = ({x}) => x !== undefined) {
+  bbox(_x = 0, _y = 0, _angle = 0, pred = ({ x }) => x !== undefined) {
     let r = new BBox();
 
     for(let o of this.iter(_x, _y, _angle)) {
@@ -245,7 +243,7 @@ class Package extends Node {
 class Signal extends Node {
   /*name = "";*/
 
-  constructor(name = '') {
+  constructor(name = "") {
     super();
     this.name = name;
   }
@@ -290,7 +288,7 @@ class Pad {
   // shape = "";
   // rot = "";*/
 
-  constructor(name = '', x = 0, y = 0, drill = '', diameter = 0, shape = '', rot = '') {
+  constructor(name = "", x = 0, y = 0, drill = "", diameter = 0, shape = "", rot = "") {
     this.name = name;
     this.x = x;
     this.y = y;
@@ -309,7 +307,7 @@ class ContactRef {
   /*element = "";
   pad = "";*/
 
-  constructor(element = '', pad = '', signal = '') {
+  constructor(element = "", pad = "", signal = "") {
     this.element = element;
     this.pad = pad;
     Signal.add(signal, this);
@@ -326,13 +324,13 @@ class ContactRef {
 class Text {
   /*text = "";*/
 
-  constructor(text = '') {
+  constructor(text = "") {
     this.text = text;
   }
 }
 
 class Layer extends Node {
-/*  number = 0;
+  /*  number = 0;
   name = "";
   color = -1;
   fill = -1;
@@ -353,7 +351,7 @@ class Layer extends Node {
     return layer;
   }
 
-  constructor(number = 0, name = '', color = -1, fill = -1, visible = false, active = false) {
+  constructor(number = 0, name = "", color = -1, fill = -1, visible = false, active = false) {
     super();
     this.number = number;
     this.name = name;
@@ -384,24 +382,24 @@ class Layer extends Node {
 }
 
 class Param {
-/*  name = "";
+  /*  name = "";
   value = "";*/
 
-  constructor(name = '', value = '') {
+  constructor(name = "", value = "") {
     this.name = name;
     this.value = value;
   }
 }
 
 class Wire {
-/*  x1 = 0;
+  /*  x1 = 0;
   y1 = 0;
   x2 = 0;
   y2 = 0;
   width = 0;
   layer = -1;
 */
-  constructor(x1= 0, y1 = 0, x2 = 0, y2 = 0, width = 0, layer = -1, signal = '') {
+  constructor(x1 = 0, y1 = 0, x2 = 0, y2 = 0, width = 0, layer = -1, signal = "") {
     this.x1 = x1;
     this.y1 = y1;
     this.x2 = x2;
@@ -522,8 +520,12 @@ function eagle(obj, parentObj) {
   return ret;
 }
 
+export const allElements = eagleProps.allElements;
+
+export { Node, AST, Env, JSGenerator, MoonScriptGenerator, Token, Lexer, Parser, Interpreter };
+
 /*if(module) {*/
-export { eagle, eagleProps, allElements: eagleProps.allElements , ...eagleProps.classes };
+export { eagle, eagleProps };
 
 export const instances = {};
 for(let c in eagleProps.classes) {
@@ -541,4 +543,4 @@ module.exports.elementMap = elementMap;
 module.exports.allElements = allElements;*/
 export default eagle;
 /*}
-*/
+ */

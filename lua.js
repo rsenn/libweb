@@ -1,13 +1,13 @@
-var Util = require("./util.js");
+import Util from "./util.js";
 
 function Stack() {
   let stack = Util.getCallerStack(1, 100).map(Util.stackFrame);
 
-  stack = stack.filter(s => !/Parser.parser.</.test(s.functionName));
-  stack = stack.filter(s => s.typeName == "Parser");
-  stack = stack.map(s => ({
-    method: s.functionName || s.methodName,
-    position: s.position /*, type: s.typeName*/
+  stack = stack.filter(({ functionName }) => !/Parser.parser.</.test(functionName));
+  stack = stack.filter(({ typeName }) => typeName == "Parser");
+  stack = stack.map(({ functionName, methodName, position }) => ({
+    method: functionName || methodName,
+    position: position /*, type: s.typeName*/
   }));
   return stack;
 }
@@ -28,22 +28,22 @@ class Node {
     Object.assign(this, obj);
   }
   toString(depth = 0) {
-    var str = "";
+    let str = "";
     const indent = Util.repeat(depth, "  ");
-    var node = this;
+    const node = this;
 
     str += node.type;
-    str += indent + "{\n";
+    str += `${indent}{\n`;
 
     for(let prop in node) {
       if(prop == "type") continue;
-      var value = node[prop];
-      if(value instanceof Array || (value && value.map !== undefined)) value = value.map(v => indent + "  " + (v.toString ? v.toString() : "" + v)).join("\n");
+      let value = node[prop];
+      if(value instanceof Array || (value && value.map !== undefined)) value = value.map(v => `${indent}  ${v.toString ? v.toString() : `${v}`}`).join("\n");
       else value = node[prop] && node[prop].toString ? node[prop].toString() : node[prop];
       str += indent + `  ${prop}:${value}\n`;
     }
 
-    str += indent + "}\n";
+    str += `${indent}}\n`;
 
     return str;
   }
@@ -63,57 +63,84 @@ class AST {
     };
   }
 
-  program = body => this.visitor({ body, type: "Program" });
-
-  chunk = body => this.visitor({ body, type: "Chunk" });
-
-  do_stat = body => this.visitor({ body, type: "DoStatement" });
-
-  break_stat = () => this.visitor({ type: "BreakStatement" });
-
-  return_stat = params => this.visitor({ params, type: "ReturnStatement" });
-
-  expr_stat = expression => this.visitor({ expression, type: "ExpressionStatement" });
-
-  func_stat = (id, params, body) => this.visitor({ id, params, body, type: "FunctionDeclaration" });
-
-  local_stat = (variables, init) => this.visitor({ init, variables, type: "LocalStatement" });
-
-  if_stat = (cond, body, elseif, _else) => this.visitor({ cond, body, elseif, else: _else, type: "IfStatement" });
-
-  fornum_stat = (id, begin, end, step, body) => this.visitor({ id, begin, end, step, body, type: "FornumStatement" });
-
-  forlist_stat = (id, left, right, body) => this.visitor({ id, left, right, body, type: "ForlistStatement" });
-
-  while_stat = (cond, body) => this.visitor({ cond, body, type: "WhileStatement" });
-
-  repeat_stat = (cond, body) => this.visitor({ cond, body, type: "RepeatStatement" });
-
-  identifier = name => this.visitor({ name, type: "Identifier" });
-
-  literal = (value, raw, quote = "") => this.visitor({ value, raw, quote, type: "Literal" });
-
-  unary_expr = (op, argument) => this.visitor({ op, argument, type: "UnaryExpression" });
-
-  binary_expr = (op, left, right) => this.visitor({ op, left, right, type: "BinaryExpression" });
-
-  call_expr = (callee, params) => this.visitor({ callee, params, type: "CallExpression" });
-
-  member_expr = (object, sep, property) => this.visitor({ object, sep, property, type: "MemberExpression" });
-
-  index_expr = (object, index) => this.visitor({ object, index, type: "IndexExpression" });
-
-  assign_expr = (op, left, right) => this.visitor({ op, left, right, type: "AssignExpression" });
-
-  table_expr = (fields, multiline = true) => this.visitor({ fields, multiline, type: "TableExpression" });
-
-  recfield = (key, value) => this.visitor({ key, value, type: "Recfield" });
-
-  listfield = value => this.visitor({ value, type: "Listfield" });
-
-  comment = text => this.visitor({ text, type: "Comment" });
-
-  undef = () => this.visitor({ type: "Undefined", value: "" });
+  program(body) {
+    return this.visitor({ body, type: "Program" });
+  }
+  chunk(body) {
+    return this.visitor({ body, type: "Chunk" });
+  }
+  do_stat(body) {
+    return this.visitor({ body, type: "DoStatement" });
+  }
+  break_stat() {
+    return this.visitor({ type: "BreakStatement" });
+  }
+  return_stat(params) {
+    return this.visitor({ params, type: "ReturnStatement" });
+  }
+  expr_stat(expression) {
+    return this.visitor({ expression, type: "ExpressionStatement" });
+  }
+  func_stat(id, params, body) {
+    return this.visitor({ id, params, body, type: "FunctionDeclaration" });
+  }
+  local_stat(variables, init) {
+    return this.visitor({ init, variables, type: "LocalStatement" });
+  }
+  if_stat(cond, body, elseif, _else) {
+    return this.visitor({ cond, body, elseif, else: _else, type: "IfStatement" });
+  }
+  fornum_stat(id, begin, end, step, body) {
+    return this.visitor({ id, begin, end, step, body, type: "FornumStatement" });
+  }
+  forlist_stat(id, left, right, body) {
+    return this.visitor({ id, left, right, body, type: "ForlistStatement" });
+  }
+  while_stat(cond, body) {
+    return this.visitor({ cond, body, type: "WhileStatement" });
+  }
+  repeat_stat(cond, body) {
+    return this.visitor({ cond, body, type: "RepeatStatement" });
+  }
+  identifier(name) {
+    return this.visitor({ name, type: "Identifier" });
+  }
+  literal(value, raw, quote = "") {
+    return this.visitor({ value, raw, quote, type: "Literal" });
+  }
+  unary_expr(op, argument) {
+    return this.visitor({ op, argument, type: "UnaryExpression" });
+  }
+  binary_expr(op, left, right) {
+    return this.visitor({ op, left, right, type: "BinaryExpression" });
+  }
+  call_expr(callee, params) {
+    return this.visitor({ callee, params, type: "CallExpression" });
+  }
+  member_expr(object, sep, property) {
+    return this.visitor({ object, sep, property, type: "MemberExpression" });
+  }
+  index_expr(object, index) {
+    return this.visitor({ object, index, type: "IndexExpression" });
+  }
+  assign_expr(op, left, right) {
+    return this.visitor({ op, left, right, type: "AssignExpression" });
+  }
+  table_expr(fields, multiline = true) {
+    return this.visitor({ fields, multiline, type: "TableExpression" });
+  }
+  recfield(key, value) {
+    return this.visitor({ key, value, type: "Recfield" });
+  }
+  listfield(value) {
+    return this.visitor({ value, type: "Listfield" });
+  }
+  comment(text) {
+    return this.visitor({ text, type: "Comment" });
+  }
+  undef() {
+    return this.visitor({ type: "Undefined", value: "" });
+  }
 }
 
 class Env {
@@ -151,7 +178,7 @@ class Env {
   set(name, value) {
     let scope = this.lookup(name);
     if(!scope) {
-      throw new Error("Undefined variable " + name);
+      throw new Error(`Undefined variable ${name}`);
     }
 
     scope.vars[name] = value;
@@ -207,52 +234,48 @@ const pairs =(table) => {
 `;
     }
 
-    function js_program(node) {
-      return js_polyfill() + js(node.body);
+    function js_program({ body }) {
+      return js_polyfill() + js(body);
     }
 
-    function js_chunk(node) {
-      return node.body.map(js).join("\n");
+    function js_chunk({ body }) {
+      return body.map(js).join("\n");
     }
 
-    function js_local_statement(node) {
-      return node.variables.map((variable, i) => `${variable.name} = ${js(node.init[i])}`).join("\n");
+    function js_local_statement({ variables, init }) {
+      return variables.map(({ name }, i) => `${name} = ${js(init[i])}`).join("\n");
     }
 
-    function js_do_statement(node) {
+    function js_do_statement({ body }) {
       return `
 {
 
-${js(node.body)}
+${js(body)}
 
 }
 `;
     }
 
-    function js_literal(node) {
+    function js_literal({ value }) {
       /*
                 cheating :)
              */
 
-      return JSON.stringify(node.value);
+      return JSON.stringify(value);
     }
 
-    function js_identifier(node) {
-      return node.name;
+    function js_identifier({ name }) {
+      return name;
     }
 
     function js_call_expression(node) {
       const callee = js(node.callee);
-      const params = node.params
-        .map(param => {
-          return js(param);
-        })
-        .join(", ");
+      const params = node.params.map(param => js(param)).join(", ");
       return `${callee}(${params})`;
     }
 
-    function js_expression_statement(node) {
-      return js(node.expression);
+    function js_expression_statement({ expression }) {
+      return js(expression);
     }
 
     function js_binary_expression(node) {
@@ -268,8 +291,8 @@ ${js(node.body)}
       }
     }
 
-    function js_unary_expression(node) {
-      return `${js_unary_map(node.op)}${js(node.argument)}`;
+    function js_unary_expression({ op, argument }) {
+      return `${js_unary_map(op)}${js(argument)}`;
     }
 
     function js_break_statement(node) {
@@ -278,16 +301,16 @@ ${js(node.body)}
 
     function js_table_expression(node) {
       let list = 0;
-      const fields = node.fields.map(field => (field.type == "Recfield" ? `"${js(field.key)}": ${js(field.value)}` : `"${list++}": ${js(field.value)}`)).join(", ");
+      const fields = node.fields.map(({ type, key, value }) => (type == "Recfield" ? `"${js(key)}": ${js(value)}` : `"${list++}": ${js(value)}`)).join(", ");
       return `{${fields}}`;
     }
 
-    function js_member_expression(node) {
-      return `${js(node.object)}.${js(node.property)}`;
+    function js_member_expression({ object, property }) {
+      return `${js(object)}.${js(property)}`;
     }
 
-    function js_index_expression(node) {
-      return `${js(node.object)}[${js(node.index)}]`;
+    function js_index_expression({ object, index }) {
+      return `${js(object)}[${js(index)}]`;
     }
 
     function js_assign_expression(node) {
@@ -302,11 +325,7 @@ ${js(node.body)}
     }
 
     function js_forlist_statement(node) {
-      const left = node.left
-        .map((variable, i) => {
-          return `${js(variable)} = value[${i}]`;
-        })
-        .join("\n");
+      const left = node.left.map((variable, i) => `${js(variable)} = value[${i}]`).join("\n");
 
       return `
             for(const iterator = ${js(node.right)};;) {
@@ -318,9 +337,9 @@ ${js(node.body)}
             }`;
     }
 
-    function js_while_statement(node) {
-      return `while(${js(node.cond)}) {
-  ${js(node.body)}
+    function js_while_statement({ cond, body }) {
+      return `while(${js(cond)}) {
+  ${js(body)}
 }`;
     }
 
@@ -336,11 +355,7 @@ for(;;) {
     }
 
     function js_function_declaration(node) {
-      const params = node.params
-        .map(param => {
-          return js(param);
-        })
-        .join(", ");
+      const params = node.params.map(param => js(param)).join(", ");
 
       return `function ${js(node.id)}(${params}) {
                 ${js(node.body)}
@@ -348,21 +363,17 @@ for(;;) {
     }
 
     function js_return_statement(node) {
-      const params = node.params
-        .map(param => {
-          return js(param);
-        })
-        .join(", ");
+      const params = node.params.map(param => js(param)).join(", ");
       return `return ${params}`;
     }
 
     function js_if_statement(node) {
       const elseif = node.elseif
-        .map(e => {
-          return `else if(${js(e.cond)}) {
-                    ${js(e.body)}
-                }`;
-        })
+        .map(
+          ({ cond, body }) => `else if(${js(cond)}) {
+                ${js(body)}
+            }`
+        )
         .join("\n");
 
       let other = "";
@@ -427,16 +438,16 @@ ${other}`;
         case "ReturnStatement":
           return js_return_statement(node);
         default:
-          throw new Error("Dunno how to generate for " + Util.inspect(node, { newline: " " }));
+          throw new Error(`Dunno how to generate for ${Util.inspect(node, { newline: " " })}`);
       }
     }
   }
 }
 
 class MoonScriptGenerator {
-  stack = [];
+  /*  stack = [];
   multiline = true;
-  indent = "";
+  indent = "";*/
 
   constructor(ast, multiline = true, indent = "") {
     if(ast !== undefined) {
@@ -444,6 +455,7 @@ class MoonScriptGenerator {
       if(multiline !== undefined) this.multiline = multiline;
       if(indent !== undefined) this.indent = indent;
     }
+    this.stack = [];
   }
 
   clone(multiline, ast) {
@@ -457,7 +469,7 @@ class MoonScriptGenerator {
   }
 
   static str(node, multiline = false, indent = "") {
-    var gen = MoonScriptGenerator.create(node, multiline, indent);
+    const gen = MoonScriptGenerator.create(node, multiline, indent);
     return gen.str();
   }
 
@@ -467,8 +479,8 @@ class MoonScriptGenerator {
   }
 
   subtree(node, multiline = false) {
-    var subtree = node && node.length !== undefined ? new Node({ type: "Chunk", body: node }) : node; //new Node({ type: 'Program', body: node });
-    var gen = MoonScriptGenerator.create(subtree, multiline);
+    const subtree = node && node.length !== undefined ? new Node({ type: "Chunk", body: node }) : node; //new Node({ type: 'Program', body: node });
+    const gen = MoonScriptGenerator.create(subtree, multiline);
     return gen.to_moonscript(node);
   }
 
@@ -492,39 +504,39 @@ class MoonScriptGenerator {
         .replace(/\n/g, "\n  ");
     }
 
-    function moonscript_program(node) {
-      return moonscript_polyfill() + moonscript(node.body);
+    function moonscript_program({ body }) {
+      return moonscript_polyfill() + moonscript(body);
     }
 
-    function moonscript_chunk(node) {
-      return node.body.map(moonscript).join("\n");
+    function moonscript_chunk({ body }) {
+      return body.map(moonscript).join("\n");
     }
 
-    function moonscript_local_statement(node) {
-      let vars = node.variables.map((variable, i) => ({
-        name: variable.name,
-        init: moonscript(node.init[i])
+    function moonscript_local_statement({ variables, init }) {
+      let vars = variables.map(({ name }, i) => ({
+        name: name,
+        init: moonscript(init[i])
       }));
 
-      vars = vars.filter(v => v.init != "");
-      return vars.map(v => `${v.name} = ${v.init}`).join("\n");
+      vars = vars.filter(({ init }) => init != "");
+      return vars.map(({ name, init }) => `${name} = ${init}`).join("\n");
     }
 
-    function moonscript_do_statement(node) {
+    function moonscript_do_statement({ body }) {
       return `
-  ${moonscript_body(node.body)}
+  ${moonscript_body(body)}
 `;
     }
 
     function moonscript_literal(node) {
       // if(/^[-+]?[0-9.]*[0-9]$/.test(node.value)) return node.value;
 
-      var value = node.value === null ? "nil" : String(node.value);
+      const value = node.value === null ? "nil" : String(node.value);
       return `${node.quote || ""}${value}${node.quote || ""}`;
     }
 
-    function moonscript_identifier(node) {
-      return node.name;
+    function moonscript_identifier({ name }) {
+      return name;
     }
 
     function moonscript_call_expression(node) {
@@ -537,8 +549,8 @@ class MoonScriptGenerator {
       return paren ? `${callee}(${params})` : `${callee} ${params}`;
     }
 
-    function moonscript_expression_statement(node) {
-      return moonscript(node.expression);
+    function moonscript_expression_statement({ expression }) {
+      return moonscript(expression);
     }
 
     function moonscript_binary_expression(node) {
@@ -557,8 +569,8 @@ class MoonScriptGenerator {
       }
     }
 
-    function moonscript_unary_expression(node) {
-      return `${moonscript_unary_map(node.op)}${moonscript(node.argument)}`;
+    function moonscript_unary_expression({ op, argument }) {
+      return `${moonscript_unary_map(op)}${moonscript(argument)}`;
     }
 
     function moonscript_break_statement(node) {
@@ -568,25 +580,25 @@ class MoonScriptGenerator {
     function moonscript_table_expression(node) {
       let list = 0;
       // const types = Util.histogram(node.fields.map(f => f.type));
-      var indent = generator.indent + "  ";
+      const indent = `${generator.indent}  `;
       // console.error('TYPES: ', types);
 
       const fields = node.fields.map(field => {
         let key = generator.subtree(field.key, false);
         let num = parseInt(key);
         if(!isNaN(num)) key = num;
-        if(field.type == "Recfield") return `['${key}']: ` + generator.subtree(field.value, false, indent + "  ").replace(/\n/g, "\n" + indent);
+        if(field.type == "Recfield") return `['${key}']: ` + generator.subtree(field.value, false, `${indent}  `).replace(/\n/g, `\n${indent}`);
         return generator.str(field.value, node.multiline, indent);
       });
-      return "{" + (generator.multiline ? "\n" + indent : " ") + fields.join(generator.multiline ? "\n" + indent : ", ") + (generator.multiline ? "\n" + generator.indent : " ") + "}";
+      return `{${generator.multiline ? `\n${indent}` : " "}${fields.join(generator.multiline ? `\n${indent}` : ", ")}${generator.multiline ? `\n${generator.indent}` : " "}}`;
     }
 
-    function moonscript_member_expression(node) {
-      return moonscript(node.object) + "." + moonscript(node.property);
+    function moonscript_member_expression({ object, property }) {
+      return `${moonscript(object)}.${moonscript(property)}`;
     }
 
-    function moonscript_index_expression(node) {
-      return moonscript(node.object) + moonscript(node.index);
+    function moonscript_index_expression({ object, index }) {
+      return moonscript(object) + moonscript(index);
     }
 
     function moonscript_assign_expression(node) {
@@ -597,7 +609,7 @@ class MoonScriptGenerator {
       return node.left
         .map((variable, i) => {
           let r = node.right[i];
-          console.error("variable.name=" + variable.name + ", r=", r);
+          console.error(`variable.name=${variable.name}, r=`, r);
           if(r.left && variable.name == r.left.name && ["*", "%", "/", "+", "-"].indexOf(r.op) != -1) {
             return `${moonscript(variable)} ${r.op}${node.op} ${moonscript(node.right[i].right)}`;
           }
@@ -618,15 +630,15 @@ class MoonScriptGenerator {
   ${moonscript_body(node.body)}`;
     }
 
-    function moonscript_while_statement(node) {
-      return `while ${moonscript(node.cond)}
-  ${moonscript_body(node.body)}`;
+    function moonscript_while_statement({ cond, body }) {
+      return `while ${moonscript(cond)}
+  ${moonscript_body(body)}`;
     }
 
-    function moonscript_repeat_statement(node) {
+    function moonscript_repeat_statement({ body, cond }) {
       return `repeat
-  ${moonscript_body(node.body)}
-until ${moonscript(node.cond)}`;
+  ${moonscript_body(body)}
+until ${moonscript(cond)}`;
     }
 
     function moonscript_function_declaration(node) {
@@ -651,8 +663,8 @@ until ${moonscript(node.cond)}`;
     function moonscript_if_statement(node) {
       const elseif = node.elseif
         .map(
-          e => `elseif ${moonscript(e.cond)}
-  ${moonscript_body(e.body)}`
+          ({ cond, body }) => `elseif ${moonscript(cond)}
+  ${moonscript_body(body)}`
         )
         .join("\n");
 
@@ -758,7 +770,7 @@ ${other}`;
           ret = "";
           break;
         default:
-          throw { message: "Dunno how to generate for " + node.type }; //Util.inspect(node, { newline: ' ' }));
+          throw { message: `Dunno how to generate for ${node.type}` }; //Util.inspect(node, { newline: ' ' }));
           break;
       }
       //ret = typeof(ret) == 'string' ? ret.trim() : ret;
@@ -829,12 +841,16 @@ Token.COMMENT = "COMMENT";
 Token.HASH = "#";
 
 class Lexer {
-  index = 0;
+  /*  index = 0;
   pos = 0;
   line = 1;
-  column = 1;
+  column = 1;*/
 
   constructor(source) {
+    this.index = 0;
+    this.pos = 0;
+    this.line = 1;
+    this.column = 1;
     this.source = source;
     this.size = source.length;
 
@@ -900,7 +916,7 @@ class Lexer {
   }
 
   eat(n = 1) {
-    var newpos = this.pos + n;
+    const newpos = this.pos + n;
     while(this.pos < newpos) {
       /*    if(this.source[this.pos] == '\n') {
         this.line++;
@@ -1208,9 +1224,8 @@ class Lexer {
 }
 
 class Parser {
-  depth = 0;
-
   constructor(lexer, visitor) {
+    this.depth = 0;
     this.lexer = lexer;
     this.cur_token = null;
     this.ast = new AST(node => {
@@ -1232,7 +1247,7 @@ class Parser {
           this.log("position: ", this.cur_token.position, " args: ", args);
           let ret = fn.apply(this, args);
           if(ret && ret !== null) {
-            this.log("ret: ", ret.toString ? ret.toString().replace(/\n/g, "\n" + indent) : ret);
+            this.log("ret: ", ret.toString ? ret.toString().replace(/\n/g, `\n${indent}`) : ret);
             this.node = ret;
           }
 
@@ -1249,23 +1264,23 @@ class Parser {
     let args = [...arguments];
     let stack = Util.getCallers(0, 10);
 
-    stack = stack.filter(s => (s.typeName == "Parser" || (s.methodName || s.functionName || "").indexOf("parse") != -1) && s.methodName != "log");
-    const names = stack.filter(f => !f.functionName.startsWith("Parser.")).map(f => f.functionName);
+    stack = stack.filter(({ typeName, methodName, functionName }) => (typeName == "Parser" || (methodName || functionName || "").indexOf("parse") != -1) && methodName != "log");
+    const names = stack.filter(({ functionName }) => !functionName.startsWith("Parser.")).map(({ functionName }) => functionName);
 
-    stack = stack.map(s => ({
-      method: s.methodName || s.functionName,
-      position: s.position,
+    stack = stack.map(({ methodName, functionName, position }) => ({
+      method: methodName || functionName,
+      position: position,
       toString: () => `${this.method} ${this.position}`
     }));
 
-    var name = stack[0].method;
+    let name = stack[0].method;
     name = Util.repeat(this.depth, "  ").join("") + name;
     name = name + Util.pad(name, 80);
     args.unshift(name);
 
     //    process.stderr.write(util.inspect(args)+"\n");
 
-    console.error.apply(console, args);
+    console.error(...args);
   }
 
   yield_error(fn, token) {
@@ -1682,7 +1697,7 @@ class Parser {
       do {
         this.match(Token.COMMA);
 
-        var node = this.parse_primaryexp();
+        const node = this.parse_primaryexp();
         primaryexp.push(node);
       } while(this.cur_token.value == ",");
     }
@@ -1814,7 +1829,7 @@ class Parser {
         case "local":
           return this.parse_local_stat();
         default:
-          this.yield_error("parse_simpleexp " + this.cur_token.value);
+          this.yield_error(`parse_simpleexp ${this.cur_token.value}`);
       }
     } else if(this.cur_token.value == "{") {
       return this.parse_constructor();
@@ -1832,7 +1847,7 @@ class Parser {
       //console.error('\nTOKEN: ', this.cur_token, '\n');
     }
 
-    var node = this.parse_prefixexp(true);
+    let node = this.parse_prefixexp(true);
     let property;
 
     while(true) {
@@ -2207,25 +2222,25 @@ class Interpreter {
     }
   }
 
-  evaluate_program(node, env) {
-    return this.evaluate(node.body, env);
+  evaluate_program({ body }, env) {
+    return this.evaluate(body, env);
   }
 
-  evaluate_chunk(node, env) {
+  evaluate_chunk({ body }, env) {
     let rv;
-    for(let i = 0; i < node.body.length; i++) {
-      rv = this.evaluate(node.body[i], env);
+    for(let i = 0; i < body.length; i++) {
+      rv = this.evaluate(body[i], env);
     }
 
     return rv;
   }
 
-  evaluate_table_expression(node, env) {
+  evaluate_table_expression({ fields }, env) {
     let t = {};
     const self = this;
     let i = 1;
 
-    node.fields.map(field => {
+    fields.map(field => {
       if(field.type == "Recfield") {
         //identifier
         let key = field.key.name;
@@ -2240,33 +2255,30 @@ class Interpreter {
     return t;
   }
 
-  evaluate_literal(node, env) {
-    return node.value;
+  evaluate_literal({ value }, env) {
+    return value;
   }
 
   evaluate_assign_expression(node, env) {
-    for(let i = 0; i < node.left.length; i++) {
-      const n = node.left[i];
-      if(n.type == "Identifier") {
-        env.set(n.name, this.evaluate(node.right[i], env));
-      } else if(n.type == "MemberExpression") {
-        const obj = env.get(n.object.name);
-        obj[n.property.name] = this.evaluate(node.right[i], env);
+    node.left.forEach(({ type, name, object, property }, i) => {
+      if(type == "Identifier") {
+        env.set(name, this.evaluate(node.right[i], env));
+      } else if(type == "MemberExpression") {
+        const obj = env.get(object.name);
+        obj[property.name] = this.evaluate(node.right[i], env);
       }
-    }
+    });
   }
 
-  evaluate_do_statment(node, env) {
-    return this.evaluate(node.body, env.extend());
+  evaluate_do_statment({ body }, env) {
+    return this.evaluate(body, env.extend());
   }
 
   evaluate_break_statment(node, env) {}
 
-  evaluate_return_statment(node, env) {
+  evaluate_return_statment({ params }, env) {
     const self = this;
-    let results = node.params.map(param => {
-      return self.evaluate(param, env);
-    });
+    let results = params.map(param => self.evaluate(param, env));
     return results[results.length - 1];
   }
 
@@ -2344,20 +2356,15 @@ class Interpreter {
     }
   }
 
-  evaluate_identifier(node, env) {
-    return env.get(node.name);
+  evaluate_identifier({ name }, env) {
+    return env.get(name);
   }
 
   evaluate_call_expression(node, env) {
     const callee = this.evaluate(node.callee, env);
     const self = this;
 
-    return callee.apply(
-      null,
-      node.params.map(arg => {
-        return self.evaluate(arg, env);
-      })
-    );
+    return callee(...node.params.map(arg => self.evaluate(arg, env)));
   }
 
   evaluate_if_statement(node, env) {
@@ -2366,12 +2373,12 @@ class Interpreter {
       this.evaluate(node.body, env);
       return true;
     } else {
-      for(let i = 0; i < node.elseif.length; i++) {
-        let elseif = node.elseif[i];
+      for(let elseif of node.elseif) {
         if(this.evaluate(elseif, env)) {
           return true;
         }
       }
+
       if(node.else) {
         this.evaluate(node.else, env);
       }
@@ -2379,18 +2386,18 @@ class Interpreter {
     }
   }
 
-  evaluate_member_expression(node, env) {
+  evaluate_member_expression({ sep, object, property }, env) {
     let table, value;
-    if(node.sep == ".") {
-      table = env.get(node.object.name);
-      value = node.property.name;
+    if(sep == ".") {
+      table = env.get(object.name);
+      value = property.name;
     }
 
     return table[value];
   }
 
-  evaluate_expression_stat(node, env) {
-    return this.evaluate(node.expression, env);
+  evaluate_expression_stat({ expression }, env) {
+    return this.evaluate(expression, env);
   }
 
   evaluate_local_stat(node, env) {
@@ -2411,7 +2418,7 @@ class Interpreter {
     function lambda(...args) {
       let params = node.params;
       let scope = env.extend();
-      for(var i = 0; i < params.length; ++i) {
+      for(let i = 0; i < params.length; ++i) {
         scope.def(params[i].name, args[i]);
       }
 
@@ -2430,11 +2437,11 @@ class Interpreter {
 
 Object.assign(Interpreter, {
   OP: {
-    or: function(left, right) {
+    or(left, right) {
       return left || right;
     },
 
-    and: function(left, right) {
+    and(left, right) {
       return left && right;
     },
 
@@ -2490,7 +2497,7 @@ Object.assign(Interpreter, {
       return -right;
     },
 
-    not: function(right) {
+    not(right) {
       return !right;
     },
 
@@ -2504,7 +2511,7 @@ Object.assign(Interpreter, {
   }
 });
 
-module.exports = {
+export default {
   AST,
   Env,
   JSGenerator,

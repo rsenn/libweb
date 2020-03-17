@@ -1,5 +1,5 @@
-import {Token} from "./token.js";
-import {tokenTypes} from "./token.js";
+import { Token } from "./token.js";
+import { tokenTypes } from "./token.js";
 
 function Lexer(sourceText) {
   this.setInput(sourceText);

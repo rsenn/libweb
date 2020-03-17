@@ -7,7 +7,7 @@ import devtools, { storage, select } from "./devtools.js";
 import { TouchListener } from "./touchHandler.js";
 import { lazyInitializer } from "./lazyInitializer.js";
 
-var SvgPath = require("./svg-path.js");
+import SvgPath from "./svg-path.js";
 /*
 if(global.window) {
   window.addEventListener('load', () => {
@@ -16,117 +16,6 @@ if(global.window) {
 }*/
 
 export default class devpane {
-  config = storage("devpane");
-  svg = null;
-  open = false;
-  active = false;
-  rectList = [];
-  serial = 0;
-  elements = [];
-  translations = null;
-  path = null;
-  touch = null;
-  bbrect = lazyInitializer(() => Element.rect(this.parent));
-  entitySources = {};
-
-  pane = lazyInitializer(() => {
-    let pos = {
-      right: "2em",
-      bottom: "1em"
-    };
-    if(this.config.has("position")) {
-      let p = this.config.get("position");
-      pos = {
-        left: `${p.x}px`,
-        top: `${p.y}px`
-      };
-    }
-    let layer = this.createLayer(
-      { id: "devpane-pane" },
-      {
-        zIndex: 18,
-        minWidth: "300px",
-        maxWidth: "80vw",
-
-        minHeight: "30vh",
-        maxHeight: "60vh",
-        overflowY: "auto",
-        /*   overflowX: 'auto',*/
-        display: "block",
-        position: "absolute",
-        ...pos,
-        backgroundColor: "#fffab3ff",
-        WebkitBoxShadow: "2px 2px 6px 2px rgba(0,0,0,0.5)",
-        BoxShadow: "2px 2px 6px 2px rgba(0,0,0,1)",
-        border: "4px solid #ff0000ff",
-        borderRadius: "0.5em",
-        padding: "0px",
-        opacity: 1,
-        textAlign: "left",
-        fontFamily: 'MiscFixedSC613,MiscFixed,Monospace,fixed-width,fixed,"Courier New"',
-        fontSize: "11px"
-      }
-    );
-    let p = this.renderPaneLayer(layer);
-    //    layer.appendChild(p);
-    return layer;
-  });
-
-  root = lazyInitializer(
-    () => {
-      let e = this.createRectLayer(this.bbrect(), {
-        width: "",
-        height: "",
-        top: "",
-        bottom: "10px",
-        right: "10px",
-        left: ""
-      });
-      e.id = "devpane-root";
-      return e;
-    } /*,
-    () => {
-      const handleTouch = event => {
-        this.touch.listener(event);
-        //document.dispatchEvent(event);
-      };
-      window.addEventListener('touchstart', handleTouch);
-      window.addEventListener('touchend', handleTouch);
-      window.addEventListener('touchmove', handleTouch);
-      window.addEventListener('touchcancel', handleTouch);
-    }*/
-  );
-
-  svg = lazyInitializer(() => {
-    var rect = Element.rect(document.body);
-
-    var svg = this.createSVGElement("svg", { width: rect.width, height: rect.height, viewBox: `0 0 ${rect.width} ${rect.height}` }, this.root());
-    this.createSVGElement("defs", {}, svg);
-    this.createSVGElement("rect", { x: 100, y: 100, w: 100, h: 100, fill: "#f0f" }, svg);
-
-    return svg;
-  });
-
-  log = lazyInitializer(() =>
-    this.createLayer(
-      { tag: "pre", id: "devpane-log" },
-      {
-        position: "relative",
-        /*height: '20px',*/
-        maxHeight: "100px",
-        overflowY: "scroll",
-        overflowX: "auto",
-        display: "block",
-        border: "1px solid #000000ff",
-        padding: "2px",
-        textAlign: "left",
-        fontFamily: "MiscFixedSC613,Fixed,MiscFixed,Monospace,fixed-width",
-        fontSize: "12px" /*,
-        minHeight: '4em'*/
-      }
-    )
-  );
-
   getTranslations(done = () => {}) {
     const filename = "static/locales/fa-IR/common.json";
     const nl = "\r\n";
@@ -154,7 +43,7 @@ export default class devpane {
     this.path = new SvgPath();
     this.touch = TouchListener(this.handleTouch.bind(this));
     this.svg.factory = lazyInitializer(() => SVG.factory(this.svg()));
-    var cfg = this.config();
+    const cfg = this.config();
     //console.log("devpane cfg=", cfg);
     this.open = !cfg.open;
 
@@ -198,7 +87,7 @@ export default class devpane {
     }
 
     if(this.open) {
-      var table = this.renderTable(["entity", "source"], rows, {
+      const table = this.renderTable(["entity", "source"], rows, {
         cellspacing: 0,
         style: {
           /*  width: '100%'*/
@@ -224,7 +113,7 @@ export default class devpane {
       if(log) {
         if(log.parentNode !== this.pane()) this.pane().insertBefore(log, this.pane().firstElementChild);
 
-        log.insertAdjacentText("beforeend", str.trim() + "\n");
+        log.insertAdjacentText("beforeend", `${str.trim()}\n`);
         log.scrollTop = log.scrollHeight;
         log.style.height = "4em";
       }
@@ -232,7 +121,7 @@ export default class devpane {
   }
 
   handleTouch(event) {
-    var move;
+    let move;
 
     if(event.num == 0) {
       this.path.commands = [];
@@ -249,12 +138,12 @@ export default class devpane {
       this.prevTouch = move;
     }
 
-    var polygon = Polygon.approxCircle(25, 7);
+    const polygon = Polygon.approxCircle(25, 7);
 
-    var svg = this.svg();
+    const svg = this.svg();
 
-    var svgpath = svg && svg.querySelector("#touch-path");
-    var svgcircle = svg && svg.querySelector("#touch-pos");
+    let svgpath = svg && svg.querySelector("#touch-path");
+    let svgcircle = svg && svg.querySelector("#touch-pos");
 
     if(!(svgpath && svgpath.tagName == "path")) {
       svgpath = SVG.create(
@@ -333,7 +222,7 @@ export default class devpane {
               if(idx == -1) a.push(r);
               return a;
             }, []),
-            r => r.name == "boundary"
+            ({ name }) => name == "boundary"
           );
           rect.bounds.sort((a, b) => Rect.area(a) - Rect.area(b));
           list.push(rect);
@@ -356,17 +245,17 @@ export default class devpane {
     return multi ? ret : null;
   }
 
-  getTextParts(elem) {
+  getTextParts({ innerHTML, firstElementChild }) {
     let ret = [];
-    if(!elem.innerHTML.match(/<.*>/)) {
-      ret.push(elem.innerHTML);
+    if(!innerHTML.match(/<.*>/)) {
+      ret.push(innerHTML);
     } else {
-      Element.walk(elem.firstElementChild, (e, accu) => {
+      Element.walk(firstElementChild, ({ innerHTML, textContent, innerText }, accu) => {
         let text = "";
-        if(!e.innerHTML.match(/<.*>/)) {
-          text = e.innerHTML.replace(/&nbsp;/g, "");
+        if(!innerHTML.match(/<.*>/)) {
+          text = innerHTML.replace(/&nbsp;/g, "");
         } else {
-          text = e.textContent || e.innerText || "";
+          text = textContent || innerText || "";
         }
         if(text.length > 0) ret.push(text);
       });
@@ -376,7 +265,7 @@ export default class devpane {
 
   handleKeypress(e) {
     const { key, keyCode, charCode } = e;
-    const modifiers = ["alt", "shift", "ctrl", "meta"].reduce((mod, key) => (e[key + "Key"] === true ? [...mod, key] : mod), []).toString();
+    const modifiers = ["alt", "shift", "ctrl", "meta"].reduce((mod, key) => (e[`${key}Key`] === true ? [...mod, key] : mod), []).toString();
     //console.log('keypress: ', { key, keyCode, charCode, modifiers });
 
     if(e.key == "D" && (e.metaKey || e.ctrlKey || e.altKey) && e.shiftKey) {
@@ -414,8 +303,8 @@ export default class devpane {
     }
   }
 
-  createRectLayer = (rect, css = {}, fn = Element.create) =>
-    fn("div", {
+  createRectLayer(rect, css = {}, fn = Element.create) {
+    return fn("div", {
       parent: Element.find("body"),
       style: {
         display: "inline-block",
@@ -426,9 +315,10 @@ export default class devpane {
         ...css
       }
     });
+  }
 
-  createLayer = (props = {}, css = {}, fn = Element.create) =>
-    fn(props.tag || "div", {
+  createLayer(props = {}, css = {}, fn = Element.create) {
+    return fn(props.tag || "div", {
       parent: props.parent || this.root(),
       lang: "en",
       dir: "ltr",
@@ -449,18 +339,21 @@ export default class devpane {
         ...css
       }
     });
+  }
 
-  createSVGElement = (tag, attr, parent) => SVG.create(tag, attr, parent);
+  createSVGElement(tag, attr, parent) {
+    return SVG.create(tag, attr, parent);
+  }
   handleToggle(event, checked) {
     //    const { currentTarget } = event;
     if(checked === undefined) checked = this.open;
     const what = checked ? "add" : "remove";
-    const fn = what + "EventListener";
+    const fn = `${what}EventListener`;
 
-    console.log("devpane.handleToggle " + fn);
+    console.log(`devpane.handleToggle ${fn}`);
     const mouseEvents = elem => ["mouseenter", "mouseleave"].forEach(listener => elem[fn](listener, this.mouseEvent));
 
-    window[what + "EventListener"]("mousemove", this.mouseMove);
+    window[`${what}EventListener`]("mousemove", this.mouseMove);
 
     this.active = checked;
     if(this.active) {
@@ -518,8 +411,8 @@ export default class devpane {
       console.log("t.set ", { e });
       e.value = str;
     };
-    t.handleChange = e => {
-      const key = e.currentTarget.value || e.target.value;
+    t.handleChange = ({ currentTarget, target }) => {
+      const key = currentTarget.value || target.value;
       const value = t.options[key];
       if(t.inputs.en) t.inputs.en.value = value;
     };
@@ -531,8 +424,8 @@ export default class devpane {
     t.form.addEventListener("submit", e => false);
     t.select = t.renderer.refresh();
 
-    t.select.addEventListener("change", e => {
-      const text = t.options[e.target.value];
+    t.select.addEventListener("change", ({ target }) => {
+      const text = t.options[target.value];
       t.set("en", text);
     });
 
@@ -630,8 +523,8 @@ export default class devpane {
       t.inputs[lang] = createEditBox(
         lang,
         "",
-        function(e) {
-          this[lang] = e.currentTarget.value;
+        function({ currentTarget }) {
+          this[lang] = currentTarget.value;
         }.bind(t)
       );
       Element.create("br", { parent: t.fields });
@@ -641,7 +534,7 @@ export default class devpane {
       save: createButton("Save", e => t.save(e)),
       new: createButton("New", () => this.renderTranslateBox()),
       load: createButton("Load", () => {
-        axios.get("/api/read/static/locales/fa-IR/common.json").then(res => {
+        axios.get("/api/read/static/locales/fa-IR/common.json").then(({ data }) => {
           const elem = t.factory("textarea", {
             cols: 80,
             rows: 25,
@@ -651,7 +544,7 @@ export default class devpane {
             }
           });
 
-          const json = Util.base64.decode(res.data.data);
+          const json = Util.base64.decode(data.data);
           const obj = JSON.parse(json);
           //const data = atob(cmd.data);
 
@@ -700,7 +593,7 @@ export default class devpane {
               let bbox = Element.rect(res);
               let css = Element.getCSS(res);
 
-              bbText.innerHTML = Rect.toSource(bbox) + "\nfont-size: " + css.fontSize; // `x: ${bbox.x}\ny: ${bbox.y}\nw: ${bbox.width}\nh: ${bbox.height}`;
+              bbText.innerHTML = `${Rect.toSource(bbox)}\nfont-size: ${css.fontSize}`; // `x: ${bbox.x}\ny: ${bbox.y}\nw: ${bbox.width}\nh: ${bbox.height}`;
             }
             console.log("selectElement (resolved) = ", res);
 
@@ -740,18 +633,18 @@ export default class devpane {
         style: { border: "2px outset #ddd" },
         onclick: event => {
           if(this.elements.length >= 2) {
-            var elem1 = this.elements[0].e;
-            var elem2 = this.elements[1].e;
+            const elem1 = this.elements[0].e;
+            const elem2 = this.elements[1].e;
 
             //console.log(elem1);
 
-            var rect1 = Element.rect(elem1);
-            var rect2 = Element.rect(elem2);
+            const rect1 = Element.rect(elem1);
+            const rect2 = Element.rect(elem2);
 
-            var border1 = Element.border(elem1)
+            const border1 = Element.border(elem1)
               .outset(rect1)
               .round();
-            var border2 = Element.border(elem2)
+            const border2 = Element.border(elem2)
               .outset(rect2)
               .round();
 
@@ -790,8 +683,8 @@ export default class devpane {
       let page = Element.find(".page");
       console.log("page ", page);
 
-      this.rectList = this.buildRectList(page, e => {
-        let text = e.innerText || e.textContent || "";
+      this.rectList = this.buildRectList(page, ({ innerText, textContent }) => {
+        let text = innerText || textContent || "";
         return text.length > 0;
       }); //e.textContent && e.textContent.length > 0);
       console.log("this.rectList ", this.rectList);
@@ -822,9 +715,9 @@ export default class devpane {
           this.selected = this.getRectAt(clientX, clientY, true);
           if(this.selected.length) {
             console.log("selectElement selected: ", this.selected);
-            elm.innerHTML = this.selected.map(s => `#${s.e.id}`).join(",");
+            elm.innerHTML = this.selected.map(({ e }) => `#${e.id}`).join(",");
             this.fontSize = Element.getCSS(this.selected[0].e, "font-size");
-            console.log(Element.xpath(this.selected[0].e) + " font-size: ", this.fontSize);
+            console.log(`${Element.xpath(this.selected[0].e)} font-size: `, this.fontSize);
           } else {
             elm.innerHTML = "";
           }
@@ -850,12 +743,12 @@ export default class devpane {
       gparent.removeChild(rect.boxes);
       rect.boxes = null;
     }
-    let rects = this.rectList.reduce((accu, rect, idx, arr) => {
+    let rects = this.rectList.reduce((accu, rect, idx, { length }) => {
       const inside = rect.test(pos, serial);
-      const hue = (360 * idx) / arr.length;
+      const hue = (360 * idx) / length;
       if(inside && !rect.box) {
         if(!rect.boxes) rect.boxes = this.svg.factory("g");
-        rect.bounds.forEach((r, i, a) => this.svg.factory("rect", { ...Rect(rect), stroke: HSLA(hue, 100, 25 + (50 * i) / a.length).toString(), fill: "none" }, rect.boxes));
+        rect.bounds.forEach((r, i, { length }) => this.svg.factory("rect", { ...Rect(rect), stroke: HSLA(hue, 100, 25 + (50 * i) / length).toString(), fill: "none" }, rect.boxes));
       } else if(!inside && rect.boxes) {
         //console.log('parent: ', rect.boxes.parentNode, ' boxes: ', rect.boxes);
         while(rect.boxes.firstChild) rect.boxes.removeChild(rect.boxes.firstChild);
@@ -887,10 +780,10 @@ export default class devpane {
     let svgRects = rects.map(({ x, y, width, height, color }, index) => {
       return f("rect", { x, y, width, height, stroke: color.toString(), strokeWidth: 3, fill: "none" });
     });
-    var selectedList = Element.find("#selected-list");
+    const selectedList = Element.find("#selected-list");
     Element.setCSS(selectedList, { display: "block", backgroundColor: "black", padding: "2px", overflow: "scroll" });
     // prettier-ignore
-    selectedList.innerHTML = "<pre>" + rects .map(rect => `<span style="color: ${rect.color.toString()};">` + Element.xpath(rect.e, document.body) + `</span>` ) .reverse() .join("\n") + `</pre>`;
+    selectedList.innerHTML = `<pre>${rects .map(({color, e}) => `<span style="color: ${color.toString()};">` + Element.xpath(e, document.body) + `</span>` ) .reverse() .join("\n")}${`</pre>`}`;
     if(rects[0]) {
       this.rect = rects[0];
       // this.renderPaneLayer();
@@ -907,3 +800,63 @@ export default class devpane {
     }
   }
 }
+
+devpane.prototype.config = storage("devpane");
+devpane.prototype.svg = null;
+devpane.prototype.open = false;
+devpane.prototype.active = false;
+devpane.prototype.rectList = [];
+devpane.prototype.serial = 0;
+devpane.prototype.elements = [];
+devpane.prototype.translations = null;
+devpane.prototype.path = null;
+devpane.prototype.touch = null;
+devpane.prototype.bbrect = lazyInitializer(() => Element.rect(this.parent));
+devpane.prototype.entitySources = {};
+
+devpane.prototype.pane = lazyInitializer(() => {
+  let pos = { right: "2em", bottom: "1em" };
+  if(this.config.has("position")) {
+    let p = this.config.get("position");
+    pos = { left: `${p.x}px`, top: `${p.y}px` };
+  }
+  let layer = this.createLayer(
+    { id: "devpane-pane" },
+    {
+      zIndex: 18,
+      minWidth: "300px",
+      maxWidth: "80vw",
+      minHeight: "30vh",
+      maxHeight: "60vh",
+      overflowY: "auto",
+      /*   overflowX: 'auto',*/ display: "block",
+      position: "absolute",
+      ...pos,
+      backgroundColor: "#fffab3ff",
+      WebkitBoxShadow: "2px 2px 6px 2px rgba(0,0,0,0.5)",
+      BoxShadow: "2px 2px 6px 2px rgba(0,0,0,1)",
+      border: "4px solid #ff0000ff",
+      borderRadius: "0.5em",
+      padding: "0px",
+      opacity: 1,
+      textAlign: "left",
+      fontFamily: 'MiscFixedSC613,MiscFixed,Monospace,fixed-width,fixed,"Courier New"',
+      fontSize: "11px"
+    }
+  );
+  let p = this.renderPaneLayer(layer);
+  /*   layer.appendChild(p); */ return layer;
+});
+devpane.prototype.root = lazyInitializer(() => {
+  let e = this.createRectLayer(this.bbrect(), { width: "", height: "", top: "", bottom: "10px", right: "10px", left: "" });
+  e.id = "devpane-root";
+  return e;
+});
+devpane.prototype.svg = lazyInitializer(() => {
+  const rect = Element.rect(document.body);
+  const svg = this.createSVGElement("svg", { width: rect.width, height: rect.height, viewBox: `0 0 ${rect.width} ${rect.height}` }, this.root());
+  this.createSVGElement("defs", {}, svg);
+  this.createSVGElement("rect", { x: 100, y: 100, w: 100, h: 100, fill: "#f0f" }, svg);
+  return svg;
+});
+devpane.prototype.log = lazyInitializer(() => this.createLayer({ tag: "pre", id: "devpane-log" }, { position: "relative", maxHeight: "100px", overflowY: "scroll", overflowX: "auto", display: "block", border: "1px solid #000000ff", padding: "2px", textAlign: "left", fontFamily: "MiscFixedSC613,Fixed,MiscFixed,Monospace,fixed-width", fontSize: "12px" }));

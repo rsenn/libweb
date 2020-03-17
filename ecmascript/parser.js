@@ -1,7 +1,7 @@
 import util from "util";
 import Util from "../util.es5.js";
 import Lexer from "./lexer.js";
-import {tokenTypes} from "./token.js";
+import { tokenTypes } from "./token.js";
 import estree from "./estree.js";
 
 function Parser(sourceText, prefix) {
@@ -261,7 +261,7 @@ p.matchIdentifier = function matchIdentifier(no_keyword = false) {
   return token.type === tokenTypes.identifier || (no_keyword && token.type === tokenTypes.keyword);
 };
 
-function isLiteral({type}) {
+function isLiteral({ type }) {
   return type === tokenTypes.stringLiteral || type === tokenTypes.numericLiteral || type === tokenTypes.regexpLiteral || type === tokenTypes.nullLiteral || type === tokenTypes.booleanLiteral;
 }
 
