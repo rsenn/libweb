@@ -379,7 +379,10 @@ Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index
   };
   return adapter;
 };
-Util.adapter.localStorage = function(s = localStorage) {
+Util.adapter.localStorage = function(s) {
+  if(!s && global.window)
+    s = window.localStorage;
+  
   return Util.adapter(
     s,
     l => l.length,

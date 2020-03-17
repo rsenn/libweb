@@ -11,56 +11,34 @@ var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends")
 
 var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
-
-var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
-
-var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
-
 var _react = _interopRequireDefault(require("react"));
 
 var _jsxFileName = "/home/roman/the-wild-beauty-company/lib/dom/select.js";
-var __jsx = _react["default"].createElement;
+var __jsx = _react.default.createElement;
 
-var Select = (function(_React$Component) {
-  (0, _inherits2["default"])(Select, _React$Component);
-
-  function Select(props) {
-    (0, _classCallCheck2["default"])(this, Select);
-    return (0, _possibleConstructorReturn2["default"])(this, (0, _getPrototypeOf2["default"])(Select).call(this, props));
+class Select extends _react.default.Component {
+  constructor(props) {
+    super(props);
   }
 
-  (0, _createClass2["default"])(Select, [
-    {
-      key: "render",
-      value: function render() {
-        var _this$props = this.props,
+  render() {
+    const _this$props = this.props,
           options = _this$props.options,
-          props = (0, _objectWithoutProperties2["default"])(_this$props, ["options"]);
+          props = (0, _objectWithoutProperties2.default)(_this$props, ["options"]);
 
-        var Option = function Option(_ref) {
-          var children = _ref.children,
-            props = (0, _objectWithoutProperties2["default"])(_ref, ["children"]);
-          return __jsx(
-            "option",
-            (0, _extends2["default"])({}, props, {
-              __source: {
-                fileName: _jsxFileName,
-                lineNumber: 14
-              },
-              __self: this
-            }),
-            children
-          );
-        };
-      }
-    }
-  ]);
-  return Select;
-})(_react["default"].Component);
+    const Option = (_ref) => {
+      let children = _ref.children,
+          props = (0, _objectWithoutProperties2.default)(_ref, ["children"]);
+      return __jsx("option", (0, _extends2.default)({}, props, {
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 14
+        },
+        __self: this
+      }), children);
+    };
+  }
+
+}
 
 exports.Select = Select;

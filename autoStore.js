@@ -1,10 +1,47 @@
-import { autorun } from "mobx";
+import { autorun, toJS } from "mobx";
 
-export const makeLocalStorage = () => ({
-  get: name => JSON.parse(localStorage.getItem(name)),
-  set: (name, data) => localStorage.setItem(name, JSON.stringify(data)),
-  remove: name => localStorage.removeItem(name)
+export const makeLocalStorage = () => {
+  if(global.window && window.localStorage)
+    return {
+      get: name => JSON.parse(window.localStorage.getItem(name)),
+      set: (name, data) => window.localStorage.setItem(name, JSON.stringify(data)),
+      remove: name => window.localStorage.removeItem(name)
+    };
+  return {
+    get: name => ({}),
+    set: (name, data) => undefined,
+    remove: name => undefined
+  };
+};
+
+export const logStoreAdapter = store => {
+  return {
+    store,
+    get: function(name) {return this.store.get(name); },
+    set: function(name, data) {return this.store && this.store.set ? this.store.set(name, data) : null; },
+    remove: function(name) {return this.store && this.store.remove ? this.store.remove(name) : null; }
+  };
+};
+
+export const makeLocalStore = name => ({
+  name,
+  storage: makeLocalStorage(),
+  get() {
+    //console.log(`localStore[${this.name}].get()`);
+    return this.storage.get(this.name);
+  },
+  set(data) {
+    //console.log(`localStore[${this.name}].set(data)`);
+
+    return this.storage.set(this.name, data);
+  },
+  remove() {
+    //console.log(`localStore[${this.name}].remove()`);
+
+    return this.storage.remove(this.name);
+  }
 });
+
 export const makeDummyStorage = () => ({
   get: name => null,
   set: (name, data) => {},
@@ -18,9 +55,9 @@ export function getLocalStorage() {
   return getLocalStorage.store;
 }
 
-export const makeAutoStoreHandler = (name, _class) => {
-  const store = getLocalStorage();
-  return (_this, _member) => {
+export const makeAutoStoreHandler = (name, store) => {
+  if(!store) store = getLocalStorage();
+  var fn = function(_this, _member) {
     let firstRun = false; //true;
     // will run on change
     const disposer = autorun(() => {
@@ -28,20 +65,20 @@ export const makeAutoStoreHandler = (name, _class) => {
       if(firstRun) {
         const existingStore = store.get(name);
         if(existingStore) {
-          /*          if(_class)
-            _class.setState({ [name]: existingStore });
-          else*/
           _this[_member] = existingStore;
-          _class.setSource("local", _member);
-          //console.log("AUTO RUN localStore '" + name + "' READ " + Object.keys(existingStore).length + ' keys');
         }
       }
       const updatedStore = _this[_member];
 
+      /*      console.log("AutoStoreHandler: ", {
+        name,
+        obj: toJS(_this),
+        key: _member,
+        value: toJS(updatedStore)
+      });*/
+
       if(updatedStore) {
-        //console.log("AUTO store '" + name + "' WRITE " + Object.keys(updatedStore).length + ' keys');
-        // from then on serialize and save to localStorage
-        store.set(name, updatedStore);
+        fn.update ? fn.update(updatedStore) : store.set(name, updatedStore);
       } else {
         store.remove(name);
       }
@@ -49,4 +86,17 @@ export const makeAutoStoreHandler = (name, _class) => {
     firstRun = false;
     return disposer;
   };
+  fn.update = function(updatedStore) {
+    try {
+      store.set(name, updatedStore);
+    } catch(err) {
+      //console.log("ERROR: ", err);
+    }
+  };
+
+  fn.set = store.set;
+  fn.get = store.get;
+  fn.remove = store.remove;
+
+  return fn;
 };

@@ -1,125 +1,118 @@
-var _regeneratorRuntime = require("@babel/runtime/regenerator");
+"use strict";
 
-var axios = require("axios");
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var Util = require("./util.es5.js");
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.httpClient = exports.axios = exports.default = void 0;
 
-var httpClient = (function() {
-  var client = axios.create({
+require("core-js/modules/es6.promise");
+
+require("core-js/modules/es6.object.to-string");
+
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+
+require("regenerator-runtime/runtime");
+
+var _axios = _interopRequireDefault(require("axios"));
+
+var _util = _interopRequireDefault(require("./util.es5.js"));
+
+const httpClient = (() => {
+  const client = _axios.default.create({
     withCredentials: true
   });
-  client.interceptors.response.use(
-    function(res) {
-      var data = res.data,
-        status = res.status,
-        statusText = res.statusText,
-        headers = res.headers,
-        config = res.config,
-        request = res.request;
-      return res;
-    },
-    function _callee(err) {
-      var _ref, code, config, request, _ref2, url, method, data;
 
-      return _regeneratorRuntime.async(
-        function _callee$(_context) {
-          while(1) {
-            switch ((_context.prev = _context.next)) {
-              case 0:
-                _context.next = 2;
-                return _regeneratorRuntime.awrap(err);
+  client.interceptors.response.use(res => {
+    const data = res.data,
+          status = res.status,
+          statusText = res.statusText,
+          headers = res.headers,
+          config = res.config,
+          request = res.request;
+    return res;
+  }, err => {
+    var _ref, code, config, request, _ref2, url, method, data;
 
-              case 2:
-                _ref = _context.sent;
-                code = _ref.code;
-                config = _ref.config;
-                request = _ref.request;
-                _context.next = 8;
-                return _regeneratorRuntime.awrap(config);
+    return _regenerator.default.async(function _callee$(_context) {
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          _context.next = 2;
+          return _regenerator.default.awrap(err);
 
-              case 8:
-                _context.t0 = _context.sent;
+        case 2:
+          _ref = _context.sent;
+          code = _ref.code;
+          config = _ref.config;
+          request = _ref.request;
+          _context.next = 8;
+          return _regenerator.default.awrap(config);
 
-                if(_context.t0) {
-                  _context.next = 11;
-                  break;
-                }
+        case 8:
+          _context.t0 = _context.sent;
 
-                _context.t0 = {};
-
-              case 11:
-                _ref2 = _context.t0;
-                url = _ref2.url;
-                method = _ref2.method;
-                data = _ref2.data;
-                console.error("axios ERROR:", {
-                  code: code,
-                  url: url,
-                  method: method,
-                  data: data
-                });
-
-              case 16:
-              case "end":
-                return _context.stop();
-            }
+          if (_context.t0) {
+            _context.next = 11;
+            break;
           }
-        },
-        null,
-        null,
-        null,
-        Promise
-      );
-    }
-  );
 
-  var request = function request(fn) {
-    var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "call";
-    return function _callee2() {
-      var args,
+          _context.t0 = {};
+
+        case 11:
+          _ref2 = _context.t0;
+          url = _ref2.url;
+          method = _ref2.method;
+          data = _ref2.data;
+          console.error("axios ERROR:", {
+            code,
+            url,
+            method,
+            data
+          });
+
+        case 16:
+        case "end":
+          return _context.stop();
+      }
+    }, null, null, null, Promise);
+  });
+
+  let request = (fn, name = "call") => function _callee2() {
+    var args,
         _args2 = arguments;
-      return _regeneratorRuntime.async(
-        function _callee2$(_context2) {
-          while(1) {
-            switch ((_context2.prev = _context2.next)) {
-              case 0:
-                args = Array.prototype.slice.call(_args2);
+    return _regenerator.default.async(function _callee2$(_context2) {
+      while (1) switch (_context2.prev = _context2.next) {
+        case 0:
+          args = [..._args2];
 
-                if(typeof args[0] == "string" && args[0].startsWith("/")) {
-                  args[0] = Util.makeURL({
-                    location: args[0]
-                  });
-                }
-
-                _context2.next = 4;
-                return _regeneratorRuntime.awrap(fn.apply(client, args));
-
-              case 4:
-                return _context2.abrupt("return", _context2.sent);
-
-              case 5:
-              case "end":
-                return _context2.stop();
-            }
+          if (typeof args[0] == "string" && args[0].startsWith("/")) {
+            args[0] = _util.default.makeURL({
+              location: args[0]
+            });
           }
-        },
-        null,
-        null,
-        null,
-        Promise
-      );
-    };
+
+          _context2.next = 4;
+          return _regenerator.default.awrap(fn.apply(client, args));
+
+        case 4:
+          return _context2.abrupt("return", _context2.sent);
+
+        case 5:
+        case "end":
+          return _context2.stop();
+      }
+    }, null, null, null, Promise);
   };
 
-  var ret = request(client);
+  let ret = request(client);
   ret.post = request(client.post, "post");
   ret.get = request(client.get, "get");
   ret.head = request(client.head, "head");
   return ret;
 })();
 
-if(global.window) window.axios = httpClient;
-module.exports = httpClient;
-module.exports["default"] = httpClient;
-module.exports.axios = httpClient;
-module.exports.httpClient = httpClient;
+exports.httpClient = exports.axios = httpClient;
+if (global.window) window.axios = httpClient;
+var _default = httpClient;
+exports.default = _default;

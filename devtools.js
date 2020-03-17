@@ -3,7 +3,7 @@ import React from "react";
 import dom, {TRBL, CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, Line, Matrix, Point, PointList, Rect, RGBA, Size, SVG, Timer, ReactComponent, Node } from "./dom.js";
 import { SvgOverlay, SvgPathTracer } from "./svg-overlay.js";
 import { SvgPath } from "./svg-path.js";
-import Util, { parseDate } from "./util.js";
+import Util from "./util.js";
 import { toJS } from "mobx";
 import { trkl } from "./trkl.js";
 import HashList from "./hashList.js";
@@ -1028,7 +1028,6 @@ export const devtools = {
   colors,
   Util,
   toJS,
-  parseDate,
   mobx: { toJS }
 };
 

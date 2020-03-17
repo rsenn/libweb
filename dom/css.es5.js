@@ -7,111 +7,48 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.CSS = void 0;
 
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
+require("core-js/modules/web.dom.iterable");
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+require("core-js/modules/es6.object.to-string");
 
 var _util = _interopRequireDefault(require("../util.es5.js"));
 
-var CSS = (function() {
-  function CSS() {
-    (0, _classCallCheck2["default"])(this, CSS);
+class CSS {
+  static list(doc) {
+    if (!doc) doc = window.document;
+
+    const getStyleMap = (obj, key) => {
+      let rule = _util.default.find(obj, item => item["selectorText"] == key);
+
+      return _util.default.adapter(rule, obj => obj && obj.styleMap && obj.styleMap.size !== undefined ? obj.styleMap.size : 0, (obj, i) => [...obj.styleMap.keys()][i], (obj, key) => obj.styleMap.getAll(key).map(v => String(v)).join(" "));
+    };
+
+    const getStyleSheet = (obj, key) => {
+      let sheet = _util.default.find(obj, entry => entry.href == key || entry.ownerNode.id == key) || obj[key];
+      return _util.default.adapter(sheet.rules, obj => obj && obj.length !== undefined ? obj.length : 0, (obj, i) => obj[i].selectorText, getStyleMap);
+    };
+
+    return _util.default.adapter([...doc.styleSheets], obj => obj.length, (obj, i) => obj[i].href || obj[i].ownerNode.id || i, getStyleSheet);
   }
 
-  (0, _createClass2["default"])(CSS, null, [
-    {
-      key: "list",
-      value: function list(doc) {
-        if(!doc) doc = window.document;
+  static styles(stylesheet) {
+    const list = stylesheet && stylesheet.cssRules ? [stylesheet] : CSS.list(stylesheet);
 
-        var getStyleMap = function getStyleMap(obj, key) {
-          var rule = _util["default"].find(obj, function(item) {
-            return item["selectorText"] == key;
-          });
+    let ret = _util.default.array();
 
-          return _util["default"].adapter(
-            rule,
-            function(obj) {
-              return obj && obj.styleMap && obj.styleMap.size !== undefined ? obj.styleMap.size : 0;
-            },
-            function(obj, i) {
-              return (0, _toConsumableArray2["default"])(obj.styleMap.keys())[i];
-            },
-            function(obj, key) {
-              return obj.styleMap
-                .getAll(key)
-                .map(function(v) {
-                  return String(v);
-                })
-                .join(" ");
-            }
-          );
-        };
+    list.forEach(s => {
+      let rules = [...s.cssRules];
+      rules.forEach(rule => {
+        ret.push(rule.cssText);
+      });
+    });
+    return ret;
+  }
 
-        var getStyleSheet = function getStyleSheet(obj, key) {
-          var sheet =
-            _util["default"].find(obj, function(entry) {
-              return entry.href == key || entry.ownerNode.id == key;
-            }) || obj[key];
-          return _util["default"].adapter(
-            sheet.rules,
-            function(obj) {
-              return obj && obj.length !== undefined ? obj.length : 0;
-            },
-            function(obj, i) {
-              return obj[i].selectorText;
-            },
-            getStyleMap
-          );
-        };
+  static classes(selector = "*") {
+    return Element.findAll(selector).filter(e => e.classList.length).map(e => [...e.classList]).flat().unique();
+  }
 
-        return _util["default"].adapter(
-          (0, _toConsumableArray2["default"])(doc.styleSheets),
-          function(obj) {
-            return obj.length;
-          },
-          function(obj, i) {
-            return obj[i].href || obj[i].ownerNode.id || i;
-          },
-          getStyleSheet
-        );
-      }
-    },
-    {
-      key: "styles",
-      value: function styles(stylesheet) {
-        var list = stylesheet && stylesheet.cssRules ? [stylesheet] : CSS.list(stylesheet);
-
-        var ret = _util["default"].array();
-
-        list.forEach(function(s) {
-          var rules = (0, _toConsumableArray2["default"])(s.cssRules);
-          rules.forEach(function(rule) {
-            ret.push(rule.cssText);
-          });
-        });
-        return ret;
-      }
-    },
-    {
-      key: "classes",
-      value: function classes() {
-        var selector = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "*";
-        return Element.findAll(selector)
-          .filter(function(e) {
-            return e.classList.length;
-          })
-          .map(function(e) {
-            return (0, _toConsumableArray2["default"])(e.classList);
-          })
-          .flat()
-          .unique();
-      }
-    }
-  ]);
-  return CSS;
-})();
+}
 
 exports.CSS = CSS;

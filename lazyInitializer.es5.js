@@ -9,19 +9,15 @@ exports.valueInitializer = valueInitializer;
 
 var _trkl = require("./trkl.es5.js");
 
-function Instance(_ref) {
-  var _ref$trackable = _ref.trackable,
-    trackable = _ref$trackable === void 0 ? false : _ref$trackable,
-    callback = _ref.callback,
-    _ref$initVal = _ref.initVal,
-    initVal = _ref$initVal === void 0 ? null : _ref$initVal;
-  var inst = trackable && trackable.subscribe !== undefined ? trackable : (0, _trkl.trkl)(initVal);
-  if(callback)
-    inst.subscribe(function(value) {
-      return callback(value, inst);
-    });
-  inst.subscribe(function(newVal) {
-    if(newVal) console.log("new instance: ", value);
+function Instance({
+  trackable = false,
+  callback,
+  initVal = null
+}) {
+  let inst = trackable && trackable.subscribe !== undefined ? trackable : (0, _trkl.trkl)(initVal);
+  if (callback) inst.subscribe(value => callback(value, inst));
+  inst.subscribe(newVal => {
+    if (newVal) console.log("new instance: ", value);
   });
 
   _trkl.trkl.property(inst, "current", inst);
@@ -29,29 +25,24 @@ function Instance(_ref) {
   return inst;
 }
 
-function TrackedInstance() {
-  var initVal = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-
-  var callback = function callback(value) {};
+function TrackedInstance(initVal = null) {
+  const callback = value => {};
 
   var inst = Instance({
     trackable: true,
-    callback: callback,
-    initVal: initVal
+    callback,
+    initVal
   });
   return inst;
 }
 
-function lazyInitializer(fn) {
-  var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+function lazyInitializer(fn, opts = {}) {
   var instance = (0, _trkl.trkl)();
 
-  var ret = function ret() {
-    var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-
-    if(value === null) {
-      if(!instance()) {
-        var initVal = fn(instance);
+  var ret = (value = null) => {
+    if (value === null) {
+      if (!instance()) {
+        const initVal = fn(instance);
         instance(initVal);
       }
 
