@@ -64,7 +64,7 @@ const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", 
  *
  * @class      Util (name)
  */
-export function Util() {}
+export default function Util() {}
 
 Util.isDebug = function() {
   if(process !== undefined && process.env.NODE_ENV === "production") return false;
@@ -1625,4 +1625,3 @@ Util.getImageAverageColor = function(imageElement, options) {
   });
   return o;
 };
-export default Util;

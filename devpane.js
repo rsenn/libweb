@@ -16,17 +16,64 @@ if(global.window) {
 }*/
 
 export default class devpane {
-
   bbrect = lazyInitializer(() => Element.rect(this.parent));
-  pane = lazyInitializer(() => {let pos = { right: "2em", bottom: "1em" }; if(this.config.has("position")) {let p = this.config.get("position"); pos = { left: `${p.x}px`, top: `${p.y}px` }; } let layer = this.createLayer({ id: "devpane-pane" }, {zIndex: 18, minWidth: "300px", maxWidth: "80vw", minHeight: "30vh", maxHeight: "60vh", overflowY: "auto", /*   overflowX: 'auto',*/ display: "block", position: "absolute", ...pos, backgroundColor: "#fffab3ff", WebkitBoxShadow: "2px 2px 6px 2px rgba(0,0,0,0.5)", BoxShadow: "2px 2px 6px 2px rgba(0,0,0,1)", border: "4px solid #ff0000ff", borderRadius: "0.5em", padding: "0px", opacity: 1, textAlign: "left", fontFamily: 'MiscFixedSC613,MiscFixed,Monospace,fixed-width,fixed,"Courier New"', fontSize: "11px"} ); let p = this.renderPaneLayer(layer); /*   layer.appendChild(p); */ return layer; });
-  root = lazyInitializer(() => {let e = this.createRectLayer(this.bbrect(), { width: "", height: "", top: "", bottom: "10px", right: "10px", left: "" }); e.id = "devpane-root"; return e; });
-  svg = lazyInitializer(() => {const rect = Element.rect(document.body); const svg = this.createSVGElement("svg", { width: rect.width, height: rect.height, viewBox: `0 0 ${rect.width} ${rect.height}` }, this.root()); this.createSVGElement("defs", {}, svg); this.createSVGElement("rect", { x: 100, y: 100, w: 100, h: 100, fill: "#f0f" }, svg); return svg; });
+  pane = lazyInitializer(() => {
+    let pos = { right: "2em", bottom: "1em" };
+    if(this.config.has("position")) {
+      let p = this.config.get("position");
+      pos = { left: `${p.x}px`, top: `${p.y}px` };
+    }
+    let layer = this.createLayer(
+      { id: "devpane-pane" },
+      {
+        zIndex: 18,
+        minWidth: "300px",
+        maxWidth: "80vw",
+        minHeight: "30vh",
+        maxHeight: "60vh",
+        overflowY: "auto",
+        /*   overflowX: 'auto',*/ display: "block",
+        position: "absolute",
+        ...pos,
+        backgroundColor: "#fffab3ff",
+        WebkitBoxShadow: "2px 2px 6px 2px rgba(0,0,0,0.5)",
+        BoxShadow: "2px 2px 6px 2px rgba(0,0,0,1)",
+        border: "4px solid #ff0000ff",
+        borderRadius: "0.5em",
+        padding: "0px",
+        opacity: 1,
+        textAlign: "left",
+        fontFamily: 'MiscFixedSC613,MiscFixed,Monospace,fixed-width,fixed,"Courier New"',
+        fontSize: "11px"
+      }
+    );
+    let p = this.renderPaneLayer(layer);
+    /*   layer.appendChild(p); */ return layer;
+  });
+  root = lazyInitializer(() => {
+    let e = this.createRectLayer(this.bbrect(), { width: "", height: "", top: "", bottom: "10px", right: "10px", left: "" });
+    e.id = "devpane-root";
+    return e;
+  });
+  svg = lazyInitializer(() => {
+    const rect = Element.rect(document.body);
+    const svg = this.createSVGElement("svg", { width: rect.width, height: rect.height, viewBox: `0 0 ${rect.width} ${rect.height}` }, this.root());
+    this.createSVGElement("defs", {}, svg);
+    this.createSVGElement("rect", { x: 100, y: 100, w: 100, h: 100, fill: "#f0f" }, svg);
+    return svg;
+  });
   log = lazyInitializer(() => this.createLayer({ tag: "pre", id: "devpane-log" }, { position: "relative", maxHeight: "100px", overflowY: "scroll", overflowX: "auto", display: "block", border: "1px solid #000000ff", padding: "2px", textAlign: "left", fontFamily: "MiscFixedSC613,Fixed,MiscFixed,Monospace,fixed-width", fontSize: "12px" }));
 
   getTranslations(done = () => {}) {
     const filename = "static/locales/fa-IR/common.json";
     const nl = "\r\n";
-    ws({recv: filename, data: x => {this.translations = x; done(x); } });
+    ws({
+      recv: filename,
+      data: x => {
+        this.translations = x;
+        done(x);
+      }
+    });
   }
 
   constructor(node = "body", observe = ".page") {
@@ -57,8 +104,7 @@ export default class devpane {
     this.open = !this.open;
     //console.log("devpane.toggleOpenClose open=" + this.open);
     this.config.assign({ open: this.open });
-    if(this.pane())
-      this.pane().style.display = this.open ? "inline-block" : "none";
+    if(this.pane()) this.pane().style.display = this.open ? "inline-block" : "none";
     if(this.open) {
       //this.pane.style.display = 'inline-block';
       //if(global.window)  this.rectList = this.buildRectList(document.body);
@@ -86,7 +132,12 @@ export default class devpane {
     }
 
     if(this.open) {
-      const table = this.renderTable(["entity", "source"], rows, {cellspacing: 0, style: {/*width: '100%'*/ } });
+      const table = this.renderTable(["entity", "source"], rows, {
+        cellspacing: 0,
+        style: {
+          /*width: '100%'*/
+        }
+      });
       let pane = this.pane();
       while(pane.lastElementChild && pane.lastElementChild.tagName.toLowerCase() == "table") {
         pane.removeChild(pane.lastElementChild);
@@ -283,7 +334,7 @@ export default class devpane {
   }
 
   createRectLayer(rect, css = {}, fn = Element.create) {
-    return fn("div", {parent: Element.find("body"), style: {display: "inline-block", zIndex: 18, position: "absolute", /*pointerEvents: "none",*/ ...(rect ? Rect.toCSS(rect) : {}), ...css } });
+    return fn("div", { parent: Element.find("body"), style: { display: "inline-block", zIndex: 18, position: "absolute", /*pointerEvents: "none",*/ ...(rect ? Rect.toCSS(rect) : {}), ...css } });
   }
 
   createLayer(props = {}, css = {}, fn = Element.create) {

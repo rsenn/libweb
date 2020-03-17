@@ -227,5 +227,4 @@ export class SwipeTracker {
   }
 }
 
-
 export default SwipeTracker;
