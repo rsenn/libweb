@@ -12,14 +12,16 @@ const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", 
   if(typeof subject == "string") return `'${subject}'`;
 
   if(subject != null && subject["y2"] !== undefined) {
-    return "rect[" + spacing + subject["x"] + separator + subject["y"] + " | " + subject["x2"] + separator + subject["y2"] + " (" + subject["w"] + "x" + subject["h"] + ")" + " ]";
+    return `rect[${spacing}${subject["x"]}${separator}${subject["y"]} | ${subject["x2"]}${separator}${subject["y2"]} (${subject["w"]}x${subject["h"]}) ]`;
   }
   if(typeof subject == "object" && "map" in subject && typeof subject.map == "function") {
     //subject instanceof Array || (subject && subject.length !== undefined)) {
-    return "[" + nl + /*(opts.depth <= 0) ? subject.length + '' : */ subject.map(i => formatAnnotatedObject(i, opts)).join(separator + nl) + "]";
+    return (
+      /*(opts.depth <= 0) ? subject.length + '' : */ `[${nl}${/*(opts.depth <= 0) ? subject.length + '' : */ subject.map(i => formatAnnotatedObject(i, opts)).join(separator + nl)}]`
+    );
   }
   if(typeof subject === "string" || subject instanceof String) {
-    return "'" + subject + "'";
+    return `'${subject}'`;
   }
   let longest = "";
   let r = [];
@@ -32,24 +34,24 @@ const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", 
     if(typeof subject[k] === "symbol") {
       s = "Symbol";
     } else if(typeof subject[k] === "string" || subject[k] instanceof String) {
-      s = "'" + subject[k] + "'";
+      s = `'${subject[k]}'`;
     } else if(typeof subject[k] === "function") {
       s = Util.fnName(s) || "function";
       s += "()";
     } else if(typeof subject[k] === "number" || typeof subject[k] === "boolean") {
-      s = "" + subject[k];
+      s = `${subject[k]}`;
     } else if(subject[k] === null) {
       s = "null";
     } else if(subject[k] && subject[k].length !== undefined) {
       try {
-        s = depth <= 0 ? `Array(${subject[k].length})` : "[ " + subject[k].map(item => formatAnnotatedObject(item, opts)).join(", ") + " ]";
+        s = depth <= 0 ? `Array(${subject[k].length})` : `[ ${subject[k].map(item => formatAnnotatedObject(item, opts)).join(", ")} ]`;
       } catch(err) {
-        s = "[" + subject[k] + "]";
+        s = `[${subject[k]}]`;
       }
     } else if(subject[k] && subject[k].toSource !== undefined) {
       s = subject[k].toSource();
     } else if(opts.depth >= 0) {
-      s = s.length > maxlen ? "[Object " + Util.objName(subject[k]) + "]" : formatAnnotatedObject(subject[k], opts);
+      s = s.length > maxlen ? `[Object ${Util.objName(subject[k])}]` : formatAnnotatedObject(subject[k], opts);
     }
     r.push([k, s]);
   }
@@ -62,7 +64,7 @@ const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", 
   }
   //padding = x => '';
 
-  let ret = "{" + opts.newline + r.map(arr => padding(arr[0]) + arr[0] + ":" + spacing + arr[1]).join(j) + opts.newline + "}";
+  let ret = `{${opts.newline}${r.map(arr => `${padding(arr[0]) + arr[0]}:${spacing}${arr[1]}`).join(j)}${opts.newline}}`;
   return ret;
 };
 /**
@@ -93,7 +95,7 @@ Util.isDebug = function() {
 };
 */
 Util.log = (function() {
-  var log = Math.log;
+  const log = Math.log;
   return function(n, base) {
     return log(n) / (base ? log(base) : 1);
   };
@@ -106,9 +108,9 @@ Util.generalLog = function(n, x) {
   return Math.log(x) / Math.log(n);
 };
 Util.toSource = function(arg) {
-  if(typeof arg == "string") return "'" + arg + "'";
+  if(typeof arg == "string") return `'${arg}'`;
   if(arg && arg.x !== undefined && arg.y !== undefined) {
-    return "[" + arg.x + "," + arg.y + "]";
+    return `[${arg.x},${arg.y}]`;
   }
   if(arg && arg.toSource) return arg.toSource();
   let cls = arg && arg.constructor && Util.fnName(arg.constructor);
@@ -137,8 +139,8 @@ Util.debug = function(message) {
   //Util.log.apply(Util, args)
 };
 
-Util.type = function(obj) {
-  return (obj.type && String(obj.type).split(/[ ()]/)[1]) || "";
+Util.type = function({type}) {
+  return (type && String(type).split(/[ ()]/)[1]) || "";
 };
 
 Util.functionName = function(fn) {
@@ -147,8 +149,8 @@ Util.functionName = function(fn) {
   return null;
 };
 
-Util.className = function(obj) {
-  return Util.functionName(obj.constructor);
+Util.className = function({constructor}) {
+  return Util.functionName(constructor);
 };
 
 Util.unwrapComponent = function(c) {
@@ -344,8 +346,8 @@ Util.abbreviate = function(str, max, suffix = "...") {
 };
 
 Util.trim = function(str, charset) {
-  const r1 = RegExp("^[" + charset + "]*");
-  const r2 = RegExp("[" + charset + "]*$");
+  const r1 = RegExp(`^[${charset}]*`);
+  const r2 = RegExp(`[${charset}]*$`);
   return str.replace(r1, "").replace(r2, "");
 };
 
@@ -402,7 +404,7 @@ Util.extendArray = function(arr = Array.prototype) {
   });*/
 };
 Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index) => obj.key(index), getItem = (obj, key) => obj[key], setItem = (obj, index, value) => (obj[index] = value)) {
-  var adapter = {
+  const adapter = {
     get length() {
       return getLength(obj);
     },
@@ -419,7 +421,7 @@ Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index
       return setItem(obj, key, value);
     },
     *keys() {
-      var length = getLength(obj);
+      const length = getLength(obj);
       for(let i = 0; i < length; i++) yield getKey(obj, i);
     },
     *entries() {
@@ -481,8 +483,8 @@ Util.extendMap = function(map) {
   map.toObject = function() {
     return Object.fromEntries(this.entries());
   };
-  map.match = function() {
-    return Util.match.apply(this, arguments);
+  map.match = function(...args) {
+    return Util.match.apply(this, args);
   };
 };
 Util.objectFrom = function(any) {
@@ -497,7 +499,7 @@ Util.tail = function(arr) {
 };
 
 Util.splice = function(str, index, delcount, insert) {
-  var chars = str.split("");
+  const chars = str.split("");
   Array.prototype.splice.apply(chars, arguments);
   return chars.join("");
 };
@@ -511,7 +513,7 @@ Util.keyOf = function(obj, prop) {
 };
 
 Util.rotateRight = function(arr, n) {
-  arr.unshift.apply(arr, arr.splice(n, arr.length));
+  arr.unshift(...arr.splice(n, arr.length));
   return arr;
 };
 
@@ -540,9 +542,9 @@ Util.flatten = function(arr) {
   return ret;
 };
 Util.chunkArray = function(myArray, chunk_size) {
-  var index = 0;
-  var arrayLength = myArray.length;
-  var tempArray = [];
+  let index = 0;
+  const arrayLength = myArray.length;
+  const tempArray = [];
 
   for(index = 0; index < arrayLength; index += chunk_size) {
     myChunk = myArray.slice(index, index + chunk_size);
@@ -571,7 +573,7 @@ Util.sum = function(arr) {
 
 Util.fnName = function(f, parent) {
   if(f !== undefined && f.name !== undefined) return f.name;
-  const s = f.toSource ? f.toSource() : f + "";
+  const s = f.toSource ? f.toSource() : `${f}`;
   const matches = /([A-Za-z_][0-9A-Za-z_]*)\w*[(\]]/.exec(s);
   if(matches) return matches[1];
   if(parent !== undefined) {
@@ -589,11 +591,11 @@ Util.keys = function(obj) {
 };
 
 Util.objName = function(o) {
-  if(o === undefined || o == null) return o + "";
+  if(o === undefined || o == null) return `${o}`;
   if(typeof o === "function" || o instanceof Function) return Util.fnName(o);
 
   if(o.constructor) return Util.fnName(o.constructor);
-  const s = o.type + "";
+  const s = `${o.type}`;
   return s;
 };
 
@@ -614,8 +616,7 @@ Util.find = function(arr, value, prop = "id", acc = Util.array()) {
     };
   } else pred = obj => obj[prop] == value;
 
-  for(let k = 0; k < arr.length; k++) {
-    let v = arr[k];
+  for (let v of arr) {
     //console.log("v: ", v, "k:", k);
     /*if(Util.isArray(v)) {
       for(let i = 0; i < v.length; i++)
@@ -623,9 +624,10 @@ Util.find = function(arr, value, prop = "id", acc = Util.array()) {
           return v[i];
 
     } else */ {
-      if(pred(v)) return v;
-    }
+        if(pred(v)) return v;
+      }
   }
+
   return null;
 };
 
@@ -661,10 +663,10 @@ Util.match = function(arg, pred) {
 Util.toHash = function(map, keyTransform = k => Util.camelize(k)) {
   let ret = {};
 
-  for(let i = 0; i < map.length; i++) {
-    const key = map[i];
+  map.forEach(key => {
     ret[keyTransform(key)] = map[key];
-  }
+  });
+
   return ret;
 };
 
@@ -685,10 +687,10 @@ Util.injectProps = function(options) {
 Util.toString = function() {};
 
 Util.dump = function(name, props) {
-  var args = [name];
+  const args = [name];
 
   for(let key in props) {
-    args.push("\n\t" + key + ": ");
+    args.push(`\n\t${key}: `);
     args.push(props[key]);
   }
 
@@ -722,8 +724,8 @@ Util.camelize = function(text, sep = "") {
 Util.decamelize = (str, separator = "-") =>
   /[A-Z]/.test(str)
     ? str
-        .replace(/([a-z\d])([A-Z])/g, "$1" + separator + "$2")
-        .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, "$1" + separator + "$2")
+        .replace(/([a-z\d])([A-Z])/g, `$1${separator}$2`)
+        .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, `$1${separator}$2`)
         .toLowerCase()
     : str;
 
@@ -887,7 +889,7 @@ Util.logOutClearStorage = function() {
 
 //Take the cookies
 Util.getCookie = function(cookie, name) {
-  let arr = cookie.match(new RegExp("(^| )" + name + "=([^;]*)(;|$)"));
+  let arr = cookie.match(new RegExp(`(^| )${name}=([^;]*)(;|$)`));
   if(arr != null) return unescape(arr[2]);
   return null;
 };
@@ -944,15 +946,15 @@ Util.setCookies = c =>
   });
 
 Util.clearCookies = function(c) {
-  return Util.setCookies(Object.keys(Util.parseCookie(c)).reduce((acc, name) => Object.assign(acc, { [name]: "; max-age=0; expires=" + new Date().toUTCString() }), {}));
+  return Util.setCookies(Object.keys(Util.parseCookie(c)).reduce((acc, name) => Object.assign(acc, { [name]: `; max-age=0; expires=${new Date().toUTCString()}` }), {}));
 };
 
 Util.deleteCookie = function(name) {
-  if(global.window) document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+  if(global.window) document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
 };
 
 Util.accAdd = function(arg1, arg2) {
-  var r1, r2, m;
+  let r1, r2, m;
   try {
     r1 = arg1.toString().split(".")[1].length;
   } catch(e) {
@@ -969,7 +971,7 @@ Util.accAdd = function(arg1, arg2) {
 //js subtraction calculation
 //
 Util.Subtr = function(arg1, arg2) {
-  var r1, r2, m, n;
+  let r1, r2, m, n;
   try {
     r1 = arg1.toString().split(".")[1].length;
   } catch(e) {
@@ -990,10 +992,10 @@ Util.Subtr = function(arg1, arg2) {
 //js division function
 //
 Util.accDiv = function(arg1, arg2) {
-  var t1 = 0;
-  var t2 = 0;
-  var r1;
-  var r2;
+  let t1 = 0;
+  let t2 = 0;
+  let r1;
+  let r2;
   try {
     t1 = arg1.toString().split(".")[1].length;
   } catch(e) {}
@@ -1008,9 +1010,9 @@ Util.accDiv = function(arg1, arg2) {
 //js multiplication function
 //
 Util.accMul = function(arg1, arg2) {
-  var m = 0;
-  var s1 = arg1.toString();
-  var s2 = arg2.toString();
+  let m = 0;
+  const s1 = arg1.toString();
+  const s2 = arg2.toString();
   try {
     m += s1.split(".")[1].length;
   } catch(e) {}
@@ -1060,7 +1062,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
   }
   try {
     if(object === Object(object)) {
-      for(var property in object) {
+      for(const property in object) {
         const desc = Object.getOwnPropertyDescriptor(object, property);
         //console.log('x ', {property, desc})
         if(property.indexOf("$") !== 0 && typeof object[property] !== "function" && !desc.get && !desc.set) {
@@ -1072,7 +1074,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
             }
           }
           //if (Object.prototype.hasOwnProperty.call(object, property)) {
-          Util.searchObject(object[property], matchCallback, currentPath + "." + property, result, searched);
+          Util.searchObject(object[property], matchCallback, `${currentPath}.${property}`, result, searched);
           //}
         }
       }
@@ -1122,7 +1124,7 @@ Util.parseQuery = function(url = Util.getURL()) {
 };
 Util.encodeQuery = function(data) {
   const ret = Util.array();
-  for(let d in data) ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
+  for(let d in data) ret.push(`${encodeURIComponent(d)}=${encodeURIComponent(data[d])}`);
   return ret.join("&");
 };
 Util.parseURL = function(href = this.getURL()) {
@@ -1154,7 +1156,7 @@ Util.parseURL = function(href = this.getURL()) {
     href(override) {
       if(typeof override === "object") Object.assign(this, override);
       const qstr = Util.encodeQuery(this.query);
-      return (this.protocol ? `${this.protocol}://` : "") + (this.host ? this.host : "") + (this.port ? ":" + this.port : "") + `${this.location}` + (qstr != "" ? "?" + qstr : "");
+      return (this.protocol ? `${this.protocol}://` : "") + (this.host ? this.host : "") + (this.port ? `:${this.port}` : "") + `${this.location}` + (qstr != "" ? `?${qstr}` : "");
     }
   };
 };
@@ -1216,7 +1218,7 @@ Util.mergeLists = function(arr1, arr2, key = "id") {
   return ret;
 };
 Util.throttle = function(fn, wait) {
-  var time = Date.now();
+  let time = Date.now();
   return function() {
     if(time + wait - Date.now() < 0) {
       fn();
@@ -1247,7 +1249,7 @@ Util.reduce = function(obj, fn, accu) {
   for(let key in obj) accu = fn(accu, obj[key], key, obj);
   return accu;
 };
-var map = Util.map;
+const map = Util.map;
 Util.map = function(obj, fn) {
   if(!fn) return map(obj);
   let ret = {};
@@ -1316,9 +1318,9 @@ Util.formatTime = function(date = new Date(), format = "HH:MM:SS") {
     while(format[i] == format[i + n]) n++;
     const fmt = format.substring(i, i + n);
     let num = fmt;
-    if(fmt.startsWith("H")) num = ("0" + date.getHours()).substring(0, n);
-    else if(fmt.startsWith("M")) num = ("0" + date.getMinutes()).substring(0, n);
-    else if(fmt.startsWith("S")) num = ("0" + date.getSeconds()).substring(0, n);
+    if(fmt.startsWith("H")) num = (`0${date.getHours()}`).substring(0, n);
+    else if(fmt.startsWith("M")) num = (`0${date.getMinutes()}`).substring(0, n);
+    else if(fmt.startsWith("S")) num = (`0${date.getSeconds()}`).substring(0, n);
     out += num;
   }
   return out;
@@ -1330,19 +1332,19 @@ Util.leapYear = function(year) {
   return false;
 };
 Util.timeSpan = function(s) {
-  var seconds = s % 60;
+  const seconds = s % 60;
   s = Math.floor(s / 60);
-  var minutes = s % 60;
+  const minutes = s % 60;
   s = Math.floor(s / 60);
-  var hours = s % 24;
+  const hours = s % 24;
   s = Math.floor(s / 24);
-  var days = s % 7;
+  const days = s % 7;
   s = Math.floor(s / 7);
-  var weeks = s;
-  var ret = "";
-  ret = ("0" + hours).substring(0, 2) + ":" + ("0" + minutes).substring(0, 2) + ":" + ("0" + seconds).substring(0, 2);
-  if(days) ret = days + " days " + ret;
-  if(weeks) ret = weeks + " weeks " + ret;
+  const weeks = s;
+  let ret = "";
+  ret = `${(`0${hours}`).substring(0, 2)}:${(`0${minutes}`).substring(0, 2)}:${(`0${seconds}`).substring(0, 2)}`;
+  if(days) ret = `${days} days ${ret}`;
+  if(weeks) ret = `${weeks} weeks ${ret}`;
   return ret;
 };
 Util.rng = Math.random;
@@ -1357,7 +1359,7 @@ Util.hex = function(num, numDigits = 0) {
   return ("0".repeat(numDigits) + n.toString(16)).slice(-numDigits);
 };
 Util.roundTo = function(value, prec) {
-  var digits = Math.ceil(-Math.log10(prec));
+  const digits = Math.ceil(-Math.log10(prec));
   return +(Math.round(value / prec) * prec).toFixed(digits);
 };
 Util.base64 = {
@@ -1388,7 +1390,7 @@ Util.isMap = function(obj) {
   return (obj && obj.get !== undefined && obj.keys !== undefined) || obj instanceof Map;
 };
 Util.effectiveDeviceWidth = function() {
-  var deviceWidth = window.orientation == 0 ? window.screen.width : window.screen.height;
+  let deviceWidth = window.orientation == 0 ? window.screen.width : window.screen.height;
   //iOS returns available pixels, Android returns pixels / pixel ratio
   //http://www.quirksmode.org/blog/archives/2012/07/more_about_devi.html
   if(navigator.userAgent.indexOf("Android") >= 0 && window.devicePixelRatio) {
@@ -1397,7 +1399,7 @@ Util.effectiveDeviceWidth = function() {
   return deviceWidth;
 };
 Util.getFormFields = function(initialState) {
-  return Util.mergeObjects([initialState, [...document.forms].reduce((acc, form) => [...form.elements].reduce((acc2, e) => (e.name == "" || e.value == undefined || e.value == "undefined" ? acc2 : Object.assign(acc2, { [e.name]: e.value })), acc), {})]);
+  return Util.mergeObjects([initialState, [...document.forms].reduce((acc, {elements}) => [...elements].reduce((acc2, {name, value}) => name == "" || value == undefined || value == "undefined" ? acc2 : Object.assign(acc2, { [name]: value }), acc), {})]);
 };
 Util.mergeObjects = function(objArr, predicate = (dst, src, key) => (src[key] == "" ? undefined : src[key])) {
   let args = objArr;
@@ -1412,12 +1414,12 @@ Util.mergeObjects = function(objArr, predicate = (dst, src, key) => (src[key] ==
   return obj;
 };
 Util.getUserAgent = function(headers = req.headers) {
-  var agent = useragent.parse(headers["user-agent"]);
+  const agent = useragent.parse(headers["user-agent"]);
   return agent;
 };
 Util.factor = function(start, end) {
-  var f = 1;
-  for(var i = start; i <= end; i++) {
+  let f = 1;
+  for(let i = start; i <= end; i++) {
     f = f * i;
   }
   return f;
@@ -1527,7 +1529,7 @@ Util.weakAssign = function(obj) {
 };
 Util.getCallerStack = function(position = 2) {
   if(position >= Error.stackTraceLimit) {
-    throw new TypeError("getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: `" + position + "` and Error.stackTraceLimit was: `" + Error.stackTraceLimit + "`");
+    throw new TypeError(`getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: \`${position}\` and Error.stackTraceLimit was: \`${Error.stackTraceLimit}\``);
   }
   const oldPrepareStackTrace = Error.prepareStackTrace;
   Error.prepareStackTrace = (_, stack) => stack;
@@ -1539,7 +1541,7 @@ Util.getCallerFile = function(position = 2) {
   let stack = Util.getCallerStack();
   if(stack !== null && typeof stack === "object") {
     const frame = stack[position];
-    return frame ? frame.getFileName() + ":" + frame.getLineNumber() : undefined;
+    return frame ? `${frame.getFileName()}:${frame.getLineNumber()}` : undefined;
   }
 };
 Util.getCallerFunction = function(position = 2) {
@@ -1604,9 +1606,9 @@ Util.rotateRight = function(x, n) {
   return Util.rotateLeft(x, 32 - n);
 };
 Util.hashString = function(string, bits = 32, mask = 0xffffffff) {
-  var ret = 0;
-  var bitc = 0;
-  for(var i = 0; i < string.length; i++) {
+  let ret = 0;
+  let bitc = 0;
+  for(let i = 0; i < string.length; i++) {
     const code = string.charCodeAt(i);
 
     ret *= 186;
@@ -1618,7 +1620,7 @@ Util.hashString = function(string, bits = 32, mask = 0xffffffff) {
   return ret & 0x7fffffff;
 };
 Util.flatTree = function(tree, addOutput) {
-  var ret = [];
+  const ret = [];
   if(!addOutput) addOutput = arg => ret.push(arg);
 
   addOutput(Util.filterKeys(tree, key => key !== "children"));
@@ -1689,40 +1691,40 @@ Util.getImageAverageColor = function(imageElement, options) {
   }
 
   options = options || {};
-  var settings = {
+  const settings = {
     tooDark: (options.tooDark || 0.03) * 255 * 3, // How dark is too dark for a pixel
     tooLight: (options.tooLight || 0.97) * 255 * 3, // How light is too light for a pixel
     tooAlpha: (options.tooAlpha || 0.1) * 255 // How transparent is too transparent for a pixel
   };
 
-  var w = imageElement.width,
-    h = imageElement.height;
+  const w = imageElement.width;
+  let h = imageElement.height;
 
   // Setup canvas and draw image onto it
-  var context = document.createElement("canvas").getContext("2d");
+  const context = document.createElement("canvas").getContext("2d");
   context.drawImage(imageElement, 0, 0, w, h);
 
   // Extract the rgba data for the image from the canvas
-  var subpixels = context.getImageData(0, 0, w, h).data;
+  const subpixels = context.getImageData(0, 0, w, h).data;
 
-  var pixels = {
+  const pixels = {
     r: 0,
     g: 0,
     b: 0,
     a: 0
   };
-  var processedPixels = 0;
+  let processedPixels = 0;
 
-  var pixel = {
+  const pixel = {
     r: 0,
     g: 0,
     b: 0,
     a: 0
   };
-  var luma = 0; // Having luma in the pixel object caused ~10% performance penalty for some reason
+  let luma = 0; // Having luma in the pixel object caused ~10% performance penalty for some reason
 
   // Loop through the rgba data
-  for(var i = 0, l = w * h * 4; i < l; i += 4) {
+  for(let i = 0, l = w * h * 4; i < l; i += 4) {
     pixel.r = subpixels[i];
     pixel.g = subpixels[i + 1];
     pixel.b = subpixels[i + 2];
@@ -1744,7 +1746,7 @@ Util.getImageAverageColor = function(imageElement, options) {
   }
 
   // Values of the channels that make up the average color
-  var channels = {
+  let channels = {
     r: null,
     g: null,
     b: null,
@@ -1760,24 +1762,24 @@ Util.getImageAverageColor = function(imageElement, options) {
     };
   }
 
-  var o = Object.assign({}, channels, {
-    toStringRgb: function() {
+  const o = Object.assign({}, channels, {
+    toStringRgb() {
       // Returns a CSS compatible RGB string (e.g. '255, 255, 255')
       const { r, g, b } = this;
       return [r, g, b].join(", ");
     },
-    toStringRgba: function() {
+    toStringRgba() {
       // Returns a CSS compatible RGBA string (e.g. '255, 255, 255, 1.0')
       const { r, g, b, a } = this;
       return [r, g, b, a].join(", ");
     },
-    toStringHex: function() {
+    toStringHex() {
       // Returns a CSS compatible HEX coloor string (e.g. 'FFA900')
-      var toHex = function(d) {
+      const toHex = function(d) {
         h = Math.round(d).toString(16);
 
         if(h.length < 2) {
-          h = "0" + h;
+          h = `0${h}`;
         }
         return h;
       };
@@ -1789,5 +1791,4 @@ Util.getImageAverageColor = function(imageElement, options) {
   return o;
 };
 
-module.exports = Util;
-module.exports.default = Util;
+export default Util;
