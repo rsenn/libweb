@@ -1,8 +1,8 @@
 import React from "react";
 // prettier-ignore
 import dom, {TRBL, CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, Line, Matrix, Point, PointList, Rect, RGBA, Size, SVG, Timer, ReactComponent, Node } from "./dom.js";
-import { SvgOverlay, SvgPathTracer } from "./svg-overlay.js";
-import { SvgPath } from "./svg-path.js";
+import { SvgOverlay, SvgPathTracer } from "./svg/overlay.js";
+import { SvgPath } from "./svg/path.js";
 import Util from "./util.js";
 import { toJS } from "mobx";
 import { trkl } from "./trkl.js";

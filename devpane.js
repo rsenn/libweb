@@ -7,7 +7,7 @@ import devtools, { storage, select } from "./devtools.js";
 import { TouchListener } from "./touchHandler.js";
 import { lazyInitializer } from "./lazyInitializer.js";
 
-import SvgPath from "./svg-path.js";
+import SvgPath from "./svg/path.js";
 /*
 if(global.window) {
   window.addEventListener('load', () => {
