@@ -1,5 +1,3 @@
-//var useragent = require('useragent');
-
 const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", separator = ",", newline = "\n", maxlen = 30, depth = 1 }) {
   const i = indent.repeat(Math.abs(1 - depth));
   let nl = newline != "" ? newline + i : spacing;
@@ -10,15 +8,12 @@ const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", 
   if(subject && subject.toSource !== undefined) return subject.toSource();
   if(subject instanceof Date) return `new Date('${new Date().toISOString()}')`;
   if(typeof subject == "string") return `'${subject}'`;
-
   if(subject != null && subject["y2"] !== undefined) {
     return `rect[${spacing}${subject["x"]}${separator}${subject["y"]} | ${subject["x2"]}${separator}${subject["y2"]} (${subject["w"]}x${subject["h"]}) ]`;
   }
   if(typeof subject == "object" && "map" in subject && typeof subject.map == "function") {
     //subject instanceof Array || (subject && subject.length !== undefined)) {
-    return (
-      /*(opts.depth <= 0) ? subject.length + '' : */ `[${nl}${/*(opts.depth <= 0) ? subject.length + '' : */ subject.map(i => formatAnnotatedObject(i, opts)).join(separator + nl)}]`
-    );
+    return /*(opts.depth <= 0) ? subject.length + '' : */ `[${nl}${/*(opts.depth <= 0) ? subject.length + '' : */ subject.map(i => formatAnnotatedObject(i, opts)).join(separator + nl)}]`;
   }
   if(typeof subject === "string" || subject instanceof String) {
     return `'${subject}'`;
@@ -28,9 +23,7 @@ const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", 
   for(let k in subject) {
     if(k.length > longest.length) longest = k;
     let s = "";
-
     //if(typeof(subject[k]) == 'string') s = subject[k];
-
     if(typeof subject[k] === "symbol") {
       s = "Symbol";
     } else if(typeof subject[k] === "string" || subject[k] instanceof String) {
@@ -63,7 +56,6 @@ const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", 
     j = separator + (opts.newline || spacing) + i;
   }
   //padding = x => '';
-
   let ret = `{${opts.newline}${r.map(arr => `${padding(arr[0]) + arr[0]}:${spacing}${arr[1]}`).join(j)}${opts.newline}}`;
   return ret;
 };
@@ -76,31 +68,14 @@ function Util() {}
 
 Util.isDebug = function() {
   if(process !== undefined && process.env.NODE_ENV === "production") return false;
-
   return true;
 };
-
-/*Util.log = function(message) {
-  const args = [...arguments];
-  if(!this.logFile) {
-    if(process.browser === undefined) {
-      if(globals && globals.require !== undefined) {
-        this.fs = globals.require('fs');
-        this.logFile = this.fs.openSync('logs/node.log', 'a');
-      }
-    }
-  }
-
-  return this.logFile !== undefined ? fs.writeSync(this.logFile, args.join('') + '\n') : null;
-};
-*/
 Util.log = (function() {
   const log = Math.log;
   return function(n, base) {
     return log(n) / (base ? log(base) : 1);
   };
 })();
-
 Util.logBase = function(n, base) {
   return Math.log(n) / Math.log(base);
 };
@@ -114,13 +89,11 @@ Util.toSource = function(arg) {
   }
   if(arg && arg.toSource) return arg.toSource();
   let cls = arg && arg.constructor && Util.fnName(arg.constructor);
-
   return String(arg);
 };
 Util.debug = function(message) {
   const args = [...arguments];
   let cache = Util.array();
-
   const removeCircular = function(key, value) {
     if(typeof value === "object" && value !== null) {
       if(cache.indexOf(value) !== -1) return;
@@ -128,31 +101,25 @@ Util.debug = function(message) {
     }
     return value;
   };
-
   const str = args
     .map(arg => (typeof arg === "object" ? JSON.stringify(arg, removeCircular) : arg))
     .join(" ")
     .replace(/\n/g, "");
   //console.log("STR: "+str);
-
   console.log.call(console, str);
   //Util.log.apply(Util, args)
 };
-
-Util.type = function({type}) {
+Util.type = function({ type }) {
   return (type && String(type).split(/[ ()]/)[1]) || "";
 };
-
 Util.functionName = function(fn) {
   const matches = /function\s*([^(]*)\(.*/g.exec(String(fn));
   if(matches && matches[1]) return matches[1];
   return null;
 };
-
-Util.className = function({constructor}) {
+Util.className = function({ constructor }) {
   return Util.functionName(constructor);
 };
-
 Util.unwrapComponent = function(c) {
   for(;;) {
     if(c.wrappedComponent) c = c.wrappedComponent;
@@ -171,11 +138,9 @@ Util.componentName = function(c) {
   }
   return Util.fnName(c);
 };
-
 Util.count = function(s, ch) {
   return (String(s).match(new RegExp(ch, "g")) || Util.array()).length;
 };
-
 Util.parseNum = function(str) {
   let num = parseFloat(str);
   if(isNaN(num)) num = 0;
@@ -207,50 +172,40 @@ Util.pow2 = function(n) {
 Util.pow10 = function(n) {
   return n >= 0 ? Math.pow(10, n) : 1 / Math.pow(10, -n);
 };
-
 Util.bitValue = function(n) {
   return Util.pow2(n - 1);
 };
-
 Util.toBinary = function(num) {
   return parseInt(num).toString(2);
 };
-
 Util.toBits = function(num) {
   let a = Util.toBinary(num)
     .split("")
     .reverse();
   return Array.from(Object.assign({}, a, { length: 50 }), bit => (bit ? 1 : 0));
 };
-
 Util.getBit = function(v, n) {
   let s = v.toString(2);
   return n < s.length ? parseInt(s[s.length - n - 1]) : 0;
 };
-
 Util.isSet = function(v, n) {
   return Util.getBit(v, n) == 1;
 };
-
 Util.bitCount = function(n) {
   return Util.count(Util.toBinary(n), "1");
 };
-
 Util.toggleBit = function(num, bit) {
   const n = Number(num);
   return Util.isSet(n, bit) ? n - Util.pow2(bit) : n + Util.pow2(bit);
 };
-
 Util.setBit = function(num, bit) {
   const n = Number(num);
   return Util.isSet(n, bit) ? n : n + Util.pow2(bit);
 };
-
 Util.clearBit = function(num, bit) {
   const n = Number(num);
   return Util.isSet(n, bit) ? n - Util.pow2(bit) : n;
 };
-
 Util.range = function(start, end) {
   if(start > end) {
     let ret = [];
@@ -261,7 +216,6 @@ Util.range = function(start, end) {
   //console.log("Util.range ", r);
   return r;
 };
-
 Util.inspect = function(
   obj,
   opts = {
@@ -273,7 +227,6 @@ Util.inspect = function(
 ) {
   return formatAnnotatedObject(obj, opts);
 };
-
 Util.bitArrayToNumbers = function(arr) {
   let numbers = Util.array();
   for(let i = 0; i < arr.length; i++) {
@@ -282,7 +235,6 @@ Util.bitArrayToNumbers = function(arr) {
   }
   return numbers;
 };
-
 Util.bitsToNumbers = function(bits) {
   let a = Util.toBinary(bits).split("");
   let r = Util.array();
@@ -290,7 +242,6 @@ Util.bitsToNumbers = function(bits) {
   a.forEach((val, key, arr) => val == "1" && r.unshift(a.length - key));
   return r;
 };
-
 Util.shuffle = function(arr, rnd = Util.rng) {
   arr.sort((a, b) => 0.5 - rnd());
   return arr;
@@ -300,57 +251,47 @@ Util.sortNum = function(arr) {
   //console.log("Util.sortNum ", { arr });
   return arr;
 };
-
 Util.draw = function(arr, n, rnd = Util.rng) {
   const r = Util.shuffle(arr, rnd).splice(0, n);
   //console.log("Util.draw ", { arr, n, r });
   return r;
 };
-
 Util.is = {
   on: val => val == "on" || val === "true" || val === true,
   off: val => val == "off" || val === "false" || val === false,
   true: val => val === "true" || val === true,
   false: val => val === "false" || val === false
 };
-
 Util.onoff = function(val) {
   if(Util.is.on(val)) return true;
   if(Util.is.off(val)) return false;
   return undefined;
 };
-
 Util.numbersToBits = function(arr) {
   return arr.reduce((bits, num) => bits + Util.bitValue(num), 0);
 };
-
 Util.randomNumbers = function([start, end], draws) {
   const r = Util.sortNum(Util.draw(Util.range(start, end), draws));
   //console.log("Util.randomNumbers ", { start, end, draws, r });
   return r;
 };
-
 Util.randomBits = function(r = [1, 50], n = 5) {
   return Util.numbersToBits(Util.randomNumbers(r, n));
 };
-
 Util.pad = function(s, n, char = " ") {
   return s.length < n ? char.repeat(n - s.length) : "";
 };
-
 Util.abbreviate = function(str, max, suffix = "...") {
   if(str.length > max) {
     return str.substring(0, max - suffix.length) + suffix;
   }
   return str;
 };
-
 Util.trim = function(str, charset) {
   const r1 = RegExp(`^[${charset}]*`);
   const r2 = RegExp(`[${charset}]*$`);
   return str.replace(r1, "").replace(r2, "");
 };
-
 Util.define = (obj, key, value, enumerable = false) =>
   obj[key] === undefined &&
   Object.defineProperty(obj, key, {
@@ -373,7 +314,6 @@ Util.defineGetterSetter = (obj, key, get, set, enumerable = false) =>
     set,
     enumerable
   });
-
 Util.extendArray = function(arr = Array.prototype) {
   /*  Util.define(arr, 'tail', function() {
     return this[this.length - 1];
@@ -439,7 +379,6 @@ Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index
   };
   return adapter;
 };
-
 Util.adapter.localStorage = function(s = localStorage) {
   return Util.adapter(
     s,
@@ -449,10 +388,8 @@ Util.adapter.localStorage = function(s = localStorage) {
     (l, key, v) => l.setItem(key, JSON.stringify(v))
   );
 };
-
 Util.array = function(enumerable = []) {
   let a = enumerable instanceof Array ? enumerable : [...enumerable];
-
   try {
     if(a.match === undefined) Util.extendArray();
     if(a.match === undefined) Util.extendArray(a);
@@ -461,9 +398,7 @@ Util.array = function(enumerable = []) {
 };
 Util.map = function(hash = {}) {
   let m = hash[Symbol.iterator] !== undefined ? hash : new Map(Object.entries(hash));
-
   if(m instanceof Array) m[Symbol.iterator] = m.entries;
-
   try {
     //if(m.toObject === undefined) Util.extendMap();
     if(m.toObject === undefined) Util.extendMap(m);
@@ -490,20 +425,16 @@ Util.extendMap = function(map) {
 Util.objectFrom = function(any) {
   if("toJS" in any) any = any.toJS();
   if("entries" in any) return Object.fromEntries(any.entries());
-
   return Object.assign({}, any);
 };
-
 Util.tail = function(arr) {
   return arr && arr.length > 0 ? arr[arr.legth - 1] : null;
 };
-
 Util.splice = function(str, index, delcount, insert) {
   const chars = str.split("");
   Array.prototype.splice.apply(chars, arguments);
   return chars.join("");
 };
-
 Util.keyOf = function(obj, prop) {
   const keys = Object.keys(obj);
   for(let k in keys) {
@@ -511,18 +442,15 @@ Util.keyOf = function(obj, prop) {
   }
   return undefined;
 };
-
 Util.rotateRight = function(arr, n) {
   arr.unshift(...arr.splice(n, arr.length));
   return arr;
 };
-
 Util.repeat = function(n, what) {
   let ret = [];
   while(n-- > 0) ret.push(what);
   return ret;
 };
-
 Util.arrayDim = function(dimensions, init) {
   let args = [...dimensions];
   args.reverse();
@@ -533,7 +461,6 @@ Util.arrayDim = function(dimensions, init) {
   }
   return ret;
 };
-
 Util.flatten = function(arr) {
   let ret = [];
   for(let i = 0; i < arr.length; i++) {
@@ -545,24 +472,20 @@ Util.chunkArray = function(myArray, chunk_size) {
   let index = 0;
   const arrayLength = myArray.length;
   const tempArray = [];
-
   for(index = 0; index < arrayLength; index += chunk_size) {
     myChunk = myArray.slice(index, index + chunk_size);
     // Do something if you want with the group
     tempArray.push(myChunk);
   }
-
   return tempArray;
 };
 Util.chances = function(numbers, matches) {
   const f = Util.factorial;
   return f(numbers) / (f(matches) * f(numbers - matches));
 };
-
 Util.sum = function(arr) {
   return arr.reduce((acc, n) => acc + n, 0);
 };
-
 /*Util.define(
   String.prototype,
   'splice',
@@ -570,7 +493,6 @@ Util.sum = function(arr) {
     return Util.splice.apply(this, [this, ...arguments]);
   }
 );*/
-
 Util.fnName = function(f, parent) {
   if(f !== undefined && f.name !== undefined) return f.name;
   const s = f.toSource ? f.toSource() : `${f}`;
@@ -583,29 +505,24 @@ Util.fnName = function(f, parent) {
   }
   return undefined;
 };
-
 Util.keys = function(obj) {
   let r = Util.array();
   for(let i in obj) r.push(i);
   return r;
 };
-
 Util.objName = function(o) {
   if(o === undefined || o == null) return `${o}`;
   if(typeof o === "function" || o instanceof Function) return Util.fnName(o);
-
   if(o.constructor) return Util.fnName(o.constructor);
   const s = `${o.type}`;
   return s;
 };
-
 Util.findKey = function(obj, value) {
   for(let k in obj) {
     if(obj[k] === value) return k;
   }
   return null;
 };
-
 Util.find = function(arr, value, prop = "id", acc = Util.array()) {
   let pred;
   if(typeof value == "function") pred = value;
@@ -615,33 +532,26 @@ Util.find = function(arr, value, prop = "id", acc = Util.array()) {
       return false;
     };
   } else pred = obj => obj[prop] == value;
-
-  for (let v of arr) {
+  for(let v of arr) {
     //console.log("v: ", v, "k:", k);
     /*if(Util.isArray(v)) {
       for(let i = 0; i < v.length; i++)
         if(pred(v[i]))
           return v[i];
-
     } else */ {
-        if(pred(v)) return v;
-      }
+      if(pred(v)) return v;
+    }
   }
-
   return null;
 };
-
 Util.match = function(arg, pred) {
   let match = pred;
-
   if(pred instanceof RegExp) {
     const re = pred;
     match = (val, key) => (val && val.tagName !== undefined && re.test(val.tagName)) || (typeof key === "string" && re.test(key)) || (typeof val === "string" && re.test(val));
   }
-
   if(Util.isArray(arg)) {
     if(!(arg instanceof Array)) arg = [...arg];
-
     return arg.reduce((acc, val, key) => {
       if(match(val, key, arg)) acc.push(val);
       return acc;
@@ -659,17 +569,13 @@ Util.match = function(arg, pred) {
     //    return Object.keys(arg).reduce((acc, key) => (match(arg[key], key, arg) ? { ...acc, [key]: arg[key] } : {}), {});
   }
 };
-
 Util.toHash = function(map, keyTransform = k => Util.camelize(k)) {
   let ret = {};
-
   map.forEach(key => {
     ret[keyTransform(key)] = map[key];
   });
-
   return ret;
 };
-
 Util.indexOf = function(obj, prop) {
   for(let key in obj) {
     if(obj[key] === prop) return key;
@@ -685,19 +591,15 @@ Util.injectProps = function(options) {
   }
 }*/
 Util.toString = function() {};
-
 Util.dump = function(name, props) {
   const args = [name];
-
   for(let key in props) {
     args.push(`\n\t${key}: `);
     args.push(props[key]);
   }
-
   if("window" in global !== false) {
     //if(window.alert !== undefined)
     //alert(args);
-
     if(window.console !== undefined) console.log(...args);
   }
 };
@@ -728,7 +630,6 @@ Util.decamelize = (str, separator = "-") =>
         .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, `$1${separator}$2`)
         .toLowerCase()
     : str;
-
 Util.isEmail = function(v) {
   return /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(v);
 };
@@ -767,7 +668,6 @@ Util.validatePassword = function(value) {
 Util.deepClone = function(data) {
   return JSON.parse(JSON.stringify(data));
 };
-
 // Function
 Util.findVal = function(object, propName, maxDepth = 10) {
   if(maxDepth <= 0) return null;
@@ -778,7 +678,6 @@ Util.findVal = function(object, propName, maxDepth = 10) {
       return object[key];
     } else {
       let value = Util.findVal(object[key], propName, maxDepth - 1);
-
       if(value !== undefined) return value;
     }
   }
@@ -806,12 +705,10 @@ Util.deepCloneObservable = function(data) {
     }
   }
 };
-
 //Convert ObservableArray to Array
 Util.toArray = function(observableArray) {
   return observableArray.slice();
 };
-
 /**
  * Convert the original array to tree
  * @param data original array
@@ -827,7 +724,6 @@ Util.arryToTree = function(data, id, pId, appId) {
   const res = this.to3wei(arr, data, id, pId);
   return res;
 };
-
 /**
  * Convert a first-level branch array to a tree
  * @param a level one branch array
@@ -850,7 +746,6 @@ Util.to3wei = function(a, old, id, pId) {
   });
   return a;
 };
-
 /**
  * Exchange 2 element positions in the array
  * @param arr original array
@@ -860,22 +755,18 @@ Util.to3wei = function(a, old, id, pId) {
 Util.arrExchangePos = function(arr, i, j) {
   arr[i] = arr.splice(j, 1, arr[i])[0];
 };
-
 Util.arrRemove = function(arr, i) {
   const index = arr.indexOf(i);
   if(index > -1) arr.splice(index, 1);
 };
-
 Util.removeEqual = function(a, b) {
   let c = {};
-
   for(let key in Object.assign({}, a)) {
     if(b[key] === a[key]) continue;
     c[key] = a[key];
   }
   return c;
 };
-
 //Remove the storage when logging out
 Util.logOutClearStorage = function() {
   localStorage.removeItem("userToken");
@@ -886,14 +777,12 @@ Util.logOutClearStorage = function() {
   localStorage.removeItem("userGroupList");
   localStorage.removeItem("gameAuthList");
 };
-
 //Take the cookies
 Util.getCookie = function(cookie, name) {
   let arr = cookie.match(new RegExp(`(^| )${name}=([^;]*)(;|$)`));
   if(arr != null) return unescape(arr[2]);
   return null;
 };
-
 Util.parseCookie = function(c = document.cookie) {
   if(!(typeof c == "string" && c && c.length > 0)) return {};
   let key = "";
@@ -922,37 +811,28 @@ Util.parseCookie = function(c = document.cookie) {
   } while(i < c.length);
   return ret;
 };
-
 /*
-
     matches.shift();
-
-
     return matches.reduce((acc, part) => {
       const a = part.trim().split('=');
       return { ...acc, [a[0]]: decodeURIComponent(a[1]) };
     }, {});
   };*/
-
 Util.encodeCookie = c =>
   Object.entries(c)
     .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
     .join("; ");
-
 Util.setCookies = c =>
   Object.entries(c).forEach(([key, value]) => {
     document.cookie = `${key}=${value}`;
     console.log(`Setting cookie[${key}] = ${value}`);
   });
-
 Util.clearCookies = function(c) {
   return Util.setCookies(Object.keys(Util.parseCookie(c)).reduce((acc, name) => Object.assign(acc, { [name]: `; max-age=0; expires=${new Date().toUTCString()}` }), {}));
 };
-
 Util.deleteCookie = function(name) {
   if(global.window) document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
 };
-
 Util.accAdd = function(arg1, arg2) {
   let r1, r2, m;
   try {
@@ -988,7 +868,6 @@ Util.Subtr = function(arg1, arg2) {
   n = r1 >= r2 ? r1 : r2;
   return (arg1 * m - arg2 * m) / m;
 };
-
 //js division function
 //
 Util.accDiv = function(arg1, arg2) {
@@ -1006,7 +885,6 @@ Util.accDiv = function(arg1, arg2) {
   r2 = Number(arg2.toString().replace(".", ""));
   return (r1 / r2) * Math.pow(10, t2 - t1);
 };
-
 //js multiplication function
 //
 Util.accMul = function(arg1, arg2) {
@@ -1021,7 +899,6 @@ Util.accMul = function(arg1, arg2) {
   } catch(e) {}
   return (Number(s1.replace(".", "")) * Number(s2.replace(".", ""))) / Math.pow(10, m);
 };
-
 Util.dateFormatter = function(date, formate) {
   const year = date.getFullYear();
   let month = date.getMonth() + 1;
@@ -1034,7 +911,6 @@ Util.dateFormatter = function(date, formate) {
   minute = minute > 9 ? minute : `0${minute}`;
   let second = date.getSeconds();
   second = second > 9 ? second : `0${second}`;
-
   return formate
     .replace(/Y+/, `${year}`.slice(-formate.match(/Y/g).length))
     .replace(/M+/, month)
@@ -1043,10 +919,8 @@ Util.dateFormatter = function(date, formate) {
     .replace(/m+/, minute)
     .replace(/s+/, second);
 };
-
 Util.numberFormatter = function(numStr) {
   let numSplit = numStr.split(".");
-
   return numSplit[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",").concat(`.${numSplit[1]}`);
 };
 Util.searchObject = function(object, matchCallback, currentPath, result, searched) {
@@ -1085,21 +959,16 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
   }
   return result;
 };
-
 Util.getURL = function(req = {}) {
   let proto = process.env.NODE_ENV === "production" ? "https" : "http";
   let port = process.env.PORT ? parseInt(process.env.PORT) : process.env.NODE_ENV === "production" ? 443 : 8080;
-
   let host = global.ip || global.host || "localhost";
   if(req && req.headers && req.headers.host !== undefined) {
     host = req.headers.host.replace(/:.*/, "");
   } else if(process.env.HOST !== undefined) host = process.env.HOST;
-
   if(global.window !== undefined && window.location !== undefined) return window.location.href;
   if(req.url !== undefined) return req.url;
-
   if(global.process !== undefined && global.process.url !== undefined) return global.process.url;
-
   const url = `${proto}://${host}:${port}`;
   console.log("getURL process ", { url });
   return url;
@@ -1109,7 +978,6 @@ Util.parseQuery = function(url = Util.getURL()) {
   let query = {};
   try {
     if((startIndex = url.indexOf("?")) != -1) url = url.substring(startIndex);
-
     const args = [...url.matchAll(/[?&]([^=&#]+)=?([^&#]*)/g)];
     if(args) {
       for(let i = 0; i < args.length; i++) {
@@ -1160,23 +1028,17 @@ Util.parseURL = function(href = this.getURL()) {
     }
   };
 };
-
 Util.makeURL = function() {
   let args = [...arguments];
   let href = typeof args[0] == "string" ? args.shift() : Util.getURL();
   let url = Util.parseURL(href);
-
   let obj = typeof args[0] == "object" ? args.shift() : {};
-
   Object.assign(url, obj);
   return url.href();
-
   /*
   let href = typeof args[0] === "string" ? args.shift() : this.getURL();
   let urlObj = null;
- 
   urlObj = this.parseURL(href);
-
   return urlObj ? urlObj.href(args[0]) : null;*/
 };
 Util.numberFromURL = function(url, fn) {
@@ -1276,7 +1138,6 @@ Util.entriesToObj = function(arr) {
 Util.isDate = function(d) {
   return d instanceof Date || (typeof d == "string" && /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d));
 };
-
 Util.parseDate = function(d) {
   if(Util.isDate(d)) {
     d = new Date(d);
@@ -1293,7 +1154,6 @@ Util.isoDate = function(date) {
   } catch(err) {}
   return null;
 };
-
 Util.toUnixTime = function(dateObj, utc = false) {
   if(!(dateObj instanceof Date)) dateObj = new Date(dateObj);
   let epoch = Math.floor(dateObj.getTime() / 1000);
@@ -1303,7 +1163,6 @@ Util.toUnixTime = function(dateObj, utc = false) {
 Util.unixTime = function(utc = false) {
   return Util.toUnixTime(new Date(), utc);
 };
-
 Util.fromUnixTime = function(epoch, utc = false) {
   let t = parseInt(epoch);
   let d = new Date(0);
@@ -1318,9 +1177,9 @@ Util.formatTime = function(date = new Date(), format = "HH:MM:SS") {
     while(format[i] == format[i + n]) n++;
     const fmt = format.substring(i, i + n);
     let num = fmt;
-    if(fmt.startsWith("H")) num = (`0${date.getHours()}`).substring(0, n);
-    else if(fmt.startsWith("M")) num = (`0${date.getMinutes()}`).substring(0, n);
-    else if(fmt.startsWith("S")) num = (`0${date.getSeconds()}`).substring(0, n);
+    if(fmt.startsWith("H")) num = `0${date.getHours()}`.substring(0, n);
+    else if(fmt.startsWith("M")) num = `0${date.getMinutes()}`.substring(0, n);
+    else if(fmt.startsWith("S")) num = `0${date.getSeconds()}`.substring(0, n);
     out += num;
   }
   return out;
@@ -1342,7 +1201,7 @@ Util.timeSpan = function(s) {
   s = Math.floor(s / 7);
   const weeks = s;
   let ret = "";
-  ret = `${(`0${hours}`).substring(0, 2)}:${(`0${minutes}`).substring(0, 2)}:${(`0${seconds}`).substring(0, 2)}`;
+  ret = `${`0${hours}`.substring(0, 2)}:${`0${minutes}`.substring(0, 2)}:${`0${seconds}`.substring(0, 2)}`;
   if(days) ret = `${days} days ${ret}`;
   if(weeks) ret = `${weeks} weeks ${ret}`;
   return ret;
@@ -1373,12 +1232,10 @@ Util.formatRecord = function(obj) {
   let ret = {};
   for(let key in obj) {
     let val = obj[key];
-
     if(val instanceof Array) val = val.map(item => Util.formatRecord(item));
     else if(/^-?[0-9]+$/.test(val)) val = parseInt(val);
     else if(/^-?[.0-9]+$/.test(val)) val = parseFloat(val);
     else if(val == "true" || val == "false") val = Boolean(val);
-
     ret[key] = val;
   }
   return ret;
@@ -1399,12 +1256,11 @@ Util.effectiveDeviceWidth = function() {
   return deviceWidth;
 };
 Util.getFormFields = function(initialState) {
-  return Util.mergeObjects([initialState, [...document.forms].reduce((acc, {elements}) => [...elements].reduce((acc2, {name, value}) => name == "" || value == undefined || value == "undefined" ? acc2 : Object.assign(acc2, { [name]: value }), acc), {})]);
+  return Util.mergeObjects([initialState, [...document.forms].reduce((acc, { elements }) => [...elements].reduce((acc2, { name, value }) => (name == "" || value == undefined || value == "undefined" ? acc2 : Object.assign(acc2, { [name]: value })), acc), {})]);
 };
 Util.mergeObjects = function(objArr, predicate = (dst, src, key) => (src[key] == "" ? undefined : src[key])) {
   let args = objArr;
   let obj = {};
-
   for(let i = 0; i < args.length; i++) {
     for(let key in args[i]) {
       const newVal = predicate(obj, args[i], key);
@@ -1518,13 +1374,11 @@ Util.getPrototypeChain = function(obj, fn = p => p) {
 Util.weakAssign = function(obj) {
   let args = [...arguments];
   obj = args.shift();
-
   args.forEach(other => {
     for(let key in other) {
       if(obj[key] === undefined) obj[key] = other[key];
     }
   });
-
   return obj;
 };
 Util.getCallerStack = function(position = 2) {
@@ -1596,7 +1450,6 @@ Util.getCallers = function(start = 2, num = 1) {
   }
   return ret;
 };
-
 Util.rotateLeft = function(x, n) {
   n = n & 0x1f;
   return (x << n) | ((x >> (32 - n)) & ~((-1 >> n) << n));
@@ -1610,11 +1463,9 @@ Util.hashString = function(string, bits = 32, mask = 0xffffffff) {
   let bitc = 0;
   for(let i = 0; i < string.length; i++) {
     const code = string.charCodeAt(i);
-
     ret *= 186;
     ret ^= code;
     bitc += 8;
-
     ret = Util.rotateLeft(ret, 7) & mask;
   }
   return ret & 0x7fffffff;
@@ -1622,9 +1473,7 @@ Util.hashString = function(string, bits = 32, mask = 0xffffffff) {
 Util.flatTree = function(tree, addOutput) {
   const ret = [];
   if(!addOutput) addOutput = arg => ret.push(arg);
-
   addOutput(Util.filterKeys(tree, key => key !== "children"));
-
   if(typeof tree.children == "object" && tree.children !== null && tree.children.length) for(let child of tree.children) Util.flatTree(child, addOutput);
   return ret;
 };
@@ -1642,7 +1491,6 @@ Util.walkTree = function(node, pred, t, depth = 0, parent = null) {
       };
     /*      let thisNode = node;
       let nodeId = node.id;*/
-
     //node = t(node);
     if(pred(node, depth, parent)) {
       yield t(node);
@@ -1658,10 +1506,8 @@ Util.walkTree = function(node, pred, t, depth = 0, parent = null) {
 Util.isPromise = function(obj) {
   return Boolean(obj) && typeof obj.then === "function";
 };
-
 /* eslint-disable no-use-before-define */
 if(typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
-
 Util.next = function(iter, observer, prev = undefined) {
   let item;
   try {
@@ -1689,24 +1535,19 @@ Util.getImageAverageColor = function(imageElement, options) {
   if(!imageElement) {
     return false;
   }
-
   options = options || {};
   const settings = {
     tooDark: (options.tooDark || 0.03) * 255 * 3, // How dark is too dark for a pixel
     tooLight: (options.tooLight || 0.97) * 255 * 3, // How light is too light for a pixel
     tooAlpha: (options.tooAlpha || 0.1) * 255 // How transparent is too transparent for a pixel
   };
-
   const w = imageElement.width;
   let h = imageElement.height;
-
   // Setup canvas and draw image onto it
   const context = document.createElement("canvas").getContext("2d");
   context.drawImage(imageElement, 0, 0, w, h);
-
   // Extract the rgba data for the image from the canvas
   const subpixels = context.getImageData(0, 0, w, h).data;
-
   const pixels = {
     r: 0,
     g: 0,
@@ -1714,7 +1555,6 @@ Util.getImageAverageColor = function(imageElement, options) {
     a: 0
   };
   let processedPixels = 0;
-
   const pixel = {
     r: 0,
     g: 0,
@@ -1722,14 +1562,12 @@ Util.getImageAverageColor = function(imageElement, options) {
     a: 0
   };
   let luma = 0; // Having luma in the pixel object caused ~10% performance penalty for some reason
-
   // Loop through the rgba data
   for(let i = 0, l = w * h * 4; i < l; i += 4) {
     pixel.r = subpixels[i];
     pixel.g = subpixels[i + 1];
     pixel.b = subpixels[i + 2];
     pixel.a = subpixels[i + 4];
-
     // Only consider pixels that aren't black, white, or too transparent
     if(
       pixel.a > settings.tooAlpha &&
@@ -1740,11 +1578,9 @@ Util.getImageAverageColor = function(imageElement, options) {
       pixels.g += pixel.g;
       pixels.b += pixel.b;
       pixels.a += pixel.a;
-
       processedPixels++;
     }
   }
-
   // Values of the channels that make up the average color
   let channels = {
     r: null,
@@ -1752,7 +1588,6 @@ Util.getImageAverageColor = function(imageElement, options) {
     b: null,
     a: null
   };
-
   if(processedPixels > 0) {
     channels = {
       r: Math.round(pixels.r / processedPixels),
@@ -1761,7 +1596,6 @@ Util.getImageAverageColor = function(imageElement, options) {
       a: Math.round(pixels.a / processedPixels)
     };
   }
-
   const o = Object.assign({}, channels, {
     toStringRgb() {
       // Returns a CSS compatible RGB string (e.g. '255, 255, 255')
@@ -1777,7 +1611,6 @@ Util.getImageAverageColor = function(imageElement, options) {
       // Returns a CSS compatible HEX coloor string (e.g. 'FFA900')
       const toHex = function(d) {
         h = Math.round(d).toString(16);
-
         if(h.length < 2) {
           h = `0${h}`;
         }
@@ -1787,8 +1620,6 @@ Util.getImageAverageColor = function(imageElement, options) {
       return [toHex(r), toHex(g), toHex(b)].join("");
     }
   });
-
   return o;
 };
-
 export default Util;
