@@ -37,6 +37,7 @@ export function MovementListener(handler, options) {
     var ends = type.endsWith("end") || type.endsWith("cancel") || type.endsWith("up");
 
     if(!started && !ends && start === null) return;
+    console.log("Touch ", type);
 
     if(ends) {
       let x = prev && prev.x !== undefined ? prev.x : 0;
@@ -53,6 +54,8 @@ export function MovementListener(handler, options) {
       self.handler.start(null);
       self.handler.end(end);
       /*if(type.endsWith('cancel'))*/ cancel();
+
+      console.log("MovementListener", { type });
       return;
     }
     if(event.touches !== undefined && event.touches.length === 0) return;
@@ -345,7 +348,6 @@ export function SelectionListener(handler, options) {
       Element.setCSS(element, { left: `${rect.x}px`, top: `${rect.y}px` });
       if(dx !== undefined && dy !== undefined) Element.setCSS(element, { width: `${rect.width}px`, height: `${rect.height}px` });
     }
-    // console.log("Touch ", type);
     if(type.endsWith("end") || type.endsWith("up")) {
       if(element) {
         Element.remove(element);
@@ -368,7 +370,10 @@ export const TouchEvents = listener => ({
 export const MouseEvents = listener => ({
   onMouseDown: listener,
   onMouseMove: listener,
-  onMouseUp: listener
+  onMouseUp: e => {
+    console.log("onMouseUp");
+    listener(e);
+  }
 });
 
 export const addTouchListeners = (listener, element, passive = true) => {

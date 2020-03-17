@@ -8,6 +8,7 @@ fi
 
 prettier() {
   command prettier \
+    $OPTS \
     --jsx-single-quote \
     --trailing-comma none \
     --write \
@@ -19,8 +20,16 @@ prettier() {
 }
 EXPR='1 { /@format/ { N; /\n$/ { d } } }'
 for KW in "if" "for" "do" "while" "catch"; do
-EXPR="$EXPR; s|\s${KW}\s*(| ${KW}(|"
-EXPR="$EXPR; s|^${KW}\s*(|${KW}(|"
+  EXPR="$EXPR; s|\s${KW}\s*(| ${KW}(|"
+  EXPR="$EXPR; s|^${KW}\s*(|${KW}(|"
+done
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -*) OPTS="${OPTS:+$OPTS
+}$1"; shift ;;
+    *) break ;;
+  esac
 done
 
 for SOURCE in  ${@:-$(find components utils stores pages -name "*.js")}; do

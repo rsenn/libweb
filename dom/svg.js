@@ -7,23 +7,22 @@ import Util from "../util.js";
 export class SVG extends Element {
   static create(name, attr, parent) {
     var svg = document.createElementNS(SVG.ns, name);
-    let text;
+    let text, attrfn;
     if(attr.text !== undefined) {
       text = attr.text;
       delete attr.text;
     }
-
     if(name == "svg") {
       attr.version = "1.1";
       attr.xmlns = SVG.ns;
+      attrfn = n => n;
+    } else {
+      attrfn = Util.decamelize;
     }
-
-    Util.foreach(attr, (value, name) => svg.setAttribute(Util.decamelize(name, "-"), value));
+    Util.foreach(attr, (value, name) => svg.setAttribute(attrfn(name, "-"), value));
 
     if(parent && parent.appendChild) parent.appendChild(svg);
-
     if(text) svg.innerHTML = text;
-
     return svg;
   }
 
