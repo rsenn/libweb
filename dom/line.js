@@ -135,6 +135,10 @@ Line.prototype.toString = function() {
   }
   return Point.prototype.toString.call(this.a) + " -> " + Point.prototype.toString.call(this.b);
 };
+Line.prototype.toObject = function() {
+  const { x1, y1, x2, y2 } = this;
+  return { x1, y1, x2, y2 };
+};
 
 for(let name of ["direction", "slope", "angle", "bbox", "points", "inspect", "toString"]) {
   Line[name] = points => Line.prototype[name].call(points);

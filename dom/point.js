@@ -1,3 +1,5 @@
+import Util from "../util.js";
+
 export function Point(arg) {
   let args = arg instanceof Array ? arg : [...arguments];
   let p = !this || this === Point ? {} : this;
@@ -151,12 +153,10 @@ Point.prototype.dimension = function() {
   return [this.width, this.height];
 };
 Point.prototype.toString = function(precision = 0.001) {
-  const prec = -Math.ceil(Math.log10(precision));
-  const x = this.x.toFixed(prec);
-  const y = this.y.toFixed(prec);
+  const x = Util.roundTo(this.x, precision);
+  const y = Util.roundTo(this.y, precision);
   return `${x},${y}`;
 };
-
 Point.prototype.toSource = function(asArray = false) {
   let x = (this.x + "").padStart(4, " ");
   let y = (this.y + "").padStart(4, " ");
@@ -166,7 +166,7 @@ Point.prototype.toSource = function(asArray = false) {
   return `{x:${x},y:${y}}`;
 };
 Point.prototype.toSource = function() {
-  return "{x:" + this.x.toFixed(3) + ",y:" + this.y.toFixed(3) + "}";
+  return "{x:" + this.x + ",y:" + this.y + "}";
 };
 Point.prototype.toCSS = function(precision = 0.001) {
   const prec = -Math.ceil(Math.log10(precision));

@@ -1320,7 +1320,8 @@ Util.hex = function(num, numDigits = 0) {
   return ("0".repeat(numDigits) + n.toString(16)).slice(-numDigits);
 };
 Util.roundTo = function(value, prec) {
-  return Math.round(value / prec) * prec;
+  var digits = Math.ceil(-Math.log10(prec));
+  return +(Math.round(value / prec) * prec).toFixed(digits);
 };
 Util.base64 = {
   encode: utf8 => {
@@ -1491,50 +1492,35 @@ Util.getCallerStack = function(position = 2) {
   if(position >= Error.stackTraceLimit) {
     throw new TypeError("getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: `" + position + "` and Error.stackTraceLimit was: `" + Error.stackTraceLimit + "`");
   }
-
   const oldPrepareStackTrace = Error.prepareStackTrace;
   Error.prepareStackTrace = (_, stack) => stack;
   const stack = new Error().stack;
   Error.prepareStackTrace = oldPrepareStackTrace;
-
   return stack !== null && typeof stack === "object" ? stack.slice(position) : null;
 };
 Util.getCallerFile = function(position = 2) {
   let stack = Util.getCallerStack();
-
   if(stack !== null && typeof stack === "object") {
     const frame = stack[position];
-    //stack[0] holds this file
-    //stack[1] holds where this function was called
-    //stack[2] holds the file we're interested in
     return frame ? frame.getFileName() + ":" + frame.getLineNumber() : undefined;
   }
 };
 Util.getCallerFunction = function(position = 2) {
   let stack = Util.getCallerStack(position + 1);
-
   if(stack !== null && typeof stack === "object") {
     const frame = stack[0];
-    //stack[0] holds this file
-    //stack[1] holds where this function was called
-    //stack[2] holds the file we're interested in
     return frame ? frame.getFunction() : undefined;
   }
 };
 Util.getCallerFunctionName = function(position = 2) {
   let stack = Util.getCallerStack(position + 1);
-
   if(stack !== null && typeof stack === "object") {
     const frame = stack[0];
-    //stack[0] holds this file
-    //stack[1] holds where this function was called
-    //stack[2] holds the file we're interested in
     return frame ? frame.getMethodName() || frame.getFunctionName() : undefined;
   }
 };
 Util.getCallerFunctionNames = function(position = 2) {
   let stack = Util.getCallerStack(position + 1);
-
   if(stack !== null && typeof stack === "object") {
     let ret = [];
     for(let i = 0; stack[i]; i++) {

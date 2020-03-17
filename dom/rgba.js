@@ -1,4 +1,5 @@
 import { HSLA } from "./hsla.js";
+import Util from "../util.js";
 
 /**
  * @brief [brief description]
@@ -203,7 +204,7 @@ RGBA.prototype.toHSLA = function() {
 
   //console.log("RGBA.toHSLA ", { h, s, l, a });
 
-  return new HSLA(h, s, l, a);
+  return new HSLA(Math.round(h), Util.roundTo(s, 100 / 255), Util.roundTo(l, 100 / 255), Util.roundTo(a, 1 / 255));
 };
 
 for(let name of ["hex", "toRGB", "round", "toHSLA"]) {
