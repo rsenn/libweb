@@ -64,7 +64,7 @@ const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", 
  *
  * @class      Util (name)
  */
-function Util() {}
+export function Util() {}
 
 Util.isDebug = function() {
   if(process !== undefined && process.env.NODE_ENV === "production") return false;

@@ -16,19 +16,22 @@ if(global.window) {
 }*/
 
 export default class devpane {
+
+  bbrect = lazyInitializer(() => Element.rect(this.parent));
+  pane = lazyInitializer(() => {let pos = { right: "2em", bottom: "1em" }; if(this.config.has("position")) {let p = this.config.get("position"); pos = { left: `${p.x}px`, top: `${p.y}px` }; } let layer = this.createLayer({ id: "devpane-pane" }, {zIndex: 18, minWidth: "300px", maxWidth: "80vw", minHeight: "30vh", maxHeight: "60vh", overflowY: "auto", /*   overflowX: 'auto',*/ display: "block", position: "absolute", ...pos, backgroundColor: "#fffab3ff", WebkitBoxShadow: "2px 2px 6px 2px rgba(0,0,0,0.5)", BoxShadow: "2px 2px 6px 2px rgba(0,0,0,1)", border: "4px solid #ff0000ff", borderRadius: "0.5em", padding: "0px", opacity: 1, textAlign: "left", fontFamily: 'MiscFixedSC613,MiscFixed,Monospace,fixed-width,fixed,"Courier New"', fontSize: "11px"} ); let p = this.renderPaneLayer(layer); /*   layer.appendChild(p); */ return layer; });
+  root = lazyInitializer(() => {let e = this.createRectLayer(this.bbrect(), { width: "", height: "", top: "", bottom: "10px", right: "10px", left: "" }); e.id = "devpane-root"; return e; });
+  svg = lazyInitializer(() => {const rect = Element.rect(document.body); const svg = this.createSVGElement("svg", { width: rect.width, height: rect.height, viewBox: `0 0 ${rect.width} ${rect.height}` }, this.root()); this.createSVGElement("defs", {}, svg); this.createSVGElement("rect", { x: 100, y: 100, w: 100, h: 100, fill: "#f0f" }, svg); return svg; });
+  log = lazyInitializer(() => this.createLayer({ tag: "pre", id: "devpane-log" }, { position: "relative", maxHeight: "100px", overflowY: "scroll", overflowX: "auto", display: "block", border: "1px solid #000000ff", padding: "2px", textAlign: "left", fontFamily: "MiscFixedSC613,Fixed,MiscFixed,Monospace,fixed-width", fontSize: "12px" }));
+
   getTranslations(done = () => {}) {
     const filename = "static/locales/fa-IR/common.json";
     const nl = "\r\n";
-    ws({
-      recv: filename,
-      data: x => {
-        this.translations = x;
-        done(x);
-      }
-    });
+    ws({recv: filename, data: x => {this.translations = x; done(x); } });
   }
 
   constructor(node = "body", observe = ".page") {
+    this.config = storage("devpane");
+
     this.parent = Element.find(node);
     this.observe = Element.find(observe);
     this.factory = Element.factory(this.parent);
@@ -52,14 +55,10 @@ export default class devpane {
 
   toggleOpenClose() {
     this.open = !this.open;
-
     //console.log("devpane.toggleOpenClose open=" + this.open);
-
     this.config.assign({ open: this.open });
-
-    if(this.pane()) {
+    if(this.pane())
       this.pane().style.display = this.open ? "inline-block" : "none";
-    }
     if(this.open) {
       //this.pane.style.display = 'inline-block';
       //if(global.window)  this.rectList = this.buildRectList(document.body);
@@ -87,19 +86,11 @@ export default class devpane {
     }
 
     if(this.open) {
-      const table = this.renderTable(["entity", "source"], rows, {
-        cellspacing: 0,
-        style: {
-          /*  width: '100%'*/
-        }
-      });
-
+      const table = this.renderTable(["entity", "source"], rows, {cellspacing: 0, style: {/*width: '100%'*/ } });
       let pane = this.pane();
-
       while(pane.lastElementChild && pane.lastElementChild.tagName.toLowerCase() == "table") {
         pane.removeChild(pane.lastElementChild);
       }
-
       pane.appendChild(table);
     }
   }
@@ -107,12 +98,8 @@ export default class devpane {
   logEntry(str) {
     if(this.log) {
       let log = this.log();
-      /*  let pane = this.pane();
-       */
-
       if(log) {
         if(log.parentNode !== this.pane()) this.pane().insertBefore(log, this.pane().firstElementChild);
-
         log.insertAdjacentText("beforeend", `${str.trim()}\n`);
         log.scrollTop = log.scrollHeight;
         log.style.height = "4em";
@@ -122,7 +109,6 @@ export default class devpane {
 
   handleTouch(event) {
     let move;
-
     if(event.num == 0) {
       this.path.commands = [];
       this.path.abs();
@@ -137,14 +123,10 @@ export default class devpane {
       //this.path.line(move.x - this.prevTouch.x, move.y - this.prevTouch.y);
       this.prevTouch = move;
     }
-
     const polygon = Polygon.approxCircle(25, 7);
-
     const svg = this.svg();
-
     let svgpath = svg && svg.querySelector("#touch-path");
     let svgcircle = svg && svg.querySelector("#touch-pos");
-
     if(!(svgpath && svgpath.tagName == "path")) {
       svgpath = SVG.create(
         "path",
@@ -158,18 +140,15 @@ export default class devpane {
         this.svg()
       );
     }
-
     if(!(svgcircle && svgpath.tagName == "path")) {
       svgcircle = SVG.create("path", { id: "touch-pos", stroke: "#80ff00", fill: "none", strokeWidth: 2 }, this.svg());
     }
-
     if(svgcircle) {
       let str = Polygon.toPath(polygon);
       Element.attr(svgcircle, { d: `M${move.x},${move.y} ` + str });
     }
     if(svgpath) {
       let str = this.path.str();
-
       if(/L/.test(str)) Element.attr(svgpath, { d: str });
       console.log("Touch event: ", { svgpath, str });
     }
@@ -304,17 +283,7 @@ export default class devpane {
   }
 
   createRectLayer(rect, css = {}, fn = Element.create) {
-    return fn("div", {
-      parent: Element.find("body"),
-      style: {
-        display: "inline-block",
-        zIndex: 18,
-        position: "absolute",
-        //pointerEvents: "none",
-        ...(rect ? Rect.toCSS(rect) : {}),
-        ...css
-      }
-    });
+    return fn("div", {parent: Element.find("body"), style: {display: "inline-block", zIndex: 18, position: "absolute", /*pointerEvents: "none",*/ ...(rect ? Rect.toCSS(rect) : {}), ...css } });
   }
 
   createLayer(props = {}, css = {}, fn = Element.create) {
@@ -801,7 +770,6 @@ export default class devpane {
   }
 }
 
-devpane.prototype.config = storage("devpane");
 devpane.prototype.svg = null;
 devpane.prototype.open = false;
 devpane.prototype.active = false;
@@ -811,52 +779,4 @@ devpane.prototype.elements = [];
 devpane.prototype.translations = null;
 devpane.prototype.path = null;
 devpane.prototype.touch = null;
-devpane.prototype.bbrect = lazyInitializer(() => Element.rect(this.parent));
 devpane.prototype.entitySources = {};
-
-devpane.prototype.pane = lazyInitializer(() => {
-  let pos = { right: "2em", bottom: "1em" };
-  if(this.config.has("position")) {
-    let p = this.config.get("position");
-    pos = { left: `${p.x}px`, top: `${p.y}px` };
-  }
-  let layer = this.createLayer(
-    { id: "devpane-pane" },
-    {
-      zIndex: 18,
-      minWidth: "300px",
-      maxWidth: "80vw",
-      minHeight: "30vh",
-      maxHeight: "60vh",
-      overflowY: "auto",
-      /*   overflowX: 'auto',*/ display: "block",
-      position: "absolute",
-      ...pos,
-      backgroundColor: "#fffab3ff",
-      WebkitBoxShadow: "2px 2px 6px 2px rgba(0,0,0,0.5)",
-      BoxShadow: "2px 2px 6px 2px rgba(0,0,0,1)",
-      border: "4px solid #ff0000ff",
-      borderRadius: "0.5em",
-      padding: "0px",
-      opacity: 1,
-      textAlign: "left",
-      fontFamily: 'MiscFixedSC613,MiscFixed,Monospace,fixed-width,fixed,"Courier New"',
-      fontSize: "11px"
-    }
-  );
-  let p = this.renderPaneLayer(layer);
-  /*   layer.appendChild(p); */ return layer;
-});
-devpane.prototype.root = lazyInitializer(() => {
-  let e = this.createRectLayer(this.bbrect(), { width: "", height: "", top: "", bottom: "10px", right: "10px", left: "" });
-  e.id = "devpane-root";
-  return e;
-});
-devpane.prototype.svg = lazyInitializer(() => {
-  const rect = Element.rect(document.body);
-  const svg = this.createSVGElement("svg", { width: rect.width, height: rect.height, viewBox: `0 0 ${rect.width} ${rect.height}` }, this.root());
-  this.createSVGElement("defs", {}, svg);
-  this.createSVGElement("rect", { x: 100, y: 100, w: 100, h: 100, fill: "#f0f" }, svg);
-  return svg;
-});
-devpane.prototype.log = lazyInitializer(() => this.createLayer({ tag: "pre", id: "devpane-log" }, { position: "relative", maxHeight: "100px", overflowY: "scroll", overflowX: "auto", display: "block", border: "1px solid #000000ff", padding: "2px", textAlign: "left", fontFamily: "MiscFixedSC613,Fixed,MiscFixed,Monospace,fixed-width", fontSize: "12px" }));
