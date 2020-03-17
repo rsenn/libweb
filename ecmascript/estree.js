@@ -1,4 +1,4 @@
-const Util = require("../util.es5.js");
+import Util from "../util.es5.js";
 
 const e = exports;
 
@@ -408,16 +408,16 @@ Node.prototype.toString = function() {
     if(this[field]) {
       let value = this[field];
       if(value.value !== undefined) {
-        value = '"' + value.value + '"';
+        value = `"${value.value}"`;
       } else if(value instanceof Array) {
-        value = "[\n  " + this[field].map(child => child.toString().replace(/\n/g, "\n  ")).join(",\n  ") + "\n]";
+        value = `[\n  ${this[field].map(child => child.toString().replace(/\n/g, "\n  ")).join(",\n  ")}\n]`;
         value = value.replace(/\n/g, "\n  ");
       } else if(typeof value === "object" && !(value instanceof Array)) {
         value = Util.className(value);
       }
       if(s.length) s += ",\n  ";
-      s += field + " = " + value + "";
+      s += `${field} = ${value}`;
     }
   });
-  return this.type + " {\n  " + s + "\n}";
+  return `${this.type} {\n  ${s}\n}`;
 };

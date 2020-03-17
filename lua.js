@@ -23,8 +23,6 @@ function SyntaxError(msg) {
 }
 
 class Node {
-  type = null;
-
   constructor(obj) {
     this.type = obj.type;
     Object.assign(this, obj);
