@@ -1,6 +1,5 @@
-import Util from "./util.es5.js";
-import dom from "./dom.es5.js";
-const { Point, Line, Rect, BBox } = dom;
+import Util from "./util.js";
+import { Point, Line, Rect, BBox } from "./dom.js";
 
 class Node {
   constructor() {}
@@ -188,11 +187,11 @@ class Element extends Node {
         r.update([o]);
       }
     }
-    function updateRect(r, pt) {
-      if(r.x1 > pt.x - 0.5) r.x1 = pt.x - 0.5;
-      if(r.x2 < pt.x + 0.5) r.x2 = pt.x + 0.5;
-      if(r.y1 > pt.y - 0.5) r.y1 = pt.y - 0.5;
-      if(r.y2 < pt.y + 0.5) r.y2 = pt.y + 0.5;
+    function updateRect(r, {x, y}) {
+      if(r.x1 > x - 0.5) r.x1 = x - 0.5;
+      if(r.x2 < x + 0.5) r.x2 = x + 0.5;
+      if(r.y1 > y - 0.5) r.y1 = y - 0.5;
+      if(r.y2 < y + 0.5) r.y2 = y + 0.5;
     }
     return r;
   }
@@ -223,14 +222,14 @@ class Package extends Node {
     for(let c of [Wire, Circle, Pad, Text, Rectangle, Description]) {
       if(obj instanceof c) {
         const cname = Util.fnName(c);
-        const lname = cname.toLowerCase() + "s";
+        const lname = `${cname.toLowerCase()}s`;
         if(this[lname] == undefined) this[lname] = [];
         this[lname].push(obj);
       }
     }
   }
 
-  bbox(_x = 0, _y = 0, _angle = 0, pred = child => child.x !== undefined) {
+  bbox(_x = 0, _y = 0, _angle = 0, pred = ({x}) => x !== undefined) {
     let r = new BBox();
 
     for(let o of this.iter(_x, _y, _angle)) {
@@ -272,7 +271,7 @@ class Signal extends Node {
     for(let c of [ContactRef, Via, Wire, Polygon]) {
       if(obj instanceof c) {
         const cname = Util.fnName(c);
-        const lname = cname.toLowerCase() + "s";
+        const lname = `${cname.toLowerCase()}s`;
         if(this[lname] == undefined) this[lname] = [];
         this[lname].push(obj);
         return true;
@@ -325,21 +324,21 @@ class ContactRef {
 }
 
 class Text {
-  text = "";
+  /*text = "";*/
 
-  constructor(text) {
+  constructor(text = '') {
     this.text = text;
   }
 }
 
 class Layer extends Node {
-  number = 0;
+/*  number = 0;
   name = "";
   color = -1;
   fill = -1;
   visible = false;
   active = false;
-  objects = [];
+  objects = [];*/
 
   static find(number_or_name) {
     for(let name in Layer.instances) {
@@ -354,7 +353,7 @@ class Layer extends Node {
     return layer;
   }
 
-  constructor(number, name, color, fill, visible, active) {
+  constructor(number = 0, name = '', color = -1, fill = -1, visible = false, active = false) {
     super();
     this.number = number;
     this.name = name;
@@ -385,24 +384,24 @@ class Layer extends Node {
 }
 
 class Param {
-  name = "";
-  value = "";
+/*  name = "";
+  value = "";*/
 
-  constructor(name, value) {
+  constructor(name = '', value = '') {
     this.name = name;
     this.value = value;
   }
 }
 
 class Wire {
-  x1 = 0;
+/*  x1 = 0;
   y1 = 0;
   x2 = 0;
   y2 = 0;
   width = 0;
   layer = -1;
-
-  constructor(x1, y1, x2, y2, width, layer, signal) {
+*/
+  constructor(x1= 0, y1 = 0, x2 = 0, y2 = 0, width = 0, layer = -1, signal = '') {
     this.x1 = x1;
     this.y1 = y1;
     this.x2 = x2;
@@ -412,13 +411,12 @@ class Wire {
     this.layer = layer;
     Signal.add(signal, this);
   }
-  g;
   getLayer() {
     return Layer.get(this.layer);
   }
 }
 
-var eagleProps = {
+const eagleProps = {
   classes: {
     Circle,
     Polygon,
@@ -524,20 +522,23 @@ function eagle(obj, parentObj) {
   return ret;
 }
 
-if(module) {
-  Object.assign(module.exports, { eagle }, { eagleProps }, { allElements: eagleProps.allElements }, eagleProps.classes);
-  module.exports.instances = {};
-  for(let c in eagleProps.classes) {
-    const name = c;
-    console.log("name: ", c);
-    const ctor = eagleProps.classes[c];
-    const proto = ctor.prototype;
-    eagleProps.elementMap[name.toLowerCase()] = eagleProps.classes[c];
-    const withName = eagleProps.classesWithName.indexOf(c) != -1;
-    module.exports[name + "s"] = module.exports.instances[name] = module.exports[name].instances = withName ? {} : [];
-  }
-  /*
-  module.exports.elementMap = elementMap;
-  module.exports.allElements = allElements;*/
-  module.exports.default = eagle;
+/*if(module) {*/
+export { eagle, eagleProps, allElements: eagleProps.allElements , ...eagleProps.classes };
+
+export const instances = {};
+for(let c in eagleProps.classes) {
+  const name = c;
+  console.log("name: ", c);
+  const ctor = eagleProps.classes[c];
+  const proto = ctor.prototype;
+  eagleProps.elementMap[name.toLowerCase()] = eagleProps.classes[c];
+  const withName = eagleProps.classesWithName.indexOf(c) != -1;
+  module.exports[`${name}s`] = module.exports.instances[name] = module.exports[name].instances = withName ? {} : [];
 }
+
+/*
+module.exports.elementMap = elementMap;
+module.exports.allElements = allElements;*/
+export default eagle;
+/*}
+*/
