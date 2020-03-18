@@ -69,7 +69,6 @@ Size.prototype.toCSS = function() {
   if(this.height !== undefined) ret.height = this.height + (this.units && "height" in this.units ? this.units.height : "px");
   return ret;
 };
-
 Size.prototype.transform = function(m) {
   this.width = m.xx * this.width + m.yx * this.height;
   this.height = m.xy * this.width + m.yy * this.height;
@@ -81,12 +80,54 @@ Size.prototype.isSquare = function() {
 Size.prototype.area = function() {
   return this.width * this.height;
 };
+Size.prototype.sum = function(other) {
+  return new Size(this.width + other.width, this.height + other.height);
+};
+Size.prototype.add = function() {
+  for(let other of [...arguments]) {
+    this.width += other.width;
+    this.height += other.height;
+  }
+  return this;
+};
+Size.prototype.diff = function(other) {
+  return new Size(this.width - other.width, this.height - other.height);
+};
+Size.prototype.sub = function() {
+  for(let other of [...arguments]) {
+    this.width -= other.width;
+    this.height -= other.height;
+  }
+  return this;
+};
+Size.prototype.prod = function(f) {
+  const o = isPoint(f) ? f : { width: f, height: f };
+  return new Size(this.width * o.width, this.height * o.height);
+};
+Size.prototype.mul = function(f) {
+  for(let f of [...arguments]) {
+    const o = isPoint(f) ? f : { width: f, height: f };
+    this.width *= o.width;
+    this.height *= o.height;
+  }
+  return this;
+};
+Size.prototype.quot = function(other) {
+  return new Size(this.width / other.width, this.height / other.height);
+};
+Size.prototype.div = function(f) {
+  for(let f of [...arguments]) {
+    this.width /= f;
+    this.height /= f;
+  }
+  return this;
+};
 
 Size.area = sz => Size.prototype.area.call(sz);
 Size.aspect = sz => Size.prototype.aspect.call(sz);
 
 export const isSize = o => o && ((o.width !== undefined && o.height !== undefined) || (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) || (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
 
-for(let name of ["toCSS", "isSquare"]) {
+for(let name of ["toCSS", "isSquare", "sum", "add", "diff", "sub", "prod", "mul", "quot", "div"]) {
   Size[name] = points => Size.prototype[name].call(points);
 }

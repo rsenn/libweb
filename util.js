@@ -1642,3 +1642,18 @@ Util.jsonToObject = function(jsonStr) {
   }
   return ret;
 };
+Util.splitLines = function(str, max_linelen = Number.MAX_SAFE_INTEGER) {
+  const tokens = str.split(/\s/g);
+  let lines = [];
+  let line = tokens.shift();
+  for(; tokens.length; ) {
+    if((line.length ? line.length + 1 : 0) + tokens[0].length > max_linelen) {
+      lines.push(line);
+      line = "";
+    }
+    if(line != "") line += " ";
+    line += tokens.shift();
+  }
+  if(line != "") lines.push(line);
+  return lines;
+}
