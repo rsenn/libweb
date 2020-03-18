@@ -450,10 +450,19 @@ Util.rotateRight = function(arr, n) {
   arr.unshift(...arr.splice(n, arr.length));
   return arr;
 };
+Util.repeater = function(n, what) {
+      if(typeof(what) == 'function')
+  return (function*() {
+    for(let i = 0; i < n; i++)
+      yield what();
+  })();
+ return (function*() {
+    for(let i = 0; i < n; i++)
+      yield what;
+  })();
+};
 Util.repeat = function(n, what) {
-  let ret = [];
-  while(n-- > 0) ret.push(what);
-  return ret;
+  return [...Util.repeater(n, what)];
 };
 Util.arrayDim = function(dimensions, init) {
   let args = [...dimensions];

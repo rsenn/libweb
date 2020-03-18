@@ -61,9 +61,16 @@
       random.uint32 = function() {
         return random() * 0x100000000; // 2^32
       };
+      random.int32 = function() {
+        return random() * 0x100000000 - 0x7fffffff; // 2^31-1
+      };
+      random.signed = function() {
+        return random() * 2 - 1.0;
+      };
       random.fract53 = function() {
         return random() + ((random() * 0x200000) | 0) * 1.1102230246251565e-16; // 2^-53
       };
+
       random.version = 'Alea 0.9';
       random.args = args;
 
