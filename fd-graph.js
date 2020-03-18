@@ -57,7 +57,7 @@ export class Graph {
     if(!(n instanceof Node)) n = new Node(...args);
     n.index = this.nodes.length;
     this.nodes.push(n);
-    this.checkRedraw();
+    //this.checkRedraw();
     return this.nodes[this.nodes.length - 1];
   }
 
@@ -77,9 +77,11 @@ export class Graph {
     if(o instanceof Node) this.nodes.push(o);
     if(o instanceof Edge) this.edges.push(o);
   }
+
   push() {
     return this.add.apply(this, [...arguments]);
   }
+
   resetNodes() {
     for(var i = 0; i < this.nodes.length; i++) {
       var n = this.nodes[i];
@@ -127,10 +129,10 @@ export class Graph {
       var node = this.nodes[i];
 
       var isLeaf = this.isLeafNode(node);
-      //    console.log("node: ", { isLeaf });
 
       node.netforce = new Point(0, 0);
       node.velocity = new Point(0, 0);
+
       if(1 /*!isLeaf*/) {
         //this.config.canvas.selection == null || this.config.canvas.selection != node) {
         if(this.gravitate_to_origin) {
@@ -163,10 +165,11 @@ export class Graph {
         node.velocity.y = node.netforce.y == 0 ? 0 : (node.velocity.y + this.timestep * node.netforce.y) * this.damping;
       }
       // move the nodes scaled by constant timestep
-      Point.move(node, node.velocity.x * this.timestep, node.velocity.y * this.timestep);
+      node.move(node.velocity.x * this.timestep, node.velocity.y * this.timestep);
 
       // magnitude of the velocity vector
-      var velocity = Math.abs(Math.sqrt(node.velocity.x * node.velocity.x + node.velocity.y * node.velocity.y));
+      var velocity = node.velocity.distance();
+
       // keep track of the net velocity of the entire system
       this.total_node_velocity += velocity;
       this.kineticenergy += node.mass * (velocity * velocity);
@@ -240,23 +243,24 @@ export class Graph {
     if(this.total_node_velocity < 0.0001) {
       this.done_rendering = true;
 
-      distributeLeafNodes();
+      /* distributeLeafNodes();
 
       for(let i = 0; i < newPositions.length; i++) {
         let newPos = newPositions[i];
 
-        /*  this.nodes[newPos.index].x = newPos.x;
-      this.nodes[newPos.index].y = newPos.y;*/
+      this.nodes[newPos.index].x = newPos.x;
+      this.nodes[newPos.index].y = newPos.y;
       }
-      console.log("newPositions: ", newPositions);
+      console.log("newPositions: ", newPositions);*/
     } else {
       this.done_rendering = false;
     }
 
     const { kineticenergy, total_node_velocity } = this;
 
-    //if(this.done_rendering)    this.timer.stop();
-    // console.log("checkRedraw", { kineticenergy, total_node_velocity });
+    // this.nodes.forEach(node => node.round(0.001));
+
+    console.log("checkRedraw", { kineticenergy, total_node_velocity });
   }
 
   updateAll() {
@@ -273,13 +277,11 @@ export class Graph {
   }
 
   serialize() {
-    let data = {
+    return {
       nodes: this.nodes.map(node => Node.prototype.toJS.call(node)),
-
-      edges: this.edges.map(edge => Edge.prototype.toIdx.call(edge, this))
+      edges: this.edges.map(edge => Edge.prototype.toIdx.call(edge, this)),
+      bbox: this.getBBox()
     };
-
-    return data;
   }
 
   get rect() {
@@ -322,9 +324,7 @@ class Node extends Point {
    */
   constructor(label, charge = 60, mass = 100) {
     //
-    super(0, 0);
-    this.x = Math.floor(Math.random() * 1000);
-    this.y = Math.floor(Math.random() * 1000);
+    super(Math.random() * 1000, Math.random() * 1000);
 
     this.charge = charge;
     this.mass = mass;
@@ -341,27 +341,25 @@ class Node extends Point {
   }
 
   applyAttractiveForce(n, scale = 0.1) {
-    if(isPoint(n)) {
-      var distance = Point.distance(this, n);
-      var force = scale * Math.max(distance + 200, 1);
+    var distance = this.distance(n);
+    var force = scale * Math.max(distance + 200, 1);
 
-      var p = new Point(this);
-
-      Point.move(this.netforce, force * Math.sin((n.x - p.x) / distance), force * Math.sin((n.y - p.y) / distance));
-    }
+    this.netforce.move(force * Math.sin((n.x - this.x) / distance), force * Math.sin((n.y - this.y) / distance));
   }
 
   applyRepulsiveForce(n, scale = 1) {
-    var d = Math.max(Point.distance(this, n), 1);
+    var d = Math.max(this.distance(n), 1);
     // calculate repulsion force between nodes
     var f = -1 * scale * ((this.charge * n.charge) / (d * d));
-    var p = new Point(this);
 
-    Point.move(this.netforce, f * Math.sin((n.x - p.x) / d), f * Math.sin((n.y - p.y) / d));
+    this.netforce.move(f * Math.sin((n.x - this.x) / d), f * Math.sin((n.y - this.y) / d));
   }
 
   toJS() {
-    return Util.filterKeys(this, key => ["charge", "mass", "velocity", "netforce", "label", "x", "y", "id"].indexOf(key) != -1);
+    let ret = Util.filterKeys(this, key => ["charge", "mass", "velocity", "netforce", "label", "x", "y", "id"].indexOf(key) != -1);
+    if(this.node && this.node.id !== undefined) ret.id = this.node.id;
+    Point.round(ret, 0.001);
+    return ret;
   }
 }
 

@@ -1,5 +1,6 @@
 import { Point, isPoint } from "./point.js";
 import { Rect } from "./rect.js";
+import Util from "../util.js";
 
 export function Line(x1, y1, x2, y2) {
   let obj = this instanceof Line ? this : {};
@@ -140,6 +141,15 @@ Line.prototype.toObject = function() {
   return { x1, y1, x2, y2 };
 };
 
-for(let name of ["direction", "slope", "angle", "bbox", "points", "inspect", "toString"]) {
+Line.prototype.round = function(precision = 0.001) {
+  let { x1, y1, x2, y2 } = this;
+  this.a.x = Util.roundTo(x1, precision);
+  this.a.y = Util.roundTo(y1, precision);
+  this.b.x = Util.roundTo(x2, precision);
+  this.b.y = Util.roundTo(y2, precision);
+  return this;
+};
+
+for(let name of ["direction", "round", "slope", "angle", "bbox", "points", "inspect", "toString"]) {
   Line[name] = points => Line.prototype[name].call(points);
 }

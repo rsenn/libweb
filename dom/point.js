@@ -52,11 +52,6 @@ Point.prototype.clear = function(x, y) {
   this.y = 0;
   return this;
 };
-Point.prototype.move = function(x, y) {
-  this.x += x;
-  this.y += y;
-  return this;
-};
 Point.prototype.set = function(fn) {
   if(typeof fn != "function") {
     Point.apply(this, [...arguments]);

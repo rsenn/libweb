@@ -201,7 +201,7 @@ export default class devpane {
     if(svgpath) {
       let str = this.path.str();
       if(/L/.test(str)) Element.attr(svgpath, { d: str });
-      console.log("Touch event: ", { svgpath, str });
+      //console.log("Touch event: ", { svgpath, str });
     }
   }
 

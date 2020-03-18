@@ -64,7 +64,9 @@ const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", 
  *
  * @class      Util (name)
  */
-export default function Util() {}
+function Util() {}
+
+export { Util as default, Util };
 
 Util.isDebug = function() {
   if(process !== undefined && process.env.NODE_ENV === "production") return false;
@@ -1624,4 +1626,19 @@ Util.getImageAverageColor = function(imageElement, options) {
     }
   });
   return o;
+};
+Util.jsonToObject = function(jsonStr) {
+  let ret = null;
+  try {
+    ret = JSON.parse(jsonStr);
+  } catch(error) {
+    let pos = +("" + error)
+      .split("\n")
+      .reverse()[0]
+      .replace(/.*position ([0-9]+).*/, "$1");
+    console.error("Unexpected token: ", jsonStr);
+    console.error("Unexpected token at:", jsonStr.substring(pos));
+    ret = null;
+  }
+  return ret;
 };

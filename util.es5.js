@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = Util;
+exports.Util = exports.default = Util;
 
 require("core-js/modules/es6.set");
 
@@ -2333,4 +2333,22 @@ Util.getImageAverageColor = function(imageElement, options) {
     }
   });
   return o;
+};
+
+Util.jsonToObject = function(jsonStr) {
+  let ret = null;
+
+  try {
+    ret = JSON.parse(jsonStr);
+  } catch(error) {
+    let pos = +("" + error)
+      .split("\n")
+      .reverse()[0]
+      .replace(/.*position ([0-9]+).*/, "$1");
+    console.error("Unexpected token: ", jsonStr);
+    console.error("Unexpected token at:", jsonStr.substring(pos));
+    ret = null;
+  }
+
+  return ret;
 };

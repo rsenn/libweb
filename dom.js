@@ -21,6 +21,7 @@ import { ReactComponent } from "./dom/reactComponent.js";
 import { Container } from "./dom/container.js";
 import { Layer, Renderer } from "./dom/layer.js";
 import { Select } from "./dom/select.js";
+import { Align, Anchor } from "./dom/align.js";
 import { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from "./dom/elementRect.js";
 
 export function dom() {
@@ -51,21 +52,6 @@ export function dom() {
 export const isNumber = a => {
   return String(a).replace(/^[0-9]*$/, "") == "";
 };
-
-export function Align(arg) {}
-
-Align.CENTER = 0;
-Align.LEFT = 1;
-Align.RIGHT = 2;
-
-Align.MIDDLE = 0;
-Align.TOP = 4;
-Align.BOTTOM = 8;
-
-Align.horizontal = alignment => alignment & (Align.LEFT | Align.RIGHT);
-Align.vertical = alignment => alignment & (Align.TOP | Align.BOTTOM);
-
-export const Anchor = Align;
 
 export function Unit(str) {
   let u =
@@ -197,6 +183,7 @@ export { Container } from "./dom/container.js";
 export { Layer, Renderer } from "./dom/layer.js";
 export { Select } from "./dom/select.js";
 export { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from "./dom/elementRect.js";
+export { Align, Anchor } from "./dom/align.js";
 
 export default Object.assign(dom, {
   Align,

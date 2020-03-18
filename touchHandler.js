@@ -37,7 +37,7 @@ export function MovementListener(handler, options) {
     var ends = type.endsWith("end") || type.endsWith("cancel") || type.endsWith("up");
 
     if(!started && !ends && start === null) return;
-    console.log("Touch ", type);
+    //console.log("Touch ", type);
 
     if(ends) {
       let x = prev && prev.x !== undefined ? prev.x : 0;

@@ -1,6 +1,8 @@
 import { Point, isPoint } from "./point.js";
 import { PointList } from "./pointList.js";
 import { Size, isSize } from "./size.js";
+import { Align, Anchor } from "./align.js";
+import { Util } from "../util.js";
 
 export function Rect(arg) {
   let obj = this instanceof Rect ? this : {};
@@ -198,8 +200,8 @@ Rect.prototype.toPoints = function() {
   return list;
 };
 Rect.prototype.align = function(align_to, a = 0) {
-  const xdiff = align_to.width - this.width;
-  const ydiff = align_to.height - this.height;
+  const xdiff = (align_to.width || 0) - this.width;
+  const ydiff = (align_to.height || 0) - this.height;
   let oldx = this.x;
   let oldy = this.y;
 
@@ -225,18 +227,26 @@ Rect.prototype.align = function(align_to, a = 0) {
       this.y = align_to.y + ydiff / 2;
       break;
   }
-  this.tx = this.x - oldx;
-  this.ty = this.y - oldy;
+  /*  this.tx = this.x - oldx;
+  this.ty = this.y - oldy;*/
   return this;
 };
 
-Rect.prototype.round = function(precision = 0) {
+Rect.prototype.round = function(precision = 0.001) {
   let { x, y, x2, y2 } = this;
-  this.x = +(0 + x).toFixed(precision);
-  this.y = +(0 + y).toFixed(precision);
-  this.width = +x2.toFixed(precision) - this.x;
-  this.height = +y2.toFixed(precision) - this.y;
+  this.x = Util.roundTo(x, precision);
+  this.y = Util.roundTo(y, precision);
+  this.width = Util.roundTo(x2 - this.x, precision);
+  this.height = Util.roundTo(y2 - this.y, precision);
   return this;
+};
+Rect.prototype.toObject = function(bb = false) {
+  if(bb) {
+    const { x1, y1, x2, y2 } = this;
+    return { x1, y1, x2, y2 };
+  }
+  const { x, y, width, height } = this;
+  return { x, y, width, height };
 };
 
 Rect.round = rect => Rect.prototype.round.call(rect);
