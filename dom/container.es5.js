@@ -12,8 +12,8 @@ class Container {
     let delegate = {
       root: null,
       append_to: function append_to(elem, p = null) {
-        if(p == null) {
-          if(this.root == null) {
+        if (p == null) {
+          if (this.root == null) {
             this.root = document.createElement("div");
             this.append_to(this.root, parent);
           }
@@ -26,6 +26,7 @@ class Container {
     };
     return _element.Element.factory(delegate);
   }
+
 }
 
 exports.Container = Container;

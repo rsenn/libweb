@@ -53,9 +53,8 @@ export class Graph {
   }*/
   }
 
-  addNode(n) {
-    let args = [...arguments];
-    if(!(n instanceof Node)) n = new Node(...[...args.slice(0,3), this.prng]);
+  addNode(n, charge = 60, mass = 100) {
+    if(!(n instanceof Node)) n = new Node(n, charge, mass, this.prng);
     n.index = this.nodes.length;
     this.nodes.push(n);
     //this.checkRedraw();
@@ -333,7 +332,7 @@ class Node extends Point {
    * @param      {String}  label        A label
    * @param      {number}  [charge=60]  The charge
    */
-  constructor(label, charge = 60, mass = 100, prng = Math.random) {
+  constructor(label, charge = 60, mass = 100, prng /*= Math.random*/) {
     //
     super(prng() * 1000, prng() * 1000);
 

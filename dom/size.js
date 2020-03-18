@@ -122,12 +122,18 @@ Size.prototype.div = function(f) {
   }
   return this;
 };
+Size.prototype.round = function(precision = 0.001) {
+  const prec = -Math.ceil(Math.log10(precision));
+  this.width = precision == 1 ? Math.round(this.width) : +this.width.toFixed(prec);
+  this.height = precision == 1 ? Math.round(this.height) : +this.height.toFixed(prec);
+  return this;
+};
 
 Size.area = sz => Size.prototype.area.call(sz);
 Size.aspect = sz => Size.prototype.aspect.call(sz);
 
 export const isSize = o => o && ((o.width !== undefined && o.height !== undefined) || (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) || (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
 
-for(let name of ["toCSS", "isSquare", "sum", "add", "diff", "sub", "prod", "mul", "quot", "div"]) {
+for(let name of ["toCSS", "isSquare", "round", "sum", "add", "diff", "sub", "prod", "mul", "quot", "div"]) {
   Size[name] = points => Size.prototype[name].call(points);
 }

@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.dom = dom;
-exports.Align = Align;
 exports.Unit = Unit;
 exports.ScalarValue = ScalarValue;
 Object.defineProperty(exports, "Point", {
@@ -189,6 +188,18 @@ Object.defineProperty(exports, "Select", {
     return _select.Select;
   }
 });
+Object.defineProperty(exports, "Align", {
+  enumerable: true,
+  get: function get() {
+    return _align.Align;
+  }
+});
+Object.defineProperty(exports, "Anchor", {
+  enumerable: true,
+  get: function get() {
+    return _align.Anchor;
+  }
+});
 Object.defineProperty(exports, "ElementPosProps", {
   enumerable: true,
   get: function get() {
@@ -225,7 +236,7 @@ Object.defineProperty(exports, "ElementXYProps", {
     return _elementRect.ElementXYProps;
   }
 });
-exports.default = exports.RandomColor = exports.TransitionList = exports.Transition = exports.CSSTransformSetters = exports.ElementTransformation = exports.Anchor = exports.isNumber = void 0;
+exports.default = exports.RandomColor = exports.TransitionList = exports.Transition = exports.CSSTransformSetters = exports.ElementTransformation = exports.isNumber = void 0;
 
 require("core-js/modules/es6.regexp.to-string");
 
@@ -283,6 +294,8 @@ var _layer = require("./dom/layer.es5.js");
 
 var _select = require("./dom/select.es5.js");
 
+var _align = require("./dom/align.es5.js");
+
 var _elementRect = require("./dom/elementRect.es5.js");
 
 function dom() {
@@ -297,58 +310,57 @@ function dom() {
     var _iteratorError = undefined;
 
     try {
-      for(var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      for (var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
         let key = _step.value;
-        if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
+        if (e[key] === undefined) e[key] = functions[key].bind(functions, e);
       }
-    } catch(err) {
+    } catch (err) {
       _didIteratorError = true;
       _iteratorError = err;
     } finally {
       try {
-        if(!_iteratorNormalCompletion && _iterator.return != null) {
+        if (!_iteratorNormalCompletion && _iterator.return != null) {
           _iterator.return();
         }
       } finally {
-        if(_didIteratorError) {
+        if (_didIteratorError) {
           throw _iteratorError;
         }
       }
     }
   };
 
-  args = args.map(arg => (typeof arg == "string" ? _element.Element.findAll(arg) : arg));
+  args = args.map(arg => typeof arg == "string" ? _element.Element.findAll(arg) : arg);
   var _iteratorNormalCompletion2 = true;
   var _didIteratorError2 = false;
   var _iteratorError2 = undefined;
 
   try {
-    for(var _iterator2 = args[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+    for (var _iterator2 = args[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
       let e = _step2.value;
-      if(e instanceof SVGSVGElement) extend(e, _svg.SVG);
-      else if(e instanceof HTMLElement) {
+      if (e instanceof SVGSVGElement) extend(e, _svg.SVG);else if (e instanceof HTMLElement) {
         extend(e, _element.Element);
         (0, _elementRect.ElementPosProps)(e);
         (0, _elementRect.ElementSizeProps)(e);
       }
       ret.push(e);
     }
-  } catch(err) {
+  } catch (err) {
     _didIteratorError2 = true;
     _iteratorError2 = err;
   } finally {
     try {
-      if(!_iteratorNormalCompletion2 && _iterator2.return != null) {
+      if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
         _iterator2.return();
       }
     } finally {
-      if(_didIteratorError2) {
+      if (_didIteratorError2) {
         throw _iteratorError2;
       }
     }
   }
 
-  if(ret.length == 1) ret = ret[0];
+  if (ret.length == 1) ret = ret[0];
   return ret;
 }
 
@@ -358,38 +370,20 @@ const isNumber = a => {
 
 exports.isNumber = isNumber;
 
-function Align(arg) {}
-
-Align.CENTER = 0;
-Align.LEFT = 1;
-Align.RIGHT = 2;
-Align.MIDDLE = 0;
-Align.TOP = 4;
-Align.BOTTOM = 8;
-
-Align.horizontal = alignment => alignment & (Align.LEFT | Align.RIGHT);
-
-Align.vertical = alignment => alignment & (Align.TOP | Align.BOTTOM);
-
-const Anchor = Align;
-exports.Anchor = Anchor;
-
 function Unit(str) {
-  let u =
-    this instanceof Unit
-      ? this
-      : {
-          format(number) {
-            return "".concat(number).concat(this.name);
-          }
-        };
+  let u = this instanceof Unit ? this : {
+    format(number) {
+      return "".concat(number).concat(this.name);
+    }
+
+  };
   u.name = str.replace(/^[a-z]*/, "");
   return u;
 }
 
 function ScalarValue() {}
 
-const ifdef = (value, def, nodef) => (value !== undefined ? def : nodef);
+const ifdef = (value, def, nodef) => value !== undefined ? def : nodef;
 
 const ElementTransformation = () => ({
   rotate: 0,
@@ -398,15 +392,11 @@ const ElementTransformation = () => ({
 
   toString() {
     const rotate = this.rotate,
-      translate = this.translate,
-      scale = this.scale;
-    return "rotate("
-      .concat(rotate, "deg) translate(")
-      .concat(translate.x, ", ")
-      .concat(translate.y, ") scale(")
-      .concat(scale.w, ",")
-      .concat(scale.h, ")");
+          translate = this.translate,
+          scale = this.scale;
+    return "rotate(".concat(rotate, "deg) translate(").concat(translate.x, ", ").concat(translate.y, ") scale(").concat(scale.w, ",").concat(scale.h, ")");
   }
+
 });
 
 exports.ElementTransformation = ElementTransformation;
@@ -442,6 +432,7 @@ const CSSTransformSetters = element => ({
     const t = this.transformation.toString();
     this.style.transform = t;
   }
+
 });
 
 exports.CSSTransformSetters = CSSTransformSetters;
@@ -461,6 +452,7 @@ class Transition {
   static list() {
     return new TransitionList(...arguments);
   }
+
 }
 
 exports.Transition = Transition;
@@ -483,6 +475,7 @@ class TransitionList extends Array {
       transitionTimingFunction: this.propertyList("timing").join(", ")
     };
   }
+
 }
 
 exports.TransitionList = TransitionList;
@@ -496,8 +489,8 @@ const RandomColor = () => {
 exports.RandomColor = RandomColor;
 
 var _default = Object.assign(dom, {
-  Align,
-  Anchor,
+  Align: _align.Align,
+  Anchor: _align.Anchor,
   Container: _container.Container,
   CSS: _css.CSS,
   CSSTransformSetters,

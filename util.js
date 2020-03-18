@@ -451,14 +451,12 @@ Util.rotateRight = function(arr, n) {
   return arr;
 };
 Util.repeater = function(n, what) {
-      if(typeof(what) == 'function')
+  if(typeof what == "function")
+    return (function*() {
+      for(let i = 0; i < n; i++) yield what();
+    })();
   return (function*() {
-    for(let i = 0; i < n; i++)
-      yield what();
-  })();
- return (function*() {
-    for(let i = 0; i < n; i++)
-      yield what;
+    for(let i = 0; i < n; i++) yield what;
   })();
 };
 Util.repeat = function(n, what) {
@@ -637,7 +635,7 @@ Util.camelize = (text, sep = "") =>
   });
 
 Util.decamelize = function(str, separator = "-") {
-  /[A-Z]/.test(str)
+  return /[A-Z]/.test(str)
     ? str
         .replace(/([a-z\d])([A-Z])/g, `$1${separator}$2`)
         .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, `$1${separator}$2`)
@@ -1232,6 +1230,7 @@ Util.hex = function(num, numDigits = 0) {
   return ("0".repeat(numDigits) + n.toString(16)).slice(-numDigits);
 };
 Util.roundTo = function(value, prec) {
+  if(prec == 1) return Math.round(value);
   const digits = Math.ceil(-Math.log10(prec));
   return +(Math.round(value / prec) * prec).toFixed(digits);
 };
@@ -1665,4 +1664,4 @@ Util.splitLines = function(str, max_linelen = Number.MAX_SAFE_INTEGER) {
   }
   if(line != "") lines.push(line);
   return lines;
-}
+};

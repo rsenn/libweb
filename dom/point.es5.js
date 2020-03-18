@@ -78,12 +78,6 @@ Point.prototype.clear = function(x, y) {
   return this;
 };
 
-Point.prototype.move = function(x, y) {
-  this.x += x;
-  this.y += y;
-  return this;
-};
-
 Point.prototype.set = function(fn) {
   if(typeof fn != "function") {
     Point.apply(this, [...arguments]);
@@ -180,8 +174,8 @@ Point.prototype.equal = function(other) {
 
 Point.prototype.round = function(precision = 0.001) {
   const prec = -Math.ceil(Math.log10(precision));
-  this.x = +this.x.toFixed(prec);
-  this.y = +this.y.toFixed(prec);
+  this.x = precision == 1 ? Math.round(this.x) : +this.x.toFixed(prec);
+  this.y = precision == 1 ? Math.round(this.y) : +this.y.toFixed(prec);
   return this;
 };
 
@@ -241,10 +235,9 @@ Point.prototype.toSource = function() {
 };
 
 Point.prototype.toCSS = function(precision = 0.001) {
-  const prec = -Math.ceil(Math.log10(precision));
   return {
-    left: this.x.toFixed(prec) + "px",
-    top: this.y.toFixed(prec) + "px"
+    left: _util.default.roundTo(this.x, precision) + "px",
+    top: _util.default.roundTo(this.y, precision) + "px"
   };
 };
 
@@ -283,14 +276,14 @@ Point.quot = (a, b) => Point.prototype.quot.call(a, b);
 
 Point.equal = (a, b) => Point.prototype.equal.call(a, b);
 
-Point.round = (a, b) => Point.prototype.round.call(a, b);
+Point.round = (point, prec) => Point.prototype.round.call(point, prec);
 
 Point.fromAngle = (angle, f) => Point.prototype.fromAngle.call(new Point(0, 0), angle, f);
 
 for(var _i = 0, _arr = ["clone", "comp", "neg", "sides", "dimension", "toString", "toSource", "toCSS"]; _i < _arr.length; _i++) {
   let name = _arr[_i];
 
-  Point[name] = points => Point.prototype[name].call(points);
+  Point[name] = (...args) => Point.prototype[name].call(...args);
 }
 
 const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)));

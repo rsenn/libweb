@@ -729,7 +729,7 @@ Util.rotateRight = function (arr, n) {
 };
 
 Util.repeater = function (n, what) {
-  if (typeof what == 'function') return _regenerator.default.mark(function _callee3() {
+  if (typeof what == "function") return _regenerator.default.mark(function _callee3() {
     var i;
     return _regenerator.default.wrap(function _callee3$(_context4) {
       while (1) switch (_context4.prev = _context4.next) {
@@ -1004,7 +1004,7 @@ Util.camelize = (text, sep = "") => text.replace(/^([A-Z])|[\s-_]+(\w)/g, functi
 });
 
 Util.decamelize = function (str, separator = "-") {
-  /[A-Z]/.test(str) ? str.replace(/([a-z\d])([A-Z])/g, "$1".concat(separator, "$2")).replace(/([A-Z]+)([A-Z][a-z\d]+)/g, "$1".concat(separator, "$2")).toLowerCase() : str;
+  return /[A-Z]/.test(str) ? str.replace(/([a-z\d])([A-Z])/g, "$1".concat(separator, "$2")).replace(/([A-Z]+)([A-Z][a-z\d]+)/g, "$1".concat(separator, "$2")).toLowerCase() : str;
 };
 
 Util.isEmail = function (v) {
@@ -1683,6 +1683,7 @@ Util.hex = function (num, numDigits = 0) {
 };
 
 Util.roundTo = function (value, prec) {
+  if (prec == 1) return Math.round(value);
   const digits = Math.ceil(-Math.log10(prec));
   return +(Math.round(value / prec) * prec).toFixed(digits);
 };

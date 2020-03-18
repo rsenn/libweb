@@ -1,8 +1,8 @@
 import { Node } from "./node.js";
 import { TRBL } from "./trbl.js";
-import { Rect } from "./rect.js";
+import { Rect, isRect } from "./rect.js";
+import { Align, Anchor } from "./align.js";
 import Util from "../util.js";
-
 /**
  * Class for element.
  *
@@ -206,11 +206,15 @@ export class Element extends Node {
     return r;
   }
 
-  static setRect(element, rect, anchor = Anchor.LEFT | Anchor.TOP) {
+  static setRect(element, rect, anchor) {
     const e = typeof element === "string" ? Element.find(element) : element;
-    //console.log('Element.setRect(', element, ',', rect, ', ', anchor, ') ');
-    if(typeof anchor == "string") e.style.position = anchor;
-    const position = e.style.position || rect.position || "relative";
+    console.log("Element.setRect(", element, ",", rect, ", ", anchor, ") ");
+    if(typeof anchor == "string") {
+      e.style.position = anchor;
+      anchor = 0;
+    }
+    anchor = anchor || Anchor.LEFT | Anchor.TOP;
+    const position = e.style.position; /*|| rect.position || "relative"*/
     const pelement = position == "fixed" ? e.documentElement || document.body : e.parentNode;
     const prect = Element.rect(pelement, { round: false });
     //Rect.align(rect, prect, anchor);
@@ -218,13 +222,13 @@ export class Element extends Node {
     /* const stack = Util.getCallers(3, 4);*/
     const ptrbl = Rect.toTRBL(prect);
     const trbl = Rect.toTRBL(rect);
-    //console.log('Element.setRect ', { trbl, ptrbl, stack });
+    console.log("Element.setRect ", { trbl, ptrbl });
     let css = {};
     let remove;
     switch (Anchor.horizontal(anchor)) {
       case Anchor.LEFT:
       default:
-        css.left = Math.round(trbl.left - ptrbl.left) + "px";
+        css.left = Math.round(trbl.left /* - ptrbl.left*/) + "px";
         remove = "right";
         break;
       case Anchor.RIGHT:
@@ -235,7 +239,7 @@ export class Element extends Node {
     switch (Anchor.vertical(anchor)) {
       case Anchor.TOP:
       default:
-        css.top = Math.round(trbl.top - ptrbl.top) + "px";
+        css.top = Math.round(trbl.top /* - ptrbl.top*/) + "px";
         remove = "bottom";
         break;
       case Anchor.BOTTOM:
@@ -245,11 +249,12 @@ export class Element extends Node {
     }
     if(e.style.removeProperty) e.style.removeProperty(remove);
     else e.style[remove] = undefined;
-    css.position = position;
-    css.width = Math.round(isNaN(rect.width) ? rect.width : prect.width) + "px";
-    css.height = Math.round(isNaN(rect.height) ? rect.height : prect.height) + "px";
-    //console.log('Element.setRect ', css);
-    Element.setCSS(e, css);
+    //  css.position = position;
+    css.width = Math.round(rect.width) + "px";
+    css.height = Math.round(rect.height) + "px";
+    console.log("Element.setRect ", css);
+    Object.assign(e.style, css);
+    //    Element.setCSS(e, css);
     return e;
   }
 
@@ -357,7 +362,7 @@ export class Element extends Node {
     if(typeof element == "string") element = Element.find(element);
     if(typeof prop == "string" && typeof value == "string") prop = { [prop]: value };
 
-    //console.log('Element.setCSS ', { element, prop$ });
+    console.log("Element.setCSS ", { element, prop });
     for(let key in prop) {
       let value = prop[key];
       const propName = Util.decamelize(key);
@@ -641,7 +646,7 @@ export class Element extends Node {
     });
   }
 
-  static transition(element, css, time, easing = "linear") {
+  static transition(element, css, time, easing = "linear", callback = null) {
     const e = typeof element === "string" ? Element.find(element) : element;
     let a = [];
     const t = typeof time == "number" ? `${time}ms` : time;
@@ -654,9 +659,16 @@ export class Element extends Node {
       ctx.to[name] = css[prop];
     }
     const tlist = a.join(", ");
-    //console.log("Element.transition", ctx);
 
-    return new Promise((resolve, reject) => {
+    //console.log("Element.transition", { ctx, tlist });
+
+    var cancel;
+    let ret = new Promise((resolve, reject) => {
+      var trun = function(e) {
+        this.event = e;
+        console.log("Element.transitionRun event", this);
+        callback(this);
+      };
       var tend = function(e) {
         this.event = e;
         //console.log("Element.transitionEnd event", this);
@@ -665,13 +677,19 @@ export class Element extends Node {
         delete this.fn;
         resolve(this);
       };
-      ctx.fn = tend;
+      ctx.cancel = tend;
+      ctx.run = trun;
+      cancel = () => ctx.cancel();
+
+      e.addEventListener("transitionend", tend.bind(ctx));
+      e.addEventListener("transitionrun", trun.bind(ctx));
       if(e.style && e.style.setProperty) e.style.setProperty("transition", tlist);
       else e.style.transition = tlist;
 
-      e.addEventListener("transitionend", tend.bind(ctx));
       Object.assign(e.style, css);
     });
+    ret.cancel = cancel;
+    return ret;
   }
 }
 

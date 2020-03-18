@@ -861,13 +861,13 @@ export function rect(arg) {
     if(args[0] instanceof dom.Rect) r = args.shift();
     else r = new dom.Rect(args);
 
-    a.push(__rect(r));
+    a.push(__rect({ r, args }));
   }
 
-  return a;
+  return a.length == 1 ? a[0] : a;
 
-  function __rect(rect) {
-    console.log("__rect ", rect);
+  function __rect({ r, args }) {
+    const rect = r;
     let body = Element.find("body");
     let parent = null;
 
@@ -878,39 +878,37 @@ export function rect(arg) {
       rect = Element.rect(rect);
     }
 
-    console.log("rect ", { rect });
     let color = args.shift() || "#ffff0030";
     let borderColor = args.shift() || "#0f0";
     parent = parent || args.shift() || body;
-    let css = Rect.toCSS(rect) || {};
     if(typeof parent == "string") parent = Element.find(parent);
 
     if(parent != body && parent.style && !parent.style.position) parent.style.setProperty("position", "relative");
 
-    let e = Element.create("div", {
-      parent,
-      style: {
-        /*display: "inline-block",
-        class: "tracker-rect",
-        position: "absolute",*/
-        border: `1px dashed ${typeof borderColor == "string" ? borderColor : "#0f0"}`,
-        borderRadius: "0px",
-        backgroundColor: typeof color == "string" ? color : "#ffff0030",
-        zIndex: 999,
-        pointerEvents: "none",
-        left: `${rect.x}px`,
-        top: `${rect.y}px`,
-        width: `${rect.width}px`,
-        height: `${rect.height}px`
-        /*   WebkitBoxShadow: '0px 0px 9px 0px #000000',
+    let e = Element.create("div", { parent });
+
+    Object.assign(e.style, {
+      /*display: "inline-block",
+        class: "tracker-rect",*/
+      position: "absolute",
+      border: `1px dashed ${typeof borderColor == "string" ? borderColor : "#0f0"}`,
+      borderRadius: "0px",
+      backgroundColor: color,
+      zIndex: 9999,
+      pointerEvents: "none" /*,
+                ...rect.round(1).toCSS(),*/
+
+      /*   WebkitBoxShadow: '0px 0px 9px 0px #000000',
       boxShadow: '0px 0px 9px 0px #000000',*/
-        /*...css*/
-      }
     });
+
+    console.log("__rect ", rect, color);
+
+    Element.setRect(e, rect.round(1), "absolute");
 
     /*  Rect.set(r, e);*/
     // Rect.inset(rect, TRBL(3, 3, 3, 3));
-    //  Element.setCSS(e, { left: rect.x, top: rect.y, width: rect.width, height: rect.height });
+    //Element.setCSS(e, { left: rect.x, top: rect.y, width: rect.width, height: rect.height });
     // Element.rect(e, rect, 'absolute');
     let computed = Element.getRect(e);
     console.log("rect: ", rect, " computed: ", computed);

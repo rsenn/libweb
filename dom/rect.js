@@ -2,6 +2,7 @@ import { Point, isPoint } from "./point.js";
 import { PointList } from "./pointList.js";
 import { Size, isSize } from "./size.js";
 import { Align, Anchor } from "./align.js";
+import { TRBL, isTRBL } from "./trbl.js";
 import { Util } from "../util.js";
 
 export function Rect(arg) {
@@ -100,11 +101,11 @@ Rect.prototype.constructor = Rect;
 Rect.prototype.getArea = function() {
   return this.width * this.height;
 };
-Rect.prototype.toString = function() {
-  return (this.x + "").padStart(4, " ") + "," + (this.y + "").padEnd(4, " ") + " " + (this.width + "").padStart(4, " ") + "x" + (this.height + "").padEnd(4, " ");
+Rect.prototype.toString = function(prec = 0.000001) {
+  return `${Util.roundTo(this.x, prec)} ${Util.roundTo(this.y, prec)} ${Util.roundTo(this.width, prec)} ${Util.roundTo(this.height, prec)}`;
 };
 Rect.prototype.toSource = function() {
-  return "new Rect(" + (this ? this.x + "," + this.y + "," + this.width + "," + this.height : "") + ")";
+  return "new Rect(" + (this ? (this.x + "").padStart(4, " ") + "," + (this.y + "").padEnd(4, " ") + " " + (this.width + "").padStart(4, " ") + "x" + (this.height + "").padEnd(4, " ") : "") + ")";
 };
 Object.defineProperty(Rect.prototype, "x1", {
   get: function() {
@@ -191,6 +192,14 @@ Rect.prototype.toCSS = function() {
   return { ...Point.prototype.toCSS.call(this), ...Size.prototype.toCSS.call(this) };
 };
 
+Rect.prototype.toTRBL = function() {
+  return {
+    top: this.y,
+    right: this.x + this.width,
+    bottom: this.y + this.height,
+    left: this.x
+  };
+};
 Rect.prototype.toPoints = function() {
   var list = new PointList();
   list.push(new Point(this.x, this.y));
@@ -261,7 +270,7 @@ Rect.inside = (rect, point) => {
   return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
 };
 
-for(let name of ["clone", "corners", "isSquare", "getArea", "toString", "toSource", "points", "toCSS", "toPoints"]) {
+for(let name of ["clone", "corners", "isSquare", "getArea", "toString", "toSource", "points", "toCSS", "toTRBL", "toPoints"]) {
   Rect[name] = points => Rect.prototype[name].call(points);
 }
 

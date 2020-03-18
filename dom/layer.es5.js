@@ -9,9 +9,10 @@ var _element = require("./element.es5.js");
 
 class Layer extends _element.Element {
   constructor(arg, attr) {
-    this.elm = (_element.Element.isElement(arg) && arg) || _element.Element.create(arg);
+    this.elm = _element.Element.isElement(arg) && arg || _element.Element.create(arg);
     this.rect = _element.Element.rect(this.elm);
   }
+
 }
 
 exports.Layer = Layer;
@@ -25,7 +26,7 @@ class Renderer {
   refresh() {
     this.clear();
     ReactDOM.render(this.component, this.root_node);
-    const e = (this.element = this.root_node.firstChild);
+    const e = this.element = this.root_node.firstChild;
 
     const xpath = _element.Element.xpath(e);
 
@@ -33,12 +34,13 @@ class Renderer {
   }
 
   clear() {
-    if(this.element) {
+    if (this.element) {
       let parent = this.element.parentNode;
       parent.removeChild(this.element);
       this.element = null;
     }
   }
+
 }
 
 exports.Renderer = Renderer;

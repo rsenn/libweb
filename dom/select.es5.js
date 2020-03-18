@@ -23,25 +23,22 @@ class Select extends _react.default.Component {
 
   render() {
     const _this$props = this.props,
-      options = _this$props.options,
-      props = (0, _objectWithoutProperties2.default)(_this$props, ["options"]);
+          options = _this$props.options,
+          props = (0, _objectWithoutProperties2.default)(_this$props, ["options"]);
 
-    const Option = _ref => {
+    const Option = (_ref) => {
       let children = _ref.children,
-        props = (0, _objectWithoutProperties2.default)(_ref, ["children"]);
-      return __jsx(
-        "option",
-        (0, _extends2.default)({}, props, {
-          __source: {
-            fileName: _jsxFileName,
-            lineNumber: 14
-          },
-          __self: this
-        }),
-        children
-      );
+          props = (0, _objectWithoutProperties2.default)(_ref, ["children"]);
+      return __jsx("option", (0, _extends2.default)({}, props, {
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 14
+        },
+        __self: this
+      }), children);
     };
   }
+
 }
 
 exports.Select = Select;

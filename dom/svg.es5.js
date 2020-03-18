@@ -37,48 +37,21 @@ var _rect = require("./rect.es5.js");
 
 var _util = _interopRequireDefault(require("../util.es5.js"));
 
-function ownKeys(object, enumerableOnly) {
-  var keys = Object.keys(object);
-  if(Object.getOwnPropertySymbols) {
-    var symbols = Object.getOwnPropertySymbols(object);
-    if(enumerableOnly)
-      symbols = symbols.filter(function(sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      });
-    keys.push.apply(keys, symbols);
-  }
-  return keys;
-}
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) {
-  for(var i = 1; i < arguments.length; i++) {
-    var source = arguments[i] != null ? arguments[i] : {};
-    if(i % 2) {
-      ownKeys(Object(source), true).forEach(function(key) {
-        (0, _defineProperty2.default)(target, key, source[key]);
-      });
-    } else if(Object.getOwnPropertyDescriptors) {
-      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-    } else {
-      ownKeys(Object(source)).forEach(function(key) {
-        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-      });
-    }
-  }
-  return target;
-}
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 class SVG extends _element.Element {
   static create(name, attr, parent) {
     var svg = document.createElementNS(SVG.ns, name);
     let text, attrfn;
 
-    if(attr.text !== undefined) {
+    if (attr.text !== undefined) {
       text = attr.text;
       delete attr.text;
     }
 
-    if(name == "svg") {
+    if (name == "svg") {
       attr.version = "1.1";
       attr.xmlns = SVG.ns;
 
@@ -89,8 +62,8 @@ class SVG extends _element.Element {
 
     _util.default.foreach(attr, (value, name) => svg.setAttribute(attrfn(name, "-"), value));
 
-    if(parent && parent.appendChild) parent.appendChild(svg);
-    if(text) svg.innerHTML = text;
+    if (parent && parent.appendChild) parent.appendChild(svg);
+    if (text) svg.innerHTML = text;
     return svg;
   }
 
@@ -101,37 +74,30 @@ class SVG extends _element.Element {
       setattr: (elem, name, value) => name != "ns" && elem.setAttributeNS(document.namespaceURI, _util.default.decamelize(name, "-"), value),
       setcss: (elem, css) => elem.setAttributeNS(null, "style", css)
     };
-    if(size == null) size = (0, _size2.Size)(_rect.Rect.round(_element.Element.rect(parent)));
+    if (size == null) size = (0, _size2.Size)(_rect.Rect.round(_element.Element.rect(parent)));
     const _size = size,
-      width = _size.width,
-      height = _size.height;
-    if(parent && parent.tagName == "svg") delegate.root = parent;
-    else if(this !== SVG && this && this.appendChild) delegate.root = this;
-    else {
-      delegate.root = SVG.create(
-        "svg",
-        {
-          width,
-          height,
-          viewBox: "0 0 " + width + " " + height + ""
-        },
-        parent
-      );
+          width = _size.width,
+          height = _size.height;
+    if (parent && parent.tagName == "svg") delegate.root = parent;else if (this !== SVG && this && this.appendChild) delegate.root = this;else {
+      delegate.root = SVG.create("svg", {
+        width,
+        height,
+        viewBox: "0 0 " + width + " " + height + ""
+      }, parent);
     }
 
-    if(!delegate.root.firstElementChild || delegate.root.firstElementChild.tagName != "defs") {
+    if (!delegate.root.firstElementChild || delegate.root.firstElementChild.tagName != "defs") {
       SVG.create("defs", {}, delegate.root);
     }
 
-    delegate.append_to = function(elem, p) {
+    delegate.append_to = function (elem, p) {
       var root = p || this.root;
 
-      if(elem.tagName.indexOf("Gradient") != -1) {
+      if (elem.tagName.indexOf("Gradient") != -1) {
         root = root.querySelector("defs");
       }
 
-      if(typeof root.append == "function") root.append(elem);
-      else root.appendChild(elem);
+      if (typeof root.append == "function") root.append(elem);else root.appendChild(elem);
     };
 
     return _element.Element.factory(delegate);
@@ -140,24 +106,21 @@ class SVG extends _element.Element {
   static matrix(element, screen = false) {
     let e = typeof element === "string" ? _element.Element.find(element) : element;
     let fn = screen ? "getScreenCTM" : "getCTM";
-    if(e && e[fn]) return Matrix.fromDOMMatrix(e[fn]());
+    if (e && e[fn]) return Matrix.fromDOMMatrix(e[fn]());
     return null;
   }
 
-  static bbox(
-    element,
-    options = {
-      parent: null,
-      absolute: false
-    }
-  ) {
+  static bbox(element, options = {
+    parent: null,
+    absolute: false
+  }) {
     let e = typeof element === "string" ? _element.Element.find(element, options.parent) : element;
     let bb;
 
-    if(e && e.getBBox) {
+    if (e && e.getBBox) {
       bb = new _rect.Rect(e.getBBox());
 
-      if(options.absolute) {
+      if (options.absolute) {
         let r = _element.Element.rect(element.ownerSVGElement);
 
         bb.x += r.x;
@@ -172,18 +135,18 @@ class SVG extends _element.Element {
 
   static gradient(type, _ref) {
     let stops = _ref.stops,
-      _ref$factory = _ref.factory,
-      factory = _ref$factory === void 0 ? SVG.create : _ref$factory,
-      _ref$parent = _ref.parent,
-      parent = _ref$parent === void 0 ? null : _ref$parent,
-      _ref$line = _ref.line,
-      line = _ref$line === void 0 ? false : _ref$line,
-      props = (0, _objectWithoutProperties2.default)(_ref, ["stops", "factory", "parent", "line"]);
+        _ref$factory = _ref.factory,
+        factory = _ref$factory === void 0 ? SVG.create : _ref$factory,
+        _ref$parent = _ref.parent,
+        parent = _ref$parent === void 0 ? null : _ref$parent,
+        _ref$line = _ref.line,
+        line = _ref$line === void 0 ? false : _ref$line,
+        props = (0, _objectWithoutProperties2.default)(_ref, ["stops", "factory", "parent", "line"]);
     var defs = factory("defs", {}, parent);
     const map = new Map(stops instanceof Array ? stops : Object.entries(stops));
     let rect = {};
 
-    if(line) {
+    if (line) {
       rect = new _rect.Rect(line);
       rect = {
         x1: rect.x,
@@ -195,27 +158,23 @@ class SVG extends _element.Element {
 
     let grad = factory(type + "-gradient", _objectSpread({}, props, {}, rect), defs);
     map.forEach((color, o) => {
-      factory(
-        "stop",
-        {
-          offset: Math.round(o * 100) + "%",
-          stopColor: color
-        },
-        grad
-      );
+      factory("stop", {
+        offset: Math.round(o * 100) + "%",
+        stopColor: color
+      }, grad);
     });
     return grad;
   }
 
   static owner(elem) {
     var ret = function ret(tag, props, parent) {
-      if(tag === undefined) return this.element;
+      if (tag === undefined) return this.element;
       return SVG.create.call(SVG, tag, props, parent || this.element);
     };
 
     ret.element = elem.ownerSVGElement;
 
-    _util.default.defineGetterSetter(ret, "rect", function() {
+    _util.default.defineGetterSetter(ret, "rect", function () {
       return _element.Element.rect(this.element);
     });
 
@@ -230,35 +189,35 @@ class SVG extends _element.Element {
     return _regenerator.default.mark(function _callee() {
       var len, i, pos, point;
       return _regenerator.default.wrap(function _callee$(_context) {
-        while(1)
-          switch ((_context.prev = _context.next)) {
-            case 0:
-              len = e.getTotalLength();
-              i = 0;
+        while (1) switch (_context.prev = _context.next) {
+          case 0:
+            len = e.getTotalLength();
+            i = 0;
 
-            case 2:
-              if(!(i < numPoints)) {
-                _context.next = 10;
-                break;
-              }
-
-              pos = (i * len) / numPoints;
-              point = e.getPointAtLength(pos);
-              _context.next = 7;
-              return tr(point);
-
-            case 7:
-              i++;
-              _context.next = 2;
+          case 2:
+            if (!(i < numPoints)) {
+              _context.next = 10;
               break;
+            }
 
-            case 10:
-            case "end":
-              return _context.stop();
-          }
+            pos = i * len / numPoints;
+            point = e.getPointAtLength(pos);
+            _context.next = 7;
+            return tr(point);
+
+          case 7:
+            i++;
+            _context.next = 2;
+            break;
+
+          case 10:
+          case "end":
+            return _context.stop();
+        }
       }, _callee);
     })();
   }
+
 }
 
 exports.SVG = SVG;

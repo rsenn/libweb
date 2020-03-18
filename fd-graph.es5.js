@@ -22,7 +22,7 @@ var _dom = require("./dom.es5.js");
 var _util = _interopRequireDefault(require("./util.es5.js"));
 
 class Graph {
-  constructor({ origin = new _dom.Point(0, 0), gravitate_to_origin = true, spacing = 1, timestep = 150, kineticenergy = 1, damping = 0.000005, total_node_velocity = 0, onUpdateNode = node => {}, onUpdateEdge = edge => {}, onRenderGraph = graph => {} }) {
+  constructor({ origin = new _dom.Point(0, 0), prng = Math.random, gravitate_to_origin = true, spacing = 1, timestep = 150, kineticenergy = 1, damping = 0.000005, total_node_velocity = 0, onUpdateNode = node => {}, onUpdateEdge = edge => {}, onRenderGraph = graph => {} }) {
     console.log("Graph(".concat(origin, ",").concat(gravitate_to_origin, ")"));
     this.nodes = [];
     this.edges = [];
@@ -40,16 +40,15 @@ class Graph {
     this.total_node_velocity = total_node_velocity;
     this.gravitate_to_origin = typeof gravitate_to_origin == "undefined" ? true : gravitate_to_origin;
     this.done_rendering = false;
+    this.prng = prng;
     var g = this;
     var seq = 0;
   }
 
-  addNode(n) {
-    let args = [...arguments];
-    if(!(n instanceof Node)) n = new Node(...args);
+  addNode(n, charge = 60, mass = 100) {
+    if(!(n instanceof Node)) n = new Node(n, charge, mass, this.prng);
     n.index = this.nodes.length;
     this.nodes.push(n);
-    this.checkRedraw();
     return this.nodes[this.nodes.length - 1];
   }
 
@@ -221,9 +220,8 @@ class Graph {
         node.velocity.y = node.netforce.y == 0 ? 0 : (node.velocity.y + this.timestep * node.netforce.y) * this.damping;
       }
 
-      _dom.Point.move(node, node.velocity.x * this.timestep, node.velocity.y * this.timestep);
-
-      var velocity = Math.abs(Math.sqrt(node.velocity.x * node.velocity.x + node.velocity.y * node.velocity.y));
+      node.move(node.velocity.x * this.timestep, node.velocity.y * this.timestep);
+      var velocity = node.velocity.distance();
       this.total_node_velocity += velocity;
       this.kineticenergy += node.mass * (velocity * velocity);
     }
@@ -316,13 +314,6 @@ class Graph {
 
     if(this.total_node_velocity < 0.0001) {
       this.done_rendering = true;
-      distributeLeafNodes();
-
-      for(let i = 0; i < newPositions.length; i++) {
-        let newPos = newPositions[i];
-      }
-
-      console.log("newPositions: ", newPositions);
     } else {
       this.done_rendering = false;
     }
@@ -348,11 +339,11 @@ class Graph {
   }
 
   serialize() {
-    let data = {
+    return {
       nodes: this.nodes.map(node => Node.prototype.toJS.call(node)),
-      edges: this.edges.map(edge => Edge.prototype.toIdx.call(edge, this))
+      edges: this.edges.map(edge => Edge.prototype.toIdx.call(edge, this)),
+      bbox: this.getBBox()
     };
-    return data;
   }
 
   get rect() {
@@ -376,15 +367,22 @@ class Graph {
 exports.Graph = Graph;
 
 class Node extends _dom.Point {
-  constructor(label, charge = 60, mass = 100) {
-    super(0, 0);
+  static clone(other) {
+    let node = new Node(other.label, other.charge, other.mass, () => 0);
+    node.velocity = other.velocity;
+    node.netforce = other.netforce;
+    node.x = other.x;
+    node.y = other.y;
+    return node;
+  }
+
+  constructor(label, charge = 60, mass = 100, prng) {
+    super(prng() * 1000, prng() * 1000);
     this.charge = 0;
     this.mass = 0;
     this.velocity = null;
     this.netforce = null;
     this.label = null;
-    this.x = Math.floor(Math.random() * 1000);
-    this.y = Math.floor(Math.random() * 1000);
     this.charge = charge;
     this.mass = mass;
     this.velocity = new _dom.Point(0, 0);
@@ -406,26 +404,25 @@ class Node extends _dom.Point {
   }
 
   applyAttractiveForce(n, scale = 0.1) {
-    if((0, _dom.isPoint)(n)) {
-      var distance = _dom.Point.distance(this, n);
-
-      var force = scale * Math.max(distance + 200, 1);
-      var p = new _dom.Point(this);
-
-      _dom.Point.move(this.netforce, force * Math.sin((n.x - p.x) / distance), force * Math.sin((n.y - p.y) / distance));
-    }
+    var distance = this.distance(n);
+    var force = scale * Math.max(distance + 200, 1);
+    this.netforce.move(force * Math.sin((n.x - this.x) / distance), force * Math.sin((n.y - this.y) / distance));
   }
 
   applyRepulsiveForce(n, scale = 1) {
-    var d = Math.max(_dom.Point.distance(this, n), 1);
+    var d = Math.max(this.distance(n), 1);
     var f = -1 * scale * ((this.charge * n.charge) / (d * d));
-    var p = new _dom.Point(this);
-
-    _dom.Point.move(this.netforce, f * Math.sin((n.x - p.x) / d), f * Math.sin((n.y - p.y) / d));
+    this.netforce.move(f * Math.sin((n.x - this.x) / d), f * Math.sin((n.y - this.y) / d));
   }
 
   toJS() {
-    return _util.default.filterKeys(this, key => ["charge", "mass", "velocity", "netforce", "label", "x", "y", "id"].indexOf(key) != -1);
+    let ret = _util.default.filterKeys(this, key => ["charge", "mass", "velocity", "netforce", "label", "x", "y", "id"].indexOf(key) != -1);
+
+    if(this.node && this.node.id !== undefined) ret.id = this.node.id;
+
+    _dom.Point.round(ret, 0.001);
+
+    return ret;
   }
 }
 
@@ -434,8 +431,8 @@ class Edge extends _dom.Line {
     super();
     this.a = null;
     this.b = null;
-    if(node_a) this.a = node_a instanceof Node ? node_a : new Node(node_a);
-    if(node_b) this.b = node_b instanceof Node ? node_b : new Node(node_b);
+    if(node_a) this.a = node_a instanceof Node ? node_a : Node.clone(node_a);
+    if(node_b) this.b = node_b instanceof Node ? node_b : Node.clone(node_b);
 
     if(!(node_a && node_b)) {
       throw new Error("Edge requires 2 nodes");
