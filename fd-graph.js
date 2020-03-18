@@ -20,7 +20,7 @@ import Util from "./util.js";
  */
 
 export class Graph {
-  constructor({ origin = new Point(0, 0), gravitate_to_origin = true, spacing = 1, timestep = 150, kineticenergy = 1, damping = 0.000005, total_node_velocity = 0, onUpdateNode = node => {}, onUpdateEdge = edge => {}, onRenderGraph = graph => {} }) {
+  constructor({ origin = new Point(0, 0), prng = Math.random, gravitate_to_origin = true, spacing = 1, timestep = 150, kineticenergy = 1, damping = 0.000005, total_node_velocity = 0, onUpdateNode = node => {}, onUpdateEdge = edge => {}, onRenderGraph = graph => {} }) {
     console.log(`Graph(${origin},${gravitate_to_origin})`);
     this.nodes = [];
     this.edges = [];
@@ -33,6 +33,7 @@ export class Graph {
     this.total_node_velocity = total_node_velocity;
     this.gravitate_to_origin = typeof gravitate_to_origin == "undefined" ? true : gravitate_to_origin;
     this.done_rendering = false;
+    this.prng = prng;
 
     var g = this;
     var seq = 0;
@@ -54,7 +55,7 @@ export class Graph {
 
   addNode(n) {
     let args = [...arguments];
-    if(!(n instanceof Node)) n = new Node(...args);
+    if(!(n instanceof Node)) n = new Node(...[...args.slice(0,3), this.prng]);
     n.index = this.nodes.length;
     this.nodes.push(n);
     //this.checkRedraw();
@@ -260,7 +261,7 @@ export class Graph {
 
     // this.nodes.forEach(node => node.round(0.001));
 
-    console.log("checkRedraw", { kineticenergy, total_node_velocity });
+    //console.log("checkRedraw", { kineticenergy, total_node_velocity });
   }
 
   updateAll() {
@@ -315,6 +316,16 @@ class Node extends Point {
   netforce = null;
   label = null;
 
+  static clone(other) {
+    let node = new Node(other.label, other.charge, other.mass, () => 0);
+
+    node.velocity = other.velocity;
+    node.netforce = other.netforce;
+    node.x = other.x;
+    node.y = other.y;
+    return node;
+  }
+
   /**
    * Node
    *
@@ -322,9 +333,9 @@ class Node extends Point {
    * @param      {String}  label        A label
    * @param      {number}  [charge=60]  The charge
    */
-  constructor(label, charge = 60, mass = 100) {
+  constructor(label, charge = 60, mass = 100, prng = Math.random) {
     //
-    super(Math.random() * 1000, Math.random() * 1000);
+    super(prng() * 1000, prng() * 1000);
 
     this.charge = charge;
     this.mass = mass;
@@ -376,8 +387,8 @@ class Edge extends Line {
    */
   constructor(node_a, node_b) {
     super();
-    if(node_a) this.a = node_a instanceof Node ? node_a : new Node(node_a);
-    if(node_b) this.b = node_b instanceof Node ? node_b : new Node(node_b);
+    if(node_a) this.a = node_a instanceof Node ? node_a : Node.clone(node_a);
+    if(node_b) this.b = node_b instanceof Node ? node_b : Node.clone(node_b);
 
     if(!(node_a && node_b)) {
       throw new Error("Edge requires 2 nodes");
