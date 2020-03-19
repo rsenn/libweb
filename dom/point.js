@@ -140,9 +140,9 @@ Point.prototype.fromAngle = function(angle, dist = 1.0) {
 Point.prototype.toAngle = function(deg = false) {
   return Math.atan2(this.x, this.y) * (deg ? 180 / Math.PI : 1);
 };
-Point.prototype.angle = function(other) {
+Point.prototype.angle = function(other, deg = false) {
   other = other || { x: 0, y: 0 };
-  return Point.prototype.diff.call(this, other).toAngle();
+  return Point.prototype.diff.call(this, other).toAngle(deg);
 };
 Point.prototype.dimension = function() {
   return [this.width, this.height];
@@ -166,6 +166,9 @@ Point.prototype.toSource = function() {
 Point.prototype.toCSS = function(precision = 0.001) {
   return { left: Util.roundTo(this.x, precision) + "px", top: Util.roundTo(this.y, precision) + "px" };
 };
+Point.prototype.toFixed = function(digits) {
+  return new Point(+this.x.toFixed(digits),+this.y.toFixed(digits));
+};
 Point.prototype.inside = function(rect) {
   return this.x >= rect.x && this.x < rect.x + rect.width && this.y >= rect.y && this.y < rect.y + rect.height;
 };
@@ -182,7 +185,7 @@ Point.prototype.normalize = function(minmax) {
 
 Point.distance = point => Point.prototype.distance.call(point);
 Point.move = (point, x, y) => Point.prototype.move.call(point, x, y);
-Point.angle = point => Point.prototype.angle.call(point);
+Point.angle = (point,other,deg = false) => Point.prototype.angle.call(point, other,deg);
 Point.distance = point => Point.prototype.distance.call(point);
 Point.inside = (point, rect) => Point.prototype.inside.call(point, rect);
 Point.add = (point, other) => Point.prototype.add.call(point, other);

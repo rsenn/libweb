@@ -5,7 +5,8 @@ import Util from "../util.js";
 export function PointList(points) {
   let args = [...arguments];
   let ret = this instanceof PointList ? this : [];
-  if(args.length == 1 && args[0] instanceof Array) args = args[0];
+  if(Util.isArray(args[0]) ||  Util.isGenerator(args[0])) args = [...args[0]];
+
   if(typeof points === "string") {
     const matches = [...points.matchAll(/[-.0-9,]+/g)];
     for(let i = 0; i < matches.length; i++) {
@@ -13,9 +14,13 @@ export function PointList(points) {
       ret.push(Point(coords));
     }
   } else if(args[0] && args[0].length == 2) {
-    for(let i = 0; i < args.length; i++) ret.push(this instanceof PointList ? new Point(args[i]) : Point(args[i]));
-  } else if(isPoint(args[0])) {
-    for(let i = 0; i < args.length; i++) ret.push(this instanceof PointList ? new Point(args[i]) : Point(args[i]));
+    for(let i = 0; i < args.length; i++)
+      ret.push(this instanceof PointList ? new Point(args[i]) : Point(args[i]));
+
+  } else if(args.length !== undefined) {
+    for(let i = 0; i < args.length; i++) {
+      ret.push(args[i] instanceof Point ? args[i] : this instanceof PointList ? new Point(args[i]) : Point(args[i]));
+    }
   }
   if(!(this instanceof PointList)) {
     return ret;
@@ -44,10 +49,12 @@ PointList.prototype.removeSegment = function(index) {
   }
 };
 PointList.prototype.toPath = function(options = {}) {
-  const { relative = false, close = false } = options;
+  const { relative = false, close = false, precision = 0.001 } = options;
   let out = "";
+  const point = relative ? (i => i > 0 ? Point.diff(this[i], this[i - 1]) : this[i]) :  i => this[i];
+  const cmd = i => (i == 0 ? "M" : "L"[relative ? 'toLowerCase' : 'toUpperCase']());
   for(let i = 0; i < this.length; i++) {
-    out += (i == 0 ? "M" : "L") + this[i].x.toFixed(3) + "," + this[i].y.toFixed(3) + " ";
+    out += cmd(i) + Util.roundTo(point(i).x, precision) + "," +  Util.roundTo(point(i).y, precision) + " ";
   }
   if(close) out += "Z";
   return out;

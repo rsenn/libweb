@@ -30,7 +30,9 @@ export class SVG extends Element {
     let delegate = {
       create: tag => document.createElementNS(SVG.ns, tag),
       append_to: elem => parent.appendChild(elem),
-      setattr: (elem, name, value) => name != "ns" && elem.setAttributeNS(document.namespaceURI, Util.decamelize(name, "-"), value),
+      setattr: (elem, name, value) =>
+        name != "ns" &&
+        elem.setAttributeNS(document.namespaceURI, Util.decamelize(name, "-"), value),
       setcss: (elem, css) => elem.setAttributeNS(null, "style", css)
     };
     if(size == null) size = Size(Rect.round(Element.rect(parent)));
@@ -39,7 +41,11 @@ export class SVG extends Element {
     if(parent && parent.tagName == "svg") delegate.root = parent;
     else if(this !== SVG && this && this.appendChild) delegate.root = this;
     else {
-      delegate.root = SVG.create("svg", { width, height, viewBox: "0 0 " + width + " " + height + "" }, parent);
+      delegate.root = SVG.create(
+        "svg",
+        { width, height, viewBox: "0 0 " + width + " " + height + "" },
+        parent
+      );
     }
 
     if(!delegate.root.firstElementChild || delegate.root.firstElementChild.tagName != "defs") {
@@ -120,15 +126,61 @@ export class SVG extends Element {
     return new SvgPath();
   }
 
-  static *path_iterator(path, numPoints = 100, tr = p => new Point(p)) {
+  /*
+       
+    paths = dom.Element.findAll("path", await img("action-save-new.svg"));
+    points = [...dom.SVG.path_iterator(paths[1])].map(item => item.point);
+    list = new dom.PointList(points);
+
+
+*/
+
+  static *path_iterator(e, numPoints, fn = p => p) {
     const len = e.getTotalLength();
 
-    for(let i = 0; i < numPoints; i++) {
-      const pos = (i * len) / numPoints;
-      const point = e.getPointAtLength(pos);
+    if(!numPoints) numPoints = Math.ceil(len / 2);
 
-      yield tr(point);
+    let p,y,
+      prev = { };
+    const pos = i => (i * len) / numPoints;
+
+     var do_point  = (point) => {
+        const { x, y, slope, next, prev, i, isin } = point
+        let d = point.distance = slope ? Point.distance(slope) : Number.POSITIVE_INFINITY;
+       point.angle = slope ? slope.toAngle(true) : NaN;
+        point.move = !(isin.stroke  && isin.fill);
+        point.ok = !point.move && prev.angle != point.angle ;
+        const pad = Util.padFn(12, " ", (str, pad) => `${pad}${str}`);
+        if(point.ok) {
+          console.log(
+            `pos: ${pad(i, 3)}, move: ${isin  || point.move} point: ${pad(point)}, slope: ${pad(
+              slope && slope.toFixed(3)
+            )}, angle: ${point.angle.toFixed(3)}, d: ${d.toFixed(3)}`
+          );
+          let ret;
+
+          try { ret = fn(point); } catch(err) {}
+          return ret;
+        }
+      };
+
+    for(let i = 0; i < numPoints - 1; i++) {
+      const point = e.getPointAtLength(pos(i));
+      const next = e.getPointAtLength(pos(i + 1));
+      const isin = { stroke: e.isPointInStroke(point), fill: e.isPointInFill(point), toString() {return `${this.stroke},${this.fill}`; } };
+        p = new Point(point);
+      Object.assign(p, { slope: Point.diff(next, point), next, prev, i, isin });
+      y = do_point(p);
+      if(y) {
+        yield y;
+      }
+      prev = p;
     }
+    p = new Point(e.getPointAtLength(pos(numPoints-1)));
+          p =  Object.assign(p, { slope: null, next: null, prev, isin: {stroke:true,fill:true} });
+    
+    y = do_point(p);
+    if(y) yield y;
   }
 }
 SVG.ns = "http://www.w3.org/2000/svg";

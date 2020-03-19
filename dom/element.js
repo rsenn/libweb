@@ -208,7 +208,7 @@ export class Element extends Node {
 
   static setRect(element, rect, anchor) {
     const e = typeof element === "string" ? Element.find(element) : element;
-    console.log("Element.setRect(", element, ",", rect, ", ", anchor, ") ");
+    //console.log("Element.setRect(", element, ",", rect, ", ", anchor, ") ");
     if(typeof anchor == "string") {
       e.style.position = anchor;
       anchor = 0;
@@ -222,7 +222,7 @@ export class Element extends Node {
     /* const stack = Util.getCallers(3, 4);*/
     const ptrbl = Rect.toTRBL(prect);
     const trbl = Rect.toTRBL(rect);
-    console.log("Element.setRect ", { trbl, ptrbl });
+    //console.log("Element.setRect ", { trbl, ptrbl });
     let css = {};
     let remove;
     switch (Anchor.horizontal(anchor)) {
@@ -252,7 +252,7 @@ export class Element extends Node {
     //  css.position = position;
     css.width = Math.round(rect.width) + "px";
     css.height = Math.round(rect.height) + "px";
-    console.log("Element.setRect ", css);
+    //console.log("Element.setRect ", css);
     Object.assign(e.style, css);
     //    Element.setCSS(e, css);
     return e;
@@ -362,7 +362,7 @@ export class Element extends Node {
     if(typeof element == "string") element = Element.find(element);
     if(typeof prop == "string" && typeof value == "string") prop = { [prop]: value };
 
-    console.log("Element.setCSS ", { element, prop });
+    //console.log("Element.setCSS ", { element, prop });
     for(let key in prop) {
       let value = prop[key];
       const propName = Util.decamelize(key);
@@ -645,13 +645,22 @@ export class Element extends Node {
       else reject();
     });
   }
+  /*
+      e=Util.shuffle(dom.Element.findAll('rect'))[0]; r=dom.Element.rect(e); a=rect(r, new dom.HSLA(200,100,50,0.5));
+      t=dom.Element.transition(a, { transform: 'translate(100px,100px) scale(2,2) rotate(45deg)' }, 10000, ctx => console.log("run",ctx)); t.then(done => console.log({done}))
 
+*/
   static transition(element, css, time, easing = "linear", callback = null) {
-    const e = typeof element === "string" ? Element.find(element) : element;
+    let args = [...arguments];
+    const e = typeof element === "string" ? Element.find(args.shift()) : args.shift();
     let a = [];
     const t = typeof time == "number" ? `${time}ms` : time;
     let ctx = { e, t, from: {}, to: {}, css };
+    args.shift(); args.shift();
 
+         easing = (typeof args[0] == 'function') ?"linear" : aargs.shift();
+      callback = args.shift();
+   
     for(let prop in css) {
       const name = Util.decamelize(prop);
       a.push(`${name} ${t} ${easing}`);
@@ -666,23 +675,25 @@ export class Element extends Node {
     let ret = new Promise((resolve, reject) => {
       var trun = function(e) {
         this.event = e;
-        console.log("Element.transitionRun event", this);
+        //console.log("Element.transitionRun event", this);
         callback(this);
       };
       var tend = function(e) {
         this.event = e;
         //console.log("Element.transitionEnd event", this);
-        this.e.removeEventListener("transitionend", this.fn);
+        this.e.removeEventListener("transitionend", this);
         this.e.style.setProperty("transition", "");
-        delete this.fn;
+        delete this.cancel;
         resolve(this);
       };
-      ctx.cancel = tend;
-      ctx.run = trun;
+
+      e.addEventListener("transitionend", (ctx.cancel = tend).bind(ctx));
+
+      if(typeof(callback) == 'function')
+      e.addEventListener("transitionrun",       (ctx.run = trun).bind(ctx));
+
       cancel = () => ctx.cancel();
 
-      e.addEventListener("transitionend", tend.bind(ctx));
-      e.addEventListener("transitionrun", trun.bind(ctx));
       if(e.style && e.style.setProperty) e.style.setProperty("transition", tlist);
       else e.style.transition = tlist;
 
