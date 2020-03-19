@@ -5,7 +5,7 @@ import { Point, isPoint } from "./dom/point.js";
 import { Size, isSize } from "./dom/size.js";
 import { Line, isLine } from "./dom/line.js";
 import { Rect, isRect } from "./dom/rect.js";
-import { PointList } from "./dom/pointList.js";
+import { PointList, Polyline } from "./dom/pointList.js";
 import { RGBA, isRGBA } from "./dom/rgba.js";
 import { HSLA, isHSLA } from "./dom/hsla.js";
 import { Matrix, isMatrix, MatrixProps } from "./dom/matrix.js";
@@ -22,43 +22,22 @@ import { Container } from "./dom/container.js";
 import { Layer, Renderer } from "./dom/layer.js";
 import { Select } from "./dom/select.js";
 import { Align, Anchor } from "./dom/align.js";
-import {
-  ElementPosProps,
-  ElementRectProps,
-  ElementRectProxy,
-  ElementSizeProps,
-  ElementWHProps,
-  ElementXYProps
-} from "./dom/elementRect.js";
+import { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from "./dom/elementRect.js";
 
 export function dom() {
   let args = [...arguments];
   let ret = Util.array();
 
   const extend = (e, functions) => {
-    const keys = [...Util.members(functions)].filter(
-      key =>
-        [
-          "callee",
-          "caller",
-          "arguments",
-          "call",
-          "bind",
-          "apply",
-          "prototype",
-          "constructor",
-          "length"
-        ].indexOf(key) == -1 && typeof functions[key] == "function"
-    );
-    for(let key of keys)
-      if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
+    const keys = [...Util.members(functions)].filter(key => ["callee", "caller", "arguments", "call", "bind", "apply", "prototype", "constructor", "length"].indexOf(key) == -1 && typeof functions[key] == "function");
+    for(let key of keys) if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
   };
 
   args = args.map(arg => (typeof arg == "string" ? Element.findAll(arg) : arg));
 
   for(let e of args) {
     if(e instanceof SVGSVGElement) extend(e, SVG);
-    else if(e instanceof HTMLElement) {
+    if(isElement(e)) {
       extend(e, Element);
       ElementPosProps(e);
       ElementSizeProps(e);
@@ -192,7 +171,7 @@ export { Point, isPoint } from "./dom/point.js";
 export { Size, isSize } from "./dom/size.js";
 export { Line, isLine } from "./dom/line.js";
 export { Rect, isRect } from "./dom/rect.js";
-export { PointList } from "./dom/pointList.js";
+export { PointList, Polyline } from "./dom/pointList.js";
 export { RGBA, isRGBA } from "./dom/rgba.js";
 export { HSLA, isHSLA } from "./dom/hsla.js";
 export { Matrix, isMatrix, MatrixProps } from "./dom/matrix.js";
@@ -208,14 +187,7 @@ export { ReactComponent } from "./dom/reactComponent.js";
 export { Container } from "./dom/container.js";
 export { Layer, Renderer } from "./dom/layer.js";
 export { Select } from "./dom/select.js";
-export {
-  ElementPosProps,
-  ElementRectProps,
-  ElementRectProxy,
-  ElementSizeProps,
-  ElementWHProps,
-  ElementXYProps
-} from "./dom/elementRect.js";
+export { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from "./dom/elementRect.js";
 export { Align, Anchor } from "./dom/align.js";
 
 export default Object.assign(dom, {
@@ -248,6 +220,7 @@ export default Object.assign(dom, {
   MatrixProps,
   Point,
   PointList,
+  Polyline,
   ReactComponent,
   Rect,
   Renderer,

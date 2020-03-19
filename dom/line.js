@@ -129,12 +129,17 @@ Line.prototype.inspect = function() {
 };
 Line.prototype.toString = function() {
   let { a, b } = this;
-  if(a.x > b.x) {
-    let tmp = this.b;
-    this.b = this.a;
-    this.a = tmp;
-  }
   return Point.prototype.toString.call(this.a) + " -> " + Point.prototype.toString.call(this.b);
+};
+Line.prototype.toSource = function() {
+  let { a, b } = this;
+  return `new Line(${a.x},${a.y},${b.x},${b.y})`;
+};
+Line.prototype.swap = function() {
+  let tmp = this.b;
+  this.b = this.a;
+  this.a = tmp;
+  return this;
 };
 Line.prototype.toObject = function() {
   const { x1, y1, x2, y2 } = this;

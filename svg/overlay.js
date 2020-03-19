@@ -95,8 +95,7 @@ export class SvgOverlay extends React.Component {
       this.svg(svg);
       const f = this.factory();
       f.root = svg;
-      if(typeof svgRef == "function")
-        svgRef({ svg, factory: f /*(name,props) => f(name,props, svg) */ });
+      if(typeof svgRef == "function") svgRef({ svg, factory: f /*(name,props) => f(name,props, svg) */ });
       //console.log("SvgOverlay: ", { svg, rect });
 
       //   this.createPaths();
@@ -109,8 +108,7 @@ export class SvgOverlay extends React.Component {
   createPaths = () => {
     const f = this.factory();
 
-    if(typeof f == "function")
-      f("rect", { width: 100, height: 100, x: 50, y: 50, stroke: "red", strokeWidth: "4" });
+    if(typeof f == "function") f("rect", { width: 100, height: 100, x: 50, y: 50, stroke: "red", strokeWidth: "4" });
   };
 
   render() {

@@ -1,7 +1,4 @@
-const formatAnnotatedObject = function(
-  subject,
-  { indent = "  ", spacing = " ", separator = ",", newline = "\n", maxlen = 30, depth = 1 }
-) {
+const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", separator = ",", newline = "\n", maxlen = 30, depth = 1 }) {
   const i = indent.repeat(Math.abs(1 - depth));
   let nl = newline != "" ? newline + i : spacing;
   const opts = {
@@ -16,11 +13,7 @@ const formatAnnotatedObject = function(
   }
   if(typeof subject == "object" && "map" in subject && typeof subject.map == "function") {
     //subject instanceof Array || (subject && subject.length !== undefined)) {
-    return /*(opts.depth <= 0) ? subject.length + '' : */ `[${nl}${
-      /*(opts.depth <= 0) ? subject.length + '' : */ subject
-        .map(i => formatAnnotatedObject(i, opts))
-        .join(separator + nl)
-    }]`;
+    return /*(opts.depth <= 0) ? subject.length + '' : */ `[${nl}${/*(opts.depth <= 0) ? subject.length + '' : */ subject.map(i => formatAnnotatedObject(i, opts)).join(separator + nl)}]`;
   }
   if(typeof subject === "string" || subject instanceof String) {
     return `'${subject}'`;
@@ -44,20 +37,14 @@ const formatAnnotatedObject = function(
       s = "null";
     } else if(subject[k] && subject[k].length !== undefined) {
       try {
-        s =
-          depth <= 0
-            ? `Array(${subject[k].length})`
-            : `[ ${subject[k].map(item => formatAnnotatedObject(item, opts)).join(", ")} ]`;
+        s = depth <= 0 ? `Array(${subject[k].length})` : `[ ${subject[k].map(item => formatAnnotatedObject(item, opts)).join(", ")} ]`;
       } catch(err) {
         s = `[${subject[k]}]`;
       }
     } else if(subject[k] && subject[k].toSource !== undefined) {
       s = subject[k].toSource();
     } else if(opts.depth >= 0) {
-      s =
-        s.length > maxlen
-          ? `[Object ${Util.objName(subject[k])}]`
-          : formatAnnotatedObject(subject[k], opts);
+      s = s.length > maxlen ? `[Object ${Util.objName(subject[k])}]` : formatAnnotatedObject(subject[k], opts);
     }
     r.push([k, s]);
   }
@@ -69,9 +56,7 @@ const formatAnnotatedObject = function(
     j = separator + (opts.newline || spacing) + i;
   }
   //padding = x => '';
-  let ret = `{${opts.newline}${r
-    .map(arr => `${padding(arr[0]) + arr[0]}:${spacing}${arr[1]}`)
-    .join(j)}${opts.newline}}`;
+  let ret = `{${opts.newline}${r.map(arr => `${padding(arr[0]) + arr[0]}:${spacing}${arr[1]}`).join(j)}${opts.newline}}`;
   return ret;
 };
 /**
@@ -295,11 +280,14 @@ Util.randomNumbers = function([start, end], draws) {
 Util.randomBits = function(r = [1, 50], n = 5) {
   return Util.numbersToBits(Util.randomNumbers(r, n));
 };
-Util.padFn = function(len, char = " ", fn = (str,pad) => pad) {
-  return (s, n = len) => { s = s ? s.toString() : ''+s; return fn(s, s.length < n ? char.repeat(n - s.length) : ""); }
+Util.padFn = function(len, char = " ", fn = (str, pad) => pad) {
+  return (s, n = len) => {
+    s = s ? s.toString() : "" + s;
+    return fn(s, s.length < n ? char.repeat(n - s.length) : "");
+  };
 };
 Util.pad = function(s, n, char = " ") {
-  return Util.padFn(n,char)(s);
+  return Util.padFn(n, char)(s);
 };
 Util.abbreviate = function(str, max, suffix = "...") {
   if(str.length > max) {
@@ -363,13 +351,7 @@ Util.extendArray = function(arr = Array.prototype) {
     return Util.inspect(this, { depth: 100, ...opts });
   });*/
 };
-Util.adapter = function(
-  obj,
-  getLength = obj => obj.length,
-  getKey = (obj, index) => obj.key(index),
-  getItem = (obj, key) => obj[key],
-  setItem = (obj, index, value) => (obj[index] = value)
-) {
+Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index) => obj.key(index), getItem = (obj, key) => obj[key], setItem = (obj, index, value) => (obj[index] = value)) {
   const adapter = {
     get length() {
       return getLength(obj);
@@ -416,12 +398,17 @@ Util.adapter.localStorage = function(s) {
     (l, key, v) => l.setItem(key, JSON.stringify(v))
   );
 };
-Util.array = function(enumerable = []) {
-  let a = enumerable instanceof Array ? enumerable : [...enumerable];
-  try {
-    if(a.match === undefined) Util.extendArray();
-    if(a.match === undefined) Util.extendArray(a);
-  } catch(err) {}
+var doExtendArray = Util.extendArray;
+Util.array = function(...args) {
+  let a = args[0] instanceof Array ? args[0] : [...args];
+  if(doExtendArray)
+    try {
+      if(a.match === undefined) {
+        doExtendArray();
+        if(a.match) doExtendArray = null;
+      }
+      if(a.match === undefined) doExtendArray(a);
+    } catch(err) {}
   return a;
 };
 Util.map = function(hash = {}) {
@@ -583,10 +570,7 @@ Util.match = function(arg, pred) {
   let match = pred;
   if(pred instanceof RegExp) {
     const re = pred;
-    match = (val, key) =>
-      (val && val.tagName !== undefined && re.test(val.tagName)) ||
-      (typeof key === "string" && re.test(key)) ||
-      (typeof val === "string" && re.test(val));
+    match = (val, key) => (val && val.tagName !== undefined && re.test(val.tagName)) || (typeof key === "string" && re.test(key)) || (typeof val === "string" && re.test(val));
   }
   if(Util.isArray(arg)) {
     if(!(arg instanceof Array)) arg = [...arg];
@@ -596,25 +580,13 @@ Util.match = function(arg, pred) {
     }, Util.array());
   } else if(Util.isMap(arg)) {
     //console.log('Util.match ', { arg });
-    return [...arg.keys()].reduce(
-      (acc, key) => (match(arg.get(key), key, arg) ? acc.set(key, arg.get(key)) : acc),
-      new Map()
-    );
-  } else {
-    let i = 0;
-    let ret = [];
-    for(let item of arg) {
-      if(match(item, i, arg)) ret.push(item);
-    }
-    return ret;
-    //    return Object.keys(arg).reduce((acc, key) => (match(arg[key], key, arg) ? { ...acc, [key]: arg[key] } : {}), {});
+    return [...arg.keys()].reduce((acc, key) => (match(arg.get(key), key, arg) ? acc.set(key, arg.get(key)) : acc), new Map());
   }
+  return Util.filter(arg, match);
 };
-Util.toHash = function(map, keyTransform = k => Util.camelize(k)) {
+Util.toHash = function(map, keyTransform = k => Util.camelize("" + k)) {
   let ret = {};
-  map.forEach(key => {
-    ret[keyTransform(key)] = map[key];
-  });
+  Util.foreach(map, (v, k) => (ret[keyTransform(k)] = v));
   return ret;
 };
 Util.indexOf = function(obj, prop) {
@@ -691,8 +663,7 @@ Util.isEmptyString = function(v) {
   return false;
 };
 Util.isEmpty = function(v) {
-  if(typeof v == "object" && !!v && v.constructor == Object && Object.keys(v).length == 0)
-    return true;
+  if(typeof v == "object" && !!v && v.constructor == Object && Object.keys(v).length == 0) return true;
   if(!v || v === null) return true;
   if(typeof v == "object" && v.length !== undefined && v.length === 0) return true;
   return false;
@@ -705,11 +676,7 @@ Util.hasProps = function(obj) {
   return keys.length > 0;
 };
 Util.validatePassword = function(value) {
-  return (
-    value.length > 7 &&
-    /^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]/.test(value) &&
-    !/\s/.test(value)
-  );
+  return value.length > 7 && /^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]/.test(value) && !/\s/.test(value);
 };
 //deep copy
 Util.deepClone = function(data) {
@@ -875,13 +842,7 @@ Util.setCookies = c =>
     console.log(`Setting cookie[${key}] = ${value}`);
   });
 Util.clearCookies = function(c) {
-  return Util.setCookies(
-    Object.keys(Util.parseCookie(c)).reduce(
-      (acc, name) =>
-        Object.assign(acc, { [name]: `; max-age=0; expires=${new Date().toUTCString()}` }),
-      {}
-    )
-  );
+  return Util.setCookies(Object.keys(Util.parseCookie(c)).reduce((acc, name) => Object.assign(acc, { [name]: `; max-age=0; expires=${new Date().toUTCString()}` }), {}));
 };
 Util.deleteCookie = function(name) {
   if(global.window) document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
@@ -992,12 +953,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
       for(const property in object) {
         const desc = Object.getOwnPropertyDescriptor(object, property);
         //console.log('x ', {property, desc})
-        if(
-          property.indexOf("$") !== 0 &&
-          typeof object[property] !== "function" &&
-          !desc.get &&
-          !desc.set
-        ) {
+        if(property.indexOf("$") !== 0 && typeof object[property] !== "function" && !desc.get && !desc.set) {
           if(typeof object[property] === "object") {
             try {
               JSON.stringify(object[property]);
@@ -1006,13 +962,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
             }
           }
           //if (Object.prototype.hasOwnProperty.call(object, property)) {
-          Util.searchObject(
-            object[property],
-            matchCallback,
-            `${currentPath}.${property}`,
-            result,
-            searched
-          );
+          Util.searchObject(object[property], matchCallback, `${currentPath}.${property}`, result, searched);
           //}
         }
       }
@@ -1025,11 +975,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
 };
 Util.getURL = function(req = {}) {
   let proto = process.env.NODE_ENV === "production" ? "https" : "http";
-  let port = process.env.PORT
-    ? parseInt(process.env.PORT)
-    : process.env.NODE_ENV === "production"
-    ? 443
-    : 8080;
+  let port = process.env.PORT ? parseInt(process.env.PORT) : process.env.NODE_ENV === "production" ? 443 : 8080;
   let host = global.ip || global.host || "localhost";
   if(req && req.headers && req.headers.host !== undefined) {
     host = req.headers.host.replace(/:.*/, "");
@@ -1066,8 +1012,7 @@ Util.encodeQuery = function(data) {
 Util.parseURL = function(href = this.getURL()) {
   const matches = /^([^:]*):\/\/([^/:]*)(:[0-9]*)?(\/?.*)/.exec(href);
   if(!matches) return null;
-  const argstr =
-    matches[4].indexOf("?") != -1 ? matches[4].replace(/^[^?]*\?/, "") : ""; /* + "&test=1"*/
+  const argstr = matches[4].indexOf("?") != -1 ? matches[4].replace(/^[^?]*\?/, "") : ""; /* + "&test=1"*/
   const pmatches =
     typeof argstr === "string"
       ? argstr
@@ -1093,13 +1038,7 @@ Util.parseURL = function(href = this.getURL()) {
     href(override) {
       if(typeof override === "object") Object.assign(this, override);
       const qstr = Util.encodeQuery(this.query);
-      return (
-        (this.protocol ? `${this.protocol}://` : "") +
-        (this.host ? this.host : "") +
-        (this.port ? `:${this.port}` : "") +
-        `${this.location}` +
-        (qstr != "" ? `?${qstr}` : "")
-      );
+      return (this.protocol ? `${this.protocol}://` : "") + (this.host ? this.host : "") + (this.port ? `:${this.port}` : "") + `${this.location}` + (qstr != "" ? `?${qstr}` : "");
     }
   };
 };
@@ -1163,30 +1102,29 @@ Util.throttle = function(fn, wait) {
     }
   };
 };
-Util.foreach = function(obj, fn) {
-  if(obj instanceof Array) obj.forEach(fn);
-  else {
-    for(let key in obj) {
-      fn(obj[key], key, obj);
-    }
-  }
+Util.foreach = function(o, fn) {
+  for(let [k, v] of Util.entries(o)) fn(v, k, o);
 };
 Util.all = function(obj, pred) {
   for(let k in obj) if(!pred(obj[k])) return false;
   return true;
 };
 Util.isGenerator = function(fn) {
-  return (typeof(fn) == 'function' && /^[^(]*\*/.test(fn.toString())) || (['function','object'].indexOf(typeof fn) != -1 && fn.next !== undefined);
+  return (typeof fn == "function" && /^[^(]*\*/.test(fn.toString())) || (["function", "object"].indexOf(typeof fn) != -1 && fn.next !== undefined);
 };
-Util.filter = function(arg, fn) {
-  if(Util.isGenerator(arg))
+Util.filter = function(a, pred) {
+  if(Util.isGenerator(a))
     return (function*() {
-for(let item of arg) if(fn(item)) yield item;
+      for(let item of a) if(pred(item)) yield item;
+    })();
+  let isa = Util.isArray(a);
+  if(isa)
+    return (function*() {
+      for(let [k, v] of a.entries()) if(pred(v, k, a)) yield v;
     })();
   let ret = {};
-  for(let key in arg) {
-    if(fn(arg[key], key, arg)) ret[key] = arg[key];
-  }
+  let fn = (k, v) => (ret[k] = v);
+  for(let [k, v] of Util.entries(a)) if(pred(v, k, a)) fn(k, v);
   return ret;
 };
 Util.reduce = function(obj, fn, accu) {
@@ -1218,11 +1156,7 @@ Util.entriesToObj = function(arr) {
   }, {});
 };
 Util.isDate = function(d) {
-  return (
-    d instanceof Date ||
-    (typeof d == "string" &&
-      /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d))
-  );
+  return d instanceof Date || (typeof d == "string" && /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d));
 };
 Util.parseDate = function(d) {
   if(Util.isDate(d)) {
@@ -1287,10 +1221,7 @@ Util.timeSpan = function(s) {
   s = Math.floor(s / 7);
   const weeks = s;
   let ret = "";
-  ret = `${`0${hours}`.substring(0, 2)}:${`0${minutes}`.substring(0, 2)}:${`0${seconds}`.substring(
-    0,
-    2
-  )}`;
+  ret = `${`0${hours}`.substring(0, 2)}:${`0${minutes}`.substring(0, 2)}:${`0${seconds}`.substring(0, 2)}`;
   if(days) ret = `${days} days ${ret}`;
   if(weeks) ret = `${weeks} weeks ${ret}`;
   return ret;
@@ -1346,25 +1277,9 @@ Util.effectiveDeviceWidth = function() {
   return deviceWidth;
 };
 Util.getFormFields = function(initialState) {
-  return Util.mergeObjects([
-    initialState,
-    [...document.forms].reduce(
-      (acc, { elements }) =>
-        [...elements].reduce(
-          (acc2, { name, value }) =>
-            name == "" || value == undefined || value == "undefined"
-              ? acc2
-              : Object.assign(acc2, { [name]: value }),
-          acc
-        ),
-      {}
-    )
-  ]);
+  return Util.mergeObjects([initialState, [...document.forms].reduce((acc, { elements }) => [...elements].reduce((acc2, { name, value }) => (name == "" || value == undefined || value == "undefined" ? acc2 : Object.assign(acc2, { [name]: value })), acc), {})]);
 };
-Util.mergeObjects = function(
-  objArr,
-  predicate = (dst, src, key) => (src[key] == "" ? undefined : src[key])
-) {
+Util.mergeObjects = function(objArr, predicate = (dst, src, key) => (src[key] == "" ? undefined : src[key])) {
   let args = objArr;
   let obj = {};
   for(let i = 0; i < args.length; i++) {
@@ -1421,16 +1336,29 @@ Util.filterOutKeys = function(obj, arr) {
 Util.numbersConvert = function(str) {
   return str
     .split("")
-    .map((ch, i) =>
-      /[ :,./]/.test(ch) ? ch : String.fromCharCode((str.charCodeAt(i) & 0x0f) + 0x30)
-    )
+    .map((ch, i) => (/[ :,./]/.test(ch) ? ch : String.fromCharCode((str.charCodeAt(i) & 0x0f) + 0x30)))
     .join("");
 };
-Util.traverse = function(obj, fn) {
-  Util.foreach(obj, (v, k, a) => {
-    fn(v, k, a);
-    if(typeof v === "object") Util.traverse(v, fn);
-  });
+Util.entries = function(arg) {
+  if(typeof arg == "object" && arg !== null) {
+    return typeof arg.entries == "function" ? arg.entries() : Object.entries(arg);
+  }
+  console.log("Util.entries", arg);
+  return null;
+};
+Util.traverse = function(o, fn) {
+  if(typeof fn == "function")
+    return Util.foreach(o, (v, k, a) => {
+      fn(v, k, a);
+      if(typeof v === "object") Util.traverse(v, fn);
+    });
+  function* walker(o, depth = 0) {
+    for(let [k, v] of Util.entries(o)) {
+      yield [v, k, o, depth];
+      if(typeof v == "object" && v !== null) yield* walker(v, depth + 1);
+    }
+  }
+  return walker(o);
 };
 Util.pushUnique = function(arr) {
   let args = [...arguments];
@@ -1452,19 +1380,15 @@ Util.members = function(obj, recursive = false, pred = () => true) {
     for(let name in obj) if(adder(name)) yield name;
 
     for(let name of Object.getOwnPropertyNames(obj)) if(adder(name)) yield name;
-    if(recursive)
-      for(let proto of Util.getPrototypeChain(obj))
-        for(let name of Object.getOwnPropertyNames(proto)) if(adder(name)) yield name;
+    if(recursive) for(let proto of Util.getPrototypeChain(obj)) for (let name of Object.getOwnPropertyNames(proto)) if (adder(name)) yield name;
   })();
 };
-Util.getMethodNames = function(obj) {
-  return Util.array(
-    Util.members(obj).filter(item => typeof obj[item] === "function" && item != "constructor")
-  );
+Util.getMethodNames = function(obj, recursive = false) {
+  return Util.filter(Util.members(obj, recursive), item => typeof obj[item] === "function" && item != "constructor");
 };
-Util.getMethods = function(obj) {
-  const names = Util.getMethodNames(obj);
-  return names.reduce((ret, method) => Object.assign(ret, { [method]: obj[method] }), {});
+Util.getMethods = function(obj, recursive = false) {
+  const names = [...Util.getMethodNames(obj, recursive)];
+  return names.reduce((ret, method) => ({ ...ret, [method]: obj[method] }), {});
 };
 Util.bindMethods = function(methods, obj) {
   for(let name in methods) {
@@ -1500,9 +1424,7 @@ Util.weakAssign = function(obj) {
 };
 Util.getCallerStack = function(position = 2) {
   if(position >= Error.stackTraceLimit) {
-    throw new TypeError(
-      `getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: \`${position}\` and Error.stackTraceLimit was: \`${Error.stackTraceLimit}\``
-    );
+    throw new TypeError(`getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: \`${position}\` and Error.stackTraceLimit was: \`${Error.stackTraceLimit}\``);
   }
   const oldPrepareStackTrace = Error.prepareStackTrace;
   Error.prepareStackTrace = (_, stack) => stack;
@@ -1544,20 +1466,7 @@ Util.getCallerFunctionNames = function(position = 2) {
 };
 Util.getCaller = function(position = 2) {
   let stack = Util.getCallerStack(position + 1);
-  const methods = [
-    "getColumnNumber",
-    "getEvalOrigin",
-    "getFileName",
-    "getFunction",
-    "getFunctionName",
-    "getLineNumber",
-    "getMethodName",
-    "getPosition",
-    "getPromiseIndex",
-    "getScriptNameOrSourceURL",
-    "getThis",
-    "getTypeName"
-  ];
+  const methods = ["getColumnNumber", "getEvalOrigin", "getFileName", "getFunction", "getFunctionName", "getLineNumber", "getMethodName", "getPosition", "getPromiseIndex", "getScriptNameOrSourceURL", "getThis", "getTypeName"];
   if(stack !== null && typeof stack === "object") {
     const frame = stack[0];
     return methods.reduce((acc, m) => {
@@ -1606,20 +1515,12 @@ Util.flatTree = function(tree, addOutput) {
   const ret = [];
   if(!addOutput) addOutput = arg => ret.push(arg);
   addOutput(Util.filterKeys(tree, key => key !== "children"));
-  if(typeof tree.children == "object" && tree.children !== null && tree.children.length)
-    for(let child of tree.children) Util.flatTree(child, addOutput);
+  if(typeof tree.children == "object" && tree.children !== null && tree.children.length) for(let child of tree.children) Util.flatTree(child, addOutput);
   return ret;
 };
 Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
-  if(
-    typeof tree == "object" &&
-    tree !== null &&
-    typeof tree.children == "object" &&
-    tree.children !== null &&
-    tree.children.length
-  )
-    for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
+  if(typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children !== null && tree.children.length) for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
 };
 Util.walkTree = function(node, pred, t, depth = 0, parent = null) {
   return (function*() {
@@ -1634,12 +1535,7 @@ Util.walkTree = function(node, pred, t, depth = 0, parent = null) {
     //node = t(node);
     if(pred(node, depth, parent)) {
       yield t(node);
-      if(
-        typeof node == "object" &&
-        node !== null &&
-        typeof node.children == "object" &&
-        node.children.length
-      ) {
+      if(typeof node == "object" && node !== null && typeof node.children == "object" && node.children.length) {
         for(let child of [...node.children]) {
           /*   if(pred(child, depth + 1, node))*/
           yield* Util.walkTree(child, pred, t, depth + 1, node.parent_id);
@@ -1649,7 +1545,7 @@ Util.walkTree = function(node, pred, t, depth = 0, parent = null) {
   })();
 };
 Util.isPromise = function(obj) {
-  return Boolean(obj) && typeof obj.then === "function";
+  return (Boolean(obj) && typeof obj.then === "function") || obj instanceof Promise;
 };
 /* eslint-disable no-use-before-define */
 if(typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);

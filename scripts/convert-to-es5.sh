@@ -68,14 +68,14 @@ convert_to_es5() {
       FILE=${FILE#./}
       FILE="$DIR/$FILE"
       test -e "$FILE" || continue
-      echo "FILE=$FILE" 1>&2
+      #echo "FILE=$FILE" 1>&2
       FILE=${FILE%.js}
       FILE=${FILE%.es5}
       pushv_unique ADDFILES "${FILE}.js"
       FILE=${FILE#$DIR/}
       SUBST="$SUBST ;; /require(/ s|${FILE%.js}.js\"|${FILE%.js}.es5.js\"|g"
     done
-   (set -x; sed -i -e "$SUBST" "$OUT")
+   [ -n "$SUBST" ] && (set -x; sed -i -e "$SUBST" "$OUT")
 
     set -- "$@" $ADDFILES
   done

@@ -8,8 +8,16 @@ exports.ElementRectProps = exports.ElementSizeProps = exports.ElementPosProps = 
 
 var _element = require("./element.es5.js");
 
+var _point = require("./point.es5.js");
+
+var _size = require("./size.es5.js");
+
 function ElementRectProxy(element) {
   this.element = element;
+
+  if (element.style && element.style.position !== undefined) {
+    if (element.style.position == "") element.style.position = "relative";
+  }
 }
 
 ElementRectProxy.prototype = {
@@ -22,11 +30,21 @@ ElementRectProxy.prototype = {
       round: false
     }));
   },
-  setPos: function setPos(pos) {
-    _element.Element.move.apply(_element.Element, [this.element, ...arguments]);
+  setPos: function setPos() {
+    let pos = new _point.Point(...arguments);
+    this.setRect(rect => {
+      rect.x = pos.x;
+      rect.y = pos.y;
+      return rect;
+    });
   },
-  setSize: function setSize(size) {
-    _element.Element.resize.apply(_element.Element, [this.element, ...arguments]);
+  setSize: function setSize() {
+    let size = new _size.Size(...arguments);
+    this.setRect(rect => {
+      rect.width = size.width;
+      rect.height = size.height;
+      return rect;
+    });
   },
   changeRect: function changeRect(fn = (rect, e) => rect) {
     let r = _element.Element.getRect(this.element);
@@ -36,13 +54,10 @@ ElementRectProxy.prototype = {
     _element.Element.setRect(this.element, r);
   },
   setRect: function setRect(arg) {
-    let rect = arg;
+    let rect;
+    if (typeof arg == "function") rect = arg(this.getRect(), this.element);else rect = new Rect(...arguments);
 
-    if (typeof arg == "function") {
-      rect = arg(this.getRect());
-    }
-
-    _element.Element.rect(this.element, rect);
+    _element.Element.setRect(this.element, rect);
   }
 };
 
@@ -129,10 +144,10 @@ const ElementSizeProps = (element, proxy) => {
   Util.defineGetterSetter(element, "width", () => proxy.getRect().width, width => proxy.setSize({
     width
   }));
-  Util.defineGetterSetter(element, "h", () => proxy.getRect().height, width => proxy.setSize({
+  Util.defineGetterSetter(element, "h", () => proxy.getRect().height, height => proxy.setSize({
     height
   }));
-  Util.defineGetterSetter(element, "height", () => proxy.getRect().height, width => proxy.setSize({
+  Util.defineGetterSetter(element, "height", () => proxy.getRect().height, height => proxy.setSize({
     height
   }));
 };

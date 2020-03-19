@@ -1,11 +1,12 @@
 import { Point, isPoint } from "./point.js";
 import { Rect } from "./rect.js";
+import { Line } from "./line.js";
 import Util from "../util.js";
 
 export function PointList(points) {
   let args = [...arguments];
   let ret = this instanceof PointList ? this : [];
-  if(Util.isArray(args[0]) ||  Util.isGenerator(args[0])) args = [...args[0]];
+  if(Util.isArray(args[0]) || Util.isGenerator(args[0])) args = [...args[0]];
 
   if(typeof points === "string") {
     const matches = [...points.matchAll(/[-.0-9,]+/g)];
@@ -14,9 +15,7 @@ export function PointList(points) {
       ret.push(Point(coords));
     }
   } else if(args[0] && args[0].length == 2) {
-    for(let i = 0; i < args.length; i++)
-      ret.push(this instanceof PointList ? new Point(args[i]) : Point(args[i]));
-
+    for(let i = 0; i < args.length; i++) ret.push(this instanceof PointList ? new Point(args[i]) : Point(args[i]));
   } else if(args.length !== undefined) {
     for(let i = 0; i < args.length; i++) {
       ret.push(args[i] instanceof Point ? args[i] : this instanceof PointList ? new Point(args[i]) : Point(args[i]));
@@ -51,10 +50,10 @@ PointList.prototype.removeSegment = function(index) {
 PointList.prototype.toPath = function(options = {}) {
   const { relative = false, close = false, precision = 0.001 } = options;
   let out = "";
-  const point = relative ? (i => i > 0 ? Point.diff(this[i], this[i - 1]) : this[i]) :  i => this[i];
-  const cmd = i => (i == 0 ? "M" : "L"[relative ? 'toLowerCase' : 'toUpperCase']());
+  const point = relative ? i => (i > 0 ? Point.diff(this[i], this[i - 1]) : this[i]) : i => this[i];
+  const cmd = i => (i == 0 ? "M" : "L"[relative ? "toLowerCase" : "toUpperCase"]());
   for(let i = 0; i < this.length; i++) {
-    out += cmd(i) + Util.roundTo(point(i).x, precision) + "," +  Util.roundTo(point(i).y, precision) + " ";
+    out += cmd(i) + Util.roundTo(point(i).x, precision) + "," + Util.roundTo(point(i).y, precision) + " ";
   }
   if(close) out += "Z";
   return out;
@@ -225,7 +224,7 @@ PointList.prototype.lines = function(closed = false) {
   return iterableObj;
 };
 PointList.prototype.toString = function(prec) {
-  return "PointList([" + this.map(point => Point.prototype.toString.call(point, prec)).join(",") + "])";
+  return this.map(point => Point.prototype.toString.call(point, prec)).join(" ");
 };
 PointList.prototype.rotateRight = function(n) {
   return Util.rotateRight(this, n);
@@ -254,3 +253,45 @@ PointList.prototype.diff = function(pt) {
 for(let name of ["push", "splice", "clone", "area", "centroid", "avg", "bbox", "rect", "xrange", "yrange", "boundingRect"]) {
   PointList[name] = points => PointList.prototype[name].call(points);
 }
+
+/*
+
+paths = dom.Element.findAll("path", im = dom(await img("action-save-new.svg")));
+lines = [...dom.SVG.line_iterator(paths[1])];
+let p=new dom.ElementRectProxy(im);
+e=dom(im.parentElement);
+e.resize(200,200); im.resize('100%','100%')
+new dom.Polyline(lines).toSVG(dom.SVG.factory(), { stroke: '#ffa000', fill: 'none', strokeWidth: 0.4 }, paths[0].parentElement);
+new dom.Polyline(lines).toSVG(dom.SVG.factory(), { stroke: '#ff0000', fill: 'none', strokeWidth: 0.4 }, paths[0].parentElement);
+new dom.Polyline(lines).toSVG(dom.SVG.factory(), { stroke: '#0050ff', fill: 'none', strokeWidth: 0.4 }, paths[0].parentElement);
+*/
+export function Polyline(lines) {
+  let ret = this instanceof Polyline ? this : new PointList();
+  const addUnique = point => {
+    const ok = ret.length > 0 ? !Point.equal(ret[ret.length - 1], point) : true;
+    if(ok) ret.push({ ...point });
+    return ok;
+  };
+  let prev;
+  for(let i = 0; i < lines.length; i++) {
+    const line = lines.shift();
+    console.log(`line[${i}]:`, line.toString());
+    if(i > 0) {
+      const eq = [Point.equal(prev, line.a)];
+
+      console.log(`Point.equal(${prev},${line.a}) = ${eq[0]}`);
+      if(!eq[0] && !Point.equal(prev, line.b)) break;
+    } else {
+      addUnique(line.a);
+    }
+    addUnique(line.b);
+    prev = line.b;
+  }
+  return ret;
+}
+
+Polyline.prototype = new PointList();
+
+Polyline.prototype.toSVG = function(factory, attrs = {}, parent = null) {
+  return factory("polyline", { points: PointList.prototype.toString.call(this), ...attrs }, parent);
+};

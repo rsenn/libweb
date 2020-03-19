@@ -152,6 +152,16 @@ Point.prototype.toString = function(precision = 0.001) {
   const y = Util.roundTo(this.y, precision);
   return `${x},${y}`;
 };
+Util.defineGetterSetter(
+  Point.prototype,
+  Symbol.toStringTag,
+  function() {
+    return `Point{ ${Point.prototype.toSource.call(this)}`;
+  },
+  () => {},
+  false
+);
+
 Point.prototype.toSource = function(asArray = false) {
   let x = (this.x + "").padStart(4, " ");
   let y = (this.y + "").padStart(4, " ");
@@ -167,7 +177,7 @@ Point.prototype.toCSS = function(precision = 0.001) {
   return { left: Util.roundTo(this.x, precision) + "px", top: Util.roundTo(this.y, precision) + "px" };
 };
 Point.prototype.toFixed = function(digits) {
-  return new Point(+this.x.toFixed(digits),+this.y.toFixed(digits));
+  return new Point(+this.x.toFixed(digits), +this.y.toFixed(digits));
 };
 Point.prototype.inside = function(rect) {
   return this.x >= rect.x && this.x < rect.x + rect.width && this.y >= rect.y && this.y < rect.y + rect.height;
@@ -185,7 +195,7 @@ Point.prototype.normalize = function(minmax) {
 
 Point.distance = point => Point.prototype.distance.call(point);
 Point.move = (point, x, y) => Point.prototype.move.call(point, x, y);
-Point.angle = (point,other,deg = false) => Point.prototype.angle.call(point, other,deg);
+Point.angle = (point, other, deg = false) => Point.prototype.angle.call(point, other, deg);
 Point.distance = point => Point.prototype.distance.call(point);
 Point.inside = (point, rect) => Point.prototype.inside.call(point, rect);
 Point.add = (point, other) => Point.prototype.add.call(point, other);
@@ -194,7 +204,10 @@ Point.sum = (a, b) => Point.prototype.sum.call(a, b);
 Point.diff = (a, b) => Point.prototype.diff.call(a, b);
 Point.prod = (a, b) => Point.prototype.prod.call(a, b);
 Point.quot = (a, b) => Point.prototype.quot.call(a, b);
-Point.equal = (a, b) => Point.prototype.equal.call(a, b);
+Point.equal = (a, b) => {
+  let ret = Point.prototype.equal.call(a, b);
+  return ret;
+};
 Point.round = (point, prec) => Point.prototype.round.call(point, prec);
 Point.fromAngle = (angle, f) => Point.prototype.fromAngle.call(new Point(0, 0), angle, f);
 

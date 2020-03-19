@@ -1,7 +1,13 @@
 import { Element } from "./element.js";
+import { Point } from "./point.js";
+import { Size } from "./size.js";
 
 export function ElementRectProxy(element) {
   this.element = element;
+
+  if(element.style && element.style.position !== undefined) {
+    if(element.style.position == "") element.style.position = "relative";
+  }
 }
 ElementRectProxy.prototype = {
   element: null,
@@ -11,11 +17,21 @@ ElementRectProxy.prototype = {
   getRect: function(fn = rect => rect) {
     return fn(Element.rect(this.element, { round: false }));
   },
-  setPos: function(pos) {
-    Element.move.apply(Element, [this.element, ...arguments]);
+  setPos: function() {
+    let pos = new Point(...arguments);
+    this.setRect(rect => {
+      rect.x = pos.x;
+      rect.y = pos.y;
+      return rect;
+    });
   },
-  setSize: function(size) {
-    Element.resize.apply(Element, [this.element, ...arguments]);
+  setSize: function() {
+    let size = new Size(...arguments);
+    this.setRect(rect => {
+      rect.width = size.width;
+      rect.height = size.height;
+      return rect;
+    });
   },
   changeRect: function(fn = (rect, e) => rect) {
     let r = Element.getRect(this.element);
@@ -24,11 +40,10 @@ ElementRectProxy.prototype = {
     Element.setRect(this.element, r);
   },
   setRect: function(arg) {
-    let rect = arg;
-    if(typeof arg == "function") {
-      rect = arg(this.getRect());
-    }
-    Element.rect(this.element, rect);
+    let rect;
+    if(typeof arg == "function") rect = arg(this.getRect(), this.element);
+    else rect = new Rect(...arguments);
+    Element.setRect(this.element, rect);
     /*    rect = new Rect(rect);
     Element.setCSS(this.element, { ...rect.toCSS(rect), position: 'absolute' });
 */
@@ -174,13 +189,13 @@ export const ElementSizeProps = (element, proxy) => {
     element,
     "h",
     () => proxy.getRect().height,
-    width => proxy.setSize({ height })
+    height => proxy.setSize({ height })
   );
   Util.defineGetterSetter(
     element,
     "height",
     () => proxy.getRect().height,
-    width => proxy.setSize({ height })
+    height => proxy.setSize({ height })
   );
 };
 

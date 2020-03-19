@@ -13,6 +13,8 @@ require("core-js/modules/es6.symbol");
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
+require("core-js/modules/es6.regexp.to-string");
+
 require("regenerator-runtime/runtime");
 
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
@@ -34,6 +36,10 @@ var _size2 = require("./size.es5.js");
 var _point = require("./point.es5.js");
 
 var _rect = require("./rect.es5.js");
+
+var _line = require("./line.es5.js");
+
+var _pathParser = require("../svg/path-parser.es5.js");
 
 var _util = _interopRequireDefault(require("../util.es5.js"));
 
@@ -185,36 +191,176 @@ class SVG extends _element.Element {
     return new SvgPath();
   }
 
-  static path_iterator(path, numPoints = 100, tr = p => new _point.Point(p)) {
+  static line_iterator(e) {
     return _regenerator.default.mark(function _callee() {
-      var len, i, pos, point;
+      var pathStr, path, prev, i, cmd, code, x, y, x0, y0, move, line;
       return _regenerator.default.wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
-            len = e.getTotalLength();
+            if (typeof e == "string") pathStr = e;else pathStr = e.getAttribute("d");
+            path = (0, _pathParser.makeAbsolute)((0, _pathParser.parseSVG)(pathStr));
             i = 0;
 
-          case 2:
-            if (!(i < numPoints)) {
-              _context.next = 10;
+          case 3:
+            if (!(i < path.length)) {
+              _context.next = 18;
               break;
             }
 
-            pos = i * len / numPoints;
-            point = e.getPointAtLength(pos);
-            _context.next = 7;
-            return tr(point);
+            cmd = path[i];
+            code = cmd.code, x = cmd.x, y = cmd.y, x0 = cmd.x0, y0 = cmd.y0;
+            if (x == undefined) x = x0;
+            if (y == undefined) y = y0;
+            move = cmd.code.toLowerCase() == "m";
 
-          case 7:
+            if (!(prev && !move)) {
+              _context.next = 14;
+              break;
+            }
+
+            line = new _line.Line({
+              x: x0,
+              y: y0
+            }, cmd);
+            console.log("line_iterator", {
+              i,
+              code,
+              x,
+              y,
+              x0,
+              y0
+            }, line.toString());
+            _context.next = 14;
+            return line;
+
+          case 14:
+            prev = cmd;
+
+          case 15:
             i++;
-            _context.next = 2;
+            _context.next = 3;
             break;
 
-          case 10:
+          case 18:
           case "end":
             return _context.stop();
         }
       }, _callee);
+    })();
+  }
+
+  static path_iterator(e, numPoints, fn = p => p) {
+    return _regenerator.default.mark(function _callee2() {
+      var len, p, y, prev, pos, do_point, i, point, next, isin;
+      return _regenerator.default.wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
+          case 0:
+            len = e.getTotalLength();
+            if (!numPoints) numPoints = Math.ceil(len / 2);
+            prev = {};
+
+            pos = i => i * len / numPoints;
+
+            do_point = point => {
+              const x = point.x,
+                    y = point.y,
+                    slope = point.slope,
+                    next = point.next,
+                    prev = point.prev,
+                    i = point.i,
+                    isin = point.isin;
+              let d = point.distance = slope ? _point.Point.distance(slope) : Number.POSITIVE_INFINITY;
+              point.angle = slope ? slope.toAngle(true) : NaN;
+              point.move = !(isin.stroke && isin.fill);
+              point.ok = !point.move && prev.angle != point.angle;
+
+              const pad = _util.default.padFn(12, " ", (str, pad) => "".concat(pad).concat(str));
+
+              if (point.ok) {
+                console.log("pos: ".concat(pad(i, 3), ", move: ").concat(isin || point.move, " point: ").concat(pad(point), ", slope: ").concat(pad(slope && slope.toFixed(3)), ", angle: ").concat(point.angle.toFixed(3), ", d: ").concat(d.toFixed(3)));
+                let ret;
+
+                try {
+                  ret = fn(point);
+                } catch (err) {}
+
+                return ret;
+              }
+            };
+
+            i = 0;
+
+          case 6:
+            if (!(i < numPoints - 1)) {
+              _context2.next = 22;
+              break;
+            }
+
+            point = e.getPointAtLength(pos(i));
+            next = e.getPointAtLength(pos(i + 1));
+            _context2.t0 = e.isPointInStroke(point);
+            _context2.t1 = e.isPointInFill(point);
+            isin = {
+              stroke: _context2.t0,
+              fill: _context2.t1,
+
+              toString() {
+                return "".concat(this.stroke, ",").concat(this.fill);
+              }
+
+            };
+            p = new _point.Point(point);
+            Object.assign(p, {
+              slope: _point.Point.diff(next, point),
+              next,
+              prev,
+              i,
+              isin
+            });
+            y = do_point(p);
+
+            if (!y) {
+              _context2.next = 18;
+              break;
+            }
+
+            _context2.next = 18;
+            return y;
+
+          case 18:
+            prev = p;
+
+          case 19:
+            i++;
+            _context2.next = 6;
+            break;
+
+          case 22:
+            p = new _point.Point(e.getPointAtLength(pos(numPoints - 1)));
+            p = Object.assign(p, {
+              slope: null,
+              next: null,
+              prev,
+              isin: {
+                stroke: true,
+                fill: true
+              }
+            });
+            y = do_point(p);
+
+            if (!y) {
+              _context2.next = 28;
+              break;
+            }
+
+            _context2.next = 28;
+            return y;
+
+          case 28:
+          case "end":
+            return _context2.stop();
+        }
+      }, _callee2);
     })();
   }
 

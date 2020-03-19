@@ -33,6 +33,9 @@ while [ $# -gt 0 ]; do
 done
 
 for SOURCE in  ${@:-$(find components utils stores pages -name "*.js")}; do
+  case "$SOURCE" in
+    *.es5.js) continue ;;
+  esac
   ARG=${SOURCE//"["/"\\["}
   ARG=${ARG//"]"/"\\]"}
   prettier "$ARG"

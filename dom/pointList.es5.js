@@ -6,6 +6,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.PointList = PointList;
+exports.Polyline = Polyline;
+
+require("core-js/modules/es7.object.get-own-property-descriptors");
+
+require("core-js/modules/web.dom.iterable");
+
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
 require("core-js/modules/es6.string.sub");
 
@@ -25,12 +32,18 @@ var _point = require("./point.es5.js");
 
 var _rect = require("./rect.es5.js");
 
+var _line = require("./line.es5.js");
+
 var _util = _interopRequireDefault(require("../util.es5.js"));
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function PointList(points) {
   let args = [...arguments];
   let ret = this instanceof PointList ? this : [];
-  if (args.length == 1 && args[0] instanceof Array) args = args[0];
+  if (_util.default.isArray(args[0]) || _util.default.isGenerator(args[0])) args = [...args[0]];
 
   if (typeof points === "string") {
     const matches = [...points.matchAll(/[-.0-9,]+/g)];
@@ -41,8 +54,10 @@ function PointList(points) {
     }
   } else if (args[0] && args[0].length == 2) {
     for (let i = 0; i < args.length; i++) ret.push(this instanceof PointList ? new _point.Point(args[i]) : (0, _point.Point)(args[i]));
-  } else if ((0, _point.isPoint)(args[0])) {
-    for (let i = 0; i < args.length; i++) ret.push(this instanceof PointList ? new _point.Point(args[i]) : (0, _point.Point)(args[i]));
+  } else if (args.length !== undefined) {
+    for (let i = 0; i < args.length; i++) {
+      ret.push(args[i] instanceof _point.Point ? args[i] : this instanceof PointList ? new _point.Point(args[i]) : (0, _point.Point)(args[i]));
+    }
   }
 
   if (!(this instanceof PointList)) {
@@ -70,7 +85,8 @@ PointList.prototype.splice = function () {
 PointList.prototype.removeSegment = function (index) {
   let indexes = [PointList.prototype.getLineIndex.call(this, index - 1), PointList.prototype.getLineIndex.call(this, index), PointList.prototype.getLineIndex.call(this, index + 1)];
   let lines = indexes.map(i => PointList.prototype.getLine.call(this, i));
-  let point = Line.intersect(lines[0], lines[2]);
+
+  let point = _line.Line.intersect(lines[0], lines[2]);
 
   if (point) {
     PointList.prototype.splice.call(this, 0, 2, new _point.Point(point));
@@ -81,11 +97,16 @@ PointList.prototype.toPath = function (options = {}) {
   const _options$relative = options.relative,
         relative = _options$relative === void 0 ? false : _options$relative,
         _options$close = options.close,
-        close = _options$close === void 0 ? false : _options$close;
+        close = _options$close === void 0 ? false : _options$close,
+        _options$precision = options.precision,
+        precision = _options$precision === void 0 ? 0.001 : _options$precision;
   let out = "";
+  const point = relative ? i => i > 0 ? _point.Point.diff(this[i], this[i - 1]) : this[i] : i => this[i];
+
+  const cmd = i => i == 0 ? "M" : "L"[relative ? "toLowerCase" : "toUpperCase"]();
 
   for (let i = 0; i < this.length; i++) {
-    out += (i == 0 ? "M" : "L") + this[i].x.toFixed(3) + "," + this[i].y.toFixed(3) + " ";
+    out += cmd(i) + _util.default.roundTo(point(i).x, precision) + "," + _util.default.roundTo(point(i).y, precision) + " ";
   }
 
   if (close) out += "Z";
@@ -274,7 +295,7 @@ PointList.prototype.lines = function (closed = false) {
           let done = step >= n;
 
           if (!done) {
-            value = new Line(points[step], points[(step + 1) % points.length]);
+            value = new _line.Line(points[step], points[(step + 1) % points.length]);
             step++;
           }
 
@@ -292,7 +313,7 @@ PointList.prototype.lines = function (closed = false) {
 };
 
 PointList.prototype.toString = function (prec) {
-  return "PointList([" + this.map(point => _point.Point.prototype.toString.call(point, prec)).join(",") + "])";
+  return this.map(point => _point.Point.prototype.toString.call(point, prec)).join(" ");
 };
 
 PointList.prototype.rotateRight = function (n) {
@@ -332,3 +353,41 @@ for (var _i = 0, _arr = ["push", "splice", "clone", "area", "centroid", "avg", "
 
   PointList[name] = points => PointList.prototype[name].call(points);
 }
+
+function Polyline(lines) {
+  let ret = this instanceof Polyline ? this : new PointList();
+
+  const addUnique = point => {
+    const ok = ret.length > 0 ? !_point.Point.equal(ret[ret.length - 1], point) : true;
+    if (ok) ret.push(_objectSpread({}, point));
+    return ok;
+  };
+
+  let prev;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines.shift();
+    console.log("line[".concat(i, "]:"), line.toString());
+
+    if (i > 0) {
+      const eq = [_point.Point.equal(prev, line.a)];
+      console.log("Point.equal(".concat(prev, ",").concat(line.a, ") = ").concat(eq[0]));
+      if (!eq[0] && !_point.Point.equal(prev, line.b)) break;
+    } else {
+      addUnique(line.a);
+    }
+
+    addUnique(line.b);
+    prev = line.b;
+  }
+
+  return ret;
+}
+
+Polyline.prototype = new PointList();
+
+Polyline.prototype.toSVG = function (factory, attrs = {}, parent = null) {
+  return factory("polyline", _objectSpread({
+    points: PointList.prototype.toString.call(this)
+  }, attrs), parent);
+};

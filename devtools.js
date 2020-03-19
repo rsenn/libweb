@@ -30,9 +30,7 @@ if(["development", "test", "local"].indexOf(env) != -1 && "window" in global) {
       .split(/\s+/g)
       .unique()
       .match(/bp3/);
-    dom.Element.findAll("*[class~=bp3]").forEach(e =>
-      newClasses.concat(String(e.class).split(/ /g))
-    );
+    dom.Element.findAll("*[class~=bp3]").forEach(e => newClasses.concat(String(e.class).split(/ /g)));
     newClasses = newClasses.filter(i => classes.indexOf(i) == -1);
     if(newClasses.length) {
       st.set("classes", (classes = Util.unique(classes.concat(newClasses))));
@@ -51,10 +49,40 @@ if(["development", "test", "local"].indexOf(env) != -1 && "window" in global) {
 /*
  */
 
-if(!Array.prototype.last) {
-  Array.prototype.last = function() {
-    return this[this.length - 1];
-  };
+if(!Array.prototype.back) {
+  try {
+    Util.defineGetterSetter(
+      Array.prototype,
+      "back",
+      function() {
+        return this.length > 0 ? this[this.length - 1] : undefined;
+      },
+      function(value) {
+        if(this.length > 0) this[this.length - 1] = value;
+        else this.push(value);
+        return this;
+      },
+      false
+    );
+  } catch(error) {}
+}
+
+if(!Array.prototype.front) {
+  try {
+    Util.defineGetterSetter(
+      Array.prototype,
+      "front",
+      function() {
+        return this.length > 0 ? this[0] : undefined;
+      },
+      function(value) {
+        if(this.length > 0) this[this.length - 1] = value;
+        else this.push(value);
+        return this;
+      },
+      false
+    );
+  } catch(error) {}
 }
 
 export function stylesheets() {
@@ -106,11 +134,7 @@ export const colors = (() => {
       //console.log("%c colors ", `background-color: ${c.toString()}`, { key, c });
 
       f("div", {
-        innerHTML: `<div class="colors-text" style="opacity:0;">${(
-          (typeof key == "number" ? key.toFixed(2) : key) +
-          ": " +
-          c.toString()
-        ).replace(/ /g, "&nbsp;")}</div>`,
+        innerHTML: `<div class="colors-text" style="opacity:0;">${((typeof key == "number" ? key.toFixed(2) : key) + ": " + c.toString()).replace(/ /g, "&nbsp;")}</div>`,
         class: "colors-item",
         style: {
           margin: "auto",
@@ -211,9 +235,7 @@ export function gradient(element) {
     element,
     steps: nodes.map(e => {
       const offset = Element.attr(e, "offset");
-      const color = RGBA.fromHex(
-        e.getAttribute("stopColor") || e.getAttribute("stop-color") || "#00000000"
-      );
+      const color = RGBA.fromHex(e.getAttribute("stopColor") || e.getAttribute("stop-color") || "#00000000");
       return {
         color,
         offset,
@@ -223,9 +245,7 @@ export function gradient(element) {
       };
     }),
     toString() {
-      return (
-        Util.decamelize(e.tagName) + "(0deg, " + this.steps.map(s => s.toString()).join(", ") + ");"
-      );
+      return Util.decamelize(e.tagName) + "(0deg, " + this.steps.map(s => s.toString()).join(", ") + ");";
     },
     [Symbol.iterator]: () =>
       new (class GradientIterator {
@@ -560,11 +580,7 @@ export async function img(name, arg = {}) {
   let list = root.images
     ? root.images
     : (root.images = new HashList(
-        obj =>
-          (obj.firstElementChild.id || obj.xpath).replace(
-            /(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/,
-            "$1XX$2"
-          ),
+        obj => (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, "$1XX$2"),
         function(arg) {
           let e = Element.find(arg);
           let svg = Element.find("svg", e);
@@ -809,9 +825,7 @@ export function walk(element) {
       let rstr = Rect.toString(rect);
 
       if(strs.length != 2 && strs.length > 0 && str.length) {
-        global.lines[1].push(
-          "  " + str + " ".repeat(Math.max(0, 80 - str.length)) + `/* ${key} */`
-        );
+        global.lines[1].push("  " + str + " ".repeat(Math.max(0, 80 - str.length)) + `/* ${key} */`);
       }
       //str = (line.length != 2 ? `/* ${key} */\n/* ${rstr} */\n` : "") + str;
       else if(Rect.area(rect)) global.lines[0].push(str);
@@ -837,9 +851,7 @@ export function measure(element) {
 
 export function trackElements() {
   const elements = Element.findAll.apply(this, arguments);
-  const rects = elements.map(e =>
-    rect(e, "none", "#" + Util.hex(Math.round(Math.random() * 0xfff)), e)
-  );
+  const rects = elements.map(e => rect(e, "none", "#" + Util.hex(Math.round(Math.random() * 0xfff)), e));
 
   window.trackingRects = rects;
 
@@ -870,11 +882,7 @@ export function polyline(points, closed = false) {
       },
       document.body
     );
-  SVG.create(
-    closed ? "polygon" : "polyline",
-    { points: points.toString(3), fill: "none", stroke: "red", strokeWidth: 1.5 },
-    window.svg
-  );
+  SVG.create(closed ? "polygon" : "polyline", { points: points.toString(3), fill: "none", stroke: "red", strokeWidth: 1.5 }, window.svg);
 }
 
 export function circle(point, radius = 10) {
@@ -892,11 +900,7 @@ export function circle(point, radius = 10) {
       },
       document.body
     );
-  SVG.create(
-    "circle",
-    { cx: point.x, cy: point.y, r: radius, fill: "none", stroke: "red", strokeWidth: 1.5 },
-    window.svg
-  );
+  SVG.create("circle", { cx: point.x, cy: point.y, r: radius, fill: "none", stroke: "red", strokeWidth: 1.5 }, window.svg);
 }
 
 export function rect(arg) {
@@ -929,8 +933,7 @@ export function rect(arg) {
     parent = parent || args.shift() || body;
     if(typeof parent == "string") parent = Element.find(parent);
 
-    if(parent != body && parent.style && !parent.style.position)
-      parent.style.setProperty("position", "relative");
+    if(parent != body && parent.style && !parent.style.position) parent.style.setProperty("position", "relative");
 
     let e = Element.create("div", { parent });
 

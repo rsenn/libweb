@@ -1,6 +1,8 @@
 import { Node } from "./node.js";
 import { TRBL } from "./trbl.js";
+import { Point, isPoint } from "./point.js";
 import { Rect, isRect } from "./rect.js";
+import { Size, isSize } from "./size.js";
 import { Align, Anchor } from "./align.js";
 import Util from "../util.js";
 /**
@@ -268,7 +270,7 @@ export class Element extends Node {
     let [e, ...rest] = [...arguments];
     let { x = Element.position(element).x, y = Element.position(element).y } = new Point(rest);
     let to = { x, y };
-    let position = pos || Element.getCSS(element, "position") || "relative";
+    let position = rest.shift() || Element.getCSS(element, "position") || "relative";
     let off;
     //console.log('Element.move ', { element, to, position });
     const getValue = prop => {
@@ -289,7 +291,7 @@ export class Element extends Node {
       to.y -= off.y;
     }*/
     let css = Point.toCSS(current);
-    //console.log("Element.move: ", { position, to, css, off, current });
+    console.log("Element.move: ", { position, to, css, off, current });
     //console.log('move newpos: ', Point.toCSS(pt));
     Element.setCSS(element, { ...css, position });
     return element;
@@ -389,9 +391,9 @@ export class Element extends Node {
 
     let parent = element.parentElement ? element.parentElement : element.parentNode;
 
-    const estyle = Util.toHash(w && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element));
-    const pstyle = parent && parent.tagName ? Util.toHash(w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {};
-    //console.log('Element.getCSS ', { estyle, pstyle });
+    const estyle = /*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element);
+    const pstyle = parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {};
+    console.log("Element.getCSS ", { estyle, pstyle });
 
     let style = Util.removeEqual(estyle, pstyle);
     let keys = Object.keys(style).filter(k => !/^__/.test(k));
@@ -656,11 +658,12 @@ export class Element extends Node {
     let a = [];
     const t = typeof time == "number" ? `${time}ms` : time;
     let ctx = { e, t, from: {}, to: {}, css };
-    args.shift(); args.shift();
+    args.shift();
+    args.shift();
 
-         easing = (typeof args[0] == 'function') ?"linear" : aargs.shift();
-      callback = args.shift();
-   
+    easing = typeof args[0] == "function" ? "linear" : aargs.shift();
+    callback = args.shift();
+
     for(let prop in css) {
       const name = Util.decamelize(prop);
       a.push(`${name} ${t} ${easing}`);
@@ -689,8 +692,7 @@ export class Element extends Node {
 
       e.addEventListener("transitionend", (ctx.cancel = tend).bind(ctx));
 
-      if(typeof(callback) == 'function')
-      e.addEventListener("transitionrun",       (ctx.run = trun).bind(ctx));
+      if(typeof callback == "function") e.addEventListener("transitionrun", (ctx.run = trun).bind(ctx));
 
       cancel = () => ctx.cancel();
 
