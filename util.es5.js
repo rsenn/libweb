@@ -13,9 +13,9 @@ require("core-js/modules/es6.promise");
 
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
-
 require("core-js/modules/es6.set");
+
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
 require("core-js/modules/es7.object.entries");
 
@@ -720,9 +720,40 @@ Util.extendMap = function (map) {
   };
 };
 
+Util.fromEntries = Object.fromEntries ? Object.fromEntries : entries => {
+  let ret = {};
+  var _iteratorNormalCompletion3 = true;
+  var _didIteratorError3 = false;
+  var _iteratorError3 = undefined;
+
+  try {
+    for (var _iterator3 = entries[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+      let _step3$value = (0, _slicedToArray2.default)(_step3.value, 2),
+          k = _step3$value[0],
+          v = _step3$value[1];
+
+      ret[k] = v;
+    }
+  } catch (err) {
+    _didIteratorError3 = true;
+    _iteratorError3 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+        _iterator3.return();
+      }
+    } finally {
+      if (_didIteratorError3) {
+        throw _iteratorError3;
+      }
+    }
+  }
+
+  return ret;
+};
+
 Util.objectFrom = function (any) {
-  if ("toJS" in any) any = any.toJS();
-  if ("entries" in any) return Object.fromEntries(any.entries());
+  if ("toJS" in any) any = any.toJS();else if (Util.isArray(any)) return Util.fromEntries(any);else if ("entries" in any) return Util.fromEntries(any.entries());
   return Object.assign({}, any);
 };
 
@@ -904,28 +935,28 @@ Util.find = function (arr, value, prop = "id", acc = Util.array()) {
       return false;
     };
   } else pred = obj => obj[prop] == value;
-  var _iteratorNormalCompletion3 = true;
-  var _didIteratorError3 = false;
-  var _iteratorError3 = undefined;
+  var _iteratorNormalCompletion4 = true;
+  var _didIteratorError4 = false;
+  var _iteratorError4 = undefined;
 
   try {
-    for (var _iterator3 = arr[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-      let v = _step3.value;
+    for (var _iterator4 = arr[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+      let v = _step4.value;
       {
         if (pred(v)) return v;
       }
     }
   } catch (err) {
-    _didIteratorError3 = true;
-    _iteratorError3 = err;
+    _didIteratorError4 = true;
+    _iteratorError4 = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-        _iterator3.return();
+      if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
+        _iterator4.return();
       }
     } finally {
-      if (_didIteratorError3) {
-        throw _iteratorError3;
+      if (_didIteratorError4) {
+        throw _iteratorError4;
       }
     }
   }
@@ -1077,26 +1108,26 @@ Util.deepCloneObservable = function (data) {
 
   if (t === "object") {
     if (data.length) {
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
+      var _iteratorNormalCompletion5 = true;
+      var _didIteratorError5 = false;
+      var _iteratorError5 = undefined;
 
       try {
-        for (var _iterator4 = data[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-          const value = _step4.value;
+        for (var _iterator5 = data[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+          const value = _step5.value;
           o.push(this.deepCloneObservable(value));
         }
       } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
+        _didIteratorError5 = true;
+        _iteratorError5 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-            _iterator4.return();
+          if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
+            _iterator5.return();
           }
         } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
+          if (_didIteratorError5) {
+            throw _iteratorError5;
           }
         }
       }
@@ -1522,29 +1553,29 @@ Util.throttle = function (fn, wait) {
 };
 
 Util.foreach = function (o, fn) {
-  var _iteratorNormalCompletion5 = true;
-  var _didIteratorError5 = false;
-  var _iteratorError5 = undefined;
+  var _iteratorNormalCompletion6 = true;
+  var _didIteratorError6 = false;
+  var _iteratorError6 = undefined;
 
   try {
-    for (var _iterator5 = Util.entries(o)[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-      let _step5$value = (0, _slicedToArray2.default)(_step5.value, 2),
-          k = _step5$value[0],
-          v = _step5$value[1];
+    for (var _iterator6 = Util.entries(o)[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+      let _step6$value = (0, _slicedToArray2.default)(_step6.value, 2),
+          k = _step6$value[0],
+          v = _step6$value[1];
 
       fn(v, k, o);
     }
   } catch (err) {
-    _didIteratorError5 = true;
-    _iteratorError5 = err;
+    _didIteratorError6 = true;
+    _iteratorError6 = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-        _iterator5.return();
+      if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
+        _iterator6.return();
       }
     } finally {
-      if (_didIteratorError5) {
-        throw _iteratorError5;
+      if (_didIteratorError6) {
+        throw _iteratorError6;
       }
     }
   }
@@ -1562,24 +1593,24 @@ Util.isGenerator = function (fn) {
 
 Util.filter = function (a, pred) {
   if (Util.isGenerator(a)) return _regenerator.default.mark(function _callee5() {
-    var _iteratorNormalCompletion6, _didIteratorError6, _iteratorError6, _iterator6, _step6, item;
+    var _iteratorNormalCompletion7, _didIteratorError7, _iteratorError7, _iterator7, _step7, item;
 
     return _regenerator.default.wrap(function _callee5$(_context6) {
       while (1) switch (_context6.prev = _context6.next) {
         case 0:
-          _iteratorNormalCompletion6 = true;
-          _didIteratorError6 = false;
-          _iteratorError6 = undefined;
+          _iteratorNormalCompletion7 = true;
+          _didIteratorError7 = false;
+          _iteratorError7 = undefined;
           _context6.prev = 3;
-          _iterator6 = a[Symbol.iterator]();
+          _iterator7 = a[Symbol.iterator]();
 
         case 5:
-          if (_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done) {
+          if (_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done) {
             _context6.next = 13;
             break;
           }
 
-          item = _step6.value;
+          item = _step7.value;
 
           if (!pred(item)) {
             _context6.next = 10;
@@ -1590,7 +1621,7 @@ Util.filter = function (a, pred) {
           return item;
 
         case 10:
-          _iteratorNormalCompletion6 = true;
+          _iteratorNormalCompletion7 = true;
           _context6.next = 5;
           break;
 
@@ -1601,26 +1632,26 @@ Util.filter = function (a, pred) {
         case 15:
           _context6.prev = 15;
           _context6.t0 = _context6["catch"](3);
-          _didIteratorError6 = true;
-          _iteratorError6 = _context6.t0;
+          _didIteratorError7 = true;
+          _iteratorError7 = _context6.t0;
 
         case 19:
           _context6.prev = 19;
           _context6.prev = 20;
 
-          if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
-            _iterator6.return();
+          if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
+            _iterator7.return();
           }
 
         case 22:
           _context6.prev = 22;
 
-          if (!_didIteratorError6) {
+          if (!_didIteratorError7) {
             _context6.next = 25;
             break;
           }
 
-          throw _iteratorError6;
+          throw _iteratorError7;
 
         case 25:
           return _context6.finish(22);
@@ -1636,24 +1667,24 @@ Util.filter = function (a, pred) {
   })();
   let isa = Util.isArray(a);
   if (isa) return _regenerator.default.mark(function _callee6() {
-    var _iteratorNormalCompletion7, _didIteratorError7, _iteratorError7, _iterator7, _step7, _step7$value, k, v;
+    var _iteratorNormalCompletion8, _didIteratorError8, _iteratorError8, _iterator8, _step8, _step8$value, k, v;
 
     return _regenerator.default.wrap(function _callee6$(_context7) {
       while (1) switch (_context7.prev = _context7.next) {
         case 0:
-          _iteratorNormalCompletion7 = true;
-          _didIteratorError7 = false;
-          _iteratorError7 = undefined;
+          _iteratorNormalCompletion8 = true;
+          _didIteratorError8 = false;
+          _iteratorError8 = undefined;
           _context7.prev = 3;
-          _iterator7 = a.entries()[Symbol.iterator]();
+          _iterator8 = a.entries()[Symbol.iterator]();
 
         case 5:
-          if (_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done) {
+          if (_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done) {
             _context7.next = 13;
             break;
           }
 
-          _step7$value = (0, _slicedToArray2.default)(_step7.value, 2), k = _step7$value[0], v = _step7$value[1];
+          _step8$value = (0, _slicedToArray2.default)(_step8.value, 2), k = _step8$value[0], v = _step8$value[1];
 
           if (!pred(v, k, a)) {
             _context7.next = 10;
@@ -1664,7 +1695,7 @@ Util.filter = function (a, pred) {
           return v;
 
         case 10:
-          _iteratorNormalCompletion7 = true;
+          _iteratorNormalCompletion8 = true;
           _context7.next = 5;
           break;
 
@@ -1675,26 +1706,26 @@ Util.filter = function (a, pred) {
         case 15:
           _context7.prev = 15;
           _context7.t0 = _context7["catch"](3);
-          _didIteratorError7 = true;
-          _iteratorError7 = _context7.t0;
+          _didIteratorError8 = true;
+          _iteratorError8 = _context7.t0;
 
         case 19:
           _context7.prev = 19;
           _context7.prev = 20;
 
-          if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
-            _iterator7.return();
+          if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
+            _iterator8.return();
           }
 
         case 22:
           _context7.prev = 22;
 
-          if (!_didIteratorError7) {
+          if (!_didIteratorError8) {
             _context7.next = 25;
             break;
           }
 
-          throw _iteratorError7;
+          throw _iteratorError8;
 
         case 25:
           return _context7.finish(22);
@@ -1712,29 +1743,29 @@ Util.filter = function (a, pred) {
 
   let fn = (k, v) => ret[k] = v;
 
-  var _iteratorNormalCompletion8 = true;
-  var _didIteratorError8 = false;
-  var _iteratorError8 = undefined;
+  var _iteratorNormalCompletion9 = true;
+  var _didIteratorError9 = false;
+  var _iteratorError9 = undefined;
 
   try {
-    for (var _iterator8 = Util.entries(a)[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-      let _step8$value = (0, _slicedToArray2.default)(_step8.value, 2),
-          k = _step8$value[0],
-          v = _step8$value[1];
+    for (var _iterator9 = Util.entries(a)[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+      let _step9$value = (0, _slicedToArray2.default)(_step9.value, 2),
+          k = _step9$value[0],
+          v = _step9$value[1];
 
       if (pred(v, k, a)) fn(k, v);
     }
   } catch (err) {
-    _didIteratorError8 = true;
-    _iteratorError8 = err;
+    _didIteratorError9 = true;
+    _iteratorError9 = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
-        _iterator8.return();
+      if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
+        _iterator9.return();
       }
     } finally {
-      if (_didIteratorError8) {
-        throw _iteratorError8;
+      if (_didIteratorError9) {
+        throw _iteratorError9;
       }
     }
   }
@@ -2021,24 +2052,24 @@ Util.traverse = function (o, fn) {
   });
 
   function walker(o, depth = 0) {
-    var _iteratorNormalCompletion9, _didIteratorError9, _iteratorError9, _iterator9, _step9, _step9$value, k, v;
+    var _iteratorNormalCompletion10, _didIteratorError10, _iteratorError10, _iterator10, _step10, _step10$value, k, v;
 
     return _regenerator.default.wrap(function walker$(_context8) {
       while (1) switch (_context8.prev = _context8.next) {
         case 0:
-          _iteratorNormalCompletion9 = true;
-          _didIteratorError9 = false;
-          _iteratorError9 = undefined;
+          _iteratorNormalCompletion10 = true;
+          _didIteratorError10 = false;
+          _iteratorError10 = undefined;
           _context8.prev = 3;
-          _iterator9 = Util.entries(o)[Symbol.iterator]();
+          _iterator10 = Util.entries(o)[Symbol.iterator]();
 
         case 5:
-          if (_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done) {
+          if (_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done) {
             _context8.next = 14;
             break;
           }
 
-          _step9$value = (0, _slicedToArray2.default)(_step9.value, 2), k = _step9$value[0], v = _step9$value[1];
+          _step10$value = (0, _slicedToArray2.default)(_step10.value, 2), k = _step10$value[0], v = _step10$value[1];
           _context8.next = 9;
           return [v, k, o, depth];
 
@@ -2051,7 +2082,7 @@ Util.traverse = function (o, fn) {
           return _context8.delegateYield(walker(v, depth + 1), "t0", 11);
 
         case 11:
-          _iteratorNormalCompletion9 = true;
+          _iteratorNormalCompletion10 = true;
           _context8.next = 5;
           break;
 
@@ -2062,26 +2093,26 @@ Util.traverse = function (o, fn) {
         case 16:
           _context8.prev = 16;
           _context8.t1 = _context8["catch"](3);
-          _didIteratorError9 = true;
-          _iteratorError9 = _context8.t1;
+          _didIteratorError10 = true;
+          _iteratorError10 = _context8.t1;
 
         case 20:
           _context8.prev = 20;
           _context8.prev = 21;
 
-          if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
-            _iterator9.return();
+          if (!_iteratorNormalCompletion10 && _iterator10.return != null) {
+            _iterator10.return();
           }
 
         case 23:
           _context8.prev = 23;
 
-          if (!_didIteratorError9) {
+          if (!_didIteratorError10) {
             _context8.next = 26;
             break;
           }
 
-          throw _iteratorError9;
+          throw _iteratorError10;
 
         case 26:
           return _context8.finish(23);
@@ -2119,7 +2150,7 @@ Util.members = function (obj, recursive = false, pred = () => true) {
   };
 
   return _regenerator.default.mark(function _callee7() {
-    var name, _iteratorNormalCompletion10, _didIteratorError10, _iteratorError10, _iterator10, _step10, _iteratorNormalCompletion11, _didIteratorError11, _iteratorError11, _iterator11, _step11, proto, _iteratorNormalCompletion12, _didIteratorError12, _iteratorError12, _iterator12, _step12;
+    var name, _iteratorNormalCompletion11, _didIteratorError11, _iteratorError11, _iterator11, _step11, _iteratorNormalCompletion12, _didIteratorError12, _iteratorError12, _iterator12, _step12, proto, _iteratorNormalCompletion13, _didIteratorError13, _iteratorError13, _iterator13, _step13;
 
     return _regenerator.default.wrap(function _callee7$(_context9) {
       while (1) switch (_context9.prev = _context9.next) {
@@ -2147,19 +2178,19 @@ Util.members = function (obj, recursive = false, pred = () => true) {
           break;
 
         case 8:
-          _iteratorNormalCompletion10 = true;
-          _didIteratorError10 = false;
-          _iteratorError10 = undefined;
+          _iteratorNormalCompletion11 = true;
+          _didIteratorError11 = false;
+          _iteratorError11 = undefined;
           _context9.prev = 11;
-          _iterator10 = Object.getOwnPropertyNames(obj)[Symbol.iterator]();
+          _iterator11 = Object.getOwnPropertyNames(obj)[Symbol.iterator]();
 
         case 13:
-          if (_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done) {
+          if (_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done) {
             _context9.next = 21;
             break;
           }
 
-          name = _step10.value;
+          name = _step11.value;
 
           if (!adder(name)) {
             _context9.next = 18;
@@ -2170,7 +2201,7 @@ Util.members = function (obj, recursive = false, pred = () => true) {
           return name;
 
         case 18:
-          _iteratorNormalCompletion10 = true;
+          _iteratorNormalCompletion11 = true;
           _context9.next = 13;
           break;
 
@@ -2181,26 +2212,26 @@ Util.members = function (obj, recursive = false, pred = () => true) {
         case 23:
           _context9.prev = 23;
           _context9.t2 = _context9["catch"](11);
-          _didIteratorError10 = true;
-          _iteratorError10 = _context9.t2;
+          _didIteratorError11 = true;
+          _iteratorError11 = _context9.t2;
 
         case 27:
           _context9.prev = 27;
           _context9.prev = 28;
 
-          if (!_iteratorNormalCompletion10 && _iterator10.return != null) {
-            _iterator10.return();
+          if (!_iteratorNormalCompletion11 && _iterator11.return != null) {
+            _iterator11.return();
           }
 
         case 30:
           _context9.prev = 30;
 
-          if (!_didIteratorError10) {
+          if (!_didIteratorError11) {
             _context9.next = 33;
             break;
           }
 
-          throw _iteratorError10;
+          throw _iteratorError11;
 
         case 33:
           return _context9.finish(30);
@@ -2214,32 +2245,32 @@ Util.members = function (obj, recursive = false, pred = () => true) {
             break;
           }
 
-          _iteratorNormalCompletion11 = true;
-          _didIteratorError11 = false;
-          _iteratorError11 = undefined;
+          _iteratorNormalCompletion12 = true;
+          _didIteratorError12 = false;
+          _iteratorError12 = undefined;
           _context9.prev = 39;
-          _iterator11 = Util.getPrototypeChain(obj)[Symbol.iterator]();
+          _iterator12 = Util.getPrototypeChain(obj)[Symbol.iterator]();
 
         case 41:
-          if (_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done) {
+          if (_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done) {
             _context9.next = 73;
             break;
           }
 
-          proto = _step11.value;
-          _iteratorNormalCompletion12 = true;
-          _didIteratorError12 = false;
-          _iteratorError12 = undefined;
+          proto = _step12.value;
+          _iteratorNormalCompletion13 = true;
+          _didIteratorError13 = false;
+          _iteratorError13 = undefined;
           _context9.prev = 46;
-          _iterator12 = Object.getOwnPropertyNames(proto)[Symbol.iterator]();
+          _iterator13 = Object.getOwnPropertyNames(proto)[Symbol.iterator]();
 
         case 48:
-          if (_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done) {
+          if (_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done) {
             _context9.next = 56;
             break;
           }
 
-          name = _step12.value;
+          name = _step13.value;
 
           if (!adder(name)) {
             _context9.next = 53;
@@ -2250,7 +2281,7 @@ Util.members = function (obj, recursive = false, pred = () => true) {
           return name;
 
         case 53:
-          _iteratorNormalCompletion12 = true;
+          _iteratorNormalCompletion13 = true;
           _context9.next = 48;
           break;
 
@@ -2261,26 +2292,26 @@ Util.members = function (obj, recursive = false, pred = () => true) {
         case 58:
           _context9.prev = 58;
           _context9.t3 = _context9["catch"](46);
-          _didIteratorError12 = true;
-          _iteratorError12 = _context9.t3;
+          _didIteratorError13 = true;
+          _iteratorError13 = _context9.t3;
 
         case 62:
           _context9.prev = 62;
           _context9.prev = 63;
 
-          if (!_iteratorNormalCompletion12 && _iterator12.return != null) {
-            _iterator12.return();
+          if (!_iteratorNormalCompletion13 && _iterator13.return != null) {
+            _iterator13.return();
           }
 
         case 65:
           _context9.prev = 65;
 
-          if (!_didIteratorError12) {
+          if (!_didIteratorError13) {
             _context9.next = 68;
             break;
           }
 
-          throw _iteratorError12;
+          throw _iteratorError13;
 
         case 68:
           return _context9.finish(65);
@@ -2289,7 +2320,7 @@ Util.members = function (obj, recursive = false, pred = () => true) {
           return _context9.finish(62);
 
         case 70:
-          _iteratorNormalCompletion11 = true;
+          _iteratorNormalCompletion12 = true;
           _context9.next = 41;
           break;
 
@@ -2300,26 +2331,26 @@ Util.members = function (obj, recursive = false, pred = () => true) {
         case 75:
           _context9.prev = 75;
           _context9.t4 = _context9["catch"](39);
-          _didIteratorError11 = true;
-          _iteratorError11 = _context9.t4;
+          _didIteratorError12 = true;
+          _iteratorError12 = _context9.t4;
 
         case 79:
           _context9.prev = 79;
           _context9.prev = 80;
 
-          if (!_iteratorNormalCompletion11 && _iterator11.return != null) {
-            _iterator11.return();
+          if (!_iteratorNormalCompletion12 && _iterator12.return != null) {
+            _iterator12.return();
           }
 
         case 82:
           _context9.prev = 82;
 
-          if (!_didIteratorError11) {
+          if (!_didIteratorError12) {
             _context9.next = 85;
             break;
           }
 
-          throw _iteratorError11;
+          throw _iteratorError12;
 
         case 85:
           return _context9.finish(82);
@@ -2507,38 +2538,6 @@ Util.flatTree = function (tree, addOutput) {
   addOutput(Util.filterKeys(tree, key => key !== "children"));
 
   if (typeof tree.children == "object" && tree.children !== null && tree.children.length) {
-    var _iteratorNormalCompletion13 = true;
-    var _didIteratorError13 = false;
-    var _iteratorError13 = undefined;
-
-    try {
-      for (var _iterator13 = tree.children[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
-        let child = _step13.value;
-        Util.flatTree(child, addOutput);
-      }
-    } catch (err) {
-      _didIteratorError13 = true;
-      _iteratorError13 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion13 && _iterator13.return != null) {
-          _iterator13.return();
-        }
-      } finally {
-        if (_didIteratorError13) {
-          throw _iteratorError13;
-        }
-      }
-    }
-  }
-
-  return ret;
-};
-
-Util.traverseTree = function (tree, fn, depth = 0, parent = null) {
-  fn(tree, depth, parent);
-
-  if (typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children !== null && tree.children.length) {
     var _iteratorNormalCompletion14 = true;
     var _didIteratorError14 = false;
     var _iteratorError14 = undefined;
@@ -2546,7 +2545,7 @@ Util.traverseTree = function (tree, fn, depth = 0, parent = null) {
     try {
       for (var _iterator14 = tree.children[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
         let child = _step14.value;
-        Util.traverseTree(child, fn, depth + 1, tree);
+        Util.flatTree(child, addOutput);
       }
     } catch (err) {
       _didIteratorError14 = true;
@@ -2559,6 +2558,38 @@ Util.traverseTree = function (tree, fn, depth = 0, parent = null) {
       } finally {
         if (_didIteratorError14) {
           throw _iteratorError14;
+        }
+      }
+    }
+  }
+
+  return ret;
+};
+
+Util.traverseTree = function (tree, fn, depth = 0, parent = null) {
+  fn(tree, depth, parent);
+
+  if (typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children !== null && tree.children.length) {
+    var _iteratorNormalCompletion15 = true;
+    var _didIteratorError15 = false;
+    var _iteratorError15 = undefined;
+
+    try {
+      for (var _iterator15 = tree.children[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+        let child = _step15.value;
+        Util.traverseTree(child, fn, depth + 1, tree);
+      }
+    } catch (err) {
+      _didIteratorError15 = true;
+      _iteratorError15 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion15 && _iterator15.return != null) {
+          _iterator15.return();
+        }
+      } finally {
+        if (_didIteratorError15) {
+          throw _iteratorError15;
         }
       }
     }

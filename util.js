@@ -437,9 +437,20 @@ Util.extendMap = function(map) {
     return Util.match.apply(this, args);
   };
 };
+Util.fromEntries = Object.fromEntries
+  ? Object.fromEntries
+  : entries => {
+      let ret = {};
+      for(let [k, v] of entries) {
+        ret[k] = v;
+      }
+      return ret;
+    };
+
 Util.objectFrom = function(any) {
   if("toJS" in any) any = any.toJS();
-  if("entries" in any) return Object.fromEntries(any.entries());
+  else if(Util.isArray(any)) return Util.fromEntries(any);
+  else if("entries" in any) return Util.fromEntries(any.entries());
   return Object.assign({}, any);
 };
 Util.tail = function(arr) {
