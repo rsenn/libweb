@@ -12,7 +12,7 @@ export function MovementListener(handler, options) {
   var points = new PointList();
   var prev;
 
-  function cancel() {
+  const cancel = trkl(event => {
     start = null;
     move = {};
     end = {};
@@ -22,13 +22,12 @@ export function MovementListener(handler, options) {
     points = new PointList();
     prev = {};
     //console.log('MovementListener cancelled');
-  }
+  });
 
   options = { step: 1, round: false, angle: false, noscroll: true, ...options };
   //console.log("new MovementListener(", handler, ",", options, ")");
 
   var self = function(event) {
-    //console.log("MovementListener(", { event }, ")");
     const { nativeEvent, button, buttons } = event;
     let currentTarget = nativeEvent ? nativeEvent.currentTarget : event.currentTarget;
 
@@ -36,8 +35,9 @@ export function MovementListener(handler, options) {
     var started = type.endsWith("start") || type.endsWith("down");
     var ends = type.endsWith("end") || type.endsWith("cancel") || type.endsWith("up");
 
-    if(!started && !ends && start === null) return;
-    //console.log("Touch ", type);
+    //console.log("MovementListener", { type, started, ends });
+
+    //  console.log("Touch ", type);
 
     if(ends) {
       let x = prev && prev.x !== undefined ? prev.x : 0;
@@ -55,9 +55,11 @@ export function MovementListener(handler, options) {
       self.handler.end(end);
       /*if(type.endsWith('cancel'))*/ cancel();
 
-      console.log("MovementListener", { type });
+      //console.log("MovementListener", { type });
       return;
     }
+    if(!started && !ends && start === null) return;
+
     if(event.touches !== undefined && event.touches.length === 0) return;
 
     let touches = event.touches && event.touches.length > 0 ? event.touches : [event];
@@ -161,7 +163,7 @@ export function MultitouchListener(handler, options) {
 
   const getPos = (obj, prefix) => ({ x: obj[prefix + "X"], y: obj[prefix + "Y"] });
 
-  function cancel() {
+  const cancel = new trkl(() => {
     start = {};
     move = {};
     end = {};
@@ -170,7 +172,7 @@ export function MultitouchListener(handler, options) {
     starttime = 0;
     points = new PointList();
     //console.log('MultitouchListener cancelled');
-  }
+  });
 
   var self = function(event) {
     var type = event.type;
@@ -306,9 +308,10 @@ export function TurnListener(handler, options) {
 }
 
 export function SelectionListener(handler, options) {
-  var start = null,
+  var origin = null,
     position,
-    line;
+    line,
+    running = false;
   var element = null;
 
   options = {
@@ -319,45 +322,67 @@ export function SelectionListener(handler, options) {
     shadow: "black",
     ...options
   };
+  function cancel(event) {
+    running = false;
+    handler.destroy(event, origin);
+    origin = null;
+    event.cancel();
+    return;
+  }
   var callback = function(event) {
-    let x = event.nativeEvent.clientX;
-    let y = event.nativeEvent.clientY;
-    let dx = event.x;
-    let dy = event.y;
-    let type = event.nativeEvent ? event.nativeEvent.type : event.type;
+    const { start, x, y, type } = event;
+    event.cancel.subscribe(cancel);
+
+    if(type.endsWith("end") || type.endsWith("up")) {
+      event.cancel(event);
+    }
+
     if(type.endsWith("start") || type.endsWith("down")) {
-      start = new Point(event.client);
-      // console.log("Touch ", event.type, start);
-    } else if(start && start.x !== undefined) {
-      position = new Point(Point.sum(start, event));
-      line = new Line(start.round(), position.round());
+      origin = new Point(start.x, start.y);
+      return;
+    }
+
+    if(type.endsWith("move") && origin) {
+      position = new Point(x, y).add(origin);
+      line = new Line(origin.round(), position.round());
       let rect = Rect.round(line.bbox());
       event.line = line;
-      if(element == null) {
-        let id = SelectionListener.id === undefined ? 1 : SelectionListener.id + 1;
-        SelectionListener.id = id;
-        element = Element.create("div", { id: `select_${id}` }, global.window ? window.document.body : null);
-        Element.setCSS(element, {
-          position: "fixed",
-          border: "2px dashed " + options.color,
-          filter: `drop-shadow(1px 1px 1px ${options.shadow})`,
-          zIndex: 999999999
-        });
-      }
-      //    Element.rect(element, rect, { position: 'absolute' });
-      Element.setCSS(element, { left: `${rect.x}px`, top: `${rect.y}px` });
-      if(dx !== undefined && dy !== undefined) Element.setCSS(element, { width: `${rect.width}px`, height: `${rect.height}px` });
-    }
-    if(type.endsWith("end") || type.endsWith("up")) {
-      if(element) {
-        Element.remove(element);
-        element = null;
+
+      if(!running) {
+        running = true;
+        handler.create(line, event, origin);
+      } else {
+        handler.update(line, event, origin);
       }
     }
-    if(typeof handler == "function") return handler(event);
   };
 
-  return TouchListener(callback, { listener: MovementListener, noscroll: true, ...options });
+  return MovementListener(callback, options);
+}
+
+export function SelectionRenderer() {
+  return {
+    element: null,
+    create(rect) {
+      //console.log("SelectionListener.create(", rect, ")");
+      this.element = Element.create("div", { id: `selection-rect` }, global.window ? window.document.body : null);
+      Element.setCSS(this.element, {
+        position: "fixed",
+        border: "3px dashed white",
+        filter: `drop-shadow(1px 1px 1px black)`,
+        zIndex: 999999999
+      });
+      this.update(rect);
+    },
+    update(rect) {
+      //console.log("SelectionListener.update(", rect, ")");
+      Element.rect(this.element, rect, { position: "absolute" });
+    },
+    destroy() {
+      //console.log("SelectionListener.destroy()");
+      Element.remove(this.element);
+    }
+  };
 }
 
 export const TouchEvents = listener => ({
@@ -370,10 +395,7 @@ export const TouchEvents = listener => ({
 export const MouseEvents = listener => ({
   onMouseDown: listener,
   onMouseMove: listener,
-  onMouseUp: e => {
-    console.log("onMouseUp");
-    listener(e);
-  }
+  onMouseUp: listener //e => {console.log("onMouseUp"); listener(e); }
 });
 
 export const addTouchListeners = (listener, element, passive = true) => {
