@@ -82,6 +82,21 @@ class Element extends _node.Node {
     return e;
   }
 
+  static walkUp(elem, pred) {
+    if (typeof elem == "string") elem = Element.find(elem);
+    let n;
+
+    if (typeof pred == "number") {
+      n = pred;
+
+      pred = () => n-- > 0;
+    }
+
+    while (!pred(elem)) elem = elem.parentElement;
+
+    return elem;
+  }
+
   static walk(elem, fn, accu = {}) {
     elem = Element.find(elem);
     const root = elem;
@@ -162,7 +177,7 @@ class Element extends _node.Node {
 
   static findAll(arg, parent) {
     parent = Element.find(parent);
-    return _util.default.array(parent && parent.querySelectorAll ? parent.querySelectorAll(arg) : document.querySelectorAll(arg));
+    return [...(parent && parent.querySelectorAll ? parent.querySelectorAll(arg) : document.querySelectorAll(arg))];
   }
 
   static attr(element, attrs_or_name) {

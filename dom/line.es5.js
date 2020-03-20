@@ -80,45 +80,77 @@ Line.prototype.intersect = function (other) {
   });
 };
 
+Object.defineProperty(Line.prototype, 0, {
+  get: function get() {
+    return this.a;
+  },
+  set: function set(v) {
+    this.a.x = v.x;
+    this.a.y = v.y;
+  },
+  enumerable: false
+});
+Object.defineProperty(Line.prototype, 1, {
+  get: function get() {
+    return this.b;
+  },
+  set: function set(v) {
+    this.b.x = v.x;
+    this.b.y = v.y;
+  },
+  enumerable: false
+});
 Object.defineProperty(Line.prototype, "x1", {
   get: function get() {
     return this.a && this.a.x;
   },
   set: function set(v) {
-    if (!this.a) this.a = new _point.Point();
+    if (!this.a) Object.defineProperty(this, "a", {
+      value: new _point.Point(),
+      enumerable: false
+    });
     this.a.x = v;
   },
-  enumerable: true
+  enumerable: false
 });
 Object.defineProperty(Line.prototype, "y1", {
   get: function get() {
     return this.a && this.a.y;
   },
   set: function set(v) {
-    if (!this.a) this.a = new _point.Point();
+    if (!this.a) Object.defineProperty(this, "a", {
+      value: new _point.Point(),
+      enumerable: false
+    });
     this.a.y = v;
   },
-  enumerable: true
+  enumerable: false
 });
 Object.defineProperty(Line.prototype, "x2", {
   get: function get() {
     return this.b && this.b.x;
   },
   set: function set(v) {
-    if (!this.b) this.b = new _point.Point();
+    if (!this.b) Object.defineProperty(this, "b", {
+      value: new _point.Point(),
+      enumerable: false
+    });
     this.b.x = v;
   },
-  enumerable: true
+  enumerable: false
 });
 Object.defineProperty(Line.prototype, "y2", {
   get: function get() {
     return this.b && this.b.y;
   },
   set: function set(v) {
-    if (!this.b) this.b = new _point.Point();
+    if (!this.b) Object.defineProperty(this, "b", {
+      value: new _point.Point(),
+      enumerable: false
+    });
     this.b.y = v;
   },
-  enumerable: true
+  enumerable: false
 });
 
 Line.prototype.direction = function () {
