@@ -952,16 +952,12 @@ export function rect(arg) {
       boxShadow: '0px 0px 9px 0px #000000',*/
     });
 
-    console.log("__rect ", rect, color);
+    //console.log("__rect ", rect, color);
 
     Element.setRect(e, rect.round(1), "absolute");
 
-    /*  Rect.set(r, e);*/
-    // Rect.inset(rect, TRBL(3, 3, 3, 3));
-    //Element.setCSS(e, { left: rect.x, top: rect.y, width: rect.width, height: rect.height });
-    // Element.rect(e, rect, 'absolute');
     let computed = Element.getRect(e);
-    console.log("rect: ", rect, " computed: ", computed);
+    //console.log("rect: ", rect, " computed: ", computed);
     const proxy = new ElementRectProxy(e);
     ElementXYProps(e, proxy);
     ElementSizeProps(e, proxy);
