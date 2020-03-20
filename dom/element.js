@@ -43,8 +43,7 @@ export class Element extends Node {
       n = pred;
       pred = () => n-- > 0;
     }
-    while(!pred(elem))
-      elem = elem.parentElement;
+    while(!pred(elem)) elem = elem.parentElement;
     return elem;
   }
 
