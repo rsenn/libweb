@@ -124,7 +124,8 @@ export class SvgOverlay extends React.Component {
           top: 0,
           width: "100vw",
           height: "100%",
-          pointerEvents: "none"
+          pointerEvents: "none",
+          ...this.props.style
         }}
       ></div>
     );

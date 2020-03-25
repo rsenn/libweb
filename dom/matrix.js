@@ -164,7 +164,13 @@ Matrix.prototype.toArray = function() {
 
 Matrix.prototype.toString = function() {
   let rows = Matrix.prototype.rows.call(this);
-  return "[\n  " + rows.map(row => "[" + row.join(", ") + "]").join(",\n  ") + "\n]";
+  let name = rows[0].length == 3 ? "matrix" : "matrix3d";
+
+  if(rows[0].length == 3) {
+    rows = [["a", "b", "c", "d", "e", "f"].map(k => this[Matrix.prototype.keyIndex[k]])];
+  }
+
+  return `${name}(` + rows.map(row => row.join(", ")).join(", ") + ")";
 };
 
 Matrix.prototype.toSVG = function() {
@@ -331,7 +337,7 @@ Matrix.translate = (matrix, tx, ty) => Matrix.prototype.translate.call(matrix, t
 Matrix.scale = (matrix, sx, sy) => Matrix.prototype.identity.call(matrix, sx, sy);
 Matrix.rotate = (matrix, rad) => Matrix.prototype.rotate.call(matrix, rad);
 
-for(let name of ["toArray", "toString", "toSVG", "point_transformer"]) {
+for(let name of ["toArray", "toString", "toSVG", "point_transformer", "product"]) {
   Matrix[name] = points => Matrix.prototype[name].call(points);
 }
 
