@@ -1,46 +1,45 @@
-import Util from "../util.es5.js";
+import Util from "../util.js";
 
-const e = exports;
-
-class Node {
+export class Node {
   constructor(type) {
-    this.type = type;
-    this.loc = null; // TODO: For now avoid dealing with location information.
+    //this.type = type;
+    //this.loc = null; // TODO: For now avoid dealing with location information.
     // Fix it later.
   }
 }
 
-class Program extends Node {
+export class Program extends Node {
   constructor(body) {
     super("Program");
     this.body = body;
   }
 }
 
-class Expression extends Node {
+export class Expression extends Node {
   constructor(type = "Expression") {
     super(type);
   }
 }
 
-class Function extends Node {
-  constructor(type, id, params, body, exported) {
+export class Function extends Node {
+  constructor(type, id, params, body, exported, async) {
     super(type);
     this.id = id;
     this.params = params;
     this.body = body;
     this.exported = exported;
+    this.async = async;
   }
 }
 
-class Identifier extends Expression {
+export class Identifier extends Expression {
   constructor(value) {
     super("Identifier");
     this.value = value;
   }
 }
 
-class BindingProperty extends Expression {
+export class BindingProperty extends Expression {
   constructor(property, element) {
     super("BindingProperty");
     this.property = property;
@@ -48,20 +47,20 @@ class BindingProperty extends Expression {
   }
 }
 
-class Literal extends Expression {
+export class Literal extends Expression {
   constructor(value) {
     super("Literal");
     this.value = value;
   }
 }
 
-class ThisExpression extends Expression {
+export class ThisExpression extends Expression {
   constructor() {
     super("ThisExpression");
   }
 }
 
-class UnaryExpression extends Expression {
+export class UnaryExpression extends Expression {
   constructor(operator, argument, prefix) {
     super("UnaryExpression");
     this.operator = operator;
@@ -70,7 +69,7 @@ class UnaryExpression extends Expression {
   }
 }
 
-class UpdateExpression extends Expression {
+export class UpdateExpression extends Expression {
   constructor(operator, argument, prefix) {
     super("UpdateExpression");
     this.operator = operator;
@@ -79,7 +78,7 @@ class UpdateExpression extends Expression {
   }
 }
 
-class BinaryExpression extends Expression {
+export class BinaryExpression extends Expression {
   constructor(operator, left, right) {
     super("BinaryExpression");
     this.operator = operator;
@@ -88,7 +87,7 @@ class BinaryExpression extends Expression {
   }
 }
 
-class AssignmentExpression extends Expression {
+export class AssignmentExpression extends Expression {
   constructor(operator, left, right) {
     super("AssignmentExpression");
     this.operator = operator;
@@ -97,7 +96,7 @@ class AssignmentExpression extends Expression {
   }
 }
 
-class LogicalExpression extends Expression {
+export class LogicalExpression extends Expression {
   constructor(operator, left, right) {
     super("LogicalExpression");
     this.operator = operator;
@@ -106,16 +105,16 @@ class LogicalExpression extends Expression {
   }
 }
 
-class MemberExpression extends Expression {
-  constructor(obj, prop, comp = false) {
+export class MemberExpression extends Expression {
+  constructor(obj, prop /*, comp = false*/) {
     super("MemberExpression");
     this.object = obj;
     this.property = prop;
-    this.computed = comp;
+    //this.computed = comp;
   }
 }
 
-class ConditionalExpression extends Expression {
+export class ConditionalExpression extends Expression {
   constructor(test, consequent, alternate) {
     super("ConditionalExpression");
     this.test = test;
@@ -124,15 +123,15 @@ class ConditionalExpression extends Expression {
   }
 }
 
-class CallExpression extends Expression {
+export class CallExpression extends Expression {
   constructor(callee, args) {
     super("CallExpression");
-    this.callee = callee;
     this.arguments = args;
+    this.callee = callee;
   }
 }
 
-class DecoratorExpression extends CallExpression {
+export class DecoratorExpression extends CallExpression {
   constructor(callee, args, _class) {
     super("DecoratorExpression");
     this.callee = callee;
@@ -141,7 +140,7 @@ class DecoratorExpression extends CallExpression {
   }
 }
 
-class NewExpression extends Expression {
+export class NewExpression extends Expression {
   constructor(callee, args) {
     super("NewExpression");
     this.callee = callee;
@@ -149,66 +148,66 @@ class NewExpression extends Expression {
   }
 }
 
-class SequenceExpression extends Expression {
+export class SequenceExpression extends Expression {
   constructor(expressions) {
     super("SequenceExpression");
     this.expressions = expressions;
   }
 }
 
-class Statement extends Node {
+export class Statement extends Node {
   constructor(type) {
     super(type);
   }
 }
 
-class BlockStatement extends Statement {
+export class BlockStatement extends Statement {
   constructor(statements) {
     super("BlockStatement");
     this.body = statements;
   }
 }
 
-class StatementList extends Statement {
+export class StatementList extends Statement {
   constructor(statements) {
     super("StatementList");
     this.body = statements;
   }
 }
 
-class EmptyStatement extends Statement {
+export class EmptyStatement extends Statement {
   constructor() {
     super("EmptyStatement");
   }
 }
 
-class ExpressionStatement extends Statement {
+export class ExpressionStatement extends Statement {
   constructor(expression) {
     super("ExpressionStatement");
     this.expression = expression;
   }
 }
 
-class ReturnStatement extends Statement {
+export class ReturnStatement extends Statement {
   constructor(argument) {
     super("ReturnStatement");
     this.argument = argument;
   }
 }
 
-class ContinueStatement extends Statement {
+export class ContinueStatement extends Statement {
   constructor() {
     super("ContinueStatement");
   }
 }
 
-class BreakStatement extends Statement {
+export class BreakStatement extends Statement {
   constructor() {
     super("BreakStatement");
   }
 }
 
-class IfStatement extends Statement {
+export class IfStatement extends Statement {
   constructor(test, consequent, alternate) {
     super("IfStatement");
     this.test = test;
@@ -217,7 +216,7 @@ class IfStatement extends Statement {
   }
 }
 
-class WhileStatement extends Statement {
+export class WhileStatement extends Statement {
   constructor(test, body) {
     super("WhileStatement");
     this.test = test;
@@ -225,7 +224,7 @@ class WhileStatement extends Statement {
   }
 }
 
-class DoStatement extends Statement {
+export class DoStatement extends Statement {
   constructor(test, body) {
     super("DoStatement");
     this.test = test;
@@ -233,7 +232,7 @@ class DoStatement extends Statement {
   }
 }
 
-class ForStatement extends Statement {
+export class ForStatement extends Statement {
   constructor(init, test, update, body) {
     super("ForStatement");
     this.init = init;
@@ -243,7 +242,7 @@ class ForStatement extends Statement {
   }
 }
 
-class ForInStatement extends Statement {
+export class ForInStatement extends Statement {
   constructor(left, right, body) {
     super("ForInStatement");
     this.left = left;
@@ -252,7 +251,7 @@ class ForInStatement extends Statement {
   }
 }
 
-class WithStatement extends Statement {
+export class WithStatement extends Statement {
   constructor(test, body) {
     super("WithStatement");
     this.test = test;
@@ -260,7 +259,16 @@ class WithStatement extends Statement {
   }
 }
 
-class ImportStatement extends Statement {
+export class TryStatement extends Statement {
+  constructor(body, parameters, trap) {
+    super("TryStatement");
+    this.body = body;
+    this.parameters = parameters;
+    this.trap = trap;
+  }
+}
+
+export class ImportStatement extends Statement {
   constructor(identifiers, sourceFile) {
     super("ImportStatement");
     this.identifiers = identifiers;
@@ -268,13 +276,13 @@ class ImportStatement extends Statement {
   }
 }
 
-class Declaration extends Statement {
+export class Declaration extends Statement {
   constructor(type = "Declaration") {
     super(type);
   }
 }
 
-class ClassDeclaration extends Declaration {
+export class ClassDeclaration extends Declaration {
   constructor(id, extending, body, exported = false) {
     super("ClassDeclaration");
     this.id = id;
@@ -286,26 +294,37 @@ class ClassDeclaration extends Declaration {
   }
 }
 
-class FunctionDeclaration extends Function {
-  constructor(id, params, body, exported = false) {
-    super("FunctionDeclaration", id, params, body, exported);
+export class FunctionDeclaration extends Function {
+  constructor(id, params, body, exported = false, async = false) {
+    super("FunctionDeclaration", id, params, body, exported, async);
     // console.log('New FunctionDeclaration: ', JSON.stringify({ id, params,
     // exported }));
   }
 }
 
-class VariableDeclaration extends Declaration {
+export class ArrowFunction extends Node {
+  constructor(params, body, is_async) {
+    super("ArrowFunction");
+    this.async = is_async;
+    this.params = params;
+    this.body = body;
+    // console.log('New FunctionDeclaration: ', JSON.stringify({ id, params,
+    // exported }));
+  }
+}
+
+export class VariableDeclaration extends Declaration {
   constructor(declarations, kind = "var", exported = false) {
     super("VariableDeclaration");
-    this.declarations = declarations;
     this.kind = kind;
     this.exported = exported;
+    this.declarations = declarations;
     // console.log('New VariableDeclaration: ', JSON.stringify({ kind, exported
     // }));
   }
 }
 
-class VariableDeclarator extends Node {
+export class VariableDeclarator extends Node {
   constructor(identifier, initialValue) {
     super("VariableDeclarator");
     this.id = identifier;
@@ -315,7 +334,7 @@ class VariableDeclarator extends Node {
   }
 }
 
-class ObjectLiteral extends Node {
+export class ObjectLiteral extends Node {
   constructor(members) {
     super("ObjectLiteral");
     this.members = members;
@@ -323,7 +342,7 @@ class ObjectLiteral extends Node {
   }
 }
 
-class ArrayLiteral extends Node {
+export class ArrayLiteral extends Node {
   constructor(members) {
     super("ArrayLiteral");
     this.members = members;
@@ -331,7 +350,7 @@ class ArrayLiteral extends Node {
   }
 }
 
-class JSXLiteral extends Node {
+export class JSXLiteral extends Node {
   constructor(tag, attributes) {
     super("JSXLiteral");
     this.tag = tag;
@@ -340,67 +359,41 @@ class JSXLiteral extends Node {
   }
 }
 
-class BindingPattern extends Identifier {
+export class BindingPattern extends Identifier {
   constructor(properties) {
     super("BindingPattern");
     this.properties = properties;
   }
 }
 
-class ArrayBinding extends BindingPattern {
+export class ArrayBinding extends BindingPattern {
   constructor(properties) {
     super("ArrayBinding");
     this.properties = properties;
   }
 }
 
-class ObjectBinding extends BindingPattern {
+export class ObjectBinding extends BindingPattern {
   constructor(properties) {
     super("ObjectBinding");
     this.properties = properties;
   }
 }
 
-e.Node = Node;
-e.Program = Program;
-e.Identifier = Identifier;
-e.BindingProperty = BindingProperty;
-e.Literal = Literal;
-e.ThisExpression = ThisExpression;
-e.UnaryExpression = UnaryExpression;
-e.UpdateExpression = UpdateExpression;
-e.BinaryExpression = BinaryExpression;
-e.AssignmentExpression = AssignmentExpression;
-e.LogicalExpression = LogicalExpression;
-e.ConditionalExpression = ConditionalExpression;
-e.CallExpression = CallExpression;
-e.DecoratorExpression = DecoratorExpression;
-e.NewExpression = NewExpression;
-e.SequenceExpression = SequenceExpression;
-e.BlockStatement = BlockStatement;
-e.StatementList = StatementList;
-e.EmptyStatement = EmptyStatement;
-e.ExpressionStatement = ExpressionStatement;
-e.ReturnStatement = ReturnStatement;
-e.ContinueStatement = ContinueStatement;
-e.BreakStatement = BreakStatement;
-e.IfStatement = IfStatement;
-e.WhileStatement = WhileStatement;
-e.DoStatement = DoStatement;
-e.ForStatement = ForStatement;
-e.ForInStatement = ForInStatement;
-e.WithStatement = WithStatement;
-e.ImportStatement = ImportStatement;
-e.FunctionDeclaration = FunctionDeclaration;
-e.ClassDeclaration = ClassDeclaration;
-e.VariableDeclaration = VariableDeclaration;
-e.VariableDeclarator = VariableDeclarator;
-e.ObjectLiteral = ObjectLiteral;
-e.ArrayLiteral = ArrayLiteral;
-e.MemberExpression = MemberExpression;
-e.JSXLiteral = JSXLiteral;
-e.ArrayBinding = ArrayBinding;
-e.ObjectBinding = ObjectBinding;
+export class AwaitExpression extends Expression {
+  constructor(value) {
+    super("AwaitExpression");
+    this.value = value;
+  }
+}
+export class RestOfExpression extends Node {
+  constructor(value) {
+    super("RestOfExpression");
+    this.value = value;
+  }
+}
+
+Node.prototype.type = null;
 
 Node.prototype.toString = function() {
   let s = "";
@@ -420,4 +413,56 @@ Node.prototype.toString = function() {
     }
   });
   return `${this.type} {\n  ${s}\n}`;
+};
+
+export default {
+  Node,
+  Program,
+  Expression,
+  Function,
+  Identifier,
+  BindingProperty,
+  Literal,
+  ThisExpression,
+  UnaryExpression,
+  UpdateExpression,
+  BinaryExpression,
+  AssignmentExpression,
+  LogicalExpression,
+  MemberExpression,
+  ConditionalExpression,
+  CallExpression,
+  DecoratorExpression,
+  NewExpression,
+  SequenceExpression,
+  Statement,
+  BlockStatement,
+  StatementList,
+  EmptyStatement,
+  ExpressionStatement,
+  ReturnStatement,
+  ContinueStatement,
+  BreakStatement,
+  IfStatement,
+  WhileStatement,
+  DoStatement,
+  ForStatement,
+  ForInStatement,
+  WithStatement,
+  TryStatement,
+  ImportStatement,
+  Declaration,
+  ClassDeclaration,
+  FunctionDeclaration,
+  ArrowFunction,
+  VariableDeclaration,
+  VariableDeclarator,
+  ObjectLiteral,
+  ArrayLiteral,
+  JSXLiteral,
+  BindingPattern,
+  ArrayBinding,
+  ObjectBinding,
+  AwaitExpression,
+  RestOfExpression
 };

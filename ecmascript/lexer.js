@@ -1,5 +1,34 @@
 import { Token } from "./token.js";
 import { tokenTypes } from "./token.js";
+import Util from "../util.js";
+
+export function Stack() {
+  let stack = Util.getCallers(2, 30);
+
+  return stack.map(({ fileName, columnNumber, lineNumber, functionName, methodName }) => `${fileName}:${lineNumber}:${columnNumber}:${functionName}:${methodName}`);
+  /*
+  stack = stack.filter(({ functionName }) => !/Parser.parser.</.test(functionName));
+  stack = stack.filter(({ typeName }) => typeName == "Parser");
+  stack = stack.map(({ functionName, methodName, position }) => ({
+    method: functionName || methodName,
+    position: position 
+  }));*/
+}
+
+export function Error(msg) {
+  this.msg = msg;
+  this.stack = Stack();
+}
+
+export function SyntaxError(msg, ast) {
+  this.msg = msg;
+  this.ast = ast;
+  this.stack = Stack();
+}
+
+SyntaxError.prototype.toString = function() {
+  return this.msg + "";
+};
 
 function Lexer(sourceText) {
   this.setInput(sourceText);
@@ -27,13 +56,13 @@ l.ignore = function() {
 };
 
 // Returns the next character in the source code
-l.peek = function() {
-  if(this.pos >= this.source.length) {
+l.peek = function(offset = 0) {
+  if(this.pos + offset >= this.source.length) {
     // null represents EOF
     return null;
   }
 
-  const c = this.source[this.pos];
+  const c = this.source[this.pos + offset];
   this.c = c;
   return c;
 };
@@ -161,10 +190,10 @@ function isPunctuator(word) {
       return ["=", ".", "-", "%", "}", ">", ",", "*", "[", "<", "!", "/", "]", "~", "&", "(", ";", "?", "|", ")", ":", "+", "^", "{", "@"].indexOf(word) >= 0;
 
     case 2:
-      return ["!=", "*=", "&&", "<<", "/=", "||", ">>", "&=", "==", "++", "|=", "<=", "--", "+=", "^=", ">=", "-=", "%="].indexOf(word) >= 0;
+      return ["!=", "*=", "&&", "<<", "/=", "||", ">>", "&=", "==", "++", "|=", "<=", "--", "+=", "^=", ">=", "-=", "%=", "=>"].indexOf(word) >= 0;
 
     case 3:
-      return ["!==", "===", ">>=", "-->>", "<<="].indexOf(word) >= 0;
+      return ["!==", "===", ">>=", "-->>", "<<=", "..."].indexOf(word) >= 0;
 
     case 4:
       return word === "-->>=";
@@ -211,7 +240,7 @@ function isKeyword(word) {
         case "new":
         case "var":
         case "try":
-        case "get":
+        case "let":
           return true;
       }
       return false;
@@ -238,6 +267,7 @@ function isKeyword(word) {
         case "const":
         case "super":
         case "throw":
+        case "await":
           return true;
       }
       return false;
@@ -380,7 +410,7 @@ l.lexRegExp = function() {
   let word = "";
   let slashes = 1;
   let validator = c => {
-    let last = word.substr(-1);
+    let last = word.substring(word.length - 1);
     if(c == "/") {
       slashes++;
     } else if(slashes == 2) {
@@ -415,7 +445,7 @@ l.lexPunctuator = function() {
     // Keep accumulating punctuator chars, and as soon as the accumulated
     // word isn't a valid punctuator, we stop and backup to take the
     // longest valid punctuator before continuing.
-    if(!isPunctuator(word)) {
+    if(word != ".." && !isPunctuator(word)) {
       this.backup();
       this.addToken(tokenTypes.punctuator);
       return this.lexText;
@@ -486,7 +516,7 @@ l.lexSingleLineComment = function() {
 l.lexMultiLineComment = function() {
   do {
     // Multi-line comment is terminated if we see * followed by /
-    const nextTwo = this.source.substr(this.pos, 2);
+    const nextTwo = this.source.substring(this.pos, this.pos + 2);
     if(nextTwo === "*/") {
       this.pos += 2;
       this.ignore();
@@ -500,7 +530,7 @@ l.lexMultiLineComment = function() {
 l.lexText = function() {
   do {
     // Examine the next 2 characters to see if we're encountering code comments
-    const nextTwo = this.source.substr(this.pos, 2);
+    const nextTwo = this.source.substring(this.pos, this.pos + 2);
     if(nextTwo === "//") {
       this.pos += 2;
       return this.lexSingleLineComment;
