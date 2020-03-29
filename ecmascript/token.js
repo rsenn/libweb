@@ -1,9 +1,7 @@
-"use strict";
-
 /*
  * Token Definitions
  */
-class Token {
+export class Token {
   constructor(type, value, from, to, pos) {
     const token = this;
     this.type = type;
@@ -23,7 +21,7 @@ class Token {
   }
 }
 
-const tokenTypes = {
+export const tokenTypes = {
   comment: "comment",
   stringLiteral: "stringLiteral",
   numericLiteral: "numericLiteral",
@@ -35,6 +33,4 @@ const tokenTypes = {
   regexpLiteral: "regexpLiteral",
   eof: "eof"
 };
-
-exports.Token = Token;
-exports.tokenTypes = tokenTypes;
+export default Token;

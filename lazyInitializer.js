@@ -40,4 +40,23 @@ export function lazyInitializer(fn, opts = {}) {
   return ret;
 }
 
+export function lazyMembers(obj, members) {
+  let initializers = {};
+
+  for(let name in members) {
+    initializers[name] = lazyInitializer(members[name]);
+
+    Object.defineProperty(obj, name, {
+      get: function() {
+        return initializers[name]();
+      },
+      set: function(value) {
+        initializers[name](value);
+        return initializers[name]();
+      },
+      enumerable: true
+    });
+  }
+}
+
 export function valueInitializer(createFunction, onInit) {}

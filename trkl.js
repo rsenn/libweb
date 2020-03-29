@@ -129,6 +129,12 @@ trkl.bind = function(object, name, handler) {
   return self;
 };
 
+trkl.object = function(handlers, ret = {}) {
+  for(let prop in handlers) trkl.bind(ret, prop, handlers[prop]);
+
+  return ret;
+};
+
 function detectCircularity(token) {
   if(computedTracker.indexOf(token) !== -1) {
     throw Error("Circular computation detected");

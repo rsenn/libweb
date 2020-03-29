@@ -39,6 +39,9 @@ export function Line(x1, y1, x2, y2) {
 }
 
 export const isLine = obj => ["x1", "y1", "x2", "y2"].every(prop => obj[prop] !== undefined);
+/*
+Object.defineProperty(Line.prototype, "a", { value: new Point(), enumerable: false });
+Object.defineProperty(Line.prototype, "b", { value: new Point(), enumerable: true });*/
 
 Line.prototype.intersect = function(other) {
   const ma = (this[0].y - this[1].y) / (this[0].x - this[1].x);
@@ -49,45 +52,65 @@ Line.prototype.intersect = function(other) {
     y: (ma * mb * (other[0].x - this[0].x) + mb * this[0].y - ma * other[0].y) / (mb - ma)
   });
 };
+Object.defineProperty(Line.prototype, 0, {
+  get: function() {
+    return this.a;
+  },
+  set: function(v) {
+    this.a.x = v.x;
+    this.a.y = v.y;
+  },
+  enumerable: false
+});
+Object.defineProperty(Line.prototype, 1, {
+  get: function() {
+    return this.b;
+  },
+  set: function(v) {
+    this.b.x = v.x;
+    this.b.y = v.y;
+  },
+  enumerable: false
+});
 Object.defineProperty(Line.prototype, "x1", {
   get: function() {
     return this.a && this.a.x;
   },
   set: function(v) {
-    if(!this.a) this.a = new Point();
+    if(!this.a) Object.defineProperty(this, "a", { value: new Point(), enumerable: false });
     this.a.x = v;
   },
-  enumerable: true
+  enumerable: false
 });
 Object.defineProperty(Line.prototype, "y1", {
   get: function() {
     return this.a && this.a.y;
   },
   set: function(v) {
-    if(!this.a) this.a = new Point();
+    if(!this.a) Object.defineProperty(this, "a", { value: new Point(), enumerable: false });
     this.a.y = v;
   },
-  enumerable: true
+  enumerable: false
 });
 Object.defineProperty(Line.prototype, "x2", {
   get: function() {
     return this.b && this.b.x;
   },
   set: function(v) {
-    if(!this.b) this.b = new Point();
+    if(!this.b) Object.defineProperty(this, "b", { value: new Point(), enumerable: false });
     this.b.x = v;
   },
-  enumerable: true
+  enumerable: false
 });
 Object.defineProperty(Line.prototype, "y2", {
   get: function() {
     return this.b && this.b.y;
   },
   set: function(v) {
-    if(!this.b) this.b = new Point();
+    if(!this.b) Object.defineProperty(this, "b", { value: new Point(), enumerable: false });
     this.b.y = v;
   },
-  enumerable: true
+  enumerable: false
 });
 Line.prototype.direction = function() {
   var dist = Point.prototype.distance.call(this.a, this.b);
