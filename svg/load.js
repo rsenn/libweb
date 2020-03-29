@@ -3,7 +3,7 @@
  * https://blobfolio.com/2018/06/lazy-loading-sprites-inline/
  */
 
-import axios from "./axios.js";
+import Util from "../util.js";
 
 /**
  * Process SVGs onLoad
@@ -25,11 +25,20 @@ export function loadSVGs() {
 }
 
 const CacheSVG = new (class CacheProxy {
-  instance = "window" in global && "caches" in window ? caches.open("svg") : null;
+  constructor(globalObj) {
+    this.setInstance(globalObj);
+  }
+
+  async setInstance(globalObj) {
+    if(globalObj) this.instance = "window" in globalObj && window.caches !== undefined ? await caches.open("svg") : null;
+  }
 
   async get(url) {
-    if(this.instace !== null) {
-      const match = await (await this.instance).match(url);
+    if(this.instance == null)
+      this.setInstance(Util.getGlobalObject());
+
+    if(this.instance !== null) {
+      const match = await this.instance.match(url);
       if(match && match.ok) {
         console.log("CacheSVG hit ", { url, match });
         return match.text();
@@ -37,12 +46,15 @@ const CacheSVG = new (class CacheProxy {
     }
     return null;
   }
-  put(url, data) {
-    if(this.instace !== null) {
-      this.instance.then(cache => cache.put(url, new Response(data, { headers: { "Content-Type": "image/svg+xml" } })));
-    }
+  async put(url, data) {
+    if(this.instance == null)
+      await this.setInstance(Util.getGlobalObject());
+
+    if(this.instance !== null)
+      await this.instance.put(url, new Response(data, { headers: { "Content-Type": "image/svg+xml" } }));
+
   }
-})();
+})(Util.getGlobalObject());
 
 /**
  * Fetch an SVG
@@ -56,7 +68,10 @@ export async function inlineSVG(url, el) {
 
   if(!data) {
     console.log(`fetchSVG(${url})`);
-    data = await axios.get(url).then(response => response.data);
+    data = await fetch(url).then(async res => {
+      return await (await res).text();
+    });
+    // data = await axios.get(url).then(response => response.data);
     CacheSVG.put(url, data);
   }
 

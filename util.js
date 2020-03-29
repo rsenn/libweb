@@ -64,10 +64,26 @@ const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", 
  *
  * @class      Util (name)
  */
-function Util() {}
+function Util(g) {
+  if(g)
+    Util.globalObject = g;
+
+}
 
 export { Util as default, Util };
 
+Util.getGlobalObject = function() {
+  let ret = this.globalObject;
+  try {
+    if(!ret)
+    ret = global;
+
+    if(!ret)
+      ret = globalThis;
+  } catch(err) {
+  }
+  return ret;
+};
 Util.isDebug = function() {
   if(process !== undefined && process.env.NODE_ENV === "production") return false;
   return true;

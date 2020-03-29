@@ -107,8 +107,8 @@ export class Element extends Node {
     return s;
   }
 
-  static find(arg, parent) {
-    if(!parent && global.window) parent = window.document;
+  static find(arg, parent, globalObj = Util.getGlobalObject()) {
+    if(!parent && globalObj.document) parent = globalObj.document;
 
     return typeof arg === "string" ? parent.querySelector(arg) : arg;
   }
