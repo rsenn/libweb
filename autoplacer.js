@@ -5,7 +5,7 @@ var vinc  = m2d.dec;
 var vmul  = m2d.mul;
 var vlen = m2d.len;
 var vsetlen = m2d.setlen;
-	
+
 var vset = function(a, b) {
 	a[0] = b[0];
 	a[1] = b[1];
@@ -37,7 +37,7 @@ var rectoverlap = function(a, b) {
  * 
  */
 export var Autoplacer = function(opts) {
-  if (opts) {
+  if(opts) {
 	  this.init(opts);
 	}
 };
@@ -48,7 +48,7 @@ Autoplacer.prototype.init = function(opts) {
 	var b = this.bodies_ = opts.bodies.slice(0), i, len = b.length,
 		s = this.states_ = [], p, r;
 		
-	for(i = 0; i < len; i++ ) { 
+ for(i = 0; i < len; i++ ) { 
 		r = b[i] = b[i].slice(0);
 		p = rectmid(b[i]);
 		s[i] = {
@@ -78,7 +78,7 @@ Autoplacer.prototype.init = function(opts) {
  * 
  */
 Autoplacer.prototype.next = function() {
-	if (this.count_ > 0 && !this.cond()) {
+ if(this.count_ > 0 && !this.cond()) {
 		return null;
 	}
 	this.count_++;
@@ -93,7 +93,7 @@ Autoplacer.prototype.next = function() {
 		step = this.step_, damp = this.damp_;
 		vzero = [0,0], f = [], d = [];
 	
-	for (i = 0; i < total; i++ ) {
+ for(i = 0; i < total; i++ ) {
 		b = bb[i]; s = ss[i]; vel = s.vel;
 		pos = s.pos; // pos is variable, current poisition
 		fix = s.fix; // fix is an initial (constant) position
@@ -105,8 +105,8 @@ Autoplacer.prototype.next = function() {
 		
 		// repulsion force calculation
 		
-		for(j = 0; j < total; j++) {
-		  if (i === j) continue;
+	 for(j = 0; j < total; j++) {
+		  if(i === j) continue;
 		  bj  = bb[j]; sj = ss[j]; 
 		  rj[0] = sj.prev[0]; rj[1] = sj.prev[1]; rj[2] = bj[2]; rj[3] = rj[3];
 		  vsetlen(vdec(vset(d, pos), sj.prev), 
@@ -157,7 +157,7 @@ Autoplacer.prototype.animate = function(animator, interval) {
   recur = function() {
     me.next();
     animator(me.bodies);
-    if (me.cond()) {
+    if(me.cond()) {
       setTimeout(recur, interval);
     }
   }

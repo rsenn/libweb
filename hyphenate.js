@@ -501,7 +501,7 @@ const main = function() {
   console.log(resp);
 };
 
-if(require.main === module) {
+if (require.main === module) {
   main();
 }
 
