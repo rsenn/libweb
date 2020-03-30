@@ -1,4 +1,4 @@
-import { Rect } from './rect.js';
+import { Rect } from "./rect.js";
 
 export class BBox {
   static fromPoints(pts) {
@@ -88,10 +88,10 @@ export class BBox {
     this.y2 = this.y1 + h;
   }
   get rect() {
-    return new Rect(this.x1, this.y1,  this.x2 - this.x1, this.y2 - this.y1);
+    return new Rect(this.x1, this.y1, this.x2 - this.x1, this.y2 - this.y1);
   }
   toString() {
-    return `${this.x1} ${this.y1} ${this.x2-this.x1} ${this.y2-this.y1}`;
+    return `${this.x1} ${this.y1} ${this.x2 - this.x1} ${this.y2 - this.y1}`;
   }
   transform(fn = arg => arg, out) {
     if(!out) out = this;
