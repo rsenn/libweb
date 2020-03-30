@@ -180,8 +180,8 @@ trkl.bind = function(object, name, handler) {
   return self;
 };
 
-trkl.object = function (handlers, ret = {}) {
-  for (let prop in handlers) trkl.bind(ret, prop, handlers[prop]);
+trkl.object = function(handlers, ret = {}) {
+  for(let prop in handlers) trkl.bind(ret, prop, handlers[prop]);
 
   return ret;
 };

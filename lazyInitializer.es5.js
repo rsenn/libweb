@@ -56,7 +56,7 @@ function lazyInitializer(fn, opts = {}) {
 function lazyMembers(obj, members) {
   let initializers = {};
 
-  for (let name in members) {
+  for(let name in members) {
     initializers[name] = lazyInitializer(members[name]);
     Object.defineProperty(obj, name, {
       get: function get() {

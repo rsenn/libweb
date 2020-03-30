@@ -436,7 +436,7 @@ export default class devpane {
       const value = t.options[key];
       if(t.inputs.en) t.inputs.en.value = value;
     };
-    t.chooser = <Select name='en_translations' options={options} onChange={t.handleChange} />;
+    t.chooser = <Select name="en_translations" options={options} onChange={t.handleChange} />;
     t.layer = this.createLayer({ id: "devpane-layer" });
     t.factory = Element.factory({ append_to: e => t.layer.appendChild(e) });
     t.renderer = new Renderer(t.chooser, t.factory("div"));
@@ -687,8 +687,8 @@ export default class devpane {
   render() {
     const { rect, fontSize } = this;
     return (
-      <form action='none' onSubmit={e => e.preventDefault()}>
-        <input type='checkbox' onChange={this.handleToggle} />
+      <form action="none" onSubmit={e => e.preventDefault()}>
+        <input type="checkbox" onChange={this.handleToggle} />
         Bounding boxes
         <br />
         <pre id={"bbox"}>{[`x: ${rect.x || 0}`, `y: ${rect.y || 0}`, `width: ${rect.w || 0}`, `height: ${rect.h || 0}`, `font-size: ${fontSize || 0}`].join(",\n")}</pre>
