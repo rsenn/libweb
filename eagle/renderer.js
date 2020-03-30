@@ -108,7 +108,7 @@ export function renderSchematic(obj, factory) {
     if(["x", "y", "x1", "y1", "x2", "y2", "width", "size"].indexOf(k) != -1) {
       o[k] = v / 2.54;
 
-      if(k !== "width" && k !== "size") o[k] = Util.roundTo(o[k], 0.001);
+     /* if(k !== "width" && k !== "size")*/ o[k] = Util.roundTo(o[k], 0.001);
 
       if(k[0] == "y") o[k] = -o[k];
     }
