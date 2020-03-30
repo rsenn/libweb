@@ -528,7 +528,7 @@ export { Node, AST, Env, JSGenerator, MoonScriptGenerator, Token, Lexer, Parser,
 export { eagle, eagleProps };
 
 export const instances = {};
-for (let c in eagleProps.classes) {
+for(let c in eagleProps.classes) {
   const name = c;
   console.log("name: ", c);
   const ctor = eagleProps.classes[c];

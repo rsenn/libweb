@@ -1,4 +1,5 @@
-import parser from "../json/xml2json.js";
+import parser, { xml2json } from "../json/xml2json.js";
+import Util from "../util.js";
 
 const pinThickness = 0.1524;
 
@@ -103,23 +104,25 @@ function getSymbolName(symbols, part, instance, devicesets) {
   var symbol = null;
 
   if(Array.isArray(devicesets)) {
-    deviceset = devicesets.find(x => x.name === part.deviceset);
+    deviceset = devicesets.find(x => x.name === part.deviceset).deviceset;
   } else if(devicesets.name === part.deviceset) {
-    deviceset = devicesets;
+    deviceset = devicesets.deviceset;
   }
 
-  if(Array.isArray(deviceset.gates.gate)) {
-    gate = deviceset.gates.gate.find(x => x.name === instance.gate);
-  } else if(deviceset.gates.gate.name === instance.gate) {
-    gate = deviceset.gates.gate;
+  //console.log("deviceset", deviceset);
+
+  if(Array.isArray(deviceset.gates)) {
+    gate = deviceset.gates.find(x => x.name === instance.gate);
+  } else if(deviceset.gates && deviceset.gates.name === instance.gate) {
+    gate = deviceset.gates;
   }
 
-  if(deviceset == null) return null;
-  if(gate == null) return null;
+  if(deviceset == null) throw new Error("No deviceset " + part.deviceset);
+  if(gate == null) throw new Error("No gate " + instance.gate);
 
   if(Array.isArray(symbols)) {
     symbol = symbols.find(x => x.name === gate.symbol);
-
+    //console.log("SYMBOL:", symbol);
     if(symbol != null) return symbol.name;
   }
 
@@ -134,29 +137,39 @@ function schematicGetParts(schematic, sheet) {
   if(schematic == null) return null;
   if(sheet == null) return null;
 
-  var libraries = schematic.libraries.library;
-  var parts = schematic.parts.part;
-  var instances = sheet.instances.instance;
+  var libraries = schematic.libraries;
+  var parts = schematic.parts;
+  var instances = sheet.instances;
 
   var schematicParts = [];
 
   instances.forEach(function(instance) {
     if(instance == null) return;
 
+    //console.log("instance:", instance);
+
     var part = parts.find(x => x.name === instance.part);
-    if(part == null) return;
+
+    if(part == null) throw new Error("No part", instance.part);
 
     var library = libraries.find(x => x.name === part.library);
-    if(library == null) return;
 
-    var devicesets = library.devicesets.deviceset;
-    if(devicesets == null) return;
+    if(library == null) throw new Error("No library", part.library);
 
-    var symbols = library.symbols.symbol;
-    if(symbols == null) return;
+    var devicesets = library.library.devicesets;
+
+    if(devicesets == null) throw new Error("No devicesets", library.library.devicesets);
+
+    var symbols = library.library.symbols;
+
+    //console.log("symbols:", symbols);
+
+    if(symbols == null) throw new Error("No symbols", library.library.symbols);
 
     var symbolName = getSymbolName(symbols, part, instance, devicesets);
-    if(symbolName == null) return;
+    //console.log("symbolName:", symbolName);
+
+    if(symbolName == null) throw new Error("No symbolName" + JSON.stringify({ devicesets }));
 
     var value = part.value != null ? part.value : part.deviceset + part.device;
 
@@ -180,18 +193,20 @@ function schematicGetSymbols(parts, libraries) {
   var symbols = [];
 
   parts.forEach(function(part) {
-    var library = libraries.find(x => x.name === part.library);
+    var library = libraries.find(x => x.name === part.library).library;
     if(library == null) return;
 
     var symbol;
 
-    if(Array.isArray(library.symbols.symbol)) {
-      symbol = library.symbols.symbol.find(x => x.name === part.symbol);
+    if(Array.isArray(library.symbols)) {
+      symbol = library.symbols.find(x => x.name === part.symbol);
       if(symbol == null) return;
     } else {
-      symbol = library.symbols.symbol;
+      symbol = library.symbols;
       if(symbol == null || symbol.name !== part.symbol) return;
     }
+
+    //console.log("symbol:", symbol);
 
     if(symbols.indexOf(symbol) === -1) symbols.push(symbol);
   });
@@ -200,7 +215,8 @@ function schematicGetSymbols(parts, libraries) {
 }
 
 export function parseSchematic(data, callback) {
-  var raw = parser.toJson(data, { object: true });
+  var raw = JSON.parse(xml2json(data));
+  //console.log("raw:", raw);
 
   if(raw == null || raw.eagle === raw) {
     callback("Error: Failed to parse schematic");
@@ -210,32 +226,50 @@ export function parseSchematic(data, callback) {
   var sheet;
 
   // TODO: Add multi-sheet support
-  if(Array.isArray(raw.eagle.drawing.schematic.sheets.sheet)) {
-    sheet = raw.eagle.drawing.schematic.sheets.sheet[0];
+  if(Array.isArray(raw.eagle.drawing.schematic.sheets)) {
+    sheet = raw.eagle.drawing.schematic.sheets[0];
   } else {
     sheet = raw.eagle.drawing.schematic.sheets.sheet;
   }
 
-  var layers = schematicGetLayers(raw.eagle.drawing.layers.layer);
+  var layers = schematicGetLayers(raw.eagle.drawing.layers);
 
   if(layers == null || layers.length < 1) {
     callback("Error: Failed to parse schematic layers");
     return;
   }
+  //console.log("sheet:", sheet);
 
   var parts = schematicGetParts(raw.eagle.drawing.schematic, sheet);
+  //console.log("raw.eagle.drawing.schematic.sheets.sheet.nets:", raw.eagle.drawing.schematic.sheets.sheet.nets);
 
   if(parts == null || parts.length < 1) {
     callback("Error: Failed to parse schematic parts");
     return;
   }
 
-  var symbols = schematicGetSymbols(parts, raw.eagle.drawing.schematic.libraries.library);
+  var symbols = schematicGetSymbols(parts, raw.eagle.drawing.schematic.libraries);
 
   if(symbols == null || symbols.length < 1) {
     callback("Error: Failed to parse schematic symbols");
     return;
   }
 
-  setTimeout(callback(null, { layers: layers, parts: parts, symbols: symbols }), 50);
+  let nets = raw.eagle.drawing.schematic.sheets.sheet.nets;
+  let obj = { layers: layers, parts: parts, symbols: symbols, nets };
+
+  for(let [v, k, o] of Util.traverse(obj)) {
+    let num = parseFloat(v);
+    if(!isNaN(num) && k != "gate") o[k] = num;
+    else if(typeof v == "string") o[k] = Util.decodeHTMLEntities(v);
+
+    if((v === null || k == "text") && o.type === undefined) {
+      o.type = k;
+      if(v === null) delete o[k];
+    }
+  }
+
+  //console.log("raw.eagle:", raw.eagle);
+
+  setTimeout(callback(raw.eagle, obj), 50);
 }

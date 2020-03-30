@@ -610,7 +610,7 @@ export const Behave = function(userOpts) {
   init(userOpts);
 };
 
-if (typeof module !== "undefined" && module.exports) {
+if(typeof module !== "undefined" && module.exports) {
   module.exports = { Behave, BehaveHooks };
 }
 

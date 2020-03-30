@@ -34,8 +34,7 @@ const CacheSVG = new (class CacheProxy {
   }
 
   async get(url) {
-    if(this.instance == null)
-      this.setInstance(Util.getGlobalObject());
+    if(this.instance == null) this.setInstance(Util.getGlobalObject());
 
     if(this.instance !== null) {
       const match = await this.instance.match(url);
@@ -47,12 +46,9 @@ const CacheSVG = new (class CacheProxy {
     return null;
   }
   async put(url, data) {
-    if(this.instance == null)
-      await this.setInstance(Util.getGlobalObject());
+    if(this.instance == null) await this.setInstance(Util.getGlobalObject());
 
-    if(this.instance !== null)
-      await this.instance.put(url, new Response(data, { headers: { "Content-Type": "image/svg+xml" } }));
-
+    if(this.instance !== null) await this.instance.put(url, new Response(data, { headers: { "Content-Type": "image/svg+xml" } }));
   }
 })(Util.getGlobalObject());
 

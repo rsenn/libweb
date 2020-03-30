@@ -122,7 +122,6 @@ for(let name of ["null", "isNaN", "outset", "toRect", "toSource"]) {
   TRBL[name] = points => TRBL.prototype[name].call(points);
 }
 
-
 export function isTRBL(obj) {
-  return (top in obj && right in obj && bottom in obj && left in obj);
+  return top in obj && right in obj && bottom in obj && left in obj;
 }

@@ -40,7 +40,7 @@ function xml2json_translator() {
 
         if(xml.attributes.length)
           // element with attributes  ..
-          for(var i = 0; i < xml.attributes.length; i++) parent[xml.nodeName + "@" + xml.attributes[i].nodeName] = xml.attributes[i].nodeValue;
+          for(var i = 0; i < xml.attributes.length; i++) parent[/*xml.nodeName + "@" +*/ xml.attributes[i].nodeName] = xml.attributes[i].nodeValue;
 
         if(xml.firstChild) {
           // element has child nodes. Figure out some properties of it's structure, to guide us later.
@@ -58,6 +58,7 @@ function xml2json_translator() {
             // non-whitespace text
             else if(n.nodeType == 4) cdataChild++; // cdata section node
           }
+          //     if(hasElementChild) needsArray = true;
           if(hasElementChild && textChild) needsArray = true;
           if(hasElementChild && cdataChild) needsArray = true;
           if(textChild && cdataChild) needsArray = true;
@@ -208,7 +209,7 @@ function xml2json_translator() {
   return X;
 }
 
-function xml2json(xml, tab) {
+export function xml2json(xml, tab) {
   var X = xml2json_translator();
   if(xml.nodeType == 9)
     // document node
@@ -219,7 +220,4 @@ function xml2json(xml, tab) {
   return tab ? json.replace(/\t/g, tab) : json.replace(/\t|\n/g, "");
 }
 
-// node.js
-if(typeof module != "undefined") {
-  module.exports = xml2json_translator();
-}
+export default xml2json_translator();
