@@ -609,6 +609,7 @@ export class Element extends Node {
       let obj = this && this.create ? this : delegate;
       return obj.bound_factory.apply(obj, arguments);
     };*/
+    delegate.bound_factory.delegate = delegate;
     return delegate.bound_factory; //.bind(delegate);
   }
 
