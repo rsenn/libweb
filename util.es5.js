@@ -127,7 +127,20 @@ const formatAnnotatedObject = function formatAnnotatedObject(subject, {
   return ret;
 };
 
-function Util() {}
+function Util(g) {
+  if (g) Util.globalObject = g;
+}
+
+Util.getGlobalObject = function () {
+  let ret = this.globalObject;
+
+  try {
+    if (!ret) ret = global;
+    if (!ret) ret = globalThis;
+  } catch (err) {}
+
+  return ret;
+};
 
 Util.isDebug = function () {
   if (process !== undefined && process.env.NODE_ENV === "production") return false;
@@ -2809,4 +2822,22 @@ Util.splitLines = function (str, max_linelen = Number.MAX_SAFE_INTEGER) {
 
   if (line != "") lines.push(line);
   return lines;
+};
+
+Util.decodeHTMLEntities = function (text) {
+  var entities = {
+    amp: "&",
+    apos: "'",
+    "#x27": "'",
+    "#x2F": "/",
+    "#39": "'",
+    "#47": "/",
+    lt: "<",
+    gt: ">",
+    nbsp: " ",
+    quot: '"'
+  };
+  return text.replace(/&([^;]+);/gm, function (match, entity) {
+    return entities[entity] || match;
+  });
 };

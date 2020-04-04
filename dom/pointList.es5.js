@@ -82,6 +82,8 @@ PointList.prototype.splice = function () {
   return Array.prototype.splice.apply(this, [start, remove, ...args.map(arg => arg instanceof _point.Point ? arg : new _point.Point(arg))]);
 };
 
+PointList.prototype.slice = Array.prototype.slice;
+
 PointList.prototype.removeSegment = function (index) {
   let indexes = [PointList.prototype.getLineIndex.call(this, index - 1), PointList.prototype.getLineIndex.call(this, index), PointList.prototype.getLineIndex.call(this, index + 1)];
   let lines = indexes.map(i => PointList.prototype.getLine.call(this, i));

@@ -40,7 +40,7 @@ const httpClient = (() => {
   return ret;
 })();
 
-if(global.window) window.axios = httpClient;
+if (global.window) window.axios = httpClient;
 
 export default httpClient;
 export { httpClient as axios };

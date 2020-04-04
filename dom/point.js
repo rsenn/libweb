@@ -211,7 +211,7 @@ Point.equal = (a, b) => {
 Point.round = (point, prec) => Point.prototype.round.call(point, prec);
 Point.fromAngle = (angle, f) => Point.prototype.fromAngle.call(new Point(0, 0), angle, f);
 
-for(let name of ["clone", "comp", "neg", "sides", "dimension", "toString", "toSource", "toCSS"]) {
+for (let name of ["clone", "comp", "neg", "sides", "dimension", "toString", "toSource", "toCSS"]) {
   Point[name] = (...args) => Point.prototype[name].call(...args);
 }
 

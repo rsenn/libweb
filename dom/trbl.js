@@ -9,7 +9,7 @@ export function TRBL(arg) {
   let ret = this instanceof TRBL ? this : {};
   let args = [...arguments];
 
-  if(typeof arg === "object") {
+  if(typeof arg === "object" && !arg instanceof Array) {
     Object.keys(arg).forEach(k => {
       const matches = /(top|right|bottom|left)/i.exec(k);
       ret[matches[0].toLowerCase()] = parseInt(arg[k]);
@@ -93,6 +93,14 @@ TRBL.prototype.toRect = function() {
     height: this.bottom - this.top
   });
 };
+TRBL.prototype.toRect = function() {
+  return new Rect({
+    x: this.left,
+    y: this.top,
+    width: this.right - this.left,
+    height: this.bottom - this.top
+  });
+};
 
 TRBL.union = (trbl, other) => ({
   top: other.top < trbl.top ? other.top : trbl.top,
@@ -110,6 +118,10 @@ TRBL.prototype.toSource = function() {
   return "{top:" + this.top + ",right:" + this.right + ",bottom:" + this.bottom + ",left:" + this.left + "}";
 };
 
-for(let name of ["null", "isNaN", "outset", "toRect", "toSource"]) {
+for (let name of ["null", "isNaN", "outset", "toRect", "toSource"]) {
   TRBL[name] = points => TRBL.prototype[name].call(points);
+}
+
+export function isTRBL(obj) {
+  return top in obj && right in obj && bottom in obj && left in obj;
 }

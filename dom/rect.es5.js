@@ -90,8 +90,10 @@ function Rect(arg) {
     obj.height = typeof h === "number" ? h : parseFloat(h);
     ret = 4;
   } else if (arg && arg.length >= 2 && arg.slice(0, 2).every(arg => !isNaN(parseFloat(arg)))) {
-    obj.width = typeof x === "number" ? x : parseFloat(x);
-    obj.height = typeof y === "number" ? y : parseFloat(y);
+    obj.x = 0;
+    obj.y = 0;
+    obj.width = typeof arg[0] === "number" ? arg[0] : parseFloat(arg[0]);
+    obj.height = typeof arg[1] === "number" ? arg[1] : parseFloat(arg[1]);
     ret = 2;
   } else if (arg instanceof Array) {
     let argc;

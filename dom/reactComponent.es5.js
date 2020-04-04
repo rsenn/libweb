@@ -17,8 +17,6 @@ require("core-js/modules/es6.object.to-string");
 
 require("core-js/modules/es6.regexp.replace");
 
-var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends"));
-
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
 var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
@@ -29,7 +27,6 @@ var _element = require("./element.es5.js");
 
 var _util = _interopRequireDefault(require("../util.es5.js"));
 
-var _jsxFileName = "/home/roman/the-wild-beauty-company/lib/dom/reactComponent.js";
 var __jsx = _react.default.createElement;
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -57,13 +54,7 @@ class ReactComponent {
     if (!children) children = args.shift();
     if (!Array.isArray(children)) children = [children];
 
-    const elem = __jsx(Tag, (0, _extends2.default)({}, restOfProps, {
-      __source: {
-        fileName: _jsxFileName,
-        lineNumber: 21
-      },
-      __self: this
-    }), children.map((child, key) => {
+    const elem = __jsx(Tag, restOfProps, children.map((child, key) => {
       if (typeof child === "object" && child.tagName !== undefined) {
         const tagName = child.tagName,
               props = (0, _objectWithoutProperties2.default)(child, ["tagName"]);

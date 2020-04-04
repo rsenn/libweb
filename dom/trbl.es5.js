@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.TRBL = TRBL;
+exports.isTRBL = isTRBL;
 
 require("core-js/modules/es6.regexp.to-string");
 
@@ -17,7 +18,7 @@ function TRBL(arg) {
   let ret = this instanceof TRBL ? this : {};
   let args = [...arguments];
 
-  if (typeof arg === "object") {
+  if (typeof arg === "object" && !arg instanceof Array) {
     Object.keys(arg).forEach(k => {
       const matches = /(top|right|bottom|left)/i.exec(k);
       ret[matches[0].toLowerCase()] = parseInt(arg[k]);
@@ -91,6 +92,15 @@ TRBL.prototype.toRect = function () {
   });
 };
 
+TRBL.prototype.toRect = function () {
+  return new _rect.Rect({
+    x: this.left,
+    y: this.top,
+    width: this.right - this.left,
+    height: this.bottom - this.top
+  });
+};
+
 TRBL.union = (trbl, other) => ({
   top: other.top < trbl.top ? other.top : trbl.top,
   right: other.right > trbl.right ? other.right : trbl.right,
@@ -112,4 +122,8 @@ for (var _i = 0, _arr = ["null", "isNaN", "outset", "toRect", "toSource"]; _i < 
   let name = _arr[_i];
 
   TRBL[name] = points => TRBL.prototype[name].call(points);
+}
+
+function isTRBL(obj) {
+  return top in obj && right in obj && bottom in obj && left in obj;
 }

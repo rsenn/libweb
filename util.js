@@ -64,10 +64,21 @@ const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", 
  *
  * @class      Util (name)
  */
-function Util() {}
+function Util(g) {
+  if(g) Util.globalObject = g;
+}
 
 export { Util as default, Util };
 
+Util.getGlobalObject = function() {
+  let ret = this.globalObject;
+  try {
+    if(!ret) ret = global;
+
+    if(!ret) ret = globalThis;
+  } catch(err) {}
+  return ret;
+};
 Util.isDebug = function() {
   if(process !== undefined && process.env.NODE_ENV === "production") return false;
   return true;
@@ -1564,7 +1575,7 @@ Util.isPromise = function(obj) {
   return (Boolean(obj) && typeof obj.then === "function") || obj instanceof Promise;
 };
 /* eslint-disable no-use-before-define */
-if(typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
+if (typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
 Util.next = function(iter, observer, prev = undefined) {
   let item;
   try {
@@ -1708,4 +1719,22 @@ Util.splitLines = function(str, max_linelen = Number.MAX_SAFE_INTEGER) {
   }
   if(line != "") lines.push(line);
   return lines;
+};
+
+Util.decodeHTMLEntities = function(text) {
+  var entities = {
+    amp: "&",
+    apos: "'",
+    "#x27": "'",
+    "#x2F": "/",
+    "#39": "'",
+    "#47": "/",
+    lt: "<",
+    gt: ">",
+    nbsp: " ",
+    quot: '"'
+  };
+  return text.replace(/&([^;]+);/gm, function(match, entity) {
+    return entities[entity] || match;
+  });
 };

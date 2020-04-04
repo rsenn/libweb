@@ -107,8 +107,8 @@ export class Element extends Node {
     return s;
   }
 
-  static find(arg, parent) {
-    if(!parent && global.window) parent = window.document;
+  static find(arg, parent, globalObj = Util.getGlobalObject()) {
+    if(!parent && globalObj.document) parent = globalObj.document;
 
     return typeof arg === "string" ? parent.querySelector(arg) : arg;
   }
@@ -609,6 +609,7 @@ export class Element extends Node {
       let obj = this && this.create ? this : delegate;
       return obj.bound_factory.apply(obj, arguments);
     };*/
+    delegate.bound_factory.delegate = delegate;
     return delegate.bound_factory; //.bind(delegate);
   }
 

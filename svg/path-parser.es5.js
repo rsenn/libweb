@@ -1,5 +1,10 @@
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.makeAbsolute = exports.parseSVG = exports.parse = exports.SyntaxError = void 0;
+
 require("core-js/modules/es6.array.sort");
 
 require("core-js/modules/es6.regexp.replace");
@@ -2400,43 +2405,47 @@ function peg$parse(input, options) {
   }
 }
 
-module.exports = {
-  SyntaxError: peg$SyntaxError,
-  parse: peg$parse,
-  parseSVG: peg$parse,
-  makeAbsolute: function makeSVGPathCommandsAbsolute(commands) {
-    var subpathStart,
-        prevCmd = {
-      x: 0,
-      y: 0
-    };
-    var attr = {
-      x: "x0",
-      y: "y0",
-      x1: "x0",
-      y1: "y0",
-      x2: "x0",
-      y2: "y0"
-    };
-    commands.forEach(function (cmd) {
-      if (cmd.command === "moveto") subpathStart = cmd;
-      cmd.x0 = prevCmd.x;
-      cmd.y0 = prevCmd.y;
+const SyntaxError = peg$SyntaxError;
+exports.SyntaxError = SyntaxError;
+const parse = peg$parse;
+exports.parse = parse;
+const parseSVG = peg$parse;
+exports.parseSVG = parseSVG;
 
-      for (var a in attr) if (a in cmd) cmd[a] += cmd.relative ? cmd[attr[a]] : 0;
+const makeAbsolute = function makeSVGPathCommandsAbsolute(commands) {
+  var subpathStart,
+      prevCmd = {
+    x: 0,
+    y: 0
+  };
+  var attr = {
+    x: "x0",
+    y: "y0",
+    x1: "x0",
+    y1: "y0",
+    x2: "x0",
+    y2: "y0"
+  };
+  commands.forEach(function (cmd) {
+    if (cmd.command === "moveto") subpathStart = cmd;
+    cmd.x0 = prevCmd.x;
+    cmd.y0 = prevCmd.y;
 
-      if (!("x" in cmd)) cmd.x = prevCmd.x;
-      if (!("y" in cmd)) cmd.y = prevCmd.y;
-      cmd.relative = false;
-      cmd.code = cmd.code.toUpperCase();
+    for (var a in attr) if (a in cmd) cmd[a] += cmd.relative ? cmd[attr[a]] : 0;
 
-      if (cmd.command == "closepath") {
-        cmd.x = subpathStart.x;
-        cmd.y = subpathStart.y;
-      }
+    if (!("x" in cmd)) cmd.x = prevCmd.x;
+    if (!("y" in cmd)) cmd.y = prevCmd.y;
+    cmd.relative = false;
+    cmd.code = cmd.code.toUpperCase();
 
-      prevCmd = cmd;
-    });
-    return commands;
-  }
+    if (cmd.command == "closepath") {
+      cmd.x = subpathStart.x;
+      cmd.y = subpathStart.y;
+    }
+
+    prevCmd = cmd;
+  });
+  return commands;
 };
+
+exports.makeAbsolute = makeAbsolute;

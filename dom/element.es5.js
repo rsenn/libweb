@@ -170,8 +170,8 @@ class Element extends _node.Node {
     return s;
   }
 
-  static find(arg, parent) {
-    if (!parent && global.window) parent = window.document;
+  static find(arg, parent, globalObj = _util.default.getGlobalObject()) {
+    if (!parent && globalObj.document) parent = globalObj.document;
     return typeof arg === "string" ? parent.querySelector(arg) : arg;
   }
 
@@ -784,6 +784,7 @@ class Element extends _node.Node {
       return elem;
     };
 
+    delegate.bound_factory.delegate = delegate;
     return delegate.bound_factory;
   }
 

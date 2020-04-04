@@ -11,6 +11,8 @@ require("core-js/modules/es6.symbol");
 
 require("core-js/modules/web.dom.iterable");
 
+var _rect = require("./rect.es5.js");
+
 class BBox {
   static fromPoints(pts) {
     let pt = pts.shift();
@@ -133,16 +135,11 @@ class BBox {
   }
 
   get rect() {
-    return new Rect({
-      x: this.x1,
-      y: this.y1,
-      width: this.x2 - this.x1,
-      height: this.y2 - this.y1
-    });
+    return new _rect.Rect(this.x1, this.y1, this.x2 - this.x1, this.y2 - this.y1);
   }
 
   toString() {
-    return "[".concat(this.x1, ",").concat(this.y1, "] - [").concat(this.x2, ",").concat(this.y2, "]");
+    return "".concat(this.x1, " ").concat(this.y1, " ").concat(this.x2 - this.x1, " ").concat(this.y2 - this.y1);
   }
 
   transform(fn = arg => arg, out) {
