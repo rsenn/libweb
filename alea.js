@@ -1,6 +1,6 @@
 // From http://baagoe.com/en/RandomMusings/javascript/
 
-export function Alea() {
+function Alea() {
   const args = [...arguments];
   // Johannes Baagøe <baagoe@baagoe.com>, 2010
   var s0 = 0;
@@ -108,4 +108,4 @@ Alea.importState = function(i) {
   return random;
 };
 
-export default Alea;
+module.exports = Alea;
