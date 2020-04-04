@@ -1,4 +1,4 @@
-import { Point, isPoint, PointList, Line, Timer, Element, BBox } from "./dom.js";
+import { Point, isPoint, Size, PointList, Line, Timer, Element, BBox } from "./dom.js";
 import Util from "./util.js";
 
 /* From https://github.com/ehayon/FDGraph */
@@ -20,44 +20,52 @@ import Util from "./util.js";
  */
 
 export class Graph {
-  constructor({ origin = new Point(0, 0), prng = Math.random, gravitate_to_origin = true, spacing = 1, timestep = 150, kineticenergy = 1, damping = 0.000005, total_node_velocity = 0, onUpdateNode = node => {}, onUpdateEdge = edge => {}, onRenderGraph = graph => {} }) {
+  constructor({ origin = new Point(0, 0), size = new Size(1000, 1000), prng = Math.random, gravitate_to_origin = true, charge = 100, mass = 240, spacing = 3, timestep = 150, damping = 0.000005, onUpdateNode = node => {}, onUpdateEdge = edge => {}, onRenderGraph = graph => {} }) {
     console.log(`Graph(${origin},${gravitate_to_origin})`);
     this.nodes = [];
     this.edges = [];
-    this.config = { origin, spacing };
+    this.config = { origin, spacing, size };
     this.update = { node: onUpdateNode, edge: onUpdateEdge };
 
     this.damping = damping;
     this.timestep = timestep;
-    this.kineticenergy = kineticenergy;
-    this.total_node_velocity = total_node_velocity;
-    this.gravitate_to_origin = typeof gravitate_to_origin == "undefined" ? true : gravitate_to_origin;
+
+    this.gravitate_to_origin = typeof gravitate_to_origin == "undefined" ? false : gravitate_to_origin;
     this.done_rendering = false;
     this.prng = prng;
 
     var g = this;
     var seq = 0;
-    /*
-  this.timer = Timer.interval(5, function() {
-    if(!g.done_rendering) {
-      g.checkRedraw();
-    }
-    if(g.done_rendering) {
-      g.updateAll();
-      g.timer.stop();
-      onRenderGraph(g);
-    }
-    seq++;
-  });
-
-  }*/
   }
 
-  addNode(n, charge = 60, mass = 100) {
-    if(!(n instanceof Node)) n = new Node(n, charge, mass, this.prng);
+  animate(update = () => {}) {
+    const g = this;
+    let i = 0;
+    g.done_rendering = false;
+
+    this.timer = Timer.interval(5, function() {
+      if(!g.done_rendering) {
+        g.checkRedraw();
+      }
+      if(g.done_rendering) {
+        g.updateAll();
+        g.timer.stop();
+      }
+      update(g, i++);
+    });
+  }
+
+  addNode(n, charge = this.config.charge, mass = this.config.mass) {
+    if(!(n instanceof Node)) n = new Node(n, charge, mass, this.config.size ? () => 0 : this.prng);
     n.index = this.nodes.length;
     this.nodes.push(n);
-    //this.checkRedraw();
+
+    if(this.config.size) {
+      const { width, height } = this.config.size;
+      n.x = this.prng() * width - width / 2;
+      n.y = this.prng() * height - height / 2;
+    }
+
     return this.nodes[this.nodes.length - 1];
   }
 
@@ -65,10 +73,24 @@ export class Graph {
     return Util.find(this.nodes, value, key);
   }
 
+  randomize() {
+    const { width = 1000, height = 1000 } = this.config.size;
+
+    for(let node of this.nodes) {
+      node.x = this.prng() * width - width / 2;
+      node.y = this.prng() * height - height / 2;
+    }
+  }
+
   addEdge(e) {
     let args = [...arguments];
-    if(!(e instanceof Edge)) e = new Edge(args[0], args[1]);
+    let ids = [];
+    if(!(e instanceof Edge)) {
+      e = new Edge(args[0], args[1]);
+      ids = [this.nodes.indexOf(args[0]), this.nodes.indexOf(args[1])];
+    }
     e.index = this.edges.length;
+    e.ids = ids;
     this.edges.push(e);
     return this.edges[this.edges.length - 1];
   }
@@ -115,62 +137,64 @@ export class Graph {
     }
   }
 
-  getBBox() {
+  get bbox() {
     return BBox.from(this.nodes);
   }
 
   checkRedraw() {
-    // compute the force on each connection
-    // only update if net force is greater than threshold
     this.kineticenergy = 0;
     this.total_node_velocity = 0;
 
-    for(var i = 0; i < this.nodes.length; i++) {
-      var node = this.nodes[i];
+    for(let i = 0; i < this.nodes.length; i++) {
+      let node = this.nodes[i];
 
-      var isLeaf = this.isLeafNode(node);
+      let isLeaf = this.isLeafNode(node);
 
       node.netforce = new Point(0, 0);
       node.velocity = new Point(0, 0);
 
       if(1 /*!isLeaf*/) {
-        //this.config.canvas.selection == null || this.config.canvas.selection != node) {
         if(this.gravitate_to_origin) {
-          // gravitate to, and repel from origin
-          var d = node.distance(this.config.origin);
-          var af = 0.02 * Math.max(d, 1);
-          Point.move(node.netforce, af * Math.sin((this.config.origin.x - node.x) / d), af * Math.sin((this.config.origin.y - node.y) / d));
+          const { origin } = this.config;
 
-          var rf = -1 * (node.charge / (d * d));
-          Point.move(node.netforce, rf * Math.sin((this.config.origin.x - node.x) / d), rf * Math.sin((this.config.origin.y - node.y) / d));
+          let d = node.distance(origin);
+          let af = 0.02 * Math.max(d, 1);
+          let od = Point.diff(origin, node);
+
+          node.netforce.move(af * Math.sin(od.x / d), af * Math.sin(od.y / d));
+
+          let rf = -1 * (node.charge / (d * d));
+          node.netforce.move(rf * Math.sin(od.x / d), rf * Math.sin(od.y / d));
         }
-        for(var j = 0; j < this.edges.length; j++) {
-          var con = this.edges[j];
+        for(let j = 0; j < this.edges.length; j++) {
+          let con = this.edges[j];
           if(con.a == node || con.b == node) {
-            // calculate the attractive force between nodes
-            var other_node = con.a == node ? con.b : con.a;
+            let other_node = con.a == node ? con.b : con.a;
             node.applyAttractiveForce(other_node);
           }
         }
-        // calculate the repulsive force between nodes
-        for(var k = 0; k < this.nodes.length; k++) {
-          var rep_node = this.nodes[k];
+
+        for(let k = 0; k < this.nodes.length; k++) {
+          let rep_node = this.nodes[k];
           node.applyRepulsiveForce(rep_node, this.config.spacing || 1);
         }
-        // we eventually want to stop the nodes from moving
+
         node.netforce.x = Math.abs(node.netforce.x) < 1 ? 0 : node.netforce.x;
         node.netforce.y = Math.abs(node.netforce.y) < 1 ? 0 : node.netforce.y;
-        // set the velocity of the nodes based on their net force
-        node.velocity.x = node.netforce.x == 0 ? 0 : (node.velocity.x + this.timestep * node.netforce.x) * this.damping;
-        node.velocity.y = node.netforce.y == 0 ? 0 : (node.velocity.y + this.timestep * node.netforce.y) * this.damping;
+
+        let newVel = node.netforce
+          .prod(this.timestep)
+          .sum(node.velocity)
+          .prod(this.damping);
+
+        node.velocity.x = node.netforce.x == 0 ? 0 : newVel.x;
+        node.velocity.y = node.netforce.y == 0 ? 0 : newVel.y;
       }
-      // move the nodes scaled by constant timestep
-      node.move(node.velocity.x * this.timestep, node.velocity.y * this.timestep);
 
-      // magnitude of the velocity vector
-      var velocity = node.velocity.distance();
+      Point.add(node, node.velocity.prod(this.timestep));
 
-      // keep track of the net velocity of the entire system
+      let velocity = node.velocity.distance();
+
       this.total_node_velocity += velocity;
       this.kineticenergy += node.mass * (velocity * velocity);
     }
@@ -216,8 +240,6 @@ export class Graph {
           }
 
           if(Math.abs(middleAngle) > 0) {
-            //  console.log("middleAngle: ", middleAngle);
-
             let gapStep = gapLen / leafNodes.length;
             let gapPos = middleAngle - gapLen / 2;
 
@@ -229,38 +251,20 @@ export class Graph {
 
               let rel = Point.diff(leaf, node);
 
-              // prettier-ignore
-              newPositions.push({index, old: rel, x: node.x + Math.cos(gapPos) * 50, y: node.y + Math.sin(gapPos) * 50 });
+              newPositions.push({ index, old: rel, x: node.x + Math.cos(gapPos) * 50, y: node.y + Math.sin(gapPos) * 50 });
               gapPos += gapStep;
             }
           }
         }
-
-        //let indexes = Object.keys(lines).sort((a, b) => lines[a].angle() - lines[b].angle());
       }
     };
 
     if(this.total_node_velocity < 0.0001) {
       this.done_rendering = true;
-
-      /* distributeLeafNodes();
-
-      for(let i = 0; i < newPositions.length; i++) {
-        let newPos = newPositions[i];
-
-      this.nodes[newPos.index].x = newPos.x;
-      this.nodes[newPos.index].y = newPos.y;
-      }
-      console.log("newPositions: ", newPositions);*/
     } else {
       this.done_rendering = false;
     }
-
     const { kineticenergy, total_node_velocity } = this;
-
-    // this.nodes.forEach(node => node.round(0.001));
-
-    //console.log("checkRedraw", { kineticenergy, total_node_velocity });
   }
 
   updateAll() {
@@ -280,8 +284,27 @@ export class Graph {
     return {
       nodes: this.nodes.map(node => Node.prototype.toJS.call(node)),
       edges: this.edges.map(edge => Edge.prototype.toIdx.call(edge, this)),
-      bbox: this.getBBox()
+      bbox: this.bbox,
+      config: this.config
     };
+  }
+
+  deserialize(nodes, edges, config) {
+    this.nodes = [];
+    this.edges = [];
+    for(let n of nodes) {
+      let node = this.addNode(n.label, n.charge, n.mass);
+      node.x = n.x;
+      node.y = n.y;
+      node.label = n.label;
+      node.id = n.id;
+      if(n.color !== undefined) node.color = n.color;
+      //console.log("node:", node);
+    }
+    for(let e of edges) {
+      let edge = this.addEdge(this.nodes[e[0]], this.nodes[e[1]]);
+    }
+    this.config = config;
   }
 
   get rect() {
@@ -299,13 +322,6 @@ export class Graph {
       Point.move(this.nodes[i], p.x, p.y);
     }
   }
-  /*
-  get points() {
-    let ret = new PointList(this.nodes);
-    let rect = ret.rect();
-    let center = rect.center;
-    return ret.translate(-center.x, -center.y);
-  }*/
 }
 
 class Node extends Point {
@@ -325,15 +341,7 @@ class Node extends Point {
     return node;
   }
 
-  /**
-   * Node
-   *
-   * @class      Node (name)
-   * @param      {String}  label        A label
-   * @param      {number}  [charge=60]  The charge
-   */
-  constructor(label, charge = 60, mass = 100, prng /*= Math.random*/) {
-    //
+  constructor(label, charge = 60, mass = 100, prng) {
     super(prng() * 1000, prng() * 1000);
 
     this.charge = charge;
@@ -341,8 +349,11 @@ class Node extends Point {
     this.velocity = new Point(0, 0);
     this.netforce = new Point(0, 0);
     this.label = label;
-
-    console.log(`Node(${label},${charge})`, Util.inspect(this, { newline: "", indent: "", spacing: " " }));
+    /*
+    console.log(
+      `Node(${label},${charge})`,
+      Util.inspect(this, { newline: "", indent: "", spacing: " " })
+    );*/
   }
 
   reset() {
@@ -359,14 +370,14 @@ class Node extends Point {
 
   applyRepulsiveForce(n, scale = 1) {
     var d = Math.max(this.distance(n), 1);
-    // calculate repulsion force between nodes
+
     var f = -1 * scale * ((this.charge * n.charge) / (d * d));
 
     this.netforce.move(f * Math.sin((n.x - this.x) / d), f * Math.sin((n.y - this.y) / d));
   }
 
   toJS() {
-    let ret = Util.filterKeys(this, key => ["charge", "mass", "velocity", "netforce", "label", "x", "y", "id"].indexOf(key) != -1);
+    let ret = Util.filterKeys(this, key => ["charge", "mass", "label", "x", "y", "id", "color"].indexOf(key) != -1);
     if(this.node && this.node.id !== undefined) ret.id = this.node.id;
     Point.round(ret, 0.001);
     return ret;
@@ -377,13 +388,6 @@ class Edge extends Line {
   a = null;
   b = null;
 
-  /**
-   * { function_description }
-   *
-   * @class      Edge (name)
-   * @param      {Point}  a
-   * @param      {Point}  b
-   */
   constructor(node_a, node_b) {
     super();
     if(node_a) this.a = node_a instanceof Node ? node_a : Node.clone(node_a);
@@ -393,28 +397,33 @@ class Edge extends Line {
       throw new Error("Edge requires 2 nodes");
     }
 
-    // super(node_a ? node_a.x : 0, node_a ? node_a.y : 0, node_b ? node_b.x :0 , node_b ? node_b.y :0);
-
     this.draggable = false;
   }
 
-  // prettier-ignore
-  get x1() {return this.a ? this.a.x : 0; }
-  // prettier-ignore
-  get y1() {return this.a ? this.a.y : 0; }
-  // prettier-ignore
-  get x2() {return this.b ? this.b.x : 0; }
-  // prettier-ignore
-  get y2() {return this.b ?  this.b.y : 0; }
-
-  // prettier-ignore
-  set x1(v) {if(this.a)  this.a.x = v; }
-  // prettier-ignore
-  set y1(v) {if(this.a)  this.a.y = v; }
-  // prettier-ignore
-  set x2(v) {if(this.b)  this.b.x = v; }
-  // prettier-ignore
-  set y2(v) {if(this.b)  this.b.y = v; }
+  get x1() {
+    return this.a ? this.a.x : 0;
+  }
+  get y1() {
+    return this.a ? this.a.y : 0;
+  }
+  get x2() {
+    return this.b ? this.b.x : 0;
+  }
+  get y2() {
+    return this.b ? this.b.y : 0;
+  }
+  set x1(v) {
+    if(this.a) this.a.x = v;
+  }
+  set y1(v) {
+    if(this.a) this.a.y = v;
+  }
+  set x2(v) {
+    if(this.b) this.b.x = v;
+  }
+  set y2(v) {
+    if(this.b) this.b.y = v;
+  }
 
   toJS() {
     return {
@@ -425,14 +434,8 @@ class Edge extends Line {
   toIdx(graph) {
     return [graph.nodes.indexOf(this.a), graph.nodes.indexOf(this.b)];
   }
-  // we need to override the draw method so it updates on a redraw
-  draw(ctx) {
-    /* ctx.strokeStyle = "#B2B2B2";
-  ctx.beginPath();
-  ctx.moveTo(this.a.x, this.a.y);
-  ctx.lineTo(this.b.x, this.b.y);
-  ctx.stroke();*/
-  }
+
+  draw(ctx) {}
 }
 
 if(module.exports) {

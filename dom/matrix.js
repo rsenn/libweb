@@ -142,6 +142,7 @@ Matrix.prototype.translate = function(tx, ty) {
 };
 
 Matrix.prototype.scale = function(sx, sy) {
+  if(sy === undefined) sy = sx;
   const m = new Matrix({ xx: sx, xy: 0, x0: 0, yx: 0, yy: sy, y0: 0 });
   return Matrix.prototype.multiply.call(this, m);
 };
@@ -163,6 +164,10 @@ Matrix.prototype.toArray = function() {
 };
 
 Matrix.prototype.toString = function() {
+  /*
+  if(Matrix.prototype.is_identity.call(this))
+    return '';
+*/
   let rows = Matrix.prototype.rows.call(this);
   let name = rows[0].length == 3 ? "matrix" : "matrix3d";
 
@@ -177,11 +182,21 @@ Matrix.prototype.toSVG = function() {
   return "matrix(" + ["a", "b", "c", "d", "e", "f"].map(k => this[Matrix.prototype.keyIndex[k]]).join(",") + ")";
 };
 
+Matrix.prototype.equal = function(other) {
+  for(let i = 0; i < 9; i++) {
+    if(this[i] != other[i]) return false;
+  }
+  return true;
+};
+
 Matrix.prototype.init_identity = function() {
   Matrix.prototype.set_row.call(this, 0, 1, 0, 0);
   Matrix.prototype.set_row.call(this, 1, 0, 1, 0);
   Matrix.prototype.set_row.call(this, 2, 0, 0, 1);
   return this;
+};
+Matrix.prototype.is_identity = function() {
+  return Matrix.prototype.equal.call(this, [1, 0, 0, 0, 1, 0, 0, 0, 1]);
 };
 
 Matrix.prototype.init_translate = function(tx, ty) {
@@ -190,6 +205,7 @@ Matrix.prototype.init_translate = function(tx, ty) {
 };
 
 Matrix.prototype.init_scale = function(sx, sy) {
+  if(sy === undefined) sy = sx;
   Matrix.prototype.set_row.call(this, 0, sx, 0, 0);
   Matrix.prototype.set_row.call(this, 1, 0, sy, 0);
   Matrix.prototype.set_row.call(this, 2, 0, 0, 1);

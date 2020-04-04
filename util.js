@@ -1096,13 +1096,18 @@ Util.rangeMinMax = function(arr, field) {
   return [Math.min(...numbers), Math.max(...numbers)];
 };
 Util.mergeLists = function(arr1, arr2, key = "id") {
-  let hash = arr1.reduce((acc, it) => Object.assign({ [it[key]]: it }, acc), {});
+  let hash = {};
+
+  for(let obj of arr1) hash[obj[key]] = obj;
+  for(let obj of arr2) hash[obj[key]] = obj;
+  return Object.values(hash);
+  /* let hash = arr1.reduce((acc, it) => Object.assign({ [it[key]]: it }, acc), {});
   hash = arr2.reduce((acc, it) => Object.assign({ [it[key]]: it }, acc), {});
   let ret = Util.array();
   for(let k in hash) {
     if(hash[k][key]) ret.push(hash[k]);
   }
-  return ret;
+  return ret;*/
 };
 Util.throttle = function(fn, wait) {
   let time = Date.now();

@@ -15,7 +15,12 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
   let ret = this instanceof HSLA ? this : {};
   /*  if(!this) return Object.assign({}, HSLA.prototype, { h, s, l, a });*/
 
-  if(args.length >= 3) {
+  if(typeof args[0] == "object" && "h" in args[0] && "s" in args[0] && "l" in args[0]) {
+    ret.h = args[0].h;
+    ret.s = args[0].s;
+    ret.l = args[0].l;
+    ret.a = args[0].a || 1.0;
+  } else if(args.length >= 3) {
     ret.h = Math.round(h);
     ret.s = s;
     ret.l = l;
