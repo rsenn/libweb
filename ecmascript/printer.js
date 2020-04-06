@@ -110,9 +110,6 @@ export class Printer {
   }*/
   printBinaryExpression(binary_expression) {
     const { operator, left, right } = binary_expression;
-
-    console.log("printBinaryExpression", { operator, left, right });
-
     return `${this.printNode(left)} ${operator} ${this.printNode(right)}`;
   }
   printAssignmentExpression(assignment_expression) {
@@ -128,8 +125,7 @@ export class Printer {
   printMemberExpression(member_expression) {
     const { object, property } = member_expression;
     let output;
-    console.log("printMemberExpression", { object, property });
-    console.log("printMemberExpression", member_expression);
+
     output = this.printNode(object) + "." + this.printNode(property);
     return output;
   }

@@ -1509,12 +1509,15 @@ Util.getCaller = function(position = 2) {
     }, {});
   }
 };
-Util.getCallers = function(start = 2, num = 1) {
+Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER) {
   let ret = [];
   let i = start;
   while(i++ < start + num) {
     try {
-      ret.push(Util.getCaller(i + 1));
+      let caller = Util.getCaller(i + 1);
+      if(!caller) break;
+      
+      ret.push(caller);
     } catch(err) {}
   }
   return ret;
