@@ -205,5 +205,14 @@ export class SVG extends Element {
     y = do_point(p);
     if(y) yield y;
   }
+
+  static viewbox(element, rect) {
+    if(typeof element == "string") element = Element.find(element);
+    if(element.ownerSVGElement) element = element.ownerSVGElement;
+    let vbattr;
+    if(rect) element.setAttribute("viewBox", "toString" in rect ? rect.toString() : rect);
+    vbattr = Element.attr(element, "viewBox");
+    return new Rect(vbattr.split(/\s+/g).map(parseFloat));
+  }
 }
 SVG.ns = "http://www.w3.org/2000/svg";

@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 // prettier-ignore
 import dom, {TRBL, CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, Line, Matrix, Point, PointList, Rect, RGBA, Size, SVG, Timer, ReactComponent, Node } from "./dom.js";
 import { SvgOverlay, SvgPathTracer } from "./svg/overlay.js";
@@ -1072,7 +1073,10 @@ export const devtools = {
   trackElements,
   Util,
   walk,
+  trkl,
   ws,
+  React,
+  ReactDOM,
   mobx: { toJS }
 };
 

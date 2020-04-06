@@ -149,7 +149,7 @@ export class Element extends Node {
     let ret = attrs_or_name.reduce((acc, name) => {
       const key = /*Util.camelize*/ name;
       const value = e && e.getAttribute ? e.getAttribute(name) : e[key];
-      acc[key] = isNaN(parseFloat(value)) ? value : parseFloat(value);
+      acc[key] = /^-?[0-9]*\.[0-9]\+$/.test(value) ? parseFloat(value) : value;
       return acc;
     }, {});
     if(typeof arguments[1] == "string") return ret[attrs_or_name[0]];

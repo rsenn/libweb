@@ -71,11 +71,22 @@ function trkl(initValue) {
     }
     return value;
   }
+  Object.setPrototypeOf(self, trkl.prototype);
 
   return self;
 }
 
-trkl["computed"] = function(fn) {
+trkl.prototype = Object.create({ ...Function.prototype, constructor: trkl  });
+
+trkl.getset = function(arg) {
+  let trkl = arg || new trkl(arg);
+  return Object.create({
+    get: () => trkl(),
+    set: value => trkl(value)
+    }, {});
+};
+
+trkl.computed = function(fn) {
   var self = trkl();
   var computationToken = {
     _subscriber: runComputed
@@ -117,6 +128,7 @@ trkl.property = function(object, name, options = { enumerable: true, configurabl
   });
   return self;
 };
+
 
 trkl.bind = function(object, name, handler) {
   var self = handler;
