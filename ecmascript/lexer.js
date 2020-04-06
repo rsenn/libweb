@@ -48,6 +48,7 @@ l.reset = function(sourceText) {
   this.line = 1;
   this.column = 1;
   this.tokenIndex = 0;
+  this.noRegex = false;
 };
 
 // Skips over the pending input before this point
@@ -544,7 +545,7 @@ l.lexText = function() {
     if(c === null) {
       // EOF
       return null;
-    } else if(isRegExpChar(c)) {
+    } else if(!this.noRegex && isRegExpChar(c)) {
       return this.lexRegExp;
     } else if(isQuoteChar(c)) {
       return this.lexQuote(c);
@@ -577,12 +578,22 @@ l.nextToken = function() {
   return token;
 };
 
-l.setInput = function(sourceText) {
-  this.reset(sourceText);
-
+l.lex = function() {
+  let idx = this.tokenIndex;
   do {
     this.stateFn = this.stateFn();
-  } while(this.stateFn !== null);
+  } while(this.stateFn !== null && this.tokenIndex >= this.tokens.length);
+  let tok = this.nextToken();
+  // console.log("lex: ", tok);
+  return tok;
+};
+
+l.setInput = function(sourceText) {
+  this.reset(sourceText);
+  /*
+  do {
+    this.stateFn = this.stateFn();
+  } while(this.stateFn !== null);*/
 };
 
 export default Lexer;

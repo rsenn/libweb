@@ -343,18 +343,21 @@ export class ObjectLiteral extends Node {
 }
 
 export class ArrayLiteral extends Node {
-  constructor(members) {
+  constructor(elements) {
     super("ArrayLiteral");
-    this.members = members;
+    this.elements = elements;
     // console.log('New ArrayLiteral: ', Object.keys(members));
   }
 }
 
 export class JSXLiteral extends Node {
-  constructor(tag, attributes) {
+  constructor(tag, attributes, closing = false, selfClosing = false, children = []) {
     super("JSXLiteral");
     this.tag = tag;
     this.attributes = attributes;
+    this.closing = closing;
+    this.selfClosing = selfClosing;
+    this.children = children;
     // console.log('New JSXLiteral: ', tag, JSX.keys(attributes));
   }
 }
@@ -367,9 +370,9 @@ export class BindingPattern extends Identifier {
 }
 
 export class ArrayBinding extends BindingPattern {
-  constructor(properties) {
+  constructor(elements) {
     super("ArrayBinding");
-    this.properties = properties;
+    this.elements = elements;
   }
 }
 

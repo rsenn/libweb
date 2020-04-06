@@ -30,17 +30,17 @@ export class SchematicRenderer {
         case "wire": {
           const { x1, x2, y1, y2, width } = sym;
           //  console.log("layer:",layer);
-          this.factory("line", {stroke: layer ? layer.color : "#a54b4b", x1, x2, y1, y2, strokeWidth: width }, parent );
+          this.factory("line", { stroke: layer ? layer.color : "#a54b4b", x1, x2, y1, y2, strokeWidth: width }, parent);
           break;
         }
         case "text": {
           const { x, y, text, align, size, font } = sym;
-          this.factory("text", {fill: layer ? layer.color : "#a54b4b", x, y, innerHTML: text, fontSize: size, fontFamily: font || "Fixed"}, parent );
+          this.factory("text", { fill: layer ? layer.color : "#a54b4b", x, y, innerHTML: text, fontSize: size, fontFamily: font || "Fixed" }, parent);
           break;
         }
         case "circle": {
           const { x, y, width, radius } = sym;
-          this.factory("circle", {stroke: layer ? layer.color : "#a54b4b", x, y, r: radius / 2, strokeWidth: width, fill: "none"}, parent );
+          this.factory("circle", { stroke: layer ? layer.color : "#a54b4b", x, y, r: radius / 2, strokeWidth: width, fill: "none" }, parent);
           break;
         }
 
@@ -50,8 +50,8 @@ export class SchematicRenderer {
           const vec = Point.fromAngle((angle * Math.PI) / 180, SchematicRenderer.pinSizes[length]).prod(new Point(1, -1));
           const pivot = new Point(x, y);
           const l = new Line(pivot, vec.add(pivot));
-          console.log("pin:",sym);
-          this.factory("line", {stroke: layer ? layer.color : "#a54b4b", ...l.toObject(), strokeWidth: 0.1 }, parent );
+          console.log("pin:", sym);
+          this.factory("line", { stroke: layer ? layer.color : "#a54b4b", ...l.toObject(), strokeWidth: 0.1 }, parent);
           break;
         }
 
@@ -108,7 +108,7 @@ export function renderSchematic(obj, factory) {
     if(["x", "y", "x1", "y1", "x2", "y2", "width", "size"].indexOf(k) != -1) {
       o[k] = v / 2.54;
 
-     /* if(k !== "width" && k !== "size")*/ o[k] = Util.roundTo(o[k], 0.001);
+      /* if(k !== "width" && k !== "size")*/ o[k] = Util.roundTo(o[k], 0.001);
 
       if(k[0] == "y") o[k] = -o[k];
     }

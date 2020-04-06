@@ -130,8 +130,9 @@ Util.functionName = function(fn) {
   if(matches && matches[1]) return matches[1];
   return null;
 };
-Util.className = function({ constructor }) {
-  return Util.functionName(constructor);
+Util.className = function(obj) {
+  let proto = Object.getPrototypeOf(obj) || obj;
+  return Util.fnName(proto.constructor || proto);
 };
 Util.unwrapComponent = function(c) {
   for(;;) {
@@ -1575,7 +1576,7 @@ Util.isPromise = function(obj) {
   return (Boolean(obj) && typeof obj.then === "function") || obj instanceof Promise;
 };
 /* eslint-disable no-use-before-define */
-if (typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
+if(typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
 Util.next = function(iter, observer, prev = undefined) {
   let item;
   try {
