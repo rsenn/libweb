@@ -22,7 +22,7 @@ class BBox {
   }
 
   constructor(x1, y1, x2, y2) {
-    if (x1 !== undefined && y1 !== undefined && x2 !== undefined && y2 !== undefined) {
+    if(x1 !== undefined && y1 !== undefined && x2 !== undefined && y2 !== undefined) {
       this.x1 = Math.min(x1, x2);
       this.y1 = Math.min(y1, y2);
       this.x2 = Math.max(x1, x2);
@@ -41,22 +41,22 @@ class BBox {
     var _iteratorError = undefined;
 
     try {
-      for (var _iterator = list[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      for(var _iterator = list[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
         let arg = _step.value;
-        if (arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset);
-        if (arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0);
-        if (arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0);
+        if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset);
+        if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0);
+        if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0);
       }
-    } catch (err) {
+    } catch(err) {
       _didIteratorError = true;
       _iteratorError = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion && _iterator.return != null) {
+        if(!_iteratorNormalCompletion && _iterator.return != null) {
           _iterator.return();
         }
       } finally {
-        if (_didIteratorError) {
+        if(_didIteratorError) {
           throw _iteratorError;
         }
       }
@@ -66,22 +66,22 @@ class BBox {
   updateXY(x, y, offset = 0) {
     let updated = {};
 
-    if (this.x1 > x - offset) {
+    if(this.x1 > x - offset) {
       this.x1 = x - offset;
       updated.x1 = true;
     }
 
-    if (this.x2 < x + offset) {
+    if(this.x2 < x + offset) {
       this.x2 = x + offset;
       updated.x2 = true;
     }
 
-    if (this.y1 > y - offset) {
+    if(this.y1 > y - offset) {
       this.y1 = y - offset;
       updated.y1 = true;
     }
 
-    if (this.y2 < y + offset) {
+    if(this.y2 < y + offset) {
       this.y2 = y + offset;
       updated.y2 = true;
     }
@@ -139,13 +139,17 @@ class BBox {
   }
 
   toString() {
-    return "".concat(this.x1, " ").concat(this.y1, " ").concat(this.x2 - this.x1, " ").concat(this.y2 - this.y1);
+    return ""
+      .concat(this.x1, " ")
+      .concat(this.y1, " ")
+      .concat(this.x2 - this.x1, " ")
+      .concat(this.y2 - this.y1);
   }
 
   transform(fn = arg => arg, out) {
-    if (!out) out = this;
+    if(!out) out = this;
 
-    for (var _i = 0, _arr = ["x1", "y1", "x2", "y2"]; _i < _arr.length; _i++) {
+    for(var _i = 0, _arr = ["x1", "y1", "x2", "y2"]; _i < _arr.length; _i++) {
       let prop = _arr[_i];
       const v = this[prop];
       out[prop] = fn(v);
@@ -161,12 +165,12 @@ class BBox {
   }
 
   static from(iter, tp = p => p) {
-    if (typeof iter == "object" && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
+    if(typeof iter == "object" && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
     let r = new BBox();
     let result = iter.next();
     let p;
 
-    if (result.value) {
+    if(result.value) {
       p = tp(result.value);
       r.x1 = p.x;
       r.x2 = p.x;
@@ -174,19 +178,18 @@ class BBox {
       r.y2 = p.y;
     }
 
-    while (true) {
+    while(true) {
       result = iter.next();
-      if (!result.value) break;
+      if(!result.value) break;
       p = tp(result.value);
-      if (r.x1 > p.x) r.x1 = p.x;
-      if (r.x2 < p.x) r.x2 = p.x;
-      if (r.y1 > p.y) r.y1 = p.y;
-      if (r.y2 < p.y) r.y2 = p.y;
+      if(r.x1 > p.x) r.x1 = p.x;
+      if(r.x2 < p.x) r.x2 = p.x;
+      if(r.y1 > p.y) r.y1 = p.y;
+      if(r.y2 < p.y) r.y2 = p.y;
     }
 
     return r;
   }
-
 }
 
 exports.BBox = BBox;

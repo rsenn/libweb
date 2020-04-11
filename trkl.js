@@ -4,7 +4,7 @@ var computedTracker = [];
 //safely. This is necessary for subscriptions that remove themselves.
 var effects = [];
 
-function trkl(initValue) {
+export function trkl(initValue) {
   var value = initValue;
   var subscribers = [];
 
@@ -162,10 +162,11 @@ function remove(array, item) {
   }
 }
 
-if(typeof module === "object") {
+export default trkl;
+/*if(typeof module === "object") {
   const { from, computed, property } = trkl;
   //console.log("trkl.property ", trkl.property);
   module.exports = { from, computed, property, trkl };
 } else {
   window["trkl"] = trkl;
-}
+}*/

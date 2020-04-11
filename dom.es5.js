@@ -316,37 +316,37 @@ function dom() {
     var _iteratorError = undefined;
 
     try {
-      for (var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      for(var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
         let key = _step.value;
-        if (e[key] === undefined) e[key] = functions[key].bind(functions, e);
+        if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
       }
-    } catch (err) {
+    } catch(err) {
       _didIteratorError = true;
       _iteratorError = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion && _iterator.return != null) {
+        if(!_iteratorNormalCompletion && _iterator.return != null) {
           _iterator.return();
         }
       } finally {
-        if (_didIteratorError) {
+        if(_didIteratorError) {
           throw _iteratorError;
         }
       }
     }
   };
 
-  args = args.map(arg => typeof arg == "string" ? _element.Element.findAll(arg) : arg);
+  args = args.map(arg => (typeof arg == "string" ? _element.Element.findAll(arg) : arg));
   var _iteratorNormalCompletion2 = true;
   var _didIteratorError2 = false;
   var _iteratorError2 = undefined;
 
   try {
-    for (var _iterator2 = args[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+    for(var _iterator2 = args[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
       let e = _step2.value;
-      if (e instanceof SVGSVGElement) extend(e, _svg.SVG);
+      if(e instanceof SVGSVGElement) extend(e, _svg.SVG);
 
-      if ((0, _element.isElement)(e)) {
+      if((0, _element.isElement)(e)) {
         extend(e, _element.Element);
         (0, _elementRect.ElementPosProps)(e);
         (0, _elementRect.ElementSizeProps)(e);
@@ -355,22 +355,22 @@ function dom() {
 
       ret.push(e);
     }
-  } catch (err) {
+  } catch(err) {
     _didIteratorError2 = true;
     _iteratorError2 = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+      if(!_iteratorNormalCompletion2 && _iterator2.return != null) {
         _iterator2.return();
       }
     } finally {
-      if (_didIteratorError2) {
+      if(_didIteratorError2) {
         throw _iteratorError2;
       }
     }
   }
 
-  if (ret.length == 1) ret = ret[0];
+  if(ret.length == 1) ret = ret[0];
   return ret;
 }
 
@@ -381,19 +381,21 @@ const isNumber = a => {
 exports.isNumber = isNumber;
 
 function Unit(str) {
-  let u = this instanceof Unit ? this : {
-    format(number) {
-      return "".concat(number).concat(this.name);
-    }
-
-  };
+  let u =
+    this instanceof Unit
+      ? this
+      : {
+          format(number) {
+            return "".concat(number).concat(this.name);
+          }
+        };
   u.name = str.replace(/^[a-z]*/, "");
   return u;
 }
 
 function ScalarValue() {}
 
-const ifdef = (value, def, nodef) => value !== undefined ? def : nodef;
+const ifdef = (value, def, nodef) => (value !== undefined ? def : nodef);
 
 const ElementTransformation = () => ({
   rotate: 0,
@@ -402,11 +404,15 @@ const ElementTransformation = () => ({
 
   toString() {
     const rotate = this.rotate,
-          translate = this.translate,
-          scale = this.scale;
-    return "rotate(".concat(rotate, "deg) translate(").concat(translate.x, ", ").concat(translate.y, ") scale(").concat(scale.w, ",").concat(scale.h, ")");
+      translate = this.translate,
+      scale = this.scale;
+    return "rotate("
+      .concat(rotate, "deg) translate(")
+      .concat(translate.x, ", ")
+      .concat(translate.y, ") scale(")
+      .concat(scale.w, ",")
+      .concat(scale.h, ")");
   }
-
 });
 
 exports.ElementTransformation = ElementTransformation;
@@ -446,7 +452,6 @@ const CSSTransformSetters = element => ({
     console.log("CSSTransformSetters.updateTransformation", t);
     this.style.transform = t;
   }
-
 });
 
 exports.CSSTransformSetters = CSSTransformSetters;
@@ -466,7 +471,6 @@ class Transition {
   static list() {
     return new TransitionList(...arguments);
   }
-
 }
 
 exports.Transition = Transition;
@@ -489,7 +493,6 @@ class TransitionList extends Array {
       transitionTimingFunction: this.propertyList("timing").join(", ")
     };
   }
-
 }
 
 exports.TransitionList = TransitionList;

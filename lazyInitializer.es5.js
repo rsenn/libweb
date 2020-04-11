@@ -10,15 +10,11 @@ exports.valueInitializer = valueInitializer;
 
 var _trkl = require("./trkl.es5.js");
 
-function Instance({
-  trackable = false,
-  callback,
-  initVal = null
-}) {
+function Instance({ trackable = false, callback, initVal = null }) {
   let inst = trackable && trackable.subscribe !== undefined ? trackable : (0, _trkl.trkl)(initVal);
-  if (callback) inst.subscribe(value => callback(value, inst));
+  if(callback) inst.subscribe(value => callback(value, inst));
   inst.subscribe(newVal => {
-    if (newVal) console.log("new instance: ", value);
+    if(newVal) console.log("new instance: ", value);
   });
 
   _trkl.trkl.property(inst, "current", inst);
@@ -41,8 +37,8 @@ function lazyInitializer(fn, opts = {}) {
   var instance = (0, _trkl.trkl)();
 
   var ret = (value = null) => {
-    if (value === null) {
-      if (!instance()) {
+    if(value === null) {
+      if(!instance()) {
         const initVal = fn(instance);
         instance(initVal);
       }
@@ -60,7 +56,7 @@ function lazyInitializer(fn, opts = {}) {
 function lazyMembers(obj, members) {
   let initializers = {};
 
-  for (let name in members) {
+  for(let name in members) {
     initializers[name] = lazyInitializer(members[name]);
     Object.defineProperty(obj, name, {
       get: function get() {

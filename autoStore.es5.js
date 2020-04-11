@@ -9,11 +9,12 @@ exports.makeAutoStoreHandler = exports.makeDummyStorage = exports.makeLocalStore
 var _mobx = require("mobx");
 
 const makeLocalStorage = () => {
-  if (global.window && window.localStorage) return {
-    get: name => JSON.parse(window.localStorage.getItem(name)),
-    set: (name, data) => window.localStorage.setItem(name, JSON.stringify(data)),
-    remove: name => window.localStorage.removeItem(name)
-  };
+  if(global.window && window.localStorage)
+    return {
+      get: name => JSON.parse(window.localStorage.getItem(name)),
+      set: (name, data) => window.localStorage.setItem(name, JSON.stringify(data)),
+      remove: name => window.localStorage.removeItem(name)
+    };
   return {
     get: name => ({}),
     set: (name, data) => undefined,
@@ -55,7 +56,6 @@ const makeLocalStore = name => ({
   remove() {
     return this.storage.remove(this.name);
   }
-
 });
 
 exports.makeLocalStore = makeLocalStore;
@@ -69,7 +69,7 @@ const makeDummyStorage = () => ({
 exports.makeDummyStorage = makeDummyStorage;
 
 function getLocalStorage() {
-  if (getLocalStorage.store === undefined) {
+  if(getLocalStorage.store === undefined) {
     getLocalStorage.store = global.window && window.localStorage ? makeLocalStorage() : makeDummyStorage();
   }
 
@@ -77,22 +77,22 @@ function getLocalStorage() {
 }
 
 const makeAutoStoreHandler = (name, store) => {
-  if (!store) store = getLocalStorage();
+  if(!store) store = getLocalStorage();
 
   var fn = function fn(_this, _member) {
     let firstRun = false;
     const disposer = (0, _mobx.autorun)(() => {
-      if (firstRun) {
+      if(firstRun) {
         const existingStore = store.get(name);
 
-        if (existingStore) {
+        if(existingStore) {
           _this[_member] = existingStore;
         }
       }
 
       const updatedStore = _this[_member];
 
-      if (updatedStore) {
+      if(updatedStore) {
         fn.update ? fn.update(updatedStore) : store.set(name, updatedStore);
       } else {
         store.remove(name);
@@ -102,10 +102,10 @@ const makeAutoStoreHandler = (name, store) => {
     return disposer;
   };
 
-  fn.update = function (updatedStore) {
+  fn.update = function(updatedStore) {
     try {
       store.set(name, updatedStore);
-    } catch (err) {}
+    } catch(err) {}
   };
 
   fn.set = store.set;

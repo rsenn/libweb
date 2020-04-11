@@ -313,13 +313,19 @@ Util.trim = function(str, charset) {
   return str.replace(r1, "").replace(r2, "");
 };
 Util.define = (obj, key, value, enumerable = false) =>
-  obj[key] === undefined &&
+  /*obj[key] === undefined &&*/
   Object.defineProperty(obj, key, {
     enumerable,
     configurable: false,
     writable: false,
     value
   });
+Util.extend = (obj, other) => {
+  for(let prop in other)
+    Util.define(obj, prop, other[prop]);
+//     obj[prop] = other[prop];
+  return obj;
+};
 Util.defineGetter = (obj, key, get, enumerable = false) =>
   obj[key] === undefined &&
   Object.defineProperty(obj, key, {
@@ -666,6 +672,20 @@ Util.decamelize = function(str, separator = "-") {
         .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, `$1${separator}$2`)
         .toLowerCase()
     : str;
+};
+Util.ifThenElse = function(pred = value => !!value, _then = () => {}, _else = () => {}) {
+  return function(value) {
+    var result = pred(value);
+    var ret = !!result ? _then(value) : _else(value);
+    return ret;
+  };
+};
+Util.transform = function(fn) {
+  return function*(arr) {
+    for(let item of arr) {
+      yield fn(item);
+    }
+  };
 };
 Util.isEmail = function(v) {
   return /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(v);
@@ -1369,7 +1389,7 @@ Util.numbersConvert = function(str) {
 };
 Util.entries = function(arg) {
   if(typeof arg == "object" && arg !== null) {
-    return typeof arg.entries == "function" ? arg.entries() : Object.entries(arg);
+    return typeof arg.entries !== "undefined" ? arg.entries() : Object.entries(arg);
   }
   console.log("Util.entries", arg);
   return null;
@@ -1387,6 +1407,23 @@ Util.traverse = function(o, fn) {
     }
   }
   return walker(o);
+};
+Util.traverseWithPath = function(o, rootPath = []) {
+  for(let key of rootPath) o = o[key];
+
+  function* walker(o, path) {
+    for(let [k, v] of Util.entries(o)) {
+      let p = [...path, k];
+      yield [v, k, o, p];
+      if(typeof v == "object" && v !== null) yield* walker(v, p);
+    }
+  }
+
+  return walker(o, []);
+};
+Util.indexByPath = function(o, p) {
+  for(let key of p) o = o[key];
+  return o;
 };
 Util.pushUnique = function(arr) {
   let args = [...arguments];
@@ -1579,7 +1616,7 @@ Util.isPromise = function(obj) {
   return (Boolean(obj) && typeof obj.then === "function") || obj instanceof Promise;
 };
 /* eslint-disable no-use-before-define */
-if(typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
+if (typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
 Util.next = function(iter, observer, prev = undefined) {
   let item;
   try {

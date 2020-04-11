@@ -59,4 +59,27 @@ export function lazyMembers(obj, members) {
   }
 }
 
+export function lazyArray(elements) {
+  let initializers = new Array(elements.length);
+  let i = 0;
+  let arr = new Array(elements.length);
+
+  for(let fn of elements) {
+    initializers[i] = lazyInitializer(fn);
+
+    Object.defineProperty(arr, i, {
+      get: function() {
+        return fn();
+      },
+      set: function(value) {
+        fn(value);
+      },
+      enumerable: true
+    });
+    i++;
+  }
+  //  arr.length = elements.length;
+  return arr;
+}
+
 export function valueInitializer(createFunction, onInit) {}

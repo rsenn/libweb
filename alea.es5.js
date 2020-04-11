@@ -21,26 +21,26 @@ function Alea() {
     var t = 2091639 * s0 + c * 2.3283064365386963e-10;
     s0 = s1;
     s1 = s2;
-    return s2 = t - (c = t | 0);
+    return (s2 = t - (c = t | 0));
   };
 
-  random.uint32 = function () {
+  random.uint32 = function() {
     return random() * 0x100000000;
   };
 
-  random.int32 = function () {
+  random.int32 = function() {
     return random() * 0x100000000 - 0x7fffffff;
   };
 
-  random.signed = function () {
+  random.signed = function() {
     return random() * 2 - 1.0;
   };
 
-  random.fract53 = function () {
-    return random() + (random() * 0x200000 | 0) * 1.1102230246251565e-16;
+  random.fract53 = function() {
+    return random() + ((random() * 0x200000) | 0) * 1.1102230246251565e-16;
   };
 
-  random.color = function () {
+  random.color = function() {
     return {
       h: random() * 360,
       s: random() * 100,
@@ -48,10 +48,10 @@ function Alea() {
     };
   };
 
-  random.seed = function () {
+  random.seed = function() {
     let args = [...arguments];
 
-    if (args.length == 0) {
+    if(args.length == 0) {
       args = [+new Date()];
     }
 
@@ -60,22 +60,22 @@ function Alea() {
     s1 = mash(" ");
     s2 = mash(" ");
 
-    for (var i = 0; i < args.length; i++) {
+    for(var i = 0; i < args.length; i++) {
       s0 -= mash(args[i]);
 
-      if (s0 < 0) {
+      if(s0 < 0) {
         s0 += 1;
       }
 
       s1 -= mash(args[i]);
 
-      if (s1 < 0) {
+      if(s1 < 0) {
         s1 += 1;
       }
 
       s2 -= mash(args[i]);
 
-      if (s2 < 0) {
+      if(s2 < 0) {
         s2 += 1;
       }
     }
@@ -87,11 +87,11 @@ function Alea() {
   random.args = args;
   random.seed.apply(random, args);
 
-  random.exportState = function () {
+  random.exportState = function() {
     return [s0, s1, s2, c];
   };
 
-  random.importState = function (i) {
+  random.importState = function(i) {
     s0 = +i[0] || 0;
     s1 = +i[1] || 0;
     s2 = +i[2] || 0;
@@ -107,7 +107,7 @@ function Mash() {
   var mash = function mash(data) {
     data = data.toString();
 
-    for (var i = 0; i < data.length; i++) {
+    for(var i = 0; i < data.length; i++) {
       n += data.charCodeAt(i);
       var h = 0.02519603282416938 * n;
       n = h >>> 0;
@@ -125,7 +125,7 @@ function Mash() {
   return mash;
 }
 
-Alea.importState = function (i) {
+Alea.importState = function(i) {
   var random = new Alea();
   random.importState(i);
   return random;
