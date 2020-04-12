@@ -6,17 +6,16 @@ const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, b
 export function DereferenceError(object, member, pos, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
 
-  error.message = `Error dereferencing Object @ ${locator.join("|")} w/ keys {${Object.keys(object).join(",")}} no member '${member}'`;
-  //  error.toString = () => error.message;
-  error.object = object;
-  error.member = member;
-  error.pos = pos;
-  error.locator = locator;
-  error.stack = Util.getCallerStack()
-    .filter(frame => null !== frame.getFileName())
-    .map(frame => `${("" + frame.getFileName()).replace(/.*plot-cv\//, "")}:${frame.getLineNumber()}:${frame.getColumnNumber()}`);
-
-  return error;
+  return Util.extend(
+    error,
+    { object, member, pos, locator },
+    {
+      message: `Error dereferencing Object @ ${locator.join("|")} w/ keys {${Object.keys(object).join(",")}} no member '${member}'`,
+      stack: Util.getCallerStack()
+        .filter(frame => null !== frame.getFileName())
+        .map(frame => `${("" + frame.getFileName()).replace(/.*plot-cv\//, "")}:${frame.getLineNumber()}:${frame.getColumnNumber()}`)
+    }
+  );
 }
 
 DereferenceError.prototype.toString = function() {
@@ -25,7 +24,6 @@ DereferenceError.prototype.toString = function() {
 };
 
 export class EagleLocator extends Array {
-
   constructor(location = []) {
     super();
     for(let i = 0; i < location.length; i++) this.push(location[i]);
@@ -116,7 +114,7 @@ export class EagleLocator extends Array {
   }
 
   toString(hl = -1) {
-    const ansi = (n = 0) =>`\u001b[${[...arguments].join(";")}m`;
+    const ansi = (n = 0) => `\u001b[${[...arguments].join(";")}m`;
     const text = (text, ...color) => ansi(...color) + text + ansi(0);
 
     let y = this.map(item => (item == "children" ? "⎿" : item)).map((part, i) => text(part, ...(hl == i ? [38, 5, 124] : [38, 5, 82])));

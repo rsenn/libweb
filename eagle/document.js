@@ -135,9 +135,7 @@ export class EagleDocument {
     yield [o, l, hier, d];
     if(typeof o == "object") {
       let h = [[o, l.last, d], ...hier];
-      if(o instanceof Array || "length" in o) 
-        for(let i = 0; i < o.length; i++) 
-          yield* EagleDocument.traverse(o[i], l.down(i), h, d);
+      if(o instanceof Array || "length" in o) for(let i = 0; i < o.length; i++) yield* EagleDocument.traverse(o[i], l.down(i), h, d);
       else if("children" in o) for(let i = 0; i < o.children.length; i++) yield* EagleDocument.traverse(o.children[i], l.down("children", i), h, d);
     }
   }
@@ -216,7 +214,7 @@ export class EagleDocument {
   }
 
   toString = () => this.xml.map(e => EagleDocument.toXML(e)).join("\n") + "\n";
-/*
+  /*
   static pathStr(path) {
     let str = "";
     for(let part of path) str += typeof part == "number" ? `[${part}]` : "." + part;

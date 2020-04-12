@@ -321,10 +321,10 @@ Util.define = (obj, key, value, enumerable = false) =>
     writable: false,
     value
   });
-Util.extend = (obj, other) => {
+Util.extend = (obj, ...args) => {
+  for(let other of args)
   for(let prop in other)
     Util.define(obj, prop, other[prop]);
-//     obj[prop] = other[prop];
   return obj;
 };
 Util.defineGetter = (obj, key, get, enumerable = false) =>
