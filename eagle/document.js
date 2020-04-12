@@ -11,6 +11,23 @@ import { EagleLocator } from "./locator.js";
 
 const dump = (obj, depth = 1) => util.inspect(obj, { depth, breakLength: 400, colors: true });
 
+const parseArgs = args => {
+  let ret = { location: [], transform: arg => arg };
+  while(args.length > 0) {
+    if(args[0] instanceof EagleLocator) ret.location = args.shift();
+    else if(typeof args[0] == "function") {
+      if(ret.predicate === undefined) ret.predicate = args.shift();
+      else ret.transform = args.shift();
+    } else if(ret.element === undefined) {
+      ret.element = args.shift();
+    } else if(typeof args[0] == "string") {
+      ret.name = args.shift();
+    } else throw new Error("unhandled");
+  }
+  // if(!ret.predicate)  ret.predicate = (...args) => args;
+  return ret;
+};
+
 export class EagleDocument {
   xml = null;
   path = null;
@@ -63,9 +80,11 @@ export class EagleDocument {
     return counts;
   }
 
-  index(loc) {
-    if(!loc) return null;
-    let obj = this.root;
+  index(location, transform = arg => arg) {
+    if(!(location instanceof EagleLocator)) location = new EagleLocator(location);
+    return transform(location.apply(this.root));
+
+    /*
     for(let i = 0; i < loc.length; i++) {
       const idx = loc[i];
       switch (typeof idx) {
@@ -85,7 +104,7 @@ export class EagleDocument {
       }
     }
     if(!obj) throw new Error(`EagleDocument index(${dump(loc)}) returned ${obj}`);
-    return obj;
+    return obj;*/
   }
 
   static nodeName(node, loc, hier) {
@@ -96,13 +115,12 @@ export class EagleDocument {
       let next = hier[0] || [null, []];
       let parent = next[0];
       if(str.startsWith("?")) break;
-      if(typeof node == "object" && node.tagName && "children" in node && parent && parent.children.filter(child => (typeof child.tagName == "string" && child.tagName.length > 0 ? child.tagName == node.tagName : false)).length == 1) {
+      if(typeof node == "object" && node.tagName && "children" in node && parent && parent.children.filter(child => typeof child.tagName == "string" && child.tagName.length > 0 ? child.tagName == node.tagName : false ).length == 1 ) {
       } else if(typeof node == "object" && "attributes" in node && "name" in node.attributes) {
         let cmp = Object.keys(node.attributes)
           .filter(k => k == "name")
           .map(key => `@${key}="${node.attributes[key]}"`)
           .join(",");
-
         if(cmp != "") str += `[${cmp}]`;
       } else if(typeof key == "number") {
         str += `[${key}]`;
@@ -117,27 +135,28 @@ export class EagleDocument {
     return out;
   }
 
-  static *traverse(obj, loc = [], hier = []) {
+  static *traverse(obj, loc = [], hier = [], parent) {
     if(!(loc instanceof EagleLocator)) loc = new EagleLocator(loc);
 
-    if(false && typeof obj == "object") {
-      if(obj !== null && "name" in obj.attributes) {
-        let key = { name: obj.attributes.name };
-        loc[loc.length - 1] = key;
-      }
-    }
-    let parent = hier[0] && hier[0][0];
+    if(false && typeof obj == "object")
+      if(obj !== null && "name" in obj.attributes)
+        loc[loc.length - 1] = { name: obj.attributes.name };
+
+    if(parent === undefined)
+      parent = hier[0] && hier[0][0];
     yield [obj, loc, hier, parent];
 
     if(typeof obj == "object") {
-      if(obj instanceof Array || "length" in obj) {
-        for(let i = 0; i < obj.length; i++) yield* EagleDocument.traverse(obj[i], loc.down(i), [[obj, loc.last, parent], ...hier]);
-      } else if("children" in obj) {
-        for(let i = 0; i < obj.children.length; i++) yield* EagleDocument.traverse(obj.children[i], loc.down("children", i), [[obj, loc.last, parent], ...hier]);
-      }
+      let h = [[obj, loc.last, parent], ...hier];
+      if(obj instanceof Array || "length" in obj)
+        for(let i = 0; i < obj.length; i++)
+          yield* EagleDocument.traverse(obj[i], loc.down(i), h, parent );
+      else if("children" in obj)
+        for(let i = 0; i < obj.children.length; i++)
+          yield* EagleDocument.traverse(obj.children[i], loc.down("children", i), h, parent );
     }
   }
-
+  /*
   nextSibling(loc) {
     let obj = this.index(loc.nextSibling);
     return obj ? [obj, p] : null;
@@ -161,75 +180,55 @@ export class EagleDocument {
   lastChild(loc) {
     let obj = this.index(loc.lastChild);
     return obj ? [obj, p] : null;
-  }
-
-  find(pred, rootLoc = []) {
-    for(let [v, p, h] of EagleDocument.traverse(this.xml[0], rootLoc)) if(pred(v, p, h)) return [v, p, h];
-    return [null, [], []];
-  }
-
-  *findAll(pred, rootLoc = []) {
-    for(let [v, p, h] of EagleDocument.traverse(this.xml[0], rootLoc)) if(pred(v, p, h)) yield [v, p, h];
-  }
-
-  locate(obj, rootLoc = []) {
-    let [value, path, hier] = this.find((value, path, hier) => value === obj, rootLoc);
-    return path;
-  }
-  /*
-  get(entity) {
-    const [parent, loc] = this.find(v => v.tagName == entity);
-    let elements = null;
-
-    if(parent) {
-      elements = [];
-
-      for(let i = 0; i < parent.children.length; i++) {
-        elements.push(new EagleEntity(this, [...loc, i]));
-      }
-    }
-    return elements;
   }*/
 
-  *getAll(entity, rootLoc, transform) {
-    let arg = [...arguments];
-    entity = arg.shift();
-    rootLoc = arg[0] instanceof Array ? arg.shift() : [];
-    transform =
-      typeof arg[0] == "function"
-        ? arg.shift()
-        : function() {
-            return [...arguments];
-          };
-
-    for(let [value, loc, hier] of this.findAll((v, p, h) => v.tagName == entity, rootLoc)) {
-      yield transform(value, loc, hier, this);
-      //       yield  new EagleEntity(this, loc);
-    }
+  find(...args) {
+    let { element, location, predicate, transform } = parseArgs(args);
+    for(let [v, p, h] of EagleDocument.traverse(this.xml[0], location))
+      if(predicate(v, p, h))return transform([v, p, h]);
+    return transform([null, [], []]);
   }
 
-  getByName(entity, name) {
-    const [element, loc] = this.find(v => v.tagName == entity && v.attributes.name == name);
-    return new EagleEntity(this, loc);
+  *findAll(...args) {
+    let { location, predicate, transform } = parseArgs(args);
+
+    for(let [v, l, h] of EagleDocument.traverse(this.xml[0], location))
+      if(predicate(v, l, h)) yield transform([v, l, h, this]);
+  }
+
+  locate(...args) {
+    let { element, location, predicate } = parseArgs(args);
+    return predicate(this.find((v, l, h, d) => v === element, location));
+  }
+
+  getAll(...args) {
+    let element = typeof args[0] == "string" ? args.shift() : undefined;
+    let name = typeof args[0] == "string" ? args.shift() : undefined;
+    let predicate = typeof element == "string"? (v, l, h, d) => (name !== undefined && v.tagName === name) || (element !== undefined && v.tagName === element) : typeof args[0] == "function"? args.shift() : arg => true;
+    let transform = typeof name == "string"? ([v, l, h, d]) => v.attributes && v.attributes[name] : typeof args[0] == "function"? args.shift() : arg => arg;
+    return this.findAll(predicate, transform);
+  }
+
+  getByName(...args) {
+    let { location, element } = parseArgs(args);
+    return transform(this.find(v => v.tagName == element && v.attributes.name == name));
   }
 
   xpath(loc) {
-    let str = "";
-    let obj = this.xml;
+    let str = "",
+      obj = this.xml;
     for(let i = 0; i < loc.length; i++) {
       let part = loc[i];
       obj = obj[part];
-
       if(obj.tagName !== undefined /*&& obj.tagName[0] != '?'*/) {
         if(obj.tagName[0] == "?") continue;
-
         str += `/${obj.tagName}`;
-        if(obj.attributes && obj.attributes.name !== undefined) str += `[@name="${obj.attributes.name}"]`;
-      } else if(part != "children") str += "/" + part;
-
+        if(obj.attributes && obj.attributes.name !== undefined)
+          str += `[@name="${obj.attributes.name}"]`;
+      } else if(part != "children") {
+        str += "/" + part;
+      }
       if(typeof part == "number") str += `[${part}]`;
-
-      //console.log(obj);
     }
     return str;
   }
@@ -238,10 +237,7 @@ export class EagleDocument {
 
   static pathStr(path) {
     let str = "";
-    for(let part of path) {
-      if(typeof part == "number") str += `[${part}]`;
-      else str += "." + part;
-    }
+    for(let part of path) str += typeof part == "number" ? `[${part}]` : "." + part;
     return str;
   }
 
@@ -256,12 +252,36 @@ export class EagleDocument {
     const children = obj.children && obj.children.length !== undefined ? obj.children : [];
     if(children && children.length > 0) {
       str += obj.tagName[0] != "?" ? ">" : "?>";
-      let nl = obj.tagName == "text" && children.length == 1 ? "" : obj.tagName[0] != "?" ? "\n  " : "\n";
-      for(let child of children) str += nl + EagleDocument.toXML(child, depth - 1).replace(/\n/g, nl);
+      let nl =
+        obj.tagName == "text" && children.length == 1 ? "" : obj.tagName[0] != "?" ? "\n  " : "\n";
+      for(let child of children)
+        str += nl + EagleDocument.toXML(child, depth - 1).replace(/\n/g, nl);
       if(obj.tagName[0] != "?") str += `${nl.replace(/ /g, "")}</${obj.tagName}>`;
     } else {
       str += " />";
     }
     return str.replace(/\n *\n/g, "\n").trim();
+  }
+
+  entries(t) {
+    if(!t) t = ([v, l, h, d]) => new EagleEntity(d, l);
+    return this[Symbol.iterator](t);
+  }
+
+  *[Symbol.iterator](t) {
+    let doc = this;
+    let { xml } = doc;
+    if(typeof t != "function")
+      t = ([v, l, h, d = doc]) => {
+        //  console.log("document: " + (l)  + '  '+ dump(d));
+        let obj = v instanceof EagleEntity ? EagleEntity.toObject(v) : v;
+        if(!(v instanceof EagleEntity)) v = new EagleEntity(d, l);
+        let { tagName, children, attributes } = obj;
+        return [tagName || null, attributes || null, children || []];
+      };
+    if(!this.root) this.root = xml[0];
+    let { root } = this;
+
+    for(let element of EagleDocument.traverse(xml[0], [], undefined, doc)) yield t(element);
   }
 }

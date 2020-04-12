@@ -1,17 +1,37 @@
 import Util from "../util.js";
+import util from "util";
+
+const dump = (obj, depth = 1, breakLength = 100) =>
+  util.inspect(obj, { depth, breakLength, colors: true });
 
 export function DereferenceError(object, member, pos, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
 
-  error.message = `Error dereferencing Object @ ${locator.join("|")} w/ keys {${Object.keys(object).join(",")}} no member '${member}'`;
-  error.toString = () => error.message;
-  error.object = error;
+  error.message = `Error dereferencing Object @ ${locator.join("|")} w/ keys {${Object.keys(
+    object
+  ).join(",")}} no member '${member}'`;
+  //  error.toString = () => error.message;
+  error.object = object;
   error.member = member;
   error.pos = pos;
   error.locator = locator;
+  error.stack = Util.getCallerStack()
+    .filter(frame => null !== frame.getFileName())
+    .map(
+      frame =>
+        `${("" + frame.getFileName()).replace(
+          /.*plot-cv\//,
+          ""
+        )}:${frame.getLineNumber()}:${frame.getColumnNumber()}`
+    );
 
   return error;
 }
+
+DereferenceError.prototype.toString = function() {
+  const { message, object, member, pos, locator, stack } = this;
+  return `${message}\n${dump({ object, member, pos, locator, stack }, 2)}`;
+};
 
 export class EagleLocator extends Array {
   constructor(location = []) {
@@ -106,15 +126,20 @@ export class EagleLocator extends Array {
         return a;
       },
       { o, n: 0 }
-    );
+    ).o;
   }
 
   toString(hl = -1) {
-     const ansi = function(n = 0) {return `\u001b[${[...arguments].join(";")}m`; };
-  const text = (text, ...color) => ansi(...color) + text + ansi(0);
+    const ansi = function(n = 0) {
+      return `\u001b[${[...arguments].join(";")}m`;
+    };
+    const text = (text, ...color) => ansi(...color) + text + ansi(0);
 
-    let out = this.map(item => (item == "children" ? "⎿" : item)).map((part, i) => text(part, ...(hl == i ? [38,5,124] : [38,5,82])));
+    let out = this.map(item => (item == "children" ? "⎿" : item)).map((part, i) =>
+      text(part, ...(hl == i ? [38, 5, 124] : [38, 5, 82]))
+    );
 
-    return text(" ♈", 38,5,45) + out.join("") + text("🔚 ", 38,5,172);
+    out = text("♈ ", 38, 5, 45) + out.join("") + text(" 🔚", 38, 5, 172);
+    return out.trim();
   }
 }

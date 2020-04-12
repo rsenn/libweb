@@ -294,8 +294,9 @@ Util.randomBits = function(r = [1, 50], n = 5) {
 };
 Util.padFn = function(len, char = " ", fn = (str, pad) => pad) {
   return (s, n = len) => {
+    let m = Util.stripAnsi(s).length;
     s = s ? s.toString() : "" + s;
-    return fn(s, s.length < n ? char.repeat(n - s.length) : "");
+    return fn(s, m < n ? char.repeat(n - m) : "");
   };
 };
 Util.pad = function(s, n, char = " ") {
@@ -1778,4 +1779,7 @@ Util.decodeHTMLEntities = function(text) {
   return text.replace(/&([^;]+);/gm, function(match, entity) {
     return entities[entity] || match;
   });
+};
+Util.stripAnsi = function(str) {
+  return str.replace(/\x1B[[(?);]{0,2}(;?\d)*./g, '');
 };
