@@ -25,6 +25,7 @@ DereferenceError.prototype.toString = function() {
 };
 
 export class EagleLocator extends Array {
+
   constructor(location = []) {
     super();
     for(let i = 0; i < location.length; i++) this.push(location[i]);
@@ -34,8 +35,8 @@ export class EagleLocator extends Array {
     return this.slice();
   }
 
-  set(parts) {
-    this.splice(0, this.length, ...parts);
+  set(a) {
+    this.splice(0, this.length, ...a);
     return this;
   }
 
@@ -90,15 +91,9 @@ export class EagleLocator extends Array {
     return this.down.apply(this, arguments);
   }
 
-  get lastId() {
-    return this.length - 1;
-  }
-  get last() {
-    return this[this.length - 1];
-  }
-  get first() {
-    return this[0];
-  }
+  /* prettier-ignore */ get lastId() {return this.length - 1; }
+  /* prettier-ignore */ get last() {return this[this.length - 1]; }
+  /* prettier-ignore */ get first() {return this[0]; }
 
   /* prettier-ignore */ get nextSibling() { return this.right(); }
   /* prettier-ignore */ get prevSibling() { return this.left(); }
@@ -121,14 +116,12 @@ export class EagleLocator extends Array {
   }
 
   toString(hl = -1) {
-    const ansi = function(n = 0) {
-      return `\u001b[${[...arguments].join(";")}m`;
-    };
+    const ansi = (n = 0) =>`\u001b[${[...arguments].join(";")}m`;
     const text = (text, ...color) => ansi(...color) + text + ansi(0);
 
-    let out = this.map(item => (item == "children" ? "⎿" : item)).map((part, i) => text(part, ...(hl == i ? [38, 5, 124] : [38, 5, 82])));
+    let y = this.map(item => (item == "children" ? "⎿" : item)).map((part, i) => text(part, ...(hl == i ? [38, 5, 124] : [38, 5, 82])));
 
-    out = text("♈ ", 38, 5, 45) + out.join("") + text(" 🔚", 38, 5, 172);
-    return out.trim();
+    y = text("♈ ", 38, 5, 45) + y.join("") + text(" 🔚", 38, 5, 172);
+    return y.trim();
   }
 }

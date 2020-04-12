@@ -5,15 +5,13 @@ import { EagleDocument } from "./document.js";
 
 export class EagleProject {
   documents = [];
+  filename = null;
 
-  constructor(filename) {
-    this.filename = filename.replace(/\.(brd|sch)$/, "");
-
+  constructor(file) {
+    this.filename = file.replace(/\.(brd|sch)$/, "");
     this.open(this.filename + ".sch");
     this.open(this.filename + ".brd");
-
     this.loadLibraries();
-
     console.log("Opened project:", this.filename);
   }
 
@@ -23,28 +21,22 @@ export class EagleProject {
    * @param      {string}         filename  Document filename
    * @return     {EagleDocument}  The eagle document.
    */
-  open(filename) {
+  open(file) {
     let doc, err;
     try {
-      doc = new EagleDocument(filename);
+      doc = new EagleDocument(file);
     } catch(error) {
       err = error;
     }
     if(doc) this.documents.push(doc);
-    else throw new Error("EagleProject: error opening " + filename);
+    else throw new Error("EagleProject: error opening " + file);
     //console.log("Opened document:", filename);
     return doc;
   }
 
-  get schematic() {
-    return this.documents.find(doc => doc.type == "sch");
-  }
-  get board() {
-    return this.documents.find(doc => doc.type == "brd");
-  }
-  get libraries() {
-    return this.documents.filter(doc => doc.type == "lbr");
-  }
+  /* prettier-ignore */ get schematic() {return this.documents.find(doc => doc.type == "sch"); }
+  /* prettier-ignore */ get board() {return this.documents.find(doc => doc.type == "brd"); }
+  /* prettier-ignore */ get libraries() {return this.documents.filter(doc => doc.type == "lbr"); }
 
   getDocumentDirectories = () => Util.unique(this.documents.map(doc => doc.dirname));
 
@@ -70,7 +62,7 @@ export class EagleProject {
 
   loadLibraries(dirs = this.libraryPath()) {
     let names = this.getLibraryNames();
-    console.log("names:", names);
+    //console.log("names:", names);
     for(let name of names) {
       let lib = this.findLibrary(name, dirs);
       if(!lib) throw new Error(`EagleProject library '${name}' not found in ${dirs.join(".")}`);
