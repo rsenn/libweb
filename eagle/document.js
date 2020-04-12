@@ -8,6 +8,7 @@ import { EagleEntity } from "./entity.js";
 import util from "util";
 import path from "path";
 import { EagleLocator } from "./locator.js";
+import { ansi, text } from "./common.js";
 
 const dump = (obj, depth = 1) => util.inspect(obj, { depth, breakLength: 400, colors: true });
 

@@ -1,5 +1,6 @@
 import Util from "../util.js";
 import util from "util";
+import { ansi, text } from "./common.js";
 
 const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
 

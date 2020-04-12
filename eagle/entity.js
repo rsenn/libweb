@@ -4,6 +4,7 @@ import { lazyArray } from "../lazyInitializer.js";
 import util from "util";
 import { EagleDocument } from "./document.js";
 import { EagleLocator } from "./locator.js";
+import { ansi, text } from "./common.js";
 
 const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
 
@@ -88,8 +89,7 @@ export class EagleEntity {
   static dump(e, d, c = { depth: 0, breakLength: 400 }) {
     const { depth, breakLength } = c;
     let o = e;
-    const ansi = (...args) => `\u001b[${[...args].join(";")}m`;
-    const text = (text, ...color) => ansi(...color) + text + ansi(0);
+   
     if(typeof e == "string") return text(e, 1, 36);
     if(e instanceof EagleEntity) o = EagleEntity.toObject(e);
     let x = util.inspect(o, { depth: depth * 2, breakLength, colors: true });
