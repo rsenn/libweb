@@ -57,10 +57,7 @@ export class EagleProject {
     const { board, schematic } = this;
     const transform = ([v, l, h, d]) => v.attributes.name;
     const predicate = (v, l, h, d) => v.tagName == "library";
-    return Util.unique([
-      ...board.getAll(predicate, transform),
-      ...schematic.getAll(predicate, transform)
-    ]);
+    return Util.unique([...board.getAll(predicate, transform), ...schematic.getAll(predicate, transform)]);
   }
 
   findLibrary(name, dirs = this.libraryPath()) {
@@ -81,6 +78,5 @@ export class EagleProject {
     }
   }
 
-  saveTo = (dir = ".", overwrite = false) =>
-    Promise.all(this.documents.map(doc => doc.saveTo(path.join(dir, doc.filename), overwrite)));
+  saveTo = (dir = ".", overwrite = false) => Promise.all(this.documents.map(doc => doc.saveTo(path.join(dir, doc.filename), overwrite)));
 }

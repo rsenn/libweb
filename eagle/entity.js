@@ -7,8 +7,7 @@ import util from "util";
 import { EagleDocument } from "./document.js";
 import { EagleLocator } from "./locator.js";
 
-const dump = (obj, depth = 1, breakLength = 100) =>
-  util.inspect(obj, { depth, breakLength, colors: true });
+const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
 
 export class EagleEntity {
   tagName = "";
@@ -20,12 +19,7 @@ export class EagleEntity {
       handlers: {}
     });
 
-    if(obj === undefined || (obj.tagName === undefined && obj.attributes === undefined)) {
-      let r = this.locator.apply(d.root || d.xml[0]);
-      ///    console.log(`EagleEntity.constructor  \n`, locator.toString(),"\n",dump(r));
-
-      obj = r;
-    }
+    if(obj === undefined || (obj.tagName === undefined && obj.attributes === undefined)) obj = this.locator.apply(d.root || d.xml[0]);
 
     let { tagName, attributes, children } = obj;
 
@@ -42,19 +36,11 @@ export class EagleEntity {
         );
         this.handlers[key] = handler;
         trkl.bind(this.attributes, key, handler);
-        if(EagleEntity.isRelation(key))
-          trkl.bind(this, key, value =>
-            value ? this.handlers[key](value.name) : document.getByName(key, this.handlers[key]())
-          );
+        if(EagleEntity.isRelation(key)) trkl.bind(this, key, value => (value ? this.handlers[key](value.name) : document.getByName(key, this.handlers[key]())));
       }
     }
     this.children = [];
-    if(children instanceof Array)
-      this.children = lazyArray(
-        children.map((child, i) => () =>
-          new EagleEntity(document, this.locator.down("children", i))
-        )
-      );
+    if(children instanceof Array) this.children = lazyArray(children.map((child, i) => () => new EagleEntity(document, this.locator.down("children", i))));
   }
 
   get text() {
@@ -84,22 +70,7 @@ export class EagleEntity {
   }
 
   static isRelation(name) {
-    return (
-      [
-        "class",
-        "device",
-        "deviceset",
-        "element",
-        "gate",
-        "layer",
-        "library",
-        "package",
-        "pad",
-        "part",
-        "pin",
-        "symbol"
-      ].indexOf(name) != -1
-    );
+    return ["class", "device", "deviceset", "element", "gate", "layer", "library", "package", "pad", "part", "pin", "symbol"].indexOf(name) != -1;
   }
 
   /* prettier-ignore */ static keys(entity) {return Object.keys(EagleEntity.toObject(entity)); }
@@ -110,12 +81,7 @@ export class EagleEntity {
     let { tagName, attributes, children, text } = entity;
     let o = { ...attributes };
     if(typeof entity == "object" && entity !== null && "tagName" in entity) o = { tagName, ...o };
-    if(
-      typeof children == "object" &&
-      children !== null &&
-      "length" in children &&
-      children.length > 0
-    ) {
+    if(typeof children == "object" && children !== null && "length" in children && children.length > 0) {
       let lines = children.filter(child => typeof child == "string");
       children = children.filter(child => typeof child != "string").map(EagleEntity.toObject);
       text = lines.join("\n");
@@ -133,54 +99,37 @@ export class EagleEntity {
     return [tagName, attributes, children];
   }
 
-  static dump(entity, depth = 0, breakLength = 400) {
+  static dump(entity, doc, opts = { depth: 0, breakLength: 400 }) {
+    const { depth, breakLength } = opts;
     let obj = entity;
-
     const ansi = (...args) => `\u001b[${[...args].join(";")}m`;
     const text = (text, ...color) => ansi(...color) + text + ansi(0);
-
     if(typeof entity == "string") return text(entity, 1, 36);
-
     if(entity instanceof EagleEntity) obj = EagleEntity.toObject(entity);
-
     let s = util.inspect(obj, { depth: depth * 2, breakLength, colors: true });
-
     let sep = "⏐";
     s = s.replace(/.*tagName[^']*'([^']+)'[^,]*,?/g, "$1");
-    s = s.replace(
-      /([^ ]*):[^']*('[^']*')[^,]*,?/g,
-      `${text("$1", 33)}${text(sep, 0, 37)}${text("$2", 1, 36)}`
-    );
+    s = s.replace(/([^ ]*):[^']*('[^']*')[^,]*,?/g, [text("$1", 33), text(sep, 0, 37), text("$2", 1, 36)].join(""));
     let [part, ...arr] = s
       .replace(/[|\s]+/g, " ")
       .replace(/'([^'][^']*)'/g, "$1")
       .split(/ +/g);
-
-    part = part.replace(/^[^a-z]*([a-z]+)[^a-z]*$/g, "$1");
-    //part = `〈${part}〉`;
-    part = text(part, 38, 5, 199);
-    part = text(`〔`, 1, 37) + part;
-
-    let location = entity.locator + "";
-    return (
-      `${location + Util.pad(location, 24, " ")}  ${text("EagleEntity", 38, 5, 219)}${part} ${text(
-        "⧃❋⭗",
-        38,
-        5,
-        112
-      )}  ${arr.join(" ").trimRight()}` + text(`〕`, 1, 37)
-    );
+    part = text(`〔`, 1, 37) + text(part.replace(/^[^a-z]*([a-z]+)[^a-z]*$/g, "$1"), 38, 5, 199);
+    let location = entity.locator + "",
+      type = Util.lcfirst(doc.type);
+    return [location + Util.pad(location, 24, " "), text(`${type}`, 38, 5, 219), part, text("⧃❋⭗", 38, 5, 112), arr.join(" ").trimRight(), text(`〕`, 1, 37)].join(" ");
   }
 
   toString(entity = this) {
-    const { text } = entity;
+    const { text, document } = entity;
+    const { type, filename } = document;
     /*  if(typeof text == "string" && text.length > 0) {
       if(entity.attributes) entity.attributes.innerHTML = text;
       else entity.innerHTML = text;
     }*/
     //      if(entity instanceof EagleEntity) entity = EagleEntity.toObject(entity);
 
-    return EagleEntity.dump(entity);
+    return EagleEntity.dump(entity, document);
     /*
 
     const { locator, attributes, children, tagName, text } = entity;
