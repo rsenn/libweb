@@ -1,5 +1,5 @@
-import { EagleLocator } from './locator.js';
-import { EagleEntity } from './entity.js';
+import { EagleLocator } from "./locator.js";
+import { EagleEntity } from "./entity.js";
 import util from "util";
 
 export const ansi = (...args) => `\u001b[${[...args].join(";")}m`;
@@ -25,40 +25,40 @@ export const parseArgs = args => {
   return ret;
 };
 
-  export const traverse = function *(o, l = [], hier = [], d) {
-    /*if(!(l instanceof EagleLocator)) l = new EagleLocator(l);*/
-    if(l instanceof Array) l = new EagleLocator(l);
-    if(false && typeof o == "object") if (o !== null && "name" in o.attributes) l[l.length - 1] = { name: o.attributes.name };
-    if(d === undefined) d = hier[0] && hier[0][0];
-    yield [o, l, hier, d];
-    if(typeof o == "object") {
-      let h = [[o, l.last, d], ...hier];
-      if(o instanceof Array || "length" in o) for(let i = 0; i < o.length; i++) yield* traverse(o[i], l.down(i), h, d);
-      else if("children" in o) for(let i = 0; i < o.children.length; i++) yield* traverse(o.children[i], l.down("children", i), h, d);
-    }
-  };
-  export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
-    if(o instanceof Array) return o.map(toXML).join("\n");
-    else if(typeof o == "string") return o;
-    else if(typeof o != "object" || o.tagName === undefined) return "";
+export const traverse = function*(o, l = [], hier = [], d) {
+  /*if(!(l instanceof EagleLocator)) l = new EagleLocator(l);*/
+  if(l instanceof Array) l = new EagleLocator(l);
+  if(false && typeof o == "object") if (o !== null && "name" in o.attributes) l[l.length - 1] = { name: o.attributes.name };
+  if(d === undefined) d = hier[0] && hier[0][0];
+  yield [o, l, hier, d];
+  if(typeof o == "object") {
+    let h = [[o, l.last, d], ...hier];
+    if(o instanceof Array || "length" in o) for(let i = 0; i < o.length; i++) yield* traverse(o[i], l.down(i), h, d);
+    else if("children" in o) for(let i = 0; i < o.children.length; i++) yield* traverse(o.children[i], l.down("children", i), h, d);
+  }
+};
+export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
+  if(o instanceof Array) return o.map(toXML).join("\n");
+  else if(typeof o == "string") return o;
+  else if(typeof o != "object" || o.tagName === undefined) return "";
 
-    let s = `<${o.tagName}`;
-    for(let k in o.attribues) s += ` ${k}="${o.attributes[k]}"`;
+  let s = `<${o.tagName}`;
+  for(let k in o.attribues) s += ` ${k}="${o.attributes[k]}"`;
 
-    const a = o.children && o.children.length !== undefined ? o.children : [];
-    if(a && a.length > 0) {
-      s += o.tagName[0] != "?" ? ">" : "?>";
-      let nl = o.tagName == "text" && a.length == 1 ? "" : o.tagName[0] != "?" ? "\n  " : "\n";
-      for(let child of a) s += nl + toXML(child, z - 1).replace(/\n/g, nl);
-      if(o.tagName[0] != "?") s += `${nl.replace(/ /g, "")}</${o.tagName}>`;
-    } else {
-      s += " />";
-    }
-    return s.replace(/\n *\n/g, "\n").trim();
-  };
+  const a = o.children && o.children.length !== undefined ? o.children : [];
+  if(a && a.length > 0) {
+    s += o.tagName[0] != "?" ? ">" : "?>";
+    let nl = o.tagName == "text" && a.length == 1 ? "" : o.tagName[0] != "?" ? "\n  " : "\n";
+    for(let child of a) s += nl + toXML(child, z - 1).replace(/\n/g, nl);
+    if(o.tagName[0] != "?") s += `${nl.replace(/ /g, "")}</${o.tagName}>`;
+  } else {
+    s += " />";
+  }
+  return s.replace(/\n *\n/g, "\n").trim();
+};
 
 export class EagleNode {
-   nextSibling(loc) {
+  nextSibling(loc) {
     let obj = this.index(loc.nextSibling);
     return obj ? [obj, p] : null;
   }
@@ -85,13 +85,13 @@ export class EagleNode {
 
   find(...args) {
     let { element, location, predicate, transform } = parseArgs(args);
-    for(let [v, p, h] of traverse(this.xml[0],  )) if(predicate(v, p, h)) return transform([v, p, h]);
+    for(let [v, p, h] of traverse(this.xml[0])) if(predicate(v, p, h)) return transform([v, p, h]);
     return transform([null, [], []]);
   }
 
   *findAll(...args) {
     let { location, predicate, transform } = parseArgs(args);
-console.log("location:",dump(location));
+    console.log("location:", dump(location));
     for(let [v, l, h] of traverse(this.xml[0], location)) if(predicate(v, l, h)) yield transform([v, l, h, this]);
   }
 
@@ -137,7 +137,6 @@ console.log("location:",dump(location));
     for(let part of path) str += typeof part == "number" ? `[${part}]` : "." + part;
     return str;
   }*/
-
 
   entries(t) {
     if(!t) t = ([v, l, h, d]) => new EagleEntity(d, l);

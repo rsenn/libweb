@@ -5,8 +5,7 @@ import { EagleEntity } from "./entity.js";
 import util from "util";
 import path from "path";
 import { EagleLocator } from "./locator.js";
-import { text,traverse, toXML,parseArgs, dump, EagleNode } from "./common.js";
-
+import { text, traverse, toXML, parseArgs, dump, EagleNode } from "./common.js";
 
 export class EagleDocument extends EagleNode {
   xml = null;
@@ -37,7 +36,7 @@ export class EagleDocument extends EagleNode {
   /* prettier-ignore */
   saveTo = (path, overwrite = false) => new Promise((resolve, reject) => fsPromises .writeFile(path, this.toString(), { flag: overwrite ? "w" : "wx" }) .then(() => resolve(path)) .catch(reject) );
 
-/*  *tagNames() {
+  /*  *tagNames() {
     let names = [];
     for(let [v, k, o, p] of Util.traverseWithPath(this.xml))
       if(k == "tagName" && names.indexOf(v) == -1) {
