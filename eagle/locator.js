@@ -1,17 +1,17 @@
 import Util from "../util.js";
 import util from "util";
-import { ansi, text } from "./common.js";
+import { ansi, text, inspect } from "./common.js";
 
 const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
 
-export function DereferenceError(object, member, pos, locator) {
+export function DereferenceError(object, member, pos, part, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
 
   return Util.extend(
     error,
     { object, member, pos, locator },
     {
-      message: `Error dereferencing Object @ ${locator.join("|")} w/ keys {${Object.keys(object).join(",")}} no member '${member}'`,
+      message: `Error dereferencing ${Util.className(object)} @ ${locator.slice(0,pos+1).join("|")} w/ keys={${Object.keys(part).join(",")}} no member '${member}' in `,
       stack: Util.getCallerStack()
         .filter(frame => null !== frame.getFileName())
         .map(frame => `${("" + frame.getFileName()).replace(/.*plot-cv\//, "")}:${frame.getLineNumber()}:${frame.getColumnNumber()}`)
@@ -101,13 +101,14 @@ export class EagleLocator extends Array {
   /* prettier-ignore */ get lastChild() { return this.nthChild(-1); }
   /* prettier-ignore */ get depth() { return this.length; }
 
-  apply(o) {
+  apply(obj) {
+    let o = obj;
     if(o === undefined) throw new Error(`Object ${o}`);
 
     return this.reduce(
       (a, i) => {
         let r = i < 0 && a.o instanceof Array ? a.o[a.o.length + i] : a.o[i];
-        if(r === undefined) throw new DereferenceError(a.o, i, a.n, this);
+        if(r === undefined) throw new DereferenceError(obj, i, a.n, a.o, this);
         a.o = r;
         a.n++;
         return a;
@@ -128,5 +129,20 @@ export class EagleLocator extends Array {
 
   toSource() {
     return `[${this.filter(item => item != "children").join(",")}]`;
+  }
+
+  split(pred) {
+    let i = 0;
+    let a = new EagleLocator();
+    let n;
+    if(typeof(pred) == 'number') {
+      n = pred;
+      pred = (part,index) => index === n;
+    }
+    while(i < this.length && !pred(this[0], i)) {
+      a.push(this.shift());
+      i++;
+    }
+    return a;
   }
 }

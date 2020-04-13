@@ -17,8 +17,36 @@ export class EagleEntity extends EagleNode {
     super(d, l);
     // const { +locator, ownerDocument, handlers } = */Util.extend(this, { ownerDocument: d, locator: l, handlers: {} });
     Object.defineProperty(this, "handlers", { value: {}, enumerable: false });
+/*
+    if(!(d instanceof EagleDocument)) {
+      let docpath = this.location.split(part => part == 'children');
+      d = d.index(docpath);
+        console.error("docpath:",   docpath, dump(d,1));
+    }
+*/
+ // console.error("EagleEntity", dump(this.document), dump(this.location));
+ // console.error("EagleEntity\n  "+Util.className(this.owner)+' '+Util.className(this.getDocument())+"\n  "+this.location.join(',')+"\n");
+
     // if(!d) return;
-    if(o === undefined || (o.tagName === undefined && o.attributes === undefined)) o = d && d.index ? d.index(this.location) : this.location.apply(d);
+    if(o === undefined || (o.tagName === undefined && o.attributes === undefined && o.children === undefined)) {
+      let owner = this.owner;
+      let location = this.location;
+try {
+  o = this.location.apply(owner); //.index(location);
+
+} catch(error) {
+  throw new Error("EagleEntity index\nerror="+error+"\nowner="+Util.className(owner).replace(/\s+/g, " ")+"\nlocation=["+location.join(','));
+
+}
+
+    //  o = this.location[0] == 'children' ?  this.getDocument().index(this.location) : this.owner.index(this.location);
+    }
+
+if(o === null) {
+  throw new Error("eagleentity "+l.join(',')+Util.className(d)+' '+Util.className(this.document));
+}
+//console.log("o:",o);
+
 
     let { tagName, attributes, children } = o;
     this.tagName = tagName;
@@ -33,10 +61,10 @@ export class EagleEntity extends EagleNode {
         );
         this.handlers[key] = handler;
         trkl.bind(this.attributes, key, handler);
-        if(EagleEntity.isRelation(key)) trkl.bind(this, key, v => (v ? this.handlers[key](v.name) : this.ownerDocument.getByName(key, this.handlers[key]())));
+        if(EagleEntity.isRelation(key)) trkl.bind(this, key, v => (v ? this.handlers[key](v.name) : this.owner.getByName(key, this.handlers[key]())[0]));
       }
     }
-    if(children instanceof Array) this.children = lazyArray(children.map((child, i) => () => new EagleEntity(d, this.location.down("children", i))));
+    if(children instanceof Array) this.children = lazyArray(children.map((child, i) => () => new EagleEntity(this.owner, this.location.down("children", i))));
     else this.children = [];
   }
 

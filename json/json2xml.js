@@ -114,6 +114,6 @@ function json2xml(json, tab) {
 }
 
 // node.js
-if(typeof module != "undefined") {
+if (typeof module != "undefined") {
   module.exports = json2xml_translator();
 }

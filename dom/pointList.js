@@ -251,7 +251,7 @@ PointList.prototype.diff = function(pt) {
   return PointList.prototype.sub.apply(ret, arguments);
 };
 
-for(let name of ["push", "splice", "clone", "area", "centroid", "avg", "bbox", "rect", "xrange", "yrange", "boundingRect"]) {
+for (let name of ["push", "splice", "clone", "area", "centroid", "avg", "bbox", "rect", "xrange", "yrange", "boundingRect"]) {
   PointList[name] = points => PointList.prototype[name].call(points);
 }
 

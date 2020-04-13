@@ -353,7 +353,7 @@ Matrix.translate = (matrix, tx, ty) => Matrix.prototype.translate.call(matrix, t
 Matrix.scale = (matrix, sx, sy) => Matrix.prototype.identity.call(matrix, sx, sy);
 Matrix.rotate = (matrix, rad) => Matrix.prototype.rotate.call(matrix, rad);
 
-for(let name of ["toArray", "toString", "toSVG", "point_transformer", "product"]) {
+for (let name of ["toArray", "toString", "toSVG", "point_transformer", "product"]) {
   Matrix[name] = points => Matrix.prototype[name].call(points);
 }
 
