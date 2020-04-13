@@ -97,7 +97,7 @@ export class EagleInterface {
   *findAll(obj) {
     console.log('obj:',obj);
     let { location, predicate, transform } = obj instanceof Array ? parseArgs(obj):obj;
-    for(let [v, l, h] of traverse(this.root, location)) if(predicate(v, l, h)) yield transform([v, l, h, this]);
+    for(let [v, l, h, d] of this.iterator()) if(predicate(v, l, h)) yield transform([v, l, h, this]);
   }
 
   locate(...args) {
