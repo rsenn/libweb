@@ -27,7 +27,7 @@ export class EagleProject extends EagleInterface {
   open(file) {
     let doc, err;
     try {
-      doc = new EagleDocument(file);
+      doc = new EagleDocument(file, this);
     } catch(error) {
       err = error;
     }
@@ -44,6 +44,14 @@ export class EagleProject extends EagleInterface {
   /* prettier-ignore */ get board() {return this.documents.find(doc => doc.type == "brd"); }
   /* prettier-ignore */ get libraries() {return this.documents.filter(doc => doc.type == "lbr"); }
   /* prettier-ignore */ get root() { let children = this.documents; return { children }; }
+
+
+  *iterator(t = ([v, l, h, d]) => [v.tagName ? new EagleEntity(d, l) : v, l, h, d]) {
+    for(let d of this.documents) 
+      yield *d.iterator(([v,l,h,d]) => t([v,[...EagleProject.documentLocation(d),...l],h,this]));
+  }
+
+  /* prettier-ignore */ static documentLocation(d) { return d.type == 'lbr' ? ['lbr',d.filename] : [d.type]; }
 
   getDocumentDirectories = () => Util.unique(this.documents.map(doc => doc.dirname));
 

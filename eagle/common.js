@@ -156,12 +156,11 @@ export class EagleInterface {
   *iterator(t = ([v, l, h, d]) => [v.tagName ? new EagleEntity(d, l) : v, l, h, d]) {
     let doc = this.document;
     let root = (doc && doc.root) || this.root;
-    for(let e of traverse(root, [], undefined, doc))
-       yield t(e);
-}
+    for(let e of traverse(root, [], undefined, doc)) yield t(e);
+  }
 
   [Symbol.iterator]() {
-  return  this.iterator(a => a);
+    return this.iterator(a => a);
   }
 
   static name(e, l) {

@@ -1404,6 +1404,6 @@ var QRCode;
   QRCode.CorrectLevel = QRErrorCorrectLevel;
 })();
 
-if(typeof module !== "undefined") {
+if (typeof module !== "undefined") {
   module.exports = QRCode;
 }

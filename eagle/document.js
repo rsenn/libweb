@@ -10,8 +10,9 @@ import { text, traverse, toXML, parseArgs, dump, EagleNode } from "./common.js";
 export class EagleDocument extends EagleNode {
   xml = null;
   path = null;
+  project = null;
 
-  constructor(filename) {
+  constructor(filename, project) {
     super(null, []);
     Object.defineProperty(this, "ownerDocument", { value: null, enumerable: false });
 
@@ -26,6 +27,7 @@ export class EagleDocument extends EagleNode {
     }
     this.path = filename;
     this.type = /<library>/.test(xmlStr) ? "lbr" : /<element /.test(xmlStr) ? "brd" : "sch";
+    if(project) this.project = project;
     Util.define(this, "xml", new tXml(xmlStr));
   }
 
@@ -39,6 +41,8 @@ export class EagleDocument extends EagleNode {
     return e;
 }
   }
+
+
 
   toString = () => this.xml.map(e => toXML(e)).join("\n") + "\n";
 
