@@ -101,9 +101,9 @@ export function renderSchematic(obj, factory) {
   bb.update(objects);
   const rect = bb.rect.outset(2.54 * 4);
   const center = rect.center;
-  console.log("rect:", rect.toString());
+  /*console.log("rect:", rect.toString());
   console.log("center:", center.prod(-1, -1).toString());
-  console.log("factory.delegate.root:", factory.delegate.root);
+  console.log("factory.delegate.root:", factory.delegate.root);*/
   factory.delegate.root.setAttribute("viewBox", rect.toString());
   for(let [v, k, o] of Util.traverse(obj)) {
     if(["x", "y", "x1", "y1", "x2", "y2", "width", "size"].indexOf(k) != -1) {

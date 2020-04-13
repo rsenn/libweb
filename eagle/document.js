@@ -42,6 +42,8 @@ export class EagleDocument extends EagleNode {
 }
   }
 
+  get basename() { return path.basename(this.filename).replace(/\.[a-z][a-z][a-z]$/i, ""); }
+
   toString = () => this.xml.map(e => toXML(e)).join("\n") + "\n";
 
   /* prettier-ignore */

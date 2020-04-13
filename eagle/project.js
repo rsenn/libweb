@@ -35,7 +35,7 @@ export class EagleProject extends EagleInterface {
     else throw new Error(`EagleProject: error opening '${file}': ${err}`);
     //console.log("Opened ownerDocument:", filename);
 
-    if(doc.type == "lbr") this.data[doc.type][doc.filename.replace(/\.lbr$/i, "")] = doc.root;
+    if(doc.type == "lbr") this.data[doc.type][doc.basename] = doc.root;
     else this.data[doc.type] = doc.root;
     return doc;
   }
@@ -44,25 +44,28 @@ export class EagleProject extends EagleInterface {
   /* prettier-ignore */ get board() {return this.documents.find(doc => doc.type == "brd"); }
   /* prettier-ignore */ get libraries() {return this.documents.filter(doc => doc.type == "lbr"); }
   /* prettier-ignore */ get root() { let children = this.documents; return { children }; }
+  /* prettier-ignore */ get children() { let children = this.documents; return children; }
+  /* prettier-ignore */ get library() { return this.data.lbr; }
 
   *iterator(t = ([v, l, h, d]) => [v.tagName ? new EagleEntity(d, l) : v, l, h, d]) {
     for(let d of this.documents) yield* d.iterator(([v, l, h, d]) => t([v, [...EagleProject.documentKey(d), ...l], h, this]));
   }
 
   /* prettier-ignore */ static documentLocation(d) { return d.type == 'lbr' ? ['lbr',d.filename] : [d.type]; }
-  /* prettier-ignore */ static documentKey(d) {
-    switch(d.type) {
-      case 'sch': return ['schematic'];
-      case 'brd': return ['board'];
-      case 'lbr': return ['library',d.filename.replace(/\.lbr$/i, "")];
+
+  static documentKey(d) {
+    switch (d.type) {
+      case "sch":
+        return ["schematic"];
+      case "brd":
+        return ["board"];
+      case "lbr":
+        return ["library", d.basename];
     }
-    }
+  }
+
   getDocumentDirectories = () => Util.unique(this.documents.map(doc => doc.dirname));
 
-  get library() {
-    return this.data.lbr;
-  }
-  
   libraryPath() {
     let docDirs = this.getDocumentDirectories();
     return [...docDirs, ...docDirs.map(dir => `${dir}/lbr`)].filter(fs.existsSync);

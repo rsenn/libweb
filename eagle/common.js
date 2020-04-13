@@ -94,24 +94,24 @@ export class EagleInterface {
     return transform([null, [], []]);
   }
 
-  *findAll(...args) {
-    let { location, predicate, transform } = parseArgs(args);
-    console.log("location:", dump(location));
-    console.log("root:", dump(this.root));
+  *findAll(obj) {
+    console.log('obj:',obj);
+    let { location, predicate, transform } = obj instanceof Array ? parseArgs(obj):obj;
     for(let [v, l, h] of traverse(this.root, location)) if(predicate(v, l, h)) yield transform([v, l, h, this]);
   }
 
   locate(...args) {
-    let { element, location, predicate } = parseArgs(args);
+    let { element, location, predicate, transform } = parseArgs(args);
     return predicate(this.find((v, l, h, d) => v === element, location));
   }
 
   getAll(...args) {
     let e = typeof args[0] == "string" ? args.shift() : undefined;
     let n = typeof args[0] == "string" ? args.shift() : undefined;
-    let p = typeof e == "string" ? (v, l, h, d) => (n !== undefined && v.tagName === n) || (e !== undefined && v.tagName === e) : typeof args[0] == "function" ? args.shift() : arg => true;
-    let t = typeof n == "string" ? ([v, l, h, d]) => v.attributes && v.attributes[n] : typeof args[0] == "function" ? args.shift() : x => x;
-    return this.findAll(p, t);
+    let predicate = typeof e == "string" ? (v, l, h, d) => (n !== undefined && v.tagName === n) || (e !== undefined && v.tagName === e) : typeof args[0] == "function" ? args.shift() : arg => true;
+    let transform = typeof n == "string" ? ([v, l, h, d]) => v.attributes && v.attributes[n] : typeof args[0] == "function" ? args.shift() : x => x;
+    console.log("t:",transform);
+    return this.findAll({  location: [], predicate, transform });
   }
 
   getByName(...args) {
@@ -148,7 +148,9 @@ export class EagleInterface {
     return str;
   }*/
 
-  entries(t = ([v, l, h, d]) => [l[l.length - 1], new EagleEntity(d, l)]) { return this.iterator(t); }
+  entries(t = ([v, l, h, d]) => [l[l.length - 1], new EagleEntity(d, l)]) {
+    return this.iterator(t);
+  }
 
   *iterator(t = ([v, l, h, d]) => [v.tagName ? new EagleEntity(d, l) : v, l, h, d]) {
     let doc = this.document;
