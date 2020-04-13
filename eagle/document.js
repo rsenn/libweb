@@ -42,8 +42,6 @@ export class EagleDocument extends EagleNode {
 }
   }
 
-
-
   toString = () => this.xml.map(e => toXML(e)).join("\n") + "\n";
 
   /* prettier-ignore */

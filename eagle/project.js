@@ -45,10 +45,8 @@ export class EagleProject extends EagleInterface {
   /* prettier-ignore */ get libraries() {return this.documents.filter(doc => doc.type == "lbr"); }
   /* prettier-ignore */ get root() { let children = this.documents; return { children }; }
 
-
   *iterator(t = ([v, l, h, d]) => [v.tagName ? new EagleEntity(d, l) : v, l, h, d]) {
-    for(let d of this.documents) 
-      yield *d.iterator(([v,l,h,d]) => t([v,[...EagleProject.documentLocation(d),...l],h,this]));
+    for(let d of this.documents) yield* d.iterator(([v, l, h, d]) => t([v, [...EagleProject.documentLocation(d), ...l], h, this]));
   }
 
   /* prettier-ignore */ static documentLocation(d) { return d.type == 'lbr' ? ['lbr',d.filename] : [d.type]; }

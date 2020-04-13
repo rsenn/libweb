@@ -148,10 +148,7 @@ export class EagleInterface {
     return str;
   }*/
 
-  entries(t) {
-    if(!t) t = ([v, l, h, d]) => [l[l.length - 1], new EagleEntity(d, l)];
-    return this[Symbol.iterator](t);
-  }
+  entries = (t = ([v, l, h, d]) => [l[l.length - 1], new EagleEntity(d, l)]) => this.iterator(t);
 
   *iterator(t = ([v, l, h, d]) => [v.tagName ? new EagleEntity(d, l) : v, l, h, d]) {
     let doc = this.document;
