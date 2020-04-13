@@ -4,7 +4,7 @@ import { lazyArray } from "../lazyInitializer.js";
 import util from "util";
 import { EagleDocument } from "./document.js";
 import { EagleLocator } from "./locator.js";
-import { ansi, text, EagleNode } from "./common.js";
+import { ansi, text, EagleNode, inspect, toXML } from "./common.js";
 
 const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
 
@@ -12,12 +12,14 @@ export class EagleEntity extends EagleNode {
   tagName = "";
   attributes = {};
   children = [];
-  document = null;
 
   constructor(d, l, o) {
-    super();
-    const { locator, document, handlers } = Util.extend(this, { document: d, locator: new EagleLocator(l), handlers: {} });
-    if(o === undefined || (o.tagName === undefined && o.attributes === undefined)) o = this.locator.apply(d.root || d.xml[0]);
+    super(d, l);
+    // const { +locator, ownerDocument, handlers } = */Util.extend(this, { ownerDocument: d, locator: l, handlers: {} });
+    Object.defineProperty(this, "handlers", { value: {}, enumerable: false });
+    // if(!d) return;
+    if(o === undefined || (o.tagName === undefined && o.attributes === undefined)) o = d && d.index ? d.index(this.location) : this.location.apply(d);
+
     let { tagName, attributes, children } = o;
     this.tagName = tagName;
     this.attributes = {};
@@ -31,10 +33,10 @@ export class EagleEntity extends EagleNode {
         );
         this.handlers[key] = handler;
         trkl.bind(this.attributes, key, handler);
-        if(EagleEntity.isRelation(key)) trkl.bind(this, key, v => (v ? this.handlers[key](v.name) : document.getByName(key, this.handlers[key]())));
+        if(EagleEntity.isRelation(key)) trkl.bind(this, key, v => (v ? this.handlers[key](v.name) : this.ownerDocument.getByName(key, this.handlers[key]())));
       }
     }
-    if(children instanceof Array) this.children = lazyArray(children.map((child, i) => () => new EagleEntity(document, this.locator.down("children", i))));
+    if(children instanceof Array) this.children = lazyArray(children.map((child, i) => () => new EagleEntity(d, this.location.down("children", i))));
     else this.children = [];
   }
 
@@ -43,10 +45,8 @@ export class EagleEntity extends EagleNode {
   }
 
   toXML(depth = Number.MAX_SAFE_INTEGER) {
-    const { tagName, children } = this;
-    let attributes = {};
-    for(let prop in this.attributes) attributes[prop] = this.attributes[prop];
-    return toXML({ tagName, attributes, children }, depth);
+    let o = this.document.index(this.location);
+    return toXML(o, depth);
   }
 
   set(name, value) {
@@ -79,6 +79,7 @@ export class EagleEntity extends EagleNode {
     if(typeof text == "string" && text.length > 0)
       if("attributes" in o) o.attributes.text = text;
       else o.innerHTML = text;
+    o.type = e.nodeType;
     return o;
   }
 
@@ -87,28 +88,8 @@ export class EagleEntity extends EagleNode {
     return [tagName, attributes, children];
   }
 
-  static dump(e, d, c = { depth: 0, breakLength: 400 }) {
-    const { depth, breakLength } = c;
-    let o = e;
-
-    if(typeof e == "string") return text(e, 1, 36);
-    if(e instanceof EagleEntity) o = EagleEntity.toObject(e);
-    let x = util.inspect(o, { depth: depth * 2, breakLength, colors: true });
-    let s = "⏐";
-    x = x.replace(/.*tagName[^']*'([^']+)'[^,]*,?/g, "$1");
-    x = x.replace(/([^ ]*):[^']*('[^']*')[^,]*,?/g, [text("$1", 33), text(s, 0, 37), text("$2", 1, 36)].join(""));
-    let [p, ...arr] = x
-      .replace(/[|\x]+/g, " ")
-      .replace(/'([^'][^']*)'/g, "$1")
-      .split(/ +/g);
-    p = text(`〔`, 1, 37) + text(p.replace(/^[^a-z]*([a-z]+)[^a-z]*$/g, "$1"), 38, 5, 199);
-    let l = e.locator + "",
-      type = Util.lcfirst(d.type);
-    return [l + Util.pad(l, 24, " "), text(type, 38, 5, 219), p, text("⧃❋⭗", 38, 5, 112), arr.join(" ").trimRight(), text(`〕`, 1, 37)].join(" ");
-  }
-
   toString(entity = this) {
-    const { text, document } = entity;
-    return EagleEntity.dump(entity, document);
+    const { text, ownerDocument } = entity;
+    return inspect(entity, ownerDocument);
   }
 }

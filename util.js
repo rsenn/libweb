@@ -1117,12 +1117,10 @@ Util.isMobile = function() {
 Util.unique = function(arr) {
   return Array.from(new Set(arr));
 };
-Util.concat = function *(...args) {
+Util.concat = function*(...args) {
   for(let arg of args) {
-    if(arg instanceof Array)
-      for(let item of arg) yield item;
-        else
-    yield *arg;
+    if(arg instanceof Array) for(let item of arg) yield item;
+    else yield* arg;
   }
 };
 Util.distinct = function(arr) {

@@ -12,7 +12,9 @@ export class EagleDocument extends EagleNode {
   path = null;
 
   constructor(filename) {
-    super();
+    super(null, []);
+    Object.defineProperty(this, "ownerDocument", { value: null, enumerable: false });
+
     let xmlStr = "";
     try {
       if(!/<\?children.*<eagle /.test(filename)) {
@@ -24,89 +26,27 @@ export class EagleDocument extends EagleNode {
     }
     this.path = filename;
     this.type = /<library>/.test(xmlStr) ? "lbr" : /<element /.test(xmlStr) ? "brd" : "sch";
-    this.xml = new tXml(xmlStr);
-    this.root = this.xml[0];
+    Util.define(this, "xml", new tXml(xmlStr));
   }
 
   /* prettier-ignore */ get filename() { return path.basename(this.path); }
   /* prettier-ignore */ get dirname() { return path.dirname(this.path); }
+  /* prettier-ignore */ get children() { return this.root.children; }
+  /* prettier-ignore */ get root() {
+    if(this.xml.length == 1) {
+            const e = this.xml[0];
+            if(e.tagName.startsWith('?'))
+    return e;
+}
+  }
 
   toString = () => this.xml.map(e => toXML(e)).join("\n") + "\n";
 
   /* prettier-ignore */
   saveTo = (path, overwrite = false) => new Promise((resolve, reject) => fsPromises .writeFile(path, this.toString(), { flag: overwrite ? "w" : "wx" }) .then(() => resolve(path)) .catch(reject) );
 
-  /*  *tagNames() {
-    let names = [];
-    for(let [v, k, o, p] of Util.traverseWithPath(this.xml))
-      if(k == "tagName" && names.indexOf(v) == -1) {
-        yield v;
-        names.push(v);
-      }
-  }
-
-  tagCounts() {
-    let counts = {};
-    for(let [v, k, o, p] of Util.traverseWithPath(this.xml))
-      if(k == "tagName") {
-        if(v in counts) counts[v]++;
-        else counts[v] = 1;
-      }
-    return counts;
-  }*/
-
   index(location, transform = arg => arg) {
     if(!(location instanceof EagleLocator)) location = new EagleLocator(location);
     return transform(location.apply(this.root));
-
-    /*
-    for(let i = 0; i < loc.length; i++) {
-      const idx = loc[i];
-      switch (typeof idx) {
-        case "number":
-          obj = obj.children ? obj.children[idx] : obj[idx];
-          break;
-        case "string":
-          obj = obj[idx];
-          break;
-        case "object":
-          if(idx.name !== undefined) {
-            obj = obj.children.find(child => child.attributes.name == idx.name);
-            break;
-          }
-        default:
-          throw new Error(`EagleDocument index ${i} ${loc.length} '${idx}' not found`);
-      }
-    }
-    if(!obj) throw new Error(`EagleDocument index(${dump(loc)}) returned ${obj}`);
-    return obj;*/
-  }
-
-  static nodeName(e, l, hier) {
-    let out = "";
-    do {
-      let str = e.tagName || "";
-      let key = l && l.length > 0 ? l[path.length - 1] : [];
-      let next = hier[0] || [null, []];
-      let parent = next[0];
-      if(str.startsWith("?")) break;
-      if(typeof e == "object" && e.tagName && "children" in e && parent && parent.children.filter(child => (typeof child.tagName == "string" && child.tagName.length > 0 ? child.tagName == e.tagName : false)).length == 1) {
-      } else if(typeof e == "object" && "attributes" in e && "name" in e.attributes) {
-        let cmp = Object.keys(e.attributes)
-          .filter(k => k == "name")
-          .map(key => `@${key}="${e.attributes[key]}"`)
-          .join(",");
-        if(cmp != "") str += `[${cmp}]`;
-      } else if(typeof key == "number") {
-        str += `[${key}]`;
-      }
-      if(out.length > 0) str += "/";
-      out = str + out;
-      if(!hier || !hier.length) break;
-      e = parent;
-      l = l.slice(0, -1);
-      hier = hier.slice(1);
-    } while(true);
-    return out;
   }
 }

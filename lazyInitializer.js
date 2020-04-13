@@ -63,21 +63,20 @@ export function lazyArray(elements) {
   let initializers = new Array(elements.length);
   let i = 0;
   let arr = new Array(elements.length);
+  let props = {};
 
   for(let fn of elements) {
-    initializers[i] = lazyInitializer(fn);
-
-    Object.defineProperty(arr, i, {
+    let lazy = lazyInitializer(fn);
+    props[i] = {
       get: function() {
-        return fn();
+        return lazy();
       },
-      set: function(value) {
-        fn(value);
-      },
+      //set: function(value) {lazy(value); },
       enumerable: true
-    });
+    };
     i++;
   }
+  Object.defineProperties(arr, props);
   //  arr.length = elements.length;
   return arr;
 }

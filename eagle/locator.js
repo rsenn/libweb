@@ -102,6 +102,8 @@ export class EagleLocator extends Array {
   /* prettier-ignore */ get depth() { return this.length; }
 
   apply(o) {
+    if(o === undefined) throw new Error(`Object ${o}`);
+
     return this.reduce(
       (a, i) => {
         let r = i < 0 && a.o instanceof Array ? a.o[a.o.length + i] : a.o[i];
@@ -122,5 +124,9 @@ export class EagleLocator extends Array {
 
     y = text("♈ ", 38, 5, 45) + y.join("") + text(" 🔚", 38, 5, 172);
     return y.trim();
+  }
+
+  toSource() {
+    return `[${this.filter(item => item != "children").join(",")}]`;
   }
 }

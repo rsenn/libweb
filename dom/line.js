@@ -178,6 +178,6 @@ Line.prototype.round = function(precision = 0.001) {
   return this;
 };
 
-for (let name of ["direction", "round", "slope", "angle", "bbox", "points", "inspect", "toString"]) {
+for(let name of ["direction", "round", "slope", "angle", "bbox", "points", "inspect", "toString"]) {
   Line[name] = points => Line.prototype[name].call(points);
 }

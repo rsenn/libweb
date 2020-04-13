@@ -15,7 +15,7 @@ var root = global.window ? window : global;
 
 const env = "development";
 
-if (["development", "test", "local"].indexOf(env) != -1 && "window" in global) {
+if(["development", "test", "local"].indexOf(env) != -1 && "window" in global) {
   window.accumulateClasses = () => {
     var st = storage("dev");
     var classes = st.get("classes") || [];
@@ -50,7 +50,7 @@ if (["development", "test", "local"].indexOf(env) != -1 && "window" in global) {
 /*
  */
 
-if (!Array.prototype.back) {
+if(!Array.prototype.back) {
   try {
     Util.defineGetterSetter(
       Array.prototype,
@@ -68,7 +68,7 @@ if (!Array.prototype.back) {
   } catch(error) {}
 }
 
-if (!Array.prototype.front) {
+if(!Array.prototype.front) {
   try {
     Util.defineGetterSetter(
       Array.prototype,

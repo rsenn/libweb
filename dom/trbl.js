@@ -118,7 +118,7 @@ TRBL.prototype.toSource = function() {
   return "{top:" + this.top + ",right:" + this.right + ",bottom:" + this.bottom + ",left:" + this.left + "}";
 };
 
-for (let name of ["null", "isNaN", "outset", "toRect", "toSource"]) {
+for(let name of ["null", "isNaN", "outset", "toRect", "toSource"]) {
   TRBL[name] = points => TRBL.prototype[name].call(points);
 }
 

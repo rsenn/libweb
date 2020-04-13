@@ -2,12 +2,15 @@ import Util from "../util.js";
 import fs from "fs";
 import path from "path";
 import { EagleDocument } from "./document.js";
+import { EagleInterface } from "./common.js";
 
-export class EagleProject {
+export class EagleProject extends EagleInterface {
   documents = [];
   filename = null;
+  data = { sch: null, brd: null, lbr: {} };
 
   constructor(file) {
+    super();
     this.filename = file.replace(/\.(brd|sch)$/, "");
     this.open(this.filename + ".sch");
     this.open(this.filename + ".brd");
@@ -16,10 +19,10 @@ export class EagleProject {
   }
 
   /**
-   * @brief  Opens a document
+   * @brief  Opens a ownerDocument
    *
    * @param      {string}         filename  Document filename
-   * @return     {EagleDocument}  The eagle document.
+   * @return     {EagleDocument}  The eagle ownerDocument.
    */
   open(file) {
     let doc, err;
@@ -29,14 +32,18 @@ export class EagleProject {
       err = error;
     }
     if(doc) this.documents.push(doc);
-    else throw new Error("EagleProject: error opening " + file);
-    //console.log("Opened document:", filename);
+    else throw new Error(`EagleProject: error opening '${file}': ${err}`);
+    //console.log("Opened ownerDocument:", filename);
+
+    if(doc.type == "lbr") this.data[doc.type][doc.filename] = doc.root;
+    else this.data[doc.type] = doc.root;
     return doc;
   }
 
   /* prettier-ignore */ get schematic() {return this.documents.find(doc => doc.type == "sch"); }
   /* prettier-ignore */ get board() {return this.documents.find(doc => doc.type == "brd"); }
   /* prettier-ignore */ get libraries() {return this.documents.filter(doc => doc.type == "lbr"); }
+  /* prettier-ignore */ get root() { let children = this.documents; return { children }; }
 
   getDocumentDirectories = () => Util.unique(this.documents.map(doc => doc.dirname));
 

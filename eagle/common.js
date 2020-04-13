@@ -1,6 +1,7 @@
 import { EagleLocator } from "./locator.js";
 import { EagleEntity } from "./entity.js";
 import util from "util";
+import Util from "../util.js";
 
 export const ansi = (...args) => `\u001b[${[...args].join(";")}m`;
 export const text = (text, ...color) => ansi(...color) + text + ansi(0);
@@ -35,6 +36,7 @@ export const traverse = function*(o, l = [], hier = [], d) {
     let h = [[o, l.last, d], ...hier];
     if(o instanceof Array || "length" in o) for(let i = 0; i < o.length; i++) yield* traverse(o[i], l.down(i), h, d);
     else if("children" in o) for(let i = 0; i < o.children.length; i++) yield* traverse(o.children[i], l.down("children", i), h, d);
+    // else for(let k in o)  yield* traverse(o[k], l.down(k), h, d);
   }
 };
 export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
@@ -43,56 +45,60 @@ export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
   else if(typeof o != "object" || o.tagName === undefined) return "";
 
   let s = `<${o.tagName}`;
-  for(let k in o.attribues) s += ` ${k}="${o.attributes[k]}"`;
+  for(let k in o.attributes) s += ` ${k}="${o.attributes[k]}"`;
 
   const a = o.children && o.children.length !== undefined ? o.children : [];
   if(a && a.length > 0) {
     s += o.tagName[0] != "?" ? ">" : "?>";
-    let nl = o.tagName == "text" && a.length == 1 ? "" : o.tagName[0] != "?" ? "\n  " : "\n";
-    for(let child of a) s += nl + toXML(child, z - 1).replace(/\n/g, nl);
-    if(o.tagName[0] != "?") s += `${nl.replace(/ /g, "")}</${o.tagName}>`;
+    if(z > 0) {
+      let nl = o.tagName == "text" && a.length == 1 ? "" : o.tagName[0] != "?" ? "\n  " : "\n";
+      for(let child of a) s += nl + toXML(child, z - 1).replace(/\n/g, nl);
+      if(o.tagName[0] != "?") s += `${nl.replace(/ /g, "")}</${o.tagName}>`;
+    }
   } else {
     s += " />";
   }
-  return s.replace(/\n *\n/g, "\n").trim();
+  return s.trim();
+  //  return s.replace(/\n *\n/g, "\n").trim();
 };
 
-export class EagleNode {
-  nextSibling(loc) {
-    let obj = this.index(loc.nextSibling);
-    return obj ? [obj, p] : null;
-  }
+export const inspect = (e, d, c = { depth: 0, breakLength: 400 }) => {
+  const { depth, breakLength } = c;
+  let o = e;
 
-  prevSibling(loc) {
-    let obj = this.index(loc.prevSibling);
-    return obj ? [obj, p] : null;
-  }
+  if(typeof e == "string") return text(e, 1, 36);
+  if(e instanceof EagleEntity) o = EagleEntity.toObject(e);
+  let x = util.inspect(o, { depth: depth * 2, breakLength, colors: true });
+  let s = "⏐";
+  x = x.substring(x.indexOf("tagName") + 14);
+  //    x = x.replace(/.*tagName[^']*'([^']+)'[^,]*,?/g, "$1");
 
-  parent(loc) {
-    let obj = this.index(loc.parent);
-    return obj ? [obj, p] : null;
-  }
+  x = Object.entries(e.attributes).map(([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36));
+  x.unshift(e.tagName);
+  //x = x.replace(/([^ ]*):[^']*('[^']*')[^,]*,?/g, text("$1", 33)+text(s, 0, 37)+text("$2", 1, 36));
 
-  firstChild(loc) {
-    let obj = this.index(loc.firstChild);
-    return obj ? [obj, p] : null;
-  }
+  let [p, ...arr] = x; /*
+      .replace(/[|\x]+/g, " ")
+      .replace(/'([^'][^']*)'/g, "$1")
+      .split(/ +/g);*/
+  p = text(`〔`, 1, 37) + text(p, 38, 5, 199);
+  let l = e.location.toSource();
+  let type = (e.nodeType || (d && d.type)) + "";
+  return [l + Util.pad(l, 40, " "), text(type, 38, 5, 219), p, text("⧃❋⭗", 38, 5, 112), arr.join(" ").trimRight(), text(`〕`, 1, 37)].join(" ");
+};
 
-  lastChild(loc) {
-    let obj = this.index(loc.lastChild);
-    return obj ? [obj, p] : null;
-  }
-
+export class EagleInterface {
   find(...args) {
     let { element, location, predicate, transform } = parseArgs(args);
-    for(let [v, p, h] of traverse(this.xml[0])) if(predicate(v, p, h)) return transform([v, p, h]);
+    for(let [v, p, h] of traverse(this.root)) if(predicate(v, p, h)) return transform([v, p, h]);
     return transform([null, [], []]);
   }
 
   *findAll(...args) {
     let { location, predicate, transform } = parseArgs(args);
     console.log("location:", dump(location));
-    for(let [v, l, h] of traverse(this.xml[0], location)) if(predicate(v, l, h)) yield transform([v, l, h, this]);
+    console.log("root:", dump(this.root));
+    for(let [v, l, h] of traverse(this.root, location)) if(predicate(v, l, h)) yield transform([v, l, h, this]);
   }
 
   locate(...args) {
@@ -113,11 +119,15 @@ export class EagleNode {
     return transform(this.find(v => v.tagName == element && v.attributes.name == name));
   }
 
-  xpath(l) {
-    let s = "",
-      o = this.xml;
+  xpath() {
+    let l = this.location,
+      s = "",
+      d = this.document;
+    let o = d.index([]),
+      p = null;
     for(let i = 0; i < l.length; i++) {
       let part = l[i];
+      p = o;
       o = o[part];
       if(o.tagName !== undefined /*&& o.tagName[0] != '?'*/) {
         if(o.tagName[0] == "?") continue;
@@ -139,22 +149,128 @@ export class EagleNode {
   }*/
 
   entries(t) {
-    if(!t) t = ([v, l, h, d]) => new EagleEntity(d, l);
+    if(!t) t = ([v, l, h, d]) => [l[l.length - 1], new EagleEntity(d, l)];
     return this[Symbol.iterator](t);
   }
 
-  *[Symbol.iterator](t) {
-    let d = this;
-    let { xml } = d;
-    if(typeof t != "function")
-      t = ([v, l, h, d = d]) => {
-        let o = v instanceof EagleEntity ? EagleEntity.toObject(v) : v;
-        if(!(v instanceof EagleEntity)) v = new EagleEntity(d, l);
-        let { tagName, children, attributes } = o;
-        return [tagName || null, attributes || null, children || []];
-      };
-    if(!this.root) this.root = xml[0];
+  *iterator(t = ([v, l, h, d]) => [v.tagName ? new EagleEntity(d, l) : v, l, h, d]) {
+    let doc = this.document;
+    let root = (doc && doc.root) || this.root;
+    for(let e of traverse(root, [], undefined, doc))
+       yield t(e);
+}
 
-    for(let e of traverse(xml[0], [], undefined, d)) yield t(e);
+  [Symbol.iterator]() {
+  return  this.iterator(a => a);
+  }
+
+  static name(e, l) {
+    let out = "";
+    let d = e.document || e.ownerDocument;
+    if(!l) l = e.location;
+    do {
+      let str = e.tagName || "";
+      let key = l && l.length > 0 ? l[l.length - 1] : [];
+      let parent = d.index(l.slice(0, -2));
+      let numSiblings = parent ? parent.children.length : 0;
+      if(!str.startsWith("?")) {
+        if(typeof e == "object" && e.tagName && "children" in e && parent && parent.children.filter(child => (typeof child.tagName == "string" && child.tagName.length > 0 ? child.tagName == e.tagName : false)).length == 1) {
+        } else if(typeof e == "object" && "attributes" in e && "name" in e.attributes) {
+          let cmp = Object.keys(e.attributes)
+            .filter(k => k == "name")
+            .map(key => `@${key}="${e.attributes[key]}"`)
+            .join(",");
+          if(cmp != "") str += `[${cmp}]`;
+        } else if(typeof key == "number" && numSiblings > 1) {
+          str += `[${key}]`;
+        }
+        if(out.length > 0) str += "/";
+        out = str + out;
+      }
+      if(l.length <= 0) break;
+      l = l.slice(0, -2);
+      e = parent;
+    } while(true);
+    return out;
+  }
+
+  static toString(e) {
+    return dump(e);
+  }
+}
+
+export class EagleNode extends EagleInterface {
+  location = new EagleLocator();
+  ownerDocument = null;
+
+  constructor(d = null, l = []) {
+    super();
+    this.location = l instanceof EagleLocator ? l : new EagleLocator(l);
+    this.ownerDocument = d;
+  }
+
+  get document() {
+    return this.ownerDocument || this;
+  }
+  /*
+  index(location, transform = arg => arg) {
+    if(!(location instanceof EagleLocator)) location = new EagleLocator(location);
+    return transform(location.apply(this.root));
+  }*/
+  /*
+  index(loc, transform = arg => arg) {
+
+    for(let i = 0; i < loc.length; i++) {
+      const idx = loc[i];
+      switch (typeof idx) {
+        case "number":
+          obj = obj.children ? obj.children[idx] : obj[idx];
+          break;
+        case "string":
+          obj = obj[idx];
+          break;
+        case "object":
+          if(idx.name !== undefined) {
+            obj = obj.children.find(child => child.attributes.name == idx.name);
+            break;
+          }
+        default:
+          throw new Error(`EagleNode index ${i} ${loc.length} '${idx}' not found`);
+      }
+    }
+    if(!obj) throw new Error(`EagleDocument index(${dump(loc)}) returned ${obj}`);
+    return obj;
+  }
+*/
+  get nodeType() {
+    if(typeof this.tagName == "string") return "EagleElement";
+    else if(this.ownerDocument === null) return "EagleDocument";
+  }
+
+  get nextSibling() {
+    let obj = this.document.index(this.location.nextSibling);
+    return obj ? [obj, p] : null;
+  }
+
+  get prevSibling() {
+    let obj = this.document.index(this.location.prevSibling);
+    return obj ? [obj, p] : null;
+  }
+
+  get parentNode() {
+    let obj = null,
+      l = this.location;
+    if(l.length >= 2 && l[l.length - 2] == "children") obj = this.document.index(l.slice(0, -2));
+    return obj;
+  }
+
+  get firstChild() {
+    let obj = this.document.index(this.location.firstChild);
+    return obj ? [obj, p] : null;
+  }
+
+  get lastChild() {
+    let obj = this.document.index(this.location.lastChild);
+    return obj ? [obj, p] : null;
   }
 }
