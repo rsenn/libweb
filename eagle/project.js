@@ -49,7 +49,7 @@ export class EagleProject {
     const { board, schematic } = this;
     const transform = ([v, l, h, d]) => v.attributes.name;
     const predicate = (v, l, h, d) => v.tagName == "library";
-    return Util.unique([...board.getAll(predicate, transform), ...schematic.getAll(predicate, transform)]);
+    return Util.concat(board.getAll(predicate, transform), schematic.getAll(predicate, transform));
   }
 
   findLibrary(name, dirs = this.libraryPath()) {

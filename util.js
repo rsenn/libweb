@@ -322,9 +322,7 @@ Util.define = (obj, key, value, enumerable = false) =>
     value
   });
 Util.extend = (obj, ...args) => {
-  for(let other of args)
-  for(let prop in other)
-    Util.define(obj, prop, other[prop]);
+  for(let other of args) for (let prop in other) Util.define(obj, prop, other[prop]);
   return obj;
 };
 Util.defineGetter = (obj, key, get, enumerable = false) =>
@@ -1119,6 +1117,14 @@ Util.isMobile = function() {
 Util.unique = function(arr) {
   return Array.from(new Set(arr));
 };
+Util.concat = function *(...args) {
+  for(let arg of args) {
+    if(arg instanceof Array)
+      for(let item of arg) yield item;
+        else
+    yield *arg;
+  }
+};
 Util.distinct = function(arr) {
   return Array.prototype.filter.call(arr, function(value, index, me) {
     return me.indexOf(value) === index;
@@ -1781,5 +1787,5 @@ Util.decodeHTMLEntities = function(text) {
   });
 };
 Util.stripAnsi = function(str) {
-  return str.replace(/\x1B[[(?);]{0,2}(;?\d)*./g, '');
+  return str.replace(/\x1B[[(?);]{0,2}(;?\d)*./g, "");
 };

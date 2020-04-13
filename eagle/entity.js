@@ -4,17 +4,18 @@ import { lazyArray } from "../lazyInitializer.js";
 import util from "util";
 import { EagleDocument } from "./document.js";
 import { EagleLocator } from "./locator.js";
-import { ansi, text } from "./common.js";
+import { ansi, text, EagleNode } from "./common.js";
 
 const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
 
-export class EagleEntity {
+export class EagleEntity extends EagleNode {
   tagName = "";
   attributes = {};
   children = [];
   document = null;
 
   constructor(d, l, o) {
+    super();
     const { locator, document, handlers } = Util.extend(this, { document: d, locator: new EagleLocator(l), handlers: {} });
     if(o === undefined || (o.tagName === undefined && o.attributes === undefined)) o = this.locator.apply(d.root || d.xml[0]);
     let { tagName, attributes, children } = o;
@@ -45,7 +46,7 @@ export class EagleEntity {
     const { tagName, children } = this;
     let attributes = {};
     for(let prop in this.attributes) attributes[prop] = this.attributes[prop];
-    return EagleDocument.toXML({ tagName, attributes, children }, depth);
+    return toXML({ tagName, attributes, children }, depth);
   }
 
   set(name, value) {
@@ -89,7 +90,7 @@ export class EagleEntity {
   static dump(e, d, c = { depth: 0, breakLength: 400 }) {
     const { depth, breakLength } = c;
     let o = e;
-   
+
     if(typeof e == "string") return text(e, 1, 36);
     if(e instanceof EagleEntity) o = EagleEntity.toObject(e);
     let x = util.inspect(o, { depth: depth * 2, breakLength, colors: true });
