@@ -140,7 +140,7 @@ export class EagleInterface {
     let e = typeof args[0] == "string" ? args.shift() : undefined;
     let n = typeof args[0] == "string" ? args.shift() : undefined;
     let predicate = typeof e == "string" ? (v, l, d) => (n !== undefined && v.tagName === n) || (e !== undefined && v.tagName === e) : typeof args[0] == "function" ? args.shift() : arg => true;
-    let transform = typeof n == "string" ? ([v, l, d]) => v.attributes && v.attributes[n] : typeof args[0] == "function" ? args.shift() : x => x;
+    let transform = typeof n == "string" ? ([v, l, d]) => v.attributes && v.attributes[n] : typeof args[0] == "function" ? args.shift() : ([v, l, d]) => new EagleEntity(d, l);
     console.log("t:", transform);
     return this.findAll({ location: [], predicate, transform });
   }

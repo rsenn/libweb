@@ -64,6 +64,8 @@ export class EagleEntity extends EagleNode {
             const device = this.deviceset.getByName("device", this.attributes.device);
             return device;
           });
+        } else {
+          trkl.bind(this, key, handler);
         }
       }
     }
