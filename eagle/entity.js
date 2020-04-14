@@ -42,18 +42,21 @@ export class EagleEntity extends EagleNode {
 
     let { tagName, attributes, children } = o;
     this.tagName = tagName;
-    this.attributes = {};
+    this.attributes = /* attributes; */ {};
 
     if(!Util.isEmpty(attributes)) {
       for(let key in attributes) {
-        let prop = trkl(attributes[key]);
+        let prop = trkl.property(this.attributes, key);
         let handler = Util.ifThenElse(
           v => v !== undefined,
           v => prop(v),
           v => (/^-?[0-9.]+$/.test(prop()) ? parseFloat(prop()) : prop())
         );
+        prop(attributes[key]);
+        prop.subscribe(value => (value !== undefined ? (attributes[key] = value) : undefined));
+
         this.handlers[key] = handler;
-        trkl.bind(this.attributes, key, handler);
+
         if(EagleEntity.isRelation(key)) {
           trkl.bind(this, key, v => {
             return v ? this.handlers[key](v.name) : this.owner.getByName(key, this.handlers[key]());

@@ -140,7 +140,7 @@ trkl.bind = function(object, name, handler) {
     get: self,
     set: self
   });
-  return self;
+  return object;
 };
 
 trkl.object = function(handlers, ret = {}) {

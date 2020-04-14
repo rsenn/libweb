@@ -4,6 +4,8 @@ import fs, { promises as fsPromises } from "fs";
 import { EagleEntity } from "./entity.js";
 import util from "util";
 import path from "path";
+import deepClone from "clone";
+import deepDiff from "deep-diff";
 import { EagleLocator } from "./locator.js";
 import { text, traverse, toXML, parseArgs, dump, EagleNode } from "./common.js";
 
@@ -29,7 +31,9 @@ export class EagleDocument extends EagleNode {
     // this.location.push(this.type == "lbr" ? "library" : this.type == "brd" ? "board" : "schematic");
     // if(this.type == "lbr") this.location.push(this.basename);
     if(project) this.owner = project;
-    Util.define(this, "xml", new tXml(xmlStr));
+    Util.define(this, "orig", new tXml(xmlStr));
+    Util.define(this, "xml", deepClone(this.orig));
+    console.log("" + deepDiff.diff);
   }
 
   /* prettier-ignore */ get filename() { return path.basename(this.path); }
@@ -47,6 +51,10 @@ export class EagleDocument extends EagleNode {
 
   get basename() {
     return path.basename(this.filename).replace(/\.[a-z][a-z][a-z]$/i, "");
+  }
+
+  get changes() {
+    return deepDiff.diff(this.orig, this.xml);
   }
 
   /*get location() {
