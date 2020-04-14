@@ -32,8 +32,8 @@ export class EagleEntity extends EagleNode {
     let { tagName, attributes, children } = o;
     this.tagName = tagName;
     this.attributes = /* attributes; */ {};
-    Util.define(this, "root", o);
-    // this.data = o;
+    // Util.define(this, "data", o);
+    //this.data = o;    // this.data = o;
 
     if(!Util.isEmpty(attributes)) {
       for(let key in attributes) {
@@ -63,22 +63,34 @@ export class EagleEntity extends EagleNode {
         }
       }
     }
-    if(children instanceof Array) {
-      let childHandlers = children.map((child, i) => (typeof child == "object" ? () => new EagleEntity(owner, location.slice().down("children", i)) : () => child));
+
+    if(o.children && typeof o.children[0] == "string") {
+      //this.text = o.children[0];
+      this.children = o.children;
+   //   console.log(`${tagName}: ${children.length}`, this.text);
+    } else if(Util.isArray(children)) {
+      let childHandlers = children.map((child, i) => (typeof child == "object" ? () => new EagleEntity(owner, location.slice().down("children", i)) : () => children[i]));
       this.children = lazyArray(childHandlers);
       //   Util.define(this, 'childHandlers', childHandlers);
-    } else this.children = [];
+    } else this.children = children;
 
     this.initCache();
   }
 
   get text() {
-    return this.children.filter(child => typeof child == "string").join("\n");
+    let idx = this.children.findIndex(child => typeof child == "string");
+    let txt = this.children[idx];
+
+    return txt;
+  }
+  set text(value) {
+    let idx = this.children.findIndex(child => typeof child == "string");
+    this.children[idx] = value;
   }
 
   toXML(depth = Number.MAX_SAFE_INTEGER) {
-    let o = this.document.index(this.location);
-    return toXML(o, depth);
+    // let o = this.document.index(this.location);
+    return toXML(this.raw, depth);
   }
   /*
   set(name, value) {

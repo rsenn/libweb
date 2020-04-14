@@ -428,8 +428,11 @@ Util.array = function(...args) {
     } catch(err) {}
   return a;
 };
-Util.toMap = function(hash = {}) {
+Util.toMap = function(hash = {}, fn) {
   let m, gen;
+  if(hash instanceof Array && typeof(fn) == 'function')
+    hash = hash.map(fn);
+
   if(hash[Symbol.iterator] !== undefined) gen = hash[Symbol.iterator]();
   else if(Util.isGenerator(hash)) gen = hash;
   else gen = Object.entries(hash);

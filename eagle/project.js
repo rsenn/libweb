@@ -81,10 +81,7 @@ export class EagleProject {
   }
 
   *getLibraryNames() {
-    for(let [v, l, d] of this.board.iterator(
-      [],
-      it => it /*([v,l,d]) => [typeof(v) == 'string' ? v : new EagleEntity(d,l),l,d]*/
-    )) {
+    for(let [v, l, d] of this.board.iterator([], it => it /*([v,l,d]) => [typeof(v) == 'string' ? v : new EagleEntity(d,l),l,d]*/)) {
       if(v.tagName != "library") continue;
       // console.log("it:", {v,l,d});
 
@@ -120,28 +117,43 @@ export class EagleProject {
       board: board.get("library", name)
     };
     let layers = {
-      schematic: Object.fromEntries(schematic.layers.filter(l => l.active == 'yes').map(l => [l.number,l])),
-      board: Object.fromEntries(board.layers.filter(l => l.active == 'yes').map(l => [l.number,l]))
+      schematic: Util.toMap(
+        schematic.layers.filter(l => l.active == "yes"),
+        l => [l.number, l]
+      ),
+      board: Util.toMap(
+        board.layers.filter(l => l.active == "yes"),
+        l => [l.number, l]
+      )
     };
 
+    for(let k of ["schematic", "board"]) {
+      const lib = libraries[k];
+      const { raw, root } = lib;
+      console.log(`${k}.library ${name}: `, root);
 
-
-    for(let k of ['schematic','board']) {
-              const lib = libraries[k];
-              const { raw, root } = lib;
-      console.log(`${k}.library ${name}: `,root);
-
-      for(let entity of ['package','symbol','deviceset']) {
-        const l = lib[entity+'s'];
+      for(let entity of ["package", "symbol", "deviceset"]) {
+        const l = lib[entity + "s"];
         if(l)
-      console.log(`${k}.library ${name} ${entity}s:\n`+(inspect(l, 2)));
+          for(let i = 0; i < l.length; i++) {
+            const elem = l[i];
+            console.log(`${k}.library ${name} ${entity} #${i}:\n`+inspect(elem));
+          }
       }
     }
-            console.log("layer", Util.map(layers, (key,value) => [key,Object.keys(value)]));    
+    /*  console.log(
+      "layer",
+      Util.map(layers, (key, value) => [key, Object.keys(value)])
+    );
 
-             console.log("layers",dump(layers,4));
-
-/*
+    console.log("layers", dump(layers, 4));*/
+    console.log(layers.schematic.get(99).active, layers.schematic.get(250).active);
+    /*  let test = schematic.layers.filter(l => l.active == 'yes');
+    console.log("schematic.layers:"+test.map(l => inspect(l)).join("\n"));
+   let test = schematic.layers.filter(l => l.active == 'yes');
+    console.log("schematic.layers:"+test.map(l => inspect(l)).join("\n"));
+    console.log(Util.className(test));*/
+    /*
     console.log("name:", name);
     console.log("libraries:", libraries);*/
   }
@@ -173,6 +185,5 @@ export class EagleProject {
     return doc.index(location);
   }
 
-  saveTo = (dir = ".", overwrite = false) =>
-    Promise.all(this.documents.map(doc => doc.saveTo(path.join(dir, doc.filename), overwrite)));
+  saveTo = (dir = ".", overwrite = false) => Promise.all(this.documents.map(doc => doc.saveTo(path.join(dir, doc.filename), overwrite)));
 }

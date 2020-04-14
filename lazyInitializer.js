@@ -60,52 +60,80 @@ export function lazyMembers(obj, members) {
   }
 }
 
-export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, proto) {
+/**
+ * { function_description }
+ *
+ * @param      {<type>}    arr                       The arr
+ * @param      {Function}  [lookup=item=>item.name]  The lookup
+ * @param      {Function}  [ctor=arg=>arg]           The constructor
+ * @param      {<type>}    prototyp                  The prototyp
+ * @return     {Proxy}     { description_of_the_return_value }
+ */
+export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prototyp) {
   /*  let m = new Map();
 
   for(let [k,v] of entries)
     m.set(k, lazyInitializer(v));
 */
-  var cache = {};
-  let p = new Proxy(arr, {
-    get(target, key, receiver) {
-      // console.log("key:", key);
-      let index = typeof key == "string" && /^[0-9]+$/.test(key) ? parseInt(key) : key;
-      if(cache[key]) return cache[key];
-      if(key == "length") {
-        index = key;
-      } else if(typeof index == "string") {
-        index = Util.findKey(target, (v, k) => lookup(v) === key);
-        if(typeof index == "string" && /^[0-9]+$/.test(index)) index = parseInt(index);
+  //  var cache = {};
 
-        if(typeof index != "number" || typeof index != "string") index = key;
-      }
+  var proto = prototyp;
 
-      let ret = Reflect.get(target, index);
-      if(typeof ret == "object" && typeof index == "number") {
-        key = lookup(ret);
-        cache[key] = ctor(ret, index);
-        ret = cache[key];
-      }
-      /*  if(typeof(index) == 'number' || typeof(index) == 'string')
-       console.log(`getting  @${index} = ` + ret);*/
-      return ret;
-    },
-    set(target, key, value, receiver) {
-      console.log(`setting ${key}!`);
-      // Reflect.set(target, key, value, receiver);
-    },
-    has(target, key) {
-      if(Reflect.has(target, key)) return true;
-      const len = Reflect.get(target, "length");
-      if(typeof key == "number") return key >= 0 && key < len;
+  Object.assign(arr, {
+    filter() {
+      let ret = Array.prototype.filter.apply(this, arguments);
+      ret = proxify(ret, {});
+      //console.log("filter ret:",Util.className(ret));
+      return ret; //lazyMap(ret, lookup, ctor, proto);
+    }
+  });
 
-      for(let i = 0; i < len; i++) if(lookup(Reflect.get(target, i)) === key) return true;
-      return false;
-    },
-    getPrototypeOf(target) {
-      return proto;
-    } /*,
+  //console.log("",{proto,prototyp},proto.filter);
+
+  function proxify(arr, cache = {}) {
+    return new Proxy(arr, {
+      get(target, key, receiver) {
+        // console.log("key:", key);
+        let index = typeof key == "string" && /^[0-9]+$/.test(key) ? parseInt(key) : key;
+        if(cache[key]) return cache[key];
+        if(key == "length") {
+          index = key;
+        } else if(typeof index == "string") {
+          index = Util.findKey(target, (v, k) => lookup(v) === key);
+          if(typeof index == "string" && /^[0-9]+$/.test(index)) index = parseInt(index);
+
+          if(typeof index != "number" || typeof index != "string") index = key;
+        }
+
+        let ret = typeof proto[key] == "function" ? proto[key] : Reflect.get(target, index, receiver);
+
+        if(typeof ret == "object" && typeof index == "number") {
+          key = lookup(ret);
+          cache[key] = ctor(ret, index);
+          ret = cache[key];
+        }
+        /*if(typeof index == "number" || typeof index == "string") console.log(`getting  @${index} = ` + ret);*/
+        // console.log("reflect:",{index,key});
+        //  console.log("cache:",Object.keys(cache));
+
+        return ret;
+      },
+      set(target, key, value, receiver) {
+        console.log(`setting ${key}!`);
+        Reflect.set(target, key, value, receiver);
+        return true;
+      },
+      has(target, key) {
+        if(Reflect.has(target, key)) return true;
+        const len = target.length;
+        if(typeof key == "number") return key >= 0 && key < len;
+
+        for(let i = 0; i < len; i++) if(lookup(target[i]) === key) return true;
+        return false;
+      },
+      getPrototypeOf(target) {
+        return proto;
+      } /*,
       ownKeys(target) {
         let keys = [];
         for(let i = 0; i < Reflect.get(target, "length"); i++) {
@@ -113,9 +141,10 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
         }
         return keys;
       }*/
-  });
+    });
+  }
 
-  return p;
+  return proxify(arr);
 }
 
 export function lazyArray(elements) {

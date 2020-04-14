@@ -62,10 +62,12 @@ export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
   for(let k in o.attributes) s += ` ${k}="${o.attributes[k]}"`;
 
   const a = o.children && o.children.length !== undefined ? o.children : [];
-  if(a && a.length > 0) {
+const text = o.text;
+  if(a && a.length > 0 || text) {
     s += o.tagName[0] != "?" ? ">" : "?>";
     if(z > 0) {
-      let nl = o.tagName == "text" && a.length == 1 ? "" : o.tagName[0] != "?" ? "\n  " : "\n";
+      let nl = text ? "" : o.tagName == "text" && a.length == 1 ? "" : o.tagName[0] != "?" ? "\n  " : "\n";
+      if(text) s+= text; else 
       for(let child of a) s += nl + toXML(child, z - 1).replace(/\n/g, nl);
       if(o.tagName[0] != "?") s += `${nl.replace(/ /g, "")}</${o.tagName}>`;
     }
@@ -79,14 +81,14 @@ export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
 export const inspect = (e, d, c = { depth: 0, breakLength: 400, location: true }) => {
   const { depth, breakLength } = c;
   let o = e;
-if(Util.isArray(o) || (Util.isObject(o)  &&  o.length !== undefined)) {
+  /* if(Util.isArray(o) || (Util.isObject(o) && o.length !== undefined)) {
     let s = "";
     for(let i of o) {
       if(s.length > 0) s += i instanceof EagleEntity ? ",\n" : ", ";
-      s += i === undefined ? 'undefined' : inspect(i, undefined, { ...c, depth: c.depth - 1 });
+      s += i === undefined ? "undefined" : inspect(i, undefined, { ...c, depth: c.depth - 1 });
     }
     return s;
-  } 
+  }*/
   if(typeof e == "string") return text(e, 1, 36);
   if(e instanceof EagleEntity) o = EagleEntity.toObject(e);
   let x = util.inspect(o, { depth: depth * 2, breakLength, colors: true });
@@ -95,10 +97,10 @@ if(Util.isArray(o) || (Util.isObject(o)  &&  o.length !== undefined)) {
   //    x = x.replace(/.*tagName[^']*'([^']+)'[^,]*,?/g, "$1");
 
   x = Object.entries((e && e.attributes) || {}).map(([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36));
-/*
+  /*
 if(!e  || !e.tagName)
   return o;*/
-//  console.log(o);
+  //  console.log(o);
   x.unshift(e.tagName);
   //x = x.replace(/([^ ]*):[^']*('[^']*')[^,]*,?/g, text("$1", 33)+text(s, 0, 37)+text("$2", 1, 36));
 
@@ -176,7 +178,7 @@ export class EagleInterface {
     }
     return s;
   }
-/*
+  /*
   get nodeType() {
     if(typeof this.tagName == "string") return "EagleElement";
     else if(this instanceof EagleEntity) return "EagleText";
@@ -244,7 +246,8 @@ export class EagleInterface {
     return dump(e);
   }
 }
-export class EagleNodeList {}
+
+class EagleNodeList extends Array {}
 
 export class EagleNode extends EagleInterface {
   location = null;
@@ -289,17 +292,22 @@ export class EagleNode extends EagleInterface {
 
   get raw() {
     let ret = {};
-    if(this.tagName) {
+    /*  if(this.data)
+      return this.data; if(this.root)
+      return this.root;*/
+    if(this.xml && this.xml[0]) {
+      ret = this.xml[0];
+    } else if(this.tagName) {
       ret.tagName = this.tagName;
       if(this.attributes) ret.attributes = Util.map(this.attributes, (k, v) => [k, this.handlers[k]()]);
+      if(this.text) ret.text = this.text;
       let children = this.children.map(child => child.raw || child.text).filter(child => child !== undefined);
       if(children.length > 0) ret.children = children;
-    } else if(this.xml[0]) {
-      ret = this.xml[0];
-    }  else {
+    } else {
       throw new Error("Cannot get raw");
     }
-  //  console.log("raw:",ret);
+
+    //  console.log("raw:",ret);
 
     return ret;
   }
@@ -342,7 +350,7 @@ export class EagleNode extends EagleInterface {
             key,
             lazyMap(
               value.children,
-              item => item.attributes.name,
+              item => item.name,
               (arg, key) => new EagleEntity(parent, [...path, "children", key]),
               EagleNodeList.prototype
             )
