@@ -428,13 +428,22 @@ Util.array = function(...args) {
     } catch(err) {}
   return a;
 };
-Util.map = function(hash = {}) {
-  let m = hash[Symbol.iterator] !== undefined ? hash : new Map(Object.entries(hash));
+Util.toMap = function(hash = {}) {
+  let m, gen;
+  if(hash[Symbol.iterator] !== undefined)
+    gen = hash[Symbol.iterator]();
+  else if(Util.isGenerator(hash))
+    gen = hash;
+  else
+    gen = Object.entries(hash);
+
+  m = new Map(gen);
+/*  
   if(m instanceof Array) m[Symbol.iterator] = m.entries;
   try {
     //if(m.toObject === undefined) Util.extendMap();
     if(m.toObject === undefined) Util.extendMap(m);
-  } catch(err) {}
+  } catch(err) {}*/
   return m;
 };
 Util.extendMap = function(map) {
@@ -1191,9 +1200,13 @@ Util.reduce = function(obj, fn, accu) {
   for(let key in obj) accu = fn(accu, obj[key], key, obj);
   return accu;
 };
-const map = Util.map;
+Util.mapFunctional = (fn) => function*(arg) {
+  for(let item of arg)
+    yield fn(item);
+};
 Util.map = function(obj, fn) {
-  if(!fn) return map(obj);
+  if(typeof(obj) == 'function') return Util.mapFunctional(...arguments);
+  if(typeof(fn) != 'function') return Util.toMap(...arguments);
   let ret = {};
   for(let key in obj) {
     if(obj.hasOwnProperty(key)) {

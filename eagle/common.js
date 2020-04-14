@@ -3,6 +3,7 @@ import { EagleEntity } from "./entity.js";
 import util from "util";
 import Util from "../util.js";
 import deep from "../deep.js";
+import { lazyMembers } from "../lazyInitializer.js";
 
 export const ansi = (...args) => `\u001b[${[...args].join(";")}m`;
 export const text = (text, ...color) => ansi(...color) + text + ansi(0);
@@ -131,7 +132,7 @@ export class EagleInterface {
   *findAll(...args) {
     let { location, predicate, transform } = parseArgs(args);
     if(!transform) transform = ([v, l, d]) => (typeof v == "object" && v !== null && "tagName" in v ? new EagleEntity(d, l, v) : v);
-    for(let [v, l, d] of this.iterator([], it => it))
+    for(let [v, l, d] of this.iterator(predicate, [], it => it))
       if(predicate(v, l, d)) {
         if(transform) v = transform([v, l, d]);
         yield v;
@@ -141,26 +142,6 @@ export class EagleInterface {
   locate(...args) {
     let { element, location, predicate, transform } = parseArgs(args);
     return predicate(this.find((v, l, d) => v === element, location));
-  }
-
-  getAll(...args) {
-    let e = typeof args[0] == "string" ? args.shift() : undefined;
-    let n = typeof args[0] == "string" ? args.shift() : undefined;
-    let predicate = typeof e == "string" ? (v, l, d) => (n !== undefined && v.tagName === n) || (e !== undefined && v.tagName === e) : typeof args[0] == "function" ? args.shift() : arg => true;
-    let transform = typeof n == "string" ? ([v, l, d]) => v.attributes && v.attributes[n] : typeof args[0] == "function" ? args.shift() : ([v, l, d]) => new EagleEntity(d, l);
-    console.log("t:", transform);
-    return this.findAll({ predicate, transform });
-  }
-
-  getByName(element, name, attr = "name", t = ([v, l, d]) => new EagleEntity(d, l)) {
-    // console.log(`getByName:`,{element,name,attr})  ;
-    for(let [v, l, d] of this.iterator([], it => it)) {
-      if(typeof v == "object" && "tagName" in v && "attributes" in v && attr in v.attributes) {
-        // console.log(`   ${v.tagName} "${v.attributes[attr]}"`);
-        if(v.tagName == element && v.attributes[attr] == name) return t([v, l, d]);
-      }
-    }
-    return null;
   }
 
   xpath() {
@@ -204,13 +185,14 @@ export class EagleInterface {
   }
 
   *iterator(...args) {
+    let predicate = typeof args[0] == "function" ? args.shift() : arg => false;
     let location = (Util.isArray(args[0]) && args.shift()) || [];
     let t = typeof args[0] == "function" ? args.shift() : ([v, l, d]) => [typeof v == "object" && v !== null && "tagName" in v ? new EagleEntity(d, l) : v, l, d];
     let owner = this instanceof EagleEntity ? this.owner : this;
     let root = (owner.xml && owner.xml[0]) || this.root;
     let node = root;
     if(location.length > 0) node = deep.get(node, location);
-    for(let [v, l] of deep.iterate(node, (v, p) => (p.length > 1 ? p[p.length - 2] == "children" : true))) if(typeof v == "object" && v !== null && "tagName" in v) yield [v, l, owner];
+    for(let [v, l] of deep.iterate(node, (v, p) => (predicate(v, p) ? -1 : p.length > 1 ? p[p.length - 2] == "children" : true))) if(typeof v == "object" && v !== null && "tagName" in v) yield [v, l, owner];
   }
 
   [Symbol.iterator]() {
@@ -293,6 +275,46 @@ export class EagleNode extends EagleInterface {
     return this.document.owner;
   }
 
+  cacheFields() {
+    switch (this.tagName) {
+      case "schematic":
+        return ["settings", "layers", "libraries", "classes", "parts", "sheets"];
+      case "sheet":
+        return ["busses", "nets", "instances"];
+      case "deviceset":
+        return ["gates", "devices"];
+      case "device":
+        return ["connects", "technologies"];
+      case "library":
+        return ["packages", "symbols", "devicesets"];
+    }
+  }
+
+  initCache() {
+    let fields = this.cacheFields();
+
+    if(fields) {
+      console.log(`${this.type || this.tagName}.fields: ` + fields.join(","));
+      Util.define(this, "cache", {});
+
+      let lazy = {},
+        parent = this;
+      for(let [value, path] of deep.iterate(this.root, v => v && fields.indexOf(v.tagName) != -1)) lazy[value.tagName] = () => new EagleEntity(parent, path);
+
+      lazyMembers(this.cache, lazy);
+    }
+  }
+
+  get(name, value, attr = "name") {
+    if(this.cache[name]) return this.cache[name];
+    let p = this.cache[name + "s"];
+    if(p && p.children) for(let e of p.children) if (e.attributes[attr] == value) return e;
+  }
+
+  *getAll(name, transform = arg => arg) {
+    let a = this.cache[name + "s"];
+    if(a && a.children) for(let e of a.children) yield transform(e, e.name);
+  }
   /*
   index(location, transform = arg => arg) {
     if(!(location instanceof EagleLocator)) location = new EagleLocator(location);
@@ -323,6 +345,26 @@ export class EagleNode extends EagleInterface {
     return obj;
   }
 */
+  /*
+  getAll(...args) {
+    let e = typeof args[0] == "string" ? args.shift() : undefined;
+    let n = typeof args[0] == "string" ? args.shift() : undefined;
+    let predicate = typeof e == "string" ? (v, l, d) => (n !== undefined && v.tagName === n) || (e !== undefined && v.tagName === e) : typeof args[0] == "function" ? args.shift() : arg => true;
+    let transform = typeof n == "string" ? ([v, l, d]) => v.attributes && v.attributes[n] : typeof args[0] == "function" ? args.shift() : ([v, l, d]) => new EagleEntity(d, l);
+    console.log("t:", transform);
+    return this.findAll({ predicate, transform });
+  }*/
+
+  getByName(element, name, attr = "name", t = ([v, l, d]) => new EagleEntity(d, l)) {
+    // console.log(`getByName:`,{element,name,attr})  ;
+    for(let [v, l, d] of this.iterator([], it => it)) {
+      if(typeof v == "object" && "tagName" in v && "attributes" in v && attr in v.attributes) {
+        // console.log(`   ${v.tagName} "${v.attributes[attr]}"`);
+        if(v.tagName == element && v.attributes[attr] == name) return t([v, l, d]);
+      }
+    }
+    return null;
+  }
 
   get nextSibling() {
     let obj = this.document.index(this.location.nextSibling);

@@ -32,7 +32,7 @@ export class EagleEntity extends EagleNode {
     let { tagName, attributes, children } = o;
     this.tagName = tagName;
     this.attributes = /* attributes; */ {};
-    //Util.define(this, "data", o);
+    Util.define(this, "root", o);
     // this.data = o;
 
     if(!Util.isEmpty(attributes)) {
@@ -71,6 +71,8 @@ export class EagleEntity extends EagleNode {
         })
       );
     else this.children = [];
+
+    this.initCache();
   }
 
   get raw() {
@@ -91,7 +93,7 @@ export class EagleEntity extends EagleNode {
     let o = this.document.index(this.location);
     return toXML(o, depth);
   }
-
+  /*
   set(name, value) {
     if(value instanceof EagleEntity) value = value.get("name");
     else if(typeof value != "string") value = "" + value;
@@ -100,7 +102,7 @@ export class EagleEntity extends EagleNode {
 
   get(name) {
     return this.handlers[name]();
-  }
+  }*/
 
   static isRelation(name) {
     return ["class", "deviceset", "element", "gate", "layer", "library", "package", "pad", "part", "pin", "symbol"].indexOf(name) != -1;

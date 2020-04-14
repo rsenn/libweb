@@ -4,8 +4,10 @@ import fs, { promises as fsPromises } from "fs";
 import path from "path";
 import deepClone from "clone";
 import deepDiff from "deep-diff";
+import { EagleEntity } from "./entity.js";
 import { EagleLocator } from "./locator.js";
-import { toXML, EagleNode } from "./common.js";
+import { toXML, EagleNode, inspect } from "./common.js";
+import deep from "../deep.js";
 
 export class EagleDocument extends EagleNode {
   xml = null;
@@ -32,6 +34,21 @@ export class EagleDocument extends EagleNode {
     Util.define(this, "xml", new tXml(xmlStr));
     //  Util.define(this, "orig", deepClone(this.xml));
     //console.log("" + deepDiff.diff);
+    //
+    //
+
+    /* let counts = {};
+  for(let value of f) {
+    if(!value.children || value.children.length == 0) continue;
+    if(counts[value.tagName] === undefined)
+counts[value.tagName] = 0;
+
+counts[value.tagName]++;
+  }
+ counts = Object.entries(counts).filter(([key,value]) => value === 1).map(([key,value]) => key);
+    console.log(`counts.${this.type}: ['`+counts.join("','")+"']");
+*/
+    this.initCache();
   }
 
   /* prettier-ignore */ get filename() { return path.basename(this.path); }
@@ -54,12 +71,17 @@ export class EagleDocument extends EagleNode {
     return deepDiff.diff(this.orig, this.xml);
   }
 
-  /*get location() {
-    if(this.type == 'sch' || this.type == 'brd')
-      return new EagleLocator([this.type == 'sch' ? 'schematic' : 'board']);
-    else if(this.type == 'library')
-      return new EagleLocator(['library',this.basename]);
-  }*/
+  cacheFields() {
+    switch (this.type) {
+      case "sch":
+        return ["settings", "layers", "libraries", "classes", "parts", "sheets", "instances", "nets"];
+      case "brd":
+        return ["settings", "layers", "libraries", "classes", "designrules", "elements", "signals"];
+      case "lbr":
+        return ["settings", "layers", "packages", "symbols", "devicesets"];
+    }
+    return super.cacheFields();
+  }
 
   toString() {
     return this.xml.map(e => toXML(e)).join("\n") + "\n";
