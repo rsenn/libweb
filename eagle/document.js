@@ -30,7 +30,7 @@ export class EagleDocument extends EagleNode {
     // if(this.type == "lbr") this.location.push(this.basename);
     if(project) this.owner = project;
     Util.define(this, "xml", new tXml(xmlStr));
-  //  Util.define(this, "orig", deepClone(this.xml));
+    //  Util.define(this, "orig", deepClone(this.xml));
     //console.log("" + deepDiff.diff);
   }
 
