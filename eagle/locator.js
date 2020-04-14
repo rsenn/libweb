@@ -11,7 +11,7 @@ export function DereferenceError(object, member, pos, part, locator) {
     error,
     { object, member, pos, locator },
     {
-      message: `Error dereferencing ${Util.className(object)} @ ${locator.slice(0,pos+1).join("|")} w/ keys={${Object.keys(part).join(",")}} no member '${member}' in `,
+      message: `Error dereferencing ${Util.className(object)} @ ${locator.map((part, i) => (i == pos ? `<<${part}>>` : part)).join(",")} w/ keys={${Object.keys(part).join(",")}} no member '${member}' `,
       stack: Util.getCallerStack()
         .filter(frame => null !== frame.getFileName())
         .map(frame => `${("" + frame.getFileName()).replace(/.*plot-cv\//, "")}:${frame.getLineNumber()}:${frame.getColumnNumber()}`)
@@ -37,6 +37,10 @@ export class EagleLocator extends Array {
   set(a) {
     this.splice(0, this.length, ...a);
     return this;
+  }
+
+  get size() {
+    return this.length;
   }
 
   /**
@@ -77,7 +81,7 @@ export class EagleLocator extends Array {
   }
 
   down(...args) {
-    return this.slice().concat(args);
+    return this.concat(args);
   }
 
   /**
@@ -135,9 +139,9 @@ export class EagleLocator extends Array {
     let i = 0;
     let a = new EagleLocator();
     let n;
-    if(typeof(pred) == 'number') {
+    if(typeof pred == "number") {
       n = pred;
-      pred = (part,index) => index === n;
+      pred = (part, index) => index === n;
     }
     while(i < this.length && !pred(this[0], i)) {
       a.push(this.shift());

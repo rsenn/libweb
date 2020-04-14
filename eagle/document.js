@@ -26,7 +26,9 @@ export class EagleDocument extends EagleNode {
     }
     this.path = filename;
     this.type = /<library>/.test(xmlStr) ? "lbr" : /<element /.test(xmlStr) ? "brd" : "sch";
-   if(project) this.owner = project;
+    // this.location.push(this.type == "lbr" ? "library" : this.type == "brd" ? "board" : "schematic");
+    // if(this.type == "lbr") this.location.push(this.basename);
+    if(project) this.owner = project;
     Util.define(this, "xml", new tXml(xmlStr));
   }
 
@@ -46,6 +48,13 @@ export class EagleDocument extends EagleNode {
   get basename() {
     return path.basename(this.filename).replace(/\.[a-z][a-z][a-z]$/i, "");
   }
+
+  /*get location() {
+    if(this.type == 'sch' || this.type == 'brd')
+      return new EagleLocator([this.type == 'sch' ? 'schematic' : 'board']);
+    else if(this.type == 'library')
+      return new EagleLocator(['library',this.basename]);
+  }*/
 
   toString = () => this.xml.map(e => toXML(e)).join("\n") + "\n";
 

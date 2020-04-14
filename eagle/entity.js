@@ -15,42 +15,35 @@ export class EagleEntity extends EagleNode {
 
   constructor(d, l, o) {
     super(d, l);
-    // const { +locator, ownerDocument, handlers } = */Util.extend(this, { ownerDocument: d, locator: l, handlers: {} });
     Object.defineProperty(this, "handlers", { value: {}, enumerable: false });
-/*
-    if(!(d instanceof EagleDocument)) {
-      let docpath = this.location.split(part => part == 'children');
-      d = d.index(docpath);
-        console.error("docpath:",   docpath, dump(d,1));
-    }
-*/
- // console.error("EagleEntity", dump(this.document), dump(this.location));
- // console.error("EagleEntity\n  "+Util.className(this.owner)+' '+Util.className(this.getDocument())+"\n  "+this.location.join(',')+"\n");
 
-    // if(!d) return;
+    //   console.error("EagleEntity\n  "+(o)+"  \n  "+Util.className(this.getDocument())+"\n  "+this.location.join(',')+"\n");
+    let owner = this.owner;
+    let location = this.location.clone();
+
+    /*        if(owner instanceof EagleDocument && location.indexOf('children') != -1) {
+            while(location.length > 0 && location[0] !== 'children')
+              location.shift();
+          }*/
+    //if(location[0] !== 'children') owner = owner.owner;
+
+    if(owner === null) throw new Error("owner == null");
+
+    //  console.error("EagleEntity o="+(o)+" location=" + location.join(',') + " d=" + Util.className(d) + " owner=" + Util.className(owner) + " location=" + this.location.join(","));
     if(o === undefined || (o.tagName === undefined && o.attributes === undefined && o.children === undefined)) {
-      let owner = this.owner;
-      let location = this.location;
-try {
-  o = this.location.apply(owner); //.index(location);
-
-} catch(error) {
-  throw new Error("EagleEntity index\nerror="+error+"\nowner="+Util.className(owner).replace(/\s+/g, " ")+"\nlocation=["+location.join(','));
-
-}
-
-    //  o = this.location[0] == 'children' ?  this.getDocument().index(this.location) : this.owner.index(this.location);
+      try {
+        o = location.apply(owner); //.index(location);
+      } catch(error) {
+        throw new Error("EagleEntity index\n  " + location[0] + "\n  error=" + error.toString().split(/\n/g)[0] + "\n  owner=" + Util.className(owner).replace(/\s+/g, " ") + "\n  location=[" + location.join(",") + "]");
+      }
     }
 
-if(o === null) {
-  throw new Error("eagleentity "+l.join(',')+Util.className(d)+' '+Util.className(this.document));
-}
-//console.log("o:",o);
-
+    if(o === null || typeof o != "object") throw new Error("eagleentity " + location.join(",") + " " + Util.className(owner) + " " + Util.className(this.document));
 
     let { tagName, attributes, children } = o;
     this.tagName = tagName;
     this.attributes = {};
+
     if(!Util.isEmpty(attributes)) {
       for(let key in attributes) {
         let prop = trkl(attributes[key]);
@@ -61,10 +54,26 @@ if(o === null) {
         );
         this.handlers[key] = handler;
         trkl.bind(this.attributes, key, handler);
-        if(EagleEntity.isRelation(key)) trkl.bind(this, key, v => (v ? this.handlers[key](v.name) : this.owner.getByName(key, this.handlers[key]())[0]));
+        if(EagleEntity.isRelation(key)) {
+          trkl.bind(this, key, v => {
+            return v ? this.handlers[key](v.name) : this.owner.getByName(key, this.handlers[key]());
+          });
+        } else if(key == "device") {
+          trkl.bind(this, key, v => {
+            if(v !== undefined) return this.handlers[key](v.name);
+            const device = this.deviceset.getByName("device", this.attributes.device);
+            return device;
+          });
+        }
       }
     }
-    if(children instanceof Array) this.children = lazyArray(children.map((child, i) => () => new EagleEntity(this.owner, this.location.down("children", i))));
+    if(children instanceof Array)
+      this.children = lazyArray(
+        children.map((child, i) => {
+          if(typeof child == "object") return () => new EagleEntity(owner, location.slice().down("children", i));
+          return () => child;
+        })
+      );
     else this.children = [];
   }
 
@@ -88,7 +97,7 @@ if(o === null) {
   }
 
   static isRelation(name) {
-    return ["class", "device", "deviceset", "element", "gate", "layer", "library", "package", "pad", "part", "pin", "symbol"].indexOf(name) != -1;
+    return ["class", "deviceset", "element", "gate", "layer", "library", "package", "pad", "part", "pin", "symbol"].indexOf(name) != -1;
   }
 
   /* prettier-ignore */ static keys(entity) {return Object.keys(EagleEntity.toObject(entity)); }

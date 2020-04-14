@@ -4,19 +4,20 @@ import path from "path";
 import { EagleDocument } from "./document.js";
 import { inspect, EagleInterface } from "./common.js";
 import { EagleEntity } from "./entity.js";
+import { EagleLocator } from "./locator.js";
 
-export class EagleProject extends EagleInterface {
+export class EagleProject {
   documents = [];
   filename = null;
   data = { sch: null, brd: null, lbr: {} };
 
   constructor(file) {
-    super();
+    //  super();
     this.filename = file.replace(/\.(brd|sch)$/, "");
     this.open(this.filename + ".sch");
     this.open(this.filename + ".brd");
 
-    console.log("libraries:",);
+    console.log("libraries:");
     this.loadLibraries();
     console.log("Opened project:", this.filename);
   }
@@ -50,13 +51,12 @@ export class EagleProject extends EagleInterface {
   /* prettier-ignore */ get children() { let children = this.documents; return children; }
   /* prettier-ignore */ get library() { return this.data.lbr; }
 
-  *iterator(t = ([v, l, h, d]) => [((d instanceof EagleDocument) && v.tagName) ? new EagleEntity(d, l) : v, l, h, d]) {
-    for(let doc of this.documents) yield* doc.iterator(arg => {
-      const r = t(arg);
-      const [v, l, h] = r;
-     //console.log("arg:",arg);
-      return [v, [...EagleProject.documentKey(doc), ...l], h, doc];
-});
+  *iterator(t = ([v, l, d]) => [typeof v == "object" ? new EagleEntity(d, l, v) : v, l, d]) {
+    const project = this;
+    for(let doc of this.documents) {
+      let prefix = EagleProject.documentKey(doc);
+      yield* doc.iterator(t);
+    }
   }
 
   /* prettier-ignore */ static documentLocation(d) { return d.type == 'lbr' ? ['lbr',d.filename] : [d.type]; }
@@ -80,8 +80,13 @@ export class EagleProject extends EagleInterface {
     return [...docDirs, ...docDirs.map(dir => `${dir}/lbr`)].filter(fs.existsSync);
   }
 
-  getLibraryNames() {
-    return Util.unique(this.getAll(v => v.tagName == 'library', l => l[0].attributes.name));
+  *getLibraryNames() {
+    for(let [v, l, d] of this.board.iterator(it => it /*([v,l,d]) => [typeof(v) == 'string' ? v : new EagleEntity(d,l),l,d]*/)) {
+      if(v.tagName != "library") continue;
+      // console.log("it:", {v,l,d});
+
+      yield v.attributes.name;
+    }
   }
 
   findLibrary(name, dirs = this.libraryPath()) {
@@ -107,7 +112,7 @@ export class EagleProject extends EagleInterface {
     let key = location.shift();
     let doc, name;
 
-    if(location.length == 0)return this;
+    if(location.length == 0) return this;
 
     switch (key) {
       case "board":
@@ -122,7 +127,7 @@ export class EagleProject extends EagleInterface {
         break;
     }
     if(!doc || !doc.index) {
-      throw new Error("ERROR: project.index("+ l.join(", ")+ " )");
+      throw new Error("ERROR: project.index(" + l.join(", ") + " )");
       return null;
     }
     if(location.length == 0) return doc;

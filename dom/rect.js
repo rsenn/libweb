@@ -94,7 +94,7 @@ Rect.prototype.corners = function() {
   ];
 };
 
-if (Rect.prototype.isSquare === undefined) {
+if(Rect.prototype.isSquare === undefined) {
   Rect.prototype.isSquare = function() {
     return Math.abs(this.width - this.height) < 1;
   };
@@ -272,7 +272,7 @@ Rect.inside = (rect, point) => {
   return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
 };
 
-for (let name of ["clone", "corners", "isSquare", "getArea", "toString", "toSource", "points", "toCSS", "toTRBL", "toPoints"]) {
+for(let name of ["clone", "corners", "isSquare", "getArea", "toString", "toSource", "points", "toCSS", "toTRBL", "toPoints"]) {
   Rect[name] = points => Rect.prototype[name].call(points);
 }
 
