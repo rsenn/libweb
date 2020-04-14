@@ -3,6 +3,7 @@ import { EagleEntity } from "./entity.js";
 import { EagleDocument } from "./document.js";
 import util from "util";
 import Util from "../util.js";
+import deep from "../deep.js";
 
 export const ansi = (...args) => `\u001b[${[...args].join(";")}m`;
 export const text = (text, ...color) => ansi(...color) + text + ansi(0);
@@ -99,6 +100,13 @@ export class EagleInterface {
     //   this.owner = owner;
     Object.defineProperty(this, "owner", { value: owner, enumerable: false, configurable: true, writable: true });
     Object.defineProperty(this, "location", { value: new EagleLocator([]), enumerable: false, configurable: true, writable: true });
+    Object.defineProperty(this, "children", {
+      enumerable: true,
+      configurable: true,
+      get: function() {
+        return this.root.children;
+      }
+    });
   }
 
   find(...args) {
@@ -122,7 +130,7 @@ export class EagleInterface {
     console.log("predicate: " + obj.predicate);
     console.log("transform: " + obj.transform);
     let { location, predicate, transform } = obj instanceof Array ? parseArgs(obj) : obj;
-    for(let [v, l, d] of this.iterator(it => it))
+    for(let [v, l, d] of this.iterator([], it => it))
       if(predicate(v, l)) {
         if(transform) v = transform([v, l, this]);
         //   console.log("v: ",v);
@@ -147,7 +155,7 @@ export class EagleInterface {
 
   getByName(element, name, attr = "name", t = ([v, l, d]) => new EagleEntity(d, l)) {
     // console.log(`getByName:`,{element,name,attr})  ;
-    for(let [v, l, d] of this.iterator(it => it)) {
+    for(let [v, l, d] of this.iterator([], it => it)) {
       if(typeof v == "object" && "tagName" in v && "attributes" in v && attr in v.attributes) {
         // console.log(`   ${v.tagName} "${v.attributes[attr]}"`);
         if(v.tagName == element && v.attributes[attr] == name) return t([v, l, d]);
@@ -193,23 +201,21 @@ export class EagleInterface {
   }*/
 
   entries(t = ([v, l, d]) => [l[l.length - 1], new EagleEntity(d, l)]) {
-    return this.iterator(t);
+    return this.iterator([], t);
   }
 
-  *iterator(t = ([v, l, d]) => [typeof v == "object" && v !== null && "tagName" in v ? new EagleEntity(d, l) : v, l, d]) {
-    let owner = this;
-    let location = this instanceof EagleDocument ? new EagleLocator([]) : this.location;
-    let document = this instanceof EagleDocument ? this : this.owner;
-    let root = location.apply(document);
-    /*  console.log("documemnt:", document);
-    console.log("root:", root);*/
-
-    for(let it of traverse(root, location, document)) {
-      let [v, l, d] = t(it);
-
-      // console.log("v:",dump(v,1));
-
-      if(typeof v == "object" && v !== null && "tagName" in v) yield [v, l, d];
+  *iterator(...args) {
+    let location = (Util.isArray(args[0]) && args.shift()) || [];
+    let t = typeof args[0] == "function" ? args.shift() : ([v, l, d]) => [typeof v == "object" && v !== null && "tagName" in v ? new EagleEntity(d, l) : v, l, d];
+    let owner = this instanceof EagleDocument ? this : this.owner;
+    //console.log("iterator:", location.join(','));
+    let root = (owner.xml && owner.xml[0]) || this.root;
+    let node = root;
+    if(location.length > 0) node = deep.get(node, location);
+    //console.log("node:", node);
+    for(let it of deep.iterate(node, (v, p) => (p.length > 1 ? p[p.length - 2] == "children" : true))) {
+      let [v, l] = t(it);
+      if(typeof v == "object" && v !== null && "tagName" in v) yield [v, l, owner];
     }
   }
 
@@ -258,7 +264,7 @@ export class EagleNode extends EagleInterface {
 
   constructor(d = null, l = []) {
     super(d);
-    this.location = l instanceof EagleLocator ? l : new EagleLocator(l);
+    Util.define(this, "location", l instanceof EagleLocator ? l : new EagleLocator(l));
   }
 
   get document() {

@@ -26,19 +26,18 @@ export class EagleDocument extends EagleNode {
     } catch(error) {
       throw new Error("EagleDocument: " + error);
     }
-    this.path = filename;
-    this.type = /<library>/.test(xmlStr) ? "lbr" : /<element /.test(xmlStr) ? "brd" : "sch";
+    Util.define(this, "path", filename);
+    Util.define(this, "type", /<library>/.test(xmlStr) ? "lbr" : /<element /.test(xmlStr) ? "brd" : "sch");
     // this.location.push(this.type == "lbr" ? "library" : this.type == "brd" ? "board" : "schematic");
     // if(this.type == "lbr") this.location.push(this.basename);
     if(project) this.owner = project;
     Util.define(this, "orig", new tXml(xmlStr));
     Util.define(this, "xml", deepClone(this.orig));
-    console.log("" + deepDiff.diff);
+    //console.log("" + deepDiff.diff);
   }
 
   /* prettier-ignore */ get filename() { return path.basename(this.path); }
   /* prettier-ignore */ get dirname() { return path.dirname(this.path); }
-  /* prettier-ignore */ get children() { return this.root.children; }
   /* prettier-ignore */ get root() {
     if(this.xml.length == 1) {
             const e = this.xml[0];
@@ -64,10 +63,12 @@ export class EagleDocument extends EagleNode {
       return new EagleLocator(['library',this.basename]);
   }*/
 
-  toString = () => this.xml.map(e => toXML(e)).join("\n") + "\n";
+  toString() {
+    return this.xml.map(e => toXML(e)).join("\n") + "\n";
+  }
 
   /* prettier-ignore */
-  saveTo = (path, overwrite = false) => new Promise((resolve, reject) => fsPromises .writeFile(path, this.toString(), { flag: overwrite ? "w" : "wx" }) .then(() => resolve(path)) .catch(reject) );
+  saveTo(path, overwrite = false) {return new Promise((resolve, reject) => fsPromises .writeFile(path, this.toString(), { flag: overwrite ? "w" : "wx" }) .then(() => resolve(path)) .catch(reject) ); }
 
   index(location, transform = arg => arg) {
     if(!(location instanceof EagleLocator)) location = new EagleLocator(location);

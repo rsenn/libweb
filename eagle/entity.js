@@ -43,6 +43,8 @@ export class EagleEntity extends EagleNode {
     let { tagName, attributes, children } = o;
     this.tagName = tagName;
     this.attributes = /* attributes; */ {};
+    //Util.define(this, 'data',o);
+    this.data = o;
 
     if(!Util.isEmpty(attributes)) {
       for(let key in attributes) {
@@ -59,11 +61,11 @@ export class EagleEntity extends EagleNode {
 
         if(EagleEntity.isRelation(key)) {
           trkl.bind(this, key, v => {
-            return v ? this.handlers[key](typeof(v) == 'string' ? v : v.name) : this.owner.getByName(key, this.handlers[key]());
+            return v ? this.handlers[key](typeof v == "string" ? v : v.name) : this.owner.getByName(key, this.handlers[key]());
           });
         } else if(key == "device") {
           trkl.bind(this, key, v => {
-            if(v !== undefined) return this.handlers[key](typeof(v) == 'string' ? v : v.name);
+            if(v !== undefined) return this.handlers[key](typeof v == "string" ? v : v.name);
             const device = this.deviceset.getByName("device", this.attributes.device);
             return device;
           });

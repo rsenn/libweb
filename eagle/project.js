@@ -81,7 +81,7 @@ export class EagleProject {
   }
 
   *getLibraryNames() {
-    for(let [v, l, d] of this.board.iterator(it => it /*([v,l,d]) => [typeof(v) == 'string' ? v : new EagleEntity(d,l),l,d]*/)) {
+    for(let [v, l, d] of this.board.iterator([], it => it /*([v,l,d]) => [typeof(v) == 'string' ? v : new EagleEntity(d,l),l,d]*/)) {
       if(v.tagName != "library") continue;
       // console.log("it:", {v,l,d});
 

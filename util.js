@@ -720,6 +720,10 @@ Util.hasProps = function(obj) {
 Util.validatePassword = function(value) {
   return value.length > 7 && /^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]/.test(value) && !/\s/.test(value);
 };
+Util.clone =  function(obj) {
+  if (typeof(obj) != 'object') return obj;
+  return Util.isArray(obj) ? obj.slice() : Object.assign({}, obj);
+};
 //deep copy
 Util.deepClone = function(data) {
   return JSON.parse(JSON.stringify(data));
@@ -1316,6 +1320,19 @@ Util.formatRecord = function(obj) {
 };
 Util.isArray = function(obj) {
   return (obj && obj.length !== undefined) || obj instanceof Array;
+};
+
+Util.isObject = function(obj) {
+  const type = typeof obj;
+  return type === 'function' || type === 'object' && !!obj;
+};
+Util.size = function(obj) {
+  if(Util.isObject(obj)) {
+    if('length' in obj)
+      return obj.length;
+    return Object.keys(obj).length;
+  }
+  return undefined;
 };
 Util.isMap = function(obj) {
   return (obj && obj.get !== undefined && obj.keys !== undefined) || obj instanceof Map;
