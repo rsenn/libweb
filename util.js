@@ -430,15 +430,12 @@ Util.array = function(...args) {
 };
 Util.toMap = function(hash = {}) {
   let m, gen;
-  if(hash[Symbol.iterator] !== undefined)
-    gen = hash[Symbol.iterator]();
-  else if(Util.isGenerator(hash))
-    gen = hash;
-  else
-    gen = Object.entries(hash);
+  if(hash[Symbol.iterator] !== undefined) gen = hash[Symbol.iterator]();
+  else if(Util.isGenerator(hash)) gen = hash;
+  else gen = Object.entries(hash);
 
   m = new Map(gen);
-/*  
+  /*  
   if(m instanceof Array) m[Symbol.iterator] = m.entries;
   try {
     //if(m.toObject === undefined) Util.extendMap();
@@ -577,10 +574,9 @@ Util.objName = function(o) {
   return s;
 };
 Util.findKey = function(obj, value) {
-  for(let k in obj) {
-    if(obj[k] === value) return k;
-  }
-  return null;
+  let pred = typeof(value) == 'function' ? value : v => v === value;
+  for(let k in obj)
+    if(pred(obj[k], k)) return k;
 };
 Util.find = function(arr, value, prop = "id", acc = Util.array()) {
   let pred;
@@ -729,8 +725,8 @@ Util.hasProps = function(obj) {
 Util.validatePassword = function(value) {
   return value.length > 7 && /^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]/.test(value) && !/\s/.test(value);
 };
-Util.clone =  function(obj) {
-  if (typeof(obj) != 'object') return obj;
+Util.clone = function(obj) {
+  if(typeof obj != "object") return obj;
   return Util.isArray(obj) ? obj.slice() : Object.assign({}, obj);
 };
 //deep copy
@@ -1128,10 +1124,9 @@ Util.isMobile = function() {
   return true;
 };
 Util.unique = function(arr) {
- /* arr = [...arr];
+  /* arr = [...arr];
   return arr.filter((item,index) => arr.indexOf(item) === index);*/
-   return [...new Set(arr)]
-
+  return [...new Set(arr)];
 };
 Util.concat = function*(...args) {
   for(let arg of args) {
@@ -1200,13 +1195,13 @@ Util.reduce = function(obj, fn, accu) {
   for(let key in obj) accu = fn(accu, obj[key], key, obj);
   return accu;
 };
-Util.mapFunctional = (fn) => function*(arg) {
-  for(let item of arg)
-    yield fn(item);
-};
+Util.mapFunctional = fn =>
+  function*(arg) {
+    for(let item of arg) yield fn(item);
+  };
 Util.map = function(obj, fn) {
-  if(typeof(obj) == 'function') return Util.mapFunctional(...arguments);
-  if(typeof(fn) != 'function') return Util.toMap(...arguments);
+  if(typeof obj == "function") return Util.mapFunctional(...arguments);
+  if(typeof fn != "function") return Util.toMap(...arguments);
   let ret = {};
   for(let key in obj) {
     if(obj.hasOwnProperty(key)) {
@@ -1340,12 +1335,11 @@ Util.isArray = function(obj) {
 
 Util.isObject = function(obj) {
   const type = typeof obj;
-  return type === 'function' || type === 'object' && !!obj;
+  return type === "function" || (type === "object" && !!obj);
 };
 Util.size = function(obj) {
   if(Util.isObject(obj)) {
-    if('length' in obj)
-      return obj.length;
+    if("length" in obj) return obj.length;
     return Object.keys(obj).length;
   }
   return undefined;
@@ -1820,3 +1814,14 @@ Util.decodeHTMLEntities = function(text) {
 Util.stripAnsi = function(str) {
   return str.replace(/\x1B[[(?);]{0,2}(;?\d)*./g, "");
 };
+Util.proxy = (obj = {}, handler) => new Proxy(obj, {
+  get(target, key, receiver) {
+    console.log(`Util.proxy getting ${key}!`);
+    return Reflect.get(target, key, receiver);
+  },
+  set(target, key, value, receiver) {
+    console.log(`Util.proxy setting ${key}!`);
+    return Reflect.set(target, key, value, receiver);
+  },
+  ...handler
+});

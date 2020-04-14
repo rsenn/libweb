@@ -1,3 +1,4 @@
+import { Util } from "./util.js";
 import { trkl } from "./trkl.js";
 
 export function Instance({ trackable = false, callback, initVal = null }) {
@@ -57,6 +58,64 @@ export function lazyMembers(obj, members) {
       enumerable: true
     });
   }
+}
+
+export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, proto) {
+  /*  let m = new Map();
+
+  for(let [k,v] of entries)
+    m.set(k, lazyInitializer(v));
+*/
+  var cache = {};
+  let p = new Proxy(arr, {
+    get(target, key, receiver) {
+      // console.log("key:", key);
+      let index = typeof key == "string" && /^[0-9]+$/.test(key) ? parseInt(key) : key;
+      if(cache[key]) return cache[key];
+      if(key == "length") {
+        index = key;
+      } else if(typeof index == "string") {
+        index = Util.findKey(target, (v, k) => lookup(v) === key);
+        if(typeof index == "string" && /^[0-9]+$/.test(index)) index = parseInt(index);
+
+        if(typeof index != "number" || typeof index != "string") index = key;
+      }
+
+      let ret = Reflect.get(target, index);
+      if(typeof ret == "object" && typeof index == "number") {
+        key = lookup(ret);
+        cache[key] = ctor(ret, index);
+        ret = cache[key];
+      }
+      /*  if(typeof(index) == 'number' || typeof(index) == 'string')
+       console.log(`getting  @${index} = ` + ret);*/
+      return ret;
+    },
+    set(target, key, value, receiver) {
+      console.log(`setting ${key}!`);
+      // Reflect.set(target, key, value, receiver);
+    },
+    has(target, key) {
+      if(Reflect.has(target, key)) return true;
+      const len = Reflect.get(target, "length");
+      if(typeof key == "number") return key >= 0 && key < len;
+
+      for(let i = 0; i < len; i++) if(lookup(Reflect.get(target, i)) === key) return true;
+      return false;
+    },
+    getPrototypeOf(target) {
+      return proto;
+    } /*,
+      ownKeys(target) {
+        let keys = [];
+        for(let i = 0; i < Reflect.get(target, "length"); i++) {
+          keys.push(lookup(Reflect.get(target, ''+i)));
+        }
+        return keys;
+      }*/
+  });
+
+  return p;
 }
 
 export function lazyArray(elements) {

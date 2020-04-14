@@ -3,7 +3,7 @@ import { EagleEntity } from "./entity.js";
 import util from "util";
 import Util from "../util.js";
 import deep from "../deep.js";
-import { lazyMembers } from "../lazyInitializer.js";
+import { lazyMembers, lazyMap } from "../lazyInitializer.js";
 
 export const ansi = (...args) => `\u001b[${[...args].join(";")}m`;
 export const text = (text, ...color) => ansi(...color) + text + ansi(0);
@@ -233,6 +233,7 @@ export class EagleInterface {
     return dump(e);
   }
 }
+export class EagleNodeList {}
 
 export class EagleNode extends EagleInterface {
   location = null;
@@ -275,6 +276,19 @@ export class EagleNode extends EagleInterface {
     return this.document.owner;
   }
 
+  get raw() {
+    let ret = {};
+    if(this.tagName) {
+      ret.tagName = this.tagName;
+      if(this.attributes) ret.attributes = Util.map(this.attributes, (k, v) => [k, this.handlers[k]()]);
+      let children = this.children.map(child => child.raw || child.text).filter(child => child !== undefined);
+      if(children.length > 0) ret.children = children;
+    } else if(this.xml[0]) {
+      ret = this.xml[0];
+    }
+
+    return ret;
+  }
   cacheFields() {
     switch (this.tagName) {
       case "schematic":
@@ -294,14 +308,36 @@ export class EagleNode extends EagleInterface {
     let fields = this.cacheFields();
 
     if(fields) {
-      console.log(`${this.type || this.tagName}.fields: ` + fields.join(","));
+      //console.log(`${this.type || this.tagName}.fields: ` + fields.join(","));
       Util.define(this, "cache", {});
 
       let lazy = {},
+        lists = {},
+        maps = {},
         parent = this;
-      for(let [value, path] of deep.iterate(this.root, v => v && fields.indexOf(v.tagName) != -1)) lazy[value.tagName] = () => new EagleEntity(parent, path);
+
+      for(let [value, path] of deep.iterate(this.raw, v => v && fields.indexOf(v.tagName) != -1)) {
+        const key = value.tagName;
+        lazy[key] = () => new EagleEntity(parent, path);
+        //lists[key] = { enumerable: false, get: () => parent.cache[key].children };
+
+        if(this[key] !== undefined) console.log(`${key} already defined`);
+        else
+          Util.define(
+            this,
+            key,
+            lazyMap(
+              value.children,
+              item => item.attributes.name,
+              (arg, key) => new EagleEntity(parent, [...path, "children", key]),
+              EagleNodeList.prototype
+            )
+          );
+      }
 
       lazyMembers(this.cache, lazy);
+
+      // Object.defineProperties(this, maps);
     }
   }
 

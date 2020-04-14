@@ -63,26 +63,13 @@ export class EagleEntity extends EagleNode {
         }
       }
     }
-    if(children instanceof Array)
-      this.children = lazyArray(
-        children.map((child, i) => {
-          if(typeof child == "object") return () => new EagleEntity(owner, location.slice().down("children", i));
-          return () => child;
-        })
-      );
-    else this.children = [];
+    if(children instanceof Array) {
+      let childHandlers = children.map((child, i) => (typeof child == "object" ? () => new EagleEntity(owner, location.slice().down("children", i)) : () => child));
+      this.children = lazyArray(childHandlers);
+      //   Util.define(this, 'childHandlers', childHandlers);
+    } else this.children = [];
 
     this.initCache();
-  }
-
-  get raw() {
-    let ret = {};
-    if(this.tagName) ret.tagName = this.tagName;
-    if(this.attributes) ret.attributes = Util.map(this.attributes, (k, v) => [k, this.handlers[k]()]);
-    let children = this.children.map(child => child.raw || child.text).filter(child => child !== undefined);
-    if(children.length > 0) ret.children = children;
-
-    return ret;
   }
 
   get text() {
