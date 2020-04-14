@@ -11,7 +11,6 @@ export const dump = (obj, depth = 1) => util.inspect(obj, { depth, breakLength: 
 
 export const parseArgs = args => {
   let ret = { location: [] /*, transform: arg => arg*/ };
-  console.log("args:", args);
 
   while(args.length > 0) {
     if(args[0] instanceof EagleLocator) {
@@ -35,8 +34,6 @@ export const parseArgs = args => {
     if(ret.name) ret.predicate = v => v.tagName == ret.element && v.attributes.name == ret.name;
     else ret.predicate = v => v.tagName == ret.element;
   }
-  console.log("ret:", ret);
-  // if(!ret.predicate)  ret.predicate = (...args) => args;
   return ret;
 };
 

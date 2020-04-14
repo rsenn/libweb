@@ -1119,7 +1119,10 @@ Util.isMobile = function() {
   return true;
 };
 Util.unique = function(arr) {
-  return Array.from(new Set(arr));
+ /* arr = [...arr];
+  return arr.filter((item,index) => arr.indexOf(item) === index);*/
+   return [...new Set(arr)]
+
 };
 Util.concat = function*(...args) {
   for(let arg of args) {
