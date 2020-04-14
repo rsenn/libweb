@@ -33,7 +33,7 @@ export class EagleEntity extends EagleNode {
     this.tagName = tagName;
     this.attributes = /* attributes; */ {};
     //Util.define(this, "data", o);
-   // this.data = o;
+    // this.data = o;
 
     if(!Util.isEmpty(attributes)) {
       for(let key in attributes) {
@@ -76,10 +76,10 @@ export class EagleEntity extends EagleNode {
   get raw() {
     let ret = {};
     if(this.tagName) ret.tagName = this.tagName;
-    if(this.attributes) ret.attributes = Util.map(this.attributes, (k,v) => [k,this.handlers[k]()]);
+    if(this.attributes) ret.attributes = Util.map(this.attributes, (k, v) => [k, this.handlers[k]()]);
     let children = this.children.map(child => child.raw || child.text).filter(child => child !== undefined);
     if(children.length > 0) ret.children = children;
-   
+
     return ret;
   }
 
