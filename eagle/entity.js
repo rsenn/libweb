@@ -2,9 +2,7 @@ import Util from "../util.js";
 import { trkl } from "../trkl.js";
 import { lazyArray } from "../lazyInitializer.js";
 import util from "util";
-import { EagleDocument } from "./document.js";
-import { EagleLocator } from "./locator.js";
-import { ansi, text, EagleNode, inspect, toXML } from "./common.js";
+import { text, EagleNode, inspect, toXML } from "./common.js";
 
 const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
 
@@ -16,20 +14,11 @@ export class EagleEntity extends EagleNode {
   constructor(d, l, o) {
     super(d, l);
     Object.defineProperty(this, "handlers", { value: {}, enumerable: false });
-
-    //   console.error("EagleEntity\n  "+(o)+"  \n  "+Util.className(this.getDocument())+"\n  "+this.location.join(',')+"\n");
     let owner = this.owner;
     let location = this.location.clone();
 
-    /*        if(owner instanceof EagleDocument && location.indexOf('children') != -1) {
-            while(location.length > 0 && location[0] !== 'children')
-              location.shift();
-          }*/
-    //if(location[0] !== 'children') owner = owner.owner;
-
     if(owner === null) throw new Error("owner == null");
 
-    //  console.error("EagleEntity o="+(o)+" location=" + location.join(',') + " d=" + Util.className(d) + " owner=" + Util.className(owner) + " location=" + this.location.join(","));
     if(o === undefined || (o.tagName === undefined && o.attributes === undefined && o.children === undefined)) {
       try {
         o = location.apply(owner); //.index(location);
@@ -43,8 +32,8 @@ export class EagleEntity extends EagleNode {
     let { tagName, attributes, children } = o;
     this.tagName = tagName;
     this.attributes = /* attributes; */ {};
-    //Util.define(this, 'data',o);
-    this.data = o;
+    Util.define(this, "data", o);
+    //this.data = o;
 
     if(!Util.isEmpty(attributes)) {
       for(let key in attributes) {

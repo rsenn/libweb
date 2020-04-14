@@ -1,6 +1,5 @@
 import { EagleLocator } from "./locator.js";
 import { EagleEntity } from "./entity.js";
-import { EagleDocument } from "./document.js";
 import util from "util";
 import Util from "../util.js";
 import deep from "../deep.js";
@@ -207,14 +206,11 @@ export class EagleInterface {
   *iterator(...args) {
     let location = (Util.isArray(args[0]) && args.shift()) || [];
     let t = typeof args[0] == "function" ? args.shift() : ([v, l, d]) => [typeof v == "object" && v !== null && "tagName" in v ? new EagleEntity(d, l) : v, l, d];
-    let owner = this instanceof EagleDocument ? this : this.owner;
+    let owner = this instanceof EagleEntity ? this.owner : this;
     let root = (owner.xml && owner.xml[0]) || this.root;
     let node = root;
     if(location.length > 0) node = deep.get(node, location);
-    for(let it of deep.iterate(node, (v, p) => (p.length > 1 ? p[p.length - 2] == "children" : true))) {
-      let [v, l] = t(it);
-      if(typeof v == "object" && v !== null && "tagName" in v) yield [v, l, owner];
-    }
+    for(let [v, l] of deep.iterate(node, (v, p) => (p.length > 1 ? p[p.length - 2] == "children" : true))) if(typeof v == "object" && v !== null && "tagName" in v) yield [v, l, owner];
   }
 
   [Symbol.iterator]() {

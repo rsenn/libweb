@@ -1,13 +1,11 @@
 import tXml from "../tXml.js";
 import Util from "../util.js";
 import fs, { promises as fsPromises } from "fs";
-import { EagleEntity } from "./entity.js";
-import util from "util";
 import path from "path";
 import deepClone from "clone";
 import deepDiff from "deep-diff";
 import { EagleLocator } from "./locator.js";
-import { text, traverse, toXML, parseArgs, dump, EagleNode } from "./common.js";
+import { toXML, EagleNode } from "./common.js";
 
 export class EagleDocument extends EagleNode {
   xml = null;

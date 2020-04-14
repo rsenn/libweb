@@ -2,9 +2,7 @@ import Util from "../util.js";
 import fs from "fs";
 import path from "path";
 import { EagleDocument } from "./document.js";
-import { inspect, EagleInterface } from "./common.js";
 import { EagleEntity } from "./entity.js";
-import { EagleLocator } from "./locator.js";
 
 export class EagleProject {
   documents = [];

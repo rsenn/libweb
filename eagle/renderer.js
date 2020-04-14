@@ -1,5 +1,4 @@
 import { BBox } from "../dom/bbox.js";
-import { Rect } from "../dom/rect.js";
 import { Point } from "../dom/point.js";
 import { Line } from "../dom/line.js";
 
