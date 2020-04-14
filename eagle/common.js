@@ -79,7 +79,14 @@ export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
 export const inspect = (e, d, c = { depth: 0, breakLength: 400, location: true }) => {
   const { depth, breakLength } = c;
   let o = e;
-
+if(Util.isArray(o) || (Util.isObject(o)  &&  o.length !== undefined)) {
+    let s = "";
+    for(let i of o) {
+      if(s.length > 0) s += i instanceof EagleEntity ? ",\n" : ", ";
+      s += i === undefined ? 'undefined' : inspect(i, undefined, { ...c, depth: c.depth - 1 });
+    }
+    return s;
+  } 
   if(typeof e == "string") return text(e, 1, 36);
   if(e instanceof EagleEntity) o = EagleEntity.toObject(e);
   let x = util.inspect(o, { depth: depth * 2, breakLength, colors: true });
@@ -87,7 +94,11 @@ export const inspect = (e, d, c = { depth: 0, breakLength: 400, location: true }
   x = x.substring(x.indexOf("tagName") + 14);
   //    x = x.replace(/.*tagName[^']*'([^']+)'[^,]*,?/g, "$1");
 
-  x = Object.entries(e.attributes || {}).map(([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36));
+  x = Object.entries((e && e.attributes) || {}).map(([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36));
+/*
+if(!e  || !e.tagName)
+  return o;*/
+//  console.log(o);
   x.unshift(e.tagName);
   //x = x.replace(/([^ ]*):[^']*('[^']*')[^,]*,?/g, text("$1", 33)+text(s, 0, 37)+text("$2", 1, 36));
 
@@ -165,14 +176,14 @@ export class EagleInterface {
     }
     return s;
   }
-
+/*
   get nodeType() {
     if(typeof this.tagName == "string") return "EagleElement";
     else if(this instanceof EagleEntity) return "EagleText";
     else if(this instanceof EagleDocument) return "EagleDocument";
     else if(this instanceof EagleProject) return "EagleProject";
   }
-
+*/
   /*
   static pathStr(path) {
     let str = "";
@@ -285,7 +296,10 @@ export class EagleNode extends EagleInterface {
       if(children.length > 0) ret.children = children;
     } else if(this.xml[0]) {
       ret = this.xml[0];
+    }  else {
+      throw new Error("Cannot get raw");
     }
+  //  console.log("raw:",ret);
 
     return ret;
   }
@@ -343,7 +357,8 @@ export class EagleNode extends EagleInterface {
 
   get(name, value, attr = "name") {
     if(this.cache[name]) return this.cache[name];
-    let p = this.cache[name + "s"];
+    let i = name == "library" ? "libraries" : name + "s";
+    let p = this.cache[i];
     if(p && p.children) for(let e of p.children) if (e.attributes[attr] == value) return e;
   }
 

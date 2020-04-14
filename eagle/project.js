@@ -3,6 +3,8 @@ import fs from "fs";
 import path from "path";
 import { EagleDocument } from "./document.js";
 import { EagleEntity } from "./entity.js";
+import { dump, inspect } from "./common.js";
+import deep from "../deep.js";
 
 export class EagleProject {
   documents = [];
@@ -37,8 +39,8 @@ export class EagleProject {
     else throw new Error(`EagleProject: error opening '${file}': ${err}`);
     //console.log("Opened ownerDocument:", filename);
 
-    if(doc.type == "lbr") this.data[doc.type][doc.basename] = doc.root;
-    else this.data[doc.type] = doc.root;
+    if(doc.type == "lbr") this.data[doc.type][doc.basename] = doc;
+    else this.data[doc.type] = doc;
     return doc;
   }
 
@@ -79,7 +81,10 @@ export class EagleProject {
   }
 
   *getLibraryNames() {
-    for(let [v, l, d] of this.board.iterator([], it => it /*([v,l,d]) => [typeof(v) == 'string' ? v : new EagleEntity(d,l),l,d]*/)) {
+    for(let [v, l, d] of this.board.iterator(
+      [],
+      it => it /*([v,l,d]) => [typeof(v) == 'string' ? v : new EagleEntity(d,l),l,d]*/
+    )) {
       if(v.tagName != "library") continue;
       // console.log("it:", {v,l,d});
 
@@ -103,6 +108,42 @@ export class EagleProject {
       if(!lib) throw new Error(`EagleProject library '${name}' not found in ${dirs.join(".")}`);
       this.open(lib);
     }
+  }
+
+  updateLibrary(name) {
+    const library = this.library[name];
+    const { schematic, board } = this;
+
+    let libraries = {
+      file: library.get("library"),
+      schematic: schematic.get("library", name),
+      board: board.get("library", name)
+    };
+    let layers = {
+      schematic: Object.fromEntries(schematic.layers.filter(l => l.active == 'yes').map(l => [l.number,l])),
+      board: Object.fromEntries(board.layers.filter(l => l.active == 'yes').map(l => [l.number,l]))
+    };
+
+
+
+    for(let k of ['schematic','board']) {
+              const lib = libraries[k];
+              const { raw, root } = lib;
+      console.log(`${k}.library ${name}: `,root);
+
+      for(let entity of ['package','symbol','deviceset']) {
+        const l = lib[entity+'s'];
+        if(l)
+      console.log(`${k}.library ${name} ${entity}s:\n`+(inspect(l, 2)));
+      }
+    }
+            console.log("layer", Util.map(layers, (key,value) => [key,Object.keys(value)]));    
+
+             console.log("layers",dump(layers,4));
+
+/*
+    console.log("name:", name);
+    console.log("libraries:", libraries);*/
   }
 
   index(l) {
@@ -132,5 +173,6 @@ export class EagleProject {
     return doc.index(location);
   }
 
-  saveTo = (dir = ".", overwrite = false) => Promise.all(this.documents.map(doc => doc.saveTo(path.join(dir, doc.filename), overwrite)));
+  saveTo = (dir = ".", overwrite = false) =>
+    Promise.all(this.documents.map(doc => doc.saveTo(path.join(dir, doc.filename), overwrite)));
 }

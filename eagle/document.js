@@ -78,7 +78,7 @@ counts[value.tagName]++;
       case "brd":
         return ["settings", "layers", "libraries", "classes", "designrules", "elements", "signals"];
       case "lbr":
-        return ["settings", "layers", "packages", "symbols", "devicesets"];
+        return ["settings", "layers", "library", "packages", "symbols", "devicesets"];
     }
     return super.cacheFields();
   }
