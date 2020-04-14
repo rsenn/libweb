@@ -137,25 +137,12 @@ export class EagleProject {
         if(l)
           for(let i = 0; i < l.length; i++) {
             const elem = l[i];
-            console.log(`${k}.library ${name} ${entity} #${i}:\n`+inspect(elem));
+            console.log(`${k}.library ${name} ${entity} #${i}:\n` + inspect(elem));
           }
       }
     }
-    /*  console.log(
-      "layer",
-      Util.map(layers, (key, value) => [key, Object.keys(value)])
-    );
 
-    console.log("layers", dump(layers, 4));*/
     console.log(layers.schematic.get(99).active, layers.schematic.get(250).active);
-    /*  let test = schematic.layers.filter(l => l.active == 'yes');
-    console.log("schematic.layers:"+test.map(l => inspect(l)).join("\n"));
-   let test = schematic.layers.filter(l => l.active == 'yes');
-    console.log("schematic.layers:"+test.map(l => inspect(l)).join("\n"));
-    console.log(Util.className(test));*/
-    /*
-    console.log("name:", name);
-    console.log("libraries:", libraries);*/
   }
 
   index(l) {

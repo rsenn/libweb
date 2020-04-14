@@ -62,13 +62,13 @@ export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
   for(let k in o.attributes) s += ` ${k}="${o.attributes[k]}"`;
 
   const a = o.children && o.children.length !== undefined ? o.children : [];
-const text = o.text;
-  if(a && a.length > 0 || text) {
+  const text = o.text;
+  if((a && a.length > 0) || text) {
     s += o.tagName[0] != "?" ? ">" : "?>";
     if(z > 0) {
       let nl = text ? "" : o.tagName == "text" && a.length == 1 ? "" : o.tagName[0] != "?" ? "\n  " : "\n";
-      if(text) s+= text; else 
-      for(let child of a) s += nl + toXML(child, z - 1).replace(/\n/g, nl);
+      if(text) s += text;
+      else for(let child of a) s += nl + toXML(child, z - 1).replace(/\n/g, nl);
       if(o.tagName[0] != "?") s += `${nl.replace(/ /g, "")}</${o.tagName}>`;
     }
   } else {

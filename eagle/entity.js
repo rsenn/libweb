@@ -67,7 +67,7 @@ export class EagleEntity extends EagleNode {
     if(o.children && typeof o.children[0] == "string") {
       //this.text = o.children[0];
       this.children = o.children;
-   //   console.log(`${tagName}: ${children.length}`, this.text);
+      //   console.log(`${tagName}: ${children.length}`, this.text);
     } else if(Util.isArray(children)) {
       let childHandlers = children.map((child, i) => (typeof child == "object" ? () => new EagleEntity(owner, location.slice().down("children", i)) : () => children[i]));
       this.children = lazyArray(childHandlers);
