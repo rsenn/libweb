@@ -59,11 +59,11 @@ export class EagleEntity extends EagleNode {
 
         if(EagleEntity.isRelation(key)) {
           trkl.bind(this, key, v => {
-            return v ? this.handlers[key](v.name) : this.owner.getByName(key, this.handlers[key]());
+            return v ? this.handlers[key](typeof(v) == 'string' ? v : v.name) : this.owner.getByName(key, this.handlers[key]());
           });
         } else if(key == "device") {
           trkl.bind(this, key, v => {
-            if(v !== undefined) return this.handlers[key](v.name);
+            if(v !== undefined) return this.handlers[key](typeof(v) == 'string' ? v : v.name);
             const device = this.deviceset.getByName("device", this.attributes.device);
             return device;
           });
