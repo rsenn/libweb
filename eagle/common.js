@@ -208,11 +208,9 @@ export class EagleInterface {
     let location = (Util.isArray(args[0]) && args.shift()) || [];
     let t = typeof args[0] == "function" ? args.shift() : ([v, l, d]) => [typeof v == "object" && v !== null && "tagName" in v ? new EagleEntity(d, l) : v, l, d];
     let owner = this instanceof EagleDocument ? this : this.owner;
-    //console.log("iterator:", location.join(','));
     let root = (owner.xml && owner.xml[0]) || this.root;
     let node = root;
     if(location.length > 0) node = deep.get(node, location);
-    //console.log("node:", node);
     for(let it of deep.iterate(node, (v, p) => (p.length > 1 ? p[p.length - 2] == "children" : true))) {
       let [v, l] = t(it);
       if(typeof v == "object" && v !== null && "tagName" in v) yield [v, l, owner];
