@@ -32,8 +32,8 @@ export class EagleEntity extends EagleNode {
     let { tagName, attributes, children } = o;
     this.tagName = tagName;
     this.attributes = /* attributes; */ {};
-    Util.define(this, "data", o);
-    //this.data = o;
+    //Util.define(this, "data", o);
+   // this.data = o;
 
     if(!Util.isEmpty(attributes)) {
       for(let key in attributes) {
@@ -43,10 +43,10 @@ export class EagleEntity extends EagleNode {
           v => prop(v),
           v => (/^-?[0-9.]+$/.test(prop()) ? parseFloat(prop()) : prop())
         );
-        prop(attributes[key]);
+        handler(attributes[key]);
         prop.subscribe(value => (value !== undefined ? (attributes[key] = value) : undefined));
 
-        this.handlers[key] = handler;
+        this.handlers[key] = prop;
 
         if(EagleEntity.isRelation(key)) {
           trkl.bind(this, key, v => {
@@ -71,6 +71,16 @@ export class EagleEntity extends EagleNode {
         })
       );
     else this.children = [];
+  }
+
+  get raw() {
+    let ret = {};
+    if(this.tagName) ret.tagName = this.tagName;
+    if(this.attributes) ret.attributes = Util.map(this.attributes, (k,v) => [k,this.handlers[k]()]);
+    let children = this.children.map(child => child.raw || child.text).filter(child => child !== undefined);
+    if(children.length > 0) ret.children = children;
+   
+    return ret;
   }
 
   get text() {

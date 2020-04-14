@@ -267,7 +267,7 @@ export class EagleNode extends EagleInterface {
   get document() {
     let l = this.location.clone();
     let d = this.owner;
-
+    /*
     try {
       if(!(d instanceof EagleDocument) && this.location.length) {
         while(!(d instanceof EagleDocument)) d = d[l.shift()];
@@ -276,7 +276,7 @@ export class EagleNode extends EagleInterface {
       //)       if(!(d instanceof EagleDocument))
       console.log("error:" + (error + "").split(/\n/g)[0]);
       throw new Error("document() " + Util.className(this.owner) + " [" + l.join(",") + "]");
-    }
+    }*/
     return d;
   }
 
