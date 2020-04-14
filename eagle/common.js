@@ -10,19 +10,32 @@ export const dingbatCode = digit => (digit % 10 == 0 ? circles[0] : String.fromC
 export const dump = (obj, depth = 1) => util.inspect(obj, { depth, breakLength: 400, colors: true });
 
 export const parseArgs = args => {
-  let ret = { location: [], transform: arg => arg };
+  let ret = { location: [] /*, transform: arg => arg*/ };
+  console.log("args:", args);
+
   while(args.length > 0) {
-    if(args[0] instanceof EagleLocator) ret.location = args.shift();
-    else if(args[0] instanceof Array) ret.location = new EagleLocator(args.shift());
-    else if(typeof args[0] == "function") {
+    if(args[0] instanceof EagleLocator) {
+      ret.location = args.shift();
+    } else if(args[0] instanceof Array /*Util.isArray(args[0])*/) {
+      ret.location = new EagleLocator(args.shift());
+    } else if(typeof args[0] == "function") {
       if(ret.predicate === undefined) ret.predicate = args.shift();
       else ret.transform = args.shift();
-    } else if(ret.element === undefined) {
-      ret.element = args.shift();
     } else if(typeof args[0] == "string") {
-      ret.name = args.shift();
-    } else throw new Error("unhandled: " + dump(args[0]));
+      if(ret.element === undefined) ret.element = args.shift();
+      else ret.name = args.shift();
+    } else if(typeof args[0] == "object") {
+      const { predicate, transform, element, name } = args.shift();
+      Object.assign(ret, { predicate, transform, element, name });
+    } else {
+      throw new Error("unhandled: " + typeof args[0] + dump(args[0]));
+    }
   }
+  if(typeof ret.predicate != "function" && (ret.element || ret.name)) {
+    if(ret.name) ret.predicate = v => v.tagName == ret.element && v.attributes.name == ret.name;
+    else ret.predicate = v => v.tagName == ret.element;
+  }
+  console.log("ret:", ret);
   // if(!ret.predicate)  ret.predicate = (...args) => args;
   return ret;
 };
@@ -109,31 +122,21 @@ export class EagleInterface {
   }
 
   find(...args) {
-    let { element, location, predicate, transform } = parseArgs(args);
-    /*  console.log(
-      "find: " + this.location.join(","),
-      Util.getCallerStack()
-        .filter(frame => null !== frame.getFileName())
-        .map(frame => `${("" + frame.getFileName()).replace(/.*plot-cv\//, "")}:${frame.getLineNumber()}:${frame.getColumnNumber()}`)
-    );*/
+    let { location, predicate, transform } = parseArgs([...arguments]);
+    if(!transform) transform = ([v, l, d]) => (typeof v == "object" && v !== null && "tagName" in v ? new EagleEntity(d, l, v) : v);
     for(let [v, p, d] of this.iterator()) {
       if(typeof v == "string") continue;
-      /* console.log("this:" + Util.className(v));
-      console.log("find:" + v.xpath(","));*/
       if(predicate(v, p, d)) return transform([v, p, d]);
     }
     return transform([null, [], []]);
   }
 
-  *findAll(obj) {
-    console.log("predicate: " + obj.predicate);
-    console.log("transform: " + obj.transform);
-    let { location, predicate, transform } = obj instanceof Array ? parseArgs(obj) : obj;
+  *findAll(...args) {
+    let { location, predicate, transform } = parseArgs(args);
+    if(!transform) transform = ([v, l, d]) => (typeof v == "object" && v !== null && "tagName" in v ? new EagleEntity(d, l, v) : v);
     for(let [v, l, d] of this.iterator([], it => it))
-      if(predicate(v, l)) {
-        if(transform) v = transform([v, l, this]);
-        //   console.log("v: ",v);
-
+      if(predicate(v, l, d)) {
+        if(transform) v = transform([v, l, d]);
         yield v;
       }
   }
@@ -149,7 +152,7 @@ export class EagleInterface {
     let predicate = typeof e == "string" ? (v, l, d) => (n !== undefined && v.tagName === n) || (e !== undefined && v.tagName === e) : typeof args[0] == "function" ? args.shift() : arg => true;
     let transform = typeof n == "string" ? ([v, l, d]) => v.attributes && v.attributes[n] : typeof args[0] == "function" ? args.shift() : ([v, l, d]) => new EagleEntity(d, l);
     console.log("t:", transform);
-    return this.findAll({ location: [], predicate, transform });
+    return this.findAll({ predicate, transform });
   }
 
   getByName(element, name, attr = "name", t = ([v, l, d]) => new EagleEntity(d, l)) {

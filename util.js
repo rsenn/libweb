@@ -1319,7 +1319,7 @@ Util.formatRecord = function(obj) {
   return ret;
 };
 Util.isArray = function(obj) {
-  return (obj && obj.length !== undefined) || obj instanceof Array;
+  return (obj && obj.length !== undefined && !(obj instanceof String)) || obj instanceof Array;
 };
 
 Util.isObject = function(obj) {
