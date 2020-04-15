@@ -5,7 +5,7 @@ import path from "path";
 import deepClone from "clone";
 import deepDiff from "deep-diff";
 import { EagleEntity } from "./entity.js";
-import { EagleLocator } from "./locator.js";
+import { EaglePath } from "./locator.js";
 import { toXML, EagleNode, inspect } from "./common.js";
 import deep from "../deep.js";
 
@@ -28,8 +28,8 @@ export class EagleDocument extends EagleNode {
     }
     Util.define(this, "path", filename);
     Util.define(this, "type", /<library>/.test(xmlStr) ? "lbr" : /<element /.test(xmlStr) ? "brd" : "sch");
-    // this.location.push(this.type == "lbr" ? "library" : this.type == "brd" ? "board" : "schematic");
-    // if(this.type == "lbr") this.location.push(this.basename);
+    // this.path.push(this.type == "lbr" ? "library" : this.type == "brd" ? "board" : "schematic");
+    // if(this.type == "lbr") this.path.push(this.basename);
     if(project) this.owner = project;
     Util.define(this, "xml", new tXml(xmlStr));
     //  Util.define(this, "orig", deepClone(this.xml));
@@ -90,8 +90,8 @@ counts[value.tagName]++;
   /* prettier-ignore */
   saveTo(path, overwrite = false) {return new Promise((resolve, reject) => fsPromises .writeFile(path, this.toString(), { flag: overwrite ? "w" : "wx" }) .then(() => resolve(path)) .catch(reject) ); }
 
-  index(location, transform = arg => arg) {
-    if(!(location instanceof EagleLocator)) location = new EagleLocator(location);
-    return transform(location.apply(this));
+  index(path, transform = arg => arg) {
+    if(!(path instanceof EaglePath)) path = new EaglePath(path);
+    return transform(path.apply(this));
   }
 }

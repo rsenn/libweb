@@ -15,19 +15,22 @@ export class EagleEntity extends EagleNode {
     super(d, l);
     Object.defineProperty(this, "handlers", { value: {}, enumerable: false });
     let owner = this.owner;
-    let location = this.location.clone();
+
+    /*  console.log("this.ref:",this.ref);
+    console.log("this.path:",Util.className(this.path));*/
+    let path = this.path.clone();
 
     if(owner === null) throw new Error("owner == null");
 
     if(o === undefined || (o.tagName === undefined && o.attributes === undefined && o.children === undefined)) {
       try {
-        o = location.apply(owner); //.index(location);
+        o = path.apply(owner); //.index(path);
       } catch(error) {
-        throw new Error("EagleEntity index\n  " + location[0] + "\n  error=" + error.toString().split(/\n/g)[0] + "\n  owner=" + Util.className(owner).replace(/\s+/g, " ") + "\n  location=[" + location.join(",") + "]");
+        throw new Error("EagleEntity index\n  " + path[0] + "\n  error=" + error.toString().split(/\n/g)[0] + "\n  owner=" + Util.className(owner).replace(/\s+/g, " ") + "\n  path=[" + path.join(",") + "]");
       }
     }
 
-    if(o === null || typeof o != "object") throw new Error("eagleentity " + location.join(",") + " " + Util.className(owner) + " " + Util.className(this.document));
+    if(o === null || typeof o != "object") throw new Error("eagleentity " + path.join(",") + " " + Util.className(owner) + " " + Util.className(this.document));
 
     let { tagName, attributes, children } = o;
     this.tagName = tagName;
@@ -69,7 +72,7 @@ export class EagleEntity extends EagleNode {
       this.children = o.children;
       //   console.log(`${tagName}: ${children.length}`, this.text);
     } else if(Util.isArray(children)) {
-      let childHandlers = children.map((child, i) => (typeof child == "object" ? () => new EagleEntity(owner, location.slice().down("children", i)) : () => children[i]));
+      let childHandlers = children.map((child, i) => (typeof child == "object" ? () => new EagleEntity(owner, path.down("children", i)) : () => children[i]));
       this.children = lazyArray(childHandlers);
       //   Util.define(this, 'childHandlers', childHandlers);
     } else this.children = children;
@@ -89,7 +92,7 @@ export class EagleEntity extends EagleNode {
   }
 
   toXML(depth = Number.MAX_SAFE_INTEGER) {
-    // let o = this.document.index(this.location);
+    // let o = this.document.index(this.path);
     return toXML(this.raw, depth);
   }
   /*

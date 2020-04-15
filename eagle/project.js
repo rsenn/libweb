@@ -146,11 +146,11 @@ export class EagleProject {
   }
 
   index(l) {
-    let location = [...l];
-    let key = location.shift();
+    let path = [...l];
+    let key = path.shift();
     let doc, name;
 
-    if(location.length == 0) return this;
+    if(path.length == 0) return this;
 
     switch (key) {
       case "board":
@@ -158,7 +158,7 @@ export class EagleProject {
         doc = this[key];
         break;
       case "library":
-        name = location.shift();
+        name = path.shift();
         doc = this[key][name];
         break;
       default:
@@ -168,8 +168,8 @@ export class EagleProject {
       throw new Error("ERROR: project.index(" + l.join(", ") + " )");
       return null;
     }
-    if(location.length == 0) return doc;
-    return doc.index(location);
+    if(path.length == 0) return doc;
+    return doc.index(path);
   }
 
   saveTo = (dir = ".", overwrite = false) => Promise.all(this.documents.map(doc => doc.saveTo(path.join(dir, doc.filename), overwrite)));

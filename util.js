@@ -1828,3 +1828,45 @@ Util.proxy = (obj = {}, handler) => new Proxy(obj, {
   },
   ...handler
 });
+Util.immutable = args => {
+  const argsType =
+    typeof args === "object" && Util.isArray(args) ? "array" : "object";
+  const errorText =
+    argsType === "array"
+      ? "Error! You can't change elements of this array"
+      : "Error! You can't change properties of this object";
+  const handler = {
+    set: () => {
+      throw new Error(errorText);
+    },
+    deleteProperty: () => {
+      throw new Error(errorText);
+    },
+    defineProperty: () => {
+      throw new Error(errorText);
+    }
+  };
+  return new Proxy(args, handler);
+};
+Util.immutableClass = (Original) => {
+  const Immutable = class extends Original {
+    constructor (...args) {
+      super(...args)
+      if (new.target === Immutable) {
+        Object.freeze(this)
+      }
+    }
+  }
+  return Immutable;
+};
+Util.immutableClass = (Original) => {
+  const Immutable = class extends Original {
+    constructor (...args) {
+      super(...args)
+      if (new.target === Immutable) {
+        Object.freeze(this)
+      }
+    }
+  }
+  return Immutable;
+};
