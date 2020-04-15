@@ -234,21 +234,18 @@ export const EagleRef = function EagleRef(root, path) {
     })
 );
 let props = ["nextSibling", "prevSibling", "parent", "parentNode", "firstChild", "lastChild", "depth"].reduce(
-    (acc, method) => ({
-      ...acc,
-      [method]: {
-        get: function(...args) {
-          return EagleRef(this.root, EaglePath.prototype[method].apply(this.path, args));
-        }/*,
+  (acc, method) => ({
+    ...acc,
+    [method]: {
+      get: function(...args) {
+        return EagleRef(this.root, EaglePath.prototype[method].apply(this.path, args));
+      } /*,
         writable: false,
         enumerable: false*/
-      }
-    }),
-    {}
-  );
-
-  console.log("props:",props);
-Object.defineProperties(
-  EagleRef.prototype,
-  props
+    }
+  }),
+  {}
 );
+
+console.log("props:", props);
+Object.defineProperties(EagleRef.prototype, props);
