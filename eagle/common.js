@@ -428,8 +428,8 @@ export class EagleNode extends EagleInterface {
   }
 
   get parentNode() {
-    const { parent } = this.path;
-    return parent.existsIn(this.root) ? new EagleEntity(this.owner, parent) : null;
+    const { parentNode } = this.path;
+    return parentNode.existsIn(this.root) ? new EagleEntity(this.owner, parentNode) : null;
   }
 
   get firstChild() {
