@@ -204,7 +204,7 @@ export const EagleRef = function EagleRef(root, path) {
 };
 */
   path = path instanceof EaglePath ? path : new EaglePath(path);
-  return {
+  return Object.freeze({
     root,
     path,
     dereference: () => path.apply(root),
@@ -223,7 +223,7 @@ export const EagleRef = function EagleRef(root, path) {
       }
       return [root];
     }
-  };
+  });
 };
 
 ["up", "down", "left", "right", "slice"].forEach(
