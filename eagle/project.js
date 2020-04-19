@@ -3,9 +3,14 @@ import fs from "fs";
 import path from "path";
 import { EagleDocument } from "./document.js";
 import { EagleEntity } from "./entity.js";
-import { dump, inspect } from "./common.js";
+import { inspect } from "./common.js";
+import { makeEagleNodeMap, EagleNodeMap } from "./nodeMap.js";
 import { SortedMap } from "../indexMap.js";
+import { compareVersions } from "../compareVersions.js";
 import deep from "../deep.js";
+
+import util from "util";
+const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
 
 export class EagleProject {
   documents = [];
@@ -137,39 +142,62 @@ export class EagleProject {
       // const { packages = [], devicesets = destLib.appendChild("devicesets"), symbols = destLib.appendChild("symbols") } = destLib;
 
       const libProps = lib => {
-        /*  const { packages, devicesets = new Map(), symbols = new Map() } =  */ return Object.fromEntries(
-          ["packages", "symbols", "devicesets"]
-            .map(k => [k, lib[k]])
-            .filter(([k, v]) => v)
-            .map(([k, v]) => [k, new Map(v.entries())])
-        );
+        /*  const { packages, devicesets = new Map(), symbols = new Map() } =  */ return Object.fromEntries(["packages", "symbols", "devicesets"].map(k => [k, lib[k]]).filter(([k, v]) => v) /*
+           .map(([k, v]) => [k, v])*/);
         return { packages, devicesets, symbols };
       };
       const destLib = libProps(libraries[k]);
       const srcLib = libProps(libraries.file);
 
       for(let entity in destLib) {
-        console.log("srcLib[entity]:", entity);
-        for(let [key, value] of srcLib[entity]) {
-          destLib[entity].set(key, value);
-          console.log("srcLib:", entity, key, value);
+        console.log("entity:", entity);
+        console.log("srcLib[entity]:", srcLib[entity]);
+        const srcMap = makeEagleNodeMap(srcLib[entity]);
+        const dstMap = makeEagleNodeMap(destLib[entity]);
+        console.log("srcMap:", srcMap);
+        //console.log("nodeMap.keys():", nodeMap.keys());
+        console.log("srcMap.get():", srcMap.get("E5-4"));
+        //  console.log("nodeMap.values():", nodeMap.values());
+        //  console.log("nodeMap.entries():", nodeMap.entries ());
+
+        const transformName = n => n.replace(/[.,][0-9]*/g, "").replace(/([^0-9])([0-9])([^0-9])/g, "$10$2$3");
+
+        let ent = srcLib[entity]
+          .map((v, i) => [transformName(v.attributes.name), v.attributes.name, i])
+          .sort((a, b) => a[0].localeCompare(b[0]))
+          .map(item => item.slice(1));
+        let m = new Map(ent);
+
+        console.log(`srcLib['${entity}']:`, Util.className(srcLib[entity]));
+        console.log(`srcLib['${entity}']:`, srcLib[entity]);
+
+        for(let value of srcMap.values()) {
+          const key = value.attributes.name;
+
+          console.log(`dstMap.set(${key},`, dump(value, 0), `):`);
+          dstMap.set(key, value);
         }
-        const values = [...destLib[entity].entries()].sort((a, b) => a[0].localeCompare(b[0]));
-        console.log("destLib values:", values);
-        const sorted = values.map(a => a[1]);
-        const outLib = libraries[k][entity];
 
-        console.log(`${k}.library destLib: `, sorted);
-        console.log(`${k}.library destLib.${entity}: `, libraries[k][entity]);
-        console.log(`${k}.library destLib.${entity}.ref: `, outLib.ref);
+        /*  console.log("srcMap.raw:", dump(srcMap.raw,2));*/
+        console.log("dstMap.ref:", dump(dstMap.ref, 2));
+        // console.log("destLib[entity].raw:", dump(destLib[entity].raw,2));
+        console.log("srcLib[entity].raw == srcMap.raw:", srcLib[entity].raw == srcMap.raw);
+        console.log("destLib[entity].raw == dstMap.raw:", destLib[entity].raw === dstMap.raw);
 
-       outLib.ref.replace(sorted);
-               console.log(`${k}.library destLib.${entity}.ref.dereference(): `, outLib.ref.dereference());
+        /*   console.log(`destLib['${entity}']:`, Util.className(destLib[entity]));
+        console.log(`destLib['${entity}'].owner:`, destLib[entity].owner);
 
+        const values = [...destLib[entity].entries()]
+          .sort((a, b) => a[0] - b[0])
+          .map(v => v[1])
+          .sort((a, b) => compareVersions.compare(a.name, b.name, ">"));
+        const map = Util.toMap(values, value => [value.name, value]);
+
+        const sorted = values.map(a => a[1]);*/
       }
     }
 
-   //  console.log(layers.schematic.get(99).active, layers.schematic.get(250).active);
+    //  console.log(layers.schematic.get(99).active, layers.schematic.get(250).active);
   }
 
   index(l) {

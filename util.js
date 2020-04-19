@@ -1,3 +1,5 @@
+import debug from "debug";
+
 const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", separator = ",", newline = "\n", maxlen = 30, depth = 1 }) {
   const i = indent.repeat(Math.abs(1 - depth));
   let nl = newline != "" ? newline + i : spacing;
@@ -104,24 +106,26 @@ Util.toSource = function(arg) {
   let cls = arg && arg.constructor && Util.fnName(arg.constructor);
   return String(arg);
 };
-Util.debug = function(message) {
-  const args = [...arguments];
-  let cache = Util.array();
-  const removeCircular = function(key, value) {
-    if(typeof value === "object" && value !== null) {
-      if(cache.indexOf(value) !== -1) return;
-      cache.push(value);
-    }
-    return value;
+Util.debug =
+  debug ||
+  function(message) {
+    const args = [...arguments];
+    let cache = Util.array();
+    const removeCircular = function(key, value) {
+      if(typeof value === "object" && value !== null) {
+        if(cache.indexOf(value) !== -1) return;
+        cache.push(value);
+      }
+      return value;
+    };
+    const str = args
+      .map(arg => (typeof arg === "object" ? JSON.stringify(arg, removeCircular) : arg))
+      .join(" ")
+      .replace(/\n/g, "");
+    //console.log("STR: "+str);
+    console.log.call(console, str);
+    //Util.log.apply(Util, args)
   };
-  const str = args
-    .map(arg => (typeof arg === "object" ? JSON.stringify(arg, removeCircular) : arg))
-    .join(" ")
-    .replace(/\n/g, "");
-  //console.log("STR: "+str);
-  console.log.call(console, str);
-  //Util.log.apply(Util, args)
-};
 Util.type = function({ type }) {
   return (type && String(type).split(/[ ()]/)[1]) || "";
 };
@@ -421,7 +425,9 @@ Util.adapter.localStorage = function(s) {
 };
 var doExtendArray = Util.extendArray;
 Util.array = function(...args) {
-  let a = args[0] instanceof Array ? args[0] : [...args];
+  let a = args[0] instanceof Array ? args.shift() : [...args];
+  let fn = args[0];
+
   if(doExtendArray)
     try {
       if(a.match === undefined) {
@@ -432,10 +438,15 @@ Util.array = function(...args) {
     } catch(err) {}
   return a;
 };
+Util.arrayFromEntries = entries =>
+  Array.from(
+    entries.map(([k, v]) => k),
+    key => entries.find(([k, v]) => k === key)[1]
+  );
+
 Util.toMap = function(hash = {}, fn) {
   let m, gen;
-  if(hash instanceof Array && typeof(fn) == 'function')
-    hash = hash.map(fn);
+  if(hash instanceof Array && typeof fn == "function") hash = hash.map(fn);
 
   if(hash[Symbol.iterator] !== undefined) gen = hash[Symbol.iterator]();
   else if(Util.isGenerator(hash)) gen = hash;
@@ -581,9 +592,8 @@ Util.objName = function(o) {
   return s;
 };
 Util.findKey = function(obj, value) {
-  let pred = typeof(value) == 'function' ? value : v => v === value;
-  for(let k in obj)
-    if(pred(obj[k], k)) return k;
+  let pred = typeof value == "function" ? value : v => v === value;
+  for(let k in obj) if(pred(obj[k], k)) return k;
 };
 Util.find = function(arr, value, prop = "id", acc = Util.array()) {
   let pred;
@@ -704,9 +714,9 @@ Util.isEmail = function(v) {
 Util.isString = function(v) {
   return Object.prototype.toString.call(v) == "[object String]";
 };
-Util.isObject = function(v) {
-  return Object.prototype.toString.call(v) == "[object Object]";
-};
+
+Util.isObject = obj => typeof obj === "object" && obj !== null;
+
 Util.isEmptyString = function(v) {
   if(this.isString(v) && !v) {
     return true;
@@ -1130,20 +1140,18 @@ Util.isServer = function() {
 Util.isMobile = function() {
   return true;
 };
-Util.unique = function(arr) {
-  /* arr = [...arr];
-  return arr.filter((item,index) => arr.indexOf(item) === index);*/
-  return [...new Set(arr)];
-};
+Util.uniquePred = (el, i, arr) => arr.indexOf(el) === i;
+Util.unique = arr => arr.filter(Util.uniquePred);
+
 Util.concat = function*(...args) {
   for(let arg of args) {
     if(Util.isGenerator(arg)) {
-      console.error("isGenerator:",arg);
+      console.error("isGenerator:", arg);
       yield* arg;
-    } else /* if(Util.isArray(arg))*/ {
+    } /* if(Util.isArray(arg))*/ else {
       for(let item of arg) yield item;
     }
- /*   else  else {
+    /*   else  else {
       throw new Error("No such arg type:"+typeof(arg));
     }*/
   }
@@ -1675,7 +1683,7 @@ Util.isPromise = function(obj) {
   return (Boolean(obj) && typeof obj.then === "function") || obj instanceof Promise;
 };
 /* eslint-disable no-use-before-define */
-if(typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
+if (typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
 Util.next = function(iter, observer, prev = undefined) {
   let item;
   try {
@@ -1841,24 +1849,122 @@ Util.decodeHTMLEntities = function(text) {
 Util.stripAnsi = function(str) {
   return str.replace(/\x1B[[(?);]{0,2}(;?\d)*./g, "");
 };
-Util.proxy = (obj = {}, handler) => new Proxy(obj, {
-  get(target, key, receiver) {
-    console.log(`Util.proxy getting ${key}!`);
-    return Reflect.get(target, key, receiver);
-  },
-  set(target, key, value, receiver) {
-    console.log(`Util.proxy setting ${key}!`);
-    return Reflect.set(target, key, value, receiver);
-  },
-  ...handler
-});
+Util.proxy = (obj = {}, handler) =>
+  new Proxy(obj, {
+    get(target, key, receiver) {
+      console.log(`Util.proxy getting ${key}!`);
+      return Reflect.get(target, key, receiver);
+    },
+    set(target, key, value, receiver) {
+      console.log(`Util.proxy setting ${key}!`);
+      return Reflect.set(target, key, value, receiver);
+    },
+    ...handler
+  });
+Util.proxyTree = function proxyTree(...callbacks) {
+  const [setCallback, applyCallback = () => {}] = callbacks;
+  const handler = {
+    get(target, key) {
+      return node([...this.path, key]);
+    },
+    set(target, key, value) {
+      return setCallback(this.path, key, value);
+    },
+    apply(target, thisArg, args) {
+      return applyCallback(this.path, ...args);
+    }
+  };
+  function node(path) {
+    return new Proxy(() => {}, { path, ...handler });
+  }
+
+  return node([]);
+};
+Util.proxyClone = obj => {
+  const override = Object.create(null);
+  const deleted = Object.create(null);
+
+  const debug = (...args) => console.log("DEBUG proxyClone", ...args); //Util.debug("proxy-clone");
+
+  const get = name => {
+    let value;
+    if(!deleted[name]) value = override[name] || obj[name];
+    if(Util.isObject(value)) {
+      value = Util.proxyClone(value);
+      override[name] = value;
+    }
+    if(typeof value === "function") {
+      value = value.bind(obj);
+    }
+    return value;
+  };
+
+  return new Proxy(Object.prototype, {
+    getPrototypeOf: () => Object.getPrototypeOf(obj),
+    setPrototypeOf: () => {
+      throw new Error("Not yet implemented: setPrototypeOf");
+    },
+    isExtensible: () => {
+      throw new Error("Not yet implemented: isExtensible");
+    },
+    preventExtensions: () => {
+      throw new Error("Not yet implemented: preventExtensions");
+    },
+    getOwnPropertyDescriptor: (target, name) => {
+      let desc;
+      if(!deleted[name]) {
+        desc = Object.getOwnPropertyDescriptor(override, name) || Object.getOwnPropertyDescriptor(obj, name);
+      }
+      if(desc) desc.configurable = true;
+      debug(`getOwnPropertyDescriptor ${name} =`, desc);
+      return desc;
+    },
+    defineProperty: () => {
+      throw new Error("Not yet implemented: defineProperty");
+    },
+    has: (_, name) => {
+      const has = !deleted[name] && (name in override || name in obj);
+      debug(`has ${name} = ${has}`);
+      return has;
+    },
+    get: (receiver, name) => {
+      const value = get(name);
+      debug(`get ${name} =`, value);
+      return value;
+    },
+    set: (_, name, val) => {
+      delete deleted[name];
+      override[name] = val;
+      debug(`set ${name} = ${val}`, name, val);
+      return true;
+    },
+    deleteProperty: (_, name) => {
+      debug(`deleteProperty ${name}`);
+      deleted[name] = true;
+      delete override[name];
+    },
+    ownKeys: () => {
+      const keys = Object.keys(obj)
+        .concat(Object.keys(override))
+        .filter(Util.uniquePred)
+        .filter(key => !deleted[key]);
+      debug(`ownKeys`, keys);
+      return keys;
+    },
+    apply: () => {
+      throw new Error("Not yet implemented: apply");
+    },
+    construct: () => {
+      throw new Error("Not yet implemented: construct");
+    },
+    enumerate: () => {
+      throw new Error("Not yet implemented: enumerate");
+    }
+  });
+};
 Util.immutable = args => {
-  const argsType =
-    typeof args === "object" && Util.isArray(args) ? "array" : "object";
-  const errorText =
-    argsType === "array"
-      ? "Error! You can't change elements of this array"
-      : "Error! You can't change properties of this object";
+  const argsType = typeof args === "object" && Util.isArray(args) ? "array" : "object";
+  const errorText = argsType === "array" ? "Error! You can't change elements of this array" : "Error! You can't change properties of this object";
   const handler = {
     set: () => {
       throw new Error(errorText);
@@ -1872,25 +1978,25 @@ Util.immutable = args => {
   };
   return new Proxy(args, handler);
 };
-Util.immutableClass = (Original) => {
+Util.immutableClass = Original => {
   const Immutable = class extends Original {
-    constructor (...args) {
-      super(...args)
-      if (new.target === Immutable) {
-        Object.freeze(this)
+    constructor(...args) {
+      super(...args);
+      if(new.target === Immutable) {
+        Object.freeze(this);
       }
     }
-  }
+  };
   return Immutable;
 };
-Util.fun = (Original) => {
+Util.fun = Original => {
   const Immutable = class extends Original {
-    constructor (...args) {
-      super(...args)
-      if (new.target === Immutable) {
-        Object.freeze(this)
+    constructor(...args) {
+      super(...args);
+      if(new.target === Immutable) {
+        Object.freeze(this);
       }
     }
-  }
+  };
   return Immutable;
 };

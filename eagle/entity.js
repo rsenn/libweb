@@ -5,7 +5,7 @@ import util from "util";
 import { text, inspect, toXML } from "./common.js";
 import { EaglePath } from "./locator.js";
 import { EagleNode } from "./node.js";
-import { EagleNodeList } from "./nodeList.js";
+import { EagleNodeList, makeEagleNodeList } from "./nodeList.js";
 
 const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
 
@@ -118,7 +118,7 @@ export class EagleEntity extends EagleNode {
       trkl.bind(this, "children", prop);
     }
 */
-    this.children = EagleNodeList(this, this.ref);
+    this.children = makeEagleNodeList(this, this.ref);
 
     this.initCache();
   }

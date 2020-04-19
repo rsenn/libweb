@@ -54,7 +54,8 @@ export const traverse = function*(o, l = [], d) {
   }
 };
 export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
-  if(typeof(o) == 'object' && o !== null && 'root' in o) o = o.root;
+  if(typeof o == "object" && o !== null && "raw" in o) o = o.raw;
+  //if(typeof o == "object" && o !== null && "root" in o) o = o.root;
 
   if(o instanceof Array) return o.map(toXML).join("\n");
   else if(typeof o == "string") return o;
@@ -65,18 +66,20 @@ export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
 
   const a = o.children && o.children.length !== undefined ? o.children : [];
   const text = o.text;
-  if((a && a.length > 0) || text ) {
+  if(a && a.length > 0) {
     s += o.tagName[0] != "?" ? ">" : "?>";
     if(z > 0) {
-      let nl = (text && text.length > 0) ? "" : o.tagName == "text" && a.length == 1 ? "" : o.tagName[0] != "?" ? "\n  " : "\n";
-      if((text && text.length > 0)) s += text;
-      else for(let child of a) s += nl + toXML(child, z - 1).replace(/\n/g, nl);
-      if(o.tagName[0] != "?") s += `${nl.replace(/ /g, "")}</${o.tagName}>`;
+      const textChildren = typeof a[0] == "string";
+      let nl = textChildren ? "" : o.tagName == "text" && a.length == 1 ? "" : o.tagName[0] != "?" ? "\n  " : "\n";
+      if(textChildren) s += a.join("\n") + `</${o.tagName}>`;
+      else {
+        for(let child of a) s += nl + toXML(child, z - 1).replace(/>\n/g, ">" + nl);
+        if(o.tagName[0] != "?") s += `${nl.replace(/ /g, "")}</${o.tagName}>`;
+      }
     }
   } else {
-    if(Object.keys(o.attributes).length == 0)
-    s += `></${o.tagName}>`;
-   else s += " />";
+    if(Object.keys(o.attributes).length == 0) s += `></${o.tagName}>`;
+    else s += " />";
   }
   return s.trim();
 };

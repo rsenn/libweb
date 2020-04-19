@@ -1,7 +1,6 @@
-
 // Module constants
-const CMP = Symbol('insort.CMP');
-const ORDER = Symbol('insort.ORDER');
+const CMP = Symbol("insort.CMP");
+const ORDER = Symbol("insort.ORDER");
 const CMP_DEFAULT = (a, b) => String(a).localeCompare(b);
 
 // Binary search
@@ -9,9 +8,9 @@ let floor = Math.floor;
 function bisect(arr, cmp, val) {
   let lo = 0;
   let hi = arr.length;
-  while (lo < hi) {
+  while(lo < hi) {
     let mid = floor((lo + hi) / 2);
-    if (cmp(val, arr[mid]) > 0) {
+    if(cmp(val, arr[mid]) > 0) {
       lo = mid + 1;
     } else {
       hi = mid;
