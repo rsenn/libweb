@@ -111,7 +111,7 @@ export class EagleNode extends EagleInterface {
 
       for(let [value, path] of deep.iterate(this.ref.dereference(), v => v && fields.indexOf(v.tagName) != -1)) {
         const key = value.tagName;
-           //   console.log(`x ${key}:`,value.tagName, value.children.length,  ` ${path}`);
+        //   console.log(`x ${key}:`,value.tagName, value.children.length,  ` ${path}`);
 
         lazy[key] = () => new EagleEntity(parent, path);
 
@@ -122,8 +122,8 @@ export class EagleNode extends EagleInterface {
             key,
             lazyMap(
               value.children,
-              (item,i) => item.name || i,
-              (arg, key) => EagleElement(parent, new EaglePath([...path,"children", key])),
+              (item, i) => item.name || i,
+              (arg, key) => EagleElement(parent, new EaglePath([...path, "children", key])),
               EagleNodeList.prototype
             )
           );
@@ -230,12 +230,9 @@ export class EagleNode extends EagleInterface {
     if(numChildren == 0) attrs += " /";
     let ret = `${Util.className(this)}`;
 
+    if(this.tagName || attrs != "") ret += ` <${this.tagName + attrs}>`;
 
-if(this.tagName || attrs != "")
-    ret +=  ` <${this.tagName + attrs}>` ;
-
-    if(this.filename)
-       ret += ` filename="${this.filename}"`;
+    if(this.filename) ret += ` filename="${this.filename}"`;
     if(numChildren > 0) {
       ret += `{...${numChildren} children...}</${this.tagName}>`;
     }

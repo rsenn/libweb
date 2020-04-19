@@ -55,22 +55,21 @@ export class EagleEntity extends EagleNode {
 
         if(EagleEntity.isRelation(key)) {
           let doc = this.document;
-                //   console.log(`this.document = ${Util.className(doc)}`);
+          //   console.log(`this.document = ${Util.className(doc)}`);
           const fn = v => (v ? this.handlers[key](typeof v == "string" ? v : v.name) : doc.getByName(key, this.handlers[key]()));
-        //  console.log(`this[${key}] = ${fn}`);
+          //  console.log(`this[${key}] = ${fn}`);
           trkl.bind(this, key, fn);
-        } else if(key == 'deviceset') {
-                  const fn = v => (v ? this.handlers[key](typeof v == "string" ? v : v.name) : this.library.getByName(key, this.handlers[key]()));
+        } else if(key == "deviceset") {
+          const fn = v => (v ? this.handlers[key](typeof v == "string" ? v : v.name) : this.library.getByName(key, this.handlers[key]()));
           trkl.bind(this, key, fn);
-   } else if(key == 'device') {
-                  const fn = v => (v ? this.handlers[key](typeof v == "string" ? v : v.name) : this.deviceset.getByName(key, this.handlers[key]()));
+        } else if(key == "device") {
+          const fn = v => (v ? this.handlers[key](typeof v == "string" ? v : v.name) : this.deviceset.getByName(key, this.handlers[key]()));
           trkl.bind(this, key, fn);
         } else {
           trkl.bind(this, key, handler);
         }
 
-
-       /*  if(key == "device" || key == 'deviceset') {
+        /*  if(key == "device" || key == 'deviceset') {
           trkl.bind(this, key, v => {
             if(v !== undefined) return this.handlers[key](typeof v == "string" ? v : v.name);
             const device = this[key == 'deviceset' ? 'library' : 'devicesets'].getByName(key, this.attributes.device);

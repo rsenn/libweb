@@ -7,19 +7,15 @@ import deep from "../deep.js";
 import { lazyMembers, lazyMap } from "../lazyInitializer.js";
 import { ansi, text, dingbatCode, dump, parseArgs, traverse, toXML, inspect, EagleInterface } from "./common.js";
 
-
-
 export function EagleNodeList() {
   let args = [...arguments];
   let ref,
     owner = args.shift();
- let down = [];
+  let down = [];
 
   if("ref" in owner) ref = owner.ref;
 
- // if(args.length > 0) ref = ref.down(...args);
-
-
+  // if(args.length > 0) ref = ref.down(...args);
 
   /*if(typeof args[0] == "object" && args[0] !== null && "root" in args[0] && "path" in args[0]) ref = args.shift();
   else
@@ -70,13 +66,11 @@ export function EagleNodeList() {
 
         /* console.log("arr:",instance.ref.up(1).dereference());*/
         if(typeof prop == "string" && /^[0-9]+$/.test(prop)) prop = parseInt(prop);
-        if(typeof prop == "number") return prop in arr ? EagleElement(instance,  instance.ref.concat(['children',prop])) : undefined;
-          if(typeof(Array.prototype[prop]) == 'function')
-  return Array.prototype[prop].bind(arr);
+        if(typeof prop == "number") return prop in arr ? EagleElement(instance, instance.ref.concat(["children", prop])) : undefined;
+        if(typeof Array.prototype[prop] == "function") return Array.prototype[prop].bind(arr);
 
-        if(prop in arr) 
-          return arr[prop];
-      
+        if(prop in arr) return arr[prop];
+
         prop = Util.findKey(arr, prop, property);
         if(prop in arr) return arr[prop];
       }

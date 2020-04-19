@@ -139,7 +139,7 @@ export class EagleProject {
       console.log("lib:", lib);
 
       for(let node of library.findAll(node => entityNames.indexOf(node.tagName) !== -1)) {
-     //   console.log("node:", node);
+        //   console.log("node:", node);
       }
       /* const getLibraryNodes = lib => lib.children.filter(child => ["package", "symbol", "deviceset"].indexOf(child.tagName.substring(0, child.tagName.length-1)) !== -1).map(node => [node.tagName.substring(0, node.tagName.length-1),node]);
 
