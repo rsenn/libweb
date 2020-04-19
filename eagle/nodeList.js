@@ -1,10 +1,10 @@
 import { EagleRef, EagleReference } from "./locator.js";
-import { EagleElement } from "./entity.js";
+import { EagleElement } from "./element.js";
 import Util from "../util.js";
 import { inspect } from "./common.js";
-import util from "util";
+/*import util from "util";
 const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
-
+*/
 export function EagleNodeList(owner, ref) {
   this.ref = ref;
   Util.define(this, "owner", owner);

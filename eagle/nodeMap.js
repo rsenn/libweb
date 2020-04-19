@@ -1,5 +1,5 @@
 import { EagleRef, EagleReference } from "./locator.js";
-import { EagleElement } from "./entity.js";
+import { EagleElement } from "./element.js";
 import { EagleNodeList } from "./nodeList.js";
 import Util from "../util.js";
 import { inspect } from "./common.js";
@@ -15,8 +15,12 @@ Object.defineProperties(EagleNodeMap.prototype, {
 });
 
 Util.extend(EagleNodeMap.prototype, {
-  get(name) {
-    const idx = this.arr.findIndex(item => item.attributes[this.key] == name);
+  at(pos) {   
+    return this.arr[pos];
+  }, 
+  get(name) {    
+    const arr = this.arr.raw;
+    const idx = arr.findIndex(item => item.attributes[this.key] == name);
     return idx == -1 ? null : this.arr[idx];
   },
   set(name, value) {
@@ -48,8 +52,18 @@ export function makeEagleNodeMap(arr, key = "name") {
 
   return new Proxy(instance, {
     get(target, prop, receiver) {
+      
+      let index; 
+
       if(prop == "ref" || prop == "raw") return instance.arr[prop];
       if(prop == "instance") return instance;
+      if(prop == "length") return instance.arr.raw.length;
+      if(/^[0-9]+$/.test(prop)) {
+        index = parseInt(prop);
+        if(index >= 0 && index < instance.arr.raw.length)
+          return instance.arr[prop];
+      }
+      if((index=instance.keys().indexOf(prop)) != -1) return instance.arr[index];
       if(typeof instance[prop] == "function") return instance[prop].bind(instance);
 
       return Reflect.get(target, prop, receiver);

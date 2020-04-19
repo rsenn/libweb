@@ -1,5 +1,5 @@
 import Util from "../util.js";
-import util from "util";
+//import util from "util";
 import { ansi, text, inspect, toXML } from "./common.js";
 
 const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
@@ -293,7 +293,7 @@ export const EagleRef = function EagleRef(root, path) {
   /* if(!EaglePath.prototype.existsIn.call(path, root))
     return null;*/
 
-  if(root !== null && root.root !== undefined && root.root !== null) root = root.root;
+  if( Util.isObject(root) && Util.isObject(root.root)) root = root.root;
 
   let obj = new EagleReference(root, path);
   return Object.freeze(obj);

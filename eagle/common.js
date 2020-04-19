@@ -1,7 +1,7 @@
 import { EaglePath, EagleRef } from "./locator.js";
-import { EagleEntity, EagleElement } from "./entity.js";
+import { EagleEntity, EagleElement } from "./element.js";
 //import { EagleDocument } from "./document.js";
-import util from "util";
+//import util from "util";
 import Util from "../util.js";
 import deep from "../deep.js";
 import { lazyMembers, lazyMap } from "../lazyInitializer.js";

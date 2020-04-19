@@ -30,7 +30,7 @@ export class SchematicRenderer {
           const { x1, x2, y1, y2, width } = sym;
           this.factory("line", { stroke: layer ? layer.color : "#a54b4b", x1, x2, y1, y2, strokeWidth: width }, parent);
           break;
-        case "text":
+        case "text": {
           const { x, y, text, align, size, font } = sym;
           this.factory(
             "text",
@@ -45,7 +45,8 @@ export class SchematicRenderer {
             parent
           );
           break;
-        case "circle":
+        }
+        case "circle": {
           const { x, y, width, radius } = sym;
           this.factory(
             "circle",
@@ -60,7 +61,8 @@ export class SchematicRenderer {
             parent
           );
           break;
-        case "pin":
+        }
+        case "pin": {
           const { x, y, length, rot } = sym;
           const angle = +(rot || "").replace(/R/, "");
           const vec = Point.fromAngle((angle * Math.PI) / 180, SchematicRenderer.pinSizes[length]).prod(new Point(1, -1));
@@ -69,10 +71,12 @@ export class SchematicRenderer {
           console.log("pin:", sym);
           this.factory("line", { stroke: layer ? layer.color : "#a54b4b", ...l.toObject(), strokeWidth: 0.1 }, parent);
           break;
-        default:
+        }
+        default: {
           const { x, y, width, radius } = sym;
           console.log("Unhandled", sym.type || sym);
           break;
+}
       }
     });
   }

@@ -1,7 +1,7 @@
 import Util from "../util.js";
 import { trkl } from "../trkl.js";
 import { lazyArray } from "../lazyInitializer.js";
-import util from "util";
+//import util from "util";
 import { text, inspect, toXML } from "./common.js";
 import { EaglePath } from "./locator.js";
 import { EagleNode } from "./node.js";

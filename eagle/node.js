@@ -1,12 +1,13 @@
 import { EaglePath, EagleRef, EagleReference } from "./locator.js";
-import { EagleEntity, EagleElement } from "./entity.js";
+import { EagleEntity, EagleElement } from "./element.js";
 //import { EagleDocument } from "./document.js";
-import util from "util";
+//import util from "util";
 import Util from "../util.js";
 import deep from "../deep.js";
 import { lazyMembers, lazyMap } from "../lazyInitializer.js";
 import { ansi, text, dingbatCode, dump, parseArgs, traverse, toXML, inspect, EagleInterface } from "./common.js";
 import { EagleNodeList } from "./nodeList.js";
+import { makeEagleNodeMap } from "./nodeMap.js";
 
 export class EagleNode extends EagleInterface {
   ref = null;
@@ -130,7 +131,7 @@ export class EagleNode extends EagleInterface {
 
         lazy[value.tagName] = () => EagleElement(this, path);
 
-        lists[value.tagName] = () => lazy[value.tagName]().children;
+        lists[value.tagName] = () => makeEagleNodeMap(lazy[value.tagName]().children);
       }
       lazyMembers(this, lists);
       //new EagleEntity(parent, path);

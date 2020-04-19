@@ -1,10 +1,10 @@
 import tXml from "../tXml.js";
 import Util from "../util.js";
-import fs, { promises as fsPromises } from "fs";
-import path from "path";
-import deepClone from "clone";
-import deepDiff from "deep-diff";
-import { EagleEntity } from "./entity.js";
+//import fs, { promises as fsPromises } from "fs";
+//import path from "path";
+import deepClone from "../clone.js";
+import deepDiff from "../deep-diff.js";
+import { EagleEntity } from "./element.js";
 import { EaglePath, EagleRef } from "./locator.js";
 import { EagleNode } from "./node.js";
 import { toXML, inspect } from "./common.js";
@@ -14,21 +14,22 @@ export class EagleDocument extends EagleNode {
   xml = null;
   path = null;
 
-  constructor(filename, project) {
-    let xmlStr = "";
-    try {
-      if(!/<\?children.*<eagle /.test(filename)) {
+  constructor(xmlStr, project, filename) {
+//  let xmlStr = "";
+  /*  try {
+      if(!/<\?.*<eagle /.test(filename)) {
         xmlStr = fs.readFileSync(filename);
         xmlStr = xmlStr.toString();
       }
     } catch(error) {
       throw new Error("EagleDocument: " + error);
-    }
+    }*/
     const xml = new tXml(xmlStr);
 
     super(project, EagleRef(deepClone(xml[0]), []));
 
-    this.path = filename;
+if(filename)
+    this.filename = filename;
     Util.define(this, "type", /<library>/.test(xmlStr) ? "lbr" : /<element /.test(xmlStr) ? "brd" : "sch");
     // this.path.push(this.type == "lbr" ? "library" : this.type == "brd" ? "board" : "schematic");
     // if(this.type == "lbr") this.path.push(this.basename);
@@ -58,8 +59,8 @@ counts[value.tagName]++;
     this.initCache();
   }
 
-  /* prettier-ignore */ get filename() { return path.basename(this.path); }
-  /* prettier-ignore */ get dirname() { return path.dirname(this.path); }
+  /* prettier-ignore */ get filename() { return this.path.replace(/.*\//g, ""); }
+  /* prettier-ignore */ get dirname() { return this.path.replace(/\/[^/]*\/?$/g, ""); }
 
   //get project() { return this.owner; }
   //  get orig() { return this.xml[0]; }
@@ -69,7 +70,7 @@ counts[value.tagName]++;
   }
 
   get changes() {
-    return deepDiff.diff(this.orig, this.root);
+    return deepDiff(this.orig, this.root);
   }
 
   cacheFields() {

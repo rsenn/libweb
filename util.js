@@ -1,4 +1,4 @@
-import debug from "debug";
+//import debug from "debug";
 
 const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", separator = ",", newline = "\n", maxlen = 30, depth = 1 }) {
   const i = indent.repeat(Math.abs(1 - depth));
@@ -107,7 +107,6 @@ Util.toSource = function(arg) {
   return String(arg);
 };
 Util.debug =
-  debug ||
   function(message) {
     const args = [...arguments];
     let cache = Util.array();

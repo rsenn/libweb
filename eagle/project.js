@@ -1,17 +1,17 @@
 import Util from "../util.js";
-import fs from "fs";
-import path from "path";
+//import fs from "fs";
+//import path from "path";
 import { EagleDocument } from "./document.js";
-import { EagleEntity } from "./entity.js";
+import { EagleEntity } from "./element.js";
 import { inspect } from "./common.js";
 import { makeEagleNodeMap, EagleNodeMap } from "./nodeMap.js";
 import { SortedMap } from "../indexMap.js";
 import { compareVersions } from "../compareVersions.js";
 import deep from "../deep.js";
-
-import util from "util";
+/*
+//import util from "util";
 const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
-
+*/
 export class EagleProject {
   documents = [];
   filename = null;
@@ -83,7 +83,7 @@ export class EagleProject {
 
   libraryPath() {
     let docDirs = this.getDocumentDirectories();
-    return [...docDirs, ...docDirs.map(dir => `${dir}/lbr`)].filter(fs.existsSync);
+    return [...docDirs, ...docDirs.map(dir => `${dir}/lbr`)]; //.filter(fs.existsSync);
   }
 
   *getLibraryNames() {
