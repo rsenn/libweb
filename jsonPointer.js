@@ -1,6 +1,3 @@
-
-
-
 let $path = Symbol();
 let $orig = Symbol();
 let $pointer = Symbol();
@@ -56,7 +53,6 @@ export class JsonReference {
     return this.$ref;
   }
 }
-
 
 var root = this; // either the module or the window (in a browser)
 var savedJsonPointer = JsonPointer;

@@ -1683,7 +1683,7 @@ Util.isPromise = function(obj) {
   return (Boolean(obj) && typeof obj.then === "function") || obj instanceof Promise;
 };
 /* eslint-disable no-use-before-define */
-if (typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
+if(typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
 Util.next = function(iter, observer, prev = undefined) {
   let item;
   try {
@@ -2016,11 +2016,11 @@ Util.fun = Original => {
 };
 Util.curry = function curry(fn, arity) {
   return function curried() {
-    if (arity == null) {
+    if(arity == null) {
       arity = fn.length;
     }
     var args = [].slice.call(arguments);
-    if (args.length >= arity) {
+    if(args.length >= arity) {
       return fn.apply(this, args);
     } else {
       return function() {
@@ -2032,33 +2032,30 @@ Util.curry = function curry(fn, arity) {
 
 Util.partial = function partial(fn /*, arg1, arg2 etc */) {
   var partialArgs = [].slice.call(arguments, 1);
-  if (!partialArgs.length) {
+  if(!partialArgs.length) {
     return fn;
   }
   return function() {
     var args = [].slice.call(arguments);
     var derivedArgs = [];
-    for (var i = 0; i < partialArgs.length; i++) {
+    for(var i = 0; i < partialArgs.length; i++) {
       var thisPartialArg = partialArgs[i];
-      derivedArgs[i] =
-        thisPartialArg === undefined ? args.shift() : thisPartialArg;
+      derivedArgs[i] = thisPartialArg === undefined ? args.shift() : thisPartialArg;
     }
     return fn.apply(this, derivedArgs.concat(args));
   };
 };
 
-Util.compose = compose(fn1, fn2 /*, fn3, etc */) {
-  if (!arguments.length) {
-    throw new Error(
-      'expected at least one (and probably more) function arguments'
-    );
+Util.compose = function compose(fn1, fn2 /*, fn3, etc */) {
+  if(!arguments.length) {
+    throw new Error("expected at least one (and probably more) function arguments");
   }
   var fns = arguments;
 
   return function() {
     var result = fns[0].apply(this, arguments);
     var len = fns.length;
-    for (var i = 1; i < len; i++) {
+    for(var i = 1; i < len; i++) {
       result = fns[i].call(this, result);
     }
     return result;
