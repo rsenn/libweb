@@ -20,21 +20,25 @@ Util.extend(EagleNodeMap.prototype, {
     return idx == -1 ? null : this.arr[idx];
   },
   set(name, value) {
-    const idx = this.arr.findIndex(item => item.attributes[this.key] == name);
+    const arr = this.arr.raw;
+    const idx = arr.findIndex(item => item.attributes[this.key] == name);
 
-    if(idx != -1) this.arr[idx] = value;
-    else this.arr[this.arr.length] = value;
-    //     this.arr.push(value);
+    if(idx != -1) arr[idx] = value;
+    else
+       arr.push(value);
     console.log(`${idx == -1 ? "push" : "assign"} property ${name} [${idx}]`);
   },
   keys() {
-    return this.arr.map(item => item.attributes[this.key]);
+    return this.arr.raw.map(item => item.attributes[this.key]);
   },
   values() {
     return [...this.arr];
   },
   entries() {
     return this.keys().map((key, i) => [key, this.arr[i]]);
+  },
+  map() {
+    return new Map(this.entries());
   }
 });
 
