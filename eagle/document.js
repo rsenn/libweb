@@ -6,7 +6,8 @@ import deepClone from "clone";
 import deepDiff from "deep-diff";
 import { EagleEntity } from "./entity.js";
 import { EaglePath } from "./locator.js";
-import { toXML, EagleNode, inspect } from "./common.js";
+import { EagleNode } from "./node.js";
+import { toXML, inspect } from "./common.js";
 import deep from "../deep.js";
 
 export class EagleDocument extends EagleNode {
@@ -14,9 +15,6 @@ export class EagleDocument extends EagleNode {
   path = null;
 
   constructor(filename, project) {
-    super(null, []);
-    Object.defineProperty(this, "ownerDocument", { value: null, enumerable: false });
-
     let xmlStr = "";
     try {
       if(!/<\?children.*<eagle /.test(filename)) {
@@ -26,13 +24,22 @@ export class EagleDocument extends EagleNode {
     } catch(error) {
       throw new Error("EagleDocument: " + error);
     }
-    Util.define(this, "path", filename);
+    const xml = new tXml(xmlStr);
+
+    super(deepClone(xml[0]), []);
+
+    this.path = filename;
     Util.define(this, "type", /<library>/.test(xmlStr) ? "lbr" : /<element /.test(xmlStr) ? "brd" : "sch");
     // this.path.push(this.type == "lbr" ? "library" : this.type == "brd" ? "board" : "schematic");
     // if(this.type == "lbr") this.path.push(this.basename);
     if(project) this.owner = project;
-    Util.define(this, "xml", new tXml(xmlStr));
-    //  Util.define(this, "orig", deepClone(this.xml));
+    Util.define(this, "xml", xml);
+    const orig = xml[0];
+
+    Util.define(this, "orig", orig);
+
+    //  Object.defineProperty(this, "ownerDocument", { value: null, enumerable: false });
+
     //console.log("" + deepDiff.diff);
     //
     //
@@ -53,22 +60,16 @@ counts[value.tagName]++;
 
   /* prettier-ignore */ get filename() { return path.basename(this.path); }
   /* prettier-ignore */ get dirname() { return path.dirname(this.path); }
-  /* prettier-ignore */ get root() {
-    if(this.xml.length == 1) {
-            const e = this.xml[0];
-            if(e.tagName.startsWith('?'))
-    return e;
-}
-  }
 
   //get project() { return this.owner; }
+  //  get orig() { return this.xml[0]; }
 
   get basename() {
     return path.basename(this.filename).replace(/\.[a-z][a-z][a-z]$/i, "");
   }
 
   get changes() {
-    return deepDiff.diff(this.orig, this.xml);
+    return deepDiff.diff(this.orig, this.root);
   }
 
   cacheFields() {

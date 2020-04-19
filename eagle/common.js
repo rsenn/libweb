@@ -1,5 +1,6 @@
 import { EaglePath, EagleRef } from "./locator.js";
-import { EagleEntity } from "./entity.js";
+import { EagleEntity, EagleElement } from "./entity.js";
+//import { EagleDocument } from "./document.js";
 import util from "util";
 import Util from "../util.js";
 import deep from "../deep.js";
@@ -8,15 +9,19 @@ import { lazyMembers, lazyMap } from "../lazyInitializer.js";
 export const ansi = (...args) => `\u001b[${[...args].join(";")}m`;
 export const text = (text, ...color) => ansi(...color) + text + ansi(0);
 export const dingbatCode = digit => (digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1));
-export const dump = (obj, depth = 1) => util.inspect(obj, { depth, breakLength: 400, colors: true });
+export const dump = (obj, depth = 1) => {
+  if("toString" in obj) return obj.toString();
+
+  return util.inspect(obj, { depth, breakLength: 400, colors: true });
+};
 
 export const parseArgs = args => {
-  let ret = { path: [] /*, transform: arg => arg*/ };
+  let ret = { path: [] };
 
   while(args.length > 0) {
     if(args[0] instanceof EaglePath) {
       ret.path = args.shift();
-    } else if(args[0] instanceof Array /*Util.isArray(args[0])*/) {
+    } else if(args[0] instanceof Array) {
       ret.path = new EaglePath(args.shift());
     } else if(typeof args[0] == "function") {
       if(ret.predicate === undefined) ret.predicate = args.shift();
@@ -40,17 +45,12 @@ export const parseArgs = args => {
 
 export const traverse = function*(o, l = [], d) {
   if(!(l instanceof EaglePath)) l = new EaglePath(l);
-  /*console.log("o:",dump(o,1)," l:",l.join(','));
- if(l.size > 0)
-  o = l.apply(o);*/
 
-  //  if(l instanceof Array) l = new EaglePath(l);
   if(false && typeof o == "object") if (o !== null && "name" in o.attributes) l[l.length - 1] = { name: o.attributes.name };
   yield [o, l, d];
   if(typeof o == "object") {
     if(o instanceof Array || "length" in o) for(let i = 0; i < o.length; i++) yield* traverse(o[i], l.down(i), d);
     else if("children" in o) for(let i = 0; i < o.children.length; i++) yield* traverse(o.children[i], l.down("children", i), d);
-    //    else for(let k in o) yield* traverse(o[k], l.down(k), d);
   }
 };
 export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
@@ -75,39 +75,23 @@ export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
     s += " />";
   }
   return s.trim();
-  //  return s.replace(/\n *\n/g, "\n").trim();
 };
 
 export const inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {
   const { depth, breakLength } = c;
   let o = e;
-  /* if(Util.isArray(o) || (Util.isObject(o) && o.length !== undefined)) {
-    let s = "";
-    for(let i of o) {
-      if(s.length > 0) s += i instanceof EagleEntity ? ",\n" : ", ";
-      s += i === undefined ? "undefined" : inspect(i, undefined, { ...c, depth: c.depth - 1 });
-    }
-    return s;
-  }*/
+
   if(typeof e == "string") return text(e, 1, 36);
   if(e instanceof EagleEntity) o = EagleEntity.toObject(e);
   let x = util.inspect(o, { depth: depth * 2, breakLength, colors: true });
   let s = "⏐";
   x = x.substring(x.indexOf("tagName") + 14);
-  //    x = x.replace(/.*tagName[^']*'([^']+)'[^,]*,?/g, "$1");
 
   x = Object.entries((e && e.attributes) || {}).map(([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36));
-  /*
-if(!e  || !e.tagName)
-  return o;*/
-  //  console.log(o);
-  x.unshift(e.tagName);
-  //x = x.replace(/([^ ]*):[^']*('[^']*')[^,]*,?/g, text("$1", 33)+text(s, 0, 37)+text("$2", 1, 36));
 
-  let [p, ...arr] = x; /*
-      .replace(/[|\x]+/g, " ")
-      .replace(/'([^'][^']*)'/g, "$1")
-      .split(/ +/g);*/
+  x.unshift(e.tagName);
+
+  let [p, ...arr] = x;
   p = text(`〔`, 1, 37) + text(p, 38, 5, 199);
   let l = e.path + "";
   let type = (e.nodeType || (d && d.type)) + "";
@@ -117,12 +101,9 @@ if(!e  || !e.tagName)
 };
 
 export class EagleInterface {
-  //owner = null;
-
   constructor(owner) {
-    //   this.owner = owner;
     Object.defineProperty(this, "owner", { value: owner, enumerable: false, configurable: true, writable: true });
-    //Object.defineProperty(this, "path", { value: new EaglePath([]), enumerable: false, configurable: true, writable: true });
+
     Object.defineProperty(this, "children", {
       enumerable: true,
       configurable: true,
@@ -167,7 +148,7 @@ export class EagleInterface {
       let part = l[i];
       p = o;
       o = o[part];
-      if(o.tagName !== undefined /*&& o.tagName[0] != '?'*/) {
+      if(o.tagName !== undefined) {
         if(o.tagName[0] == "?") continue;
         s += `/${o.tagName}`;
         if(o.attributes && o.attributes.name !== undefined) s += `[@name="${o.attributes.name}"]`;
@@ -183,12 +164,6 @@ export class EagleInterface {
     if(typeof this.tagName == "string") return "EagleElement";
     return Util.className(this);
   }
-  /*
-  static pathStr(path) {
-    let str = "";
-    for(let part of path) str += typeof part == "number" ? `[${part}]` : "." + part;
-    return str;
-  }*/
 
   entries(t = ([v, l, d]) => [l[l.length - 1], new EagleEntity(d, l)]) {
     return this.iterator([], t);
@@ -243,202 +218,76 @@ export class EagleInterface {
     return dump(e);
   }
 }
+export function EagleNodeList() {
+  let args = [...arguments];
+  let ref,
+    owner = args.shift();
 
-class EagleNodeList extends Array {}
+  if("ref" in owner) ref = owner.ref;
 
-export class EagleNode extends EagleInterface {
-  ref = null;
+  if(args.length > 0) ref = ref.down(...args);
 
-  constructor(d = null, l = []) {
-    super(d);
-    Util.define(this, "ref", EagleRef(d, l));
-  }
+  /*if(typeof args[0] == "object" && args[0] !== null && "root" in args[0] && "path" in args[0]) ref = args.shift();
+  else
+ */
 
-  get path() {
-    return this.ref.path;
-  }
-  get root() {
-    return this.ref.root;
-  }
+  const Ctor = class EagleNodeList {
+    ref = null;
+    owner = null;
 
-  get document() {
-    return this.owner;
-  }
-
-  getDocument() {
-    let l = this.path.clone();
-    let d = this.owner;
-
-    if(!(d instanceof EagleDocument) && this.path.length) {
-      while(!(d instanceof EagleDocument)) d = d[l.shift()];
+    constructor(owner, ref) {
+      Util.define(this, "owner", owner);
+      Util.define(this, "ref", ref);
     }
-
-    return d;
-  }
-
-  get project() {
-    if(this.owner instanceof EagleProject) return this.owner;
-    return this.document.owner;
-  }
-
-  get raw() {
-    let ret = {};
-    /*  if(this.data)
-      return this.data; if(this.root)
-      return this.root;*/
-    if(this.xml && this.xml[0]) {
-      ret = this.xml[0];
-    } else if(this.tagName) {
-      ret.tagName = this.tagName;
-      if(this.attributes) ret.attributes = Util.map(this.attributes, (k, v) => [k, this.handlers[k]()]);
-      if(this.text) ret.text = this.text;
-      let children = this.children.map(child => child.raw || child.text).filter(child => child !== undefined);
-      if(children.length > 0) ret.children = children;
-    } else {
-      throw new Error("Cannot get raw");
+    /*
+    static fromElement(element) {
+      return EagleNodeList.fromRef(element.ref, "children");
     }
-
-    //  console.log("raw:",ret);
-
-    return ret;
-  }
-
-  cacheFields() {
-    switch (this.tagName) {
-      case "schematic":
-        return ["settings", "layers", "libraries", "classes", "parts", "sheets"];
-      case "sheet":
-        return ["busses", "nets", "instances"];
-      case "deviceset":
-        return ["gates", "devices"];
-      case "device":
-        return ["connects", "technologies"];
-      case "library":
-        return ["packages", "symbols", "devicesets"];
+    static fromRef(ref, ...args) {
+      return new EagleNodeList(ref.root, ref.path, ...args);
     }
-  }
-
-  initCache() {
-    let fields = this.cacheFields();
-
-    if(fields) {
-      //console.log(`${this.type || this.tagName}.fields: ` + fields.join(","));
-      Util.define(this, "cache", {});
-
-      let lazy = {},
-        lists = {},
-        maps = {},
-        parent = this;
-
-      for(let [value, path] of deep.iterate(this.raw, v => v && fields.indexOf(v.tagName) != -1)) {
-        const key = value.tagName;
-        lazy[key] = () => new EagleEntity(parent, path);
-        //lists[key] = { enumerable: false, get: () => parent.cache[key].children };
-
-        if(this[key] !== undefined) console.log(`${key} already defined`);
-        else
-          Util.define(
-            this,
-            key,
-            lazyMap(
-              value.children,
-              item => item.name,
-              (arg, key) => new EagleEntity(parent, [...path, "children", key]),
-              EagleNodeList.prototype
-            )
-          );
-      }
-
-      lazyMembers(this.cache, lazy);
-
-      // Object.defineProperties(this, maps);
-    }
-  }
-
-  get(name, value, attr = "name") {
-    if(this.cache[name]) return this.cache[name];
-    let i = name == "library" ? "libraries" : name + "s";
-    let p = this.cache[i];
-    if(p && p.children) for(let e of p.children) if (e.attributes[attr] == value) return e;
-  }
-
-  *getAll(name, transform = arg => arg) {
-    let a = this.cache[name + "s"];
-    if(a && a.children) for(let e of a.children) yield transform(e, e.name);
-  }
-  /*
-  index(path, transform = arg => arg) {
-    if(!(path instanceof EaglePath)) path = new EaglePath(path);
-    return transform(path.apply(this.root));
-  }*/
-  /*
-  index(loc, transform = arg => arg) {
-
-    for(let i = 0; i < loc.length; i++) {
-      const idx = loc[i];
-      switch (typeof idx) {
-        case "number":
-          obj = obj.children ? obj.children[idx] : obj[idx];
-          break;
-        case "string":
-          obj = obj[idx];
-          break;
-        case "object":
-          if(idx.name !== undefined) {
-            obj = obj.children.find(child => child.attributes.name == idx.name);
-            break;
-          }
-        default:
-          throw new Error(`EagleNode index ${i} ${loc.length} '${idx}' not found`);
-      }
-    }
-    if(!obj) throw new Error(`EagleDocument index(${dump(loc)}) returned ${obj}`);
-    return obj;
-  }
 */
-  /*
-  getAll(...args) {
-    let e = typeof args[0] == "string" ? args.shift() : undefined;
-    let n = typeof args[0] == "string" ? args.shift() : undefined;
-    let predicate = typeof e == "string" ? (v, l, d) => (n !== undefined && v.tagName === n) || (e !== undefined && v.tagName === e) : typeof args[0] == "function" ? args.shift() : arg => true;
-    let transform = typeof n == "string" ? ([v, l, d]) => v.attributes && v.attributes[n] : typeof args[0] == "function" ? args.shift() : ([v, l, d]) => new EagleEntity(d, l);
-    console.log("t:", transform);
-    return this.findAll({ predicate, transform });
-  }*/
-
-  getByName(element, name, attr = "name", t = ([v, l, d]) => new EagleEntity(d, l)) {
-    // console.log(`getByName:`,{element,name,attr})  ;
-    for(let [v, l, d] of this.iterator([], it => it)) {
-      if(typeof v == "object" && "tagName" in v && "attributes" in v && attr in v.attributes) {
-        // console.log(`   ${v.tagName} "${v.attributes[attr]}"`);
-        if(v.tagName == element && v.attributes[attr] == name) return t([v, l, d]);
-      }
+    get(value, key = "name") {
+      return Util.find(this, value, key);
     }
-    return null;
-  }
 
-  get nextSibling() {
-    const { nextSibling } = this.path;
-    return nextSibling.existsIn(this.root) ? new EagleEntity(this.owner, nextSibling) : null;
-  }
+    getKey(value, key = "name") {
+      return this.indexOf(item => item[key] == value);
+    }
 
-  get prevSibling() {
-    const { prevSibling } = this.path;
-    return prevSibling.existsIn(this.root) ? new EagleEntity(this.owner, prevSibling) : null;
-  }
+    set(obj, prop = "name") {
+      const value = obj[prop];
+      let key = this.getKey(value, prop);
+      if(key == -1) this.push(obj);
+      else this[key].replace(obj);
+    }
+  };
+  //ref = ref.shift(-2);
+  //console.log(`EagleNodeList(${Util.className(owner)}, ${ref.inspect(", ")})`);
+  const instance = new Ctor(owner, ref);
+  const property = "name";
+  return new Proxy(instance, {
+    get(target, prop, receiver) {
+      let index;
+      let arr;
 
-  get parentNode() {
-    const { parentNode } = this.path;
-    return parentNode.existsIn(this.root) ? new EagleEntity(this.owner, parentNode) : null;
-  }
+      if((typeof prop == "string" && /^([0-9]+|length)$/.test(prop)) || prop == Symbol.iterator || ["findIndex"].indexOf(prop) !== -1) {
+        arr = instance.ref.dereference();
 
-  get firstChild() {
-    const { firstChild } = this.path;
-    return firstChild.existsIn(this.root) ? new EagleEntity(this.owner, firstChild) : null;
-  }
+        /* console.log("arr:",instance.ref.up(1).dereference());*/
+        if(typeof prop == "string" && /^[0-9]+$/.test(prop)) prop = parseInt(prop);
+        if(typeof prop == "number") return prop in arr ? EagleElement(owner, instance.ref, prop) : undefined;
 
-  get lastChild() {
-    const { lastChild } = this.path;
-    return lastChild.existsIn(this.root) ? new EagleEntity(this.owner, lastChild) : null;
-  }
+        if(prop in arr) return arr[prop];
+        prop = Util.findKey(arr, prop, property);
+        if(prop in arr) return arr[prop];
+      }
+
+      return Reflect.get(target, prop, receiver);
+    },
+    ownKeys(target) {
+      arr = instance.ref.dereference();
+      return arr.map(child => child[property]);
+    }
+  });
 }

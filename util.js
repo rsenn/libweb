@@ -313,6 +313,10 @@ Util.trim = function(str, charset) {
   const r2 = RegExp(`[${charset}]*$`);
   return str.replace(r1, "").replace(r2, "");
 };
+Util.trimRight = function(str, charset) {
+  const r2 = RegExp(`[${charset}]*$`);
+  return str.replace(r2, "");
+};
 Util.define = (obj, key, value, enumerable = false) =>
   /*obj[key] === undefined &&*/
   Object.defineProperty(obj, key, {
@@ -1133,8 +1137,15 @@ Util.unique = function(arr) {
 };
 Util.concat = function*(...args) {
   for(let arg of args) {
-    if(arg instanceof Array) for(let item of arg) yield item;
-    else yield* arg;
+    if(Util.isGenerator(arg)) {
+      console.error("isGenerator:",arg);
+      yield* arg;
+    } else /* if(Util.isArray(arg))*/ {
+      for(let item of arg) yield item;
+    }
+ /*   else  else {
+      throw new Error("No such arg type:"+typeof(arg));
+    }*/
   }
 };
 Util.distinct = function(arr) {
@@ -1523,6 +1534,7 @@ Util.weakAssign = function(obj) {
   return obj;
 };
 Util.getCallerStack = function(position = 2) {
+  Error.stackTraceLimit = 20;
   if(position >= Error.stackTraceLimit) {
     throw new TypeError(`getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: \`${position}\` and Error.stackTraceLimit was: \`${Error.stackTraceLimit}\``);
   }
@@ -1859,7 +1871,7 @@ Util.immutableClass = (Original) => {
   }
   return Immutable;
 };
-Util.immutableClass = (Original) => {
+Util.fun = (Original) => {
   const Immutable = class extends Original {
     constructor (...args) {
       super(...args)
