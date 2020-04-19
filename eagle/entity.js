@@ -53,17 +53,44 @@ export class EagleEntity extends EagleNode {
 
         this.handlers[key] = prop;
 
-        if(EagleEntity.isRelation(key)) {
+        if(key == "deviceset") {
+          const fn = v => {
+            if(v) {
+              const { names } = v;
+              if(names !== undefined) {
+                this.handlers.library(names.library);
+                this.handlers.deviceset(names.deviceset);
+              }
+            } else {
+              return this.library.devicesets.find(this.attributes.deviceset); //, this.handlers[key]());
+            }
+          };
+          trkl.bind(this, key, fn);
+        } else if(key == "device") {
+          const fn = v => {
+            if(v) {
+              const { names } = v;
+              if(names !== undefined) {
+                this.handlers.library(names.library);
+                this.handlers.deviceset(names.deviceset);
+                this.handlers.device(names.device);
+              }
+            } else {
+              return this.deviceset.devices.find(this.attributes.device); //key, this.handlers[key]());
+            }
+          };
+          trkl.bind(this, key, fn);
+        } else if(EagleEntity.isRelation(key)) {
           let doc = this.document;
-          //   console.log(`this.document = ${Util.className(doc)}`);
+          // console.log(`this.document = ${Util.className(doc)}`);
+          //  if(Util.className(doc) == 'EagleDocument') {
           const fn = v => (v ? this.handlers[key](typeof v == "string" ? v : v.name) : doc.getByName(key, this.handlers[key]()));
           //  console.log(`this[${key}] = ${fn}`);
           trkl.bind(this, key, fn);
+          //}
         } else if(key == "deviceset") {
+          //  console.log("this.library:", this.attributes.library);
           const fn = v => (v ? this.handlers[key](typeof v == "string" ? v : v.name) : this.library.getByName(key, this.handlers[key]()));
-          trkl.bind(this, key, fn);
-        } else if(key == "device") {
-          const fn = v => (v ? this.handlers[key](typeof v == "string" ? v : v.name) : this.deviceset.getByName(key, this.handlers[key]()));
           trkl.bind(this, key, fn);
         } else {
           trkl.bind(this, key, handler);
@@ -159,6 +186,12 @@ export class EagleEntity extends EagleNode {
   }
 }
 export const EagleElement = function EagleElement(owner, ref, ...args) {
-  let e = new EagleEntity(owner, ref.concat(args));
+  if("length" in ref) ref = owner.ref.down(...ref);
+
+  if(args.length > 0) ref = ref.down(...args);
+
+  //console.log("ref:", ref);
+
+  let e = new EagleEntity(owner, ref);
   return e;
 };

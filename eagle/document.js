@@ -5,7 +5,7 @@ import path from "path";
 import deepClone from "clone";
 import deepDiff from "deep-diff";
 import { EagleEntity } from "./entity.js";
-import { EaglePath } from "./locator.js";
+import { EaglePath, EagleRef } from "./locator.js";
 import { EagleNode } from "./node.js";
 import { toXML, inspect } from "./common.js";
 import deep from "../deep.js";
@@ -26,7 +26,7 @@ export class EagleDocument extends EagleNode {
     }
     const xml = new tXml(xmlStr);
 
-    super(deepClone(xml[0]), []);
+    super(project, EagleRef(deepClone(xml[0]), []));
 
     this.path = filename;
     Util.define(this, "type", /<library>/.test(xmlStr) ? "lbr" : /<element /.test(xmlStr) ? "brd" : "sch");
@@ -85,7 +85,9 @@ counts[value.tagName]++;
   }
 
   toString() {
-    return this.xml.map(e => toXML(e)).join("\n") + "\n";
+    let xml = toXML(this.root/*dereference()*/);
+    //console.log("xml:", toXML(this.root, 7));
+    return xml; //.map(e => toXML(e)).join("\n") + "\n";
   }
 
   /* prettier-ignore */

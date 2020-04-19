@@ -54,6 +54,8 @@ export const traverse = function*(o, l = [], d) {
   }
 };
 export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
+  if(typeof(o) == 'object' && o !== null && 'root' in o) o = o.root;
+
   if(o instanceof Array) return o.map(toXML).join("\n");
   else if(typeof o == "string") return o;
   else if(typeof o != "object" || o.tagName === undefined) return "";
@@ -63,16 +65,18 @@ export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
 
   const a = o.children && o.children.length !== undefined ? o.children : [];
   const text = o.text;
-  if((a && a.length > 0) || text) {
+  if((a && a.length > 0) || text ) {
     s += o.tagName[0] != "?" ? ">" : "?>";
     if(z > 0) {
-      let nl = text ? "" : o.tagName == "text" && a.length == 1 ? "" : o.tagName[0] != "?" ? "\n  " : "\n";
-      if(text) s += text;
+      let nl = (text && text.length > 0) ? "" : o.tagName == "text" && a.length == 1 ? "" : o.tagName[0] != "?" ? "\n  " : "\n";
+      if((text && text.length > 0)) s += text;
       else for(let child of a) s += nl + toXML(child, z - 1).replace(/\n/g, nl);
       if(o.tagName[0] != "?") s += `${nl.replace(/ /g, "")}</${o.tagName}>`;
     }
   } else {
-    s += " />";
+    if(Object.keys(o.attributes).length == 0)
+    s += `></${o.tagName}>`;
+   else s += " />";
   }
   return s.trim();
 };
@@ -170,6 +174,14 @@ export class EagleInterface {
   }
 
   *iterator(...args) {
+    /*   let obj = ref.dereference();
+
+    yield [obj, ref,
+
+    for(let k in obj) {
+      yield* this.iterator(this.ref.down(k));
+    }*/
+
     let predicate = typeof args[0] == "function" ? args.shift() : arg => false;
     let path = (Util.isArray(args[0]) && args.shift()) || [];
     let t = typeof args[0] == "function" ? args.shift() : ([v, l, d]) => [typeof v == "object" && v !== null && "tagName" in v ? new EagleEntity(d, l) : v, l, d];
@@ -217,77 +229,4 @@ export class EagleInterface {
   static toString(e) {
     return dump(e);
   }
-}
-export function EagleNodeList() {
-  let args = [...arguments];
-  let ref,
-    owner = args.shift();
-
-  if("ref" in owner) ref = owner.ref;
-
-  if(args.length > 0) ref = ref.down(...args);
-
-  /*if(typeof args[0] == "object" && args[0] !== null && "root" in args[0] && "path" in args[0]) ref = args.shift();
-  else
- */
-
-  const Ctor = class EagleNodeList {
-    ref = null;
-    owner = null;
-
-    constructor(owner, ref) {
-      Util.define(this, "owner", owner);
-      Util.define(this, "ref", ref);
-    }
-    /*
-    static fromElement(element) {
-      return EagleNodeList.fromRef(element.ref, "children");
-    }
-    static fromRef(ref, ...args) {
-      return new EagleNodeList(ref.root, ref.path, ...args);
-    }
-*/
-    get(value, key = "name") {
-      return Util.find(this, value, key);
-    }
-
-    getKey(value, key = "name") {
-      return this.indexOf(item => item[key] == value);
-    }
-
-    set(obj, prop = "name") {
-      const value = obj[prop];
-      let key = this.getKey(value, prop);
-      if(key == -1) this.push(obj);
-      else this[key].replace(obj);
-    }
-  };
-  //ref = ref.shift(-2);
-  //console.log(`EagleNodeList(${Util.className(owner)}, ${ref.inspect(", ")})`);
-  const instance = new Ctor(owner, ref);
-  const property = "name";
-  return new Proxy(instance, {
-    get(target, prop, receiver) {
-      let index;
-      let arr;
-
-      if((typeof prop == "string" && /^([0-9]+|length)$/.test(prop)) || prop == Symbol.iterator || ["findIndex"].indexOf(prop) !== -1) {
-        arr = instance.ref.dereference();
-
-        /* console.log("arr:",instance.ref.up(1).dereference());*/
-        if(typeof prop == "string" && /^[0-9]+$/.test(prop)) prop = parseInt(prop);
-        if(typeof prop == "number") return prop in arr ? EagleElement(owner, instance.ref, prop) : undefined;
-
-        if(prop in arr) return arr[prop];
-        prop = Util.findKey(arr, prop, property);
-        if(prop in arr) return arr[prop];
-      }
-
-      return Reflect.get(target, prop, receiver);
-    },
-    ownKeys(target) {
-      arr = instance.ref.dereference();
-      return arr.map(child => child[property]);
-    }
-  });
 }

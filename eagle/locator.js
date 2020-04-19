@@ -82,11 +82,11 @@ export const EaglePath = Util.immutableClass(
      */
     up(n = 1) {
       //   const i = Math.max(1, Math.min(this.size, n));
-      return this.slice(0, this.length - n);
+      return new EaglePath(this.toArray().slice(0, this.length - n));
     }
 
     down(...args) {
-      return this.concat(args);
+      return new EaglePath(this.toArray().concat(args));
     }
 
     /**
@@ -226,7 +226,7 @@ export class EagleReference {
   constructor(root, path) {
     // path = path instanceof EaglePath ? path : new EaglePath(path);
 
-    this.path = path instanceof EaglePath ? path : new EaglePath(path);
+    this.path = /*path instanceof EaglePath ? path : */ new EaglePath(path);
     this.root = root;
   }
   get type() {
@@ -259,14 +259,21 @@ export class EagleReference {
     return EagleRef(this.root, this.path.firstChild);
   }
 
+  down() {
+    return new EagleReference(this.root, [...this.path.toArray(), ...arguments]);
+  }
+  up(n = 1) {
+    return new EagleReference(this.root, this.path.up(n));
+  }
+
   shift(n = 1) {
     let root = this.root;
-    if(n < 0) n = this.length + n;
+    if(n < 0) n = this.path.length + n;
     for(let i = 0; i < n; i++) {
       let k = this.path[i];
       root = root[k];
     }
-    return EagleRef(root, this.path.slice(n));
+    return new EagleReference(root, this.path.slice(n));
   }
 
   [Symbol.for("nodejs.util.inspect.custom")]() {
@@ -310,13 +317,13 @@ export const EagleRef = function EagleRef(root, path) {
 
   return Object.freeze(obj);
 };*/
-
+/*
 ["up", "down", "left", "right", "slice"].forEach(
   method =>
     (EagleReference.prototype[method] = function(...args) {
       return EagleRef(this.root, this.path[method](...args));
     })
-);
+);*/
 Object.assign(EagleReference.prototype, {});
 
 /*let props = ["nextSibling", "prevSibling", "parent", "parentNode", "firstChild", "lastChild", "depth"].reduce(

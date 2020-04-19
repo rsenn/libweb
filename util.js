@@ -1229,6 +1229,18 @@ Util.map = function(obj, fn) {
   }
   return ret;
 };
+/*Util.indexedMap = (arr, fn = arg => arg.name) => {
+  return new Proxy(arr, {
+    get(target, prop, receiver) {
+      let idx = arr.findIndex(item => fn(item) == 'prop');
+      if(idx != -1)
+        prop = idx;
+
+      return Reflect.get(arr, idx, receiver);
+    }
+  });
+};*/
+
 Util.entriesToObj = function(arr) {
   return [...arr].reduce((acc, item) => {
     const k = item[0];
