@@ -1962,6 +1962,20 @@ Util.proxyClone = obj => {
     }
   });
 };
+Util.proxyDelegate = (target, origin) => {
+  return new Proxy(target, {
+    get(target, key, receiver) {
+      if(key in target) return Reflect.get(target, key, receiver);
+      const value = origin[key];
+      return typeof value === "function" ? (...args) => value.apply(origin, args) : value;
+    },
+    set(target, key, value, receiver) {
+      if(key in target) return Reflect.set(target, key, value, receiver);
+      origin[key] = value;
+      return true;
+    }
+  });
+};
 Util.immutable = args => {
   const argsType = typeof args === "object" && Util.isArray(args) ? "array" : "object";
   const errorText = argsType === "array" ? "Error! You can't change elements of this array" : "Error! You can't change properties of this object";
@@ -1999,4 +2013,54 @@ Util.fun = Original => {
     }
   };
   return Immutable;
+};
+Util.curry = function curry(fn, arity) {
+  return function curried() {
+    if (arity == null) {
+      arity = fn.length;
+    }
+    var args = [].slice.call(arguments);
+    if (args.length >= arity) {
+      return fn.apply(this, args);
+    } else {
+      return function() {
+        return curried.apply(this, args.concat([].slice.call(arguments)));
+      };
+    }
+  };
+};
+
+Util.partial = function partial(fn /*, arg1, arg2 etc */) {
+  var partialArgs = [].slice.call(arguments, 1);
+  if (!partialArgs.length) {
+    return fn;
+  }
+  return function() {
+    var args = [].slice.call(arguments);
+    var derivedArgs = [];
+    for (var i = 0; i < partialArgs.length; i++) {
+      var thisPartialArg = partialArgs[i];
+      derivedArgs[i] =
+        thisPartialArg === undefined ? args.shift() : thisPartialArg;
+    }
+    return fn.apply(this, derivedArgs.concat(args));
+  };
+};
+
+Util.compose = compose(fn1, fn2 /*, fn3, etc */) {
+  if (!arguments.length) {
+    throw new Error(
+      'expected at least one (and probably more) function arguments'
+    );
+  }
+  var fns = arguments;
+
+  return function() {
+    var result = fns[0].apply(this, arguments);
+    var len = fns.length;
+    for (var i = 1; i < len; i++) {
+      result = fns[i].call(this, result);
+    }
+    return result;
+  };
 };
