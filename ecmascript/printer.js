@@ -60,7 +60,7 @@ export class Printer {
     let name, fn;
     try {
       name = Util.isObject(node) ? Util.className(node) : null;
-      fn = this["print" + name] || (arg => ''+arg);
+      fn = this["print" + name] || (arg => "" + arg);
     } catch(err) {
       console.log("printNode error: ", err);
       console.log("node:", node);

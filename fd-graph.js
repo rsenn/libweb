@@ -438,7 +438,7 @@ class Edge extends Line {
   draw(ctx) {}
 }
 
-if (module.exports) {
+if(module.exports) {
   module.exports.Node = Node;
   module.exports.Edge = Edge;
   module.exports.Graph = Graph;
