@@ -68,15 +68,10 @@ export class EagleElement extends EagleNode {
   }
 
   get text() {
-    let idx = this.children.findIndex(child => typeof child == "string");
-    let txt = this.children[idx];
+      let text = this.raw.children[0];
+    if(typeof(text) == 'string')return text;
+  }
 
-    return txt;
-  }
-  set text(value) {
-    let idx = this.children.findIndex(child => typeof child == "string");
-    this.children[idx] = value;
-  }
 
   toXML(depth = Number.MAX_SAFE_INTEGER) {
     // let o = this.document.index(this.path);
