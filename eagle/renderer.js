@@ -4,22 +4,20 @@ import { Point } from "../geom/point.js";
 import { Line } from "../geom/line.js";
 import { EagleElement } from "./element.js";
 
-const RotateTransformation = (rot) => {
+const RotateTransformation = rot => {
   let angle = +(rot || "").replace(/R/, "") || 0;
- // rot -= 90;
+  // rot -= 90;
   return `rotate(${angle})`;
-//  return angle != 0 ? `rotate(${angle})` : '';
+  //  return angle != 0 ? `rotate(${angle})` : '';
 };
 
-const InvertY = (item) => {
- //item = EagleElement.toObject(item);
- let ret = {};
- for(let prop in item.attributes) {
-  if(prop.startsWith('y'))
-    ret[prop] = - (+item.attributes[prop]);
-  else 
-   ret[prop] = item.attributes[prop];
- }
+const InvertY = item => {
+  //item = EagleElement.toObject(item);
+  let ret = {};
+  for(let prop in item.attributes) {
+    if(prop.startsWith("y")) ret[prop] = -+item.attributes[prop];
+    else ret[prop] = item.attributes[prop];
+  }
   return item;
 };
 
@@ -56,7 +54,6 @@ export class SchematicRenderer {
 
     const { labelText, coordFn = i => i } = opts;
 
-
     switch (item.tagName) {
       case "wire": {
         const { x1, x2, y1, y2, width } = coordFn(item);
@@ -89,7 +86,8 @@ export class SchematicRenderer {
           {
             fill: "#f0f", //color,
             stroke: "none",
-            x: 0, y: 0,
+            x: 0,
+            y: 0,
             /*   x,
             y,*/ "text-anchor": "middle",
             "alignment-baseline": "central",
@@ -104,22 +102,23 @@ export class SchematicRenderer {
       }
       case "text": {
         let { x, y, text, align, size, font, rot } = coordFn(item);
-        if(text.startsWith('&gt;')) {
+        if(text.startsWith("&gt;")) {
           const prop = text.slice(4).toLowerCase();
           text = prop in opts ? opts[prop] : text;
         }
-                const transform = `translate(${x},${y}) scale(1,-1) ${RotateTransformation(rot)}`;
+        const transform = `translate(${x},${y}) scale(1,-1) ${RotateTransformation(rot)}`;
         factory(
           "text",
           {
             fill: color,
             stroke: "none",
             strokeWidth: 0.05,
-            x:0,
-            y:0,
+            x: 0,
+            y: 0,
             innerHTML: text,
             fontSize: size * 1.6,
-            fontFamily: font || "Fixed", transform
+            fontFamily: font || "Fixed",
+            transform
           },
           parent
         );
@@ -175,7 +174,7 @@ export class SchematicRenderer {
   }
 
   renderPart(instance, parent) {
-    const { x, y, rot } = (instance);
+    const { x, y, rot } = instance;
     const part = instance.part;
     const { deviceset, device, library, name, value } = part;
     let symbol;
@@ -194,7 +193,7 @@ export class SchematicRenderer {
     }
 
     const g = this.factory("g", { id: `part.${part.name}`, transform: ` translate(${x},${y}) ${RotateTransformation(rot)}` }, parent);
-    this.renderCollection(symbol, g, {name,value});
+    this.renderCollection(symbol, g, { name, value });
     return g;
   }
 

@@ -147,10 +147,10 @@ Point.prototype.angle = function(other, deg = false) {
 Point.prototype.dimension = function() {
   return [this.width, this.height];
 };
-Point.prototype.toString = function(precision = 0.001) {
+Point.prototype.toString = function(precision = 0.001, unit = "") {
   const x = Util.roundTo(this.x, precision);
   const y = Util.roundTo(this.y, precision);
-  return `${x},${y}`;
+  return `${x}${unit},${y}${unit}`;
 };
 Util.defineGetterSetter(
   Point.prototype,

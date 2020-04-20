@@ -2078,3 +2078,4 @@ Util.compose = function compose(fn1, fn2 /*, fn3, etc */) {
     return result;
   };
 };
+Util.clamp = Util.curry((min, max, value) => Math.max(min, Math.min(max, value)));
