@@ -1,5 +1,14 @@
-import { autorun, toJS } from "mobx";
-export const makeLocalStorage = () => {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getLocalStorage = getLocalStorage;
+exports.makeAutoStoreHandler = exports.makeDummyStorage = exports.makeLocalStore = exports.logStoreAdapter = exports.makeLocalStorage = void 0;
+
+var _mobx = require("mobx");
+
+const makeLocalStorage = () => {
   if (global.window && window.localStorage) return {
     get: name => JSON.parse(window.localStorage.getItem(name)),
     set: (name, data) => window.localStorage.setItem(name, JSON.stringify(data)),
@@ -11,21 +20,27 @@ export const makeLocalStorage = () => {
     remove: name => undefined
   };
 };
-export const logStoreAdapter = store => {
+
+exports.makeLocalStorage = makeLocalStorage;
+
+const logStoreAdapter = store => {
   return {
     store,
-    get: function (name) {
+    get: function get(name) {
       return this.store.get(name);
     },
-    set: function (name, data) {
+    set: function set(name, data) {
       return this.store && this.store.set ? this.store.set(name, data) : null;
     },
-    remove: function (name) {
+    remove: function remove(name) {
       return this.store && this.store.remove ? this.store.remove(name) : null;
     }
   };
 };
-export const makeLocalStore = name => ({
+
+exports.logStoreAdapter = logStoreAdapter;
+
+const makeLocalStore = name => ({
   name,
   storage: makeLocalStorage(),
 
@@ -42,24 +57,31 @@ export const makeLocalStore = name => ({
   }
 
 });
-export const makeDummyStorage = () => ({
+
+exports.makeLocalStore = makeLocalStore;
+
+const makeDummyStorage = () => ({
   get: name => null,
   set: (name, data) => {},
   remove: name => {}
 });
-export function getLocalStorage() {
+
+exports.makeDummyStorage = makeDummyStorage;
+
+function getLocalStorage() {
   if (getLocalStorage.store === undefined) {
     getLocalStorage.store = global.window && window.localStorage ? makeLocalStorage() : makeDummyStorage();
   }
 
   return getLocalStorage.store;
 }
-export const makeAutoStoreHandler = (name, store) => {
+
+const makeAutoStoreHandler = (name, store) => {
   if (!store) store = getLocalStorage();
 
-  var fn = function (_this, _member) {
+  var fn = function fn(_this, _member) {
     let firstRun = false;
-    const disposer = autorun(() => {
+    const disposer = (0, _mobx.autorun)(() => {
       if (firstRun) {
         const existingStore = store.get(name);
 
@@ -91,3 +113,5 @@ export const makeAutoStoreHandler = (name, store) => {
   fn.remove = store.remove;
   return fn;
 };
+
+exports.makeAutoStoreHandler = makeAutoStoreHandler;

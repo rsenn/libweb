@@ -1,3 +1,9 @@
+require("core-js/modules/es6.array.sort");
+
+require("core-js/modules/es6.regexp.to-string");
+
+require("core-js/modules/es6.object.to-string");
+
 (function () {
   "use strict";
 
@@ -39,7 +45,7 @@
   if (nav.indexOf("msie 7") != -1) browser.msie7 = 1;else browser.msie7 = 0;
   if (nav.indexOf("msie ") != -1) browser.msie = 1;else browser.msie = 0;
 
-  var Inherit = function (ce, ce2) {
+  var Inherit = function Inherit(ce, ce2) {
     var p;
 
     if (typeof Object.getOwnPropertyNames === "undefined") {

@@ -3,6 +3,8 @@
 NL="
 "
 IFS="$NL"
+THISDIR=`dirname "$0"`
+ABSDIR=`cd "$THISDIR" && pwd`
 
 pushv() { 
     eval "shift;$1=\"\${$1+\"\$$1\${IFS%\"\${IFS#?}\"}\"}\$*\""
@@ -56,7 +58,7 @@ convert_to_es5() {
     pushv_unique ALLFILES "$IN"
 
     run_babel() {
-      (set -x;  babel --compact auto --no-comments ${2:+-o} ${2:+"$2"} "${1:-"-"}" )
+      (set -x;  babel --config-file "$THISDIR/../../.babelrc" --compact auto --no-comments ${2:+-o} ${2:+"$2"} "${1:-"-"}" )
     }
 
     [ "$FORCE" = true -o "$OUT" -ot "$IN" ] && run_babel "$IN" "$OUT"

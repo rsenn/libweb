@@ -1,48 +1,10 @@
-"use strict";
-
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Rect = Rect;
-exports.isRect = void 0;
-
-require("core-js/modules/es7.object.get-own-property-descriptors");
-
-require("core-js/modules/es6.symbol");
-
-require("core-js/modules/web.dom.iterable");
-
-require("core-js/modules/es6.string.sub");
-
-require("core-js/modules/es7.string.pad-end");
-
-require("core-js/modules/es7.string.pad-start");
-
-require("core-js/modules/es6.regexp.to-string");
-
-require("core-js/modules/es6.object.to-string");
-
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
-
-var _point = require("./point.es5.js");
-
-var _pointList = require("./pointList.es5.js");
-
-var _size = require("./size.es5.js");
-
-var _align = require("./align.es5.js");
-
-var _trbl = require("./trbl.es5.js");
-
-var _util = require("../util.es5.js");
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function Rect(arg) {
+import { Point, isPoint } from "./point.js";
+import { PointList } from "./pointList.js";
+import { Size, isSize } from "./size.js";
+import { Align, Anchor } from "./align.js";
+import { TRBL, isTRBL } from "./trbl.js";
+import { Util } from "../util.js";
+export function Rect(arg) {
   let obj = this instanceof Rect ? this : {};
   let args = arg instanceof Array ? arg : [...arguments];
   let ret;
@@ -52,28 +14,30 @@ function Rect(arg) {
   });
 
   if (arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
-    const _arg = arg,
-          x1 = _arg.x1,
-          y1 = _arg.y1,
-          x2 = _arg.x2,
-          y2 = _arg.y2;
+    const {
+      x1,
+      y1,
+      x2,
+      y2
+    } = arg;
     obj.x = x1;
     obj.y = y1;
     obj.width = x2 - x1;
     obj.height = y2 - y1;
     ret = 1;
   } else if (arg && arg.x !== undefined && arg.y !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
-    const _arg2 = arg,
-          x = _arg2.x,
-          y = _arg2.y,
-          x2 = _arg2.x2,
-          y2 = _arg2.y2;
+    const {
+      x,
+      y,
+      x2,
+      y2
+    } = arg;
     obj.x = x;
     obj.y = y;
     obj.width = x2 - x;
     obj.height = y2 - y;
     ret = 1;
-  } else if ((0, _point.isPoint)(arg) && arg.y !== undefined && arg.width !== undefined && arg.height !== undefined) {
+  } else if (isPoint(arg) && arg.y !== undefined && arg.width !== undefined && arg.height !== undefined) {
     obj.x = parseFloat(arg.x);
     obj.y = parseFloat(arg.y);
     obj.width = parseFloat(arg.width);
@@ -101,22 +65,18 @@ function Rect(arg) {
 
     if (arg.length >= 4) {
       argc = typeof x == "number" ? 2 : 1;
-
-      _point.Point.apply(obj, arg.slice(0, argc));
-
+      Point.apply(obj, arg.slice(0, argc));
       argi = argc;
     }
 
     argc = typeof arg[argi] == "number" ? 2 : 1;
-
-    _size.Size.apply(obj, arg.slice(argi, argc));
-
+    Size.apply(obj, arg.slice(argi, argc));
     ret = argi + argc;
   }
 
   if (obj.round === undefined) {
     Object.defineProperty(obj, "round", {
-      value: function value() {
+      value: function () {
         return Rect.round(this);
       },
       enumerable: true,
@@ -129,8 +89,10 @@ function Rect(arg) {
     return ret;
   }
 }
-
-Rect.prototype = _objectSpread({}, _point.Point.prototype, {}, _size.Size.prototype, {}, Rect.prototype);
+Rect.prototype = { ...Point.prototype,
+  ...Size.prototype,
+  ...Rect.prototype
+};
 
 Rect.prototype.clone = function () {
   return new Rect(this.x, this.y, this.width, this.height);
@@ -166,7 +128,7 @@ Rect.prototype.getArea = function () {
 };
 
 Rect.prototype.toString = function (prec = 0.000001) {
-  return "".concat(_util.Util.roundTo(this.x, prec), " ").concat(_util.Util.roundTo(this.y, prec), " ").concat(_util.Util.roundTo(this.width, prec), " ").concat(_util.Util.roundTo(this.height, prec));
+  return `${Util.roundTo(this.x, prec)} ${Util.roundTo(this.y, prec)} ${Util.roundTo(this.width, prec)} ${Util.roundTo(this.height, prec)}`;
 };
 
 Rect.prototype.toSource = function () {
@@ -174,10 +136,10 @@ Rect.prototype.toSource = function () {
 };
 
 Object.defineProperty(Rect.prototype, "x1", {
-  get: function get() {
+  get: function () {
     return this.x;
   },
-  set: function set(value) {
+  set: function (value) {
     const extend = this.x - value;
     this.width += extend;
     this.x -= extend;
@@ -185,52 +147,52 @@ Object.defineProperty(Rect.prototype, "x1", {
   enumerable: true
 });
 Object.defineProperty(Rect.prototype, "x2", {
-  get: function get() {
+  get: function () {
     return this.x + this.width;
   },
-  set: function set(value) {
+  set: function (value) {
     this.width = value - this.x;
   },
   enumerable: true
 });
 Object.defineProperty(Rect.prototype, "y1", {
-  get: function get() {
+  get: function () {
     return this.y;
   },
-  set: function set(value) {
+  set: function (value) {
     const extend = this.y - value;
     this.height += extend;
     this.y -= extend;
   }
 });
 Object.defineProperty(Rect.prototype, "y2", {
-  get: function get() {
+  get: function () {
     return this.y + this.height;
   },
-  set: function set(value) {
+  set: function (value) {
     this.height = value - this.y;
   }
 });
 Object.defineProperty(Rect.prototype, "area", {
-  get: function get() {
+  get: function () {
     return Rect.prototype.getArea.call(this);
   }
 });
 Object.defineProperty(Rect.prototype, "center", {
-  get: function get() {
+  get: function () {
     return Rect.center(this);
   }
 });
 
 Rect.prototype.points = function () {
   const c = this.corners();
-  return new _pointList.PointList(c);
+  return new PointList(c);
 };
 
 Rect.prototype.toCSS = Rect.toCSS;
 
 Rect.prototype.outset = function (trbl) {
-  if (typeof trbl == "number") trbl = new _trbl.TRBL(trbl, trbl, trbl, trbl);
+  if (typeof trbl == "number") trbl = new TRBL(trbl, trbl, trbl, trbl);
   this.x -= trbl.left;
   this.y -= trbl.top;
   this.width += trbl.left + trbl.right;
@@ -239,7 +201,7 @@ Rect.prototype.outset = function (trbl) {
 };
 
 Rect.prototype.inset = function (trbl) {
-  if (typeof trbl == "number") trbl = new _trbl.TRBL(trbl, trbl, trbl, trbl);
+  if (typeof trbl == "number") trbl = new TRBL(trbl, trbl, trbl, trbl);
 
   if (trbl.left + trbl.right < this.width && trbl.top + trbl.bottom < this.height) {
     this.x += trbl.left;
@@ -256,15 +218,16 @@ Rect.prototype.inside = function (point) {
 };
 
 Rect.prototype.pointFromCenter = function (point) {
-  _point.Point.prototype.sub.call(point, this.center);
-
+  Point.prototype.sub.call(point, this.center);
   point.x /= this.width;
   point.y /= this.height;
   return point;
 };
 
 Rect.prototype.toCSS = function () {
-  return _objectSpread({}, _point.Point.prototype.toCSS.call(this), {}, _size.Size.prototype.toCSS.call(this));
+  return { ...Point.prototype.toCSS.call(this),
+    ...Size.prototype.toCSS.call(this)
+  };
 };
 
 Rect.prototype.toTRBL = function () {
@@ -277,11 +240,11 @@ Rect.prototype.toTRBL = function () {
 };
 
 Rect.prototype.toPoints = function () {
-  var list = new _pointList.PointList();
-  list.push(new _point.Point(this.x, this.y));
-  list.push(new _point.Point(this.x, this.y2));
-  list.push(new _point.Point(this.x2, this.y2));
-  list.push(new _point.Point(this.x2, this.y));
+  var list = new PointList();
+  list.push(new Point(this.x, this.y));
+  list.push(new Point(this.x, this.y2));
+  list.push(new Point(this.x2, this.y2));
+  list.push(new Point(this.x2, this.y));
   return list;
 };
 
@@ -291,12 +254,12 @@ Rect.prototype.align = function (align_to, a = 0) {
   let oldx = this.x;
   let oldy = this.y;
 
-  switch (_align.Align.horizontal(a)) {
-    case _align.Align.LEFT:
+  switch (Align.horizontal(a)) {
+    case Align.LEFT:
       this.x = align_to.x;
       break;
 
-    case _align.Align.RIGHT:
+    case Align.RIGHT:
       this.x = align_to.x + xdiff;
       break;
 
@@ -305,12 +268,12 @@ Rect.prototype.align = function (align_to, a = 0) {
       break;
   }
 
-  switch (_align.Align.vertical(a)) {
-    case _align.Align.TOP:
+  switch (Align.vertical(a)) {
+    case Align.TOP:
       this.y = align_to.y;
       break;
 
-    case _align.Align.BOTTOM:
+    case Align.BOTTOM:
       this.y = align_to.y + ydiff;
       break;
 
@@ -323,23 +286,27 @@ Rect.prototype.align = function (align_to, a = 0) {
 };
 
 Rect.prototype.round = function (precision = 0.001) {
-  let x = this.x,
-      y = this.y,
-      x2 = this.x2,
-      y2 = this.y2;
-  this.x = _util.Util.roundTo(x, precision);
-  this.y = _util.Util.roundTo(y, precision);
-  this.width = _util.Util.roundTo(x2 - this.x, precision);
-  this.height = _util.Util.roundTo(y2 - this.y, precision);
+  let {
+    x,
+    y,
+    x2,
+    y2
+  } = this;
+  this.x = Util.roundTo(x, precision);
+  this.y = Util.roundTo(y, precision);
+  this.width = Util.roundTo(x2 - this.x, precision);
+  this.height = Util.roundTo(y2 - this.y, precision);
   return this;
 };
 
 Rect.prototype.toObject = function (bb = false) {
   if (bb) {
-    const x1 = this.x1,
-          y1 = this.y1,
-          x2 = this.x2,
-          y2 = this.y2;
+    const {
+      x1,
+      y1,
+      x2,
+      y2
+    } = this;
     return {
       x1,
       y1,
@@ -348,10 +315,12 @@ Rect.prototype.toObject = function (bb = false) {
     };
   }
 
-  const x = this.x,
-        y = this.y,
-        width = this.width,
-        height = this.height;
+  const {
+    x,
+    y,
+    width,
+    height
+  } = this;
   return {
     x,
     y,
@@ -370,18 +339,14 @@ Rect.inset = (rect, trbl) => Rect.prototype.inset.call(rect, trbl);
 
 Rect.outset = (rect, trbl) => Rect.prototype.outset.call(rect, trbl);
 
-Rect.center = rect => new _point.Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
+Rect.center = rect => new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 
 Rect.inside = (rect, point) => {
   return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
 };
 
-for (var _i = 0, _arr = ["clone", "corners", "isSquare", "getArea", "toString", "toSource", "points", "toCSS", "toTRBL", "toPoints"]; _i < _arr.length; _i++) {
-  let name = _arr[_i];
-
+for (let name of ["clone", "corners", "isSquare", "getArea", "toString", "toSource", "points", "toCSS", "toTRBL", "toPoints"]) {
   Rect[name] = points => Rect.prototype[name].call(points);
 }
 
-const isRect = rect => (0, _point.isPoint)(rect) && (0, _size.isSize)(rect);
-
-exports.isRect = isRect;
+export const isRect = rect => isPoint(rect) && isSize(rect);

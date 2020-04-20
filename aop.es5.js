@@ -1,4 +1,4 @@
-var AOP = function (obj) {
+var AOP = function AOP(obj) {
   obj.proceed = null;
   obj.result = {};
 

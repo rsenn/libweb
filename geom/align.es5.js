@@ -1,13 +1,4 @@
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Align = Align;
-exports.Anchor = void 0;
-
-function Align(arg) {}
-
+export function Align(arg) {}
 Align.CENTER = 0;
 Align.LEFT = 1;
 Align.RIGHT = 2;
@@ -19,5 +10,4 @@ Align.horizontal = alignment => alignment & (Align.LEFT | Align.RIGHT);
 
 Align.vertical = alignment => alignment & (Align.TOP | Align.BOTTOM);
 
-const Anchor = Align;
-exports.Anchor = Anchor;
+export const Anchor = Align;

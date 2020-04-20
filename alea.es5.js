@@ -1,3 +1,7 @@
+require("core-js/modules/es6.regexp.to-string");
+
+require("core-js/modules/es6.object.to-string");
+
 function Alea() {
   const args = [...arguments];
   var s0 = 0;
@@ -5,7 +9,7 @@ function Alea() {
   var s2 = 0;
   var c = 1;
 
-  var random = function () {
+  var random = function random() {
     var t = 2091639 * s0 + c * 2.3283064365386963e-10;
     s0 = s1;
     s1 = s2;
@@ -92,7 +96,7 @@ function Alea() {
 function Mash() {
   var n = 0xefc8249d;
 
-  var mash = function (data) {
+  var mash = function mash(data) {
     data = data.toString();
 
     for (var i = 0; i < data.length; i++) {
