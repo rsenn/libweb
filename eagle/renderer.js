@@ -47,7 +47,7 @@ static colors = [
         }
          case "rectangle": {
           const { x1, x2, y1, y2, width, layer } = sym;
-          this.factory("rect", { stroke: 'none', fill: color, x: x1, y: y1, width: x2-x1, height: y2-y1, strokeWidth: width*1.2 }, parent);
+          this.factory("rect", { stroke: 'none', fill: color, x: x1, y: y1, width: x2-x1, height: y2-y1, strokeWidth: '0.1' }, parent);
           break;
         }
         case "text": {
