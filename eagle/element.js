@@ -48,31 +48,23 @@ export class EagleElement extends EagleNode {
 
         this.handlers[key] = prop;
 
-        if(key == "deviceset") {
+        if(key == "deviceset" || key == "package") {
+          trkl.bind(this, key, v => (v ? v.names.forEach(name => this.handlers[name](v.names[name])) : this.library[key + "s"][this.attributes[key]]));
+          /* } else if(key == "package") {
           const fn = v => {
             if(v) {
+              v.names.forEach(name => this.handlers[name](v.names[name]));
+              
               const { names } = v;
               if(names !== undefined) {
                 this.handlers.library(names.library);
-                this.handlers.deviceset(names.deviceset);
+                this.handlers.package(names.package);
               }
             } else {
-              return this.library.devicesets[this.attributes.deviceset]; //, this.handlers[key]());
+              return this.library[key+'s'][this.attributes[key]];
             }
           };
-          trkl.bind(this, key, fn);
-        } else if(key == "package") {
-          const fn = v => {
-            if(v) {
-              const { names } = v;
-              if(names !== undefined) {
-                this.handlers.library(names.library);
-              }
-            } else {
-              return this.library.packages[this.attributes.package]; //, this.handlers[key]());
-            }
-          };
-          trkl.bind(this, key, fn);
+          trkl.bind(this, key, fn);*/
         } else if(key == "device") {
           const fn = v => {
             if(v) {
@@ -91,11 +83,11 @@ export class EagleElement extends EagleNode {
           let doc = this.document;
           // console.log(`this.document = ${Util.className(doc)}`);
           //  if(Util.className(doc) == 'EagleDocument') {
-          const fn = v => (v ? this.handlers[key](typeof v == "string" ? v : v.name) : doc[key == 'library' ? 'libraries' : key+'s'][this.handlers[key]()]);
+          const fn = v => (v ? this.handlers[key](typeof v == "string" ? v : v.name) : doc[key == "library" ? "libraries" : key + "s"][this.handlers[key]()]);
           //  console.log(`this[${key}] = ${fn}`);
           trkl.bind(this, key, fn);
           //}
-        }  else {
+        } else {
           trkl.bind(this, key, handler);
         }
 
