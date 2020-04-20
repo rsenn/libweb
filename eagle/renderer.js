@@ -49,7 +49,7 @@ export class SchematicRenderer {
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
-    const color = SchematicRenderer.colors[layer && layer.color] || "#4BA54B";
+    const color = SchematicRenderer.colors[layer && layer.color ] || "#4BA54B";
     const factory = (elem, attr, parent) => this.factory(elem, { className: item.tagName, ...attr }, parent);
 
     const { labelText, coordFn = i => i } = opts;
@@ -57,7 +57,7 @@ export class SchematicRenderer {
     switch (item.tagName) {
       case "wire": {
         const { x1, x2, y1, y2, width } = coordFn(item);
-        factory("line", { stroke: color, x1, x2, y1, y2, strokeWidth: +(width * 1.2).toFixed(3) }, parent);
+        factory("line", { stroke: color, x1, x2, y1, y2, strokeWidth: +(width * 1).toFixed(3) }, parent);
         break;
       }
       case "rectangle": {
@@ -241,7 +241,9 @@ export function renderSchematic(obj, factory) {
     }
   }
   const g = factory("g", {
-    transform: `translate(${center.prod(-1)}) scale(2.54,2.54) translate(${center.prod(1 / 2.54)}) scale(1,-1)`
+    transform: `translate(${center.prod(-1)}) scale(2.54,2.54) translate(${center.prod(1 / 2.54)}) scale(1,-1)`,
+    "vector-effect": "non-scaling-stroke"
+
   });
   renderer.render(g);
 
