@@ -1,8 +1,8 @@
 import Util from "../util.js";
 
 export function EagleNodeMap(list, key) {
-  this.list = list; //Util.define(this, "list", list);
-  this.key = key; //  Util.define(this, "key", key);
+  this.list = list;
+  this.key = key;
 }
 
 Object.defineProperties(EagleNodeMap.prototype, {
@@ -25,7 +25,7 @@ Util.extend(EagleNodeMap.prototype, {
 
     if(idx != -1) list[idx] = value;
     else list.push(value);
-    //console.log(`${idx == -1 ? "push" : "assign"} property ${name} [${idx}]`);
+
   },
   keys(key = this.key) {
     return (this.list.raw || this.list).map(item => item.attributes[key]);
@@ -50,7 +50,6 @@ Util.extend(EagleNodeMap.prototype, {
 export function makeEagleNodeMap(list, key = "name") {
   const Ctor = EagleNodeMap;
 
-  //console.log("makeEagleNodeMap(", list, ", ", key, ")");
 
   const instance = new Ctor(list, key);
 
@@ -62,11 +61,7 @@ export function makeEagleNodeMap(list, key = "name") {
       if(prop == "instance") return instance;
       if(prop == "length" || prop == "size") return (instance.list.raw || instance.list).length;
       if(prop == Symbol.iterator) return instance.entries()[Symbol.iterator];
-      /*if(/^[0-9]+$/.test(prop)) {
-        index = parseInt(prop);
-        if(index >= 0 && index < instance.list.raw.length)
-          return instance.list[prop];
-      }*/
+
       if((index = instance.keys().indexOf(prop)) != -1) return instance.list[index];
       if(typeof instance[prop] == "function") return instance[prop].bind(instance);
 
@@ -77,7 +72,7 @@ export function makeEagleNodeMap(list, key = "name") {
     },
     ownKeys(target) {
       let keys = instance.keys();
-      //  console.log("keys:",keys);
+
       return keys;
     }
   });

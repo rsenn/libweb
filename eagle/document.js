@@ -22,36 +22,13 @@ export class EagleDocument extends EagleNode {
       throw new Error("EagleDocument: " + error);
     }*/
     const xml = new tXml(xmlStr);
-
     super(project, EagleRef(deepClone(xml[0]), []));
-
     if(filename) this.path = filename;
     Util.define(this, "type", /<library>/.test(xmlStr) ? "lbr" : /<element /.test(xmlStr) ? "brd" : "sch");
-    // this.path.push(this.type == "lbr" ? "library" : this.type == "brd" ? "board" : "schematic");
-    // if(this.type == "lbr") this.path.push(this.basename);
     if(project) this.owner = project;
     Util.define(this, "xml", xml);
     const orig = xml[0];
-
     Util.define(this, "orig", orig);
-
-    //  Object.defineProperty(this, "ownerDocument", { value: null, enumerable: false });
-
-    //console.log("" + deepDiff.diff);
-    //
-    //
-
-    /* let counts = {};
-  for(let value of f) {
-    if(!value.children || value.children.length == 0) continue;
-    if(counts[value.tagName] === undefined)
-counts[value.tagName] = 0;
-
-counts[value.tagName]++;
-  }
- counts = Object.entries(counts).filter(([key,value]) => value === 1).map(([key,value]) => key);
-    console.log(`counts.${this.type}: ['`+counts.join("','")+"']");
-*/
     this.initCache(EagleElement);
   }
 

@@ -189,14 +189,6 @@ export class EagleInterface {
   }
 
   *iterator(...args) {
-    /*   let obj = ref.dereference();
-
-    yield [obj, ref,
-
-    for(let k in obj) {
-      yield* this.iterator(this.ref.down(k));
-    }*/
-
     let predicate = typeof args[0] == "function" ? args.shift() : arg => false;
     let path = (Util.isArray(args[0]) && args.shift()) || [];
     let t = typeof args[0] == "function" ? args.shift() : ([v, l, d]) => [typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l) : v, l, d];
