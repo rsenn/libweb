@@ -14,7 +14,6 @@ Object.defineProperties(EagleNodeList.prototype, {
 });
 
 Util.extend(EagleNodeList.prototype, {
-
   *[Symbol.iterator]() {
     const list = this.ref.dereference();
     for(let i = 0; i < list.length; i++) yield makeEagleElement(instance, this.ref.down(i));

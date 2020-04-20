@@ -138,7 +138,7 @@ export class EagleProject {
         l => [l.number, l]
       )
     };
-    
+
     console.log("libraries.schematic:", libraries.schematic);
     for(let k of ["schematic", "board"]) {
       console.log(`project[${k}].libraries:`, this[k].libraries);

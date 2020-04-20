@@ -52,10 +52,6 @@ export const EaglePath = Util.immutableClass(
     right(n = 1) {
       const [base, last] = this.split(-1);
       return new EaglePath([...base, this.last + 1]);
-      /*      let i = this.lastId,
-        l = this.slice();
-      if(i >= 0) l[i] = l[i] + 1;
-      return l;*/
     }
 
     /**
@@ -278,41 +274,14 @@ export class EagleReference {
   inspect() {
     return this[Symbol.for("nodejs.util.inspect.custom")](...arguments);
   }
-  /* toString() {
-      return `Immutable EagleRef { path: ${this.path.toString()} , root: ${util.inspect(this.root)} }`;
-    }*/
 }
 
 export const EagleRef = function EagleRef(root, path) {
-  /* path = path instanceof EaglePath ? path : new EaglePath(path);
-   */
-  /* if(!EaglePath.prototype.existsIn.call(path, root))
-    return null;*/
-
   if(Util.isObject(root) && Util.isObject(root.root)) root = root.root;
 
   let obj = new EagleReference(root, path);
   return Object.freeze(obj);
 };
-/*-;
-
-  if(this instanceof EagleRef) {
-    this.root = root;
-    this.path = path;
-  }
-
-    let obj = this instanceof EagleRef ? this : { root, path };
-
-  if(!(obj instanceof EagleRef))
-    Util.extend(obj, EagleRef.prototype);
-
-    obj.root = root;
-  root = root !== null && root.ref ? root.ref.root : root;
-
- 
-
-  return Object.freeze(obj);
-};*/
 /*
 ["up", "down", "left", "right", "slice"].forEach(
   method =>

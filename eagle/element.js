@@ -82,16 +82,6 @@ export class EagleElement extends EagleNode {
     // let o = this.document.index(this.path);
     return toXML(this.raw, depth);
   }
-  /*
-  set(name, value) {
-    if(value instanceof EagleElement) value = value.get("name");
-    else if(typeof value != "string") value = "" + value;
-    return this.handlers[name](value);
-  }
-
-  get(name) {
-    return this.handlers[name]();
-  }*/
 
   static isRelation(name) {
     let relationNames = ["class", "element", "gate", "layer", "library", "package", "pad", "part", "pin", "symbol"];

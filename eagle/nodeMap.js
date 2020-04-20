@@ -25,7 +25,6 @@ Util.extend(EagleNodeMap.prototype, {
 
     if(idx != -1) list[idx] = value;
     else list.push(value);
-
   },
   keys(key = this.key) {
     return (this.list.raw || this.list).map(item => item.attributes[key]);
@@ -49,7 +48,6 @@ Util.extend(EagleNodeMap.prototype, {
 
 export function makeEagleNodeMap(list, key = "name") {
   const Ctor = EagleNodeMap;
-
 
   const instance = new Ctor(list, key);
 
