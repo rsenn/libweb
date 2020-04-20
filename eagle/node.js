@@ -130,6 +130,7 @@ export class EagleNode extends EagleInterface {
 
     if(fields) {
       Util.define(this, "cache", {});
+      Util.define(this, "lists", {});
 
       let lazy = {};
       let lists = {};
@@ -142,9 +143,12 @@ export class EagleNode extends EagleInterface {
 
         lazy[key] = () => makeEagleNode(this, ref.down(...path), ctor);
 
-        /*  lists[key] = () => makeEagleNodeList(this, [...path,'children']);*/
+        lists[key] = () => lazy[key]().children;
 
-        maps[key] = () => makeEagleNodeMap(lazy[key]().children, key == "layers" ? "number" : "name");
+        if(key == 'sheets')
+   maps[key] = lists[key];
+ else
+        maps[key] = () => makeEagleNodeMap(lazy[key]().children, key == 'instances' ? 'part' : key == "layers" ? "number" : "name");
       }
       lazyMembers(this.lists, lists);
       lazyMembers(this.cache, lazy);
