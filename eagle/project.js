@@ -105,7 +105,6 @@ export class EagleProject {
   }
 
   loadLibraries(dirs = this.libraryPath()) {
-
     let names = this.getLibraryNames();
     console.log("loadLibraries:", dirs, names);
     for(let name of names) {
@@ -153,23 +152,22 @@ export class EagleProject {
       const libProps = lib => {
         const { packages, devicesets, symbols } = lib;
 
-         return Object.fromEntries(["packages", "symbols", "devicesets"].map(k => [k, lib[k]]).filter(([k, v]) => v));
+        return Object.fromEntries(["packages", "symbols", "devicesets"].map(k => [k, lib[k]]).filter(([k, v]) => v));
 
-           
         return { packages, devicesets, symbols };
       };
       const destLib = libProps(libraries[k]);
       //console.log("destLib:", destLib);
 
       const srcLib = libProps(libraries.file);
-    //  console.log("srcLib:", srcLib);
+      //  console.log("srcLib:", srcLib);
 
       for(let entity in destLib) {
         console.log("entity:", entity);
         //console.log(`srcLib[${entity}]:`, srcLib[entity]);
         //console.log(`srcLib[${entity}].list:`, srcLib[entity].list);
-        const srcMap = (srcLib[entity]);
-        const dstMap = (destLib[entity]);
+        const srcMap = srcLib[entity];
+        const dstMap = destLib[entity];
         //console.log("srcMap:", srcMap);
         //console.log("nodeMap.keys():", nodeMap.keys());
         //console.log("srcMap[E5-4]:", srcMap["E5-4"]);
@@ -178,10 +176,10 @@ export class EagleProject {
 
         const transformName = n => n.replace(/[.,][0-9]*/g, "").replace(/([^0-9])([0-9])([^0-9])/g, "$10$2$3");
 
-        let ent = srcLib[entity].entries()/*
+        let ent = srcLib[entity].entries(); /*
           .map((v, i) => [transformName(v.attributes.name), v.attributes.name, i])
           .sort((a, b) => a[0].localeCompare(b[0]))
-          .map(item => item.slice(1))*/;
+          .map(item => item.slice(1))*/
         let m = new Map(ent);
 
         //console.log(`srcLib['${entity}']:`, Util.className(srcLib[entity]));

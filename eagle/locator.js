@@ -21,7 +21,7 @@ DereferenceError.prototype.toString = function() {
   return `${message}\n${dump({ object, member, pos, locator, stack }, 2)}`;
 };
 
-const ChildrenSym = Symbol("➟");
+const ChildrenSym = Symbol("⊳");
 
 export const EaglePath = Util.immutableClass(
   class EaglePath extends Array {

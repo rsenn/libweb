@@ -23,7 +23,7 @@ Util.extend(EagleNodeMap.prototype, {
     const list = this.list.raw;
     const idx = list.findIndex(item => item.attributes[this.key] == name);
 
-    if (idx != -1) list[idx] = value;
+    if(idx != -1) list[idx] = value;
     else list.push(value);
     //console.log(`${idx == -1 ? "push" : "assign"} property ${name} [${idx}]`);
   },
@@ -58,17 +58,17 @@ export function makeEagleNodeMap(list, key = "name") {
     get(target, prop, receiver) {
       let index;
 
-      if (prop == "ref" || prop == "raw") return instance.list[prop];
-      if (prop == "instance") return instance;
-      if (prop == "length" || prop == "size") return (instance.list.raw || instance.list).length;
-      if (prop == Symbol.iterator) return instance.entries()[Symbol.iterator];
+      if(prop == "ref" || prop == "raw") return instance.list[prop];
+      if(prop == "instance") return instance;
+      if(prop == "length" || prop == "size") return (instance.list.raw || instance.list).length;
+      if(prop == Symbol.iterator) return instance.entries()[Symbol.iterator];
       /*if(/^[0-9]+$/.test(prop)) {
         index = parseInt(prop);
         if(index >= 0 && index < instance.list.raw.length)
           return instance.list[prop];
       }*/
-      if ((index = instance.keys().indexOf(prop)) != -1) return instance.list[index];
-      if (typeof instance[prop] == "function") return instance[prop].bind(instance);
+      if((index = instance.keys().indexOf(prop)) != -1) return instance.list[index];
+      if(typeof instance[prop] == "function") return instance[prop].bind(instance);
 
       return Reflect.get(target, prop, receiver);
     },
