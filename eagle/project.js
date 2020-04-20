@@ -87,9 +87,13 @@ export class EagleProject {
     return [...docDirs, ...docDirs.map(dir => `${dir}/lbr`)]; //.filter(fs.existsSync);
   }
 
-  getLibraryNames() {
-    return Util.unique([...this.schematic.libraries.list, ...this.board.libraries.list].map(l => l.name));
+  *getLibraryNames() {
+    for(let library of this.schematic.libraries) yield library.name;
+    for(let library of this.board.libraries) yield library.name;
 
+    /*  const libs = [...this.schematic.libraries.list, ...this.board.libraries.list];
+    return Util.unique(libs.map(l => l.name));
+*/
     /* for(let [v, l, d] of ) {
       if(v.tagName != "library") continue;
       yield v.attributes.name;

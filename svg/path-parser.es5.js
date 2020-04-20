@@ -1,5 +1,18 @@
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.makeAbsolute = exports.parseSVG = exports.parse = exports.SyntaxError = void 0;
+
+require("core-js/modules/es6.array.sort");
+
+require("core-js/modules/es6.regexp.replace");
+
+require("core-js/modules/es6.regexp.to-string");
+
+require("core-js/modules/es6.object.to-string");
+
 function peg$subclass(child, parent) {
   function ctor() {
     this.constructor = child;
@@ -25,10 +38,10 @@ peg$subclass(peg$SyntaxError, Error);
 
 peg$SyntaxError.buildMessage = function (expected, found) {
   var DESCRIBE_EXPECTATION_FNS = {
-    literal: function (expectation) {
+    literal: function literal(expectation) {
       return '"' + literalEscape(expectation.text) + '"';
     },
-    class: function (expectation) {
+    class: function _class(expectation) {
       var escapedParts = "",
           i;
 
@@ -38,13 +51,13 @@ peg$SyntaxError.buildMessage = function (expected, found) {
 
       return "[" + (expectation.inverted ? "^" : "") + escapedParts + "]";
     },
-    any: function (expectation) {
+    any: function any(expectation) {
       return "any character";
     },
-    end: function (expectation) {
+    end: function end(expectation) {
       return "end of input";
     },
-    other: function (expectation) {
+    other: function other(expectation) {
       return expectation.description;
     }
   };
@@ -122,7 +135,7 @@ function peg$parse(input, options) {
     svg_path: peg$parsesvg_path
   },
       peg$startRuleFunction = peg$parsesvg_path,
-      peg$c0 = function (data) {
+      peg$c0 = function peg$c0(data) {
     if (!data) return [];
 
     for (var cmds = [], i = 0; i < data.length; i++) cmds = cmds.concat.apply(cmds, data[i]);
@@ -136,29 +149,29 @@ function peg$parse(input, options) {
 
     return cmds;
   },
-      peg$c1 = function (first, more) {
+      peg$c1 = function peg$c1(first, more) {
     return merge(first, more);
   },
       peg$c2 = /^[Mm]/,
       peg$c3 = peg$classExpectation(["M", "m"], false, false),
-      peg$c4 = function (c, first, more) {
+      peg$c4 = function peg$c4(c, first, more) {
     var move = commands(c, [first]);
     if (more) move = move.concat(commands(c == "M" ? "L" : "l", more[1]));
     return move;
   },
       peg$c5 = /^[Zz]/,
       peg$c6 = peg$classExpectation(["Z", "z"], false, false),
-      peg$c7 = function () {
+      peg$c7 = function peg$c7() {
     return commands("Z");
   },
       peg$c8 = /^[Ll]/,
       peg$c9 = peg$classExpectation(["L", "l"], false, false),
-      peg$c10 = function (c, args) {
+      peg$c10 = function peg$c10(c, args) {
     return commands(c, args);
   },
       peg$c11 = /^[Hh]/,
       peg$c12 = peg$classExpectation(["H", "h"], false, false),
-      peg$c13 = function (c, args) {
+      peg$c13 = function peg$c13(c, args) {
     return commands(c, args.map(function (x) {
       return {
         x: x
@@ -167,7 +180,7 @@ function peg$parse(input, options) {
   },
       peg$c14 = /^[Vv]/,
       peg$c15 = peg$classExpectation(["V", "v"], false, false),
-      peg$c16 = function (c, args) {
+      peg$c16 = function peg$c16(c, args) {
     return commands(c, args.map(function (y) {
       return {
         y: y
@@ -176,7 +189,7 @@ function peg$parse(input, options) {
   },
       peg$c17 = /^[Cc]/,
       peg$c18 = peg$classExpectation(["C", "c"], false, false),
-      peg$c19 = function (a, b, c) {
+      peg$c19 = function peg$c19(a, b, c) {
     return {
       x1: a.x,
       y1: a.y,
@@ -188,7 +201,7 @@ function peg$parse(input, options) {
   },
       peg$c20 = /^[Ss]/,
       peg$c21 = peg$classExpectation(["S", "s"], false, false),
-      peg$c22 = function (b, c) {
+      peg$c22 = function peg$c22(b, c) {
     return {
       x2: b.x,
       y2: b.y,
@@ -198,7 +211,7 @@ function peg$parse(input, options) {
   },
       peg$c23 = /^[Qq]/,
       peg$c24 = peg$classExpectation(["Q", "q"], false, false),
-      peg$c25 = function (a, b) {
+      peg$c25 = function peg$c25(a, b) {
     return {
       x1: a.x,
       y1: a.y,
@@ -210,7 +223,7 @@ function peg$parse(input, options) {
       peg$c27 = peg$classExpectation(["T", "t"], false, false),
       peg$c28 = /^[Aa]/,
       peg$c29 = peg$classExpectation(["A", "a"], false, false),
-      peg$c30 = function (rx, ry, xrot, large, sweep, xy) {
+      peg$c30 = function peg$c30(rx, ry, xrot, large, sweep, xy) {
     return {
       rx: rx,
       ry: ry,
@@ -221,29 +234,29 @@ function peg$parse(input, options) {
       y: xy.y
     };
   },
-      peg$c31 = function (x, y) {
+      peg$c31 = function peg$c31(x, y) {
     return {
       x: x,
       y: y
     };
   },
-      peg$c32 = function (n) {
+      peg$c32 = function peg$c32(n) {
     return n * 1;
   },
-      peg$c33 = function (parts) {
+      peg$c33 = function peg$c33(parts) {
     return parts.join("") * 1;
   },
       peg$c34 = /^[01]/,
       peg$c35 = peg$classExpectation(["0", "1"], false, false),
-      peg$c36 = function (bit) {
+      peg$c36 = function peg$c36(bit) {
     return bit == "1";
   },
-      peg$c37 = function () {
+      peg$c37 = function peg$c37() {
     return "";
   },
       peg$c38 = ",",
       peg$c39 = peg$literalExpectation(",", false),
-      peg$c40 = function (parts) {
+      peg$c40 = function peg$c40(parts) {
     return parts.join("");
   },
       peg$c41 = ".",
@@ -254,7 +267,7 @@ function peg$parse(input, options) {
       peg$c46 = peg$classExpectation(["+", "-"], false, false),
       peg$c47 = /^[0-9]/,
       peg$c48 = peg$classExpectation([["0", "9"]], false, false),
-      peg$c49 = function (digits) {
+      peg$c49 = function peg$c49(digits) {
     return digits.join("");
   },
       peg$c50 = /^[ \t\n\r]/,
@@ -2392,10 +2405,14 @@ function peg$parse(input, options) {
   }
 }
 
-export const SyntaxError = peg$SyntaxError;
-export const parse = peg$parse;
-export const parseSVG = peg$parse;
-export const makeAbsolute = function makeSVGPathCommandsAbsolute(commands) {
+const SyntaxError = peg$SyntaxError;
+exports.SyntaxError = SyntaxError;
+const parse = peg$parse;
+exports.parse = parse;
+const parseSVG = peg$parse;
+exports.parseSVG = parseSVG;
+
+const makeAbsolute = function makeSVGPathCommandsAbsolute(commands) {
   var subpathStart,
       prevCmd = {
     x: 0,
@@ -2430,3 +2447,5 @@ export const makeAbsolute = function makeSVGPathCommandsAbsolute(commands) {
   });
   return commands;
 };
+
+exports.makeAbsolute = makeAbsolute;

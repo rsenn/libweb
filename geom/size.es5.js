@@ -1,4 +1,20 @@
-export function Size(arg) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Size = Size;
+exports.isSize = void 0;
+
+require("core-js/modules/es6.string.sub");
+
+require("core-js/modules/es6.regexp.to-string");
+
+require("core-js/modules/es6.object.to-string");
+
+require("core-js/modules/es6.regexp.replace");
+
+function Size(arg) {
   let obj = this instanceof Size ? this : {};
   let args = [...arguments];
 
@@ -98,7 +114,8 @@ Size.prototype.sum = function (other) {
 };
 
 Size.prototype.add = function () {
-  for (let other of [...arguments]) {
+  for (var _i = 0, _arr = [...arguments]; _i < _arr.length; _i++) {
+    let other = _arr[_i];
     this.width += other.width;
     this.height += other.height;
   }
@@ -111,7 +128,8 @@ Size.prototype.diff = function (other) {
 };
 
 Size.prototype.sub = function () {
-  for (let other of [...arguments]) {
+  for (var _i2 = 0, _arr2 = [...arguments]; _i2 < _arr2.length; _i2++) {
+    let other = _arr2[_i2];
     this.width -= other.width;
     this.height -= other.height;
   }
@@ -128,7 +146,8 @@ Size.prototype.prod = function (f) {
 };
 
 Size.prototype.mul = function (f) {
-  for (let f of [...arguments]) {
+  for (var _i3 = 0, _arr3 = [...arguments]; _i3 < _arr3.length; _i3++) {
+    let f = _arr3[_i3];
     const o = isPoint(f) ? f : {
       width: f,
       height: f
@@ -145,7 +164,8 @@ Size.prototype.quot = function (other) {
 };
 
 Size.prototype.div = function (f) {
-  for (let f of [...arguments]) {
+  for (var _i4 = 0, _arr4 = [...arguments]; _i4 < _arr4.length; _i4++) {
+    let f = _arr4[_i4];
     this.width /= f;
     this.height /= f;
   }
@@ -164,8 +184,12 @@ Size.area = sz => Size.prototype.area.call(sz);
 
 Size.aspect = sz => Size.prototype.aspect.call(sz);
 
-export const isSize = o => o && (o.width !== undefined && o.height !== undefined || o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined || o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined);
+const isSize = o => o && (o.width !== undefined && o.height !== undefined || o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined || o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined);
 
-for (let name of ["toCSS", "isSquare", "round", "sum", "add", "diff", "sub", "prod", "mul", "quot", "div"]) {
+exports.isSize = isSize;
+
+for (var _i5 = 0, _arr5 = ["toCSS", "isSquare", "round", "sum", "add", "diff", "sub", "prod", "mul", "quot", "div"]; _i5 < _arr5.length; _i5++) {
+  let name = _arr5[_i5];
+
   Size[name] = points => Size.prototype[name].call(points);
 }

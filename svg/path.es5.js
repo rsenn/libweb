@@ -1,3 +1,7 @@
+require("core-js/modules/es6.regexp.to-string");
+
+require("core-js/modules/es6.object.to-string");
+
 /**
  * SvgPath
  * Chainable SVG path string generator with some sugar added

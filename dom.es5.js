@@ -8,6 +8,66 @@ Object.defineProperty(exports, "__esModule", {
 exports.dom = dom;
 exports.Unit = Unit;
 exports.ScalarValue = ScalarValue;
+Object.defineProperty(exports, "Point", {
+  enumerable: true,
+  get: function get() {
+    return _point.Point;
+  }
+});
+Object.defineProperty(exports, "isPoint", {
+  enumerable: true,
+  get: function get() {
+    return _point.isPoint;
+  }
+});
+Object.defineProperty(exports, "Size", {
+  enumerable: true,
+  get: function get() {
+    return _size.Size;
+  }
+});
+Object.defineProperty(exports, "isSize", {
+  enumerable: true,
+  get: function get() {
+    return _size.isSize;
+  }
+});
+Object.defineProperty(exports, "Line", {
+  enumerable: true,
+  get: function get() {
+    return _line.Line;
+  }
+});
+Object.defineProperty(exports, "isLine", {
+  enumerable: true,
+  get: function get() {
+    return _line.isLine;
+  }
+});
+Object.defineProperty(exports, "Rect", {
+  enumerable: true,
+  get: function get() {
+    return _rect.Rect;
+  }
+});
+Object.defineProperty(exports, "isRect", {
+  enumerable: true,
+  get: function get() {
+    return _rect.isRect;
+  }
+});
+Object.defineProperty(exports, "PointList", {
+  enumerable: true,
+  get: function get() {
+    return _pointList.PointList;
+  }
+});
+Object.defineProperty(exports, "Polyline", {
+  enumerable: true,
+  get: function get() {
+    return _pointList.Polyline;
+  }
+});
 Object.defineProperty(exports, "RGBA", {
   enumerable: true,
   get: function get() {
@@ -54,6 +114,12 @@ Object.defineProperty(exports, "BBox", {
   enumerable: true,
   get: function get() {
     return _bbox.BBox;
+  }
+});
+Object.defineProperty(exports, "TRBL", {
+  enumerable: true,
+  get: function get() {
+    return _trbl.TRBL;
   }
 });
 Object.defineProperty(exports, "Timer", {
@@ -128,6 +194,18 @@ Object.defineProperty(exports, "Select", {
     return _select.Select;
   }
 });
+Object.defineProperty(exports, "Align", {
+  enumerable: true,
+  get: function get() {
+    return _align.Align;
+  }
+});
+Object.defineProperty(exports, "Anchor", {
+  enumerable: true,
+  get: function get() {
+    return _align.Anchor;
+  }
+});
 Object.defineProperty(exports, "ElementPosProps", {
   enumerable: true,
   get: function get() {
@@ -162,84 +240,6 @@ Object.defineProperty(exports, "ElementXYProps", {
   enumerable: true,
   get: function get() {
     return _elementRect.ElementXYProps;
-  }
-});
-Object.defineProperty(exports, "Point", {
-  enumerable: true,
-  get: function get() {
-    return _point2.Point;
-  }
-});
-Object.defineProperty(exports, "isPoint", {
-  enumerable: true,
-  get: function get() {
-    return _point2.isPoint;
-  }
-});
-Object.defineProperty(exports, "Size", {
-  enumerable: true,
-  get: function get() {
-    return _size2.Size;
-  }
-});
-Object.defineProperty(exports, "isSize", {
-  enumerable: true,
-  get: function get() {
-    return _size2.isSize;
-  }
-});
-Object.defineProperty(exports, "Line", {
-  enumerable: true,
-  get: function get() {
-    return _line2.Line;
-  }
-});
-Object.defineProperty(exports, "isLine", {
-  enumerable: true,
-  get: function get() {
-    return _line2.isLine;
-  }
-});
-Object.defineProperty(exports, "Rect", {
-  enumerable: true,
-  get: function get() {
-    return _rect2.Rect;
-  }
-});
-Object.defineProperty(exports, "isRect", {
-  enumerable: true,
-  get: function get() {
-    return _rect2.isRect;
-  }
-});
-Object.defineProperty(exports, "PointList", {
-  enumerable: true,
-  get: function get() {
-    return _pointList2.PointList;
-  }
-});
-Object.defineProperty(exports, "Polyline", {
-  enumerable: true,
-  get: function get() {
-    return _pointList2.Polyline;
-  }
-});
-Object.defineProperty(exports, "TRBL", {
-  enumerable: true,
-  get: function get() {
-    return _trbl2.TRBL;
-  }
-});
-Object.defineProperty(exports, "Align", {
-  enumerable: true,
-  get: function get() {
-    return _align2.Align;
-  }
-});
-Object.defineProperty(exports, "Anchor", {
-  enumerable: true,
-  get: function get() {
-    return _align2.Anchor;
   }
 });
 exports.default = exports.RandomColor = exports.TransitionList = exports.Transition = exports.CSSTransformSetters = exports.ElementTransformation = exports.isNumber = void 0;
@@ -303,20 +303,6 @@ var _select = require("./dom/select.es5.js");
 var _align = require("./geom/align.es5.js");
 
 var _elementRect = require("./dom/elementRect.es5.js");
-
-var _point2 = require("./dom/point.js");
-
-var _size2 = require("./dom/size.js");
-
-var _line2 = require("./dom/line.js");
-
-var _rect2 = require("./dom/rect.js");
-
-var _pointList2 = require("./dom/pointList.js");
-
-var _trbl2 = require("./dom/trbl.js");
-
-var _align2 = require("./dom/align.js");
 
 function dom() {
   let args = [...arguments];

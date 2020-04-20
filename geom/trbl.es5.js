@@ -1,5 +1,20 @@
-import { Rect } from "./rect.js";
-export function TRBL(arg) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.TRBL = TRBL;
+exports.isTRBL = isTRBL;
+
+require("core-js/modules/es6.regexp.to-string");
+
+require("core-js/modules/web.dom.iterable");
+
+require("core-js/modules/es6.object.to-string");
+
+var _rect = require("./rect.es5.js");
+
+function TRBL(arg) {
   let ret = this instanceof TRBL ? this : {};
   let args = [...arguments];
 
@@ -30,7 +45,7 @@ TRBL.prototype.null = function () {
 
 TRBL.null = trbl => TRBL.prototype.null.call(trbl);
 
-TRBL.neg = (trbl = this) => ({
+TRBL.neg = (trbl = void 0) => ({
   top: -trbl.top,
   right: -trbl.right,
   bottom: -trbl.bottom,
@@ -43,13 +58,13 @@ TRBL.prototype.isNaN = function () {
 
 Object.defineProperty(TRBL.prototype, "inset", {
   get() {
-    return rect => Rect.inset(rect, this);
+    return rect => _rect.Rect.inset(rect, this);
   }
 
 });
 Object.defineProperty(TRBL.prototype, "outset", {
   get() {
-    return rect => Rect.outset(rect, this);
+    return rect => _rect.Rect.outset(rect, this);
   }
 
 });
@@ -69,7 +84,7 @@ TRBL.prototype.union = function (other) {
 };
 
 TRBL.prototype.toRect = function () {
-  return new Rect({
+  return new _rect.Rect({
     x: this.left,
     y: this.top,
     width: this.right - this.left,
@@ -78,7 +93,7 @@ TRBL.prototype.toRect = function () {
 };
 
 TRBL.prototype.toRect = function () {
-  return new Rect({
+  return new _rect.Rect({
     x: this.left,
     y: this.top,
     width: this.right - this.left,
@@ -93,7 +108,7 @@ TRBL.union = (trbl, other) => ({
   left: other.left < trbl.left ? other.left : trbl.left
 });
 
-TRBL.toRect = trbl => new Rect(trbl.left, trbl.top, trbl.right - trbl.left, trbl.bottom - trbl.top);
+TRBL.toRect = trbl => new _rect.Rect(trbl.left, trbl.top, trbl.right - trbl.left, trbl.bottom - trbl.top);
 
 TRBL.prototype.toString = function (unit = "px") {
   return "" + this.top + "" + unit + " " + this.right + "" + unit + " " + this.bottom + "" + unit + " " + this.left + unit;
@@ -103,10 +118,12 @@ TRBL.prototype.toSource = function () {
   return "{top:" + this.top + ",right:" + this.right + ",bottom:" + this.bottom + ",left:" + this.left + "}";
 };
 
-for (let name of ["null", "isNaN", "outset", "toRect", "toSource"]) {
+for (var _i = 0, _arr = ["null", "isNaN", "outset", "toRect", "toSource"]; _i < _arr.length; _i++) {
+  let name = _arr[_i];
+
   TRBL[name] = points => TRBL.prototype[name].call(points);
 }
 
-export function isTRBL(obj) {
+function isTRBL(obj) {
   return top in obj && right in obj && bottom in obj && left in obj;
 }

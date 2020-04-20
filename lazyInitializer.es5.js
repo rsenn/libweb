@@ -1,16 +1,38 @@
-import { Util } from "./util.js";
-import { trkl } from "./trkl.js";
-export function Instance({
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Instance = Instance;
+exports.lazyInitializer = lazyInitializer;
+exports.lazyMembers = lazyMembers;
+exports.lazyMap = lazyMap;
+exports.lazyArray = lazyArray;
+exports.valueInitializer = valueInitializer;
+
+require("core-js/modules/es7.symbol.async-iterator");
+
+require("core-js/modules/es6.symbol");
+
+require("core-js/modules/web.dom.iterable");
+
+var _util = require("./util.es5.js");
+
+var _trkl = require("./trkl.es5.js");
+
+function Instance({
   trackable = false,
   callback,
   initVal = null
 }) {
-  let inst = trackable && trackable.subscribe !== undefined ? trackable : trkl(initVal);
+  let inst = trackable && trackable.subscribe !== undefined ? trackable : (0, _trkl.trkl)(initVal);
   if (callback) inst.subscribe(value => callback(value, inst));
   inst.subscribe(newVal => {
     if (newVal) console.log("new instance: ", value);
   });
-  trkl.property(inst, "current", inst);
+
+  _trkl.trkl.property(inst, "current", inst);
+
   return inst;
 }
 
@@ -25,8 +47,8 @@ function TrackedInstance(initVal = null) {
   return inst;
 }
 
-export function lazyInitializer(fn, opts = {}) {
-  var instance = trkl();
+function lazyInitializer(fn, opts = {}) {
+  var instance = (0, _trkl.trkl)();
 
   var ret = (value = null) => {
     if (value === null) {
@@ -44,16 +66,17 @@ export function lazyInitializer(fn, opts = {}) {
   ret.subscribe = instance.subscribe.bind(instance);
   return ret;
 }
-export function lazyMembers(obj, members) {
+
+function lazyMembers(obj, members) {
   let initializers = {};
 
   for (let name in members) {
     initializers[name] = lazyInitializer(members[name]);
     Object.defineProperty(obj, name, {
-      get: function () {
+      get: function get() {
         return initializers[name]();
       },
-      set: function (value) {
+      set: function set(value) {
         initializers[name](value);
         return initializers[name]();
       },
@@ -61,7 +84,8 @@ export function lazyMembers(obj, members) {
     });
   }
 }
-export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prototyp) {
+
+function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prototyp) {
   var proto = prototyp;
   Object.assign(arr, {
     filter() {
@@ -81,7 +105,7 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
         if (key == "length") {
           index = key;
         } else if (typeof index == "string") {
-          index = Util.findKey(target, (v, k) => lookup(v) === key);
+          index = _util.Util.findKey(target, (v, k) => lookup(v) === key);
           if (typeof index == "string" && /^[0-9]+$/.test(index)) index = parseInt(index);
           if (typeof index != "number" || typeof index != "string") index = key;
         }
@@ -98,7 +122,7 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
       },
 
       set(target, key, value, receiver) {
-        console.log(`setting ${key}!`);
+        console.log("setting ".concat(key, "!"));
         Reflect.set(target, key, value, receiver);
         return true;
       },
@@ -122,24 +146,45 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
 
   return proxify(arr);
 }
-export function lazyArray(elements) {
+
+function lazyArray(elements) {
   let initializers = new Array(elements.length);
   let i = 0;
   let arr = new Array(elements.length);
   let props = {};
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
 
-  for (let fn of elements) {
-    let lazy = lazyInitializer(fn);
-    props[i] = {
-      get: function () {
-        return lazy();
-      },
-      enumerable: true
-    };
-    i++;
+  try {
+    for (var _iterator = elements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      let fn = _step.value;
+      let lazy = lazyInitializer(fn);
+      props[i] = {
+        get: function get() {
+          return lazy();
+        },
+        enumerable: true
+      };
+      i++;
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return != null) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
   }
 
   Object.defineProperties(arr, props);
   return arr;
 }
-export function valueInitializer(createFunction, onInit) {}
+
+function valueInitializer(createFunction, onInit) {}

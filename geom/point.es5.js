@@ -1,5 +1,30 @@
-import Util from "../util.js";
-export function Point(arg) {
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Point = Point;
+exports.default = exports.isPoint = void 0;
+
+require("core-js/modules/es7.string.pad-start");
+
+require("core-js/modules/es7.symbol.async-iterator");
+
+require("core-js/modules/es6.symbol");
+
+require("core-js/modules/es6.regexp.to-string");
+
+require("core-js/modules/es6.object.to-string");
+
+require("core-js/modules/es6.string.sub");
+
+require("core-js/modules/es6.regexp.constructor");
+
+var _util = _interopRequireDefault(require("../util.es5.js"));
+
+function Point(arg) {
   let args = arg instanceof Array ? arg : [...arguments];
   let p = !this || this === Point ? {} : this;
   arg = args.shift();
@@ -187,21 +212,23 @@ Point.prototype.dimension = function () {
 };
 
 Point.prototype.toString = function (precision = 0.001) {
-  const x = Util.roundTo(this.x, precision);
-  const y = Util.roundTo(this.y, precision);
-  return `${x},${y}`;
+  const x = _util.default.roundTo(this.x, precision);
+
+  const y = _util.default.roundTo(this.y, precision);
+
+  return "".concat(x, ",").concat(y);
 };
 
-Util.defineGetterSetter(Point.prototype, Symbol.toStringTag, function () {
-  return `Point{ ${Point.prototype.toSource.call(this)}`;
+_util.default.defineGetterSetter(Point.prototype, Symbol.toStringTag, function () {
+  return "Point{ ".concat(Point.prototype.toSource.call(this));
 }, () => {}, false);
 
 Point.prototype.toSource = function (asArray = false) {
   let x = (this.x + "").padStart(4, " ");
   let y = (this.y + "").padStart(4, " ");
   if (typeof this != "object" || this === null) return "";
-  if (asArray) return `[${x},${y}]`;
-  return `{x:${x},y:${y}}`;
+  if (asArray) return "[".concat(x, ",").concat(y, "]");
+  return "{x:".concat(x, ",y:").concat(y, "}");
 };
 
 Point.prototype.toSource = function () {
@@ -210,8 +237,8 @@ Point.prototype.toSource = function () {
 
 Point.prototype.toCSS = function (precision = 0.001) {
   return {
-    left: Util.roundTo(this.x, precision) + "px",
-    top: Util.roundTo(this.y, precision) + "px"
+    left: _util.default.roundTo(this.x, precision) + "px",
+    top: _util.default.roundTo(this.y, precision) + "px"
   };
 };
 
@@ -261,10 +288,15 @@ Point.round = (point, prec) => Point.prototype.round.call(point, prec);
 
 Point.fromAngle = (angle, f) => Point.prototype.fromAngle.call(new Point(0, 0), angle, f);
 
-for (let name of ["clone", "comp", "neg", "sides", "dimension", "toString", "toSource", "toCSS"]) {
+for (var _i = 0, _arr = ["clone", "comp", "neg", "sides", "dimension", "toString", "toSource", "toCSS"]; _i < _arr.length; _i++) {
+  let name = _arr[_i];
+
   Point[name] = (...args) => Point.prototype[name].call(...args);
 }
 
-export const isPoint = o => o && (o.x !== undefined && o.y !== undefined || (o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined));
+const isPoint = o => o && (o.x !== undefined && o.y !== undefined || (o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined));
+
+exports.isPoint = isPoint;
 Point.isPoint = isPoint;
-export default Point;
+var _default = Point;
+exports.default = _default;
