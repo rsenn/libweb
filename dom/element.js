@@ -583,7 +583,7 @@ export class Element extends Node {
     if(!delegate.setcss) delegate.setcss = (elem, css) => Object.assign(elem.style, css); // Element.setCSS(elem, css);
 
     delegate.bound_factory = (tag, attr = {}, parent = null) => {
-      const { tagName, style, children, innerHTML, ...props } = attr;
+      const { tagName, style, children, className, innerHTML, ...props } = attr;
       let elem = delegate.create(tagName || tag);
 
       if(style) delegate.setcss(elem, style);
@@ -598,6 +598,7 @@ export class Element extends Node {
         }
       }
       if(innerHTML) elem.innerHTML += innerHTML;
+      if(className) elem.classList.add(className);
       for(let k in props) delegate.setattr(elem, k, props[k]);
       /*console.log("bound_factory: ", { _this: this, tag, style, children, parent, props, to, append_to: this.append_to });*/
       if(delegate.append_to) delegate.append_to(elem, parent);

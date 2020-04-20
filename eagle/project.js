@@ -18,9 +18,8 @@ export class EagleProject {
     this.open(this.filename + ".sch");
     this.open(this.filename + ".brd");
 
-    console.log("libraries:");
     this.loadLibraries();
-    console.log("Opened project:", this.filename);
+    //console.log("Opened project:", this.filename);
   }
 
   /**
@@ -42,11 +41,11 @@ export class EagleProject {
     }
     if(doc) this.documents.push(doc);
     else throw new Error(`EagleProject: error opening '${file}': ${err}`);
-    console.log("Opened:", file);
+    //console.log("Opened:", file);
 
     if(doc.type == "lbr") {
       this.data[doc.type][doc.basename] = doc;
-      console.log("Opened library:", doc.basename);
+      //console.log("Opened library:", doc.basename);
     } else this.data[doc.type] = doc;
     return doc;
   }
@@ -87,17 +86,12 @@ export class EagleProject {
     return [...docDirs, ...docDirs.map(dir => `${dir}/lbr`)]; //.filter(fs.existsSync);
   }
 
-  *getLibraryNames() {
-    for(let library of this.schematic.libraries) yield library.name;
-    for(let library of this.board.libraries) yield library.name;
-
-    /*  const libs = [...this.schematic.libraries.list, ...this.board.libraries.list];
-    return Util.unique(libs.map(l => l.name));
-*/
-    /* for(let [v, l, d] of ) {
-      if(v.tagName != "library") continue;
-      yield v.attributes.name;
-    }*/
+  getLibraryNames() {
+    return Util.unique([
+      ...(function*(libraries) {
+        for(let library of libraries) yield library.attributes.name;
+      })([...this.schematic.libraries.raw, ...this.board.libraries.raw])
+    ]);
   }
 
   findLibrary(name, dirs = this.libraryPath()) {
@@ -109,7 +103,7 @@ export class EagleProject {
   }
 
   loadLibraries(dirs = this.libraryPath()) {
-    let names = this.getLibraryNames();
+    const names = this.getLibraryNames();
     console.log("loadLibraries:", dirs, names);
     for(let name of names) {
       let lib = this.findLibrary(name, dirs);

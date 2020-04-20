@@ -1,11 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.busywait = (checkFn, _options) => {
+export const busywait = (checkFn, _options) => {
   const options = Object.assign({}, _options);
   return checkArgs(checkFn, options).then(() => {
     return eventLoop(wrapSyncMethod(checkFn), options);
   });
 };
+
 const checkArgs = (checkFn, options) => {
   if(isNaN(options.maxChecks) || options.maxChecks < 1) {
     return Promise.reject("maxChecks must be a valid integer greater than 0");
@@ -18,6 +17,7 @@ const checkArgs = (checkFn, options) => {
   }
   return Promise.resolve();
 };
+
 const wrapSyncMethod = checkFn => {
   return iteration => {
     return new Promise((resolve, reject) => {
@@ -29,6 +29,7 @@ const wrapSyncMethod = checkFn => {
     });
   };
 };
+
 const eventLoop = (checkFn, options) => {
   return new Promise((resolve, reject) => {
     let iteration = 0;
@@ -51,6 +52,7 @@ const eventLoop = (checkFn, options) => {
     setTimeout(iterationCheck, options.waitFirst ? options.sleepTime : 0);
   });
 };
-const isFunction = obj => {
-  return toString.call(obj) === "[object Function]";
-};
+
+const isFunction = obj => toString.call(obj) === "[object Function]";
+
+export default busywait;
