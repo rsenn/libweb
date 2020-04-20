@@ -14,7 +14,7 @@
  */
 
 // Map array support
-if(![].map) {
+if (![].map) {
   Array.prototype.map = function(callback, self) {
     var array = this;
     var len = array.length;
@@ -29,7 +29,7 @@ if(![].map) {
 }
 
 // Filter array support
-if(![].filter) {
+if (![].filter) {
   Array.prototype.filter = function(callback) {
     if(this == null) throw new TypeError();
     var t = Object(this);
@@ -48,7 +48,7 @@ if(![].filter) {
 }
 
 // Index of array support
-if(![].indexOf) {
+if (![].indexOf) {
   Array.prototype.indexOf = function(searchElement) {
     if(this == null) throw new TypeError();
     var t = Object(this);

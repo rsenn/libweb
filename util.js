@@ -1129,8 +1129,23 @@ Util.numberFromURL = function(url, fn) {
   if(!isNaN(nr) && typeof fn === "function") fn(nr);
   return nr;
 };
+Util.tryPromise = fn => new Promise((resolve,reject) => Util.tryCatch(fn, resolve,reject));
+
+Util.tryCatch = (fn,resolve,reject) => {
+  let ret;
+  try {
+    ret = fn();
+  } catch(err) {
+    reject();
+  }
+  resolve(ret);
+};
+
 Util.isBrowser = function() {
-  return !!(global.window && global.window.document);
+  let ret = false;
+  Util.tryCatch(() => !!window, () => ret = true, () => ret = false);
+  return ret;
+  //return !!(global.window && global.window.document);
 };
 Util.isServer = function() {
   return !Util.isBrowser();

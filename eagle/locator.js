@@ -1,8 +1,6 @@
 import Util from "../util.js";
-//import util from "util";
-import { ansi, text, inspect, toXML } from "./common.js";
 
-const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
+import { ansi, text, inspect, toXML, dump } from "./common.js";
 
 export function DereferenceError(object, member, pos, part, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
@@ -147,8 +145,6 @@ export const EaglePath = Util.immutableClass(
     }
 
     toString(hl = -1) {
-      const ansi = (n = 0) => `\u001b[${[...arguments].join(";")}m`;
-      const text = (text, ...color) => ansi(...color) + text + ansi(0);
 
       let y = this.map(item => (item == "children" ? "⎿" : item)).map((part, i) => text(part, ...(hl == i ? [38, 5, 124] : [38, 5, 82])));
 

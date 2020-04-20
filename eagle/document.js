@@ -1,10 +1,8 @@
 import tXml from "../tXml.js";
 import Util from "../util.js";
-//import fs, { promises as fsPromises } from "fs";
-//import path from "path";
 import deepClone from "../clone.js";
 import deepDiff from "../deep-diff.js";
-import { EagleEntity } from "./element.js";
+import { EagleElement } from "./element.js";
 import { EaglePath, EagleRef } from "./locator.js";
 import { EagleNode } from "./node.js";
 import { toXML, inspect } from "./common.js";

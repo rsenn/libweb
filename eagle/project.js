@@ -1,17 +1,14 @@
 import Util from "../util.js";
-//import fs from "fs";
-//import path from "path";
+
+
 import { EagleDocument } from "./document.js";
-import { EagleEntity } from "./element.js";
+import { EagleElement } from "./element.js";
 import { inspect } from "./common.js";
 import { makeEagleNodeMap, EagleNodeMap } from "./nodeMap.js";
 import { SortedMap } from "../indexMap.js";
 import { compareVersions } from "../compareVersions.js";
 import deep from "../deep.js";
-/*
-//import util from "util";
-const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
-*/
+
 export class EagleProject {
   documents = [];
   filename = null;
@@ -57,7 +54,7 @@ export class EagleProject {
   /* prettier-ignore */ get children() { let children = this.documents; return children; }
   /* prettier-ignore */ get library() { return this.data.lbr; }
 
-  *iterator(t = ([v, l, d]) => [typeof v == "object" ? new EagleEntity(d, l, v) : v, l, d]) {
+  *iterator(t = ([v, l, d]) => [typeof v == "object" ? new EagleElement(d, l, v) : v, l, d]) {
     const project = this;
     for(let doc of this.documents) {
       let prefix = EagleProject.documentKey(doc);
@@ -88,7 +85,7 @@ export class EagleProject {
 
   *getLibraryNames() {
     for(let [v, l, d] of this.board.iterator()) {
-      //[], it => it /*([v,l,d]) => [typeof(v) == 'string' ? v : new EagleEntity(d,l),l,d]*/)) {
+      //[], it => it /*([v,l,d]) => [typeof(v) == 'string' ? v : new EagleElement(d,l),l,d]*/)) {
       if(v.tagName != "library") continue;
       // console.log("it:", { v, l, d });
 

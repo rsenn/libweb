@@ -1,15 +1,16 @@
+import tXml from "../tXml.js";
 import Util from "../util.js";
-import { trkl } from "../trkl.js";
-import { lazyArray } from "../lazyInitializer.js";
-//import util from "util";
-import { text, inspect, toXML } from "./common.js";
-import { EaglePath } from "./locator.js";
+import deepClone from "../clone.js";
+import deepDiff from "../deep-diff.js";
+import { EagleElement } from "./element.js";
+import { EaglePath, EagleRef } from "./locator.js";
 import { EagleNode } from "./node.js";
-import { EagleNodeList, makeEagleNodeList } from "./nodeList.js";
+import { toXML, inspect } from "./common.js";
+import deep from "../deep.js";
 
 const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
 
-export class EagleEntity extends EagleNode {
+export class EagleElement extends EagleNode {
   tagName = "";
   attributes = {};
   children = [];
@@ -28,7 +29,7 @@ export class EagleEntity extends EagleNode {
       try {
         o = this.ref.dereference(); //.apply(owner); //.index(path);
       } catch(error) {
-        /* throw new Error("EagleEntity index\n  " + path[0] + "\n  error=" + error.toString().split(/\n/g)[0] + "\n  owner=" + Util.className(owner).replace(/\s+/g, " ") + "\n  path=[" + path.join(",") + "]");*/
+        /* throw new Error("EagleElement index\n  " + path[0] + "\n  error=" + error.toString().split(/\n/g)[0] + "\n  owner=" + Util.className(owner).replace(/\s+/g, " ") + "\n  path=[" + path.join(",") + "]");*/
       }
     }
 
@@ -80,7 +81,7 @@ export class EagleEntity extends EagleNode {
             }
           };
           trkl.bind(this, key, fn);
-        } else if(EagleEntity.isRelation(key)) {
+        } else if(EagleElement.isRelation(key)) {
           let doc = this.document;
           // console.log(`this.document = ${Util.className(doc)}`);
           //  if(Util.className(doc) == 'EagleDocument') {
@@ -112,7 +113,7 @@ export class EagleEntity extends EagleNode {
     } else if(Util.isArray(children)) {
       const ref = this.ref.down("children");
 
-      let prop = trkl.computed(() => lazyArray(ref.dereference().map((child, i) => () => new EagleEntity(owner, path.down("children", i)))));
+      let prop = trkl.computed(() => lazyArray(ref.dereference().map((child, i) => () => new EagleElement(owner, path.down("children", i)))));
 
       //  this.children = lazyArray(childHandlers);
       trkl.bind(this, "children", prop);
@@ -140,7 +141,7 @@ export class EagleEntity extends EagleNode {
   }
   /*
   set(name, value) {
-    if(value instanceof EagleEntity) value = value.get("name");
+    if(value instanceof EagleElement) value = value.get("name");
     else if(typeof value != "string") value = "" + value;
     return this.handlers[name](value);
   }
@@ -155,9 +156,9 @@ export class EagleEntity extends EagleNode {
     return relationNames.indexOf(name) != -1;
   }
 
-  /* prettier-ignore */ static keys(entity) {return Object.keys(EagleEntity.toObject(entity)); }
-  /* prettier-ignore */ static values(entity) {return Object.values(EagleEntity.toObject(entity)); }
-  /* prettier-ignore */ static entries(entity) { return Object.entries(EagleEntity.toObject(entity)); }
+  /* prettier-ignore */ static keys(entity) {return Object.keys(EagleElement.toObject(entity)); }
+  /* prettier-ignore */ static values(entity) {return Object.values(EagleElement.toObject(entity)); }
+  /* prettier-ignore */ static entries(entity) { return Object.entries(EagleElement.toObject(entity)); }
 
   static toObject(e) {
     let { tagName, attributes, children, text } = e;
@@ -165,7 +166,7 @@ export class EagleEntity extends EagleNode {
     if(typeof e == "object" && e !== null && "tagName" in e) o = { tagName, ...o };
     if(typeof children == "object" && children !== null && "length" in children && children.length > 0) {
       let a = children.filter(child => typeof child == "string");
-      children = children.filter(child => typeof child != "string").map(EagleEntity.toObject);
+      children = children.filter(child => typeof child != "string").map(EagleElement.toObject);
       text = a.join("\n");
     }
     if(typeof text == "string" && text.length > 0)
@@ -185,13 +186,13 @@ export class EagleEntity extends EagleNode {
     return inspect(entity, ownerDocument);
   }
 }
-export const EagleElement = function EagleElement(owner, ref, ...args) {
+export const makeEagleElement = function makeEagleElement(owner, ref, ...args) {
   if("length" in ref) ref = owner.ref.down(...ref);
 
   if(args.length > 0) ref = ref.down(...args);
 
   //console.log("ref:", ref);
 
-  let e = new EagleEntity(owner, ref);
+  let e = new EagleElement(owner, ref);
   return e;
 };

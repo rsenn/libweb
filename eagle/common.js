@@ -1,18 +1,20 @@
 import { EaglePath, EagleRef } from "./locator.js";
-import { EagleEntity, EagleElement } from "./element.js";
-//import { EagleDocument } from "./document.js";
-//import util from "util";
+import { EagleElement, makeEagleElement } from "./element.js";
 import Util from "../util.js";
 import deep from "../deep.js";
 import { lazyMembers, lazyMap } from "../lazyInitializer.js";
 
-export const ansi = (...args) => `\u001b[${[...args].join(";")}m`;
-export const text = (text, ...color) => ansi(...color) + text + ansi(0);
+const pathPadding = Util.isBrowser() ? 0 : 40;
+
+export const ansi = Util.isBrowser() ? (() => "") : (...args) => `\u001b[${[...args].join(";")}m`;
+export const text = Util.isBrowser() ? ((text,...color) => color.indexOf(1) != -1 ? `${text}`  : text) : ((text, ...color) => ansi(...color) + text + ansi(0));
+
 export const dingbatCode = digit => (digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1));
+
 export const dump = (obj, depth = 1) => {
   if("toString" in obj) return obj.toString();
 
-  return util.inspect(obj, { depth, breakLength: 400, colors: true });
+  return Util.inspect(obj, { depth, breakLength: 400, colors: !Util.isBrowser() });
 };
 
 export const parseArgs = args => {
@@ -89,8 +91,8 @@ export const inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) =>
   let o = e;
 
   if(typeof e == "string") return text(e, 1, 36);
-  if(e instanceof EagleEntity) o = EagleEntity.toObject(e);
-  let x = util.inspect(o, { depth: depth * 2, breakLength, colors: true });
+  if(e instanceof EagleElement) o = EagleElement.toObject(e);
+  let x = Util.inspect(o, { depth: depth * 2, breakLength, colors: !Util.isBrowser() });
   let s = "⏐";
   x = x.substring(x.indexOf("tagName") + 14);
 
@@ -103,7 +105,7 @@ export const inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) =>
   let l = e.path + "";
   let type = (e.nodeType || (d && d.type)) + "";
   let ret = [text(type, 38, 5, 219), p, text("⧃❋⭗", 38, 5, 112), arr.join(" ").trimRight(), text(`〕`, 1, 37)];
-  if(c.path) ret.unshift(l + Util.pad(l, 40, " "));
+  if(c.path) ret.unshift(l + Util.pad(l, pathPadding, " "));
   return ret.join(" ");
 };
 
@@ -122,7 +124,7 @@ export class EagleInterface {
 
   find(...args) {
     let { path, predicate, transform } = parseArgs([...arguments]);
-    if(!transform) transform = ([v, l, d]) => (typeof v == "object" && v !== null && "tagName" in v ? new EagleEntity(d, l, v) : v);
+    if(!transform) transform = ([v, l, d]) => (typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l, v) : v);
     for(let [v, p, d] of this.iterator()) {
       if(typeof v == "string") continue;
       if(predicate(v, p, d)) return transform([v, p, d]);
@@ -132,7 +134,7 @@ export class EagleInterface {
 
   *findAll(...args) {
     let { path, predicate, transform } = parseArgs(args);
-    if(!transform) transform = ([v, l, d]) => (typeof v == "object" && v !== null && "tagName" in v ? new EagleEntity(d, l, v) : v);
+    if(!transform) transform = ([v, l, d]) => (typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l, v) : v);
     for(let [v, l, d] of this.iterator(predicate, [], it => it))
       if(predicate(v, l, d)) {
         if(transform) v = transform([v, l, d]);
@@ -172,7 +174,7 @@ export class EagleInterface {
     return Util.className(this);
   }
 
-  entries(t = ([v, l, d]) => [l[l.length - 1], new EagleEntity(d, l)]) {
+  entries(t = ([v, l, d]) => [l[l.length - 1], new EagleElement(d, l)]) {
     return this.iterator([], t);
   }
 
@@ -187,8 +189,8 @@ export class EagleInterface {
 
     let predicate = typeof args[0] == "function" ? args.shift() : arg => false;
     let path = (Util.isArray(args[0]) && args.shift()) || [];
-    let t = typeof args[0] == "function" ? args.shift() : ([v, l, d]) => [typeof v == "object" && v !== null && "tagName" in v ? new EagleEntity(d, l) : v, l, d];
-    let owner = this instanceof EagleEntity ? this.owner : this;
+    let t = typeof args[0] == "function" ? args.shift() : ([v, l, d]) => [typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l) : v, l, d];
+    let owner = this instanceof EagleElement ? this.owner : this;
     let root = (owner.xml && owner.xml[0]) || this.root;
     let node = root;
     if(path.length > 0) node = deep.get(node, path);

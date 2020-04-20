@@ -293,11 +293,11 @@ RGBA.prototype.luminance = function() {
   return Y;
 };
 
-for(let name of ["hex", "toRGB", "round", "toHSLA", "toCMYK", "toLAB", "linear", "luminance"]) {
+for (let name of ["hex", "toRGB", "round", "toHSLA", "toCMYK", "toLAB", "linear", "luminance"]) {
   RGBA[name] = arg => RGBA.prototype[name].call(arg);
 }
 
-for(let name of ["fromLAB"]) {
+for (let name of ["fromLAB"]) {
   RGBA[name] = arg => {
     let ret = new RGBA();
     return RGBA.prototype[name].call(ret, arg);
