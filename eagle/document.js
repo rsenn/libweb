@@ -66,11 +66,8 @@ export class EagleDocument extends EagleNode {
 
   /* prettier-ignore */
   saveTo(path, overwrite = false) {
-    let { fs } = this.project; 
+    let { fs } = this.project;
     fs.writeFile(path, this.toString());
-
-
-///return new Promise((resolve, reject) => fs.writeFile(path, this.toString(), { flag: overwrite ? "w" : "wx" }) .then(() => resolve(path)) .catch(reject) ); 
   }
 
   index(path, transform = arg => arg) {

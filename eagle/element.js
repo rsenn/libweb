@@ -12,28 +12,20 @@ export class EagleElement extends EagleNode {
   constructor(d, l, o) {
     super(d, l);
     Object.defineProperty(this, "handlers", { value: {}, enumerable: false });
-    let owner = this.owner; /*    console.log("this.path:",Util.className(this.path));*/
-
-    /*     console.log(`new Entity(`,d,', ',l,');');
-     */ let path = this.ref.path.clone();
-
+    let owner = this.owner;
+    let path = this.ref.path.clone();
     if(owner === null) throw new Error("owner == null");
-
     if(o === undefined || (o.tagName === undefined && o.attributes === undefined && o.children === undefined)) {
       try {
-        o = this.ref.dereference(); //.apply(owner); //.index(path);
-      } catch(error) {
-        /* throw new Error("EagleElement index\n  " + path[0] + "\n  error=" + error.toString().split(/\n/g)[0] + "\n  owner=" + Util.className(owner).replace(/\s+/g, " ") + "\n  path=[" + path.join(",") + "]");*/
-      }
+        o = this.ref.dereference();
+      } catch(error) {}
     }
 
-    if(o === null || typeof o != "object") throw new Error("ref: " + this.ref.inspect() + " entity: " + EagleNode.prototype.inspect.call(this) /*+" " + path.join(",") + " " + Util.className(owner) + " " + Util.className(this.document)*/);
+    if(o === null || typeof o != "object") throw new Error("ref: " + this.ref.inspect() + " entity: " + EagleNode.prototype.inspect.call(this));
 
     let { tagName, attributes, children } = o;
     this.tagName = tagName;
-    this.attributes = /* attributes; */ {};
-    // Util.define(this, "data", o);
-    //this.data = o;    // this.data = o;
+    this.attributes = {};
 
     if(!Util.isEmpty(attributes)) {
       for(let key in attributes) {
@@ -45,26 +37,9 @@ export class EagleElement extends EagleNode {
         );
         handler(attributes[key]);
         prop.subscribe(value => (value !== undefined ? (attributes[key] = value) : undefined));
-
         this.handlers[key] = prop;
-
         if(key == "deviceset" || key == "package") {
           trkl.bind(this, key, v => (v ? v.names.forEach(name => this.handlers[name](v.names[name])) : this.library[key + "s"][this.attributes[key]]));
-          /* } else if(key == "package") {
-          const fn = v => {
-            if(v) {
-              v.names.forEach(name => this.handlers[name](v.names[name]));
-              
-              const { names } = v;
-              if(names !== undefined) {
-                this.handlers.library(names.library);
-                this.handlers.package(names.package);
-              }
-            } else {
-              return this.library[key+'s'][this.attributes[key]];
-            }
-          };
-          trkl.bind(this, key, fn);*/
         } else if(key == "device") {
           const fn = v => {
             if(v) {
@@ -75,47 +50,20 @@ export class EagleElement extends EagleNode {
                 this.handlers.device(names.device);
               }
             } else {
-              return this.deviceset.devices[this.attributes.device]; //key, this.handlers[key]());
+              return this.deviceset.devices[this.attributes.device];
             }
           };
           trkl.bind(this, key, fn);
         } else if(EagleElement.isRelation(key)) {
           let doc = this.document;
-          // console.log(`this.document = ${Util.className(doc)}`);
-          //  if(Util.className(doc) == 'EagleDocument') {
           const fn = v => (v ? this.handlers[key](typeof v == "string" ? v : v.name) : doc[key == "library" ? "libraries" : key + "s"][this.handlers[key]()]);
-          //  console.log(`this[${key}] = ${fn}`);
           trkl.bind(this, key, fn);
-          //}
         } else {
           trkl.bind(this, key, handler);
         }
-
-        /*  if(key == "device" || key == 'deviceset') {
-          trkl.bind(this, key, v => {
-            if(v !== undefined) return this.handlers[key](typeof v == "string" ? v : v.name);
-            const device = this[key == 'deviceset' ? 'library' : 'devicesets'].getByName(key, this.attributes.device);
-            return device;
-          });*/
       }
     }
-
-    /*  if(o.children && typeof o.children[0] == "string") {
-      //this.text = o.children[0];
-      this.children = o.children;
-      //   console.log(`${tagName}: ${children.length}`, this.text);
-    } else if(Util.isArray(children)) {
-      const ref = this.ref.down("children");
-
-      let prop = trkl.computed(() => lazyArray(ref.dereference().map((child, i) => () => new EagleElement(owner, path.down("children", i)))));
-
-      //  this.children = lazyArray(childHandlers);
-      trkl.bind(this, "children", prop);
-    }
-*/
     this.children = makeEagleNodeList(this, this.ref);
-
-    //console.log("children:", this.children);
     this.initCache(EagleElement);
   }
 
