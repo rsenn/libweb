@@ -1,13 +1,18 @@
 import { EaglePath, EagleRef, EagleReference } from "./locator.js";
-import { EagleElement, makeEagleElement } from "./element.js";
-
-
+//import {  makeEagleElement } from "./element.js";
 import Util from "../util.js";
 import deep from "../deep.js";
 import { lazyMembers, lazyMap } from "../lazyInitializer.js";
-import { ansi, text, dingbatCode, dump, parseArgs, traverse, toXML, inspect, EagleInterface } from "./common.js";
-import { EagleNodeList } from "./nodeList.js";
+import { text, inspect, EagleInterface } from "./common.js";
+//import { EagleNodeList } from "./nodeList.js";
 import { makeEagleNodeMap } from "./nodeMap.js";
+
+export const makeEagleNode = (owner, ref, ctor) => {
+
+ /// console.log(`makeEagleNode(`,owner,', ',ref,', ',ctor,`)`);
+  let e = new ctor(owner, ref);
+  return e;
+};
 
 export class EagleNode extends EagleInterface {
   ref = null;
@@ -66,7 +71,7 @@ export class EagleNode extends EagleInterface {
   }
 
   get project() {
-    if(this.owner instanceof EagleProject) return this.owner;
+    if(Util.className(this.owner) == 'EagleProject') return this.owner;
     return this.document.owner;
   }
 
@@ -112,46 +117,39 @@ export class EagleNode extends EagleInterface {
     }
   }
 
-  initCache() {
+  get childConstructor() {
+    let protos = Util.getPrototypeChain(this);
+    if(Util.fnName(protos[0].constructor) == "EagleDocument") protos.shift();
+    let ctor = protos[0].constructor;
+    console.log("ctor:", ctor);
+    return ctor;
+  }
+
+  initCache(ctor = this.childConstructor) {
     let fields = this.cacheFields();
+    //console.log(`initCache(${Util.fnName(ctor)}) this:`, Util.className(this));
 
     if(fields) {
       Util.define(this, "cache", {});
 
-      let lazy = {},
-        lists = {},
-        maps = {},
-        parent = this;
+      let lazy = {};
+      let lists = {};
+      let maps = {};
       let ref = this.ref;
 
       for(let [value, path] of deep.iterate(ref.dereference(), v => v && fields.indexOf(v.tagName) != -1)) {
         const key = value.tagName;
-        //let r = EagleRef(ref.root, path.concat('children'));
-        //console.log(`x ${key}:`,value.tagName, value.children.length, r.dereference(), ` ${path}`);
+       // console.log(`cache list ${key}:`, path);
 
-        lazy[value.tagName] = () => makeEagleElement(this, path);
+        lazy[key] = () => makeEagleNode(this, ref.down(...path), ctor);
 
-        lists[value.tagName] = () => makeEagleNodeMap(lazy[value.tagName]().children, key == "layers" ? "number" : "name");
+        /*  lists[key] = () => makeEagleNodeList(this, [...path,'children']);*/
+
+        maps[key] = () => makeEagleNodeMap(lazy[key]().children, key == "layers" ? "number" : "name");
       }
-      lazyMembers(this, lists);
-      //new EagleElement(parent, path);
-
-      //Object.defineProperty(this, key, { writeable: false, enumerable: false, get: getter });
-      //   Util.define(this, key, );
-
-      /*     if(this[key] !== undefined) console.log(`${key} already defined`);
-        else
-          Util.define(
-            this,
-            key,
-            lazyMap(
-              value.children,
-              (item, i) => item.name || i,
-              (arg, key) => makeEagleElement(parent, new EaglePath([...path, "children", key])),
-              EagleNodeList.prototype
-            )
-          );*/
+      lazyMembers(this.lists, lists);
       lazyMembers(this.cache, lazy);
+      lazyMembers(this, maps);
     }
   }
 
@@ -219,7 +217,7 @@ export class EagleNode extends EagleInterface {
     return null;
   }
 
-  getByName(element, name, attr = "name", t = ([v, l, d]) => new EagleElement(d, this.ref.down(...l))) {
+  getByName(element, name, attr = "name", t = ([v, l, d]) => makeEagleNode(d, this.ref.down(...l), this.childConstructor)) {
     /*if(this.cache[element+'s']) {
   console.log(`this.cache[${element+'s'}]:`,this.cache[element+'s']);
 

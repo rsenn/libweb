@@ -1,6 +1,5 @@
 import Util from "../util.js";
-
-import { ansi, text, inspect, toXML, dump } from "./common.js";
+import { text, inspect, toXML, dump } from "./common.js";
 
 export function DereferenceError(object, member, pos, part, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
@@ -145,7 +144,6 @@ export const EaglePath = Util.immutableClass(
     }
 
     toString(hl = -1) {
-
       let y = this.map(item => (item == "children" ? "⎿" : item)).map((part, i) => text(part, ...(hl == i ? [38, 5, 124] : [38, 5, 82])));
 
       y = text("♈ ", 38, 5, 45) + y.join("") + text(" 🔚", 38, 5, 172);
@@ -273,7 +271,7 @@ export class EagleReference {
   }
 
   [Symbol.for("nodejs.util.inspect.custom")]() {
-    return `EagleReference { root:${toXML(this.root, 0)}, path:${this.path.inspect()} }`;
+    return `EagleReference { path:${this.path.inspect()}, root:${toXML(this.root, 0)}  }`;
   }
   inspect() {
     return this[Symbol.for("nodejs.util.inspect.custom")](...arguments);

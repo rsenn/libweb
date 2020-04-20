@@ -1,5 +1,5 @@
 import { EagleRef, EagleReference } from "./locator.js";
-import { EagleElement, makeEagleElement } from "./element.js";
+import { makeEagleElement } from "./element.js";
 import Util from "../util.js";
 import { inspect } from "./common.js";
 

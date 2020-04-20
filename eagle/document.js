@@ -2,11 +2,10 @@ import tXml from "../tXml.js";
 import Util from "../util.js";
 import deepClone from "../clone.js";
 import deepDiff from "../deep-diff.js";
-import { EagleElement } from "./element.js";
 import { EaglePath, EagleRef } from "./locator.js";
 import { EagleNode } from "./node.js";
-import { toXML, inspect } from "./common.js";
-import deep from "../deep.js";
+import { EagleElement } from "./element.js";
+import { toXML } from "./common.js";
 
 export class EagleDocument extends EagleNode {
   xml = null;
@@ -26,7 +25,7 @@ export class EagleDocument extends EagleNode {
 
     super(project, EagleRef(deepClone(xml[0]), []));
 
-    if(filename) this.filename = filename;
+    if(filename) this.path = filename;
     Util.define(this, "type", /<library>/.test(xmlStr) ? "lbr" : /<element /.test(xmlStr) ? "brd" : "sch");
     // this.path.push(this.type == "lbr" ? "library" : this.type == "brd" ? "board" : "schematic");
     // if(this.type == "lbr") this.path.push(this.basename);
@@ -53,17 +52,17 @@ counts[value.tagName]++;
  counts = Object.entries(counts).filter(([key,value]) => value === 1).map(([key,value]) => key);
     console.log(`counts.${this.type}: ['`+counts.join("','")+"']");
 */
-    this.initCache();
+    this.initCache(EagleElement);
   }
 
-  /* prettier-ignore */ get filename() { return this.path.replace(/.*\//g, ""); }
-  /* prettier-ignore */ get dirname() { return this.path.replace(/\/[^/]*\/?$/g, ""); }
+  /* prettier-ignore */ get filename() { return this.path && this.path.replace(/.*\//g, ""); }
+  /* prettier-ignore */ get dirname() { return this.path && this.path.replace(/\/[^/]*\/?$/g, "") || "."; }
 
   //get project() { return this.owner; }
   //  get orig() { return this.xml[0]; }
 
   get basename() {
-    return path.basename(this.filename).replace(/\.[a-z][a-z][a-z]$/i, "");
+    return this.path && this.filename.replace(/\.[a-z][a-z][a-z]$/i, "");
   }
 
   get changes() {
@@ -89,7 +88,13 @@ counts[value.tagName]++;
   }
 
   /* prettier-ignore */
-  saveTo(path, overwrite = false) {return new Promise((resolve, reject) => fsPromises .writeFile(path, this.toString(), { flag: overwrite ? "w" : "wx" }) .then(() => resolve(path)) .catch(reject) ); }
+  saveTo(path, overwrite = false) {
+    let { fs } = this.project; 
+    fs.writeFile(path, this.toString());
+
+
+///return new Promise((resolve, reject) => fs.writeFile(path, this.toString(), { flag: overwrite ? "w" : "wx" }) .then(() => resolve(path)) .catch(reject) ); 
+  }
 
   index(path, transform = arg => arg) {
     if(!(path instanceof EaglePath)) path = new EaglePath(path);

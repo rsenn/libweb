@@ -1,14 +1,8 @@
-import tXml from "../tXml.js";
 import Util from "../util.js";
-import deepClone from "../clone.js";
-import deepDiff from "../deep-diff.js";
-import { EagleElement } from "./element.js";
-import { EaglePath, EagleRef } from "./locator.js";
+import trkl from "../trkl.js";
 import { EagleNode } from "./node.js";
-import { toXML, inspect } from "./common.js";
-import deep from "../deep.js";
-
-const dump = (obj, depth = 1, breakLength = 100) => util.inspect(obj, { depth, breakLength, colors: true });
+import { makeEagleNodeList } from "./nodeList.js";
+import { toXML, inspect, dump } from "./common.js";
 
 export class EagleElement extends EagleNode {
   tagName = "";
@@ -121,7 +115,8 @@ export class EagleElement extends EagleNode {
 */
     this.children = makeEagleNodeList(this, this.ref);
 
-    this.initCache();
+    //console.log("children:", this.children);
+    this.initCache(EagleElement);
   }
 
   get text() {
@@ -186,6 +181,7 @@ export class EagleElement extends EagleNode {
     return inspect(entity, ownerDocument);
   }
 }
+
 export const makeEagleElement = function makeEagleElement(owner, ref, ...args) {
   if("length" in ref) ref = owner.ref.down(...ref);
 

@@ -1129,9 +1129,9 @@ Util.numberFromURL = function(url, fn) {
   if(!isNaN(nr) && typeof fn === "function") fn(nr);
   return nr;
 };
-Util.tryPromise = fn => new Promise((resolve,reject) => Util.tryCatch(fn, resolve,reject));
+Util.tryPromise = fn => new Promise((resolve, reject) => Util.tryCatch(fn, resolve, reject));
 
-Util.tryCatch = (fn,resolve,reject) => {
+Util.tryCatch = (fn, resolve, reject) => {
   let ret;
   try {
     ret = fn();
@@ -1143,7 +1143,16 @@ Util.tryCatch = (fn,resolve,reject) => {
 
 Util.isBrowser = function() {
   let ret = false;
-  Util.tryCatch(() => !!window, () => ret = true, () => ret = false);
+  Util.tryCatch(
+    () => window,
+    w =>  Util.isObject(w) ? ret = true : undefined,
+    () => {}
+  );
+  Util.tryCatch(
+    () => document,
+    w =>  Util.isObject(w) ? ret = true : undefined,
+    () => {}
+  );
   return ret;
   //return !!(global.window && global.window.document);
 };
@@ -1545,6 +1554,9 @@ Util.bindMethodsTo = function(dest, obj, methods) {
     dest[name] = methods[name].bind(obj);
   }
   return dest;
+};
+Util.getConstructor = obj => {
+  return Object.getPrototypeOf(obj).constructor;
 };
 Util.getPrototypeChain = function(obj, fn = p => p) {
   let ret = Util.array();
