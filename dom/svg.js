@@ -1,8 +1,8 @@
 import { Element } from "./element.js";
-import { Size } from "./size.js";
-import { Point } from "./point.js";
-import { Rect } from "./rect.js";
-import { Line } from "./line.js";
+import { Size } from "../geom/size.js";
+import { Point } from "../geom/point.js";
+import { Rect } from "../geom/rect.js";
+import { Line } from "../geom/line.js";
 import { parseSVG, makeAbsolute } from "../svg/path-parser.js";
 import Util from "../util.js";
 

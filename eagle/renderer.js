@@ -1,6 +1,6 @@
 import { BBox } from "../dom/bbox.js";
-import { Point } from "../dom/point.js";
-import { Line } from "../dom/line.js";
+import { Point } from "../geom/point.js";
+import { Line } from "../geom/line.js";
 
 export class SchematicRenderer {
   static pinSizes = {

@@ -1,16 +1,16 @@
 //import ReactDOM from "react-dom";
 import { SvgPath } from "./svg/path.js";
 import Util from "./util.js";
-import { Point, isPoint } from "./dom/point.js";
-import { Size, isSize } from "./dom/size.js";
-import { Line, isLine } from "./dom/line.js";
-import { Rect, isRect } from "./dom/rect.js";
-import { PointList, Polyline } from "./dom/pointList.js";
+import { Point, isPoint } from "./geom/point.js";
+import { Size, isSize } from "./geom/size.js";
+import { Line, isLine } from "./geom/line.js";
+import { Rect, isRect } from "./geom/rect.js";
+import { PointList, Polyline } from "./geom/pointList.js";
 import { RGBA, isRGBA } from "./dom/rgba.js";
 import { HSLA, isHSLA } from "./dom/hsla.js";
 import { Matrix, isMatrix, MatrixProps } from "./dom/matrix.js";
 import { BBox } from "./dom/bbox.js";
-import { TRBL } from "./dom/trbl.js";
+import { TRBL } from "./geom/trbl.js";
 import { Timer } from "./dom/timer.js";
 import { Tree } from "./dom/tree.js";
 import { Node } from "./dom/node.js";
@@ -21,7 +21,7 @@ import { ReactComponent } from "./dom/reactComponent.js";
 import { Container } from "./dom/container.js";
 import { Layer, Renderer } from "./dom/layer.js";
 import { Select } from "./dom/select.js";
-import { Align, Anchor } from "./dom/align.js";
+import { Align, Anchor } from "./geom/align.js";
 import { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from "./dom/elementRect.js";
 
 export function dom() {

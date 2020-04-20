@@ -1,6 +1,6 @@
 import { Element } from "./element.js";
-import { Point } from "./point.js";
-import { Size } from "./size.js";
+import { Point } from "../geom/point.js";
+import { Size } from "../geom/size.js";
 
 export function ElementRectProxy(element) {
   this.element = element;

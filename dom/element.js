@@ -1,9 +1,9 @@
 import { Node } from "./node.js";
-import { TRBL } from "./trbl.js";
-import { Point, isPoint } from "./point.js";
-import { Rect, isRect } from "./rect.js";
-import { Size, isSize } from "./size.js";
-import { Align, Anchor } from "./align.js";
+import { TRBL } from "../geom/trbl.js";
+import { Point, isPoint } from "../geom/point.js";
+import { Rect, isRect } from "../geom/rect.js";
+import { Size, isSize } from "../geom/size.js";
+import { Align, Anchor } from "../geom/align.js";
 import Util from "../util.js";
 /**
  * Class for element.

@@ -1,4 +1,4 @@
-import { Rect } from "./rect.js";
+import { Rect } from "../geom/rect.js";
 
 export class BBox {
   static fromPoints(pts) {
