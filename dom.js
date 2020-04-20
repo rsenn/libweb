@@ -167,16 +167,16 @@ export const isRenderer = inst => {};
 export const isSelect = inst => {};
 */
 
-export { Point, isPoint } from "./dom/point.js";
-export { Size, isSize } from "./dom/size.js";
-export { Line, isLine } from "./dom/line.js";
-export { Rect, isRect } from "./dom/rect.js";
-export { PointList, Polyline } from "./dom/pointList.js";
+export { Point, isPoint } from "./geom/point.js";
+export { Size, isSize } from "./geom/size.js";
+export { Line, isLine } from "./geom/line.js";
+export { Rect, isRect } from "./geom/rect.js";
+export { PointList, Polyline } from "./geom/pointList.js";
 export { RGBA, isRGBA } from "./dom/rgba.js";
 export { HSLA, isHSLA } from "./dom/hsla.js";
 export { Matrix, isMatrix, MatrixProps } from "./dom/matrix.js";
 export { BBox } from "./dom/bbox.js";
-export { TRBL } from "./dom/trbl.js";
+export { TRBL } from "./geom/trbl.js";
 export { Timer } from "./dom/timer.js";
 export { Tree } from "./dom/tree.js";
 export { Node } from "./dom/node.js";
@@ -188,7 +188,7 @@ export { Container } from "./dom/container.js";
 export { Layer, Renderer } from "./dom/layer.js";
 export { Select } from "./dom/select.js";
 export { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from "./dom/elementRect.js";
-export { Align, Anchor } from "./dom/align.js";
+export { Align, Anchor } from "./geom/align.js";
 
 export default Object.assign(dom, {
   Align,
