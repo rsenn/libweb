@@ -1145,12 +1145,12 @@ Util.isBrowser = function() {
   let ret = false;
   Util.tryCatch(
     () => window,
-    w =>  Util.isObject(w) ? ret = true : undefined,
+    w => (Util.isObject(w) ? (ret = true) : undefined),
     () => {}
   );
   Util.tryCatch(
     () => document,
-    w =>  Util.isObject(w) ? ret = true : undefined,
+    w => (Util.isObject(w) ? (ret = true) : undefined),
     () => {}
   );
   return ret;

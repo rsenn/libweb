@@ -8,8 +8,7 @@ import { text, inspect, EagleInterface } from "./common.js";
 import { makeEagleNodeMap } from "./nodeMap.js";
 
 export const makeEagleNode = (owner, ref, ctor) => {
-
- /// console.log(`makeEagleNode(`,owner,', ',ref,', ',ctor,`)`);
+  /// console.log(`makeEagleNode(`,owner,', ',ref,', ',ctor,`)`);
   let e = new ctor(owner, ref);
   return e;
 };
@@ -71,7 +70,7 @@ export class EagleNode extends EagleInterface {
   }
 
   get project() {
-    if(Util.className(this.owner) == 'EagleProject') return this.owner;
+    if(Util.className(this.owner) == "EagleProject") return this.owner;
     return this.document.owner;
   }
 
@@ -139,7 +138,7 @@ export class EagleNode extends EagleInterface {
 
       for(let [value, path] of deep.iterate(ref.dereference(), v => v && fields.indexOf(v.tagName) != -1)) {
         const key = value.tagName;
-       // console.log(`cache list ${key}:`, path);
+        // console.log(`cache list ${key}:`, path);
 
         lazy[key] = () => makeEagleNode(this, ref.down(...path), ctor);
 

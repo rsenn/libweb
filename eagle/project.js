@@ -44,10 +44,9 @@ export class EagleProject {
     console.log("Opened:", file);
 
     if(doc.type == "lbr") {
-      this.data[doc.type][doc.basename] = doc;console.log("Opened library:", doc.basename);
-
-    }
-    else this.data[doc.type] = doc;
+      this.data[doc.type][doc.basename] = doc;
+      console.log("Opened library:", doc.basename);
+    } else this.data[doc.type] = doc;
     return doc;
   }
 
@@ -118,8 +117,8 @@ export class EagleProject {
 
   updateLibrary(name) {
     const library = this.library[name];
-        console.log("name:", name);
-        console.log("library:", library);
+    console.log("name:", name);
+    console.log("library:", library);
 
     const { schematic, board } = this;
     const entityNames = ["package", "symbol", "deviceset"];
@@ -139,7 +138,7 @@ export class EagleProject {
         l => [l.number, l]
       )
     };
-    let entities = new Map(entityNames.map(entity => [entity, library[entity+'s']]));
+    let entities = new Map(entityNames.map(entity => [entity, library[entity + "s"]]));
     //console.log("entities:", entities);
     console.log("libraries.schematic:", libraries.schematic);
 
