@@ -2018,26 +2018,18 @@ Util.immutable = args => {
   return new Proxy(args, handler);
 };
 Util.immutableClass = Original => {
-  const Immutable = class extends Original {
+  let name = Util.fnName(Original);
+  return new Function(
+    "Original",
+    `const Immutable${name} = class extends Original {
     constructor(...args) {
       super(...args);
-      if(new.target === Immutable) {
+      if(new.target === Immutable${name})
         Object.freeze(this);
-      }
     }
   };
-  return Immutable;
-};
-Util.fun = Original => {
-  const Immutable = class extends Original {
-    constructor(...args) {
-      super(...args);
-      if(new.target === Immutable) {
-        Object.freeze(this);
-      }
-    }
-  };
-  return Immutable;
+  return Immutable${name};`
+  )(Original);
 };
 Util.curry = function curry(fn, arity) {
   return function curried() {

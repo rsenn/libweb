@@ -2,6 +2,7 @@ import Util from "../util.js";
 import { EagleDocument } from "./document.js";
 import { EagleElement } from "./element.js";
 import { makeEagleNodeMap } from "./nodeMap.js";
+import { dump } from "./common.js";
 import { compareVersions } from "../compareVersions.js";
 
 export class EagleProject {
@@ -86,14 +87,13 @@ export class EagleProject {
     return [...docDirs, ...docDirs.map(dir => `${dir}/lbr`)]; //.filter(fs.existsSync);
   }
 
-  *getLibraryNames() {
-    for(let [v, l, d] of this.board.iterator()) {
-      //[], it => it /*([v,l,d]) => [typeof(v) == 'string' ? v : new EagleElement(d,l),l,d]*/)) {
-      if(v.tagName != "library") continue;
-      // console.log("it:", { v, l, d });
+  getLibraryNames() {
+    return Util.unique([...this.schematic.libraries.list, ...this.board.libraries.list].map(l => l.name));
 
+    /* for(let [v, l, d] of ) {
+      if(v.tagName != "library") continue;
       yield v.attributes.name;
-    }
+    }*/
   }
 
   findLibrary(name, dirs = this.libraryPath()) {
@@ -105,9 +105,9 @@ export class EagleProject {
   }
 
   loadLibraries(dirs = this.libraryPath()) {
-    console.log("loadLibraries:", dirs);
 
     let names = this.getLibraryNames();
+    console.log("loadLibraries:", dirs, names);
     for(let name of names) {
       let lib = this.findLibrary(name, dirs);
       if(!lib) throw new Error(`EagleProject library '${name}' not found in ${dirs.join(".")}`);
@@ -116,17 +116,18 @@ export class EagleProject {
   }
 
   updateLibrary(name) {
-    const library = this.library[name];
+    const l = this.library;
     console.log("name:", name);
-    console.log("library:", library);
+    console.log("library:", l);
+    console.log("documents:", this.documents);
 
     const { schematic, board } = this;
     const entityNames = ["package", "symbol", "deviceset"];
 
     let libraries = {
-      file: library,
-      schematic: schematic.getByName("library", name),
-      board: board.getByName("library", name)
+      file: l[name],
+      schematic: schematic.libraries[name],
+      board: board.libraries[name]
     };
     let layers = {
       schematic: Util.toMap(
@@ -138,45 +139,59 @@ export class EagleProject {
         l => [l.number, l]
       )
     };
-    let entities = new Map(entityNames.map(entity => [entity, library[entity + "s"]]));
+    //let entities = new Map(entityNames.map(entity => [entity, library[entity + "s"]]));
     //console.log("entities:", entities);
     console.log("libraries.schematic:", libraries.schematic);
 
     for(let k of ["schematic", "board"]) {
+      console.log(`project[${k}].libraries:`, this[k].libraries);
+      console.log(`libraries[${k}]:`, libraries[k]);
+      console.log(`libraries[${k}].packages:`, libraries[k].packages);
+
       // const { packages = [], devicesets = destLib.appendChild("devicesets"), symbols = destLib.appendChild("symbols") } = destLib;
 
       const libProps = lib => {
-        /*  const { packages, devicesets = new Map(), symbols = new Map() } =  */ return Object.fromEntries(["packages", "symbols", "devicesets"].map(k => [k, lib[k]]).filter(([k, v]) => v) /*
-           .map(([k, v]) => [k, v])*/);
+        const { packages, devicesets, symbols } = lib;
+
+         return Object.fromEntries(["packages", "symbols", "devicesets"].map(k => [k, lib[k]]).filter(([k, v]) => v));
+
+           
         return { packages, devicesets, symbols };
       };
       const destLib = libProps(libraries[k]);
+      //console.log("destLib:", destLib);
+
       const srcLib = libProps(libraries.file);
+    //  console.log("srcLib:", srcLib);
 
       for(let entity in destLib) {
         console.log("entity:", entity);
-        console.log("srcLib[entity]:", srcLib[entity]);
-        const srcMap = makeEagleNodeMap(srcLib[entity]);
-        const dstMap = makeEagleNodeMap(destLib[entity]);
-        console.log("srcMap:", srcMap);
+        //console.log(`srcLib[${entity}]:`, srcLib[entity]);
+        //console.log(`srcLib[${entity}].list:`, srcLib[entity].list);
+        const srcMap = (srcLib[entity]);
+        const dstMap = (destLib[entity]);
+        //console.log("srcMap:", srcMap);
         //console.log("nodeMap.keys():", nodeMap.keys());
-        console.log("srcMap.get():", srcMap.get("E5-4"));
+        //console.log("srcMap[E5-4]:", srcMap["E5-4"]);
         //  console.log("nodeMap.values():", nodeMap.values());
         //  console.log("nodeMap.entries():", nodeMap.entries ());
 
         const transformName = n => n.replace(/[.,][0-9]*/g, "").replace(/([^0-9])([0-9])([^0-9])/g, "$10$2$3");
 
-        let ent = srcLib[entity]
+        let ent = srcLib[entity].entries()/*
           .map((v, i) => [transformName(v.attributes.name), v.attributes.name, i])
           .sort((a, b) => a[0].localeCompare(b[0]))
-          .map(item => item.slice(1));
+          .map(item => item.slice(1))*/;
         let m = new Map(ent);
 
-        console.log(`srcLib['${entity}']:`, Util.className(srcLib[entity]));
-        console.log(`srcLib['${entity}']:`, srcLib[entity]);
+        //console.log(`srcLib['${entity}']:`, Util.className(srcLib[entity]));
+        //console.log(`srcLib['${entity}']:`, srcLib[entity]);
+        //console.log(`srcLib['${entity}'].values():`, srcLib[entity].values());
+        console.log(`dstMap:`, dstMap);
+        console.log(`dstMap:`, Util.className(dstMap));
 
-        for(let value of srcMap.values()) {
-          const key = value.attributes.name;
+        for(let value of srcLib[entity].values()) {
+          const key = value.name;
 
           console.log(`dstMap.set(${key},`, dump(value, 0), `):`);
           dstMap.set(key, value);
@@ -190,11 +205,11 @@ export class EagleProject {
         console.log("dstMap.map:", dump(dstMap.map().size, 2));
         // console.log("dstMap.map:", dump(dstMap.map(), 2));
         // console.log("destLib[entity].raw:", dump(destLib[entity].raw,2));
-        console.log("srcLib[entity].raw == srcMap.raw:", srcLib[entity].raw == srcMap.raw);
-        console.log("destLib[entity].raw == dstMap.raw:", destLib[entity].raw === dstMap.raw);
+        //console.log("srcLib[entity].raw == srcMap.raw:", srcLib[entity].raw == srcMap.raw);
+        //console.log("destLib[entity].raw == dstMap.raw:", destLib[entity].raw === dstMap.raw);
 
         /*   console.log(`destLib['${entity}']:`, Util.className(destLib[entity]));
-        console.log(`destLib['${entity}'].owner:`, destLib[entity].owner);
+        //console.log(`destLib['${entity}'].owner:`, destLib[entity].owner);
 
         const values = [...destLib[entity].entries()]
           .sort((a, b) => a[0] - b[0])

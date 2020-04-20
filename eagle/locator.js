@@ -21,12 +21,14 @@ DereferenceError.prototype.toString = function() {
   return `${message}\n${dump({ object, member, pos, locator, stack }, 2)}`;
 };
 
+const ChildrenSym = Symbol("➟");
+
 export const EaglePath = Util.immutableClass(
   class EaglePath extends Array {
     constructor(path = []) {
       super(/*path.length*/);
       for(let i = 0; i < path.length; i++) {
-        let value = /^[0-9]+$/.test(path[i]) ? parseInt(path[i]) : path[i];
+        let value = /*(path[i] == 'children' || path[i] === ChildrenSym) ? ChildrenSym : */ /^[0-9]+$/.test(path[i]) ? parseInt(path[i]) : path[i];
 
         Array.prototype.push.call(this, value); // this.push(value); //[i] = value;
       }
@@ -122,7 +124,7 @@ export const EaglePath = Util.immutableClass(
 
       return this.reduce(
         (a, i) => {
-          let r = i < 0 && a.o instanceof Array ? a.o[a.o.length + i] : a.o[i];
+          let r = i === ChildrenSym ? a.o.children : i < 0 && a.o instanceof Array ? a.o[a.o.length + i] : a.o[i];
           if(r === undefined) throw new DereferenceError(obj, i, a.n, a.o, this);
           a.o = r;
           a.n++;
@@ -151,7 +153,7 @@ export const EaglePath = Util.immutableClass(
     }
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
-      return `EaglePath [${this.map(part => text(typeof part == "number" ? part : `'${part}'`, 1, typeof part == "number" ? 33 : 32)).join(", ")}]`;
+      return `EaglePath [${this.map(part => (part === ChildrenSym ? String.fromCharCode(10143) : text(typeof part == "number" ? part : `'${part}'`, 1, typeof part == "number" ? 33 : 32))).join(", ")}]`;
     }
     inspect() {
       return EaglePath.prototype[Symbol.for("nodejs.util.inspect.custom")].apply(this, arguments);

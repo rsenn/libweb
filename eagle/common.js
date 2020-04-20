@@ -201,7 +201,7 @@ export class EagleInterface {
     let path = (Util.isArray(args[0]) && args.shift()) || [];
     let t = typeof args[0] == "function" ? args.shift() : ([v, l, d]) => [typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l) : v, l, d];
     let owner = Util.isObject(this) && "owner" in this ? this.owner : this;
-    let root = (owner.xml && owner.xml[0]) || this.root;
+    let root = this.root | (owner.xml && owner.xml[0]);
     let node = root;
     if(path.length > 0) node = deep.get(node, path);
     for(let [v, l] of deep.iterate(node, (v, p) => (predicate(v, p) ? -1 : p.length > 1 ? p[p.length - 2] == "children" : true))) if(typeof v == "object" && v !== null && "tagName" in v) yield [v, l, owner];
