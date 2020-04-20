@@ -61,6 +61,18 @@ export class EagleElement extends EagleNode {
             }
           };
           trkl.bind(this, key, fn);
+        } else if(key == "package") {
+          const fn = v => {
+            if(v) {
+              const { names } = v;
+              if(names !== undefined) {
+                this.handlers.library(names.library);
+              }
+            } else {
+              return this.library.packages[this.attributes.package]; //, this.handlers[key]());
+            }
+          };
+          trkl.bind(this, key, fn);
         } else if(key == "device") {
           const fn = v => {
             if(v) {
@@ -83,11 +95,7 @@ export class EagleElement extends EagleNode {
           //  console.log(`this[${key}] = ${fn}`);
           trkl.bind(this, key, fn);
           //}
-        } else if(key == "deviceset") {
-          //  console.log("this.library:", this.attributes.library);
-          const fn = v => (v ? this.handlers[key](typeof v == "string" ? v : v.name) : this.library.getByName(key, this.handlers[key]()));
-          trkl.bind(this, key, fn);
-        } else {
+        }  else {
           trkl.bind(this, key, handler);
         }
 
