@@ -15,8 +15,8 @@ export class EagleDocument extends EagleNode {
   path = null;
 
   constructor(xmlStr, project, filename) {
-//  let xmlStr = "";
-  /*  try {
+    //  let xmlStr = "";
+    /*  try {
       if(!/<\?.*<eagle /.test(filename)) {
         xmlStr = fs.readFileSync(filename);
         xmlStr = xmlStr.toString();
@@ -28,8 +28,7 @@ export class EagleDocument extends EagleNode {
 
     super(project, EagleRef(deepClone(xml[0]), []));
 
-if(filename)
-    this.filename = filename;
+    if(filename) this.filename = filename;
     Util.define(this, "type", /<library>/.test(xmlStr) ? "lbr" : /<element /.test(xmlStr) ? "brd" : "sch");
     // this.path.push(this.type == "lbr" ? "library" : this.type == "brd" ? "board" : "schematic");
     // if(this.type == "lbr") this.path.push(this.basename);

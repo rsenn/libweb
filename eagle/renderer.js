@@ -76,7 +76,7 @@ export class SchematicRenderer {
           const { x, y, width, radius } = sym;
           console.log("Unhandled", sym.type || sym);
           break;
-}
+        }
       }
     });
   }

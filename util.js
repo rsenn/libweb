@@ -106,25 +106,24 @@ Util.toSource = function(arg) {
   let cls = arg && arg.constructor && Util.fnName(arg.constructor);
   return String(arg);
 };
-Util.debug =
-  function(message) {
-    const args = [...arguments];
-    let cache = Util.array();
-    const removeCircular = function(key, value) {
-      if(typeof value === "object" && value !== null) {
-        if(cache.indexOf(value) !== -1) return;
-        cache.push(value);
-      }
-      return value;
-    };
-    const str = args
-      .map(arg => (typeof arg === "object" ? JSON.stringify(arg, removeCircular) : arg))
-      .join(" ")
-      .replace(/\n/g, "");
-    //console.log("STR: "+str);
-    console.log.call(console, str);
-    //Util.log.apply(Util, args)
+Util.debug = function(message) {
+  const args = [...arguments];
+  let cache = Util.array();
+  const removeCircular = function(key, value) {
+    if(typeof value === "object" && value !== null) {
+      if(cache.indexOf(value) !== -1) return;
+      cache.push(value);
+    }
+    return value;
   };
+  const str = args
+    .map(arg => (typeof arg === "object" ? JSON.stringify(arg, removeCircular) : arg))
+    .join(" ")
+    .replace(/\n/g, "");
+  //console.log("STR: "+str);
+  console.log.call(console, str);
+  //Util.log.apply(Util, args)
+};
 Util.type = function({ type }) {
   return (type && String(type).split(/[ ()]/)[1]) || "";
 };
@@ -1682,7 +1681,7 @@ Util.isPromise = function(obj) {
   return (Boolean(obj) && typeof obj.then === "function") || obj instanceof Promise;
 };
 /* eslint-disable no-use-before-define */
-if(typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
+if (typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
 Util.next = function(iter, observer, prev = undefined) {
   let item;
   try {

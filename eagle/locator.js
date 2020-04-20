@@ -293,7 +293,7 @@ export const EagleRef = function EagleRef(root, path) {
   /* if(!EaglePath.prototype.existsIn.call(path, root))
     return null;*/
 
-  if( Util.isObject(root) && Util.isObject(root.root)) root = root.root;
+  if(Util.isObject(root) && Util.isObject(root.root)) root = root.root;
 
   let obj = new EagleReference(root, path);
   return Object.freeze(obj);

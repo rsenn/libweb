@@ -131,7 +131,7 @@ export class EagleNode extends EagleInterface {
 
         lazy[value.tagName] = () => EagleElement(this, path);
 
-        lists[value.tagName] = () => makeEagleNodeMap(lazy[value.tagName]().children, key == 'layers' ? 'number' : 'name');
+        lists[value.tagName] = () => makeEagleNodeMap(lazy[value.tagName]().children, key == "layers" ? "number" : "name");
       }
       lazyMembers(this, lists);
       //new EagleEntity(parent, path);

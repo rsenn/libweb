@@ -184,7 +184,7 @@ export class EagleProject {
         console.log("dstMap.keys:", dump(dstMap.raw.map(item => item.attributes.name).sort(), 2));
         console.log("dstMap.keys:", dump(dstMap.keys().length, 2));
         console.log("dstMap.map:", dump(dstMap.map().size, 2));
-       // console.log("dstMap.map:", dump(dstMap.map(), 2));
+        // console.log("dstMap.map:", dump(dstMap.map(), 2));
         // console.log("destLib[entity].raw:", dump(destLib[entity].raw,2));
         console.log("srcLib[entity].raw == srcMap.raw:", srcLib[entity].raw == srcMap.raw);
         console.log("destLib[entity].raw == dstMap.raw:", destLib[entity].raw === dstMap.raw);
