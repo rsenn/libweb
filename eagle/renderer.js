@@ -10,9 +10,7 @@ export class SchematicRenderer {
     short: 1,
     point: 0
   };
-static colors = [
-"#FFFFFF", "#4B4BA5", "#4BA54B", "#4BA5A5", "#A54B4B", "#A54BA5", "#A5A54B", "#E6E6E6", "#4B4BFF", "#4BFF4B", "#4BFFFF", "#FF4B4B", "#FF4BFF", "#FFFF4B", "#4B4B4B", "#A5A5A5"
-];
+  static colors = ["#FFFFFF", "#4B4BA5", "#4BA54B", "#4BA5A5", "#A54B4B", "#A54BA5", "#A5A54B", "#E6E6E6", "#4B4BFF", "#4BFF4B", "#4BFFFF", "#FF4B4B", "#FF4BFF", "#FFFF4B", "#4B4B4B", "#A5A5A5"];
   constructor(obj, factory) {
     const { layers, nets, parts, sheets, symbols } = obj;
 
@@ -30,24 +28,24 @@ static colors = [
 
     for(let sym of symbol.children) {
       const layer = sym.layer;
-     console.log("layer:", sym.layer);
-/*
+      console.log("layer:", sym.layer);
+      /*
       if(sym.tagName == 'text') {
       console.log("text:", sym.text);
       console.log("children:", sym.raw.children);
       console.log("xml:", sym.toXML());
     }*/
-    const color  = SchematicRenderer.colors[layer && layer.color] ||  "#4BA54B";
+      const color = SchematicRenderer.colors[layer && layer.color] || "#4BA54B";
 
       switch (sym.tagName) {
         case "wire": {
           const { x1, x2, y1, y2, width, layer } = sym;
-          this.factory("line", { stroke: color, x1, x2, y1, y2, strokeWidth: width*1.2 }, parent);
+          this.factory("line", { stroke: color, x1, x2, y1, y2, strokeWidth: width * 1.2 }, parent);
           break;
         }
-         case "rectangle": {
+        case "rectangle": {
           const { x1, x2, y1, y2, width, layer } = sym;
-          this.factory("rect", { stroke: 'none', fill: color, x: x1, y: y1, width: x2-x1, height: y2-y1, strokeWidth: '0.1' }, parent);
+          this.factory("rect", { stroke: "none", fill: color, x: x1, y: y1, width: x2 - x1, height: y2 - y1, strokeWidth: "0.1" }, parent);
           break;
         }
         case "text": {
@@ -56,12 +54,12 @@ static colors = [
             "text",
             {
               fill: color,
-              stroke: 'none',
+              stroke: "none",
               strokeWidth: 0.05,
               x,
               y,
               innerHTML: text,
-              fontSize: size*1.6,
+              fontSize: size * 1.6,
               fontFamily: font || "Fixed"
             },
             parent
@@ -76,7 +74,7 @@ static colors = [
               stroke: color,
               x,
               y,
-              r: radius ,
+              r: radius,
               strokeWidth: width * 0.8,
               fill: "none"
             },
@@ -91,7 +89,7 @@ static colors = [
           const pivot = new Point(x, y);
           const l = new Line(pivot, vec.add(pivot));
           console.log("pin:", sym);
-          this.factory("line", { class: 'pin', stroke:  "#A54B4b", ...l.toObject(), strokeWidth: 0.1 }, parent);
+          this.factory("line", { class: "pin", stroke: "#A54B4b", ...l.toObject(), strokeWidth: 0.1 }, parent);
           break;
         }
         default: {
@@ -150,7 +148,6 @@ export function renderSchematic(obj, factory) {
   console.log("center:", center.prod(-1, -1).toString());
   console.log("factory.delegate.root:", factory.delegate.root);*/
 
-
   for(let [v, k, o] of Util.traverse(obj)) {
     if(["x", "y", "x1", "y1", "x2", "y2", "width", "size"].indexOf(k) != -1) {
       o[k] = v / 2.54;
@@ -164,10 +161,9 @@ export function renderSchematic(obj, factory) {
   renderer.render(g);
 
   let bbox = SVG.bbox("#board");
-  console.log("bbox:",bbox);
-  console.log("bbox.aspect:",bbox.aspect());
-  console.log("bbox.toString:",bbox.toString());
+  console.log("bbox:", bbox);
+  console.log("bbox.aspect:", bbox.aspect());
+  console.log("bbox.toString:", bbox.toString());
   //console.log("bbox.rect.toString:",bbox.rect.toString());
   factory.delegate.root.setAttribute("viewBox", bbox.toString());
-
 }
