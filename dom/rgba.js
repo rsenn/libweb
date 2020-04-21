@@ -107,6 +107,12 @@ RGBA.prototype.toString = function(sep = ", ") {
   else return "rgba(" + this.r + sep + this.g + sep + this.b + sep + (a / 255).toFixed(3) + ")";
 };
 
+RGBA.prototype.toSource = function(sep = ",") {
+  let a = this.a;
+  if(a >= 255) return "new RGBA(" + this.r + sep + this.g + sep + this.b + ")";
+  else return "new RGBA(" + this.r + sep + this.g + sep + this.b + sep + (a / 255).toFixed(3) + ")";
+};
+
 RGBA.prototype.normalize = function(from = 255, to = 1.0) {
   const mul = to / from;
   this.r *= mul;

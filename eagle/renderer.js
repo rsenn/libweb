@@ -5,9 +5,10 @@ import { Line } from "../geom/line.js";
 import { EagleElement } from "./element.js";
 
 const RotateTransformation = rot => {
+  let mirror = /M/.test(rot);
   let angle = +(rot || "").replace(/R/, "") || 0;
   // rot -= 90;
-  return `rotate(${angle})`;
+  return (mirror ? ` scale(-1,1) ` : '') +`rotate(${angle})` ;
   //  return angle != 0 ? `rotate(${angle})` : '';
 };
 
@@ -28,7 +29,25 @@ export class SchematicRenderer {
     short: 1,
     point: 0
   };
-  static colors = ["#ffffff", "#4b4ba5", "#4ba54b", "#4ba5a5", "#a54b4b", "#a54ba5", "#a5a54b", "#e6e6e6", "#4b4bff", "#4bff4b", "#4bffff", "#ff4b4b", "#ff4bff", "#ffff4b", "#4b4b4b", "#a5a5a5"];
+  static colors = [
+    "rgb(255,255,255)",
+    "rgb(75,75,165)",
+    "rgb(75,165,75)",
+    "rgb(75,165,165)",
+    "rgb(165,75,75)",
+    "rgb(165,75,165)",
+    "rgb(165,165,75)",
+    "rgb(175,175,175)",
+    "rgb(75,75,255)",
+    "rgb(75,255,75)",
+    "rgb(75,255,255)",
+    "rgb(255,75,75)",
+    "rgb(255,75,255)",
+    "rgb(255,255,75)",
+    "rgb(75,75,75)",
+    "rgb(165,165,165)"
+    /*"#ffffff", "#4b4ba5", "#4ba54b", "#4ba5a5", "#a54b4b", "#a54ba5", "#a5a54b", "#e6e6e6", "#4b4bff", "#4bff4b", "#4bffff", "#ff4b4b", "#ff4bff", "#ffff4b", "#4b4b4b", "#a5a5a5"*/
+  ];
   constructor(obj, factory) {
     const { layers, nets, parts, sheets, symbols } = obj;
 
@@ -41,15 +60,22 @@ export class SchematicRenderer {
   }
 
   renderCollection(collection, parent, labelText) {
-    const arr = collection.children;
-    /* console.log("collection:", collection.toXML(), " part:", part);*/
+    const arr = [...collection.children];
 
-    for(let item of collection.children) this.renderItem(item, parent, labelText);
+  /*  arr.sort((a,b) => a.tagName.localeCompare(b.tagName));
+     console.log("arr:", arr);*/
+
+    for(let item of arr.filter(item => item.tagName != 'text'))
+      this.renderItem(item, parent, labelText);
+
+    for(let item of arr.filter(item => item.tagName == 'text'))
+          this.renderItem(item, parent, labelText);
+
   }
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
-    const color = SchematicRenderer.colors[layer && layer.color ] || "#4BA54B";
+    const color = SchematicRenderer.colors[layer && layer.color] || "#4BA54B";
     const factory = (elem, attr, parent) => this.factory(elem, { className: item.tagName, ...attr }, parent);
 
     const { labelText, coordFn = i => i } = opts;
@@ -243,7 +269,6 @@ export function renderSchematic(obj, factory) {
   const g = factory("g", {
     transform: `translate(${center.prod(-1)}) scale(2.54,2.54) translate(${center.prod(1 / 2.54)}) scale(1,-1)`,
     "vector-effect": "non-scaling-stroke"
-
   });
   renderer.render(g);
 
