@@ -583,9 +583,13 @@ export class Element extends Node {
     if(!delegate.setcss) delegate.setcss = (elem, css) => Object.assign(elem.style, css); // Element.setCSS(elem, css);
 
     delegate.bound_factory = (tag, attr = {}, parent = null) => {
-      const { tagName, style, children, className, innerHTML, ...props } = attr;
-      let elem = delegate.create(tagName || tag);
-
+      if(typeof tag == "object") {
+        const { tagName, ...a } = tag;
+        attr = a;
+        tag = tagName;
+      }
+      const { style, children, className, innerHTML, ...props } = attr;
+      let elem = delegate.create(tag);
       if(style) delegate.setcss(elem, style);
       if(children && children.length) {
         for(let i = 0; i < children.length; i++) {

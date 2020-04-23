@@ -40,20 +40,14 @@ export class SVG extends Element {
 
     if(parent && parent.tagName == "svg") delegate.root = parent;
     else if(this !== SVG && this && this.appendChild) delegate.root = this;
-    else {
-      delegate.root = SVG.create("svg", { width, height, viewBox: "0 0 " + width + " " + height + "" }, parent);
-    }
+    else delegate.root = SVG.create("svg", { width, height, viewBox: `0 0 ${width} ${height}` }, parent);
 
-    if(!delegate.root.firstElementChild || delegate.root.firstElementChild.tagName != "defs") {
-      SVG.create("defs", {}, delegate.root);
-    }
+    if(!delegate.root.firstElementChild || delegate.root.firstElementChild.tagName != "defs") SVG.create("defs", {}, delegate.root);
 
     delegate.append_to = function(elem, p) {
       var root = p || this.root;
 
-      if(elem.tagName.indexOf("Gradient") != -1) {
-        root = root.querySelector("defs");
-      }
+      if(elem.tagName.indexOf("Gradient") != -1) root = root.querySelector("defs");
 
       if(typeof root.append == "function") root.append(elem);
       else root.appendChild(elem);

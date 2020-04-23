@@ -89,6 +89,7 @@ Point.prototype.mul = function(f) {
   return this;
 };
 Point.prototype.quot = function(other) {
+  other = isPoint(other) ? other : { x: other, y: other };
   return new Point(this.x / other.x, this.y / other.y);
 };
 Point.prototype.div = function(f) {
@@ -172,6 +173,10 @@ Point.prototype.toSource = function(asArray = false) {
 };
 Point.prototype.toSource = function() {
   return "{x:" + this.x + ",y:" + this.y + "}";
+};
+Point.prototype.toObject = function() {
+  const { x, y } = this;
+  return { x, y };
 };
 Point.prototype.toCSS = function(precision = 0.001) {
   return { left: Util.roundTo(this.x, precision) + "px", top: Util.roundTo(this.y, precision) + "px" };
