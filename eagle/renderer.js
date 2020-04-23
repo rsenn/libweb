@@ -309,10 +309,11 @@ export class SchematicRenderer extends EagleRenderer {
 export class BoardRenderer extends EagleRenderer {
   constructor(obj, factory) {
     super();
-    const { settings, layers, libraries, classes, designrules, elements, signals } = obj;
+    const { settings, layers, libraries, classes, designrules, elements, signals, plain } = obj;
 
     this.elements = elements;
     this.signals = signals;
+    this.plain = [...board.getAll('plain', (v, l) => new EagleElement(board, l))][0];
     this.layers = layers;
     this.create = factory;
   }
@@ -332,8 +333,6 @@ export class BoardRenderer extends EagleRenderer {
         const ri = +(drill / 3).toFixed(3);
         let data = '';
         const transform = `translate(${x},${y})`;
-
-        console.log('pad:', { ro, ri });
 
         switch (shape) {
           case 'long': {
@@ -406,7 +405,7 @@ export class BoardRenderer extends EagleRenderer {
     }
   }
 
-  renderCollection(coll, parent, opts) {
+  renderCollection(coll, parent, opts = {}) {
     const { predicate = i => true } = opts;
 
     for(let item of coll.children) {
@@ -429,7 +428,10 @@ export class BoardRenderer extends EagleRenderer {
   render(parent) {
     let signalsGroup = this.create('g', { className: 'signals', strokeLinecap: 'round' }, parent);
     let elementsGroup = this.create('g', { className: 'elements' }, parent);
-    console.log('elements:', this.elements);
+
+    let plainGroup = this.create('g', { className: 'plain' }, parent);
+
+    console.log('plain:', this.plain);
 
     for(let element of this.elements.list) this.renderElement(element, elementsGroup);
 
@@ -441,6 +443,8 @@ export class BoardRenderer extends EagleRenderer {
       this.renderCollection(signal, signalsGroup, {
         predicate: i => i.attributes.layer === undefined
       });
+
+    this.renderCollection(this.plain, plainGroup);
   }
 }
 

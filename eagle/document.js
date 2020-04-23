@@ -64,7 +64,16 @@ export class EagleDocument extends EagleNode {
           'nets'
         ];
       case 'brd':
-        return ['settings', 'layers', 'libraries', 'classes', 'designrules', 'elements', 'signals'];
+        return [
+          'settings',
+          'layers',
+          'libraries',
+          'classes',
+          'designrules',
+          'elements',
+          'signals',
+          'plain'
+        ];
       case 'lbr':
         return ['settings', 'layers', 'library', 'packages', 'symbols', 'devicesets'];
     }

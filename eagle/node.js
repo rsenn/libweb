@@ -1,5 +1,4 @@
 import { EaglePath, EagleRef, EagleReference } from './locator.js';
-
 import Util from '../util.js';
 import deep from '../deep.js';
 import { lazyMembers, lazyMap } from '../lazyInitializer.js';
@@ -7,7 +6,7 @@ import { text, inspect, EagleInterface } from './common.js';
 
 import { makeEagleNodeMap } from './nodeMap.js';
 
-export const makeEagleNode = (owner, ref, ctor) => {
+export const makeEagleNode = (owner, ref, ctor = EagleNode) => {
   let e = new ctor(owner, ref);
   return e;
 };
@@ -88,6 +87,8 @@ export class EagleNode extends EagleInterface {
     switch (this.tagName) {
       case 'schematic':
         return ['settings', 'layers', 'libraries', 'classes', 'parts', 'sheets'];
+      case 'board':
+        return ['plain', 'libraries'];
       case 'sheet':
         return ['busses', 'nets', 'instances'];
       case 'deviceset':
@@ -128,7 +129,7 @@ export class EagleNode extends EagleInterface {
         lists[key] = () => lazy[key]().children;
 
         maps[key] =
-          ['sheets', 'connects'].indexOf(key) != -1
+          ['sheets', 'connects', 'plain'].indexOf(key) != -1
             ? lists[key]
             : () =>
                 makeEagleNodeMap(
@@ -160,8 +161,8 @@ export class EagleNode extends EagleInterface {
   replace(node) {
     this.ref.replace(node);
   }
-
-  get(name, pred, attr = 'name', transform = (o, l) => makeEagleElement(this, l)) {
+  /*
+  get(name, pred, attr = 'name', transform = (o, l) => makeEagleNode(this, l)) {
     let i = name == 'library' ? 'libraries' : name + 's';
     let p = this[i];
     let children = p;
@@ -169,14 +170,16 @@ export class EagleNode extends EagleInterface {
       const attrName = '' + attr;
       attr = e => e.attributes[attrName];
     }
-    if(typeof pred != 'function') {
+    if(pred === undefined) {
+      pred = e => true;
+    } else if(typeof pred != 'function') {
       let value = pred;
       pred = e => attr(e) === '' + value;
     }
     if(p && children)
       for(let j = 0; j < children.length; j++)
         if(pred(children[j])) return transform(this, ['children', j]);
-  }
+  }*/
 
   *getAll(name, transform) {
     transform =
