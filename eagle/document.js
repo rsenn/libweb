@@ -96,4 +96,9 @@ export class EagleDocument extends EagleNode {
     if(!(path instanceof EaglePath)) path = new EaglePath(path);
     return transform(path.apply(this));
   }
+
+  
+  *getAll(name) {
+    yield *super.getAll(name, (v,l,p) => new EagleElement(this, l));
+  }
 }

@@ -121,7 +121,7 @@ trkl["from"] = function(executor) {
   return self;
 };
 
-trkl.property = function(object, name, options = { enumerable: true, configurable: true }) {
+trkl.property = function(object, name, options = { enumerable: true, configurable: true, deletable: false }) {
   const { value, ...opts } = options;
   var self = trkl(value);
   Object.defineProperty(object, name, {
@@ -129,6 +129,10 @@ trkl.property = function(object, name, options = { enumerable: true, configurabl
     get: self,
     set: self
   });
+  if(options.deletable) {
+    trkl.subscribe(value => value === undefined ? self.delete() : undefined);
+    self.delete = () => { delete object[name]; self(null); };
+  }
   return self;
 };
 

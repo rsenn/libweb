@@ -64,7 +64,12 @@ export class EagleNode extends EagleInterface {
   }
 
   get raw() {
-    return this.ref.dereference();
+    let obj = this;
+    while('ref' in obj)
+      obj = obj.ref.dereference();
+
+    return obj;
+    
     let ret = {};
     if(this.xml && this.xml[0]) {
       ret = this.xml[0];
@@ -187,7 +192,7 @@ export class EagleNode extends EagleInterface {
       function() {
         return [...arguments];
       };
-    for(let [v, p, o] of deep.iterate(this.ref.dereference(), e => e.tagName === name))
+    for(let [v, p, o] of deep.iterate(this.raw, e => e.tagName === name))
       yield transform(v, p, o);
   }
 

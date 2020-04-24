@@ -79,7 +79,7 @@ export class EagleRenderer {
         const { x1, x2, y1, y2, width } = coordFn(item);
         svg(
           'line',
-          { stroke: color, x1, x2, y1, y2, strokeWidth: +(width * 1).toFixed(3) },
+          { stroke: color, x1, x2, y1, y2, strokeWidth: +(width == 0 ? 0.1 : width * 1).toFixed(3) },
           parent
         );
         break;
@@ -130,6 +130,7 @@ export class EagleRenderer {
           text = prop in opts ? opts[prop] : text;
         }
         const transform = `translate(${x},${y}) scale(1,-1) ${RotateTransformation(rot)}`;
+        const e = 
         svg(
           'text',
           {
@@ -138,14 +139,16 @@ export class EagleRenderer {
             strokeWidth: 0.05,
             x: 0,
             y: 0,
-            ...Alignment(align),
-            innerHTML: text,
+          /*  ...Alignment(align),
+            innerHTML: text,*/
             fontSize: size * 1.6,
             fontFamily: font || 'Fixed',
             transform
           },
           parent
         );
+        svg('tspan', {       ...Alignment(align),
+            innerHTML: text }, e);
         break;
       }
       case 'circle': {
@@ -454,7 +457,7 @@ export function renderDocument(doc, factory) {
   const bb = new BBox();
   let objects = [];
 
-  for(let [v, k, o] of doc.iterator()) if(typeof v == 'object' && v !== null) objects.push(v);
+  for(let [v, k, o] of doc.iterator(it => it.attributes && it.attributes.x !== undefined, [], arg => arg)) /*if(typeof v == 'object' && v !== null) */objects.push(v);
   bb.update(objects);
   const rect = bb.rect.outset(2.54 * 4);
   const center = rect.center;
@@ -462,7 +465,7 @@ export function renderDocument(doc, factory) {
   console.log("center:", center.prod(-1, -1).toString());
   console.log("factory.delegate.root:", factory.delegate.root);*/
 
-  for(let [v, k, o] of Util.traverse(doc)) {
+  for(let [v, k, o] of doc.iterator(it => !!it.attributes, [], arg => arg)) {
     if(['x', 'y', 'x1', 'y1', 'x2', 'y2', 'width', 'size'].indexOf(k) != -1) {
       o[k] = v / 2.54;
       /* if(k !== "width" && k !== "size")*/ o[k] = Util.roundTo(o[k], 0.001);

@@ -163,9 +163,9 @@ export const EaglePath = Util.immutableClass(
             s += e.tagName;
             pt = o.filter(sib => sib.tagName == e.tagName);
           }
-          if(pt.length != 1) {
-            if(e.attributes.name) s += `[@name='${e.attributes.name}']`;
-            else if(typeof p == 'number' && n != 1) s += `[${p + 1}]`;
+            if(Util.isObject(e.attributes) && e.attributes.name) s += `[@name='${e.attributes.name}']`;
+         else  if(pt.length != 1) {
+ if(typeof p == 'number' && n != 1) s += `[${p + 1}]`;
           }
           n = undefined;
         }
@@ -301,8 +301,8 @@ export class EagleReference {
     return EagleRef(this.root, this.path.firstChild);
   }
 
-  down() {
-    return new EagleReference(this.root, [...this.path.toArray(), ...arguments]);
+  down(...args) {
+    return new EagleReference(this.root, [...this.path.toArray(), ...args]);
   }
   up(n = 1) {
     return new EagleReference(this.root, this.path.up(n));

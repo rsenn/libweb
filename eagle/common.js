@@ -59,20 +59,21 @@ export const parseArgs = args => {
   return ret;
 };
 
-export const traverse = function*(o, l = [], d) {
-  if(!(l instanceof EaglePath)) l = new EaglePath(l);
+export const traverse = function*(obj, path = [], doc) {
+  if(!(path instanceof EaglePath)) path = new EaglePath(path);
 
-  if(false && typeof o == 'object')
-    if(o !== null && 'name' in o.attributes) l[l.length - 1] = { name: o.attributes.name };
-  yield [o, l, d];
-  if(typeof o == 'object') {
-    if(o instanceof Array || 'length' in o)
-      for(let i = 0; i < o.length; i++) yield* traverse(o[i], l.down(i), d);
-    else if('children' in o)
-      for(let i = 0; i < o.children.length; i++)
-        yield* traverse(o.children[i], l.down('children', i), d);
+  if(false && typeof obj == 'object')
+    if(obj !== null && 'name' in obj.attributes) path[path.length - 1] = { name: obj.attributes.name };
+  yield [obj, path, doc];
+  if(typeof obj == 'object') {
+    if(Util.isArray(obj))
+      for(let i = 0; i < obj.length; i++) yield* traverse(obj[i], path.down(i), doc);
+    else if('children' in obj && Util.isArray(obj.children))
+      for(let i = 0; i < obj.children.length; i++)
+        yield* traverse(obj.children[i], path.down('children', i), doc);
   }
 };
+
 export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
   if(typeof o == 'object' && o !== null && 'raw' in o) o = o.raw;
   //if(typeof o == "object" && o !== null && "root" in o) o = o.root;
@@ -170,11 +171,15 @@ export class EagleInterface {
   }*/
 
   *findAll(...args) {
+
+
     let { path, predicate, transform } = parseArgs(args);
-    if(!transform) transform = ([v, l, d]) => [v, l, d]; //(typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l, v) : v);
-    for(let [v, l, d] of this.iterator(predicate, [], it => it)) {
+    //if(!transform) transform = ([v, l, d]) => [v, l, d]; //(typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l, v) : v);
+    for(let [v, l, d] of this.iterator(e => true, [], arg => arg)) {
       if(!d) d = this;
       if(predicate(v, l, d)) {
+         //      console.log("findAll",{v,l,d});
+
         if(transform) v = transform([v, l, d]);
         yield v;
       }
@@ -187,29 +192,12 @@ export class EagleInterface {
   }
 
   xpath() {
-    let l = this.path,
-      s = '',
-      d = this.owner;
-    let o = d.index([]),
-      p = null;
-    for(let i = 0; i < l.length; i++) {
-      let part = l[i];
-      p = o;
-      o = o[part];
-      if(o.tagName !== undefined) {
-        if(o.tagName[0] == '?') continue;
-        s += `/${o.tagName}`;
-        if(o.attributes && o.attributes.name !== undefined) s += `[@name="${o.attributes.name}"]`;
-      } else if(part != 'children') {
-        s += '/' + part;
-      }
-      if(typeof part == 'number') s += `[${part}]`;
-    }
-    return s;
+    return this.path.xpath(this.root);
   }
 
   get nodeType() {
     if(typeof this.tagName == 'string') return 'EagleElement';
+    else if(typeof this.xml != 'undefined') return 'EagleDocument';
     return Util.className(this);
   }
 
@@ -218,7 +206,7 @@ export class EagleInterface {
   }
 
   *iterator(...args) {
-    let predicate = typeof args[0] == 'function' ? args.shift() : arg => false;
+    let predicate = typeof args[0] == 'function' ? args.shift() : arg => true;
     let path = (Util.isArray(args[0]) && args.shift()) || [];
     let t =
       typeof args[0] == 'function'
@@ -234,8 +222,15 @@ export class EagleInterface {
     if(path.length > 0) node = deep.get(node, path);
     for(let [v, l] of deep.iterate(node, (v, p) =>
       predicate(v, p) ? -1 : p.length > 1 ? p[p.length - 2] == 'children' : true
-    ))
-      if(typeof v == 'object' && v !== null && 'tagName' in v) yield [v, l, owner];
+    )) {
+    if(!(l instanceof EaglePath))
+        l = new EaglePath(l);
+      if(typeof v == 'object' && v !== null && 'tagName' in v) {
+             console.log("l:",l.xpath(root));
+
+        if(predicate(v,l,owner)) yield t([v, l, owner]);
+      }
+    }
   }
 
   [Symbol.iterator]() {
@@ -285,4 +280,11 @@ export class EagleInterface {
   static toString(e) {
     return dump(e);
   }
+
+
+  toXML(depth = Number.MAX_SAFE_INTEGER) {
+    // let o = this.document.index(this.path);
+    return toXML(this.ref.dereference(), depth);
+  }
+
 }

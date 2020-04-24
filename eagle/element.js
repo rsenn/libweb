@@ -41,8 +41,8 @@ export class EagleElement extends EagleNode {
           v => prop(v),
           v => (/^-?[0-9.]+$/.test(prop()) ? parseFloat(prop()) : prop())
         );
-        handler(attributes[key]);
-        prop.subscribe(value => (value !== undefined ? (attributes[key] = value) : undefined));
+        prop(attributes[key]);
+        prop.subscribe(value => (value !== undefined ? (o.attributes[key] = value) : delete o.attributes[key]));
         this.handlers[key] = prop;
         if(key == 'deviceset' || key == 'package') {
           trkl.bind(this, key, v =>
@@ -83,11 +83,6 @@ export class EagleElement extends EagleNode {
   get text() {
     let text = this.raw.children[0];
     if(typeof text == 'string') return text;
-  }
-
-  toXML(depth = Number.MAX_SAFE_INTEGER) {
-    // let o = this.document.index(this.path);
-    return toXML(this.raw, depth);
   }
 
   static isRelation(name) {
@@ -141,9 +136,30 @@ export class EagleElement extends EagleNode {
     const { text, ownerDocument } = entity;
     return inspect(entity, ownerDocument);
   }
+
+  *getAll(name) {
+    yield *super.getAll(name, (v,l,p) => new EagleElement(this, l));
+  }
+
+  setAttribute(name, value) {
+    if(typeof(value) != 'string' && !value)
+      this.removeAttribute(name);
+    else
+    this.raw.attributes[name] = value+'';
+  }
+
+  removeAttribute(name) {
+   delete this.raw.attributes[name];
+  }
+
+  get pos() {
+    return `(${(this.x/25.4).toFixed(1)} ${(this.y/25.4).toFixed(1)})`;
+  }
 }
 
 export const makeEagleElement = function makeEagleElement(owner, ref, ...args) {
+ 
+//console.log("makeEagleElement",{owner,ref,args});
   if('length' in ref) ref = owner.ref.down(...ref);
 
   if(args.length > 0) ref = ref.down(...args);
