@@ -325,19 +325,6 @@ Rect.toSource = (rect, opts = {}) => {
   return `{${sep}${props}${sep}}`;
 };
 
-if(!Util.isBrowser()) {
-  const c = Util.color();
-  Rect.prototype[Symbol.for("nodejs.util.inspect.custom")] = function() {
-    const { x, y } = this;
-    return (
-      c.text("Rect", 1, 31) +
-      Util.toString(
-        { x, y },
-        { multiline: false, colon: ":", spacing: "", separator: ", ", padding: " " }
-      )
-    );
-    return Rect.prototype.toSource.call(this, { inner: true, sep: " ", spc: "", colon: "=" });
-  };
-}
+Util.defineInspect(Rect.prototype, 'x','y','width','height');
 
 export const isRect = rect => isPoint(rect) && isSize(rect);

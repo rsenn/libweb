@@ -26,10 +26,13 @@ export function Line(x1, y1, x2, y2) {
     obj.y2 = parseFloat(y2);
     ret = 1;
   } else if(isPoint(args[0]) && isPoint(args[1])) {
-    obj.x1 = parseFloat(args[0].x);
+    obj.a = args[0];
+    obj.b = args[1];
+
+/*    obj.x1 = parseFloat(args[0].x);
     obj.y1 = parseFloat(args[0].y);
     obj.x2 = parseFloat(args[1].x);
-    obj.y2 = parseFloat(args[1].y);
+    obj.y2 = parseFloat(args[1].y);*/
     ret = 2;
   } else if(arg && arg.length >= 4 && arg.slice(0, 4).every(arg => !isNaN(parseFloat(arg)))) {
     obj.x1 = typeof x === "number" ? x : parseFloat(x);
@@ -212,3 +215,5 @@ for(let name of [
 ]) {
   Line[name] = points => Line.prototype[name].call(points);
 }
+
+Util.defineInspect(Line.prototype, 'x1','y1','x2', 'y2');

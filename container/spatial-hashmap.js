@@ -1,21 +1,21 @@
 (function(factory, window) {
-  'use strict';
+  "use strict";
 
   var hashmapUrl = {
-    amd: './hashmap',
-    node: 'hashmap',
-    browser: 'HashMap'
+    amd: "./hashmap",
+    node: "hashmap",
+    browser: "HashMap"
   };
 
-  if(typeof define === 'function' && define.amd) {
+  if(typeof define === "function" && define.amd) {
     define([hashmapUrl.amd], factory);
-  } else if(typeof exports === 'object') {
+  } else if(typeof exports === "object") {
     exports.SpatialHashMap = factory(require(hashmapUrl.node).HashMap);
   } else {
     window.SpatialHashMap = factory(window[hashmapUrl.browser]);
   }
 })(function(HashMap) {
-  'use strict';
+  "use strict";
 
   /**
    * HashMap
@@ -40,7 +40,7 @@
    */
 
   var Key = function(cell) {
-    return cell.x + ':' + cell.y;
+    return cell.x + ":" + cell.y;
   };
 
   var Keys = function(cells) {
@@ -235,10 +235,7 @@
     return this;
   };
 
-  SpatialHashMap.prototype.moveBy = SpatialHashMap.prototype.move = function(
-    diff,
-    obj
-  ) {
+  SpatialHashMap.prototype.moveBy = SpatialHashMap.prototype.move = function(diff, obj) {
     diff.w = 0;
     diff.h = 0;
     this.moveAndResizeBy(diff, obj);

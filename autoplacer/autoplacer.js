@@ -1,4 +1,4 @@
-import m2d from './math2d.js';
+import m2d from "./math2d.js";
 
 var vdec = m2d.inc;
 var vinc = m2d.dec;
@@ -147,10 +147,7 @@ Autoplacer.prototype.next = function() {
       //console.log("sj.prev:", sj.prev);
 
       var ov = rectoverlap(b, rj);
-      vsetlen(
-        vdec(vset(d, pos), sj.prev),
-        0.1 * Math.min(300, Math.pow(Math.max(ov), 0.5))
-      );
+      vsetlen(vdec(vset(d, pos), sj.prev), 0.1 * Math.min(300, Math.pow(Math.max(ov), 0.5)));
 
       //console.log("ov:", ov);
       //console.log("f:", f);

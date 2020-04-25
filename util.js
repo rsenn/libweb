@@ -740,7 +740,7 @@ Util.toString = (obj, opts = {}, indent = "") => {
     else s += value;
     i++;
   }
-  return s + sep(false) + c.code(1, 36) + `${padding}}`;
+  return s + sep(false) + c.text(`${padding}}`, 1, 36);
 };
 Util.dump = function(name, props) {
   const args = [name];
@@ -1688,7 +1688,7 @@ Util.members = function*(obj, recursive = false, pred = () => true) {
 
   if(recursive) {
     const proto = Object.getPrototypeOf(obj);
-    if(proto) yield* Util.members(proto, true, pred);
+    if(proto) yield* Util.members(proto, typeof(recursive) == 'number' ? recursive - 1 : recursive, pred);
   }
 };
 Util.getMethodNames = function(obj, recursive = false) {
@@ -1707,8 +1707,10 @@ Util.getMethods = function(obj, recursive = false, t = (key, value) => [key, val
 };
 Util.methods = function*(obj, recursive = false, t = (key, value) => [key, value]) {
   for(let name of Util.getMethodNames(obj, recursive)) {
+    try {
     const value = t(name, obj[name]);
     if(value !== undefined && value !== false && value !== null) yield value;
+  } catch(err) {}
   }
 };
 Util.bindMethods = function(methods, obj) {
@@ -2298,3 +2300,19 @@ Util.color = (useColor = true) =>
 
 Util.colorText = (...args) => Util.color().text(...args);
 Util.ansiCode = (...args) => Util.color().code(...args);
+
+
+Util.defineInspect = (proto, ...props) => {
+if(!Util.isBrowser()) {
+  const c = Util.color();
+  proto[Symbol.for("nodejs.util.inspect.custom")] = function() { 
+  const obj =this;   
+    return c.text(Util.fnName(proto.constructor)+' ', 1, 31) +
+      Util.toString(
+        props.reduce((acc,key) => { acc[key] = obj[key]; return acc; }, {}),
+        { multiline: false, colon: ":", spacing: "", separator: ", ", padding: "" }
+      );
+  
+  };
+}
+}

@@ -17,7 +17,7 @@
  * along with BackBee. If not, see <http://www.gnu.org/licenses/>.
  */
 (function(window) {
-  'use strict';
+  "use strict";
 
   var setValues = function hashMapSetValues(HashMap, values) {
       var value;
@@ -32,10 +32,7 @@
         }
       }
     },
-    defineArrayProperty = function hashMapDefineArrayProperty(
-      obj,
-      property_name
-    ) {
+    defineArrayProperty = function hashMapDefineArrayProperty(obj, property_name) {
       Object.defineProperty(obj, property_name, {
         value: [],
         writable: false,
@@ -43,10 +40,7 @@
         configurable: false
       });
     },
-    defineSizeProperty = function hashMapDefineSizeProperty(
-      obj,
-      property_name
-    ) {
+    defineSizeProperty = function hashMapDefineSizeProperty(obj, property_name) {
       Object.defineProperty(obj, property_name, {
         get: function hashMapDefineSizePropertyGet() {
           return this.map_values.length;
@@ -59,13 +53,13 @@
       });
     },
     HashMap = function(values) {
-      defineArrayProperty(this, 'map_keys');
+      defineArrayProperty(this, "map_keys");
 
-      defineArrayProperty(this, 'map_values');
+      defineArrayProperty(this, "map_values");
 
-      defineSizeProperty(this, 'length');
+      defineSizeProperty(this, "length");
 
-      defineSizeProperty(this, 'size');
+      defineSizeProperty(this, "size");
 
       setValues(this, values);
     };
@@ -242,8 +236,8 @@
     return values;
   };
 
-  if(typeof define === 'function' && define.amd) {
-    define('bbhashmap', [], function() {
+  if(typeof define === "function" && define.amd) {
+    define("bbhashmap", [], function() {
       return HashMap;
     });
   } else {

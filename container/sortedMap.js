@@ -1,6 +1,6 @@
 // Module constants
-const CMP = Symbol('insort.CMP');
-const ORDER = Symbol('insort.ORDER');
+const CMP = Symbol("insort.CMP");
+const ORDER = Symbol("insort.ORDER");
 const CMP_DEFAULT = (a, b) => String(a).localeCompare(b);
 
 // Binary search

@@ -1,7 +1,7 @@
-import React from 'react';
-import { Point, Element, SVG } from '../dom.js';
-import { trkl } from '../trkl.js';
-import { lazyInitializer } from '../lazyInitializer.js';
+import React from "react";
+import { Point, Element, SVG } from "../dom.js";
+import { trkl } from "../trkl.js";
+import { lazyInitializer } from "../lazyInitializer.js";
 
 export function SvgPathTracer(path) {
   var bbox = SVG.bbox(path);
@@ -36,7 +36,7 @@ export class SvgOverlay extends React.Component {
   svg = lazyInitializer((rect, root) => {
     //console.log("lazyInitializer: ", { rect, root });
     var svg = SVG.create(
-      'svg',
+      "svg",
       {
         parent: root,
         width: rect.width,
@@ -48,7 +48,7 @@ export class SvgOverlay extends React.Component {
     );
     const f = this.factory();
     if(f) f.root = svg;
-    SVG.create('defs', {}, svg);
+    SVG.create("defs", {}, svg);
 
     ReactDOM.render(this.props.children, svg);
     //
@@ -64,11 +64,11 @@ export class SvgOverlay extends React.Component {
 
     const { svgRef } = this.props;
 
-    trkl.property(this.layerRef, 'current').subscribe(ref => {
+    trkl.property(this.layerRef, "current").subscribe(ref => {
       //console.log("layerRef: ", ref);
       var rect = Element.rect(ref);
       var svg = SVG.create(
-        'svg',
+        "svg",
         {
           width: rect.width,
           height: rect.height,
@@ -77,7 +77,7 @@ export class SvgOverlay extends React.Component {
         },
         ref
       );
-      SVG.create('defs', {}, svg);
+      SVG.create("defs", {}, svg);
       /* SVG.create(
         "rect",
         {
@@ -95,7 +95,7 @@ export class SvgOverlay extends React.Component {
       this.svg(svg);
       const f = this.factory();
       f.root = svg;
-      if(typeof svgRef == 'function')
+      if(typeof svgRef == "function")
         svgRef({ svg, factory: f /*(name,props) => f(name,props, svg) */ });
       //console.log("SvgOverlay: ", { svg, rect });
 
@@ -109,14 +109,14 @@ export class SvgOverlay extends React.Component {
   createPaths = () => {
     const f = this.factory();
 
-    if(typeof f == 'function')
-      f('rect', {
+    if(typeof f == "function")
+      f("rect", {
         width: 100,
         height: 100,
         x: 50,
         y: 50,
-        stroke: 'red',
-        strokeWidth: '4'
+        stroke: "red",
+        strokeWidth: "4"
       });
   };
 
@@ -125,15 +125,15 @@ export class SvgOverlay extends React.Component {
 
     return (
       <div
-        className={'svg-overlay'}
+        className={"svg-overlay"}
         ref={this.layerRef}
         style={{
-          position: 'absolute',
+          position: "absolute",
           left: 0,
           top: 0,
-          width: '100vw',
-          height: '100%',
-          pointerEvents: 'none',
+          width: "100vw",
+          height: "100%",
+          pointerEvents: "none",
           ...this.props.style
         }}
       ></div>

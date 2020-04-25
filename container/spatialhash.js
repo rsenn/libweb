@@ -73,7 +73,7 @@ export class SpatialHash {
       }
       for(var y = y1; y <= y2; y++) {
         for(var x = x1; x <= x2; x++) {
-          var key = x + ' ' + y;
+          var key = x + " " + y;
           if(!this.list[key]) {
             this.list[key] = [object];
           } else {
@@ -126,7 +126,7 @@ export class SpatialHash {
     y2 = y2 >= this.height ? this.height - 1 : y2;
     for(var y = y1; y <= y2; y++) {
       for(var x = x1; x <= x2; x++) {
-        var entry = this.list[x + ' ' + y];
+        var entry = this.list[x + " " + y];
         if(entry) {
           results = results.concat(entry.list);
         }
@@ -157,7 +157,7 @@ export class SpatialHash {
     y2 = y2 >= this.height ? this.height - 1 : y2;
     for(var y = y1; y <= y2; y++) {
       for(var x = x1; x <= x2; x++) {
-        var entry = this.list[x + ' ' + y];
+        var entry = this.list[x + " " + y];
         if(entry) {
           for(var i = 0; i < entry.list.length; i++) {
             if(callback(entry.list[i])) {
@@ -227,7 +227,7 @@ export class SpatialHash {
     var y2 = Math.ceil((AABB.y + AABB.height) / this.cellSize);
     for(var y = y1; y < y2; y++) {
       for(var x = x1; x < x2; x++) {
-        count += this.list[x + ' ' + y] ? 1 : 0;
+        count += this.list[x + " " + y] ? 1 : 0;
         total++;
       }
     }
