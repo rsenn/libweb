@@ -186,7 +186,8 @@ export class CompositeMap {
           } else if(level < lastLevel) {
             key[level] = result.value[0];
             level++;
-            levelIterator = level === lastLevel ? result.value[1].keys() : result.value[1].entries();
+            levelIterator =
+              level === lastLevel ? result.value[1].keys() : result.value[1].entries();
             levelIterators[level] = levelIterator;
           } else {
             const key2 = key.slice();

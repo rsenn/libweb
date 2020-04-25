@@ -75,7 +75,10 @@ export class EagleNode extends EagleInterface {
     } else {
       ret.tagName = this.tagName;
       if(this.attributes)
-        ret.attributes = Util.map(this.attributes, (k, v) => [k, this.handlers[k]()]);
+        ret.attributes = Util.map(this.attributes, (k, v) => [
+          k,
+          this.handlers[k]()
+        ]);
       if(this.context) ret.text = this.text;
       let children = [];
       if(this.children && 'map' in this.children)
@@ -90,7 +93,14 @@ export class EagleNode extends EagleInterface {
   cacheFields() {
     switch (this.tagName) {
       case 'schematic':
-        return ['settings', 'layers', 'libraries', 'classes', 'parts', 'sheets'];
+        return [
+          'settings',
+          'layers',
+          'libraries',
+          'classes',
+          'parts',
+          'sheets'
+        ];
       case 'board':
         return ['plain', 'libraries'];
       case 'sheet':
@@ -138,7 +148,11 @@ export class EagleNode extends EagleInterface {
             : () =>
                 makeEagleNodeMap(
                   lazy[key]().children,
-                  key == 'instances' ? 'part' : key == 'layers' ? 'number' : 'name'
+                  key == 'instances'
+                    ? 'part'
+                    : key == 'layers'
+                    ? 'number'
+                    : 'name'
                 );
       }
       lazyMembers(this.lists, lists);
@@ -191,7 +205,8 @@ export class EagleNode extends EagleInterface {
       function() {
         return [...arguments];
       };
-    for(let [v, p, o] of deep.iterate(this.raw, e => e.tagName === name)) yield transform(v, p, o);
+    for(let [v, p, o] of deep.iterate(this.raw, e => e.tagName === name))
+      yield transform(v, p, o);
   }
 
   getMap(entity) {
@@ -204,11 +219,18 @@ export class EagleNode extends EagleInterface {
     element,
     name,
     attr = 'name',
-    t = ([v, l, d]) => makeEagleNode(d, this.ref.down(...l), this.childConstructor)
+    t = ([v, l, d]) =>
+      makeEagleNode(d, this.ref.down(...l), this.childConstructor)
   ) {
     for(let [v, l, d] of this.iterator([], it => it)) {
-      if(typeof v == 'object' && 'tagName' in v && 'attributes' in v && attr in v.attributes) {
-        if(v.tagName == element && v.attributes[attr] == name) return t([v, l, d]);
+      if(
+        typeof v == 'object' &&
+        'tagName' in v &&
+        'attributes' in v &&
+        attr in v.attributes
+      ) {
+        if(v.tagName == element && v.attributes[attr] == name)
+          return t([v, l, d]);
       }
     }
     return null;
@@ -219,7 +241,8 @@ export class EagleNode extends EagleInterface {
     let ref = this.ref;
     do {
       let node = ref.dereference();
-      if(node.attributes.name !== undefined) names.push([node.tagName, node.attributes.name]);
+      if(node.attributes.name !== undefined)
+        names.push([node.tagName, node.attributes.name]);
       ref = ref.up(2);
     } while(ref.path.length);
     return Object.fromEntries(names);
@@ -264,10 +287,14 @@ export class EagleNode extends EagleInterface {
     let ret = `${Util.className(this)}`;
     if(this.tagName || attrs != '') ret += ` <${this.tagName + attrs}>`;
     if(this.filename) ret += ` filename="${this.filename}"`;
-    if(numChildren > 0) ret += `{...${numChildren} children...}</${this.tagName}>`;
+    if(numChildren > 0)
+      ret += `{...${numChildren} children...}</${this.tagName}>`;
     return ret;
   }
   inspect() {
-    return EagleNode.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, arguments);
+    return EagleNode.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(
+      this,
+      arguments
+    );
   }
 }

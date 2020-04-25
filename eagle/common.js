@@ -5,18 +5,23 @@ import deep from '../deep.js';
 
 const pathPadding = Util.isBrowser() ? 0 : 40;
 
-export const ansi = Util.isBrowser() ? () => '' : (...args) => `\u001b[${[...args].join(';')}m`;
+export const ansi = Util.isBrowser()
+  ? () => ''
+  : (...args) => `\u001b[${[...args].join(';')}m`;
 export const text = Util.isBrowser()
   ? (text, ...color) => (color.indexOf(1) != -1 ? `${text}` : text)
   : (text, ...color) => ansi(...color) + text + ansi(0);
 
 export const dingbatCode = digit =>
-  digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1);
+  digit % 10 == 0
+    ? circles[0]
+    : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1);
 
 export const dump = (o, depth = 2, breakLength = 400) => {
   //  if("toString" in o) return o.toString();
   const isElement = o =>
-    Util.isObject(o) && ['EagleElement', 'EagleNode'].indexOf(Util.className(o)) != -1;
+    Util.isObject(o) &&
+    ['EagleElement', 'EagleNode'].indexOf(Util.className(o)) != -1;
   let s;
   if(o instanceof Array) {
     s = '';
@@ -27,7 +32,13 @@ export const dump = (o, depth = 2, breakLength = 400) => {
   } else if(isElement(o)) {
     s = inspect(o, undefined, { depth, path: false });
     depth * 4;
-  } else s = Util.inspect(o, { depth, newline: '', colors: !Util.isBrowser(), breakLength });
+  } else
+    s = Util.inspect(o, {
+      depth,
+      newline: '',
+      colors: !Util.isBrowser(),
+      breakLength
+    });
   return s;
 };
 
@@ -53,7 +64,9 @@ export const parseArgs = args => {
     }
   }
   if(typeof ret.predicate != 'function' && (ret.element || ret.name)) {
-    if(ret.name) ret.predicate = v => v.tagName == ret.element && v.attributes.name == ret.name;
+    if(ret.name)
+      ret.predicate = v =>
+        v.tagName == ret.element && v.attributes.name == ret.name;
     else ret.predicate = v => v.tagName == ret.element;
   }
   return ret;
@@ -68,7 +81,8 @@ export const traverse = function*(obj, path = [], doc) {
   yield [obj, path, doc];
   if(typeof obj == 'object') {
     if(Util.isArray(obj))
-      for(let i = 0; i < obj.length; i++) yield* traverse(obj[i], path.down(i), doc);
+      for(let i = 0; i < obj.length; i++)
+        yield* traverse(obj[i], path.down(i), doc);
     else if('children' in obj && Util.isArray(obj.children))
       for(let i = 0; i < obj.children.length; i++)
         yield* traverse(obj.children[i], path.down('children', i), doc);
@@ -83,42 +97,54 @@ export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
   else if(typeof o == 'string') return o;
   else if(typeof o != 'object' || o.tagName === undefined) return '';
 
-  let s = `<${o.tagName}`;
-  for(let k in o.attributes) s += ` ${k}="${o.attributes[k]}"`;
+  let { tagName, attributes, children, ...obj } = o;
 
-  const a = o.children && o.children.length !== undefined ? o.children : [];
+  let s = `<${tagName}`;
+  let attrs = attributes || obj;
+  for(let k in attrs) s += ` ${k}="${attrs[k]}"`;
+
+  const a = children && children.length !== undefined ? children : [];
   const text = o.text;
   if(a && a.length > 0) {
-    s += o.tagName[0] != '?' ? '>' : '?>';
+    s += tagName[0] != '?' ? '>' : '?>';
     if(z > 0) {
       const textChildren = typeof a[0] == 'string';
       let nl = textChildren
         ? ''
-        : o.tagName == 'text' && a.length == 1
+        : tagName == 'text' && a.length == 1
         ? ''
-        : o.tagName[0] != '?'
+        : tagName[0] != '?'
         ? '\n  '
         : '\n';
-      if(textChildren) s += a.join('\n') + `</${o.tagName}>`;
+      if(textChildren) s += a.join('\n') + `</${tagName}>`;
       else {
-        for(let child of a) s += nl + toXML(child, z - 1).replace(/>\n/g, '>' + nl);
-        if(o.tagName[0] != '?') s += `${nl.replace(/ /g, '')}</${o.tagName}>`;
+        for(let child of a)
+          s += nl + toXML(child, z - 1).replace(/>\n/g, '>' + nl);
+        if(tagName[0] != '?') s += `${nl.replace(/ /g, '')}</${tagName}>`;
       }
     }
   } else {
-    if(Object.keys(o.attributes).length == 0) s += `></${o.tagName}>`;
+    if(Object.keys(attrs).length == 0) s += `></${tagName}>`;
     else s += ' />';
   }
   return s.trim();
 };
 
-export const inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {
+export const inspect = (
+  e,
+  d,
+  c = { depth: 0, breakLength: 400, path: true }
+) => {
   const { depth, breakLength } = c;
   let o = e;
 
   if(typeof e == 'string') return text(e, 1, 36);
   //if(e instanceof EagleElement) o = EagleElement.toObject(e);
-  let x = Util.inspect(o, { depth: depth * 2, breakLength, colors: !Util.isBrowser() });
+  let x = Util.inspect(o, {
+    depth: depth * 2,
+    breakLength,
+    colors: !Util.isBrowser()
+  });
   let s = '⏐';
   x = x.substring(x.indexOf('tagName') + 14);
 
@@ -215,7 +241,9 @@ export class EagleInterface {
       typeof args[0] == 'function'
         ? args.shift()
         : ([v, l, d]) => [
-            typeof v == 'object' && v !== null && 'tagName' in v ? new EagleElement(d, l) : v,
+            typeof v == 'object' && v !== null && 'tagName' in v
+              ? new EagleElement(d, l)
+              : v,
             l,
             d
           ];
@@ -260,7 +288,11 @@ export class EagleInterface {
               : false
           ).length == 1
         ) {
-        } else if(typeof e == 'object' && 'attributes' in e && 'name' in e.attributes) {
+        } else if(
+          typeof e == 'object' &&
+          'attributes' in e &&
+          'name' in e.attributes
+        ) {
           let cmp = Object.keys(e.attributes)
             .filter(k => k == 'name')
             .map(key => `@${key}="${e.attributes[key]}"`)

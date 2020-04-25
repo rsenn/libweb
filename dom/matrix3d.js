@@ -12,11 +12,44 @@
 //     \//  |_|| |_||_| |_| |_| ||_| |_|  \\/     \\
 
 (function(window) {
-  "use strict";
+  'use strict';
 
   var IDENTITY = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
-  function multiply(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P) {
+  function multiply(
+    a,
+    b,
+    c,
+    d,
+    e,
+    f,
+    g,
+    h,
+    i,
+    j,
+    k,
+    l,
+    m,
+    n,
+    o,
+    p,
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    I,
+    J,
+    K,
+    L,
+    M,
+    N,
+    O,
+    P
+  ) {
     return [
       a * A + b * E + c * I + d * M,
       a * B + b * F + c * J + d * N,
@@ -51,7 +84,9 @@
 
   Matrix3D.prototype = {
     multiply: function(entities) {
-      return new Matrix3D(multiply.apply(window, this.entities.concat(entities)));
+      return new Matrix3D(
+        multiply.apply(window, this.entities.concat(entities))
+      );
     },
 
     transform: function(matrix) {
@@ -85,7 +120,7 @@
     },
 
     toString: function() {
-      return "matrix3d(" + this.entities.join(",") + ")";
+      return 'matrix3d(' + this.entities.join(',') + ')';
     }
   };
 

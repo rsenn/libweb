@@ -1,10 +1,10 @@
-import { Element } from "./element.js";
-import { Size } from "../geom/size.js";
-import { Point } from "../geom/point.js";
-import { Rect } from "../geom/rect.js";
-import { Line } from "../geom/line.js";
-import { parseSVG, makeAbsolute } from "../svg/path-parser.js";
-import Util from "../util.js";
+import { Element } from './element.js';
+import { Size } from '../geom/size.js';
+import { Point } from '../geom/point.js';
+import { Rect } from '../geom/rect.js';
+import { Line } from '../geom/line.js';
+import { parseSVG, makeAbsolute } from '../svg/path-parser.js';
+import Util from '../util.js';
 
 export class SVG extends Element {
   static create(name, attr, parent) {
@@ -14,14 +14,16 @@ export class SVG extends Element {
       text = attr.text;
       delete attr.text;
     }
-    if(name == "svg") {
-      attr.version = "1.1";
+    if(name == 'svg') {
+      attr.version = '1.1';
       attr.xmlns = SVG.ns;
       attrfn = n => n;
     } else {
-      attrfn = Util.decamelize;
+      attrfn = arg => arg; //Util.decamelize;
     }
-    Util.foreach(attr, (value, name) => svg.setAttribute(attrfn(name, "-"), value));
+    Util.foreach(attr, (value, name) =>
+      svg.setAttribute(attrfn(name, '-'), value)
+    );
 
     if(parent && parent.appendChild) parent.appendChild(svg);
     if(text) svg.innerHTML = text;
@@ -32,24 +34,40 @@ export class SVG extends Element {
     let delegate = {
       create: tag => document.createElementNS(SVG.ns, tag),
       append_to: elem => parent.appendChild(elem),
-      setattr: (elem, name, value) => name != "ns" && elem.setAttributeNS(document.namespaceURI, Util.decamelize(name, "-"), value),
-      setcss: (elem, css) => elem.setAttributeNS(null, "style", css)
+      setattr: (elem, name, value) =>
+        name != 'ns' &&
+        elem.setAttributeNS(
+          document.namespaceURI,
+          Util.decamelize(name, '-'),
+          value
+        ),
+      setcss: (elem, css) => elem.setAttributeNS(null, 'style', css)
     };
     if(size == null) size = Size(Rect.round(Element.rect(parent)));
     const { width, height } = size;
 
-    if(parent && parent.tagName == "svg") delegate.root = parent;
+    if(parent && parent.tagName == 'svg') delegate.root = parent;
     else if(this !== SVG && this && this.appendChild) delegate.root = this;
-    else delegate.root = SVG.create("svg", { width, height, viewBox: `0 0 ${width} ${height}` }, parent);
+    else
+      delegate.root = SVG.create(
+        'svg',
+        { width, height, viewBox: `0 0 ${width} ${height}` },
+        parent
+      );
 
-    if(!delegate.root.firstElementChild || delegate.root.firstElementChild.tagName != "defs") SVG.create("defs", {}, delegate.root);
+    if(
+      !delegate.root.firstElementChild ||
+      delegate.root.firstElementChild.tagName != 'defs'
+    )
+      SVG.create('defs', {}, delegate.root);
 
     delegate.append_to = function(elem, p) {
       var root = p || this.root;
 
-      if(elem.tagName.indexOf("Gradient") != -1) root = root.querySelector("defs");
+      if(elem.tagName.indexOf('Gradient') != -1)
+        root = root.querySelector('defs');
 
-      if(typeof root.append == "function") root.append(elem);
+      if(typeof root.append == 'function') root.append(elem);
       else root.appendChild(elem);
       //console.log('append_to ', elem, ', root=', root);
     };
@@ -57,14 +75,17 @@ export class SVG extends Element {
   }
 
   static matrix(element, screen = false) {
-    let e = typeof element === "string" ? Element.find(element) : element;
-    let fn = screen ? "getScreenCTM" : "getCTM";
+    let e = typeof element === 'string' ? Element.find(element) : element;
+    let fn = screen ? 'getScreenCTM' : 'getCTM';
     if(e && e[fn]) return Matrix.fromDOMMatrix(e[fn]());
     return null;
   }
 
   static bbox(element, options = { parent: null, absolute: false }) {
-    let e = typeof element === "string" ? Element.find(element, options.parent) : element;
+    let e =
+      typeof element === 'string'
+        ? Element.find(element, options.parent)
+        : element;
     let bb;
     if(e && e.getBBox) {
       bb = new Rect(e.getBBox());
@@ -78,8 +99,11 @@ export class SVG extends Element {
     return Element.rect(e);
   }
 
-  static gradient(type, { stops, factory = SVG.create, parent = null, line = false, ...props }) {
-    var defs = factory("defs", {}, parent);
+  static gradient(
+    type,
+    { stops, factory = SVG.create, parent = null, line = false, ...props }
+  ) {
+    var defs = factory('defs', {}, parent);
     const map = new Map(stops instanceof Array ? stops : Object.entries(stops));
 
     let rect = {};
@@ -90,11 +114,15 @@ export class SVG extends Element {
     }
     //    const { x1, y1, x2, y2 } = line;
 
-    let grad = factory(type + "-gradient", { ...props, ...rect }, defs);
+    let grad = factory(type + '-gradient', { ...props, ...rect }, defs);
 
     map.forEach((color, o) => {
       //console.log('color:' + color + ' o:' + o);
-      factory("stop", { offset: Math.round(o * 100) + "%", stopColor: color }, grad);
+      factory(
+        'stop',
+        { offset: Math.round(o * 100) + '%', stopColor: color },
+        grad
+      );
     });
 
     return grad;
@@ -106,7 +134,7 @@ export class SVG extends Element {
       return SVG.create.call(SVG, tag, props, parent || this.element);
     };
     ret.element = elem.ownerSVGElement;
-    Util.defineGetterSetter(ret, "rect", function() {
+    Util.defineGetterSetter(ret, 'rect', function() {
       return Element.rect(this.element);
     });
     return ret;
@@ -126,8 +154,8 @@ export class SVG extends Element {
 */
   static *line_iterator(e) {
     let pathStr;
-    if(typeof e == "string") pathStr = e;
-    else pathStr = e.getAttribute("d");
+    if(typeof e == 'string') pathStr = e;
+    else pathStr = e.getAttribute('d');
     let path = makeAbsolute(parseSVG(pathStr));
     let prev;
     for(let i = 0; i < path.length; i++) {
@@ -135,12 +163,16 @@ export class SVG extends Element {
       let { code, x, y, x0, y0 } = cmd;
       if(x == undefined) x = x0;
       if(y == undefined) y = y0;
-      const move = cmd.code.toLowerCase() == "m";
+      const move = cmd.code.toLowerCase() == 'm';
       if(prev && !move) {
         //              const swap = !Point.equal(prev, { x: x0, y: y0 });
 
         let line = new Line({ x: x0, y: y0 }, cmd);
-        console.log("line_iterator", { i, code, x, y, x0, y0 }, line.toString());
+        console.log(
+          'line_iterator',
+          { i, code, x, y, x0, y0 },
+          line.toString()
+        );
         yield line;
       }
       prev = cmd;
@@ -159,13 +191,21 @@ export class SVG extends Element {
 
     var do_point = point => {
       const { x, y, slope, next, prev, i, isin } = point;
-      let d = (point.distance = slope ? Point.distance(slope) : Number.POSITIVE_INFINITY);
+      let d = (point.distance = slope
+        ? Point.distance(slope)
+        : Number.POSITIVE_INFINITY);
       point.angle = slope ? slope.toAngle(true) : NaN;
       point.move = !(isin.stroke && isin.fill);
       point.ok = !point.move && prev.angle != point.angle;
-      const pad = Util.padFn(12, " ", (str, pad) => `${pad}${str}`);
+      const pad = Util.padFn(12, ' ', (str, pad) => `${pad}${str}`);
       if(point.ok) {
-        console.log(`pos: ${pad(i, 3)}, move: ${isin || point.move} point: ${pad(point)}, slope: ${pad(slope && slope.toFixed(3))}, angle: ${point.angle.toFixed(3)}, d: ${d.toFixed(3)}`);
+        console.log(
+          `pos: ${pad(i, 3)}, move: ${isin || point.move} point: ${pad(
+            point
+          )}, slope: ${pad(
+            slope && slope.toFixed(3)
+          )}, angle: ${point.angle.toFixed(3)}, d: ${d.toFixed(3)}`
+        );
         let ret;
 
         try {
@@ -194,19 +234,28 @@ export class SVG extends Element {
       prev = p;
     }
     p = new Point(e.getPointAtLength(pos(numPoints - 1)));
-    p = Object.assign(p, { slope: null, next: null, prev, isin: { stroke: true, fill: true } });
+    p = Object.assign(p, {
+      slope: null,
+      next: null,
+      prev,
+      isin: { stroke: true, fill: true }
+    });
 
     y = do_point(p);
     if(y) yield y;
   }
 
   static viewbox(element, rect) {
-    if(typeof element == "string") element = Element.find(element);
+    if(typeof element == 'string') element = Element.find(element);
     if(element.ownerSVGElement) element = element.ownerSVGElement;
     let vbattr;
-    if(rect) element.setAttribute("viewBox", "toString" in rect ? rect.toString() : rect);
-    vbattr = Element.attr(element, "viewBox");
+    if(rect)
+      element.setAttribute(
+        'viewBox',
+        'toString' in rect ? rect.toString() : rect
+      );
+    vbattr = Element.attr(element, 'viewBox');
     return new Rect(vbattr.split(/\s+/g).map(parseFloat));
   }
 }
-SVG.ns = "http://www.w3.org/2000/svg";
+SVG.ns = 'http://www.w3.org/2000/svg';

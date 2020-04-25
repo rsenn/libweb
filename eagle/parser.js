@@ -158,7 +158,8 @@ function schematicGetParts(schematic, sheet) {
 
     var devicesets = library.library.devicesets;
 
-    if(devicesets == null) throw new Error('No devicesets', library.library.devicesets);
+    if(devicesets == null)
+      throw new Error('No devicesets', library.library.devicesets);
 
     var symbols = library.library.symbols;
 
@@ -169,7 +170,8 @@ function schematicGetParts(schematic, sheet) {
     var symbolName = getSymbolName(symbols, part, instance, devicesets);
     //console.log("symbolName:", symbolName);
 
-    if(symbolName == null) throw new Error('No symbolName' + JSON.stringify({ devicesets }));
+    if(symbolName == null)
+      throw new Error('No symbolName' + JSON.stringify({ devicesets }));
 
     var value = part.value != null ? part.value : part.deviceset + part.device;
 
@@ -248,7 +250,10 @@ export function parseSchematic(data, callback) {
     return;
   }
 
-  var symbols = schematicGetSymbols(parts, raw.eagle.drawing.schematic.libraries);
+  var symbols = schematicGetSymbols(
+    parts,
+    raw.eagle.drawing.schematic.libraries
+  );
 
   if(symbols == null || symbols.length < 1) {
     callback('Error: Failed to parse schematic symbols');

@@ -2,15 +2,22 @@ import Util from '../util.js';
 import { text, inspect, toXML, dump } from './common.js';
 
 export function DereferenceError(object, member, pos, part, locator) {
-  let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
+  let error =
+    this instanceof DereferenceError
+      ? this
+      : new DereferenceError(object.index);
 
   return Util.extend(
     error,
     { object, member, pos, locator },
     {
-      message: `Error dereferencing ${Util.className(object)} @ ${locator
+      message: `Error dereferencing ${Util.className(
+        object
+      )} @ ${locator
         .map((part, i) => (i == pos ? `<<${part}>>` : part))
-        .join(',')} w/ keys={${Object.keys(part).join(',')}} no member '${member}' `,
+        .join(',')} w/ keys={${Object.keys(part).join(
+        ','
+      )}} no member '${member}' `,
       stack: Util.getCallerStack()
         .filter(frame => null !== frame.getFileName())
         .map(
@@ -138,7 +145,8 @@ export const EaglePath = Util.immutableClass(
               : i < 0 && a.o instanceof Array
               ? a.o[a.o.length + i]
               : a.o[i];
-          if(r === undefined) throw new DereferenceError(obj, i, a.n, a.o, this);
+          if(r === undefined)
+            throw new DereferenceError(obj, i, a.n, a.o, this);
           a.o = r;
           a.n++;
           return a;
@@ -180,16 +188,17 @@ export const EaglePath = Util.immutableClass(
         obj = root;
       for(i = 0; i + 1 < this.length; i++) {
         const key = this[i];
-        if(!(key in obj)) throw new Error(`No path ${this.join(',')} in ${typeof root}`);
+        if(!(key in obj))
+          throw new Error(`No path ${this.join(',')} in ${typeof root}`);
         obj = obj[this[i]];
       }
       return this[i] in obj;
     }
 
     toString(hl = -1) {
-      let y = this.map(item => (item == 'children' ? '⎿' : item)).map((part, i) =>
-        text(part, ...(hl == i ? [38, 5, 124] : [38, 5, 82]))
-      );
+      let y = this.map(item =>
+        item == 'children' ? '⎿' : item
+      ).map((part, i) => text(part, ...(hl == i ? [38, 5, 124] : [38, 5, 82])));
 
       y = text('♈ ', 38, 5, 45) + y.join('') + text(' 🔚', 38, 5, 172);
       return y.trim();
@@ -199,11 +208,17 @@ export const EaglePath = Util.immutableClass(
       return `EaglePath [${this.map(part =>
         part === ChildrenSym
           ? String.fromCharCode(10143)
-          : text(typeof part == 'number' ? part : `'${part}'`, 1, typeof part == 'number' ? 33 : 32)
+          : text(
+              typeof part == 'number' ? part : `'${part}'`,
+              1,
+              typeof part == 'number' ? 33 : 32
+            )
       ).join(', ')}]`;
     }
     inspect() {
-      return EaglePath.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, arguments);
+      return EaglePath.prototype[
+        Symbol.for('nodejs.util.inspect.custom')
+      ].apply(this, arguments);
     }
 
     toSource() {
@@ -225,7 +240,9 @@ export const EaglePath = Util.immutableClass(
     }
 
     slice(start = 0, end = this.length) {
-      return new EaglePath(Array.prototype.slice.call(this.toArray(), start, end));
+      return new EaglePath(
+        Array.prototype.slice.call(this.toArray(), start, end)
+      );
     }
 
     push(...args) {
@@ -254,7 +271,8 @@ export const EaglePath = Util.immutableClass(
     }
     filter(fn) {
       let ret = [];
-      for(let i = 0; i < this.length; i++) if(fn(this[i], i, this)) ret.push(this[i]);
+      for(let i = 0; i < this.length; i++)
+        if(fn(this[i], i, this)) ret.push(this[i]);
       return ret;
     }
     toArray() {
@@ -320,7 +338,10 @@ export class EagleReference {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    return `EagleReference { path:${this.path.inspect()}, root:${toXML(this.root, 0)}  }`;
+    return `EagleReference { path:${this.path.inspect()}, root:${toXML(
+      this.root,
+      0
+    )}  }`;
   }
   inspect() {
     return this[Symbol.for('nodejs.util.inspect.custom')](...arguments);

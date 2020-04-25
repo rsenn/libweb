@@ -1,5 +1,5 @@
-import { HSLA } from "./hsla.js";
-import Util from "../util.js";
+import { HSLA } from './hsla.js';
+import Util from '../util.js';
 
 /**
  * @brief [brief description]
@@ -24,9 +24,16 @@ export function RGBA(r = 0, g = 0, b = 0, a = 255) {
     ret.a = a;
   } else if(args.length == 1) {
     const arg = args[0];
-    if(typeof arg === "string") {
-      if(arg.startsWith("#")) {
-        c = arg.length >= 7 ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(arg) : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(arg);
+    if(typeof arg === 'string') {
+      if(arg.startsWith('#')) {
+        c =
+          arg.length >= 7
+            ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(
+                arg
+              )
+            : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(
+                arg
+              );
 
         let mul = arg.length >= 7 ? 1 : 17;
 
@@ -36,8 +43,8 @@ export function RGBA(r = 0, g = 0, b = 0, a = 255) {
         ret.g = parseInt(c[2], 16) * mul;
         ret.b = parseInt(c[3], 16) * mul;
         ret.a = c.length > 3 ? parseInt(c[4], 16) * mul : 255;
-      } else if(arg.toLowerCase().startsWith("rgb")) {
-        c = arg.match(new RegExp("/[d.]+/g")).map(x => parseFloat(x));
+      } else if(arg.toLowerCase().startsWith('rgb')) {
+        c = arg.match(new RegExp('/[d.]+/g')).map(x => parseFloat(x));
 
         c = [...c].slice(1);
 
@@ -45,7 +52,7 @@ export function RGBA(r = 0, g = 0, b = 0, a = 255) {
         ret.g = Math.round(c[1]);
         ret.b = Math.round(c[2]);
         ret.a = Math.round(c.length > 3 && !isNaN(c[3]) ? c[3] : 255);
-      } else if(typeof arg === "object" && arg.r !== undefined) {
+      } else if(typeof arg === 'object' && arg.r !== undefined) {
         ret.r = arg.r;
         ret.g = arg.g;
         ret.b = arg.b;
@@ -59,11 +66,18 @@ export function RGBA(r = 0, g = 0, b = 0, a = 255) {
   if(!(ret instanceof RGBA)) return ret; //Object.setPrototypeOf(ret, RGBA.prototype);
 }
 
-RGBA.properties = ["r", "g", "b", "a"];
-export const isRGBA = obj => RGBA.properties.every(prop => obj.hasOwnProperty(prop));
+RGBA.properties = ['r', 'g', 'b', 'a'];
+export const isRGBA = obj =>
+  RGBA.properties.every(prop => obj.hasOwnProperty(prop));
 
 RGBA.fromHex = (hex, alpha = 255) => {
-  const matches = hex && (hex.length >= 7 ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(hex) : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(hex));
+  const matches =
+    hex &&
+    (hex.length >= 7
+      ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(
+          hex
+        )
+      : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(hex));
   if(matches === null) return null;
   let mul = hex.length >= 7 ? 1 : 17;
 
@@ -74,7 +88,11 @@ RGBA.fromHex = (hex, alpha = 255) => {
 
 RGBA.prototype.hex = function() {
   const { r, g, b, a } = RGBA.clamp(RGBA.round(this));
-  return "#" + ("0000000" + ((r << 16) | (g << 8) | b).toString(16)).slice(-6) + (a !== undefined && a != 255 ? ("0" + a.toString(16)).slice(-2) : "");
+  return (
+    '#' +
+    ('0000000' + ((r << 16) | (g << 8) | b).toString(16)).slice(-6) +
+    (a !== undefined && a != 255 ? ('0' + a.toString(16)).slice(-2) : '')
+  );
 };
 
 RGBA.prototype.toRGB = function() {
@@ -84,7 +102,13 @@ RGBA.prototype.toRGB = function() {
 
 RGBA.toHex = rgba => RGBA.prototype.hex.call(rgba);
 
-RGBA.clamp = rgba => RGBA(Math.min(Math.max(rgba.r, 0), 255), Math.min(Math.max(rgba.g, 0), 255), Math.min(Math.max(rgba.b, 0), 255), Math.min(Math.max(rgba.a, 0), 255));
+RGBA.clamp = rgba =>
+  RGBA(
+    Math.min(Math.max(rgba.r, 0), 255),
+    Math.min(Math.max(rgba.g, 0), 255),
+    Math.min(Math.max(rgba.b, 0), 255),
+    Math.min(Math.max(rgba.a, 0), 255)
+  );
 RGBA.round = rgba => RGBA.prototype.round.call(rgba);
 RGBA.prototype.round = function() {
   this.r = Math.round(this.r);
@@ -99,18 +123,50 @@ RGBA.normalize = (rgba, from = 255, to = 1.0) => ({
   b: (rgba.b * to) / from,
   a: (rgba.a * to) / from
 });
-RGBA.prototype.css = () => prop => (prop ? prop + ":" : "") + "rgba(" + this.r + ", " + this.g + ", " + this.b + ", " + (this.a / 255).toFixed(3) + ")";
+RGBA.prototype.css = () => prop =>
+  (prop ? prop + ':' : '') +
+  'rgba(' +
+  this.r +
+  ', ' +
+  this.g +
+  ', ' +
+  this.b +
+  ', ' +
+  (this.a / 255).toFixed(3) +
+  ')';
 
-RGBA.prototype.toString = function(sep = ", ") {
+RGBA.prototype.toString = function(sep = ', ') {
   let a = this.a;
-  if(a >= 255) return "rgb(" + this.r + sep + this.g + sep + this.b + ")";
-  else return "rgba(" + this.r + sep + this.g + sep + this.b + sep + (a / 255).toFixed(3) + ")";
+  if(a >= 255) return 'rgb(' + this.r + sep + this.g + sep + this.b + ')';
+  else
+    return (
+      'rgba(' +
+      this.r +
+      sep +
+      this.g +
+      sep +
+      this.b +
+      sep +
+      (a / 255).toFixed(3) +
+      ')'
+    );
 };
 
-RGBA.prototype.toSource = function(sep = ",") {
+RGBA.prototype.toSource = function(sep = ',') {
   let a = this.a;
-  if(a >= 255) return "new RGBA(" + this.r + sep + this.g + sep + this.b + ")";
-  else return "new RGBA(" + this.r + sep + this.g + sep + this.b + sep + (a / 255).toFixed(3) + ")";
+  if(a >= 255) return 'new RGBA(' + this.r + sep + this.g + sep + this.b + ')';
+  else
+    return (
+      'new RGBA(' +
+      this.r +
+      sep +
+      this.g +
+      sep +
+      this.b +
+      sep +
+      (a / 255).toFixed(3) +
+      ')'
+    );
 };
 
 RGBA.prototype.normalize = function(from = 255, to = 1.0) {
@@ -125,7 +181,12 @@ RGBA.prototype.normalize = function(from = 255, to = 1.0) {
 RGBA.blend = (a, b, o = 0.5) => {
   a = new RGBA(a);
   b = new RGBA(b);
-  return new RGBA(Math.round(a.r * o + b.r * (1 - o)), Math.round(a.g * o + b.g * (1 - o)), Math.round(a.b * o + b.b * (1 - o)), Math.round(a.a * o + b.a * (1 - o)));
+  return new RGBA(
+    Math.round(a.r * o + b.r * (1 - o)),
+    Math.round(a.g * o + b.g * (1 - o)),
+    Math.round(a.b * o + b.b * (1 - o)),
+    Math.round(a.a * o + b.a * (1 - o))
+  );
 };
 
 RGBA.prototype.toAlpha = function(color) {
@@ -210,7 +271,12 @@ RGBA.prototype.toHSLA = function() {
 
   //console.log("RGBA.toHSLA ", { h, s, l, a });
 
-  return new HSLA(Math.round(h), Util.roundTo(s, 100 / 255), Util.roundTo(l, 100 / 255), Util.roundTo(a, 1 / 255));
+  return new HSLA(
+    Math.round(h),
+    Util.roundTo(s, 100 / 255),
+    Util.roundTo(l, 100 / 255),
+    Util.roundTo(a, 1 / 255)
+  );
 };
 
 RGBA.prototype.toCMYK = function() {
@@ -225,7 +291,13 @@ RGBA.prototype.toCMYK = function() {
   res.m = (1 - g - res.k) / (1 - res.k);
   res.y = (1 - b - res.k) / (1 - res.k);
 
-  return { c: Math.round(res.c * 100), m: Math.round(res.m * 100), y: Math.round(res.y * 100), k: Math.round(res.k * 100), a: this.a };
+  return {
+    c: Math.round(res.c * 100),
+    m: Math.round(res.m * 100),
+    y: Math.round(res.y * 100),
+    k: Math.round(res.k * 100),
+    a: this.a
+  };
 };
 
 RGBA.prototype.toLAB = function() {
@@ -248,7 +320,12 @@ RGBA.prototype.toLAB = function() {
   y = y > 0.008856 ? Math.pow(y, 1 / 3) : 7.787 * y + 16 / 116;
   z = z > 0.008856 ? Math.pow(z, 1 / 3) : 7.787 * z + 16 / 116;
 
-  return { l: /*Math.round*/ 116 * y - 16, a: /*Math.round*/ 500 * (x - y), b: /*Math.round*/ 200 * (y - z), alpha: this.a };
+  return {
+    l: /*Math.round*/ 116 * y - 16,
+    a: /*Math.round*/ 500 * (x - y),
+    b: /*Math.round*/ 200 * (y - z),
+    alpha: this.a
+  };
 };
 
 RGBA.prototype.fromLAB = function(lab) {
@@ -299,11 +376,20 @@ RGBA.prototype.luminance = function() {
   return Y;
 };
 
-for (let name of ["hex", "toRGB", "round", "toHSLA", "toCMYK", "toLAB", "linear", "luminance"]) {
+for(let name of [
+  'hex',
+  'toRGB',
+  'round',
+  'toHSLA',
+  'toCMYK',
+  'toLAB',
+  'linear',
+  'luminance'
+]) {
   RGBA[name] = arg => RGBA.prototype[name].call(arg);
 }
 
-for (let name of ["fromLAB"]) {
+for(let name of ['fromLAB']) {
   RGBA[name] = arg => {
     let ret = new RGBA();
     return RGBA.prototype[name].call(ret, arg);

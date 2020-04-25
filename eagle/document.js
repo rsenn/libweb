@@ -27,7 +27,11 @@ export class EagleDocument extends EagleNode {
     Util.define(
       this,
       'type',
-      /<library>/.test(xmlStr) ? 'lbr' : /<element /.test(xmlStr) ? 'brd' : 'sch'
+      /<library>/.test(xmlStr)
+        ? 'lbr'
+        : /<element /.test(xmlStr)
+        ? 'brd'
+        : 'sch'
     );
     if(project) this.owner = project;
     Util.define(this, 'xml', xml);
@@ -75,7 +79,14 @@ export class EagleDocument extends EagleNode {
           'plain'
         ];
       case 'lbr':
-        return ['settings', 'layers', 'library', 'packages', 'symbols', 'devicesets'];
+        return [
+          'settings',
+          'layers',
+          'library',
+          'packages',
+          'symbols',
+          'devicesets'
+        ];
     }
     return super.cacheFields();
   }

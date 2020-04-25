@@ -1,6 +1,6 @@
-import { Point, isPoint } from "./point.js";
-import { Rect } from "./rect.js";
-import Util from "../util.js";
+import { Point, isPoint } from './point.js';
+import { Rect } from './rect.js';
+import Util from '../util.js';
 
 export function Line(x1, y1, x2, y2) {
   let obj = this instanceof Line ? this : {};
@@ -12,7 +12,13 @@ export function Line(x1, y1, x2, y2) {
   } else if(args.length == 1) {
     arg = args[0];
   }
-  if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
+  if(
+    arg &&
+    arg.x1 !== undefined &&
+    arg.y1 !== undefined &&
+    arg.x2 !== undefined &&
+    arg.y2 !== undefined
+  ) {
     const { x1, y1, x2, y2 } = arg;
     obj.x1 = parseFloat(x1);
     obj.y1 = parseFloat(y1);
@@ -25,20 +31,25 @@ export function Line(x1, y1, x2, y2) {
     obj.x2 = parseFloat(args[1].x);
     obj.y2 = parseFloat(args[1].y);
     ret = 2;
-  } else if(arg && arg.length >= 4 && arg.slice(0, 4).every(arg => !isNaN(parseFloat(arg)))) {
-    obj.x1 = typeof x === "number" ? x : parseFloat(x);
-    obj.y1 = typeof y === "number" ? y : parseFloat(y);
-    obj.x2 = typeof w === "number" ? w : parseFloat(w);
-    obj.y2 = typeof h === "number" ? h : parseFloat(h);
+  } else if(
+    arg &&
+    arg.length >= 4 &&
+    arg.slice(0, 4).every(arg => !isNaN(parseFloat(arg)))
+  ) {
+    obj.x1 = typeof x === 'number' ? x : parseFloat(x);
+    obj.y1 = typeof y === 'number' ? y : parseFloat(y);
+    obj.x2 = typeof w === 'number' ? w : parseFloat(w);
+    obj.y2 = typeof h === 'number' ? h : parseFloat(h);
     ret = 4;
   } else {
     ret = 0;
   }
-  if(!isLine(obj)) console.log("ERROR: is not a line: ", [...arguments]);
+  if(!isLine(obj)) console.log('ERROR: is not a line: ', [...arguments]);
   if(!(this instanceof Line)) return obj;
 }
 
-export const isLine = obj => ["x1", "y1", "x2", "y2"].every(prop => obj[prop] !== undefined);
+export const isLine = obj =>
+  ['x1', 'y1', 'x2', 'y2'].every(prop => obj[prop] !== undefined);
 /*
 Object.defineProperty(Line.prototype, "a", { value: new Point(), enumerable: false });
 Object.defineProperty(Line.prototype, "b", { value: new Point(), enumerable: true });*/
@@ -49,7 +60,9 @@ Line.prototype.intersect = function(other) {
   if(ma - mb < Number.EPSILON) return undefined;
   return new Point({
     x: (ma * this[0].x - mb * other[0].x + other[0].y - this[0].y) / (ma - mb),
-    y: (ma * mb * (other[0].x - this[0].x) + mb * this[0].y - ma * other[0].y) / (mb - ma)
+    y:
+      (ma * mb * (other[0].x - this[0].x) + mb * this[0].y - ma * other[0].y) /
+      (mb - ma)
   });
 };
 Object.defineProperty(Line.prototype, 0, {
@@ -72,42 +85,58 @@ Object.defineProperty(Line.prototype, 1, {
   },
   enumerable: false
 });
-Object.defineProperty(Line.prototype, "x1", {
+Object.defineProperty(Line.prototype, 'x1', {
   get: function() {
     return this.a && this.a.x;
   },
   set: function(v) {
-    if(!this.a) Object.defineProperty(this, "a", { value: new Point(), enumerable: false });
+    if(!this.a)
+      Object.defineProperty(this, 'a', {
+        value: new Point(),
+        enumerable: false
+      });
     this.a.x = v;
   },
   enumerable: false
 });
-Object.defineProperty(Line.prototype, "y1", {
+Object.defineProperty(Line.prototype, 'y1', {
   get: function() {
     return this.a && this.a.y;
   },
   set: function(v) {
-    if(!this.a) Object.defineProperty(this, "a", { value: new Point(), enumerable: false });
+    if(!this.a)
+      Object.defineProperty(this, 'a', {
+        value: new Point(),
+        enumerable: false
+      });
     this.a.y = v;
   },
   enumerable: false
 });
-Object.defineProperty(Line.prototype, "x2", {
+Object.defineProperty(Line.prototype, 'x2', {
   get: function() {
     return this.b && this.b.x;
   },
   set: function(v) {
-    if(!this.b) Object.defineProperty(this, "b", { value: new Point(), enumerable: false });
+    if(!this.b)
+      Object.defineProperty(this, 'b', {
+        value: new Point(),
+        enumerable: false
+      });
     this.b.x = v;
   },
   enumerable: false
 });
-Object.defineProperty(Line.prototype, "y2", {
+Object.defineProperty(Line.prototype, 'y2', {
   get: function() {
     return this.b && this.b.y;
   },
   set: function(v) {
-    if(!this.b) Object.defineProperty(this, "b", { value: new Point(), enumerable: false });
+    if(!this.b)
+      Object.defineProperty(this, 'b', {
+        value: new Point(),
+        enumerable: false
+      });
     this.b.y = v;
   },
   enumerable: false
@@ -126,7 +155,10 @@ Line.prototype.length = function() {
   return Point.prototype.distance.call(this.a, this.b);
 };
 Line.prototype.pointAt = function(pos) {
-  return new Point(pos * (this.x2 - this.x1) + this.x1, pos * (this.y2 - this.y1) + this.y1);
+  return new Point(
+    pos * (this.x2 - this.x1) + this.x1,
+    pos * (this.y2 - this.y1) + this.y1
+  );
 };
 Line.prototype.transform = function(m) {
   this.a = this.a.transform(m);
@@ -148,11 +180,15 @@ Line.prototype.points = function() {
 };
 Line.prototype.inspect = function() {
   const { x1, y1, x2, y2 } = this;
-  return "Line{ " + inspect({ x1, y1, x2, y2 }) + " }";
+  return 'Line{ ' + inspect({ x1, y1, x2, y2 }) + ' }';
 };
 Line.prototype.toString = function() {
   let { a, b } = this;
-  return Point.prototype.toString.call(this.a) + " -> " + Point.prototype.toString.call(this.b);
+  return (
+    Point.prototype.toString.call(this.a) +
+    ' -> ' +
+    Point.prototype.toString.call(this.b)
+  );
 };
 Line.prototype.toSource = function() {
   let { a, b } = this;
@@ -178,6 +214,15 @@ Line.prototype.round = function(precision = 0.001) {
   return this;
 };
 
-for (let name of ["direction", "round", "slope", "angle", "bbox", "points", "inspect", "toString"]) {
+for(let name of [
+  'direction',
+  'round',
+  'slope',
+  'angle',
+  'bbox',
+  'points',
+  'inspect',
+  'toString'
+]) {
   Line[name] = points => Line.prototype[name].call(points);
 }

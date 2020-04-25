@@ -35,7 +35,9 @@ export class Observe {
 
   set(target, key, value, context) {
     if(Reflect.has(target, key)) {
-      this.fn.apply(this, [{ name: key, object: JSON.stringify(target), type: "update", oldValue: target[key] }]);
+      this.fn.apply(this, [
+        { name: key, object: JSON.stringify(target), type: "update", oldValue: target[key] }
+      ]);
       return Reflect.set(target, key, value, context);
     } else {
       this.fn.apply(this, [{ name: key, object: JSON.stringify(target), type: "add" }]);
@@ -44,17 +46,33 @@ export class Observe {
   }
 
   deleteProperty(target, key) {
-    this.fn.apply(this, [{ name: key, object: JSON.stringify(target), type: "delete", oldValue: target[key] }]);
+    this.fn.apply(this, [
+      { name: key, object: JSON.stringify(target), type: "delete", oldValue: target[key] }
+    ]);
     return Reflect.deleteProperty(target, key);
   }
 
   defineProperty(target, key, desc) {
-    this.fn.apply(this, [{ name: key, object: JSON.stringify(target), type: "reconfigure", descriptor: JSON.stringify(desc) }]);
+    this.fn.apply(this, [
+      {
+        name: key,
+        object: JSON.stringify(target),
+        type: "reconfigure",
+        descriptor: JSON.stringify(desc)
+      }
+    ]);
     return Reflect.defineProperty(target, key, desc);
   }
 
   setPrototypeOf(target, proto) {
-    this.fn.apply(this, [{ name: JSON.stringify(proto), object: JSON.stringify(target), type: "setPrototype", oldValue: JSON.stringify(target) }]);
+    this.fn.apply(this, [
+      {
+        name: JSON.stringify(proto),
+        object: JSON.stringify(target),
+        type: "setPrototype",
+        oldValue: JSON.stringify(target)
+      }
+    ]);
     return Reflect.setPrototypeOf(target, proto);
   }
 }

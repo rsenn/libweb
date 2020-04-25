@@ -1,4 +1,4 @@
-import { Rect } from "../geom/rect.js";
+import { Rect } from '../geom/rect.js';
 
 export class BBox {
   static fromPoints(pts) {
@@ -9,7 +9,12 @@ export class BBox {
   }
 
   constructor(x1, y1, x2, y2) {
-    if(x1 !== undefined && y1 !== undefined && x2 !== undefined && y2 !== undefined) {
+    if(
+      x1 !== undefined &&
+      y1 !== undefined &&
+      x2 !== undefined &&
+      y2 !== undefined
+    ) {
       this.x1 = Math.min(x1, x2);
       this.y1 = Math.min(y1, y2);
       this.x2 = Math.max(x1, x2);
@@ -24,9 +29,12 @@ export class BBox {
 
   update(list, offset = 0.0) {
     for(let arg of list) {
-      if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset);
-      if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0);
-      if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0);
+      if(arg.x !== undefined && arg.y != undefined)
+        this.updateXY(arg.x, arg.y, offset);
+      if(arg.x1 !== undefined && arg.y1 != undefined)
+        this.updateXY(arg.x1, arg.y1, 0);
+      if(arg.x2 !== undefined && arg.y2 != undefined)
+        this.updateXY(arg.x2, arg.y2, 0);
     }
   }
 
@@ -52,7 +60,10 @@ export class BBox {
   }
 
   get center() {
-    return new Point({ x: this.x + this.width / 2, y: this.y + this.height / 2 });
+    return new Point({
+      x: this.x + this.width / 2,
+      y: this.y + this.height / 2
+    });
   }
 
   relative_to(x, y) {
@@ -95,7 +106,7 @@ export class BBox {
   }
   transform(fn = arg => arg, out) {
     if(!out) out = this;
-    for(let prop of ["x1", "y1", "x2", "y2"]) {
+    for(let prop of ['x1', 'y1', 'x2', 'y2']) {
       const v = this[prop];
       out[prop] = fn(v);
     }
@@ -108,7 +119,8 @@ export class BBox {
   }
 
   static from(iter, tp = p => p) {
-    if(typeof iter == "object" && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
+    if(typeof iter == 'object' && iter[Symbol.iterator])
+      iter = iter[Symbol.iterator]();
 
     let r = new BBox();
     let result = iter.next();

@@ -18,7 +18,17 @@ export class Node {
   }
 
   static attrs(node) {
-    return node.attributes && node.attributes.length > 0 ? Array.from(node.attributes).reduce((acc, attr) => ({ ...acc, [attr.name]: isNaN(parseFloat(attr.value)) ? attr.value : parseFloat(attr.value) }), {}) : {};
+    return node.attributes && node.attributes.length > 0
+      ? Array.from(node.attributes).reduce(
+          (acc, attr) => ({
+            ...acc,
+            [attr.name]: isNaN(parseFloat(attr.value))
+              ? attr.value
+              : parseFloat(attr.value)
+          }),
+          {}
+        )
+      : {};
   }
 }
 

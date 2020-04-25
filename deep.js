@@ -58,7 +58,8 @@ export const equals = (a, b) => {
 
 export const extend = () => {
   let destination, k, source, sources, j, len;
-  (destination = arguments[0]), (sources = 2 <= arguments.length ? Array.prototype.slice.call(arguments, 1) : []);
+  (destination = arguments[0]),
+    (sources = 2 <= arguments.length ? Array.prototype.slice.call(arguments, 1) : []);
   for(j = 0, len = sources.length; j < len; j++) {
     source = sources[j];
     for(k in source) {
@@ -79,7 +80,8 @@ export const select = (root, filter, path) => {
     v;
   if(!path) path = [];
   if(filter(root, path)) selected.push({ path: path, value: root });
-  else if(Util.isObject(root)) for(k in root) selected = selected.concat(select(root[k], filter, [...path, k]));
+  else if(Util.isObject(root))
+    for(k in root) selected = selected.concat(select(root[k], filter, [...path, k]));
   return selected;
 };
 
@@ -92,7 +94,8 @@ export const iterate = function*(root, filter = v => true) {
     r;
 
   if((r = filter(value, path, root))) yield [value, path, root];
-  if(r !== -1) if (Util.isObject(value)) for(k in value) yield* iterate(value[k], filter, [...path, k]);
+  if(r !== -1)
+    if(Util.isObject(value)) for(k in value) yield* iterate(value[k], filter, [...path, k]);
 };
 
 export const get = (root, path) => {

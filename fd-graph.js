@@ -20,7 +20,20 @@ import Util from "./util.js";
  */
 
 export class Graph {
-  constructor({ origin = new Point(0, 0), size = new Size(1000, 1000), prng = Math.random, gravitate_to_origin = true, charge = 100, mass = 240, spacing = 3, timestep = 150, damping = 0.000005, onUpdateNode = node => {}, onUpdateEdge = edge => {}, onRenderGraph = graph => {} }) {
+  constructor({
+    origin = new Point(0, 0),
+    size = new Size(1000, 1000),
+    prng = Math.random,
+    gravitate_to_origin = true,
+    charge = 100,
+    mass = 240,
+    spacing = 3,
+    timestep = 150,
+    damping = 0.000005,
+    onUpdateNode = node => {},
+    onUpdateEdge = edge => {},
+    onRenderGraph = graph => {}
+  }) {
     console.log(`Graph(${origin},${gravitate_to_origin})`);
     this.nodes = [];
     this.edges = [];
@@ -30,7 +43,8 @@ export class Graph {
     this.damping = damping;
     this.timestep = timestep;
 
-    this.gravitate_to_origin = typeof gravitate_to_origin == "undefined" ? false : gravitate_to_origin;
+    this.gravitate_to_origin =
+      typeof gravitate_to_origin == "undefined" ? false : gravitate_to_origin;
     this.done_rendering = false;
     this.prng = prng;
 
@@ -251,7 +265,12 @@ export class Graph {
 
               let rel = Point.diff(leaf, node);
 
-              newPositions.push({ index, old: rel, x: node.x + Math.cos(gapPos) * 50, y: node.y + Math.sin(gapPos) * 50 });
+              newPositions.push({
+                index,
+                old: rel,
+                x: node.x + Math.cos(gapPos) * 50,
+                y: node.y + Math.sin(gapPos) * 50
+              });
               gapPos += gapStep;
             }
           }
@@ -365,7 +384,10 @@ class Node extends Point {
     var distance = this.distance(n);
     var force = scale * Math.max(distance + 200, 1);
 
-    this.netforce.move(force * Math.sin((n.x - this.x) / distance), force * Math.sin((n.y - this.y) / distance));
+    this.netforce.move(
+      force * Math.sin((n.x - this.x) / distance),
+      force * Math.sin((n.y - this.y) / distance)
+    );
   }
 
   applyRepulsiveForce(n, scale = 1) {
@@ -377,7 +399,10 @@ class Node extends Point {
   }
 
   toJS() {
-    let ret = Util.filterKeys(this, key => ["charge", "mass", "label", "x", "y", "id", "color"].indexOf(key) != -1);
+    let ret = Util.filterKeys(
+      this,
+      key => ["charge", "mass", "label", "x", "y", "id", "color"].indexOf(key) != -1
+    );
     if(this.node && this.node.id !== undefined) ret.id = this.node.id;
     Point.round(ret, 0.001);
     return ret;
@@ -438,7 +463,7 @@ class Edge extends Line {
   draw(ctx) {}
 }
 
-if (module.exports) {
+if(module.exports) {
   module.exports.Node = Node;
   module.exports.Edge = Edge;
   module.exports.Graph = Graph;

@@ -70,25 +70,55 @@ const EagleColors = [
 export const EaglePalette = [
   'rgb(3,0,5)',
   'rgb(252,245,38)',
-  'rgb(251,252,247)',
+  'rgb(0,126,24)',
 
-  'rgb(16,6,61)',
   'rgb(0,23,185)',
   'rgb(79,9,0)',
   'rgb(62,46,25)',
   'rgb(178,27,0)',
   'rgb(255,38,0)',
   'rgb(105,82,33)',
-  'rgb(0,126,24)',
+  'rgb(251,252,247)',
+
   'rgb(140,95,51)',
   'rgb(189,133,64)',
   'rgb(132,148,109)',
   'rgb(168,166,32)',
+  'rgb(16,6,61)',
   'rgb(255,180,83)'
 ];
 
 export class EagleRenderer {
   palette = EagleColors;
+  id = 0;
+  layers = {};
+
+  constructor(doc, factory) {
+    this.doc = doc;
+    this.create = (tag, attrs, parent) =>
+      factory(tag, 'id' in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
+  }
+
+  renderLayers(parent) {
+    const layerGroup = this.create('g', { className: 'layers' }, parent);
+    const layers = [...this.doc.layers.list].sort(
+      (a, b) => a.number - b.number
+    );
+    for(let l of layers) {
+      const { name, number, color } = l;
+      const layer = this.create(
+        'g',
+        {
+          id: `layer-${l.number}`,
+          className: l.name,
+          stroke: this.palette[color - 1]
+        },
+        layerGroup
+      );
+
+      this.layers[l.number] = layer;
+    }
+  }
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
@@ -126,7 +156,9 @@ export class EagleRenderer {
             y: -rect.height / 2,
             width: rect.width,
             height: rect.height,
-            transform: `translate(${center.x},${center.y}) ${RotateTransformation(rot)}`
+            transform: `translate(${center.x},${
+              center.y
+            }) ${RotateTransformation(rot)}`
           },
           parent
         );
@@ -134,7 +166,9 @@ export class EagleRenderer {
       }
       case 'label': {
         const { x, y, size, rot, align } = coordFn(item);
-        const transform = `translate(${x},${y}) scale(1,-1) ${RotateTransformation(rot)}`;
+        const transform = `translate(${x},${y}) scale(1,-1) ${RotateTransformation(
+          rot
+        )}`;
         svg(
           'text',
           {
@@ -158,7 +192,9 @@ export class EagleRenderer {
           const prop = text.slice(4).toLowerCase();
           text = prop in opts ? opts[prop] : text;
         }
-        const transform = `translate(${x},${y}) scale(1,-1) ${RotateTransformation(rot)}`;
+        const transform = `translate(${x},${y}) scale(1,-1) ${RotateTransformation(
+          rot
+        )}`;
         const e = svg(
           'text',
           {
@@ -203,7 +239,7 @@ export class EagleRenderer {
   }
 
   setPalette(pal) {
-    this.palette = pal.map(c => new RGBA(c));
+    this.palette = pal; //pal.map(c => new RGBA(c));
   }
 }
 
@@ -215,12 +251,12 @@ export class SchematicRenderer extends EagleRenderer {
     point: 0
   };
 
-  constructor(obj, factory) {
-    super();
+  constructor(doc, factory) {
+    super(doc, factory);
 
-    const { layers, nets, parts, sheets, symbols } = obj;
+    const { layers, nets, parts, sheets, symbols } = doc;
     this.sheets = sheets;
-    this.create = factory;
+    this.id = 0;
   }
 
   renderCollection(collection, parent, opts) {
@@ -265,7 +301,12 @@ export class SchematicRenderer extends EagleRenderer {
         console.log('pin:', item.toXML());
         svg(
           'line',
-          { class: 'pin', stroke: '#a54b4b', ...l.toObject(), strokeWidth: 0.15 },
+          {
+            class: 'pin',
+            stroke: '#a54b4b',
+            ...l.toObject(),
+            strokeWidth: 0.15
+          },
           parent
         );
         if(name != '' && visible != 'off')
@@ -282,7 +323,9 @@ export class SchematicRenderer extends EagleRenderer {
               'text-anchor': 'left',
               'alignment-baseline': 'central',
               innerHTML: name,
-              transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
+              transform: `translate(${vec.x},${
+                vec.y
+              }) scale(1,-1) rotate(${-angle})`
             },
             parent
           );
@@ -311,7 +354,10 @@ export class SchematicRenderer extends EagleRenderer {
     }
     const g = this.create(
       'g',
-      { id: `part.${part.name}`, transform: ` translate(${x},${y}) ${RotateTransformation(rot)}` },
+      {
+        className: `part.${part.name}`,
+        transform: ` translate(${x},${y}) ${RotateTransformation(rot)}`
+      },
       parent
     );
     if(!value) value = deviceset.name;
@@ -320,11 +366,14 @@ export class SchematicRenderer extends EagleRenderer {
   }
 
   renderNet(net, parent) {
-    let g = this.create('g', { id: `net.${net.name}` }, parent);
-    for(let segment of net.children) this.renderCollection(segment, g, { labelText: net.name });
+    let g = this.create('g', { className: `net.${net.name}` }, parent);
+    for(let segment of net.children)
+      this.renderCollection(segment, g, { labelText: net.name });
   }
 
   render(parent) {
+    this.renderLayers(parent);
+
     for(let sheet of this.sheets) {
       console.log('sheet:', sheet);
       this.renderSheet(sheet, parent);
@@ -335,21 +384,32 @@ export class SchematicRenderer extends EagleRenderer {
     let netsGroup = this.create('g', { className: 'nets' }, parent);
     console.log('netsGroup:', netsGroup);
     let partsGroup = this.create('g', { className: 'parts' }, parent);
-    for(let instance of sheet.instances.list) this.renderPart(instance, partsGroup);
+    for(let instance of sheet.instances.list)
+      this.renderPart(instance, partsGroup);
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
   }
 }
 
 export class BoardRenderer extends EagleRenderer {
   constructor(obj, factory) {
-    super();
-    const { settings, layers, libraries, classes, designrules, elements, signals, plain } = obj;
+    super(obj, factory);
+    const {
+      settings,
+      layers,
+      libraries,
+      classes,
+      designrules,
+      elements,
+      signals,
+      plain
+    } = obj;
 
     this.elements = elements;
     this.signals = signals;
-    this.plain = [...board.getAll('plain', (v, l) => new EagleElement(board, l))][0];
+    this.plain = [
+      ...board.getAll('plain', (v, l) => new EagleElement(board, l))
+    ][0];
     this.layers = layers;
-    this.create = factory;
   }
 
   renderItem(item, parent, opts = {}) {
@@ -383,7 +443,9 @@ export class BoardRenderer extends EagleRenderer {
               new Point(-1, 1)
             ].map(p => p.prod(ro * 1.27));
 
-            data = points.map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+            data = points
+              .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+              .join(' ');
             //data = `M ${-ro} ${-ro} L ${ro} ${-ro} L ${ro} ${ro} L ${-ro} ${ro}`;
             break;
           }
@@ -392,7 +454,9 @@ export class BoardRenderer extends EagleRenderer {
               Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.4)
             );
 
-            data = points.map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+            data = points
+              .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+              .join(' ');
             break;
           }
           default: {
@@ -406,7 +470,9 @@ export class BoardRenderer extends EagleRenderer {
           {
             //stroke: color, strokeWidth: 0.1, fill: 'none',
             fill: this.palette[2],
-            d: data + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
+            d:
+              data +
+              ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
             transform
           },
           parent
@@ -426,7 +492,10 @@ export class BoardRenderer extends EagleRenderer {
               fontSize: 0.9,
               fontStyle: 'bold',
               fontFamily: 'Fixed',
-              transform: `${transform} ${RotateTransformation(opts.rot, -1)} scale(1,-1)`
+              transform: `${transform} ${RotateTransformation(
+                opts.rot,
+                -1
+              )} scale(1,-1)`
             },
             parent
           );
@@ -452,7 +521,13 @@ export class BoardRenderer extends EagleRenderer {
 
     const g = this.create(
       'g',
-      { id: `element.${name}`, transform: ` translate(${x},${y}) ${RotateTransformation(rot)}` },
+      {
+        id: `element.${name}`,
+        'data-name': name,
+        'data-value': value,
+        'data-library': library.name,
+        transform: ` translate(${x},${y}) ${RotateTransformation(rot)}`
+      },
       parent
     );
 
@@ -460,19 +535,30 @@ export class BoardRenderer extends EagleRenderer {
   }
 
   render(parent) {
-    let signalsGroup = this.create('g', { className: 'signals', strokeLinecap: 'round' }, parent);
+    this.renderLayers(parent);
+
+    let signalsGroup = this.create(
+      'g',
+      { className: 'signals', strokeLinecap: 'round' },
+      parent
+    );
     let elementsGroup = this.create('g', { className: 'elements' }, parent);
 
     let plainGroup = this.create('g', { className: 'plain' }, parent);
 
     console.log('plain:', this.plain);
 
-    for(let element of this.elements.list) this.renderElement(element, elementsGroup);
+    for(let element of this.elements.list)
+      this.renderElement(element, elementsGroup);
 
     for(let signal of this.signals.list)
-      this.renderCollection(signal, signalsGroup, { predicate: i => i.attributes.layer == '16' });
+      this.renderCollection(signal, signalsGroup, {
+        predicate: i => i.attributes.layer == '16'
+      });
     for(let signal of this.signals.list)
-      this.renderCollection(signal, signalsGroup, { predicate: i => i.attributes.layer == '1' });
+      this.renderCollection(signal, signalsGroup, {
+        predicate: i => i.attributes.layer == '1'
+      });
     for(let signal of this.signals.list)
       this.renderCollection(signal, signalsGroup, {
         predicate: i => i.attributes.layer === undefined
@@ -482,18 +568,60 @@ export class BoardRenderer extends EagleRenderer {
   }
 }
 
-export function renderDocument(doc, factory) {
+export function renderDocument(doc, container) {
+  const factory = SVG.factory(container);
   const ctor = doc.type == 'sch' ? SchematicRenderer : BoardRenderer;
   const renderer = new ctor(doc, factory);
   const bb = new BBox();
   let objects = [];
+  let defs;
 
-  /*if(typeof v == 'object' && v !== null) */ for(let [v, k, o] of doc.iterator(
+  if(
+    !container.firstElementChild ||
+    container.firstElementChild.tagName != 'defs'
+  ) {
+    defs = SVG.create('defs');
+    container.insertBefore(defs, container.firstElementChild);
+  } else {
+    defs = container.firstElementChild;
+  }
+
+  if(!Element.find('pattern', defs)) {
+    const step = '2.54';
+    SVG.create(
+      'path',
+      {
+        d: `M ${step} 0 L 0 0 0 ${step}`,
+        fill: 'none',
+        stroke: 'rgb(0,23,185)',
+        'stroke-width': '0.1'
+      },
+      SVG.create(
+        'pattern',
+        {
+          id: 'grid',
+          width: step,
+          height: step,
+          patternUnits: 'userSpaceOnUse'
+        },
+        defs
+      )
+    );
+  }
+
+  renderer.setPalette(EaglePalette);
+
+  /*if(typeof v == 'object' && v !== null) */ for(let [
+    v,
+    k,
+    o
+  ] of doc.iterator(
     it => it.attributes && it.attributes.x !== undefined,
     [],
     arg => arg
   ))
     objects.push(v);
+
   bb.update(objects);
   const rect = bb.rect.outset(2.54 * 4);
   const center = rect.center;
@@ -512,10 +640,11 @@ export function renderDocument(doc, factory) {
       if(k[0] == 'y') o[k] = -o[k];
     }
   }
+
   const g = factory('g', {
-    transform: `translate(${center.prod(-1)}) scale(2.54,2.54) translate(${center.quot(
-      2.54
-    )}) scale(1,-1)`,
+    transform: `translate(${center.prod(
+      -1
+    )}) scale(2.54,2.54) translate(${center.quot(2.54)}) scale(1,-1)`,
     'vector-effect': 'non-scaling-stroke'
   });
   renderer.render(g);
@@ -526,4 +655,13 @@ export function renderDocument(doc, factory) {
   console.log('bbox.toString:', bbox.toString());
   //console.log("bbox.rect.toString:",bbox.rect.toString());
   factory.delegate.root.setAttribute('viewBox', bbox.toString());
+
+  let grid = SVG.create('rect', {
+    ...bbox.toObject(),
+    x: 0,
+    y: 0,
+    fill: 'url(#grid)'
+  });
+
+  g.insertBefore(grid, g.firstElementChild);
 }

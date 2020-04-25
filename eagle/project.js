@@ -10,7 +10,10 @@ export class EagleProject {
   filename = null;
   data = { sch: null, brd: null, lbr: {} };
 
-  constructor(file, fs = { readFile: filename => '', exists: filename => false }) {
+  constructor(
+    file,
+    fs = { readFile: filename => '', exists: filename => false }
+  ) {
     //  super();
     this.filename = file.replace(/\.(brd|sch)$/, '');
     this.fs = fs;
@@ -57,7 +60,13 @@ export class EagleProject {
   /* prettier-ignore */ get children() { let children = this.documents; return children; }
   /* prettier-ignore */ get library() { return this.data.lbr; }
 
-  *iterator(t = ([v, l, d]) => [typeof v == 'object' ? new EagleElement(d, l, v) : v, l, d]) {
+  *iterator(
+    t = ([v, l, d]) => [
+      typeof v == 'object' ? new EagleElement(d, l, v) : v,
+      l,
+      d
+    ]
+  ) {
     const project = this;
     for(let doc of this.documents) {
       let prefix = EagleProject.documentKey(doc);
@@ -79,7 +88,8 @@ export class EagleProject {
     return null;
   }
 
-  getDocumentDirectories = () => Util.unique(this.documents.map(doc => doc.dirname));
+  getDocumentDirectories = () =>
+    Util.unique(this.documents.map(doc => doc.dirname));
 
   libraryPath() {
     let docDirs = this.getDocumentDirectories();
@@ -107,7 +117,10 @@ export class EagleProject {
     console.log('loadLibraries:', dirs, names);
     for(let name of names) {
       let lib = this.findLibrary(name, dirs);
-      if(!lib) throw new Error(`EagleProject library '${name}' not found in ${dirs.join('.')}`);
+      if(!lib)
+        throw new Error(
+          `EagleProject library '${name}' not found in ${dirs.join('.')}`
+        );
       this.open(lib);
     }
   }
@@ -145,7 +158,9 @@ export class EagleProject {
       const libProps = lib => {
         const { packages, devicesets, symbols } = lib;
         return Object.fromEntries(
-          ['packages', 'symbols', 'devicesets'].map(k => [k, lib[k]]).filter(([k, v]) => v)
+          ['packages', 'symbols', 'devicesets']
+            .map(k => [k, lib[k]])
+            .filter(([k, v]) => v)
         );
         return { packages, devicesets, symbols };
       };
@@ -156,7 +171,9 @@ export class EagleProject {
         const srcMap = srcLib[entity];
         const dstMap = destLib[entity];
         const transformName = n =>
-          n.replace(/[.,][0-9]*/g, '').replace(/([^0-9])([0-9])([^0-9])/g, '$10$2$3');
+          n
+            .replace(/[.,][0-9]*/g, '')
+            .replace(/([^0-9])([0-9])([^0-9])/g, '$10$2$3');
         let ent = srcLib[entity].entries();
         let m = new Map(ent);
         console.log(`dstMap:`, dstMap);
@@ -168,7 +185,10 @@ export class EagleProject {
         }
         console.log('dstMap.ref:', dump(dstMap.ref, 2));
         console.log('dstMap.raw:', dump(dstMap.raw, 2));
-        console.log('dstMap.keys:', dump(dstMap.raw.map(item => item.attributes.name).sort(), 2));
+        console.log(
+          'dstMap.keys:',
+          dump(dstMap.raw.map(item => item.attributes.name).sort(), 2)
+        );
         console.log('dstMap.keys:', dump(dstMap.keys().length, 2));
         console.log('dstMap.map:', dump(dstMap.map().size, 2));
       }
@@ -205,7 +225,9 @@ export class EagleProject {
   saveTo = (dir = '.', overwrite = false) =>
     new Promise((resolve, reject) =>
       Promise.all(
-        this.documents.map(doc => doc.saveTo([dir, doc.filename].join('/'), overwrite))
+        this.documents.map(doc =>
+          doc.saveTo([dir, doc.filename].join('/'), overwrite)
+        )
       ).then(result => resolve(Object.fromEntries(result)))
     );
 }
