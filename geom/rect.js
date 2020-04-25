@@ -14,48 +14,27 @@ export function Rect(arg) {
   ['x', 'y', 'width', 'height'].forEach(field => {
     if(typeof obj[field] != 'number') obj[field] = 0;
   });
-  if(
-    arg &&
-    arg.x1 !== undefined &&
-    arg.y1 !== undefined &&
-    arg.x2 !== undefined &&
-    arg.y2 !== undefined
-  ) {
+  if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
     const { x1, y1, x2, y2 } = arg;
     obj.x = x1;
     obj.y = y1;
     obj.width = x2 - x1;
     obj.height = y2 - y1;
     ret = 1;
-  } else if(
-    arg &&
-    arg.x !== undefined &&
-    arg.y !== undefined &&
-    arg.x2 !== undefined &&
-    arg.y2 !== undefined
-  ) {
+  } else if(arg && arg.x !== undefined && arg.y !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
     const { x, y, x2, y2 } = arg;
     obj.x = x;
     obj.y = y;
     obj.width = x2 - x;
     obj.height = y2 - y;
     ret = 1;
-  } else if(
-    isPoint(arg) &&
-    arg.y !== undefined &&
-    arg.width !== undefined &&
-    arg.height !== undefined
-  ) {
+  } else if(isPoint(arg) && arg.y !== undefined && arg.width !== undefined && arg.height !== undefined) {
     obj.x = parseFloat(arg.x);
     obj.y = parseFloat(arg.y);
     obj.width = parseFloat(arg.width);
     obj.height = parseFloat(arg.height);
     ret = 1;
-  } else if(
-    arg &&
-    arg.length >= 4 &&
-    arg.slice(0, 4).every(arg => !isNaN(parseFloat(arg)))
-  ) {
+  } else if(arg && arg.length >= 4 && arg.slice(0, 4).every(arg => !isNaN(parseFloat(arg)))) {
     let x = arg.shift();
     let y = arg.shift();
     let w = arg.shift();
@@ -65,11 +44,7 @@ export function Rect(arg) {
     obj.width = typeof w === 'number' ? w : parseFloat(w);
     obj.height = typeof h === 'number' ? h : parseFloat(h);
     ret = 4;
-  } else if(
-    arg &&
-    arg.length >= 2 &&
-    arg.slice(0, 2).every(arg => !isNaN(parseFloat(arg)))
-  ) {
+  } else if(arg && arg.length >= 2 && arg.slice(0, 2).every(arg => !isNaN(parseFloat(arg)))) {
     obj.x = 0;
     obj.y = 0;
     obj.width = typeof arg[0] === 'number' ? arg[0] : parseFloat(arg[0]);
@@ -129,25 +104,11 @@ Rect.prototype.getArea = function() {
   return this.width * this.height;
 };
 Rect.prototype.toString = function(prec = 0.000001) {
-  return `${Util.roundTo(this.x, prec)} ${Util.roundTo(
-    this.y,
-    prec
-  )} ${Util.roundTo(this.width, prec)} ${Util.roundTo(this.height, prec)}`;
+  return `${Util.roundTo(this.x, prec)} ${Util.roundTo(this.y, prec)} ${Util.roundTo(this.width, prec)} ${Util.roundTo(this.height, prec)}`;
 };
 Rect.prototype.toSource = function() {
-  return (
-    'new Rect(' +
-    (this
-      ? (this.x + '').padStart(4, ' ') +
-        ',' +
-        (this.y + '').padEnd(4, ' ') +
-        ' ' +
-        (this.width + '').padStart(4, ' ') +
-        'x' +
-        (this.height + '').padEnd(4, ' ')
-      : '') +
-    ')'
-  );
+  const { x, y, width, height } = this;
+  return `new Rect(${x},${y},${width},${height})`;
 };
 Object.defineProperty(Rect.prototype, 'x1', {
   get: function() {
@@ -212,10 +173,7 @@ Rect.prototype.outset = function(trbl) {
 };
 Rect.prototype.inset = function(trbl) {
   if(typeof trbl == 'number') trbl = new TRBL(trbl, trbl, trbl, trbl);
-  if(
-    trbl.left + trbl.right < this.width &&
-    trbl.top + trbl.bottom < this.height
-  ) {
+  if(trbl.left + trbl.right < this.width && trbl.top + trbl.bottom < this.height) {
     this.x += trbl.left;
     this.y += trbl.top;
     this.width -= trbl.left + trbl.right;
@@ -307,22 +265,15 @@ Rect.prototype.toObject = function(bb = false) {
 };
 
 Rect.round = rect => Rect.prototype.round.call(rect);
-Rect.align = (rect, align_to, a = 0) =>
-  Rect.prototype.align.call(rect, align_to, a);
+Rect.align = (rect, align_to, a = 0) => Rect.prototype.align.call(rect, align_to, a);
 Rect.toCSS = rect => Rect.prototype.toCSS.call(rect);
 Rect.inset = (rect, trbl) => Rect.prototype.inset.call(rect, trbl);
 Rect.outset = (rect, trbl) => Rect.prototype.outset.call(rect, trbl);
 
-Rect.center = rect =>
-  new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
+Rect.center = rect => new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 
 Rect.inside = (rect, point) => {
-  return (
-    point.x >= rect.x &&
-    point.x <= rect.x + rect.width &&
-    point.y >= rect.y &&
-    point.y <= rect.y + rect.height
-  );
+  return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
 };
 
 for(let name of [
@@ -331,7 +282,7 @@ for(let name of [
   'isSquare',
   'getArea',
   'toString',
-  'toSource',
+  // 'toSource',
   'points',
   'toCSS',
   'toTRBL',
@@ -339,5 +290,7 @@ for(let name of [
 ]) {
   Rect[name] = points => Rect.prototype[name].call(points);
 }
+
+Rect.toSource = rect => `{x:${rect.x},y:${rect.y},width:${rect.width},height:${rect.height}}`;
 
 export const isRect = rect => isPoint(rect) && isSize(rect);

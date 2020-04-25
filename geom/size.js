@@ -20,10 +20,7 @@ export function Size(arg) {
       obj.height = arg.bottom - arg.top;
     }
   } else {
-    while(
-      typeof arg == 'object' &&
-      (arg instanceof Array || 'length' in arg)
-    ) {
+    while(typeof arg == 'object' && (arg instanceof Array || 'length' in arg)) {
       args = [...arg];
       arg = args[0];
     }
@@ -32,15 +29,11 @@ export function Size(arg) {
       let h = args.shift();
       if(typeof w == 'object' && 'baseVal' in w) w = w.baseVal.value;
       if(typeof h == 'object' && 'baseVal' in h) h = h.baseVal.value;
-      obj.width =
-        typeof w == 'number' ? w : parseFloat(w.replace(/[^-.0-9]*$/, ''));
-      obj.height =
-        typeof h == 'number' ? h : parseFloat(h.replace(/[^-.0-9]*$/, ''));
+      obj.width = typeof w == 'number' ? w : parseFloat(w.replace(/[^-.0-9]*$/, ''));
+      obj.height = typeof h == 'number' ? h : parseFloat(h.replace(/[^-.0-9]*$/, ''));
       obj.units = {
-        width:
-          typeof w == 'number' ? 'px' : w.replace(obj.width.toString(), ''),
-        height:
-          typeof h == 'number' ? 'px' : h.replace(obj.height.toString(), '')
+        width: typeof w == 'number' ? 'px' : w.replace(obj.width.toString(), ''),
+        height: typeof h == 'number' ? 'px' : h.replace(obj.height.toString(), '')
       };
     }
   }
@@ -72,14 +65,8 @@ Size.prototype.aspect = function() {
 };
 Size.prototype.toCSS = function() {
   let ret = {};
-  if(this.width !== undefined)
-    ret.width =
-      this.width +
-      (this.units && 'width' in this.units ? this.units.width : 'px');
-  if(this.height !== undefined)
-    ret.height =
-      this.height +
-      (this.units && 'height' in this.units ? this.units.height : 'px');
+  if(this.width !== undefined) ret.width = this.width + (this.units && 'width' in this.units ? this.units.width : 'px');
+  if(this.height !== undefined) ret.height = this.height + (this.units && 'height' in this.units ? this.units.height : 'px');
   return ret;
 };
 Size.prototype.transform = function(m) {
@@ -137,40 +124,16 @@ Size.prototype.div = function(f) {
 };
 Size.prototype.round = function(precision = 0.001) {
   const prec = -Math.ceil(Math.log10(precision));
-  this.width =
-    precision == 1 ? Math.round(this.width) : +this.width.toFixed(prec);
-  this.height =
-    precision == 1 ? Math.round(this.height) : +this.height.toFixed(prec);
+  this.width = precision == 1 ? Math.round(this.width) : +this.width.toFixed(prec);
+  this.height = precision == 1 ? Math.round(this.height) : +this.height.toFixed(prec);
   return this;
 };
 
 Size.area = sz => Size.prototype.area.call(sz);
 Size.aspect = sz => Size.prototype.aspect.call(sz);
 
-export const isSize = o =>
-  o &&
-  ((o.width !== undefined && o.height !== undefined) ||
-    (o.x !== undefined &&
-      o.x2 !== undefined &&
-      o.y !== undefined &&
-      o.y2 !== undefined) ||
-    (o.left !== undefined &&
-      o.right !== undefined &&
-      o.top !== undefined &&
-      o.bottom !== undefined));
+export const isSize = o => o && ((o.width !== undefined && o.height !== undefined) || (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) || (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
 
-for(let name of [
-  'toCSS',
-  'isSquare',
-  'round',
-  'sum',
-  'add',
-  'diff',
-  'sub',
-  'prod',
-  'mul',
-  'quot',
-  'div'
-]) {
+for(let name of ['toCSS', 'isSquare', 'round', 'sum', 'add', 'diff', 'sub', 'prod', 'mul', 'quot', 'div']) {
   Size[name] = points => Size.prototype[name].call(points);
 }

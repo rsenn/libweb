@@ -193,7 +193,7 @@ class SVG extends _element.Element {
     return new SvgPath();
   }
 
-  static line_iterator(e) {
+  static lineIterator(e) {
     return _regenerator.default.mark(function _callee() {
       var pathStr, path, prev, i, cmd, code, x, y, x0, y0, move, line;
       return _regenerator.default.wrap(function _callee$(_context) {
@@ -224,7 +224,7 @@ class SVG extends _element.Element {
               x: x0,
               y: y0
             }, cmd);
-            console.log("line_iterator", {
+            console.log("lineIterator", {
               i,
               code,
               x,
@@ -251,7 +251,7 @@ class SVG extends _element.Element {
     })();
   }
 
-  static path_iterator(e, numPoints, fn = p => p) {
+  static pathIterator(e, numPoints, fn = p => p) {
     return _regenerator.default.mark(function _callee2() {
       var len, p, y, prev, pos, do_point, i, point, next, isin;
       return _regenerator.default.wrap(function _callee2$(_context2) {

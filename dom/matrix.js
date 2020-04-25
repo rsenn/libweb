@@ -1,13 +1,8 @@
 export function Matrix(arg) {
-  let ret =
-    this instanceof Matrix
-      ? this
-      : [undefined, 0, 0, undefined, 0, 0, undefined, 0, 0];
-  if(typeof arg === 'string') {
+  let ret = this instanceof Matrix ? this : [undefined, 0, 0, undefined, 0, 0, undefined, 0, 0];
+  if(typeof arg === "string") {
     if(/matrix\([^)]*\)/.test(arg)) {
-      let [xx, xy, x0, yx, yy, y0] = [...arg.matchAll(/[-.0-9]+/g)].map(m =>
-        parseFloat(m[0])
-      );
+      let [xx, xy, x0, yx, yy, y0] = [...arg.matchAll(/[-.0-9]+/g)].map(m => parseFloat(m[0]));
       ret[0] = xx;
       ret[1] = xy;
       ret[2] = x0;
@@ -15,7 +10,7 @@ export function Matrix(arg) {
       ret[4] = yy;
       ret[5] = y0;
     }
-  } else if(arg && typeof arg == 'object') {
+  } else if(arg && typeof arg == "object") {
     if(
       arg.xx !== undefined &&
       arg.yx !== undefined &&
@@ -62,8 +57,8 @@ export function Matrix(arg) {
 
 Matrix.prototype = [1, 0, 0, 0, 1, 0, 0, 0, 1];
 
-Matrix.prototype.keys = ['xx', 'xy', 'x0', 'yx', 'yy', 'y0'];
-Matrix.prototype.keySeq = ['xx', 'yx', 'xy', 'yy', 'x0', 'y0'];
+Matrix.prototype.keys = ["xx", "xy", "x0", "yx", "yy", "y0"];
+Matrix.prototype.keySeq = ["xx", "yx", "xy", "yy", "x0", "y0"];
 Matrix.prototype.keyIndex = {
   xx: 0,
   a: 0,
@@ -85,24 +80,21 @@ Matrix.prototype.at = function(key) {
   return this[Matrix.prototype.keyIndex[key]];
 };
 
-export const MatrixProps = Object.keys(Matrix.prototype.keyIndex).reduce(
-  (acc, k) => {
-    const i = Matrix.prototype.keyIndex[k];
-    return {
-      ...acc,
-      [k]: {
-        get: function() {
-          return this[i];
-        },
-        set: function(v) {
-          this[i] = v;
-        },
-        enumerable: true
-      }
-    };
-  },
-  {}
-);
+export const MatrixProps = Object.keys(Matrix.prototype.keyIndex).reduce((acc, k) => {
+  const i = Matrix.prototype.keyIndex[k];
+  return {
+    ...acc,
+    [k]: {
+      get: function() {
+        return this[i];
+      },
+      set: function(v) {
+        this[i] = v;
+      },
+      enumerable: true
+    }
+  };
+}, {});
 
 // prettier-ignore
 Object.defineProperties(Matrix.prototype, {
@@ -213,26 +205,20 @@ Matrix.prototype.toString = function() {
     return '';
 */
   let rows = Matrix.prototype.rows.call(this);
-  let name = rows[0].length == 3 ? 'matrix' : 'matrix3d';
+  let name = rows[0].length == 3 ? "matrix" : "matrix3d";
 
   if(rows[0].length == 3) {
-    rows = [
-      ['a', 'b', 'c', 'd', 'e', 'f'].map(
-        k => this[Matrix.prototype.keyIndex[k]]
-      )
-    ];
+    rows = [["a", "b", "c", "d", "e", "f"].map(k => this[Matrix.prototype.keyIndex[k]])];
   }
 
-  return `${name}(` + rows.map(row => row.join(', ')).join(', ') + ')';
+  return `${name}(` + rows.map(row => row.join(", ")).join(", ") + ")";
 };
 
 Matrix.prototype.toSVG = function() {
   return (
-    'matrix(' +
-    ['a', 'b', 'c', 'd', 'e', 'f']
-      .map(k => this[Matrix.prototype.keyIndex[k]])
-      .join(',') +
-    ')'
+    "matrix(" +
+    ["a", "b", "c", "d", "e", "f"].map(k => this[Matrix.prototype.keyIndex[k]]).join(",") +
+    ")"
   );
 };
 
@@ -254,20 +240,7 @@ Matrix.prototype.is_identity = function() {
 };
 
 Matrix.prototype.init_translate = function(tx, ty) {
-  Matrix.prototype.splice.call(
-    this,
-    0,
-    this.length,
-    1,
-    0,
-    tx,
-    0,
-    1,
-    ty,
-    0,
-    0,
-    1
-  );
+  Matrix.prototype.splice.call(this, 0, this.length, 1, 0, tx, 0, 1, ty, 0, 0, 1);
   return this;
 };
 
@@ -372,8 +345,7 @@ Matrix.prototype.decompose = function(useLU = true) {
       skew.x = Math.atan((a * c + b * d) / (r * r));
     } else if(c || d) {
       s = Math.sqrt(c * c + d * d);
-      rotation =
-        Math.PI * 0.5 - (d > 0 ? Math.acos(-c / s) : -Math.acos(c / s));
+      rotation = Math.PI * 0.5 - (d > 0 ? Math.acos(-c / s) : -Math.acos(c / s));
       scale = { x: determ / s, y: s };
       skew.y = Math.atan((a * c + b * d) / (s * s));
     } else {
@@ -392,8 +364,8 @@ Matrix.prototype.decompose = function(useLU = true) {
 
 Matrix.prototype.affine_transform = function(a, b) {
   var xx, yx, xy, yy, tx, ty;
-  if(typeof a == 'object' && a.toPoints !== undefined) a = a.toPoints();
-  if(typeof b == 'object' && b.toPoints !== undefined) b = b.toPoints();
+  if(typeof a == "object" && a.toPoints !== undefined) a = a.toPoints();
+  if(typeof b == "object" && b.toPoints !== undefined) b = b.toPoints();
   xx =
     (b[0].x * a[1].y +
       b[1].x * a[2].y +
@@ -485,31 +457,18 @@ Matrix.getAffineTransform = (a, b) => {
 };
 
 Matrix.init_identity = matrix => Matrix.prototype.init_identity.call(matrix);
-Matrix.init_translate = (matrix, tx, ty) =>
-  Matrix.prototype.init_translate.call(matrix, tx, ty);
-Matrix.init_scale = (matrix, sx, sy) =>
-  Matrix.prototype.init_identity.call(matrix, sx, sy);
-Matrix.init_rotate = (matrix, rad) =>
-  Matrix.prototype.init_rotate.call(matrix, rad);
+Matrix.init_translate = (matrix, tx, ty) => Matrix.prototype.init_translate.call(matrix, tx, ty);
+Matrix.init_scale = (matrix, sx, sy) => Matrix.prototype.init_identity.call(matrix, sx, sy);
+Matrix.init_rotate = (matrix, rad) => Matrix.prototype.init_rotate.call(matrix, rad);
 
-Matrix.translate = (matrix, tx, ty) =>
-  Matrix.prototype.translate.call(matrix, tx, ty);
-Matrix.scale = (matrix, sx, sy) =>
-  Matrix.prototype.identity.call(matrix, sx, sy);
+Matrix.translate = (matrix, tx, ty) => Matrix.prototype.translate.call(matrix, tx, ty);
+Matrix.scale = (matrix, sx, sy) => Matrix.prototype.identity.call(matrix, sx, sy);
 Matrix.rotate = (matrix, rad) => Matrix.prototype.rotate.call(matrix, rad);
 
-for(let name of [
-  'toArray',
-  'toString',
-  'toSVG',
-  'point_transformer',
-  'product'
-]) {
+for(let name of ["toArray", "toString", "toSVG", "point_transformer", "product"]) {
   Matrix[name] = points => Matrix.prototype[name].call(points);
 }
 
 export const isMatrix = m =>
   m instanceof Matrix ||
-  (m.length !== undefined &&
-    m.length == 6 &&
-    m.every(el => typeof el == 'number'));
+  (m.length !== undefined && m.length == 6 && m.every(el => typeof el == "number"));

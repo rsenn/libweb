@@ -22,9 +22,7 @@ export class Node {
       ? Array.from(node.attributes).reduce(
           (acc, attr) => ({
             ...acc,
-            [attr.name]: isNaN(parseFloat(attr.value))
-              ? attr.value
-              : parseFloat(attr.value)
+            [attr.name]: isNaN(parseFloat(attr.value)) ? attr.value : parseFloat(attr.value)
           }),
           {}
         )

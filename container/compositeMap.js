@@ -5,14 +5,14 @@ export class CompositeMap {
       this.keyLength = 0;
       this.data = new Map();
     } else if(entries instanceof CompositeMap) {
-      const copyMethod = (options && options.copy) || "keys";
+      const copyMethod = (options && options.copy) || 'keys';
       switch (copyMethod) {
-        case "keys":
+        case 'keys':
           this.copiedSet = undefined;
           this.keyLength = entries.keyLength;
           this.data = copyMaps(entries.data, entries.keyLength, 0);
           break;
-        case "on-write":
+        case 'on-write':
           // When using copy-on-write, map being copied must also use copy-on-write mode
           this.copiedSet = entries.copiedSet = new WeakSet();
           this.keyLength = entries.keyLength;
@@ -24,9 +24,15 @@ export class CompositeMap {
     } else {
       this.keyLength = (options && options.keyLength) || 0;
       if(!this.keyLength) {
-        throw new Error("Array inputs require a non-zero value for options.keyLength");
+        throw new Error(
+          'Array inputs require a non-zero value for options.keyLength'
+        );
       }
-      this.data = recursiveEntriesToRecursiveMap(this.keyLength - 1, entries, 0);
+      this.data = recursiveEntriesToRecursiveMap(
+        this.keyLength - 1,
+        entries,
+        0
+      );
     }
   }
   set(key, value) {
@@ -34,7 +40,7 @@ export class CompositeMap {
       if(!this.keyLength) {
         this.keyLength = key.length;
       } else {
-        throw Error("Invalid key length");
+        throw Error('Invalid key length');
       }
     }
     let map = this.data;
@@ -90,7 +96,7 @@ export class CompositeMap {
       return true;
     }
     if(key.length > this.keyLength) {
-      throw Error("Invalid key length");
+      throw Error('Invalid key length');
     }
     let map = this.data;
     const maps = [map];
@@ -125,7 +131,7 @@ export class CompositeMap {
       return this.data.size > 0;
     }
     if(key.length > this.keyLength) {
-      throw Error("Invalid key length");
+      throw Error('Invalid key length');
     }
     let map = this.data;
     const lastKeyPos = key.length - 1;
@@ -145,7 +151,7 @@ export class CompositeMap {
       return undefined;
     }
     if(key.length > this.keyLength) {
-      throw Error("Invalid key length");
+      throw Error('Invalid key length');
     }
     let map = this.data;
     const lastKeyPos = key.length - 1;
@@ -187,7 +193,9 @@ export class CompositeMap {
             key[level] = result.value[0];
             level++;
             levelIterator =
-              level === lastLevel ? result.value[1].keys() : result.value[1].entries();
+              level === lastLevel
+                ? result.value[1].keys()
+                : result.value[1].entries();
             levelIterators[level] = levelIterator;
           } else {
             const key2 = key.slice();
@@ -364,7 +372,10 @@ function recursiveEntriesToRecursiveMap(lastKeyPos, entries, level) {
     });
   } else {
     entries.forEach(entry => {
-      map.set(entry[0], recursiveEntriesToRecursiveMap(lastKeyPos, entry[1], level + 1));
+      map.set(
+        entry[0],
+        recursiveEntriesToRecursiveMap(lastKeyPos, entry[1], level + 1)
+      );
     });
   }
   return map;

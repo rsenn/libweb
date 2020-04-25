@@ -147,12 +147,12 @@ export class SVG extends Element {
   /*
        
     paths = dom.Element.findAll("path", await img("action-save-new.svg"));
-    lines = [...dom.SVG.line_iterator(paths[1])];
+    lines = [...dom.SVG.lineIterator(paths[1])];
     pl = new dom.Polyline(lines);
 
 
 */
-  static *line_iterator(e) {
+  static *lineIterator(e) {
     let pathStr;
     if(typeof e == 'string') pathStr = e;
     else pathStr = e.getAttribute('d');
@@ -168,18 +168,14 @@ export class SVG extends Element {
         //              const swap = !Point.equal(prev, { x: x0, y: y0 });
 
         let line = new Line({ x: x0, y: y0 }, cmd);
-        console.log(
-          'line_iterator',
-          { i, code, x, y, x0, y0 },
-          line.toString()
-        );
+        console.log('lineIterator', { i, code, x, y, x0, y0 }, line.toString());
         yield line;
       }
       prev = cmd;
     }
   }
 
-  static *path_iterator(e, numPoints, fn = p => p) {
+  static *pathIterator(e, numPoints, fn = p => p) {
     const len = e.getTotalLength();
 
     if(!numPoints) numPoints = Math.ceil(len / 2);
@@ -199,13 +195,7 @@ export class SVG extends Element {
       point.ok = !point.move && prev.angle != point.angle;
       const pad = Util.padFn(12, ' ', (str, pad) => `${pad}${str}`);
       if(point.ok) {
-        console.log(
-          `pos: ${pad(i, 3)}, move: ${isin || point.move} point: ${pad(
-            point
-          )}, slope: ${pad(
-            slope && slope.toFixed(3)
-          )}, angle: ${point.angle.toFixed(3)}, d: ${d.toFixed(3)}`
-        );
+        //console.log(`pos: ${pad(i, 3)}, move: ${isin || point.move} point: ${pad(point )}, slope: ${pad(slope && slope.toFixed(3) )}, angle: ${point.angle.toFixed(3)}, d: ${d.toFixed(3)}` );
         let ret;
 
         try {

@@ -8,6 +8,7 @@ const pathPadding = Util.isBrowser() ? 0 : 40;
 export const ansi = Util.isBrowser()
   ? () => ''
   : (...args) => `\u001b[${[...args].join(';')}m`;
+  
 export const text = Util.isBrowser()
   ? (text, ...color) => (color.indexOf(1) != -1 ? `${text}` : text)
   : (text, ...color) => ansi(...color) + text + ansi(0);
@@ -256,7 +257,7 @@ export class EagleInterface {
     )) {
       if(!(l instanceof EaglePath)) l = new EaglePath(l);
       if(typeof v == 'object' && v !== null && 'tagName' in v) {
-        console.log('l:', l.xpath(root));
+        //    console.log('l:', l.xpath(root));
 
         if(predicate(v, l, owner)) yield t([v, l, owner]);
       }

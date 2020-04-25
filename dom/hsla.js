@@ -1,4 +1,4 @@
-import { RGBA } from './rgba.js';
+import { RGBA } from "./rgba.js";
 
 /**
  * @brief [brief description]
@@ -15,12 +15,7 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
   let ret = this instanceof HSLA ? this : {};
   /*  if(!this) return Object.assign({}, HSLA.prototype, { h, s, l, a });*/
 
-  if(
-    typeof args[0] == 'object' &&
-    'h' in args[0] &&
-    's' in args[0] &&
-    'l' in args[0]
-  ) {
+  if(typeof args[0] == "object" && "h" in args[0] && "s" in args[0] && "l" in args[0]) {
     ret.h = args[0].h;
     ret.s = args[0].s;
     ret.l = args[0].l;
@@ -32,11 +27,9 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
     ret.a = a;
   } else {
     const arg = args[0];
-    if(typeof arg === 'string') {
+    if(typeof arg === "string") {
       var matches =
-        /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(
-          arg
-        ) ||
+        /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) ||
         /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
 
       if(matches != null) matches = [...matches].slice(1);
@@ -46,11 +39,9 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
     ret.l = c[2];
     ret.a = c[3] !== undefined ? c[3] : 1.0;
 
-    ['h', 's', 'l', 'a'].forEach(channel => {
-      if(String(ret[channel]).endsWith('%'))
-        ret[channel] = parseFloat(
-          ret[channel].slice(0, ret[channel].length - 1)
-        );
+    ["h", "s", "l", "a"].forEach(channel => {
+      if(String(ret[channel]).endsWith("%"))
+        ret[channel] = parseFloat(ret[channel].slice(0, ret[channel].length - 1));
       else ret[channel] = parseFloat(ret[channel]);
     });
   }
@@ -59,7 +50,7 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
   if(!(ret instanceof HSLA)) return ret;
 }
 
-HSLA.prototype.properties = ['h', 's', 'l', 'a'];
+HSLA.prototype.properties = ["h", "s", "l", "a"];
 
 //export const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(prop));
 
@@ -150,17 +141,8 @@ HSLA.prototype.toString = function() {
   return `hsla(${this.h},${this.s}%,${this.l}%,${this.a})`;
 };
 
-for(let name of [
-  'css',
-  'toHSL',
-  'clamp',
-  'round',
-  'hex',
-  'toRGBA',
-  'toString'
-]) {
+for(let name of ["css", "toHSL", "clamp", "round", "hex", "toRGBA", "toString"]) {
   HSLA[name] = points => HSLA.prototype[name].call(points);
 }
 
-export const isHSLA = obj =>
-  HSLA.properties.every(prop => obj.hasOwnProperty(prop));
+export const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(prop));

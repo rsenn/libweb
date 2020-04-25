@@ -1,153 +1,167 @@
-function SpatialHash(range, bucketSize) {
-    this.bucketSize = bucketSize || 100;
-    this.range = range;
+export function SpatialHash(range, bucketSize) {
+  this.bucketSize = bucketSize || 100;
+  this.range = range;
 
-    this.init();
+  this.init();
 }
 
-module.exports = SpatialHash;
-
 SpatialHash.prototype.init = function() {
-    var b = getBounds(this.range),
-        bucketSize = this.bucketSize;
+  var b = getBounds(this.range),
+    bucketSize = this.bucketSize;
 
-    this._hStart = ~~(b.left / bucketSize);
-    this._hEnd = ~~(b.right / bucketSize);
-    this._vStart = ~~(b.top / bucketSize);
-    this._vEnd = ~~(b.bottom / bucketSize);
+  this.x1 = ~~(b.left / bucketSize);
+  this.x2 = ~~(b.right / bucketSize);
+  this.y1 = ~~(b.top / bucketSize);
+  this.y2 = ~~(b.bottom / bucketSize);
 
-    var z = { };
-    var i = this._hStart;
-    for (; i <= this._hEnd; i++) {
-        var j = this._vStart,
-            a = { };
+  var z = {};
+  var i = this.x1;
+  for(; i <= this.x2; i++) {
+    var j = this.y1,
+      a = {};
 
-        for (; j <= this._vEnd; j++)
-            a[j] = [];
-        z[i] = a;
-    }
+    for(; j <= this.y2; j++) a[j] = [];
+    z[i] = a;
+  }
 
-    this.hashes = z;
-    this.itemCount = 0;
-    this.horizontalBuckets = (this._hEnd - this._hStart) + 1;
-    this.verticalBuckets = (this._vEnd - this._vStart) + 1;
-    this.bucketCount = this.horizontalBuckets * this.verticalBuckets;
-    this._nId = -9e15;
+  this.hashes = z;
+  this.itemCount = 0;
+  this.horizontalBuckets = this.x2 - this.x1 + 1;
+  this.verticalBuckets = this.y2 - this.y1 + 1;
+  this.bucketCount = this.horizontalBuckets * this.verticalBuckets;
+  this.nId = -9e15;
 };
 
 SpatialHash.prototype.insert = function(item) {
-    if (!item.range) return;
-    var b = getBounds(item.range),
-        bucketSize = this.bucketSize;
+  if(!item.range) return;
+  var b = getBounds(item.range),
+    bucketSize = this.bucketSize;
 
-    var hStart = Math.max(~~(b.left / bucketSize), this._hStart);
-    var hEnd = Math.min(~~(b.right / bucketSize), this._hEnd);
-    var vStart = Math.max(~~(b.top / bucketSize), this._vStart);
-    var vEnd = Math.min(~~(b.bottom / bucketSize), this._vEnd);
-    item.__b = {
-        hStart: hStart,
-        hEnd: hEnd,
-        vStart: vStart,
-        vEnd: vEnd,
-        id: this._nId++
-    };
+  var x1 = Math.max(~~(b.left / bucketSize), this.x1);
+  var x2 = Math.min(~~(b.right / bucketSize), this.x2);
+  var y1 = Math.max(~~(b.top / bucketSize), this.y1);
+  var y2 = Math.min(~~(b.bottom / bucketSize), this.y2);
+  item.b = {
+    x1: x1,
+    x2: x2,
+    y1: y1,
+    y2: y2,
+    id: this.nId++
+  };
 
-    var i = hStart, j;
-    for (; i <= hEnd; i++) {
-        j = vStart;
-        for (; j <= vEnd; j++)
-            this.hashes[i][j].push(item);
-    }
+  var i = x1,
+    j;
+  for(; i <= x2; i++) {
+    j = y1;
+    for(; j <= y2; j++) this.hashes[i][j].push(item);
+  }
 
-    if (this.itemCount++ >= 9e15)
-        throw new Error("SpatialHash: To ensure pure integer stability it must not have more than 9E15 (900 000 000 000 000) objects");
-    else if (this._nId > 9e15 - 1)
-        this._nId = -9e15;
+  if(this.itemCount++ >= 9e15)
+    throw new Error(
+      'SpatialHash: To ensure pure integer stability it must not have more than 9E15 (900 000 000 000 000) objects'
+    );
+  else if(this.nId > 9e15 - 1) this.nId = -9e15;
 };
 
 SpatialHash.prototype.remove = function(item) {
-    if (!item.__b) return;
+  if(!item.b) return;
 
-    var hStart = item.__b.hStart;
-    var hEnd = item.__b.hEnd;
-    var vStart = item.__b.vStart;
-    var vEnd = item.__b.vEnd;
+  var x1 = item.b.x1;
+  var x2 = item.b.x2;
+  var y1 = item.b.y1;
+  var y2 = item.b.y2;
 
-    var i = hStart, j, k;
-    for (; i <= hEnd; i++) {
-        j = vStart;
-        for (; j <= vEnd; j++) {
-            k = this.hashes[i][j].indexOf(item);
-            if (k !== -1) this.hashes[i][j].splice(k, 1);
-        }
+  var i = x1,
+    j,
+    k;
+  for(; i <= x2; i++) {
+    j = y1;
+    for(; j <= y2; j++) {
+      k = this.hashes[i][j].indexOf(item);
+      if(k !== -1) this.hashes[i][j].splice(k, 1);
     }
-    if (!(delete item.__b)) item.__b = undefined;
-    this.itemCount--;
+  }
+  if(!delete item.b) item.b = undefined;
+  this.itemCount--;
 };
 
 SpatialHash.prototype.update = function(item) {
-    this.remove(item);
-    this.insert(item);
+  this.remove(item);
+  this.insert(item);
 };
 
-SpatialHash.prototype.__srch = function(range, selector, callback, returnOnFirst) {
-    var b = getBounds(range),
-        bucketSize = this.bucketSize;
+SpatialHash.prototype.srch = function(
+  range,
+  selector,
+  callback,
+  returnOnFirst
+) {
+  var b = getBounds(range),
+    bucketSize = this.bucketSize;
 
-    // range might be larger than the hash's size itself
-    var hStart = Math.max(~~(b.left / bucketSize), this._hStart);
-    var hEnd = Math.min(~~(b.right / bucketSize), this._hEnd);
-    var vStart = Math.max(~~(b.top / bucketSize), this._vStart);
-    var vEnd = Math.min(~~(b.bottom / bucketSize), this._vEnd);
+  // range might be larger than the hash's size itself
+  var x1 = Math.max(~~(b.left / bucketSize), this.x1);
+  var x2 = Math.min(~~(b.right / bucketSize), this.x2);
+  var y1 = Math.max(~~(b.top / bucketSize), this.y1);
+  var y2 = Math.min(~~(b.bottom / bucketSize), this.y2);
 
-    var i = hStart, j, k, l, m, o = [], p = [];
-    for (; i <= hEnd; i++) {
-        j = vStart;
-        for (; j <= vEnd; j++) {
-            k = this.hashes[i][j];
-            l = k.length;
-            m = 0;
-            for (; m < l; m++)
-                if (intersects(k[m].range, range) && p.indexOf(k[m].__b.id) === -1) {
-                    p.push(k[m].__b.id);
-                    if (selector) if (!selector(k[m])) continue;
-                    if (callback) callback(k[m]);
-                    if (returnOnFirst) return true;
-                    o.push(k[m]);
-                }
+  var i = x1,
+    j,
+    k,
+    l,
+    m,
+    o = [],
+    p = [];
+  for(; i <= x2; i++) {
+    j = y1;
+    for(; j <= y2; j++) {
+      k = this.hashes[i][j];
+      l = k.length;
+      m = 0;
+      for(; m < l; m++)
+        if(intersects(k[m].range, range) && p.indexOf(k[m].b.id) === -1) {
+          p.push(k[m].b.id);
+          if(selector) if (!selector(k[m])) continue;
+          if(callback) callback(k[m]);
+          if(returnOnFirst) return true;
+          o.push(k[m]);
         }
     }
-    if (returnOnFirst) return false;
-    return o;
+  }
+  if(returnOnFirst) return false;
+  return o;
 };
 
 SpatialHash.prototype.any = function(range) {
-    return this.__srch(range, null, null, true);
+  return this.srch(range, null, null, true);
 };
 
 SpatialHash.prototype.query = function(range, selector) {
-    return this.__srch(range, selector, null, false);
+  return this.srch(range, selector, null, false);
 };
 
 SpatialHash.prototype.find = function(range, callback) {
-    return this.__srch(range, null, callback, false);
+  return this.srch(range, null, callback, false);
 };
 
 function intersects(a, b) {
-    var xa = a.x - a.w, ya = a.y - a.h, wa = a.w * 2, ha = a.h * 2,
-        xb = b.x - b.w, yb = b.y - b.h, wb = b.w * 2, hb = b.h * 2;
+  var xa = a.x - a.w,
+    ya = a.y - a.h,
+    wa = a.w * 2,
+    ha = a.h * 2,
+    xb = b.x - b.w,
+    yb = b.y - b.h,
+    wb = b.w * 2,
+    hb = b.h * 2;
 
-    return xa <= xb + wb
-        && xa + wa >= xb
-        && ya <= yb + hb
-        && ya + ha >= yb;
+  return xa <= xb + wb && xa + wa >= xb && ya <= yb + hb && ya + ha >= yb;
 }
 
 function getBounds(a) {
-    return {
-        left: a.x - a.w,
-        right: a.x + a.w,
-        top: a.y - a.h,
-        bottom: a.y + a.h
-    };
+  return {
+    left: a.x - a.w,
+    right: a.x + a.w,
+    top: a.y - a.h,
+    bottom: a.y + a.h
+  };
 }
