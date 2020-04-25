@@ -149,8 +149,17 @@ Util.functionName = function(fn) {
   return null;
 };
 Util.className = function(obj) {
-  let proto = Object.getPrototypeOf(obj) || obj;
-  return Util.fnName(proto.constructor || proto);
+  let proto;
+  console.log("class:",obj);
+  try {
+  proto = Object.getPrototypeOf(obj);
+  } catch(err) {
+    try {
+proto = obj.prototype;
+} catch(err) {}
+  } ;
+  if(Util.isObject(proto) && 'constructor' in proto)
+    return Util.fnName(proto.constructor );
 };
 Util.unwrapComponent = function(c) {
   for(;;) {
@@ -724,6 +733,12 @@ Util.toString = (obj, opts = {}, indent = "") => {
     }
     return s + sep() + `${padding}]`;
   }
+  console.log("obj:",Util.className(obj), obj);
+  if(typeof obj == "function" || obj instanceof Function || Util.className(obj) == 'Function') {
+    obj = "" + obj;
+    if(!multiline) obj = obj.replace(/(\n| anonymous)/g, "");
+    return obj;
+  }
   let s = c.text(`{${padding}`, 1, 36);
   let i = 0;
   for(let key in obj) {
@@ -733,7 +748,7 @@ Util.toString = (obj, opts = {}, indent = "") => {
     if(i > 0) s += sep(true);
     s += `${c.text(key, 1, 33)}${c.text(colon, 1, 36)}` + spacing;
     /*if(Util.isArray(value)) s+= Util.toString(value);
-      else*/ if(typeof value == "object")
+      else*/ if(Util.isObject(value))
       s += Util.toString(value, opts, indent + "  ");
     else if(typeof value == "string") s += c.text(`${quote}${value}${quote}`, 1, 36);
     else if(typeof value == "number") s += c.text(value, 1, 32);
@@ -1519,7 +1534,7 @@ Util.formatRecord = function(obj) {
   return ret;
 };
 Util.isArray = function(obj) {
-  return (obj && obj.length !== undefined && !(obj instanceof String)) || obj instanceof Array;
+  return (obj && obj.length !== undefined && !(obj instanceof String)&& !(obj instanceof Function)&& typeof(obj) == 'function') || obj instanceof Array;
 };
 
 Util.isObject = function(obj) {

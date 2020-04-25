@@ -185,13 +185,24 @@ Line.prototype.equations = function() {
   return equations;
 };
 Line.prototype.functions = function() {
-  let [ y0, myx ] =  Line.prototype.yIntercept.call(this);
-  let [ x0, mxy ] =  Line.prototype.xIntercept.call(this);
+  let i;
+  let fns = {};
+  if((i = Line.prototype.yIntercept.call(this))) {
+    let [y0, myx] = i;
+    fns.y = x => y0 + myx * x;
+  } else {
+        let { y } = this.a;
 
-  return  {
-    y:  x =>  y0 + myx * x,
-    x:  y =>  x0 + mxy * y
-  };
+    fns.y = new Function('x', `return ${y}`);
+  }
+  if((i = Line.prototype.xIntercept.call(this))) {
+    let [x0, mxy] = i;
+    fns.x = y => x0 + mxy * y;
+  } else {
+    let { x } = this.a;
+    fns.x = new Function('y', `return ${x}`); //y => x;
+  }
+  return fns;
 };
 Line.prototype.angle = function() {
   return Point.prototype.angle.call(Line.prototype.slope.call(this));
