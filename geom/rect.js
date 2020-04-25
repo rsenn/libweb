@@ -325,6 +325,6 @@ Rect.toSource = (rect, opts = {}) => {
   return `{${sep}${props}${sep}}`;
 };
 
-Util.defineInspect(Rect.prototype, 'x','y','width','height');
+Util.defineInspect(Rect.prototype, "x", "y", "width", "height");
 
 export const isRect = rect => isPoint(rect) && isSize(rect);

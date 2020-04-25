@@ -29,7 +29,7 @@ export function Line(x1, y1, x2, y2) {
     obj.a = args[0];
     obj.b = args[1];
 
-/*    obj.x1 = parseFloat(args[0].x);
+    /*    obj.x1 = parseFloat(args[0].x);
     obj.y1 = parseFloat(args[0].y);
     obj.x2 = parseFloat(args[1].x);
     obj.y2 = parseFloat(args[1].y);*/
@@ -139,10 +139,59 @@ Object.defineProperty(Line.prototype, "y2", {
 });
 Line.prototype.direction = function() {
   var dist = Point.prototype.distance.call(this.a, this.b);
-  return Point.prototype.diff.call(this.a, this.b) / dist;
+  return Point.prototype.quot.call(Line.prototype.slope.call(this), dist);
+};
+Line.prototype.vector = function() {
+  return Point.prototype.diff.call(this.a, this.b);
 };
 Line.prototype.slope = function() {
-  return Point.prototype.diff.call(this.a, this.b);
+  return (this.y2 - this.y1) / (this.x2 - this.x1);
+};
+Line.prototype.yIntercept = function() {
+  let v = Line.prototype.vector.call(this);
+  if(v.x !== 0) {
+    let slope = v.y / v.x;
+    return [this.a.y - this.a.x * slope, slope || 0];
+  }
+};
+Line.prototype.xIntercept = function() {
+  let v = Line.prototype.vector.call(this);
+  if(v.y !== 0) {
+    let slope = v.x / v.y;
+    return [this.a.x - this.a.y * slope, slope || 0];
+  }
+};
+Line.prototype.isHorizontal = function() {
+  return Line.prototype.vector.call(this).y === 0;
+};
+Line.prototype.isVertical = function() {
+  return Line.prototype.vector.call(this).x === 0;
+};
+
+Line.prototype.equations = function() {
+  let intercept = {
+    y: Line.prototype.yIntercept.call(this),
+    x: Line.prototype.xIntercept.call(this)
+  };
+  let equations = [];
+  for(let axis in intercept) {
+    if(intercept[axis]) {
+      let [c0, m] = intercept[axis];
+      let rhs = `${c0}`;
+      if(m !== 0) rhs += ` + ${m} * ${axis == "y" ? "x" : "y"}`;
+      equations.push(`${axis} = ${rhs}`);
+    }
+  }
+  return equations;
+};
+Line.prototype.functions = function() {
+  let [ y0, myx ] =  Line.prototype.yIntercept.call(this);
+  let [ x0, mxy ] =  Line.prototype.xIntercept.call(this);
+
+  return  {
+    y:  x =>  y0 + myx * x,
+    x:  y =>  x0 + mxy * y
+  };
 };
 Line.prototype.angle = function() {
   return Point.prototype.angle.call(Line.prototype.slope.call(this));
@@ -183,7 +232,7 @@ Line.prototype.toSource = function() {
   let { a, b } = this;
   return `new Line(${a.x},${a.y},${b.x},${b.y})`;
 };
-Line.prototype.swap = function() {
+Line.prototype.reverse = function() {
   let tmp = this.b;
   this.b = this.a;
   this.a = tmp;
@@ -203,6 +252,51 @@ Line.prototype.round = function(precision = 0.001) {
   return this;
 };
 
+Line.prototype.some = function(pred) {
+  return pred(this.a) || pred(this.b);
+};
+Line.prototype.every = function(pred) {
+  return pred(this.a) && pred(this.b);
+};
+Line.prototype.includes = function(point) {
+  return Point.prototype.equal.call(this.a, point) || Point.prototype.equal.call(this.b, point);
+};
+Line.prototype.equal = function(other) {
+  if(Point.prototype.equal.call(this.a, other.a) && Point.prototype.equal.call(this.b, other.b))
+    return 1;
+  if(Point.prototype.equal.call(this.a, other.b) && Point.prototype.equal.call(this.b, other.a))
+    return -1;
+  return false;
+};
+Line.prototype.indexOf = function(point) {
+  let i = 0;
+  for(let p of [this.a, this.b]) {
+    if(Point.prototype.equal.call(p, point)) return i;
+    i++;
+  }
+  return -1;
+};
+Line.prototype.lastIndexOf = function(point) {
+  let i = 0;
+  for(let p of [this.b, this.a]) {
+    if(Point.prototype.equal.call(p, point)) return i;
+    i++;
+  }
+  return -1;
+};
+Line.prototype.map = function(fn) {
+  let i = 0;
+  let r = [];
+  for(let p of [this.a, this.b]) {
+    r.push(fn(p, i, this));
+    i++;
+  }
+  return new Line(...r);
+};
+Line.prototype.swap = function(fn) {
+  return new Line(this.a, this.b).reverse();
+};
+
 for(let name of [
   "direction",
   "round",
@@ -216,4 +310,4 @@ for(let name of [
   Line[name] = points => Line.prototype[name].call(points);
 }
 
-Util.defineInspect(Line.prototype, 'x1','y1','x2', 'y2');
+Util.defineInspect(Line.prototype, "x1", "y1", "x2", "y2");

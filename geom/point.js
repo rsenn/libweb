@@ -267,7 +267,6 @@ export const isPoint = o =>
       (o.top !== undefined || o.bottom !== undefined)));
 
 Point.isPoint = isPoint;
-Util.defineInspect(Point.prototype, 'x','y');
-
+Util.defineInspect(Point.prototype, "x", "y");
 
 export default Point;
