@@ -360,7 +360,7 @@ function Polyline(lines) {
   let ret = this instanceof Polyline ? this : new PointList();
 
   const addUnique = point => {
-    const ok = ret.length > 0 ? !_point.Point.equal(ret[ret.length - 1], point) : true;
+    const ok = ret.length > 0 ? !_point.Point.equals(ret[ret.length - 1], point) : true;
     if (ok) ret.push(_objectSpread({}, point));
     return ok;
   };
@@ -372,9 +372,9 @@ function Polyline(lines) {
     console.log("line[".concat(i, "]:"), line.toString());
 
     if (i > 0) {
-      const eq = [_point.Point.equal(prev, line.a)];
-      console.log("Point.equal(".concat(prev, ",").concat(line.a, ") = ").concat(eq[0]));
-      if (!eq[0] && !_point.Point.equal(prev, line.b)) break;
+      const eq = [_point.Point.equals(prev, line.a)];
+      console.log("Point.equals(".concat(prev, ",").concat(line.a, ") = ").concat(eq[0]));
+      if (!eq[0] && !_point.Point.equals(prev, line.b)) break;
     } else {
       addUnique(line.a);
     }

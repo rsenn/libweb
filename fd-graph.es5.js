@@ -176,15 +176,15 @@ class Graph {
 
             edge = _this.edges[i];
             r = null;
-            if (edge.a && _dom.Point.equal(edge.a, node)) r = edge.b;
-            if (edge.b && _dom.Point.equal(edge.b, node)) r = edge.a;
+            if (edge.a && _dom.Point.equals(edge.a, node)) r = edge.b;
+            if (edge.b && _dom.Point.equals(edge.b, node)) r = edge.a;
 
             if (!(r !== null)) {
               _context.next = 11;
               break;
             }
 
-            if (!(exclude !== null && _dom.Point.equal(exclude, r))) {
+            if (!(exclude !== null && _dom.Point.equals(exclude, r))) {
               _context.next = 9;
               break;
             }

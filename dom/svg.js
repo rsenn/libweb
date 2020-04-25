@@ -145,7 +145,7 @@ export class SVG extends Element {
       if(y == undefined) y = y0;
       const move = cmd.code.toLowerCase() == "m";
       if(prev && !move) {
-        //              const swap = !Point.equal(prev, { x: x0, y: y0 });
+        //              const swap = !Point.equals(prev, { x: x0, y: y0 });
 
         let line = new Line({ x: x0, y: y0 }, cmd);
         console.log("lineIterator", { i, code, x, y, x0, y0 }, line.toString());

@@ -87,7 +87,7 @@ export class HashList {
                 String(arr[i]).match(a) ||
                 arr[i].id == a ||
                 arr[i].e == a ||
-                Rect.equal(arr[i].rect, arr[i].rect)))
+                Rect.equals(arr[i].rect, arr[i].rect)))
     );
   }
 

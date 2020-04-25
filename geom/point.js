@@ -125,7 +125,7 @@ Point.prototype.distance = function(
     (other.y - this.y) * (other.y - this.y) + (other.x - this.x) * (other.x - this.x)
   );
 };
-Point.prototype.equal = function(other) {
+Point.prototype.equals = function(other) {
   return this.x == other.x && this.y == other.y;
 };
 Point.prototype.round = function(precision = 0.001) {
@@ -238,8 +238,8 @@ Point.sum = (a, b) => Point.prototype.sum.call(a, b);
 Point.diff = (a, b) => Point.prototype.diff.call(a, b);
 Point.prod = (a, b) => Point.prototype.prod.call(a, b);
 Point.quot = (a, b) => Point.prototype.quot.call(a, b);
-Point.equal = (a, b) => {
-  let ret = Point.prototype.equal.call(a, b);
+Point.equals = (a, b) => {
+  let ret = Point.prototype.equals.call(a, b);
   return ret;
 };
 Point.round = (point, prec) => Point.prototype.round.call(point, prec);

@@ -219,13 +219,14 @@ Line.prototype.endpointDist = function(point) {
   return Math.min(point.distance(this.a), point.distance(this.b));
 };
 Line.prototype.matchEndpoints = function(arr) {
-  const { x1, x2, y1, y2 } = this;
+  const { a, b } = this;
   return [...arr.entries()].filter(
     ([i, otherLine]) =>
-      !Line.prototype.equal.call(this, otherLine) && (
-      ((otherLine.x1 == x1 && otherLine.y1 == y1) || (otherLine.x2 == x2 && otherLine.y2 == y2)) ||
-      ((otherLine.x1 == x2 && otherLine.y1 == y2) || (otherLine.x2 == x1 && otherLine.y2 == y1))
-      )
+      !Line.prototype.equals.call(this, otherLine) &&
+      (Point.prototype.equals.call(a, otherLine.a) ||
+        Point.prototype.equals.call(b, otherLine.b) ||
+        Point.prototype.equals.call(b, otherLine.a) ||
+        Point.prototype.equals.call(a, otherLine.b))
   );
 };
 
@@ -305,19 +306,19 @@ Line.prototype.every = function(pred) {
   return pred(this.a) && pred(this.b);
 };
 Line.prototype.includes = function(point) {
-  return Point.prototype.equal.call(this.a, point) || Point.prototype.equal.call(this.b, point);
+  return Point.prototype.equals.call(this.a, point) || Point.prototype.equals.call(this.b, point);
 };
-Line.prototype.equal = function(other) {
-  if(Point.prototype.equal.call(this.a, other.a) && Point.prototype.equal.call(this.b, other.b))
+Line.prototype.equals = function(other) {
+  if(Point.prototype.equals.call(this.a, other.a) && Point.prototype.equals.call(this.b, other.b))
     return 1;
-  if(Point.prototype.equal.call(this.a, other.b) && Point.prototype.equal.call(this.b, other.a))
+  if(Point.prototype.equals.call(this.a, other.b) && Point.prototype.equals.call(this.b, other.a))
     return -1;
   return false;
 };
 Line.prototype.indexOf = function(point) {
   let i = 0;
   for(let p of [this.a, this.b]) {
-    if(Point.prototype.equal.call(p, point)) return i;
+    if(Point.prototype.equals.call(p, point)) return i;
     i++;
   }
   return -1;
@@ -325,7 +326,7 @@ Line.prototype.indexOf = function(point) {
 Line.prototype.lastIndexOf = function(point) {
   let i = 0;
   for(let p of [this.b, this.a]) {
-    if(Point.prototype.equal.call(p, point)) return i;
+    if(Point.prototype.equals.call(p, point)) return i;
     i++;
   }
   return -1;

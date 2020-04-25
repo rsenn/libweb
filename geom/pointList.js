@@ -387,7 +387,7 @@ new dom.Polyline(lines).toSVG(dom.SVG.factory(), { stroke: '#0050ff', fill: 'non
 export function Polyline(lines) {
   let ret = this instanceof Polyline ? this : new PointList();
   const addUnique = point => {
-    const ok = ret.length > 0 ? !Point.equal(ret[ret.length - 1], point) : true;
+    const ok = ret.length > 0 ? !Point.equals(ret[ret.length - 1], point) : true;
     if(ok) ret.push({ ...point });
     return ok;
   };
@@ -396,10 +396,10 @@ export function Polyline(lines) {
     const line = lines.shift();
     console.log(`line[${i}]:`, line.toString());
     if(i > 0) {
-      const eq = [Point.equal(prev, line.a)];
+      const eq = [Point.equals(prev, line.a)];
 
-      console.log(`Point.equal(${prev},${line.a}) = ${eq[0]}`);
-      if(!eq[0] && !Point.equal(prev, line.b)) break;
+      console.log(`Point.equals(${prev},${line.a}) = ${eq[0]}`);
+      if(!eq[0] && !Point.equals(prev, line.b)) break;
     } else {
       addUnique(line.a);
     }

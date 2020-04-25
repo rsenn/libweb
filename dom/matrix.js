@@ -222,7 +222,7 @@ Matrix.prototype.toSVG = function() {
   );
 };
 
-Matrix.prototype.equal = function(other) {
+Matrix.prototype.equals = function(other) {
   for(let i = 0; i < 9; i++) {
     if(this[i] != other[i]) return false;
   }
@@ -236,7 +236,7 @@ Matrix.prototype.init_identity = function() {
   return this;
 };
 Matrix.prototype.is_identity = function() {
-  return Matrix.prototype.equal.call(this, [1, 0, 0, 0, 1, 0, 0, 0, 1]);
+  return Matrix.prototype.equals.call(this, [1, 0, 0, 0, 1, 0, 0, 0, 1]);
 };
 
 Matrix.prototype.init_translate = function(tx, ty) {

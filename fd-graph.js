@@ -130,11 +130,11 @@ export class Graph {
       let edge = this.edges[i];
       let r = null;
 
-      if(edge.a && Point.equal(edge.a, node)) r = edge.b;
-      if(edge.b && Point.equal(edge.b, node)) r = edge.a;
+      if(edge.a && Point.equals(edge.a, node)) r = edge.b;
+      if(edge.b && Point.equals(edge.b, node)) r = edge.a;
 
       if(r !== null) {
-        if(exclude !== null && Point.equal(exclude, r)) continue;
+        if(exclude !== null && Point.equals(exclude, r)) continue;
         yield r;
       }
     }
