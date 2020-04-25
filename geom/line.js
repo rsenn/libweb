@@ -139,33 +139,36 @@ Object.defineProperty(Line.prototype, "y2", {
 });
 Line.prototype.direction = function() {
   var dist = Point.prototype.distance.call(this.a, this.b);
-  return Point.prototype.quot.call(Line.prototype.slope.call(this), dist);
+  return Point.prototype.quot.call(Line.prototype.getSlope.call(this), dist);
 };
-Line.prototype.vector = function() {
-  return Point.prototype.diff.call(this.a, this.b);
+Line.prototype.getVector = function() {
+  return { x: this.x2 - this.x1, y: this.y2 - this.y1 };
 };
-Line.prototype.slope = function() {
+Object.defineProperty(Line.prototype, "vector", { 
+  get: Line.prototype.getVector });
+Object.defineProperty(Line.prototype, "slope", { 
+  get:  Line.prototype.getSlope = function() {
   return (this.y2 - this.y1) / (this.x2 - this.x1);
-};
+}});
 Line.prototype.yIntercept = function() {
-  let v = Line.prototype.vector.call(this);
+  let v = Line.prototype.getVector.call(this);
   if(v.x !== 0) {
     let slope = v.y / v.x;
     return [this.a.y - this.a.x * slope, slope || 0];
   }
 };
 Line.prototype.xIntercept = function() {
-  let v = Line.prototype.vector.call(this);
+  let v = Line.prototype.getVector.call(this);
   if(v.y !== 0) {
     let slope = v.x / v.y;
     return [this.a.x - this.a.y * slope, slope || 0];
   }
 };
 Line.prototype.isHorizontal = function() {
-  return Line.prototype.vector.call(this).y === 0;
+  return Line.prototype.getVector.call(this).y === 0;
 };
 Line.prototype.isVertical = function() {
-  return Line.prototype.vector.call(this).x === 0;
+  return Line.prototype.getVector.call(this).x === 0;
 };
 
 Line.prototype.equations = function() {
@@ -191,25 +194,34 @@ Line.prototype.functions = function() {
     let [y0, myx] = i;
     fns.y = x => y0 + myx * x;
   } else {
-        let { y } = this.a;
-
-    fns.y = new Function('x', `return ${y}`);
+    let { y } = this.a;
+    fns.y = new Function("x", `return ${y}`);
   }
   if((i = Line.prototype.xIntercept.call(this))) {
     let [x0, mxy] = i;
     fns.x = y => x0 + mxy * y;
   } else {
     let { x } = this.a;
-    fns.x = new Function('y', `return ${x}`); //y => x;
+    fns.x = new Function("y", `return ${x}`); //y => x;
   }
   return fns;
 };
 Line.prototype.angle = function() {
-  return Point.prototype.angle.call(Line.prototype.slope.call(this));
+  return Point.prototype.angle.call(Line.prototype.getSlope.call(this));
 };
-Line.prototype.length = function() {
-  return Point.prototype.distance.call(this.a, this.b);
-};
+Object.defineProperty(Line.prototype, "length", { 
+  get: Line.prototype.getLength = function() {   return Point.prototype.distance.call(this.a, this.b); }
+});
+Object.defineProperty(Line.prototype, "cross", { 
+  get: function() {   const { x1, x2, y1, y2 } = this;
+  return x1 * y2 - y1 * x2;
+}});
+Object.defineProperty(Line.prototype, "dot", { 
+get: function() {
+  const { x1, x2, y1, y2 } = this;
+  return x1 * x2 + y1 * y2;
+}});
+
 Line.prototype.pointAt = function(pos) {
   return new Point(pos * (this.x2 - this.x1) + this.x1, pos * (this.y2 - this.y1) + this.y1);
 };

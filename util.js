@@ -150,16 +150,15 @@ Util.functionName = function(fn) {
 };
 Util.className = function(obj) {
   let proto;
-  console.log("class:",obj);
+  console.log("class:", obj);
   try {
-  proto = Object.getPrototypeOf(obj);
+    proto = Object.getPrototypeOf(obj);
   } catch(err) {
     try {
-proto = obj.prototype;
-} catch(err) {}
-  } ;
-  if(Util.isObject(proto) && 'constructor' in proto)
-    return Util.fnName(proto.constructor );
+      proto = obj.prototype;
+    } catch(err) {}
+  }
+  if(Util.isObject(proto) && "constructor" in proto) return Util.fnName(proto.constructor);
 };
 Util.unwrapComponent = function(c) {
   for(;;) {
@@ -733,8 +732,8 @@ Util.toString = (obj, opts = {}, indent = "") => {
     }
     return s + sep() + `${padding}]`;
   }
-  console.log("obj:",Util.className(obj), obj);
-  if(typeof obj == "function" || obj instanceof Function || Util.className(obj) == 'Function') {
+  console.log("obj:", Util.className(obj), obj);
+  if(typeof obj == "function" || obj instanceof Function || Util.className(obj) == "Function") {
     obj = "" + obj;
     if(!multiline) obj = obj.replace(/(\n| anonymous)/g, "");
     return obj;
@@ -1534,7 +1533,14 @@ Util.formatRecord = function(obj) {
   return ret;
 };
 Util.isArray = function(obj) {
-  return (obj && obj.length !== undefined && !(obj instanceof String)&& !(obj instanceof Function)&& typeof(obj) == 'function') || obj instanceof Array;
+  return (
+    (obj &&
+      obj.length !== undefined &&
+      !(obj instanceof String) &&
+      !(obj instanceof Function) &&
+      typeof obj == "function") ||
+    obj instanceof Array
+  );
 };
 
 Util.isObject = function(obj) {
