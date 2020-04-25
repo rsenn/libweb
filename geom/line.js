@@ -219,8 +219,12 @@ Line.prototype.endpointDist = function(point) {
   return Math.min(point.distance(this.a), point.distance(this.b));
 };
 Line.prototype.matchEndpoints = function(arr) {
-      const { x1, x2, y1, y2 } = this;
-  return [...arr.entries()].filter(([i,otherLine]) => !Line.prototype.equal.call(this, otherLine) && ((otherLine.x1 == x1 && otherLine.y1 == y1) ||  (otherLine.x2 == x2 && otherLine.y2 == y2)));
+  const { x1, x2, y1, y2 } = this;
+  return [...arr.entries()].filter(
+    ([i, otherLine]) =>
+      !Line.prototype.equal.call(this, otherLine) &&
+      ((otherLine.x1 == x1 && otherLine.y1 == y1) || (otherLine.x2 == x2 && otherLine.y2 == y2))
+  );
 };
 
 Object.defineProperty(Line.prototype, "length", {
