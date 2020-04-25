@@ -42,7 +42,9 @@ export class EagleElement extends EagleNode {
           v => (/^-?[0-9.]+$/.test(prop()) ? parseFloat(prop()) : prop())
         );
         prop(attributes[key]);
-        prop.subscribe(value => (value !== undefined ? (o.attributes[key] = value) : delete o.attributes[key]));
+        prop.subscribe(value =>
+          value !== undefined ? (o.attributes[key] = value) : delete o.attributes[key]
+        );
         this.handlers[key] = prop;
         if(key == 'deviceset' || key == 'package') {
           trkl.bind(this, key, v =>
@@ -138,28 +140,25 @@ export class EagleElement extends EagleNode {
   }
 
   *getAll(name) {
-    yield *super.getAll(name, (v,l,p) => new EagleElement(this, l));
+    yield* super.getAll(name, (v, l, p) => new EagleElement(this, l));
   }
 
   setAttribute(name, value) {
-    if(typeof(value) != 'string' && !value)
-      this.removeAttribute(name);
-    else
-    this.raw.attributes[name] = value+'';
+    if(typeof value != 'string' && !value) this.removeAttribute(name);
+    else this.raw.attributes[name] = value + '';
   }
 
   removeAttribute(name) {
-   delete this.raw.attributes[name];
+    delete this.raw.attributes[name];
   }
 
   get pos() {
-    return `(${(this.x/25.4).toFixed(1)} ${(this.y/25.4).toFixed(1)})`;
+    return `(${(this.x / 25.4).toFixed(1)} ${(this.y / 25.4).toFixed(1)})`;
   }
 }
 
 export const makeEagleElement = function makeEagleElement(owner, ref, ...args) {
- 
-//console.log("makeEagleElement",{owner,ref,args});
+  //console.log("makeEagleElement",{owner,ref,args});
   if('length' in ref) ref = owner.ref.down(...ref);
 
   if(args.length > 0) ref = ref.down(...args);

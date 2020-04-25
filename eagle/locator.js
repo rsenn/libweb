@@ -163,9 +163,10 @@ export const EaglePath = Util.immutableClass(
             s += e.tagName;
             pt = o.filter(sib => sib.tagName == e.tagName);
           }
-            if(Util.isObject(e.attributes) && e.attributes.name) s += `[@name='${e.attributes.name}']`;
-         else  if(pt.length != 1) {
- if(typeof p == 'number' && n != 1) s += `[${p + 1}]`;
+          if(Util.isObject(e.attributes) && e.attributes.name)
+            s += `[@name='${e.attributes.name}']`;
+          else if(pt.length != 1) {
+            if(typeof p == 'number' && n != 1) s += `[${p + 1}]`;
           }
           n = undefined;
         }

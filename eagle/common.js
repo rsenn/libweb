@@ -63,7 +63,8 @@ export const traverse = function*(obj, path = [], doc) {
   if(!(path instanceof EaglePath)) path = new EaglePath(path);
 
   if(false && typeof obj == 'object')
-    if(obj !== null && 'name' in obj.attributes) path[path.length - 1] = { name: obj.attributes.name };
+    if(obj !== null && 'name' in obj.attributes)
+      path[path.length - 1] = { name: obj.attributes.name };
   yield [obj, path, doc];
   if(typeof obj == 'object') {
     if(Util.isArray(obj))
@@ -171,14 +172,16 @@ export class EagleInterface {
   }*/
 
   *findAll(...args) {
-
-
     let { path, predicate, transform } = parseArgs(args);
     //if(!transform) transform = ([v, l, d]) => [v, l, d]; //(typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l, v) : v);
-    for(let [v, l, d] of this.iterator(e => true, [], arg => arg)) {
+    for(let [v, l, d] of this.iterator(
+      e => true,
+      [],
+      arg => arg
+    )) {
       if(!d) d = this;
       if(predicate(v, l, d)) {
-         //      console.log("findAll",{v,l,d});
+        //      console.log("findAll",{v,l,d});
 
         if(transform) v = transform([v, l, d]);
         yield v;
@@ -223,12 +226,11 @@ export class EagleInterface {
     for(let [v, l] of deep.iterate(node, (v, p) =>
       predicate(v, p) ? -1 : p.length > 1 ? p[p.length - 2] == 'children' : true
     )) {
-    if(!(l instanceof EaglePath))
-        l = new EaglePath(l);
+      if(!(l instanceof EaglePath)) l = new EaglePath(l);
       if(typeof v == 'object' && v !== null && 'tagName' in v) {
-             console.log("l:",l.xpath(root));
+        console.log('l:', l.xpath(root));
 
-        if(predicate(v,l,owner)) yield t([v, l, owner]);
+        if(predicate(v, l, owner)) yield t([v, l, owner]);
       }
     }
   }
@@ -281,10 +283,8 @@ export class EagleInterface {
     return dump(e);
   }
 
-
   toXML(depth = Number.MAX_SAFE_INTEGER) {
     // let o = this.document.index(this.path);
     return toXML(this.ref.dereference(), depth);
   }
-
 }

@@ -203,5 +203,9 @@ export class EagleProject {
   }
 
   saveTo = (dir = '.', overwrite = false) =>
-    Promise.all(this.documents.map(doc => doc.saveTo([dir, doc.filename].join('/'), overwrite)));
+    new Promise((resolve, reject) =>
+      Promise.all(
+        this.documents.map(doc => doc.saveTo([dir, doc.filename].join('/'), overwrite))
+      ).then(result => resolve(Object.fromEntries(result)))
+    );
 }

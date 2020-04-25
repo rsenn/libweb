@@ -1,5 +1,5 @@
 //import ReactDOM from "react-dom";
-import { SvgPath } from "./svg/path.js";
+//import { SvgPath } from "./svg/path.js";
 import Util from "./util.js";
 import { Point, isPoint } from "./geom/point.js";
 import { Size, isSize } from "./geom/size.js";
@@ -17,10 +17,10 @@ import { Node } from "./dom/node.js";
 import { Element, isElement } from "./dom/element.js";
 import { CSS } from "./dom/css.js";
 import { SVG } from "./dom/svg.js";
-import { ReactComponent } from "./dom/reactComponent.js";
+//import { ReactComponent } from "./dom/reactComponent.js";
 import { Container } from "./dom/container.js";
 import { Layer, Renderer } from "./dom/layer.js";
-import { Select } from "./dom/select.js";
+//import { Select } from "./dom/select.js";
 import { Align, Anchor } from "./geom/align.js";
 import { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from "./dom/elementRect.js";
 
@@ -183,10 +183,10 @@ export { Node } from "./dom/node.js";
 export { Element, isElement } from "./dom/element.js";
 export { CSS } from "./dom/css.js";
 export { SVG } from "./dom/svg.js";
-export { ReactComponent } from "./dom/reactComponent.js";
+//export { ReactComponent } from "./dom/reactComponent.js";
 export { Container } from "./dom/container.js";
 export { Layer, Renderer } from "./dom/layer.js";
-export { Select } from "./dom/select.js";
+//export { Select } from "./dom/select.js";
 export { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from "./dom/elementRect.js";
 export { Align, Anchor } from "./geom/align.js";
 
@@ -221,12 +221,12 @@ export default Object.assign(dom, {
   Point,
   PointList,
   Polyline,
-  ReactComponent,
+ // ReactComponent,
   Rect,
   Renderer,
   RGBA,
   HSLA,
-  Select,
+ // Select,
   Size,
   SVG,
   Timer,

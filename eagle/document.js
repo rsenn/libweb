@@ -89,7 +89,12 @@ export class EagleDocument extends EagleNode {
   /* prettier-ignore */
   saveTo(path, overwrite = false) {
     let { fs } = this.project;
-    fs.writeFile(path, this.toString());
+    const data = Buffer.from(this.toString());
+
+   return new Promise((resolve,reject) => {
+    fs.writeFile(path, data);
+    resolve([path,data.length]);
+  });
   }
 
   index(path, transform = arg => arg) {
@@ -97,8 +102,7 @@ export class EagleDocument extends EagleNode {
     return transform(path.apply(this));
   }
 
-  
   *getAll(name) {
-    yield *super.getAll(name, (v,l,p) => new EagleElement(this, l));
+    yield* super.getAll(name, (v, l, p) => new EagleElement(this, l));
   }
 }

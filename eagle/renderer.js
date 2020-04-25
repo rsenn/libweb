@@ -67,10 +67,32 @@ const EagleColors = [
   'rgb(165,165,165)' // 15
 ];
 
+export const EaglePalette = [
+  'rgb(3,0,5)',
+  'rgb(252,245,38)',
+  'rgb(251,252,247)',
+
+  'rgb(16,6,61)',
+  'rgb(0,23,185)',
+  'rgb(79,9,0)',
+  'rgb(62,46,25)',
+  'rgb(178,27,0)',
+  'rgb(255,38,0)',
+  'rgb(105,82,33)',
+  'rgb(0,126,24)',
+  'rgb(140,95,51)',
+  'rgb(189,133,64)',
+  'rgb(132,148,109)',
+  'rgb(168,166,32)',
+  'rgb(255,180,83)'
+];
+
 export class EagleRenderer {
+  palette = EagleColors;
+
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
-    const color = opts.color || EagleColors[layer && layer.color] || '#4BA54B';
+    const color = opts.color || this.palette[layer && layer.color] || '#4BA54B';
     const svg = (elem, attr, parent) =>
       this.create(elem, { className: item.tagName, ...attr }, parent);
     const { labelText, coordFn = i => i } = opts;
@@ -79,7 +101,14 @@ export class EagleRenderer {
         const { x1, x2, y1, y2, width } = coordFn(item);
         svg(
           'line',
-          { stroke: color, x1, x2, y1, y2, strokeWidth: +(width == 0 ? 0.1 : width * 1).toFixed(3) },
+          {
+            stroke: color,
+            x1,
+            x2,
+            y1,
+            y2,
+            strokeWidth: +(width == 0 ? 0.1 : width * 1).toFixed(3)
+          },
           parent
         );
         break;
@@ -130,8 +159,7 @@ export class EagleRenderer {
           text = prop in opts ? opts[prop] : text;
         }
         const transform = `translate(${x},${y}) scale(1,-1) ${RotateTransformation(rot)}`;
-        const e = 
-        svg(
+        const e = svg(
           'text',
           {
             fill: color,
@@ -139,7 +167,7 @@ export class EagleRenderer {
             strokeWidth: 0.05,
             x: 0,
             y: 0,
-          /*  ...Alignment(align),
+            /*  ...Alignment(align),
             innerHTML: text,*/
             fontSize: size * 1.6,
             fontFamily: font || 'Fixed',
@@ -147,8 +175,7 @@ export class EagleRenderer {
           },
           parent
         );
-        svg('tspan', {       ...Alignment(align),
-            innerHTML: text }, e);
+        svg('tspan', { ...Alignment(align), innerHTML: text }, e);
         break;
       }
       case 'circle': {
@@ -173,6 +200,10 @@ export class EagleRenderer {
         break;
       }
     }
+  }
+
+  setPalette(pal) {
+    this.palette = pal.map(c => new RGBA(c));
   }
 }
 
@@ -202,7 +233,7 @@ export class SchematicRenderer extends EagleRenderer {
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
-    const color = opts.color || EagleColors[layer && layer.color] || '#4BA54B';
+    const color = opts.color || this.palette[layer && layer.color] || '#4BA54B';
     const svg = (elem, attr, parent) =>
       this.create(elem, { className: item.tagName, ...attr }, parent);
     const { labelText, coordFn = i => i } = opts;
@@ -243,7 +274,7 @@ export class SchematicRenderer extends EagleRenderer {
             {
               class: 'pin',
               stroke: 'none',
-              fill: EagleColors[7],
+              fill: this.palette[7],
               x: 2.54,
               y: 0,
               fontSize: 2,
@@ -323,7 +354,7 @@ export class BoardRenderer extends EagleRenderer {
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
-    const color = EagleColors[layer && layer.color] || EagleColors[7];
+    const color = this.palette[layer && layer.color] || this.palette[7];
     const svg = (elem, attr, parent) =>
       this.create(elem, { className: item.tagName, ...attr }, parent);
     const { labelText, coordFn = i => i, rot } = opts;
@@ -374,7 +405,7 @@ export class BoardRenderer extends EagleRenderer {
           'path',
           {
             //stroke: color, strokeWidth: 0.1, fill: 'none',
-            fill: EagleColors[2],
+            fill: this.palette[2],
             d: data + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
             transform
           },
@@ -457,7 +488,12 @@ export function renderDocument(doc, factory) {
   const bb = new BBox();
   let objects = [];
 
-  for(let [v, k, o] of doc.iterator(it => it.attributes && it.attributes.x !== undefined, [], arg => arg)) /*if(typeof v == 'object' && v !== null) */objects.push(v);
+  /*if(typeof v == 'object' && v !== null) */ for(let [v, k, o] of doc.iterator(
+    it => it.attributes && it.attributes.x !== undefined,
+    [],
+    arg => arg
+  ))
+    objects.push(v);
   bb.update(objects);
   const rect = bb.rect.outset(2.54 * 4);
   const center = rect.center;
@@ -465,7 +501,11 @@ export function renderDocument(doc, factory) {
   console.log("center:", center.prod(-1, -1).toString());
   console.log("factory.delegate.root:", factory.delegate.root);*/
 
-  for(let [v, k, o] of doc.iterator(it => !!it.attributes, [], arg => arg)) {
+  for(let [v, k, o] of doc.iterator(
+    it => !!it.attributes,
+    [],
+    arg => arg
+  )) {
     if(['x', 'y', 'x1', 'y1', 'x2', 'y2', 'width', 'size'].indexOf(k) != -1) {
       o[k] = v / 2.54;
       /* if(k !== "width" && k !== "size")*/ o[k] = Util.roundTo(o[k], 0.001);
