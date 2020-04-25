@@ -1,4 +1,4 @@
-import { Rect } from './rect.js';
+import { Rect } from "./rect.js";
 
 /**
  * Type for TopRightBottomLeft (paddings and margins)
@@ -9,7 +9,7 @@ export function TRBL(arg) {
   let ret = this instanceof TRBL ? this : {};
   let args = [...arguments];
 
-  if(typeof arg === 'object' && !arg instanceof Array) {
+  if(typeof arg === "object" && !arg instanceof Array) {
     Object.keys(arg).forEach(k => {
       const matches = /(top|right|bottom|left)/i.exec(k);
       ret[matches[0].toLowerCase()] = parseInt(arg[k]);
@@ -17,7 +17,7 @@ export function TRBL(arg) {
   } else if(arg) {
     if(args.length > 1) arg = args;
 
-    if(typeof arg === 'string') arg = [...arg.matchAll(/^[0-9.]+(|px|em|rem|pt|cm|mm)$/g)];
+    if(typeof arg === "string") arg = [...arg.matchAll(/^[0-9.]+(|px|em|rem|pt|cm|mm)$/g)];
     else if(arg.length == 4) arg = arg.map(v => parseInt(v));
 
     ret.top = arg[0];
@@ -55,13 +55,13 @@ TRBL.neg = (trbl = this) => ({
 TRBL.prototype.isNaN = function() {
   return isNaN(this.top) || isNaN(this.right) || isNaN(this.bottom) || isNaN(this.left);
 };
-Object.defineProperty(TRBL.prototype, 'inset', {
+Object.defineProperty(TRBL.prototype, "inset", {
   get() {
     return rect => Rect.inset(rect, this);
   }
 });
 
-Object.defineProperty(TRBL.prototype, 'outset', {
+Object.defineProperty(TRBL.prototype, "outset", {
   get() {
     return rect => Rect.outset(rect, this);
   }
@@ -111,14 +111,40 @@ TRBL.union = (trbl, other) => ({
 
 TRBL.toRect = trbl => new Rect(trbl.left, trbl.top, trbl.right - trbl.left, trbl.bottom - trbl.top);
 
-TRBL.prototype.toString = function(unit = 'px') {
-  return '' + this.top + '' + unit + ' ' + this.right + '' + unit + ' ' + this.bottom + '' + unit + ' ' + this.left + unit;
+TRBL.prototype.toString = function(unit = "px") {
+  return (
+    "" +
+    this.top +
+    "" +
+    unit +
+    " " +
+    this.right +
+    "" +
+    unit +
+    " " +
+    this.bottom +
+    "" +
+    unit +
+    " " +
+    this.left +
+    unit
+  );
 };
 TRBL.prototype.toSource = function() {
-  return '{top:' + this.top + ',right:' + this.right + ',bottom:' + this.bottom + ',left:' + this.left + '}';
+  return (
+    "{top:" +
+    this.top +
+    ",right:" +
+    this.right +
+    ",bottom:" +
+    this.bottom +
+    ",left:" +
+    this.left +
+    "}"
+  );
 };
 
-for(let name of ['null', 'isNaN', 'outset', 'toRect', 'toSource']) {
+for(let name of ["null", "isNaN", "outset", "toRect", "toSource"]) {
   TRBL[name] = points => TRBL.prototype[name].call(points);
 }
 
