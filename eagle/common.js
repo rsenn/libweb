@@ -170,8 +170,7 @@ export class EagleInterface {
   *findAll(...args) {
     let { path, predicate, transform } = parseArgs(args);
     //if(!transform) transform = ([v, l, d]) => [v, l, d]; //(typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l, v) : v);
-    for(let [v, l, d] of this.iterator(
-      e => true,
+    for(let [v, l, d] of this.iterator(e => true,
       [],
       arg => arg
     )) {

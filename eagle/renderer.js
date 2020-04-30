@@ -8,6 +8,10 @@ import { Transformation, TransformationList } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
 import Alea from '../alea.js';
 
+const EagleColors = ['rgb(255,255,255)', 'rgb(75,75,165)', 'rgb(75,165,75)', 'rgb(75,165,165)', 'rgb(165,75,75)', 'rgb(165,75,165)', 'rgb(165,165,75)', 'rgb(175,175,175)', 'rgb(75,75,255)', 'rgb(75,255,75)', 'rgb(75,255,255)', 'rgb(255,75,75)', 'rgb(255,75,255)', 'rgb(255,255,75)', 'rgb(75,75,75)', 'rgb(165,165,165)'];
+
+export const EaglePalette = ['hsl(230,100%,40%)', 'rgb(252,245,38)', 'rgb(0,126,24)', 'rgb(0,23,185)', 'rgb(79,9,0)', 'rgb(62,46,25)', 'hsl(30,100%,55%)', 'rgb(255,180,83)', 'rgb(105,82,33)', 'rgb(251,252,247)', 'rgb(140,95,51)', 'rgb(132,148,109)', 'rgb(168,166,32)', 'rgb(16,6,61)', 'rgb(178,27,0)', 'hsl(30,0%,80%)'];
+
 const VERTICAL = 1;
 const HORIZONTAL = 2;
 const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
@@ -27,8 +31,8 @@ const Rotation = (rot, f = 1) => {
     angle = +(rot || '').replace(/M?R/, '') || 0;
   }
   let transformations = new TransformationList();
-  if(mirror !== 0) transformations.scale(-1, 1); //(`scale(-1,1)`);
-  if(angle !== 0) transformations.rotate(angle); //push(`rotate(${angle})`);
+  if(mirror !== 0) transformations.scale(-1, 1);
+  if(angle !== 0) transformations.rotate(angle);
 
   return transformations;
 
@@ -50,15 +54,10 @@ const Rotation = (rot, f = 1) => {
 
 const RotateTransformation = (rot, f = 1) => {
   const r = Rotation(rot, f);
-  //console.log("r:",r);
+
   return r.toString();
 };
 
-/*const LayerAttributes = layer => ({
-  'data-layer-number': layer.number,
-  'data-layer-name': layer.name,
-  'data-layer-color': layer.color
-});*/
 const LayerAttributes = layer =>
   layer
     ? {
@@ -94,28 +93,16 @@ const Arc = (x, y, radius, startAngle, endAngle) => {
 const CalculateArcRadius = (p1, p2, angle) => {
   const d = Point.distance(p1, p2);
 
-  // d²=2r²(1 − cos(2α))
-  // ÷r² ÷d²
-  //
-  //  1/r² = 2(1 − cos(2α)) / d²
-  //  r²   = d² / 2(1 − cos(2α))
-  //  r²   = d² / 2 − 2*cos(2α)
-  //  r    = d  / √(2 − 2*cos(2α))
-
   const r2 = (d * d) / (2 - 2 * Math.cos((angle * Math.PI) / 180));
   const r = d / Math.sqrt(2 + 2 * Math.cos((angle * Math.PI) / 180));
-  //const r = (d / 2) * Math.sqrt(1 + 9 / Math.pow(Math.sin(angle), 2));
 
   if(isNaN(r)) throw new Error('Arc radius for angle: ' + angle);
-  //console.log('CalculateArcRadius', { angle, d, r });
 
   return Math.abs(angle) > 90 ? r / 2 : Math.sqrt(r2);
 };
 
 const LinesToPath = lines => {
-  //console.log(`lines:`, lines.map(Line.toObject));
-  let l = lines.shift(),
-    m;
+  let l = lines.shift(), m;
   let start = l.a;
   let ret = [];
   let prevPoint = new Point(l.a.x, l.a.y);
@@ -131,7 +118,6 @@ const LinesToPath = lines => {
       ret.push(`A ${r} ${r} 0 ${largeArc} ${sweepArc} ${point.x} ${point.y}`);
     } else {
       ret.push(`L ${point.x} ${point.y}`);
-      //ret += `\nl${prevPoint.x-point.x} ${prevPoint.y-point.y}`;
     }
     prevPoint = new Point(point.x, point.y);
   };
@@ -142,7 +128,6 @@ const LinesToPath = lines => {
     m = null;
     for(let i = 0; i < lines.length; i++) {
       const d = [i, Point.distance(l.b, lines[i].a), Point.distance(l.b, lines[i].b)];
-      // console.log('d =', d);
 
       if(Point.equals(l.b, lines[i].a)) {
         m = lines.splice(i, 1)[0];
@@ -165,47 +150,9 @@ const LinesToPath = lines => {
       lineTo(l.b, l.curve);
     }
   } while(lines.length > 0);
-  //console.log('ret:', ret);
+
   return ret.join('\n');
 };
-
-const EagleColors = [
-  'rgb(255,255,255)', // 0
-  'rgb(75,75,165)', // 1
-  'rgb(75,165,75)', // 2
-  'rgb(75,165,165)', // 3
-  'rgb(165,75,75)', // 4
-  'rgb(165,75,165)', // 5
-  'rgb(165,165,75)', // 6
-  'rgb(175,175,175)', // 7
-  'rgb(75,75,255)', // 8
-  'rgb(75,255,75)', // 9
-  'rgb(75,255,255)', // 10
-  'rgb(255,75,75)', // 11
-  'rgb(255,75,255)', // 12
-  'rgb(255,255,75)', // 13
-  'rgb(75,75,75)', // 14
-  'rgb(165,165,165)' // 15
-];
-
-export const EaglePalette = [
-  'rgb(3,0,5)', // 0
-  'rgb(252,245,38)', // 1
-  'rgb(0,126,24)', // 2
-  'rgb(0,23,185)', // 3
-  'rgb(79,9,0)', // 4
-  'rgb(62,46,25)', // 5
-  'rgb(189,133,64)', // 6
-  'rgb(255,180,83)', // 7
-  'rgb(105,82,33)', // 8
-  'rgb(251,252,247)', // 9
-  'rgb(140,95,51)',
-  'rgb(132,148,109)',
-  'rgb(168,166,32)',
-  'rgb(16,6,61)',
-  'rgb(178,27,0)',
-  'rgb(255,38,0)'
-];
 
 export class EagleRenderer {
   palette = EagleColors;
@@ -221,7 +168,6 @@ export class EagleRenderer {
   findLayer(number_or_name) {
     if(number_or_name instanceof EagleElement) {
       if('layer' in number_or_name) number_or_name = number_or_name.layer;
-      //else if('getLayer' in number_or_name) number_or_name = number_or_name.getLayer();
       else if(number_or_name.tagName == 'pad') number_or_name = 'Pads';
       else if(number_or_name.tagName == 'description') number_or_name = 'Document';
     }
@@ -236,22 +182,11 @@ export class EagleRenderer {
       if(layer.name === id) return layer;
     }
   }
-  /*
-  getColor(...args) {
-    let li = this.getLayer(...args) || this.findLayer(...args);
-    let index = Util.isObject(li) && 'color' in li ? li.color : li;
-    let name = Util.isObject(li) && 'name' in li ? li.name : li;
-    let color;
-    try {
-      color = this.colors[name || index] || this.palette[index >= 1 ? index - 1 : index];
-    } catch(err) {}
-    //if(!color) throw new Error("No such color:\n"+index+",\n"+name+",\n"+toXML(li));
-    return color;
-  }*/
+
   getColor(layer) {
-    const name = Util.isObject(layer) && 'name' in layer ? layer.name : undefined;
-    const color = Util.isObject(layer) && 'color' in layer ? layer.color : 7;
-    return this.colors[name] || this.palette[color >= 1 ? color - 1 : color] || 'rgb(175,175,175)';
+    //const name = Util.isObject(layer) && 'name' in layer ? layer.name : layer;
+    const color = Util.isObject(layer) && 'color' in layer ? layer.color : layer;
+    return this.colors[color] || this.palette[color  - 1] || 'rgb(255,0,0)';
   }
 
   layerOf(element) {
@@ -273,48 +208,36 @@ export class EagleRenderer {
 
     for(let l of layers) {
       const { name, number, color } = l;
-      const stroke = this.getColor(l);
-      const layer = this.create(
-        'g',
-        {
+      const stroke = this.getColor(color);
+      const layer = this.create('g', {
           id: `layer-${l.number}`,
           className: 'layer',
           ...LayerAttributes(l),
           stroke
-        },
-        layerGroup
-      );
+        }, layerGroup);
 
       this.layerElements[l.number] = layer;
       colors[l.name] = stroke;
     }
-    //console.log('colors:', Util.inspect(colors));
   }
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
-    const color = opts.color || this.getColor(layer);
+    const color = opts.color || this.getColor(layer.color);
     const svg = (elem, attr, parent) =>
-      this.create(
-        elem,
-        {
+      this.create(elem, {
           className: item.tagName,
           ...LayerAttributes(layer),
           ...attr
-        },
-        parent
-      );
+        }, parent);
     let { labelText, coordFn = i => i } = opts;
 
     let transformation = (opts.transformation || new TransformationList()).slice();
 
-    //console.log('transformation:', transformation);
     switch (item.tagName) {
       case 'wire': {
         const { x1, x2, y1, y2, width, curve } = coordFn(item);
-        svg(
-          'line',
-          {
+        svg('line', {
             stroke: color,
             x1,
             x2,
@@ -322,18 +245,14 @@ export class EagleRenderer {
             y2,
             strokeWidth: +(width == 0 ? 0.1 : width * 1).toFixed(3),
             'data-curve': curve
-          },
-          parent
-        );
+          }, parent);
         break;
       }
       case 'rectangle': {
         const { x1, x2, y1, y2, width, rot } = coordFn(item);
         let rect = new Rect({ x1, x2, y1, y2 });
         let center = rect.center;
-        svg(
-          'rect',
-          {
+        svg('rect', {
             stroke: 'none',
             fill: color,
             x: -rect.width / 2,
@@ -341,20 +260,14 @@ export class EagleRenderer {
             width: rect.width,
             height: rect.height,
             transform: `translate(${center.x},${center.y}) ${Rotation(rot)}`
-          },
-          parent
-        );
+          }, parent);
         break;
       }
       case 'label': {
         const { x, y, size, rot, align } = coordFn(item);
         const transform = new TransformationList(`translate(${x},${y})`);
 
-        //`   scale(1,-1) ${RotateTransformation(opts.rot, -1)} ${Rotate(rot)}`;
-
-        svg(
-          'text',
-          {
+        svg('text', {
             fill: '#f0f',
             stroke: 'none',
             x: 0,
@@ -364,9 +277,7 @@ export class EagleRenderer {
             fontSize: 3,
             fontFamily: 'Fixed',
             transform: transform.undo(transformation)
-          },
-          parent
-        );
+          }, parent);
         break;
       }
       case 'text': {
@@ -379,12 +290,12 @@ export class EagleRenderer {
         const rotation = translation.concat(Rotation(rot));
         let wholeTransform = transformation.concat(Rotation(rot));
         let wholeAngle = wholeTransform.rotation;
-        //(wholeAngle > 0) wholeAngle -= 360;
+
         while(wholeAngle < 0) wholeAngle += 360;
 
         wholeAngle %= 360;
 
-        let undoTransform = /* wholeTransform.undo()*/ new TransformationList().scale(1, -1).rotate(wholeAngle);
+        let undoTransform = new TransformationList().scale(1, -1).rotate(wholeAngle);
         let undoAngle = undoTransform.rotation;
 
         while(undoAngle > 0) undoAngle -= 360;
@@ -393,11 +304,9 @@ export class EagleRenderer {
 
         let angle = undoAngle - wholeAngle;
 
-        //      let angle = wholeAngle;
         while(angle < 0) angle += 360;
 
         angle %= 180;
-        //   let undoAngle = undoTransform.rotation;
 
         const baseAlignment = EagleRenderer.alignment(align);
         const rotateAlignment = AlignmentAngle(wholeAngle);
@@ -406,28 +315,18 @@ export class EagleRenderer {
           .rotate((rotateAlignment * Math.PI) / 180)
           .round(1);
 
-        //console.log(`${text}`, align, baseAlignment.toString({ left: "[", right: "]" }), rotateAlignment.toString(), alignment.toString({ left: "[", right: "]" }) );
-        //console.log(`${text}`, { rotateAlignment, undoAngle, wholeAngle });
-        //console.log(`${text}`, alignment, EagleRenderer.alignmentAttrs(alignment, HORIZONTAL_VERTICAL) );
-
-        const e = svg(
-          'text',
-          {
+        const e = svg('text', {
             fill: color,
             stroke: 'none',
             strokeWidth: 0.05,
             x: 0,
             y: 0,
             ...EagleRenderer.alignmentAttrs(alignment, VERTICAL),
-            /*innerHTML: text,*/
+
             fontSize: (size * 1.6).toFixed(2),
             fontFamily: font || 'Fixed',
             transform: rotation.concat(undoTransform).rotate(undoAngle % 180)
-            // rotation.rotate(angle).scale
-          },
-          parent
-        );
-        //console.log('tspan:', text, 'rot:', rot, 'transformation:', transformation);
+          }, parent);
 
         let attrs = EagleRenderer.alignmentAttrs(alignment, HORIZONTAL);
         if(align !== undefined) attrs['data-align'] = align;
@@ -436,32 +335,28 @@ export class EagleRenderer {
       }
       case 'circle': {
         const { x, y, width, radius } = coordFn(item);
-        svg(
-          'circle',
-          {
+        svg('circle', {
             stroke: color,
             cx: x,
             cy: y,
             r: radius,
             strokeWidth: width * 0.8,
             fill: 'none'
-          },
-          parent
-        );
+          }, parent);
         break;
       }
       case 'contactref':
         break;
       default: {
         const { x, y, width, radius } = coordFn(item);
-        //console.log('Unhandled', item.toXML());
+
         break;
       }
     }
   }
 
   setPalette(pal) {
-    this.palette = pal; //pal.map(c => new RGBA(c));
+    this.palette = pal;
   }
 
   static alignment(align, def = [-1, 1], rot = 0) {
@@ -532,24 +427,20 @@ export class SchematicRenderer extends EagleRenderer {
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
-    const color = opts.color || this.getColor(layer);
+    const color = opts.color || this.getColor(layer.color);
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...LayerAttributes(layer), ...attr }, parent);
 
     const { labelText, coordFn = i => i } = opts;
     switch (item.tagName) {
       case 'junction': {
         const { x, y } = coordFn(item);
-        svg(
-          'circle',
-          {
+        svg('circle', {
             fill: '#4ba54b',
             cx: x,
             cy: y,
             r: 0.5,
             stroke: 'none'
-          },
-          parent
-        );
+          }, parent);
         break;
       }
 
@@ -559,24 +450,18 @@ export class SchematicRenderer extends EagleRenderer {
         const vec = Point.fromAngle((angle * Math.PI) / 180).prod(SchematicRenderer.pinSizes[length] * 2.54);
         const pivot = new Point(+x, +y);
         const l = new Line(pivot, vec.add(pivot));
-        //console.log('pin:', item.toXML());
-        svg(
-          'line',
-          {
+
+        svg('line', {
             class: 'pin',
             stroke: '#a54b4b',
             ...l.toObject(),
             strokeWidth: 0.15
-          },
-          parent
-        );
+          }, parent);
         if(name != '' && visible != 'off')
-          svg(
-            'text',
-            {
+          svg('text', {
               class: 'pin',
               stroke: 'none',
-              fill: this.palette[7],
+              fill: this.getColor(6),
               x: 2.54,
               y: 0,
               fontSize: 2,
@@ -585,9 +470,7 @@ export class SchematicRenderer extends EagleRenderer {
               'alignment-baseline': 'central',
               innerHTML: name,
               transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
-            },
-            parent
-          );
+            }, parent);
         break;
       }
       default: {
@@ -603,22 +486,15 @@ export class SchematicRenderer extends EagleRenderer {
     let { deviceset, device, library, name, value } = part;
     let symbol;
     for(let gate of deviceset.gates.list) {
-      //console.log('gate:', gate.toXML());
-      //console.log('gate.symbol:', gate.attributes.symbol);
       symbol = library.symbols[gate.attributes.symbol];
       if(symbol) break;
     }
     if(!symbol) {
-      //console.log('Symbol not found:', deviceset.name);
     }
-    const g = this.create(
-      'g',
-      {
+    const g = this.create('g', {
         className: `part.${part.name}`,
         transform: ` translate(${x},${y}) ${RotateTransformation(rot)}`
-      },
-      parent
-    );
+      }, parent);
     if(!value) value = deviceset.name;
     this.renderCollection(symbol, g, { name, value });
     return g;
@@ -633,14 +509,13 @@ export class SchematicRenderer extends EagleRenderer {
     this.renderLayers(parent);
 
     for(let sheet of this.sheets) {
-      //console.log('sheet:', sheet);
       this.renderSheet(sheet, parent);
     }
   }
 
   renderSheet(sheet, parent) {
     let netsGroup = this.create('g', { className: 'nets' }, parent);
-    //console.log('netsGroup:', netsGroup);
+
     let partsGroup = this.create('g', { className: 'parts' }, parent);
     for(let instance of sheet.instances.list) this.renderPart(instance, partsGroup);
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
@@ -660,7 +535,7 @@ export class BoardRenderer extends EagleRenderer {
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
-    const color = this.getColor(item);
+    const color = layer ? this.getColor(layer.color) : this.getColor(6);;
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...LayerAttributes(layer), ...attr }, parent);
     const { labelText, coordFn = i => i, rot } = opts;
     switch (item.tagName) {
@@ -683,7 +558,7 @@ export class BoardRenderer extends EagleRenderer {
             const points = [new Point(-1, -1), new Point(1, -1), new Point(1, 1), new Point(-1, 1)].map(p => p.prod(ro * 1.27));
 
             data = points.map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-            //data = `M ${-ro} ${-ro} L ${ro} ${-ro} L ${ro} ${ro} L ${-ro} ${ro}`;
+
             break;
           }
           case 'octagon': {
@@ -698,28 +573,19 @@ export class BoardRenderer extends EagleRenderer {
           }
         }
 
-        svg(
-          'path',
-          {
-            //stroke: color, strokeWidth: 0.1, fill: 'none',
+        svg('path', {
             fill: this.colors['Pads'] || this.palette[2],
             d: data + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
             transform
-          },
-          parent
-        );
+          }, parent);
 
         if(name) {
-          svg(
-            'tspan',
-            {
+          svg('tspan', {
               innerHTML: name,
               ...EagleRenderer.alignmentAttrs('center', HORIZONTAL)
-            },
-            svg(
-              'text',
-              {
-                fill: 'hsl(180,100%,60%)', // this.colors['Holes'],
+            }, svg(
+              'text', {
+                fill: 'hsl(180,100%,60%)',
                 stroke: 'black',
                 strokeWidth: 0.01,
                 x: 0.04,
@@ -730,8 +596,7 @@ export class BoardRenderer extends EagleRenderer {
                 fontStyle: 'bold',
                 fontFamily: 'Fixed',
                 transform: `${transform} scale(1,-1) ${RotateTransformation(opts.rot, -1)}`
-              },
-              parent
+              }, parent
             )
           );
         }
@@ -746,10 +611,8 @@ export class BoardRenderer extends EagleRenderer {
 
   renderCollection(coll, parent, opts = {}) {
     const { predicate = i => true, coordFn = i => i, transform } = opts;
-    let wireMap = new Map(),
-      other = [];
-    let layers = {},
-      widths = {};
+    let wireMap = new Map(), other = [];
+    let layers = {}, widths = {};
 
     for(let item of coll.children) {
       if(item.tagName === 'wire') {
@@ -763,17 +626,12 @@ export class BoardRenderer extends EagleRenderer {
       }
     }
 
-    /*  console.log("wireMap:", wireMap);
-    //console.log("other:", other);*/
-
     for(let item of other) if(predicate(item) && item.tagName == 'pad') this.renderItem(item, parent, opts);
 
     for(let item of other) if(predicate(item) && item.tagName != 'pad') this.renderItem(item, parent, opts);
 
     for(let [layerId, wires] of wireMap) {
-      if(/*parent.classList.contains('signals') || */ parent.classList.contains('plain')) continue;
-
-      //console.log('parent:', parent);
+      if(parent.classList.contains('plain')) continue;
 
       const lines = wires.map(wire => {
         let line = new Line(coordFn(wire));
@@ -786,9 +644,7 @@ export class BoardRenderer extends EagleRenderer {
       const width = widths[layerId];
       const color = this.getColor(layer);
 
-      this.create(
-        'path',
-        {
+      this.create('path', {
           className: 'wire',
           d: path,
           stroke: color,
@@ -797,14 +653,7 @@ export class BoardRenderer extends EagleRenderer {
           strokeLinecap: 'round',
           strokeLinejoin: 'round',
           ...LayerAttributes(layer)
-        },
-        parent
-      );
-      /*
-      const intersections = PolygonFinder.findAllIntersectionsInSegments(lines);
-      const polygons = PolygonFinder.polygonsFromSegments(lines);
-      //console.log(`intersections layerId=${layerId}:`, intersections);
-      //console.log(`polygons layerId=${layerId}:`, polygons);*/
+        }, parent);
     }
   }
 
@@ -813,24 +662,17 @@ export class BoardRenderer extends EagleRenderer {
 
     let transform = new TransformationList();
     let rotation = Rotation(rot);
-    //console.log('rotation:', { rot, rotation });
-    /*
-transform.merge(rotation);
-*/
+
     transform.translate(x, y);
 
-    const g = this.create(
-      'g',
-      {
+    const g = this.create('g', {
         id: `element.${name}`,
         'data-name': name,
         'data-value': value,
         'data-library': library.name,
         'data-package': element.package.name,
-        transform: transform.concat(rotation) //: ` translate(${x},${y}) ${RotateTransformation(rot)}`
-      },
-      parent
-    );
+        transform: transform.concat(rotation)
+      }, parent);
 
     this.renderCollection(element.package, g, {
       name,
@@ -847,8 +689,6 @@ transform.merge(rotation);
     let elementsGroup = this.create('g', { className: 'elements' }, parent);
 
     let plainGroup = this.create('g', { className: 'plain' }, parent);
-
-    //console.log('plain:', this.plain);
 
     for(let element of this.elements.list) this.renderElement(element, elementsGroup);
 
@@ -873,8 +713,7 @@ export function renderDocument(doc, container) {
   const gridColor = 'hsl(230,100%,60%)';
   const gridWidth = 0.127;
 
-  const factory = SVG.factory(
-    {
+  const factory = SVG.factory({
       append_to(elem, parent) {
         if(elem.tagName.toLowerCase() == 'text') return parent.appendChild(elem);
         let before = null;
@@ -884,12 +723,10 @@ export function renderDocument(doc, container) {
             break;
           }
         }
-        //console.log("append_to",{elem,parent});
+
         parent.insertBefore(elem, before);
       }
-    },
-    container
-  );
+    }, container);
   const ctor = doc.type == 'sch' ? SchematicRenderer : BoardRenderer;
   const renderer = new ctor(doc, factory);
   const bb = new BBox();
@@ -960,101 +797,18 @@ export function renderDocument(doc, container) {
     SpiceOrder: 'rgb(189,133,64)',
     trash: 'rgb(189,133,64)'
   };
-  //const palette = [ 'hsl(157,100%,50.2%)', 'hsl(282,100%,50.2%)', 'hsl(120,100%,20.2%)', 'hsl(47,100%,50.2%)', 'hsl(104,100%,50.2%)', 'hsl(55,100%,50.2%)', 'hsl(260,100%,80%)', 'hsl(184,100%,50.2%)', 'hsl(203,100%,50.2%)', 'hsl(80,100%,50.2%)', 'hsl(215,100%,50.2%)', 'hsl(119,100%,50.2%)', 'hsl(233,100%,50.2%)', 'hsl(339,100%,50.2%)'];
+
   let palette;
 
-  let rng,
-    str = '';
-      let randN = Util.randInt(0, 30000);
-/*
-  for(let seed of [randN]) {
-    rng = new Alea(seed);
+  let rng, str = '';
+  let randN = Util.randInt(0, 30000);
 
-    let colors = ['hsl(350,100%,50.2%)', 'hsl(30,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(240,100%,50.2%)', 'hsl(260,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(121,100%,50.2%)', 'hsl(75,100%,50.2%)', 'hsl(55,100%,50.2%)', 'hsl(184,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(182,100%,50.2%)', 'hsl(88,100%,50.2%)', 'hsl(291,100%,50.2%)'];
-    palette = Util.shuffle(colors, rng);
-    str += 'palette = ' + Util.inspect(palette, { multiline: false, newline: '' }) + ';\n';
-  }
-  console.log({ randN });
-  console.log(str);*/
-  //palette = [ 'hsl(267,100%,50.2%)', 'hsl(155,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(10,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(176,100%,50.2%)', 'hsl(215,100%,50.2%)'];
-      rng = new Alea(1340);
+  rng = new Alea(1340);
 
-  palette = [ 'hsl(155,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(176,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(10,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(215,100%,50.2%)'];
-  palette =Util.shuffle(palette, rng);
-  //palette = [ 'hsl(176,100%,50.2%)', 'hsl(10,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(215,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(155,100%,50.2%)'];
-  //palette = [ 'hsl(176,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(215,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(155,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(10,100%,50.2%)'];
-  //palette = [ 'hsl(10,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(176,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(155,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(215,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(106,100%,50.2%)'];
+  palette = ['hsl(155,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(176,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(10,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(215,100%,50.2%)'];
+  palette = Util.shuffle(palette, rng);
 
-  //palette = [ 'hsl(199,100%,50.2%)', 'hsl(99,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(95,100%,50.2%)', 'hsl(133,100%,50.2%)', 'hsl(48,100%,50.2%)', 'hsl(301,100%,50.2%)', 'hsl(32,100%,50.2%)', 'hsl(191,100%,50.2%)', 'hsl(174,100%,50.2%)', 'hsl(241,100%,50.2%)', 'hsl(342,100%,50.2%)', 'hsl(319,100%,50.2%)', 'hsl(161,100%,50.2%)'];
-  //palette = [ 'hsl(291,100%,50.2%)', 'hsl(240,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(80,100%,30%)', 'hsl(88,100%,50.2%)', 'hsl(260,100%,50.2%)', 'hsl(75,100%,50.2%)', 'hsl(350,100%,50.2%)', 'hsl(55,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(184,100%,50.2%)', 'hsl(121,100%,50.2%)', 'hsl(182,100%,50.2%)'];
- //palette = [ 'hsl(32,100%,50.2%)', 'hsl(6,100%,50.2%)', 'hsl(73,100%,50.2%)', 'hsl(55,100%,50.2%)', 'hsl(141,100%,50.2%)', 'hsl(270,100%,50.2%)', 'hsl(328,100%,50.2%)', 'hsl(7,100%,50.2%)', 'hsl(208,100%,50.2%)', 'hsl(216,100%,50.2%)', 'hsl(342,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(112,100%,50.2%)', 'hsl(292,100%,50.2%)', 'hsl(30,100%,50.2%)', 'hsl(152,100%,50.2%)'];
-
-
-  renderer.colors = {
-   /* Top: palette[0],
-    Route3: palette[0],
-    Route5: palette[0],
-    Route7: palette[0],
-    Route9: palette[0],
-    Route11: palette[0],
-    Route13: palette[0],
-    Route15: palette[0],
-    tKeepout: palette[0],
-    tRestrict: palette[0],
-    Symbols: palette[0],
-    Route2: palette[1],
-    Route4: palette[1],
-    Route6: palette[1],
-    Route8: palette[1],
-    Route10: palette[1],
-    Route12: palette[1],
-    Route14: palette[1],
-    bKeepout: palette[1],
-    bRestrict: palette[1],
-    Busses: palette[1],
-    Bottom: palette[2],
-    Vias: palette[2],
-    vRestrict: palette[2],
-    Nets: palette[2],
-    Pins: palette[2],
-    Pads: palette[3],
-    Unrouted: palette[4],
-    tFinish: palette[4],
-    bFinish: palette[4],
-    Guide: palette[4],
-    Dimension: palette[5],
-    tPlace: palette[6],
-    bPlace: palette[7],
-    Document: palette[7],
-    tDocu: palette[7],
-    bDocu: palette[7],
-    tOrigins: palette[8],
-    bOrigins: palette[8],
-    tNames: palette[10],
-    tValues: palette[10],
-    bNames: palette[10],
-    bValues: palette[10],
-    tStop: palette[10],
-    bStop: palette[10],
-    tCream: palette[10],
-    bCream: palette[10],
-    tGlue: palette[10],
-    bGlue: palette[10],
-    tTest: palette[10],
-    bTest: palette[10],
-    Drills: palette[10],
-    Measures: palette[10],
-    Reference: palette[10],
-    Names: palette[10],
-    Values: palette[10],
-    Info: palette[10],
-    SpiceOrder: palette[10],
-    trash: palette[10],
-    Holes: palette[11],
-    Milling: palette[12],
-    Modules: palette[13]*/
-  };
-
+  renderer.colors = {};
   if(!container.firstElementChild || container.firstElementChild.tagName != 'defs') {
     defs = SVG.create('defs');
     container.insertBefore(defs, container.firstElementChild);
@@ -1064,57 +818,43 @@ export function renderDocument(doc, container) {
 
   if(!Element.find('pattern', defs)) {
     const step = '2.54';
-    SVG.create(
-      'path',
-      {
+    SVG.create('path', {
         d: `M ${step},0 L 0,0 L 0,${step}`,
         fill: 'none',
         stroke: gridColor,
         'stroke-width': gridWidth
-        /* 'stroke-dasharray': '0.254 0.254',
-        'stroke-dashoffset': '0.127',
-        'stroke-linecap': 'butt'*/
-      },
-      SVG.create(
-        'pattern',
-        {
+      }, SVG.create(
+        'pattern', {
           id: 'grid',
           width: step,
           height: step,
           patternUnits: 'userSpaceOnUse'
-        },
-        defs
+        }, defs
       )
     );
   }
 
   if(!Element.find('filter', defs)) {
-    SVG.create(
-      'feDropShadow',
-      {
+    SVG.create('feDropShadow', {
         dx: '20',
         dy: '20',
         stdDeviation: '4',
         'flood-color': '#000000'
-      },
-      SVG.create(
-        'filter',
-        {
+      }, SVG.create(
+        'filter', {
           id: 'shadow',
           x: '-20%',
           y: '-20%',
           width: '200%',
           height: '200%'
-        },
-        defs
+        }, defs
       )
     );
   }
 
-  renderer.setPalette(palette);
+  renderer.setPalette(EaglePalette ||palette);
 
-  /*if(typeof v == 'object' && v !== null) */ for(let [v, k, o] of doc.iterator(
-    it => it.attributes && it.attributes.x !== undefined,
+  for(let [v, k, o] of doc.iterator(it => it.attributes && it.attributes.x !== undefined,
     [],
     arg => arg
   ))
@@ -1123,17 +863,14 @@ export function renderDocument(doc, container) {
   bb.update(objects);
   const rect = bb.rect.outset(2.54 * 4);
   const center = rect.center;
-  /*console.log("center:", center.prod(-1, -1).toString());
-  //console.log("factory.delegate.root:", factory.delegate.root);*/
 
-  for(let [v, k, o] of doc.iterator(
-    it => !!it.attributes,
+  for(let [v, k, o] of doc.iterator(it => !!it.attributes,
     [],
     arg => arg
   )) {
     if(['x', 'y', 'x1', 'y1', 'x2', 'y2', 'width', 'size'].indexOf(k) != -1) {
       o[k] = v / 2.54;
-      /* if(k !== "width" && k !== "size")*/ o[k] = Util.roundTo(o[k], 0.001);
+      o[k] = Util.roundTo(o[k], 0.001);
       if(k[0] == 'y') o[k] = -o[k];
     }
   }
@@ -1152,14 +889,9 @@ export function renderDocument(doc, container) {
   renderer.render(g);
 
   let bbox = SVG.bbox('#board');
-  //console.log('bbox.aspect:', bbox.aspect());
-  //console.log('bbox.toString:', bbox.toString());
+
   let brect = Element.rect('#board');
   const crect = new Rect(0, 0, window.innerWidth, window.innerHeight);
-
-  //console.log('brect:', brect.toString());
-  //console.log('brect:', brect.aspect());
-  //console.log('crect:', crect.toString());
 
   Element.setCSS(document.body, { overflow: 'hidden' });
   Element.setCSS(container.parentElement, {
@@ -1169,24 +901,10 @@ export function renderDocument(doc, container) {
     justifyContent: 'center'
   });
   Element.setCSS(container, brect.aspect() > 1 ? { overflow: 'hidden', width: `${crect.width}px`, height: 'auto' } : { overflow: 'hidden', width: 'auto', height: '${crect.height}px' });
-  //console.log('parent:', container.parentElement);
-  /*
-  bbox.width += 0.1;
-  bbox.y -= 0.2;
-  bbox.height += 1;*/
+
   let gridBox = new Rect(0, 0, Util.roundTo(bbox.width, 2.54), Util.roundTo(bbox.height, 2.54));
 
   bbox.outset({ top: 0.778, bottom: 1, left: -0.05, right: 0.05 });
-
-  //console.log("bbox.rect.toString:",bbox.rect.toString());
-
-  //gridBox.outset(1);
-  //  gridBox.y += gridBox.height;
-  //gridBox.div(2.54);
-
-  //gridBox.outset({ top: 0.4, bottom: 0.4, left: 0, right: 0 });
-
-  //gridBox.move(0, -gridBox.height);
 
   gridBox.size.div(2.54);
   gridBox.height += 1;
@@ -1205,19 +923,12 @@ export function renderDocument(doc, container) {
   let points = gridBox.toPoints();
   let d = points.toPath({ close: true });
 
-  //gridGroup.parentElement.insertBefore(SVG.create('path', {d, fill: 'none', stroke: 'rgb(0,23,185)', 'stroke-width': 0.1, transform: `scale(1,-1)  scale(2.54,2.54)  ` }), gridGroup.nextElementSibling);
-
   let gbox = SVG.bbox(grid);
   let obox = SVG.bbox(g);
 
   bbox.outset(1);
   factory.delegate.root.setAttribute('viewBox', bbox.toString());
 
-  //console.log('bbox:', bbox);
-  //console.log('gbox:', gbox);
-  //console.log('obox:', obox);
-
-  //groupTransform += ` translate(0,-0.30)`;
   groupTransform += ` translate(0,0)`;
   Element.attr(g, { transform: groupTransform });
   return renderer;

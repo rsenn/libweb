@@ -17,15 +17,13 @@ Util.extend(EagleNodeList.prototype, {
   *[Symbol.iterator]() {
     const list = this.ref.dereference();
     for(let i = 0; i < list.length; i++) yield makeEagleElement(instance, this.ref.down(i));
-  },
-  iterator() {
+  }, iterator() {
     const instance = this;
     return function*() {
       const list = instance.ref.dereference();
       for(let i = 0; i < list.length; i++) yield makeEagleElement(instance, instance.ref.down(i));
     };
-  },
-  *entries() {
+  }, *entries() {
     const instance = this;
     const list = instance.ref.dereference();
     for(let i = 0; i < list.length; i++) yield [i, makeEagleElement(instance, instance.ref.down(i))];
@@ -60,8 +58,7 @@ export function makeEagleNodeList(...args) {
       } else {
         return Reflect.set(target, prop, value);
       }
-    },
-    get(target, prop, receiver) {
+    }, get(target, prop, receiver) {
       let index;
       if(prop == 'raw') return instance.ref.dereference();
       if(prop == 'instance') return instance;
@@ -84,12 +81,10 @@ export function makeEagleNodeList(...args) {
         if(prop in list) return list[prop];
       }
       return Reflect.get(target, prop, receiver);
-    },
-    ownKeys(target) {
+    }, ownKeys(target) {
       let list = instance.ref.dereference();
       return ['owner', 'length'];
-    },
-    getPrototypeOf(target) {
+    }, getPrototypeOf(target) {
       return Reflect.getPrototypeOf(instance);
     }
   });

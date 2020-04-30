@@ -4,8 +4,7 @@ import { text, inspect, toXML, dump } from './common.js';
 export function DereferenceError(object, member, pos, part, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
 
-  return Util.extend(
-    error,
+  return Util.extend(error,
     { object, member, pos, locator },
     {
       message: `Error dereferencing ${Util.className(object)} @ ${locator.map((part, i) => (i == pos ? `<<${part}>>` : part)).join(',')} w/ keys={${Object.keys(part).join(',')}} no member '${member}' `,
@@ -23,8 +22,7 @@ DereferenceError.prototype.toString = function() {
 
 const ChildrenSym = Symbol('⊳');
 
-export const EaglePath = Util.immutableClass(
-  class EaglePath extends Array {
+export const EaglePath = Util.immutableClass(class EaglePath extends Array {
     constructor(path = []) {
       super(/*path.length*/);
       for(let i = 0; i < path.length; i++) {
@@ -61,8 +59,7 @@ export const EaglePath = Util.immutableClass(
      * @return     {EaglePath}
      */
     left(n = 1) {
-      let i = this.lastId,
-        l = this.slice();
+      let i = this.lastId, l = this.slice();
       if(i >= 0) {
         l[i] = Math.max(0, l[i] - n);
         return l;
@@ -118,15 +115,13 @@ export const EaglePath = Util.immutableClass(
       let o = obj;
       if(o === undefined) throw new Error(`Object ${o}`);
 
-      return this.reduce(
-        (a, i) => {
+      return this.reduce((a, i) => {
           let r = i === ChildrenSym ? a.o.children : i < 0 && a.o instanceof Array ? a.o[a.o.length + i] : a.o[i];
           if(r === undefined) throw new DereferenceError(obj, i, a.n, a.o, this);
           a.o = r;
           a.n++;
           return a;
-        },
-        { o, n: 0 }
+        }, { o, n: 0 }
       ).o;
     }
 
@@ -158,8 +153,7 @@ export const EaglePath = Util.immutableClass(
     }
 
     existsIn(root) {
-      let i,
-        obj = root;
+      let i, obj = root;
       for(i = 0; i + 1 < this.length; i++) {
         const key = this[i];
         if(!(key in obj)) throw new Error(`No path ${this.join(',')} in ${typeof root}`);
@@ -188,8 +182,7 @@ export const EaglePath = Util.immutableClass(
 
     split(pred) {
       let i = 0;
-      let a = [],
-        b = [];
+      let a = [], b = [];
       let n;
       if(typeof pred == 'number') {
         n = pred < 0 ? this.length + pred : pred;
