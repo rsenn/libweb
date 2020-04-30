@@ -142,9 +142,7 @@ export function MovementListener(handler, options) {
     self.scrollDisabler = ScrollDisabler(self.isActive);
     self.handler.scrollDisabler = self.scrollDisabler;
 
-    self.handler.start.subscribe(event =>
-      event === null ? self.scrollDisabler.remove() : self.scrollDisabler.add()
-    );
+    self.handler.start.subscribe(event => (event === null ? self.scrollDisabler.remove() : self.scrollDisabler.add()));
     self.handler.end.subscribe(event => self.scrollDisabler.remove());
   }
 
@@ -255,14 +253,11 @@ export function TurnListener(handler, options) {
     return this.cancel(event);
   }
 
-  return MultitouchListener(MovementListener(event => {
+  return MultitouchListener(
+    MovementListener(event => {
       const { points, x, y } = event;
       const type = event.type || "";
-      var end =
-        type.endsWith("up") ||
-        type.endsWith("cancel") ||
-        type.endsWith("end") ||
-        event.active === false;
+      var end = type.endsWith("up") || type.endsWith("cancel") || type.endsWith("end") || event.active === false;
       //if(type != 'touchmove') console.log('type = ', type);
       if(points.length >= 2) {
         center = points.avg();
@@ -315,7 +310,8 @@ export function TurnListener(handler, options) {
 export function SelectionListener(handler, options) {
   var origin = null,
     position,
-    line, running = false;
+    line,
+    running = false;
   var element = null;
 
   options = {
@@ -369,10 +365,7 @@ export function SelectionRenderer() {
     element: null,
     create(rect) {
       //console.log("SelectionListener.create(", rect, ")");
-      this.element = Element.create("div",
-        { id: `selection-rect` },
-        global.window ? window.document.body : null
-      );
+      this.element = Element.create("div", { id: `selection-rect` }, global.window ? window.document.body : null);
       Element.setCSS(this.element, {
         position: "fixed",
         border: "3px dashed white",
@@ -380,10 +373,12 @@ export function SelectionRenderer() {
         zIndex: 999999999
       });
       this.update(rect);
-    }, update(rect) {
+    },
+    update(rect) {
       //console.log("SelectionListener.update(", rect, ")");
       Element.rect(this.element, rect, { position: "absolute" });
-    }, destroy() {
+    },
+    destroy() {
       //console.log("SelectionListener.destroy()");
       Element.remove(this.element);
     }

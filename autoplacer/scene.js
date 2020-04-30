@@ -6,26 +6,27 @@ window.onload = function() {
   var MARGIN = 50; // margin from canvas boundary
   // }
 
-  var canvas = document.getElementById("scene");
+  var canvas = document.getElementById('scene');
   var SCENE_W = canvas.width;
   var SCENE_H = canvas.height;
 
-  var draw = new Draw(canvas.getContext("2d"));
+  var draw = new Draw(canvas.getContext('2d'));
 
   var i, j, k;
-  var bodies = [], body;
+  var bodies = [],
+    body;
 
   var rand = function(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
   };
 
   draw.body = function(body) {
-    draw.color("blue");
+    draw.color('blue');
     draw.circle(body.fix, 2);
-    draw.color("green");
+    draw.color('green');
     draw.crect(body.move, body.size);
     if(body.move) {
-      draw.color("red");
+      draw.color('red');
       draw.circle(body.move, 2);
       draw.line(body.fix, body.move);
     }
@@ -50,9 +51,11 @@ window.onload = function() {
       bodies[i].move = body.fix;
     }
 
-    physics.layout({
+    physics.layout(
+      {
         pushCenter: [SCENE_W / 2, SCENE_H / 2]
-      }, bodies,
+      },
+      bodies,
       function(bb) {
         var i = 0;
         draw.clear();

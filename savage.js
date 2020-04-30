@@ -16,7 +16,8 @@
     xm = "http://www.w3.org/2000/svg",
     each = function(o, f) {
       for(var k in o) if(o.hasOwnProperty(k)) f(o[k], k);
-    }, attr = function(e, a) {
+    },
+    attr = function(e, a) {
       each(a, function(v, k) {
         e.setAttribute(k, v);
       });
@@ -63,19 +64,7 @@
   /**
    * shortcut functions for all the shapes
    */
-  [
-    "circle",
-    "ellipse",
-    "image",
-    "line",
-    "marker",
-    "path",
-    "polygon",
-    "radialGradient",
-    "rect",
-    "text",
-    "tspan"
-  ].forEach(function(t) {
+  ["circle", "ellipse", "image", "line", "marker", "path", "polygon", "radialGradient", "rect", "text", "tspan"].forEach(function(t) {
     P[t] = function(a) {
       return this.draw(t, a);
     };

@@ -1,8 +1,6 @@
 //import debug from "debug";
 
-const formatAnnotatedObject = function(subject,
-  { indent = "  ", spacing = " ", separator = ",", newline = "\n", maxlen = 30, depth = 1 }
-) {
+const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", separator = ",", newline = "\n", maxlen = 30, depth = 1 }) {
   const i = indent.repeat(Math.abs(1 - depth));
   let nl = newline != "" ? newline + i : spacing;
   const opts = {
@@ -17,11 +15,7 @@ const formatAnnotatedObject = function(subject,
   }
   if(typeof subject == "object" && "map" in subject && typeof subject.map == "function") {
     //subject instanceof Array || (subject && subject.length !== undefined)) {
-    return /*(opts.depth <= 0) ? subject.length + '' : */ `[${nl}${
-      /*(opts.depth <= 0) ? subject.length + '' : */ subject
-        .map(i => formatAnnotatedObject(i, opts))
-        .join(separator + nl)
-    }]`;
+    return /*(opts.depth <= 0) ? subject.length + '' : */ `[${nl}${/*(opts.depth <= 0) ? subject.length + '' : */ subject.map(i => formatAnnotatedObject(i, opts)).join(separator + nl)}]`;
   }
   if(typeof subject === "string" || subject instanceof String) {
     return `'${subject}'`;
@@ -45,20 +39,14 @@ const formatAnnotatedObject = function(subject,
       s = "null";
     } else if(subject[k] && subject[k].length !== undefined) {
       try {
-        s =
-          depth <= 0
-            ? `Array(${subject[k].length})`
-            : `[ ${subject[k].map(item => formatAnnotatedObject(item, opts)).join(", ")} ]`;
+        s = depth <= 0 ? `Array(${subject[k].length})` : `[ ${subject[k].map(item => formatAnnotatedObject(item, opts)).join(", ")} ]`;
       } catch(err) {
         s = `[${subject[k]}]`;
       }
     } else if(subject[k] && subject[k].toSource !== undefined) {
       s = subject[k].toSource();
     } else if(opts.depth >= 0) {
-      s =
-        s.length > maxlen
-          ? `[Object ${Util.objName(subject[k])}]`
-          : formatAnnotatedObject(subject[k], opts);
+      s = s.length > maxlen ? `[Object ${Util.objName(subject[k])}]` : formatAnnotatedObject(subject[k], opts);
     }
     r.push([k, s]);
   }
@@ -70,9 +58,7 @@ const formatAnnotatedObject = function(subject,
     j = separator + (opts.newline || spacing) + i;
   }
   //padding = x => '';
-  let ret = `{${opts.newline}${r
-    .map(arr => `${padding(arr[0]) + arr[0]}:${spacing}${arr[1]}`)
-    .join(j)}${opts.newline}}`;
+  let ret = `{${opts.newline}${r.map(arr => `${padding(arr[0]) + arr[0]}:${spacing}${arr[1]}`).join(j)}${opts.newline}}`;
   return ret;
 };
 /**
@@ -115,8 +101,7 @@ Util.toSource = function(arg, opts = {}) {
   const { color = true } = opts;
   const c = Util.color(color);
   if(typeof arg == "string") return c.text(`'${arg}'`, 1, 36);
-  if(arg && arg.x !== undefined && arg.y !== undefined)
-    return `[${c.text(arg.x, 1, 32)},${c.text(arg.y, 1, 32)}]`;
+  if(arg && arg.x !== undefined && arg.y !== undefined) return `[${c.text(arg.x, 1, 32)},${c.text(arg.y, 1, 32)}]`;
   if(arg && arg.toSource) return arg.toSource();
   let cls = arg && arg.constructor && Util.fnName(arg.constructor);
   return String(arg);
@@ -255,7 +240,8 @@ Util.range = function(start, end) {
   //console.log("Util.range ", r);
   return r;
 };
-Util.inspect = function(obj,
+Util.inspect = function(
+  obj,
   opts = {
     indent: "  ",
     newline: "\n",
@@ -358,10 +344,7 @@ Util.define = (obj, key, value, enumerable = false) => {
 Util.extend = (obj, ...args) => {
   let props = {};
   for(let other of args) {
-    let desc = Util.getMethods(other,
-      false,
-      (key, value) => obj[key] === undefined && [key, value]
-    );
+    let desc = Util.getMethods(other, false, (key, value) => obj[key] === undefined && [key, value]);
 
     Object.assign(obj, desc);
     /*
@@ -401,12 +384,14 @@ Util.extendArray = function(arr = Array.prototype) {
   Util.define(arr, "unique", function() {
     return this.filter((item, i, a) => a.indexOf(item) == i);
   });
-  Util.defineGetterSetter(arr,
+  Util.defineGetterSetter(
+    arr,
     "tail",
     function() {
       return Util.tail(this);
-    }, function(value) {
-      if (this.length == 0) this.push(value);
+    },
+    function(value) {
+      if(this.length == 0) this.push(value);
       else this[this.length - 1] = value;
     }
   );
@@ -414,33 +399,37 @@ Util.extendArray = function(arr = Array.prototype) {
     return Util.inspect(this, { depth: 100, ...opts });
   });*/
 };
-Util.adapter = function(obj,
-  getLength = obj => obj.length,
-  getKey = (obj, index) => obj.key(index),
-  getItem = (obj, key) => obj[key],
-  setItem = (obj, index, value) => (obj[index] = value)
-) {
+Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index) => obj.key(index), getItem = (obj, key) => obj[key], setItem = (obj, index, value) => (obj[index] = value)) {
   const adapter = {
     get length() {
       return getLength(obj);
-    }, get instance() {
+    },
+    get instance() {
       return obj;
-    }, key(i) {
+    },
+    key(i) {
       return getKey(obj, i);
-    }, get(key) {
+    },
+    get(key) {
       return getItem(obj, key);
-    }, set(key, value) {
+    },
+    set(key, value) {
       return setItem(obj, key, value);
-    }, *keys() {
+    },
+    *keys() {
       const length = getLength(obj);
       for(let i = 0; i < length; i++) yield getKey(obj, i);
-    }, *entries() {
-      for (let key of this.keys()) yield [key, getItem(obj, key)];
-    }, [Symbol.iterator]() {
+    },
+    *entries() {
+      for(let key of this.keys()) yield [key, getItem(obj, key)];
+    },
+    [Symbol.iterator]() {
       return this.entries();
-    }, toObject() {
+    },
+    toObject() {
       return Object.fromEntries(this.entries());
-    }, toMap() {
+    },
+    toMap() {
       return new Map(this.entries());
     }
   };
@@ -449,7 +438,8 @@ Util.adapter = function(obj,
 Util.adapter.localStorage = function(s) {
   if(!s && global.window) s = window.localStorage;
 
-  return Util.adapter(s,
+  return Util.adapter(
+    s,
     l => l.length,
     (l, i) => l.key(i),
     (l, key) => JSON.parse(l.getItem(key)),
@@ -473,7 +463,8 @@ Util.array = function(a) {
   return a;
 };
 Util.arrayFromEntries = entries =>
-  Array.from(entries.map(([k, v]) => k),
+  Array.from(
+    entries.map(([k, v]) => k),
     key => entries.find(([k, v]) => k === key)[1]
   );
 
@@ -652,10 +643,7 @@ Util.match = function(arg, pred) {
   let match = pred;
   if(pred instanceof RegExp) {
     const re = pred;
-    match = (val, key) =>
-      (val && val.tagName !== undefined && re.test(val.tagName)) ||
-      (typeof key === "string" && re.test(key)) ||
-      (typeof val === "string" && re.test(val));
+    match = (val, key) => (val && val.tagName !== undefined && re.test(val.tagName)) || (typeof key === "string" && re.test(key)) || (typeof val === "string" && re.test(val));
   }
   if(Util.isArray(arg)) {
     if(!(arg instanceof Array)) arg = [...arg];
@@ -665,9 +653,7 @@ Util.match = function(arg, pred) {
     }, Util.array());
   } else if(Util.isMap(arg)) {
     //console.log('Util.match ', { arg });
-    return [...arg.keys()].reduce((acc, key) => (match(arg.get(key), key, arg) ? acc.set(key, arg.get(key)) : acc),
-      new Map()
-    );
+    return [...arg.keys()].reduce((acc, key) => (match(arg.get(key), key, arg) ? acc.set(key, arg.get(key)) : acc), new Map());
   }
   return Util.filter(arg, match);
 };
@@ -691,19 +677,9 @@ Util.injectProps = function(options) {
   }
 }*/
 Util.toString = (obj, opts = {}, indent = "") => {
-  const {
-    quote = '"',
-    multiline = true,
-    color = true,
-    spacing = " ",
-    padding = " ",
-    separator = ",",
-    colon = ":"
-  } = opts;
+  const { quote = '"', multiline = true, color = true, spacing = " ", padding = " ", separator = ",", colon = ":" } = opts;
   const c = Util.color(color);
-  const sep = multiline
-    ? (space = false) => "\n" + indent + (space ? "  " : "")
-    : (space = false) => (space ? spacing : "");
+  const sep = multiline ? (space = false) => "\n" + indent + (space ? "  " : "") : (space = false) => (space ? spacing : "");
   if(Util.isArray(obj)) {
     let s = c.text(`[${padding}`, 1, 36);
     for(let i = 0; i < obj.length; i++) {
@@ -728,8 +704,7 @@ Util.toString = (obj, opts = {}, indent = "") => {
     if(i > 0) s += sep(true);
     s += `${c.text(key, 1, 33)}${c.text(colon, 1, 36)}` + spacing;
     /*if(Util.isArray(value)) s+= Util.toString(value);
-      else*/ if(Util.isObject(value))
-      s += Util.toString(value, opts, indent + "  ");
+      else*/ if(Util.isObject(value)) s += Util.toString(value, opts, indent + "  ");
     else if(typeof value == "string") s += c.text(`${quote}${value}${quote}`, 1, 36);
     else if(typeof value == "number") s += c.text(value, 1, 32);
     else s += value;
@@ -810,8 +785,7 @@ Util.isEmptyString = function(v) {
   return false;
 };
 Util.isEmpty = function(v) {
-  if(typeof v == "object" && !!v && v.constructor == Object && Object.keys(v).length == 0)
-    return true;
+  if(typeof v == "object" && !!v && v.constructor == Object && Object.keys(v).length == 0) return true;
   if(!v || v === null) return true;
   if(typeof v == "object" && v.length !== undefined && v.length === 0) return true;
   return false;
@@ -824,10 +798,7 @@ Util.hasProps = function(obj) {
   return keys.length > 0;
 };
 Util.validatePassword = function(value) {
-  return (value.length > 7 &&
-    /^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]/.test(value) &&
-    !/\s/.test(value)
-  );
+  return value.length > 7 && /^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]/.test(value) && !/\s/.test(value);
 };
 Util.clone = function(obj) {
   if(typeof obj != "object") return obj;
@@ -997,12 +968,7 @@ Util.setCookies = c =>
     //console.log(`Setting cookie[${key}] = ${value}`);
   });
 Util.clearCookies = function(c) {
-  return Util.setCookies(Object.keys(Util.parseCookie(c)).reduce(
-      (acc, name) =>
-        Object.assign(acc, { [name]: `; max-age=0; expires=${new Date().toUTCString()}` }),
-      {}
-    )
-  );
+  return Util.setCookies(Object.keys(Util.parseCookie(c)).reduce((acc, name) => Object.assign(acc, { [name]: `; max-age=0; expires=${new Date().toUTCString()}` }), {}));
 };
 Util.deleteCookie = function(name) {
   if(global.window) document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
@@ -1113,11 +1079,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
       for(const property in object) {
         const desc = Object.getOwnPropertyDescriptor(object, property);
         //console.log('x ', {property, desc})
-        if(property.indexOf("$") !== 0 &&
-          typeof object[property] !== "function" &&
-          !desc.get &&
-          !desc.set
-        ) {
+        if(property.indexOf("$") !== 0 && typeof object[property] !== "function" && !desc.get && !desc.set) {
           if(typeof object[property] === "object") {
             try {
               JSON.stringify(object[property]);
@@ -1126,12 +1088,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
             }
           }
           //if (Object.prototype.hasOwnProperty.call(object, property)) {
-          Util.searchObject(object[property],
-            matchCallback,
-            `${currentPath}.${property}`,
-            result,
-            searched
-          );
+          Util.searchObject(object[property], matchCallback, `${currentPath}.${property}`, result, searched);
           //}
         }
       }
@@ -1144,11 +1101,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
 };
 Util.getURL = function(req = {}) {
   let proto = process.env.NODE_ENV === "production" ? "https" : "http";
-  let port = process.env.PORT
-    ? parseInt(process.env.PORT)
-    : process.env.NODE_ENV === "production"
-    ? 443
-    : 8080;
+  let port = process.env.PORT ? parseInt(process.env.PORT) : process.env.NODE_ENV === "production" ? 443 : 8080;
   let host = global.ip || global.host || "localhost";
   if(req && req.headers && req.headers.host !== undefined) {
     host = req.headers.host.replace(/:.*/, "");
@@ -1185,8 +1138,7 @@ Util.encodeQuery = function(data) {
 Util.parseURL = function(href = this.getURL()) {
   const matches = /^([^:]*):\/\/([^/:]*)(:[0-9]*)?(\/?.*)/.exec(href);
   if(!matches) return null;
-  const argstr =
-    matches[4].indexOf("?") != -1 ? matches[4].replace(/^[^?]*\?/, "") : ""; /* + "&test=1"*/
+  const argstr = matches[4].indexOf("?") != -1 ? matches[4].replace(/^[^?]*\?/, "") : ""; /* + "&test=1"*/
   const pmatches =
     typeof argstr === "string"
       ? argstr
@@ -1212,12 +1164,7 @@ Util.parseURL = function(href = this.getURL()) {
     href(override) {
       if(typeof override === "object") Object.assign(this, override);
       const qstr = Util.encodeQuery(this.query);
-      return ((this.protocol ? `${this.protocol}://` : "") +
-        (this.host ? this.host : "") +
-        (this.port ? `:${this.port}` : "") +
-        `${this.location}` +
-        (qstr != "" ? `?${qstr}` : "")
-      );
+      return (this.protocol ? `${this.protocol}://` : "") + (this.host ? this.host : "") + (this.port ? `:${this.port}` : "") + `${this.location}` + (qstr != "" ? `?${qstr}` : "");
     }
   };
 };
@@ -1256,11 +1203,13 @@ Util.tryCatch = (fn, resolve, reject) => {
 
 Util.isBrowser = function() {
   let ret = false;
-  Util.tryCatch(() => window,
+  Util.tryCatch(
+    () => window,
     w => (Util.isObject(w) ? (ret = true) : undefined),
     () => {}
   );
-  Util.tryCatch(() => document,
+  Util.tryCatch(
+    () => document,
     w => (Util.isObject(w) ? (ret = true) : undefined),
     () => {}
   );
@@ -1329,9 +1278,7 @@ Util.all = function(obj, pred) {
   return true;
 };
 Util.isGenerator = function(fn) {
-  return ((typeof fn == "function" && /^[^(]*\*/.test(fn.toString())) ||
-    (["function", "object"].indexOf(typeof fn) != -1 && fn.next !== undefined)
-  );
+  return (typeof fn == "function" && /^[^(]*\*/.test(fn.toString())) || (["function", "object"].indexOf(typeof fn) != -1 && fn.next !== undefined);
 };
 Util.filter = function(a, pred) {
   if(Util.isGenerator(a))
@@ -1393,10 +1340,7 @@ Util.entriesToObj = function(arr) {
   }, {});
 };
 Util.isDate = function(d) {
-  return (d instanceof Date ||
-    (typeof d == "string" &&
-      /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d))
-  );
+  return d instanceof Date || (typeof d == "string" && /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d));
 };
 Util.parseDate = function(d) {
   if(Util.isDate(d)) {
@@ -1461,9 +1405,7 @@ Util.timeSpan = function(s) {
   s = Math.floor(s / 7);
   const weeks = s;
   let ret = "";
-  ret = `${`0${hours}`.substring(0, 2)}:${`0${minutes}`.substring(0, 2)}:${`0${seconds}`.substring(0,
-    2
-  )}`;
+  ret = `${`0${hours}`.substring(0, 2)}:${`0${minutes}`.substring(0, 2)}:${`0${seconds}`.substring(0, 2)}`;
   if(days) ret = `${days} days ${ret}`;
   if(weeks) ret = `${weeks} weeks ${ret}`;
   return ret;
@@ -1502,7 +1444,8 @@ Util.base64 = {
   encode: utf8 => {
     if(global.window) return window.btoa(unescape(encodeURIComponent(utf8)));
     return Buffer.from(utf8).toString("base64");
-  }, decode: base64 => decodeURIComponent(escape(window.atob(base64)))
+  },
+  decode: base64 => decodeURIComponent(escape(window.atob(base64)))
 };
 Util.formatRecord = function(obj) {
   let ret = {};
@@ -1517,13 +1460,7 @@ Util.formatRecord = function(obj) {
   return ret;
 };
 Util.isArray = function(obj) {
-  return ((obj &&
-      obj.length !== undefined &&
-      !(obj instanceof String) &&
-      !(obj instanceof Function) &&
-      typeof obj == "function") ||
-    obj instanceof Array
-  );
+  return (obj && obj.length !== undefined && !(obj instanceof String) && !(obj instanceof Function) && typeof obj == "function") || obj instanceof Array;
 };
 
 Util.isObject = function(obj) {
@@ -1551,23 +1488,9 @@ Util.effectiveDeviceWidth = function() {
   return deviceWidth;
 };
 Util.getFormFields = function(initialState) {
-  return Util.mergeObjects([
-    initialState,
-    [...document.forms].reduce(
-      (acc, { elements }) =>
-        [...elements].reduce((acc2, { name, value }) =>
-            name == "" || value == undefined || value == "undefined"
-              ? acc2
-              : Object.assign(acc2, { [name]: value }),
-          acc
-        ),
-      {}
-    )
-  ]);
+  return Util.mergeObjects([initialState, [...document.forms].reduce((acc, { elements }) => [...elements].reduce((acc2, { name, value }) => (name == "" || value == undefined || value == "undefined" ? acc2 : Object.assign(acc2, { [name]: value })), acc), {})]);
 };
-Util.mergeObjects = function(objArr,
-  predicate = (dst, src, key) => (src[key] == "" ? undefined : src[key])
-) {
+Util.mergeObjects = function(objArr, predicate = (dst, src, key) => (src[key] == "" ? undefined : src[key])) {
   let args = objArr;
   let obj = {};
   for(let i = 0; i < args.length; i++) {
@@ -1624,9 +1547,7 @@ Util.filterOutKeys = function(obj, arr) {
 Util.numbersConvert = function(str) {
   return str
     .split("")
-    .map((ch, i) =>
-      /[ :,./]/.test(ch) ? ch : String.fromCharCode((str.charCodeAt(i) & 0x0f) + 0x30)
-    )
+    .map((ch, i) => (/[ :,./]/.test(ch) ? ch : String.fromCharCode((str.charCodeAt(i) & 0x0f) + 0x30)))
     .join("");
 };
 Util.entries = function(arg) {
@@ -1677,8 +1598,7 @@ Util.pushUnique = function(arr) {
 };
 Util.iterateMembers = function*(obj, recursive = false, pred = () => true) {
   let names = [];
-  const adder = arg =>
-    true; /*name => {
+  const adder = arg => true; /*name => {
     const exists = names.indexOf(name) != -1;
     const add = !exists && pred(obj[name], name);
     if(add) names.push(name);
@@ -1690,26 +1610,14 @@ Util.iterateMembers = function*(obj, recursive = false, pred = () => true) {
 
   if(recursive) {
     const proto = Object.getPrototypeOf(obj);
-    if(proto)
-      yield* Util.iterateMembers(proto,
-        typeof recursive == "number" ? recursive - 1 : recursive,
-        pred
-      );
+    if(proto) yield* Util.iterateMembers(proto, typeof recursive == "number" ? recursive - 1 : recursive, pred);
   }
 };
-Util.members = (obj, recursive = false, pred = () => true) =>
-  Util.unique([...Util.iterateMembers(obj, recursive, pred)]);
+Util.members = (obj, recursive = false, pred = () => true) => Util.unique([...Util.iterateMembers(obj, recursive, pred)]);
 
-Util.getMethodNames = (obj, recursive = false) =>
-  Util.unique([
-    ...Util.iterateMembers(obj,
-      recursive,
-      item => typeof obj[item] === "function" && item != "constructor"
-    )
-  ]);
+Util.getMethodNames = (obj, recursive = false) => Util.unique([...Util.iterateMembers(obj, recursive, item => typeof obj[item] === "function" && item != "constructor")]);
 
-Util.getMethods = (obj, recursive = false, t = (key, value) => [key, value]) =>
-  Object.fromEntries([...Util.iterateMethods(obj, recursive, t)]);
+Util.getMethods = (obj, recursive = false, t = (key, value) => [key, value]) => Object.fromEntries([...Util.iterateMethods(obj, recursive, t)]);
 Util.methods = Util.getMethods;
 
 Util.iterateMethods = function*(obj, recursive = false, t = (key, value) => [key, value]) {
@@ -1758,8 +1666,7 @@ Util.weakAssign = function(obj) {
 Util.getCallerStack = function(position = 2) {
   Error.stackTraceLimit = 20;
   if(position >= Error.stackTraceLimit) {
-    throw new TypeError(`getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: \`${position}\` and Error.stackTraceLimit was: \`${Error.stackTraceLimit}\``
-    );
+    throw new TypeError(`getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: \`${position}\` and Error.stackTraceLimit was: \`${Error.stackTraceLimit}\``);
   }
   const oldPrepareStackTrace = Error.prepareStackTrace;
   Error.prepareStackTrace = (_, stack) => stack;
@@ -1801,20 +1708,7 @@ Util.getCallerFunctionNames = function(position = 2) {
 };
 Util.getCaller = function(position = 2) {
   let stack = Util.getCallerStack(position + 1);
-  const methods = [
-    "getColumnNumber",
-    "getEvalOrigin",
-    "getFileName",
-    "getFunction",
-    "getFunctionName",
-    "getLineNumber",
-    "getMethodName",
-    "getPosition",
-    "getPromiseIndex",
-    "getScriptNameOrSourceURL",
-    "getThis",
-    "getTypeName"
-  ];
+  const methods = ["getColumnNumber", "getEvalOrigin", "getFileName", "getFunction", "getFunctionName", "getLineNumber", "getMethodName", "getPosition", "getPromiseIndex", "getScriptNameOrSourceURL", "getThis", "getTypeName"];
   if(stack !== null && typeof stack === "object") {
     const frame = stack[0];
     return methods.reduce((acc, m) => {
@@ -1866,19 +1760,12 @@ Util.flatTree = function(tree, addOutput) {
   const ret = [];
   if(!addOutput) addOutput = arg => ret.push(arg);
   addOutput(Util.filterKeys(tree, key => key !== "children"));
-  if(typeof tree.children == "object" && tree.children !== null && tree.children.length)
-    for(let child of tree.children) Util.flatTree(child, addOutput);
+  if(typeof tree.children == "object" && tree.children !== null && tree.children.length) for(let child of tree.children) Util.flatTree(child, addOutput);
   return ret;
 };
 Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
-  if(typeof tree == "object" &&
-    tree !== null &&
-    typeof tree.children == "object" &&
-    tree.children !== null &&
-    tree.children.length
-  )
-    for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
+  if(typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children !== null && tree.children.length) for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
 };
 Util.walkTree = function(node, pred, t, depth = 0, parent = null) {
   return (function*() {
@@ -1893,11 +1780,7 @@ Util.walkTree = function(node, pred, t, depth = 0, parent = null) {
     //node = t(node);
     if(pred(node, depth, parent)) {
       yield t(node);
-      if(typeof node == "object" &&
-        node !== null &&
-        typeof node.children == "object" &&
-        node.children.length
-      ) {
+      if(typeof node == "object" && node !== null && typeof node.children == "object" && node.children.length) {
         for(let child of [...node.children]) {
           /*   if(pred(child, depth + 1, node))*/
           yield* Util.walkTree(child, pred, t, depth + 1, node.parent_id);
@@ -1972,7 +1855,8 @@ Util.getImageAverageColor = function(imageElement, options) {
     pixel.b = subpixels[i + 2];
     pixel.a = subpixels[i + 4];
     // Only consider pixels that aren't black, white, or too transparent
-    if(pixel.a > settings.tooAlpha &&
+    if(
+      pixel.a > settings.tooAlpha &&
       (luma = pixel.r + pixel.g + pixel.b) > settings.tooDark && // Luma is assigned inside the conditional to avoid re-calculation when alpha is not met
       luma < settings.tooLight
     ) {
@@ -2003,11 +1887,13 @@ Util.getImageAverageColor = function(imageElement, options) {
       // Returns a CSS compatible RGB string (e.g. '255, 255, 255')
       const { r, g, b } = this;
       return [r, g, b].join(", ");
-    }, toStringRgba() {
+    },
+    toStringRgba() {
       // Returns a CSS compatible RGBA string (e.g. '255, 255, 255, 1.0')
       const { r, g, b, a } = this;
       return [r, g, b, a].join(", ");
-    }, toStringHex() {
+    },
+    toStringHex() {
       // Returns a CSS compatible HEX coloor string (e.g. 'FFA900')
       const toHex = function(d) {
         h = Math.round(d).toString(16);
@@ -2078,19 +1964,23 @@ Util.proxy = (obj = {}, handler) =>
     get(target, key, receiver) {
       //console.log(`Util.proxy getting ${key}!`);
       return Reflect.get(target, key, receiver);
-    }, set(target, key, value, receiver) {
+    },
+    set(target, key, value, receiver) {
       //console.log(`Util.proxy setting ${key}!`);
       return Reflect.set(target, key, value, receiver);
-    }, ...handler
+    },
+    ...handler
   });
 Util.proxyTree = function proxyTree(...callbacks) {
   const [setCallback, applyCallback = () => {}] = callbacks;
   const handler = {
     get(target, key) {
       return node([...this.path, key]);
-    }, set(target, key, value) {
+    },
+    set(target, key, value) {
       return setCallback(this.path, key, value);
-    }, apply(target, thisArg, args) {
+    },
+    apply(target, thisArg, args) {
       return applyCallback(this.path, ...args);
     }
   };
@@ -2123,51 +2013,61 @@ Util.proxyClone = obj => {
     getPrototypeOf: () => Object.getPrototypeOf(obj),
     setPrototypeOf: () => {
       throw new Error("Not yet implemented: setPrototypeOf");
-    }, isExtensible: () => {
+    },
+    isExtensible: () => {
       throw new Error("Not yet implemented: isExtensible");
-    }, preventExtensions: () => {
+    },
+    preventExtensions: () => {
       throw new Error("Not yet implemented: preventExtensions");
-    }, getOwnPropertyDescriptor: (target, name) => {
+    },
+    getOwnPropertyDescriptor: (target, name) => {
       let desc;
       if(!deleted[name]) {
-        desc =
-          Object.getOwnPropertyDescriptor(override, name) ||
-          Object.getOwnPropertyDescriptor(obj, name);
+        desc = Object.getOwnPropertyDescriptor(override, name) || Object.getOwnPropertyDescriptor(obj, name);
       }
       if(desc) desc.configurable = true;
       debug(`getOwnPropertyDescriptor ${name} =`, desc);
       return desc;
-    }, defineProperty: () => {
+    },
+    defineProperty: () => {
       throw new Error("Not yet implemented: defineProperty");
-    }, has: (_, name) => {
+    },
+    has: (_, name) => {
       const has = !deleted[name] && (name in override || name in obj);
       debug(`has ${name} = ${has}`);
       return has;
-    }, get: (receiver, name) => {
+    },
+    get: (receiver, name) => {
       const value = get(name);
       debug(`get ${name} =`, value);
       return value;
-    }, set: (_, name, val) => {
+    },
+    set: (_, name, val) => {
       delete deleted[name];
       override[name] = val;
       debug(`set ${name} = ${val}`, name, val);
       return true;
-    }, deleteProperty: (_, name) => {
+    },
+    deleteProperty: (_, name) => {
       debug(`deleteProperty ${name}`);
       deleted[name] = true;
       delete override[name];
-    }, ownKeys: () => {
+    },
+    ownKeys: () => {
       const keys = Object.keys(obj)
         .concat(Object.keys(override))
         .filter(Util.uniquePred)
         .filter(key => !deleted[key]);
       debug(`ownKeys`, keys);
       return keys;
-    }, apply: () => {
+    },
+    apply: () => {
       throw new Error("Not yet implemented: apply");
-    }, construct: () => {
+    },
+    construct: () => {
       throw new Error("Not yet implemented: construct");
-    }, enumerate: () => {
+    },
+    enumerate: () => {
       throw new Error("Not yet implemented: enumerate");
     }
   });
@@ -2178,8 +2078,9 @@ Util.proxyDelegate = (target, origin) => {
       if(key in target) return Reflect.get(target, key, receiver);
       const value = origin[key];
       return typeof value === "function" ? (...args) => value.apply(origin, args) : value;
-    }, set(target, key, value, receiver) {
-      if (key in target) return Reflect.set(target, key, value, receiver);
+    },
+    set(target, key, value, receiver) {
+      if(key in target) return Reflect.set(target, key, value, receiver);
       origin[key] = value;
       return true;
     }
@@ -2187,16 +2088,15 @@ Util.proxyDelegate = (target, origin) => {
 };
 Util.immutable = args => {
   const argsType = typeof args === "object" && Util.isArray(args) ? "array" : "object";
-  const errorText =
-    argsType === "array"
-      ? "Error! You can't change elements of this array"
-      : "Error! You can't change properties of this object";
+  const errorText = argsType === "array" ? "Error! You can't change elements of this array" : "Error! You can't change properties of this object";
   const handler = {
     set: () => {
       throw new Error(errorText);
-    }, deleteProperty: () => {
+    },
+    deleteProperty: () => {
       throw new Error(errorText);
-    }, defineProperty: () => {
+    },
+    defineProperty: () => {
       throw new Error(errorText);
     }
   };
@@ -2204,7 +2104,8 @@ Util.immutable = args => {
 };
 Util.immutableClass = Original => {
   let name = Util.fnName(Original);
-  return new Function("Original",
+  return new Function(
+    "Original",
     `const Immutable${name} = class extends Original {
     constructor(...args) {
       super(...args);
@@ -2273,7 +2174,8 @@ Util.color = (useColor = true) =>
     : {
         code(...args) {
           return `\u001b[${[...args].join(";")}m`;
-        }, text(text, ...color) {
+        },
+        text(text, ...color) {
           return this.code(...color) + text + this.code(0);
         }
       };
@@ -2286,8 +2188,10 @@ Util.defineInspect = (proto, ...props) => {
     const c = Util.color();
     proto[Symbol.for("nodejs.util.inspect.custom")] = function() {
       const obj = this;
-      return (c.text(Util.fnName(proto.constructor) + " ", 1, 31) +
-        Util.toString(props.reduce((acc, key) => {
+      return (
+        c.text(Util.fnName(proto.constructor) + " ", 1, 31) +
+        Util.toString(
+          props.reduce((acc, key) => {
             acc[key] = obj[key];
             return acc;
           }, {}),

@@ -50,10 +50,12 @@ export function lazyMembers(obj, members) {
     Object.defineProperty(obj, name, {
       get: function() {
         return initializers[name]();
-      }, set: function(value) {
+      },
+      set: function(value) {
         initializers[name](value);
         return initializers[name]();
-      }, enumerable: true
+      },
+      enumerable: true
     });
   }
 }
@@ -103,8 +105,7 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
           if(typeof index != "number" || typeof index != "string") index = key;
         }
 
-        let ret =
-          typeof proto[key] == "function" ? proto[key] : Reflect.get(target, index, receiver);
+        let ret = typeof proto[key] == "function" ? proto[key] : Reflect.get(target, index, receiver);
 
         if(typeof ret == "object" && typeof index == "number") {
           key = lookup(ret);
@@ -116,18 +117,21 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
         //  console.log("cache:",Object.keys(cache));
 
         return ret;
-      }, set(target, key, value, receiver) {
+      },
+      set(target, key, value, receiver) {
         console.log(`setting ${key}!`);
         Reflect.set(target, key, value, receiver);
         return true;
-      }, has(target, key) {
-        if (Reflect.has(target, key)) return true;
+      },
+      has(target, key) {
+        if(Reflect.has(target, key)) return true;
         const len = target.length;
         if(typeof key == "number") return key >= 0 && key < len;
 
         for(let i = 0; i < len; i++) if(lookup(target[i]) === key) return true;
         return false;
-      }, getPrototypeOf(target) {
+      },
+      getPrototypeOf(target) {
         return proto;
       } /*,
       ownKeys(target) {

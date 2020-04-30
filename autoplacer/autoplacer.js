@@ -1,4 +1,4 @@
-import m2d from "./math2d.js";
+import m2d from './math2d.js';
 
 var vdec = m2d.inc;
 var vinc = m2d.dec;
@@ -30,8 +30,10 @@ var rectoverlap = function(a, b) {
     y12 = a[1] + a[3],
     x21 = b[0],
     y21 = b[1],
-    x22 = b[0] + b[2], y22 = b[1] + b[3];
-  var dx = Math.max(0, Math.min(x12, x22) - Math.max(x11, x21)), dy = Math.max(0, Math.min(y12, y22) - Math.max(y11, y21));
+    x22 = b[0] + b[2],
+    y22 = b[1] + b[3];
+  var dx = Math.max(0, Math.min(x12, x22) - Math.max(x11, x21)),
+    dy = Math.max(0, Math.min(y12, y22) - Math.max(y11, y21));
   return dx * dy;
 };
 
@@ -55,7 +57,8 @@ Autoplacer.prototype.init = function(opts) {
     i,
     len = b.length,
     s = (this.states_ = []),
-    p, r;
+    p,
+    r;
 
   for(i = 0; i < len; i++) {
     r = b[i] = b[i].slice(0);

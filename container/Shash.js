@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /** @constructor */
 export function Shash(width, height, onNeighbour) {
@@ -26,7 +26,8 @@ Shash.prototype.check = function() {
   if(!this.onNeighbour) return;
 
   // Clear grids
-  var i = Math.ceil(this.size.x / this.gridSize.x), J = Math.ceil(this.size.y / this.gridSize.y);
+  var i = Math.ceil(this.size.x / this.gridSize.x),
+    J = Math.ceil(this.size.y / this.gridSize.y);
   this.grid = [];
   while(i--) {
     this.grid[i] = [];
@@ -38,9 +39,7 @@ Shash.prototype.check = function() {
   i = this.objects.length;
   while(i--) {
     var grob = this.objects[i];
-    grob.grid = this.grid[Math.floor(grob.object.coords.x / this.gridSize.x)][
-      Math.floor(grob.object.coords.y / this.gridSize.y)
-    ];
+    grob.grid = this.grid[Math.floor(grob.object.coords.x / this.gridSize.x)][Math.floor(grob.object.coords.y / this.gridSize.y)];
     grob.grid.push(grob);
   }
 

@@ -12,43 +12,11 @@
 //     \//  |_|| |_||_| |_| |_| ||_| |_|  \\/     \\
 
 (function(window) {
-  "use strict";
+  'use strict';
 
   var IDENTITY = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
-  function multiply(a,
-    b,
-    c,
-    d,
-    e,
-    f,
-    g,
-    h,
-    i,
-    j,
-    k,
-    l,
-    m,
-    n,
-    o,
-    p,
-    A,
-    B,
-    C,
-    D,
-    E,
-    F,
-    G,
-    H,
-    I,
-    J,
-    K,
-    L,
-    M,
-    N,
-    O,
-    P
-  ) {
+  function multiply(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P) {
     return [
       a * A + b * E + c * I + d * M,
       a * B + b * F + c * J + d * N,
@@ -84,26 +52,33 @@
   Matrix3D.prototype = {
     multiply: function(entities) {
       return new Matrix3D(multiply.apply(window, this.entities.concat(entities)));
-    }, transform: function(matrix) {
+    },
+    transform: function(matrix) {
       return this.multiply(matrix.entities);
-    }, scale: function(s) {
+    },
+    scale: function(s) {
       return this.multiply([s, 0, 0, 0, 0, s, 0, 0, 0, 0, s, 0, 0, 0, 0, 1]);
-    }, rotateX: function(a) {
+    },
+    rotateX: function(a) {
       var c = cos(a);
       var s = sin(a);
       return this.multiply([1, 0, 0, 0, 0, c, -s, 0, 0, s, c, 0, 0, 0, 0, 1]);
-    }, rotateY: function(a) {
+    },
+    rotateY: function(a) {
       var c = cos(a);
       var s = sin(a);
       return this.multiply([c, 0, s, 0, 0, 1, 0, 0, -s, 0, c, 0, 0, 0, 0, 1]);
-    }, rotateZ: function(a) {
+    },
+    rotateZ: function(a) {
       var c = cos(a);
       var s = sin(a);
       return this.multiply([c, -s, 0, 0, s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
-    }, translate: function(x, y, z) {
+    },
+    translate: function(x, y, z) {
       return this.multiply([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1]);
-    }, toString: function() {
-      return "matrix3d(" + this.entities.join(",") + ")";
+    },
+    toString: function() {
+      return 'matrix3d(' + this.entities.join(',') + ')';
     }
   };
 

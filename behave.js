@@ -21,8 +21,9 @@ export const BehaveHooks = (function() {
         }
         hooks[hookName].push(fn);
       }
-    }, get: function(hookName) {
-      if (hooks[hookName]) {
+    },
+    get: function(hookName) {
+      if(hooks[hookName]) {
         return hooks[hookName];
       }
     }
@@ -49,11 +50,13 @@ export const Behave = function(userOpts) {
         throw new TypeError();
       }
 
-      var t = Object(this), len = t.length >>> 0;
+      var t = Object(this),
+        len = t.length >>> 0;
       if(typeof func != "function") {
         throw new TypeError();
       }
-      var res = [], thisp = arguments[1];
+      var res = [],
+        thisp = arguments[1];
       for(var i = 0; i < len; i++) {
         if(i in t) {
           var val = t[i];
@@ -76,7 +79,8 @@ export const Behave = function(userOpts) {
       autoStrip: true,
       autoIndent: true,
       fence: false
-    }, tab,
+    },
+    tab,
     newLine,
     charSettings = {
       keyMap: [
@@ -86,7 +90,8 @@ export const Behave = function(userOpts) {
         { open: "[", close: "]", canBreak: true },
         { open: "{", close: "}", canBreak: true }
       ]
-    }, utils = {
+    },
+    utils = {
       _callHook: function(hookName, passData) {
         var hooks = BehaveHooks.get(hookName);
         passData = typeof passData == "boolean" && passData === false ? false : true;
@@ -95,7 +100,8 @@ export const Behave = function(userOpts) {
           if(passData) {
             var theEditor = defaults.textarea,
               textVal = theEditor.value,
-              caretPos = utils.cursor.get(), i;
+              caretPos = utils.cursor.get(),
+              i;
 
             for(i = 0; i < hooks.length; i++) {
               hooks[i].call(undefined, {
@@ -103,9 +109,11 @@ export const Behave = function(userOpts) {
                   element: theEditor,
                   text: textVal,
                   levelsDeep: utils.levelsDeep()
-                }, caret: {
+                },
+                caret: {
                   pos: caretPos
-                }, lines: {
+                },
+                lines: {
                   current: utils.cursor.getLine(textVal, caretPos),
                   total: utils.editor.getLines(textVal)
                 }
@@ -117,7 +125,8 @@ export const Behave = function(userOpts) {
             }
           }
         }
-      }, defineNewLine: function() {
+      },
+      defineNewLine: function() {
         var ta = document.createElement("textarea");
         ta.value = "\n";
 
@@ -126,8 +135,9 @@ export const Behave = function(userOpts) {
         } else {
           newLine = "\n";
         }
-      }, defineTabSize: function(tabSize) {
-        if (typeof defaults.textarea.style.OTabSize != "undefined") {
+      },
+      defineTabSize: function(tabSize) {
+        if(typeof defaults.textarea.style.OTabSize != "undefined") {
           defaults.textarea.style.OTabSize = tabSize;
           return;
         }
@@ -139,16 +149,19 @@ export const Behave = function(userOpts) {
           defaults.textarea.style.tabSize = tabSize;
           return;
         }
-      }, cursor: {
+      },
+      cursor: {
         getLine: function(textVal, pos) {
           return textVal.substring(0, pos).split("\n").length;
-        }, get: function() {
-          if (typeof document.createElement("textarea").selectionStart === "number") {
+        },
+        get: function() {
+          if(typeof document.createElement("textarea").selectionStart === "number") {
             return defaults.textarea.selectionStart;
           } else if(document.selection) {
             var caretPos = 0,
               range = defaults.textarea.createTextRange(),
-              rangeDupe = document.selection.createRange().duplicate(), rangeDupeBookmark = rangeDupe.getBookmark();
+              rangeDupe = document.selection.createRange().duplicate(),
+              rangeDupeBookmark = rangeDupe.getBookmark();
             range.moveToBookmark(rangeDupeBookmark);
 
             while(range.moveStart("character", -1) !== 0) {
@@ -156,8 +169,9 @@ export const Behave = function(userOpts) {
             }
             return caretPos;
           }
-        }, set: function(start, end) {
-          if (!end) {
+        },
+        set: function(start, end) {
+          if(!end) {
             end = start;
           }
           if(defaults.textarea.setSelectionRange) {
@@ -170,18 +184,18 @@ export const Behave = function(userOpts) {
             range.moveStart("character", start);
             range.select();
           }
-        }, selection: function() {
+        },
+        selection: function() {
           var textAreaElement = defaults.textarea,
             start = 0,
             end = 0,
             normalizedValue,
             range,
             textInputRange,
-            len, endRange;
+            len,
+            endRange;
 
-          if(typeof textAreaElement.selectionStart == "number" &&
-            typeof textAreaElement.selectionEnd == "number"
-          ) {
+          if(typeof textAreaElement.selectionStart == "number" && typeof textAreaElement.selectionEnd == "number") {
             start = textAreaElement.selectionStart;
             end = textAreaElement.selectionEnd;
           } else {
@@ -220,16 +234,20 @@ export const Behave = function(userOpts) {
                 end: end
               };
         }
-      }, editor: {
+      },
+      editor: {
         getLines: function(textVal) {
           return textVal.split("\n").length;
-        }, get: function() {
+        },
+        get: function() {
           return defaults.textarea.value.replace(/\r/g, "");
-        }, set: function(data) {
+        },
+        set: function(data) {
           defaults.textarea.value = data;
         }
-      }, fenceRange: function() {
-        if (typeof defaults.fence == "string") {
+      },
+      fenceRange: function() {
+        if(typeof defaults.fence == "string") {
           var data = utils.editor.get(),
             pos = utils.cursor.get(),
             hacked = 0,
@@ -254,14 +272,18 @@ export const Behave = function(userOpts) {
         } else {
           return true;
         }
-      }, isEven: function(_this, i) {
+      },
+      isEven: function(_this, i) {
         return i % 2;
-      }, levelsDeep: function() {
-        var pos = utils.cursor.get(), val = utils.editor.get();
+      },
+      levelsDeep: function() {
+        var pos = utils.cursor.get(),
+          val = utils.editor.get();
 
         var left = val.substring(0, pos),
           levels = 0,
-          i, j;
+          i,
+          j;
 
         for(i = 0; i < left.length; i++) {
           for(j = 0; j < charSettings.keyMap.length; j++) {
@@ -277,7 +299,8 @@ export const Behave = function(userOpts) {
           }
         }
 
-        var toDecrement = 0, quoteMap = ["'", '"'];
+        var toDecrement = 0,
+          quoteMap = ["'", '"'];
         for(i = 0; i < charSettings.keyMap.length; i++) {
           if(charSettings.keyMap[i].canBreak) {
             for(j in quoteMap) {
@@ -294,12 +317,10 @@ export const Behave = function(userOpts) {
         var finalLevels = levels - toDecrement;
 
         return finalLevels >= 0 ? finalLevels : 0;
-      }, deepExtend: function(destination, source) {
-        for (var property in source) {
-          if(source[property] &&
-            source[property].constructor &&
-            source[property].constructor === Object
-          ) {
+      },
+      deepExtend: function(destination, source) {
+        for(var property in source) {
+          if(source[property] && source[property].constructor && source[property].constructor === Object) {
             destination[property] = destination[property] || {};
             utils.deepExtend(destination[property], source[property]);
           } else {
@@ -307,26 +328,30 @@ export const Behave = function(userOpts) {
           }
         }
         return destination;
-      }, addEvent: function addEvent(element, eventName, func) {
-        if (element.addEventListener) {
+      },
+      addEvent: function addEvent(element, eventName, func) {
+        if(element.addEventListener) {
           element.addEventListener(eventName, func, false);
         } else if(element.attachEvent) {
           element.attachEvent("on" + eventName, func);
         }
-      }, removeEvent: function addEvent(element, eventName, func) {
-        if (element.addEventListener) {
+      },
+      removeEvent: function addEvent(element, eventName, func) {
+        if(element.addEventListener) {
           element.removeEventListener(eventName, func, false);
         } else if(element.attachEvent) {
           element.detachEvent("on" + eventName, func);
         }
-      }, preventDefaultEvent: function(e) {
-        if (e.preventDefault) {
+      },
+      preventDefaultEvent: function(e) {
+        if(e.preventDefault) {
           e.preventDefault();
         } else {
           e.returnValue = false;
         }
       }
-    }, intercept = {
+    },
+    intercept = {
       tabKey: function(e) {
         if(!utils.fenceRange()) {
           return;
@@ -363,8 +388,7 @@ export const Behave = function(userOpts) {
               }
               toIndent = lines.join("\n");
 
-              utils.editor.set(val.substring(0, selection.start) + toIndent + val.substring(selection.end)
-              );
+              utils.editor.set(val.substring(0, selection.start) + toIndent + val.substring(selection.end));
               utils.cursor.set(selection.start, selection.start + toIndent.length);
             } else {
               for(i in lines) {
@@ -372,8 +396,7 @@ export const Behave = function(userOpts) {
               }
               toIndent = lines.join("\n");
 
-              utils.editor.set(val.substring(0, selection.start) + toIndent + val.substring(selection.end)
-              );
+              utils.editor.set(val.substring(0, selection.start) + toIndent + val.substring(selection.end));
               utils.cursor.set(selection.start, selection.start + toIndent.length);
             }
           } else {
@@ -396,8 +419,9 @@ export const Behave = function(userOpts) {
           utils._callHook("tab:after");
         }
         return toReturn;
-      }, enterKey: function(e) {
-        if (!utils.fenceRange()) {
+      },
+      enterKey: function(e) {
+        if(!utils.fenceRange()) {
           return;
         }
 
@@ -426,27 +450,20 @@ export const Behave = function(userOpts) {
             finalCursorPos = ourIndent.length + 1;
 
             for(i = 0; i < charSettings.keyMap.length; i++) {
-              if(charSettings.keyMap[i].open == leftChar &&
-                charSettings.keyMap[i].close == rightChar
-              ) {
+              if(charSettings.keyMap[i].open == leftChar && charSettings.keyMap[i].close == rightChar) {
                 closingBreak = newLine;
               }
             }
           }
 
-          var edited =
-            left +
-            newLine +
-            ourIndent +
-            closingBreak +
-            ourIndent.substring(0, ourIndent.length - tab.length) +
-            right;
+          var edited = left + newLine + ourIndent + closingBreak + ourIndent.substring(0, ourIndent.length - tab.length) + right;
           utils.editor.set(edited);
           utils.cursor.set(pos + finalCursorPos);
           utils._callHook("enter:after");
         }
-      }, deleteKey: function(e) {
-        if (!utils.fenceRange()) {
+      },
+      deleteKey: function(e) {
+        if(!utils.fenceRange()) {
           return;
         }
 
@@ -465,9 +482,7 @@ export const Behave = function(userOpts) {
 
           if(utils.cursor.selection() === false) {
             for(i = 0; i < charSettings.keyMap.length; i++) {
-              if(charSettings.keyMap[i].open == leftChar &&
-                charSettings.keyMap[i].close == rightChar
-              ) {
+              if(charSettings.keyMap[i].open == leftChar && charSettings.keyMap[i].close == rightChar) {
                 var edited = val.substring(0, pos - 1) + val.substring(pos + 1);
                 utils.editor.set(edited);
                 utils.cursor.set(pos - 1);
@@ -478,7 +493,8 @@ export const Behave = function(userOpts) {
             utils.editor.set(edited);
             utils.cursor.set(pos - 1);
           } else {
-            var sel = utils.cursor.selection(), edited = val.substring(0, sel.start) + val.substring(sel.end);
+            var sel = utils.cursor.selection(),
+              edited = val.substring(0, sel.start) + val.substring(sel.end);
             utils.editor.set(edited);
             utils.cursor.set(pos);
           }
@@ -486,7 +502,8 @@ export const Behave = function(userOpts) {
           utils._callHook("delete:after");
         }
       }
-    }, charFuncs = {
+    },
+    charFuncs = {
       openedChar: function(_char, e) {
         utils.preventDefaultEvent(e);
         utils._callHook("openChar:before");
@@ -499,7 +516,8 @@ export const Behave = function(userOpts) {
         defaults.textarea.value = edited;
         utils.cursor.set(pos + 1);
         utils._callHook("openChar:after");
-      }, closedChar: function(_char, e) {
+      },
+      closedChar: function(_char, e) {
         var pos = utils.cursor.get(),
           val = utils.editor.get(),
           toOverwrite = val.substring(pos, pos + 1);
@@ -512,7 +530,8 @@ export const Behave = function(userOpts) {
         }
         return false;
       }
-    }, action = {
+    },
+    action = {
       filter: function(e) {
         if(!utils.fenceRange()) {
           return;
@@ -524,7 +543,8 @@ export const Behave = function(userOpts) {
           return;
         }
 
-        var _char = String.fromCharCode(theCode), i;
+        var _char = String.fromCharCode(theCode),
+          i;
 
         for(i = 0; i < charSettings.keyMap.length; i++) {
           if(charSettings.keyMap[i].close == _char) {
@@ -537,8 +557,9 @@ export const Behave = function(userOpts) {
             charFuncs.openedChar(charSettings.keyMap[i], e);
           }
         }
-      }, listen: function() {
-        if (defaults.replaceTab) {
+      },
+      listen: function() {
+        if(defaults.replaceTab) {
           utils.addEvent(defaults.textarea, "keydown", intercept.tabKey);
         }
         if(defaults.autoIndent) {
@@ -557,8 +578,9 @@ export const Behave = function(userOpts) {
           utils._callHook("keyup");
         });
       }
-    }, init = function(opts) {
-      if (opts.textarea) {
+    },
+    init = function(opts) {
+      if(opts.textarea) {
         utils._callHook("init:before", false);
         utils.deepExtend(defaults, opts);
         utils.defineNewLine();

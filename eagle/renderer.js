@@ -114,7 +114,8 @@ const CalculateArcRadius = (p1, p2, angle) => {
 
 const LinesToPath = lines => {
   //console.log(`lines:`, lines.map(Line.toObject));
-  let l = lines.shift(), m;
+  let l = lines.shift(),
+    m;
   let start = l.a;
   let ret = [];
   let prevPoint = new Point(l.a.x, l.a.y);
@@ -235,7 +236,7 @@ export class EagleRenderer {
       if(layer.name === id) return layer;
     }
   }
-/*
+  /*
   getColor(...args) {
     let li = this.getLayer(...args) || this.findLayer(...args);
     let index = Util.isObject(li) && 'color' in li ? li.color : li;
@@ -247,11 +248,11 @@ export class EagleRenderer {
     //if(!color) throw new Error("No such color:\n"+index+",\n"+name+",\n"+toXML(li));
     return color;
   }*/
-   getColor(layer) {
+  getColor(layer) {
     const name = Util.isObject(layer) && 'name' in layer ? layer.name : undefined;
     const color = Util.isObject(layer) && 'color' in layer ? layer.color : 7;
     return this.colors[name] || this.palette[color >= 1 ? color - 1 : color] || 'rgb(175,175,175)';
-}
+  }
 
   layerOf(element) {
     let layer;
@@ -273,12 +274,16 @@ export class EagleRenderer {
     for(let l of layers) {
       const { name, number, color } = l;
       const stroke = this.getColor(l);
-      const layer = this.create('g', {
+      const layer = this.create(
+        'g',
+        {
           id: `layer-${l.number}`,
           className: 'layer',
           ...LayerAttributes(l),
           stroke
-        }, layerGroup);
+        },
+        layerGroup
+      );
 
       this.layerElements[l.number] = layer;
       colors[l.name] = stroke;
@@ -290,11 +295,15 @@ export class EagleRenderer {
     const layer = item.layer;
     const color = opts.color || this.getColor(layer);
     const svg = (elem, attr, parent) =>
-      this.create(elem, {
+      this.create(
+        elem,
+        {
           className: item.tagName,
           ...LayerAttributes(layer),
           ...attr
-        }, parent);
+        },
+        parent
+      );
     let { labelText, coordFn = i => i } = opts;
 
     let transformation = (opts.transformation || new TransformationList()).slice();
@@ -303,7 +312,9 @@ export class EagleRenderer {
     switch (item.tagName) {
       case 'wire': {
         const { x1, x2, y1, y2, width, curve } = coordFn(item);
-        svg('line', {
+        svg(
+          'line',
+          {
             stroke: color,
             x1,
             x2,
@@ -311,14 +322,18 @@ export class EagleRenderer {
             y2,
             strokeWidth: +(width == 0 ? 0.1 : width * 1).toFixed(3),
             'data-curve': curve
-          }, parent);
+          },
+          parent
+        );
         break;
       }
       case 'rectangle': {
         const { x1, x2, y1, y2, width, rot } = coordFn(item);
         let rect = new Rect({ x1, x2, y1, y2 });
         let center = rect.center;
-        svg('rect', {
+        svg(
+          'rect',
+          {
             stroke: 'none',
             fill: color,
             x: -rect.width / 2,
@@ -326,7 +341,9 @@ export class EagleRenderer {
             width: rect.width,
             height: rect.height,
             transform: `translate(${center.x},${center.y}) ${Rotation(rot)}`
-          }, parent);
+          },
+          parent
+        );
         break;
       }
       case 'label': {
@@ -335,7 +352,9 @@ export class EagleRenderer {
 
         //`   scale(1,-1) ${RotateTransformation(opts.rot, -1)} ${Rotate(rot)}`;
 
-        svg('text', {
+        svg(
+          'text',
+          {
             fill: '#f0f',
             stroke: 'none',
             x: 0,
@@ -345,7 +364,9 @@ export class EagleRenderer {
             fontSize: 3,
             fontFamily: 'Fixed',
             transform: transform.undo(transformation)
-          }, parent);
+          },
+          parent
+        );
         break;
       }
       case 'text': {
@@ -389,7 +410,9 @@ export class EagleRenderer {
         //console.log(`${text}`, { rotateAlignment, undoAngle, wholeAngle });
         //console.log(`${text}`, alignment, EagleRenderer.alignmentAttrs(alignment, HORIZONTAL_VERTICAL) );
 
-        const e = svg('text', {
+        const e = svg(
+          'text',
+          {
             fill: color,
             stroke: 'none',
             strokeWidth: 0.05,
@@ -401,7 +424,9 @@ export class EagleRenderer {
             fontFamily: font || 'Fixed',
             transform: rotation.concat(undoTransform).rotate(undoAngle % 180)
             // rotation.rotate(angle).scale
-          }, parent);
+          },
+          parent
+        );
         //console.log('tspan:', text, 'rot:', rot, 'transformation:', transformation);
 
         let attrs = EagleRenderer.alignmentAttrs(alignment, HORIZONTAL);
@@ -411,14 +436,18 @@ export class EagleRenderer {
       }
       case 'circle': {
         const { x, y, width, radius } = coordFn(item);
-        svg('circle', {
+        svg(
+          'circle',
+          {
             stroke: color,
             cx: x,
             cy: y,
             r: radius,
             strokeWidth: width * 0.8,
             fill: 'none'
-          }, parent);
+          },
+          parent
+        );
         break;
       }
       case 'contactref':
@@ -510,13 +539,17 @@ export class SchematicRenderer extends EagleRenderer {
     switch (item.tagName) {
       case 'junction': {
         const { x, y } = coordFn(item);
-        svg('circle', {
+        svg(
+          'circle',
+          {
             fill: '#4ba54b',
             cx: x,
             cy: y,
             r: 0.5,
             stroke: 'none'
-          }, parent);
+          },
+          parent
+        );
         break;
       }
 
@@ -527,14 +560,20 @@ export class SchematicRenderer extends EagleRenderer {
         const pivot = new Point(+x, +y);
         const l = new Line(pivot, vec.add(pivot));
         //console.log('pin:', item.toXML());
-        svg('line', {
+        svg(
+          'line',
+          {
             class: 'pin',
             stroke: '#a54b4b',
             ...l.toObject(),
             strokeWidth: 0.15
-          }, parent);
+          },
+          parent
+        );
         if(name != '' && visible != 'off')
-          svg('text', {
+          svg(
+            'text',
+            {
               class: 'pin',
               stroke: 'none',
               fill: this.palette[7],
@@ -546,7 +585,9 @@ export class SchematicRenderer extends EagleRenderer {
               'alignment-baseline': 'central',
               innerHTML: name,
               transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
-            }, parent);
+            },
+            parent
+          );
         break;
       }
       default: {
@@ -570,10 +611,14 @@ export class SchematicRenderer extends EagleRenderer {
     if(!symbol) {
       //console.log('Symbol not found:', deviceset.name);
     }
-    const g = this.create('g', {
+    const g = this.create(
+      'g',
+      {
         className: `part.${part.name}`,
         transform: ` translate(${x},${y}) ${RotateTransformation(rot)}`
-      }, parent);
+      },
+      parent
+    );
     if(!value) value = deviceset.name;
     this.renderCollection(symbol, g, { name, value });
     return g;
@@ -653,19 +698,27 @@ export class BoardRenderer extends EagleRenderer {
           }
         }
 
-        svg('path', {
+        svg(
+          'path',
+          {
             //stroke: color, strokeWidth: 0.1, fill: 'none',
             fill: this.colors['Pads'] || this.palette[2],
             d: data + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
             transform
-          }, parent);
+          },
+          parent
+        );
 
         if(name) {
-          svg('tspan', {
+          svg(
+            'tspan',
+            {
               innerHTML: name,
               ...EagleRenderer.alignmentAttrs('center', HORIZONTAL)
-            }, svg(
-              'text', {
+            },
+            svg(
+              'text',
+              {
                 fill: 'hsl(180,100%,60%)', // this.colors['Holes'],
                 stroke: 'black',
                 strokeWidth: 0.01,
@@ -677,7 +730,8 @@ export class BoardRenderer extends EagleRenderer {
                 fontStyle: 'bold',
                 fontFamily: 'Fixed',
                 transform: `${transform} scale(1,-1) ${RotateTransformation(opts.rot, -1)}`
-              }, parent
+              },
+              parent
             )
           );
         }
@@ -692,8 +746,10 @@ export class BoardRenderer extends EagleRenderer {
 
   renderCollection(coll, parent, opts = {}) {
     const { predicate = i => true, coordFn = i => i, transform } = opts;
-    let wireMap = new Map(), other = [];
-    let layers = {}, widths = {};
+    let wireMap = new Map(),
+      other = [];
+    let layers = {},
+      widths = {};
 
     for(let item of coll.children) {
       if(item.tagName === 'wire') {
@@ -730,7 +786,9 @@ export class BoardRenderer extends EagleRenderer {
       const width = widths[layerId];
       const color = this.getColor(layer);
 
-      this.create('path', {
+      this.create(
+        'path',
+        {
           className: 'wire',
           d: path,
           stroke: color,
@@ -739,7 +797,9 @@ export class BoardRenderer extends EagleRenderer {
           strokeLinecap: 'round',
           strokeLinejoin: 'round',
           ...LayerAttributes(layer)
-        }, parent);
+        },
+        parent
+      );
       /*
       const intersections = PolygonFinder.findAllIntersectionsInSegments(lines);
       const polygons = PolygonFinder.polygonsFromSegments(lines);
@@ -759,14 +819,18 @@ transform.merge(rotation);
 */
     transform.translate(x, y);
 
-    const g = this.create('g', {
+    const g = this.create(
+      'g',
+      {
         id: `element.${name}`,
         'data-name': name,
         'data-value': value,
         'data-library': library.name,
         'data-package': element.package.name,
         transform: transform.concat(rotation) //: ` translate(${x},${y}) ${RotateTransformation(rot)}`
-      }, parent);
+      },
+      parent
+    );
 
     this.renderCollection(element.package, g, {
       name,
@@ -809,7 +873,8 @@ export function renderDocument(doc, container) {
   const gridColor = 'hsl(230,100%,60%)';
   const gridWidth = 0.127;
 
-  const factory = SVG.factory({
+  const factory = SVG.factory(
+    {
       append_to(elem, parent) {
         if(elem.tagName.toLowerCase() == 'text') return parent.appendChild(elem);
         let before = null;
@@ -822,7 +887,9 @@ export function renderDocument(doc, container) {
         //console.log("append_to",{elem,parent});
         parent.insertBefore(elem, before);
       }
-    }, container);
+    },
+    container
+  );
   const ctor = doc.type == 'sch' ? SchematicRenderer : BoardRenderer;
   const renderer = new ctor(doc, factory);
   const bb = new BBox();
@@ -991,7 +1058,9 @@ export function renderDocument(doc, container) {
 
   if(!Element.find('pattern', defs)) {
     const step = '2.54';
-    SVG.create('path', {
+    SVG.create(
+      'path',
+      {
         d: `M ${step},0 L 0,0 L 0,${step}`,
         fill: 'none',
         stroke: gridColor,
@@ -999,38 +1068,47 @@ export function renderDocument(doc, container) {
         /* 'stroke-dasharray': '0.254 0.254',
         'stroke-dashoffset': '0.127',
         'stroke-linecap': 'butt'*/
-      }, SVG.create(
-        'pattern', {
+      },
+      SVG.create(
+        'pattern',
+        {
           id: 'grid',
           width: step,
           height: step,
           patternUnits: 'userSpaceOnUse'
-        }, defs
+        },
+        defs
       )
     );
   }
 
   if(!Element.find('filter', defs)) {
-    SVG.create('feDropShadow', {
+    SVG.create(
+      'feDropShadow',
+      {
         dx: '20',
         dy: '20',
         stdDeviation: '4',
         'flood-color': '#000000'
-      }, SVG.create(
-        'filter', {
+      },
+      SVG.create(
+        'filter',
+        {
           id: 'shadow',
           x: '-20%',
           y: '-20%',
           width: '200%',
           height: '200%'
-        }, defs
+        },
+        defs
       )
     );
   }
 
   renderer.setPalette(EaglePalette);
 
-  /*if(typeof v == 'object' && v !== null) */ for(let [v, k, o] of doc.iterator(it => it.attributes && it.attributes.x !== undefined,
+  /*if(typeof v == 'object' && v !== null) */ for(let [v, k, o] of doc.iterator(
+    it => it.attributes && it.attributes.x !== undefined,
     [],
     arg => arg
   ))
@@ -1042,7 +1120,8 @@ export function renderDocument(doc, container) {
   /*console.log("center:", center.prod(-1, -1).toString());
   //console.log("factory.delegate.root:", factory.delegate.root);*/
 
-  for(let [v, k, o] of doc.iterator(it => !!it.attributes,
+  for(let [v, k, o] of doc.iterator(
+    it => !!it.attributes,
     [],
     arg => arg
   )) {

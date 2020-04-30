@@ -127,7 +127,8 @@ export class EagleProject {
       board: board.libraries[name]
     };
     let layers = {
-      schematic: Util.toMap(schematic.layers.list.filter(l => l.active == 'yes'),
+      schematic: Util.toMap(
+        schematic.layers.list.filter(l => l.active == 'yes'),
         l => [l.number, l]
       ),
       board: Util.toMap(

@@ -17,7 +17,7 @@
  * along with BackBee. If not, see <http://www.gnu.org/licenses/>.
  */
 (function(window) {
-  "use strict";
+  'use strict';
 
   var setValues = function hashMapSetValues(HashMap, values) {
       var value;
@@ -31,30 +31,35 @@
           }
         }
       }
-    }, defineArrayProperty = function hashMapDefineArrayProperty(obj, property_name) {
+    },
+    defineArrayProperty = function hashMapDefineArrayProperty(obj, property_name) {
       Object.defineProperty(obj, property_name, {
         value: [],
         writable: false,
         enumerable: false,
         configurable: false
       });
-    }, defineSizeProperty = function hashMapDefineSizeProperty(obj, property_name) {
+    },
+    defineSizeProperty = function hashMapDefineSizeProperty(obj, property_name) {
       Object.defineProperty(obj, property_name, {
         get: function hashMapDefineSizePropertyGet() {
           return this.map_values.length;
-        }, set: function hashMapDefineSizePropertySet() {
+        },
+        set: function hashMapDefineSizePropertySet() {
           return;
-        }, enumerable: false,
+        },
+        enumerable: false,
         configurable: false
       });
-    }, HashMap = function(values) {
-      defineArrayProperty(this, "map_keys");
+    },
+    HashMap = function(values) {
+      defineArrayProperty(this, 'map_keys');
 
-      defineArrayProperty(this, "map_values");
+      defineArrayProperty(this, 'map_values');
 
-      defineSizeProperty(this, "length");
+      defineSizeProperty(this, 'length');
 
-      defineSizeProperty(this, "size");
+      defineSizeProperty(this, 'size');
 
       setValues(this, values);
     };
@@ -221,7 +226,8 @@
    * Returns returns a new Iterator object that contains an array of [key, value] for each element in the HashMap object in insertion order.
    */
   HashMap.prototype.entries = function hashMapEntries() {
-    var key, values = [];
+    var key,
+      values = [];
 
     for(key = 0; key < this.map_values.length; key = key + 1) {
       values.push([this.map_keys[key], this.map_values[key]]);
@@ -230,8 +236,8 @@
     return values;
   };
 
-  if(typeof define === "function" && define.amd) {
-    define("bbhashmap", [], function() {
+  if(typeof define === 'function' && define.amd) {
+    define('bbhashmap', [], function() {
       return HashMap;
     });
   } else {

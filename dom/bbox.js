@@ -1,4 +1,4 @@
-import { Rect } from "../geom/rect.js";
+import { Rect } from '../geom/rect.js';
 
 export class BBox {
   static fromPoints(pts) {
@@ -98,7 +98,7 @@ export class BBox {
   }
   transform(fn = arg => arg, out) {
     if(!out) out = this;
-    for(let prop of ["x1", "y1", "x2", "y2"]) {
+    for(let prop of ['x1', 'y1', 'x2', 'y2']) {
       const v = this[prop];
       out[prop] = fn(v);
     }
@@ -111,7 +111,7 @@ export class BBox {
   }
 
   static from(iter, tp = p => p) {
-    if(typeof iter == "object" && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
+    if(typeof iter == 'object' && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
 
     let r = new BBox();
     let result = iter.next();
