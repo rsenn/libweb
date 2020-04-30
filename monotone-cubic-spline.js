@@ -50,8 +50,7 @@ export class CubicSpline {
       if(pts[1].length < 6) {
         const n = pts[0].length;
 
-        pts[1] = [pts[0][n - 2] * 2 - pts[0][n - 4], pts[0][n - 1] * 2 - pts[0][n - 3]].concat(
-          pts[1]
+        pts[1] = [pts[0][n - 2] * 2 - pts[0][n - 4], pts[0][n - 1] * 2 - pts[0][n - 3]].concat(pts[1]
         );
       }
       //Remove control points for 'M'

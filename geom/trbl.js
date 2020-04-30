@@ -112,8 +112,7 @@ TRBL.union = (trbl, other) => ({
 TRBL.toRect = trbl => new Rect(trbl.left, trbl.top, trbl.right - trbl.left, trbl.bottom - trbl.top);
 
 TRBL.prototype.toString = function(unit = "px") {
-  return (
-    "" +
+  return ("" +
     this.top +
     "" +
     unit +
@@ -131,8 +130,7 @@ TRBL.prototype.toString = function(unit = "px") {
   );
 };
 TRBL.prototype.toSource = function() {
-  return (
-    "{top:" +
+  return ("{top:" +
     this.top +
     ",right:" +
     this.right +

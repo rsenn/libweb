@@ -325,8 +325,7 @@ ${js(body)}
     }
 
     function js_fornum_statement(node) {
-      return `for ${js(node.id)} = ${js(node.begin)}, ${js(node.end)}; ${js(node.id)} += ${js(
-        node.step
+      return `for ${js(node.id)} = ${js(node.begin)}, ${js(node.end)}; ${js(node.id)} += ${js(node.step
       )}) {
                 ${js(node.body)}
             }
@@ -378,8 +377,7 @@ for(;;) {
 
     function js_if_statement(node) {
       const elseif = node.elseif
-        .map(
-          ({ cond, body }) => `else if(${js(cond)}) {
+        .map(({ cond, body }) => `else if(${js(cond)}) {
                 ${js(body)}
             }`
         )
@@ -601,14 +599,12 @@ class MoonScriptGenerator {
         let num = parseInt(key);
         if(!isNaN(num)) key = num;
         if(field.type == "Recfield")
-          return (
-            `['${key}']: ` +
+          return (`['${key}']: ` +
             generator.subtree(field.value, false, `${indent}  `).replace(/\n/g, `\n${indent}`)
           );
         return generator.str(field.value, node.multiline, indent);
       });
-      return `{${generator.multiline ? `\n${indent}` : " "}${fields.join(
-        generator.multiline ? `\n${indent}` : ", "
+      return `{${generator.multiline ? `\n${indent}` : " "}${fields.join(generator.multiline ? `\n${indent}` : ", "
       )}${generator.multiline ? `\n${generator.indent}` : " "}}`;
     }
 
@@ -630,8 +626,7 @@ class MoonScriptGenerator {
         .map((variable, i) => {
           let r = node.right[i];
           console.error(`variable.name=${variable.name}, r=`, r);
-          if(
-            r.left &&
+          if(r.left &&
             variable.name == r.left.name &&
             ["*", "%", "/", "+", "-"].indexOf(r.op) != -1
           ) {
@@ -644,8 +639,7 @@ class MoonScriptGenerator {
     }
 
     function moonscript_fornum_statement(node) {
-      return `for ${moonscript(node.id)} = ${moonscript(node.begin)}, ${moonscript(
-        node.end
+      return `for ${moonscript(node.id)} = ${moonscript(node.begin)}, ${moonscript(node.end
       )}, ${moonscript(node.step)}
   ${moonscript_body(node.body)}`;
     }
@@ -688,8 +682,7 @@ until ${moonscript(cond)}`;
 
     function moonscript_if_statement(node) {
       const elseif = node.elseif
-        .map(
-          ({ cond, body }) => `elseif ${moonscript(cond)}
+        .map(({ cond, body }) => `elseif ${moonscript(cond)}
   ${moonscript_body(body)}`
         )
         .join("\n");
@@ -1291,8 +1284,7 @@ class Parser {
     let args = [...arguments];
     let stack = Util.getCallers(0, 10);
 
-    stack = stack.filter(
-      ({ typeName, methodName, functionName }) =>
+    stack = stack.filter(({ typeName, methodName, functionName }) =>
         (typeName == "Parser" || (methodName || functionName || "").indexOf("parse") != -1) &&
         methodName != "log"
     );
@@ -1356,8 +1348,7 @@ class Parser {
         return cur_token;
       }
     }
-    this.yield_error(
-      `match(${t}, ${v || this.cur_token.value}) ${this.cur_token.toString()}`,
+    this.yield_error(`match(${t}, ${v || this.cur_token.value}) ${this.cur_token.toString()}`,
       this.cur_token
     );
   }
@@ -1920,8 +1911,7 @@ class Parser {
       if(this.cur_token.value == ".") continue;
       if(this.cur_token.value == "[") continue;
 
-      if(
-        this.cur_token.value == "(" ||
+      if(this.cur_token.value == "(" ||
         this.cur_token.value == "{" ||
         this.cur_token.type == Token.STRING
       ) {
@@ -2479,70 +2469,38 @@ Object.assign(Interpreter, {
   OP: {
     or(left, right) {
       return left || right;
-    },
-
-    and(left, right) {
+    }, and(left, right) {
       return left && right;
-    },
-
-    "<": function(left, right) {
+    }, "<": function(left, right) {
       return left < right;
-    },
-
-    ">": function(left, right) {
+    }, ">": function(left, right) {
       return left > right;
-    },
-
-    "<=": function(left, right) {
+    }, "<=": function(left, right) {
       return left <= right;
-    },
-
-    ">=": function(left, right) {
+    }, ">=": function(left, right) {
       return left >= right;
-    },
-
-    "==": function(left, right) {
+    }, "==": function(left, right) {
       return left == right;
-    },
-
-    "~=": function(left, right) {
+    }, "~=": function(left, right) {
       return left != right;
-    },
-
-    "..": function(left, right) {
+    }, "..": function(left, right) {
       return `${left}${right}`;
-    },
-
-    "+": function(left, right) {
+    }, "+": function(left, right) {
       return left + right;
-    },
-
-    "-": function(left, right) {
+    }, "-": function(left, right) {
       return left - right;
-    },
-
-    "*": function(left, right) {
+    }, "*": function(left, right) {
       return left * right;
-    },
-
-    "/": function(left, right) {
+    }, "/": function(left, right) {
       return left / right;
-    },
-
-    "^": function(left, rihgt) {
+    }, "^": function(left, rihgt) {
       return math.pow(left, right);
-    },
-
-    "#-": function(right) {
+    }, "#-": function(right) {
       return -right;
-    },
-
-    not(right) {
+    }, not(right) {
       return !right;
-    },
-
-    "#": function(right) {
-      if(typeof right !== "string") {
+    }, "#": function(right) {
+      if (typeof right !== "string") {
         throw new Error("attempt to get length of a nonstring value");
       }
 

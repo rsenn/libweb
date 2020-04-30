@@ -113,11 +113,16 @@ export const inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) =>
 
   if(typeof e == 'string') return text(e, 1, 36);
   //if(e instanceof EagleElement) o = EagleElement.toObject(e);
-  let x = Util.inspect(o, {
-    depth: depth * 2,
-    breakLength,
-    colors: !Util.isBrowser()
-  });
+  let x = '';
+
+  try {
+    x = Util.inspect(o, {
+      depth: depth * 2,
+      breakLength,
+      colors: !Util.isBrowser()
+    });
+  } catch(err) {}
+
   let s = '⏐';
   x = x.substring(x.indexOf('tagName') + 14);
 
@@ -165,8 +170,7 @@ export class EagleInterface {
   *findAll(...args) {
     let { path, predicate, transform } = parseArgs(args);
     //if(!transform) transform = ([v, l, d]) => [v, l, d]; //(typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l, v) : v);
-    for(let [v, l, d] of this.iterator(
-      e => true,
+    for(let [v, l, d] of this.iterator(e => true,
       [],
       arg => arg
     )) {

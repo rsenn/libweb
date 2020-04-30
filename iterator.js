@@ -12,8 +12,7 @@ export function Iterator(arg) {
     return (function*() {
       yield* arg;
     })();
-  if(
-    ((typeof arg == "object" && arg !== null) || typeof arg == "string") &&
+  if(((typeof arg == "object" && arg !== null) || typeof arg == "string") &&
     arg.length !== undefined
   )
     return (function*() {

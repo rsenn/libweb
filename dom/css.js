@@ -7,8 +7,7 @@ export class CSS {
 
     const getStyleMap = (obj, key) => {
       let rule = Util.find(obj, item => item["selectorText"] == key);
-      return Util.adapter(
-        rule,
+      return Util.adapter(rule,
         obj => (obj && obj.styleMap && obj.styleMap.size !== undefined ? obj.styleMap.size : 0),
         (obj, i) => [...obj.styleMap.keys()][i],
         (obj, key) =>
@@ -22,15 +21,13 @@ export class CSS {
       let sheet =
         Util.find(obj, entry => entry.href == key || entry.ownerNode.id == key) || obj[key];
 
-      return Util.adapter(
-        sheet.rules,
+      return Util.adapter(sheet.rules,
         obj => (obj && obj.length !== undefined ? obj.length : 0),
         (obj, i) => obj[i].selectorText,
         getStyleMap
       );
     };
-    return Util.adapter(
-      [...doc.styleSheets],
+    return Util.adapter([...doc.styleSheets],
       obj => obj.length,
       (obj, i) => obj[i].href || obj[i].ownerNode.id || i,
       getStyleSheet
@@ -77,31 +74,25 @@ export class CSS {
         const exists = this.map.has(selector);
         this.map.set(selector, Util.toMap(props));
         return this.update(exists);
-      },
-      get(selector) {
+      }, get(selector) {
         const props = this.map.get(selector);
         return "toObject" in props ? props.toObject() : props;
-      },
-      keys() {
+      }, keys() {
         return this.map.keys();
-      },
-      *entries() {
-        for(let [selector, props] of this.map.entries()) yield [selector, props.toObject()];
-      },
-      update(text = "") {
-        if(text != "") {
+      }, *entries() {
+        for (let [selector, props] of this.map.entries()) yield [selector, props.toObject()];
+      }, update(text = "") {
+        if (text != "") {
           let node = document.createTextNode("\n" + text);
           this.element.appendChild(node);
           return this;
         }
         return this.generate();
-      },
-      generate() {
+      }, generate() {
         this.element.innerHTML = "";
         for(let [selector, props] of this.map) this.update(CSS.section(selector, props));
         return this;
-      },
-      get text() {
+      }, get text() {
         return (this.element.innerText + "").trim();
       }
     };

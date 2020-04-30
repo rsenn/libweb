@@ -77,8 +77,7 @@ export function ScrollDisabler(disabledfn = () => true, element = global.window)
     if(disabled) {
       if(event.keyCode !== undefined && keys.indexOf(event.keyCode) != -1) {
         event.preventDefault();
-      } else if(
-        event.type == "wheel" ||
+      } else if(event.type == "wheel" ||
         event.type == "scroll" ||
         event.type == "touchmove" ||
         event.type == "DOMMouseScroll"

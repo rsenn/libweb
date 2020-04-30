@@ -435,8 +435,7 @@ const eagleProps = {
     Layer,
     Param,
     Wire
-  },
-  classesWithName: [
+  }, classesWithName: [
     "Class",
     "Designrules",
     "Element",
@@ -502,8 +501,7 @@ const eagleProps = {
 };
 
 function eagle(obj, parentObj) {
-  let ret = null,
-    ctor = null;
+  let ret = null, ctor = null;
   let args = [...arguments];
   // console.log("eagle: ", { parentObj, obj });
   if(typeof obj == "object") {

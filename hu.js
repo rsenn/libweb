@@ -9,8 +9,7 @@ var hu = (function() {
   var nn = 1, // counter for dynamically generated def id
     U = function(n) {
       this.n = n;
-    },
-    fn = U.prototype,
+    }, fn = U.prototype,
     nopx = {
       // css properties which don't need a unit
       "column-count": 1,
@@ -95,8 +94,7 @@ var hu = (function() {
   // stores the passed element in the closest SVG parent of this
   //  and gives it an automatic id.
   fn.def = function(a) {
-    var u = obj(a),
-      p = this;
+    var u = obj(a), p = this;
     while(p) {
       if(p.n.tagName === "svg") {
         (obj("defs", p) || obj("<defs", p.n)).n.appendChild(u.n);
@@ -184,8 +182,7 @@ var hu = (function() {
 
   // dst is a map containing the destination css or attribute keys and values
   fn.animate = function(dst, duration, cb) {
-    var u = this,
-      vars = [];
+    var u = this, vars = [];
     // the goal of this iteration is to build an array of objects for the
     // animable properties, with
     //  - v.k : the key
@@ -196,8 +193,7 @@ var hu = (function() {
     for(var k in dst) {
       var dstk = dst[k];
       k = rcc(k);
-      var v = { k: k, e: dstk },
-        sk = this.n.style[k];
+      var v = { k: k, e: dstk }, sk = this.n.style[k];
       if(sk !== undefined && sk !== "") {
         // 0 or "0" would be ok
         v.f = fn.css;
@@ -213,8 +209,7 @@ var hu = (function() {
       }
       vars.push(v);
     }
-    var s = Date.now(),
-      e = s + duration;
+    var s = Date.now(), e = s + duration;
     (function step(n) {
       n = Date.now();
       vars.forEach(function(v) {

@@ -1,4 +1,5 @@
 import { RGBA } from "./rgba.js";
+import Util from "../util.js";
 
 /**
  * @brief [brief description]
@@ -34,6 +35,8 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
 
       if(matches != null) c = [...matches].slice(1);
     }
+
+    if(c.length < 3) throw new Error("Invalid HSLA color:" + args);
     ret.h = c[0];
     ret.s = c[1];
     ret.l = c[2];
@@ -136,8 +139,13 @@ HSLA.prototype.toRGBA = function() {
 };
 
 HSLA.prototype.toString = function() {
-  if(this.a == 1) return `hsl(${this.h},${this.s}%,${this.l}%)`;
-  return `hsla(${this.h},${this.s}%,${this.l}%,${this.a})`;
+  const h = Util.roundTo(this.h, 360 / 255, 0);
+  const s = Util.roundTo(this.s, 100 / 255, 2);
+  const l = Util.roundTo(this.l, 100 / 255, 2);
+  const a = Util.roundTo(this.a, 1 / 255, 4);
+
+  if(this.a == 1) return `hsl(${h},${s}%,${l}%)`;
+  return `hsla(${h},${s}%,${l}%,${a})`;
 };
 
 for(let name of ["css", "toHSL", "clamp", "round", "hex", "toRGBA", "toString"]) {

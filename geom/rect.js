@@ -14,8 +14,7 @@ export function Rect(arg) {
   ["x", "y", "width", "height"].forEach(field => {
     if(typeof obj[field] != "number") obj[field] = 0;
   });
-  if(
-    arg &&
+  if(arg &&
     arg.x1 !== undefined &&
     arg.y1 !== undefined &&
     arg.x2 !== undefined &&
@@ -27,8 +26,7 @@ export function Rect(arg) {
     obj.width = x2 - x1;
     obj.height = y2 - y1;
     ret = 1;
-  } else if(
-    arg &&
+  } else if(arg &&
     arg.x !== undefined &&
     arg.y !== undefined &&
     arg.x2 !== undefined &&
@@ -40,8 +38,7 @@ export function Rect(arg) {
     obj.width = x2 - x;
     obj.height = y2 - y;
     ret = 1;
-  } else if(
-    isPoint(arg) &&
+  } else if(isPoint(arg) &&
     arg.y !== undefined &&
     arg.width !== undefined &&
     arg.height !== undefined
@@ -83,8 +80,7 @@ export function Rect(arg) {
     Object.defineProperty(obj, "round", {
       value: function() {
         return Rect.round(this);
-      },
-      enumerable: true,
+      }, enumerable: true,
       writable: false
     });
   }
@@ -121,8 +117,7 @@ Rect.prototype.getArea = function() {
   return this.width * this.height;
 };
 Rect.prototype.toString = function(prec = 0.000001, sep = " ") {
-  return `${Util.roundTo(this.x, prec)}${sep}${Util.roundTo(this.y, prec)}${sep}${Util.roundTo(
-    this.width,
+  return `${Util.roundTo(this.x, prec)}${sep}${Util.roundTo(this.y, prec)}${sep}${Util.roundTo(this.width,
     prec
   )}${sep}${Util.roundTo(this.height, prec)}`;
 };
@@ -135,28 +130,23 @@ Rect.prototype.toSource = function(opts = {}) {
 Object.defineProperty(Rect.prototype, "x1", {
   get: function() {
     return this.x;
-  },
-  set: function(value) {
+  }, set: function(value) {
     const extend = this.x - value;
     this.width += extend;
     this.x -= extend;
-  },
-  enumerable: true
+  }, enumerable: true
 });
 Object.defineProperty(Rect.prototype, "x2", {
   get: function() {
     return this.x + this.width;
-  },
-  set: function(value) {
+  }, set: function(value) {
     this.width = value - this.x;
-  },
-  enumerable: true
+  }, enumerable: true
 });
 Object.defineProperty(Rect.prototype, "y1", {
   get: function() {
     return this.y;
-  },
-  set: function(value) {
+  }, set: function(value) {
     const extend = this.y - value;
     this.height += extend;
     this.y -= extend;
@@ -165,8 +155,7 @@ Object.defineProperty(Rect.prototype, "y1", {
 Object.defineProperty(Rect.prototype, "y2", {
   get: function() {
     return this.y + this.height;
-  },
-  set: function(value) {
+  }, set: function(value) {
     this.height = value - this.y;
   }
 });
@@ -178,6 +167,29 @@ Object.defineProperty(Rect.prototype, "area", {
 Object.defineProperty(Rect.prototype, "center", {
   get: function() {
     return Rect.center(this);
+  }
+});
+Object.defineProperty(Rect.prototype, "size", {
+  get: function() {
+    const rect = this;
+    const size = new Size(rect.width, rect.height);
+    Object.defineProperties(size, {
+      width: {
+        get() {
+          return rect.width;
+        }, set(value) {
+          return (rect.width = +value);
+        }, enumerable: true
+      },
+      height: {
+        get() {
+          return rect.height;
+        }, set(value) {
+          return (rect.height = +value);
+        }, enumerable: true
+      }
+    });
+    return size;
   }
 });
 Rect.prototype.points = function() {
@@ -295,8 +307,7 @@ Rect.outset = (rect, trbl) => Rect.prototype.outset.call(rect, trbl);
 Rect.center = rect => new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 
 Rect.inside = (rect, point) => {
-  return (
-    point.x >= rect.x &&
+  return (point.x >= rect.x &&
     point.x <= rect.x + rect.width &&
     point.y >= rect.y &&
     point.y <= rect.y + rect.height

@@ -31,16 +31,22 @@ export function Size(arg) {
       if(typeof h == "object" && "baseVal" in h) h = h.baseVal.value;
       obj.width = typeof w == "number" ? w : parseFloat(w.replace(/[^-.0-9]*$/, ""));
       obj.height = typeof h == "number" ? h : parseFloat(h.replace(/[^-.0-9]*$/, ""));
-      obj.units = {
-        width: typeof w == "number" ? "px" : w.replace(obj.width.toString(), ""),
-        height: typeof h == "number" ? "px" : h.replace(obj.height.toString(), "")
-      };
+      Object.defineProperty(obj, "units", {
+        value: {
+          width: typeof w == "number" ? "px" : w.replace(obj.width.toString(), ""),
+          height: typeof h == "number" ? "px" : h.replace(obj.height.toString(), "")
+        }, enumerable: false
+      });
     }
   }
   if(isNaN(obj.width)) obj.width = undefined;
   if(isNaN(obj.height)) obj.height = undefined;
   if(!(obj instanceof Size)) return obj;
 }
+Size.prototype.width = NaN;
+Size.prototype.height = NaN;
+Size.prototype.units = null;
+
 Size.prototype.convertUnits = function(w = "window" in global ? window : null) {
   if(w === null) return this;
   const view = {
@@ -82,6 +88,12 @@ Size.prototype.isSquare = function() {
 Size.prototype.area = function() {
   return this.width * this.height;
 };
+Size.prototype.resize = function(width, height) {
+  this.width = width;
+  this.height = height;
+  return this;
+};
+
 Size.prototype.sum = function(other) {
   return new Size(this.width + other.width, this.height + other.height);
 };

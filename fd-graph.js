@@ -369,8 +369,7 @@ class Node extends Point {
     this.netforce = new Point(0, 0);
     this.label = label;
     /*
-    console.log(
-      `Node(${label},${charge})`,
+    console.log(`Node(${label},${charge})`,
       Util.inspect(this, { newline: "", indent: "", spacing: " " })
     );*/
   }
@@ -384,8 +383,7 @@ class Node extends Point {
     var distance = this.distance(n);
     var force = scale * Math.max(distance + 200, 1);
 
-    this.netforce.move(
-      force * Math.sin((n.x - this.x) / distance),
+    this.netforce.move(force * Math.sin((n.x - this.x) / distance),
       force * Math.sin((n.y - this.y) / distance)
     );
   }
@@ -399,8 +397,7 @@ class Node extends Point {
   }
 
   toJS() {
-    let ret = Util.filterKeys(
-      this,
+    let ret = Util.filterKeys(this,
       key => ["charge", "mass", "label", "x", "y", "id", "color"].indexOf(key) != -1
     );
     if(this.node && this.node.id !== undefined) ret.id = this.node.id;

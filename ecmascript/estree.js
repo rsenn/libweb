@@ -289,16 +289,14 @@ export class ClassDeclaration extends Declaration {
     this.extending = extending;
     this.body = body;
     this.exported = exported;
-    // console.log('New ClassDeclaration: ', JSON.stringify({ id, extending,
-    // exported }));
+    // console.log('New ClassDeclaration: ', JSON.stringify({ id, extending, // exported }));
   }
 }
 
 export class FunctionDeclaration extends Function {
   constructor(id, params, body, exported = false, async = false) {
     super("FunctionDeclaration", id, params, body, exported, async);
-    // console.log('New FunctionDeclaration: ', JSON.stringify({ id, params,
-    // exported }));
+    // console.log('New FunctionDeclaration: ', JSON.stringify({ id, params, // exported }));
   }
 }
 
@@ -308,8 +306,7 @@ export class ArrowFunction extends Node {
     this.async = is_async;
     this.params = params;
     this.body = body;
-    // console.log('New FunctionDeclaration: ', JSON.stringify({ id, params,
-    // exported }));
+    // console.log('New FunctionDeclaration: ', JSON.stringify({ id, params, // exported }));
   }
 }
 

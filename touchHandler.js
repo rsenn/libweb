@@ -115,8 +115,7 @@ export function MovementListener(handler, options) {
       //devp.logEntry(`EVENT: ${index} ${Math.round(angle)} ${move.x} ${move.y}`);
       move.prev = prev;
 
-      (move.time = Date.now() - starttime),
-        (move.timediff = prev && prev.time !== undefined ? move.time - prev.time : 0);
+      (move.time = Date.now() - starttime), (move.timediff = prev && prev.time !== undefined ? move.time - prev.time : 0);
 
       if(/*prev && prev.time === 0 &&*/ Math.abs(90 - Math.abs(angle)) < 45) {
         if(self.handler.start() === null) self.handler.start(move);
@@ -256,8 +255,7 @@ export function TurnListener(handler, options) {
     return this.cancel(event);
   }
 
-  return MultitouchListener(
-    MovementListener(event => {
+  return MultitouchListener(MovementListener(event => {
       const { points, x, y } = event;
       const type = event.type || "";
       var end =
@@ -317,8 +315,7 @@ export function TurnListener(handler, options) {
 export function SelectionListener(handler, options) {
   var origin = null,
     position,
-    line,
-    running = false;
+    line, running = false;
   var element = null;
 
   options = {
@@ -372,8 +369,7 @@ export function SelectionRenderer() {
     element: null,
     create(rect) {
       //console.log("SelectionListener.create(", rect, ")");
-      this.element = Element.create(
-        "div",
+      this.element = Element.create("div",
         { id: `selection-rect` },
         global.window ? window.document.body : null
       );
@@ -384,12 +380,10 @@ export function SelectionRenderer() {
         zIndex: 999999999
       });
       this.update(rect);
-    },
-    update(rect) {
+    }, update(rect) {
       //console.log("SelectionListener.update(", rect, ")");
       Element.rect(this.element, rect, { position: "absolute" });
-    },
-    destroy() {
+    }, destroy() {
       //console.log("SelectionListener.destroy()");
       Element.remove(this.element);
     }

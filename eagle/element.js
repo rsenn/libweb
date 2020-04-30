@@ -30,8 +30,7 @@ export class EagleElement extends EagleNode {
     if(!Util.isEmpty(attributes)) {
       for(let key in attributes) {
         let prop = trkl.property(this.attributes, key);
-        let handler = Util.ifThenElse(
-          v => v !== undefined,
+        let handler = Util.ifThenElse(v => v !== undefined,
           v => prop(v),
           v => (/^-?[0-9.]+$/.test(prop()) ? parseFloat(prop()) : prop())
         );
@@ -70,6 +69,13 @@ export class EagleElement extends EagleNode {
   get text() {
     let text = this.raw.children[0];
     if(typeof text == 'string') return text;
+  }
+
+  getLayer() {
+    if(this.raw.attributes.layer) return this.raw.attributes.layer;
+
+    if(this.raw.tagName == 'pad') return 'Pads';
+    if(this.raw.tagName == 'description') return 'Document';
   }
 
   static isRelation(name) {

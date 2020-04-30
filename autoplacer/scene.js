@@ -13,8 +13,7 @@ window.onload = function() {
   var draw = new Draw(canvas.getContext("2d"));
 
   var i, j, k;
-  var bodies = [],
-    body;
+  var bodies = [], body;
 
   var rand = function(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
@@ -51,11 +50,9 @@ window.onload = function() {
       bodies[i].move = body.fix;
     }
 
-    physics.layout(
-      {
+    physics.layout({
         pushCenter: [SCENE_W / 2, SCENE_H / 2]
-      },
-      bodies,
+      }, bodies,
       function(bb) {
         var i = 0;
         draw.clear();

@@ -47,8 +47,7 @@ export class SVG extends Element {
     if(parent && parent.tagName == "svg") delegate.root = parent;
     else if(this !== SVG && this && this.appendChild) delegate.root = this;
     else
-      delegate.root = SVG.create(
-        "svg",
+      delegate.root = SVG.create("svg",
         { width, height, viewBox: `0 0 ${width} ${height}` },
         parent
       );

@@ -76,8 +76,7 @@ export class HashList {
   }
 
   find(a) {
-    return this.method(
-      "find",
+    return this.method("find",
       typeof a === "function"
         ? (arg, i, arr) => a(arg, arg.name, this)
         : (arg, i, arr) =>
@@ -93,8 +92,7 @@ export class HashList {
 
   remap(fn) {
     const arr = this.toArray();
-    let ret = new HashList(
-      obj => obj.key || obj.id,
+    let ret = new HashList(obj => obj.key || obj.id,
       obj => obj
     );
     for(let i = 0; i < arr.length; i++) {

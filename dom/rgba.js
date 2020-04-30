@@ -67,6 +67,19 @@ export function RGBA(r = 0, g = 0, b = 0, a = 255) {
 RGBA.properties = ["r", "g", "b", "a"];
 export const isRGBA = obj => RGBA.properties.every(prop => obj.hasOwnProperty(prop));
 
+RGBA.fromString = str => {
+  let c = Util.tryCatch(() => new HSLA(str),
+    c => c.toRGBA(),
+    () => undefined
+  );
+  if(!c)
+    c = Util.tryCatch(() => new RGBA(str),
+      c => c,
+      () => undefined
+    );
+  return c;
+};
+
 RGBA.fromHex = (hex, alpha = 255) => {
   const matches =
     hex &&
@@ -83,8 +96,7 @@ RGBA.fromHex = (hex, alpha = 255) => {
 
 RGBA.prototype.hex = function() {
   const { r, g, b, a } = RGBA.clamp(RGBA.round(this));
-  return (
-    "#" +
+  return ("#" +
     ("0000000" + ((r << 16) | (g << 8) | b).toString(16)).slice(-6) +
     (a !== undefined && a != 255 ? ("0" + a.toString(16)).slice(-2) : "")
   );
@@ -98,8 +110,7 @@ RGBA.prototype.toRGB = function() {
 RGBA.toHex = rgba => RGBA.prototype.hex.call(rgba);
 
 RGBA.clamp = rgba =>
-  RGBA(
-    Math.min(Math.max(rgba.r, 0), 255),
+  RGBA(Math.min(Math.max(rgba.r, 0), 255),
     Math.min(Math.max(rgba.g, 0), 255),
     Math.min(Math.max(rgba.b, 0), 255),
     Math.min(Math.max(rgba.a, 0), 255)
@@ -130,7 +141,7 @@ RGBA.prototype.css = () => prop =>
   (this.a / 255).toFixed(3) +
   ")";
 
-RGBA.prototype.toString = function(sep = ", ") {
+RGBA.prototype.toString = function(sep = ",") {
   let a = this.a;
   if(a >= 255) return "rgb(" + this.r + sep + this.g + sep + this.b + ")";
   else return "rgba(" + this.r + sep + this.g + sep + this.b + sep + (a / 255).toFixed(3) + ")";
@@ -154,8 +165,7 @@ RGBA.prototype.normalize = function(from = 255, to = 1.0) {
 RGBA.blend = (a, b, o = 0.5) => {
   a = new RGBA(a);
   b = new RGBA(b);
-  return new RGBA(
-    Math.round(a.r * o + b.r * (1 - o)),
+  return new RGBA(Math.round(a.r * o + b.r * (1 - o)),
     Math.round(a.g * o + b.g * (1 - o)),
     Math.round(a.b * o + b.b * (1 - o)),
     Math.round(a.a * o + b.a * (1 - o))
@@ -244,8 +254,7 @@ RGBA.prototype.toHSLA = function() {
 
   //console.log("RGBA.toHSLA ", { h, s, l, a });
 
-  return new HSLA(
-    Math.round(h),
+  return new HSLA(Math.round(h),
     Util.roundTo(s, 100 / 255),
     Util.roundTo(l, 100 / 255),
     Util.roundTo(a, 1 / 255)
@@ -278,8 +287,7 @@ RGBA.prototype.toLAB = function() {
     g = this.g / 255,
     b = this.b / 255,
     x,
-    y,
-    z;
+    y, z;
 
   r = r > 0.04045 ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
   g = g > 0.04045 ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
@@ -306,8 +314,7 @@ RGBA.prototype.fromLAB = function(lab) {
     x = lab.a / 500 + y,
     z = y - lab.b / 200,
     r,
-    g,
-    b;
+    g, b;
 
   x = 0.95047 * (x * x * x > 0.008856 ? x * x * x : (x - 16 / 116) / 7.787);
   y = 1.0 * (y * y * y > 0.008856 ? y * y * y : (y - 16 / 116) / 7.787);

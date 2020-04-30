@@ -16,8 +16,7 @@
     xm = "http://www.w3.org/2000/svg",
     each = function(o, f) {
       for(var k in o) if(o.hasOwnProperty(k)) f(o[k], k);
-    },
-    attr = function(e, a) {
+    }, attr = function(e, a) {
       each(a, function(v, k) {
         e.setAttribute(k, v);
       });

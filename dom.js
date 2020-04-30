@@ -36,8 +36,7 @@ export function dom() {
   let ret = Util.array();
 
   const extend = (e, functions) => {
-    const keys = [...Util.members(functions)].filter(
-      key =>
+    const keys = [...Util.members(functions)].filter(key =>
         [
           "callee",
           "caller",
@@ -105,26 +104,20 @@ export const CSSTransformSetters = element => ({
   transformation: ElementTransformation(),
   get rotate() {
     return this.transformation.rotate;
-  },
-  set rotate(a) {
+  }, set rotate(a) {
     this.transformation.rotate = a;
     this.updateTransformation();
-  },
-  get translate() {
+  }, get translate() {
     return this.transformation.translate;
-  },
-  set translate(point) {
+  }, set translate(point) {
     this.transformation.translate.set(point.x, point.y);
     this.updateTransformation();
-  },
-  get scale() {
+  }, get scale() {
     return this.transformation.scale;
-  },
-  set scale(size) {
+  }, set scale(size) {
     this.transformation.scale.set(size.width, size.height);
     this.updateTransformation();
-  },
-  updateTransformation() {
+  }, updateTransformation() {
     const t = this.transformation.toString();
     console.log("CSSTransformSetters.updateTransformation", t);
     this.style.transform = t;

@@ -17,8 +17,7 @@ export class ReactComponent {
     let { children, parent, ...restOfProps } = props;
     if(!children) children = args.shift();
     if(!Array.isArray(children)) children = [children];
-    const elem = (
-      <Tag {...restOfProps}>
+    const elem = (<Tag {...restOfProps}>
         {children.map((child, key) => {
           if(typeof child === "object" && child.tagName !== undefined) {
             const { tagName, ...props } = child;
@@ -67,8 +66,7 @@ export class ReactComponent {
 
       /*    if(obj.tagName == 'React.Fragment' && numChildren == 1) {
  obj =  ReactComponent.toObject(arr[0]);
-      } else*/ if(
-        numChildren > 0
+      } else*/ if(numChildren > 0
       ) {
         obj.children = ReactComponent.toObject(...arr);
       }

@@ -23,9 +23,7 @@ export default class devpane {
       let p = this.config.get("position");
       pos = { left: `${p.x}px`, top: `${p.y}px` };
     }
-    let layer = this.createLayer(
-      { id: "devpane-pane" },
-      {
+    let layer = this.createLayer({ id: "devpane-pane" }, {
         zIndex: 18,
         minWidth: "300px",
         maxWidth: "80vw",
@@ -64,8 +62,7 @@ export default class devpane {
   });
   svg = lazyInitializer(() => {
     const rect = Element.rect(document.body);
-    const svg = this.createSVGElement(
-      "svg",
+    const svg = this.createSVGElement("svg",
       { width: rect.width, height: rect.height, viewBox: `0 0 ${rect.width} ${rect.height}` },
       this.root()
     );
@@ -74,9 +71,7 @@ export default class devpane {
     return svg;
   });
   log = lazyInitializer(() =>
-    this.createLayer(
-      { tag: "pre", id: "devpane-log" },
-      {
+    this.createLayer({ tag: "pre", id: "devpane-log" }, {
         position: "relative",
         maxHeight: "100px",
         overflowY: "scroll",
@@ -207,21 +202,16 @@ export default class devpane {
     let svgpath = svg && svg.querySelector("#touch-path");
     let svgcircle = svg && svg.querySelector("#touch-pos");
     if(!(svgpath && svgpath.tagName == "path")) {
-      svgpath = SVG.create(
-        "path",
-        {
+      svgpath = SVG.create("path", {
           id: "touch-path",
           stroke: "#ffee00",
           fill: "none",
           strokeWidth: 3,
           strokeDasharray: "16 16"
-        },
-        this.svg()
-      );
+        }, this.svg());
     }
     if(!(svgcircle && svgpath.tagName == "path")) {
-      svgcircle = SVG.create(
-        "path",
+      svgcircle = SVG.create("path",
         { id: "touch-pos", stroke: "#80ff00", fill: "none", strokeWidth: 2 },
         this.svg()
       );
@@ -240,8 +230,7 @@ export default class devpane {
   buildRectList(element = null, pred = null) {
     element = Element.find(element ? element : this.observe);
 
-    return Element.walk(
-      element,
+    return Element.walk(element,
       (elem, list) => {
         //if(!pred(elem)) return;
         let rect = Element.getRect(elem);
@@ -272,8 +261,7 @@ export default class devpane {
             if(inside) this.serial = serial;
             return inside;
           };
-          rect.bounds = Rect.uniq(
-            ["boundary", "margin", "border", "padding"].reduce((a, name) => {
+          rect.bounds = Rect.uniq(["boundary", "margin", "border", "padding"].reduce((a, name) => {
               let o = Element.getTRBL(rect.e, name);
               if(name == "margin") o.add(Element.getTRBL(rect.e, "border"));
               const offset = o.isNaN() ? Rect : o.outset;
@@ -290,9 +278,7 @@ export default class devpane {
           list.push(rect);
         }
         return list;
-      },
-      []
-    );
+      }, []);
   }
 
   getRectAt(x, y, multi = false) {
@@ -338,8 +324,7 @@ export default class devpane {
       select().then(e => console.log("select() = ", e));
     } /* if(e.key == 'g') {
       gettext().then(r => console.log("gettext() = ", r));
-    } else*/ else if(
-      e.key == "t" &&
+    } else*/ else if(e.key == "t" &&
       e.ctrlKey
     ) {
       console.log("devpane ", this);
@@ -489,8 +474,7 @@ export default class devpane {
     t.layer = this.createLayer({ id: "devpane-layer" });
     t.factory = Element.factory({ append_to: e => t.layer.appendChild(e) });
     t.renderer = new Renderer(t.chooser, t.factory("div"));
-    t.form = t.factory(
-      "form",
+    t.form = t.factory("form",
       {},
       { display: "flex", flexFlow: "row nowrap", alignItems: "flex-end", padding: "4px" }
     );
@@ -521,8 +505,7 @@ export default class devpane {
       });
 
     const createEditBox = (label, value, onChange) => {
-      return (
-        createLabel(label),
+      return (createLabel(label),
         Element.create("input", {
           type: "text",
           size: "40",
@@ -593,8 +576,7 @@ export default class devpane {
     t.labels = {};
 
     ["en", "fa"].forEach(lang => {
-      t.inputs[lang] = createEditBox(
-        lang,
+      t.inputs[lang] = createEditBox(lang,
         "",
         function({ currentTarget }) {
           this[lang] = currentTarget.value;
@@ -739,8 +721,7 @@ export default class devpane {
 
   render() {
     const { rect, fontSize } = this;
-    return (
-      <form action='none' onSubmit={e => e.preventDefault()}>
+    return (<form action='none' onSubmit={e => e.preventDefault()}>
         <input type='checkbox' onChange={this.handleToggle} />
         Bounding boxes
         <br />
@@ -830,14 +811,11 @@ export default class devpane {
       if(inside && !rect.box) {
         if(!rect.boxes) rect.boxes = this.svg.factory("g");
         rect.bounds.forEach((r, i, { length }) =>
-          this.svg.factory(
-            "rect",
-            {
+          this.svg.factory("rect", {
               ...Rect(rect),
               stroke: HSLA(hue, 100, 25 + (50 * i) / length).toString(),
               fill: "none"
-            },
-            rect.boxes
+            }, rect.boxes
           )
         );
       } else if(!inside && rect.boxes) {

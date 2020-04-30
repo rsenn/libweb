@@ -33,8 +33,7 @@
         y11 = b1.move.y() - b1.size.y() / 2,
         x12 = b1.move.x() + b1.size.x() / 2,
         y12 = b1.move.y() + b1.size.y() / 2,
-        x = p.x(),
-        y = p.y();
+        x = p.x(), y = p.y();
       return x >= x11 && x <= x12 && y >= y11 && y <= y12;
     };
 
@@ -61,8 +60,7 @@
         f = pdist.scaleto(2);
       }
 
-      return f.plus(
-        dist.scaleto(0.1 * Math.min(300, Math.pow(Math.max(overlapArea(b, other)), 0.5)))
+      return f.plus(dist.scaleto(0.1 * Math.min(300, Math.pow(Math.max(overlapArea(b, other)), 0.5)))
       );
     };
 

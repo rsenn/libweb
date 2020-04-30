@@ -6,6 +6,7 @@ import { Line } from '../geom/line.js';
 import { PolygonFinder } from '../geom/polygonFinder.js';
 import { Transformation, TransformationList } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
+import Alea from '../alea.js';
 
 const VERTICAL = 1;
 const HORIZONTAL = 2;
@@ -113,8 +114,7 @@ const CalculateArcRadius = (p1, p2, angle) => {
 
 const LinesToPath = lines => {
   //console.log(`lines:`, lines.map(Line.toObject));
-  let l = lines.shift(),
-    m;
+  let l = lines.shift(), m;
   let start = l.a;
   let ret = [];
   let prevPoint = new Point(l.a.x, l.a.y);
@@ -217,10 +217,51 @@ export class EagleRenderer {
     this.create = (tag, attrs, parent) => factory(tag, 'id' in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
   }
 
-  getColor(layer) {
+  findLayer(number_or_name) {
+    if(number_or_name instanceof EagleElement) {
+      if('layer' in number_or_name) number_or_name = number_or_name.layer;
+      //else if('getLayer' in number_or_name) number_or_name = number_or_name.getLayer();
+      else if(number_or_name.tagName == 'pad') number_or_name = 'Pads';
+      else if(number_or_name.tagName == 'description') number_or_name = 'Document';
+    }
+    const { number, name } = Util.isObject(number_or_name) ? { number: number_or_name.number, name: number_or_name.name } : { number: +number_or_name, name: '' + number_or_name };
+    return this.getLayer(typeof number == 'number' ? number : name);
+  }
+  getLayer(id) {
+    if(this.layers[id]) return this.layers[id];
+
+    for(let layer of this.layers.list) {
+      if(layer.number === id) return layer;
+      if(layer.name === id) return layer;
+    }
+  }
+/*
+  getColor(...args) {
+    let li = this.getLayer(...args) || this.findLayer(...args);
+    let index = Util.isObject(li) && 'color' in li ? li.color : li;
+    let name = Util.isObject(li) && 'name' in li ? li.name : li;
+    let color;
+    try {
+      color = this.colors[name || index] || this.palette[index >= 1 ? index - 1 : index];
+    } catch(err) {}
+    //if(!color) throw new Error("No such color:\n"+index+",\n"+name+",\n"+toXML(li));
+    return color;
+  }*/
+   getColor(layer) {
     const name = Util.isObject(layer) && 'name' in layer ? layer.name : undefined;
     const color = Util.isObject(layer) && 'color' in layer ? layer.color : 7;
     return this.colors[name] || this.palette[color >= 1 ? color - 1 : color] || 'rgb(175,175,175)';
+}
+
+  layerOf(element) {
+    let layer;
+    do {
+      layer = element.getAttribute('data-layer') || element.getAttribute('data-layer-id') || element.getAttribute('data-layer-name') || element.getAttribute('layer');
+      if(layer) {
+        const layerId = +(layer + '').replace(/ .*/g, '');
+        return this.layers[layerId];
+      }
+    } while((element = element.parentElement));
   }
 
   renderLayers(parent) {
@@ -232,16 +273,12 @@ export class EagleRenderer {
     for(let l of layers) {
       const { name, number, color } = l;
       const stroke = this.getColor(l);
-      const layer = this.create(
-        'g',
-        {
+      const layer = this.create('g', {
           id: `layer-${l.number}`,
           className: 'layer',
           ...LayerAttributes(l),
           stroke
-        },
-        layerGroup
-      );
+        }, layerGroup);
 
       this.layerElements[l.number] = layer;
       colors[l.name] = stroke;
@@ -253,15 +290,11 @@ export class EagleRenderer {
     const layer = item.layer;
     const color = opts.color || this.getColor(layer);
     const svg = (elem, attr, parent) =>
-      this.create(
-        elem,
-        {
+      this.create(elem, {
           className: item.tagName,
           ...LayerAttributes(layer),
           ...attr
-        },
-        parent
-      );
+        }, parent);
     let { labelText, coordFn = i => i } = opts;
 
     let transformation = (opts.transformation || new TransformationList()).slice();
@@ -270,9 +303,7 @@ export class EagleRenderer {
     switch (item.tagName) {
       case 'wire': {
         const { x1, x2, y1, y2, width, curve } = coordFn(item);
-        svg(
-          'line',
-          {
+        svg('line', {
             stroke: color,
             x1,
             x2,
@@ -280,18 +311,14 @@ export class EagleRenderer {
             y2,
             strokeWidth: +(width == 0 ? 0.1 : width * 1).toFixed(3),
             'data-curve': curve
-          },
-          parent
-        );
+          }, parent);
         break;
       }
       case 'rectangle': {
         const { x1, x2, y1, y2, width, rot } = coordFn(item);
         let rect = new Rect({ x1, x2, y1, y2 });
         let center = rect.center;
-        svg(
-          'rect',
-          {
+        svg('rect', {
             stroke: 'none',
             fill: color,
             x: -rect.width / 2,
@@ -299,9 +326,7 @@ export class EagleRenderer {
             width: rect.width,
             height: rect.height,
             transform: `translate(${center.x},${center.y}) ${Rotation(rot)}`
-          },
-          parent
-        );
+          }, parent);
         break;
       }
       case 'label': {
@@ -310,9 +335,7 @@ export class EagleRenderer {
 
         //`   scale(1,-1) ${RotateTransformation(opts.rot, -1)} ${Rotate(rot)}`;
 
-        svg(
-          'text',
-          {
+        svg('text', {
             fill: '#f0f',
             stroke: 'none',
             x: 0,
@@ -322,9 +345,7 @@ export class EagleRenderer {
             fontSize: 3,
             fontFamily: 'Fixed',
             transform: transform.undo(transformation)
-          },
-          parent
-        );
+          }, parent);
         break;
       }
       case 'text': {
@@ -334,28 +355,41 @@ export class EagleRenderer {
           text = prop in opts ? opts[prop] : text;
         }
         const translation = new TransformationList(`translate(${x},${y})`);
-        const rotation = translation.merge(Rotation(rot));
+        const rotation = translation.concat(Rotation(rot));
         let wholeTransform = transformation.concat(Rotation(rot));
         let wholeAngle = wholeTransform.rotation;
-        let undoTransform = wholeTransform.undo().scale(1, -1);
+        //(wholeAngle > 0) wholeAngle -= 360;
+        while(wholeAngle < 0) wholeAngle += 360;
+
+        wholeAngle %= 360;
+
+        let undoTransform = /* wholeTransform.undo()*/ new TransformationList().scale(1, -1).rotate(wholeAngle);
         let undoAngle = undoTransform.rotation;
 
-        while(wholeAngle > 0) wholeAngle -= 360;
         while(undoAngle > 0) undoAngle -= 360;
-        // while(wholeAngle < 0) wholeAngle += 360;
-        wholeAngle %= 180;
+
         undoAngle %= 360;
 
         let angle = undoAngle - wholeAngle;
-        //console.log(`${text}`, { wholeAngle, undoAngle, angle });
 
+        //      let angle = wholeAngle;
+        while(angle < 0) angle += 360;
+
+        angle %= 180;
         //   let undoAngle = undoTransform.rotation;
 
-        const alignment = EagleRenderer.alignment(align).rotate(AlignmentAngle(angle));
+        const baseAlignment = EagleRenderer.alignment(align);
+        const rotateAlignment = AlignmentAngle(wholeAngle);
+        const alignment = baseAlignment
+          .clone()
+          .rotate((rotateAlignment * Math.PI) / 180)
+          .round(1);
 
-        const e = svg(
-          'text',
-          {
+        //console.log(`${text}`, align, baseAlignment.toString({ left: "[", right: "]" }), rotateAlignment.toString(), alignment.toString({ left: "[", right: "]" }) );
+        //console.log(`${text}`, { rotateAlignment, undoAngle, wholeAngle });
+        //console.log(`${text}`, alignment, EagleRenderer.alignmentAttrs(alignment, HORIZONTAL_VERTICAL) );
+
+        const e = svg('text', {
             fill: color,
             stroke: 'none',
             strokeWidth: 0.05,
@@ -365,11 +399,9 @@ export class EagleRenderer {
             /*innerHTML: text,*/
             fontSize: (size * 1.6).toFixed(2),
             fontFamily: font || 'Fixed',
-            transform: rotation.concat(undoTransform).rotate(wholeAngle)
+            transform: rotation.concat(undoTransform).rotate(undoAngle % 180)
             // rotation.rotate(angle).scale
-          },
-          parent
-        );
+          }, parent);
         //console.log('tspan:', text, 'rot:', rot, 'transformation:', transformation);
 
         let attrs = EagleRenderer.alignmentAttrs(alignment, HORIZONTAL);
@@ -379,18 +411,14 @@ export class EagleRenderer {
       }
       case 'circle': {
         const { x, y, width, radius } = coordFn(item);
-        svg(
-          'circle',
-          {
+        svg('circle', {
             stroke: color,
             cx: x,
             cy: y,
             r: radius,
             strokeWidth: width * 0.8,
             fill: 'none'
-          },
-          parent
-        );
+          }, parent);
         break;
       }
       case 'contactref':
@@ -409,9 +437,9 @@ export class EagleRenderer {
 
   static alignment(align, def = [-1, 1], rot = 0) {
     let h, v;
-    const { horizontalAlignment,verticalAlignment } = EagleRenderer;
+    const { horizontalAlignment, verticalAlignment } = EagleRenderer;
 
-    for(let tok of (align || (horizontalAlignment[def[0] + 1] + '-' + verticalAlignment[def[1] + 1])).split(/-/g)) {
+    for(let tok of (align || horizontalAlignment[def[0] + 1] + '-' + verticalAlignment[def[1] + 1]).split(/-/g)) {
       switch (tok) {
         case 'center': {
           if(h === undefined) h = 0;
@@ -431,15 +459,13 @@ export class EagleRenderer {
       }
     }
     let ret = new Point(h === undefined ? def[0] : h, v === undefined ? def[1] : v);
-    if(Math.abs(rot) > 0)
-      ret.rotate(rot * Math.PI / 180);
+    if(Math.abs(rot) > 0) ret.rotate((rot * Math.PI) / 180);
     return ret;
   }
 
   static alignmentAttrs(align, hv = HORIZONTAL_VERTICAL, rot = 0) {
     let coord = align instanceof Point ? align : EagleRenderer.alignment(align, [-1, 1]);
-    if(Math.abs(rot) > 0)
-      coord.rotate(rot * Math.PI / 180);
+    if(Math.abs(rot) > 0) coord.rotate((rot * Math.PI) / 180);
 
     const { x, y } = coord;
     const { verticalAlignment, horizontalAlignment } = EagleRenderer;
@@ -451,7 +477,7 @@ export class EagleRenderer {
   }
 }
 EagleRenderer.horizontalAlignment = ['start', 'middle', 'end'];
-EagleRenderer.verticalAlignment = ['baseline', 'middle', 'hanging'];
+EagleRenderer.verticalAlignment = ['hanging', 'mathematical', 'baseline'];
 
 export class SchematicRenderer extends EagleRenderer {
   static pinSizes = {
@@ -484,17 +510,13 @@ export class SchematicRenderer extends EagleRenderer {
     switch (item.tagName) {
       case 'junction': {
         const { x, y } = coordFn(item);
-        svg(
-          'circle',
-          {
+        svg('circle', {
             fill: '#4ba54b',
             cx: x,
             cy: y,
             r: 0.5,
             stroke: 'none'
-          },
-          parent
-        );
+          }, parent);
         break;
       }
 
@@ -505,20 +527,14 @@ export class SchematicRenderer extends EagleRenderer {
         const pivot = new Point(+x, +y);
         const l = new Line(pivot, vec.add(pivot));
         //console.log('pin:', item.toXML());
-        svg(
-          'line',
-          {
+        svg('line', {
             class: 'pin',
             stroke: '#a54b4b',
             ...l.toObject(),
             strokeWidth: 0.15
-          },
-          parent
-        );
+          }, parent);
         if(name != '' && visible != 'off')
-          svg(
-            'text',
-            {
+          svg('text', {
               class: 'pin',
               stroke: 'none',
               fill: this.palette[7],
@@ -530,9 +546,7 @@ export class SchematicRenderer extends EagleRenderer {
               'alignment-baseline': 'central',
               innerHTML: name,
               transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
-            },
-            parent
-          );
+            }, parent);
         break;
       }
       default: {
@@ -556,14 +570,10 @@ export class SchematicRenderer extends EagleRenderer {
     if(!symbol) {
       //console.log('Symbol not found:', deviceset.name);
     }
-    const g = this.create(
-      'g',
-      {
+    const g = this.create('g', {
         className: `part.${part.name}`,
         transform: ` translate(${x},${y}) ${RotateTransformation(rot)}`
-      },
-      parent
-    );
+      }, parent);
     if(!value) value = deviceset.name;
     this.renderCollection(symbol, g, { name, value });
     return g;
@@ -605,7 +615,7 @@ export class BoardRenderer extends EagleRenderer {
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
-    const color = this.getColor(layer);
+    const color = this.getColor(item);
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...LayerAttributes(layer), ...attr }, parent);
     const { labelText, coordFn = i => i, rot } = opts;
     switch (item.tagName) {
@@ -643,35 +653,34 @@ export class BoardRenderer extends EagleRenderer {
           }
         }
 
-        svg(
-          'path',
-          {
+        svg('path', {
             //stroke: color, strokeWidth: 0.1, fill: 'none',
             fill: this.colors['Pads'] || this.palette[2],
             d: data + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
             transform
-          },
-          parent
-        );
+          }, parent);
 
-        if(name)
-          svg(
-            'text',
-            {
-              fill: this.colors['Holes'],
-              stroke: 'black',
-              strokeWidth: 0.02,
-              x: 0,
-              y: 0.1,
-              ...EagleRenderer.alignmentAttrs('center'),
+        if(name) {
+          svg('tspan', {
               innerHTML: name,
-              fontSize: 0.9,
-              fontStyle: 'bold',
-              fontFamily: 'Fixed',
-              transform: `${transform} scale(1,-1) ${RotateTransformation(opts.rot, -1)}`
-            },
-            parent
+              ...EagleRenderer.alignmentAttrs('center', HORIZONTAL)
+            }, svg(
+              'text', {
+                fill: 'hsl(180,100%,60%)', // this.colors['Holes'],
+                stroke: 'black',
+                strokeWidth: 0.01,
+                x: 0.04,
+                y: -0.04,
+                filter: 'url(#shadow)',
+                ...EagleRenderer.alignmentAttrs('center', VERTICAL),
+                fontSize: 0.9,
+                fontStyle: 'bold',
+                fontFamily: 'Fixed',
+                transform: `${transform} scale(1,-1) ${RotateTransformation(opts.rot, -1)}`
+              }, parent
+            )
           );
+        }
         break;
       }
       default: {
@@ -683,10 +692,8 @@ export class BoardRenderer extends EagleRenderer {
 
   renderCollection(coll, parent, opts = {}) {
     const { predicate = i => true, coordFn = i => i, transform } = opts;
-    let wireMap = new Map(),
-      other = [];
-    let layers = {},
-      widths = {};
+    let wireMap = new Map(), other = [];
+    let layers = {}, widths = {};
 
     for(let item of coll.children) {
       if(item.tagName === 'wire') {
@@ -703,9 +710,9 @@ export class BoardRenderer extends EagleRenderer {
     /*  console.log("wireMap:", wireMap);
     //console.log("other:", other);*/
 
-    for(let item of other) {
-      if(predicate(item)) this.renderItem(item, parent, opts);
-    }
+    for(let item of other) if(predicate(item) && item.tagName == 'pad') this.renderItem(item, parent, opts);
+
+    for(let item of other) if(predicate(item) && item.tagName != 'pad') this.renderItem(item, parent, opts);
 
     for(let [layerId, wires] of wireMap) {
       if(/*parent.classList.contains('signals') || */ parent.classList.contains('plain')) continue;
@@ -723,9 +730,7 @@ export class BoardRenderer extends EagleRenderer {
       const width = widths[layerId];
       const color = this.getColor(layer);
 
-      this.create(
-        'path',
-        {
+      this.create('path', {
           className: 'wire',
           d: path,
           stroke: color,
@@ -734,9 +739,7 @@ export class BoardRenderer extends EagleRenderer {
           strokeLinecap: 'round',
           strokeLinejoin: 'round',
           ...LayerAttributes(layer)
-        },
-        parent
-      );
+        }, parent);
       /*
       const intersections = PolygonFinder.findAllIntersectionsInSegments(lines);
       const polygons = PolygonFinder.polygonsFromSegments(lines);
@@ -756,17 +759,14 @@ transform.merge(rotation);
 */
     transform.translate(x, y);
 
-    const g = this.create(
-      'g',
-      {
+    const g = this.create('g', {
         id: `element.${name}`,
         'data-name': name,
         'data-value': value,
         'data-library': library.name,
+        'data-package': element.package.name,
         transform: transform.concat(rotation) //: ` translate(${x},${y}) ${RotateTransformation(rot)}`
-      },
-      parent
-    );
+      }, parent);
 
     this.renderCollection(element.package, g, {
       name,
@@ -806,8 +806,10 @@ transform.merge(rotation);
 }
 
 export function renderDocument(doc, container) {
-  const factory = SVG.factory(
-    {
+  const gridColor = 'hsl(230,100%,60%)';
+  const gridWidth = 0.127;
+
+  const factory = SVG.factory({
       append_to(elem, parent) {
         if(elem.tagName.toLowerCase() == 'text') return parent.appendChild(elem);
         let before = null;
@@ -820,9 +822,7 @@ export function renderDocument(doc, container) {
         //console.log("append_to",{elem,parent});
         parent.insertBefore(elem, before);
       }
-    },
-    container
-  );
+    }, container);
   const ctor = doc.type == 'sch' ? SchematicRenderer : BoardRenderer;
   const renderer = new ctor(doc, factory);
   const bb = new BBox();
@@ -850,7 +850,7 @@ export function renderDocument(doc, container) {
     Vias: 'rgb(252,245,38)',
     Unrouted: 'rgb(62,46,25)',
     Dimension: 'rgb(175,175,175)',
-    tPlace: 'hsl(30,100%,60%)',
+    tPlace: 'hsl(20,100%,60%)',
     bPlace: 'rgb(255,180,83)',
     tOrigins: 'rgb(178,27,0)',
     bOrigins: 'rgb(178,27,0)',
@@ -893,6 +893,94 @@ export function renderDocument(doc, container) {
     SpiceOrder: 'rgb(189,133,64)',
     trash: 'rgb(189,133,64)'
   };
+  //const palette = [ 'hsl(157,100%,50.2%)', 'hsl(282,100%,50.2%)', 'hsl(120,100%,20.2%)', 'hsl(47,100%,50.2%)', 'hsl(104,100%,50.2%)', 'hsl(55,100%,50.2%)', 'hsl(260,100%,80%)', 'hsl(184,100%,50.2%)', 'hsl(203,100%,50.2%)', 'hsl(80,100%,50.2%)', 'hsl(215,100%,50.2%)', 'hsl(119,100%,50.2%)', 'hsl(233,100%,50.2%)', 'hsl(339,100%,50.2%)'];
+
+  let rng,
+    palette,
+    str = '';
+  let randN = Util.randInt(0, 30000);
+  for(let seed of [randN]) {
+    rng = new Alea(seed);
+
+    let colors = ['hsl(350,100%,50.2%)', 'hsl(30,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(240,100%,50.2%)', 'hsl(260,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(121,100%,50.2%)', 'hsl(75,100%,50.2%)', 'hsl(55,100%,50.2%)', 'hsl(184,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(182,100%,50.2%)', 'hsl(88,100%,50.2%)', 'hsl(291,100%,50.2%)'];
+    palette = Util.shuffle(colors, rng);
+    str += 'palette = ' + Util.inspect(palette, { multiline: false, newline: '' }) + ';\n';
+  }
+  console.log({ randN });
+  console.log(str);
+  //palette = [ 'hsl(267,100%,50.2%)', 'hsl(155,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(10,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(176,100%,50.2%)', 'hsl(215,100%,50.2%)'];
+  //palette = [ 'hsl(155,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(176,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(10,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(215,100%,50.2%)'];
+  //palette = [ 'hsl(176,100%,50.2%)', 'hsl(10,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(215,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(155,100%,50.2%)'];
+  //palette = [ 'hsl(176,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(215,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(155,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(10,100%,50.2%)'];
+  //palette = [ 'hsl(10,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(176,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(155,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(215,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(106,100%,50.2%)'];
+
+  //palette = [ 'hsl(199,100%,50.2%)', 'hsl(99,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(95,100%,50.2%)', 'hsl(133,100%,50.2%)', 'hsl(48,100%,50.2%)', 'hsl(301,100%,50.2%)', 'hsl(32,100%,50.2%)', 'hsl(191,100%,50.2%)', 'hsl(174,100%,50.2%)', 'hsl(241,100%,50.2%)', 'hsl(342,100%,50.2%)', 'hsl(319,100%,50.2%)', 'hsl(161,100%,50.2%)'];
+  //palette = [ 'hsl(291,100%,50.2%)', 'hsl(240,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(30,100%,50.2%)', 'hsl(88,100%,50.2%)', 'hsl(260,100%,50.2%)', 'hsl(75,100%,50.2%)', 'hsl(350,100%,50.2%)', 'hsl(55,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(184,100%,50.2%)', 'hsl(121,100%,50.2%)', 'hsl(182,100%,50.2%)'];
+
+  renderer.colors = {
+    Top: palette[0],
+    Route3: palette[0],
+    Route5: palette[0],
+    Route7: palette[0],
+    Route9: palette[0],
+    Route11: palette[0],
+    Route13: palette[0],
+    Route15: palette[0],
+    tKeepout: palette[0],
+    tRestrict: palette[0],
+    Symbols: palette[0],
+    Route2: palette[1],
+    Route4: palette[1],
+    Route6: palette[1],
+    Route8: palette[1],
+    Route10: palette[1],
+    Route12: palette[1],
+    Route14: palette[1],
+    bKeepout: palette[1],
+    bRestrict: palette[1],
+    Busses: palette[1],
+    Bottom: palette[2],
+    Vias: palette[2],
+    vRestrict: palette[2],
+    Nets: palette[2],
+    Pins: palette[2],
+    Pads: palette[3],
+    Unrouted: palette[4],
+    tFinish: palette[4],
+    bFinish: palette[4],
+    Guide: palette[4],
+    Dimension: palette[5],
+    tPlace: palette[6],
+    bPlace: palette[7],
+    Document: palette[7],
+    tDocu: palette[7],
+    bDocu: palette[7],
+    tOrigins: palette[8],
+    bOrigins: palette[8],
+    tNames: palette[9],
+    tValues: palette[9],
+    bNames: palette[10],
+    bValues: palette[10],
+    tStop: palette[10],
+    bStop: palette[10],
+    tCream: palette[10],
+    bCream: palette[10],
+    tGlue: palette[10],
+    bGlue: palette[10],
+    tTest: palette[10],
+    bTest: palette[10],
+    Drills: palette[10],
+    Measures: palette[10],
+    Reference: palette[10],
+    Names: palette[10],
+    Values: palette[10],
+    Info: palette[10],
+    SpiceOrder: palette[10],
+    trash: palette[10],
+    Holes: palette[11],
+    Milling: palette[12],
+    Modules: palette[13]
+  };
 
   if(!container.firstElementChild || container.firstElementChild.tagName != 'defs') {
     defs = SVG.create('defs');
@@ -903,31 +991,46 @@ export function renderDocument(doc, container) {
 
   if(!Element.find('pattern', defs)) {
     const step = '2.54';
-    SVG.create(
-      'path',
-      {
+    SVG.create('path', {
         d: `M ${step},0 L 0,0 L 0,${step}`,
         fill: 'none',
-        stroke: 'rgb(0,23,185)',
-        'stroke-width': '0.1'
-      },
-      SVG.create(
-        'pattern',
-        {
+        stroke: gridColor,
+        'stroke-width': gridWidth
+        /* 'stroke-dasharray': '0.254 0.254',
+        'stroke-dashoffset': '0.127',
+        'stroke-linecap': 'butt'*/
+      }, SVG.create(
+        'pattern', {
           id: 'grid',
           width: step,
           height: step,
           patternUnits: 'userSpaceOnUse'
-        },
-        defs
+        }, defs
+      )
+    );
+  }
+
+  if(!Element.find('filter', defs)) {
+    SVG.create('feDropShadow', {
+        dx: '20',
+        dy: '20',
+        stdDeviation: '4',
+        'flood-color': '#000000'
+      }, SVG.create(
+        'filter', {
+          id: 'shadow',
+          x: '-20%',
+          y: '-20%',
+          width: '200%',
+          height: '200%'
+        }, defs
       )
     );
   }
 
   renderer.setPalette(EaglePalette);
 
-  /*if(typeof v == 'object' && v !== null) */ for(let [v, k, o] of doc.iterator(
-    it => it.attributes && it.attributes.x !== undefined,
+  /*if(typeof v == 'object' && v !== null) */ for(let [v, k, o] of doc.iterator(it => it.attributes && it.attributes.x !== undefined,
     [],
     arg => arg
   ))
@@ -939,8 +1042,7 @@ export function renderDocument(doc, container) {
   /*console.log("center:", center.prod(-1, -1).toString());
   //console.log("factory.delegate.root:", factory.delegate.root);*/
 
-  for(let [v, k, o] of doc.iterator(
-    it => !!it.attributes,
+  for(let [v, k, o] of doc.iterator(it => !!it.attributes,
     [],
     arg => arg
   )) {
@@ -952,10 +1054,10 @@ export function renderDocument(doc, container) {
   }
   const p1 = center.prod(-1);
   const p2 = center.quot(2.54);
-  let groupTransform = `translate(${p1}) scale(2.54,2.54) translate(${p2.sum(0, 0)}) scale(1,-1)`;
+  let groupTransform = `translate(${p1}) scale(2.54,-2.54) translate(${p2.sum(0, 0.0)})`;
 
   const gridGroup = factory('g', {
-    transform: groupTransform,
+    transform: `scale(1,-1) translate(0,0)`,
     'vector-effect': 'non-scaling-stroke'
   });
   const g = factory('g', {
@@ -987,28 +1089,44 @@ export function renderDocument(doc, container) {
   bbox.width += 0.1;
   bbox.y -= 0.2;
   bbox.height += 1;*/
+  let gridBox = new Rect(0, 0, Util.roundTo(bbox.width, 2.54), Util.roundTo(bbox.height, 2.54));
+
   bbox.outset({ top: 0.778, bottom: 1, left: -0.05, right: 0.05 });
 
   //console.log("bbox.rect.toString:",bbox.rect.toString());
-  factory.delegate.root.setAttribute('viewBox', bbox.toString());
 
-  let gridBox = new Rect(bbox);
-  gridBox.x = 0;
-  gridBox.y = 0;
-
-  gridBox.outset(1);
+  //gridBox.outset(1);
   //  gridBox.y += gridBox.height;
+  //gridBox.div(2.54);
+
+  //gridBox.outset({ top: 0.4, bottom: 0.4, left: 0, right: 0 });
+
+  //gridBox.move(0, -gridBox.height);
+
+  gridBox.size.div(2.54);
+  gridBox.height += 1;
+
+  gridBox.round(2.54);
+  gridBox.height += gridWidth / 2;
+  gridBox.width += gridWidth / 2;
 
   let grid = SVG.create('rect', {
     ...gridBox.toObject(),
-    fill: 'url(#grid)'
+    fill: 'url(#grid)',
+    transform: 'translate(0,0) scale(2.54,2.54)'
   });
-
   gridGroup.appendChild(grid);
-  //  g.insertBefore(grid, g.firstElementChild);
+
+  let points = gridBox.toPoints();
+  let d = points.toPath({ close: true });
+
+  //gridGroup.parentElement.insertBefore(SVG.create('path', {d, fill: 'none', stroke: 'rgb(0,23,185)', 'stroke-width': 0.1, transform: `scale(1,-1)  scale(2.54,2.54)  ` }), gridGroup.nextElementSibling);
 
   let gbox = SVG.bbox(grid);
   let obox = SVG.bbox(g);
+
+  bbox.outset(1);
+  factory.delegate.root.setAttribute('viewBox', bbox.toString());
 
   //console.log('bbox:', bbox);
   //console.log('gbox:', gbox);

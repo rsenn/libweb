@@ -62,8 +62,7 @@ export class SpatialHash {
     var y2 = Math.floor((AABB.y + AABB.height) / this.cellSize);
     y2 = y2 >= this.height ? this.height - 1 : y2;
     // only remove and insert if mapping has changed
-    if(
-      object.spatial.x1 !== x1 ||
+    if(object.spatial.x1 !== x1 ||
       object.spatial.y1 !== y1 ||
       object.spatial.x2 !== x2 ||
       object.spatial.y2 !== y2
@@ -199,8 +198,7 @@ export class SpatialHash {
    * @return {number} the largest sized bucket
    */
   getLargest() {
-    var largest = 0,
-      object;
+    var largest = 0, object;
     for(var key in this.list) {
       if(this.list[key].length > largest) {
         largest = this.list[key].length;
@@ -219,8 +217,7 @@ export class SpatialHash {
    * @return {number} sparseness percentage
    */
   getSparseness(AABB) {
-    var count = 0,
-      total = 0;
+    var count = 0, total = 0;
     var x1 = Math.floor(AABB.x / this.cellSize);
     var y1 = Math.floor(AABB.y / this.cellSize);
     var x2 = Math.ceil((AABB.x + AABB.width) / this.cellSize);

@@ -4,14 +4,12 @@ import Util from "./util.js";
 const httpClient = (() => {
   const client = axios.create({ withCredentials: true });
 
-  client.interceptors.response.use(
-    res => {
+  client.interceptors.response.use(res => {
       const { data, status, statusText, headers, config, request } = res;
       // console.error("axios SUCCESS:", { status, statusText, data });
 
       return res;
-    },
-    async err => {
+    }, async err => {
       const { code, config, request } = await err;
       const { url, method, data } = (await config) || {};
       console.error("axios ERROR:", { code, url, method, data });

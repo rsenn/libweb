@@ -89,13 +89,11 @@ export class Element extends Node {
       let value = a[key];
       attributes[Util.camelize(key)] = value;
     }
-    return Object.assign(
-      {
-        tagName: e.tagName
-      },
-      attributes,
-      children,
-      ns
+    return Object.assign({
+        tagName: /[a-z]/.test(e.tagName) ? e.tagName : e.tagName.toLowerCase()
+      }, attributes,
+      children /*,
+      ns*/
     );
   }
 
@@ -109,13 +107,13 @@ export class Element extends Node {
       v = parent ? String.fromCharCode(parent.charCodeAt(0) + 1) : varName;
       s += `${v} = `;
     }
-    let c = Util.array(elem.children).map(child =>
-      Element.toObject(child, { ...opts, namespaceURI: ns })
-    );
-    if(c.length) attrs.children = c;
     let a = Util.toString(ns ? { ns, ...attrs } : attrs, { quote: "'" });
-    s += `${cmd}('${tagName}', ${a}${parent ? `, ${parent}` : ""});`;
-    return s;
+    s += `${cmd}('${tagName}', ${a}${parent ? `, ${parent}` : ""})`;
+    let c = elem.children; //Util.array(elem.children).map(child => Element.toObject(child, { ...opts, namespaceURI: ns }));
+    if(c.length == 1) {
+      s = Element.toCommand(c[0], { ...opts, parent: s });
+    }
+    return s.replace(/;*$/g, "") + ";";
   }
 
   static find(arg, parent, globalObj = Util.getGlobalObject()) {
@@ -163,7 +161,8 @@ export class Element extends Node {
     } else {
       attrs_or_name = [];
       console.log("e:", e);
-      for(let i = 0; i < e.attributes.length; i++) attrs_or_name.push(e.attributes[i].name);
+      if(Util.isArray(e.attributes))
+        for(let i = 0; i < e.attributes.length; i++) attrs_or_name.push(e.attributes[i].name);
     }
     let ret = attrs_or_name.reduce((acc, name) => {
       const key = /*Util.camelize*/ name;
@@ -381,8 +380,7 @@ export class Element extends Node {
   }
 
   static getTRBL(element, prefix = "") {
-    const names = ["Top", "Right", "Bottom", "Left"].map(
-      pos => prefix + (prefix == "" ? pos.toLowerCase() : pos + (prefix == "border" ? "Width" : ""))
+    const names = ["Top", "Right", "Bottom", "Left"].map(pos => prefix + (prefix == "" ? pos.toLowerCase() : pos + (prefix == "border" ? "Width" : ""))
     );
     return new TRBL(Element.getCSS(element, names));
   }
@@ -453,8 +451,7 @@ export class Element extends Node {
                 return Object.entries(this)
                   .map(([k, v]) => `${Util.decamelize(k, "-")}: ${v};\n`)
                   .join("");
-              },
-              enumerable: false
+              }, enumerable: false
             });
           } catch(err) {}
         }
@@ -526,14 +523,11 @@ export class Element extends Node {
       return accu;
     }
     str = dumpElem(elem, "");
-    str = Element.walk(
-      elem.firstElementChild,
+    str = Element.walk(elem.firstElementChild,
       (e, a, r, d) => {
         if(e && e.attributes) return dumpElem(e, a + "\n", r, d);
         return null;
-      },
-      str
-    );
+      }, str);
     return str;
   }
 
