@@ -246,7 +246,7 @@ export class EagleRenderer {
       this.layerElements[l.number] = layer;
       colors[l.name] = stroke;
     }
-    console.log('colors:', Util.inspect(colors));
+    //console.log('colors:', Util.inspect(colors));
   }
 
   renderItem(item, parent, opts = {}) {
@@ -266,7 +266,7 @@ export class EagleRenderer {
 
     let transformation = (opts.transformation || new TransformationList()).slice();
 
-    console.log('transformation:', transformation);
+    //console.log('transformation:', transformation);
     switch (item.tagName) {
       case 'wire': {
         const { x1, x2, y1, y2, width, curve } = coordFn(item);
@@ -347,7 +347,7 @@ export class EagleRenderer {
         undoAngle %= 360;
 
         let angle = undoAngle - wholeAngle;
-        console.log(`${text}`, { wholeAngle, undoAngle, angle });
+        //console.log(`${text}`, { wholeAngle, undoAngle, angle });
 
         //   let undoAngle = undoTransform.rotation;
 
@@ -370,7 +370,7 @@ export class EagleRenderer {
           },
           parent
         );
-        console.log('tspan:', text, 'rot:', rot, 'transformation:', transformation);
+        //console.log('tspan:', text, 'rot:', rot, 'transformation:', transformation);
 
         let attrs = EagleRenderer.alignmentAttrs(alignment, HORIZONTAL);
         if(align !== undefined) attrs['data-align'] = align;
@@ -397,7 +397,7 @@ export class EagleRenderer {
         break;
       default: {
         const { x, y, width, radius } = coordFn(item);
-        console.log('Unhandled', item.toXML());
+        //console.log('Unhandled', item.toXML());
         break;
       }
     }
@@ -504,7 +504,7 @@ export class SchematicRenderer extends EagleRenderer {
         const vec = Point.fromAngle((angle * Math.PI) / 180).prod(SchematicRenderer.pinSizes[length] * 2.54);
         const pivot = new Point(+x, +y);
         const l = new Line(pivot, vec.add(pivot));
-        console.log('pin:', item.toXML());
+        //console.log('pin:', item.toXML());
         svg(
           'line',
           {
@@ -548,13 +548,13 @@ export class SchematicRenderer extends EagleRenderer {
     let { deviceset, device, library, name, value } = part;
     let symbol;
     for(let gate of deviceset.gates.list) {
-      console.log('gate:', gate.toXML());
-      console.log('gate.symbol:', gate.attributes.symbol);
+      //console.log('gate:', gate.toXML());
+      //console.log('gate.symbol:', gate.attributes.symbol);
       symbol = library.symbols[gate.attributes.symbol];
       if(symbol) break;
     }
     if(!symbol) {
-      console.log('Symbol not found:', deviceset.name);
+      //console.log('Symbol not found:', deviceset.name);
     }
     const g = this.create(
       'g',
@@ -578,14 +578,14 @@ export class SchematicRenderer extends EagleRenderer {
     this.renderLayers(parent);
 
     for(let sheet of this.sheets) {
-      console.log('sheet:', sheet);
+      //console.log('sheet:', sheet);
       this.renderSheet(sheet, parent);
     }
   }
 
   renderSheet(sheet, parent) {
     let netsGroup = this.create('g', { className: 'nets' }, parent);
-    console.log('netsGroup:', netsGroup);
+    //console.log('netsGroup:', netsGroup);
     let partsGroup = this.create('g', { className: 'parts' }, parent);
     for(let instance of sheet.instances.list) this.renderPart(instance, partsGroup);
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
@@ -701,7 +701,7 @@ export class BoardRenderer extends EagleRenderer {
     }
 
     /*  console.log("wireMap:", wireMap);
-    console.log("other:", other);*/
+    //console.log("other:", other);*/
 
     for(let item of other) {
       if(predicate(item)) this.renderItem(item, parent, opts);
@@ -740,8 +740,8 @@ export class BoardRenderer extends EagleRenderer {
       /*
       const intersections = PolygonFinder.findAllIntersectionsInSegments(lines);
       const polygons = PolygonFinder.polygonsFromSegments(lines);
-      console.log(`intersections layerId=${layerId}:`, intersections);
-      console.log(`polygons layerId=${layerId}:`, polygons);*/
+      //console.log(`intersections layerId=${layerId}:`, intersections);
+      //console.log(`polygons layerId=${layerId}:`, polygons);*/
     }
   }
 
@@ -750,7 +750,7 @@ export class BoardRenderer extends EagleRenderer {
 
     let transform = new TransformationList();
     let rotation = Rotation(rot);
-    console.log('rotation:', { rot, rotation });
+    //console.log('rotation:', { rot, rotation });
     /*
 transform.merge(rotation);
 */
@@ -784,7 +784,7 @@ transform.merge(rotation);
 
     let plainGroup = this.create('g', { className: 'plain' }, parent);
 
-    console.log('plain:', this.plain);
+    //console.log('plain:', this.plain);
 
     for(let element of this.elements.list) this.renderElement(element, elementsGroup);
 
@@ -937,7 +937,7 @@ export function renderDocument(doc, container) {
   const rect = bb.rect.outset(2.54 * 4);
   const center = rect.center;
   /*console.log("center:", center.prod(-1, -1).toString());
-  console.log("factory.delegate.root:", factory.delegate.root);*/
+  //console.log("factory.delegate.root:", factory.delegate.root);*/
 
   for(let [v, k, o] of doc.iterator(
     it => !!it.attributes,
@@ -965,14 +965,14 @@ export function renderDocument(doc, container) {
   renderer.render(g);
 
   let bbox = SVG.bbox('#board');
-  console.log('bbox.aspect:', bbox.aspect());
-  console.log('bbox.toString:', bbox.toString());
+  //console.log('bbox.aspect:', bbox.aspect());
+  //console.log('bbox.toString:', bbox.toString());
   let brect = Element.rect('#board');
   const crect = new Rect(0, 0, window.innerWidth, window.innerHeight);
 
-  console.log('brect:', brect.toString());
-  console.log('brect:', brect.aspect());
-  console.log('crect:', crect.toString());
+  //console.log('brect:', brect.toString());
+  //console.log('brect:', brect.aspect());
+  //console.log('crect:', crect.toString());
 
   Element.setCSS(document.body, { overflow: 'hidden' });
   Element.setCSS(container.parentElement, {
@@ -1010,9 +1010,9 @@ export function renderDocument(doc, container) {
   let gbox = SVG.bbox(grid);
   let obox = SVG.bbox(g);
 
-  console.log('bbox:', bbox);
-  console.log('gbox:', gbox);
-  console.log('obox:', obox);
+  //console.log('bbox:', bbox);
+  //console.log('gbox:', gbox);
+  //console.log('obox:', obox);
 
   //groupTransform += ` translate(0,-0.30)`;
   groupTransform += ` translate(0,0)`;
