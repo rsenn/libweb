@@ -961,11 +961,12 @@ export function renderDocument(doc, container) {
     trash: 'rgb(189,133,64)'
   };
   //const palette = [ 'hsl(157,100%,50.2%)', 'hsl(282,100%,50.2%)', 'hsl(120,100%,20.2%)', 'hsl(47,100%,50.2%)', 'hsl(104,100%,50.2%)', 'hsl(55,100%,50.2%)', 'hsl(260,100%,80%)', 'hsl(184,100%,50.2%)', 'hsl(203,100%,50.2%)', 'hsl(80,100%,50.2%)', 'hsl(215,100%,50.2%)', 'hsl(119,100%,50.2%)', 'hsl(233,100%,50.2%)', 'hsl(339,100%,50.2%)'];
+  let palette;
 
   let rng,
-    palette,
     str = '';
-  let randN = Util.randInt(0, 30000);
+      let randN = Util.randInt(0, 30000);
+/*
   for(let seed of [randN]) {
     rng = new Alea(seed);
 
@@ -974,18 +975,23 @@ export function renderDocument(doc, container) {
     str += 'palette = ' + Util.inspect(palette, { multiline: false, newline: '' }) + ';\n';
   }
   console.log({ randN });
-  console.log(str);
+  console.log(str);*/
   //palette = [ 'hsl(267,100%,50.2%)', 'hsl(155,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(10,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(176,100%,50.2%)', 'hsl(215,100%,50.2%)'];
-  //palette = [ 'hsl(155,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(176,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(10,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(215,100%,50.2%)'];
+      rng = new Alea(1340);
+
+  palette = [ 'hsl(155,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(176,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(10,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(215,100%,50.2%)'];
+  palette =Util.shuffle(palette, rng);
   //palette = [ 'hsl(176,100%,50.2%)', 'hsl(10,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(215,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(155,100%,50.2%)'];
   //palette = [ 'hsl(176,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(215,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(155,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(10,100%,50.2%)'];
   //palette = [ 'hsl(10,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(176,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(155,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(215,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(106,100%,50.2%)'];
 
   //palette = [ 'hsl(199,100%,50.2%)', 'hsl(99,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(95,100%,50.2%)', 'hsl(133,100%,50.2%)', 'hsl(48,100%,50.2%)', 'hsl(301,100%,50.2%)', 'hsl(32,100%,50.2%)', 'hsl(191,100%,50.2%)', 'hsl(174,100%,50.2%)', 'hsl(241,100%,50.2%)', 'hsl(342,100%,50.2%)', 'hsl(319,100%,50.2%)', 'hsl(161,100%,50.2%)'];
-  //palette = [ 'hsl(291,100%,50.2%)', 'hsl(240,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(30,100%,50.2%)', 'hsl(88,100%,50.2%)', 'hsl(260,100%,50.2%)', 'hsl(75,100%,50.2%)', 'hsl(350,100%,50.2%)', 'hsl(55,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(184,100%,50.2%)', 'hsl(121,100%,50.2%)', 'hsl(182,100%,50.2%)'];
+  //palette = [ 'hsl(291,100%,50.2%)', 'hsl(240,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(80,100%,30%)', 'hsl(88,100%,50.2%)', 'hsl(260,100%,50.2%)', 'hsl(75,100%,50.2%)', 'hsl(350,100%,50.2%)', 'hsl(55,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(184,100%,50.2%)', 'hsl(121,100%,50.2%)', 'hsl(182,100%,50.2%)'];
+ //palette = [ 'hsl(32,100%,50.2%)', 'hsl(6,100%,50.2%)', 'hsl(73,100%,50.2%)', 'hsl(55,100%,50.2%)', 'hsl(141,100%,50.2%)', 'hsl(270,100%,50.2%)', 'hsl(328,100%,50.2%)', 'hsl(7,100%,50.2%)', 'hsl(208,100%,50.2%)', 'hsl(216,100%,50.2%)', 'hsl(342,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(112,100%,50.2%)', 'hsl(292,100%,50.2%)', 'hsl(30,100%,50.2%)', 'hsl(152,100%,50.2%)'];
+
 
   renderer.colors = {
-    Top: palette[0],
+   /* Top: palette[0],
     Route3: palette[0],
     Route5: palette[0],
     Route7: palette[0],
@@ -1024,8 +1030,8 @@ export function renderDocument(doc, container) {
     bDocu: palette[7],
     tOrigins: palette[8],
     bOrigins: palette[8],
-    tNames: palette[9],
-    tValues: palette[9],
+    tNames: palette[10],
+    tValues: palette[10],
     bNames: palette[10],
     bValues: palette[10],
     tStop: palette[10],
@@ -1046,7 +1052,7 @@ export function renderDocument(doc, container) {
     trash: palette[10],
     Holes: palette[11],
     Milling: palette[12],
-    Modules: palette[13]
+    Modules: palette[13]*/
   };
 
   if(!container.firstElementChild || container.firstElementChild.tagName != 'defs') {
@@ -1105,7 +1111,7 @@ export function renderDocument(doc, container) {
     );
   }
 
-  renderer.setPalette(EaglePalette);
+  renderer.setPalette(palette);
 
   /*if(typeof v == 'object' && v !== null) */ for(let [v, k, o] of doc.iterator(
     it => it.attributes && it.attributes.x !== undefined,
