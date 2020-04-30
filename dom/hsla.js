@@ -32,7 +32,7 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
         /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) ||
         /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
 
-      if(matches != null) matches = [...matches].slice(1);
+      if(matches != null) c = [...matches].slice(1);
     }
     ret.h = c[0];
     ret.s = c[1];
@@ -40,9 +40,8 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
     ret.a = c[3] !== undefined ? c[3] : 1.0;
 
     ["h", "s", "l", "a"].forEach(channel => {
-      if(String(ret[channel]).endsWith("%"))
-        ret[channel] = parseFloat(ret[channel].slice(0, ret[channel].length - 1));
-      else ret[channel] = parseFloat(ret[channel]);
+      if(String(ret[channel]).endsWith("%")) ret[channel] = parseFloat(ret[channel].slice(0, -1));
+      else ret[channel] = parseFloat(ret[channel]) * (channel == "a" || channel == "h" ? 1 : 100);
     });
   }
 

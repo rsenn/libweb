@@ -40,9 +40,11 @@ export function RGBA(r = 0, g = 0, b = 0, a = 255) {
         ret.b = parseInt(c[3], 16) * mul;
         ret.a = c.length > 3 ? parseInt(c[4], 16) * mul : 255;
       } else if(arg.toLowerCase().startsWith("rgb")) {
-        c = arg.match(new RegExp("/[d.]+/g")).map(x => parseFloat(x));
+        c = arg
+          .match(/[\d.%]+/g)
+          .map(x => (x.endsWith("%") ? parseFloat(x.slice(0, -1)) * 2.55 : +x));
 
-        c = [...c].slice(1);
+        c = [...c].slice();
 
         ret.r = Math.round(c[0]);
         ret.g = Math.round(c[1]);

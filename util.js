@@ -137,7 +137,7 @@ Util.debug = function(message) {
     .join(" ")
     .replace(/\n/g, "");
   //console.log("STR: "+str);
-  console.log.call(console, str);
+  //console.log.call(console, str);
   //Util.log.apply(Util, args)
 };
 Util.type = function({ type }) {
@@ -150,7 +150,7 @@ Util.functionName = function(fn) {
 };
 Util.className = function(obj) {
   let proto;
-  console.log("class:", obj);
+  //console.log("class:", obj);
   try {
     proto = Object.getPrototypeOf(obj);
   } catch(err) {
@@ -732,7 +732,7 @@ Util.toString = (obj, opts = {}, indent = "") => {
     }
     return s + sep() + `${padding}]`;
   }
-  console.log("obj:", Util.className(obj), obj);
+  //console.log("obj:", Util.className(obj), obj);
   if(typeof obj == "function" || obj instanceof Function || Util.className(obj) == "Function") {
     obj = "" + obj;
     if(!multiline) obj = obj.replace(/(\n| anonymous)/g, "");
@@ -862,8 +862,8 @@ Util.findVal = function(object, propName, maxDepth = 10) {
   if(maxDepth <= 0) return null;
   for(let key in object) {
     if(key === propName) {
-      console.log(propName);
-      console.log(object[key]);
+      //console.log(propName);
+      //console.log(object[key]);
       return object[key];
     } else {
       let value = Util.findVal(object[key], propName, maxDepth - 1);
@@ -1014,7 +1014,7 @@ Util.encodeCookie = c =>
 Util.setCookies = c =>
   Object.entries(c).forEach(([key, value]) => {
     document.cookie = `${key}=${value}`;
-    console.log(`Setting cookie[${key}] = ${value}`);
+    //console.log(`Setting cookie[${key}] = ${value}`);
   });
 Util.clearCookies = function(c) {
   return Util.setCookies(
@@ -1160,7 +1160,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
       }
     }
   } catch(e) {
-    console.log(object);
+    //console.log(object);
     //throw e;
   }
   return result;
@@ -1180,7 +1180,7 @@ Util.getURL = function(req = {}) {
   if(req.url !== undefined) return req.url;
   if(global.process !== undefined && global.process.url !== undefined) return global.process.url;
   const url = `${proto}://${host}:${port}`;
-  console.log("getURL process ", { url });
+  //console.log("getURL process ", { url });
   return url;
 };
 Util.parseQuery = function(url = Util.getURL()) {
@@ -1225,7 +1225,7 @@ Util.parseURL = function(href = this.getURL()) {
     acc[m[0]] = m[1];
     return acc;
   }, {});
-  console.log("PARAMS: ", { argstr, pmatches, params });
+  //console.log("PARAMS: ", { argstr, pmatches, params });
   return {
     protocol: matches[1],
     host: matches[2],
@@ -1652,7 +1652,7 @@ Util.entries = function(arg) {
   if(typeof arg == "object" && arg !== null) {
     return typeof arg.entries !== "undefined" ? arg.entries() : Object.entries(arg);
   }
-  console.log("Util.entries", arg);
+  //console.log("Util.entries", arg);
   return null;
 };
 Util.traverse = function(o, fn) {
@@ -1694,7 +1694,7 @@ Util.pushUnique = function(arr) {
   });
   return arr;
 };
-Util.members = function*(obj, recursive = false, pred = () => true) {
+Util.iterateMembers = function*(obj, recursive = false, pred = () => true) {
   let names = [];
   const adder = arg =>
     true; /*name => {
@@ -1703,31 +1703,37 @@ Util.members = function*(obj, recursive = false, pred = () => true) {
     if(add) names.push(name);
     return add;
   };*/
-  for(let name in obj) if(adder(name)) yield name;
-  for(let name of Object.getOwnPropertyNames(obj)) if(adder(name)) yield name;
-  for(let symbol of Object.getOwnPropertySymbols(obj)) if(adder(symbol)) yield symbol;
+  for(let name in obj) if(pred(name)) yield name;
+  for(let name of Object.getOwnPropertyNames(obj)) if(pred(name)) yield name;
+  for(let symbol of Object.getOwnPropertySymbols(obj)) if(pred(symbol)) yield symbol;
 
   if(recursive) {
     const proto = Object.getPrototypeOf(obj);
     if(proto)
-      yield* Util.members(proto, typeof recursive == "number" ? recursive - 1 : recursive, pred);
+      yield* Util.iterateMembers(
+        proto,
+        typeof recursive == "number" ? recursive - 1 : recursive,
+        pred
+      );
   }
 };
-Util.getMethodNames = function(obj, recursive = false) {
-  return Util.members(
-    obj,
-    recursive,
-    item => typeof obj[item] === "function" && item != "constructor"
-  );
-};
-Util.getMethods = function(obj, recursive = false, t = (key, value) => [key, value]) {
-  return Object.fromEntries([...Util.methods(obj, recursive, t)]);
-  /*  let ret = {};
-  for(let name of Util.getMethodNames(obj, recursive)) ret[name] = obj[name];
-  return ret;
-*/
-};
-Util.methods = function*(obj, recursive = false, t = (key, value) => [key, value]) {
+Util.members = (obj, recursive = false, pred = () => true) =>
+  Util.unique([...Util.iterateMembers(obj, recursive, pred)]);
+
+Util.getMethodNames = (obj, recursive = false) =>
+  Util.unique([
+    ...Util.iterateMembers(
+      obj,
+      recursive,
+      item => typeof obj[item] === "function" && item != "constructor"
+    )
+  ]);
+
+Util.getMethods = (obj, recursive = false, t = (key, value) => [key, value]) =>
+  Object.fromEntries([...Util.iterateMethods(obj, recursive, t)]);
+Util.methods = Util.getMethods;
+
+Util.iterateMethods = function*(obj, recursive = false, t = (key, value) => [key, value]) {
   for(let name of Util.getMethodNames(obj, recursive)) {
     try {
       const value = t(name, obj[name]);
@@ -2097,11 +2103,11 @@ Util.stripAnsi = function(str) {
 Util.proxy = (obj = {}, handler) =>
   new Proxy(obj, {
     get(target, key, receiver) {
-      console.log(`Util.proxy getting ${key}!`);
+      //console.log(`Util.proxy getting ${key}!`);
       return Reflect.get(target, key, receiver);
     },
     set(target, key, value, receiver) {
-      console.log(`Util.proxy setting ${key}!`);
+      //console.log(`Util.proxy setting ${key}!`);
       return Reflect.set(target, key, value, receiver);
     },
     ...handler

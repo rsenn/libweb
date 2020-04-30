@@ -72,18 +72,22 @@ Point.prototype.set = function(fn) {
 Point.prototype.clone = function() {
   return new Point({ x: this.x, y: this.y });
 };
-Point.prototype.sum = function(other) {
-  return new Point(this.x + other.x, this.y + other.y);
+Point.prototype.sum = function(...args) {
+  const p = new Point(...args);
+  return new Point(this.x + p.x, this.y + p.y);
 };
-Point.prototype.add = function(other) {
+Point.prototype.add = function(...args) {
+  const other = new Point(...args);
   this.x += other.x;
   this.y += other.y;
   return this;
 };
-Point.prototype.diff = function(other) {
+Point.prototype.diff = function(...args) {
+  const other = new Point(...args);
   return new Point(this.x - other.x, this.y - other.y);
 };
-Point.prototype.sub = function(other) {
+Point.prototype.sub = function(...args) {
+  const other = new Point(...args);
   this.x -= other.x;
   this.y -= other.y;
   return this;
@@ -115,17 +119,14 @@ Point.prototype.neg = function() {
   this.y *= -1;
   return this;
 };
-Point.prototype.distance = function(
-  other = {
-    x: 0,
-    y: 0
-  }
-) {
-  return Math.sqrt(
-    (other.y - this.y) * (other.y - this.y) + (other.x - this.x) * (other.x - this.x)
-  );
+Point.prototype.distanceSquared = function(other = { x: 0, y: 0 }) {
+  return (other.y - this.y) * (other.y - this.y) + (other.x - this.x) * (other.x - this.x);
+};
+Point.prototype.distance = function(other = { x: 0, y: 0 }) {
+  return Math.sqrt(Point.prototype.distanceSquared.call(this, other));
 };
 Point.prototype.equals = function(other) {
+  //console.log(`Point.equals ${this} ${other}`);
   return this.x == other.x && this.y == other.y;
 };
 Point.prototype.round = function(precision = 0.001) {
@@ -156,6 +157,16 @@ Point.prototype.toAngle = function(deg = false) {
 Point.prototype.angle = function(other, deg = false) {
   other = other || { x: 0, y: 0 };
   return Point.prototype.diff.call(this, other).toAngle(deg);
+};
+Point.prototype.rotate = function(angle, origin = { x: 0, y: 0 }) {
+  this.x -= origin.x;
+  this.y -= origin.y;
+  let c = Math.cos(angle), s = Math.sin(angle);
+   let xnew = this.x * c - this.y * s;
+  let ynew = this.x * s + this.y * c;
+  this.x = xnew;
+  this.y = ynew;
+  return this;
 };
 Point.prototype.dimension = function() {
   return [this.width, this.height];
@@ -197,7 +208,9 @@ Point.prototype.toSource = function(opts = {}) {
 };*/
 Point.prototype.toObject = function() {
   const { x, y } = this;
-  return { x, y };
+  const obj = { x, y };
+  Object.setPrototypeOf(obj, Point.prototype);
+  return obj;
 };
 Point.prototype.toCSS = function(precision = 0.001) {
   return {
@@ -227,15 +240,10 @@ Point.prototype.normalize = function(minmax) {
   });
 };
 
-Point.distance = point => Point.prototype.distance.call(point);
 Point.move = (point, x, y) => Point.prototype.move.call(point, x, y);
 Point.angle = (point, other, deg = false) => Point.prototype.angle.call(point, other, deg);
-Point.distance = point => Point.prototype.distance.call(point);
 Point.inside = (point, rect) => Point.prototype.inside.call(point, rect);
-Point.add = (point, other) => Point.prototype.add.call(point, other);
 Point.sub = (point, other) => Point.prototype.sub.call(point, other);
-Point.sum = (a, b) => Point.prototype.sum.call(a, b);
-Point.diff = (a, b) => Point.prototype.diff.call(a, b);
 Point.prod = (a, b) => Point.prototype.prod.call(a, b);
 Point.quot = (a, b) => Point.prototype.quot.call(a, b);
 Point.equals = (a, b) => {
@@ -253,7 +261,12 @@ for(let name of [
   "dimension",
   "toString",
   // 'toSource',
-  "toCSS"
+  "toCSS",
+  "sub",
+  "diff",
+  "add",
+  "sum",
+  "distance"
 ]) {
   Point[name] = (...args) => Point.prototype[name].call(...args);
 }

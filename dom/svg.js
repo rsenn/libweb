@@ -28,14 +28,18 @@ export class SVG extends Element {
     return svg;
   }
 
-  static factory(parent, size = null) {
-    let delegate = {
+  static factory(...args) {
+    let delegate = "appendChild" in args[0] ? {} : args.shift();
+    let parent = args.shift();
+    let size = args.length > 0 ? args.shift() : null;
+    delegate = {
       create: tag => document.createElementNS(SVG.ns, tag),
       append_to: elem => parent.appendChild(elem),
       setattr: (elem, name, value) =>
         name != "ns" &&
         elem.setAttributeNS(document.namespaceURI, Util.decamelize(name, "-"), value),
-      setcss: (elem, css) => elem.setAttributeNS(null, "style", css)
+      setcss: (elem, css) => elem.setAttributeNS(null, "style", css),
+      ...delegate
     };
     if(size == null) size = Size(Rect.round(Element.rect(parent)));
     const { width, height } = size;
@@ -52,13 +56,17 @@ export class SVG extends Element {
     if(!delegate.root.firstElementChild || delegate.root.firstElementChild.tagName != "defs")
       SVG.create("defs", {}, delegate.root);
 
+    const { append_to } = delegate;
+
     delegate.append_to = function(elem, p) {
       var root = p || this.root;
 
       if(elem.tagName.indexOf("Gradient") != -1) root = root.querySelector("defs");
 
-      if(typeof root.append == "function") root.append(elem);
-      else root.appendChild(elem);
+      append_to(elem, root);
+
+      /*if(typeof root.append == "function") root.append(elem);
+      else root.appendChild(elem);*/
       //console.log('append_to ', elem, ', root=', root);
     };
     return Element.factory(delegate);

@@ -48,8 +48,8 @@ export function Line(x1, y1, x2, y2) {
 }
 
 export const isLine = obj => ["x1", "y1", "x2", "y2"].every(prop => obj[prop] !== undefined);
-/*
-Object.defineProperty(Line.prototype, "a", { value: new Point(), enumerable: false });
+
+/*Object.defineProperty(Line.prototype, "a", { value: new Point(), enumerable: true });
 Object.defineProperty(Line.prototype, "b", { value: new Point(), enumerable: true });*/
 
 Line.prototype.intersect = function(other) {
@@ -93,7 +93,7 @@ Object.defineProperty(Line.prototype, "x1", {
       });
     this.a.x = v;
   },
-  enumerable: false
+  enumerable: true
 });
 Object.defineProperty(Line.prototype, "y1", {
   get: function() {
@@ -107,7 +107,7 @@ Object.defineProperty(Line.prototype, "y1", {
       });
     this.a.y = v;
   },
-  enumerable: false
+  enumerable: true
 });
 Object.defineProperty(Line.prototype, "x2", {
   get: function() {
@@ -121,7 +121,7 @@ Object.defineProperty(Line.prototype, "x2", {
       });
     this.b.x = v;
   },
-  enumerable: false
+  enumerable: true
 });
 Object.defineProperty(Line.prototype, "y2", {
   get: function() {
@@ -135,7 +135,7 @@ Object.defineProperty(Line.prototype, "y2", {
       });
     this.b.y = v;
   },
-  enumerable: false
+  enumerable: true
 });
 Line.prototype.direction = function() {
   var dist = Point.prototype.distance.call(this.a, this.b);
@@ -230,6 +230,21 @@ Line.prototype.matchEndpoints = function(arr) {
   );
 };
 
+Line.prototype.distanceToPointSquared = function(p) {
+  const { a, b } = this;
+  var l2 = Point.prototype.distanceSquared.call(a, b);
+  if(l2 === 0) return Point.prototype.distanceSquared.call(p, a);
+  var t = ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / l2;
+  t = Math.max(0, Math.min(1, t));
+  return Point.prototype.distanceSquared.call(
+    p,
+    new Point(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y))
+  );
+};
+Line.prototype.distanceToPoint = function(p) {
+  return Math.sqrt(Line.prototype.distanceToPointSquared.call(this, p));
+};
+
 Object.defineProperty(Line.prototype, "length", {
   get: Line.prototype.getLength
 });
@@ -287,7 +302,9 @@ Line.prototype.reverse = function() {
 };
 Line.prototype.toObject = function() {
   const { x1, y1, x2, y2 } = this;
-  return { x1, y1, x2, y2 };
+  const obj = { x1, y1, x2, y2 };
+  Object.setPrototypeOf(obj, Line.prototype);
+  return obj;
 };
 
 Line.prototype.round = function(precision = 0.001) {
@@ -309,6 +326,7 @@ Line.prototype.includes = function(point) {
   return Point.prototype.equals.call(this.a, point) || Point.prototype.equals.call(this.b, point);
 };
 Line.prototype.equals = function(other) {
+  console.log("Line.equals", this, other);
   if(Point.prototype.equals.call(this.a, other.a) && Point.prototype.equals.call(this.b, other.b))
     return 1;
   if(Point.prototype.equals.call(this.a, other.b) && Point.prototype.equals.call(this.b, other.a))
@@ -352,9 +370,13 @@ for(let name of [
   "bbox",
   "points",
   "inspect",
-  "toString"
+  "toString",
+  "toObject",
+  "toSource",
+  "distanceToPointSquared",
+  "distanceToPoint"
 ]) {
-  Line[name] = points => Line.prototype[name].call(points);
+  Line[name] = (...args) => Line.prototype[name].call(...args);
 }
 
 Util.defineInspect(Line.prototype, "x1", "y1", "x2", "y2");

@@ -186,7 +186,7 @@ Rect.prototype.points = function() {
 };
 Rect.prototype.toCSS = Rect.toCSS;
 Rect.prototype.outset = function(trbl) {
-  if(typeof trbl == "number") trbl = new TRBL(trbl, trbl, trbl, trbl);
+  if(typeof trbl == "number") trbl = { top: trbl, right: trbl, bottom: trbl, left: trbl };
   this.x -= trbl.left;
   this.y -= trbl.top;
   this.width += trbl.left + trbl.right;

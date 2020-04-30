@@ -108,7 +108,7 @@ export class CSS {
 
     const obj = Object.create(null);
     Object.setPrototypeOf(obj, proto);
-    Util.extend(obj, { element, map: new Map() });
+    Object.assign(obj, { element, map: new Map() });
     return obj;
   }
 }
