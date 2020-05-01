@@ -58,78 +58,66 @@ Line.prototype.intersect = function(other) {
 Object.defineProperty(Line.prototype, 0, {
   get: function() {
     return this.a;
-  },
-  set: function(v) {
+  }, set: function(v) {
     this.a.x = v.x;
     this.a.y = v.y;
-  },
-  enumerable: false
+  }, enumerable: false
 });
 Object.defineProperty(Line.prototype, 1, {
   get: function() {
     return this.b;
-  },
-  set: function(v) {
+  }, set: function(v) {
     this.b.x = v.x;
     this.b.y = v.y;
-  },
-  enumerable: false
+  }, enumerable: false
 });
 Object.defineProperty(Line.prototype, 'x1', {
   get: function() {
     return this.a && this.a.x;
-  },
-  set: function(v) {
-    if(!this.a)
+  }, set: function(v) {
+    if (!this.a)
       Object.defineProperty(this, 'a', {
         value: new Point(),
         enumerable: false
       });
     this.a.x = v;
-  },
-  enumerable: true
+  }, enumerable: true
 });
 Object.defineProperty(Line.prototype, 'y1', {
   get: function() {
     return this.a && this.a.y;
-  },
-  set: function(v) {
-    if(!this.a)
+  }, set: function(v) {
+    if (!this.a)
       Object.defineProperty(this, 'a', {
         value: new Point(),
         enumerable: false
       });
     this.a.y = v;
-  },
-  enumerable: true
+  }, enumerable: true
 });
 Object.defineProperty(Line.prototype, 'x2', {
   get: function() {
     return this.b && this.b.x;
-  },
-  set: function(v) {
-    if(!this.b)
+  }, set: function(v) {
+    if (!this.b)
       Object.defineProperty(this, 'b', {
         value: new Point(),
         enumerable: false
       });
     this.b.x = v;
-  },
-  enumerable: true
+  }, enumerable: true
 });
 Object.defineProperty(Line.prototype, 'y2', {
   get: function() {
     return this.b && this.b.y;
-  },
-  set: function(v) {
-    if(!this.b)
+  }, set: function(v) {
+    if (!this.b)
       Object.defineProperty(this, 'b', {
         value: new Point(),
         enumerable: false
       });
     this.b.y = v;
-  },
-  enumerable: true
+  }, enumerable: true
 });
 Line.prototype.direction = function() {
   var dist = Point.prototype.distance.call(this.a, this.b);

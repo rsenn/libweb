@@ -186,7 +186,7 @@ export class EagleRenderer {
   getColor(layer) {
     //const name = Util.isObject(layer) && 'name' in layer ? layer.name : layer;
     const color = Util.isObject(layer) && 'color' in layer ? layer.color : layer;
-    return this.colors[color] || this.palette[color  - 1] || 'rgb(255,0,0)';
+    return this.colors[color] || this.palette[color - 1] || 'rgb(255,0,0)';
   }
 
   layerOf(element) {
@@ -535,7 +535,7 @@ export class BoardRenderer extends EagleRenderer {
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
-    const color = layer ? this.getColor(layer.color) : this.getColor(6);;
+    const color = layer ? this.getColor(layer.color) : this.getColor(6);
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...LayerAttributes(layer), ...attr }, parent);
     const { labelText, coordFn = i => i, rot } = opts;
     switch (item.tagName) {
@@ -852,7 +852,7 @@ export function renderDocument(doc, container) {
     );
   }
 
-  renderer.setPalette(EaglePalette ||palette);
+  renderer.setPalette(EaglePalette || palette);
 
   for(let [v, k, o] of doc.iterator(it => it.attributes && it.attributes.x !== undefined,
     [],

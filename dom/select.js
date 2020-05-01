@@ -1,23 +1,12 @@
-import React from 'react';
+import { Element } from './element.js';
 
-export class Select extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    const { options, ...props } = this.props;
+export class Select {
+  static create(entries, factory = Element.create) {
+    let elem = factory('select', {});
 
-    //console.log('Select.render ', { options, props });
-    const Option = ({ children, ...props }) => {
-      //console.log('Select.render Option ', { children, props });
-
-      return <option {...props}>{children}</option>;
-    };
-
-    //return <select {...props}>{
-    //Object.keys(options).map(key =>
-    //<Option value={key}>{options[key]}</Option>
-    //)
-    //}</select>
+    for(let [value, text] of entries) {
+      let o = factory('option', { value, innerHTML: text }, elem);
+    }
+    return elem;
   }
 }

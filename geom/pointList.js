@@ -32,8 +32,7 @@ export function PointList(points, base = Array) {
   if(!(this instanceof PointList)) return ret;
 }
 
-Util.extend(
-  //Object.assign
+Util.extend(//Object.assign
   PointList.prototype,
   Util.getMethods(Array.prototype, false)
 );

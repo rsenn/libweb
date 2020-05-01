@@ -81,8 +81,7 @@ export class SpatialHash {
   }
 
   srch(range, selector, callback, returnOnFirst) {
-    var bounds = getBounds(range),
-      cellSize = this.cellSize;
+    var bounds = getBounds(range), cellSize = this.cellSize;
 
     // range might be larger than the hash's size itself
     var x1 = Math.max(~~((bounds.left - this.range.x) / this.cellSize), 0);

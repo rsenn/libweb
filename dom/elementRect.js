@@ -13,33 +13,28 @@ ElementRectProxy.prototype = {
   element: null,
   getPos: function(fn = rect => rect) {
     return fn(Element.position(this.element));
-  },
-  getRect: function(fn = rect => rect) {
+  }, getRect: function(fn = rect => rect) {
     return fn(Element.rect(this.element, { round: false }));
-  },
-  setPos: function() {
+  }, setPos: function() {
     let pos = new Point(...arguments);
     this.setRect(rect => {
       rect.x = pos.x;
       rect.y = pos.y;
       return rect;
     });
-  },
-  setSize: function() {
+  }, setSize: function() {
     let size = new Size(...arguments);
     this.setRect(rect => {
       rect.width = size.width;
       rect.height = size.height;
       return rect;
     });
-  },
-  changeRect: function(fn = (rect, e) => rect) {
+  }, changeRect: function(fn = (rect, e) => rect) {
     let r = Element.getRect(this.element);
     if(typeof fn == 'function') r = fn(r, this.element);
 
     Element.setRect(this.element, r);
-  },
-  setRect: function(arg) {
+  }, setRect: function(arg) {
     let rect;
     if(typeof arg == 'function') rect = arg(this.getRect(), this.element);
     else rect = new Rect(...arguments);
@@ -66,46 +61,38 @@ const computedSetter = (proxy, compute) =>
   };
 
 export const ElementXYProps = element => {
-  Util.defineGetterSetter(
-    element,
+  Util.defineGetterSetter(element,
     'x',
     function() {
       return Element.getRect(this).x;
-    },
-    function(val) {
+    }, function(val) {
       this.style.left = `${val}px`;
     }
   );
-  Util.defineGetterSetter(
-    element,
+  Util.defineGetterSetter(element,
     'y',
     function() {
       return Element.getRect(this).y;
-    },
-    function(val) {
+    }, function(val) {
       this.style.top = `${val}px`;
     }
   );
 };
 
 export const ElementWHProps = element => {
-  Util.defineGetterSetter(
-    element,
+  Util.defineGetterSetter(element,
     'w',
     function() {
       return Element.getRect(this).width;
-    },
-    function(val) {
+    }, function(val) {
       this.style.width = `${val}px`;
     }
   );
-  Util.defineGetterSetter(
-    element,
+  Util.defineGetterSetter(element,
     'h',
     function() {
       return Element.getRect(this).height;
-    },
-    function(val) {
+    }, function(val) {
       this.style.height = `${val}px`;
     }
   );
@@ -113,14 +100,12 @@ export const ElementWHProps = element => {
 
 export const ElementPosProps = (element, proxy) => {
   proxy = proxy || new ElementRectProxy(element);
-  Util.defineGetterSetter(
-    element,
+  Util.defineGetterSetter(element,
     'x',
     () => proxy.getPos().x,
     x => proxy.setPos({ x })
   );
-  Util.defineGetterSetter(
-    element,
+  Util.defineGetterSetter(element,
     'x1',
     () => proxy.getPos().x,
     value =>
@@ -130,8 +115,7 @@ export const ElementPosProps = (element, proxy) => {
         return rect;
       })
   );
-  Util.defineGetterSetter(
-    element,
+  Util.defineGetterSetter(element,
     'x2',
     () => proxy.getRect(rect => rect.x + rect.width),
     value =>
@@ -141,14 +125,12 @@ export const ElementPosProps = (element, proxy) => {
         return rect;
       })
   );
-  Util.defineGetterSetter(
-    element,
+  Util.defineGetterSetter(element,
     'y',
     () => proxy.getPos().y,
     y => proxy.setPos({ y })
   );
-  Util.defineGetterSetter(
-    element,
+  Util.defineGetterSetter(element,
     'y1',
     () => proxy.getPos().y,
     value =>
@@ -158,8 +140,7 @@ export const ElementPosProps = (element, proxy) => {
         return rect;
       })
   );
-  Util.defineGetterSetter(
-    element,
+  Util.defineGetterSetter(element,
     'y2',
     () => proxy.getRect(rect => rect.y + rect.height),
     value =>
@@ -173,26 +154,22 @@ export const ElementPosProps = (element, proxy) => {
 
 export const ElementSizeProps = (element, proxy) => {
   proxy = proxy || new ElementRectProxy(element);
-  Util.defineGetterSetter(
-    element,
+  Util.defineGetterSetter(element,
     'w',
     () => proxy.getRect().width,
     width => proxy.setSize({ width })
   );
-  Util.defineGetterSetter(
-    element,
+  Util.defineGetterSetter(element,
     'width',
     () => proxy.getRect().width,
     width => proxy.setSize({ width })
   );
-  Util.defineGetterSetter(
-    element,
+  Util.defineGetterSetter(element,
     'h',
     () => proxy.getRect().height,
     height => proxy.setSize({ height })
   );
-  Util.defineGetterSetter(
-    element,
+  Util.defineGetterSetter(element,
     'height',
     () => proxy.getRect().height,
     height => proxy.setSize({ height })

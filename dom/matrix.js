@@ -80,11 +80,9 @@ export const MatrixProps = Object.keys(Matrix.prototype.keyIndex).reduce((acc, k
     [k]: {
       get: function() {
         return this[i];
-      },
-      set: function(v) {
+      }, set: function(v) {
         this[i] = v;
-      },
-      enumerable: true
+      }, enumerable: true
     }
   };
 }, {});
@@ -347,13 +345,11 @@ Matrix.prototype.scale_sign = function() {
 Matrix.prototype.decompose = function(degrees = false, useLU = true) {
   var a = this[0],
     b = this[3],
-    c = this[1],
-    d = this[4];
+    c = this[1], d = this[4];
 
   var translate = { x: this[2], y: this[5] },
     rotation = 0,
-    scale = { x: 1, y: 1 },
-    skew = { x: 0, y: 0 };
+    scale = { x: 1, y: 1 }, skew = { x: 0, y: 0 };
 
   var determ = a * d - b * c,
     r,
@@ -370,8 +366,7 @@ Matrix.prototype.decompose = function(degrees = false, useLU = true) {
     if(b) {
       let sign = Matrix.prototype.scale_sign.call(this);
       rotation = (Math.atan2(this[3], this[4]) + Math.atan2(-sign * this[1], sign * this[0])) / 2;
-      const cos = Math.cos(rotation),
-        sin = Math.sin(rotation);
+      const cos = Math.cos(rotation), sin = Math.sin(rotation);
       scale = {
         x: calcFromValues(this[0] / cos, cos, -this[1] / sin, sin),
         y: calcFromValues(this[4] / cos, cos, this[3] / sin, sin)

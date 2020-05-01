@@ -85,11 +85,9 @@ export class Element extends Node {
       let value = a[key];
       attributes[Util.camelize(key)] = value;
     }
-    return Object.assign(
-      {
+    return Object.assign({
         tagName: /[a-z]/.test(e.tagName) ? e.tagName : e.tagName.toLowerCase()
-      },
-      attributes,
+      }, attributes,
       children /*,
       ns*/
     );
@@ -434,8 +432,7 @@ export class Element extends Node {
                 return Object.entries(this)
                   .map(([k, v]) => `${Util.decamelize(k, '-')}: ${v};\n`)
                   .join('');
-              },
-              enumerable: false
+              }, enumerable: false
             });
           } catch(err) {}
         }
@@ -507,14 +504,11 @@ export class Element extends Node {
       return accu;
     }
     str = dumpElem(elem, '');
-    str = Element.walk(
-      elem.firstElementChild,
+    str = Element.walk(elem.firstElementChild,
       (e, a, r, d) => {
         if(e && e.attributes) return dumpElem(e, a + '\n', r, d);
         return null;
-      },
-      str
-    );
+      }, str);
     return str;
   }
 

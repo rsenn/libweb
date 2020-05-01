@@ -18,13 +18,11 @@ export const mathutil = function() {
     return t;
   };
   var sqrlen = function(t) {
-    var t0 = t[0],
-      t1 = t[1];
+    var t0 = t[0], t1 = t[1];
     return t0 * t0 + t1 * t1;
   };
   var len = function(t) {
-    var t0 = t[0],
-      t1 = t[1];
+    var t0 = t[0], t1 = t[1];
     return Math.sqrt(t0 * t0 + t1 * t1);
   };
   var setlen = function(t, newlen) {

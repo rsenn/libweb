@@ -6,8 +6,7 @@ export function SpatialHash(range, bucketSize) {
 }
 
 SpatialHash.prototype.init = function() {
-  var b = getBounds(this.range),
-    bucketSize = this.bucketSize;
+  var b = getBounds(this.range), bucketSize = this.bucketSize;
 
   this.x1 = ~~(b.left / bucketSize);
   this.x2 = ~~(b.right / bucketSize);
@@ -17,8 +16,7 @@ SpatialHash.prototype.init = function() {
   var z = {};
   var i = this.x1;
   for(; i <= this.x2; i++) {
-    var j = this.y1,
-      a = {};
+    var j = this.y1, a = {};
 
     for(; j <= this.y2; j++) a[j] = [];
     z[i] = a;
@@ -34,8 +32,7 @@ SpatialHash.prototype.init = function() {
 
 SpatialHash.prototype.insert = function(item) {
   if(!item.range) return;
-  var b = getBounds(item.range),
-    bucketSize = this.bucketSize;
+  var b = getBounds(item.range), bucketSize = this.bucketSize;
 
   var x1 = Math.max(~~(b.left / bucketSize), this.x1);
   var x2 = Math.min(~~(b.right / bucketSize), this.x2);
@@ -49,8 +46,7 @@ SpatialHash.prototype.insert = function(item) {
     id: this.nId++
   };
 
-  var i = x1,
-    j;
+  var i = x1, j;
   for(; i <= x2; i++) {
     j = y1;
     for(; j <= y2; j++) this.hashes[i][j].push(item);
@@ -88,8 +84,7 @@ SpatialHash.prototype.update = function(item) {
 };
 
 SpatialHash.prototype.srch = function(range, selector, callback, returnOnFirst) {
-  var b = getBounds(range),
-    bucketSize = this.bucketSize;
+  var b = getBounds(range), bucketSize = this.bucketSize;
 
   // range might be larger than the hash's size itself
   var x1 = Math.max(~~(b.left / bucketSize), this.x1);
@@ -143,8 +138,7 @@ function intersects(a, b) {
     ha = a.h * 2,
     xb = b.x - b.w,
     yb = b.y - b.h,
-    wb = b.w * 2,
-    hb = b.h * 2;
+    wb = b.w * 2, hb = b.h * 2;
 
   return xa <= xb + wb && xa + wa >= xb && ya <= yb + hb && ya + ha >= yb;
 }

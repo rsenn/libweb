@@ -20,7 +20,7 @@ import { SVG } from "./dom/svg.js";
 //import { ReactComponent } from "./dom/reactComponent.js";
 import { Container } from "./dom/container.js";
 import { Layer, Renderer } from "./dom/layer.js";
-//import { Select } from "./dom/select.js";
+import { Select } from "./dom/select.js";
 import { Align, Anchor } from "./geom/align.js";
 import { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from "./dom/elementRect.js";
 
@@ -186,7 +186,7 @@ export { SVG } from "./dom/svg.js";
 //export { ReactComponent } from "./dom/reactComponent.js";
 export { Container } from "./dom/container.js";
 export { Layer, Renderer } from "./dom/layer.js";
-//export { Select } from "./dom/select.js";
+export { Select } from "./dom/select.js";
 export { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from "./dom/elementRect.js";
 export { Align, Anchor } from "./geom/align.js";
 
