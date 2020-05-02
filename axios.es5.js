@@ -64,7 +64,7 @@ const httpClient = (() => {
           url = _ref2.url;
           method = _ref2.method;
           data = _ref2.data;
-          console.error("axios ERROR:", {
+          console.error('axios ERROR:', {
             code,
             url,
             method,
@@ -78,7 +78,7 @@ const httpClient = (() => {
     }, null, null, null, Promise);
   });
 
-  let request = (fn, name = "call") => function _callee2() {
+  let request = (fn, name = 'call') => function _callee2() {
     var args,
         _args2 = arguments;
     return _regenerator.default.async(function _callee2$(_context2) {
@@ -86,7 +86,7 @@ const httpClient = (() => {
         case 0:
           args = [..._args2];
 
-          if (typeof args[0] == "string" && args[0].startsWith("/")) {
+          if (typeof args[0] == 'string' && args[0].startsWith('/')) {
             args[0] = _util.default.makeURL({
               location: args[0]
             });
@@ -106,9 +106,9 @@ const httpClient = (() => {
   };
 
   let ret = request(client);
-  ret.post = request(client.post, "post");
-  ret.get = request(client.get, "get");
-  ret.head = request(client.head, "head");
+  ret.post = request(client.post, 'post');
+  ret.get = request(client.get, 'get');
+  ret.head = request(client.head, 'head');
   return ret;
 })();
 

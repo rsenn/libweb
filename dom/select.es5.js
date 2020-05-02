@@ -7,37 +7,50 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Select = void 0;
 
-var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends"));
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
-var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
+require("core-js/modules/es7.symbol.async-iterator");
 
-var _react = _interopRequireDefault(require("react"));
+require("core-js/modules/es6.symbol");
 
-var _jsxFileName = "/home/roman/Dokumente/Sources/plot-cv/lib/dom/select.js";
-var __jsx = _react.default.createElement;
+require("core-js/modules/web.dom.iterable");
 
-class Select extends _react.default.Component {
-  constructor(props) {
-    super(props);
-  }
+var _element = require("./element.es5.js");
 
-  render() {
-    const _this$props = this.props,
-          options = _this$props.options,
-          props = (0, _objectWithoutProperties2.default)(_this$props, ["options"]);
+class Select {
+  static create(entries, factory = _element.Element.create) {
+    let elem = factory('select', {});
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
 
-    const Option = (_ref) => {
-      let children = _ref.children,
-          props = (0, _objectWithoutProperties2.default)(_ref, ["children"]);
-      return __jsx("option", (0, _extends2.default)({}, props, {
-        __self: this,
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 14,
-          columnNumber: 14
+    try {
+      for (var _iterator = entries[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        let _step$value = (0, _slicedToArray2.default)(_step.value, 2),
+            value = _step$value[0],
+            text = _step$value[1];
+
+        let o = factory('option', {
+          value,
+          innerHTML: text
+        }, elem);
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return != null) {
+          _iterator.return();
         }
-      }), children);
-    };
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+
+    return elem;
   }
 
 }

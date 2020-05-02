@@ -23,7 +23,7 @@ function Size(arg) {
     arg = args[0];
   }
 
-  if (typeof arg == "object") {
+  if (typeof arg == 'object') {
     if (arg.width !== undefined || arg.height !== undefined) {
       arg = args.shift();
       obj.width = arg.width;
@@ -38,7 +38,7 @@ function Size(arg) {
       obj.height = arg.bottom - arg.top;
     }
   } else {
-    while (typeof arg == "object" && (arg instanceof Array || "length" in arg)) {
+    while (typeof arg == 'object' && (arg instanceof Array || 'length' in arg)) {
       args = [...arg];
       arg = args[0];
     }
@@ -46,14 +46,17 @@ function Size(arg) {
     if (args && args.length >= 2) {
       let w = args.shift();
       let h = args.shift();
-      if (typeof w == "object" && "baseVal" in w) w = w.baseVal.value;
-      if (typeof h == "object" && "baseVal" in h) h = h.baseVal.value;
-      obj.width = typeof w == "number" ? w : parseFloat(w.replace(/[^-.0-9]*$/, ""));
-      obj.height = typeof h == "number" ? h : parseFloat(h.replace(/[^-.0-9]*$/, ""));
-      obj.units = {
-        width: typeof w == "number" ? "px" : w.replace(obj.width.toString(), ""),
-        height: typeof h == "number" ? "px" : h.replace(obj.height.toString(), "")
-      };
+      if (typeof w == 'object' && 'baseVal' in w) w = w.baseVal.value;
+      if (typeof h == 'object' && 'baseVal' in h) h = h.baseVal.value;
+      obj.width = typeof w == 'number' ? w : parseFloat(w.replace(/[^-.0-9]*$/, ''));
+      obj.height = typeof h == 'number' ? h : parseFloat(h.replace(/[^-.0-9]*$/, ''));
+      Object.defineProperty(obj, 'units', {
+        value: {
+          width: typeof w == 'number' ? 'px' : w.replace(obj.width.toString(), ''),
+          height: typeof h == 'number' ? 'px' : h.replace(obj.height.toString(), '')
+        },
+        enumerable: false
+      });
     }
   }
 
@@ -62,7 +65,11 @@ function Size(arg) {
   if (!(obj instanceof Size)) return obj;
 }
 
-Size.prototype.convertUnits = function (w = "window" in global ? window : null) {
+Size.prototype.width = NaN;
+Size.prototype.height = NaN;
+Size.prototype.units = null;
+
+Size.prototype.convertUnits = function (w = 'window' in global ? window : null) {
   if (w === null) return this;
   const view = {
     vw: w.innerWidth,
@@ -90,8 +97,8 @@ Size.prototype.aspect = function () {
 
 Size.prototype.toCSS = function () {
   let ret = {};
-  if (this.width !== undefined) ret.width = this.width + (this.units && "width" in this.units ? this.units.width : "px");
-  if (this.height !== undefined) ret.height = this.height + (this.units && "height" in this.units ? this.units.height : "px");
+  if (this.width !== undefined) ret.width = this.width + (this.units && 'width' in this.units ? this.units.width : 'px');
+  if (this.height !== undefined) ret.height = this.height + (this.units && 'height' in this.units ? this.units.height : 'px');
   return ret;
 };
 
@@ -107,6 +114,12 @@ Size.prototype.isSquare = function () {
 
 Size.prototype.area = function () {
   return this.width * this.height;
+};
+
+Size.prototype.resize = function (width, height) {
+  this.width = width;
+  this.height = height;
+  return this;
 };
 
 Size.prototype.sum = function (other) {
@@ -188,7 +201,7 @@ const isSize = o => o && (o.width !== undefined && o.height !== undefined || o.x
 
 exports.isSize = isSize;
 
-for (var _i5 = 0, _arr5 = ["toCSS", "isSquare", "round", "sum", "add", "diff", "sub", "prod", "mul", "quot", "div"]; _i5 < _arr5.length; _i5++) {
+for (var _i5 = 0, _arr5 = ['toCSS', 'isSquare', 'round', 'sum', 'add', 'diff', 'sub', 'prod', 'mul', 'quot', 'div']; _i5 < _arr5.length; _i5++) {
   let name = _arr5[_i5];
 
   Size[name] = points => Size.prototype[name].call(points);

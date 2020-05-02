@@ -18,14 +18,14 @@ function TRBL(arg) {
   let ret = this instanceof TRBL ? this : {};
   let args = [...arguments];
 
-  if (typeof arg === "object" && !arg instanceof Array) {
+  if (typeof arg === 'object' && !arg instanceof Array) {
     Object.keys(arg).forEach(k => {
       const matches = /(top|right|bottom|left)/i.exec(k);
       ret[matches[0].toLowerCase()] = parseInt(arg[k]);
     });
   } else if (arg) {
     if (args.length > 1) arg = args;
-    if (typeof arg === "string") arg = [...arg.matchAll(/^[0-9.]+(|px|em|rem|pt|cm|mm)$/g)];else if (arg.length == 4) arg = arg.map(v => parseInt(v));
+    if (typeof arg === 'string') arg = [...arg.matchAll(/^[0-9.]+(|px|em|rem|pt|cm|mm)$/g)];else if (arg.length == 4) arg = arg.map(v => parseInt(v));
     ret.top = arg[0];
     ret.right = arg[1];
     ret.bottom = arg[2];
@@ -56,13 +56,13 @@ TRBL.prototype.isNaN = function () {
   return isNaN(this.top) || isNaN(this.right) || isNaN(this.bottom) || isNaN(this.left);
 };
 
-Object.defineProperty(TRBL.prototype, "inset", {
+Object.defineProperty(TRBL.prototype, 'inset', {
   get() {
     return rect => _rect.Rect.inset(rect, this);
   }
 
 });
-Object.defineProperty(TRBL.prototype, "outset", {
+Object.defineProperty(TRBL.prototype, 'outset', {
   get() {
     return rect => _rect.Rect.outset(rect, this);
   }
@@ -110,15 +110,15 @@ TRBL.union = (trbl, other) => ({
 
 TRBL.toRect = trbl => new _rect.Rect(trbl.left, trbl.top, trbl.right - trbl.left, trbl.bottom - trbl.top);
 
-TRBL.prototype.toString = function (unit = "px") {
-  return "" + this.top + "" + unit + " " + this.right + "" + unit + " " + this.bottom + "" + unit + " " + this.left + unit;
+TRBL.prototype.toString = function (unit = 'px') {
+  return '' + this.top + '' + unit + ' ' + this.right + '' + unit + ' ' + this.bottom + '' + unit + ' ' + this.left + unit;
 };
 
 TRBL.prototype.toSource = function () {
-  return "{top:" + this.top + ",right:" + this.right + ",bottom:" + this.bottom + ",left:" + this.left + "}";
+  return '{top:' + this.top + ',right:' + this.right + ',bottom:' + this.bottom + ',left:' + this.left + '}';
 };
 
-for (var _i = 0, _arr = ["null", "isNaN", "outset", "toRect", "toSource"]; _i < _arr.length; _i++) {
+for (var _i = 0, _arr = ['null', 'isNaN', 'outset', 'toRect', 'toSource']; _i < _arr.length; _i++) {
   let name = _arr[_i];
 
   TRBL[name] = points => TRBL.prototype[name].call(points);

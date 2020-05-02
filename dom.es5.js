@@ -164,12 +164,6 @@ Object.defineProperty(exports, "SVG", {
     return _svg.SVG;
   }
 });
-Object.defineProperty(exports, "ReactComponent", {
-  enumerable: true,
-  get: function get() {
-    return _reactComponent.ReactComponent;
-  }
-});
 Object.defineProperty(exports, "Container", {
   enumerable: true,
   get: function get() {
@@ -256,8 +250,6 @@ require("core-js/modules/es6.symbol");
 
 require("core-js/modules/web.dom.iterable");
 
-var _path = require("./svg/path.es5.js");
-
 var _util = _interopRequireDefault(require("./util.es5.js"));
 
 var _point = require("./geom/point.es5.js");
@@ -292,8 +284,6 @@ var _css = require("./dom/css.es5.js");
 
 var _svg = require("./dom/svg.es5.js");
 
-var _reactComponent = require("./dom/reactComponent.es5.js");
-
 var _container = require("./dom/container.es5.js");
 
 var _layer = require("./dom/layer.es5.js");
@@ -310,7 +300,7 @@ function dom() {
   let ret = _util.default.array();
 
   const extend = (e, functions) => {
-    const keys = [..._util.default.members(functions)].filter(key => ["callee", "caller", "arguments", "call", "bind", "apply", "prototype", "constructor", "length"].indexOf(key) == -1 && typeof functions[key] == "function");
+    const keys = [..._util.default.members(functions)].filter(key => ['callee', 'caller', 'arguments', 'call', 'bind', 'apply', 'prototype', 'constructor', 'length'].indexOf(key) == -1 && typeof functions[key] == 'function');
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
     var _iteratorError = undefined;
@@ -336,7 +326,7 @@ function dom() {
     }
   };
 
-  args = args.map(arg => typeof arg == "string" ? _element.Element.findAll(arg) : arg);
+  args = args.map(arg => typeof arg == 'string' ? _element.Element.findAll(arg) : arg);
   var _iteratorNormalCompletion2 = true;
   var _didIteratorError2 = false;
   var _iteratorError2 = undefined;
@@ -375,7 +365,7 @@ function dom() {
 }
 
 const isNumber = a => {
-  return String(a).replace(/^[0-9]*$/, "") == "";
+  return String(a).replace(/^[0-9]*$/, '') == '';
 };
 
 exports.isNumber = isNumber;
@@ -387,7 +377,7 @@ function Unit(str) {
     }
 
   };
-  u.name = str.replace(/^[a-z]*/, "");
+  u.name = str.replace(/^[a-z]*/, '');
   return u;
 }
 
@@ -443,7 +433,7 @@ const CSSTransformSetters = element => ({
 
   updateTransformation() {
     const t = this.transformation.toString();
-    console.log("CSSTransformSetters.updateTransformation", t);
+    console.log('CSSTransformSetters.updateTransformation', t);
     this.style.transform = t;
   }
 
@@ -453,10 +443,10 @@ exports.CSSTransformSetters = CSSTransformSetters;
 
 class Transition {
   constructor(property, delay, duration, timing) {
-    this.property = "none";
-    this.delay = "";
-    this.duration = "";
-    this.timing = "";
+    this.property = 'none';
+    this.delay = '';
+    this.duration = '';
+    this.timing = '';
     this.property = property;
     this.delay = delay;
     this.duration = duration;
@@ -483,10 +473,10 @@ class TransitionList extends Array {
 
   get css() {
     return {
-      transitionDelay: this.propertyList("delay").join(", "),
-      transitionDuration: this.propertyList("duration").join(", "),
-      transitionProperty: this.propertyList("property").join(", "),
-      transitionTimingFunction: this.propertyList("timing").join(", ")
+      transitionDelay: this.propertyList('delay').join(', '),
+      transitionDuration: this.propertyList('duration').join(', '),
+      transitionProperty: this.propertyList('property').join(', '),
+      transitionTimingFunction: this.propertyList('timing').join(', ')
     };
   }
 
@@ -533,12 +523,10 @@ var _default = Object.assign(dom, {
   Point: _point.Point,
   PointList: _pointList.PointList,
   Polyline: _pointList.Polyline,
-  ReactComponent: _reactComponent.ReactComponent,
   Rect: _rect.Rect,
   Renderer: _layer.Renderer,
   RGBA: _rgba.RGBA,
   HSLA: _hsla.HSLA,
-  Select: _select.Select,
   Size: _size.Size,
   SVG: _svg.SVG,
   Timer: _timer.Timer,

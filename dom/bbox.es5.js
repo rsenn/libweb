@@ -145,7 +145,7 @@ class BBox {
   transform(fn = arg => arg, out) {
     if (!out) out = this;
 
-    for (var _i = 0, _arr = ["x1", "y1", "x2", "y2"]; _i < _arr.length; _i++) {
+    for (var _i = 0, _arr = ['x1', 'y1', 'x2', 'y2']; _i < _arr.length; _i++) {
       let prop = _arr[_i];
       const v = this[prop];
       out[prop] = fn(v);
@@ -161,7 +161,7 @@ class BBox {
   }
 
   static from(iter, tp = p => p) {
-    if (typeof iter == "object" && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
+    if (typeof iter == 'object' && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
     let r = new BBox();
     let result = iter.next();
     let p;

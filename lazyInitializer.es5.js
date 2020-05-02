@@ -28,10 +28,10 @@ function Instance({
   let inst = trackable && trackable.subscribe !== undefined ? trackable : (0, _trkl.trkl)(initVal);
   if (callback) inst.subscribe(value => callback(value, inst));
   inst.subscribe(newVal => {
-    if (newVal) console.log("new instance: ", value);
+    if (newVal) console.log('new instance: ', value);
   });
 
-  _trkl.trkl.property(inst, "current", inst);
+  _trkl.trkl.property(inst, 'current', inst);
 
   return inst;
 }
@@ -99,20 +99,20 @@ function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prototyp) {
   function proxify(arr, cache = {}) {
     return new Proxy(arr, {
       get(target, key, receiver) {
-        let index = typeof key == "string" && /^[0-9]+$/.test(key) ? parseInt(key) : key;
+        let index = typeof key == 'string' && /^[0-9]+$/.test(key) ? parseInt(key) : key;
         if (cache[key]) return cache[key];
 
-        if (key == "length") {
+        if (key == 'length') {
           index = key;
-        } else if (typeof index == "string") {
+        } else if (typeof index == 'string') {
           index = _util.Util.findKey(target, (v, k) => lookup(v) === key);
-          if (typeof index == "string" && /^[0-9]+$/.test(index)) index = parseInt(index);
-          if (typeof index != "number" || typeof index != "string") index = key;
+          if (typeof index == 'string' && /^[0-9]+$/.test(index)) index = parseInt(index);
+          if (typeof index != 'number' || typeof index != 'string') index = key;
         }
 
-        let ret = typeof proto[key] == "function" ? proto[key] : Reflect.get(target, index, receiver);
+        let ret = typeof proto[key] == 'function' ? proto[key] : Reflect.get(target, index, receiver);
 
-        if (typeof ret == "object" && typeof index == "number") {
+        if (typeof ret == 'object' && typeof index == 'number') {
           key = lookup(ret);
           cache[key] = ctor(ret, index);
           ret = cache[key];
@@ -130,7 +130,7 @@ function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prototyp) {
       has(target, key) {
         if (Reflect.has(target, key)) return true;
         const len = target.length;
-        if (typeof key == "number") return key >= 0 && key < len;
+        if (typeof key == 'number') return key >= 0 && key < len;
 
         for (let i = 0; i < len; i++) if (lookup(target[i]) === key) return true;
 

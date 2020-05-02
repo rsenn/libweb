@@ -50,7 +50,7 @@ class Graph {
     };
     this.damping = damping;
     this.timestep = timestep;
-    this.gravitate_to_origin = typeof gravitate_to_origin == "undefined" ? false : gravitate_to_origin;
+    this.gravitate_to_origin = typeof gravitate_to_origin == 'undefined' ? false : gravitate_to_origin;
     this.done_rendering = false;
     this.prng = prng;
     var g = this;
@@ -91,7 +91,7 @@ class Graph {
     return this.nodes[this.nodes.length - 1];
   }
 
-  findNode(value, key = "label") {
+  findNode(value, key = 'label') {
     return _util.default.find(this.nodes, value, key);
   }
 
@@ -495,7 +495,7 @@ class Graph {
   }
 
   translate(x, y) {
-    let p = typeof y == "number" ? new _dom.Point(x, y) : x;
+    let p = typeof y == 'number' ? new _dom.Point(x, y) : x;
 
     for (let i = 0; i < this.nodes.length; i++) {
       _dom.Point.move(this.nodes[i], p.x, p.y);
@@ -548,7 +548,7 @@ class Node extends _dom.Point {
   }
 
   toJS() {
-    let ret = _util.default.filterKeys(this, key => ["charge", "mass", "label", "x", "y", "id", "color"].indexOf(key) != -1);
+    let ret = _util.default.filterKeys(this, key => ['charge', 'mass', 'label', 'x', 'y', 'id', 'color'].indexOf(key) != -1);
 
     if (this.node && this.node.id !== undefined) ret.id = this.node.id;
 
@@ -568,7 +568,7 @@ class Edge extends _dom.Line {
     if (node_b) this.b = node_b instanceof Node ? node_b : Node.clone(node_b);
 
     if (!(node_a && node_b)) {
-      throw new Error("Edge requires 2 nodes");
+      throw new Error('Edge requires 2 nodes');
     }
 
     this.draggable = false;

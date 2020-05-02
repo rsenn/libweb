@@ -19,8 +19,6 @@ require("core-js/modules/es6.regexp.to-string");
 
 require("regenerator-runtime/runtime");
 
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
-
 require("core-js/modules/es7.object.entries");
 
 require("core-js/modules/web.dom.iterable");
@@ -30,6 +28,8 @@ require("core-js/modules/es6.object.to-string");
 require("core-js/modules/es6.map");
 
 var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
+
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
 var _element = require("./element.es5.js");
 
@@ -59,61 +59,57 @@ class SVG extends _element.Element {
       delete attr.text;
     }
 
-    if (name == "svg") {
-      attr.version = "1.1";
+    if (name == 'svg') {
+      attr.version = '1.1';
       attr.xmlns = SVG.ns;
 
       attrfn = n => n;
     } else {
-      attrfn = _util.default.decamelize;
+      attrfn = arg => arg;
     }
 
-    _util.default.foreach(attr, (value, name) => svg.setAttribute(attrfn(name, "-"), value));
+    _util.default.foreach(attr, (value, name) => svg.setAttribute(attrfn(name, '-'), value));
 
     if (parent && parent.appendChild) parent.appendChild(svg);
     if (text) svg.innerHTML = text;
     return svg;
   }
 
-  static factory(parent, size = null) {
-    let delegate = {
+  static factory(...args) {
+    let delegate = 'appendChild' in args[0] ? {} : args.shift();
+    let parent = args.shift();
+    let size = args.length > 0 ? args.shift() : null;
+    delegate = _objectSpread({
       create: tag => document.createElementNS(SVG.ns, tag),
       append_to: elem => parent.appendChild(elem),
-      setattr: (elem, name, value) => name != "ns" && elem.setAttributeNS(document.namespaceURI, _util.default.decamelize(name, "-"), value),
-      setcss: (elem, css) => elem.setAttributeNS(null, "style", css)
-    };
+      setattr: (elem, name, value) => name != 'ns' && elem.setAttributeNS(document.namespaceURI, _util.default.decamelize(name, '-'), value),
+      setcss: (elem, css) => elem.setAttributeNS(null, 'style', css)
+    }, delegate);
     if (size == null) size = (0, _size2.Size)(_rect.Rect.round(_element.Element.rect(parent)));
     const _size = size,
           width = _size.width,
           height = _size.height;
-    if (parent && parent.tagName == "svg") delegate.root = parent;else if (this !== SVG && this && this.appendChild) delegate.root = this;else {
-      delegate.root = SVG.create("svg", {
-        width,
-        height,
-        viewBox: "0 0 " + width + " " + height + ""
-      }, parent);
-    }
-
-    if (!delegate.root.firstElementChild || delegate.root.firstElementChild.tagName != "defs") {
-      SVG.create("defs", {}, delegate.root);
-    }
+    if (parent && parent.tagName == 'svg') delegate.root = parent;else if (this !== SVG && this && this.appendChild) delegate.root = this;else delegate.root = SVG.create('svg', {
+      width,
+      height,
+      viewBox: "0 0 ".concat(width, " ").concat(height)
+    }, parent);
+    if (!delegate.root.firstElementChild || delegate.root.firstElementChild.tagName != 'defs') SVG.create('defs', {}, delegate.root);
+    const _delegate = delegate,
+          append_to = _delegate.append_to;
 
     delegate.append_to = function (elem, p) {
       var root = p || this.root;
-
-      if (elem.tagName.indexOf("Gradient") != -1) {
-        root = root.querySelector("defs");
-      }
-
-      if (typeof root.append == "function") root.append(elem);else root.appendChild(elem);
+      if (elem.tagName.indexOf('Gradient') != -1) root = root.querySelector('defs');
+      append_to(elem, root);
     };
 
     return _element.Element.factory(delegate);
   }
 
   static matrix(element, screen = false) {
-    let e = typeof element === "string" ? _element.Element.find(element) : element;
-    let fn = screen ? "getScreenCTM" : "getCTM";
+    let e = typeof element === 'string' ? _element.Element.find(element) : element;
+    let fn = screen ? 'getScreenCTM' : 'getCTM';
     if (e && e[fn]) return Matrix.fromDOMMatrix(e[fn]());
     return null;
   }
@@ -122,7 +118,7 @@ class SVG extends _element.Element {
     parent: null,
     absolute: false
   }) {
-    let e = typeof element === "string" ? _element.Element.find(element, options.parent) : element;
+    let e = typeof element === 'string' ? _element.Element.find(element, options.parent) : element;
     let bb;
 
     if (e && e.getBBox) {
@@ -150,7 +146,7 @@ class SVG extends _element.Element {
         _ref$line = _ref.line,
         line = _ref$line === void 0 ? false : _ref$line,
         props = (0, _objectWithoutProperties2.default)(_ref, ["stops", "factory", "parent", "line"]);
-    var defs = factory("defs", {}, parent);
+    var defs = factory('defs', {}, parent);
     const map = new Map(stops instanceof Array ? stops : Object.entries(stops));
     let rect = {};
 
@@ -164,10 +160,10 @@ class SVG extends _element.Element {
       };
     }
 
-    let grad = factory(type + "-gradient", _objectSpread({}, props, {}, rect), defs);
+    let grad = factory(type + '-gradient', _objectSpread({}, props, {}, rect), defs);
     map.forEach((color, o) => {
-      factory("stop", {
-        offset: Math.round(o * 100) + "%",
+      factory('stop', {
+        offset: Math.round(o * 100) + '%',
         stopColor: color
       }, grad);
     });
@@ -182,7 +178,7 @@ class SVG extends _element.Element {
 
     ret.element = elem.ownerSVGElement;
 
-    _util.default.defineGetterSetter(ret, "rect", function () {
+    _util.default.defineGetterSetter(ret, 'rect', function () {
       return _element.Element.rect(this.element);
     });
 
@@ -199,7 +195,7 @@ class SVG extends _element.Element {
       return _regenerator.default.wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
-            if (typeof e == "string") pathStr = e;else pathStr = e.getAttribute("d");
+            if (typeof e == 'string') pathStr = e;else pathStr = e.getAttribute('d');
             path = (0, _pathParser.makeAbsolute)((0, _pathParser.parseSVG)(pathStr));
             i = 0;
 
@@ -213,7 +209,7 @@ class SVG extends _element.Element {
             code = cmd.code, x = cmd.x, y = cmd.y, x0 = cmd.x0, y0 = cmd.y0;
             if (x == undefined) x = x0;
             if (y == undefined) y = y0;
-            move = cmd.code.toLowerCase() == "m";
+            move = cmd.code.toLowerCase() == 'm';
 
             if (!(prev && !move)) {
               _context.next = 14;
@@ -224,7 +220,7 @@ class SVG extends _element.Element {
               x: x0,
               y: y0
             }, cmd);
-            console.log("lineIterator", {
+            console.log('lineIterator', {
               i,
               code,
               x,
@@ -276,10 +272,9 @@ class SVG extends _element.Element {
               point.move = !(isin.stroke && isin.fill);
               point.ok = !point.move && prev.angle != point.angle;
 
-              const pad = _util.default.padFn(12, " ", (str, pad) => "".concat(pad).concat(str));
+              const pad = _util.default.padFn(12, ' ', (str, pad) => "".concat(pad).concat(str));
 
               if (point.ok) {
-                console.log("pos: ".concat(pad(i, 3), ", move: ").concat(isin || point.move, " point: ").concat(pad(point), ", slope: ").concat(pad(slope && slope.toFixed(3)), ", angle: ").concat(point.angle.toFixed(3), ", d: ").concat(d.toFixed(3)));
                 let ret;
 
                 try {
@@ -367,15 +362,15 @@ class SVG extends _element.Element {
   }
 
   static viewbox(element, rect) {
-    if (typeof element == "string") element = _element.Element.find(element);
+    if (typeof element == 'string') element = _element.Element.find(element);
     if (element.ownerSVGElement) element = element.ownerSVGElement;
     let vbattr;
-    if (rect) element.setAttribute("viewBox", "toString" in rect ? rect.toString() : rect);
-    vbattr = _element.Element.attr(element, "viewBox");
+    if (rect) element.setAttribute('viewBox', 'toString' in rect ? rect.toString() : rect);
+    vbattr = _element.Element.attr(element, 'viewBox');
     return new _rect.Rect(vbattr.split(/\s+/g).map(parseFloat));
   }
 
 }
 
 exports.SVG = SVG;
-SVG.ns = "http://www.w3.org/2000/svg";
+SVG.ns = 'http://www.w3.org/2000/svg';

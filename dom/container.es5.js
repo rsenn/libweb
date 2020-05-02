@@ -14,7 +14,7 @@ class Container {
       append_to: function append_to(elem, p = null) {
         if (p == null) {
           if (this.root == null) {
-            this.root = document.createElement("div");
+            this.root = document.createElement('div');
             this.append_to(this.root, parent);
           }
 

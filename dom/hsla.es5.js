@@ -1,5 +1,7 @@
 "use strict";
 
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -12,12 +14,14 @@ require("core-js/modules/es6.object.to-string");
 
 var _rgba = require("./rgba.es5.js");
 
+var _util = _interopRequireDefault(require("../util.es5.js"));
+
 function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
   const args = [...arguments];
   let c = [];
   let ret = this instanceof HSLA ? this : {};
 
-  if (typeof args[0] == "object" && "h" in args[0] && "s" in args[0] && "l" in args[0]) {
+  if (typeof args[0] == 'object' && 'h' in args[0] && 's' in args[0] && 'l' in args[0]) {
     ret.h = args[0].h;
     ret.s = args[0].s;
     ret.l = args[0].l;
@@ -30,24 +34,25 @@ function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
   } else {
     const arg = args[0];
 
-    if (typeof arg === "string") {
+    if (typeof arg === 'string') {
       var matches = /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) || /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
-      if (matches != null) matches = [...matches].slice(1);
+      if (matches != null) c = [...matches].slice(1);
     }
 
+    if (c.length < 3) throw new Error('Invalid HSLA color:' + args);
     ret.h = c[0];
     ret.s = c[1];
     ret.l = c[2];
     ret.a = c[3] !== undefined ? c[3] : 1.0;
-    ["h", "s", "l", "a"].forEach(channel => {
-      if (String(ret[channel]).endsWith("%")) ret[channel] = parseFloat(ret[channel].slice(0, ret[channel].length - 1));else ret[channel] = parseFloat(ret[channel]);
+    ['h', 's', 'l', 'a'].forEach(channel => {
+      if (String(ret[channel]).endsWith('%')) ret[channel] = parseFloat(ret[channel].slice(0, -1));else ret[channel] = parseFloat(ret[channel]) * (channel == 'a' || channel == 'h' ? 1 : 100);
     });
   }
 
   if (!(ret instanceof HSLA)) return ret;
 }
 
-HSLA.prototype.properties = ["h", "s", "l", "a"];
+HSLA.prototype.properties = ['h', 's', 'l', 'a'];
 
 HSLA.prototype.css = function () {
   const hsla = HSLA.clamp(HSLA.round(this));
@@ -133,11 +138,19 @@ HSLA.prototype.toRGBA = function () {
 };
 
 HSLA.prototype.toString = function () {
-  if (this.a == 1) return "hsl(".concat(this.h, ",").concat(this.s, "%,").concat(this.l, "%)");
-  return "hsla(".concat(this.h, ",").concat(this.s, "%,").concat(this.l, "%,").concat(this.a, ")");
+  const h = _util.default.roundTo(this.h, 360 / 255, 0);
+
+  const s = _util.default.roundTo(this.s, 100 / 255, 2);
+
+  const l = _util.default.roundTo(this.l, 100 / 255, 2);
+
+  const a = _util.default.roundTo(this.a, 1 / 255, 4);
+
+  if (this.a == 1) return "hsl(".concat(h, ",").concat(s, "%,").concat(l, "%)");
+  return "hsla(".concat(h, ",").concat(s, "%,").concat(l, "%,").concat(a, ")");
 };
 
-for (var _i = 0, _arr = ["css", "toHSL", "clamp", "round", "hex", "toRGBA", "toString"]; _i < _arr.length; _i++) {
+for (var _i = 0, _arr = ['css', 'toHSL', 'clamp', 'round', 'hex', 'toRGBA', 'toString']; _i < _arr.length; _i++) {
   let name = _arr[_i];
 
   HSLA[name] = points => HSLA.prototype[name].call(points);

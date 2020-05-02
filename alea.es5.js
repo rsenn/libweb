@@ -1,3 +1,11 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Alea = Alea;
+exports.default = void 0;
+
 require("core-js/modules/es6.regexp.to-string");
 
 require("core-js/modules/es6.object.to-string");
@@ -48,9 +56,9 @@ function Alea() {
     }
 
     var mash = Mash();
-    s0 = mash(" ");
-    s1 = mash(" ");
-    s2 = mash(" ");
+    s0 = mash(' ');
+    s1 = mash(' ');
+    s2 = mash(' ');
 
     for (var i = 0; i < args.length; i++) {
       s0 -= mash(args[i]);
@@ -75,7 +83,7 @@ function Alea() {
     mash = null;
   };
 
-  random.version = "Alea 0.9";
+  random.version = 'Alea 0.9';
   random.args = args;
   random.seed.apply(random, args);
 
@@ -113,7 +121,7 @@ function Mash() {
     return (n >>> 0) * 2.3283064365386963e-10;
   };
 
-  mash.version = "Mash 0.9";
+  mash.version = 'Mash 0.9';
   return mash;
 }
 
@@ -123,4 +131,5 @@ Alea.importState = function (i) {
   return random;
 };
 
-module.exports = Alea;
+var _default = Alea;
+exports.default = _default;

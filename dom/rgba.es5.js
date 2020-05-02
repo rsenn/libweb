@@ -14,8 +14,6 @@ require("core-js/modules/es6.object.to-string");
 
 var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
-require("core-js/modules/es6.regexp.constructor");
-
 require("core-js/modules/es6.regexp.match");
 
 var _hsla = require("./hsla.es5.js");
@@ -35,22 +33,22 @@ function RGBA(r = 0, g = 0, b = 0, a = 255) {
   } else if (args.length == 1) {
     const arg = args[0];
 
-    if (typeof arg === "string") {
-      if (arg.startsWith("#")) {
+    if (typeof arg === 'string') {
+      if (arg.startsWith('#')) {
         c = arg.length >= 7 ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(arg) : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(arg);
         let mul = arg.length >= 7 ? 1 : 17;
         ret.r = parseInt(c[1], 16) * mul;
         ret.g = parseInt(c[2], 16) * mul;
         ret.b = parseInt(c[3], 16) * mul;
         ret.a = c.length > 3 ? parseInt(c[4], 16) * mul : 255;
-      } else if (arg.toLowerCase().startsWith("rgb")) {
-        c = arg.match(new RegExp("/[d.]+/g")).map(x => parseFloat(x));
-        c = [...c].slice(1);
+      } else if (arg.toLowerCase().startsWith('rgb')) {
+        c = arg.match(/[\d.%]+/g).map(x => x.endsWith('%') ? parseFloat(x.slice(0, -1)) * 2.55 : +x);
+        c = [...c].slice();
         ret.r = Math.round(c[0]);
         ret.g = Math.round(c[1]);
         ret.b = Math.round(c[2]);
         ret.a = Math.round(c.length > 3 && !isNaN(c[3]) ? c[3] : 255);
-      } else if (typeof arg === "object" && arg.r !== undefined) {
+      } else if (typeof arg === 'object' && arg.r !== undefined) {
         ret.r = arg.r;
         ret.g = arg.g;
         ret.b = arg.b;
@@ -63,11 +61,18 @@ function RGBA(r = 0, g = 0, b = 0, a = 255) {
   if (!(ret instanceof RGBA)) return ret;
 }
 
-RGBA.properties = ["r", "g", "b", "a"];
+RGBA.properties = ['r', 'g', 'b', 'a'];
 
 const isRGBA = obj => RGBA.properties.every(prop => obj.hasOwnProperty(prop));
 
 exports.isRGBA = isRGBA;
+
+RGBA.fromString = str => {
+  let c = _util.default.tryCatch(() => new _hsla.HSLA(str), c => c.toRGBA(), () => undefined);
+
+  if (!c) c = _util.default.tryCatch(() => new RGBA(str), c => c, () => undefined);
+  return c;
+};
 
 RGBA.fromHex = (hex, alpha = 255) => {
   const matches = hex && (hex.length >= 7 ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(hex) : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(hex));
@@ -91,7 +96,7 @@ RGBA.prototype.hex = function () {
         b = _RGBA$clamp.b,
         a = _RGBA$clamp.a;
 
-  return "#" + ("0000000" + (r << 16 | g << 8 | b).toString(16)).slice(-6) + (a !== undefined && a != 255 ? ("0" + a.toString(16)).slice(-2) : "");
+  return '#' + ('0000000' + (r << 16 | g << 8 | b).toString(16)).slice(-6) + (a !== undefined && a != 255 ? ('0' + a.toString(16)).slice(-2) : '');
 };
 
 RGBA.prototype.toRGB = function () {
@@ -122,11 +127,16 @@ RGBA.normalize = (rgba, from = 255, to = 1.0) => ({
   a: rgba.a * to / from
 });
 
-RGBA.prototype.css = () => prop => (prop ? prop + ":" : "") + "rgba(" + (void 0).r + ", " + (void 0).g + ", " + (void 0).b + ", " + ((void 0).a / 255).toFixed(3) + ")";
+RGBA.prototype.css = () => prop => (prop ? prop + ':' : '') + 'rgba(' + (void 0).r + ', ' + (void 0).g + ', ' + (void 0).b + ', ' + ((void 0).a / 255).toFixed(3) + ')';
 
-RGBA.prototype.toString = function (sep = ", ") {
+RGBA.prototype.toString = function (sep = ',') {
   let a = this.a;
-  if (a >= 255) return "rgb(" + this.r + sep + this.g + sep + this.b + ")";else return "rgba(" + this.r + sep + this.g + sep + this.b + sep + (a / 255).toFixed(3) + ")";
+  if (a >= 255) return 'rgb(' + this.r + sep + this.g + sep + this.b + ')';else return 'rgba(' + this.r + sep + this.g + sep + this.b + sep + (a / 255).toFixed(3) + ')';
+};
+
+RGBA.prototype.toSource = function (sep = ',') {
+  let a = this.a;
+  if (a >= 255) return 'new RGBA(' + this.r + sep + this.g + sep + this.b + ')';else return 'new RGBA(' + this.r + sep + this.g + sep + this.b + sep + (a / 255).toFixed(3) + ')';
 };
 
 RGBA.prototype.normalize = function (from = 255, to = 1.0) {
@@ -308,13 +318,13 @@ RGBA.prototype.luminance = function () {
   return Y;
 };
 
-for (var _i = 0, _arr = ["hex", "toRGB", "round", "toHSLA", "toCMYK", "toLAB", "linear", "luminance"]; _i < _arr.length; _i++) {
+for (var _i = 0, _arr = ['hex', 'toRGB', 'round', 'toHSLA', 'toCMYK', 'toLAB', 'linear', 'luminance']; _i < _arr.length; _i++) {
   let name = _arr[_i];
 
   RGBA[name] = arg => RGBA.prototype[name].call(arg);
 }
 
-for (var _i2 = 0, _arr2 = ["fromLAB"]; _i2 < _arr2.length; _i2++) {
+for (var _i2 = 0, _arr2 = ['fromLAB']; _i2 < _arr2.length; _i2++) {
   let name = _arr2[_i2];
 
   RGBA[name] = arg => {
