@@ -8,8 +8,8 @@ export function KolorWheel(color) {
   this.resultList = [this];
   this.elm = null;
 
-  if(typeof color == "undefined") color = "#000000";
-  if(typeof color.validateHsl == "function") {
+  if(typeof color == 'undefined') color = '#000000';
+  if(typeof color.validateHsl == 'function') {
     this.setHsl([color.h, color.s, color.l]);
   } else {
     this.setColor(color);
@@ -17,9 +17,9 @@ export function KolorWheel(color) {
 } // KolorWheel() ctor
 
 KolorWheel.prototype.setColor = function(color) {
-  if(typeof color == "undefined") return;
+  if(typeof color == 'undefined') return;
 
-  if(typeof color == "object") {
+  if(typeof color == 'object') {
     this.setHsl(color);
   } else {
     this.setHex(color);
@@ -46,7 +46,7 @@ KolorWheel.prototype.validateHsl = function() {
 }; // validateHsl()
 
 KolorWheel.prototype.setHex = function(hex) {
-  if(hex.substring(0, 1) == "#") hex = hex.substring(1);
+  if(hex.substring(0, 1) == '#') hex = hex.substring(1);
 
   var r = parseInt(hex.substring(0, 2), 16);
   var g = parseInt(hex.substring(2, 4), 16);
@@ -137,12 +137,12 @@ KolorWheel.prototype.getHex = function() {
   hex += this.toHexByte(result[1]);
   hex += this.toHexByte(result[2]);
 
-  return "#" + hex.toUpperCase();
+  return '#' + hex.toUpperCase();
 }; // getHex()
 
 KolorWheel.prototype.toHexByte = function(number) {
   var hexByte = number.toString(16);
-  if(hexByte.length < 2) hexByte = "0" + hexByte;
+  if(hexByte.length < 2) hexByte = '0' + hexByte;
 
   return hexByte;
 }; // toHexByte()
@@ -158,10 +158,8 @@ KolorWheel.prototype.multi = function(fn, p1, p2, p3, p4, p5, p6, p7, p8, p9) {
   for(var i in sourceList) {
     var src = sourceList[i];
     src.workList = [];
-    if(fn == "rel")
-      KolorWheel.prototype.spinSingle.call(src, "rel", p1, p2, p3, p4, p5, p6, p7, p8, p9);
-    if(fn == "abs")
-      KolorWheel.prototype.spinSingle.call(src, "abs", p1, p2, p3, p4, p5, p6, p7, p8, p9);
+    if(fn == 'rel') KolorWheel.prototype.spinSingle.call(src, 'rel', p1, p2, p3, p4, p5, p6, p7, p8, p9);
+    if(fn == 'abs') KolorWheel.prototype.spinSingle.call(src, 'abs', p1, p2, p3, p4, p5, p6, p7, p8, p9);
     this.resultList = this.resultList.concat(src.workList);
   } // foreach sourceList
 
@@ -176,50 +174,50 @@ KolorWheel.prototype.multi = function(fn, p1, p2, p3, p4, p5, p6, p7, p8, p9) {
 }; // multi()
 
 KolorWheel.prototype.rel = function(dh, ds, dl, length, start) {
-  return this.multi("rel", dh, ds, dl, length, start);
+  return this.multi('rel', dh, ds, dl, length, start);
 }; // rel()
 
 KolorWheel.prototype.abs = function(dh, ds, dl, length, start) {
   var isDhAColor = false;
-  if(typeof dh == "object") {
-    if(typeof dh.validateHsl == "function") isDhAColor = true;
+  if(typeof dh == 'object') {
+    if(typeof dh.validateHsl == 'function') isDhAColor = true;
   } else {
-    if(("" + dh).substring(0, 1) == "#") isDhAColor = true;
-    if(("" + dh).length > 4) isDhAColor = true;
+    if(('' + dh).substring(0, 1) == '#') isDhAColor = true;
+    if(('' + dh).length > 4) isDhAColor = true;
   } // if dh is object
 
   if(isDhAColor) {
     var conv = new KolorWheel(dh);
-    return this.multi("abs", conv.h, conv.s, conv.l, ds, dl);
+    return this.multi('abs', conv.h, conv.s, conv.l, ds, dl);
   } else {
-    return this.multi("abs", dh, ds, dl, length, start);
+    return this.multi('abs', dh, ds, dl, length, start);
   }
 }; // abs()
 
 KolorWheel.prototype.spinSingle = function(mode, dh, ds, dl, length, start) {
-  var unchanged = mode == "abs" ? -1 : 0;
-  if(typeof dh == "undefined") dh = unchanged;
-  if(typeof ds == "undefined") ds = unchanged;
-  if(typeof dl == "undefined") dl = unchanged;
+  var unchanged = mode == 'abs' ? -1 : 0;
+  if(typeof dh == 'undefined') dh = unchanged;
+  if(typeof ds == 'undefined') ds = unchanged;
+  if(typeof dl == 'undefined') dl = unchanged;
 
-  if(typeof dh == "undefined") length = 12;
+  if(typeof dh == 'undefined') length = 12;
   var dhLength = 0;
   var dsLength = 0;
   var dlLength = 0;
-  if(typeof dh == "object") dhLength = dh.length;
-  if(typeof ds == "object") dsLength = ds.length;
-  if(typeof dl == "object") dlLength = dl.length;
+  if(typeof dh == 'object') dhLength = dh.length;
+  if(typeof ds == 'object') dsLength = ds.length;
+  if(typeof dl == 'object') dlLength = dl.length;
 
-  if(typeof length == "undefined") {
+  if(typeof length == 'undefined') {
     length = 1;
     if(dhLength > length) length = dhLength;
     if(dsLength > length) length = dsLength;
     if(dlLength > length) length = dlLength;
   }
-  if(typeof start == "undefined") start = 0;
+  if(typeof start == 'undefined') start = 0;
 
   var jquery = null;
-  if(typeof length == "object") {
+  if(typeof length == 'object') {
     jquery = length;
     length = jquery.length;
   }
@@ -250,7 +248,7 @@ KolorWheel.prototype.spinSingle = function(mode, dh, ds, dl, length, start) {
       parml = dl * progress;
     }
 
-    if(mode == "rel") {
+    if(mode == 'rel') {
       result.h += parmh;
       result.s += parms;
       result.l += parml;
@@ -306,7 +304,7 @@ KolorWheel.prototype.each = function(fn) {
 }; // each()
 
 KolorWheel.prototype.get = function(n) {
-  if(typeof n == "undefined") n = 0;
+  if(typeof n == 'undefined') n = 0;
   return this.resultList[n];
 }; // get()
 
