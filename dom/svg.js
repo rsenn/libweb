@@ -34,7 +34,7 @@ export class SVG extends Element {
     let size = args.length > 0 ? args.shift() : null;
     delegate = {
       create: tag => document.createElementNS(SVG.ns, tag),
-      append_to: elem => parent.appendChild(elem),
+      append_to: (elem, root = parent) => root.appendChild(elem),
       setattr: (elem, name, value) => name != 'ns' && elem.setAttributeNS(document.namespaceURI, Util.decamelize(name, '-'), value),
       setcss: (elem, css) => elem.setAttributeNS(null, 'style', css),
       ...delegate
