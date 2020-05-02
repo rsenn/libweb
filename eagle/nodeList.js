@@ -63,12 +63,11 @@ export function makeEagleNodeList(...args) {
     },
     get(target, prop, receiver) {
       let index;
-      let is_symbol = typeof(prop) == 'symbol';
+      let is_symbol = typeof prop == 'symbol';
 
       if(prop == 'raw') return instance.ref.dereference();
       if(prop == 'instance') return instance;
-      if(prop == 'iterator' || prop == Symbol.iterator) 
-        if(typeof(instance.iterator) == 'function') return instance.iterator();
+      if(prop == 'iterator' || prop == Symbol.iterator) if (typeof instance.iterator == 'function') return instance.iterator();
       if(typeof Ctor.prototype[prop] == 'function') return Ctor.prototype[prop].bind(instance);
       let list = instance.ref.dereference();
       if(prop == 'find')

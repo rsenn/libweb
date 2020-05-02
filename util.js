@@ -342,8 +342,7 @@ Util.define = (obj, key, value, enumerable = false) => {
   return obj;
 };
 Util.copyEntries = (obj, entries) => {
-  for(let [k,v] of entries)
-    obj[k] = v;
+  for(let [k, v] of entries) obj[k] = v;
   return obj;
 };
 
@@ -1607,36 +1606,44 @@ Util.pushUnique = function(arr) {
   });
   return arr;
 };
-Util.iterateMembers = function*(obj, predicate = (name,depth) => true, depth = 0) {
+Util.iterateMembers = function*(obj, predicate = (name, depth) => true, depth = 0) {
   let names = [];
   let pred = Util.predicate(predicate);
+  // let skip =  !(range === true || depth >= range[0] && depth <= range[1]);
   const adder = arg => true; /*name => {
     const exists = names.indexOf(name) != -1;
     const add = !exists && pred(obj[name], name);
     if(add) names.push(name);
     return add;
   };*/
-  for(let name in obj) if(pred(name)) yield name;
-  for(let name of Object.getOwnPropertyNames(obj)) if(pred(name)) yield name;
-  for(let symbol of Object.getOwnPropertySymbols(obj)) if(pred(symbol)) yield symbol;
+  for(let name in obj) if(pred(name, depth)) yield name;
+  for(let name of Object.getOwnPropertyNames(obj)) if(pred(name, depth)) yield name;
+  for(let symbol of Object.getOwnPropertySymbols(obj)) if(pred(symbol, depth)) yield symbol;
 
-  if(depth === true || depth >= 0) {
-    const proto = Object.getPrototypeOf(obj);
-    if(proto) yield* Util.iterateMembers(proto, pred, typeof depth == "number" ? depth - 1 : depth);
-  }
+  const proto = Object.getPrototypeOf(obj);
+  if(proto) yield* Util.iterateMembers(proto, pred, depth + 1);
 };
-Util.members = (obj, recursive = false, pred = () => true) => Util.unique([...Util.iterateMembers(obj, pred, recursive)]);
 
-Util.getMethodNames = (obj, recursive = false) => Util.unique([...Util.iterateMembers(obj, item => typeof obj[item] === "function" && item != "constructor", recursive)]);
+Util.getMembers = (obj, pred = (prop, level) => true) => Util.unique([...Util.iterateMembers(obj, pred)]);
 
-Util.getMethods = (obj, recursive = false, t = (key, value) => [key, value]) => Object.fromEntries([...Util.iterateMethods(obj, recursive, t)]);
-Util.methods = Util.getMethods;
+Util.iterateMethodNames = (obj, depth = 1, start = 0) => {
+  const end = depth === true ? start + 1 : depth === false ? start : start + depth;
+  const check = Util.inRange(start, end);
+  console.log('iterateMethodNames', { depth, start, end });
+  console.assert(typeof start != 'function');
+  return Util.iterateMembers(obj, (prop, level) => check(level) && typeof obj[prop] === 'function' && prop != 'constructor');
+};
+Util.getMethodNames = (obj, depth = 1, start = 0) => Util.unique([...Util.iterateMethodNames(obj, depth, start)]);
 
-Util.iterateMethods = function*(obj, recursive = false, t = (key, value) => [key, value]) {
-  for(let name of Util.getMethodNames(obj, recursive)) {
+Util.methods = (obj, depth = 1, t = (k, v) => [k, v], r = e => Object.fromEntries(e)) => r([...Util.iterateMethods(obj, depth, t)]);
+
+Util.getMethods = (obj, depth = 1, t = (k, v) => [k, v]) => Util.methods(obj, depth, t, e => Object.fromEntries(e));
+
+Util.iterateMethods = function*(obj, depth = 1, t = (key, value) => [key, value], start = 0) {
+  for(let name of Util.getMethodNames(obj, depth, start)) {
     try {
       const value = t(name, obj[name]);
-      if(value !== undefined && value !== false && value !== null)yield value;
+      if(value !== undefined && value !== false && value !== null) yield value;
     } catch(err) {}
   }
 };
@@ -2213,11 +2220,10 @@ Util.defineInspect = (proto, ...props) => {
     };
   }
 };
-Util.predicate = (fn_or_regex) => {
+Util.predicate = fn_or_regex => {
   let fn;
-  if(fn_or_regex instanceof RegExp)
-    fn = (...args) => fn_or_regex.test(args+'');
-  else
-    fn = (...args) => fn_or_regex(...args);
+  if(fn_or_regex instanceof RegExp) fn = (...args) => fn_or_regex.test(args + '');
+  else fn = (...args) => fn_or_regex(...args);
   return fn;
 };
+Util.inRange = Util.curry((a, b, value) => value >= a && value <= b);

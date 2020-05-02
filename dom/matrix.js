@@ -1,12 +1,12 @@
 import { Util } from '../util.js';
 
 export function Matrix(arg) {
-  let ret = (this instanceof Matrix || new.target === Matrix) ? this : [undefined, 0, 0, undefined, 0, 0, undefined, 0, 0];
+  let ret = this instanceof Matrix || new.target === Matrix ? this : [undefined, 0, 0, undefined, 0, 0, undefined, 0, 0];
 
   if(arg instanceof Array) {
     Matrix.prototype.init.call(ret, arg);
   } else if(typeof arg === 'number') {
-   Matrix.prototype.init.apply(ret, arguments);
+    Matrix.prototype.init.apply(ret, arguments);
   } else if(typeof arg === 'string') {
     if(/matrix\([^)]*\)/.test(arg)) {
       let [xx, xy, x0, yx, yy, y0] = [...arg.matchAll(/[-.0-9]+/g)].map(m => parseFloat(m[0]));
@@ -34,20 +34,18 @@ export function Matrix(arg) {
       ret[5] = arg.f; // y0
     }
   } else {
-    Array.prototype.splice.call(ret, 0, ret.length,  1, 0, 0, 0, 1, 0, 0, 0, 1);
+    Array.prototype.splice.call(ret, 0, ret.length, 1, 0, 0, 0, 1, 0, 0, 0, 1);
   }
-  for(let i = 0; i < 9; i++)
-    if(ret[i] === undefined)
-      ret[i] = [ 1, 0, 0, 0, 1, 0, 0, 0, 1 ][i];
+  for(let i = 0; i < 9; i++) if(ret[i] === undefined) ret[i] = [1, 0, 0, 0, 1, 0, 0, 0, 1][i];
 
-/*if(ret.length !== 9)
+  /*if(ret.length !== 9)
   ret.length = 9;
 */
-/*delete ret.length;
+  /*delete ret.length;
 if(!('length' in ret))
     Object.defineProperty(ret, "length", { value: 9, enumerable: false, writable: true, configurable: false });
 */
-/*
+  /*
   if(ret[0] === undefined) { Matrix.prototype.set_row.call(ret, 0, 1, 0, 0);
   if(ret[3] === undefined) Matrix.prototype.set_row.call(ret, 1, 0, 1, 0);
   if(ret[6] === undefined) Matrix.prototype.set_row.call(ret, 2, 0, 0, 1);*/
@@ -67,15 +65,13 @@ Matrix.prototype.constructor = Matrix;
 
 //Util.getMethods(new Array(9), 1, (k,v)=>(typeof(k) == 'symbol' || /(String|values)/i.test(k)) && [k,v]));
 
-
 //new Array(9); //[ 1, 0, 0, 0, 1, 0, 0, 0, 1 ];
 
-
-             /*   Matrix.prototype.constructor = Matrix;
+/*   Matrix.prototype.constructor = Matrix;
                                  
 delete Matrix.prototype.some;*/
 
-Object.defineProperty(Matrix.prototype, "length", { value: 9, enumerable: false, writable: true, configurable: false });
+Object.defineProperty(Matrix.prototype, 'length', { value: 9, enumerable: false, writable: true, configurable: false });
 
 //Matrix.prototype = new Array(9);
 //Object.assign(Matrix.prototype, Array.prototype);
@@ -86,7 +82,7 @@ Matrix.prototype.constructor = Array;*/
 // sed "s|this\[0\]|this.xx|g ;; s|this\[1\]|this.yx|g ;; s|this\[2\]|this.xy|g ;; s|this\[3\]|this.yy|g ;; s|this\[4\]|this.x0|g ;; s|this\[5\]|this.y0|g"
 // sed "s|this\[0\]|xx|g ;; s|this\[1\]|yx|g ;; s|this\[2\]|xy|g ;; s|this\[3\]|yy|g ;; s|this\[4\]|x0|g ;; s|this\[5\]|y0|g"
 // "s|this\[0\]|a|g ;; s|this\[1\]|b|g ;; s|this\[2\]|c|g ;; s|this\[3\]|d|g ;; s|this\[4\]|e|g ;; s|this\[5\]|f|g ;; s|this\[6\]|g|g ;; s|this\[7\]|h|g ;; s|this\[8\]|i|g"
-// 
+//
 
 Matrix.prototype.keys = ['xx', 'xy', 'x0', 'yx', 'yy', 'y0'];
 Matrix.prototype.keySeq = ['xx', 'yx', 'xy', 'yy', 'x0', 'y0'];
@@ -111,7 +107,8 @@ Matrix.prototype.at = function(key) {
   return this[Matrix.prototype.keyIndex[key]];
 };
 
-export const MatrixProps = Object.entries(Matrix.prototype.keyIndex).reduce((acc, [k,i]) => ({
+export const MatrixProps = Object.entries(Matrix.prototype.keyIndex).reduce(
+  (acc, [k, i]) => ({
     ...acc,
     [k]: {
       get: function() {
@@ -122,7 +119,9 @@ export const MatrixProps = Object.entries(Matrix.prototype.keyIndex).reduce((acc
       },
       enumerable: true
     }
-  }), {});
+  }),
+  {}
+);
 
 //Object.defineProperties(Matrix.prototype, MatrixProps);
 
@@ -142,8 +141,7 @@ Matrix.propDescriptors =MatrixProps;
 
 Matrix.prototype.init = function(...args) {
   if(args.length == 1) args = args[0];
-  if(args.length < 9)
-    args = args.concat(Array.prototype.slice.call(Matrix.IDENTITY, args.length));
+  if(args.length < 9) args = args.concat(Array.prototype.slice.call(Matrix.IDENTITY, args.length));
 
   Array.prototype.splice.call(this, 0, this.length, ...args);
   return this;
@@ -396,12 +394,10 @@ Matrix.prototype.decompose = function(degrees = false, useLU = true) {
       skew = { x: Math.atan(c / a), y: Math.atan(b / a) };
       scale = { x: a, y: determ / a };
     } else {
-
       scale = { x: c, y: d };
       skew.x = Math.PI * 0.25;
     }
   } else {
-
     if(a || b) {
       r = Math.sqrt(a * a + b * b);
       rotation = b > 0 ? Math.acos(a / r) : -Math.acos(a / r);
@@ -413,7 +409,6 @@ Matrix.prototype.decompose = function(degrees = false, useLU = true) {
       scale = { x: determ / s, y: s };
       skew.y = Math.atan((a * c + b * d) / (s * s));
     } else {
-
       scale = { x: 0, y: 0 };
     }
   }
@@ -452,7 +447,6 @@ Matrix.prototype.init_skew = function(x, y, deg = false) {
   const ay = Math.tan(deg ? Matrix.deg2rad(y) : y);
   return Matrix.prototype.init.call(this, 1, ax, 0, ay, 1, 0);
 };
-
 
 Matrix.IDENTITY = Object.freeze(new Matrix([1, 0, 0, 0, 1, 0, 0, 0, 1]));
 Matrix.rad2deg = radians => (radians * 180) / Math.PI;

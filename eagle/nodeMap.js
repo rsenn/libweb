@@ -60,7 +60,7 @@ export function makeEagleNodeMap(list, key = 'name') {
       if(prop == 'length' || prop == 'size') return (instance.list.raw || instance.list).length;
       if(prop == Symbol.iterator) return instance.entries()[Symbol.iterator];
 
-      if('keys' in instance && (index = instance.keys().indexOf(prop)) != -1) return instance.list[index];
+      if((index = instance.keys().indexOf(prop)) != -1) return instance.list[index];
       if(typeof instance[prop] == 'function') return instance[prop].bind(instance);
 
       return Reflect.get(target, prop, receiver);
