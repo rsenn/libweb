@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /*!
  * https://github.com/Palindrom/JSONPatcherProxy
@@ -17,9 +17,9 @@ const JSONPatcherProxy = (function() {
    */
   function deepClone(obj) {
     switch (typeof obj) {
-      case "object":
+      case 'object':
         return JSON.parse(JSON.stringify(obj)); //Faster than ES5 clone - http://jsperf.com/deep-cloning-of-objects/5
-      case "undefined":
+      case 'undefined':
         return null; //this is how JSON.stringify behaves for array items
       default:
         return obj; //no need to clone primitives
@@ -28,8 +28,8 @@ const JSONPatcherProxy = (function() {
   JSONPatcherProxy.deepClone = deepClone;
 
   function escapePathComponent(str) {
-    if(str.indexOf("/") == -1 && str.indexOf("~") == -1) return str;
-    return str.replace(/~/g, "~0").replace(/\//g, "~1");
+    if(str.indexOf('/') == -1 && str.indexOf('~') == -1) return str;
+    return str.replace(/~/g, '~0').replace(/\//g, '~1');
   }
   JSONPatcherProxy.escapePathComponent = escapePathComponent;
 
@@ -47,10 +47,10 @@ const JSONPatcherProxy = (function() {
       parenthood = instance._parenthoodMap.get(parenthood.parent);
     }
     if(pathComponents.length) {
-      const path = pathComponents.join("/");
-      return "/" + path;
+      const path = pathComponents.join('/');
+      return '/' + path;
     }
-    return "";
+    return '';
   }
   /**
    * A callback to be used as the proxy set trap callback.
@@ -61,7 +61,7 @@ const JSONPatcherProxy = (function() {
    * @param {Any} newValue the value being set
    */
   function trapForSet(instance, tree, key, newValue) {
-    const pathToKey = getPathToTree(instance, tree) + "/" + escapePathComponent(key);
+    const pathToKey = getPathToTree(instance, tree) + '/' + escapePathComponent(key);
     const subtreeMetadata = instance._treeMetadataMap.get(newValue);
 
     if(instance._treeMetadataMap.has(newValue)) {
@@ -97,7 +97,7 @@ const JSONPatcherProxy = (function() {
     const isNonSerializableArrayProperty = isTreeAnArray && !Number.isInteger(+key.toString());
 
     // if the new value is an object, make sure to watch it
-    if(newValue && typeof newValue == "object" && !instance._treeMetadataMap.has(newValue)) {
+    if(newValue && typeof newValue == 'object' && !instance._treeMetadataMap.has(newValue)) {
       if(isNonSerializableArrayProperty) {
         // This happens in Vue 1-2 (should not happen in Vue 3). See: https://github.com/vuejs/vue/issues/427, https://github.com/vuejs/vue/issues/9259
         console.warn(`JSONPatcherProxy noticed a non-integer property ('${key}') was set for an array. This interception will not emit a patch. The value is an object, but it was not proxified, because it would not be addressable in JSON-Pointer`);
@@ -115,15 +115,15 @@ const JSONPatcherProxy = (function() {
       if(index > tree.length) {
         // force call trapForSet for implicit undefined elements of the array added by the JS engine
         // because JSON-Patch spec prohibits adding an index that is higher than array.length
-        trapForSet(instance, tree, index - 1 + "", undefined);
+        trapForSet(instance, tree, index - 1 + '', undefined);
       }
     }
     const reflectionResult = Reflect.set(tree, key, newValue);
     const operation = {
-      op: "remove",
+      op: 'remove',
       path: pathToKey
     };
-    if(typeof newValue == "undefined") {
+    if(typeof newValue == 'undefined') {
       // applying De Morgan's laws would be a tad faster, but less readable
       if(!isTreeAnArray && !wasKeyInTreeBeforeReflection) {
         // `undefined` is being set to an already undefined value, keep silent
@@ -136,9 +136,9 @@ const JSONPatcherProxy = (function() {
         if(isTreeAnArray) {
           operation.value = null;
           if(wasKeyInTreeBeforeReflection) {
-            operation.op = "replace";
+            operation.op = 'replace';
           } else {
-            operation.op = "add";
+            operation.op = 'add';
           }
         }
         const oldSubtreeMetadata = instance._treeMetadataMap.get(valueBeforeReflection);
@@ -152,18 +152,18 @@ const JSONPatcherProxy = (function() {
     } else {
       if(isNonSerializableArrayProperty) {
         /* array props (as opposed to indices) don't emit any patches, to avoid needless `length` patches */
-        if(key != "length" && !warnedAboutNonIntegrerArrayProp) {
+        if(key != 'length' && !warnedAboutNonIntegrerArrayProp) {
           console.warn(`JSONPatcherProxy noticed a non-integer property ('${key}') was set for an array. This interception will not emit a patch`);
         }
         return reflectionResult;
       }
-      operation.op = "add";
+      operation.op = 'add';
       if(wasKeyInTreeBeforeReflection) {
-        if(typeof valueBeforeReflection !== "undefined" || isTreeAnArray) {
+        if(typeof valueBeforeReflection !== 'undefined' || isTreeAnArray) {
           if(!isSignificantChange(valueBeforeReflection, newValue, isTreeAnArray)) {
             return reflectionResult; // Value wasn't actually changed with respect to its JSON projection
           }
-          operation.op = "replace"; // setting `undefined` array elements is a `replace` op
+          operation.op = 'replace'; // setting `undefined` array elements is a `replace` op
         }
       }
       operation.value = newValue;
@@ -201,10 +201,10 @@ const JSONPatcherProxy = (function() {
    * @param {*} newValue new value
    */
   function isSignificantChangeInArray(oldValue, newValue) {
-    if(typeof oldValue === "undefined") {
+    if(typeof oldValue === 'undefined') {
       oldValue = null;
     }
-    if(typeof newValue === "undefined") {
+    if(typeof newValue === 'undefined') {
       newValue = null;
     }
     return oldValue !== newValue;
@@ -219,8 +219,8 @@ const JSONPatcherProxy = (function() {
   function trapForDeleteProperty(instance, tree, key) {
     const oldValue = tree[key];
     const reflectionResult = Reflect.deleteProperty(tree, key);
-    if(typeof oldValue !== "undefined") {
-      const pathToKey = getPathToTree(instance, tree) + "/" + escapePathComponent(key);
+    if(typeof oldValue !== 'undefined') {
+      const pathToKey = getPathToTree(instance, tree) + '/' + escapePathComponent(key);
       const subtreeMetadata = instance._treeMetadataMap.get(oldValue);
 
       if(subtreeMetadata) {
@@ -242,7 +242,7 @@ const JSONPatcherProxy = (function() {
       }
 
       instance._defaultCallback({
-        op: "remove",
+        op: 'remove',
         path: pathToKey
       });
     }
@@ -261,7 +261,7 @@ const JSONPatcherProxy = (function() {
     this._treeMetadataMap = new Map();
     this._parenthoodMap = new Map();
     // default to true
-    if(typeof showDetachedWarning !== "boolean") {
+    if(typeof showDetachedWarning !== 'boolean') {
       showDetachedWarning = true;
     }
 
@@ -316,7 +316,7 @@ const JSONPatcherProxy = (function() {
     */
     this.pause();
     this._isProxifyingTreeNow = true;
-    const proxifiedRoot = this._proxifyTreeRecursively(undefined, root, "");
+    const proxifiedRoot = this._proxifyTreeRecursively(undefined, root, '');
     /* OK you can record now */
     this._isProxifyingTreeNow = false;
     this.resume();
@@ -354,7 +354,7 @@ const JSONPatcherProxy = (function() {
    */
   JSONPatcherProxy.prototype.observe = function(record, callback) {
     if(!record && !callback) {
-      throw new Error("You need to either record changes or pass a callback");
+      throw new Error('You need to either record changes or pass a callback');
     }
     this._isRecording = record;
     this._userCallback = callback;
@@ -373,7 +373,7 @@ const JSONPatcherProxy = (function() {
    */
   JSONPatcherProxy.prototype.generate = function() {
     if(!this._isRecording) {
-      throw new Error("You should set record to true to get patches later");
+      throw new Error('You should set record to true to get patches later');
     }
     return this._patches.splice(0, this._patches.length);
   };

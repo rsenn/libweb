@@ -17,13 +17,15 @@ Util.extend(EagleNodeList.prototype, {
   *[Symbol.iterator]() {
     const list = this.ref.dereference();
     for(let i = 0; i < list.length; i++) yield makeEagleElement(instance, this.ref.down(i));
-  }, iterator() {
+  },
+  iterator() {
     const instance = this;
     return function*() {
       const list = instance.ref.dereference();
       for(let i = 0; i < list.length; i++) yield makeEagleElement(instance, instance.ref.down(i));
     };
-  }, *entries() {
+  },
+  *entries() {
     const instance = this;
     const list = instance.ref.dereference();
     for(let i = 0; i < list.length; i++) yield [i, makeEagleElement(instance, instance.ref.down(i))];
@@ -58,12 +60,15 @@ export function makeEagleNodeList(...args) {
       } else {
         return Reflect.set(target, prop, value);
       }
-    }, get(target, prop, receiver) {
+    },
+    get(target, prop, receiver) {
       let index;
+      let is_symbol = typeof(prop) == 'symbol';
+
       if(prop == 'raw') return instance.ref.dereference();
       if(prop == 'instance') return instance;
-      if(prop == 'iterator') return instance.iterator();
-      if(prop == Symbol.iterator) return instance.iterator();
+      if(prop == 'iterator' || prop == Symbol.iterator) 
+        if(typeof(instance.iterator) == 'function') return instance.iterator();
       if(typeof Ctor.prototype[prop] == 'function') return Ctor.prototype[prop].bind(instance);
       let list = instance.ref.dereference();
       if(prop == 'find')
@@ -72,19 +77,21 @@ export function makeEagleNodeList(...args) {
           return idx == -1 ? null : makeEagleElement(instance, instance.ref.down(idx));
         };
       if(prop == 'entries') return () => list.map((item, i) => [item.attributes.name, item]);
-      if(/^[0-9]+$/.test(prop + '')) {
+      if(!is_symbol && /^[0-9]+$/.test(prop + '')) {
         let r = instance.ref.down(prop);
         return makeEagleElement(instance, r);
       }
       if(typeof Array.prototype[prop] == 'function') return Array.prototype[prop].bind(target);
-      if(((typeof prop == 'string' || typeof prop == 'number') && /^([0-9]+|length)$/.test('' + prop)) || prop == Symbol.iterator || ['findIndex'].indexOf(prop) !== -1) {
+      if((!is_symbol && /^([0-9]+|length)$/.test('' + prop)) || prop == Symbol.iterator || ['findIndex'].indexOf(prop) !== -1) {
         if(prop in list) return list[prop];
       }
       return Reflect.get(target, prop, receiver);
-    }, ownKeys(target) {
+    },
+    ownKeys(target) {
       let list = instance.ref.dereference();
       return ['owner', 'length'];
-    }, getPrototypeOf(target) {
+    },
+    getPrototypeOf(target) {
       return Reflect.getPrototypeOf(instance);
     }
   });

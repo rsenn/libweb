@@ -1,39 +1,39 @@
 //import ReactDOM from "react-dom";
 //import { SvgPath } from "./svg/path.js";
-import Util from "./util.js";
-import { Point, isPoint } from "./geom/point.js";
-import { Size, isSize } from "./geom/size.js";
-import { Line, isLine } from "./geom/line.js";
-import { Rect, isRect } from "./geom/rect.js";
-import { PointList, Polyline } from "./geom/pointList.js";
-import { RGBA, isRGBA } from "./dom/rgba.js";
-import { HSLA, isHSLA } from "./dom/hsla.js";
-import { Matrix, isMatrix, MatrixProps } from "./dom/matrix.js";
-import { BBox } from "./dom/bbox.js";
-import { TRBL } from "./geom/trbl.js";
-import { Timer } from "./dom/timer.js";
-import { Tree } from "./dom/tree.js";
-import { Node } from "./dom/node.js";
-import { Element, isElement } from "./dom/element.js";
-import { CSS } from "./dom/css.js";
-import { SVG } from "./dom/svg.js";
+import Util from './util.js';
+import { Point, isPoint } from './geom/point.js';
+import { Size, isSize } from './geom/size.js';
+import { Line, isLine } from './geom/line.js';
+import { Rect, isRect } from './geom/rect.js';
+import { PointList, Polyline } from './geom/pointList.js';
+import { RGBA, isRGBA } from './dom/rgba.js';
+import { HSLA, isHSLA } from './dom/hsla.js';
+import { Matrix, isMatrix, MatrixProps } from './dom/matrix.js';
+import { BBox } from './dom/bbox.js';
+import { TRBL } from './geom/trbl.js';
+import { Timer } from './dom/timer.js';
+import { Tree } from './dom/tree.js';
+import { Node } from './dom/node.js';
+import { Element, isElement } from './dom/element.js';
+import { CSS } from './dom/css.js';
+import { SVG } from './dom/svg.js';
 //import { ReactComponent } from "./dom/reactComponent.js";
-import { Container } from "./dom/container.js";
-import { Layer, Renderer } from "./dom/layer.js";
-import { Select } from "./dom/select.js";
-import { Align, Anchor } from "./geom/align.js";
-import { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from "./dom/elementRect.js";
+import { Container } from './dom/container.js';
+import { Layer, Renderer } from './dom/layer.js';
+import { Select } from './dom/select.js';
+import { Align, Anchor } from './geom/align.js';
+import { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from './dom/elementRect.js';
 
 export function dom() {
   let args = [...arguments];
   let ret = Util.array();
 
   const extend = (e, functions) => {
-    const keys = [...Util.members(functions)].filter(key => ["callee", "caller", "arguments", "call", "bind", "apply", "prototype", "constructor", "length"].indexOf(key) == -1 && typeof functions[key] == "function");
+    const keys = [...Util.members(functions)].filter(key => ['callee', 'caller', 'arguments', 'call', 'bind', 'apply', 'prototype', 'constructor', 'length'].indexOf(key) == -1 && typeof functions[key] == 'function');
     for(let key of keys) if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
   };
 
-  args = args.map(arg => (typeof arg == "string" ? Element.findAll(arg) : arg));
+  args = args.map(arg => (typeof arg == 'string' ? Element.findAll(arg) : arg));
 
   for(let e of args) {
     if(e instanceof SVGSVGElement) extend(e, SVG);
@@ -51,7 +51,7 @@ export function dom() {
 }
 
 export const isNumber = a => {
-  return String(a).replace(/^[0-9]*$/, "") == "";
+  return String(a).replace(/^[0-9]*$/, '') == '';
 };
 
 export function Unit(str) {
@@ -63,7 +63,7 @@ export function Unit(str) {
             return `${number}${this.name}`;
           }
         };
-  u.name = str.replace(/^[a-z]*/, "");
+  u.name = str.replace(/^[a-z]*/, '');
   return u;
 }
 
@@ -106,16 +106,16 @@ export const CSSTransformSetters = element => ({
   },
   updateTransformation() {
     const t = this.transformation.toString();
-    console.log("CSSTransformSetters.updateTransformation", t);
+    console.log('CSSTransformSetters.updateTransformation', t);
     this.style.transform = t;
   }
 });
 
 export class Transition {
-  property = "none";
-  delay = "";
-  duration = "";
-  timing = "";
+  property = 'none';
+  delay = '';
+  duration = '';
+  timing = '';
 
   constructor(property, delay, duration, timing) {
     this.property = property;
@@ -142,10 +142,10 @@ export class TransitionList extends Array {
 
   get css() {
     return {
-      transitionDelay: this.propertyList("delay").join(", "),
-      transitionDuration: this.propertyList("duration").join(", "),
-      transitionProperty: this.propertyList("property").join(", "),
-      transitionTimingFunction: this.propertyList("timing").join(", ")
+      transitionDelay: this.propertyList('delay').join(', '),
+      transitionDuration: this.propertyList('duration').join(', '),
+      transitionProperty: this.propertyList('property').join(', '),
+      transitionTimingFunction: this.propertyList('timing').join(', ')
     };
   }
 }
@@ -167,28 +167,28 @@ export const isRenderer = inst => {};
 export const isSelect = inst => {};
 */
 
-export { Point, isPoint } from "./geom/point.js";
-export { Size, isSize } from "./geom/size.js";
-export { Line, isLine } from "./geom/line.js";
-export { Rect, isRect } from "./geom/rect.js";
-export { PointList, Polyline } from "./geom/pointList.js";
-export { RGBA, isRGBA } from "./dom/rgba.js";
-export { HSLA, isHSLA } from "./dom/hsla.js";
-export { Matrix, isMatrix, MatrixProps } from "./dom/matrix.js";
-export { BBox } from "./dom/bbox.js";
-export { TRBL } from "./geom/trbl.js";
-export { Timer } from "./dom/timer.js";
-export { Tree } from "./dom/tree.js";
-export { Node } from "./dom/node.js";
-export { Element, isElement } from "./dom/element.js";
-export { CSS } from "./dom/css.js";
-export { SVG } from "./dom/svg.js";
+export { Point, isPoint } from './geom/point.js';
+export { Size, isSize } from './geom/size.js';
+export { Line, isLine } from './geom/line.js';
+export { Rect, isRect } from './geom/rect.js';
+export { PointList, Polyline } from './geom/pointList.js';
+export { RGBA, isRGBA } from './dom/rgba.js';
+export { HSLA, isHSLA } from './dom/hsla.js';
+export { Matrix, isMatrix, MatrixProps } from './dom/matrix.js';
+export { BBox } from './dom/bbox.js';
+export { TRBL } from './geom/trbl.js';
+export { Timer } from './dom/timer.js';
+export { Tree } from './dom/tree.js';
+export { Node } from './dom/node.js';
+export { Element, isElement } from './dom/element.js';
+export { CSS } from './dom/css.js';
+export { SVG } from './dom/svg.js';
 //export { ReactComponent } from "./dom/reactComponent.js";
-export { Container } from "./dom/container.js";
-export { Layer, Renderer } from "./dom/layer.js";
-export { Select } from "./dom/select.js";
-export { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from "./dom/elementRect.js";
-export { Align, Anchor } from "./geom/align.js";
+export { Container } from './dom/container.js';
+export { Layer, Renderer } from './dom/layer.js';
+export { Select } from './dom/select.js';
+export { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from './dom/elementRect.js';
+export { Align, Anchor } from './geom/align.js';
 
 export default Object.assign(dom, {
   Align,

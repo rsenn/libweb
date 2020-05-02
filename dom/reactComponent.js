@@ -17,7 +17,8 @@ export class ReactComponent {
     let { children, parent, ...restOfProps } = props;
     if(!children) children = args.shift();
     if(!Array.isArray(children)) children = [children];
-    const elem = (<Tag {...restOfProps}>
+    const elem = (
+      <Tag {...restOfProps}>
         {children.map((child, key) => {
           if(typeof child === 'object' && child.tagName !== undefined) {
             const { tagName, ...props } = child;

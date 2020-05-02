@@ -30,7 +30,8 @@ export class EagleElement extends EagleNode {
     if(!Util.isEmpty(attributes)) {
       for(let key in attributes) {
         let prop = trkl.property(this.attributes, key);
-        let handler = Util.ifThenElse(v => v !== undefined,
+        let handler = Util.ifThenElse(
+          v => v !== undefined,
           v => prop(v),
           v => (/^-?[0-9.]+$/.test(prop()) ? parseFloat(prop()) : prop())
         );

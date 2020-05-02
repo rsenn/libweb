@@ -1,8 +1,8 @@
-import Util from "./util.js";
+import Util from './util.js';
 
 export const isPlainObject = obj => {
   if((obj != null ? obj.constructor : void 0) == null) return false;
-  return obj.constructor.name === "Object";
+  return obj.constructor.name === 'Object';
 };
 
 export const clone = obj => {

@@ -151,7 +151,8 @@ Point.prototype.angle = function(other, deg = false) {
 Point.prototype.rotate = function(angle, origin = { x: 0, y: 0 }) {
   this.x -= origin.x;
   this.y -= origin.y;
-  let c = Math.cos(angle), s = Math.sin(angle);
+  let c = Math.cos(angle),
+    s = Math.sin(angle);
   let xnew = this.x * c - this.y * s;
   let ynew = this.x * s + this.y * c;
   this.x = xnew;
@@ -167,11 +168,13 @@ Point.prototype.toString = function(opts = {}) {
   const y = Util.roundTo(this.y, precision);
   return `${left}${x}${unit}${separator}${y}${unit}${right}`;
 };
-Util.defineGetterSetter(Point.prototype,
+Util.defineGetterSetter(
+  Point.prototype,
   Symbol.toStringTag,
   function() {
     return `Point{ ${Point.prototype.toSource.call(this)}`;
-  }, () => {},
+  },
+  () => {},
   false
 );
 

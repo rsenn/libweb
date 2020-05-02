@@ -1,10 +1,10 @@
-import Util from "./util.js";
+import Util from './util.js';
 
 function Stack() {
   let stack = Util.getCallerStack(1, 100).map(Util.stackFrame);
 
   stack = stack.filter(({ functionName }) => !/Parser.parser.</.test(functionName));
-  stack = stack.filter(({ typeName }) => typeName == "Parser");
+  stack = stack.filter(({ typeName }) => typeName == 'Parser');
   stack = stack.map(({ functionName, methodName, position }) => ({
     method: functionName || methodName,
     position: position /*, type: s.typeName*/
@@ -28,17 +28,17 @@ class Node {
     Object.assign(this, obj);
   }
   toString(depth = 0) {
-    let str = "";
-    const indent = Util.repeat(depth, "  ");
+    let str = '';
+    const indent = Util.repeat(depth, '  ');
     const node = this;
 
     str += node.type;
     str += `${indent}{\n`;
 
     for(let prop in node) {
-      if(prop == "type") continue;
+      if(prop == 'type') continue;
       let value = node[prop];
-      if(value instanceof Array || (value && value.map !== undefined)) value = value.map(v => `${indent}  ${v.toString ? v.toString() : `${v}`}`).join("\n");
+      if(value instanceof Array || (value && value.map !== undefined)) value = value.map(v => `${indent}  ${v.toString ? v.toString() : `${v}`}`).join('\n');
       else value = node[prop] && node[prop].toString ? node[prop].toString() : node[prop];
       str += indent + `  ${prop}:${value}\n`;
     }
@@ -64,82 +64,82 @@ class AST {
   }
 
   program(body) {
-    return this.visitor({ body, type: "Program" });
+    return this.visitor({ body, type: 'Program' });
   }
   chunk(body) {
-    return this.visitor({ body, type: "Chunk" });
+    return this.visitor({ body, type: 'Chunk' });
   }
   do_stat(body) {
-    return this.visitor({ body, type: "DoStatement" });
+    return this.visitor({ body, type: 'DoStatement' });
   }
   break_stat() {
-    return this.visitor({ type: "BreakStatement" });
+    return this.visitor({ type: 'BreakStatement' });
   }
   return_stat(params) {
-    return this.visitor({ params, type: "ReturnStatement" });
+    return this.visitor({ params, type: 'ReturnStatement' });
   }
   expr_stat(expression) {
-    return this.visitor({ expression, type: "ExpressionStatement" });
+    return this.visitor({ expression, type: 'ExpressionStatement' });
   }
   func_stat(id, params, body) {
-    return this.visitor({ id, params, body, type: "FunctionDeclaration" });
+    return this.visitor({ id, params, body, type: 'FunctionDeclaration' });
   }
   local_stat(variables, init) {
-    return this.visitor({ init, variables, type: "LocalStatement" });
+    return this.visitor({ init, variables, type: 'LocalStatement' });
   }
   if_stat(cond, body, elseif, _else) {
-    return this.visitor({ cond, body, elseif, else: _else, type: "IfStatement" });
+    return this.visitor({ cond, body, elseif, else: _else, type: 'IfStatement' });
   }
   fornum_stat(id, begin, end, step, body) {
-    return this.visitor({ id, begin, end, step, body, type: "FornumStatement" });
+    return this.visitor({ id, begin, end, step, body, type: 'FornumStatement' });
   }
   forlist_stat(id, left, right, body) {
-    return this.visitor({ id, left, right, body, type: "ForlistStatement" });
+    return this.visitor({ id, left, right, body, type: 'ForlistStatement' });
   }
   while_stat(cond, body) {
-    return this.visitor({ cond, body, type: "WhileStatement" });
+    return this.visitor({ cond, body, type: 'WhileStatement' });
   }
   repeat_stat(cond, body) {
-    return this.visitor({ cond, body, type: "RepeatStatement" });
+    return this.visitor({ cond, body, type: 'RepeatStatement' });
   }
   identifier(name) {
-    return this.visitor({ name, type: "Identifier" });
+    return this.visitor({ name, type: 'Identifier' });
   }
-  literal(value, raw, quote = "") {
-    return this.visitor({ value, raw, quote, type: "Literal" });
+  literal(value, raw, quote = '') {
+    return this.visitor({ value, raw, quote, type: 'Literal' });
   }
   unary_expr(op, argument) {
-    return this.visitor({ op, argument, type: "UnaryExpression" });
+    return this.visitor({ op, argument, type: 'UnaryExpression' });
   }
   binary_expr(op, left, right) {
-    return this.visitor({ op, left, right, type: "BinaryExpression" });
+    return this.visitor({ op, left, right, type: 'BinaryExpression' });
   }
   call_expr(callee, params) {
-    return this.visitor({ callee, params, type: "CallExpression" });
+    return this.visitor({ callee, params, type: 'CallExpression' });
   }
   member_expr(object, sep, property) {
-    return this.visitor({ object, sep, property, type: "MemberExpression" });
+    return this.visitor({ object, sep, property, type: 'MemberExpression' });
   }
   index_expr(object, index) {
-    return this.visitor({ object, index, type: "IndexExpression" });
+    return this.visitor({ object, index, type: 'IndexExpression' });
   }
   assign_expr(op, left, right) {
-    return this.visitor({ op, left, right, type: "AssignExpression" });
+    return this.visitor({ op, left, right, type: 'AssignExpression' });
   }
   table_expr(fields, multiline = true) {
-    return this.visitor({ fields, multiline, type: "TableExpression" });
+    return this.visitor({ fields, multiline, type: 'TableExpression' });
   }
   recfield(key, value) {
-    return this.visitor({ key, value, type: "Recfield" });
+    return this.visitor({ key, value, type: 'Recfield' });
   }
   listfield(value) {
-    return this.visitor({ value, type: "Listfield" });
+    return this.visitor({ value, type: 'Listfield' });
   }
   comment(text) {
-    return this.visitor({ text, type: "Comment" });
+    return this.visitor({ text, type: 'Comment' });
   }
   undef() {
-    return this.visitor({ type: "Undefined", value: "" });
+    return this.visitor({ type: 'Undefined', value: '' });
   }
 }
 
@@ -148,7 +148,7 @@ class Env {
     this.vars = {};
     this.parent = parent;
 
-    this.def("require", "function: internal");
+    this.def('require', 'function: internal');
   }
 
   extend() {
@@ -239,11 +239,11 @@ const pairs =(table) => {
     }
 
     function js_chunk({ body }) {
-      return body.map(js).join("\n");
+      return body.map(js).join('\n');
     }
 
     function js_local_statement({ variables, init }) {
-      return variables.map(({ name }, i) => `${name} = ${js(init[i])}`).join("\n");
+      return variables.map(({ name }, i) => `${name} = ${js(init[i])}`).join('\n');
     }
 
     function js_do_statement({ body }) {
@@ -270,7 +270,7 @@ ${js(body)}
 
     function js_call_expression(node) {
       const callee = js(node.callee);
-      const params = node.params.map(param => js(param)).join(", ");
+      const params = node.params.map(param => js(param)).join(', ');
       return `${callee}(${params})`;
     }
 
@@ -284,8 +284,8 @@ ${js(body)}
 
     function js_unary_map(value) {
       switch (value) {
-        case "#-":
-          return "-";
+        case '#-':
+          return '-';
         default:
           return value;
       }
@@ -296,12 +296,12 @@ ${js(body)}
     }
 
     function js_break_statement(node) {
-      return "break";
+      return 'break';
     }
 
     function js_table_expression(node) {
       let list = 0;
-      const fields = node.fields.map(({ type, key, value }) => (type == "Recfield" ? `"${js(key)}": ${js(value)}` : `"${list++}": ${js(value)}`)).join(", ");
+      const fields = node.fields.map(({ type, key, value }) => (type == 'Recfield' ? `"${js(key)}": ${js(value)}` : `"${list++}": ${js(value)}`)).join(', ');
       return `{${fields}}`;
     }
 
@@ -314,7 +314,7 @@ ${js(body)}
     }
 
     function js_assign_expression(node) {
-      return node.left.map((variable, i) => `${js(variable)}${node.op}${js(node.right[i])}`).join("\n");
+      return node.left.map((variable, i) => `${js(variable)}${node.op}${js(node.right[i])}`).join('\n');
     }
 
     function js_fornum_statement(node) {
@@ -325,7 +325,7 @@ ${js(body)}
     }
 
     function js_forlist_statement(node) {
-      const left = node.left.map((variable, i) => `${js(variable)} = value[${i}]`).join("\n");
+      const left = node.left.map((variable, i) => `${js(variable)} = value[${i}]`).join('\n');
 
       return `
             for(const iterator = ${js(node.right)};;) {
@@ -344,7 +344,7 @@ ${js(body)}
     }
 
     function js_repeat_statement(node) {
-      let body = js(node.body).replace(/\n/g, ";\n  ");
+      let body = js(node.body).replace(/\n/g, ';\n  ');
       return `
 for(;;) {
   ${body};
@@ -355,7 +355,7 @@ for(;;) {
     }
 
     function js_function_declaration(node) {
-      const params = node.params.map(param => js(param)).join(", ");
+      const params = node.params.map(param => js(param)).join(', ');
 
       return `function ${js(node.id)}(${params}) {
                 ${js(node.body)}
@@ -363,7 +363,7 @@ for(;;) {
     }
 
     function js_return_statement(node) {
-      const params = node.params.map(param => js(param)).join(", ");
+      const params = node.params.map(param => js(param)).join(', ');
       return `return ${params}`;
     }
 
@@ -374,9 +374,9 @@ for(;;) {
                 ${js(body)}
             }`
         )
-        .join("\n");
+        .join('\n');
 
-      let other = "";
+      let other = '';
       if(node.else) {
         other = `else {
                     ${js(node.else)}
@@ -393,52 +393,52 @@ ${other}`;
 
     function js(node) {
       switch (node.type) {
-        case "Program":
+        case 'Program':
           return js_program(node);
-        case "Chunk":
+        case 'Chunk':
           return js_chunk(node);
-        case "LocalStatement":
+        case 'LocalStatement':
           return js_local_statement(node);
-        case "Literal":
+        case 'Literal':
           return js_literal(node);
-        case "Identifier":
+        case 'Identifier':
           return js_identifier(node);
-        case "ExpressionStatement":
+        case 'ExpressionStatement':
           return js_expression_statement(node);
-        case "CallExpression":
+        case 'CallExpression':
           return js_call_expression(node);
-        case "BinaryExpression":
+        case 'BinaryExpression':
           return js_binary_expression(node);
-        case "UnaryExpression":
+        case 'UnaryExpression':
           return js_unary_expression(node);
-        case "DoStatement":
+        case 'DoStatement':
           return js_do_statement(node);
-        case "BreakStatement":
+        case 'BreakStatement':
           return js_break_statement(node);
-        case "TableExpression":
+        case 'TableExpression':
           return js_table_expression(node);
-        case "MemberExpression":
+        case 'MemberExpression':
           return js_member_expression(node);
-        case "IndexExpression":
+        case 'IndexExpression':
           return js_index_expression(node);
-        case "AssignExpression":
+        case 'AssignExpression':
           return js_assign_expression(node);
-        case "IfStatement":
+        case 'IfStatement':
           return js_if_statement(node);
-        case "FornumStatement":
+        case 'FornumStatement':
           return js_fornum_statement(node);
-        case "ForlistStatement":
+        case 'ForlistStatement':
           return js_forlist_statement(node);
-        case "WhileStatement":
+        case 'WhileStatement':
           return js_while_statement(node);
-        case "RepeatStatement":
+        case 'RepeatStatement':
           return js_repeat_statement(node);
-        case "FunctionDeclaration":
+        case 'FunctionDeclaration':
           return js_function_declaration(node);
-        case "ReturnStatement":
+        case 'ReturnStatement':
           return js_return_statement(node);
         default:
-          throw new Error(`Dunno how to generate for ${Util.inspect(node, { newline: " " })}`);
+          throw new Error(`Dunno how to generate for ${Util.inspect(node, { newline: ' ' })}`);
       }
     }
   }
@@ -449,7 +449,7 @@ class MoonScriptGenerator {
   multiline = true;
   indent = "";*/
 
-  constructor(ast, multiline = true, indent = "") {
+  constructor(ast, multiline = true, indent = '') {
     if(ast !== undefined) {
       this.ast = ast;
       if(multiline !== undefined) this.multiline = multiline;
@@ -464,11 +464,11 @@ class MoonScriptGenerator {
     return new MoonScriptGenerator(ast, multiline, this.indent);
   }
 
-  static create(node, multiline = true, indent = "") {
+  static create(node, multiline = true, indent = '') {
     return new MoonScriptGenerator(node, multiline, indent);
   }
 
-  static str(node, multiline = false, indent = "") {
+  static str(node, multiline = false, indent = '') {
     const gen = MoonScriptGenerator.create(node, multiline, indent);
     return gen.str();
   }
@@ -479,7 +479,7 @@ class MoonScriptGenerator {
   }
 
   subtree(node, multiline = false) {
-    const subtree = node && node.length !== undefined ? new Node({ type: "Chunk", body: node }) : node; //new Node({ type: 'Program', body: node });
+    const subtree = node && node.length !== undefined ? new Node({ type: 'Chunk', body: node }) : node; //new Node({ type: 'Program', body: node });
     const gen = MoonScriptGenerator.create(subtree, multiline);
     return gen.to_moonscript(node);
   }
@@ -498,10 +498,10 @@ class MoonScriptGenerator {
       return ``;
     }
 
-    function moonscript_body(code, indent = "  ") {
+    function moonscript_body(code, indent = '  ') {
       return moonscript(code)
         .trimEnd()
-        .replace(/\n/g, "\n  ");
+        .replace(/\n/g, '\n  ');
     }
 
     function moonscript_program({ body }) {
@@ -509,7 +509,7 @@ class MoonScriptGenerator {
     }
 
     function moonscript_chunk({ body }) {
-      return body.map(moonscript).join("\n");
+      return body.map(moonscript).join('\n');
     }
 
     function moonscript_local_statement({ variables, init }) {
@@ -518,8 +518,8 @@ class MoonScriptGenerator {
         init: moonscript(init[i])
       }));
 
-      vars = vars.filter(({ init }) => init != "");
-      return vars.map(({ name, init }) => `${name} = ${init}`).join("\n");
+      vars = vars.filter(({ init }) => init != '');
+      return vars.map(({ name, init }) => `${name} = ${init}`).join('\n');
     }
 
     function moonscript_do_statement({ body }) {
@@ -531,8 +531,8 @@ class MoonScriptGenerator {
     function moonscript_literal(node) {
       // if(/^[-+]?[0-9.]*[0-9]$/.test(node.value)) return node.value;
 
-      const value = node.value === null ? "nil" : String(node.value);
-      return `${node.quote || ""}${value}${node.quote || ""}`;
+      const value = node.value === null ? 'nil' : String(node.value);
+      return `${node.quote || ''}${value}${node.quote || ''}`;
     }
 
     function moonscript_identifier({ name }) {
@@ -541,11 +541,11 @@ class MoonScriptGenerator {
 
     function moonscript_call_expression(node) {
       let paren = false;
-      if(generator.stack[1].type == "MemberExpression") paren = true;
+      if(generator.stack[1].type == 'MemberExpression') paren = true;
 
       ////console.error('node: ', generator.stack[1].type);
       const callee = moonscript(node.callee);
-      const params = node.params && node.params.map ? node.params.map(param => moonscript(param)).join(", ") : "";
+      const params = node.params && node.params.map ? node.params.map(param => moonscript(param)).join(', ') : '';
       return paren ? `${callee}(${params})` : `${callee} ${params}`;
     }
 
@@ -560,10 +560,10 @@ class MoonScriptGenerator {
 
     function moonscript_unary_map(value) {
       switch (value) {
-        case "#-":
-          return "-";
-        case "!":
-          return "not";
+        case '#-':
+          return '-';
+        case '!':
+          return 'not';
         default:
           return value;
       }
@@ -574,7 +574,7 @@ class MoonScriptGenerator {
     }
 
     function moonscript_break_statement(node) {
-      return "break";
+      return 'break';
     }
 
     function moonscript_table_expression(node) {
@@ -587,10 +587,10 @@ class MoonScriptGenerator {
         let key = generator.subtree(field.key, false);
         let num = parseInt(key);
         if(!isNaN(num)) key = num;
-        if(field.type == "Recfield") return `['${key}']: ` + generator.subtree(field.value, false, `${indent}  `).replace(/\n/g, `\n${indent}`);
+        if(field.type == 'Recfield') return `['${key}']: ` + generator.subtree(field.value, false, `${indent}  `).replace(/\n/g, `\n${indent}`);
         return generator.str(field.value, node.multiline, indent);
       });
-      return `{${generator.multiline ? `\n${indent}` : " "}${fields.join(generator.multiline ? `\n${indent}` : ", ")}${generator.multiline ? `\n${generator.indent}` : " "}}`;
+      return `{${generator.multiline ? `\n${indent}` : ' '}${fields.join(generator.multiline ? `\n${indent}` : ', ')}${generator.multiline ? `\n${generator.indent}` : ' '}}`;
     }
 
     function moonscript_member_expression({ object, property }) {
@@ -602,7 +602,7 @@ class MoonScriptGenerator {
     }
 
     function moonscript_assign_expression(node) {
-      console.error("ASSIGN_EXPRESSION ", node);
+      console.error('ASSIGN_EXPRESSION ', node);
 
       if(node.left && node.left.length >= 2) return `${moonscript(node.left)} = ${moonscript(node.right)}`;
 
@@ -610,13 +610,13 @@ class MoonScriptGenerator {
         .map((variable, i) => {
           let r = node.right[i];
           console.error(`variable.name=${variable.name}, r=`, r);
-          if(r.left && variable.name == r.left.name && ["*", "%", "/", "+", "-"].indexOf(r.op) != -1) {
+          if(r.left && variable.name == r.left.name && ['*', '%', '/', '+', '-'].indexOf(r.op) != -1) {
             return `${moonscript(variable)} ${r.op}${node.op} ${moonscript(node.right[i].right)}`;
           }
 
           return `${moonscript(variable)} ${node.op} ${moonscript(r)}`;
         })
-        .join("\n");
+        .join('\n');
     }
 
     function moonscript_fornum_statement(node) {
@@ -625,7 +625,7 @@ class MoonScriptGenerator {
     }
 
     function moonscript_forlist_statement(node) {
-      const left = node.left.map((variable, i) => moonscript(variable)).join(", ");
+      const left = node.left.map((variable, i) => moonscript(variable)).join(', ');
       return `for ${left} in ${moonscript(node.right)}
   ${moonscript_body(node.body)}`;
     }
@@ -642,9 +642,9 @@ until ${moonscript(cond)}`;
     }
 
     function moonscript_function_declaration(node) {
-      const params = node.params.map(param => moonscript(param)).join(", ");
+      const params = node.params.map(param => moonscript(param)).join(', ');
       const name = moonscript(node.id);
-      const assignment = name == "" ? "" : `${name} = `;
+      const assignment = name == '' ? '' : `${name} = `;
 
       return `${assignment}(${params}) ->
   ${moonscript_body(node.body)}
@@ -652,7 +652,7 @@ until ${moonscript(cond)}`;
     }
 
     function moonscript_return_statement(node) {
-      const params = node.params.map(param => moonscript(param)).join(", ");
+      const params = node.params.map(param => moonscript(param)).join(', ');
       return `return ${params}`;
     }
     function moonscript_comment(node) {
@@ -666,12 +666,12 @@ until ${moonscript(cond)}`;
           ({ cond, body }) => `elseif ${moonscript(cond)}
   ${moonscript_body(body)}`
         )
-        .join("\n");
+        .join('\n');
 
-      let other = "";
+      let other = '';
       let thenBody = moonscript_body(node.body);
-      let elseBody = node.else ? moonscript_body(node.else) : "";
-      if(elseBody != "") {
+      let elseBody = node.else ? moonscript_body(node.else) : '';
+      if(elseBody != '') {
         other = `else
   ${moonscript_body(node.else)}`;
       }
@@ -683,91 +683,91 @@ ${other}`;
     }
 
     function moonscript(node) {
-      let ret = "";
-      if(node === undefined) return "";
+      let ret = '';
+      if(node === undefined) return '';
 
       generator.stack.unshift(node);
 
       if(node.length !== undefined && node.type === undefined && node.map) return node.map(moonscript);
 
       if(node.type == undefined) {
-        console.error("node = ", node);
+        console.error('node = ', node);
         // throw { message: "node.type == undefined",  node };
-        return "";
+        return '';
       }
 
       switch (node.type) {
-        case "Program":
+        case 'Program':
           ret = moonscript_program(node);
           break;
-        case "Chunk":
+        case 'Chunk':
           ret = moonscript_chunk(node);
           break;
-        case "LocalStatement":
+        case 'LocalStatement':
           ret = moonscript_local_statement(node);
           break;
-        case "Literal":
+        case 'Literal':
           ret = moonscript_literal(node);
           break;
-        case "Identifier":
+        case 'Identifier':
           ret = moonscript_identifier(node);
           break;
-        case "ExpressionStatement":
+        case 'ExpressionStatement':
           ret = moonscript_expression_statement(node);
           break;
-        case "CallExpression":
+        case 'CallExpression':
           ret = moonscript_call_expression(node);
           break;
-        case "BinaryExpression":
+        case 'BinaryExpression':
           ret = moonscript_binary_expression(node);
           break;
-        case "UnaryExpression":
+        case 'UnaryExpression':
           ret = moonscript_unary_expression(node);
           break;
-        case "DoStatement":
+        case 'DoStatement':
           ret = moonscript_do_statement(node);
           break;
-        case "BreakStatement":
+        case 'BreakStatement':
           ret = moonscript_break_statement(node);
           break;
-        case "TableExpression":
+        case 'TableExpression':
           ret = moonscript_table_expression(node);
           break;
-        case "MemberExpression":
+        case 'MemberExpression':
           ret = moonscript_member_expression(node);
           break;
-        case "IndexExpression":
+        case 'IndexExpression':
           ret = moonscript_index_expression(node);
           break;
-        case "AssignExpression":
+        case 'AssignExpression':
           ret = moonscript_assign_expression(node);
           break;
-        case "IfStatement":
+        case 'IfStatement':
           ret = moonscript_if_statement(node);
           break;
-        case "FornumStatement":
+        case 'FornumStatement':
           ret = moonscript_fornum_statement(node);
           break;
-        case "ForlistStatement":
+        case 'ForlistStatement':
           ret = moonscript_forlist_statement(node);
           break;
-        case "WhileStatement":
+        case 'WhileStatement':
           ret = moonscript_while_statement(node);
           break;
-        case "RepeatStatement":
+        case 'RepeatStatement':
           ret = moonscript_repeat_statement(node);
           break;
-        case "FunctionDeclaration":
+        case 'FunctionDeclaration':
           ret = moonscript_function_declaration(node);
           break;
-        case "ReturnStatement":
+        case 'ReturnStatement':
           ret = moonscript_return_statement(node);
           break;
-        case "Comment":
+        case 'Comment':
           ret = moonscript_comment(node);
           break;
-        case "Undefined":
-          ret = "";
+        case 'Undefined':
+          ret = '';
           break;
         default:
           throw { message: `Dunno how to generate for ${node.type}` }; //Util.inspect(node, { newline: ' ' }));
@@ -808,37 +808,37 @@ class Token {
   }
 }
 
-Token.EOS = "EOS";
-Token.DOT = "DOT";
-Token.COLON = "COLON";
-Token.GT = "GT";
-Token.GE = "GE";
-Token.LE = "LE";
-Token.LT = "LT";
-Token.ASSIGN = "ASSIGN";
-Token.EQ = "EQ";
-Token.ELLIPSES = "ELLIPSES";
-Token.CONCAT = "CONCAT";
-Token.NUMBER = "NUMBER";
-Token.KEYWORD = "KEYWORD";
-Token.IDENTIFIER = "IDENTIFIER";
-Token.STRING = "STRING";
-Token.SEMICOLON = "SEMICOLON";
-Token.PLUS = "PLUS";
-Token.MINUS = "MINUS";
-Token.MUL = "MUL";
-Token.DIV = "DIV";
-Token.MOD = "MOD";
-Token.MOD = "POW";
-Token.COMMA = "COMMA";
-Token.LPAREN = "LEFT PAREN";
-Token.RPAREN = "RIGHT PAREN";
-Token.LBRACKET = "LEFT BRACKET";
-Token.RBRACKET = "RIGHT BRACKET";
-Token.LBRACE = "LEFT BRACE";
-Token.RBRACE = "RIGHT BRACE";
-Token.COMMENT = "COMMENT";
-Token.HASH = "#";
+Token.EOS = 'EOS';
+Token.DOT = 'DOT';
+Token.COLON = 'COLON';
+Token.GT = 'GT';
+Token.GE = 'GE';
+Token.LE = 'LE';
+Token.LT = 'LT';
+Token.ASSIGN = 'ASSIGN';
+Token.EQ = 'EQ';
+Token.ELLIPSES = 'ELLIPSES';
+Token.CONCAT = 'CONCAT';
+Token.NUMBER = 'NUMBER';
+Token.KEYWORD = 'KEYWORD';
+Token.IDENTIFIER = 'IDENTIFIER';
+Token.STRING = 'STRING';
+Token.SEMICOLON = 'SEMICOLON';
+Token.PLUS = 'PLUS';
+Token.MINUS = 'MINUS';
+Token.MUL = 'MUL';
+Token.DIV = 'DIV';
+Token.MOD = 'MOD';
+Token.MOD = 'POW';
+Token.COMMA = 'COMMA';
+Token.LPAREN = 'LEFT PAREN';
+Token.RPAREN = 'RIGHT PAREN';
+Token.LBRACKET = 'LEFT BRACKET';
+Token.RBRACKET = 'RIGHT BRACKET';
+Token.LBRACE = 'LEFT BRACE';
+Token.RBRACE = 'RIGHT BRACE';
+Token.COMMENT = 'COMMENT';
+Token.HASH = '#';
 
 class Lexer {
   /*  index = 0;
@@ -883,7 +883,7 @@ class Lexer {
     let pos = this.pos > 0 ? this.pos - 1 : this.pos;
     let str = this.source.substring(this.pos - this.column);
 
-    return str.substring(0, str.indexOf("\n"));
+    return str.substring(0, str.indexOf('\n'));
   }
 
   get xy() {
@@ -944,7 +944,7 @@ class Lexer {
 
     peek = this.lookahead(0);
     if(!is_digit(peek)) {
-      return this.croak("not digit");
+      return this.croak('not digit');
     }
 
     let sum = 0;
@@ -961,25 +961,25 @@ class Lexer {
 
   scan_longstring() {
     let comment = [];
-    if(this.lookahead(0) != "[") {
-      this.croak("not [");
+    if(this.lookahead(0) != '[') {
+      this.croak('not [');
     }
     let peek = this.lookahead(1, true);
     let term = 0;
-    if(peek == "=") {
+    if(peek == '=') {
       term++;
       for(;;) {
         peek = this.lookahead(1, true);
-        if(peek == "=") {
+        if(peek == '=') {
           term++;
           continue;
-        } else if((peek = "[")) {
+        } else if((peek = '[')) {
           break;
         } else {
           return this.croak();
         }
       }
-    } else if(peek != "[") {
+    } else if(peek != '[') {
       return this.croak();
     }
     for(;;) {
@@ -987,12 +987,12 @@ class Lexer {
       /*
        * try to find ]=*]
        */
-      if(peek == "]") {
+      if(peek == ']') {
         let i;
         this.eat(1);
         for(i = 0; i < term; i++) {
           peek = this.lookahead(i);
-          if(peek == "=") {
+          if(peek == '=') {
             continue;
           } else if(peek == undefined) {
             return this.croak(peek);
@@ -1000,9 +1000,9 @@ class Lexer {
         }
         if(i == term) {
           peek = this.lookahead(term);
-          if(peek == "]") {
+          if(peek == ']') {
             this.lookahead(2 + term, true);
-            return comment.join("");
+            return comment.join('');
           } else if(peek == undefined) {
             return this.croak(peek);
           }
@@ -1023,36 +1023,36 @@ class Lexer {
       peekpeek = this.lookahead(2);
 
       this.column++;
-      this.quote = "";
+      this.quote = '';
 
       switch (c) {
         case undefined:
           return this.token(0, Token.EOS, Token.EOS);
 
-        case "\f":
-        case "\r":
-        case " ":
-        case "\t":
+        case '\f':
+        case '\r':
+        case ' ':
+        case '\t':
           this.lookahead(1, true);
           continue;
-        case "\n":
+        case '\n':
           this.line++;
           this.column = 0;
           this.lookahead(1, true);
           continue;
-        case ";":
-          return this.token(1, Token.SEMICOLON, ";");
-        case "+":
-          return this.token(1, Token.PLUS, "+");
-        case "-":
-          if(peek == "-") {
-            if(peekpeek != "[") {
+        case ';':
+          return this.token(1, Token.SEMICOLON, ';');
+        case '+':
+          return this.token(1, Token.PLUS, '+');
+        case '-':
+          if(peek == '-') {
+            if(peekpeek != '[') {
               peek = this.lookahead(1, true);
               comment = [];
               for(;;) {
                 peek = this.lookahead(1, true);
-                if(peek == "\n" /*|| peek == undefined*/) {
-                  return this.token(0, Token.COMMENT, comment.join(""));
+                if(peek == '\n' /*|| peek == undefined*/) {
+                  return this.token(0, Token.COMMENT, comment.join(''));
                 } else {
                   comment.push(peek);
                   continue;
@@ -1065,71 +1065,71 @@ class Lexer {
             return this.token(0, Token.COMMENT, comment);
           }
 
-          return this.token(1, Token.MINUS, "-");
-        case "*":
-          return this.token(1, Token.MUL, "*");
-        case "/":
-          return this.token(1, Token.DIV, "/");
-        case "%":
-          return this.token(1, Token.MOD, "%");
-        case "^":
-          return this.token(1, Token.POW, "^");
-        case ",":
-          return this.token(1, Token.COMMA, ",");
-        case "(":
-          return this.token(1, Token.LPAREN, "(");
-        case ")":
-          return this.token(1, Token.RPAREN, ")");
-        case "[":
-          if(peek == "[" || peek == "=") {
+          return this.token(1, Token.MINUS, '-');
+        case '*':
+          return this.token(1, Token.MUL, '*');
+        case '/':
+          return this.token(1, Token.DIV, '/');
+        case '%':
+          return this.token(1, Token.MOD, '%');
+        case '^':
+          return this.token(1, Token.POW, '^');
+        case ',':
+          return this.token(1, Token.COMMA, ',');
+        case '(':
+          return this.token(1, Token.LPAREN, '(');
+        case ')':
+          return this.token(1, Token.RPAREN, ')');
+        case '[':
+          if(peek == '[' || peek == '=') {
             string = this.scan_longstring();
             return this.token(0, Token.STRING, string);
           }
 
-          return this.token(1, Token.LBRACKET, "[");
-        case "]":
-          return this.token(1, Token.RBRACKET, "]");
-        case "{":
-          return this.token(1, Token.LBRACE, "{");
-        case "}":
-          return this.token(1, Token.RBRACE, "}");
-        case "=":
-          if(peek == "=") return this.token(2, Token.EQ, "==");
+          return this.token(1, Token.LBRACKET, '[');
+        case ']':
+          return this.token(1, Token.RBRACKET, ']');
+        case '{':
+          return this.token(1, Token.LBRACE, '{');
+        case '}':
+          return this.token(1, Token.RBRACE, '}');
+        case '=':
+          if(peek == '=') return this.token(2, Token.EQ, '==');
 
-          return this.token(1, Token.ASSIGN, "=");
+          return this.token(1, Token.ASSIGN, '=');
 
-        case ">":
-          if(peek == "=") return this.token(2, Token.GE, ">=");
+        case '>':
+          if(peek == '=') return this.token(2, Token.GE, '>=');
 
-          return this.token(1, Token.GT, ">");
+          return this.token(1, Token.GT, '>');
 
-        case "<":
-          if(peek == "=") return this.token(2, Token.LE, "<=");
+        case '<':
+          if(peek == '=') return this.token(2, Token.LE, '<=');
 
-          return this.token(1, Token.LT, "<");
+          return this.token(1, Token.LT, '<');
 
-        case "~":
-          if(peek == "=") return this.token(2, Token.NE, "~=");
+        case '~':
+          if(peek == '=') return this.token(2, Token.NE, '~=');
 
           return this.croak();
 
-        case ":":
-          return this.token(1, Token.COLON, ":");
+        case ':':
+          return this.token(1, Token.COLON, ':');
 
-        case ".":
-          if(peek == ".") {
-            if(peekpeek == ".") return this.token(3, Token.ELLIPSES, "...");
-            return this.token(2, Token.CONCAT, "..");
+        case '.':
+          if(peek == '.') {
+            if(peekpeek == '.') return this.token(3, Token.ELLIPSES, '...');
+            return this.token(2, Token.CONCAT, '..');
           }
 
-          return this.token(1, Token.DOT, ".");
+          return this.token(1, Token.DOT, '.');
 
         case "'":
           string = [];
           for(;;) {
             peek = this.lookahead(1, true);
             if(peek == c) {
-              return this.token(1, Token.STRING, string.join(""));
+              return this.token(1, Token.STRING, string.join(''));
             } else if(peek == undefined) {
               return this.croak();
             } else {
@@ -1137,8 +1137,8 @@ class Lexer {
             }
           }
 
-        case "#":
-          return this.token(1, Token.HASH, "#");
+        case '#':
+          return this.token(1, Token.HASH, '#');
 
         case '"':
         case "'":
@@ -1147,7 +1147,7 @@ class Lexer {
           for(;;) {
             peek = this.lookahead(1, true);
             if(peek == c) {
-              return this.token(1, Token.STRING, string.join(""));
+              return this.token(1, Token.STRING, string.join(''));
             } else if(peek == undefined) {
               return this.croak();
             } else {
@@ -1158,7 +1158,7 @@ class Lexer {
         default:
           if(this.is_digit(c)) {
             let num = 0;
-            if(peek == "x" || peek == "X") {
+            if(peek == 'x' || peek == 'X') {
               this.eat(1);
               peek = this.lookahead(1);
               if(!this.is_hex(peek)) return this.croak();
@@ -1174,7 +1174,7 @@ class Lexer {
               if(this.is_digit(peek)) continue;
               else break;
             }
-            if(peek == ".") {
+            if(peek == '.') {
               base = 1;
               for(;;) {
                 peek = this.lookahead(1, true);
@@ -1186,12 +1186,12 @@ class Lexer {
                 }
               }
             }
-            if(peek == "E" || peek == "e") {
+            if(peek == 'E' || peek == 'e') {
               peek = this.lookahead(1, true);
-              if(peek == "-") {
+              if(peek == '-') {
                 this.eat(1);
                 base = -1;
-              } else if(peek == "+") {
+              } else if(peek == '+') {
                 this.eat(1);
                 base = +1;
               } else {
@@ -1202,12 +1202,12 @@ class Lexer {
             }
             return this.token(0, Token.NUMBER, num);
           }
-          if(this.is_letter(c) || c == "_") {
+          if(this.is_letter(c) || c == '_') {
             identifier = [c];
             for(;;) {
               peek = this.lookahead(1, true);
-              if(!this.is_digit_or_letter(peek) && peek != "_") {
-                identifier = identifier.join("");
+              if(!this.is_digit_or_letter(peek) && peek != '_') {
+                identifier = identifier.join('');
                 if(this.keywords[identifier]) return this.token(0, Token.KEYWORD, identifier);
                 return this.token(0, Token.IDENTIFIER, identifier);
               } else if(peek == undefined) {
@@ -1238,16 +1238,16 @@ class Parser {
     let parser = this;
 
     for(let name of Util.getMethodNames(this)) {
-      if(name.startsWith("parse_")) {
+      if(name.startsWith('parse_')) {
         let fn = this[name];
         parser[name] = function() {
           const args = [...arguments];
           this.depth += 1;
-          let indent = "  ".repeat(this.depth);
-          this.log("position: ", this.cur_token.position, " args: ", args);
+          let indent = '  '.repeat(this.depth);
+          this.log('position: ', this.cur_token.position, ' args: ', args);
           let ret = fn.apply(this, args);
           if(ret && ret !== null) {
-            this.log("ret: ", ret.toString ? ret.toString().replace(/\n/g, `\n${indent}`) : ret);
+            this.log('ret: ', ret.toString ? ret.toString().replace(/\n/g, `\n${indent}`) : ret);
             this.node = ret;
           }
 
@@ -1264,8 +1264,8 @@ class Parser {
     let args = [...arguments];
     let stack = Util.getCallers(0, 10);
 
-    stack = stack.filter(({ typeName, methodName, functionName }) => (typeName == "Parser" || (methodName || functionName || "").indexOf("parse") != -1) && methodName != "log");
-    const names = stack.filter(({ functionName }) => !functionName.startsWith("Parser.")).map(({ functionName }) => functionName);
+    stack = stack.filter(({ typeName, methodName, functionName }) => (typeName == 'Parser' || (methodName || functionName || '').indexOf('parse') != -1) && methodName != 'log');
+    const names = stack.filter(({ functionName }) => !functionName.startsWith('Parser.')).map(({ functionName }) => functionName);
 
     stack = stack.map(({ methodName, functionName, position }) => ({
       method: methodName || functionName,
@@ -1274,7 +1274,7 @@ class Parser {
     }));
 
     let name = stack[0].method;
-    name = Util.repeat(this.depth, "  ").join("") + name;
+    name = Util.repeat(this.depth, '  ').join('') + name;
     name = name + Util.pad(name, 80);
     args.unshift(name);
 
@@ -1358,8 +1358,8 @@ class Parser {
       return this.ast.program(this.parse_chunk());
     } catch(err) {
       err.token = this.cur_token;
-      console.error("ERROR:", err);
-      console.log("ERROR:", err);
+      console.error('ERROR:', err);
+      console.log('ERROR:', err);
       throw err;
     }
   }
@@ -1369,13 +1369,13 @@ class Parser {
     /* chunk       ::=   {<stat> [`;`]} */
     let stats = [];
     while(!this.is_block_follow()) {
-      if(this.cur_token.value == "return") {
+      if(this.cur_token.value == 'return') {
         stats.push(this.parse_stat());
         this.consume(Token.SEMICOLON);
         break;
       }
 
-      if(this.cur_token.type == "COMMENT") {
+      if(this.cur_token.type == 'COMMENT') {
         stats.push(this.ast.comment(this.cur_token.value));
         this.next();
         continue;
@@ -1407,23 +1407,23 @@ class Parser {
      */
 
     switch (this.cur_token.value) {
-      case "do":
+      case 'do':
         return this.parse_do_stat();
-      case "break":
+      case 'break':
         return this.parse_break_stat();
-      case "return":
+      case 'return':
         return this.parse_return_stat();
-      case "function":
+      case 'function':
         return this.parse_func_stat();
-      case "local":
+      case 'local':
         return this.parse_local_stat();
-      case "if":
+      case 'if':
         return this.parse_if_stat();
-      case "for":
+      case 'for':
         return this.parse_for_stat();
-      case "while":
+      case 'while':
         return this.parse_while_stat();
-      case "repeat":
+      case 'repeat':
         return this.parse_repeat_stat();
       default:
         return this.parse_expr_stat();
@@ -1433,9 +1433,9 @@ class Parser {
   parse_do_stat() {
     /* do_stat     ::=  `do` <block> `end` */
 
-    this.match(Token.KEYWORD, "do");
+    this.match(Token.KEYWORD, 'do');
     let do_stat = this.ast.do_stat(this.parse_block());
-    this.match(Token.KEYWORD, "end");
+    this.match(Token.KEYWORD, 'end');
 
     return do_stat;
   }
@@ -1443,7 +1443,7 @@ class Parser {
   parse_break_stat() {
     /* break_stat  ::=  `break` */
 
-    this.match(Token.KEYWORD, "break");
+    this.match(Token.KEYWORD, 'break');
 
     return this.ast.break_stat();
   }
@@ -1460,17 +1460,17 @@ class Parser {
   parse_func_stat() {
     /* func_stat   ::= `function` <funcname> '(' <parlist> ')' <blcok> 'end'*/
     let id;
-    this.match(Token.KEYWORD, "function");
+    this.match(Token.KEYWORD, 'function');
 
-    console.error("parse_func_stat ", this.cur_token);
-    if(this.cur_token.type == "LPAREN") id = "";
+    console.error('parse_func_stat ', this.cur_token);
+    if(this.cur_token.type == 'LPAREN') id = '';
     else id = this.parse_funcname();
 
     this.match(Token.LPAREN);
     let params = this.parse_parlist();
     this.match(Token.RPAREN);
     let body = this.parse_block();
-    this.match(Token.KEYWORD, "end");
+    this.match(Token.KEYWORD, 'end');
 
     return this.ast.func_stat(id, params, body);
   }
@@ -1483,7 +1483,7 @@ class Parser {
     if(this.is_param()) {
       parlist.push(this.parse_param());
 
-      while(this.cur_token.value == ",") {
+      while(this.cur_token.value == ',') {
         this.next();
         parlist.push(this.parse_param());
       }
@@ -1503,15 +1503,15 @@ class Parser {
     let funcname = this.parse_name();
 
     if(members) {
-      while(this.cur_token.value == ".") {
+      while(this.cur_token.value == '.') {
         this.next();
-        funcname = this.ast.member_expr(funcname, ".", this.parse_name());
+        funcname = this.ast.member_expr(funcname, '.', this.parse_name());
       }
     }
 
-    if(this.cur_token.value == ":") {
+    if(this.cur_token.value == ':') {
       this.next();
-      funcname = this.ast.member_expr(funcname, ":", this.parse_name());
+      funcname = this.ast.member_expr(funcname, ':', this.parse_name());
     }
 
     return funcname;
@@ -1522,18 +1522,18 @@ class Parser {
                         | `local` `function` <NAME> '(' <parlist> ')' <blcok> 'end'
    */
 
-    this.match(Token.KEYWORD, "local");
+    this.match(Token.KEYWORD, 'local');
 
-    if(this.cur_token.value == "function") {
+    if(this.cur_token.value == 'function') {
       this.next();
 
-      let id = "";
-      if(this.cur_token.type != "LPAREN") id = this.parse_name();
+      let id = '';
+      if(this.cur_token.type != 'LPAREN') id = this.parse_name();
       this.match(Token.LPAREN);
       let params = this.parse_parlist();
       this.match(Token.RPAREN);
       let block = this.parse_block();
-      this.match(Token.KEYWORD, "end");
+      this.match(Token.KEYWORD, 'end');
 
       return this.ast.func_stat(id, params, block);
     } else {
@@ -1541,12 +1541,12 @@ class Parser {
       let init = [];
       variables.push(this.parse_name());
 
-      while(this.cur_token.value == ",") {
+      while(this.cur_token.value == ',') {
         this.next();
         variables.push(this.parse_name());
       }
 
-      if(this.cur_token.value == "=") {
+      if(this.cur_token.value == '=') {
         this.next();
         init = this.parse_explist1();
       }
@@ -1561,28 +1561,28 @@ class Parser {
         <cond>      ::= <expr>
      */
 
-    this.match(Token.KEYWORD, "if");
+    this.match(Token.KEYWORD, 'if');
     let cond = this.parse_cond();
-    this.match(Token.KEYWORD, "then");
+    this.match(Token.KEYWORD, 'then');
     let block = this.parse_block();
     let elseif = [];
     let _else = null;
 
-    while(this.cur_token.value == "elseif") {
+    while(this.cur_token.value == 'elseif') {
       this.next();
       let elsecond = this.parse_cond();
-      this.match(Token.KEYWORD, "then");
+      this.match(Token.KEYWORD, 'then');
       let elseblock = this.parse_block();
 
       elseif.push(this.ast.if_stat(elsecond, elseblock, []));
     }
 
-    if(this.cur_token.value == "else") {
+    if(this.cur_token.value == 'else') {
       this.next();
       _else = this.parse_block();
     }
 
-    this.match(Token.KEYWORD, "end");
+    this.match(Token.KEYWORD, 'end');
 
     return this.ast.if_stat(cond, block, elseif, _else);
   }
@@ -1602,33 +1602,33 @@ class Parser {
             forlist     ::= <NAME> '=' <exp1>, <exp1> [',' <exp1>] <forbody> 'end'
          */
 
-    this.match(Token.KEYWORD, "for");
+    this.match(Token.KEYWORD, 'for');
 
     let name = this.parse_name();
-    if(this.cur_token.value == "=") {
+    if(this.cur_token.value == '=') {
       this.next();
       let begin = this.parse_exp1();
-      this.match(Token.COMMA, ",");
+      this.match(Token.COMMA, ',');
       let end = this.parse_exp1();
       let step = this.ast.literal(1);
-      if(this.cur_token.value == ",") {
+      if(this.cur_token.value == ',') {
         this.next();
         step = this.parse_exp1();
       }
 
       let body = this.parse_forbody();
-      this.match(Token.KEYWORD, "end");
+      this.match(Token.KEYWORD, 'end');
       return this.ast.fornum_stat(name, begin, end, step, body);
     } else {
       let left = [name];
-      while(this.cur_token.value == ",") {
+      while(this.cur_token.value == ',') {
         this.next();
         left.push(this.parse_name());
       }
-      this.match(Token.KEYWORD, "in");
+      this.match(Token.KEYWORD, 'in');
       let right = this.parse_exp1();
       let body = this.parse_forbody();
-      this.match(Token.KEYWORD, "end");
+      this.match(Token.KEYWORD, 'end');
       return this.ast.forlist_stat(name, left, right, body);
     }
   }
@@ -1638,7 +1638,7 @@ class Parser {
             forbody     ::= 'do' <block>
          */
 
-    this.match(Token.KEYWORD, "do");
+    this.match(Token.KEYWORD, 'do');
     let block = this.parse_block();
 
     return block;
@@ -1649,11 +1649,11 @@ class Parser {
             while_stat  ::= `while` <cond> `do` <block> `end`
          */
 
-    this.match(Token.KEYWORD, "while");
+    this.match(Token.KEYWORD, 'while');
     let cond = this.parse_cond();
-    this.match(Token.KEYWORD, "do");
+    this.match(Token.KEYWORD, 'do');
     let block = this.parse_block();
-    this.match(Token.KEYWORD, "end");
+    this.match(Token.KEYWORD, 'end');
 
     return this.ast.while_stat(cond, block);
   }
@@ -1663,9 +1663,9 @@ class Parser {
             repeat_stat ::= `repeat` <chunk> `until` <cond>
          */
 
-    this.match(Token.KEYWORD, "repeat");
+    this.match(Token.KEYWORD, 'repeat');
     let body = this.parse_block();
-    this.match(Token.KEYWORD, "until");
+    this.match(Token.KEYWORD, 'until');
     let cond = this.parse_cond();
 
     return this.ast.repeat_stat(cond, body);
@@ -1682,7 +1682,7 @@ class Parser {
 
     //  console.error('EXPR_STAT ', this.cur_token);
 
-    if(primaryexp.type == "CallExpression") {
+    if(primaryexp.type == 'CallExpression') {
       return this.ast.expr_stat(primaryexp);
     } else {
       let assignment = this.parse_assignment([primaryexp]);
@@ -1691,7 +1691,7 @@ class Parser {
   }
 
   parse_assignment(primaryexp) {
-    if(this.cur_token.value == ",") {
+    if(this.cur_token.value == ',') {
       if(!(primaryexp instanceof Array)) primaryexp = [primaryexp];
 
       do {
@@ -1699,7 +1699,7 @@ class Parser {
 
         const node = this.parse_primaryexp();
         primaryexp.push(node);
-      } while(this.cur_token.value == ",");
+      } while(this.cur_token.value == ',');
     }
 
     /*
@@ -1707,10 +1707,10 @@ class Parser {
                           | '=' <explist1>
          */
 
-    if(this.cur_token.value == "=") {
+    if(this.cur_token.value == '=') {
       this.next();
       let right = this.parse_explist1();
-      return this.ast.assign_expr("=", primaryexp, right);
+      return this.ast.assign_expr('=', primaryexp, right);
     }
 
     primaryexp.push(this.parse_primaryexp());
@@ -1724,7 +1724,7 @@ class Parser {
 
     let exps = [this.parse_expr()];
 
-    while(this.cur_token.value == ",") {
+    while(this.cur_token.value == ',') {
       this.next();
       exps.push(this.parse_expr());
     }
@@ -1802,19 +1802,19 @@ class Parser {
       return this.ast.literal(cur_token.value, false, q);
     } else if(this.cur_token.type == Token.KEYWORD) {
       switch (this.cur_token.value) {
-        case "nil":
+        case 'nil':
           this.next();
           return this.ast.literal(null);
-        case "true":
+        case 'true':
           this.next();
           return this.ast.literal(true);
-        case "false":
+        case 'false':
           this.next();
           return this.ast.literal(false);
-        case "...":
+        case '...':
           this.next();
-          return this.ast.literal("...");
-        case "function":
+          return this.ast.literal('...');
+        case 'function':
           const token = this.cur_token;
           const name = this.ast.undef();
           this.next();
@@ -1822,16 +1822,16 @@ class Parser {
           let params = this.parse_parlist();
           this.match(Token.RPAREN);
           let block = this.parse_block();
-          this.match(Token.KEYWORD, "end");
+          this.match(Token.KEYWORD, 'end');
 
           return this.ast.func_stat(name, params, block);
 
-        case "local":
+        case 'local':
           return this.parse_local_stat();
         default:
           this.yield_error(`parse_simpleexp ${this.cur_token.value}`);
       }
-    } else if(this.cur_token.value == "{") {
+    } else if(this.cur_token.value == '{') {
       return this.parse_constructor();
     } else {
       return this.parse_primaryexp();
@@ -1852,12 +1852,12 @@ class Parser {
 
     while(true) {
       switch (this.cur_token.value) {
-        case ".":
+        case '.':
           this.next();
           property = this.parse_name(true);
-          node = this.ast.member_expr(node, ".", property);
+          node = this.ast.member_expr(node, '.', property);
           break;
-        case "[":
+        case '[':
           this.next();
 
           if(this.cur_token.line >= 138) {
@@ -1870,10 +1870,10 @@ class Parser {
           this.match(Token.RBRACKET);
 
           break;
-        case ":":
+        case ':':
           this.next();
           property = this.parse_expr();
-          node = this.ast.member_expr(node, ":", property);
+          node = this.ast.member_expr(node, ':', property);
           let params = this.parse_funcargs();
           node = this.ast.call_expr(node, params);
           break;
@@ -1881,10 +1881,10 @@ class Parser {
           break;
       }
 
-      if(this.cur_token.value == ".") continue;
-      if(this.cur_token.value == "[") continue;
+      if(this.cur_token.value == '.') continue;
+      if(this.cur_token.value == '[') continue;
 
-      if(this.cur_token.value == "(" || this.cur_token.value == "{" || this.cur_token.type == Token.STRING) {
+      if(this.cur_token.value == '(' || this.cur_token.value == '{' || this.cur_token.type == Token.STRING) {
         let params = this.parse_funcargs();
         node = this.ast.call_expr(node, params);
         continue;
@@ -1903,9 +1903,9 @@ class Parser {
 
     let params = [];
 
-    if(this.cur_token.value == "(") {
+    if(this.cur_token.value == '(') {
       this.next();
-      if(this.cur_token.value != ")") {
+      if(this.cur_token.value != ')') {
         params = this.parse_explist1();
       }
       this.match(Token.RPAREN);
@@ -1931,9 +1931,9 @@ class Parser {
     while(true) {
       let node;
 
-      while(this.cur_token.type == "COMMENT") this.next();
+      while(this.cur_token.type == 'COMMENT') this.next();
 
-      if(this.cur_token.type == "RIGHT BRACE") break;
+      if(this.cur_token.type == 'RIGHT BRACE') break;
 
       lines.push(this.cur_token.line);
 
@@ -1947,7 +1947,7 @@ class Parser {
     this.match(Token.RBRACE);
 
     lines = Util.unique(lines);
-    console.error("LINES: ", lines.join(","));
+    console.error('LINES: ', lines.join(','));
 
     return this.ast.table_expr(fields, lines.length != 1);
   }
@@ -1958,12 +1958,12 @@ class Parser {
                           | ';'
          */
 
-    if(this.cur_token.value == "," || this.cur_token.value == ";") {
+    if(this.cur_token.value == ',' || this.cur_token.value == ';') {
       let cur_token = this.next();
       return this.ast.literal(cur_token.value);
     }
 
-    this.yield_error("parse_fieldsep");
+    this.yield_error('parse_fieldsep');
   }
 
   parse_field() {
@@ -1973,7 +1973,7 @@ class Parser {
                           | <listfield>
          */
 
-    if(this.cur_token.value == "[" /* || this.cur_token.type == Token.IDENTIFIER*/) {
+    if(this.cur_token.value == '[' /* || this.cur_token.type == Token.IDENTIFIER*/) {
       return this.parse_recfield();
     } else {
       return this.parse_listfield();
@@ -1987,7 +1987,7 @@ class Parser {
 
     let key, value;
 
-    if(this.cur_token.value == "[") {
+    if(this.cur_token.value == '[') {
       this.next();
       key = this.parse_exp1();
       this.match(Token.RBRACKET);
@@ -2010,17 +2010,17 @@ class Parser {
 
     let index;
 
-    console.error("TOKEN: ", this.cur_token);
+    console.error('TOKEN: ', this.cur_token);
 
     let node = this.parse_expr();
 
     // parse_assignment
 
-    console.error("EXPR: ", node);
+    console.error('EXPR: ', node);
 
-    if(this.cur_token.type == "ASSIGN") {
+    if(this.cur_token.type == 'ASSIGN') {
       this.next();
-      console.error("TOKEN2: ", this.cur_token);
+      console.error('TOKEN2: ', this.cur_token);
       index = node;
       node = this.parse_expr();
 
@@ -2036,7 +2036,7 @@ class Parser {
                      | '(' <expr> ')'
      */
 
-    if(this.cur_token.value == "(") {
+    if(this.cur_token.value == '(') {
       this.match(Token.LPAREN);
       let expr = this.parse_expr();
       this.match(Token.RPAREN);
@@ -2064,8 +2064,8 @@ class Parser {
     const token = this.next();
 
     switch (token.value) {
-      case "-":
-        return "#-";
+      case '-':
+        return '#-';
       default:
         return token.value;
     }
@@ -2076,7 +2076,7 @@ class Parser {
       //console.error('\nTOKEN: ', this.cur_token, '\n');
     }
 
-    if(this.cur_token.type == "ELLIPSES" || this.cur_token.value == "...") {
+    if(this.cur_token.type == 'ELLIPSES' || this.cur_token.value == '...') {
       const value = this.cur_token.value;
       this.next();
       return this.ast.literal(value);
@@ -2091,19 +2091,19 @@ class Parser {
 
   is_unary() {
     switch (this.cur_token.type) {
-      case "HASH":
-      case "MINUS":
+      case 'HASH':
+      case 'MINUS':
         return true;
       default:
-        if(this.cur_token.value == "not" || this.cur_token.value == "#") return true;
+        if(this.cur_token.value == 'not' || this.cur_token.value == '#') return true;
         return false;
     }
   }
 
   is_fieldsep() {
     switch (this.cur_token.value) {
-      case ",":
-      case ";":
+      case ',':
+      case ';':
         return true;
       default:
         return false;
@@ -2128,11 +2128,11 @@ class Parser {
 
   is_block_follow() {
     switch (this.cur_token.value) {
-      case "else":
-      case "elseif":
-      case "end":
-      case "until":
-      case "EOS":
+      case 'else':
+      case 'elseif':
+      case 'end':
+      case 'until':
+      case 'EOS':
         return true;
     }
 
@@ -2144,22 +2144,22 @@ Object.assign(Parser, {
   OP: {
     or: { prec: 1, left: 1, binary: 1 },
     and: { prec: 2, left: 1, binary: 1 },
-    "<": { prec: 3, left: 1, binary: 1 },
-    ">": { prec: 3, left: 1, binary: 1 },
-    "<=": { prec: 3, left: 1, binary: 1 },
-    ">=": { prec: 3, left: 1, binary: 1 },
-    "==": { prec: 3, left: 1, binary: 1 },
-    "~=": { prec: 3, left: 1, binary: 1 },
-    "..": { prec: 4, left: 0, binary: 1 },
-    "+": { prec: 5, left: 1, binary: 1 },
-    "-": { prec: 5, left: 1, binary: 1 },
-    "*": { prec: 6, left: 1, binary: 1 },
-    "/": { prec: 6, left: 1, binary: 1 },
-    "%": { prec: 4, left: 1, binary: 1 },
+    '<': { prec: 3, left: 1, binary: 1 },
+    '>': { prec: 3, left: 1, binary: 1 },
+    '<=': { prec: 3, left: 1, binary: 1 },
+    '>=': { prec: 3, left: 1, binary: 1 },
+    '==': { prec: 3, left: 1, binary: 1 },
+    '~=': { prec: 3, left: 1, binary: 1 },
+    '..': { prec: 4, left: 0, binary: 1 },
+    '+': { prec: 5, left: 1, binary: 1 },
+    '-': { prec: 5, left: 1, binary: 1 },
+    '*': { prec: 6, left: 1, binary: 1 },
+    '/': { prec: 6, left: 1, binary: 1 },
+    '%': { prec: 4, left: 1, binary: 1 },
     not: { prec: 7, left: 1, binary: 0 },
-    "#": { prec: 7, left: 1, binary: 0 },
-    "u-": { prec: 7, left: 1, binary: 0 },
-    "^": { prec: 8, left: 0, binary: 1 }
+    '#': { prec: 7, left: 1, binary: 0 },
+    'u-': { prec: 7, left: 1, binary: 0 },
+    '^': { prec: 8, left: 0, binary: 1 }
   }
 });
 
@@ -2175,47 +2175,47 @@ class Interpreter {
 
   evaluate(node, env) {
     switch (node.type) {
-      case "Program":
+      case 'Program':
         return this.evaluate(node.body, env);
-      case "Chunk":
+      case 'Chunk':
         return this.evaluate_chunk(node, env);
-      case "Identifier":
+      case 'Identifier':
         return this.evaluate_identifier(node, env);
-      case "Literal":
+      case 'Literal':
         return this.evaluate_literal(node, env);
-      case "AssignExpression":
+      case 'AssignExpression':
         return this.evaluate_assign_expression(node, env);
-      case "LocalStatement":
+      case 'LocalStatement':
         return this.evaluate_local_stat(node, env);
-      case "ExpressionStatement":
+      case 'ExpressionStatement':
         return this.evaluate_expression_stat(node, env);
-      case "CallExpression":
+      case 'CallExpression':
         return this.evaluate_call_expression(node, env);
-      case "UnaryExpression":
+      case 'UnaryExpression':
         return this.evaluate_unary_expression(node, env);
-      case "BinaryExpression":
+      case 'BinaryExpression':
         return this.evaluate_binary_expression(node, env);
-      case "DoStatement":
+      case 'DoStatement':
         return this.evaluate_do_statment(node, env);
-      case "BreakStatement":
+      case 'BreakStatement':
         return this.evaluate_break_statment(node, env);
-      case "ReturnStatement":
+      case 'ReturnStatement':
         return this.evaluate_return_statment(node, env);
-      case "FunctionDeclaration":
+      case 'FunctionDeclaration':
         return this.evaluate_function_declaration(node, env);
-      case "TableExpression":
+      case 'TableExpression':
         return this.evaluate_table_expression(node, env);
-      case "MemberExpression":
+      case 'MemberExpression':
         return this.evaluate_member_expression(node, env);
-      case "IfStatement":
+      case 'IfStatement':
         return this.evaluate_if_statement(node, env);
-      case "FornumStatement":
+      case 'FornumStatement':
         return this.evaluate_fornum_statement(node, env);
-      case "ForlistStatement":
+      case 'ForlistStatement':
         return this.evaluate_forlist_statement(node, env);
-      case "WhileStatement":
+      case 'WhileStatement':
         return this.evaluate_while_statement(node, env);
-      case "RepeatStatement":
+      case 'RepeatStatement':
         return this.evaluate_repeat_statement(node, env);
       default:
         throw new Error(`unknow ast node with ${node.type}`);
@@ -2241,7 +2241,7 @@ class Interpreter {
     let i = 1;
 
     fields.map(field => {
-      if(field.type == "Recfield") {
+      if(field.type == 'Recfield') {
         //identifier
         let key = field.key.name;
         let value = self.evaluate(field.value, env);
@@ -2261,9 +2261,9 @@ class Interpreter {
 
   evaluate_assign_expression(node, env) {
     node.left.forEach(({ type, name, object, property }, i) => {
-      if(type == "Identifier") {
+      if(type == 'Identifier') {
         env.set(name, this.evaluate(node.right[i], env));
-      } else if(type == "MemberExpression") {
+      } else if(type == 'MemberExpression') {
         const obj = env.get(object.name);
         obj[property.name] = this.evaluate(node.right[i], env);
       }
@@ -2388,7 +2388,7 @@ class Interpreter {
 
   evaluate_member_expression({ sep, object, property }, env) {
     let table, value;
-    if(sep == ".") {
+    if(sep == '.') {
       table = env.get(object.name);
       value = property.name;
     }
@@ -2426,7 +2426,7 @@ class Interpreter {
     }
 
     let name;
-    if(node.id.type == "Identifier") {
+    if(node.id.type == 'Identifier') {
       name = node.id.name;
     }
     env.def(name, lambda);
@@ -2443,51 +2443,51 @@ Object.assign(Interpreter, {
     and(left, right) {
       return left && right;
     },
-    "<": function(left, right) {
+    '<': function(left, right) {
       return left < right;
     },
-    ">": function(left, right) {
+    '>': function(left, right) {
       return left > right;
     },
-    "<=": function(left, right) {
+    '<=': function(left, right) {
       return left <= right;
     },
-    ">=": function(left, right) {
+    '>=': function(left, right) {
       return left >= right;
     },
-    "==": function(left, right) {
+    '==': function(left, right) {
       return left == right;
     },
-    "~=": function(left, right) {
+    '~=': function(left, right) {
       return left != right;
     },
-    "..": function(left, right) {
+    '..': function(left, right) {
       return `${left}${right}`;
     },
-    "+": function(left, right) {
+    '+': function(left, right) {
       return left + right;
     },
-    "-": function(left, right) {
+    '-': function(left, right) {
       return left - right;
     },
-    "*": function(left, right) {
+    '*': function(left, right) {
       return left * right;
     },
-    "/": function(left, right) {
+    '/': function(left, right) {
       return left / right;
     },
-    "^": function(left, rihgt) {
+    '^': function(left, rihgt) {
       return math.pow(left, right);
     },
-    "#-": function(right) {
+    '#-': function(right) {
       return -right;
     },
     not(right) {
       return !right;
     },
-    "#": function(right) {
-      if(typeof right !== "string") {
-        throw new Error("attempt to get length of a nonstring value");
+    '#': function(right) {
+      if(typeof right !== 'string') {
+        throw new Error('attempt to get length of a nonstring value');
       }
 
       return right.length;

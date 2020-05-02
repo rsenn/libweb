@@ -6,74 +6,150 @@ export class Transformation {
   }
 
   get axes() {
-    let ret = ['x', 'y', 'z'].filter(axis => this[axis] !== undefined);
+    let ret = ['x', 'y', 'z'].filter(axis => axis in this);
     if(this.axis !== undefined) ret.push(this.axis);
     return ret;
   }
 
-  get values() {
-    return Object.fromEntries(this.axes.map(axis => [axis, this[axis]]));
+  has(axis) {
+    if(this.axis !== undefined) return axis === this.axis;
+    return axis in this;
+  }
+
+  get is3D() {
+    return this.has('z');
+  }
+
+  entries() {
+    return this.axes.map(axis => [axis, this[axis]]);
+  }
+
+  vector(unit) {
+    return (this.is3D ? ['x', 'y', 'z'] : ['x', 'y']).map(unit ? axis => this[axis] + unit : axis => this[axis]);
+  }
+
+  toString(unit) {
+    return `${this.type}${this.is3D ? '3d' : ''}(${this.vector(unit).join(',')})`;
   }
 
   static fromString(arg) {
-    let args = arg.split(/[^-0-9A-Za-z.]+/g);
+    let args = arg.split(/[^-+0-9A-Za-z.]+/g);
     let cmd = args.shift().toLowerCase();
     let t;
-    args = args.filter(arg => /^[-0-9.]+$/.test(arg)).map(arg => +arg);
+    args = args.filter(arg => /^[-+0-9.]+$/.test(arg)).map(arg => +arg);
 
     if(cmd.startsWith('rotate')) {
       const axis = cmd.slice(6);
       args = axis != '' ? [args[0], axis] : args;
-      t = new Rotation(...args);
+      t = new RotateTransformation(...args);
     } else if(cmd.startsWith('translate')) {
       const axis = cmd.slice(9);
       args = axis != '' ? [args[0], axis] : args;
-      t = new Translation(...args);
+      t = new TranslateTransformation(...args);
     } else if(cmd.startsWith('scale')) {
       const axis = cmd.slice(5);
       args = axis != '' ? [args[0], axis] : args;
-      t = new Scaling(...args);
+      t = new ScaleTransformation(...args);
+    } else if(cmd.startsWith('matrix')) {
+      t = new MatrixTransformation(...args);
     }
 
     return t;
   }
-}
-Transformation.rad2deg = radians => (radians * 180) / Math.PI;
-Transformation.deg2rad = degrees => (degrees * Math.PI) / 180;
 
-export class Rotation extends Transformation {
+  static translate(...args) {
+    return new TranslateTransformation(...args);
+  }
+
+  static rotate(...args) {
+    return new RotateTransformation(...args);
+  }
+
+  static scale(...args) {
+    return new ScaleTransformation(...args);
+  }
+
+  static transform(...args) {
+    return new MatrixTransformation(...args);
+  }
+
+  static RAD2DEG = 180 / Math.PI;
+  static DEG2RAD = Math.PI / 180;
+
+  static rad2deg(radians) {
+    return radians * this.RAD2DEG;
+  }
+
+  static deg2rad(degrees) {
+    return degrees * this.DEG2RAD;
+  }
+
+  [Symbol.toStringTag]() {
+    return this.toString();
+  }
+
+  static get rotation() {
+    return RotateTransformation;
+  }
+  static get translation() {
+    return TranslateTransformation;
+  }
+  static get scaling() {
+    return ScaleTransformation;
+  }
+  static get matrix() {
+    return MatrixTransformation;
+  }
+}
+
+export class RotateTransformation extends Transformation {
   angle = 0;
   //axis = undefined;
 
   constructor(angle, axis) {
     super('rotate');
-    if(typeof axis == 'string' && ['x', 'y', 'z'].indexOf(axis.toLowerCase()) != -1) this.this.axis = axis.toLowerCase();
+    if(typeof axis == 'string' && ['x', 'y', 'z'].indexOf(axis.toLowerCase()) != -1) this.axis = axis.toLowerCase();
     // else this.axis = 'z';
     this.angle = angle;
   }
 
   get values() {
-    return { [this.axis]: this.angle };
+    return { [this.axis || 'z']: this.angle };
   }
 
-  toString() {
+  get is3D() {
+    return this.axis == 'z';
+  }
+
+  toString(unit = '') {
     const axis = this.axis !== undefined ? this.axis.toUpperCase() : '';
-    return `rotate${axis}(${this.angle})`;
+    const angle = this.constructor.convertAngle(this.angle, unit);
+    return `rotate${this.is3D ? axis : ''}(${angle}${unit})`;
   }
 
   toMatrix(matrix = Matrix.identity) {
-    return Matrix.rotate(matrix, (this.angle * Math.PI) / 180);
+    return Matrix.rotate(matrix, this.constructor.deg2rad(this.angle));
   }
 
   invert() {
-    return new Rotation(-this.angle, this.axis);
+    return new this.constructor(-this.angle, this.axis);
+  }
+
+  static convertAngle(angle, unit) {
+    switch (unit) {
+      case 'deg':
+        return angle;
+      case 'rad':
+        return this.deg2rad(angle);
+      case 'turn':
+        return angle / 360;
+      default:
+        return angle;
+    }
   }
 }
 
-Rotation.rad2deg = radians => (radians * 180) / Math.PI;
-Rotation.deg2rad = degrees => (degrees * Math.PI) / 180;
-
-export class Translation extends Transformation {
+export class TranslateTransformation extends Transformation {
   x = 0;
   y = 0;
   //z = undefined;
@@ -92,9 +168,9 @@ export class Translation extends Transformation {
     }
   }
 
-  toString() {
-    const is3D = this.z !== undefined;
-    return `translate${is3D ? '3d' : ''}(${this.x},${this.y}${is3D ? `,${this.z}` : ''})`;
+  get values() {
+    const { x, y, z } = this;
+    return 'z' in this ? { x, y, z } : { x, y };
   }
 
   toMatrix(matrix = Matrix.identity) {
@@ -102,11 +178,11 @@ export class Translation extends Transformation {
   }
 
   invert() {
-    return this.z !== undefined ? new Translation(-this.x, -this.y, -this.z) : new Translation(-this.x, -this.y);
+    return this.z !== undefined ? new TranslateTransformation(-this.x, -this.y, -this.z) : new TranslateTransformation(-this.x, -this.y);
   }
 }
 
-export class Scaling extends Transformation {
+export class ScaleTransformation extends Transformation {
   x = 1;
   y = 1;
   //z = undefined;
@@ -125,10 +201,9 @@ export class Scaling extends Transformation {
     }
   }
 
-  toString() {
-    const is3D = this.z !== undefined;
-
-    return `scale${is3D ? '3d' : ''}(${this.x},${this.y}${is3D ? `,${this.z}` : ''})`;
+  get values() {
+    const { x, y, z } = this;
+    return 'z' in this ? { x, y, z } : { x, y };
   }
 
   toMatrix(matrix = Matrix.identity) {
@@ -136,7 +211,35 @@ export class Scaling extends Transformation {
   }
 
   invert() {
-    return this.z !== undefined ? new Scaling(1 / this.x, 1 / this.y, 1 / this.z) : new Scaling(1 / this.x, 1 / this.y);
+    return this.z !== undefined ? new ScaleTransformation(1 / this.x, 1 / this.y, 1 / this.z) : new ScaleTransformation(1 / this.x, 1 / this.y);
+  }
+}
+
+export class MatrixTransformation extends Transformation {
+  matrix = Matrix.identity;
+
+  constructor(init) {
+    super('matrix');
+
+    if(init instanceof Matrix) this.matrix = init;
+    else if(isMatrix(init)) this.matrix = new Matrix(init);
+    else this.matrix = new Matrix(...arguments);
+  }
+
+  get values() {
+    return this.matrix.values();
+  }
+
+  toMatrix() {
+    return this.matrix.clone();
+  }
+
+  toString() {
+    return this.matrix.toString('');
+  }
+
+  invert() {
+    return new MatrixTransformation(this.matrix.invert());
   }
 }
 
@@ -150,6 +253,18 @@ export class TransformationList extends Array {
       else if(init instanceof Array) TransformationList.prototype.fromArray.call(this, init);
       else throw new Error('No such initialization: ' + init);
     }
+  }
+
+  get [Symbol.isConcatSpreadable]() {
+    return true;
+  }
+
+  [Symbol.toStringTag]() {
+    return TransformationList.prototype.toString.call(this);
+  }
+
+  static get [Symbol.species]() {
+    return this;
   }
 
   fromString(str) {
@@ -197,11 +312,6 @@ export class TransformationList extends Array {
 
   clone() {
     return this.slice();
-    /*    let ret = new TransformationList();
-    for(let i = 0; i < this.length; i++)
-       Array.prototype.push.call(ret, this[i]);
-    return ret;
-*/
   }
 
   unshift(...args) {
@@ -213,21 +323,27 @@ export class TransformationList extends Array {
   }
 
   rotate(...args) {
-    Array.prototype.push.call(this, new Rotation(...args));
+    Array.prototype.push.call(this, new RotateTransformation(...args));
     return this;
   }
 
   translate(...args) {
-    Array.prototype.push.call(this, new Translation(...args));
-    return this;
-  }
-  scale(...args) {
-    Array.prototype.push.call(this, new Scaling(...args));
+    Array.prototype.push.call(this, new TranslateTransformation(...args));
     return this;
   }
 
-  toString() {
-    return this.map(t => t.toString()).join(' ');
+  scale(...args) {
+    Array.prototype.push.call(this, new ScaleTransformation(...args));
+    return this;
+  }
+
+  matrix(...args) {
+    Array.prototype.push.call(this, new MatrixTransformation(...args));
+    return this;
+  }
+
+  toString(tUnit, rUnit) {
+    return this.map(t => t.toString(t instanceof TranslateTransformation ? tUnit : t instanceof RotateTransformation ? rUnit : undefined)).join(' ');
   }
 
   toMatrices() {
@@ -286,12 +402,17 @@ export class TransformationList extends Array {
     return this.decompose().translate;
   }
 
+  map(...args) {
+    return Array.prototype.map.apply(Array.from(this), args);
+  }
+
   get last() {
     return this.at(-1);
   }
   get first() {
     return this.at(0);
   }
+
   at(pos) {
     if(pos < 0) pos += this.length;
     return this[pos];

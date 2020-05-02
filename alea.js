@@ -40,9 +40,9 @@ export function Alea() {
       args = [+new Date()];
     }
     var mash = Mash();
-    s0 = mash(" ");
-    s1 = mash(" ");
-    s2 = mash(" ");
+    s0 = mash(' ');
+    s1 = mash(' ');
+    s2 = mash(' ');
 
     for(var i = 0; i < args.length; i++) {
       s0 -= mash(args[i]);
@@ -61,7 +61,7 @@ export function Alea() {
     mash = null;
   };
 
-  random.version = "Alea 0.9";
+  random.version = 'Alea 0.9';
   random.args = args;
   random.seed.apply(random, args);
 
@@ -97,7 +97,7 @@ function Mash() {
     return (n >>> 0) * 2.3283064365386963e-10; // 2^-32
   };
 
-  mash.version = "Mash 0.9";
+  mash.version = 'Mash 0.9';
   return mash;
 }
 

@@ -17,9 +17,9 @@ export function trkl(initValue) {
   };
 
   //Using string keys tells Uglify that we intend to export these symbols
-  self["subscribe"] = subscribe;
+  self['subscribe'] = subscribe;
 
-  self["bind_to"] = (obj, prop) => {
+  self['bind_to'] = (obj, prop) => {
     Object.defineProperty(obj, prop, {
       enumerable: true,
       configurable: true,
@@ -39,14 +39,14 @@ export function trkl(initValue) {
     }
   }
 
-  self["unsubscribe"] = function(subscriber) {
+  self['unsubscribe'] = function(subscriber) {
     remove(subscribers, subscriber);
   };
 
   function write(newValue) {
     var oldValue = value;
 
-    if(newValue === oldValue && (newValue === null || typeof newValue !== "object")) {
+    if(newValue === oldValue && (newValue === null || typeof newValue !== 'object')) {
       return; // bail out
     }
 
@@ -115,7 +115,7 @@ trkl.computed = function(fn) {
   }
 };
 
-trkl["from"] = function(executor) {
+trkl['from'] = function(executor) {
   var self = trkl();
   executor(self);
   return self;
@@ -158,7 +158,7 @@ trkl.object = function(handlers, ret = {}) {
 
 function detectCircularity(token) {
   if(computedTracker.indexOf(token) !== -1) {
-    throw Error("Circular computation detected");
+    throw Error('Circular computation detected');
   }
 }
 

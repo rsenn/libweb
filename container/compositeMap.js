@@ -174,8 +174,9 @@ export class CompositeMap {
     const iterator = {
       [Symbol.iterator]() {
         return iterator;
-      }, next() {
-        for (;;) {
+      },
+      next() {
+        for(;;) {
           const result = levelIterator.next();
           if(result.done) {
             if(level <= 0) {
@@ -205,8 +206,9 @@ export class CompositeMap {
     const iterator = {
       [Symbol.iterator]() {
         return iterator;
-      }, next() {
-        for (;;) {
+      },
+      next() {
+        for(;;) {
           const result = levelIterator.next();
           if(result.done) {
             if(level <= 0) {
@@ -235,8 +237,9 @@ export class CompositeMap {
     const iterator = {
       [Symbol.iterator]() {
         return iterator;
-      }, next() {
-        for (;;) {
+      },
+      next() {
+        for(;;) {
           const result = levelIterator.next();
           if(result.done) {
             if(level <= 0) {
