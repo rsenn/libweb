@@ -1205,11 +1205,11 @@ Util.parseQuery = function(url = Util.getURL()) {
   }
 };
 Util.encodeQuery = function(data) {
-  const ret = Util.array();
+  const ret = [];
   for(let d in data) ret.push(`${encodeURIComponent(d)}=${encodeURIComponent(data[d])}`);
   return ret.join("&");
 };
-Util.parseURL = function(href = this.getURL()) {
+Util.parseURL = function(href =   this.getURL()) {
   const matches = /^([^:]*):\/\/([^/:]*)(:[0-9]*)?(\/?.*)/.exec(href);
   if(!matches) return null;
   const argstr =
