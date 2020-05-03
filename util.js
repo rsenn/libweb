@@ -1628,7 +1628,7 @@ Util.methods = (obj, depth = 1, t = (k, v) => [k, v], r = e => Object.fromEntrie
 
 Util.getMethods = (obj, depth = 1) => {
   let ret = {};
-  for(let [k, v] of Util.iterateMethods(obj, depth, (k, v) => [k, v])) ret[k] = v;
+  for(let [k, v] of Util.iterateMethods(obj, depth)) ret[k] = v;
   return ret;
 };
 Util.iterateMethods = function*(obj, depth = 1, t = (key, value) => [key, value], start = 0) {
