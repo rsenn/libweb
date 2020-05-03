@@ -263,10 +263,9 @@ Point.isPoint = isPoint;
 Util.defineInspect(Point.prototype, 'x', 'y');
 
 Point.bind = (o, p, gen) => {
-  if(!p) p = ['x', 'y'];
+ const [ x, y ] = p || ['x', 'y'];
   if(!gen)
    gen = k => v => v === undefined ? o[k] : o[k] = v;
- const [ x, y ] = p;
  return Util.bindProperties(new Point(0,0), o, [x,y], gen);
 };
 export default Point;
