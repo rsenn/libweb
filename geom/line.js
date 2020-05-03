@@ -366,8 +366,8 @@ for(let name of ['direction', 'round', 'slope', 'angle', 'bbox', 'points', 'insp
 Util.defineInspect(Line.prototype, 'x1', 'y1', 'x2', 'y2');
 
 Line.bind = (o, p, gen) => {
-  if(!p) p = ['x1', 'y1', 'x2', 'y2'];
   if(!gen) gen = k => v => (v === undefined ? o[k] : (o[k] = v)); 
+  if(!p) p = ['x1', 'y1', 'x2', 'y2'];
   let  a = Point.bind(o, p.slice(0,2), gen);
   let b = Point.bind(o, p.slice(2,4), gen);
 
