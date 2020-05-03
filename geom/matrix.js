@@ -230,13 +230,20 @@ Matrix.prototype.transform_distance = function(d) {
 };
 
 Matrix.prototype.transform_xy = function(x, y) {
-  return [this[0] * x + this[1] * y + this[2], this[3] * x + this[4] * y + this[5]];
+    const m0 = this.row(0);
+    const m1 = this.row(1);
+
+  return [m0[0] * x + m0[1]* y + m0[2], m1[0] * x + m1[1] * y + m0[2]];
 };
 
 Matrix.prototype.transform_point = function(p) {
   const k = 'x' in p && 'y' in p ? ['x', 'y'] : [0, 1];
-  const x = this[0] * p[k[0]] + this[1] * p[k[1]] + this[2];
-  const y = this[3] * p[k[0]] + this[4] * p[k[1]] + this[5];
+   const m0 = this.row(0);
+    const m1 = this.row(1);
+
+  const x = m0[0] * p[k[0]] + m0[1] * p[k[1]] + m0[2];
+  const y = m1[0] * p[k[0]] + m1[1] * p[k[1]] + m1[2];
+
   p[k[0]] = x;
   p[k[1]] = y;
   return p;
