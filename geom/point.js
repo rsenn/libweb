@@ -266,6 +266,7 @@ Point.bind = (o, p, gen) => {
   if(!p) p = ['x', 'y'];
   if(!gen)
    gen = k => v => v === undefined ? o[k] : o[k] = v;
- return Util.bindProperties(new Point(0,0), o, { x: gen(p[0]), y: gen(p[1]) });
+ const [ x, y ] = p;
+ return Util.bindProperties(new Point(0,0), o, [x,y], gen);
 };
 export default Point;
