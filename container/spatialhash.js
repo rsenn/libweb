@@ -194,8 +194,7 @@ export class SpatialHash {
    * @return {number} the largest sized bucket
    */
   getLargest() {
-    var largest = 0,
-      object;
+    var largest = 0, object;
     for(var key in this.list) {
       if(this.list[key].length > largest) {
         largest = this.list[key].length;
@@ -214,8 +213,7 @@ export class SpatialHash {
    * @return {number} sparseness percentage
    */
   getSparseness(AABB) {
-    var count = 0,
-      total = 0;
+    var count = 0, total = 0;
     var x1 = Math.floor(AABB.x / this.cellSize);
     var y1 = Math.floor(AABB.y / this.cellSize);
     var x2 = Math.ceil((AABB.x + AABB.width) / this.cellSize);

@@ -235,8 +235,7 @@
    * @constructor
    */
   ClipperLib.FPoint = function() {
-    var a = arguments,
-      alen = a.length;
+    var a = arguments, alen = a.length;
     this.X = 0;
     this.Y = 0;
     if(ClipperLib.use_xyz) {
@@ -378,8 +377,7 @@
    * @constructor
    */
   ClipperLib.FRect = function() {
-    var a = arguments,
-      alen = a.length;
+    var a = arguments, alen = a.length;
     if(alen === 4) {
       // function (l, t, r, b)
       this.left = a[0];
@@ -637,8 +635,7 @@
   };
 
   ClipperLib.ClipperBase.prototype.SlopesEqual = ClipperLib.ClipperBase.SlopesEqual = function() {
-    var a = arguments,
-      alen = a.length;
+    var a = arguments, alen = a.length;
     var e1, e2, pt1, pt2, pt3, pt4;
     if(alen === 2) {
       // function (e1, e2)
@@ -693,8 +690,7 @@
   };
 
   ClipperLib.ClipperBase.prototype.RangeTest = function(pt) {
-    if(
-      pt.X > ClipperLib.ClipperBase.maxValue ||
+    if(pt.X > ClipperLib.ClipperBase.maxValue ||
       pt.X < -ClipperLib.ClipperBase.maxValue ||
       pt.Y > ClipperLib.ClipperBase.maxValue ||
       pt.Y < -ClipperLib.ClipperBase.maxValue ||
@@ -880,8 +876,7 @@
 
     var eStart = edges[0];
     //2. Remove duplicate vertices, and (when closed) collinear edges ...
-    var E = eStart,
-      eLoopStop = eStart;
+    var E = eStart, eLoopStop = eStart;
     for(;;) {
       //console.log(E.Next, eStart);
       //nb: allows matching start and end points when not Closed ...
@@ -1356,8 +1351,7 @@
       // function (clipType, solution, subjFillType, clipFillType)
       var clipType = a[0],
         solution = a[1],
-        subjFillType = a[2],
-        clipFillType = a[3];
+        subjFillType = a[2], clipFillType = a[3];
       if(this.m_ExecuteLocked) return false;
       if(this.m_HasOpenPaths) ClipperLib.Error('Error: PolyTree struct is needed for open path clipping.');
       this.m_ExecuteLocked = true;
@@ -1379,8 +1373,7 @@
       // function (clipType, polytree, subjFillType, clipFillType)
       var clipType = a[0],
         polytree = a[1],
-        subjFillType = a[2],
-        clipFillType = a[3];
+        subjFillType = a[2], clipFillType = a[3];
       if(this.m_ExecuteLocked) return false;
       this.m_ExecuteLocked = true;
       this.m_SubjFillType = subjFillType;
@@ -1398,13 +1391,11 @@
       return succeeded;
     } else if(alen === 2 && !ispolytree) {
       // function (clipType, solution)
-      var clipType = a[0],
-        solution = a[1];
+      var clipType = a[0], solution = a[1];
       return this.Execute(clipType, solution, ClipperLib.PolyFillType.pftEvenOdd, ClipperLib.PolyFillType.pftEvenOdd);
     } else if(alen === 2 && ispolytree) {
       // function (clipType, polytree)
-      var clipType = a[0],
-        polytree = a[1];
+      var clipType = a[0], polytree = a[1];
       return this.Execute(clipType, polytree, ClipperLib.PolyFillType.pftEvenOdd, ClipperLib.PolyFillType.pftEvenOdd);
     }
   };
@@ -1424,8 +1415,7 @@
       this.m_SortedEdges = null;
       this.m_Maxima = null;
 
-      var botY = {},
-        topY = {};
+      var botY = {}, topY = {};
 
       if(!this.PopScanbeam(botY)) {
         return false;
@@ -2381,8 +2371,7 @@
 
     var IsOpen = horzEdge.WindDelta === 0;
 
-    var eLastHorz = horzEdge,
-      eMaxPair = null;
+    var eLastHorz = horzEdge, eMaxPair = null;
     while(eLastHorz.NextInLML !== null && ClipperLib.ClipperBase.IsHorizontal(eLastHorz.NextInLML)) eLastHorz = eLastHorz.NextInLML;
     if(eLastHorz.NextInLML === null) eMaxPair = this.GetMaximaPair(eLastHorz);
 
@@ -3090,10 +3079,8 @@
   };
 
   ClipperLib.Clipper.prototype.JoinPoints = function(j, outRec1, outRec2) {
-    var op1 = j.OutPt1,
-      op1b = new ClipperLib.OutPt();
-    var op2 = j.OutPt2,
-      op2b = new ClipperLib.OutPt();
+    var op1 = j.OutPt1, op1b = new ClipperLib.OutPt();
+    var op2 = j.OutPt2, op2b = new ClipperLib.OutPt();
     //There are 3 kinds of joins for output polygons ...
     //1. Horizontal joins where Join.OutPt1 & Join.OutPt2 are vertices anywhere
     //along (horizontal) collinear edges (& Join.OffPt is on the same horizontal).
@@ -3242,8 +3229,7 @@
   };
 
   ClipperLib.Clipper.GetBounds = function(paths) {
-    var i = 0,
-      cnt = paths.length;
+    var i = 0, cnt = paths.length;
     while(i < cnt && paths[i].length === 0) i++;
     if(i === cnt) return new ClipperLib.FRect(0, 0, 0, 0);
     var result = new ClipperLib.FRect();
@@ -3282,8 +3268,7 @@
     //returns 0 if false, +1 if true, -1 if pt ON polygon boundary
     //See "The Point in Polygon Problem for Arbitrary Polygons" by Hormann & Agathos
     //http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.88.5498&rep=rep1&type=pdf
-    var result = 0,
-      cnt = path.length;
+    var result = 0, cnt = path.length;
     if(cnt < 3) return 0;
     var ip = path[0];
     for(var i = 1; i <= cnt; ++i) {
@@ -3316,14 +3301,11 @@
     //returns 0 if false, +1 if true, -1 if pt ON polygon boundary
     var result = 0;
     var startOp = op;
-    var ptx = pt.X,
-      pty = pt.Y;
-    var poly0x = op.Pt.X,
-      poly0y = op.Pt.Y;
+    var ptx = pt.X, pty = pt.Y;
+    var poly0x = op.Pt.X, poly0y = op.Pt.Y;
     do {
       op = op.Next;
-      var poly1x = op.Pt.X,
-        poly1y = op.Pt.Y;
+      var poly1x = op.Pt.X, poly1y = op.Pt.Y;
       if(poly1y === pty) {
         if(poly1x === ptx || (poly0y === pty && poly1x > ptx === poly0x < ptx)) return -1;
       }
@@ -3828,8 +3810,7 @@
     if(endType === ClipperLib.EndType.etClosedLine || endType === ClipperLib.EndType.etClosedPolygon) while(highI > 0 && ClipperLib.FPoint.op_Equality(path[0], path[highI])) highI--;
     //newNode.m_polygon.set_Capacity(highI + 1);
     newNode.m_polygon.push(path[0]);
-    var j = 0,
-      k = 0;
+    var j = 0, k = 0;
     for(var i = 1; i <= highI; i++)
       if(ClipperLib.FPoint.op_Inequality(newNode.m_polygon[j], path[i])) {
         j++;
@@ -3912,8 +3893,7 @@
       this.m_destPoly = new Array();
       if(len === 1) {
         if(node.m_jointype === ClipperLib.JoinType.jtRound) {
-          var X = 1,
-            Y = 0;
+          var X = 1, Y = 0;
           for(var j = 1; j <= steps; j++) {
             this.m_destPoly.push(new ClipperLib.FPoint2(this.m_srcPoly[0].X + X * delta, this.m_srcPoly[0].Y + Y * delta));
             var X2 = X;
@@ -3921,8 +3901,7 @@
             Y = X2 * this.m_sin + Y * this.m_cos;
           }
         } else {
-          var X = -1,
-            Y = -1;
+          var X = -1, Y = -1;
           for(var j = 0; j < 4; ++j) {
             this.m_destPoly.push(new ClipperLib.FPoint2(this.m_srcPoly[0].X + X * delta, this.m_srcPoly[0].Y + Y * delta));
             if(X < 0) X = 1;
@@ -3995,12 +3974,10 @@
   };
 
   ClipperLib.ClipperOffset.prototype.Execute = function() {
-    var a = arguments,
-      ispolytree = a[0] instanceof ClipperLib.PolyTree;
+    var a = arguments, ispolytree = a[0] instanceof ClipperLib.PolyTree;
     if(!ispolytree) {
       // function (solution, delta)
-      var solution = a[0],
-        delta = a[1];
+      var solution = a[0], delta = a[1];
       ClipperLib.Clear(solution);
       this.FixOrientations();
       this.DoOffset(delta);
@@ -4024,8 +4001,7 @@
       //console.log(JSON.stringify(solution));
     } // function (polytree, delta)
     else {
-      var solution = a[0],
-        delta = a[1];
+      var solution = a[0], delta = a[1];
       solution.Clear();
       this.FixOrientations();
       this.DoOffset(delta);
@@ -4082,8 +4058,7 @@
 			}
 			//else angle ==> 180 degrees
 		}
-*/ else if(
-      this.m_sinA < -1
+*/ else if(this.m_sinA < -1
     )
       this.m_sinA = -1.0;
     if(this.m_sinA * this.m_delta < 0) {
@@ -4269,8 +4244,7 @@
       poly = polygon[i];
       plen = poly.length;
       if(plen === 0) continue;
-      for(
-        k = 0;
+      for(k = 0;
         k < 1000000;
         k++ // could be forever loop, but wiser to restrict max repeat count
       ) {
@@ -4362,8 +4336,7 @@
       p2,
       p1x = 0.0,
       p1y = 0.0,
-      p2x = 0.0,
-      p2y = 0.0;
+      p2x = 0.0, p2y = 0.0;
     var j = path.length;
     if(j < 2) return 0;
     if(closed) {

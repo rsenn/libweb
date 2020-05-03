@@ -240,8 +240,7 @@ Util.range = function(start, end) {
   //console.log("Util.range ", r);
   return r;
 };
-Util.inspect = function(
-  obj,
+Util.inspect = function(obj,
   opts = {
     indent: '  ',
     newline: '\n',
@@ -389,14 +388,12 @@ Util.extendArray = function(arr = Array.prototype) {
   Util.define(arr, 'unique', function() {
     return this.filter((item, i, a) => a.indexOf(item) == i);
   });
-  Util.defineGetterSetter(
-    arr,
+  Util.defineGetterSetter(arr,
     'tail',
     function() {
       return Util.tail(this);
-    },
-    function(value) {
-      if(this.length == 0) this.push(value);
+    }, function(value) {
+      if (this.length == 0) this.push(value);
       else this[this.length - 1] = value;
     }
   );
@@ -408,33 +405,24 @@ Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index
   const adapter = {
     get length() {
       return getLength(obj);
-    },
-    get instance() {
+    }, get instance() {
       return obj;
-    },
-    key(i) {
+    }, key(i) {
       return getKey(obj, i);
-    },
-    get(key) {
+    }, get(key) {
       return getItem(obj, key);
-    },
-    set(key, value) {
+    }, set(key, value) {
       return setItem(obj, key, value);
-    },
-    *keys() {
+    }, *keys() {
       const length = getLength(obj);
       for(let i = 0; i < length; i++) yield getKey(obj, i);
-    },
-    *entries() {
-      for(let key of this.keys()) yield [key, getItem(obj, key)];
-    },
-    [Symbol.iterator]() {
+    }, *entries() {
+      for (let key of this.keys()) yield [key, getItem(obj, key)];
+    }, [Symbol.iterator]() {
       return this.entries();
-    },
-    toObject() {
+    }, toObject() {
       return Object.fromEntries(this.entries());
-    },
-    toMap() {
+    }, toMap() {
       return new Map(this.entries());
     }
   };
@@ -443,8 +431,7 @@ Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index
 Util.adapter.localStorage = function(s) {
   if(!s && global.window) s = window.localStorage;
 
-  return Util.adapter(
-    s,
+  return Util.adapter(s,
     l => l.length,
     (l, i) => l.key(i),
     (l, key) => JSON.parse(l.getItem(key)),
@@ -468,8 +455,7 @@ Util.array = function(a) {
   return a;
 };
 Util.arrayFromEntries = entries =>
-  Array.from(
-    entries.map(([k, v]) => k),
+  Array.from(entries.map(([k, v]) => k),
     key => entries.find(([k, v]) => k === key)[1]
   );
 
@@ -1208,13 +1194,11 @@ Util.tryCatch = (fn, resolve, reject) => {
 
 Util.isBrowser = function() {
   let ret = false;
-  Util.tryCatch(
-    () => window,
+  Util.tryCatch(() => window,
     w => (Util.isObject(w) ? (ret = true) : undefined),
     () => {}
   );
-  Util.tryCatch(
-    () => document,
+  Util.tryCatch(() => document,
     w => (Util.isObject(w) ? (ret = true) : undefined),
     () => {}
   );
@@ -1449,8 +1433,7 @@ Util.base64 = {
   encode: utf8 => {
     if(global.window) return window.btoa(unescape(encodeURIComponent(utf8)));
     return Buffer.from(utf8).toString('base64');
-  },
-  decode: base64 => decodeURIComponent(escape(window.atob(base64)))
+  }, decode: base64 => decodeURIComponent(escape(window.atob(base64)))
 };
 Util.formatRecord = function(obj) {
   let ret = {};
@@ -1867,8 +1850,7 @@ Util.getImageAverageColor = function(imageElement, options) {
     pixel.b = subpixels[i + 2];
     pixel.a = subpixels[i + 4];
     // Only consider pixels that aren't black, white, or too transparent
-    if(
-      pixel.a > settings.tooAlpha &&
+    if(pixel.a > settings.tooAlpha &&
       (luma = pixel.r + pixel.g + pixel.b) > settings.tooDark && // Luma is assigned inside the conditional to avoid re-calculation when alpha is not met
       luma < settings.tooLight
     ) {
@@ -1899,13 +1881,11 @@ Util.getImageAverageColor = function(imageElement, options) {
       // Returns a CSS compatible RGB string (e.g. '255, 255, 255')
       const { r, g, b } = this;
       return [r, g, b].join(', ');
-    },
-    toStringRgba() {
+    }, toStringRgba() {
       // Returns a CSS compatible RGBA string (e.g. '255, 255, 255, 1.0')
       const { r, g, b, a } = this;
       return [r, g, b, a].join(', ');
-    },
-    toStringHex() {
+    }, toStringHex() {
       // Returns a CSS compatible HEX coloor string (e.g. 'FFA900')
       const toHex = function(d) {
         h = Math.round(d).toString(16);
@@ -1976,23 +1956,19 @@ Util.proxy = (obj = {}, handler) =>
     get(target, key, receiver) {
       //console.log(`Util.proxy getting ${key}!`);
       return Reflect.get(target, key, receiver);
-    },
-    set(target, key, value, receiver) {
+    }, set(target, key, value, receiver) {
       //console.log(`Util.proxy setting ${key}!`);
       return Reflect.set(target, key, value, receiver);
-    },
-    ...handler
+    }, ...handler
   });
 Util.proxyTree = function proxyTree(...callbacks) {
   const [setCallback, applyCallback = () => {}] = callbacks;
   const handler = {
     get(target, key) {
       return node([...this.path, key]);
-    },
-    set(target, key, value) {
+    }, set(target, key, value) {
       return setCallback(this.path, key, value);
-    },
-    apply(target, thisArg, args) {
+    }, apply(target, thisArg, args) {
       return applyCallback(this.path, ...args);
     }
   };
@@ -2025,14 +2001,11 @@ Util.proxyClone = obj => {
     getPrototypeOf: () => Object.getPrototypeOf(obj),
     setPrototypeOf: () => {
       throw new Error('Not yet implemented: setPrototypeOf');
-    },
-    isExtensible: () => {
+    }, isExtensible: () => {
       throw new Error('Not yet implemented: isExtensible');
-    },
-    preventExtensions: () => {
+    }, preventExtensions: () => {
       throw new Error('Not yet implemented: preventExtensions');
-    },
-    getOwnPropertyDescriptor: (target, name) => {
+    }, getOwnPropertyDescriptor: (target, name) => {
       let desc;
       if(!deleted[name]) {
         desc = Object.getOwnPropertyDescriptor(override, name) || Object.getOwnPropertyDescriptor(obj, name);
@@ -2040,46 +2013,37 @@ Util.proxyClone = obj => {
       if(desc) desc.configurable = true;
       debug(`getOwnPropertyDescriptor ${name} =`, desc);
       return desc;
-    },
-    defineProperty: () => {
+    }, defineProperty: () => {
       throw new Error('Not yet implemented: defineProperty');
-    },
-    has: (_, name) => {
+    }, has: (_, name) => {
       const has = !deleted[name] && (name in override || name in obj);
       debug(`has ${name} = ${has}`);
       return has;
-    },
-    get: (receiver, name) => {
+    }, get: (receiver, name) => {
       const value = get(name);
       debug(`get ${name} =`, value);
       return value;
-    },
-    set: (_, name, val) => {
+    }, set: (_, name, val) => {
       delete deleted[name];
       override[name] = val;
       debug(`set ${name} = ${val}`, name, val);
       return true;
-    },
-    deleteProperty: (_, name) => {
+    }, deleteProperty: (_, name) => {
       debug(`deleteProperty ${name}`);
       deleted[name] = true;
       delete override[name];
-    },
-    ownKeys: () => {
+    }, ownKeys: () => {
       const keys = Object.keys(obj)
         .concat(Object.keys(override))
         .filter(Util.uniquePred)
         .filter(key => !deleted[key]);
       debug(`ownKeys`, keys);
       return keys;
-    },
-    apply: () => {
+    }, apply: () => {
       throw new Error('Not yet implemented: apply');
-    },
-    construct: () => {
+    }, construct: () => {
       throw new Error('Not yet implemented: construct');
-    },
-    enumerate: () => {
+    }, enumerate: () => {
       throw new Error('Not yet implemented: enumerate');
     }
   });
@@ -2090,9 +2054,8 @@ Util.proxyDelegate = (target, origin) => {
       if(key in target) return Reflect.get(target, key, receiver);
       const value = origin[key];
       return typeof value === 'function' ? (...args) => value.apply(origin, args) : value;
-    },
-    set(target, key, value, receiver) {
-      if(key in target) return Reflect.set(target, key, value, receiver);
+    }, set(target, key, value, receiver) {
+      if (key in target) return Reflect.set(target, key, value, receiver);
       origin[key] = value;
       return true;
     }
@@ -2104,11 +2067,9 @@ Util.immutable = args => {
   const handler = {
     set: () => {
       throw new Error(errorText);
-    },
-    deleteProperty: () => {
+    }, deleteProperty: () => {
       throw new Error(errorText);
-    },
-    defineProperty: () => {
+    }, defineProperty: () => {
       throw new Error(errorText);
     }
   };
@@ -2116,8 +2077,7 @@ Util.immutable = args => {
 };
 Util.immutableClass = Original => {
   let name = Util.fnName(Original);
-  return new Function(
-    'Original',
+  return new Function('Original',
     `const Immutable${name} = class extends Original {
     constructor(...args) {
       super(...args);
@@ -2186,8 +2146,7 @@ Util.color = (useColor = true) =>
     : {
         code(...args) {
           return `\u001b[${[...args].join(';')}m`;
-        },
-        text(text, ...color) {
+        }, text(text, ...color) {
           return this.code(...color) + text + this.code(0);
         }
       };
@@ -2200,10 +2159,8 @@ Util.defineInspect = (proto, ...props) => {
     const c = Util.color();
     proto[Symbol.for('nodejs.util.inspect.custom')] = function() {
       const obj = this;
-      return (
-        c.text(Util.fnName(proto.constructor) + ' ', 1, 31) +
-        Util.toString(
-          props.reduce((acc, key) => {
+      return (c.text(Util.fnName(proto.constructor) + ' ', 1, 31) +
+        Util.toString(props.reduce((acc, key) => {
             acc[key] = obj[key];
             return acc;
           }, {}),
@@ -2225,11 +2182,9 @@ Util.bindProperties = (proxy, target, props, gen) => {
   if(props instanceof Array) props = Object.fromEntries(props.map(name => [name, name]));
   const propNames = Object.keys(props);
 
-  if(!gen) 
-    gen = p => v => (v === undefined ? target[p] : (target[p] = v))
+  if(!gen) gen = p => v => (v === undefined ? target[p] : (target[p] = v));
 
-  Object.defineProperties(
-    proxy,
+  Object.defineProperties(proxy,
     propNames.reduce((a, k) => {
       const prop = props[k];
       const get_set = typeof prop == 'function' ? prop : gen(prop);

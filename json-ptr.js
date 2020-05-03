@@ -19,11 +19,9 @@ export const get = (pointer, value = undefined) => {
   const ptr = compile(pointer);
 
   const fn = value =>
-    ptr.reduce(
-      ([value, pointer], segment) => {
+    ptr.reduce(([value, pointer], segment) => {
         return [applySegment(value, segment, pointer), append(segment, pointer)];
-      },
-      [value, '']
+      }, [value, '']
     )[0];
 
   return value === undefined ? fn : fn(value);

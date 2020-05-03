@@ -73,7 +73,7 @@ export const traverse = function*(obj, path = [], doc) {
   }
 };
 
-export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
+export const toXML = function(o, z = 10000) {
   if(typeof o == 'object' && o !== null && 'raw' in o) o = o.raw;
   //if(typeof o == "object" && o !== null && "root" in o) o = o.root;
 
@@ -91,16 +91,19 @@ export const toXML = function(o, z = Number.MAX_SAFE_INTEGER) {
   const text = o.text;
   if(a && a.length > 0) {
     s += tagName[0] != '?' ? '>' : '?>';
-    if(z > 0) {
+    
       const textChildren = typeof a[0] == 'string';
       let nl = textChildren ? '' : tagName == 'text' && a.length == 1 ? '' : tagName[0] != '?' ? '\n  ' : '\n';
       if(textChildren) s += a.join('\n') + `</${tagName}>`;
       else {
-        for(let child of a) s += nl + toXML(child, z - 1).replace(/>\n/g, '>' + nl);
+        if(true /*z === true || z > 0*/) { 
+        for(let child of a) s += nl + toXML(child, z === true ? z : z - 1).replace(/>\n/g, '>' + nl);
+      } 
+          else s += "...";
+
         if(tagName[0] != '?') s += `${nl.replace(/ /g, '')}</${tagName}>`;
       }
-    }
-  } else {
+      } else {
     if(Object.keys(attrs).length == 0) s += `></${tagName}>`;
     else s += ' />';
   }
@@ -170,8 +173,7 @@ export class EagleInterface {
   *findAll(...args) {
     let { path, predicate, transform } = parseArgs(args);
     //if(!transform) transform = ([v, l, d]) => [v, l, d]; //(typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l, v) : v);
-    for(let [v, l, d] of this.iterator(
-      e => true,
+    for(let [v, l, d] of this.iterator(e => true,
       [],
       arg => arg
     )) {

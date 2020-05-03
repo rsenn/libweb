@@ -369,8 +369,7 @@ for(;;) {
 
     function js_if_statement(node) {
       const elseif = node.elseif
-        .map(
-          ({ cond, body }) => `else if(${js(cond)}) {
+        .map(({ cond, body }) => `else if(${js(cond)}) {
                 ${js(body)}
             }`
         )
@@ -662,8 +661,7 @@ until ${moonscript(cond)}`;
 
     function moonscript_if_statement(node) {
       const elseif = node.elseif
-        .map(
-          ({ cond, body }) => `elseif ${moonscript(cond)}
+        .map(({ cond, body }) => `elseif ${moonscript(cond)}
   ${moonscript_body(body)}`
         )
         .join('\n');
@@ -2439,54 +2437,38 @@ Object.assign(Interpreter, {
   OP: {
     or(left, right) {
       return left || right;
-    },
-    and(left, right) {
+    }, and(left, right) {
       return left && right;
-    },
-    '<': function(left, right) {
+    }, '<': function(left, right) {
       return left < right;
-    },
-    '>': function(left, right) {
+    }, '>': function(left, right) {
       return left > right;
-    },
-    '<=': function(left, right) {
+    }, '<=': function(left, right) {
       return left <= right;
-    },
-    '>=': function(left, right) {
+    }, '>=': function(left, right) {
       return left >= right;
-    },
-    '==': function(left, right) {
+    }, '==': function(left, right) {
       return left == right;
-    },
-    '~=': function(left, right) {
+    }, '~=': function(left, right) {
       return left != right;
-    },
-    '..': function(left, right) {
+    }, '..': function(left, right) {
       return `${left}${right}`;
-    },
-    '+': function(left, right) {
+    }, '+': function(left, right) {
       return left + right;
-    },
-    '-': function(left, right) {
+    }, '-': function(left, right) {
       return left - right;
-    },
-    '*': function(left, right) {
+    }, '*': function(left, right) {
       return left * right;
-    },
-    '/': function(left, right) {
+    }, '/': function(left, right) {
       return left / right;
-    },
-    '^': function(left, rihgt) {
+    }, '^': function(left, rihgt) {
       return math.pow(left, right);
-    },
-    '#-': function(right) {
+    }, '#-': function(right) {
       return -right;
-    },
-    not(right) {
+    }, not(right) {
       return !right;
-    },
-    '#': function(right) {
-      if(typeof right !== 'string') {
+    }, '#': function(right) {
+      if (typeof right !== 'string') {
         throw new Error('attempt to get length of a nonstring value');
       }
 

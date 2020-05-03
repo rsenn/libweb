@@ -19,11 +19,9 @@ export const logStoreAdapter = store => {
     store,
     get: function(name) {
       return this.store.get(name);
-    },
-    set: function(name, data) {
+    }, set: function(name, data) {
       return this.store && this.store.set ? this.store.set(name, data) : null;
-    },
-    remove: function(name) {
+    }, remove: function(name) {
       return this.store && this.store.remove ? this.store.remove(name) : null;
     }
   };
@@ -35,13 +33,11 @@ export const makeLocalStore = name => ({
   get() {
     //console.log(`localStore[${this.name}].get()`);
     return this.storage.get(this.name);
-  },
-  set(data) {
+  }, set(data) {
     //console.log(`localStore[${this.name}].set(data)`);
 
     return this.storage.set(this.name, data);
-  },
-  remove() {
+  }, remove() {
     //console.log(`localStore[${this.name}].remove()`);
 
     return this.storage.remove(this.name);

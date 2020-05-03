@@ -66,8 +66,7 @@ export function Rect(arg) {
     Object.defineProperty(obj, 'round', {
       value: function() {
         return Rect.round(this);
-      },
-      enumerable: true,
+      }, enumerable: true,
       writable: false
     });
   }
@@ -115,28 +114,23 @@ Rect.prototype.toSource = function(opts = {}) {
 Object.defineProperty(Rect.prototype, 'x1', {
   get: function() {
     return this.x;
-  },
-  set: function(value) {
+  }, set: function(value) {
     const extend = this.x - value;
     this.width += extend;
     this.x -= extend;
-  },
-  enumerable: true
+  }, enumerable: true
 });
 Object.defineProperty(Rect.prototype, 'x2', {
   get: function() {
     return this.x + this.width;
-  },
-  set: function(value) {
+  }, set: function(value) {
     this.width = value - this.x;
-  },
-  enumerable: true
+  }, enumerable: true
 });
 Object.defineProperty(Rect.prototype, 'y1', {
   get: function() {
     return this.y;
-  },
-  set: function(value) {
+  }, set: function(value) {
     const extend = this.y - value;
     this.height += extend;
     this.y -= extend;
@@ -145,8 +139,7 @@ Object.defineProperty(Rect.prototype, 'y1', {
 Object.defineProperty(Rect.prototype, 'y2', {
   get: function() {
     return this.y + this.height;
-  },
-  set: function(value) {
+  }, set: function(value) {
     this.height = value - this.y;
   }
 });
@@ -168,20 +161,16 @@ Object.defineProperty(Rect.prototype, 'size', {
       width: {
         get() {
           return rect.width;
-        },
-        set(value) {
+        }, set(value) {
           return (rect.width = +value);
-        },
-        enumerable: true
+        }, enumerable: true
       },
       height: {
         get() {
           return rect.height;
-        },
-        set(value) {
+        }, set(value) {
           return (rect.height = +value);
-        },
-        enumerable: true
+        }, enumerable: true
       }
     });
     return size;

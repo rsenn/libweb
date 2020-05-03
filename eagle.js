@@ -432,8 +432,7 @@ const eagleProps = {
     Layer,
     Param,
     Wire
-  },
-  classesWithName: ['Class', 'Designrules', 'Element', 'Layer', 'Library', 'Package', 'Param', 'Pass', 'Signal'],
+  }, classesWithName: ['Class', 'Designrules', 'Element', 'Layer', 'Library', 'Package', 'Param', 'Pass', 'Signal'],
   coordProperties: ['x', 'y', 'x1', 'y1', 'x2', 'y2', 'width', 'diameter', 'radius', 'extent', 'size', 'drill'],
   elementMap: {},
   allElements: [],
@@ -476,8 +475,7 @@ const eagleProps = {
 };
 
 function eagle(obj, parentObj) {
-  let ret = null,
-    ctor = null;
+  let ret = null, ctor = null;
   let args = [...arguments];
   // console.log("eagle: ", { parentObj, obj });
   if(typeof obj == 'object') {

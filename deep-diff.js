@@ -452,40 +452,31 @@ Object.defineProperties(accumulateDiff, {
   diff: {
     value: accumulateDiff,
     enumerable: true
-  },
-  orderIndependentDiff: {
+  }, orderIndependentDiff: {
     value: accumulateOrderIndependentDiff,
     enumerable: true
-  },
-  observableDiff: {
+  }, observableDiff: {
     value: observableDiff,
     enumerable: true
-  },
-  orderIndependentObservableDiff: {
+  }, orderIndependentObservableDiff: {
     value: orderIndependentDeepDiff,
     enumerable: true
-  },
-  orderIndepHash: {
+  }, orderIndepHash: {
     value: getOrderIndependentHash,
     enumerable: true
-  },
-  applyDiff: {
+  }, applyDiff: {
     value: applyDiff,
     enumerable: true
-  },
-  applyChange: {
+  }, applyChange: {
     value: applyChange,
     enumerable: true
-  },
-  revertChange: {
+  }, revertChange: {
     value: revertChange,
     enumerable: true
-  },
-  isConflict: {
+  }, isConflict: {
     value: function() {
       return typeof $conflict !== 'undefined';
-    },
-    enumerable: true
+    }, enumerable: true
   }
 });
 

@@ -63,14 +63,12 @@ RGBA.properties = ['r', 'g', 'b', 'a'];
 export const isRGBA = obj => RGBA.properties.every(prop => obj.hasOwnProperty(prop));
 
 RGBA.fromString = str => {
-  let c = Util.tryCatch(
-    () => new HSLA(str),
+  let c = Util.tryCatch(() => new HSLA(str),
     c => c.toRGBA(),
     () => undefined
   );
   if(!c)
-    c = Util.tryCatch(
-      () => new RGBA(str),
+    c = Util.tryCatch(() => new RGBA(str),
       c => c,
       () => undefined
     );
@@ -254,8 +252,7 @@ RGBA.prototype.toLAB = function() {
     g = this.g / 255,
     b = this.b / 255,
     x,
-    y,
-    z;
+    y, z;
 
   r = r > 0.04045 ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
   g = g > 0.04045 ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
@@ -282,8 +279,7 @@ RGBA.prototype.fromLAB = function(lab) {
     x = lab.a / 500 + y,
     z = y - lab.b / 200,
     r,
-    g,
-    b;
+    g, b;
 
   x = 0.95047 * (x * x * x > 0.008856 ? x * x * x : (x - 16 / 116) / 7.787);
   y = 1.0 * (y * y * y > 0.008856 ? y * y * y : (y - 16 / 116) / 7.787);

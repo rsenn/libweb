@@ -63,8 +63,16 @@ export class EagleNode extends EagleInterface {
   }
 
   get raw() {
+    /*   if(this.xml && this.xml[0])
+      return this.xml[0];*/
+
     let obj = this;
-    while('ref' in obj) obj = obj.ref.dereference();
+    /*  if('raw' in obj.ref.root)
+    console.log(`obj[${this.path}].ref.root:`,obj.ref.root);  */
+    while('ref' in obj) {
+      obj = obj.ref.dereference();
+      if('raw' in obj) obj = obj.raw;
+    }
 
     return obj;
 

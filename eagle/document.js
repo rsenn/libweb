@@ -43,7 +43,7 @@ export class EagleDocument extends EagleNode {
   }
 
   get changes() {
-    return deepDiff(this.orig, this.root);
+    return deepDiff(this.orig, this.raw);
   }
 
   cacheFields() {

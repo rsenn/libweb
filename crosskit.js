@@ -59,40 +59,32 @@ function isPOT(value) {
 var vec3 = {
   length: function(pt) {
     return Math.sqrt(pt[0] * pt[0] + pt[1] * pt[1] + pt[2] * pt[2]);
-  },
-
+  }, 
   normalize: function(pt) {
     var d = Math.sqrt(pt[0] * pt[0] + pt[1] * pt[1] + pt[2] * pt[2]);
     if(d === 0) {
       return [0, 0, 0];
     }
     return [pt[0] / d, pt[1] / d, pt[2] / d];
-  },
-
+  }, 
   dot: function(v1, v2) {
     return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
-  },
-
+  }, 
   angle: function(v1, v2) {
     return Math.acos((v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]) / (Math.sqrt(v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]) * Math.sqrt(v2[0] * v2[0] + v2[1] * v2[1] + v2[2] * v2[2])));
-  },
-
+  }, 
   cross: function(vectA, vectB) {
     return [vectA[1] * vectB[2] - vectB[1] * vectA[2], vectA[2] * vectB[0] - vectB[2] * vectA[0], vectA[0] * vectB[1] - vectB[0] * vectA[1]];
-  },
-
+  }, 
   multiply: function(vectA, constB) {
     return [vectA[0] * constB, vectA[1] * constB, vectA[2] * constB];
-  },
-
+  }, 
   add: function(vectA, vectB) {
     return [vectA[0] + vectB[0], vectA[1] + vectB[1], vectA[2] + vectB[2]];
-  },
-
+  }, 
   subtract: function(vectA, vectB) {
     return [vectA[0] - vectB[0], vectA[1] - vectB[1], vectA[2] - vectB[2]];
-  },
-
+  }, 
   equal: function(a, b) {
     var epsilon = 0.0000001;
     if(a === undefined && b === undefined) {
@@ -125,8 +117,7 @@ var mat3 = {
       m24 = m2[4],
       m25 = m2[5],
       m26 = m2[6],
-      m27 = m2[7],
-      m28 = m2[8];
+      m27 = m2[7], m28 = m2[8];
 
     m2[0] = m20 * m10 + m23 * m11 + m26 * m12;
     m2[1] = m21 * m10 + m24 * m11 + m27 * m12;
@@ -137,15 +128,13 @@ var mat3 = {
     m2[6] = m20 * m16 + m23 * m17 + m26 * m18;
     m2[7] = m21 * m16 + m24 * m17 + m27 * m18;
     m2[8] = m22 * m16 + m25 * m17 + m28 * m18;
-  },
-
+  }, 
   vec2_multiply: function(m1, m2) {
     var mOut = [];
     mOut[0] = m2[0] * m1[0] + m2[3] * m1[1] + m2[6];
     mOut[1] = m2[1] * m1[0] + m2[4] * m1[1] + m2[7];
     return mOut;
-  },
-
+  }, 
   transpose: function(m) {
     return [m[0], m[3], m[6], m[1], m[4], m[7], m[2], m[5], m[8]];
   }
@@ -385,8 +374,7 @@ WebGL2D.prototype.getFragmentShaderSource = function getFragmentShaderSource(sMa
 };
 
 WebGL2D.prototype.getVertexShaderSource = function getVertexShaderSource(stackDepth, sMask) {
-  var w = 2 / this.canvas.width,
-    h = -2 / this.canvas.height;
+  var w = 2 / this.canvas.width, h = -2 / this.canvas.height;
 
   stackDepth = stackDepth || 1;
 
@@ -518,8 +506,7 @@ WebGL2D.prototype.postInit = function() {
 
 // Extends gl context with Canvas2D API
 WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
-  var gl2d = this,
-    gl = this.gl;
+  var gl2d = this, gl = this.gl;
 
   // Rendering Canvas for text fonts
   var textCanvas = document.createElement('canvas');
@@ -777,8 +764,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   };
 
   // Maintain drawing state params during gl.save and gl.restore. see saveDrawState() and restoreDrawState()
-  var drawState = {},
-    drawStateStack = [];
+  var drawState = {}, drawStateStack = [];
 
   // A fast simple shallow clone
   function cloneObject(obj) {
@@ -826,8 +812,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   Object.defineProperty(gl, 'fillStyle', {
     get: function() {
       return colorVecToString(drawState.fillStyle);
-    },
-    set: function(value) {
+    }, set: function(value) {
       drawState.fillStyle = colorStringToVec4(value) || drawState.fillStyle;
     }
   });
@@ -837,8 +822,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   Object.defineProperty(gl, 'strokeStyle', {
     get: function() {
       return colorVecToString(drawState.strokeStyle);
-    },
-    set: function(value) {
+    }, set: function(value) {
       drawState.strokeStyle = colorStringToVec4(value) || drawStyle.strokeStyle;
     }
   });
@@ -851,8 +835,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   Object.defineProperty(gl, 'lineWidth', {
     get: function() {
       return drawState.lineWidth;
-    },
-    set: function(value) {
+    }, set: function(value) {
       gl.$lineWidth(value);
       drawState.lineWidth = value;
     }
@@ -864,8 +847,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   Object.defineProperty(gl, 'lineCap', {
     get: function() {
       return drawState.lineCap;
-    },
-    set: function(value) {
+    }, set: function(value) {
       drawState.lineCap = value;
     }
   });
@@ -875,8 +857,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   Object.defineProperty(gl, 'lineJoin', {
     get: function() {
       return drawState.lineJoin;
-    },
-    set: function(value) {
+    }, set: function(value) {
       drawState.lineJoin = value;
     }
   });
@@ -886,8 +867,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   Object.defineProperty(gl, 'miterLimit', {
     get: function() {
       return drawState.miterLimit;
-    },
-    set: function(value) {
+    }, set: function(value) {
       drawState.miterLimit = value;
     }
   });
@@ -897,8 +877,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   Object.defineProperty(gl, 'shadowOffsetX', {
     get: function() {
       return drawState.shadowOffsetX;
-    },
-    set: function(value) {
+    }, set: function(value) {
       drawState.shadowOffsetX = value;
     }
   });
@@ -908,8 +887,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   Object.defineProperty(gl, 'shadowOffsetY', {
     get: function() {
       return drawState.shadowOffsetY;
-    },
-    set: function(value) {
+    }, set: function(value) {
       drawState.shadowOffsetY = value;
     }
   });
@@ -919,8 +897,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   Object.defineProperty(gl, 'shadowBlur', {
     get: function() {
       return drawState.shadowBlur;
-    },
-    set: function(value) {
+    }, set: function(value) {
       drawState.shadowBlur = value;
     }
   });
@@ -930,8 +907,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   Object.defineProperty(gl, 'shadowColor', {
     get: function() {
       return drawState.shadowColor;
-    },
-    set: function(value) {
+    }, set: function(value) {
       drawState.shadowColor = value;
     }
   });
@@ -941,8 +917,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   Object.defineProperty(gl, 'font', {
     get: function() {
       return drawState.font;
-    },
-    set: function(value) {
+    }, set: function(value) {
       textCtx.font = value;
       drawState.font = value;
     }
@@ -953,8 +928,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   Object.defineProperty(gl, 'textAlign', {
     get: function() {
       return drawState.textAlign;
-    },
-    set: function(value) {
+    }, set: function(value) {
       drawState.textAlign = value;
     }
   });
@@ -964,8 +938,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   Object.defineProperty(gl, 'textBaseline', {
     get: function() {
       return drawState.textBaseline;
-    },
-    set: function(value) {
+    }, set: function(value) {
       drawState.textBaseline = value;
     }
   });
@@ -976,8 +949,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   Object.defineProperty(gl, 'globalAlpha', {
     get: function() {
       return drawState.globalAlpha;
-    },
-    set: function(value) {
+    }, set: function(value) {
       drawState.globalAlpha = value;
     }
   });
@@ -988,8 +960,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   Object.defineProperty(gl, 'globalCompositeOperation', {
     get: function() {
       return drawState.globalCompositeOperation;
-    },
-    set: function(value) {
+    }, set: function(value) {
       drawState.globalCompositeOperation = value;
     }
   });
@@ -1042,8 +1013,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     var data = tempCtx.createImageData(width, height);
     var buffer = new Uint8Array(width * height * 4);
     gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
-    var w = width * 4,
-      h = height;
+    var w = width * 4, h = height;
     for(var i = 0, maxI = h / 2; i < maxI; ++i) {
       for(var j = 0, maxJ = w; j < maxJ; ++j) {
         var index1 = i * w + j;
@@ -1255,8 +1225,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
   gl.drawFocusRing = function drawFocusRing() {};
 
-  var imageCache = [],
-    textureCache = [];
+  var imageCache = [], textureCache = [];
 
   function Texture(image) {
     this.obj = gl.createTexture();
@@ -1327,8 +1296,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     var shaderProgram = gl2d.initShaders(transform.c_stack, sMask);
 
-    var texture,
-      cacheIndex = imageCache.indexOf(image);
+    var texture, cacheIndex = imageCache.indexOf(image);
 
     if(cacheIndex !== -1) {
       texture = textureCache[cacheIndex];
@@ -1385,8 +1353,7 @@ var dom_svgs = (dom_svgs_shapes = svg_anims = []);
 
 //Texts In WebGL Stored Into Arrays With Their Canvas
 var images;
-var text_svg,
-  texts = (images = []);
+var text_svg, texts = (images = []);
 
 //Modes Of Rendering
 var WEBGL = 'WEBGL',
@@ -1395,8 +1362,7 @@ var WEBGL = 'WEBGL',
   DOM = 'DOM'; //Simple
 
 window.update = function() {
-  return (
-    window.requestAnimationFrame ||
+  return (window.requestAnimationFrame ||
     window.webkitRequestAnimationFrame ||
     window.mozRequestAnimationFrame ||
     window.msRequestAnimationFrame ||
@@ -1460,8 +1426,7 @@ export const crosskit = {
     }
     index++; //Increase Index Of Elements Creation
     console.info('%cCROSSKIT ' + crosskit.version + '\nRendering Mode: ' + renderer, 'font-size: 32px; background-color: purple; color: white; font-family: monospace;');
-  },
-
+  }, 
   line: function(v) {
     if(renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
@@ -1507,8 +1472,7 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
-  },
-
+  }, 
   //And When Drawing Shapes In SVG Or DOM We Get The Last Array Element Which Is The Shape We Pushed To Draw
   rect: function(v) {
     if(renderer == CANVAS || renderer == WEBGL) {
@@ -1568,8 +1532,7 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
-  },
-
+  }, 
   square: function(v) {
     if(renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
@@ -1607,8 +1570,7 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
-  },
-
+  }, 
   pixel: function(v) {
     if(renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
@@ -1643,8 +1605,7 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
-  },
-
+  }, 
   roundedrect: function(v) {
     if(renderer == CANVAS) {
       cakepen.globalAlpha = v.a;
@@ -1715,8 +1676,7 @@ export const crosskit = {
       cakepen.rotate(-v.angle);
       cakepen.globalAlpha = 1;
     }
-  },
-
+  }, 
   circle: function(v) {
     if(renderer == CANVAS) {
       cakepen.globalAlpha = v.a;
@@ -1788,9 +1748,8 @@ export const crosskit = {
       cakepen.rotate(-v.angle);
       cakepen.globalAlpha = 1;
     }
-  },
-  img: function(v) {
-    if(renderer == CANVAS || renderer == WEBGL) {
+  }, img: function(v) {
+    if (renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
       cakepen.rotate(v.angle / 50);
       images.push(new Image(v.w, v.h));
@@ -1825,8 +1784,7 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
-  },
-
+  }, 
   //NOTES: If Parameter To Use With DOM Or SVG,Set It To 0 Or "none" In Case Of That
   //NOTES: v.size Parameter Only For SVG And DOM,Font Size Setted In CANVAS Mode With font
   text: function(v) {
@@ -1869,9 +1827,8 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].style.fontSize = v.size + 'px';
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
-  },
-  triangle: function(v) {
-    if(renderer == CANVAS || renderer == WEBGL) {
+  }, triangle: function(v) {
+    if (renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
       cakepen.strokeStyle = v.stroke;
       cakepen.fillStyle = v.fill;
@@ -1914,9 +1871,8 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
-  },
-  polygon: function(v) {
-    if(renderer == CANVAS || renderer == WEBGL) {
+  }, polygon: function(v) {
+    if (renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
       cakepen.fillStyle = v.fill;
       cakepen.strokeStyle = v.stroke;
@@ -1958,9 +1914,8 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
-  },
-  clear: function() {
-    if(renderer == CANVAS || renderer == WEBGL) {
+  }, clear: function() {
+    if (renderer == CANVAS || renderer == WEBGL) {
       cakepen.fillStyle = 'transparent';
       cakepen.fillRect(0, 0, cakepen.canvas.width, cakepen.canvas.height);
       cakepen.clearRect(0, 0, cakepen.canvas.width, cakepen.canvas.height);
@@ -1984,17 +1939,14 @@ export const crosskit = {
         cakecanvas.removeChild(svg_shapes[svgos]);
       }
     }
-  },
-  bgcolor: function(c) {
-    if(renderer == CANVAS || renderer == WEBGL || renderer == SVG || renderer == DOM) cakecanvas.style.backgroundColor = c;
+  }, bgcolor: function(c) {
+    if (renderer == CANVAS || renderer == WEBGL || renderer == SVG || renderer == DOM) cakecanvas.style.backgroundColor = c;
     if(renderer == DOM) svg_board.style.backgroundColor = c;
-  },
-  bgimg: function(v) {
+  }, bgimg: function(v) {
     cakecanvas.style.backgroundImage = 'url(' + v.src + ')';
     cakecanvas.style.opacity = v.a;
-  },
-  animate: function(v) {
-    if(renderer == CANVAS || renderer == WEBGL || renderer == DOM) window.requestAnimationFrame(v.frame);
+  }, animate: function(v) {
+    if (renderer == CANVAS || renderer == WEBGL || renderer == DOM) window.requestAnimationFrame(v.frame);
     if(renderer == SVG) {
       svg_anims.push(document.createElementNS('http://www.w3.org/2000/svg', 'animate'));
       svg_anims[svg_anims.length - 1].setAttribute('attributeType', 'XML');
@@ -2011,18 +1963,14 @@ export const crosskit = {
       if(prev_anim != null) svg_obj.removeChild(prev_anim);
       svg_obj.appendChild(svg_anims[svg_anims.length - 1]);
     }
-  },
-  interval: function(f, t) {
+  }, interval: function(f, t) {
     return setInterval(f, t);
-  },
-  timer: function(f, t) {
+  }, timer: function(f, t) {
     return setTimeout(f, t);
-  },
-  update: function(f, t) {
+  }, update: function(f, t) {
     return window.update(f, t);
-  },
-  pause: function(v) {
-    if(v.interval == undefined && (renderer == DOM || renderer == CANVAS || renderer == WEBGL)) window.cancelAnimationFrame(v.frame);
+  }, pause: function(v) {
+    if (v.interval == undefined && (renderer == DOM || renderer == CANVAS || renderer == WEBGL)) window.cancelAnimationFrame(v.frame);
     if(!(v.interval == undefined) && (renderer == DOM || renderer == CANVAS || renderer == WEBGL)) window.clearInterval(v.interval);
   }
 };

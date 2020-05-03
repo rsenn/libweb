@@ -19,13 +19,11 @@ if(['development', 'test', 'local'].indexOf(env) != -1 && 'window' in global) {
   window.accumulateClasses = () => {
     var st = storage('dev');
     var classes = st.get('classes') || [];
-    var newClasses = dom.Element.walk(
-      document.body,
+    var newClasses = dom.Element.walk(document.body,
       (e, acc) => {
         acc.push(e.getAttribute('class'));
         return acc;
-      },
-      []
+      }, []
     )
       .join(' ')
       .split(/\s+/g)
@@ -52,37 +50,29 @@ if(['development', 'test', 'local'].indexOf(env) != -1 && 'window' in global) {
 
 if(!Array.prototype.back) {
   try {
-    Util.defineGetterSetter(
-      Array.prototype,
+    Util.defineGetterSetter(Array.prototype,
       'back',
       function() {
         return this.length > 0 ? this[this.length - 1] : undefined;
-      },
-      function(value) {
-        if(this.length > 0) this[this.length - 1] = value;
+      }, function(value) {
+        if (this.length > 0) this[this.length - 1] = value;
         else this.push(value);
         return this;
-      },
-      false
-    );
+      }, false);
   } catch(error) {}
 }
 
 if(!Array.prototype.front) {
   try {
-    Util.defineGetterSetter(
-      Array.prototype,
+    Util.defineGetterSetter(Array.prototype,
       'front',
       function() {
         return this.length > 0 ? this[0] : undefined;
-      },
-      function(value) {
-        if(this.length > 0) this[this.length - 1] = value;
+      }, function(value) {
+        if (this.length > 0) this[this.length - 1] = value;
         else this.push(value);
         return this;
-      },
-      false
-    );
+      }, false);
   } catch(error) {}
 }
 
@@ -125,8 +115,7 @@ export const colors = (() => {
     let f = Element.factory({}, e);
     let prev = 0;
     let entries = args.entries();
-    let i = 0,
-      len = entries.length;
+    let i = 0, len = entries.length;
     for(let [key, color] of entries) {
       let diff = key - prev;
       prev = key;
@@ -190,16 +179,13 @@ export async function getStars() {
     this.paths.forEach(e => e.parentElement.removeChild(e));
 
     return (this.stars = this.circles.map(c =>
-      dom.SVG.create(
-        'circle',
-        {
+      dom.SVG.create('circle', {
           cx: c.position.x.toFixed(3),
           cy: c.position.y.toFixed(3),
           r: c.radius.toFixed(3),
           fill: 'url(#' + gr.getAttribute('id') + ')',
           style: 'mix-blend-mode: screen'
-        },
-        this.svg
+        }, this.svg
       )
     ));
   };
@@ -247,8 +233,7 @@ export function gradient(element) {
     }),
     toString() {
       return Util.decamelize(e.tagName) + '(0deg, ' + this.steps.map(s => s.toString()).join(', ') + ');';
-    },
-    [Symbol.iterator]: () =>
+    }, [Symbol.iterator]: () =>
       new (class GradientIterator {
         index = 0;
         next() {
@@ -431,15 +416,12 @@ export function boxes(state) {
     });
     let cr = Element.rect(page);
     //console.log('container Rect: ', cr);
-    let accu = Element.walk(
-      container,
+    let accu = Element.walk(container,
       function(elem, accu, root) {
         const z = parseInt(Element.getCSS(elem, 'z-index'));
         //console.log(Element.xpath(elem, body));
         return z > accu ? z : accu;
-      },
-      0
-    );
+      }, 0);
     //console.log('accu: ', accu);
     Element.setCSS(boxes, {
       backgroundImage: 'url(/static/img/boxes-480.svg)',
@@ -580,8 +562,7 @@ export async function img(name, arg = {}) {
 
   let list = root.images
     ? root.images
-    : (root.images = new HashList(
-        obj => (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, '$1XX$2'),
+    : (root.images = new HashList(obj => (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, '$1XX$2'),
         function(arg) {
           let e = Element.find(arg);
           let svg = Element.find('svg', e);
@@ -627,8 +608,7 @@ export async function img(name, arg = {}) {
           opacity: 0.5,
           border: '1px dotted black',
           ...style
-        },
-        ...props
+        }, ...props
       });
       e.innerHTML = await res.data;
       const av = e && e.firstChild && e.firstChild.viewBox && e.firstChild.viewBox.animVal;
@@ -746,8 +726,7 @@ export function walk(element) {
     return e;
   });
 
-  let texts = new HashList(
-    obj => {
+  let texts = new HashList(obj => {
       const xpath = Element.xpath(obj.e, obj.e.parentNode);
       //if(obj.name.indexOf("#") != -1) return obj.name;
 
@@ -760,9 +739,8 @@ export function walk(element) {
         .replace(/\[[^]]*\]/g, '');
 
       return key.replace(/\//g, ' > ');
-    },
-    obj => {
-      if(obj.id === undefined) Object.assign(obj, { id: Element.attr(obj.e, 'id') });
+    }, obj => {
+      if (obj.id === undefined) Object.assign(obj, { id: Element.attr(obj.e, 'id') });
       if(obj.e) {
         let prev;
         obj.div = obj.e.parentNode;
@@ -873,16 +851,12 @@ export function polyline(points, closed = false) {
   if(typeof points == 'object' && points.toPoints) points = points.toPoints();
 
   if(!window.svg)
-    window.svg = SVG.create(
-      'svg',
-      {
+    window.svg = SVG.create('svg', {
         width,
         height,
         viewBox: `0 0 ${width} ${height}`,
         style: `position: fixed; left: 0; top: 0; z-index: 999999;`
-      },
-      document.body
-    );
+      }, document.body);
   SVG.create(closed ? 'polygon' : 'polyline', { points: points.toString(3), fill: 'none', stroke: 'red', strokeWidth: 1.5 }, window.svg);
 }
 
@@ -891,16 +865,12 @@ export function circle(point, radius = 10) {
   const height = window.innerHeight;
 
   if(!window.svg)
-    window.svg = SVG.create(
-      'svg',
-      {
+    window.svg = SVG.create('svg', {
         width,
         height,
         viewBox: `0 0 ${width} ${height}`,
         style: `position: fixed; left: 0; top: 0; z-index: 999999;`
-      },
-      document.body
-    );
+      }, document.body);
   SVG.create('circle', { cx: point.x, cy: point.y, r: radius, fill: 'none', stroke: 'red', strokeWidth: 1.5 }, window.svg);
 }
 
@@ -1008,8 +978,7 @@ export function storage(name) {
   });
 
   Util.defineGetterSetter(self, 'name', () => name);
-  Util.defineGetterSetter(
-    self,
+  Util.defineGetterSetter(self,
     'value',
     () => self(),
     value => self(value)

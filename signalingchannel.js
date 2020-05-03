@@ -25,8 +25,7 @@ window.SignalingChannel = (function() {
       throw new Error('No wss url was set');
     }
     trace('Opening signaling channel.');
-    return new Promise(
-      function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
         this.websocket_ = new WebSocket(this.wssUrl_);
 
         this.websocket_.onopen = function() {

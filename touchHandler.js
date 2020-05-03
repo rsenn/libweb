@@ -253,8 +253,7 @@ export function TurnListener(handler, options) {
     return this.cancel(event);
   }
 
-  return MultitouchListener(
-    MovementListener(event => {
+  return MultitouchListener(MovementListener(event => {
       const { points, x, y } = event;
       const type = event.type || '';
       var end = type.endsWith('up') || type.endsWith('cancel') || type.endsWith('end') || event.active === false;
@@ -310,8 +309,7 @@ export function TurnListener(handler, options) {
 export function SelectionListener(handler, options) {
   var origin = null,
     position,
-    line,
-    running = false;
+    line, running = false;
   var element = null;
 
   options = {
@@ -373,12 +371,10 @@ export function SelectionRenderer() {
         zIndex: 999999999
       });
       this.update(rect);
-    },
-    update(rect) {
+    }, update(rect) {
       //console.log("SelectionListener.update(", rect, ")");
       Element.rect(this.element, rect, { position: 'absolute' });
-    },
-    destroy() {
+    }, destroy() {
       //console.log("SelectionListener.destroy()");
       Element.remove(this.element);
     }

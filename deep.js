@@ -75,8 +75,7 @@ export const extend = () => {
 export const select = (root, filter, path) => {
   let elementPath,
     k,
-    selected = [],
-    v;
+    selected = [], v;
   if(!path) path = [];
   if(filter(root, path)) selected.push({ path: path, value: root });
   else if(Util.isObject(root)) for(k in root) selected = selected.concat(select(root[k], filter, [...path, k]));
@@ -117,8 +116,7 @@ export const transform = (obj, filter, t) => {
     transformed,
     v,
     j,
-    len,
-    path = arguments[3] == [];
+    len, path = arguments[3] == [];
   if(filter(obj, path)) {
     return t(obj, path);
   } else if(Util.isArray(obj)) {

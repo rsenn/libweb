@@ -80,13 +80,10 @@ trkl.prototype = Object.create({ ...Function.prototype, constructor: trkl });
 
 trkl.getset = function(arg) {
   let trkl = arg || new trkl(arg);
-  return Object.create(
-    {
+  return Object.create({
       get: () => trkl(),
       set: value => trkl(value)
-    },
-    {}
-  );
+    }, {});
 };
 
 trkl.computed = function(fn) {

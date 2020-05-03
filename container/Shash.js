@@ -26,8 +26,7 @@ Shash.prototype.check = function() {
   if(!this.onNeighbour) return;
 
   // Clear grids
-  var i = Math.ceil(this.size.x / this.gridSize.x),
-    J = Math.ceil(this.size.y / this.gridSize.y);
+  var i = Math.ceil(this.size.x / this.gridSize.x), J = Math.ceil(this.size.y / this.gridSize.y);
   this.grid = [];
   while(i--) {
     this.grid[i] = [];

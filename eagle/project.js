@@ -127,8 +127,7 @@ export class EagleProject {
       board: board.libraries[name]
     };
     let layers = {
-      schematic: Util.toMap(
-        schematic.layers.list.filter(l => l.active == 'yes'),
+      schematic: Util.toMap(schematic.layers.list.filter(l => l.active == 'yes'),
         l => [l.number, l]
       ),
       board: Util.toMap(
@@ -160,7 +159,6 @@ export class EagleProject {
         //console.log(`dstMap:`, Util.className(dstMap));
         for(let value of srcLib[entity].values()) {
           const key = value.name;
-          //console.log(`dstMap.set(${key},`, dump(value, 0), `):`);
           dstMap.set(key, value);
         }
         //console.log('dstMap.ref:', dump(dstMap.ref, 2));
