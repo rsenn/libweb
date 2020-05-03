@@ -4,7 +4,7 @@ import { text, inspect, toXML, dump } from './common.js';
 export function DereferenceError(object, member, pos, part, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
 
-  return Util.extend(
+  return Object.assign(
     error,
     { object, member, pos, locator },
     {

@@ -83,16 +83,15 @@ export const select = (root, filter, path) => {
   return selected;
 };
 
-export const iterate = function*(root, filter = v => true) {
-  let value = root,
-    k,
+export const iterate = function*(value, filter = v => true, path = []) {
+  let root = arguments[3] || value,
     selected = [],
-    v,
-    path = arguments[2] || [],
     r;
 
+
   if((r = filter(value, path, root))) yield [value, path, root];
-  if(r !== -1) if (Util.isObject(value)) for(k in value) yield* iterate(value[k], filter, [...path, k]);
+  if(r !== -1) if (Util.isObject(value)) 
+    for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
 };
 
 export const get = (root, path) => {

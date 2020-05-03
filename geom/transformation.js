@@ -32,6 +32,10 @@ export class Transformation {
     return `${this.type}${this.is3D ? '3d' : ''}(${this.vector(unit).join(',')})`;
   }
 
+  clone() {
+    return this.constructor.fromString(this.toString());
+  }
+
   static fromString(arg) {
     let args = arg.split(/[^-+0-9A-Za-z.]+/g);
     let cmd = args.shift().toLowerCase();
@@ -127,12 +131,18 @@ export class RotateTransformation extends Transformation {
     return `rotate${this.is3D ? axis : ''}(${angle}${unit})`;
   }
 
-  toMatrix(matrix = Matrix.identity) {
-    return Matrix.rotate(matrix, this.constructor.deg2rad(this.angle));
+  toMatrix() {
+    return Matrix.rotate(this.constructor.deg2rad(this.angle));
   }
 
   invert() {
     return new this.constructor(-this.angle, this.axis);
+  }
+
+  accumulate(other) {
+    if(this.type !== other.type && this.axis !== other.axis)
+      throw new Error(Util.className(this)+": accumulate mismatch");
+return new RotateTransformation(this.angle + other.angle, this.axis);
   }
 
   static convertAngle(angle, unit) {
@@ -173,12 +183,21 @@ export class TranslateTransformation extends Transformation {
     return 'z' in this ? { x, y, z } : { x, y };
   }
 
-  toMatrix(matrix = Matrix.identity) {
-    return Matrix.translate(matrix, this.x, this.y, this.z);
+  toMatrix(matrix = Matrix.identity()) {
+    return matrix.translate_self(this.x, this.y, this.z);
   }
 
   invert() {
     return this.z !== undefined ? new TranslateTransformation(-this.x, -this.y, -this.z) : new TranslateTransformation(-this.x, -this.y);
+  }
+
+  accumulate(other) {
+    if(this.type !== other.type)
+      throw new Error(Util.className(this)+": accumulate mismatch");
+
+    if(this.is3D)
+   return new TranslateTransformation(this.x + other.x, this.y + other.y, this.z + other.z);
+ return new TranslateTransformation(this.x + other.x, this.y + other.y);
   }
 }
 
@@ -206,17 +225,26 @@ export class ScaleTransformation extends Transformation {
     return 'z' in this ? { x, y, z } : { x, y };
   }
 
-  toMatrix(matrix = Matrix.identity) {
-    return Matrix.scale(matrix, this.x, this.y, this.z);
+  toMatrix(matrix = Matrix.identity()) {
+    return matrix.scale_self(this.x, this.y, this.z);
   }
 
   invert() {
     return this.z !== undefined ? new ScaleTransformation(1 / this.x, 1 / this.y, 1 / this.z) : new ScaleTransformation(1 / this.x, 1 / this.y);
   }
+
+  accumulate(other) {
+    if(this.type !== other.type)
+      throw new Error(Util.className(this)+": accumulate mismatch");
+
+    if(this.is3D)
+   return new TranslateTransformation(this.x * other.x, this.y * other.y, this.z * other.z);
+ return new TranslateTransformation(this.x * other.x, this.y * other.y);
+  }
 }
 
 export class MatrixTransformation extends Transformation {
-  matrix = Matrix.identity;
+  matrix = Matrix.IDENTITY;
 
   constructor(init) {
     super('matrix');
@@ -240,6 +268,13 @@ export class MatrixTransformation extends Transformation {
 
   invert() {
     return new MatrixTransformation(this.matrix.invert());
+  }
+
+  accumulate(other) {
+    if(this.type !== other.type)
+      throw new Error(Util.className(this)+": accumulate mismatch");
+   
+   return new MatrixTransformation(this.matrix.multiply(other.matrix));
   }
 }
 
@@ -302,6 +337,20 @@ export class TransformationList extends Array {
     return TransformationList.prototype.fromArray.call(new TransformationList(), arr);
   }
 
+  static fromMatrix(matrix) {
+    const transformations = Matrix.decompose(matrix, true);
+    Util.define(transformations.scale, 'toArray', function toArray() { return [this.x, this.y]; });
+    Util.define(transformations.translate, 'toArray', function toArray() { return [this.x, this.y]; });
+
+    let ret = new TransformationList();
+
+     ret.translate(...transformations.translate.toArray());
+     ret.rotate(transformations.rotate);
+     ret.scale(...transformations.scale.toArray());
+
+    return ret;
+  }
+
   push(...args) {
     for(let arg of args) {
       if(typeof arg == 'string') arg = Transformation.fromString(arg);
@@ -351,8 +400,11 @@ export class TransformationList extends Array {
   }
 
   toMatrix() {
-    let ret = new Matrix(Matrix.identity);
-    return Matrix.prototype.multiply.apply(ret, this.toMatrices());
+    let matrix = Matrix.identity();
+    for(let other of this.toMatrices())
+      matrix.multiply_self(other);
+
+    return matrix;
   }
 
   undo() {
@@ -382,25 +434,33 @@ export class TransformationList extends Array {
 */
   decompose(degrees = true) {
     let matrix = this.toMatrix();
-    return matrix.decompose(degrees);
+    const { translate, rotate, scale } = matrix.decompose(degrees);
+    let ret = { translate,rotate,scale };
+    ret.scale.toArray = 
+    ret.translate.toArray = function toArray() { return [this.x, this.y]; };
+    return ret;
   }
 
-  get rotation() {
-    return this.decompose().rotation;
+   findLast(predicate) {
+  for (let i = this.length - 1; i >= 0; --i) {
+    const x = this[i];
+    if (predicate(x))
+      return x;
   }
+  return null;
+}
+  
+    get rotation() {
+      return this.findLast(item => item.type == 'rotate');
+    }
 
-  get scaling() {
-    return {
-      ...this.decompose().scale,
-      toArray() {
-        return [this.x, this.y];
-      }
-    };
-  }
+    get scaling() {
+      return this.findLast(item => item.type == 'scale');
+    }
 
-  get translation() {
-    return this.decompose().translate;
-  }
+    get translation() {
+      return this.findLast(item => item.type == 'translation');
+    }
 
   map(...args) {
     return Array.prototype.map.apply(Array.from(this), args);
@@ -416,5 +476,26 @@ export class TransformationList extends Array {
   at(pos) {
     if(pos < 0) pos += this.length;
     return this[pos];
+  }
+
+  collapse() {
+    let ret = new TransformationList();
+
+    for(let i = 0; i < this.length; i++) {
+      let item = this[i];
+       if(i + 1 < this.length && this[i+1].type == this[i].type) {
+         item = item.accumulate(this[i+1]);
+         i++;
+       } else {
+        item = item.clone();
+       }
+       Array.prototype.push.call(ret, item);
+    }
+    return ret;
+  }
+
+  collapseAll() {
+    let matrix = this.toMatrix();
+    return this.constructor.fromMatrix(matrix);
   }
 }

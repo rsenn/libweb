@@ -107,7 +107,7 @@ export class EagleProject {
     console.log('loadLibraries:', dirs, names);
     for(let name of names) {
       let lib = this.findLibrary(name, dirs);
-      if(!lib) throw new Error(`EagleProject library '${name}' not found in ${dirs.join('.')}`);
+      if(!lib) throw new Error(`EagleProject library '${name}' not found in:  \n${dirs.join('\n  ')}`);
       this.open(lib);
     }
   }

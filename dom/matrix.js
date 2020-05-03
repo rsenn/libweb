@@ -179,7 +179,7 @@ Matrix.prototype.multiply_self = function(...args) {
 /*Matrix.prototype.values = function() {
   return Array.from({ ...this, length: 9 });
 };*/
-/*Matrix.prototype.toObject = function() {
+Matrix.prototype.toObject = function() {
   const { xx, xy, x0, yx, yy, y0 } = this;
   return { xx, xy, x0, yx, yy, y0 };
 };
@@ -357,7 +357,7 @@ Matrix.getAffineTransform = (a, b) => {
   matrix.affine_transform(a, b);
   return matrix;
 };
-*/
+
 Matrix.prototype.decompose = function(degrees = false, useLU = true) {
   var a = this[0],
     b = this[3],
@@ -377,11 +377,10 @@ Matrix.prototype.decompose = function(degrees = false, useLU = true) {
     if(!isFinite(r1)) return r2;
     else if(!isFinite(r2)) return r1;
     (m1 = Math.abs(m1)), (m2 = Math.abs(m2));
-    return (m1 * r1 + m2 * r2) / (m1 + m2);
+    return Util.roundTo((m1 * r1 + m2 * r2) / (m1 + m2), 0.0001);
   };
 
-  if(useLU) {
-    if(b) {
+  //if(useLU) {
       let sign = Matrix.prototype.scale_sign.call(this);
       rotation = (Math.atan2(this[3], this[4]) + Math.atan2(-sign * this[1], sign * this[0])) / 2;
       const cos = Math.cos(rotation),
@@ -390,14 +389,14 @@ Matrix.prototype.decompose = function(degrees = false, useLU = true) {
         x: calcFromValues(this[0] / cos, cos, -this[1] / sin, sin),
         y: calcFromValues(this[4] / cos, cos, this[3] / sin, sin)
       };
-    } else if(a) {
+  /*  } else if(a) {
       skew = { x: Math.atan(c / a), y: Math.atan(b / a) };
       scale = { x: a, y: determ / a };
     } else {
       scale = { x: c, y: d };
       skew.x = Math.PI * 0.25;
-    }
-  } else {
+    }*/
+ /* } else {
     if(a || b) {
       r = Math.sqrt(a * a + b * b);
       rotation = b > 0 ? Math.acos(a / r) : -Math.acos(a / r);
@@ -411,11 +410,11 @@ Matrix.prototype.decompose = function(degrees = false, useLU = true) {
     } else {
       scale = { x: 0, y: 0 };
     }
-  }
+  }*/
 
   return {
-    translate: translate,
-    rotation: degrees ? Util.roundTo(Matrix.rad2deg(rotation), 0.1) : rotation,
+    translate,
+    rotate: degrees === true ? Util.roundTo(Matrix.rad2deg(rotation), 0.1) : rotation,
     scale: scale,
     skew: skew
   };
@@ -448,7 +447,11 @@ Matrix.prototype.init_skew = function(x, y, deg = false) {
   return Matrix.prototype.init.call(this, 1, ax, 0, ay, 1, 0);
 };
 
-Matrix.IDENTITY = Object.freeze(new Matrix([1, 0, 0, 0, 1, 0, 0, 0, 1]));
+
+
+Matrix.identity = () => new Matrix([1, 0, 0, 0, 1, 0, 0, 0, 1]);
+
+Matrix.IDENTITY = Object.freeze(Matrix.identity());
 Matrix.rad2deg = radians => (radians * 180) / Math.PI;
 Matrix.deg2rad = degrees => (degrees * Math.PI) / 180;
 
@@ -456,7 +459,7 @@ for(let name of ['toObject', 'init', 'toArray', 'isIdentity', 'determinant', 'in
   Matrix[name] = (...args) => Matrix.prototype[name].call(...args);
 }
 
-for(let name of ['identity', 'translate', 'scale', 'rotate', 'skew']) {
+for(let name of ['translate', 'scale', 'rotate', 'skew']) {
   Matrix[name] = (...args) => Matrix.prototype['init_' + name].call(new Matrix(), ...args);
 }
 

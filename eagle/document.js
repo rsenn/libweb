@@ -33,7 +33,7 @@ export class EagleDocument extends EagleNode {
   }
 
   /* prettier-ignore */ get filename() { return this.path && this.path.replace(/.*\//g, ""); }
-  /* prettier-ignore */ get dirname() { return this.path && this.path.replace(/\/[^/]*\/?$/g, "") || "."; }
+  /* prettier-ignore */ get dirname() { return this.path &&  (/\//.test(this.path) ? this.path.replace(/\/[^/]*\/?$/g, "") : "."); }
 
   //get project() { return this.owner; }
   //  get orig() { return this.xml[0]; }

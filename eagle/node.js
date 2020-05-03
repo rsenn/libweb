@@ -170,13 +170,29 @@ export class EagleNode extends EagleInterface {
         if(pred(children[j])) return transform(this, ['children', j]);
   }*/
 
-  *getAll(name, transform) {
+  *getAll(pred, transform) {
+let name;
+    if(typeof(pred) == 'string') {
+       name = pred;
+      pred = (v,p,o) => v.tagName === name;
+    }
+
     transform =
       transform ||
       function() {
         return [...arguments];
       };
-    for(let [v, p, o] of deep.iterate(this.raw, e => e.tagName === name)) yield transform(v, p, o);
+
+
+
+    for(let [v, p, o] of deep.iterate(this.raw, pred,  [])) {
+      yield transform(v, p, o);
+    }
+  }
+
+  find(name) {
+    const a = [...this.getAll(name)];
+    return a[0];
   }
 
   getMap(entity) {

@@ -33,7 +33,7 @@ export class EagleElement extends EagleNode {
         let handler = Util.ifThenElse(
           v => v !== undefined,
           v => prop(v),
-          v => (/^-?[0-9.]+$/.test(prop()) ? parseFloat(prop()) : prop())
+          v => (/^[-+]?[0-9.]+$/.test(prop()) ? parseFloat(prop()) : prop())
         );
         prop(attributes[key]);
         prop.subscribe(value => (value !== undefined ? (o.attributes[key] = value) : delete o.attributes[key]));
@@ -115,8 +115,8 @@ export class EagleElement extends EagleNode {
     return inspect(entity, ownerDocument);
   }
 
-  *getAll(name) {
-    yield* super.getAll(name, (v, l, p) => new EagleElement(this, l));
+  *getAll(predicate) {
+    yield* super.getAll(predicate, (v, l, o) => new EagleElement(this, [...this.path,...l]));
   }
 
   setAttribute(name, value) {

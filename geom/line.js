@@ -3,7 +3,7 @@ import { Rect } from './rect.js';
 import Util from '../util.js';
 
 export function Line(x1, y1, x2, y2) {
-  let obj = this instanceof Line ? this : {};
+  let obj = this instanceof Line ? this : null;
   let arg;
   let args = [...arguments];
   let ret;
@@ -12,6 +12,11 @@ export function Line(x1, y1, x2, y2) {
   } else if(args.length == 1) {
     arg = args[0];
   }
+
+  if(obj === null) {
+      obj = arg instanceof Line ? arg : new Line();
+  }
+
   if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
     const { x1, y1, x2, y2 } = arg;
     obj.x1 = parseFloat(x1);
@@ -38,7 +43,8 @@ export function Line(x1, y1, x2, y2) {
     ret = 0;
   }
   if(!isLine(obj)) console.log('ERROR: is not a line: ', [...arguments]);
-  if(!(this instanceof Line)) return obj;
+ 
+  if(this !== obj) return obj;
 }
 
 export const isLine = obj => ['x1', 'y1', 'x2', 'y2'].every(prop => obj[prop] !== undefined);
@@ -266,6 +272,10 @@ Line.prototype.points = function() {
   const { a, b } = this;
   return [a, b];
 };
+Line.prototype.diff = function(other) {
+   other = Line(...arguments);
+  return new Line(Point.diff(this.a, other.a), Point.diff(this.b, other.b));
+};
 Line.prototype.inspect = function() {
   const { x1, y1, x2, y2 } = this;
   return 'Line{ ' + inspect({ x1, y1, x2, y2 }) + ' }';
@@ -290,6 +300,10 @@ Line.prototype.toObject = function() {
   Object.setPrototypeOf(obj, Line.prototype);
   return obj;
 };
+Line.prototype.clone = function() {
+  const { x1, y1, x2, y2 } = this;
+  return new Line(x1, y1, x2, y2);
+};
 
 Line.prototype.round = function(precision = 0.001) {
   let { x1, y1, x2, y2 } = this;
@@ -310,9 +324,10 @@ Line.prototype.includes = function(point) {
   return Point.prototype.equals.call(this.a, point) || Point.prototype.equals.call(this.b, point);
 };
 Line.prototype.equals = function(other) {
-  console.log('Line.equals', this, other);
-  if(Point.prototype.equals.call(this.a, other.a) && Point.prototype.equals.call(this.b, other.b)) return 1;
-  if(Point.prototype.equals.call(this.a, other.b) && Point.prototype.equals.call(this.b, other.a)) return -1;
+  //console.log('Line.equals', this, other);
+  other = Line(other);
+  if(Point.equals(this.a, other.a) && Point.equals(this.b, other.b)) return 1;
+  if(Point.equals(this.a, other.b) && Point.equals(this.b, other.a)) return -1;
   return false;
 };
 Line.prototype.indexOf = function(point) {
@@ -349,3 +364,8 @@ for(let name of ['direction', 'round', 'slope', 'angle', 'bbox', 'points', 'insp
 }
 
 Util.defineInspect(Line.prototype, 'x1', 'y1', 'x2', 'y2');
+
+Line.bind = (line,props = ['x1', 'y1', 'x2', 'y2']) => {
+  let proxy = new Line(Point.bind(line, { x: props[0], y: props[1] }), Point.bind(line, { x: props[2], y: props[3] }));
+  return proxy;
+}

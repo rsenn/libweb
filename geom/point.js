@@ -2,8 +2,15 @@ import Util from '../util.js';
 
 export function Point(arg) {
   let args = arg instanceof Array ? arg : [...arguments];
-  let p = !this || this === Point ? {} : this;
+  let p = this instanceof Point ? this : null;
   arg = args.shift();
+
+if(p === null) {
+  if(arg instanceof Point)
+    return arg;
+  p = {};
+}
+
 
   if(typeof arg === 'undefined') {
     p.x = arg;
@@ -73,7 +80,7 @@ Point.prototype.add = function(...args) {
   return this;
 };
 Point.prototype.diff = function(...args) {
-  const other = new Point(...args);
+  const other = Point(...args);
   return new Point(this.x - other.x, this.y - other.y);
 };
 Point.prototype.sub = function(...args) {
@@ -117,7 +124,7 @@ Point.prototype.distance = function(other = { x: 0, y: 0 }) {
 };
 Point.prototype.equals = function(other) {
   //console.log(`Point.equals ${this} ${other}`);
-  return this.x == other.x && this.y == other.y;
+  return +this.x == +other.x && +this.y == +other.y;
 };
 Point.prototype.round = function(precision = 0.001) {
   const prec = -Math.ceil(Math.log10(precision));
@@ -256,5 +263,7 @@ export const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((
 
 Point.isPoint = isPoint;
 Util.defineInspect(Point.prototype, 'x', 'y');
+
+Point.bind = (point, props =['x', 'y'])  => Util.bindProperties(new Point(+point[props[0]], +point[props[1]]), point, props);
 
 export default Point;
