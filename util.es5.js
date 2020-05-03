@@ -2992,14 +2992,14 @@ Util.getMethodNames = (obj, depth = 1, start = 0) => Util.unique([...Util.iterat
 
 Util.methods = (obj, depth = 1, t = (k, v) => [k, v], r = e => Object.fromEntries([...e])) => r(Util.iterateMethods(obj, depth, t));
 
-Util.getMethods = (obj, depth = 1, t = (k, v) => [k, v]) => {
+Util.getMethods = (obj, depth = 1) => {
   let ret = {};
   var _iteratorNormalCompletion24 = true;
   var _didIteratorError24 = false;
   var _iteratorError24 = undefined;
 
   try {
-    for (var _iterator24 = Util.iterateMethods(obj, depth, t)[Symbol.iterator](), _step24; !(_iteratorNormalCompletion24 = (_step24 = _iterator24.next()).done); _iteratorNormalCompletion24 = true) {
+    for (var _iterator24 = Util.iterateMethods(obj, depth)[Symbol.iterator](), _step24; !(_iteratorNormalCompletion24 = (_step24 = _iterator24.next()).done); _iteratorNormalCompletion24 = true) {
       let _step24$value = (0, _slicedToArray2.default)(_step24.value, 2),
           k = _step24$value[0],
           v = _step24$value[1];

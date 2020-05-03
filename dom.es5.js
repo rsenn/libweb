@@ -266,9 +266,9 @@ var _rgba = require("./dom/rgba.es5.js");
 
 var _hsla = require("./dom/hsla.es5.js");
 
-var _matrix = require("./dom/matrix.es5.js");
+var _matrix = require("./geom/matrix.es5.js");
 
-var _bbox = require("./dom/bbox.es5.js");
+var _bbox = require("./geom/bbox.es5.js");
 
 var _trbl = require("./geom/trbl.es5.js");
 
