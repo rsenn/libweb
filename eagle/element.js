@@ -116,7 +116,7 @@ export class EagleElement extends EagleNode {
   }
 
   *getAll(predicate) {
-    yield* super.getAll(predicate, (v, l, o) => new EagleElement(this, [...this.path,...l]));
+    yield* super.getAll(predicate, (v, l, o) => new EagleElement(this, [...this.path, ...l]));
   }
 
   setAttribute(name, value) {

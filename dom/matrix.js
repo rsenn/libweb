@@ -196,13 +196,11 @@ Matrix.prototype.row = function(row) {
 
 Matrix.prototype.rows = function() {
   let ret = [];
-  for(let i = 0; i < 9; i += 3)
-    ret.push([this[i+0],this[i+1],this[i+2]]);
+  for(let i = 0; i < 9; i += 3) ret.push([this[i + 0], this[i + 1], this[i + 2]]);
   return ret;
 };
 Matrix.prototype.toArray = function() {
   return Array.from(this);
-
 };
 Matrix.prototype.isIdentity = function() {
   return Util.equals(this, Matrix.IDENTITY);
@@ -228,7 +226,6 @@ Matrix.prototype.invert = function() {
     (this[0] * this[4] - this[1] * this[3]) / det
   ]);
 };
-
 
 Matrix.prototype.scalar_product = function(f) {
   return new Matrix({
@@ -265,7 +262,6 @@ Matrix.prototype.toSVG = function() {
 
 Matrix.prototype.equals = function(other) {
   return Array.prototype.every.call((n, i) => other[i] == n);
-
 };
 
 Matrix.prototype.transform_distance = function(p) {
@@ -381,14 +377,14 @@ Matrix.prototype.decompose = function(degrees = false, useLU = true) {
   };
 
   //if(useLU) {
-      let sign = Matrix.prototype.scale_sign.call(this);
-      rotation = (Math.atan2(this[3], this[4]) + Math.atan2(-sign * this[1], sign * this[0])) / 2;
-      const cos = Math.cos(rotation),
-        sin = Math.sin(rotation);
-      scale = {
-        x: calcFromValues(this[0] / cos, cos, -this[1] / sin, sin),
-        y: calcFromValues(this[4] / cos, cos, this[3] / sin, sin)
-      };
+  let sign = Matrix.prototype.scale_sign.call(this);
+  rotation = (Math.atan2(this[3], this[4]) + Math.atan2(-sign * this[1], sign * this[0])) / 2;
+  const cos = Math.cos(rotation),
+    sin = Math.sin(rotation);
+  scale = {
+    x: calcFromValues(this[0] / cos, cos, -this[1] / sin, sin),
+    y: calcFromValues(this[4] / cos, cos, this[3] / sin, sin)
+  };
   /*  } else if(a) {
       skew = { x: Math.atan(c / a), y: Math.atan(b / a) };
       scale = { x: a, y: determ / a };
@@ -396,7 +392,7 @@ Matrix.prototype.decompose = function(degrees = false, useLU = true) {
       scale = { x: c, y: d };
       skew.x = Math.PI * 0.25;
     }*/
- /* } else {
+  /* } else {
     if(a || b) {
       r = Math.sqrt(a * a + b * b);
       rotation = b > 0 ? Math.acos(a / r) : -Math.acos(a / r);
@@ -446,8 +442,6 @@ Matrix.prototype.init_skew = function(x, y, deg = false) {
   const ay = Math.tan(deg ? Matrix.deg2rad(y) : y);
   return Matrix.prototype.init.call(this, 1, ax, 0, ay, 1, 0);
 };
-
-
 
 Matrix.identity = () => new Matrix([1, 0, 0, 0, 1, 0, 0, 0, 1]);
 

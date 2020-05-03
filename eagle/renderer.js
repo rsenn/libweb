@@ -16,7 +16,7 @@ const VERTICAL = 1;
 const HORIZONTAL = 2;
 const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
 
-const ClampAngle = (a,mod=360) => {
+const ClampAngle = (a, mod = 360) => {
   while(a < 0) a += 360;
   a %= mod;
   return a > 180 ? a - 360 : a;
@@ -322,34 +322,39 @@ export class EagleRenderer {
 
         let angle = ClampAngle(undoAngle - wholeAngle, 180);
 
-        const finalTransformation = rotation.concat(undoTransform).rotate(Math.abs(wholeAngle % 180)).collapseAll();
+        const finalTransformation = rotation
+          .concat(undoTransform)
+          .rotate(Math.abs(wholeAngle % 180))
+          .collapseAll();
 
-
-      /*  console.log(`wholeTransform ${text}`, rotation);
-        */ console.log(`wholeAngle ${text}`, wholeAngle);
-         console.log(`undoAngle ${text}`, undoAngle);
-         console.log(`angle ${text}`, angle);
+        /*  console.log(`wholeTransform ${text}`, rotation);
+         */ console.log(`wholeAngle ${text}`, wholeAngle);
+        console.log(`undoAngle ${text}`, undoAngle);
+        console.log(`angle ${text}`, angle);
         /*console.log(`wholeTransform ${text}`, wholeTransform, wholeTransform.toString())
         console.log(`undoTransform ${text}`, undoTransform, undoTransform.toString())
-    */    console.log(`finalTransformation ${text}`, finalTransformation.toString())
-      console.log(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);
+    */ console.log(`finalTransformation ${text}`, finalTransformation.toString());
+        console.log(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);
 
-      if(finalTransformation.rotation) {
-      if(finalTransformation.rotation.angle < 0)
-        finalTransformation.rotation.angle = Math.abs(finalTransformation.rotation.angle);
-      }
+        if(finalTransformation.rotation) {
+          if(finalTransformation.rotation.angle < 0) finalTransformation.rotation.angle = Math.abs(finalTransformation.rotation.angle);
+        }
 
         const baseAlignment = EagleRenderer.alignment(align);
         const rotateAlignment = AlignmentAngle(wholeAngle);
         const alignment = baseAlignment
           .clone()
-          .rotate(rotateAlignment  * Math.PI / 180)
+          .rotate((rotateAlignment * Math.PI) / 180)
           .round(1);
-     //  console.log(`render angles ${text}`, Util.map({ wholeAngle, undoAngle, angle }, (k,v) => [k,v+'']));
-       /*   console.log(`render transforms ${text}`, Util.map({ wholeTransform,  undoTransform }, (k,v) => [k,v+'']));
+        //  console.log(`render angles ${text}`, Util.map({ wholeAngle, undoAngle, angle }, (k,v) => [k,v+'']));
+        /*   console.log(`render transforms ${text}`, Util.map({ wholeTransform,  undoTransform }, (k,v) => [k,v+'']));
 
           console.log(`render undoTransform ${text}`, undoTransform, undoTransform.toMatrices(), undoTransform.toMatrix(), undoTransform.decompose());*/
-          console.log(`render alignment ${text}`, Util.map({ baseAlignment, rotateAlignment, alignment }, (k,v) => [k,v+'']), EagleRenderer.alignmentAttrs(alignment, VERTICAL));
+        console.log(
+          `render alignment ${text}`,
+          Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + '']),
+          EagleRenderer.alignmentAttrs(alignment, VERTICAL)
+        );
 
         const e = svg(
           'text',
@@ -556,8 +561,8 @@ export class SchematicRenderer extends EagleRenderer {
       parent
     );
     if(!value) value = deviceset.name;
-    let opts = deviceset.uservalue == "yes" ? { name, value } : { name };
-        this.renderCollection(symbol, g, opts);
+    let opts = deviceset.uservalue == 'yes' ? { name, value } : { name };
+    this.renderCollection(symbol, g, opts);
     return g;
   }
 

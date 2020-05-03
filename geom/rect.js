@@ -301,8 +301,7 @@ Rect.outset = (rect, trbl) => Rect.prototype.outset.call(rect, trbl);
 
 Rect.center = rect => new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 Rect.bind = rect => {
-let obj = new Rect();
-
+  let obj = new Rect();
 };
 
 Rect.inside = (rect, point) => {

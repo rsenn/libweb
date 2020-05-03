@@ -2221,21 +2221,27 @@ Util.predicate = fn_or_regex => {
 };
 Util.inRange = Util.curry((a, b, value) => value >= a && value <= b);
 
-
-Util.bindProperties = (proxy,target, props, fn = p => v => v === undefined ? target[p] : target[p] = v) => {
-  if(props instanceof Array)
-    props = Object.fromEntries(props.map(name => [name,name]));
+Util.bindProperties = (proxy, target, props, gen) => {
+  if(props instanceof Array) props = Object.fromEntries(props.map(name => [name, name]));
   const propNames = Object.keys(props);
 
-  Object.defineProperties(proxy, propNames.reduce((a,k) => {
-const propName = props[k];
-const propFn = fn(propName);
-    return { ...a,[k]
-: {
-      get: () => propFn(undefined),
-      set: (value) => propFn(value),
-      enumerable: true
-    }};
-  }, {}));
+  if(!gen) 
+    gen = p => v => (v === undefined ? target[p] : (target[p] = v))
+
+  Object.defineProperties(
+    proxy,
+    propNames.reduce((a, k) => {
+      const prop = props[k];
+      const get_set = typeof prop == 'function' ? prop : gen(prop);
+      return {
+        ...a,
+        [k]: {
+          get: get_set,
+          set: get_set,
+          enumerable: true
+        }
+      };
+    }, {})
+  );
   return proxy;
 };

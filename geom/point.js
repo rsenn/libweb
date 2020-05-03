@@ -5,12 +5,10 @@ export function Point(arg) {
   let p = this instanceof Point ? this : null;
   arg = args.shift();
 
-if(p === null) {
-  if(arg instanceof Point)
-    return arg;
-  p = {};
-}
-
+  if(p === null) {
+    if(arg instanceof Point) return arg;
+    p = {};
+  }
 
   if(typeof arg === 'undefined') {
     p.x = arg;
@@ -264,6 +262,10 @@ export const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((
 Point.isPoint = isPoint;
 Util.defineInspect(Point.prototype, 'x', 'y');
 
-Point.bind = (point, props = ['x', 'y']) => Util.bindProperties(new Point(), point, props, k => v => v === undefined ? +point[k] : point[k] = +v);
-
+Point.bind = (o, p, gen) => {
+  if(!p) p = ['x', 'y'];
+  if(!gen)
+   gen = k => v => v === undefined ? o[k] : o[k] = v;
+ return Util.bindProperties(new Point(0,0), o, { x: gen(p[0]), y: gen(p[1]) });
+};
 export default Point;

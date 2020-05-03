@@ -171,10 +171,10 @@ export class EagleNode extends EagleInterface {
   }*/
 
   *getAll(pred, transform) {
-let name;
-    if(typeof(pred) == 'string') {
-       name = pred;
-      pred = (v,p,o) => v.tagName === name;
+    let name;
+    if(typeof pred == 'string') {
+      name = pred;
+      pred = (v, p, o) => v.tagName === name;
     }
 
     transform =
@@ -183,9 +183,7 @@ let name;
         return [...arguments];
       };
 
-
-
-    for(let [v, p, o] of deep.iterate(this.raw, pred,  [])) {
+    for(let [v, p, o] of deep.iterate(this.raw, pred, [])) {
       yield transform(v, p, o);
     }
   }

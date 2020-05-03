@@ -14,7 +14,7 @@ export function Line(x1, y1, x2, y2) {
   }
 
   if(obj === null) {
-      obj = arg instanceof Line ? arg : new Line();
+    obj = arg instanceof Line ? arg : new Line();
   }
 
   if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
@@ -43,7 +43,7 @@ export function Line(x1, y1, x2, y2) {
     ret = 0;
   }
   if(!isLine(obj)) console.log('ERROR: is not a line: ', [...arguments]);
- 
+
   if(this !== obj) return obj;
 }
 
@@ -273,7 +273,7 @@ Line.prototype.points = function() {
   return [a, b];
 };
 Line.prototype.diff = function(other) {
-   other = Line(...arguments);
+  other = Line(...arguments);
   return new Line(Point.diff(this.a, other.a), Point.diff(this.b, other.b));
 };
 Line.prototype.inspect = function() {
@@ -365,7 +365,13 @@ for(let name of ['direction', 'round', 'slope', 'angle', 'bbox', 'points', 'insp
 
 Util.defineInspect(Line.prototype, 'x1', 'y1', 'x2', 'y2');
 
-Line.bind = (line,props = ['x1', 'y1', 'x2', 'y2']) => {
-  let proxy = new Line(Point.bind(line, { x: props[0], y: props[1] }), Point.bind(line, { x: props[2], y: props[3] }));
+Line.bind = (o, p, gen) => {
+  if(!p) p = ['x1', 'y1', 'x2', 'y2'];
+  if(!gen) gen = k => v => (v === undefined ? o[k] : (o[k] = v)); 
+  let  a = Point.bind(o, p.slice(0,2), gen);
+  let b = Point.bind(o, p.slice(2,4), gen);
+
+  console.log("a:",a);
+  let proxy = new Line(a, b);
   return proxy;
-}
+};

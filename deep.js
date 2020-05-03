@@ -88,10 +88,8 @@ export const iterate = function*(value, filter = v => true, path = []) {
     selected = [],
     r;
 
-
   if((r = filter(value, path, root))) yield [value, path, root];
-  if(r !== -1) if (Util.isObject(value)) 
-    for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
+  if(r !== -1) if (Util.isObject(value)) for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
 };
 
 export const get = (root, path) => {
