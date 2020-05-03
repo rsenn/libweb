@@ -33,7 +33,7 @@ export class EagleProject {
     str = this.fs.readFile(file);
     if(typeof str != 'string' && 'toString' in str) str = str.toString();
 
-    console.log('EagleProject.open', { file });
+    //console.log('EagleProject.open', { file });
     try {
       doc = new EagleDocument(str, this, file);
     } catch(error) {
@@ -104,7 +104,7 @@ export class EagleProject {
 
   loadLibraries(dirs = this.libraryPath()) {
     const names = this.getLibraryNames();
-    console.log('loadLibraries:', dirs, names);
+    //console.log('loadLibraries:', dirs, names);
     for(let name of names) {
       let lib = this.findLibrary(name, dirs);
       if(!lib) throw new Error(`EagleProject library '${name}' not found in:  \n${dirs.join('\n  ')}`);
@@ -114,9 +114,9 @@ export class EagleProject {
 
   updateLibrary(name) {
     const l = this.library;
-    console.log('name:', name);
-    console.log('library:', l);
-    console.log('documents:', this.documents);
+    //console.log('name:', name);
+    //console.log('library:', l);
+    //console.log('documents:', this.documents);
 
     const { schematic, board } = this;
     const entityNames = ['package', 'symbol', 'deviceset'];
@@ -137,11 +137,11 @@ export class EagleProject {
       )
     };
 
-    console.log('libraries.schematic:', libraries.schematic);
+    //console.log('libraries.schematic:', libraries.schematic);
     for(let k of ['schematic', 'board']) {
-      console.log(`project[${k}].libraries:`, this[k].libraries);
-      console.log(`libraries[${k}]:`, libraries[k]);
-      console.log(`libraries[${k}].packages:`, libraries[k].packages);
+      //console.log(`project[${k}].libraries:`, this[k].libraries);
+      //console.log(`libraries[${k}]:`, libraries[k]);
+      //console.log(`libraries[${k}].packages:`, libraries[k].packages);
       const libProps = lib => {
         const { packages, devicesets, symbols } = lib;
         return Object.fromEntries(['packages', 'symbols', 'devicesets'].map(k => [k, lib[k]]).filter(([k, v]) => v));
@@ -150,24 +150,24 @@ export class EagleProject {
       const destLib = libProps(libraries[k]);
       const srcLib = libProps(libraries.file);
       for(let entity in destLib) {
-        console.log('entity:', entity);
+        //console.log('entity:', entity);
         const srcMap = srcLib[entity];
         const dstMap = destLib[entity];
         const transformName = n => n.replace(/[.,][0-9]*/g, '').replace(/([^0-9])([0-9])([^0-9])/g, '$10$2$3');
         let ent = srcLib[entity].entries();
         let m = new Map(ent);
-        console.log(`dstMap:`, dstMap);
-        console.log(`dstMap:`, Util.className(dstMap));
+        //console.log(`dstMap:`, dstMap);
+        //console.log(`dstMap:`, Util.className(dstMap));
         for(let value of srcLib[entity].values()) {
           const key = value.name;
-          console.log(`dstMap.set(${key},`, dump(value, 0), `):`);
+          //console.log(`dstMap.set(${key},`, dump(value, 0), `):`);
           dstMap.set(key, value);
         }
-        console.log('dstMap.ref:', dump(dstMap.ref, 2));
-        console.log('dstMap.raw:', dump(dstMap.raw, 2));
-        console.log('dstMap.keys:', dump(dstMap.raw.map(item => item.attributes.name).sort(), 2));
-        console.log('dstMap.keys:', dump(dstMap.keys().length, 2));
-        console.log('dstMap.map:', dump(dstMap.map().size, 2));
+        //console.log('dstMap.ref:', dump(dstMap.ref, 2));
+        //console.log('dstMap.raw:', dump(dstMap.raw, 2));
+        //console.log('dstMap.keys:', dump(dstMap.raw.map(item => item.attributes.name).sort(), 2));
+        //console.log('dstMap.keys:', dump(dstMap.keys().length, 2));
+        //console.log('dstMap.map:', dump(dstMap.map().size, 2));
       }
     }
   }
