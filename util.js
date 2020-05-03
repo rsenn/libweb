@@ -2222,16 +2222,20 @@ Util.predicate = fn_or_regex => {
 Util.inRange = Util.curry((a, b, value) => value >= a && value <= b);
 
 
-Util.bindProperties = (proxy,target, props) => {
+Util.bindProperties = (proxy,target, props, fn = p => v => v === undefined ? target[p] : target[p] = v) => {
   if(props instanceof Array)
     props = Object.fromEntries(props.map(name => [name,name]));
   const propNames = Object.keys(props);
 
-  Object.defineProperties(proxy, propNames.reduce((a,k) => ({ ...a,[k]
+  Object.defineProperties(proxy, propNames.reduce((a,k) => {
+const propName = props[k];
+const propFn = fn(propName);
+    return { ...a,[k]
 : {
-      get: function() { return target[props[k]]; },
-      set: function(v) { target[props[k]] = v; },
+      get: () => propFn(undefined),
+      set: (value) => propFn(value),
       enumerable: true
-    }}), {}));
+    }};
+  }, {}));
   return proxy;
 };

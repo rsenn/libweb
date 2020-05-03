@@ -127,9 +127,9 @@ Point.prototype.equals = function(other) {
   return +this.x == +other.x && +this.y == +other.y;
 };
 Point.prototype.round = function(precision = 0.001) {
-  const prec = -Math.ceil(Math.log10(precision));
-  this.x = precision == 1 ? Math.round(this.x) : +this.x.toFixed(prec);
-  this.y = precision == 1 ? Math.round(this.y) : +this.y.toFixed(prec);
+  let { x, y } = this;
+  this.x = Util.roundTo(x, precision);
+  this.y = Util.roundTo(y, precision);
   return this;
 };
 Point.prototype.sides = function() {
@@ -264,6 +264,6 @@ export const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((
 Point.isPoint = isPoint;
 Util.defineInspect(Point.prototype, 'x', 'y');
 
-Point.bind = (point, props =['x', 'y'])  => Util.bindProperties(new Point(+point[props[0]], +point[props[1]]), point, props);
+Point.bind = (point, props = ['x', 'y']) => Util.bindProperties(new Point(), point, props, k => v => v === undefined ? +point[k] : point[k] = +v);
 
 export default Point;
