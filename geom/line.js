@@ -346,6 +346,15 @@ Line.prototype.map = function(fn) {
 Line.prototype.swap = function(fn) {
   return new Line(this.a, this.b).reverse();
 };
+Line.prototype.toPoints = function() {
+  const { x1, y1, x2, y2 } = this;
+  var list = new PointList();
+  list.push(new Point(x1, y1));
+  list.push(new Point(x2, y1));
+  list.push(new Point(x2, y2));
+  list.push(new Point(x1, y2));
+  return list;
+};
 
 for(let name of ['direction', 'round', 'slope', 'angle', 'bbox', 'points', 'inspect', 'toString', 'toObject', 'toSource', 'distanceToPointSquared', 'distanceToPoint']) {
   Line[name] = (...args) => Line.prototype[name].call(...args);

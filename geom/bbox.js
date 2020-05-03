@@ -1,4 +1,5 @@
 import { Rect } from '../geom/rect.js';
+import Util from '../util.js';
 
 export class BBox {
   static fromPoints(pts) {
@@ -22,33 +23,41 @@ export class BBox {
     }
   }
 
-  update(list, offset = 0.0) {
-    for(let arg of list) {
+  updateList(list, offset = 0.0) {
+    for(let arg of list)
+      this.update(arg, offset);
+    return this;
+  }
+
+  update(arg, offset = 0.0) {
+    if(Util.isArray(arg)) return this.updateList(arg, offset);
+
       if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset);
       if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0);
       if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0);
-    }
+    return this;
   }
 
   updateXY(x, y, offset = 0) {
     let updated = {};
-    if(this.x1 > x - offset) {
+    if(this.x1 === undefined || this.x1 > x - offset) {
       this.x1 = x - offset;
       updated.x1 = true;
     }
-    if(this.x2 < x + offset) {
+    if(this.x2 === undefined || this.x2 < x + offset) {
       this.x2 = x + offset;
       updated.x2 = true;
     }
-    if(this.y1 > y - offset) {
+    if(this.y1 === undefined || this.y1 > y - offset) {
       this.y1 = y - offset;
       updated.y1 = true;
     }
-    if(this.y2 < y + offset) {
+    if(this.y2 === undefined || this.y2 < y + offset) {
       this.y2 = y + offset;
       updated.y2 = true;
     }
     // if(Object.keys(updated)) console.log(`BBox update ${x},${y} `, updated);
+    return this;
   }
 
   get center() {
@@ -127,10 +136,8 @@ export class BBox {
       result = iter.next();
       if(!result.value) break;
       p = tp(result.value);
-      if(r.x1 > p.x) r.x1 = p.x;
-      if(r.x2 < p.x) r.x2 = p.x;
-      if(r.y1 > p.y) r.y1 = p.y;
-      if(r.y2 < p.y) r.y2 = p.y;
+
+      r.update(p);
     }
     return r;
   }

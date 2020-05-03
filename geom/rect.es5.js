@@ -318,11 +318,12 @@ Rect.prototype.toTRBL = function () {
 };
 
 Rect.prototype.toPoints = function () {
+  const { x, y, width, height } = this;
   var list = new _pointList.PointList();
-  list.push(new _point.Point(this.x, this.y));
-  list.push(new _point.Point(this.x, this.y2));
-  list.push(new _point.Point(this.x2, this.y2));
-  list.push(new _point.Point(this.x2, this.y));
+  list.push(new _point.Point(x, y));
+  list.push(new _point.Point(x, this+height));
+  list.push(new _point.Point(x+width, y+height));
+  list.push(new _point.Point(x+width, y));
   return list;
 };
 

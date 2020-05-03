@@ -1,4 +1,4 @@
-import { Matrix, isMatrix } from '../dom/matrix.js';
+import { Matrix, isMatrix } from '../geom/matrix.js';
 
 export class Transformation {
   constructor(type) {

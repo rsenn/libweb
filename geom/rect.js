@@ -224,11 +224,12 @@ Rect.prototype.toTRBL = function() {
   };
 };
 Rect.prototype.toPoints = function() {
+  const { x, y, width, height } = this;
   var list = new PointList();
-  list.push(new Point(this.x, this.y));
-  list.push(new Point(this.x, this.y2));
-  list.push(new Point(this.x2, this.y2));
-  list.push(new Point(this.x2, this.y));
+  list.push(new Point(x, y));
+  list.push(new Point(x, y+height));
+  list.push(new Point(x+width, y+height));
+  list.push(new Point(x+width, y));
   return list;
 };
 Rect.prototype.align = function(align_to, a = 0) {

@@ -1,5 +1,5 @@
 import { SVG } from '../dom/svg.js';
-import { BBox } from '../dom/bbox.js';
+import { BBox } from '../geom/bbox.js';
 import { Point } from '../geom/point.js';
 import { Rect } from '../geom/rect.js';
 import { Line } from '../geom/line.js';
