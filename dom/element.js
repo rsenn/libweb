@@ -11,6 +11,13 @@ import Util from '../util.js';
  * @class      Element (name)
  */
 export class Element extends Node {
+  static wrap(e) {
+    if(!this.methods) this.methods = Util.static({}, this, this, (k, fn) => k != 'wrap' && fn.length > 0);
+
+    if(typeof e == 'string') e = Element.find(e);
+    return Util.extend(e, this.methods);
+  }
+
   static create() {
     let args = [...arguments];
     let { tagName, ns, children, ...props } = typeof args[0] == 'object' ? args.shift() : { tagName: args.shift(), ...args.shift() };
@@ -38,22 +45,27 @@ export class Element extends Node {
 
   static walkUp(elem, pred) {
     if(typeof elem == 'string') elem = Element.find(elem);
-    let n;
+    var depth = 0;
     if(typeof pred == 'number') {
-      n = pred;
-      pred = () => n-- > 0;
+      var n = pred;
+      pred = (e, d) => d == n;
     }
-    while(!pred(elem)) elem = elem.parentElement;
-    return elem;
+    let ret = [];
+    while(elem) {
+      if(pred(elem, depth)) ret.push(elem);
+      elem = elem.parentElement;
+      depth++;
+    }
+    return ret.length ? ret : null;
   }
 
   static walk(elem, fn, accu = {}) {
-    elem = Element.find(elem);
+    if(typeof elem == 'string') elem = Element.find(elem);
     const root = elem;
-    const rootPath = Element.xpath(elem);
+    // const rootPath = Element.xpath(elem);
     let depth = 0;
     while(elem) {
-      accu = fn(dom(elem), accu, root, depth);
+      accu = fn(this.wrap(elem), accu, root, depth);
       if(elem.firstElementChild) depth++;
       elem =
         elem.firstElementChild ||
@@ -69,27 +81,46 @@ export class Element extends Node {
     return accu;
   }
 
+  static *iterator(elem, predicate = (e, d, r) => true) {
+    if(typeof elem == 'string') elem = Element.find(elem);
+    const root = elem;
+    let depth = 0;
+    while(elem) {
+      if(predicate(elem, depth, root)) yield this.wrap(elem);
+      if(elem.firstElementChild) depth++;
+      elem =
+        elem.firstElementChild ||
+        elem.nextElementSibling ||
+        (function() {
+          do {
+            if(!(elem = elem.parentElement)) break;
+            depth--;
+          } while(depth > 0 && !elem.nextElementSibling);
+          return elem && elem != root ? elem.nextElementSibling : null;
+        })();
+    }
+  }
+
   static toObject(elem, opts = { children: true }) {
     let e = Element.find(elem);
-    let children = opts.children
-      ? e.children && e.children.length
-        ? {
-            children: Util.array(e.children).map(child => Element.toObject(child, e))
-          }
-        : {}
-      : {};
+    let children = [];
+    if(opts.children && e.firstChild) {
+      for(let c = e.firstChild; c; c = c.nextSibling) {
+        if(Util.isObject(c) && 'tagName' in c) children.push(Element.toObject(c, e));
+        else if((c.textContent + '').trim() != '') children.push(c.textContent);
+      }
+    }
     let ns = (arguments[1] ? arguments[1].namespaceURI : document.body.namespaceURI) != e.namespaceURI ? { ns: e.namespaceURI } : {};
     let attributes = {};
     let a = Element.attr(e);
     for(let key in a) {
       let value = a[key];
-      attributes[Util.camelize(key)] = value;
+      attributes[key] = value;
     }
     return Object.assign({
         tagName: /[a-z]/.test(e.tagName) ? e.tagName : e.tagName.toLowerCase()
       }, attributes,
-      children /*,
-      ns*/
+      children.length > 0 ? { children } : {}
     );
   }
 
@@ -294,7 +325,7 @@ export class Element extends Node {
     let off;
     //console.log('Element.move ', { element, to, position });
     const getValue = prop => {
-      const property = dom.Element.getCSS(element, prop);
+      const property = Element.getCSS(element, prop);
       if(property === undefined) return undefined;
       const matches = /([-0-9.]+)(.*)/.exec(property) || [];
       //console.log({ match, value, unit });
@@ -673,8 +704,8 @@ export class Element extends Node {
     });
   }
   /*
-      e=Util.shuffle(dom.Element.findAll('rect'))[0]; r=dom.Element.rect(e); a=rect(r, new dom.HSLA(200,100,50,0.5));
-      t=dom.Element.transition(a, { transform: 'translate(100px,100px) scale(2,2) rotate(45deg)' }, 10000, ctx => console.log("run",ctx)); t.then(done => console.log({done}))
+      e=Util.shuffle(Element.findAll('rect'))[0]; r=Element.rect(e); a=rect(r, new dom.HSLA(200,100,50,0.5));
+      t=Element.transition(a, { transform: 'translate(100px,100px) scale(2,2) rotate(45deg)' }, 10000, ctx => console.log("run",ctx)); t.then(done => console.log({done}))
 
 */
   static transition(element, css, time, easing = 'linear', callback = null) {

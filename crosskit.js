@@ -59,33 +59,25 @@ function isPOT(value) {
 var vec3 = {
   length: function(pt) {
     return Math.sqrt(pt[0] * pt[0] + pt[1] * pt[1] + pt[2] * pt[2]);
-  }, 
-  normalize: function(pt) {
+  }, normalize: function(pt) {
     var d = Math.sqrt(pt[0] * pt[0] + pt[1] * pt[1] + pt[2] * pt[2]);
     if(d === 0) {
       return [0, 0, 0];
     }
     return [pt[0] / d, pt[1] / d, pt[2] / d];
-  }, 
-  dot: function(v1, v2) {
+  }, dot: function(v1, v2) {
     return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
-  }, 
-  angle: function(v1, v2) {
+  }, angle: function(v1, v2) {
     return Math.acos((v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]) / (Math.sqrt(v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]) * Math.sqrt(v2[0] * v2[0] + v2[1] * v2[1] + v2[2] * v2[2])));
-  }, 
-  cross: function(vectA, vectB) {
+  }, cross: function(vectA, vectB) {
     return [vectA[1] * vectB[2] - vectB[1] * vectA[2], vectA[2] * vectB[0] - vectB[2] * vectA[0], vectA[0] * vectB[1] - vectB[0] * vectA[1]];
-  }, 
-  multiply: function(vectA, constB) {
+  }, multiply: function(vectA, constB) {
     return [vectA[0] * constB, vectA[1] * constB, vectA[2] * constB];
-  }, 
-  add: function(vectA, vectB) {
+  }, add: function(vectA, vectB) {
     return [vectA[0] + vectB[0], vectA[1] + vectB[1], vectA[2] + vectB[2]];
-  }, 
-  subtract: function(vectA, vectB) {
+  }, subtract: function(vectA, vectB) {
     return [vectA[0] - vectB[0], vectA[1] - vectB[1], vectA[2] - vectB[2]];
-  }, 
-  equal: function(a, b) {
+  }, equal: function(a, b) {
     var epsilon = 0.0000001;
     if(a === undefined && b === undefined) {
       return true;
@@ -128,14 +120,12 @@ var mat3 = {
     m2[6] = m20 * m16 + m23 * m17 + m26 * m18;
     m2[7] = m21 * m16 + m24 * m17 + m27 * m18;
     m2[8] = m22 * m16 + m25 * m17 + m28 * m18;
-  }, 
-  vec2_multiply: function(m1, m2) {
+  }, vec2_multiply: function(m1, m2) {
     var mOut = [];
     mOut[0] = m2[0] * m1[0] + m2[3] * m1[1] + m2[6];
     mOut[1] = m2[1] * m1[0] + m2[4] * m1[1] + m2[7];
     return mOut;
-  }, 
-  transpose: function(m) {
+  }, transpose: function(m) {
     return [m[0], m[3], m[6], m[1], m[4], m[7], m[2], m[5], m[8]];
   }
 }; //mat3
@@ -1426,9 +1416,8 @@ export const crosskit = {
     }
     index++; //Increase Index Of Elements Creation
     console.info('%cCROSSKIT ' + crosskit.version + '\nRendering Mode: ' + renderer, 'font-size: 32px; background-color: purple; color: white; font-family: monospace;');
-  }, 
-  line: function(v) {
-    if(renderer == CANVAS || renderer == WEBGL) {
+  }, line: function(v) {
+    if (renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
       cakepen.strokeStyle = v.stroke;
       cakepen.lineWidth = v.line_width;
@@ -1472,8 +1461,7 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
-  }, 
-  //And When Drawing Shapes In SVG Or DOM We Get The Last Array Element Which Is The Shape We Pushed To Draw
+  }, //And When Drawing Shapes In SVG Or DOM We Get The Last Array Element Which Is The Shape We Pushed To Draw
   rect: function(v) {
     if(renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
@@ -1532,9 +1520,8 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
-  }, 
-  square: function(v) {
-    if(renderer == CANVAS || renderer == WEBGL) {
+  }, square: function(v) {
+    if (renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
       cakepen.fillStyle = v.fill;
       cakepen.strokeStyle = v.stroke;
@@ -1570,9 +1557,8 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
-  }, 
-  pixel: function(v) {
-    if(renderer == CANVAS || renderer == WEBGL) {
+  }, pixel: function(v) {
+    if (renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
       cakepen.fillStyle = v.color;
       cakepen.rotate(v.angle / 50);
@@ -1605,9 +1591,8 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
-  }, 
-  roundedrect: function(v) {
-    if(renderer == CANVAS) {
+  }, roundedrect: function(v) {
+    if (renderer == CANVAS) {
       cakepen.globalAlpha = v.a;
       cakepen.fillStyle = v.fill;
       cakepen.strokeStyle = v.stroke;
@@ -1676,9 +1661,8 @@ export const crosskit = {
       cakepen.rotate(-v.angle);
       cakepen.globalAlpha = 1;
     }
-  }, 
-  circle: function(v) {
-    if(renderer == CANVAS) {
+  }, circle: function(v) {
+    if (renderer == CANVAS) {
       cakepen.globalAlpha = v.a;
       cakepen.fillStyle = v.fill;
       cakepen.strokeStyle = v.stroke;
@@ -1784,8 +1768,7 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
-  }, 
-  //NOTES: If Parameter To Use With DOM Or SVG,Set It To 0 Or "none" In Case Of That
+  }, //NOTES: If Parameter To Use With DOM Or SVG,Set It To 0 Or "none" In Case Of That
   //NOTES: v.size Parameter Only For SVG And DOM,Font Size Setted In CANVAS Mode With font
   text: function(v) {
     if(renderer == CANVAS || renderer == WEBGL) {

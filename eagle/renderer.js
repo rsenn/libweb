@@ -156,7 +156,7 @@ const LinesToPath = lines => {
     }
   } while(lines.length > 0);
 
-  return ret.join('\n');
+  return ret.join(' ');
 };
 
 export class EagleRenderer {
@@ -248,7 +248,7 @@ export class EagleRenderer {
             x2,
             y1,
             y2,
-            strokeWidth: +(width == 0 ? 0.1 : width * 1).toFixed(3),
+            'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
             'data-curve': curve
           }, parent);
         break;
@@ -279,8 +279,8 @@ export class EagleRenderer {
             y: 0,
             ...EagleRenderer.alignmentAttrs(align),
             innerHTML: labelText,
-            fontSize: 3,
-            fontFamily: 'Fixed',
+            'font-size': 3,
+            'font-family': 'Fixed',
             transform: transform.undo(transformation)
           }, parent);
         break;
@@ -306,14 +306,11 @@ export class EagleRenderer {
           .rotate(Math.abs(wholeAngle % 180))
           .collapseAll();
 
-        /*  console.log(`wholeTransform ${text}`, rotation);
-         */ console.log(`wholeAngle ${text}`, wholeAngle);
+        /*  console.log(`wholeAngle ${text}`, wholeAngle);
         console.log(`undoAngle ${text}`, undoAngle);
         console.log(`angle ${text}`, angle);
-        /*console.log(`wholeTransform ${text}`, wholeTransform, wholeTransform.toString())
-        console.log(`undoTransform ${text}`, undoTransform, undoTransform.toString())
-    */ console.log(`finalTransformation ${text}`, finalTransformation.toString());
-        console.log(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);
+         console.log(`finalTransformation ${text}`, finalTransformation.toString());
+        console.log(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);*/
 
         if(finalTransformation.rotation) {
           if(finalTransformation.rotation.angle < 0) finalTransformation.rotation.angle = Math.abs(finalTransformation.rotation.angle);
@@ -325,25 +322,19 @@ export class EagleRenderer {
           .clone()
           .rotate((rotateAlignment * Math.PI) / 180)
           .round(1);
-        //  console.log(`render angles ${text}`, Util.map({ wholeAngle, undoAngle, angle }, (k,v) => [k,v+'']));
-        /*   console.log(`render transforms ${text}`, Util.map({ wholeTransform,  undoTransform }, (k,v) => [k,v+'']));
 
-          console.log(`render undoTransform ${text}`, undoTransform, undoTransform.toMatrices(), undoTransform.toMatrix(), undoTransform.decompose());*/
-        console.log(`render alignment ${text}`,
-          Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + '']),
-          EagleRenderer.alignmentAttrs(alignment, VERTICAL)
-        );
+        //console.log(`render alignment ${text}`, Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + '']), EagleRenderer.alignmentAttrs(alignment, VERTICAL) );
 
         const e = svg('text', {
             fill: color,
             stroke: 'none',
-            strokeWidth: 0.05,
+            'stroke-width': 0.05,
             x: 0,
             y: 0,
             ...EagleRenderer.alignmentAttrs(alignment, VERTICAL),
 
-            fontSize: (size * 1.6).toFixed(2),
-            fontFamily: font || 'Fixed',
+            'font-size': (size * 1.6).toFixed(2),
+            'font-family': font || 'Fixed',
             transform: finalTransformation
           }, parent);
 
@@ -359,7 +350,7 @@ export class EagleRenderer {
             cx: x,
             cy: y,
             r: radius,
-            strokeWidth: width * 0.8,
+            'stroke-width': width * 0.8,
             fill: 'none'
           }, parent);
         break;
@@ -474,7 +465,7 @@ export class SchematicRenderer extends EagleRenderer {
             class: 'pin',
             stroke: '#a54b4b',
             ...l.toObject(),
-            strokeWidth: 0.15
+            'stroke-width': 0.15
           }, parent);
         if(name != '' && visible != 'off')
           svg('text', {
@@ -483,8 +474,8 @@ export class SchematicRenderer extends EagleRenderer {
               fill: this.getColor(6),
               x: 2.54,
               y: 0,
-              fontSize: 2,
-              fontFamily: 'Fixed',
+              'font-size': 2,
+              'font-family': 'Fixed',
               'text-anchor': 'left',
               'alignment-baseline': 'central',
               innerHTML: name,
@@ -607,14 +598,14 @@ export class BoardRenderer extends EagleRenderer {
               'text', {
                 fill: 'hsl(180,100%,60%)',
                 stroke: 'black',
-                strokeWidth: 0.01,
+                'stroke-width': 0.01,
                 x: 0.04,
                 y: -0.04,
                 filter: 'url(#shadow)',
                 ...EagleRenderer.alignmentAttrs('center', VERTICAL),
-                fontSize: 0.9,
+                'font-size': 0.9,
                 fontStyle: 'bold',
-                fontFamily: 'Fixed',
+                'font-family': 'Fixed',
                 transform: `${transform} scale(1,-1) ${RotateTransformation(opts.rot, -1)}`
               }, parent
             )
@@ -668,7 +659,7 @@ export class BoardRenderer extends EagleRenderer {
           className: 'wire',
           d: path,
           stroke: color,
-          strokeWidth: +(width == 0 ? 0.1 : width * 1).toFixed(3),
+          'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
           fill: 'none',
           strokeLinecap: 'round',
           strokeLinejoin: 'round',
@@ -687,6 +678,7 @@ export class BoardRenderer extends EagleRenderer {
 
     const g = this.create('g', {
         id: `element.${name}`,
+        className: 'element',
         'data-name': name,
         'data-value': value,
         'data-library': library.name,
@@ -706,7 +698,7 @@ export class BoardRenderer extends EagleRenderer {
     this.renderLayers(parent);
 
     let signalsGroup = this.create('g', { className: 'signals', strokeLinecap: 'round' }, parent);
-    let elementsGroup = this.create('g', { className: 'elements' }, parent);
+    let elementsGroup = parent; // this.create('g', { className: 'elements' }, parent);
 
     let plainGroup = this.create('g', { className: 'plain' }, parent);
 
@@ -943,11 +935,14 @@ export function renderDocument(doc, container) {
   let points = gridBox.toPoints();
   let d = points.toPath({ close: true });
 
-  let gbox = SVG.bbox(grid);
-  let obox = SVG.bbox(g);
+  let sbox = SVG.bbox(container);
+  let obox = SVG.bbox(gridGroup);
 
-  bbox.outset(1);
-  factory.delegate.root.setAttribute('viewBox', bbox.toString());
+  sbox.outset(2.54 * 2.54);
+  factory.delegate.root.setAttribute('viewBox', sbox.toString());
+
+  obox.outset(2.54 * 2.54);
+  container.insertBefore(SVG.create('rect', { ...obox, fill: 'black', transform: 'scale(1,-1)' }), gridGroup);
 
   groupTransform += ` translate(0,0)`;
   Element.attr(g, { transform: groupTransform });

@@ -15,6 +15,7 @@ Object.defineProperties(EagleNodeList.prototype, {
 
 Util.extend(EagleNodeList.prototype, {
   *[Symbol.iterator]() {
+    const instance = this;
     const list = this.ref.dereference();
     for(let i = 0; i < list.length; i++) yield makeEagleElement(instance, this.ref.down(i));
   }, iterator() {
@@ -50,7 +51,7 @@ export function makeEagleNodeList(...args) {
       if(/^[0-9]+$/.test(prop + '')) prop = parseInt(prop);
 
       console.log('write property:', prop);
-      
+
       if(typeof prop == 'number') {
         let list = instance.ref.dereference();
         let len = list.length;
@@ -68,7 +69,7 @@ export function makeEagleNodeList(...args) {
       if(prop == 'raw') return instance.ref.dereference();
       if(prop == 'instance') return instance;
       if(prop == 'iterator' || prop == Symbol.iterator) if (typeof instance.iterator == 'function') return instance.iterator();
-/*
+      /*
 if(/description/.test(txt))
       console.log("list:","\n", toXML(instance.ref.dereference(), true),prop,txt);
 */

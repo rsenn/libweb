@@ -64,7 +64,7 @@ HSLA.prototype.toHSL = function() {
 };
 
 HSLA.prototype.clamp = function() {
-  this.h = this.h % 360;
+  this.h = (this.h % 360) + (this.h < 0 ? 360 : 0);
   this.s = Math.min(Math.max(this.s, 0), 100);
   this.l = Math.min(Math.max(this.l, 0), 100);
   this.a = Math.min(Math.max(this.a, 0), 1);
@@ -77,7 +77,13 @@ HSLA.prototype.round = function() {
   this.a = Math.round(this.a);
   return this;
 };
-
+HSLA.prototype.add = function(h, s = 0, l = 0, a = 0) {
+  this.h += h;
+  this.s += s;
+  this.l += l;
+  this.a += a;
+  return this.clamp();
+};
 HSLA.prototype.hex = function() {
   return RGBA.prototype.hex.call(HSLA.prototype.toRGBA.call(this));
 };
@@ -144,6 +150,14 @@ HSLA.prototype.toString = function() {
 
   if(this.a == 1) return `hsl(${h},${s}%,${l}%)`;
   return `hsla(${h},${s}%,${l}%,${a})`;
+};
+
+HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [1, 1], rng = Math.random) {
+  return new HSLA(Util.randInt(h, rng), Util.randInt(s, rng), Util.randInt(l, rng), Util.randInt(a, rng));
+};
+HSLA.prototype.dump = function() {
+  console.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
+  return this;
 };
 
 for(let name of ['css', 'toHSL', 'clamp', 'round', 'hex', 'toRGBA', 'toString']) {

@@ -10,7 +10,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
   key: { writable: true, configurable: true, enumerable: false, value: null }
 });
 
-Util.extend(EagleNodeMap.prototype, {
+Object.assign(EagleNodeMap.prototype, {
   at(pos) {
     return this.list[pos];
   }, get(name, key = this.key) {

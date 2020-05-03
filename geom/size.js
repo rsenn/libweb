@@ -1,3 +1,5 @@
+import { Util } from '../util.js';
+
 export function Size(arg) {
   let obj = this instanceof Size ? this : {};
   let args = [...arguments];
@@ -143,6 +145,12 @@ Size.prototype.round = function(precision = 0.001) {
 
 Size.area = sz => Size.prototype.area.call(sz);
 Size.aspect = sz => Size.prototype.aspect.call(sz);
+
+Size.bind = (o, p, gen) => {
+  const [width, height] = p || ['width', 'height'];
+  if(!gen) gen = k => v => (v === undefined ? o[k] : (o[k] = v));
+  return Util.bindProperties(new Size(0, 0), o, { width, height }, gen);
+};
 
 export const isSize = o => o && ((o.width !== undefined && o.height !== undefined) || (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) || (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
 

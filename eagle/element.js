@@ -6,7 +6,7 @@ import { toXML, inspect, dump } from './common.js';
 
 export class EagleElement extends EagleNode {
   tagName = '';
-  attributes = {};
+  //attributes = {};
   children = [];
 
   constructor(d, l, o) {
@@ -25,20 +25,20 @@ export class EagleElement extends EagleNode {
 
     let { tagName, attributes, children } = o;
     this.tagName = tagName;
-    this.attributes = {};
+    this.attrMap = {};
 
     if(!Util.isEmpty(attributes)) {
       for(let key in attributes) {
-        let prop = trkl.property(this.attributes, key);
+        let prop = trkl.property(this.attrMap, key);
         let handler = Util.ifThenElse(v => v !== undefined,
           v => prop(v),
           v => (/^[-+]?[0-9.]+$/.test(prop()) ? parseFloat(prop()) : prop())
         );
         prop(attributes[key]);
-        prop.subscribe(value => (value !== undefined ? (o.attributes[key] = value) : delete o.attributes[key]));
+        prop.subscribe(value => (value !== undefined ? (o.attributes[key] = '' + value) : delete o.attributes[key]));
         this.handlers[key] = prop;
         if(key == 'deviceset' || key == 'package') {
-          trkl.bind(this, key, v => (v ? v.names.forEach(name => this.handlers[name](v.names[name])) : this.library[key + 's'][this.attributes[key]]));
+          trkl.bind(this, key, v => (v ? v.names.forEach(name => this.handlers[name](v.names[name])) : this.library[key + 's'][this.attrMap[key]]));
         } else if(key == 'device') {
           const fn = v => {
             if(v) {
@@ -49,7 +49,7 @@ export class EagleElement extends EagleNode {
                 this.handlers.device(names.device);
               }
             } else {
-              return this.deviceset.devices[this.attributes.device];
+              return this.deviceset.devices[this.attrMap.device];
             }
           };
           trkl.bind(this, key, fn);
@@ -60,6 +60,9 @@ export class EagleElement extends EagleNode {
         } else {
           trkl.bind(this, key, handler);
         }
+
+        //   this.attributes[key] = handler();
+        //          trkl.bind(this.attributes, key, handler);
       }
     }
     var childList = null;
@@ -84,11 +87,57 @@ export class EagleElement extends EagleNode {
     if(typeof text == 'string') return text;
   }
 
+  get attributes() {
+    let attributeHandlers = this.handlers;
+    let attributeNames = Object.keys(attributeHandlers);
+    const Attributes = () => {
+      class EagleAttributes {
+        constructor(props) {
+          Object.defineProperties(this, props);
+        }
+        *[Symbol.iterator]() {
+          for(let key of attributeNames) yield [key, attributeHandlers[key]()];
+        }
+      }
+      Util.extend(EagleAttributes.prototype, {
+        entries: () => attributeNames.map(key => [key, attributeHandlers[key]()]),
+        keys: () => attributeNames,
+        has: key => attributeNames.includes(key),
+        values: () => attributeNames.map(key => attributeHandlers[key]())
+      });
+      Object.assign(EagleAttributes.prototype,
+        attributeNames.reduce((acc, key) => ({ ...acc, [key]: attributeHandlers[key]() }))
+      );
+      return EagleAttributes;
+    };
+    let props = attributeNames.reduce((acc, key) => ({ ...acc, [key]: { get: attributeHandlers[key], set: attributeHandlers[key], enumerable: true } }), {});
+    let ret = new (Attributes())(props);
+    return ret;
+  }
+
   getLayer() {
     if(this.raw.attributes.layer) return this.raw.attributes.layer;
 
     if(this.raw.tagName == 'pad') return 'Pads';
     if(this.raw.tagName == 'description') return 'Document';
+  }
+
+  geometry() {
+    const { attributes } = this.raw;
+    const keys = Object.keys(attributes);
+    const makeGetterSetter = k => v => (v === undefined ? +attributes[k] : (attributes[k] = '' + v));
+
+    if(['x1', 'y1', 'x2', 'y2'].every(prop => keys.includes(prop))) {
+      return Line.bind(attributes, null, makeGetterSetter);
+    } else if(['x', 'y'].every(prop => keys.includes(prop))) {
+      const { x, y } = Point(this);
+
+      /* if(keys.includes('radius')) 
+        return Rect.fromCircle(x, y, +this.radius);*/
+
+      if(['width', 'height'].every(prop => keys.includes(prop))) return Rect.bind(attributes, null, makeGetterSetter);
+      else return Point.bind(attributes, null, makeGetterSetter);
+    }
   }
 
   static isRelation(name) {
@@ -103,7 +152,10 @@ export class EagleElement extends EagleNode {
 
   static toObject(e) {
     let { tagName, attributes, children, text } = e;
-    let o = { ...attributes };
+    let o = {};
+    for(let [name, value] of attributes) {
+      o[name] = value;
+    }
     if(typeof e == 'object' && e !== null && 'tagName' in e) o = { tagName, ...o };
     if(typeof children == 'object' && children !== null && 'length' in children && children.length > 0) {
       let a = children.filter(child => typeof child == 'string');

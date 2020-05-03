@@ -32,11 +32,6 @@ export function PointList(points, base = Array) {
   if(!(this instanceof PointList)) return ret;
 }
 
-Util.extend(//Object.assign
-  PointList.prototype,
-  Util.getMethods(Array.prototype, false)
-);
-
 console.log('Util.getMethodNames(Array.prototype, false):', [...Util.getMethodNames(Array.prototype, false)]);
 console.log('Util.getMethods(Array.prototype, false):', Util.getMethods(Array.prototype, false));
 console.log('PointList.prototype[Symbol.iterator]:', Array.prototype[Symbol.iterator]);
@@ -294,6 +289,8 @@ PointList.prototype.round = function(prec) {
   PointList.prototype.forEach.call(this, it => Point.prototype.round.call(it, prec));
   return this;
 };
+
+Util.extend(PointList.prototype, Array.prototype);
 
 if(!Util.isBrowser()) {
   let c = Util.color();

@@ -50,6 +50,11 @@ export function RGBA(r = 0, g = 0, b = 0, a = 255) {
         ret.g = arg.g;
         ret.b = arg.b;
         ret.a = arg.a !== undefined ? arg.a : 255;
+      } else {
+        ret.r = 0;
+        ret.g = 0;
+        ret.b = 0;
+        ret.a = 0;
       }
     }
   }
@@ -320,9 +325,37 @@ RGBA.prototype.luminance = function() {
   Y = Y + 0.0722 * lin.b; // blue channel
   return Y;
 };
+RGBA.prototype.invert = function() {
+  let r = 255 - this.r;
+  let g = 255 - this.g;
+  let b = 255 - this.b;
+  return new RGBA(r, g, b, this.a);
+};
+RGBA.prototype.distance = function(other) {
+  return Math.sqrt(Math.pow(other.r - this.r, 2) + Math.pow(other.g - this.g, 2) + Math.pow(other.b - this.b, 2)) / 441.67295593006370984949;
+};
+RGBA.prototype.luminanace = function() {
+  const { r, g, b } = this;
+  var a = [r, g, b].map(v => {
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+};
+RGBA.prototype.contrast = function contrast(other) {
+  var lum1 = this.luminanace();
+  var lum2 = RGBA.prototype.luminanace.call(other);
+  var brightest = Math.max(lum1, lum2);
+  var darkest = Math.min(lum1, lum2);
+  return (brightest + 0.05) / (darkest + 0.05);
+};
 
-for(let name of ['hex', 'toRGB', 'round', 'toHSLA', 'toCMYK', 'toLAB', 'linear', 'luminance']) {
-  RGBA[name] = arg => RGBA.prototype[name].call(arg);
+RGBA.random = function(r = [0, 255], g = [0, 255], b = [0, 255], a = [255, 255], rng = Math.random) {
+  return new RGBA(Util.randInt(...r, rng), Util.randInt(...g, rng), Util.randInt(...b, rng), Util.randInt(...a, rng));
+};
+
+for(let name of ['hex', 'toRGB', 'round', 'toHSLA', 'toCMYK', 'toLAB', 'linear', 'luminance', 'distance']) {
+  RGBA[name] = (...args) => RGBA.prototype[name].call(...args);
 }
 
 for(let name of ['fromLAB']) {

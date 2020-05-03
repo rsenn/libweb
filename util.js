@@ -346,18 +346,30 @@ Util.copyEntries = (obj, entries) => {
 };
 
 Util.extend = (obj, ...args) => {
-  let props = {};
   for(let other of args) {
-    let desc = Util.getMethods(other, false, (key, value) => obj[key] === undefined && [key, value]);
-
-    Object.assign(obj, desc);
-    /*
-    for(let prop in desc) {
-      const descriptor=desc[prop];
-      props[prop] = { ...descriptor, enumerable: false };
-    }*/
+    for(let [name, fn] of Util.iterateMethods(other, 0, (key, value) => obj[key] === undefined && [key, value])) {
+      try {
+        Object.defineProperty(obj, name, { value: fn, enumerable: false, configurable: false, writable: false });
+      } catch(err) {
+        console.log('extend:', err);
+      }
+    }
   }
-  // Object.defineProperties(obj, props);
+  return obj;
+};
+
+Util.static = (obj, functions, thisObj, pred = (k, v, f) => true) => {
+  for(let [name, fn] of Util.iterateMethods(functions, 0, (key, value) => obj[key] === undefined && pred(key, value, functions) && [key, value])) {
+    const value = function(...args) {
+      return fn.call(thisObj || obj, this, ...args);
+    };
+    try {
+      obj[name] = value;
+      /*        Object.defineProperty(obj, name, { value, enumerable: false, configurable: false, writable: false });*/
+    } catch(err) {
+      console.log('static:', err);
+    }
+  }
   return obj;
 };
 Util.defineGetter = (obj, key, get, enumerable = false) =>
@@ -1404,7 +1416,11 @@ Util.randFloat = function(min, max, rnd = Util.rng) {
   return rnd() * (max - min) + min;
 };
 Util.randInt = function(min, max = 16777215, rnd = Util.rng) {
-  return Math.round(Util.randFloat(min, max, rnd));
+  let args = [...arguments];
+  let range = args[0] instanceof Array ? args.shift() : args.splice(0, typeof args[1] == 'number' ? 2 : 1);
+  let prng = typeof args[0] == 'function' ? args.shift() : Util.rng;
+  if(range.length < 2) range.unshift(0);
+  return Math.round(Util.randFloat(...range, prng));
 };
 Util.hex = function(num, numDigits = 0) {
   let n = typeof num == 'number' ? num : parseInt(num);
@@ -2181,22 +2197,22 @@ Util.inRange = Util.curry((a, b, value) => value >= a && value <= b);
 Util.bindProperties = (proxy, target, props, gen) => {
   if(props instanceof Array) props = Object.fromEntries(props.map(name => [name, name]));
   const propNames = Object.keys(props);
-
   if(!gen) gen = p => v => (v === undefined ? target[p] : (target[p] = v));
-
   Object.defineProperties(proxy,
-    propNames.reduce((a, k) => {
-      const prop = props[k];
-      const get_set = typeof prop == 'function' ? prop : gen(prop);
-      return {
-        ...a,
-        [k]: {
-          get: get_set,
-          set: get_set,
-          enumerable: true
-        }
-      };
-    }, {})
+    propNames.reduce(
+      (a, k) => {
+        const prop = props[k];
+        const get_set = typeof prop == 'function' ? prop : gen(prop);
+        return {
+          ...a,
+          [k]: {
+            get: get_set,
+            set: get_set,
+            enumerable: true
+          }
+        };
+      }, { __getter_setter__: { value: gen, enumerable: false }, __bound_target__: { value: target, enumerable: false } }
+    )
   );
   return proxy;
 };

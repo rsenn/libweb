@@ -124,6 +124,110 @@ export class SVG extends Element {
     return new SvgPath();
   }
 
+  static getProperty(elem, name) {
+    if(!elem.style[name] && elem.hasAttribute(name)) elem.style.setProperty(name, elem.getAttribute(name));
+    let props = window.getComputedStyle(elem);
+    return props[name];
+  }
+
+  static getProperties(elem, properties) {
+    for(let name of properties) {
+      if(!elem.style[name] && elem.hasAttribute(name)) elem.style.setProperty(name, elem.getAttribute(name));
+    }
+    let props = window.getComputedStyle(elem);
+    return properties.reduce((acc, name) => ({ ...acc, [name]: props[name] }), {});
+  }
+
+  static *coloredElements(elem) {
+    for(let item of Element.iterator(elem, (e, d) => ['fill', 'stroke'].some(a => e.hasAttribute(a)))) {
+      const { fill, stroke } = this.getProperties(item, ['fill', 'stroke']);
+      const a = Object.entries({ fill, stroke }).filter(([k, v]) => v !== undefined && v !== 'none');
+      if(a.length == 0) continue;
+
+      const value = { item, props: a.reduce((acc, [name, value]) => (/#/.test(value) ? acc : { ...acc, [name]: value }), {}) };
+      yield value;
+      // console.log(value);
+    }
+  }
+  static allColors(elem) {
+    let map = new Map();
+    const addColor = (c, item, prop) => {
+      if(!map.has(c)) map.set(c, []);
+      map.get(c).push([item, prop]);
+    };
+    for(let { item, props } of this.coloredElements(elem)) {
+      for(let prop in props) addColor(props[prop], item, prop);
+    }
+
+    let list = [...map.keys()].map(color => ({ color, elements: map.get(color) }));
+    return {
+      list,
+      get colors() {
+        return this.list.map(item => item.color);
+      }, index(name) {
+        return typeof name == 'number' && this.list[name] ? name : this.list.findIndex(item => item.color === name);
+      }, name(i) {
+        return typeof i == 'number' ? this.list[i].name : typeof i == 'string' ? i : null;
+      }, get(arg) {
+        return this.list[arg] || this.list.find(item => item.color == arg);
+      }, set(index, color, elements) {
+        this.list[index] = color ? { color, elements } : color;
+        return this;
+      }, dump() {
+        for (let i = 0; i < this.list.length; i++) {
+          const { color, elements } = this.list[i];
+          console.log(`${i}: %c    %c ${color}`, `background: ${color};`, `background: none`);
+        }
+        return this;
+      }, adjacencyMatrix() {
+        let ret = [];
+        for(let i = 0; i < this.list.length; i++) {
+          ret.push([]);
+          ret[i].fill(null, 0, this.list.length);
+        }
+
+        for(let i = 0; i < this.list.length; i++) {
+          for(let j = 0; j < this.list.length; j++) {
+            const dist = RGBA.fromString(this.list[i].color).contrast(RGBA.fromString(this.list[j].color));
+
+            if(/*ret[i][j] == null &&*/ j != i) ret[j][i] = +dist.toFixed(3);
+            else ret[j][i] = Number.POSITIVE_INFINITY
+;
+          }
+        }
+        return ret;
+      }, replace(color, newColor) {
+        let name = this.name(color);
+        let index = this.index(color);
+        let a = this.get(color);
+
+        this.set(index, null);
+
+        if(typeof newColor != 'function') {
+          var newC = newColor;
+          newColor = () => newC;
+        }
+        let c = newColor(RGBA.fromString(a.color), index, a.color);
+        if(typeof c != 'string') c = c.toString();
+        //   console.log('new color:', c);
+
+        for(let [elem, prop] of a.elements) elem.style.setProperty(prop, c);
+
+        return this.set(index, c, a.elements);
+      }, replaceAll(fn) {
+        const colors = this.list.map(item => item.color);
+        if(!fn) fn = Util.shuffle(colors);
+
+        if(fn instanceof Array) {
+          var a = fn.concat(colors.slice(fn.length, colors.length));
+          fn = (rgba, index, color) => a[index];
+        }
+        for(let i = 0; i < colors.length; i++) this.replace(i, fn);
+        return this;
+      }
+    };
+  }
+
   /*
        
     paths = dom.Element.findAll("path", await img("action-save-new.svg"));

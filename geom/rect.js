@@ -208,7 +208,6 @@ Rect.prototype.pointFromCenter = function(point) {
   point.y /= this.height;
   return point;
 };
-
 Rect.prototype.toCSS = function() {
   return {
     ...Point.prototype.toCSS.call(this),
@@ -296,6 +295,12 @@ Rect.bind = rect => {
 Rect.inside = (rect, point) => {
   return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
 };
+Rect.fromCircle = function(...args) {
+  const { x, y } = Point(args);
+  const radius = args.shift();
+
+  return new Rect(x - radius, y - radius, radius * 2, radius * 2);
+};
 
 for(let name of [
   'clone',
@@ -317,6 +322,15 @@ Rect.toSource = (rect, opts = {}) => {
   let props = `x${colon}${spc}${rect.x}${sep}y${colon}${spc}${rect.y}${sep}width${colon}${spc}${rect.width}${sep}height${colon}${spc}${rect.height}`;
   if(inner) return props;
   return `{${sep}${props}${sep}}`;
+};
+
+Rect.bind = (o, p, gen) => {
+  const [x, y, width, height] = p || ['x', 'y', 'width', 'height'];
+  if(!gen) gen = k => v => (v === undefined ? o[k] : (o[k] = v));
+  let pt = Point.bind(o, [x, y], gen);
+  let sz = Size.bind(o, [width, height], gen);
+  let proxy = new Rect(pt, sz);
+  return proxy;
 };
 
 Util.defineInspect(Rect.prototype, 'x', 'y', 'width', 'height');
