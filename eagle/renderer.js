@@ -821,11 +821,12 @@ export function renderDocument(doc, container) {
   palette = Util.shuffle(palette, rng);
 
   renderer.colors = {};
-  if(!container.firstElementChild || container.firstElementChild.tagName != 'defs') {
-    defs = SVG.create('defs');
+  let first = container.firstElementChild;
+  if(!first || (first.tagName+'').toLowerCase() != 'defs') {
+    defs = SVG.create('defs', {});
     container.insertBefore(defs, container.firstElementChild);
   } else {
-    defs = container.firstElementChild;
+    defs = first;
   }
 
   if(!Element.find('pattern', defs)) {
