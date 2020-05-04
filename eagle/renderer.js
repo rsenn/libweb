@@ -820,6 +820,8 @@ export function renderDocument(doc, container) {
   palette = ['hsl(155,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(176,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(10,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(215,100%,50.2%)'];
   palette = Util.shuffle(palette, rng);
 
+  container = factory.delegate.root;
+
   renderer.colors = {};
   let first = container.firstElementChild;
   if(!first || (first.tagName+'').toLowerCase() != 'defs') {
@@ -940,10 +942,10 @@ export function renderDocument(doc, container) {
   let obox = SVG.bbox(gridGroup);
 
   sbox.outset(2.54 * 2.54);
-  factory.delegate.root.setAttribute('viewBox', sbox.toString());
+  container.setAttribute('viewBox', sbox.toString());
 
   obox.outset(2.54 * 2.54);
-  container.insertBefore(SVG.create('rect', { ...obox, fill: 'black', transform: 'scale(1,-1)' }), gridGroup);
+  gridGroup.parentElement.insertBefore(SVG.create('rect', { ...obox, fill: 'black', transform: 'scale(1,-1)' }), gridGroup);
 
   groupTransform += ` translate(0,0)`;
   Element.attr(g, { transform: groupTransform });
