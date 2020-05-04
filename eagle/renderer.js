@@ -932,8 +932,8 @@ export function renderDocument(doc, container) {
     ...gridBox.toObject(),
     fill: 'url(#grid)',
     transform: 'translate(0,0) scale(2.54,2.54)'
-  });
-  gridGroup.appendChild(grid);
+  }, gridGroup);
+//  gridGroup.appendChild(grid);
 
   let points = gridBox.toPoints();
   let d = points.toPath({ close: true });
@@ -945,7 +945,10 @@ export function renderDocument(doc, container) {
   container.setAttribute('viewBox', sbox.toString());
 
   obox.outset(2.54 * 2.54);
-  gridGroup.parentElement.insertBefore(SVG.create('rect', { ...obox, fill: 'black', transform: 'scale(1,-1)' }), gridGroup);
+  grid.style.setProperty('background', 'black');
+
+
+    gridBox.parentElement.insertBefore(SVG.create('rect', { ...new Rect(obox).toObject(), fill: 'black', transform: 'scale(2.54,2.54)' }), gridBox);
 
   groupTransform += ` translate(0,0)`;
   Element.attr(g, { transform: groupTransform });
