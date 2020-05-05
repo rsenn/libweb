@@ -1,11 +1,11 @@
-import { EagleRef, EagleReference } from "./locator.js";
-import { makeEagleElement } from "./element.js";
-import Util from "../util.js";
-import { inspect, toXML } from "./common.js";
+import { EagleRef, EagleReference } from './locator.js';
+import { makeEagleElement } from './element.js';
+import Util from '../util.js';
+import { inspect, toXML } from './common.js';
 
 export function EagleNodeList(owner, ref) {
   this.ref = ref;
-  Util.define(this, "owner", owner);
+  Util.define(this, 'owner', owner);
 }
 
 Object.defineProperties(EagleNodeList.prototype, {
@@ -39,10 +39,10 @@ EagleNodeList.make = function() {
   let ref;
   let owner = args.shift();
   let down = [];
-  if("ref" in owner && "length" in args[0]) ref = EagleRef(owner.ref.root, args.shift());
+  if('ref' in owner && 'length' in args[0]) ref = EagleRef(owner.ref.root, args.shift());
   else if(args[0] instanceof EagleReference) ref = args.shift();
   if(args.length > 0) ref = ref.down(...args);
-  else if(ref.path.last != "children") ref = ref.down("children");
+  else if(ref.path.last != 'children') ref = ref.down('children');
   const Ctor = EagleNodeList;
   return { instance: new Ctor(owner, ref), Ctor };
 };
@@ -51,18 +51,18 @@ export function makeEagleNodeList(...args) {
   const { Ctor, instance } = EagleNodeList.make(...args);
   return new Proxy(instance, {
     set(target, prop, value) {
-      if(/^[0-9]+$/.test(prop + "")) prop = parseInt(prop);
+      if(/^[0-9]+$/.test(prop + '')) prop = parseInt(prop);
 
-      console.log("write property:", prop);
+      console.log('write property:', prop);
 
-      if(typeof prop == "number") {
+      if(typeof prop == 'number') {
         let list = instance.ref.dereference();
         let len = list.length;
         console.log(
-          `${prop + 1 == len ? "push" : "replace"} property ${prop}/${len}:`,
+          `${prop + 1 == len ? 'push' : 'replace'} property ${prop}/${len}:`,
           dump(value, 0)
         );
-        if(typeof value == "object" && "raw" in value) value = value.raw;
+        if(typeof value == 'object' && 'raw' in value) value = value.raw;
         Reflect.set(list, prop, value);
         return true;
       } else {
@@ -71,34 +71,34 @@ export function makeEagleNodeList(...args) {
     },
     get(target, prop, receiver) {
       let index;
-      let is_symbol = typeof prop == "symbol";
+      let is_symbol = typeof prop == 'symbol';
 
-      if(prop == "raw") return instance.ref.dereference();
-      if(prop == "instance") return instance;
-      if(prop == "iterator" || prop == Symbol.iterator)
-        if(typeof instance.iterator == "function") return instance.iterator();
+      if(prop == 'raw') return instance.ref.dereference();
+      if(prop == 'instance') return instance;
+      if(prop == 'iterator' || prop == Symbol.iterator)
+        if(typeof instance.iterator == 'function') return instance.iterator();
       /*
 if(/description/.test(txt))
       console.log("list:","\n", toXML(instance.ref.dereference(), true),prop,txt);
 */
-      if(typeof Ctor.prototype[prop] == "function") return Ctor.prototype[prop].bind(instance);
+      if(typeof Ctor.prototype[prop] == 'function') return Ctor.prototype[prop].bind(instance);
       let list = instance.ref.dereference();
 
-      if(prop == "find")
+      if(prop == 'find')
         return name => {
           const idx = list.findIndex(e => e.attributes.name == name);
           return idx == -1 ? null : makeEagleElement(instance, instance.ref.down(idx));
         };
-      if(prop == "entries") return () => list.map((item, i) => [item.attributes.name, item]);
-      if(!is_symbol && /^[0-9]+$/.test(prop + "")) {
+      if(prop == 'entries') return () => list.map((item, i) => [item.attributes.name, item]);
+      if(!is_symbol && /^[0-9]+$/.test(prop + '')) {
         let r = instance.ref.down(prop);
         return makeEagleElement(instance, r);
       }
-      if(typeof Array.prototype[prop] == "function") return Array.prototype[prop].bind(target);
+      if(typeof Array.prototype[prop] == 'function') return Array.prototype[prop].bind(target);
       if(
-        (!is_symbol && /^([0-9]+|length)$/.test("" + prop)) ||
+        (!is_symbol && /^([0-9]+|length)$/.test('' + prop)) ||
         prop == Symbol.iterator ||
-        ["findIndex"].indexOf(prop) !== -1
+        ['findIndex'].indexOf(prop) !== -1
       ) {
         if(prop in list) return list[prop];
       }
@@ -106,7 +106,7 @@ if(/description/.test(txt))
     },
     ownKeys(target) {
       let list = instance.ref.dereference();
-      return ["owner", "length"];
+      return ['owner', 'length'];
     },
     getPrototypeOf(target) {
       return Reflect.getPrototypeOf(instance);

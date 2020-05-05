@@ -1,5 +1,5 @@
-import Util from "./util.js";
-import { Point, Line, Rect, BBox } from "./dom.js";
+import Util from './util.js';
+import { Point, Line, Rect, BBox } from './dom.js';
 
 class Node {
   constructor() {}
@@ -60,7 +60,7 @@ class Circle {
 }
 
 class Polygon {
-  constructor(width = 0, layer = -1, isolate = "") {
+  constructor(width = 0, layer = -1, isolate = '') {
     this.width = width;
     this.layer = layer;
     this.isolate = isolate;
@@ -85,7 +85,7 @@ class Via {
   drill = "";
   shape = "";*/
 
-  constructor(x = 0, y = 0, extent = "", drill = "", shape = "", signal = "") {
+  constructor(x = 0, y = 0, extent = '', drill = '', shape = '', signal = '') {
     this.x = x;
     this.y = y;
     this.extent = extent;
@@ -118,7 +118,7 @@ class Rectangle {
 class Library extends Node {
   /*name = "";*/
 
-  constructor(name = "") {
+  constructor(name = '') {
     super();
     this.name = name;
   }
@@ -137,7 +137,7 @@ class Element extends Node {
   x = 0;
   y = 0;*/
 
-  constructor(name = "", library = "", pkg = "", value = "", x = 0, y = 0) {
+  constructor(name = '', library = '', pkg = '', value = '', x = 0, y = 0) {
     super();
     this.name = name;
     this.library = library;
@@ -152,8 +152,8 @@ class Element extends Node {
   }
 
   getRotation() {
-    if(typeof this.rot == "string" && /^R/.test(this.rot))
-      return parseInt(this.rot.replace(/^R/, ""));
+    if(typeof this.rot == 'string' && /^R/.test(this.rot))
+      return parseInt(this.rot.replace(/^R/, ''));
     return undefined;
   }
   getLibrary() {
@@ -199,7 +199,7 @@ class Element extends Node {
 class Description {
   /*language = "";*/
 
-  constructor(language = "") {
+  constructor(language = '') {
     this.language = language;
   }
 }
@@ -207,7 +207,7 @@ class Description {
 class Package extends Node {
   /*name = "";*/
 
-  constructor(name = "") {
+  constructor(name = '') {
     super();
     this.name = name;
   }
@@ -244,7 +244,7 @@ class Package extends Node {
 class Signal extends Node {
   /*name = "";*/
 
-  constructor(name = "") {
+  constructor(name = '') {
     super();
     this.name = name;
   }
@@ -255,14 +255,14 @@ class Signal extends Node {
   }
 
   static add(name, obj) {
-    if(name != "") {
+    if(name != '') {
       let s = Signal.get(name);
       if(s.add(obj)) {
         if(s.name) obj.signal = s.name;
         return s.name;
       }
     }
-    return "";
+    return '';
   }
 
   add(obj) {
@@ -289,14 +289,14 @@ class Pad {
   // shape = "";
   // rot = "";*/
 
-  constructor(name = "", x = 0, y = 0, drill = "", diameter = 0, shape = "", rot = "") {
+  constructor(name = '', x = 0, y = 0, drill = '', diameter = 0, shape = '', rot = '') {
     this.name = name;
     this.x = x;
     this.y = y;
     this.drill = drill;
     if(diameter) this.diameter = diameter;
     if(shape) this.shape = shape;
-    if(rot) this.rot = parseFloat(rot.replace(/^R/, ""));
+    if(rot) this.rot = parseFloat(rot.replace(/^R/, ''));
   }
 
   static get(name) {
@@ -308,7 +308,7 @@ class ContactRef {
   /*element = "";
   pad = "";*/
 
-  constructor(element = "", pad = "", signal = "") {
+  constructor(element = '', pad = '', signal = '') {
     this.element = element;
     this.pad = pad;
     Signal.add(signal, this);
@@ -325,7 +325,7 @@ class ContactRef {
 class Text {
   /*text = "";*/
 
-  constructor(text = "") {
+  constructor(text = '') {
     this.text = text;
   }
 }
@@ -349,12 +349,12 @@ class Layer extends Node {
 
   static get(number_or_name) {
     let layer = Layer.find(number_or_name);
-    if(layer === null && typeof number_or_name == "string")
+    if(layer === null && typeof number_or_name == 'string')
       layer = Layer.instances[number_or_name] = new Layer(number_or_name);
     return layer;
   }
 
-  constructor(number = 0, name = "", color = -1, fill = -1, visible = false, active = false) {
+  constructor(number = 0, name = '', color = -1, fill = -1, visible = false, active = false) {
     super();
     this.number = number;
     this.name = name;
@@ -365,7 +365,7 @@ class Layer extends Node {
   }
 
   static add(name, obj) {
-    if(name != "") {
+    if(name != '') {
       let l = Layer.get(name);
       if(l !== null) {
         l.add(obj);
@@ -373,7 +373,7 @@ class Layer extends Node {
         return l.name;
       }
     }
-    return "";
+    return '';
   }
 
   getColor() {
@@ -388,7 +388,7 @@ class Param {
   /*  name = "";
   value = "";*/
 
-  constructor(name = "", value = "") {
+  constructor(name = '', value = '') {
     this.name = name;
     this.value = value;
   }
@@ -402,7 +402,7 @@ class Wire {
   width = 0;
   layer = -1;
 */
-  constructor(x1 = 0, y1 = 0, x2 = 0, y2 = 0, width = 0, layer = -1, signal = "") {
+  constructor(x1 = 0, y1 = 0, x2 = 0, y2 = 0, width = 0, layer = -1, signal = '') {
     this.x1 = x1;
     this.y1 = y1;
     this.x2 = x2;
@@ -437,67 +437,67 @@ const eagleProps = {
     Wire
   },
   classesWithName: [
-    "Class",
-    "Designrules",
-    "Element",
-    "Layer",
-    "Library",
-    "Package",
-    "Param",
-    "Pass",
-    "Signal"
+    'Class',
+    'Designrules',
+    'Element',
+    'Layer',
+    'Library',
+    'Package',
+    'Param',
+    'Pass',
+    'Signal'
   ],
   coordProperties: [
-    "x",
-    "y",
-    "x1",
-    "y1",
-    "x2",
-    "y2",
-    "width",
-    "diameter",
-    "radius",
-    "extent",
-    "size",
-    "drill"
+    'x',
+    'y',
+    'x1',
+    'y1',
+    'x2',
+    'y2',
+    'width',
+    'diameter',
+    'radius',
+    'extent',
+    'size',
+    'drill'
   ],
   elementMap: {},
   allElements: [],
   scaleCoords: 1,
   tCoords: coord => coord,
   colors: [
-    "#000000", // 0
-    "#000080", // 1
-    "#008000", // 2
-    "#008080", // 3
-    "#800000", // 4
-    "#800080", // 5
-    "#808000", // 6
-    "#808080", // 7
-    "#000000", // 8
-    "#0000ff", // 9
-    "#00ff00", // 10
-    "#00ffff", // 11
-    "#ff0000", // 12
-    "#ff00ff", // 13
-    "#ffff00", // 14
-    "#ffffff", // 15
-    "#c0c0c0",
-    "#c0c0c0",
-    "#c0c0c0",
-    "#c0c0c0",
-    "#c0c0c0",
-    "#c0c0c0",
-    "#c0c0c0",
-    "#c0c0c0",
-    "#c0c0c0",
-    "#c0c0c0",
-    "#c0c0c0",
-    "#c0c0c0",
-    "#c0c0c0",
-    "#c0c0c0",
-    "#c0c0c0",
-    "#c0c0c0"
+    '#000000', // 0
+    '#000080', // 1
+    '#008000', // 2
+    '#008080', // 3
+    '#800000', // 4
+    '#800080', // 5
+    '#808000', // 6
+    '#808080', // 7
+    '#000000', // 8
+    '#0000ff', // 9
+    '#00ff00', // 10
+    '#00ffff', // 11
+    '#ff0000', // 12
+    '#ff00ff', // 13
+    '#ffff00', // 14
+    '#ffffff', // 15
+    '#c0c0c0',
+    '#c0c0c0',
+    '#c0c0c0',
+    '#c0c0c0',
+    '#c0c0c0',
+    '#c0c0c0',
+    '#c0c0c0',
+    '#c0c0c0',
+    '#c0c0c0',
+    '#c0c0c0',
+    '#c0c0c0',
+    '#c0c0c0',
+    '#c0c0c0',
+    '#c0c0c0',
+    '#c0c0c0',
+    '#c0c0c0'
   ]
 };
 
@@ -506,7 +506,7 @@ function eagle(obj, parentObj) {
     ctor = null;
   let args = [...arguments];
   // console.log("eagle: ", { parentObj, obj });
-  if(typeof obj == "object") {
+  if(typeof obj == 'object') {
     const t = obj.tagName || obj.tag;
     if(t && eagleProps.elementMap[t] !== undefined) {
       const { tagName, tag, ...o } = obj;
@@ -522,7 +522,7 @@ function eagle(obj, parentObj) {
         ret = Object.assign(ret, o);
       }
     }
-  } else if(typeof obj == "string") {
+  } else if(typeof obj == 'string') {
     const t = args.shift().toLowerCase();
     obj = args.shift();
     if(t && eagleProps.elementMap[t] !== undefined) {
@@ -538,7 +538,7 @@ function eagle(obj, parentObj) {
     if(ctor.instances instanceof Array) ctor.instances.push(ret);
     else ctor.instances[ret.name] = ret;
     if(parentObj instanceof Signal || parentObj instanceof Package) parentObj.add(ret);
-    if(ret.layer !== undefined && (typeof ret.layer == "number" || typeof ret.layer == "string")) {
+    if(ret.layer !== undefined && (typeof ret.layer == 'number' || typeof ret.layer == 'string')) {
       Layer.add(ret.layer, ret);
     }
     eagleProps.allElements.push(ret);
@@ -556,7 +556,7 @@ export { eagle, eagleProps };
 export const instances = {};
 for(let c in eagleProps.classes) {
   const name = c;
-  console.log("name: ", c);
+  console.log('name: ', c);
   const ctor = eagleProps.classes[c];
   const proto = ctor.prototype;
   eagleProps.elementMap[name.toLowerCase()] = eagleProps.classes[c];

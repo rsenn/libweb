@@ -14,7 +14,7 @@ var SUBDIVISION_MAX_ITERATIONS = 10;
 var kSplineTableSize = 11;
 var kSampleStepSize = 1.0 / (kSplineTableSize - 1.0);
 
-var float32ArraySupported = typeof Float32Array === "function";
+var float32ArraySupported = typeof Float32Array === 'function';
 
 function A(aA1, aA2) {
   return 1.0 - 3.0 * aA2 + 3.0 * aA1;
@@ -70,7 +70,7 @@ function LinearEasing(x) {
 
 module.exports = function bezier(mX1, mY1, mX2, mY2) {
   if(!(mX1 >= 0 && mX1 <= 1 && mX2 >= 0 && mX2 <= 1)) {
-    throw new Error("bezier x values must be in [0, 1] range");
+    throw new Error('bezier x values must be in [0, 1] range');
   }
 
   if(mX1 === mY1 && mX2 === mY2) {

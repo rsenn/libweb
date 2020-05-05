@@ -2,21 +2,21 @@
 
 const formatAnnotatedObject = function(
   subject,
-  { indent = "  ", spacing = " ", separator = ",", newline = "\n", maxlen = 30, depth = 1 }
+  { indent = '  ', spacing = ' ', separator = ',', newline = '\n', maxlen = 30, depth = 1 }
 ) {
   const i = indent.repeat(Math.abs(1 - depth));
-  let nl = newline != "" ? newline + i : spacing;
+  let nl = newline != '' ? newline + i : spacing;
   const opts = {
-    newline: depth >= 0 ? newline : "",
+    newline: depth >= 0 ? newline : '',
     depth: depth - 1
   };
   if(subject && subject.toSource !== undefined) return subject.toSource();
   if(subject instanceof Date) return `new Date('${new Date().toISOString()}')`;
-  if(typeof subject == "string") return `'${subject}'`;
-  if(subject != null && subject["y2"] !== undefined) {
-    return `rect[${spacing}${subject["x"]}${separator}${subject["y"]} | ${subject["x2"]}${separator}${subject["y2"]} (${subject["w"]}x${subject["h"]}) ]`;
+  if(typeof subject == 'string') return `'${subject}'`;
+  if(subject != null && subject['y2'] !== undefined) {
+    return `rect[${spacing}${subject['x']}${separator}${subject['y']} | ${subject['x2']}${separator}${subject['y2']} (${subject['w']}x${subject['h']}) ]`;
   }
-  if(typeof subject == "object" && "map" in subject && typeof subject.map == "function") {
+  if(typeof subject == 'object' && 'map' in subject && typeof subject.map == 'function') {
     //subject instanceof Array || (subject && subject.length !== undefined)) {
     return /*(opts.depth <= 0) ? subject.length + '' : */ `[${nl}${
       /*(opts.depth <= 0) ? subject.length + '' : */ subject
@@ -24,32 +24,32 @@ const formatAnnotatedObject = function(
         .join(separator + nl)
     }]`;
   }
-  if(typeof subject === "string" || subject instanceof String) {
+  if(typeof subject === 'string' || subject instanceof String) {
     return `'${subject}'`;
   }
-  let longest = "";
+  let longest = '';
   let r = [];
   for(let k in subject) {
     if(k.length > longest.length) longest = k;
-    let s = "";
+    let s = '';
     //if(typeof(subject[k]) == 'string') s = subject[k];
-    if(typeof subject[k] === "symbol") {
-      s = "Symbol";
-    } else if(typeof subject[k] === "string" || subject[k] instanceof String) {
+    if(typeof subject[k] === 'symbol') {
+      s = 'Symbol';
+    } else if(typeof subject[k] === 'string' || subject[k] instanceof String) {
       s = `'${subject[k]}'`;
-    } else if(typeof subject[k] === "function") {
-      s = Util.fnName(s) || "function";
-      s += "()";
-    } else if(typeof subject[k] === "number" || typeof subject[k] === "boolean") {
+    } else if(typeof subject[k] === 'function') {
+      s = Util.fnName(s) || 'function';
+      s += '()';
+    } else if(typeof subject[k] === 'number' || typeof subject[k] === 'boolean') {
       s = `${subject[k]}`;
     } else if(subject[k] === null) {
-      s = "null";
+      s = 'null';
     } else if(subject[k] && subject[k].length !== undefined) {
       try {
         s =
           depth <= 0
             ? `Array(${subject[k].length})`
-            : `[ ${subject[k].map(item => formatAnnotatedObject(item, opts)).join(", ")} ]`;
+            : `[ ${subject[k].map(item => formatAnnotatedObject(item, opts)).join(', ')} ]`;
       } catch(err) {
         s = `[${subject[k]}]`;
       }
@@ -64,7 +64,7 @@ const formatAnnotatedObject = function(
     r.push([k, s]);
   }
   //console.log("longest: ", longest)
-  let padding = x => (opts.newline != "" ? Util.pad(x, longest.length, spacing) : spacing);
+  let padding = x => (opts.newline != '' ? Util.pad(x, longest.length, spacing) : spacing);
   let j = separator + spacing;
   if(r.length > 6) {
     nl = opts.newline + i;
@@ -97,7 +97,7 @@ Util.getGlobalObject = function() {
   return ret;
 };
 Util.isDebug = function() {
-  if(process !== undefined && process.env.NODE_ENV === "production") return false;
+  if(process !== undefined && process.env.NODE_ENV === 'production') return false;
   return true;
 };
 Util.log = (function() {
@@ -115,7 +115,7 @@ Util.generalLog = function(n, x) {
 Util.toSource = function(arg, opts = {}) {
   const { color = true } = opts;
   const c = Util.color(color);
-  if(typeof arg == "string") return c.text(`'${arg}'`, 1, 36);
+  if(typeof arg == 'string') return c.text(`'${arg}'`, 1, 36);
   if(arg && arg.x !== undefined && arg.y !== undefined)
     return `[${c.text(arg.x, 1, 32)},${c.text(arg.y, 1, 32)}]`;
   if(arg && arg.toSource) return arg.toSource();
@@ -126,22 +126,22 @@ Util.debug = function(message) {
   const args = [...arguments];
   let cache = Util.array();
   const removeCircular = function(key, value) {
-    if(typeof value === "object" && value !== null) {
+    if(typeof value === 'object' && value !== null) {
       if(cache.indexOf(value) !== -1) return;
       cache.push(value);
     }
     return value;
   };
   const str = args
-    .map(arg => (typeof arg === "object" ? JSON.stringify(arg, removeCircular) : arg))
-    .join(" ")
-    .replace(/\n/g, "");
+    .map(arg => (typeof arg === 'object' ? JSON.stringify(arg, removeCircular) : arg))
+    .join(' ')
+    .replace(/\n/g, '');
   //console.log("STR: "+str);
   //console.log.call(console, str);
   //Util.log.apply(Util, args)
 };
 Util.type = function({ type }) {
-  return (type && String(type).split(/[ ()]/)[1]) || "";
+  return (type && String(type).split(/[ ()]/)[1]) || '';
 };
 Util.functionName = function(fn) {
   const matches = /function\s*([^(]*)\(.*/g.exec(String(fn));
@@ -158,7 +158,7 @@ Util.className = function(obj) {
       proto = obj.prototype;
     } catch(err) {}
   }
-  if(Util.isObject(proto) && "constructor" in proto) return Util.fnName(proto.constructor);
+  if(Util.isObject(proto) && 'constructor' in proto) return Util.fnName(proto.constructor);
 };
 Util.unwrapComponent = function(c) {
   for(;;) {
@@ -171,7 +171,7 @@ Util.unwrapComponent = function(c) {
 Util.componentName = function(c) {
   for(;;) {
     if(c.displayName || c.name) {
-      return (c.displayName || c.name).replace(/.*\(([A-Za-z0-9_]+).*/, "$1");
+      return (c.displayName || c.name).replace(/.*\(([A-Za-z0-9_]+).*/, '$1');
     } else if(c.wrappedComponent) c = c.wrappedComponent;
     else if(c.WrappedComponent) c = c.WrappedComponent;
     else break;
@@ -179,7 +179,7 @@ Util.componentName = function(c) {
   return Util.fnName(c);
 };
 Util.count = function(s, ch) {
-  return (String(s).match(new RegExp(ch, "g")) || Util.array()).length;
+  return (String(s).match(new RegExp(ch, 'g')) || Util.array()).length;
 };
 Util.parseNum = function(str) {
   let num = parseFloat(str);
@@ -190,16 +190,16 @@ Util.minmax = function(num, min, max) {
   return Math.min(Math.max(num, min), max);
 };
 Util.getExponential = function(num) {
-  let str = typeof num == "string" ? num : num.toExponential();
+  let str = typeof num == 'string' ? num : num.toExponential();
   const matches = /e\+?(.*)$/.exec(str);
   //console.log("matches: ", matches);
   return parseInt(matches[1]);
 };
 Util.getNumberParts = function(num) {
-  let str = typeof num == "string" ? num : num.toExponential();
+  let str = typeof num == 'string' ? num : num.toExponential();
   const matches = /^(-?)(.*)e\+?(.*)$/.exec(str);
   //console.log("matches: ", matches);
-  const negative = matches[1] == "-";
+  const negative = matches[1] == '-';
   return {
     negative,
     mantissa: parseFloat(matches[2]),
@@ -220,7 +220,7 @@ Util.toBinary = function(num) {
 };
 Util.toBits = function(num) {
   let a = Util.toBinary(num)
-    .split("")
+    .split('')
     .reverse();
   return Array.from(Object.assign({}, a, { length: 50 }), bit => (bit ? 1 : 0));
 };
@@ -232,7 +232,7 @@ Util.isSet = function(v, n) {
   return Util.getBit(v, n) == 1;
 };
 Util.bitCount = function(n) {
-  return Util.count(Util.toBinary(n), "1");
+  return Util.count(Util.toBinary(n), '1');
 };
 Util.toggleBit = function(num, bit) {
   const n = Number(num);
@@ -259,10 +259,10 @@ Util.range = function(start, end) {
 Util.inspect = function(
   obj,
   opts = {
-    indent: "  ",
-    newline: "\n",
+    indent: '  ',
+    newline: '\n',
     depth: 2,
-    spacing: " "
+    spacing: ' '
   }
 ) {
   return formatAnnotatedObject(obj, opts);
@@ -276,10 +276,10 @@ Util.bitArrayToNumbers = function(arr) {
   return numbers;
 };
 Util.bitsToNumbers = function(bits) {
-  let a = Util.toBinary(bits).split("");
+  let a = Util.toBinary(bits).split('');
   let r = Util.array();
   //return a;
-  a.forEach((val, key, arr) => val == "1" && r.unshift(a.length - key));
+  a.forEach((val, key, arr) => val == '1' && r.unshift(a.length - key));
   return r;
 };
 Util.shuffle = function(arr, rnd = Util.rng) {
@@ -297,10 +297,10 @@ Util.draw = function(arr, n, rnd = Util.rng) {
   return r;
 };
 Util.is = {
-  on: val => val == "on" || val === "true" || val === true,
-  off: val => val == "off" || val === "false" || val === false,
-  true: val => val === "true" || val === true,
-  false: val => val === "false" || val === false
+  on: val => val == 'on' || val === 'true' || val === true,
+  off: val => val == 'off' || val === 'false' || val === false,
+  true: val => val === 'true' || val === true,
+  false: val => val === 'false' || val === false
 };
 Util.onoff = function(val) {
   if(Util.is.on(val)) return true;
@@ -318,17 +318,17 @@ Util.randomNumbers = function([start, end], draws) {
 Util.randomBits = function(r = [1, 50], n = 5) {
   return Util.numbersToBits(Util.randomNumbers(r, n));
 };
-Util.padFn = function(len, char = " ", fn = (str, pad) => pad) {
+Util.padFn = function(len, char = ' ', fn = (str, pad) => pad) {
   return (s, n = len) => {
     let m = Util.stripAnsi(s).length;
-    s = s ? s.toString() : "" + s;
-    return fn(s, m < n ? char.repeat(n - m) : "");
+    s = s ? s.toString() : '' + s;
+    return fn(s, m < n ? char.repeat(n - m) : '');
   };
 };
-Util.pad = function(s, n, char = " ") {
+Util.pad = function(s, n, char = ' ') {
   return Util.padFn(n, char)(s);
 };
-Util.abbreviate = function(str, max, suffix = "...") {
+Util.abbreviate = function(str, max, suffix = '...') {
   if(str.length > max) {
     return str.substring(0, max - suffix.length) + suffix;
   }
@@ -337,14 +337,14 @@ Util.abbreviate = function(str, max, suffix = "...") {
 Util.trim = function(str, charset) {
   const r1 = RegExp(`^[${charset}]*`);
   const r2 = RegExp(`[${charset}]*$`);
-  return str.replace(r1, "").replace(r2, "");
+  return str.replace(r1, '').replace(r2, '');
 };
 Util.trimRight = function(str, charset) {
   const r2 = RegExp(`[${charset}]*$`);
-  return str.replace(r2, "");
+  return str.replace(r2, '');
 };
 Util.define = (obj, key, value, enumerable = false) => {
-  if(typeof key == "object") {
+  if(typeof key == 'object') {
     for(let prop in key) Util.define(obj, prop, key[prop], Util.isBool(value) ? value : false);
     return obj;
   }
@@ -377,7 +377,7 @@ Util.extend = (obj, ...args) => {
           writable: false
         });
       } catch(err) {
-        console.log("extend:", err);
+        console.log('extend:', err);
       }
     }
   }
@@ -397,7 +397,7 @@ Util.static = (obj, functions, thisObj, pred = (k, v, f) => true) => {
       obj[name] = value;
       /*        Object.defineProperty(obj, name, { value, enumerable: false, configurable: false, writable: false });*/
     } catch(err) {
-      console.log("static:", err);
+      console.log('static:', err);
     }
   }
   return obj;
@@ -420,19 +420,19 @@ Util.extendArray = function(arr = Array.prototype) {
   /*  Util.define(arr, 'tail', function() {
     return this[this.length - 1];
   });*/
-  Util.define(arr, "match", function(pred) {
+  Util.define(arr, 'match', function(pred) {
     return Util.match(this, pred);
   });
-  Util.define(arr, "clear", function() {
+  Util.define(arr, 'clear', function() {
     this.splice(0, this, length);
     return this;
   });
-  Util.define(arr, "unique", function() {
+  Util.define(arr, 'unique', function() {
     return this.filter((item, i, a) => a.indexOf(item) == i);
   });
   Util.defineGetterSetter(
     arr,
-    "tail",
+    'tail',
     function() {
       return Util.tail(this);
     },
@@ -501,7 +501,7 @@ Util.adapter.localStorage = function(s) {
 var doExtendArray = Util.extendArray;
 Util.array = function(a) {
   if(!(a instanceof Array)) {
-    if(Util.isObject(a) && "length" in a) a = Array.from(a);
+    if(Util.isObject(a) && 'length' in a) a = Array.from(a);
   }
   if(doExtendArray)
     try {
@@ -522,7 +522,7 @@ Util.arrayFromEntries = entries =>
 
 Util.toMap = function(hash = {}, fn) {
   let m, gen;
-  if(hash instanceof Array && typeof fn == "function") hash = hash.map(fn);
+  if(hash instanceof Array && typeof fn == 'function') hash = hash.map(fn);
 
   if(hash[Symbol.iterator] !== undefined) gen = hash[Symbol.iterator]();
   else if(Util.isGenerator(hash)) gen = hash;
@@ -565,18 +565,18 @@ Util.fromEntries = Object.fromEntries
     };
 
 Util.objectFrom = function(any) {
-  if("toJS" in any) any = any.toJS();
+  if('toJS' in any) any = any.toJS();
   else if(Util.isArray(any)) return Util.fromEntries(any);
-  else if("entries" in any) return Util.fromEntries(any.entries());
+  else if('entries' in any) return Util.fromEntries(any.entries());
   return Object.assign({}, any);
 };
 Util.tail = function(arr) {
   return arr && arr.length > 0 ? arr[arr.legth - 1] : null;
 };
 Util.splice = function(str, index, delcount, insert) {
-  const chars = str.split("");
+  const chars = str.split('');
   Array.prototype.splice.apply(chars, arguments);
-  return chars.join("");
+  return chars.join('');
 };
 Util.keyOf = function(obj, prop) {
   const keys = Object.keys(obj);
@@ -590,7 +590,7 @@ Util.rotateRight = function(arr, n) {
   return arr;
 };
 Util.repeater = function(n, what) {
-  if(typeof what == "function")
+  if(typeof what == 'function')
     return (function*() {
       for(let i = 0; i < n; i++) yield what();
     })();
@@ -661,18 +661,18 @@ Util.keys = function(obj) {
 };
 Util.objName = function(o) {
   if(o === undefined || o == null) return `${o}`;
-  if(typeof o === "function" || o instanceof Function) return Util.fnName(o);
+  if(typeof o === 'function' || o instanceof Function) return Util.fnName(o);
   if(o.constructor) return Util.fnName(o.constructor);
   const s = `${o.type}`;
   return s;
 };
 Util.findKey = function(obj, value) {
-  let pred = typeof value == "function" ? value : v => v === value;
+  let pred = typeof value == 'function' ? value : v => v === value;
   for(let k in obj) if(pred(obj[k], k)) return k;
 };
-Util.find = function(arr, value, prop = "id", acc = Util.array()) {
+Util.find = function(arr, value, prop = 'id', acc = Util.array()) {
   let pred;
-  if(typeof value == "function") pred = value;
+  if(typeof value == 'function') pred = value;
   else if(prop && prop.length !== undefined) {
     pred = function(obj) {
       if(obj[prop] == value) return true;
@@ -697,8 +697,8 @@ Util.match = function(arg, pred) {
     const re = pred;
     match = (val, key) =>
       (val && val.tagName !== undefined && re.test(val.tagName)) ||
-      (typeof key === "string" && re.test(key)) ||
-      (typeof val === "string" && re.test(val));
+      (typeof key === 'string' && re.test(key)) ||
+      (typeof val === 'string' && re.test(val));
   }
   if(Util.isArray(arg)) {
     if(!(arg instanceof Array)) arg = [...arg];
@@ -715,7 +715,7 @@ Util.match = function(arg, pred) {
   }
   return Util.filter(arg, match);
 };
-Util.toHash = function(map, keyTransform = k => Util.camelize("" + k)) {
+Util.toHash = function(map, keyTransform = k => Util.camelize('' + k)) {
   let ret = {};
   Util.foreach(map, (v, k) => (ret[keyTransform(k)] = v));
   return ret;
@@ -734,48 +734,48 @@ Util.injectProps = function(options) {
     }
   }
 }*/
-Util.toString = (obj, opts = {}, indent = "") => {
+Util.toString = (obj, opts = {}, indent = '') => {
   const {
     quote = '"',
     multiline = true,
     color = true,
-    spacing = " ",
-    padding = " ",
-    separator = ",",
-    colon = ":"
+    spacing = ' ',
+    padding = ' ',
+    separator = ',',
+    colon = ':'
   } = opts;
   const c = Util.color(color);
   const sep = multiline
-    ? (space = false) => "\n" + indent + (space ? "  " : "")
-    : (space = false) => (space ? spacing : "");
+    ? (space = false) => '\n' + indent + (space ? '  ' : '')
+    : (space = false) => (space ? spacing : '');
   if(Util.isArray(obj)) {
     let s = c.text(`[${padding}`, 1, 36);
     for(let i = 0; i < obj.length; i++) {
-      s += i > 0 ? c.text(separator, 1, 36) : "";
+      s += i > 0 ? c.text(separator, 1, 36) : '';
       s += sep(true);
-      s += Util.toString(obj[i], opts, indent + "  ");
+      s += Util.toString(obj[i], opts, indent + '  ');
     }
     return s + sep() + `${padding}]`;
   }
   //console.log("obj:", Util.className(obj), obj);
-  if(typeof obj == "function" || obj instanceof Function || Util.className(obj) == "Function") {
-    obj = "" + obj;
-    if(!multiline) obj = obj.replace(/(\n| anonymous)/g, "");
+  if(typeof obj == 'function' || obj instanceof Function || Util.className(obj) == 'Function') {
+    obj = '' + obj;
+    if(!multiline) obj = obj.replace(/(\n| anonymous)/g, '');
     return obj;
   }
   let s = c.text(`{${padding}`, 1, 36);
   let i = 0;
   for(let key in obj) {
     const value = obj[key];
-    s += i > 0 ? c.text(separator, 36) : "";
+    s += i > 0 ? c.text(separator, 36) : '';
 
     if(i > 0) s += sep(true);
     s += `${c.text(key, 1, 33)}${c.text(colon, 1, 36)}` + spacing;
     /*if(Util.isArray(value)) s+= Util.toString(value);
       else*/ if(Util.isObject(value))
-      s += Util.toString(value, opts, indent + "  ");
-    else if(typeof value == "string") s += c.text(`${quote}${value}${quote}`, 1, 36);
-    else if(typeof value == "number") s += c.text(value, 1, 32);
+      s += Util.toString(value, opts, indent + '  ');
+    else if(typeof value == 'string') s += c.text(`${quote}${value}${quote}`, 1, 36);
+    else if(typeof value == 'number') s += c.text(value, 1, 32);
     else s += value;
     i++;
   }
@@ -787,14 +787,14 @@ Util.dump = function(name, props) {
     args.push(`\n\t${key}: `);
     args.push(props[key]);
   }
-  if("window" in global !== false) {
+  if('window' in global !== false) {
     //if(window.alert !== undefined)
     //alert(args);
     if(window.console !== undefined) console.log(...args);
   }
 };
 Util.ucfirst = function(str) {
-  if(typeof str != "string") str = String(str);
+  if(typeof str != 'string') str = String(str);
   return str.substring(0, 1).toUpperCase() + str.substring(1);
 };
 Util.lcfirst = function(str) {
@@ -807,13 +807,13 @@ Util.lcfirst = function(str) {
  * @param {text} string Text to camelize
  * @return string Camelized text
  */
-Util.camelize = (text, sep = "") =>
+Util.camelize = (text, sep = '') =>
   text.replace(/^([A-Z])|[\s-_]+(\w)/g, function(match, p1, p2, offset) {
     if(p2) return sep + p2.toUpperCase();
     return p1.toLowerCase();
   });
 
-Util.decamelize = function(str, separator = "-") {
+Util.decamelize = function(str, separator = '-') {
   return /[A-Z]/.test(str)
     ? str
         .replace(/([a-z\d])([A-Z])/g, `$1${separator}$2`)
@@ -839,10 +839,10 @@ Util.isEmail = function(v) {
   return /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(v);
 };
 Util.isString = function(v) {
-  return Object.prototype.toString.call(v) == "[object String]";
+  return Object.prototype.toString.call(v) == '[object String]';
 };
 
-Util.isObject = obj => typeof obj === "object" && obj !== null;
+Util.isObject = obj => typeof obj === 'object' && obj !== null;
 
 Util.isEmptyString = function(v) {
   if(this.isString(v) && !v) {
@@ -854,10 +854,10 @@ Util.isEmptyString = function(v) {
   return false;
 };
 Util.isEmpty = function(v) {
-  if(typeof v == "object" && !!v && v.constructor == Object && Object.keys(v).length == 0)
+  if(typeof v == 'object' && !!v && v.constructor == Object && Object.keys(v).length == 0)
     return true;
   if(!v || v === null) return true;
-  if(typeof v == "object" && v.length !== undefined && v.length === 0) return true;
+  if(typeof v == 'object' && v.length !== undefined && v.length === 0) return true;
   return false;
 };
 Util.notEmpty = function(v) {
@@ -875,7 +875,7 @@ Util.validatePassword = function(value) {
   );
 };
 Util.clone = function(obj) {
-  if(typeof obj != "object") return obj;
+  if(typeof obj != 'object') return obj;
   return Util.isArray(obj) ? obj.slice() : Object.assign({}, obj);
 };
 //deep copy
@@ -900,12 +900,12 @@ Util.findVal = function(object, propName, maxDepth = 10) {
 Util.deepCloneObservable = function(data) {
   let o;
   const t = typeof data;
-  if(t === "object") {
+  if(t === 'object') {
     o = data.length ? Util.array() : {};
   } else {
     return data;
   }
-  if(t === "object") {
+  if(t === 'object') {
     if(data.length) {
       for(const value of data) {
         o.push(this.deepCloneObservable(value));
@@ -983,13 +983,13 @@ Util.removeEqual = function(a, b) {
 };
 //Remove the storage when logging out
 Util.logOutClearStorage = function() {
-  localStorage.removeItem("userToken");
-  localStorage.removeItem("userLoginPermission");
-  localStorage.removeItem("ssoToken");
-  localStorage.removeItem("userId");
-  localStorage.removeItem("userInfo");
-  localStorage.removeItem("userGroupList");
-  localStorage.removeItem("gameAuthList");
+  localStorage.removeItem('userToken');
+  localStorage.removeItem('userLoginPermission');
+  localStorage.removeItem('ssoToken');
+  localStorage.removeItem('userId');
+  localStorage.removeItem('userInfo');
+  localStorage.removeItem('userGroupList');
+  localStorage.removeItem('gameAuthList');
 };
 //Take the cookies
 Util.getCookie = function(cookie, name) {
@@ -998,10 +998,10 @@ Util.getCookie = function(cookie, name) {
   return null;
 };
 Util.parseCookie = function(c = document.cookie) {
-  if(!(typeof c == "string" && c && c.length > 0)) return {};
-  let key = "";
-  let value = "";
-  const ws = " \r\n\t";
+  if(!(typeof c == 'string' && c && c.length > 0)) return {};
+  let key = '';
+  let value = '';
+  const ws = ' \r\n\t';
   let i = 0;
   let ret = {};
   const skip = (pred = char => ws.indexOf(char) != -1) => {
@@ -1011,16 +1011,16 @@ Util.parseCookie = function(c = document.cookie) {
     return r;
   };
   do {
-    let str = skip(char => char != "=" && char != ";");
-    if(c[i] == "=" && str != "path") {
+    let str = skip(char => char != '=' && char != ';');
+    if(c[i] == '=' && str != 'path') {
       i++;
       key = str;
-      value = skip(char => char != ";");
+      value = skip(char => char != ';');
     } else {
       i++;
       skip();
     }
-    if(key != "") ret[key] = value;
+    if(key != '') ret[key] = value;
     skip();
   } while(i < c.length);
   return ret;
@@ -1035,7 +1035,7 @@ Util.parseCookie = function(c = document.cookie) {
 Util.encodeCookie = c =>
   Object.entries(c)
     .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join("; ");
+    .join('; ');
 Util.setCookies = c =>
   Object.entries(c).forEach(([key, value]) => {
     document.cookie = `${key}=${value}`;
@@ -1056,12 +1056,12 @@ Util.deleteCookie = function(name) {
 Util.accAdd = function(arg1, arg2) {
   let r1, r2, m;
   try {
-    r1 = arg1.toString().split(".")[1].length;
+    r1 = arg1.toString().split('.')[1].length;
   } catch(e) {
     r1 = 0;
   }
   try {
-    r2 = arg2.toString().split(".")[1].length;
+    r2 = arg2.toString().split('.')[1].length;
   } catch(e) {
     r2 = 0;
   }
@@ -1073,12 +1073,12 @@ Util.accAdd = function(arg1, arg2) {
 Util.Subtr = function(arg1, arg2) {
   let r1, r2, m, n;
   try {
-    r1 = arg1.toString().split(".")[1].length;
+    r1 = arg1.toString().split('.')[1].length;
   } catch(e) {
     r1 = 0;
   }
   try {
-    r2 = arg2.toString().split(".")[1].length;
+    r2 = arg2.toString().split('.')[1].length;
   } catch(e) {
     r2 = 0;
   }
@@ -1096,13 +1096,13 @@ Util.accDiv = function(arg1, arg2) {
   let r1;
   let r2;
   try {
-    t1 = arg1.toString().split(".")[1].length;
+    t1 = arg1.toString().split('.')[1].length;
   } catch(e) {}
   try {
-    t2 = arg2.toString().split(".")[1].length;
+    t2 = arg2.toString().split('.')[1].length;
   } catch(e) {}
-  r1 = Number(arg1.toString().replace(".", ""));
-  r2 = Number(arg2.toString().replace(".", ""));
+  r1 = Number(arg1.toString().replace('.', ''));
+  r2 = Number(arg2.toString().replace('.', ''));
   return (r1 / r2) * Math.pow(10, t2 - t1);
 };
 //js multiplication function
@@ -1112,12 +1112,12 @@ Util.accMul = function(arg1, arg2) {
   const s1 = arg1.toString();
   const s2 = arg2.toString();
   try {
-    m += s1.split(".")[1].length;
+    m += s1.split('.')[1].length;
   } catch(e) {}
   try {
-    m += s2.split(".")[1].length;
+    m += s2.split('.')[1].length;
   } catch(e) {}
-  return (Number(s1.replace(".", "")) * Number(s2.replace(".", ""))) / Math.pow(10, m);
+  return (Number(s1.replace('.', '')) * Number(s2.replace('.', ''))) / Math.pow(10, m);
 };
 Util.dateFormatter = function(date, formate) {
   const year = date.getFullYear();
@@ -1140,11 +1140,11 @@ Util.dateFormatter = function(date, formate) {
     .replace(/s+/, second);
 };
 Util.numberFormatter = function(numStr) {
-  let numSplit = numStr.split(".");
-  return numSplit[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",").concat(`.${numSplit[1]}`);
+  let numSplit = numStr.split('.');
+  return numSplit[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',').concat(`.${numSplit[1]}`);
 };
 Util.searchObject = function(object, matchCallback, currentPath, result, searched) {
-  currentPath = currentPath || "";
+  currentPath = currentPath || '';
   result = result || Util.array();
   searched = searched || Util.array();
   if(searched.indexOf(object) !== -1 && object === Object(object)) {
@@ -1160,12 +1160,12 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
         const desc = Object.getOwnPropertyDescriptor(object, property);
         //console.log('x ', {property, desc})
         if(
-          property.indexOf("$") !== 0 &&
-          typeof object[property] !== "function" &&
+          property.indexOf('$') !== 0 &&
+          typeof object[property] !== 'function' &&
           !desc.get &&
           !desc.set
         ) {
-          if(typeof object[property] === "object") {
+          if(typeof object[property] === 'object') {
             try {
               JSON.stringify(object[property]);
             } catch(err) {
@@ -1191,15 +1191,15 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
   return result;
 };
 Util.getURL = function(req = {}) {
-  let proto = process.env.NODE_ENV === "production" ? "https" : "http";
+  let proto = process.env.NODE_ENV === 'production' ? 'https' : 'http';
   let port = process.env.PORT
     ? parseInt(process.env.PORT)
-    : process.env.NODE_ENV === "production"
+    : process.env.NODE_ENV === 'production'
     ? 443
     : 8080;
-  let host = global.ip || global.host || "localhost";
+  let host = global.ip || global.host || 'localhost';
   if(req && req.headers && req.headers.host !== undefined) {
-    host = req.headers.host.replace(/:.*/, "");
+    host = req.headers.host.replace(/:.*/, '');
   } else if(process.env.HOST !== undefined) host = process.env.HOST;
   if(global.window !== undefined && window.location !== undefined) return window.location.href;
   if(req.url !== undefined) return req.url;
@@ -1212,7 +1212,7 @@ Util.parseQuery = function(url = Util.getURL()) {
   let startIndex;
   let query = {};
   try {
-    if((startIndex = url.indexOf("?")) != -1) url = url.substring(startIndex);
+    if((startIndex = url.indexOf('?')) != -1) url = url.substring(startIndex);
     const args = [...url.matchAll(/[?&]([^=&#]+)=?([^&#]*)/g)];
     if(args) {
       for(let i = 0; i < args.length; i++) {
@@ -1228,21 +1228,21 @@ Util.parseQuery = function(url = Util.getURL()) {
 Util.encodeQuery = function(data) {
   const ret = [];
   for(let d in data) ret.push(`${encodeURIComponent(d)}=${encodeURIComponent(data[d])}`);
-  return ret.join("&");
+  return ret.join('&');
 };
 Util.parseURL = function(href = this.getURL()) {
   const matches = /^([^:]*):\/\/([^/:]*)(:[0-9]*)?(\/?.*)/.exec(href);
   if(!matches) return null;
   const argstr =
-    matches[4].indexOf("?") != -1 ? matches[4].replace(/^[^?]*\?/, "") : ""; /* + "&test=1"*/
+    matches[4].indexOf('?') != -1 ? matches[4].replace(/^[^?]*\?/, '') : ''; /* + "&test=1"*/
   const pmatches =
-    typeof argstr === "string"
+    typeof argstr === 'string'
       ? argstr
           .split(/&/g)
           .map(part => {
             let a = part.split(/=/);
             let b = a.shift();
-            return [b, a.join("=")];
+            return [b, a.join('=')];
           })
           .filter(([k, v]) => !(k.length == 0 && v.length == 0))
       : Util.array();
@@ -1254,27 +1254,27 @@ Util.parseURL = function(href = this.getURL()) {
   return {
     protocol: matches[1],
     host: matches[2],
-    port: typeof matches[3] === "string" ? parseInt(matches[3].substring(1)) : 443,
-    location: matches[4].replace(/\?.*/, ""),
+    port: typeof matches[3] === 'string' ? parseInt(matches[3].substring(1)) : 443,
+    location: matches[4].replace(/\?.*/, ''),
     query: params,
     href(override) {
-      if(typeof override === "object") Object.assign(this, override);
+      if(typeof override === 'object') Object.assign(this, override);
       const qstr = Util.encodeQuery(this.query);
       return (
-        (this.protocol ? `${this.protocol}://` : "") +
-        (this.host ? this.host : "") +
-        (this.port ? `:${this.port}` : "") +
+        (this.protocol ? `${this.protocol}://` : '') +
+        (this.host ? this.host : '') +
+        (this.port ? `:${this.port}` : '') +
         `${this.location}` +
-        (qstr != "" ? `?${qstr}` : "")
+        (qstr != '' ? `?${qstr}` : '')
       );
     }
   };
 };
 Util.makeURL = function() {
   let args = [...arguments];
-  let href = typeof args[0] == "string" ? args.shift() : Util.getURL();
+  let href = typeof args[0] == 'string' ? args.shift() : Util.getURL();
   let url = Util.parseURL(href);
-  let obj = typeof args[0] == "object" ? args.shift() : {};
+  let obj = typeof args[0] == 'object' ? args.shift() : {};
   Object.assign(url, obj);
   return url.href();
   /*
@@ -1284,11 +1284,11 @@ Util.makeURL = function() {
   return urlObj ? urlObj.href(args[0]) : null;*/
 };
 Util.numberFromURL = function(url, fn) {
-  const obj = typeof url === "object" ? url : this.parseURL(url);
-  const nr_match = RegExp(".*[^0-9]([0-9]+)$").exec(url.location);
+  const obj = typeof url === 'object' ? url : this.parseURL(url);
+  const nr_match = RegExp('.*[^0-9]([0-9]+)$').exec(url.location);
   const nr_arg = nr_match ? nr_match[1] : undefined;
   const nr = nr_arg && parseInt(nr_arg);
-  if(!isNaN(nr) && typeof fn === "function") fn(nr);
+  if(!isNaN(nr) && typeof fn === 'function') fn(nr);
   return nr;
 };
 Util.tryPromise = fn => new Promise((resolve, reject) => Util.tryCatch(fn, resolve, reject));
@@ -1330,7 +1330,7 @@ Util.unique = arr => arr.filter(Util.uniquePred);
 Util.concat = function*(...args) {
   for(let arg of args) {
     if(Util.isGenerator(arg)) {
-      console.error("isGenerator:", arg);
+      console.error('isGenerator:', arg);
       yield* arg;
     } /* if(Util.isArray(arg))*/ else {
       for(let item of arg) yield item;
@@ -1349,7 +1349,7 @@ Util.rangeMinMax = function(arr, field) {
   const numbers = [...arr].map(obj => obj[field]);
   return [Math.min(...numbers), Math.max(...numbers)];
 };
-Util.mergeLists = function(arr1, arr2, key = "id") {
+Util.mergeLists = function(arr1, arr2, key = 'id') {
   let hash = {};
 
   for(let obj of arr1) hash[obj[key]] = obj;
@@ -1381,8 +1381,8 @@ Util.all = function(obj, pred) {
 };
 Util.isGenerator = function(fn) {
   return (
-    (typeof fn == "function" && /^[^(]*\*/.test(fn.toString())) ||
-    (["function", "object"].indexOf(typeof fn) != -1 && fn.next !== undefined)
+    (typeof fn == 'function' && /^[^(]*\*/.test(fn.toString())) ||
+    (['function', 'object'].indexOf(typeof fn) != -1 && fn.next !== undefined)
   );
 };
 Util.filter = function(a, pred) {
@@ -1409,8 +1409,8 @@ Util.mapFunctional = fn =>
     for(let item of arg) yield fn(item);
   };
 Util.map = function(obj, fn) {
-  if(typeof obj == "function") return Util.mapFunctional(...arguments);
-  if(typeof fn != "function") return Util.toMap(...arguments);
+  if(typeof obj == 'function') return Util.mapFunctional(...arguments);
+  if(typeof fn != 'function') return Util.toMap(...arguments);
   let ret = {};
   for(let key in obj) {
     if(obj.hasOwnProperty(key)) {
@@ -1447,7 +1447,7 @@ Util.entriesToObj = function(arr) {
 Util.isDate = function(d) {
   return (
     d instanceof Date ||
-    (typeof d == "string" &&
+    (typeof d == 'string' &&
       /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d))
   );
 };
@@ -1463,7 +1463,7 @@ Util.isoDate = function(date) {
     const minOffset = date.getTimezoneOffset();
     const milliseconds = date.valueOf() - minOffset * 60 * 1000;
     date = new Date(milliseconds);
-    return date.toISOString().replace(/T.*/, "");
+    return date.toISOString().replace(/T.*/, '');
   } catch(err) {}
   return null;
 };
@@ -1482,17 +1482,17 @@ Util.fromUnixTime = function(epoch, utc = false) {
   utc ? d.setUTCSeconds(t) : d.setSeconds(t);
   return d;
 };
-Util.formatTime = function(date = new Date(), format = "HH:MM:SS") {
+Util.formatTime = function(date = new Date(), format = 'HH:MM:SS') {
   let n;
-  let out = "";
+  let out = '';
   for(let i = 0; i < format.length; i += n) {
     n = 1;
     while(format[i] == format[i + n]) n++;
     const fmt = format.substring(i, i + n);
     let num = fmt;
-    if(fmt.startsWith("H")) num = `0${date.getHours()}`.substring(0, n);
-    else if(fmt.startsWith("M")) num = `0${date.getMinutes()}`.substring(0, n);
-    else if(fmt.startsWith("S")) num = `0${date.getSeconds()}`.substring(0, n);
+    if(fmt.startsWith('H')) num = `0${date.getHours()}`.substring(0, n);
+    else if(fmt.startsWith('M')) num = `0${date.getMinutes()}`.substring(0, n);
+    else if(fmt.startsWith('S')) num = `0${date.getSeconds()}`.substring(0, n);
     out += num;
   }
   return out;
@@ -1513,7 +1513,7 @@ Util.timeSpan = function(s) {
   const days = s % 7;
   s = Math.floor(s / 7);
   const weeks = s;
-  let ret = "";
+  let ret = '';
   ret = `${`0${hours}`.substring(0, 2)}:${`0${minutes}`.substring(0, 2)}:${`0${seconds}`.substring(
     0,
     2
@@ -1529,14 +1529,14 @@ Util.randFloat = function(min, max, rnd = Util.rng) {
 Util.randInt = function(min, max = 16777215, rnd = Util.rng) {
   let args = [...arguments];
   let range =
-    args[0] instanceof Array ? args.shift() : args.splice(0, typeof args[1] == "number" ? 2 : 1);
-  let prng = typeof args[0] == "function" ? args.shift() : Util.rng;
+    args[0] instanceof Array ? args.shift() : args.splice(0, typeof args[1] == 'number' ? 2 : 1);
+  let prng = typeof args[0] == 'function' ? args.shift() : Util.rng;
   if(range.length < 2) range.unshift(0);
   return Math.round(Util.randFloat(...range, prng));
 };
 Util.hex = function(num, numDigits = 0) {
-  let n = typeof num == "number" ? num : parseInt(num);
-  return ("0".repeat(numDigits) + n.toString(16)).slice(-numDigits);
+  let n = typeof num == 'number' ? num : parseInt(num);
+  return ('0'.repeat(numDigits) + n.toString(16)).slice(-numDigits);
 };
 Util.numberParts = (num, base) => {
   let exp = 0;
@@ -1554,13 +1554,13 @@ Util.roundTo = function(value, prec, digits) {
   console.log('digits:', digits);*/
   let ret = Math.round(value / prec) * prec;
 
-  if(typeof digits == "number") ret = +ret.toFixed(digits);
+  if(typeof digits == 'number') ret = +ret.toFixed(digits);
   return ret;
 };
 Util.base64 = {
   encode: utf8 => {
     if(global.window) return window.btoa(unescape(encodeURIComponent(utf8)));
-    return Buffer.from(utf8).toString("base64");
+    return Buffer.from(utf8).toString('base64');
   },
   decode: base64 => decodeURIComponent(escape(window.atob(base64)))
 };
@@ -1571,7 +1571,7 @@ Util.formatRecord = function(obj) {
     if(val instanceof Array) val = val.map(item => Util.formatRecord(item));
     else if(/^-?[0-9]+$/.test(val)) val = parseInt(val);
     else if(/^-?[.0-9]+$/.test(val)) val = parseFloat(val);
-    else if(val == "true" || val == "false") val = Boolean(val);
+    else if(val == 'true' || val == 'false') val = Boolean(val);
     ret[key] = val;
   }
   return ret;
@@ -1582,7 +1582,7 @@ Util.isArray = function(obj) {
       obj.length !== undefined &&
       !(obj instanceof String) &&
       !(obj instanceof Function) &&
-      typeof obj == "function") ||
+      typeof obj == 'function') ||
     obj instanceof Array
   );
 };
@@ -1594,12 +1594,12 @@ Util.equals = function(a, b) {
 
 Util.isObject = function(obj) {
   const type = typeof obj;
-  return type === "function" || (type === "object" && !!obj);
+  return type === 'function' || (type === 'object' && !!obj);
 };
 Util.isBool = value => value === true || value === false;
 Util.size = function(obj) {
   if(Util.isObject(obj)) {
-    if("length" in obj) return obj.length;
+    if('length' in obj) return obj.length;
     return Object.keys(obj).length;
   }
   return undefined;
@@ -1611,7 +1611,7 @@ Util.effectiveDeviceWidth = function() {
   let deviceWidth = window.orientation == 0 ? window.screen.width : window.screen.height;
   //iOS returns available pixels, Android returns pixels / pixel ratio
   //http://www.quirksmode.org/blog/archives/2012/07/more_about_devi.html
-  if(navigator.userAgent.indexOf("Android") >= 0 && window.devicePixelRatio) {
+  if(navigator.userAgent.indexOf('Android') >= 0 && window.devicePixelRatio) {
     deviceWidth = deviceWidth / window.devicePixelRatio;
   }
   return deviceWidth;
@@ -1623,7 +1623,7 @@ Util.getFormFields = function(initialState) {
       (acc, { elements }) =>
         [...elements].reduce(
           (acc2, { name, value }) =>
-            name == "" || value == undefined || value == "undefined"
+            name == '' || value == undefined || value == 'undefined'
               ? acc2
               : Object.assign(acc2, { [name]: value }),
           acc
@@ -1634,7 +1634,7 @@ Util.getFormFields = function(initialState) {
 };
 Util.mergeObjects = function(
   objArr,
-  predicate = (dst, src, key) => (src[key] == "" ? undefined : src[key])
+  predicate = (dst, src, key) => (src[key] == '' ? undefined : src[key])
 ) {
   let args = objArr;
   let obj = {};
@@ -1647,7 +1647,7 @@ Util.mergeObjects = function(
   return obj;
 };
 Util.getUserAgent = function(headers = req.headers) {
-  const agent = useragent.parse(headers["user-agent"]);
+  const agent = useragent.parse(headers['user-agent']);
   return agent;
 };
 Util.factor = function(start, end) {
@@ -1680,7 +1680,7 @@ Util.filterKeys = function(obj) {
   let args = [...arguments];
   obj = args.shift();
   let ret = {};
-  let pred = typeof args[0] == "function" ? args[0] : key => args.indexOf(key) != -1;
+  let pred = typeof args[0] == 'function' ? args[0] : key => args.indexOf(key) != -1;
   for(let key in obj) {
     if(pred(key)) ret[key] = obj[key];
   }
@@ -1691,29 +1691,29 @@ Util.filterOutKeys = function(obj, arr) {
 };
 Util.numbersConvert = function(str) {
   return str
-    .split("")
+    .split('')
     .map((ch, i) =>
       /[ :,./]/.test(ch) ? ch : String.fromCharCode((str.charCodeAt(i) & 0x0f) + 0x30)
     )
-    .join("");
+    .join('');
 };
 Util.entries = function(arg) {
-  if(typeof arg == "object" && arg !== null) {
-    return typeof arg.entries !== "undefined" ? arg.entries() : Object.entries(arg);
+  if(typeof arg == 'object' && arg !== null) {
+    return typeof arg.entries !== 'undefined' ? arg.entries() : Object.entries(arg);
   }
   //console.log("Util.entries", arg);
   return null;
 };
 Util.traverse = function(o, fn) {
-  if(typeof fn == "function")
+  if(typeof fn == 'function')
     return Util.foreach(o, (v, k, a) => {
       fn(v, k, a);
-      if(typeof v === "object") Util.traverse(v, fn);
+      if(typeof v === 'object') Util.traverse(v, fn);
     });
   function* walker(o, depth = 0) {
     for(let [k, v] of Util.entries(o)) {
       yield [v, k, o, depth];
-      if(typeof v == "object" && v !== null) yield* walker(v, depth + 1);
+      if(typeof v == 'object' && v !== null) yield* walker(v, depth + 1);
     }
   }
   return walker(o);
@@ -1725,7 +1725,7 @@ Util.traverseWithPath = function(o, rootPath = []) {
     for(let [k, v] of Util.entries(o)) {
       let p = [...path, k];
       yield [v, k, o, p];
-      if(typeof v == "object" && v !== null) yield* walker(v, p);
+      if(typeof v == 'object' && v !== null) yield* walker(v, p);
     }
   }
 
@@ -1761,7 +1761,7 @@ Util.iterateMethodNames = (obj, depth = 1, start = 0) => {
   const check = Util.inRange(start, end);
   return Util.iterateMembers(
     obj,
-    (prop, level) => check(level) && typeof obj[prop] === "function" && prop != "constructor"
+    (prop, level) => check(level) && typeof obj[prop] === 'function' && prop != 'constructor'
   );
 };
 Util.getMethodNames = (obj, depth = 1, start = 0) =>
@@ -1829,32 +1829,32 @@ Util.getCallerStack = function(position = 2) {
   Error.prepareStackTrace = (_, stack) => stack;
   const stack = new Error().stack;
   Error.prepareStackTrace = oldPrepareStackTrace;
-  return stack !== null && typeof stack === "object" ? stack.slice(position) : null;
+  return stack !== null && typeof stack === 'object' ? stack.slice(position) : null;
 };
 Util.getCallerFile = function(position = 2) {
   let stack = Util.getCallerStack();
-  if(stack !== null && typeof stack === "object") {
+  if(stack !== null && typeof stack === 'object') {
     const frame = stack[position];
     return frame ? `${frame.getFileName()}:${frame.getLineNumber()}` : undefined;
   }
 };
 Util.getCallerFunction = function(position = 2) {
   let stack = Util.getCallerStack(position + 1);
-  if(stack !== null && typeof stack === "object") {
+  if(stack !== null && typeof stack === 'object') {
     const frame = stack[0];
     return frame ? frame.getFunction() : undefined;
   }
 };
 Util.getCallerFunctionName = function(position = 2) {
   let stack = Util.getCallerStack(position + 1);
-  if(stack !== null && typeof stack === "object") {
+  if(stack !== null && typeof stack === 'object') {
     const frame = stack[0];
     return frame ? frame.getMethodName() || frame.getFunctionName() : undefined;
   }
 };
 Util.getCallerFunctionNames = function(position = 2) {
   let stack = Util.getCallerStack(position + 1);
-  if(stack !== null && typeof stack === "object") {
+  if(stack !== null && typeof stack === 'object') {
     let ret = [];
     for(let i = 0; stack[i]; i++) {
       const frame = stack[i];
@@ -1866,24 +1866,24 @@ Util.getCallerFunctionNames = function(position = 2) {
 Util.getCaller = function(position = 2) {
   let stack = Util.getCallerStack(position + 1);
   const methods = [
-    "getColumnNumber",
-    "getEvalOrigin",
-    "getFileName",
-    "getFunction",
-    "getFunctionName",
-    "getLineNumber",
-    "getMethodName",
-    "getPosition",
-    "getPromiseIndex",
-    "getScriptNameOrSourceURL",
-    "getThis",
-    "getTypeName"
+    'getColumnNumber',
+    'getEvalOrigin',
+    'getFileName',
+    'getFunction',
+    'getFunctionName',
+    'getLineNumber',
+    'getMethodName',
+    'getPosition',
+    'getPromiseIndex',
+    'getScriptNameOrSourceURL',
+    'getThis',
+    'getTypeName'
   ];
-  if(stack !== null && typeof stack === "object") {
+  if(stack !== null && typeof stack === 'object') {
     const frame = stack[0];
     return methods.reduce((acc, m) => {
       if(frame[m]) {
-        const name = Util.lcfirst(m.replace(/^get/, ""));
+        const name = Util.lcfirst(m.replace(/^get/, ''));
         const value = frame[m]();
         if(value != undefined) {
           acc[name] = value;
@@ -1929,17 +1929,17 @@ Util.hashString = function(string, bits = 32, mask = 0xffffffff) {
 Util.flatTree = function(tree, addOutput) {
   const ret = [];
   if(!addOutput) addOutput = arg => ret.push(arg);
-  addOutput(Util.filterKeys(tree, key => key !== "children"));
-  if(typeof tree.children == "object" && tree.children !== null && tree.children.length)
+  addOutput(Util.filterKeys(tree, key => key !== 'children'));
+  if(typeof tree.children == 'object' && tree.children !== null && tree.children.length)
     for(let child of tree.children) Util.flatTree(child, addOutput);
   return ret;
 };
 Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
   if(
-    typeof tree == "object" &&
+    typeof tree == 'object' &&
     tree !== null &&
-    typeof tree.children == "object" &&
+    typeof tree.children == 'object' &&
     tree.children !== null &&
     tree.children.length
   )
@@ -1959,9 +1959,9 @@ Util.walkTree = function(node, pred, t, depth = 0, parent = null) {
     if(pred(node, depth, parent)) {
       yield t(node);
       if(
-        typeof node == "object" &&
+        typeof node == 'object' &&
         node !== null &&
-        typeof node.children == "object" &&
+        typeof node.children == 'object' &&
         node.children.length
       ) {
         for(let child of [...node.children]) {
@@ -1973,10 +1973,10 @@ Util.walkTree = function(node, pred, t, depth = 0, parent = null) {
   })();
 };
 Util.isPromise = function(obj) {
-  return (Boolean(obj) && typeof obj.then === "function") || obj instanceof Promise;
+  return (Boolean(obj) && typeof obj.then === 'function') || obj instanceof Promise;
 };
 /* eslint-disable no-use-before-define */
-if(typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
+if(typeof setImmediate !== 'function') var setImmediate = fn => setTimeout(fn, 0);
 Util.next = function(iter, observer, prev = undefined) {
   let item;
   try {
@@ -2013,7 +2013,7 @@ Util.getImageAverageColor = function(imageElement, options) {
   const w = imageElement.width;
   let h = imageElement.height;
   // Setup canvas and draw image onto it
-  const context = document.createElement("canvas").getContext("2d");
+  const context = document.createElement('canvas').getContext('2d');
   context.drawImage(imageElement, 0, 0, w, h);
   // Extract the rgba data for the image from the canvas
   const subpixels = context.getImageData(0, 0, w, h).data;
@@ -2069,12 +2069,12 @@ Util.getImageAverageColor = function(imageElement, options) {
     toStringRgb() {
       // Returns a CSS compatible RGB string (e.g. '255, 255, 255')
       const { r, g, b } = this;
-      return [r, g, b].join(", ");
+      return [r, g, b].join(', ');
     },
     toStringRgba() {
       // Returns a CSS compatible RGBA string (e.g. '255, 255, 255, 1.0')
       const { r, g, b, a } = this;
-      return [r, g, b, a].join(", ");
+      return [r, g, b, a].join(', ');
     },
     toStringHex() {
       // Returns a CSS compatible HEX coloor string (e.g. 'FFA900')
@@ -2086,7 +2086,7 @@ Util.getImageAverageColor = function(imageElement, options) {
         return h;
       };
       const { r, g, b } = this;
-      return [toHex(r), toHex(g), toHex(b)].join("");
+      return [toHex(r), toHex(g), toHex(b)].join('');
     }
   });
   return o;
@@ -2096,12 +2096,12 @@ Util.jsonToObject = function(jsonStr) {
   try {
     ret = JSON.parse(jsonStr);
   } catch(error) {
-    let pos = +("" + error)
-      .split("\n")
+    let pos = +('' + error)
+      .split('\n')
       .reverse()[0]
-      .replace(/.*position ([0-9]+).*/, "$1");
-    console.error("Unexpected token: ", jsonStr);
-    console.error("Unexpected token at:", jsonStr.substring(pos));
+      .replace(/.*position ([0-9]+).*/, '$1');
+    console.error('Unexpected token: ', jsonStr);
+    console.error('Unexpected token at:', jsonStr.substring(pos));
     ret = null;
   }
   return ret;
@@ -2113,26 +2113,26 @@ Util.splitLines = function(str, max_linelen = Number.MAX_SAFE_INTEGER) {
   for(; tokens.length; ) {
     if((line.length ? line.length + 1 : 0) + tokens[0].length > max_linelen) {
       lines.push(line);
-      line = "";
+      line = '';
     }
-    if(line != "") line += " ";
+    if(line != '') line += ' ';
     line += tokens.shift();
   }
-  if(line != "") lines.push(line);
+  if(line != '') lines.push(line);
   return lines;
 };
 
 Util.decodeHTMLEntities = function(text) {
   var entities = {
-    amp: "&",
+    amp: '&',
     apos: "'",
-    "#x27": "'",
-    "#x2F": "/",
-    "#39": "'",
-    "#47": "/",
-    lt: "<",
-    gt: ">",
-    nbsp: " ",
+    '#x27': "'",
+    '#x2F': '/',
+    '#39': "'",
+    '#47': '/',
+    lt: '<',
+    gt: '>',
+    nbsp: ' ',
     quot: '"'
   };
   return text.replace(/&([^;]+);/gm, function(match, entity) {
@@ -2140,7 +2140,7 @@ Util.decodeHTMLEntities = function(text) {
   });
 };
 Util.stripAnsi = function(str) {
-  return (str + "").replace(/\x1B[[(?);]{0,2}(;?\d)*./g, "");
+  return (str + '').replace(/\x1B[[(?);]{0,2}(;?\d)*./g, '');
 };
 Util.proxy = (obj = {}, handler) =>
   new Proxy(obj, {
@@ -2177,7 +2177,7 @@ Util.proxyClone = obj => {
   const override = Object.create(null);
   const deleted = Object.create(null);
 
-  const debug = (...args) => console.log("DEBUG proxyClone", ...args); //Util.debug("proxy-clone");
+  const debug = (...args) => console.log('DEBUG proxyClone', ...args); //Util.debug("proxy-clone");
 
   const get = name => {
     let value;
@@ -2186,7 +2186,7 @@ Util.proxyClone = obj => {
       value = Util.proxyClone(value);
       override[name] = value;
     }
-    if(typeof value === "function") {
+    if(typeof value === 'function') {
       value = value.bind(obj);
     }
     return value;
@@ -2195,13 +2195,13 @@ Util.proxyClone = obj => {
   return new Proxy(Object.prototype, {
     getPrototypeOf: () => Object.getPrototypeOf(obj),
     setPrototypeOf: () => {
-      throw new Error("Not yet implemented: setPrototypeOf");
+      throw new Error('Not yet implemented: setPrototypeOf');
     },
     isExtensible: () => {
-      throw new Error("Not yet implemented: isExtensible");
+      throw new Error('Not yet implemented: isExtensible');
     },
     preventExtensions: () => {
-      throw new Error("Not yet implemented: preventExtensions");
+      throw new Error('Not yet implemented: preventExtensions');
     },
     getOwnPropertyDescriptor: (target, name) => {
       let desc;
@@ -2215,7 +2215,7 @@ Util.proxyClone = obj => {
       return desc;
     },
     defineProperty: () => {
-      throw new Error("Not yet implemented: defineProperty");
+      throw new Error('Not yet implemented: defineProperty');
     },
     has: (_, name) => {
       const has = !deleted[name] && (name in override || name in obj);
@@ -2247,13 +2247,13 @@ Util.proxyClone = obj => {
       return keys;
     },
     apply: () => {
-      throw new Error("Not yet implemented: apply");
+      throw new Error('Not yet implemented: apply');
     },
     construct: () => {
-      throw new Error("Not yet implemented: construct");
+      throw new Error('Not yet implemented: construct');
     },
     enumerate: () => {
-      throw new Error("Not yet implemented: enumerate");
+      throw new Error('Not yet implemented: enumerate');
     }
   });
 };
@@ -2262,7 +2262,7 @@ Util.proxyDelegate = (target, origin) => {
     get(target, key, receiver) {
       if(key in target) return Reflect.get(target, key, receiver);
       const value = origin[key];
-      return typeof value === "function" ? (...args) => value.apply(origin, args) : value;
+      return typeof value === 'function' ? (...args) => value.apply(origin, args) : value;
     },
     set(target, key, value, receiver) {
       if(key in target) return Reflect.set(target, key, value, receiver);
@@ -2272,9 +2272,9 @@ Util.proxyDelegate = (target, origin) => {
   });
 };
 Util.immutable = args => {
-  const argsType = typeof args === "object" && Util.isArray(args) ? "array" : "object";
+  const argsType = typeof args === 'object' && Util.isArray(args) ? 'array' : 'object';
   const errorText =
-    argsType === "array"
+    argsType === 'array'
       ? "Error! You can't change elements of this array"
       : "Error! You can't change properties of this object";
   const handler = {
@@ -2293,7 +2293,7 @@ Util.immutable = args => {
 Util.immutableClass = Original => {
   let name = Util.fnName(Original);
   return new Function(
-    "Original",
+    'Original',
     `const Immutable${name} = class extends Original {
     constructor(...args) {
       super(...args);
@@ -2338,7 +2338,7 @@ Util.partial = function partial(fn /*, arg1, arg2 etc */) {
 
 Util.compose = function compose(fn1, fn2 /*, fn3, etc */) {
   if(!arguments.length) {
-    throw new Error("expected at least one (and probably more) function arguments");
+    throw new Error('expected at least one (and probably more) function arguments');
   }
   var fns = arguments;
 
@@ -2356,12 +2356,12 @@ Util.clamp = Util.curry((min, max, value) => Math.max(min, Math.min(max, value))
 Util.color = (useColor = true) =>
   !useColor || Util.isBrowser()
     ? {
-        code: () => "",
+        code: () => '',
         text: (text, ...color) => (color.indexOf(1) != -1 ? `${text}` : text)
       }
     : {
         code(...args) {
-          return `\u001b[${[...args].join(";")}m`;
+          return `\u001b[${[...args].join(';')}m`;
         },
         text(text, ...color) {
           return this.code(...color) + text + this.code(0);
@@ -2374,16 +2374,16 @@ Util.ansiCode = (...args) => Util.color().code(...args);
 Util.defineInspect = (proto, ...props) => {
   if(!Util.isBrowser()) {
     const c = Util.color();
-    proto[Symbol.for("nodejs.util.inspect.custom")] = function() {
+    proto[Symbol.for('nodejs.util.inspect.custom')] = function() {
       const obj = this;
       return (
-        c.text(Util.fnName(proto.constructor) + " ", 1, 31) +
+        c.text(Util.fnName(proto.constructor) + ' ', 1, 31) +
         Util.toString(
           props.reduce((acc, key) => {
             acc[key] = obj[key];
             return acc;
           }, {}),
-          { multiline: false, colon: ":", spacing: "", separator: ", ", padding: "" }
+          { multiline: false, colon: ':', spacing: '', separator: ', ', padding: '' }
         )
       );
     };
@@ -2391,7 +2391,7 @@ Util.defineInspect = (proto, ...props) => {
 };
 Util.predicate = fn_or_regex => {
   let fn;
-  if(fn_or_regex instanceof RegExp) fn = (...args) => fn_or_regex.test(args + "");
+  if(fn_or_regex instanceof RegExp) fn = (...args) => fn_or_regex.test(args + '');
   else fn = (...args) => fn_or_regex(...args);
   return fn;
 };
@@ -2406,7 +2406,7 @@ Util.bindProperties = (proxy, target, props, gen) => {
     propNames.reduce(
       (a, k) => {
         const prop = props[k];
-        const get_set = typeof prop == "function" ? prop : gen(prop);
+        const get_set = typeof prop == 'function' ? prop : gen(prop);
         return {
           ...a,
           [k]: {

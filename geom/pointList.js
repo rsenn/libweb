@@ -1,17 +1,17 @@
-import { Point, isPoint } from "./point.js";
-import { Rect } from "./rect.js";
-import { Line } from "./line.js";
-import Util from "../util.js";
+import { Point, isPoint } from './point.js';
+import { Rect } from './rect.js';
+import { Line } from './line.js';
+import Util from '../util.js';
 
 export function PointList(points, base = Array) {
   let args = [...arguments];
   let ret = this instanceof PointList ? this : [];
   if(Util.isArray(args[0]) || Util.isGenerator(args[0])) args = [...args[0]];
 
-  if(typeof points === "string") {
+  if(typeof points === 'string') {
     const matches = [...points.matchAll(/[-.0-9,]+/g)];
     for(let i = 0; i < matches.length; i++) {
-      const coords = String(matches[i]).split(",");
+      const coords = String(matches[i]).split(',');
       ret.push(Point(coords));
     }
   } else if(args[0] && args[0].length == 2) {
@@ -39,17 +39,17 @@ export function PointList(points, base = Array) {
   if(!(this instanceof PointList)) return ret;
 }
 
-console.log("Util.getMethodNames(Array.prototype, false):", [
+console.log('Util.getMethodNames(Array.prototype, false):', [
   ...Util.getMethodNames(Array.prototype, false)
 ]);
-console.log("Util.getMethods(Array.prototype, false):", Util.getMethods(Array.prototype, false));
-console.log("PointList.prototype[Symbol.iterator]:", Array.prototype[Symbol.iterator]);
+console.log('Util.getMethods(Array.prototype, false):', Util.getMethods(Array.prototype, false));
+console.log('PointList.prototype[Symbol.iterator]:', Array.prototype[Symbol.iterator]);
 
 PointList.prototype.getLength = function() {
   return this.length;
 };
 
-Object.defineProperty(PointList.prototype, "size", {
+Object.defineProperty(PointList.prototype, 'size', {
   get: function() {
     return PointList.prototype.getLength.call(this);
   }
@@ -90,7 +90,7 @@ PointList.prototype.removeSegment = function(index) {
 };
 PointList.prototype.toPath = function(options = {}) {
   const { relative = false, close = false, precision = 0.001 } = options;
-  let out = "";
+  let out = '';
   const point = relative
     ? i =>
         i > 0
@@ -100,17 +100,17 @@ PointList.prototype.toPath = function(options = {}) {
             )
           : PointList.prototype.at.call(this, i)
     : i => PointList.prototype.at.call(this, i);
-  const cmd = i => (i == 0 ? "M" : "L"[relative ? "toLowerCase" : "toUpperCase"]());
+  const cmd = i => (i == 0 ? 'M' : 'L'[relative ? 'toLowerCase' : 'toUpperCase']());
   const len = PointList.prototype.getLength.call(this);
   for(let i = 0; i < len; i++) {
     out +=
       cmd(i) +
       Util.roundTo(point(i).x, precision) +
-      "," +
+      ',' +
       Util.roundTo(point(i).y, precision) +
-      " ";
+      ' ';
   }
-  if(close) out += "Z";
+  if(close) out += 'Z';
   return out;
 };
 PointList.prototype.clone = function() {
@@ -124,7 +124,7 @@ PointList.prototype.clone = function() {
 };
 PointList.prototype.toPolar = function(tfn) {
   let ret = new PointList();
-  let t = typeof tfn == "function" ? tfn : (x, y) => ({ x: (x * 180) / Math.PI, y });
+  let t = typeof tfn == 'function' ? tfn : (x, y) => ({ x: (x * 180) / Math.PI, y });
   ret.splice.apply(ret, [
     0,
     ret.length,
@@ -137,7 +137,7 @@ PointList.prototype.toPolar = function(tfn) {
 };
 PointList.prototype.fromPolar = function(tfn) {
   let ret = new PointList();
-  let t = typeof tfn == "function" ? tfn : (x, y) => ({ x: (x * Math.PI) / 180, y });
+  let t = typeof tfn == 'function' ? tfn : (x, y) => ({ x: (x * Math.PI) / 180, y });
   ret.splice.apply(ret, [
     0,
     ret.length,
@@ -209,9 +209,9 @@ PointList.prototype.bbox = function() {
     y1: first.y,
     y2: first.y,
     toString: function() {
-      return `{x1:${(this.x1 + "").padStart(4, " ")},x2:${(this.x2 + "").padStart(4, " ")},y1:${(
-        this.y1 + ""
-      ).padStart(4, " ")},y2:${(this.y2 + "").padStart(4, " ")}}`;
+      return `{x1:${(this.x1 + '').padStart(4, ' ')},x2:${(this.x2 + '').padStart(4, ' ')},y1:${(
+        this.y1 + ''
+      ).padStart(4, ' ')},y2:${(this.y2 + '').padStart(4, ' ')}}`;
     }
   };
   for(let i = 1; i < len; i++) {
@@ -293,16 +293,16 @@ PointList.prototype.lines = function(closed = false) {
   };
   return iterableObj;
 };
-PointList.prototype.toString = function(sep = ",", prec) {
+PointList.prototype.toString = function(sep = ',', prec) {
   return Point.prototype.map
     .call(this, point => Point.prototype.toString.call(point, prec, sep))
-    .join(" ");
+    .join(' ');
 };
 PointList.prototype.toSource = function() {
   return (
-    "new PointList([" +
-    PointList.prototype.map.call(this, point => Point.prototype.toSource.call(point)).join(",") +
-    "])"
+    'new PointList([' +
+    PointList.prototype.map.call(this, point => Point.prototype.toSource.call(point)).join(',') +
+    '])'
   );
 };
 PointList.prototype.rotateRight = function(n) {
@@ -337,27 +337,27 @@ Util.extend(PointList.prototype, Array.prototype);
 if(!Util.isBrowser()) {
   let c = Util.color();
   PointList.prototype[
-    /* util.inspect.custom || */ Symbol.for("nodejs.util.inspect.custom")
+    /* util.inspect.custom || */ Symbol.for('nodejs.util.inspect.custom')
   ] = function() {
-    return `${c.text("PointList", 1, 33)} ${c.text("(", 1, 36)}${c.text(this.getLength(), 1, 35) +
+    return `${c.text('PointList', 1, 33)} ${c.text('(', 1, 36)}${c.text(this.getLength(), 1, 35) +
       c.code(1, 36)}) [\n  ${this.map(({ x, y }) =>
-      Util.toString({ x, y }, { multiline: false, spacing: " " })
-    ).join(",\n  ")}\n]`;
+      Util.toString({ x, y }, { multiline: false, spacing: ' ' })
+    ).join(',\n  ')}\n]`;
   };
 }
 
 for(let name of [
-  "push",
-  "splice",
-  "clone",
-  "area",
-  "centroid",
-  "avg",
-  "bbox",
-  "rect",
-  "xrange",
-  "yrange",
-  "boundingRect"
+  'push',
+  'splice',
+  'clone',
+  'area',
+  'centroid',
+  'avg',
+  'bbox',
+  'rect',
+  'xrange',
+  'yrange',
+  'boundingRect'
 ]) {
   PointList[name] = points => PointList.prototype[name].call(points);
 }
@@ -408,5 +408,5 @@ export function Polyline(lines) {
 Polyline.prototype = new PointList();
 
 Polyline.prototype.toSVG = function(factory, attrs = {}, parent = null) {
-  return factory("polyline", { points: PointList.prototype.toString.call(this), ...attrs }, parent);
+  return factory('polyline', { points: PointList.prototype.toString.call(this), ...attrs }, parent);
 };

@@ -5,7 +5,7 @@
  *
  * Make sure that cell_size is equal or bigger than retrieving box
  */
-"use strict";
+'use strict';
 
 /**
  *
@@ -92,7 +92,7 @@ SpatialHash.prototype.retrieve = function(point) {
 /** @param point {x, y} */
 SpatialHash.prototype.hash = function(point) {
   var cell = this.reverse_cell_size;
-  var hash = "" + parseInt(point.x * cell, 10);
+  var hash = '' + parseInt(point.x * cell, 10);
   hash += parseInt(point.y * cell, 10);
   return hash;
 };

@@ -1,5 +1,5 @@
-import { Point, isPoint, Size, PointList, Line, Timer, Element, BBox } from "./dom.js";
-import Util from "./util.js";
+import { Point, isPoint, Size, PointList, Line, Timer, Element, BBox } from './dom.js';
+import Util from './util.js';
 
 /* From https://github.com/ehayon/FDGraph */
 
@@ -44,7 +44,7 @@ export class Graph {
     this.timestep = timestep;
 
     this.gravitate_to_origin =
-      typeof gravitate_to_origin == "undefined" ? false : gravitate_to_origin;
+      typeof gravitate_to_origin == 'undefined' ? false : gravitate_to_origin;
     this.done_rendering = false;
     this.prng = prng;
 
@@ -83,7 +83,7 @@ export class Graph {
     return this.nodes[this.nodes.length - 1];
   }
 
-  findNode(value, key = "label") {
+  findNode(value, key = 'label') {
     return Util.find(this.nodes, value, key);
   }
 
@@ -336,7 +336,7 @@ export class Graph {
   }
 
   translate(x, y) {
-    let p = typeof y == "number" ? new Point(x, y) : x;
+    let p = typeof y == 'number' ? new Point(x, y) : x;
     for(let i = 0; i < this.nodes.length; i++) {
       Point.move(this.nodes[i], p.x, p.y);
     }
@@ -400,7 +400,7 @@ class Node extends Point {
   toJS() {
     let ret = Util.filterKeys(
       this,
-      key => ["charge", "mass", "label", "x", "y", "id", "color"].indexOf(key) != -1
+      key => ['charge', 'mass', 'label', 'x', 'y', 'id', 'color'].indexOf(key) != -1
     );
     if(this.node && this.node.id !== undefined) ret.id = this.node.id;
     Point.round(ret, 0.001);
@@ -418,7 +418,7 @@ class Edge extends Line {
     if(node_b) this.b = node_b instanceof Node ? node_b : Node.clone(node_b);
 
     if(!(node_a && node_b)) {
-      throw new Error("Edge requires 2 nodes");
+      throw new Error('Edge requires 2 nodes');
     }
 
     this.draggable = false;

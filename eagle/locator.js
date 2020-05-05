@@ -1,5 +1,5 @@
-import Util from "../util.js";
-import { text, inspect, toXML, dump } from "./common.js";
+import Util from '../util.js';
+import { text, inspect, toXML, dump } from './common.js';
 
 export function DereferenceError(object, member, pos, part, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
@@ -10,14 +10,14 @@ export function DereferenceError(object, member, pos, part, locator) {
     {
       message: `Error dereferencing ${Util.className(object)} @ ${locator
         .map((part, i) => (i == pos ? `<<${part}>>` : part))
-        .join(",")} w/ keys={${Object.keys(part).join(",")}} no member '${member}' `,
+        .join(',')} w/ keys={${Object.keys(part).join(',')}} no member '${member}' `,
       stack: Util.getCallerStack()
         .filter(frame => null !== frame.getFileName())
         .map(
           frame =>
-            `${("" + frame.getFileName()).replace(
+            `${('' + frame.getFileName()).replace(
               /.*plot-cv\//,
-              ""
+              ''
             )}:${frame.getLineNumber()}:${frame.getColumnNumber()}`
         )
     }
@@ -29,7 +29,7 @@ DereferenceError.prototype.toString = function() {
   return `${message}\n${dump({ object, member, pos, locator, stack }, 2)}`;
 };
 
-const ChildrenSym = Symbol("⊳");
+const ChildrenSym = Symbol('⊳');
 
 export const EaglePath = Util.immutableClass(
   class EaglePath extends Array {
@@ -103,7 +103,7 @@ export const EaglePath = Util.immutableClass(
      * @return     {EaglePath}
      */
     nthChild(i) {
-      return this.down("children", i);
+      return this.down('children', i);
     }
 
     diff(other) {
@@ -148,14 +148,14 @@ export const EaglePath = Util.immutableClass(
     }
 
     xpath(obj) {
-      let s = "";
+      let s = '';
       let o = obj;
       let n;
       for(let i = 0; i < this.length; i++) {
         const p = this[i];
         const e = o[p];
-        if(p == "children") {
-          s += "/";
+        if(p == 'children') {
+          s += '/';
           n = e.length;
         } else {
           let pt = [];
@@ -166,7 +166,7 @@ export const EaglePath = Util.immutableClass(
           if(Util.isObject(e.attributes) && e.attributes.name)
             s += `[@name='${e.attributes.name}']`;
           else if(pt.length != 1) {
-            if(typeof p == "number" && n != 1) s += `[${p + 1}]`;
+            if(typeof p == 'number' && n != 1) s += `[${p + 1}]`;
           }
           n = undefined;
         }
@@ -180,7 +180,7 @@ export const EaglePath = Util.immutableClass(
         obj = root;
       for(i = 0; i + 1 < this.length; i++) {
         const key = this[i];
-        if(!(key in obj)) throw new Error(`No path ${this.join(",")} in ${typeof root}`);
+        if(!(key in obj)) throw new Error(`No path ${this.join(',')} in ${typeof root}`);
         obj = obj[this[i]];
       }
       return this[i] in obj;
@@ -188,26 +188,26 @@ export const EaglePath = Util.immutableClass(
 
     toString(hl = -1) {
       let y = this.map(item =>
-        item == "children" ? "⎿" : item == "attributes" ? "＠" : item
+        item == 'children' ? '⎿' : item == 'attributes' ? '＠' : item
       ).map((part, i) => text(part, ...(hl == i ? [38, 5, 124] : [38, 5, 82])));
 
-      y = text("♈ ", 38, 5, 45) + y.join("") + text(" 🔚", 38, 5, 172);
+      y = text('♈ ', 38, 5, 45) + y.join('') + text(' 🔚', 38, 5, 172);
       return y.trim();
     }
 
-    [Symbol.for("nodejs.util.inspect.custom")]() {
+    [Symbol.for('nodejs.util.inspect.custom')]() {
       return `EaglePath [${this.map(part =>
         part === ChildrenSym
           ? String.fromCharCode(10143)
-          : text(typeof part == "number" ? part : `'${part}'`, 1, typeof part == "number" ? 33 : 32)
-      ).join(", ")}]`;
+          : text(typeof part == 'number' ? part : `'${part}'`, 1, typeof part == 'number' ? 33 : 32)
+      ).join(', ')}]`;
     }
     inspect() {
-      return EaglePath.prototype[Symbol.for("nodejs.util.inspect.custom")].apply(this, arguments);
+      return EaglePath.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, arguments);
     }
 
     toSource() {
-      return `[${this.filter(item => item != "children").join(",")}]`;
+      return `[${this.filter(item => item != 'children').join(',')}]`;
     }
 
     split(pred) {
@@ -215,7 +215,7 @@ export const EaglePath = Util.immutableClass(
       let a = [],
         b = [];
       let n;
-      if(typeof pred == "number") {
+      if(typeof pred == 'number') {
         n = pred < 0 ? this.length + pred : pred;
         pred = (part, index) => index === n;
       }
@@ -273,7 +273,7 @@ export class EagleReference {
     this.root = root;
   }
   get type() {
-    return typeof this.path.last == "number" ? Array : Object;
+    return typeof this.path.last == 'number' ? Array : Object;
   }
 
   dereference() {
@@ -319,11 +319,11 @@ export class EagleReference {
     return new EagleReference(root, this.path.slice(n));
   }
 
-  [Symbol.for("nodejs.util.inspect.custom")]() {
+  [Symbol.for('nodejs.util.inspect.custom')]() {
     return `EagleReference { path:${this.path.inspect()}, root:${toXML(this.root, 0)}  }`;
   }
   inspect() {
-    return this[Symbol.for("nodejs.util.inspect.custom")](...arguments);
+    return this[Symbol.for('nodejs.util.inspect.custom')](...arguments);
   }
 }
 

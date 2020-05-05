@@ -1,5 +1,5 @@
-import { Graph } from "./graph.js";
-import { Intersection } from "./intersection.js";
+import { Graph } from './graph.js';
+import { Intersection } from './intersection.js';
 
 export class PolygonFinder {
   static buildGraphFromSegments(segments) {
@@ -42,7 +42,7 @@ export class PolygonFinder {
           );
 
           possibleNeighbors.forEach(possibleNeighbor => {
-            let comparisonProperty = "";
+            let comparisonProperty = '';
             let distanceBetween = dist(
               intersection.point.x,
               intersection.point.y,
@@ -51,9 +51,9 @@ export class PolygonFinder {
             );
 
             if(possibleNeighbor.point.x !== intersection.point.x) {
-              comparisonProperty = "x";
+              comparisonProperty = 'x';
             } else if(possibleNeighbor.point.y !== intersection.point.y) {
-              comparisonProperty = "y";
+              comparisonProperty = 'y';
             } else {
               return null;
             }
@@ -121,8 +121,8 @@ export class PolygonFinder {
   static polygonsFromSegments(segments) {
     let graph = PolygonFinder.buildGraphFromSegments(segments);
     let cycles = graph.findMinimumCycles();
-    console.log("graph:", graph);
-    console.log("cycles:", cycles);
+    console.log('graph:', graph);
+    console.log('cycles:', cycles);
     return PolygonFinder.polygonsFromCycles(cycles, graph);
   }
 
@@ -132,10 +132,10 @@ export class PolygonFinder {
       for(let j = i + 1; j < segmentSet.length; j++) {
         let intersection = Intersection.findIntersection(segmentSet[i], segmentSet[j]);
         console.log(
-          "findIntersection:",
+          'findIntersection:',
           segmentSet[i].toObject(),
           segmentSet[j].toObject(),
-          " = ",
+          ' = ',
           intersection
         );
         if(intersection !== null) {

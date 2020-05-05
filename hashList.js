@@ -1,4 +1,4 @@
-import { Element, Rect } from "../lib/dom.js";
+import { Element, Rect } from '../lib/dom.js';
 
 export class HashList {
   constructor(keyfn, ctor) {
@@ -68,17 +68,17 @@ export class HashList {
   }
 
   filter(arg) {
-    return this.method("filter", arg);
+    return this.method('filter', arg);
   }
 
   map(arg) {
-    return this.method("map", arg);
+    return this.method('map', arg);
   }
 
   find(a) {
     return this.method(
-      "find",
-      typeof a === "function"
+      'find',
+      typeof a === 'function'
         ? (arg, i, arr) => a(arg, arg.name, this)
         : (arg, i, arr) =>
             (a && arr[i] && a == arr[i].e) ||
@@ -105,8 +105,8 @@ export class HashList {
 
   toString() {
     return Util.distinct(this.keys)
-      .map(key => key + "[" + this[key].length + "]")
-      .join(", ");
+      .map(key => key + '[' + this[key].length + ']')
+      .join(', ');
   }
 }
 

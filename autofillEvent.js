@@ -5,7 +5,7 @@ export function autofillEvent(window, changeHandler) {
 
   window.handleAutoFillEvent = changeHandler;
   window.checkAndTriggerAutoFillEvent = function(els) {
-    els = this.nodeName === "INPUT" ? [this] : els;
+    els = this.nodeName === 'INPUT' ? [this] : els;
     var i, el;
     for(i = 0; i < els.length; i++) {
       el = els[i];
@@ -16,26 +16,26 @@ export function autofillEvent(window, changeHandler) {
     }
   };
 
-  addGlobalEventListener("change", markValue);
+  addGlobalEventListener('change', markValue);
 
   //HTMLInputElement.prototype.checkAndTriggerAutoFillEvent = window.checkAndTriggerAutoFillEvent;
 
   //Need to use blur and not change event
   //as Chrome does not fire change events in all cases an input is changed
   //(e.g. when starting to type and then finish the input by auto filling a username)
-  addGlobalEventListener("blur", function(target) {
+  addGlobalEventListener('blur', function(target) {
     //setTimeout needed for Chrome as it fills other
     //form fields a little later...
     window.setTimeout(function() {
       var parentForm = findParentForm(target);
       if(!parentForm) return;
-      window.checkAndTriggerAutoFillEvent(parentForm.querySelectorAll("input"));
+      window.checkAndTriggerAutoFillEvent(parentForm.querySelectorAll('input'));
     }, 20);
   });
 
   function initAutoFillListeners() {
     const inputElements = [
-      ...(document.getElementsByTagName("input") || document.querySelectorAll("input"))
+      ...(document.getElementsByTagName('input') || document.querySelectorAll('input'))
     ];
 
     //mark all values that are present when the DOM is ready.
@@ -57,19 +57,19 @@ export function autofillEvent(window, changeHandler) {
   initAutoFillListeners();
   //IE8 compatibility issue
   if(!window.document.addEventListener) {
-    window.document.attachEvent("DOMContentLoaded", initAutoFillListeners);
+    window.document.attachEvent('DOMContentLoaded', initAutoFillListeners);
   } else {
-    window.document.addEventListener("DOMContentLoaded", initAutoFillListeners, false);
+    window.document.addEventListener('DOMContentLoaded', initAutoFillListeners, false);
   }
 
   //----------
 
   function valueMarked(el) {
-    if(!("$$currentValue" in el)) {
+    if(!('$$currentValue' in el)) {
       //First time we see an element we take it's value attribute
       //as real value. This might have been filled in the backend,
       //...
-      el.$$currentValue = el.getAttribute("value");
+      el.$$currentValue = el.getAttribute('value');
     }
 
     var val = el.value;
@@ -118,7 +118,7 @@ export function autofillEvent(window, changeHandler) {
 
   function findParentForm(el) {
     while(el) {
-      if(el.nodeName === "FORM") {
+      if(el.nodeName === 'FORM') {
         return el;
       }
       el = el.parentNode;
@@ -138,10 +138,10 @@ export function autofillEvent(window, changeHandler) {
 */
   function triggerChangeEvent(element, changeHandler) {
     var doc = window.document;
-    var event = doc.createEvent("HTMLEvents");
+    var event = doc.createEvent('HTMLEvents');
     var handler = changeHandler || window.handleAutoFillEvent;
 
-    event.initEvent("change", true, true);
+    event.initEvent('change', true, true);
 
     //console.log("triggerChangeEvent ", { element, doc, event });
 

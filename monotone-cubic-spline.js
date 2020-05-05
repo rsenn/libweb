@@ -67,7 +67,7 @@ export class CubicSpline {
    * @returns {String}
    */
   static svgPath(points) {
-    let p = "";
+    let p = '';
 
     points.forEach((point, i) => {
       const n = point.length;

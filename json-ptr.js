@@ -1,16 +1,16 @@
-import Util from "./util.js";
+import Util from './util.js';
 
 const { curry } = Util;
 
-export const nil = "";
+export const nil = '';
 
 const compile = pointer => {
-  if(pointer.length > 0 && pointer[0] !== "/") {
-    throw Error("Invalid JSON Pointer");
+  if(pointer.length > 0 && pointer[0] !== '/') {
+    throw Error('Invalid JSON Pointer');
   }
 
   return pointer
-    .split("/")
+    .split('/')
     .slice(1)
     .map(unescape);
 };
@@ -23,7 +23,7 @@ export const get = (pointer, value = undefined) => {
       ([value, pointer], segment) => {
         return [applySegment(value, segment, pointer), append(segment, pointer)];
       },
-      [value, ""]
+      [value, '']
     )[0];
 
   return value === undefined ? fn : fn(value);
@@ -54,7 +54,7 @@ const _set = (pointer, subject, value, cursor) => {
     const segment = computeSegment(subject, pointer[0]);
     clonedSubject[segment] = value;
     return clonedSubject;
-  } else if(typeof subject === "object" && subject !== null) {
+  } else if(typeof subject === 'object' && subject !== null) {
     return { ...subject, [pointer[0]]: value };
   } else {
     return applySegment(subject, pointer[0], cursor);
@@ -94,7 +94,7 @@ const _unset = (pointer, subject, cursor) => {
     return { ...subject, [segment]: _unset(pointer, value, append(segment, cursor)) };
   } else if(Array.isArray(subject)) {
     return subject.filter((_, ndx) => ndx != pointer[0]);
-  } else if(typeof subject === "object" && subject !== null) {
+  } else if(typeof subject === 'object' && subject !== null) {
     // eslint-disable-next-line no-unused-vars
     const { [pointer[0]]: _, ...result } = subject;
     return result;
@@ -120,7 +120,7 @@ const _remove = (pointer, subject, cursor) => {
     _remove(pointer, value, append(segment, cursor));
   } else if(Array.isArray(subject)) {
     subject.splice(pointer[0], 1);
-  } else if(typeof subject === "object" && subject !== null) {
+  } else if(typeof subject === 'object' && subject !== null) {
     delete subject[pointer[0]];
   } else {
     applySegment(subject, pointer[0], cursor);
@@ -128,23 +128,23 @@ const _remove = (pointer, subject, cursor) => {
 };
 
 export const append = curry(
-  (pointer, ...segments) => pointer + segments.map(segment => "/" + escape(segment)).join("")
+  (pointer, ...segments) => pointer + segments.map(segment => '/' + escape(segment)).join('')
 );
 
 const escape = segment =>
   segment
     .toString()
-    .replace(/~/g, "~0")
-    .replace(/\//g, "~1");
+    .replace(/~/g, '~0')
+    .replace(/\//g, '~1');
 const unescape = segment =>
   segment
     .toString()
-    .replace(/~1/g, "/")
-    .replace(/~0/g, "~");
+    .replace(/~1/g, '/')
+    .replace(/~0/g, '~');
 const computeSegment = (value, segment) =>
-  Array.isArray(value) && segment === "-" ? value.length : segment;
+  Array.isArray(value) && segment === '-' ? value.length : segment;
 
-const applySegment = (value, segment, cursor = "") => {
+const applySegment = (value, segment, cursor = '') => {
   if(isScalar(value)) {
     throw Error(`Value at '${cursor}' is a scalar and can't be indexed`);
   }
@@ -157,6 +157,6 @@ const applySegment = (value, segment, cursor = "") => {
   return value[computedSegment];
 };
 
-const isScalar = value => value === null || typeof value !== "object";
+const isScalar = value => value === null || typeof value !== 'object';
 
 export default { nil, append, get, set, assign, unset, delete: remove };
