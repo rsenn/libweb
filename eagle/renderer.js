@@ -723,7 +723,7 @@ export class BoardRenderer extends EagleRenderer {
 
 export function renderDocument(doc, container) {
   const gridColor = 'hsl(230,100%,60%)';
-  const gridWidth = 0.127;
+  const gridWidth = 0.2;
 
   const factory = SVG.factory({
       append_to(elem, parent) {
@@ -917,19 +917,22 @@ export function renderDocument(doc, container) {
   });
   Element.setCSS(container, brect.aspect() > 1 ? { overflow: 'hidden', width: `${crect.width}px`, height: 'auto' } : { overflow: 'hidden', width: 'auto', height: '${crect.height}px' });
 
-  let gridBox = new Rect(0, 0, Util.roundTo(bbox.width, 2.54), Util.roundTo(bbox.height, 2.54));
+  let gridBox = SVG.bbox(container.lastElementChild);
 
-  bbox.outset({ top: 0.778, bottom: 1, left: -0.05, right: 0.05 });
+  let gridRect = new Rect(gridBox);
 
-  gridBox.size.div(2.54);
+ // gridBox.size.div(2.54);
+  /*
   gridBox.height += 1;
 
   gridBox.round(2.54);
   gridBox.height += gridWidth / 2;
-  gridBox.width += gridWidth / 2;
+  gridBox.width += gridWidth / 2;*/
+  gridRect.round(2.54);
+  gridRect.outset(0.2);
 
   let grid = SVG.create('rect', {
-    ...gridBox.toObject(),
+    ...gridRect.toObject(),
     fill: 'url(#grid)',
     transform: 'translate(0,0) scale(2.54,2.54)'
   }, gridGroup);
@@ -940,15 +943,21 @@ export function renderDocument(doc, container) {
 
   let sbox = SVG.bbox(container);
   let obox = SVG.bbox(gridGroup);
+  let gbox = SVG.bbox(gridGroup.firstElementChild);
+
+let gridObj = new Rect(gridRect).outset(1.27);
+console.log("gridBox:",gridBox);
+console.log("gridObj:",gridObj);
+console.log("gridRect:",gridRect);
 
   sbox.outset(2.54 * 2.54);
   container.setAttribute('viewBox', sbox.toString());
 
   obox.outset(2.54 * 2.54);
-  grid.style.setProperty('background', 'black');
+  //grid.style.setProperty('background', 'black');
 
 
-    gridBox.parentElement.insertBefore(SVG.create('rect', { ...new Rect(obox).toObject(), fill: 'black', transform: 'scale(2.54,2.54)' }), gridBox);
+    grid.parentElement.insertBefore(SVG.create('rect', { ...gridObj, fill: 'black', transform: 'scale(2.54,2.54)' }), grid);
 
   groupTransform += ` translate(0,0)`;
   Element.attr(g, { transform: groupTransform });
