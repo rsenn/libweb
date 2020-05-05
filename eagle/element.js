@@ -130,6 +130,18 @@ export class EagleElement extends EagleNode {
     if(this.raw.tagName == 'description') return 'Document';
   }
 
+  getBounds() {
+    let bb = new BBox();
+    for(let element of board.getAll(e => e.tagName !== undefined)) {
+      let g = element.geometry();
+      if(g) {
+        //console.log("getBounds", element.layer, g);
+        bb.update(g);
+      }
+    }
+    console.log('getBounds', bb);
+  }
+
   geometry() {
     const { attributes } = this.raw;
     const keys = Object.keys(attributes);

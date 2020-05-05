@@ -1,5 +1,5 @@
 import { Element } from './element.js';
-import { Size } from '../geom/size.js';
+import { Size, isSize } from '../geom/size.js';
 import { Point } from '../geom/point.js';
 import { Rect } from '../geom/rect.js';
 import { Line } from '../geom/line.js';
@@ -29,9 +29,12 @@ export class SVG extends Element {
   }
 
   static factory(...args) {
-    let delegate = 'appendChild' in args[0] ? {} : args.shift();
-    let parent = args.shift();
-    let size = args.length > 0 ? args.shift() : null;
+    let arg = [...arguments];
+
+    let delegate = 'append_to' in args[0] || 'create' in args[0] || 'setattr' in args[0] ? args.shift() : {};
+    let parent = 'tagName' in args[0] || 'appendChild' in args[0] ? args.shift() : null;
+    let size = isSize(args[0]) ? args.shift() : null;
+
     delegate = {
       create: tag => document.createElementNS(SVG.ns, tag),
       append_to: (elem, root = parent) => root.appendChild(elem),
@@ -39,12 +42,13 @@ export class SVG extends Element {
       setcss: (elem, css) => elem.setAttributeNS(null, 'style', css),
       ...delegate
     };
-    if(size == null) size = Size(Rect.round(Element.rect(parent)));
-    const { width, height } = size;
+    // if(size == null) size = new Size(Element.rect(parent));
 
-    if(parent && parent.tagName == 'svg') delegate.root = parent;
+    const { width, height } = size || {};
+    console.log('factory', { delegate, parent, size, arg });
+    if(parent && parent.tagName.toLowerCase() == 'svg') delegate.root = parent;
     else if(this !== SVG && this && this.appendChild) delegate.root = this;
-    else delegate.root = SVG.create('svg', { width, height, viewBox: `0 0 ${width} ${height}` }, parent);
+    else delegate.append_to((delegate.root = SVG.create('svg', { ...size, viewBox: `0 0 ${width} ${height}` })), parent);
 
     if(!delegate.root.firstElementChild || delegate.root.firstElementChild.tagName != 'defs') SVG.create('defs', {}, delegate.root);
 
@@ -67,7 +71,9 @@ export class SVG extends Element {
   static matrix(element, screen = false) {
     let e = typeof element === 'string' ? Element.find(element) : element;
     let fn = screen ? 'getScreenCTM' : 'getCTM';
-    if(e && e[fn]) return Matrix.fromDOMMatrix(e[fn]());
+    let ctm = e[fn]();
+    console.log('ctm:', ctm);
+    if(e && e[fn]) return new Matrix(ctm);
     return null;
   }
 

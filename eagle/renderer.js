@@ -233,7 +233,7 @@ export class EagleRenderer {
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
-    const color = opts.color || this.getColor(layer.color);
+    const color = (opts && opts.color) || (layer && this.getColor(layer.color));
     const svg = (elem, attr, parent) =>
       this.create(
         elem,
@@ -466,7 +466,7 @@ export class SchematicRenderer extends EagleRenderer {
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
-    const color = opts.color || this.getColor(layer.color);
+    const color = (opts && opts.color) || (layer && this.getColor(layer.color));
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...LayerAttributes(layer), ...attr }, parent);
 
     const { labelText, coordFn = i => i } = opts;
@@ -792,6 +792,7 @@ export function renderDocument(doc, container) {
   const factory = SVG.factory(
     {
       append_to(elem, parent) {
+        // console.log('append:', elem, parent);
         if(elem.tagName.toLowerCase() == 'text') return parent.appendChild(elem);
         let before = null;
         for(let i = 0; i < parent.children.length; i++) {
@@ -806,6 +807,24 @@ export function renderDocument(doc, container) {
     },
     container
   );
+
+  container = factory.delegate.root;
+  let svg;
+
+  if(container.tagName.toLowerCase() == 'svg') {
+    svg = container;
+    container = container.parentElement;
+  }
+  /*
+  if(!svg && factory.delegate.root)
+    svg = factory.delegate.root;
+
+  if(!container)
+        container = svg.parentElement;
+*/
+
+  console.log('renderer:', { container, svg });
+
   const ctor = doc.type == 'sch' ? SchematicRenderer : BoardRenderer;
   const renderer = new ctor(doc, factory);
   const bb = new BBox();
@@ -888,13 +907,13 @@ export function renderDocument(doc, container) {
   palette = ['hsl(155,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(176,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(10,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(215,100%,50.2%)'];
   palette = Util.shuffle(palette, rng);
 
-  container = factory.delegate.root;
+  // container = factory.delegate.root;
 
   renderer.colors = {};
-  let first = container.firstElementChild;
+  let first = svg.firstElementChild;
   if(!first || (first.tagName + '').toLowerCase() != 'defs') {
     defs = SVG.create('defs', {});
-    container.insertBefore(defs, container.firstElementChild);
+    svg.insertBefore(defs, svg.firstElementChild);
   } else {
     defs = first;
   }
@@ -974,10 +993,12 @@ export function renderDocument(doc, container) {
   let groupTransform = `translate(${p1}) scale(2.54,-2.54) translate(${p2.sum(0, 0.0)})`;
 
   const gridGroup = factory('g', {
+    className: 'grid',
     transform: `scale(1,-1) translate(0,0)`,
     'vector-effect': 'non-scaling-stroke'
   });
   const g = factory('g', {
+    className: 'drawing',
     transform: groupTransform,
     'vector-effect': 'non-scaling-stroke'
   });
@@ -989,14 +1010,14 @@ export function renderDocument(doc, container) {
   const crect = new Rect(0, 0, window.innerWidth, window.innerHeight);
 
   // Element.setCSS(document.body, { overflow: "hidden" });
-  Element.setCSS(container.parentElement, {
+  /* Element.setCSS(container.parentElement, {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
   });
   Element.setCSS(container, brect.aspect() > 1 ? { overflow: 'hidden', width: `${crect.width}px`, height: 'auto' } : { overflow: 'hidden', width: 'auto', height: '${crect.height}px' });
-
-  let gridBox = SVG.bbox(container.lastElementChild);
+*/
+  let gridBox = SVG.bbox(svg.lastElementChild);
 
   let gridRect = new Rect(gridBox);
 
@@ -1024,17 +1045,25 @@ export function renderDocument(doc, container) {
   let points = gridBox.toPoints();
   let d = points.toPath({ close: true });
 
-  let sbox = SVG.bbox(container);
+  let sbox = SVG.bbox(svg);
   let obox = SVG.bbox(gridGroup);
   let gbox = SVG.bbox(gridGroup.firstElementChild);
 
   let gridObj = new Rect(gridRect).outset(1.27);
-  console.log('gridBox:', gridBox);
-  console.log('gridObj:', gridObj);
-  console.log('gridRect:', gridRect);
+  //console.log('gridBox:', gridBox);
+  //console.log('gridObj:', gridObj);
+  //console.log('gridRect:', gridRect);
 
   sbox.outset(2.54 * 2.54);
-  container.setAttribute('viewBox', sbox.toString());
+  console.log('render', { sbox, obox, gbox });
+
+  let srect = new Rect(sbox);
+  console.log('sbox:', srect.toString());
+
+  svg.setAttribute('viewBox', srect);
+  svg.setAttribute('width', sbox.width);
+  svg.setAttribute('height', sbox.height);
+  //  svg.setAttribute('viewBox', new Rect(sbox).toString());
 
   obox.outset(2.54 * 2.54);
   //grid.style.setProperty('background', 'black');

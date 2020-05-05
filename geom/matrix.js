@@ -254,9 +254,17 @@ Matrix.prototype.transform_point = function(p) {
   return p;
 };
 
-Matrix.prototype.transform_points = function(list) {
-  for(let i = 0; i < list.length; i++) list[i] = Matrix.prototype.transform_point.call(this, list[i]);
-  return this;
+Matrix.prototype.transformGenerator = function(what = 'point') {
+  const matrix = Object.freeze(this.clone());
+  return function*(list) {
+    const method = Matrix.prototype['transform_' + what] || (typeof what == 'function' && what) || Matrix.prototype.transform_xy;
+
+    for(let item of list) yield item instanceof Array ? method.apply(matrix, [...item]) : method.call(matrix, { ...item });
+  };
+};
+
+Matrix.prototype.transform_points = function*(list) {
+  for(let i = 0; i < list.length; i++) yield Matrix.prototype.transform_point.call(this, { ...list[i] });
 };
 
 Matrix.prototype.transform_wh = function(width, height) {
@@ -271,6 +279,10 @@ Matrix.prototype.transform_size = function(s) {
   s.width = w;
   s.height = h;
   return s;
+};
+
+Matrix.prototype.transform_xywh = function(x, y, width, height) {
+  return [...Matrix.prototype.transform_xy.call(this, x, y), ...Matrix.prototype.transform_wh.call(this, width, height)];
 };
 
 Matrix.prototype.transform_rect = function(rect) {

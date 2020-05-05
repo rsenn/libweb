@@ -77,8 +77,8 @@ export function Rect(arg) {
   }
 }
 Rect.prototype = {
-  ...Point.prototype,
-  ...Size.prototype,
+  /*...Point.prototype,
+  ...Size.prototype,*/
   ...Rect.prototype
 };
 Rect.prototype.clone = function() {
@@ -233,6 +233,10 @@ Rect.prototype.toTRBL = function() {
     bottom: this.y + this.height,
     left: this.x
   };
+};
+Rect.prototype.toArray = function() {
+  const { x, y, width, height } = this;
+  return [x, y, width, height];
 };
 Rect.prototype.toPoints = function() {
   const { x, y, width, height } = this;
