@@ -24,11 +24,7 @@ export class EagleDocument extends EagleNode {
     const xml = new tXml(xmlStr);
     super(project, EagleRef(deepClone(xml[0]), []));
     if(filename) this.path = filename;
-    Util.define(
-      this,
-      'type',
-      /<library>/.test(xmlStr) ? 'lbr' : /<element /.test(xmlStr) ? 'brd' : 'sch'
-    );
+    Util.define(this, 'type', /<library>/.test(xmlStr) ? 'lbr' : /<element /.test(xmlStr) ? 'brd' : 'sch');
     if(project) this.owner = project;
     Util.define(this, 'xml', xml);
     const orig = xml[0];
@@ -53,27 +49,9 @@ export class EagleDocument extends EagleNode {
   cacheFields() {
     switch (this.type) {
       case 'sch':
-        return [
-          'settings',
-          'layers',
-          'libraries',
-          'classes',
-          'parts',
-          'sheets',
-          'instances',
-          'nets'
-        ];
+        return ['settings', 'layers', 'libraries', 'classes', 'parts', 'sheets', 'instances', 'nets'];
       case 'brd':
-        return [
-          'settings',
-          'layers',
-          'libraries',
-          'classes',
-          'designrules',
-          'elements',
-          'signals',
-          'plain'
-        ];
+        return ['settings', 'layers', 'libraries', 'classes', 'designrules', 'elements', 'signals', 'plain'];
       case 'lbr':
         return ['settings', 'layers', 'library', 'packages', 'symbols', 'devicesets'];
     }

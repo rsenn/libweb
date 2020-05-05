@@ -170,10 +170,7 @@
     return this;
   };
 
-  SpatialHashMap.prototype.moveAndResizeBy = SpatialHashMap.prototype.moveAndResize = function(
-    diff,
-    obj
-  ) {
+  SpatialHashMap.prototype.moveAndResizeBy = SpatialHashMap.prototype.moveAndResize = function(diff, obj) {
     // Get the cells the object WAS in
     var object = this.objects.get(obj);
     var aabb = object.AABB;

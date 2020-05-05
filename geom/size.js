@@ -74,10 +74,8 @@ Size.prototype.aspect = function() {
 };
 Size.prototype.toCSS = function() {
   let ret = {};
-  if(this.width !== undefined)
-    ret.width = this.width + (this.units && 'width' in this.units ? this.units.width : 'px');
-  if(this.height !== undefined)
-    ret.height = this.height + (this.units && 'height' in this.units ? this.units.height : 'px');
+  if(this.width !== undefined) ret.width = this.width + (this.units && 'width' in this.units ? this.units.width : 'px');
+  if(this.height !== undefined) ret.height = this.height + (this.units && 'height' in this.units ? this.units.height : 'px');
   return ret;
 };
 Size.prototype.transform = function(m) {
@@ -155,27 +153,8 @@ Size.bind = (o, p, gen) => {
   return Util.bindProperties(new Size(0, 0), o, { width, height }, gen);
 };
 
-export const isSize = o =>
-  o &&
-  ((o.width !== undefined && o.height !== undefined) ||
-    (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) ||
-    (o.left !== undefined &&
-      o.right !== undefined &&
-      o.top !== undefined &&
-      o.bottom !== undefined));
+export const isSize = o => o && ((o.width !== undefined && o.height !== undefined) || (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) || (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
 
-for(let name of [
-  'toCSS',
-  'isSquare',
-  'round',
-  'sum',
-  'add',
-  'diff',
-  'sub',
-  'prod',
-  'mul',
-  'quot',
-  'div'
-]) {
+for(let name of ['toCSS', 'isSquare', 'round', 'sum', 'add', 'diff', 'sub', 'prod', 'mul', 'quot', 'div']) {
   Size[name] = points => Size.prototype[name].call(points);
 }

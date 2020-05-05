@@ -29,8 +29,7 @@ Util.extend(EagleNodeList.prototype, {
   *entries() {
     const instance = this;
     const list = instance.ref.dereference();
-    for(let i = 0; i < list.length; i++)
-      yield [i, makeEagleElement(instance, instance.ref.down(i))];
+    for(let i = 0; i < list.length; i++) yield [i, makeEagleElement(instance, instance.ref.down(i))];
   }
 });
 
@@ -58,10 +57,7 @@ export function makeEagleNodeList(...args) {
       if(typeof prop == 'number') {
         let list = instance.ref.dereference();
         let len = list.length;
-        console.log(
-          `${prop + 1 == len ? 'push' : 'replace'} property ${prop}/${len}:`,
-          dump(value, 0)
-        );
+        console.log(`${prop + 1 == len ? 'push' : 'replace'} property ${prop}/${len}:`, dump(value, 0));
         if(typeof value == 'object' && 'raw' in value) value = value.raw;
         Reflect.set(list, prop, value);
         return true;
@@ -75,8 +71,7 @@ export function makeEagleNodeList(...args) {
 
       if(prop == 'raw') return instance.ref.dereference();
       if(prop == 'instance') return instance;
-      if(prop == 'iterator' || prop == Symbol.iterator)
-        if(typeof instance.iterator == 'function') return instance.iterator();
+      if(prop == 'iterator' || prop == Symbol.iterator) if (typeof instance.iterator == 'function') return instance.iterator();
       /*
 if(/description/.test(txt))
       console.log("list:","\n", toXML(instance.ref.dereference(), true),prop,txt);
@@ -95,11 +90,7 @@ if(/description/.test(txt))
         return makeEagleElement(instance, r);
       }
       if(typeof Array.prototype[prop] == 'function') return Array.prototype[prop].bind(target);
-      if(
-        (!is_symbol && /^([0-9]+|length)$/.test('' + prop)) ||
-        prop == Symbol.iterator ||
-        ['findIndex'].indexOf(prop) !== -1
-      ) {
+      if((!is_symbol && /^([0-9]+|length)$/.test('' + prop)) || prop == Symbol.iterator || ['findIndex'].indexOf(prop) !== -1) {
         if(prop in list) return list[prop];
       }
       return Reflect.get(target, prop, receiver);

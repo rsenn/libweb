@@ -56,8 +56,7 @@ export const makeDummyStorage = () => ({
 
 export function getLocalStorage() {
   if(getLocalStorage.store === undefined) {
-    getLocalStorage.store =
-      global.window && window.localStorage ? makeLocalStorage() : makeDummyStorage();
+    getLocalStorage.store = global.window && window.localStorage ? makeLocalStorage() : makeDummyStorage();
   }
   return getLocalStorage.store;
 }

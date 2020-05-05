@@ -25,9 +25,7 @@ export class Transformation {
   }
 
   vector(unit) {
-    return (this.is3D ? ['x', 'y', 'z'] : ['x', 'y']).map(
-      unit ? axis => this[axis] + unit : axis => this[axis]
-    );
+    return (this.is3D ? ['x', 'y', 'z'] : ['x', 'y']).map(unit ? axis => this[axis] + unit : axis => this[axis]);
   }
 
   toString(unit) {
@@ -114,8 +112,7 @@ export class Rotation extends Transformation {
 
   constructor(angle, axis) {
     super('rotate');
-    if(typeof axis == 'string' && ['x', 'y', 'z'].indexOf(axis.toLowerCase()) != -1)
-      this.axis = axis.toLowerCase();
+    if(typeof axis == 'string' && ['x', 'y', 'z'].indexOf(axis.toLowerCase()) != -1) this.axis = axis.toLowerCase();
     // else this.axis = 'z';
     this.angle = angle;
   }
@@ -143,8 +140,7 @@ export class Rotation extends Transformation {
   }
 
   accumulate(other) {
-    if(this.type !== other.type && this.axis !== other.axis)
-      throw new Error(Util.className(this) + ': accumulate mismatch');
+    if(this.type !== other.type && this.axis !== other.axis) throw new Error(Util.className(this) + ': accumulate mismatch');
     return new Rotation(this.angle + other.angle, this.axis);
   }
 
@@ -191,9 +187,7 @@ export class Translation extends Transformation {
   }
 
   invert() {
-    return this.z !== undefined
-      ? new Translation(-this.x, -this.y, -this.z)
-      : new Translation(-this.x, -this.y);
+    return this.z !== undefined ? new Translation(-this.x, -this.y, -this.z) : new Translation(-this.x, -this.y);
   }
 
   accumulate(other) {
@@ -233,9 +227,7 @@ export class Scaling extends Transformation {
   }
 
   invert() {
-    return this.z !== undefined
-      ? new Scaling(1 / this.x, 1 / this.y, 1 / this.z)
-      : new Scaling(1 / this.x, 1 / this.y);
+    return this.z !== undefined ? new Scaling(1 / this.x, 1 / this.y, 1 / this.z) : new Scaling(1 / this.x, 1 / this.y);
   }
 
   accumulate(other) {
@@ -398,9 +390,7 @@ export class TransformationList extends Array {
   }
 
   toString(tUnit, rUnit) {
-    return this.map(t =>
-      t.toString(t instanceof Translation ? tUnit : t instanceof Rotation ? rUnit : undefined)
-    ).join(' ');
+    return this.map(t => t.toString(t instanceof Translation ? tUnit : t instanceof Rotation ? rUnit : undefined)).join(' ');
   }
 
   toMatrices() {

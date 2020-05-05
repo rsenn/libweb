@@ -20,20 +20,10 @@ export function Point(arg) {
     const matches = [...arg.matchAll(new RegExp('/([-+]?d*.?d+)(?:[eE]([-+]?d+))?/g'))];
     p.x = parseFloat(matches[0]);
     p.y = parseFloat(matches[1]);
-  } else if(
-    typeof arg == 'object' &&
-    arg !== null &&
-    (arg.x !== undefined || arg.y !== undefined)
-  ) {
+  } else if(typeof arg == 'object' && arg !== null && (arg.x !== undefined || arg.y !== undefined)) {
     p.x = arg.x;
     p.y = arg.y;
-  } else if(
-    typeof arg == 'object' &&
-    arg !== null &&
-    arg.length > 0 &&
-    x !== undefined &&
-    y !== undefined
-  ) {
+  } else if(typeof arg == 'object' && arg !== null && arg.length > 0 && x !== undefined && y !== undefined) {
     p.x = parseFloat(arg.shift());
     p.y = parseFloat(arg.shift());
   } else if(typeof args[0] === 'number' && typeof args[1] === 'number') {
@@ -200,15 +190,7 @@ Point.prototype.toSource = function(opts = {}) {
 
   if(typeof this != 'object' || this === null) return '';
   if(asArray) return `[${x},${y}]`;
-  return `${Util.colorText(showNew ? 'new ' : '', 1, 31)}${Util.colorText(
-    'Point',
-    1,
-    33
-  )}${Util.colorText('(', 1, 36)}${Util.colorText(x, 1, 32)}${Util.colorText(
-    ',',
-    1,
-    36
-  )}${Util.colorText(y, 1, 32)}${Util.colorText(')', 1, 36)}`;
+  return `${Util.colorText(showNew ? 'new ' : '', 1, 31)}${Util.colorText('Point', 1, 33)}${Util.colorText('(', 1, 36)}${Util.colorText(x, 1, 32)}${Util.colorText(',', 1, 36)}${Util.colorText(y, 1, 32)}${Util.colorText(')', 1, 36)}`;
 };
 /*Point.prototype.toSource = function() {
   return '{x:' + this.x + ',y:' + this.y + '}';
@@ -229,12 +211,7 @@ Point.prototype.toFixed = function(digits) {
   return new Point(+this.x.toFixed(digits), +this.y.toFixed(digits));
 };
 Point.prototype.inside = function(rect) {
-  return (
-    this.x >= rect.x &&
-    this.x < rect.x + rect.width &&
-    this.y >= rect.y &&
-    this.y < rect.y + rect.height
-  );
+  return this.x >= rect.x && this.x < rect.x + rect.width && this.y >= rect.y && this.y < rect.y + rect.height;
 };
 /*Point.prototype.transform = function(m) {
   Matrix.prototype.transform_point.call(m, this);
@@ -280,11 +257,7 @@ for(let name of [
 
 Point.toSource = point => `{ x:${point.x}, y: ${point.y} }`;
 
-export const isPoint = o =>
-  o &&
-  ((o.x !== undefined && o.y !== undefined) ||
-    ((o.left !== undefined || o.right !== undefined) &&
-      (o.top !== undefined || o.bottom !== undefined)));
+export const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)));
 
 Point.isPoint = isPoint;
 Util.defineInspect(Point.prototype, 'x', 'y');
