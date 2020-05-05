@@ -17,7 +17,8 @@ export function Line(x1, y1, x2, y2) {
     obj = arg instanceof Line ? arg : new Line();
   }
 
-  if(arg &&
+  if(
+    arg &&
     arg.x1 !== undefined &&
     arg.y1 !== undefined &&
     arg.x2 !== undefined &&
@@ -69,66 +70,78 @@ Line.prototype.intersect = function(other) {
 Object.defineProperty(Line.prototype, 0, {
   get: function() {
     return this.a;
-  }, set: function(v) {
+  },
+  set: function(v) {
     this.a.x = v.x;
     this.a.y = v.y;
-  }, enumerable: false
+  },
+  enumerable: false
 });
 Object.defineProperty(Line.prototype, 1, {
   get: function() {
     return this.b;
-  }, set: function(v) {
+  },
+  set: function(v) {
     this.b.x = v.x;
     this.b.y = v.y;
-  }, enumerable: false
+  },
+  enumerable: false
 });
 Object.defineProperty(Line.prototype, "x1", {
   get: function() {
     return this.a && this.a.x;
-  }, set: function(v) {
-    if (!this.a)
+  },
+  set: function(v) {
+    if(!this.a)
       Object.defineProperty(this, "a", {
         value: new Point(),
         enumerable: false
       });
     this.a.x = v;
-  }, enumerable: true
+  },
+  enumerable: true
 });
 Object.defineProperty(Line.prototype, "y1", {
   get: function() {
     return this.a && this.a.y;
-  }, set: function(v) {
-    if (!this.a)
+  },
+  set: function(v) {
+    if(!this.a)
       Object.defineProperty(this, "a", {
         value: new Point(),
         enumerable: false
       });
     this.a.y = v;
-  }, enumerable: true
+  },
+  enumerable: true
 });
 Object.defineProperty(Line.prototype, "x2", {
   get: function() {
     return this.b && this.b.x;
-  }, set: function(v) {
-    if (!this.b)
+  },
+  set: function(v) {
+    if(!this.b)
       Object.defineProperty(this, "b", {
         value: new Point(),
         enumerable: false
       });
     this.b.x = v;
-  }, enumerable: true
+  },
+  enumerable: true
 });
 Object.defineProperty(Line.prototype, "y2", {
   get: function() {
     return this.b && this.b.y;
-  }, set: function(v) {
-    if (!this.b)
+  },
+  set: function(v) {
+    if(!this.b)
       Object.defineProperty(this, "b", {
         value: new Point(),
         enumerable: false
       });
     this.b.y = v;
-  }, enumerable: true
+  },
+  enumerable: true
 });
 Line.prototype.direction = function() {
   var dist = Point.prototype.distance.call(this.a, this.b);
@@ -213,7 +226,8 @@ Line.prototype.endpointDist = function(point) {
 };
 Line.prototype.matchEndpoints = function(arr) {
   const { a, b } = this;
-  return [...arr.entries()].filter(([i, otherLine]) =>
+  return [...arr.entries()].filter(
+    ([i, otherLine]) =>
       !Line.prototype.equals.call(this, otherLine) &&
       (Point.prototype.equals.call(a, otherLine.a) ||
         Point.prototype.equals.call(b, otherLine.b) ||
@@ -228,7 +242,8 @@ Line.prototype.distanceToPointSquared = function(p) {
   if(l2 === 0) return Point.prototype.distanceSquared.call(p, a);
   var t = ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / l2;
   t = Math.max(0, Math.min(1, t));
-  return Point.prototype.distanceSquared.call(p,
+  return Point.prototype.distanceSquared.call(
+    p,
     new Point(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y))
   );
 };

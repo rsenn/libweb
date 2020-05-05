@@ -9,7 +9,8 @@
 
 const MSRGX = /\s{2,}/g,
   DRGX = /\d/,
-  CRGX = /[a-z]/, ACRGX = /[.a-z]/;
+  CRGX = /[a-z]/,
+  ACRGX = /[.a-z]/;
 
 const Hyphenator = function(patterns, exceptions) {
   this.tree = {};

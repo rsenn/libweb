@@ -1,6 +1,7 @@
 //import debug from "debug";
 
-const formatAnnotatedObject = function(subject,
+const formatAnnotatedObject = function(
+  subject,
   { indent = "  ", spacing = " ", separator = ",", newline = "\n", maxlen = 30, depth = 1 }
 ) {
   const i = indent.repeat(Math.abs(1 - depth));
@@ -255,7 +256,8 @@ Util.range = function(start, end) {
   //console.log("Util.range ", r);
   return r;
 };
-Util.inspect = function(obj,
+Util.inspect = function(
+  obj,
   opts = {
     indent: "  ",
     newline: "\n",
@@ -362,7 +364,8 @@ Util.copyEntries = (obj, entries) => {
 
 Util.extend = (obj, ...args) => {
   for(let other of args) {
-    for(let [name, fn] of Util.iterateMethods(other,
+    for(let [name, fn] of Util.iterateMethods(
+      other,
       0,
       (key, value) => obj[key] === undefined && [key, value]
     )) {
@@ -382,7 +385,8 @@ Util.extend = (obj, ...args) => {
 };
 
 Util.static = (obj, functions, thisObj, pred = (k, v, f) => true) => {
-  for(let [name, fn] of Util.iterateMethods(functions,
+  for(let [name, fn] of Util.iterateMethods(
+    functions,
     0,
     (key, value) => obj[key] === undefined && pred(key, value, functions) && [key, value]
   )) {
@@ -426,12 +430,14 @@ Util.extendArray = function(arr = Array.prototype) {
   Util.define(arr, "unique", function() {
     return this.filter((item, i, a) => a.indexOf(item) == i);
   });
-  Util.defineGetterSetter(arr,
+  Util.defineGetterSetter(
+    arr,
     "tail",
     function() {
       return Util.tail(this);
-    }, function(value) {
-      if (this.length == 0) this.push(value);
+    },
+    function(value) {
+      if(this.length == 0) this.push(value);
       else this[this.length - 1] = value;
     }
   );
@@ -439,7 +445,8 @@ Util.extendArray = function(arr = Array.prototype) {
     return Util.inspect(this, { depth: 100, ...opts });
   });*/
 };
-Util.adapter = function(obj,
+Util.adapter = function(
+  obj,
   getLength = obj => obj.length,
   getKey = (obj, index) => obj.key(index),
   getItem = (obj, key) => obj[key],
@@ -448,24 +455,33 @@ Util.adapter = function(obj,
   const adapter = {
     get length() {
       return getLength(obj);
-    }, get instance() {
+    },
+    get instance() {
       return obj;
-    }, key(i) {
+    },
+    key(i) {
       return getKey(obj, i);
-    }, get(key) {
+    },
+    get(key) {
       return getItem(obj, key);
-    }, set(key, value) {
+    },
+    set(key, value) {
       return setItem(obj, key, value);
-    }, *keys() {
+    },
+    *keys() {
       const length = getLength(obj);
       for(let i = 0; i < length; i++) yield getKey(obj, i);
-    }, *entries() {
-      for (let key of this.keys()) yield [key, getItem(obj, key)];
-    }, [Symbol.iterator]() {
+    },
+    *entries() {
+      for(let key of this.keys()) yield [key, getItem(obj, key)];
+    },
+    [Symbol.iterator]() {
       return this.entries();
-    }, toObject() {
+    },
+    toObject() {
       return Object.fromEntries(this.entries());
-    }, toMap() {
+    },
+    toMap() {
       return new Map(this.entries());
     }
   };
@@ -474,7 +490,8 @@ Util.adapter = function(obj,
 Util.adapter.localStorage = function(s) {
   if(!s && global.window) s = window.localStorage;
 
-  return Util.adapter(s,
+  return Util.adapter(
+    s,
     l => l.length,
     (l, i) => l.key(i),
     (l, key) => JSON.parse(l.getItem(key)),
@@ -498,7 +515,8 @@ Util.array = function(a) {
   return a;
 };
 Util.arrayFromEntries = entries =>
-  Array.from(entries.map(([k, v]) => k),
+  Array.from(
+    entries.map(([k, v]) => k),
     key => entries.find(([k, v]) => k === key)[1]
   );
 
@@ -690,7 +708,8 @@ Util.match = function(arg, pred) {
     }, Util.array());
   } else if(Util.isMap(arg)) {
     //console.log('Util.match ', { arg });
-    return [...arg.keys()].reduce((acc, key) => (match(arg.get(key), key, arg) ? acc.set(key, arg.get(key)) : acc),
+    return [...arg.keys()].reduce(
+      (acc, key) => (match(arg.get(key), key, arg) ? acc.set(key, arg.get(key)) : acc),
       new Map()
     );
   }
@@ -849,7 +868,8 @@ Util.hasProps = function(obj) {
   return keys.length > 0;
 };
 Util.validatePassword = function(value) {
-  return (value.length > 7 &&
+  return (
+    value.length > 7 &&
     /^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]/.test(value) &&
     !/\s/.test(value)
   );
@@ -1022,7 +1042,8 @@ Util.setCookies = c =>
     //console.log(`Setting cookie[${key}] = ${value}`);
   });
 Util.clearCookies = function(c) {
-  return Util.setCookies(Object.keys(Util.parseCookie(c)).reduce(
+  return Util.setCookies(
+    Object.keys(Util.parseCookie(c)).reduce(
       (acc, name) =>
         Object.assign(acc, { [name]: `; max-age=0; expires=${new Date().toUTCString()}` }),
       {}
@@ -1138,7 +1159,8 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
       for(const property in object) {
         const desc = Object.getOwnPropertyDescriptor(object, property);
         //console.log('x ', {property, desc})
-        if(property.indexOf("$") !== 0 &&
+        if(
+          property.indexOf("$") !== 0 &&
           typeof object[property] !== "function" &&
           !desc.get &&
           !desc.set
@@ -1151,7 +1173,8 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
             }
           }
           //if (Object.prototype.hasOwnProperty.call(object, property)) {
-          Util.searchObject(object[property],
+          Util.searchObject(
+            object[property],
             matchCallback,
             `${currentPath}.${property}`,
             result,
@@ -1237,7 +1260,8 @@ Util.parseURL = function(href = this.getURL()) {
     href(override) {
       if(typeof override === "object") Object.assign(this, override);
       const qstr = Util.encodeQuery(this.query);
-      return ((this.protocol ? `${this.protocol}://` : "") +
+      return (
+        (this.protocol ? `${this.protocol}://` : "") +
         (this.host ? this.host : "") +
         (this.port ? `:${this.port}` : "") +
         `${this.location}` +
@@ -1281,11 +1305,13 @@ Util.tryCatch = (fn, resolve, reject) => {
 
 Util.isBrowser = function() {
   let ret = false;
-  Util.tryCatch(() => window,
+  Util.tryCatch(
+    () => window,
     w => (Util.isObject(w) ? (ret = true) : undefined),
     () => {}
   );
-  Util.tryCatch(() => document,
+  Util.tryCatch(
+    () => document,
     w => (Util.isObject(w) ? (ret = true) : undefined),
     () => {}
   );
@@ -1354,7 +1380,8 @@ Util.all = function(obj, pred) {
   return true;
 };
 Util.isGenerator = function(fn) {
-  return ((typeof fn == "function" && /^[^(]*\*/.test(fn.toString())) ||
+  return (
+    (typeof fn == "function" && /^[^(]*\*/.test(fn.toString())) ||
     (["function", "object"].indexOf(typeof fn) != -1 && fn.next !== undefined)
   );
 };
@@ -1418,7 +1445,8 @@ Util.entriesToObj = function(arr) {
   }, {});
 };
 Util.isDate = function(d) {
-  return (d instanceof Date ||
+  return (
+    d instanceof Date ||
     (typeof d == "string" &&
       /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d))
   );
@@ -1486,7 +1514,8 @@ Util.timeSpan = function(s) {
   s = Math.floor(s / 7);
   const weeks = s;
   let ret = "";
-  ret = `${`0${hours}`.substring(0, 2)}:${`0${minutes}`.substring(0, 2)}:${`0${seconds}`.substring(0,
+  ret = `${`0${hours}`.substring(0, 2)}:${`0${minutes}`.substring(0, 2)}:${`0${seconds}`.substring(
+    0,
     2
   )}`;
   if(days) ret = `${days} days ${ret}`;
@@ -1532,7 +1561,8 @@ Util.base64 = {
   encode: utf8 => {
     if(global.window) return window.btoa(unescape(encodeURIComponent(utf8)));
     return Buffer.from(utf8).toString("base64");
-  }, decode: base64 => decodeURIComponent(escape(window.atob(base64)))
+  },
+  decode: base64 => decodeURIComponent(escape(window.atob(base64)))
 };
 Util.formatRecord = function(obj) {
   let ret = {};
@@ -1547,7 +1577,8 @@ Util.formatRecord = function(obj) {
   return ret;
 };
 Util.isArray = function(obj) {
-  return ((obj &&
+  return (
+    (obj &&
       obj.length !== undefined &&
       !(obj instanceof String) &&
       !(obj instanceof Function) &&
@@ -1590,7 +1621,8 @@ Util.getFormFields = function(initialState) {
     initialState,
     [...document.forms].reduce(
       (acc, { elements }) =>
-        [...elements].reduce((acc2, { name, value }) =>
+        [...elements].reduce(
+          (acc2, { name, value }) =>
             name == "" || value == undefined || value == "undefined"
               ? acc2
               : Object.assign(acc2, { [name]: value }),
@@ -1600,7 +1632,8 @@ Util.getFormFields = function(initialState) {
     )
   ]);
 };
-Util.mergeObjects = function(objArr,
+Util.mergeObjects = function(
+  objArr,
   predicate = (dst, src, key) => (src[key] == "" ? undefined : src[key])
 ) {
   let args = objArr;
@@ -1726,7 +1759,8 @@ Util.getMembers = (obj, pred = (prop, level) => true) =>
 Util.iterateMethodNames = (obj, depth = 1, start = 0) => {
   const end = depth === true ? start + 1 : depth === false ? start : start + depth;
   const check = Util.inRange(start, end);
-  return Util.iterateMembers(obj,
+  return Util.iterateMembers(
+    obj,
     (prop, level) => check(level) && typeof obj[prop] === "function" && prop != "constructor"
   );
 };
@@ -1787,7 +1821,8 @@ Util.weakAssign = function(obj) {
 Util.getCallerStack = function(position = 2) {
   Error.stackTraceLimit = 20;
   if(position >= Error.stackTraceLimit) {
-    throw new TypeError(`getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: \`${position}\` and Error.stackTraceLimit was: \`${Error.stackTraceLimit}\``
+    throw new TypeError(
+      `getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: \`${position}\` and Error.stackTraceLimit was: \`${Error.stackTraceLimit}\``
     );
   }
   const oldPrepareStackTrace = Error.prepareStackTrace;
@@ -1901,7 +1936,8 @@ Util.flatTree = function(tree, addOutput) {
 };
 Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
-  if(typeof tree == "object" &&
+  if(
+    typeof tree == "object" &&
     tree !== null &&
     typeof tree.children == "object" &&
     tree.children !== null &&
@@ -1922,7 +1958,8 @@ Util.walkTree = function(node, pred, t, depth = 0, parent = null) {
     //node = t(node);
     if(pred(node, depth, parent)) {
       yield t(node);
-      if(typeof node == "object" &&
+      if(
+        typeof node == "object" &&
         node !== null &&
         typeof node.children == "object" &&
         node.children.length
@@ -2001,7 +2038,8 @@ Util.getImageAverageColor = function(imageElement, options) {
     pixel.b = subpixels[i + 2];
     pixel.a = subpixels[i + 4];
     // Only consider pixels that aren't black, white, or too transparent
-    if(pixel.a > settings.tooAlpha &&
+    if(
+      pixel.a > settings.tooAlpha &&
       (luma = pixel.r + pixel.g + pixel.b) > settings.tooDark && // Luma is assigned inside the conditional to avoid re-calculation when alpha is not met
       luma < settings.tooLight
     ) {
@@ -2032,11 +2070,13 @@ Util.getImageAverageColor = function(imageElement, options) {
       // Returns a CSS compatible RGB string (e.g. '255, 255, 255')
       const { r, g, b } = this;
       return [r, g, b].join(", ");
-    }, toStringRgba() {
+    },
+    toStringRgba() {
       // Returns a CSS compatible RGBA string (e.g. '255, 255, 255, 1.0')
       const { r, g, b, a } = this;
       return [r, g, b, a].join(", ");
-    }, toStringHex() {
+    },
+    toStringHex() {
       // Returns a CSS compatible HEX coloor string (e.g. 'FFA900')
       const toHex = function(d) {
         h = Math.round(d).toString(16);
@@ -2107,19 +2147,23 @@ Util.proxy = (obj = {}, handler) =>
     get(target, key, receiver) {
       //console.log(`Util.proxy getting ${key}!`);
       return Reflect.get(target, key, receiver);
-    }, set(target, key, value, receiver) {
+    },
+    set(target, key, value, receiver) {
       //console.log(`Util.proxy setting ${key}!`);
       return Reflect.set(target, key, value, receiver);
-    }, ...handler
+    },
+    ...handler
   });
 Util.proxyTree = function proxyTree(...callbacks) {
   const [setCallback, applyCallback = () => {}] = callbacks;
   const handler = {
     get(target, key) {
       return node([...this.path, key]);
-    }, set(target, key, value) {
+    },
+    set(target, key, value) {
       return setCallback(this.path, key, value);
-    }, apply(target, thisArg, args) {
+    },
+    apply(target, thisArg, args) {
       return applyCallback(this.path, ...args);
     }
   };
@@ -2152,11 +2196,14 @@ Util.proxyClone = obj => {
     getPrototypeOf: () => Object.getPrototypeOf(obj),
     setPrototypeOf: () => {
       throw new Error("Not yet implemented: setPrototypeOf");
-    }, isExtensible: () => {
+    },
+    isExtensible: () => {
       throw new Error("Not yet implemented: isExtensible");
-    }, preventExtensions: () => {
+    },
+    preventExtensions: () => {
       throw new Error("Not yet implemented: preventExtensions");
-    }, getOwnPropertyDescriptor: (target, name) => {
+    },
+    getOwnPropertyDescriptor: (target, name) => {
       let desc;
       if(!deleted[name]) {
         desc =
@@ -2166,37 +2213,46 @@ Util.proxyClone = obj => {
       if(desc) desc.configurable = true;
       debug(`getOwnPropertyDescriptor ${name} =`, desc);
       return desc;
-    }, defineProperty: () => {
+    },
+    defineProperty: () => {
       throw new Error("Not yet implemented: defineProperty");
-    }, has: (_, name) => {
+    },
+    has: (_, name) => {
       const has = !deleted[name] && (name in override || name in obj);
       debug(`has ${name} = ${has}`);
       return has;
-    }, get: (receiver, name) => {
+    },
+    get: (receiver, name) => {
       const value = get(name);
       debug(`get ${name} =`, value);
       return value;
-    }, set: (_, name, val) => {
+    },
+    set: (_, name, val) => {
       delete deleted[name];
       override[name] = val;
       debug(`set ${name} = ${val}`, name, val);
       return true;
-    }, deleteProperty: (_, name) => {
+    },
+    deleteProperty: (_, name) => {
       debug(`deleteProperty ${name}`);
       deleted[name] = true;
       delete override[name];
-    }, ownKeys: () => {
+    },
+    ownKeys: () => {
       const keys = Object.keys(obj)
         .concat(Object.keys(override))
         .filter(Util.uniquePred)
         .filter(key => !deleted[key]);
       debug(`ownKeys`, keys);
       return keys;
-    }, apply: () => {
+    },
+    apply: () => {
       throw new Error("Not yet implemented: apply");
-    }, construct: () => {
+    },
+    construct: () => {
       throw new Error("Not yet implemented: construct");
-    }, enumerate: () => {
+    },
+    enumerate: () => {
       throw new Error("Not yet implemented: enumerate");
     }
   });
@@ -2207,8 +2263,9 @@ Util.proxyDelegate = (target, origin) => {
       if(key in target) return Reflect.get(target, key, receiver);
       const value = origin[key];
       return typeof value === "function" ? (...args) => value.apply(origin, args) : value;
-    }, set(target, key, value, receiver) {
-      if (key in target) return Reflect.set(target, key, value, receiver);
+    },
+    set(target, key, value, receiver) {
+      if(key in target) return Reflect.set(target, key, value, receiver);
       origin[key] = value;
       return true;
     }
@@ -2223,9 +2280,11 @@ Util.immutable = args => {
   const handler = {
     set: () => {
       throw new Error(errorText);
-    }, deleteProperty: () => {
+    },
+    deleteProperty: () => {
       throw new Error(errorText);
-    }, defineProperty: () => {
+    },
+    defineProperty: () => {
       throw new Error(errorText);
     }
   };
@@ -2233,7 +2292,8 @@ Util.immutable = args => {
 };
 Util.immutableClass = Original => {
   let name = Util.fnName(Original);
-  return new Function("Original",
+  return new Function(
+    "Original",
     `const Immutable${name} = class extends Original {
     constructor(...args) {
       super(...args);
@@ -2302,7 +2362,8 @@ Util.color = (useColor = true) =>
     : {
         code(...args) {
           return `\u001b[${[...args].join(";")}m`;
-        }, text(text, ...color) {
+        },
+        text(text, ...color) {
           return this.code(...color) + text + this.code(0);
         }
       };
@@ -2315,8 +2376,10 @@ Util.defineInspect = (proto, ...props) => {
     const c = Util.color();
     proto[Symbol.for("nodejs.util.inspect.custom")] = function() {
       const obj = this;
-      return (c.text(Util.fnName(proto.constructor) + " ", 1, 31) +
-        Util.toString(props.reduce((acc, key) => {
+      return (
+        c.text(Util.fnName(proto.constructor) + " ", 1, 31) +
+        Util.toString(
+          props.reduce((acc, key) => {
             acc[key] = obj[key];
             return acc;
           }, {}),
@@ -2338,7 +2401,8 @@ Util.bindProperties = (proxy, target, props, gen) => {
   if(props instanceof Array) props = Object.fromEntries(props.map(name => [name, name]));
   const propNames = Object.keys(props);
   if(!gen) gen = p => v => (v === undefined ? target[p] : (target[p] = v));
-  Object.defineProperties(proxy,
+  Object.defineProperties(
+    proxy,
     propNames.reduce(
       (a, k) => {
         const prop = props[k];
@@ -2351,7 +2415,8 @@ Util.bindProperties = (proxy, target, props, gen) => {
             enumerable: true
           }
         };
-      }, {
+      },
+      {
         __getter_setter__: { value: gen, enumerable: false },
         __bound_target__: { value: target, enumerable: false }
       }

@@ -21,7 +21,8 @@ export function Matrix(arg) {
       ret[5] = y0;
     }
   } else if(arg && typeof arg == "object") {
-    if(arg.xx !== undefined &&
+    if(
+      arg.xx !== undefined &&
       arg.yx !== undefined &&
       arg.xy !== undefined &&
       arg.yy !== undefined &&
@@ -34,7 +35,8 @@ export function Matrix(arg) {
       ret[3] = arg.yx;
       ret[4] = arg.yy;
       ret[5] = arg.y0;
-    } else if(arg.a !== undefined &&
+    } else if(
+      arg.a !== undefined &&
       arg.b !== undefined &&
       arg.c !== undefined &&
       arg.d !== undefined &&
@@ -88,14 +90,17 @@ Matrix.prototype.at = function(key) {
   return this[Matrix.prototype.keyIndex[key]];
 };
 
-export const MatrixProps = Object.entries(Matrix.prototype.keyIndex).reduce((acc, [k, i]) => ({
+export const MatrixProps = Object.entries(Matrix.prototype.keyIndex).reduce(
+  (acc, [k, i]) => ({
     ...acc,
     [k]: {
       get: function() {
         return this[i];
-      }, set: function(v) {
+      },
+      set: function(v) {
         this[i] = v;
-      }, enumerable: true
+      },
+      enumerable: true
     }
   }),
   {}
@@ -149,7 +154,8 @@ Matrix.prototype.multiply = function(...args) {
 Matrix.prototype.multiply_self = function(...args) {
   for(let m of args) {
     if(!(m instanceof Matrix)) m = new Matrix(m);
-    Matrix.prototype.init.call(this,
+    Matrix.prototype.init.call(
+      this,
       this[0] * m[0] + this[1] * m[3],
       this[0] * m[1] + this[1] * m[4],
       this[0] * m[2] + this[1] * m[5] + this[2],
@@ -187,7 +193,8 @@ Matrix.prototype.isIdentity = function() {
 };
 
 Matrix.prototype.determinant = function() {
-  return (this[0] * (this[4] * this[8] - this[5] * this[7]) +
+  return (
+    this[0] * (this[4] * this[8] - this[5] * this[7]) +
     this[1] * (this[5] * this[6] - this[3] * this[8]) +
     this[2] * (this[3] * this[7] - this[4] * this[6])
   );
@@ -240,7 +247,8 @@ Matrix.prototype.toString = function(separator = " ") {
 };
 
 Matrix.prototype.toSVG = function() {
-  return ("matrix(" +
+  return (
+    "matrix(" +
     ["a", "b", "c", "d", "e", "f"].map(k => this[Matrix.prototype.keyIndex[k]]).join(",") +
     ")"
   );
@@ -440,11 +448,13 @@ Matrix.getAffineTransform = (a, b) => {
 Matrix.prototype.decompose = function(degrees = false, useLU = true) {
   var a = this[0],
     b = this[3],
-    c = this[1], d = this[4];
+    c = this[1],
+    d = this[4];
 
   var translate = { x: this[2], y: this[5] },
     rotation = 0,
-    scale = { x: 1, y: 1 }, skew = { x: 0, y: 0 };
+    scale = { x: 1, y: 1 },
+    skew = { x: 0, y: 0 };
 
   var determ = a * d - b * c,
     r,
@@ -460,7 +470,8 @@ Matrix.prototype.decompose = function(degrees = false, useLU = true) {
   //if(useLU) {
   let sign = Matrix.prototype.scale_sign.call(this);
   rotation = (Math.atan2(this[3], this[4]) + Math.atan2(-sign * this[1], sign * this[0])) / 2;
-  const cos = Math.cos(rotation), sin = Math.sin(rotation);
+  const cos = Math.cos(rotation),
+    sin = Math.sin(rotation);
   scale = {
     x: calcFromValues(this[0] / cos, cos, -this[1] / sin, sin),
     y: calcFromValues(this[4] / cos, cos, this[3] / sin, sin)

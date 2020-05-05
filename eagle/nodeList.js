@@ -18,13 +18,15 @@ Util.extend(EagleNodeList.prototype, {
     const instance = this;
     const list = this.ref.dereference();
     for(let i = 0; i < list.length; i++) yield makeEagleElement(instance, this.ref.down(i));
-  }, iterator() {
+  },
+  iterator() {
     const instance = this;
     return function*() {
       const list = instance.ref.dereference();
       for(let i = 0; i < list.length; i++) yield makeEagleElement(instance, instance.ref.down(i));
     };
-  }, *entries() {
+  },
+  *entries() {
     const instance = this;
     const list = instance.ref.dereference();
     for(let i = 0; i < list.length; i++)
@@ -56,7 +58,8 @@ export function makeEagleNodeList(...args) {
       if(typeof prop == "number") {
         let list = instance.ref.dereference();
         let len = list.length;
-        console.log(`${prop + 1 == len ? "push" : "replace"} property ${prop}/${len}:`,
+        console.log(
+          `${prop + 1 == len ? "push" : "replace"} property ${prop}/${len}:`,
           dump(value, 0)
         );
         if(typeof value == "object" && "raw" in value) value = value.raw;
@@ -65,7 +68,8 @@ export function makeEagleNodeList(...args) {
       } else {
         return Reflect.set(target, prop, value);
       }
-    }, get(target, prop, receiver) {
+    },
+    get(target, prop, receiver) {
       let index;
       let is_symbol = typeof prop == "symbol";
 
@@ -91,17 +95,20 @@ if(/description/.test(txt))
         return makeEagleElement(instance, r);
       }
       if(typeof Array.prototype[prop] == "function") return Array.prototype[prop].bind(target);
-      if((!is_symbol && /^([0-9]+|length)$/.test("" + prop)) ||
+      if(
+        (!is_symbol && /^([0-9]+|length)$/.test("" + prop)) ||
         prop == Symbol.iterator ||
         ["findIndex"].indexOf(prop) !== -1
       ) {
         if(prop in list) return list[prop];
       }
       return Reflect.get(target, prop, receiver);
-    }, ownKeys(target) {
+    },
+    ownKeys(target) {
       let list = instance.ref.dereference();
       return ["owner", "length"];
-    }, getPrototypeOf(target) {
+    },
+    getPrototypeOf(target) {
       return Reflect.getPrototypeOf(instance);
     }
   });

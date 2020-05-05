@@ -81,7 +81,8 @@
     }
     var extra_arguments = Array.prototype.slice.call(arguments, 1);
     var handlers = this._events[event].slice();
-    handlers.forEach(function(fn) {
+    handlers.forEach(
+      function(fn) {
         fn.apply(this, extra_arguments);
       }.bind(this)
     );
@@ -91,7 +92,8 @@
     ctor.prototype = Object.create(EventEmitter.prototype);
   };
   this.EventEmitter = EventEmitter;
-}.call((function() {
+}.call(
+  (function() {
     return this;
   })()
 ));

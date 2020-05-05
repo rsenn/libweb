@@ -136,17 +136,21 @@ export class SwipeTracker {
           if(Math.abs(this.quadrant.y) > 0) ret += "Y";
         }
         return ret;
-      }, getDist: function() {
+      },
+      getDist: function() {
         return this.axis & SwipeTracker.H ? this.delta.x : this.delta.y;
-      }, toSource: function() {
+      },
+      toSource: function() {
         return Object.keys(this)
           .map(key => {
             let value = Util.toSource(this[key]);
             return `${key}:${value}`;
           })
           .join(", ");
-      }, toString: function() {
-        return (`SwipeEvent ${this.name.toUpperCase()}(` +
+      },
+      toString: function() {
+        return (
+          `SwipeEvent ${this.name.toUpperCase()}(` +
           (this.delta && this.delta.toString(false)) +
           ") " +
           this.getAxis() +
@@ -175,12 +179,14 @@ export class SwipeTracker {
 
   getEventHandlers() {
     const inst = this;
-    return Util.bindMethods({
+    return Util.bindMethods(
+      {
         onSwipeStart: function(event) {
           console.log("swipestart: ", { event });
           inst.end = null;
           inst.start = null;
-        }, onSwipeMove: function(pos, event) {
+        },
+        onSwipeMove: function(pos, event) {
           let name = "move";
           if(!inst.start) {
             inst.start = new Point(this.mouse);
@@ -210,7 +216,8 @@ export class SwipeTracker {
             // 'quadrant=' + quadrant); console.log('New event: ',
             // inst.emitEvent(name).toSource());
           }
-        }, onSwipeEnd: function(pos, event) {
+        },
+        onSwipeEnd: function(pos, event) {
           const { start, end, delta, quadrant } = this;
           const position = new Point(pos.x, pos.y);
           if(inst.start && inst.start.x !== undefined) {
@@ -223,7 +230,9 @@ export class SwipeTracker {
           inst.delta.set(0, 0);
           inst.active = false;
         }
-      }, inst);
+      },
+      inst
+    );
   }
 
   get events() {

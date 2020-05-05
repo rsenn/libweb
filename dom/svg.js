@@ -47,7 +47,8 @@ export class SVG extends Element {
     if(parent && parent.tagName == "svg") delegate.root = parent;
     else if(this !== SVG && this && this.appendChild) delegate.root = this;
     else
-      delegate.root = SVG.create("svg",
+      delegate.root = SVG.create(
+        "svg",
         { width, height, viewBox: `0 0 ${width} ${height}` },
         parent
       );
@@ -152,7 +153,8 @@ export class SVG extends Element {
       ["fill", "stroke"].some(a => e.hasAttribute(a))
     )) {
       const { fill, stroke } = this.getProperties(item, ["fill", "stroke"]);
-      const a = Object.entries({ fill, stroke }).filter(([k, v]) => v !== undefined && v !== "none"
+      const a = Object.entries({ fill, stroke }).filter(
+        ([k, v]) => v !== undefined && v !== "none"
       );
       if(a.length == 0) continue;
 
@@ -182,24 +184,30 @@ export class SVG extends Element {
       list,
       get colors() {
         return this.list.map(item => item.color);
-      }, index(name) {
+      },
+      index(name) {
         return typeof name == "number" && this.list[name]
           ? name
           : this.list.findIndex(item => item.color === name);
-      }, name(i) {
+      },
+      name(i) {
         return typeof i == "number" ? this.list[i].name : typeof i == "string" ? i : null;
-      }, get(arg) {
+      },
+      get(arg) {
         return this.list[arg] || this.list.find(item => item.color == arg);
-      }, set(index, color, elements) {
+      },
+      set(index, color, elements) {
         this.list[index] = color ? { color, elements } : color;
         return this;
-      }, dump() {
-        for (let i = 0; i < this.list.length; i++) {
+      },
+      dump() {
+        for(let i = 0; i < this.list.length; i++) {
           const { color, elements } = this.list[i];
           console.log(`${i}: %c    %c ${color}`, `background: ${color};`, `background: none`);
         }
         return this;
-      }, adjacencyMatrix() {
+      },
+      adjacencyMatrix() {
         let ret = [];
         for(let i = 0; i < this.list.length; i++) {
           ret.push([]);
@@ -208,7 +216,8 @@ export class SVG extends Element {
 
         for(let i = 0; i < this.list.length; i++) {
           for(let j = 0; j < this.list.length; j++) {
-            const dist = RGBA.fromString(this.list[i].color).contrast(RGBA.fromString(this.list[j].color)
+            const dist = RGBA.fromString(this.list[i].color).contrast(
+              RGBA.fromString(this.list[j].color)
             );
 
             if(/*ret[i][j] == null &&*/ j != i) ret[j][i] = +dist.toFixed(3);
@@ -216,7 +225,8 @@ export class SVG extends Element {
           }
         }
         return ret;
-      }, replace(color, newColor) {
+      },
+      replace(color, newColor) {
         let name = this.name(color);
         let index = this.index(color);
         let a = this.get(color);
@@ -234,7 +244,8 @@ export class SVG extends Element {
         for(let [elem, prop] of a.elements) elem.style.setProperty(prop, c);
 
         return this.set(index, c, a.elements);
-      }, replaceAll(fn) {
+      },
+      replaceAll(fn) {
         const colors = this.list.map(item => item.color);
         if(!fn) fn = Util.shuffle(colors);
 

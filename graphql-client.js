@@ -13,7 +13,8 @@ const client = (options = {}) => {
 
   if(fetch === undefined) {
     if(globalThis.fetch) fetch = globalThis.fetch; // eslint-disable-line prefer-destructuring
-    throw new Error("You must provide a fetch implementation, either in globalThis, or in options."
+    throw new Error(
+      "You must provide a fetch implementation, either in globalThis, or in options."
     );
   }
 

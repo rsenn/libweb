@@ -144,7 +144,8 @@ export const inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) =>
   let s = "⏐";
   x = x.substring(x.indexOf("tagName") + 14);
 
-  x = Object.entries((e && e.attributes) || {}).map(([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36)
+  x = Object.entries((e && e.attributes) || {}).map(
+    ([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36)
   );
 
   x.unshift(e.tagName);
@@ -195,7 +196,8 @@ export class EagleInterface {
   *findAll(...args) {
     let { path, predicate, transform } = parseArgs(args);
     //if(!transform) transform = ([v, l, d]) => [v, l, d]; //(typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l, v) : v);
-    for(let [v, l, d] of this.iterator(e => true,
+    for(let [v, l, d] of this.iterator(
+      e => true,
       [],
       arg => arg
     )) {
@@ -269,7 +271,8 @@ export class EagleInterface {
       let parent = d.index(l.slice(0, -2));
       let numSiblings = parent ? parent.children.length : 0;
       if(!str.startsWith("?")) {
-        if(typeof e == "object" &&
+        if(
+          typeof e == "object" &&
           e.tagName &&
           "children" in e &&
           parent &&

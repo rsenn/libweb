@@ -13,11 +13,13 @@ Object.defineProperties(EagleNodeMap.prototype, {
 Object.assign(EagleNodeMap.prototype, {
   at(pos) {
     return this.list[pos];
-  }, get(name, key = this.key) {
+  },
+  get(name, key = this.key) {
     const list = this.list.raw;
     const idx = list.findIndex(item => item.attributes[key] == name);
     return idx == -1 ? null : this.list[idx];
-  }, set(name, value) {
+  },
+  set(name, value) {
     const list = this.list.raw;
     const idx = list.findIndex(item => item.attributes[this.key] == name);
 
@@ -26,17 +28,23 @@ Object.assign(EagleNodeMap.prototype, {
 
     if(idx != -1) list[idx] = value;
     else list.push(value);
-  }, keys(key = this.key) {
+  },
+  keys(key = this.key) {
     return (this.list.raw || this.list).map(item => item.attributes[key]);
-  }, size(key = this.key) {
+  },
+  size(key = this.key) {
     return (this.list.raw || this.list).length;
-  }, values() {
+  },
+  values() {
     return [...this.list];
-  }, entries(key = this.key) {
+  },
+  entries(key = this.key) {
     return this.keys(key).map((key, i) => [key + "", this.list[i]]);
-  }, map(key = this.key) {
+  },
+  map(key = this.key) {
     return new Map(this.entries(key));
-  }, toObject(key = this.key) {
+  },
+  toObject(key = this.key) {
     return Object.fromEntries(this.entries(key));
   }
 });
@@ -59,9 +67,11 @@ export function makeEagleNodeMap(list, key = "name") {
       if(typeof instance[prop] == "function") return instance[prop].bind(instance);
 
       return Reflect.get(target, prop, receiver);
-    }, getPrototypeOf(target) {
+    },
+    getPrototypeOf(target) {
       return Reflect.getPrototypeOf(instance);
-    }, ownKeys(target) {
+    },
+    ownKeys(target) {
       let keys = instance.keys();
 
       return keys;

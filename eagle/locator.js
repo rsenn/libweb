@@ -4,7 +4,8 @@ import { text, inspect, toXML, dump } from "./common.js";
 export function DereferenceError(object, member, pos, part, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
 
-  return Object.assign(error,
+  return Object.assign(
+    error,
     { object, member, pos, locator },
     {
       message: `Error dereferencing ${Util.className(object)} @ ${locator
@@ -12,8 +13,10 @@ export function DereferenceError(object, member, pos, part, locator) {
         .join(",")} w/ keys={${Object.keys(part).join(",")}} no member '${member}' `,
       stack: Util.getCallerStack()
         .filter(frame => null !== frame.getFileName())
-        .map(frame =>
-            `${("" + frame.getFileName()).replace(/.*plot-cv\//,
+        .map(
+          frame =>
+            `${("" + frame.getFileName()).replace(
+              /.*plot-cv\//,
               ""
             )}:${frame.getLineNumber()}:${frame.getColumnNumber()}`
         )
@@ -28,11 +31,13 @@ DereferenceError.prototype.toString = function() {
 
 const ChildrenSym = Symbol("⊳");
 
-export const EaglePath = Util.immutableClass(class EaglePath extends Array {
+export const EaglePath = Util.immutableClass(
+  class EaglePath extends Array {
     constructor(path = []) {
       super(/*path.length*/);
       for(let i = 0; i < path.length; i++) {
-        let value = /*(path[i] == 'children' || path[i] === ChildrenSym) ? ChildrenSym : */ /^[0-9]+$/.test(path[i]
+        let value = /*(path[i] == 'children' || path[i] === ChildrenSym) ? ChildrenSym : */ /^[0-9]+$/.test(
+          path[i]
         )
           ? parseInt(path[i])
           : path[i];
@@ -68,7 +73,8 @@ export const EaglePath = Util.immutableClass(class EaglePath extends Array {
      * @return     {EaglePath}
      */
     left(n = 1) {
-      let i = this.lastId, l = this.slice();
+      let i = this.lastId,
+        l = this.slice();
       if(i >= 0) {
         l[i] = Math.max(0, l[i] - n);
         return l;
@@ -124,7 +130,8 @@ export const EaglePath = Util.immutableClass(class EaglePath extends Array {
       let o = obj;
       if(o === undefined) throw new Error(`Object ${o}`);
 
-      return this.reduce((a, i) => {
+      return this.reduce(
+        (a, i) => {
           let r =
             i === ChildrenSym
               ? a.o.children
@@ -135,7 +142,8 @@ export const EaglePath = Util.immutableClass(class EaglePath extends Array {
           a.o = r;
           a.n++;
           return a;
-        }, { o, n: 0 }
+        },
+        { o, n: 0 }
       ).o;
     }
 
@@ -168,7 +176,8 @@ export const EaglePath = Util.immutableClass(class EaglePath extends Array {
     }
 
     existsIn(root) {
-      let i, obj = root;
+      let i,
+        obj = root;
       for(i = 0; i + 1 < this.length; i++) {
         const key = this[i];
         if(!(key in obj)) throw new Error(`No path ${this.join(",")} in ${typeof root}`);
@@ -203,7 +212,8 @@ export const EaglePath = Util.immutableClass(class EaglePath extends Array {
 
     split(pred) {
       let i = 0;
-      let a = [], b = [];
+      let a = [],
+        b = [];
       let n;
       if(typeof pred == "number") {
         n = pred < 0 ? this.length + pred : pred;

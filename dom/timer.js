@@ -13,7 +13,8 @@ export function Timer(timeout, fn, props = {}, { create = setInterval, destroy =
         this.id = null;
         this.running = false;
       }
-    }, ...props
+    },
+    ...props
   };
 
   if(this instanceof Timer) Object.assign(this, t);
@@ -42,7 +43,8 @@ Timer.debug = (impl = Timer.std) => ({
     }, timeout);
     this.log(`Timer #${id} START ${timeout}ms`);
     return id;
-  }, destroy(id) {
+  },
+  destroy(id) {
     impl.destroy(id);
     this.log(`Timer #${id} STOP`);
   }
@@ -50,9 +52,11 @@ Timer.debug = (impl = Timer.std) => ({
 
 Timer.promise = (timeout, impl = Timer.std /*Timer.debug(Timer.std)*/) =>
   new Promise((resolve, reject) =>
-    Timer(timeout,
+    Timer(
+      timeout,
       resolve,
-      {}, {
+      {},
+      {
         create: (fn, timeout) => impl.create(fn, timeout),
         destroy: id => {
           impl.destroy(id);

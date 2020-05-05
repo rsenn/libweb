@@ -19,7 +19,8 @@ export function PointList(points, base = Array) {
       ret.push(this instanceof PointList ? new Point(args[i]) : Point(args[i]));
   } else if(args.length !== undefined) {
     for(let i = 0; i < args.length; i++) {
-      ret.push(args[i] instanceof Point
+      ret.push(
+        args[i] instanceof Point
           ? args[i]
           : this instanceof PointList
           ? new Point(args[i])
@@ -93,7 +94,8 @@ PointList.prototype.toPath = function(options = {}) {
   const point = relative
     ? i =>
         i > 0
-          ? Point.diff(PointList.prototype.at.call(this, i),
+          ? Point.diff(
+              PointList.prototype.at.call(this, i),
               PointList.prototype.at.call(this, i - 1)
             )
           : PointList.prototype.at.call(this, i)
@@ -207,7 +209,8 @@ PointList.prototype.bbox = function() {
     y1: first.y,
     y2: first.y,
     toString: function() {
-      return `{x1:${(this.x1 + "").padStart(4, " ")},x2:${(this.x2 + "").padStart(4, " ")},y1:${(this.y1 + ""
+      return `{x1:${(this.x1 + "").padStart(4, " ")},x2:${(this.x2 + "").padStart(4, " ")},y1:${(
+        this.y1 + ""
       ).padStart(4, " ")},y2:${(this.y2 + "").padStart(4, " ")}}`;
     }
   };
@@ -296,7 +299,8 @@ PointList.prototype.toString = function(sep = ",", prec) {
     .join(" ");
 };
 PointList.prototype.toSource = function() {
-  return ("new PointList([" +
+  return (
+    "new PointList([" +
     PointList.prototype.map.call(this, point => Point.prototype.toSource.call(point)).join(",") +
     "])"
   );

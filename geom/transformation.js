@@ -25,7 +25,8 @@ export class Transformation {
   }
 
   vector(unit) {
-    return (this.is3D ? ["x", "y", "z"] : ["x", "y"]).map(unit ? axis => this[axis] + unit : axis => this[axis]
+    return (this.is3D ? ["x", "y", "z"] : ["x", "y"]).map(
+      unit ? axis => this[axis] + unit : axis => this[axis]
     );
   }
 

@@ -122,9 +122,11 @@ export class Element extends Node {
       let value = a[key];
       attributes[key] = value;
     }
-    return Object.assign({
+    return Object.assign(
+      {
         tagName: /[a-z]/.test(e.tagName) ? e.tagName : e.tagName.toLowerCase()
-      }, attributes,
+      },
+      attributes,
       children.length > 0 ? { children } : {}
     );
   }
@@ -412,7 +414,8 @@ export class Element extends Node {
   }
 
   static getTRBL(element, prefix = "") {
-    const names = ["Top", "Right", "Bottom", "Left"].map(pos => prefix + (prefix == "" ? pos.toLowerCase() : pos + (prefix == "border" ? "Width" : ""))
+    const names = ["Top", "Right", "Bottom", "Left"].map(
+      pos => prefix + (prefix == "" ? pos.toLowerCase() : pos + (prefix == "border" ? "Width" : ""))
     );
     return new TRBL(Element.getCSS(element, names));
   }
@@ -483,7 +486,8 @@ export class Element extends Node {
                 return Object.entries(this)
                   .map(([k, v]) => `${Util.decamelize(k, "-")}: ${v};\n`)
                   .join("");
-              }, enumerable: false
+              },
+              enumerable: false
             });
           } catch(err) {}
         }
@@ -555,11 +559,14 @@ export class Element extends Node {
       return accu;
     }
     str = dumpElem(elem, "");
-    str = Element.walk(elem.firstElementChild,
+    str = Element.walk(
+      elem.firstElementChild,
       (e, a, r, d) => {
         if(e && e.attributes) return dumpElem(e, a + "\n", r, d);
         return null;
-      }, str);
+      },
+      str
+    );
     return str;
   }
 

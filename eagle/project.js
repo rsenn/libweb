@@ -128,7 +128,8 @@ export class EagleProject {
       board: board.libraries[name]
     };
     let layers = {
-      schematic: Util.toMap(schematic.layers.list.filter(l => l.active == "yes"),
+      schematic: Util.toMap(
+        schematic.layers.list.filter(l => l.active == "yes"),
         l => [l.number, l]
       ),
       board: Util.toMap(
@@ -144,7 +145,8 @@ export class EagleProject {
       //console.log(`libraries[${k}].packages:`, libraries[k].packages);
       const libProps = lib => {
         const { packages, devicesets, symbols } = lib;
-        return Object.fromEntries(["packages", "symbols", "devicesets"].map(k => [k, lib[k]]).filter(([k, v]) => v)
+        return Object.fromEntries(
+          ["packages", "symbols", "devicesets"].map(k => [k, lib[k]]).filter(([k, v]) => v)
         );
         return { packages, devicesets, symbols };
       };
@@ -202,7 +204,8 @@ export class EagleProject {
 
   saveTo = (dir = ".", overwrite = false) =>
     new Promise((resolve, reject) =>
-      Promise.all(this.documents.map(doc => doc.saveTo([dir, doc.filename].join("/"), overwrite))
+      Promise.all(
+        this.documents.map(doc => doc.saveTo([dir, doc.filename].join("/"), overwrite))
       ).then(result => resolve(Object.fromEntries(result)))
     );
 }

@@ -15,7 +15,8 @@ export class EagleElement extends EagleNode {
     let owner = this.owner;
     let path = this.ref.path.clone();
     if(owner === null) throw new Error("owner == null");
-    if(o === undefined ||
+    if(
+      o === undefined ||
       (o.tagName === undefined && o.attributes === undefined && o.children === undefined)
     ) {
       try {
@@ -24,7 +25,8 @@ export class EagleElement extends EagleNode {
     }
 
     if(o === null || typeof o != "object")
-      throw new Error("ref: " + this.ref.inspect() + " entity: " + EagleNode.prototype.inspect.call(this)
+      throw new Error(
+        "ref: " + this.ref.inspect() + " entity: " + EagleNode.prototype.inspect.call(this)
       );
 
     let { tagName, attributes, children } = o;
@@ -34,7 +36,8 @@ export class EagleElement extends EagleNode {
     if(!Util.isEmpty(attributes)) {
       for(let key in attributes) {
         let prop = trkl.property(this.attrMap, key);
-        let handler = Util.ifThenElse(v => v !== undefined,
+        let handler = Util.ifThenElse(
+          v => v !== undefined,
           v => prop(v),
           v => (/^[-+]?[0-9.]+$/.test(prop()) ? parseFloat(prop()) : prop())
         );
@@ -118,12 +121,14 @@ export class EagleElement extends EagleNode {
         has: key => attributeNames.includes(key),
         values: () => attributeNames.map(key => attributeHandlers[key]())
       });
-      Object.assign(EagleAttributes.prototype,
+      Object.assign(
+        EagleAttributes.prototype,
         attributeNames.reduce((acc, key) => ({ ...acc, [key]: attributeHandlers[key]() }))
       );
       return EagleAttributes;
     };
-    let props = attributeNames.reduce((acc, key) => ({
+    let props = attributeNames.reduce(
+      (acc, key) => ({
         ...acc,
         [key]: { get: attributeHandlers[key], set: attributeHandlers[key], enumerable: true }
       }),
@@ -188,7 +193,8 @@ export class EagleElement extends EagleNode {
       o[name] = value;
     }
     if(typeof e == "object" && e !== null && "tagName" in e) o = { tagName, ...o };
-    if(typeof children == "object" &&
+    if(
+      typeof children == "object" &&
       children !== null &&
       "length" in children &&
       children.length > 0

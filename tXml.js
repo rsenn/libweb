@@ -60,8 +60,10 @@ function tXml(S, options) {
         } else if(S.charCodeAt(pos + 1) === exclamationCC) {
           if(S.charCodeAt(pos + 2) == minusCC) {
             //comment support
-            while(pos !== -1 &&
-              !(S.charCodeAt(pos) === closeBracketCC &&
+            while(
+              pos !== -1 &&
+              !(
+                S.charCodeAt(pos) === closeBracketCC &&
                 S.charCodeAt(pos - 1) == minusCC &&
                 S.charCodeAt(pos - 2) == minusCC &&
                 pos != -1
@@ -134,7 +136,8 @@ function tXml(S, options) {
         var name = parseName();
         // search beginning of the string
         var code = S.charCodeAt(pos);
-        while(code &&
+        while(
+          code &&
           code !== singleQuoteCC &&
           code !== doubleQuoteCC &&
           !((code > 64 && code < 91) || (code > 96 && code < 123)) &&
@@ -201,7 +204,8 @@ function tXml(S, options) {
    *
    */
   function findElements() {
-    var r = new RegExp("\\s" + options.attrName + "\\s*=['\"]" + options.attrValue + "['\"]").exec(S
+    var r = new RegExp("\\s" + options.attrName + "\\s*=['\"]" + options.attrValue + "['\"]").exec(
+      S
     );
     if(r) {
       return r.index;

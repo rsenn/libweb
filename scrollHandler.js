@@ -69,15 +69,19 @@ export function ScrollListener(handler) {
   return listen.handler;
 }
 
-export function ScrollDisabler(disabledfn = () => true, element = global.window) {
+export function ScrollDisabler(disabledfn = () => true, element) {
   const keys = [32, 33, 34, 35, 36, 37, 38, 39, 40];
+  try {
+    element = element || global.window;
+  } catch(err) {}
   var listen = ScrollHandler(event => {
     let disabled = disabledfn();
 
     if(disabled) {
       if(event.keyCode !== undefined && keys.indexOf(event.keyCode) != -1) {
         event.preventDefault();
-      } else if(event.type == "wheel" ||
+      } else if(
+        event.type == "wheel" ||
         event.type == "scroll" ||
         event.type == "touchmove" ||
         event.type == "DOMMouseScroll"
@@ -93,8 +97,14 @@ export function ScrollDisabler(disabledfn = () => true, element = global.window)
   listen.handler.listener = listen;
   if(element) listen.handler.element = addScrollListeners(listen, element);
   else listen.handler.events = ScrollEvents(listen);
-  listen.handler.remove = () => removeScrollListeners(listen, element);
-  listen.handler.add = () => addScrollListeners(listen, element);
+  listen.handler.remove = () => {
+    console.log("detach scroll disabler");
+    removeScrollListeners(listen, element);
+  };
+  listen.handler.add = () => {
+    console.log("attach scroll disabler");
+    addScrollListeners(listen, element);
+  };
   return listen.handler;
 }
 

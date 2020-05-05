@@ -37,7 +37,8 @@ export function Size(arg) {
         value: {
           width: typeof w == "number" ? "px" : w.replace(obj.width.toString(), ""),
           height: typeof h == "number" ? "px" : h.replace(obj.height.toString(), "")
-        }, enumerable: false
+        },
+        enumerable: false
       });
     }
   }

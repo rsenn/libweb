@@ -132,7 +132,8 @@ export class EagleNode extends EagleInterface {
       let maps = {};
       let ref = this.ref;
 
-      for(let [value, path] of deep.iterate(ref.dereference(),
+      for(let [value, path] of deep.iterate(
+        ref.dereference(),
         v => v && fields.indexOf(v.tagName) != -1
       )) {
         const key = value.tagName;
@@ -143,7 +144,8 @@ export class EagleNode extends EagleInterface {
           ["sheets", "connects", "plain"].indexOf(key) != -1
             ? lists[key]
             : () =>
-                makeEagleNodeMap(lazy[key]().children,
+                makeEagleNodeMap(
+                  lazy[key]().children,
                   key == "instances" ? "part" : key == "layers" ? "number" : "name"
                 );
       }
@@ -220,7 +222,8 @@ export class EagleNode extends EagleInterface {
     return null;
   }
 
-  getByName(element,
+  getByName(
+    element,
     name,
     attr = "name",
     t = ([v, l, d]) => makeEagleNode(d, this.ref.down(...l), this.childConstructor)
@@ -273,7 +276,8 @@ export class EagleNode extends EagleInterface {
     let attrs = "";
     if(this.attributes)
       for(let attr in this.attributes)
-        attrs += ` ${text(attr, 1, 33)}${text(":", 1, 36)}${text(`'${this.attributes[attr]}'`,
+        attrs += ` ${text(attr, 1, 33)}${text(":", 1, 36)}${text(
+          `'${this.attributes[attr]}'`,
           1,
           32
         )}`;
