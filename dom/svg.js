@@ -48,7 +48,7 @@ export class SVG extends Element {
     console.log('factory', { delegate, parent, size, arg });
     if(parent && parent.tagName.toLowerCase() == 'svg') delegate.root = parent;
     else if(this !== SVG && this && this.appendChild) delegate.root = this;
-    else delegate.append_to((delegate.root = SVG.create('svg', { ...size, viewBox: `0 0 ${width} ${height}` })), parent);
+    else delegate.append_to((delegate.root = SVG.create('svg', { ...size, viewBox: `0 0 ${width || 0} ${height || 0}` })), parent);
 
     if(!delegate.root.firstElementChild || delegate.root.firstElementChild.tagName != 'defs') SVG.create('defs', {}, delegate.root);
 

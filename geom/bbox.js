@@ -74,13 +74,13 @@ export class BBox {
     return this.x1;
   }
   get width() {
-    return Math.abs(this.x2 - this.x1);
+    return /*Math.abs*/ this.x2 - this.x1;
   }
   get y() {
     return this.y1 < this.y2 ? this.y1 : this.y2;
   }
   get height() {
-    return Math.abs(this.y2 - this.y1);
+    return /*Math.abs*/ this.y2 - this.y1;
   }
   set x(x) {
     let ix = x - this.x1;
@@ -99,10 +99,10 @@ export class BBox {
     this.y2 = this.y1 + h;
   }
   get rect() {
-    return new Rect(this.x1, this.y1, this.x2 - this.x1, this.y2 - this.y1);
+    return new Rect(this);
   }
   toString() {
-    return `${this.x1} ${this.y1} ${this.x2 - this.x1} ${this.y2 - this.y1}`;
+    return `${this.x1} ${this.y1} ${this.x2} ${this.y2}`;
   }
   transform(fn = arg => arg, out) {
     if(!out) out = this;

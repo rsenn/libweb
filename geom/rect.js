@@ -349,6 +349,21 @@ Rect.bind = (o, p, gen) => {
   return proxy;
 };
 
+Rect.scale = Util.curry((rect, sx, sy) => Matrix.scale(sx, sy).transform_rect(rect));
+Rect.resize = Util.curry((rect, width, height) => {
+  rect.width = width;
+  rect.height = height;
+  return rect;
+});
+Rect.translate = Util.curry((rect, x, y) => Matrix.translate(f, f).transform_rect(rect));
+
+for(let f of ['scale', 'resize', 'translate']) {
+  Rect.prototype[f] = function(...args) {
+    Rect[f](this, ...args);
+    return this;
+  };
+}
+
 Util.defineInspect(Rect.prototype, 'x', 'y', 'width', 'height');
 
 export const isRect = rect => isPoint(rect) && isSize(rect);

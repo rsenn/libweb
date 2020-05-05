@@ -8,10 +8,12 @@ import { EagleElement } from './element.js';
 import { toXML } from './common.js';
 
 export class EagleDocument extends EagleNode {
+  static types = ['brd', 'sch', 'lbr'];
   xml = null;
   path = null;
+  type = null;
 
-  constructor(xmlStr, project, filename) {
+  constructor(xmlStr, project, filename, type) {
     //  let xmlStr = "";
     /*  try {
       if(!/<\?.*<eagle /.test(filename)) {
@@ -23,8 +25,16 @@ export class EagleDocument extends EagleNode {
     }*/
     const xml = new tXml(xmlStr);
     super(project, EagleRef(deepClone(xml[0]), []));
-    if(filename) this.path = filename;
-    Util.define(this, 'type', /<library>/.test(xmlStr) ? 'lbr' : /<element /.test(xmlStr) ? 'brd' : 'sch');
+    type = type || /<library>/.test(xmlStr) ? 'lbr' : /<element /.test(xmlStr) ? 'brd' : 'sch';
+
+    if(filename) {
+      this.path = filename;
+
+      type = type || filename.replace(/.*\//g, '').replace(/.*\./g, '');
+    }
+    console.log('type:', type);
+    this.type = type;
+
     if(project) this.owner = project;
     Util.define(this, 'xml', xml);
     const orig = xml[0];

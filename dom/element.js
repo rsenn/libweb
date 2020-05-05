@@ -261,15 +261,19 @@ export class Element extends Node {
     return r;
   }
 
-  static setRect(element, rect, anchor) {
+  static setRect(element, rect, opts = {}) {
+    let { anchor, unit = 'px', scale } = opts;
     const e = typeof element === 'string' ? Element.find(element) : element;
     //console.log("Element.setRect(", element, ",", rect, ", ", anchor, ") ");
     if(typeof anchor == 'string') {
       e.style.position = anchor;
       anchor = 0;
     }
+    if(scale) Rect.scale(rect, scale, scale);
+
     anchor = anchor || Anchor.LEFT | Anchor.TOP;
-    const position = e.style.position; /*|| rect.position || "relative"*/
+    const position = element.style && element.style.position;
+    /*|| rect.position || "relative"*/
     const pelement = position == 'fixed' ? e.documentElement || document.body : e.parentNode;
     const prect = Element.rect(pelement, { round: false });
     //Rect.align(rect, prect, anchor);
@@ -283,32 +287,35 @@ export class Element extends Node {
     switch (Anchor.horizontal(anchor)) {
       case Anchor.LEFT:
       default:
-        css.left = Math.round(trbl.left /* - ptrbl.left*/) + 'px';
+        css.left = Math.round(trbl.left /* - ptrbl.left*/) + unit;
         remove = 'right';
         break;
       case Anchor.RIGHT:
-        css.right = Math.round(trbl.right - ptrbl.right) + 'px';
+        css.right = Math.round(trbl.right - ptrbl.right) + unit;
         remove = 'left';
         break;
     }
     switch (Anchor.vertical(anchor)) {
       case Anchor.TOP:
       default:
-        css.top = Math.round(trbl.top /* - ptrbl.top*/) + 'px';
+        css.top = Math.round(trbl.top /* - ptrbl.top*/) + unit;
         remove = 'bottom';
         break;
       case Anchor.BOTTOM:
-        css.bottom = Math.round(trbl.bottom - ptrbl.bottom) + 'px';
+        css.bottom = Math.round(trbl.bottom - ptrbl.bottom) + unit;
         remove = 'top';
         break;
     }
-    if(e.style.removeProperty) e.style.removeProperty(remove);
-    else e.style[remove] = undefined;
+    if(e.style) {
+      if(e.style.removeProperty) e.style.removeProperty(remove);
+      else e.style[remove] = undefined;
+    }
     //  css.position = position;
-    css.width = Math.round(rect.width) + 'px';
-    css.height = Math.round(rect.height) + 'px';
+    css.width = Math.round(rect.width) + (unit || unit);
+    css.height = Math.round(rect.height) + (unit || unit);
     //console.log("Element.setRect ", css);
-    Object.assign(e.style, css);
+    Element.setCSS(e, css);
+    //  Object.assign(e.style, css);
     //    Element.setCSS(e, css);
     return e;
   }

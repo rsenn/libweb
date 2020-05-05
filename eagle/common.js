@@ -2,6 +2,7 @@ import { EaglePath } from './locator.js';
 //import { EagleElement } from "./element.js";
 import Util from '../util.js';
 import deep from '../deep.js';
+import { SVG } from '../dom/svg.js';
 
 const pathPadding = Util.isBrowser() ? 0 : 40;
 
@@ -185,6 +186,19 @@ export class EagleInterface {
         yield v;
       }
     }
+  }
+
+  getBounds() {
+    let bb = new BBox();
+    for(let element of board.getAll(e => e.tagName !== undefined)) {
+      let g = element.geometry();
+      if(g) {
+        //console.log("getBounds", element.layer, g);
+        bb.update(g);
+      }
+    }
+    console.log('getBounds', bb);
+    return bb;
   }
 
   locate(...args) {
