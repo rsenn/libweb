@@ -2,7 +2,8 @@ export class SpatialHash {
   constructor(range, cellSize) {
     //var getBounds = getBounds(range);
     this.cellSize = cellSize;
-    if(range.width % cellSize !== 0 || range.height % cellSize !== 0) throw 'Exception: width and height must both be divisible by cell size';
+    if(range.width % cellSize !== 0 || range.height % cellSize !== 0)
+      throw "Exception: width and height must both be divisible by cell size";
 
     this.horizontalCells = range.width / cellSize;
     this.verticalCells = range.height / cellSize;
@@ -22,7 +23,7 @@ export class SpatialHash {
   }
 
   insert(item) {
-    if(!item.range) throw 'Exception: item has no range object';
+    if(!item.range) throw "Exception: item has no range object";
     var bounds = getBounds(item.range);
     var x1 = Math.max(~~((bounds.left - this.range.x) / this.cellSize), 0);
     var x2 = Math.min(~~((bounds.right - this.range.x) / this.cellSize), this.horizontalCells - 1);
@@ -42,7 +43,7 @@ export class SpatialHash {
       for(j = x1; j <= x2; j++) this.hash[i][j].push(item);
     }
 
-    if(this.itemCount++ >= 9e15) throw 'Exception: more than 9E15 (900 000 000 000 000) items';
+    if(this.itemCount++ >= 9e15) throw "Exception: more than 9E15 (900 000 000 000 000) items";
     else if(this.id > 9e15 - 1) this.id = -9e15;
   }
 
@@ -128,7 +129,8 @@ export class SpatialHash {
 }
 
 export function intersects(a, b) {
-  return a.x <= b.x + b.width && a.x + a.width >= b.x && a.y <= b.y + b.height && a.y + a.height >= b.y;
+  return (a.x <= b.x + b.width && a.x + a.width >= b.x && a.y <= b.y + b.height && a.y + a.height >= b.y
+  );
 }
 
 export function getBounds(range) {

@@ -17,7 +17,7 @@
  * along with BackBee. If not, see <http://www.gnu.org/licenses/>.
  */
 (function(window) {
-  'use strict';
+  "use strict";
 
   var setValues = function hashMapSetValues(HashMap, values) {
       var value;
@@ -48,13 +48,13 @@
         configurable: false
       });
     }, HashMap = function(values) {
-      defineArrayProperty(this, 'map_keys');
+      defineArrayProperty(this, "map_keys");
 
-      defineArrayProperty(this, 'map_values');
+      defineArrayProperty(this, "map_values");
 
-      defineSizeProperty(this, 'length');
+      defineSizeProperty(this, "length");
 
-      defineSizeProperty(this, 'size');
+      defineSizeProperty(this, "size");
 
       setValues(this, values);
     };
@@ -230,8 +230,8 @@
     return values;
   };
 
-  if(typeof define === 'function' && define.amd) {
-    define('bbhashmap', [], function() {
+  if(typeof define === "function" && define.amd) {
+    define("bbhashmap", [], function() {
       return HashMap;
     });
   } else {

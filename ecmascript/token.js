@@ -13,8 +13,8 @@ export class Token {
       column: pos ? pos.column : 0,
       line: pos ? pos.line : 0,
       toString() {
-        let s = this.line + ':' + this.column;
-        if(delta > 0) s += '-' + (this.column + delta);
+        let s = this.line + ":" + this.column;
+        if(delta > 0) s += "-" + (this.column + delta);
         return s;
       }
     };
@@ -22,15 +22,15 @@ export class Token {
 }
 
 export const tokenTypes = {
-  comment: 'comment',
-  stringLiteral: 'stringLiteral',
-  numericLiteral: 'numericLiteral',
-  booleanLiteral: 'booleanLiteral',
-  nullLiteral: 'nullLiteral',
-  punctuator: 'punctuator',
-  keyword: 'keyword',
-  identifier: 'identifier',
-  regexpLiteral: 'regexpLiteral',
-  eof: 'eof'
+  comment: "comment",
+  stringLiteral: "stringLiteral",
+  numericLiteral: "numericLiteral",
+  booleanLiteral: "booleanLiteral",
+  nullLiteral: "nullLiteral",
+  punctuator: "punctuator",
+  keyword: "keyword",
+  identifier: "identifier",
+  regexpLiteral: "regexpLiteral",
+  eof: "eof"
 };
 export default Token;

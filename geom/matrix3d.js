@@ -12,11 +12,43 @@
 //     \//  |_|| |_||_| |_| |_| ||_| |_|  \\/     \\
 
 (function(window) {
-  'use strict';
+  "use strict";
 
   var IDENTITY = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
-  function multiply(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P) {
+  function multiply(a,
+    b,
+    c,
+    d,
+    e,
+    f,
+    g,
+    h,
+    i,
+    j,
+    k,
+    l,
+    m,
+    n,
+    o,
+    p,
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    I,
+    J,
+    K,
+    L,
+    M,
+    N,
+    O,
+    P
+  ) {
     return [
       a * A + b * E + c * I + d * M,
       a * B + b * F + c * J + d * N,
@@ -71,7 +103,7 @@
     }, translate: function(x, y, z) {
       return this.multiply([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1]);
     }, toString: function() {
-      return 'matrix3d(' + this.entities.join(',') + ')';
+      return "matrix3d(" + this.entities.join(",") + ")";
     }
   };
 

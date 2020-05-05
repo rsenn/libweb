@@ -8,51 +8,51 @@
 function json2xml_translator() {
   var X = {
     toXml: function(v, name, ind, mySiblingAttrs) {
-      if(typeof name == 'undefined') name = null;
-      if(typeof ind == 'undefined') ind = '';
-      if(typeof mySiblingAttrs == 'undefined') mySiblingAttrs = {};
+      if(typeof name == "undefined") name = null;
+      if(typeof ind == "undefined") ind = "";
+      if(typeof mySiblingAttrs == "undefined") mySiblingAttrs = {};
 
-      var xml = '';
+      var xml = "";
 
       if(v instanceof Array) {
-        xml += ind + '<' + name;
+        xml += ind + "<" + name;
         // Since we are dealing with an Array, there cannot be child attributes,
         // but there can be sibling attributes passed by caller
         for(var m in mySiblingAttrs) {
-          xml += ' ' + m + '="' + mySiblingAttrs[m].toString() + '"';
+          xml += " " + m + '="' + mySiblingAttrs[m].toString() + '"';
         }
-        xml += '>\n';
+        xml += ">\n";
         for(var i = 0, n = v.length; i < n; i++) {
           if(v[i] instanceof Array) {
             // TODO: Honestly, I have no idea what this does, nor what it should do... (nested lists, what does that even mean in xml?)
-            xml += ind + X.toXml(v[i], name, ind + '\t') + '\n';
-          } else if(typeof v[i] == 'object') {
+            xml += ind + X.toXml(v[i], name, ind + "\t") + "\n";
+          } else if(typeof v[i] == "object") {
             xml += X.toXml(v[i], null, ind);
           } else {
-            xml += ind + '\t' + v[i].toString();
-            xml += xml.charAt(xml.length - 1) == '\n' ? '' : '\n';
+            xml += ind + "\t" + v[i].toString();
+            xml += xml.charAt(xml.length - 1) == "\n" ? "" : "\n";
           }
         }
         if(name != null) {
-          xml += (xml.charAt(xml.length - 1) == '\n' ? ind : '') + '</' + name + '>';
+          xml += (xml.charAt(xml.length - 1) == "\n" ? ind : "") + "</" + name + ">";
         }
-      } else if(typeof v == 'object') {
+      } else if(typeof v == "object") {
         var hasChild = false;
         if(name === null) {
           // root element
           // note: for convenience, if the top level in json has multiple elements, we'll just output multiple xml documents after each other
           // ... this space intentionally left blank ...
         } else {
-          xml += ind + '<' + name;
+          xml += ind + "<" + name;
         }
         // Before doing anything else, check for and separate those that
         // are attributes of the "sibling attribute" type (see below)
         var newSiblingAttrs = {};
         for(var m in v) {
-          if(m.search('@') >= 1) {
+          if(m.search("@") >= 1) {
             // @ exists, but is not the first character
-            var parts = m.split('@');
-            if(typeof newSiblingAttrs[parts[0]] == 'undefined') newSiblingAttrs[parts[0]] = {};
+            var parts = m.split("@");
+            if(typeof newSiblingAttrs[parts[0]] == "undefined") newSiblingAttrs[parts[0]] = {};
             newSiblingAttrs[parts[0]][parts[1]] = v[m];
             delete v[m];
           }
@@ -62,44 +62,45 @@ function json2xml_translator() {
           // either be a child, like so: {e : {@attribute : value}} or a
           // sibling, like so: {e : ..., e@attribute : value }
           // This test for the child (legacy)
-          if(m.charAt(0) == '@') xml += ' ' + m.substr(1) + '="' + v[m].toString() + '"';
+          if(m.charAt(0) == "@") xml += " " + m.substr(1) + '="' + v[m].toString() + '"';
           else hasChild = true;
         }
         // Now add sibling attributes (passed by caller)
         for(var m in mySiblingAttrs) {
-          xml += ' ' + m + '="' + mySiblingAttrs[m].toString() + '"';
+          xml += " " + m + '="' + mySiblingAttrs[m].toString() + '"';
         }
         if(name != null) {
-          xml += hasChild ? '' : '/';
-          xml += '>\n';
+          xml += hasChild ? "" : "/";
+          xml += ">\n";
         }
         if(hasChild) {
           for(var m in v) {
             // legacy form
-            if(m == '#text') xml += v[m];
-            else if(m == '#cdata') xml += '<![CDATA[' + v[m] + ']]>';
-            else if(m.charAt(0) != '@') xml += X.toXml(v[m], m, ind + '\t', newSiblingAttrs[m]) + '\n';
+            if(m == "#text") xml += v[m];
+            else if(m == "#cdata") xml += "<![CDATA[" + v[m] + "]]>";
+            else if(m.charAt(0) != "@")
+              xml += X.toXml(v[m], m, ind + "\t", newSiblingAttrs[m]) + "\n";
           }
           if(name != null) {
-            xml += (xml.charAt(xml.length - 1) == '\n' ? ind : '') + '</' + name + '>';
+            xml += (xml.charAt(xml.length - 1) == "\n" ? ind : "") + "</" + name + ">";
           }
         }
       } else {
         // string or number value
-        xml += ind + '<' + name;
+        xml += ind + "<" + name;
         // Add sibling attributes (passed by caller)
         for(var m in mySiblingAttrs) {
-          xml += ' ' + m + '="' + mySiblingAttrs[m].toString() + '"';
+          xml += " " + m + '="' + mySiblingAttrs[m].toString() + '"';
         }
-        xml += '>';
-        xml += v.toString() + '</' + name + '>';
+        xml += ">";
+        xml += v.toString() + "</" + name + ">";
       }
       return xml;
     },
     parseJson: function(jsonString) {
       var obj;
       // TODO: Should use real JSON parser (in a way that works both in node and browser)
-      eval('obj = ' + jsonString + ';');
+      eval("obj = " + jsonString + ";");
       return obj;
     }
   };
@@ -110,10 +111,10 @@ function json2xml(json, tab) {
   var X = json2xml_translator();
   var xml = X.toXml(X.parseJson(json));
   // If tab given, do pretty print, otherwise remove white space
-  return tab ? xml.replace(/\t/g, tab) : xml.replace(/\t|\n/g, '');
+  return tab ? xml.replace(/\t/g, tab) : xml.replace(/\t|\n/g, "");
 }
 
 // node.js
-if(typeof module != 'undefined') {
+if(typeof module != "undefined") {
   module.exports = json2xml_translator();
 }

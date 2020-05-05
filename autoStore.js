@@ -1,4 +1,4 @@
-import { autorun, toJS } from 'mobx';
+import { autorun, toJS } from "mobx";
 
 export const makeLocalStorage = () => {
   if(global.window && window.localStorage)
@@ -52,7 +52,8 @@ export const makeDummyStorage = () => ({
 
 export function getLocalStorage() {
   if(getLocalStorage.store === undefined) {
-    getLocalStorage.store = global.window && window.localStorage ? makeLocalStorage() : makeDummyStorage();
+    getLocalStorage.store =
+      global.window && window.localStorage ? makeLocalStorage() : makeDummyStorage();
   }
   return getLocalStorage.store;
 }

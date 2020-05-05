@@ -8,7 +8,7 @@
 function xml2json_translator() {
   var X = {
     err: function(msg) {
-      alert('Error: ' + msg);
+      alert("Error: " + msg);
     },
     /**
      * Return a js object from given xml.
@@ -30,7 +30,7 @@ function xml2json_translator() {
         if(xml.nodeType == 1) {
           // element node
           o[xml.nodeName] = X.toObj(xml, o);
-        } else X.err('unhandled node type: ' + xml.nodeType);
+        } else X.err("unhandled node type: " + xml.nodeType);
         return o;
       }
 
@@ -40,7 +40,9 @@ function xml2json_translator() {
 
         if(xml.attributes.length)
           // element with attributes  ..
-          for(var i = 0; i < xml.attributes.length; i++) parent[/*xml.nodeName + "@" +*/ xml.attributes[i].nodeName] = xml.attributes[i].nodeValue;
+          for(var i = 0; i < xml.attributes.length; i++)
+            parent[/*xml.nodeName + "@" +*/ xml.attributes[i].nodeName] =
+              xml.attributes[i].nodeValue;
 
         if(xml.firstChild) {
           // element has child nodes. Figure out some properties of it's structure, to guide us later.
@@ -71,13 +73,14 @@ function xml2json_translator() {
               if(n.nodeType == 3)
                 // text node
                 //o["#text"] = X.escape(n.nodeValue);
-                o['#text'] = X.escape(n.nodeValue);
+                o["#text"] = X.escape(n.nodeValue);
               else if(n.nodeType == 4)
                 // cdata node
-                o['#cdata'] = X.escape(n.nodeValue);
+                o["#cdata"] = X.escape(n.nodeValue);
               else if(o[n.nodeName]) {
                 // multiple occurence of element ..
-                if(o[n.nodeName] instanceof Array) o[n.nodeName][o[n.nodeName].length] = X.toObj(n, o);
+                if(o[n.nodeName] instanceof Array)
+                  o[n.nodeName][o[n.nodeName].length] = X.toObj(n, o);
                 else o[n.nodeName] = [o[n.nodeName], X.toObj(n, o)];
               } // first occurence of element..
               else o[n.nodeName] = X.toObj(n, o);
@@ -93,7 +96,7 @@ function xml2json_translator() {
               // TODO: shouldn't escape() happen in toJson() / printing phase???
               else if(n.nodeType == 4)
                 // cdata node
-                o[o.length] = { '#cdata': X.escape(n.nodeValue) };
+                o[o.length] = { "#cdata": X.escape(n.nodeValue) };
               // TODO: same here? especially with cdata?
               else {
                 // element
@@ -112,59 +115,65 @@ function xml2json_translator() {
           } else if(cdataChild) {
             // single cdata
             X.removeWhite(xml);
-            o['#cdata'] = X.escape(xml.firstChild.nodeValue);
+            o["#cdata"] = X.escape(xml.firstChild.nodeValue);
           }
         }
 
         //if (!xml.attributes.length && !xml.firstChild) o = null;
         if(!xml.firstChild) o = null;
-      } else X.err('unhandled node type: ' + xml.nodeType);
+      } else X.err("unhandled node type: " + xml.nodeType);
 
       return o;
     },
     toJson: function(o, ind) {
-      var json = '';
+      var json = "";
       if(o instanceof Array) {
         for(var i = 0, n = o.length; i < n; i++) {
           // strings usually follow the colon, but in arrays we must add the usual indent
-          var extra_indent = '';
-          if(typeof o[i] == 'string') extra_indent = ind + '\t';
-          o[i] = extra_indent + X.toJson(o[i], ind + '\t');
+          var extra_indent = "";
+          if(typeof o[i] == "string") extra_indent = ind + "\t";
+          o[i] = extra_indent + X.toJson(o[i], ind + "\t");
         }
-        json += '[' + (o.length > 1 ? '\n' + o.join(',\n') + '\n' + ind : o.join('')) + ']';
-      } else if(o == null) json += 'null';
-      else if(typeof o == 'string') json += '"' + o.toString() + '"';
-      else if(typeof o == 'object') {
-        json += ind + '{';
+        json += "[" + (o.length > 1 ? "\n" + o.join(",\n") + "\n" + ind : o.join("")) + "]";
+      } else if(o == null) json += "null";
+      else if(typeof o == "string") json += '"' + o.toString() + '"';
+      else if(typeof o == "object") {
+        json += ind + "{";
         // Count the members in o
         var i = 0;
         for(var member in o) i++;
         // ...so that we know when we are at the last element when doing this
         for(var member in o) {
-          json += '\n' + ind + '\t"' + member + '":' + X.toJson(o[member], ind + '\t');
-          json += i > 1 ? ',' : '\n' + ind;
+          json += "\n" + ind + '\t"' + member + '":' + X.toJson(o[member], ind + "\t");
+          json += i > 1 ? "," : "\n" + ind;
           i--;
         }
-        json += '}';
+        json += "}";
       } else json += o.toString();
       return json;
     },
     innerXml: function(node) {
-      var s = '';
-      if('innerHTML' in node) s = node.innerHTML;
+      var s = "";
+      if("innerHTML" in node) s = node.innerHTML;
       else {
         var asXml = function(n) {
-          var s = '';
+          var s = "";
           if(n.nodeType == 1) {
-            s += '<' + n.nodeName;
-            for(var i = 0; i < n.attributes.length; i++) s += ' ' + n.attributes[i].nodeName + '="' + (n.attributes[i].nodeValue || '').toString() + '"';
+            s += "<" + n.nodeName;
+            for(var i = 0; i < n.attributes.length; i++)
+              s +=
+                " " +
+                n.attributes[i].nodeName +
+                '="' +
+                (n.attributes[i].nodeValue || "").toString() +
+                '"';
             if(n.firstChild) {
-              s += '>';
+              s += ">";
               for(var c = n.firstChild; c; c = c.nextSibling) s += asXml(c);
-              s += '</' + n.nodeName + '>';
-            } else s += '/>';
+              s += "</" + n.nodeName + ">";
+            } else s += "/>";
           } else if(n.nodeType == 3) s += n.nodeValue;
-          else if(n.nodeType == 4) s += '<![CDATA[' + n.nodeValue + ']]>';
+          else if(n.nodeType == 4) s += "<![CDATA[" + n.nodeValue + "]]>";
           return s;
         };
         for(var c = node.firstChild; c; c = c.nextSibling) s += asXml(c);
@@ -173,10 +182,10 @@ function xml2json_translator() {
     },
     escape: function(txt) {
       return txt
-        .replace(/[\\]/g, '\\\\')
+        .replace(/[\\]/g, "\\\\")
         .replace(/[\"]/g, '\\"')
-        .replace(/[\n]/g, '\\n')
-        .replace(/[\r]/g, '\\r');
+        .replace(/[\n]/g, "\\n")
+        .replace(/[\r]/g, "\\r");
     },
     removeWhite: function(e) {
       e.normalize();
@@ -200,7 +209,7 @@ function xml2json_translator() {
     },
     parseXml: function(xmlString) {
       var dom = null;
-      var xml = require('libxml');
+      var xml = require("libxml");
       dom = xml.parseFromString(xmlString);
       return dom;
     }
@@ -215,9 +224,9 @@ export function xml2json(xml, tab) {
     // document node
     xml = xml.documentElement;
   var o = X.toObj(X.removeWhite(xml));
-  var json = X.toJson(o, '');
+  var json = X.toJson(o, "");
   // If tab given, do pretty print, otherwise remove white space
-  return tab ? json.replace(/\t/g, tab) : json.replace(/\t|\n/g, '');
+  return tab ? json.replace(/\t/g, tab) : json.replace(/\t|\n/g, "");
 }
 
 export default xml2json_translator();

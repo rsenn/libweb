@@ -1,22 +1,22 @@
-import parser, { xml2json } from '../json/xml2json.js';
-import Util from '../util.js';
+import parser, { xml2json } from "../json/xml2json.js";
+import Util from "../util.js";
 
 const pinThickness = 0.1524;
 
 const schematicLayers = [
-  { id: 91, name: 'Nets' },
-  { id: 92, name: 'Busses' },
-  { id: 94, name: 'Symbols' },
-  { id: 95, name: 'Names' },
-  { id: 96, name: 'Values' },
-  { id: 97, name: 'Info' }
+  { id: 91, name: "Nets" },
+  { id: 92, name: "Busses" },
+  { id: 94, name: "Symbols" },
+  { id: 95, name: "Names" },
+  { id: 96, name: "Values" },
+  { id: 97, name: "Info" }
 ];
 
 const pinSizes = [
-  { size: 'long', length: 7.62 },
-  { size: 'middle', length: 5.08 },
-  { size: 'short', length: 2.54 },
-  { size: 'point', length: 0.0 }
+  { size: "long", length: 7.62 },
+  { size: "middle", length: 5.08 },
+  { size: "short", length: 2.54 },
+  { size: "point", length: 0.0 }
 ];
 
 function degToRad(degrees) {
@@ -24,46 +24,46 @@ function degToRad(degrees) {
 }
 
 function schematicGetColor(id) {
-  if(typeof id !== 'number') return null;
+  if(typeof id !== "number") return null;
 
   switch (id) {
     case 0:
-      return '#FFFFFF';
+      return "#FFFFFF";
     case 1:
-      return '#4B4BA5';
+      return "#4B4BA5";
     case 2:
-      return '#4BA54B';
+      return "#4BA54B";
     case 3:
-      return '#4BA5A5';
+      return "#4BA5A5";
     case 4:
-      return '#A54B4B';
+      return "#A54B4B";
     case 5:
-      return '#A54BA5';
+      return "#A54BA5";
     case 6:
-      return '#A5A54B';
+      return "#A5A54B";
     case 8:
-      return '#E6E6E6';
+      return "#E6E6E6";
     case 9:
-      return '#4B4BFF';
+      return "#4B4BFF";
     case 10:
-      return '#4BFF4B';
+      return "#4BFF4B";
     case 11:
-      return '#4BFFFF';
+      return "#4BFFFF";
     case 12:
-      return '#FF4B4B';
+      return "#FF4B4B";
     case 13:
-      return '#FF4BFF';
+      return "#FF4BFF";
     case 14:
-      return '#FFFF4B';
+      return "#FFFF4B";
     case 15:
-      return '#4B4B4B';
+      return "#4B4B4B";
     default:
-      return '#A5A5A5';
+      return "#A5A5A5";
   }
 }
 
 function schematicGetLayer(id) {
-  if(typeof id !== 'number') return null;
+  if(typeof id !== "number") return null;
 
   for(var i = 0; i < schematicLayers.length; i++) {
     if(schematicLayers[i].id === id) return schematicLayers[i];
@@ -79,7 +79,7 @@ function schematicGetLayers(objects) {
   var layers = [];
 
   for(var i = 0; i < objects.length; i++) {
-    if(objects[i].visible !== 'yes') continue;
+    if(objects[i].visible !== "yes") continue;
 
     var layer = schematicGetLayer(Number(objects[i].number));
     if(layer == null) continue;
@@ -117,8 +117,8 @@ function getSymbolName(symbols, part, instance, devicesets) {
     gate = deviceset.gates;
   }
 
-  if(deviceset == null) throw new Error('No deviceset ' + part.deviceset);
-  if(gate == null) throw new Error('No gate ' + instance.gate);
+  if(deviceset == null) throw new Error("No deviceset " + part.deviceset);
+  if(gate == null) throw new Error("No gate " + instance.gate);
 
   if(Array.isArray(symbols)) {
     symbol = symbols.find(x => x.name === gate.symbol);
@@ -150,26 +150,26 @@ function schematicGetParts(schematic, sheet) {
 
     var part = parts.find(x => x.name === instance.part);
 
-    if(part == null) throw new Error('No part', instance.part);
+    if(part == null) throw new Error("No part", instance.part);
 
     var library = libraries.find(x => x.name === part.library);
 
-    if(library == null) throw new Error('No library', part.library);
+    if(library == null) throw new Error("No library", part.library);
 
     var devicesets = library.library.devicesets;
 
-    if(devicesets == null) throw new Error('No devicesets', library.library.devicesets);
+    if(devicesets == null) throw new Error("No devicesets", library.library.devicesets);
 
     var symbols = library.library.symbols;
 
     //console.log("symbols:", symbols);
 
-    if(symbols == null) throw new Error('No symbols', library.library.symbols);
+    if(symbols == null) throw new Error("No symbols", library.library.symbols);
 
     var symbolName = getSymbolName(symbols, part, instance, devicesets);
     //console.log("symbolName:", symbolName);
 
-    if(symbolName == null) throw new Error('No symbolName' + JSON.stringify({ devicesets }));
+    if(symbolName == null) throw new Error("No symbolName" + JSON.stringify({ devicesets }));
 
     var value = part.value != null ? part.value : part.deviceset + part.device;
 
@@ -219,7 +219,7 @@ export function parseSchematic(data, callback) {
   //console.log("raw:", raw);
 
   if(raw == null || raw.eagle === raw) {
-    callback('Error: Failed to parse schematic');
+    callback("Error: Failed to parse schematic");
     return;
   }
 
@@ -235,7 +235,7 @@ export function parseSchematic(data, callback) {
   var layers = schematicGetLayers(raw.eagle.drawing.layers);
 
   if(layers == null || layers.length < 1) {
-    callback('Error: Failed to parse schematic layers');
+    callback("Error: Failed to parse schematic layers");
     return;
   }
   //console.log("sheet:", sheet);
@@ -244,14 +244,14 @@ export function parseSchematic(data, callback) {
   //console.log("raw.eagle.drawing.schematic.sheets.sheet.nets:", raw.eagle.drawing.schematic.sheets.sheet.nets);
 
   if(parts == null || parts.length < 1) {
-    callback('Error: Failed to parse schematic parts');
+    callback("Error: Failed to parse schematic parts");
     return;
   }
 
   var symbols = schematicGetSymbols(parts, raw.eagle.drawing.schematic.libraries);
 
   if(symbols == null || symbols.length < 1) {
-    callback('Error: Failed to parse schematic symbols');
+    callback("Error: Failed to parse schematic symbols");
     return;
   }
 
@@ -260,10 +260,10 @@ export function parseSchematic(data, callback) {
 
   for(let [v, k, o] of Util.traverse(obj)) {
     let num = parseFloat(v);
-    if(!isNaN(num) && k != 'gate') o[k] = num;
-    else if(typeof v == 'string') o[k] = Util.decodeHTMLEntities(v);
+    if(!isNaN(num) && k != "gate") o[k] = num;
+    else if(typeof v == "string") o[k] = Util.decodeHTMLEntities(v);
 
-    if((v === null || k == 'text') && o.type === undefined) {
+    if((v === null || k == "text") && o.type === undefined) {
       o.type = k;
       if(v === null) delete o[k];
     }

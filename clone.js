@@ -1,5 +1,5 @@
 export const clone = (function() {
-  'use strict';
+  "use strict";
 
   function _instanceof(obj, type) {
     return type != null && obj instanceof type;
@@ -50,7 +50,7 @@ export const clone = (function() {
    *    chain will be ignored. (optional - false by default)
    */
   function clone(parent, circular, depth, prototype, includeNonEnumerable) {
-    if(typeof circular === 'object') {
+    if(typeof circular === "object") {
       depth = circular.depth;
       prototype = circular.prototype;
       includeNonEnumerable = circular.includeNonEnumerable;
@@ -61,11 +61,11 @@ export const clone = (function() {
     var allParents = [];
     var allChildren = [];
 
-    var useBuffer = typeof Buffer != 'undefined';
+    var useBuffer = typeof Buffer != "undefined";
 
-    if(typeof circular == 'undefined') circular = true;
+    if(typeof circular == "undefined") circular = true;
 
-    if(typeof depth == 'undefined') depth = Infinity;
+    if(typeof depth == "undefined") depth = Infinity;
 
     // recurse this function so we don't reset allParents and allChildren
     function _clone(parent, depth) {
@@ -76,7 +76,7 @@ export const clone = (function() {
 
       var child;
       var proto;
-      if(typeof parent != 'object') {
+      if(typeof parent != "object") {
         return parent;
       }
 
@@ -113,7 +113,7 @@ export const clone = (function() {
       } else if(_instanceof(parent, Error)) {
         child = Object.create(parent);
       } else {
-        if(typeof prototype == 'undefined') {
+        if(typeof prototype == "undefined") {
           proto = Object.getPrototypeOf(parent);
           child = Object.create(proto);
         } else {
@@ -221,25 +221,25 @@ export const clone = (function() {
   clone.__objToStr = __objToStr;
 
   function __isDate(o) {
-    return typeof o === 'object' && __objToStr(o) === '[object Date]';
+    return typeof o === "object" && __objToStr(o) === "[object Date]";
   }
   clone.__isDate = __isDate;
 
   function __isArray(o) {
-    return typeof o === 'object' && __objToStr(o) === '[object Array]';
+    return typeof o === "object" && __objToStr(o) === "[object Array]";
   }
   clone.__isArray = __isArray;
 
   function __isRegExp(o) {
-    return typeof o === 'object' && __objToStr(o) === '[object RegExp]';
+    return typeof o === "object" && __objToStr(o) === "[object RegExp]";
   }
   clone.__isRegExp = __isRegExp;
 
   function __getRegExpFlags(re) {
-    var flags = '';
-    if(re.global) flags += 'g';
-    if(re.ignoreCase) flags += 'i';
-    if(re.multiline) flags += 'm';
+    var flags = "";
+    if(re.global) flags += "g";
+    if(re.ignoreCase) flags += "i";
+    if(re.multiline) flags += "m";
     return flags;
   }
   clone.__getRegExpFlags = __getRegExpFlags;

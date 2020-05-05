@@ -18,7 +18,7 @@ DOMinate = function dom(array, // Array containing the DOM fragment in JsonML
   returnObject = returnObject || {};
 
   // Set default namespace to XHTML namespace
-  namespace = namespace || 'http://www.w3.org/1999/xhtml';
+  namespace = namespace || "http://www.w3.org/1999/xhtml";
 
   // Create DOM element from syntax sugar string
   function createElement(sugarString) {
@@ -40,7 +40,7 @@ DOMinate = function dom(array, // Array containing the DOM fragment in JsonML
 
     // Assign class if is set
     if((classNames = sugarString.match(/\.[\w-]+/g))) {
-      element.setAttribute('class', classNames.join(' ').replace(/\./g, ''));
+      element.setAttribute("class", classNames.join(" ").replace(/\./g, ""));
     }
 
     // Return DOM element

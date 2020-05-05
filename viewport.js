@@ -90,11 +90,11 @@ var viewport = (function() {
   };
 
   if(window.addEventListener) {
-    window.addEventListener('scroll', update);
-    window.addEventListener('resize', update);
+    window.addEventListener("scroll", update);
+    window.addEventListener("resize", update);
   } else if(window.attachEvent) {
-    window.attachEvent('onscroll', update);
-    window.attachEvent('onresize', update);
+    window.attachEvent("onscroll", update);
+    window.attachEvent("onresize", update);
   }
 
   update();
@@ -104,7 +104,8 @@ var viewport = (function() {
     this.element = element;
     this.inset = inset;
     this.bounds = elementRect(this.element);
-    this.visible = this.bounds.width > 0 && this.bounds.height > 0 && intersects(this.bounds, inset);
+    this.visible =
+      this.bounds.width > 0 && this.bounds.height > 0 && intersects(this.bounds, inset);
   }
 
   Region.prototype.validate = function() {
@@ -150,6 +151,6 @@ var viewport = (function() {
   return self;
 })();
 
-if(typeof module !== 'undefined') {
+if(typeof module !== "undefined") {
   module.exports = viewport;
 }

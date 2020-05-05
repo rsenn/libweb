@@ -1,5 +1,5 @@
-import { Rect } from '../geom/rect.js';
-import Util from '../util.js';
+import { Rect } from "../geom/rect.js";
+import Util from "../util.js";
 
 export class BBox {
   static fromPoints(pts) {
@@ -24,17 +24,16 @@ export class BBox {
   }
 
   updateList(list, offset = 0.0) {
-    for(let arg of list)
-      this.update(arg, offset);
+    for(let arg of list) this.update(arg, offset);
     return this;
   }
 
   update(arg, offset = 0.0) {
     if(Util.isArray(arg)) return this.updateList(arg, offset);
 
-      if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset);
-      if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0);
-      if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0);
+    if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset);
+    if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0);
+    if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0);
     return this;
   }
 
@@ -107,7 +106,7 @@ export class BBox {
   }
   transform(fn = arg => arg, out) {
     if(!out) out = this;
-    for(let prop of ['x1', 'y1', 'x2', 'y2']) {
+    for(let prop of ["x1", "y1", "x2", "y2"]) {
       const v = this[prop];
       out[prop] = fn(v);
     }
@@ -120,7 +119,7 @@ export class BBox {
   }
 
   static from(iter, tp = p => p) {
-    if(typeof iter == 'object' && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
+    if(typeof iter == "object" && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
 
     let r = new BBox();
     let result = iter.next();

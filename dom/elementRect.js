@@ -1,12 +1,12 @@
-import { Element } from './element.js';
-import { Point } from '../geom/point.js';
-import { Size } from '../geom/size.js';
+import { Element } from "./element.js";
+import { Point } from "../geom/point.js";
+import { Size } from "../geom/size.js";
 
 export function ElementRectProxy(element) {
   this.element = element;
 
   if(element.style && element.style.position !== undefined) {
-    if(element.style.position == '') element.style.position = 'relative';
+    if(element.style.position == "") element.style.position = "relative";
   }
 }
 ElementRectProxy.prototype = {
@@ -31,12 +31,12 @@ ElementRectProxy.prototype = {
     });
   }, changeRect: function(fn = (rect, e) => rect) {
     let r = Element.getRect(this.element);
-    if(typeof fn == 'function') r = fn(r, this.element);
+    if(typeof fn == "function") r = fn(r, this.element);
 
     Element.setRect(this.element, r);
   }, setRect: function(arg) {
     let rect;
-    if(typeof arg == 'function') rect = arg(this.getRect(), this.element);
+    if(typeof arg == "function") rect = arg(this.getRect(), this.element);
     else rect = new Rect(...arguments);
     Element.setRect(this.element, rect);
     /*    rect = new Rect(rect);
@@ -62,7 +62,7 @@ const computedSetter = (proxy, compute) =>
 
 export const ElementXYProps = element => {
   Util.defineGetterSetter(element,
-    'x',
+    "x",
     function() {
       return Element.getRect(this).x;
     }, function(val) {
@@ -70,7 +70,7 @@ export const ElementXYProps = element => {
     }
   );
   Util.defineGetterSetter(element,
-    'y',
+    "y",
     function() {
       return Element.getRect(this).y;
     }, function(val) {
@@ -81,7 +81,7 @@ export const ElementXYProps = element => {
 
 export const ElementWHProps = element => {
   Util.defineGetterSetter(element,
-    'w',
+    "w",
     function() {
       return Element.getRect(this).width;
     }, function(val) {
@@ -89,7 +89,7 @@ export const ElementWHProps = element => {
     }
   );
   Util.defineGetterSetter(element,
-    'h',
+    "h",
     function() {
       return Element.getRect(this).height;
     }, function(val) {
@@ -101,12 +101,12 @@ export const ElementWHProps = element => {
 export const ElementPosProps = (element, proxy) => {
   proxy = proxy || new ElementRectProxy(element);
   Util.defineGetterSetter(element,
-    'x',
+    "x",
     () => proxy.getPos().x,
     x => proxy.setPos({ x })
   );
   Util.defineGetterSetter(element,
-    'x1',
+    "x1",
     () => proxy.getPos().x,
     value =>
       proxy.setRect(rect => {
@@ -116,7 +116,7 @@ export const ElementPosProps = (element, proxy) => {
       })
   );
   Util.defineGetterSetter(element,
-    'x2',
+    "x2",
     () => proxy.getRect(rect => rect.x + rect.width),
     value =>
       proxy.setRect(rect => {
@@ -126,12 +126,12 @@ export const ElementPosProps = (element, proxy) => {
       })
   );
   Util.defineGetterSetter(element,
-    'y',
+    "y",
     () => proxy.getPos().y,
     y => proxy.setPos({ y })
   );
   Util.defineGetterSetter(element,
-    'y1',
+    "y1",
     () => proxy.getPos().y,
     value =>
       proxy.setRect(rect => {
@@ -141,7 +141,7 @@ export const ElementPosProps = (element, proxy) => {
       })
   );
   Util.defineGetterSetter(element,
-    'y2',
+    "y2",
     () => proxy.getRect(rect => rect.y + rect.height),
     value =>
       proxy.setRect(rect => {
@@ -155,22 +155,22 @@ export const ElementPosProps = (element, proxy) => {
 export const ElementSizeProps = (element, proxy) => {
   proxy = proxy || new ElementRectProxy(element);
   Util.defineGetterSetter(element,
-    'w',
+    "w",
     () => proxy.getRect().width,
     width => proxy.setSize({ width })
   );
   Util.defineGetterSetter(element,
-    'width',
+    "width",
     () => proxy.getRect().width,
     width => proxy.setSize({ width })
   );
   Util.defineGetterSetter(element,
-    'h',
+    "h",
     () => proxy.getRect().height,
     height => proxy.setSize({ height })
   );
   Util.defineGetterSetter(element,
-    'height',
+    "height",
     () => proxy.getRect().height,
     height => proxy.setSize({ height })
   );

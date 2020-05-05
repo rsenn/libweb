@@ -12,8 +12,8 @@
  * TODO propper text support
  */
 (function(D, W) {
-  var xl = 'http://www.w3.org/1999/xlink',
-    xm = 'http://www.w3.org/2000/svg',
+  var xl = "http://www.w3.org/1999/xlink",
+    xm = "http://www.w3.org/2000/svg",
     each = function(o, f) {
       for(var k in o) if(o.hasOwnProperty(k)) f(o[k], k);
     }, attr = function(e, a) {
@@ -28,10 +28,10 @@
    * @argument width number width of the svg canvas
    */
   var S = function(E, h, w) {
-    if(typeof E === 'string') {
+    if(typeof E === "string") {
       E = D.querySelector(E);
     }
-    var cnv = el('svg', { height: h, width: w, version: 1.1, xmlns: xm });
+    var cnv = el("svg", { height: h, width: w, version: 1.1, xmlns: xm });
     E.appendChild(cnv);
     this.E = cnv;
   };
@@ -43,7 +43,7 @@
   var el = function(t, a) {
     var e = D.createElementNS(xm, t);
     attr(e, a);
-    a.hasOwnProperty('content') && (e.textContent = a.content);
+    a.hasOwnProperty("content") && (e.textContent = a.content);
     return e;
   };
 
@@ -63,7 +63,19 @@
   /**
    * shortcut functions for all the shapes
    */
-  ['circle', 'ellipse', 'image', 'line', 'marker', 'path', 'polygon', 'radialGradient', 'rect', 'text', 'tspan'].forEach(function(t) {
+  [
+    "circle",
+    "ellipse",
+    "image",
+    "line",
+    "marker",
+    "path",
+    "polygon",
+    "radialGradient",
+    "rect",
+    "text",
+    "tspan"
+  ].forEach(function(t) {
     P[t] = function(a) {
       return this.draw(t, a);
     };

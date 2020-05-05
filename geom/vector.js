@@ -1,4 +1,4 @@
-import Util from '../util.js';
+import Util from "../util.js";
 
 export function Vector(init, n, base = Int32Array) {
   if(n === undefined) n = init.length;
