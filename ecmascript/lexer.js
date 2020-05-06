@@ -1,6 +1,6 @@
-import { Token } from './token.js';
-import { tokenTypes } from './token.js';
-import Util from '../util.js';
+import { Token } from "./token.js";
+import { tokenTypes } from "./token.js";
+import Util from "../util.js";
 
 export function Stack() {
   let stack = Util.getCallers(2, 30);
@@ -27,7 +27,7 @@ export function SyntaxError(msg, ast) {
 }
 
 SyntaxError.prototype.toString = function() {
-  return this.msg + '';
+  return this.msg + "";
 };
 
 function Lexer(sourceText) {
@@ -72,7 +72,7 @@ l.peek = function(offset = 0) {
 l.next = function() {
   const c = this.peek();
   if(c !== null) {
-    if(c == '\n') {
+    if(c == "\n") {
       this.line++;
       this.column = 1;
     }
@@ -105,7 +105,7 @@ l.accept = function(validator) {
   const c = this.peek();
   if(c !== null && validator(c)) {
     this.pos++;
-    if(c != '\n') {
+    if(c != "\n") {
       this.column++;
     } else {
       this.column = 0;
@@ -161,29 +161,29 @@ l.addToken = function(type) {
 
 // Whitespace characters as specified by ES1
 function isWhitespace(c) {
-  if(c === '\u0009' || c === '\u000B' || c === '\u000C' || c === '\u0020') {
+  if(c === "\u0009" || c === "\u000B" || c === "\u000C" || c === "\u0020") {
     return true;
   }
   return false;
 }
 
 function isLineTerminator(c) {
-  if(c === '\n' || c === '\r') {
+  if(c === "\n" || c === "\r") {
     return true;
   }
   return false;
 }
 
 function isQuoteChar(c) {
-  return c === '"' || c === "'" || c === '`';
+  return c === '"' || c === "'" || c === "`";
 }
 
 function isRegExpChar(c) {
-  return c === '/';
+  return c === "/";
 }
 
 function isPunctuatorChar(c) {
-  const chars = ['=', '.', '-', '%', '}', '>', ',', '*', '[', '<', '!', '/', ']', '~', '&', '(', ';', '?', '|', ')', ':', '+', '^', '{', '@'];
+  const chars = ["=", ".", "-", "%", "}", ">", ",", "*", "[", "<", "!", "/", "]", "~", "&", "(", ";", "?", "|", ")", ":", "+", "^", "{", "@"];
 
   return chars.indexOf(c) >= 0;
 }
@@ -191,16 +191,16 @@ function isPunctuatorChar(c) {
 function isPunctuator(word) {
   switch (word.length) {
     case 1:
-      return ['=', '.', '-', '%', '}', '>', ',', '*', '[', '<', '!', '/', ']', '~', '&', '(', ';', '?', '|', ')', ':', '+', '^', '{', '@'].indexOf(word) >= 0;
+      return ["=", ".", "-", "%", "}", ">", ",", "*", "[", "<", "!", "/", "]", "~", "&", "(", ";", "?", "|", ")", ":", "+", "^", "{", "@"].indexOf(word) >= 0;
 
     case 2:
-      return ['!=', '*=', '&&', '<<', '/=', '||', '>>', '&=', '==', '++', '|=', '<=', '--', '+=', '^=', '>=', '-=', '%=', '=>'].indexOf(word) >= 0;
+      return ["!=", "*=", "&&", "<<", "/=", "||", ">>", "&=", "==", "++", "|=", "<=", "--", "+=", "^=", ">=", "-=", "%=", "=>"].indexOf(word) >= 0;
 
     case 3:
-      return ['!==', '===', '>>=', '-->>', '<<=', '...'].indexOf(word) >= 0;
+      return ["!==", "===", ">>=", "-->>", "<<=", "..."].indexOf(word) >= 0;
 
     case 4:
-      return word === '-->>=';
+      return word === "-->>=";
 
     default:
       return false;
@@ -208,107 +208,107 @@ function isPunctuator(word) {
 }
 
 function isAlphaChar(c) {
-  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+  return (c >= "a" && c <= "z") || (c >= "A" && c <= "Z");
 }
 
 function isDecimalDigit(c) {
-  return c >= '0' && c <= '9';
+  return c >= "0" && c <= "9";
 }
 
 function isOctalDigit(c) {
-  return c >= '0' && c <= '7';
+  return c >= "0" && c <= "7";
 }
 
 function isHexDigit(c) {
-  return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+  return (c >= "0" && c <= "9") || (c >= "a" && c <= "f") || (c >= "A" && c <= "F");
 }
 
 function isIdentifierChar(c) {
-  return isAlphaChar(c) || c === '$' || c === '_' || isDecimalDigit(c);
+  return isAlphaChar(c) || c === "$" || c === "_" || isDecimalDigit(c);
 }
 
 function isKeyword(word) {
   switch (word.length) {
     case 2:
       switch (word) {
-        case 'if':
-        case 'in':
-        case 'do':
+        case "if":
+        case "in":
+        case "do":
           return true;
       }
       return false;
 
     case 3:
       switch (word) {
-        case 'for':
-        case 'new':
-        case 'var':
-        case 'try':
-        case 'let':
+        case "for":
+        case "new":
+        case "var":
+        case "try":
+        case "let":
           return true;
       }
       return false;
 
     case 4:
       switch (word) {
-        case 'else':
-        case 'this':
-        case 'void':
-        case 'with':
-        case 'case':
-        case 'enum':
-        case 'from':
+        case "else":
+        case "this":
+        case "void":
+        case "with":
+        case "case":
+        case "enum":
+        case "from":
           return true;
       }
       return false;
 
     case 5:
       switch (word) {
-        case 'break':
-        case 'while':
-        case 'catch':
-        case 'class':
-        case 'const':
-        case 'super':
-        case 'throw':
-        case 'await':
+        case "break":
+        case "while":
+        case "catch":
+        case "class":
+        case "const":
+        case "super":
+        case "throw":
+        case "await":
           return true;
       }
       return false;
 
     case 6:
       switch (word) {
-        case 'delete':
-        case 'return':
-        case 'typeof':
-        case 'import':
-        case 'switch':
-        case 'export':
+        case "delete":
+        case "return":
+        case "typeof":
+        case "import":
+        case "switch":
+        case "export":
           return true;
       }
       return false;
 
     case 7:
       switch (word) {
-        case 'default':
-        case 'extends':
-        case 'finally':
+        case "default":
+        case "extends":
+        case "finally":
           return true;
       }
       return false;
 
     case 8:
       switch (word) {
-        case 'continue':
-        case 'function':
-        case 'debugger':
+        case "continue":
+        case "function":
+        case "debugger":
           return true;
       }
       return false;
 
     case 10:
       switch (word) {
-        case 'instanceof':
+        case "instanceof":
           return true;
       }
       return false;
@@ -339,9 +339,9 @@ l.lexIdentifier = function() {
   }
 
   const word = this.source.substring(this.start, this.pos);
-  if(word === 'true' || word === 'false') {
+  if(word === "true" || word === "false") {
     this.addToken(tokenTypes.booleanLiteral);
-  } else if(word === 'null') {
+  } else if(word === "null") {
     this.addToken(tokenTypes.nullLiteral);
   } else if(isKeyword(word)) {
     this.addToken(tokenTypes.keyword);
@@ -356,9 +356,9 @@ l.lexNumber = function() {
 
   // If the first digit is 0, then need to first determine whether it's an
   // octal number, or a hex number, or a decimal number.
-  if(this.accept(oneOf('0'))) {
+  if(this.accept(oneOf("0"))) {
     // If number started with 0x or 0X, then it's a hex number.
-    if(this.accept(oneOf('xX'))) {
+    if(this.accept(oneOf("xX"))) {
       validator = isHexDigit;
 
       // The hex number needs to at least be followed by some digit.
@@ -383,12 +383,12 @@ l.lexNumber = function() {
   if(validator == isDecimalDigit) {
     // A number could have a decimal in it, followed by a sequence of valid
     // digits again.
-    if(this.accept(oneOf('.'))) {
+    if(this.accept(oneOf("."))) {
       this.acceptRun(validator);
     }
 
-    if(this.accept(oneOf('eE'))) {
-      this.accept(oneOf('+-'));
+    if(this.accept(oneOf("eE"))) {
+      this.accept(oneOf("+-"));
       if(!this.accept(validator)) {
         throw new SyntaxError(`${this.position()}Invalid number: ${this.source.substring(this.start, this.pos + 1)}`);
       }
@@ -400,7 +400,7 @@ l.lexNumber = function() {
   // for identifiers or keywords. It also cannot be immediately followed by
   // a string.
   const c = this.peek();
-  if(isIdentifierChar(c) || isQuoteChar(c) || oneOf('.eE')(c)) {
+  if(isIdentifierChar(c) || isQuoteChar(c) || oneOf(".eE")(c)) {
     throw new SyntaxError(`${this.position()}Invalid number: ${this.source.substring(this.start, this.pos + 1)}`);
   }
 
@@ -411,16 +411,16 @@ l.lexNumber = function() {
 
 l.lexRegExp = function() {
   let i = 0;
-  let word = '';
+  let word = "";
   let slashes = 1;
   let validator = c => {
     let last = word.substring(word.length - 1);
-    if(c == '/') {
+    if(c == "/") {
       slashes++;
     } else if(slashes == 2) {
-      return c == 'g' || c == 'i';
+      return c == "g" || c == "i";
     }
-    if(last == ';') return false;
+    if(last == ";") return false;
     // console.log('last: ' + last + " slashes: "+slashes);
     return true;
   };
@@ -449,7 +449,7 @@ l.lexPunctuator = function() {
     // Keep accumulating punctuator chars, and as soon as the accumulated
     // word isn't a valid punctuator, we stop and backup to take the
     // longest valid punctuator before continuing.
-    if(word != '..' && !isPunctuator(word)) {
+    if(word != ".." && !isPunctuator(word)) {
       this.backup();
       this.addToken(tokenTypes.punctuator);
       return this.lexText;
@@ -471,8 +471,8 @@ l.lexPunctuator = function() {
 
 l.lexQuote = quoteChar => {
   return function() {
-    let prevChar = '';
-    let c = '';
+    let prevChar = "";
+    let c = "";
     let escapeEncountered = false;
     do {
       // Keep consuming characters unless we encounter line
@@ -487,19 +487,19 @@ l.lexQuote = quoteChar => {
         // incomplete.
         throw new SyntaxError(`${this.position()}Illegal token: ${this.source.substring(this.start, this.pos)}`);
       } else if(!escapeEncountered) {
-        if(quoteChar === '`' && c == '{' && prevChar == '$') {
-          while(c != '}') {
+        if(quoteChar === "`" && c == "{" && prevChar == "$") {
+          while(c != "}") {
             prevChar = c;
             c = this.next();
           }
-        } else if(isLineTerminator(c) && quoteChar !== '`') {
+        } else if(isLineTerminator(c) && quoteChar !== "`") {
           // If we somehow reached EOL without encountering the
           // ending quote char then this string is incomplete.
           throw new SyntaxError(`${this.position()}Illegal token: ${this.source.substring(this.start, this.pos)}`);
         } else if(c === quoteChar) {
           this.addToken(tokenTypes.stringLiteral);
           return this.lexText;
-        } else if(c === '\\') {
+        } else if(c === "\\") {
           escapeEncountered = true;
         }
       } else {
@@ -521,7 +521,7 @@ l.lexMultiLineComment = function() {
   do {
     // Multi-line comment is terminated if we see * followed by /
     const nextTwo = this.source.substring(this.pos, this.pos + 2);
-    if(nextTwo === '*/') {
+    if(nextTwo === "*/") {
       this.pos += 2;
       this.ignore();
       return this.lexText;
@@ -535,10 +535,10 @@ l.lexText = function() {
   do {
     // Examine the next 2 characters to see if we're encountering code comments
     const nextTwo = this.source.substring(this.pos, this.pos + 2);
-    if(nextTwo === '//') {
+    if(nextTwo === "//") {
       this.pos += 2;
       return this.lexSingleLineComment;
-    } else if(nextTwo === '/*') {
+    } else if(nextTwo === "/*") {
       this.pos += 2;
       return this.lexMultiLineComment;
     }
@@ -552,7 +552,7 @@ l.lexText = function() {
       return this.lexRegExp;
     } else if(isQuoteChar(c)) {
       return this.lexQuote(c);
-    } else if(isDecimalDigit(c) || (c === '.' && isDecimalDigit(this.peek()))) {
+    } else if(isDecimalDigit(c) || (c === "." && isDecimalDigit(this.peek()))) {
       this.backup();
       return this.lexNumber;
     } else if(isWhitespace(c)) {

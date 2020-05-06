@@ -1,12 +1,12 @@
-import React from 'react';
-import { Element } from './element.js';
-import Util from '../util.js';
+import React from "react";
+import { Element } from "./element.js";
+import Util from "../util.js";
 
 export class ReactComponent {
   static create() {
     let args = [...arguments];
     let Tag, props;
-    if(typeof args[0] == 'string') {
+    if(typeof args[0] == "string") {
       Tag = args.shift();
       props = args.shift();
     } else {
@@ -20,7 +20,7 @@ export class ReactComponent {
     const elem = (
       <Tag {...restOfProps}>
         {children.map((child, key) => {
-          if(typeof child === 'object' && child.tagName !== undefined) {
+          if(typeof child === "object" && child.tagName !== undefined) {
             const { tagName, ...props } = child;
             return ReactComponent.create(tagName, { key, ...props });
           }
@@ -32,10 +32,10 @@ export class ReactComponent {
   }
 
   static factory(render_to, root) {
-    if(typeof render_to === 'string') render_to = Element.find(append_to);
-    if(typeof render_to !== 'function') {
+    if(typeof render_to === "string") render_to = Element.find(append_to);
+    if(typeof render_to !== "function") {
       root = root || render_to;
-      render_to = component => require('react-dom').render(component, root || render_to);
+      render_to = component => require("react-dom").render(component, root || render_to);
     }
     let ret = function() {
       let args = [...arguments];
@@ -49,12 +49,12 @@ export class ReactComponent {
   static toObject() {
     let ret = [];
     for(let arg of [...arguments]) {
-      if(!typeof arg == 'object' || arg === null || !arg) continue;
+      if(!typeof arg == "object" || arg === null || !arg) continue;
 
-      const tagName = typeof arg.type == 'string' ? arg.type : typeof arg.type == 'function' ? arg.type.name : 'React.Fragment';
+      const tagName = typeof arg.type == "string" ? arg.type : typeof arg.type == "function" ? arg.type.name : "React.Fragment";
       let { children, ...props } = arg.props || {};
       let obj = { tagName, ...props };
-      if(typeof arg.key == 'string') obj.key = arg.key;
+      if(typeof arg.key == "string") obj.key = arg.key;
       if(!children) children = arg.children;
       const arr = React.Children.toArray(children);
 
@@ -76,26 +76,26 @@ export class ReactComponent {
     for(let prop in props) {
       let value = props[prop];
 
-      if(typeof value == 'function') {
-        value = ' ()=>{} ';
-      } else if(typeof value == 'object') {
+      if(typeof value == "function") {
+        value = " ()=>{} ";
+      } else if(typeof value == "object") {
         value = Util.inspect(value, {
-          indent: '',
-          newline: '\n',
+          indent: "",
+          newline: "\n",
           depth: 10,
-          spacing: ' '
+          spacing: " "
         });
-        value = value.replace(/(,?)(\n?[\s]+|\s+)/g, '$1 ');
-      } else if(typeof value == 'string') {
+        value = value.replace(/(,?)(\n?[\s]+|\s+)/g, "$1 ");
+      } else if(typeof value == "string") {
         value = `'${value}'`;
       }
       str += ` ${prop}={${value}}`;
     }
 
     if(!children || !children.length) {
-      str += ' />';
+      str += " />";
     } else {
-      str += '>';
+      str += ">";
       str += `</${tagName}>`;
     }
     return str;

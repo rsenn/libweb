@@ -48,8 +48,8 @@ import {
   ObjectBinding,
   AwaitExpression,
   RestOfExpression
-} from './estree.js';
-import Util from '../util.js';
+} from "./estree.js";
+import Util from "../util.js";
 
 export class Printer {
   constructor(options = {}) {
@@ -60,10 +60,10 @@ export class Printer {
     let name, fn;
     try {
       name = Util.isObject(node) ? Util.className(node) : null;
-      fn = this['print' + name] || (arg => '' + arg);
+      fn = this["print" + name] || (arg => "" + arg);
     } catch(err) {
-      console.log('printNode error: ', err);
-      console.log('node:', node);
+      console.log("printNode error: ", err);
+      console.log("node:", node);
       process.exit(0);
     }
     if(!fn) {
@@ -79,7 +79,7 @@ export class Printer {
   }
 
   printProgram(program) {
-    return program.body.map(line => this.printNode(line) + ';').join('\n');
+    return program.body.map(line => this.printNode(line) + ";").join("\n");
   }
 
   printString(str) {
@@ -126,7 +126,7 @@ export class Printer {
     const { object, property } = member_expression;
     let output;
 
-    output = this.printNode(object) + '.' + this.printNode(property);
+    output = this.printNode(object) + "." + this.printNode(property);
     return output;
   }
   /*
@@ -135,19 +135,19 @@ export class Printer {
 
   printCallExpression(call_expression) {
     const { arguments: args, callee } = call_expression;
-    return this.printNode(callee) + '(' + args.map(arg => this.printNode(arg)).join(', ') + ')';
+    return this.printNode(callee) + "(" + args.map(arg => this.printNode(arg)).join(", ") + ")";
   }
   /*
   printDecoratorExpression(decorator_expression) {
   }*/
 
   printNewExpression(new_expression) {
-    return 'new ' + this.printCallExpression(new_expression);
+    return "new " + this.printCallExpression(new_expression);
   }
   printSequenceExpression(sequence_expression) {
     const { expressions } = sequence_expression;
 
-    let output = expressions.map(expr => this.printNode(expr)).join(', ');
+    let output = expressions.map(expr => this.printNode(expr)).join(", ");
     return output;
   }
   /*  printStatement(statement) {
@@ -155,35 +155,35 @@ export class Printer {
 
   printBlockStatement(block_statement) {
     const { body } = block_statement;
-    let output = '{\n  ';
-    if(typeof body.map == 'function') output += body.map(line => this.printNode(line).replace(/\n/g, '\n  ')).join(';\n  ');
-    else output += this.printNode(body).replace(/\n/g, '\n  ');
-    return output + ';\n}';
+    let output = "{\n  ";
+    if(typeof body.map == "function") output += body.map(line => this.printNode(line).replace(/\n/g, "\n  ")).join(";\n  ");
+    else output += this.printNode(body).replace(/\n/g, "\n  ");
+    return output + ";\n}";
   }
   /*
   printStatementList(statement_list) {
   }*/
 
   printEmptyStatement(empty_statement) {
-    return '';
+    return "";
   }
   /*  printExpressionStatement(expression_statement) {
   }*/
 
   printReturnStatement(return_statement) {
     const { argument } = return_statement;
-    let output = 'return';
+    let output = "return";
     if(argument) {
-      output += ' ';
+      output += " ";
       output += this.printNode(argument);
     }
     return output;
   }
   printContinueStatement(continue_statement) {
-    return 'continue';
+    return "continue";
   }
   printBreakStatement(break_statement) {
-    return 'break';
+    return "break";
   }
   /*
   printIfStatement(if_statement) {
@@ -191,7 +191,7 @@ export class Printer {
 
   printWhileStatement(while_statement) {
     const { body, test } = do_statement;
-    let output = `while(` + this.printNode(test) + ') ';
+    let output = `while(` + this.printNode(test) + ") ";
     output += this.printBlockStatement(body);
     return output;
   }
@@ -201,11 +201,11 @@ export class Printer {
 
     let output = `do `;
     output += this.printBlockStatement(body);
-    output += ` while(` + this.printNode(test) + ')';
+    output += ` while(` + this.printNode(test) + ")";
     return output;
 
     console.log(arguments[0]);
-    console.log(Object.keys(arguments[0]).join(', '));
+    console.log(Object.keys(arguments[0]).join(", "));
     throw new Error(arguments[0]);
   }
   /*
@@ -217,19 +217,19 @@ export class Printer {
   }*/
   printTryStatement(try_statement) {
     const { body, parameters, trap } = try_statement;
-    let output = 'try ';
+    let output = "try ";
     output += this.printBlockStatement(body);
-    output += ` catch(` + parameters.map(param => this.printNode(param)).join(', ') + ') ';
+    output += ` catch(` + parameters.map(param => this.printNode(param)).join(", ") + ") ";
     output += this.printBlockStatement(trap);
     return output;
   }
   printImportStatement(import_statement) {
     const { identifiers } = import_statement;
-    let output = identifiers.exported ? 'export ' : 'import ';
+    let output = identifiers.exported ? "export " : "import ";
     console.log(identifiers);
 
-    output += identifiers.declarations.map(decl => this.printNode(decl)).join(', ');
-    output += ' from ';
+    output += identifiers.declarations.map(decl => this.printNode(decl)).join(", ");
+    output += " from ";
     output += this.printNode(import_statement.source);
     return output;
   }
@@ -240,42 +240,42 @@ export class Printer {
   }*/
   printFunctionDeclaration(function_declaration) {
     const { id, params, body, exported, async } = function_declaration;
-    let output = exported ? 'export ' : '';
-    output += async ? 'async ' : '';
+    let output = exported ? "export " : "";
+    output += async ? "async " : "";
     output += `function`;
     if(id) output += ` ${this.printNode(id)}`;
     output +=
-      '(' +
+      "(" +
       (params.length !== undefined
         ? Array.from(params)
             .map(param => this.printNode(param))
-            .join(', ')
+            .join(", ")
         : this.printNode(params)) +
-      ')';
+      ")";
     output += this.printBlockStatement(body);
     return output;
   }
   printArrowFunction(arrow_function) {
     const { async, params, body } = arrow_function;
-    let output = async ? 'async ' : '';
+    let output = async ? "async " : "";
     output +=
-      '(' +
+      "(" +
       (params.length !== undefined
         ? Array.from(params)
             .map(param => this.printNode(param))
-            .join(', ')
+            .join(", ")
         : this.printNode(params)) +
-      ')';
-    output += ' => ';
-    if(typeof body.map == 'function') output += body.map(line => this.printNode(line)).join('\n  ');
+      ")";
+    output += " => ";
+    if(typeof body.map == "function") output += body.map(line => this.printNode(line)).join("\n  ");
     else output += this.printNode(body);
     return output;
   }
 
   printVariableDeclaration(variable_declaration) {
     const { kind, exported, declarations } = variable_declaration;
-    let output = kind != '' ? `${kind} ` : '';
-    output += declarations.map(decl => this.printNode(decl)).join(', ');
+    let output = kind != "" ? `${kind} ` : "";
+    output += declarations.map(decl => this.printNode(decl)).join(", ");
     return output;
   }
 
@@ -290,9 +290,9 @@ export class Printer {
 
   printObjectLiteral(object_literal) {
     const { members } = object_literal;
-    let output = '';
+    let output = "";
     for(let key in members) {
-      if(output.length) output += ', ';
+      if(output.length) output += ", ";
       output += `${key}: ${this.printNode(members[key])}`;
     }
     return `{ ${output} }`;
@@ -300,7 +300,7 @@ export class Printer {
 
   printArrayLiteral(array_literal) {
     const { elements } = array_literal;
-    let output = elements.map(elem => this.printNode(elem)).join(', ');
+    let output = elements.map(elem => this.printNode(elem)).join(", ");
     return `[ ${output} ]`;
   }
 
@@ -317,11 +317,11 @@ export class Printer {
 
     if(children instanceof Array && children.length > 0) {
       return `<${tag}${output}>
-  ${children.map(child => this.printNode(child).replace(/\n/g, '\n  ')).join('\n  ')}
+  ${children.map(child => this.printNode(child).replace(/\n/g, "\n  ")).join("\n  ")}
 </${tag}>`;
     }
 
-    return `<${closing ? '/' : ''}${tag}${output}${selfClosing ? ' /' : ''}>`;
+    return `<${closing ? "/" : ""}${tag}${output}${selfClosing ? " /" : ""}>`;
   }
 
   /*
@@ -329,7 +329,7 @@ export class Printer {
   }*/
   printArrayBinding(array_binding) {
     const { elements } = array_binding;
-    let output = elements.map(({ element }) => element.value).join(', ');
+    let output = elements.map(({ element }) => element.value).join(", ");
     return `[ ${output} ]`;
   }
 
@@ -340,7 +340,7 @@ export class Printer {
         if(property.value == element.value) return property.value;
         return `${property.value}: ${element.value}`;
       })
-      .join(', ');
+      .join(", ");
     return `{ ${output} }`;
   }
 

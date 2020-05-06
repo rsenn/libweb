@@ -1,7 +1,7 @@
-import { rect } from '../lib/devtools.js';
-import { Point, Rect } from '../lib/dom.js';
-import Util from '../lib/util.js';
-import { trkl } from './trkl.js';
+import { rect } from "../lib/devtools.js";
+import { Point, Rect } from "../lib/dom.js";
+import Util from "../lib/util.js";
+import { trkl } from "./trkl.js";
 
 export class SwipeTracker {
   static H = 2;
@@ -29,7 +29,7 @@ export class SwipeTracker {
 
     if(global.window) {
       const mouseObserver = trkl.from(observable => {
-        window.addEventListener('mousemove', e => {
+        window.addEventListener("mousemove", e => {
           const pos = {
             x: e.clientX + window.pageXOffset,
             y: e.clientY + window.pageYOffset
@@ -38,7 +38,7 @@ export class SwipeTracker {
         });
       });
       mouseObserver.subscribe(pos => {
-        if(this.mouse === null || !this.mouse || typeof this.mouse.move != 'function') this.mouse = new Point(pos);
+        if(this.mouse === null || !this.mouse || typeof this.mouse.move != "function") this.mouse = new Point(pos);
         else this.mouse.move(pos.x, pos.y);
       });
       const touchObserver = trkl.from(observable => {
@@ -58,10 +58,10 @@ export class SwipeTracker {
           }
           observable(pos);
         };
-        ['touchstart', 'touchmove', 'touchend'].forEach(name => window.addEventListener(name, handler));
+        ["touchstart", "touchmove", "touchend"].forEach(name => window.addEventListener(name, handler));
       });
       touchObserver.subscribe(pos => {
-        if(!this.touch || typeof this.touch.move !== 'function') this.touch = new Point(pos);
+        if(!this.touch || typeof this.touch.move !== "function") this.touch = new Point(pos);
         else this.touch.move(pos.x, pos.y);
       });
     }
@@ -99,11 +99,11 @@ export class SwipeTracker {
     if(this.debug) {
       if(!this.elem) {
         this.elem = rect(r.width, r.height);
-        this.elem.style.position = 'absolute';
+        this.elem.style.position = "absolute";
       }
-      this.elem.style.display = 'block';
-      this.elem.style.border = '2px white dashed';
-      this.elem.style.boxShadow = 'none';
+      this.elem.style.display = "block";
+      this.elem.style.border = "2px white dashed";
+      this.elem.style.boxShadow = "none";
       Object.assign(this.elem.style, Rect.toCSS(r));
     }
   }
@@ -125,12 +125,12 @@ export class SwipeTracker {
       this.mouse = (args && args.mouse) || null;
     }
     SwipeEvent.prototype = {
-      ...(global.document ? document.createEvent('Event') : {}),
+      ...(global.document ? document.createEvent("Event") : {}),
       getAxis: function() {
-        let ret = '';
+        let ret = "";
         if(this.quadrant) {
-          if(Math.abs(this.quadrant.x) > 0) ret += 'H';
-          if(Math.abs(this.quadrant.y) > 0) ret += 'Y';
+          if(Math.abs(this.quadrant.x) > 0) ret += "H";
+          if(Math.abs(this.quadrant.y) > 0) ret += "Y";
         }
         return ret;
       },
@@ -143,13 +143,13 @@ export class SwipeTracker {
             let value = Util.toSource(this[key]);
             return `${key}:${value}`;
           })
-          .join(', ');
+          .join(", ");
       },
       toString: function() {
-        return `SwipeEvent ${this.name.toUpperCase()}(` + (this.delta && this.delta.toString(false)) + ') ' + this.getAxis() + ' ' + this.dist + ' [' + (this.mouse && this.mouse.toSource(false)) + ']';
+        return `SwipeEvent ${this.name.toUpperCase()}(` + (this.delta && this.delta.toString(false)) + ") " + this.getAxis() + " " + this.dist + " [" + (this.mouse && this.mouse.toSource(false)) + "]";
       }
     };
-    Object.defineProperty(SwipeEvent.prototype, 'dist', {
+    Object.defineProperty(SwipeEvent.prototype, "dist", {
       get: function() {
         return this.getDist();
       }
@@ -161,7 +161,7 @@ export class SwipeTracker {
     if(vec.x < 0) amount *= 10;
     if(vec.x > 0) amount *= 0.1;
     this.setState({ amount });
-    console.log('Payment.handleSwipeDirection ', { event, direction, vec });
+    console.log("Payment.handleSwipeDirection ", { event, direction, vec });
   };
 
   getEventHandlers() {
@@ -169,12 +169,12 @@ export class SwipeTracker {
     return Util.bindMethods(
       {
         onSwipeStart: function(event) {
-          console.log('swipestart: ', { event });
+          console.log("swipestart: ", { event });
           inst.end = null;
           inst.start = null;
         },
         onSwipeMove: function(pos, event) {
-          let name = 'move';
+          let name = "move";
           if(!inst.start) {
             inst.start = new Point(this.mouse);
           }
@@ -211,7 +211,7 @@ export class SwipeTracker {
             inst.delta = Point.diff(inst.position, inst.start);
           }
           inst.end = position;
-          inst.emitEvent('end');
+          inst.emitEvent("end");
           inst.start = null;
           inst.quadrant.set(0, 0);
           inst.delta.set(0, 0);

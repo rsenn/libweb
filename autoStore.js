@@ -1,4 +1,4 @@
-import { autorun, toJS } from 'mobx';
+import { autorun, toJS } from "mobx";
 
 export const makeLocalStorage = () => {
   if(global.window && window.localStorage)

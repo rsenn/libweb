@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 function fuzzysearch(needle, haystack) {
   var hlen = haystack.length;

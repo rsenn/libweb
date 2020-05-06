@@ -1,5 +1,5 @@
 function isJpeg(buf) {
-  return typeof buf == 'object' && buf !== null && buf.length >= 10 ? buf.readUInt32LE(6) == 0x4649464a : false;
+  return typeof buf == "object" && buf !== null && buf.length >= 10 ? buf.readUInt32LE(6) == 0x4649464a : false;
 }
 
 const jpegProps = data => {
@@ -27,7 +27,7 @@ const jpegProps = data => {
       };
       if(ret.width > 0 && ret.height > 0) {
         ret.aspect = (ret.width / ret.height).toFixed(3);
-        ret.orientation = ret.aspect > 1 ? 'landscape' : ret.aspect < 1 ? 'portrait' : 'square';
+        ret.orientation = ret.aspect > 1 ? "landscape" : ret.aspect < 1 ? "portrait" : "square";
       }
       break;
     }

@@ -1,4 +1,4 @@
-import m2d from './math2d.js';
+import m2d from "./math2d.js";
 
 var vdec = m2d.inc;
 var vinc = m2d.dec;

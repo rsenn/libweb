@@ -60,7 +60,7 @@ Polygon.approxCircle = (radius, npoints) => {
 Polygon.toPath = (polygon, relative = true) => {
   var prevx = 0;
   var prevy = 0;
-  var path = '';
+  var path = "";
 
   for(var k = 0; k < polygon.length; k++) {
     let x = polygon[k].x !== undefined ? polygon[k].x : polygon[k][0];
@@ -71,12 +71,12 @@ Polygon.toPath = (polygon, relative = true) => {
       y -= prevy;
     }
 
-    let cmd = k == 0 ? 'M' : 'L';
+    let cmd = k == 0 ? "M" : "L";
     if(relative) cmd = cmd.toLowerCase();
     path += `${cmd}${x},${y}`;
   }
 
-  path += 'z';
+  path += "z";
   return path;
 };
 

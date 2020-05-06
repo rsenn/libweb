@@ -284,12 +284,12 @@ var WebGL2D = /*this.WebGL2D =*/ function WebGL2D(canvas, options) {
   // Override getContext function with "webgl-2d" enabled version
   canvas.getContext = (function(gl2d) {
     return function(context) {
-      if((gl2d.options.force || context === 'webgl-2d') && !(canvas.width === 0 || canvas.height === 0)) {
+      if((gl2d.options.force || context === "webgl-2d") && !(canvas.width === 0 || canvas.height === 0)) {
         if(gl2d.gl) {
           return gl2d.gl;
         }
 
-        var gl = (gl2d.gl = gl2d.canvas.$getContext('experimental-webgl'));
+        var gl = (gl2d.gl = gl2d.canvas.$getContext("experimental-webgl"));
 
         gl2d.initShaders();
         gl2d.initBuffers();
@@ -341,35 +341,35 @@ var shaderMask = {
 // Fragment shader source
 WebGL2D.prototype.getFragmentShaderSource = function getFragmentShaderSource(sMask) {
   var fsSource = [
-    '#ifdef GL_ES',
-    'precision highp float;',
-    '#endif',
+    "#ifdef GL_ES",
+    "precision highp float;",
+    "#endif",
 
-    '#define hasTexture ' + (sMask & shaderMask.texture ? '1' : '0'),
-    '#define hasCrop ' + (sMask & shaderMask.crop ? '1' : '0'),
+    "#define hasTexture " + (sMask & shaderMask.texture ? "1" : "0"),
+    "#define hasCrop " + (sMask & shaderMask.crop ? "1" : "0"),
 
-    'varying vec4 vColor;',
+    "varying vec4 vColor;",
 
-    '#if hasTexture',
-    'varying vec2 vTextureCoord;',
-    'uniform sampler2D uSampler;',
-    '#if hasCrop',
-    'uniform vec4 uCropSource;',
-    '#endif',
-    '#endif',
+    "#if hasTexture",
+    "varying vec2 vTextureCoord;",
+    "uniform sampler2D uSampler;",
+    "#if hasCrop",
+    "uniform vec4 uCropSource;",
+    "#endif",
+    "#endif",
 
-    'void main(void) {',
-    '#if hasTexture',
-    '#if hasCrop',
-    'gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x * uCropSource.z, vTextureCoord.y * uCropSource.w) + uCropSource.xy);',
-    '#else',
-    'gl_FragColor = texture2D(uSampler, vTextureCoord);',
-    '#endif',
-    '#else',
-    'gl_FragColor = vColor;',
-    '#endif',
-    '}'
-  ].join('\n');
+    "void main(void) {",
+    "#if hasTexture",
+    "#if hasCrop",
+    "gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x * uCropSource.z, vTextureCoord.y * uCropSource.w) + uCropSource.xy);",
+    "#else",
+    "gl_FragColor = texture2D(uSampler, vTextureCoord);",
+    "#endif",
+    "#else",
+    "gl_FragColor = vColor;",
+    "#endif",
+    "}"
+  ].join("\n");
 
   return fsSource;
 };
@@ -381,37 +381,37 @@ WebGL2D.prototype.getVertexShaderSource = function getVertexShaderSource(stackDe
   stackDepth = stackDepth || 1;
 
   var vsSource = [
-    '#define hasTexture ' + (sMask & shaderMask.texture ? '1' : '0'),
-    'attribute vec4 aVertexPosition;',
+    "#define hasTexture " + (sMask & shaderMask.texture ? "1" : "0"),
+    "attribute vec4 aVertexPosition;",
 
-    '#if hasTexture',
-    'varying vec2 vTextureCoord;',
-    '#endif',
+    "#if hasTexture",
+    "varying vec2 vTextureCoord;",
+    "#endif",
 
-    'uniform vec4 uColor;',
-    'uniform mat3 uTransforms[' + stackDepth + '];',
+    "uniform vec4 uColor;",
+    "uniform mat3 uTransforms[" + stackDepth + "];",
 
-    'varying vec4 vColor;',
+    "varying vec4 vColor;",
 
-    'const mat4 pMatrix = mat4(' + w + ',0,0,0, 0,' + h + ',0,0, 0,0,1.0,1.0, -1.0,1.0,0,0);',
+    "const mat4 pMatrix = mat4(" + w + ",0,0,0, 0," + h + ",0,0, 0,0,1.0,1.0, -1.0,1.0,0,0);",
 
-    'mat3 crunchStack(void) {',
-    'mat3 result = uTransforms[0];',
-    'for (int i = 1; i < ' + stackDepth + '; ++i) {',
-    'result = uTransforms[i] * result;',
-    '}',
-    'return result;',
-    '}',
+    "mat3 crunchStack(void) {",
+    "mat3 result = uTransforms[0];",
+    "for (int i = 1; i < " + stackDepth + "; ++i) {",
+    "result = uTransforms[i] * result;",
+    "}",
+    "return result;",
+    "}",
 
-    'void main(void) {',
-    'vec3 position = crunchStack() * vec3(aVertexPosition.x, aVertexPosition.y, 1.0);',
-    'gl_Position = pMatrix * vec4(position, 1.0);',
-    'vColor = uColor;',
-    '#if hasTexture',
-    'vTextureCoord = aVertexPosition.zw;',
-    '#endif',
-    '}'
-  ].join('\n');
+    "void main(void) {",
+    "vec3 position = crunchStack() * vec3(aVertexPosition.x, aVertexPosition.y, 1.0);",
+    "gl_Position = pMatrix * vec4(position, 1.0);",
+    "vColor = uColor;",
+    "#if hasTexture",
+    "vTextureCoord = aVertexPosition.zw;",
+    "#endif",
+    "}"
+  ].join("\n");
   return vsSource;
 };
 
@@ -438,7 +438,7 @@ WebGL2D.prototype.initShaders = function initShaders(transformStackDepth, sMask)
     gl.compileShader(this.fs);
 
     if(!gl.getShaderParameter(this.fs, gl.COMPILE_STATUS)) {
-      throw 'fragment shader error: ' + gl.getShaderInfoLog(this.fs);
+      throw "fragment shader error: " + gl.getShaderInfoLog(this.fs);
     }
 
     var vs = (this.vs = gl.createShader(gl.VERTEX_SHADER));
@@ -446,7 +446,7 @@ WebGL2D.prototype.initShaders = function initShaders(transformStackDepth, sMask)
     gl.compileShader(this.vs);
 
     if(!gl.getShaderParameter(this.vs, gl.COMPILE_STATUS)) {
-      throw 'vertex shader error: ' + gl.getShaderInfoLog(this.vs);
+      throw "vertex shader error: " + gl.getShaderInfoLog(this.vs);
     }
 
     var shaderProgram = (this.shaderProgram = gl.createProgram());
@@ -456,21 +456,21 @@ WebGL2D.prototype.initShaders = function initShaders(transformStackDepth, sMask)
     gl.linkProgram(shaderProgram);
 
     if(!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-      throw 'Could not initialise shaders.';
+      throw "Could not initialise shaders.";
     }
 
     gl.useProgram(shaderProgram);
 
-    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
+    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
-    shaderProgram.uColor = gl.getUniformLocation(shaderProgram, 'uColor');
-    shaderProgram.uSampler = gl.getUniformLocation(shaderProgram, 'uSampler');
-    shaderProgram.uCropSource = gl.getUniformLocation(shaderProgram, 'uCropSource');
+    shaderProgram.uColor = gl.getUniformLocation(shaderProgram, "uColor");
+    shaderProgram.uSampler = gl.getUniformLocation(shaderProgram, "uSampler");
+    shaderProgram.uCropSource = gl.getUniformLocation(shaderProgram, "uCropSource");
 
     shaderProgram.uTransforms = [];
     for(var i = 0; i < transformStackDepth; ++i) {
-      shaderProgram.uTransforms[i] = gl.getUniformLocation(shaderProgram, 'uTransforms[' + i + ']');
+      shaderProgram.uTransforms[i] = gl.getUniformLocation(shaderProgram, "uTransforms[" + i + "]");
     } //for
     this.shaderPool[transformStackDepth][sMask] = shaderProgram;
     return shaderProgram;
@@ -512,10 +512,10 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     gl = this.gl;
 
   // Rendering Canvas for text fonts
-  var textCanvas = document.createElement('canvas');
+  var textCanvas = document.createElement("canvas");
   textCanvas.width = gl2d.canvas.width;
   textCanvas.height = gl2d.canvas.height;
-  var textCtx = textCanvas.getContext('2d');
+  var textCtx = textCanvas.getContext("2d");
 
   var reRGBAColor = /^rgb(a)?\(\s*(-?[\d]+)(%)?\s*,\s*(-?[\d]+)(%)?\s*,\s*(-?[\d]+)(%)?\s*,?\s*(-?[\d\.]+)?\s*\)$/;
   var reHSLAColor = /^hsl(a)?\(\s*(-?[\d\.]+)\s*,\s*(-?[\d\.]+)%\s*,\s*(-?[\d\.]+)%\s*,?\s*(-?[\d\.]+)?\s*\)$/;
@@ -604,11 +604,11 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
       var colorInt = parseInt(match[1], 16);
       result = [((colorInt & 0xff0000) >> 16) / 255, ((colorInt & 0x00ff00) >> 8) / 255, (colorInt & 0x0000ff) / 255, 1.0];
     } else if((match = reHex3Color.exec(value))) {
-      var hexString = '#' + [match[1], match[1], match[2], match[2], match[3], match[3]].join('');
+      var hexString = "#" + [match[1], match[1], match[2], match[2], match[3], match[3]].join("");
       result = colorStringToVec4(hexString);
     } else if(value.toLowerCase() in colorKeywords) {
       result = colorStringToVec4(colorKeywords[value.toLowerCase()]);
-    } else if(value.toLowerCase() === 'transparent') {
+    } else if(value.toLowerCase() === "transparent") {
       result = [0, 0, 0, 0];
     } else {
       // Color keywords not yet implemented, ie "orange", return hot pink
@@ -619,151 +619,151 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   }
 
   function colorVecToString(vec4) {
-    return 'rgba(' + vec4[0] * 255 + ', ' + vec4[1] * 255 + ', ' + vec4[2] * 255 + ', ' + parseFloat(vec4[3]) + ')';
+    return "rgba(" + vec4[0] * 255 + ", " + vec4[1] * 255 + ", " + vec4[2] * 255 + ", " + parseFloat(vec4[3]) + ")";
   }
 
   var colorKeywords = {
-    aliceblue: '#f0f8ff',
-    antiquewhite: '#faebd7',
-    aqua: '#00ffff',
-    aquamarine: '#7fffd4',
-    azure: '#f0ffff',
-    beige: '#f5f5dc',
-    bisque: '#ffe4c4',
-    black: '#000000',
-    blanchedalmond: '#ffebcd',
-    blue: '#0000ff',
-    blueviolet: '#8a2be2',
-    brown: '#a52a2a',
-    burlywood: '#deb887',
-    cadetblue: '#5f9ea0',
-    chartreuse: '#7fff00',
-    chocolate: '#d2691e',
-    coral: '#ff7f50',
-    cornflowerblue: '#6495ed',
-    cornsilk: '#fff8dc',
-    crimson: '#dc143c',
-    cyan: '#00ffff',
-    darkblue: '#00008b',
-    darkcyan: '#008b8b',
-    darkgoldenrod: '#b8860b',
-    darkgray: '#a9a9a9',
-    darkgreen: '#006400',
-    darkkhaki: '#bdb76b',
-    darkmagenta: '#8b008b',
-    darkolivegreen: '#556b2f',
-    darkorange: '#ff8c00',
-    darkorchid: '#9932cc',
-    darkred: '#8b0000',
-    darksalmon: '#e9967a',
-    darkseagreen: '#8fbc8f',
-    darkslateblue: '#483d8b',
-    darkslategray: '#2f4f4f',
-    darkturquoise: '#00ced1',
-    darkviolet: '#9400d3',
-    deeppink: '#ff1493',
-    deepskyblue: '#00bfff',
-    dimgray: '#696969',
-    dodgerblue: '#1e90ff',
-    firebrick: '#b22222',
-    floralwhite: '#fffaf0',
-    forestgreen: '#228b22',
-    fuchsia: '#ff00ff',
-    gainsboro: '#dcdcdc',
-    ghostwhite: '#f8f8ff',
-    gold: '#ffd700',
-    goldenrod: '#daa520',
-    gray: '#808080',
-    green: '#008000',
-    greenyellow: '#adff2f',
-    grey: '#808080',
-    honeydew: '#f0fff0',
-    hotpink: '#ff69b4',
-    indianred: '#cd5c5c',
-    indigo: '#4b0082',
-    ivory: '#fffff0',
-    khaki: '#f0e68c',
-    lavender: '#e6e6fa',
-    lavenderblush: '#fff0f5',
-    lawngreen: '#7cfc00',
-    lemonchiffon: '#fffacd',
-    lightblue: '#add8e6',
-    lightcoral: '#f08080',
-    lightcyan: '#e0ffff',
-    lightgoldenrodyellow: '#fafad2',
-    lightgrey: '#d3d3d3',
-    lightgreen: '#90ee90',
-    lightpink: '#ffb6c1',
-    lightsalmon: '#ffa07a',
-    lightseagreen: '#20b2aa',
-    lightskyblue: '#87cefa',
-    lightslategray: '#778899',
-    lightsteelblue: '#b0c4de',
-    lightyellow: '#ffffe0',
-    lime: '#00ff00',
-    limegreen: '#32cd32',
-    linen: '#faf0e6',
-    magenta: '#ff00ff',
-    maroon: '#800000',
-    mediumaquamarine: '#66cdaa',
-    mediumblue: '#0000cd',
-    mediumorchid: '#ba55d3',
-    mediumpurple: '#9370d8',
-    mediumseagreen: '#3cb371',
-    mediumslateblue: '#7b68ee',
-    mediumspringgreen: '#00fa9a',
-    mediumturquoise: '#48d1cc',
-    mediumvioletred: '#c71585',
-    midnightblue: '#191970',
-    mintcream: '#f5fffa',
-    mistyrose: '#ffe4e1',
-    moccasin: '#ffe4b5',
-    navajowhite: '#ffdead',
-    navy: '#000080',
-    oldlace: '#fdf5e6',
-    olive: '#808000',
-    olivedrab: '#6b8e23',
-    orange: '#ffa500',
-    orangered: '#ff4500',
-    orchid: '#da70d6',
-    palegoldenrod: '#eee8aa',
-    palegreen: '#98fb98',
-    paleturquoise: '#afeeee',
-    palevioletred: '#d87093',
-    papayawhip: '#ffefd5',
-    peachpuff: '#ffdab9',
-    peru: '#cd853f',
-    pink: '#ffc0cb',
-    plum: '#dda0dd',
-    powderblue: '#b0e0e6',
-    purple: '#800080',
-    red: '#ff0000',
-    rosybrown: '#bc8f8f',
-    royalblue: '#4169e1',
-    saddlebrown: '#8b4513',
-    salmon: '#fa8072',
-    sandybrown: '#f4a460',
-    seagreen: '#2e8b57',
-    seashell: '#fff5ee',
-    sienna: '#a0522d',
-    silver: '#c0c0c0',
-    skyblue: '#87ceeb',
-    slateblue: '#6a5acd',
-    slategray: '#708090',
-    snow: '#fffafa',
-    springgreen: '#00ff7f',
-    steelblue: '#4682b4',
-    tan: '#d2b48c',
-    teal: '#008080',
-    thistle: '#d8bfd8',
-    tomato: '#ff6347',
-    turquoise: '#40e0d0',
-    violet: '#ee82ee',
-    wheat: '#f5deb3',
-    white: '#ffffff',
-    whitesmoke: '#f5f5f5',
-    yellow: '#ffff00',
-    yellowgreen: '#9acd32'
+    aliceblue: "#f0f8ff",
+    antiquewhite: "#faebd7",
+    aqua: "#00ffff",
+    aquamarine: "#7fffd4",
+    azure: "#f0ffff",
+    beige: "#f5f5dc",
+    bisque: "#ffe4c4",
+    black: "#000000",
+    blanchedalmond: "#ffebcd",
+    blue: "#0000ff",
+    blueviolet: "#8a2be2",
+    brown: "#a52a2a",
+    burlywood: "#deb887",
+    cadetblue: "#5f9ea0",
+    chartreuse: "#7fff00",
+    chocolate: "#d2691e",
+    coral: "#ff7f50",
+    cornflowerblue: "#6495ed",
+    cornsilk: "#fff8dc",
+    crimson: "#dc143c",
+    cyan: "#00ffff",
+    darkblue: "#00008b",
+    darkcyan: "#008b8b",
+    darkgoldenrod: "#b8860b",
+    darkgray: "#a9a9a9",
+    darkgreen: "#006400",
+    darkkhaki: "#bdb76b",
+    darkmagenta: "#8b008b",
+    darkolivegreen: "#556b2f",
+    darkorange: "#ff8c00",
+    darkorchid: "#9932cc",
+    darkred: "#8b0000",
+    darksalmon: "#e9967a",
+    darkseagreen: "#8fbc8f",
+    darkslateblue: "#483d8b",
+    darkslategray: "#2f4f4f",
+    darkturquoise: "#00ced1",
+    darkviolet: "#9400d3",
+    deeppink: "#ff1493",
+    deepskyblue: "#00bfff",
+    dimgray: "#696969",
+    dodgerblue: "#1e90ff",
+    firebrick: "#b22222",
+    floralwhite: "#fffaf0",
+    forestgreen: "#228b22",
+    fuchsia: "#ff00ff",
+    gainsboro: "#dcdcdc",
+    ghostwhite: "#f8f8ff",
+    gold: "#ffd700",
+    goldenrod: "#daa520",
+    gray: "#808080",
+    green: "#008000",
+    greenyellow: "#adff2f",
+    grey: "#808080",
+    honeydew: "#f0fff0",
+    hotpink: "#ff69b4",
+    indianred: "#cd5c5c",
+    indigo: "#4b0082",
+    ivory: "#fffff0",
+    khaki: "#f0e68c",
+    lavender: "#e6e6fa",
+    lavenderblush: "#fff0f5",
+    lawngreen: "#7cfc00",
+    lemonchiffon: "#fffacd",
+    lightblue: "#add8e6",
+    lightcoral: "#f08080",
+    lightcyan: "#e0ffff",
+    lightgoldenrodyellow: "#fafad2",
+    lightgrey: "#d3d3d3",
+    lightgreen: "#90ee90",
+    lightpink: "#ffb6c1",
+    lightsalmon: "#ffa07a",
+    lightseagreen: "#20b2aa",
+    lightskyblue: "#87cefa",
+    lightslategray: "#778899",
+    lightsteelblue: "#b0c4de",
+    lightyellow: "#ffffe0",
+    lime: "#00ff00",
+    limegreen: "#32cd32",
+    linen: "#faf0e6",
+    magenta: "#ff00ff",
+    maroon: "#800000",
+    mediumaquamarine: "#66cdaa",
+    mediumblue: "#0000cd",
+    mediumorchid: "#ba55d3",
+    mediumpurple: "#9370d8",
+    mediumseagreen: "#3cb371",
+    mediumslateblue: "#7b68ee",
+    mediumspringgreen: "#00fa9a",
+    mediumturquoise: "#48d1cc",
+    mediumvioletred: "#c71585",
+    midnightblue: "#191970",
+    mintcream: "#f5fffa",
+    mistyrose: "#ffe4e1",
+    moccasin: "#ffe4b5",
+    navajowhite: "#ffdead",
+    navy: "#000080",
+    oldlace: "#fdf5e6",
+    olive: "#808000",
+    olivedrab: "#6b8e23",
+    orange: "#ffa500",
+    orangered: "#ff4500",
+    orchid: "#da70d6",
+    palegoldenrod: "#eee8aa",
+    palegreen: "#98fb98",
+    paleturquoise: "#afeeee",
+    palevioletred: "#d87093",
+    papayawhip: "#ffefd5",
+    peachpuff: "#ffdab9",
+    peru: "#cd853f",
+    pink: "#ffc0cb",
+    plum: "#dda0dd",
+    powderblue: "#b0e0e6",
+    purple: "#800080",
+    red: "#ff0000",
+    rosybrown: "#bc8f8f",
+    royalblue: "#4169e1",
+    saddlebrown: "#8b4513",
+    salmon: "#fa8072",
+    sandybrown: "#f4a460",
+    seagreen: "#2e8b57",
+    seashell: "#fff5ee",
+    sienna: "#a0522d",
+    silver: "#c0c0c0",
+    skyblue: "#87ceeb",
+    slateblue: "#6a5acd",
+    slategray: "#708090",
+    snow: "#fffafa",
+    springgreen: "#00ff7f",
+    steelblue: "#4682b4",
+    tan: "#d2b48c",
+    teal: "#008080",
+    thistle: "#d8bfd8",
+    tomato: "#ff6347",
+    turquoise: "#40e0d0",
+    violet: "#ee82ee",
+    wheat: "#f5deb3",
+    white: "#ffffff",
+    whitesmoke: "#f5f5f5",
+    yellow: "#ffff00",
+    yellowgreen: "#9acd32"
   };
 
   // Maintain drawing state params during gl.save and gl.restore. see saveDrawState() and restoreDrawState()
@@ -813,7 +813,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   // These getters and setters store the original rgba string as well as convert to a vector
   drawState.fillStyle = [0, 0, 0, 1]; // default black
 
-  Object.defineProperty(gl, 'fillStyle', {
+  Object.defineProperty(gl, "fillStyle", {
     get: function() {
       return colorVecToString(drawState.fillStyle);
     },
@@ -824,7 +824,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
   drawState.strokeStyle = [0, 0, 0, 1]; // default black
 
-  Object.defineProperty(gl, 'strokeStyle', {
+  Object.defineProperty(gl, "strokeStyle", {
     get: function() {
       return colorVecToString(drawState.strokeStyle);
     },
@@ -838,7 +838,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   gl.$lineWidth = gl.lineWidth;
   drawState.lineWidth = 1.0;
 
-  Object.defineProperty(gl, 'lineWidth', {
+  Object.defineProperty(gl, "lineWidth", {
     get: function() {
       return drawState.lineWidth;
     },
@@ -849,9 +849,9 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   });
 
   // Currently unsupported attributes and their default values
-  drawState.lineCap = 'butt';
+  drawState.lineCap = "butt";
 
-  Object.defineProperty(gl, 'lineCap', {
+  Object.defineProperty(gl, "lineCap", {
     get: function() {
       return drawState.lineCap;
     },
@@ -860,9 +860,9 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     }
   });
 
-  drawState.lineJoin = 'miter';
+  drawState.lineJoin = "miter";
 
-  Object.defineProperty(gl, 'lineJoin', {
+  Object.defineProperty(gl, "lineJoin", {
     get: function() {
       return drawState.lineJoin;
     },
@@ -873,7 +873,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
   drawState.miterLimit = 10;
 
-  Object.defineProperty(gl, 'miterLimit', {
+  Object.defineProperty(gl, "miterLimit", {
     get: function() {
       return drawState.miterLimit;
     },
@@ -884,7 +884,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
   drawState.shadowOffsetX = 0;
 
-  Object.defineProperty(gl, 'shadowOffsetX', {
+  Object.defineProperty(gl, "shadowOffsetX", {
     get: function() {
       return drawState.shadowOffsetX;
     },
@@ -895,7 +895,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
   drawState.shadowOffsetY = 0;
 
-  Object.defineProperty(gl, 'shadowOffsetY', {
+  Object.defineProperty(gl, "shadowOffsetY", {
     get: function() {
       return drawState.shadowOffsetY;
     },
@@ -906,7 +906,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
   drawState.shadowBlur = 0;
 
-  Object.defineProperty(gl, 'shadowBlur', {
+  Object.defineProperty(gl, "shadowBlur", {
     get: function() {
       return drawState.shadowBlur;
     },
@@ -915,9 +915,9 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     }
   });
 
-  drawState.shadowColor = 'rgba(0, 0, 0, 0.0)';
+  drawState.shadowColor = "rgba(0, 0, 0, 0.0)";
 
-  Object.defineProperty(gl, 'shadowColor', {
+  Object.defineProperty(gl, "shadowColor", {
     get: function() {
       return drawState.shadowColor;
     },
@@ -926,9 +926,9 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     }
   });
 
-  drawState.font = '10px sans-serif';
+  drawState.font = "10px sans-serif";
 
-  Object.defineProperty(gl, 'font', {
+  Object.defineProperty(gl, "font", {
     get: function() {
       return drawState.font;
     },
@@ -938,9 +938,9 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     }
   });
 
-  drawState.textAlign = 'start';
+  drawState.textAlign = "start";
 
-  Object.defineProperty(gl, 'textAlign', {
+  Object.defineProperty(gl, "textAlign", {
     get: function() {
       return drawState.textAlign;
     },
@@ -949,9 +949,9 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     }
   });
 
-  drawState.textBaseline = 'alphabetic';
+  drawState.textBaseline = "alphabetic";
 
-  Object.defineProperty(gl, 'textBaseline', {
+  Object.defineProperty(gl, "textBaseline", {
     get: function() {
       return drawState.textBaseline;
     },
@@ -963,7 +963,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   // This attribute will need to control global alpha of objects drawn.
   drawState.globalAlpha = 1.0;
 
-  Object.defineProperty(gl, 'globalAlpha', {
+  Object.defineProperty(gl, "globalAlpha", {
     get: function() {
       return drawState.globalAlpha;
     },
@@ -973,9 +973,9 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   });
 
   // This attribute will need to set the gl.blendFunc mode
-  drawState.globalCompositeOperation = 'source-over';
+  drawState.globalCompositeOperation = "source-over";
 
-  Object.defineProperty(gl, 'globalCompositeOperation', {
+  Object.defineProperty(gl, "globalCompositeOperation", {
     get: function() {
       return drawState.globalCompositeOperation;
     },
@@ -999,8 +999,8 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     return 1;
   };
 
-  var tempCanvas = document.createElement('canvas');
-  var tempCtx = tempCanvas.getContext('2d');
+  var tempCanvas = document.createElement("canvas");
+  var tempCtx = tempCanvas.getContext("2d");
 
   gl.save = function save() {
     gl2d.transform.pushMatrix();
@@ -1257,12 +1257,12 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     // we may wish to consider tiling large images like this instead of scaling and
     // adjust appropriately (flip to next texture source and tile offset) when drawing
     if(image.width > gl2d.maxTextureSize || image.height > gl2d.maxTextureSize) {
-      var canvas = document.createElement('canvas');
+      var canvas = document.createElement("canvas");
 
       canvas.width = image.width > gl2d.maxTextureSize ? gl2d.maxTextureSize : image.width;
       canvas.height = image.height > gl2d.maxTextureSize ? gl2d.maxTextureSize : image.height;
 
-      var ctx = canvas.getContext('2d');
+      var ctx = canvas.getContext("2d");
 
       ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height);
 
@@ -1355,9 +1355,9 @@ var index = (biggest_x = biggest_y = 0),
   webgl_texts = 0,
   //Important Variables For Correction
   u = undefined,
-  no_use = 'none',
-  domvg_polygon_points = '',
-  infinite = 'indefinite',
+  no_use = "none",
+  domvg_polygon_points = "",
+  infinite = "indefinite",
   //Getting Body Element
   //And Yes,There Must Be <body> Element To Use Crosskit
   body = document.body;
@@ -1379,10 +1379,10 @@ var text_svg,
   texts = (images = []);
 
 //Modes Of Rendering
-var WEBGL = 'WEBGL',
-  CANVAS = 'CANVAS',
-  SVG = 'SVG',
-  DOM = 'DOM'; //Simple
+var WEBGL = "WEBGL",
+  CANVAS = "CANVAS",
+  SVG = "SVG",
+  DOM = "DOM"; //Simple
 
 window.update = function() {
   return (
@@ -1400,56 +1400,56 @@ window.update = function() {
 export const crosskit = {
   compatible_width: window.innerWidth - 25,
   compatible_height: window.innerHeight - 25,
-  version: '0.8.8',
+  version: "0.8.8",
   init: function(v) {
     renderer = v.renderer.toString();
     if(renderer == CANVAS) {
-      canvas = document.createElement('canvas');
+      canvas = document.createElement("canvas");
       canvas.width = v.w;
       canvas.height = v.h;
-      canvas.style.position = 'relative';
-      canvas.style.left = '8px';
+      canvas.style.position = "relative";
+      canvas.style.left = "8px";
       body.parentNode.appendChild(canvas);
-      cakecanvas = document.getElementsByTagName('canvas')[index];
-      cakepen = cakecanvas.getContext('2d');
+      cakecanvas = document.getElementsByTagName("canvas")[index];
+      cakepen = cakecanvas.getContext("2d");
     }
 
     if(renderer == SVG) {
-      cakecanvas = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      cakecanvas.setAttribute('width', v.w);
-      cakecanvas.setAttribute('height', v.h);
+      cakecanvas = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      cakecanvas.setAttribute("width", v.w);
+      cakecanvas.setAttribute("height", v.h);
       body.appendChild(cakecanvas);
     }
 
     if(renderer == WEBGL) {
-      canvas = document.createElement('canvas');
+      canvas = document.createElement("canvas");
       canvas.width = v.w;
       canvas.height = v.h;
-      canvas.style.position = 'relative';
-      canvas.style.left = '8px';
+      canvas.style.position = "relative";
+      canvas.style.left = "8px";
       body.parentNode.appendChild(canvas);
       cakecanvas = canvas;
       WebGL2D.enable(cakecanvas);
-      cakepen = cakecanvas.getContext('webgl-2d');
+      cakepen = cakecanvas.getContext("webgl-2d");
     }
 
     if(renderer == DOM) {
-      board = document.createElement('div');
-      board.id = 'board';
+      board = document.createElement("div");
+      board.id = "board";
       board.style.width = v.w;
       board.style.height = v.h;
-      board.style.position = 'relative';
-      board.style.bottom = '3px';
+      board.style.position = "relative";
+      board.style.bottom = "3px";
       body.appendChild(board);
       cakecanvas = board;
-      svg_board = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg_board.setAttribute('width', v.w);
-      svg_board.setAttribute('height', v.h);
+      svg_board = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg_board.setAttribute("width", v.w);
+      svg_board.setAttribute("height", v.h);
       svg_board.style.zIndex = 1;
       board.appendChild(svg_board);
     }
     index++; //Increase Index Of Elements Creation
-    console.info('%cCROSSKIT ' + crosskit.version + '\nRendering Mode: ' + renderer, 'font-size: 32px; background-color: purple; color: white; font-family: monospace;');
+    console.info("%cCROSSKIT " + crosskit.version + "\nRendering Mode: " + renderer, "font-size: 32px; background-color: purple; color: white; font-family: monospace;");
   },
   line: function(v) {
     if(renderer == CANVAS || renderer == WEBGL) {
@@ -1471,28 +1471,28 @@ export const crosskit = {
       if(v.pos1[1] > biggest_y) biggest_y = v.pos1[1];
       if(v.pos2[0] > biggest_x) biggest_x = v.pos2[0];
       if(v.pos2[1] > biggest_y) biggest_y = v.pos2[1];
-      dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'line'));
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('x1', v.pos1[0].toString());
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('y1', v.pos1[1].toString());
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('x2', v.pos2[0].toString());
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('y2', v.pos2[1].toString());
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke', v.stroke);
+      dom_svgs_shapes.push(document.createElementNS("http://www.w3.org/2000/svg", "line"));
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute("x1", v.pos1[0].toString());
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute("y1", v.pos1[1].toString());
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute("x2", v.pos2[0].toString());
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute("y2", v.pos2[1].toString());
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute("stroke", v.stroke);
       dom_svgs_shapes[dom_svgs_shapes.length - 1].style.strokeWidth = v.line_width;
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       dom_svgs_shapes[dom_svgs_shapes.length - 1].style.opacity = v.a;
       svg_board.appendChild(dom_svgs_shapes[dom_svgs_shapes.length - 1]);
     }
     //And Sorry,Drawing Lines And Anything Related-To Polygons
     //Including Triangles And Polygons Are Not Supported In DOM
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'line'));
-      svg_shapes[svg_shapes.length - 1].setAttribute('x1', v.pos1[0].toString());
-      svg_shapes[svg_shapes.length - 1].setAttribute('y1', v.pos1[1].toString());
-      svg_shapes[svg_shapes.length - 1].setAttribute('x2', v.pos2[0].toString());
-      svg_shapes[svg_shapes.length - 1].setAttribute('y2', v.pos2[1].toString());
-      svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
+      svg_shapes.push(document.createElementNS("http://www.w3.org/2000/svg", "line"));
+      svg_shapes[svg_shapes.length - 1].setAttribute("x1", v.pos1[0].toString());
+      svg_shapes[svg_shapes.length - 1].setAttribute("y1", v.pos1[1].toString());
+      svg_shapes[svg_shapes.length - 1].setAttribute("x2", v.pos2[0].toString());
+      svg_shapes[svg_shapes.length - 1].setAttribute("y2", v.pos2[1].toString());
+      svg_shapes[svg_shapes.length - 1].setAttribute("stroke", v.stroke);
       svg_shapes[svg_shapes.length - 1].style.strokeWidth = v.line_width;
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -1527,31 +1527,31 @@ export const crosskit = {
     }
 
     if(renderer == DOM) {
-      dom_shapes.push(document.createElement('div'));
+      dom_shapes.push(document.createElement("div"));
       dom_shapes[dom_shapes.length - 1].style.backgroundColor = v.fill;
-      dom_shapes[dom_shapes.length - 1].style.border = '2px ' + v.stroke + ' solid';
-      dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
-      dom_shapes[dom_shapes.length - 1].style.width = v.w + 'px';
-      dom_shapes[dom_shapes.length - 1].style.height = v.h + 'px';
-      dom_shapes[dom_shapes.length - 1].style.top = v.y + 'px';
-      dom_shapes[dom_shapes.length - 1].style.left = v.x + 'px';
-      dom_shapes[dom_shapes.length - 1].style.borderRadius = v.r + 'px';
+      dom_shapes[dom_shapes.length - 1].style.border = "2px " + v.stroke + " solid";
+      dom_shapes[dom_shapes.length - 1].style.position = "absolute";
+      dom_shapes[dom_shapes.length - 1].style.width = v.w + "px";
+      dom_shapes[dom_shapes.length - 1].style.height = v.h + "px";
+      dom_shapes[dom_shapes.length - 1].style.top = v.y + "px";
+      dom_shapes[dom_shapes.length - 1].style.left = v.x + "px";
+      dom_shapes[dom_shapes.length - 1].style.borderRadius = v.r + "px";
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
-      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
-      svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
-      svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
-      svg_shapes[svg_shapes.length - 1].setAttribute('width', v.w);
-      svg_shapes[svg_shapes.length - 1].setAttribute('height', v.h);
-      svg_shapes[svg_shapes.length - 1].setAttribute('rx', v.r);
-      svg_shapes[svg_shapes.length - 1].setAttribute('ry', v.r);
-      svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
-      svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes.push(document.createElementNS("http://www.w3.org/2000/svg", "rect"));
+      svg_shapes[svg_shapes.length - 1].setAttribute("x", v.x);
+      svg_shapes[svg_shapes.length - 1].setAttribute("y", v.y);
+      svg_shapes[svg_shapes.length - 1].setAttribute("width", v.w);
+      svg_shapes[svg_shapes.length - 1].setAttribute("height", v.h);
+      svg_shapes[svg_shapes.length - 1].setAttribute("rx", v.r);
+      svg_shapes[svg_shapes.length - 1].setAttribute("ry", v.r);
+      svg_shapes[svg_shapes.length - 1].setAttribute("fill", v.fill);
+      svg_shapes[svg_shapes.length - 1].setAttribute("stroke", v.stroke);
+      svg_shapes[svg_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -1568,28 +1568,28 @@ export const crosskit = {
     }
 
     if(renderer == DOM) {
-      dom_shapes.push(document.createElement('div'));
+      dom_shapes.push(document.createElement("div"));
       dom_shapes[dom_shapes.length - 1].style.backgroundColor = v.fill;
-      dom_shapes[dom_shapes.length - 1].style.border = '2px ' + v.stroke + ' solid';
-      dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
-      dom_shapes[dom_shapes.length - 1].style.width = v.size / 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.height = v.size / 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.top = v.y - v.size * 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.left = v.x - v.size * 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.border = "2px " + v.stroke + " solid";
+      dom_shapes[dom_shapes.length - 1].style.position = "absolute";
+      dom_shapes[dom_shapes.length - 1].style.width = v.size / 2 + "px";
+      dom_shapes[dom_shapes.length - 1].style.height = v.size / 2 + "px";
+      dom_shapes[dom_shapes.length - 1].style.top = v.y - v.size * 2 + "px";
+      dom_shapes[dom_shapes.length - 1].style.left = v.x - v.size * 2 + "px";
+      dom_shapes[dom_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
-      svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
-      svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
-      svg_shapes[svg_shapes.length - 1].setAttribute('width', v.size);
-      svg_shapes[svg_shapes.length - 1].setAttribute('height', v.size);
-      svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
-      svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes.push(document.createElementNS("http://www.w3.org/2000/svg", "rect"));
+      svg_shapes[svg_shapes.length - 1].setAttribute("x", v.x);
+      svg_shapes[svg_shapes.length - 1].setAttribute("y", v.y);
+      svg_shapes[svg_shapes.length - 1].setAttribute("width", v.size);
+      svg_shapes[svg_shapes.length - 1].setAttribute("height", v.size);
+      svg_shapes[svg_shapes.length - 1].setAttribute("fill", v.fill);
+      svg_shapes[svg_shapes.length - 1].setAttribute("stroke", v.stroke);
+      svg_shapes[svg_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -1605,26 +1605,26 @@ export const crosskit = {
     }
 
     if(renderer == DOM) {
-      dom_shapes.push(document.createElement('div'));
+      dom_shapes.push(document.createElement("div"));
       dom_shapes[dom_shapes.length - 1].style.backgroundColor = v.color;
-      dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
-      dom_shapes[dom_shapes.length - 1].style.width = '1px';
-      dom_shapes[dom_shapes.length - 1].style.height = '1px';
-      dom_shapes[dom_shapes.length - 1].style.top = v.y + '1px';
-      dom_shapes[dom_shapes.length - 1].style.left = v.x + '1px';
-      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.position = "absolute";
+      dom_shapes[dom_shapes.length - 1].style.width = "1px";
+      dom_shapes[dom_shapes.length - 1].style.height = "1px";
+      dom_shapes[dom_shapes.length - 1].style.top = v.y + "1px";
+      dom_shapes[dom_shapes.length - 1].style.left = v.x + "1px";
+      dom_shapes[dom_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
-      svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
-      svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
-      svg_shapes[svg_shapes.length - 1].setAttribute('width', 1);
-      svg_shapes[svg_shapes.length - 1].setAttribute('height', 1);
-      svg_shapes[svg_shapes.length - 1].setAttribute('color', v.color);
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes.push(document.createElementNS("http://www.w3.org/2000/svg", "rect"));
+      svg_shapes[svg_shapes.length - 1].setAttribute("x", v.x);
+      svg_shapes[svg_shapes.length - 1].setAttribute("y", v.y);
+      svg_shapes[svg_shapes.length - 1].setAttribute("width", 1);
+      svg_shapes[svg_shapes.length - 1].setAttribute("height", 1);
+      svg_shapes[svg_shapes.length - 1].setAttribute("color", v.color);
+      svg_shapes[svg_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -1653,31 +1653,31 @@ export const crosskit = {
     }
 
     if(renderer == DOM) {
-      dom_shapes.push(document.createElement('div'));
+      dom_shapes.push(document.createElement("div"));
       dom_shapes[dom_shapes.length - 1].style.backgroundColor = v.fill;
-      dom_shapes[dom_shapes.length - 1].style.border = '2px ' + v.stroke + ' solid';
-      dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
-      dom_shapes[dom_shapes.length - 1].style.width = v.w / 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.height = v.h / 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.borderRadius = v.r + 'px';
-      dom_shapes[dom_shapes.length - 1].style.top = v.y - v.h * 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.left = v.x - v.w * 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.border = "2px " + v.stroke + " solid";
+      dom_shapes[dom_shapes.length - 1].style.position = "absolute";
+      dom_shapes[dom_shapes.length - 1].style.width = v.w / 2 + "px";
+      dom_shapes[dom_shapes.length - 1].style.height = v.h / 2 + "px";
+      dom_shapes[dom_shapes.length - 1].style.borderRadius = v.r + "px";
+      dom_shapes[dom_shapes.length - 1].style.top = v.y - v.h * 2 + "px";
+      dom_shapes[dom_shapes.length - 1].style.left = v.x - v.w * 2 + "px";
+      dom_shapes[dom_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
-      svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
-      svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
-      svg_shapes[svg_shapes.length - 1].setAttribute('width', v.w);
-      svg_shapes[svg_shapes.length - 1].setAttribute('height', v.h);
-      svg_shapes[svg_shapes.length - 1].setAttribute('rx', v.r);
-      svg_shapes[svg_shapes.length - 1].setAttribute('ry', v.r);
-      svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
-      svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes.push(document.createElementNS("http://www.w3.org/2000/svg", "rect"));
+      svg_shapes[svg_shapes.length - 1].setAttribute("x", v.x);
+      svg_shapes[svg_shapes.length - 1].setAttribute("y", v.y);
+      svg_shapes[svg_shapes.length - 1].setAttribute("width", v.w);
+      svg_shapes[svg_shapes.length - 1].setAttribute("height", v.h);
+      svg_shapes[svg_shapes.length - 1].setAttribute("rx", v.r);
+      svg_shapes[svg_shapes.length - 1].setAttribute("ry", v.r);
+      svg_shapes[svg_shapes.length - 1].setAttribute("fill", v.fill);
+      svg_shapes[svg_shapes.length - 1].setAttribute("stroke", v.stroke);
+      svg_shapes[svg_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -1716,28 +1716,28 @@ export const crosskit = {
     }
 
     if(renderer == DOM) {
-      dom_shapes.push(document.createElement('div'));
+      dom_shapes.push(document.createElement("div"));
       dom_shapes[dom_shapes.length - 1].style.backgroundColor = v.fill;
-      dom_shapes[dom_shapes.length - 1].style.border = '2px ' + v.stroke + ' solid';
-      dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
-      dom_shapes[dom_shapes.length - 1].style.width = v.r * 1.85 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.height = v.r * 1.85 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.borderRadius = '50%';
-      dom_shapes[dom_shapes.length - 1].style.top = v.y - v.r + 'px';
-      dom_shapes[dom_shapes.length - 1].style.left = v.x - v.r + 'px';
-      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.border = "2px " + v.stroke + " solid";
+      dom_shapes[dom_shapes.length - 1].style.position = "absolute";
+      dom_shapes[dom_shapes.length - 1].style.width = v.r * 1.85 + "px";
+      dom_shapes[dom_shapes.length - 1].style.height = v.r * 1.85 + "px";
+      dom_shapes[dom_shapes.length - 1].style.borderRadius = "50%";
+      dom_shapes[dom_shapes.length - 1].style.top = v.y - v.r + "px";
+      dom_shapes[dom_shapes.length - 1].style.left = v.x - v.r + "px";
+      dom_shapes[dom_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'circle'));
-      svg_shapes[svg_shapes.length - 1].setAttribute('cx', v.x);
-      svg_shapes[svg_shapes.length - 1].setAttribute('cy', v.y);
-      svg_shapes[svg_shapes.length - 1].setAttribute('r', v.r);
-      svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
-      svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes.push(document.createElementNS("http://www.w3.org/2000/svg", "circle"));
+      svg_shapes[svg_shapes.length - 1].setAttribute("cx", v.x);
+      svg_shapes[svg_shapes.length - 1].setAttribute("cy", v.y);
+      svg_shapes[svg_shapes.length - 1].setAttribute("r", v.r);
+      svg_shapes[svg_shapes.length - 1].setAttribute("fill", v.fill);
+      svg_shapes[svg_shapes.length - 1].setAttribute("stroke", v.stroke);
+      svg_shapes[svg_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -1785,26 +1785,26 @@ export const crosskit = {
     if(renderer == DOM) {
       dom_shapes.push(new Image());
       dom_shapes[dom_shapes.length - 1].src = v.img;
-      dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
-      dom_shapes[dom_shapes.length - 1].style.width = v.w + 'px';
-      dom_shapes[dom_shapes.length - 1].style.height = v.h + 'px';
-      dom_shapes[dom_shapes.length - 1].style.borderRadius = v.r + 'px';
-      dom_shapes[dom_shapes.length - 1].style.top = v.y - v.h / 60 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.left = v.x - v.w / 60 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.position = "absolute";
+      dom_shapes[dom_shapes.length - 1].style.width = v.w + "px";
+      dom_shapes[dom_shapes.length - 1].style.height = v.h + "px";
+      dom_shapes[dom_shapes.length - 1].style.borderRadius = v.r + "px";
+      dom_shapes[dom_shapes.length - 1].style.top = v.y - v.h / 60 + "px";
+      dom_shapes[dom_shapes.length - 1].style.left = v.x - v.w / 60 + "px";
+      dom_shapes[dom_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'image'));
-      svg_shapes[svg_shapes.length - 1].setAttribute('href', v.img);
-      svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
-      svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
-      svg_shapes[svg_shapes.length - 1].setAttribute('rx', v.r);
-      svg_shapes[svg_shapes.length - 1].setAttribute('ry', v.r);
-      svg_shapes[svg_shapes.length - 1].setAttribute('width', v.w);
-      svg_shapes[svg_shapes.length - 1].setAttribute('height', v.h);
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes.push(document.createElementNS("http://www.w3.org/2000/svg", "image"));
+      svg_shapes[svg_shapes.length - 1].setAttribute("href", v.img);
+      svg_shapes[svg_shapes.length - 1].setAttribute("x", v.x);
+      svg_shapes[svg_shapes.length - 1].setAttribute("y", v.y);
+      svg_shapes[svg_shapes.length - 1].setAttribute("rx", v.r);
+      svg_shapes[svg_shapes.length - 1].setAttribute("ry", v.r);
+      svg_shapes[svg_shapes.length - 1].setAttribute("width", v.w);
+      svg_shapes[svg_shapes.length - 1].setAttribute("height", v.h);
+      svg_shapes[svg_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -1813,7 +1813,7 @@ export const crosskit = {
   text: function(v) {
     if(renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
-      cakepen.font = v.size + 'px ' + v.font;
+      cakepen.font = v.size + "px " + v.font;
       cakepen.fillStyle = v.fill;
       cakepen.strokeStyle = v.stroke;
       cakepen.rotate(v.angle / 50);
@@ -1824,30 +1824,30 @@ export const crosskit = {
     }
 
     if(renderer == DOM) {
-      dom_shapes.push(document.createElement('strong'));
+      dom_shapes.push(document.createElement("strong"));
       dom_shapes[dom_shapes.length - 1].innerHTML = v.txt;
       dom_shapes[dom_shapes.length - 1].style.fontFamily = v.font;
-      dom_shapes[dom_shapes.length - 1].style.fontSize = v.size + 'px';
-      dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
+      dom_shapes[dom_shapes.length - 1].style.fontSize = v.size + "px";
+      dom_shapes[dom_shapes.length - 1].style.position = "absolute";
       dom_shapes[dom_shapes.length - 1].style.color = v.fill;
-      dom_shapes[dom_shapes.length - 1].style.top = v.y - v.size / 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.left = v.x - v.size / 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.top = v.y - v.size / 2 + "px";
+      dom_shapes[dom_shapes.length - 1].style.left = v.x - v.size / 2 + "px";
+      dom_shapes[dom_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'text'));
-      svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
-      svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
+      svg_shapes.push(document.createElementNS("http://www.w3.org/2000/svg", "text"));
+      svg_shapes[svg_shapes.length - 1].setAttribute("x", v.x);
+      svg_shapes[svg_shapes.length - 1].setAttribute("y", v.y);
       svg_shapes[svg_shapes.length - 1].innerHTML = v.txt;
-      svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
-      svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
+      svg_shapes[svg_shapes.length - 1].setAttribute("fill", v.fill);
+      svg_shapes[svg_shapes.length - 1].setAttribute("stroke", v.stroke);
       svg_shapes[svg_shapes.length - 1].style.fontFamily = v.font;
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
-      svg_shapes[svg_shapes.length - 1].style.fontSize = v.size + 'px';
+      svg_shapes[svg_shapes.length - 1].style.fontSize = v.size + "px";
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
   },
@@ -1876,22 +1876,22 @@ export const crosskit = {
       if(v.pos2[1] > biggest_y) biggest_y = v.pos2[1];
       if(v.pos3[0] > biggest_x) biggest_x = v.pos3[0];
       if(v.pos3[1] > biggest_y) biggest_y = v.pos3[1];
-      dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('points', (v.pos1[0] + ',' + v.pos1[1] + ' ' + v.pos2[0] + ',' + v.pos2[1] + ' ' + v.pos3[0] + ',' + v.pos3[1] + ' ' + v.pos1[0] + ',' + v.pos1[1]).toString());
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('fill', v.fill);
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke', v.stroke);
+      dom_svgs_shapes.push(document.createElementNS("http://www.w3.org/2000/svg", "polygon"));
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute("points", (v.pos1[0] + "," + v.pos1[1] + " " + v.pos2[0] + "," + v.pos2[1] + " " + v.pos3[0] + "," + v.pos3[1] + " " + v.pos1[0] + "," + v.pos1[1]).toString());
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute("fill", v.fill);
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute("stroke", v.stroke);
       dom_svgs_shapes[dom_svgs_shapes.length - 1].style.strokeWidth = v.line_width;
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       dom_svgs_shapes[dom_svgs_shapes.length - 1].style.opacity = v.a;
       svg_board.appendChild(dom_svgs_shapes[dom_svgs_shapes.length - 1]);
     }
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
-      svg_shapes[svg_shapes.length - 1].setAttribute('points', (v.pos1[0] + ',' + v.pos1[1] + ' ' + v.pos2[0] + ',' + v.pos2[1] + ' ' + v.pos3[0] + ',' + v.pos3[1] + ' ' + v.pos1[0] + ',' + v.pos1[1]).toString());
-      svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
-      svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
+      svg_shapes.push(document.createElementNS("http://www.w3.org/2000/svg", "polygon"));
+      svg_shapes[svg_shapes.length - 1].setAttribute("points", (v.pos1[0] + "," + v.pos1[1] + " " + v.pos2[0] + "," + v.pos2[1] + " " + v.pos3[0] + "," + v.pos3[1] + " " + v.pos1[0] + "," + v.pos1[1]).toString());
+      svg_shapes[svg_shapes.length - 1].setAttribute("fill", v.fill);
+      svg_shapes[svg_shapes.length - 1].setAttribute("stroke", v.stroke);
       svg_shapes[svg_shapes.length - 1].style.strokeWidth = v.line_width;
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
@@ -1912,37 +1912,37 @@ export const crosskit = {
       cakepen.globalAlpha = 1;
     }
     if(renderer == DOM) {
-      domvg_polygon_points = '';
-      domvg_polygon_points += v.points[0][0] + ',' + v.points[0][1] + ' ';
+      domvg_polygon_points = "";
+      domvg_polygon_points += v.points[0][0] + "," + v.points[0][1] + " ";
       for(var i = 0; i < v.points.length; i++) {
         if(v.points[i][0] > biggest_x) biggest_x = v.points[i][0];
         if(v.points[i][1] > biggest_y) biggest_y = v.points[i][1];
-        domvg_polygon_points += v.points[i][0] + ',' + v.points[i][1] + ' ';
+        domvg_polygon_points += v.points[i][0] + "," + v.points[i][1] + " ";
       }
-      dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('points', domvg_polygon_points.toString());
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('fill', v.fill);
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke', v.stroke);
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      dom_svgs_shapes.push(document.createElementNS("http://www.w3.org/2000/svg", "polygon"));
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute("points", domvg_polygon_points.toString());
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute("fill", v.fill);
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute("stroke", v.stroke);
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       dom_svgs_shapes[dom_svgs_shapes.length - 1].style.opacity = v.a;
       svg_board.appendChild(dom_svgs_shapes[dom_svgs_shapes.length - 1]);
     }
     if(renderer == SVG) {
-      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
-      domvg_polygon_points = '';
-      domvg_polygon_points += v.points[0][0] + ',' + v.points[0][1] + ' ';
-      for(var i = 0; i < v.points.length; i++) domvg_polygon_points += v.points[i][0] + ',' + v.points[i][1] + ' ';
-      svg_shapes[svg_shapes.length - 1].setAttribute('points', domvg_polygon_points.toString());
-      svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
-      svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
-      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
+      svg_shapes.push(document.createElementNS("http://www.w3.org/2000/svg", "polygon"));
+      domvg_polygon_points = "";
+      domvg_polygon_points += v.points[0][0] + "," + v.points[0][1] + " ";
+      for(var i = 0; i < v.points.length; i++) domvg_polygon_points += v.points[i][0] + "," + v.points[i][1] + " ";
+      svg_shapes[svg_shapes.length - 1].setAttribute("points", domvg_polygon_points.toString());
+      svg_shapes[svg_shapes.length - 1].setAttribute("fill", v.fill);
+      svg_shapes[svg_shapes.length - 1].setAttribute("stroke", v.stroke);
+      svg_shapes[svg_shapes.length - 1].style.transform = "rotate(" + v.angle + "deg)";
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
   },
   clear: function() {
     if(renderer == CANVAS || renderer == WEBGL) {
-      cakepen.fillStyle = 'transparent';
+      cakepen.fillStyle = "transparent";
       cakepen.fillRect(0, 0, cakepen.canvas.width, cakepen.canvas.height);
       cakepen.clearRect(0, 0, cakepen.canvas.width, cakepen.canvas.height);
     }
@@ -1971,22 +1971,22 @@ export const crosskit = {
     if(renderer == DOM) svg_board.style.backgroundColor = c;
   },
   bgimg: function(v) {
-    cakecanvas.style.backgroundImage = 'url(' + v.src + ')';
+    cakecanvas.style.backgroundImage = "url(" + v.src + ")";
     cakecanvas.style.opacity = v.a;
   },
   animate: function(v) {
     if(renderer == CANVAS || renderer == WEBGL || renderer == DOM) window.requestAnimationFrame(v.frame);
     if(renderer == SVG) {
-      svg_anims.push(document.createElementNS('http://www.w3.org/2000/svg', 'animate'));
-      svg_anims[svg_anims.length - 1].setAttribute('attributeType', 'XML');
-      svg_anims[svg_anims.length - 1].setAttribute('attributeName', v.attr);
-      svg_anims[svg_anims.length - 1].setAttribute('dur', v.dur + 's');
-      svg_anims[svg_anims.length - 1].setAttribute('to', v.to);
-      svg_anims[svg_anims.length - 1].setAttribute('from', v.from);
-      svg_anims[svg_anims.length - 1].setAttribute('repeatCount', v.loop_num);
-      svg_anims[svg_anims.length - 1].setAttribute('repeatDur', v.loop_dur);
-      svg_anims[svg_anims.length - 1].anim_id = 'animation-' + svg_anims[svg_anims.length - 1];
-      svg_anims[svg_anims.length - 1].setAttribute('id', svg_anims[svg_anims.length - 1].anim_id);
+      svg_anims.push(document.createElementNS("http://www.w3.org/2000/svg", "animate"));
+      svg_anims[svg_anims.length - 1].setAttribute("attributeType", "XML");
+      svg_anims[svg_anims.length - 1].setAttribute("attributeName", v.attr);
+      svg_anims[svg_anims.length - 1].setAttribute("dur", v.dur + "s");
+      svg_anims[svg_anims.length - 1].setAttribute("to", v.to);
+      svg_anims[svg_anims.length - 1].setAttribute("from", v.from);
+      svg_anims[svg_anims.length - 1].setAttribute("repeatCount", v.loop_num);
+      svg_anims[svg_anims.length - 1].setAttribute("repeatDur", v.loop_dur);
+      svg_anims[svg_anims.length - 1].anim_id = "animation-" + svg_anims[svg_anims.length - 1];
+      svg_anims[svg_anims.length - 1].setAttribute("id", svg_anims[svg_anims.length - 1].anim_id);
       var svg_obj = svg_shapes[v.index];
       var prev_anim = document.getElementById(svg_anims[svg_anims.length - 1].anim_id);
       if(prev_anim != null) svg_obj.removeChild(prev_anim);
@@ -2008,18 +2008,18 @@ export const crosskit = {
   }
 };
 var rgb = function(v) {
-  return 'rgb(' + v.r + ',' + v.g + ',' + v.b + ')';
+  return "rgb(" + v.r + "," + v.g + "," + v.b + ")";
 };
 var rgba = function(v) {
-  return 'rgba(' + v.r + ',' + v.g + ',' + v.b + ',' + v.a + ')';
+  return "rgba(" + v.r + "," + v.g + "," + v.b + "," + v.a + ")";
 };
 var hsl = function(v) {
-  return 'hsl(' + v.h + ',' + v.s + ',' + v.l + ')';
+  return "hsl(" + v.h + "," + v.s + "," + v.l + ")";
 };
 var hsla = function(v) {
-  return 'hsla(' + v.h + ',' + v.s + ',' + v.l + ',' + v.a + ')';
+  return "hsla(" + v.h + "," + v.s + "," + v.l + "," + v.a + ")";
 };
-window.addEventListener('keypress', function(e) {
-  if(e.key == 'f' && !window.fullscreen) document.documentElement.requestFullscreen();
-  if(e.key == 'f' && window.fullscreen) document.documentElement.exitFullscreen();
+window.addEventListener("keypress", function(e) {
+  if(e.key == "f" && !window.fullscreen) document.documentElement.requestFullscreen();
+  if(e.key == "f" && window.fullscreen) document.documentElement.exitFullscreen();
 });
