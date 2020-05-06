@@ -111,7 +111,7 @@ const operatorPrecedence = {
   "%": 9
 };
 
-Parser.prototype = {
+Object.assign(Parser.prototype, {
   constructor: Parser,
 
   /*
@@ -240,7 +240,8 @@ Parser.prototype = {
     } else {
       ret = keywords === token.value;
     }
-    this.log(`matchKeywords(${keywords})`);
+    //if(ret)
+    this.log(`matchKeywords(${keywords}) = ${ret}`);
     return ret;
   },
   matchPunctuators(punctuators) {
@@ -311,9 +312,16 @@ Parser.prototype = {
       ret = this.parseJSX();
     } else if(!is_async && this.matchLiteral()) {
       ret = this.expectLiteral();
+
+ } else if(this.matchIdentifier("super")) {
+      this.expectIdentifier("super");
+      ret = new estree.Identifier("super");
+
     } else if(this.matchKeywords("super")) {
       this.expectKeywords("super");
       ret = new estree.Identifier("super");
+
+
     } else if(this.matchIdentifier()) {
       let id = this.expectIdentifier();
 
@@ -692,13 +700,16 @@ Parser.prototype = {
     }
     return new estree.VariableDeclaration(declarations, kind, exported);
   },
-  parseBlock(insideIteration, insideFunction) {
+  parseBlock(insideIteration, insideFunction, insideConstructor) {
     this.log(`parseBlock()`);
     const statements = [];
     this.expectPunctuators("{");
     do {
       if(this.matchStatement()) {
-        statements.push(this.parseStatement(insideIteration, insideFunction));
+        let stmt;
+      
+         stmt = this.parseStatement(insideIteration, insideFunction, insideConstructor);
+        statements.push(stmt);
       }
     } while(!this.matchPunctuators("}"));
     this.expectPunctuators("}");
@@ -706,11 +717,11 @@ Parser.prototype = {
 
     return new estree.BlockStatement(statements);
   },
-  parseList(insideIteration = false, insideFunction = false, check = p => false) {
+  parseList(insideIteration = false, insideFunction = false, insideConstructor = false, check = p => false) {
     this.log(`parseList()`);
     const statements = [];
     while(this.matchStatement()) {
-      statements.push(this.parseStatement(insideIteration, insideFunction));
+      statements.push(this.parseStatement(insideIteration, insideFunction, insideConstructor));
       if(check(this)) break;
     }
     return new estree.StatementList(statements);
@@ -948,31 +959,31 @@ Parser.prototype = {
     if(this.matchPunctuators(";")) this.expectPunctuators(";");
     return /*new estree.ExpressionStatement*/ expression;
   },
-  parseIfStatement(insideIteration, insideFunction) {
+  parseIfStatement(insideIteration, insideFunction, insideConstructor) {
     this.expectKeywords("if");
     this.expectPunctuators("(");
     const test = this.parseExpression();
     this.expectPunctuators(")");
-    const consequent = this.parseStatement(insideIteration, insideFunction);
+    const consequent = this.parseStatement(insideIteration, insideFunction , insideConstructor);
     if(consequent === null) {
       throw new SyntaxError("Expecting statement for if-statement", this.position());
     }
     let alternate = null;
     if(this.matchKeywords("else")) {
       this.expectKeywords("else");
-      alternate = this.parseStatement(insideIteration, insideFunction);
+      alternate = this.parseStatement(insideIteration, insideFunction, insideConstructor);
       if(alternate === null) {
         throw new SyntaxError("Expecting statement for else block in if-statement", this.position());
       }
     }
     return new estree.IfStatement(test, consequent, alternate);
   },
-  parseWhileStatement(insideFunction) {
+  parseWhileStatement(insideFunction, insideConstructor) {
     this.expectKeywords("while");
     this.expectPunctuators("(");
     const test = this.parseExpression();
     this.expectPunctuators(")");
-    const statement = this.parseStatement(true, insideFunction);
+    const statement = this.parseStatement(true, insideFunction, insideConstructor);
     if(statement === null) {
       throw new SyntaxError("Expecting statement for while-statement", this.position());
     }
@@ -980,7 +991,7 @@ Parser.prototype = {
   },
   parseDoStatement() {
     this.expectKeywords("do");
-    const statement = this.parseStatement(true);
+    const statement = this.parseStatement(true, false, false);
     if(statement === null) {
       throw new SyntaxError("Expecting statement for do-while-statement", this.position());
     }
@@ -1072,7 +1083,7 @@ Parser.prototype = {
       else cv = this.parseExpression();
       this.expectPunctuators(":");
 
-      stmt = this.parseList(true, insideFunction, p => p.matchKeywords(["case", "default"]));
+      stmt = this.parseList(true, insideFunction, false, p => p.matchKeywords(["case", "default"]));
 
       if(this.matchPunctuators("}")) break;
     }
@@ -1142,13 +1153,19 @@ Parser.prototype = {
     this.expectPunctuators(";");
     return new estree.ReturnStatement(expression);
   },
-  parseStatement(insideIteration, insideFunction) {
+  parseStatement(insideIteration, insideFunction, insideConstructor) {
     this.log(`parseStatement()`, Util.inspect(this.token));
     // Parse Block
+  let t = this.token || this.lexer.tokens[this.lexer.tokenIndex];
+
     if(this.matchPunctuators("{")) {
-      return this.parseBlock(insideIteration, insideFunction);
+      return this.parseBlock(insideIteration, insideFunction, insideConstructor );
     } else if(this.matchPunctuators("@")) {
       return this.parseDecorator();
+
+      // Parse constructor() super[.method](calls)
+   } else if(insideConstructor && (this.matchKeywords("super") || this.matchIdentifier("super"))) {
+ return this.parseNewOrCallOrMemberExpression(false, true);
 
       // Parse Variable Statement
     } else if(this.matchKeywords(["var", "let", "const"])) {
@@ -1156,7 +1173,7 @@ Parser.prototype = {
     }
     // Parse import Statement
     else if(this.matchKeywords("import")) {
-      this.log(`parseStatement()`, Util.inspect(this.token));
+   //   this.log(`parseStatement()`, Util.inspect(this.token));
 
       return this.parseImportStatement();
     }
@@ -1172,13 +1189,13 @@ Parser.prototype = {
     // Parse If Statement
     else if(this.matchKeywords("if")) {
       return this.parseIfStatement(insideIteration, insideFunction);
-    }
+    
     // Parse Iteration Statement
-    else if(this.matchKeywords(["while", "for", "do"])) {
+    } else if(this.matchKeywords(["while", "for", "do"])) {
       return this.parseIterationStatement(insideFunction);
-    }
+    
     // Parse Switch Statement
-    else if(this.matchKeywords("switch")) {
+  }  else if(this.matchKeywords("switch")) {
       return this.parseSwitchStatement(insideFunction);
     } else if(this.matchKeywords("try")) {
       return this.parseTryStatement();
@@ -1208,10 +1225,10 @@ Parser.prototype = {
       }
     } else {
       const { column, line } = this.lexer;
-            const tok = this.token;
-
+            const tok = t; // this.token;
+let m = this.matchKeywords('super');
    const { type, value } = tok; //lexer.tokens[0];
-      throw new SyntaxError(`Unexpected ${type}-token "${value}"`, this.position());
+      throw new SyntaxError(`Unexpected ${type}-token "${value}" ${m} ${insideConstructor}`, this.position());
     }
   },
   parseClass(exported = false) {
@@ -1263,7 +1280,7 @@ Parser.prototype = {
     this.expectPunctuators(")");
 
     // Parse function body
-    const body = this.parseBlock(false, true);
+    const body = this.parseBlock(false, true, identifer == "constructor" );
 
     let object = new estree.FunctionDeclaration(identifier, parameters, body, exported, isAsync, isGenerator);
 
@@ -1310,7 +1327,21 @@ Parser.prototype = {
 
     return new estree.Program(body);
   }
-};
+});
+
+  const methods = [...Util.getMethodNames(Parser.prototype)];
+  methods.filter(name => /^(expect|match|parse)[A-Z]/.test(name) ).forEach(method => {
+    var fn = Parser.prototype[method];
+
+console.log("method:"+method);
+Parser.prototype[method] = function(...args) {
+  let ret = fn.call(this, ...args);
+  if(ret)
+  console.log(`CALL ${method}(${args})`);
+  return ret;
+  };
+  });
+
 
 Parser.parse = async function parse(sourceText, prefix) {
   const parser = new Parser(sourceText, prefix);
