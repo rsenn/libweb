@@ -20,7 +20,9 @@ import Util from "./util.js";
  */
 
 export class Graph {
-  constructor({ origin = new Point(0, 0), size = new Size(1000, 1000), prng = Math.random, gravitate_to_origin = true, charge = 100, mass = 240, spacing = 3, timestep = 150, damping = 0.000005, onUpdateNode = node => {}, onUpdateEdge = edge => {}, onRenderGraph = graph => {} }) {
+  constructor(options = {}) {
+    let  { origin = new Point(0, 0), size = new Size(1000, 1000), prng = Math.random, gravitate_to_origin = true, charge = 100, mass = 240, spacing = 3, timestep = 150, damping = 0.000005, onUpdateNode = node => true, onUpdateEdge = edge => true, onRenderGraph = graph => true } = options;
+
     console.log(`Graph(${origin},${gravitate_to_origin})`);
     this.nodes = [];
     this.edges = [];
@@ -329,7 +331,7 @@ export class Graph {
   }
 }
 
-class Node extends Point {
+export class Node extends Point {
   charge = 0;
   mass = 0;
   velocity = null;
@@ -388,7 +390,7 @@ class Node extends Point {
   }
 }
 
-class Edge extends Line {
+export class Edge extends Line {
   a = null;
   b = null;
 
@@ -442,8 +444,6 @@ class Edge extends Line {
   draw(ctx) {}
 }
 
-if(module.exports) {
-  module.exports.Node = Node;
-  module.exports.Edge = Edge;
-  module.exports.Graph = Graph;
-}
+const fdgraph =  { Graph,GraphEdge: Edge,GraphNode: Node };
+
+export default fdgraph;
