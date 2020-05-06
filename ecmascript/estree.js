@@ -487,7 +487,6 @@ export const CTORS = {
 
 export const Factory = (function() {
   const nodeList = [];
-
   var self = function estree(ctor, ...args) {
     ctor = typeof ctor == "string" ? CTORS[ctor] : ctor;
     let instance = new ctor(...args);
@@ -495,7 +494,8 @@ export const Factory = (function() {
     return instance;
   };
   self.nodes = nodeList;
-
+  self.stack = [];
+  self.loc = { pos: -1, column: -1, line: -1 } ;
   return self;
 })();
 

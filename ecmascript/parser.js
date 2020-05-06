@@ -219,7 +219,7 @@ Object.assign(Parser.prototype, {
         throw new SyntaxError(` Expected: ${punctuators}    Actual: ${token.value}`, ast, this.position());
       }
     } else if(punctuators !== token.value) {
-      throw new SyntaxError(` Expected: ${punctuators} Actual: ${token.VALUE}`, ast, this.position());
+      throw new SyntaxError(` Expected: ${punctuators} Actual: ${token.value}`, ast, this.position());
     }
     return token;
   },
@@ -1334,60 +1334,59 @@ var fns = [];
 const methodNames = [...Util.getMethodNames(Parser.prototype)];
 var methods = {};
 
-Parser.instrumentate = (methodName) =>
-  function(...args) {
+Parser.instrumentate = (methodName,fn = methods[methodName]) => {
+const { nodes, stack, loc } = Factory;
+  var esfactory = function(...args) {
     let parser = this;
-    nodes = nodes.concat(Factory.nodes.splice(0, Factory.nodes.length));
+    let { lexer, token } = this;
+
 
     depth++;
-    let start = parser.lexer.pos;
-    let firstTok = parser.lexer.tokenIndex;
+    let start = lexer.pos;
+    let firstTok = lexer.tokenIndex;
 
-    if(!(parser.fns instanceof Array)) parser.fns = new Array();
-
-    parser.fns.push(methodName);
+    stack.push(methodName);
 
     let ret = methods[methodName].call(parser, ...args);
-    parser.fns.pop();
+    stack.pop();
 
     let s = "     " + "" + depth;
-    ret && console.log(s.substr(s.length - 4, s.length) + ` CALL ${method}(${args})`);
+    ret && console.log(s.substr(s.length - 4, s.length) + ` CALL ${methodName}(${args})`);
 
-    let end = parser.token.from || parser.lexer.pos;
-    let lastTok = parser.lexer.tokenIndex;
+    let end = this.token.from || lexer.pos;
+    let lastTok = lexer.tokenIndex;
 
-    if(parser.token) lastTok--;
+    if(this.token) lastTok--;
 
     let newNodes = {};
-    for(let [node, path] of deep.iterate(Factory.nodes, n => n instanceof Node)) {
+    for(let [node, path] of deep.iterate(nodes, n => n instanceof Node)) {
       const name = Util.className(node);
       newNodes[["", ...path.slice(1)].join("/")] = name;
     }
-    let parsed = parser.lexer.source.substring(start, end);
+    let parsed = lexer.source.substring(start, end);
     if(parsed.length) console.log(`${Util.fnName(fn)} parsed string '${parsed.replace(/\n/g, "\\n")}'`);
 
-    let lexed = parser.lexer.tokens.slice(firstTok, lastTok);
+    let lexed = lexer.tokens.slice(firstTok, lastTok);
     if(lexed.length)
       console.log(
         `${Util.fnName(fn)} lexed tokens`,
         lexed.map(t => t.value)
       );
-    if(Factory.nodes.length) {
+    if(nodes.length) {
       console.log(`${Util.fnName(fn)} yielded nodes`, newNodes);
     }
     depth--;
     return ret;
   };
-
+  return esfactory;
+}
 methodNames
   .filter(name => /^(expect|match|parse)[A-Z]/.test(name))
-  .forEach(method => {
-    const methodName = method;
+  .forEach(methodName => {
     var fn = Parser.prototype[methodName];
     methods[methodName] = fn;
 
-    Parser.prototype[methodName] = Parser.instrumentate(methodName);
-  };
+    Parser.prototype[methodName] = Parser.instrumentate(methodName, fn);
   });
 
 const timeout = ms =>
