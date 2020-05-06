@@ -599,7 +599,7 @@ l.lex = function() {
     this.stateFn = this.stateFn();
   } while(this.stateFn !== null && this.tokenIndex >= this.tokens.length);
   let tok = this.nextToken();
-  console.log("lex: ",this.tokenIndex , tok);
+  //console.log("lex: ",this.tokenIndex , tok);
   return tok;
 };
 
