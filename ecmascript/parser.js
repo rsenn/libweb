@@ -1,7 +1,8 @@
 import Util from "../util.js";
 import Lexer, { SyntaxError } from "./lexer.js";
+import deep from "../deep.js";
 import { tokenTypes } from "./token.js";
-import { estree, Factory } from "./estree.js";
+import { estree, Node, Factory } from "./estree.js";
 
 export function Parser(sourceText, prefix) {
   this.tokens = [];
@@ -269,7 +270,7 @@ Object.assign(Parser.prototype, {
     return isLiteral(token);
   },
   matchStatement() {
-    return this.matchPunctuators(";") || this.matchKeywords(["if", "var", "let", "const", "with", "while", "do", "for", "continue", "break", "return", "switch", "import", "export", "try",  "throw"]) || this.matchAssignmentExpression();
+    return this.matchPunctuators(";") || this.matchKeywords(["if", "var", "let", "const", "with", "while", "do", "for", "continue", "break", "return", "switch", "import", "export", "try", "throw"]) || this.matchAssignmentExpression();
   },
   matchPrimaryExpression() {
     return this.matchKeywords(["this", "async", "super"]) || this.matchPunctuators(["(", "[", "{", "<", "..."]) || this.matchLiteral() || this.matchIdentifier();
@@ -1162,7 +1163,7 @@ Object.assign(Parser.prototype, {
       return this.parseDecorator();
 
       // Parse constructor() super[.method](calls)
-   /* } else if(insideFunction && (this.matchKeywords("super") || this.matchIdentifier("super"))) {
+      /* } else if(insideFunction && (this.matchKeywords("super") || this.matchIdentifier("super"))) {
       return this.parseNewOrCallOrMemberExpression(false, true);
 */
       // Parse Variable Statement
@@ -1326,39 +1327,79 @@ Object.assign(Parser.prototype, {
 });
 
 var depth = 0;
-const methods = [...Util.getMethodNames(Parser.prototype)];
-methods
+var nodes = [];
+var diff = [];
+var fns = [];
+
+const methodNames = [...Util.getMethodNames(Parser.prototype)];
+var methods = {};
+
+Parser.instrumentate = (methodName) =>
+  function(...args) {
+    let parser = this;
+    nodes = nodes.concat(Factory.nodes.splice(0, Factory.nodes.length));
+
+    depth++;
+    let start = parser.lexer.pos;
+    let firstTok = parser.lexer.tokenIndex;
+
+    if(!(parser.fns instanceof Array)) parser.fns = new Array();
+
+    parser.fns.push(methodName);
+
+    let ret = methods[methodName].call(parser, ...args);
+    parser.fns.pop();
+
+    let s = "     " + "" + depth;
+    ret && console.log(s.substr(s.length - 4, s.length) + ` CALL ${method}(${args})`);
+
+    let end = parser.token.from || parser.lexer.pos;
+    let lastTok = parser.lexer.tokenIndex;
+
+    if(parser.token) lastTok--;
+
+    let newNodes = {};
+    for(let [node, path] of deep.iterate(Factory.nodes, n => n instanceof Node)) {
+      const name = Util.className(node);
+      newNodes[["", ...path.slice(1)].join("/")] = name;
+    }
+    let parsed = parser.lexer.source.substring(start, end);
+    if(parsed.length) console.log(`${Util.fnName(fn)} parsed string '${parsed.replace(/\n/g, "\\n")}'`);
+
+    let lexed = parser.lexer.tokens.slice(firstTok, lastTok);
+    if(lexed.length)
+      console.log(
+        `${Util.fnName(fn)} lexed tokens`,
+        lexed.map(t => t.value)
+      );
+    if(Factory.nodes.length) {
+      console.log(`${Util.fnName(fn)} yielded nodes`, newNodes);
+    }
+    depth--;
+    return ret;
+  };
+
+methodNames
   .filter(name => /^(expect|match|parse)[A-Z]/.test(name))
   .forEach(method => {
-    var fn = Parser.prototype[method];
+    const methodName = method;
+    var fn = Parser.prototype[methodName];
+    methods[methodName] = fn;
 
-    console.log("method:" + method);
-    Parser.prototype[method] = function(...args) {
-      depth++;
-      let ret = fn.call(this, ...args);
-      let s = "     " + "" + depth;
-      ret && console.log(s.substr(s.length - 4, s.length) + ` CALL ${method}(${args})`);
-      depth--;
-      return ret;
-    };
+    Parser.prototype[methodName] = Parser.instrumentate(methodName);
+  };
   });
 
+const timeout = ms =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => resolve(), ms);
+  });
 
-  const  timeout = (ms) => new Promise((resolve, reject) => {
-      setTimeout(() => 
-        resolve()
-      , ms);
-    });
-
-
-Parser.parse =  function parse(sourceText, prefix) {
+Parser.parse = function parse(sourceText, prefix) {
   const parser = new Parser(sourceText, prefix);
-
   Parser.instance = parser;
-
-//await timeout(1000).catch(e => console.log("timeout error:",e));
-
-    return parser.parseProgram();
+  //await timeout(1000).catch(e => console.log("timeout error:",e));
+  return parser.parseProgram();
 };
 
 export default Parser;

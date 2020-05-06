@@ -91,6 +91,12 @@ l.next = function() {
   return c;
 };
 
+l.skip = function(n = 1) {
+  let c;
+  while(n-- > 0) c = this.next();
+  return c;
+};
+
 l.backup = function() {
   this.pos--;
   this.column--;
@@ -537,7 +543,7 @@ l.lexMultiLineComment = function() {
     // Multi-line comment is terminated if we see * followed by /
     const nextTwo = this.source.substring(this.pos, this.pos + 2);
     if(nextTwo === "*/") {
-      this.pos += 2;
+      this.skip(2);
       this.ignore();
       return this.lexText;
     }
@@ -551,10 +557,10 @@ l.lexText = function() {
     // Examine the next 2 characters to see if we're encountering code comments
     const nextTwo = this.source.substring(this.pos, this.pos + 2);
     if(nextTwo === "//") {
-      this.pos += 2;
+      this.skip(2);
       return this.lexSingleLineComment;
     } else if(nextTwo === "/*") {
-      this.pos += 2;
+      this.skip(2);
       return this.lexMultiLineComment;
     }
 

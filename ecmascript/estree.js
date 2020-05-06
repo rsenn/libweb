@@ -491,10 +491,10 @@ export const Factory = (function() {
   var self = function estree(ctor, ...args) {
     ctor = typeof ctor == "string" ? CTORS[ctor] : ctor;
     let instance = new ctor(...args);
-    nodeList.push(instance);
+    self.nodes.push(instance);
     return instance;
   };
-  self.nodeList = nodeList;
+  self.nodes = nodeList;
 
   return self;
 })();
