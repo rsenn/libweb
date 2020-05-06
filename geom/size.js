@@ -72,10 +72,11 @@ Size.prototype.convertUnits = function(w = 'window' in global ? window : null) {
 Size.prototype.aspect = function() {
   return this.width / this.height;
 };
-Size.prototype.toCSS = function() {
+Size.prototype.toCSS = function(units) {
   let ret = {};
-  if(this.width !== undefined) ret.width = this.width + (this.units && 'width' in this.units ? this.units.width : 'px');
-  if(this.height !== undefined) ret.height = this.height + (this.units && 'height' in this.units ? this.units.height : 'px');
+  units = units || this.units || { width: 'px', height: 'px' };
+  if(this.width !== undefined) ret.width = this.width + (units.width || 'px');
+  if(this.height !== undefined) ret.height = this.height + (units.height || 'px');
   return ret;
 };
 Size.prototype.transform = function(m) {

@@ -190,7 +190,7 @@ export class EagleInterface {
 
   getBounds() {
     let bb = new BBox();
-    for(let element of board.getAll(e => e.tagName !== undefined)) {
+    for(let element of this.getAll(e => e.tagName !== undefined)) {
       let g = element.geometry();
       if(g) {
         //console.log("getBounds", element.layer, g);

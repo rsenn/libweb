@@ -6,11 +6,8 @@ import { Line } from '../geom/line.js';
 import { PolygonFinder } from '../geom/polygonFinder.js';
 import { Transformation, TransformationList } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
+import { ColorMap } from '../draw/colorMap.js';
 import Alea from '../alea.js';
-
-const EagleColors = ['rgb(255,255,255)', 'rgb(75,75,165)', 'rgb(75,165,75)', 'rgb(75,165,165)', 'rgb(165,75,75)', 'rgb(165,75,165)', 'rgb(165,165,75)', 'rgb(175,175,175)', 'rgb(75,75,255)', 'rgb(75,255,75)', 'rgb(75,255,255)', 'rgb(255,75,75)', 'rgb(255,75,255)', 'rgb(255,255,75)', 'rgb(75,75,75)', 'rgb(165,165,165)'];
-
-export const EaglePalette = ['hsl(230,100%,40%)', 'rgb(252,245,38)', 'rgb(0,126,24)', 'rgb(0,23,185)', 'rgb(79,9,0)', 'rgb(62,46,25)', 'hsl(30,100%,55%)', 'rgb(255,180,83)', 'rgb(105,82,33)', 'rgb(251,252,247)', 'rgb(140,95,51)', 'rgb(132,148,109)', 'rgb(168,166,32)', 'rgb(16,6,61)', 'rgb(178,27,0)', 'hsl(30,0%,80%)'];
 
 const VERTICAL = 1;
 const HORIZONTAL = 2;
@@ -161,7 +158,7 @@ const LinesToPath = lines => {
 };
 
 export class EagleRenderer {
-  palette = EagleColors;
+  palette = null;
   id = 0;
   layers = {};
   colors = {};
@@ -169,6 +166,14 @@ export class EagleRenderer {
   constructor(doc, factory) {
     this.doc = doc;
     this.create = (tag, attrs, parent) => factory(tag, 'id' in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
+  }
+
+  setPalette(palette) {
+    Object.defineProperty(this, 'palette', {
+      value: palette || (this instanceof SchematicRenderer ? BoardRenderer.palette : SchematicRenderer.palette),
+      writable: false,
+      configurable: false
+    });
   }
 
   findLayer(number_or_name) {
@@ -189,10 +194,13 @@ export class EagleRenderer {
     }
   }
 
-  getColor(layer) {
+  getColor(color) {
+    let c = this.palette[color - 1] || /*this.colors[color] || */ 'rgb(255,0,0)';
+
+    //    console.log(`getColor(${color})`,c)
     //const name = Util.isObject(layer) && 'name' in layer ? layer.name : layer;
-    const color = Util.isObject(layer) && 'color' in layer ? layer.color : layer;
-    return this.colors[color] || this.palette[color - 1] || 'rgb(255,0,0)';
+    //  const color = Util.isObject(layer) && 'color' in layer ? layer.color : layer;
+    return c;
   }
 
   layerOf(element) {
@@ -394,10 +402,6 @@ export class EagleRenderer {
     }
   }
 
-  setPalette(pal) {
-    this.palette = pal;
-  }
-
   static alignment(align, def = [-1, 1], rot = 0) {
     let h, v;
     const { horizontalAlignment, verticalAlignment } = EagleRenderer;
@@ -456,6 +460,9 @@ export class SchematicRenderer extends EagleRenderer {
     const { layers, nets, parts, sheets, symbols } = doc;
     this.sheets = sheets;
     this.id = 0;
+
+    this.setPalette(['#ffffff', '#4b4ba5', '#4ba54b', '#4ba5a5', '#a54b4b', '#a54ba5', '#a5a54b', '#afafaf', '#4b4bff', '#4bff4b', '#4bffff', '#ff4b4b', '#ff4bff', '#ffff4b', '#4b4b4b', '#a5a5a5']);
+    //this.palette = SchematicRenderer.palette;
   }
 
   renderCollection(collection, parent, opts) {
@@ -587,6 +594,8 @@ export class BoardRenderer extends EagleRenderer {
     this.signals = signals;
     this.plain = [...board.getAll('plain', (v, l) => new EagleElement(board, l))][0];
     this.layers = layers;
+
+    this.setPalette(['hsl(230,100%,40%)', 'rgb(252,245,38)', 'rgb(0,126,24)', 'rgb(0,23,185)', 'rgb(79,9,0)', 'rgb(62,46,25)', 'hsl(30,100%,55%)', 'rgb(255,180,83)', 'rgb(105,82,33)', 'rgb(251,252,247)', 'rgb(140,95,51)', 'rgb(132,148,109)', 'rgb(168,166,32)', 'rgb(16,6,61)', 'rgb(178,27,0)', 'hsl(30,0%,80%)']);
   }
 
   renderItem(item, parent, opts = {}) {
@@ -709,7 +718,7 @@ export class BoardRenderer extends EagleRenderer {
       const path = LinesToPath(lines);
       const layer = layers[layerId];
       const width = widths[layerId];
-      const color = this.getColor(layer);
+      const color = this.getColor(layer.color);
 
       this.create(
         'path',
@@ -788,11 +797,9 @@ export class BoardRenderer extends EagleRenderer {
 export function renderDocument(doc, container) {
   const gridColor = 'hsl(230,100%,60%)';
   const gridWidth = 0.2;
-
   const factory = SVG.factory(
     {
       append_to(elem, parent) {
-        // console.log('append:', elem, parent);
         if(elem.tagName.toLowerCase() == 'text') return parent.appendChild(elem);
         let before = null;
         for(let i = 0; i < parent.children.length; i++) {
@@ -801,116 +808,31 @@ export function renderDocument(doc, container) {
             break;
           }
         }
-
         parent.insertBefore(elem, before);
       }
     },
     container
   );
-
   container = factory.delegate.root;
   let svg;
-
   if(container.tagName.toLowerCase() == 'svg') {
     svg = container;
     container = container.parentElement;
   }
-  /*
-  if(!svg && factory.delegate.root)
-    svg = factory.delegate.root;
-
-  if(!container)
-        container = svg.parentElement;
-*/
-
   console.log('renderer:', { container, svg });
   console.log('doc:', doc);
-
   const ctor = doc.type == 'sch' ? SchematicRenderer : BoardRenderer;
   const renderer = new ctor(doc, factory);
-  const bb = new BBox();
   let objects = [];
   let defs;
-
-  renderer.colors = {
-    Top: 'rgb(0,23,185)',
-    Route2: 'rgb(3,0,5)',
-    Route3: 'rgb(0,23,185)',
-    Route4: 'rgb(3,0,5)',
-    Route5: 'rgb(0,23,185)',
-    Route6: 'rgb(3,0,5)',
-    Route7: 'rgb(0,23,185)',
-    Route8: 'rgb(3,0,5)',
-    Route9: 'rgb(0,23,185)',
-    Route10: 'rgb(3,0,5)',
-    Route11: 'rgb(0,23,185)',
-    Route12: 'rgb(3,0,5)',
-    Route13: 'rgb(0,23,185)',
-    Route14: 'rgb(3,0,5)',
-    Route15: 'rgb(0,23,185)',
-    Bottom: 'rgb(252,245,38)',
-    Pads: 'hsl(131,100%,24.7%)',
-    Vias: 'rgb(252,245,38)',
-    Unrouted: 'rgb(62,46,25)',
-    Dimension: 'rgb(175,175,175)',
-    tPlace: 'hsl(20,100%,60%)',
-    bPlace: 'rgb(255,180,83)',
-    tOrigins: 'rgb(178,27,0)',
-    bOrigins: 'rgb(178,27,0)',
-    tNames: 'rgb(255,38,0)',
-    bNames: 'rgb(189,133,64)',
-    tValues: 'rgb(255,38,0)',
-    bValues: 'rgb(189,133,64)',
-    tStop: 'rgb(189,133,64)',
-    bStop: 'rgb(189,133,64)',
-    tCream: 'rgb(189,133,64)',
-    bCream: 'rgb(189,133,64)',
-    tFinish: 'rgb(62,46,25)',
-    bFinish: 'rgb(62,46,25)',
-    tGlue: 'rgb(189,133,64)',
-    bGlue: 'rgb(189,133,64)',
-    tTest: 'rgb(189,133,64)',
-    bTest: 'rgb(189,133,64)',
-    tKeepout: 'rgb(0,23,185)',
-    bKeepout: 'rgb(3,0,5)',
-    tRestrict: 'rgb(0,23,185)',
-    bRestrict: 'rgb(3,0,5)',
-    vRestrict: 'rgb(252,245,38)',
-    Drills: 'rgb(189,133,64)',
-    Holes: 'rgb(0,255,255)',
-    Milling: 'rgb(0,126,24)',
-    Measures: 'rgb(189,133,64)',
-    Document: 'rgb(255,180,83)',
-    Reference: 'rgb(189,133,64)',
-    tDocu: 'rgb(255,180,83)',
-    bDocu: 'rgb(255,180,83)',
-    Modules: 'rgb(79,9,0)',
-    Nets: 'rgb(252,245,38)',
-    Busses: 'rgb(3,0,5)',
-    Pins: 'rgb(252,245,38)',
-    Symbols: 'rgb(0,23,185)',
-    Names: 'rgb(189,133,64)',
-    Values: 'rgb(189,133,64)',
-    Info: 'rgb(189,133,64)',
-    Guide: 'rgb(62,46,25)',
-    SpiceOrder: 'rgb(189,133,64)',
-    trash: 'rgb(189,133,64)'
-  };
-
   let palette;
-
   let rng,
     str = '';
   let randN = Util.randInt(0, 30000);
-
   rng = new Alea(1340);
-
-  palette = ['hsl(155,100%,50.2%)', 'hsl(318,100%,50.2%)', 'hsl(109,100%,50.2%)', 'hsl(236,100%,50.2%)', 'hsl(176,100%,50.2%)', 'hsl(267,100%,50.2%)', 'hsl(263,100%,50.2%)', 'hsl(42,100%,50.2%)', 'hsl(106,100%,50.2%)', 'hsl(4,100%,50.2%)', 'hsl(10,100%,50.2%)', 'hsl(71,100%,50.2%)', 'hsl(305,100%,50.2%)', 'hsl(215,100%,50.2%)'];
-  palette = Util.shuffle(palette, rng);
-  palette = EaglePalette;
-
-  // container = factory.delegate.root;
-
+  let bgColor = doc.type == 'sch' ? 'white' : 'black';
+  console.log(`renderer ${Util.className(renderer)} palette=${renderer.palette}`);
+  console.log(`doc type=${doc.type} path=${doc.path}`);
   renderer.colors = {};
   let first = svg.firstElementChild;
   if(!first || (first.tagName + '').toLowerCase() != 'defs') {
@@ -919,7 +841,6 @@ export function renderDocument(doc, container) {
   } else {
     defs = first;
   }
-
   if(!Element.find('pattern', defs)) {
     const step = '2.54';
     SVG.create(
@@ -942,7 +863,6 @@ export function renderDocument(doc, container) {
       )
     );
   }
-
   if(!Element.find('filter', defs)) {
     SVG.create(
       'feDropShadow',
@@ -965,20 +885,16 @@ export function renderDocument(doc, container) {
       )
     );
   }
-
-  renderer.setPalette(EaglePalette || palette);
-
   for(let [v, k, o] of doc.iterator(
     it => it.attributes && it.attributes.x !== undefined,
     [],
     arg => arg
   ))
     objects.push(v);
-
+  const bb = new BBox();
   bb.update(objects);
   const rect = bb.rect.outset(2.54 * 4);
   const center = rect.center;
-
   for(let [v, k, o] of doc.iterator(
     it => !!it.attributes,
     [],
@@ -993,7 +909,6 @@ export function renderDocument(doc, container) {
   const p1 = center.prod(-1);
   const p2 = center.quot(2.54);
   let groupTransform = `translate(${p1}) scale(2.54,-2.54) translate(${p2.sum(0, 0.0)})`;
-
   const gridGroup = factory('g', {
     className: 'grid',
     transform: `scale(1,-1) translate(0,0)`,
@@ -1005,34 +920,34 @@ export function renderDocument(doc, container) {
     'vector-effect': 'non-scaling-stroke'
   });
   renderer.render(g);
-
+  let colors = SVG.allColors(svg);
+  window.c = colors;
+  window.dump = () => {
+    let layerMap = (window.layerMap = new Map());
+    let insert = (window.ins = Util.bucketInserter(layerMap));
+    let getLayersForColor = number => (layerMap.has(number + '') ? layerMap.get(number + '').map(l => l.name) : []);
+    for(let layer of renderer.doc.layers.list) {
+      const { color, number, name, active, fill, visible } = layer.attributes;
+      if(active == 'no') continue;
+      console.log('layer:,', layer.attributes);
+      insert([color, { number, name, color, active, fill, visible }]);
+    }
+    const rgba1 = renderer.palette.map((color, i) => RGBA.fromString(color));
+    const cmap = (window.colormap = new ColorMap(renderer.palette));
+    console.log('cmap:', cmap);
+    console.log('cmap:', [...cmap.toScalar({ fmt: n => `0b${n.toString(2)}` })]);
+    const layerNames = Util.unique([...eagle.getAll(e => e.tagName)].filter(e => e.layer).map(e => e.layer.name));
+    Util.colorDump(rgba1, (c, n) => ('    ' + n).slice(-3) + '   ' + getLayersForColor(n).join('\n'));
+    colors.dump();
+  };
+  dump();
   let bbox = SVG.bbox('#board');
-
   let brect = Element.rect('#board');
   const crect = new Rect(0, 0, window.innerWidth, window.innerHeight);
-
-  // Element.setCSS(document.body, { overflow: "hidden" });
-  /* Element.setCSS(container.parentElement, {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  });
-  Element.setCSS(container, brect.aspect() > 1 ? { overflow: 'hidden', width: `${crect.width}px`, height: 'auto' } : { overflow: 'hidden', width: 'auto', height: '${crect.height}px' });
-*/
   let gridBox = SVG.bbox(svg.lastElementChild);
-
   let gridRect = new Rect(gridBox);
-
-  // gridBox.size.div(2.54);
-  /*
-  gridBox.height += 1;
-
-  gridBox.round(2.54);
-  gridBox.height += gridWidth / 2;
-  gridBox.width += gridWidth / 2;*/
   gridRect.round(2.54);
   gridRect.outset(0.2);
-
   let grid = SVG.create(
     'rect',
     {
@@ -1042,36 +957,19 @@ export function renderDocument(doc, container) {
     },
     gridGroup
   );
-  //  gridGroup.appendChild(grid);
-
   let points = gridBox.toPoints();
   let d = points.toPath({ close: true });
-
   let sbox = SVG.bbox(svg);
   let obox = SVG.bbox(gridGroup);
   let gbox = SVG.bbox(gridGroup.firstElementChild);
-
   let gridObj = new Rect(gridRect).outset(1.27);
-  //console.log('gridBox:', gridBox);
-  //console.log('gridObj:', gridObj);
-  //console.log('gridRect:', gridRect);
-
   sbox.outset(2.54 * 2.54);
   console.log('render', { sbox, obox, gbox });
-
   let srect = new Rect(sbox);
   console.log('sbox:', srect.toString());
-
   svg.setAttribute('viewBox', srect);
-  svg.setAttribute('width', sbox.width);
-  svg.setAttribute('height', sbox.height);
-  //  svg.setAttribute('viewBox', new Rect(sbox).toString());
-
   obox.outset(2.54 * 2.54);
-  //grid.style.setProperty('background', 'black');
-
-  grid.parentElement.insertBefore(SVG.create('rect', { ...gridObj, fill: 'black', transform: 'scale(2.54,2.54)' }), grid);
-
+  grid.parentElement.insertBefore(SVG.create('rect', { ...gridObj, fill: bgColor, transform: 'scale(2.54,2.54)' }), grid);
   groupTransform += ` translate(0,0)`;
   Element.attr(g, { transform: groupTransform });
   return renderer;

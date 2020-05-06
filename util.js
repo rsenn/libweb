@@ -72,6 +72,21 @@ function Util(g) {
 
 export { Util as default, Util };
 
+Util.curry = function curry(fn, arity) {
+  return function curried() {
+    if(arity == null) arity = fn.length;
+
+    var args = [].slice.call(arguments);
+    if(args.length >= arity) {
+      return fn.apply(this, args);
+    } else {
+      return function() {
+        return curried.apply(this, args.concat([].slice.call(arguments)));
+      };
+    }
+  };
+};
+
 Util.getGlobalObject = function() {
   let ret = this.globalObject;
   try {
@@ -781,10 +796,77 @@ Util.ifThenElse = function(pred = value => !!value, _then = () => {}, _else = ()
     return ret;
   };
 };
-Util.transform = function(fn) {
-  return function*(arr) {
-    for(let item of arr) {
-      yield fn(item);
+Util.transform = Util.curry(function*(fn, arr) {
+  for(let item of arr) {
+    yield fn(item);
+  }
+});
+Util.colorDump = (iterable, textFn = (color, n) => ('   ' + (i + 1)).slice(-3) + ` ${color.hex()}`) => {
+  let j = 0;
+  const filters = 'font-weight: bold; text-shadow: 0px 0px 1px rgba(0,0,0,0.8); filter: drop-shadow(30px 10px 4px #4444dd)';
+  for(let j = 0; j < iterable.length; j++) {
+    const [i, color] = iterable[j].length == 2 ? iterable[j] : [j, iterable[j]];
+    console.log(`  %c    %c ${color.hex()} %c ${textFn(color, i)}`, `background: ${color}; font-size: 18px; ${filters};`, `background: none; color: ${color}; min-width: 120px; ${filters}; `, `color: black; font-size: 12px;`);
+  }
+};
+
+Util.bucketInserter = (map, ...extraArgs) => {
+  var inserter;
+  inserter =
+    typeof map.has == 'function'
+      ? function(...args) {
+          // console.log("bucketInsert:",map,args);
+          for(let [k, v] of args) {
+            let a;
+            map.has(k) ? (a = map.get(k)) : map.set(k, (a = []));
+            a.push(v);
+          }
+          return inserter;
+        }
+      : function(...args) {
+          for(let arg of args) {
+            for(let k in arg) {
+              const v = arg[k];
+              let a = map[k] || [];
+              if(typeof a.push == 'function') a.push(v);
+
+              map[k] = a;
+            }
+          }
+        };
+  inserter(...extraArgs);
+  inserter.map = map;
+  return inserter;
+};
+Util.fifo = function fifo() {
+  let resolve = () => {};
+  const queue = [];
+
+  // (there's no arrow function syntax for this)
+  async function* generator() {
+    for(;;) {
+      if(!queue.length) {
+        // there's nothing in the queue, wait until push()
+        await new Promise(r => (resolve = r));
+      }
+      yield queue.shift();
+    }
+  }
+
+  return {
+    push: function(...args) {
+      for(let event of args) {
+        queue.push(event);
+        if(queue.length === 1) resolve(); // allow the generator to resume
+      }
+      return this;
+    },
+    loop: generator(),
+
+    process: async function run() {
+      for await (const event of this.loop) {
+        console.info('event:', event);
+      }
     }
   };
 };
@@ -2149,22 +2231,6 @@ Util.immutableClass = Original => {
   return Immutable${name};`
   )(Original);
 };
-Util.curry = function curry(fn, arity) {
-  return function curried() {
-    if(arity == null) {
-      arity = fn.length;
-    }
-    var args = [].slice.call(arguments);
-    if(args.length >= arity) {
-      return fn.apply(this, args);
-    } else {
-      return function() {
-        return curried.apply(this, args.concat([].slice.call(arguments)));
-      };
-    }
-  };
-};
-
 Util.partial = function partial(fn /*, arg1, arg2 etc */) {
   var partialArgs = [].slice.call(arguments, 1);
   if(!partialArgs.length) {

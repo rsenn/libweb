@@ -121,10 +121,10 @@ RGBA.normalize = (rgba, from = 255, to = 1.0) => ({
 });
 RGBA.prototype.css = () => prop => (prop ? prop + ':' : '') + 'rgba(' + this.r + ', ' + this.g + ', ' + this.b + ', ' + (this.a / 255).toFixed(3) + ')';
 
-RGBA.prototype.toString = function(sep = ',') {
-  let a = this.a;
-  if(a >= 255) return 'rgb(' + this.r + sep + this.g + sep + this.b + ')';
-  else return 'rgba(' + this.r + sep + this.g + sep + this.b + sep + (a / 255).toFixed(3) + ')';
+RGBA.prototype.toString = function(sep = ',', fmt = num => +num.toFixed(3)) {
+  const { r, g, b, a } = this;
+  if(a >= 255) return 'rgb(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + ')';
+  else return 'rgba(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + sep + a / 255 + ')';
 };
 
 RGBA.prototype.toSource = function(sep = ',') {
