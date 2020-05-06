@@ -77,8 +77,8 @@ export function Rect(arg) {
   }
 }
 Rect.prototype = {
-  /*...Point.prototype,
-  ...Size.prototype,*/
+  /*...Point.prototype,*/
+  ...Size.prototype,
   ...Rect.prototype
 };
 Rect.prototype.clone = function() {

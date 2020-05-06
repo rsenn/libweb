@@ -929,7 +929,7 @@ export function renderDocument(doc, container) {
     for(let layer of renderer.doc.layers.list) {
       const { color, number, name, active, fill, visible } = layer.attributes;
       if(active == "no") continue;
-      console.log("layer:,", layer.attributes);
+     // console.log("layer:,", layer.attributes);
       insert([color, { number, name, color, active, fill, visible }]);
     }
     const rgba1 = renderer.palette.map((color, i) => RGBA.fromString(color));
@@ -962,9 +962,11 @@ export function renderDocument(doc, container) {
   let sbox = SVG.bbox(svg);
   let obox = SVG.bbox(gridGroup);
   let gbox = SVG.bbox(gridGroup.firstElementChild);
+  let aspects = [sbox.aspect(), obox.aspect(), gbox.aspect()];
   let gridObj = new Rect(gridRect).outset(1.27);
   sbox.outset(2.54 * 2.54);
-  console.log("render", { sbox, obox, gbox });
+  Object.assign(renderer, { sbox, obox, gbox, aspects });
+  console.log("render", { sbox, obox, gbox, aspects });
   let srect = new Rect(sbox);
   console.log("sbox:", srect.toString());
   svg.setAttribute("viewBox", srect);

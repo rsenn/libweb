@@ -360,12 +360,11 @@ export class Element extends Node {
     return element;
   }
 
-  static resize() {
-    let args = [...arguments];
-    let e = Element.find(args.shift());
-    let size = new Size(args);
+  static resize(element, ...dimensions) {
+    let e = Element.find(element);
+    let size = new Size(...dimensions);
     const css = Size.toCSS(size);
-    //console.log("Element.resize: ", { e, size, css });
+    console.log("Element.resize: ", { e, size, css });
     Element.setCSS(e, css);
     return e;
   }
