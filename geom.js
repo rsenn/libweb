@@ -6,3 +6,4 @@ export { PointList, Polyline } from "./geom/pointList.js";
 export { TRBL } from "./geom/trbl.js";
 export { Align, Anchor } from "./geom/align.js";
 export { Vector } from "./geom/vector.js";
+export { BBox } from "./geom/bbox.js";

@@ -37,7 +37,7 @@ SyntaxError.prototype[Symbol.toStringTag] = function() {
   return this.toString();
 };
 
-function Lexer(sourceText) {
+export function Lexer(sourceText) {
   this.setInput(sourceText);
 }
 

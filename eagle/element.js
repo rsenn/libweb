@@ -3,6 +3,7 @@ import trkl from "../trkl.js";
 import { EagleNode } from "./node.js";
 import { makeEagleNodeList } from "./nodeList.js";
 import { toXML, inspect, dump } from "./common.js";
+import { BBox, Point, Line, Rect } from "../geom.js";
 
 export class EagleElement extends EagleNode {
   tagName = "";
@@ -131,15 +132,28 @@ export class EagleElement extends EagleNode {
   }
 
   getBounds() {
-    let bb = new BBox();
-    for(let element of board.getAll(e => e.tagName !== undefined)) {
+    let bb, pos;
+    if(this.tagName == "element") {
+      bb = this.package.getBounds();
+      pos = this.geometry();
+      bb.move(pos.x, pos.y);
+
+      bb = bb.round(v => Util.roundTo(v, 2.54));
+      //    console.log("getBounds", this.tagName, {bb,pos} );
+
+      return bb;
+    }
+
+    bb = new BBox();
+    for(let element of this.getAll(e => e.tagName !== undefined)) {
       let g = element.geometry();
       if(g) {
         //console.log("getBounds", element.layer, g);
         bb.update(g);
       }
     }
-    console.log("getBounds", bb);
+    // console.log("getBounds", bb);
+    return bb;
   }
 
   geometry() {
