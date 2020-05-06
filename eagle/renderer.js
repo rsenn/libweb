@@ -170,7 +170,7 @@ export class EagleRenderer {
 
   setPalette(palette) {
     Object.defineProperty(this, "palette", {
-      value: palette || (this instanceof SchematicRenderer ? BoardRenderer.palette : SchematicRenderer.palette),
+      value: palette || (this.doc.type == "brd" ? BoardRenderer.palette : SchematicRenderer.palette),
       writable: false,
       configurable: false
     });
@@ -195,7 +195,7 @@ export class EagleRenderer {
   }
 
   getColor(color) {
-    let c = this.palette[color - 1] || /*this.colors[color] || */ "rgb(255,0,0)";
+    let c = this.palette[color] || /*this.colors[color] || */ "rgb(255,0,0)";
 
     //    console.log(`getColor(${color})`,c)
     //const name = Util.isObject(layer) && 'name' in layer ? layer.name : layer;
@@ -454,6 +454,8 @@ export class SchematicRenderer extends EagleRenderer {
     point: 0
   };
 
+  static palette = ["#ffffff", "#4b4ba5", "#4ba54b", "#4ba5a5", "#a54b4b", "#a54ba5", "#a5a54b", "#afafaf", "#4b4bff", "#4bff4b", "#4bffff", "#ff4b4b", "#ff4bff", "#ffff4b", "#4b4b4b", "#a5a5a5"];
+
   constructor(doc, factory) {
     super(doc, factory);
 
@@ -461,8 +463,8 @@ export class SchematicRenderer extends EagleRenderer {
     this.sheets = sheets;
     this.id = 0;
 
-    this.setPalette(["#ffffff", "#4b4ba5", "#4ba54b", "#4ba5a5", "#a54b4b", "#a54ba5", "#a5a54b", "#afafaf", "#4b4bff", "#4bff4b", "#4bffff", "#ff4b4b", "#ff4bff", "#ffff4b", "#4b4b4b", "#a5a5a5"]);
-    //this.palette = SchematicRenderer.palette;
+    //this.setPalette(SchematicRenderer.palette);
+    this.palette = SchematicRenderer.palette;
   }
 
   renderCollection(collection, parent, opts) {
@@ -586,6 +588,8 @@ export class SchematicRenderer extends EagleRenderer {
 }
 
 export class BoardRenderer extends EagleRenderer {
+  static palette = ["hsl(230,100%,40%)", "rgb(252,245,38)", "rgb(0,126,24)", "rgb(0,23,185)", "rgb(79,9,0)", "rgb(62,46,25)", "hsl(30,100%,55%)", "rgb(255,180,83)", "rgb(105,82,33)", "rgb(251,252,247)", "rgb(140,95,51)", "rgb(132,148,109)", "rgb(168,166,32)", "rgb(16,6,61)", "rgb(178,27,0)", "hsl(30,0%,80%)"];
+
   constructor(obj, factory) {
     super(obj, factory);
     const { settings, layers, libraries, classes, designrules, elements, signals, plain } = obj;
@@ -595,7 +599,7 @@ export class BoardRenderer extends EagleRenderer {
     this.plain = [...board.getAll("plain", (v, l) => new EagleElement(board, l))][0];
     this.layers = layers;
 
-    this.setPalette(["hsl(230,100%,40%)", "rgb(252,245,38)", "rgb(0,126,24)", "rgb(0,23,185)", "rgb(79,9,0)", "rgb(62,46,25)", "hsl(30,100%,55%)", "rgb(255,180,83)", "rgb(105,82,33)", "rgb(251,252,247)", "rgb(140,95,51)", "rgb(132,148,109)", "rgb(168,166,32)", "rgb(16,6,61)", "rgb(178,27,0)", "hsl(30,0%,80%)"]);
+    this.setPalette(BoardRenderer.palette);
   }
 
   renderItem(item, parent, opts = {}) {
@@ -929,7 +933,7 @@ export function renderDocument(doc, container) {
     for(let layer of renderer.doc.layers.list) {
       const { color, number, name, active, fill, visible } = layer.attributes;
       if(active == "no") continue;
-     // console.log("layer:,", layer.attributes);
+      // console.log("layer:,", layer.attributes);
       insert([color, { number, name, color, active, fill, visible }]);
     }
     const rgba1 = renderer.palette.map((color, i) => RGBA.fromString(color));
@@ -937,7 +941,9 @@ export function renderDocument(doc, container) {
     console.log("cmap:", cmap);
     console.log("cmap:", [...cmap.toScalar({ fmt: n => `0b${n.toString(2)}` })]);
     const layerNames = Util.unique([...eagle.getAll(e => e.tagName)].filter(e => e.layer).map(e => e.layer.name));
-    Util.colorDump(rgba1, (c, n) => ("    " + n).slice(-3) + "   " + getLayersForColor(n).join("\n"));
+
+    Util.colorDump(rgba1, (c, n) => ("    " + n).slice(-3) + "   " + getLayersForColor(n).join(" "));
+
     colors.dump();
   };
   dump();

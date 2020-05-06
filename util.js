@@ -801,12 +801,12 @@ Util.transform = Util.curry(function*(fn, arr) {
     yield fn(item);
   }
 });
-Util.colorDump = (iterable, textFn = (color, n) => ("   " + (i + 1)).slice(-3) + ` ${color.hex()}`) => {
+Util.colorDump = (iterable, textFn = (color, n) => ("   " + (n + 1)).slice(-3) + ` ${color}`) => {
   let j = 0;
   const filters = "font-weight: bold; text-shadow: 0px 0px 1px rgba(0,0,0,0.8); filter: drop-shadow(30px 10px 4px #4444dd)";
   for(let j = 0; j < iterable.length; j++) {
     const [i, color] = iterable[j].length == 2 ? iterable[j] : [j, iterable[j]];
-    console.log(`  %c    %c ${color.hex()} %c ${textFn(color, i)}`, `background: ${color}; font-size: 18px; ${filters};`, `background: none; color: ${color}; min-width: 120px; ${filters}; `, `color: black; font-size: 12px;`);
+    console.log(`  %c    %c ${color} %c ${textFn(color, i)}`, `background: ${color}; font-size: 18px; ${filters};`, `background: none; color: ${color}; min-width: 120px; ${filters}; `, `color: black; font-size: 12px;`);
   }
 };
 

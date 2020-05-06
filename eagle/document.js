@@ -24,7 +24,9 @@ export class EagleDocument extends EagleNode {
       throw new Error("EagleDocument: " + error);
     }*/
     const xml = new tXml(xmlStr);
+
     super(project, EagleRef(deepClone(xml[0]), []));
+
     type = type || /<library>/.test(xmlStr) ? "lbr" : /<element /.test(xmlStr) ? "brd" : "sch";
 
     if(filename) {

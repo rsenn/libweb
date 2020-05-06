@@ -12,9 +12,10 @@ export class Token {
     this.pos = {
       column: pos ? pos.column : 0,
       line: pos ? pos.line : 0,
+      [Symbol.toStringTag]() { return this.toString(); },
       toString() {
         let s = this.line + ":" + this.column;
-        if(delta > 0) s += "-" + (this.column + delta);
+        if(delta > 0) s += ` len=${delta+1}`;
         return s;
       }
     };

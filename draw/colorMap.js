@@ -8,7 +8,7 @@ export function ColorMap(...args) {
 
   for(let arg of args) {
     for(let color of arg) {
-      console.log("arg:", color);
+      // console.log("arg:", color);
 
       let item;
       /*if(typeof(arg) == 'string')

@@ -5,7 +5,7 @@ import Util from "../util.js";
 export function Stack() {
   let stack = Util.getCallers(2, 30);
 
-  return stack.map(({ fileName, columnNumber, lineNumber, functionName, methodName }) => `${fileName}:${lineNumber}:${columnNumber}:${functionName}:${methodName}`);
+  return stack.map(({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) => `  ${functionName}${Util.pad(functionName, 20)} ${(fileName+'').replace(/.*file:\/\//g, "")}:${lineNumber}:${columnNumber}`);
   /*
   stack = stack.filter(({ functionName }) => !/Parser.parser.</.test(functionName));
   stack = stack.filter(({ typeName }) => typeName == "Parser");
@@ -20,15 +20,19 @@ export function Error(msg) {
   this.stack = Stack();
 }
 
-export function SyntaxError(msg, ast) {
+export function SyntaxError(msg, ast, pos) {
   this.msg = msg;
   this.ast = ast;
+  this.pos = pos;
   this.stack = Stack();
 }
 
 SyntaxError.prototype.toString = function() {
-  return this.msg + "";
+  const { msg, pos } = this;
+  const { line, column } = pos || {};
+  return (pos ? ` line=${line},column=${column} ` : "") + ` : ${msg} `;
 };
+  SyntaxError.prototype[Symbol.toStringTag] = function() { return this.toString(); };
 
 function Lexer(sourceText) {
   this.setInput(sourceText);
@@ -95,10 +99,17 @@ l.position = function() {
   return {
     line,
     column,
+          [Symbol.toStringTag]() { return this.toString(); },
     toString() {
-      return `${this.line}:${this.column} `;
+      const { line, column } = this;
+      return `line=${line}:col=${column} `;
     }
   };
+};
+
+l.positionString = function() {
+  const { line, column } = this;
+       return `${line}:${column}`;
 };
 
 l.accept = function(validator) {
@@ -150,8 +161,8 @@ function oneOf(str) {
 }
 
 l.addToken = function(type) {
-  const { start, pos, column, line } = this;
-  const token = new Token(type, this.source.substring(this.start, this.pos), this.start, this.pos, {
+  const { start, pos, column, line, source } = this;
+  const token = new Token(type, source.substring(start, pos), start, pos, {
     line,
     column
   });
@@ -234,6 +245,7 @@ function isKeyword(word) {
         case "if":
         case "in":
         case "do":
+        case "of":
           return true;
       }
       return false;
@@ -330,12 +342,12 @@ l.lexIdentifier = function() {
   // Make sure identifier didn't start with a decimal digit
   const firstChar = this.source[this.start];
   if(isDecimalDigit(firstChar)) {
-    throw new SyntaxError(`${this.position()}Invalid identifier: ${this.source.substring(this.start, this.pos)}`);
+    throw new SyntaxError(`Invalid identifier: ${this.source.substring(this.start, this.pos)}`, this.position());
   }
 
   const c = this.peek();
   if(isQuoteChar(c)) {
-    throw new SyntaxError(`${this.position()}Invalid identifier: ${this.source.substring(this.start, this.pos + 1)}`);
+    throw new SyntaxError(`Invalid identifier: ${this.source.substring(this.start, this.pos + 1)}`, this.position());
   }
 
   const word = this.source.substring(this.start, this.pos);
@@ -363,7 +375,7 @@ l.lexNumber = function() {
 
       // The hex number needs to at least be followed by some digit.
       if(!this.accept(validator)) {
-        throw new SyntaxError(`${this.position()}Invalid number: ${this.source.substring(this.start, this.pos + 1)}`);
+        throw new SyntaxError(`Invalid number: ${this.source.substring(this.start, this.pos + 1)}`, this.position());
       }
     }
     // If number starts with 0 followed by an octal digit, then it's an
@@ -373,7 +385,7 @@ l.lexNumber = function() {
     }
     // If a 0 isn't a hex nor an octal number, then it's invalid.
     else if(this.accept(isDecimalDigit)) {
-      throw new SyntaxError(`${this.position()}Invalid number: ${this.source.substring(this.start, this.pos)}`);
+      throw new SyntaxError(`Invalid number: ${this.source.substring(this.start, this.pos)}`, this.position());
     }
   }
 
@@ -390,7 +402,7 @@ l.lexNumber = function() {
     if(this.accept(oneOf("eE"))) {
       this.accept(oneOf("+-"));
       if(!this.accept(validator)) {
-        throw new SyntaxError(`${this.position()}Invalid number: ${this.source.substring(this.start, this.pos + 1)}`);
+        throw new SyntaxError(`Invalid number: ${this.source.substring(this.start, this.pos + 1)}`, this.position());
       }
       this.acceptRun(validator);
     }
@@ -401,7 +413,7 @@ l.lexNumber = function() {
   // a string.
   const c = this.peek();
   if(isIdentifierChar(c) || isQuoteChar(c) || oneOf(".eE")(c)) {
-    throw new SyntaxError(`${this.position()}Invalid number: ${this.source.substring(this.start, this.pos + 1)}`);
+    throw new SyntaxError(`Invalid number: ${this.source.substring(this.start, this.pos + 1)}`, this.position());
   }
 
   this.addToken(tokenTypes.numericLiteral);
@@ -465,7 +477,7 @@ l.lexPunctuator = function() {
   } else {
     // This shouldn't ever happen, but throw an exception to make sure we
     // catch it if it does.
-    throw new SyntaxError(`${this.position()}Invalid punctuator: ${word}`);
+    throw new SyntaxError(`Invalid punctuator: ${word}`, this.position());
   }
 };
 
@@ -485,7 +497,7 @@ l.lexQuote = quoteChar => {
       if(c === null) {
         // If we reached EOF without the closing quote char, then this string is
         // incomplete.
-        throw new SyntaxError(`${this.position()}Illegal token: ${this.source.substring(this.start, this.pos)}`);
+        throw new SyntaxError(`Illegal token: ${this.source.substring(this.start, this.pos)}`, this.position());
       } else if(!escapeEncountered) {
         if(quoteChar === "`" && c == "{" && prevChar == "$") {
           while(c != "}") {
@@ -495,7 +507,7 @@ l.lexQuote = quoteChar => {
         } else if(isLineTerminator(c) && quoteChar !== "`") {
           // If we somehow reached EOL without encountering the
           // ending quote char then this string is incomplete.
-          throw new SyntaxError(`${this.position()}Illegal token: ${this.source.substring(this.start, this.pos)}`);
+          throw new SyntaxError(`Illegal token: ${this.source.substring(this.start, this.pos)}`, this.position());
         } else if(c === quoteChar) {
           this.addToken(tokenTypes.stringLiteral);
           return this.lexText;
@@ -566,7 +578,7 @@ l.lexText = function() {
     } else if(isLineTerminator(c)) {
       this.ignore();
     } else {
-      throw new SyntaxError(`${this.line}:${this.column} Unexpected character: ${c}`);
+      throw new SyntaxError(`Unexpected character: ${c}`, this.position());
     }
   } while(true);
 };
@@ -587,7 +599,7 @@ l.lex = function() {
     this.stateFn = this.stateFn();
   } while(this.stateFn !== null && this.tokenIndex >= this.tokens.length);
   let tok = this.nextToken();
-  // console.log("lex: ", tok);
+  console.log("lex: ",this.tokenIndex , tok);
   return tok;
 };
 

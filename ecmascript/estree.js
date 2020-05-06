@@ -22,13 +22,14 @@ export class Expression extends Node {
 }
 
 export class Function extends Node {
-  constructor(type, id, params, body, exported, async) {
+  constructor(type, id, params, body, exported, async, generator) {
     super(type);
     this.id = id;
     this.params = params;
     this.body = body;
     this.exported = exported;
     this.async = async;
+    this.generator = generator;
   }
 }
 
@@ -268,6 +269,13 @@ export class TryStatement extends Statement {
   }
 }
 
+export class ThrowStatement extends Statement {
+  constructor(expression) {
+    super("ThrowStatement");
+    this.expression = expression;
+  }
+}
+
 export class ImportStatement extends Statement {
   constructor(identifiers, sourceFile) {
     super("ImportStatement");
@@ -294,8 +302,8 @@ export class ClassDeclaration extends Declaration {
 }
 
 export class FunctionDeclaration extends Function {
-  constructor(id, params, body, exported = false, async = false) {
-    super("FunctionDeclaration", id, params, body, exported, async);
+  constructor(id, params, body, exported = false, async = false, generator = false) {
+    super("FunctionDeclaration", id, params, body, exported, async, generator);
     // console.log('New FunctionDeclaration: ', JSON.stringify({ id, params, // exported }));
   }
 }
@@ -415,54 +423,81 @@ Node.prototype.toString = function() {
   return `${this.type} {\n  ${s}\n}`;
 };
 
-export default {
-  Node,
-  Program,
-  Expression,
-  Function,
-  Identifier,
-  BindingProperty,
-  Literal,
-  ThisExpression,
-  UnaryExpression,
-  UpdateExpression,
-  BinaryExpression,
+export const CTORS = {
+  ArrayBinding,
+  ArrayLiteral,
+  ArrowFunction,
   AssignmentExpression,
+  AwaitExpression,
+  BinaryExpression,
+  BindingPattern,
+  BindingProperty,
+  BlockStatement,
+  BreakStatement,
+  CallExpression,
+  ClassDeclaration,
+  ConditionalExpression,
+  ContinueStatement,
+  Declaration,
+  DecoratorExpression,
+  DoStatement,
+  EmptyStatement,
+  Expression,
+  ExpressionStatement,
+  ForInStatement,
+  ForStatement,
+  Function,
+  FunctionDeclaration,
+  Identifier,
+  IfStatement,
+  ImportStatement,
+  JSXLiteral,
+  Literal,
   LogicalExpression,
   MemberExpression,
-  ConditionalExpression,
-  CallExpression,
-  DecoratorExpression,
   NewExpression,
+  Node,
+  ObjectBinding,
+  ObjectLiteral,
+  Program,
+  RestOfExpression,
+  ReturnStatement,
   SequenceExpression,
   Statement,
-  BlockStatement,
   StatementList,
-  EmptyStatement,
-  ExpressionStatement,
-  ReturnStatement,
-  ContinueStatement,
-  BreakStatement,
-  IfStatement,
-  WhileStatement,
-  DoStatement,
-  ForStatement,
-  ForInStatement,
-  WithStatement,
+  ThisExpression,
+  ThrowStatement,
   TryStatement,
-  ImportStatement,
-  Declaration,
-  ClassDeclaration,
-  FunctionDeclaration,
-  ArrowFunction,
+  UnaryExpression,
+  UpdateExpression,
   VariableDeclaration,
   VariableDeclarator,
-  ObjectLiteral,
-  ArrayLiteral,
-  JSXLiteral,
-  BindingPattern,
-  ArrayBinding,
-  ObjectBinding,
-  AwaitExpression,
-  RestOfExpression
+  WhileStatement,
+  WithStatement
 };
+
+export const Factory = (function() {
+  const nodeList = [];
+
+  var self = function estree(ctor, ...args) {
+    ctor = typeof ctor == "string" ? CTORS[ctor] : ctor;
+    let instance = new ctor(...args);
+    nodeList.push(instance);
+    return instance;
+  };
+  self.nodeList = nodeList;
+
+  return self;
+})();
+
+export const estree = Object.assign(
+  Factory,
+  Object.keys(CTORS).reduce((acc, nodeName) => ({
+    ...acc,
+    [nodeName]: function(...args) {
+      return Factory(nodeName, ...args);
+    }
+  }))
+);
+
+export default estree;
