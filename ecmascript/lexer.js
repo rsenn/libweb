@@ -20,8 +20,9 @@ export function Error(msg) {
   this.stack = Stack();
 }
 
-export function SyntaxError(msg, ast, pos) {
+export function SyntaxError(msg, ast, pos, ctx) {
   this.msg = msg;
+  this.ctx = ctx;
   this.ast = ast;
   this.pos = pos;
   this.stack = Stack();
@@ -30,7 +31,7 @@ export function SyntaxError(msg, ast, pos) {
 SyntaxError.prototype.toString = function() {
   const { msg, pos } = this;
   const { line, column } = pos || {};
-  return (pos ? ` line=${line},column=${column} ` : "") + ` : ${msg} `;
+  return (line ? ` line=${line}` : "") + (column ? `, column=${column} ` : "") + `: ${msg}`;
 };
 SyntaxError.prototype[Symbol.toStringTag] = function() {
   return this.toString();
@@ -55,6 +56,7 @@ l.reset = function(sourceText) {
   this.column = 1;
   this.tokenIndex = 0;
   this.noRegex = false;
+  this.accepted = "";
 };
 
 // Skips over the pending input before this point
@@ -84,7 +86,7 @@ l.next = function() {
     }
     this.column++;
     this.pos++;
-    // const { pos, line, column } = this;
+    const { pos, line, column } = this;
     // console.log("Lexer.next { ", { pos, line, column }, " }");
   }
   this.c = c;
@@ -125,6 +127,7 @@ l.positionString = function() {
 l.accept = function(validator) {
   const c = this.peek();
   if(c !== null && validator(c)) {
+    this.accepted += c;
     this.pos++;
     if(c != "\n") {
       this.column++;
@@ -352,12 +355,12 @@ l.lexIdentifier = function() {
   // Make sure identifier didn't start with a decimal digit
   const firstChar = this.source[this.start];
   if(isDecimalDigit(firstChar)) {
-    throw new SyntaxError(`Invalid identifier: ${this.source.substring(this.start, this.pos)}`, this.position());
+    throw new SyntaxError(`Invalid identifier: ${this.source.substring(this.start, this.pos)}\n${this.currentLine()}`, this.position());
   }
 
   const c = this.peek();
   if(isQuoteChar(c)) {
-    throw new SyntaxError(`Invalid identifier: ${this.source.substring(this.start, this.pos + 1)}`, this.position());
+    throw new SyntaxError(`Invalid identifier: ${this.source.substring(this.start, this.pos + 1)}${this.currentLine()}`, this.position());
   }
 
   const word = this.source.substring(this.start, this.pos);
@@ -371,6 +374,30 @@ l.lexIdentifier = function() {
     this.addToken(tokenTypes.identifier);
   }
   return this.lexText;
+};
+
+l.currentLine = function() {
+  let p, e;
+  const { pos, line, column, source } = this;
+  for(e = pos; e < source.length; e++) {
+    if(source[e] == "\n") break;
+  }
+  for(p = pos; p > 0; p--) {
+    if(source[p - 1] == "\n") break;
+  }
+
+  let lineno = `${(line + "").padStart(4)}: `;
+  let indent = " ".repeat(lineno.length);
+
+  return `\n${lineno}${source.slice(p, e)}\n${indent + ` column ${column} ----`.padStart(column).slice(-column)}╯\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${this.accepted.length}\n${indent + source.slice(this.pos, this.pos + 10)}`;
+};
+l.lineRange = function(start, end) {
+  let lines = this.source.split(/\n/g).entries();
+  lines = lines.slice(start, end);
+  lines.print = function() {
+    for(let [lineno, str] of this) console.log(`${lineno.padStart(10)}: ${str}`);
+  };
+  return lines;
 };
 
 l.lexNumber = function() {

@@ -491,22 +491,26 @@ export const Factory = (function() {
     ctor = typeof ctor == "string" ? CTORS[ctor] : ctor;
     let instance = new ctor(...args);
     self.nodes.push(instance);
+    //console.log("factory ret:",instance);
     return instance;
   };
   self.nodes = nodeList;
   self.stack = [];
-  self.loc = { pos: -1, column: -1, line: -1 } ;
+  self.loc = { pos: -1, column: -1, line: -1 };
   return self;
 })();
 
 export const estree = Object.assign(
-  Factory,
-  Object.keys(CTORS).reduce((acc, nodeName) => ({
-    ...acc,
-    [nodeName]: function(...args) {
-      return Factory(nodeName, ...args);
-    }
-  }))
+  {},
+  Object.keys(CTORS).reduce(
+    (acc, nodeName) => ({
+      ...acc,
+      [nodeName]: function(...args) {
+        return Factory(nodeName, ...args);
+      }
+    }),
+    Factory
+  )
 );
 
-export default estree;
+//export default estree;

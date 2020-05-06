@@ -1334,12 +1334,11 @@ var fns = [];
 const methodNames = [...Util.getMethodNames(Parser.prototype)];
 var methods = {};
 
-Parser.instrumentate = (methodName,fn = methods[methodName]) => {
-const { nodes, stack, loc } = Factory;
+Parser.instrumentate = (methodName, fn = methods[methodName]) => {
+  const { nodes, stack, loc } = Factory;
   var esfactory = function(...args) {
     let parser = this;
     let { lexer, token } = this;
-
 
     depth++;
     let start = lexer.pos;
@@ -1379,7 +1378,7 @@ const { nodes, stack, loc } = Factory;
     return ret;
   };
   return esfactory;
-}
+};
 methodNames
   .filter(name => /^(expect|match|parse)[A-Z]/.test(name))
   .forEach(methodName => {
