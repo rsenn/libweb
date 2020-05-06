@@ -115,6 +115,14 @@ export class MemberExpression extends Expression {
   }
 }
 
+export class InExpression extends Expression {
+  constructor(obj, prop) {
+    super("InExpression");
+    this.object = obj;
+    this.property = prop;
+  }
+}
+
 export class ConditionalExpression extends Expression {
   constructor(test, consequent, alternate) {
     super("ConditionalExpression");
@@ -455,6 +463,7 @@ export const CTORS = {
   Literal,
   LogicalExpression,
   MemberExpression,
+  InExpression,
   NewExpression,
   Node,
   ObjectBinding,

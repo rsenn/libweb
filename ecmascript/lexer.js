@@ -5,7 +5,7 @@ import Util from "../util.js";
 export function Stack() {
   let stack = Util.getCallers(2, 30);
 
-  return stack.map(({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) => `  ${functionName}${Util.pad(functionName, 20)} ${(fileName+'').replace(/.*file:\/\//g, "")}:${lineNumber}:${columnNumber}`);
+  return stack.map(({ fileName = "", columnNumber, lineNumber, functionName = "", methodName = "" }) => `  ${functionName}${Util.pad(functionName, 20)} ${(fileName + "").replace(/.*file:\/\//g, "")}:${lineNumber}:${columnNumber}`);
   /*
   stack = stack.filter(({ functionName }) => !/Parser.parser.</.test(functionName));
   stack = stack.filter(({ typeName }) => typeName == "Parser");
@@ -32,7 +32,9 @@ SyntaxError.prototype.toString = function() {
   const { line, column } = pos || {};
   return (pos ? ` line=${line},column=${column} ` : "") + ` : ${msg} `;
 };
-  SyntaxError.prototype[Symbol.toStringTag] = function() { return this.toString(); };
+SyntaxError.prototype[Symbol.toStringTag] = function() {
+  return this.toString();
+};
 
 function Lexer(sourceText) {
   this.setInput(sourceText);
@@ -99,7 +101,9 @@ l.position = function() {
   return {
     line,
     column,
-          [Symbol.toStringTag]() { return this.toString(); },
+    [Symbol.toStringTag]() {
+      return this.toString();
+    },
     toString() {
       const { line, column } = this;
       return `line=${line}:col=${column} `;
@@ -109,7 +113,7 @@ l.position = function() {
 
 l.positionString = function() {
   const { line, column } = this;
-       return `${line}:${column}`;
+  return `${line}:${column}`;
 };
 
 l.accept = function(validator) {
@@ -281,7 +285,7 @@ function isKeyword(word) {
         case "catch":
         case "class":
         case "const":
-        case "super":
+        //  case "super":
         case "throw":
         case "await":
           return true;
@@ -427,19 +431,18 @@ l.lexRegExp = function() {
   let slashes = 1;
   let validator = c => {
     let last = word.substring(word.length - 1);
-    if(c == "/") {
+    if(c == "/" && last != "\\") {
       slashes++;
     } else if(slashes == 2) {
       return c == "g" || c == "i";
     }
     if(last == ";") return false;
-    // console.log('last: ' + last + " slashes: "+slashes);
+    console.log("last: " + last + " slashes: " + slashes);
     return true;
   };
   const print = () => {
     word = this.source.substring(this.start, this.pos);
-    // console.log('word: ' + word + " lexText:
-    // "+this.source.substring(this.start, this.pos));
+    console.log("word: " + word + " lexText: " + this.source.substring(this.start, this.pos));
   };
 
   // if(this.accept(oneOf('/')))
