@@ -19,17 +19,17 @@ require("core-js/modules/es7.object.entries");
 
 require("core-js/modules/es6.map");
 
-var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
-
-require("regenerator-runtime/runtime");
-
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
-
 require("core-js/modules/es7.symbol.async-iterator");
 
 require("core-js/modules/es6.symbol");
 
 require("core-js/modules/web.dom.iterable");
+
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+
+require("regenerator-runtime/runtime");
+
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
 require("core-js/modules/es7.string.trim-right");
 
@@ -49,61 +49,73 @@ require("core-js/modules/es6.regexp.split");
 
 require("core-js/modules/es6.regexp.replace");
 
+var _asyncIterator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncIterator"));
+
+var _awaitAsyncGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/awaitAsyncGenerator"));
+
+var _wrapAsyncGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/wrapAsyncGenerator"));
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+
 const formatAnnotatedObject = function formatAnnotatedObject(subject, {
-  indent = '  ',
-  spacing = ' ',
-  separator = ',',
-  newline = '\n',
+  indent = "  ",
+  spacing = " ",
+  separator = ",",
+  newline = "\n",
   maxlen = 30,
   depth = 1
 }) {
   const i = indent.repeat(Math.abs(1 - depth));
-  let nl = newline != '' ? newline + i : spacing;
+  let nl = newline != "" ? newline + i : spacing;
   const opts = {
-    newline: depth >= 0 ? newline : '',
+    newline: depth >= 0 ? newline : "",
     depth: depth - 1
   };
   if (subject && subject.toSource !== undefined) return subject.toSource();
   if (subject instanceof Date) return "new Date('".concat(new Date().toISOString(), "')");
-  if (typeof subject == 'string') return "'".concat(subject, "'");
+  if (typeof subject == "string") return "'".concat(subject, "'");
 
-  if (subject != null && subject['y2'] !== undefined) {
-    return "rect[".concat(spacing).concat(subject['x']).concat(separator).concat(subject['y'], " | ").concat(subject['x2']).concat(separator).concat(subject['y2'], " (").concat(subject['w'], "x").concat(subject['h'], ") ]");
+  if (subject != null && subject["y2"] !== undefined) {
+    return "rect[".concat(spacing).concat(subject["x"]).concat(separator).concat(subject["y"], " | ").concat(subject["x2"]).concat(separator).concat(subject["y2"], " (").concat(subject["w"], "x").concat(subject["h"], ") ]");
   }
 
-  if (typeof subject == 'object' && 'map' in subject && typeof subject.map == 'function') {
+  if (typeof subject == "object" && "map" in subject && typeof subject.map == "function") {
     return "[".concat(nl).concat(subject.map(i => formatAnnotatedObject(i, opts)).join(separator + nl), "]");
   }
 
-  if (typeof subject === 'string' || subject instanceof String) {
+  if (typeof subject === "string" || subject instanceof String) {
     return "'".concat(subject, "'");
   }
 
-  let longest = '';
+  let longest = "";
   let r = [];
 
   for (let k in subject) {
     if (k.length > longest.length) longest = k;
-    let s = '';
+    let s = "";
 
-    if (typeof subject[k] === 'symbol') {
-      s = 'Symbol';
-    } else if (typeof subject[k] === 'string' || subject[k] instanceof String) {
+    if (typeof subject[k] === "symbol") {
+      s = "Symbol";
+    } else if (typeof subject[k] === "string" || subject[k] instanceof String) {
       s = "'".concat(subject[k], "'");
-    } else if (typeof subject[k] === 'function') {
-      s = Util.fnName(s) || 'function';
-      s += '()';
-    } else if (typeof subject[k] === 'number' || typeof subject[k] === 'boolean') {
+    } else if (typeof subject[k] === "function") {
+      s = Util.fnName(s) || "function";
+      s += "()";
+    } else if (typeof subject[k] === "number" || typeof subject[k] === "boolean") {
       s = "".concat(subject[k]);
     } else if (subject[k] === null) {
-      s = 'null';
+      s = "null";
     } else if (subject[k] && subject[k].length !== undefined) {
       try {
-        s = depth <= 0 ? "Array(".concat(subject[k].length, ")") : "[ ".concat(subject[k].map(item => formatAnnotatedObject(item, opts)).join(', '), " ]");
+        s = depth <= 0 ? "Array(".concat(subject[k].length, ")") : "[ ".concat(subject[k].map(item => formatAnnotatedObject(item, opts)).join(", "), " ]");
       } catch (err) {
         s = "[".concat(subject[k], "]");
       }
@@ -116,7 +128,7 @@ const formatAnnotatedObject = function formatAnnotatedObject(subject, {
     r.push([k, s]);
   }
 
-  let padding = x => opts.newline != '' ? Util.pad(x, longest.length, spacing) : spacing;
+  let padding = x => opts.newline != "" ? Util.pad(x, longest.length, spacing) : spacing;
 
   let j = separator + spacing;
 
@@ -133,6 +145,21 @@ function Util(g) {
   if (g) Util.globalObject = g;
 }
 
+Util.curry = function curry(fn, arity) {
+  return function curried() {
+    if (arity == null) arity = fn.length;
+    var args = [].slice.call(arguments);
+
+    if (args.length >= arity) {
+      return fn.apply(this, args);
+    } else {
+      return function () {
+        return curried.apply(this, args.concat([].slice.call(arguments)));
+      };
+    }
+  };
+};
+
 Util.getGlobalObject = function () {
   let ret = this.globalObject;
 
@@ -145,7 +172,7 @@ Util.getGlobalObject = function () {
 };
 
 Util.isDebug = function () {
-  if (process !== undefined && process.env.NODE_ENV === 'production') return false;
+  if (process !== undefined && process.env.NODE_ENV === "production") return false;
   return true;
 };
 
@@ -168,7 +195,7 @@ Util.toSource = function (arg, opts = {}) {
   const _opts$color = opts.color,
         color = _opts$color === void 0 ? true : _opts$color;
   const c = Util.color(color);
-  if (typeof arg == 'string') return c.text("'".concat(arg, "'"), 1, 36);
+  if (typeof arg == "string") return c.text("'".concat(arg, "'"), 1, 36);
   if (arg && arg.x !== undefined && arg.y !== undefined) return "[".concat(c.text(arg.x, 1, 32), ",").concat(c.text(arg.y, 1, 32), "]");
   if (arg && arg.toSource) return arg.toSource();
   let cls = arg && arg.constructor && Util.fnName(arg.constructor);
@@ -180,7 +207,7 @@ Util.debug = function (message) {
   let cache = Util.array();
 
   const removeCircular = function removeCircular(key, value) {
-    if (typeof value === 'object' && value !== null) {
+    if (typeof value === "object" && value !== null) {
       if (cache.indexOf(value) !== -1) return;
       cache.push(value);
     }
@@ -188,13 +215,13 @@ Util.debug = function (message) {
     return value;
   };
 
-  const str = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg, removeCircular) : arg).join(' ').replace(/\n/g, '');
+  const str = args.map(arg => typeof arg === "object" ? JSON.stringify(arg, removeCircular) : arg).join(" ").replace(/\n/g, "");
 };
 
 Util.type = function ({
   type
 }) {
-  return type && String(type).split(/[ ()]/)[1] || '';
+  return type && String(type).split(/[ ()]/)[1] || "";
 };
 
 Util.functionName = function (fn) {
@@ -214,7 +241,7 @@ Util.className = function (obj) {
     } catch (err) {}
   }
 
-  if (Util.isObject(proto) && 'constructor' in proto) return Util.fnName(proto.constructor);
+  if (Util.isObject(proto) && "constructor" in proto) return Util.fnName(proto.constructor);
 };
 
 Util.unwrapComponent = function (c) {
@@ -228,7 +255,7 @@ Util.unwrapComponent = function (c) {
 Util.componentName = function (c) {
   for (;;) {
     if (c.displayName || c.name) {
-      return (c.displayName || c.name).replace(/.*\(([A-Za-z0-9_]+).*/, '$1');
+      return (c.displayName || c.name).replace(/.*\(([A-Za-z0-9_]+).*/, "$1");
     } else if (c.wrappedComponent) c = c.wrappedComponent;else if (c.WrappedComponent) c = c.WrappedComponent;else break;
   }
 
@@ -236,7 +263,7 @@ Util.componentName = function (c) {
 };
 
 Util.count = function (s, ch) {
-  return (String(s).match(new RegExp(ch, 'g')) || Util.array()).length;
+  return (String(s).match(new RegExp(ch, "g")) || Util.array()).length;
 };
 
 Util.parseNum = function (str) {
@@ -250,15 +277,15 @@ Util.minmax = function (num, min, max) {
 };
 
 Util.getExponential = function (num) {
-  let str = typeof num == 'string' ? num : num.toExponential();
+  let str = typeof num == "string" ? num : num.toExponential();
   const matches = /e\+?(.*)$/.exec(str);
   return parseInt(matches[1]);
 };
 
 Util.getNumberParts = function (num) {
-  let str = typeof num == 'string' ? num : num.toExponential();
+  let str = typeof num == "string" ? num : num.toExponential();
   const matches = /^(-?)(.*)e\+?(.*)$/.exec(str);
-  const negative = matches[1] == '-';
+  const negative = matches[1] == "-";
   return {
     negative,
     mantissa: parseFloat(matches[2]),
@@ -283,7 +310,7 @@ Util.toBinary = function (num) {
 };
 
 Util.toBits = function (num) {
-  let a = Util.toBinary(num).split('').reverse();
+  let a = Util.toBinary(num).split("").reverse();
   return Array.from(Object.assign({}, a, {
     length: 50
   }), bit => bit ? 1 : 0);
@@ -299,7 +326,7 @@ Util.isSet = function (v, n) {
 };
 
 Util.bitCount = function (n) {
-  return Util.count(Util.toBinary(n), '1');
+  return Util.count(Util.toBinary(n), "1");
 };
 
 Util.toggleBit = function (num, bit) {
@@ -333,10 +360,10 @@ Util.range = function (start, end) {
 };
 
 Util.inspect = function (obj, opts = {
-  indent: '  ',
-  newline: '\n',
+  indent: "  ",
+  newline: "\n",
   depth: 2,
-  spacing: ' '
+  spacing: " "
 }) {
   return formatAnnotatedObject(obj, opts);
 };
@@ -353,9 +380,9 @@ Util.bitArrayToNumbers = function (arr) {
 };
 
 Util.bitsToNumbers = function (bits) {
-  let a = Util.toBinary(bits).split('');
+  let a = Util.toBinary(bits).split("");
   let r = Util.array();
-  a.forEach((val, key, arr) => val == '1' && r.unshift(a.length - key));
+  a.forEach((val, key, arr) => val == "1" && r.unshift(a.length - key));
   return r;
 };
 
@@ -375,10 +402,10 @@ Util.draw = function (arr, n, rnd = Util.rng) {
 };
 
 Util.is = {
-  on: val => val == 'on' || val === 'true' || val === true,
-  off: val => val == 'off' || val === 'false' || val === false,
-  true: val => val === 'true' || val === true,
-  false: val => val === 'false' || val === false
+  on: val => val == "on" || val === "true" || val === true,
+  off: val => val == "off" || val === "false" || val === false,
+  true: val => val === "true" || val === true,
+  false: val => val === "false" || val === false
 };
 
 Util.onoff = function (val) {
@@ -400,19 +427,19 @@ Util.randomBits = function (r = [1, 50], n = 5) {
   return Util.numbersToBits(Util.randomNumbers(r, n));
 };
 
-Util.padFn = function (len, char = ' ', fn = (str, pad) => pad) {
+Util.padFn = function (len, char = " ", fn = (str, pad) => pad) {
   return (s, n = len) => {
     let m = Util.stripAnsi(s).length;
-    s = s ? s.toString() : '' + s;
-    return fn(s, m < n ? char.repeat(n - m) : '');
+    s = s ? s.toString() : "" + s;
+    return fn(s, m < n ? char.repeat(n - m) : "");
   };
 };
 
-Util.pad = function (s, n, char = ' ') {
+Util.pad = function (s, n, char = " ") {
   return Util.padFn(n, char)(s);
 };
 
-Util.abbreviate = function (str, max, suffix = '...') {
+Util.abbreviate = function (str, max, suffix = "...") {
   if (str.length > max) {
     return str.substring(0, max - suffix.length) + suffix;
   }
@@ -423,16 +450,16 @@ Util.abbreviate = function (str, max, suffix = '...') {
 Util.trim = function (str, charset) {
   const r1 = RegExp("^[".concat(charset, "]*"));
   const r2 = RegExp("[".concat(charset, "]*$"));
-  return str.replace(r1, '').replace(r2, '');
+  return str.replace(r1, "").replace(r2, "");
 };
 
 Util.trimRight = function (str, charset) {
   const r2 = RegExp("[".concat(charset, "]*$"));
-  return str.replace(r2, '');
+  return str.replace(r2, "");
 };
 
 Util.define = (obj, key, value, enumerable = false) => {
-  if (typeof key == 'object') {
+  if (typeof key == "object") {
     for (let prop in key) Util.define(obj, prop, key[prop], Util.isBool(value) ? value : false);
 
     return obj;
@@ -448,31 +475,21 @@ Util.define = (obj, key, value, enumerable = false) => {
 };
 
 Util.copyEntries = (obj, entries) => {
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
+  var _iterator2 = _createForOfIteratorHelper(entries),
+      _step2;
 
   try {
-    for (var _iterator = entries[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      let _step$value = (0, _slicedToArray2.default)(_step.value, 2),
-          k = _step$value[0],
-          v = _step$value[1];
+    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+      let _step2$value = (0, _slicedToArray2.default)(_step2.value, 2),
+          k = _step2$value[0],
+          v = _step2$value[1];
 
       obj[k] = v;
     }
   } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
+    _iterator2.e(err);
   } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return != null) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
+    _iterator2.f();
   }
 
   return obj;
@@ -481,15 +498,15 @@ Util.copyEntries = (obj, entries) => {
 Util.extend = (obj, ...args) => {
   for (var _i = 0, _args = args; _i < _args.length; _i++) {
     let other = _args[_i];
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
+
+    var _iterator3 = _createForOfIteratorHelper(Util.iterateMethods(other, 0, (key, value) => obj[key] === undefined && [key, value])),
+        _step3;
 
     try {
-      for (var _iterator2 = Util.iterateMethods(other, 0, (key, value) => obj[key] === undefined && [key, value])[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        let _step2$value = (0, _slicedToArray2.default)(_step2.value, 2),
-            name = _step2$value[0],
-            fn = _step2$value[1];
+      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+        let _step3$value = (0, _slicedToArray2.default)(_step3.value, 2),
+            name = _step3$value[0],
+            fn = _step3$value[1];
 
         try {
           Object.defineProperty(obj, name, {
@@ -499,22 +516,13 @@ Util.extend = (obj, ...args) => {
             writable: false
           });
         } catch (err) {
-          console.log('extend:', err);
+          console.log("extend:", err);
         }
       }
     } catch (err) {
-      _didIteratorError2 = true;
-      _iteratorError2 = err;
+      _iterator3.e(err);
     } finally {
-      try {
-        if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-          _iterator2.return();
-        }
-      } finally {
-        if (_didIteratorError2) {
-          throw _iteratorError2;
-        }
-      }
+      _iterator3.f();
     }
   }
 
@@ -522,15 +530,14 @@ Util.extend = (obj, ...args) => {
 };
 
 Util.static = (obj, functions, thisObj, pred = (k, v, f) => true) => {
-  var _iteratorNormalCompletion3 = true;
-  var _didIteratorError3 = false;
-  var _iteratorError3 = undefined;
+  var _iterator4 = _createForOfIteratorHelper(Util.iterateMethods(functions, 0, (key, value) => obj[key] === undefined && pred(key, value, functions) && [key, value])),
+      _step4;
 
   try {
-    for (var _iterator3 = Util.iterateMethods(functions, 0, (key, value) => obj[key] === undefined && pred(key, value, functions) && [key, value])[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-      let _step3$value = (0, _slicedToArray2.default)(_step3.value, 2),
-          name = _step3$value[0],
-          fn = _step3$value[1];
+    for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+      let _step4$value = (0, _slicedToArray2.default)(_step4.value, 2),
+          name = _step4$value[0],
+          fn = _step4$value[1];
 
       const value = function value(...args) {
         return fn.call(thisObj || obj, this, ...args);
@@ -539,22 +546,13 @@ Util.static = (obj, functions, thisObj, pred = (k, v, f) => true) => {
       try {
         obj[name] = value;
       } catch (err) {
-        console.log('static:', err);
+        console.log("static:", err);
       }
     }
   } catch (err) {
-    _didIteratorError3 = true;
-    _iteratorError3 = err;
+    _iterator4.e(err);
   } finally {
-    try {
-      if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-        _iterator3.return();
-      }
-    } finally {
-      if (_didIteratorError3) {
-        throw _iteratorError3;
-      }
-    }
+    _iterator4.f();
   }
 
   return obj;
@@ -573,17 +571,17 @@ Util.defineGetterSetter = (obj, key, get, set, enumerable = false) => obj[key] =
 });
 
 Util.extendArray = function (arr = Array.prototype) {
-  Util.define(arr, 'match', function (pred) {
+  Util.define(arr, "match", function (pred) {
     return Util.match(this, pred);
   });
-  Util.define(arr, 'clear', function () {
+  Util.define(arr, "clear", function () {
     this.splice(0, this, length);
     return this;
   });
-  Util.define(arr, 'unique', function () {
+  Util.define(arr, "unique", function () {
     return this.filter((item, i, a) => a.indexOf(item) == i);
   });
-  Util.defineGetterSetter(arr, 'tail', function () {
+  Util.defineGetterSetter(arr, "tail", function () {
     return Util.tail(this);
   }, function (value) {
     if (this.length == 0) this.push(value);else this[this.length - 1] = value;
@@ -647,71 +645,52 @@ Util.adapter = function (obj, getLength = obj => obj.length, getKey = (obj, inde
       var _this = this;
 
       return _regenerator.default.mark(function _callee2() {
-        var _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, key;
+        var _iterator5, _step5, key;
 
         return _regenerator.default.wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
-              _iteratorNormalCompletion4 = true;
-              _didIteratorError4 = false;
-              _iteratorError4 = undefined;
-              _context2.prev = 3;
-              _iterator4 = _this.keys()[Symbol.iterator]();
+              _iterator5 = _createForOfIteratorHelper(_this.keys());
+              _context2.prev = 1;
 
-            case 5:
-              if (_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done) {
-                _context2.next = 12;
+              _iterator5.s();
+
+            case 3:
+              if ((_step5 = _iterator5.n()).done) {
+                _context2.next = 9;
                 break;
               }
 
-              key = _step4.value;
-              _context2.next = 9;
+              key = _step5.value;
+              _context2.next = 7;
               return [key, getItem(obj, key)];
 
-            case 9:
-              _iteratorNormalCompletion4 = true;
-              _context2.next = 5;
+            case 7:
+              _context2.next = 3;
               break;
 
-            case 12:
-              _context2.next = 18;
+            case 9:
+              _context2.next = 14;
               break;
+
+            case 11:
+              _context2.prev = 11;
+              _context2.t0 = _context2["catch"](1);
+
+              _iterator5.e(_context2.t0);
 
             case 14:
               _context2.prev = 14;
-              _context2.t0 = _context2["catch"](3);
-              _didIteratorError4 = true;
-              _iteratorError4 = _context2.t0;
 
-            case 18:
-              _context2.prev = 18;
-              _context2.prev = 19;
+              _iterator5.f();
 
-              if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-                _iterator4.return();
-              }
+              return _context2.finish(14);
 
-            case 21:
-              _context2.prev = 21;
-
-              if (!_didIteratorError4) {
-                _context2.next = 24;
-                break;
-              }
-
-              throw _iteratorError4;
-
-            case 24:
-              return _context2.finish(21);
-
-            case 25:
-              return _context2.finish(18);
-
-            case 26:
+            case 17:
             case "end":
               return _context2.stop();
           }
-        }, _callee2, null, [[3, 14, 18, 26], [19,, 21, 25]]);
+        }, _callee2, null, [[1, 11, 14, 17]]);
       })();
     },
 
@@ -740,7 +719,7 @@ var doExtendArray = Util.extendArray;
 
 Util.array = function (a) {
   if (!(a instanceof Array)) {
-    if (Util.isObject(a) && 'length' in a) a = Array.from(a);
+    if (Util.isObject(a) && "length" in a) a = Array.from(a);
   }
 
   if (doExtendArray) try {
@@ -758,7 +737,7 @@ Util.arrayFromEntries = entries => Array.from(entries.map(([k, v]) => k), key =>
 
 Util.toMap = function (hash = {}, fn) {
   let m, gen;
-  if (hash instanceof Array && typeof fn == 'function') hash = hash.map(fn);
+  if (hash instanceof Array && typeof fn == "function") hash = hash.map(fn);
   if (hash[Symbol.iterator] !== undefined) gen = hash[Symbol.iterator]();else if (Util.isGenerator(hash)) gen = hash;else gen = Object.entries(hash);
   m = new Map(gen);
 
@@ -772,98 +751,79 @@ Util.toMap = function (hash = {}, fn) {
 Util.extendMap = function (map) {
   if (map.entries === undefined) {
     map.entries = _regenerator.default.mark(function iterator() {
-      var _iteratorNormalCompletion5, _didIteratorError5, _iteratorError5, _iterator5, _step5, entry;
+      var _iterator6, _step6, entry;
 
       return _regenerator.default.wrap(function iterator$(_context3) {
         while (1) switch (_context3.prev = _context3.next) {
           case 0:
-            _iteratorNormalCompletion5 = true;
-            _didIteratorError5 = false;
-            _iteratorError5 = undefined;
-            _context3.prev = 3;
-            _iterator5 = map[Symbol.iterator]();
+            _iterator6 = _createForOfIteratorHelper(map);
+            _context3.prev = 1;
 
-          case 5:
-            if (_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done) {
-              _context3.next = 22;
+            _iterator6.s();
+
+          case 3:
+            if ((_step6 = _iterator6.n()).done) {
+              _context3.next = 19;
               break;
             }
 
-            entry = _step5.value;
+            entry = _step6.value;
 
             if (!(entry.name !== undefined && entry.value !== undefined)) {
-              _context3.next = 12;
+              _context3.next = 10;
               break;
             }
 
-            _context3.next = 10;
+            _context3.next = 8;
             return [entry.name, entry.value];
 
-          case 10:
-            _context3.next = 19;
+          case 8:
+            _context3.next = 17;
             break;
 
-          case 12:
+          case 10:
             if (!(entry[0] !== undefined && entry[1] !== undefined)) {
-              _context3.next = 17;
+              _context3.next = 15;
               break;
             }
 
-            _context3.next = 15;
+            _context3.next = 13;
             return entry;
 
-          case 15:
-            _context3.next = 19;
+          case 13:
+            _context3.next = 17;
             break;
 
-          case 17:
-            _context3.next = 19;
+          case 15:
+            _context3.next = 17;
             return [entry, map[entry]];
 
-          case 19:
-            _iteratorNormalCompletion5 = true;
-            _context3.next = 5;
+          case 17:
+            _context3.next = 3;
             break;
 
-          case 22:
-            _context3.next = 28;
+          case 19:
+            _context3.next = 24;
             break;
+
+          case 21:
+            _context3.prev = 21;
+            _context3.t0 = _context3["catch"](1);
+
+            _iterator6.e(_context3.t0);
 
           case 24:
             _context3.prev = 24;
-            _context3.t0 = _context3["catch"](3);
-            _didIteratorError5 = true;
-            _iteratorError5 = _context3.t0;
 
-          case 28:
-            _context3.prev = 28;
-            _context3.prev = 29;
+            _iterator6.f();
 
-            if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-              _iterator5.return();
-            }
+            return _context3.finish(24);
 
-          case 31:
-            _context3.prev = 31;
-
-            if (!_didIteratorError5) {
-              _context3.next = 34;
-              break;
-            }
-
-            throw _iteratorError5;
-
-          case 34:
-            return _context3.finish(31);
-
-          case 35:
-            return _context3.finish(28);
-
-          case 36:
+          case 27:
           case "end":
             return _context3.stop();
         }
-      }, iterator, null, [[3, 24, 28, 36], [29,, 31, 35]]);
+      }, iterator, null, [[1, 21, 24, 27]]);
     });
   }
 
@@ -878,38 +838,29 @@ Util.extendMap = function (map) {
 
 Util.fromEntries = Object.fromEntries ? Object.fromEntries : entries => {
   let ret = {};
-  var _iteratorNormalCompletion6 = true;
-  var _didIteratorError6 = false;
-  var _iteratorError6 = undefined;
+
+  var _iterator7 = _createForOfIteratorHelper(entries),
+      _step7;
 
   try {
-    for (var _iterator6 = entries[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-      let _step6$value = (0, _slicedToArray2.default)(_step6.value, 2),
-          k = _step6$value[0],
-          v = _step6$value[1];
+    for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+      let _step7$value = (0, _slicedToArray2.default)(_step7.value, 2),
+          k = _step7$value[0],
+          v = _step7$value[1];
 
       ret[k] = v;
     }
   } catch (err) {
-    _didIteratorError6 = true;
-    _iteratorError6 = err;
+    _iterator7.e(err);
   } finally {
-    try {
-      if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
-        _iterator6.return();
-      }
-    } finally {
-      if (_didIteratorError6) {
-        throw _iteratorError6;
-      }
-    }
+    _iterator7.f();
   }
 
   return ret;
 };
 
 Util.objectFrom = function (any) {
-  if ('toJS' in any) any = any.toJS();else if (Util.isArray(any)) return Util.fromEntries(any);else if ('entries' in any) return Util.fromEntries(any.entries());
+  if ("toJS" in any) any = any.toJS();else if (Util.isArray(any)) return Util.fromEntries(any);else if ("entries" in any) return Util.fromEntries(any.entries());
   return Object.assign({}, any);
 };
 
@@ -918,9 +869,9 @@ Util.tail = function (arr) {
 };
 
 Util.splice = function (str, index, delcount, insert) {
-  const chars = str.split('');
+  const chars = str.split("");
   Array.prototype.splice.apply(chars, arguments);
-  return chars.join('');
+  return chars.join("");
 };
 
 Util.keyOf = function (obj, prop) {
@@ -939,7 +890,7 @@ Util.rotateRight = function (arr, n) {
 };
 
 Util.repeater = function (n, what) {
-  if (typeof what == 'function') return _regenerator.default.mark(function _callee3() {
+  if (typeof what == "function") return _regenerator.default.mark(function _callee3() {
     var i;
     return _regenerator.default.wrap(function _callee3$(_context4) {
       while (1) switch (_context4.prev = _context4.next) {
@@ -1069,50 +1020,41 @@ Util.keys = function (obj) {
 
 Util.objName = function (o) {
   if (o === undefined || o == null) return "".concat(o);
-  if (typeof o === 'function' || o instanceof Function) return Util.fnName(o);
+  if (typeof o === "function" || o instanceof Function) return Util.fnName(o);
   if (o.constructor) return Util.fnName(o.constructor);
   const s = "".concat(o.type);
   return s;
 };
 
 Util.findKey = function (obj, value) {
-  let pred = typeof value == 'function' ? value : v => v === value;
+  let pred = typeof value == "function" ? value : v => v === value;
 
   for (let k in obj) if (pred(obj[k], k)) return k;
 };
 
-Util.find = function (arr, value, prop = 'id', acc = Util.array()) {
+Util.find = function (arr, value, prop = "id", acc = Util.array()) {
   let pred;
-  if (typeof value == 'function') pred = value;else if (prop && prop.length !== undefined) {
+  if (typeof value == "function") pred = value;else if (prop && prop.length !== undefined) {
     pred = function pred(obj) {
       if (obj[prop] == value) return true;
       return false;
     };
   } else pred = obj => obj[prop] == value;
-  var _iteratorNormalCompletion7 = true;
-  var _didIteratorError7 = false;
-  var _iteratorError7 = undefined;
+
+  var _iterator8 = _createForOfIteratorHelper(arr),
+      _step8;
 
   try {
-    for (var _iterator7 = arr[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-      let v = _step7.value;
+    for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+      let v = _step8.value;
       {
         if (pred(v)) return v;
       }
     }
   } catch (err) {
-    _didIteratorError7 = true;
-    _iteratorError7 = err;
+    _iterator8.e(err);
   } finally {
-    try {
-      if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
-        _iterator7.return();
-      }
-    } finally {
-      if (_didIteratorError7) {
-        throw _iteratorError7;
-      }
-    }
+    _iterator8.f();
   }
 
   return null;
@@ -1124,7 +1066,7 @@ Util.match = function (arg, pred) {
   if (pred instanceof RegExp) {
     const re = pred;
 
-    match = (val, key) => val && val.tagName !== undefined && re.test(val.tagName) || typeof key === 'string' && re.test(key) || typeof val === 'string' && re.test(val);
+    match = (val, key) => val && val.tagName !== undefined && re.test(val.tagName) || typeof key === "string" && re.test(key) || typeof val === "string" && re.test(val);
   }
 
   if (Util.isArray(arg)) {
@@ -1140,7 +1082,7 @@ Util.match = function (arg, pred) {
   return Util.filter(arg, match);
 };
 
-Util.toHash = function (map, keyTransform = k => Util.camelize('' + k)) {
+Util.toHash = function (map, keyTransform = k => Util.camelize("" + k)) {
   let ret = {};
   Util.foreach(map, (v, k) => ret[keyTransform(k)] = v);
   return ret;
@@ -1154,7 +1096,7 @@ Util.indexOf = function (obj, prop) {
   return undefined;
 };
 
-Util.toString = (obj, opts = {}, indent = '') => {
+Util.toString = (obj, opts = {}, indent = "") => {
   const _opts$quote = opts.quote,
         quote = _opts$quote === void 0 ? '"' : _opts$quote,
         _opts$multiline = opts.multiline,
@@ -1162,31 +1104,31 @@ Util.toString = (obj, opts = {}, indent = '') => {
         _opts$color2 = opts.color,
         color = _opts$color2 === void 0 ? true : _opts$color2,
         _opts$spacing = opts.spacing,
-        spacing = _opts$spacing === void 0 ? ' ' : _opts$spacing,
+        spacing = _opts$spacing === void 0 ? " " : _opts$spacing,
         _opts$padding = opts.padding,
-        padding = _opts$padding === void 0 ? ' ' : _opts$padding,
+        padding = _opts$padding === void 0 ? " " : _opts$padding,
         _opts$separator = opts.separator,
-        separator = _opts$separator === void 0 ? ',' : _opts$separator,
+        separator = _opts$separator === void 0 ? "," : _opts$separator,
         _opts$colon = opts.colon,
-        colon = _opts$colon === void 0 ? ':' : _opts$colon;
+        colon = _opts$colon === void 0 ? ":" : _opts$colon;
   const c = Util.color(color);
-  const sep = multiline ? (space = false) => '\n' + indent + (space ? '  ' : '') : (space = false) => space ? spacing : '';
+  const sep = multiline ? (space = false) => "\n" + indent + (space ? "  " : "") : (space = false) => space ? spacing : "";
 
   if (Util.isArray(obj)) {
     let s = c.text("[".concat(padding), 1, 36);
 
     for (let i = 0; i < obj.length; i++) {
-      s += i > 0 ? c.text(separator, 1, 36) : '';
+      s += i > 0 ? c.text(separator, 1, 36) : "";
       s += sep(true);
-      s += Util.toString(obj[i], opts, indent + '  ');
+      s += Util.toString(obj[i], opts, indent + "  ");
     }
 
     return s + sep() + "".concat(padding, "]");
   }
 
-  if (typeof obj == 'function' || obj instanceof Function || Util.className(obj) == 'Function') {
-    obj = '' + obj;
-    if (!multiline) obj = obj.replace(/(\n| anonymous)/g, '');
+  if (typeof obj == "function" || obj instanceof Function || Util.className(obj) == "Function") {
+    obj = "" + obj;
+    if (!multiline) obj = obj.replace(/(\n| anonymous)/g, "");
     return obj;
   }
 
@@ -1195,10 +1137,10 @@ Util.toString = (obj, opts = {}, indent = '') => {
 
   for (let key in obj) {
     const value = obj[key];
-    s += i > 0 ? c.text(separator, 36) : '';
+    s += i > 0 ? c.text(separator, 36) : "";
     if (i > 0) s += sep(true);
     s += "".concat(c.text(key, 1, 33)).concat(c.text(colon, 1, 36)) + spacing;
-    if (Util.isObject(value)) s += Util.toString(value, opts, indent + '  ');else if (typeof value == 'string') s += c.text("".concat(quote).concat(value).concat(quote), 1, 36);else if (typeof value == 'number') s += c.text(value, 1, 32);else s += value;
+    if (Util.isObject(value)) s += Util.toString(value, opts, indent + "  ");else if (typeof value == "string") s += c.text("".concat(quote).concat(value).concat(quote), 1, 36);else if (typeof value == "number") s += c.text(value, 1, 32);else s += value;
     i++;
   }
 
@@ -1213,13 +1155,13 @@ Util.dump = function (name, props) {
     args.push(props[key]);
   }
 
-  if ('window' in global !== false) {
+  if ("window" in global !== false) {
     if (window.console !== undefined) console.log(...args);
   }
 };
 
 Util.ucfirst = function (str) {
-  if (typeof str != 'string') str = String(str);
+  if (typeof str != "string") str = String(str);
   return str.substring(0, 1).toUpperCase() + str.substring(1);
 };
 
@@ -1227,12 +1169,12 @@ Util.lcfirst = function (str) {
   return str.substring(0, 1).toLowerCase() + str.substring(1);
 };
 
-Util.camelize = (text, sep = '') => text.replace(/^([A-Z])|[\s-_]+(\w)/g, function (match, p1, p2, offset) {
+Util.camelize = (text, sep = "") => text.replace(/^([A-Z])|[\s-_]+(\w)/g, function (match, p1, p2, offset) {
   if (p2) return sep + p2.toUpperCase();
   return p1.toLowerCase();
 });
 
-Util.decamelize = function (str, separator = '-') {
+Util.decamelize = function (str, separator = "-") {
   return /[A-Z]/.test(str) ? str.replace(/([a-z\d])([A-Z])/g, "$1".concat(separator, "$2")).replace(/([A-Z]+)([A-Z][a-z\d]+)/g, "$1".concat(separator, "$2")).toLowerCase() : str;
 };
 
@@ -1244,74 +1186,232 @@ Util.ifThenElse = function (pred = value => !!value, _then = () => {}, _else = (
   };
 };
 
-Util.transform = function (fn) {
-  return _regenerator.default.mark(function _callee5(arr) {
-    var _iteratorNormalCompletion8, _didIteratorError8, _iteratorError8, _iterator8, _step8, item;
+Util.transform = Util.curry(_regenerator.default.mark(function _callee5(fn, arr) {
+  var _iterator9, _step9, item;
 
-    return _regenerator.default.wrap(function _callee5$(_context6) {
-      while (1) switch (_context6.prev = _context6.next) {
-        case 0:
-          _iteratorNormalCompletion8 = true;
-          _didIteratorError8 = false;
-          _iteratorError8 = undefined;
-          _context6.prev = 3;
-          _iterator8 = arr[Symbol.iterator]();
+  return _regenerator.default.wrap(function _callee5$(_context6) {
+    while (1) switch (_context6.prev = _context6.next) {
+      case 0:
+        _iterator9 = _createForOfIteratorHelper(arr);
+        _context6.prev = 1;
 
-        case 5:
-          if (_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done) {
-            _context6.next = 12;
-            break;
-          }
+        _iterator9.s();
 
-          item = _step8.value;
+      case 3:
+        if ((_step9 = _iterator9.n()).done) {
           _context6.next = 9;
-          return fn(item);
-
-        case 9:
-          _iteratorNormalCompletion8 = true;
-          _context6.next = 5;
           break;
+        }
 
-        case 12:
-          _context6.next = 18;
-          break;
+        item = _step9.value;
+        _context6.next = 7;
+        return fn(item);
 
-        case 14:
-          _context6.prev = 14;
-          _context6.t0 = _context6["catch"](3);
-          _didIteratorError8 = true;
-          _iteratorError8 = _context6.t0;
+      case 7:
+        _context6.next = 3;
+        break;
 
-        case 18:
-          _context6.prev = 18;
-          _context6.prev = 19;
+      case 9:
+        _context6.next = 14;
+        break;
 
-          if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
-            _iterator8.return();
-          }
+      case 11:
+        _context6.prev = 11;
+        _context6.t0 = _context6["catch"](1);
 
-        case 21:
-          _context6.prev = 21;
+        _iterator9.e(_context6.t0);
 
-          if (!_didIteratorError8) {
-            _context6.next = 24;
-            break;
-          }
+      case 14:
+        _context6.prev = 14;
 
-          throw _iteratorError8;
+        _iterator9.f();
 
-        case 24:
-          return _context6.finish(21);
+        return _context6.finish(14);
 
-        case 25:
-          return _context6.finish(18);
+      case 17:
+      case "end":
+        return _context6.stop();
+    }
+  }, _callee5, null, [[1, 11, 14, 17]]);
+}));
 
-        case 26:
-        case "end":
-          return _context6.stop();
+Util.colorDump = (iterable, textFn = (color, n) => ("   " + (n + 1)).slice(-3) + " ".concat(color)) => {
+  let j = 0;
+  const filters = "font-weight: bold; text-shadow: 0px 0px 1px rgba(0,0,0,0.8); filter: drop-shadow(30px 10px 4px #4444dd)";
+
+  for (let j = 0; j < iterable.length; j++) {
+    const _ref = iterable[j].length == 2 ? iterable[j] : [j, iterable[j]],
+          _ref2 = (0, _slicedToArray2.default)(_ref, 2),
+          i = _ref2[0],
+          color = _ref2[1];
+
+    console.log("  %c    %c ".concat(color, " %c ").concat(textFn(color, i)), "background: ".concat(color, "; font-size: 18px; ").concat(filters, ";"), "background: none; color: ".concat(color, "; min-width: 120px; ").concat(filters, "; "), "color: black; font-size: 12px;");
+  }
+};
+
+Util.bucketInserter = (map, ...extraArgs) => {
+  var inserter;
+  inserter = typeof map.has == "function" ? function (...args) {
+    for (var _i2 = 0, _args8 = args; _i2 < _args8.length; _i2++) {
+      let _args8$_i = (0, _slicedToArray2.default)(_args8[_i2], 2),
+          k = _args8$_i[0],
+          v = _args8$_i[1];
+
+      let a;
+      map.has(k) ? a = map.get(k) : map.set(k, a = []);
+      a.push(v);
+    }
+
+    return inserter;
+  } : function (...args) {
+    for (var _i3 = 0, _args9 = args; _i3 < _args9.length; _i3++) {
+      let arg = _args9[_i3];
+
+      for (let k in arg) {
+        const v = arg[k];
+        let a = map[k] || [];
+        if (typeof a.push == "function") a.push(v);
+        map[k] = a;
       }
-    }, _callee5, null, [[3, 14, 18, 26], [19,, 21, 25]]);
-  });
+    }
+  };
+  inserter(...extraArgs);
+  inserter.map = map;
+  return inserter;
+};
+
+Util.fifo = function fifo() {
+  let resolve = () => {};
+
+  const queue = [];
+
+  function generator() {
+    return _generator.apply(this, arguments);
+  }
+
+  function _generator() {
+    _generator = (0, _wrapAsyncGenerator2.default)(_regenerator.default.mark(function _callee6() {
+      return _regenerator.default.wrap(function _callee6$(_context7) {
+        while (1) switch (_context7.prev = _context7.next) {
+          case 0:
+            if (queue.length) {
+              _context7.next = 3;
+              break;
+            }
+
+            _context7.next = 3;
+            return (0, _awaitAsyncGenerator2.default)(new Promise(r => resolve = r));
+
+          case 3:
+            _context7.next = 5;
+            return queue.shift();
+
+          case 5:
+            _context7.next = 0;
+            break;
+
+          case 7:
+          case "end":
+            return _context7.stop();
+        }
+      }, _callee6);
+    }));
+    return _generator.apply(this, arguments);
+  }
+
+  return {
+    push: function push(...args) {
+      for (var _i4 = 0, _args11 = args; _i4 < _args11.length; _i4++) {
+        let event = _args11[_i4];
+        queue.push(event);
+        if (queue.length === 1) resolve();
+      }
+
+      return this;
+    },
+    loop: generator(),
+    process: function run() {
+      var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, _value, event;
+
+      return _regenerator.default.async(function run$(_context8) {
+        while (1) switch (_context8.prev = _context8.next) {
+          case 0:
+            _iteratorNormalCompletion = true;
+            _didIteratorError = false;
+            _context8.prev = 2;
+            _iterator = (0, _asyncIterator2.default)(this.loop);
+
+          case 4:
+            _context8.next = 6;
+            return _regenerator.default.awrap(_iterator.next());
+
+          case 6:
+            _step = _context8.sent;
+            _iteratorNormalCompletion = _step.done;
+            _context8.next = 10;
+            return _regenerator.default.awrap(_step.value);
+
+          case 10:
+            _value = _context8.sent;
+
+            if (_iteratorNormalCompletion) {
+              _context8.next = 17;
+              break;
+            }
+
+            event = _value;
+            console.info("event:", event);
+
+          case 14:
+            _iteratorNormalCompletion = true;
+            _context8.next = 4;
+            break;
+
+          case 17:
+            _context8.next = 23;
+            break;
+
+          case 19:
+            _context8.prev = 19;
+            _context8.t0 = _context8["catch"](2);
+            _didIteratorError = true;
+            _iteratorError = _context8.t0;
+
+          case 23:
+            _context8.prev = 23;
+            _context8.prev = 24;
+
+            if (!(!_iteratorNormalCompletion && _iterator.return != null)) {
+              _context8.next = 28;
+              break;
+            }
+
+            _context8.next = 28;
+            return _regenerator.default.awrap(_iterator.return());
+
+          case 28:
+            _context8.prev = 28;
+
+            if (!_didIteratorError) {
+              _context8.next = 31;
+              break;
+            }
+
+            throw _iteratorError;
+
+          case 31:
+            return _context8.finish(28);
+
+          case 32:
+            return _context8.finish(23);
+
+          case 33:
+          case "end":
+            return _context8.stop();
+        }
+      }, null, this, [[2, 19, 23, 33], [24,, 28, 32]], Promise);
+    }
+  };
 };
 
 Util.isEmail = function (v) {
@@ -1319,10 +1419,10 @@ Util.isEmail = function (v) {
 };
 
 Util.isString = function (v) {
-  return Object.prototype.toString.call(v) == '[object String]';
+  return Object.prototype.toString.call(v) == "[object String]";
 };
 
-Util.isObject = obj => typeof obj === 'object' && obj !== null;
+Util.isObject = obj => typeof obj === "object" && obj !== null;
 
 Util.isEmptyString = function (v) {
   if (this.isString(v) && !v) {
@@ -1337,9 +1437,9 @@ Util.isEmptyString = function (v) {
 };
 
 Util.isEmpty = function (v) {
-  if (typeof v == 'object' && !!v && v.constructor == Object && Object.keys(v).length == 0) return true;
+  if (typeof v == "object" && !!v && v.constructor == Object && Object.keys(v).length == 0) return true;
   if (!v || v === null) return true;
-  if (typeof v == 'object' && v.length !== undefined && v.length === 0) return true;
+  if (typeof v == "object" && v.length !== undefined && v.length === 0) return true;
   return false;
 };
 
@@ -1357,7 +1457,7 @@ Util.validatePassword = function (value) {
 };
 
 Util.clone = function (obj) {
-  if (typeof obj != 'object') return obj;
+  if (typeof obj != "object") return obj;
   return Util.isArray(obj) ? obj.slice() : Object.assign({}, obj);
 };
 
@@ -1382,36 +1482,26 @@ Util.deepCloneObservable = function (data) {
   let o;
   const t = typeof data;
 
-  if (t === 'object') {
+  if (t === "object") {
     o = data.length ? Util.array() : {};
   } else {
     return data;
   }
 
-  if (t === 'object') {
+  if (t === "object") {
     if (data.length) {
-      var _iteratorNormalCompletion9 = true;
-      var _didIteratorError9 = false;
-      var _iteratorError9 = undefined;
+      var _iterator10 = _createForOfIteratorHelper(data),
+          _step10;
 
       try {
-        for (var _iterator9 = data[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-          const value = _step9.value;
+        for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+          const value = _step10.value;
           o.push(this.deepCloneObservable(value));
         }
       } catch (err) {
-        _didIteratorError9 = true;
-        _iteratorError9 = err;
+        _iterator10.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
-            _iterator9.return();
-          }
-        } finally {
-          if (_didIteratorError9) {
-            throw _iteratorError9;
-          }
-        }
+        _iterator10.f();
       }
 
       return o;
@@ -1476,13 +1566,13 @@ Util.removeEqual = function (a, b) {
 };
 
 Util.logOutClearStorage = function () {
-  localStorage.removeItem('userToken');
-  localStorage.removeItem('userLoginPermission');
-  localStorage.removeItem('ssoToken');
-  localStorage.removeItem('userId');
-  localStorage.removeItem('userInfo');
-  localStorage.removeItem('userGroupList');
-  localStorage.removeItem('gameAuthList');
+  localStorage.removeItem("userToken");
+  localStorage.removeItem("userLoginPermission");
+  localStorage.removeItem("ssoToken");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("userInfo");
+  localStorage.removeItem("userGroupList");
+  localStorage.removeItem("gameAuthList");
 };
 
 Util.getCookie = function (cookie, name) {
@@ -1492,10 +1582,10 @@ Util.getCookie = function (cookie, name) {
 };
 
 Util.parseCookie = function (c = document.cookie) {
-  if (!(typeof c == 'string' && c && c.length > 0)) return {};
-  let key = '';
-  let value = '';
-  const ws = ' \r\n\t';
+  if (!(typeof c == "string" && c && c.length > 0)) return {};
+  let key = "";
+  let value = "";
+  const ws = " \r\n\t";
   let i = 0;
   let ret = {};
 
@@ -1509,25 +1599,25 @@ Util.parseCookie = function (c = document.cookie) {
   };
 
   do {
-    let str = skip(char => char != '=' && char != ';');
+    let str = skip(char => char != "=" && char != ";");
 
-    if (c[i] == '=' && str != 'path') {
+    if (c[i] == "=" && str != "path") {
       i++;
       key = str;
-      value = skip(char => char != ';');
+      value = skip(char => char != ";");
     } else {
       i++;
       skip();
     }
 
-    if (key != '') ret[key] = value;
+    if (key != "") ret[key] = value;
     skip();
   } while (i < c.length);
 
   return ret;
 };
 
-Util.encodeCookie = c => Object.entries(c).map(([key, value]) => "".concat(key, "=").concat(encodeURIComponent(value))).join('; ');
+Util.encodeCookie = c => Object.entries(c).map(([key, value]) => "".concat(key, "=").concat(encodeURIComponent(value))).join("; ");
 
 Util.setCookies = c => Object.entries(c).forEach(([key, value]) => {
   document.cookie = "".concat(key, "=").concat(value);
@@ -1547,13 +1637,13 @@ Util.accAdd = function (arg1, arg2) {
   let r1, r2, m;
 
   try {
-    r1 = arg1.toString().split('.')[1].length;
+    r1 = arg1.toString().split(".")[1].length;
   } catch (e) {
     r1 = 0;
   }
 
   try {
-    r2 = arg2.toString().split('.')[1].length;
+    r2 = arg2.toString().split(".")[1].length;
   } catch (e) {
     r2 = 0;
   }
@@ -1566,13 +1656,13 @@ Util.Subtr = function (arg1, arg2) {
   let r1, r2, m, n;
 
   try {
-    r1 = arg1.toString().split('.')[1].length;
+    r1 = arg1.toString().split(".")[1].length;
   } catch (e) {
     r1 = 0;
   }
 
   try {
-    r2 = arg2.toString().split('.')[1].length;
+    r2 = arg2.toString().split(".")[1].length;
   } catch (e) {
     r2 = 0;
   }
@@ -1589,15 +1679,15 @@ Util.accDiv = function (arg1, arg2) {
   let r2;
 
   try {
-    t1 = arg1.toString().split('.')[1].length;
+    t1 = arg1.toString().split(".")[1].length;
   } catch (e) {}
 
   try {
-    t2 = arg2.toString().split('.')[1].length;
+    t2 = arg2.toString().split(".")[1].length;
   } catch (e) {}
 
-  r1 = Number(arg1.toString().replace('.', ''));
-  r2 = Number(arg2.toString().replace('.', ''));
+  r1 = Number(arg1.toString().replace(".", ""));
+  r2 = Number(arg2.toString().replace(".", ""));
   return r1 / r2 * Math.pow(10, t2 - t1);
 };
 
@@ -1607,14 +1697,14 @@ Util.accMul = function (arg1, arg2) {
   const s2 = arg2.toString();
 
   try {
-    m += s1.split('.')[1].length;
+    m += s1.split(".")[1].length;
   } catch (e) {}
 
   try {
-    m += s2.split('.')[1].length;
+    m += s2.split(".")[1].length;
   } catch (e) {}
 
-  return Number(s1.replace('.', '')) * Number(s2.replace('.', '')) / Math.pow(10, m);
+  return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m);
 };
 
 Util.dateFormatter = function (date, formate) {
@@ -1633,12 +1723,12 @@ Util.dateFormatter = function (date, formate) {
 };
 
 Util.numberFormatter = function (numStr) {
-  let numSplit = numStr.split('.');
-  return numSplit[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',').concat(".".concat(numSplit[1]));
+  let numSplit = numStr.split(".");
+  return numSplit[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",").concat(".".concat(numSplit[1]));
 };
 
 Util.searchObject = function (object, matchCallback, currentPath, result, searched) {
-  currentPath = currentPath || '';
+  currentPath = currentPath || "";
   result = result || Util.array();
   searched = searched || Util.array();
 
@@ -1660,8 +1750,8 @@ Util.searchObject = function (object, matchCallback, currentPath, result, search
       for (const property in object) {
         const desc = Object.getOwnPropertyDescriptor(object, property);
 
-        if (property.indexOf('$') !== 0 && typeof object[property] !== 'function' && !desc.get && !desc.set) {
-          if (typeof object[property] === 'object') {
+        if (property.indexOf("$") !== 0 && typeof object[property] !== "function" && !desc.get && !desc.set) {
+          if (typeof object[property] === "object") {
             try {
               JSON.stringify(object[property]);
             } catch (err) {
@@ -1679,12 +1769,12 @@ Util.searchObject = function (object, matchCallback, currentPath, result, search
 };
 
 Util.getURL = function (req = {}) {
-  let proto = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-  let port = process.env.PORT ? parseInt(process.env.PORT) : process.env.NODE_ENV === 'production' ? 443 : 8080;
-  let host = global.ip || global.host || 'localhost';
+  let proto = process.env.NODE_ENV === "production" ? "https" : "http";
+  let port = process.env.PORT ? parseInt(process.env.PORT) : process.env.NODE_ENV === "production" ? 443 : 8080;
+  let host = global.ip || global.host || "localhost";
 
   if (req && req.headers && req.headers.host !== undefined) {
-    host = req.headers.host.replace(/:.*/, '');
+    host = req.headers.host.replace(/:.*/, "");
   } else if (process.env.HOST !== undefined) host = process.env.HOST;
 
   if (global.window !== undefined && window.location !== undefined) return window.location.href;
@@ -1699,7 +1789,7 @@ Util.parseQuery = function (url = Util.getURL()) {
   let query = {};
 
   try {
-    if ((startIndex = url.indexOf('?')) != -1) url = url.substring(startIndex);
+    if ((startIndex = url.indexOf("?")) != -1) url = url.substring(startIndex);
     const args = [...url.matchAll(/[?&]([^=&#]+)=?([^&#]*)/g)];
 
     if (args) {
@@ -1720,17 +1810,17 @@ Util.encodeQuery = function (data) {
 
   for (let d in data) ret.push("".concat(encodeURIComponent(d), "=").concat(encodeURIComponent(data[d])));
 
-  return ret.join('&');
+  return ret.join("&");
 };
 
 Util.parseURL = function (href = this.getURL()) {
   const matches = /^([^:]*):\/\/([^/:]*)(:[0-9]*)?(\/?.*)/.exec(href);
   if (!matches) return null;
-  const argstr = matches[4].indexOf('?') != -1 ? matches[4].replace(/^[^?]*\?/, '') : '';
-  const pmatches = typeof argstr === 'string' ? argstr.split(/&/g).map(part => {
+  const argstr = matches[4].indexOf("?") != -1 ? matches[4].replace(/^[^?]*\?/, "") : "";
+  const pmatches = typeof argstr === "string" ? argstr.split(/&/g).map(part => {
     let a = part.split(/=/);
     let b = a.shift();
-    return [b, a.join('=')];
+    return [b, a.join("=")];
   }).filter(([k, v]) => !(k.length == 0 && v.length == 0)) : Util.array();
   const params = [...pmatches].reduce((acc, m) => {
     acc[m[0]] = m[1];
@@ -1739,14 +1829,14 @@ Util.parseURL = function (href = this.getURL()) {
   return {
     protocol: matches[1],
     host: matches[2],
-    port: typeof matches[3] === 'string' ? parseInt(matches[3].substring(1)) : 443,
-    location: matches[4].replace(/\?.*/, ''),
+    port: typeof matches[3] === "string" ? parseInt(matches[3].substring(1)) : 443,
+    location: matches[4].replace(/\?.*/, ""),
     query: params,
 
     href(override) {
-      if (typeof override === 'object') Object.assign(this, override);
+      if (typeof override === "object") Object.assign(this, override);
       const qstr = Util.encodeQuery(this.query);
-      return (this.protocol ? "".concat(this.protocol, "://") : '') + (this.host ? this.host : '') + (this.port ? ":".concat(this.port) : '') + "".concat(this.location) + (qstr != '' ? "?".concat(qstr) : '');
+      return (this.protocol ? "".concat(this.protocol, "://") : "") + (this.host ? this.host : "") + (this.port ? ":".concat(this.port) : "") + "".concat(this.location) + (qstr != "" ? "?".concat(qstr) : "");
     }
 
   };
@@ -1754,19 +1844,19 @@ Util.parseURL = function (href = this.getURL()) {
 
 Util.makeURL = function () {
   let args = [...arguments];
-  let href = typeof args[0] == 'string' ? args.shift() : Util.getURL();
+  let href = typeof args[0] == "string" ? args.shift() : Util.getURL();
   let url = Util.parseURL(href);
-  let obj = typeof args[0] == 'object' ? args.shift() : {};
+  let obj = typeof args[0] == "object" ? args.shift() : {};
   Object.assign(url, obj);
   return url.href();
 };
 
 Util.numberFromURL = function (url, fn) {
-  const obj = typeof url === 'object' ? url : this.parseURL(url);
-  const nr_match = RegExp('.*[^0-9]([0-9]+)$').exec(url.location);
+  const obj = typeof url === "object" ? url : this.parseURL(url);
+  const nr_match = RegExp(".*[^0-9]([0-9]+)$").exec(url.location);
   const nr_arg = nr_match ? nr_match[1] : undefined;
   const nr = nr_arg && parseInt(nr_arg);
-  if (!isNaN(nr) && typeof fn === 'function') fn(nr);
+  if (!isNaN(nr) && typeof fn === "function") fn(nr);
   return nr;
 };
 
@@ -1803,100 +1893,81 @@ Util.uniquePred = (el, i, arr) => arr.indexOf(el) === i;
 
 Util.unique = arr => arr.filter(Util.uniquePred);
 
-Util.concat = _regenerator.default.mark(function _callee6(...args) {
-  var _i2, _args8, arg, _iteratorNormalCompletion10, _didIteratorError10, _iteratorError10, _iterator10, _step10, item;
+Util.concat = _regenerator.default.mark(function _callee7(...args) {
+  var _i5, _args13, arg, _iterator11, _step11, item;
 
-  return _regenerator.default.wrap(function _callee6$(_context7) {
-    while (1) switch (_context7.prev = _context7.next) {
+  return _regenerator.default.wrap(function _callee7$(_context9) {
+    while (1) switch (_context9.prev = _context9.next) {
       case 0:
-        _i2 = 0, _args8 = args;
+        _i5 = 0, _args13 = args;
 
       case 1:
-        if (!(_i2 < _args8.length)) {
-          _context7.next = 37;
+        if (!(_i5 < _args13.length)) {
+          _context9.next = 28;
           break;
         }
 
-        arg = _args8[_i2];
+        arg = _args13[_i5];
 
         if (!Util.isGenerator(arg)) {
-          _context7.next = 8;
+          _context9.next = 8;
           break;
         }
 
-        console.error('isGenerator:', arg);
-        return _context7.delegateYield(arg, "t0", 6);
+        console.error("isGenerator:", arg);
+        return _context9.delegateYield(arg, "t0", 6);
 
       case 6:
-        _context7.next = 34;
+        _context9.next = 25;
         break;
 
       case 8:
-        _iteratorNormalCompletion10 = true;
-        _didIteratorError10 = false;
-        _iteratorError10 = undefined;
-        _context7.prev = 11;
-        _iterator10 = arg[Symbol.iterator]();
+        _iterator11 = _createForOfIteratorHelper(arg);
+        _context9.prev = 9;
 
-      case 13:
-        if (_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done) {
-          _context7.next = 20;
+        _iterator11.s();
+
+      case 11:
+        if ((_step11 = _iterator11.n()).done) {
+          _context9.next = 17;
           break;
         }
 
-        item = _step10.value;
-        _context7.next = 17;
+        item = _step11.value;
+        _context9.next = 15;
         return item;
 
-      case 17:
-        _iteratorNormalCompletion10 = true;
-        _context7.next = 13;
+      case 15:
+        _context9.next = 11;
         break;
 
-      case 20:
-        _context7.next = 26;
+      case 17:
+        _context9.next = 22;
         break;
+
+      case 19:
+        _context9.prev = 19;
+        _context9.t1 = _context9["catch"](9);
+
+        _iterator11.e(_context9.t1);
 
       case 22:
-        _context7.prev = 22;
-        _context7.t1 = _context7["catch"](11);
-        _didIteratorError10 = true;
-        _iteratorError10 = _context7.t1;
+        _context9.prev = 22;
 
-      case 26:
-        _context7.prev = 26;
-        _context7.prev = 27;
+        _iterator11.f();
 
-        if (!_iteratorNormalCompletion10 && _iterator10.return != null) {
-          _iterator10.return();
-        }
+        return _context9.finish(22);
 
-      case 29:
-        _context7.prev = 29;
-
-        if (!_didIteratorError10) {
-          _context7.next = 32;
-          break;
-        }
-
-        throw _iteratorError10;
-
-      case 32:
-        return _context7.finish(29);
-
-      case 33:
-        return _context7.finish(26);
-
-      case 34:
-        _i2++;
-        _context7.next = 1;
+      case 25:
+        _i5++;
+        _context9.next = 1;
         break;
 
-      case 37:
+      case 28:
       case "end":
-        return _context7.stop();
+        return _context9.stop();
     }
-  }, _callee6, null, [[11, 22, 26, 34], [27,, 29, 33]]);
+  }, _callee7, null, [[9, 19, 22, 25]]);
 });
 
 Util.distinct = function (arr) {
@@ -1910,54 +1981,35 @@ Util.rangeMinMax = function (arr, field) {
   return [Math.min(...numbers), Math.max(...numbers)];
 };
 
-Util.mergeLists = function (arr1, arr2, key = 'id') {
+Util.mergeLists = function (arr1, arr2, key = "id") {
   let hash = {};
-  var _iteratorNormalCompletion11 = true;
-  var _didIteratorError11 = false;
-  var _iteratorError11 = undefined;
+
+  var _iterator12 = _createForOfIteratorHelper(arr1),
+      _step12;
 
   try {
-    for (var _iterator11 = arr1[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-      let obj = _step11.value;
-      hash[obj[key]] = obj;
-    }
-  } catch (err) {
-    _didIteratorError11 = true;
-    _iteratorError11 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion11 && _iterator11.return != null) {
-        _iterator11.return();
-      }
-    } finally {
-      if (_didIteratorError11) {
-        throw _iteratorError11;
-      }
-    }
-  }
-
-  var _iteratorNormalCompletion12 = true;
-  var _didIteratorError12 = false;
-  var _iteratorError12 = undefined;
-
-  try {
-    for (var _iterator12 = arr2[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+    for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
       let obj = _step12.value;
       hash[obj[key]] = obj;
     }
   } catch (err) {
-    _didIteratorError12 = true;
-    _iteratorError12 = err;
+    _iterator12.e(err);
   } finally {
-    try {
-      if (!_iteratorNormalCompletion12 && _iterator12.return != null) {
-        _iterator12.return();
-      }
-    } finally {
-      if (_didIteratorError12) {
-        throw _iteratorError12;
-      }
+    _iterator12.f();
+  }
+
+  var _iterator13 = _createForOfIteratorHelper(arr2),
+      _step13;
+
+  try {
+    for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
+      let obj = _step13.value;
+      hash[obj[key]] = obj;
     }
+  } catch (err) {
+    _iterator13.e(err);
+  } finally {
+    _iterator13.f();
   }
 
   return Object.values(hash);
@@ -1974,31 +2026,21 @@ Util.throttle = function (fn, wait) {
 };
 
 Util.foreach = function (o, fn) {
-  var _iteratorNormalCompletion13 = true;
-  var _didIteratorError13 = false;
-  var _iteratorError13 = undefined;
+  var _iterator14 = _createForOfIteratorHelper(Util.entries(o)),
+      _step14;
 
   try {
-    for (var _iterator13 = Util.entries(o)[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
-      let _step13$value = (0, _slicedToArray2.default)(_step13.value, 2),
-          k = _step13$value[0],
-          v = _step13$value[1];
+    for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
+      let _step14$value = (0, _slicedToArray2.default)(_step14.value, 2),
+          k = _step14$value[0],
+          v = _step14$value[1];
 
       fn(v, k, o);
     }
   } catch (err) {
-    _didIteratorError13 = true;
-    _iteratorError13 = err;
+    _iterator14.e(err);
   } finally {
-    try {
-      if (!_iteratorNormalCompletion13 && _iterator13.return != null) {
-        _iterator13.return();
-      }
-    } finally {
-      if (_didIteratorError13) {
-        throw _iteratorError13;
-      }
-    }
+    _iterator14.f();
   }
 };
 
@@ -2009,186 +2051,138 @@ Util.all = function (obj, pred) {
 };
 
 Util.isGenerator = function (fn) {
-  return typeof fn == 'function' && /^[^(]*\*/.test(fn.toString()) || ['function', 'object'].indexOf(typeof fn) != -1 && fn.next !== undefined;
+  return typeof fn == "function" && /^[^(]*\*/.test(fn.toString()) || ["function", "object"].indexOf(typeof fn) != -1 && fn.next !== undefined;
 };
 
 Util.filter = function (a, pred) {
-  if (Util.isGenerator(a)) return _regenerator.default.mark(function _callee7() {
-    var _iteratorNormalCompletion14, _didIteratorError14, _iteratorError14, _iterator14, _step14, item;
+  if (Util.isGenerator(a)) return _regenerator.default.mark(function _callee8() {
+    var _iterator15, _step15, item;
 
-    return _regenerator.default.wrap(function _callee7$(_context8) {
-      while (1) switch (_context8.prev = _context8.next) {
+    return _regenerator.default.wrap(function _callee8$(_context10) {
+      while (1) switch (_context10.prev = _context10.next) {
         case 0:
-          _iteratorNormalCompletion14 = true;
-          _didIteratorError14 = false;
-          _iteratorError14 = undefined;
-          _context8.prev = 3;
-          _iterator14 = a[Symbol.iterator]();
+          _iterator15 = _createForOfIteratorHelper(a);
+          _context10.prev = 1;
 
-        case 5:
-          if (_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done) {
-            _context8.next = 13;
+          _iterator15.s();
+
+        case 3:
+          if ((_step15 = _iterator15.n()).done) {
+            _context10.next = 10;
             break;
           }
 
-          item = _step14.value;
+          item = _step15.value;
 
           if (!pred(item)) {
-            _context8.next = 10;
+            _context10.next = 8;
             break;
           }
 
-          _context8.next = 10;
+          _context10.next = 8;
           return item;
 
-        case 10:
-          _iteratorNormalCompletion14 = true;
-          _context8.next = 5;
+        case 8:
+          _context10.next = 3;
           break;
 
-        case 13:
-          _context8.next = 19;
+        case 10:
+          _context10.next = 15;
           break;
+
+        case 12:
+          _context10.prev = 12;
+          _context10.t0 = _context10["catch"](1);
+
+          _iterator15.e(_context10.t0);
 
         case 15:
-          _context8.prev = 15;
-          _context8.t0 = _context8["catch"](3);
-          _didIteratorError14 = true;
-          _iteratorError14 = _context8.t0;
+          _context10.prev = 15;
 
-        case 19:
-          _context8.prev = 19;
-          _context8.prev = 20;
+          _iterator15.f();
 
-          if (!_iteratorNormalCompletion14 && _iterator14.return != null) {
-            _iterator14.return();
-          }
+          return _context10.finish(15);
 
-        case 22:
-          _context8.prev = 22;
-
-          if (!_didIteratorError14) {
-            _context8.next = 25;
-            break;
-          }
-
-          throw _iteratorError14;
-
-        case 25:
-          return _context8.finish(22);
-
-        case 26:
-          return _context8.finish(19);
-
-        case 27:
+        case 18:
         case "end":
-          return _context8.stop();
+          return _context10.stop();
       }
-    }, _callee7, null, [[3, 15, 19, 27], [20,, 22, 26]]);
+    }, _callee8, null, [[1, 12, 15, 18]]);
   })();
   let isa = Util.isArray(a);
-  if (isa) return _regenerator.default.mark(function _callee8() {
-    var _iteratorNormalCompletion15, _didIteratorError15, _iteratorError15, _iterator15, _step15, _step15$value, k, v;
+  if (isa) return _regenerator.default.mark(function _callee9() {
+    var _iterator16, _step16, _step16$value, k, v;
 
-    return _regenerator.default.wrap(function _callee8$(_context9) {
-      while (1) switch (_context9.prev = _context9.next) {
+    return _regenerator.default.wrap(function _callee9$(_context11) {
+      while (1) switch (_context11.prev = _context11.next) {
         case 0:
-          _iteratorNormalCompletion15 = true;
-          _didIteratorError15 = false;
-          _iteratorError15 = undefined;
-          _context9.prev = 3;
-          _iterator15 = a.entries()[Symbol.iterator]();
+          _iterator16 = _createForOfIteratorHelper(a.entries());
+          _context11.prev = 1;
 
-        case 5:
-          if (_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done) {
-            _context9.next = 13;
+          _iterator16.s();
+
+        case 3:
+          if ((_step16 = _iterator16.n()).done) {
+            _context11.next = 10;
             break;
           }
 
-          _step15$value = (0, _slicedToArray2.default)(_step15.value, 2), k = _step15$value[0], v = _step15$value[1];
+          _step16$value = (0, _slicedToArray2.default)(_step16.value, 2), k = _step16$value[0], v = _step16$value[1];
 
           if (!pred(v, k, a)) {
-            _context9.next = 10;
+            _context11.next = 8;
             break;
           }
 
-          _context9.next = 10;
+          _context11.next = 8;
           return v;
 
-        case 10:
-          _iteratorNormalCompletion15 = true;
-          _context9.next = 5;
+        case 8:
+          _context11.next = 3;
           break;
 
-        case 13:
-          _context9.next = 19;
+        case 10:
+          _context11.next = 15;
           break;
+
+        case 12:
+          _context11.prev = 12;
+          _context11.t0 = _context11["catch"](1);
+
+          _iterator16.e(_context11.t0);
 
         case 15:
-          _context9.prev = 15;
-          _context9.t0 = _context9["catch"](3);
-          _didIteratorError15 = true;
-          _iteratorError15 = _context9.t0;
+          _context11.prev = 15;
 
-        case 19:
-          _context9.prev = 19;
-          _context9.prev = 20;
+          _iterator16.f();
 
-          if (!_iteratorNormalCompletion15 && _iterator15.return != null) {
-            _iterator15.return();
-          }
+          return _context11.finish(15);
 
-        case 22:
-          _context9.prev = 22;
-
-          if (!_didIteratorError15) {
-            _context9.next = 25;
-            break;
-          }
-
-          throw _iteratorError15;
-
-        case 25:
-          return _context9.finish(22);
-
-        case 26:
-          return _context9.finish(19);
-
-        case 27:
+        case 18:
         case "end":
-          return _context9.stop();
+          return _context11.stop();
       }
-    }, _callee8, null, [[3, 15, 19, 27], [20,, 22, 26]]);
+    }, _callee9, null, [[1, 12, 15, 18]]);
   })();
   let ret = {};
 
   let fn = (k, v) => ret[k] = v;
 
-  var _iteratorNormalCompletion16 = true;
-  var _didIteratorError16 = false;
-  var _iteratorError16 = undefined;
+  var _iterator17 = _createForOfIteratorHelper(Util.entries(a)),
+      _step17;
 
   try {
-    for (var _iterator16 = Util.entries(a)[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
-      let _step16$value = (0, _slicedToArray2.default)(_step16.value, 2),
-          k = _step16$value[0],
-          v = _step16$value[1];
+    for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
+      let _step17$value = (0, _slicedToArray2.default)(_step17.value, 2),
+          k = _step17$value[0],
+          v = _step17$value[1];
 
       if (pred(v, k, a)) fn(k, v);
     }
   } catch (err) {
-    _didIteratorError16 = true;
-    _iteratorError16 = err;
+    _iterator17.e(err);
   } finally {
-    try {
-      if (!_iteratorNormalCompletion16 && _iterator16.return != null) {
-        _iterator16.return();
-      }
-    } finally {
-      if (_didIteratorError16) {
-        throw _iteratorError16;
-      }
-    }
+    _iterator17.f();
   }
 
   return ret;
@@ -2200,77 +2194,58 @@ Util.reduce = function (obj, fn, accu) {
   return accu;
 };
 
-Util.mapFunctional = fn => _regenerator.default.mark(function _callee9(arg) {
-  var _iteratorNormalCompletion17, _didIteratorError17, _iteratorError17, _iterator17, _step17, item;
+Util.mapFunctional = fn => _regenerator.default.mark(function _callee10(arg) {
+  var _iterator18, _step18, item;
 
-  return _regenerator.default.wrap(function _callee9$(_context10) {
-    while (1) switch (_context10.prev = _context10.next) {
+  return _regenerator.default.wrap(function _callee10$(_context12) {
+    while (1) switch (_context12.prev = _context12.next) {
       case 0:
-        _iteratorNormalCompletion17 = true;
-        _didIteratorError17 = false;
-        _iteratorError17 = undefined;
-        _context10.prev = 3;
-        _iterator17 = arg[Symbol.iterator]();
+        _iterator18 = _createForOfIteratorHelper(arg);
+        _context12.prev = 1;
 
-      case 5:
-        if (_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done) {
-          _context10.next = 12;
+        _iterator18.s();
+
+      case 3:
+        if ((_step18 = _iterator18.n()).done) {
+          _context12.next = 9;
           break;
         }
 
-        item = _step17.value;
-        _context10.next = 9;
+        item = _step18.value;
+        _context12.next = 7;
         return fn(item);
 
-      case 9:
-        _iteratorNormalCompletion17 = true;
-        _context10.next = 5;
+      case 7:
+        _context12.next = 3;
         break;
 
-      case 12:
-        _context10.next = 18;
+      case 9:
+        _context12.next = 14;
         break;
+
+      case 11:
+        _context12.prev = 11;
+        _context12.t0 = _context12["catch"](1);
+
+        _iterator18.e(_context12.t0);
 
       case 14:
-        _context10.prev = 14;
-        _context10.t0 = _context10["catch"](3);
-        _didIteratorError17 = true;
-        _iteratorError17 = _context10.t0;
+        _context12.prev = 14;
 
-      case 18:
-        _context10.prev = 18;
-        _context10.prev = 19;
+        _iterator18.f();
 
-        if (!_iteratorNormalCompletion17 && _iterator17.return != null) {
-          _iterator17.return();
-        }
+        return _context12.finish(14);
 
-      case 21:
-        _context10.prev = 21;
-
-        if (!_didIteratorError17) {
-          _context10.next = 24;
-          break;
-        }
-
-        throw _iteratorError17;
-
-      case 24:
-        return _context10.finish(21);
-
-      case 25:
-        return _context10.finish(18);
-
-      case 26:
+      case 17:
       case "end":
-        return _context10.stop();
+        return _context12.stop();
     }
-  }, _callee9, null, [[3, 14, 18, 26], [19,, 21, 25]]);
+  }, _callee10, null, [[1, 11, 14, 17]]);
 });
 
 Util.map = function (obj, fn) {
-  if (typeof obj == 'function') return Util.mapFunctional(...arguments);
-  if (typeof fn != 'function') return Util.toMap(...arguments);
+  if (typeof obj == "function") return Util.mapFunctional(...arguments);
+  if (typeof fn != "function") return Util.toMap(...arguments);
   let ret = {};
 
   for (let key in obj) {
@@ -2296,7 +2271,7 @@ Util.entriesToObj = function (arr) {
 };
 
 Util.isDate = function (d) {
-  return d instanceof Date || typeof d == 'string' && /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d);
+  return d instanceof Date || typeof d == "string" && /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d);
 };
 
 Util.parseDate = function (d) {
@@ -2312,7 +2287,7 @@ Util.isoDate = function (date) {
     const minOffset = date.getTimezoneOffset();
     const milliseconds = date.valueOf() - minOffset * 60 * 1000;
     date = new Date(milliseconds);
-    return date.toISOString().replace(/T.*/, '');
+    return date.toISOString().replace(/T.*/, "");
   } catch (err) {}
 
   return null;
@@ -2336,9 +2311,9 @@ Util.fromUnixTime = function (epoch, utc = false) {
   return d;
 };
 
-Util.formatTime = function (date = new Date(), format = 'HH:MM:SS') {
+Util.formatTime = function (date = new Date(), format = "HH:MM:SS") {
   let n;
-  let out = '';
+  let out = "";
 
   for (let i = 0; i < format.length; i += n) {
     n = 1;
@@ -2347,7 +2322,7 @@ Util.formatTime = function (date = new Date(), format = 'HH:MM:SS') {
 
     const fmt = format.substring(i, i + n);
     let num = fmt;
-    if (fmt.startsWith('H')) num = "0".concat(date.getHours()).substring(0, n);else if (fmt.startsWith('M')) num = "0".concat(date.getMinutes()).substring(0, n);else if (fmt.startsWith('S')) num = "0".concat(date.getSeconds()).substring(0, n);
+    if (fmt.startsWith("H")) num = "0".concat(date.getHours()).substring(0, n);else if (fmt.startsWith("M")) num = "0".concat(date.getMinutes()).substring(0, n);else if (fmt.startsWith("S")) num = "0".concat(date.getSeconds()).substring(0, n);
     out += num;
   }
 
@@ -2371,7 +2346,7 @@ Util.timeSpan = function (s) {
   const days = s % 7;
   s = Math.floor(s / 7);
   const weeks = s;
-  let ret = '';
+  let ret = "";
   ret = "".concat("0".concat(hours).substring(0, 2), ":").concat("0".concat(minutes).substring(0, 2), ":").concat("0".concat(seconds).substring(0, 2));
   if (days) ret = "".concat(days, " days ").concat(ret);
   if (weeks) ret = "".concat(weeks, " weeks ").concat(ret);
@@ -2386,15 +2361,15 @@ Util.randFloat = function (min, max, rnd = Util.rng) {
 
 Util.randInt = function (min, max = 16777215, rnd = Util.rng) {
   let args = [...arguments];
-  let range = args[0] instanceof Array ? args.shift() : args.splice(0, typeof args[1] == 'number' ? 2 : 1);
-  let prng = typeof args[0] == 'function' ? args.shift() : Util.rng;
+  let range = args[0] instanceof Array ? args.shift() : args.splice(0, typeof args[1] == "number" ? 2 : 1);
+  let prng = typeof args[0] == "function" ? args.shift() : Util.rng;
   if (range.length < 2) range.unshift(0);
   return Math.round(Util.randFloat(...range, prng));
 };
 
 Util.hex = function (num, numDigits = 0) {
-  let n = typeof num == 'number' ? num : parseInt(num);
-  return ('0'.repeat(numDigits) + n.toString(16)).slice(-numDigits);
+  let n = typeof num == "number" ? num : parseInt(num);
+  return ("0".repeat(numDigits) + n.toString(16)).slice(-numDigits);
 };
 
 Util.numberParts = (num, base) => {
@@ -2421,14 +2396,14 @@ Util.numberParts = (num, base) => {
 Util.roundTo = function (value, prec, digits) {
   if (prec == 1) return Math.round(value);
   let ret = Math.round(value / prec) * prec;
-  if (typeof digits == 'number') ret = +ret.toFixed(digits);
+  if (typeof digits == "number") ret = +ret.toFixed(digits);
   return ret;
 };
 
 Util.base64 = {
   encode: utf8 => {
     if (global.window) return window.btoa(unescape(encodeURIComponent(utf8)));
-    return Buffer.from(utf8).toString('base64');
+    return Buffer.from(utf8).toString("base64");
   },
   decode: base64 => decodeURIComponent(escape(window.atob(base64)))
 };
@@ -2438,7 +2413,7 @@ Util.formatRecord = function (obj) {
 
   for (let key in obj) {
     let val = obj[key];
-    if (val instanceof Array) val = val.map(item => Util.formatRecord(item));else if (/^-?[0-9]+$/.test(val)) val = parseInt(val);else if (/^-?[.0-9]+$/.test(val)) val = parseFloat(val);else if (val == 'true' || val == 'false') val = Boolean(val);
+    if (val instanceof Array) val = val.map(item => Util.formatRecord(item));else if (/^-?[0-9]+$/.test(val)) val = parseInt(val);else if (/^-?[.0-9]+$/.test(val)) val = parseFloat(val);else if (val == "true" || val == "false") val = Boolean(val);
     ret[key] = val;
   }
 
@@ -2446,7 +2421,7 @@ Util.formatRecord = function (obj) {
 };
 
 Util.isArray = function (obj) {
-  return obj && obj.length !== undefined && !(obj instanceof String) && !(obj instanceof Function) && typeof obj == 'function' || obj instanceof Array;
+  return obj && obj.length !== undefined && !(obj instanceof String) && !(obj instanceof Function) && typeof obj == "function" || obj instanceof Array;
 };
 
 Util.equals = function (a, b) {
@@ -2457,14 +2432,14 @@ Util.equals = function (a, b) {
 
 Util.isObject = function (obj) {
   const type = typeof obj;
-  return type === 'function' || type === 'object' && !!obj;
+  return type === "function" || type === "object" && !!obj;
 };
 
 Util.isBool = value => value === true || value === false;
 
 Util.size = function (obj) {
   if (Util.isObject(obj)) {
-    if ('length' in obj) return obj.length;
+    if ("length" in obj) return obj.length;
     return Object.keys(obj).length;
   }
 
@@ -2478,7 +2453,7 @@ Util.isMap = function (obj) {
 Util.effectiveDeviceWidth = function () {
   let deviceWidth = window.orientation == 0 ? window.screen.width : window.screen.height;
 
-  if (navigator.userAgent.indexOf('Android') >= 0 && window.devicePixelRatio) {
+  if (navigator.userAgent.indexOf("Android") >= 0 && window.devicePixelRatio) {
     deviceWidth = deviceWidth / window.devicePixelRatio;
   }
 
@@ -2491,12 +2466,12 @@ Util.getFormFields = function (initialState) {
   }) => [...elements].reduce((acc2, {
     name,
     value
-  }) => name == '' || value == undefined || value == 'undefined' ? acc2 : Object.assign(acc2, {
+  }) => name == "" || value == undefined || value == "undefined" ? acc2 : Object.assign(acc2, {
     [name]: value
   }), acc), {})]);
 };
 
-Util.mergeObjects = function (objArr, predicate = (dst, src, key) => src[key] == '' ? undefined : src[key]) {
+Util.mergeObjects = function (objArr, predicate = (dst, src, key) => src[key] == "" ? undefined : src[key]) {
   let args = objArr;
   let obj = {};
 
@@ -2511,7 +2486,7 @@ Util.mergeObjects = function (objArr, predicate = (dst, src, key) => src[key] ==
 };
 
 Util.getUserAgent = function (headers = req.headers) {
-  const agent = useragent.parse(headers['user-agent']);
+  const agent = useragent.parse(headers["user-agent"]);
   return agent;
 };
 
@@ -2553,7 +2528,7 @@ Util.filterKeys = function (obj) {
   let args = [...arguments];
   obj = args.shift();
   let ret = {};
-  let pred = typeof args[0] == 'function' ? args[0] : key => args.indexOf(key) != -1;
+  let pred = typeof args[0] == "function" ? args[0] : key => args.indexOf(key) != -1;
 
   for (let key in obj) {
     if (pred(key)) ret[key] = obj[key];
@@ -2567,12 +2542,12 @@ Util.filterOutKeys = function (obj, arr) {
 };
 
 Util.numbersConvert = function (str) {
-  return str.split('').map((ch, i) => /[ :,./]/.test(ch) ? ch : String.fromCharCode((str.charCodeAt(i) & 0x0f) + 0x30)).join('');
+  return str.split("").map((ch, i) => /[ :,./]/.test(ch) ? ch : String.fromCharCode((str.charCodeAt(i) & 0x0f) + 0x30)).join("");
 };
 
 Util.entries = function (arg) {
-  if (typeof arg == 'object' && arg !== null) {
-    return typeof arg.entries !== 'undefined' ? arg.entries() : Object.entries(arg);
+  if (typeof arg == "object" && arg !== null) {
+    return typeof arg.entries !== "undefined" ? arg.entries() : Object.entries(arg);
   }
 
   return null;
@@ -2581,85 +2556,66 @@ Util.entries = function (arg) {
 Util.traverse = function (o, fn) {
   var _marked = _regenerator.default.mark(walker);
 
-  if (typeof fn == 'function') return Util.foreach(o, (v, k, a) => {
+  if (typeof fn == "function") return Util.foreach(o, (v, k, a) => {
     fn(v, k, a);
-    if (typeof v === 'object') Util.traverse(v, fn);
+    if (typeof v === "object") Util.traverse(v, fn);
   });
 
   function walker(o, depth = 0) {
-    var _iteratorNormalCompletion18, _didIteratorError18, _iteratorError18, _iterator18, _step18, _step18$value, k, v;
+    var _iterator19, _step19, _step19$value, k, v;
 
-    return _regenerator.default.wrap(function walker$(_context11) {
-      while (1) switch (_context11.prev = _context11.next) {
+    return _regenerator.default.wrap(function walker$(_context13) {
+      while (1) switch (_context13.prev = _context13.next) {
         case 0:
-          _iteratorNormalCompletion18 = true;
-          _didIteratorError18 = false;
-          _iteratorError18 = undefined;
-          _context11.prev = 3;
-          _iterator18 = Util.entries(o)[Symbol.iterator]();
+          _iterator19 = _createForOfIteratorHelper(Util.entries(o));
+          _context13.prev = 1;
 
-        case 5:
-          if (_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done) {
-            _context11.next = 14;
+          _iterator19.s();
+
+        case 3:
+          if ((_step19 = _iterator19.n()).done) {
+            _context13.next = 11;
             break;
           }
 
-          _step18$value = (0, _slicedToArray2.default)(_step18.value, 2), k = _step18$value[0], v = _step18$value[1];
-          _context11.next = 9;
+          _step19$value = (0, _slicedToArray2.default)(_step19.value, 2), k = _step19$value[0], v = _step19$value[1];
+          _context13.next = 7;
           return [v, k, o, depth];
 
-        case 9:
-          if (!(typeof v == 'object' && v !== null)) {
-            _context11.next = 11;
+        case 7:
+          if (!(typeof v == "object" && v !== null)) {
+            _context13.next = 9;
             break;
           }
 
-          return _context11.delegateYield(walker(v, depth + 1), "t0", 11);
+          return _context13.delegateYield(walker(v, depth + 1), "t0", 9);
+
+        case 9:
+          _context13.next = 3;
+          break;
 
         case 11:
-          _iteratorNormalCompletion18 = true;
-          _context11.next = 5;
+          _context13.next = 16;
           break;
 
-        case 14:
-          _context11.next = 20;
-          break;
+        case 13:
+          _context13.prev = 13;
+          _context13.t1 = _context13["catch"](1);
+
+          _iterator19.e(_context13.t1);
 
         case 16:
-          _context11.prev = 16;
-          _context11.t1 = _context11["catch"](3);
-          _didIteratorError18 = true;
-          _iteratorError18 = _context11.t1;
+          _context13.prev = 16;
 
-        case 20:
-          _context11.prev = 20;
-          _context11.prev = 21;
+          _iterator19.f();
 
-          if (!_iteratorNormalCompletion18 && _iterator18.return != null) {
-            _iterator18.return();
-          }
+          return _context13.finish(16);
 
-        case 23:
-          _context11.prev = 23;
-
-          if (!_didIteratorError18) {
-            _context11.next = 26;
-            break;
-          }
-
-          throw _iteratorError18;
-
-        case 26:
-          return _context11.finish(23);
-
-        case 27:
-          return _context11.finish(20);
-
-        case 28:
+        case 19:
         case "end":
-          return _context11.stop();
+          return _context13.stop();
       }
-    }, _marked, null, [[3, 16, 20, 28], [21,, 23, 27]]);
+    }, _marked, null, [[1, 13, 16, 19]]);
   }
 
   return walker(o);
@@ -2668,133 +2624,94 @@ Util.traverse = function (o, fn) {
 Util.traverseWithPath = function (o, rootPath = []) {
   var _marked2 = _regenerator.default.mark(walker);
 
-  var _iteratorNormalCompletion19 = true;
-  var _didIteratorError19 = false;
-  var _iteratorError19 = undefined;
+  var _iterator20 = _createForOfIteratorHelper(rootPath),
+      _step20;
 
   try {
-    for (var _iterator19 = rootPath[Symbol.iterator](), _step19; !(_iteratorNormalCompletion19 = (_step19 = _iterator19.next()).done); _iteratorNormalCompletion19 = true) {
-      let key = _step19.value;
+    for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
+      let key = _step20.value;
       o = o[key];
     }
   } catch (err) {
-    _didIteratorError19 = true;
-    _iteratorError19 = err;
+    _iterator20.e(err);
   } finally {
-    try {
-      if (!_iteratorNormalCompletion19 && _iterator19.return != null) {
-        _iterator19.return();
-      }
-    } finally {
-      if (_didIteratorError19) {
-        throw _iteratorError19;
-      }
-    }
+    _iterator20.f();
   }
 
   function walker(o, path) {
-    var _iteratorNormalCompletion20, _didIteratorError20, _iteratorError20, _iterator20, _step20, _step20$value, k, v, p;
+    var _iterator21, _step21, _step21$value, k, v, p;
 
-    return _regenerator.default.wrap(function walker$(_context12) {
-      while (1) switch (_context12.prev = _context12.next) {
+    return _regenerator.default.wrap(function walker$(_context14) {
+      while (1) switch (_context14.prev = _context14.next) {
         case 0:
-          _iteratorNormalCompletion20 = true;
-          _didIteratorError20 = false;
-          _iteratorError20 = undefined;
-          _context12.prev = 3;
-          _iterator20 = Util.entries(o)[Symbol.iterator]();
+          _iterator21 = _createForOfIteratorHelper(Util.entries(o));
+          _context14.prev = 1;
 
-        case 5:
-          if (_iteratorNormalCompletion20 = (_step20 = _iterator20.next()).done) {
-            _context12.next = 15;
+          _iterator21.s();
+
+        case 3:
+          if ((_step21 = _iterator21.n()).done) {
+            _context14.next = 12;
             break;
           }
 
-          _step20$value = (0, _slicedToArray2.default)(_step20.value, 2), k = _step20$value[0], v = _step20$value[1];
+          _step21$value = (0, _slicedToArray2.default)(_step21.value, 2), k = _step21$value[0], v = _step21$value[1];
           p = [...path, k];
-          _context12.next = 10;
+          _context14.next = 8;
           return [v, k, o, p];
 
-        case 10:
-          if (!(typeof v == 'object' && v !== null)) {
-            _context12.next = 12;
+        case 8:
+          if (!(typeof v == "object" && v !== null)) {
+            _context14.next = 10;
             break;
           }
 
-          return _context12.delegateYield(walker(v, p), "t0", 12);
+          return _context14.delegateYield(walker(v, p), "t0", 10);
+
+        case 10:
+          _context14.next = 3;
+          break;
 
         case 12:
-          _iteratorNormalCompletion20 = true;
-          _context12.next = 5;
+          _context14.next = 17;
           break;
 
-        case 15:
-          _context12.next = 21;
-          break;
+        case 14:
+          _context14.prev = 14;
+          _context14.t1 = _context14["catch"](1);
+
+          _iterator21.e(_context14.t1);
 
         case 17:
-          _context12.prev = 17;
-          _context12.t1 = _context12["catch"](3);
-          _didIteratorError20 = true;
-          _iteratorError20 = _context12.t1;
+          _context14.prev = 17;
 
-        case 21:
-          _context12.prev = 21;
-          _context12.prev = 22;
+          _iterator21.f();
 
-          if (!_iteratorNormalCompletion20 && _iterator20.return != null) {
-            _iterator20.return();
-          }
+          return _context14.finish(17);
 
-        case 24:
-          _context12.prev = 24;
-
-          if (!_didIteratorError20) {
-            _context12.next = 27;
-            break;
-          }
-
-          throw _iteratorError20;
-
-        case 27:
-          return _context12.finish(24);
-
-        case 28:
-          return _context12.finish(21);
-
-        case 29:
+        case 20:
         case "end":
-          return _context12.stop();
+          return _context14.stop();
       }
-    }, _marked2, null, [[3, 17, 21, 29], [22,, 24, 28]]);
+    }, _marked2, null, [[1, 14, 17, 20]]);
   }
 
   return walker(o, []);
 };
 
 Util.indexByPath = function (o, p) {
-  var _iteratorNormalCompletion21 = true;
-  var _didIteratorError21 = false;
-  var _iteratorError21 = undefined;
+  var _iterator22 = _createForOfIteratorHelper(p),
+      _step22;
 
   try {
-    for (var _iterator21 = p[Symbol.iterator](), _step21; !(_iteratorNormalCompletion21 = (_step21 = _iterator21.next()).done); _iteratorNormalCompletion21 = true) {
-      let key = _step21.value;
+    for (_iterator22.s(); !(_step22 = _iterator22.n()).done;) {
+      let key = _step22.value;
       o = o[key];
     }
   } catch (err) {
-    _didIteratorError21 = true;
-    _iteratorError21 = err;
+    _iterator22.e(err);
   } finally {
-    try {
-      if (!_iteratorNormalCompletion21 && _iterator21.return != null) {
-        _iterator21.return();
-      }
-    } finally {
-      if (_didIteratorError21) {
-        throw _iteratorError21;
-      }
-    }
+    _iterator22.f();
   }
 
   return o;
@@ -2809,175 +2726,137 @@ Util.pushUnique = function (arr) {
   return arr;
 };
 
-Util.iterateMembers = _regenerator.default.mark(function _callee10(obj, predicate = (name, depth) => true, depth = 0) {
-  var names, pred, name, _iteratorNormalCompletion22, _didIteratorError22, _iteratorError22, _iterator22, _step22, _iteratorNormalCompletion23, _didIteratorError23, _iteratorError23, _iterator23, _step23, symbol, proto;
+Util.iterateMembers = _regenerator.default.mark(function _callee11(obj, predicate = (name, depth) => true, depth = 0) {
+  var names, pred, name, _iterator23, _step23, _iterator24, _step24, symbol, proto;
 
-  return _regenerator.default.wrap(function _callee10$(_context13) {
-    while (1) switch (_context13.prev = _context13.next) {
+  return _regenerator.default.wrap(function _callee11$(_context15) {
+    while (1) switch (_context15.prev = _context15.next) {
       case 0:
         names = [];
         pred = Util.predicate(predicate);
-        _context13.t0 = _regenerator.default.keys(obj);
+        _context15.t0 = _regenerator.default.keys(obj);
 
       case 3:
-        if ((_context13.t1 = _context13.t0()).done) {
-          _context13.next = 10;
+        if ((_context15.t1 = _context15.t0()).done) {
+          _context15.next = 10;
           break;
         }
 
-        name = _context13.t1.value;
+        name = _context15.t1.value;
 
         if (!pred(name, depth)) {
-          _context13.next = 8;
+          _context15.next = 8;
           break;
         }
 
-        _context13.next = 8;
+        _context15.next = 8;
         return name;
 
       case 8:
-        _context13.next = 3;
+        _context15.next = 3;
         break;
 
       case 10:
-        _iteratorNormalCompletion22 = true;
-        _didIteratorError22 = false;
-        _iteratorError22 = undefined;
-        _context13.prev = 13;
-        _iterator22 = Object.getOwnPropertyNames(obj)[Symbol.iterator]();
+        _iterator23 = _createForOfIteratorHelper(Object.getOwnPropertyNames(obj));
+        _context15.prev = 11;
 
-      case 15:
-        if (_iteratorNormalCompletion22 = (_step22 = _iterator22.next()).done) {
-          _context13.next = 23;
+        _iterator23.s();
+
+      case 13:
+        if ((_step23 = _iterator23.n()).done) {
+          _context15.next = 20;
           break;
         }
 
-        name = _step22.value;
+        name = _step23.value;
 
         if (!pred(name, depth)) {
-          _context13.next = 20;
+          _context15.next = 18;
           break;
         }
 
-        _context13.next = 20;
+        _context15.next = 18;
         return name;
 
-      case 20:
-        _iteratorNormalCompletion22 = true;
-        _context13.next = 15;
+      case 18:
+        _context15.next = 13;
         break;
 
-      case 23:
-        _context13.next = 29;
+      case 20:
+        _context15.next = 25;
         break;
+
+      case 22:
+        _context15.prev = 22;
+        _context15.t2 = _context15["catch"](11);
+
+        _iterator23.e(_context15.t2);
 
       case 25:
-        _context13.prev = 25;
-        _context13.t2 = _context13["catch"](13);
-        _didIteratorError22 = true;
-        _iteratorError22 = _context13.t2;
+        _context15.prev = 25;
 
-      case 29:
-        _context13.prev = 29;
-        _context13.prev = 30;
+        _iterator23.f();
 
-        if (!_iteratorNormalCompletion22 && _iterator22.return != null) {
-          _iterator22.return();
-        }
+        return _context15.finish(25);
 
-      case 32:
-        _context13.prev = 32;
+      case 28:
+        _iterator24 = _createForOfIteratorHelper(Object.getOwnPropertySymbols(obj));
+        _context15.prev = 29;
 
-        if (!_didIteratorError22) {
-          _context13.next = 35;
+        _iterator24.s();
+
+      case 31:
+        if ((_step24 = _iterator24.n()).done) {
+          _context15.next = 38;
           break;
         }
 
-        throw _iteratorError22;
-
-      case 35:
-        return _context13.finish(32);
-
-      case 36:
-        return _context13.finish(29);
-
-      case 37:
-        _iteratorNormalCompletion23 = true;
-        _didIteratorError23 = false;
-        _iteratorError23 = undefined;
-        _context13.prev = 40;
-        _iterator23 = Object.getOwnPropertySymbols(obj)[Symbol.iterator]();
-
-      case 42:
-        if (_iteratorNormalCompletion23 = (_step23 = _iterator23.next()).done) {
-          _context13.next = 50;
-          break;
-        }
-
-        symbol = _step23.value;
+        symbol = _step24.value;
 
         if (!pred(symbol, depth)) {
-          _context13.next = 47;
+          _context15.next = 36;
           break;
         }
 
-        _context13.next = 47;
+        _context15.next = 36;
         return symbol;
 
-      case 47:
-        _iteratorNormalCompletion23 = true;
-        _context13.next = 42;
+      case 36:
+        _context15.next = 31;
         break;
 
-      case 50:
-        _context13.next = 56;
+      case 38:
+        _context15.next = 43;
         break;
 
-      case 52:
-        _context13.prev = 52;
-        _context13.t3 = _context13["catch"](40);
-        _didIteratorError23 = true;
-        _iteratorError23 = _context13.t3;
+      case 40:
+        _context15.prev = 40;
+        _context15.t3 = _context15["catch"](29);
 
-      case 56:
-        _context13.prev = 56;
-        _context13.prev = 57;
+        _iterator24.e(_context15.t3);
 
-        if (!_iteratorNormalCompletion23 && _iterator23.return != null) {
-          _iterator23.return();
-        }
+      case 43:
+        _context15.prev = 43;
 
-      case 59:
-        _context13.prev = 59;
+        _iterator24.f();
 
-        if (!_didIteratorError23) {
-          _context13.next = 62;
-          break;
-        }
+        return _context15.finish(43);
 
-        throw _iteratorError23;
-
-      case 62:
-        return _context13.finish(59);
-
-      case 63:
-        return _context13.finish(56);
-
-      case 64:
+      case 46:
         proto = Object.getPrototypeOf(obj);
 
         if (!proto) {
-          _context13.next = 67;
+          _context15.next = 49;
           break;
         }
 
-        return _context13.delegateYield(Util.iterateMembers(proto, pred, depth + 1), "t4", 67);
+        return _context15.delegateYield(Util.iterateMembers(proto, pred, depth + 1), "t4", 49);
 
-      case 67:
+      case 49:
       case "end":
-        return _context13.stop();
+        return _context15.stop();
     }
-  }, _callee10, null, [[13, 25, 29, 37], [30,, 32, 36], [40, 52, 56, 64], [57,, 59, 63]]);
+  }, _callee11, null, [[11, 22, 25, 28], [29, 40, 43, 46]]);
 });
 
 Util.getMembers = (obj, pred = (prop, level) => true) => Util.unique([...Util.iterateMembers(obj, pred)]);
@@ -2985,7 +2864,7 @@ Util.getMembers = (obj, pred = (prop, level) => true) => Util.unique([...Util.it
 Util.iterateMethodNames = (obj, depth = 1, start = 0) => {
   const end = depth === true ? start + 1 : depth === false ? start : start + depth;
   const check = Util.inRange(start, end);
-  return Util.iterateMembers(obj, (prop, level) => check(level) && typeof obj[prop] === 'function' && prop != 'constructor');
+  return Util.iterateMembers(obj, (prop, level) => check(level) && typeof obj[prop] === "function" && prop != "constructor");
 };
 
 Util.getMethodNames = (obj, depth = 1, start = 0) => Util.unique([...Util.iterateMethodNames(obj, depth, start)]);
@@ -2994,118 +2873,90 @@ Util.methods = (obj, depth = 1, t = (k, v) => [k, v], r = e => Object.fromEntrie
 
 Util.getMethods = (obj, depth = 1) => {
   let ret = {};
-  var _iteratorNormalCompletion24 = true;
-  var _didIteratorError24 = false;
-  var _iteratorError24 = undefined;
+
+  var _iterator25 = _createForOfIteratorHelper(Util.iterateMethods(obj, depth)),
+      _step25;
 
   try {
-    for (var _iterator24 = Util.iterateMethods(obj, depth)[Symbol.iterator](), _step24; !(_iteratorNormalCompletion24 = (_step24 = _iterator24.next()).done); _iteratorNormalCompletion24 = true) {
-      let _step24$value = (0, _slicedToArray2.default)(_step24.value, 2),
-          k = _step24$value[0],
-          v = _step24$value[1];
+    for (_iterator25.s(); !(_step25 = _iterator25.n()).done;) {
+      let _step25$value = (0, _slicedToArray2.default)(_step25.value, 2),
+          k = _step25$value[0],
+          v = _step25$value[1];
 
       ret[k] = v;
     }
   } catch (err) {
-    _didIteratorError24 = true;
-    _iteratorError24 = err;
+    _iterator25.e(err);
   } finally {
-    try {
-      if (!_iteratorNormalCompletion24 && _iterator24.return != null) {
-        _iterator24.return();
-      }
-    } finally {
-      if (_didIteratorError24) {
-        throw _iteratorError24;
-      }
-    }
+    _iterator25.f();
   }
 
   return ret;
 };
 
-Util.iterateMethods = _regenerator.default.mark(function _callee11(obj, depth = 1, t = (key, value) => [key, value], start = 0) {
-  var _iteratorNormalCompletion25, _didIteratorError25, _iteratorError25, _iterator25, _step25, name, value;
+Util.iterateMethods = _regenerator.default.mark(function _callee12(obj, depth = 1, t = (key, value) => [key, value], start = 0) {
+  var _iterator26, _step26, name, value;
 
-  return _regenerator.default.wrap(function _callee11$(_context14) {
-    while (1) switch (_context14.prev = _context14.next) {
+  return _regenerator.default.wrap(function _callee12$(_context16) {
+    while (1) switch (_context16.prev = _context16.next) {
       case 0:
-        _iteratorNormalCompletion25 = true;
-        _didIteratorError25 = false;
-        _iteratorError25 = undefined;
-        _context14.prev = 3;
-        _iterator25 = Util.getMethodNames(obj, depth, start)[Symbol.iterator]();
+        _iterator26 = _createForOfIteratorHelper(Util.getMethodNames(obj, depth, start));
+        _context16.prev = 1;
 
-      case 5:
-        if (_iteratorNormalCompletion25 = (_step25 = _iterator25.next()).done) {
-          _context14.next = 19;
+        _iterator26.s();
+
+      case 3:
+        if ((_step26 = _iterator26.n()).done) {
+          _context16.next = 16;
           break;
         }
 
-        name = _step25.value;
-        _context14.prev = 7;
+        name = _step26.value;
+        _context16.prev = 5;
         value = t(name, obj[name]);
 
         if (!(value !== undefined && value !== false && value !== null)) {
-          _context14.next = 12;
+          _context16.next = 10;
           break;
         }
 
-        _context14.next = 12;
+        _context16.next = 10;
         return value;
 
-      case 12:
-        _context14.next = 16;
+      case 10:
+        _context16.next = 14;
         break;
+
+      case 12:
+        _context16.prev = 12;
+        _context16.t0 = _context16["catch"](5);
 
       case 14:
-        _context14.prev = 14;
-        _context14.t0 = _context14["catch"](7);
+        _context16.next = 3;
+        break;
 
       case 16:
-        _iteratorNormalCompletion25 = true;
-        _context14.next = 5;
+        _context16.next = 21;
         break;
 
-      case 19:
-        _context14.next = 25;
-        break;
+      case 18:
+        _context16.prev = 18;
+        _context16.t1 = _context16["catch"](1);
+
+        _iterator26.e(_context16.t1);
 
       case 21:
-        _context14.prev = 21;
-        _context14.t1 = _context14["catch"](3);
-        _didIteratorError25 = true;
-        _iteratorError25 = _context14.t1;
+        _context16.prev = 21;
 
-      case 25:
-        _context14.prev = 25;
-        _context14.prev = 26;
+        _iterator26.f();
 
-        if (!_iteratorNormalCompletion25 && _iterator25.return != null) {
-          _iterator25.return();
-        }
+        return _context16.finish(21);
 
-      case 28:
-        _context14.prev = 28;
-
-        if (!_didIteratorError25) {
-          _context14.next = 31;
-          break;
-        }
-
-        throw _iteratorError25;
-
-      case 31:
-        return _context14.finish(28);
-
-      case 32:
-        return _context14.finish(25);
-
-      case 33:
+      case 24:
       case "end":
-        return _context14.stop();
+        return _context16.stop();
     }
-  }, _callee11, null, [[3, 21, 25, 33], [7, 14], [26,, 28, 32]]);
+  }, _callee12, null, [[1, 18, 21, 24], [5, 12]]);
 });
 
 Util.bindMethods = function (methods, obj) {
@@ -3165,13 +3016,13 @@ Util.getCallerStack = function (position = 2) {
 
   const stack = new Error().stack;
   Error.prepareStackTrace = oldPrepareStackTrace;
-  return stack !== null && typeof stack === 'object' ? stack.slice(position) : null;
+  return stack !== null && typeof stack === "object" ? stack.slice(position) : null;
 };
 
 Util.getCallerFile = function (position = 2) {
   let stack = Util.getCallerStack();
 
-  if (stack !== null && typeof stack === 'object') {
+  if (stack !== null && typeof stack === "object") {
     const frame = stack[position];
     return frame ? "".concat(frame.getFileName(), ":").concat(frame.getLineNumber()) : undefined;
   }
@@ -3180,7 +3031,7 @@ Util.getCallerFile = function (position = 2) {
 Util.getCallerFunction = function (position = 2) {
   let stack = Util.getCallerStack(position + 1);
 
-  if (stack !== null && typeof stack === 'object') {
+  if (stack !== null && typeof stack === "object") {
     const frame = stack[0];
     return frame ? frame.getFunction() : undefined;
   }
@@ -3189,7 +3040,7 @@ Util.getCallerFunction = function (position = 2) {
 Util.getCallerFunctionName = function (position = 2) {
   let stack = Util.getCallerStack(position + 1);
 
-  if (stack !== null && typeof stack === 'object') {
+  if (stack !== null && typeof stack === "object") {
     const frame = stack[0];
     return frame ? frame.getMethodName() || frame.getFunctionName() : undefined;
   }
@@ -3198,7 +3049,7 @@ Util.getCallerFunctionName = function (position = 2) {
 Util.getCallerFunctionNames = function (position = 2) {
   let stack = Util.getCallerStack(position + 1);
 
-  if (stack !== null && typeof stack === 'object') {
+  if (stack !== null && typeof stack === "object") {
     let ret = [];
 
     for (let i = 0; stack[i]; i++) {
@@ -3212,13 +3063,13 @@ Util.getCallerFunctionNames = function (position = 2) {
 
 Util.getCaller = function (position = 2) {
   let stack = Util.getCallerStack(position + 1);
-  const methods = ['getColumnNumber', 'getEvalOrigin', 'getFileName', 'getFunction', 'getFunctionName', 'getLineNumber', 'getMethodName', 'getPosition', 'getPromiseIndex', 'getScriptNameOrSourceURL', 'getThis', 'getTypeName'];
+  const methods = ["getColumnNumber", "getEvalOrigin", "getFileName", "getFunction", "getFunctionName", "getLineNumber", "getMethodName", "getPosition", "getPromiseIndex", "getScriptNameOrSourceURL", "getThis", "getTypeName"];
 
-  if (stack !== null && typeof stack === 'object') {
+  if (stack !== null && typeof stack === "object") {
     const frame = stack[0];
     return methods.reduce((acc, m) => {
       if (frame[m]) {
-        const name = Util.lcfirst(m.replace(/^get/, ''));
+        const name = Util.lcfirst(m.replace(/^get/, ""));
         const value = frame[m]();
 
         if (value != undefined) {
@@ -3274,31 +3125,21 @@ Util.hashString = function (string, bits = 32, mask = 0xffffffff) {
 Util.flatTree = function (tree, addOutput) {
   const ret = [];
   if (!addOutput) addOutput = arg => ret.push(arg);
-  addOutput(Util.filterKeys(tree, key => key !== 'children'));
+  addOutput(Util.filterKeys(tree, key => key !== "children"));
 
-  if (typeof tree.children == 'object' && tree.children !== null && tree.children.length) {
-    var _iteratorNormalCompletion26 = true;
-    var _didIteratorError26 = false;
-    var _iteratorError26 = undefined;
+  if (typeof tree.children == "object" && tree.children !== null && tree.children.length) {
+    var _iterator27 = _createForOfIteratorHelper(tree.children),
+        _step27;
 
     try {
-      for (var _iterator26 = tree.children[Symbol.iterator](), _step26; !(_iteratorNormalCompletion26 = (_step26 = _iterator26.next()).done); _iteratorNormalCompletion26 = true) {
-        let child = _step26.value;
+      for (_iterator27.s(); !(_step27 = _iterator27.n()).done;) {
+        let child = _step27.value;
         Util.flatTree(child, addOutput);
       }
     } catch (err) {
-      _didIteratorError26 = true;
-      _iteratorError26 = err;
+      _iterator27.e(err);
     } finally {
-      try {
-        if (!_iteratorNormalCompletion26 && _iterator26.return != null) {
-          _iterator26.return();
-        }
-      } finally {
-        if (_didIteratorError26) {
-          throw _iteratorError26;
-        }
-      }
+      _iterator27.f();
     }
   }
 
@@ -3308,39 +3149,29 @@ Util.flatTree = function (tree, addOutput) {
 Util.traverseTree = function (tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
 
-  if (typeof tree == 'object' && tree !== null && typeof tree.children == 'object' && tree.children !== null && tree.children.length) {
-    var _iteratorNormalCompletion27 = true;
-    var _didIteratorError27 = false;
-    var _iteratorError27 = undefined;
+  if (typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children !== null && tree.children.length) {
+    var _iterator28 = _createForOfIteratorHelper(tree.children),
+        _step28;
 
     try {
-      for (var _iterator27 = tree.children[Symbol.iterator](), _step27; !(_iteratorNormalCompletion27 = (_step27 = _iterator27.next()).done); _iteratorNormalCompletion27 = true) {
-        let child = _step27.value;
+      for (_iterator28.s(); !(_step28 = _iterator28.n()).done;) {
+        let child = _step28.value;
         Util.traverseTree(child, fn, depth + 1, tree);
       }
     } catch (err) {
-      _didIteratorError27 = true;
-      _iteratorError27 = err;
+      _iterator28.e(err);
     } finally {
-      try {
-        if (!_iteratorNormalCompletion27 && _iterator27.return != null) {
-          _iterator27.return();
-        }
-      } finally {
-        if (_didIteratorError27) {
-          throw _iteratorError27;
-        }
-      }
+      _iterator28.f();
     }
   }
 };
 
 Util.walkTree = function (node, pred, t, depth = 0, parent = null) {
-  return _regenerator.default.mark(function _callee12() {
-    var _i3, _arr, child;
+  return _regenerator.default.mark(function _callee13() {
+    var _i6, _arr, child;
 
-    return _regenerator.default.wrap(function _callee12$(_context15) {
-      while (1) switch (_context15.prev = _context15.next) {
+    return _regenerator.default.wrap(function _callee13$(_context17) {
+      while (1) switch (_context17.prev = _context17.next) {
         case 0:
           if (!pred) pred = i => true;
           if (!t) t = function t(i) {
@@ -3349,48 +3180,48 @@ Util.walkTree = function (node, pred, t, depth = 0, parent = null) {
           };
 
           if (!pred(node, depth, parent)) {
-            _context15.next = 13;
+            _context17.next = 13;
             break;
           }
 
-          _context15.next = 5;
+          _context17.next = 5;
           return t(node);
 
         case 5:
-          if (!(typeof node == 'object' && node !== null && typeof node.children == 'object' && node.children.length)) {
-            _context15.next = 13;
+          if (!(typeof node == "object" && node !== null && typeof node.children == "object" && node.children.length)) {
+            _context17.next = 13;
             break;
           }
 
-          _i3 = 0, _arr = [...node.children];
+          _i6 = 0, _arr = [...node.children];
 
         case 7:
-          if (!(_i3 < _arr.length)) {
-            _context15.next = 13;
+          if (!(_i6 < _arr.length)) {
+            _context17.next = 13;
             break;
           }
 
-          child = _arr[_i3];
-          return _context15.delegateYield(Util.walkTree(child, pred, t, depth + 1, node.parent_id), "t0", 10);
+          child = _arr[_i6];
+          return _context17.delegateYield(Util.walkTree(child, pred, t, depth + 1, node.parent_id), "t0", 10);
 
         case 10:
-          _i3++;
-          _context15.next = 7;
+          _i6++;
+          _context17.next = 7;
           break;
 
         case 13:
         case "end":
-          return _context15.stop();
+          return _context17.stop();
       }
-    }, _callee12);
+    }, _callee13);
   })();
 };
 
 Util.isPromise = function (obj) {
-  return Boolean(obj) && typeof obj.then === 'function' || obj instanceof Promise;
+  return Boolean(obj) && typeof obj.then === "function" || obj instanceof Promise;
 };
 
-if (typeof setImmediate !== 'function') var setImmediate = fn => setTimeout(fn, 0);
+if (typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
 
 Util.next = function (iter, observer, prev = undefined) {
   let item;
@@ -3430,7 +3261,7 @@ Util.getImageAverageColor = function (imageElement, options) {
   };
   const w = imageElement.width;
   let h = imageElement.height;
-  const context = document.createElement('canvas').getContext('2d');
+  const context = document.createElement("canvas").getContext("2d");
   context.drawImage(imageElement, 0, 0, w, h);
   const subpixels = context.getImageData(0, 0, w, h).data;
   const pixels = {
@@ -3484,7 +3315,7 @@ Util.getImageAverageColor = function (imageElement, options) {
       const r = this.r,
             g = this.g,
             b = this.b;
-      return [r, g, b].join(', ');
+      return [r, g, b].join(", ");
     },
 
     toStringRgba() {
@@ -3492,7 +3323,7 @@ Util.getImageAverageColor = function (imageElement, options) {
             g = this.g,
             b = this.b,
             a = this.a;
-      return [r, g, b, a].join(', ');
+      return [r, g, b, a].join(", ");
     },
 
     toStringHex() {
@@ -3509,7 +3340,7 @@ Util.getImageAverageColor = function (imageElement, options) {
       const r = this.r,
             g = this.g,
             b = this.b;
-      return [toHex(r), toHex(g), toHex(b)].join('');
+      return [toHex(r), toHex(g), toHex(b)].join("");
     }
 
   });
@@ -3522,9 +3353,9 @@ Util.jsonToObject = function (jsonStr) {
   try {
     ret = JSON.parse(jsonStr);
   } catch (error) {
-    let pos = +('' + error).split('\n').reverse()[0].replace(/.*position ([0-9]+).*/, '$1');
-    console.error('Unexpected token: ', jsonStr);
-    console.error('Unexpected token at:', jsonStr.substring(pos));
+    let pos = +("" + error).split("\n").reverse()[0].replace(/.*position ([0-9]+).*/, "$1");
+    console.error("Unexpected token: ", jsonStr);
+    console.error("Unexpected token at:", jsonStr.substring(pos));
     ret = null;
   }
 
@@ -3539,28 +3370,28 @@ Util.splitLines = function (str, max_linelen = Number.MAX_SAFE_INTEGER) {
   for (; tokens.length;) {
     if ((line.length ? line.length + 1 : 0) + tokens[0].length > max_linelen) {
       lines.push(line);
-      line = '';
+      line = "";
     }
 
-    if (line != '') line += ' ';
+    if (line != "") line += " ";
     line += tokens.shift();
   }
 
-  if (line != '') lines.push(line);
+  if (line != "") lines.push(line);
   return lines;
 };
 
 Util.decodeHTMLEntities = function (text) {
   var entities = {
-    amp: '&',
+    amp: "&",
     apos: "'",
-    '#x27': "'",
-    '#x2F': '/',
-    '#39': "'",
-    '#47': '/',
-    lt: '<',
-    gt: '>',
-    nbsp: ' ',
+    "#x27": "'",
+    "#x2F": "/",
+    "#39": "'",
+    "#47": "/",
+    lt: "<",
+    gt: ">",
+    nbsp: " ",
     quot: '"'
   };
   return text.replace(/&([^;]+);/gm, function (match, entity) {
@@ -3569,7 +3400,7 @@ Util.decodeHTMLEntities = function (text) {
 };
 
 Util.stripAnsi = function (str) {
-  return (str + '').replace(/\x1B[[(?);]{0,2}(;?\d)*./g, '');
+  return (str + "").replace(/\x1B[[(?);]{0,2}(;?\d)*./g, "");
 };
 
 Util.proxy = (obj = {}, handler) => new Proxy(obj, _objectSpread({
@@ -3615,7 +3446,7 @@ Util.proxyClone = obj => {
   const override = Object.create(null);
   const deleted = Object.create(null);
 
-  const debug = (...args) => console.log('DEBUG proxyClone', ...args);
+  const debug = (...args) => console.log("DEBUG proxyClone", ...args);
 
   const _get = name => {
     let value;
@@ -3626,7 +3457,7 @@ Util.proxyClone = obj => {
       override[name] = value;
     }
 
-    if (typeof value === 'function') {
+    if (typeof value === "function") {
       value = value.bind(obj);
     }
 
@@ -3636,13 +3467,13 @@ Util.proxyClone = obj => {
   return new Proxy(Object.prototype, {
     getPrototypeOf: () => Object.getPrototypeOf(obj),
     setPrototypeOf: () => {
-      throw new Error('Not yet implemented: setPrototypeOf');
+      throw new Error("Not yet implemented: setPrototypeOf");
     },
     isExtensible: () => {
-      throw new Error('Not yet implemented: isExtensible');
+      throw new Error("Not yet implemented: isExtensible");
     },
     preventExtensions: () => {
-      throw new Error('Not yet implemented: preventExtensions');
+      throw new Error("Not yet implemented: preventExtensions");
     },
     getOwnPropertyDescriptor: (target, name) => {
       let desc;
@@ -3656,7 +3487,7 @@ Util.proxyClone = obj => {
       return desc;
     },
     defineProperty: () => {
-      throw new Error('Not yet implemented: defineProperty');
+      throw new Error("Not yet implemented: defineProperty");
     },
     has: (_, name) => {
       const has = !deleted[name] && (name in override || name in obj);
@@ -3686,13 +3517,13 @@ Util.proxyClone = obj => {
       return keys;
     },
     apply: () => {
-      throw new Error('Not yet implemented: apply');
+      throw new Error("Not yet implemented: apply");
     },
     construct: () => {
-      throw new Error('Not yet implemented: construct');
+      throw new Error("Not yet implemented: construct");
     },
     enumerate: () => {
-      throw new Error('Not yet implemented: enumerate');
+      throw new Error("Not yet implemented: enumerate");
     }
   });
 };
@@ -3702,7 +3533,7 @@ Util.proxyDelegate = (target, origin) => {
     get(target, key, receiver) {
       if (key in target) return Reflect.get(target, key, receiver);
       const value = origin[key];
-      return typeof value === 'function' ? (...args) => value.apply(origin, args) : value;
+      return typeof value === "function" ? (...args) => value.apply(origin, args) : value;
     },
 
     set(target, key, value, receiver) {
@@ -3715,8 +3546,8 @@ Util.proxyDelegate = (target, origin) => {
 };
 
 Util.immutable = args => {
-  const argsType = typeof args === 'object' && Util.isArray(args) ? 'array' : 'object';
-  const errorText = argsType === 'array' ? "Error! You can't change elements of this array" : "Error! You can't change properties of this object";
+  const argsType = typeof args === "object" && Util.isArray(args) ? "array" : "object";
+  const errorText = argsType === "array" ? "Error! You can't change elements of this array" : "Error! You can't change properties of this object";
   const handler = {
     set: () => {
       throw new Error(errorText);
@@ -3733,25 +3564,7 @@ Util.immutable = args => {
 
 Util.immutableClass = Original => {
   let name = Util.fnName(Original);
-  return new Function('Original', "const Immutable".concat(name, " = class extends Original {\n    constructor(...args) {\n      super(...args);\n      if(new.target === Immutable").concat(name, ")\n        Object.freeze(this);\n    }\n  };\n  return Immutable").concat(name, ";"))(Original);
-};
-
-Util.curry = function curry(fn, arity) {
-  return function curried() {
-    if (arity == null) {
-      arity = fn.length;
-    }
-
-    var args = [].slice.call(arguments);
-
-    if (args.length >= arity) {
-      return fn.apply(this, args);
-    } else {
-      return function () {
-        return curried.apply(this, args.concat([].slice.call(arguments)));
-      };
-    }
-  };
+  return new Function("Original", "const Immutable".concat(name, " = class extends Original {\n    constructor(...args) {\n      super(...args);\n      if(new.target === Immutable").concat(name, ")\n        Object.freeze(this);\n    }\n  };\n  return Immutable").concat(name, ";"))(Original);
 };
 
 Util.partial = function partial(fn) {
@@ -3776,7 +3589,7 @@ Util.partial = function partial(fn) {
 
 Util.compose = function compose(fn1, fn2) {
   if (!arguments.length) {
-    throw new Error('expected at least one (and probably more) function arguments');
+    throw new Error("expected at least one (and probably more) function arguments");
   }
 
   var fns = arguments;
@@ -3795,11 +3608,11 @@ Util.compose = function compose(fn1, fn2) {
 Util.clamp = Util.curry((min, max, value) => Math.max(min, Math.min(max, value)));
 
 Util.color = (useColor = true) => !useColor || Util.isBrowser() ? {
-  code: () => '',
+  code: () => "",
   text: (_text, ...color) => color.indexOf(1) != -1 ? "".concat(_text) : _text
 } : {
   code(...args) {
-    return "\x1B[".concat([...args].join(';'), "m");
+    return "\x1B[".concat([...args].join(";"), "m");
   },
 
   text(text, ...color) {
@@ -3816,17 +3629,17 @@ Util.defineInspect = (proto, ...props) => {
   if (!Util.isBrowser()) {
     const c = Util.color();
 
-    proto[Symbol.for('nodejs.util.inspect.custom')] = function () {
+    proto[Symbol.for("nodejs.util.inspect.custom")] = function () {
       const obj = this;
-      return c.text(Util.fnName(proto.constructor) + ' ', 1, 31) + Util.toString(props.reduce((acc, key) => {
+      return c.text(Util.fnName(proto.constructor) + " ", 1, 31) + Util.toString(props.reduce((acc, key) => {
         acc[key] = obj[key];
         return acc;
       }, {}), {
         multiline: false,
-        colon: ':',
-        spacing: '',
-        separator: ', ',
-        padding: ''
+        colon: ":",
+        spacing: "",
+        separator: ", ",
+        padding: ""
       });
     };
   }
@@ -3834,7 +3647,7 @@ Util.defineInspect = (proto, ...props) => {
 
 Util.predicate = fn_or_regex => {
   let fn;
-  if (fn_or_regex instanceof RegExp) fn = (...args) => fn_or_regex.test(args + '');else fn = (...args) => fn_or_regex(...args);
+  if (fn_or_regex instanceof RegExp) fn = (...args) => fn_or_regex.test(args + "");else fn = (...args) => fn_or_regex(...args);
   return fn;
 };
 
@@ -3846,7 +3659,7 @@ Util.bindProperties = (proxy, target, props, gen) => {
   if (!gen) gen = p => v => v === undefined ? target[p] : target[p] = v;
   Object.defineProperties(proxy, propNames.reduce((a, k) => {
     const prop = props[k];
-    const get_set = typeof prop == 'function' ? prop : gen(prop);
+    const get_set = typeof prop == "function" ? prop : gen(prop);
     return _objectSpread({}, a, {
       [k]: {
         get: get_set,

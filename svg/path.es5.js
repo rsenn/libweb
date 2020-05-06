@@ -14,17 +14,17 @@ require("core-js/modules/es6.object.to-string");
  * @license MIT
  */
 (function (root, factory) {
-  if (typeof define === 'function' && define.amd) {
+  if (typeof define === "function" && define.amd) {
     define([], factory);
-  } else if (typeof exports === 'object') {
+  } else if (typeof exports === "object") {
     module.exports = factory();
   } else {
     root.SvgPath = factory();
   }
 })(this, function () {
-  'use strict';
+  "use strict";
 
-  var absCommands = ['M', 'Z', 'L', 'H', 'V', 'C', 'S', 'Q', 'T', 'A'];
+  var absCommands = ["M", "Z", "L", "H", "V", "C", "S", "Q", "T", "A"];
   var relCommands = absCommands.map(function (letter) {
     return letter.toLowerCase();
   });
@@ -50,35 +50,35 @@ require("core-js/modules/es6.object.to-string");
   };
 
   SvgPath.prototype.close = function () {
-    return this._cmd('Z')();
+    return this._cmd("Z")();
   };
 
   SvgPath.prototype.to = function (x, y) {
-    var point = typeof x === 'object' ? x : {
+    var point = typeof x === "object" ? x : {
       x: x,
       y: y
     };
-    return this._cmd('M')(point.x, point.y);
+    return this._cmd("M")(point.x, point.y);
   };
 
   SvgPath.prototype.line = function (x, y) {
-    var point = typeof x === 'object' ? x : {
+    var point = typeof x === "object" ? x : {
       x: x,
       y: y
     };
-    return this._cmd('L')(point.x, point.y);
+    return this._cmd("L")(point.x, point.y);
   };
 
   SvgPath.prototype.hline = function (x) {
-    return this._cmd('H')(x);
+    return this._cmd("H")(x);
   };
 
   SvgPath.prototype.vline = function (y) {
-    return this._cmd('V')(y);
+    return this._cmd("V")(y);
   };
 
   SvgPath.prototype.bezier3 = function (x1, y1, x2, y2, x, y) {
-    var usePoints = typeof x1 === 'object';
+    var usePoints = typeof x1 === "object";
     var shortcut = usePoints ? arguments.length < 3 : arguments.length < 6;
     var p1 = {
       x: x1,
@@ -100,14 +100,14 @@ require("core-js/modules/es6.object.to-string");
     }
 
     if (!shortcut) {
-      return this._cmd('C')(p1.x, p1.y, p2.x, p2.y, end.x, end.y);
+      return this._cmd("C")(p1.x, p1.y, p2.x, p2.y, end.x, end.y);
     } else {
-      return this._cmd('S')(p1.x, p1.y, end.x, end.y);
+      return this._cmd("S")(p1.x, p1.y, end.x, end.y);
     }
   };
 
   SvgPath.prototype.bezier2 = function (x1, y1, x, y) {
-    var usePoints = typeof x1 === 'object';
+    var usePoints = typeof x1 === "object";
     var shortcut = usePoints ? arguments.length < 2 : arguments.length < 4;
     var p1 = {
       x: x1,
@@ -124,18 +124,18 @@ require("core-js/modules/es6.object.to-string");
     }
 
     if (!shortcut) {
-      return this._cmd('Q')(p1.x, p1.y, end.x, end.y);
+      return this._cmd("Q")(p1.x, p1.y, end.x, end.y);
     } else {
-      return this._cmd('T')(end.x, end.y);
+      return this._cmd("T")(end.x, end.y);
     }
   };
 
   SvgPath.prototype.arc = function (rx, ry, rotation, large, sweep, x, y) {
-    var point = typeof x === 'object' ? x : {
+    var point = typeof x === "object" ? x : {
       x: x,
       y: y
     };
-    return this._cmd('A')(rx, ry, rotation, large ? 1 : 0, sweep ? 1 : 0, point.x, point.y);
+    return this._cmd("A")(rx, ry, rotation, large ? 1 : 0, sweep ? 1 : 0, point.x, point.y);
   };
 
   SvgPath.prototype.cmd = function (cmd) {
@@ -150,7 +150,7 @@ require("core-js/modules/es6.object.to-string");
   SvgPath.prototype.str = function () {
     return this.commands.map(function (command) {
       return command.toString();
-    }).join(' ');
+    }).join(" ");
   };
 
   commands.forEach(function (commandName) {
@@ -175,7 +175,7 @@ require("core-js/modules/es6.object.to-string");
   }
 
   Command.prototype.toString = function () {
-    return this.name + this.args.join(' ');
+    return this.name + this.args.join(" ");
   };
 
   return SvgPath;

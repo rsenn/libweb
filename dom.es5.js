@@ -238,17 +238,19 @@ Object.defineProperty(exports, "ElementXYProps", {
 });
 exports.default = exports.RandomColor = exports.TransitionList = exports.Transition = exports.CSSTransformSetters = exports.ElementTransformation = exports.isNumber = void 0;
 
-require("core-js/modules/es6.regexp.to-string");
-
-require("core-js/modules/es6.object.to-string");
-
-require("core-js/modules/es6.regexp.replace");
+require("core-js/modules/web.dom.iterable");
 
 require("core-js/modules/es7.symbol.async-iterator");
 
 require("core-js/modules/es6.symbol");
 
-require("core-js/modules/web.dom.iterable");
+require("core-js/modules/es6.array.from");
+
+require("core-js/modules/es6.regexp.to-string");
+
+require("core-js/modules/es6.object.to-string");
+
+require("core-js/modules/es6.regexp.replace");
 
 var _util = _interopRequireDefault(require("./util.es5.js"));
 
@@ -294,45 +296,42 @@ var _align = require("./geom/align.es5.js");
 
 var _elementRect = require("./dom/elementRect.es5.js");
 
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+
 function dom() {
   let args = [...arguments];
 
   let ret = _util.default.array();
 
   const extend = (e, functions) => {
-    const keys = [..._util.default.members(functions)].filter(key => ['callee', 'caller', 'arguments', 'call', 'bind', 'apply', 'prototype', 'constructor', 'length'].indexOf(key) == -1 && typeof functions[key] == 'function');
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
+    const keys = [..._util.default.members(functions)].filter(key => ["callee", "caller", "arguments", "call", "bind", "apply", "prototype", "constructor", "length"].indexOf(key) == -1 && typeof functions[key] == "function");
+
+    var _iterator = _createForOfIteratorHelper(keys),
+        _step;
 
     try {
-      for (var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
         let key = _step.value;
         if (e[key] === undefined) e[key] = functions[key].bind(functions, e);
       }
     } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
+      _iterator.e(err);
     } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return != null) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
+      _iterator.f();
     }
   };
 
-  args = args.map(arg => typeof arg == 'string' ? _element.Element.findAll(arg) : arg);
-  var _iteratorNormalCompletion2 = true;
-  var _didIteratorError2 = false;
-  var _iteratorError2 = undefined;
+  args = args.map(arg => typeof arg == "string" ? _element.Element.findAll(arg) : arg);
+
+  var _iterator2 = _createForOfIteratorHelper(args),
+      _step2;
 
   try {
-    for (var _iterator2 = args[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
       let e = _step2.value;
       if (e instanceof SVGSVGElement) extend(e, _svg.SVG);
 
@@ -346,18 +345,9 @@ function dom() {
       ret.push(e);
     }
   } catch (err) {
-    _didIteratorError2 = true;
-    _iteratorError2 = err;
+    _iterator2.e(err);
   } finally {
-    try {
-      if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-        _iterator2.return();
-      }
-    } finally {
-      if (_didIteratorError2) {
-        throw _iteratorError2;
-      }
-    }
+    _iterator2.f();
   }
 
   if (ret.length == 1) ret = ret[0];
@@ -365,7 +355,7 @@ function dom() {
 }
 
 const isNumber = a => {
-  return String(a).replace(/^[0-9]*$/, '') == '';
+  return String(a).replace(/^[0-9]*$/, "") == "";
 };
 
 exports.isNumber = isNumber;
@@ -377,7 +367,7 @@ function Unit(str) {
     }
 
   };
-  u.name = str.replace(/^[a-z]*/, '');
+  u.name = str.replace(/^[a-z]*/, "");
   return u;
 }
 
@@ -433,7 +423,7 @@ const CSSTransformSetters = element => ({
 
   updateTransformation() {
     const t = this.transformation.toString();
-    console.log('CSSTransformSetters.updateTransformation', t);
+    console.log("CSSTransformSetters.updateTransformation", t);
     this.style.transform = t;
   }
 
@@ -443,10 +433,10 @@ exports.CSSTransformSetters = CSSTransformSetters;
 
 class Transition {
   constructor(property, delay, duration, timing) {
-    this.property = 'none';
-    this.delay = '';
-    this.duration = '';
-    this.timing = '';
+    this.property = "none";
+    this.delay = "";
+    this.duration = "";
+    this.timing = "";
     this.property = property;
     this.delay = delay;
     this.duration = duration;
@@ -473,10 +463,10 @@ class TransitionList extends Array {
 
   get css() {
     return {
-      transitionDelay: this.propertyList('delay').join(', '),
-      transitionDuration: this.propertyList('duration').join(', '),
-      transitionProperty: this.propertyList('property').join(', '),
-      transitionTimingFunction: this.propertyList('timing').join(', ')
+      transitionDelay: this.propertyList("delay").join(", "),
+      transitionDuration: this.propertyList("duration").join(", "),
+      transitionProperty: this.propertyList("property").join(", "),
+      transitionTimingFunction: this.propertyList("timing").join(", ")
     };
   }
 

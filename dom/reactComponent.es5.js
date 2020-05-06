@@ -41,7 +41,7 @@ class ReactComponent {
     let args = [...arguments];
     let Tag, props;
 
-    if (typeof args[0] == 'string') {
+    if (typeof args[0] == "string") {
       Tag = args.shift();
       props = args.shift();
     } else {
@@ -65,7 +65,7 @@ class ReactComponent {
         columnNumber: 7
       }
     }), children.map((child, key) => {
-      if (typeof child === 'object' && child.tagName !== undefined) {
+      if (typeof child === "object" && child.tagName !== undefined) {
         const tagName = child.tagName,
               props = (0, _objectWithoutProperties2.default)(child, ["tagName"]);
         return ReactComponent.create(tagName, _objectSpread({
@@ -80,12 +80,12 @@ class ReactComponent {
   }
 
   static factory(render_to, root) {
-    if (typeof render_to === 'string') render_to = _element.Element.find(append_to);
+    if (typeof render_to === "string") render_to = _element.Element.find(append_to);
 
-    if (typeof render_to !== 'function') {
+    if (typeof render_to !== "function") {
       root = root || render_to;
 
-      render_to = component => require('react-dom').render(component, root || render_to);
+      render_to = component => require("react-dom").render(component, root || render_to);
     }
 
     let ret = function ret() {
@@ -103,8 +103,8 @@ class ReactComponent {
 
     for (var _i = 0, _arr = [...arguments]; _i < _arr.length; _i++) {
       let arg = _arr[_i];
-      if (!typeof arg == 'object' || arg === null || !arg) continue;
-      const tagName = typeof arg.type == 'string' ? arg.type : typeof arg.type == 'function' ? arg.type.name : 'React.Fragment';
+      if (!typeof arg == "object" || arg === null || !arg) continue;
+      const tagName = typeof arg.type == "string" ? arg.type : typeof arg.type == "function" ? arg.type.name : "React.Fragment";
 
       let _ref = arg.props || {},
           children = _ref.children,
@@ -114,7 +114,7 @@ class ReactComponent {
         tagName
       }, props);
 
-      if (typeof arg.key == 'string') obj.key = arg.key;
+      if (typeof arg.key == "string") obj.key = arg.key;
       if (!children) children = arg.children;
 
       const arr = _react.default.Children.toArray(children);
@@ -140,17 +140,17 @@ class ReactComponent {
     for (let prop in props) {
       let value = props[prop];
 
-      if (typeof value == 'function') {
-        value = ' ()=>{} ';
-      } else if (typeof value == 'object') {
+      if (typeof value == "function") {
+        value = " ()=>{} ";
+      } else if (typeof value == "object") {
         value = _util.default.inspect(value, {
-          indent: '',
-          newline: '\n',
+          indent: "",
+          newline: "\n",
           depth: 10,
-          spacing: ' '
+          spacing: " "
         });
-        value = value.replace(/(,?)(\n?[\s]+|\s+)/g, '$1 ');
-      } else if (typeof value == 'string') {
+        value = value.replace(/(,?)(\n?[\s]+|\s+)/g, "$1 ");
+      } else if (typeof value == "string") {
         value = "'".concat(value, "'");
       }
 
@@ -158,9 +158,9 @@ class ReactComponent {
     }
 
     if (!children || !children.length) {
-      str += ' />';
+      str += " />";
     } else {
-      str += '>';
+      str += ">";
       str += "</".concat(tagName, ">");
     }
 

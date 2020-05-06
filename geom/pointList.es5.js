@@ -45,11 +45,11 @@ function PointList(points, base = Array) {
   let ret = this instanceof PointList ? this : [];
   if (_util.default.isArray(args[0]) || _util.default.isGenerator(args[0])) args = [...args[0]];
 
-  if (typeof points === 'string') {
+  if (typeof points === "string") {
     const matches = [...points.matchAll(/[-.0-9,]+/g)];
 
     for (let i = 0; i < matches.length; i++) {
-      const coords = String(matches[i]).split(',');
+      const coords = String(matches[i]).split(",");
       ret.push((0, _point.Point)(coords));
     }
   } else if (args[0] && args[0].length == 2) {
@@ -65,17 +65,15 @@ function PointList(points, base = Array) {
   if (!(this instanceof PointList)) return ret;
 }
 
-_util.default.extend(PointList.prototype, _util.default.getMethods(Array.prototype, false));
-
-console.log('Util.getMethodNames(Array.prototype, false):', [..._util.default.getMethodNames(Array.prototype, false)]);
-console.log('Util.getMethods(Array.prototype, false):', _util.default.getMethods(Array.prototype, false));
-console.log('PointList.prototype[Symbol.iterator]:', Array.prototype[Symbol.iterator]);
+console.log("Util.getMethodNames(Array.prototype, false):", [..._util.default.getMethodNames(Array.prototype, false)]);
+console.log("Util.getMethods(Array.prototype, false):", _util.default.getMethods(Array.prototype, false));
+console.log("PointList.prototype[Symbol.iterator]:", Array.prototype[Symbol.iterator]);
 
 PointList.prototype.getLength = function () {
   return this.length;
 };
 
-Object.defineProperty(PointList.prototype, 'size', {
+Object.defineProperty(PointList.prototype, "size", {
   get: function get() {
     return PointList.prototype.getLength.call(this);
   }
@@ -120,18 +118,18 @@ PointList.prototype.toPath = function (options = {}) {
         close = _options$close === void 0 ? false : _options$close,
         _options$precision = options.precision,
         precision = _options$precision === void 0 ? 0.001 : _options$precision;
-  let out = '';
+  let out = "";
   const point = relative ? i => i > 0 ? _point.Point.diff(PointList.prototype.at.call(this, i), PointList.prototype.at.call(this, i - 1)) : PointList.prototype.at.call(this, i) : i => PointList.prototype.at.call(this, i);
 
-  const cmd = i => i == 0 ? 'M' : 'L'[relative ? 'toLowerCase' : 'toUpperCase']();
+  const cmd = i => i == 0 ? "M" : "L"[relative ? "toLowerCase" : "toUpperCase"]();
 
   const len = PointList.prototype.getLength.call(this);
 
   for (let i = 0; i < len; i++) {
-    out += cmd(i) + _util.default.roundTo(point(i).x, precision) + ',' + _util.default.roundTo(point(i).y, precision) + ' ';
+    out += cmd(i) + _util.default.roundTo(point(i).x, precision) + "," + _util.default.roundTo(point(i).y, precision) + " ";
   }
 
-  if (close) out += 'Z';
+  if (close) out += "Z";
   return out;
 };
 
@@ -143,7 +141,7 @@ PointList.prototype.clone = function () {
 
 PointList.prototype.toPolar = function (tfn) {
   let ret = new PointList();
-  let t = typeof tfn == 'function' ? tfn : (x, y) => ({
+  let t = typeof tfn == "function" ? tfn : (x, y) => ({
     x: x * 180 / Math.PI,
     y
   });
@@ -157,7 +155,7 @@ PointList.prototype.toPolar = function (tfn) {
 
 PointList.prototype.fromPolar = function (tfn) {
   let ret = new PointList();
-  let t = typeof tfn == 'function' ? tfn : (x, y) => ({
+  let t = typeof tfn == "function" ? tfn : (x, y) => ({
     x: x * Math.PI / 180,
     y
   });
@@ -241,7 +239,7 @@ PointList.prototype.bbox = function () {
     y1: first.y,
     y2: first.y,
     toString: function toString() {
-      return "{x1:".concat((this.x1 + '').padStart(4, ' '), ",x2:").concat((this.x2 + '').padStart(4, ' '), ",y1:").concat((this.y1 + '').padStart(4, ' '), ",y2:").concat((this.y2 + '').padStart(4, ' '), "}");
+      return "{x1:".concat((this.x1 + "").padStart(4, " "), ",x2:").concat((this.x2 + "").padStart(4, " "), ",y1:").concat((this.y1 + "").padStart(4, " "), ",y2:").concat((this.y2 + "").padStart(4, " "), "}");
     }
   };
 
@@ -346,12 +344,12 @@ PointList.prototype.lines = function (closed = false) {
   return iterableObj;
 };
 
-PointList.prototype.toString = function (sep = ',', prec) {
-  return _point.Point.prototype.map.call(this, point => _point.Point.prototype.toString.call(point, prec, sep)).join(' ');
+PointList.prototype.toString = function (sep = ",", prec) {
+  return _point.Point.prototype.map.call(this, point => _point.Point.prototype.toString.call(point, prec, sep)).join(" ");
 };
 
 PointList.prototype.toSource = function () {
-  return 'new PointList([' + PointList.prototype.map.call(this, point => _point.Point.prototype.toSource.call(point)).join(',') + '])';
+  return "new PointList([" + PointList.prototype.map.call(this, point => _point.Point.prototype.toSource.call(point)).join(",") + "])";
 };
 
 PointList.prototype.rotateRight = function (n) {
@@ -385,11 +383,13 @@ PointList.prototype.round = function (prec) {
   return this;
 };
 
+_util.default.extend(PointList.prototype, Array.prototype);
+
 if (!_util.default.isBrowser()) {
   let c = _util.default.color();
 
-  PointList.prototype[Symbol.for('nodejs.util.inspect.custom')] = function () {
-    return "".concat(c.text('PointList', 1, 33), " ").concat(c.text('(', 1, 36)).concat(c.text(this.getLength(), 1, 35) + c.code(1, 36), ") [\n  ").concat(this.map(({
+  PointList.prototype[Symbol.for("nodejs.util.inspect.custom")] = function () {
+    return "".concat(c.text("PointList", 1, 33), " ").concat(c.text("(", 1, 36)).concat(c.text(this.getLength(), 1, 35) + c.code(1, 36), ") [\n  ").concat(this.map(({
       x,
       y
     }) => _util.default.toString({
@@ -397,12 +397,12 @@ if (!_util.default.isBrowser()) {
       y
     }, {
       multiline: false,
-      spacing: ' '
-    })).join(',\n  '), "\n]");
+      spacing: " "
+    })).join(",\n  "), "\n]");
   };
 }
 
-for (var _i = 0, _arr = ['push', 'splice', 'clone', 'area', 'centroid', 'avg', 'bbox', 'rect', 'xrange', 'yrange', 'boundingRect']; _i < _arr.length; _i++) {
+for (var _i = 0, _arr = ["push", "splice", "clone", "area", "centroid", "avg", "bbox", "rect", "xrange", "yrange", "boundingRect"]; _i < _arr.length; _i++) {
   let name = _arr[_i];
 
   PointList[name] = points => PointList.prototype[name].call(points);
@@ -441,7 +441,7 @@ function Polyline(lines) {
 Polyline.prototype = new PointList();
 
 Polyline.prototype.toSVG = function (factory, attrs = {}, parent = null) {
-  return factory('polyline', _objectSpread({
+  return factory("polyline", _objectSpread({
     points: PointList.prototype.toString.call(this)
   }, attrs), parent);
 };

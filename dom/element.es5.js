@@ -12,21 +12,23 @@ require("core-js/modules/es7.object.get-own-property-descriptors");
 
 require("core-js/modules/es6.symbol");
 
-var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
-
-require("regenerator-runtime/runtime");
-
 require("core-js/modules/es6.promise");
 
 require("core-js/modules/es7.object.entries");
 
 require("core-js/modules/web.dom.iterable");
 
+require("core-js/modules/es6.string.anchor");
+
 require("core-js/modules/es6.regexp.replace");
 
 require("core-js/modules/es6.regexp.to-string");
 
 require("core-js/modules/es6.object.to-string");
+
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+
+require("regenerator-runtime/runtime");
 
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
@@ -51,10 +53,16 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 class Element extends _node.Node {
+  static wrap(e) {
+    if (!this.methods) this.methods = _util.default.static({}, this, this, (k, fn) => k != "wrap" && fn.length > 0);
+    if (typeof e == "string") e = Element.find(e);
+    return _util.default.extend(e, this.methods);
+  }
+
   static create() {
     let args = [...arguments];
 
-    let _ref = typeof args[0] == 'object' ? args.shift() : _objectSpread({
+    let _ref = typeof args[0] == "object" ? args.shift() : _objectSpread({
       tagName: args.shift()
     }, args.shift()),
         tagName = _ref.tagName,
@@ -69,12 +77,12 @@ class Element extends _node.Node {
     for (let k in props) {
       const value = props[k];
 
-      if (k == 'parent') {
+      if (k == "parent") {
         parent = props[k];
         continue;
-      } else if (k == 'className') k = 'class';
+      } else if (k == "className") k = "class";
 
-      if (k == 'style' && typeof value === 'object') Element.setCSS(e, value);else if (k.startsWith('on') || k.startsWith('inner')) e[k] = value;else e.setAttribute(k, value);
+      if (k == "style" && typeof value === "object") Element.setCSS(e, value);else if (k.startsWith("on") || k.startsWith("inner")) e[k] = value;else e.setAttribute(k, value);
     }
 
     if (children && children.length) children.forEach(obj => Element.create(obj, e));
@@ -83,28 +91,33 @@ class Element extends _node.Node {
   }
 
   static walkUp(elem, pred) {
-    if (typeof elem == 'string') elem = Element.find(elem);
-    let n;
+    if (typeof elem == "string") elem = Element.find(elem);
+    var depth = 0;
 
-    if (typeof pred == 'number') {
-      n = pred;
+    if (typeof pred == "number") {
+      var n = pred;
 
-      pred = () => n-- > 0;
+      pred = (e, d) => d == n;
     }
 
-    while (!pred(elem)) elem = elem.parentElement;
+    let ret = [];
 
-    return elem;
+    while (elem) {
+      if (pred(elem, depth)) ret.push(elem);
+      elem = elem.parentElement;
+      depth++;
+    }
+
+    return ret.length ? ret : null;
   }
 
   static walk(elem, fn, accu = {}) {
-    elem = Element.find(elem);
+    if (typeof elem == "string") elem = Element.find(elem);
     const root = elem;
-    const rootPath = Element.xpath(elem);
     let depth = 0;
 
     while (elem) {
-      accu = fn(dom(elem), accu, root, depth);
+      accu = fn(this.wrap(elem), accu, root, depth);
       if (elem.firstElementChild) depth++;
 
       elem = elem.firstElementChild || elem.nextElementSibling || function () {
@@ -120,13 +133,67 @@ class Element extends _node.Node {
     return accu;
   }
 
+  static iterator(elem, predicate = (e, d, r) => true) {
+    var _this = this;
+
+    return _regenerator.default.mark(function _callee() {
+      var root, depth;
+      return _regenerator.default.wrap(function _callee$(_context) {
+        while (1) switch (_context.prev = _context.next) {
+          case 0:
+            if (typeof elem == "string") elem = Element.find(elem);
+            root = elem;
+            depth = 0;
+
+          case 3:
+            if (!elem) {
+              _context.next = 11;
+              break;
+            }
+
+            if (!predicate(elem, depth, root)) {
+              _context.next = 7;
+              break;
+            }
+
+            _context.next = 7;
+            return _this.wrap(elem);
+
+          case 7:
+            if (elem.firstElementChild) depth++;
+
+            elem = elem.firstElementChild || elem.nextElementSibling || function () {
+              do {
+                if (!(elem = elem.parentElement)) break;
+                depth--;
+              } while (depth > 0 && !elem.nextElementSibling);
+
+              return elem && elem != root ? elem.nextElementSibling : null;
+            }();
+
+            _context.next = 3;
+            break;
+
+          case 11:
+          case "end":
+            return _context.stop();
+        }
+      }, _callee);
+    })();
+  }
+
   static toObject(elem, opts = {
     children: true
   }) {
     let e = Element.find(elem);
-    let children = opts.children ? e.children && e.children.length ? {
-      children: _util.default.array(e.children).map(child => Element.toObject(child, e))
-    } : {} : {};
+    let children = [];
+
+    if (opts.children && e.firstChild) {
+      for (let c = e.firstChild; c; c = c.nextSibling) {
+        if (_util.default.isObject(c) && "tagName" in c) children.push(Element.toObject(c, e));else if ((c.textContent + "").trim() != "") children.push(c.textContent);
+      }
+    }
+
     let ns = (arguments[1] ? arguments[1].namespaceURI : document.body.namespaceURI) != e.namespaceURI ? {
       ns: e.namespaceURI
     } : {};
@@ -135,29 +202,31 @@ class Element extends _node.Node {
 
     for (let key in a) {
       let value = a[key];
-      attributes[_util.default.camelize(key)] = value;
+      attributes[key] = value;
     }
 
     return Object.assign({
       tagName: /[a-z]/.test(e.tagName) ? e.tagName : e.tagName.toLowerCase()
-    }, attributes, children);
+    }, attributes, children.length > 0 ? {
+      children
+    } : {});
   }
 
   static toCommand(elem, opts = {}) {
     let _opts$parent = opts.parent,
-        parent = _opts$parent === void 0 ? '' : _opts$parent,
+        parent = _opts$parent === void 0 ? "" : _opts$parent,
         varName = opts.varName,
         _opts$cmd = opts.cmd,
-        cmd = _opts$cmd === void 0 ? 'Element.create' : _opts$cmd;
+        cmd = _opts$cmd === void 0 ? "Element.create" : _opts$cmd;
     let o = Element.toObject(elem, {
       children: false
     });
-    let s = '';
+    let s = "";
     let tagName = o.tagName,
         ns = o.ns,
         children = o.children,
         attrs = (0, _objectWithoutProperties2.default)(o, ["tagName", "ns", "children"]);
-    let v = '';
+    let v = "";
 
     if (elem.firstElementChild && varName) {
       v = parent ? String.fromCharCode(parent.charCodeAt(0) + 1) : varName;
@@ -170,7 +239,7 @@ class Element extends _node.Node {
       quote: "'"
     });
 
-    s += "".concat(cmd, "('").concat(tagName, "', ").concat(a).concat(parent ? ", ".concat(parent) : '', ")");
+    s += "".concat(cmd, "('").concat(tagName, "', ").concat(a).concat(parent ? ", ".concat(parent) : "", ")");
     let c = elem.children;
 
     if (c.length == 1) {
@@ -179,12 +248,12 @@ class Element extends _node.Node {
       }));
     }
 
-    return s.replace(/;*$/g, '') + ';';
+    return s.replace(/;*$/g, "") + ";";
   }
 
   static find(arg, parent, globalObj = _util.default.getGlobalObject()) {
     if (!parent && globalObj.document) parent = globalObj.document;
-    return typeof arg === 'string' ? parent.querySelector(arg) : arg;
+    return typeof arg === "string" ? parent.querySelector(arg) : arg;
   }
 
   static findAll(arg, parent) {
@@ -193,29 +262,29 @@ class Element extends _node.Node {
   }
 
   static attr(element, attrs_or_name) {
-    const e = typeof element === 'string' ? Element.find(element) : element;
+    const e = typeof element === "string" ? Element.find(element) : element;
 
-    if (!_util.default.isArray(attrs_or_name) && typeof attrs_or_name === 'object' && e) {
+    if (!_util.default.isArray(attrs_or_name) && typeof attrs_or_name === "object" && e) {
       for (let key in attrs_or_name) {
-        const name = _util.default.decamelize(key, '-');
+        const name = _util.default.decamelize(key, "-");
 
         const value = attrs_or_name[key];
-        if (key.startsWith('on') && !/svg/.test(e.namespaceURI)) e[key] = value;else if (e.setAttribute) e.setAttribute(name, value);else e[key] = value;
+        if (key.startsWith("on") && !/svg/.test(e.namespaceURI)) e[key] = value;else if (e.setAttribute) e.setAttribute(name, value);else e[key] = value;
       }
 
       return e;
     }
 
-    if (typeof attrs_or_name === 'function') {
+    if (typeof attrs_or_name === "function") {
       attrs_or_name(e.attributes, e);
       return e;
-    } else if (typeof attrs_or_name === 'string') {
+    } else if (typeof attrs_or_name === "string") {
       attrs_or_name = [attrs_or_name];
-    } else if ('getAttributeNames' in e) {
+    } else if ("getAttributeNames" in e) {
       attrs_or_name = e.getAttributeNames();
     } else {
       attrs_or_name = [];
-      console.log('e:', e);
+      console.log("e:", e);
       if (_util.default.isArray(e.attributes)) for (let i = 0; i < e.attributes.length; i++) attrs_or_name.push(e.attributes[i].name);
     }
 
@@ -225,7 +294,7 @@ class Element extends _node.Node {
       acc[key] = /^-?[0-9]*\.[0-9]\+$/.test(value) ? parseFloat(value) : value;
       return acc;
     }, {});
-    if (typeof arguments[1] == 'string') return ret[attrs_or_name[0]];
+    if (typeof arguments[1] == "string") return ret[attrs_or_name[0]];
     return ret;
   }
 
@@ -234,9 +303,9 @@ class Element extends _node.Node {
 
     while (e) {
       if (e.style) {
-        if (e.style.position == '') e.style.position = 'relative';
-        if (e.style.left == '') e.style.left = '0px';
-        if (e.style.top == '') e.style.top = '0px';
+        if (e.style.position == "") e.style.position = "relative";
+        if (e.style.left == "") e.style.left = "0px";
+        if (e.style.top == "") e.style.top = "0px";
       }
 
       e = e.offsetParent || e.parentNode;
@@ -261,7 +330,7 @@ class Element extends _node.Node {
           relative_to = _options$relative_to === void 0 ? null : _options$relative_to,
           _options$scroll_offse = options.scroll_offset,
           scroll_offset = _options$scroll_offse === void 0 ? true : _options$scroll_offse;
-    const e = typeof element === 'string' ? Element.find(element) : element;
+    const e = typeof element === "string" ? Element.find(element) : element;
 
     if (!e || !e.getBoundingClientRect) {
       return new _rect.Rect(0, 0, 0, 0);
@@ -295,17 +364,22 @@ class Element extends _node.Node {
     return r;
   }
 
-  static setRect(element, rect, anchor) {
-    const e = typeof element === 'string' ? Element.find(element) : element;
+  static setRect(element, rect, opts = {}) {
+    let anchor = opts.anchor,
+        _opts$unit = opts.unit,
+        unit = _opts$unit === void 0 ? "px" : _opts$unit,
+        scale = opts.scale;
+    const e = typeof element === "string" ? Element.find(element) : element;
 
-    if (typeof anchor == 'string') {
+    if (typeof anchor == "string") {
       e.style.position = anchor;
       anchor = 0;
     }
 
+    if (scale) _rect.Rect.scale(rect, scale, scale);
     anchor = anchor || _align.Anchor.LEFT | _align.Anchor.TOP;
-    const position = e.style.position;
-    const pelement = position == 'fixed' ? e.documentElement || document.body : e.parentNode;
+    const position = element.style && element.style.position;
+    const pelement = position == "fixed" ? e.documentElement || document.body : e.parentNode;
     const prect = Element.rect(pelement, {
       round: false
     });
@@ -320,38 +394,41 @@ class Element extends _node.Node {
     switch (_align.Anchor.horizontal(anchor)) {
       case _align.Anchor.LEFT:
       default:
-        css.left = Math.round(trbl.left) + 'px';
-        remove = 'right';
+        css.left = Math.round(trbl.left) + unit;
+        remove = "right";
         break;
 
       case _align.Anchor.RIGHT:
-        css.right = Math.round(trbl.right - ptrbl.right) + 'px';
-        remove = 'left';
+        css.right = Math.round(trbl.right - ptrbl.right) + unit;
+        remove = "left";
         break;
     }
 
     switch (_align.Anchor.vertical(anchor)) {
       case _align.Anchor.TOP:
       default:
-        css.top = Math.round(trbl.top) + 'px';
-        remove = 'bottom';
+        css.top = Math.round(trbl.top) + unit;
+        remove = "bottom";
         break;
 
       case _align.Anchor.BOTTOM:
-        css.bottom = Math.round(trbl.bottom - ptrbl.bottom) + 'px';
-        remove = 'top';
+        css.bottom = Math.round(trbl.bottom - ptrbl.bottom) + unit;
+        remove = "top";
         break;
     }
 
-    if (e.style.removeProperty) e.style.removeProperty(remove);else e.style[remove] = undefined;
-    css.width = Math.round(rect.width) + 'px';
-    css.height = Math.round(rect.height) + 'px';
-    Object.assign(e.style, css);
+    if (e.style) {
+      if (e.style.removeProperty) e.style.removeProperty(remove);else e.style[remove] = undefined;
+    }
+
+    css.width = Math.round(rect.width) + (unit || unit);
+    css.height = Math.round(rect.height) + (unit || unit);
+    Element.setCSS(e, css);
     return e;
   }
 
-  static position(element, pos = 'absolute') {
-    if (typeof element == 'string') element = Element.find(element);
+  static position(element, pos = "absolute") {
+    if (typeof element == "string") element = Element.find(element);
 
     const _element$getBoundingC = element.getBoundingClientRect(),
           x = _element$getBoundingC.x,
@@ -368,29 +445,29 @@ class Element extends _node.Node {
         e = _ref2[0],
         rest = _ref2.slice(1);
 
-    let _ref3 = new _point.Point(rest),
-        _ref3$x = _ref3.x,
-        x = _ref3$x === void 0 ? Element.position(element).x : _ref3$x,
-        _ref3$y = _ref3.y,
-        y = _ref3$y === void 0 ? Element.position(element).y : _ref3$y;
+    let _Point = new _point.Point(rest),
+        _Point$x = _Point.x,
+        x = _Point$x === void 0 ? Element.position(element).x : _Point$x,
+        _Point$y = _Point.y,
+        y = _Point$y === void 0 ? Element.position(element).y : _Point$y;
 
     let to = {
       x,
       y
     };
-    let position = rest.shift() || Element.getCSS(element, 'position') || 'relative';
+    let position = rest.shift() || Element.getCSS(element, "position") || "relative";
     let off;
 
     const getValue = prop => {
-      const property = dom.Element.getCSS(element, prop);
+      const property = Element.getCSS(element, prop);
       if (property === undefined) return undefined;
       const matches = /([-0-9.]+)(.*)/.exec(property) || [];
       return parseFloat(matches[1]);
     };
 
     const current = new _point.Point({
-      x: getValue('left') || 0,
-      y: getValue('top') || 0
+      x: getValue("left") || 0,
+      y: getValue("top") || 0
     });
     off = new _point.Point(Element.rect(element, {
       round: false
@@ -400,7 +477,7 @@ class Element extends _node.Node {
 
     let css = _point.Point.toCSS(current);
 
-    console.log('Element.move: ', {
+    console.log("Element.move: ", {
       position,
       to,
       css,
@@ -413,13 +490,17 @@ class Element extends _node.Node {
     return element;
   }
 
-  static resize() {
-    let args = [...arguments];
-    let e = Element.find(args.shift());
-    let size = new _size.Size(args);
+  static resize(element, ...dimensions) {
+    let e = Element.find(element);
+    let size = new _size.Size(...dimensions);
 
     const css = _size.Size.toCSS(size);
 
+    console.log("Element.resize: ", {
+      e,
+      size,
+      css
+    });
     Element.setCSS(e, css);
     return e;
   }
@@ -494,7 +575,7 @@ class Element extends _node.Node {
   }
 
   static cumulativeOffset(element, relative_to = null) {
-    if (typeof element == 'string') element = Element.find(element);
+    if (typeof element == "string") element = Element.find(element);
     let p = {
       x: 0,
       y: 0
@@ -508,14 +589,14 @@ class Element extends _node.Node {
     return p;
   }
 
-  static getTRBL(element, prefix = '') {
-    const names = ['Top', 'Right', 'Bottom', 'Left'].map(pos => prefix + (prefix == '' ? pos.toLowerCase() : pos + (prefix == 'border' ? 'Width' : '')));
+  static getTRBL(element, prefix = "") {
+    const names = ["Top", "Right", "Bottom", "Left"].map(pos => prefix + (prefix == "" ? pos.toLowerCase() : pos + (prefix == "border" ? "Width" : "")));
     return new _trbl.TRBL(Element.getCSS(element, names));
   }
 
-  static setTRBL(element, trbl, prefix = 'margin') {
-    const attrs = ['Top', 'Right', 'Bottom', 'Left'].reduce((acc, pos) => {
-      const name = prefix + (prefix == '' ? pos.toLowerCase() : pos);
+  static setTRBL(element, trbl, prefix = "margin") {
+    const attrs = ["Top", "Right", "Bottom", "Left"].reduce((acc, pos) => {
+      const name = prefix + (prefix == "" ? pos.toLowerCase() : pos);
       return _objectSpread({}, acc, {
         [name]: trbl[pos.toLowerCase()]
       });
@@ -524,8 +605,8 @@ class Element extends _node.Node {
   }
 
   static setCSS(element, prop, value) {
-    if (typeof element == 'string') element = Element.find(element);
-    if (typeof prop == 'string' && typeof value == 'string') prop = {
+    if (typeof element == "string") element = Element.find(element);
+    if (typeof prop == "string" && typeof value == "string") prop = {
       [prop]: value
     };
 
@@ -534,8 +615,8 @@ class Element extends _node.Node {
 
       const propName = _util.default.decamelize(key);
 
-      if (typeof value == 'function') {
-        if ('subscribe' in value) {
+      if (typeof value == "function") {
+        if ("subscribe" in value) {
           value.subscribe = newval => element.style.setProperty(propName, newval);
 
           value = value();
@@ -551,13 +632,13 @@ class Element extends _node.Node {
   }
 
   static getCSS(element, property = undefined, receiver = null) {
-    element = typeof element === 'string' ? Element.find(element) : element;
+    element = typeof element === "string" ? Element.find(element) : element;
     const w = window !== undefined ? window : global.window;
     const d = document !== undefined ? document : global.document;
     let parent = element.parentElement ? element.parentElement : element.parentNode;
     const estyle = w && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element);
     const pstyle = parent && parent.tagName ? w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent) : {};
-    console.log('Element.getCSS ', {
+    console.log("Element.getCSS ", {
       estyle,
       pstyle
     });
@@ -569,11 +650,11 @@ class Element extends _node.Node {
 
     if (receiver == null) {
       receiver = result => {
-        if (typeof result == 'object') {
+        if (typeof result == "object") {
           try {
-            Object.defineProperty(result, 'cssText', {
+            Object.defineProperty(result, "cssText", {
               get: function get() {
-                return Object.entries(this).map(([k, v]) => "".concat(_util.default.decamelize(k, '-'), ": ").concat(v, ";\n")).join('');
+                return Object.entries(this).map(([k, v]) => "".concat(_util.default.decamelize(k, "-"), ": ").concat(v, ";\n")).join("");
               },
               enumerable: false
             });
@@ -585,7 +666,7 @@ class Element extends _node.Node {
     }
 
     if (property !== undefined) {
-      ret = typeof property === 'string' ? style[property] : property.reduce((ret, key) => {
+      ret = typeof property === "string" ? style[property] : property.reduce((ret, key) => {
         ret[key] = style[key];
         return ret;
       }, {});
@@ -596,7 +677,7 @@ class Element extends _node.Node {
         const key = _util.default.camelize(stylesheet);
 
         const val = style[stylesheet] || style[key];
-        if (val && val.length > 0 && val != 'none') ret[key] = val;
+        if (val && val.length > 0 && val != "none") ret[key] = val;
       }
     }
 
@@ -604,7 +685,7 @@ class Element extends _node.Node {
   }
 
   static xpath(elt, relative_to = null) {
-    let path = '';
+    let path = "";
 
     for (; elt && elt.nodeType == 1; elt = elt.parentNode) {
       const xname = Element.unique(elt);
@@ -614,7 +695,7 @@ class Element extends _node.Node {
         break;
       }
 
-      path = '/' + path;
+      path = "/" + path;
     }
 
     return path;
@@ -625,15 +706,15 @@ class Element extends _node.Node {
           relative_to = _opts$relative_to === void 0 ? null : _opts$relative_to,
           _opts$use_id = opts.use_id,
           use_id = _opts$use_id === void 0 ? false : _opts$use_id;
-    let sel = '';
+    let sel = "";
 
     for (; elt && elt.nodeType == 1; elt = elt.parentNode) {
-      if (sel != '') sel = ' > ' + sel;
+      if (sel != "") sel = " > " + sel;
       let xname = Element.unique(elt, {
         idx: false,
         use_id
       });
-      if (use_id === false) xname = xname.replace(/#.*/g, '');
+      if (use_id === false) xname = xname.replace(/#.*/g, "");
       sel = xname + sel;
       if (elt == relative_to) break;
     }
@@ -650,24 +731,24 @@ class Element extends _node.Node {
   }
 
   static dump(elem) {
-    let str = '';
+    let str = "";
 
     function dumpElem(child, accu, root, depth) {
       const rect = _rect.Rect.round(Element.rect(child, elem));
 
-      accu += '  '.repeat((depth > 0 ? depth : 0) + 1) + ' ' + Element.xpath(child, child);
-      [...child.attributes].forEach(attr => accu += ' ' + attr.name + "='" + attr.value + "'");
-      if (_rect.Rect.area(rect) > 0) accu += ' ' + _rect.Rect.toString(rect);
-      ['margin', 'border', 'padding'].forEach(name => {
-        let trbl = Element.getTRBL(elem, 'margin');
-        if (!trbl.null()) accu += ' ' + name + ': ' + trbl + '';
+      accu += "  ".repeat((depth > 0 ? depth : 0) + 1) + " " + Element.xpath(child, child);
+      [...child.attributes].forEach(attr => accu += " " + attr.name + "='" + attr.value + "'");
+      if (_rect.Rect.area(rect) > 0) accu += " " + _rect.Rect.toString(rect);
+      ["margin", "border", "padding"].forEach(name => {
+        let trbl = Element.getTRBL(elem, "margin");
+        if (!trbl.null()) accu += " " + name + ": " + trbl + "";
       });
       return accu;
     }
 
-    str = dumpElem(elem, '');
+    str = dumpElem(elem, "");
     str = Element.walk(elem.firstElementChild, (e, a, r, d) => {
-      if (e && e.attributes) return dumpElem(e, a + '\n', r, d);
+      if (e && e.attributes) return dumpElem(e, a + "\n", r, d);
       return null;
     }, str);
     return str;
@@ -704,7 +785,7 @@ class Element extends _node.Node {
 
   static name(elem) {
     let name = elem.tagName.toLowerCase();
-    if (elem.id && elem.id.length) name += '#' + elem.id;else if (elem.class && elem.class.length) name += '.' + elem.class;
+    if (elem.id && elem.id.length) name += "#" + elem.id;else if (elem.class && elem.class.length) name += "." + elem.class;
     return name;
   }
 
@@ -714,17 +795,17 @@ class Element extends _node.Node {
           _opts$use_id2 = opts.use_id,
           use_id = _opts$use_id2 === void 0 ? true : _opts$use_id2;
     let name = elem.tagName.toLowerCase();
-    if (use_id && elem.id && elem.id.length) return name + '#' + elem.id;
+    if (use_id && elem.id && elem.id.length) return name + "#" + elem.id;
     const classNames = [...elem.classList];
 
     for (let i = 0; i < classNames.length; i++) {
       let res = document.getElementsByClassName(classNames[i]);
-      if (res && res.length === 1) return name + '.' + classNames[i];
+      if (res && res.length === 1) return name + "." + classNames[i];
     }
 
     if (idx) {
       if (elem.nextElementSibling || elem.previousElementSibling) {
-        return name + '[' + Element.idx(elem) + ']';
+        return name + "[" + Element.idx(elem) + "]";
       }
     }
 
@@ -735,11 +816,11 @@ class Element extends _node.Node {
     let root = parent;
 
     if (root === null) {
-      if (typeof delegate.append_to !== 'function') {
+      if (typeof delegate.append_to !== "function") {
         root = delegate;
         delegate = {};
       } else {
-        root = 'body';
+        root = "body";
       }
     }
 
@@ -748,7 +829,7 @@ class Element extends _node.Node {
           create = _delegate.create,
           setattr = _delegate.setattr,
           setcss = _delegate.setcss;
-    if (typeof root === 'string') root = Element.find(root);
+    if (typeof root === "string") root = Element.find(root);
     if (!delegate.root) delegate.root = root;
 
     if (!delegate.append_to) {
@@ -770,7 +851,7 @@ class Element extends _node.Node {
     if (!delegate.setcss) delegate.setcss = (elem, css) => Object.assign(elem.style, css);
 
     delegate.bound_factory = (tag, attr = {}, parent = null) => {
-      if (typeof tag == 'object') {
+      if (typeof tag == "object") {
         const _tag = tag,
               tagName = _tag.tagName,
               a = (0, _objectWithoutProperties2.default)(_tag, ["tagName"]);
@@ -789,7 +870,7 @@ class Element extends _node.Node {
 
       if (children && children.length) {
         for (let i = 0; i < children.length; i++) {
-          if (typeof children[i] === 'string') {
+          if (typeof children[i] === "string") {
             elem.innerHTML += children[i];
           } else {
             const _children$i = children[i],
@@ -815,7 +896,7 @@ class Element extends _node.Node {
   }
 
   static remove(element) {
-    const e = typeof element === 'string' ? Element.find(element) : element;
+    const e = typeof element === "string" ? Element.find(element) : element;
 
     if (e && e.parentNode) {
       const parent = e.parentNode;
@@ -864,11 +945,11 @@ class Element extends _node.Node {
     });
   }
 
-  static transition(element, css, time, easing = 'linear', callback = null) {
+  static transition(element, css, time, easing = "linear", callback = null) {
     let args = [...arguments];
-    const e = typeof element === 'string' ? Element.find(args.shift()) : args.shift();
+    const e = typeof element === "string" ? Element.find(args.shift()) : args.shift();
     let a = [];
-    const t = typeof time == 'number' ? "".concat(time, "ms") : time;
+    const t = typeof time == "number" ? "".concat(time, "ms") : time;
     let ctx = {
       e,
       t,
@@ -878,7 +959,7 @@ class Element extends _node.Node {
     };
     args.shift();
     args.shift();
-    easing = typeof args[0] == 'function' ? 'linear' : aargs.shift();
+    easing = typeof args[0] == "function" ? "linear" : aargs.shift();
     callback = args.shift();
 
     for (let prop in css) {
@@ -889,7 +970,7 @@ class Element extends _node.Node {
       ctx.to[name] = css[prop];
     }
 
-    const tlist = a.join(', ');
+    const tlist = a.join(", ");
     var cancel;
     let ret = new Promise((resolve, reject) => {
       var trun = function trun(e) {
@@ -899,18 +980,18 @@ class Element extends _node.Node {
 
       var tend = function tend(e) {
         this.event = e;
-        this.e.removeEventListener('transitionend', this);
-        this.e.style.setProperty('transition', '');
+        this.e.removeEventListener("transitionend", this);
+        this.e.style.setProperty("transition", "");
         delete this.cancel;
         resolve(this);
       };
 
-      e.addEventListener('transitionend', (ctx.cancel = tend).bind(ctx));
-      if (typeof callback == 'function') e.addEventListener('transitionrun', (ctx.run = trun).bind(ctx));
+      e.addEventListener("transitionend", (ctx.cancel = tend).bind(ctx));
+      if (typeof callback == "function") e.addEventListener("transitionrun", (ctx.run = trun).bind(ctx));
 
       cancel = () => ctx.cancel();
 
-      if (e.style && e.style.setProperty) e.style.setProperty('transition', tlist);else e.style.transition = tlist;
+      if (e.style && e.style.setProperty) e.style.setProperty("transition", tlist);else e.style.transition = tlist;
       Object.assign(e.style, css);
     });
     ret.cancel = cancel;
@@ -920,40 +1001,40 @@ class Element extends _node.Node {
 }
 
 exports.Element = Element;
-Element.children = _regenerator.default.mark(function _callee(elem, tfn = e => e) {
+Element.children = _regenerator.default.mark(function _callee2(elem, tfn = e => e) {
   var e;
-  return _regenerator.default.wrap(function _callee$(_context) {
-    while (1) switch (_context.prev = _context.next) {
+  return _regenerator.default.wrap(function _callee2$(_context2) {
+    while (1) switch (_context2.prev = _context2.next) {
       case 0:
-        if (typeof elem == 'string') elem = Element.find(elem);
+        if (typeof elem == "string") elem = Element.find(elem);
         e = elem.firstElementChild;
 
       case 2:
         if (!e) {
-          _context.next = 8;
+          _context2.next = 8;
           break;
         }
 
-        _context.next = 5;
+        _context2.next = 5;
         return tfn(e);
 
       case 5:
         e = e.nextElementSibling;
-        _context.next = 2;
+        _context2.next = 2;
         break;
 
       case 8:
       case "end":
-        return _context.stop();
+        return _context2.stop();
     }
-  }, _callee);
+  }, _callee2);
 });
-Element.recurse = _regenerator.default.mark(function _callee2(elem, tfn = e => e) {
+Element.recurse = _regenerator.default.mark(function _callee3(elem, tfn = e => e) {
   var root;
-  return _regenerator.default.wrap(function _callee2$(_context2) {
-    while (1) switch (_context2.prev = _context2.next) {
+  return _regenerator.default.wrap(function _callee3$(_context3) {
+    while (1) switch (_context3.prev = _context3.next) {
       case 0:
-        if (typeof elem == 'string') elem = Element.find(elem);
+        if (typeof elem == "string") elem = Element.find(elem);
         root = elem;
 
       case 2:
@@ -966,24 +1047,24 @@ Element.recurse = _regenerator.default.mark(function _callee2(elem, tfn = e => e
         }();
 
         if (!(elem !== null)) {
-          _context2.next = 6;
+          _context3.next = 6;
           break;
         }
 
-        _context2.next = 6;
+        _context3.next = 6;
         return tfn(elem);
 
       case 6:
         if (elem) {
-          _context2.next = 2;
+          _context3.next = 2;
           break;
         }
 
       case 7:
       case "end":
-        return _context2.stop();
+        return _context3.stop();
     }
-  }, _callee2);
+  }, _callee3);
 });
 Element.EDGES = {
   upperLeft: 0,
@@ -1003,11 +1084,11 @@ Element.Axis = {
   V: 2
 };
 
-Element.margin = element => Element.getTRBL(element, 'margin');
+Element.margin = element => Element.getTRBL(element, "margin");
 
-Element.padding = element => Element.getTRBL(element, 'padding');
+Element.padding = element => Element.getTRBL(element, "padding");
 
-Element.border = element => Element.getTRBL(element, 'border');
+Element.border = element => Element.getTRBL(element, "border");
 
 function isElement(e) {
   return e.tagName !== undefined;

@@ -5,19 +5,19 @@ require("core-js/modules/es6.regexp.to-string");
 require("core-js/modules/es6.object.to-string");
 
 (function () {
-  'use strict';
+  "use strict";
 
   var ClipperLib = {};
-  ClipperLib.version = '6.4.2.2';
+  ClipperLib.version = "6.4.2.2";
   ClipperLib.use_lines = true;
   ClipperLib.use_xyz = false;
   var isNode = false;
 
-  if (typeof module !== 'undefined' && module.exports) {
+  if (typeof module !== "undefined" && module.exports) {
     module.exports = ClipperLib;
     isNode = true;
   } else {
-    if (typeof document !== 'undefined') window.ClipperLib = ClipperLib;else self['ClipperLib'] = ClipperLib;
+    if (typeof document !== "undefined") window.ClipperLib = ClipperLib;else self["ClipperLib"] = ClipperLib;
   }
 
   var navigator_appName;
@@ -26,40 +26,40 @@ require("core-js/modules/es6.object.to-string");
     var nav = navigator.userAgent.toString().toLowerCase();
     navigator_appName = navigator.appName;
   } else {
-    var nav = 'chrome';
-    navigator_appName = 'Netscape';
+    var nav = "chrome";
+    navigator_appName = "Netscape";
   }
 
   var browser = {};
-  if (nav.indexOf('chrome') != -1 && nav.indexOf('chromium') == -1) browser.chrome = 1;else browser.chrome = 0;
-  if (nav.indexOf('chromium') != -1) browser.chromium = 1;else browser.chromium = 0;
-  if (nav.indexOf('safari') != -1 && nav.indexOf('chrome') == -1 && nav.indexOf('chromium') == -1) browser.safari = 1;else browser.safari = 0;
-  if (nav.indexOf('firefox') != -1) browser.firefox = 1;else browser.firefox = 0;
-  if (nav.indexOf('firefox/17') != -1) browser.firefox17 = 1;else browser.firefox17 = 0;
-  if (nav.indexOf('firefox/15') != -1) browser.firefox15 = 1;else browser.firefox15 = 0;
-  if (nav.indexOf('firefox/3') != -1) browser.firefox3 = 1;else browser.firefox3 = 0;
-  if (nav.indexOf('opera') != -1) browser.opera = 1;else browser.opera = 0;
-  if (nav.indexOf('msie 10') != -1) browser.msie10 = 1;else browser.msie10 = 0;
-  if (nav.indexOf('msie 9') != -1) browser.msie9 = 1;else browser.msie9 = 0;
-  if (nav.indexOf('msie 8') != -1) browser.msie8 = 1;else browser.msie8 = 0;
-  if (nav.indexOf('msie 7') != -1) browser.msie7 = 1;else browser.msie7 = 0;
-  if (nav.indexOf('msie ') != -1) browser.msie = 1;else browser.msie = 0;
+  if (nav.indexOf("chrome") != -1 && nav.indexOf("chromium") == -1) browser.chrome = 1;else browser.chrome = 0;
+  if (nav.indexOf("chromium") != -1) browser.chromium = 1;else browser.chromium = 0;
+  if (nav.indexOf("safari") != -1 && nav.indexOf("chrome") == -1 && nav.indexOf("chromium") == -1) browser.safari = 1;else browser.safari = 0;
+  if (nav.indexOf("firefox") != -1) browser.firefox = 1;else browser.firefox = 0;
+  if (nav.indexOf("firefox/17") != -1) browser.firefox17 = 1;else browser.firefox17 = 0;
+  if (nav.indexOf("firefox/15") != -1) browser.firefox15 = 1;else browser.firefox15 = 0;
+  if (nav.indexOf("firefox/3") != -1) browser.firefox3 = 1;else browser.firefox3 = 0;
+  if (nav.indexOf("opera") != -1) browser.opera = 1;else browser.opera = 0;
+  if (nav.indexOf("msie 10") != -1) browser.msie10 = 1;else browser.msie10 = 0;
+  if (nav.indexOf("msie 9") != -1) browser.msie9 = 1;else browser.msie9 = 0;
+  if (nav.indexOf("msie 8") != -1) browser.msie8 = 1;else browser.msie8 = 0;
+  if (nav.indexOf("msie 7") != -1) browser.msie7 = 1;else browser.msie7 = 0;
+  if (nav.indexOf("msie ") != -1) browser.msie = 1;else browser.msie = 0;
 
   var Inherit = function Inherit(ce, ce2) {
     var p;
 
-    if (typeof Object.getOwnPropertyNames === 'undefined') {
-      for (p in ce2.prototype) if (typeof ce.prototype[p] === 'undefined' || ce.prototype[p] === Object.prototype[p]) ce.prototype[p] = ce2.prototype[p];
+    if (typeof Object.getOwnPropertyNames === "undefined") {
+      for (p in ce2.prototype) if (typeof ce.prototype[p] === "undefined" || ce.prototype[p] === Object.prototype[p]) ce.prototype[p] = ce2.prototype[p];
 
-      for (p in ce2) if (typeof ce[p] === 'undefined') ce[p] = ce2[p];
+      for (p in ce2) if (typeof ce[p] === "undefined") ce[p] = ce2[p];
 
       ce.$baseCtor = ce2;
     } else {
       var props = Object.getOwnPropertyNames(ce2.prototype);
 
-      for (var i = 0; i < props.length; i++) if (typeof Object.getOwnPropertyDescriptor(ce.prototype, props[i]) === 'undefined') Object.defineProperty(ce.prototype, props[i], Object.getOwnPropertyDescriptor(ce2.prototype, props[i]));
+      for (var i = 0; i < props.length; i++) if (typeof Object.getOwnPropertyDescriptor(ce.prototype, props[i]) === "undefined") Object.defineProperty(ce.prototype, props[i], Object.getOwnPropertyDescriptor(ce2.prototype, props[i]));
 
-      for (p in ce2) if (typeof ce[p] === 'undefined') ce[p] = ce2[p];
+      for (p in ce2) if (typeof ce[p] === "undefined") ce[p] = ce2[p];
 
       ce.$baseCtor = ce2;
     }
@@ -190,7 +190,7 @@ require("core-js/modules/es6.object.to-string");
           this.Z = 0;
         } else {
             var pt = a[0];
-            if (typeof pt.Z === 'undefined') pt.Z = 0;
+            if (typeof pt.Z === "undefined") pt.Z = 0;
             this.X = pt.X;
             this.Y = pt.Y;
             this.Z = pt.Z;
@@ -242,7 +242,7 @@ require("core-js/modules/es6.object.to-string");
     this.Y = pt.Y;
 
     if (ClipperLib.use_xyz) {
-      if (typeof pt.Z === 'undefined') this.Z = 0;else this.Z = pt.Z;
+      if (typeof pt.Z === "undefined") this.Z = 0;else this.Z = pt.Z;
     }
   };
 
@@ -261,7 +261,7 @@ require("core-js/modules/es6.object.to-string");
     this.Y = y;
 
     if (ClipperLib.use_xyz) {
-      if (typeof z === 'undefined') this.Z = 0;else this.Z = z;
+      if (typeof z === "undefined") this.Z = 0;else this.Z = z;
     }
   };
 
@@ -540,7 +540,7 @@ require("core-js/modules/es6.object.to-string");
   };
 
   ClipperLib.ClipperBase.prototype.RangeTest = function (pt) {
-    if (pt.X > ClipperLib.ClipperBase.maxValue || pt.X < -ClipperLib.ClipperBase.maxValue || pt.Y > ClipperLib.ClipperBase.maxValue || pt.Y < -ClipperLib.ClipperBase.maxValue || pt.X > 0 && pt.X < ClipperLib.ClipperBase.minValue || pt.Y > 0 && pt.Y < ClipperLib.ClipperBase.minValue || pt.X < 0 && pt.X > -ClipperLib.ClipperBase.minValue || pt.Y < 0 && pt.Y > -ClipperLib.ClipperBase.minValue) ClipperLib.Error('Coordinate outside allowed range in RangeTest().');
+    if (pt.X > ClipperLib.ClipperBase.maxValue || pt.X < -ClipperLib.ClipperBase.maxValue || pt.Y > ClipperLib.ClipperBase.maxValue || pt.Y < -ClipperLib.ClipperBase.maxValue || pt.X > 0 && pt.X < ClipperLib.ClipperBase.minValue || pt.Y > 0 && pt.Y < ClipperLib.ClipperBase.minValue || pt.X < 0 && pt.X > -ClipperLib.ClipperBase.minValue || pt.Y < 0 && pt.Y > -ClipperLib.ClipperBase.minValue) ClipperLib.Error("Coordinate outside allowed range in RangeTest().");
   };
 
   ClipperLib.ClipperBase.prototype.InitEdge = function (e, eNext, ePrev, pt) {
@@ -687,9 +687,9 @@ require("core-js/modules/es6.object.to-string");
 
   ClipperLib.ClipperBase.prototype.AddPath = function (pg, polyType, Closed) {
     if (ClipperLib.use_lines) {
-      if (!Closed && polyType === ClipperLib.PolyType.ptClip) ClipperLib.Error('AddPath: Open paths must be subject.');
+      if (!Closed && polyType === ClipperLib.PolyType.ptClip) ClipperLib.Error("AddPath: Open paths must be subject.");
     } else {
-      if (!Closed) ClipperLib.Error('AddPath: Open paths have been disabled.');
+      if (!Closed) ClipperLib.Error("AddPath: Open paths have been disabled.");
     }
 
     var highI = pg.length - 1;
@@ -979,7 +979,7 @@ require("core-js/modules/es6.object.to-string");
 
   ClipperLib.ClipperBase.prototype.UpdateEdgeIntoAEL = function (e) {
     if (e.NextInLML === null) {
-      ClipperLib.Error('UpdateEdgeIntoAEL: invalid call');
+      ClipperLib.Error("UpdateEdgeIntoAEL: invalid call");
     }
 
     var AelPrev = e.PrevInAEL;
@@ -1112,7 +1112,7 @@ require("core-js/modules/es6.object.to-string");
   };
 
   ClipperLib.Clipper = function (InitOptions) {
-    if (typeof InitOptions === 'undefined') InitOptions = 0;
+    if (typeof InitOptions === "undefined") InitOptions = 0;
     this.m_PolyOuts = null;
     this.m_ClipType = ClipperLib.ClipType.ctIntersection;
     this.m_Scanbeam = null;
@@ -1205,7 +1205,7 @@ require("core-js/modules/es6.object.to-string");
           subjFillType = a[2],
           clipFillType = a[3];
       if (this.m_ExecuteLocked) return false;
-      if (this.m_HasOpenPaths) ClipperLib.Error('Error: PolyTree struct is needed for open path clipping.');
+      if (this.m_HasOpenPaths) ClipperLib.Error("Error: PolyTree struct is needed for open path clipping.");
       this.m_ExecuteLocked = true;
       ClipperLib.Clear(solution);
       this.m_SubjFillType = subjFillType;
@@ -2440,7 +2440,7 @@ require("core-js/modules/es6.object.to-string");
     } catch ($$e2) {
       this.m_SortedEdges = null;
       this.m_IntersectList.length = 0;
-      ClipperLib.Error('ProcessIntersections error');
+      ClipperLib.Error("ProcessIntersections error");
     }
 
     this.m_SortedEdges = null;
@@ -2709,7 +2709,7 @@ require("core-js/modules/es6.object.to-string");
       }
 
       this.DeleteFromAEL(eMaxPair);
-    } else ClipperLib.Error('DoMaxima error');
+    } else ClipperLib.Error("DoMaxima error");
   };
 
   ClipperLib.Clipper.ReversePaths = function (polys) {
@@ -3420,7 +3420,7 @@ require("core-js/modules/es6.object.to-string");
   };
 
   ClipperLib.Clipper.SimplifyPolygons = function (polys, fillType) {
-    if (typeof fillType === 'undefined') fillType = ClipperLib.PolyFillType.pftEvenOdd;
+    if (typeof fillType === "undefined") fillType = ClipperLib.PolyFillType.pftEvenOdd;
     var result = new Array();
     var c = new ClipperLib.Clipper(0);
     c.StrictlySimple = true;
@@ -3466,7 +3466,7 @@ require("core-js/modules/es6.object.to-string");
   };
 
   ClipperLib.Clipper.CleanPolygon = function (path, distance) {
-    if (typeof distance === 'undefined') distance = 1.415;
+    if (typeof distance === "undefined") distance = 1.415;
     var cnt = path.length;
     if (cnt === 0) return new Array();
     var outPts = new Array(cnt);
@@ -3645,8 +3645,8 @@ require("core-js/modules/es6.object.to-string");
   };
 
   ClipperLib.ClipperOffset = function (miterLimit, arcTolerance) {
-    if (typeof miterLimit === 'undefined') miterLimit = 2;
-    if (typeof arcTolerance === 'undefined') arcTolerance = ClipperLib.ClipperOffset.def_arc_tolerance;
+    if (typeof miterLimit === "undefined") miterLimit = 2;
+    if (typeof arcTolerance === "undefined") arcTolerance = ClipperLib.ClipperOffset.def_arc_tolerance;
     this.m_destPolys = new ClipperLib.Paths();
     this.m_srcPoly = new ClipperLib.Path();
     this.m_destPoly = new ClipperLib.Path();
@@ -4011,8 +4011,8 @@ require("core-js/modules/es6.object.to-string");
     var isPolygons = polygon[0] instanceof Array;
     var polygon = ClipperLib.JS.Clone(polygon);
 
-    if (typeof delta !== 'number' || delta === null) {
-      ClipperLib.Error('Delta is not a number in Clean().');
+    if (typeof delta !== "number" || delta === null) {
+      ClipperLib.Error("Delta is not a number in Clean().");
       return polygon;
     }
 
@@ -4085,8 +4085,8 @@ require("core-js/modules/es6.object.to-string");
   ClipperLib.JS.Lighten = function (polygon, tolerance) {
     if (!(polygon instanceof Array)) return [];
 
-    if (typeof tolerance !== 'number' || tolerance === null) {
-      ClipperLib.Error('Tolerance is not a number in Lighten().');
+    if (typeof tolerance !== "number" || tolerance === null) {
+      ClipperLib.Error("Tolerance is not a number in Lighten().");
       return ClipperLib.JS.Clone(polygon);
     }
 
@@ -4184,7 +4184,7 @@ require("core-js/modules/es6.object.to-string");
       results = results[0];
     }
 
-    if (typeof results === 'undefined') {
+    if (typeof results === "undefined") {
       results = [];
     }
 
@@ -4192,7 +4192,7 @@ require("core-js/modules/es6.object.to-string");
   };
 
   ClipperLib.JS.PerimeterOfPath = function (path, closed) {
-    if (typeof path === 'undefined') return 0;
+    if (typeof path === "undefined") return 0;
     var sqrt = Math.sqrt;
     var perimeter = 0.0;
     var p1,

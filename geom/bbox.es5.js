@@ -7,15 +7,27 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.BBox = void 0;
 
+require("core-js/modules/es6.array.from");
+
+require("core-js/modules/es6.regexp.to-string");
+
+require("core-js/modules/es6.object.to-string");
+
+require("core-js/modules/web.dom.iterable");
+
 require("core-js/modules/es7.symbol.async-iterator");
 
 require("core-js/modules/es6.symbol");
 
-require("core-js/modules/web.dom.iterable");
-
 var _rect = require("../geom/rect.es5.js");
 
 var _util = _interopRequireDefault(require("../util.es5.js"));
+
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
 class BBox {
   static fromPoints(pts) {
@@ -40,28 +52,18 @@ class BBox {
   }
 
   updateList(list, offset = 0.0) {
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
+    var _iterator = _createForOfIteratorHelper(list),
+        _step;
 
     try {
-      for (var _iterator = list[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
         let arg = _step.value;
         this.update(arg, offset);
       }
     } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
+      _iterator.e(err);
     } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return != null) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
+      _iterator.f();
     }
 
     return this;
@@ -117,7 +119,7 @@ class BBox {
   }
 
   get width() {
-    return Math.abs(this.x2 - this.x1);
+    return this.x2 - this.x1;
   }
 
   get y() {
@@ -125,7 +127,7 @@ class BBox {
   }
 
   get height() {
-    return Math.abs(this.y2 - this.y1);
+    return this.y2 - this.y1;
   }
 
   set x(x) {
@@ -149,17 +151,17 @@ class BBox {
   }
 
   get rect() {
-    return new _rect.Rect(this.x1, this.y1, this.x2 - this.x1, this.y2 - this.y1);
+    return new _rect.Rect(this);
   }
 
   toString() {
-    return "".concat(this.x1, " ").concat(this.y1, " ").concat(this.x2 - this.x1, " ").concat(this.y2 - this.y1);
+    return "".concat(this.x1, " ").concat(this.y1, " ").concat(this.x2, " ").concat(this.y2);
   }
 
   transform(fn = arg => arg, out) {
     if (!out) out = this;
 
-    for (var _i = 0, _arr = ['x1', 'y1', 'x2', 'y2']; _i < _arr.length; _i++) {
+    for (var _i = 0, _arr = ["x1", "y1", "x2", "y2"]; _i < _arr.length; _i++) {
       let prop = _arr[_i];
       const v = this[prop];
       out[prop] = fn(v);
@@ -175,7 +177,7 @@ class BBox {
   }
 
   static from(iter, tp = p => p) {
-    if (typeof iter == 'object' && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
+    if (typeof iter == "object" && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
     let r = new BBox();
     let result = iter.next();
     let p;

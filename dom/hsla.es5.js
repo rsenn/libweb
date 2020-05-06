@@ -21,7 +21,7 @@ function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
   let c = [];
   let ret = this instanceof HSLA ? this : {};
 
-  if (typeof args[0] == 'object' && 'h' in args[0] && 's' in args[0] && 'l' in args[0]) {
+  if (typeof args[0] == "object" && "h" in args[0] && "s" in args[0] && "l" in args[0]) {
     ret.h = args[0].h;
     ret.s = args[0].s;
     ret.l = args[0].l;
@@ -34,25 +34,25 @@ function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
   } else {
     const arg = args[0];
 
-    if (typeof arg === 'string') {
+    if (typeof arg === "string") {
       var matches = /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) || /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
       if (matches != null) c = [...matches].slice(1);
     }
 
-    if (c.length < 3) throw new Error('Invalid HSLA color:' + args);
+    if (c.length < 3) throw new Error("Invalid HSLA color:" + args);
     ret.h = c[0];
     ret.s = c[1];
     ret.l = c[2];
     ret.a = c[3] !== undefined ? c[3] : 1.0;
-    ['h', 's', 'l', 'a'].forEach(channel => {
-      if (String(ret[channel]).endsWith('%')) ret[channel] = parseFloat(ret[channel].slice(0, -1));else ret[channel] = parseFloat(ret[channel]) * (channel == 'a' || channel == 'h' ? 1 : 100);
+    ["h", "s", "l", "a"].forEach(channel => {
+      if (String(ret[channel]).endsWith("%")) ret[channel] = parseFloat(ret[channel].slice(0, -1));else ret[channel] = parseFloat(ret[channel]) * (channel == "a" || channel == "h" ? 1 : 100);
     });
   }
 
   if (!(ret instanceof HSLA)) return ret;
 }
 
-HSLA.prototype.properties = ['h', 's', 'l', 'a'];
+HSLA.prototype.properties = ["h", "s", "l", "a"];
 
 HSLA.prototype.css = function () {
   const hsla = HSLA.clamp(HSLA.round(this));
@@ -67,7 +67,7 @@ HSLA.prototype.toHSL = function () {
 };
 
 HSLA.prototype.clamp = function () {
-  this.h = this.h % 360;
+  this.h = this.h % 360 + (this.h < 0 ? 360 : 0);
   this.s = Math.min(Math.max(this.s, 0), 100);
   this.l = Math.min(Math.max(this.l, 0), 100);
   this.a = Math.min(Math.max(this.a, 0), 1);
@@ -80,6 +80,14 @@ HSLA.prototype.round = function () {
   this.l = Math.round(this.l);
   this.a = Math.round(this.a);
   return this;
+};
+
+HSLA.prototype.add = function (h, s = 0, l = 0, a = 0) {
+  this.h += h;
+  this.s += s;
+  this.l += l;
+  this.a += a;
+  return this.clamp();
 };
 
 HSLA.prototype.hex = function () {
@@ -150,7 +158,16 @@ HSLA.prototype.toString = function () {
   return "hsla(".concat(h, ",").concat(s, "%,").concat(l, "%,").concat(a, ")");
 };
 
-for (var _i = 0, _arr = ['css', 'toHSL', 'clamp', 'round', 'hex', 'toRGBA', 'toString']; _i < _arr.length; _i++) {
+HSLA.random = function (h = [0, 360], s = [0, 100], l = [0, 100], a = [1, 1], rng = Math.random) {
+  return new HSLA(_util.default.randInt(h, rng), _util.default.randInt(s, rng), _util.default.randInt(l, rng), _util.default.randInt(a, rng));
+};
+
+HSLA.prototype.dump = function () {
+  console.log("[%c    %c]", "background: ".concat(this.toString(), ";"), "background: none", this);
+  return this;
+};
+
+for (var _i = 0, _arr = ["css", "toHSL", "clamp", "round", "hex", "toRGBA", "toString"]; _i < _arr.length; _i++) {
   let name = _arr[_i];
 
   HSLA[name] = points => HSLA.prototype[name].call(points);

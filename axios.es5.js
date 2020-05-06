@@ -33,7 +33,7 @@ const httpClient = (() => {
           request = res.request;
     return res;
   }, err => {
-    var _ref, code, config, request, _ref2, url, method, data;
+    var _await$err, code, config, request, _ref, url, method, data;
 
     return _regenerator.default.async(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
@@ -42,10 +42,10 @@ const httpClient = (() => {
           return _regenerator.default.awrap(err);
 
         case 2:
-          _ref = _context.sent;
-          code = _ref.code;
-          config = _ref.config;
-          request = _ref.request;
+          _await$err = _context.sent;
+          code = _await$err.code;
+          config = _await$err.config;
+          request = _await$err.request;
           _context.next = 8;
           return _regenerator.default.awrap(config);
 
@@ -60,11 +60,11 @@ const httpClient = (() => {
           _context.t0 = {};
 
         case 11:
-          _ref2 = _context.t0;
-          url = _ref2.url;
-          method = _ref2.method;
-          data = _ref2.data;
-          console.error('axios ERROR:', {
+          _ref = _context.t0;
+          url = _ref.url;
+          method = _ref.method;
+          data = _ref.data;
+          console.error("axios ERROR:", {
             code,
             url,
             method,
@@ -78,7 +78,7 @@ const httpClient = (() => {
     }, null, null, null, Promise);
   });
 
-  let request = (fn, name = 'call') => function _callee2() {
+  let request = (fn, name = "call") => function _callee2() {
     var args,
         _args2 = arguments;
     return _regenerator.default.async(function _callee2$(_context2) {
@@ -86,7 +86,7 @@ const httpClient = (() => {
         case 0:
           args = [..._args2];
 
-          if (typeof args[0] == 'string' && args[0].startsWith('/')) {
+          if (typeof args[0] == "string" && args[0].startsWith("/")) {
             args[0] = _util.default.makeURL({
               location: args[0]
             });
@@ -106,9 +106,9 @@ const httpClient = (() => {
   };
 
   let ret = request(client);
-  ret.post = request(client.post, 'post');
-  ret.get = request(client.get, 'get');
-  ret.head = request(client.head, 'head');
+  ret.post = request(client.post, "post");
+  ret.get = request(client.get, "get");
+  ret.head = request(client.head, "head");
   return ret;
 })();
 

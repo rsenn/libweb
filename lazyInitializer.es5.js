@@ -10,15 +10,27 @@ exports.lazyMap = lazyMap;
 exports.lazyArray = lazyArray;
 exports.valueInitializer = valueInitializer;
 
+require("core-js/modules/web.dom.iterable");
+
 require("core-js/modules/es7.symbol.async-iterator");
 
 require("core-js/modules/es6.symbol");
 
-require("core-js/modules/web.dom.iterable");
+require("core-js/modules/es6.array.from");
+
+require("core-js/modules/es6.regexp.to-string");
+
+require("core-js/modules/es6.object.to-string");
 
 var _util = require("./util.es5.js");
 
 var _trkl = require("./trkl.es5.js");
+
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
 function Instance({
   trackable = false,
@@ -28,10 +40,10 @@ function Instance({
   let inst = trackable && trackable.subscribe !== undefined ? trackable : (0, _trkl.trkl)(initVal);
   if (callback) inst.subscribe(value => callback(value, inst));
   inst.subscribe(newVal => {
-    if (newVal) console.log('new instance: ', value);
+    if (newVal) console.log("new instance: ", value);
   });
 
-  _trkl.trkl.property(inst, 'current', inst);
+  _trkl.trkl.property(inst, "current", inst);
 
   return inst;
 }
@@ -99,20 +111,20 @@ function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prototyp) {
   function proxify(arr, cache = {}) {
     return new Proxy(arr, {
       get(target, key, receiver) {
-        let index = typeof key == 'string' && /^[0-9]+$/.test(key) ? parseInt(key) : key;
+        let index = typeof key == "string" && /^[0-9]+$/.test(key) ? parseInt(key) : key;
         if (cache[key]) return cache[key];
 
-        if (key == 'length') {
+        if (key == "length") {
           index = key;
-        } else if (typeof index == 'string') {
+        } else if (typeof index == "string") {
           index = _util.Util.findKey(target, (v, k) => lookup(v) === key);
-          if (typeof index == 'string' && /^[0-9]+$/.test(index)) index = parseInt(index);
-          if (typeof index != 'number' || typeof index != 'string') index = key;
+          if (typeof index == "string" && /^[0-9]+$/.test(index)) index = parseInt(index);
+          if (typeof index != "number" || typeof index != "string") index = key;
         }
 
-        let ret = typeof proto[key] == 'function' ? proto[key] : Reflect.get(target, index, receiver);
+        let ret = typeof proto[key] == "function" ? proto[key] : Reflect.get(target, index, receiver);
 
-        if (typeof ret == 'object' && typeof index == 'number') {
+        if (typeof ret == "object" && typeof index == "number") {
           key = lookup(ret);
           cache[key] = ctor(ret, index);
           ret = cache[key];
@@ -130,7 +142,7 @@ function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prototyp) {
       has(target, key) {
         if (Reflect.has(target, key)) return true;
         const len = target.length;
-        if (typeof key == 'number') return key >= 0 && key < len;
+        if (typeof key == "number") return key >= 0 && key < len;
 
         for (let i = 0; i < len; i++) if (lookup(target[i]) === key) return true;
 
@@ -152,12 +164,12 @@ function lazyArray(elements) {
   let i = 0;
   let arr = new Array(elements.length);
   let props = {};
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
+
+  var _iterator = _createForOfIteratorHelper(elements),
+      _step;
 
   try {
-    for (var _iterator = elements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
       let fn = _step.value;
       let lazy = lazyInitializer(fn);
       props[i] = {
@@ -169,18 +181,9 @@ function lazyArray(elements) {
       i++;
     }
   } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
+    _iterator.e(err);
   } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return != null) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
+    _iterator.f();
   }
 
   Object.defineProperties(arr, props);

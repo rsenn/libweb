@@ -7,19 +7,31 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Graph = void 0;
 
-var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
-
-require("regenerator-runtime/runtime");
+require("core-js/modules/web.dom.iterable");
 
 require("core-js/modules/es7.symbol.async-iterator");
 
 require("core-js/modules/es6.symbol");
 
-require("core-js/modules/web.dom.iterable");
+require("core-js/modules/es6.array.from");
+
+require("core-js/modules/es6.regexp.to-string");
+
+require("core-js/modules/es6.object.to-string");
+
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+
+require("regenerator-runtime/runtime");
 
 var _dom = require("./dom.es5.js");
 
 var _util = _interopRequireDefault(require("./util.es5.js"));
+
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
 class Graph {
   constructor({
@@ -50,7 +62,7 @@ class Graph {
     };
     this.damping = damping;
     this.timestep = timestep;
-    this.gravitate_to_origin = typeof gravitate_to_origin == 'undefined' ? false : gravitate_to_origin;
+    this.gravitate_to_origin = typeof gravitate_to_origin == "undefined" ? false : gravitate_to_origin;
     this.done_rendering = false;
     this.prng = prng;
     var g = this;
@@ -91,7 +103,7 @@ class Graph {
     return this.nodes[this.nodes.length - 1];
   }
 
-  findNode(value, key = 'label') {
+  findNode(value, key = "label") {
     return _util.default.find(this.nodes, value, key);
   }
 
@@ -101,29 +113,20 @@ class Graph {
           width = _this$config$size2$wi === void 0 ? 1000 : _this$config$size2$wi,
           _this$config$size2$he = _this$config$size2.height,
           height = _this$config$size2$he === void 0 ? 1000 : _this$config$size2$he;
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
+
+    var _iterator = _createForOfIteratorHelper(this.nodes),
+        _step;
 
     try {
-      for (var _iterator = this.nodes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
         let node = _step.value;
         node.x = this.prng() * width - width / 2;
         node.y = this.prng() * height - height / 2;
       }
     } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
+      _iterator.e(err);
     } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return != null) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
+      _iterator.f();
     }
   }
 
@@ -326,12 +329,11 @@ class Graph {
     let newPositions = [];
 
     const distributeLeafNodes = () => {
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
+      var _iterator2 = _createForOfIteratorHelper(this.branchNodes()),
+          _step2;
 
       try {
-        for (var _iterator2 = this.branchNodes()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
           let node = _step2.value;
           let connections = [...this.getConnections(node)];
           let nonLeafNodes = connections.filter(c => !this.isLeafNode(c));
@@ -376,18 +378,9 @@ class Graph {
           }
         }
       } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
+        _iterator2.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-            _iterator2.return();
-          }
-        } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
-          }
-        }
+        _iterator2.f();
       }
     };
 
@@ -429,12 +422,12 @@ class Graph {
   deserialize(nodes, edges, config) {
     this.nodes = [];
     this.edges = [];
-    var _iteratorNormalCompletion3 = true;
-    var _didIteratorError3 = false;
-    var _iteratorError3 = undefined;
+
+    var _iterator3 = _createForOfIteratorHelper(nodes),
+        _step3;
 
     try {
-      for (var _iterator3 = nodes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
         let n = _step3.value;
         let node = this.addNode(n.label, n.charge, n.mass);
         node.x = n.x;
@@ -444,42 +437,23 @@ class Graph {
         if (n.color !== undefined) node.color = n.color;
       }
     } catch (err) {
-      _didIteratorError3 = true;
-      _iteratorError3 = err;
+      _iterator3.e(err);
     } finally {
-      try {
-        if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-          _iterator3.return();
-        }
-      } finally {
-        if (_didIteratorError3) {
-          throw _iteratorError3;
-        }
-      }
+      _iterator3.f();
     }
 
-    var _iteratorNormalCompletion4 = true;
-    var _didIteratorError4 = false;
-    var _iteratorError4 = undefined;
+    var _iterator4 = _createForOfIteratorHelper(edges),
+        _step4;
 
     try {
-      for (var _iterator4 = edges[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+      for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
         let e = _step4.value;
         let edge = this.addEdge(this.nodes[e[0]], this.nodes[e[1]]);
       }
     } catch (err) {
-      _didIteratorError4 = true;
-      _iteratorError4 = err;
+      _iterator4.e(err);
     } finally {
-      try {
-        if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-          _iterator4.return();
-        }
-      } finally {
-        if (_didIteratorError4) {
-          throw _iteratorError4;
-        }
-      }
+      _iterator4.f();
     }
 
     this.config = config;
@@ -495,7 +469,7 @@ class Graph {
   }
 
   translate(x, y) {
-    let p = typeof y == 'number' ? new _dom.Point(x, y) : x;
+    let p = typeof y == "number" ? new _dom.Point(x, y) : x;
 
     for (let i = 0; i < this.nodes.length; i++) {
       _dom.Point.move(this.nodes[i], p.x, p.y);
@@ -548,7 +522,7 @@ class Node extends _dom.Point {
   }
 
   toJS() {
-    let ret = _util.default.filterKeys(this, key => ['charge', 'mass', 'label', 'x', 'y', 'id', 'color'].indexOf(key) != -1);
+    let ret = _util.default.filterKeys(this, key => ["charge", "mass", "label", "x", "y", "id", "color"].indexOf(key) != -1);
 
     if (this.node && this.node.id !== undefined) ret.id = this.node.id;
 
@@ -568,7 +542,7 @@ class Edge extends _dom.Line {
     if (node_b) this.b = node_b instanceof Node ? node_b : Node.clone(node_b);
 
     if (!(node_a && node_b)) {
-      throw new Error('Edge requires 2 nodes');
+      throw new Error("Edge requires 2 nodes");
     }
 
     this.draggable = false;
