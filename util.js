@@ -90,8 +90,6 @@ export function Util(g) {
   if(g) Util.globalObject = g;
 }
 
-export default Util;
-
 Util.curry = function curry(fn, arity) {
   return function curried() {
     if(arity == null) arity = fn.length;
@@ -2498,3 +2496,5 @@ Util.bindProperties = (proxy, target, props, gen) => {
   );
   return proxy;
 };
+
+export default Util;
