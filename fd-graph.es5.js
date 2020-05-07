@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Graph = void 0;
+exports.default = exports.Edge = exports.Node = exports.Graph = void 0;
 
 require("core-js/modules/web.dom.iterable");
 
@@ -34,20 +34,31 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
 class Graph {
-  constructor({
-    origin = new _dom.Point(0, 0),
-    size = new _dom.Size(1000, 1000),
-    prng = Math.random,
-    gravitate_to_origin = true,
-    charge = 100,
-    mass = 240,
-    spacing = 3,
-    timestep = 150,
-    damping = 0.000005,
-    onUpdateNode = node => {},
-    onUpdateEdge = edge => {},
-    onRenderGraph = graph => {}
-  }) {
+  constructor(options = {}) {
+    let _options$origin = options.origin,
+        origin = _options$origin === void 0 ? new _dom.Point(0, 0) : _options$origin,
+        _options$size = options.size,
+        size = _options$size === void 0 ? new _dom.Size(1000, 1000) : _options$size,
+        _options$prng = options.prng,
+        prng = _options$prng === void 0 ? Math.random : _options$prng,
+        _options$gravitate_to = options.gravitate_to_origin,
+        gravitate_to_origin = _options$gravitate_to === void 0 ? true : _options$gravitate_to,
+        _options$charge = options.charge,
+        charge = _options$charge === void 0 ? 100 : _options$charge,
+        _options$mass = options.mass,
+        mass = _options$mass === void 0 ? 240 : _options$mass,
+        _options$spacing = options.spacing,
+        spacing = _options$spacing === void 0 ? 3 : _options$spacing,
+        _options$timestep = options.timestep,
+        timestep = _options$timestep === void 0 ? 150 : _options$timestep,
+        _options$damping = options.damping,
+        damping = _options$damping === void 0 ? 0.000005 : _options$damping,
+        _options$onUpdateNode = options.onUpdateNode,
+        onUpdateNode = _options$onUpdateNode === void 0 ? node => true : _options$onUpdateNode,
+        _options$onUpdateEdge = options.onUpdateEdge,
+        onUpdateEdge = _options$onUpdateEdge === void 0 ? edge => true : _options$onUpdateEdge,
+        _options$onRenderGrap = options.onRenderGraph,
+        onRenderGraph = _options$onRenderGrap === void 0 ? graph => true : _options$onRenderGrap;
     console.log("Graph(".concat(origin, ",").concat(gravitate_to_origin, ")"));
     this.nodes = [];
     this.edges = [];
@@ -533,6 +544,8 @@ class Node extends _dom.Point {
 
 }
 
+exports.Node = Node;
+
 class Edge extends _dom.Line {
   constructor(node_a, node_b) {
     super();
@@ -595,8 +608,11 @@ class Edge extends _dom.Line {
 
 }
 
-if (module.exports) {
-  module.exports.Node = Node;
-  module.exports.Edge = Edge;
-  module.exports.Graph = Graph;
-}
+exports.Edge = Edge;
+const fdgraph = {
+  Graph,
+  GraphEdge: Edge,
+  GraphNode: Node
+};
+var _default = fdgraph;
+exports.default = _default;

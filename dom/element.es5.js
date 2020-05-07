@@ -609,6 +609,10 @@ class Element extends _node.Node {
     if (typeof prop == "string" && typeof value == "string") prop = {
       [prop]: value
     };
+    console.log("Element.setCSS ", {
+      element,
+      prop
+    });
 
     for (let key in prop) {
       let value = prop[key];

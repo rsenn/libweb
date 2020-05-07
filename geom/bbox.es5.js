@@ -170,10 +170,18 @@ class BBox {
     return this;
   }
 
-  round() {
+  round(fn = arg => Math.round(arg)) {
     let ret = new BBox();
-    this.transform(arg => Math.round(arg), ret);
+    this.transform(fn, ret);
     return ret;
+  }
+
+  move(x, y) {
+    this.x1 += x;
+    this.y1 += y;
+    this.x2 += x;
+    this.y2 += y;
+    return this;
   }
 
   static from(iter, tp = p => p) {

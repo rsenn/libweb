@@ -20,11 +20,11 @@ require("core-js/modules/es6.regexp.to-string");
 
 require("core-js/modules/es6.object.to-string");
 
-require("core-js/modules/es7.string.pad-start");
-
 require("core-js/modules/es7.symbol.async-iterator");
 
 require("core-js/modules/es6.symbol");
+
+require("core-js/modules/es7.string.pad-start");
 
 require("core-js/modules/es6.regexp.split");
 
@@ -64,10 +64,6 @@ function PointList(points, base = Array) {
   Object.setPrototypeOf(ret, proto);
   if (!(this instanceof PointList)) return ret;
 }
-
-console.log("Util.getMethodNames(Array.prototype, false):", [..._util.default.getMethodNames(Array.prototype, false)]);
-console.log("Util.getMethods(Array.prototype, false):", _util.default.getMethods(Array.prototype, false));
-console.log("PointList.prototype[Symbol.iterator]:", Array.prototype[Symbol.iterator]);
 
 PointList.prototype.getLength = function () {
   return this.length;
