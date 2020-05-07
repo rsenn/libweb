@@ -14,7 +14,7 @@ if(global.window) {
     console.log("New cookie: ", document.cookie);
   });
 }
-f;
+
 
 export default class devpane {
   bbrect = lazyInitializer(() => Element.rect(this.parent));

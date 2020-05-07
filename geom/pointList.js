@@ -32,10 +32,6 @@ export function PointList(points, base = Array) {
   if(!(this instanceof PointList)) return ret;
 }
 
-console.log("Util.getMethodNames(Array.prototype, false):", [...Util.getMethodNames(Array.prototype, false)]);
-console.log("Util.getMethods(Array.prototype, false):", Util.getMethods(Array.prototype, false));
-console.log("PointList.prototype[Symbol.iterator]:", Array.prototype[Symbol.iterator]);
-
 PointList.prototype.getLength = function() {
   return this.length;
 };
