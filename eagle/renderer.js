@@ -1047,14 +1047,14 @@ export function renderDocument(doc, container) {
   sbox.outset(2.54 * 2.54);
   Object.assign(renderer, { sbox, obox, gbox, aspects });
   console.log("render", { sbox, obox, gbox, aspects });
-  let srect = new Rect(gridBox);
+  let srect = new Rect(sbox);
   console.log("sbox:", srect.toString());
   svg.setAttribute("viewBox", srect);
   svg.setAttribute("data-aspect", new Rect(sbox).aspect());
 
   obox.outset(2.54 * 2.54);
   grid.parentElement.insertBefore(
-    SVG.create("rect", { ...gridObj, fill: "none" || bgColor, transform: "scale(2.54,2.54)" }),
+    SVG.create("rect", { ...gridObj, fill: bgColor, transform: "scale(2.54,2.54)" }),
     grid
   );
   groupTransform += ` translate(0,0)`;

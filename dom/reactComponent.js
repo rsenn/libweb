@@ -4,7 +4,7 @@ import Util from "../util.js";
 
 export class ReactComponent {
   static create() {
-    let args = [...arguments];
+ /*   let args = [...arguments];
     let Tag, props;
     if(typeof args[0] == "string") {
       Tag = args.shift();
@@ -17,18 +17,15 @@ export class ReactComponent {
     let { children, parent, ...restOfProps } = props;
     if(!children) children = args.shift();
     if(!Array.isArray(children)) children = [children];
-    const elem = (
-      <Tag {...restOfProps}>
-        {children.map((child, key) => {
+   children = children.map((child, key) => {
           if(typeof child === "object" && child.tagName !== undefined) {
             const { tagName, ...props } = child;
             return ReactComponent.create(tagName, { key, ...props });
           }
           return child;
-        })}
-      </Tag>
-    );
-    return elem;
+        });
+    const elem = React.create(Tag, restOfProps, children);
+    return elem;*/
   }
 
   static factory(render_to, root) {

@@ -4,11 +4,14 @@ import deep from "../deep.js";
 import { tokenTypes } from "./token.js";
 import { estree, Node, Factory } from "./estree.js";
 
-export function Parser(sourceText, prefix) {
+export function Parser(sourceText, fileName) {
   this.tokens = [];
-  this.lexer = new Lexer(sourceText);
+  this.lexer = new Lexer(sourceText, fileName);
   this.stack = [];
-  this.prefix = prefix ? `${prefix}:` : "";
+  this.prefix = fileName ? `${fileName}:` : "";
+
+//  console.log("parser: ", this.parser);
+  console.log("lexer: ", this.lexer.fileName);
 }
 
 function getFn(name) {
@@ -122,6 +125,12 @@ const operatorPrecedence = {
 Object.assign(Parser.prototype, {
   constructor: Parser,
 
+  error(errorMessage, astNode) {
+     const pos = this.lexer.position();
+
+  return new SyntaxError("parse", errorMessage, astNode, pos);
+  },
+
   /*
    * Lexer Interactions
    */
@@ -200,10 +209,7 @@ Object.assign(Parser.prototype, {
     if(
       !(token.type === tokenTypes.identifier || (no_keyword && token.type == tokenTypes.keyword))
     ) {
-      throw new SyntaxError(
-        ` Expecting Identifier, but got ${token.type} with value: ${token.value}`,
-        this.position()
-      );
+      throw this.error(`Expecting <Identifier> but got <${token.type}> with value '${token.value}'`);
     }
     this.log(`expectIdentifier2(no_keyword=${no_keyword})`);
 
@@ -215,23 +221,14 @@ Object.assign(Parser.prototype, {
     this.log(`expectKeywords(${keywords}) `);
     const token = this.consume();
     if(token.type !== tokenTypes.keyword) {
-      throw new SyntaxError(
-        `  Expecting Keyword, but got ${token.type} with value: ${token.value}`,
-        this.position()
-      );
+      throw this.error(` Expecting Keyword, but got ${token.type} with value '${token.value}'`);
     }
     if(Array.isArray(keywords)) {
       if(keywords.indexOf(token.value) < 0) {
-        throw new SyntaxError(
-          ` Expected: ${keywords}    Actual: ${token.value || token.type}`,
-          this.position()
-        );
+        throw this.error(`Expected: ${keywords}    Actual: ${token.value || token.type}`);
       }
     } else if(keywords !== token.value) {
-      throw new SyntaxError(
-        ` Expected: ${keywords}    Actual: ${token.value || token.type}`,
-        this.position()
-      );
+      throw this.error(`Expected: ${keywords}    Actual: ${token.value || token.type}`);
     }
     return token;
   },
@@ -239,26 +236,14 @@ Object.assign(Parser.prototype, {
     this.log(`expectPunctuators(${punctuators}) `);
     const token = this.consume();
     if(token.type !== tokenTypes.punctuator) {
-      throw new SyntaxError(
-        ` Expecting Punctuator, but got ${token.type} with value: ${token.value}`,
-        ast,
-        this.position()
-      );
+      throw this.error(`Expecting Punctuator, but got ${token.type} with value '${token.value}'`,ast);
     }
     if(Array.isArray(punctuators)) {
       if(punctuators.indexOf(token.value) < 0) {
-        throw new SyntaxError(
-          ` Expected: ${punctuators}    Actual: ${token.value}`,
-          ast,
-          this.position()
-        );
+        throw this.error(`Expected: ${punctuators}    Actual: ${token.value}`,ast);
       }
     } else if(punctuators !== token.value) {
-      throw new SyntaxError(
-        ` Expected: ${punctuators} Actual: ${token.value}`,
-        ast,
-        this.position()
-      );
+      throw this.error(`Expected: ${punctuators} Actual: ${token.value}`,ast);
     }
     return token;
   },
@@ -266,10 +251,7 @@ Object.assign(Parser.prototype, {
     this.log("expectLiteral() ");
     const token = this.consume();
     if(!isLiteral(token)) {
-      throw new SyntaxError(
-        ` Expecting Literal, but got ${token.type} with value: ${token.value}`,
-        this.position()
-      );
+      throw this.error(`Expecting Literal, but got ${token.type} with value '${token.value}'`);
     }
     this.log("New literal: ", token);
     return new estree.Literal(token.value);
@@ -737,10 +719,7 @@ Object.assign(Parser.prototype, {
       expressions.push(expression);
     } else if(!optional) {
       const token = this.next();
-      throw new SyntaxError(
-        ` Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`,
-        this.position()
-      );
+      throw this.error(`Expecting AssignmentExpression, but got ${token.type} with value '${token.value}'`);
     }
     //console.log("expression: ", expression);
 
@@ -751,10 +730,7 @@ Object.assign(Parser.prototype, {
         expressions.push(expression);
       } else if(!optional) {
         const token = this.next();
-        throw new SyntaxError(
-          ` Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`,
-          this.position()
-        );
+        throw this.error(`Expecting AssignmentExpression, but got ${token.type} with value '${token.value}'`);
       }
     }
     if(expressions.length > 1) {
@@ -764,7 +740,7 @@ Object.assign(Parser.prototype, {
     } else if(optional) {
       return null;
     } else {
-      throw new Error(` Shouldn't ever be here`, this.position());
+      throw new Error(`Shouldn't ever be here`, this.position());
     }
   },
   parseBindingPattern() {
@@ -783,6 +759,9 @@ Object.assign(Parser.prototype, {
       } else {
         if(this.matchPunctuators(":")) {
           this.expectPunctuators(":");
+          element = this.expectIdentifier();
+        } else if(this.matchKeywords("as")) {
+                    this.expectKeywords("as");
           element = this.expectIdentifier();
         }
 
@@ -808,10 +787,7 @@ Object.assign(Parser.prototype, {
       assignment = this.parseAssignmentExpression();
       if(assignment === null) {
         const token = this.next();
-        throw new SyntaxError(
-          ` Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`,
-          this.position()
-        );
+        throw this.error(`Expecting AssignmentExpression, but got ${token.type} with value '${token.value}'`);
       }
     }
     return { identifier, assignment };
@@ -1104,17 +1080,14 @@ Object.assign(Parser.prototype, {
     this.expectPunctuators(")");
     const consequent = this.parseStatement(insideIteration, insideFunction);
     if(consequent === null) {
-      throw new SyntaxError("Expecting statement for if-statement", this.position());
+      throw this.error("Expecting statement for if-statement", this.position());
     }
     let alternate = null;
     if(this.matchKeywords("else")) {
       this.expectKeywords("else");
       alternate = this.parseStatement(insideIteration, insideFunction);
       if(alternate === null) {
-        throw new SyntaxError(
-          "Expecting statement for else block in if-statement",
-          this.position()
-        );
+        throw this.error("Expecting statement for else block in if-statement");
       }
     }
     return new estree.IfStatement(test, consequent, alternate);
@@ -1126,7 +1099,7 @@ Object.assign(Parser.prototype, {
     this.expectPunctuators(")");
     const statement = this.parseStatement(true, insideFunction);
     if(statement === null) {
-      throw new SyntaxError("Expecting statement for while-statement", this.position());
+      throw this.error("Expecting statement for while-statement", this.position());
     }
     return new estree.WhileStatement(test, statement);
   },
@@ -1134,7 +1107,7 @@ Object.assign(Parser.prototype, {
     this.expectKeywords("do");
     const statement = this.parseStatement(true, false, false);
     if(statement === null) {
-      throw new SyntaxError("Expecting statement for do-while-statement", this.position());
+      throw this.error("Expecting statement for do-while-statement", this.position());
     }
     this.expectKeywords("while");
     this.expectPunctuators("(");
@@ -1163,10 +1136,7 @@ Object.assign(Parser.prototype, {
         // Make sure the ast contains only one identifier and at most one
         // initializer
         if(ast.declarations.length !== 1) {
-          throw new SyntaxError(
-            ` Expecting only one Identifier and at most one Initializer in a ForIn statement`,
-            this.position()
-          );
+          throw this.error(`Expecting only one Identifier and at most one Initializer in a ForIn statement`);
         }
         this.expectKeywords(["in", "of"]);
         right = this.parseExpression();
@@ -1196,7 +1166,7 @@ Object.assign(Parser.prototype, {
     this.expectPunctuators(")");
     const statement = this.parseStatement(true, insideFunction);
     if(statement === null) {
-      throw new SyntaxError("Expecting statement for for-statement", this.position());
+      throw this.error("Expecting statement for for-statement", this.position());
     }
     if(isForInStatement) {
       return new estree.ForInStatement(left, right, statement);
@@ -1268,7 +1238,7 @@ Object.assign(Parser.prototype, {
     this.expectPunctuators(")");
     const statement = this.parseStatement(insideIteration, insideFunction);
     if(statement === null) {
-      throw new SyntaxError("Expecting statement for with-statement", this.position());
+      throw this.error("Expecting statement for with-statement", this.position());
     }
     return new estree.WithStatement(test, statement);
   },
@@ -1351,29 +1321,26 @@ Object.assign(Parser.prototype, {
       if(insideIteration) {
         return this.parseContinueStatement();
       } else {
-        throw new SyntaxError(
-          ` continue; statement can only be inside an iteration`,
-          this.position()
-        );
+        throw this.error(`continue; statement can only be inside an iteration`);
       }
     } else if(this.matchKeywords("break")) {
       if(insideIteration) {
         return this.parseBreakStatement();
       } else {
-        throw new SyntaxError(` break; statement can only be inside an iteration`, this.position());
+        throw this.error(`break; statement can only be inside an iteration`, this.position());
       }
     } else if(this.matchKeywords("return")) {
       if(insideFunction) {
         return this.parseReturnStatement();
       } else {
-        throw new SyntaxError(` return statement can only be inside a function`, this.position());
+        throw this.error(`return statement can only be inside a function`, this.position());
       }
     } else {
       const { column, line } = this.lexer;
       const tok = t; // this.token;
       let m = this.matchKeywords("super");
       const { type, value } = tok; //lexer.tokens[0];
-      throw new SyntaxError(`Unexpected ${type}-token "${value}" ${m} `, this.position());
+      throw this.error(`Unexpected ${type}-token "${value}" ${m} `, this.position());
     }
   },
   parseClass(exported = false) {
@@ -1474,10 +1441,7 @@ Object.assign(Parser.prototype, {
     }
 
     if(this.tokens.length >= 1 && this.tokens[0].type !== tokenTypes.eof) {
-      throw new SyntaxError(
-        `Didn't consume all tokens: ${Util.inspect(this.tokens[0])}`,
-        this.position()
-      );
+      throw this.error(`Didn't consume all tokens: ${Util.inspect(this.tokens[0])}`);
     }
 
     return new estree.Program(body);
@@ -1495,22 +1459,30 @@ var methods = {};
 Parser.instrumentate = (methodName, fn = methods[methodName]) => {
   const { nodes, stack, loc } = Factory;
   var esfactory = function(...args) {
-    let ret = methods[methodName].call(parser, ...args);
+    stack.push({ methodName, })
+
+    let ret = methods[methodName].call(this, ...args);
     stack.pop();
     let s = "     " + "" + depth;
-    ret && console.log(s.substr(s.length - 4, s.length) + ` CALL ${methodName}(${args})`);
-    let end = this.token.from || lexer.pos;
+   /* ret &&*/ console.log(s.substr(s.length - 4, s.length) + ` CALL ${methodName}(${args})`);
+    let { lexer, token } = this;
+    let start = this.consumed || 0;
+    let firstTok = this.numToks || 0;
+    let end = token.from || lexer.pos;
     let lastTok = lexer.tokenIndex;
-    if(this.token) lastTok--;
+    if(token) lastTok--;
     let newNodes = {};
     for(let [node, path] of deep.iterate(nodes, n => n instanceof Node)) {
       const name = Util.className(node);
       newNodes[["", ...path.slice(1)].join("/")] = name;
     }
     let parsed = lexer.source.substring(start, end);
+    this.consumed = end;
     if(parsed.length)
       console.log(`${Util.fnName(fn)} parsed string '${parsed.replace(/\n/g, "\\n")}'`);
     let lexed = lexer.tokens.slice(firstTok, lastTok);
+        this.numToks = lastTok;
+
     if(lexed.length)
       console.log(
         `${Util.fnName(fn)} lexed tokens`,
@@ -1520,6 +1492,15 @@ Parser.instrumentate = (methodName, fn = methods[methodName]) => {
       console.log(`${Util.fnName(fn)} yielded nodes`, newNodes);
     }
     depth--;
+
+    if(true /*!!ret*/) {
+      Parser.trace = Parser.trace || [];
+      Parser.trace = [...Parser.trace, {methodName,depth, ret,
+        toString() {
+          return `${(''+depth).padStart(10)} ${methodName} ${!!ret ? `= ${Util.className(ret)}` : ''}`;
+        }}];
+
+    }
     return ret;
   };
   return esfactory;

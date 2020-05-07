@@ -139,7 +139,7 @@ Util.toSource = function(arg, opts = {}) {
 };
 Util.debug = function(message) {
   const args = [...arguments];
-  let cache = Util.array();
+  let cache = [];
   const removeCircular = function(key, value) {
     if(typeof value === "object" && value !== null) {
       if(cache.indexOf(value) !== -1) return;
@@ -988,11 +988,9 @@ Util.findVal = function(object, propName, maxDepth = 10) {
 Util.deepCloneObservable = function(data) {
   let o;
   const t = typeof data;
-  if(t === "object") {
-    o = data.length ? Util.array() : {};
-  } else {
+  if(t === "object")
     return data;
-  }
+
   if(t === "object") {
     if(data.length) {
       for(const value of data) {
@@ -1887,7 +1885,7 @@ Util.getConstructor = obj => {
   return Object.getPrototypeOf(obj).constructor;
 };
 Util.getPrototypeChain = function(obj, fn = p => p) {
-  let ret = Util.array();
+  let ret = [];
   let proto;
   while((proto = Object.getPrototypeOf(obj))) {
     if(proto === Object.prototype) break;
@@ -1951,8 +1949,7 @@ Util.getCallerFunctionNames = function(position = 2) {
     return ret;
   }
 };
-Util.getCaller = function(position = 2) {
-  let stack = Util.getCallerStack(position + 1);
+Util.getCaller = function(index, stack) {
   const methods = [
     "getColumnNumber",
     "getEvalOrigin",
@@ -1968,7 +1965,7 @@ Util.getCaller = function(position = 2) {
     "getTypeName"
   ];
   if(stack !== null && typeof stack === "object") {
-    const frame = stack[0];
+    const frame = stack[index];
     return methods.reduce((acc, m) => {
       if(frame[m]) {
         const name = Util.lcfirst(m.replace(/^get/, ""));
@@ -1982,14 +1979,15 @@ Util.getCaller = function(position = 2) {
   }
 };
 Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER) {
+     let stack =  Util.getCallerStack(start+1);
   let ret = [];
-  let i = start;
-  while(i++ < start + num) {
+  let i = 0;
+  while(i++ < num) {
     try {
-      let caller = Util.getCaller(i + 1);
-      if(!caller) break;
+      let frame = Util.getCaller(i, stack);
+      if(frame === null) break;
 
-      ret.push(caller);
+      ret.push(frame);
     } catch(err) {}
   }
   return ret;

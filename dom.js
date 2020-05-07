@@ -33,7 +33,7 @@ import {
 
 export function dom() {
   let args = [...arguments];
-  let ret = Util.array();
+  let ret = [];
 
   const extend = (e, functions) => {
     const keys = [...Util.members(functions)].filter(

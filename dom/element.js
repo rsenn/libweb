@@ -45,7 +45,7 @@ export class Element extends Node {
     return e;
   }
 
-  static walkUp(elem, pred) {
+  static walkUp(elem, pred = e => true) {
     if(typeof elem == "string") elem = Element.find(elem);
     var depth = 0;
     if(typeof pred == "number") {
@@ -103,52 +103,55 @@ export class Element extends Node {
     }
   }
 
+  static *childIterator(elem) {
+    if(elem.firstChild) for(let c = elem.firstChild; c; c = c.nextSibling) yield c;
+    else for(let i = 0; i < elem.children.length; i++) yield elem.children[i];
+  }
+
   static toObject(elem, opts = { children: true }) {
-    let e = Element.find(elem);
+    elem = Element.find(elem);
     let children = [];
-    if(opts.children && e.firstChild) {
-      for(let c = e.firstChild; c; c = c.nextSibling) {
-        if(Util.isObject(c) && "tagName" in c) children.push(Element.toObject(c, e));
-        else if((c.textContent + "").trim() != "") children.push(c.textContent);
-      }
+    if(opts.children) {
+      [...this.childIterator(elem)].forEach(c =>
+        Util.isObject(c) && "tagName" in c
+          ? children.push(Element.toObject(c, elem))
+          : (c.textContent + "").trim() != ""
+          ? children.push(c.textContent)
+          : undefined
+      );
     }
-    let ns =
-      (arguments[1] ? arguments[1].namespaceURI : document.body.namespaceURI) != e.namespaceURI
-        ? { ns: e.namespaceURI }
+    let attributes =
+      (opts ? opts.namespaceURI : document.body.namespaceURI) != elem.namespaceURI
+        ? { ns: elem.namespaceURI }
         : {};
-    let attributes = {};
-    let a = Element.attr(e);
-    for(let key in a) {
-      let value = a[key];
-      attributes[key] = value;
-    }
-    return Object.assign(
-      {
-        tagName: /[a-z]/.test(e.tagName) ? e.tagName : e.tagName.toLowerCase()
-      },
-      attributes,
-      children.length > 0 ? { children } : {}
-    );
+    let a = "length" in elem.attributes ? Element.attr(elem) : elem.attributes;
+    for(let key in a) attributes[key] = "" + a[key];
+    return {
+      tagName: /[a-z]/.test(elem.tagName) ? elem.tagName : elem.tagName.toLowerCase(),
+      ...attributes,
+      ...(children.length > 0 ? { children } : {})
+    };
   }
 
   static toCommand(elem, opts = {}) {
-    let { parent = "", varName, cmd = "Element.create" } = opts;
+    let { parent = "", varName, recursive = true, cmd = "Element.create", quote = "'" } = opts;
     let o = Element.toObject(elem, { children: false });
     let s = "";
-    let { tagName, ns, children, ...attrs } = o;
+    let { tagName, ns, children, ...attributes } = o;
     let v = "";
+    s = Object.keys(ns ? { ns, ...attributes } : attributes)
+      .map(k => `${k}:${quote}${attributes[k]}${quote}`)
+      .join(", ");
+    s = `${cmd}('${tagName}', {${s}}`;
+    let c = elem.children;
+    if(c.length >= 1) s = `${s}, [\n  ${c.map(e => Element.toCommand(e, opts).replace(/\n/g, "\n  ")).join(",\n  ")}\n]`;
+    s = `${s}${parent ? `, ${parent}` : ""})`;
     if(elem.firstElementChild && varName) {
       v = parent ? String.fromCharCode(parent.charCodeAt(0) + 1) : varName;
-      s += `${v} = `;
+      s = `${v} = ${s}`;
     }
-    let a = Util.toString(ns ? { ns, ...attrs } : attrs, { quote: "'" });
-    s += `${cmd}('${tagName}', ${a}${parent ? `, ${parent}` : ""})`;
-    let c = elem.children; //Util.array(elem.children).map(child => Element.toObject(child, { ...opts, namespaceURI: ns }));
-    if(c.length == 1) {
-      s = Element.toCommand(c[0], { ...opts, parent: s });
-    }
-    return s.replace(/;*$/g, "") + ";";
-  }
+    return s.replace(/;*$/g, "");
+      }
 
   static find(arg, parent, globalObj = Util.getGlobalObject()) {
     if(!parent && globalObj.document) parent = globalObj.document;
@@ -172,35 +175,35 @@ export class Element extends Node {
    * @param      {<type>}  [attrs=null]  The attributes
    * @return     {<type>}  { description_of_the_return_value }
    */
-  static attr(element, attrs_or_name) {
-    const e = typeof element === "string" ? Element.find(element) : element;
-    if(!Util.isArray(attrs_or_name) && typeof attrs_or_name === "object" && e) {
+  static attr(e, attrs_or_name) {
+    const elem = typeof e === "string" ? Element.find(e) : e;
+    if(!Util.isArray(attrs_or_name) && typeof attrs_or_name === "object" && elem) {
       for(let key in attrs_or_name) {
         const name = Util.decamelize(key, "-");
         const value = attrs_or_name[key];
-        /*        console.log('attr(', e, ', ', { name, key, value, }, ')')
-         */ if(key.startsWith("on") && !/svg/.test(e.namespaceURI)) e[key] = value;
-        else if(e.setAttribute) e.setAttribute(name, value);
-        else e[key] = value;
+        /*        console.log('attr(', elem, ', ', { name, key, value, }, ')')
+         */ if(key.startsWith("on") && !/svg/.test(elem.namespaceURI)) elem[key] = value;
+        else if(elem.setAttribute) elem.setAttribute(name, value);
+        else elem[key] = value;
       }
-      return e;
+      return elem;
     }
     if(typeof attrs_or_name === "function") {
-      attrs_or_name(e.attributes, e);
-      return e;
+      attrs_or_name(elem.attributes, elem);
+      return elem;
     } else if(typeof attrs_or_name === "string") {
       attrs_or_name = [attrs_or_name];
-    } else if("getAttributeNames" in e) {
-      attrs_or_name = e.getAttributeNames();
+    } else if("getAttributeNames" in elem) {
+      attrs_or_name = elem.getAttributeNames();
     } else {
       attrs_or_name = [];
-      console.log("e:", e);
-      if(Util.isArray(e.attributes))
-        for(let i = 0; i < e.attributes.length; i++) attrs_or_name.push(e.attributes[i].name);
+      if(Util.isArray(elem.attributes))
+        for(let i = 0; i < elem.attributes.length; i++)
+          attrs_or_name.push(elem.attributes[i].name);
     }
     let ret = attrs_or_name.reduce((acc, name) => {
       const key = /*Util.camelize*/ name;
-      const value = e && e.getAttribute ? e.getAttribute(name) : e[key];
+      const value = elem && elem.getAttribute ? elem.getAttribute(name) : elem[key];
       acc[key] = /^-?[0-9]*\.[0-9]\+$/.test(value) ? parseFloat(value) : value;
       return acc;
     }, {});

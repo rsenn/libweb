@@ -38,24 +38,19 @@ export class CSS {
   }
   static styles(stylesheet) {
     const list = stylesheet && stylesheet.cssRules ? [stylesheet] : CSS.list(stylesheet);
-    let ret = Util.array();
+    let ret = [];
 
-    list.forEach(s => {
-      let rules = [...s.cssRules];
-
-      rules.forEach(rule => {
+    list.forEach(s => [...(s.cssRules||s.rules)].forEach(rule => {
         ret.push(rule.cssText);
-      });
-    });
+          }));
     return ret;
   }
 
   static classes(selector = "*") {
-    return Element.findAll(selector)
+    return Util.unique([...Element.findAll(selector)]
       .filter(e => e.classList.length)
       .map(e => [...e.classList])
-      .flat()
-      .unique();
+      .flat());
   }
 
   static section(selector, props) {
