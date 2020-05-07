@@ -76,9 +76,11 @@ const formatAnnotatedObject = function(subject, o) {
     j = separator + (opts.newline || spacing) + i;
   }
   //padding = x => '';
-  let ret = '{'+opts.newline+r
-    .map(arr => padding(arr[0]) + arr[0] +':'+ spacing + arr[1])
-    .join(j) + opts.newline;
+  let ret =
+    "{" +
+    opts.newline +
+    r.map(arr => padding(arr[0]) + arr[0] + ":" + spacing + arr[1]).join(j) +
+    opts.newline;
   return ret;
 };
 /**
@@ -94,12 +96,12 @@ Util.curry = function curry(fn, arity) {
   return function curried() {
     if(arity == null) arity = fn.length;
 
-    var args = [].slice.call(arguments);
+    var args = [...arguments]; //[].slice.call(arguments);
     if(args.length >= arity) {
       return fn.apply(this, args);
     } else {
       return function() {
-        return curried.apply(this, args.concat([].slice.call(arguments)));
+        return curried.apply(this, args.concat([...arguments] /*.slice.call(arguments)*/));
       };
     }
   };
@@ -118,12 +120,9 @@ Util.isDebug = function() {
   if(process !== undefined && process.env.NODE_ENV === "production") return false;
   return true;
 };
-Util.log = (function() {
-  const log = Math.log;
-  return function(n, base) {
-    return log(n) / (base ? log(base) : 1);
-  };
-})();
+Util.log = Util.curry(function(n, base) {
+  return Math.log(n) / (base ? Math.log(base) : 1);
+});
 Util.logBase = function(n, base) {
   return Math.log(n) / Math.log(base);
 };

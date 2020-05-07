@@ -2,6 +2,7 @@ import Util from "../util.js";
 import Lexer, { Stack, SyntaxError } from "./lexer.js";
 import deep from "../deep.js";
 import { tokenTypes } from "./token.js";
+import { Printer } from "./printer.js";
 import { estree, Node, Factory } from "./estree.js";
 
 export function Parser(sourceText, fileName) {
@@ -159,8 +160,7 @@ Object.assign(Parser.prototype, {
     const token = this.tokens.shift();
     if(this.tokens.length == 0) this.next();
 
-    if(typeof(this.onToken) == 'function')
-      this.onToken(token);
+    if(typeof this.onToken == "function") this.onToken(token);
 
     return token;
     //parseRemainingMemberExpression2;
@@ -231,7 +231,7 @@ Object.assign(Parser.prototype, {
     }
     if(Array.isArray(keywords)) {
       if(keywords.indexOf(token.value) < 0) {
-        throw this.error(`Expected: ${keywords.join(' ')}    Actual: ${token.value || token.type}`);
+        throw this.error(`Expected: ${keywords.join(" ")}    Actual: ${token.value || token.type}`);
       }
     } else if(keywords !== token.value) {
       throw this.error(`Expected: ${keywords}    Actual: ${token.value || token.type}`);
@@ -249,7 +249,7 @@ Object.assign(Parser.prototype, {
     }
     if(Array.isArray(punctuators)) {
       if(punctuators.indexOf(token.value) < 0) {
-        throw this.error(`Expected: ${punctuators.join(' ')}    Actual: ${token.value}`, ast);
+        throw this.error(`Expected: ${punctuators.join(" ")}    Actual: ${token.value}`, ast);
       }
     } else if(punctuators !== token.value) {
       throw this.error(`Expected: ${punctuators} Actual: ${token.value}`, ast);
@@ -383,7 +383,7 @@ Object.assign(Parser.prototype, {
       ret = this.parseJSX();
     } else if(!is_async && this.matchLiteral()) {
       ret = this.expectLiteral();
- /*   } else if(this.matchIdentifier("super") && this.token.value == "super") {
+      /*   } else if(this.matchIdentifier("super") && this.token.value == "super") {
       this.expectIdentifier("super");
       ret = new estree.Identifier("super");*/
     } else if(this.matchKeywords("super")) {
@@ -777,7 +777,7 @@ Object.assign(Parser.prototype, {
           this.expectKeywords("as");
           element = this.expectIdentifier();
         }
- if(this.matchPunctuators("=")) {
+        if(this.matchPunctuators("=")) {
           this.expectPunctuators("=");
           initializer = this.parseAssignmentExpression();
         }
@@ -800,10 +800,8 @@ Object.assign(Parser.prototype, {
 
     this.log(`parseVariableDeclaration()`);
 
-    if(this.matchPunctuators(["{", "["])) 
-      identifier = this.parseBindingPattern();
-    else
-      identifier = this.expectIdentifier();
+    if(this.matchPunctuators(["{", "["])) identifier = this.parseBindingPattern();
+    else identifier = this.expectIdentifier();
 
     let assignment = null;
 
@@ -1073,6 +1071,10 @@ Object.assign(Parser.prototype, {
       return this.parseClass(true);
     } else if(this.matchKeywords("function")) {
       return this.parseFunction(true);
+    } else if(this.matchKeywords("default")) {
+      this.expectKeywords("default");
+
+      return estree.VariableDeclarator(new estree.Identifier("default"), this.expectIdentifier());
     }
     return this.parseVariableStatement(true);
   },
@@ -1409,13 +1411,13 @@ Object.assign(Parser.prototype, {
     }
     let parameters = []; // this.parseArguments();
 
-      this.expectPunctuators("(");
+    this.expectPunctuators("(");
 
     // Parse optional parameter list
     while(/*this.matchPunctuators(["{", "["]) ||*/ this.matchIdentifier()) {
       let param, defaultValue;
 
-    //  param = this.parseVariableDeclaration();
+      //  param = this.parseVariableDeclaration();
 
       if(this.matchPunctuators(["{", "["])) {
         param = this.parseArguments();
@@ -1423,11 +1425,11 @@ Object.assign(Parser.prototype, {
         param = this.expectIdentifier();
 
         if(this.matchPunctuators("=")) {
-        //  this.expectPunctuators("=");
+          //  this.expectPunctuators("=");
 
-            defaultValue = this.parseAssignmentExpression();
+          defaultValue = this.parseAssignmentExpression();
 
-            param = new estree.AssignmentExpression("=", param, defaultValue);
+          param = new estree.AssignmentExpression("=", param, defaultValue);
         }
       } else {
         break;
@@ -1438,7 +1440,7 @@ Object.assign(Parser.prototype, {
       if(this.matchPunctuators(",")) this.expectPunctuators(",");
     }
 
-      this.matchPunctuators(")");
+    this.matchPunctuators(")");
     this.expectPunctuators(")");
 
     // Parse function body
@@ -1507,43 +1509,65 @@ var fns = [];
 const methodNames = [...Util.getMethodNames(Parser.prototype)];
 var methods = {};
 
-    const quoteArray = arr => arr.length < 5  ?  arr.join(" ") : `[${arr.length}]`;
+const quoteArray = arr => (arr.length < 5 ? arr.join(" ") : `[${arr.length}]`);
 
-    const quoteList = l => ''+l.map(t => `'${t}'`).join(" ")+'';
-    const quoteArg = a => a.map(i => i instanceof Array ? quoteArray(i) : typeof(i) == 'object' ? Util.className(i) : `'${i}'`).join(", ");
+const quoteList = l => "" + l.map(t => `'${t}'`).join(" ") + "";
+const quoteToks = l => quoteList(l.map(t => t.value));
+const quoteArg = a =>
+  a
+    .map(i =>
+      i instanceof Array ? quoteArray(i) : typeof i == "object" ? Util.className(i) : `'${i}'`
+    )
+    .join(", ");
 
-Parser.prototype.trace = function()  { return this.stack.map(frame => `${(frame.tokenIndex+'').padStart(3)} ${(frame.position).padEnd(5)} ${frame.methodName.padEnd(50)} ${frame.tokens.join(' ')}`).join('\n'); };
+Parser.prototype.trace = function() {
+  return this.stack
+    .map(
+      frame =>
+        `${(frame.tokenIndex + "").padStart(3)} ${frame.position.padEnd(
+          5
+        )} ${frame.methodName.padEnd(50)} ${frame.tokens.join(" ")}`
+    )
+    .join("\n");
+};
 
-    Parser.prototype.onToken = function(tok) {
-      let i = 0;
-      while(i  < this.stack.length  && !/parse/.test(this.stack[i].methodName)) i++;
-      let frame = this.stack[0];
-console.log(`${frame.methodName} consumed '${tok.value}'`);
-     this.stack[i].tokens.push(tok.value);
-    };
-
-
+Parser.prototype.onToken = function(tok) {
+  let i = 0;
+  while(i < this.stack.length && !/parse/.test(this.stack[i].methodName)) i++;
+  let frame = this.stack[0];
+  let str = tok.value.trim();
+  console.log(`${frame.methodName} consumed '${str}'`);
+  this.stack[i].tokens.push(str);
+};
 
 const instrumentate = (methodName, fn = methods[methodName]) => {
   const { nodes, loc } = Factory;
 
-  var esfactory = function(...args) {
-     let { lexer,  stack } = this;
-let { tokenIndex } = lexer;
+  const printer = new Printer();
 
-   // /parse/.test(methodName) &&
-   let position = lexer.position().toString().split(/:/g).slice(1).join(':');
-      this.stack.unshift({ methodName, tokenIndex,  position, tokens: [] });
+  var esfactory = function(...args) {
+    let { lexer, stack } = this;
+    let { tokenIndex } = lexer;
+
+    // /parse/.test(methodName) &&
+    let position = lexer
+      .position()
+      .toString()
+      .split(/:/g)
+      .slice(1)
+      .join(":");
+    this.stack.unshift({ methodName, tokenIndex, position, tokens: [] });
 
     depth = this.stack.length - 1;
-    let s = (''+this.lexer.tokenIndex).padStart(3)+ ` ${position.padEnd(10)} ${' '.repeat(depth*2)}${this.stack[0].methodName}`;
- let msg = s + ` ${quoteList(this.stack[depth].tokens)}` + `  ${quoteArg(args)}`;
+    let s =
+      ("" + this.lexer.tokenIndex).padStart(3) +
+      ` ${position.padEnd(10)} ${" ".repeat(depth * 2)}${this.stack[0].methodName}`;
+    let msg = s + ` ${quoteList(this.stack[depth].tokens)}` + `  ${quoteArg(args)}`;
 
-     if(!/match/.test(methodName))
- console.log(msg);
+    if(!/match/.test(methodName)) console.log(msg);
 
     let ret = methods[methodName].call(this, ...args);
-    let {  token } = this;
+    let { token } = this;
     let start = this.consumed || 0;
     let firstTok = this.numToks || 0;
     let end = token.from || lexer.pos;
@@ -1551,8 +1575,10 @@ let { tokenIndex } = lexer;
 
     // msg = s + ` ${quoteList(this.stack[depth].tokens)}`;
 
-        this.stack.shift();
-  
+    let tmp = this.stack[0].tokens || [];
+    this.stack.shift();
+    if(this.stack[0]) this.stack[0].tokens = this.stack[0].tokens || tmp;
+
     // if(token) lastTok--;
     newNodes = [];
     for(let [node, path] of deep.iterate(nodes, n => n instanceof Node)) {
@@ -1569,7 +1595,11 @@ let { tokenIndex } = lexer;
     this.numToks = lastTok;
     let annotate = [];
 
-    annotate.push(`returned: ${typeof(ret) == 'object' ? Util.className(ret)+`{${parsed}}` : ret}`);
+    annotate.push(
+      `returned: ${
+        typeof ret == "object" ? Util.className(ret) + `{ ${printer.print(ret)} }` : ret
+      }`
+    );
 
     if(lexed.length) annotate.push(`lexed: ${quoteList(lexed.map(t => t.value))}`);
     if(nodes.length) annotate.push(`yielded: ` + quoteArray(newNodes));
@@ -1577,12 +1607,11 @@ let { tokenIndex } = lexer;
     depth--;
 
     if(annotate.length) {
-      msg = msg+'    '+ annotate.join(", ");
+      msg = msg + "    " + annotate.join(", ");
     }
 
-   if(ret || !/match/.test(methodName))
-    console.log(msg);
-/*
+    if(ret || !/match/.test(methodName)) console.log(msg);
+    /*
      {
       Parser.trace = Parser.trace || [];
       Parser.trace = [

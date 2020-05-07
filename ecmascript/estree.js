@@ -46,8 +46,7 @@ export class BindingProperty extends Expression {
     this.property = property;
     this.element = element;
 
-    if(initializer)
-      this.initializer = initializer;
+    if(initializer) this.initializer = initializer;
   }
 }
 

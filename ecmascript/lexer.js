@@ -13,7 +13,10 @@ export function Stack() {
     t = s => s.replace(re, "");
   } catch(err) {}
 
-  let maxLen = stack.reduce((acc, entry) => entry.functionName ? Math.max(acc, entry.functionName.length) : acc, 0);
+  let maxLen = stack.reduce(
+    (acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc),
+    0
+  );
 
   return stack
     .filter(s => s.functionName != "esfactory")
