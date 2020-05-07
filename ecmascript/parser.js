@@ -31,7 +31,7 @@ function backTrace() {
   arr = arr
     .map(line => {
       let matches = /^(.*)\s\((.*):([0-9]*):([0-9]*)\)$/.exec(line);
-      if(matches) {
+      if(matches && !/estree/.test(line)) {
         let name = matches[1].replace(/Parser\./, "Parser.prototype.");
         let r = {
           name: name.replace(/.*\.prototype\./, ""),
@@ -1337,26 +1337,13 @@ var methods = {};
 Parser.instrumentate = (methodName, fn = methods[methodName]) => {
   const { nodes, stack, loc } = Factory;
   var esfactory = function(...args) {
-    let parser = this;
-    let { lexer, token } = this;
-
-    depth++;
-    let start = lexer.pos;
-    let firstTok = lexer.tokenIndex;
-
-    stack.push(methodName);
-
     let ret = methods[methodName].call(parser, ...args);
     stack.pop();
-
     let s = "     " + "" + depth;
     ret && console.log(s.substr(s.length - 4, s.length) + ` CALL ${methodName}(${args})`);
-
     let end = this.token.from || lexer.pos;
     let lastTok = lexer.tokenIndex;
-
     if(this.token) lastTok--;
-
     let newNodes = {};
     for(let [node, path] of deep.iterate(nodes, n => n instanceof Node)) {
       const name = Util.className(node);
@@ -1364,7 +1351,6 @@ Parser.instrumentate = (methodName, fn = methods[methodName]) => {
     }
     let parsed = lexer.source.substring(start, end);
     if(parsed.length) console.log(`${Util.fnName(fn)} parsed string '${parsed.replace(/\n/g, "\\n")}'`);
-
     let lexed = lexer.tokens.slice(firstTok, lastTok);
     if(lexed.length)
       console.log(

@@ -799,8 +799,8 @@ export class BoardRenderer extends EagleRenderer {
 }
 
 export function renderDocument(doc, container) {
-  const gridColor = "hsl(230,100%,60%)";
-  const gridWidth = 0.2;
+  const gridColor = "hsla(230,100%,60%,0.3)";
+  const gridWidth = 0.1;
   const factory = SVG.factory(
     {
       append_to(elem, parent) {
@@ -953,6 +953,9 @@ export function renderDocument(doc, container) {
   let gridBox = SVG.bbox(svg.lastElementChild);
   let gridRect = new Rect(gridBox);
   gridRect.round(2.54);
+
+  renderer.dimensions = new Size(gridRect, "mm");
+
   gridRect.outset(0.2);
   let grid = SVG.create(
     "rect",
@@ -976,6 +979,8 @@ export function renderDocument(doc, container) {
   let srect = new Rect(sbox);
   console.log("sbox:", srect.toString());
   svg.setAttribute("viewBox", srect);
+  svg.setAttribute("data-aspect", new Rect(sbox).aspect());
+
   obox.outset(2.54 * 2.54);
   grid.parentElement.insertBefore(SVG.create("rect", { ...gridObj, fill: bgColor, transform: "scale(2.54,2.54)" }), grid);
   groupTransform += ` translate(0,0)`;
