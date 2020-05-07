@@ -31,14 +31,17 @@ export class SVG extends Element {
   static factory(...args) {
     let arg = [...arguments];
 
-    let delegate = "append_to" in args[0] || "create" in args[0] || "setattr" in args[0] ? args.shift() : {};
+    let delegate =
+      "append_to" in args[0] || "create" in args[0] || "setattr" in args[0] ? args.shift() : {};
     let parent = "tagName" in args[0] || "appendChild" in args[0] ? args.shift() : null;
     let size = isSize(args[0]) ? args.shift() : null;
 
     delegate = {
       create: tag => document.createElementNS(SVG.ns, tag),
       append_to: (elem, root = parent) => root.appendChild(elem),
-      setattr: (elem, name, value) => name != "ns" && elem.setAttributeNS(document.namespaceURI, Util.decamelize(name, "-"), value),
+      setattr: (elem, name, value) =>
+        name != "ns" &&
+        elem.setAttributeNS(document.namespaceURI, Util.decamelize(name, "-"), value),
       setcss: (elem, css) => elem.setAttributeNS(null, "style", css),
       ...delegate
     };
@@ -57,7 +60,8 @@ export class SVG extends Element {
         parent
       );
 
-    if(!delegate.root.firstElementChild || delegate.root.firstElementChild.tagName != "defs") SVG.create("defs", {}, delegate.root);
+    if(!delegate.root.firstElementChild || delegate.root.firstElementChild.tagName != "defs")
+      SVG.create("defs", {}, delegate.root);
 
     const { append_to } = delegate;
 
@@ -138,28 +142,37 @@ export class SVG extends Element {
   }
 
   static getProperty(elem, name) {
-    if(!elem.style[name] && elem.hasAttribute(name)) elem.style.setProperty(name, elem.getAttribute(name));
+    if(!elem.style[name] && elem.hasAttribute(name))
+      elem.style.setProperty(name, elem.getAttribute(name));
     let props = window.getComputedStyle(elem);
     return props[name];
   }
 
   static getProperties(elem, properties) {
     for(let name of properties) {
-      if(!elem.style[name] && elem.hasAttribute(name)) elem.style.setProperty(name, elem.getAttribute(name));
+      if(!elem.style[name] && elem.hasAttribute(name))
+        elem.style.setProperty(name, elem.getAttribute(name));
     }
     let props = window.getComputedStyle(elem);
     return properties.reduce((acc, name) => ({ ...acc, [name]: props[name] }), {});
   }
 
   static *coloredElements(elem) {
-    for(let item of Element.iterator(elem, (e, d) => ["fill", "stroke"].some(a => e.hasAttribute(a)))) {
+    for(let item of Element.iterator(elem, (e, d) =>
+      ["fill", "stroke"].some(a => e.hasAttribute(a))
+    )) {
       const { fill, stroke } = this.getProperties(item, ["fill", "stroke"]);
-      const a = Object.entries({ fill, stroke }).filter(([k, v]) => v !== undefined && v !== "none");
+      const a = Object.entries({ fill, stroke }).filter(
+        ([k, v]) => v !== undefined && v !== "none"
+      );
       if(a.length == 0) continue;
 
       const value = {
         item,
-        props: a.reduce((acc, [name, value]) => (/#/.test(value) ? acc : { ...acc, [name]: value }), {})
+        props: a.reduce(
+          (acc, [name, value]) => (/#/.test(value) ? acc : { ...acc, [name]: value }),
+          {}
+        )
       };
       yield value;
       // console.log(value);
@@ -182,7 +195,9 @@ export class SVG extends Element {
         return this.list.map(item => item.color);
       },
       index(name) {
-        return typeof name == "number" && this.list[name] ? name : this.list.findIndex(item => item.color === name);
+        return typeof name == "number" && this.list[name]
+          ? name
+          : this.list.findIndex(item => item.color === name);
       },
       name(i) {
         return typeof i == "number" ? this.list[i].name : typeof i == "string" ? i : null;
@@ -210,7 +225,9 @@ export class SVG extends Element {
 
         for(let i = 0; i < this.list.length; i++) {
           for(let j = 0; j < this.list.length; j++) {
-            const dist = RGBA.fromString(this.list[i].color).contrast(RGBA.fromString(this.list[j].color));
+            const dist = RGBA.fromString(this.list[i].color).contrast(
+              RGBA.fromString(this.list[j].color)
+            );
 
             if(/*ret[i][j] == null &&*/ j != i) ret[j][i] = +dist.toFixed(3);
             else ret[j][i] = Number.POSITIVE_INFINITY;

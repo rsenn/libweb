@@ -3,7 +3,9 @@ function oneObject(str) {
   str.split(",").forEach(_ => (obj[_] = true));
   return obj;
 }
-var voidTag = oneObject("area,base,basefont,br,col,frame,hr,img,input,link,meta,param,embed,command,keygen,source,track,wbr");
+var voidTag = oneObject(
+  "area,base,basefont,br,col,frame,hr,img,input,link,meta,param,embed,command,keygen,source,track,wbr"
+);
 var specalTag = oneObject("xmp,style,script,noscript,textarea,template,#comment");
 
 var hiddenTag = oneObject("style,script,noscript,template");
@@ -412,5 +414,7 @@ function getAttrs(string) {
 }
 
 function makeJSX(JSXNode) {
-  return JSXNode.length === 1 && JSXNode[0].type === "#jsx" ? JSXNode[0] : { type: "#jsx", nodeValue: JSXNode };
+  return JSXNode.length === 1 && JSXNode[0].type === "#jsx"
+    ? JSXNode[0]
+    : { type: "#jsx", nodeValue: JSXNode };
 }

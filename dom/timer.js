@@ -23,7 +23,8 @@ export function Timer(timeout, fn, props = {}, { create = setInterval, destroy =
 
 Timer.interval = (timeout, fn, props) => new Timer(timeout, fn, props, { destroy: clearTimeout });
 
-Timer.once = (timeout, fn, props) => new Timer(timeout, fn, props, { create: setTimeout, destroy: clearTimeout });
+Timer.once = (timeout, fn, props) =>
+  new Timer(timeout, fn, props, { create: setTimeout, destroy: clearTimeout });
 Timer.until = (deadline, fn, props) => Timer.once(deadline - Date.now(), fn, props);
 
 Timer.std = {

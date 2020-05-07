@@ -20,7 +20,13 @@ function getFn(name) {
 }
 
 function isLiteral({ type }) {
-  return type === tokenTypes.stringLiteral || type === tokenTypes.numericLiteral || type === tokenTypes.regexpLiteral || type === tokenTypes.nullLiteral || type === tokenTypes.booleanLiteral;
+  return (
+    type === tokenTypes.stringLiteral ||
+    type === tokenTypes.numericLiteral ||
+    type === tokenTypes.regexpLiteral ||
+    type === tokenTypes.nullLiteral ||
+    type === tokenTypes.booleanLiteral
+  );
 }
 
 function backTrace() {
@@ -163,13 +169,20 @@ Object.assign(Parser.prototype, {
   log() {
     //return;
     const width = 72;
-    let args = [...arguments].map(a => (typeof a === "string" ? `"${a}"` : toStr(a)).replace(/[\n\r\t ]+/g, ""));
+    let args = [...arguments].map(a =>
+      (typeof a === "string" ? `"${a}"` : toStr(a)).replace(/[\n\r\t ]+/g, "")
+    );
     let name = Util.abbreviate(Util.trim(args.join(""), "'\""), width);
     let stack = Util.getCallerStack().map(st => st.getFunctionName());
     /*this.stack.map((name, i) => `${i}:${name}`).join(", ");*/
 
     const posstr = this.prefix + String(this.pos);
-    console.log.apply(console, [posstr + Util.pad(posstr, this.prefix.length + 8), name + Util.pad(name, width), this.printtoks(), "stack: " + stack.indexOf("parseProgram")]);
+    console.log.apply(console, [
+      posstr + Util.pad(posstr, this.prefix.length + 8),
+      name + Util.pad(name, width),
+      this.printtoks(),
+      "stack: " + stack.indexOf("parseProgram")
+    ]);
   },
   position(tok = null) {
     let obj = tok ? tok.pos : this.lexer;
@@ -184,8 +197,13 @@ Object.assign(Parser.prototype, {
    */ expectIdentifier(no_keyword = false) {
     this.log(`expectIdentifier(no_keyword=${no_keyword})`);
     const token = this.consume();
-    if(!(token.type === tokenTypes.identifier || (no_keyword && token.type == tokenTypes.keyword))) {
-      throw new SyntaxError(` Expecting Identifier, but got ${token.type} with value: ${token.value}`, this.position());
+    if(
+      !(token.type === tokenTypes.identifier || (no_keyword && token.type == tokenTypes.keyword))
+    ) {
+      throw new SyntaxError(
+        ` Expecting Identifier, but got ${token.type} with value: ${token.value}`,
+        this.position()
+      );
     }
     this.log(`expectIdentifier2(no_keyword=${no_keyword})`);
 
@@ -197,14 +215,23 @@ Object.assign(Parser.prototype, {
     this.log(`expectKeywords(${keywords}) `);
     const token = this.consume();
     if(token.type !== tokenTypes.keyword) {
-      throw new SyntaxError(`  Expecting Keyword, but got ${token.type} with value: ${token.value}`, this.position());
+      throw new SyntaxError(
+        `  Expecting Keyword, but got ${token.type} with value: ${token.value}`,
+        this.position()
+      );
     }
     if(Array.isArray(keywords)) {
       if(keywords.indexOf(token.value) < 0) {
-        throw new SyntaxError(` Expected: ${keywords}    Actual: ${token.value || token.type}`, this.position());
+        throw new SyntaxError(
+          ` Expected: ${keywords}    Actual: ${token.value || token.type}`,
+          this.position()
+        );
       }
     } else if(keywords !== token.value) {
-      throw new SyntaxError(` Expected: ${keywords}    Actual: ${token.value || token.type}`, this.position());
+      throw new SyntaxError(
+        ` Expected: ${keywords}    Actual: ${token.value || token.type}`,
+        this.position()
+      );
     }
     return token;
   },
@@ -212,14 +239,26 @@ Object.assign(Parser.prototype, {
     this.log(`expectPunctuators(${punctuators}) `);
     const token = this.consume();
     if(token.type !== tokenTypes.punctuator) {
-      throw new SyntaxError(` Expecting Punctuator, but got ${token.type} with value: ${token.value}`, ast, this.position());
+      throw new SyntaxError(
+        ` Expecting Punctuator, but got ${token.type} with value: ${token.value}`,
+        ast,
+        this.position()
+      );
     }
     if(Array.isArray(punctuators)) {
       if(punctuators.indexOf(token.value) < 0) {
-        throw new SyntaxError(` Expected: ${punctuators}    Actual: ${token.value}`, ast, this.position());
+        throw new SyntaxError(
+          ` Expected: ${punctuators}    Actual: ${token.value}`,
+          ast,
+          this.position()
+        );
       }
     } else if(punctuators !== token.value) {
-      throw new SyntaxError(` Expected: ${punctuators} Actual: ${token.value}`, ast, this.position());
+      throw new SyntaxError(
+        ` Expected: ${punctuators} Actual: ${token.value}`,
+        ast,
+        this.position()
+      );
     }
     return token;
   },
@@ -227,7 +266,10 @@ Object.assign(Parser.prototype, {
     this.log("expectLiteral() ");
     const token = this.consume();
     if(!isLiteral(token)) {
-      throw new SyntaxError(` Expecting Literal, but got ${token.type} with value: ${token.value}`, this.position());
+      throw new SyntaxError(
+        ` Expecting Literal, but got ${token.type} with value: ${token.value}`,
+        this.position()
+      );
     }
     this.log("New literal: ", token);
     return new estree.Literal(token.value);
@@ -262,7 +304,9 @@ Object.assign(Parser.prototype, {
   matchIdentifier(no_keyword = false) {
     const token = this.next();
     // this.log('matchIdentifier() ');
-    return token.type === tokenTypes.identifier || (no_keyword && token.type === tokenTypes.keyword);
+    return (
+      token.type === tokenTypes.identifier || (no_keyword && token.type === tokenTypes.keyword)
+    );
   },
   matchLiteral() {
     const token = this.next();
@@ -270,16 +314,49 @@ Object.assign(Parser.prototype, {
     return isLiteral(token);
   },
   matchStatement() {
-    return this.matchPunctuators(";") || this.matchKeywords(["if", "var", "let", "const", "with", "while", "do", "for", "continue", "break", "return", "switch", "import", "export", "try", "throw"]) || this.matchAssignmentExpression();
+    return (
+      this.matchPunctuators(";") ||
+      this.matchKeywords([
+        "if",
+        "var",
+        "let",
+        "const",
+        "with",
+        "while",
+        "do",
+        "for",
+        "continue",
+        "break",
+        "return",
+        "switch",
+        "import",
+        "export",
+        "try",
+        "throw"
+      ]) ||
+      this.matchAssignmentExpression()
+    );
   },
   matchPrimaryExpression() {
-    return this.matchKeywords(["this", "async", "super"]) || this.matchPunctuators(["(", "[", "{", "<", "..."]) || this.matchLiteral() || this.matchIdentifier();
+    return (
+      this.matchKeywords(["this", "async", "super"]) ||
+      this.matchPunctuators(["(", "[", "{", "<", "..."]) ||
+      this.matchLiteral() ||
+      this.matchIdentifier()
+    );
   },
   matchUnaryExpression() {
-    return this.matchKeywords(["delete", "void", "typeof", "await"]) || this.matchPunctuators(["++", "--", "+", "-", "~", "!"]);
+    return (
+      this.matchKeywords(["delete", "void", "typeof", "await"]) ||
+      this.matchPunctuators(["++", "--", "+", "-", "~", "!"])
+    );
   },
   matchAssignmentExpression() {
-    return this.matchUnaryExpression() || this.matchLeftHandSideExpression() || this.matchFunctionExpression();
+    return (
+      this.matchUnaryExpression() ||
+      this.matchLeftHandSideExpression() ||
+      this.matchFunctionExpression()
+    );
   },
   matchFunctionExpression() {
     const async = this.lookahead(0).value == "async";
@@ -380,7 +457,12 @@ Object.assign(Parser.prototype, {
 
         object = new estree.MemberExpression(object, identifier, false);
 
-        this.log("parseRemainingMemberExpression2(", object.toString(), ")", Util.fnName(this.parseRemainingMemberExpression));
+        this.log(
+          "parseRemainingMemberExpression2(",
+          object.toString(),
+          ")",
+          Util.fnName(this.parseRemainingMemberExpression)
+        );
       } else if(this.matchPunctuators("[")) {
         this.expectPunctuators("[");
         const expression = this.parseExpression(true);
@@ -523,7 +605,29 @@ Object.assign(Parser.prototype, {
   parseBinaryExpression(minPrecedence) {
     this.log(`parseBinaryExpression()`);
 
-    const punctuators = ["||", "&&", "|", "^", "&", "===", "==", "!==", "!=", "<", ">", "<=", ">=", "<<", ">>", "-->>", "+", "-", "*", "/", "%"];
+    const punctuators = [
+      "||",
+      "&&",
+      "|",
+      "^",
+      "&",
+      "===",
+      "==",
+      "!==",
+      "!=",
+      "<",
+      ">",
+      "<=",
+      ">=",
+      "<<",
+      ">>",
+      "-->>",
+      "+",
+      "-",
+      "*",
+      "/",
+      "%"
+    ];
     const result = this.parseUnaryExpression();
     let ast = result.ast;
     let lhs = result.lhs;
@@ -532,13 +636,20 @@ Object.assign(Parser.prototype, {
     let value = tok.value;
     //  if(tok.value == 'instanceof')
     //  this.log('TOKEN: ', tok);
-    while((this.matchKeywords(["instanceof", "in"]) || this.matchPunctuators(punctuators) || ["instanceof", "in"].includes(tok.value)) && operatorPrecedence[(tok = this.next()).value] >= minPrecedence) {
+    while(
+      (this.matchKeywords(["instanceof", "in"]) ||
+        this.matchPunctuators(punctuators) ||
+        ["instanceof", "in"].includes(tok.value)) &&
+      operatorPrecedence[(tok = this.next()).value] >= minPrecedence
+    ) {
       // this.log('VALUE: ', value);
       // If any operator is encountered, then the result cannot be
       // LeftHandSideExpression anymore
       lhs = false;
       const precedenceLevel = operatorPrecedence[this.next().value];
-      const operatorToken = ["instanceof", "in"].includes(value) ? this.expectKeywords(["instanceof", "in"]) : this.expectPunctuators(punctuators);
+      const operatorToken = ["instanceof", "in"].includes(value)
+        ? this.expectKeywords(["instanceof", "in"])
+        : this.expectPunctuators(punctuators);
       const right = this.parseBinaryExpression(precedenceLevel + 1);
       if(operatorToken.value === "||" || operatorToken.value === "&&") {
         ast = new estree.LogicalExpression(operatorToken.value, ast, right.ast);
@@ -592,7 +703,20 @@ Object.assign(Parser.prototype, {
       // Once it is determined that the parse result yielded
       // LeftHandSideExpression though, then we can parse the remaining
       // AssignmentExpression with that knowledge
-      const assignmentOperators = ["=", "*=", "/=", "%=", "+=", "-=", "<<=", ">>=", "-->>=", "&=", "^=", "|="];
+      const assignmentOperators = [
+        "=",
+        "*=",
+        "/=",
+        "%=",
+        "+=",
+        "-=",
+        "<<=",
+        ">>=",
+        "-->>=",
+        "&=",
+        "^=",
+        "|="
+      ];
       if(this.matchPunctuators(assignmentOperators)) {
         const left = result.ast;
         const operatorToken = this.expectPunctuators(assignmentOperators);
@@ -613,7 +737,10 @@ Object.assign(Parser.prototype, {
       expressions.push(expression);
     } else if(!optional) {
       const token = this.next();
-      throw new SyntaxError(` Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`, this.position());
+      throw new SyntaxError(
+        ` Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`,
+        this.position()
+      );
     }
     //console.log("expression: ", expression);
 
@@ -624,7 +751,10 @@ Object.assign(Parser.prototype, {
         expressions.push(expression);
       } else if(!optional) {
         const token = this.next();
-        throw new SyntaxError(` Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`, this.position());
+        throw new SyntaxError(
+          ` Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`,
+          this.position()
+        );
       }
     }
     if(expressions.length > 1) {
@@ -678,7 +808,10 @@ Object.assign(Parser.prototype, {
       assignment = this.parseAssignmentExpression();
       if(assignment === null) {
         const token = this.next();
-        throw new SyntaxError(` Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`, this.position());
+        throw new SyntaxError(
+          ` Expecting AssignmentExpression, but got ${token.type} with value: ${token.value}`,
+          this.position()
+        );
       }
     }
     return { identifier, assignment };
@@ -766,7 +899,13 @@ Object.assign(Parser.prototype, {
     this.expectPunctuators("}");
 
     if(ctor == estree.ObjectBinding) {
-      members = Object.entries(members).map(([key, value]) => new estree.BindingProperty(new estree.Identifier(key), value ? new estree.Identifier(value) : new estree.Identifier(key)));
+      members = Object.entries(members).map(
+        ([key, value]) =>
+          new estree.BindingProperty(
+            new estree.Identifier(key),
+            value ? new estree.Identifier(value) : new estree.Identifier(key)
+          )
+      );
     }
     return new ctor(members);
   },
@@ -972,7 +1111,10 @@ Object.assign(Parser.prototype, {
       this.expectKeywords("else");
       alternate = this.parseStatement(insideIteration, insideFunction);
       if(alternate === null) {
-        throw new SyntaxError("Expecting statement for else block in if-statement", this.position());
+        throw new SyntaxError(
+          "Expecting statement for else block in if-statement",
+          this.position()
+        );
       }
     }
     return new estree.IfStatement(test, consequent, alternate);
@@ -1021,7 +1163,10 @@ Object.assign(Parser.prototype, {
         // Make sure the ast contains only one identifier and at most one
         // initializer
         if(ast.declarations.length !== 1) {
-          throw new SyntaxError(` Expecting only one Identifier and at most one Initializer in a ForIn statement`, this.position());
+          throw new SyntaxError(
+            ` Expecting only one Identifier and at most one Initializer in a ForIn statement`,
+            this.position()
+          );
         }
         this.expectKeywords(["in", "of"]);
         right = this.parseExpression();
@@ -1206,7 +1351,10 @@ Object.assign(Parser.prototype, {
       if(insideIteration) {
         return this.parseContinueStatement();
       } else {
-        throw new SyntaxError(` continue; statement can only be inside an iteration`, this.position());
+        throw new SyntaxError(
+          ` continue; statement can only be inside an iteration`,
+          this.position()
+        );
       }
     } else if(this.matchKeywords("break")) {
       if(insideIteration) {
@@ -1279,7 +1427,14 @@ Object.assign(Parser.prototype, {
     // Parse function body
     const body = this.parseBlock(false, true, identifer == "constructor");
 
-    let object = new estree.FunctionDeclaration(identifier, parameters, body, exported, isAsync, isGenerator);
+    let object = new estree.FunctionDeclaration(
+      identifier,
+      parameters,
+      body,
+      exported,
+      isAsync,
+      isGenerator
+    );
 
     if(this.matchPunctuators("(")) {
       return this.parseRemainingCallExpression(object);
@@ -1319,7 +1474,10 @@ Object.assign(Parser.prototype, {
     }
 
     if(this.tokens.length >= 1 && this.tokens[0].type !== tokenTypes.eof) {
-      throw new SyntaxError(`Didn't consume all tokens: ${Util.inspect(this.tokens[0])}`, this.position());
+      throw new SyntaxError(
+        `Didn't consume all tokens: ${Util.inspect(this.tokens[0])}`,
+        this.position()
+      );
     }
 
     return new estree.Program(body);
@@ -1350,7 +1508,8 @@ Parser.instrumentate = (methodName, fn = methods[methodName]) => {
       newNodes[["", ...path.slice(1)].join("/")] = name;
     }
     let parsed = lexer.source.substring(start, end);
-    if(parsed.length) console.log(`${Util.fnName(fn)} parsed string '${parsed.replace(/\n/g, "\\n")}'`);
+    if(parsed.length)
+      console.log(`${Util.fnName(fn)} parsed string '${parsed.replace(/\n/g, "\\n")}'`);
     let lexed = lexer.tokens.slice(firstTok, lastTok);
     if(lexed.length)
       console.log(

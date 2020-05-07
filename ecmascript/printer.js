@@ -156,7 +156,8 @@ export class Printer {
   printBlockStatement(block_statement) {
     const { body } = block_statement;
     let output = "{\n  ";
-    if(typeof body.map == "function") output += body.map(line => this.printNode(line).replace(/\n/g, "\n  ")).join(";\n  ");
+    if(typeof body.map == "function")
+      output += body.map(line => this.printNode(line).replace(/\n/g, "\n  ")).join(";\n  ");
     else output += this.printNode(body).replace(/\n/g, "\n  ");
     return output + ";\n}";
   }
@@ -267,7 +268,8 @@ export class Printer {
         : this.printNode(params)) +
       ")";
     output += " => ";
-    if(typeof body.map == "function") output += body.map(line => this.printNode(line)).join("\n  ");
+    if(typeof body.map == "function")
+      output += body.map(line => this.printNode(line)).join("\n  ");
     else output += this.printNode(body);
     return output;
   }

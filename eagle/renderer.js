@@ -1054,7 +1054,7 @@ export function renderDocument(doc, container) {
 
   obox.outset(2.54 * 2.54);
   grid.parentElement.insertBefore(
-    SVG.create("rect", { ...gridObj, fill: 'none'||bgColor, transform: "scale(2.54,2.54)" }),
+    SVG.create("rect", { ...gridObj, fill: "none" || bgColor, transform: "scale(2.54,2.54)" }),
     grid
   );
   groupTransform += ` translate(0,0)`;

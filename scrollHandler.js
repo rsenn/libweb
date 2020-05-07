@@ -80,7 +80,12 @@ export function ScrollDisabler(disabledfn = () => true, element) {
     if(disabled) {
       if(event.keyCode !== undefined && keys.indexOf(event.keyCode) != -1) {
         event.preventDefault();
-      } else if(event.type == "wheel" || event.type == "scroll" || event.type == "touchmove" || event.type == "DOMMouseScroll") {
+      } else if(
+        event.type == "wheel" ||
+        event.type == "scroll" ||
+        event.type == "touchmove" ||
+        event.type == "DOMMouseScroll"
+      ) {
         if(event.cancelable) event.preventDefault();
       }
 

@@ -39,7 +39,9 @@ const CacheSVG = new (class CacheProxy {
   }
   put(url, data) {
     if(this.instace !== null) {
-      this.instance.then(cache => cache.put(url, new Response(data, { headers: { "Content-Type": "image/svg+xml" } })));
+      this.instance.then(cache =>
+        cache.put(url, new Response(data, { headers: { "Content-Type": "image/svg+xml" } }))
+      );
     }
   }
 })();

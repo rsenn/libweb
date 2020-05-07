@@ -29,7 +29,9 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
   } else {
     const arg = args[0];
     if(typeof arg === "string") {
-      var matches = /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) || /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
+      var matches =
+        /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) ||
+        /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
 
       if(matches != null) c = [...matches].slice(1);
     }
@@ -153,7 +155,12 @@ HSLA.prototype.toString = function() {
 };
 
 HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [1, 1], rng = Math.random) {
-  return new HSLA(Util.randInt(h, rng), Util.randInt(s, rng), Util.randInt(l, rng), Util.randInt(a, rng));
+  return new HSLA(
+    Util.randInt(h, rng),
+    Util.randInt(s, rng),
+    Util.randInt(l, rng),
+    Util.randInt(a, rng)
+  );
 };
 HSLA.prototype.dump = function() {
   console.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);

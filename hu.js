@@ -123,11 +123,13 @@ var hu = (function() {
   fn.width = function(v) {
     // window.getComputedStyle is the only thing that seems to work on FF when
     // there are nested svg elements
-    if(v === undefined) return this.n.getBBox().width || parseInt(window.getComputedStyle(this.n).width);
+    if(v === undefined)
+      return this.n.getBBox().width || parseInt(window.getComputedStyle(this.n).width);
     return this.attrnv("width", v);
   };
   fn.height = function(v) {
-    if(v === undefined) return this.n.getBBox().height || parseInt(window.getComputedStyle(this.n).height);
+    if(v === undefined)
+      return this.n.getBBox().height || parseInt(window.getComputedStyle(this.n).height);
     return this.attrnv("height", v);
   };
 

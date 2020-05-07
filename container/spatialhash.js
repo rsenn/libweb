@@ -62,7 +62,12 @@ export class SpatialHash {
     var y2 = Math.floor((AABB.y + AABB.height) / this.cellSize);
     y2 = y2 >= this.height ? this.height - 1 : y2;
     // only remove and insert if mapping has changed
-    if(object.spatial.x1 !== x1 || object.spatial.y1 !== y1 || object.spatial.x2 !== x2 || object.spatial.y2 !== y2) {
+    if(
+      object.spatial.x1 !== x1 ||
+      object.spatial.y1 !== y1 ||
+      object.spatial.x2 !== x2 ||
+      object.spatial.y2 !== y2
+    ) {
       if(object.spatial.maps.length) {
         this.remove(object);
       }

@@ -5,7 +5,13 @@ import Util from "../util.js";
 export function Stack() {
   let stack = Util.getCallers(2, 30);
 
-  return stack.map(({ fileName = "", columnNumber, lineNumber, functionName = "", methodName = "" }) => `  ${functionName}${Util.pad(functionName, 20)} ${(fileName + "").replace(/.*file:\/\//g, "")}:${lineNumber}:${columnNumber}`);
+  return stack.map(
+    ({ fileName = "", columnNumber, lineNumber, functionName = "", methodName = "" }) =>
+      `  ${functionName}${Util.pad(functionName, 20)} ${(fileName + "").replace(
+        /.*file:\/\//g,
+        ""
+      )}:${lineNumber}:${columnNumber}`
+  );
   /*
   stack = stack.filter(({ functionName }) => !/Parser.parser.</.test(functionName));
   stack = stack.filter(({ typeName }) => typeName == "Parser");
@@ -207,7 +213,33 @@ function isRegExpChar(c) {
 }
 
 function isPunctuatorChar(c) {
-  const chars = ["=", ".", "-", "%", "}", ">", ",", "*", "[", "<", "!", "/", "]", "~", "&", "(", ";", "?", "|", ")", ":", "+", "^", "{", "@"];
+  const chars = [
+    "=",
+    ".",
+    "-",
+    "%",
+    "}",
+    ">",
+    ",",
+    "*",
+    "[",
+    "<",
+    "!",
+    "/",
+    "]",
+    "~",
+    "&",
+    "(",
+    ";",
+    "?",
+    "|",
+    ")",
+    ":",
+    "+",
+    "^",
+    "{",
+    "@"
+  ];
 
   return chars.indexOf(c) >= 0;
 }
@@ -215,10 +247,60 @@ function isPunctuatorChar(c) {
 function isPunctuator(word) {
   switch (word.length) {
     case 1:
-      return ["=", ".", "-", "%", "}", ">", ",", "*", "[", "<", "!", "/", "]", "~", "&", "(", ";", "?", "|", ")", ":", "+", "^", "{", "@"].indexOf(word) >= 0;
+      return (
+        [
+          "=",
+          ".",
+          "-",
+          "%",
+          "}",
+          ">",
+          ",",
+          "*",
+          "[",
+          "<",
+          "!",
+          "/",
+          "]",
+          "~",
+          "&",
+          "(",
+          ";",
+          "?",
+          "|",
+          ")",
+          ":",
+          "+",
+          "^",
+          "{",
+          "@"
+        ].indexOf(word) >= 0
+      );
 
     case 2:
-      return ["!=", "*=", "&&", "<<", "/=", "||", ">>", "&=", "==", "++", "|=", "<=", "--", "+=", "^=", ">=", "-=", "%=", "=>"].indexOf(word) >= 0;
+      return (
+        [
+          "!=",
+          "*=",
+          "&&",
+          "<<",
+          "/=",
+          "||",
+          ">>",
+          "&=",
+          "==",
+          "++",
+          "|=",
+          "<=",
+          "--",
+          "+=",
+          "^=",
+          ">=",
+          "-=",
+          "%=",
+          "=>"
+        ].indexOf(word) >= 0
+      );
 
     case 3:
       return ["!==", "===", ">>=", "-->>", "<<=", "..."].indexOf(word) >= 0;
@@ -355,12 +437,18 @@ l.lexIdentifier = function() {
   // Make sure identifier didn't start with a decimal digit
   const firstChar = this.source[this.start];
   if(isDecimalDigit(firstChar)) {
-    throw new SyntaxError(`Invalid identifier: ${this.source.substring(this.start, this.pos)}\n${this.currentLine()}`, this.position());
+    throw new SyntaxError(
+      `Invalid identifier: ${this.source.substring(this.start, this.pos)}\n${this.currentLine()}`,
+      this.position()
+    );
   }
 
   const c = this.peek();
   if(isQuoteChar(c)) {
-    throw new SyntaxError(`Invalid identifier: ${this.source.substring(this.start, this.pos + 1)}${this.currentLine()}`, this.position());
+    throw new SyntaxError(
+      `Invalid identifier: ${this.source.substring(this.start, this.pos + 1)}${this.currentLine()}`,
+      this.position()
+    );
   }
 
   const word = this.source.substring(this.start, this.pos);
@@ -389,7 +477,12 @@ l.currentLine = function() {
   let lineno = `${(line + "").padStart(4)}: `;
   let indent = " ".repeat(lineno.length);
 
-  return `\n${lineno}${source.slice(p, e)}\n${indent + ` column ${column} ----`.padStart(column).slice(-column)}╯\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${this.accepted.length}\n${indent + source.slice(this.pos, this.pos + 10)}`;
+  return `\n${lineno}${source.slice(p, e)}\n${indent +
+    ` column ${column} ----`
+      .padStart(column)
+      .slice(-column)}╯\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${
+    this.accepted.length
+  }\n${indent + source.slice(this.pos, this.pos + 10)}`;
 };
 l.lineRange = function(start, end) {
   let lines = this.source.split(/\n/g).entries();
@@ -412,7 +505,10 @@ l.lexNumber = function() {
 
       // The hex number needs to at least be followed by some digit.
       if(!this.accept(validator)) {
-        throw new SyntaxError(`Invalid number: ${this.source.substring(this.start, this.pos + 1)}`, this.position());
+        throw new SyntaxError(
+          `Invalid number: ${this.source.substring(this.start, this.pos + 1)}`,
+          this.position()
+        );
       }
     }
     // If number starts with 0 followed by an octal digit, then it's an
@@ -422,7 +518,10 @@ l.lexNumber = function() {
     }
     // If a 0 isn't a hex nor an octal number, then it's invalid.
     else if(this.accept(isDecimalDigit)) {
-      throw new SyntaxError(`Invalid number: ${this.source.substring(this.start, this.pos)}`, this.position());
+      throw new SyntaxError(
+        `Invalid number: ${this.source.substring(this.start, this.pos)}`,
+        this.position()
+      );
     }
   }
 
@@ -439,7 +538,10 @@ l.lexNumber = function() {
     if(this.accept(oneOf("eE"))) {
       this.accept(oneOf("+-"));
       if(!this.accept(validator)) {
-        throw new SyntaxError(`Invalid number: ${this.source.substring(this.start, this.pos + 1)}`, this.position());
+        throw new SyntaxError(
+          `Invalid number: ${this.source.substring(this.start, this.pos + 1)}`,
+          this.position()
+        );
       }
       this.acceptRun(validator);
     }
@@ -450,7 +552,10 @@ l.lexNumber = function() {
   // a string.
   const c = this.peek();
   if(isIdentifierChar(c) || isQuoteChar(c) || oneOf(".eE")(c)) {
-    throw new SyntaxError(`Invalid number: ${this.source.substring(this.start, this.pos + 1)}`, this.position());
+    throw new SyntaxError(
+      `Invalid number: ${this.source.substring(this.start, this.pos + 1)}`,
+      this.position()
+    );
   }
 
   this.addToken(tokenTypes.numericLiteral);
@@ -533,7 +638,10 @@ l.lexQuote = quoteChar => {
       if(c === null) {
         // If we reached EOF without the closing quote char, then this string is
         // incomplete.
-        throw new SyntaxError(`Illegal token: ${this.source.substring(this.start, this.pos)}`, this.position());
+        throw new SyntaxError(
+          `Illegal token: ${this.source.substring(this.start, this.pos)}`,
+          this.position()
+        );
       } else if(!escapeEncountered) {
         if(quoteChar === "`" && c == "{" && prevChar == "$") {
           while(c != "}") {
@@ -543,7 +651,10 @@ l.lexQuote = quoteChar => {
         } else if(isLineTerminator(c) && quoteChar !== "`") {
           // If we somehow reached EOL without encountering the
           // ending quote char then this string is incomplete.
-          throw new SyntaxError(`Illegal token: ${this.source.substring(this.start, this.pos)}`, this.position());
+          throw new SyntaxError(
+            `Illegal token: ${this.source.substring(this.start, this.pos)}`,
+            this.position()
+          );
         } else if(c === quoteChar) {
           this.addToken(tokenTypes.stringLiteral);
           return this.lexText;

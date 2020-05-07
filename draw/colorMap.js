@@ -30,7 +30,8 @@ ColorMap.prototype.base = 10;
 ColorMap.prototype.toString = function(opts = {}) {
   const base = opts.base || this.base;
   let a = [];
-  for(let color of this) a.push(color.toString ? color.toString(",", num => num.toString(base)) : "" + color);
+  for(let color of this)
+    a.push(color.toString ? color.toString(",", num => num.toString(base)) : "" + color);
   a.join(",");
 };
 ColorMap.prototype.toScalar = function*(opts = {}) {

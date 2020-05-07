@@ -14,21 +14,38 @@ export function Rect(arg) {
   ["x", "y", "width", "height"].forEach(field => {
     if(typeof obj[field] != "number") obj[field] = 0;
   });
-  if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
+  if(
+    arg &&
+    arg.x1 !== undefined &&
+    arg.y1 !== undefined &&
+    arg.x2 !== undefined &&
+    arg.y2 !== undefined
+  ) {
     const { x1, y1, x2, y2 } = arg;
     obj.x = x1;
     obj.y = y1;
     obj.width = x2 - x1;
     obj.height = y2 - y1;
     ret = 1;
-  } else if(arg && arg.x !== undefined && arg.y !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
+  } else if(
+    arg &&
+    arg.x !== undefined &&
+    arg.y !== undefined &&
+    arg.x2 !== undefined &&
+    arg.y2 !== undefined
+  ) {
     const { x, y, x2, y2 } = arg;
     obj.x = x;
     obj.y = y;
     obj.width = x2 - x;
     obj.height = y2 - y;
     ret = 1;
-  } else if(isPoint(arg) && arg.y !== undefined && arg.width !== undefined && arg.height !== undefined) {
+  } else if(
+    isPoint(arg) &&
+    arg.y !== undefined &&
+    arg.width !== undefined &&
+    arg.height !== undefined
+  ) {
     obj.x = parseFloat(arg.x);
     obj.y = parseFloat(arg.y);
     obj.width = parseFloat(arg.width);
@@ -104,7 +121,10 @@ Rect.prototype.getArea = function() {
   return this.width * this.height;
 };
 Rect.prototype.toString = function(prec = 0.000001, sep = " ") {
-  return `${Util.roundTo(this.x, prec)}${sep}${Util.roundTo(this.y, prec)}${sep}${Util.roundTo(this.width, prec)}${sep}${Util.roundTo(this.height, prec)}`;
+  return `${Util.roundTo(this.x, prec)}${sep}${Util.roundTo(this.y, prec)}${sep}${Util.roundTo(
+    this.width,
+    prec
+  )}${sep}${Util.roundTo(this.height, prec)}`;
 };
 Rect.prototype.toSource = function(opts = {}) {
   const { color = true } = opts;
@@ -309,7 +329,12 @@ Rect.bind = rect => {
 };
 
 Rect.inside = (rect, point) => {
-  return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
+  return (
+    point.x >= rect.x &&
+    point.x <= rect.x + rect.width &&
+    point.y >= rect.y &&
+    point.y <= rect.y + rect.height
+  );
 };
 Rect.fromCircle = function(...args) {
   const { x, y } = Point(args);

@@ -104,7 +104,8 @@ var viewport = (function() {
     this.element = element;
     this.inset = inset;
     this.bounds = elementRect(this.element);
-    this.visible = this.bounds.width > 0 && this.bounds.height > 0 && intersects(this.bounds, inset);
+    this.visible =
+      this.bounds.width > 0 && this.bounds.height > 0 && intersects(this.bounds, inset);
   }
 
   Region.prototype.validate = function() {

@@ -152,7 +152,8 @@ class Element extends Node {
   }
 
   getRotation() {
-    if(typeof this.rot == "string" && /^R/.test(this.rot)) return parseInt(this.rot.replace(/^R/, ""));
+    if(typeof this.rot == "string" && /^R/.test(this.rot))
+      return parseInt(this.rot.replace(/^R/, ""));
     return undefined;
   }
   getLibrary() {
@@ -340,14 +341,16 @@ class Layer extends Node {
 
   static find(number_or_name) {
     for(let name in Layer.instances) {
-      if(Layer.instances[name].number === number_or_name || name === number_or_name) return Layer.instances[name];
+      if(Layer.instances[name].number === number_or_name || name === number_or_name)
+        return Layer.instances[name];
     }
     return null;
   }
 
   static get(number_or_name) {
     let layer = Layer.find(number_or_name);
-    if(layer === null && typeof number_or_name == "string") layer = Layer.instances[number_or_name] = new Layer(number_or_name);
+    if(layer === null && typeof number_or_name == "string")
+      layer = Layer.instances[number_or_name] = new Layer(number_or_name);
     return layer;
   }
 
@@ -433,8 +436,31 @@ const eagleProps = {
     Param,
     Wire
   },
-  classesWithName: ["Class", "Designrules", "Element", "Layer", "Library", "Package", "Param", "Pass", "Signal"],
-  coordProperties: ["x", "y", "x1", "y1", "x2", "y2", "width", "diameter", "radius", "extent", "size", "drill"],
+  classesWithName: [
+    "Class",
+    "Designrules",
+    "Element",
+    "Layer",
+    "Library",
+    "Package",
+    "Param",
+    "Pass",
+    "Signal"
+  ],
+  coordProperties: [
+    "x",
+    "y",
+    "x1",
+    "y1",
+    "x2",
+    "y2",
+    "width",
+    "diameter",
+    "radius",
+    "extent",
+    "size",
+    "drill"
+  ],
   elementMap: {},
   allElements: [],
   scaleCoords: 1,
@@ -535,7 +561,9 @@ for(let c in eagleProps.classes) {
   const proto = ctor.prototype;
   eagleProps.elementMap[name.toLowerCase()] = eagleProps.classes[c];
   const withName = eagleProps.classesWithName.indexOf(c) != -1;
-  module.exports[`${name}s`] = module.exports.instances[name] = module.exports[name].instances = withName ? {} : [];
+  module.exports[`${name}s`] = module.exports.instances[name] = module.exports[
+    name
+  ].instances = withName ? {} : [];
 }
 
 /*
