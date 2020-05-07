@@ -4,20 +4,23 @@ import Util from "../util.js";
 
 export function Stack() {
   let stack = Util.getCallers(4, 30);
-let  re, t = s => s;
+  let re,
+    t = s => s;
 
-try {
-  let pwd = process.cwd();
-  re = new RegExp(`(file://)?${pwd}/`, 'g');
-  t = s => s.replace(re, "");
-} catch(err) {}
+  try {
+    let pwd = process.cwd();
+    re = new RegExp(`(file://)?${pwd}/`, "g");
+    t = s => s.replace(re, "");
+  } catch(err) {}
 
-  let maxLen = stack.reduce((acc,entry) => Math.max(acc, entry.functionName.length), 0);
+  let maxLen = stack.reduce((acc, entry) => entry.functionName ? Math.max(acc, entry.functionName.length) : acc, 0);
 
-  return stack.filter(s => s.functionName != 'esfactory').map(
-    ({ fileName = "", columnNumber, lineNumber, functionName = "", methodName = "" }) =>
-      `  ${functionName}${Util.pad(functionName, maxLen+1)} ${t(fileName)}:${lineNumber}`
-  );
+  return stack
+    .filter(s => s.functionName != "esfactory")
+    .map(
+      ({ fileName = "", columnNumber, lineNumber, functionName = "", methodName = "" }) =>
+        `  ${functionName}${Util.pad(functionName, maxLen + 1)} ${t(fileName)}:${lineNumber}`
+    );
   /*
   stack = stack.filter(({ functionName }) => !/Parser.parser.</.test(functionName));
   stack = stack.filter(({ typeName }) => typeName == "Parser");
@@ -39,13 +42,12 @@ export function SyntaxError(ctx, msg, ast, pos) {
   this.ctx = ctx;
   this.ast = ast;
   this.pos = pos;
-  console.log("pos:", Util.inspect(pos, {depth:10}));
-
+  console.log("pos:", Util.inspect(pos, { depth: 10 }));
 }
 
 SyntaxError.prototype.toString = function() {
   const { msg, pos, ctx } = this;
-  return `${pos}: ${ctx ? `${ctx} error: ` : ''}${msg}`;
+  return `${pos}: ${ctx ? `${ctx} error: ` : ""}${msg}`;
 };
 SyntaxError.prototype[Symbol.toStringTag] = function() {
   return this.toString();
@@ -60,7 +62,7 @@ const l = Lexer.prototype;
 l.error = function(errorMessage, astNode) {
   const pos = this.position();
 
-  return new SyntaxError("scan", errorMessage, astNode, pos/*, this*/);
+  return new SyntaxError("scan", errorMessage, astNode, pos /*, this*/);
 };
 
 /*
@@ -462,7 +464,9 @@ l.lexIdentifier = function() {
 
   const c = this.peek();
   if(isQuoteChar(c)) {
-    throw this.error(`Invalid identifier: ${this.source.substring(this.start, this.pos + 1)}${this.currentLine()}`);
+    throw this.error(
+      `Invalid identifier: ${this.source.substring(this.start, this.pos + 1)}${this.currentLine()}`
+    );
   }
 
   const word = this.source.substring(this.start, this.pos);

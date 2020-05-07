@@ -1,9 +1,14 @@
 //import debug from "debug";
 
-const formatAnnotatedObject = function(
-  subject,
-  { indent = "  ", spacing = " ", separator = ",", newline = "\n", maxlen = 30, depth = 1 }
-) {
+const formatAnnotatedObject = function(subject, o) {
+  const {
+    indent = "  ",
+    spacing = " ",
+    separator = ",",
+    newline = "\n",
+    maxlen = 30,
+    depth = 1
+  } = o;
   const i = indent.repeat(Math.abs(1 - depth));
   let nl = newline != "" ? newline + i : spacing;
   const opts = {
@@ -71,9 +76,9 @@ const formatAnnotatedObject = function(
     j = separator + (opts.newline || spacing) + i;
   }
   //padding = x => '';
-  let ret = `{${opts.newline}${r
-    .map(arr => `${padding(arr[0]) + arr[0]}:${spacing}${arr[1]}`)
-    .join(j)}${opts.newline}}`;
+  let ret = '{'+opts.newline+r
+    .map(arr => padding(arr[0]) + arr[0] +':'+ spacing + arr[1])
+    .join(j) + opts.newline;
   return ret;
 };
 /**
@@ -988,8 +993,7 @@ Util.findVal = function(object, propName, maxDepth = 10) {
 Util.deepCloneObservable = function(data) {
   let o;
   const t = typeof data;
-  if(t === "object")
-    return data;
+  if(t === "object") return data;
 
   if(t === "object") {
     if(data.length) {
@@ -1979,7 +1983,7 @@ Util.getCaller = function(index, stack) {
   }
 };
 Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER) {
-     let stack =  Util.getCallerStack(start+1);
+  let stack = Util.getCallerStack(start + 1);
   let ret = [];
   let i = 0;
   while(i++ < num) {

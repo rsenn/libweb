@@ -4,7 +4,7 @@ import Util from "../util.js";
 
 export class ReactComponent {
   static create() {
- /*   let args = [...arguments];
+    /*   let args = [...arguments];
     let Tag, props;
     if(typeof args[0] == "string") {
       Tag = args.shift();

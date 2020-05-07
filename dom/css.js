@@ -40,17 +40,21 @@ export class CSS {
     const list = stylesheet && stylesheet.cssRules ? [stylesheet] : CSS.list(stylesheet);
     let ret = [];
 
-    list.forEach(s => [...(s.cssRules||s.rules)].forEach(rule => {
+    list.forEach(s =>
+      [...(s.cssRules || s.rules)].forEach(rule => {
         ret.push(rule.cssText);
-          }));
+      })
+    );
     return ret;
   }
 
   static classes(selector = "*") {
-    return Util.unique([...Element.findAll(selector)]
-      .filter(e => e.classList.length)
-      .map(e => [...e.classList])
-      .flat());
+    return Util.unique(
+      [...Element.findAll(selector)]
+        .filter(e => e.classList.length)
+        .map(e => [...e.classList])
+        .flat()
+    );
   }
 
   static section(selector, props) {

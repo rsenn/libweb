@@ -144,14 +144,17 @@ export class Element extends Node {
       .join(", ");
     s = `${cmd}('${tagName}', {${s}}`;
     let c = elem.children;
-    if(c.length >= 1) s = `${s}, [\n  ${c.map(e => Element.toCommand(e, opts).replace(/\n/g, "\n  ")).join(",\n  ")}\n]`;
+    if(c.length >= 1)
+      s = `${s}, [\n  ${c
+        .map(e => Element.toCommand(e, opts).replace(/\n/g, "\n  "))
+        .join(",\n  ")}\n]`;
     s = `${s}${parent ? `, ${parent}` : ""})`;
     if(elem.firstElementChild && varName) {
       v = parent ? String.fromCharCode(parent.charCodeAt(0) + 1) : varName;
       s = `${v} = ${s}`;
     }
     return s.replace(/;*$/g, "");
-      }
+  }
 
   static find(arg, parent, globalObj = Util.getGlobalObject()) {
     if(!parent && globalObj.document) parent = globalObj.document;

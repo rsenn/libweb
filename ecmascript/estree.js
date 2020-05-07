@@ -41,10 +41,13 @@ export class Identifier extends Expression {
 }
 
 export class BindingProperty extends Expression {
-  constructor(property, element) {
+  constructor(property, element, initializer) {
     super("BindingProperty");
     this.property = property;
     this.element = element;
+
+    if(initializer)
+      this.initializer = initializer;
   }
 }
 
