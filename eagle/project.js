@@ -107,7 +107,8 @@ export class EagleProject {
     //console.log('loadLibraries:', dirs, names);
     for(let name of names) {
       let lib = this.findLibrary(name, dirs);
-      if(!lib) throw new Error(`EagleProject library '${name}' not found in:  \n${dirs.join("\n  ")}`);
+      if(!lib)
+        throw new Error(`EagleProject library '${name}' not found in:  \n${dirs.join("\n  ")}`);
       this.open(lib);
     }
   }
@@ -144,7 +145,9 @@ export class EagleProject {
       //console.log(`libraries[${k}].packages:`, libraries[k].packages);
       const libProps = lib => {
         const { packages, devicesets, symbols } = lib;
-        return Object.fromEntries(["packages", "symbols", "devicesets"].map(k => [k, lib[k]]).filter(([k, v]) => v));
+        return Object.fromEntries(
+          ["packages", "symbols", "devicesets"].map(k => [k, lib[k]]).filter(([k, v]) => v)
+        );
         return { packages, devicesets, symbols };
       };
       const destLib = libProps(libraries[k]);
@@ -153,7 +156,8 @@ export class EagleProject {
         //console.log('entity:', entity);
         const srcMap = srcLib[entity];
         const dstMap = destLib[entity];
-        const transformName = n => n.replace(/[.,][0-9]*/g, "").replace(/([^0-9])([0-9])([^0-9])/g, "$10$2$3");
+        const transformName = n =>
+          n.replace(/[.,][0-9]*/g, "").replace(/([^0-9])([0-9])([^0-9])/g, "$10$2$3");
         let ent = srcLib[entity].entries();
         let m = new Map(ent);
         //console.log(`dstMap:`, dstMap);
@@ -198,5 +202,10 @@ export class EagleProject {
     return doc.index(path);
   }
 
-  saveTo = (dir = ".", overwrite = false) => new Promise((resolve, reject) => Promise.all(this.documents.map(doc => doc.saveTo([dir, doc.filename].join("/"), overwrite))).then(result => resolve(Object.fromEntries(result))));
+  saveTo = (dir = ".", overwrite = false) =>
+    new Promise((resolve, reject) =>
+      Promise.all(
+        this.documents.map(doc => doc.saveTo([dir, doc.filename].join("/"), overwrite))
+      ).then(result => resolve(Object.fromEntries(result)))
+    );
 }

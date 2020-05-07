@@ -66,11 +66,11 @@ const formatAnnotatedObject = function(subject, { indent = "  ", spacing = " ", 
  *
  * @class      Util (name)
  */
-function Util(g) {
+export function Util(g) {
   if(g) Util.globalObject = g;
 }
 
-export { Util as default, Util };
+export default Util;
 
 Util.curry = function curry(fn, arity) {
   return function curried() {

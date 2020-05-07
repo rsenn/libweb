@@ -8,13 +8,17 @@ const pathPadding = Util.isBrowser() ? 0 : 40;
 
 export const ansi = Util.isBrowser() ? () => "" : (...args) => `\u001b[${[...args].join(";")}m`;
 
-export const text = Util.isBrowser() ? (text, ...color) => (color.indexOf(1) != -1 ? `${text}` : text) : (text, ...color) => ansi(...color) + text + ansi(0);
+export const text = Util.isBrowser()
+  ? (text, ...color) => (color.indexOf(1) != -1 ? `${text}` : text)
+  : (text, ...color) => ansi(...color) + text + ansi(0);
 
-export const dingbatCode = digit => (digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1));
+export const dingbatCode = digit =>
+  digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1);
 
 export const dump = (o, depth = 2, breakLength = 400) => {
   //  if("toString" in o) return o.toString();
-  const isElement = o => Util.isObject(o) && ["EagleElement", "EagleNode"].indexOf(Util.className(o)) != -1;
+  const isElement = o =>
+    Util.isObject(o) && ["EagleElement", "EagleNode"].indexOf(Util.className(o)) != -1;
   let s;
   if(o instanceof Array) {
     s = "";
@@ -66,11 +70,16 @@ export const parseArgs = args => {
 export const traverse = function*(obj, path = [], doc) {
   if(!(path instanceof EaglePath)) path = new EaglePath(path);
 
-  if(false && typeof obj == "object") if (obj !== null && "name" in obj.attributes) path[path.length - 1] = { name: obj.attributes.name };
+  if(false && typeof obj == "object")
+    if(obj !== null && "name" in obj.attributes)
+      path[path.length - 1] = { name: obj.attributes.name };
   yield [obj, path, doc];
   if(typeof obj == "object") {
-    if(Util.isArray(obj)) for(let i = 0; i < obj.length; i++) yield* traverse(obj[i], path.down(i), doc);
-    else if("children" in obj && Util.isArray(obj.children)) for(let i = 0; i < obj.children.length; i++) yield* traverse(obj.children[i], path.down("children", i), doc);
+    if(Util.isArray(obj))
+      for(let i = 0; i < obj.length; i++) yield* traverse(obj[i], path.down(i), doc);
+    else if("children" in obj && Util.isArray(obj.children))
+      for(let i = 0; i < obj.children.length; i++)
+        yield* traverse(obj.children[i], path.down("children", i), doc);
   }
 };
 
@@ -94,11 +103,18 @@ export const toXML = function(o, z = 10000) {
     s += tagName[0] != "?" ? ">" : "?>";
 
     const textChildren = typeof a[0] == "string";
-    let nl = textChildren ? "" : tagName == "text" && a.length == 1 ? "" : tagName[0] != "?" ? "\n  " : "\n";
+    let nl = textChildren
+      ? ""
+      : tagName == "text" && a.length == 1
+      ? ""
+      : tagName[0] != "?"
+      ? "\n  "
+      : "\n";
     if(textChildren) s += a.join("\n") + `</${tagName}>`;
     else {
       if(true /*z === true || z > 0*/) {
-        for(let child of a) s += nl + toXML(child, z === true ? z : z - 1).replace(/>\n/g, ">" + nl);
+        for(let child of a)
+          s += nl + toXML(child, z === true ? z : z - 1).replace(/>\n/g, ">" + nl);
       } else s += "...";
 
       if(tagName[0] != "?") s += `${nl.replace(/ /g, "")}</${tagName}>`;
@@ -129,7 +145,9 @@ export const inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) =>
   let s = "⏐";
   x = x.substring(x.indexOf("tagName") + 14);
 
-  x = Object.entries((e && e.attributes) || {}).map(([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36));
+  x = Object.entries((e && e.attributes) || {}).map(
+    ([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36)
+  );
 
   x.unshift(e.tagName);
 
@@ -137,7 +155,13 @@ export const inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) =>
   p = text(`〔`, 1, 37) + text(p, 38, 5, 199);
   let l = e.path + "";
   let type = (e.nodeType || (d && d.type)) + "";
-  let ret = [text(type, 38, 5, 219), p, text("⧃❋⭗", 38, 5, 112), arr.join(" ").trimRight(), text(`〕`, 1, 37)];
+  let ret = [
+    text(type, 38, 5, 219),
+    p,
+    text("⧃❋⭗", 38, 5, 112),
+    arr.join(" ").trimRight(),
+    text(`〕`, 1, 37)
+  ];
   if(c.path) ret.unshift(l + Util.pad(l, pathPadding, " "));
   return ret.join(" ");
 };
@@ -223,12 +247,21 @@ export class EagleInterface {
   *iterator(...args) {
     let predicate = typeof args[0] == "function" ? args.shift() : arg => true;
     let path = (Util.isArray(args[0]) && args.shift()) || [];
-    let t = typeof args[0] == "function" ? args.shift() : ([v, l, d]) => [typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l) : v, l, d];
+    let t =
+      typeof args[0] == "function"
+        ? args.shift()
+        : ([v, l, d]) => [
+            typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l) : v,
+            l,
+            d
+          ];
     let owner = Util.isObject(this) && "owner" in this ? this.owner : this;
     let root = this.root || (owner.xml && owner.xml[0]);
     let node = root;
     if(path.length > 0) node = deep.get(node, path);
-    for(let [v, l] of deep.iterate(node, (v, p) => (predicate(v, p) ? -1 : p.length > 1 ? p[p.length - 2] == "children" : true))) {
+    for(let [v, l] of deep.iterate(node, (v, p) =>
+      predicate(v, p) ? -1 : p.length > 1 ? p[p.length - 2] == "children" : true
+    )) {
       if(!(l instanceof EaglePath)) l = new EaglePath(l);
       if(typeof v == "object" && v !== null && "tagName" in v) {
         //    console.log('l:', l.xpath(root));
@@ -252,7 +285,17 @@ export class EagleInterface {
       let parent = d.index(l.slice(0, -2));
       let numSiblings = parent ? parent.children.length : 0;
       if(!str.startsWith("?")) {
-        if(typeof e == "object" && e.tagName && "children" in e && parent && parent.children.filter(child => (typeof child.tagName == "string" && child.tagName.length > 0 ? child.tagName == e.tagName : false)).length == 1) {
+        if(
+          typeof e == "object" &&
+          e.tagName &&
+          "children" in e &&
+          parent &&
+          parent.children.filter(child =>
+            typeof child.tagName == "string" && child.tagName.length > 0
+              ? child.tagName == e.tagName
+              : false
+          ).length == 1
+        ) {
         } else if(typeof e == "object" && "attributes" in e && "name" in e.attributes) {
           let cmp = Object.keys(e.attributes)
             .filter(k => k == "name")

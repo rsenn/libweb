@@ -1,0 +1,18 @@
+
+
+# --------------
+# Please enter the commit message for your changes. Everything below
+# this paragraph is ignored, and an empty message aborts the commit.
+# Just close the window to accept your message.
+diff --git a/scripts/commonjs-to-es6.sh b/scripts/commonjs-to-es6.sh
+new file mode 100755
+index 0000000..b37033b
+--- /dev/null
++++ b/scripts/commonjs-to-es6.sh
+@@ -0,0 +1,6 @@
++#!/bin/sh
++exec sed \
++  -e 's|const \([^{}]*\) = require(\(.*\))\.\([^)]*\);|import { \3 as \1 } from \2;|' \
++  -e 's|const \(.*\) = require(\(.*\));|import \1 from \2;|' \
++  -e 's|\.es5\.|.|g' \
++"$@"
