@@ -1,8 +1,8 @@
-function isJpeg(buf) {
+export function isJpeg(buf) {
   return typeof buf == "object" && buf !== null && buf.length >= 10 ? buf.readUInt32LE(6) == 0x4649464a : false;
 }
 
-const jpegProps = data => {
+export const jpegProps = data => {
   var ret = {};
   // data is an array of bytes
   var off = 0;
@@ -38,4 +38,4 @@ const jpegProps = data => {
   return ret;
 };
 
-module.exports = { isJpeg, jpegProps };
+export default { isJpeg, jpegProps };
