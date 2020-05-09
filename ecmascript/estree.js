@@ -22,13 +22,13 @@ export class Expression extends Node {
 }
 
 export class FunctionLiteral extends Node {
-  constructor(type, id, params, body, exported, async, generator) {
+  constructor(type, id, params, body, exported, is_async, generator) {
     super(type);
     this.id = id;
     this.params = params;
     this.body = body;
     this.exported = exported;
-    this.async = async;
+    this.async = is_async;
     this.generator = generator;
   }
 }
@@ -335,8 +335,8 @@ export class ClassDeclaration extends Declaration {
 }
 
 export class FunctionDeclaration extends FunctionLiteral {
-  constructor(id, params, body, exported = false, async = false, generator = false) {
-    super("FunctionDeclaration", id, params, body, exported, async, generator);
+  constructor(id, params, body, exported = false, is_async = false, generator = false) {
+    super("FunctionDeclaration", id, params, body, exported, is_async, generator);
     // console.log('New FunctionDeclaration: ', JSON.stringify({ id, params, // exported }));
   }
 }
