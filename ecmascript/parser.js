@@ -380,8 +380,8 @@ export class ECMAScriptParser extends Parser {
     }
 
     if(!expr) {
-      //console.log("expr:", this.token);
-      throw new Error();
+      console.log("expr:", this.token.value, expr   );
+      throw new Error();  
     }
 
     return expr;
@@ -1295,9 +1295,10 @@ export class ECMAScriptParser extends Parser {
     this.log(`parseReturnStatement()`);
     this.expectKeywords("return");
     let expression = null;
-    // if(this.matchExpression()) {
+
+    if(!this.matchPunctuators(";")) {
     expression = this.parseExpression();
-    //}
+  }
     this.expectPunctuators(";");
     return new estree.ReturnStatement(expression);
   }

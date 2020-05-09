@@ -448,7 +448,7 @@ export class RestOfExpression extends Node {
   }
 }
 export class SpreadElement extends Node {
-  constructor(value) {
+  constructor(expr) {
     super("SpreadElement");
     this.expr = expr;
   }
