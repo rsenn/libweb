@@ -1004,8 +1004,7 @@ Util.move = function(src, dst = []) {
 Util.moveIf = function(src, pred, dst = []) {
   let items = src.splice(0, src.length);
   let i = 0;
-  for(let item of items)
-    (pred(item, i++) ? src : dst).push(item);
+  for(let item of items) (pred(item, i++) ? src : dst).push(item);
 
   return dst;
 };

@@ -590,7 +590,7 @@ class MoonScriptGenerator {
         if(field.type == "Recfield") return `['${key}']: ` + generator.subtree(field.value, false, `${indent}  `).replace(/\n/g, `\n${indent}`);
         return generator.str(field.value, node.multiline, indent);
       });
-      return `{${generator.multiline ? "\n"+indent : " "}${fields.join(generator.multiline ?"\n"+indent : ", ")}${generator.multiline ? "\n"+generator.indent : " "}}`;
+      return `{${generator.multiline ? "\n" + indent : " "}${fields.join(generator.multiline ? "\n" + indent : ", ")}${generator.multiline ? "\n" + generator.indent : " "}}`;
     }
 
     function moonscript_member_expression({ object, property }) {

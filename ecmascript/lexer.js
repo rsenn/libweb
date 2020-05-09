@@ -427,13 +427,13 @@ export class Lexer {
     let validator = c => {
       //   let last = word.substring(word.length - 1);
       //console.log("i:" + i + " c:" + c + " prev: " + prev + " slashes: " + slashes);
-i++;
-      if(slashes == 1 && c == " " && prev == '/') {
+      i++;
+      if(slashes == 1 && c == " " && prev == "/") {
         return false;
       } else if(c == "/" && prev != "\\") {
         slashes++;
       } else if(slashes == 2) {
-        return c == "g" || c == "i" ;
+        return c == "g" || c == "i";
       }
       if(prev == ";") return false;
       word += c;
@@ -449,7 +449,7 @@ i++;
 
     if(this.acceptRun(validator)) {
       print();
-     // this.backup();
+      // this.backup();
       this.addToken(Token.types.regexpLiteral);
       return this.lexText;
     }

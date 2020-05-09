@@ -325,7 +325,7 @@ export class Declaration extends Statement {
 }
 
 export class ClassDeclaration extends Declaration {
-  constructor(id, extending, members/*, exported = false*/) {
+  constructor(id, extending, members /*, exported = false*/) {
     super("ClassDeclaration");
     this.id = id;
     this.extending = extending;
@@ -353,7 +353,7 @@ export class ArrowFunction extends Node {
 }
 
 export class VariableDeclaration extends Declaration {
-  constructor(declarations, kind = "var"/*, exported = false*/) {
+  constructor(declarations, kind = "var" /*, exported = false*/) {
     super("VariableDeclaration");
     this.kind = kind;
     //this.exported = exported;

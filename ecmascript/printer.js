@@ -31,14 +31,15 @@ export class Printer {
     }*/
     //console.log("position:", node.position);
 
-    let ret = '';
+    let ret = "";
     let comments = this.adjacent.filter(entry => entry.nodes[1][2] === node);
 
     if(comments.length) {
-console.log("comments:", comments);
-for(let comment of comments) {
-  ret += comment.text;
-}}
+      console.log("comments:", comments);
+      for(let comment of comments) {
+        ret += comment.text;
+      }
+    }
 
     ret += fn.call(this, node);
 
@@ -47,16 +48,14 @@ for(let comment of comments) {
   }
 
   print(tree) {
+    this.nodes = [...deep.iterate(tree, node => Util.isObject(node) && "position" in node)].map(([node, path]) => [node.position.valueOf(), path.join("."), node]) /*.sort((a,b) => a[0] - b[0])*/;
 
-    this.nodes = [...deep.iterate(tree, node => Util.isObject(node) && 'position' in node)].map(([node,path]) => [node.position.valueOf(),path.join("."),node] )/*.sort((a,b) => a[0] - b[0])*/;
+    //  console.log("comments: ", this.comments);
 
-  //  console.log("comments: ", this.comments);
+    //   console.log("nodes: ", this.nodes);
+    this.adjacent = this.comments.map(({ text, pos, len }) => ({ start: pos, end: pos + len, text, nodes: this.nodes.slice(this.nodes.findIndex(([position, path]) => position > pos + len) - 1).slice(0, 2) }));
 
- //   console.log("nodes: ", this.nodes);
-    this.adjacent = this.comments.map(({ text, pos, len }) => ({ start: pos, end: pos+len, text, nodes: this.nodes.slice(this.nodes.findIndex(([position,path])  =>  position > pos+len )-1).slice(0, 2) }))
-
-
-   console.log("adjacent: ", this.adjacent);
+    console.log("adjacent: ", this.adjacent);
 
     return this.printNode(tree);
   }
@@ -305,13 +304,13 @@ for(let comment of comments) {
     let output = "try ";
     output += this.printNode(body);
     if(catch_block) {
-    output += ` catch(` + parameters.map(param => this.printNode(param)).join(", ") + ") ";
-    output += this.printNode(catch_block);
-  }
-  if(finally_block) {
+      output += ` catch(` + parameters.map(param => this.printNode(param)).join(", ") + ") ";
+      output += this.printNode(catch_block);
+    }
+    if(finally_block) {
       output += ` finally `;
-    output += this.printNode(finally_block);
-  }
+      output += this.printNode(finally_block);
+    }
     return output;
   }
 
@@ -328,7 +327,6 @@ for(let comment of comments) {
 
   printExportStatement(export_statement) {
     const { what, declarations } = export_statement;
-
 
     //console.log("declarations: "+declarations.length);
 
@@ -401,7 +399,7 @@ for(let comment of comments) {
 
   printVariableDeclaration(variable_declaration) {
     const { kind, exported, declarations } = variable_declaration;
-        let output = exported ? "export " : "";
+    let output = exported ? "export " : "";
 
     output += kind != "" ? `${kind} ` : "";
     output += declarations.map(decl => this.printNode(decl)).join(", ");
@@ -430,27 +428,27 @@ for(let comment of comments) {
         throw new Error();
       }
       //if(this.position().line >= 2497)
-              //console.log("Property:", property);
+      //console.log("Property:", property);
 
       /*      if(Util.className(property.id) == "Identifier") {
         //console.log("property.id:", Util.className(property.id));
         throw new Error();
       }*/
       let name = this.printNode(property.id);
-      let value= this.printNode(property.value);
+      let value = this.printNode(property.value);
       let line = "";
       //console.log("value:", Util.className(property.value), property.id.value);
       if(property.value instanceof FunctionDeclaration) {
         //console.log("function.id:", property.value.id);
-        let functionName = property.value.id ? this.printNode(property.value.id) : '';
-        if(functionName != '') {
-  name = functionName;
-  delete property.id;
-         } else if(functionName) {
+        let functionName = property.value.id ? this.printNode(property.value.id) : "";
+        if(functionName != "") {
+          name = functionName;
+          delete property.id;
+        } else if(functionName) {
           name = "";
         }
- value = this.printNode(property.value);
-          value = value.replace(/^function\s/, "");
+        value = this.printNode(property.value);
+        value = value.replace(/^function\s/, "");
       }
       if(!is_multiline && /\n/.test(value)) is_multiline |= true;
       line += value.replace(/\n/g, "\n  ");
@@ -516,7 +514,7 @@ for(let comment of comments) {
   printObjectBindingPattern(object_binding_pattern) {
     const { value, properties } = object_binding_pattern;
 
-  //  console.log("properties:",properties);
+    //  console.log("properties:",properties);
     let output = properties
       .map(({ property, element }) => {
         if(property.value == element.value) return property.value;

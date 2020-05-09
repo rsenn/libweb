@@ -23,7 +23,6 @@ function bisect(arr, cmp, val) {
  * Map subclass that efficiently maintains a sorted iteration order.
  */
 export class SortedMap extends Map {
-
   [CMP] = null;
   [ORDER] = null;
 
@@ -83,8 +82,7 @@ export class SortedMap extends Map {
 
   findKey(pred) {
     for(let key of this[ORDER]) {
-      if(pred(this.get(key), key, this))
-        return key;
+      if(pred(this.get(key), key, this)) return key;
     }
   }
 
@@ -95,8 +93,7 @@ export class SortedMap extends Map {
   find(pred) {
     for(let key of this[ORDER]) {
       const value = this.get(key);
-      if(pred(value, key, this))
-        return value;
+      if(pred(value, key, this)) return value;
     }
   }
 
