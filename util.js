@@ -1001,6 +1001,14 @@ Util.move = function(src, dst = []) {
   dst.splice(dst.length, 0, ...items);
   return dst;
 };
+Util.moveIf = function(src, pred, dst = []) {
+  let items = src.splice(0, src.length);
+  let i = 0;
+  for(let item of items)
+    (pred(item, i++) ? src : dst).push(item);
+
+  return dst;
+};
 Util.removeEqual = function(a, b) {
   let c = {};
   for(let key in Object.assign({}, a)) {

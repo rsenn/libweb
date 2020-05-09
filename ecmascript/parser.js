@@ -35,21 +35,31 @@ export class Parser {
   }
 
   handleComment = (comment, start, end) => {
-    //console.log(`comment ${start} ${end}: '${comment}'`);
-    if(!this.lexer.comments) this.lexer.comments = [];
-    this.lexer.comments.push({ comment, start, end });
+  //  console.log(`comment ${start} ${end}`, this.position());
+/*    if(!this.lexer.comments) this.lexer.comments = [];
+    this.lexer.comments.push({ comment, pos: start.valueOf(), len: end.valueOf() - start.valueOf() });*/
+    this.comments = add(this.comments, { text: comment, pos: start.valueOf(), len: end.valueOf() - start.valueOf() });
   };
 
   handleConstruct = (ctor, args, instance) => {
-    let comments = Util.move(this.lexer.comments || []);
+    let pos = instance.position || this.position();
+   /* let comments = []; //(this.lexer.comments || []).filter(comment => comment.pos <= pos.valueOf());
+
+
+      console.log("pos:", pos);
+
+      if(comments.length)
+      console.log("comments:", comments);
 
     this.currentNode = instance;
     if(!this.comments) this.comments = [];
-    for(let comment of comments) {
-      this.comments.push({ ...comment, node: instance });
+    for(let { comment, pos, len, ...item } of comments) {
+      this.comments.push({ ...item, text: comment, pos, len, node: instance });
     }
-    if(comments.length) for(let comment of comments) console.log("comment:", comment);
-
+    if(comments.length) for(let comment of this.comments) {
+      console.log("comment:", comment);
+    }
+*/
     instance.position = this.stack[0].position;
     this.lastPos = this.stack[0].position;
 

@@ -21,8 +21,9 @@ export class Token {
     this.value = value;
     this.start = start;
     this.end = end;
+    this.pos = pos;
     const delta = end - start - 1;
-    this.pos = {
+    this.position = {
       column: pos ? pos.column : 0,
       line: pos ? pos.line : 0,
       [Symbol.toStringTag]() {

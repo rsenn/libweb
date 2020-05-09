@@ -26,7 +26,7 @@ export class SortedMap extends Map {
 
   [CMP] = null;
   [ORDER] = null;
-  
+
   /**
    * Create a new SortedMap.
    *
@@ -79,6 +79,25 @@ export class SortedMap extends Map {
 
   keys() {
     return this[ORDER][Symbol.iterator]();
+  }
+
+  findKey(pred) {
+    for(let key of this[ORDER]) {
+      if(pred(this.get(key), key, this))
+        return key;
+    }
+  }
+
+  keyOf(value) {
+    return this.findKey(v => value === v);
+  }
+
+  find(pred) {
+    for(let key of this[ORDER]) {
+      const value = this.get(key);
+      if(pred(value, key, this))
+        return value;
+    }
   }
 
   set(key, val) {

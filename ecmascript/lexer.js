@@ -92,15 +92,16 @@ const countLinesCols = (s, p1, p2, lc = { line: 1, column: 1 }) => {
   return lc;
 };
 
-export function Position(line, column, file) {
+export function Position(line, column, pos, file) {
   let obj = this instanceof Position ? this : {};
 
   Object.assign(
     obj,
     {
-      file,
       line,
-      column
+      column,
+      pos,
+      file
     },
     obj === this ? {} : Position.prototype
   );
@@ -113,6 +114,10 @@ Position.prototype[Symbol.toStringTag] = function() {
 Position.prototype.toString = function() {
   const { file, line, column } = this;
   return file ? `${file}:${line}:${column}` : `${line}:${column}`;
+};
+
+Position.prototype.valueOf = function() {
+  return this.pos;
 };
 
 export class Lexer {
@@ -164,7 +169,7 @@ export class Lexer {
     const column = before.length - before.lastIndexOf("\n");
     const line = this.line - (comment.split(/\n/g).length - 1);
 
-    const start = new Position(line, column, this.fileName);
+    const start = new Position(line, column, this.start, this.fileName);
 
     console.log("comment:", this.get(-comment.length));
 
@@ -223,9 +228,9 @@ export class Lexer {
   }
 
   position() {
-    let { line, column, fileName } = this;
+    let { line, column, pos, fileName } = this;
 
-    return new Position(line, column, fileName);
+    return new Position(line, column, pos, fileName);
   }
   /*
   positionString() {

@@ -1,9 +1,11 @@
 import { Node, Literal, PropertyDefinition, FunctionDeclaration, Identifier } from "./estree.js";
 import Util from "../util.js";
+import deep from "../deep.js";
 
 export class Printer {
-  constructor(options = {}) {
+  constructor(options = {}, comments) {
     this.indent = options.indent || 2;
+    this.comments = comments || [];
   }
 
   printNode(node) {
@@ -27,12 +29,35 @@ export class Printer {
     /* if(!fn) {
       throw new Error(`No print function ${className}`);
     }*/
-    let ret = fn.call(this, node);
+    //console.log("position:", node.position);
+
+    let ret = '';
+    let comments = this.adjacent.filter(entry => entry.nodes[1][2] === node);
+
+    if(comments.length) {
+console.log("comments:", comments);
+for(let comment of comments) {
+  ret += comment.text;
+}}
+
+    ret += fn.call(this, node);
+
     // console.log("printNode: " + ret);
     return ret;
   }
 
   print(tree) {
+
+    this.nodes = [...deep.iterate(tree, node => Util.isObject(node) && 'position' in node)].map(([node,path]) => [node.position.valueOf(),path.join("."),node] )/*.sort((a,b) => a[0] - b[0])*/;
+
+  //  console.log("comments: ", this.comments);
+
+ //   console.log("nodes: ", this.nodes);
+    this.adjacent = this.comments.map(({ text, pos, len }) => ({ start: pos, end: pos+len, text, nodes: this.nodes.slice(this.nodes.findIndex(([position,path])  =>  position > pos+len )-1).slice(0, 2) }))
+
+
+   console.log("adjacent: ", this.adjacent);
+
     return this.printNode(tree);
   }
 
@@ -107,7 +132,7 @@ export class Printer {
     let left, right;
     left = this.printNode(object);
     right = this.printNode(property);
-    /null.*{/.test(left) && console.log("object:", object);
+    ///null.*{/.test(left) && console.log("object:", object);
     if(/^[0-9]+$/.test(right)) return left + "[" + right + "]";
     return left + "." + right;
   }
@@ -128,6 +153,7 @@ export class Printer {
     const { arguments: args, callee } = call_expression;
     return this.printNode(callee) + "(" + args.map(arg => this.printNode(arg)).join(", ") + ")";
   }
+  /*
   /*
   printDecoratorExpression(decorator_expression) {
   }*/
