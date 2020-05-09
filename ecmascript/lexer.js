@@ -102,9 +102,10 @@ export function Position(line, column, file) {
       file,
       line,
       column
-    },
-    obj === this ? {} : Position.prototype
+    }
   );
+  if(this !== obj)
+    Object.setPrototypeOf(obj);
   return Object.freeze(obj);
 }
 
