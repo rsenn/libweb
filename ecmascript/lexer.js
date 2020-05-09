@@ -54,7 +54,7 @@ export class SyntaxError extends Error {
     this.ctx = ctx;
     this.ast = ast;
     this.pos = pos;
-    console.log("pos:", Util.inspect(pos, { depth: 10 }));
+    //console.log("pos:", Util.inspect(pos, { depth: 10 }));
   }
 }
 
@@ -350,12 +350,12 @@ export class Lexer {
         return c == "g" || c == "i";
       }
       if(last == ";") return false;
-      console.log("last: " + last + " slashes: " + slashes);
+      //console.log("last: " + last + " slashes: " + slashes);
       return true;
     };
     const print = () => {
       word = this.source.substring(this.start, this.pos);
-      console.log("word: " + word + " lexText: " + this.source.substring(this.start, this.pos));
+      //console.log("word: " + word + " lexText: " + this.source.substring(this.start, this.pos));
     };
 
     // if(this.accept(oneOf('/')))

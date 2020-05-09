@@ -1,55 +1,4 @@
-import {
-  Node,
-  Program,
-  Expression,
-  FunctionLiteral,
-  Identifier,
-  BindingProperty,
-  Literal,
-  ThisExpression,
-  UnaryExpression,
-  UpdateExpression,
-  BinaryExpression,
-  AssignmentExpression,
-  LogicalExpression,
-  MemberExpression,
-  ConditionalExpression,
-  CallExpression,
-  DecoratorExpression,
-  NewExpression,
-  SequenceExpression,
-  Statement,
-  BlockStatement,
-  StatementList,
-  EmptyStatement,
-  ExpressionStatement,
-  ReturnStatement,
-  ContinueStatement,
-  BreakStatement,
-  IfStatement,
-  WhileStatement,
-  DoStatement,
-  ForStatement,
-  ForInStatement,
-  WithStatement,
-  TryStatement,
-  ImportStatement,
-  Declaration,
-  ClassDeclaration,
-  FunctionDeclaration,
-  ArrowFunction,
-  VariableDeclaration,
-  VariableDeclarator,
-  ObjectLiteral,
-  PropertyDefinition,
-  ArrayLiteral,
-  JSXLiteral,
-  BindingPattern,
-  ArrayBindingPattern,
-  ObjectBindingPattern,
-  AwaitExpression,
-  RestOfExpression
-} from "./estree.js";
+import {Node, Literal, PropertyDefinition } from "./estree.js";
 import Util from "../util.js";
 
 export class Printer {
@@ -95,7 +44,7 @@ export class Printer {
 
       if(/\n/.test(line) && output != "") output += "\n";
 
-      output += line + (line.endsWith("}") ? "\n" : ";\n");
+      output += line + (/[}; \n]$/.test(line) ? "\n" : ";\n");
     }
     return output;
   }
@@ -134,6 +83,9 @@ export class Printer {
 
     let arg = this.printNode(argument);
 
+    if(prefix && /[a-z]$/.test(operator))
+      arg = ' '+arg;
+
     return prefix ? operator + arg : arg + operator;
   }
 
@@ -155,6 +107,7 @@ export class Printer {
     const { operator, left, right } = logical_expression;
     return `${this.printNode(left)} ${operator} ${this.printNode(right)}`;
   }
+
   printMemberExpression(member_expression) {
     const { object, property } = member_expression;
     let left, right;
@@ -163,6 +116,10 @@ export class Printer {
     right = this.printNode(property);
 
     /null.*{/.test(left) && console.log("object:", object);
+
+if(/^[0-9]+$/.test(right))
+  return left+"["+right+"]";
+
     return left + "." + right;
   }
 
@@ -234,7 +191,7 @@ export class Printer {
       let line = this.printNode(statement);
       let multiline = /\n/.test(line);
       s += multiline && s.length ? "\n\n" : "\n";
-      if(line != "") s += line + (/(;|\n|})$/.test(line.trimEnd()) ? "" : ";") + (multiline ? "\n" : "");
+      if(line != "") s += line + (/(;|\n|}|\s)$/.test(line.trimEnd()) ? "" : ";") + (multiline ? "\n" : "");
     }
 
     return s;
