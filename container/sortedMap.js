@@ -23,6 +23,10 @@ function bisect(arr, cmp, val) {
  * Map subclass that efficiently maintains a sorted iteration order.
  */
 export class SortedMap extends Map {
+
+  [CMP] = null;
+  [ORDER] = null;
+  
   /**
    * Create a new SortedMap.
    *

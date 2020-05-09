@@ -15,7 +15,7 @@ export class Printer {
       fn =
         this["print" + name] ||
         function(...args) {
-          console.log(`Non-existent:`, args);
+          //console.log(`Non-existent:`, args);
           args = args.map(a => Util.className(a));
           throw new Error(`Non-existent print${name}(${args})`);
         };
@@ -304,7 +304,7 @@ export class Printer {
     const { what, declarations } = export_statement;
 
 
-    console.log("declarations: "+declarations.length);
+    //console.log("declarations: "+declarations.length);
 
     let output = "export ";
     output += what ? this.printNode(what) : "default";
@@ -400,14 +400,14 @@ export class Printer {
     if(members.length == 0) return "{}";
     for(let property of members) {
       if(property.id == null) {
-        console.log("Property:", Util.className(property));
+        //console.log("Property:", Util.className(property));
         throw new Error();
       }
       //if(this.position().line >= 2497)
-              console.log("Property:", property);
+              //console.log("Property:", property);
 
       /*      if(Util.className(property.id) == "Identifier") {
-        console.log("property.id:", Util.className(property.id));
+        //console.log("property.id:", Util.className(property.id));
         throw new Error();
       }*/
       let name = this.printNode(property.id);

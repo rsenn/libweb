@@ -56,9 +56,9 @@ export const equals = (a, b) => {
   }
 };
 
-export const extend = () => {
+export const extend = (...args) => {
   let destination, k, source, sources, j, len;
-  (destination = arguments[0]), (sources = 2 <= arguments.length ? Array.prototype.slice.call(arguments, 1) : []);
+  (destination = args[0]), (sources = 2 <= args.length ? Array.prototype.slice.call(args, 1) : []);
   for(j = 0, len = sources.length; j < len; j++) {
     source = sources[j];
     for(k in source) {
@@ -77,6 +77,7 @@ export const select = (root, filter, path) => {
     k,
     selected = [],
     v;
+  path = typeof(path) == 'string' ? path.split(/\.\//) : path;
   if(!path) path = [];
   if(filter(root, path)) selected.push({ path: path, value: root });
   else if(Util.isObject(root)) for(k in root) selected = selected.concat(select(root[k], filter, [...path, k]));
@@ -92,14 +93,28 @@ export const iterate = function*(value, filter = v => true, path = []) {
   if(r !== -1) if (Util.isObject(value)) for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
 };
 
-export const flatten = function(obj, dst = {}) {
-  for(let [value,path] of iterate(obj, v => true))
-    dst[path.join(".")] = value;
+export const flatten = function(iter, dst = {}) {
+  let insert;
+  if(!iter.next) 
+    iter = iterate(iter, v => true);
+
+  
+  if(dst instanceof Map)
+    insert = (name,value) => dst.set(name,value);
+  else if(dst.length)
+    insert = (name,value) => dst.push([name,value]);
+  else
+    insert = (name,value) => dst[name] = value;
+
+    for(let [value,path] of iter)
+       insert(path.join("."), value);
+
   return dst;
 };
 
 export const get = (root, path) => {
   let len;
+  path = typeof(path) == 'string' ? path.split(/\.\//) : path;
   path = Util.clone(path);
   for(let j = 0, len = path.length; j < len; j++) {
     let pathElement = path[j];
@@ -109,6 +124,7 @@ export const get = (root, path) => {
 };
 
 export const set = (root, path, value) => {
+  path = typeof(path) == 'string' ? path.split(/\.\//) : path;
   path = Util.clone(path);
   let lastPath = path.pop();
   for(let j = 0, len = path.length; j < len; j++) {
