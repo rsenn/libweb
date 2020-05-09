@@ -1,5 +1,5 @@
 import Util from "../util.js";
-import Lexer, { Stack, SyntaxError } from "./lexer.js";
+import Lexer, { SyntaxError } from "./lexer.js";
 import deep from "../deep.js";
 import { tokenTypes } from "./token.js";
 import { Printer } from "./printer.js";
