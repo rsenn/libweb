@@ -34,9 +34,7 @@ export function autofillEvent(window, changeHandler) {
   });
 
   function initAutoFillListeners() {
-    const inputElements = [
-      ...(document.getElementsByTagName("input") || document.querySelectorAll("input"))
-    ];
+    const inputElements = [...(document.getElementsByTagName("input") || document.querySelectorAll("input"))];
 
     //mark all values that are present when the DOM is ready.
     //We don't need to trigger a change event here,

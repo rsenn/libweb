@@ -154,27 +154,8 @@ Size.bind = (o, p, gen) => {
   return Util.bindProperties(new Size(0, 0), o, { width, height }, gen);
 };
 
-export const isSize = o =>
-  o &&
-  ((o.width !== undefined && o.height !== undefined) ||
-    (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) ||
-    (o.left !== undefined &&
-      o.right !== undefined &&
-      o.top !== undefined &&
-      o.bottom !== undefined));
+export const isSize = o => o && ((o.width !== undefined && o.height !== undefined) || (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) || (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
 
-for(let name of [
-  "toCSS",
-  "isSquare",
-  "round",
-  "sum",
-  "add",
-  "diff",
-  "sub",
-  "prod",
-  "mul",
-  "quot",
-  "div"
-]) {
+for(let name of ["toCSS", "isSquare", "round", "sum", "add", "diff", "sub", "prod", "mul", "quot", "div"]) {
   Size[name] = points => Size.prototype[name].call(points);
 }

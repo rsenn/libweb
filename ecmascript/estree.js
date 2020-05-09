@@ -404,9 +404,16 @@ export class AwaitExpression extends Expression {
     this.value = value;
   }
 }
+
 export class RestOfExpression extends Node {
   constructor(value) {
     super("RestOfExpression");
+    this.value = value;
+  }
+}
+export class SpreadOperator extends Node {
+  constructor(value) {
+    super("SpreadOperator");
     this.value = value;
   }
 }
@@ -415,44 +422,13 @@ Node.prototype.type = null;
 
 Node.prototype.toString = function() {
   let s = "";
-  [
-    "alternate",
-    "argument",
-    "arguments",
-    "body",
-    "callee",
-    "computed",
-    "consequent",
-    "declarations",
-    "exported",
-    "expression",
-    "expressions",
-    "id",
-    "identifiers",
-    "init",
-    "kind",
-    "left",
-    "loc",
-    "members",
-    "object",
-    "operator",
-    "params",
-    "prefix",
-    "property",
-    "right",
-    "source",
-    "test",
-    "update",
-    "value"
-  ].forEach(field => {
+  ["alternate", "argument", "arguments", "body", "callee", "computed", "consequent", "declarations", "exported", "expression", "expressions", "id", "identifiers", "init", "kind", "left", "loc", "members", "object", "operator", "params", "prefix", "property", "right", "source", "test", "update", "value"].forEach(field => {
     if(this[field]) {
       let value = this[field];
       if(value.value !== undefined) {
         value = `"${value.value}"`;
       } else if(value instanceof Array) {
-        value = `[\n  ${this[field]
-          .map(child => child.toString().replace(/\n/g, "\n  "))
-          .join(",\n  ")}\n]`;
+        value = `[\n  ${this[field].map(child => child.toString().replace(/\n/g, "\n  ")).join(",\n  ")}\n]`;
         value = value.replace(/\n/g, "\n  ");
       } else if(typeof value === "object" && !(value instanceof Array)) {
         value = Util.className(value);
@@ -505,6 +481,7 @@ export const CTORS = {
   RestOfExpression,
   ReturnStatement,
   SequenceExpression,
+  SpreadOperator,
   Statement,
   StatementList,
   ThisExpression,

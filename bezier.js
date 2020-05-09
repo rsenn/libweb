@@ -78,9 +78,7 @@ module.exports = function bezier(mX1, mY1, mX2, mY2) {
   }
 
   // Precompute samples table
-  var sampleValues = float32ArraySupported
-    ? new Float32Array(kSplineTableSize)
-    : new Array(kSplineTableSize);
+  var sampleValues = float32ArraySupported ? new Float32Array(kSplineTableSize) : new Array(kSplineTableSize);
   for(var i = 0; i < kSplineTableSize; ++i) {
     sampleValues[i] = calcBezier(i * kSampleStepSize, mX1, mX2);
   }
@@ -96,9 +94,7 @@ module.exports = function bezier(mX1, mY1, mX2, mY2) {
     --currentSample;
 
     // Interpolate to provide an initial guess for t
-    var dist =
-      (aX - sampleValues[currentSample]) /
-      (sampleValues[currentSample + 1] - sampleValues[currentSample]);
+    var dist = (aX - sampleValues[currentSample]) / (sampleValues[currentSample + 1] - sampleValues[currentSample]);
     var guessForT = intervalStart + dist * kSampleStepSize;
 
     var initialSlope = getSlope(guessForT, mX1, mX2);

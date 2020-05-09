@@ -165,14 +165,12 @@ export class EagleRenderer {
 
   constructor(doc, factory) {
     this.doc = doc;
-    this.create = (tag, attrs, parent) =>
-      factory(tag, "id" in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
+    this.create = (tag, attrs, parent) => factory(tag, "id" in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
   }
 
   setPalette(palette) {
     Object.defineProperty(this, "palette", {
-      value:
-        palette || (this.doc.type == "brd" ? BoardRenderer.palette : SchematicRenderer.palette),
+      value: palette || (this.doc.type == "brd" ? BoardRenderer.palette : SchematicRenderer.palette),
       writable: false,
       configurable: false
     });
@@ -184,9 +182,7 @@ export class EagleRenderer {
       else if(number_or_name.tagName == "pad") number_or_name = "Pads";
       else if(number_or_name.tagName == "description") number_or_name = "Document";
     }
-    const { number, name } = Util.isObject(number_or_name)
-      ? { number: number_or_name.number, name: number_or_name.name }
-      : { number: +number_or_name, name: "" + number_or_name };
+    const { number, name } = Util.isObject(number_or_name) ? { number: number_or_name.number, name: number_or_name.name } : { number: +number_or_name, name: "" + number_or_name };
     return this.getLayer(typeof number == "number" ? number : name);
   }
   getLayer(id) {
@@ -210,11 +206,7 @@ export class EagleRenderer {
   layerOf(element) {
     let layer;
     do {
-      layer =
-        element.getAttribute("data-layer") ||
-        element.getAttribute("data-layer-id") ||
-        element.getAttribute("data-layer-name") ||
-        element.getAttribute("layer");
+      layer = element.getAttribute("data-layer") || element.getAttribute("data-layer-id") || element.getAttribute("data-layer-name") || element.getAttribute("layer");
       if(layer) {
         const layerId = +(layer + "").replace(/ .*/g, "");
         return this.layers[layerId];
@@ -350,8 +342,7 @@ export class EagleRenderer {
         console.log(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);*/
 
         if(finalTransformation.rotation) {
-          if(finalTransformation.rotation.angle < 0)
-            finalTransformation.rotation.angle = Math.abs(finalTransformation.rotation.angle);
+          if(finalTransformation.rotation.angle < 0) finalTransformation.rotation.angle = Math.abs(finalTransformation.rotation.angle);
         }
 
         const baseAlignment = EagleRenderer.alignment(align);
@@ -415,9 +406,7 @@ export class EagleRenderer {
     let h, v;
     const { horizontalAlignment, verticalAlignment } = EagleRenderer;
 
-    for(let tok of (
-      align || horizontalAlignment[def[0] + 1] + "-" + verticalAlignment[def[1] + 1]
-    ).split(/-/g)) {
+    for(let tok of (align || horizontalAlignment[def[0] + 1] + "-" + verticalAlignment[def[1] + 1]).split(/-/g)) {
       switch (tok) {
         case "center": {
           if(h === undefined) h = 0;
@@ -448,13 +437,9 @@ export class EagleRenderer {
     const { x, y } = coord;
     const { verticalAlignment, horizontalAlignment } = EagleRenderer;
     let r = {};
-    if(hv & VERTICAL)
-      r["dominant-baseline"] =
-        verticalAlignment[Math.round(y) + 1] || verticalAlignment[defaultY + 1];
+    if(hv & VERTICAL) r["dominant-baseline"] = verticalAlignment[Math.round(y) + 1] || verticalAlignment[defaultY + 1];
 
-    if(hv & HORIZONTAL)
-      r["text-anchor"] =
-        horizontalAlignment[Math.round(x) + 1] || horizontalAlignment[defaultX + 1];
+    if(hv & HORIZONTAL) r["text-anchor"] = horizontalAlignment[Math.round(x) + 1] || horizontalAlignment[defaultX + 1];
     return r;
   }
 }
@@ -469,24 +454,7 @@ export class SchematicRenderer extends EagleRenderer {
     point: 0
   };
 
-  static palette = [
-    "#ffffff",
-    "#4b4ba5",
-    "#4ba54b",
-    "#4ba5a5",
-    "#a54b4b",
-    "#a54ba5",
-    "#a5a54b",
-    "#afafaf",
-    "#4b4bff",
-    "#4bff4b",
-    "#4bffff",
-    "#ff4b4b",
-    "#ff4bff",
-    "#ffff4b",
-    "#4b4b4b",
-    "#a5a5a5"
-  ];
+  static palette = ["#ffffff", "#4b4ba5", "#4ba54b", "#4ba5a5", "#a54b4b", "#a54ba5", "#a5a54b", "#afafaf", "#4b4bff", "#4bff4b", "#4bffff", "#ff4b4b", "#ff4bff", "#ffff4b", "#4b4b4b", "#a5a5a5"];
 
   constructor(doc, factory) {
     super(doc, factory);
@@ -501,17 +469,14 @@ export class SchematicRenderer extends EagleRenderer {
 
   renderCollection(collection, parent, opts) {
     const arr = [...collection.children];
-    for(let item of arr.filter(item => item.tagName != "text"))
-      this.renderItem(item, parent, opts);
-    for(let item of arr.filter(item => item.tagName == "text"))
-      this.renderItem(item, parent, opts);
+    for(let item of arr.filter(item => item.tagName != "text")) this.renderItem(item, parent, opts);
+    for(let item of arr.filter(item => item.tagName == "text")) this.renderItem(item, parent, opts);
   }
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
-    const svg = (elem, attr, parent) =>
-      this.create(elem, { className: item.tagName, ...LayerAttributes(layer), ...attr }, parent);
+    const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...LayerAttributes(layer), ...attr }, parent);
 
     const { labelText, coordFn = i => i } = opts;
     switch (item.tagName) {
@@ -534,9 +499,7 @@ export class SchematicRenderer extends EagleRenderer {
       case "pin": {
         const { x, y, length, rot, name, visible } = coordFn(item);
         const angle = +(rot || "0").replace(/R/, "");
-        const vec = Point.fromAngle((angle * Math.PI) / 180).prod(
-          SchematicRenderer.pinSizes[length] * 2.54
-        );
+        const vec = Point.fromAngle((angle * Math.PI) / 180).prod(SchematicRenderer.pinSizes[length] * 2.54);
         const pivot = new Point(+x, +y);
         const l = new Line(pivot, vec.add(pivot));
 
@@ -625,24 +588,7 @@ export class SchematicRenderer extends EagleRenderer {
 }
 
 export class BoardRenderer extends EagleRenderer {
-  static palette = [
-    "hsl(230,100%,40%)",
-    "rgb(252,245,38)",
-    "rgb(0,126,24)",
-    "rgb(0,23,185)",
-    "rgb(79,9,0)",
-    "rgb(62,46,25)",
-    "hsl(30,100%,55%)",
-    "rgb(255,180,83)",
-    "rgb(105,82,33)",
-    "rgb(251,252,247)",
-    "rgb(140,95,51)",
-    "rgb(132,148,109)",
-    "rgb(168,166,32)",
-    "rgb(16,6,61)",
-    "rgb(178,27,0)",
-    "hsl(30,0%,80%)"
-  ];
+  static palette = ["hsl(230,100%,40%)", "rgb(252,245,38)", "rgb(0,126,24)", "rgb(0,23,185)", "rgb(79,9,0)", "rgb(62,46,25)", "hsl(30,100%,55%)", "rgb(255,180,83)", "rgb(105,82,33)", "rgb(251,252,247)", "rgb(140,95,51)", "rgb(132,148,109)", "rgb(168,166,32)", "rgb(16,6,61)", "rgb(178,27,0)", "hsl(30,0%,80%)"];
 
   constructor(obj, factory) {
     super(obj, factory);
@@ -659,8 +605,7 @@ export class BoardRenderer extends EagleRenderer {
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
     const color = layer ? this.getColor(layer.color) : this.getColor(6);
-    const svg = (elem, attr, parent) =>
-      this.create(elem, { className: item.tagName, ...LayerAttributes(layer), ...attr }, parent);
+    const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...LayerAttributes(layer), ...attr }, parent);
     const { labelText, coordFn = i => i, rot } = opts;
     switch (item.tagName) {
       case "via":
@@ -675,26 +620,18 @@ export class BoardRenderer extends EagleRenderer {
         switch (shape) {
           case "long": {
             const w = ro * 0.75;
-            data = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${-w *
-              2} 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
+            data = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${-w * 2} 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
             break;
           }
           case "square": {
-            const points = [
-              new Point(-1, -1),
-              new Point(1, -1),
-              new Point(1, 1),
-              new Point(-1, 1)
-            ].map(p => p.prod(ro * 1.27));
+            const points = [new Point(-1, -1), new Point(1, -1), new Point(1, 1), new Point(-1, 1)].map(p => p.prod(ro * 1.27));
 
             data = points.map((p, i) => `${i == 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
 
             break;
           }
           case "octagon": {
-            const points = Util.range(0, 7).map(i =>
-              Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.4)
-            );
+            const points = Util.range(0, 7).map(i => Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.4));
 
             data = points.map((p, i) => `${i == 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
             break;
@@ -769,11 +706,9 @@ export class BoardRenderer extends EagleRenderer {
       }
     }
 
-    for(let item of other)
-      if(predicate(item) && item.tagName == "pad") this.renderItem(item, parent, opts);
+    for(let item of other) if(predicate(item) && item.tagName == "pad") this.renderItem(item, parent, opts);
 
-    for(let item of other)
-      if(predicate(item) && item.tagName != "pad") this.renderItem(item, parent, opts);
+    for(let item of other) if(predicate(item) && item.tagName != "pad") this.renderItem(item, parent, opts);
 
     for(let [layerId, wires] of wireMap) {
       if(parent.classList.contains("plain")) continue;
@@ -994,8 +929,7 @@ export function renderDocument(doc, container) {
   window.dump = () => {
     let layerMap = (window.layerMap = new Map());
     let insert = (window.ins = Util.bucketInserter(layerMap));
-    let getLayersForColor = number =>
-      layerMap.has(number + "") ? layerMap.get(number + "").map(l => l.name) : [];
+    let getLayersForColor = number => (layerMap.has(number + "") ? layerMap.get(number + "").map(l => l.name) : []);
     for(let layer of renderer.doc.layers.list) {
       const { color, number, name, active, fill, visible } = layer.attributes;
       if(active == "no") continue;
@@ -1006,14 +940,9 @@ export function renderDocument(doc, container) {
     const cmap = (window.colormap = new ColorMap(renderer.palette));
     console.log("cmap:", cmap);
     console.log("cmap:", [...cmap.toScalar({ fmt: n => `0b${n.toString(2)}` })]);
-    const layerNames = Util.unique(
-      [...eagle.getAll(e => e.tagName)].filter(e => e.layer).map(e => e.layer.name)
-    );
+    const layerNames = Util.unique([...eagle.getAll(e => e.tagName)].filter(e => e.layer).map(e => e.layer.name));
 
-    Util.colorDump(
-      rgba1,
-      (c, n) => ("    " + n).slice(-3) + "   " + getLayersForColor(n).join(" ")
-    );
+    Util.colorDump(rgba1, (c, n) => ("    " + n).slice(-3) + "   " + getLayersForColor(n).join(" "));
 
     colors.dump();
   };
@@ -1053,10 +982,7 @@ export function renderDocument(doc, container) {
   svg.setAttribute("data-aspect", new Rect(sbox).aspect());
 
   obox.outset(2.54 * 2.54);
-  grid.parentElement.insertBefore(
-    SVG.create("rect", { ...gridObj, fill: bgColor, transform: "scale(2.54,2.54)" }),
-    grid
-  );
+  grid.parentElement.insertBefore(SVG.create("rect", { ...gridObj, fill: bgColor, transform: "scale(2.54,2.54)" }), grid);
   groupTransform += ` translate(0,0)`;
   Element.attr(g, { transform: groupTransform });
   return renderer;

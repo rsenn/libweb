@@ -35,9 +35,7 @@ export class Observe {
 
   set(target, key, value, context) {
     if(Reflect.has(target, key)) {
-      this.fn.apply(this, [
-        { name: key, object: JSON.stringify(target), type: "update", oldValue: target[key] }
-      ]);
+      this.fn.apply(this, [{ name: key, object: JSON.stringify(target), type: "update", oldValue: target[key] }]);
       return Reflect.set(target, key, value, context);
     } else {
       this.fn.apply(this, [{ name: key, object: JSON.stringify(target), type: "add" }]);
@@ -46,9 +44,7 @@ export class Observe {
   }
 
   deleteProperty(target, key) {
-    this.fn.apply(this, [
-      { name: key, object: JSON.stringify(target), type: "delete", oldValue: target[key] }
-    ]);
+    this.fn.apply(this, [{ name: key, object: JSON.stringify(target), type: "delete", oldValue: target[key] }]);
     return Reflect.deleteProperty(target, key);
   }
 

@@ -61,28 +61,9 @@ export class EagleDocument extends EagleNode {
   cacheFields() {
     switch (this.type) {
       case "sch":
-        return [
-          "settings",
-          "layers",
-          "libraries",
-          "classes",
-          "parts",
-          "sheets",
-          "instances",
-          "nets"
-        ];
+        return ["settings", "layers", "libraries", "classes", "parts", "sheets", "instances", "nets"];
       case "brd":
-        return [
-          "settings",
-          "layers",
-          "libraries",
-          "classes",
-          "designrules",
-          "elements",
-          "signals",
-          "pads",
-          "plain"
-        ];
+        return ["settings", "layers", "libraries", "classes", "designrules", "elements", "signals", "pads", "plain"];
       case "lbr":
         return ["settings", "layers", "library", "packages", "symbols", "devicesets"];
     }

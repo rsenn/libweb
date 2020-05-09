@@ -38,8 +38,7 @@ export class SwipeTracker {
         });
       });
       mouseObserver.subscribe(pos => {
-        if(this.mouse === null || !this.mouse || typeof this.mouse.move != "function")
-          this.mouse = new Point(pos);
+        if(this.mouse === null || !this.mouse || typeof this.mouse.move != "function") this.mouse = new Point(pos);
         else this.mouse.move(pos.x, pos.y);
       });
       const touchObserver = trkl.from(observable => {
@@ -59,9 +58,7 @@ export class SwipeTracker {
           }
           observable(pos);
         };
-        ["touchstart", "touchmove", "touchend"].forEach(name =>
-          window.addEventListener(name, handler)
-        );
+        ["touchstart", "touchmove", "touchend"].forEach(name => window.addEventListener(name, handler));
       });
       touchObserver.subscribe(pos => {
         if(!this.touch || typeof this.touch.move !== "function") this.touch = new Point(pos);
@@ -149,17 +146,7 @@ export class SwipeTracker {
           .join(", ");
       },
       toString: function() {
-        return (
-          `SwipeEvent ${this.name.toUpperCase()}(` +
-          (this.delta && this.delta.toString(false)) +
-          ") " +
-          this.getAxis() +
-          " " +
-          this.dist +
-          " [" +
-          (this.mouse && this.mouse.toSource(false)) +
-          "]"
-        );
+        return `SwipeEvent ${this.name.toUpperCase()}(` + (this.delta && this.delta.toString(false)) + ") " + this.getAxis() + " " + this.dist + " [" + (this.mouse && this.mouse.toSource(false)) + "]";
       }
     };
     Object.defineProperty(SwipeEvent.prototype, "dist", {

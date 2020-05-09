@@ -3,13 +3,13 @@ import { tokenTypes } from "./token.js";
 import Util from "../util.js";
 
 export function PathReplacer() {
-let re;
+  let re;
   try {
     let pwd = process.cwd();
     re = new RegExp(`(file://)?${pwd}/`, "g");
     t = s => s.replace(re, "");
   } catch(err) {}
-  return (path,to = '') => re ? path.replace(re,to) : path;
+  return (path, to = "") => (re ? path.replace(re, to) : path);
 }
 
 export function Stack() {
@@ -23,18 +23,13 @@ export function Stack() {
     t = s => s.replace(re, "");
   } catch(err) {}
 
-  let maxLen = stack.reduce(
-    (acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc),
-    0
-  );
+  let maxLen = stack.reduce((acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc), 0);
 
   return stack
     .filter(s => s.functionName != "esfactory")
-    .map(
-      function({ fileName = "", columnNumber, lineNumber, functionName = "", methodName = "" }) {
-        return `  ${functionName.padEnd(maxLen+1)} ${t(fileName)}:${lineNumber}`;
-      }
-    );
+    .map(function({ fileName = "", columnNumber, lineNumber, functionName = "", methodName = "" }) {
+      return `  ${functionName.padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`;
+    });
   /*
   stack = stack.filter(({ functionName }) => !/Parser.parser.</.test(functionName)g1);
   stack = stack.filter(({ typeName }) => typeName == "Parser");
@@ -51,7 +46,6 @@ export function Error(msg) {
 */
 export class SyntaxError extends Error {
   constructor(ctx, msg, ast, pos) {
-
     super(msg);
 
     this.msg = msg;
@@ -62,11 +56,11 @@ export class SyntaxError extends Error {
     this.pos = pos;
     console.log("pos:", Util.inspect(pos, { depth: 10 }));
   }
-};
+}
 
 SyntaxError.prototype.toString = function() {
   const { msg, pos, ctx } = this;
-  return pos+': '+(ctx ? (ctx+' error: ') : '')+msg;
+  return pos + ": " + (ctx ? ctx + " error: " : "") + msg;
 };
 
 SyntaxError.prototype[Symbol.toStringTag] = function() {
@@ -220,19 +214,12 @@ export class Lexer {
     // Make sure identifier didn't start with a decimal digit
     const firstChar = this.source[this.start];
     if(isDecimalDigit(firstChar)) {
-      throw this.error(
-        `Invalid identifier: ${this.source.substring(this.start, this.pos)}\n${this.currentLine()}`
-      );
+      throw this.error(`Invalid identifier: ${this.source.substring(this.start, this.pos)}\n${this.currentLine()}`);
     }
 
     const c = this.peek();
     if(isQuoteChar(c)) {
-      throw this.error(
-        `Invalid identifier: ${this.source.substring(
-          this.start,
-          this.pos + 1
-        )}${this.currentLine()}`
-      );
+      throw this.error(`Invalid identifier: ${this.source.substring(this.start, this.pos + 1)}${this.currentLine()}`);
     }
 
     const word = this.source.substring(this.start, this.pos);
@@ -247,45 +234,39 @@ export class Lexer {
     }
     return this.lexText;
   }
-   get columnIndex() {
+  get columnIndex() {
     let p;
-     for(p = this.pos; p > 0; p--) {
+    for(p = this.pos; p > 0; p--) {
       if(this.source[p - 1] == "\n") break;
     }
-    return this.pos-p;
-   }
-   getLineRange() {
-        let p, e;
- const { pos, column, source } = this;
+    return this.pos - p;
+  }
+  getLineRange() {
+    let p, e;
+    const { pos, column, source } = this;
     for(e = pos; e < source.length; e++) {
       if(source[e] == "\n") break;
     }
     for(p = pos; p > 0; p--) {
       if(source[p - 1] == "\n") break;
     }
-    return [p,e];
-   }
-   getLine() {
-       const [start,end] = this.getLineRange();
-return this.source.substring(start, end);
+    return [p, e];
+  }
+  getLine() {
+    const [start, end] = this.getLineRange();
+    return this.source.substring(start, end);
   }
 
   currentLine() {
     const { pos, line, columnIndex, source } = this;
-   
 
     let lineno = `${(line + "").padStart(5)}: `;
     let indent = " ".repeat(lineno.length);
-    let column = columnIndex+1;
+    let column = columnIndex + 1;
 
-    let indicator = indent +
-      ` column ${column} ----`
-        .padStart(columnIndex)
-        .slice(-columnIndex)+'╯';
+    let indicator = indent + ` column ${column} ----`.padStart(columnIndex).slice(-columnIndex) + "╯";
 
-    return `\n${lineno}${this.getLine()}\n${indicator}\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${
-      this.accepted.length
-    }\n${indent + source.slice(this.pos, this.pos + 10)}`;
+    return `\n${lineno}${this.getLine()}\n${indicator}\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${this.accepted.length}\n${indent + source.slice(this.pos, this.pos + 10)}`;
   }
 
   lineRange(start, end) {
@@ -588,34 +569,7 @@ function isRegExpChar(c) {
 }
 
 function isPunctuatorChar(c) {
-  const chars = [
-    "=",
-    ".",
-    "-",
-    "%",
-    "}",
-    ">",
-    ",",
-    "*",
-    "[",
-    "<",
-    "!",
-    "/",
-    "]",
-    "~",
-    "&",
-    "(",
-    ";",
-    "?",
-    "|",
-    ")",
-    ":",
-    "+",
-    "^",
-    "{",
-    "@"
-  ];
-
+  const chars = "=.-%}>,*[<!/]~&(;?|):+^{@";
   return chars.indexOf(c) >= 0;
 }
 
@@ -627,7 +581,7 @@ function isPunctuator(word) {
       /* prettier-ignore */ return (["!=", "*=", "&&", "<<", "/=", "||", ">>", "&=", "==", "++", "|=", "<=", "--", "+=", "^=", ">=", "-=", "%=", "=>"]).indexOf(word) >= 0;
 
     case 3:
-      return (["!==", "===", ">>=", "-->>", "<<=", "..."]).indexOf(word) >= 0;
+      return ["!==", "===", ">>=", "-->>", "<<=", "..."].indexOf(word) >= 0;
 
     case 4:
       return word === "-->>=";

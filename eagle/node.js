@@ -48,8 +48,7 @@ export class EagleNode extends EagleInterface {
   getDocument() {
     let l = this.path.clone();
     let d = this.owner;
-    if(!(d instanceof EagleDocument) && this.path.length)
-      while(!(d instanceof EagleDocument)) d = d[l.shift()];
+    if(!(d instanceof EagleDocument) && this.path.length) while(!(d instanceof EagleDocument)) d = d[l.shift()];
     return d;
   }
 
@@ -82,14 +81,10 @@ export class EagleNode extends EagleInterface {
       ret = this.xml[0];
     } else {
       ret.tagName = this.tagName;
-      if(this.attributes)
-        ret.attributes = Util.map(this.attributes, (k, v) => [k, this.handlers[k]()]);
+      if(this.attributes) ret.attributes = Util.map(this.attributes, (k, v) => [k, this.handlers[k]()]);
       if(this.context) ret.text = this.text;
       let children = [];
-      if(this.children && "map" in this.children)
-        children = this.children
-          .map(child => child.raw || child.text)
-          .filter(child => child !== undefined);
+      if(this.children && "map" in this.children) children = this.children.map(child => child.raw || child.text).filter(child => child !== undefined);
       ret.children = children;
     }
     return ret;
@@ -132,22 +127,12 @@ export class EagleNode extends EagleInterface {
       let maps = {};
       let ref = this.ref;
 
-      for(let [value, path] of deep.iterate(
-        ref.dereference(),
-        v => v && fields.indexOf(v.tagName) != -1
-      )) {
+      for(let [value, path] of deep.iterate(ref.dereference(), v => v && fields.indexOf(v.tagName) != -1)) {
         const key = value.tagName;
         lazy[key] = () => makeEagleNode(this, ref.down(...path), ctor);
         lists[key] = () => lazy[key]().children;
 
-        maps[key] =
-          ["sheets", "connects", "plain"].indexOf(key) != -1
-            ? lists[key]
-            : () =>
-                makeEagleNodeMap(
-                  lazy[key]().children,
-                  key == "instances" ? "part" : key == "layers" ? "number" : "name"
-                );
+        maps[key] = ["sheets", "connects", "plain"].indexOf(key) != -1 ? lists[key] : () => makeEagleNodeMap(lazy[key]().children, key == "instances" ? "part" : key == "layers" ? "number" : "name");
       }
       lazyMembers(this.lists, lists);
       lazyMembers(this.cache, lazy);
@@ -222,12 +207,7 @@ export class EagleNode extends EagleInterface {
     return null;
   }
 
-  getByName(
-    element,
-    name,
-    attr = "name",
-    t = ([v, l, d]) => makeEagleNode(d, this.ref.down(...l), this.childConstructor)
-  ) {
+  getByName(element, name, attr = "name", t = ([v, l, d]) => makeEagleNode(d, this.ref.down(...l), this.childConstructor)) {
     for(let [v, l, d] of this.iterator([], it => it)) {
       if(typeof v == "object" && "tagName" in v && "attributes" in v && attr in v.attributes) {
         if(v.tagName == element && v.attributes[attr] == name) return t([v, l, d]);
@@ -274,13 +254,7 @@ export class EagleNode extends EagleInterface {
 
   [Symbol.for("nodejs.util.inspect.custom")]() {
     let attrs = "";
-    if(this.attributes)
-      for(let attr in this.attributes)
-        attrs += ` ${text(attr, 1, 33)}${text(":", 1, 36)}${text(
-          `'${this.attributes[attr]}'`,
-          1,
-          32
-        )}`;
+    if(this.attributes) for(let attr in this.attributes) attrs += ` ${text(attr, 1, 33)}${text(":", 1, 36)}${text(`'${this.attributes[attr]}'`, 1, 32)}`;
     let numChildren = this.raw.children && this.raw.children.length;
     if(numChildren == 0) attrs += " /";
     let ret = `${Util.className(this)}`;

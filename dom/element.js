@@ -12,8 +12,7 @@ import Util from "../util.js";
  */
 export class Element extends Node {
   static wrap(e) {
-    if(!this.methods)
-      this.methods = Util.static({}, this, this, (k, fn) => k != "wrap" && fn.length > 0);
+    if(!this.methods) this.methods = Util.static({}, this, this, (k, fn) => k != "wrap" && fn.length > 0);
 
     if(typeof e == "string") e = Element.find(e);
     return Util.extend(e, this.methods);
@@ -21,8 +20,7 @@ export class Element extends Node {
 
   static create() {
     let args = [...arguments];
-    let { tagName, ns, children, ...props } =
-      typeof args[0] == "object" ? args.shift() : { tagName: args.shift(), ...args.shift() };
+    let { tagName, ns, children, ...props } = typeof args[0] == "object" ? args.shift() : { tagName: args.shift(), ...args.shift() };
     let parent = args.shift();
 
     //console.log('Element.create ', { tagName, props, parent });
@@ -112,18 +110,9 @@ export class Element extends Node {
     elem = Element.find(elem);
     let children = [];
     if(opts.children) {
-      [...this.childIterator(elem)].forEach(c =>
-        Util.isObject(c) && "tagName" in c
-          ? children.push(Element.toObject(c, elem))
-          : (c.textContent + "").trim() != ""
-          ? children.push(c.textContent)
-          : undefined
-      );
+      [...this.childIterator(elem)].forEach(c => (Util.isObject(c) && "tagName" in c ? children.push(Element.toObject(c, elem)) : (c.textContent + "").trim() != "" ? children.push(c.textContent) : undefined));
     }
-    let attributes =
-      (opts ? opts.namespaceURI : document.body.namespaceURI) != elem.namespaceURI
-        ? { ns: elem.namespaceURI }
-        : {};
+    let attributes = (opts ? opts.namespaceURI : document.body.namespaceURI) != elem.namespaceURI ? { ns: elem.namespaceURI } : {};
     let a = "length" in elem.attributes ? Element.attr(elem) : elem.attributes;
     for(let key in a) attributes[key] = "" + a[key];
     return {
@@ -144,10 +133,7 @@ export class Element extends Node {
       .join(", ");
     s = `${cmd}('${tagName}', {${s}}`;
     let c = elem.children;
-    if(c.length >= 1)
-      s = `${s}, [\n  ${c
-        .map(e => Element.toCommand(e, opts).replace(/\n/g, "\n  "))
-        .join(",\n  ")}\n]`;
+    if(c.length >= 1) s = `${s}, [\n  ${c.map(e => Element.toCommand(e, opts).replace(/\n/g, "\n  ")).join(",\n  ")}\n]`;
     s = `${s}${parent ? `, ${parent}` : ""})`;
     if(elem.firstElementChild && varName) {
       v = parent ? String.fromCharCode(parent.charCodeAt(0) + 1) : varName;
@@ -164,11 +150,7 @@ export class Element extends Node {
 
   static findAll(arg, parent) {
     parent = Element.find(parent);
-    return [
-      ...(parent && parent.querySelectorAll
-        ? parent.querySelectorAll(arg)
-        : document.querySelectorAll(arg))
-    ];
+    return [...(parent && parent.querySelectorAll ? parent.querySelectorAll(arg) : document.querySelectorAll(arg))];
   }
 
   /**
@@ -200,9 +182,7 @@ export class Element extends Node {
       attrs_or_name = elem.getAttributeNames();
     } else {
       attrs_or_name = [];
-      if(Util.isArray(elem.attributes))
-        for(let i = 0; i < elem.attributes.length; i++)
-          attrs_or_name.push(elem.attributes[i].name);
+      if(Util.isArray(elem.attributes)) for(let i = 0; i < elem.attributes.length; i++) attrs_or_name.push(elem.attributes[i].name);
     }
     let ret = attrs_or_name.reduce((acc, name) => {
       const key = /*Util.camelize*/ name;
@@ -244,8 +224,7 @@ export class Element extends Node {
   static rect(elem, options = {}) {
     let args = [...arguments];
     let element = args.shift();
-    if(args.length > 0 && (isRect(args) || isRect(args[0])))
-      return Element.setRect.apply(Element, arguments);
+    if(args.length > 0 && (isRect(args) || isRect(args[0]))) return Element.setRect.apply(Element, arguments);
     const { round = true, relative_to = null, scroll_offset = true } = options;
     const e = typeof element === "string" ? Element.find(element) : element;
     if(!e || !e.getBoundingClientRect) {
@@ -426,9 +405,7 @@ export class Element extends Node {
   }
 
   static getTRBL(element, prefix = "") {
-    const names = ["Top", "Right", "Bottom", "Left"].map(
-      pos => prefix + (prefix == "" ? pos.toLowerCase() : pos + (prefix == "border" ? "Width" : ""))
-    );
+    const names = ["Top", "Right", "Bottom", "Left"].map(pos => prefix + (prefix == "" ? pos.toLowerCase() : pos + (prefix == "border" ? "Width" : "")));
     return new TRBL(Element.getCSS(element, names));
   }
 
@@ -473,16 +450,8 @@ export class Element extends Node {
 
     let parent = element.parentElement ? element.parentElement : element.parentNode;
 
-    const estyle =
-      /*Util.toHash*/ w && w.getComputedStyle
-        ? w.getComputedStyle(element)
-        : d.getComputedStyle(element);
-    const pstyle =
-      parent && parent.tagName
-        ? /*Util.toHash*/ w && w.getComputedStyle
-          ? w.getComputedStyle(parent)
-          : d.getComputedStyle(parent)
-        : {};
+    const estyle = /*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element);
+    const pstyle = parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {};
     console.log("Element.getCSS ", { estyle, pstyle });
 
     let style = Util.removeEqual(estyle, pstyle);
@@ -788,8 +757,7 @@ export class Element extends Node {
 
       e.addEventListener("transitionend", (ctx.cancel = tend).bind(ctx));
 
-      if(typeof callback == "function")
-        e.addEventListener("transitionrun", (ctx.run = trun).bind(ctx));
+      if(typeof callback == "function") e.addEventListener("transitionrun", (ctx.run = trun).bind(ctx));
 
       cancel = () => ctx.cancel();
 

@@ -130,12 +130,7 @@ function getOrderIndependentHash(object) {
   if(type === "object") {
     for(var key in object) {
       if(object.hasOwnProperty(key)) {
-        var keyValueString =
-          "[ type: object, key: " +
-          key +
-          ", value hash: " +
-          getOrderIndependentHash(object[key]) +
-          "]";
+        var keyValueString = "[ type: object, key: " + key + ", value hash: " + getOrderIndependentHash(object[key]) + "]";
         accum += hashThisString(keyValueString);
       }
     }
@@ -183,18 +178,8 @@ function deepDiff(lhs, rhs, changes, prefilter, path, key, stack, orderIndepende
   var rtype = typeof rhs;
   var i, j, k, other;
 
-  var ldefined =
-    ltype !== "undefined" ||
-    (stack &&
-      stack.length > 0 &&
-      stack[stack.length - 1].lhs &&
-      Object.getOwnPropertyDescriptor(stack[stack.length - 1].lhs, key));
-  var rdefined =
-    rtype !== "undefined" ||
-    (stack &&
-      stack.length > 0 &&
-      stack[stack.length - 1].rhs &&
-      Object.getOwnPropertyDescriptor(stack[stack.length - 1].rhs, key));
+  var ldefined = ltype !== "undefined" || (stack && stack.length > 0 && stack[stack.length - 1].lhs && Object.getOwnPropertyDescriptor(stack[stack.length - 1].lhs, key));
+  var rdefined = rtype !== "undefined" || (stack && stack.length > 0 && stack[stack.length - 1].rhs && Object.getOwnPropertyDescriptor(stack[stack.length - 1].rhs, key));
 
   if(!ldefined && rdefined) {
     changes.push(new DiffNew(currentPath, rhs));
@@ -245,31 +230,13 @@ function deepDiff(lhs, rhs, changes, prefilter, path, key, stack, orderIndepende
             deepDiff(lhs[k], rhs[k], changes, prefilter, currentPath, k, stack, orderIndependent);
             pkeys[other] = null;
           } else {
-            deepDiff(
-              lhs[k],
-              undefined,
-              changes,
-              prefilter,
-              currentPath,
-              k,
-              stack,
-              orderIndependent
-            );
+            deepDiff(lhs[k], undefined, changes, prefilter, currentPath, k, stack, orderIndependent);
           }
         }
         for(i = 0; i < pkeys.length; ++i) {
           k = pkeys[i];
           if(k) {
-            deepDiff(
-              undefined,
-              rhs[k],
-              changes,
-              prefilter,
-              currentPath,
-              k,
-              stack,
-              orderIndependent
-            );
+            deepDiff(undefined, rhs[k], changes, prefilter, currentPath, k, stack, orderIndependent);
           }
         }
       }
@@ -371,10 +338,7 @@ function applyChange(target, source, change) {
       last = change.path ? change.path.length - 1 : 0;
     while(++i < last) {
       if(typeof it[change.path[i]] === "undefined") {
-        it[change.path[i]] =
-          typeof change.path[i + 1] !== "undefined" && typeof change.path[i + 1] === "number"
-            ? []
-            : {};
+        it[change.path[i]] = typeof change.path[i + 1] !== "undefined" && typeof change.path[i + 1] === "number" ? [] : {};
       }
       it = it[change.path[i]];
     }

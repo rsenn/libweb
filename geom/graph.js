@@ -40,9 +40,7 @@ export class Graph {
   }
 
   getConnectedNodes(node) {
-    let myConnections = this.connections.filter(
-      connection => connection.node1 === node || connection.node2 === node
-    );
+    let myConnections = this.connections.filter(connection => connection.node1 === node || connection.node2 === node);
     let connectedNodes = new Set();
     myConnections.forEach(connection => {
       connectedNodes.add(connection.node1).add(connection.node2);
@@ -52,9 +50,7 @@ export class Graph {
   }
 
   getConnectionsFromNode(node) {
-    return this.connections.filter(
-      connection => connection.node1 === node || connection.node2 === node
-    );
+    return this.connections.filter(connection => connection.node1 === node || connection.node2 === node);
   }
 
   getNeighboringNodes(node) {
@@ -72,10 +68,7 @@ export class Graph {
 
   isConnected(node1, node2) {
     return this.connections.some(connection => {
-      return (
-        (connection.node1 === node1 && connection.node2 === node2) ||
-        (connection.node2 === node1 && connection.node1 === node2)
-      );
+      return (connection.node1 === node1 && connection.node2 === node2) || (connection.node2 === node1 && connection.node1 === node2);
     });
   }
 
@@ -113,9 +106,7 @@ export class Graph {
 
     let newConnection = new Graph.Connection(node1Matches[0], node2Matches[0]);
 
-    let duplicateConnections = this.connections.filter(connection =>
-      connection.equals(newConnection)
-    );
+    let duplicateConnections = this.connections.filter(connection => connection.equals(newConnection));
 
     if(duplicateConnections.length > 1) {
       console.log("TODO:  HANDLE THIS.  THIS SHOULD NOT BE HAPPENING");
@@ -146,12 +137,8 @@ export class Graph {
       let path = [adjacencyListSourceIndex];
       let startingNeighborIndex = neighbors[i];
       let tmpAdjacencyList = { ...adjacencyList };
-      tmpAdjacencyList[startingNeighborIndex] = tmpAdjacencyList[startingNeighborIndex].filter(
-        nodeIndex => nodeIndex !== adjacencyListSourceIndex
-      );
-      path = path.concat(
-        Graph.findShortestPath(tmpAdjacencyList, startingNeighborIndex, adjacencyListSourceIndex)
-      );
+      tmpAdjacencyList[startingNeighborIndex] = tmpAdjacencyList[startingNeighborIndex].filter(nodeIndex => nodeIndex !== adjacencyListSourceIndex);
+      path = path.concat(Graph.findShortestPath(tmpAdjacencyList, startingNeighborIndex, adjacencyListSourceIndex));
       paths.push(path);
     }
     return paths;
@@ -168,10 +155,7 @@ export class Graph {
     let cyclesToRemove = [];
     let uniqueCycles = [];
     for(let i = 0; i < cycles.length; i++) {
-      if(
-        uniqueCycles.filter(cycle => Graph.doArraysContainSameElements(cycle, cycles[i])).length ===
-        0
-      ) {
+      if(uniqueCycles.filter(cycle => Graph.doArraysContainSameElements(cycle, cycles[i])).length === 0) {
         uniqueCycles.push(cycles[i]);
       }
     }
@@ -248,9 +232,7 @@ export class Graph {
           let path = [i];
           let startingNeighborIndex = neighbors[j];
           let tmpAdjacencyList = { ...leftoverAdjacencyList };
-          tmpAdjacencyList[startingNeighborIndex] = tmpAdjacencyList[startingNeighborIndex].filter(
-            nodeIndex => nodeIndex !== i
-          );
+          tmpAdjacencyList[startingNeighborIndex] = tmpAdjacencyList[startingNeighborIndex].filter(nodeIndex => nodeIndex !== i);
           path = path.concat(Graph.findShortestPath(tmpAdjacencyList, startingNeighborIndex, i));
           extraPaths.push(path);
         }
@@ -258,10 +240,7 @@ export class Graph {
     }
     let leftoverCycles = [];
     for(let i = 0; i < extraPaths.length; i++) {
-      if(
-        leftoverCycles.filter(cycle => Graph.doArraysContainSameElements(cycle, extraPaths[i]))
-          .length === 0
-      ) {
+      if(leftoverCycles.filter(cycle => Graph.doArraysContainSameElements(cycle, extraPaths[i])).length === 0) {
         leftoverCycles.push(extraPaths[i]);
       }
     }
@@ -348,9 +327,6 @@ Graph.Connection = class {
   }
 
   equals(connection) {
-    return (
-      (this.node1.equals(connection.node1) && this.node2.equals(connection.node2)) ||
-      (this.node2.equals(connection.node1) && this.node1.equals(connection.node2))
-    );
+    return (this.node1.equals(connection.node1) && this.node2.equals(connection.node2)) || (this.node2.equals(connection.node1) && this.node1.equals(connection.node2));
   }
 };
