@@ -30,6 +30,7 @@ export function Stack() {
     .map(function({ fileName = "", columnNumber, lineNumber, functionName = "", methodName = "" }) {
       return `  ${functionName.padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`;
     });
+
   /*
   stack = stack.filter(({ functionName }) => !/Parser.parser.</.test(functionName)g1);
   stack = stack.filter(({ typeName }) => typeName == "Parser");
@@ -67,9 +68,58 @@ SyntaxError.prototype[Symbol.toStringTag] = function() {
   return this.toString();
 };
 
+const distTo = (s, pos, inc, fn) => {
+  let i;
+  if(typeof fn == "string" && fn.length == 1) {
+    let ch = fn;
+    fn = c => c === ch;
+  }
+  for(i = pos; !fn(s[i], i); i += inc) {}
+  return i - pos;
+};
+const countLinesCols = (s, p1, p2, lc = { line: 1, column: 1 }) => {
+  //let { line = 1, column = 1 }  = lc;
+  let start = Math.min(p1, p2),
+    end = Math.max(p1, p2);
+
+  for(let i = start; i < end; i++) {
+    if(s[i] == "\n") {
+      lc.column = 1;
+      lc.line++;
+    } else {
+      lc.column++;
+    }
+  }
+  return lc;
+};
+
+export function Position(line, column, file) {
+  let obj = this instanceof Position ? this : {};
+
+  Object.assign(obj, {
+    file,
+    line,
+    column,
+    [Symbol.toStringTag]() {
+      return this.toString();
+    },
+    toString() {
+      const { file, line, column } = this;
+      return file ? `${file}:${line}:${column}` : `${line}:${column}`;
+    }
+  });
+  return Object.freeze(obj);
+}
+
 export class Lexer {
-  constructor(sourceText, fileName) {
+  static escape(str) {
+    return str.replace(/\n/g, "\\n").replace(/\t/g, "\\t");
+  }
+
+  constructor(sourceText, fileName, handleComment) {
     this.setInput(sourceText, fileName);
+
+    this.onComment = handleComment;
   }
 
   error(errorMessage, astNode) {
@@ -97,7 +147,35 @@ export class Lexer {
 
   // Skips over the pending input before this point
   ignore() {
+    //const { line, column } = this;
+
+    //countLinesCols(this.source, this.start, this.pos, this);
+
     this.start = this.pos;
+  }
+
+  skipComment() {
+    const comment = this.getRange(this.start, this.pos);
+    const before = this.getRange(0, this.start);
+    const column = before.length - before.lastIndexOf("\n");
+    const line = this.line - (comment.split(/\n/g).length - 1);
+
+    const start = new Position(line, column, this.fileName);
+
+    console.log("comment:", this.get(-comment.length));
+
+    this.ignore();
+
+    if(typeof this.onComment == "function") this.onComment(comment, start, this.position());
+  }
+
+  getRange(start, end) {
+    end = typeof end == "number" ? end : this.source.length;
+    return this.source.substring(start, end);
+  }
+
+  get(offset) {
+    return this.getRange(Math.min(this.pos + offset, this.pos), Math.max(this.pos + offset, this.pos));
   }
 
   // Returns the next character in the source code
@@ -141,27 +219,16 @@ export class Lexer {
   }
 
   position() {
-    const { line, column } = this;
-    const file = this.fileName;
-    return {
-      file,
-      line,
-      column,
-      [Symbol.toStringTag]() {
-        return this.toString();
-      },
-      toString() {
-        const { file, line, column } = this;
-        return `${file}:${line}:${column}`;
-      }
-    };
-  }
+    let { line, column, fileName } = this;
 
+    return new Position(line, column, fileName);
+  }
+  /*
   positionString() {
     const { line, column } = this;
     return `${line}:${column}`;
   }
-
+*/
   accept(validator) {
     const c = this.peek();
     if(c !== null && validator(c)) {
@@ -214,15 +281,15 @@ export class Lexer {
     // Make sure identifier didn't start with a decimal digit
     const firstChar = this.source[this.start];
     if(isDecimalDigit(firstChar)) {
-      throw this.error(`Invalid identifier: ${this.source.substring(this.start, this.pos)}\n${this.currentLine()}`);
+      throw this.error(`Invalid identifier: ${this.getRange(this.start, this.pos)}\n${this.currentLine()}`);
     }
 
     const c = this.peek();
     if(isQuoteChar(c)) {
-      throw this.error(`Invalid identifier: ${this.source.substring(this.start, this.pos + 1)}${this.currentLine()}`);
+      throw this.error(`Invalid identifier: ${this.getRange(this.start, this.pos + 1)}${this.currentLine()}`);
     }
 
-    const word = this.source.substring(this.start, this.pos);
+    const word = this.getRange(this.start, this.pos);
     if(word === "true" || word === "false") {
       this.addToken(tokenTypes.booleanLiteral);
     } else if(word === "null") {
@@ -242,7 +309,7 @@ export class Lexer {
     }
     return this.pos - p;
   }
-
+  /*
   getLineRange() {
     let p, e;
     const { pos, column, source } = this;
@@ -253,10 +320,15 @@ export class Lexer {
       if(source[p - 1] == "\n") break;
     }
     return [p, e];
+  }*/
+  getLineRange() {
+    const start = this.getRange(0, this.pos).lastIndexOf("\n") + 1;
+    const end = this.source.indexOf("\n", this.pos);
+
+    return [start, end == -1 ? this.source.length : end];
   }
   getLine() {
-    const [start, end] = this.getLineRange();
-    return this.source.substring(start, end);
+    return this.getRange(...this.getLineRange());
   }
 
   currentLine() {
@@ -292,7 +364,7 @@ export class Lexer {
 
         // The hex number needs to at least be followed by some digit.
         if(!this.accept(validator)) {
-          throw this.error(`Invalid number: ${this.source.substring(this.start, this.pos + 1)}`);
+          throw this.error(`Invalid number: ${this.getRange(this.start, this.pos + 1)}`);
         }
       }
       // If number starts with 0 followed by an octal digit, then it's an
@@ -302,7 +374,7 @@ export class Lexer {
       }
       // If a 0 isn't a hex nor an octal number, then it's invalid.
       else if(this.accept(isDecimalDigit)) {
-        throw this.error(`Invalid number: ${this.source.substring(this.start, this.pos)}`);
+        throw this.error(`Invalid number: ${this.getRange(this.start, this.pos)}`);
       }
     }
 
@@ -319,7 +391,7 @@ export class Lexer {
       if(this.accept(oneOf("eE"))) {
         this.accept(oneOf("+-"));
         if(!this.accept(validator)) {
-          throw this.error(`Invalid number: ${this.source.substring(this.start, this.pos + 1)}`);
+          throw this.error(`Invalid number: ${this.getRange(this.start, this.pos + 1)}`);
         }
         this.acceptRun(validator);
       }
@@ -330,7 +402,7 @@ export class Lexer {
     // a string.
     const c = this.peek();
     if(isIdentifierChar(c) || isQuoteChar(c) || oneOf(".eE")(c)) {
-      throw this.error(`Invalid number: ${this.source.substring(this.start, this.pos + 1)}`);
+      throw this.error(`Invalid number: ${this.getRange(this.start, this.pos + 1)}`);
     }
 
     this.addToken(tokenTypes.numericLiteral);
@@ -354,8 +426,8 @@ export class Lexer {
       return true;
     };
     const print = () => {
-      word = this.source.substring(this.start, this.pos);
-      //console.log("word: " + word + " lexText: " + this.source.substring(this.start, this.pos));
+      word = this.getRange(this.start, this.pos);
+      //console.log("word: " + word + " lexText: " + this.getRange(this.start, this.pos));
     };
 
     // if(this.accept(oneOf('/')))
@@ -372,7 +444,7 @@ export class Lexer {
     // This loop will handle the situation when valid punctuators are next
     // to each other. E.g. ![x];
     while(this.accept(isPunctuatorChar)) {
-      let word = this.source.substring(this.start, this.pos);
+      let word = this.getRange(this.start, this.pos);
 
       // Keep accumulating punctuator chars, and as soon as the accumulated
       // word isn't a valid punctuator, we stop and backup to take the
@@ -386,7 +458,7 @@ export class Lexer {
 
     // Handle the case when punctuator is by itself and not next to
     // other punctuators.
-    const word = this.source.substring(this.start, this.pos);
+    const word = this.getRange(this.start, this.pos);
     if(isPunctuator(word)) {
       this.addToken(tokenTypes.punctuator);
       return this.lexText;
@@ -413,7 +485,7 @@ export class Lexer {
         if(c === null) {
           // If we reached EOF without the closing quote char, then this string is
           // incomplete.
-          throw this.error(`Illegal token: ${this.source.substring(this.start, this.pos)}`);
+          throw this.error(`Illegal token: ${this.getRange(this.start, this.pos)}`);
         } else if(!escapeEncountered) {
           if(quoteChar === "`" && c == "{" && prevChar == "$") {
             while(c != "}") {
@@ -423,7 +495,7 @@ export class Lexer {
           } else if(isLineTerminator(c) && quoteChar !== "`") {
             // If we somehow reached EOL without encountering the
             // ending quote char then this string is incomplete.
-            throw this.error(`Illegal token: ${this.source.substring(this.start, this.pos)}`);
+            throw this.error(`Illegal token: ${this.getRange(this.start, this.pos)}`);
           } else if(c === quoteChar) {
             this.addToken(tokenTypes.stringLiteral);
             return this.lexText;
@@ -441,17 +513,17 @@ export class Lexer {
     // Single line comment is only terminated by a line terminator
     // character and nothing else
     this.acceptRun(not(isLineTerminator));
-    this.ignore();
+    this.skipComment();
     return this.lexText;
   }
 
   lexMultiLineComment() {
     do {
       // Multi-line comment is terminated if we see * followed by /
-      const nextTwo = this.source.substring(this.pos, this.pos + 2);
+      const nextTwo = this.getRange(this.pos, this.pos + 2);
       if(nextTwo === "*/") {
         this.skip(2);
-        this.ignore();
+        this.skipComment();
         return this.lexText;
       }
 
@@ -462,7 +534,7 @@ export class Lexer {
   lexText() {
     do {
       // Examine the next 2 characters to see if we're encountering code comments
-      const nextTwo = this.source.substring(this.pos, this.pos + 2);
+      const nextTwo = this.getRange(this.pos, this.pos + 2);
       if(nextTwo === "//") {
         this.skip(2);
         return this.lexSingleLineComment;
@@ -672,6 +744,7 @@ function isKeyword(word) {
         case "import":
         case "switch":
         case "export":
+        case "static":
           return true;
       }
       return false;

@@ -996,6 +996,11 @@ Util.arrRemove = function(arr, i) {
   const index = arr.indexOf(i);
   if(index > -1) arr.splice(index, 1);
 };
+Util.move = function(src, dst = []) {
+  let items = src.splice(0, src.length);
+  dst.splice(dst.length, 0, ...items);
+  return dst;
+};
 Util.removeEqual = function(a, b) {
   let c = {};
   for(let key in Object.assign({}, a)) {

@@ -1,4 +1,4 @@
-import {Node, Literal, PropertyDefinition } from "./estree.js";
+import { Node, Literal, PropertyDefinition, FunctionDeclaration } from "./estree.js";
 import Util from "../util.js";
 
 export class Printer {
@@ -38,12 +38,9 @@ export class Printer {
 
   printProgram(program) {
     let output = "";
-
     for(let statement of program.body) {
       let line = this.printNode(statement);
-
       if(/\n/.test(line) && output != "") output += "\n";
-
       output += line + (/[}; \n]$/.test(line) ? "\n" : ";\n");
     }
     return output;
@@ -73,19 +70,16 @@ export class Printer {
   printThisExpression(this_expression) {
     return "this";
   }
+
   printSpreadElement(spread_element) {
     const { expr } = spread_element;
-
     return "..." + this.printNode(expr);
   }
+
   printUnaryExpression(unary_expression) {
     const { operator, argument, prefix } = unary_expression;
-
     let arg = this.printNode(argument);
-
-    if(prefix && /[a-z]$/.test(operator))
-      arg = ' '+arg;
-
+    if(prefix && /[a-z]$/.test(operator)) arg = " " + arg;
     return prefix ? operator + arg : arg + operator;
   }
 
@@ -111,21 +105,15 @@ export class Printer {
   printMemberExpression(member_expression) {
     const { object, property } = member_expression;
     let left, right;
-
     left = this.printNode(object);
     right = this.printNode(property);
-
     /null.*{/.test(left) && console.log("object:", object);
-
-if(/^[0-9]+$/.test(right))
-  return left+"["+right+"]";
-
+    if(/^[0-9]+$/.test(right)) return left + "[" + right + "]";
     return left + "." + right;
   }
 
   printConditionalExpression(conditional_expression) {
     const { test, consequent, alternate } = conditional_expression;
-
     if(!test) {
       //console.log("conditional_expression:", conditional_expression);
       throw new Error("");
@@ -133,7 +121,6 @@ if(/^[0-9]+$/.test(right))
     let condition = this.printNode(test);
     let if_true = this.printNode(consequent);
     let if_false = this.printNode(alternate);
-
     return condition + " ? " + if_true + " : " + if_false;
   }
 
@@ -160,14 +147,14 @@ if(/^[0-9]+$/.test(right))
     const { body } = block_statement;
     let s = "";
     if(!body) {
-      console.log("block_statement:", block_statement);
+      //console.log("block_statement:", block_statement);
       process.exit();
     }
     if("length" in body) {
       if(body.length == 0) return "{}";
       for(let statement of body) {
         if(statement == null) {
-          console.log("printBlockStatement: ", body);
+          //console.log("printBlockStatement: ", body);
           throw new Error();
         }
         let line = this.printNode(statement);
@@ -186,14 +173,12 @@ if(/^[0-9]+$/.test(right))
   printStatementList(statement_list) {
     const { body } = statement_list;
     let s = "";
-
     for(let statement of body) {
       let line = this.printNode(statement);
       let multiline = /\n/.test(line);
       s += multiline && s.length ? "\n\n" : "\n";
       if(line != "") s += line + (/(;|\n|}|\s)$/.test(line.trimEnd()) ? "" : ";") + (multiline ? "\n" : "");
     }
-
     return s;
   }
 
@@ -222,12 +207,9 @@ if(/^[0-9]+$/.test(right))
 
   printIfStatement(if_statement) {
     const { test, consequent, alternate } = if_statement;
-
     let condition = this.printNode(test);
     let if_true = this.printNode(consequent);
-
     let output = `if(${condition}) ${if_true}`;
-
     if(alternate) {
       let if_false = this.printNode(alternate);
       output += (/[;}\n]$/.test(output) ? "" : ";") + ` else ${if_false}`;
@@ -241,15 +223,13 @@ if(/^[0-9]+$/.test(right))
     let output = `switch(${condition}) {\n`;
     for(let case_clause of cases) {
       const { value, body } = case_clause;
-      if(value == null)
-        output += "  default:";
-     else
-        output += "  case " + this.printNode(value) + ":";
+      if(value == null) output += "  default:";
+      else output += "  case " + this.printNode(value) + ":";
       let case_body = this.printNode(body)
         .trim()
         .replace(/\n/g, "\n  ");
       output += /^[^{].*\n/.test(case_body) ? "\n  " : " ";
-      output += case_body + (/\n/.test(case_body) ? "\n\n"  : "\n");
+      output += case_body + (/\n/.test(case_body) ? "\n\n" : "\n");
     }
     return output + `}`;
   }
@@ -263,12 +243,10 @@ if(/^[0-9]+$/.test(right))
 
   printDoStatement(do_statement) {
     const { body, test } = do_statement;
-
     let output = `do `;
     output += this.printNode(body);
     output += ` while(` + this.printNode(test) + ")";
     return output;
-
     //console.log(arguments[0]);
     //console.log(Object.keys(arguments[0]).join(", "));
     throw new Error(arguments[0]);
@@ -276,11 +254,9 @@ if(/^[0-9]+$/.test(right))
 
   printForStatement(for_statement) {
     const { init, test, update, body } = for_statement;
-
     let assign = init ? this.printNode(init) : "";
-    let condition = test ? ' '+this.printNode(test) : "";
-    let iterate = update ? ' '+this.printNode(update) : "";
-
+    let condition = test ? " " + this.printNode(test) : "";
+    let iterate = update ? " " + this.printNode(update) : "";
     let output = `for(${assign};${condition};${iterate})`;
     output += this.printNode(body);
     return output;
@@ -340,17 +316,13 @@ if(/^[0-9]+$/.test(right))
 
   printClassDeclaration(class_declaration) {
     const { id, extending, members, exported } = class_declaration;
-
     let output = "class";
-
     if(exported) output = "export " + output;
     let name = id ? this.printNode(id) : "";
     if(name != "") output += " " + name;
     if(extending) output += " extends " + this.printNode(extending);
-
     //console.log("members:", members);
     output += " " + this.printNode(members);
-
     return output;
   }
 
@@ -415,51 +387,47 @@ if(/^[0-9]+$/.test(right))
     let a = [];
     let is_multiline = false,
       is_prototype = true;
-
+    if(members.length == 0) return "{}";
     for(let property of members) {
-      let member = this.printNode(property.value);
-      let name = property.id;
-      let line = '';
-
-      if("id" in property.value) {
-        let functionName = property.value.id;
-        if(!functionName || functionName.value == name.value) {
-          if(!functionName)
-            line += name.value;
-
-          name = '';
+      let name = this.printNode(property.id);
+      let value = this.printNode(property.value);
+      let line = "";
+      //console.log("value:", Util.className(property.value), property.id.value);
+      if(property.value instanceof FunctionDeclaration) {
+        //console.log("function.id:", property.value.id);
+        let functionName = property.value.id ? this.printNode(property.value.id) : "";
+        if(functionName == "" || functionName == name) {
+          if(!functionName) line += name;
+          name = "";
+          value = value.replace(/^function\s?/, "");
         }
       }
-      if(!is_multiline && /\n/.test(member)) is_multiline |= true;
-      line += member.replace(/\n/g, "\n  ");
-
-      if(!name /*&& name.value === key*/) {
-        line = line.replace(/function\s?/, "");
-      } else {
-        line = name.value + ": " + line;
-        is_prototype = false;
+      if(!is_multiline && /\n/.test(value)) is_multiline |= true;
+      line += value.replace(/\n/g, "\n  ");
+      if(property.flags) {
+        line = name + " = " + line;
+      } else if(name) {
+        line = name + ": " + line;
+        if(!property.flags) is_prototype = false;
       }
-
+      if(property.flags & PropertyDefinition.STATIC) line = "static " + line;
+      line += property.flags ? ";" : "";
+      if(/\n/.test(line)) line = "\n  " + line;
       a.push(line);
     }
-
-    if(is_multiline) return `{\n  ${a.join(is_prototype ? "\n\n  " : ",\n  ")}\n}`;
-
+    if(is_multiline) return `{\n  ${a.join(is_prototype ? "\n  " : ",\n  ")}\n}`;
     return `{ ${a.join(", ")} }`;
   }
 
-    printPropertyDefinition(property_definition) {
-      const {id, property, getter_or_setter } = property_definition;
-
- let s = getter_or_setter & PropertyDefinition.GETTER ? "get " : getter_or_setter & PropertyDefinition.SETTER ? "set " : "";
-
- s += id.value;
- console.log("property:",property);
-
-s += this.printNode(property);
-return s;
-    }
-
+  printPropertyDefinition(property_definition) {
+    const { id, property, flags } = property_definition;
+    let s = flags & PropertyDefinition.GETTER ? "get " : flags & PropertyDefinition.SETTER ? "set " : "";
+    if(flags & PropertyDefinition.STATIC) s = "static " + s;
+    s += id.value;
+    //console.log("property:", property);
+    s += this.printNode(property);
+    return s;
+  }
 
   printArrayLiteral(array_literal) {
     const { elements } = array_literal;
@@ -477,7 +445,6 @@ return s;
       if(value instanceof Literal) output += this.printNode(value);
       else output += `{${this.printNode(value)}}`;
     }
-
     if(children instanceof Array && children.length > 0) {
       return `<${tag}${output}>
   ${children.map(child => this.printNode(child).replace(/\n/g, "\n  ")).join("\n  ")}

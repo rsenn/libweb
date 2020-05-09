@@ -381,15 +381,15 @@ export class ObjectLiteral extends Node {
 }
 
 export class PropertyDefinition extends Node {
-
   static GETTER = 1;
   static SETTER = 2;
+  static STATIC = 4;
 
-  constructor(id, value, getter_or_setter) {
+  constructor(id, value, flags) {
     super("PropertyDefinition");
     this.id = id;
     this.value = value;
-    this.getter_or_setter = getter_or_setter;
+    this.flags = flags;
   }
 }
 
@@ -516,7 +516,7 @@ export const CTORS = {
   Node,
   ObjectBindingPattern,
   ObjectLiteral,
-PropertyDefinition,
+  PropertyDefinition,
   Program,
   RestOfExpression,
   ReturnStatement,
@@ -535,32 +535,35 @@ PropertyDefinition,
   WithStatement
 };
 
-export const Factory = (function() {
+export function Factory() {
   const nodeList = [];
   var self = function estree(ctor, ...args) {
     ctor = typeof ctor == "string" ? CTORS[ctor] : ctor;
     let instance = new ctor(...args);
-    self.nodes.push(instance);
-    //console.log("factory ret:",instance);
+    self.callback(ctor, args, instance);
+    /*console.log("factory ret:",instance);*/
     return instance;
   };
   self.nodes = nodeList;
   self.stack = [];
   self.loc = { pos: -1, column: -1, line: -1 };
-  return self;
-})();
-
-export const estree = Object.assign(
-  {},
-  Object.keys(CTORS).reduce(
+  self.callback = node => self.nodes.push(node);
+  self.classes = Object.keys(CTORS).reduce(
     (acc, nodeName) => ({
       ...acc,
       [nodeName]: function(...args) {
-        return Factory(nodeName, ...args);
+        return self(nodeName, ...args);
       }
     }),
-    Factory
-  )
-);
+    {}
+  );
 
-//export default estree;
+  return self;
+}
+
+export const estree = (function() {
+  const factory = Factory();
+  return factory.classes;
+})();
+
+export default estree;
