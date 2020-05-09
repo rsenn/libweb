@@ -1,5 +1,4 @@
 import { Token } from "./token.js";
-import { tokenTypes } from "./token.js";
 import Util from "../util.js";
 
 export function PathReplacer() {
@@ -296,13 +295,13 @@ export class Lexer {
 
     const word = this.getRange(this.start, this.pos);
     if(word === "true" || word === "false") {
-      this.addToken(tokenTypes.booleanLiteral);
+      this.addToken(Token.types.booleanLiteral);
     } else if(word === "null") {
-      this.addToken(tokenTypes.nullLiteral);
+      this.addToken(Token.types.nullLiteral);
     } else if(isKeyword(word)) {
-      this.addToken(tokenTypes.keyword);
+      this.addToken(Token.types.keyword);
     } else {
-      this.addToken(tokenTypes.identifier);
+      this.addToken(Token.types.identifier);
     }
     return this.lexText;
   }
@@ -410,39 +409,44 @@ export class Lexer {
       throw this.error(`Invalid number: ${this.getRange(this.start, this.pos + 1)}`);
     }
 
-    this.addToken(tokenTypes.numericLiteral);
+    this.addToken(Token.types.numericLiteral);
 
     return this.lexText;
   }
 
   lexRegExp() {
     let i = 0;
-    let word = "";
+    let word = "", prev = "";
     let slashes = 1;
     let validator = c => {
-      let last = word.substring(word.length - 1);
-      if(c == "/" && last != "\\") {
+  //   let last = word.substring(word.length - 1);
+      console.log("c:" +c +" prev: " + prev + " slashes: " + slashes);
+
+      if(c == " " && prev != "\\") {
+       return false;
+      } else if(c == "/" && prev != "\\") {
         slashes++;
       } else if(slashes == 2) {
         return c == "g" || c == "i";
       }
-      if(last == ";") return false;
-      //console.log("last: " + last + " slashes: " + slashes);
+      if(prev == ";") return false;
+      word += c;
+      prev = c;
       return true;
     };
     const print = () => {
       word = this.getRange(this.start, this.pos);
-      //console.log("word: " + word + " lexText: " + this.getRange(this.start, this.pos));
+      console.log("word: " + word + " lexText: " + this.getRange(this.start, this.pos));
     };
 
     // if(this.accept(oneOf('/')))
 
-    while(this.accept(validator)) {
-      print();
-    }
-    //    this.backup();
-    this.addToken(tokenTypes.regexpLiteral);
+    if(this.acceptRun(validator)) {
+    this.backup();
+    this.addToken(Token.types.regexpLiteral);
     return this.lexText;
+    }
+    return this.lexPunctuator();
   }
 
   lexPunctuator() {
@@ -456,7 +460,7 @@ export class Lexer {
       // longest valid punctuator before continuing.
       if(word != ".." && !isPunctuator(word)) {
         this.backup();
-        this.addToken(tokenTypes.punctuator);
+        this.addToken(Token.types.punctuator);
         return this.lexText;
       }
     }
@@ -465,7 +469,7 @@ export class Lexer {
     // other punctuators.
     const word = this.getRange(this.start, this.pos);
     if(isPunctuator(word)) {
-      this.addToken(tokenTypes.punctuator);
+      this.addToken(Token.types.punctuator);
       return this.lexText;
     } else {
       // This shouldn't ever happen, but throw an exception to make sure we
@@ -502,7 +506,7 @@ export class Lexer {
             // ending quote char then this string is incomplete.
             throw this.error(`Illegal token: ${this.getRange(this.start, this.pos)}`);
           } else if(c === quoteChar) {
-            this.addToken(tokenTypes.stringLiteral);
+            this.addToken(Token.types.stringLiteral);
             return this.lexText;
           } else if(c === "\\") {
             escapeEncountered = true;
@@ -578,7 +582,7 @@ export class Lexer {
 
   nextToken() {
     if(this.tokenIndex >= this.tokens.length) {
-      return new Token(tokenTypes.eof, null, this.source.length, this.source.length);
+      return new Token(Token.types.eof, null, this.source.length, this.source.length);
     }
 
     const token = this.tokens[this.tokenIndex];

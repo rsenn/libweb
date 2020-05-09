@@ -389,6 +389,14 @@ export class Printer {
       is_prototype = true;
     if(members.length == 0) return "{}";
     for(let property of members) {
+      if(property.id == null) {
+        console.log("Property:", Util.className(property));
+        throw new Error();
+      }
+/*      if(Util.className(property.id) == "Identifier") {
+        console.log("property.id:", Util.className(property.id));
+        throw new Error();
+      }*/
       let name = this.printNode(property.id);
       let value = this.printNode(property.value);
       let line = "";
