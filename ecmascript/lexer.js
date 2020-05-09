@@ -96,20 +96,25 @@ const countLinesCols = (s, p1, p2, lc = { line: 1, column: 1 }) => {
 export function Position(line, column, file) {
   let obj = this instanceof Position ? this : {};
 
-  Object.assign(obj, {
-    file,
-    line,
-    column,
-    [Symbol.toStringTag]() {
-      return this.toString();
+  Object.assign(
+    obj,
+    {
+      file,
+      line,
+      column
     },
-    toString() {
-      const { file, line, column } = this;
-      return file ? `${file}:${line}:${column}` : `${line}:${column}`;
-    }
-  });
+    obj === this ? {} : Position.prototype
+  );
   return Object.freeze(obj);
 }
+
+Position.prototype[Symbol.toStringTag] = function() {
+  return this.toString();
+};
+Position.prototype.toString = function() {
+  const { file, line, column } = this;
+  return file ? `${file}:${line}:${column}` : `${line}:${column}`;
+};
 
 export class Lexer {
   static escape(str) {

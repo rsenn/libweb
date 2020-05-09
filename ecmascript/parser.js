@@ -5,8 +5,10 @@ import { tokenTypes } from "./token.js";
 import { Printer } from "./printer.js";
 import { estree, Node, Factory, PropertyDefinition } from "./estree.js";
 
+const add = (arr, ...items) => [...(arr || []), ...items];
+
 export class Parser {
-  lastPos = new Position(1,1);
+  lastPos = new Position(1, 1);
 
   constructor(sourceText, fileName) {
     this.tokens = [];
@@ -40,20 +42,25 @@ export class Parser {
   handleConstruct = (ctor, args, instance) => {
     let comments = Util.move(this.lexer.comments || []);
 
-
-
     this.currentNode = instance;
     if(!this.comments) this.comments = [];
     for(let comment of comments) {
       this.comments.push({ ...comment, node: instance });
     }
-    if(comments.length)
-      for(let comment of comments) console.log("comment:", comment);
+    if(comments.length) for(let comment of comments) console.log("comment:", comment);
 
     instance.position = this.lastPos;
-  this.lastPos = this.position();
+    this.lastPos = this.position();
 
-  console.log("node:",Util.className(instance), instance.position.toString());
+    this.nodes = add(this.nodes, instance);
+    let index = this.nodes.indexOf(instance);
+
+    console.log(
+      "positions:",
+      this.stack.map(({ position, methodName, ...ent }) => ({ methodName, ...position }))
+    );
+
+    console.log("node:", index, Util.className(instance), instance.position.toString());
   };
 
   /*
@@ -1587,11 +1594,12 @@ export class ECMAScriptParser extends Parser {
 
 var depth = 0;
 var newNodes = [];
+var nodes = [];
 var diff = [];
 var fns = [];
 //var stack = [{methodName: 'parse', tokens:[]}];
 
-const methodNames = [...Util.getMethodNames(Parser.prototype)];
+const methodNames = [...Util.getMethodNames(ECMAScriptParser.prototype)];
 var methods = {};
 
 const quoteArray = arr => (arr.length < 5 ? arr.join(" ") : `[${arr.length}]`);
@@ -1601,7 +1609,7 @@ const quoteToks = l => quoteList(l.map(t => t.value));
 const quoteArg = a => a.map(i => (i instanceof Array ? quoteArray(i) : typeof i == "object" ? Util.className(i) : `'${i}'`)).join(", ");
 
 Parser.prototype.trace = function() {
-  return this.stack.map(frame => `${(frame.tokenIndex + "").padStart(5)} ${frame.position.padStart(6)} ${(frame.methodName + "(" + quoteList(frame.args, ",") + ")").padEnd(50)} ${frame.tokens.join(" ")}`).join("\n");
+  return this.stack.map(frame => `${(frame.tokenIndex + "").padStart(5)} ${(frame.position + "").padStart(6)} ${(frame.methodName + "(" + quoteList(frame.args, ",") + ")").padEnd(50)} ${frame.tokens.join(" ")}`).join("\n");
 };
 
 Parser.prototype.onToken = function(tok) {
@@ -1614,7 +1622,7 @@ Parser.prototype.onToken = function(tok) {
 };
 
 const instrumentate = (methodName, fn = methods[methodName]) => {
-  const { nodes, loc } = Factory;
+  const { loc } = Factory;
 
   const printer = new Printer();
 
@@ -1623,16 +1631,12 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
     let { tokenIndex } = lexer;
 
     // /parse/.test(methodName) &&
-    let position = lexer
-      .position()
-      .toString()
-      .split(/:/g)
-      .slice(1)
-      .join(":");
-    this.stack.unshift({ methodName, tokenIndex, args, position, tokens: [] });
+    let position = this.position();
+    let depth = this.stack.length;
+    let entry = { methodName, tokenIndex, args, position, depth, tokens: [] };
+    this.stack.unshift(entry);
 
-    depth = this.stack.length - 1;
-    let s = ("" + this.lexer.tokenIndex).padStart(5) + ` ${position.padEnd(10)} ${" ".repeat(depth * 2)}${this.stack[0].methodName}`;
+    let s = ("" + this.lexer.tokenIndex).padStart(5) + ` ${(position + "").padEnd(10)} ${" ".repeat(depth * 2)}${this.stack[0].methodName}`;
     let msg = s + ` ${quoteList(this.stack[depth].tokens)}` + `  ${quoteArg(args)}`;
 
     if(!/match/.test(methodName)) console.log(msg);
@@ -1647,8 +1651,8 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
     // msg = s + ` ${quoteList(this.stack[depth].tokens)}`;
 
     let tmp = this.stack[0].tokens || [];
-    this.stack.shift();
-    if(this.stack[0]) this.stack[0].tokens = this.stack[0].tokens || tmp;
+    while(this.stack[0].depth > depth) this.stack.shift();
+    //    if(this.stack[0]) this.stack[0].tokens = this.stack[0].tokens || tmp;
 
     // if(token) lastTok--;
     newNodes = [];
@@ -1680,35 +1684,23 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
     }
 
     if(ret || !/match/.test(methodName)) console.log(msg);
-    /*
-     {
-      Parser.trace = Parser.trace || [];
-      Parser.trace = [
-        ...Parser.trace,
-        {
-          methodName,
-          depth,
-          ret,
-          toString() {
-            return `${("" + depth).padStart(10)} ${methodName} ${
-              !!ret ? `= ${Util.className(ret)}` : ""
-            }`;
-          }
-        }
-      ];
-    }*/
+
     return ret;
   };
   return esfactory;
 };
-methodNames
-  .filter(name => /^(expect|match|parse)/.test(name))
-  .forEach(methodName => {
-    var fn = Parser.prototype[methodName];
-    methods[methodName] = fn;
 
-    Parser.prototype[methodName] = instrumentate(methodName, fn);
-  });
+Object.assign(
+  ECMAScriptParser.prototype,
+  Util.getMethodNames(new ECMAScriptParser(), 1)
+    .filter(name => /^(expect|match|parse)/.test(name))
+    .reduce(function(acc, methodName) {
+      var fn = ECMAScriptParser.prototype[methodName];
+      methods[methodName] = fn;
+
+      return { ...acc, [methodName]: instrumentate(methodName, fn) };
+    }, {})
+);
 
 const timeout = ms =>
   new Promise((resolve, reject) => {
@@ -1717,9 +1709,11 @@ const timeout = ms =>
 
 Parser.parse = function parse(sourceText, prefix) {
   const parser = new ECMAScriptParser(sourceText, prefix);
-  Parser.instance = parser;
+  // Parser.instance = parser;
   //await timeout(1000).catch(e => console.log("timeout error:",e));
   return parser.parseProgram();
 };
+console.log("methods:", methodNames);
+console.log("fn:" + ECMAScriptParser.prototype.parseProgram);
 
 export default Parser;
