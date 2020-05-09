@@ -191,7 +191,7 @@ export class Printer {
   }*/
 
   printWhileStatement(while_statement) {
-    const { body, test } = do_statement;
+    const { body, test } = while_statement;
     let output = `while(` + this.printNode(test) + ") ";
     output += this.printBlockStatement(body);
     return output;

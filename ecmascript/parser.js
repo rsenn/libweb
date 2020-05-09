@@ -1,4 +1,4 @@
-import Util from "../util.js";
+  import Util from "../util.js";
 import Lexer, { Stack, SyntaxError } from "./lexer.js";
 import deep from "../deep.js";
 import { tokenTypes } from "./token.js";
@@ -227,7 +227,7 @@ Object.assign(Parser.prototype, {
     this.log(`expectKeywords(${keywords}) `);
     const token = this.consume();
     if(token.type !== tokenTypes.keyword) {
-      throw this.error(` Expecting Keyword, but got ${token.type} with value '${token.value}'`);
+      throw this.error(` Expecting Keyword${keywords ? `(${keywords})` : ''}, but got ${token.type} with value '${token.value}'`);
     }
     if(Array.isArray(keywords)) {
       if(keywords.indexOf(token.value) < 0) {
@@ -243,7 +243,7 @@ Object.assign(Parser.prototype, {
     const token = this.consume();
     if(token.type !== tokenTypes.punctuator) {
       throw this.error(
-        `Expecting Punctuator, but got ${token.type} with value '${token.value}'`,
+        `Expecting Punctuator${punctuators ? `(${punctuators})` : ''}, but got ${token.type} with value '${token.value}'`,
         ast
       );
     }
@@ -876,7 +876,7 @@ Object.assign(Parser.prototype, {
         member = this.expectIdentifier();
       } else if(this.matchPunctuators("[")) {
         this.expectPunctuators("[");
-        member = this.expectLiteral();
+        member = this.parseAssignmentExpression();
         this.expectPunctuators("]");
       } else if(this.matchPunctuators(":")) {
         if(getter) {
@@ -1132,9 +1132,9 @@ Object.assign(Parser.prototype, {
     }
     return new estree.WhileStatement(test, statement);
   },
-  parseDoStatement() {
+  parseDoStatement(insideFunction) {
     this.expectKeywords("do");
-    const statement = this.parseStatement(true, false, false);
+    const statement = this.parseStatement(true, insideFunction, false);
     if(statement === null) {
       throw this.error("Expecting statement for do-while-statement", this.position());
     }
@@ -1228,7 +1228,7 @@ Object.assign(Parser.prototype, {
       else cv = this.parseExpression();
       this.expectPunctuators(":");
 
-      stmt = this.parseList(true, insideFunction, false, p => p.matchKeywords(["case", "default"]));
+      stmt = this.parseList(true, insideFunction, p => p.matchKeywords(["case", "default"]));
 
       if(this.matchPunctuators("}")) break;
     }
@@ -1387,9 +1387,42 @@ Object.assign(Parser.prototype, {
     // Parse function body
     const body = this.parseBlock(false, true);
 
+if(this.matchPunctuators(";"))
     this.expectPunctuators(";");
 
     return new estree.ClassDeclaration(identifier, extending, body, exported);
+  },
+   parseParameters() {
+    const params = [];
+    let rest_of = false, parens = false;
+    const checkRestOf = parser => {
+      if(this.matchPunctuators("...")) {
+        this.expectPunctuators("...");
+        rest_of = true;
+      }
+    };
+    if(this.matchPunctuators("(")) {
+      this.expectPunctuators("(");
+      parens = true;
+    }
+    while(this.matchAssignmentExpression()) {
+      let param;
+        checkRestOf();
+if(this.matchPunctuators(["{","["])) {
+  param = this.parseBindingPattern();
+} else {
+        param = this.parseAssignmentExpression();
+}
+        if(rest_of) param = new estree.RestOfExpression(param);
+        params.push(param);
+        if(rest_of) break;
+        if(rest_of || !this.matchPunctuators(","))
+          break;
+        this.expectPunctuators(",");
+    }
+    if(parens)
+      this.expectPunctuators(")", params);
+    return params;
   },
   parseFunction(exported = false) {
     let isGenerator = false,
@@ -1409,12 +1442,13 @@ Object.assign(Parser.prototype, {
     if(this.matchIdentifier(true)) {
       identifier = this.expectIdentifier(true);
     }
-    let parameters = []; // this.parseArguments();
-
+    let parameters =  this.parseParameters();
+/*
     this.expectPunctuators("(");
 
     // Parse optional parameter list
-    while(/*this.matchPunctuators(["{", "["]) ||*/ this.matchIdentifier()) {
+    while(//this.matchPunctuators(["{", "["]) ||
+     this.matchIdentifier()) {
       let param, defaultValue;
 
       //  param = this.parseVariableDeclaration();
@@ -1442,9 +1476,9 @@ Object.assign(Parser.prototype, {
 
     this.matchPunctuators(")");
     this.expectPunctuators(")");
-
+*/
     // Parse function body
-    const body = this.parseBlock(false, true, identifier == "constructor");
+    const body = this.parseBlock(false, true, identifier);
 
     let object = new estree.FunctionDeclaration(
       identifier,
@@ -1511,7 +1545,7 @@ var methods = {};
 
 const quoteArray = arr => (arr.length < 5 ? arr.join(" ") : `[${arr.length}]`);
 
-const quoteList = l => "" + l.map(t => `'${t}'`).join(" ") + "";
+const quoteList = (l, delim = " ") => "" + l.map(t => typeof(t) == 'string' ? `'${t}'` : ''+t).join(delim) + "";
 const quoteToks = l => quoteList(l.map(t => t.value));
 const quoteArg = a =>
   a
@@ -1524,9 +1558,9 @@ Parser.prototype.trace = function() {
   return this.stack
     .map(
       frame =>
-        `${(frame.tokenIndex + "").padStart(3)} ${frame.position.padEnd(
-          5
-        )} ${frame.methodName.padEnd(50)} ${frame.tokens.join(" ")}`
+        `${(frame.tokenIndex + "").padStart(5)} ${frame.position.padStart(
+          6
+        )} ${(frame.methodName+'('+quoteList(frame.args,','  )+')').padEnd(50)} ${frame.tokens.join(" ")}`
     )
     .join("\n");
 };
@@ -1556,11 +1590,11 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
       .split(/:/g)
       .slice(1)
       .join(":");
-    this.stack.unshift({ methodName, tokenIndex, position, tokens: [] });
+    this.stack.unshift({ methodName, tokenIndex, args, position, tokens: [] });
 
     depth = this.stack.length - 1;
     let s =
-      ("" + this.lexer.tokenIndex).padStart(3) +
+      ("" + this.lexer.tokenIndex).padStart(5) +
       ` ${position.padEnd(10)} ${" ".repeat(depth * 2)}${this.stack[0].methodName}`;
     let msg = s + ` ${quoteList(this.stack[depth].tokens)}` + `  ${quoteArg(args)}`;
 
@@ -1597,7 +1631,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
 
     annotate.push(
       `returned: ${
-        typeof ret == "object" ? Util.className(ret) + `{ ${printer.print(ret)} }` : ret
+        typeof ret == "object" ? Util.className(ret)/* + `{ ${printer.print(ret)} }`*/ : ret
       }`
     );
 
