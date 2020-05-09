@@ -5,7 +5,8 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Util = exports.default = Util;
+exports.Util = Util;
+exports.default = void 0;
 
 require("core-js/modules/es7.object.get-own-property-descriptors");
 
@@ -65,14 +66,19 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
-const formatAnnotatedObject = function formatAnnotatedObject(subject, {
-  indent = "  ",
-  spacing = " ",
-  separator = ",",
-  newline = "\n",
-  maxlen = 30,
-  depth = 1
-}) {
+const formatAnnotatedObject = function formatAnnotatedObject(subject, o) {
+  const _o$indent = o.indent,
+        indent = _o$indent === void 0 ? "  " : _o$indent,
+        _o$spacing = o.spacing,
+        spacing = _o$spacing === void 0 ? " " : _o$spacing,
+        _o$separator = o.separator,
+        separator = _o$separator === void 0 ? "," : _o$separator,
+        _o$newline = o.newline,
+        newline = _o$newline === void 0 ? "\n" : _o$newline,
+        _o$maxlen = o.maxlen,
+        maxlen = _o$maxlen === void 0 ? 30 : _o$maxlen,
+        _o$depth = o.depth,
+        depth = _o$depth === void 0 ? 1 : _o$depth;
   const i = indent.repeat(Math.abs(1 - depth));
   let nl = newline != "" ? newline + i : spacing;
   const opts = {
@@ -137,7 +143,7 @@ const formatAnnotatedObject = function formatAnnotatedObject(subject, {
     j = separator + (opts.newline || spacing) + i;
   }
 
-  let ret = "{".concat(opts.newline).concat(r.map(arr => "".concat(padding(arr[0]) + arr[0], ":").concat(spacing).concat(arr[1])).join(j)).concat(opts.newline, "}");
+  let ret = "{" + opts.newline + r.map(arr => padding(arr[0]) + arr[0] + ":" + spacing + arr[1]).join(j) + opts.newline;
   return ret;
 };
 
@@ -148,13 +154,13 @@ function Util(g) {
 Util.curry = function curry(fn, arity) {
   return function curried() {
     if (arity == null) arity = fn.length;
-    var args = [].slice.call(arguments);
+    var args = [...arguments];
 
     if (args.length >= arity) {
       return fn.apply(this, args);
     } else {
       return function () {
-        return curried.apply(this, args.concat([].slice.call(arguments)));
+        return curried.apply(this, args.concat([...arguments]));
       };
     }
   };
@@ -176,12 +182,9 @@ Util.isDebug = function () {
   return true;
 };
 
-Util.log = function () {
-  const log = Math.log;
-  return function (n, base) {
-    return log(n) / (base ? log(base) : 1);
-  };
-}();
+Util.log = Util.curry(function (n, base) {
+  return Math.log(n) / (base ? Math.log(base) : 1);
+});
 
 Util.logBase = function (n, base) {
   return Math.log(n) / Math.log(base);
@@ -204,7 +207,7 @@ Util.toSource = function (arg, opts = {}) {
 
 Util.debug = function (message) {
   const args = [...arguments];
-  let cache = Util.array();
+  let cache = [];
 
   const removeCircular = function removeCircular(key, value) {
     if (typeof value === "object" && value !== null) {
@@ -1481,12 +1484,7 @@ Util.findVal = function (object, propName, maxDepth = 10) {
 Util.deepCloneObservable = function (data) {
   let o;
   const t = typeof data;
-
-  if (t === "object") {
-    o = data.length ? Util.array() : {};
-  } else {
-    return data;
-  }
+  if (t === "object") return data;
 
   if (t === "object") {
     if (data.length) {
@@ -1552,6 +1550,33 @@ Util.arrExchangePos = function (arr, i, j) {
 Util.arrRemove = function (arr, i) {
   const index = arr.indexOf(i);
   if (index > -1) arr.splice(index, 1);
+};
+
+Util.move = function (src, dst = []) {
+  let items = src.splice(0, src.length);
+  dst.splice(dst.length, 0, ...items);
+  return dst;
+};
+
+Util.moveIf = function (src, pred, dst = []) {
+  let items = src.splice(0, src.length);
+  let i = 0;
+
+  var _iterator11 = _createForOfIteratorHelper(items),
+      _step11;
+
+  try {
+    for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+      let item = _step11.value;
+      (pred(item, i++) ? src : dst).push(item);
+    }
+  } catch (err) {
+    _iterator11.e(err);
+  } finally {
+    _iterator11.f();
+  }
+
+  return dst;
 };
 
 Util.removeEqual = function (a, b) {
@@ -1894,7 +1919,7 @@ Util.uniquePred = (el, i, arr) => arr.indexOf(el) === i;
 Util.unique = arr => arr.filter(Util.uniquePred);
 
 Util.concat = _regenerator.default.mark(function _callee7(...args) {
-  var _i5, _args13, arg, _iterator11, _step11, item;
+  var _i5, _args13, arg, _iterator12, _step12, item;
 
   return _regenerator.default.wrap(function _callee7$(_context9) {
     while (1) switch (_context9.prev = _context9.next) {
@@ -1922,18 +1947,18 @@ Util.concat = _regenerator.default.mark(function _callee7(...args) {
         break;
 
       case 8:
-        _iterator11 = _createForOfIteratorHelper(arg);
+        _iterator12 = _createForOfIteratorHelper(arg);
         _context9.prev = 9;
 
-        _iterator11.s();
+        _iterator12.s();
 
       case 11:
-        if ((_step11 = _iterator11.n()).done) {
+        if ((_step12 = _iterator12.n()).done) {
           _context9.next = 17;
           break;
         }
 
-        item = _step11.value;
+        item = _step12.value;
         _context9.next = 15;
         return item;
 
@@ -1949,12 +1974,12 @@ Util.concat = _regenerator.default.mark(function _callee7(...args) {
         _context9.prev = 19;
         _context9.t1 = _context9["catch"](9);
 
-        _iterator11.e(_context9.t1);
+        _iterator12.e(_context9.t1);
 
       case 22:
         _context9.prev = 22;
 
-        _iterator11.f();
+        _iterator12.f();
 
         return _context9.finish(22);
 
@@ -1984,21 +2009,7 @@ Util.rangeMinMax = function (arr, field) {
 Util.mergeLists = function (arr1, arr2, key = "id") {
   let hash = {};
 
-  var _iterator12 = _createForOfIteratorHelper(arr1),
-      _step12;
-
-  try {
-    for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
-      let obj = _step12.value;
-      hash[obj[key]] = obj;
-    }
-  } catch (err) {
-    _iterator12.e(err);
-  } finally {
-    _iterator12.f();
-  }
-
-  var _iterator13 = _createForOfIteratorHelper(arr2),
+  var _iterator13 = _createForOfIteratorHelper(arr1),
       _step13;
 
   try {
@@ -2010,6 +2021,20 @@ Util.mergeLists = function (arr1, arr2, key = "id") {
     _iterator13.e(err);
   } finally {
     _iterator13.f();
+  }
+
+  var _iterator14 = _createForOfIteratorHelper(arr2),
+      _step14;
+
+  try {
+    for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
+      let obj = _step14.value;
+      hash[obj[key]] = obj;
+    }
+  } catch (err) {
+    _iterator14.e(err);
+  } finally {
+    _iterator14.f();
   }
 
   return Object.values(hash);
@@ -2026,21 +2051,21 @@ Util.throttle = function (fn, wait) {
 };
 
 Util.foreach = function (o, fn) {
-  var _iterator14 = _createForOfIteratorHelper(Util.entries(o)),
-      _step14;
+  var _iterator15 = _createForOfIteratorHelper(Util.entries(o)),
+      _step15;
 
   try {
-    for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
-      let _step14$value = (0, _slicedToArray2.default)(_step14.value, 2),
-          k = _step14$value[0],
-          v = _step14$value[1];
+    for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
+      let _step15$value = (0, _slicedToArray2.default)(_step15.value, 2),
+          k = _step15$value[0],
+          v = _step15$value[1];
 
       fn(v, k, o);
     }
   } catch (err) {
-    _iterator14.e(err);
+    _iterator15.e(err);
   } finally {
-    _iterator14.f();
+    _iterator15.f();
   }
 };
 
@@ -2056,23 +2081,23 @@ Util.isGenerator = function (fn) {
 
 Util.filter = function (a, pred) {
   if (Util.isGenerator(a)) return _regenerator.default.mark(function _callee8() {
-    var _iterator15, _step15, item;
+    var _iterator16, _step16, item;
 
     return _regenerator.default.wrap(function _callee8$(_context10) {
       while (1) switch (_context10.prev = _context10.next) {
         case 0:
-          _iterator15 = _createForOfIteratorHelper(a);
+          _iterator16 = _createForOfIteratorHelper(a);
           _context10.prev = 1;
 
-          _iterator15.s();
+          _iterator16.s();
 
         case 3:
-          if ((_step15 = _iterator15.n()).done) {
+          if ((_step16 = _iterator16.n()).done) {
             _context10.next = 10;
             break;
           }
 
-          item = _step15.value;
+          item = _step16.value;
 
           if (!pred(item)) {
             _context10.next = 8;
@@ -2094,12 +2119,12 @@ Util.filter = function (a, pred) {
           _context10.prev = 12;
           _context10.t0 = _context10["catch"](1);
 
-          _iterator15.e(_context10.t0);
+          _iterator16.e(_context10.t0);
 
         case 15:
           _context10.prev = 15;
 
-          _iterator15.f();
+          _iterator16.f();
 
           return _context10.finish(15);
 
@@ -2111,23 +2136,23 @@ Util.filter = function (a, pred) {
   })();
   let isa = Util.isArray(a);
   if (isa) return _regenerator.default.mark(function _callee9() {
-    var _iterator16, _step16, _step16$value, k, v;
+    var _iterator17, _step17, _step17$value, k, v;
 
     return _regenerator.default.wrap(function _callee9$(_context11) {
       while (1) switch (_context11.prev = _context11.next) {
         case 0:
-          _iterator16 = _createForOfIteratorHelper(a.entries());
+          _iterator17 = _createForOfIteratorHelper(a.entries());
           _context11.prev = 1;
 
-          _iterator16.s();
+          _iterator17.s();
 
         case 3:
-          if ((_step16 = _iterator16.n()).done) {
+          if ((_step17 = _iterator17.n()).done) {
             _context11.next = 10;
             break;
           }
 
-          _step16$value = (0, _slicedToArray2.default)(_step16.value, 2), k = _step16$value[0], v = _step16$value[1];
+          _step17$value = (0, _slicedToArray2.default)(_step17.value, 2), k = _step17$value[0], v = _step17$value[1];
 
           if (!pred(v, k, a)) {
             _context11.next = 8;
@@ -2149,12 +2174,12 @@ Util.filter = function (a, pred) {
           _context11.prev = 12;
           _context11.t0 = _context11["catch"](1);
 
-          _iterator16.e(_context11.t0);
+          _iterator17.e(_context11.t0);
 
         case 15:
           _context11.prev = 15;
 
-          _iterator16.f();
+          _iterator17.f();
 
           return _context11.finish(15);
 
@@ -2168,21 +2193,21 @@ Util.filter = function (a, pred) {
 
   let fn = (k, v) => ret[k] = v;
 
-  var _iterator17 = _createForOfIteratorHelper(Util.entries(a)),
-      _step17;
+  var _iterator18 = _createForOfIteratorHelper(Util.entries(a)),
+      _step18;
 
   try {
-    for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
-      let _step17$value = (0, _slicedToArray2.default)(_step17.value, 2),
-          k = _step17$value[0],
-          v = _step17$value[1];
+    for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+      let _step18$value = (0, _slicedToArray2.default)(_step18.value, 2),
+          k = _step18$value[0],
+          v = _step18$value[1];
 
       if (pred(v, k, a)) fn(k, v);
     }
   } catch (err) {
-    _iterator17.e(err);
+    _iterator18.e(err);
   } finally {
-    _iterator17.f();
+    _iterator18.f();
   }
 
   return ret;
@@ -2195,23 +2220,23 @@ Util.reduce = function (obj, fn, accu) {
 };
 
 Util.mapFunctional = fn => _regenerator.default.mark(function _callee10(arg) {
-  var _iterator18, _step18, item;
+  var _iterator19, _step19, item;
 
   return _regenerator.default.wrap(function _callee10$(_context12) {
     while (1) switch (_context12.prev = _context12.next) {
       case 0:
-        _iterator18 = _createForOfIteratorHelper(arg);
+        _iterator19 = _createForOfIteratorHelper(arg);
         _context12.prev = 1;
 
-        _iterator18.s();
+        _iterator19.s();
 
       case 3:
-        if ((_step18 = _iterator18.n()).done) {
+        if ((_step19 = _iterator19.n()).done) {
           _context12.next = 9;
           break;
         }
 
-        item = _step18.value;
+        item = _step19.value;
         _context12.next = 7;
         return fn(item);
 
@@ -2227,12 +2252,12 @@ Util.mapFunctional = fn => _regenerator.default.mark(function _callee10(arg) {
         _context12.prev = 11;
         _context12.t0 = _context12["catch"](1);
 
-        _iterator18.e(_context12.t0);
+        _iterator19.e(_context12.t0);
 
       case 14:
         _context12.prev = 14;
 
-        _iterator18.f();
+        _iterator19.f();
 
         return _context12.finish(14);
 
@@ -2562,23 +2587,23 @@ Util.traverse = function (o, fn) {
   });
 
   function walker(o, depth = 0) {
-    var _iterator19, _step19, _step19$value, k, v;
+    var _iterator20, _step20, _step20$value, k, v;
 
     return _regenerator.default.wrap(function walker$(_context13) {
       while (1) switch (_context13.prev = _context13.next) {
         case 0:
-          _iterator19 = _createForOfIteratorHelper(Util.entries(o));
+          _iterator20 = _createForOfIteratorHelper(Util.entries(o));
           _context13.prev = 1;
 
-          _iterator19.s();
+          _iterator20.s();
 
         case 3:
-          if ((_step19 = _iterator19.n()).done) {
+          if ((_step20 = _iterator20.n()).done) {
             _context13.next = 11;
             break;
           }
 
-          _step19$value = (0, _slicedToArray2.default)(_step19.value, 2), k = _step19$value[0], v = _step19$value[1];
+          _step20$value = (0, _slicedToArray2.default)(_step20.value, 2), k = _step20$value[0], v = _step20$value[1];
           _context13.next = 7;
           return [v, k, o, depth];
 
@@ -2602,12 +2627,12 @@ Util.traverse = function (o, fn) {
           _context13.prev = 13;
           _context13.t1 = _context13["catch"](1);
 
-          _iterator19.e(_context13.t1);
+          _iterator20.e(_context13.t1);
 
         case 16:
           _context13.prev = 16;
 
-          _iterator19.f();
+          _iterator20.f();
 
           return _context13.finish(16);
 
@@ -2624,38 +2649,38 @@ Util.traverse = function (o, fn) {
 Util.traverseWithPath = function (o, rootPath = []) {
   var _marked2 = _regenerator.default.mark(walker);
 
-  var _iterator20 = _createForOfIteratorHelper(rootPath),
-      _step20;
+  var _iterator21 = _createForOfIteratorHelper(rootPath),
+      _step21;
 
   try {
-    for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
-      let key = _step20.value;
+    for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
+      let key = _step21.value;
       o = o[key];
     }
   } catch (err) {
-    _iterator20.e(err);
+    _iterator21.e(err);
   } finally {
-    _iterator20.f();
+    _iterator21.f();
   }
 
   function walker(o, path) {
-    var _iterator21, _step21, _step21$value, k, v, p;
+    var _iterator22, _step22, _step22$value, k, v, p;
 
     return _regenerator.default.wrap(function walker$(_context14) {
       while (1) switch (_context14.prev = _context14.next) {
         case 0:
-          _iterator21 = _createForOfIteratorHelper(Util.entries(o));
+          _iterator22 = _createForOfIteratorHelper(Util.entries(o));
           _context14.prev = 1;
 
-          _iterator21.s();
+          _iterator22.s();
 
         case 3:
-          if ((_step21 = _iterator21.n()).done) {
+          if ((_step22 = _iterator22.n()).done) {
             _context14.next = 12;
             break;
           }
 
-          _step21$value = (0, _slicedToArray2.default)(_step21.value, 2), k = _step21$value[0], v = _step21$value[1];
+          _step22$value = (0, _slicedToArray2.default)(_step22.value, 2), k = _step22$value[0], v = _step22$value[1];
           p = [...path, k];
           _context14.next = 8;
           return [v, k, o, p];
@@ -2680,12 +2705,12 @@ Util.traverseWithPath = function (o, rootPath = []) {
           _context14.prev = 14;
           _context14.t1 = _context14["catch"](1);
 
-          _iterator21.e(_context14.t1);
+          _iterator22.e(_context14.t1);
 
         case 17:
           _context14.prev = 17;
 
-          _iterator21.f();
+          _iterator22.f();
 
           return _context14.finish(17);
 
@@ -2700,18 +2725,18 @@ Util.traverseWithPath = function (o, rootPath = []) {
 };
 
 Util.indexByPath = function (o, p) {
-  var _iterator22 = _createForOfIteratorHelper(p),
-      _step22;
+  var _iterator23 = _createForOfIteratorHelper(p),
+      _step23;
 
   try {
-    for (_iterator22.s(); !(_step22 = _iterator22.n()).done;) {
-      let key = _step22.value;
+    for (_iterator23.s(); !(_step23 = _iterator23.n()).done;) {
+      let key = _step23.value;
       o = o[key];
     }
   } catch (err) {
-    _iterator22.e(err);
+    _iterator23.e(err);
   } finally {
-    _iterator22.f();
+    _iterator23.f();
   }
 
   return o;
@@ -2727,7 +2752,7 @@ Util.pushUnique = function (arr) {
 };
 
 Util.iterateMembers = _regenerator.default.mark(function _callee11(obj, predicate = (name, depth) => true, depth = 0) {
-  var names, pred, name, _iterator23, _step23, _iterator24, _step24, symbol, proto;
+  var names, pred, name, _iterator24, _step24, _iterator25, _step25, symbol, proto;
 
   return _regenerator.default.wrap(function _callee11$(_context15) {
     while (1) switch (_context15.prev = _context15.next) {
@@ -2757,18 +2782,18 @@ Util.iterateMembers = _regenerator.default.mark(function _callee11(obj, predicat
         break;
 
       case 10:
-        _iterator23 = _createForOfIteratorHelper(Object.getOwnPropertyNames(obj));
+        _iterator24 = _createForOfIteratorHelper(Object.getOwnPropertyNames(obj));
         _context15.prev = 11;
 
-        _iterator23.s();
+        _iterator24.s();
 
       case 13:
-        if ((_step23 = _iterator23.n()).done) {
+        if ((_step24 = _iterator24.n()).done) {
           _context15.next = 20;
           break;
         }
 
-        name = _step23.value;
+        name = _step24.value;
 
         if (!pred(name, depth)) {
           _context15.next = 18;
@@ -2790,28 +2815,28 @@ Util.iterateMembers = _regenerator.default.mark(function _callee11(obj, predicat
         _context15.prev = 22;
         _context15.t2 = _context15["catch"](11);
 
-        _iterator23.e(_context15.t2);
+        _iterator24.e(_context15.t2);
 
       case 25:
         _context15.prev = 25;
 
-        _iterator23.f();
+        _iterator24.f();
 
         return _context15.finish(25);
 
       case 28:
-        _iterator24 = _createForOfIteratorHelper(Object.getOwnPropertySymbols(obj));
+        _iterator25 = _createForOfIteratorHelper(Object.getOwnPropertySymbols(obj));
         _context15.prev = 29;
 
-        _iterator24.s();
+        _iterator25.s();
 
       case 31:
-        if ((_step24 = _iterator24.n()).done) {
+        if ((_step25 = _iterator25.n()).done) {
           _context15.next = 38;
           break;
         }
 
-        symbol = _step24.value;
+        symbol = _step25.value;
 
         if (!pred(symbol, depth)) {
           _context15.next = 36;
@@ -2833,12 +2858,12 @@ Util.iterateMembers = _regenerator.default.mark(function _callee11(obj, predicat
         _context15.prev = 40;
         _context15.t3 = _context15["catch"](29);
 
-        _iterator24.e(_context15.t3);
+        _iterator25.e(_context15.t3);
 
       case 43:
         _context15.prev = 43;
 
-        _iterator24.f();
+        _iterator25.f();
 
         return _context15.finish(43);
 
@@ -2874,44 +2899,44 @@ Util.methods = (obj, depth = 1, t = (k, v) => [k, v], r = e => Object.fromEntrie
 Util.getMethods = (obj, depth = 1) => {
   let ret = {};
 
-  var _iterator25 = _createForOfIteratorHelper(Util.iterateMethods(obj, depth)),
-      _step25;
+  var _iterator26 = _createForOfIteratorHelper(Util.iterateMethods(obj, depth)),
+      _step26;
 
   try {
-    for (_iterator25.s(); !(_step25 = _iterator25.n()).done;) {
-      let _step25$value = (0, _slicedToArray2.default)(_step25.value, 2),
-          k = _step25$value[0],
-          v = _step25$value[1];
+    for (_iterator26.s(); !(_step26 = _iterator26.n()).done;) {
+      let _step26$value = (0, _slicedToArray2.default)(_step26.value, 2),
+          k = _step26$value[0],
+          v = _step26$value[1];
 
       ret[k] = v;
     }
   } catch (err) {
-    _iterator25.e(err);
+    _iterator26.e(err);
   } finally {
-    _iterator25.f();
+    _iterator26.f();
   }
 
   return ret;
 };
 
 Util.iterateMethods = _regenerator.default.mark(function _callee12(obj, depth = 1, t = (key, value) => [key, value], start = 0) {
-  var _iterator26, _step26, name, value;
+  var _iterator27, _step27, name, value;
 
   return _regenerator.default.wrap(function _callee12$(_context16) {
     while (1) switch (_context16.prev = _context16.next) {
       case 0:
-        _iterator26 = _createForOfIteratorHelper(Util.getMethodNames(obj, depth, start));
+        _iterator27 = _createForOfIteratorHelper(Util.getMethodNames(obj, depth, start));
         _context16.prev = 1;
 
-        _iterator26.s();
+        _iterator27.s();
 
       case 3:
-        if ((_step26 = _iterator26.n()).done) {
+        if ((_step27 = _iterator27.n()).done) {
           _context16.next = 16;
           break;
         }
 
-        name = _step26.value;
+        name = _step27.value;
         _context16.prev = 5;
         value = t(name, obj[name]);
 
@@ -2943,12 +2968,12 @@ Util.iterateMethods = _regenerator.default.mark(function _callee12(obj, depth = 
         _context16.prev = 18;
         _context16.t1 = _context16["catch"](1);
 
-        _iterator26.e(_context16.t1);
+        _iterator27.e(_context16.t1);
 
       case 21:
         _context16.prev = 21;
 
-        _iterator26.f();
+        _iterator27.f();
 
         return _context16.finish(21);
 
@@ -2980,7 +3005,7 @@ Util.getConstructor = obj => {
 };
 
 Util.getPrototypeChain = function (obj, fn = p => p) {
-  let ret = Util.array();
+  let ret = [];
   let proto;
 
   while (proto = Object.getPrototypeOf(obj)) {
@@ -3004,7 +3029,7 @@ Util.weakAssign = function (obj) {
 };
 
 Util.getCallerStack = function (position = 2) {
-  Error.stackTraceLimit = 20;
+  Error.stackTraceLimit = 100;
 
   if (position >= Error.stackTraceLimit) {
     throw new TypeError("getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: `".concat(position, "` and Error.stackTraceLimit was: `").concat(Error.stackTraceLimit, "`"));
@@ -3061,12 +3086,11 @@ Util.getCallerFunctionNames = function (position = 2) {
   }
 };
 
-Util.getCaller = function (position = 2) {
-  let stack = Util.getCallerStack(position + 1);
+Util.getCaller = function (index, stack) {
   const methods = ["getColumnNumber", "getEvalOrigin", "getFileName", "getFunction", "getFunctionName", "getLineNumber", "getMethodName", "getPosition", "getPromiseIndex", "getScriptNameOrSourceURL", "getThis", "getTypeName"];
 
   if (stack !== null && typeof stack === "object") {
-    const frame = stack[0];
+    const frame = stack[index];
     return methods.reduce((acc, m) => {
       if (frame[m]) {
         const name = Util.lcfirst(m.replace(/^get/, ""));
@@ -3083,14 +3107,15 @@ Util.getCaller = function (position = 2) {
 };
 
 Util.getCallers = function (start = 2, num = Number.MAX_SAFE_INTEGER) {
+  let stack = Util.getCallerStack(start + 1);
   let ret = [];
-  let i = start;
+  let i = 0;
 
-  while (i++ < start + num) {
+  while (i++ < num) {
     try {
-      let caller = Util.getCaller(i + 1);
-      if (!caller) break;
-      ret.push(caller);
+      let frame = Util.getCaller(i, stack);
+      if (frame === null) break;
+      ret.push(frame);
     } catch (err) {}
   }
 
@@ -3128,18 +3153,18 @@ Util.flatTree = function (tree, addOutput) {
   addOutput(Util.filterKeys(tree, key => key !== "children"));
 
   if (typeof tree.children == "object" && tree.children !== null && tree.children.length) {
-    var _iterator27 = _createForOfIteratorHelper(tree.children),
-        _step27;
+    var _iterator28 = _createForOfIteratorHelper(tree.children),
+        _step28;
 
     try {
-      for (_iterator27.s(); !(_step27 = _iterator27.n()).done;) {
-        let child = _step27.value;
+      for (_iterator28.s(); !(_step28 = _iterator28.n()).done;) {
+        let child = _step28.value;
         Util.flatTree(child, addOutput);
       }
     } catch (err) {
-      _iterator27.e(err);
+      _iterator28.e(err);
     } finally {
-      _iterator27.f();
+      _iterator28.f();
     }
   }
 
@@ -3150,18 +3175,18 @@ Util.traverseTree = function (tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
 
   if (typeof tree == "object" && tree !== null && typeof tree.children == "object" && tree.children !== null && tree.children.length) {
-    var _iterator28 = _createForOfIteratorHelper(tree.children),
-        _step28;
+    var _iterator29 = _createForOfIteratorHelper(tree.children),
+        _step29;
 
     try {
-      for (_iterator28.s(); !(_step28 = _iterator28.n()).done;) {
-        let child = _step28.value;
+      for (_iterator29.s(); !(_step29 = _iterator29.n()).done;) {
+        let child = _step29.value;
         Util.traverseTree(child, fn, depth + 1, tree);
       }
     } catch (err) {
-      _iterator28.e(err);
+      _iterator29.e(err);
     } finally {
-      _iterator28.f();
+      _iterator29.f();
     }
   }
 };
@@ -3679,3 +3704,6 @@ Util.bindProperties = (proxy, target, props, gen) => {
   }));
   return proxy;
 };
+
+var _default = Util;
+exports.default = _default;

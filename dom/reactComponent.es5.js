@@ -17,8 +17,6 @@ require("core-js/modules/es6.object.to-string");
 
 require("core-js/modules/es6.regexp.replace");
 
-var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends"));
-
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
 var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
@@ -29,55 +27,12 @@ var _element = require("./element.es5.js");
 
 var _util = _interopRequireDefault(require("../util.es5.js"));
 
-var _jsxFileName = "/home/roman/Dokumente/Sources/plot-cv/lib/dom/reactComponent.js";
-var __jsx = _react.default.createElement;
-
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 class ReactComponent {
-  static create() {
-    let args = [...arguments];
-    let Tag, props;
-
-    if (typeof args[0] == "string") {
-      Tag = args.shift();
-      props = args.shift();
-    } else {
-      props = args.shift();
-      Tag = props.tagName;
-      delete props.tagName;
-    }
-
-    let _props = props,
-        children = _props.children,
-        parent = _props.parent,
-        restOfProps = (0, _objectWithoutProperties2.default)(_props, ["children", "parent"]);
-    if (!children) children = args.shift();
-    if (!Array.isArray(children)) children = [children];
-
-    const elem = __jsx(Tag, (0, _extends2.default)({}, restOfProps, {
-      __self: this,
-      __source: {
-        fileName: _jsxFileName,
-        lineNumber: 21,
-        columnNumber: 7
-      }
-    }), children.map((child, key) => {
-      if (typeof child === "object" && child.tagName !== undefined) {
-        const tagName = child.tagName,
-              props = (0, _objectWithoutProperties2.default)(child, ["tagName"]);
-        return ReactComponent.create(tagName, _objectSpread({
-          key
-        }, props));
-      }
-
-      return child;
-    }));
-
-    return elem;
-  }
+  static create() {}
 
   static factory(render_to, root) {
     if (typeof render_to === "string") render_to = _element.Element.find(append_to);

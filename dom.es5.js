@@ -304,8 +304,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 function dom() {
   let args = [...arguments];
-
-  let ret = _util.default.array();
+  let ret = [];
 
   const extend = (e, functions) => {
     const keys = [..._util.default.members(functions)].filter(key => ["callee", "caller", "arguments", "call", "bind", "apply", "prototype", "constructor", "length"].indexOf(key) == -1 && typeof functions[key] == "function");

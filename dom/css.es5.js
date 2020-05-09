@@ -57,20 +57,15 @@ class CSS {
 
   static styles(stylesheet) {
     const list = stylesheet && stylesheet.cssRules ? [stylesheet] : CSS.list(stylesheet);
-
-    let ret = _util.default.array();
-
-    list.forEach(s => {
-      let rules = [...s.cssRules];
-      rules.forEach(rule => {
-        ret.push(rule.cssText);
-      });
-    });
+    let ret = [];
+    list.forEach(s => [...(s.cssRules || s.rules)].forEach(rule => {
+      ret.push(rule.cssText);
+    }));
     return ret;
   }
 
   static classes(selector = "*") {
-    return _element.Element.findAll(selector).filter(e => e.classList.length).map(e => [...e.classList]).flat().unique();
+    return _util.default.unique([..._element.Element.findAll(selector)].filter(e => e.classList.length).map(e => [...e.classList]).flat());
   }
 
   static section(selector, props) {

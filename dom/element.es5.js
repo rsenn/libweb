@@ -14,15 +14,15 @@ require("core-js/modules/es6.symbol");
 
 require("core-js/modules/es6.promise");
 
-require("core-js/modules/es7.object.entries");
+require("core-js/modules/es6.regexp.to-string");
 
-require("core-js/modules/web.dom.iterable");
+require("core-js/modules/es7.object.entries");
 
 require("core-js/modules/es6.string.anchor");
 
 require("core-js/modules/es6.regexp.replace");
 
-require("core-js/modules/es6.regexp.to-string");
+require("core-js/modules/web.dom.iterable");
 
 require("core-js/modules/es6.object.to-string");
 
@@ -90,7 +90,7 @@ class Element extends _node.Node {
     return e;
   }
 
-  static walkUp(elem, pred) {
+  static walkUp(elem, pred = e => true) {
     if (typeof elem == "string") elem = Element.find(elem);
     var depth = 0;
 
@@ -182,32 +182,82 @@ class Element extends _node.Node {
     })();
   }
 
+  static childIterator(elem) {
+    return _regenerator.default.mark(function _callee2() {
+      var c, i;
+      return _regenerator.default.wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
+          case 0:
+            if (!elem.firstChild) {
+              _context2.next = 10;
+              break;
+            }
+
+            c = elem.firstChild;
+
+          case 2:
+            if (!c) {
+              _context2.next = 8;
+              break;
+            }
+
+            _context2.next = 5;
+            return c;
+
+          case 5:
+            c = c.nextSibling;
+            _context2.next = 2;
+            break;
+
+          case 8:
+            _context2.next = 17;
+            break;
+
+          case 10:
+            i = 0;
+
+          case 11:
+            if (!(i < elem.children.length)) {
+              _context2.next = 17;
+              break;
+            }
+
+            _context2.next = 14;
+            return elem.children[i];
+
+          case 14:
+            i++;
+            _context2.next = 11;
+            break;
+
+          case 17:
+          case "end":
+            return _context2.stop();
+        }
+      }, _callee2);
+    })();
+  }
+
   static toObject(elem, opts = {
     children: true
   }) {
-    let e = Element.find(elem);
+    elem = Element.find(elem);
     let children = [];
 
-    if (opts.children && e.firstChild) {
-      for (let c = e.firstChild; c; c = c.nextSibling) {
-        if (_util.default.isObject(c) && "tagName" in c) children.push(Element.toObject(c, e));else if ((c.textContent + "").trim() != "") children.push(c.textContent);
-      }
+    if (opts.children) {
+      [...this.childIterator(elem)].forEach(c => _util.default.isObject(c) && "tagName" in c ? children.push(Element.toObject(c, elem)) : (c.textContent + "").trim() != "" ? children.push(c.textContent) : undefined);
     }
 
-    let ns = (arguments[1] ? arguments[1].namespaceURI : document.body.namespaceURI) != e.namespaceURI ? {
-      ns: e.namespaceURI
+    let attributes = (opts ? opts.namespaceURI : document.body.namespaceURI) != elem.namespaceURI ? {
+      ns: elem.namespaceURI
     } : {};
-    let attributes = {};
-    let a = Element.attr(e);
+    let a = "length" in elem.attributes ? Element.attr(elem) : elem.attributes;
 
-    for (let key in a) {
-      let value = a[key];
-      attributes[key] = value;
-    }
+    for (let key in a) attributes[key] = "" + a[key];
 
-    return Object.assign({
-      tagName: /[a-z]/.test(e.tagName) ? e.tagName : e.tagName.toLowerCase()
-    }, attributes, children.length > 0 ? {
+    return _objectSpread({
+      tagName: /[a-z]/.test(elem.tagName) ? elem.tagName : elem.tagName.toLowerCase()
+    }, attributes, {}, children.length > 0 ? {
       children
     } : {});
   }
@@ -216,8 +266,12 @@ class Element extends _node.Node {
     let _opts$parent = opts.parent,
         parent = _opts$parent === void 0 ? "" : _opts$parent,
         varName = opts.varName,
+        _opts$recursive = opts.recursive,
+        recursive = _opts$recursive === void 0 ? true : _opts$recursive,
         _opts$cmd = opts.cmd,
-        cmd = _opts$cmd === void 0 ? "Element.create" : _opts$cmd;
+        cmd = _opts$cmd === void 0 ? "Element.create" : _opts$cmd,
+        _opts$quote = opts.quote,
+        quote = _opts$quote === void 0 ? "'" : _opts$quote;
     let o = Element.toObject(elem, {
       children: false
     });
@@ -225,30 +279,22 @@ class Element extends _node.Node {
     let tagName = o.tagName,
         ns = o.ns,
         children = o.children,
-        attrs = (0, _objectWithoutProperties2.default)(o, ["tagName", "ns", "children"]);
+        attributes = (0, _objectWithoutProperties2.default)(o, ["tagName", "ns", "children"]);
     let v = "";
+    s = Object.keys(ns ? _objectSpread({
+      ns
+    }, attributes) : attributes).map(k => "".concat(k, ":").concat(quote).concat(attributes[k]).concat(quote)).join(", ");
+    s = "".concat(cmd, "('").concat(tagName, "', {").concat(s, "}");
+    let c = elem.children;
+    if (c.length >= 1) s = "".concat(s, ", [\n  ").concat(c.map(e => Element.toCommand(e, opts).replace(/\n/g, "\n  ")).join(",\n  "), "\n]");
+    s = "".concat(s).concat(parent ? ", ".concat(parent) : "", ")");
 
     if (elem.firstElementChild && varName) {
       v = parent ? String.fromCharCode(parent.charCodeAt(0) + 1) : varName;
-      s += "".concat(v, " = ");
+      s = "".concat(v, " = ").concat(s);
     }
 
-    let a = _util.default.toString(ns ? _objectSpread({
-      ns
-    }, attrs) : attrs, {
-      quote: "'"
-    });
-
-    s += "".concat(cmd, "('").concat(tagName, "', ").concat(a).concat(parent ? ", ".concat(parent) : "", ")");
-    let c = elem.children;
-
-    if (c.length == 1) {
-      s = Element.toCommand(c[0], _objectSpread({}, opts, {
-        parent: s
-      }));
-    }
-
-    return s.replace(/;*$/g, "") + ";";
+    return s.replace(/;*$/g, "");
   }
 
   static find(arg, parent, globalObj = _util.default.getGlobalObject()) {
@@ -261,36 +307,35 @@ class Element extends _node.Node {
     return [...(parent && parent.querySelectorAll ? parent.querySelectorAll(arg) : document.querySelectorAll(arg))];
   }
 
-  static attr(element, attrs_or_name) {
-    const e = typeof element === "string" ? Element.find(element) : element;
+  static attr(e, attrs_or_name) {
+    const elem = typeof e === "string" ? Element.find(e) : e;
 
-    if (!_util.default.isArray(attrs_or_name) && typeof attrs_or_name === "object" && e) {
+    if (!_util.default.isArray(attrs_or_name) && typeof attrs_or_name === "object" && elem) {
       for (let key in attrs_or_name) {
         const name = _util.default.decamelize(key, "-");
 
         const value = attrs_or_name[key];
-        if (key.startsWith("on") && !/svg/.test(e.namespaceURI)) e[key] = value;else if (e.setAttribute) e.setAttribute(name, value);else e[key] = value;
+        if (key.startsWith("on") && !/svg/.test(elem.namespaceURI)) elem[key] = value;else if (elem.setAttribute) elem.setAttribute(name, value);else elem[key] = value;
       }
 
-      return e;
+      return elem;
     }
 
     if (typeof attrs_or_name === "function") {
-      attrs_or_name(e.attributes, e);
-      return e;
+      attrs_or_name(elem.attributes, elem);
+      return elem;
     } else if (typeof attrs_or_name === "string") {
       attrs_or_name = [attrs_or_name];
-    } else if ("getAttributeNames" in e) {
-      attrs_or_name = e.getAttributeNames();
+    } else if ("getAttributeNames" in elem) {
+      attrs_or_name = elem.getAttributeNames();
     } else {
       attrs_or_name = [];
-      console.log("e:", e);
-      if (_util.default.isArray(e.attributes)) for (let i = 0; i < e.attributes.length; i++) attrs_or_name.push(e.attributes[i].name);
+      if (_util.default.isArray(elem.attributes)) for (let i = 0; i < elem.attributes.length; i++) attrs_or_name.push(elem.attributes[i].name);
     }
 
     let ret = attrs_or_name.reduce((acc, name) => {
       const key = name;
-      const value = e && e.getAttribute ? e.getAttribute(name) : e[key];
+      const value = elem && elem.getAttribute ? elem.getAttribute(name) : elem[key];
       acc[key] = /^-?[0-9]*\.[0-9]\+$/.test(value) ? parseFloat(value) : value;
       return acc;
     }, {});
@@ -609,10 +654,6 @@ class Element extends _node.Node {
     if (typeof prop == "string" && typeof value == "string") prop = {
       [prop]: value
     };
-    console.log("Element.setCSS ", {
-      element,
-      prop
-    });
 
     for (let key in prop) {
       let value = prop[key];
@@ -1005,38 +1046,38 @@ class Element extends _node.Node {
 }
 
 exports.Element = Element;
-Element.children = _regenerator.default.mark(function _callee2(elem, tfn = e => e) {
+Element.children = _regenerator.default.mark(function _callee3(elem, tfn = e => e) {
   var e;
-  return _regenerator.default.wrap(function _callee2$(_context2) {
-    while (1) switch (_context2.prev = _context2.next) {
+  return _regenerator.default.wrap(function _callee3$(_context3) {
+    while (1) switch (_context3.prev = _context3.next) {
       case 0:
         if (typeof elem == "string") elem = Element.find(elem);
         e = elem.firstElementChild;
 
       case 2:
         if (!e) {
-          _context2.next = 8;
+          _context3.next = 8;
           break;
         }
 
-        _context2.next = 5;
+        _context3.next = 5;
         return tfn(e);
 
       case 5:
         e = e.nextElementSibling;
-        _context2.next = 2;
+        _context3.next = 2;
         break;
 
       case 8:
       case "end":
-        return _context2.stop();
+        return _context3.stop();
     }
-  }, _callee2);
+  }, _callee3);
 });
-Element.recurse = _regenerator.default.mark(function _callee3(elem, tfn = e => e) {
+Element.recurse = _regenerator.default.mark(function _callee4(elem, tfn = e => e) {
   var root;
-  return _regenerator.default.wrap(function _callee3$(_context3) {
-    while (1) switch (_context3.prev = _context3.next) {
+  return _regenerator.default.wrap(function _callee4$(_context4) {
+    while (1) switch (_context4.prev = _context4.next) {
       case 0:
         if (typeof elem == "string") elem = Element.find(elem);
         root = elem;
@@ -1051,24 +1092,24 @@ Element.recurse = _regenerator.default.mark(function _callee3(elem, tfn = e => e
         }();
 
         if (!(elem !== null)) {
-          _context3.next = 6;
+          _context4.next = 6;
           break;
         }
 
-        _context3.next = 6;
+        _context4.next = 6;
         return tfn(elem);
 
       case 6:
         if (elem) {
-          _context3.next = 2;
+          _context4.next = 2;
           break;
         }
 
       case 7:
       case "end":
-        return _context3.stop();
+        return _context4.stop();
     }
-  }, _callee3);
+  }, _callee4);
 });
 Element.EDGES = {
   upperLeft: 0,
