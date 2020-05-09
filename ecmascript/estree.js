@@ -21,7 +21,7 @@ export class Expression extends Node {
   }
 }
 
-export class Function extends Node {
+export class FunctionLiteral extends Node {
   constructor(type, id, params, body, exported, async, generator) {
     super(type);
     this.id = id;
@@ -227,6 +227,21 @@ export class IfStatement extends Statement {
   }
 }
 
+export class SwitchStatement extends Statement {
+  constructor(test, cases) {
+    super("SwitchStatement");
+    this.test = test;
+    this.cases = cases;
+  }
+}
+export class CaseClause extends Statement {
+  constructor(value, body) {
+    super("CaseClause");
+    this.value = value;
+    this.body = body;
+  }
+}
+
 export class WhileStatement extends Statement {
   constructor(test, body) {
     super("WhileStatement");
@@ -294,6 +309,14 @@ export class ImportStatement extends Statement {
   }
 }
 
+export class ExportStatement extends Statement {
+  constructor(what, declarations) {
+    super("ExportStatement");
+    this.what = what;
+    this.declarations = declarations;
+  }
+}
+
 export class Declaration extends Statement {
   constructor(type = "Declaration") {
     super(type);
@@ -301,17 +324,17 @@ export class Declaration extends Statement {
 }
 
 export class ClassDeclaration extends Declaration {
-  constructor(id, extending, body, exported = false) {
+  constructor(id, extending, members, exported = false) {
     super("ClassDeclaration");
     this.id = id;
     this.extending = extending;
-    this.body = body;
+    this.members = members;
     this.exported = exported;
     // console.log('New ClassDeclaration: ', JSON.stringify({ id, extending, // exported }));
   }
 }
 
-export class FunctionDeclaration extends Function {
+export class FunctionDeclaration extends FunctionLiteral {
   constructor(id, params, body, exported = false, async = false, generator = false) {
     super("FunctionDeclaration", id, params, body, exported, async, generator);
     // console.log('New FunctionDeclaration: ', JSON.stringify({ id, params, // exported }));
@@ -357,6 +380,19 @@ export class ObjectLiteral extends Node {
   }
 }
 
+export class PropertyDefinition extends Node {
+
+  static GETTER = 1;
+  static SETTER = 2;
+
+  constructor(id, value, getter_or_setter) {
+    super("PropertyDefinition");
+    this.id = id;
+    this.value = value;
+    this.getter_or_setter = getter_or_setter;
+  }
+}
+
 export class ArrayLiteral extends Node {
   constructor(elements) {
     super("ArrayLiteral");
@@ -384,16 +420,16 @@ export class BindingPattern extends Identifier {
   }
 }
 
-export class ArrayBinding extends BindingPattern {
+export class ArrayBindingPattern extends BindingPattern {
   constructor(elements) {
-    super("ArrayBinding");
+    super("ArrayBindingPattern");
     this.elements = elements;
   }
 }
 
-export class ObjectBinding extends BindingPattern {
+export class ObjectBindingPattern extends BindingPattern {
   constructor(properties) {
-    super("ObjectBinding");
+    super("ObjectBindingPattern");
     this.properties = properties;
   }
 }
@@ -411,10 +447,10 @@ export class RestOfExpression extends Node {
     this.value = value;
   }
 }
-export class SpreadOperator extends Node {
+export class SpreadElement extends Node {
   constructor(value) {
-    super("SpreadOperator");
-    this.value = value;
+    super("SpreadElement");
+    this.expr = expr;
   }
 }
 
@@ -441,7 +477,7 @@ Node.prototype.toString = function() {
 };
 
 export const CTORS = {
-  ArrayBinding,
+  ArrayBindingPattern,
   ArrayLiteral,
   ArrowFunction,
   AssignmentExpression,
@@ -463,11 +499,14 @@ export const CTORS = {
   ExpressionStatement,
   ForInStatement,
   ForStatement,
-  Function,
+  FunctionLiteral,
   FunctionDeclaration,
   Identifier,
   IfStatement,
+  SwitchStatement,
+  CaseClause,
   ImportStatement,
+  ExportStatement,
   JSXLiteral,
   Literal,
   LogicalExpression,
@@ -475,13 +514,14 @@ export const CTORS = {
   InExpression,
   NewExpression,
   Node,
-  ObjectBinding,
+  ObjectBindingPattern,
   ObjectLiteral,
+PropertyDefinition,
   Program,
   RestOfExpression,
   ReturnStatement,
   SequenceExpression,
-  SpreadOperator,
+  SpreadElement,
   Statement,
   StatementList,
   ThisExpression,

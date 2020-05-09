@@ -234,6 +234,7 @@ export class Lexer {
     }
     return this.lexText;
   }
+
   get columnIndex() {
     let p;
     for(p = this.pos; p > 0; p--) {
@@ -241,6 +242,7 @@ export class Lexer {
     }
     return this.pos - p;
   }
+
   getLineRange() {
     let p, e;
     const { pos, column, source } = this;
@@ -578,7 +580,7 @@ function isPunctuator(word) {
     case 1:
       /* prettier-ignore */ return "=.-%}>,*[<!/]~&(;?|):+^{@".indexOf(word) >= 0;
     case 2:
-      /* prettier-ignore */ return (["!=", "*=", "&&", "<<", "/=", "||", ">>", "&=", "==", "++", "|=", "<=", "--", "+=", "^=", ">=", "-=", "%=", "=>"]).indexOf(word) >= 0;
+      /* prettier-ignore */ return ["!=", "*=", "&&", "<<", "/=", "||", ">>", "&=", "==", "++", "|=", "<=", "--", "+=", "^=", ">=", "-=", "%=", "=>"].indexOf(word) >= 0;
 
     case 3:
       return ["!==", "===", ">>=", "-->>", "<<=", "..."].indexOf(word) >= 0;
