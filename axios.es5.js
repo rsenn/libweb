@@ -15,15 +15,14 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 require("regenerator-runtime/runtime");
 
-var _axios = _interopRequireDefault(require("axios"));
-
 var _util = _interopRequireDefault(require("./util.es5.js"));
 
+const axios = require("axios").default;
+
 const httpClient = (() => {
-  const client = _axios.default.create({
+  const client = axios.create({
     withCredentials: true
   });
-
   client.interceptors.response.use(res => {
     const data = res.data,
           status = res.status,

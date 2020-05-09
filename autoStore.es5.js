@@ -6,8 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.getLocalStorage = getLocalStorage;
 exports.makeAutoStoreHandler = exports.makeDummyStorage = exports.makeLocalStore = exports.logStoreAdapter = exports.makeLocalStorage = void 0;
 
-var _mobx = require("mobx");
-
 const makeLocalStorage = () => {
   if (global.window && window.localStorage) return {
     get: name => JSON.parse(window.localStorage.getItem(name)),
@@ -76,12 +74,12 @@ function getLocalStorage() {
   return getLocalStorage.store;
 }
 
-const makeAutoStoreHandler = (name, store) => {
+const makeAutoStoreHandler = (name, store, runner) => {
   if (!store) store = getLocalStorage();
 
   var fn = function fn(_this, _member) {
     let firstRun = false;
-    const disposer = (0, _mobx.autorun)(() => {
+    const disposer = runner(() => {
       if (firstRun) {
         const existingStore = store.get(name);
 
