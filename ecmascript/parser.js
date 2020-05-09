@@ -57,7 +57,7 @@ export class Parser {
 
     console.log(
       "positions:",
-      this.stack.map(({ position, methodName, ...ent }) => ({ methodName, ...position }))
+      this.stack.map(({ position, methodName, depth, ...ent }) => ({ methodName, depth, ...position }))
     );
 
     console.log("node:", index, Util.className(instance), instance.position.toString());
