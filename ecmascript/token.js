@@ -2,19 +2,18 @@
  * Token Definitions
  */
 export class Token {
-
-static types = {
-  comment: "comment",
-  stringLiteral: "stringLiteral",
-  numericLiteral: "numericLiteral",
-  booleanLiteral: "booleanLiteral",
-  nullLiteral: "nullLiteral",
-  punctuator: "punctuator",
-  keyword: "keyword",
-  identifier: "identifier",
-  regexpLiteral: "regexpLiteral",
-  eof: "eof"
-};
+  static types = {
+    comment: "comment",
+    stringLiteral: "stringLiteral",
+    numericLiteral: "numericLiteral",
+    booleanLiteral: "booleanLiteral",
+    nullLiteral: "nullLiteral",
+    punctuator: "punctuator",
+    keyword: "keyword",
+    identifier: "identifier",
+    regexpLiteral: "regexpLiteral",
+    eof: "eof"
+  };
 
   constructor(type, value, start, end, pos) {
     const token = this;

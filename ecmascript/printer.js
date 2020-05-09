@@ -1,4 +1,4 @@
-import { Node, Literal, PropertyDefinition, FunctionDeclaration } from "./estree.js";
+import { Node, Literal, PropertyDefinition, FunctionDeclaration, Identifier } from "./estree.js";
 import Util from "../util.js";
 
 export class Printer {
@@ -15,7 +15,7 @@ export class Printer {
       fn =
         this["print" + name] ||
         function(...args) {
-          //console.log(`Non-existent print${name}(`, args, `)`);
+          console.log(`Non-existent:`, args);
           args = args.map(a => Util.className(a));
           throw new Error(`Non-existent print${name}(${args})`);
         };
@@ -275,11 +275,17 @@ export class Printer {
   /*printWithStatement(with_statement) {
   }*/
   printTryStatement(try_statement) {
-    const { body, parameters, trap } = try_statement;
+    const { body, parameters, catch_block, finally_block } = try_statement;
     let output = "try ";
     output += this.printNode(body);
+    if(catch_block) {
     output += ` catch(` + parameters.map(param => this.printNode(param)).join(", ") + ") ";
-    output += this.printNode(trap);
+    output += this.printNode(catch_block);
+  }
+  if(finally_block) {
+      output += ` finally `;
+    output += this.printNode(finally_block);
+  }
     return output;
   }
 
@@ -296,10 +302,12 @@ export class Printer {
 
   printExportStatement(export_statement) {
     const { what, declarations } = export_statement;
-    //console.log(identifiers);
+
+
+    console.log("declarations: "+declarations.length);
 
     let output = "export ";
-    output += this.printNode(what);
+    output += what ? this.printNode(what) : "default";
     output += " ";
     output += this.printNode(declarations);
     return output;
@@ -367,7 +375,9 @@ export class Printer {
 
   printVariableDeclaration(variable_declaration) {
     const { kind, exported, declarations } = variable_declaration;
-    let output = kind != "" ? `${kind} ` : "";
+        let output = exported ? "export " : "";
+
+    output += kind != "" ? `${kind} ` : "";
     output += declarations.map(decl => this.printNode(decl)).join(", ");
     return output;
   }
@@ -393,28 +403,34 @@ export class Printer {
         console.log("Property:", Util.className(property));
         throw new Error();
       }
-/*      if(Util.className(property.id) == "Identifier") {
+      //if(this.position().line >= 2497)
+              console.log("Property:", property);
+
+      /*      if(Util.className(property.id) == "Identifier") {
         console.log("property.id:", Util.className(property.id));
         throw new Error();
       }*/
       let name = this.printNode(property.id);
-      let value = this.printNode(property.value);
+      let value= this.printNode(property.value);
       let line = "";
       //console.log("value:", Util.className(property.value), property.id.value);
       if(property.value instanceof FunctionDeclaration) {
         //console.log("function.id:", property.value.id);
-        let functionName = property.value.id ? this.printNode(property.value.id) : "";
-        if(functionName == "" || functionName == name) {
-          if(!functionName) line += name;
+        let functionName = property.value.id ? this.printNode(property.value.id) : '';
+        if(functionName != '') {
+  name = functionName;
+  delete property.id;
+         } else if(functionName) {
           name = "";
-          value = value.replace(/^function\s?/, "");
         }
+ value = this.printNode(property.value);
+          value = value.replace(/^function\s/, "");
       }
       if(!is_multiline && /\n/.test(value)) is_multiline |= true;
       line += value.replace(/\n/g, "\n  ");
       if(property.flags) {
         line = name + " = " + line;
-      } else if(name) {
+      } else if(name && name != line) {
         line = name + ": " + line;
         if(!property.flags) is_prototype = false;
       }
@@ -473,6 +489,8 @@ export class Printer {
 
   printObjectBindingPattern(object_binding_pattern) {
     const { value, properties } = object_binding_pattern;
+
+  //  console.log("properties:",properties);
     let output = properties
       .map(({ property, element }) => {
         if(property.value == element.value) return property.value;

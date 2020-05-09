@@ -416,18 +416,19 @@ export class Lexer {
 
   lexRegExp() {
     let i = 0;
-    let word = "", prev = "";
+    let word = "",
+      prev = "";
     let slashes = 1;
     let validator = c => {
-  //   let last = word.substring(word.length - 1);
-      console.log("c:" +c +" prev: " + prev + " slashes: " + slashes);
-
-      if(c == " " && prev != "\\") {
-       return false;
+      //   let last = word.substring(word.length - 1);
+      //console.log("i:" + i + " c:" + c + " prev: " + prev + " slashes: " + slashes);
+i++;
+      if(slashes == 1 && c == " " && prev == '/') {
+        return false;
       } else if(c == "/" && prev != "\\") {
         slashes++;
       } else if(slashes == 2) {
-        return c == "g" || c == "i";
+        return c == "g" || c == "i" ;
       }
       if(prev == ";") return false;
       word += c;
@@ -442,9 +443,10 @@ export class Lexer {
     // if(this.accept(oneOf('/')))
 
     if(this.acceptRun(validator)) {
-    this.backup();
-    this.addToken(Token.types.regexpLiteral);
-    return this.lexText;
+      print();
+     // this.backup();
+      this.addToken(Token.types.regexpLiteral);
+      return this.lexText;
     }
     return this.lexPunctuator();
   }

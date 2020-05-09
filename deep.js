@@ -92,6 +92,12 @@ export const iterate = function*(value, filter = v => true, path = []) {
   if(r !== -1) if (Util.isObject(value)) for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
 };
 
+export const flatten = function(obj, dst = {}) {
+  for(let [value,path] of iterate(obj, v => true))
+    dst[path.join(".")] = value;
+  return dst;
+};
+
 export const get = (root, path) => {
   let len;
   path = Util.clone(path);
@@ -140,4 +146,4 @@ export const transform = (obj, filter, t) => {
   }
 };
 
-export default { isPlainObject, clone, equals, extend, select, get, set, transform, iterate };
+export default { isPlainObject, clone, equals, extend, select, get, set, transform, iterate, flatten };

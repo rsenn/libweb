@@ -1777,7 +1777,7 @@ Util.weakAssign = function(obj) {
   return obj;
 };
 Util.getCallerStack = function(position = 2) {
-  Error.stackTraceLimit = 20;
+  Error.stackTraceLimit = 100;
   if(position >= Error.stackTraceLimit) {
     throw new TypeError(`getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: \`${position}\` and Error.stackTraceLimit was: \`${Error.stackTraceLimit}\``);
   }

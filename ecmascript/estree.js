@@ -27,7 +27,7 @@ export class FunctionLiteral extends Node {
     this.id = id;
     this.params = params;
     this.body = body;
-    this.exported = exported;
+    //this.exported = exported;
     this.async = is_async;
     this.generator = generator;
   }
@@ -286,11 +286,12 @@ export class WithStatement extends Statement {
 }
 
 export class TryStatement extends Statement {
-  constructor(body, parameters, trap) {
+  constructor(body, parameters, catch_block, finally_bock) {
     super("TryStatement");
     this.body = body;
     this.parameters = parameters;
-    this.trap = trap;
+    this.catch_block = catch_block;
+    this.finally_bock = finally_bock;
   }
 }
 
@@ -324,12 +325,12 @@ export class Declaration extends Statement {
 }
 
 export class ClassDeclaration extends Declaration {
-  constructor(id, extending, members, exported = false) {
+  constructor(id, extending, members/*, exported = false*/) {
     super("ClassDeclaration");
     this.id = id;
     this.extending = extending;
     this.members = members;
-    this.exported = exported;
+    //this.exported = exported;
     // console.log('New ClassDeclaration: ', JSON.stringify({ id, extending, // exported }));
   }
 }
@@ -352,10 +353,10 @@ export class ArrowFunction extends Node {
 }
 
 export class VariableDeclaration extends Declaration {
-  constructor(declarations, kind = "var", exported = false) {
+  constructor(declarations, kind = "var"/*, exported = false*/) {
     super("VariableDeclaration");
     this.kind = kind;
-    this.exported = exported;
+    //this.exported = exported;
     this.declarations = declarations;
     // console.log('New VariableDeclaration: ', JSON.stringify({ kind, exported
     // }));

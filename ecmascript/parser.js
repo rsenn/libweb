@@ -3,7 +3,7 @@ import Lexer, { SyntaxError, Position } from "./lexer.js";
 import deep from "../deep.js";
 import { Token } from "./token.js";
 import { Printer } from "./printer.js";
-import { estree, Node, Factory, PropertyDefinition } from "./estree.js";
+import { estree, Node, Factory, PropertyDefinition, BinaryExpression } from "./estree.js";
 
 const add = (arr, ...items) => [...(arr || []), ...items];
 
@@ -12,6 +12,7 @@ export class Parser {
 
   constructor(sourceText, fileName) {
     this.tokens = [];
+    this.processed = [];
     this.lexer = new Lexer(sourceText, fileName, this.handleComment);
     this.stack = [];
     this.prefix = fileName ? `${fileName}:` : "";
@@ -93,10 +94,20 @@ export class Parser {
     const token = this.tokens.shift();
     if(this.tokens.length == 0) this.next();
 
+    this.processed.push(token);
+
     if(typeof Parser.onToken == "function") Parser.onToken(token);
 
     return token;
     //parseRemainingMemberExpression2;
+  }
+
+  state = () => {
+var n = this.processed.length;
+var parser = this;
+return function() {
+parser.tokens.unshift(...parser.processed.splice(n, parser.processed.length));
+}
   }
 
   printtoks() {
@@ -222,8 +233,8 @@ const operatorPrecedence = {
   ">": 6,
   "<=": 6,
   ">=": 6,
-  instanceof: 6,
-  in: 6,
+  "instanceof": 6,
+  "in": 6,
   "<<": 7,
   ">>": 7,
   "-->>": 7,
@@ -336,7 +347,7 @@ export class ECMAScriptParser extends Parser {
   }
 
   matchStatement() {
-    return this.matchPunctuators(";") || this.matchKeywords(["if", "var", "let", "const", "with", "while", "do", "for", "continue", "break", "return", "switch", "import", "export", "try", "throw"]) || this.matchAssignmentExpression();
+    return this.matchPunctuators(";") || this.matchKeywords(["if", "var", "let", "const", "with", "while", "do", "for", "continue", "break", "return", "switch", "import", "export", "try", "throw", "class"]) || this.matchAssignmentExpression();
   }
 
   matchPrimaryExpression() {
@@ -379,9 +390,10 @@ export class ECMAScriptParser extends Parser {
       rest_of = true;
       this.expectPunctuators("...");
     }
+    console.log("rest_of:", rest_of)
 
     if(is_async || this.matchKeywords("function")) {
-   expr = this.parseFunction();
+      expr = this.parseFunction();
     } else if(!is_async && this.matchKeywords("this")) {
       this.expectKeywords("this");
       expr = new this.estree.ThisExpression();
@@ -389,7 +401,7 @@ export class ECMAScriptParser extends Parser {
       expr = this.parseJSX();
     } else if(this.matchPunctuators("[")) {
       expr = this.parseArray();
-         } else if(this.matchPunctuators("{")) {
+    } else if(this.matchPunctuators("{")) {
       expr = this.parseObject();
     } else if(!is_async && this.matchLiteral()) {
       expr = this.expectLiteral();
@@ -399,21 +411,26 @@ export class ECMAScriptParser extends Parser {
     } else if(this.matchKeywords("super")) {
       this.expectKeywords("super");
       expr = new this.estree.Identifier("super");
-    } else if(this.matchIdentifier()) {
-      let id = this.expectIdentifier();
+    } else if(!rest_of && this.matchIdentifier()) {
+      let expr = this.expectIdentifier();
 
-      if(this.matchPunctuators("=>")) id = this.parseArrowFunction([id], is_async);
+      if(this.matchPunctuators("=>")) expr = this.parseArrowFunction([expr], is_async);
 
-      expr = id;
-    } else if(this.matchPunctuators("(")) {
-      this.expectPunctuators("(");
-      let expression = [];
-      if(!this.matchPunctuators(")")) expression = this.parseExpression();
-      //console.log("expression:", expression);
-      this.expectPunctuators(")");
-      if(this.matchPunctuators("=>")) expression = this.parseArrowFunction(expression, is_async);
+    } else if(!rest_of && this.matchPunctuators("(")) {
 
-      expr = expression;
+   //   this.expectPunctuators("(");
+      
+     expr = this.parseArguments();
+    
+    console.log("expression:", expr);
+//      this.expectPunctuators(")");
+      if(this.matchPunctuators("=>")) expr = this.parseArrowFunction(expr, is_async);
+
+    } 
+
+
+    if(expr == null) {
+      console.log("literal:",this.token);
     }
 
     if(rest_of) {
@@ -421,8 +438,9 @@ export class ECMAScriptParser extends Parser {
     }
 
     if(!expr) {
-      console.log("expr:", this.token, expr);
-      throw new Error();
+      console.log(`expr:`,this.token, this.token.pos.toString());
+      console.log(`expr: ${this.token.value} ${this.token.pos}`);
+        throw new Error();
     }
 
     return expr;
@@ -438,10 +456,9 @@ export class ECMAScriptParser extends Parser {
       }
     };
     this.expectPunctuators("(");
-    checkRestOf(this);
-    if(this.matchAssignmentExpression()) {
       while(true) {
         checkRestOf(this);
+        if(!this.matchAssignmentExpression()) break;
         let arg = this.parseAssignmentExpression();
         if(rest_of) arg = new this.estree.RestOfExpression(arg);
         args.push(arg);
@@ -451,9 +468,9 @@ export class ECMAScriptParser extends Parser {
           continue;
         }
         break;
-      }
-    }
-    this.expectPunctuators(")", args);
+      } 
+      console.log("this.processed:", this.processed);
+        this.expectPunctuators(")", args);
     return args;
   }
 
@@ -481,8 +498,15 @@ export class ECMAScriptParser extends Parser {
   parseArrowFunction(args, is_async = false) {
     this.expectPunctuators("=>");
     let body;
-    if(this.matchPunctuators("{")) body = this.parseBlock(false, true);
-    else body = this.parseExpression();
+
+    if(this.matchPunctuators("{"))
+      body = this.parseBlock(false, true);
+    else
+      body = this.parseExpression();
+
+    console.log("body:",body);
+    console.log("args:",args);
+
     return new this.estree.ArrowFunction(args, body, is_async);
   }
 
@@ -635,7 +659,7 @@ export class ECMAScriptParser extends Parser {
       // LeftHandSideExpression anymore
       lhs = false;
       const precedenceLevel = operatorPrecedence[this.next().value];
-      const operatorToken = ["instanceof", "in"].includes(value) ? this.expectKeywords(["instanceof", "in"]) : this.expectPunctuators(punctuators);
+      const operatorToken = ["instanceof", "in"].includes(tok.value) ? this.expectKeywords(["instanceof", "in"]) : this.expectPunctuators(punctuators);
       const right = this.parseBinaryExpression(precedenceLevel + 1);
       if(operatorToken.value === "||" || operatorToken.value === "&&") {
         ast = new this.estree.LogicalExpression(operatorToken.value, ast, right.ast);
@@ -678,17 +702,17 @@ export class ECMAScriptParser extends Parser {
       return this.parseFunction();
     } else if(this.matchPunctuators("{")) {
       return this.parseObject();
-    }  else if(this.matchPunctuators("[")) {
+    } /*else if(this.matchPunctuators("[")) {
       //    return this.parseNewOrCallOrMemberExpression();
       let object = this.parseArray();
       if(this.matchPunctuators(".")) {
         object = this.parseRemainingMemberExpression(object);
       }
-            if(this.matchPunctuators("(")) {
-              object = this.parseRemainingCallExpression(object);
-            }
+      if(this.matchPunctuators("(")) {
+        object = this.parseRemainingCallExpression(object);
+      }
       return object;
-    }
+    }*/
 
     // Won't know immediately whether to parse as ConditionalExpression or
     // LeftHandSideExpression. We'll only know later on during parsing if we
@@ -820,7 +844,13 @@ export class ECMAScriptParser extends Parser {
       assignment = declarator.assignment;
       declarations.push(new this.estree.VariableDeclarator(identifier, assignment));
     }
-    return new this.estree.VariableDeclaration(declarations, kind, exported);
+    let decl = new this.estree.VariableDeclaration(declarations, kind, exported);
+
+    if(exported) {
+      decl = new this.estree.ExportStatement(decl.id, decl);
+    }
+
+    return decl;
   }
 
   parseBlock(insideIteration, insideFunction) {
@@ -895,18 +925,14 @@ export class ECMAScriptParser extends Parser {
             member = new estree.Identifier("get");
             flags &= ~PropertyDefinition.GETTER;
           }
-        } else if(this.matchLiteral()) {
+        } /*else if(this.matchLiteral()) {
           member = this.expectLiteral();
-        }
+        }*/
       }
 
-      if(this.matchPunctuators(",")) {
-        this.expectPunctuators(",");
-        continue;
-      }
-      if(this.matchPunctuators("}")) break;
-
-      if(this.matchPunctuators("(")) {
+       if(this.matchPunctuators([",","}"])) {
+        value = member;
+      } else if(this.matchPunctuators("(")) {
         value = this.parseFunction();
         /*        console.log("member:",member, getter);
         members[member.value] = fn;
@@ -923,7 +949,7 @@ export class ECMAScriptParser extends Parser {
         if(!this.matchAssignmentExpression()) break;
         value = this.parseAssignmentExpression();
       } else if(typeof member == "object" && member !== null && "value" in member) {
-        //console.log("member:", member, this.expectIdentifier());
+        console.log("member:", member, this.expectIdentifier());
 
         ctor = this.estree.ObjectBindingPattern;
       }
@@ -937,13 +963,15 @@ export class ECMAScriptParser extends Parser {
 
       properties.push(member);
 
+      if(this.matchPunctuators("}")) break;
+
       if(this.matchPunctuators(",")) this.expectPunctuators(",");
     }
 
     this.expectPunctuators("}");
 
     if(ctor == this.estree.ObjectBindingPattern) {
-      members = Object.entries(members).map(([key, value]) => new this.estree.BindingProperty(new this.estree.Identifier(key), value ? new this.estree.Identifier(value) : new this.estree.Identifier(key)));
+      properties = Object.entries(properties).map(([key, value]) => new this.estree.BindingProperty(new this.estree.Identifier(key), value ? new this.estree.Identifier(value) : new this.estree.Identifier(key)));
     }
     return new ctor(properties);
   }
@@ -963,15 +991,15 @@ export class ECMAScriptParser extends Parser {
         spread = true;
       }
 
-      if(this.matchAssignmentExpression()) {
+     // if(this.matchAssignmentExpression()) {
         element = this.parseAssignmentExpression();
-      }
+      //}
+      console.log("array element:", element);
 
       if(spread) {
         element = new this.estree.SpreadElement(element);
       }
 
-      //console.log("array element:", element);
       members.push(element);
 
       if(this.matchPunctuators(",")) this.expectPunctuators(",");
@@ -1124,15 +1152,24 @@ export class ECMAScriptParser extends Parser {
 
   parseExportStatement() {
     this.log("parseExportStatement()");
-    this.expectKeywords("export");
-    if(this.matchKeywords("class")) {
+    if(this.matchKeywords("export"))
+      this.expectKeywords("export");
+
+    if(this.matchKeywords("default")) {
+      this.expectKeywords("default");
+                  let stmt = this.parsePrimaryExpression();
+      console.log("default export:", stmt);
+
+                  stmt =  new this.estree.ExportStatement(null, stmt);
+                  return stmt;
+    } else if(this.matchKeywords("class")) {
       return this.parseClass(true);
     } else if(this.matchKeywords("function")) {
       return this.parseFunction(true);
-    } else if(this.matchKeywords("default")) {
-      this.expectKeywords("default");
+    } else if(this.matchIdentifier(true)) {
+      const id = this.expectIdentifier();
 
-      return new this.estree.ExportStatement(new this.estree.Identifier("default"), this.parseAssignmentExpression());
+      return new this.estree.ExportStatement(id, this.parseAssignmentExpression());
     }
     return this.parseVariableStatement(true);
   }
@@ -1253,8 +1290,14 @@ export class ECMAScriptParser extends Parser {
         update = this.matchPunctuators(")") ? null : this.parseExpression(true);
       } else {
         isForInStatement = true;
-        this.expectKeywords(["in", "of"]);
-        right = this.parseExpression();
+
+        if(left instanceof BinaryExpression && left.operator == "in") {
+          right = left.right;
+          left = left.left;
+        } else {
+          this.expectKeywords(["in", "of"]);
+          right = this.parseExpression();
+        }
       }
     }
     this.expectPunctuators(")");
@@ -1303,12 +1346,14 @@ export class ECMAScriptParser extends Parser {
     return new this.estree.SwitchStatement(sv, cases);
   }
 
-  parseTryStatement() {
+  parseTryStatement(insideIteration, insideFunction) {
+    let body, parameters = [], catch_block, finally_block;
     this.expectKeywords("try");
     //this.expectPunctuators("{");
-    const body = this.parseBlock(false, false);
+   body = this.parseBlock(insideIteration, insideFunction);
+
+    if(this.matchKeywords('catch')) {
     this.expectKeywords("catch");
-    let parameters = [];
     this.expectPunctuators("(");
     // Parse optional parameter list
     if(this.matchIdentifier()) {
@@ -1321,9 +1366,16 @@ export class ECMAScriptParser extends Parser {
     this.expectPunctuators(")");
 
     // Parse function body
-    const trap = this.parseBlock(false, true);
+  catch_block = this.parseStatement(insideIteration, insideFunction);
+  }
+      if(this.matchKeywords('finally')) {
+    this.expectKeywords("finally");
 
-    let object = new this.estree.TryStatement(body, parameters, trap);
+    finally_block = this.parseStatement(insideIteration, insideFunction);
+
+}
+
+    let object = new this.estree.TryStatement(body, parameters, catch_block, finally_block);
 
     if(this.matchPunctuators("(")) {
       return this.parseRemainingCallExpression(object);
@@ -1365,19 +1417,25 @@ export class ECMAScriptParser extends Parser {
   parseReturnStatement() {
     this.log(`parseReturnStatement()`);
     this.expectKeywords("return");
-    let expression = null;
+    let expression = this.parseAssignmentExpression();
 
-    if(this.matchAssignmentExpression()) {
+/*    if(this.matchAssignmentExpression()) {
       expression = this.parseAssignmentExpression();
     }
-    this.expectPunctuators(";");
+*/    this.expectPunctuators(";");
     return new this.estree.ReturnStatement(expression);
   }
 
-  parseStatement(insideIteration, insideFunction) {
+  parseStatement(insideIteration, insideFunction, exported) {
     this.log(`parseStatement()`, Util.inspect(this.token));
     // Parse Block
     let t = this.token || this.lexer.tokens[this.lexer.tokenIndex];
+    let defaultExport = false;
+
+    if(exported) {
+      if(this.matchKeywords('default')) 
+      defaultExport = this.expectKeywords('default');
+    }
 
     if(this.matchPunctuators("{")) {
       return this.parseBlock(insideIteration, insideFunction);
@@ -1390,10 +1448,17 @@ export class ECMAScriptParser extends Parser {
 */
       // Parse Variable Statement
     } else if(this.matchKeywords(["var", "let", "const"])) {
-      return this.parseVariableStatement();
-    }
-    // Parse import Statement
-    else if(this.matchKeywords("import")) {
+
+
+      let stmt = this.parseVariableStatement();
+
+      if(exported) {
+        stmt = new estree.ExportStatement(defaultExport || stmt.id, stmt);
+      }
+      return stmt;
+
+   
+    } else if(this.matchKeywords("import")) {
       //   this.log(`parseStatement()`, Util.inspect(this.token));
       return this.parseImportStatement();
       // Parse Empty Statement
@@ -1403,7 +1468,13 @@ export class ECMAScriptParser extends Parser {
     }
     // Parse Expression Statement
     else if(this.matchAssignmentExpression()) {
-      return this.parseExpressionStatement();
+
+      let stmt = this.parseExpressionStatement();
+
+      if(defaultExport) {
+        stmt = new estree.ExportStatement('default', stmt);
+      }
+      return stmt;
     }
     // Parse If Statement
     else if(this.matchKeywords("if")) {
@@ -1417,7 +1488,7 @@ export class ECMAScriptParser extends Parser {
     } else if(this.matchKeywords("switch")) {
       return this.parseSwitchStatement(insideFunction);
     } else if(this.matchKeywords("try")) {
-      return this.parseTryStatement();
+      return this.parseTryStatement(insideIteration, insideFunction);
 
       // Parse With Statement
     } else if(this.matchKeywords("throw")) {
@@ -1465,8 +1536,12 @@ export class ECMAScriptParser extends Parser {
     const members = this.parseObject(false, true);
 
     if(this.matchPunctuators(";")) this.expectPunctuators(";");
+    let decl =  new this.estree.ClassDeclaration(identifier, extending, members);
 
-    return new this.estree.ClassDeclaration(identifier, extending, members, exported);
+    if(exported) {
+      decl = new this.estree.ExportStatement(decl.id, decl);
+    }
+    return decl;
   }
 
   parseParameters() {
@@ -1558,26 +1633,30 @@ export class ECMAScriptParser extends Parser {
     // Parse function body
     const body = this.parseBlock(false, true, identifier);
 
-    let object = new this.estree.FunctionDeclaration(identifier, parameters, body, exported, isAsync, isGenerator);
+    let object = new this.estree.FunctionDeclaration(identifier, parameters, body, false, isAsync, isGenerator);
 
     if(this.matchPunctuators("(")) {
       return this.parseRemainingCallExpression(object);
+    }
+
+    if(exported) {
+      object = new this.estree.ExportStatement(object.id, object);
     }
 
     return object;
   }
 
   parseSourceElement() {
-    //  let exported = false;
-    //  if(this.matchKeywords('export')) {
-    //    this.expectKeywords('export');
-    //    exported = true;
-    //  }
     let exported = false;
-
     if(this.matchKeywords("export")) {
-      return this.parseExportStatement();
-    } else if(this.matchKeywords("class")) {
+      this.expectKeywords("export");
+      exported = true;
+
+      if(this.matchKeywords("default"))
+        return this.parseExportStatement();
+    }
+
+     if(this.matchKeywords("class")) {
       return this.parseClass(exported);
     } else if(this.matchKeywords("function")) {
       return this.parseFunction(exported);
