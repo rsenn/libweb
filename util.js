@@ -84,7 +84,7 @@ function curry(fn, arity) {
       };
     }
   };
-};
+}
 Util.curry = curry;
 Util.getGlobalObject = function() {
   let ret = this.globalObject;
@@ -795,13 +795,11 @@ Util.ifThenElse = function(pred = value => !!value, _then = () => {}, _else = ()
 };
 
 Util.transform = curry(function*(fn, arr) {
-  for(let item of arr)
-    yield fn(item);
-
+  for(let item of arr) yield fn(item);
 });
 
 Util.colorDump = (iterable, textFn) => {
-  textFn = textFn || ((color, n) => (("   " + (n + 1)).slice(-3) + ` ${color}`));
+  textFn = textFn || ((color, n) => ("   " + (n + 1)).slice(-3) + ` ${color}`);
 
   let j = 0;
   const filters = "font-weight: bold; text-shadow: 0px 0px 1px rgba(0,0,0,0.8); filter: drop-shadow(30px 10px 4px #4444dd)";
