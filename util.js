@@ -324,6 +324,7 @@ Util.pad = function(s, n, char = " ") {
   return Util.padFn(n, char)(s);
 };
 Util.abbreviate = function(str, max, suffix = "...") {
+  str = "" + str;
   if(str.length > max) {
     return str.substring(0, max - suffix.length) + suffix;
   }
@@ -2286,6 +2287,7 @@ Util.color = (useColor = true) =>
 
 Util.colorText = (...args) => Util.color().text(...args);
 Util.ansiCode = (...args) => Util.color().code(...args);
+Util.ansi = Util.color(true);
 
 Util.defineInspect = (proto, ...props) => {
   if(!Util.isBrowser()) {

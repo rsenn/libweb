@@ -636,7 +636,7 @@ export class ECMAScriptParser extends Parser {
     const result = this.parseUnaryExpression();
 
     if(result.ast == null) {
-      //console.log("binary:", result);
+      console.log("binary:", result);
       throw new Error();
     }
     let { ast, lhs } = result;
@@ -885,7 +885,7 @@ export class ECMAScriptParser extends Parser {
     return new this.estree.StatementList(statements);
   }
 
-  parseObject() {
+  parseObject(isClass = false) {
     let ctor = this.estree.ObjectLiteral;
     this.log(`parseObject()`);
     let properties = [];
@@ -931,6 +931,7 @@ export class ECMAScriptParser extends Parser {
         } /*else if(this.matchLiteral()) {
           member = this.expectLiteral();
         }*/
+        console.log("member:", member);
       }
 
       if(this.matchPunctuators([",", "}"])) {
@@ -945,8 +946,10 @@ export class ECMAScriptParser extends Parser {
       } else if(this.matchPunctuators("=")) {
         this.expectPunctuators("=");
         value = this.parseAssignmentExpression();
-
-        this.expectPunctuators(";");
+        /*
+if(this.matchPunctuators(',')
+        this.expectPunctuators(";");*/
+        if(!isClass) ctor = this.estree.ObjectBindingPattern;
       } else if(this.matchPunctuators(":")) {
         this.expectPunctuators(":");
         if(!this.matchAssignmentExpression()) break;
@@ -956,9 +959,10 @@ export class ECMAScriptParser extends Parser {
 
         ctor = this.estree.ObjectBindingPattern;
       }
+      console.log("member:", member);
 
       if(member == null) {
-        //console.log("Property:", value.id);
+        console.log("Property:", { member, value, token: this.token });
         throw new Error();
       }
       if(spread) member = new this.estree.SpreadElement(value);
@@ -1421,12 +1425,11 @@ export class ECMAScriptParser extends Parser {
   parseReturnStatement() {
     this.log(`parseReturnStatement()`);
     this.expectKeywords("return");
-    let expression = this.parseAssignmentExpression();
+    let expression = null;
 
-    /*    if(this.matchAssignmentExpression()) {
-      expression = this.parseAssignmentExpression();
-    }
-*/ this.expectPunctuators(";");
+    if(!this.matchPunctuators(";")) expression = this.parseAssignmentExpression();
+
+    this.expectPunctuators(";");
     return new this.estree.ReturnStatement(expression);
   }
 

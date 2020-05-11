@@ -1,3 +1,5 @@
+import Util from "../util.js";
+
 /*
  * Token Definitions
  */
@@ -5,6 +7,7 @@ export class Token {
   static types = {
     comment: "comment",
     stringLiteral: "stringLiteral",
+    templateLiteral: "templateLiteral",
     numericLiteral: "numericLiteral",
     booleanLiteral: "booleanLiteral",
     nullLiteral: "nullLiteral",
@@ -15,12 +18,13 @@ export class Token {
     eof: "eof"
   };
 
-  constructor(type, value, start, end, pos) {
+  constructor(type, value, position) {
     const token = this;
     this.type = type;
     this.value = value;
-    this.start = start;
-    this.end = end;
+    this.position = position;
+
+    /* this.end = end;
     this.pos = pos;
     const delta = end - start - 1;
     this.position = {
@@ -34,7 +38,22 @@ export class Token {
         if(delta > 0) s += ` len=${delta + 1}`;
         return s;
       }
-    };
+    };*/
+  }
+
+  get length() {
+    return this.position.length;
+  }
+  get start() {
+    return this.position.pos;
+  }
+  get end() {
+    return this.position.pos + this.length;
+  }
+
+  toString() {
+    const { type, value, position } = this;
+    return `${position} ${type} '${Util.abbreviate(value, 80)}'`;
   }
 }
 
