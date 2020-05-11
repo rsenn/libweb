@@ -392,7 +392,7 @@ export function gettext(elem, done) {
 export function select() {
   if(!select.promise)
     select.promise = new Promise(function(resolve, reject) {
-      const e = Element.find("#__next");
+      const e = Element.find("body");
       e.style.cursor = "crosshair";
       select.element = null;
       const abortsel = () => {
@@ -840,7 +840,8 @@ export function walk(element) {
   //reduceTexts((acc,text) => console.log("text " + text.index));
 }
 
-export function measure(element) {
+export async function measure(element) {
+  element = element || await select();
   let e = Element.find(element);
   let r = Element.rect(e);
 
