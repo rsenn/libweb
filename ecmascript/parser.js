@@ -325,40 +325,57 @@ export class ECMAScriptParser extends Parser {
       parts = [];
     this.templateLevel = this.templateLevel || 0;
     this.templateLevel++;
-    while(this.matchLiteral()) {
-      part = this.expectLiteral();
 
-      console.log("part:", part);
+//    let punct = this.matchLiteral();
+
+    while(true) {
+
+
+      console.log("token:", this.token.toString() );
+
+if(!this.matchLiteral())
+break;
+   part = this.expectLiteral();
+         console.log("part:", part);
+
       parts.push(part);
 
-      if(part.value.endsWith("`")) break;
+      if(this.token.value.endsWith("`") || part.value.endsWith("`")) 
+        break;
 
-      if(this.matchAssignmentExpression()) {
+    /*  if(this.matchPunctuators("${")) {
+        this.expectPunctuators("${");
+*/
         part = this.parseAssignmentExpression();
         parts.push(part);
-        console.log("part", part);
-        continue;
-      }
+        console.log("assignment expression", part);
 
-      if(this.matchPunctuators("}")) {
-        this.expectPunctuators("}");
+//this.matchLiteral();
+      console.log("parseTemplateLiteral", this.token.toString());
+
+     /* if(this.matchPunctuators("}"))*/ {
         const { lexer } = this;
         let { stateFn } = lexer;
         let { inSubst } = stateFn;
-        console.log("lexer", { inSubst });
+
+        this.lexer.stateFn = this.lexer.lexTemplate(true);
+        this.lexer.stateFn.inSubst = false;
+    
+    
+        let literal = (this.matchLiteral() ? this.expectLiteral() : this.expectPunctuators("}")).value;
+        console.log("parseTemplateLiteral", { inSubst, literal });
 
         //this.lexer.template.inSubst = false;
         //stateFn.inSubst = false;
 
-this.lexer.stateFn();
+     //   this.lexer.lexPunctuator();
+/*
+        this.template = 
+        this.template.inSubst = false;*/
+         console.log("token:", this.token.toString());
 
-        this.template = this.template || this.lexer.lexTemplate(true);
-        this.template.inSubst = false;
-
-        this.lexer.stateFn = this.template;
-        this.lexer.stateFn.inSubst = false;
       }
-
+    
     }
     this.templateLevel--;
 
@@ -404,7 +421,7 @@ this.lexer.stateFn();
 
   matchLiteral() {
     const token = this.next();
-    console.log(`matchLiteral() token=${token.value}`);
+    console.log(`matchLiteral() token='${token.value}'`);
     return isLiteral(token);
   }
   matchTemplateLiteral() {
@@ -579,10 +596,10 @@ this.lexer.stateFn();
         if(this.matchPunctuators("=>")) object = this.parseArrowFunction(args, is_async);
         else object = new this.estree.CallExpression(object, args);
       } else if(this.matchTemplateLiteral()) {
-        console.log("Template call", this.token);
+        //console.log("Template call", this.token);
         let arg = this.parseTemplateLiteral();
 
-        console.log("Template call", arg);
+        //console.log("Template call", arg);
         object = new this.estree.CallExpression(object, [arg]);
       }
     }
@@ -1812,7 +1829,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
     let { token } = this;
     let start = this.consumed || 0;
     let firstTok = this.numToks || 0;
-    let end = token.from || lexer.pos;
+    let end = (token && token.pos) || lexer.pos;
     let lastTok = lexer.tokenIndex;
 
     // msg = s + ` ${quoteList(this.stack[depth].tokens)}`;

@@ -374,6 +374,10 @@ export class Lexer {
     this.ignore();
   }
 
+   get token() {
+    return this.tokens[this.tokens.length - 1]; 
+   }
+
   /*
    * Various State Functions
    */
@@ -593,92 +597,102 @@ export class Lexer {
   }
 
   lexTemplate(cont = false) {
-    const done = (doSubst, fn = template) => {
-      if(!doSubst) {
-        this.template = null;
-        return this.lexText;
-      }
+    const done = (doSubst, defaultFn = null) => {
       template.inSubst = doSubst;
       var self = () => {
-        let inSubst = this.template.inSubst;
+        //let inSubst = this.template.inSubst;
         let c = this.peek();
         let { start, pos } = this;
-        console.log("self", { c, inSubst, start, pos });
-        if(c == "`") {
+        const position = this.position();
+        const { stateFn } = this;
+let doSubst = template.inSubst;
+
+if(c == ';') {
+
+  throw new Error(`${this.position()}`);
+}
+
+        if(!doSubst && c == "`") {
           this.template = null;
           this.addToken(Token.types.stringLiteral);
-          this.skip(1);
-          this.ignore();
-          return this.lexText;
+/*          this.skip(1);
+          this.ignore();*/
+          return this.lexText();
         }
-        //console.log("lexTemplate", { inSubst }, this.errorRange());
-        fn = this.template.inSubst ? this.lexText() : () => this.template;
-        //console.log("fn:", fn);
-        if(fn == this.lexPunctuator) {
-          c = this.peek();
-          //console.log("punct:", c);
 
-          if(this.template.inSubst && c == "}") {
-            c = this.next();
-            this.ignore();
-            return template;
-          }
+       let  fn = doSubst ? this.lexText : defaultFn;
+        let ret;
+                console.log("self", { c, doSubst, fn }, this.errorRange(), position.toString());
+
+        if(doSubst && c == "}" /*&& fn === this.lexPunctuator)*/) {
+          console.log("self:", { c, ret, fn }, position + "");
+          c = this.peek();
+      //   this.skip();
+          console.log("self:", { c, doSubsbt, start, pos });
+       // this.ignore();
+                   this.addToken(Token.types.punctuator);
+
+          return fn();
         }
-        let ret = fn.call(this);
-        //console.log("ret:", ret);
         if(fn === null) throw new Error();
-        return self;
+       
+        return fn; ///*fn && */done(doSubst, fn)/* ||  this.lexText()*/;
       };
-      this.template.inSubst = doSubst;
+      template.inSubst = doSubst;
       return self;
     };
-
     let c;
     let inSubst = (this.template && this.template.inSubst) || template.inSubst;
-
     if(cont) {
+      c = this.next();
+      console.log("lexTemplate continue c:", { c });
       c = this.peek();
-      console.log("continue c:", { c });
-      /*
-  if(c == '}');
-     this.next();*/
-      c = this.peek();
-      // this.ignore();
-
-      console.log("continue template:", { c, cont, inSubst });
-
-      //  this.skip(1);
-      //this.ignore();
-      return this.template();
+      console.log("lexTemplate continue template:", { c, cont, inSubst });
+//      throw new Error();
+      return template;
     }
     var startToken = this.tokenIndex;
-
     function template() {
       let prevChar = "";
       let c = "";
       let escapeEncountered = false;
+      let n = 0;
       do {
         if(this.acceptRun(not(or(c => c === "$", oneOf("\\`{$"))))) {
           escapeEncountered = false;
         }
         prevChar = c;
         c = this.next();
+        ++n;
         console.log(`lexTemplate`, { c, escapeEncountered });
         if(c === null) {
-          throw this.error(`Illegal template token '${this.source[this.start]}': ${this.errorRange()}`);
+          throw this.error(`Illegal template token (${n})  '${this.source[this.start]}': ${this.errorRange()}`);
         } else if(!escapeEncountered) {
           if(c == "{" && prevChar == "$") {
-            this.backup();
-            this.backup();
+            this.backup(2);
             this.addToken(Token.types.templateLiteral);
-            this.skip(2);
-            this.ignore();
-            return done(true, 0);
+/*
+            this.start = this.pos;
+            this.pos += 2;
+*/
+  //this.addToken(Token.types.punctuator);
+
+           this.skip(2);
+                 console.log("lexTemplate template:", { c: this.peek(), prevChar });
+
+//           this.skip(2);
+           this.ignore();
+//sreturn this.lexPunctuator.bind(this);
+console.log("addtoken:",           this.token.toString());
+          return done(true, this.lexText);
           } else if(c === "`") {
             this.addToken(Token.types.templateLiteral);
-            //            this.ignore();
+           // this.skip(1);
+                    //  this.ignore();
+    //return  this.lexText();
+
             return this.lexText.bind(this);
-            return done(false, 1);
+       //     return this.lexText;
           } else if(c === "\\") {
             escapeEncountered = true;
           }
@@ -687,21 +701,16 @@ export class Lexer {
         }
       } while(true);
     }
-
-    template.inSubst = inSubst;
-
+  /*  template.inSubst = inSubst;
     if(this.template !== template) this.template = template;
-
-    console.log("lexTemplate:", { c, startToken, inSubst }, this.line + 1 + ":" + (1 + this.column)); //this.position(Math.max(this.start, this.pos)).toString());
-
-    return this.template;
+    console.log("lexTemplate:", { c, startToken, inSubst }, this.line + 1 + ":" + (1 + this.column));*/   
+    return template.call(this);
   }
-
   lexQuote(quoteChar) {
     if(quoteChar === "`") {
       // this.ignore();
 
-      return this.template || this.lexTemplate;
+      return  this.lexTemplate;
     }
     return function() {
       let prevChar = "";
@@ -890,7 +899,7 @@ function isPunctuator(word) {
     case 1:
       /* prettier-ignore */ return "=.-%}>,*[<!/]~&(;?|):+^{@".indexOf(word) >= 0;
     case 2:
-      /* prettier-ignore */ return ["!=", "*=", "&&", "<<", "/=", "||", ">>", "&=", "==", "++", "|=", "<=", "--", "+=", "^=", ">=", "-=", "%=", "=>"].indexOf(word) >= 0;
+      /* prettier-ignore */ return ["!=", "*=", "&&", "<<", "/=", "||", ">>", "&=", "==", "++", "|=", "<=", "--", "+=", "^=", ">=", "-=", "%=", "=>", "${"].indexOf(word) >= 0;
 
     case 3:
       return ["!==", "===", ">>=", "-->>", "<<=", "..."].indexOf(word) >= 0;
