@@ -53,9 +53,11 @@ export class Token {
 
   toString() {
     let { type, value, position } = this;
+
     value = Util.abbreviate(value, 80);
-    if(type == "stringLiteral") value = `'${value}'`;
-    else if(type == "templateLiteral") value = "`" + value + "`";
+
+    value = value.replace(/\n/g, "\\n").replace(/\t/g, "\\t");
+
     if(type == "identifier") value = Util.colorText(value, 1, 33);
     else if(type == "keyword") value = Util.colorText(value, 1, 31);
     else if(type == "comment") value = Util.colorText(value, 1, 32);

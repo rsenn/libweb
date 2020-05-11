@@ -644,7 +644,7 @@ export class Lexer {
             return done(true, 0);
           } else if(c === "`") {
             this.addToken(Token.types.templateLiteral);
-            this.ignore();
+//            this.ignore();
             return this.lexText;
             return done(false, 1);
           } else if(c === "\\") {
@@ -661,7 +661,7 @@ export class Lexer {
 
   lexQuote(quoteChar) {
     if(quoteChar === "`") {
-      this.ignore();
+     // this.ignore();
 
       return this.template || this.lexTemplate;
     }
