@@ -921,7 +921,9 @@ export function renderDocument(doc, container) {
   const g = factory("g", {
     className: "drawing",
     transform: groupTransform,
-    "vector-effect": "non-scaling-stroke"
+    "vector-effect": "non-scaling-stroke",
+    "stroke-linecap":"round",
+    "stroke-linejoin":"miter"
   });
   renderer.render(g);
   let colors = SVG.allColors(svg);
