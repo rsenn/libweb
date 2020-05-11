@@ -374,9 +374,9 @@ export class Lexer {
     this.ignore();
   }
 
-   get token() {
-    return this.tokens[this.tokens.length - 1]; 
-   }
+  get token() {
+    return this.tokens[this.tokens.length - 1];
+  }
 
   /*
    * Various State Functions
@@ -605,37 +605,36 @@ export class Lexer {
         let { start, pos } = this;
         const position = this.position();
         const { stateFn } = this;
-let doSubst = template.inSubst;
+        let doSubst = template.inSubst;
 
-if(c == ';') {
-
-  throw new Error(`${this.position()}`);
-}
+        if(c == ";") {
+          throw new Error(`${this.position()}`);
+        }
 
         if(!doSubst && c == "`") {
           this.template = null;
           this.addToken(Token.types.stringLiteral);
-/*          this.skip(1);
+          /*          this.skip(1);
           this.ignore();*/
           return this.lexText();
         }
 
-       let  fn = doSubst ? this.lexText : defaultFn;
+        let fn = doSubst ? this.lexText : defaultFn;
         let ret;
-                console.log("self", { c, doSubst, fn }, this.errorRange(), position.toString());
+        console.log("self", { c, doSubst, fn }, this.errorRange(), position.toString());
 
         if(doSubst && c == "}" /*&& fn === this.lexPunctuator)*/) {
           console.log("self:", { c, ret, fn }, position + "");
           c = this.peek();
-      //   this.skip();
+          //   this.skip();
           console.log("self:", { c, doSubsbt, start, pos });
-       // this.ignore();
-                   this.addToken(Token.types.punctuator);
+          // this.ignore();
+          this.addToken(Token.types.punctuator);
 
           return fn();
         }
         if(fn === null) throw new Error();
-       
+
         return fn; ///*fn && */done(doSubst, fn)/* ||  this.lexText()*/;
       };
       template.inSubst = doSubst;
@@ -648,7 +647,7 @@ if(c == ';') {
       console.log("lexTemplate continue c:", { c });
       c = this.peek();
       console.log("lexTemplate continue template:", { c, cont, inSubst });
-//      throw new Error();
+      //      throw new Error();
       return template;
     }
     var startToken = this.tokenIndex;
@@ -671,28 +670,28 @@ if(c == ';') {
           if(c == "{" && prevChar == "$") {
             this.backup(2);
             this.addToken(Token.types.templateLiteral);
-/*
+            /*
             this.start = this.pos;
             this.pos += 2;
 */
-  //this.addToken(Token.types.punctuator);
+            //this.addToken(Token.types.punctuator);
 
-           this.skip(2);
-                 console.log("lexTemplate template:", { c: this.peek(), prevChar });
+            this.skip(2);
+            console.log("lexTemplate template:", { c: this.peek(), prevChar });
 
-//           this.skip(2);
-           this.ignore();
-//sreturn this.lexPunctuator.bind(this);
-console.log("addtoken:",           this.token.toString());
-          return done(true, this.lexText);
+            //           this.skip(2);
+            this.ignore();
+            //sreturn this.lexPunctuator.bind(this);
+            console.log("addtoken:", this.token.toString());
+            return done(true, this.lexText);
           } else if(c === "`") {
             this.addToken(Token.types.templateLiteral);
-           // this.skip(1);
-                    //  this.ignore();
-    //return  this.lexText();
+            // this.skip(1);
+            //  this.ignore();
+            //return  this.lexText();
 
             return this.lexText.bind(this);
-       //     return this.lexText;
+            //     return this.lexText;
           } else if(c === "\\") {
             escapeEncountered = true;
           }
@@ -701,16 +700,17 @@ console.log("addtoken:",           this.token.toString());
         }
       } while(true);
     }
-  /*  template.inSubst = inSubst;
+    /*  template.inSubst = inSubst;
     if(this.template !== template) this.template = template;
-    console.log("lexTemplate:", { c, startToken, inSubst }, this.line + 1 + ":" + (1 + this.column));*/   
+    console.log("lexTemplate:", { c, startToken, inSubst }, this.line + 1 + ":" + (1 + this.column));*/
+
     return template.call(this);
   }
   lexQuote(quoteChar) {
     if(quoteChar === "`") {
       // this.ignore();
 
-      return  this.lexTemplate;
+      return this.lexTemplate;
     }
     return function() {
       let prevChar = "";

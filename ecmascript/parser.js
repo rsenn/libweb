@@ -326,56 +326,49 @@ export class ECMAScriptParser extends Parser {
     this.templateLevel = this.templateLevel || 0;
     this.templateLevel++;
 
-//    let punct = this.matchLiteral();
+    //    let punct = this.matchLiteral();
 
     while(true) {
+      console.log("token:", this.token.toString());
 
-
-      console.log("token:", this.token.toString() );
-
-if(!this.matchLiteral())
-break;
-   part = this.expectLiteral();
-         console.log("part:", part);
+      if(!this.matchLiteral()) break;
+      part = this.expectLiteral();
+      console.log("part:", part);
 
       parts.push(part);
 
-      if(this.token.value.endsWith("`") || part.value.endsWith("`")) 
-        break;
+      if(this.token.value.endsWith("`") || part.value.endsWith("`")) break;
 
-    /*  if(this.matchPunctuators("${")) {
+      /*  if(this.matchPunctuators("${")) {
         this.expectPunctuators("${");
 */
-        part = this.parseAssignmentExpression();
-        parts.push(part);
-        console.log("assignment expression", part);
+      part = this.parseAssignmentExpression();
+      parts.push(part);
+      console.log("assignment expression", part);
 
-//this.matchLiteral();
+      //this.matchLiteral();
       console.log("parseTemplateLiteral", this.token.toString());
 
-     /* if(this.matchPunctuators("}"))*/ {
+      /* if(this.matchPunctuators("}"))*/ {
         const { lexer } = this;
         let { stateFn } = lexer;
         let { inSubst } = stateFn;
 
         this.lexer.stateFn = this.lexer.lexTemplate(true);
         this.lexer.stateFn.inSubst = false;
-    
-    
+
         let literal = (this.matchLiteral() ? this.expectLiteral() : this.expectPunctuators("}")).value;
         console.log("parseTemplateLiteral", { inSubst, literal });
 
         //this.lexer.template.inSubst = false;
         //stateFn.inSubst = false;
 
-     //   this.lexer.lexPunctuator();
-/*
+        //   this.lexer.lexPunctuator();
+        /*
         this.template = 
         this.template.inSubst = false;*/
-         console.log("token:", this.token.toString());
-
+        console.log("token:", this.token.toString());
       }
-    
     }
     this.templateLevel--;
 

@@ -3,25 +3,24 @@ import Util from "../util.js";
 import deep from "../deep.js";
 
 export class Printer {
-
   static colors = {
-    keywords: [1,31],
-    identifiers: [1,33],
-    punctuators: [1,36],
-    stringLiterals: [1,36],
-    numberLiterals: [1,36],
-    regexpLiterals: [1,35],
-    comments: [1,32],
-    templates: [1,35],
+    keywords: [1, 31],
+    identifiers: [1, 33],
+    punctuators: [1, 36],
+    stringLiterals: [1, 36],
+    numberLiterals: [1, 36],
+    regexpLiterals: [1, 35],
+    comments: [1, 32],
+    templates: [1, 35]
   };
   constructor(options = {}, comments) {
     this.indent = options.indent || 2;
     this.comments = comments || [];
 
-   this.color = Util.color(true);
+    this.color = Util.color(true);
 
-   this.colorText = Object.entries(Printer.colors).reduce((acc, [key,codes]) => ({ ...acc, [key]: text => this.color.text(text, ...codes) }),{});
-   this.colorCode = Object.entries(Printer.colors).reduce((acc, [key,codes]) => ({ ...acc, [key]: () => this.color.code(...codes) }),{});
+    this.colorText = Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: text => this.color.text(text, ...codes) }), {});
+    this.colorCode = Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: () => this.color.code(...codes) }), {});
   }
 
   printNode(node) {
@@ -203,7 +202,7 @@ export class Printer {
       process.exit();
     }
     if("length" in body) {
-      if(body.length == 0) return this.color("{}", 1,36);
+      if(body.length == 0) return this.color("{}", 1, 36);
       for(let statement of body) {
         if(statement == null) {
           //console.log("printBlockStatement: ", body);
@@ -219,7 +218,7 @@ export class Printer {
     }
     s = s.trimEnd();
 
-    return this.colorCode.punctuators()+"{" + s +  this.colorText.punctuators(/[};n ]$/.test(s) ? "\n}" : ";\n}")
+    return this.colorCode.punctuators() + "{" + s + this.colorText.punctuators(/[};n ]$/.test(s) ? "\n}" : ";\n}");
   }
 
   printStatementList(statement_list) {
@@ -272,7 +271,7 @@ export class Printer {
   printSwitchStatement(switch_statement) {
     const { test, cases } = switch_statement;
     let condition = this.printNode(test);
-    let output = this.colorCode.keywords()+`switch`+this.colorCode.punctuators()+`(${condition}) {\n`;
+    let output = this.colorCode.keywords() + `switch` + this.colorCode.punctuators() + `(${condition}) {\n`;
     for(let case_clause of cases) {
       const { value, body } = case_clause;
       if(value == null) output += "  default:";
@@ -430,7 +429,7 @@ export class Printer {
     const { kind, exported, declarations } = variable_declaration;
     let output = exported ? "export " : "";
 
-    output += kind != "" ? this.colorText.keywords(kind)+' ' : "";
+    output += kind != "" ? this.colorText.keywords(kind) + " " : "";
     output += declarations.map(decl => this.printNode(decl)).join(", ");
     return output;
   }
@@ -439,7 +438,7 @@ export class Printer {
     const { id, init } = variable_declarator;
     let output = this.printNode(id);
     if(init) {
-      output += ' '+ this.colorText.punctuators('=')+` ${this.printNode(init)}`;
+      output += " " + this.colorText.punctuators("=") + ` ${this.printNode(init)}`;
     }
     return output;
   }
