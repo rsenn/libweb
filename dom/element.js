@@ -357,7 +357,7 @@ export class Element extends Node {
       to.y -= off.y;
     }*/
     let css = Point.toCSS(current);
-    console.log("Element.move: ", { position, to, css, off, current });
+    //console.log("Element.move: ", { position, to, css, off, current });
     //console.log('move newpos: ', Point.toCSS(pt));
     Element.setCSS(element, { ...css, position });
     return element;
@@ -383,7 +383,7 @@ export class Element extends Node {
     let e = Element.find(element);
     let size = new Size(...dimensions);
     const css = Size.toCSS(size);
-    console.log("Element.resize: ", { e, size, css });
+    //console.log("Element.resize: ", { e, size, css });
     Element.setCSS(e, css);
     return e;
   }
@@ -475,7 +475,7 @@ export class Element extends Node {
 
     const estyle = /*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element);
     const pstyle = parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {};
-    console.log("Element.getCSS ", { estyle, pstyle });
+    //console.log("Element.getCSS ", { estyle, pstyle });
 
     let style = Util.removeEqual(estyle, pstyle);
     let keys = Object.keys(style).filter(k => !/^__/.test(k));

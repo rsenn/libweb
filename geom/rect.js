@@ -227,7 +227,7 @@ Rect.prototype.fit = function(other, align = Align.CENTER | Align.MIDDLE | Rect.
     return acc;
   }, []);
 
-  console.log("rects:", rects);
+  //console.log("rects:", rects);
 
   return rects;
 };
