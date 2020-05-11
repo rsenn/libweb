@@ -3,9 +3,25 @@ import Util from "../util.js";
 import deep from "../deep.js";
 
 export class Printer {
+
+  static colors = {
+    keywords: [1,31],
+    identifiers: [1,33],
+    punctuators: [1,36],
+    stringLiterals: [1,36],
+    numberLiterals: [1,36],
+    regexpLiterals: [1,35],
+    comments: [1,32],
+    templates: [1,35],
+  };
   constructor(options = {}, comments) {
     this.indent = options.indent || 2;
     this.comments = comments || [];
+
+   this.color = Util.color(true);
+
+   this.colorText = Object.entries(Printer.colors).reduce((acc, [key,codes]) => ({ ...acc, [key]: text => this.color.text(text, ...codes) }),{});
+   this.colorCode = Object.entries(Printer.colors).reduce((acc, [key,codes]) => ({ ...acc, [key]: () => this.color.code(...codes) }),{});
   }
 
   printNode(node) {
@@ -71,7 +87,7 @@ export class Printer {
   }
 
   printString(str) {
-    return `"${str}"`;
+    return this.colorText.stringLiterals(`"${str}"`);
   }
 
   /*
@@ -82,13 +98,13 @@ export class Printer {
   }
 */
   printIdentifier(identifier) {
-    return identifier.value;
+    return this.colorText.identifiers(identifier.value);
   }
   /*
   printBindingProperty(binding_property) {
   }*/
   printLiteral(literal) {
-    return literal.value;
+    return this.colorText.numberLiterals(literal.value);
   }
 
   printTemplateLiteral(template_literal) {
@@ -99,7 +115,7 @@ export class Printer {
       if(part instanceof Literal) s += part.value;
       else s += "${" + this.printNode(part) + "}";
     }
-    return s;
+    return this.colorText.templates(s);
   }
 
   printThisExpression(this_expression) {
@@ -187,7 +203,7 @@ export class Printer {
       process.exit();
     }
     if("length" in body) {
-      if(body.length == 0) return "{}";
+      if(body.length == 0) return this.color("{}", 1,36);
       for(let statement of body) {
         if(statement == null) {
           //console.log("printBlockStatement: ", body);
@@ -202,8 +218,8 @@ export class Printer {
       s += this.printNode(body).replace(/\n/g, "\n  ");
     }
     s = s.trimEnd();
-    s += /[};n ]$/.test(s) ? "\n}" : ";\n}";
-    return "{" + s;
+
+    return this.colorCode.punctuators()+"{" + s +  this.colorText.punctuators(/[};n ]$/.test(s) ? "\n}" : ";\n}")
   }
 
   printStatementList(statement_list) {
@@ -226,7 +242,7 @@ export class Printer {
 
   printReturnStatement(return_statement) {
     const { argument } = return_statement;
-    let output = "return";
+    let output = this.colorText.keywords("return");
     if(argument) {
       output += " ";
       output += this.printNode(argument);
@@ -256,7 +272,7 @@ export class Printer {
   printSwitchStatement(switch_statement) {
     const { test, cases } = switch_statement;
     let condition = this.printNode(test);
-    let output = `switch(${condition}) {\n`;
+    let output = this.colorCode.keywords()+`switch`+this.colorCode.punctuators()+`(${condition}) {\n`;
     for(let case_clause of cases) {
       const { value, body } = case_clause;
       if(value == null) output += "  default:";
@@ -361,9 +377,11 @@ export class Printer {
     const { id, extending, members, exported } = class_declaration;
     let output = "class";
     if(exported) output = "export " + output;
+    output = this.colors.keywords(output);
+
     let name = id ? this.printNode(id) : "";
-    if(name != "") output += " " + name;
-    if(extending) output += " extends " + this.printNode(extending);
+    if(name != "") output += " " + this.colors.identifiers(name);
+    if(extending) output += this.colors.keywords(" extends ") + this.printNode(extending);
     //console.log("members:", members);
     output += " " + this.printNode(members);
     return output;
@@ -412,7 +430,7 @@ export class Printer {
     const { kind, exported, declarations } = variable_declaration;
     let output = exported ? "export " : "";
 
-    output += kind != "" ? `${kind} ` : "";
+    output += kind != "" ? this.colorText.keywords(kind)+' ' : "";
     output += declarations.map(decl => this.printNode(decl)).join(", ");
     return output;
   }
@@ -421,7 +439,7 @@ export class Printer {
     const { id, init } = variable_declarator;
     let output = this.printNode(id);
     if(init) {
-      output += ` = ${this.printNode(init)}`;
+      output += ' '+ this.colorText.punctuators('=')+` ${this.printNode(init)}`;
     }
     return output;
   }
