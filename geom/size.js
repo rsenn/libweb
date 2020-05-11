@@ -117,7 +117,7 @@ Size.prototype.sub = function() {
   return this;
 };
 Size.prototype.prod = function(f) {
-  const o = isPoint(f) ? f : { width: f, height: f };
+  const o = isSize(f) ? f : isPoint(f) ? { width: f.x, height: f.y } : { width: f, height: f };
   return new Size(this.width * o.width, this.height * o.height);
 };
 Size.prototype.mul = function(f) {
@@ -130,6 +130,9 @@ Size.prototype.mul = function(f) {
 };
 Size.prototype.quot = function(other) {
   return new Size(this.width / other.width, this.height / other.height);
+};
+Size.prototype.inverse = function(other) {
+  return new Size(1 / this.width, 1 / this.height);
 };
 Size.prototype.div = function(f) {
   for(let f of [...arguments]) {
@@ -145,6 +148,43 @@ Size.prototype.round = function(precision = 0.001) {
   return this;
 };
 
+Size.prototype.bounds = function(other) {
+
+  let w = [Math.min(this.width, other.width), Math.max(this.width, other.width) ];
+  let h = [Math.min(this.height, other.height), Math.max(this.height, other.height) ];
+
+
+  let scale = h / this.height;
+  this.mul(scale);
+  return this;
+};
+
+Size.prototype.fit = function(size) {
+  size = new Size(size);
+  let factors = Size.prototype.fitFactors.call(this, size);
+  let ret =  [ Size.prototype.prod.call(this, factors[0]), 
+  Size.prototype.prod.call(this, factors[1]), 
+   ];
+return ret;
+}; 
+
+Size.prototype.fitHeight = function(other) {
+  other = new Size(other);
+  let scale = other.height / this.height;
+  this.mul(scale);
+  return [ this.width , other.width ] ;
+};
+Size.prototype.fitWidth = function(other) {
+  other = new Size(other);
+  let scale = other.width / this.width;
+  this.mul(scale);
+  return [this.height , other.height];
+};
+Size.prototype.fitFactors = function(other) {
+  const hf = other.width / this.width;
+  const vf = other.height / this.height;
+  return [hf, vf ];
+};
 Size.area = sz => Size.prototype.area.call(sz);
 Size.aspect = sz => Size.prototype.aspect.call(sz);
 
@@ -153,6 +193,10 @@ Size.bind = (o, p, gen) => {
   if(!gen) gen = k => v => (v === undefined ? o[k] : (o[k] = v));
   return Util.bindProperties(new Size(0, 0), o, { width, height }, gen);
 };
+
+for(let method of Util.getMethodNames(Size.prototype))
+  Size[method] = (size, ...args) => Size.prototype[method].call(size, ...args);
+
 
 export const isSize = o => o && ((o.width !== undefined && o.height !== undefined) || (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) || (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
 

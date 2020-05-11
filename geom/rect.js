@@ -213,6 +213,27 @@ Rect.prototype.inset = function(trbl) {
 Rect.prototype.inside = function(point) {
   return Rect.inside(this, point);
 };
+Rect.CONTAIN = 16;
+Rect.COVER = 32;
+
+Rect.prototype.fit = function(other, align = Align.CENTER|Align.MIDDLE|Rect.CONTAIN) {
+  let factors = Size.prototype.fitFactors.call(this, new Size(other)).sort((a,b) => a - b);
+  let rects = factors.reduce((acc,factor) => {
+
+let rect = new Rect(0,0,this.width, this.height);
+rect.mul(factor);
+rect.align(other, align);
+
+acc.push(rect);
+return acc;
+  }, []);
+
+    
+console.log("rects:",rects);
+
+return rects;
+};  
+
 Rect.prototype.pointFromCenter = function(point) {
   Point.prototype.sub.call(point, this.center);
   point.x /= this.width;
