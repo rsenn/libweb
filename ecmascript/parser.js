@@ -319,41 +319,47 @@ export class ECMAScriptParser extends Parser {
     return new this.estree.Literal(token.value);
   }
 
-  expectTemplateLiteral() {
+  parseTemplateLiteral() {
     let token,
       part,
       parts = [];
     this.templateLevel = this.templateLevel || 0;
     this.templateLevel++;
-    do {
-      if(this.matchLiteral()) {
-        part = this.expectLiteral();
+    while(this.matchLiteral()) {
+      part = this.expectLiteral();
 
-        console.log("part:", part);
-        parts.push(part);
-
-        if(part.value.endsWith("`")) break;
-      }
-
-      this.matchLiteral();
-      console.log("tok", this.token);
-
-      part = this.parseAssignmentExpression();
+      console.log("part:", part);
       parts.push(part);
 
+      if(part.value.endsWith("`")) break;
+
+      if(this.matchAssignmentExpression()) {
+        part = this.parseAssignmentExpression();
+        parts.push(part);
+        console.log("part", part);
+        continue;
+      }
+
       if(this.matchPunctuators("}")) {
-       this.expectPunctuators("}");
+        this.expectPunctuators("}");
         const { lexer } = this;
         let { stateFn } = lexer;
         let { inSubst } = stateFn;
         console.log("lexer", { inSubst });
 
-//this.lexer.template.inSubst = false;
-//stateFn.inSubst = false;
+        //this.lexer.template.inSubst = false;
+        //stateFn.inSubst = false;
 
-        this.lexer.stateFn = this.lexer.lexTemplate(true);
+this.lexer.stateFn();
+
+        this.template = this.template || this.lexer.lexTemplate(true);
+        this.template.inSubst = false;
+
+        this.lexer.stateFn = this.template;
+        this.lexer.stateFn.inSubst = false;
       }
-    } while(true);
+
+    }
     this.templateLevel--;
 
     let node = new this.estree.TemplateLiteral(parts);
@@ -462,7 +468,7 @@ export class ECMAScriptParser extends Parser {
     } else if(!is_async && this.matchPunctuators("<")) {
       expr = this.parseJSX();
     } else if(!is_async && this.matchLiteral()) {
-      if(this.matchTemplateLiteral()) expr = this.expectTemplateLiteral();
+      if(this.matchTemplateLiteral()) expr = this.parseTemplateLiteral();
       else expr = this.expectLiteral();
       /*   } else if(this.matchIdentifier("super") && this.token.value == "super") {
       this.expectIdentifier("super");
@@ -574,7 +580,7 @@ export class ECMAScriptParser extends Parser {
         else object = new this.estree.CallExpression(object, args);
       } else if(this.matchTemplateLiteral()) {
         console.log("Template call", this.token);
-        let arg = this.expectTemplateLiteral();
+        let arg = this.parseTemplateLiteral();
 
         console.log("Template call", arg);
         object = new this.estree.CallExpression(object, [arg]);
@@ -699,6 +705,8 @@ export class ECMAScriptParser extends Parser {
 
     if(result.ast == null) {
       console.log("binary:", result);
+
+      if(!this.matchPunctuators("}")) return result;
       throw new Error(`${this.position()} ${this.token}`);
     }
     let { ast, lhs } = result;
@@ -778,9 +786,10 @@ export class ECMAScriptParser extends Parser {
     // come across things that cannot be in LeftHandSideExpression.
     const result = this.parseConditionalExpression();
 
-    if(!result.ast) {
-      //console.log("result:",result);
-      throw new Error();
+    if(this.matchPunctuators("}")) {
+      console.log("result:", result);
+      return result.ast;
+      //throw new Error(`${this.position()}`);
     }
 
     if(result.lhs) {
