@@ -363,6 +363,22 @@ export class Element extends Node {
     return element;
   }
 
+  static move_relative(element, to) {
+    var e = Element.find(element);
+
+    var pos = Object.freeze(new Rect(to || Element.rect(e)));
+    function move(x, y) {
+      let rect = new Rect(pos.x + x, pos.y + y, pos.width, pos.height);
+      move.last = rect;
+      return Element.move(e, rect, "relative");
+    }
+    move.pos = pos;
+    move.cancel = () => move(0, 0);
+    move.jump = () => Element.move_relative(e);
+
+    return move;
+  }
+
   static resize(element, ...dimensions) {
     let e = Element.find(element);
     let size = new Size(...dimensions);
