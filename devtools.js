@@ -841,7 +841,7 @@ export function walk(element) {
 }
 
 export async function measure(element) {
-  element = element || await select();
+  element = element || (await select());
   let e = Element.find(element);
   let r = Element.rect(e);
 

@@ -58,6 +58,13 @@ export class Element extends Node {
     }
     return ret.length ? ret : null;
   }
+  static *skip(elem, fn = e => e.parentElement) {
+    elem = typeof elem == "string" ? Element.find(elem) : elem;
+    while(elem) {
+      yield elem;
+      elem = fn(elem);
+    }
+  }
 
   static walk(elem, fn, accu = {}) {
     if(typeof elem == "string") elem = Element.find(elem);

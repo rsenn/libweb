@@ -834,7 +834,7 @@ export function renderDocument(doc, container) {
     str = "";
   let randN = Util.randInt(0, 30000);
   rng = new Alea(1340);
-  let bgColor = doc.type == "sch" ? "rgb(255,255,255)" : "rgb(0,0,0)";
+  let bgColor = doc.type == "sch" ? "rgb(255,255,255)" : "rgba(0,0,0,0.0)";
   console.log(`renderer ${Util.className(renderer)} palette=${renderer.palette}`);
   console.log(`doc type=${doc.type} path=${doc.path}`);
   renderer.colors = {};
