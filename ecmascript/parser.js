@@ -683,8 +683,7 @@ export class ECMAScriptParser extends Parser {
       this.expectKeywords("await");
       const argument = this.parseUnaryExpression();
 
-
-      return new this.estree.AwaitExpression(argument.ast && argument.ast || argument);
+      return new this.estree.AwaitExpression((argument.ast && argument.ast) || argument);
     } else if(this.matchKeywords(unaryKeywords)) {
       const operatorToken = this.expectKeywords(unaryKeywords);
       const argument = this.parseUnaryExpression();
@@ -749,14 +748,13 @@ export class ECMAScriptParser extends Parser {
   parseConditionalExpression() {
     this.log(`parseConditionalExpression()`);
     let result = this.parseBinaryExpression(0);
-          console.log("result:", result);
-if(result.ast == undefined)
-  result = { ast: result, lhs: false };
+    console.log("result:", result);
+    if(result.ast == undefined) result = { ast: result, lhs: false };
 
     let ast = result.ast;
     let lhs = result.lhs;
     if(!ast) {
-      console.log("ast lhs:", {ast,lhs});
+      console.log("ast lhs:", { ast, lhs });
       //console.log("lhs:", Util.className(lhs));
       //console.log("line:", this.lexer.currentLine());
       throw new SyntaxError(`ConditionalExpression no ast`);

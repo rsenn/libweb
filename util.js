@@ -71,7 +71,7 @@ export function Util(g) {
   if(g) Util.globalObject = g;
 }
 
-Util.curry = function curry(fn, arity) {
+function curry(fn, arity) {
   return function curried() {
     if(arity == null) arity = fn.length;
 
@@ -85,7 +85,7 @@ Util.curry = function curry(fn, arity) {
     }
   };
 };
-
+Util.curry = curry;
 Util.getGlobalObject = function() {
   let ret = this.globalObject;
   try {
@@ -99,7 +99,7 @@ Util.isDebug = function() {
   if(process !== undefined && process.env.NODE_ENV === "production") return false;
   return true;
 };
-Util.log = Util.curry(function(n, base) {
+Util.log = curry(function(n, base) {
   return Math.log(n) / (base ? Math.log(base) : 1);
 });
 Util.logBase = function(n, base) {
@@ -793,12 +793,16 @@ Util.ifThenElse = function(pred = value => !!value, _then = () => {}, _else = ()
     return ret;
   };
 };
-Util.transform = Util.curry(function*(fn, arr) {
-  for(let item of arr) {
+
+Util.transform = curry(function*(fn, arr) {
+  for(let item of arr)
     yield fn(item);
-  }
+
 });
-Util.colorDump = (iterable, textFn = (color, n) => ("   " + (n + 1)).slice(-3) + ` ${color}`) => {
+
+Util.colorDump = (iterable, textFn) => {
+  textFn = textFn || ((color, n) => (("   " + (n + 1)).slice(-3) + ` ${color}`));
+
   let j = 0;
   const filters = "font-weight: bold; text-shadow: 0px 0px 1px rgba(0,0,0,0.8); filter: drop-shadow(30px 10px 4px #4444dd)";
   for(let j = 0; j < iterable.length; j++) {
@@ -2268,7 +2272,7 @@ Util.compose = function compose(fn1, fn2 /*, fn3, etc */) {
     return result;
   };
 };
-Util.clamp = Util.curry((min, max, value) => Math.max(min, Math.min(max, value)));
+Util.clamp = curry((min, max, value) => Math.max(min, Math.min(max, value)));
 
 Util.color = (useColor = true) =>
   !useColor || Util.isBrowser()
@@ -2313,7 +2317,7 @@ Util.predicate = fn_or_regex => {
   else fn = (...args) => fn_or_regex(...args);
   return fn;
 };
-Util.inRange = Util.curry((a, b, value) => value >= a && value <= b);
+Util.inRange = curry((a, b, value) => value >= a && value <= b);
 
 Util.bindProperties = (proxy, target, props, gen) => {
   if(props instanceof Array) props = Object.fromEntries(props.map(name => [name, name]));

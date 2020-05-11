@@ -176,7 +176,7 @@ export class Printer {
 
   printCallExpression(call_expression) {
     const { arguments: args, callee } = call_expression;
-    return this.printNode(callee) + this.colorCode.punctuators()+"(" + args.map(arg => this.printNode(arg)).join(this.colorCode.punctuators()+", ") + this.colorCode.punctuators()+")";
+    return this.printNode(callee) + this.colorCode.punctuators() + "(" + args.map(arg => this.printNode(arg)).join(this.colorCode.punctuators() + ", ") + this.colorCode.punctuators() + ")";
   }
   /*
   /*
@@ -211,14 +211,14 @@ export class Printer {
         let line = this.printNode(statement);
         let multiline = /\n/.test(line);
         s += multiline && s.length ? "\n\n  " : "\n  ";
-        if(line != "") s += line.replace(/\n/g, "\n  ") + (/(;|\n|})$/.test(line.trimEnd()) ? "" : this.colorCode.punctuators()+";") + (multiline ? "\n" : "");
+        if(line != "") s += line.replace(/\n/g, "\n  ") + (/(;|\n|})$/.test(line.trimEnd()) ? "" : this.colorCode.punctuators() + ";") + (multiline ? "\n" : "");
       }
     } else {
       s += this.printNode(body).replace(/\n/g, "\n  ");
     }
     s = s.trimEnd();
 
-    return this.colorCode.punctuators() + "{" + s + this.colorCode.punctuators()+ (/[};n ]$/.test(s) ? "\n}" : ";\n}");
+    return this.colorCode.punctuators() + "{" + s + this.colorCode.punctuators() + (/[};n ]$/.test(s) ? "\n}" : ";\n}");
   }
 
   printStatementList(statement_list) {
@@ -228,7 +228,7 @@ export class Printer {
       let line = this.printNode(statement);
       let multiline = /\n/.test(line);
       s += multiline && s.length ? "\n\n" : "\n";
-      if(line != "") s += line + (/(;|\n|}|\s)$/.test(line.trimEnd()) ? "" : this.colorCode.punctuators()+";") + (multiline ? "\n" : "");
+      if(line != "") s += line + (/(;|\n|}|\s)$/.test(line.trimEnd()) ? "" : this.colorCode.punctuators() + ";") + (multiline ? "\n" : "");
     }
     return s;
   }
@@ -260,12 +260,12 @@ export class Printer {
     const { test, consequent, alternate } = if_statement;
     let condition = this.printNode(test);
     let if_true = this.printNode(consequent);
-    let output = this.colorCode.keywords()+'if'+this.colroCode.punctuators()+`(${condition}) ${if_true}`;
+    let output = this.colorCode.keywords() + "if" + this.colroCode.punctuators() + `(${condition}) ${if_true}`;
     if(alternate) {
       let if_false = this.printNode(alternate);
-      output += (/[;}\n]$/.test(output) ? "" : this.colorCode.punctuators()+";") +  this.colorCode.keywords()+` else ${if_false}`;
+      output += (/[;}\n]$/.test(output) ? "" : this.colorCode.punctuators() + ";") + this.colorCode.keywords() + ` else ${if_false}`;
     }
-    return output;  
+    return output;
   }
 
   printSwitchStatement(switch_statement) {
@@ -287,7 +287,7 @@ export class Printer {
 
   printWhileStatement(while_statement) {
     const { body, test } = while_statement;
-    let output = this.colorCode.keywords()+"while"+this.colorCode.punctuators()+`(` + this.printNode(test) +this.colorCode.punctuators()+ ") ";
+    let output = this.colorCode.keywords() + "while" + this.colorCode.punctuators() + `(` + this.printNode(test) + this.colorCode.punctuators() + ") ";
     output += this.printNode(body);
     return output;
   }
@@ -296,7 +296,7 @@ export class Printer {
     const { body, test } = do_statement;
     let output = `do `;
     output += this.printNode(body);
-    output +=this.colorCode.keywords()+"while"+this.colorCode.punctuators()+`(` + this.printNode(test) + this.colorCode.punctuators()+")";
+    output += this.colorCode.keywords() + "while" + this.colorCode.punctuators() + `(` + this.printNode(test) + this.colorCode.punctuators() + ")";
     return output;
     //console.log(arguments[0]);
     //console.log(Object.keys(arguments[0]).join(", "));
@@ -411,14 +411,16 @@ export class Printer {
   printArrowFunction(arrow_function) {
     const { async, params, body } = arrow_function;
     let output = async ? "async " : "";
-    output += this.colorCode.punctuators()+
+    output +=
+      this.colorCode.punctuators() +
       "(" +
       (params.length !== undefined
         ? Array.from(params)
             .map(param => this.printNode(param))
             .join(", ")
         : this.printNode(params)) +
-       this.colorCode.punctuators()+")";
+      this.colorCode.punctuators() +
+      ")";
     output += " => ";
     if(typeof body.map == "function") output += body.map(line => this.printNode(line)).join("\n  ");
     else output += this.printNode(body);
@@ -487,7 +489,7 @@ export class Printer {
         if(!property.flags) is_prototype = false;
       }
       if(property.flags & PropertyDefinition.STATIC) line = "static " + line;
-      line += property.flags ? this.colorCode.punctuators()+";" : "";
+      line += property.flags ? this.colorCode.punctuators() + ";" : "";
       if(/\n/.test(line)) line = "\n  " + line;
       a.push(line);
     }
@@ -499,7 +501,7 @@ export class Printer {
     const { id, property, flags } = property_definition;
     let s = flags & PropertyDefinition.GETTER ? "get " : flags & PropertyDefinition.SETTER ? "set " : "";
     if(flags & PropertyDefinition.STATIC) s = "static " + s;
-     s  = this.colorText.keywords(s);
+    s = this.colorText.keywords(s);
 
     s += id.value;
     //console.log("property:", property);
@@ -537,7 +539,7 @@ export class Printer {
   }*/
   printArrayBindingPattern(array_binding_pattern) {
     const { elements } = array_binding_pattern;
-    let output = elements.map(({ element }) => element.value).join(this.colorCode.punctuators()+", ");
+    let output = elements.map(({ element }) => element.value).join(this.colorCode.punctuators() + ", ");
     return `[ ${output} ]`;
   }
 
@@ -551,12 +553,12 @@ export class Printer {
         return `${property.value}: ${element.value}`;
       })
       .join(", ");
-    return this.colorText.punctuators('{')+` ${output} `+this.colorText.punctuators('}');
+    return this.colorText.punctuators("{") + ` ${output} ` + this.colorText.punctuators("}");
   }
 
   printAwaitExpression(await_expression) {
     const { value } = await_expression;
-    return this.colorText.keywords('await')+` ${this.printNode(value)}`;
+    return this.colorText.keywords("await") + ` ${this.printNode(value)}`;
   }
 
   printRestOfExpression(rest_of_expression) {
