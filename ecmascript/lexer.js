@@ -259,7 +259,7 @@ export class Lexer {
      end -= range.length-80;
     end += 3;
   }*/
-    console.log("start: ", { start, end });
+    //console.log("start: ", { start, end });
 
     range = range
       .split("")
@@ -590,7 +590,7 @@ export class Lexer {
   lexTemplate() {
     var startToken = this.tokenIndex;
     const done = (inSubst, fn = template) => {
-      console.log("lexTemplate:", { startToken, inSubst });
+      //console.log("lexTemplate:", { startToken, inSubst });
       if(!inSubst) {
         this.template = null;
         return this.lexText;
@@ -603,12 +603,12 @@ export class Lexer {
           this.skip(1);
           return this.lexText;
         }
-        console.log("lexTemplate", { inSubst }, this.errorRange());
+        //console.log("lexTemplate", { inSubst }, this.errorRange());
         fn = inSubst ? this.lexText() : () => template;
-        console.log("fn:", fn);
+        //console.log("fn:", fn);
         if(fn == this.lexPunctuator) {
           c = this.peek();
-          console.log("punct:", c);
+          //console.log("punct:", c);
           if(inSubst && c == "}") {
             c = this.next();
             this.ignore();
@@ -616,7 +616,7 @@ export class Lexer {
           }
         }
         let ret = fn.call(this);
-        console.log("ret:", ret);
+        //console.log("ret:", ret);
         if(fn === null) throw new Error();
         return self;
       };

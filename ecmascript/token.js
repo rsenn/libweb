@@ -52,8 +52,23 @@ export class Token {
   }
 
   toString() {
-    const { type, value, position } = this;
-    return `${position} ${type} '${Util.abbreviate(value, 80)}'`;
+    let { type, value, position } = this;
+    value = Util.abbreviate(value, 80);
+    if(type == 'stringLiteral')
+      value = `'${value}'`;  else  if(type == 'templateLiteral')
+      value = '`'+value+'`';
+    if(type == 'identifier' )
+      value = Util.colorText(value, 1,33);
+    else  if(type == 'keyword' )
+      value = Util.colorText(value, 1,31); 
+    else  if(type == 'comment' )
+      value = Util.colorText(value, 1,32);
+else  if(type == 'templateLiteral' )
+      value = Util.colorText(value, 1,35);   
+     else 
+      value = Util.colorText(value, 1,36);
+
+    return `${position} ${type} ${value}`;
   }
 }
 
