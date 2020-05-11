@@ -1,12 +1,18 @@
 import Util from "../util.js";
 
 export class Node {
+//  position = null;
+
   constructor(type) {
     //this.type = type;
     //this.loc = null; // TODO: For now avoid dealing with location information.
     // Fix it later.
+     Object.defineProperty(this, 'position', { value: null, enumerable: false, writable: true });
+
   }
 }
+
+Object.defineProperty(Node.prototype, 'position', { value: undefined, enumerable: false, writable: true });
 
 export class Program extends Node {
   constructor(body) {
@@ -54,6 +60,13 @@ export class Literal extends Expression {
   constructor(value) {
     super("Literal");
     this.value = value;
+  }
+}
+
+export class TemplateLiteral extends Expression {
+  constructor(parts) {
+    super("TemplateLiteral");
+    this.parts = parts;
   }
 }
 
@@ -510,6 +523,7 @@ export const CTORS = {
   ExportStatement,
   JSXLiteral,
   Literal,
+  TemplateLiteral,
   LogicalExpression,
   MemberExpression,
   InExpression,

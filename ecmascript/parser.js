@@ -162,7 +162,11 @@ function getFn(name) {
 }
 
 function isLiteral({ type }) {
-  return type === Token.types.stringLiteral || type === Token.types.numericLiteral || type === Token.types.regexpLiteral || type === Token.types.nullLiteral || type === Token.types.booleanLiteral;
+  return type === Token.types.stringLiteral || type === Token.types.numericLiteral || type === Token.types.regexpLiteral || type === Token.types.nullLiteral || type === Token.types.booleanLiteral || type === Token.types.templateLiteral;
+}
+
+function isTemplateLiteral({ type }) {
+  return type === Token.types.templateLiteral;
 }
 
 function backTrace() {
@@ -305,14 +309,38 @@ export class ECMAScriptParser extends Parser {
     return token;
   }
 
-  expectLiteral() {
-    this.log("expectLiteral() ");
-    const token = this.consume();
+  expectLiteral() {    this.log("expectLiteral() ");
+    let token = this.consume();
     if(!isLiteral(token)) {
       throw this.error(`Expecting Literal, but got ${token.type} with value '${token.value}'`);
     }
-    this.log("New literal: ", token);
+    console.log("New literal: ", token);
     return new this.estree.Literal(token.value);
+  }
+
+  expectTemplateLiteral() {
+    let token, part, parts = [];
+       do {
+
+ part = this.expectLiteral();
+ console.log("part:", part);
+
+    parts.push(part);
+
+    if(part.value.endsWith('`'))
+      break;
+
+
+part = this.parseSourceElement();
+
+parts.push(part);
+
+       } while(true);
+
+let node = new this.estree.TemplateLiteral(parts);
+                 console.log("node:", node);
+
+      return node;
   }
 
   matchKeywords(keywords) {
@@ -352,8 +380,12 @@ export class ECMAScriptParser extends Parser {
 
   matchLiteral() {
     const token = this.next();
-    this.log(`matchLiteral() token=${token.value}`);
+    console.log(`matchLiteral() token=${token.value}`);
     return isLiteral(token);
+  }
+  matchTemplateLiteral() {
+    const token = this.next();
+    return isTemplateLiteral(token);
   }
 
   matchStatement() {
@@ -411,6 +443,11 @@ export class ECMAScriptParser extends Parser {
     } else if(!is_async && this.matchPunctuators("<")) {
       expr = this.parseJSX();
     } else if(!is_async && this.matchLiteral()) {
+
+      if(this.matchTemplateLiteral())
+
+      expr = this.expectTemplateLiteral();
+    else
       expr = this.expectLiteral();
       /*   } else if(this.matchIdentifier("super") && this.token.value == "super") {
       this.expectIdentifier("super");
