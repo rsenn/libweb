@@ -3,7 +3,7 @@ import Lexer, { SyntaxError, Position } from "./lexer.js";
 import deep from "../deep.js";
 import { Token } from "./token.js";
 import { Printer } from "./printer.js";
-import { estree, Node, Factory, PropertyDefinition, BinaryExpression } from "./estree.js";
+import { estree, Node, Factory, PropertyDefinition, BinaryExpression, Identifier, TemplateLiteral, Literal } from "./estree.js";
 
 const add = (arr, ...items) => [...(arr || []), ...items];
 
@@ -31,7 +31,7 @@ export class Parser {
   error(errorMessage, astNode) {
     const pos = this.lexer.position();
 
-    return new SyntaxError("parse", errorMessage, astNode, pos);
+    return new SyntaxError("parse", pos.toString() + ": " + errorMessage, astNode, pos);
   }
 
   handleComment = (comment, start, end) => {
@@ -309,38 +309,56 @@ export class ECMAScriptParser extends Parser {
     return token;
   }
 
-  expectLiteral() {    this.log("expectLiteral() ");
+  expectLiteral() {
+    this.log("expectLiteral() ");
     let token = this.consume();
     if(!isLiteral(token)) {
       throw this.error(`Expecting Literal, but got ${token.type} with value '${token.value}'`);
     }
-    console.log("New literal: ", token);
+    // console.log("New literal: ", token);
     return new this.estree.Literal(token.value);
   }
 
   expectTemplateLiteral() {
-    let token, part, parts = [];
-       do {
+    let token,
+      part,
+      parts = [];
+    this.templateLevel = this.templateLevel || 0;
+    this.templateLevel++;
+    do {
+      if(this.matchLiteral()) {
+        part = this.expectLiteral();
 
- part = this.expectLiteral();
- console.log("part:", part);
+        console.log("part:", part);
+        parts.push(part);
 
-    parts.push(part);
+        if(part.value.endsWith("`")) break;
+      }
 
-    if(part.value.endsWith('`'))
-      break;
+      this.matchLiteral();
+      console.log("tok", this.token);
 
+      part = this.parseAssignmentExpression();
+      parts.push(part);
 
-part = this.parseSourceElement();
+      if(this.matchPunctuators("}")) {
+       this.expectPunctuators("}");
+        const { lexer } = this;
+        let { stateFn } = lexer;
+        let { inSubst } = stateFn;
+        console.log("lexer", { inSubst });
 
-parts.push(part);
+//this.lexer.template.inSubst = false;
+//stateFn.inSubst = false;
 
-       } while(true);
+        this.lexer.stateFn = this.lexer.lexTemplate(true);
+      }
+    } while(true);
+    this.templateLevel--;
 
-let node = new this.estree.TemplateLiteral(parts);
-                 console.log("node:", node);
-
-      return node;
+    let node = new this.estree.TemplateLiteral(parts);
+    console.log("node:", node);
+    return node;
   }
 
   matchKeywords(keywords) {
@@ -384,6 +402,7 @@ let node = new this.estree.TemplateLiteral(parts);
     return isLiteral(token);
   }
   matchTemplateLiteral() {
+    if(this.templateLevel > 0) return false;
     const token = this.next();
     return isTemplateLiteral(token);
   }
@@ -443,12 +462,8 @@ let node = new this.estree.TemplateLiteral(parts);
     } else if(!is_async && this.matchPunctuators("<")) {
       expr = this.parseJSX();
     } else if(!is_async && this.matchLiteral()) {
-
-      if(this.matchTemplateLiteral())
-
-      expr = this.expectTemplateLiteral();
-    else
-      expr = this.expectLiteral();
+      if(this.matchTemplateLiteral()) expr = this.expectTemplateLiteral();
+      else expr = this.expectLiteral();
       /*   } else if(this.matchIdentifier("super") && this.token.value == "super") {
       this.expectIdentifier("super");
       expr = new estree.Identifier("super");*/
@@ -543,7 +558,7 @@ let node = new this.estree.TemplateLiteral(parts);
     /* let args = this.parseArguments();
 
 */
-    while(this.matchPunctuators([".", "[", "("])) {
+    while(this.matchTemplateLiteral() || this.matchPunctuators([".", "[", "("])) {
       if(this.matchPunctuators(".")) {
         this.expectPunctuators(".");
         const identifier = this.expectIdentifier(true);
@@ -557,6 +572,12 @@ let node = new this.estree.TemplateLiteral(parts);
         let args = this.parseArguments();
         if(this.matchPunctuators("=>")) object = this.parseArrowFunction(args, is_async);
         else object = new this.estree.CallExpression(object, args);
+      } else if(this.matchTemplateLiteral()) {
+        console.log("Template call", this.token);
+        let arg = this.expectTemplateLiteral();
+
+        console.log("Template call", arg);
+        object = new this.estree.CallExpression(object, [arg]);
       }
     }
     return object;
@@ -592,19 +613,23 @@ let node = new this.estree.TemplateLiteral(parts);
       object = new this.estree.NewExpression(result.object, args);
     } else {
       object = this.parsePrimaryExpression();
-
-      //console.log("Object:", object, this.token);
     }
 
     object = this.parseRemainingMemberExpression(object);
 
+    let id = object;
     // If at the end of trying to parse MemberExpression we see Arguments
     // again, then that means this is a CallExpression instead.
-    if(this.matchPunctuators("(") && couldBeCallExpression) {
+    if((this.matchPunctuators("(") || this.matchTemplateLiteral()) && couldBeCallExpression) {
       couldBeNewExpression = false;
 
       object = this.parseRemainingCallExpression(object, is_async);
     }
+    /*
+    if(id.value == 'html') {
+      console.log("Object:", object, this.token, {couldBeCallExpression});
+      throw new Error();
+    }*/
 
     if(do_await) {
       object = new this.estree.AwaitExpression(object);
@@ -674,7 +699,7 @@ let node = new this.estree.TemplateLiteral(parts);
 
     if(result.ast == null) {
       console.log("binary:", result);
-      throw new Error();
+      throw new Error(`${this.position()} ${this.token}`);
     }
     let { ast, lhs } = result;
 
@@ -1000,7 +1025,7 @@ if(this.matchPunctuators(',')
 
       if(member == null) {
         console.log("Property:", { member, value, token: this.token });
-        throw new Error();
+        throw new Error(`${this.position()}`);
       }
       if(spread) member = new this.estree.SpreadElement(value);
       else member = new this.estree.PropertyDefinition(member, value, flags);
@@ -1733,14 +1758,16 @@ var fns = [];
 const methodNames = [...Util.getMethodNames(ECMAScriptParser.prototype)];
 var methods = {};
 
-const quoteArray = arr => (arr.length < 5 ? arr.join(" ") : `[${arr.length}]`);
+const quoteArray = arr => (arr.length < 5 ? `[${arr.join(", ")}]` : `[${arr.length}]`);
 
 const quoteList = (l, delim = " ") => "" + l.map(t => (typeof t == "string" ? `'${t}'` : "" + t)).join(delim) + "";
 const quoteToks = l => quoteList(l.map(t => t.value));
-const quoteArg = a => a.map(i => (i instanceof Array ? quoteArray(i) : typeof i == "object" ? Util.className(i) : `'${i}'`)).join(", ");
+const quoteObj = i => (i instanceof Array ? quoteArg(i) : Util.className(i) == "Object" ? Object.keys(i) : typeof i == "object" ? Util.className(i) : `'${i}'`);
+
+const quoteArg = a => a.map(i => (Util.isObject(i) && i.value !== undefined ? i.value : quoteObj(i)));
 
 Parser.prototype.trace = function() {
-  return this.stack.map(frame => `${(frame.tokenIndex + "").padStart(5)} ${(frame.position + "").padStart(6)} ${(frame.methodName + "(" + quoteList(frame.args, ",") + ")").padEnd(50)} ${frame.tokens.join(" ")}`).join("\n");
+  return this.stack.map(frame => `${(frame.tokenIndex + "").padStart(5)} ${frame.position.toString().padStart(6)} ${(frame.methodName + "(" + quoteList(frame.args, ",") + ")").padEnd(50)} ${frame.tokens.join(" ")}`).join("\n");
 };
 
 Parser.prototype.onToken = function(tok) {

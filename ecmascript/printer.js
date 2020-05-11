@@ -92,16 +92,14 @@ export class Printer {
   }
 
   printTemplateLiteral(template_literal) {
-    let s = '';
-      console.log("template_literal:", template_literal)
+    let s = "";
+    console.log("template_literal:", template_literal);
 
-    for(let part of template_literal.parts){
-      if(part instanceof Literal)
-        s += part.value;
-      else
-      s += '${'+this.printNode(part)+'}';
+    for(let part of template_literal.parts) {
+      if(part instanceof Literal) s += part.value;
+      else s += "${" + this.printNode(part) + "}";
     }
-      return s; 
+    return s;
   }
 
   printThisExpression(this_expression) {

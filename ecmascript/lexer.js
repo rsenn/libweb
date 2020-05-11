@@ -83,7 +83,7 @@ const countLinesCols = (s, p1, p2, lc = { line: 1, column: 1 }) => {
 
   for(let i = start; i < end; i++) {
     if(s[i] == "\n") {
-      lc.column = 1;
+      lc.column = 0;
       lc.line++;
     } else {
       lc.column++;
@@ -206,8 +206,8 @@ export class Lexer {
     this.fileName = fileName;
     this.start = 0;
     this.pos = 0;
-    this.line = 1;
-    this.column = 1;
+    this.line = 0;
+    this.column = 0;
     this.tokenIndex = 0;
     this.noRegex = false;
     this.accepted = "";
@@ -283,16 +283,16 @@ export class Lexer {
     this.c = c;
     return c;
   }
-
   // Returns the next character in the source code and advance position
   next() {
     const c = this.peek();
     if(c !== null) {
       if(c == "\n") {
         this.line++;
-        this.column = 1;
+        this.column = 0;
+      } else {
+        this.column++;
       }
-      this.column++;
       this.pos++;
       //const { pos, line, column } = this;
       // console.log("Lexer.next { ", { pos, line, column }, " }");
@@ -314,17 +314,20 @@ export class Lexer {
     }
   }
 
-  position(pos = this.start) {
+  position(pos = this.pos) {
     let { line, column, fileName } = this;
 
     let diff = pos - this.start;
 
-    if(diff < 0) column += diff;
+  //  if(diff < 0) column += diff;
 
-    column -= 1;
+
+    //column -= 1;
     //console.log("pos:", this.source.substring(pos, this.pos));
+    //
+    
 
-    return new Position(line, column, pos, fileName);
+    return new Position(line + 1, column + 1, pos, fileName);
   }
   /*
   positionString() {
@@ -447,7 +450,7 @@ export class Lexer {
 
     let lineno = `${(line + "").padStart(5)}: `;
     let indent = " ".repeat(lineno.length);
-    let column = columnIndex + 1;
+    let column = columnIndex;
 
     let indicator = indent + ` column ${column} ----`.padStart(columnIndex).slice(-columnIndex) + "╯";
 
@@ -587,16 +590,28 @@ export class Lexer {
     }
   }
 
-  lexTemplate() {
+  lexTemplate(cont = false) {    
+          let c = this.getRange(this.pos, this.pos+10);
+  let inSubst = this.template && this.template.inSubst || template.inSubst;
+
+if(cont)  {
+  this.skip(1);
+  this.ignore();
+  inSubst = false;
+}
     var startToken = this.tokenIndex;
+  
     const done = (inSubst, fn = template) => {
-      //console.log("lexTemplate:", { startToken, inSubst });
       if(!inSubst) {
         this.template = null;
         return this.lexText;
       }
+      template.inSubst = inSubst;
       var self = () => {
+        let inSubst = template.inSubst;
         let c = this.peek();
+        let { start, pos } = this;
+        console.log("self", {c,inSubst,start,pos});
         if(c == "`") {
           this.template = null;
           this.addToken(Token.types.stringLiteral);
@@ -604,22 +619,24 @@ export class Lexer {
           return this.lexText;
         }
         //console.log("lexTemplate", { inSubst }, this.errorRange());
-        fn = inSubst ? this.lexText() : () => template;
+        fn = template.inSubst ? this.lexText() : () => template;
         //console.log("fn:", fn);
         if(fn == this.lexPunctuator) {
           c = this.peek();
           //console.log("punct:", c);
-          if(inSubst && c == "}") {
+
+          /* if(template.inSubst && c == "}") {
             c = this.next();
             this.ignore();
             return template;
-          }
+          }*/
         }
         let ret = fn.call(this);
         //console.log("ret:", ret);
         if(fn === null) throw new Error();
         return self;
       };
+      template.inSubst = inSubst;
       return self;
     };
     function template() {
@@ -644,7 +661,7 @@ export class Lexer {
             return done(true, 0);
           } else if(c === "`") {
             this.addToken(Token.types.templateLiteral);
-//            this.ignore();
+            //            this.ignore();
             return this.lexText;
             return done(false, 1);
           } else if(c === "\\") {
@@ -655,13 +672,21 @@ export class Lexer {
         }
       } while(true);
     }
-    this.template = template.bind(this);
+
+  template.inSubst = inSubst;
+
+  if(this.template !== template)
+    this.template = template;
+
+  
+            console.log("lexTemplate:", { c, startToken, inSubst }, (this.line+1)+":"+(1+this.column)); //this.position(Math.max(this.start, this.pos)).toString());
+
     return this.template;
   }
 
   lexQuote(quoteChar) {
     if(quoteChar === "`") {
-     // this.ignore();
+      // this.ignore();
 
       return this.template || this.lexTemplate;
     }

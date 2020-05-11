@@ -1,18 +1,17 @@
 import Util from "../util.js";
 
 export class Node {
-//  position = null;
+  //  position = null;
 
   constructor(type) {
     //this.type = type;
     //this.loc = null; // TODO: For now avoid dealing with location information.
     // Fix it later.
-     Object.defineProperty(this, 'position', { value: null, enumerable: false, writable: true });
-
+    Object.defineProperty(this, "position", { value: null, enumerable: false, writable: true });
   }
 }
 
-Object.defineProperty(Node.prototype, 'position', { value: undefined, enumerable: false, writable: true });
+Object.defineProperty(Node.prototype, "position", { value: undefined, enumerable: false, writable: true });
 
 export class Program extends Node {
   constructor(body) {
