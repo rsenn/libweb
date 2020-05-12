@@ -26,7 +26,7 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
     ret.s = s;
     ret.l = l;
     ret.a = a;
-  } else {
+  } else if(typeof args[0] == "string") {
     const arg = args[0];
     if(typeof arg === "string") {
       var matches = /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) || /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
@@ -44,6 +44,11 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
       if(String(ret[channel]).endsWith("%")) ret[channel] = parseFloat(ret[channel].slice(0, -1));
       else ret[channel] = parseFloat(ret[channel]) * (channel == "a" || channel == "h" ? 1 : 100);
     });
+  } else {
+    ret.h = 0;
+    ret.s = 0;
+    ret.l = 0;
+    ret.a = 0;
   }
 
   //console.log('HSLA ', { c, ret, args });
@@ -161,7 +166,7 @@ HSLA.prototype.dump = function() {
 };
 
 for(let name of ["css", "toHSL", "clamp", "round", "hex", "toRGBA", "toString"]) {
-  HSLA[name] = points => HSLA.prototype[name].call(points);
+  HSLA[name] = hsla => HSLA.prototype[name].call(hsla || new HSLA());
 }
 
 export const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(prop));

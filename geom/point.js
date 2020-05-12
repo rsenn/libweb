@@ -252,7 +252,7 @@ for(let name of [
   "sum",
   "distance"
 ]) {
-  Point[name] = (...args) => Point.prototype[name].call(...args);
+  Point[name] = (point, ...args) => Point.prototype[name].call(point || new Point(point), ...args);
 }
 
 Point.toSource = point => `{ x:${point.x}, y: ${point.y} }`;

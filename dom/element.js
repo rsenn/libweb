@@ -22,6 +22,7 @@ export class Element extends Node {
     let args = [...arguments];
     let { tagName, ns, children, ...props } = typeof args[0] == "object" ? args.shift() : { tagName: args.shift(), ...args.shift() };
     let parent = args.shift();
+    parent = typeof parent == "string" ? Element.find(parent) : parent;
 
     //console.log('Element.create ', { tagName, props, parent });
 
@@ -473,13 +474,15 @@ export class Element extends Node {
 
     let parent = element.parentElement ? element.parentElement : element.parentNode;
 
-    const estyle = /*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element);
-    const pstyle = parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {};
-    //console.log("Element.getCSS ", { estyle, pstyle });
+    let estyle = /*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element);
+    let pstyle = parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {};
+
+    //    let styles = [estyle,pstyle].map(s => Object.fromEntries([...Node.map(s)].slice(0,20)));
 
     let style = Util.removeEqual(estyle, pstyle);
     let keys = Object.keys(style).filter(k => !/^__/.test(k));
-    //console.log('style: ', style);
+    console.log("style: ", style);
+    console.log("Element.getCSS ", style);
 
     let ret = {};
     if(receiver == null) {

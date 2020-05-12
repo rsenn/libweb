@@ -6,7 +6,7 @@
 //   for await (let click of clicks) console.log(click)
 // }()
 
-export default function iterator() {
+export function iterator() {
   let done = false;
   let events = [];
   let resolve;
@@ -37,3 +37,18 @@ export default function iterator() {
     resolve();
   }
 }
+
+export function eventIterator(element, ...events) {
+  let [iter, push, end] = iterator();
+
+  events.forEach(name => element.addEventListener(name, push));
+
+  iter.stop = () => {
+    events.forEach(name => element.removeEventListener(name, push));
+    end();
+  };
+
+  return iter;
+}
+
+export default iterator;

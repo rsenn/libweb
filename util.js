@@ -263,7 +263,7 @@ Util.inspect = function(
   return formatAnnotatedObject(obj, opts);
 };
 Util.bitArrayToNumbers = function(arr) {
-  let numbers = Util.array();
+  let numbers = [];
   for(let i = 0; i < arr.length; i++) {
     const number = i + 1;
     if(arr[i]) numbers.push(number);
@@ -272,7 +272,7 @@ Util.bitArrayToNumbers = function(arr) {
 };
 Util.bitsToNumbers = function(bits) {
   let a = Util.toBinary(bits).split("");
-  let r = Util.array();
+  let r = [];
   //return a;
   a.forEach((val, key, arr) => val == "1" && r.unshift(a.length - key));
   return r;
@@ -291,12 +291,12 @@ Util.draw = function(arr, n, rnd = Util.rng) {
   //console.log("Util.draw ", { arr, n, r });
   return r;
 };
-Util.is = {
-  on: val => val == "on" || val === "true" || val === true,
-  off: val => val == "off" || val === "false" || val === false,
-  true: val => val === "true" || val === true,
-  false: val => val === "false" || val === false
+Util.is = function(what, ...pred) {
+  let fnlist = pred.map(type => this.is[type]);
+  console.log("fnlist:", fnlist);
+  return fnlist.every(fn => fn(what));
 };
+
 Util.onoff = function(val) {
   if(Util.is.on(val)) return true;
   if(Util.is.off(val)) return false;
@@ -636,8 +636,15 @@ Util.fnName = function(f, parent) {
   }
   return undefined;
 };
-Util.keys = function(obj) {
-  let r = Util.array();
+Util.keys = obj => {
+  if(Symbol.iterator in obj && typeof obj.item == "function" && obj.getPropertyValue !== undefined) return obj[Symbol.iterator]();
+
+  if("length" in obj && typeof obj[0] == "string" && obj[obj[0]] !== undefined)
+    return (function*() {
+      for(let i = 0; i < obj.length; i++) yield obj[i];
+    })();
+
+  let r = [];
   for(let i in obj) r.push(i);
   return r;
 };
@@ -684,7 +691,7 @@ Util.match = function(arg, pred) {
     return arg.reduce((acc, val, key) => {
       if(match(val, key, arg)) acc.push(val);
       return acc;
-    }, Util.array());
+    }, []);
   } else if(Util.isMap(arg)) {
     //console.log('Util.match ', { arg });
     return [...arg.keys()].reduce((acc, key) => (match(arg.get(key), key, arg) ? acc.set(key, arg.get(key)) : acc), new Map());
@@ -779,7 +786,7 @@ Util.camelize = (text, sep = "") =>
   });
 
 Util.decamelize = function(str, separator = "-") {
-  return /[A-Z]/.test(str)
+  return /.[A-Z]/.test(str)
     ? str
         .replace(/([a-z\d])([A-Z])/g, `$1${separator}$2`)
         .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, `$1${separator}$2`)
@@ -875,27 +882,26 @@ Util.isEmail = function(v) {
 Util.isString = function(v) {
   return Object.prototype.toString.call(v) == "[object String]";
 };
+/**
+ * Determines whether the specified v is numeric.
+ *
+ * @param      {<type>}   v       { parameter_description }
+ * @return     {boolean}  True if the specified v is numeric, False otherwise.
+ */
+Util.isNumeric = v => /^[-+]?[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test(v);
 
 Util.isObject = obj => typeof obj === "object" && obj !== null;
+Util.isFunction = fn => !!(fn && fn.constructor && fn.call && fn.apply);
 
-Util.isEmptyString = function(v) {
-  if(this.isString(v) && !v) {
-    return true;
-  }
-  if(this.isString(v) && !v.length) {
-    return true;
-  }
-  return false;
-};
+Util.isEmptyString = v => Util.isString(v) && (v == "" || v.length == 0);
+
 Util.isEmpty = function(v) {
   if(typeof v == "object" && !!v && v.constructor == Object && Object.keys(v).length == 0) return true;
   if(!v || v === null) return true;
   if(typeof v == "object" && v.length !== undefined && v.length === 0) return true;
   return false;
 };
-Util.notEmpty = function(v) {
-  return !Util.isEmpty(v);
-};
+Util.isNonEmpty = v => !Util.isEmpty(v);
 Util.hasProps = function(obj) {
   const keys = Object.keys(obj);
   return keys.length > 0;
@@ -957,7 +963,7 @@ Util.toArray = function(observableArray) {
  * @param appId the parent id value of the level one array
  */
 Util.arryToTree = function(data, id, pId, appId) {
-  const arr = Util.array();
+  const arr = [];
   data.map((e, i) => {
     e[pId] === appId && arr.push(e);
   });
@@ -973,7 +979,7 @@ Util.arryToTree = function(data, id, pId, appId) {
  */
 Util.to3wei = function(a, old, id, pId) {
   a.map((e, i) => {
-    a[i].children = Util.array();
+    a[i].children = [];
     old.map((se, si) => {
       if(se[pId] === a[i][id]) {
         a[i].children = [...a[i].children, se];
@@ -1013,10 +1019,13 @@ Util.moveIf = function(src, pred, dst = []) {
 };
 Util.removeEqual = function(a, b) {
   let c = {};
-  for(let key in Object.assign({}, a)) {
+  for(let key of Util.keys(a)) {
     if(b[key] === a[key]) continue;
+    //console.log(`removeEqual '${a[key]}' === '${b[key]}'`);
     c[key] = a[key];
   }
+  // console.log(`removeEqual`,c);
+
   return c;
 };
 //Remove the storage when logging out
@@ -1177,8 +1186,8 @@ Util.numberFormatter = function(numStr) {
 };
 Util.searchObject = function(object, matchCallback, currentPath, result, searched) {
   currentPath = currentPath || "";
-  result = result || Util.array();
-  searched = searched || Util.array();
+  result = result || [];
+  searched = searched || [];
   if(searched.indexOf(object) !== -1 && object === Object(object)) {
     return;
   }
@@ -1261,7 +1270,7 @@ Util.parseURL = function(href = this.getURL()) {
             return [b, a.join("=")];
           })
           .filter(([k, v]) => !(k.length == 0 && v.length == 0))
-      : Util.array();
+      : [];
   const params = [...pmatches].reduce((acc, m) => {
     acc[m[0]] = m[1];
     return acc;
@@ -1303,7 +1312,7 @@ Util.numberFromURL = function(url, fn) {
 };
 Util.tryPromise = fn => new Promise((resolve, reject) => Util.tryCatch(fn, resolve, reject));
 
-Util.tryCatch = (fn, resolve, reject) => {
+Util.tryCatch = (fn, resolve, reject = () => {}) => {
   let ret;
   try {
     ret = fn();
@@ -1367,7 +1376,7 @@ Util.mergeLists = function(arr1, arr2, key = "id") {
   return Object.values(hash);
   /* let hash = arr1.reduce((acc, it) => Object.assign({ [it[key]]: it }, acc), {});
   hash = arr2.reduce((acc, it) => Object.assign({ [it[key]]: it }, acc), {});
-  let ret = Util.array();
+  let ret = [];
   for(let k in hash) {
     if(hash[k][key]) ret.push(hash[k]);
   }
@@ -1391,6 +1400,25 @@ Util.all = function(obj, pred) {
 };
 Util.isGenerator = function(fn) {
   return (typeof fn == "function" && /^[^(]*\*/.test(fn.toString())) || (["function", "object"].indexOf(typeof fn) != -1 && fn.next !== undefined);
+};
+Util.isIterable = obj => {
+  try {
+    for(let item of obj) return true;
+  } catch(err) {}
+  return false;
+};
+Util.isNativeFunction = x => typeof x == "function" && /{ \[(native code|[^\n]*)\] \}/.test(x + "");
+Util.isConstructor = x => {
+  const handler = {
+    construct() {
+      return handler;
+    }
+  }; //Must return ANY object, so reuse one
+  try {
+    return !!new new Proxy(x, handler)();
+  } catch(e) {
+    return false;
+  }
 };
 Util.filter = function(a, pred) {
   if(Util.isGenerator(a))
@@ -1717,17 +1745,17 @@ Util.pushUnique = function(arr) {
   });
   return arr;
 };
-Util.iterateMembers = function*(obj, predicate = (name, depth) => true, depth = 0) {
+Util.iterateMembers = function*(obj, predicate = (name, depth, obj) => true, depth = 0) {
   let names = [];
   let pred = Util.predicate(predicate);
-  for(let name in obj) if(pred(name, depth)) yield name;
-  for(let name of Object.getOwnPropertyNames(obj)) if(pred(name, depth)) yield name;
-  for(let symbol of Object.getOwnPropertySymbols(obj)) if(pred(symbol, depth)) yield symbol;
+  for(let name in obj) if(pred(name, depth, obj)) yield name;
+  for(let name of Object.getOwnPropertyNames(obj)) if(pred(name, depth, obj)) yield name;
+  for(let symbol of Object.getOwnPropertySymbols(obj)) if(pred(symbol, depth, obj)) yield symbol;
   const proto = Object.getPrototypeOf(obj);
-  if(proto) yield* Util.iterateMembers(proto, pred, depth + 1);
+  if(proto) yield* Util.iterateMembers(proto, predicate, depth + 1);
 };
 
-Util.getMembers = (obj, pred = (prop, level) => true) => Util.unique([...Util.iterateMembers(obj, pred)]);
+Util.getMemberNames = (obj, pred = (prop, level, obj) => !obj.__proto__ || obj.__proto__[prop] === undefined) => Util.unique([...Util.iterateMembers(obj, pred)]);
 
 Util.iterateMethodNames = (obj, depth = 1, start = 0) => {
   const end = depth === true ? start + 1 : depth === false ? start : start + depth;
@@ -1763,19 +1791,27 @@ Util.bindMethodsTo = function(dest, obj, methods) {
   }
   return dest;
 };
-Util.getConstructor = obj => {
-  return Object.getPrototypeOf(obj).constructor;
-};
+Util.getConstructor = obj => obj.constructor || Object.getPrototypeOf(obj).constructor;
 Util.getPrototypeChain = function(obj, fn = p => p) {
   let ret = [];
   let proto;
-  while((proto = Object.getPrototypeOf(obj))) {
-    if(proto === Object.prototype) break;
-    ret.push(fn(proto));
+  do {
+    proto = obj.__proto__ || Object.getPrototypeOf(obj);
+    ret.push(fn(proto, obj));
+    if(proto === Object.prototype || proto.constructor === Object) break;
     obj = proto;
-  }
+  } while(obj);
+
   return ret;
 };
+/*
+
+ ctors = [...Util.getMemberNames(window, m => Util.isNativeFunction( window[m] ))].sort().map(n => [n, window[n]]);
+chain = ctors.map(([n,f]) => [n,Util.getConstructorChain(f)]).filter(([n,c]) => c.length > 2).map(([n,c]) => c.map(f => Util.fnName(f))+'').join("\n")
+*/
+
+Util.getConstructorChain = (ctor, fn = (c, p) => c) => Util.getPrototypeChain(ctor, (p, o) => fn(o, p));
+
 Util.weakAssign = function(obj) {
   let args = [...arguments];
   obj = args.shift();
@@ -1915,6 +1951,7 @@ Util.walkTree = function(node, pred, t, depth = 0, parent = null) {
 Util.isPromise = function(obj) {
   return (Boolean(obj) && typeof obj.then === "function") || obj instanceof Promise;
 };
+
 /* eslint-disable no-use-before-define */
 if(typeof setImmediate !== "function") var setImmediate = fn => setTimeout(fn, 0);
 Util.next = function(iter, observer, prev = undefined) {
@@ -2312,7 +2349,7 @@ Util.defineInspect = (proto, ...props) => {
 Util.predicate = fn_or_regex => {
   let fn;
   if(fn_or_regex instanceof RegExp) fn = (...args) => fn_or_regex.test(args + "");
-  else fn = (...args) => fn_or_regex(...args);
+  else fn = fn_or_regex;
   return fn;
 };
 Util.inRange = curry((a, b, value) => value >= a && value <= b);
@@ -2344,5 +2381,28 @@ Util.bindProperties = (proxy, target, props, gen) => {
   );
   return proxy;
 };
+
+Object.assign(Util.is, {
+  array: Util.isArray,
+  bool: Util.isBool,
+  constructor: Util.isConstructor,
+  date: Util.isDate,
+  email: Util.isEmail,
+  empty: Util.isEmpty,
+  nonEmpty: Util.isNonEmpty,
+  emptyString: Util.isEmptyString,
+  generator: Util.isGenerator,
+  iterable: Util.isIterable,
+  map: Util.isMap,
+  nativeFunction: Util.isNativeFunction,
+  object: Util.isObject,
+  promise: Util.isPromise,
+  function: Util.isFunction,
+  string: Util.isString,
+  on: val => val == "on" || val === "true" || val === true,
+  off: val => val == "off" || val === "false" || val === false,
+  true: val => val === "true" || val === true,
+  false: val => val === "false" || val === false
+});
 
 export default Util;

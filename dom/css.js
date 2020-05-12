@@ -1,9 +1,17 @@
 import Util from "../util.js";
 import { Element } from "./element.js";
+import { Node } from "./node.js";
 
 export class CSS {
+  static get document() {
+    try {
+      return window.document;
+    } catch(err) {}
+    return null;
+  }
+
   static list(doc) {
-    if(!doc) doc = window.document;
+    if(!doc) doc = this.document;
 
     const getStyleMap = (obj, key) => {
       let rule = Util.find(obj, item => item["selectorText"] == key);
@@ -35,6 +43,7 @@ export class CSS {
       getStyleSheet
     );
   }
+
   static styles(stylesheet) {
     const list = stylesheet && stylesheet.cssRules ? [stylesheet] : CSS.list(stylesheet);
     let ret = [];
@@ -108,5 +117,18 @@ export class CSS {
     Object.setPrototypeOf(obj, proto);
     Object.assign(obj, { element, map: new Map() });
     return obj;
+  }
+
+  static consolidate(properties) {
+    let props = new Map(Util.isIterable(properties) ? properties : Object.entries(properties));
+
+    const trblExpr = /(Top|Right|Bottom|Left)/;
+    const cswExpr = /(Color|Style|Width)/;
+
+    let keyList = [...props.keys()].filter(k => trblExpr.test(k) || cswExpr.test(k));
+
+    //  console.log("props:",Util.unique(keyList.filter(k => k.startsWith('border')).map(k => k.replace(/^border/, "").replace(trblExpr, ""))));
+    for(let key of keyList) {
+    }
   }
 }

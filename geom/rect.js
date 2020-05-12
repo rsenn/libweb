@@ -9,11 +9,14 @@ export function Rect(arg) {
   let obj = this instanceof Rect ? this : {};
   let args = arg instanceof Array ? arg : [...arguments];
   let ret;
+
   if(typeof args[0] == "number") arg = args;
-  else if(args[0].length !== undefined) arg = args.shift();
+  else if(Util.isObject(args[0]) && args[0].length !== undefined) arg = args.shift();
+
   ["x", "y", "width", "height"].forEach(field => {
     if(typeof obj[field] != "number") obj[field] = 0;
   });
+
   if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
     const { x1, y1, x2, y2 } = arg;
     obj.x = x1;
@@ -71,10 +74,7 @@ export function Rect(arg) {
       writable: false
     });
   }
-  if(!(this instanceof Rect)) {
-    return obj;
-    return ret;
-  }
+  if(!(this instanceof Rect) || new.target === undefined) return obj;
 }
 Rect.prototype = {
   /*...Point.prototype,*/
@@ -349,7 +349,7 @@ for(let name of [
   "toTRBL",
   "toPoints"
 ]) {
-  Rect[name] = points => Rect.prototype[name].call(points);
+  Rect[name] = (rect, ...args) => Rect.prototype[name].call(rect || new Rect(rect), ...args);
 }
 
 Rect.toSource = (rect, opts = {}) => {

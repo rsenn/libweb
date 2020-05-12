@@ -281,8 +281,8 @@ Line.prototype.inspect = function() {
   return "Line{ " + inspect({ x1, y1, x2, y2 }) + " }";
 };
 Line.prototype.toString = function() {
-  let { a, b } = this;
-  return Point.prototype.toString.call(this.a) + " -> " + Point.prototype.toString.call(this.b);
+  const { x1, y1, x2, y2 } = this;
+  return Point.toString(this.a || Point(x1, y1)) + " -> " + Point.toString(this.b || Point(x2, y2));
 };
 Line.prototype.toSource = function() {
   let { a, b } = this;
@@ -369,7 +369,7 @@ Line.prototype.toPoints = function() {
 };
 
 for(let name of ["direction", "round", "slope", "angle", "bbox", "points", "inspect", "toString", "toObject", "toSource", "distanceToPointSquared", "distanceToPoint"]) {
-  Line[name] = (...args) => Line.prototype[name].call(...args);
+  Line[name] = (line, ...args) => Line.prototype[name].call(line || new Line(line), ...args);
 }
 
 Util.defineInspect(Line.prototype, "x1", "y1", "x2", "y2");

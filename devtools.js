@@ -1,7 +1,7 @@
 //import React from "react";
 //import ReactDOM from "react-dom";
 // prettier-ignore
-import dom, {TRBL, CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, Line, Matrix, Point, PointList, Rect, RGBA, Size, SVG, Timer, Node } from "./dom.js";
+import dom, {TRBL, CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, Line, Matrix, Point, PointList, Rect, RGBA, Size, SVG, Timer, Node, isElement } from "./dom.js";
 //import { SvgOverlay, SvgPathTracer } from "./svg/overlay.js";
 //import { SvgPath } from "./svg/path.js";
 import Util from "./util.js";
@@ -906,11 +906,24 @@ export function circle(point, radius = 10) {
 
 export function rect(arg) {
   let args = [...arguments];
-  let r;
-  let a = [];
+  let e, r;
+  let a = (rect.list = rect.list || []);
+  let zIndex = (rect.zIndex =
+    rect.zIndex ||
+    [...Element.recurse("body")]
+      .map(e => window.getComputedStyle(e).zIndex)
+      .filter(Util.uniquePred)
+      .filter(Util.isNumeric)
+      .sort()
+      .reverse()[0] ||
+    10000);
+
   while(args.length > 0) {
     if(args[0] instanceof dom.Rect) r = args.shift();
-    else r = new dom.Rect(args);
+    else if(isElement(args[0]) || (typeof args[0] == "string" && (e = Element.find(args[0])))) r = Element.rect(args.shift());
+    else r = new Rect(args);
+
+    console.log("r:", r);
 
     a.push(__rect({ r, args }));
   }
@@ -927,9 +940,10 @@ export function rect(arg) {
     if(typeof rect == "string" || rect.tagName !== undefined) {
       parent = rect;
       rect = Element.rect(rect);
+      console.log("rect:", rect);
     }
 
-    let color = args.shift() || "#ffff0030";
+    let color = args.shift() || RGBA.random([0, 255], [0, 255], [0, 255], [127, 127]);
     let borderColor = args.shift() || "#0f0";
     parent = parent || args.shift() || body;
     if(typeof parent == "string") parent = Element.find(parent);
@@ -945,7 +959,7 @@ export function rect(arg) {
       border: `1px dashed ${typeof borderColor == "string" ? borderColor : "#0f0"}`,
       borderRadius: "0px",
       backgroundColor: color,
-      zIndex: 9999,
+      zIndex,
       pointerEvents: "none" /*,
                 ...rect.round(1).toCSS(),*/
 

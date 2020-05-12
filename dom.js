@@ -218,6 +218,7 @@ export default Object.assign(dom, {
   Line,
   Matrix,
   MatrixProps,
+  Node,
   Point,
   PointList,
   Polyline,

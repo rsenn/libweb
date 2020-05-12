@@ -442,7 +442,7 @@ Matrix.rad2deg = radians => (radians * 180) / Math.PI;
 Matrix.deg2rad = degrees => (degrees * Math.PI) / 180;
 
 for(let name of ["toObject", "init", "toArray", "isIdentity", "determinant", "invert", "multiply", "scalar_product", "toSource", "toString", "toSVG", "equals", "init_identity", "is_identity", "init_translate", "init_scale", "init_rotate", "scale_sign", "decompose", "transformer"]) {
-  Matrix[name] = (...args) => Matrix.prototype[name].call(...args);
+  Matrix[name] = (matrix, ...args) => Matrix.prototype[name].call(matrix || new Matrix(matrix), ...args);
 }
 
 for(let name of ["translate", "scale", "rotate", "skew"]) {
@@ -462,9 +462,9 @@ for(let name of ["transform_distance", "transform_xy", "transform_point", "trans
   const method = Matrix.prototype[name];
 
   if(method.length == 2) {
-    Matrix[name] = Util.curry((m, a, b) => Matrix.prototype[name].call(m, a, b));
+    Matrix[name] = Util.curry((m, a, b) => Matrix.prototype[name].call(m || new Matrix(m), a, b));
   } else if(method.length == 1) {
-    Matrix[name] = Util.curry((m, a) => Matrix.prototype[name].call(m, a));
+    Matrix[name] = Util.curry((m, a) => Matrix.prototype[name].call(m || new Matrix(m), a));
   }
 }
 

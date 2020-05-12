@@ -3,7 +3,7 @@ import { Util } from "../util.js";
 export function Size(arg) {
   let obj = this instanceof Size ? this : {};
   let args = [...arguments];
-  if(args.length == 1 && args[0].length !== undefined) {
+  if(args.length == 1 && Util.isObject(args[0]) && args[0].length !== undefined) {
     args = args[0];
     arg = args[0];
   }
@@ -190,10 +190,10 @@ Size.bind = (o, p, gen) => {
   return Util.bindProperties(new Size(0, 0), o, { width, height }, gen);
 };
 
-for(let method of Util.getMethodNames(Size.prototype)) Size[method] = (size, ...args) => Size.prototype[method].call(size, ...args);
+for(let method of Util.getMethodNames(Size.prototype)) Size[method] = (size, ...args) => Size.prototype[method].call(size || new Size(size), ...args);
 
 export const isSize = o => o && ((o.width !== undefined && o.height !== undefined) || (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) || (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
 
 for(let name of ["toCSS", "isSquare", "round", "sum", "add", "diff", "sub", "prod", "mul", "quot", "div"]) {
-  Size[name] = points => Size.prototype[name].call(points);
+  Size[name] = (size, ...args) => Size.prototype[name].call(size || new Size(size), ...args);
 }
