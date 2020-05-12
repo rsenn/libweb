@@ -922,8 +922,8 @@ export function renderDocument(doc, container) {
     className: "drawing",
     transform: groupTransform,
     "vector-effect": "non-scaling-stroke",
-    "stroke-linecap":"round",
-    "stroke-linejoin":"miter"
+    "stroke-linecap": "round",
+    "stroke-linejoin": "miter"
   });
   renderer.render(g);
   let colors = SVG.allColors(svg);
