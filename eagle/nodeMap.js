@@ -58,9 +58,12 @@ export function makeEagleNodeMap(list, key = "name") {
     get(target, prop, receiver) {
       let index;
 
+if(typeof(prop) == 'string') {
+      if(Util.isNumeric(prop)) return instance.list[prop];
       if(prop == "ref" || prop == "raw") return instance.list[prop];
       if(prop == "instance") return instance;
       if(prop == "length" || prop == "size") return (instance.list.raw || instance.list).length;
+    }
       if(prop == Symbol.iterator) return instance.entries()[Symbol.iterator];
 
       if((index = instance.keys().indexOf(prop)) != -1) return instance.list[index];
@@ -70,11 +73,11 @@ export function makeEagleNodeMap(list, key = "name") {
     },
     getPrototypeOf(target) {
       return Reflect.getPrototypeOf(instance);
-    },
+    }/*,
     ownKeys(target) {
       let keys = instance.keys();
 
       return keys;
-    }
+    }*/
   });
 }

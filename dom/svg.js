@@ -5,6 +5,7 @@ import { Rect } from "../geom/rect.js";
 import { Line } from "../geom/line.js";
 import { parseSVG, makeAbsolute } from "../svg/path-parser.js";
 import Util from "../util.js";
+import { RGBA, isRGBA } from "./rgba.js";
 
 export class SVG extends Element {
   static create(name, attr, parent) {

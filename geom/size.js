@@ -1,4 +1,5 @@
 import { Util } from "../util.js";
+import { isPoint, Point } from "./point.js";
 
 export function Size(arg) {
   let obj = this instanceof Size ? this : {};

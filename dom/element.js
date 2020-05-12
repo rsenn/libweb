@@ -4,6 +4,7 @@ import { Point, isPoint } from "../geom/point.js";
 import { Rect, isRect } from "../geom/rect.js";
 import { Size, isSize } from "../geom/size.js";
 import { Align, Anchor } from "../geom/align.js";
+import { iterator, eventIterator } from "./iterator.js";
 import Util from "../util.js";
 /**
  * Class for element.
@@ -59,11 +60,14 @@ export class Element extends Node {
     }
     return ret.length ? ret : null;
   }
-  static *skip(elem, fn = e => e.parentElement) {
+  static *skip(elem, fn = (e, next) => next(e.parentElement)) {
     elem = typeof elem == "string" ? Element.find(elem) : elem;
+    // let [iter,push] = new iterator();
+    let emit = (y, n) => (elem = n);
+
     while(elem) {
       yield elem;
-      elem = fn(elem);
+      fn(elem, emit);
     }
   }
 

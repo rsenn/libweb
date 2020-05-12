@@ -8,6 +8,9 @@ import { Transformation, TransformationList } from "../geom/transformation.js";
 import { EagleElement } from "./element.js";
 import { ColorMap } from "../draw/colorMap.js";
 import Alea from "../alea.js";
+import { Util } from "../util.js";
+import { RGBA, isRGBA } from "../dom/rgba.js";
+import { Size } from "../dom.js";
 
 const VERTICAL = 1;
 const HORIZONTAL = 2;
@@ -166,6 +169,8 @@ export class EagleRenderer {
   constructor(doc, factory) {
     this.doc = doc;
     this.create = (tag, attrs, parent) => factory(tag, "id" in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
+
+    Object.setPrototypeOf(this,  (this.doc.type == "brd" ? BoardRenderer.prototype : SchematicRenderer.prototype));
   }
 
   setPalette(palette) {
@@ -215,6 +220,8 @@ export class EagleRenderer {
   }
 
   renderLayers(parent) {
+      console.log(`${Util.className(this)}.renderLayers`);
+
     const layerGroup = this.create("g", { className: "layers" }, parent);
     const layers = [...this.doc.layers.list].sort((a, b) => a.number - b.number);
     const colors = {};
@@ -240,6 +247,7 @@ export class EagleRenderer {
   }
 
   renderItem(item, parent, opts = {}) {
+          console.log(`${Util.className(this)}.renderItem`, { item,parent,opts});
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
     const svg = (elem, attr, parent) =>
@@ -474,6 +482,8 @@ export class SchematicRenderer extends EagleRenderer {
   }
 
   renderItem(item, parent, opts = {}) {
+        console.log(`${Util.className(this)}.renderItem`, { item,parent,opts});
+
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...LayerAttributes(layer), ...attr }, parent);
@@ -541,6 +551,8 @@ export class SchematicRenderer extends EagleRenderer {
   }
 
   renderPart(instance, parent) {
+            console.log(`${Util.className(this)}.renderPart`, { instance,parent});
+
     const { x, y, rot } = instance;
     const part = instance.part;
     let { deviceset, device, library, name, value } = part;
@@ -566,6 +578,8 @@ export class SchematicRenderer extends EagleRenderer {
   }
 
   renderNet(net, parent) {
+                console.log(`${Util.className(this)}.renderNet`, { net,parent});
+
     let g = this.create("g", { className: `net.${net.name}` }, parent);
     for(let segment of net.children) this.renderCollection(segment, g, { labelText: net.name });
   }
@@ -579,6 +593,8 @@ export class SchematicRenderer extends EagleRenderer {
   }
 
   renderSheet(sheet, parent) {
+    console.log(`${Util.className(this)}.renderSheet`, { sheet,parent});
+
     let netsGroup = this.create("g", { className: "nets" }, parent);
 
     let partsGroup = this.create("g", { className: "parts" }, parent);
@@ -779,17 +795,18 @@ export class BoardRenderer extends EagleRenderer {
 
     let plainGroup = this.create("g", { className: "plain" }, parent);
 
-    for(let element of this.elements.list) this.renderElement(element, elementsGroup);
+    for(let element of this.elements.list)
+      this.renderElement(element, elementsGroup);
 
-    for(let signal of this.signals.list)
+    for(let signal of this.signals)
       this.renderCollection(signal, signalsGroup, {
         predicate: i => i.attributes.layer == "16"
       });
-    for(let signal of this.signals.list)
+    for(let signal of this.signals)
       this.renderCollection(signal, signalsGroup, {
         predicate: i => i.attributes.layer == "1"
       });
-    for(let signal of this.signals.list)
+    for(let signal of this.signals)
       this.renderCollection(signal, signalsGroup, {
         predicate: i => i.attributes.layer === undefined
       });
@@ -835,7 +852,7 @@ export function renderDocument(doc, container) {
   let randN = Util.randInt(0, 30000);
   rng = new Alea(1340);
   let bgColor = doc.type == "sch" ? "rgb(255,255,255)" : "rgba(0,0,0,0.0)";
-  console.log(`renderer ${Util.className(renderer)} palette=${renderer.palette}`);
+  console.log(`${Util.className(renderer)} palette=${renderer.palette}`);
   console.log(`doc type=${doc.type} path=${doc.path}`);
   renderer.colors = {};
   let first = svg.firstElementChild;

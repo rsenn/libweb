@@ -4,7 +4,7 @@ import { HSLA } from "../dom/hsla.js";
 
 export function ColorMap(...args) {
   let isNew = this instanceof ColorMap;
-  let obj = isNew ? this : new ColorMap();
+  let obj = isNew ? this : [];
 
   for(let arg of args) {
     for(let color of arg) {
@@ -22,7 +22,9 @@ export function ColorMap(...args) {
   if(!isNew) return obj;
 }
 
-Util.extend(ColorMap.prototype, Util.getMethods(Array.prototype));
+ColorMap.prototype = new Array();
+
+//Object.assign(ColorMap.prototype, Util.getMethods(Array.prototype));
 
 ColorMap.prototype.type = RGBA;
 ColorMap.prototype.base = 10;

@@ -1,8 +1,8 @@
 import { EaglePath } from "./locator.js";
-//import { EagleElement } from "./element.js";
+//  import { EagleElement } from "./element.js";
 import Util from "../util.js";
 import deep from "../deep.js";
-import { SVG } from "../dom/svg.js";
+import { SVG, BBox } from "../dom.js";
 
 const pathPadding = Util.isBrowser() ? 0 : 40;
 
@@ -223,7 +223,7 @@ export class EagleInterface {
   *iterator(...args) {
     let predicate = typeof args[0] == "function" ? args.shift() : arg => true;
     let path = (Util.isArray(args[0]) && args.shift()) || [];
-    let t = typeof args[0] == "function" ? args.shift() : ([v, l, d]) => [typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l) : v, l, d];
+    let t = typeof args[0] == "function" ? args.shift() : ([v, l, d]) => [typeof v == "object" && v !== null && "tagName" in v ? new this.constructor(d, l) : v, l, d];
     let owner = Util.isObject(this) && "owner" in this ? this.owner : this;
     let root = this.root || (owner.xml && owner.xml[0]);
     let node = root;

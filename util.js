@@ -1312,15 +1312,24 @@ Util.numberFromURL = function(url, fn) {
 };
 Util.tryPromise = fn => new Promise((resolve, reject) => Util.tryCatch(fn, resolve, reject));
 
-Util.tryCatch = (fn, resolve, reject = () => {}) => {
-  let ret;
-  try {
-    ret = fn();
-  } catch(err) {
-    return reject();
-  }
-  return resolve(ret);
-};
+Util.tryFunction = (fn, resolve = a => a, reject = () => null) =>
+  function(...args) {
+    let ret;
+    try {
+      ret = fn(...args);
+    } catch(err) {
+      return reject();
+    }
+    return resolve(ret);
+  };
+Util.tryCatch = (fn, resolve = a => a, reject = () => null) => Util.tryFunction(fn, resolve, reject)();
+
+Util.tryPredicate = (fn, defaultRet) =>
+  Util.tryFunction(
+    fn,
+    ret => ret,
+    () => defaultRet
+  );
 
 Util.isBrowser = function() {
   let ret = false;
@@ -1760,7 +1769,10 @@ Util.getMemberNames = (obj, pred = (prop, level, obj) => !obj.__proto__ || obj._
 Util.iterateMethodNames = (obj, depth = 1, start = 0) => {
   const end = depth === true ? start + 1 : depth === false ? start : start + depth;
   const check = Util.inRange(start, end);
-  return Util.iterateMembers(obj, (prop, level) => check(level) && typeof obj[prop] === "function" && prop != "constructor");
+  return Util.iterateMembers(
+    obj,
+    Util.tryPredicate((prop, level) => check(level) && typeof obj[prop] === "function" && !["caller", "callee", "arguments", "constructor"].contains(prop))
+  );
 };
 Util.getMethodNames = (obj, depth = 1, start = 0) => Util.unique([...Util.iterateMethodNames(obj, depth, start)]);
 

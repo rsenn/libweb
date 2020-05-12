@@ -141,12 +141,18 @@ trkl.property = function(object, name, options = { enumerable: true, configurabl
 
 trkl.bind = function(object, name, handler) {
   var self = handler;
-  Object.defineProperty(object, name, {
-    enumerable: true,
-    configurable: true,
-    get: self,
-    set: self
-  });
+  if(typeof name == "object")
+    Object.defineProperties(
+      object,
+      Object.keys(name).reduce((acc, key) => ({ ...acc, [key]: { get: name[key], set: name[key] } }), {})
+    );
+  else
+    Object.defineProperty(object, name, {
+      enumerable: true,
+      configurable: true,
+      get: self,
+      set: self
+    });
   return object;
 };
 
