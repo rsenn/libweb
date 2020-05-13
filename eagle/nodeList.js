@@ -13,7 +13,7 @@ Object.defineProperties(EagleNodeList.prototype, {
   owner: { writable: true, configurable: true, enumerable: false, value: null }
 });
 
-Util.extend(EagleNodeList.prototype, {
+Object.assign(EagleNodeList.prototype, {
   *[Symbol.iterator]() {
     const instance = this;
     const list = this.ref.dereference();
@@ -68,10 +68,26 @@ export function makeEagleNodeList(...args) {
     get(target, prop, receiver) {
       let index;
       let is_symbol = typeof prop == "symbol";
+       let e;
 
+  if(!is_symbol && /^[0-9]+$/.test(prop + "")) {
+    if(!(prop in instance)) {
+        let r = instance.ref.down(prop);
+       e = makeEagleElement(instance, r);
+        Reflect.set(target, prop, e);
+      } else {
+        e = instance[prop];
+      }
+         return e;
+    }
+/*
+      if(typeof prop == "string")
+        if(Util.isNumeric(prop)) return Reflect.get(target, prop, receiver);*/
+      //instance[prop];
+   
       if(prop == "raw") return instance.ref.dereference();
       if(prop == "instance") return instance;
-      if(prop == "iterator" || prop == Symbol.iterator) if (typeof instance.iterator == "function") return instance.iterator();
+   /*   if(prop == "iterator" || prop == Symbol.iterator) if (typeof instance.iterator == "function") return instance.iterator();*/
       /*
 if(/description/.test(txt))
       console.log("list:","\n", toXML(instance.ref.dereference(), true),prop,txt);
@@ -85,21 +101,19 @@ if(/description/.test(txt))
           return idx == -1 ? null : makeEagleElement(instance, instance.ref.down(idx));
         };
       if(prop == "entries") return () => list.map((item, i) => [item.attributes.name, item]);
-      if(!is_symbol && /^[0-9]+$/.test(prop + "")) {
-        let r = instance.ref.down(prop);
-        return makeEagleElement(instance, r);
-      }
-      if(typeof Array.prototype[prop] == "function") return Array.prototype[prop].bind(target);
+    
+      if(typeof Array.prototype[prop] == "function") return Array.prototype[prop].bind(instance);
       if((!is_symbol && /^([0-9]+|length)$/.test("" + prop)) || prop == Symbol.iterator || ["findIndex"].indexOf(prop) !== -1) {
         if(prop in list) return list[prop];
       }
-      return Reflect.get(target, prop, receiver);
+      return Reflect.get(instance, prop, receiver);
     },
-    ownKeys(target) {
+  /*  ownKeys(target) {
       let list = instance.ref.dereference();
       return ["owner", "length"];
-    },
+    },*/
     getPrototypeOf(target) {
+      return EagleNodeList.prototype;
       return Reflect.getPrototypeOf(instance);
     }
   });

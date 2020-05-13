@@ -111,8 +111,8 @@ const LinesToPath = lines => {
     m;
   let start = l.a;
   let ret = [];
-  let prevPoint = new Point(l.a.x, l.a.y);
-  ret.push(`M${l.a.x} ${l.a.y}`);
+  let prevPoint = new Point(l.a && l.a.x || l.x1, l.a && l.a.y || l.y1);
+  ret.push(`M${prevPoint}`);
 
   const lineTo = (point, curve) => {
     if(curve !== undefined) {
@@ -167,11 +167,32 @@ export class EagleRenderer {
   colors = {};
 
   constructor(doc, factory) {
+      console.log(Util.className(this), Util.fnName(new.target));
+    if(new.target === EagleRenderer)
+      throw new Error("Use SchematicRenderer or BoardRenderer");
+      
+        let ctor = doc.type == "brd" ? BoardRenderer : SchematicRenderer;
+
+    Object.setPrototypeOf(this, ctor.prototype);
+
+    //ctor.apply(this, arguments);
     this.doc = doc;
     this.create = (tag, attrs, parent) => factory(tag, "id" in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
 
-    Object.setPrototypeOf(this,  (this.doc.type == "brd" ? BoardRenderer.prototype : SchematicRenderer.prototype));
-  }
+    const { settings, layers, libraries, classes, designrules, elements, signals, plain } = doc;
+
+    this.elements = elements;
+    this.signals = signals;
+    this.plain = [...board.getAll("plain", (v, l) => new EagleElement(doc, l))][0];
+    this.layers = layers;
+
+    return this;
+    }
+
+    static create(doc, factory) {
+      let renderer = doc.type == "brd" ? new BoardRenderer(doc,factory) : new SchematicRenderer(doc,factory);
+      return renderer;
+    }
 
   setPalette(palette) {
     Object.defineProperty(this, "palette", {
@@ -220,7 +241,7 @@ export class EagleRenderer {
   }
 
   renderLayers(parent) {
-      console.log(`${Util.className(this)}.renderLayers`);
+    console.log(`${Util.className(this)}.renderLayers`);
 
     const layerGroup = this.create("g", { className: "layers" }, parent);
     const layers = [...this.doc.layers.list].sort((a, b) => a.number - b.number);
@@ -247,7 +268,7 @@ export class EagleRenderer {
   }
 
   renderItem(item, parent, opts = {}) {
-          console.log(`${Util.className(this)}.renderItem`, { item,parent,opts});
+    console.log(`${Util.className(this)}.renderItem`, { item, parent, opts });
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
     const svg = (elem, attr, parent) =>
@@ -476,13 +497,16 @@ export class SchematicRenderer extends EagleRenderer {
   }
 
   renderCollection(collection, parent, opts) {
-    const arr = [...collection.children];
+        console.log(`${Util.className(this)}.renderCollection`, {collection,parent,opts});
+
+    const arr = [...collection];
+
     for(let item of arr.filter(item => item.tagName != "text")) this.renderItem(item, parent, opts);
     for(let item of arr.filter(item => item.tagName == "text")) this.renderItem(item, parent, opts);
   }
 
   renderItem(item, parent, opts = {}) {
-        console.log(`${Util.className(this)}.renderItem`, { item,parent,opts});
+    console.log(`${Util.className(this)}.renderItem`, { item, parent, opts });
 
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
@@ -551,7 +575,7 @@ export class SchematicRenderer extends EagleRenderer {
   }
 
   renderPart(instance, parent) {
-            console.log(`${Util.className(this)}.renderPart`, { instance,parent});
+    console.log(`${Util.className(this)}.renderPart`, { instance, parent });
 
     const { x, y, rot } = instance;
     const part = instance.part;
@@ -573,15 +597,15 @@ export class SchematicRenderer extends EagleRenderer {
     );
     if(!value) value = deviceset.name;
     let opts = deviceset.uservalue == "yes" ? { name, value } : { name };
-    this.renderCollection(symbol, g, opts);
+    this.renderCollection(symbol.children, g, opts);
     return g;
   }
 
   renderNet(net, parent) {
-                console.log(`${Util.className(this)}.renderNet`, { net,parent});
+    console.log(`${Util.className(this)}.renderNet`, { net, parent });
 
     let g = this.create("g", { className: `net.${net.name}` }, parent);
-    for(let segment of net.children) this.renderCollection(segment, g, { labelText: net.name });
+    for(let segment of net.children) this.renderCollection(segment.children, g, { labelText: net.name });
   }
 
   render(parent) {
@@ -593,7 +617,7 @@ export class SchematicRenderer extends EagleRenderer {
   }
 
   renderSheet(sheet, parent) {
-    console.log(`${Util.className(this)}.renderSheet`, { sheet,parent});
+    console.log(`${Util.className(this)}.renderSheet`, { sheet, parent });
 
     let netsGroup = this.create("g", { className: "nets" }, parent);
 
@@ -704,13 +728,17 @@ export class BoardRenderer extends EagleRenderer {
   }
 
   renderCollection(coll, parent, opts = {}) {
+            console.log(`${Util.className(this)}.renderCollection`, {coll,parent,opts});
+
     const { predicate = i => true, coordFn = i => i, transform } = opts;
     let wireMap = new Map(),
       other = [];
     let layers = {},
       widths = {};
 
-    for(let item of coll.children) {
+      console.log("parent:",parent);
+
+    for(let item of coll) {
       if(item.tagName === "wire") {
         const layerId = item.attributes.layer;
         layers[layerId] = item.layer;
@@ -727,7 +755,9 @@ export class BoardRenderer extends EagleRenderer {
     for(let item of other) if(predicate(item) && item.tagName != "pad") this.renderItem(item, parent, opts);
 
     for(let [layerId, wires] of wireMap) {
-      if(parent.classList.contains("plain")) continue;
+      let classList = (parent && parent.classList || []);
+      if([...classList].indexOf("plain") != -1)
+        continue;
 
       const lines = wires.map(wire => {
         let line = new Line(coordFn(wire));
@@ -738,6 +768,9 @@ export class BoardRenderer extends EagleRenderer {
       const path = LinesToPath(lines);
       const layer = layers[layerId];
       const width = widths[layerId];
+
+      console.log("layerId:",layerId);
+      console.log("layers:",layers);
       const color = this.getColor(layer.color);
 
       this.create(
@@ -779,7 +812,7 @@ export class BoardRenderer extends EagleRenderer {
       parent
     );
 
-    this.renderCollection(element.package, g, {
+    this.renderCollection(element.package.children, g, {
       name,
       value,
       rot,
@@ -787,7 +820,7 @@ export class BoardRenderer extends EagleRenderer {
     });
   }
 
-  render(parent) {
+  render(doc = this.doc, parent) {
     this.renderLayers(parent);
 
     let signalsGroup = this.create("g", { className: "signals", strokeLinecap: "round" }, parent);
@@ -795,23 +828,24 @@ export class BoardRenderer extends EagleRenderer {
 
     let plainGroup = this.create("g", { className: "plain" }, parent);
 
-    for(let element of this.elements.list)
-      this.renderElement(element, elementsGroup);
+    for(let element of this.elements.list) this.renderElement(element, elementsGroup);
 
     for(let signal of this.signals)
-      this.renderCollection(signal, signalsGroup, {
+      this.renderCollection(signal.children, signalsGroup, {
         predicate: i => i.attributes.layer == "16"
       });
     for(let signal of this.signals)
-      this.renderCollection(signal, signalsGroup, {
+      this.renderCollection(signal.children, signalsGroup, {
         predicate: i => i.attributes.layer == "1"
       });
     for(let signal of this.signals)
-      this.renderCollection(signal, signalsGroup, {
+      this.renderCollection(signal.children, signalsGroup, {
         predicate: i => i.attributes.layer === undefined
       });
 
-    this.renderCollection(this.plain, plainGroup);
+    let [plain] = [...board.getAll('plain')];
+
+    this.renderCollection(plain.children, plainGroup);
   }
 }
 

@@ -1,0 +1,10 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="Polygon_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <g clipPath="url(#Polygon_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M27.031 1.015l-22 .017v17.842l3.68-.017 7.582 8.393v3.778h10.738V1.015z" fill="none" stroke="#444443" strokeWidth="2" />
+  </g>
+</svg>

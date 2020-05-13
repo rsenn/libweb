@@ -1,0 +1,14 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="PinVisibleBoth_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <path d="M19.995 40h20.006V0H19.995v40z" fill="#444443" />
+  <path d="M0 39.961h20V0H0V39.96z" fill="#b4b3b3" />
+  <g clipPath="url(#PinVisibleBoth_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M11.803 10.96c.502 0 .966-.271.966-.965 0-.696-.464-.966-.966-.966H3.231v15.022h8.572c.502 0 .966-.27.966-.966 0-.694-.464-.965-.966-.965H5.161v-4.614h2.84c.501 0 .965-.271.965-.966 0-.696-.464-.965-.966-.965H5.161V10.96h6.642z" fill="#444443" />
+    <path d="M26.836 11.037v.808c0 .56.253.965.965.965.715 0 .965-.406.965-.965v-1.774c0-.693-.463-.965-.965-.965h-7.603c-.502 0-.964.272-.964.965 0 .695.462.966.964.966H26.835z" fill="#fff" />
+    <path d="m19.848 20.775 4.03 2.345v-12.3" fill="none" stroke="#fff" strokeLinecap="round" strokeWidth="2" />
+  </g>
+</svg>

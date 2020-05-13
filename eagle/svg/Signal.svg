@@ -1,0 +1,12 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="Signal_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <path d="M8.425 20.192h26.353H8.425z" fill="#ffcd00" />
+  <g clipPath="url(#Signal_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="m6.74 15.846h21.082" fill="none" stroke="#ffcd00" strokeWidth="3.5" />
+    <path d="M3.902 20.608a4.664 4.664 0 005.387-3.803c.433-2.513-1.278-4.93-3.8-5.367a4.644 4.644 0 00-5.362 3.78 4.64 4.64 0 003.775 5.39M26.547 20.503a4.662 4.662 0 005.386-3.802c.432-2.513-1.278-4.93-3.8-5.368a4.645 4.645 0 00-5.363 3.783 4.639 4.639 0 003.777 5.387" fill="#42ab3d" />
+  </g>
+</svg>

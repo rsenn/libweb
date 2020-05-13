@@ -1,0 +1,11 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="Paste_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <g clipPath="url(#Paste_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M22.5 20.75c0-6.213-5.037-11.25-11.25-11.25S0 14.537 0 20.75 5.037 32 11.25 32 22.5 26.963 22.5 20.75" fill="#ffdf26" />
+    <path d="M32 5.125a5.126 5.126 0 10-10.251.001A5.126 5.126 0 0032 5.125" fill="#444443" />
+  </g>
+</svg>

@@ -1,0 +1,12 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="DimensionVertical_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <g clipPath="url(#DimensionVertical_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M12.695 8.502L15.7 5.527a.405.405 0 01.602.003l2.978 3.005c.267.261.071.725-.31.723l-1.276-.004-3.417-.019-1.29-.006c-.366-.004-.555-.469-.29-.727" fill="#444443" />
+    <path d="M19.474 23.5l-3.007 2.975a.407.407 0 01-.598-.001l-2.981-3.008c-.265-.257-.071-.724.31-.722l2.178.028.013-13.639 1.425-.029-.007 13.638 2.375.031c.365.002.556.468.292.727" fill="#444443" />
+    <path d="M12.876 1.584h6.417M1.667 30.5h28.75" fill="none" stroke="#8a8a89" strokeLinecap="round" strokeWidth="3" />
+  </g>
+</svg>

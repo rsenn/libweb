@@ -1,0 +1,11 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="FolderClosed_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <g clipPath="url(#FolderClosed_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M27.004 22.933H15.24s-2.01 5.792-5.09 5.861H5.006c-5.548 0-4.99.483-4.99-4.987V7.975a4.975 4.975 0 014.99-4.978h21.998A4.98 4.98 0 0132 7.975v9.988c0 2.744-2.232 4.97-4.996 4.97" fill="#444443" />
+    <path d="m0 23.95h15.401" fill="none" stroke="#fff" strokeWidth="2" />
+  </g>
+</svg>

@@ -1,0 +1,12 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="Mark_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <g clipPath="url(#Mark_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="m8.107 30.5v-29" fill="none" stroke="#8a8a89" strokeLinecap="round" strokeWidth="3" />
+    <path d="M23.747 17.73h-2.975v-2.97c0-.832-.683-1.51-1.505-1.51-.795 0-1.499.678-1.499 1.51v2.97h-2.97c-.818 0-1.485.684-1.485 1.502 0 .811.667 1.484 1.485 1.484h2.97v3.017c0 .794.704 1.481 1.5 1.481.821 0 1.504-.687 1.504-1.481v-3.017h2.975c.818 0 1.502-.673 1.502-1.484 0-.818-.684-1.502-1.502-1.502 0 0 .826 0 0 0" fill="#444443" />
+    <path d="m1.5 8.033h29" fill="none" stroke="#8a8a89" strokeLinecap="round" strokeWidth="3" />
+  </g>
+</svg>

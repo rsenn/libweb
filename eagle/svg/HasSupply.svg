@@ -1,0 +1,12 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="HasSupply_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <g clipPath="url(#HasSupply_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M23.84 26.873c0-15.12.004-19.282.004-26.873" fill="#737372" stroke="#444443" strokeLinecap="round" strokeWidth="3" />
+    <path d="m9.993 7.458c0 18.554-2e-3 15.229-4e-3 24.542" fill="none" stroke="#444443" strokeLinecap="round" strokeWidth="3" />
+    <path d="M23.842 28.416a5.18 5.18 0 10.002-10.354 5.18 5.18 0 00-.002 10.355M3.071 11.697h13.84V5.5H3.071v6.197z" fill="#444443" />
+  </g>
+</svg>

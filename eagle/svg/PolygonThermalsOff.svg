@@ -1,0 +1,11 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="PolygonThermalsOff_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <path d="M21.849 0v5.027L10.427 16.213H5.4V40h29.494V0H21.849z" fill="#b4b3b3" />
+  <g clipPath="url(#PolygonThermalsOff_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M21.024 10.219a4.907 4.907 0 10-9.814 0 4.907 4.907 0 009.814 0" fill="#444443" />
+  </g>
+</svg>

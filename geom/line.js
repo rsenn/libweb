@@ -3,7 +3,7 @@ import { Rect } from "./rect.js";
 import Util from "../util.js";
 
 export function Line(x1, y1, x2, y2) {
-  let obj = this instanceof Line ? this : null;
+  let obj;
   let arg;
   let args = [...arguments];
   let ret;
@@ -12,10 +12,17 @@ export function Line(x1, y1, x2, y2) {
   } else if(args.length == 1) {
     arg = args[0];
   }
+   obj = this || { ...arg };
 
-  if(obj === null) {
-    obj = arg instanceof Line ? arg : new Line();
-  }
+  if(obj === null) 
+      obj = Object.create(Line.prototype);
+    
+    if(Object.getPrototypeOf(obj) !== Line.prototype)
+      Object.setPrototypeOf(obj, Line.prototype);
+
+    if(!('a' in obj) || !('b' in obj))
+      throw new Error("no a/b prop");
+
 
   if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
     const { x1, y1, x2, y2 } = arg;
@@ -25,8 +32,10 @@ export function Line(x1, y1, x2, y2) {
     obj.y2 = parseFloat(y2);
     ret = 1;
   } else if(isPoint(args[0]) && isPoint(args[1])) {
-    obj.a = args[0];
-    obj.b = args[1];
+    obj.x1 = args[0].x;
+    obj.y1 = args[0].y;
+    obj.x2 = args[1].x;
+    obj.y2 = args[1].y;
 
     /*    obj.x1 = parseFloat(args[0].x);
     obj.y1 = parseFloat(args[0].y);
@@ -49,8 +58,8 @@ export function Line(x1, y1, x2, y2) {
 
 export const isLine = obj => ["x1", "y1", "x2", "y2"].every(prop => obj[prop] !== undefined);
 
-/*Object.defineProperty(Line.prototype, "a", { value: new Point(), enumerable: true });
-Object.defineProperty(Line.prototype, "b", { value: new Point(), enumerable: true });*/
+Object.defineProperty(Line.prototype, "a", { value: new Point(), enumerable: true });
+Object.defineProperty(Line.prototype, "b", { value: new Point(), enumerable: true });
 
 Line.prototype.intersect = function(other) {
   const ma = (this[0].y - this[1].y) / (this[0].x - this[1].x);
@@ -288,11 +297,9 @@ Line.prototype.toSource = function() {
   let { a, b } = this;
   return `new Line(${a.x},${a.y},${b.x},${b.y})`;
 };
-Line.prototype.reverse = function() {
-  let tmp = this.b;
-  this.b = this.a;
-  this.a = tmp;
-  return this;
+  Line.prototype.reverse = function() {
+  const { a, b } = this;
+  return new Line(b, a);
 };
 Line.prototype.toObject = function() {
   const { x1, y1, x2, y2 } = this;

@@ -34,7 +34,7 @@ done
 
 for SOURCE in  ${@:-$(find components utils stores pages -name "*.js")}; do
   case "$SOURCE" in
-    *.es5.js) continue ;;
+    *.cjs) continue ;;
   esac
   ARG=${SOURCE//"["/"\\["}
   ARG=${ARG//"]"/"\\]"}

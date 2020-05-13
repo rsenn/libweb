@@ -1,0 +1,12 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="Replace_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <path d="M22.324 26.288H40V8.614H22.324v17.674zM0 26.288h12.02V14.27H0v12.018z" fill="#9e9e9e" />
+  <g clipPath="url(#Replace_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M20.902 5.794a8.998 8.998 0 00-12.733 0" fill="none" stroke="#444443" strokeLinecap="round" strokeWidth="2.5" />
+    <path d="M22.83 7.373V3.389c-.004-.354-.447-.536-.692-.289l-1.316 1.322-1.35 1.358-1.314 1.32c-.243.246-.06.687.291.691l3.98-.016a.386.386 0 00.4-.402s.007.221 0 0" fill="#444443" />
+  </g>
+</svg>

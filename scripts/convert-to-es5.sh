@@ -50,7 +50,7 @@ convert_to_es5() {
     IN=$1
     shift
     DIR=`dirname "$IN"`
-    OUT=${IN%.js}.es5.js
+    OUT=${IN%.js}.cjs
 
     isin $IN $ALLFILES && continue 
     [ "$DEBUG" = true ] && echo "File: ${IN}" 1>&2
@@ -58,7 +58,7 @@ convert_to_es5() {
     pushv_unique ALLFILES "$IN"
 
     run_babel() {
-      (set -x;  babel --config-file "$THISDIR/../../.babelrc" --compact auto --no-comments ${2:+-o} ${2:+"$2"} "${1:-"-"}" )
+      (set -x;  babel --config-file "$THISDIR/../../.babelrc" --compact auto --no-comments ${2:+-o} ${2:+"$2"} "${1:-"-"}") 2>&1 |grep -i experimental -v
     }
 
     [ "$FORCE" = true -o "$OUT" -ot "$IN" ] && run_babel "$IN" "$OUT"
@@ -72,18 +72,19 @@ convert_to_es5() {
       test -e "$FILE" || continue
       #echo "FILE=$FILE" 1>&2
       FILE=${FILE%.js}
+      FILE=${FILE%.cjs}
       FILE=${FILE%.es5}
       pushv_unique ADDFILES "${FILE}.js"
       FILE=${FILE#$DIR/}
-      SUBST="$SUBST ;; /require(/ s|${FILE%.js}.js\"|${FILE%.js}.es5.js\"|g"
+      SUBST="$SUBST ;; /require(/ s|${FILE%.js}.js\"|${FILE%.js}.cjs\"|g"
     done
    [ -n "$SUBST" ] && (set -x; sed -i -e "$SUBST" "$OUT")
 
     set -- "$@" $ADDFILES
   done
 }
-
-set -- $(echo "$*" | sed 's,\.es5\.,.,g')
+[ $# -le 0 ] && set -- $(find * -name "*.js" )
+set -- $(echo "$*" | sed 's,\.cjs,.js,g')
 
 #set -- $(echo "$*" | grep -v es5.js)
 

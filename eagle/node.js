@@ -180,7 +180,10 @@ export class EagleNode extends EagleInterface {
 
   *getAll(pred, transform) {
     let name;
-    if(typeof pred == "string") {
+    if(pred instanceof RegExp) {
+            name = pred;
+      pred = (v, p, o) => name.test(v.tagName);
+    } else if(typeof pred == "string") {
       name = pred;
       pred = (v, p, o) => v.tagName === name;
     }

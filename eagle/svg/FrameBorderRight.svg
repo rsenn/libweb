@@ -1,0 +1,11 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="FrameBorderRight_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <path d="M26.796 40H40V0H26.796v40z" fill="#444443" />
+  <g clipPath="url(#FrameBorderRight_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="m30.5 1.5h-29v29h29v-29z" fill="none" stroke="#b4b3b3" strokeWidth="3" />
+  </g>
+</svg>

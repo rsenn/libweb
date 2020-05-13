@@ -485,7 +485,7 @@ export class Element extends Node {
 
     let style = Util.removeEqual(estyle, pstyle);
     let keys = Object.keys(style).filter(k => !/^__/.test(k));
-    console.log("style: ", style);
+    //console.log("style: ", style);
     console.log("Element.getCSS ", style);
 
     let ret = {};

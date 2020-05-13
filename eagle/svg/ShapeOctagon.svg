@@ -1,0 +1,11 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="ShapeOctagon_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <path d="M13.608 37L3 26.35V13.58L13.608 3h12.673l10.691 10.58L37 26.26 26.28 37H13.609z" fill="#42ab3d" />
+  <g clipPath="url(#ShapeOctagon_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M18.584 16.07a2.61 2.61 0 10-2.61 2.609 2.61 2.61 0 002.61-2.609" fill="#fff" />
+  </g>
+</svg>

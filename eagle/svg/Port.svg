@@ -1,0 +1,11 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="Port_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <g clipPath="url(#Port_svg__a)" fill="none" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M6.958 8.799H2.042M6.958 23.2H2.042M30.05 8.75h-4.966" stroke="#853e8e" strokeLinecap="round" strokeWidth="4" />
+    <path d="M23.937 1.25H7.897v29.5h16.04V1.25z" stroke="#444443" strokeWidth="2.5" />
+  </g>
+</svg>

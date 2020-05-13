@@ -1,0 +1,10 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="Back_D_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <g clipPath="url(#Back_D_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M17.33 13.113v-5.1c0-1.4-1.692-2.209-2.784-1.29L4.363 15.204c-.807.666-.807 1.928 0 2.603l10.183 8.486c1.092.907 2.783.106 2.783-1.31v-5.08h11.546v-6.79H17.33z" fill="#b4b3b3" />
+  </g>
+</svg>

@@ -1,0 +1,10 @@
+<svg viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'>
+  <defs>
+    <clipPath id='UsedOff_svg__a'>
+      <path d='M0 32h32V0H0v32z' />
+    </clipPath>
+  </defs>
+  <g clipPath='url(#UsedOff_svg__a)' transform='matrix(1.25 0 0 -1.25 0 40)'>
+    <path d='M22.4 16.001c0-3.538-2.867-6.4-6.4-6.4A6.399 6.399 0 1016 22.4c3.533 0 6.4-2.867 6.4-6.399' fill='#8a8a89' />
+  </g>
+</svg>;

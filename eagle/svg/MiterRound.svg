@@ -1,0 +1,11 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="MiterRound_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <path d="M0 0v40h10.521l1.718-16.043 12.448-11.979L40 10.364V0H0z" fill="#b4b3b3" />
+  <g clipPath="url(#MiterRound_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M35.75 23.959l-7.385.003C9 23.962 8.833 4.212 8.833 5.046V-5.045" fill="none" stroke="#444443" strokeLinecap="round" strokeWidth="3" />
+  </g>
+</svg>

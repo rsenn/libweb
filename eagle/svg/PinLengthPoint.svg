@@ -1,0 +1,11 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="PinLengthPoint_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <path d="M0 40h16.875V.01H0V40z" fill="#b4b3b3" />
+  <g clipPath="url(#PinLengthPoint_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M15.875 15.996a2.5 2.5 0 10-5-.001 2.5 2.5 0 005 0" fill="#444443" />
+  </g>
+</svg>

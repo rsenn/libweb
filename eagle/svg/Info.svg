@@ -1,0 +1,13 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="Info_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <g clipPath="url(#Info_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M32 16c0-8.837-7.163-16-16-16C7.164 0 0 7.163 0 16c0 8.836 7.164 16 16 16 8.837 0 16-7.164 16-16" fill="#444443" />
+    <text transform="scale(1 -1)" x="11.11" y="-1.627">
+      <tspan fill="#fff" fontFamily="OCR A Std" fontSize="35" x="0" y="0">i</tspan>
+    </text>
+  </g>
+</svg>

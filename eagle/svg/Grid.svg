@@ -1,0 +1,10 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="Grid_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <g clipPath="url(#Grid_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M11.054 32V0M20.845 32V0M1.5 32V0M30.5 32V0M0 11.053h31.999M-.001 20.845h32M-.001 1.5h32M-.001 30.62H32" fill="none" stroke="#444443" strokeWidth="3" />
+  </g>
+</svg>

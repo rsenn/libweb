@@ -5,6 +5,8 @@ export class Transformation {
     this.type = type;
   }
 
+  [Symbol.isConcatSpreadable] = true;
+
   get axes() {
     let ret = ["x", "y", "z"].filter(axis => axis in this);
     if(this.axis !== undefined) ret.push(this.axis);

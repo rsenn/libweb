@@ -1,0 +1,12 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="Mirror_svg__a">
+      <path d="M0 32h32V0H0v32z" />
+    </clipPath>
+  </defs>
+  <g clipPath="url(#Mirror_svg__a)" transform="matrix(1.25 0 0 -1.25 0 40)">
+    <path d="M9.615 10.97H0v9.614h9.615s-3.365-1.25-3.365-4.807c0-3.61 3.365-4.807 3.365-4.807" fill="#444443" />
+    <path d="m16 30.5v-29" fill="none" stroke="#8a8a89" strokeLinecap="round" strokeWidth="3" />
+    <path d="M22.385 10.97H32v9.614h-9.615s3.365-1.25 3.365-4.807c0-3.61-3.365-4.807-3.365-4.807" fill="#444443" />
+  </g>
+</svg>
