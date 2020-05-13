@@ -1228,15 +1228,17 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
   return result;
 };
 Util.getURL = function(req = {}) {
-  let proto = process.env.NODE_ENV === "production" ? "https" : "http";
-  let port = process.env.PORT ? parseInt(process.env.PORT) : process.env.NODE_ENV === "production" ? 443 : 8080;
-  let host = global.ip || global.host || "localhost";
+  let proto = Util.tryCatch(() => (process.env.NODE_ENV === "production" ? "https" : null)) || "http";
+  let port = Util.tryCatch(() => (process.env.PORT ? parseInt(process.env.PORT) : process.env.NODE_ENV === "production" ? 443 : null)) || 3000;
+  let host = Util.tryCatch(() => global.ip) || Util.tryCatch(() => global.host) || "localhost";
   if(req && req.headers && req.headers.host !== undefined) {
     host = req.headers.host.replace(/:.*/, "");
-  } else if(process.env.HOST !== undefined) host = process.env.HOST;
-  if(global.window !== undefined && window.location !== undefined) return window.location.href;
+  } else {
+    Util.tryCatch(() => process.env.HOST !== undefined && (host = process.env.HOST));
+  }
+  //Util.tryCatch(() => global.window !== undefined && window.location !== undefined && return window.location.href)
   if(req.url !== undefined) return req.url;
-  if(global.process !== undefined && global.process.url !== undefined) return global.process.url;
+  //if(global.process !== undefined && global.process.url !== undefined) return global.process.url;
   const url = `${proto}://${host}:${port}`;
   //console.log("getURL process ", { url });
   return url;
@@ -1296,8 +1298,7 @@ Util.parseURL = function(href = this.getURL()) {
     }
   };
 };
-Util.makeURL = function() {
-  let args = [...arguments];
+Util.makeURL = function(...args) {
   let href = typeof args[0] == "string" ? args.shift() : Util.getURL();
   let url = Util.parseURL(href);
   let obj = typeof args[0] == "object" ? args.shift() : {};
