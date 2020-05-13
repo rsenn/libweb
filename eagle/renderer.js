@@ -178,7 +178,7 @@ export class EagleRenderer {
     const { settings, layers, libraries, classes, designrules, elements, signals, plain } = doc;
     this.elements = elements;
     this.signals = signals;
-    this.plain = [...board.getAll("plain", (v, l) => new EagleElement(doc, l))][0];
+    this.plain = [...doc.getAll("plain", (v, l) => new EagleElement(doc, l))][0];
     this.layers = layers;
     return this;
   }
@@ -196,15 +196,16 @@ export class EagleRenderer {
     });
   }
 
-  findLayer(number_or_name) {
-    if(number_or_name instanceof EagleElement) {
-      if("layer" in number_or_name) number_or_name = number_or_name.layer;
-      else if(number_or_name.tagName == "pad") number_or_name = "Pads";
-      else if(number_or_name.tagName == "description") number_or_name = "Document";
+  findLayer(id) {
+    if(id instanceof EagleElement) {
+      if("layer" in id) id = id.layer;
+      else if(id.tagName == "pad") id = "Pads";
+      else if(id.tagName == "description") id = "Document";
     }
-    const { number, name } = Util.isObject(number_or_name) ? { number: number_or_name.number, name: number_or_name.name } : { number: +number_or_name, name: "" + number_or_name };
+    const { number, name } = Util.isObject(id) ? { number: id.number, name: id.name } : { number: +id, name: "" + id };
     return this.getLayer(typeof number == "number" ? number : name);
   }
+
   getLayer(id) {
     if(this.layers[id]) return this.layers[id];
 
@@ -216,10 +217,6 @@ export class EagleRenderer {
 
   getColor(color) {
     let c = this.palette[color] || /*this.colors[color] || */ "rgb(255,0,0)";
-
-    //    console.log(`getColor(${color})`,c)
-    //const name = Util.isObject(layer) && 'name' in layer ? layer.name : layer;
-    //  const color = Util.isObject(layer) && 'color' in layer ? layer.color : layer;
     return c;
   }
 
@@ -240,6 +237,7 @@ export class EagleRenderer {
     const layerGroup = this.create("g", { className: "layers" }, parent);
     const layers = [...this.doc.layers.list].sort((a, b) => a.number - b.number);
     const colors = {};
+
     this.layerElements = {};
 
     for(let l of layers) {

@@ -3,36 +3,34 @@ import { Util } from "../util.js";
 export function Matrix(arg) {
   let ret = this instanceof Matrix || new.target === Matrix ? this : [undefined, 0, 0, undefined, 0, 0, undefined, 0, 0];
 
-  if(arg instanceof Array) {
+  const isObj = Util.isObject(arg);
+
+  if(isObj && arg.xx !== undefined && arg.yx !== undefined && arg.xy !== undefined && arg.yy !== undefined && arg.x0 !== undefined && arg.y0 !== undefined) {
+    ret[0] = arg.xx;
+    ret[1] = arg.xy;
+    ret[2] = arg.x0;
+    ret[3] = arg.yx;
+    ret[4] = arg.yy;
+    ret[5] = arg.y0;
+  } else if(isObj && arg.a !== undefined && arg.b !== undefined && arg.c !== undefined && arg.d !== undefined && arg.e !== undefined && arg.f !== undefined) {
+    ret[0] = arg.a; // xx
+    ret[1] = arg.c; // xy
+    ret[2] = arg.e; // x0
+    ret[3] = arg.b; // yx
+    ret[4] = arg.d; // yy
+    ret[5] = arg.f; // y0
+  } else if(arg instanceof Array) {
     Matrix.prototype.init.call(ret, arg);
   } else if(typeof arg === "number") {
     Matrix.prototype.init.apply(ret, arguments);
-  } else if(typeof arg === "string") {
-    if(/matrix\([^)]*\)/.test(arg)) {
-      let [xx, xy, x0, yx, yy, y0] = [...arg.matchAll(/[-.0-9]+/g)].map(m => parseFloat(m[0]));
-      ret[0] = xx;
-      ret[1] = xy;
-      ret[2] = x0;
-      ret[3] = yx;
-      ret[4] = yy;
-      ret[5] = y0;
-    }
-  } else if(arg && typeof arg == "object") {
-    if(arg.xx !== undefined && arg.yx !== undefined && arg.xy !== undefined && arg.yy !== undefined && arg.x0 !== undefined && arg.y0 !== undefined) {
-      ret[0] = arg.xx;
-      ret[1] = arg.xy;
-      ret[2] = arg.x0;
-      ret[3] = arg.yx;
-      ret[4] = arg.yy;
-      ret[5] = arg.y0;
-    } else if(arg.a !== undefined && arg.b !== undefined && arg.c !== undefined && arg.d !== undefined && arg.e !== undefined && arg.f !== undefined) {
-      ret[0] = arg.a; // xx
-      ret[1] = arg.c; // xy
-      ret[2] = arg.e; // x0
-      ret[3] = arg.b; // yx
-      ret[4] = arg.d; // yy
-      ret[5] = arg.f; // y0
-    }
+  } else if(typeof arg === "string" && /matrix\([^)]*\)/.test(arg)) {
+    let [xx, xy, x0, yx, yy, y0] = [...arg.matchAll(/[-.0-9]+/g)].map(m => parseFloat(m[0]));
+    ret[0] = xx;
+    ret[1] = xy;
+    ret[2] = x0;
+    ret[3] = yx;
+    ret[4] = yy;
+    ret[5] = y0;
   } else {
     Array.prototype.splice.call(ret, 0, ret.length, 1, 0, 0, 0, 1, 0, 0, 0, 1);
   }
@@ -41,10 +39,20 @@ export function Matrix(arg) {
   if(!(this instanceof Matrix)) return ret;
 }
 
+/*
+Object.assign(Matrix.prototype, Array.prototype);
+
 Matrix.prototype.splice = Array.prototype.splice;
+Matrix.prototype.slice = Array.prototype.slice;
+*/
+Matrix.prototype[Symbol.species] = Matrix;
+Matrix.prototype[Symbol.toStringTag] = function() {
+  return Matrix.prototype.toString.apply(this, arguments);
+};
+Matrix.prototype[Symbol.isConcatSpreadable] = false;
 
 Object.defineProperty(Matrix.prototype, "length", {
-  value: 9,
+  value: 6,
   enumerable: false,
   writable: true,
   configurable: false
@@ -52,7 +60,8 @@ Object.defineProperty(Matrix.prototype, "length", {
 
 Matrix.prototype.keys = ["xx", "xy", "x0", "yx", "yy", "y0"];
 Matrix.prototype.keySeq = ["xx", "yx", "xy", "yy", "x0", "y0"];
-Matrix.prototype.keyIndex = {
+
+const keyIndexes = {
   xx: 0,
   a: 0,
   xy: 1,
@@ -69,27 +78,33 @@ Matrix.prototype.keyIndex = {
   f: 5
 };
 
-Matrix.prototype.at = function(key) {
-  return this[Matrix.prototype.keyIndex[key]];
+Matrix.prototype.at = function(col, row = 0) {
+  return this[row * 3 + col];
+};
+Matrix.prototype.get = function(field) {
+  if(typeof field == "number" && field < this.length) return this[field];
+
+  if((field = keyIndexes[field])) return this[field];
 };
 
-export const MatrixProps = Object.entries(Matrix.prototype.keyIndex).reduce(
-  (acc, [k, i]) => ({
-    ...acc,
-    [k]: {
-      get: function() {
-        return this[i];
-      },
-      set: function(v) {
-        this[i] = v;
-      },
-      enumerable: true
-    }
-  }),
-  {}
-);
+const MatrixProps = (obj = {}) =>
+  Object.entries(keyIndexes).reduce(
+    (acc, [k, i]) => ({
+      ...acc,
+      [k]: {
+        get: function() {
+          return this[i];
+        },
+        set: function(v) {
+          this[i] = v;
+        },
+        enumerable: true
+      }
+    }),
+    obj
+  );
 
-//Object.defineProperties(Matrix.prototype, MatrixProps);
+Object.defineProperties(Matrix.prototype, MatrixProps());
 
 // prettier-ignore
 /*Object.defineProperties(Matrix.prototype, {
@@ -119,21 +134,19 @@ Matrix.prototype.set_row = function(...args) {
   for(let i = 0; i < end; i++) this[start + i] = args[i];
   return this;
 };
+
 Matrix.prototype.multiply = function(...args) {
-  let ret = new Matrix(this);
-  for(let m of args) {
-    if(!(m instanceof Matrix)) m = new Matrix(m);
-    ret = new Matrix({
-      xx: ret[0] * m[0] + ret[1] * m[3],
-      xy: ret[0] * m[1] + ret[1] * m[4],
-      x0: ret[0] * m[2] + ret[1] * m[5] + ret[2],
-      yx: ret[3] * m[0] + ret[4] * m[3],
-      yy: ret[3] * m[1] + ret[4] * m[4],
-      y0: ret[3] * m[2] + ret[4] * m[5] + ret[5]
-    });
-  }
-  return ret;
+  return this.clone().multiplySelf(...args);
 };
+
+Matrix.prototype.multiplySelf = function(...args) {
+  for(let arg of args) {
+    if(!(arg instanceof Matrix)) throw new Error("Not a Matrix: " + arg.constructor);
+    this.init([this[0] * arg[0] + this[1] * arg[3], this[0] * arg[1] + this[1] * arg[4], this[0] * arg[2] + this[1] * arg[5] + this[2], this[3] * arg[0] + this[4] * arg[3], this[3] * arg[1] + this[4] * arg[4], this[3] * arg[2] + this[4] * arg[5] + this[5]]);
+  }
+  return this;
+};
+
 Matrix.prototype.multiply_self = function(...args) {
   for(let m of args) {
     if(!(m instanceof Matrix)) m = new Matrix(m);
@@ -219,6 +232,26 @@ Matrix.prototype.toString = function(separator = " ") {
 
 Matrix.prototype.toSVG = function() {
   return "matrix(" + ["a", "b", "c", "d", "e", "f"].map(k => this[Matrix.prototype.keyIndex[k]]).join(",") + ")";
+};
+
+Matrix.prototype.toDOM = function(ctor = DOMMatrix) {
+  const rows = Matrix.prototype.rows.call(this);
+  const [a, c, e] = rows[0];
+  const [b, d, f] = rows[1];
+  return new ctor([a, b, c, d, e, f]);
+};
+Matrix.prototype.toJSON = function() {
+  const rows = Matrix.prototype.rows.call(this);
+  const [a, c, e] = rows[0];
+  const [b, d, f] = rows[1];
+  return { a, b, c, d, e, f };
+};
+Matrix.fromJSON = obj => {
+  return new Matrix(obj);
+};
+Matrix.fromDOM = matrix => {
+  const { a, b, c, d, e, f } = matrix;
+  return new Matrix([a, c, e, b, d, f]);
 };
 
 Matrix.prototype.equals = function(other) {

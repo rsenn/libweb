@@ -121,6 +121,14 @@ export class Rotation extends Transformation {
     this.angle = angle;
   }
 
+  clone() {
+    return new this.constructor(angle, axis);
+  }
+
+  invert() {
+    return new this.constructor(-this.angle, this.axis);
+  }
+
   get values() {
     return { [this.axis || "z"]: this.angle };
   }
@@ -137,10 +145,6 @@ export class Rotation extends Transformation {
 
   toMatrix() {
     return Matrix.rotate(this.constructor.deg2rad(this.angle));
-  }
-
-  invert() {
-    return new this.constructor(-this.angle, this.axis);
   }
 
   accumulate(other) {
@@ -190,8 +194,14 @@ export class Translation extends Transformation {
     return matrix.translate_self(this.x, this.y, this.z);
   }
 
+  clone() {
+    const { x, y, z } = this;
+    return z !== undefined ? new Translation(x, y, z) : new Translation(x, y);
+  }
+
   invert() {
-    return this.z !== undefined ? new Translation(-this.x, -this.y, -this.z) : new Translation(-this.x, -this.y);
+    const { x, y, z } = this;
+    return z !== undefined ? new Translation(-x, -y, -z) : new Translation(-x, -y);
   }
 
   accumulate(other) {
@@ -230,8 +240,14 @@ export class Scaling extends Transformation {
     return matrix.scale_self(this.x, this.y, this.z);
   }
 
+  clone() {
+    const { x, y, z } = this;
+    return z !== undefined ? new Scaling(x, y, z) : new Scaling(x, y);
+  }
+
   invert() {
-    return this.z !== undefined ? new Scaling(1 / this.x, 1 / this.y, 1 / this.z) : new Scaling(1 / this.x, 1 / this.y);
+    const { x, y, z } = this;
+    return z !== undefined ? new Scaling(1 / x, 1 / y, 1 / z) : new Scaling(1 / x, 1 / y);
   }
 
   accumulate(other) {
@@ -276,9 +292,9 @@ export class MatrixTransformation extends Transformation {
   }
 }
 
-export class TransformationList extends Array {
+export class TransformationList extends Transformation {
   constructor(init) {
-    super(0);
+    super("list");
 
     if(init !== undefined) {
       if(typeof init == "number") while(this.length < init) this.push(undefined);
@@ -295,7 +311,7 @@ export class TransformationList extends Array {
   }
 
   static get [Symbol.species]() {
-    return this;
+    return TransformationList;
   }
 
   fromString(str) {
@@ -396,7 +412,7 @@ export class TransformationList extends Array {
   }
 
   toMatrices() {
-    return [...this].map(t => t.toMatrix());
+    return Array.prototype.map.call(this, t => t.toMatrix());
   }
 
   toMatrix() {
@@ -497,4 +513,37 @@ export class TransformationList extends Array {
     let matrix = this.toMatrix();
     return this.constructor.fromMatrix(matrix);
   }
+
+  invert() {
+    return this.reduce((acc, t) => [t.invert(), ...acc], []);
+  }
+
+  join(sep = " ") {
+    return Array.prototype.join.call(this, sep);
+  }
 }
+
+const { concat, copyWithin, find, findIndex, lastIndexOf, pop, push, shift, unshift, slice, splice, includes, indexOf, entries, filter, map, every, some, reduce, reduceRight } = Array.prototype;
+
+Object.assign(TransformationList.prototype, {
+  concat,
+  copyWithin,
+  find,
+  findIndex,
+  lastIndexOf,
+  pop,
+  push,
+  shift,
+  unshift,
+  slice,
+  splice,
+  includes,
+  indexOf,
+  entries,
+  filter,
+  map,
+  every,
+  some,
+  reduce,
+  reduceRight
+});

@@ -8,7 +8,7 @@ import { Rect, isRect } from "./geom/rect.js";
 import { PointList, Polyline } from "./geom/pointList.js";
 import { RGBA, isRGBA } from "./dom/rgba.js";
 import { HSLA, isHSLA } from "./dom/hsla.js";
-import { Matrix, isMatrix, MatrixProps } from "./geom/matrix.js";
+import { Matrix, isMatrix } from "./geom/matrix.js";
 import { BBox } from "./geom/bbox.js";
 import { TRBL } from "./geom/trbl.js";
 import { Timer } from "./dom/timer.js";
@@ -174,7 +174,7 @@ export { Rect, isRect } from "./geom/rect.js";
 export { PointList, Polyline } from "./geom/pointList.js";
 export { RGBA, isRGBA } from "./dom/rgba.js";
 export { HSLA, isHSLA } from "./dom/hsla.js";
-export { Matrix, isMatrix, MatrixProps } from "./geom/matrix.js";
+export { Matrix, isMatrix } from "./geom/matrix.js";
 export { BBox } from "./geom/bbox.js";
 export { TRBL } from "./geom/trbl.js";
 export { Timer } from "./dom/timer.js";
@@ -217,7 +217,6 @@ export default Object.assign(dom, {
   isSize,
   Line,
   Matrix,
-  MatrixProps,
   Node,
   Point,
   PointList,

@@ -360,16 +360,17 @@ Util.copyEntries = (obj, entries) => {
 
 Util.extend = (obj, ...args) => {
   for(let other of args) {
-    for(let [name, fn] of Util.iterateMethods(other, 0, (key, value) => obj[key] === undefined && [key, value])) {
+    for(let key of Util.iterateMembers(other, (k, value) => /*obj[k] === undefined &&*/ [k, value])) {
+      const value = other[key];
       try {
-        Object.defineProperty(obj, name, {
-          value: fn,
+        Object.defineProperty(obj, key, {
+          value,
           enumerable: false,
           configurable: false,
           writable: false
         });
       } catch(err) {
-        console.log("extend:", err);
+        console.log("extend:" + err + "\n", { obj, key, value });
       }
     }
   }
@@ -1318,9 +1319,9 @@ Util.tryFunction = (fn, resolve = a => a, reject = () => null) =>
     try {
       ret = fn(...args);
     } catch(err) {
-      return reject();
+      return reject(ret, ...args);
     }
-    return resolve(ret);
+    return resolve(ret, ...args);
   };
 Util.tryCatch = (fn, resolve = a => a, reject = () => null) => Util.tryFunction(fn, resolve, reject)();
 
@@ -1764,33 +1765,64 @@ Util.iterateMembers = function*(obj, predicate = (name, depth, obj) => true, dep
   if(proto) yield* Util.iterateMembers(proto, predicate, depth + 1);
 };
 
-Util.getMemberNames = (obj, pred = (prop, level, obj) => !obj.__proto__ || obj.__proto__[prop] === undefined) => Util.unique([...Util.iterateMembers(obj, pred)]);
+Util.getMemberNames = (obj, depth = 1, start = 0) =>
+  Util.unique([
+    ...Util.iterateMembers(
+      obj,
+      Util.tryPredicate((m, l, o) => start <= l && l < depth + start && (typeof m != "string" || ["caller", "callee", "constructor"].indexOf(m) == -1))
+    )
+  ]);
 
-Util.iterateMethodNames = (obj, depth = 1, start = 0) => {
-  const end = depth === true ? start + 1 : depth === false ? start : start + depth;
-  const check = Util.inRange(start, end);
-  return Util.iterateMembers(
-    obj,
-    Util.tryPredicate((prop, level) => check(level) && typeof obj[prop] === "function" && !["caller", "callee", "arguments", "constructor"].contains(prop))
+Util.getMembers = (obj, depth = 1, start = 0) =>
+  Util.getMemberNames(obj, depth).reduce(
+    Util.tryFunction(
+      (a, m) => ({ [m]: obj[m] }),
+      (r, a, m) => ({ ...a, ...r }),
+      (r, a) => a
+    ),
+    {}
   );
-};
-Util.getMethodNames = (obj, depth = 1, start = 0) => Util.unique([...Util.iterateMethodNames(obj, depth, start)]);
 
-Util.methods = (obj, depth = 1, t = (k, v) => [k, v], r = e => Object.fromEntries([...e])) => r(Util.iterateMethods(obj, depth, t));
+Util.getMethodNames = (obj, depth = 1, start = 0) =>
+  Util.unique([
+    ...Util.iterateMembers(
+      obj,
+      Util.tryPredicate((m, l, o) => start <= l && l < depth + start && typeof obj[m] == "function" && (typeof m != "string" || ["caller", "callee", "constructor"].indexOf(m) == -1))
+    )
+  ]);
 
-Util.getMethods = (obj, depth = 1) => {
-  let ret = {};
-  for(let [k, v] of Util.iterateMethods(obj, depth)) ret[k] = v;
-  return ret;
+Util.getMethods = (obj, depth = 1) =>
+  Util.getMethodNames(obj, depth).reduce(
+    Util.tryFunction(
+      (a, m) => ({ [m]: obj[m] }),
+      (r, a, m) => ({ ...a, ...r }),
+      (r, a) => a
+    ),
+    {}
+  );
+Util.getMembers = (obj, depth = 1) =>
+  Util.getMemberNames(obj, depth).reduce(
+    Util.tryFunction(
+      (a, m) => ({ [m]: obj[m] }),
+      (r, a, m) => ({ ...a, ...r }),
+      (r, a) => a
+    ),
+    {}
+  );
+
+Util.inherit = (dst, src, depth = 1) => {
+  for(let k of Util.getMethodNames(src, depth)) dst[k] = src[k];
+  return dst;
 };
-Util.iterateMethods = function*(obj, depth = 1, t = (key, value) => [key, value], start = 0) {
+
+/*Util.iterateMethods = function*(obj, depth = 1, t = (key, value) => [key, value], start = 0) {
   for(let name of Util.getMethodNames(obj, depth, start)) {
     try {
       const value = t(name, obj[name]);
       if(value !== undefined && value !== false && value !== null) yield value;
     } catch(err) {}
   }
-};
+};*/
 Util.bindMethods = function(methods, obj) {
   for(let name in methods) {
     methods[name] = methods[name].bind(obj);
