@@ -161,11 +161,7 @@ const LinesToPath = lines => {
 };
 
 export class EagleRenderer {
-
-  static rendererTypes = {
-    brd: BoardRenderer,
-    sch: SchematicRenderer
-  }
+  static rendererTypes = {};
 
   palette = null;
   id = 0;
@@ -175,7 +171,7 @@ export class EagleRenderer {
   constructor(doc, factory) {
     console.log(Util.className(this), Util.fnName(new.target));
     if(new.target === EagleRenderer) throw new Error("Use SchematicRenderer or BoardRenderer");
-    let ctor =  EagleRenderer.rendererTypes[doc.type];
+    let ctor = EagleRenderer.rendererTypes[doc.type];
     Object.setPrototypeOf(this, ctor.prototype);
     this.doc = doc;
     this.create = (tag, attrs, parent) => factory(tag, "id" in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
@@ -1037,3 +1033,7 @@ export function renderDocument(doc, container) {
   Element.attr(g, { transform: groupTransform });
   return renderer;
 }
+
+EagleRenderer.rendererTypes.brd = BoardRenderer;
+
+EagleRenderer.rendererTypes.sch = SchematicRenderer;
