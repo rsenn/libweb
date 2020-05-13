@@ -32,6 +32,41 @@ export function PointList(points, base = Array) {
   if(!(this instanceof PointList)) return ret;
 }
 
+//PointList.prototype[Symbol.species] = PointList;
+
+PointList.prototype[Symbol.toStringTag] = function() {
+  return PointList.prototype.toString.apply(this, arguments);
+};
+PointList.prototype[Symbol.isConcatSpreadable] = true;
+
+PointList.prototype.concat = function(...args) {
+  let ret = this.clone();
+  for(let arg of args) {
+    if(!(arg instanceof PointList)) arg = new PointList(arg);
+    ret = Array.prototype.concat.call(ret, arg);
+  }
+  Object.setPrototypeOf(ret, PointList.prototype);
+  return ret;
+};
+
+PointList.prototype.push = function(...args) {
+  for(let arg of args) {
+    if(!(arg instanceof Point)) arg = new Point(arg);
+    Array.prototype.push.call(this, arg);
+  }
+  return this;
+};
+
+PointList.prototype.unshift = function(...args) {
+  for(let arg of args.reverse()) {
+    if(!(arg instanceof Point)) arg = new Point(arg);
+    Array.prototype.unshift.call(this, arg);
+  }
+  return this;
+};
+
+PointList.prototype.length = 0;
+
 PointList.prototype.getLength = function() {
   return this.length;
 };
@@ -42,13 +77,12 @@ Object.defineProperty(PointList.prototype, "size", {
   }
 });
 
-PointList.prototype.push = function() {
-  const args = [...arguments];
-  args.forEach(arg => {
-    if(!(arg instanceof Point)) arg = new Point(arg);
-    Array.prototype.push.call(this, arg);
-  });
-};
+Object.defineProperty(PointList, Symbol.species, {
+  get: function() {
+    return PointList;
+  }
+});
+
 PointList.prototype.at = function(index) {
   return this[+index];
 };
@@ -59,6 +93,7 @@ PointList.prototype.splice = function() {
   return Array.prototype.splice.apply(this, [start, remove, ...args.map(arg => (arg instanceof Point ? arg : new Point(arg)))]);
 };
 PointList.prototype.slice = Array.prototype.slice;
+
 PointList.prototype.removeSegment = function(index) {
   let indexes = [PointList.prototype.getLineIndex.call(this, index - 1), PointList.prototype.getLineIndex.call(this, index), PointList.prototype.getLineIndex.call(this, index + 1)];
   let lines = indexes.map(i => PointList.prototype.getLine.call(this, i));
@@ -223,6 +258,9 @@ PointList.prototype.filter = function(pred) {
   PointList.prototype.forEach.call(this, (p, i, l) => pred(p, i, l) && ret.push(new Point(l[i])));
   return ret;
 };
+
+Util.extend(PointList.prototype, Array.prototype);
+
 PointList.prototype.getLineIndex = function(index) {
   const len = PointList.prototype.getLength.call(this);
   return (index < 0 ? len + index : index) % len;
@@ -285,8 +323,6 @@ PointList.prototype.round = function(prec) {
   PointList.prototype.forEach.call(this, it => Point.prototype.round.call(it, prec));
   return this;
 };
-
-Util.extend(PointList.prototype, Array.prototype);
 
 if(!Util.isBrowser()) {
   let c = Util.color();

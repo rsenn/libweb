@@ -525,25 +525,28 @@ export class TransformationList extends Transformation {
 
 const { concat, copyWithin, find, findIndex, lastIndexOf, pop, push, shift, unshift, slice, splice, includes, indexOf, entries, filter, map, every, some, reduce, reduceRight } = Array.prototype;
 
-Object.assign(TransformationList.prototype, {
-  concat,
-  copyWithin,
-  find,
-  findIndex,
-  lastIndexOf,
-  pop,
-  push,
-  shift,
-  unshift,
-  slice,
-  splice,
-  includes,
-  indexOf,
-  entries,
-  filter,
-  map,
-  every,
-  some,
-  reduce,
-  reduceRight
-});
+Object.setPrototypeOf(
+  TransformationList.prototype,
+  new Array() || /*Object.assign(TransformationList.prototype,*/ {
+    concat,
+    copyWithin,
+    find,
+    findIndex,
+    lastIndexOf,
+    pop,
+    push,
+    shift,
+    unshift,
+    slice,
+    splice,
+    includes,
+    indexOf,
+    entries,
+    filter,
+    map,
+    every,
+    some,
+    reduce,
+    reduceRight
+  }
+);

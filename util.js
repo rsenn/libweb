@@ -360,7 +360,7 @@ Util.copyEntries = (obj, entries) => {
 
 Util.extend = (obj, ...args) => {
   for(let other of args) {
-    for(let key of Util.iterateMembers(other, (k, value) => /*obj[k] === undefined &&*/ [k, value])) {
+    for(let key of Util.iterateMembers(other, (k, value) => obj[k] === undefined && [k, value])) {
       const value = other[key];
       try {
         Object.defineProperty(obj, key, {
@@ -378,7 +378,11 @@ Util.extend = (obj, ...args) => {
 };
 
 Util.static = (obj, functions, thisObj, pred = (k, v, f) => true) => {
-  for(let [name, fn] of Util.iterateMethods(functions, 0, (key, value) => obj[key] === undefined && pred(key, value, functions) && [key, value])) {
+  for(let [name, fn] of Util.iterateMembers(
+    functions,
+
+    Util.tryPredicate((key, depth) => obj[key] === undefined && typeof functions[key] == "function" && pred(key, depth, functions) && [key, value])
+  )) {
     const value = function(...args) {
       return fn.call(thisObj || obj, this, ...args);
     };
@@ -1765,64 +1769,46 @@ Util.iterateMembers = function*(obj, predicate = (name, depth, obj) => true, dep
   if(proto) yield* Util.iterateMembers(proto, predicate, depth + 1);
 };
 
-Util.getMemberNames = (obj, depth = 1, start = 0) =>
-  Util.unique([
-    ...Util.iterateMembers(
-      obj,
-      Util.tryPredicate((m, l, o) => start <= l && l < depth + start && (typeof m != "string" || ["caller", "callee", "constructor"].indexOf(m) == -1))
-    )
-  ]);
+Util.and = (...predicates) => (...args) => predicates.every(pred => pred(...args));
+Util.or = (...predicates) => (...args) => predicates.some(pred => pred(...args));
 
-Util.getMembers = (obj, depth = 1, start = 0) =>
-  Util.getMemberNames(obj, depth).reduce(
-    Util.tryFunction(
-      (a, m) => ({ [m]: obj[m] }),
-      (r, a, m) => ({ ...a, ...r }),
-      (r, a) => a
-    ),
-    {}
+Util.members = Util.curry((pred, obj) => Util.unique([...Util.iterateMembers(obj, pred)]));
+
+Util.memberNameFilter = (depth = 1, start = 0) =>
+  Util.and(
+    (m, l, o) => start <= l && l < depth + start,
+    Util.tryPredicate((m, l, o) => typeof m != "string" || ["caller", "callee", "constructor", "arguments"].indexOf(m) == -1)
   );
 
-Util.getMethodNames = (obj, depth = 1, start = 0) =>
-  Util.unique([
-    ...Util.iterateMembers(
-      obj,
-      Util.tryPredicate((m, l, o) => start <= l && l < depth + start && typeof obj[m] == "function" && (typeof m != "string" || ["caller", "callee", "constructor"].indexOf(m) == -1))
-    )
-  ]);
+Util.getMemberNames = (obj, depth = 1, start = 0) => Util.members(Util.memberNameFilter(depth, start))(obj);
 
-Util.getMethods = (obj, depth = 1) =>
-  Util.getMethodNames(obj, depth).reduce(
+Util.objectReducer = (filterFn, accFn = (a, m, o) => ({ ...a, [m]: o[m] }), accu = {}) => (obj, ...args) =>
+  Util.members(filterFn(...args), obj).reduce(
     Util.tryFunction(
-      (a, m) => ({ [m]: obj[m] }),
-      (r, a, m) => ({ ...a, ...r }),
+      (a, m) => accFn(a, m, obj),
+      (r, a, m) => r,
       (r, a) => a
     ),
-    {}
+    accu
   );
-Util.getMembers = (obj, depth = 1) =>
-  Util.getMemberNames(obj, depth).reduce(
-    Util.tryFunction(
-      (a, m) => ({ [m]: obj[m] }),
-      (r, a, m) => ({ ...a, ...r }),
-      (r, a) => a
-    ),
-    {}
-  );
+
+Util.getMembers = Util.objectReducer(Util.memberNameFilter);
+
+Util.getMemberDescriptors = Util.objectReducer(Util.memberNameFilter, (a, m, o) => ({ ...a, [m]: Object.getOwnPropertyDescriptor(o, m) }));
+
+Util.methodNameFilter = (depth = 1, start = 0) => Util.and((m, l, o) => typeof o[m] == "function", Util.memberNameFilter(depth, start));
+
+Util.getMethodNames = (obj, depth = 1, start = 0) => Util.members(Util.methodNameFilter(depth, start))(obj);
+
+Util.getMethods = Util.objectReducer(Util.methodNameFilter);
+
+Util.getMethodDescriptors = Util.objectReducer(Util.methodNameFilter, (a, m, o) => ({ ...a, [m]: Object.getOwnPropertyDescriptor(o, m) }));
 
 Util.inherit = (dst, src, depth = 1) => {
   for(let k of Util.getMethodNames(src, depth)) dst[k] = src[k];
   return dst;
 };
 
-/*Util.iterateMethods = function*(obj, depth = 1, t = (key, value) => [key, value], start = 0) {
-  for(let name of Util.getMethodNames(obj, depth, start)) {
-    try {
-      const value = t(name, obj[name]);
-      if(value !== undefined && value !== false && value !== null) yield value;
-    } catch(err) {}
-  }
-};*/
 Util.bindMethods = function(methods, obj) {
   for(let name in methods) {
     methods[name] = methods[name].bind(obj);
@@ -1848,11 +1834,6 @@ Util.getPrototypeChain = function(obj, fn = p => p) {
 
   return ret;
 };
-/*
-
- ctors = [...Util.getMemberNames(window, m => Util.isNativeFunction( window[m] ))].sort().map(n => [n, window[n]]);
-chain = ctors.map(([n,f]) => [n,Util.getConstructorChain(f)]).filter(([n,c]) => c.length > 2).map(([n,c]) => c.map(f => Util.fnName(f))+'').join("\n")
-*/
 
 Util.getConstructorChain = (ctor, fn = (c, p) => c) => Util.getPrototypeChain(ctor, (p, o) => fn(o, p));
 
