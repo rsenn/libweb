@@ -68,26 +68,26 @@ export function makeEagleNodeList(...args) {
     get(target, prop, receiver) {
       let index;
       let is_symbol = typeof prop == "symbol";
-       let e;
+      let e;
 
-  if(!is_symbol && /^[0-9]+$/.test(prop + "")) {
-    if(!(prop in instance)) {
-        let r = instance.ref.down(prop);
-       e = makeEagleElement(instance, r);
-        Reflect.set(target, prop, e);
-      } else {
-        e = instance[prop];
+      if(!is_symbol && /^[0-9]+$/.test(prop + "")) {
+        if(!(prop in instance)) {
+          let r = instance.ref.down(prop);
+          e = makeEagleElement(instance, r);
+          Reflect.set(target, prop, e);
+        } else {
+          e = instance[prop];
+        }
+        return e;
       }
-         return e;
-    }
-/*
+      /*
       if(typeof prop == "string")
         if(Util.isNumeric(prop)) return Reflect.get(target, prop, receiver);*/
       //instance[prop];
-   
+
       if(prop == "raw") return instance.ref.dereference();
       if(prop == "instance") return instance;
-   /*   if(prop == "iterator" || prop == Symbol.iterator) if (typeof instance.iterator == "function") return instance.iterator();*/
+      /*   if(prop == "iterator" || prop == Symbol.iterator) if (typeof instance.iterator == "function") return instance.iterator();*/
       /*
 if(/description/.test(txt))
       console.log("list:","\n", toXML(instance.ref.dereference(), true),prop,txt);
@@ -101,14 +101,14 @@ if(/description/.test(txt))
           return idx == -1 ? null : makeEagleElement(instance, instance.ref.down(idx));
         };
       if(prop == "entries") return () => list.map((item, i) => [item.attributes.name, item]);
-    
+
       if(typeof Array.prototype[prop] == "function") return Array.prototype[prop].bind(instance);
       if((!is_symbol && /^([0-9]+|length)$/.test("" + prop)) || prop == Symbol.iterator || ["findIndex"].indexOf(prop) !== -1) {
         if(prop in list) return list[prop];
       }
       return Reflect.get(instance, prop, receiver);
     },
-  /*  ownKeys(target) {
+    /*  ownKeys(target) {
       let list = instance.ref.dereference();
       return ["owner", "length"];
     },*/

@@ -111,7 +111,7 @@ const LinesToPath = lines => {
     m;
   let start = l.a;
   let ret = [];
-  let prevPoint = new Point(l.a && l.a.x || l.x1, l.a && l.a.y || l.y1);
+  let prevPoint = new Point((l.a && l.a.x) || l.x1, (l.a && l.a.y) || l.y1);
   ret.push(`M${prevPoint}`);
 
   const lineTo = (point, curve) => {
@@ -161,38 +161,36 @@ const LinesToPath = lines => {
 };
 
 export class EagleRenderer {
+
+  static rendererTypes = {
+    brd: BoardRenderer,
+    sch: SchematicRenderer
+  }
+
   palette = null;
   id = 0;
   layers = {};
   colors = {};
 
   constructor(doc, factory) {
-      console.log(Util.className(this), Util.fnName(new.target));
-    if(new.target === EagleRenderer)
-      throw new Error("Use SchematicRenderer or BoardRenderer");
-      
-        let ctor = doc.type == "brd" ? BoardRenderer : SchematicRenderer;
-
+    console.log(Util.className(this), Util.fnName(new.target));
+    if(new.target === EagleRenderer) throw new Error("Use SchematicRenderer or BoardRenderer");
+    let ctor =  EagleRenderer.rendererTypes[doc.type];
     Object.setPrototypeOf(this, ctor.prototype);
-
-    //ctor.apply(this, arguments);
     this.doc = doc;
     this.create = (tag, attrs, parent) => factory(tag, "id" in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
-
     const { settings, layers, libraries, classes, designrules, elements, signals, plain } = doc;
-
     this.elements = elements;
     this.signals = signals;
     this.plain = [...board.getAll("plain", (v, l) => new EagleElement(doc, l))][0];
     this.layers = layers;
-
     return this;
-    }
+  }
 
-    static create(doc, factory) {
-      let renderer = doc.type == "brd" ? new BoardRenderer(doc,factory) : new SchematicRenderer(doc,factory);
-      return renderer;
-    }
+  static create(doc, factory) {
+    let renderer = doc.type == "brd" ? new BoardRenderer(doc, factory) : new SchematicRenderer(doc, factory);
+    return renderer;
+  }
 
   setPalette(palette) {
     Object.defineProperty(this, "palette", {
@@ -497,7 +495,7 @@ export class SchematicRenderer extends EagleRenderer {
   }
 
   renderCollection(collection, parent, opts) {
-        console.log(`${Util.className(this)}.renderCollection`, {collection,parent,opts});
+    console.log(`${Util.className(this)}.renderCollection`, { collection, parent, opts });
 
     const arr = [...collection];
 
@@ -728,7 +726,7 @@ export class BoardRenderer extends EagleRenderer {
   }
 
   renderCollection(coll, parent, opts = {}) {
-            console.log(`${Util.className(this)}.renderCollection`, {coll,parent,opts});
+    console.log(`${Util.className(this)}.renderCollection`, { coll, parent, opts });
 
     const { predicate = i => true, coordFn = i => i, transform } = opts;
     let wireMap = new Map(),
@@ -736,7 +734,7 @@ export class BoardRenderer extends EagleRenderer {
     let layers = {},
       widths = {};
 
-      console.log("parent:",parent);
+    console.log("parent:", parent);
 
     for(let item of coll) {
       if(item.tagName === "wire") {
@@ -755,9 +753,8 @@ export class BoardRenderer extends EagleRenderer {
     for(let item of other) if(predicate(item) && item.tagName != "pad") this.renderItem(item, parent, opts);
 
     for(let [layerId, wires] of wireMap) {
-      let classList = (parent && parent.classList || []);
-      if([...classList].indexOf("plain") != -1)
-        continue;
+      let classList = (parent && parent.classList) || [];
+      if([...classList].indexOf("plain") != -1) continue;
 
       const lines = wires.map(wire => {
         let line = new Line(coordFn(wire));
@@ -769,8 +766,8 @@ export class BoardRenderer extends EagleRenderer {
       const layer = layers[layerId];
       const width = widths[layerId];
 
-      console.log("layerId:",layerId);
-      console.log("layers:",layers);
+      console.log("layerId:", layerId);
+      console.log("layers:", layers);
       const color = this.getColor(layer.color);
 
       this.create(
@@ -843,7 +840,7 @@ export class BoardRenderer extends EagleRenderer {
         predicate: i => i.attributes.layer === undefined
       });
 
-    let [plain] = [...board.getAll('plain')];
+    let [plain] = [...board.getAll("plain")];
 
     this.renderCollection(plain.children, plainGroup);
   }

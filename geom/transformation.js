@@ -5,7 +5,9 @@ export class Transformation {
     this.type = type;
   }
 
-  [Symbol.isConcatSpreadable] = true;
+  get [Symbol.isConcatSpreadable]() {
+    return true;
+  }
 
   get axes() {
     let ret = ["x", "y", "z"].filter(axis => axis in this);
@@ -286,9 +288,7 @@ export class TransformationList extends Array {
     }
   }
 
-  get [Symbol.isConcatSpreadable]() {
-    return true;
-  }
+  [Symbol.isConcatSpreadable] = () => true;
 
   [Symbol.toStringTag]() {
     return TransformationList.prototype.toString.call(this);

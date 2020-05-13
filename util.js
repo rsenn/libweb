@@ -2394,6 +2394,19 @@ Util.bindProperties = (proxy, target, props, gen) => {
   return proxy;
 };
 
+Util.weakKey = (function() {
+  const map = new WeakMap();
+  let index = 0;
+  return obj => {
+    let key = map.get(obj);
+    if(!key) {
+      key = "weak-key-" + index++;
+      map.set(obj, key);
+    }
+    return key;
+  };
+})();
+
 Object.assign(Util.is, {
   array: Util.isArray,
   bool: Util.isBool,

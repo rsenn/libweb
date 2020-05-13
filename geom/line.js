@@ -12,17 +12,13 @@ export function Line(x1, y1, x2, y2) {
   } else if(args.length == 1) {
     arg = args[0];
   }
-   obj = this || { ...arg };
+  obj = this || { ...arg };
 
-  if(obj === null) 
-      obj = Object.create(Line.prototype);
-    
-    if(Object.getPrototypeOf(obj) !== Line.prototype)
-      Object.setPrototypeOf(obj, Line.prototype);
+  if(obj === null) obj = Object.create(Line.prototype);
 
-    if(!('a' in obj) || !('b' in obj))
-      throw new Error("no a/b prop");
+  if(Object.getPrototypeOf(obj) !== Line.prototype) Object.setPrototypeOf(obj, Line.prototype);
 
+  if(!("a" in obj) || !("b" in obj)) throw new Error("no a/b prop");
 
   if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
     const { x1, y1, x2, y2 } = arg;
@@ -297,7 +293,7 @@ Line.prototype.toSource = function() {
   let { a, b } = this;
   return `new Line(${a.x},${a.y},${b.x},${b.y})`;
 };
-  Line.prototype.reverse = function() {
+Line.prototype.reverse = function() {
   const { a, b } = this;
   return new Line(b, a);
 };
