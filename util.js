@@ -14,7 +14,7 @@ const formatAnnotatedObject = function(subject, o) {
   if(subject != null && subject["y2"] !== undefined) {
     return `rect[${spacing}${subject["x"]}${separator}${subject["y"]} | ${subject["x2"]}${separator}${subject["y2"]} (${subject["w"]}x${subject["h"]}) ]`;
   }
-  if(typeof subject == "object" && "map" in subject && typeof subject.map == "function") {
+  if(Util.isObject(subject) && "map" in subject && typeof subject.map == "function") {
     //subject instanceof Array || (subject && subject.length !== undefined)) {
     return /*(opts.depth <= 0) ? subject.length + '' : */ `[${nl}${/*(opts.depth <= 0) ? subject.length + '' : */ subject.map(i => formatAnnotatedObject(i, opts)).join(separator + nl)}]`;
   }
@@ -740,6 +740,8 @@ Util.toString = (obj, opts = {}, indent = "") => {
     obj = "" + obj;
     if(!multiline) obj = obj.replace(/(\n| anonymous)/g, "");
     return obj;
+  } else if(typeof obj == "string") {
+    return JSON.stringify(obj);
   }
   let s = c.text(`{${padding}`, 1, 36);
   let i = 0;

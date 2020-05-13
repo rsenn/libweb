@@ -17,7 +17,7 @@ import { Node } from "./dom/node.js";
 import { Element, isElement } from "./dom/element.js";
 import { CSS } from "./dom/css.js";
 import { SVG } from "./dom/svg.js";
-//import { ReactComponent } from "./dom/reactComponent.js";
+import { ReactComponent } from "./dom/reactComponent.js";
 import { Container } from "./dom/container.js";
 import { Layer, Renderer } from "./dom/layer.js";
 import { Select } from "./dom/select.js";
@@ -183,7 +183,7 @@ export { Node } from "./dom/node.js";
 export { Element, isElement } from "./dom/element.js";
 export { CSS } from "./dom/css.js";
 export { SVG } from "./dom/svg.js";
-//export { ReactComponent } from "./dom/reactComponent.js";
+export { ReactComponent } from "./dom/reactComponent.js";
 export { Container } from "./dom/container.js";
 export { Layer, Renderer } from "./dom/layer.js";
 export { Select } from "./dom/select.js";
@@ -221,7 +221,7 @@ export default Object.assign(dom, {
   Point,
   PointList,
   Polyline,
-  // ReactComponent,
+  ReactComponent,
   Rect,
   Renderer,
   RGBA,
