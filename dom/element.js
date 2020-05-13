@@ -63,7 +63,7 @@ export class Element extends Node {
   static *skip(elem, fn = (e, next) => next(e.parentElement)) {
     elem = typeof elem == "string" ? Element.find(elem) : elem;
     // let [iter,push] = new iterator();
-    let emit = (y, n) => (elem = n);
+    let emit = n => (elem = n);
 
     while(elem) {
       yield elem;
@@ -486,7 +486,7 @@ export class Element extends Node {
     let style = Util.removeEqual(estyle, pstyle);
     let keys = Object.keys(style).filter(k => !/^__/.test(k));
     //console.log("style: ", style);
-    console.log("Element.getCSS ", style);
+    // console.log("Element.getCSS ", style);
 
     let ret = {};
     if(receiver == null) {

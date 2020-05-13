@@ -232,7 +232,7 @@ export class EagleRenderer {
   }
 
   renderLayers(parent) {
-    console.log(`${Util.className(this)}.renderLayers`);
+    //console.log(`${Util.className(this)}.renderLayers`);
 
     const layerGroup = this.create("g", { className: "layers" }, parent);
     const layers = [...this.doc.layers.list].sort((a, b) => a.number - b.number);
@@ -260,7 +260,7 @@ export class EagleRenderer {
   }
 
   renderItem(item, parent, opts = {}) {
-    console.log(`${Util.className(this)}.renderItem`, { item, parent, opts });
+    //console.log(`${Util.className(this)}.renderItem`, { item, parent, opts });
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
     const svg = (elem, attr, parent) =>
@@ -342,7 +342,10 @@ export class EagleRenderer {
           text = prop in opts ? opts[prop] : text;
         }
         const translation = new TransformationList(`translate(${x},${y})`);
+
+        console.log("translation:", Util.className(translation));
         const rotation = translation.concat(Rotation(rot));
+        console.log("rotation:", Util.className(rotation));
         let wholeTransform = transformation.concat(Rotation(rot));
         let wholeAngle = ClampAngle(wholeTransform.decompose().rotate);
 
@@ -489,7 +492,7 @@ export class SchematicRenderer extends EagleRenderer {
   }
 
   renderCollection(collection, parent, opts) {
-    console.log(`${Util.className(this)}.renderCollection`, { collection, parent, opts });
+    //console.log(`${Util.className(this)}.renderCollection`, { collection, parent, opts });
 
     const arr = [...collection];
 
@@ -498,7 +501,7 @@ export class SchematicRenderer extends EagleRenderer {
   }
 
   renderItem(item, parent, opts = {}) {
-    console.log(`${Util.className(this)}.renderItem`, { item, parent, opts });
+    //console.log(`${Util.className(this)}.renderItem`, { item, parent, opts });
 
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
@@ -567,7 +570,7 @@ export class SchematicRenderer extends EagleRenderer {
   }
 
   renderPart(instance, parent) {
-    console.log(`${Util.className(this)}.renderPart`, { instance, parent });
+    //console.log(`${Util.className(this)}.renderPart`, { instance, parent });
 
     const { x, y, rot } = instance;
     const part = instance.part;
@@ -594,7 +597,7 @@ export class SchematicRenderer extends EagleRenderer {
   }
 
   renderNet(net, parent) {
-    console.log(`${Util.className(this)}.renderNet`, { net, parent });
+    //console.log(`${Util.className(this)}.renderNet`, { net, parent });
 
     let g = this.create("g", { className: `net.${net.name}` }, parent);
     for(let segment of net.children) this.renderCollection(segment.children, g, { labelText: net.name });
@@ -609,7 +612,7 @@ export class SchematicRenderer extends EagleRenderer {
   }
 
   renderSheet(sheet, parent) {
-    console.log(`${Util.className(this)}.renderSheet`, { sheet, parent });
+    //console.log(`${Util.className(this)}.renderSheet`, { sheet, parent });
 
     let netsGroup = this.create("g", { className: "nets" }, parent);
 
@@ -624,12 +627,13 @@ export class BoardRenderer extends EagleRenderer {
 
   constructor(obj, factory) {
     super(obj, factory);
-    const { settings, layers, libraries, classes, designrules, elements, signals, plain } = obj;
+    const { settings, layers, libraries, classes, designrules, elements, signals, plain, sheets } = obj;
 
     this.elements = elements;
     this.signals = signals;
     this.plain = [...board.getAll("plain", (v, l) => new EagleElement(board, l))][0];
     this.layers = layers;
+    this.sheets = sheets;
 
     this.setPalette(BoardRenderer.palette);
   }
@@ -728,8 +732,6 @@ export class BoardRenderer extends EagleRenderer {
     let layers = {},
       widths = {};
 
-    console.log("parent:", parent);
-
     for(let item of coll) {
       if(item.tagName === "wire") {
         const layerId = item.attributes.layer;
@@ -760,8 +762,8 @@ export class BoardRenderer extends EagleRenderer {
       const layer = layers[layerId];
       const width = widths[layerId];
 
-      console.log("layerId:", layerId);
-      console.log("layers:", layers);
+      //console.log("layerId:", layerId);
+      //console.log("layers:", layers);
       const color = this.getColor(layer.color);
 
       this.create(
@@ -865,7 +867,7 @@ export function renderDocument(doc, container) {
     svg = container;
     container = container.parentElement;
   }
-  console.log("renderer:", { container, svg });
+  //console.log("renderer:", { container, svg });
   console.log("doc:", doc);
   const ctor = doc.type == "sch" ? SchematicRenderer : BoardRenderer;
   const renderer = new ctor(doc, factory);
@@ -877,7 +879,7 @@ export function renderDocument(doc, container) {
   let randN = Util.randInt(0, 30000);
   rng = new Alea(1340);
   let bgColor = doc.type == "sch" ? "rgb(255,255,255)" : "rgba(0,0,0,0.0)";
-  console.log(`${Util.className(renderer)} palette=${renderer.palette}`);
+  //console.log(`${Util.className(renderer)} palette=${renderer.palette}`);
   console.log(`doc type=${doc.type} path=${doc.path}`);
   renderer.colors = {};
   let first = svg.firstElementChild;
@@ -1019,7 +1021,7 @@ export function renderDocument(doc, container) {
   let gridObj = new Rect(gridRect).outset(1.27);
   sbox.outset(2.54 * 2.54);
   Object.assign(renderer, { sbox, obox, gbox, aspects });
-  console.log("render", { sbox, obox, gbox, aspects });
+  //console.log("render", { sbox, obox, gbox, aspects });
   let srect = new Rect(sbox);
   console.log("sbox:", srect.toString());
   svg.setAttribute("viewBox", srect);

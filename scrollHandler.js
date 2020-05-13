@@ -93,11 +93,11 @@ export function ScrollDisabler(disabledfn = () => true, element) {
   if(element) listen.handler.element = addScrollListeners(listen, element);
   else listen.handler.events = ScrollEvents(listen);
   listen.handler.remove = () => {
-    console.log("detach scroll disabler");
+    //console.log("detach scroll disabler");
     removeScrollListeners(listen, element);
   };
   listen.handler.add = () => {
-    console.log("attach scroll disabler");
+    //console.log("attach scroll disabler");
     addScrollListeners(listen, element);
   };
   return listen.handler;

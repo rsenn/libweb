@@ -1,6 +1,8 @@
 import { Matrix, isMatrix } from "../geom/matrix.js";
 
 export class Transformation {
+  type = null;
+
   constructor(type) {
     this.type = type;
   }
@@ -292,9 +294,9 @@ export class MatrixTransformation extends Transformation {
   }
 }
 
-export class TransformationList extends Transformation {
+export class TransformationList extends Array {
   constructor(init) {
-    super("list");
+    super();
 
     if(init !== undefined) {
       if(typeof init == "number") while(this.length < init) this.push(undefined);
@@ -302,9 +304,10 @@ export class TransformationList extends Transformation {
       else if(init instanceof Array) TransformationList.prototype.fromArray.call(this, init);
       else throw new Error("No such initialization: " + init);
     }
+    return this;
   }
 
-  [Symbol.isConcatSpreadable] = () => true;
+  // [Symbol.isConcatSpreadable] = () => true;
 
   [Symbol.toStringTag]() {
     return TransformationList.prototype.toString.call(this);
@@ -438,6 +441,7 @@ export class TransformationList extends Transformation {
     }
     return this;
   }
+
   /*
   undo(...args) {
      for(let arg of args.reverse()) {
@@ -525,28 +529,5 @@ export class TransformationList extends Transformation {
 
 const { concat, copyWithin, find, findIndex, lastIndexOf, pop, push, shift, unshift, slice, splice, includes, indexOf, entries, filter, map, every, some, reduce, reduceRight } = Array.prototype;
 
-Object.setPrototypeOf(
-  TransformationList.prototype,
-  new Array() || /*Object.assign(TransformationList.prototype,*/ {
-    concat,
-    copyWithin,
-    find,
-    findIndex,
-    lastIndexOf,
-    pop,
-    push,
-    shift,
-    unshift,
-    slice,
-    splice,
-    includes,
-    indexOf,
-    entries,
-    filter,
-    map,
-    every,
-    some,
-    reduce,
-    reduceRight
-  }
-);
+Object.assign(TransformationList.prototype, { concat, copyWithin, find, findIndex, lastIndexOf, pop, shift, slice, splice, includes, indexOf, entries, filter, map, every, some, reduce, reduceRight }, { [Symbol.iterator]: Array.prototype[Symbol.iterator], [Symbol.isConcatSpreadable]: () => true });
+Object.setPrototypeOf(TransformationList.prototype, Transformation.prototype);
