@@ -7,13 +7,13 @@ export const busywait = (checkFn, _options) => {
 
 const checkArgs = (checkFn, options) => {
   if(isNaN(options.maxChecks) || options.maxChecks < 1) {
-    return Promise.reject("maxChecks must be a valid integer greater than 0");
+    return Promise.reject('maxChecks must be a valid integer greater than 0');
   }
   if(isNaN(options.sleepTime) || options.sleepTime < 1) {
-    return Promise.reject("sleepTime must be a valid integer greater than 0");
+    return Promise.reject('sleepTime must be a valid integer greater than 0');
   }
   if(!checkFn || !isFunction(checkFn)) {
-    return Promise.reject("checkFn must be a function");
+    return Promise.reject('checkFn must be a function');
   }
   return Promise.resolve();
 };
@@ -44,7 +44,7 @@ const eventLoop = (checkFn, options) => {
         })
         .catch(() => {
           if(iteration === options.maxChecks) {
-            return reject(options.failMsg || "Exceeded number of iterations to wait");
+            return reject(options.failMsg || 'Exceeded number of iterations to wait');
           }
           setTimeout(iterationCheck, options.sleepTime);
         });
@@ -53,6 +53,6 @@ const eventLoop = (checkFn, options) => {
   });
 };
 
-const isFunction = obj => toString.call(obj) === "[object Function]";
+const isFunction = obj => toString.call(obj) === '[object Function]';
 
 export default busywait;

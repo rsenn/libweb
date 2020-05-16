@@ -10,11 +10,11 @@
  * https://doorbell.io
  */
 
-"use strict";
+'use strict';
 
 /* Allow only one instance of console-history.js */
-if(typeof console.history !== "undefined") {
-  throw new Error("Only one instance of console-history.js can run at a time.");
+if(typeof console.history !== 'undefined') {
+  throw new Error('Only one instance of console-history.js can run at a time.');
 }
 
 /* Store the original log functions. */
@@ -29,19 +29,19 @@ console.history = [];
 
 /* Redirect all calls to the collector. */
 console.log = function() {
-  return console._intercept("log", arguments);
+  return console._intercept('log', arguments);
 };
 console.info = function() {
-  return console._intercept("info", arguments);
+  return console._intercept('info', arguments);
 };
 console.warn = function() {
-  return console._intercept("warn", arguments);
+  return console._intercept('warn', arguments);
 };
 console.error = function() {
-  return console._intercept("error", arguments);
+  return console._intercept('error', arguments);
 };
 console.debug = function() {
-  return console._intercept("debug", arguments);
+  return console._intercept('debug', arguments);
 };
 
 /* Give the developer the ability to intercept the message before letting
@@ -73,7 +73,7 @@ console._collect = function(type, args) {
 
   // Make sure the 'type' parameter is set. If no type is set, we fall
   // back to the default log type.
-  if(!type) type = "log";
+  if(!type) type = 'log';
 
   // To ensure we behave like the original console log functions, we do not
   // output anything if no arguments are provided.
@@ -81,20 +81,20 @@ console._collect = function(type, args) {
 
   // Act normal, and just pass all original arguments to
   // the origial console function :)
-  console["_" + type].apply(console, args);
+  console['_' + type].apply(console, args);
 
   // Get stack trace information. By throwing an error, we get access to
   // a stack trace. We then go up in the trace tree and filter out
   // irrelevant information.
   var stack = false;
   try {
-    throw Error("");
+    throw Error('');
   } catch(error) {
     // The lines containing 'console-history.js' are not relevant to us.
-    var stackParts = error.stack.split("\n");
+    var stackParts = error.stack.split('\n');
     stack = [];
     for(var i = 0; i < stackParts.length; i++) {
-      if(stackParts[i].indexOf("console-history.js") > -1 || stackParts[i].indexOf("console-history.min.js") > -1 || stackParts[i] === "Error") {
+      if(stackParts[i].indexOf('console-history.js') > -1 || stackParts[i].indexOf('console-history.min.js') > -1 || stackParts[i] === 'Error') {
         continue;
       }
       stack.push(stackParts[i].trim());

@@ -809,11 +809,11 @@ class Element extends _node.Node {
     };
   }
 
-  static prev_sibling(sib) {
+  static prevSibling(sib) {
     return sib.previousElementSibling;
   }
 
-  static next_sibling(sib) {
+  static nextSibling(sib) {
     return sib.nextElementSibling;
   }
 

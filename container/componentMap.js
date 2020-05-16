@@ -30,8 +30,8 @@ export class BucketStore {
   }
 
   set(key, value) {
-    if(!key || (typeof key !== "object" && typeof key !== "function")) {
-      throw new TypeError("Invalid value used as weak map key");
+    if(!key || (typeof key !== 'object' && typeof key !== 'function')) {
+      throw new TypeError('Invalid value used as weak map key');
     }
 
     const bucket = this.getBucket(key);
@@ -60,7 +60,7 @@ export class BucketStore {
 export class BucketMap {
   constructor(options = {}) {
     if(!options.getBucketName) {
-      throw new TypeError("BucketMap constructor requires getBucketName param");
+      throw new TypeError('BucketMap constructor requires getBucketName param');
     }
 
     if(options.WeakMap) {
@@ -91,7 +91,7 @@ export default class ComponentMap extends BucketMap {
   constructor(options = {}) {
     super(
       Object.assign({}, options, {
-        getBucketName: options.getBucketName || (key => key.displayName || key.name || "Unknown")
+        getBucketName: options.getBucketName || (key => key.displayName || key.name || 'Unknown')
       })
     );
   }

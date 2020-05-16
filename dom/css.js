@@ -1,6 +1,6 @@
-import Util from "../util.js";
-import { Element } from "./element.js";
-import { Node } from "./node.js";
+import Util from '../util.js';
+import { Element } from './element.js';
+import { Node } from './node.js';
 
 export class CSS {
   static get document() {
@@ -14,7 +14,7 @@ export class CSS {
     if(!doc) doc = this.document;
 
     const getStyleMap = (obj, key) => {
-      let rule = Util.find(obj, item => item["selectorText"] == key);
+      let rule = Util.find(obj, item => item['selectorText'] == key);
       return Util.adapter(
         rule,
         obj => (obj && obj.styleMap && obj.styleMap.size !== undefined ? obj.styleMap.size : 0),
@@ -23,7 +23,7 @@ export class CSS {
           obj.styleMap
             .getAll(key)
             .map(v => String(v))
-            .join(" ")
+            .join(' ')
       );
     };
     const getStyleSheet = (obj, key) => {
@@ -56,7 +56,7 @@ export class CSS {
     return ret;
   }
 
-  static classes(selector = "*") {
+  static classes(selector = '*') {
     return Util.unique(
       [...Element.findAll(selector)]
         .filter(e => e.classList.length)
@@ -74,9 +74,9 @@ export class CSS {
     return s;
   }
 
-  static create(parent = "head") {
-    parent = typeof parent == "string" ? Element.find(parent) : parent;
-    const element = Element.create("style", {}, parent);
+  static create(parent = 'head') {
+    parent = typeof parent == 'string' ? Element.find(parent) : parent;
+    const element = Element.create('style', {}, parent);
     const proto = {
       element: null,
       map: null,
@@ -87,7 +87,7 @@ export class CSS {
       },
       get(selector) {
         const props = this.map.get(selector);
-        return "toObject" in props ? props.toObject() : props;
+        return 'toObject' in props ? props.toObject() : props;
       },
       keys() {
         return this.map.keys();
@@ -95,21 +95,21 @@ export class CSS {
       *entries() {
         for(let [selector, props] of this.map.entries()) yield [selector, props.toObject()];
       },
-      update(text = "") {
-        if(text != "") {
-          let node = document.createTextNode("\n" + text);
+      update(text = '') {
+        if(text != '') {
+          let node = document.createTextNode('\n' + text);
           this.element.appendChild(node);
           return this;
         }
         return this.generate();
       },
       generate() {
-        this.element.innerHTML = "";
+        this.element.innerHTML = '';
         for(let [selector, props] of this.map) this.update(CSS.section(selector, props));
         return this;
       },
       get text() {
-        return (this.element.innerText + "").trim();
+        return (this.element.innerText + '').trim();
       }
     };
 

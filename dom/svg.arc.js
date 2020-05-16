@@ -1,4 +1,4 @@
-import "svgjs";
+import 'svgjs';
 
 (function() {
   var Trig = (function() {
@@ -15,23 +15,23 @@ import "svgjs";
     String.prototype.format = function() {
       var args = arguments;
       return this.replace(/{(\d+)}/g, function(match, number) {
-        return typeof args[number] != "undefined" ? args[number] : match;
+        return typeof args[number] != 'undefined' ? args[number] : match;
       });
     };
   }
 
   SVG.extend(SVG.Element, {
     x1: function() {
-      return this.attr("x1");
+      return this.attr('x1');
     },
     y1: function() {
-      return this.attr("y1");
+      return this.attr('y1');
     },
     x2: function() {
-      return this.attr("x2");
+      return this.attr('x2');
     },
     y2: function() {
-      return this.attr("y2");
+      return this.attr('y2');
     },
     translateFull: function(x, y, relative) {
       return this.transform({ x: x, y: y }, relative);
@@ -121,7 +121,7 @@ import "svgjs";
 
   SVG.Arc = SVG.invent({
     // Initialize node
-    create: "path",
+    create: 'path',
 
     // Inherit from
     inherit: SVG.Path,
@@ -129,7 +129,7 @@ import "svgjs";
     // Add class methods
     extend: {
       plotRadius: function(x1, y1, r, largeArcFlag, sweepFlag, x2, y2) {
-        var p = "M {0},{1} A {2},{2} 0 {3},{4} {5},{6}".format(x1.toFixed(2), y1.toFixed(2), r.toFixed(2), largeArcFlag.toFixed(0), sweepFlag.toFixed(0), x2.toFixed(2), y2.toFixed(2));
+        var p = 'M {0},{1} A {2},{2} 0 {3},{4} {5},{6}'.format(x1.toFixed(2), y1.toFixed(2), r.toFixed(2), largeArcFlag.toFixed(0), sweepFlag.toFixed(0), x2.toFixed(2), y2.toFixed(2));
         this.r = r;
         this.largeArcFlag = largeArcFlag;
         this.sweepFlag = sweepFlag;
@@ -138,7 +138,7 @@ import "svgjs";
         this.x12 = x2;
         this.y12 = y2;
         this.ang = Math.PI;
-        return this.attr("d", (this._array = new SVG.PathArray(p)));
+        return this.attr('d', (this._array = new SVG.PathArray(p)));
       },
 
       plot: function(x1, y1, h, sweepFlag, x2, y2) {
@@ -162,8 +162,8 @@ import "svgjs";
         this.y11 = y1;
         this.x12 = x2;
         this.y12 = y2;
-        var p = "M {0},{1} A {2},{2} 0 {3},{4} {5},{6}".format(x1.toFixed(2), y1.toFixed(2), this.r.toFixed(2), this.largeArcFlag.toFixed(0), this.sweepFlag.toFixed(0), x2.toFixed(2), y2.toFixed(2));
-        return this.attr("d", (this._array = new SVG.PathArray(p)));
+        var p = 'M {0},{1} A {2},{2} 0 {3},{4} {5},{6}'.format(x1.toFixed(2), y1.toFixed(2), this.r.toFixed(2), this.largeArcFlag.toFixed(0), this.sweepFlag.toFixed(0), x2.toFixed(2), y2.toFixed(2));
+        return this.attr('d', (this._array = new SVG.PathArray(p)));
       },
       lineAngle(x1, y1, x2, y2) {
         var t = Math.atan2(y2 - y1, x2 - x1);

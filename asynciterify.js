@@ -1,6 +1,6 @@
 const asynciterify = (emitter, event, options = {}) => {
-  const onMethod = options.isEmitter ? "on" : "addEventListener";
-  const offMethod = options.isEmitter ? "off" : "removeEventListener";
+  const onMethod = options.isEmitter ? 'on' : 'addEventListener';
+  const offMethod = options.isEmitter ? 'off' : 'removeEventListener';
   const pullQueue = [];
   const pushQueue = [];
   let done = false;

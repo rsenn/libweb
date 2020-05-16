@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /** @constructor */
 export function Shash(width, height, onNeighbour) {

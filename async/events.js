@@ -1,9 +1,9 @@
 // Tie everything together
 var run = async () => {
   var i = 0;
-  var clicks = streamify("click", document.querySelector("body"));
+  var clicks = streamify('click', document.querySelector('body'));
 
-  clicks = filter(clicks, e => e.target.matches("a"));
+  clicks = filter(clicks, e => e.target.matches('a'));
   clicks = distinct(clicks, e => e.target);
   clicks = map(clicks, e => [i++, e]);
   clicks = throttle(clicks, 500);

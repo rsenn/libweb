@@ -1,6 +1,6 @@
-import { Util } from "../util.js";
-import { RGBA } from "../dom/rgba.js";
-import { HSLA } from "../dom/hsla.js";
+import { Util } from '../util.js';
+import { RGBA } from '../dom/rgba.js';
+import { HSLA } from '../dom/hsla.js';
 
 export function ColorMap(...args) {
   let isNew = this instanceof ColorMap;
@@ -32,8 +32,8 @@ ColorMap.prototype.base = 10;
 ColorMap.prototype.toString = function(opts = {}) {
   const base = opts.base || this.base;
   let a = [];
-  for(let color of this) a.push(color.toString ? color.toString(",", num => num.toString(base)) : "" + color);
-  a.join(",");
+  for(let color of this) a.push(color.toString ? color.toString(',', num => num.toString(base)) : '' + color);
+  a.join(',');
 };
 ColorMap.prototype.toScalar = function*(opts = {}) {
   const base = opts.base || this.base;

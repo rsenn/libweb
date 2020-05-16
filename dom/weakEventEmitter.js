@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
 var has = Object.prototype.hasOwnProperty,
-  prefix = "~";
+  prefix = '~';
 
 /**
  * Constructor to create a storage for our `EE` objects.
@@ -56,8 +56,8 @@ function EE(fn, context, once) {
  * @private
  */
 function addListener(emitter, event, fn, context, once) {
-  if(typeof fn !== "function") {
-    throw new TypeError("The listener must be a function");
+  if(typeof fn !== 'function') {
+    throw new TypeError('The listener must be a function');
   }
 
   var listener = new EE(fn, context || emitter, once),
@@ -354,6 +354,6 @@ WeakEventEmitter.WeakEventEmitter = WeakEventEmitter;
 //
 // Expose the module.
 //
-if("undefined" !== typeof module) {
+if('undefined' !== typeof module) {
   module.exports = WeakEventEmitter;
 }

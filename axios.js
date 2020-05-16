@@ -1,7 +1,7 @@
 //import axios from "axios";
-const axios = require("axios").default;
+const axios = require('axios').default;
 
-import Util from "./util.js";
+import Util from './util.js';
 
 const httpClient = (() => {
   const client = axios.create({ withCredentials: true });
@@ -16,16 +16,16 @@ const httpClient = (() => {
     async err => {
       const { code, config, request } = await err;
       const { url, method, data } = (await config) || {};
-      console.error("axios ERROR:", { code, url, method, data });
+      console.error('axios ERROR:', { code, url, method, data });
       // throw new Error(err.response.data.message);
     }
   );
 
-  let request = (fn, name = "call") =>
+  let request = (fn, name = 'call') =>
     async function() {
       let args = [...arguments];
 
-      if(typeof args[0] == "string" && args[0].startsWith("/")) {
+      if(typeof args[0] == 'string' && args[0].startsWith('/')) {
         args[0] = Util.makeURL({ location: args[0] });
       }
       //  console.error(`axios ${name}:`, args);
@@ -35,9 +35,9 @@ const httpClient = (() => {
 
   let ret = request(client);
 
-  ret.post = request(client.post, "post");
-  ret.get = request(client.get, "get");
-  ret.head = request(client.head, "head");
+  ret.post = request(client.post, 'post');
+  ret.get = request(client.get, 'get');
+  ret.head = request(client.head, 'head');
 
   return ret;
 })();

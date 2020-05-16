@@ -1,22 +1,22 @@
-import Util from "../util.js";
-import { EagleDocument } from "./document.js";
-import { EagleElement } from "./element.js";
-import { makeEagleNodeMap } from "./nodeMap.js";
-import { dump } from "./common.js";
-import { compareVersions } from "../compareVersions.js";
+import Util from '../util.js';
+import { EagleDocument } from './document.js';
+import { EagleElement } from './element.js';
+import { makeEagleNodeMap } from './nodeMap.js';
+import { dump } from './common.js';
+import { compareVersions } from '../compareVersions.js';
 
 export class EagleProject {
   documents = [];
   filename = null;
   data = { sch: null, brd: null, lbr: {} };
 
-  constructor(file, fs = { readFile: filename => "", exists: filename => false }) {
+  constructor(file, fs = { readFile: filename => '', exists: filename => false }) {
     //  super();
-    this.filename = file.replace(/\.(brd|sch)$/, "");
+    this.filename = file.replace(/\.(brd|sch)$/, '');
     this.fs = fs;
 
-    this.open(this.filename + ".sch");
-    this.open(this.filename + ".brd");
+    this.open(this.filename + '.sch');
+    this.open(this.filename + '.brd');
 
     this.loadLibraries();
     //console.log("Opened project:", this.filename);
@@ -31,7 +31,7 @@ export class EagleProject {
   open(file) {
     let str, doc, err;
     str = this.fs.readFile(file);
-    if(typeof str != "string" && "toString" in str) str = str.toString();
+    if(typeof str != 'string' && 'toString' in str) str = str.toString();
 
     //console.log('EagleProject.open', { file });
     try {
@@ -43,7 +43,7 @@ export class EagleProject {
     else throw new Error(`EagleProject: error opening '${file}': ${err}`);
     //console.log("Opened:", file);
 
-    if(doc.type == "lbr") {
+    if(doc.type == 'lbr') {
       this.data[doc.type][doc.basename] = doc;
       //console.log("Opened library:", doc.basename);
     } else this.data[doc.type] = doc;
@@ -57,7 +57,7 @@ export class EagleProject {
   /* prettier-ignore */ get children() { let children = this.documents; return children; }
   /* prettier-ignore */ get library() { return this.data.lbr; }
 
-  *iterator(t = ([v, l, d]) => [typeof v == "object" ? new EagleElement(d, l, v) : v, l, d]) {
+  *iterator(t = ([v, l, d]) => [typeof v == 'object' ? new EagleElement(d, l, v) : v, l, d]) {
     const project = this;
     for(let doc of this.documents) {
       let prefix = EagleProject.documentKey(doc);
@@ -69,12 +69,12 @@ export class EagleProject {
 
   static documentKey(d) {
     switch (d.type) {
-      case "sch":
-        return ["schematic"];
-      case "brd":
-        return ["board"];
-      case "lbr":
-        return ["library", d.basename];
+      case 'sch':
+        return ['schematic'];
+      case 'brd':
+        return ['board'];
+      case 'lbr':
+        return ['library', d.basename];
     }
     return null;
   }
@@ -107,7 +107,7 @@ export class EagleProject {
     //console.log('loadLibraries:', dirs, names);
     for(let name of names) {
       let lib = this.findLibrary(name, dirs);
-      if(!lib) throw new Error(`EagleProject library '${name}' not found in:  \n${dirs.join("\n  ")}`);
+      if(!lib) throw new Error(`EagleProject library '${name}' not found in:  \n${dirs.join('\n  ')}`);
       this.open(lib);
     }
   }
@@ -119,7 +119,7 @@ export class EagleProject {
     //console.log('documents:', this.documents);
 
     const { schematic, board } = this;
-    const entityNames = ["package", "symbol", "deviceset"];
+    const entityNames = ['package', 'symbol', 'deviceset'];
 
     let libraries = {
       file: l[name],
@@ -128,23 +128,23 @@ export class EagleProject {
     };
     let layers = {
       schematic: Util.toMap(
-        schematic.layers.list.filter(l => l.active == "yes"),
+        schematic.layers.list.filter(l => l.active == 'yes'),
         l => [l.number, l]
       ),
       board: Util.toMap(
-        board.layers.list.filter(l => l.active == "yes"),
+        board.layers.list.filter(l => l.active == 'yes'),
         l => [l.number, l]
       )
     };
 
     //console.log('libraries.schematic:', libraries.schematic);
-    for(let k of ["schematic", "board"]) {
+    for(let k of ['schematic', 'board']) {
       //console.log(`project[${k}].libraries:`, this[k].libraries);
       //console.log(`libraries[${k}]:`, libraries[k]);
       //console.log(`libraries[${k}].packages:`, libraries[k].packages);
       const libProps = lib => {
         const { packages, devicesets, symbols } = lib;
-        return Object.fromEntries(["packages", "symbols", "devicesets"].map(k => [k, lib[k]]).filter(([k, v]) => v));
+        return Object.fromEntries(['packages', 'symbols', 'devicesets'].map(k => [k, lib[k]]).filter(([k, v]) => v));
         return { packages, devicesets, symbols };
       };
       const destLib = libProps(libraries[k]);
@@ -153,7 +153,7 @@ export class EagleProject {
         //console.log('entity:', entity);
         const srcMap = srcLib[entity];
         const dstMap = destLib[entity];
-        const transformName = n => n.replace(/[.,][0-9]*/g, "").replace(/([^0-9])([0-9])([^0-9])/g, "$10$2$3");
+        const transformName = n => n.replace(/[.,][0-9]*/g, '').replace(/([^0-9])([0-9])([^0-9])/g, '$10$2$3');
         let ent = srcLib[entity].entries();
         let m = new Map(ent);
         //console.log(`dstMap:`, dstMap);
@@ -179,11 +179,11 @@ export class EagleProject {
     if(path.length == 0) return this;
 
     switch (key) {
-      case "board":
-      case "schematic":
+      case 'board':
+      case 'schematic':
         doc = this[key];
         break;
-      case "library":
+      case 'library':
         name = path.shift();
         doc = this[key][name];
         break;
@@ -191,12 +191,12 @@ export class EagleProject {
         break;
     }
     if(!doc || !doc.index) {
-      throw new Error("ERROR: project.index(" + l.join(", ") + " )");
+      throw new Error('ERROR: project.index(' + l.join(', ') + ' )');
       return null;
     }
     if(path.length == 0) return doc;
     return doc.index(path);
   }
 
-  saveTo = (dir = ".", overwrite = false) => new Promise((resolve, reject) => Promise.all(this.documents.map(doc => doc.saveTo([dir, doc.filename].join("/"), overwrite))).then(result => resolve(Object.fromEntries(result))));
+  saveTo = (dir = '.', overwrite = false) => new Promise((resolve, reject) => Promise.all(this.documents.map(doc => doc.saveTo([dir, doc.filename].join('/'), overwrite))).then(result => resolve(Object.fromEntries(result))));
 }

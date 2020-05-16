@@ -1,4 +1,4 @@
-import { trkl } from "./trkl.js";
+import { trkl } from './trkl.js';
 
 export function ScrollHandler(handler) {
   var start = {};
@@ -33,26 +33,26 @@ export const ScrollEvents = listener => ({
 });
 
 export const addScrollListeners = (listener, element, passive = false) => {
-  if(window.devp) devp.logEntry("addScrollListeners");
+  if(window.devp) devp.logEntry('addScrollListeners');
   //console.log("adding scroll listeners ", { disabled: listener.disabledfn() });
-  element.addEventListener("scroll", listener, { passive });
-  element.addEventListener("wheel", listener, { passive });
-  element.addEventListener("DOMMouseScroll", listener, { passive });
-  element.addEventListener("keydown", listener, { passive });
-  element.addEventListener("touchmove", listener, { passive });
+  element.addEventListener('scroll', listener, { passive });
+  element.addEventListener('wheel', listener, { passive });
+  element.addEventListener('DOMMouseScroll', listener, { passive });
+  element.addEventListener('keydown', listener, { passive });
+  element.addEventListener('touchmove', listener, { passive });
   return element;
 };
 
 export const removeScrollListeners = (listener, element, passive = false) => {
   if(listener) {
-    if(window.devp) devp.logEntry("removeScrollListeners");
+    if(window.devp) devp.logEntry('removeScrollListeners');
     //console.log("removing scroll listeners ", { disabled: listener.disabledfn() });
 
-    element.removeEventListener("scroll", listener, { passive });
-    element.removeEventListener("wheel", listener, { passive });
-    element.removeEventListener("DOMMouseScroll", listener, { passive });
-    element.removeEventListener("keydown", listener, { passive });
-    element.removeEventListener("touchmove", listener, { passive });
+    element.removeEventListener('scroll', listener, { passive });
+    element.removeEventListener('wheel', listener, { passive });
+    element.removeEventListener('DOMMouseScroll', listener, { passive });
+    element.removeEventListener('keydown', listener, { passive });
+    element.removeEventListener('touchmove', listener, { passive });
   }
   return element;
 };
@@ -80,7 +80,7 @@ export function ScrollDisabler(disabledfn = () => true, element) {
     if(disabled) {
       if(event.keyCode !== undefined && keys.indexOf(event.keyCode) != -1) {
         event.preventDefault();
-      } else if(event.type == "wheel" || event.type == "scroll" || event.type == "touchmove" || event.type == "DOMMouseScroll") {
+      } else if(event.type == 'wheel' || event.type == 'scroll' || event.type == 'touchmove' || event.type == 'DOMMouseScroll') {
         if(event.cancelable) event.preventDefault();
       }
 

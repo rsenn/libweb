@@ -1,21 +1,21 @@
-import Util from "../util.js";
+import Util from '../util.js';
 
 /*
  * Token Definitions
  */
 export class Token {
   static types = {
-    comment: "comment",
-    stringLiteral: "stringLiteral",
-    templateLiteral: "templateLiteral",
-    numericLiteral: "numericLiteral",
-    booleanLiteral: "booleanLiteral",
-    nullLiteral: "nullLiteral",
-    punctuator: "punctuator",
-    keyword: "keyword",
-    identifier: "identifier",
-    regexpLiteral: "regexpLiteral",
-    eof: "eof"
+    comment: 'comment',
+    stringLiteral: 'stringLiteral',
+    templateLiteral: 'templateLiteral',
+    numericLiteral: 'numericLiteral',
+    booleanLiteral: 'booleanLiteral',
+    nullLiteral: 'nullLiteral',
+    punctuator: 'punctuator',
+    keyword: 'keyword',
+    identifier: 'identifier',
+    regexpLiteral: 'regexpLiteral',
+    eof: 'eof'
   };
 
   constructor(type, value, position) {
@@ -56,12 +56,12 @@ export class Token {
 
     value = Util.abbreviate(value, 80);
 
-    value = value.replace(/\n/g, "\\n").replace(/\t/g, "\\t");
+    value = value.replace(/\n/g, '\\n').replace(/\t/g, '\\t');
 
-    if(type == "identifier") value = Util.colorText(value, 1, 33);
-    else if(type == "keyword") value = Util.colorText(value, 1, 31);
-    else if(type == "comment") value = Util.colorText(value, 1, 32);
-    else if(type == "templateLiteral") value = Util.colorText(value, 1, 35);
+    if(type == 'identifier') value = Util.colorText(value, 1, 33);
+    else if(type == 'keyword') value = Util.colorText(value, 1, 31);
+    else if(type == 'comment') value = Util.colorText(value, 1, 32);
+    else if(type == 'templateLiteral') value = Util.colorText(value, 1, 35);
     else value = Util.colorText(value, 1, 36);
 
     return `${position} ${type} ${value}`;

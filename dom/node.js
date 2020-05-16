@@ -30,9 +30,9 @@ export class Node {
   }
 
   static *map(map, propFn) {
-    if(!propFn && "getPropertyValue" in map) propFn = k => [k, map.getPropertyValue(k)];
+    if(!propFn && 'getPropertyValue' in map) propFn = k => [k, map.getPropertyValue(k)];
 
-    if(!propFn && typeof map.item == "function")
+    if(!propFn && typeof map.item == 'function')
       propFn = (k, i) => {
         let { name, value } = map.item(i);
         return [name, value];

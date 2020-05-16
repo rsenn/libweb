@@ -1,5 +1,5 @@
-import { Graph } from "./graph.js";
-import { Intersection } from "./intersection.js";
+import { Graph } from './graph.js';
+import { Intersection } from './intersection.js';
 
 export class PolygonFinder {
   static buildGraphFromSegments(segments) {
@@ -35,13 +35,13 @@ export class PolygonFinder {
         let possibleNeighbors = intersections.filter(possibleNeighborIntersection => intersection != possibleNeighborIntersection);
 
         possibleNeighbors.forEach(possibleNeighbor => {
-          let comparisonProperty = "";
+          let comparisonProperty = '';
           let distanceBetween = dist(intersection.point.x, intersection.point.y, possibleNeighbor.point.x, possibleNeighbor.point.y);
 
           if(possibleNeighbor.point.x !== intersection.point.x) {
-            comparisonProperty = "x";
+            comparisonProperty = 'x';
           } else if(possibleNeighbor.point.y !== intersection.point.y) {
-            comparisonProperty = "y";
+            comparisonProperty = 'y';
           } else {
             return null;
           }
@@ -104,8 +104,8 @@ export class PolygonFinder {
   static polygonsFromSegments(segments) {
     let graph = PolygonFinder.buildGraphFromSegments(segments);
     let cycles = graph.findMinimumCycles();
-    console.log("graph:", graph);
-    console.log("cycles:", cycles);
+    console.log('graph:', graph);
+    console.log('cycles:', cycles);
     return PolygonFinder.polygonsFromCycles(cycles, graph);
   }
 
@@ -114,7 +114,7 @@ export class PolygonFinder {
     for(let i = 0; i < segmentSet.length; i++) {
       for(let j = i + 1; j < segmentSet.length; j++) {
         let intersection = Intersection.findIntersection(segmentSet[i], segmentSet[j]);
-        console.log("findIntersection:", segmentSet[i].toObject(), segmentSet[j].toObject(), " = ", intersection);
+        console.log('findIntersection:', segmentSet[i].toObject(), segmentSet[j].toObject(), ' = ', intersection);
         if(intersection !== null) {
           let alreadyInSet = false;
           for(let k = 0; k < intersections.length; k++) {

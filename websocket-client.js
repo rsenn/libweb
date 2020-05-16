@@ -39,7 +39,7 @@ export class WebSocketClient {
       this.reset();
 
       this.socket = new WebSocket(url, protocols);
-      this.socket.binaryType = "arraybuffer";
+      this.socket.binaryType = 'arraybuffer';
       return this.setupListenersOnConnect();
     });
   }
@@ -50,7 +50,7 @@ export class WebSocketClient {
    */
   send(data) {
     if(!this.connected) {
-      throw this.closeEvent || new Error("Not connected.");
+      throw this.closeEvent || new Error('Not connected.');
     }
 
     this.socket.send(data);
@@ -69,7 +69,7 @@ export class WebSocketClient {
     }
 
     if(!this.connected) {
-      return Promise.reject(this.closeEvent || new Error("Not connected."));
+      return Promise.reject(this.closeEvent || new Error('Not connected.'));
     }
 
     var receivePromise = new Promise((resolve, reject) => {
@@ -130,8 +130,8 @@ export class WebSocketClient {
       };
 
       var handleOpen = event => {
-        socket.addEventListener("message", handleMessage);
-        socket.addEventListener("close", event => {
+        socket.addEventListener('message', handleMessage);
+        socket.addEventListener('close', event => {
           this.closeEvent = event;
 
           // Whenever a close event fires, the socket is effectively dead.
@@ -144,8 +144,8 @@ export class WebSocketClient {
         resolve();
       };
 
-      socket.addEventListener("error", reject);
-      socket.addEventListener("open", handleOpen);
+      socket.addEventListener('error', reject);
+      socket.addEventListener('open', handleOpen);
     });
   }
 
@@ -172,7 +172,7 @@ export class WebSocketClient {
 
   async *[Symbol.asyncIterator]() {
     while(this.readyState !== 3) {
-      yield (await oncePromise(this.socket, "message")).data;
+      yield (await oncePromise(this.socket, 'message')).data;
     }
   }
 }

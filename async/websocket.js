@@ -12,13 +12,13 @@ var oncePromise = (emitter, event) => {
 // Add an async iterator to all WebSockets
 WebSocket.prototype[Symbol.asyncIterator] = async function*() {
   while(this.readyState !== 3) {
-    yield (await oncePromise(this, "message")).data;
+    yield (await oncePromise(this, 'message')).data;
   }
 };
 
 // Tie everything together
 var run = async () => {
-  var ws = new WebSocket("ws://localhost:3000/");
+  var ws = new WebSocket('ws://localhost:3000/');
   for await (let message of ws) {
     console.log(message);
   }
