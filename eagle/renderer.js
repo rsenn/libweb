@@ -789,7 +789,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         return line;
       });
 
-      console.log('Lines:', [...lines]);
+      //console.log('Lines:', [...lines]);
 
       const path = LinesToPath(lines);
       const layer = layers[layerId];
