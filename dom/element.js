@@ -370,14 +370,14 @@ export class Element extends Node {
     return element;
   }
 
-  static moveRelative(element, to) {
+  static moveRelative(element, to, position) {
     var e = Element.find(element);
 
     var pos = Object.freeze(new Rect(to || Element.rect(e)));
     function move(x, y) {
       let rect = new Rect(pos.x + x, pos.y + y, pos.width, pos.height);
       move.last = rect;
-      return Element.move(e, rect, 'relative');
+      return Element.move(e, rect, position);
     }
     move.pos = pos;
     move.cancel = () => move(0, 0);

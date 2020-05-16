@@ -383,7 +383,7 @@ export class EagleSVGRenderer {
         const alignment = baseAlignment
           .clone()
           .rotate((rotateAlignment * Math.PI) / 180)
-          .round(1);
+          .round(0.5);
 
         //console.log(`render alignment ${text}`, Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + '']), EagleSVGRenderer.alignmentAttrs(alignment, VERTICAL) );
 

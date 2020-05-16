@@ -145,7 +145,7 @@ export class EagleElement extends EagleNode {
       pos = this.geometry();
       bb.move(pos.x, pos.y);
 
-      bb = bb.round(v => Util.roundTo(v, 2.54));
+      bb = bb.round(v => Util.roundTo(v, 1.27));
       //    console.log("getBounds", this.tagName, {bb,pos} );
 
       return bb;
