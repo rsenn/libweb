@@ -626,10 +626,10 @@ export default class devpane {
     return pane;
   }
 
-  renderPaneLayer(parent) {
+  renderPaneLayer(parent, reactDOM) {
     /* const pane = this.pane();
     const { factory } = this;*/
-    let elm = ReactDOM.render(this.render(), parent);
+    let elm = reactDOM.render(this.render(), parent);
     if(true) {
       Element.create('input', {
         type: 'button',
