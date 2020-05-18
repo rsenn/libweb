@@ -18,39 +18,6 @@ if(global.window) {
 
 export default class devpane {
   bbrect = lazyInitializer(() => Element.rect(this.parent));
-  pane = lazyInitializer(() => {
-    let pos = { right: '2em', bottom: '1em' };
-    if(this.config.has('position')) {
-      let p = this.config.get('position');
-      pos = { left: `${p.x}px`, top: `${p.y}px` };
-    }
-    let layer = this.createLayer(
-      { id: 'devpane-pane' },
-      {
-        zIndex: 18,
-        minWidth: '300px',
-        maxWidth: '80vw',
-        minHeight: '30vh',
-        maxHeight: '60vh',
-        overflowY: 'auto',
-        /*   overflowX: 'auto',*/ display: 'block',
-        position: 'absolute',
-        ...pos,
-        backgroundColor: '#fffab3ff',
-        WebkitBoxShadow: '2px 2px 6px 2px rgba(0,0,0,0.5)',
-        BoxShadow: '2px 2px 6px 2px rgba(0,0,0,1)',
-        border: '4px solid #ff0000ff',
-        borderRadius: '0.5em',
-        padding: '0px',
-        opacity: 1,
-        textAlign: 'left',
-        fontFamily: 'MiscFixedSC613,MiscFixed,Monospace,fixed-width,fixed,"Courier New"',
-        fontSize: '11px'
-      }
-    );
-    let p = this.renderPaneLayer(layer);
-    /*   layer.appendChild(p); */ return layer;
-  });
   root = lazyInitializer(() => {
     let e = this.createRectLayer(this.bbrect(), {
       width: '',
@@ -100,7 +67,40 @@ export default class devpane {
     });
   }
 
-  constructor(node = 'body', observe = '.page') {
+  constructor(node = 'body', observe = '.page', reactDOM) {
+  this.pane = lazyInitializer(() => {
+    let pos = { right: '2em', bottom: '1em' };
+    if(this.config.has('position')) {
+      let p = this.config.get('position');
+      pos = { left: `${p.x}px`, top: `${p.y}px` };
+    }
+    let layer = this.createLayer(
+      { id: 'devpane-pane' },
+      {
+        zIndex: 18,
+        minWidth: '300px',
+        maxWidth: '80vw',
+        minHeight: '30vh',
+        maxHeight: '60vh',
+        overflowY: 'auto',
+        /*   overflowX: 'auto',*/ display: 'block',
+        position: 'absolute',
+        ...pos,
+        backgroundColor: '#fffab3ff',
+        WebkitBoxShadow: '2px 2px 6px 2px rgba(0,0,0,0.5)',
+        BoxShadow: '2px 2px 6px 2px rgba(0,0,0,1)',
+        border: '4px solid #ff0000ff',
+        borderRadius: '0.5em',
+        padding: '0px',
+        opacity: 1,
+        textAlign: 'left',
+        fontFamily: 'MiscFixedSC613,MiscFixed,Monospace,fixed-width,fixed,"Courier New"',
+        fontSize: '11px'
+      }
+    );
+    let p = this.renderPaneLayer(layer, reactDOM);
+    /*   layer.appendChild(p); */ return layer;
+  });
     this.config = storage('devpane');
 
     this.parent = Element.find(node);
