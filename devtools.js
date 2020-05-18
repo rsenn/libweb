@@ -928,7 +928,10 @@ export function rect(arg) {
     a.push(__rect({ r, args }));
   }
 
-  return a.length == 1 ? a[0] : a;
+  let ret = [...a];
+  rect.list = [];
+
+  return ret.length == 1 ? ret[0] : ret;
 
   function __rect({ r, args }) {
     const rect = r;

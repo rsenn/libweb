@@ -1626,7 +1626,7 @@ Util.formatRecord = function(obj) {
   return ret;
 };
 Util.isArray = function(obj) {
-  return (obj && obj.length !== undefined && !(obj instanceof String) && !(obj instanceof Function) && typeof obj == 'function') || obj instanceof Array;
+  return (obj && !Util.isGetter(obj, 'length') && 'length' in obj && !(obj instanceof String) && !(obj instanceof Function) && typeof obj == 'function') || obj instanceof Array;
 };
 Util.equals = function(a, b) {
   if(Util.isArray(a) && Util.isArray(b)) {
@@ -1637,6 +1637,15 @@ Util.equals = function(a, b) {
 Util.isObject = function(obj) {
   const type = typeof obj;
   return type === 'function' || (type === 'object' && !!obj);
+};
+
+Util.isGetter = (obj, propName) => {
+  while(obj) {
+    let desc = Object.getOwnPropertyDescriptor(obj, propName);
+    if(desc && 'get' in desc) return true;
+    obj = Object.getPrototypeOf(obj);
+  }
+  return false;
 };
 Util.isBool = value => value === true || value === false;
 Util.size = function(obj) {

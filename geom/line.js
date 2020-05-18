@@ -47,9 +47,13 @@ export function Line(x1, y1, x2, y2) {
   } else {
     ret = 0;
   }
+
+  if(!('a' in obj) || !obj.a) obj.a = new Point(obj.x1, obj.y1);
+  if(!('b' in obj) || !obj.b) obj.b = new Point(obj.x2, obj.y2);
+
   if(!isLine(obj)) console.log('ERROR: is not a line: ', [...arguments]);
 
-  if(this !== obj) return obj;
+  /*  if(this !== obj)*/ return obj;
 }
 
 export const isLine = obj => ['x1', 'y1', 'x2', 'y2'].every(prop => obj[prop] !== undefined);
@@ -57,6 +61,7 @@ export const isLine = obj => ['x1', 'y1', 'x2', 'y2'].every(prop => obj[prop] !=
 Object.defineProperty(Line.prototype, 'a', { value: new Point(), enumerable: true });
 Object.defineProperty(Line.prototype, 'b', { value: new Point(), enumerable: true });
 */
+
 Line.prototype.intersect = function(other) {
   const ma = (this[0].y - this[1].y) / (this[0].x - this[1].x);
   const mb = (other[0].y - other[1].y) / (other[0].x - other[1].x);
@@ -218,7 +223,12 @@ Line.prototype.angle = function() {
   return Point.prototype.angle.call(Line.prototype.getSlope.call(this));
 };
 Line.prototype.getLength = function() {
-  return Point.prototype.distance.call(this.a, this.b);
+  const { a, b } = this;
+  const { x1, y1, x2, y2 } = this;
+  //console.log("a:",a, " b:",b);
+  console.log('a:', a, ' b:', b);
+  console.log('this:', this);
+  return Point.prototype.distance.call(a, b);
 };
 Line.prototype.endpointDist = function(point) {
   return Math.min(point.distance(this.a), point.distance(this.b));
@@ -240,7 +250,7 @@ Line.prototype.distanceToPoint = function(p) {
   return Math.sqrt(Line.prototype.distanceToPointSquared.call(this, p));
 };
 
-Object.defineProperty(Line.prototype, 'length', {
+Object.defineProperty(Line.prototype, 'len', {
   get: Line.prototype.getLength
 });
 Object.defineProperty(Line.prototype, 'cross', {

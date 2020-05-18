@@ -292,7 +292,7 @@ PointList.prototype.lines = function(closed = false) {
   return iterableObj;
 };
 PointList.prototype.toString = function(sep = ',', prec) {
-  return Point.prototype.map.call(this, point => (Point.prototype.toString ? Point.prototype.toString.call(point, prec, sep) : point + '')).join(' ');
+  return Array.prototype.map.call(this, point => (Point.prototype.toString ? Point.prototype.toString.call(point, prec, sep) : point + '')).join(' ');
 };
 PointList.prototype.toSource = function() {
   return 'new PointList([' + PointList.prototype.map.call(this, point => Point.prototype.toSource.call(point)).join(',') + '])';
