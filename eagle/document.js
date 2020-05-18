@@ -35,7 +35,7 @@ export class EagleDocument extends EagleNode {
 
       type = type || filename.replace(/.*\//g, '').replace(/.*\./g, '');
     }
-    console.log('load document:', { project, xml: xmlStr.substring(0, 100), type });
+    //console.log('load document:', { project, xml: xmlStr.substring(0, 100), type });
     this.type = type;
 
     if(project) this.owner = project;

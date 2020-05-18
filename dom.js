@@ -17,7 +17,7 @@ import { Node } from './dom/node.js';
 import { Element, isElement } from './dom/element.js';
 import { CSS } from './dom/css.js';
 import { SVG } from './dom/svg.js';
-import { ReactComponent } from './dom/reactComponent.js';
+//import { ReactComponent } from './dom/reactComponent.js';
 import { Container } from './dom/container.js';
 import { Layer, Renderer } from './dom/layer.js';
 import { Select } from './dom/select.js';
