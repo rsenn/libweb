@@ -1,5 +1,5 @@
-import { hydrate, Fragment, createRef, isValidElement, cloneElement, toChildArray } from '../../modules/preact/dist/preact.mjs';
-import { h, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../../modules/htm/preact/standalone.mjs';
+import { hydrate, Fragment, createRef, isValidElement, cloneElement, toChildArray } from '../../node_modules/preact/dist/preact.mjs';
+import { h, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../../node_modules/htm/preact/standalone.mjs';
 
 import { Element } from './element.js';
 import Util from '../util.js';
@@ -49,7 +49,7 @@ export class ReactComponent {
       else if(typeof arg.type == 'function') tagName = arg.type;
       else tagName = arg.type + '';
 
-      let { children, key, ...props } = arg.props || {};
+      let { children, key, innerHTML, ...props } = arg.props || {};
 
       let obj = { tagName, ...props };
       if('key' in arg.props && key !== undefined) obj.key = key;
@@ -57,6 +57,7 @@ export class ReactComponent {
       let a = React.toChildArray(children);
       children = a.length > 0 ? this.toObject(...a) : [];
       obj.children = children instanceof Array ? children : [children];
+      if(innerHTML) obj.children.push(innerHTML);
       ret.push(obj);
     }
     return Util.isArray(ret) && ret.length == 1 ? ret[0] : ret;
@@ -67,35 +68,47 @@ export class ReactComponent {
     x = h(React.Fragment, { id: 'test' }, [h('blah', { className: 'test' }), h('p', { style: { width: '100%' } })]);
   }
 
+  static formats = {
+    HTML: 0,
+    JSX: 1,
+    H: 2
+  };
+
   static stringify(obj, opts = {}) {
-    let { fmt } = opts;
+    let { fmt = 0 } = opts;
     let s = '';
-    if(obj.__ === null && 'key' in x && 'ref' in x) obj = this.toObject(obj);
+    if(obj.__ === null && 'key' in obj && 'ref' in obj) obj = this.toObject(obj);
     if(Util.isArray(obj)) {
       for(let item of obj) {
-        s += fmt == 0 ? '' : s == '' ? '' : `, `;
+        s += fmt < 2 ? '\n' : s == '' ? '' : `, `;
         s += this.stringify(item);
       }
       return s;
+    } else if(typeof obj == 'string') {
+      return obj;
     }
     let { tagName, children, ...props } = obj;
+    if(props['className']) {
+      props['class'] = props['className'];
+      delete props['className'];
+    }
     for(let prop in props) {
-      let value = Util.toString(props[prop]);
-      s += fmt == 0 ? ` ${prop}={${value}}` : (s == '' ? '' : `, `) + ` ${prop}: ${value}`;
+      let value = props[prop];
+      s += fmt == 0 ? ` ${prop}="${value + ''}"` : fmt == 1 ? ` ${prop}={${Util.toString(value)}}` : (s == '' ? '' : `, `) + ` ${prop}: ${Util.toString(value)}`;
     }
     if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
 
-    console.log('tagName:', tagName);
+    //console.log('tagName:', tagName);
 
     tagName += '';
 
-    s = fmt == 0 ? `<${tagName} ${s}` : `h('${tagName}', { ${s}`;
+    s = fmt == 0 ? `<${tagName}${s}` : `h('${tagName}', {${s}`;
     if(!children || !children.length) {
       s += fmt == 0 ? ' />' : ` })`;
     } else {
-      s += fmt == 0 ? `>` : ` }, [ `;
-      s += this.stringify(children);
-      s += fmt == 0 ? `</${tagName}>` : ` ])`;
+      s += fmt < 2 ? `>` : ` }, [ `;
+      s += Util.indent(this.stringify(children));
+      s += fmt < 2 ? `</${tagName}>` : ` ])`;
     }
     return s;
   }

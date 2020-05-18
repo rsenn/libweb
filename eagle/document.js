@@ -6,6 +6,7 @@ import { EaglePath, EagleRef } from './locator.js';
 import { EagleNode } from './node.js';
 import { EagleElement } from './element.js';
 import { toXML } from './common.js';
+import { BBox, Rect, PointList } from '../geom.js';
 
 export class EagleDocument extends EagleNode {
   static types = ['brd', 'sch', 'lbr'];
@@ -94,5 +95,58 @@ export class EagleDocument extends EagleNode {
 
   *getAll(name) {
     yield* super.getAll(name, (v, l, p) => new EagleElement(this, l));
+  }
+
+  getBounds() {
+    let bb = new BBox();
+
+    /*
+    for(let element of this.getAll((e, p) => e.tagName === "element")) {
+//      if(/library/.test(element.xpath())) continue;
+let layer = element.layer;
+
+        if(element.attributes.package) {
+          let pr = element.package.getBounds();
+            console.log("getBounds", pr);
+          }
+    }*/
+
+    for(let instance of this.getAll((e, p) => e.tagName == 'instance')) {
+      let part = instance.part;
+      let device = part.device;
+      let deviceset = part.deviceset;
+      let gate = deviceset.gates[instance.attributes.gate];
+      let symbol = part.library.symbols[gate.attributes.symbol];
+
+      let geometries = {
+        gate: gate.geometry(),
+        symbol: new Rect(symbol.getBounds()).toPoints(),
+        instance: instance.transformation()
+      };
+
+      let matrix = geometries.instance.toMatrix();
+
+      let points = new PointList([...matrix.transform_points(geometries.symbol)]);
+
+      let bbrect = points.boundingRect();
+
+      console.log(' points:', points);
+      console.log(' bbrect:', bbrect);
+
+      //  bb.update(bbrect);
+
+      /*
+      if(layer && (layer.number > 90))
+        continue;*/
+      /*
+      let g = symbol.geometry();
+      if(g) {
+*/
+      /*    console.log("getBounds", element, g);*/
+      bb.update(g);
+      // }
+    }
+    //console.log('getBounds', bb);
+    return bb;
   }
 }

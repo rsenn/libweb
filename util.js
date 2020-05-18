@@ -339,6 +339,11 @@ Util.trimRight = function(str, charset) {
   const r2 = RegExp(`[${charset}]*$`);
   return str.replace(r2, '');
 };
+Util.indent = (text, space = '  ') => {
+  text = text.trim();
+  if(!/\n/.test(text)) return text;
+  return text.replace(/(\n)/g, '\n' + space) + '\n';
+};
 Util.define = (obj, key, value, enumerable = false) => {
   if(typeof key == 'object') {
     for(let prop in key) Util.define(obj, prop, key[prop], Util.isBool(value) ? value : false);

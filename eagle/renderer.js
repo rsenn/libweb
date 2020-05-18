@@ -174,7 +174,7 @@ export class EagleSVGRenderer {
     let ctor = EagleSVGRenderer.rendererTypes[doc.type];
     Object.setPrototypeOf(this, ctor.prototype);
     this.doc = doc;
-    this.create = (tag, attrs, parent) => factory(tag, 'id' in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
+    this.create = factory; //(tag, attrs, parent) => factory(tag, 'id' in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
     const { settings, layers, libraries, classes, designrules, elements, signals, plain } = doc;
     this.elements = elements;
     this.signals = signals;
@@ -376,6 +376,7 @@ export class EagleSVGRenderer {
 
         if(finalTransformation.rotation) {
           if(finalTransformation.rotation.angle < 0) finalTransformation.rotation.angle = Math.abs(finalTransformation.rotation.angle);
+          // finalTransformation.rotation.angle %= 180;
         }
 
         const baseAlignment = EagleSVGRenderer.alignment(align);
@@ -474,6 +475,54 @@ export class EagleSVGRenderer {
 
     if(hv & HORIZONTAL) r['text-anchor'] = horizontalAlignment[Math.round(x) + 1] || horizontalAlignment[defaultX + 1];
     return r;
+  }
+
+  render(doc = this.doc, parent) {
+    let bounds = doc.getBounds();
+
+    const { width, height } = new Size(bounds).toCSS('mm');
+
+    parent = this.create('svg', { width, height, viewBox: bounds.toString() }, parent);
+
+    //this.renderLayers(parent);
+
+    const step = 2.54;
+    const gridColor = '#0000aa';
+    const gridWidth = 0.1;
+
+    this.create(
+      'path',
+      {
+        d: `M ${step},0 L 0,0 L 0,${step}`,
+        fill: 'none',
+        stroke: gridColor,
+        'stroke-width': gridWidth
+      },
+      this.create(
+        'pattern',
+        {
+          id: 'grid',
+          width: step,
+          height: step,
+          patternUnits: 'userSpaceOnUse'
+        },
+        this.create('defs', {}, parent)
+      )
+    );
+    this.create(
+      'rect',
+      { ...bounds.rect.toObject(), fill: 'url(#grid)' },
+      this.create(
+        'g',
+        {
+          id: 'grid'
+        },
+        parent
+      )
+    );
+    [...this.sheets].forEach(sheet => this.renderSheet(sheet, parent));
+
+    return parent;
   }
 }
 EagleSVGRenderer.horizontalAlignment = ['start', 'middle', 'end'];
@@ -633,15 +682,6 @@ export class SchematicRenderer extends EagleSVGRenderer {
     let g = this.create('g', { className: `net.${net.name}` }, parent);
     for(let segment of net.children) this.renderCollection(segment.children, g, { labelText: net.name });
   }
-
-  render(doc = this.doc, parent) {
-    this.renderLayers(parent);
-
-    for(let sheet of this.sheets) {
-      this.renderSheet(sheet, parent);
-    }
-  }
-
   renderSheet(sheet, parent) {
     //console.log(`${Util.className(this)}.renderSheet`, { sheet, parent });
 
@@ -853,10 +893,12 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   render(doc = this.doc, parent) {
+    parent = super.render(doc, parent);
+
     this.renderLayers(parent);
 
-    let signalsGroup = this.create('g', { className: 'signals', strokeLinecap: 'round' }, parent);
-    let elementsGroup = this.create('g', { className: 'elements' }, parent);
+    let signalsGroup = parent; // this.create('g', { className: 'signals', strokeLinecap: 'round' }, parent);
+    let elementsGroup = parent; //this.create('g', { className: 'elements' }, parent);
 
     let plainGroup = this.create('g', { className: 'plain' }, parent);
 
@@ -878,6 +920,8 @@ export class BoardRenderer extends EagleSVGRenderer {
     let [plain] = [...board.getAll('plain')];
 
     this.renderCollection(plain.children, plainGroup);
+
+    return parent;
   }
 }
 
@@ -929,26 +973,6 @@ export function renderDocument(doc, container) {
     defs = first;
   }
   if(!Element.find('pattern', defs)) {
-    const step = '2.54';
-    SVG.create(
-      'path',
-      {
-        d: `M ${step},0 L 0,0 L 0,${step}`,
-        fill: 'none',
-        stroke: gridColor,
-        'stroke-width': gridWidth
-      },
-      SVG.create(
-        'pattern',
-        {
-          id: 'grid',
-          width: step,
-          height: step,
-          patternUnits: 'userSpaceOnUse'
-        },
-        defs
-      )
-    );
   }
   if(!Element.find('filter', defs)) {
     SVG.create(

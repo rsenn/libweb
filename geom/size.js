@@ -75,7 +75,7 @@ Size.prototype.aspect = function() {
 };
 Size.prototype.toCSS = function(units) {
   let ret = {};
-  units = units || this.units || { width: 'px', height: 'px' };
+  units = typeof units == 'string' ? { width: units, height: units } : units || this.units || { width: 'px', height: 'px' };
   if(this.width !== undefined) ret.width = this.width + (units.width || 'px');
   if(this.height !== undefined) ret.height = this.height + (units.height || 'px');
   return ret;

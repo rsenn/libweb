@@ -5,7 +5,8 @@ export class Transformation {
   type = null;
 
   constructor(type) {
-    this.type = type;
+    Util.define(this, 'type', type);
+    //    this.type = type;
 
     return this;
   }
@@ -13,7 +14,6 @@ export class Transformation {
   get [Symbol.isConcatSpreadable]() {
     return this.constructor === TransformationList || Object.getPrototypeof(this) == TransformationList.prototype || Object.getPrototypeof(this).constructor == TransformationList;
   }
-
   get axes() {
     return this.axis !== undefined ? [this.axis] : ['x', 'y', 'z'].filter(axis => axis in this);
   }
@@ -320,7 +320,9 @@ export class TransformationList extends Array {
     return this;
   }
 
-  [Symbol.isConcatSpreadable] = () => true;
+  get [Symbol.isConcatSpreadable]() {
+    return true;
+  }
 
   [Symbol.toStringTag]() {
     return `TransformationList[${this.length}]`;

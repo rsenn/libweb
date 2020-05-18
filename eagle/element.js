@@ -3,7 +3,7 @@ import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { makeEagleNodeList } from './nodeList.js';
 import { toXML, inspect, dump } from './common.js';
-import { BBox, Point, Line, Rect } from '../geom.js';
+import { BBox, Point, Line, Rect, TransformationList, Translation, Rotation, Scaling } from '../geom.js';
 
 export class EagleElement extends EagleNode {
   tagName = '';
@@ -150,17 +150,21 @@ export class EagleElement extends EagleNode {
 
       return bb;
     }
+    return super.getBounds();
+  }
 
-    bb = new BBox();
-    for(let element of this.getAll(e => e.tagName !== undefined)) {
-      let g = element.geometry();
-      if(g) {
-        //console.log("getBounds", element.layer, g);
-        bb.update(g);
-      }
-    }
-    // console.log("getBounds", bb);
-    return bb;
+  transformation() {
+    let ret = new TransformationList();
+    let rot = this.rot || '';
+
+    if('x' in this && 'y' in this) ret.push(new Translation(this.x, this.y));
+
+    if(/M/.test(rot)) ret.push(new Scaling(-1, 1));
+
+    let angle = +rot.replace(/[MR]/g, '');
+
+    if(angle > 0) ret.push(new Rotation(angle));
+    return ret;
   }
 
   geometry() {

@@ -201,6 +201,24 @@ export class EagleInterface {
     return bb;
   }
 
+  geometry() {
+    const { attributes } = this.raw;
+    const keys = Object.keys(attributes);
+    const makeGetterSetter = k => v => (v === undefined ? this[k] : (this[k] = v));
+
+    if(['x1', 'y1', 'x2', 'y2'].every(prop => keys.includes(prop))) {
+      return Line.bind(this, null, makeGetterSetter);
+    } else if(['x', 'y'].every(prop => keys.includes(prop))) {
+      const { x, y } = Point(this);
+
+      /* if(keys.includes('radius')) 
+        return Rect.fromCircle(x, y, +this.radius);*/
+
+      if(['width', 'height'].every(prop => keys.includes(prop))) return Rect.bind(this, null, makeGetterSetter);
+      else return Point.bind(this, null, makeGetterSetter);
+    }
+  }
+
   locate(...args) {
     let { element, path, predicate, transform } = parseArgs(args);
     return predicate(this.find((v, l, d) => v === element, path));
