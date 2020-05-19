@@ -56,7 +56,7 @@ export function Line(x1, y1, x2, y2) {
   /*  if(this !== obj)*/ return obj;
 }
 
-export const isLine = obj => ['x1', 'y1', 'x2', 'y2'].every(prop => obj[prop] !== undefined);
+export const isLine = obj => ['x1', 'y1', 'x2', 'y2'].every(prop => obj[prop] !== undefined) || ['a', 'b'].every(prop => isPoint(obj[prop]));
 /*
 Object.defineProperty(Line.prototype, 'a', { value: new Point(), enumerable: true });
 Object.defineProperty(Line.prototype, 'b', { value: new Point(), enumerable: true });
