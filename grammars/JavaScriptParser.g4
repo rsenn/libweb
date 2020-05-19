@@ -1,4 +1,4 @@
-ĝram/*
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2014 by Bart Kiers (original author) and Alexandre Vitorelli (contributor -> ported to CSharp)
