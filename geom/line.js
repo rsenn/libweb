@@ -51,7 +51,9 @@ export function Line(x1, y1, x2, y2) {
   if(!('a' in obj) || !obj.a) obj.a = new Point(obj.x1, obj.y1);
   if(!('b' in obj) || !obj.b) obj.b = new Point(obj.x2, obj.y2);
 
-  if(!isLine(obj)) console.log('ERROR: is not a line: ', [...arguments]);
+  if(!isLine(obj)) {
+    console.log('ERROR: is not a line: ', Util.toString(arg), Util.toString(obj));
+  }
 
   /*  if(this !== obj)*/ return obj;
 }
