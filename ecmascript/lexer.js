@@ -96,7 +96,7 @@ const countLinesCols = (s, p1, p2, lc = { line: 1, column: 1 }) => {
 };
 
 export function Position(line, column, pos, file, freeze = true) {
-  let obj = this ||  new.target.test || this ? this : {};
+  let obj = this || new.target.test || this ? this : {};
 
   /*console.log("obj.constructor:",obj.constructor);
   //console.log("freeze:",freeze);*/
@@ -329,7 +329,7 @@ export class Lexer {
     let c;
     while(n-- > 0) {
       c = this.next();
-      console.log(`skipped char '${c}'`);
+      //console.log(`skipped char '${c}'`);
     }
     return c;
   }
@@ -576,10 +576,17 @@ export class Lexer {
         return false;
       } else if(c == '/' && prev != '\\') {
         slashes++;
+      } else if(c == 'n' && prev == '\\') {
+        word += '\n';
+        prev = c;
+        return true;
       } else if(slashes == 2) {
         return c == 'g' || c == 'i';
+      } else if(c == '\\') {
+        prev = c;
+        return true;
       }
-      if(prev == ';') return false;
+      //  if(prev == ';') return false;
       word += c;
       prev = c;
       return true;
@@ -654,17 +661,17 @@ export class Lexer {
 
         let fn = doSubst ? this.lexText : defaultFn;
         let ret;
-        console.log('self', { c, doSubst, fn }, this.errorRange(), position.toString());
+        //console.log('self', { c, doSubst, fn }, this.errorRange(), position.toString());
 
         if(doSubst && c == '}' /*&& fn === this.lexPunctuator)*/) {
-          console.log('self:', { c, ret, fn }, position + '');
+          //console.log('self:', { c, ret, fn }, position + '');
           c = this.peek();
           //   this.skip();
-          console.log('self:', { c, doSubsbt, start, pos });
+          //console.log('self:', { c, doSubsbt, start, pos });
           // this.ignore();
           this.addToken(Token.types.punctuator);
-template.inSubst = false;
-          return fn/*()*/;
+          template.inSubst = false;
+          return fn /*()*/;
         }
         if(fn === null) throw new Error();
 
@@ -677,14 +684,14 @@ template.inSubst = false;
     let inSubst = (this.template && this.template.inSubst) || template.inSubst;
     if(cont) {
       c = this.peek();
-            console.log('lexTemplate peek c:', { c });
+      //console.log('lexTemplate peek c:', { c });
 
-if(c != '`') {
-      c = this.next();
-      console.log('lexTemplate continue c:', { c });
-      c = this.peek();
-      console.log('lexTemplate continue template:', { c, cont, inSubst });
-    }
+      if(c != '`') {
+        c = this.next();
+        //console.log('lexTemplate continue c:', { c });
+        c = this.peek();
+        //console.log('lexTemplate continue template:', { c, cont, inSubst });
+      }
       //      throw new Error();
       return template;
     }
@@ -701,7 +708,7 @@ if(c != '`') {
         prevChar = c;
         c = this.next();
         ++n;
-        console.log(`lexTemplate`, { c, escapeEncountered });
+        //console.log(`lexTemplate`, { c, escapeEncountered });
         if(c === null) {
           throw this.error(
             `Illegal template token (${n})  '${this.source[this.start]}': ${this.errorRange()}`
@@ -717,13 +724,13 @@ if(c != '`') {
             //this.addToken(Token.types.punctuator);
 
             this.skip(2);
-            console.log('lexTemplate template:', { c: this.peek(), prevChar });
+            //console.log('lexTemplate template:', { c: this.peek(), prevChar });
 
             //           this.skip(2);
             this.ignore();
             this.inSubst = true;
             //sreturn this.lexPunctuator.bind(this);
-            console.log('addtoken:', this.token.toString());
+            //console.log('addtoken:', this.token.toString());
             return done(true, this.lexText);
           } else if(c === '`') {
             this.addToken(Token.types.templateLiteral);
@@ -743,7 +750,7 @@ if(c != '`') {
     }
     /*  template.inSubst = inSubst;
     if(this.template !== template) this.template = template;
-    console.log("lexTemplate:", { c, startToken, inSubst }, this.line + 1 + ":" + (1 + this.column));*/
+    //console.log("lexTemplate:", { c, startToken, inSubst }, this.line + 1 + ":" + (1 + this.column));*/
 
     return template.call(this);
   }

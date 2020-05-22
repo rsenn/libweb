@@ -42,7 +42,7 @@ export class FunctionLiteral extends ESNode {
     this.params = params;
     this.body = body;
     //this.exported = exported;
-    this.async = is_async;
+    this.is_async = is_async;
     this.generator = generator;
   }
 }
@@ -368,7 +368,7 @@ export class FunctionDeclaration extends FunctionLiteral {
 export class ArrowFunction extends ESNode {
   constructor(params, body, is_async) {
     super('ArrowFunction');
-    this.async = is_async;
+    this.is_async = is_async;
     this.params = params;
     this.body = body;
     // console.log('New FunctionDeclaration: ', JSON.stringify({ id, params, // exported }));
@@ -411,6 +411,17 @@ export class PropertyDefinition extends ESNode {
 
   constructor(id, value, flags) {
     super('PropertyDefinition');
+    this.id = id;
+    this.value = value;
+    this.flags = flags;
+  }
+}
+
+export class MemberVariable extends ESNode {
+  static STATIC = 4;
+
+  constructor(id, value, flags) {
+    super('MemberVariable');
     this.id = id;
     this.value = value;
     this.flags = flags;
@@ -573,6 +584,7 @@ export const CTORS = {
   ObjectBindingPattern,
   ObjectLiteral,
   PropertyDefinition,
+  MemberVariable,
   Program,
   RestOfExpression,
   ReturnStatement,
