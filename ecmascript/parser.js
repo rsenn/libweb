@@ -14,7 +14,8 @@ import {
   TemplateLiteral,
   ImportStatement,
   Literal,
-  MemberExpression
+  MemberExpression,
+  FunctionDeclaration
 } from './estree.js';
 import { SortedMap } from '../container/sortedMap.js';
 import MultiMap from '../container/multiMap.js';
@@ -41,7 +42,7 @@ export class Parser {
     this.processed = [];
     this.lexer = new Lexer(sourceText, fileName, this.handleComment);
     this.stack = [];
-    this.prefix = fileName ? `${fileName}:` : '';
+    this.prefix = fileName ? ` ${fileName}: ` : '';
 
     this.comments = [];
     this.factory = new Factory();
@@ -307,7 +308,7 @@ function backTrace() {
       return null;
     })
     .filter(e => e != null)
-    .map(e => `${e.file}:${e.line}:${e.column} ${e.name}`);
+    .map(e => ` ${e.file}:${e.line}:${e.column} ${e.name} `);
 
   //console.log("STACK: ", arr.join("\n"));
 
@@ -404,7 +405,7 @@ export class ECMAScriptParser extends Parser {
         throw this.error(`Expected: ${keywords.join(' ')}    Actual: ${token.value || token.type}`);
       }
     } else if(keywords !== token.value) {
-      throw this.error(`Expected: ${keywords}    Actual: ${token.value || token.type}`);
+      throw this.error(` Expected: ${keywords}    Actual: ${token.value || token.type}`);
     }
     return token;
   }
@@ -439,9 +440,10 @@ export class ECMAScriptParser extends Parser {
   }
 
   parseTemplateLiteral() {
-    let token,
+    let i = 0, token,
       part,
       parts = [];
+
     this.templateLevel = this.templateLevel || 0;
     this.templateLevel++;
 
@@ -452,11 +454,14 @@ export class ECMAScriptParser extends Parser {
 
       if(!this.matchLiteral()) break;
       part = this.expectLiteral();
+
+     /* if(i == 0)
+        part.value = part.value.substring(1);*/
       console.log('part:', part);
 
       parts.push(part);
 
-      if(this.token.value.endsWith('`') || part.value.endsWith('`')) break;
+      if((i > 0  || part.value.length > 1)  && /*this.token.value.endsWith('`') ||*/ part.value.endsWith('`')) break;
 
       /*  if(this.matchPunctuators("${")) {
         this.expectPunctuators("${");
@@ -489,6 +494,7 @@ export class ECMAScriptParser extends Parser {
         this.template.inSubst = false;*/
         console.log('token:', this.token.toString());
       }
+      i++;
     }
     this.templateLevel--;
 
@@ -680,7 +686,7 @@ export class ECMAScriptParser extends Parser {
       let arg = this.parseAssignmentExpression();
       if(rest_of) arg = new this.estree.RestOfExpression(arg);
       args.push(arg);
-      if(rest_of) break;
+      //if(rest_of) break;
       if(this.matchPunctuators(',')) {
         this.expectPunctuators(',');
         continue;
@@ -697,6 +703,12 @@ export class ECMAScriptParser extends Parser {
       if(this.matchPunctuators('.')) {
         this.expectPunctuators('.');
         const identifier = this.expectIdentifier(true);
+
+        console.log("object:", object);
+        console.log("identifier:", identifier);
+
+        if(object === null)
+          throw this.error("Object "+object);
 
         object = new this.estree.MemberExpression(object, identifier, false);
 
@@ -772,9 +784,22 @@ export class ECMAScriptParser extends Parser {
 */
     this.log(`parseNewOrCallOrMemberExpression(${couldBeNewExpression}, ${couldBeCallExpression})`);
     let object = null;
-    if(!is_async && this.matchKeywords('new')) {
+
+    if(!is_async && this.matchKeywords('new') && couldBeNewExpression) {
+    //console.log("token:", this.token);
       this.expectKeywords('new');
-      const result = this.parseNewOrCallOrMemberExpression(couldBeNewExpression, false);
+
+
+/*if(!this.matchPunctuators('.')) */{
+//if(this.token.value == 'new')
+
+
+    if(this.matchPunctuators('.')) {
+      object = new this.estree.Identifier('new');
+
+    } else {
+            const result = this.parseNewOrCallOrMemberExpression(true, false);
+
       couldBeNewExpression = result.couldBeNewExpression;
       let args = [];
       if(!couldBeNewExpression || this.matchPunctuators('(')) {
@@ -786,11 +811,15 @@ export class ECMAScriptParser extends Parser {
         couldBeNewExpression = false;
       }
       object = new this.estree.NewExpression(result.object, args);
+    }
+    }
     } else {
       object = this.parsePrimaryExpression();
     }
 
     object = this.parseRemainingMemberExpression(object);
+        console.log("object:", object);
+    console.log("token:", this.token);
 
     let id = object;
     // If at the end of trying to parse MemberExpression we see Arguments
@@ -989,7 +1018,7 @@ export class ECMAScriptParser extends Parser {
     const result = this.parseConditionalExpression();
 
     if(this.matchPunctuators('}')) {
-      console.log('result:', result);
+      //console.log('result:', result);
       return result.ast;
       //throw new Error(`${this.position()}`);
     }
@@ -1179,8 +1208,13 @@ export class ECMAScriptParser extends Parser {
     return new this.estree.StatementList(statements);
   }
 
-  parseObject(isClass = false) {
-    let ctor = this.estree.ObjectLiteral;
+  parseObject(isClass = false, args = []) {
+    // let ctor = this.estree.ObjectLiteral;
+    let ctor = isClass ? this.estree.ClassDeclaration : this.estree.ObjectLiteral;
+    let memberCtor = this.estree.PropertyDefinition;
+
+    console.log('parseObject', ctor, isClass);
+
     this.log(`parseObject()`);
     let properties = [];
     this.expectPunctuators('{');
@@ -1197,6 +1231,13 @@ export class ECMAScriptParser extends Parser {
         spread = true;
       }
 
+if(spread) {
+
+  value = this.parseAssignmentExpression();
+  properties.push( 
+    new this.estree.SpreadElement(value));
+
+} else  {
       if(isClass && this.matchKeywords('static')) {
         this.expectKeywords('static');
         flags |= PropertyDefinition.STATIC;
@@ -1228,10 +1269,11 @@ export class ECMAScriptParser extends Parser {
             member = new estree.Identifier('get');
             flags &= ~PropertyDefinition.GETTER;
           }
-        } /*else if(this.matchLiteral()) {
+        } else if(this.matchLiteral()) {
           member = this.expectLiteral();
-        }*/
-        console.log('member:', member);
+        }
+
+        // console.log('member:', member);
       }
 
       if(this.matchPunctuators([',', '}'])) {
@@ -1261,19 +1303,29 @@ export class ECMAScriptParser extends Parser {
         //       console.log("member:", member);
         // ctor = this.estree.ObjectBindingPattern;
       }
-      console.log('member:', util.inspect(member, { depth: 2, colors: true }));
+      //console.log('member:', util.inspect(member, { depth: 2, colors: true }));
 
       if(member == null) {
         console.log('Property:', { member, value, token: this.token });
+            throw this.error(
+        `No member ${token}`
+      );
         throw new Error(`${this.position()}`);
       }
 
+      if(value instanceof FunctionDeclaration && flags == 0) {
+        if(member.value) value.id = member;
+        member = value;
+        value = null;
+      }
+      if(ctor === this.estree.ObjectBindingPattern) memberCtor = this.estree.BindingProperty;
+
       if(spread) member = new this.estree.SpreadElement(value);
-      else if(member.id === undefined)
-        member = new this.estree.PropertyDefinition(member, value, flags);
+      else if((value !== null && member.id === undefined) || flags)
+        member = new memberCtor(member, value, flags);
 
       properties.push(member);
-
+}
       if(this.matchPunctuators('}')) break;
 
       if(this.matchPunctuators(',')) this.expectPunctuators(',');
@@ -1281,7 +1333,7 @@ export class ECMAScriptParser extends Parser {
 
     this.expectPunctuators('}');
 
-    if(ctor == this.estree.ObjectBindingPattern) {
+    if(ctor === this.estree.ObjectBindingPattern) {
       properties = Object.entries(properties).map(
         ([key, value]) =>
           new this.estree.BindingProperty(
@@ -1290,7 +1342,7 @@ export class ECMAScriptParser extends Parser {
           )
       );
     }
-    let ret = new ctor(properties);
+    let ret = new ctor(...[...args, properties]);
     console.log('ret:', util.inspect(ret, { depth: 3, colors: true }));
     return ret;
   }
@@ -1849,10 +1901,11 @@ export class ECMAScriptParser extends Parser {
       extending = this.expectIdentifier();
     }
     // Parse function body
-    const members = this.parseObject(true).members;
+    let decl = this.parseObject(true, [identifier, extending]);
 
+    //console.log("parseClass decl=", decl);
     if(this.matchPunctuators(';')) this.expectPunctuators(';');
-    let decl = new this.estree.ClassDeclaration(identifier, extending, members);
+    // let decl = new this.estree.ClassDeclaration(identifier, extending, members);
 
     if(exported) decl = new this.estree.ExportStatement(decl.id, decl);
 

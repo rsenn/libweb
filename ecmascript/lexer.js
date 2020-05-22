@@ -96,7 +96,7 @@ const countLinesCols = (s, p1, p2, lc = { line: 1, column: 1 }) => {
 };
 
 export function Position(line, column, pos, file, freeze = true) {
-  let obj = new.target || this ? this : {};
+  let obj = this ||  new.target.test || this ? this : {};
 
   /*console.log("obj.constructor:",obj.constructor);
   //console.log("freeze:",freeze);*/
@@ -631,7 +631,7 @@ export class Lexer {
 
   lexTemplate(cont = false) {
     const done = (doSubst, defaultFn = null) => {
-      template.inSubst = doSubst;
+      //template.inSubst = doSubst;
       var self = () => {
         //let inSubst = this.template.inSubst;
         let c = this.peek();
@@ -663,8 +663,8 @@ export class Lexer {
           console.log('self:', { c, doSubsbt, start, pos });
           // this.ignore();
           this.addToken(Token.types.punctuator);
-
-          return fn();
+template.inSubst = false;
+          return fn/*()*/;
         }
         if(fn === null) throw new Error();
 
@@ -676,10 +676,15 @@ export class Lexer {
     let c;
     let inSubst = (this.template && this.template.inSubst) || template.inSubst;
     if(cont) {
+      c = this.peek();
+            console.log('lexTemplate peek c:', { c });
+
+if(c != '`') {
       c = this.next();
       console.log('lexTemplate continue c:', { c });
       c = this.peek();
       console.log('lexTemplate continue template:', { c, cont, inSubst });
+    }
       //      throw new Error();
       return template;
     }
@@ -716,6 +721,7 @@ export class Lexer {
 
             //           this.skip(2);
             this.ignore();
+            this.inSubst = true;
             //sreturn this.lexPunctuator.bind(this);
             console.log('addtoken:', this.token.toString());
             return done(true, this.lexText);
@@ -745,8 +751,9 @@ export class Lexer {
   lexQuote(quoteChar) {
     if(quoteChar === '`') {
       // this.ignore();
+      //console.log("inSubst", this.inSubst);
 
-      return this.lexTemplate;
+      return this.lexTemplate(this.inSubst);
     }
     return function() {
       let prevChar = '';

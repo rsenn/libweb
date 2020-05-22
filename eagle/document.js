@@ -1,15 +1,15 @@
-import tXml from '../tXml.js';
-import Util from '../util.js';
-import deepClone from '../clone.js';
-import deepDiff from '../deep-diff.js';
-import { EaglePath, EagleRef } from './locator.js';
-import { EagleNode } from './node.js';
-import { EagleElement } from './element.js';
-import { toXML } from './common.js';
-import { BBox, Rect, PointList } from '../geom.js';
+import tXml from "../tXml.js";
+import Util from "../util.js";
+import deepClone from "../clone.js";
+import deepDiff from "../deep-diff.js";
+import { EaglePath, EagleRef } from "./locator.js";
+import { EagleNode } from "./node.js";
+import { EagleElement } from "./element.js";
+import { toXML } from "./common.js";
+import { BBox, Rect, PointList } from "../geom.js";
 
 export class EagleDocument extends EagleNode {
-  static types = ['brd', 'sch', 'lbr'];
+  static types = ["brd", "sch", "lbr"];
   xml = null;
   path = null;
   type = null;
@@ -28,31 +28,32 @@ export class EagleDocument extends EagleNode {
 
     super(project, EagleRef(deepClone(xml[0]), []));
 
-    type = type || /<library>/.test(xmlStr) ? 'lbr' : /<element /.test(xmlStr) ? 'brd' : 'sch';
+    type = type || /<library>/.test(xmlStr) ? "lbr" : /<element /.test(xmlStr) ? "brd" : "sch";
 
     if(filename) {
       this.path = filename;
 
-      type = type || filename.replace(/.*\//g, '').replace(/.*\./g, '');
+      type = type || filename.replace(/.*\//g, "").replace(/.*\./g, "");
     }
     //console.log('load document:', { project, xml: xmlStr.substring(0, 100), type });
     this.type = type;
 
     if(project) this.owner = project;
-    Util.define(this, 'xml', xml);
+    Util.define(this, "xml", xml);
     const orig = xml[0];
-    Util.define(this, 'orig', orig);
+    Util.define(this, "orig", orig);
     this.initCache(EagleElement);
   }
 
-  /* prettier-ignore */ get filename() { return this.path && this.path.replace(/.*\//g, ""); }
-  /* prettier-ignore */ get dirname() { return this.path &&  (/\//.test(this.path) ? this.path.replace(/\/[^\/]*\/?$/g, "") : "."); }
-
-  //get project() { return this.owner; }
-  //  get orig() { return this.xml[0]; }
+  get filename() {
+    return this.path && this.path.replace(/.*\//g, "");
+  }
+  get dirname() {
+    return this.path && (/\//.test(this.path) ? this.path.replace(/\/[^\/]*\/?$/g, "") : ".");
+  }
 
   get basename() {
-    return this.path && this.filename.replace(/\.[a-z][a-z][a-z]$/i, '');
+    return this.path && this.filename.replace(/\.[a-z][a-z][a-z]$/i, "");
   }
 
   get changes() {
@@ -61,31 +62,31 @@ export class EagleDocument extends EagleNode {
 
   cacheFields() {
     switch (this.type) {
-      case 'sch':
+      case "sch":
         return [
-          'settings',
-          'layers',
-          'libraries',
-          'classes',
-          'parts',
-          'sheets',
-          'instances',
-          'nets'
+          "settings",
+          "layers",
+          "libraries",
+          "classes",
+          "parts",
+          "sheets",
+          "instances",
+          "nets"
         ];
-      case 'brd':
+      case "brd":
         return [
-          'settings',
-          'layers',
-          'libraries',
-          'classes',
-          'designrules',
-          'elements',
-          'signals',
-          'pads',
-          'plain'
+          "settings",
+          "layers",
+          "libraries",
+          "classes",
+          "designrules",
+          "elements",
+          "signals",
+          "pads",
+          "plain"
         ];
-      case 'lbr':
-        return ['settings', 'layers', 'library', 'packages', 'symbols', 'devicesets'];
+      case "lbr":
+        return ["settings", "layers", "library", "packages", "symbols", "devicesets"];
     }
     return super.cacheFields();
   }
@@ -130,27 +131,23 @@ let layer = element.layer;
           }
     }*/
 
-    for(let instance of this.getAll((e, p) => e.tagName == 'instance')) {
+    for(let instance of this.getAll((e, p) => e.tagName == "instance")) {
       let part = instance.part;
       let device = part.device;
       let deviceset = part.deviceset;
       let gate = deviceset.gates[instance.attributes.gate];
       let symbol = part.library.symbols[gate.attributes.symbol];
-
       let geometries = {
         gate: gate.geometry(),
         symbol: new Rect(symbol.getBounds()).toPoints(),
         instance: instance.transformation()
       };
-
       let matrix = geometries.instance.toMatrix();
-
       let points = new PointList([...matrix.transform_points(geometries.symbol)]);
-
       let bbrect = points.boundingRect();
 
-      console.log(' points:', points);
-      console.log(' bbrect:', bbrect);
+      console.log(" points:", points);
+      console.log(" bbrect:", bbrect);
 
       //  bb.update(bbrect);
 

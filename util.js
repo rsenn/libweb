@@ -1868,6 +1868,7 @@ Util.filterKeys = function(obj) {
   for(let key in obj) {
     if(pred(key)) ret[key] = obj[key];
   }
+  Object.setPrototypeOf(ret, Object.getPrototypeOf(obj));
   return ret;
 };
 Util.filterOutKeys = function(obj, arr) {

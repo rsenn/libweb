@@ -35,8 +35,9 @@ export class Expression extends ESNode {
 }
 
 export class FunctionLiteral extends ESNode {
-  constructor(type, id, params, body, exported, is_async, generator) {
+  constructor(type, id, params, body, is_async, generator) {
     super(type);
+
     this.id = id;
     this.params = params;
     this.body = body;
@@ -56,8 +57,8 @@ export class Identifier extends Expression {
 export class BindingProperty extends Expression {
   constructor(property, element, initializer) {
     super('BindingProperty');
-    this.property = property;
-    this.element = element;
+    this.id = property;
+    this.value = element;
 
     if(initializer) this.initializer = initializer;
   }
@@ -345,7 +346,7 @@ export class Declaration extends Statement {
   }
 }
 
-export class ClassDeclaration extends Declaration {
+export class ClassDeclaration extends ESNode {
   constructor(id, extending, members) {
     super('ClassDeclaration');
     this.id = id;
@@ -358,8 +359,9 @@ export class ClassDeclaration extends Declaration {
 
 export class FunctionDeclaration extends FunctionLiteral {
   constructor(id, params, body, exported = false, is_async = false, generator = false) {
-    super('FunctionDeclaration', id, params, body, exported, is_async, generator);
-    // console.log('New FunctionDeclaration: ', JSON.stringify({ id, params, // exported }));
+    super('FunctionDeclaration', id, params, body, is_async, generator);
+
+    this.exported = exported;
   }
 }
 
@@ -435,21 +437,21 @@ export class JSXLiteral extends ESNode {
   }
 }
 
-export class BindingPattern extends Identifier {
+export class BindingPattern extends Expression {
   constructor(properties) {
     super('BindingPattern');
     this.properties = properties;
   }
 }
 
-export class ArrayBindingPattern extends BindingPattern {
+export class ArrayBindingPattern extends Expression {
   constructor(elements) {
     super('ArrayBindingPattern');
     this.elements = elements;
   }
 }
 
-export class ObjectBindingPattern extends BindingPattern {
+export class ObjectBindingPattern extends Expression {
   constructor(properties) {
     super('ObjectBindingPattern');
     this.properties = properties;

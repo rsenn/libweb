@@ -1,4 +1,12 @@
-import { ESNode, Literal, PropertyDefinition, FunctionDeclaration, Identifier } from './estree.js';
+import {
+  ESNode,
+  Literal,
+  PropertyDefinition,
+  FunctionDeclaration,
+  Identifier,
+  ClassDeclaration,
+  BindingProperty
+} from './estree.js';
 import Util from '../util.js';
 import deep from '../deep.js';
 import util from 'util';
@@ -97,9 +105,11 @@ export class Printer {
     for(let statement of program.body) {
       let line = this.printNode(statement);
       if(/\n/.test(line) && output != '') output += '\n';
-      output += line + (/[}; \n]$/.test(line) ? '\n' : ';\n');
+   //   console.log(`line:'${line.replace(/\n/g, "\\n")}'`);
+      output += line + (line.trim().endsWith(';')  ? '\n' : ';\n');
     }
-    return output;
+    output = output.replace(/[;\n ]*$/, "");
+    return output != '' ? output +';' : output;
   }
 
   printString(str) {
@@ -118,13 +128,16 @@ export class Printer {
   }
 
   printBindingProperty(binding_property) {
-    const { property, element } = binding_property;
+    const { id, value } = binding_property;
 
     let output = '';
-    output += this.printNode(property);
-    if(element.value != property.value) output += ': ' + this.printNode(element);
+    output += this.printNode(id);
+
+    if(value.value != id.value) output += ': ' + this.printNode(value);
+
     return output;
   }
+
   printLiteral(literal) {
     return this.colorText.numberLiterals(literal.value);
   }
@@ -151,8 +164,10 @@ export class Printer {
 
   printUnaryExpression(unary_expression) {
     const { operator, argument, prefix } = unary_expression;
-    let arg = this.printNode(argument);
+    let arg = '('+this.printNode(argument)+')';
     if(prefix && /[a-z]$/.test(operator)) arg = ' ' + arg;
+
+
     return prefix ? operator + arg : arg + operator;
   }
 
@@ -178,10 +193,11 @@ export class Printer {
   printMemberExpression(member_expression) {
     const { object, property } = member_expression;
     let left, right;
+console.log("member_expression:", member_expression);
     left = this.printNode(object);
     right = this.printNode(property);
     ///null.*{/.test(left) && console.log("object:", object);
-    if(/^[0-9]+$/.test(right)) return left + '[' + right + ']';
+    if(/^[0-9]+$/.test(right) || /\./.test(right)) return left + '[' + right + ']';
     return left + '.' + right;
   }
 
@@ -239,13 +255,15 @@ export class Printer {
           throw new Error();
         }
         let line = this.printNode(statement);
+
         let multiline = /\n/.test(line);
         s += multiline && s.length ? '\n\n  ' : '\n  ';
-        if(line != '')
-          s +=
-            line.replace(/\n/g, '\n  ') +
-            (/(;|\n|})$/.test(line.trimEnd()) ? '' : this.colorCode.punctuators() + ';') +
-            (multiline ? '\n' : '');
+        let eol =
+          (/(;|\n|})$/.test(line.trimEnd()) ? '' : this.colorCode.punctuators() + ';') +
+          (multiline ? '\n' : '');
+        // console.log("line:", { line, eol });
+
+        if(line != '') s += line.replace(/\n/g, '\n  ') + eol;
       }
     } else {
       s += this.printNode(body).replace(/\n/g, '\n  ');
@@ -379,7 +397,7 @@ export class Printer {
   printForInStatement(for_in_statement) {
     const { left, right, body, operator = 'in' } = for_in_statement;
 
-    let key = this.printNode(left);
+    let key = this.printNode(left).replace(/;$/, '');
     let object = this.printNode(right);
 
     let output = `for(${key} ${operator} ${object})`;
@@ -423,11 +441,14 @@ export class Printer {
   printExportStatement(export_statement) {
     const { what, declarations } = export_statement;
 
-    //console.log("declarations: "+declarations.length);
+    //console.log("declarations:",declarations);
 
     let output = 'export ';
-    output += what ? this.printNode(what) : 'default';
-    output += ' ';
+
+    if(!(declarations instanceof ClassDeclaration)) {
+      output += what ? this.printNode(what) : 'default';
+      output += ' ';
+    }
     output += this.printNode(declarations);
     return output;
   }
@@ -450,8 +471,33 @@ export class Printer {
     let name = id ? this.printNode(id) : '';
     if(name != '') output += ' ' + this.colorText.identifiers(name);
     if(extending) output += this.colorText.keywords(' extends ') + this.printNode(extending);
-    //console.log("members:", members);
-    output += ' ' + this.printNode(members);
+    // console.log('members:', util.inspect(members, { depth: 2, colors: true }));
+
+    output += ' {';
+
+    for(let member of members) {
+      if(member.comments)
+        console.log(
+          'member.comments',
+          util.inspect(member, { depth: 0, colors: true }),
+          member.comments
+        );
+
+      let s = this.printNode(member);
+
+      if(member instanceof FunctionDeclaration) s = s.replace(/function\s/, '');
+
+      s = s.replace(/\n/g, '\n  ');
+
+      if(!s.endsWith('}')) s += ';';
+
+      if(output.endsWith('}') || member instanceof FunctionDeclaration) output += '\n';
+
+      output += '\n  ' + s;
+    }
+
+    output += '\n}';
+
     return output;
   }
 
@@ -505,7 +551,7 @@ export class Printer {
 
     output += kind != '' ? this.colorText.keywords(kind) + ' ' : '';
     output += declarations.map(decl => this.printNode(decl)).join(', ');
-    return output;
+    return output + ';';
   }
 
   printVariableDeclarator(variable_declarator) {
@@ -536,10 +582,25 @@ export class Printer {
         //console.log("property.id:", Util.className(property.id));
         throw new Error();
       }*/
-      let name = this.printNode(property.id);
-      let value = this.printNode(property.value);
+      //   console.log('printObjectLiteral:', { property });
+
+      let name, value;
+      let isFunction = false;
+
+      if(property instanceof FunctionDeclaration) {
+        //   name =  this.printNode(property.id);
+        value = this.printNode(property).replace(/function /, '');
+        isFunction = true;
+      } else if(property instanceof PropertyDefinition) {
+        a.push(this.printNode(property));
+        continue;
+      } else {
+        name = this.printNode(property.id);
+        value = this.printNode(property.value);
+      }
+
       let line = '';
-      //console.log("value:", Util.className(property.value), property.id.value);
+
       if(property.value instanceof FunctionDeclaration) {
         //console.log("function.id:", property.value.id);
         let functionName = property.value.id ? this.printNode(property.value.id) : '';
@@ -551,13 +612,16 @@ export class Printer {
         }
         value = this.printNode(property.value);
         value = value.replace(/^function\s/, '');
+        isFunction = true;
       }
+
       if(!is_multiline && /\n/.test(value)) is_multiline |= true;
       line += value.replace(/\n/g, '\n  ');
+
       if(property.flags) {
         line = name + ' = ' + line;
       } else if(name && name != line) {
-        line = name + ': ' + line;
+        line = name + (isFunction ? '' : ': ') + line;
         if(!property.flags) is_prototype = false;
       }
       if(property.flags & PropertyDefinition.STATIC) line = 'static ' + line;
@@ -571,21 +635,25 @@ export class Printer {
 
   printPropertyDefinition(property_definition) {
     const { id, value, flags } = property_definition;
+
+    let comments = property_definition.comments || id.comments;
     let s =
       flags & PropertyDefinition.GETTER ? 'get ' : flags & PropertyDefinition.SETTER ? 'set ' : '';
     if(flags & PropertyDefinition.STATIC) s = 'static ' + s;
 
     s = this.colorText.keywords(s);
 
-    s += id.value;
+    if(comments) {
+      s = this.printComments(comments) + s;
+    }
 
-    s += this.colorText.punctuators(' = ');
-    console.log(
-      'property_definition:',
-      util.inspect(property_definition, { depth: 2, colors: true })
-    );
+    s += this.printNode(Util.filterOutKeys(id, ['comments']));
+
+    if(!(value instanceof FunctionDeclaration)) s += this.colorText.punctuators(' = ');
+    //console.log('property_definition:', util.inspect(property_definition, { depth: 2, colors: true }) );
     //  console.log("property:",  util.inspect(value, {depth: 2, colors: true }));
-    s += this.printNode(value);
+
+    s += this.printNode(value).replace(/^function /, '');
     return s;
   }
 
@@ -619,20 +687,56 @@ export class Printer {
   }*/
   printArrayBindingPattern(array_binding_pattern) {
     const { elements } = array_binding_pattern;
-    let output = elements
+
+    console.log("printArrayBindingPattern", { elements });
+    let output = '';
+
+    for(let element of elements) {
+      if(output != '')
+        output += ', ';
+
+      output += this.printNode(element);
+    }
+/*    let output = elements
       .map(({ element }) => element.value)
-      .join(this.colorCode.punctuators() + ', ');
+      .join(this.colorCode.punctuators() + ', ');*/
     return `[ ${output} ]`;
   }
 
   printObjectBindingPattern(object_binding_pattern) {
     const { value, properties } = object_binding_pattern;
+    //console.log('properties:', util.inspect(properties, { depth: 2, colors: true }));
+    let output = '';
+    for(let binding_property of properties) {
+      if(output != '') output += ', ';
 
-    console.log('properties:', util.inspect(properties, { depth: 2, colors: true }));
+      if(binding_property instanceof BindingProperty || binding_property.id === undefined) {
+        output += this.printNode(binding_property);
+        continue;
+      }
 
-    let output = properties.map(property => this.printNode(property)).join(', ');
+      console.log("binding_property:", binding_property);
+
+      if(binding_property.comments) output += this.printComments(binding_property.comments);
+
+      let id = this.printNode(binding_property.id);
+      let value = binding_property.value ? this.printNode(binding_property.value) : id;
+
+      if(id == value) output += id;
+      else output += `${id}: ${value}`;
+    }
+
+    //   let output = properties.map(property => this.printNode(property)).join(', ');
 
     return this.colorText.punctuators('{') + ` ${output} ` + this.colorText.punctuators('}');
+  }
+
+  printComments(comments) {
+    let output = '';
+    for(let comment of comments) {
+      output += comment.value;
+    }
+    return output;
   }
 
   printAwaitExpression(await_expression) {
