@@ -353,10 +353,10 @@ Util.define = (obj, key, value, enumerable = false) => {
       decl[prop].configurable = true;
       decl[prop].writeable = true;
     }
-  
-  Object.defineProperties(obj, decl);
 
-//    for(let prop in key) Util.define(obj, prop, key[prop], Util.isBool(value) ? value : false);
+    Object.defineProperties(obj, decl);
+
+    //    for(let prop in key) Util.define(obj, prop, key[prop], Util.isBool(value) ? value : false);
     return obj;
   }
   /*obj[key] === undefined &&*/
@@ -2184,11 +2184,12 @@ Util.proxy = (obj = {}, handler) =>
     ...handler
   });
 
-Util.propertyLookup = (obj = {}, handler = (key) => null) => 
+Util.propertyLookup = (obj = {}, handler = key => null) =>
   Util.proxy(obj, {
     get(target, key, receiver) {
       return handler(key);
-    }});
+    }
+  });
 
 Util.proxyTree = function proxyTree(...callbacks) {
   const [setCallback, applyCallback = () => {}] = callbacks;

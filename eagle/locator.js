@@ -8,21 +8,15 @@ export function DereferenceError(object, member, pos, part, locator) {
     error,
     { object, member, pos, locator },
     {
-      message: `Error dereferencing ${Util.className(object)} @ ${locator
-        .map((part, i) => (i == pos ? `<<${part}>>` : part))
-        .join(',')} w/ keys={${Object.keys(part).join(',')}} no member '${member}' `,
+      message: `Error dereferencing ${Util.className(object)} @ ${locator.map((part, i) => (i == pos ? `<<${part}>>` : part)).join(',')} w/ keys={${Object.keys(part).join(',')}} no member '${member}' `,
       stack: Util.getCallerStack()
         .filter(frame => null !== frame.getFileName())
         .map(frame => {
           let method = frame.getMethodName();
-          if(method)
-            method = (frame.getTypeName() || Util.className(frame.getThis())) + '.' + method;
+          if(method) method = (frame.getTypeName() || Util.className(frame.getThis())) + '.' + method;
           else method = frame.getFunctionName();
 
-          return `${('' + frame.getFileName()).replace(
-            /.*plot-cv\//,
-            ''
-          )}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
+          return `${('' + frame.getFileName()).replace(/.*plot-cv\//, '')}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
         })
     }
   );
@@ -40,11 +34,7 @@ export const EaglePath = Util.immutableClass(
     constructor(path = []) {
       super(/*path.length*/);
       for(let i = 0; i < path.length; i++) {
-        let value = /*(path[i] == 'children' || path[i] === ChildrenSym) ? ChildrenSym : */ /^[0-9]+$/.test(
-          path[i]
-        )
-          ? parseInt(path[i])
-          : path[i];
+        let value = /*(path[i] == 'children' || path[i] === ChildrenSym) ? ChildrenSym : */ /^[0-9]+$/.test(path[i]) ? parseInt(path[i]) : path[i];
 
         Array.prototype.push.call(this, value); // this.push(value); //[i] = value;
       }
@@ -136,12 +126,7 @@ export const EaglePath = Util.immutableClass(
 
       return this.reduce(
         (a, i) => {
-          let r =
-            i === ChildrenSym
-              ? a.o.children
-              : i < 0 && a.o instanceof Array
-              ? a.o[a.o.length + i]
-              : a.o[i];
+          let r = i === ChildrenSym ? a.o.children : i < 0 && a.o instanceof Array ? a.o[a.o.length + i] : a.o[i];
           if(r === undefined) throw new DereferenceError(obj, i, a.n, a.o, this);
           a.o = r;
           a.n++;
@@ -167,8 +152,7 @@ export const EaglePath = Util.immutableClass(
             s += e.tagName;
             pt = o.filter(sib => sib.tagName == e.tagName);
           }
-          if(Util.isObject(e.attributes) && e.attributes.name)
-            s += `[@name='${e.attributes.name}']`;
+          if(Util.isObject(e.attributes) && e.attributes.name) s += `[@name='${e.attributes.name}']`;
           else if(pt.length != 1) {
             if(typeof p == 'number' && n != 1) s += `[${p + 1}]`;
           }
@@ -191,20 +175,14 @@ export const EaglePath = Util.immutableClass(
     }
 
     toString(hl = -1) {
-      let y = this.map(item =>
-        item == 'children' ? '⎿' : item == 'attributes' ? '＠' : item
-      ).map((part, i) => text(part, ...(hl == i ? [38, 5, 124] : [38, 5, 82])));
+      let y = this.map(item => (item == 'children' ? '⎿' : item == 'attributes' ? '＠' : item)).map((part, i) => text(part, ...(hl == i ? [38, 5, 124] : [38, 5, 82])));
 
       y = text('♈ ', 38, 5, 45) + y.join('') + text(' 🔚', 38, 5, 172);
       return y.trim();
     }
 
     [Symbol.for('nodejs.util.inspect.custom')]() {
-      return `EaglePath [${this.map(part =>
-        part === ChildrenSym
-          ? String.fromCharCode(10143)
-          : text(typeof part == 'number' ? part : `'${part}'`, 1, typeof part == 'number' ? 33 : 32)
-      ).join(', ')}]`;
+      return `EaglePath [${this.map(part => (part === ChildrenSym ? String.fromCharCode(10143) : text(typeof part == 'number' ? part : `'${part}'`, 1, typeof part == 'number' ? 33 : 32))).join(', ')}]`;
     }
     inspect() {
       return EaglePath.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, arguments);
