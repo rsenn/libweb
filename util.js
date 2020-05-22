@@ -1626,7 +1626,7 @@ Util.formatRecord = function(obj) {
   return ret;
 };
 Util.isArray = function(obj) {
-  return (obj && !Util.isGetter(obj, 'length') && 'length' in obj && !(obj instanceof String) && !(obj instanceof Function) && typeof obj == 'function') || obj instanceof Array;
+  return (obj && !Util.isGetter(obj, 'length') && Util.isObject(obj) && 'length' in obj && !(obj instanceof String) && !(obj instanceof Function) && typeof obj == 'function') || obj instanceof Array;
 };
 Util.equals = function(a, b) {
   if(Util.isArray(a) && Util.isArray(b)) {

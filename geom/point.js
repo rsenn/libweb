@@ -257,7 +257,7 @@ for(let name of [
 
 Point.toSource = point => `{ x:${point.x}, y: ${point.y} }`;
 
-export const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined))  ||   o instanceof Point || o.prototype.constructor === Point);
+export const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)) || o instanceof Point || Object.getPrototypeOf(o).constructor === Point);
 
 Point.isPoint = isPoint;
 Util.defineInspect(Point.prototype, 'x', 'y');

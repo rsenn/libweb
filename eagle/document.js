@@ -143,7 +143,7 @@ let layer = element.layer;
       if(g) {
 */
       /*    console.log("getBounds", element, g);*/
-      bb.update(g);
+      bb.update(bbrect);
       // }
     }
     //console.log('getBounds', bb);
