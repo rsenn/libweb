@@ -20,7 +20,13 @@ export function Line(x1, y1, x2, y2) {
 
   //if(!('a' in obj) || !('b' in obj)) throw new Error('no a/b prop');
 
-  if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
+  if(
+    arg &&
+    arg.x1 !== undefined &&
+    arg.y1 !== undefined &&
+    arg.x2 !== undefined &&
+    arg.y2 !== undefined
+  ) {
     const { x1, y1, x2, y2 } = arg;
     obj.x1 = parseFloat(x1);
     obj.y1 = parseFloat(y1);
@@ -58,7 +64,9 @@ export function Line(x1, y1, x2, y2) {
   /*  if(this !== obj)*/ return obj;
 }
 
-export const isLine = obj => ['x1', 'y1', 'x2', 'y2'].every(prop => obj[prop] !== undefined) || ['a', 'b'].every(prop => isPoint(obj[prop]));
+export const isLine = obj =>
+  ['x1', 'y1', 'x2', 'y2'].every(prop => obj[prop] !== undefined) ||
+  ['a', 'b'].every(prop => isPoint(obj[prop]));
 /*
 Object.defineProperty(Line.prototype, 'a', { value: new Point(), enumerable: true });
 Object.defineProperty(Line.prototype, 'b', { value: new Point(), enumerable: true });
@@ -237,7 +245,14 @@ Line.prototype.endpointDist = function(point) {
 };
 Line.prototype.matchEndpoints = function(arr) {
   const { a, b } = this;
-  return [...arr.entries()].filter(([i, otherLine]) => !Line.prototype.equals.call(this, otherLine) && (Point.prototype.equals.call(a, otherLine.a) || Point.prototype.equals.call(b, otherLine.b) || Point.prototype.equals.call(b, otherLine.a) || Point.prototype.equals.call(a, otherLine.b)));
+  return [...arr.entries()].filter(
+    ([i, otherLine]) =>
+      !Line.prototype.equals.call(this, otherLine) &&
+      (Point.prototype.equals.call(a, otherLine.a) ||
+        Point.prototype.equals.call(b, otherLine.b) ||
+        Point.prototype.equals.call(b, otherLine.a) ||
+        Point.prototype.equals.call(a, otherLine.b))
+  );
 };
 
 Line.prototype.distanceToPointSquared = function(p) {
@@ -246,7 +261,10 @@ Line.prototype.distanceToPointSquared = function(p) {
   if(l2 === 0) return Point.prototype.distanceSquared.call(p, a);
   var t = ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / l2;
   t = Math.max(0, Math.min(1, t));
-  return Point.prototype.distanceSquared.call(p, new Point(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y)));
+  return Point.prototype.distanceSquared.call(
+    p,
+    new Point(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y))
+  );
 };
 Line.prototype.distanceToPoint = function(p) {
   return Math.sqrt(Line.prototype.distanceToPointSquared.call(this, p));
@@ -383,7 +401,20 @@ Line.prototype.toPoints = function() {
   return list;
 };
 
-for(let name of ['direction', 'round', 'slope', 'angle', 'bbox', 'points', 'inspect', 'toString', 'toObject', 'toSource', 'distanceToPointSquared', 'distanceToPoint']) {
+for(let name of [
+  'direction',
+  'round',
+  'slope',
+  'angle',
+  'bbox',
+  'points',
+  'inspect',
+  'toString',
+  'toObject',
+  'toSource',
+  'distanceToPointSquared',
+  'distanceToPoint'
+]) {
   Line[name] = (line, ...args) => Line.prototype[name].call(line || new Line(line), ...args);
 }
 

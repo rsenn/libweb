@@ -121,7 +121,11 @@ trkl['from'] = function(executor) {
   return self;
 };
 
-trkl.property = function(object, name, options = { enumerable: true, configurable: true, deletable: false }) {
+trkl.property = function(
+  object,
+  name,
+  options = { enumerable: true, configurable: true, deletable: false }
+) {
   const { value, ...opts } = options;
   var self = trkl(value);
   Object.defineProperty(object, name, {
@@ -144,7 +148,10 @@ trkl.bind = function(object, name, handler) {
   if(typeof name == 'object')
     Object.defineProperties(
       object,
-      Object.keys(name).reduce((acc, key) => ({ ...acc, [key]: { get: name[key], set: name[key] } }), {})
+      Object.keys(name).reduce(
+        (acc, key) => ({ ...acc, [key]: { get: name[key], set: name[key] } }),
+        {}
+      )
     );
   else
     Object.defineProperty(object, name, {

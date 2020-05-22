@@ -86,7 +86,11 @@ String.prototype.split = function(separator, limit) {
     return nativeSplit.call(str, separator, limit);
   }
   var output = [];
-  var flags = (separator.ignoreCase ? 'i' : '') + (separator.multiline ? 'm' : '') + (separator.extended ? 'x' : '') + (separator.sticky ? 'y' : '');
+  var flags =
+    (separator.ignoreCase ? 'i' : '') +
+    (separator.multiline ? 'm' : '') +
+    (separator.extended ? 'x' : '') +
+    (separator.sticky ? 'y' : '');
   var lastLastIndex = 0;
   var separator2;
   var match;
