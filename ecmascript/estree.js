@@ -3,15 +3,23 @@ import Util from '../util.js';
 export class ESNode {
   //  position = null;
 
+  static lastNode = null;
+
   constructor(type) {
     //this.type = type;
     //this.loc = null; // TODO: For now avoid dealing with location information.
     // Fix it later.
     Object.defineProperty(this, 'position', { value: null, enumerable: false, writable: true });
+
+    ESNode.lastNode = this;
   }
 }
 
-Object.defineProperty(ESNode.prototype, 'position', { value: undefined, enumerable: false, writable: true });
+Object.defineProperty(ESNode.prototype, 'position', {
+  value: undefined,
+  enumerable: false,
+  writable: true
+});
 
 export class Program extends ESNode {
   constructor(body) {
@@ -281,11 +289,12 @@ export class ForStatement extends Statement {
 }
 
 export class ForInStatement extends Statement {
-  constructor(left, right, body) {
+  constructor(left, right, body, operator = 'in') {
     super('ForInStatement');
     this.left = left;
     this.right = right;
     this.body = body;
+    this.operator = operator;
   }
 }
 
@@ -471,13 +480,44 @@ ESNode.prototype.type = null;
 
 ESNode.prototype.toString = function() {
   let s = '';
-  ['alternate', 'argument', 'arguments', 'body', 'callee', 'computed', 'consequent', 'declarations', 'exported', 'expression', 'expressions', 'id', 'identifiers', 'init', 'kind', 'left', 'loc', 'members', 'object', 'operator', 'params', 'prefix', 'property', 'right', 'source', 'test', 'update', 'value'].forEach(field => {
+  [
+    'alternate',
+    'argument',
+    'arguments',
+    'body',
+    'callee',
+    'computed',
+    'consequent',
+    'declarations',
+    'exported',
+    'expression',
+    'expressions',
+    'id',
+    'identifiers',
+    'init',
+    'kind',
+    'left',
+    'loc',
+    'members',
+    'object',
+    'operator',
+    'params',
+    'prefix',
+    'property',
+    'right',
+    'source',
+    'test',
+    'update',
+    'value'
+  ].forEach(field => {
     if(this[field]) {
       let value = this[field];
       if(value.value !== undefined) {
         value = `"${value.value}"`;
       } else if(value instanceof Array) {
-        value = `[\n  ${this[field].map(child => child.toString().replace(/\n/g, '\n  ')).join(',\n  ')}\n]`;
+        value = `[\n  ${this[field]
+          .map(child => child.toString().replace(/\n/g, '\n  '))
+          .join(',\n  ')}\n]`;
         value = value.replace(/\n/g, '\n  ');
       } else if(typeof value === 'object' && !(value instanceof Array)) {
         value = Util.className(value);

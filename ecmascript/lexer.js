@@ -22,7 +22,10 @@ export function Stack() {
     t = s => s.replace(re, '');
   } catch(err) {}
 
-  let maxLen = stack.reduce((acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc), 0);
+  let maxLen = stack.reduce(
+    (acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc),
+    0
+  );
 
   return stack
     .filter(s => s.functionName != 'esfactory')
@@ -93,7 +96,7 @@ const countLinesCols = (s, p1, p2, lc = { line: 1, column: 1 }) => {
 };
 
 export function Position(line, column, pos, file, freeze = true) {
-  let obj = typeof this == 'object' ? this : {};
+  let obj = new.target || this ? this : {};
 
   /*console.log("obj.constructor:",obj.constructor);
   //console.log("freeze:",freeze);*/
@@ -122,12 +125,20 @@ Position.prototype.valueOf = function() {
   return this.pos;
 };
 
+Util.define(Position.prototype, {
+  get offset() {
+    return this.valueOf();
+  }
+});
+
 export function Range(...args) {
   let obj = this instanceof Range ? this : {};
-  let pos;
   if(args[0] instanceof Position) {
     const { line, column, pos, file } = args.shift();
     args.unshift(line, column, pos, file);
+  } else if(typeof args[0] == 'number') {
+    const pos = args.shift();
+    args = [undefined, undefined, pos, undefined, ...args];
   }
 
   Position.call(obj, ...args.splice(0, 4), false);
@@ -137,7 +148,6 @@ export function Range(...args) {
   Object.assign(
     obj,
     {
-      pos,
       length
     },
     obj === this ? {} : Range.prototype
@@ -157,6 +167,16 @@ Range.prototype.toString = function() {
   const { file, line, column, pos, length } = this;
   const f = file ? `${file}:` : '';
   return `${f}${line}:${column} - ${f}${line}:${column + length}`;
+};
+
+Range.prototype.in = function(other) {
+  if(other instanceof Position) {
+    let pos = other.valueOf();
+    return this.start.valueOf() <= pos && pos <= this.end.valueOf();
+  } else if(other instanceof Range) {
+    let range = other.valueOf();
+    return this.start.valueOf() <= range[0] && range[1] <= this.end.valueOf();
+  }
 };
 
 Object.defineProperties(Range.prototype, {
@@ -269,7 +289,10 @@ export class Lexer {
   }
 
   get(offset) {
-    return this.getRange(Math.min(this.pos + offset, this.pos), Math.max(this.pos + offset, this.pos));
+    return this.getRange(
+      Math.min(this.pos + offset, this.pos),
+      Math.max(this.pos + offset, this.pos)
+    );
   }
 
   // Returns the next character in the source code
@@ -369,7 +392,12 @@ export class Lexer {
 
   addToken(type) {
     const { start, pos, column, line, source } = this;
-    const token = new Token(type, source.substring(start, pos), new Range(this.position(this.start), this.pos - this.start));
+    const token = new Token(
+      type,
+      source.substring(start, pos),
+      new Range(this.position(this.start), this.pos - this.start),
+      this.start
+    );
     this.tokens.push(token);
     this.ignore();
   }
@@ -406,7 +434,9 @@ export class Lexer {
     }
 
     if(isQuoteChar(c)) {
-      throw this.error(`Invalid identifier: ${this.errorRange(this.start, this.pos + 1)}${this.currentLine()}`);
+      throw this.error(
+        `Invalid identifier: ${this.errorRange(this.start, this.pos + 1)}${this.currentLine()}`
+      );
     }
 
     const word = this.getRange(this.start, this.pos);
@@ -458,9 +488,12 @@ export class Lexer {
     let indent = ' '.repeat(lineno.length);
     let column = columnIndex;
 
-    let indicator = indent + ` column ${column} ----`.padStart(columnIndex).slice(-columnIndex) + '╯';
+    let indicator =
+      indent + ` column ${column} ----`.padStart(columnIndex).slice(-columnIndex) + '╯';
 
-    return `\n${lineno}${this.getLine()}\n${indicator}\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${this.accepted.length}\n${indent + source.slice(this.pos, this.pos + 10)}`;
+    return `\n${lineno}${this.getLine()}\n${indicator}\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${
+      this.accepted.length
+    }\n${indent + source.slice(this.pos, this.pos + 10)}`;
   }
 
   lineRange(start, end) {
@@ -665,7 +698,9 @@ export class Lexer {
         ++n;
         console.log(`lexTemplate`, { c, escapeEncountered });
         if(c === null) {
-          throw this.error(`Illegal template token (${n})  '${this.source[this.start]}': ${this.errorRange()}`);
+          throw this.error(
+            `Illegal template token (${n})  '${this.source[this.start]}': ${this.errorRange()}`
+          );
         } else if(!escapeEncountered) {
           if(c == '{' && prevChar == '$') {
             this.backup(2);
@@ -706,6 +741,7 @@ export class Lexer {
 
     return template.call(this);
   }
+  
   lexQuote(quoteChar) {
     if(quoteChar === '`') {
       // this.ignore();
@@ -735,7 +771,10 @@ export class Lexer {
               prevChar = c;
               c = this.next();
             }
-          } else */ if(isLineTerminator(c) && quoteChar !== '`') {
+          } else */ if(
+            isLineTerminator(c) &&
+            quoteChar !== '`'
+          ) {
             // If we somehow reached EOL without encountering the
             // ending quote char then this string is incomplete.
             throw this.error(`Illegal token: ${this.errorRange()}`);

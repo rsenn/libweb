@@ -346,14 +346,24 @@ Util.indent = (text, space = '  ') => {
 };
 Util.define = (obj, key, value, enumerable = false) => {
   if(typeof key == 'object') {
-    for(let prop in key) Util.define(obj, prop, key[prop], Util.isBool(value) ? value : false);
+    let decl = Object.getOwnPropertyDescriptors(key);
+
+    for(let prop in decl) {
+      decl[prop].enumerable = enumerable;
+      decl[prop].configurable = true;
+      decl[prop].writeable = true;
+    }
+  
+  Object.defineProperties(obj, decl);
+
+//    for(let prop in key) Util.define(obj, prop, key[prop], Util.isBool(value) ? value : false);
     return obj;
   }
   /*obj[key] === undefined &&*/
   Object.defineProperty(obj, key, {
     enumerable,
-    configurable: false,
-    writable: false,
+    configurable: true,
+    writable: true,
     value
   });
   return obj;
@@ -563,7 +573,7 @@ Util.objectFrom = function(any) {
   return Object.assign({}, any);
 };
 Util.tail = function(arr) {
-  return arr && arr.length > 0 ? arr[arr.legth - 1] : null;
+  return arr && arr.length > 0 ? arr[arr.length - 1] : null;
 };
 Util.splice = function(str, index, delcount, insert) {
   const chars = str.split('');
@@ -2173,6 +2183,13 @@ Util.proxy = (obj = {}, handler) =>
     },
     ...handler
   });
+
+Util.propertyLookup = (obj = {}, handler = (key) => null) => 
+  Util.proxy(obj, {
+    get(target, key, receiver) {
+      return handler(key);
+    }});
+
 Util.proxyTree = function proxyTree(...callbacks) {
   const [setCallback, applyCallback = () => {}] = callbacks;
   const handler = {

@@ -3,7 +3,16 @@ import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { makeEagleNodeList } from './nodeList.js';
 import { toXML, inspect, dump } from './common.js';
-import { BBox, Point, Line, Rect, TransformationList, Translation, Rotation, Scaling } from '../geom.js';
+import {
+  BBox,
+  Point,
+  Line,
+  Rect,
+  TransformationList,
+  Translation,
+  Rotation,
+  Scaling
+} from '../geom.js';
 
 export class EagleElement extends EagleNode {
   tagName = '';
@@ -16,13 +25,19 @@ export class EagleElement extends EagleNode {
     let owner = this.owner;
     let path = this.ref.path.clone();
     if(owner === null) throw new Error('owner == null');
-    if(o === undefined || (o.tagName === undefined && o.attributes === undefined && o.children === undefined)) {
+    if(
+      o === undefined ||
+      (o.tagName === undefined && o.attributes === undefined && o.children === undefined)
+    ) {
       try {
         o = this.ref.dereference();
       } catch(error) {}
     }
 
-    if(o === null || typeof o != 'object') throw new Error('ref: ' + this.ref.inspect() + ' entity: ' + EagleNode.prototype.inspect.call(this));
+    if(o === null || typeof o != 'object')
+      throw new Error(
+        'ref: ' + this.ref.inspect() + ' entity: ' + EagleNode.prototype.inspect.call(this)
+      );
 
     let { tagName, attributes, children } = o;
     this.tagName = tagName;
@@ -43,10 +58,16 @@ export class EagleElement extends EagleNode {
               v => (/^[-+]?[0-9.]+$/.test(prop()) ? parseFloat(prop()) : prop())
             );
         prop(attributes[key]);
-        prop.subscribe(value => (value !== undefined ? (o.attributes[key] = '' + value) : delete o.attributes[key]));
+        prop.subscribe(value =>
+          value !== undefined ? (o.attributes[key] = '' + value) : delete o.attributes[key]
+        );
         this.handlers[key] = prop;
         if(key == 'deviceset' || key == 'package') {
-          trkl.bind(this, key, v => (v ? v.names.forEach(name => this.handlers[name](v.names[name])) : this.library[key + 's'][this.attrMap[key]]));
+          trkl.bind(this, key, v =>
+            v
+              ? v.names.forEach(name => this.handlers[name](v.names[name]))
+              : this.library[key + 's'][this.attrMap[key]]
+          );
         } else if(key == 'device') {
           const fn = v => {
             if(v) {
@@ -63,7 +84,10 @@ export class EagleElement extends EagleNode {
           trkl.bind(this, key, fn);
         } else if(EagleElement.isRelation(key)) {
           let doc = this.document;
-          const fn = v => (v ? this.handlers[key](typeof v == 'string' ? v : v.name) : doc[key == 'library' ? 'libraries' : key + 's'][this.handlers[key]()]);
+          const fn = v =>
+            v
+              ? this.handlers[key](typeof v == 'string' ? v : v.name)
+              : doc[key == 'library' ? 'libraries' : key + 's'][this.handlers[key]()];
           trkl.bind(this, key, fn);
         } else {
           trkl.bind(this, key, handler);
@@ -180,13 +204,25 @@ export class EagleElement extends EagleNode {
       /* if(keys.includes('radius')) 
         return Rect.fromCircle(x, y, +this.radius);*/
 
-      if(['width', 'height'].every(prop => keys.includes(prop))) return Rect.bind(this, null, makeGetterSetter);
+      if(['width', 'height'].every(prop => keys.includes(prop)))
+        return Rect.bind(this, null, makeGetterSetter);
       else return Point.bind(this, null, makeGetterSetter);
     }
   }
 
   static isRelation(name) {
-    let relationNames = ['class', 'element', 'gate', 'layer', 'library', 'package', 'pad', 'part', 'pin', 'symbol'];
+    let relationNames = [
+      'class',
+      'element',
+      'gate',
+      'layer',
+      'library',
+      'package',
+      'pad',
+      'part',
+      'pin',
+      'symbol'
+    ];
 
     return relationNames.indexOf(name) != -1;
   }
@@ -202,7 +238,12 @@ export class EagleElement extends EagleNode {
       o[name] = value;
     }
     if(typeof e == 'object' && e !== null && 'tagName' in e) o = { tagName, ...o };
-    if(typeof children == 'object' && children !== null && 'length' in children && children.length > 0) {
+    if(
+      typeof children == 'object' &&
+      children !== null &&
+      'length' in children &&
+      children.length > 0
+    ) {
       let a = children.filter(child => typeof child == 'string');
       children = children.filter(child => typeof child != 'string').map(EagleElement.toObject);
       text = a.join('\n');

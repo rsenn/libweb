@@ -18,12 +18,15 @@ export class Token {
     eof: 'eof'
   };
 
-  constructor(type, value, position) {
+  constructor(type, value, position, offset) {
     const token = this;
     this.type = type;
     this.value = value;
     this.position = position;
 
+    //if(this.position.pos === undefined || isNaN(this.position.pos)) this.position.pos = offset;
+
+    this.offset = offset;
     /* this.end = end;
     this.pos = pos;
     const delta = end - start - 1;
@@ -45,10 +48,14 @@ export class Token {
     return this.position.length;
   }
   get start() {
-    return this.position.pos;
+    return this.offset || this.position.start.valueOf();
   }
   get end() {
-    return this.position.pos + this.length;
+    return this.start + this.length || this.position.end.valueOf();
+  }
+
+  [Symbol.toStringTag]() {
+    return this.toString();
   }
 
   toString() {
@@ -65,6 +72,52 @@ export class Token {
     else value = Util.colorText(value, 1, 36);
 
     return `${position} ${type} ${value}`;
+  }
+}
+
+export class TokenList extends Array {
+  constructor(tokens = []) {
+    super();
+
+    if(Util.isArray(tokens)) for(let token of tokens) this.push(token);
+
+    //    Array.prototype.splice.call(this, this.length, this.length, ...tokens);
+  }
+
+  get [Symbol.isConcatSpreadable]() {
+    return true;
+  }
+  get [Symbol.species]() {
+    return TokenList;
+  }
+
+  *[Symbol.iterator]() {
+    for(let i = 0; i < this.length; i++) yield this[i];
+  }
+
+  get first() {
+    return this[0];
+  }
+
+  get last() {
+    return this[this.length - 1];
+  }
+
+  get charRange() {
+    let range = [this.first.start, this.last.end];
+    return range;
+  }
+
+  [Symbol.toStringTag]() {
+    return this.toString();
+  }
+
+  toString() {
+    return this.map(tok =>
+      /(literal|identifier)/i.test(tok.type) && /^[^'"]/.test(tok.value)
+        ? '‹' + tok.value + '›'
+        : tok.value
+    ).join(' ');
   }
 }
 
