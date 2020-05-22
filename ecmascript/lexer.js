@@ -575,8 +575,8 @@ export class Lexer {
       if(slashes == 1 && c == ' ' && prev == '/') {
         return false;
       } else if(c == '/' && prev != '\\') {
-        slashes++;   
-      } else if(c == ' ' && prev != '\\') {
+        slashes++;
+      } else if((c == ' ' || c == '\n') && prev != '\\') {
         return false;
       } else if(c == 'n' && prev == '\\') {
         word += '\n';
@@ -588,7 +588,7 @@ export class Lexer {
         prev = c;
         return true;
       }
-      //  if(prev == ';') return false;
+       if(prev == ';') return false;
       word += c;
       prev = c;
       return true;
@@ -600,7 +600,7 @@ export class Lexer {
 
     // if(this.accept(oneOf('/')))
 
-    if(this.acceptRun(validator)) {
+    if(this.acceptRun(validator) && slashes == 2) {
       print();
       // this.backup();
       this.addToken(Token.types.regexpLiteral);
@@ -1014,7 +1014,7 @@ function isKeyword(word) {
     case 4:
       switch (word) {
         case 'else':
-        case 'this':
+       // case 'this':
         case 'void':
         case 'with':
         case 'case':

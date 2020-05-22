@@ -191,7 +191,11 @@ export class Printer {
 
   printBinaryExpression(binary_expression) {
     const { operator, left, right } = binary_expression;
-    return `${this.printNode(left)} ${operator} ${this.printNode(right)}`;
+
+let lhs = this.printNode(left).replace(/[\s\;]*$/g, "");
+let rhs = this.printNode(right);
+
+    return `${lhs} ${operator} ${rhs}`;
   }
   printAssignmentExpression(assignment_expression) {
     const { operator, left, right } = assignment_expression;
@@ -215,13 +219,12 @@ export class Printer {
     right = this.printNode(property);
 
     if(!(object instanceof Identifier) && !(object instanceof MemberExpression))
-      left = '('+left+')';
-
-
+      left = '(' + left + ')';
 
     ///null.*{/.test(left) && console.log("object:", object);
 
-    if(/^[0-9]+$/.test(right) || /[\.\']/.test(right)) return left + '[' + right + ']';
+    if(/^[0-9]+$/.test(right) || /[\.\']/.test(right)  || !(property instanceof Identifier)) 
+      return left + '[' + right + ']';
     return left + '.' + right;
   }
 
@@ -261,10 +264,10 @@ export class Printer {
   printSequenceExpression(sequence_expression) {
     const { expressions } = sequence_expression;
 
-    let output = ''; 
+    let output = '(';
 
     output += expressions.map(expr => this.printNode(expr)).join(', ');
-    output += '';
+    output += ')';
     return output;
   }
 
@@ -423,7 +426,7 @@ export class Printer {
     let output = `for(${assign};${condition};${iterate})`;
     let code = this.printNode(body);
 
-    output += (/\n/.test(code) ? ' ' : "\n  ");
+    output += /\n/.test(code) ? ' ' : '\n  ';
     output += code;
     return output;
   }
@@ -627,17 +630,15 @@ export class Printer {
     if(members.length == 0) return '{}';
     for(let property of members) {
       let line = '';
-      
-      if(property instanceof SpreadElement) {
+
+      /*if(property instanceof SpreadElement) {
         line += '...';
 
         property = property.expr;
-      } else 
-
-      if(property.id == null) {
-      console.log("Property:", property);
+      } else if(property.id == null) {
+        console.log('Property:', property);
         throw new Error();
-      }
+      }*/
       //if(this.position().line >= 2497)
       //console.log("Property:", property);
 
@@ -654,14 +655,17 @@ export class Printer {
         //   name =  this.printNode(property.id);
         value = this.printNode(property).replace(/function /, '');
         isFunction = true;
-      } else if(property instanceof PropertyDefinition || property instanceof BindingProperty || !property.id) {
+      } else if(
+        property instanceof PropertyDefinition ||
+        property instanceof BindingProperty ||
+        !property.id
+      ) {
         a.push(this.printNode(property));
         continue;
       } else {
         name = this.printNode(property.id);
         value = this.printNode(property.value);
       }
-
 
       if(property.value instanceof FunctionDeclaration) {
         //console.log("function.id:", property.value.id);
@@ -801,7 +805,9 @@ export class Printer {
     let output = '';
     for(let binding_property of properties) {
       if(output != '') output += ', ';
-      // console.log('binding_property:', binding_property);
+      
+
+     //  console.log('binding_property:', binding_property);
 
       if(!(binding_property instanceof PropertyDefinition)) {
         output += this.printNode(binding_property);
