@@ -243,6 +243,13 @@ export class Lexer {
   }
 
   skipComment() {
+    let c = this.peek();
+
+    while(isWhitespace(c) || isLineTerminator(c)) {
+      this.skip();
+      c = this.peek();
+    }
+
     const comment = this.getRange(this.start, this.pos);
     const before = this.getRange(0, this.start);
     const column = before.length - before.lastIndexOf('\n');
@@ -821,6 +828,7 @@ export class Lexer {
       const nextTwo = this.getRange(this.pos, this.pos + 2);
       if(nextTwo === '*/') {
         this.skip(2);
+
         this.skipComment();
         return this.lexText;
       }

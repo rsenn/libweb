@@ -681,7 +681,7 @@ export class ECMAScriptParser extends Parser {
 
       if(this.matchPunctuators('=>')) expression = this.parseArrowFunction(expression, is_async);
       //else
-      if(!(expression instanceof ArrowFunction) ||  parentheses)
+      if(!(expression instanceof ArrowFunction) || parentheses)
         expression = new this.estree.SequenceExpression([expression]);
 
       expr = expression;
@@ -726,7 +726,7 @@ export class ECMAScriptParser extends Parser {
         this.expectPunctuators('.');
         const identifier = this.expectIdentifier(true);
 
-       /* console.log('object:', object);
+        /* console.log('object:', object);
         console.log('identifier:', identifier);*/
 
         if(object === null) throw this.error('Object ' + object);
@@ -789,7 +789,7 @@ export class ECMAScriptParser extends Parser {
     }
     return object;
   }
- 
+
   parseNewOrCallOrMemberExpression(couldBeNewExpression, couldBeCallExpression) {
     let do_await = false,
       is_async = false;
@@ -801,12 +801,12 @@ export class ECMAScriptParser extends Parser {
     let object = null;
     if(!is_async && this.matchKeywords('new') && couldBeNewExpression) {
       this.expectKeywords('new');
-       {
+      {
         if(this.matchPunctuators('.')) {
           object = new this.estree.Identifier('new');
         } else {
           const result = this.parseNewOrCallOrMemberExpression(true, false);
-          console.log("result:", result);
+          console.log('result:', result);
           couldBeNewExpression = result.couldBeNewExpression;
           let args = [];
           if(!couldBeNewExpression || this.matchPunctuators('(')) {
@@ -1574,9 +1574,8 @@ export class ECMAScriptParser extends Parser {
       stmt = this.parseClass(true);
     } else if(this.matchKeywords('function')) {
       stmt = this.parseFunction(true);
-     } else if(this.matchKeywords(['var', 'let', 'const'])) {
+    } else if(this.matchKeywords(['var', 'let', 'const'])) {
       stmt = this.parseVariableStatement();
-
     } else if(this.matchIdentifier(true)) {
       const id = this.expectIdentifier();
 
