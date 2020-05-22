@@ -679,29 +679,24 @@ export class Printer {
     return s;
   }
 
-
   printMemberVariable(member_variable) {
     const { id, value, flags } = member_variable;
     let comments = member_variable.comments || id.comments;
     let s = '';
-     
-    if(flags & MemberVariable.STATIC) s = 'static ' + s;
 
+    if(flags & MemberVariable.STATIC) s = 'static ' + s;
 
     s = this.colorText.keywords(s);
     if(comments) {
       s = this.printComments(comments) + s;
     }
     let prop = this.printNode(Util.filterOutKeys(id, ['comments']));
-   
 
     s += prop;
 
     s += ' = ';
 
-
-
-      s += this.printNode(value);
+    s += this.printNode(value);
     return s;
   }
 
