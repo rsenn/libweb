@@ -192,8 +192,8 @@ export class Printer {
   printBinaryExpression(binary_expression) {
     const { operator, left, right } = binary_expression;
 
-let lhs = this.printNode(left).replace(/[\s\;]*$/g, "");
-let rhs = this.printNode(right);
+    let lhs = this.printNode(left).replace(/[\s\;]*$/g, '');
+    let rhs = this.printNode(right);
 
     return `${lhs} ${operator} ${rhs}`;
   }
@@ -223,7 +223,7 @@ let rhs = this.printNode(right);
 
     ///null.*{/.test(left) && console.log("object:", object);
 
-    if(/^[0-9]+$/.test(right) || /[\.\']/.test(right)  || !(property instanceof Identifier)) 
+    if(/^[0-9]+$/.test(right) || /[\.\']/.test(right) || !(property instanceof Identifier))
       return left + '[' + right + ']';
     return left + '.' + right;
   }
@@ -805,9 +805,8 @@ let rhs = this.printNode(right);
     let output = '';
     for(let binding_property of properties) {
       if(output != '') output += ', ';
-      
 
-     //  console.log('binding_property:', binding_property);
+      //  console.log('binding_property:', binding_property);
 
       if(!(binding_property instanceof PropertyDefinition)) {
         output += this.printNode(binding_property);

@@ -280,7 +280,7 @@ export class EagleNode extends EagleInterface {
     if(this.attributes)
       for(let attr in this.attributes)
         attrs += ` ${text(attr, 1, 33)}${text(':', 1, 36)}${text(
-          "'"+this.attributes[attr]+"'",
+          "'" + this.attributes[attr] + "'",
           1,
           32
         )}`;

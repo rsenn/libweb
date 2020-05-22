@@ -382,13 +382,16 @@ export class ECMAScriptParser extends Parser {
     const token = this.consume();
 
     if(token.type != Token.types.nullLiteral)
-    if(
-      !(token.type === Token.types.identifier || (no_keyword && token.type == Token.types.keyword))
-    ) {
-      throw this.error(
-        `Expecting <Identifier> but got <${token.type}> with value '${token.value}'`
-      );
-    }
+      if(
+        !(
+          token.type === Token.types.identifier ||
+          (no_keyword && token.type == Token.types.keyword)
+        )
+      ) {
+        throw this.error(
+          `Expecting <Identifier> but got <${token.type}> with value '${token.value}'`
+        );
+      }
     this.log(`expectIdentifier2(no_keyword=${no_keyword})`);
 
     // backTrace(p.expectIdentifier);
@@ -612,7 +615,7 @@ export class ECMAScriptParser extends Parser {
   }
 
   matchMemberExpression() {
-    return this.matchPrimaryExpression() || this.matchKeywords('new')  || this.matchKeywords('this');
+    return this.matchPrimaryExpression() || this.matchKeywords('new') || this.matchKeywords('this');
   }
 
   matchLeftHandSideExpression() {
@@ -668,8 +671,8 @@ export class ECMAScriptParser extends Parser {
       this.expectPunctuators(')');
 
       if(this.matchPunctuators('=>')) expression = this.parseArrowFunction(expression, is_async);
- else if(!(expression instanceof ArrowFunction))
-      expression =  new this.estree.SequenceExpression([expression]);
+      else if(!(expression instanceof ArrowFunction))
+        expression = new this.estree.SequenceExpression([expression]);
 
       expr = expression;
     }
@@ -1033,7 +1036,7 @@ export class ECMAScriptParser extends Parser {
     // LeftHandSideExpression. We'll only know later on during parsing if we
     // come across things that cannot be in LeftHandSideExpression.
     const result = this.parseConditionalExpression();
-console.log('parseAssignmentExpression:', {result, token: this.token.value});
+    console.log('parseAssignmentExpression:', { result, token: this.token.value });
 
     if(this.matchPunctuators('}')) {
       return result.ast;
@@ -1058,13 +1061,16 @@ console.log('parseAssignmentExpression:', {result, token: this.token.value});
         '^=',
         '|='
       ];
-      if(this.matchPunctuators(assignmentOperators) || assignmentOperators.indexOf(this.token.value) != -1) {
+      if(
+        this.matchPunctuators(assignmentOperators) ||
+        assignmentOperators.indexOf(this.token.value) != -1
+      ) {
         const left = result.ast;
         const operatorToken = this.expectPunctuators(assignmentOperators);
         const right = this.parseAssignmentExpression();
         return new this.estree.AssignmentExpression(operatorToken.value, left, right);
       } else {
-        console.log("result.ast",result.ast);
+        console.log('result.ast', result.ast);
         return result.ast;
       }
     } else {
@@ -1074,12 +1080,11 @@ console.log('parseAssignmentExpression:', {result, token: this.token.value});
 
   parseExpression(optional) {
     //this.log(`parseExpression()`);
-    
 
     const expressions = [];
     let expression = this.parseAssignmentExpression();
 
-    console.log("parseExpression", {expression});
+    console.log('parseExpression', { expression });
 
     if(expression !== null) {
       expressions.push(expression);
@@ -1267,10 +1272,9 @@ console.log('parseAssignmentExpression:', {result, token: this.token.value});
         value = this.parseAssignmentExpression();
 
         value = new this.estree.SpreadElement(value);
-        console.log("value:",value);
+        console.log('value:', value);
 
         properties.push(value);
-
       } else {
         if(isClass && this.matchKeywords('static')) {
           this.expectKeywords('static');
@@ -1611,8 +1615,6 @@ console.log('parseAssignmentExpression:', {result, token: this.token.value});
   parseExpressionStatement() {
     this.log(`parseExpressionStatement()`);
 
-
-
     const expression = this.parseExpression();
 
     if(this.matchPunctuators(';')) this.expectPunctuators(';');
@@ -1899,7 +1901,7 @@ console.log('parseAssignmentExpression:', {result, token: this.token.value});
       this.expectPunctuators(';');
       return new this.estree.EmptyStatement();
     }
-    
+
     // Parse If Statement
     else if(this.matchKeywords('if')) {
       return this.parseIfStatement(insideIteration, insideFunction);
@@ -1939,9 +1941,8 @@ console.log('parseAssignmentExpression:', {result, token: this.token.value});
       } else {
         throw this.error(`return statement can only be inside a function`, this.position());
       }
-
-    } // Parse Expression Statement
-    else /*if(this.matchAssignmentExpression())*/ {
+    } /*if(this.matchAssignmentExpression())*/ // Parse Expression Statement
+    else {
       let stmt = this.parseExpressionStatement();
 
       if(defaultExport) {
@@ -1949,7 +1950,7 @@ console.log('parseAssignmentExpression:', {result, token: this.token.value});
       }
       return stmt;
     }
-   /* else {
+    /* else {
       const { column, line } = this.lexer;
       const tok = t; // this.token;
       let m = this.matchKeywords('super');
@@ -1964,10 +1965,7 @@ console.log('parseAssignmentExpression:', {result, token: this.token.value});
     let identifier = null;
     let extending = null;
 
-
-    if(this.matchIdentifier())
-     identifier =  this.expectIdentifier();
-
+    if(this.matchIdentifier()) identifier = this.expectIdentifier();
 
     if(this.matchKeywords('extends')) {
       this.expectKeywords('extends');

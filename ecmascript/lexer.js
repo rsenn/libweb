@@ -588,7 +588,7 @@ export class Lexer {
         prev = c;
         return true;
       }
-       if(prev == ';') return false;
+      if(prev == ';') return false;
       word += c;
       prev = c;
       return true;
@@ -1014,7 +1014,7 @@ function isKeyword(word) {
     case 4:
       switch (word) {
         case 'else':
-       // case 'this':
+        // case 'this':
         case 'void':
         case 'with':
         case 'case':
