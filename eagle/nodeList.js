@@ -29,7 +29,8 @@ Object.assign(EagleNodeList.prototype, {
   *entries() {
     const instance = this;
     const list = instance.ref.dereference();
-    for(let i = 0; i < list.length; i++) yield [i, makeEagleElement(instance, instance.ref.down(i))];
+    for(let i = 0; i < list.length; i++)
+      yield [i, makeEagleElement(instance, instance.ref.down(i))];
   }
 });
 
@@ -57,7 +58,10 @@ export function makeEagleNodeList(...args) {
       if(typeof prop == 'number') {
         let list = instance.ref.dereference();
         let len = list.length;
-        console.log(`${prop + 1 == len ? 'push' : 'replace'} property ${prop}/${len}:`, dump(value, 0));
+        console.log(
+          `${prop + 1 == len ? 'push' : 'replace'} property ${prop}/${len}:`,
+          dump(value, 0)
+        );
         if(typeof value == 'object' && 'raw' in value) value = value.raw;
         Reflect.set(list, prop, value);
         return true;
@@ -103,7 +107,11 @@ if(/description/.test(txt))
       if(prop == 'entries') return () => list.map((item, i) => [item.attributes.name, item]);
 
       if(typeof Array.prototype[prop] == 'function') return Array.prototype[prop].bind(instance);
-      if((!is_symbol && /^([0-9]+|length)$/.test('' + prop)) || prop == Symbol.iterator || ['findIndex'].indexOf(prop) !== -1) {
+      if(
+        (!is_symbol && /^([0-9]+|length)$/.test('' + prop)) ||
+        prop == Symbol.iterator ||
+        ['findIndex'].indexOf(prop) !== -1
+      ) {
         if(prop in list) return list[prop];
       }
       return Reflect.get(instance, prop, receiver);

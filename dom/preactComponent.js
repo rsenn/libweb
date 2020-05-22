@@ -1,5 +1,28 @@
-import { hydrate, Fragment, createRef, isValidElement, cloneElement, toChildArray } from '../../node_modules/preact/dist/preact.mjs';
-import { h, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../../node_modules/htm/preact/standalone.mjs';
+import {
+  hydrate,
+  Fragment,
+  createRef,
+  isValidElement,
+  cloneElement,
+  toChildArray
+} from '../../node_modules/preact/dist/preact.mjs';
+import {
+  h,
+  html,
+  render,
+  Component,
+  createContext,
+  useState,
+  useReducer,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useImperativeHandle,
+  useMemo,
+  useCallback,
+  useContext,
+  useDebugValue
+} from '../../node_modules/htm/preact/standalone.mjs';
 
 import { Element } from './element.js';
 import Util from '../util.js';
@@ -65,7 +88,10 @@ export class ReactComponent {
   /*
    */
   dummy() {
-    x = h(React.Fragment, { id: 'test' }, [h('blah', { className: 'test' }), h('p', { style: { width: '100%' } })]);
+    x = h(React.Fragment, { id: 'test' }, [
+      h('blah', { className: 'test' }),
+      h('p', { style: { width: '100%' } })
+    ]);
   }
 
   static formats = {
@@ -94,9 +120,15 @@ export class ReactComponent {
     }
     for(let prop in props) {
       let value = props[prop];
-      s += fmt == 0 ? ` ${prop}="${value + ''}"` : fmt == 1 ? ` ${prop}={${Util.toString(value)}}` : (s == '' ? '' : `, `) + ` ${prop}: ${Util.toString(value)}`;
+      s +=
+        fmt == 0
+          ? ` ${prop}="${value + ''}"`
+          : fmt == 1
+          ? ` ${prop}={${Util.toString(value)}}`
+          : (s == '' ? '' : `, `) + ` ${prop}: ${Util.toString(value)}`;
     }
-    if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
+    if(typeof tagName == 'function')
+      tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
 
     //console.log('tagName:', tagName);
 
