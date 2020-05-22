@@ -681,7 +681,7 @@ export class ECMAScriptParser extends Parser {
 
       if(this.matchPunctuators('=>')) expression = this.parseArrowFunction(expression, is_async);
       //else
-      if(/*!(expression instanceof ArrowFunction) || */ parentheses)
+      if(!(expression instanceof ArrowFunction) ||  parentheses)
         expression = new this.estree.SequenceExpression([expression]);
 
       expr = expression;
@@ -789,7 +789,7 @@ export class ECMAScriptParser extends Parser {
     }
     return object;
   }
-
+ 
   parseNewOrCallOrMemberExpression(couldBeNewExpression, couldBeCallExpression) {
     let do_await = false,
       is_async = false;
@@ -797,37 +797,20 @@ export class ECMAScriptParser extends Parser {
       do_await = true;
       this.expectKeywords('await');
     }
-
-    /* if(this.matchLiteral() && this.token.value == "async") {
-    is_async = true;
-    this.expectLiteral("async");
-  }
-*/
     this.log(`parseNewOrCallOrMemberExpression(${couldBeNewExpression}, ${couldBeCallExpression})`);
     let object = null;
-
     if(!is_async && this.matchKeywords('new') && couldBeNewExpression) {
-      //console.log("token:", this.token);
       this.expectKeywords('new');
-
-      /*if(!this.matchPunctuators('.')) */ {
-        //if(this.token.value == 'new')
-
+       {
         if(this.matchPunctuators('.')) {
           object = new this.estree.Identifier('new');
         } else {
           const result = this.parseNewOrCallOrMemberExpression(true, false);
-
           console.log("result:", result);
-
           couldBeNewExpression = result.couldBeNewExpression;
           let args = [];
           if(!couldBeNewExpression || this.matchPunctuators('(')) {
             args = this.parseArguments();
-            // As soon as ( Arguments ) is encountered, then we're no longer
-            // parsing at the NewExpression level.
-            // Also, if couldBeNewExpression is false, then always try to
-            // parse Arguments it has to be there.
             couldBeNewExpression = false;
           }
           object = new this.estree.NewExpression(result.object, args);
@@ -836,29 +819,15 @@ export class ECMAScriptParser extends Parser {
     } else {
       object = this.parsePrimaryExpression();
     }
-
     object = this.parseRemainingMemberExpression(object);
-    /*console.log('object:', object);
-    console.log('token:', this.token);*/
-
     let id = object;
-    // If at the end of trying to parse MemberExpression we see Arguments
-    // again, then that means this is a CallExpression instead.
     if((this.matchPunctuators('(') || this.matchTemplateLiteral()) && couldBeCallExpression) {
       couldBeNewExpression = false;
-
       object = this.parseRemainingCallExpression(object, is_async);
     }
-    /*
-    if(id.value == 'html') {
-      console.log("Object:", object, this.token, {couldBeCallExpression});
-      throw new Error();
-    }*/
-
     if(do_await) {
       object = new this.estree.AwaitExpression(object);
     }
-
     return { object, couldBeNewExpression };
   }
 

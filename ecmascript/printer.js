@@ -478,9 +478,26 @@ export class Printer {
   printExportStatement(export_statement) {
     const { what, declarations } = export_statement;
 
-    //console.log("declarations:",declarations);
+  console.log("declarations:",declarations);
 
     let output = 'export ';
+
+    if(declarations instanceof ObjectBindingPattern) {
+let decl = '';
+for(let property of declarations.properties) {
+if(decl != '')
+  decl += ', ';
+
+decl += this.printNode(property.id);
+
+if(property.id.value != property.value.value) {
+  decl += ' as ';
+  decl += this.printNode(property.value);
+}
+}
+output += '{ '+decl+' }';
+
+    } else  {
 
     if(
       !(declarations instanceof ClassDeclaration) &&
@@ -491,6 +508,7 @@ export class Printer {
     }
 
     output += this.printNode(declarations);
+  }
     //.replace(/:\ /g, ' as ');
 
     return output.replace(/[\;\n ]*$/, '');
