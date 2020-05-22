@@ -957,10 +957,10 @@ function isPunctuator(word) {
       /* prettier-ignore */ return ["!=", "*=", "&&", "<<", "/=", "||", ">>", "&=", "==", "++", "|=", "<=", "--", "+=", "^=", ">=", "-=", "%=", "=>", "${"].indexOf(word) >= 0;
 
     case 3:
-      return ['!==', '===', '>>=', '-->>', '<<=', '...'].indexOf(word) >= 0;
+      return ['!==', '===', '>>>', '>>=', '-->>', '<<=', '...'].indexOf(word) >= 0;
 
     case 4:
-      return word === '-->>=';
+      return ['>>>=', '-->>='].indexOf(word) >= 0;
 
     default:
       return false;
@@ -1035,6 +1035,7 @@ function isKeyword(word) {
         case 'throw':
         case 'await':
         case 'yield':
+        case 'async':
           return true;
       }
       return false;

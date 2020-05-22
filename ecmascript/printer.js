@@ -489,8 +489,11 @@ export class Printer {
       let id = what instanceof ESNode ? this.printNode(what) : what;
       if(id) output += id + ' ';
     }
+
     output += this.printNode(declarations);
-    return output;
+    //.replace(/:\ /g, ' as ');
+
+    return output.replace(/[\;\n ]*$/, '');
   }
 
   printThrowStatement(throw_statement) {
