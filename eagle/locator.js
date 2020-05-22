@@ -9,7 +9,7 @@ export function DereferenceError(object, member, pos, part, locator) {
     { object, member, pos, locator },
     {
       message: `Error dereferencing ${Util.className(object)} @ ${locator
-        .map((part, i) => (i == pos ? `<<${part}>>` : part))
+        .map((part, i) => (i == pos ? '<<'+part+'>>' : part))
         .join(',')} w/ keys={${Object.keys(part).join(',')}} no member '${member}' `,
       stack: Util.getCallerStack()
         .filter(frame => null !== frame.getFileName())
@@ -203,7 +203,7 @@ export const EaglePath = Util.immutableClass(
       return `EaglePath [${this.map(part =>
         part === ChildrenSym
           ? String.fromCharCode(10143)
-          : text(typeof part == 'number' ? part : `'${part}'`, 1, typeof part == 'number' ? 33 : 32)
+          : text(typeof part == 'number' ? part : "'"+part+"'", 1, typeof part == 'number' ? 33 : 32)
       ).join(', ')}]`;
     }
     inspect() {

@@ -575,7 +575,9 @@ export class Lexer {
       if(slashes == 1 && c == ' ' && prev == '/') {
         return false;
       } else if(c == '/' && prev != '\\') {
-        slashes++;
+        slashes++;   
+      } else if(c == ' ' && prev != '\\') {
+        return false;
       } else if(c == 'n' && prev == '\\') {
         word += '\n';
         prev = c;
@@ -1032,6 +1034,7 @@ function isKeyword(word) {
         //  case "super":
         case 'throw':
         case 'await':
+        case 'yield':
           return true;
       }
       return false;

@@ -28,7 +28,7 @@ export class EagleDocument extends EagleNode {
 
     super(project, EagleRef(deepClone(xml[0]), []));
 
-    type = type || /<library>/.test(xmlStr) ? 'lbr' : /<element /.test(xmlStr) ? 'brd' : 'sch';
+    type = type || /<library>/.test(xmlStr) ? 'lbr' : /<element\ /.test(xmlStr) ? 'brd' : 'sch';
 
     if(filename) {
       this.path = filename;

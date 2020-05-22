@@ -7,7 +7,10 @@ import {
   Identifier,
   ClassDeclaration,
   BindingProperty,
-  ObjectBindingPattern
+  ObjectBindingPattern,
+  ObjectLiteral,
+  SpreadElement,
+  MemberExpression
 } from './estree.js';
 import Util from '../util.js';
 import deep from '../deep.js';
@@ -128,6 +131,13 @@ export class Printer {
   printIdentifier(identifier) {
     return this.colorText.identifiers(identifier.value);
   }
+  printComputedPropertyName(computed_property_name) {
+    const { expr } = computed_property_name;
+    let output = '[';
+    output += this.printNode(expr);
+    output += ']';
+    return output;
+  }
 
   printBindingProperty(binding_property) {
     const { id, value } = binding_property;
@@ -166,7 +176,10 @@ export class Printer {
 
   printUnaryExpression(unary_expression) {
     const { operator, argument, prefix } = unary_expression;
-    let arg = '(' + this.printNode(argument) + ')';
+    let arg = this.printNode(argument);
+
+    // arg = '(' + arg + ')';
+
     if(prefix && /[a-z]$/.test(operator)) arg = ' ' + arg;
 
     return prefix ? operator + arg : arg + operator;
@@ -200,8 +213,15 @@ export class Printer {
     //console.log("member_expression:", member_expression);
     left = this.printNode(object);
     right = this.printNode(property);
+
+    if(!(object instanceof Identifier) && !(object instanceof MemberExpression))
+      left = '('+left+')';
+
+
+
     ///null.*{/.test(left) && console.log("object:", object);
-    if(/^[0-9]+$/.test(right) || /\./.test(right)) return left + '[' + right + ']';
+
+    if(/^[0-9]+$/.test(right) || /[\.\']/.test(right)) return left + '[' + right + ']';
     return left + '.' + right;
   }
 
@@ -241,7 +261,10 @@ export class Printer {
   printSequenceExpression(sequence_expression) {
     const { expressions } = sequence_expression;
 
-    let output = expressions.map(expr => this.printNode(expr)).join(', ');
+    let output = ''; 
+
+    output += expressions.map(expr => this.printNode(expr)).join(', ');
+    output += '';
     return output;
   }
 
@@ -398,7 +421,10 @@ export class Printer {
     let condition = test ? ' ' + this.printNode(test) : '';
     let iterate = update ? ' ' + this.printNode(update) : '';
     let output = `for(${assign};${condition};${iterate})`;
-    output += this.printNode(body);
+    let code = this.printNode(body);
+
+    output += (/\n/.test(code) ? ' ' : "\n  ");
+    output += code;
     return output;
   }
 
@@ -457,8 +483,8 @@ export class Printer {
       !(declarations instanceof ClassDeclaration) &&
       !(declarations instanceof FunctionDeclaration)
     ) {
-      output += what ? this.printNode(what) : 'default';
-      output += ' ';
+      let id = what instanceof ESNode ? this.printNode(what) : what;
+      if(id) output += id + ' ';
     }
     output += this.printNode(declarations);
     return output;
@@ -468,6 +494,14 @@ export class Printer {
     let { expression } = throw_statement;
 
     return 'throw ' + this.printNode(expression);
+  }
+  printYieldStatement(yield_statement) {
+    let { expression, generator } = yield_statement;
+    let output = 'yield';
+
+    if(generator) output += '*';
+    output += ' ' + this.printNode(expression);
+    return output;
   }
   /*
   printDeclaration(declaration) {
@@ -551,9 +585,18 @@ export class Printer {
       this.colorCode.punctuators() +
       ')';
     output += ' => ';
-    if(typeof body.map == 'function')
-      output += body.map(line => this.printNode(line)).join('\n  ');
-    else output += this.printNode(body);
+    let code;
+    /*if(typeof body.map == 'function') {
+      code = body.map(line => this.printNode(line)).join('\n  ');
+    } else */ {
+      code = this.printNode(body);
+
+      console.log('body:', Util.className(body));
+      console.log('body:', body);
+
+      if(Util.className(body).startsWith('Object')) code = '(' + code + ')';
+    }
+    output += code;
     return output;
   }
 
@@ -583,8 +626,16 @@ export class Printer {
       is_prototype = true;
     if(members.length == 0) return '{}';
     for(let property of members) {
+      let line = '';
+      
+      if(property instanceof SpreadElement) {
+        line += '...';
+
+        property = property.expr;
+      } else 
+
       if(property.id == null) {
-        //console.log("Property:", Util.className(property));
+      console.log("Property:", property);
         throw new Error();
       }
       //if(this.position().line >= 2497)
@@ -603,7 +654,7 @@ export class Printer {
         //   name =  this.printNode(property.id);
         value = this.printNode(property).replace(/function /, '');
         isFunction = true;
-      } else if(property instanceof PropertyDefinition || property instanceof BindingProperty) {
+      } else if(property instanceof PropertyDefinition || property instanceof BindingProperty || !property.id) {
         a.push(this.printNode(property));
         continue;
       } else {
@@ -611,7 +662,6 @@ export class Printer {
         value = this.printNode(property.value);
       }
 
-      let line = '';
 
       if(property.value instanceof FunctionDeclaration) {
         //console.log("function.id:", property.value.id);

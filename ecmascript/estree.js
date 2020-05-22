@@ -53,6 +53,12 @@ export class Identifier extends Expression {
     this.value = value;
   }
 }
+export class ComputedPropertyName extends ESNode {
+  constructor(expr) {
+    super('ComputedPropertyName');
+    this.expr = expr;
+  }
+}
 
 export class BindingProperty extends Expression {
   constructor(property, element, initializer) {
@@ -324,6 +330,14 @@ export class ThrowStatement extends Statement {
   }
 }
 
+export class YieldStatement extends Statement {
+  constructor(expression, generator = false) {
+    super('YieldStatement');
+    this.expression = expression;
+    this.generator = generator;
+  }
+}
+
 export class ImportStatement extends Statement {
   constructor(identifiers, sourceFile) {
     super('ImportStatement');
@@ -568,6 +582,7 @@ export const CTORS = {
   FunctionLiteral,
   FunctionDeclaration,
   Identifier,
+  ComputedPropertyName,
   IfStatement,
   SwitchStatement,
   CaseClause,
@@ -594,6 +609,7 @@ export const CTORS = {
   StatementList,
   ThisExpression,
   ThrowStatement,
+  YieldStatement,
   TryStatement,
   UnaryExpression,
   UpdateExpression,

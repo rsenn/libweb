@@ -233,7 +233,7 @@ export class EagleSVGRenderer {
         element.getAttribute('data-layer-name') ||
         element.getAttribute('layer');
       if(layer) {
-        const layerId = +(layer + '').replace(/ .*/g, '');
+        const layerId = +(layer + '').replace(/\ .*/g, '');
         return this.layers[layerId];
       }
     } while((element = element.parentElement));
