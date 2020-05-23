@@ -241,7 +241,7 @@ export class EagleElement extends EagleNode {
       const { x, y } = Point(this);
 
       if(keys.includes('radius')) {
-        return new Circle(x, y, +this.radius);
+        return Circle.bind(this, null, makeGetterSetter);
       }
 
       if(['width', 'height'].every(prop => keys.includes(prop)))
