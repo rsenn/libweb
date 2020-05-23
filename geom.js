@@ -7,6 +7,7 @@ import { LineList } from './geom/lineList.js';
 
 import { isMatrix, Matrix } from './geom/matrix.js';
 import { isPoint, Point } from './geom/point.js';
+import { isCircle, Circle } from './geom/circle.js';
 import { PointList, Polyline } from './geom/pointList.js';
 import { PolygonFinder } from './geom/polygonFinder.js';
 import { isRect, Rect } from './geom/rect.js';
@@ -32,6 +33,8 @@ export { LineList } from './geom/lineList.js';
 
 export { isMatrix, Matrix } from './geom/matrix.js';
 export { isPoint, Point } from './geom/point.js';
+export { isCircle, Circle } from './geom/circle.js';
+
 export { PointList, Polyline } from './geom/pointList.js';
 export { PolygonFinder } from './geom/polygonFinder.js';
 export { isRect, Rect } from './geom/rect.js';

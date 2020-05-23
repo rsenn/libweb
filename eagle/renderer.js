@@ -733,10 +733,19 @@ export class SchematicRenderer extends EagleSVGRenderer {
       let t = new TransformationList();
       t.translate(+instance.x, +instance.y);
       t = t.concat(r);
-    //  t.translate(+gate.x, +gate.y);
+      //  t.translate(+gate.x, +gate.y);
       //console.log("t:", t);
+      //
+      let circle = symbol.find(e => e.tagName == 'circle');
+      if(circle) {
+        console.log('circle:' + circle.geometry);
+        console.log('circle:', circle, circle.geometry());
+      }
+      //
       let b = symbol.getBounds(e => e.tagName != 'text');
+
       if(part.name.startsWith('T')) console.log('symbol.getBounds():', b);
+
       let br = new Rect(b).round(0.0001, 5);
       this.create(
         'rect',
@@ -750,7 +759,11 @@ export class SchematicRenderer extends EagleSVGRenderer {
         },
         g
       );
-      this.create('path' ,  { d: `M 0,-1 L 0,1 M -1,0 L 1,0`, transform: t, stroke: 'magenta', 'stroke-width': 0.1 }, g);
+      this.create(
+        'path',
+        { d: `M 0,-1 L 0,1 M -1,0 L 1,0`, transform: t, stroke: 'magenta', 'stroke-width': 0.1 },
+        g
+      );
     }
   }
 }

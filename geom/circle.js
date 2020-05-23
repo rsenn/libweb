@@ -3,16 +3,24 @@ import { Rect } from './rect.js';
 import Util from '../util.js';
 
 export function Circle(x, y, radius) {
-  let obj;
+  let obj = this || {};
   let arg;
   let args = [...arguments];
   let ret;
   if(args.length >= 3 && args.every(arg => !isNaN(parseFloat(arg)))) {
-    arg = { x, y, radius  };
+    arg = { x: +args[0], y: +args[1], radius: +args[2] };
   } else if(args.length == 1) {
     arg = args[0];
+
+    obj.x = +arg.x;
+    obj.y = +arg.y;
+    obj.radius = +arg.radius;
   }
-  obj = this || { ...arg };
+
+  console.log('arguments:', [...arguments]);
+  /*
+if(Util.isObject(arg))
+  Object.assign(obj, arg);*/
 
   if(obj === null) obj = Object.create(Circle.prototype);
 
@@ -20,21 +28,15 @@ export function Circle(x, y, radius) {
 
   //if(!('a' in obj) || !('b' in obj)) throw new Error('no a/b prop');
 
-  if(
-    arg &&
-    arg.x !== undefined &&
-    arg.y !== undefined &&
-    arg.r !== undefined
-  ) {
-    const { x, y, radius } = arg;
-    obj.x = parseFloat(x);
-    obj.y = parseFloat(y);
-    obj.radius = parseFloat(radius);
+  if(arg && arg.x !== undefined && arg.y !== undefined && arg.radius !== undefined) {
+    obj.x = +arg.x;
+    obj.y = +arg.y;
+    obj.radius = +arg.radius;
     ret = 1;
-  } else if(isPoint(args[0]) && typeof(args[1]) == 'number') {
-    obj.x = args[0].x;
-    obj.y = args[0].y;
-    obj.radius = args[1];
+  } else if(isPoint(args[0]) && typeof args[1] == 'number') {
+    obj.x = +args[0].x;
+    obj.y = +args[0].y;
+    obj.radius = +args[1];
 
     /*    obj.x1 = parseFloat(args[0].x);
     obj.y1 = parseFloat(args[0].y);
@@ -42,23 +44,30 @@ export function Circle(x, y, radius) {
     obj.y2 = parseFloat(args[1].y);*/
     ret = 2;
   } else if(arg && arg.length >= 3 && arg.slice(0, 3).every(arg => !isNaN(parseFloat(arg)))) {
-    obj.x = typeof x === 'number' ? x : parseFloat(x);
-    obj.x = typeof y === 'number' ? y : parseFloat(y);
-    obj.radius = typeof radius === 'number' ? radius : parseFloat(radius);
+    obj.x = +arg[0];
+    obj.y = +arg[1];
+    obj.radius + arg[2];
     ret = 3;
   } else {
+    obj.x = 0;
+    obj.y = 0;
+    obj.radius = 0;
     ret = 0;
   }
 
   if(!isCircle(obj)) {
-    console.log('ERROR: is not a circle: ', Util.toString(arg), Util.toString(obj));
+    console.log(
+      'ERROR: is not a circle: ',
+      Util.className(obj),
+      Util.toString(arg),
+      Util.toString(obj)
+    );
   }
 
   /*  if(this !== obj)*/ return obj;
 }
 
-export const isCircle = obj =>
-  ['x', 'y', 'radius' ].every(prop => obj[prop] !== undefined) ;
+export const isCircle = obj => ['x', 'y', 'radius'].every(prop => obj[prop] !== undefined);
 /*
 Object.defineProperty(Circle.prototype, 'a', { value: new Point(), enumerable: true });
 Object.defineProperty(Circle.prototype, 'b', { value: new Point(), enumerable: true });
@@ -66,13 +75,26 @@ Object.defineProperty(Circle.prototype, 'b', { value: new Point(), enumerable: t
 
 Object.defineProperty(Circle.prototype, 'center', {
   get: function() {
-    return  Point.bind(this, null, value => {
+    return Point.bind(this, null, value => {
       if(value === undefined) return new Point(this.x, this.y);
 
       this.x = value.x;
       this.y = value.y;
-    }
+    });
+  }
 });
+
+Circle.prototype.bbox = function(width = 0) {
+  const { x, y, radius } = this;
+  let distance = radius + width;
+
+  return new Rect({
+    x1: x - distance,
+    x2: x + distance,
+    y1: y - distance,
+    y2: y + distance
+  });
+};
 
 Util.defineInspect(Circle.prototype, 'x', 'y', 'radius');
 
