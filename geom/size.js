@@ -145,13 +145,12 @@ Size.prototype.div = function(f) {
   }
   return this;
 };
-Size.prototype.round = function(precision = 0.001) {
-  const prec = -Math.ceil(Math.log10(precision));
-  this.width = precision == 1 ? Math.round(this.width) : +this.width.toFixed(prec);
-  this.height = precision == 1 ? Math.round(this.height) : +this.height.toFixed(prec);
+Size.prototype.round = function(precision = 0.001, digits) {
+  let { width, height } = this;
+  this.width = Util.roundTo(width, precision, digits);
+  this.height = Util.roundTo(height, precision, digits);
   return this;
 };
-
 Size.prototype.bounds = function(other) {
   let w = [Math.min(this.width, other.width), Math.max(this.width, other.width)];
   let h = [Math.min(this.height, other.height), Math.max(this.height, other.height)];
@@ -187,6 +186,11 @@ Size.prototype.fitFactors = function(other) {
   const hf = other.width / this.width;
   const vf = other.height / this.height;
   return [hf, vf];
+};
+Size.prototype.toString = function(opts = {}) {
+  const { unit = '', separator = 'x', left = '', right = '' } = opts;
+  const { width, height } = this;
+  return `${left}${width}${unit}${separator}${height}${unit}${right}`;
 };
 Size.area = sz => Size.prototype.area.call(sz);
 Size.aspect = sz => Size.prototype.aspect.call(sz);

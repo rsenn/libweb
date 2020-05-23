@@ -82,7 +82,7 @@ export function Rect(arg) {
     Size.apply(obj, arg.slice(argi, argc));
     ret = argi + argc;
   }
-  if(obj.round === undefined) {
+  /*  if(obj.round === undefined) {
     Object.defineProperty(obj, 'round', {
       value: function() {
         return Rect.round(this);
@@ -90,7 +90,7 @@ export function Rect(arg) {
       enumerable: true,
       writable: false
     });
-  }
+  }*/
   if(!(this instanceof Rect) || new.target === undefined) return obj;
 }
 Rect.prototype = {
@@ -120,11 +120,16 @@ Rect.prototype.constructor = Rect;
 Rect.prototype.getArea = function() {
   return this.width * this.height;
 };
-Rect.prototype.toString = function(prec = 0.000001, sep = ' ') {
-  return `${Util.roundTo(this.x, prec)}${sep}${Util.roundTo(this.y, prec)}${sep}${Util.roundTo(
-    this.width,
-    prec
-  )}${sep}${Util.roundTo(this.height, prec)}`;
+Rect.prototype.toString = function(opts = {}) {
+  const { precision = 0.001, unit = '', separator = ' ', left = '', right = '' } = opts;
+
+  return (
+    left +
+    Point.prototype.toString.call(this, opts) +
+    separator +
+    Size.prototype.toString.call(this, opts) +
+    right
+  );
 };
 Rect.prototype.toSource = function(opts = {}) {
   const { color = true } = opts;
@@ -331,11 +336,13 @@ Rect.prototype.align = function(align_to, a = 0) {
 };
 
 Rect.prototype.round = function(precision = 0.001, digits) {
-  let { x, y, x2, y2, width, height } = this;
-  this.x = Util.roundTo(x, precision, digits);
-  this.y = Util.roundTo(y, precision, digits);
-  this.width = Util.roundTo(width, precision, digits);
-  this.height = Util.roundTo(height, precision, digits);
+  let { x1, y1, x2, y2 } = this.toObject(true);
+  let a = new Point(x1, y1).round(precision, digits);
+  let b = new Point(x2, y2).round(precision, digits);
+  this.x = a.x;
+  this.y = a.y;
+  this.width = b.x - this.x;
+  this.height = b.y - this.y;
   return this;
 };
 Rect.prototype.toObject = function(bb = false) {

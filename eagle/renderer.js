@@ -468,10 +468,15 @@ export class EagleSVGRenderer {
     let rect = bounds.rect;*/
 
     bounds.outset(1.27);
-    bounds.round(2.54);
-
+    bounds.round(2.54, 6);
+    console.log('bounds:', bounds.toString({ separator: ' ' }));
     const { width, height } = new Size(bounds).toCSS('mm');
-    if(!parent) parent = this.create('svg', { width, height, viewBox: bounds.toString() }, parent);
+    if(!parent)
+      parent = this.create(
+        'svg',
+        { width, height, viewBox: bounds.toString({ separator: ' ' }) },
+        parent
+      );
     //this.renderLayers(parent);
     const step = 2.54;
     const gridColor = '#0000aa';

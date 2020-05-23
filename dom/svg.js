@@ -377,15 +377,14 @@ export class SVG extends Element {
       var numbers = args.match(number);
       return numbers ? numbers.map(Number) : [];
     };
-    var data =  new SvgPath();
-
+    var data = new SvgPath();
 
     path.replace(segment, (_, command, args) => {
       var type = command.toLowerCase();
       args = parseValues(args);
       // overloaded moveTo
       if(type == 'm' && args.length > 2) {
-      data.cmd(...[command].concat(args.splice(0, 2)));
+        data.cmd(...[command].concat(args.splice(0, 2)));
         type = 'l';
         command = command == 'm' ? 'l' : 'L';
       }
