@@ -14,7 +14,7 @@ import {
 } from './estree.js';
 import Util from '../util.js';
 import deep from '../deep.js';
-import util from 'util';
+//import util from 'util';
 
 export class Printer {
   static colors = {

@@ -1,7 +1,7 @@
 import Util from '../util.js';
 import Lexer, { SyntaxError, Position, Range } from './lexer.js';
 import deep from '../deep.js';
-import util from 'util';
+//import util from 'util';
 import { Token, TokenList } from './token.js';
 import { Printer } from './printer.js';
 import {

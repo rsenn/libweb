@@ -497,6 +497,7 @@ export class EagleSVGRenderer {
 
     const { width, height } = new Size(bounds).toCSS('mm');
 
+if(!parent)
     parent = this.create('svg', { width, height, viewBox: bounds.toString() }, parent);
 
     //this.renderLayers(parent);
@@ -535,7 +536,6 @@ export class EagleSVGRenderer {
         parent
       )
     );
-    [...this.sheets].forEach(sheet => this.renderSheet(sheet, parent));
 
     return parent;
   }
@@ -726,6 +726,14 @@ export class SchematicRenderer extends EagleSVGRenderer {
     let partsGroup = this.create('g', { className: 'parts' }, parent);
     for(let instance of sheet.instances.list) this.renderPart(instance, partsGroup);
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
+  }
+
+  render(doc = this.doc, parent) {
+   parent = super.render(doc, parent);
+
+    [...this.sheets].forEach(sheet => this.renderSheet(sheet, parent));
+
+    return parent;
   }
 }
 
@@ -1106,7 +1114,7 @@ export function renderDocument(doc, container) {
     'stroke-linecap': 'round',
     'stroke-linejoin': 'miter'
   });
-  renderer.render(null, g);
+  renderer.render(doc, g);
   let colors = SVG.allColors(svg);
   window.c = colors;
   window.dump = () => {
