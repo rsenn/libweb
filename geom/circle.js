@@ -99,7 +99,7 @@ Circle.prototype.bbox = function(width = 0) {
 Util.defineInspect(Circle.prototype, 'x', 'y', 'radius');
 
 Circle.bind = (o, p, gen) => {
-  const [x, y] = p || ['x', 'y', 'radius'];
+  const [x, y, radius] = p || ['x', 'y', 'radius'];
   if(!gen) gen = k => v => (v === undefined ? o[k] : (o[k] = v));
-  return Util.bindProperties(new Circle(0, 0, 0), o, { x, y }, gen);
+  return Util.bindProperties(new Circle(0, 0, 0), o, { x, y, radius }, gen);
 };

@@ -218,9 +218,13 @@ export class EagleInterface {
     let bb = new BBox();
     for(let element of this.getAll(e => e.tagName !== undefined && pred(e))) {
       let g = element.geometry();
+
       if(g) {
-        //console.log("getBounds", element.layer, g);
-        bb.update(g, 0, element);
+        let bound = typeof g.bbox == 'function' ? g.bbox() : g;
+
+        //    console.log('getBounds',  g, bound);
+
+        bb.update(bound, 0, element);
       }
     }
     //console.log('getBounds', bb);
@@ -237,8 +241,7 @@ export class EagleInterface {
     } else if(['x', 'y'].every(prop => keys.includes(prop))) {
       const { x, y } = Point(this);
 
-      /* if(keys.includes('radius')) 
-        return Rect.fromCircle(x, y, +this.radius);*/
+      if(keys.includes('radius')) return Circle.bind(this, null, makeGetterSetter);
 
       if(['width', 'height'].every(prop => keys.includes(prop)))
         return Rect.bind(this, null, makeGetterSetter);

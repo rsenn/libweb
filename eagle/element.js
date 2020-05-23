@@ -233,7 +233,7 @@ export class EagleElement extends EagleNode {
   geometry() {
     const { attributes } = this.raw;
     const keys = Object.keys(attributes);
-    const makeGetterSetter = k => v => (v === undefined ? this.attributes[k] : (this[k] = v));
+    const makeGetterSetter = k => v => (v === undefined ? this[k] : (this[k] = v));
 
     if(['x1', 'y1', 'x2', 'y2'].every(prop => keys.includes(prop))) {
       return Line.bind(this, null, makeGetterSetter);
