@@ -331,11 +331,11 @@ Rect.prototype.align = function(align_to, a = 0) {
 };
 
 Rect.prototype.round = function(precision = 0.001, digits) {
-  let { x, y, x2, y2 } = this;
+  let { x, y, x2, y2, width, height } = this;
   this.x = Util.roundTo(x, precision, digits);
   this.y = Util.roundTo(y, precision, digits);
-  this.width = Util.roundTo(x2 - this.x, precision, digits);
-  this.height = Util.roundTo(y2 - this.y, precision, digits);
+  this.width = Util.roundTo(width, precision, digits);
+  this.height = Util.roundTo(height, precision, digits);
   return this;
 };
 Rect.prototype.toObject = function(bb = false) {

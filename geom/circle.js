@@ -17,10 +17,7 @@ export function Circle(x, y, radius) {
     obj.radius = +arg.radius;
   }
 
-  console.log('arguments:', [...arguments]);
-  /*
-if(Util.isObject(arg))
-  Object.assign(obj, arg);*/
+  // console.log('arguments:', [...arguments]);
 
   if(obj === null) obj = Object.create(Circle.prototype);
 

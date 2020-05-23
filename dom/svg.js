@@ -3,7 +3,8 @@ import { Size, isSize } from '../geom/size.js';
 import { Point } from '../geom/point.js';
 import { Rect } from '../geom/rect.js';
 import { Line } from '../geom/line.js';
-import { parseSVG, makeAbsolute } from '../svg/path-parser.js';
+//import { parseSVG, makeAbsolute } from '../svg/path-parser.js';
+import SvgPath from '../svg/path.js';
 import Util from '../util.js';
 import { RGBA, isRGBA } from './rgba.js';
 
@@ -354,6 +355,51 @@ export class SVG extends Element {
 
     y = do_point(p);
     if(y) yield y;
+  }
+  static pathCmd = {
+    length: { a: 7, c: 6, h: 1, l: 2, m: 2, q: 4, s: 4, t: 2, v: 1, z: 0 },
+    segment: /([astvzqmhlc])([^astvzqmhlc]*)/gi
+  };
+
+  /**
+   * parse an svg path data string. Generates an Array
+   * of commands where each command is an Array of the
+   * form `[command, arg1, arg2, ...]`
+   *
+   * @param {String} path
+   * @return {Array}
+   */
+
+  static parsePath(path) {
+    let { length, segment } = this.pathCmd;
+    const number = /-?[0-9]*\.?[0-9]+(?:e[-+]?\d+)?/gi;
+    const parseValues = args => {
+      var numbers = args.match(number);
+      return numbers ? numbers.map(Number) : [];
+    };
+    var data =  new SvgPath();
+
+
+    path.replace(segment, (_, command, args) => {
+      var type = command.toLowerCase();
+      args = parseValues(args);
+      // overloaded moveTo
+      if(type == 'm' && args.length > 2) {
+      data.cmd(...[command].concat(args.splice(0, 2)));
+        type = 'l';
+        command = command == 'm' ? 'l' : 'L';
+      }
+      while(true) {
+        if(args.length == length[type]) {
+          args.unshift(command);
+          data.cmd(...args);
+          return;
+        }
+        if(args.length < length[type]) throw new Error('malformed path data');
+        data.cmd(...[command].concat(args.splice(0, length[type])));
+      }
+    });
+    return data;
   }
 
   static viewbox(element, rect) {

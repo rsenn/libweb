@@ -2,7 +2,7 @@ import { EaglePath } from './locator.js';
 //  import { EagleElement } from "./element.js";
 import Util from '../util.js';
 import deep from '../deep.js';
-import { BBox } from '../geom.js';
+import { BBox, TransformationList, Transformation } from '../geom.js';
 
 const pathPadding = Util.isBrowser() ? 0 : 40;
 
@@ -166,6 +166,22 @@ export const inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) =>
   ];
   if(c.path) ret.unshift(l + Util.pad(l, pathPadding, ' '));
   return ret.join(' ');
+};
+
+export const Rotation = (rot, f = 1) => {
+  let mirror, angle;
+  if(!rot) {
+    mirror = 0;
+    angle = 0;
+  } else {
+    mirror = /M/.test(rot) ? 1 : 0;
+    angle = +(rot || '').replace(/M?R/, '') || 0;
+  }
+  let transformations = new TransformationList();
+  if(mirror !== 0) transformations.scale(-1, 1);
+  if(angle !== 0) transformations.rotate(angle);
+
+  return transformations;
 };
 
 export class EagleInterface {

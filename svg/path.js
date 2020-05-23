@@ -26,7 +26,7 @@ var commands = absCommands.concat(relCommands);
 export function SvgPath() {
   //TODO is this check robust enough?
   if(this instanceof SvgPath) {
-    this.relative = false;
+    //this.relative = false;
     this.commands = [];
   } else {
     return new SvgPath();
@@ -174,11 +174,10 @@ SvgPath.prototype.arc = function(rx, ry, rotation, large, sweep, x, y) {
   return this._cmd('A')(rx, ry, rotation, large ? 1 : 0, sweep ? 1 : 0, point.x, point.y);
 };
 
-SvgPath.prototype.cmd = function(cmd) {
-  let args = [...arguments];
+SvgPath.prototype.cmd = function(...args) {
   let command = args.shift();
-  let fn = this._cmd(command);
-  return fn.apply(null, args);
+  let fn = this[command];
+  return fn.apply(this, args);
 };
 
 /**

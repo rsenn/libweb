@@ -2,7 +2,7 @@ import Util from '../util.js';
 import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { makeEagleNodeList } from './nodeList.js';
-import { toXML, inspect, dump } from './common.js';
+import { toXML, inspect, dump, Rotation } from './common.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import {
   BBox,
@@ -11,9 +11,8 @@ import {
   Line,
   Rect,
   TransformationList,
-  Translation,
-  Rotation,
-  Scaling
+  Transformation,
+  PointList
 } from '../geom.js';
 
 export class EagleElement extends EagleNode {
@@ -211,22 +210,42 @@ export class EagleElement extends EagleNode {
       //    console.log("getBounds", this.tagName, {bb,pos} );
 
       return bb;
-    }
+    } else if(this.tagName == 'instance') {
+      const { part, symbol, gate, rot } = this;
+      const { deviceset, device, value } = part;
+      let t = new TransformationList();
+      t.translate(+this.x, +this.y);
+      t = t.concat(Rotation(rot));
+      let b = symbol.getBounds(e => e.tagName != 'text');
+      let p = b.rect.toPoints();
+      let m = t.toMatrix();
+      p = new PointList([...m.transform_points(p)]);
 
-    return super.getBounds(pred);
+      //   console.log('instance.getBounds', { part, symbol, gate, deviceset, device, value, p, t });
+      return p.bbox();
+    } else if(this.tagName == 'sheet') {
+      let bb = new BBox();
+
+      for(let instance of this.getAll('instance')) {
+        bb.update(instance.getBounds(), 0, instance);
+      }
+      return bb;
+    } else {
+      return super.getBounds(pred);
+    }
   }
 
   transformation() {
     let ret = new TransformationList();
     let rot = this.rot || '';
 
-    if('x' in this && 'y' in this) ret.push(new Translation(this.x, this.y));
+    if('x' in this && 'y' in this) ret.push(new Transformation.translation(this.x, this.y));
 
-    if(/M/.test(rot)) ret.push(new Scaling(-1, 1));
+    if(/M/.test(rot)) ret.push(new Transformation.scaling(-1, 1));
 
     let angle = +rot.replace(/[MR]/g, '');
 
-    if(angle > 0) ret.push(new Rotation(angle));
+    if(angle > 0) ret.push(new Transformation.rotation(angle));
     return ret;
   }
 

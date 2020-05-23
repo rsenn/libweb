@@ -11,6 +11,7 @@ import { Util } from '../util.js';
 import { RGBA, isRGBA } from '../dom/rgba.js';
 import { HSLA, isHSLA } from '../dom/hsla.js';
 import { Size } from '../dom.js';
+import { Rotation } from './common.js';
 
 const VERTICAL = 1;
 const HORIZONTAL = 2;
@@ -24,22 +25,6 @@ const ClampAngle = (a, mod = 360) => {
 const AlignmentAngle = a => {
   a %= 360;
   return Math.abs(a - (a % 180));
-};
-
-const Rotation = (rot, f = 1) => {
-  let mirror, angle;
-  if(!rot) {
-    mirror = 0;
-    angle = 0;
-  } else {
-    mirror = /M/.test(rot) ? 1 : 0;
-    angle = +(rot || '').replace(/M?R/, '') || 0;
-  }
-  let transformations = new TransformationList();
-  if(mirror !== 0) transformations.scale(-1, 1);
-  if(angle !== 0) transformations.rotate(angle);
-
-  return transformations;
 };
 
 const RotateTransformation = (rot, f = 1) => {
@@ -245,7 +230,7 @@ export class EagleSVGRenderer {
         {
           id: `layer-${l.number}`,
           className: 'layer',
-          ...LayerAttributes(l),
+          //...LayerAttributes(l),
           stroke,
           ...(active == 'yes' ? { 'data-active': '' } : {}),
           ...(active == 'yes' ? { 'data-visible': '' } : {})
@@ -270,7 +255,7 @@ export class EagleSVGRenderer {
         elem,
         {
           className: item.tagName,
-          ...LayerAttributes(layer),
+          //  ...LayerAttributes(layer),
           ...attr
         },
         parent
@@ -477,19 +462,20 @@ export class EagleSVGRenderer {
     return r;
   }
 
-  render(doc = this.doc, parent) {
-    let bounds = doc.getBounds();
+  render(doc, parent, bounds) {
+    doc = doc || this.doc;
+    /*   bounds = bounds || doc.getBounds();
+    let rect = bounds.rect;*/
+
+    bounds.outset(1.27);
+    bounds.round(2.54);
 
     const { width, height } = new Size(bounds).toCSS('mm');
-
     if(!parent) parent = this.create('svg', { width, height, viewBox: bounds.toString() }, parent);
-
     //this.renderLayers(parent);
-
     const step = 2.54;
     const gridColor = '#0000aa';
     const gridWidth = 0.1;
-
     this.create(
       'path',
       {
@@ -500,27 +486,15 @@ export class EagleSVGRenderer {
       },
       this.create(
         'pattern',
-        {
-          id: 'grid',
-          width: step,
-          height: step,
-          patternUnits: 'userSpaceOnUse'
-        },
+        { id: 'grid', width: step, height: step, patternUnits: 'userSpaceOnUse' },
         this.create('defs', {}, parent)
       )
     );
     this.create(
       'rect',
-      { ...bounds.rect.toObject(), fill: 'url(#grid)' },
-      this.create(
-        'g',
-        {
-          id: 'grid'
-        },
-        parent
-      )
+      { ...bounds.toObject(), fill: 'url(#grid)' },
+      this.create('g', { id: 'grid' }, parent)
     );
-
     return parent;
   }
 }
@@ -582,7 +556,14 @@ export class SchematicRenderer extends EagleSVGRenderer {
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
     const svg = (elem, attr, parent) =>
-      this.create(elem, { className: item.tagName, ...LayerAttributes(layer), ...attr }, parent);
+      this.create(
+        elem,
+        {
+          className: item.tagName, //...LayerAttributes(layer),
+          ...attr
+        },
+        parent
+      );
 
     const { labelText, coordFn = i => i } = opts;
     switch (item.tagName) {
@@ -684,9 +665,18 @@ export class SchematicRenderer extends EagleSVGRenderer {
   }
 
   render(doc = this.doc, parent, sheetNo = 0) {
-    parent = super.render(doc, parent);
-    this.renderSheet(this.sheets[sheetNo], parent);
-    this.renderInstances(parent, sheetNo);
+    let sheet = this.sheets[sheetNo];
+    let bounds = sheet.getBounds();
+    let rect = bounds.rect;
+    rect.outset(1.27);
+    rect.round(2.54);
+
+    console.log('bounds:', rect);
+    parent = super.render(doc, parent, rect);
+
+    this.renderSheet(sheet, parent);
+
+    this.renderInstances(parent, sheetNo, rect);
     return parent;
   }
 
@@ -695,12 +685,11 @@ export class SchematicRenderer extends EagleSVGRenderer {
     const { x, y, rot, part, gate, symbol } = instance;
     let { deviceset, device, library, name, value } = part;
     let t = new TransformationList();
-    let pos = new Point(+x, +y);
-    pos.round(0.0001);
-    t.translate(pos.x, pos.y);
-    //t.push(new Transformation.translation(+gate.x, +gate.y));
-    t = t.concat(Rotation(rot));
-    // t.translate(-gate.x, -gate.y);
+
+    t.translate(+x, +y);
+
+    if(rot) t = t.concat(Rotation(rot));
+
     const g = this.create(
       'g',
       {
@@ -715,7 +704,8 @@ export class SchematicRenderer extends EagleSVGRenderer {
     return g;
   }
 
-  renderInstances(parent, sheetNo = 0) {
+  renderInstances(parent, sheetNo = 0, b) {
+    //  console.log('b:', b);
     let g = this.create(
       'g',
       {
@@ -726,45 +716,55 @@ export class SchematicRenderer extends EagleSVGRenderer {
       },
       parent
     );
-    for(let instance of this.sheets[sheetNo].getAll(e => e.tagName == 'instance')) {
-      const { rot, part, gate, symbol } = instance;
-      const { device, deviceset } = part;
-      let r = Rotation(rot);
+    for(let instance of this.sheets[sheetNo].getAll('instance')) {
       let t = new TransformationList();
       t.translate(+instance.x, +instance.y);
-      t = t.concat(r);
-      //  t.translate(+gate.x, +gate.y);
-      //console.log("t:", t);
-      //
-      let circle = symbol.find(e => e.tagName == 'circle');
-      if(circle) {
-        console.log('circle:' + circle.geometry);
-        console.log('circle:', circle, circle.geometry());
-      }
-      //
-      let b = symbol.getBounds(e => e.tagName != 'text');
-
-      if(part.name.startsWith('T')) console.log('symbol.getBounds():', b);
-
+      let b = instance.getBounds();
       let br = new Rect(b).round(0.0001, 5);
       this.create(
         'rect',
         {
           ...br.toObject(),
-          transform: t,
-          'data-part': part.name,
+          //   transform: 'none',
+          'data-part':
+            instance.part
+              .name /*,
           'data-device': part.device.name,
           'data-gate': gate.name,
-          'data-value': part.value || ''
+          'data-value': part.value || ''*/
         },
         g
       );
+      t.rotate(45);
       this.create(
         'path',
-        { d: `M 0,-1 L 0,1 M -1,0 L 1,0`, transform: t, stroke: 'magenta', 'stroke-width': 0.1 },
+        {
+          d: `M 0,-1 L 0,1 M -1,0 L 1,0`,
+          transform: t,
+          stroke: new RGBA(255, 255, 0),
+          'stroke-linecap': 'round',
+          'stroke-width': 0.2
+        },
         g
       );
     }
+    /*
+    r.outset(0);
+    r.round(2.54);
+*/
+    b.outset(0.15);
+
+    this.create(
+      'rect',
+      {
+        ...b.toObject(),
+        stroke: new HSLA(320, 100, 50),
+        'stroke-width': 0.3,
+        'stroke-dasharray': '0.9 0.6',
+        fill: 'none'
+      },
+      parent
+    );
   }
 }
 
@@ -815,7 +815,14 @@ export class BoardRenderer extends EagleSVGRenderer {
     const layer = item.layer;
     const color = layer ? this.getColor(layer.color) : this.getColor(6);
     const svg = (elem, attr, parent) =>
-      this.create(elem, { className: item.tagName, ...LayerAttributes(layer), ...attr }, parent);
+      this.create(
+        elem,
+        {
+          className: item.tagName, //...LayerAttributes(layer),
+          ...attr
+        },
+        parent
+      );
     const { labelText, coordFn = i => i, rot } = opts;
     switch (item.tagName) {
       case 'via':
@@ -956,13 +963,13 @@ export class BoardRenderer extends EagleSVGRenderer {
         'path',
         {
           className: 'wire',
+          //  ...LayerAttributes(layer),
           d: path,
           stroke: color,
           'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
           fill: 'none',
           strokeLinecap: 'round',
-          strokeLinejoin: 'round',
-          ...LayerAttributes(layer)
+          strokeLinejoin: 'round'
         },
         parent
       );

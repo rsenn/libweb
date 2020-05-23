@@ -15,8 +15,8 @@ export class Transformation {
   get [Symbol.isConcatSpreadable]() {
     return (
       this.constructor === TransformationList ||
-      Object.getPrototypeof(this) == TransformationList.prototype ||
-      Object.getPrototypeof(this).constructor == TransformationList
+      Object.getPrototypeOf(this) == TransformationList.prototype ||
+      Object.getPrototypeOf(this).constructor == TransformationList
     );
   }
   get axes() {

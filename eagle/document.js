@@ -149,10 +149,10 @@ let layer = element.layer;
       let sb = symbol.getBounds();
       let sbr = new Rect(sb);
 
-      if(sbr.height > 20) {
+      /*  if(sbr.height > 20) {
         console.log(' symbol.getBounds():', symbol.getBounds());
         throw new Error('symbol');
-      }
+      }*/
       //   console.log(' points:', points);
       //  console.log(' bbrect:', bbrect);
 
