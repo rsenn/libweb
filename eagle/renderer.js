@@ -3,13 +3,13 @@ import { BBox } from '../geom/bbox.js';
 import { Point } from '../geom/point.js';
 import { Rect } from '../geom/rect.js';
 import { Line } from '../geom/line.js';
-import { PolygonFinder } from '../geom/polygonFinder.js';
 import { Transformation, TransformationList } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
 import { ColorMap } from '../draw/colorMap.js';
 import Alea from '../alea.js';
 import { Util } from '../util.js';
 import { RGBA, isRGBA } from '../dom/rgba.js';
+import { HSLA, isHSLA } from '../dom/hsla.js';
 import { Size } from '../dom.js';
 
 const VERTICAL = 1;
@@ -40,21 +40,6 @@ const Rotation = (rot, f = 1) => {
   if(angle !== 0) transformations.rotate(angle);
 
   return transformations;
-
-  return {
-    scale: [mirror ? -1 : 1, 1],
-    rotate: angle * f,
-    toString() {
-      const { scale, rotate } = this;
-      let ret = [];
-
-      if(scale[0] !== 1 || scale[1] !== 1) ret.push(`scale(${scale.join(',')})`);
-
-      if(rotate !== 0) ret.push(`rotate(${rotate})`);
-
-      return ret.join(' ');
-    }
-  };
 };
 
 const RotateTransformation = (rot, f = 1) => {
@@ -296,7 +281,7 @@ export class EagleSVGRenderer {
 
     switch (item.tagName) {
       case 'wire': {
-        const { x1, x2, y1, y2, width, curve } = coordFn(item);
+        const { x1, x2, y1, y2, width, curve = '' } = coordFn(item);
         svg(
           'line',
           {
@@ -497,8 +482,7 @@ export class EagleSVGRenderer {
 
     const { width, height } = new Size(bounds).toCSS('mm');
 
-if(!parent)
-    parent = this.create('svg', { width, height, viewBox: bounds.toString() }, parent);
+    if(!parent) parent = this.create('svg', { width, height, viewBox: bounds.toString() }, parent);
 
     //this.renderLayers(parent);
 
@@ -684,24 +668,44 @@ export class SchematicRenderer extends EagleSVGRenderer {
     }
   }
 
-  renderPart(instance, parent) {
-    //console.log(`${Util.className(this)}.renderPart`, { instance, parent });
+  renderNet(net, parent) {
+    //console.log(`${Util.className(this)}.renderNet`, { net, parent });
+    let g = this.create('g', { className: `net.${net.name}` }, parent);
+    for(let segment of net.children)
+      this.renderCollection(segment.children, g, { labelText: net.name });
+  }
 
-    const { x, y, rot } = instance;
-    const part = instance.part;
+  renderSheet(sheet, parent) {
+    //console.log(`${Util.className(this)}.renderSheet`, { sheet, parent });
+    let netsGroup = this.create('g', { className: 'nets' }, parent);
+    let instancesGroup = this.create('g', { className: 'instances' }, parent);
+    for(let instance of sheet.instances.list) this.renderInstance(instance, instancesGroup);
+    for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
+  }
+
+  render(doc = this.doc, parent, sheetNo = 0) {
+    parent = super.render(doc, parent);
+    this.renderSheet(this.sheets[sheetNo], parent);
+    this.renderInstances(parent, sheetNo);
+    return parent;
+  }
+
+  renderInstance(instance, parent) {
+    //console.log(`${Util.className(this)}.renderPart`, { instance, parent });
+    const { x, y, rot, part, gate, symbol } = instance;
     let { deviceset, device, library, name, value } = part;
-    let symbol;
-    for(let gate of deviceset.gates.list) {
-      symbol = library.symbols[gate.attributes.symbol];
-      if(gate.name == instance.attributes.gate) break;
-    }
-    if(!symbol) {
-    }
+    let t = new TransformationList();
+    let pos = new Point(+x, +y);
+    pos.round(0.0001);
+    t.translate(pos.x, pos.y);
+    //t.push(new Transformation.translation(+gate.x, +gate.y));
+    t = t.concat(Rotation(rot));
+    // t.translate(-gate.x, -gate.y);
     const g = this.create(
       'g',
       {
         className: `part.${part.name}`,
-        transform: ` translate(${x},${y}) ${RotateTransformation(rot)}`
+        transform: t
       },
       parent
     );
@@ -711,29 +715,43 @@ export class SchematicRenderer extends EagleSVGRenderer {
     return g;
   }
 
-  renderNet(net, parent) {
-    //console.log(`${Util.className(this)}.renderNet`, { net, parent });
-
-    let g = this.create('g', { className: `net.${net.name}` }, parent);
-    for(let segment of net.children)
-      this.renderCollection(segment.children, g, { labelText: net.name });
-  }
-  renderSheet(sheet, parent) {
-    //console.log(`${Util.className(this)}.renderSheet`, { sheet, parent });
-
-    let netsGroup = this.create('g', { className: 'nets' }, parent);
-
-    let partsGroup = this.create('g', { className: 'parts' }, parent);
-    for(let instance of sheet.instances.list) this.renderPart(instance, partsGroup);
-    for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
-  }
-
-  render(doc = this.doc, parent) {
-   parent = super.render(doc, parent);
-
-    [...this.sheets].forEach(sheet => this.renderSheet(sheet, parent));
-
-    return parent;
+  renderInstances(parent, sheetNo = 0) {
+    let g = this.create(
+      'g',
+      {
+        className: 'instances rects',
+        stroke: new HSLA(220, 100, 50),
+        'stroke-width': 0.3,
+        fill: 'none'
+      },
+      parent
+    );
+    for(let instance of this.sheets[sheetNo].getAll(e => e.tagName == 'instance')) {
+      const { rot, part, gate, symbol } = instance;
+      const { device, deviceset } = part;
+      let r = Rotation(rot);
+      let t = new TransformationList();
+      t.translate(+instance.x, +instance.y);
+      t = t.concat(r);
+    //  t.translate(+gate.x, +gate.y);
+      //console.log("t:", t);
+      let b = symbol.getBounds(e => e.tagName != 'text');
+      if(part.name.startsWith('T')) console.log('symbol.getBounds():', b);
+      let br = new Rect(b).round(0.0001, 5);
+      this.create(
+        'rect',
+        {
+          ...br.toObject(),
+          transform: t,
+          'data-part': part.name,
+          'data-device': part.device.name,
+          'data-gate': gate.name,
+          'data-value': part.value || ''
+        },
+        g
+      );
+      this.create('path' ,  { d: `M 0,-1 L 0,1 M -1,0 L 1,0`, transform: t, stroke: 'magenta', 'stroke-width': 0.1 }, g);
+    }
   }
 }
 

@@ -3,6 +3,7 @@ import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { makeEagleNodeList } from './nodeList.js';
 import { toXML, inspect, dump } from './common.js';
+import { lazyProperty } from '../lazyInitializer.js';
 import {
   BBox,
   Point,
@@ -108,6 +109,42 @@ export class EagleElement extends EagleNode {
         o.children = value.raw;
       }
     });
+    //const chain = this.elementChain();
+
+    if(tagName == 'gate') {
+      lazyProperty(this, 'symbol', () =>
+        this.parentNode
+          .elementChain()
+          .library.find(e => e.tagName == 'symbol' && e.attributes.name == this.attributes.symbol)
+      );
+
+      /*  Util.defineGetter(this, 'symbol', function() {
+        const library = this.parentNode.elementChain().library;
+
+        return library.find(
+          e => e.tagName == 'symbol' && e.attributes.name == this.attributes.symbol
+        );
+      });*/
+    } else if(tagName == 'instance') {
+      lazyProperty(this, 'gate', () =>
+        this.part.deviceset.find(
+          e => e.tagName == 'gate' && e.attributes.name == this.attributes.gate
+        )
+      );
+
+      Util.defineGetter(this, 'symbol', () => this.gate.symbol);
+    } else if(tagName == 'device') {
+      lazyProperty(this, 'package', () => {
+        const library = this.parentNode.elementChain().library;
+
+        let pkg = library.find(
+          e => e.tagName == 'package' && e.attributes.name == this.attributes.package
+        );
+        return pkg;
+      });
+    }
+
+    //console.log("this.xpath", this.xpath());
 
     //this.children = makeEagleNodeList(this, this.ref, 'children');
 
@@ -162,7 +199,7 @@ export class EagleElement extends EagleNode {
     if(this.raw.tagName == 'description') return 'Document';
   }
 
-  getBounds() {
+  getBounds(pred = e => true) {
     let bb, pos;
     if(this.tagName == 'element') {
       bb = this.package.getBounds();
@@ -174,7 +211,9 @@ export class EagleElement extends EagleNode {
 
       return bb;
     }
-    return super.getBounds();
+    
+
+    return super.getBounds(pred);
   }
 
   transformation() {
@@ -206,6 +245,7 @@ export class EagleElement extends EagleNode {
 
       if(['width', 'height'].every(prop => keys.includes(prop)))
         return Rect.bind(this, null, makeGetterSetter);
+
       else return Point.bind(this, null, makeGetterSetter);
     }
   }
@@ -225,6 +265,24 @@ export class EagleElement extends EagleNode {
     ];
 
     return relationNames.indexOf(name) != -1;
+  }
+
+  elementChain() {
+    let node = this;
+    let ret = {};
+    do {
+      if(node.attributes.name) ret[node.tagName] = node;
+
+      //  console.log('node:', node);
+    } while((node = node.parentNode));
+    return ret;
+  }
+
+  names() {
+    return Object.entries(this.elementChain()).reduce(
+      (acc, entry) => ({ ...acc, [entry[0]]: entry[1].attributes.name }),
+      {}
+    );
   }
 
   /* prettier-ignore */ static keys(entity) {return Object.keys(EagleElement.toObject(entity)); }

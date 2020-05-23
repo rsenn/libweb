@@ -214,16 +214,16 @@ export class EagleInterface {
     }
   }
 
-  getBounds() {
+  getBounds(pred = e => true) {
     let bb = new BBox();
-    for(let element of this.getAll(e => e.tagName !== undefined)) {
+    for(let element of this.getAll(e => e.tagName !== undefined && pred(e))) {
       let g = element.geometry();
       if(g) {
         //console.log("getBounds", element.layer, g);
-        bb.update(g);
+        bb.update(g, 0, element);
       }
     }
-    console.log('getBounds', bb);
+    //console.log('getBounds', bb);
     return bb;
   }
 

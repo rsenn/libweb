@@ -330,12 +330,12 @@ Rect.prototype.align = function(align_to, a = 0) {
   return this;
 };
 
-Rect.prototype.round = function(precision = 0.001) {
+Rect.prototype.round = function(precision = 0.001, digits) {
   let { x, y, x2, y2 } = this;
-  this.x = Util.roundTo(x, precision);
-  this.y = Util.roundTo(y, precision);
-  this.width = Util.roundTo(x2 - this.x, precision);
-  this.height = Util.roundTo(y2 - this.y, precision);
+  this.x = Util.roundTo(x, precision, digits);
+  this.y = Util.roundTo(y, precision, digits);
+  this.width = Util.roundTo(x2 - this.x, precision, digits);
+  this.height = Util.roundTo(y2 - this.y, precision, digits);
   return this;
 };
 Rect.prototype.toObject = function(bb = false) {

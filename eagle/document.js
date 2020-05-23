@@ -146,8 +146,15 @@ let layer = element.layer;
       let points = new PointList([...matrix.transform_points(geometries.symbol)]);
       let bbrect = points.boundingRect();
 
-      console.log(' points:', points);
-      console.log(' bbrect:', bbrect);
+      let sb = symbol.getBounds();
+      let sbr = new Rect(sb);
+
+      if(sbr.height > 20) {
+        console.log(' symbol.getBounds():', symbol.getBounds());
+        throw new Error('symbol');
+      }
+      //   console.log(' points:', points);
+      //  console.log(' bbrect:', bbrect);
 
       //  bb.update(bbrect);
 
@@ -159,10 +166,10 @@ let layer = element.layer;
       if(g) {
 */
       /*    console.log("getBounds", element, g);*/
-      bb.update(bbrect);
+      bb.update(bbrect, 0, instance);
       // }
     }
-    //console.log('getBounds', bb);
+    // console.log('getBounds', bb);
     return bb;
   }
 }

@@ -14,6 +14,10 @@ export const makeEagleNode = (owner, ref, ctor = EagleNode) => {
 export class EagleNode extends EagleInterface {
   ref = null;
 
+  get [Symbol.species]() {
+    return this.constructor;
+  }
+
   constructor(owner, ref) {
     super(owner);
     ref = ref instanceof EagleReference ? ref : EagleRef(owner.ref.root, ref);
@@ -252,27 +256,29 @@ export class EagleNode extends EagleInterface {
 
   get nextSibling() {
     const ref = this.ref.nextSibling;
-    return ref ? new EagleElement(this, ref) : null;
+    return ref ? new this[Symbol.species](this, ref) : null;
   }
 
   get prevSibling() {
     const ref = this.ref.prevSibling;
-    return ref ? new EagleElement(this, ref) : null;
+    return ref ? new this[Symbol.species](this, ref) : null;
   }
 
   get parentNode() {
     const ref = this.ref.up(2);
-    return ref ? new EagleElement(this, ref) : null;
+    if(this.path.length == 0) return null;
+
+    return ref ? new this[Symbol.species](this, ref) : null;
   }
 
   get firstChild() {
     const ref = this.ref.firstChild;
-    return ref ? new EagleElement(this, ref) : null;
+    return ref ? new this[Symbol.species](this, ref) : null;
   }
 
   get lastChild() {
     const ref = this.ref.lastChild;
-    return ref ? new EagleElement(this, ref) : null;
+    return ref ? new this[Symbol.species](this, ref) : null;
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {

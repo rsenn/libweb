@@ -60,6 +60,10 @@ export function lazyMembers(obj, members) {
   }
 }
 
+export function lazyProperty(obj, name, fn) {
+  return lazyMembers(obj, { [name]: fn });
+}
+
 /**
  * { function_description }
  *

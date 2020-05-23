@@ -16,11 +16,13 @@ export class BBox {
       this.x2 = Math.max(x1, x2);
       this.y2 = Math.max(y1, y2);
     } else {
-      this.x1 = 0;
-      this.y1 = 0;
-      this.x2 = 0;
-      this.y2 = 0;
+      this.x1 = undefined;
+      this.y1 = undefined;
+      this.x2 = undefined;
+      this.y2 = undefined;
     }
+
+    this.__objs = {};
   }
 
   updateList(list, offset = 0.0) {
@@ -28,32 +30,35 @@ export class BBox {
     return this;
   }
 
-  update(arg, offset = 0.0) {
+  update(arg, offset = 0.0, obj = null) {
     if(Util.isArray(arg)) return this.updateList(arg, offset);
 
-    if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset);
-    if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0);
-    if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0);
+    if(arg.x !== undefined && arg.y != undefined)
+      this.updateXY(arg.x, arg.y, offset, name => (this.__objs[name] = obj || arg));
+    if(arg.x1 !== undefined && arg.y1 != undefined)
+      this.updateXY(arg.x1, arg.y1, 0, name => (this.__objs[name] = obj || arg));
+    if(arg.x2 !== undefined && arg.y2 != undefined)
+      this.updateXY(arg.x2, arg.y2, 0, name => (this.__objs[name] = obj || arg));
     return this;
   }
 
-  updateXY(x, y, offset = 0) {
+  updateXY(x, y, offset = 0, set = () => {}) {
     let updated = {};
     if(this.x1 === undefined || this.x1 > x - offset) {
       this.x1 = x - offset;
-      updated.x1 = true;
+      set('x1');
     }
     if(this.x2 === undefined || this.x2 < x + offset) {
       this.x2 = x + offset;
-      updated.x2 = true;
+      set('x2');
     }
     if(this.y1 === undefined || this.y1 > y - offset) {
       this.y1 = y - offset;
-      updated.y1 = true;
+      set('y1');
     }
     if(this.y2 === undefined || this.y2 < y + offset) {
       this.y2 = y + offset;
-      updated.y2 = true;
+      set('y2');
     }
     // if(Object.keys(updated)) console.log(`BBox update ${x},${y} `, updated);
     return this;

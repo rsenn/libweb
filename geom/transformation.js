@@ -1,4 +1,5 @@
 import { Matrix, isMatrix } from '../geom/matrix.js';
+import { Point, isPoint } from '../geom/point.js';
 import { Util } from '../util.js';
 
 export class Transformation {
@@ -48,9 +49,12 @@ export class Transformation {
     );
   }
 
-  toString(unit) {
-    return `${this.type}${this.is3D ? '3d' : ''}(${this.vector(unit).join(',')})`;
+  toString(tUnit) {
+    return `${this.type}${this.is3D ? '3d' : ''}(${this.vector(tUnit).join(', ')})`;
   }
+  /*  toSource(unit) {
+    return Util.colorText('new ',1,31)+Util.colorText(Util.className(this), 1,33) +Util.colorText('(' +this.vector(unit).join(', ') + ')', 1 ,36);
+  }*/
 
   clone() {
     let desc = Object.getOwnPropertyDescriptors(this);
@@ -91,10 +95,10 @@ export class Transformation {
   static deg2rad(degrees) {
     return degrees * this.DEG2RAD;
   }*/
-
+  /*
   [Symbol.toStringTag]() {
-    return 'Transformation'; //this.toString();
-  }
+    return  this.toSource();
+  }*/
 
   [Symbol.toPrimitive](hint) {
     if(hint == 'string') return this.toString();
@@ -102,7 +106,10 @@ export class Transformation {
     return this.toString() != '';
   }
 
-  /*
+  /* [Symbol.for('nodejs.util.inspect.custom')]() {
+      return this;
+    }*/
+
   static get rotation() {
     return Rotation;
   }
@@ -114,7 +121,7 @@ export class Transformation {
   }
   static get matrix() {
     return MatrixTransformation;
-  }*/
+  }
 }
 
 Object.defineProperty(Transformation, Symbol.hasInstance, {
@@ -162,10 +169,23 @@ export class Rotation extends Transformation {
     return this.axis == 'z';
   }
 
-  toString(unit = '') {
+  isZero() {
+    return this.angle == 0;
+  }
+
+  toString(rUnit = '') {
     const axis = this.axis !== undefined ? this.axis.toUpperCase() : '';
-    const angle = this.constructor.convertAngle(this.angle, unit);
-    return `rotate${this.is3D ? axis : ''}(${angle}${unit})`;
+    const angle = this.constructor.convertAngle(this.angle, rUnit);
+    return `rotate${this.is3D ? axis : ''}(${angle}${rUnit})`;
+  }
+
+  toSource() {
+    let o =
+      Util.colorText('new ', 1, 31) +
+      Util.colorText(Util.className(this), 1, 33) +
+      Util.colorText('(' + this.angle + ')', 1, 36);
+
+    return o;
   }
 
   toMatrix() {
@@ -214,6 +234,11 @@ export class Translation extends Transformation {
   get values() {
     const { x, y, z } = this;
     return 'z' in this ? { x, y, z } : { x, y };
+  }
+
+  isZero() {
+    const { x, y, z } = this;
+    return 'z' in this ? x == 0 && y == 0 && z == 0 : x == 0 && y == 0;
   }
 
   toMatrix(matrix = Matrix.IDENTITY) {
@@ -266,6 +291,11 @@ export class Scaling extends Transformation {
     return matrix.scale(this.x, this.y, this.z);
   }
 
+  isZero() {
+    const { x, y, z } = this;
+    return 'z' in this ? x == 0 && y == 0 && z == 0 : x == 0 && y == 0;
+  }
+
   /*clone() {
     const { x, y, z } = this;
     return z !== undefined ? new Scaling(x, y, z) : new Scaling(x, y);
@@ -311,6 +341,10 @@ export class MatrixTransformation extends Transformation {
     return new MatrixTransformation(this.matrix.invert());
   }
 
+  isZero() {
+    return this.matrix.isIdentity();
+  }
+
   accumulate(other) {
     if(this.type !== other.type) throw new Error(Util.className(this) + ': accumulate mismatch');
 
@@ -338,10 +372,10 @@ export class TransformationList extends Array {
   get [Symbol.isConcatSpreadable]() {
     return true;
   }
-
+  /*
   [Symbol.toStringTag]() {
-    return `TransformationList[${this.length}]`;
-  }
+    return this.toSource();
+  }*/
 
   static get [Symbol.species]() {
     return TransformationList;
@@ -433,8 +467,16 @@ export class TransformationList extends Array {
     return this;
   }
 
-  translate(...args) {
-    Array.prototype.push.call(this, new Translation(...args));
+  translate(x, y) {
+    let trans = this.filter(t => !t.type.startsWith('translate'));
+    let vec = new Point(x, y);
+
+    //   trans.toMatrix().transform_point(vec);
+
+    vec = vec.round(0.00001, 5);
+    //console.log("from:", new Point(x,y), " to:", vec);
+
+    Array.prototype.push.call(this, new Translation(vec.x, vec.y));
     return this;
   }
 
@@ -450,8 +492,18 @@ export class TransformationList extends Array {
 
   toString(tUnit, rUnit) {
     return this.map(t =>
-      t.toString(t instanceof Translation ? tUnit : t instanceof Rotation ? rUnit : undefined)
+      t.toString(t.type.startsWith('scale') ? '' : t.type.startsWith('rotate') ? rUnit : tUnit)
     ).join(' ');
+  }
+
+  toSource() {
+    let s =
+      Util.colorText('new ', 1, 31) +
+      Util.colorText(Util.className(this), 1, 33) +
+      Util.colorText('([', 1, 36);
+
+    s += this.map(t => t.toSource()).join(', ');
+    return s + Util.colorText('])', 1, 36);
   }
 
   toMatrices() {
