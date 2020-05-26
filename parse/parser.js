@@ -55,4 +55,3 @@ export class Parser {
     return value;
   }
 }
-  
