@@ -6,27 +6,23 @@ const add = (arr, item) => [...(arr || []), item];
 
 export class Parser {
   tokens = [];
-  // lexer = null;
 
   constructor(lexer) {
     Util.define(this, { lexer });
-    //this.lexer = lexer;
     return this;
   }
   clone() {
     let { tokens, token, lexer } = this;
-
     tokens = [...tokens];
-
     return Object.assign(new Parser(lexer.clone()), { tokens, token });
-    //, Object.getPrototypeOf(this));
   }
+
   copyTo(dst) {
     let { tokens, token, lexer } = this;
-    //console.log("copyTo", { parser: this, dst });
     Object.assign(dst, { tokens, token, lexer });
     return dst;
   }
+
   getTok() {
     let it = this.lexer.next();
     let { value, done } = it;
@@ -38,6 +34,7 @@ export class Parser {
     }
     return null;
   }
+
   match(id, s) {
     let value = this.getTok();
     if(value) {
@@ -48,7 +45,7 @@ export class Parser {
     }
   }
   expect(id, s) {
-    let { value, done } = this.lexer.next();
+    let value = this.getTok();
     let { tok, str, unget } = value;
     let ok = s === undefined ? lexIsToken(id, value) : lexMatch(id, s, value);
     if(!ok) {
@@ -58,3 +55,4 @@ export class Parser {
     return value;
   }
 }
+  
