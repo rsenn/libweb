@@ -1,17 +1,4 @@
-import {
-  ESNode,
-  Literal,
-  PropertyDefinition,
-  MemberVariable,
-  FunctionDeclaration,
-  Identifier,
-  ClassDeclaration,
-  BindingProperty,
-  ObjectBindingPattern,
-  ObjectLiteral,
-  SpreadElement,
-  MemberExpression
-} from './estree.js';
+import { ESNode, Literal, PropertyDefinition, MemberVariable, FunctionDeclaration, Identifier, ClassDeclaration, BindingProperty, ObjectBindingPattern, ObjectLiteral, SpreadElement, MemberExpression } from './estree.js';
 import Util from '../util.js';
 import deep from '../deep.js';
 //import util from 'util';
@@ -34,14 +21,8 @@ export class Printer {
 
     this.color = Util.color(color);
 
-    this.colorText = Object.entries(Printer.colors).reduce(
-      (acc, [key, codes]) => ({ ...acc, [key]: text => this.color.text(text, ...codes) }),
-      {}
-    );
-    this.colorCode = Object.entries(Printer.colors).reduce(
-      (acc, [key, codes]) => ({ ...acc, [key]: () => this.color.code(...codes) }),
-      {}
-    );
+    this.colorText = Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: text => this.color.text(text, ...codes) }), {});
+    this.colorCode = Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: () => this.color.code(...codes) }), {});
   }
 
   printNode(node) {
@@ -84,9 +65,7 @@ export class Printer {
   }
 
   print(tree) {
-    this.nodes = [
-      ...deep.iterate(tree, node => Util.isObject(node) && 'position' in node)
-    ].map(([node, path]) => [node.position, path.join('.'), node]) /*.sort((a,b) => a[0] - b[0])*/;
+    this.nodes = [...deep.iterate(tree, node => Util.isObject(node) && 'position' in node)].map(([node, path]) => [node.position, path.join('.'), node]) /*.sort((a,b) => a[0] - b[0])*/;
 
     //  console.log("comments: ", this.comments);
 
@@ -95,9 +74,7 @@ export class Printer {
       start: pos,
       end: pos + len,
       text,
-      nodes: this.nodes
-        .slice(this.nodes.findIndex(([position, path]) => position > pos + len) - 1)
-        .slice(0, 2)
+      nodes: this.nodes.slice(this.nodes.findIndex(([position, path]) => position > pos + len) - 1).slice(0, 2)
     }));
 
     //console.log("adjacent: ", this.adjacent);
@@ -218,13 +195,11 @@ export class Printer {
     left = this.printNode(object);
     right = this.printNode(property);
 
-    if(!(object instanceof Identifier) && !(object instanceof MemberExpression))
-      left = '(' + left + ')';
+    if(!(object instanceof Identifier) && !(object instanceof MemberExpression)) left = '(' + left + ')';
 
     ///null.*{/.test(left) && console.log("object:", object);
 
-    if(/^[0-9]+$/.test(right) || /[\.\']/.test(right) || !(property instanceof Identifier))
-      return left + '[' + right + ']';
+    if(/^[0-9]+$/.test(right) || /[\.\']/.test(right) || !(property instanceof Identifier)) return left + '[' + right + ']';
     return left + '.' + right;
   }
 
@@ -244,14 +219,7 @@ export class Printer {
 
   printCallExpression(call_expression) {
     const { arguments: args, callee } = call_expression;
-    return (
-      this.printNode(callee) +
-      this.colorCode.punctuators() +
-      '(' +
-      args.map(arg => this.printNode(arg)).join(this.colorCode.punctuators() + ', ') +
-      this.colorCode.punctuators() +
-      ')'
-    );
+    return this.printNode(callee) + this.colorCode.punctuators() + '(' + args.map(arg => this.printNode(arg)).join(this.colorCode.punctuators() + ', ') + this.colorCode.punctuators() + ')';
   }
   /*
   /*
@@ -290,9 +258,7 @@ export class Printer {
 
         let multiline = /\n/.test(line);
         s += multiline && s.length ? '\n\n  ' : '\n  ';
-        let eol =
-          (new RegExp('(;|\n|})$').test(line.trimEnd()) ? '' : this.colorCode.punctuators() + ';') +
-          (multiline ? '\n' : '');
+        let eol = (new RegExp('(;|\n|})$').test(line.trimEnd()) ? '' : this.colorCode.punctuators() + ';') + (multiline ? '\n' : '');
         // console.log("line:", { line, eol });
 
         if(line != '') s += line.replace(/\n/g, '\n  ') + eol;
@@ -302,13 +268,7 @@ export class Printer {
     }
     s = s.trimEnd();
 
-    return (
-      this.colorCode.punctuators() +
-      '{' +
-      s +
-      this.colorCode.punctuators() +
-      (new RegExp('[};\\n ]$').test(s) ? '\n}' : ';\n}')
-    );
+    return this.colorCode.punctuators() + '{' + s + this.colorCode.punctuators() + (new RegExp('[};\\n ]$').test(s) ? '\n}' : ';\n}');
   }
 
   printStatementList(statement_list) {
@@ -318,13 +278,7 @@ export class Printer {
       let line = this.printNode(statement);
       let multiline = /\n/.test(line);
       s += multiline && s.length ? '\n\n' : '\n';
-      if(line != '')
-        s +=
-          line +
-          (new RegExp('(;|\\n|}|\\s)$').test(line.trimEnd())
-            ? ''
-            : this.colorCode.punctuators() + ';') +
-          (multiline ? '\n' : '');
+      if(line != '') s += line + (new RegExp('(;|\\n|}|\\s)$').test(line.trimEnd()) ? '' : this.colorCode.punctuators() + ';') + (multiline ? '\n' : '');
     }
     return s;
   }
@@ -356,14 +310,10 @@ export class Printer {
     const { test, consequent, alternate } = if_statement;
     let condition = this.printNode(test);
     let if_true = this.printNode(consequent);
-    let output =
-      this.colorCode.keywords() + 'if' + this.colorCode.punctuators() + `(${condition}) ${if_true}`;
+    let output = this.colorCode.keywords() + 'if' + this.colorCode.punctuators() + `(${condition}) ${if_true}`;
     if(alternate) {
       let if_false = this.printNode(alternate);
-      output +=
-        (new RegExp('[;}\\n]$').test(output) ? '' : this.colorCode.punctuators() + ';') +
-        this.colorCode.keywords() +
-        ` else ${if_false}`;
+      output += (new RegExp('[;}\\n]$').test(output) ? '' : this.colorCode.punctuators() + ';') + this.colorCode.keywords() + ` else ${if_false}`;
     }
     return output;
   }
@@ -371,8 +321,7 @@ export class Printer {
   printSwitchStatement(switch_statement) {
     const { test, cases } = switch_statement;
     let condition = this.printNode(test);
-    let output =
-      this.colorCode.keywords() + `switch` + this.colorCode.punctuators() + `(${condition}) {\n`;
+    let output = this.colorCode.keywords() + `switch` + this.colorCode.punctuators() + `(${condition}) {\n`;
     for(let case_clause of cases) {
       const { value, body } = case_clause;
       if(value == null) output += '  default:';
@@ -388,14 +337,7 @@ export class Printer {
 
   printWhileStatement(while_statement) {
     const { body, test } = while_statement;
-    let output =
-      this.colorCode.keywords() +
-      'while' +
-      this.colorCode.punctuators() +
-      `(` +
-      this.printNode(test) +
-      this.colorCode.punctuators() +
-      ') ';
+    let output = this.colorCode.keywords() + 'while' + this.colorCode.punctuators() + `(` + this.printNode(test) + this.colorCode.punctuators() + ') ';
     output += this.printNode(body);
     return output;
   }
@@ -404,14 +346,7 @@ export class Printer {
     const { body, test } = do_statement;
     let output = `do `;
     output += this.printNode(body);
-    output +=
-      this.colorCode.keywords() +
-      'while' +
-      this.colorCode.punctuators() +
-      `(` +
-      this.printNode(test) +
-      this.colorCode.punctuators() +
-      ')';
+    output += this.colorCode.keywords() + 'while' + this.colorCode.punctuators() + `(` + this.printNode(test) + this.colorCode.punctuators() + ')';
     return output;
     //console.log(arguments[0]);
     //console.log(Object.keys(arguments[0]).join(", "));
@@ -496,10 +431,7 @@ export class Printer {
       }
       output += '{ ' + decl + ' }';
     } else {
-      if(
-        !(declarations instanceof ClassDeclaration) &&
-        !(declarations instanceof FunctionDeclaration)
-      ) {
+      if(!(declarations instanceof ClassDeclaration) && !(declarations instanceof FunctionDeclaration)) {
         let id = what instanceof ESNode ? this.printNode(what) : what;
         if(id) output += id + ' ';
       }
@@ -673,11 +605,7 @@ export class Printer {
         //   name =  this.printNode(property.id);
         value = this.printNode(property).replace(/function /, '');
         isFunction = true;
-      } else if(
-        property instanceof PropertyDefinition ||
-        property instanceof BindingProperty ||
-        !property.id
-      ) {
+      } else if(property instanceof PropertyDefinition || property instanceof BindingProperty || !property.id) {
         a.push(this.printNode(property));
         continue;
       } else {
@@ -701,11 +629,7 @@ export class Printer {
 
       line += value.replace(/\n/g, '\n  ');
 
-      if(
-        property.flags &&
-        !(property instanceof BindingProperty) &&
-        !(object_literal instanceof ObjectBindingPattern)
-      ) {
+      if(property.flags && !(property instanceof BindingProperty) && !(object_literal instanceof ObjectBindingPattern)) {
         line = name + ' = ' + line;
         //   console.log("printObjectLiteral.line:", line);
       } else if(name && name != line) {
@@ -727,8 +651,7 @@ export class Printer {
   printPropertyDefinition(property_definition) {
     const { id, value, flags } = property_definition;
     let comments = property_definition.comments || id.comments;
-    let s =
-      flags & PropertyDefinition.GETTER ? 'get ' : flags & PropertyDefinition.SETTER ? 'set ' : '';
+    let s = flags & PropertyDefinition.GETTER ? 'get ' : flags & PropertyDefinition.SETTER ? 'set ' : '';
     if(flags & PropertyDefinition.STATIC) s = 'static ' + s;
     s = this.colorText.keywords(s);
     if(comments) {
@@ -842,12 +765,7 @@ export class Printer {
 
     //   let output = properties.map(property => this.printNode(property)).join(', ');
 
-    if(/\n/.test(output))
-      return (
-        this.colorText.punctuators('{') +
-        `\n  ${output.replace(/\n/g, '\n  ')}\n` +
-        this.colorText.punctuators('}')
-      );
+    if(/\n/.test(output)) return this.colorText.punctuators('{') + `\n  ${output.replace(/\n/g, '\n  ')}\n` + this.colorText.punctuators('}');
 
     return this.colorText.punctuators('{') + ` ${output} ` + this.colorText.punctuators('}');
   }

@@ -13,11 +13,7 @@ export class Transformation {
   }
 
   get [Symbol.isConcatSpreadable]() {
-    return (
-      this.constructor === TransformationList ||
-      Object.getPrototypeOf(this) == TransformationList.prototype ||
-      Object.getPrototypeOf(this).constructor == TransformationList
-    );
+    return this.constructor === TransformationList || Object.getPrototypeOf(this) == TransformationList.prototype || Object.getPrototypeOf(this).constructor == TransformationList;
   }
   get axes() {
     return this.axis !== undefined ? [this.axis] : ['x', 'y', 'z'].filter(axis => axis in this);
@@ -44,9 +40,7 @@ export class Transformation {
   }
 
   vector(unit) {
-    return (this.is3D ? ['x', 'y', 'z'] : ['x', 'y']).map(
-      unit ? axis => this[axis] + unit : axis => this[axis]
-    );
+    return (this.is3D ? ['x', 'y', 'z'] : ['x', 'y']).map(unit ? axis => this[axis] + unit : axis => this[axis]);
   }
 
   toString(tUnit) {
@@ -126,14 +120,7 @@ export class Transformation {
 
 Object.defineProperty(Transformation, Symbol.hasInstance, {
   value: function(inst) {
-    return [
-      Transformation,
-      MatrixTransformation,
-      Rotation,
-      Translation,
-      Scaling,
-      TransformationList
-    ].some(ctor => Object.getPrototypeOf(inst) == ctor.prototype);
+    return [Transformation, MatrixTransformation, Rotation, Translation, Scaling, TransformationList].some(ctor => Object.getPrototypeOf(inst) == ctor.prototype);
   }
 });
 
@@ -147,8 +134,7 @@ export class Rotation extends Transformation {
   constructor(angle, axis) {
     super('rotate');
 
-    if(typeof axis == 'string' && ['x', 'y', 'z'].indexOf(axis.toLowerCase()) != -1)
-      this.axis = axis.toLowerCase();
+    if(typeof axis == 'string' && ['x', 'y', 'z'].indexOf(axis.toLowerCase()) != -1) this.axis = axis.toLowerCase();
     // else this.axis = 'z';
     this.angle = angle;
   }
@@ -180,10 +166,7 @@ export class Rotation extends Transformation {
   }
 
   toSource() {
-    let o =
-      Util.colorText('new ', 1, 31) +
-      Util.colorText(Util.className(this), 1, 33) +
-      Util.colorText('(' + this.angle + ')', 1, 36);
+    let o = Util.colorText('new ', 1, 31) + Util.colorText(Util.className(this), 1, 33) + Util.colorText('(' + this.angle + ')', 1, 36);
 
     return o;
   }
@@ -193,8 +176,7 @@ export class Rotation extends Transformation {
   }
 
   accumulate(other) {
-    if(this.type !== other.type && this.axis !== other.axis)
-      throw new Error(Util.className(this) + ': accumulate mismatch');
+    if(this.type !== other.type && this.axis !== other.axis) throw new Error(Util.className(this) + ': accumulate mismatch');
     return new Rotation(this.angle + other.angle, this.axis);
   }
 
@@ -491,16 +473,11 @@ export class TransformationList extends Array {
   }
 
   toString(tUnit, rUnit) {
-    return this.map(t =>
-      t.toString(t.type.startsWith('scale') ? '' : t.type.startsWith('rotate') ? rUnit : tUnit)
-    ).join(' ');
+    return this.map(t => t.toString(t.type.startsWith('scale') ? '' : t.type.startsWith('rotate') ? rUnit : tUnit)).join(' ');
   }
 
   toSource() {
-    let s =
-      Util.colorText('new ', 1, 31) +
-      Util.colorText(Util.className(this), 1, 33) +
-      Util.colorText('([', 1, 36);
+    let s = Util.colorText('new ', 1, 31) + Util.colorText(Util.className(this), 1, 33) + Util.colorText('([', 1, 36);
 
     s += this.map(t => t.toSource()).join(', ');
     return s + Util.colorText('])', 1, 36);
@@ -611,28 +588,7 @@ export class TransformationList extends Array {
   }
 }
 
-const {
-  concat,
-  copyWithin,
-  find,
-  findIndex,
-  lastIndexOf,
-  pop,
-  push,
-  shift,
-  unshift,
-  slice,
-  splice,
-  includes,
-  indexOf,
-  entries,
-  filter,
-  map,
-  every,
-  some,
-  reduce,
-  reduceRight
-} = Array.prototype;
+const { concat, copyWithin, find, findIndex, lastIndexOf, pop, push, shift, unshift, slice, splice, includes, indexOf, entries, filter, map, every, some, reduce, reduceRight } = Array.prototype;
 
 Util.inherit(
   TransformationList.prototype,

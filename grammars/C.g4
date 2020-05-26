@@ -856,7 +856,7 @@ SimpleEscapeSequence
     ;
 
 fragment
-OctalEscapeSequence
+OctalEscapeSequencef
     :   '\\' OctalDigit
     |   '\\' OctalDigit OctalDigit
     |   '\\' OctalDigit OctalDigit OctalDigit

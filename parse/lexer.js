@@ -15,6 +15,16 @@ const lexComment = lexer => {
     return Lexer.tokens.COMMENT;
   }
 };
+const lexPreProc = lexer => {
+  let s = lexer.source.substring(lexer.start, lexer.pos + 1);
+  if(/^\s*#/.test(s)) {
+    lexer.start += s.indexOf('#');
+    lexer.lexUntil(/\n$/);
+
+    //   console.log('s:', lexer.source.substring(lexer.start, lexer.pos));
+    return Lexer.tokens.PREPROC;
+  }
+};
 
 const lexString = lexer => {
   let c = lexer.peek();
@@ -43,6 +53,12 @@ const lexString = lexer => {
 const lexRegExp = lexer => {
   let s = lexer.source.substring(lexer.start, lexer.start + 2);
 
+  if(/^\./.test(s)) {
+    lexer.skip();
+    lexer.lexWhile(/[^ ]$/);
+    return Lexer.tokens.REGEXP;
+  }
+
   if(/^[\[]/.test(s)) {
     lexer.start = lexer.pos;
     lexer.get();
@@ -64,12 +80,17 @@ const lexNumber = lexer => {
 
 const lexPunctuation = lexer => {
   let s = lexer.source.substring(lexer.start, lexer.pos + 1);
-  if(/^\->/.test(s)) {
+  let c = lexer.peek();
+
+  if(/->$/.test(s)) {
     lexer.skip(2);
     return Lexer.tokens.PUNCTUATION;
   }
   if(/^[-\~.<>;,\(\):|+\?*]/.test(s)) {
     lexer.get();
+    c = lexer.peek();
+    if(s[0] == '-' && c == '>') lexer.get();
+
     lexer.lexWhile(/^[-~.<>;,\(\):|+\?*]$/);
     //console.log("PUNCT", s);
     return Lexer.tokens.PUNCTUATION;
@@ -77,10 +98,26 @@ const lexPunctuation = lexer => {
 };
 
 const lexIdentifier = lexer => {
+  let c;
+  let word = '';
   if(/^[A-Za-z]/.test(lexer.peek())) {
-    lexer.get();
-    lexer.lexWhile(/[0-9A-Za-z_]$/);
+    c = lexer.get();
+    word += c;
+
+    for(; (c = lexer.peek()); word += lexer.get()) {
+      if(!/[0-9A-Za-z_]/.test(c)) break;
+      //  console.log("lexIdentifier: ", word);
+    }
+
+    if(/[^0-9A-Za-z_]$/.test(word)) lexer.pos--;
+
+    //      console.log("lexIdentifier: ", lexer.source[lexer.pos-1]);
+
+    let s = lexer.source.substring(lexer.start, lexer.pos);
+
     let { start, pos, len } = lexer;
+    // console.log("lexIdentifier: ", {s,start,pos,len});
+
     return Lexer.tokens.IDENTIFIER;
   }
 };
@@ -157,6 +194,7 @@ export class Lexer {
   static tokens = {
     EOF: -1,
     COMMENT: 1,
+    PREPROC: 7,
     IDENTIFIER: 2,
     STRING: 3,
     PUNCTUATION: 4,
@@ -192,22 +230,33 @@ export class Lexer {
     lexNumber,
     lexPunctuation,
     lexIdentifier,
+    lexPreProc,
     lexer => {
       lexer.lexWhile(/[ \n\r\t]$/);
       if(lexer.start < lexer.pos) return Lexer.tokens.WHITESPACE;
       if(!(lexer.start < lexer.pos)) {
-        console.log(`ERROR pos=${lexer.line}:${lexer.column} start=${lexer.start} pos=${lexer.pos} len=${lexer.len}'${lexer.source.substring(lexer.start, lexer.pos + 1)}'`);
+        console.log(`ERROR file=${lexer.file} pos=${lexer.line}:${lexer.column} start=${lexer.start} pos=${lexer.pos} len=${lexer.len}'${lexer.source.substring(lexer.start, lexer.pos + 1)}'`);
         return 0;
       }
     }
   ];
 
-  constructor(source) {
-    this.source = source;
+  constructor(source, file = null) {
     this.pos = 0;
     this.start = 0;
-    this.tokIndex = -1;
-    this.len = source.length;
+    let tokIndex = -1;
+    let len = source.length;
+
+    Util.define(this, { source, tokIndex, file, len, line: 1, column: 1, eof: false });
+
+    const { pos, start } = this;
+    console.log('Lexer.constructor', { file, pos, start, tokIndex, len });
+  }
+
+  clone() {
+    const { file, source, pos, start, tokIndex, len } = this;
+
+    return Object.setPrototypeOf({ file, source, pos, start, tokIndex, len }, Object.getPrototypeOf(this));
   }
 
   peek(start = 0, num = 1) {
@@ -300,8 +349,8 @@ export class Lexer {
       if(typeof tok == 'number' || tok > 0) break;
     }
 
-    if(tok == Lexer.tokens.COMMENT) {
-      console.log('skip comment:', this.str());
+    if(tok == Lexer.tokens.COMMENT || tok == Lexer.tokens.PREPROC) {
+      //     console.log(`skip ${Lexer.tokenName(tok)}:`, this.str());
 
       return this.next();
     }

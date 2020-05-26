@@ -178,11 +178,7 @@ Object.defineProperty(Multimap.prototype, 'count', {
 var safariNext;
 
 try {
-  safariNext = new Function(
-    'iterator',
-    'makeIterator',
-    'var keysArray = []; for(var key of iterator){keysArray.push(key);} return makeIterator(keysArray).next;'
-  );
+  safariNext = new Function('iterator', 'makeIterator', 'var keysArray = []; for(var key of iterator){keysArray.push(key);} return makeIterator(keysArray).next;');
 } catch(error) {
   // for of not implemented;
 }
@@ -193,9 +189,7 @@ function makeIterator(iterator) {
 
     return {
       next: function() {
-        return nextIndex < iterator.length
-          ? { value: iterator[nextIndex++], done: false }
-          : { done: true };
+        return nextIndex < iterator.length ? { value: iterator[nextIndex++], done: false } : { done: true };
       }
     };
   }
