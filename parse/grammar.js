@@ -3,7 +3,6 @@ import { Parser } from './parser.js';
 import { Rule } from './rule.js';
 import Util from '../util.js';
 
-
 export class Grammar extends Parser {
   rules = new Map();
 

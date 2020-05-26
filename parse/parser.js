@@ -6,10 +6,10 @@ const add = (arr, item) => [...(arr || []), item];
 
 export class Parser {
   tokens = [];
- // lexer = null;
+  // lexer = null;
 
   constructor(lexer) {
-     Util.define(this, { lexer });
+    Util.define(this, { lexer });
     //this.lexer = lexer;
     return this;
   }

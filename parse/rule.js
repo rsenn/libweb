@@ -41,17 +41,16 @@ export class Rule extends Array {
   match(parser) {
     let i;
     let r = -1;
-    let  y = parser.clone();
+    let y = parser.clone();
 
     for(i = 0; i < this.length; i++) {
       const production = this[i];
       if(production.match(y)) {
-         console.log('production:', production);
-     
-        r = i;
-y.copyTo(parser);
-y = parser.clone();
+        console.log('production:', production);
 
+        r = i;
+        y.copyTo(parser);
+        y = parser.clone();
       }
 
       if(y.tokens.length) console.log('tokens:', y.tokens);

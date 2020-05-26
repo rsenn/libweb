@@ -65,28 +65,28 @@ export class Match extends Array {
   match(parser) {
     let ret = [];
     let { rule } = this;
-    let { grammar} = this.rule;
-    let keys =  [...grammar.rules.keys()];
-    let values =  [...grammar.rules.values()];
-  // console.log("grammar:", grammar.rules.keys());
-let ri = values.indexOf(rule);
-   console.log("rule:", ri);
+    let { grammar } = this.rule;
+    let keys = [...grammar.rules.keys()];
+    let values = [...grammar.rules.values()];
+    // console.log("grammar:", grammar.rules.keys());
+    let ri = values.indexOf(rule);
+    console.log('rule:', ri);
     let p = parser.clone();
     for(let pattern of this) {
-      if(grammar.rules.has(pattern)/* typeof(pattern) == 'string'*/) {
+      if(grammar.rules.has(pattern) /* typeof(pattern) == 'string'*/) {
         let ruleName = pattern;
-      //  pattern = grammar.getRule(ruleName);
-      console.log("rule:",ruleName);
-      let stack = Util.getCallerStack();
-      console.log("stack:", stack.length);
+        //  pattern = grammar.getRule(ruleName);
+        console.log('rule:', ruleName);
+        let stack = Util.getCallerStack();
+        console.log('stack:', stack.length);
       }
       if(!pattern) continue;
       if(!pattern.match(p)) {
         ret = false;
         break;
-      }  
+      }
 
-          console.log('Match.match: ', this, { pattern, p });
+      console.log('Match.match: ', this, { pattern, p });
 
       ret.push(pattern);
       p.copyTo(parser);

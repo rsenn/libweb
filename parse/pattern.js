@@ -50,15 +50,14 @@ Pattern.prototype.match = function(parser) {
   let pattern = this;
 
   let { tok, str } = this;
-let ret = null;
+  let ret = null;
   if(this.tok >= 2 && this.tok <= 3 && t.tok >= 2 && t.tok <= 3) {
     if(this.str == t.str) {
       ret = t;
       y.copyTo(parser);
     }
-  } 
-if(ret)
-   console.log('Pattern.match:', { ret, tok1: t, tok2: { tok, str } });
+  }
+  if(ret) console.log('Pattern.match:', { ret, tok1: t, tok2: { tok, str } });
 
   return null;
 };
