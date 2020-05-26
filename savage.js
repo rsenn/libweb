@@ -64,19 +64,7 @@
   /**
    * shortcut functions for all the shapes
    */
-  [
-    'circle',
-    'ellipse',
-    'image',
-    'line',
-    'marker',
-    'path',
-    'polygon',
-    'radialGradient',
-    'rect',
-    'text',
-    'tspan'
-  ].forEach(function(t) {
+  ['circle', 'ellipse', 'image', 'line', 'marker', 'path', 'polygon', 'radialGradient', 'rect', 'text', 'tspan'].forEach(function(t) {
     P[t] = function(a) {
       return this.draw(t, a);
     };

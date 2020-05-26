@@ -17,38 +17,21 @@ export function Rect(arg) {
     if(typeof obj[field] != 'number') obj[field] = 0;
   });
 
-  if(
-    arg &&
-    arg.x1 !== undefined &&
-    arg.y1 !== undefined &&
-    arg.x2 !== undefined &&
-    arg.y2 !== undefined
-  ) {
+  if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
     const { x1, y1, x2, y2 } = arg;
     obj.x = x1;
     obj.y = y1;
     obj.width = x2 - x1;
     obj.height = y2 - y1;
     ret = 1;
-  } else if(
-    arg &&
-    arg.x !== undefined &&
-    arg.y !== undefined &&
-    arg.x2 !== undefined &&
-    arg.y2 !== undefined
-  ) {
+  } else if(arg && arg.x !== undefined && arg.y !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
     const { x, y, x2, y2 } = arg;
     obj.x = x;
     obj.y = y;
     obj.width = x2 - x;
     obj.height = y2 - y;
     ret = 1;
-  } else if(
-    isPoint(arg) &&
-    arg.y !== undefined &&
-    arg.width !== undefined &&
-    arg.height !== undefined
-  ) {
+  } else if(isPoint(arg) && arg.y !== undefined && arg.width !== undefined && arg.height !== undefined) {
     obj.x = parseFloat(arg.x);
     obj.y = parseFloat(arg.y);
     obj.width = parseFloat(arg.width);
@@ -123,13 +106,7 @@ Rect.prototype.getArea = function() {
 Rect.prototype.toString = function(opts = {}) {
   const { precision = 0.001, unit = '', separator = ' ', left = '', right = '' } = opts;
 
-  return (
-    left +
-    Point.prototype.toString.call(this, opts) +
-    separator +
-    Size.prototype.toString.call(this, opts) +
-    right
-  );
+  return left + Point.prototype.toString.call(this, opts) + separator + Size.prototype.toString.call(this, opts) + right;
 };
 Rect.prototype.toSource = function(opts = {}) {
   const { color = true } = opts;
@@ -332,7 +309,7 @@ Rect.prototype.align = function(align_to, a = 0) {
   }
   /*  this.tx = this.x - oldx;
   this.ty = this.y - oldy;*/
-  return this;
+  pC: return this;
 };
 
 Rect.prototype.round = function(precision = 0.001, digits) {
@@ -366,12 +343,7 @@ Rect.bind = rect => {
 };
 
 Rect.inside = (rect, point) => {
-  return (
-    point.x >= rect.x &&
-    point.x <= rect.x + rect.width &&
-    point.y >= rect.y &&
-    point.y <= rect.y + rect.height
-  );
+  return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
 };
 Rect.fromCircle = function(...args) {
   const { x, y } = Point(args);

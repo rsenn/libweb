@@ -75,10 +75,7 @@ Size.prototype.aspect = function() {
 };
 Size.prototype.toCSS = function(units) {
   let ret = {};
-  units =
-    typeof units == 'string'
-      ? { width: units, height: units }
-      : units || this.units || { width: 'px', height: 'px' };
+  units = typeof units == 'string' ? { width: units, height: units } : units || this.units || { width: 'px', height: 'px' };
   if(this.width !== undefined) ret.width = this.width + (units.width || 'px');
   if(this.height !== undefined) ret.height = this.height + (units.height || 'px');
   return ret;
@@ -163,10 +160,7 @@ Size.prototype.bounds = function(other) {
 Size.prototype.fit = function(size) {
   size = new Size(size);
   let factors = Size.prototype.fitFactors.call(this, size);
-  let ret = [
-    Size.prototype.prod.call(this, factors[0]),
-    Size.prototype.prod.call(this, factors[1])
-  ];
+  let ret = [Size.prototype.prod.call(this, factors[0]), Size.prototype.prod.call(this, factors[1])];
   return ret;
 };
 
@@ -201,30 +195,10 @@ Size.bind = (o, p, gen) => {
   return Util.bindProperties(new Size(0, 0), o, { width, height }, gen);
 };
 
-for(let method of Util.getMethodNames(Size.prototype))
-  Size[method] = (size, ...args) => Size.prototype[method].call(size || new Size(size), ...args);
+for(let method of Util.getMethodNames(Size.prototype)) Size[method] = (size, ...args) => Size.prototype[method].call(size || new Size(size), ...args);
 
-export const isSize = o =>
-  o &&
-  ((o.width !== undefined && o.height !== undefined) ||
-    (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) ||
-    (o.left !== undefined &&
-      o.right !== undefined &&
-      o.top !== undefined &&
-      o.bottom !== undefined));
+export const isSize = o => o && ((o.width !== undefined && o.height !== undefined) || (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) || (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
 
-for(let name of [
-  'toCSS',
-  'isSquare',
-  'round',
-  'sum',
-  'add',
-  'diff',
-  'sub',
-  'prod',
-  'mul',
-  'quot',
-  'div'
-]) {
+for(let name of ['toCSS', 'isSquare', 'round', 'sum', 'add', 'diff', 'sub', 'prod', 'mul', 'quot', 'div']) {
   Size[name] = (size, ...args) => Size.prototype[name].call(size || new Size(size), ...args);
 }

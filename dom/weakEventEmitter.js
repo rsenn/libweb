@@ -292,20 +292,12 @@ WeakEventEmitter.prototype.removeListener = function removeListener(event, fn, c
   var listeners = _events[evt];
 
   if(listeners.fn) {
-    if(
-      listeners.fn === fn &&
-      (!once || listeners.once) &&
-      (!context || listeners.context === context)
-    ) {
+    if(listeners.fn === fn && (!once || listeners.once) && (!context || listeners.context === context)) {
       clearEvent(this, evt);
     }
   } else {
     for(var i = 0, events = [], length = listeners.length; i < length; i++) {
-      if(
-        listeners[i].fn !== fn ||
-        (once && !listeners[i].once) ||
-        (context && listeners[i].context !== context)
-      ) {
+      if(listeners[i].fn !== fn || (once && !listeners[i].once) || (context && listeners[i].context !== context)) {
         events.push(listeners[i]);
       }
     }

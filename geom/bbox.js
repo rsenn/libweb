@@ -33,12 +33,9 @@ export class BBox {
   update(arg, offset = 0.0, obj = null) {
     if(Util.isArray(arg)) return this.updateList(arg, offset);
 
-    if(arg.x !== undefined && arg.y != undefined)
-      this.updateXY(arg.x, arg.y, offset, name => (this.__objs[name] = obj || arg));
-    if(arg.x1 !== undefined && arg.y1 != undefined)
-      this.updateXY(arg.x1, arg.y1, 0, name => (this.__objs[name] = obj || arg));
-    if(arg.x2 !== undefined && arg.y2 != undefined)
-      this.updateXY(arg.x2, arg.y2, 0, name => (this.__objs[name] = obj || arg));
+    if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset, name => (this.__objs[name] = obj || arg));
+    if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0, name => (this.__objs[name] = obj || arg));
+    if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0, name => (this.__objs[name] = obj || arg));
     return this;
   }
 

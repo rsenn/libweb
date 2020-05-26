@@ -80,8 +80,7 @@ export const select = (root, filter, path) => {
   path = typeof path == 'string' ? path.split(/\.\//) : path;
   if(!path) path = [];
   if(filter(root, path)) selected.push({ path: path, value: root });
-  else if(Util.isObject(root))
-    for(k in root) selected = selected.concat(select(root[k], filter, [...path, k]));
+  else if(Util.isObject(root)) for(k in root) selected = selected.concat(select(root[k], filter, [...path, k]));
   return selected;
 };
 
@@ -91,9 +90,7 @@ export const iterate = function*(value, filter = v => true, path = []) {
     r;
 
   if((r = filter(value, path, root))) yield [value, path, root];
-  if(r !== -1)
-    if(Util.isObject(value))
-      for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
+  if(r !== -1) if (Util.isObject(value)) for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
 };
 
 export const flatten = function(iter, dst = {}) {

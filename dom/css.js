@@ -27,8 +27,7 @@ export class CSS {
       );
     };
     const getStyleSheet = (obj, key) => {
-      let sheet =
-        Util.find(obj, entry => entry.href == key || entry.ownerNode.id == key) || obj[key];
+      let sheet = Util.find(obj, entry => entry.href == key || entry.ownerNode.id == key) || obj[key];
 
       return Util.adapter(
         sheet.rules,

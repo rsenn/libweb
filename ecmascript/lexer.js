@@ -22,10 +22,7 @@ export function Stack() {
     t = s => s.replace(re, '');
   } catch(err) {}
 
-  let maxLen = stack.reduce(
-    (acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc),
-    0
-  );
+  let maxLen = stack.reduce((acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc), 0);
 
   return stack
     .filter(s => s.functionName != 'esfactory')
@@ -296,10 +293,7 @@ export class Lexer {
   }
 
   get(offset) {
-    return this.getRange(
-      Math.min(this.pos + offset, this.pos),
-      Math.max(this.pos + offset, this.pos)
-    );
+    return this.getRange(Math.min(this.pos + offset, this.pos), Math.max(this.pos + offset, this.pos));
   }
 
   // Returns the next character in the source code
@@ -399,12 +393,7 @@ export class Lexer {
 
   addToken(type) {
     const { start, pos, column, line, source } = this;
-    const token = new Token(
-      type,
-      source.substring(start, pos),
-      new Range(this.position(this.start), this.pos - this.start),
-      this.start
-    );
+    const token = new Token(type, source.substring(start, pos), new Range(this.position(this.start), this.pos - this.start), this.start);
     this.tokens.push(token);
     this.ignore();
   }
@@ -441,9 +430,7 @@ export class Lexer {
     }
 
     if(isQuoteChar(c)) {
-      throw this.error(
-        `Invalid identifier: ${this.errorRange(this.start, this.pos + 1)}${this.currentLine()}`
-      );
+      throw this.error(`Invalid identifier: ${this.errorRange(this.start, this.pos + 1)}${this.currentLine()}`);
     }
 
     const word = this.getRange(this.start, this.pos);
@@ -495,12 +482,9 @@ export class Lexer {
     let indent = ' '.repeat(lineno.length);
     let column = columnIndex;
 
-    let indicator =
-      indent + ` column ${column} ----`.padStart(columnIndex).slice(-columnIndex) + '╯';
+    let indicator = indent + ` column ${column} ----`.padStart(columnIndex).slice(-columnIndex) + '╯';
 
-    return `\n${lineno}${this.getLine()}\n${indicator}\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${
-      this.accepted.length
-    }\n${indent + source.slice(this.pos, this.pos + 10)}`;
+    return `\n${lineno}${this.getLine()}\n${indicator}\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${this.accepted.length}\n${indent + source.slice(this.pos, this.pos + 10)}`;
   }
 
   lineRange(start, end) {
@@ -719,9 +703,7 @@ export class Lexer {
         ++n;
         //console.log(`lexTemplate`, { c, escapeEncountered });
         if(c === null) {
-          throw this.error(
-            `Illegal template token (${n})  '${this.source[this.start]}': ${this.errorRange()}`
-          );
+          throw this.error(`Illegal template token (${n})  '${this.source[this.start]}': ${this.errorRange()}`);
         } else if(!escapeEncountered) {
           if(c == '{' && prevChar == '$') {
             this.backup(2);
@@ -794,10 +776,7 @@ export class Lexer {
               prevChar = c;
               c = this.next();
             }
-          } else */ if(
-            isLineTerminator(c) &&
-            quoteChar !== '`'
-          ) {
+          } else */ if(isLineTerminator(c) && quoteChar !== '`') {
             // If we somehow reached EOL without encountering the
             // ending quote char then this string is incomplete.
             throw this.error(`Illegal token: ${this.errorRange()}`);
