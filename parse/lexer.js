@@ -154,7 +154,10 @@ export const lexMatch = Util.curry((id, str, result) => {
     id = i => i == the_id;
   }
 
-  if(typeof str != 'function') {
+  if(Util.isArray(str)) {
+    let the_array = str;
+    str = s => the_array.indexOf(s) != -1;
+  } else if(typeof str != 'function') {
     let the_str = str;
     str = s => s == the_str;
   }

@@ -4,6 +4,23 @@ import { Lexer, lexMatch, lexIsToken } from './lexer.js';
 const addUnique = (arr, item) => (arr && arr.indexOf(item) != -1 ? arr || [] : add(arr.item));
 const add = (arr, item) => [...(arr || []), item];
 
+export class Node {
+  constructor(terminal) {
+    this.terminal = !!terminal;
+    return this;
+  }
+}
+
+export class NodeList extends Array {
+  constructor(nodes) {
+    for(let node of [...nodes]) this.push(node);
+    return this;
+  }
+  get [Symbol.species]() {
+    return NodeList;
+  }
+}
+
 export class Parser {
   tokens = [];
 
@@ -11,6 +28,7 @@ export class Parser {
     Util.define(this, { lexer });
     return this;
   }
+
   clone() {
     let { tokens, token, lexer } = this;
     tokens = [...tokens];
@@ -24,15 +42,36 @@ export class Parser {
   }
 
   getTok() {
+    let { lexer } = this;
+
+    const parser = this;
+    if(this.tokIndex < this.tokens.length) return newTok(this.tokens[this.tokIndex]);
+
     let it = this.lexer.next();
     let { value, done } = it;
-    if(!done) {
-      let { tok, str, unget } = value;
-      this.token = { tok, str };
-      this.tokens = add(this.tokens, this.token);
-      return Util.define({ ...this.token }, { unget });
+
+    this.prevTok = this.tokens.length;
+
+    if(!done) return newTok(value);
+
+    function newTok(value) {
+      let { tok, str } = value;
+      const tokIndex = parser.tokens.length;
+      let unget = () => {
+        value.unget();
+        parser.tokens.splice(tokIndex, parser.tokens.length);
+        //   parser.token = parser.tokens[tokIndex - 1];
+      };
+      parser.token = { tok, str };
+      parser.tokens = add(parser.tokens, parser.token);
+      if(tokIndex > parser.prevTok) console.log(`Parser.getTok ${parser.position} (${parser.tokens.length - 1})`, parser.token);
+      return Util.define({ ...parser.token }, { unget });
     }
     return null;
+  }
+
+  get position() {
+    return `${this.lexer.line}:${this.lexer.column}`;
   }
 
   match(id, s) {
@@ -41,17 +80,29 @@ export class Parser {
       let { tok, str, unget } = value;
       unget();
       let ok = s === undefined ? lexIsToken(id, value) : lexMatch(id, s, value);
-      return ok ? value : null;
+      if(!ok) return false;
     }
-  }
-  expect(id, s) {
-    let value = this.getTok();
-    let { tok, str, unget } = value;
-    let ok = s === undefined ? lexIsToken(id, value) : lexMatch(id, s, value);
-    if(!ok) {
-      throw new Error(`Parser.expect ${id} ${Lexer.tokenName(id)} ${s} ${tok} ${Lexer.tokenName(tok)} ${str}`);
-    }
-    this.tokens = add(this.tokens, this.token);
     return value;
   }
+
+  matchPunctuation = s => this.match(Lexer.tokens.PUNCTUATION, s);
+  matchIdentifier = s => this.match(Lexer.tokens.IDENTIFIER, s);
+  matchString = s => this.match(Lexer.tokens.IDENTIFIER, s);
+  matchNumber = s => this.match(Lexer.tokens.NUMBER, s);
+  matchRegex = s => this.match(Lexer.tokens.REGEXP, s);
+
+  expect(id, s) {
+    let r = this.match(id, s);
+    const { token } = this;
+    // console.log('token:', token);
+
+    if(!r) throw new Error(`Parser.expect ${this.position} (${Lexer.tokenName(id)}, ${Util.toString(s, { multiline: false, colors: false })})  ${Lexer.tokenName(token.tok)}, ${Util.toString(token.str)}`);
+    return this.getTok();
+  }
+
+  expectPunctuation = s => this.expect(Lexer.tokens.PUNCTUATION, s);
+  expectIdentifier = s => this.expect(Lexer.tokens.IDENTIFIER, s);
+  expectString = s => this.expect(Lexer.tokens.IDENTIFIER, s);
+  expectNumber = s => this.expect(Lexer.tokens.NUMBER, s);
+  expectRegex = s => this.expect(Lexer.tokens.REGEXP, s);
 }
