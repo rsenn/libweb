@@ -62,9 +62,12 @@ const lexRegExp = lexer => {
   if(/^[\[]/.test(s)) {
     lexer.start = lexer.pos;
     lexer.get();
+do {
     lexer.lexWhile(/.*[^\]]$/);
     lexer.get();
+  } while(lexer.peek() == '[');
     if(lexer.peek() == '+') lexer.get();
+if(lexer.peek() == '*') lexer.get();
 
     return Lexer.tokens.REGEXP;
   }
@@ -86,7 +89,7 @@ const lexPunctuation = lexer => {
     lexer.skip(2);
     return Lexer.tokens.PUNCTUATION;
   }
-  if(/^[-\~.<>;,\(\):|+\?*]/.test(s)) {
+  if(/^[-~.<>;,\(\):|+\?*]/.test(s)) {
     lexer.get();
     c = lexer.peek();
     if(s[0] == '-' && c == '>') lexer.get();

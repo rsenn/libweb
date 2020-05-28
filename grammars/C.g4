@@ -650,10 +650,10 @@ Dot : '.';
 Ellipsis : '...';
 
 Identifier
-    :   IdentifierNondigit
+    :   ([a-zA-Z_][a-zA-Z0-9_]*) /*IdentifierNondigit
         (   IdentifierNondigit
         |   Digit
-        )*
+        )**/
     ;
 
 fragment

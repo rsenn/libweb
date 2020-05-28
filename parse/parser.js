@@ -5,9 +5,16 @@ const addUnique = (arr, item) => (arr && arr.indexOf(item) != -1 ? arr || [] : a
 const add = (arr, item) => [...(arr || []), item];
 
 export class Node {
-  constructor(terminal) {
-    this.terminal = !!terminal;
+  constructor() {
     return this;
+  }
+
+  [Symbol.for('nodejs.util.inspect.custom')]() {
+    return this.toString();
+  }
+
+  toString() {
+    return Util.className(this);
   }
 }
 

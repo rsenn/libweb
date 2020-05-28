@@ -11,6 +11,7 @@ export class Match extends Array {
   get [Symbol.species]() {
     return Pattern;
   }
+
   parse(matches, ctor = SubMatch) {
     let pattern;
     let invert = false,
@@ -24,7 +25,7 @@ export class Match extends Array {
         match = matches.shift();
       }
       if(matches.length)
-        if('length' in matches[0]) {
+        if(Util.isObject(matches[0]) && 'length' in matches[0]) {
           pattern = new ctor(this.rule).parse(matches.shift(), Match);
           if(invert) pattern.invert = invert;
           if(matches && matches.length) {
