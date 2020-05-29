@@ -28,7 +28,7 @@ export function token(str) {
 export function eof() {
   return (target, position) => {
     if(position == target.length) {
-      return [true, 'EOF', position];
+      return [true, null, position];
     } else {
       return [false, null, position];
     }
