@@ -47,6 +47,12 @@ export class Rule {
     }
 
     parse(symbols) {
+      if(symbols[symbols.length - 1] == Grammar.SKIP) {
+        symbols = symbols.slice(0, -1);
+        this.skip = true;
+        console.log('SKIP!');
+      }
+
       let i = 0;
       for(let sym of symbols) {
         if(i == 0 && sym && sym.str == this.rule.name) {
@@ -111,8 +117,6 @@ export class Rule {
     while(productions.length) {
       match = productions.shift();
 
-      //console.log('match:', match);
-
       if(match && match[0] && match[0].length) {
         m = new Rule.Operator('|', ...match[0]);
         m.rule = this;
@@ -158,26 +162,31 @@ export class Rule {
 
   static generate(a, f = 'choice', sep = ', ') {
     let s = ``;
+    let skip = false;
     const operatorFunctions = {
       '+': 'many',
       '*': 'any',
-      '?': 'option'
+      '?': 'option',
+      '~': 'invert'
     };
     if(f == 'choice' /*|| f == null*/) sep = ',\n  ';
     let cls = Util.className(a);
     //if(a.str && a.str[0] == '[') console.log("a:",(a.str, Util.className(a)), a.id);
 
-    if(a.length == 1 && f == 'seq') {
+    if(a.length == 1 && (f == 'seq' || f == 'choice')) {
       f = null;
       //console.log('f:', a.length, f);
     }
     if(a.id == Lexer.tokens.REGEXP) {
-      f = 'token';
-      s = `/${a.str}/`;
-    } else if(a instanceof Rule.Literal)
+      f = 'regex';
+      s = `/${a.str}/g`;
+    } else if(a instanceof Rule.Literal) {
+      let fn = 'token';
+      if(/[\r\n\t\ ]/.test(a.str) || a.str == '\\n' || a.str == '\\r') fn = 'char';
+      //console.log("a.str:",a.str);
       //{ f = a.str.length ==1 ? 'char': 'token'; s = a.str ? `'${a.str}'` : a; }
-      return (s = a.str.length == 1 ? `token('${a.str}')` : `token('${a.str}')`);
-    else if(a instanceof Rule.Operator) s = Rule.generate(a.args, operatorFunctions[a.op]);
+      return (s = a.str.length == 1 ? `${fn}('${a.str}')` : `${fn}('${a.str}')`);
+    } else if(a instanceof Rule.Operator) s = Rule.generate(a.args, operatorFunctions[a.op]);
     else if(a instanceof Rule.Match /*|| a instanceof Array*/) {
       //console.log('a:', a);
       if(f == null && a.length > 1) {
@@ -185,6 +194,9 @@ export class Rule {
         sep = ', ';
       }
       s = a.map(p => Rule.generate(p, p instanceof Rule.Match && p.length > 1 ? 'seq' : null)).join(sep);
+
+      if(a.skip) skip = true;
+
       if(a.length <= 1) f = null;
     } else if(a instanceof Array) {
       //console.log('arr:', a, f);
@@ -201,6 +213,8 @@ export class Rule {
     if(f) s = `${f}(${sep.substring(1)}${s}${sep[1]})`;
 
     if(s == '') s = 'empty()';
+
+    if(skip) s = `ignore(${s})`;
     return s;
   }
 
@@ -218,6 +232,8 @@ export class Rule {
 export class Grammar {
   rules = new Map();
 
+  static SKIP = Symbol('skip');
+
   constructor(source, file) {
     let parser = new Parser(new Lexer(source, file));
     Util.define(this, { source, parser });
@@ -226,6 +242,7 @@ export class Grammar {
   addRule(name, productions, fragment) {
     let rule = new Rule(this, fragment);
     rule.name = name;
+    //console.log("productions:",productions);
     rule.parse(productions);
     //   if(fragment) rule.fragment = fragment;
     this.rules.set(name, rule);
@@ -283,10 +300,17 @@ export class Grammar {
       } else if(lexMatch(Lexer.tokens.IDENTIFIER, 'EOF', r)) {
         r.str = 'eof()';
       } else if(lexMatch(Lexer.tokens.PUNCTUATION, '->', r)) {
-        if((r = parser.expectIdentifier('skip'))) {
-          //  patterns.push(r);
-          continue;
+        if((r = parser.matchIdentifier('skip'))) {
+          parser.expectIdentifier('skip');
+          patterns.push(Grammar.SKIP);
         }
+        while((r = parser.getTok())) {
+          if(lexMatch(Lexer.tokens.PUNCTUATION, endTok, r)) {
+            r.unget();
+            break;
+          }
+        }
+        continue;
       }
 
       if(r instanceof Array) n = new Rule.Operator('|', ...r);
@@ -369,13 +393,13 @@ export class Grammar {
   }
 
   generate() {
-    let s = `import { choice, seq, token, char, regex, option, any, many, eof } from './lib/parse/fn.js';\n\n`;
+    let s = `import { choice, seq, token, char, regex, option, any, many, eof,ignore, concat, invert } from './lib/parse/fn.js';\n\n`;
     let names = [];
 
     s += `function wrap(parser, name) {
   return (str,pos) => {
     let r = parser(str,pos);
-    if(r[0] || name.startsWith('direct')) console.log("matched ("+name+") "+pos+" - " +r[2]+": '"+ str.substring(pos, r[2])+"'");
+    if(r[0] || name.startsWith('direct')) console.log("matched ("+name+") "+pos+" - " +r[2]+": '", r[1] ,"'");
     return r;
   };
 }

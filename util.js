@@ -1439,18 +1439,22 @@ Util.isIterable = obj => {
   } catch(err) {}
   return false;
 };
-Util.isNativeFunction = x => typeof x == 'function' && /{ \[(native code|[^\n]*)\] \}/.test(x + '');
+Util.isNativeFunction = x => typeof x == 'function' && /\[(native\ code|[^\n]*)\]/.test(x + '');
 Util.isConstructor = x => {
+  let ret;
   const handler = {
     construct() {
       return handler;
     }
   }; //Must return ANY object, so reuse one
   try {
-    return !!new new Proxy(x, handler)();
+    ret = new new Proxy(x, handler)();
   } catch(e) {
-    return false;
+    ret = false;
   }
+  let members = Util.getMemberNames(x.prototype, 1, 0);
+  //  console.log("ret:",ret, ret instanceof x);
+  return !!ret && members.length > 0;
 };
 Util.filter = function(a, pred) {
   if(Util.isGenerator(a))

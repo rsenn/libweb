@@ -19,12 +19,15 @@ export function string(str) {
 }
 
 export function token(str) {
-  return seq(any(char(' \n\r\t')), str instanceof RegExp ? regex(str) : typeof(str) == 'function' ? str : string(str), any(char(' \n\r\t')));
+  let tok = str instanceof RegExp ? regex(str) : typeof str == 'string' ? string(str) : str;
+  return one(concat(ignore(any(char(' \n\r\t'))), str instanceof RegExp ? regex(str) : typeof str == 'function' ? str : string(str), ignore(any(char(' \n\r\t')))));
+  return one(concat(ignore(any(char(' \n\r\t'))), tok /*, ignore(any(char(' \n\r\t')))*/));
+  return tok;
 }
 
 export function eof() {
   return (target, position) => {
-    if(position == target.len) {
+    if(position == target.length) {
       return [true, 'EOF', position];
     } else {
       return [false, null, position];
@@ -67,7 +70,7 @@ export function many(parser) {
       }
     }
 
-    return [success, null, position];
+    return [success, result, position];
   };
 }
 
@@ -106,7 +109,8 @@ export function seq(...parsers) {
       if(parsed[0]) {
         //console.log(`position: ${position} i: ${i}`);
 
-        result.push(parsed[1]);
+        if(parsed[1] !== null) result.push(parsed[1]);
+
         position = parsed[2];
       } else {
         // If even one returns a failure, this parser itself returns a failure
@@ -114,6 +118,30 @@ export function seq(...parsers) {
       }
     }
     return [true, result, position];
+  };
+}
+
+/**
+ * @param {Array} parsers ... Array of parsers to combine
+ * @return {Function} parser
+ */
+export function concat(...parsers) {
+  return map(seq(...parsers), result => result.filter(e => e !== null));
+}
+
+/**
+ * @param {Array} parsers ... Array of parsers to combine
+ * @return {Function} parser
+ */
+export function invert(parser) {
+  return (target, position) => {
+    let result = parser(target, position);
+
+    if(!result[0]) {
+      return [true, target.substring(position, position + 1), position + 1];
+    } else {
+      return [false, null, position];
+    }
   };
 }
 
@@ -131,7 +159,7 @@ export function regex(re) {
     let regexResult = re.exec(target.slice(position));
 
     if(regexResult && regexResult.index == 0) {
-     // console.log(`position: ${position} regex: ${re}`, regexResult);
+      // console.log(`position: ${position} regex: ${re}`, regexResult);
 
       position += regexResult[0].length;
       return [true, regexResult[0], position];
@@ -194,6 +222,22 @@ export function option(parser) {
 
 /**
  * @param {Function} parser
+ * @return {Function}
+ */
+export function ignore(parser) {
+  return map(parser, result => null /*(result instanceof Array && result.length == 0) ? null : result*/);
+}
+
+/**
+ * @param {Function} parser
+ * @return {Function}
+ */
+export function one(parser) {
+  return map(parser, result => (result instanceof Array && result.length == 1 ? result[0] : result));
+}
+
+/**
+ * @param {Function} parser
  * @param {Function} fn
  * @return {Function}
  */
@@ -224,4 +268,4 @@ export function filter(parser, fn) {
   };
 }
 
-export default { string, token, many, any, choice, seq, regex, char, lazy, option, map, filter, eof };
+export default { string, token, many, any, choice, seq, regex, char, lazy, option, map, filter, eof, ignore, concat, invert };

@@ -449,8 +449,7 @@ export class EagleSVGRenderer {
 
   render(doc, parent, bounds) {
     doc = doc || this.doc;
-    /*   bounds = bounds || doc.getBounds();
-    let rect = bounds.rect;*/
+    bounds = bounds || doc.getBounds().rect;
 
     bounds.outset(1.27);
     bounds.round(2.54, 6);

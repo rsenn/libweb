@@ -62,12 +62,12 @@ const lexRegExp = lexer => {
   if(/^[\[]/.test(s)) {
     lexer.start = lexer.pos;
     lexer.get();
-do {
-    lexer.lexWhile(/.*[^\]]$/);
-    lexer.get();
-  } while(lexer.peek() == '[');
+    do {
+      lexer.lexWhile(/.*[^\]]$/);
+      lexer.get();
+    } while(lexer.peek() == '[');
     if(lexer.peek() == '+') lexer.get();
-if(lexer.peek() == '*') lexer.get();
+    if(lexer.peek() == '*') lexer.get();
 
     return Lexer.tokens.REGEXP;
   }
