@@ -3,7 +3,7 @@ import { BBox } from '../geom/bbox.js';
 import { Point } from '../geom/point.js';
 import { Rect } from '../geom/rect.js';
 import { Line } from '../geom/line.js';
-import { Transformation, TransformationList } from '../geom/transformation.js';
+import { Transformation, TransformationList, Translation } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
 import { ColorMap } from '../draw/colorMap.js';
 import Alea from '../alea.js';
@@ -283,14 +283,14 @@ export class EagleSVGRenderer {
   }
 
   renderItem(item, parent, opts = {}) {
-    let { labelText, transform } = opts;
+    let { labelText, pos, rot, transform } = opts;
 
-    // console.log(`EagleSVGRenderer.renderItem`, {  labelText, transform });
+    //S   console.log(`EagleSVGRenderer.renderItem`, {  labelText, pos, rot, transform });
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...attr }, parent);
 
-    let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
+    let coordFn = pos ? ({ x1, y1, x2, y2, x, y, width, height }) => ({ x: x + pos.x, x1: x1 + pos.x, x2: x2 + pos.x, y: y + pos.y, y1: y1 + pos.y, y2: y2 + pos.y }) : i => i;
     //  let transformation = (opts.transformation || new TransformationList()).slice();
 
     switch (item.tagName) {
@@ -552,11 +552,11 @@ export class SchematicRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(collection, parent, opts) {
-    const { transform } = opts;
+    const { transform, pos, rot } = opts;
 
     //  let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-    console.log(`${Util.className(this)}.renderCollection`, { transform /* opts, coordFn: coordFn+'' */ });
+    console.log(`SchematicRenderer.renderCollection`, { transform, pos, rot });
 
     const arr = [...collection];
 
@@ -564,18 +564,18 @@ export class SchematicRenderer extends EagleSVGRenderer {
     for(let item of arr.filter(item => item.tagName == 'text')) this.renderItem(item, parent, { ...opts, transform });
   }
 
-/**
- * { function_description }
- *
- * @param      {<type>}  item       The item
- * @param      {<type>}  parent     The parent
- * @param      {<type>}  [opts={}]  The options
- */
+  /**
+   * { function_description }
+   *
+   * @param      {<type>}  item       The item
+   * @param      {<type>}  parent     The parent
+   * @param      {<type>}  [opts={}]  The options
+   */
   renderItem(item, parent, opts = {}) {
-    const { labelText, transform } = opts;
+    const { labSlText, pos, transform, rot } = opts;
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-    console.log(`SchematicRenderer.renderItem`, {xml: item.toXML(), labelText, transform });
+    //S console.log(`SchematicRenderer.renderItem`, {labelText, pos , rot });
 
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
@@ -682,7 +682,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
     //console.log(`${Util.className(this)}.renderSheet`, { sheet, parent });
     let netsGroup = this.create('g', { className: 'nets' }, parent);
     let instancesGroup = this.create('g', { className: 'instances' }, parent);
+
     for(let instance of sheet.instances.list) this.renderInstance(instance, instancesGroup);
+
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
   }
 
@@ -702,31 +704,21 @@ export class SchematicRenderer extends EagleSVGRenderer {
     return parent;
   }
 
-  renderInstance(instance, parent) {
-    //console.log(`${Util.className(this)}.renderPart`, { instance, parent });
-    const { x, y, rot, part, gate, symbol } = instance;
+  renderInstance(instance, parent, opts = {}) {
+    let { x, y, rot, part, gate, symbol } = instance;
+    let { transform, pos } = opts;
+    let coordFn = MakeCoordTransformer(this.transform);
     let { deviceset, device, library, name, value } = part;
     let t = new TransformationList();
-
-    t.translate(+x, +y);
-
-    if(rot) t = t.concat(Rotation(rot));
-
-    const g = this.create(
-      'g',
-      {
-        className: `part.${part.name}`
-        //    transform: t
-      },
-      parent
-    );
+    if(rot) {
+      rot = Rotation(rot);
+      t = t.concat(rot);
+    }
+    console.log(`SchematicRenderer.renderPart`, { x, y, pos, rot });
+    const g = this.create('g', {className: `part.${part.name}` }, parent );
     if(!value) value = deviceset.name;
-    let opts = deviceset.uservalue == 'yes' ? { name, value } : { name };
-
-    this.pushTransform(t);
-
-    this.renderCollection(symbol.children, g, { ...opts, transform: t });
-    this.popTransform();
+    opts = deviceset.uservalue == 'yes' ? { name, value } : { name };
+    this.renderCollection(symbol.children, g, { ...opts, rot, pos: new Point(x, y), transform: t.slice() });
     return g;
   }
 
@@ -904,9 +896,11 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(coll, parent, opts = {}) {
-    const { predicate = i => true, transform } = opts;
-    console.log(`${Util.className(this)}.renderCollection`, { transform });
-    let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
+    const { predicate = i => true, transform, pos, rot } = opts;
+    console.log(`BoardRenderer.renderCollection`, { transform, pos, rot });
+
+    //   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
+
     let wireMap = new Map(),
       other = [];
     let layers = {},
@@ -924,9 +918,9 @@ export class BoardRenderer extends EagleSVGRenderer {
       }
     }
 
-    for(let item of other) if(predicate(item) && item.tagName == 'pad') this.renderItem(item, parent, { ...opts, coordFn });
+    for(let item of other) if(predicate(item) && item.tagName == 'pad') this.renderItem(item, parent, { ...opts });
 
-    for(let item of other) if(predicate(item) && item.tagName != 'pad') this.renderItem(item, parent, { ...opts, coordFn });
+    for(let item of other) if(predicate(item) && item.tagName != 'pad') this.renderItem(item, parent, { ...opts });
 
     for(let [layerId, wires] of wireMap) {
       let classList = (parent && parent.classList) || [];
