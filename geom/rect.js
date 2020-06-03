@@ -77,12 +77,15 @@ export function Rect(arg) {
   if(!(this instanceof Rect) || new.target === undefined) return obj;
 }
 Rect.prototype = {
-  ...Point.prototype,
   ...Size.prototype,
+  ...Point.prototype,
   ...Rect.prototype
 };
-Rect.prototype.clone = function() {
-  return new Rect(this.x, this.y, this.width, this.height);
+Rect.prototype[Symbol.species] = Rect;
+Rect.prototype.clone = function(fn) {
+  let ret = new Rect(this.x, this.y, this.width, this.height);
+  if(fn) fn(ret);
+  return ret;
 };
 Rect.prototype.corners = function() {
   const rect = this;
@@ -199,6 +202,7 @@ Rect.prototype.mul = function(...args) {
   Size.prototype.mul.call(this, ...args);
   return this;
 };
+
 Rect.prototype.div = function(...args) {
   Point.prototype.div.call(this, ...args);
   Size.prototype.div.call(this, ...args);
@@ -230,7 +234,7 @@ Rect.COVER = 32;
 
 Rect.prototype.fit = function(other, align = Align.CENTER | Align.MIDDLE | Rect.CONTAIN) {
   let factors = Size.prototype.fitFactors.call(this, new Size(other)).sort((a, b) => a - b);
-  console.log('factors:', factors);
+  //console.log('factors:', factors);
   let rects = factors.reduce((acc, factor) => {
     let rect = new Rect(0, 0, this.width, this.height);
     rect.mul(factor);

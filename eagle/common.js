@@ -156,8 +156,8 @@ export const Rotation = (rot, f = 1) => {
     angle = +(rot || '').replace(/M?R/, '') || 0;
   }
   let transformations = new TransformationList();
+  if(angle !== 0) transformations.rotate(-angle);
   if(mirror !== 0) transformations.scale(-1, 1);
-  if(angle !== 0) transformations.rotate(angle);
 
   return transformations;
 };

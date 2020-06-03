@@ -107,7 +107,7 @@ export class ReactComponent {
       s += fmt == 0 ? ' />' : ` })`;
     } else {
       s += fmt < 2 ? `>` : ` }, [ `;
-      s += Util.indent(this.stringify(children));
+      s += '\n  ' + Util.indent(this.stringify(children)).trimRight() + '\n';
       s += fmt < 2 ? `</${tagName}>` : ` ])`;
     }
     return s;

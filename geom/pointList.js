@@ -336,7 +336,7 @@ for(let name of ['push', 'splice', 'clone', 'area', 'centroid', 'avg', 'bbox', '
 }
 /*
 for(let prop in Object.getOwnPropertyDescriptors(Array.prototype))
-console.log("Array.prototype prop:",Util.getMethodNames(Array.prototype));*/
+//console.log("Array.prototype prop:",Util.getMethodNames(Array.prototype));*/
 //console.log('Array.prototype getMethods:', Util.getMethods(Array.prototype));
 //console.log('Array.prototype members:', [...Util.members(Array.prototype)]);
 //console.log('PointList.prototype methods:', Util.methods(PointList.prototype));
@@ -363,11 +363,11 @@ export function Polyline(lines) {
   let prev;
   for(let i = 0; i < lines.length; i++) {
     const line = lines.shift();
-    console.log(`line[${i}]:`, line.toString());
+    //console.log(`line[${i}]:`, line.toString());
     if(i > 0) {
       const eq = [Point.equals(prev, line.a)];
 
-      console.log(`Point.equals(${prev},${line.a}) = ${eq[0]}`);
+      //console.log(`Point.equals(${prev},${line.a}) = ${eq[0]}`);
       if(!eq[0] && !Point.equals(prev, line.b)) break;
     } else {
       addUnique(line.a);

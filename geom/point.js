@@ -1,4 +1,14 @@
 import Util from '../util.js';
+const SymSpecies = Util.tryCatch(
+  () => Symbol,
+  sym => sym.species
+);
+const CTOR = obj => {
+  if(obj[SymSpecies]) return obj[SymSpecies];
+  let p = Object.getPrototypeOf(obj);
+  if(p[SymSpecies]) return p[SymSpecies];
+  return p.constructor;
+};
 
 export function Point(arg) {
   let args = arg instanceof Array ? arg : [...arguments];
@@ -42,6 +52,8 @@ export function Point(arg) {
     return p;
   }
 }
+Point.prototype[SymSpecies] = Point;
+
 Point.prototype.move = function(x, y) {
   this.x += x;
   this.y += y;
@@ -69,7 +81,10 @@ Point.prototype.clone = function() {
 };
 Point.prototype.sum = function(...args) {
   const p = new Point(...args);
-  return new Point(this.x + p.x, this.y + p.y);
+  let r = new Point(this.x, this.y);
+  r.x += p.x;
+  r.y += p.y;
+  return r;
 };
 Point.prototype.add = function(...args) {
   const other = new Point(...args);
@@ -78,8 +93,12 @@ Point.prototype.add = function(...args) {
   return this;
 };
 Point.prototype.diff = function(...args) {
-  const other = Point(...args);
-  return new Point(this.x - other.x, this.y - other.y);
+  const p = new Point(...args);
+  let r = new Point(this.x, this.y);
+  //console.log({ t: this, args, p, r });
+  r.x -= p.x;
+  r.y -= p.y;
+  return r;
 };
 Point.prototype.sub = function(...args) {
   const other = new Point(...args);

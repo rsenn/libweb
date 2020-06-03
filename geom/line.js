@@ -52,7 +52,7 @@ export function Line(x1, y1, x2, y2) {
   if(!('b' in obj) || !obj.b) obj.b = new Point(obj.x2, obj.y2);
 
   if(!isLine(obj)) {
-    console.log('ERROR: is not a line: ', Util.toString(arg), Util.toString(obj));
+    //console.log('ERROR: is not a line: ', Util.toString(arg), Util.toString(obj));
   }
 
   /*  if(this !== obj)*/ return obj;
@@ -228,8 +228,8 @@ Line.prototype.getLength = function() {
   const { a, b } = this;
   const { x1, y1, x2, y2 } = this;
   //console.log("a:",a, " b:",b);
-  console.log('a:', a, ' b:', b);
-  console.log('this:', this);
+  //console.log('a:', a, ' b:', b);
+  //console.log('this:', this);
   return Point.prototype.distance.call(a, b);
 };
 Line.prototype.endpointDist = function(point) {

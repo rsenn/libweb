@@ -682,7 +682,10 @@ export class Element extends Node {
         }
       }
       if(innerHTML) elem.innerHTML += innerHTML;
-      if(className) elem.classList.add(className);
+      if(className && elem) {
+        if(elem.classList) elem.classList.add(className);
+        else if(elem.attributes['class']) elem.attributes['class'].value += ' ' + className;
+      }
       for(let k in props) delegate.setattr(elem, k, props[k]);
       /*console.log("bound_factory: ", { _this: this, tag, style, children, parent, props, to, append_to: this.append_to });*/
       if(delegate.append_to) delegate.append_to(elem, parent);

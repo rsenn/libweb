@@ -8,7 +8,7 @@ export class Graph {
     for(let i = 0; i < this.nodes.length; i++) {
       for(let j = i + 1; j < this.nodes.length; j++) {
         if(this.nodes[i].equals(this.nodes[j])) {
-          console.log('DUPLICATE NODES, ' + i + ' and ' + j);
+          //console.log('DUPLICATE NODES, ' + i + ' and ' + j);
         }
       }
     }
@@ -18,7 +18,7 @@ export class Graph {
     for(let i = 0; i < this.connections.length; i++) {
       for(let j = i + 1; j < this.connections.length; j++) {
         if(this.connections[i].equals(this.connections[j])) {
-          console.log('DUPLICATE CONNECTIONS, ' + i + ' and ' + j);
+          //console.log('DUPLICATE CONNECTIONS, ' + i + ' and ' + j);
         }
       }
     }
@@ -85,22 +85,22 @@ export class Graph {
     let node2Matches = this.nodes.filter(node => Point.equals(node.point, node2.point));
 
     if(node1Matches.length > 1) {
-      console.log('Too many maches for node 1.  length = ' + node1Matches.length);
+      //console.log('Too many maches for node 1.  length = ' + node1Matches.length);
       return false;
     }
 
     if(node2Matches.length > 1) {
-      console.log('Too many maches for node 1.  length = ' + node2Matches.length);
+      //console.log('Too many maches for node 1.  length = ' + node2Matches.length);
       return false;
     }
 
     if(node1Matches.length === 0) {
-      console.log('No matches for node 1, doing nothing');
+      //console.log('No matches for node 1, doing nothing');
       return;
     }
 
     if(node2Matches.length === 0) {
-      console.log('No matches for node 2, doing nothing');
+      //console.log('No matches for node 2, doing nothing');
       return;
     }
 
@@ -109,7 +109,7 @@ export class Graph {
     let duplicateConnections = this.connections.filter(connection => connection.equals(newConnection));
 
     if(duplicateConnections.length > 1) {
-      console.log('TODO:  HANDLE THIS.  THIS SHOULD NOT BE HAPPENING');
+      //console.log('TODO:  HANDLE THIS.  THIS SHOULD NOT BE HAPPENING');
     } else if(duplicateConnections.length === 1) {
       return;
     } else {
@@ -121,7 +121,7 @@ export class Graph {
     let duplicateNodes = this.nodes.filter(node => Point.equals(newNode.point, node.point));
 
     if(duplicateNodes.length > 1) {
-      console.log('TODO:  HANDLE THIS.  THIS SHOULD NOT BE HAPPENING');
+      //console.log('TODO:  HANDLE THIS.  THIS SHOULD NOT BE HAPPENING');
     }
 
     if(duplicateNodes.length === 0) {
