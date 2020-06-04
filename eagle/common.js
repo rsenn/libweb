@@ -2,7 +2,7 @@ import { EaglePath } from './locator.js';
 //  import { EagleElement } from "./element.js";
 import Util from '../util.js';
 import deep from '../deep.js';
-import { BBox, TransformationList, Transformation } from '../geom.js';
+import { BBox, TransformationList } from '../geom.js';
 
 const pathPadding = Util.isBrowser() ? 0 : 40;
 

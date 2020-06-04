@@ -1,4 +1,3 @@
-import Util from '../util.js';
 
 export function EagleNodeMap(list, key) {
   this.list = list;

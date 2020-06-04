@@ -1,9 +1,7 @@
 import Util from '../util.js';
 import { EagleDocument } from './document.js';
 import { EagleElement } from './element.js';
-import { makeEagleNodeMap } from './nodeMap.js';
 import { dump } from './common.js';
-import { compareVersions } from '../compareVersions.js';
 
 export class EagleProject {
   documents = [];

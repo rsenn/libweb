@@ -1,7 +1,7 @@
 import { EagleRef, EagleReference } from './locator.js';
 import { makeEagleElement } from './element.js';
 import Util from '../util.js';
-import { inspect, toXML } from './common.js';
+import { toXML } from './common.js';
 
 export function EagleNodeList(owner, ref) {
   this.ref = ref;
