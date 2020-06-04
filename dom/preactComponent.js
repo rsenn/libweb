@@ -24,7 +24,7 @@ export class ReactComponent {
   }
 
   static factory(render_to, root) {
-    if(typeof render_to === 'string') render_to = Element.find(append_to);
+    if(typeof render_to === 'string') render_to = Element.find(render_to);
     if(typeof render_to !== 'function') {
       root = root || render_to;
       render_to = component => require('react-dom').render(component, root || render_to);
@@ -36,6 +36,17 @@ export class ReactComponent {
     };
     ret.root = root;
     return ret.bind(ret);
+  }
+
+  static append(tag, attrs, parent) {
+    let elem = h(tag, attrs);
+    if(parent) {
+      const { props } = parent;
+      if(props.children instanceof Array) props.children.push(elem);
+      else if(props.children) props.children = [props.children, elem];
+      else props.children = elem;
+    }
+    return elem;
   }
 
   static toObject(...args) {

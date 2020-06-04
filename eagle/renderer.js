@@ -157,7 +157,7 @@ export function MakeCoordTransformer(matrix) {
     let oldCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: obj[k] }), {});
     let newCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: Util.roundTo(coords[k], 0.254) }), {});
 
-    console.log(`CoordTransform [${transformStr}]`, oldCoords, ' -> ', newCoords);
+    //console.log(`CoordTransform [${transformStr}]`, oldCoords, ' -> ', newCoords);
     // Object.assign(obj, newCoords);
     return { ...newCoords };
   };
@@ -174,7 +174,7 @@ export class EagleSVGRenderer {
   transform = new TransformationList();
 
   constructor(doc, factory) {
-    console.log(Util.className(this), Util.fnName(new.target));
+    //console.log(Util.className(this), Util.fnName(new.target));
     if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
     let ctor = EagleSVGRenderer.rendererTypes[doc.type];
     Object.setPrototypeOf(this, ctor.prototype);
@@ -189,8 +189,10 @@ export class EagleSVGRenderer {
   }
 
   pushTransform(transform) {
+    transform = this.transform.concat(transform);
+
     this.transformStack.push(this.transform);
-    this.transform = transform || this.transform.clone();
+    this.transform = transform;
   }
 
   popTransform() {
@@ -246,7 +248,7 @@ export class EagleSVGRenderer {
   }
 
   renderLayers(parent) {
-    console.log(`${Util.className(this)}.renderLayers`);
+    //console.log(`${Util.className(this)}.renderLayers`);
 
     const layerGroup = this.create('g', { className: 'layers' }, parent);
     const layerList = [...this.doc.layers.list].sort((a, b) => a.number - b.number);
@@ -283,14 +285,21 @@ export class EagleSVGRenderer {
   }
 
   renderItem(item, parent, opts = {}) {
-    let { labelText, pos, rot, transform } = opts;
+    let { labelText, pos, rot } = opts;
 
     //S   console.log(`EagleSVGRenderer.renderItem`, {  labelText, pos, rot, transform });
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...attr }, parent);
 
+    let transform = new TransformationList();
     let coordFn = pos ? ({ x1, y1, x2, y2, x, y, width, height }) => ({ x: x + pos.x, x1: x1 + pos.x, x2: x2 + pos.x, y: y + pos.y, y1: y1 + pos.y, y2: y2 + pos.y }) : i => i;
+
+    if(pos) {
+      transform.translate(-pos.x, -pos.y);
+      if(rot) transform.rotate(-rot.angle);
+      transform.translate(pos.x, pos.y);
+    }
     //  let transformation = (opts.transformation || new TransformationList()).slice();
 
     switch (item.tagName) {
@@ -306,7 +315,8 @@ export class EagleSVGRenderer {
             y1,
             y2,
             'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
-            'data-curve': curve
+            'data-curve': curve,
+            transform
           },
           parent
         );
@@ -380,10 +390,10 @@ export class EagleSVGRenderer {
           // .rotate(Math.abs(wholeAngle % 180))
           .collapseAll();
 
-        console.log(`wholeAngle ${text}`, wholeAngle);
+        //console.log(`wholeAngle ${text}`, wholeAngle);
         /*console.log(`undoAngle ${text}`, undoAngle);
-        console.log(`angle ${text}`, angle);*/
-        console.log(`finalTransformation ${text}`, finalTransformation.toString());
+        //console.log(`angle ${text}`, angle);*/
+        //console.log(`finalTransformation ${text}`, finalTransformation.toString());
         //console.log(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);
 
         if(finalTransformation.rotation) {
@@ -481,6 +491,8 @@ export class EagleSVGRenderer {
   static alignmentAttrs(align, hv = HORIZONTAL_VERTICAL, rot = 0) {
     let coord = align instanceof Point ? align : EagleSVGRenderer.alignment(align, [-1, 1]);
     if(Math.abs(rot) > 0) coord.rotate((rot * Math.PI) / 180);
+    const defaultY = 1;
+    const defaultX = -1;
 
     const { x, y } = coord;
     const { verticalAlignment, horizontalAlignment } = EagleSVGRenderer;
@@ -497,15 +509,15 @@ export class EagleSVGRenderer {
 
     bounds.outset(1.27);
     bounds.round(2.54, 6);
-    console.log('bounds:', bounds.toString({ separator: ' ' }));
+    //console.log('bounds:', bounds.toString({ separator: ' ' }));
     const { width, height } = new Size(bounds).toCSS('mm');
 
     this.transform.translate(0, bounds.height + bounds.y);
     this.transform.scale(1, -1);
 
     const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;
-    console.log(bounds);
-    console.log(bounds.clone(r => (r.y = 0)));
+    //console.log(bounds);
+    //console.log(bounds.clone(r => (r.y = 0)));
     if(!parent) parent = this.create('svg', { width, height, viewBox: bounds.clone(r => (r.y = 0)).toString({ separator: ' ' }) }, parent);
     //this.renderLayers(parent);
     const step = 2.54;
@@ -556,7 +568,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     //  let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-    console.log(`SchematicRenderer.renderCollection`, { transform, pos, rot });
+    //console.log(`SchematicRenderer.renderCollection`, { transform, pos, rot });
 
     const arr = [...collection];
 
@@ -572,10 +584,11 @@ export class SchematicRenderer extends EagleSVGRenderer {
    * @param      {<type>}  [opts={}]  The options
    */
   renderItem(item, parent, opts = {}) {
-    const { labSlText, pos, transform, rot } = opts;
+    const { labelText, pos, transform, rot } = opts;
+
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-    //S console.log(`SchematicRenderer.renderItem`, {labelText, pos , rot });
+    //if(rot)    console.log(`SchematicRenderer.renderItem`, {labelText, pos ,transform,   rot });
 
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
@@ -695,7 +708,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     rect.outset(1.27);
     rect.round(2.54);
 
-    console.log('bounds:', rect);
+    //console.log('bounds:', rect);
     parent = super.render(doc, parent, rect);
 
     this.renderSheet(sheet, this.group);
@@ -710,15 +723,16 @@ export class SchematicRenderer extends EagleSVGRenderer {
     let coordFn = MakeCoordTransformer(this.transform);
     let { deviceset, device, library, name, value } = part;
     let t = new TransformationList();
+    t.translate(x, y);
     if(rot) {
       rot = Rotation(rot);
       t = t.concat(rot);
     }
-    console.log(`SchematicRenderer.renderPart`, { x, y, pos, rot });
-    const g = this.create('g', {className: `part.${part.name}` }, parent );
+    //console.log(`SchematicRenderer.renderPart`, { x, y, pos, rot, t });
+    const g = this.create('g', { className: `part.${part.name}`, transform: t }, parent);
     if(!value) value = deviceset.name;
     opts = deviceset.uservalue == 'yes' ? { name, value } : { name };
-    this.renderCollection(symbol.children, g, { ...opts, rot, pos: new Point(x, y), transform: t.slice() });
+    this.renderCollection(symbol.children, g, { ...opts, rot /*pos: new Point(x, y), transform: t.slice()*/ });
     return g;
   }
 
@@ -897,9 +911,9 @@ export class BoardRenderer extends EagleSVGRenderer {
 
   renderCollection(coll, parent, opts = {}) {
     const { predicate = i => true, transform, pos, rot } = opts;
-    console.log(`BoardRenderer.renderCollection`, { transform, pos, rot });
+    //console.log(`BoardRenderer.renderCollection`, { transform, pos, rot });
 
-    //   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
+    let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
     let wireMap = new Map(),
       other = [];
@@ -1053,7 +1067,7 @@ export function renderDocument(doc, container) {
     container = container.parentElement;
   }
   //console.log("renderer:", { container, svg });
-  console.log('doc:', doc);
+  //console.log('doc:', doc);
   const ctor = doc.type == 'sch' ? SchematicRenderer : BoardRenderer;
   const renderer = new ctor(doc, factory);
   let objects = [];
@@ -1065,7 +1079,7 @@ export function renderDocument(doc, container) {
   rng = new Alea(1340);
   let bgColor = doc.type == 'sch' ? 'rgb(255,255,255)' : 'rgba(0,0,0,0.0)';
   //console.log(`${Util.className(renderer)} palette=${renderer.palette}`);
-  console.log(`doc type=${doc.type} path=${doc.path}`);
+  //console.log(`doc type=${doc.type} path=${doc.path}`);
   renderer.colors = {};
   let first = svg.firstElementChild;
   if(!first || (first.tagName + '').toLowerCase() != 'defs') {
@@ -1149,8 +1163,8 @@ export function renderDocument(doc, container) {
     }
     const rgba1 = renderer.palette.map((color, i) => RGBA.fromString(color));
     const cmap = (window.colormap = new ColorMap(renderer.palette));
-    console.log('cmap:', cmap);
-    console.log('cmap:', [...cmap.toScalar({ fmt: n => `0b${n.toString(2)}` })]);
+    //console.log('cmap:', cmap);
+    //console.log('cmap:', [...cmap.toScalar({ fmt: n => `0b${n.toString(2)}` })]);
     const layerNames = Util.unique([...eagle.getAll(e => e.tagName)].filter(e => e.layer).map(e => e.layer.name));
 
     Util.colorDump(rgba1, (c, n) => ('    ' + n).slice(-3) + '   ' + getLayersForColor(n).join(' '));
@@ -1188,8 +1202,8 @@ export function renderDocument(doc, container) {
   Object.assign(renderer, { sbox, obox, gbox, aspects });
   //console.log("render", { sbox, obox, gbox, aspects });
   let srect = new Rect(sbox);
-  console.log('sbox:', srect.toString());
-  console.log('obox:', obox.toString());
+  //console.log('sbox:', srect.toString());
+  //console.log('obox:', obox.toString());
 
   obox.outset(2.54 * 2.54);
   grid.parentElement.insertBefore(SVG.create('rect', { ...gridObj, fill: bgColor, transform: 'scale(2.54,2.54)' }), grid);
