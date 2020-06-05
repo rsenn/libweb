@@ -1,4 +1,3 @@
-
 export function EagleNodeMap(list, key) {
   this.list = list;
   this.key = key;

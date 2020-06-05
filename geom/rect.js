@@ -197,6 +197,17 @@ Rect.prototype.points = function() {
   return new PointList(c);
 };
 Rect.prototype.toCSS = Rect.toCSS;
+
+Rect.prototype.scale = function(factor) {
+  let width = this.width * factor;
+  let height = this.height * factor;
+
+  this.x += (width - this.width) / 2;
+  this.y += (height - this.height) / 2;
+  this.width = width;
+  this.height = height;
+  return this;
+};
 Rect.prototype.mul = function(...args) {
   Point.prototype.mul.call(this, ...args);
   Size.prototype.mul.call(this, ...args);
@@ -235,6 +246,7 @@ Rect.COVER = 32;
 Rect.prototype.fit = function(other, align = Align.CENTER | Align.MIDDLE | Rect.CONTAIN) {
   let factors = Size.prototype.fitFactors.call(this, new Size(other)).sort((a, b) => a - b);
   //console.log('factors:', factors);
+
   let rects = factors.reduce((acc, factor) => {
     let rect = new Rect(0, 0, this.width, this.height);
     rect.mul(factor);

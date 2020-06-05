@@ -114,8 +114,9 @@ export class EagleSVGRenderer {
           className: 'layer',
           //...LayerAttributes(l),
           stroke,
-          ...(active == 'yes' ? { 'data-active': '' } : {}),
-          ...(active == 'yes' ? { 'data-visible': '' } : {})
+          'data-name': l.name,
+          ...(active == 'yes' ? { 'data-active': true } : {}),
+          ...(visible == 'yes' ? { 'data-visible': true } : {})
         },
         layerGroup
       );
@@ -137,7 +138,16 @@ export class EagleSVGRenderer {
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...attr }, parent);
 
     let transform = new TransformationList();
-    let coordFn = pos ? ({ x1, y1, x2, y2, x, y, width, height }) => ({ x: x + pos.x, x1: x1 + pos.x, x2: x2 + pos.x, y: y + pos.y, y1: y1 + pos.y, y2: y2 + pos.y }) : i => i;
+    let coordFn = pos
+      ? ({ x1, y1, x2, y2, x, y, width, height }) => ({
+          x: x + pos.x,
+          x1: x1 + pos.x,
+          x2: x2 + pos.x,
+          y: y + pos.y,
+          y1: y1 + pos.y,
+          y2: y2 + pos.y
+        })
+      : i => i;
 
     if(pos) {
       transform.translate(-pos.x, -pos.y);
@@ -160,6 +170,7 @@ export class EagleSVGRenderer {
             y2,
             'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
             'data-curve': curve,
+            'data-layer': layer.name,
             transform
           },
           parent
@@ -347,12 +358,20 @@ export class EagleSVGRenderer {
     return r;
   }
 
-  render(doc, parent, bounds) {
+  render(doc, parent, props = {}) {
     doc = doc || this.doc;
-    bounds = bounds || doc.getBounds().rect;
 
-    bounds.outset(1.27);
-    bounds.round(2.54, 6);
+    let bounds = doc.getBounds();
+    let rect = bounds.rect;
+
+    this.bounds = bounds;
+    this.rect = rect;
+
+    rect.outset(1.27);
+    rect.round(2.54, 6);
+
+    this.bounds = bounds;
+    this.rect = rect;
     //console.log('bounds:', bounds.toString({ separator: ' ' }));
     const { width, height } = new Size(bounds).toCSS('mm');
 
@@ -362,7 +381,7 @@ export class EagleSVGRenderer {
     const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;
     //console.log(bounds);
     //console.log(bounds.clone(r => (r.y = 0)));
-    if(!parent) parent = this.create('svg', { width, height, viewBox: bounds.clone(r => (r.y = 0)).toString({ separator: ' ' }) }, parent);
+    if(!parent) parent = this.create('svg', { width, height, viewBox: rect.clone(r => (r.y = 0)).toString({ separator: ' ' }), ...props }, parent);
     //this.renderLayers(parent);
     const step = 2.54;
     const gridColor = '#0000aa';
@@ -380,8 +399,8 @@ export class EagleSVGRenderer {
     this.group = this.create('g', { transform }, parent);
     let bgGroup = this.create('g', { id: 'bg' }, this.group);
 
-    this.create('rect', { ...bounds.toObject(), fill: 'white' }, bgGroup);
-    this.create('rect', { ...bounds.toObject(), id: 'grid', fill: 'url(#grid)' }, bgGroup);
+    this.create('rect', { ...rect.toObject(), fill: 'rgb(255,255,255)' }, bgGroup);
+    this.create('rect', { ...rect.toObject(), id: 'grid', fill: 'url(#grid)' }, bgGroup);
     return parent;
   }
 }

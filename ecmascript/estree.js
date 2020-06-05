@@ -451,13 +451,14 @@ export class ArrayLiteral extends ESNode {
 }
 
 export class JSXLiteral extends ESNode {
-  constructor(tag, attributes, closing = false, selfClosing = false, children = []) {
+  constructor(tag, attributes, closing = false, selfClosing = false, children = [], spread) {
     super('JSXLiteral');
     this.tag = tag;
     this.attributes = attributes;
     this.closing = closing;
     this.selfClosing = selfClosing;
     this.children = children;
+    this.spread = spread;
     // console.log('New JSXLiteral: ', tag, JSX.keys(attributes));
   }
 }

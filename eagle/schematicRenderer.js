@@ -17,7 +17,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     point: 0
   };
 
-  static palette = ['#ffffff', '#4b4ba5', '#4ba54b', '#4ba5a5', '#a54b4b', '#a54ba5', '#a5a54b', '#afafaf', '#4b4bff', '#4bff4b', '#4bffff', '#ff4b4b', '#ff4bff', '#ffff4b', '#4b4b4b', '#a5a5a5'];
+  static palette = ['rgb(255,255,255)', 'rgb(75,75,165)', 'rgb(75,165,75)', 'rgb(75,165,165)', 'rgb(165,75,75)', 'rgb(165,75,165)', 'rgb(165,165,75)', 'rgb(175,175,175)', 'rgb(75,75,255)', 'rgb(75,255,75)', 'rgb(75,255,255)', 'rgb(255,75,75)', 'rgb(255,75,255)', 'rgb(255,255,75)', 'rgb(75,75,75)', 'rgb(165,165,165)'];
 
   constructor(doc, factory) {
     super(doc, factory);
@@ -168,19 +168,24 @@ export class SchematicRenderer extends EagleSVGRenderer {
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
   }
 
-  render(doc = this.doc, parent, sheetNo = 0) {
+  render(doc = this.doc, parent, props = {}, sheetNo = 0) {
     let sheet = this.sheets[sheetNo];
     let bounds = sheet.getBounds();
     let rect = bounds.rect;
+
+    this.bounds = bounds;
+    this.rect = rect;
+
     rect.outset(1.27);
     rect.round(2.54);
 
     //console.log('bounds:', rect);
-    parent = super.render(doc, parent, rect);
+    parent = super.render(doc, parent, props);
 
     this.renderSheet(sheet, this.group);
 
     this.renderInstances(this.group, sheetNo, rect);
+
     return parent;
   }
 
@@ -199,7 +204,10 @@ export class SchematicRenderer extends EagleSVGRenderer {
     const g = this.create('g', { className: `part.${part.name}`, transform: t }, parent);
     if(!value) value = deviceset.name;
     opts = deviceset.uservalue == 'yes' ? { name, value } : { name };
-    this.renderCollection(symbol.children, g, { ...opts, rot /*pos: new Point(x, y), transform: t.slice()*/ });
+    this.renderCollection(symbol.children, g, {
+      ...opts,
+      rot /*pos: new Point(x, y), transform: t.slice()*/
+    });
     return g;
   }
 
@@ -266,5 +274,4 @@ export class SchematicRenderer extends EagleSVGRenderer {
   }
 }
 
-EagleSVGRenderer.SCHEMATIC = SchematicRenderer;
 EagleSVGRenderer.rendererTypes.sch = SchematicRenderer;

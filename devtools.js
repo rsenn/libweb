@@ -420,7 +420,7 @@ export function select() {
 export function boxes(state) {
   var boxes = Element.find('.boxes');
   var body = Element.find('body');
-  var container = Element.find('.container');
+  var container = Element.find('#main');
   var page = Element.find('.page');
   if(!boxes) {
     boxes = Element.create('div', {

@@ -27,7 +27,7 @@ export class Token {
     //if(this.position.pos === undefined || isNaN(this.position.pos)) this.position.pos = offset;
 
     this.offset = offset;
-    /* this.end = end;
+    /* this.end = end;F
     this.pos = pos;
     const delta = end - start - 1;
     this.position = {

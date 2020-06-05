@@ -155,6 +155,7 @@ export class Element extends Node {
   }
 
   static find(arg, parent, globalObj = Util.getGlobalObject()) {
+    if(typeof parent == 'string') parent = Element.find(parent);
     if(!parent && globalObj.document) parent = globalObj.document;
 
     return typeof arg === 'string' ? parent.querySelector(arg) : arg;
@@ -761,7 +762,7 @@ export class Element extends Node {
     args.shift();
     args.shift();
 
-    easing = typeof args[0] == 'function' ? 'linear' : aargs.shift();
+    easing = typeof args[0] == 'function' ? 'linear' : args.shift();
     callback = args.shift();
 
     for(let prop in css) {

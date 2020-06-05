@@ -113,9 +113,9 @@ export function Position(line, column, pos, file, freeze = true) {
 Position.prototype[Symbol.toStringTag] = function() {
   return this.toString();
 };
-Position.prototype.toString = function() {
+Position.prototype.toString = function(showFilename = true) {
   const { file, line, column } = this;
-  return file ? `${file}:${line}:${column}` : `${line}:${column}`;
+  return file && showFilename ? `${file}:${line}:${column}` : `${line}:${column}`;
 };
 
 Position.prototype.valueOf = function() {
@@ -160,9 +160,9 @@ Position.prototype[Symbol.toStringTag] = function() {
   return Range.prototype.toString.call(this);
 };
 
-Range.prototype.toString = function() {
+Range.prototype.toString = function(showFile = true) {
   const { file, line, column, pos, length } = this;
-  const f = file ? `${file}:` : '';
+  const f = file && showFile ? `${file}:` : '';
   return `${f}${line}:${column} - ${f}${line}:${column + length}`;
 };
 
@@ -392,6 +392,7 @@ export class Lexer {
   }
 
   addToken(type) {
+    if(type == Token.types.templateLiteral) console.log('addToken', this.token);
     const { start, pos, column, line, source } = this;
     const token = new Token(type, source.substring(start, pos), new Range(this.position(this.start), this.pos - this.start), this.start);
     this.tokens.push(token);
@@ -597,6 +598,10 @@ export class Lexer {
       this.addToken(Token.types.regexpLiteral);
       return this.lexText;
     }
+
+    this.backup(this.pos - this.start - 1);
+    console.log('this.getRange()', this.getRange(this.start, this.pos));
+
     return this.lexPunctuator();
   }
 
@@ -631,44 +636,30 @@ export class Lexer {
 
   lexTemplate(cont = false) {
     const done = (doSubst, defaultFn = null) => {
-      //template.inSubst = doSubst;
       var self = () => {
-        //let inSubst = this.template.inSubst;
         let c = this.peek();
         let { start, pos } = this;
         const position = this.position();
         const { stateFn } = this;
         let doSubst = template.inSubst;
-
         if(c == ';') {
           throw new Error(`${this.position()}`);
         }
-
         if(!doSubst && c == '`') {
           this.template = null;
           this.addToken(Token.types.stringLiteral);
-          /*          this.skip(1);
-          this.ignore();*/
           return this.lexText();
         }
-
         let fn = doSubst ? this.lexText : defaultFn;
         let ret;
-        //console.log('self', { c, doSubst, fn }, this.errorRange(), position.toString());
-
-        if(doSubst && c == '}' /*&& fn === this.lexPunctuator)*/) {
-          //console.log('self:', { c, ret, fn }, position + '');
+        if(doSubst && c == '}') {
           c = this.peek();
-          //   this.skip();
-          //console.log('self:', { c, doSubsbt, start, pos });
-          // this.ignore();
           this.addToken(Token.types.punctuator);
           template.inSubst = false;
-          return fn /*()*/;
+          return fn;
         }
         if(fn === null) throw new Error();
-
-        return fn; ///*fn && */done(doSubst, fn)/* ||  this.lexText()*/;
+        return fn;
       };
       template.inSubst = doSubst;
       return self;
@@ -677,15 +668,10 @@ export class Lexer {
     let inSubst = (this.template && this.template.inSubst) || template.inSubst;
     if(cont) {
       c = this.peek();
-      //console.log('lexTemplate peek c:', { c });
-
       if(c != '`') {
         c = this.next();
-        //console.log('lexTemplate continue c:', { c });
         c = this.peek();
-        //console.log('lexTemplate continue template:', { c, cont, inSubst });
       }
-      //      throw new Error();
       return template;
     }
     var startToken = this.tokenIndex;
@@ -701,36 +687,19 @@ export class Lexer {
         prevChar = c;
         c = this.next();
         ++n;
-        //console.log(`lexTemplate`, { c, escapeEncountered });
         if(c === null) {
           throw this.error(`Illegal template token (${n})  '${this.source[this.start]}': ${this.errorRange()}`);
         } else if(!escapeEncountered) {
           if(c == '{' && prevChar == '$') {
             this.backup(2);
             this.addToken(Token.types.templateLiteral);
-            /*
-            this.start = this.pos;
-            this.pos += 2;
-*/
-            //this.addToken(Token.types.punctuator);
-
             this.skip(2);
-            //console.log('lexTemplate template:', { c: this.peek(), prevChar });
-
-            //           this.skip(2);
             this.ignore();
             this.inSubst = true;
-            //sreturn this.lexPunctuator.bind(this);
-            //console.log('addtoken:', this.token.toString());
             return done(true, this.lexText);
           } else if(c === '`') {
             this.addToken(Token.types.templateLiteral);
-            // this.skip(1);
-            //  this.ignore();
-            //return  this.lexText();
-
             return this.lexText.bind(this);
-            //     return this.lexText;
           } else if(c === '\\') {
             escapeEncountered = true;
           }
@@ -739,10 +708,6 @@ export class Lexer {
         }
       } while(true);
     }
-    /*  template.inSubst = inSubst;
-    if(this.template !== template) this.template = template;
-    //console.log("lexTemplate:", { c, startToken, inSubst }, this.line + 1 + ":" + (1 + this.column));*/
-
     return template.call(this);
   }
 
@@ -858,7 +823,7 @@ export class Lexer {
 
   nextToken() {
     if(this.tokenIndex >= this.tokens.length) {
-      return new Token(Token.types.eof, null, this.source.length, this.source.length);
+      return new Token(Token.types.eof, null, new Range(this.position(this.pos), 0), this.source.length);
     }
 
     const token = this.tokens[this.tokenIndex];

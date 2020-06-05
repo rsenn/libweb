@@ -101,17 +101,6 @@ export class EagleDocument extends EagleNode {
   getBounds() {
     let bb = new BBox();
 
-    /*
-    for(let element of this.getAll((e, p) => e.tagName === "element")) {
-//      if(/library/.test(element.xpath())) continue;
-let layer = element.layer;
-
-        if(element.attributes.package) {
-          let pr = element.package.getBounds();
-            console.log("getBounds", pr);
-          }
-    }*/
-
     for(let instance of this.getAll((e, p) => e.tagName == 'instance')) {
       let part = instance.part;
       let device = part.device;
@@ -130,27 +119,15 @@ let layer = element.layer;
       let sb = symbol.getBounds();
       let sbr = new Rect(sb);
 
-      /*  if(sbr.height > 20) {
-        console.log(' symbol.getBounds():', symbol.getBounds());
-        throw new Error('symbol');
-      }*/
-      //   console.log(' points:', points);
-      //  console.log(' bbrect:', bbrect);
-
-      //  bb.update(bbrect);
-
-      /*
-      if(layer && (layer.number > 90))
-        continue;*/
-      /*
-      let g = symbol.geometry();
-      if(g) {
-*/
-      /*    console.log("getBounds", element, g);*/
       bb.update(bbrect, 0, instance);
-      // }
     }
-    // console.log('getBounds', bb);
+
+    for(let element of this.getAll((e, p) => e.tagName == 'element')) {
+      let bbrect = element.getBounds();
+
+      bb.update(bbrect);
+    }
+
     return bb;
   }
 }

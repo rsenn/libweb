@@ -8,11 +8,13 @@ import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPat
 import { EagleSVGRenderer } from './svgRenderer.js';
 
 export class BoardRenderer extends EagleSVGRenderer {
-  static palette = ['hsl(230,100%,40%)', 'rgb(252,245,38)', 'rgb(0,126,24)', 'rgb(0,23,185)', 'rgb(79,9,0)', 'rgb(62,46,25)', 'hsl(30,100%,55%)', 'rgb(255,180,83)', 'rgb(105,82,33)', 'rgb(251,252,247)', 'rgb(140,95,51)', 'rgb(132,148,109)', 'rgb(168,166,32)', 'rgb(16,6,61)', 'rgb(178,27,0)', 'hsl(30,0%,80%)'];
+  static palette = [/* 0 */ 'rgb(255,255,255)', 'rgb(75,75,165)', 'rgb(75,165,75)', 'rgb(75,165,165)', /* 4 */ 'rgb(165,75,75)', 'rgb(165,75,165)', 'rgb(165,165,75)', 'rgb(175,175,175)', 'rgb(75,75,255)', 'rgb(75,255,75)', 'rgb(75,255,255)', /* 11 */ 'rgb(255,75,75)', 'rgb(255,75,255)', 'rgb(255,255,75)', 'rgb(75,75,75)', 'rgb(165,165,165)'];
 
   constructor(obj, factory) {
     super(obj, factory);
     const { settings, layers, libraries, classes, designrules, elements, signals, plain, sheets } = obj;
+
+    let board = obj;
 
     this.elements = elements;
     this.signals = signals;
@@ -25,7 +27,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer;
-    const color = layer ? this.getColor(layer.color) : this.getColor(6);
+    const color = layer ? this.getColor(layer.color) : BoardRenderer.palette[2];
     const svg = (elem, attr, parent) =>
       this.create(
         elem,
@@ -173,8 +175,9 @@ export class BoardRenderer extends EagleSVGRenderer {
           stroke: color,
           'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
           fill: 'none',
-          strokeLinecap: 'round',
-          strokeLinejoin: 'round'
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round',
+          'data-layer': layer.name
         },
         parent
       );
@@ -197,8 +200,8 @@ export class BoardRenderer extends EagleSVGRenderer {
         'data-name': name,
         'data-value': value,
         'data-library': library.name,
-        'data-package': element.package.name
-        //SStransform: transform.concat(rotation)
+        'data-package': element.package.name,
+        transform: transform.concat(rotation)
       },
       parent
     );
@@ -216,8 +219,17 @@ export class BoardRenderer extends EagleSVGRenderer {
     return this.renderCollection(signal.children, signalGroup, options);
   }
 
-  render(doc = this.doc, parent) {
-    parent = super.render(doc, parent);
+  render(doc = this.doc, parent, props = {}) {
+    let bounds = doc.getBounds();
+    let rect = bounds.rect;
+
+    this.bounds = bounds;
+    this.rect = rect;
+
+    rect.outset(1.27);
+    rect.round(2.54);
+
+    parent = super.render(doc, parent, props);
 
     this.renderLayers(parent);
 
@@ -226,7 +238,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     let plainGroup = this.create('g', { className: 'plain' }, parent);
 
-    for(let element of this.elements.list) this.renderElement(element, elementsGroup);
+    console.log('bounds: ', bounds);
 
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {
@@ -241,13 +253,15 @@ export class BoardRenderer extends EagleSVGRenderer {
         predicate: i => i.attributes.layer === undefined
       });
 
-    let [plain] = [...board.getAll('plain')];
+    for(let element of this.elements.list) this.renderElement(element, elementsGroup);
+
+    let [plain] = [...this.doc.getAll('plain')];
 
     this.renderCollection(plain.children, plainGroup);
-
+    this.bounds = bounds;
+    this.rect = bounds.rect;
     return parent;
   }
 }
-EagleSVGRenderer.BOARD = BoardRenderer;
 
 EagleSVGRenderer.rendererTypes.brd = BoardRenderer;

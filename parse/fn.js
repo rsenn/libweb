@@ -268,4 +268,21 @@ export function filter(parser, fn) {
   };
 }
 
-export default { string, token, many, any, choice, seq, regex, char, lazy, option, map, filter, eof, ignore, concat, invert };
+export default {
+  string,
+  token,
+  many,
+  any,
+  choice,
+  seq,
+  regex,
+  char,
+  lazy,
+  option,
+  map,
+  filter,
+  eof,
+  ignore,
+  concat,
+  invert
+};

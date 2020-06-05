@@ -40,6 +40,7 @@ export class Transformation {
   }
 
   vector(unit) {
+    unit = this.unit || unit;
     return (this.is3D ? ['x', 'y', 'z'] : ['x', 'y']).map(unit ? axis => this[axis] + unit : axis => this[axis]);
   }
 
@@ -57,10 +58,25 @@ export class Transformation {
   }
 
   static fromString(arg) {
-    let args = arg.split(/[^-+0-9A-Za-z.]+/g);
-    let cmd = args.shift().toLowerCase();
+    let cmdLen = arg.indexOf('(');
+    let argStr = arg.slice(cmdLen + 1, arg.indexOf(')'));
+    let args = argStr.split(/[,\s ]+/g);
+    let cmd = arg.substring(0, cmdLen);
     let t;
-    args = args.filter(arg => /^[-+0-9.]+$/.test(arg)).map(arg => +arg);
+    let unit;
+
+    //  console.log("fromString",{arg,argStr,args});
+
+    args = args
+      .filter(arg => /^[-+0-9.]+[a-z]*$/.test(arg))
+      .map(arg => {
+        if(/[a-z]$/.test(arg)) {
+          unit = arg.replace(/[-+0-9.]*/g, '');
+          arg = arg.replace(/[a-z]*$/g, '');
+        }
+
+        return +arg;
+      });
 
     if(cmd.startsWith('rotate')) {
       const axis = cmd.slice(6);
@@ -77,7 +93,7 @@ export class Transformation {
     } else if(cmd.startsWith('matrix')) {
       t = new MatrixTransformation(...args);
     }
-
+    if(unit) t.unit = unit;
     return t;
   }
   /*
@@ -159,7 +175,8 @@ export class Rotation extends Transformation {
     return this.angle == 0;
   }
 
-  toString(rUnit = '') {
+  toString(rUnit) {
+    rUnit = rUnit || this.unit || '';
     const axis = this.axis !== undefined ? this.axis.toUpperCase() : '';
     const angle = this.constructor.convertAngle(this.angle, rUnit);
     return `rotate${this.is3D ? axis : ''}(${angle}${rUnit})`;

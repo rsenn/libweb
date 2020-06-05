@@ -103,7 +103,13 @@ export class Parser {
     const { token } = this;
     // console.log('token:', token);
 
-    if(!r) throw new Error(`Parser.expect ${this.position} (${Lexer.tokenName(id)}, ${Util.toString(s, { multiline: false, colors: false })})  ${Lexer.tokenName(token.tok)}, ${Util.toString(token.str)}`);
+    if(!r)
+      throw new Error(
+        `Parser.expect ${this.position} (${Lexer.tokenName(id)}, ${Util.toString(s, {
+          multiline: false,
+          colors: false
+        })})  ${Lexer.tokenName(token.tok)}, ${Util.toString(token.str)}`
+      );
     return this.getTok();
   }
 

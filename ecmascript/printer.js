@@ -15,7 +15,7 @@ export class Printer {
     templates: [1, 35]
   };
   constructor(options = {}, comments) {
-    const { indent = 2, color = false } = options;
+    const { indent = 2, color = false, format = 1 } = options;
     this.indent = indent || 2;
     this.comments = comments || [];
 
@@ -23,6 +23,7 @@ export class Printer {
 
     this.colorText = Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: text => this.color.text(text, ...codes) }), {});
     this.colorCode = Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: () => this.color.code(...codes) }), {});
+    this.format = format;
   }
 
   printNode(node) {
@@ -122,13 +123,16 @@ export class Printer {
     let output = '';
     output += this.printNode(id);
 
+    console.log('printBindingProperty:', value.value, id.value);
+
     if(value.value != id.value) output += ': ' + this.printNode(value);
 
     return output;
   }
 
   printLiteral(literal) {
-    return this.colorText.numberLiterals(literal.value);
+    let { value } = literal;
+    return this.colorText.numberLiterals(value);
   }
 
   printTemplateLiteral(template_literal) {
@@ -229,12 +233,20 @@ export class Printer {
   printNewExpression(new_expression) {
     return 'new ' + this.printCallExpression(new_expression);
   }
+
   printSequenceExpression(sequence_expression) {
     const { expressions } = sequence_expression;
 
     let output = '(';
+    console.log('expressions: ', expressions);
 
-    output += expressions.map(expr => this.printNode(expr)).join(', ');
+    output += expressions
+      .flat()
+      .map(expr => {
+        let node = this.printNode(expr);
+        return node;
+      })
+      .join(', ');
     output += ')';
     return output;
   }
@@ -629,10 +641,12 @@ export class Printer {
 
       line += value.replace(/\n/g, '\n  ');
 
+      //          console.log("printObjectLiteral.line:", { name,line});
+
       if(property.flags && !(property instanceof BindingProperty) && !(object_literal instanceof ObjectBindingPattern)) {
         line = name + ' = ' + line;
-        //   console.log("printObjectLiteral.line:", line);
       } else if(name && name != line) {
+        console.log('printObjectLiteral ', { name, line });
         line = name + (isFunction ? '' : ': ') + line;
         if(!property.flags) is_prototype = false;
       }
@@ -665,6 +679,8 @@ export class Printer {
     }
     if(!(id instanceof Identifier)) prop = '[' + prop + ']';
     s += prop;
+
+    console.log('printPropertyDefinition:', value.value, id.value);
 
     if(!(id instanceof Identifier) || id.value != value.value) {
       if(!(value instanceof FunctionDeclaration)) s += this.colorText.punctuators(': ');
@@ -703,21 +719,39 @@ export class Printer {
 
   printJSXLiteral(jsx_literal) {
     const { tag, attributes, closing, selfClosing, children } = jsx_literal;
-    let output = ``;
+    let output = this.format ? `h(${tag[0].toUpperCase() == tag[0] ? tag : "'" + tag + "'"}, {` : `<${closing ? '/' : ''}${tag}`;
+    let i = 0;
+
     for(let attr in attributes) {
       const value = attributes[attr];
-      output += ` ${attr}=`;
-      // console.log("value:",value);
-      if(value instanceof Literal) output += this.printNode(value);
-      else output += `{${this.printNode(value)}}`;
+
+      if(this.format) output += i > 0 ? ',\n   ' : '\n   ';
+
+      output += ` ${attr}`;
+
+      if(!(value instanceof Literal && value.value === true) && !(value.value == attr && this.format)) {
+        console.log('printJSXLiteral', attr, value.value);
+
+        output += this.format ? `: ` : `=`;
+        if(value instanceof Literal) output += this.printNode(value);
+        else output += this.format ? this.printNode(value) : `{${this.printNode(value)}}`;
+      }
+      i++;
     }
+    output += this.format ? `\n  }, [` : selfClosing ? ' />' : '>';
+
     if(children instanceof Array && children.length > 0) {
-      return `<${tag}${output}>
-  ${children.map(child => this.printNode(child).replace(/\n/g, '\n  ')).join('\n  ')}
-</${tag}>`;
+      if(children.length == 1) {
+        if(children[0] instanceof Literal) output += children[0].value.replace(/\\n/g, '\n');
+        else output += this.printNode(children[0]);
+      } else output += `\n    ` + children.map(child => this.printNode(child).replace(/\n/g, '\n    ')).join(this.format ? ',\n    ' : '\n    ') + `\n  `;
+
+      if(!this.format) output += `</${tag}>`;
     }
 
-    return `<${closing ? '/' : ''}${tag}${output}${selfClosing ? ' /' : ''}>`;
+    if(this.format) output += `])`;
+
+    return output;
   }
 
   /*
@@ -760,7 +794,7 @@ export class Printer {
       let value = binding_property.value ? this.printNode(binding_property.value) : id;
 
       if(id == value) output += id;
-      else output += `${id}: ${value}`;
+      else output += `${id} = ${value}`;
     }
 
     //   let output = properties.map(property => this.printNode(property)).join(', ');

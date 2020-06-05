@@ -6,20 +6,21 @@ import Alea from '../alea.js';
 import { Util } from '../util.js';
 import { RGBA } from '../dom/rgba.js';
 import { Size } from '../dom.js';
-
-import { EagleSVGRenderer } from './svgRenderer.js';
 import { SchematicRenderer } from './schematicRenderer.js';
 import { BoardRenderer } from './boardRenderer.js';
-/*
+
+import { EagleSVGRenderer } from './svgRenderer.js';
+
 export { EagleSVGRenderer } from './svgRenderer.js';
 export { SchematicRenderer } from './schematicRenderer.js';
 export { BoardRenderer } from './boardRenderer.js';
-*/
 
 export function Renderer(doc, factory) {
-  switch(doc.type) {
-    case 'brd': return new BoardRenderer(doc, factory);
-    case 'sch': return new SchematicRenderer(doc, factory);
+  switch (doc.type) {
+    case 'brd':
+      return new BoardRenderer(doc, factory);
+    case 'sch':
+      return new SchematicRenderer(doc, factory);
   }
 }
 
