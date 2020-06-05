@@ -1245,7 +1245,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
 Util.getURL = function(req = {}) {
   let proto = Util.tryCatch(() => (process.env.NODE_ENV === 'production' ? 'https' : null)) || 'http';
   let port = Util.tryCatch(() => (process.env.PORT ? parseInt(process.env.PORT) : process.env.NODE_ENV === 'production' ? 443 : null)) || 3000;
-  let host = Util.tryCatch(() => global.ip) || Util.tryCatch(() => global.host) || Util.tryCatch(() => window.location.host) || 'localhost';
+  let host = Util.tryCatch(() => global.ip) || Util.tryCatch(() => global.host) || Util.tryCatch(() => window.location.host.replace(/:.*/g, "")) || 'localhost';
   if(req && req.headers && req.headers.host !== undefined) {
     host = req.headers.host.replace(/:.*/, '');
   } else {
