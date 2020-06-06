@@ -657,7 +657,7 @@ Util.fnName = function(f, parent) {
   }
   return undefined;
 };
-Util.keys7 = obj => {
+Util.keys = obj => {
   if(Symbol.iterator in obj && typeof obj.item == 'function' && obj.getPropertyValue !== undefined) return obj[Symbol.iterator]();
 
   if('length' in obj && typeof obj[0] == 'string' && obj[obj[0]] !== undefined)
