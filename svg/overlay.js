@@ -71,21 +71,21 @@ export class SvgOverlay extends React.Component {
   componentDidMount() {
     const ref = this.layerRef.current;
 
-//    trkl.property(this.layerRef, 'current').subscribe(ref => {
-      //console.log("layerRef: ", ref);
-      var rect = Element.rect(ref);
-      var svg = SVG.create(
-        'svg',
-        {
-          width: rect.width,
-          height: rect.height,
-          viewBox: `0 0 ${rect.width} ${rect.height}`,
-          style: `width: ${rect.width}px; height: ${rect.height}px`
-        },
-        ref
-      );
-      SVG.create('defs', {}, svg);
-      /* SVG.create("rect", {
+    //    trkl.property(this.layerRef, 'current').subscribe(ref => {
+    //console.log("layerRef: ", ref);
+    var rect = Element.rect(ref);
+    var svg = SVG.create(
+      'svg',
+      {
+        width: rect.width,
+        height: rect.height,
+        viewBox: `0 0 ${rect.width} ${rect.height}`,
+        style: `width: ${rect.width}px; height: ${rect.height}px`
+      },
+      ref
+    );
+    SVG.create('defs', {}, svg);
+    /* SVG.create("rect", {
           x: 100,
           y: 100, 
           width: 100,
@@ -96,13 +96,13 @@ export class SvgOverlay extends React.Component {
           "fill-opacity": 0.5
         }, svg
       );*/
-      this.svg(svg);
-      const f = this.factory();
-      f.root = svg;
-      if(typeof svgRef == 'function') svgRef({ svg, factory: f /*(name,props) => f(name,props, svg) */ });
-      //console.log("SvgOverlay: ", { svg, rect });
+    this.svg(svg);
+    const f = this.factory();
+    f.root = svg;
+    if(typeof svgRef == 'function') svgRef({ svg, factory: f /*(name,props) => f(name,props, svg) */ });
+    //console.log("SvgOverlay: ", { svg, rect });
 
-      //   this.createPaths();
+    //   this.createPaths();
     //});
   }
 

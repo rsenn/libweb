@@ -56,16 +56,16 @@ export const Arc = (x, y, radius, startAngle, endAngle) => {
 
 export const CalculateArcRadius = (p1, p2, angle) => {
   const d = Point.distance(p1, p2);
-  const c = Math.cos(angle * Math.PI / 180);
+  const c = Math.cos((angle * Math.PI) / 180);
 
   const r2 = (d * d) / (2 - 2 * c);
 
   let r = d / Math.sqrt(2 + 2 * c);
 
-  if((2 + 2 * c) == 0) {
+  if(2 + 2 * c == 0) {
     r = r2;
-    console.log("CalculateArcRadius", {d,c,r2,r});
-}
+    console.log('CalculateArcRadius', { d, c, r2, r });
+  }
   if(isNaN(r)) throw new Error('Arc radius for angle: ' + angle);
 
   return Math.abs(angle) > 90 ? r / 2 : Math.sqrt(r2);
@@ -83,8 +83,7 @@ export const LinesToPath = lines => {
     if(curve !== undefined) {
       const r = CalculateArcRadius(prevPoint, point, curve).toFixed(4);
 
-      if(r == Number.POSITIVE_INFINITY || r == Number.NEGATIVE_INFINITY)
-        console.log("lineTo", {prevPoint, point,curve});
+      if(r == Number.POSITIVE_INFINITY || r == Number.NEGATIVE_INFINITY) console.log('lineTo', { prevPoint, point, curve });
 
       const largeArc = Math.abs(curve) > 180 ? '1' : '0';
       const sweepArc = curve > 0 ? '1' : '0';

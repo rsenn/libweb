@@ -18,7 +18,7 @@ Object.assign(EagleNodeMap.prototype, {
     return idx == -1 ? null : this.list[idx];
   },
   set(name, value) {
-      const list = this.list.raw;
+    const list = this.list.raw;
     const idx = list.findIndex(item => item.attributes[this.key] == name);
 
     if('raw' in value) value = value.raw;
@@ -40,8 +40,7 @@ Object.assign(EagleNodeMap.prototype, {
     return this.keys(key).map((key, i) => [key + '', this.list[i]]);
   },
   *[Symbol.iterator]() {
-    for(let item of this.list)
-      yield [item[this.key], item];
+    for(let item of this.list) yield [item[this.key], item];
   },
   toMap(key = this.key) {
     return new Map(this.entries(key));
@@ -68,7 +67,7 @@ export function makeEagleNodeMap(list, key = 'name') {
         if(prop == 'length' || prop == 'size') return (instance.list.raw || instance.list).length;
         if(prop == 'entries') return instance.entries;
       }
-    //  if(prop == Symbol.iterator) return instance.entries()[Symbol.iterator];
+      //  if(prop == Symbol.iterator) return instance.entries()[Symbol.iterator];
 
       if((index = instance.keys().indexOf(prop)) != -1) return instance.list[index];
       if(typeof instance[prop] == 'function') return instance[prop].bind(instance);

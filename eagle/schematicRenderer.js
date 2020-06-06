@@ -264,8 +264,8 @@ export class SchematicRenderer extends EagleSVGRenderer {
       'rect',
       {
         ...b.toObject(),
-        stroke: new HSLA(320, 100, 50),
-        'stroke-width': 0.3,
+        stroke: new HSLA(290, 100, 50),
+        'stroke-width': 0.1,
         'stroke-dasharray': '0.9 0.6',
         fill: 'none'
       },

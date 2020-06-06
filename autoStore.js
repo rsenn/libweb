@@ -5,11 +5,12 @@ export const makeLocalStorage = () => {
       set: (name, data) => window.localStorage.setItem(name, JSON.stringify(data)),
       remove: name => window.localStorage.removeItem(name),
       keys: () => {
-        let i = 0, key, r=[];
-        while(key = localStorage.key(i++))
-r.push(key);
-       return r;
-     }
+        let i = 0,
+          key,
+          r = [];
+        while((key = localStorage.key(i++))) r.push(key);
+        return r;
+      }
     };
   return {
     get: name => ({}),
