@@ -128,8 +128,8 @@ export class EagleDocument extends EagleNode {
       bb.update(bbrect);
     }
 
-    for(let [name,signal] of this.signals) {
-      console.log("signal:",signal);
+    for(let [name, signal] of this.signals) {
+      console.log('signal:', signal);
       let bbrect = signal.getBounds();
 
       bb.update(bbrect);
