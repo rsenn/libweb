@@ -1337,8 +1337,16 @@ Util.numberFromURL = function(url, fn) {
 };
 Util.tryPromise = fn => new Promise((resolve, reject) => Util.tryCatch(fn, resolve, reject));
 
-Util.tryFunction = (fn, resolve = a => a, reject = () => null) =>
-  function(...args) {
+Util.tryFunction = (fn, resolve = a => a, reject = () => null) => {
+  if(typeof resolve != 'function') {
+    var rval = resolve;
+    resolve = () => rval;
+  }
+  if(typeof reject != 'function') {
+    var cval = reject;
+    reject = () => cval;
+  }
+  return function(...args) {
     let ret;
     try {
       ret = fn(...args);
@@ -1347,7 +1355,8 @@ Util.tryFunction = (fn, resolve = a => a, reject = () => null) =>
     }
     return resolve(ret, ...args);
   };
-Util.tryCatch = (fn, resolve = a => a, reject = () => null) => Util.tryFunction(fn, resolve, reject)();
+};
+Util.tryCatch = (fn, resolve = a => a, reject = () => null, ...args) => Util.tryFunction(fn, resolve, reject)(...args);
 
 Util.tryPredicate = (fn, defaultRet) =>
   Util.tryFunction(
@@ -1727,14 +1736,18 @@ Util.counter = function() {
     return this.i;
   };
 };
-Util.filterKeys = function(obj) {
+Util.filterKeys = function(obj, pred) {
   let args = [...arguments];
   obj = args.shift();
   let ret = {};
-  let pred = typeof args[0] == 'function' ? args[0] : key => args.indexOf(key) != -1;
-  for(let key in obj) {
-    if(pred(key)) ret[key] = obj[key];
+  if(pred instanceof RegExp) {
+    var re = pred;
+    pred = str => re.test(str);
+  } else if(Util.isArray(pred)) {
+    var a = pred;
+    pred = str => a.indexOf(str) != -1;
   }
+  for(let key in obj) if(pred(key)) ret[key] = obj[key];
   Object.setPrototypeOf(ret, Object.getPrototypeOf(obj));
   return ret;
 };
