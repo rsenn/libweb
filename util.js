@@ -251,6 +251,8 @@ Util.range = function(start, end) {
   //console.log("Util.range ", r);
   return r;
 };
+Util.set = Util.curry((obj, prop, value) =>   obj[prop] = value
+);
 Util.inspect = function(
   obj,
   opts = {
@@ -1424,7 +1426,7 @@ Util.throttle = function(fn, wait) {
   };
 };
 Util.foreach = function(o, fn) {
-  for(let [k, v] of Util.entries(o)) fn(v, k, o);
+  for(let [k, v] of Util.entries(o)) { if(fn(v, k, o) === false) break; }
 };
 Util.all = function(obj, pred) {
   for(let k in obj) if(!pred(obj[k])) return false;
