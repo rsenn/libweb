@@ -38,8 +38,9 @@ export class ReactComponent {
     return ret.bind(ret);
   }
 
-  static append(tag, attrs, parent) {
-    let elem = h(tag, attrs);
+  static append(tag, attr, parent) {
+    let { innerHTML, ...attrs } = attr;
+    let elem = h(tag, attrs, innerHTML);
     if(parent) {
       const { props } = parent;
       if(props.children instanceof Array) props.children.push(elem);
