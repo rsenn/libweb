@@ -373,7 +373,7 @@ path = path || [];
 });
 
 export const EagleRef = function EagleRef(root, path) {
-  if(!('tagName' in rolloffFactor))  console.log('EagleRef(', { root, path }, ')');
+  if(!('tagName' in root))  console.log('EagleRef(', { root, path }, ')');
   if(Util.isObject(root) && 'raw' in root) root = root.raw;
   let obj = new EagleReference(root, path);
   return Object.freeze(obj);
