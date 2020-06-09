@@ -761,7 +761,11 @@ Util.injectProps = function(options) {
 Util.toString = (obj, opts = {}, indent = '') => {
   const { quote = '"', multiline = false, color = true, spacing = '', padding = '', separator = ',', colon = ':', depth = 10 } = opts;
 
-  if(depth < 0) return;
+  if(depth < 0) {
+    if(Util.isArray(obj)) return `[...${obj.length}...]`;
+    if(Util.isObject(obj)) return `{ ..${Object.keys(obj).length}.. }`;
+    return '' + obj;
+  }
   const { c = Util.coloring(color) } = opts;
 
   const sep = multiline ? (space = false) => '\n' + indent + (space ? '  ' : '') : (space = false) => (space ? spacing : '');
@@ -783,7 +787,7 @@ Util.toString = (obj, opts = {}, indent = '') => {
   } else if(!Util.isObject(obj)) {
     return '' + obj;
   }
-  let s = c.text(`{`, 1, 36);
+  let s = c.text(`{` + padding, 1, 36);
   let i = 0;
   for(let key in obj) {
     const value = obj[key];
@@ -940,6 +944,7 @@ Util.isNumeric = v => /^[-+]?[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test(v);
 
 Util.isObject = obj => typeof obj === 'object' && obj !== null;
 Util.isFunction = fn => !!(fn && fn.constructor && fn.call && fn.apply);
+Util.isArrowFunction = fn => Util.isFunction(fn) && ( ( !('prototype' in fn) )) ||  /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
 
 Util.isEmptyString = v => Util.isString(v) && (v == '' || v.length == 0);
 
@@ -950,9 +955,9 @@ Util.isEmpty = function(v) {
   return false;
 };
 Util.isNonEmpty = v => !Util.isEmpty(v);
-Util.hasProps = function(obj) {
+Util.hasProps = function(obj, props) {
   const keys = Object.keys(obj);
-  return keys.length > 0;
+  return props ? props.every(prop => 'prop' in obj) : keys.length > 0;
 };
 Util.validatePassword = function(value) {
   return value.length > 7 && /^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]/.test(value) && !/\s/.test(value);
@@ -2394,20 +2399,36 @@ Util.immutable = args => {
   };
   return new Proxy(args, handler);
 };
-Util.immutableClass = Original => {
-  let name = Util.fnName(Original);
-  return new Function(
-    'Original',
-    `const Immutable${name} = class extends Original {
+Util.immutableClass = (orig, ...proto) => {
+  let name = Util.fnName(orig);
+  proto = proto || [];
+  let initialProto = proto.map(p =>
+    Util.isArrowFunction(p)
+      ? p
+      : ctor => {
+          for(let n in p) ctor.prototype[n] = p[n];
+        }
+  );
+  //console.log('initialProto', initialProto);
+  let body = ` class Immutable${name} extends Original {
     constructor(...args) {
       super(...args);
       if(new.target === Immutable${name})
         return Object.freeze(this);
     }
   };
-  return Immutable${name};`
-  )(Original);
+    Immutable${name}.prototype = new Original();
+//console.log(Immutable${name}.prototype);
+    Immutable${name}.prototype.constructor = Immutable${name};
+  Immutable${name}.prototype[Symbol.species] = Immutable${name};
+  return Immutable${name};`;
+  for(let p of initialProto) {
+    p(orig);
+  }
+  let ctor = new Function('Original', body)(orig);
+  return ctor;
 };
+
 Util.partial = function partial(fn /*, arg1, arg2 etc */) {
   var partialArgs = [].slice.call(arguments, 1);
   if(!partialArgs.length) {
