@@ -260,7 +260,7 @@ export class EagleNode extends EagleInterface {
     /*   const ref = this.ref.up(2);*/
     const { ref, path, root, raw } = this;
     let doc = this.getDocument();
-  //P  console.log('parentNode', path + '', doc);
+    //P  console.log('parentNode', path + '', doc);
     return this[Symbol.species].get(doc, ref.up(2));
   }
 
@@ -290,7 +290,7 @@ export class EagleNode extends EagleInterface {
     let ret = ['']; //`${Util.className(this)} `;
     let tag = this.raw.tagName || this.tagName;
     //console.realLog("attrs:",attrs);
-    if(tag) ret = concat(ret, text('<', 1, 36), text(tag , 1, 31), attrs, text(numChildren == 0 ? ' />' : '>', 1, 36));
+    if(tag) ret = concat(ret, text('<', 1, 36), text(tag, 1, 31), attrs, text(numChildren == 0 ? ' />' : '>', 1, 36));
     if(this.filename) ret = concat(ret, ` filename="${this.filename}"`);
     if(numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${this.tagName}>`);
     return (ret = concat(ret, text('', 0)));
