@@ -86,15 +86,23 @@ function curry(fn, arity) {
   };
 }
 Util.curry = curry;
-Util.getGlobalObject = function() {
-  let ret = this.globalObject;
-  try {
-    if(!ret) ret = global;
+Util.getGlobalObject = () =>
+  Util.tryCatch(
+    () => global,
+    g => g,
+    err =>
+      Util.tryCatch(
+        () => globalThis,
+        g => g,
+        err =>
+          Util.tryCatch(
+            () => window,
+            g => g,
+            err => console.log('Util.getGlobalObject:', err)
+          )
+      )
+  );
 
-    if(!ret) ret = globalThis;
-  } catch(err) {}
-  return ret;
-};
 Util.isDebug = function() {
   if(process !== undefined && process.env.NODE_ENV === 'production') return false;
   return true;
@@ -102,6 +110,15 @@ Util.isDebug = function() {
 Util.log = curry(function(n, base) {
   return Math.log(n) / (base ? Math.log(base) : 1);
 });
+Util.msg = (strings, ...substitutions) => {
+  let i,
+    o = [];
+  for(i = 0; i < Math.max(strings.length, substitutions.length); i++) {
+    if(strings[i] !== undefined) o.push(strings[i].trim());
+    if(substitutions[i] !== undefined) o.push(substitutions[i]);
+  }
+  console.log(...o);
+};
 Util.logBase = function(n, base) {
   return Math.log(n) / Math.log(base);
 };
@@ -324,7 +341,7 @@ Util.padFn = function(len, char = ' ', fn = (str, pad) => pad) {
 Util.pad = function(s, n, char = ' ') {
   return Util.padFn(n, char)(s);
 };
-Util.abbreviate = function(str, max, suffix = '...') {
+Util.abbreviate = function(str, max = 40, suffix = '...') {
   str = '' + str;
   if(str.length > max) {
     return str.substring(0, max - suffix.length) + suffix;
@@ -356,6 +373,8 @@ Util.define = (obj, key, value, enumerable = false) => {
     }
 
     Object.defineProperties(obj, decl);
+    /* console.log('Util.define', { decl, keys: Object.getOwnPropertyNames(obj) });
+    console.log('Util.define', { decl, values: Object.getOwnPropertyNames(obj).map(key => obj[key]) });*/
 
     //    for(let prop in key) Util.define(obj, prop, key[prop], Util.isBool(value) ? value : false);
     return obj;
@@ -739,7 +758,7 @@ Util.injectProps = function(options) {
   }
 }*/
 Util.toString = (obj, opts = {}, indent = '') => {
-  const { quote = '"', multiline = true, color = true, spacing = ' ', padding = ' ', separator = ',', colon = ':' } = opts;
+  const { quote = '"', multiline = false, color = true, spacing = '', padding = '', separator = ',', colon = ':' } = opts;
   const c = Util.color(color);
   const sep = multiline ? (space = false) => '\n' + indent + (space ? '  ' : '') : (space = false) => (space ? spacing : '');
   if(Util.isArray(obj)) {
@@ -1352,7 +1371,7 @@ Util.tryFunction = (fn, resolve = a => a, reject = () => null) => {
     try {
       ret = fn(...args);
     } catch(err) {
-      return reject(ret, ...args);
+      return reject(err, ...args);
     }
     return resolve(ret, ...args);
   };
@@ -1941,38 +1960,56 @@ Util.getCallerFunctionNames = function(position = 2) {
     let ret = [];
     for(let i = 0; stack[i]; i++) {
       const frame = stack[i];
-      ret.push(frame ? frame.getMethodName() || frame.getFunctionName() : undefined);
+      const method = frame.getMethodName();
+      ret.push(method ? frame.getFunction() + '.' + method : frame.getFunctionName());
     }
     return ret;
   }
 };
 Util.getCaller = function(index, stack) {
-  const methods = ['getColumnNumber', 'getEvalOrigin', 'getFileName', 'getFunction', 'getFunctionName', 'getLineNumber', 'getMethodName', 'getPosition', 'getPromiseIndex', 'getScriptNameOrSourceURL', 'getThis', 'getTypeName'];
-  if(stack !== null && typeof stack === 'object') {
+  const methods = ['getThis', 'getTypeName', 'getFunction', 'getFunctionName', 'getMethodName', 'getFileName', 'getLineNumber', 'getColumnNumber', 'getEvalOrigin', 'isToplevel', 'isEval', 'isNative', 'isConstructor'];
+  if(Util.isObject(stack)) {
     const frame = stack[index];
-    return methods.reduce((acc, m) => {
-      if(frame[m]) {
-        const name = Util.lcfirst(m.replace(/^get/, ''));
-        const value = frame[m]();
-        if(value != undefined) {
-          acc[name] = value;
+    // console.log("frame keys:",frame, Util.getMemberNames(frame, 0, 10));
+    return methods.reduce(
+      (acc, m) => {
+        if(frame[m]) {
+          const name = m == 'getThis' ? 'thisObj' : Util.lcfirst(m.replace(/^(get|is)/, ''));
+
+          let value = frame[m]();
+          if(typeof value == 'string') value = value.replace('file://' + process.cwd() + '/', '');
+          if(value !== undefined) {
+            acc[name] = value;
+          }
+        }
+        return acc;
+      },
+      {
+        get position() {
+          const { fileName, columnNumber, lineNumber } = this;
+          return fileName ? `${fileName}:${lineNumber}:${columnNumber}` : null;
+        },
+        toString() {
+          const { methodName, functionName, position } = this;
+          return `${methodName || functionName || ''} ${position}`;
         }
       }
-      return acc;
-    }, {});
+    );
   }
 };
-Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER) {
+Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER, pred = () => true) {
   let stack = Util.getCallerStack(start + 1);
   let ret = [];
   let i = 0;
-  while(i++ < num) {
+  while(ret.length < num) {
     try {
       let frame = Util.getCaller(i, stack);
-      if(frame === null) break;
-
-      ret.push(frame);
+      if(pred(frame)) {
+        //if(frame === null) break;
+        ret.push(frame);
+      }
     } catch(err) {}
+    i++;
   }
   return ret;
 };
@@ -2359,7 +2396,7 @@ Util.immutableClass = Original => {
     constructor(...args) {
       super(...args);
       if(new.target === Immutable${name})
-        Object.freeze(this);
+        return Object.freeze(this);
     }
   };
   return Immutable${name};`
@@ -2506,5 +2543,7 @@ Object.assign(Util.is, {
   true: val => val === 'true' || val === true,
   false: val => val === 'false' || val === false
 });
+
+Util.assignGlobal = Util.weakAssign(Util.getGlobalObject(), Util);
 
 export default Util;

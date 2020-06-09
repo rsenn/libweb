@@ -55,7 +55,7 @@ export class EagleProject {
   /* prettier-ignore */ get children() { let children = this.documents; return children; }
   /* prettier-ignore */ get library() { return this.data.lbr; }
 
-  *iterator(t = ([v, l, d]) => [typeof v == 'object' ? new EagleElement(d, l, v) : v, l, d]) {
+  *iterator(t = ([v, l, d]) => [typeof v == 'object' ? EagleElement.get(d, l, v) : v, l, d]) {
     const project = this;
     for(let doc of this.documents) {
       let prefix = EagleProject.documentKey(doc);

@@ -10,12 +10,12 @@ Object.defineProperties(EagleNodeMap.prototype, {
 
 Object.assign(EagleNodeMap.prototype, {
   at(pos) {
-    return this.list[pos];
+    return this.list.at(pos);
   },
   get(name, key = this.key) {
-    const list = this.list.raw;
-    const idx = list.findIndex(item => item.attributes[key] == name);
-    return idx == -1 ? null : this.list[idx];
+    const { owner, ref, raw } = this.list;
+    const idx = raw.findIndex(item => item.attributes[key] == name);
+    return raw[idx] ? owner.constructor.get(owner, ref.down(idx), raw[idx]) : null;
   },
   set(name, value) {
     const list = this.list.raw;
@@ -37,10 +37,11 @@ Object.assign(EagleNodeMap.prototype, {
     return [...this.list];
   },
   entries(key = this.key) {
-    return this.keys(key).map((key, i) => [key + '', this.list[i]]);
+    return [...this[Symbol.iterator](key)];
   },
-  *[Symbol.iterator]() {
-    for(let item of this.list) yield [item[this.key], item];
+  *[Symbol.iterator](keyAttr = this.key) {
+    const { raw } = this.list;
+    for(let i = 0; i < this.list.length; i++) yield [raw[i].attributes[keyAttr], this.at(i)];
   },
   toMap(key = this.key) {
     return new Map(this.entries(key));
@@ -59,8 +60,10 @@ export function makeEagleNodeMap(list, key = 'name') {
     get(target, prop, receiver) {
       let index;
 
-      if(typeof prop == 'number') {
-        return instance.list[prop];
+      if(typeof prop == 'number' || (typeof prop == 'string' && /^[0-9]+$/.test(prop))) {
+        prop = +prop;
+
+        return instance.list.raw ? instance.list.raw[prop] : instance.list[prop];
       } else if(typeof prop == 'string') {
         if(prop == 'ref' || prop == 'raw') return instance.list[prop];
         if(prop == 'instance') return instance;

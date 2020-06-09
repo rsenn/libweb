@@ -6,8 +6,10 @@ import { text, inspect, EagleInterface } from './common.js';
 
 import { makeEagleNodeMap } from './nodeMap.js';
 
-export const makeEagleNode = (owner, ref, ctor = EagleNode) => {
-  let e = new ctor(owner, ref);
+export const makeEagleNode = (owner, ref, ctor) => {
+  if(!ctor) ctor = owner[Symbol.species];
+
+  let e = ctor.get ? ctor.get(owner, ref) : new ctor(owner, ref);
   return e;
 };
 
@@ -15,7 +17,7 @@ export class EagleNode extends EagleInterface {
   ref = null;
 
   get [Symbol.species]() {
-    return this.constructor;
+    return EagleNode;
   }
 
   constructor(owner, ref) {
@@ -67,31 +69,18 @@ export class EagleNode extends EagleInterface {
   }
 
   get raw() {
-    /*   if(this.xml && this.xml[0])
-      return this.xml[0];*/
+    if(this.xml && this.xml[0]) return this.xml[0];
 
     let obj = this;
-    /*  if('raw' in obj.ref.root)
-    console.log(`obj[${this.path}].ref.root:`,obj.ref.root);  */
     while('ref' in obj) {
-      obj = obj.ref.dereference();
-      if('raw' in obj) obj = obj.raw;
+      let ref = obj.ref;
+      obj = ref.dereference();
+      if('raw' in obj) {
+        obj = obj.raw;
+        break;
+      }
     }
-
     return obj;
-
-    let ret = {};
-    if(this.xml && this.xml[0]) {
-      ret = this.xml[0];
-    } else {
-      ret.tagName = this.tagName;
-      if(this.attributes) ret.attributes = Util.map(this.attributes, (k, v) => [k, this.handlers[k]()]);
-      if(this.context) ret.text = this.text;
-      let children = [];
-      if(this.children && 'map' in this.children) children = this.children.map(child => child.raw || child.text).filter(child => child !== undefined);
-      ret.children = children;
-    }
-    return ret;
   }
 
   cacheFields() {
@@ -162,25 +151,6 @@ export class EagleNode extends EagleInterface {
   replace(node) {
     this.ref.replace(node);
   }
-  /*
-  get(name, pred, attr = 'name', transform = (o, l) => makeEagleNode(this, l)) {
-    let i = name == 'library' ? 'libraries' : name + 's';
-    let p = this[i];
-    let children = p;
-    if(typeof attr != 'function') {
-      const attrName = '' + attr;
-      attr = e => e.attributes[attrName];
-    }
-    if(pred === undefined) {
-      pred = e => true;
-    } else if(typeof pred != 'function') {
-      let value = pred;
-      pred = e => attr(e) === '' + value;
-    }
-    if(p && children)
-      for(let j = 0; j < children.length; j++)
-        if(pred(children[j])) return transform(this, ['children', j]);
-  }*/
 
   *getAll(pred, transform) {
     let name;
@@ -201,6 +171,10 @@ export class EagleNode extends EagleInterface {
     for(let [v, p, o] of deep.iterate(this.raw, pred, [])) {
       yield transform(v, p, o);
     }
+  }
+
+  get(pred, transform) {
+    return [...this.getAll(pred, transform)][0] || null;
   }
 
   find(name) {
@@ -248,7 +222,7 @@ export class EagleNode extends EagleInterface {
     const ref = this.ref.up(2);
     if(this.path.length == 0) return null;
 
-    return ref ? new this[Symbol.species](this, ref) : null;
+    return ref ? this[Symbol.species].create(this, ref) : null;
   }
 
   get firstChild() {
@@ -263,15 +237,20 @@ export class EagleNode extends EagleInterface {
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
     let attrs = '';
-    if(this.attributes) for(let attr in this.attributes) attrs += ` ${text(attr, 1, 33)}${text(':', 1, 36)}${text("'" + this.attributes[attr] + "'", 1, 32)}`;
-    let numChildren = this.raw.children && this.raw.children.length;
+    let a = this.raw.attributes || this.attributes;
+    if(a) attrs = Object.keys(a).reduce((attrs, attr) => attrs + ` ${text(attr, 1, 33)}${text(':', 1, 36)}${text("'" + a[attr] + "'", 1, 32)}`, ``);
+    let children = this.raw.children || this.children;
+    let numChildren = children.length;
     if(numChildren == 0) attrs += ' /';
     let ret = `${Util.className(this)}`;
-    if(this.tagName || attrs != '') ret += ` <${this.tagName + attrs}>`;
+    let tag = this.raw.tagName || this.tagName;
+
+    if(tag) ret += ` <${tag + attrs}>`;
     if(this.filename) ret += ` filename="${this.filename}"`;
     if(numChildren > 0) ret += `{...${numChildren} children...}</${this.tagName}>`;
     return ret;
   }
+
   inspect() {
     return EagleNode.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, arguments);
   }

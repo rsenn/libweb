@@ -34,7 +34,7 @@ export const EaglePath = Util.immutableClass(
     constructor(path = []) {
       super(/*path.length*/);
       for(let i = 0; i < path.length; i++) {
-        let value = /*(path[i] == 'children' || path[i] === ChildrenSym) ? ChildrenSym : */ /^[0-9]+$/.test(path[i]) ? parseInt(path[i]) : path[i];
+        let value = /*(path[i] == 'children' || path[i] === ChildrenSym) ? ChildrenSym : */ typeof path[0] == 'string' && /^[0-9]+$/.test(path[i]) ? parseInt(path[i]) : path[i];
 
         Array.prototype.push.call(this, value); // this.push(value); //[i] = value;
       }
@@ -123,8 +123,7 @@ export const EaglePath = Util.immutableClass(
     apply(obj) {
       let o = obj;
       if(o === undefined) throw new Error(`Object ${o}`);
-
-      return this.reduce(
+      o = this.reduce(
         (a, i) => {
           let r = i === ChildrenSym ? a.o.children : i < 0 && a.o instanceof Array ? a.o[a.o.length + i] : a.o[i];
           if(r === undefined) throw new DereferenceError(obj, i, a.n, a.o, this);
@@ -134,6 +133,9 @@ export const EaglePath = Util.immutableClass(
         },
         { o, n: 0 }
       ).o;
+      //console.log("path.apply", this.toString(), Util.abbreviate(toXML(o), 40) );
+
+      return o;
     }
 
     xpath(obj) {
@@ -184,6 +186,7 @@ export const EaglePath = Util.immutableClass(
     [Symbol.for('nodejs.util.inspect.custom')]() {
       return `EaglePath [${this.map(part => (part === ChildrenSym ? String.fromCharCode(10143) : text(typeof part == 'number' ? part : "'" + part + "'", 1, typeof part == 'number' ? 33 : 32))).join(', ')}]`;
     }
+
     inspect() {
       return EaglePath.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, arguments);
     }
@@ -251,7 +254,7 @@ export class EagleReference {
   constructor(root, path) {
     // path = path instanceof EaglePath ? path : new EaglePath(path);
 
-    this.path = /*path instanceof EaglePath ? path : */ new EaglePath(path);
+    this.path = path instanceof EaglePath ? path : new EaglePath(path);
     this.root = root;
   }
   get type() {
@@ -259,7 +262,11 @@ export class EagleReference {
   }
 
   dereference() {
-    return this.path.apply(this.root);
+    const { root, path } = this;
+    let raw = path.apply(root);
+
+    // console.log("dereference:",path.toString(),Util.abbreviate(toXML(raw),10), root);
+    return raw;
   }
 
   replace(value) {
@@ -302,7 +309,7 @@ export class EagleReference {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    return `EagleReference { path:${this.path.inspect()}, root:${toXML(this.root, 0)}  }`;
+    return `EagleReference { path:${this.path.inspect()}, root:${Util.abbreviate(toXML(this.root, 0), 40)}  }`;
   }
   inspect() {
     return this[Symbol.for('nodejs.util.inspect.custom')](...arguments);
@@ -328,12 +335,12 @@ Object.assign(EagleReference.prototype, {});
     [method]: {
       get: function(...args) {
         let path = this.path[method](...args); //EaglePath.prototype[method].apply(this.path, args);
-        console.log(method+" path:",path.join(','), " this.path:",this.path.join(','));
+        //console.log(method+" path:",path.join(','), " this.path:",this.path.join(','));
         return path.existsIn(this.root) ? new EagleRef(this.root, path) : null;
       }
     }
   }), {});
 
-console.log("props:", props);
+//console.log("props:", props);
 Object.defineProperties(EagleReference.prototype, props);
 */

@@ -13,7 +13,6 @@ export const text = Util.isBrowser() ? (text, ...color) => (color.indexOf(1) != 
 export const dingbatCode = digit => (digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1));
 
 export const dump = (o, depth = 2, breakLength = 400) => {
-  //  if("toString" in o) return o.toString();
   const isElement = o => Util.isObject(o) && ['EagleElement', 'EagleNode'].indexOf(Util.className(o)) != -1;
   let s;
   if(o instanceof Array) {
@@ -65,9 +64,7 @@ export const parseArgs = args => {
 
 export const traverse = function*(obj, path = [], doc) {
   if(!(path instanceof EaglePath)) path = new EaglePath(path);
-
   if(false && typeof obj == 'object') if (obj !== null && 'name' in obj.attributes) path[path.length - 1] = { name: obj.attributes.name };
-
   yield [obj, path, doc];
   if(typeof obj == 'object') {
     if(Util.isArray(obj)) {
@@ -80,23 +77,17 @@ export const traverse = function*(obj, path = [], doc) {
 
 export const toXML = function(o, z = 10000) {
   if(typeof o == 'object' && o !== null && 'raw' in o) o = o.raw;
-  //if(typeof o == "object" && o !== null && "root" in o) o = o.root;
-
   if(o instanceof Array) return o.map(toXML).join('\n');
   else if(typeof o == 'string') return o;
   else if(typeof o != 'object' || o.tagName === undefined) return '';
-
   let { tagName, attributes, children, ...obj } = o;
-
   let s = `<${tagName}`;
   let attrs = attributes || obj;
   for(let k in attrs) s += ` ${k}="${attrs[k]}"`;
-
   const a = children && children.length !== undefined ? children : [];
   const text = o.text;
   if(a && a.length > 0) {
     s += tagName[0] != '?' ? '>' : '?>';
-
     const textChildren = typeof a[0] == 'string';
     let nl = textChildren ? '' : tagName == 'text' && a.length == 1 ? '' : tagName[0] != '?' ? '\n  ' : '\n';
     if(textChildren) s += a.join('\n') + `</${tagName}>`;
@@ -104,7 +95,6 @@ export const toXML = function(o, z = 10000) {
       if(true /*z === true || z > 0*/) {
         for(let child of a) s += nl + toXML(child, z === true ? z : z - 1).replace(/>\n/g, '>' + nl);
       } else s += '...';
-
       if(tagName[0] != '?') s += `${nl.replace(/ /g, '')}</${tagName}>`;
     }
   } else {
@@ -117,11 +107,8 @@ export const toXML = function(o, z = 10000) {
 export const inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {
   const { depth, breakLength } = c;
   let o = e;
-
   if(typeof e == 'string') return text(e, 1, 36);
-  //if(e instanceof EagleElement) o = EagleElement.toObject(e);
   let x = '';
-
   try {
     x = Util.inspect(o, {
       depth: depth * 2,
@@ -129,14 +116,10 @@ export const inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) =>
       colors: !Util.isBrowser()
     });
   } catch(err) {}
-
   let s = '⏐';
   x = x.substring(x.indexOf('tagName') + 14);
-
   x = Object.entries((e && e.attributes) || {}).map(([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36));
-
   x.unshift(e.tagName);
-
   let [p, ...arr] = x;
   p = text(`〔`, 1, 37) + text(p, 38, 5, 199);
   let l = e.path + '';
@@ -179,20 +162,9 @@ export class EagleInterface {
       }
     });
   }
-  /*
-  find(...args) {
-    let { path, predicate, transform } = parseArgs([...arguments]);
-    if(!transform) transform = ([v, l, d]) => (typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l, v) : v);
-    for(let [v, p, d] of this.iterator()) {
-      if(typeof v == "string") continue;
-      if(predicate(v, p, d)) return transform([v, p, d]);
-    }
-    return transform([null, [], []]);
-  }*/
 
   *findAll(...args) {
     let { path, predicate, transform } = parseArgs(args);
-    //if(!transform) transform = ([v, l, d]) => [v, l, d]; //(typeof v == "object" && v !== null && "tagName" in v ? new EagleElement(d, l, v) : v);
     for(let [v, l, d] of this.iterator(
       e => true,
       [],
@@ -200,8 +172,6 @@ export class EagleInterface {
     )) {
       if(!d) d = this;
       if(predicate(v, l, d)) {
-        //      console.log("findAll",{v,l,d});
-
         if(transform) v = transform([v, l, d]);
         yield v;
       }
@@ -212,16 +182,11 @@ export class EagleInterface {
     let bb = new BBox();
     for(let element of this.getAll(e => e.tagName !== undefined && pred(e))) {
       let g = element.geometry();
-
       if(g) {
         let bound = typeof g.bbox == 'function' ? g.bbox() : g;
-
-        //    console.log('getBounds',  g, bound);
-
         bb.update(bound, 0, element);
       }
     }
-    //console.log('getBounds', bb);
     return bb;
   }
 
@@ -229,14 +194,11 @@ export class EagleInterface {
     const { attributes } = this.raw;
     const keys = Object.keys(attributes);
     const makeGetterSetter = k => v => (v === undefined ? this[k] : (this[k] = v));
-
     if(['x1', 'y1', 'x2', 'y2'].every(prop => keys.includes(prop))) {
       return Line.bind(this, null, makeGetterSetter);
     } else if(['x', 'y'].every(prop => keys.includes(prop))) {
       const { x, y } = Point(this);
-
       if(keys.includes('radius')) return Circle.bind(this, null, makeGetterSetter);
-
       if(['width', 'height'].every(prop => keys.includes(prop))) return Rect.bind(this, null, makeGetterSetter);
       else return Point.bind(this, null, makeGetterSetter);
     }
@@ -257,7 +219,7 @@ export class EagleInterface {
     return Util.className(this);
   }
 
-  entries(t = ([v, l, d]) => [l[l.length - 1], new EagleElement(d, l)]) {
+  entries(t = ([v, l, d]) => [l[l.length - 1], EagleElement.get(d, l)]) {
     return this.iterator([], t);
   }
 
@@ -271,11 +233,7 @@ export class EagleInterface {
     if(path.length > 0) node = deep.get(node, path);
     for(let [v, l] of deep.iterate(node, (v, p) => (predicate(v, p) ? -1 : p.length > 1 ? p[p.length - 2] == 'children' : true))) {
       if(!(l instanceof EaglePath)) l = new EaglePath(l);
-      if(typeof v == 'object' && v !== null && 'tagName' in v) {
-        //    console.log('l:', l.xpath(root));
-
-        if(predicate(v, l, owner)) yield t([v, l, owner]);
-      }
+      if(typeof v == 'object' && v !== null && 'tagName' in v) if (predicate(v, l, owner)) yield t([v, l, owner]);
     }
   }
 
@@ -318,7 +276,6 @@ export class EagleInterface {
   }
 
   toXML(depth = Number.MAX_SAFE_INTEGER) {
-    // let o = this.document.index(this.path);
     return toXML(this.ref.dereference(), depth);
   }
 }

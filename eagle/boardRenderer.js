@@ -18,7 +18,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     this.elements = elements;
     this.signals = signals;
-    this.plain = [...board.getAll('plain', (v, l) => new EagleElement(board, l))][0];
+    this.plain = board.get('plain', (v, l) => EagleElement.get(board, l));
     this.layers = layers;
     this.sheets = sheets;
 

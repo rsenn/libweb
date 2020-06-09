@@ -15,29 +15,15 @@ export class EagleDocument extends EagleNode {
   type = null;
 
   constructor(xmlStr, project, filename, type) {
-    //  let xmlStr = "";
-    /*  try {
-      if(!/<\?.*<eagle /.test(filename)) {
-        xmlStr = fs.readFileSync(filename);
-        xmlStr = xmlStr.toString();
-      }
-    } catch(error) {
-      throw new Error("EagleDocument: " + error);
-    }*/
     const xml = new tXml(xmlStr);
-
     super(project, EagleRef(deepClone(xml[0]), []));
-
     type = type || /<library>/.test(xmlStr) ? 'lbr' : /<element\ /.test(xmlStr) ? 'brd' : 'sch';
-
     if(filename) {
       this.path = filename;
-
       type = type || filename.replace(/.*\//g, '').replace(/.*\./g, '');
     }
     //console.log('load document:', { project, xml: xmlStr.substring(0, 100), type });
     this.type = type;
-
     if(project) this.owner = project;
     Util.define(this, 'xml', xml);
     const orig = xml[0];
@@ -95,7 +81,11 @@ export class EagleDocument extends EagleNode {
   }
 
   *getAll(name) {
-    yield* super.getAll(name, (v, l, p) => new EagleElement(this, l));
+    yield* super.getAll(name, (v, l, p) => {
+      //   let ref = new EagleRef(p, l)
+      //console.log("getAll",{v,l,p});
+      return EagleElement.get(this, l, v);
+    });
   }
 
   getBounds() {

@@ -27,7 +27,7 @@ export class EagleSVGRenderer {
     const { settings, layers, libraries, classes, designrules, elements, signals, plain } = doc;
     this.elements = elements;
     this.signals = signals;
-    this.plain = [...doc.getAll('plain', (v, l) => new EagleElement(doc, l))][0];
+    this.plain = doc.get('plain', (v, l) => EagleElement.get(doc, l));
     this.layers = layers;
     return this;
   }
