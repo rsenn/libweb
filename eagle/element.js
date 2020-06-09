@@ -100,35 +100,66 @@ export class EagleElement extends EagleNode {
               //console.log("this:", this);
 
               const deviceset = library.find(e => e.tagName == 'deviceset' && e.attributes.name == this.attrMap.deviceset);
-              const device = library.find(e => e.tagName == 'device' && e.attributes.name == this.attrMap.device);
+              const device = deviceset.find(e => e.tagName == 'device' && e.attributes.name == this.attrMap.device);
               //console.log("part:",{ deviceset, device });
               return device;
             }
           };
           trkl.bind(this, key, fn);
-        } else if(EagleElement.isRelation(key) || key == 'package') {
-
-        console.log(`relation ${key}`, this, this.handlers[key]());
-
+        } else if(EagleElement.isRelation(key) || ['package', 'library', 'layer'].indexOf(key) != -1) {
           let doc = this.document;
+          let elem = this;
           let fn;
 
           if(key == 'package') {
-            fn = v => (v ? this.handlers[key](typeof v == 'string' ? v : v.name) : [...this.library.getAll(e => e.name == this.handlers[key])][0]);
-
-
-this.initRelation( (key,elem, doc)  => {
-           
+            // fn = v => (v ? this.handlers[key](typeof v == 'string' ? v : v.name) : [...this.library.getAll(e => e.name == this.handlers[key])][0]);
+            fn = value => {
+              //  let value = elem.handlers[key]();
               const libName = elem.handlers['library']();
               const pkgName = elem.handlers['package']();
-
               const lib = doc.get(e => e.tagName == 'library' && e.attributes['name'] == libName);
               const libs = [...doc.getAll(e => e.tagName == 'library')].map(e => e.name);
- 
-        return lib.get({ tagName: 'package', name: pkgName });
-            });
+              //  console.log('relation ', { libName, pkgName, lib, libs });
+              return lib.get({ tagName: 'package', name: pkgName });
+            };
+          } else if(tagName == 'instance') {
+            fn = value => {
+              const part = doc.get(e => e.tagName == 'part' && e.attributes['name']);
+
+              if(key == 'part') return part;
+
+              const library = elem.document.find(e => e.tagName == 'library' && e.attributes.name == part.attrMap.library);
+
+              const deviceset = library.find(e => e.tagName == 'deviceset' && e.attributes.name == part.attrMap.deviceset);
+              const gate = deviceset.find(e => e.tagName == 'gate' && e.attributes.name == part.attrMap.gate);
+
+              console.log('relation ', { part, library, deviceset, gate });
+
+              if(key == 'gate') return gate;
+              /*              const pkgName = elem.handlers['package']();
+              const lib = doc.get(e => e.tagName == 'library' && e.attributes['name'] == libName);
+              const libs = [...doc.getAll(e => e.tagName == 'library')].map(e => e.name);
+              //  console.log('relation ', { libName, pkgName, lib, libs });
+              return lib.get({ tagName: 'package', name: pkgName });*/
+            };
           } else {
-            fn = v => (v ? this.handlers[key](typeof v == 'string' ? v : v.name) : doc[key == 'library' ? 'libraries' : key + 's'][this.handlers[key]()]);
+            let id = key == 'layer' ? 'number' : 'name';
+
+            //if(key != 'layer') console.log(`relation`, { key, id, elem: this });
+
+            fn = () => {
+              let r,
+                value = elem.attrMap[key];
+              // console.log('relation ', {  key,id });
+
+              r = doc.get(e => e.tagName == key && e.attributes[id] == value);
+              console.log(`relation get(${key}, ${elem.attributes[id]}) = `, r);
+              return r;
+            };
+
+            this.initRelation(key, this.handlers[key], fn);
+            // console.log(`relation ${key}`, this[key]);
+            //  fn = v => (v ? this.handlers[key](typeof v == 'string' ? v : v.name) : doc[key == 'library' ? 'libraries' : key + 's'][this.handlers[key]()]);
           }
           trkl.bind(this, key, fn);
         } else {

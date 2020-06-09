@@ -43,15 +43,17 @@ export class EagleNode extends EagleInterface {
   }
 
   get document() {
+    return this.getDocument();
     let doc = this;
     let i = 0;
-    while(doc.owner !== undefined) {
+    while(doc.owner !== undefined) {   
+
       if(doc.xml !== undefined) break;
       doc = doc.owner;
 
       i++;
     }
-    //console.log('doc:', i, Util.className(doc), this);
+//  console.log('doc:', i, Util.className(doc), this);
     return doc;
   }
 
@@ -65,12 +67,6 @@ export class EagleNode extends EagleInterface {
     return ret;
   }
 
-  getDocument() {
-    let l = this.path.clone();
-    let d = this.owner;
-    if(!(d instanceof EagleDocument) && this.path.length) while(!(d instanceof EagleDocument)) d = d[l.shift()];
-    return d;
-  }
 
   get project() {
     if(Util.className(this.owner) == 'EagleProject') return this.owner;
@@ -145,14 +141,17 @@ export class EagleNode extends EagleInterface {
     }
   }
 
-  initRelation(key, fn) {
-          trkl.bind(this, key,  v => {
+  initRelation(key, handler, fn) {
+    let elem = this;
+    trkl.bind(this, key, v => {
+      if(v !== undefined) return handler(typeof v == 'string' ? v : v.name);
+      let value = handler() || elem.attrMap[key] || elem.attributes[key];
 
-                  if(v !== undefined) 
-                 return   this.handlers[key](typeof v == 'string' ? v : v.name);
+      return fn(value, elem, elem.document);
+    });
 
-               return fn(this.handlers[key](), this, this.document);
-             });
+    //console.log(`initRelation`,key,this[key]);
+    return this;
   }
 
   appendChild(node, attributes = {}) {
@@ -279,7 +278,7 @@ export class EagleNode extends EagleInterface {
     let ret = ''; //`${Util.className(this)} `;
     let tag = this.raw.tagName || this.tagName;
 
-    if(tag) ret += `${text('<',1,36)}${text(tag, 1, 31)}${attrs}${text(numChildren == 0 ? ' />' : '>',1,36)}`;
+    if(tag) ret += `${text('<', 1, 36)}${text(tag, 1, 31)}${attrs}${text(numChildren == 0 ? ' />' : '>', 1, 36)}`;
     if(this.filename) ret += ` filename="${this.filename}"`;
     if(numChildren > 0) ret += `{...${numChildren} children...}</${this.tagName}>`;
     return ret;

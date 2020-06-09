@@ -205,8 +205,33 @@ export class EagleInterface {
     return predicate(this.find((v, l, d) => v === element, path));
   }
 
+
+  getDocument() {
+    let o = this;
+    while(o.owner) {
+      o = o.owner;
+
+      if(o.xml !== undefined)
+        break;
+    }
+    return o;
+  }
+
   xpath() {
-    return this.path.xpath(this.root);
+    let p = new EaglePath;
+    let o = this;
+    while(o.ref) {
+      p = o.ref.path.concat(p);
+      
+      console.log("xpath",{o,p});
+
+      if(!o.owner || o.xml != undefined) break;
+      o = o.tagName == 'library' ? o.getDocument : o.owner;
+    }
+    let d = o.document || this.document;
+   // console.log("xpath",{ p, o,d: Util.className(d)});
+    let x = p.xpath(d);
+    return x;
   }
 
   get nodeType() {

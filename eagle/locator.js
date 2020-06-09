@@ -45,6 +45,10 @@ export const EaglePath = Util.immutableClass(
       //      this.length = path.length;
     }
 
+    get [Symbol.species]() {
+      return EaglePath;
+    }
+
     clone() {
       return new EaglePath(this);
     }
@@ -157,7 +161,13 @@ export const EaglePath = Util.immutableClass(
       let n;
       for(let i = 0; i < this.length; i++) {
         const p = this[i];
+if(!o || !(p in o)) {
+        console.log("failed:", {p,o:Util.className(o),i });
+
+  return null;
+}
         const e = o[p];
+
         if(p == 'children') {
           s += '/';
           n = e.length;
