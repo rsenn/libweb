@@ -138,7 +138,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
               'font-family': 'Fixed',
               'text-anchor': 'left',
               'alignment-baseline': 'central',
-              innerHTML: name
+              children: name
               //     transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
             },
             parent

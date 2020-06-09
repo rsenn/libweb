@@ -29,16 +29,17 @@ export function renderDocument(doc, container) {
   const gridWidth = 0.1;
   const factory = SVG.factory(
     {
-      append_to(elem, parent) {
-        if(elem.tagName.toLowerCase() == 'text') return parent.appendChild(elem);
-        let before = null;
-        for(let i = 0; i < parent.children.length; i++) {
-          if(parent.children[i].tagName.toLowerCase() == 'text') {
-            before = parent.children[i];
+      append_to(e, p) {
+        if(e.tagName.toLowerCase() == 'text') return p.appendChild(e);
+        let b4 = null;
+        for(let i = 0; i < p.children.length; i++) {
+          const child = p.children[i];
+          if(child.tagName.toLowerCase() == 'text') {
+            b4 = child;
             break;
           }
         }
-        parent.insertBefore(elem, before);
+        p.insertBefore(e, b4);
       }
     },
     container

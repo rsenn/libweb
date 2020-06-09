@@ -6,6 +6,8 @@ import Util from '../util.js';
 
 const React = { hydrate, Fragment, createRef, isValidElement, cloneElement, toChildArray };
 
+const add = (arr, ...items) => [...(arr || []), ...items];
+
 export class ReactComponent {
   static create(...args) {
     let Tag, props;
@@ -39,13 +41,16 @@ export class ReactComponent {
   }
 
   static append(tag, attr, parent) {
-    let { innerHTML, ...attrs } = attr;
-    let elem = h(tag, attrs, innerHTML);
+    let { children, ...props } = attr;
+    let elem = h(tag, props, children);
     if(parent) {
       const { props } = parent;
-      if(props.children instanceof Array) props.children.push(elem);
+
+      props.children = add(props.children, elem);
+      /*
+      if(Util.isArray(props.children))  props.children.push(elem);
       else if(props.children) props.children = [props.children, elem];
-      else props.children = elem;
+      else props.children = elem;*/
     }
     return elem;
   }
@@ -53,6 +58,10 @@ export class ReactComponent {
   static toObject(...args) {
     let ret = [];
     for(let arg of args) {
+      if(typeof arg == 'string') {
+        ret.push(arg);
+        continue;
+      }
       if(!typeof arg == 'object' || arg === null || !arg) continue;
 
       let tagName;
@@ -65,10 +74,14 @@ export class ReactComponent {
 
       let obj = { tagName, ...props };
       if(Util.isObject(arg.props) && 'key' in arg.props && key !== undefined) obj.key = key;
+
       if(!children) children = arg.children;
-      let a = React.toChildArray(children);
+
+      let a = toChildArray(children);
+      console.log('a:', a);
       children = a.length > 0 ? this.toObject(...a) : [];
-      obj.children = children instanceof Array ? children : [children];
+      console.log('children:', children);
+      obj.children = Util.isArray(children) ? children : [children];
       if(innerHTML) obj.children.push(innerHTML);
       ret.push(obj);
     }

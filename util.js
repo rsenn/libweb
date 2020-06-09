@@ -759,8 +759,11 @@ Util.injectProps = function(options) {
   }
 }*/
 Util.toString = (obj, opts = {}, indent = '') => {
-  const { quote = '"', multiline = false, color = true, spacing = '', padding = '', separator = ',', colon = ':' } = opts;
-  const c = Util.coloring(color);
+  const { quote = '"', multiline = false, color = true, spacing = '', padding = '', separator = ',', colon = ':', depth = 10 } = opts;
+
+  if(depth < 0) return;
+  const { c = Util.coloring(color) } = opts;
+
   const sep = multiline ? (space = false) => '\n' + indent + (space ? '  ' : '') : (space = false) => (space ? spacing : '');
   if(Util.isArray(obj)) {
     let i,
@@ -768,7 +771,7 @@ Util.toString = (obj, opts = {}, indent = '') => {
     for(i = 0; i < obj.length; i++) {
       s += i > 0 ? c.text(separator, 1, 36) : padding;
       s += sep(true);
-      s += Util.toString(obj[i], opts, indent + (multiline ? '  ' : ''));
+      s += Util.toString(obj[i], { ...opts, c, depth: depth - 1 }, indent + (multiline ? '  ' : ''));
     }
     return s + (i > 0 ? sep() + padding : '') + `]`;
   } else if(typeof obj == 'function' || obj instanceof Function || Util.className(obj) == 'Function') {
@@ -788,7 +791,7 @@ Util.toString = (obj, opts = {}, indent = '') => {
 
     s += `${c.text(key, 1, 33)}${c.text(colon, 1, 36)}` + spacing;
     /*if(Util.isArray(value)) s+= Util.toString(value);
-      else*/ if(Util.isObject(value)) s += Util.toString(value, opts, multiline ? '  ' : '');
+      else*/ if(Util.isObject(value)) s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
     else if(typeof value == 'string') s += c.text(`${quote}${value}${quote}`, 1, 36);
     else if(typeof value == 'number') s += c.text(value, 1, 32);
     else s += value;
@@ -2470,7 +2473,7 @@ Util.coloring = (useColor = true) =>
           let out = args.shift();
           for(let arg of args) {
             if(Util.isArray(arg) && typeof arg[0] == 'string') out[0] += arg.shift();
-            else if (Util.isObject(arg)) {
+            else if(Util.isObject(arg)) {
               out.push(arg);
               continue;
             }

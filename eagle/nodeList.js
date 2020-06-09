@@ -90,7 +90,7 @@ export function makeEagleNodeList(owner, ref, raw) {
   let root = document;
   let path = new EaglePath(ref);
   let node = path.apply(root);
-    console.log("makeEagleNodeList", { owner, root,node, path: ref });
+    //console.log("makeEagleNodeList", { owner, root,node, path: ref });
 */
   const { Ctor, instance } = EagleNodeList.make(owner, ['children'], raw);
   return new Proxy(instance, {

@@ -4,8 +4,8 @@ import { text, inspect, toXML, dump } from './common.js';
 export function DereferenceError(object, member, pos, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
   let { owner, ref } = object;
-  console.log('DereferenceError', { object, member, locator });
-  console.log('DereferenceError', { ref });
+  //console.log('DereferenceError', { object, member, locator });
+  //console.log('DereferenceError', { ref });
   let stack = Util.getCallerStack()
     .filter(frame => null !== frame.getFileName())
     .map(frame => {
@@ -157,7 +157,7 @@ export const EaglePath = Util.immutableClass(
       for(let i = 0; i < this.length; i++) {
         const p = this[i];
         if(!o || !(p in o)) {
-          console.log(!o || !(p in o) ? 'failed:' : 'xpart:', { i, p, o: Util.className(o), ...(o.length !== undefined ? { l: o.length } : {}) });
+          //console.log(!o || !(p in o) ? 'failed:' : 'xpart:', { i, p, o: Util.className(o), ...(o.length !== undefined ? { l: o.length } : {}) });
           if(!o || !(p in o)) return null;
         }
         const e = o[p];
@@ -274,7 +274,7 @@ export class EagleReference {
     this.path = path instanceof EaglePath ? path : new EaglePath(path);
     this.root = root;
     if(!this.dereference(true)) {
-      console.log('dereference:', { path, root: Util.abbreviate(toXML(root), 10) });
+      //console.log('dereference:', { path, root: Util.abbreviate(toXML(root), 10) });
       throw new Error(this.path.join(','));
     }
   }

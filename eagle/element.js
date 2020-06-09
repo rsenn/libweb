@@ -105,7 +105,7 @@ export class EagleElement extends EagleNode {
               const library = elem.document.find(e => e.tagName == 'library' && e.attributes.name == part.attrMap.library);
               const deviceset = library.find(e => e.tagName == 'deviceset' && e.attributes.name == part.attrMap.deviceset);
               const gate = deviceset.find(e => e.tagName == 'gate' && e.attributes.name == part.attrMap.gate);
-              console.log('relation ', { part, library, deviceset, gate });
+              //console.log('relation ', { part, library, deviceset, gate });
               if(key == 'gate') return gate;
             };
           } else {

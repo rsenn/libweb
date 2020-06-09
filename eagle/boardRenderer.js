@@ -88,7 +88,7 @@ export class BoardRenderer extends EagleSVGRenderer {
           svg(
             'tspan',
             {
-              innerHTML: name,
+              children: name,
               ...EagleSVGRenderer.alignmentAttrs('center', HORIZONTAL)
             },
             svg(
@@ -238,7 +238,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     let plainGroup = this.create('g', { className: 'plain' }, parent);
 
-    console.log('bounds: ', bounds);
+    //console.log('bounds: ', bounds);
 
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {

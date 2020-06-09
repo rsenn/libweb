@@ -216,7 +216,7 @@ export class EagleSVGRenderer {
             x,
             y,
             ...EagleSVGRenderer.alignmentAttrs(align),
-            innerHTML: labelText,
+            children: labelText,
             'font-size': 3,
             'font-family': 'Fixed' /*,
             transform: transform.undo(transformation)*/
