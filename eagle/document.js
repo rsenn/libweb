@@ -80,23 +80,22 @@ export class EagleDocument extends EagleNode {
     return transform(path.apply(this));
   }
 
-  *getAll(name) {
-    yield* super.getAll(name, (v, l, p) => EagleElement.get(this, l, v));
+  *getAll(pred, transform) {
+    yield* super.getAll(pred, transform || ((v, l, p) => EagleElement.get(this, l, v)));
   }
 
   getBounds() {
     let bb = new BBox();
 
     for(let instance of this.getAll((e, p) => e.tagName == 'instance')) {
-      let part = instance.part;
-      let library = this.document.find(e => e.tagName == 'library' && e.attributes.name == part.attributes.library);
-
-      let deviceset = library.find(e => e.tagName == 'deviceset' && e.attributes.name == part.attributes.deviceset);
-      let device = library.find(e => e.tagName == 'device' && e.attributes.name == part.attributes.device);
-
-      let gate = deviceset.find(e => e.tagName == 'gate' && e.attributes.name == instance.attributes.gate);
-
-      let symbol = library.find(e => e.tagName == 'symbol' && e.attributes.name == gate.attributes.symbol);
+      let { part, gate } = instance;
+      let symbol = gate.symbol; 
+/*
+      console.log('instance:\n  ', instance, '\n  ', instance.xpath());
+      console.log('part:\n  ', part, '\n  ', part.xpath());
+      console.log('gate:\n  ', gate, '\n  ', gate.xpath());
+      console.log('symbol:\n  ', symbol, '\n  ', symbol.xpath());
+*/
       let geometries = {
         gate: gate.geometry(),
         symbol: new Rect(symbol.getBounds()).toPoints(),

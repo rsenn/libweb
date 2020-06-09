@@ -132,59 +132,55 @@ export const EaglePath = Util.immutableClass(
       let o = obj;
       if(o === undefined && !noThrow) {
         let stack = Util.getCallers(1, 10);
-
         throw new Error(`Object ${o}` + stack.join('\n'));
       }
       let a = this.reduce(
         (a, i) => {
           if(a.o) {
             let r = i === ChildrenSym ? a.o.children : i < 0 && a.o instanceof Array ? a.o[a.o.length + i] : a.o[i];
-
             a.o = r;
             a.n++;
           }
-
           return a;
         },
         { o, n: 0 }
       );
       if(a.o == null && !noThrow) throw new DereferenceError(obj, a.n, a.n, this);
-
       //console.log("path.apply", this.toString(), Util.abbreviate(toXML(o), 40) );
-
       return a.o;
     }
 
     xpath(obj) {
-      let s = '';
+      let s = [];
       let o = obj;
       let n;
       for(let i = 0; i < this.length; i++) {
         const p = this[i];
-if(!o || !(p in o)) {
-        console.log("failed:", {p,o:Util.className(o),i });
-
-  return null;
-}
+        if(!o || !(p in o)) {
+          console.log(!o || !(p in o) ? 'failed:' : 'xpart:', { i, p, o: Util.className(o), ...(o.length !== undefined ? { l: o.length } : {}) });
+          if(!o || !(p in o)) return null;
+        }
         const e = o[p];
-
         if(p == 'children') {
-          s += '/';
+          //  s += '/';
           n = e.length;
         } else {
           let pt = [];
           if(e.tagName) {
-            s += e.tagName;
+            s.push(e.tagName);
             pt = o.filter(sib => sib.tagName == e.tagName);
           }
-          if(Util.isObject(e.attributes) && e.attributes.name) s += `[@name='${e.attributes.name}']`;
+          if(Util.isObject(e.attributes) && e.attributes.name) s.push(`[@name='${e.attributes.name}']`);
           else if(pt.length != 1) {
-            if(typeof p == 'number' && n != 1) s += `[${p + 1}]`;
+            if(typeof p == 'number' && n != 1) s.push(`[${p + 1}]`);
           }
           n = undefined;
         }
         o = e;
       }
+      s.toString = function() {
+        return '/' + this.join('/');
+      };
       return s;
     }
 
@@ -275,11 +271,8 @@ if(!o || !(p in o)) {
 
 export class EagleReference {
   constructor(root, path) {
-    // path = path instanceof EaglePath ? path : new EaglePath(path);
-
     this.path = path instanceof EaglePath ? path : new EaglePath(path);
     this.root = root;
-
     if(!this.dereference(true)) {
       console.log('dereference:', { path, root: Util.abbreviate(toXML(root), 10) });
       throw new Error(this.path.join(','));
@@ -292,14 +285,11 @@ export class EagleReference {
 
   dereference(noThrow) {
     const { path, root } = this;
-
     let r;
-
     try {
       r = (Util.isObject(root) && 'owner' in root && path.apply(root.owner, true)) || path.apply(root);
     } catch(err) {
       console.log('err:', err.message, err.stack);
-      //process.exit()
     }
     return r;
   }
@@ -316,12 +306,15 @@ export class EagleReference {
     }
     return [this.root];
   }
+
   get parent() {
     return EagleRef(this.root, this.path.slice(0, -1));
   }
+
   get nextSibling() {
     return EagleRef(this.root, this.path.nextSibling);
   }
+
   get firstChild() {
     return EagleRef(this.root, this.path.firstChild);
   }

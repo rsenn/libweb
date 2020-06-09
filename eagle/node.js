@@ -3,7 +3,7 @@ import Util from '../util.js';
 import deep from '../deep.js';
 import { lazyMembers } from '../lazyInitializer.js';
 import { trkl } from '../trkl.js';
-import { text, inspect, EagleInterface } from './common.js';
+import { text, inspect, EagleInterface, concat, ansi } from './common.js';
 
 import { makeEagleNodeMap } from './nodeMap.js';
 
@@ -46,14 +46,13 @@ export class EagleNode extends EagleInterface {
     return this.getDocument();
     let doc = this;
     let i = 0;
-    while(doc.owner !== undefined) {   
-
+    while(doc.owner !== undefined) {
       if(doc.xml !== undefined) break;
       doc = doc.owner;
 
       i++;
     }
-//  console.log('doc:', i, Util.className(doc), this);
+    //  console.log('doc:', i, Util.className(doc), this);
     return doc;
   }
 
@@ -66,7 +65,6 @@ export class EagleNode extends EagleInterface {
     }
     return ret;
   }
-
 
   get project() {
     if(Util.className(this.owner) == 'EagleProject') return this.owner;
@@ -209,7 +207,7 @@ export class EagleNode extends EagleInterface {
     return a[0] || null;
   }
 
-  find(name, transform = v => v) {
+  find(name, transform) {
     const a = [...this.getAll(name, transform)];
     return a[0];
   }
@@ -270,18 +268,18 @@ export class EagleNode extends EagleInterface {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    let attrs = '';
+    let attrs = [''];
     let a = this.raw.attributes || this.attributes;
-    if(a) attrs = Object.keys(a).reduce((attrs, attr) => attrs + ` ${text(attr, 1, 33)}${text(':', 1, 36)}${text("'" + a[attr] + "'", 1, 32)}`, ``);
+    if(a) attrs = Object.keys(a).reduce((attrs, attr) => concat(attrs, text(attr, 1, 33), text(':', 1, 36), text("'" + a[attr] + "'", 1, 32)), attrs);
     let children = this.raw.children || this.children;
     let numChildren = children.length;
-    let ret = ''; //`${Util.className(this)} `;
+    let ret = ['']; //`${Util.className(this)} `;
     let tag = this.raw.tagName || this.tagName;
-
-    if(tag) ret += `${text('<', 1, 36)}${text(tag, 1, 31)}${attrs}${text(numChildren == 0 ? ' />' : '>', 1, 36)}`;
-    if(this.filename) ret += ` filename="${this.filename}"`;
-    if(numChildren > 0) ret += `{...${numChildren} children...}</${this.tagName}>`;
-    return ret;
+    //console.realLog("attrs:",attrs);
+    if(tag) ret = concat(ret, text('<', 1, 36), text(tag + ' ', 1, 31), attrs, text(numChildren == 0 ? '/>' : '>', 1, 36));
+    if(this.filename) ret = concat(ret, ` filename="${this.filename}"`);
+    if(numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${this.tagName}>`);
+    return (ret = concat(ret, text('', 0)));
   }
 
   inspect() {

@@ -50,7 +50,7 @@ export class ReactComponent {
       let { children, key, innerHTML, ...props } = arg.props || {};
 
       let obj = { tagName, ...props };
-      if('key' in arg.props && key !== undefined) obj.key = key;
+      if(Util.isObject(arg.props) && 'key' in arg.props && key !== undefined) obj.key = key;
       if(!children) children = arg.children;
       let a = React.toChildArray(children);
       children = a.length > 0 ? this.toObject(...a) : [];

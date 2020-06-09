@@ -6,9 +6,12 @@ import { BBox, TransformationList } from '../geom.js';
 
 const pathPadding = Util.isBrowser() ? 0 : 40;
 
-export const ansi = Util.isBrowser() ? () => '' : (...args) => `\u001b[${[...args].join(';')}m`;
+export const coloring = Util.coloring();
+console.log('coloring: ', coloring);
+export const ansi = coloring.code.bind(coloring); //Util.isBrowser() ? () => '' : (...args) => `\u001b[${[...args].join(';')}m`;
 
-export const text = Util.isBrowser() ? (text, ...color) => (color.indexOf(1) != -1 ? `${text}` : text) : (text, ...color) => ansi(...color) + text + ansi(0);
+export const text = coloring.text.bind(coloring); //? (text, ...color) => (color.indexOf(1) != -1 ? `${text}` : text) : (text, ...color) => ansi(...color) + text + ansi(0);
+export const concat = coloring.concat.bind(coloring); //? (text, ...color) => (color.indexOf(1) != -1 ? `${text}` : text) : (text, ...color) => ansi(...color) + text + ansi(0);
 
 export const dingbatCode = digit => (digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1));
 
@@ -205,31 +208,25 @@ export class EagleInterface {
     return predicate(this.find((v, l, d) => v === element, path));
   }
 
-
   getDocument() {
     let o = this;
     while(o.owner) {
       o = o.owner;
 
-      if(o.xml !== undefined)
-        break;
+      if(o.xml !== undefined) break;
     }
     return o;
   }
 
   xpath() {
-    let p = new EaglePath;
+    let p = new EaglePath();
     let o = this;
-    while(o.ref) {
+    do {
       p = o.ref.path.concat(p);
-      
-      console.log("xpath",{o,p});
-
       if(!o.owner || o.xml != undefined) break;
-      o = o.tagName == 'library' ? o.getDocument : o.owner;
-    }
-    let d = o.document || this.document;
-   // console.log("xpath",{ p, o,d: Util.className(d)});
+      o = o.owner;
+    } while(o.ref);
+    let d = o;
     let x = p.xpath(d);
     return x;
   }

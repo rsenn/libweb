@@ -128,7 +128,7 @@ Util.generalLog = function(n, x) {
 };
 Util.toSource = function(arg, opts = {}) {
   const { color = true } = opts;
-  const c = Util.color(color);
+  const c = Util.coloring(color);
   if(typeof arg == 'string') return c.text(`'${arg}'`, 1, 36);
   if(arg && arg.x !== undefined && arg.y !== undefined) return `[${c.text(arg.x, 1, 32)},${c.text(arg.y, 1, 32)}]`;
   if(arg && arg.toSource) return arg.toSource();
@@ -760,7 +760,7 @@ Util.injectProps = function(options) {
 }*/
 Util.toString = (obj, opts = {}, indent = '') => {
   const { quote = '"', multiline = false, color = true, spacing = '', padding = '', separator = ',', colon = ':' } = opts;
-  const c = Util.color(color);
+  const c = Util.coloring(color);
   const sep = multiline ? (space = false) => '\n' + indent + (space ? '  ' : '') : (space = false) => (space ? spacing : '');
   if(Util.isArray(obj)) {
     let i,
@@ -2438,25 +2438,46 @@ Util.compose = function compose(fn1, fn2 /*, fn3, etc */) {
 };
 Util.clamp = curry((min, max, value) => Math.max(min, Math.min(max, value)));
 
-Util.color = (useColor = true) =>
+Util.coloring = (useColor = true) =>
   !useColor || Util.isBrowser()
     ? {
-        palette: Util.range(0, 15).map(
+        palette: ['rgb(0,0,0)', 'rgb(80,0,0)', 'rgb(0,80,0)', 'rgb(80,80,0)', 'rgb(0,0,80)', 'rgb(80,0,80)', 'rgb(0,80,80)', 'rgb(80,80,80)', 'rgb(0,0,0)', 'rgb(160,0,0)', 'rgb(0,160,0)', 'rgb(160,160,0)', 'rgb(0,0,160)', 'rgb(160,0,160)', 'rgb(0,160,160)', 'rgb(160,160,160)'],
+        /*Util.range(0, 15).map(
           i =>
             `rgb(${Util.range(0, 2)
-              .map(bitno => Util.getBit(i, bitno) * (i & 0x08 ? 255 : 127))
+              .map(bitno => Util.getBit(i, bitno) * (i & 0x08 ? 160 : 80))
               .join(',')})`
-        ),
-        code: function(...args) {
-          let o = {};
+        )*/ code(...args) {
+          let css = '';
+          let bold = 0;
           for(let arg of args) {
-            if(arg >= 40) o['background-color'] = this.palette[arg & 0xf];
-            else if(arg >= 30) o['color'] = this.palette[arg & 0xf];
+            let c = (arg % 10) + bold;
+            let rgb = this.palette[c];
+            //     console.realLog("code:", {arg, c, rgb});
+            if(arg >= 40) css += `background-color:${rgb};`;
+            else if(arg >= 30) css += `color:${rgb};`;
+            else if(arg == 1) bold = 8;
+            else if(arg == 0) bold = 0;
+            else throw new Error('No such color code:' + arg);
           }
-          return o;
+          css += 'padding: 2px 0 2px 0;';
+          return css;
         },
         text(text, ...color) {
           return [`%c${text}`, this.code(...color)];
+        },
+        concat(...args) {
+          let out = args.shift();
+          for(let arg of args) {
+            if(Util.isArray(arg) && typeof arg[0] == 'string') out[0] += arg.shift();
+            else if (Util.isObject(arg)) {
+              out.push(arg);
+              continue;
+            }
+
+            out = out.concat(arg);
+          }
+          return out;
         }
       }
     : {
@@ -2465,16 +2486,25 @@ Util.color = (useColor = true) =>
         },
         text(text, ...color) {
           return this.code(...color) + text + this.code(0);
+        },
+        concat(...args) {
+          return args.join('');
         }
       };
-
-Util.colorText = (...args) => Util.color().text(...args);
-Util.ansiCode = (...args) => Util.color().code(...args);
-Util.ansi = Util.color(true);
+let color;
+Util.colorText = (...args) => {
+  if(!color) color = Util.coloring();
+  return color.text(...args);
+};
+Util.ansiCode = (...args) => {
+  if(!color) color = Util.coloring();
+  return color.code(...args);
+};
+Util.ansi = Util.coloring(true);
 
 Util.defineInspect = (proto, ...props) => {
   if(!Util.isBrowser()) {
-    const c = Util.color();
+    const c = Util.coloring();
     proto[Symbol.for('nodejs.util.inspect.custom')] = function() {
       const obj = this;
       return (

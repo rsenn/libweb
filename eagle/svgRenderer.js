@@ -289,7 +289,7 @@ export class EagleSVGRenderer {
 
         let attrs = EagleSVGRenderer.alignmentAttrs(alignment, HORIZONTAL);
         if(align !== undefined) attrs['data-align'] = align;
-        this.create('tspan', { ...attrs, innerHTML: text }, e);
+        this.create('tspan', { ...attrs, children: text }, e);
         break;
       }
       case 'circle': {

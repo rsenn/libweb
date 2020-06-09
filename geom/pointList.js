@@ -325,7 +325,7 @@ PointList.prototype.round = function(prec) {
 };
 
 if(!Util.isBrowser()) {
-  let c = Util.color();
+  let c = Util.coloring();
   PointList.prototype[/* util.inspect.custom || */ Symbol.for('nodejs.util.inspect.custom')] = function() {
     return `${c.text('PointList', 1, 33)} ${c.text('(', 1, 36)}${c.text(this.getLength(), 1, 35) + c.code(1, 36)}) [\n  ${this.map(({ x, y }) => Util.toString({ x, y }, { multiline: false, spacing: ' ' })).join(',\n  ')}\n]`;
   };

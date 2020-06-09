@@ -113,9 +113,9 @@ Rect.prototype.toString = function(opts = {}) {
 };
 Rect.prototype.toSource = function(opts = {}) {
   const { color = true } = opts;
-  const c = Util.color(color);
+  const c = Util.coloring(color);
   const { x, y, width, height } = this;
-  return `${c.text('new', 1, 31)} ${c.text('Rect', 1, 33)}(${x},${y},${width},${height})`;
+  return c.concat(c.text('new', 1, 31), c.text('Rect', 1, 33), `(${x},${y},${width},${height})`);
 };
 Object.defineProperty(Rect.prototype, 'x1', {
   get: function() {

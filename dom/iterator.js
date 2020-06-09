@@ -23,7 +23,7 @@ export function iterator() {
   async function* read() {
     await promise;
     yield* events.splice(0);
-    if (!done) yield* read();
+    if(!done) yield* read();
   }
 
   function write(event) {

@@ -13,15 +13,10 @@ export class EagleElement extends EagleNode {
 
   static get(owner, ref, node) {
     if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(Util.isObject(owner) && 'raw' in owner ? owner.raw : owner, ref);
-    /*  const getOwner = obj => (Util.isObject(obj) && 'owner' in obj && obj.xml === undefined ? obj.owner : obj);
-    const getRoot = obj => (Util.isObject(obj) && 'raw' in obj ? obj.raw : obj);
-    owner = getOwner(owner) || owner;
-    let root = getOwner(owner);*/
     if(!node) {
       node = ref.path.apply(ref.root, true);
     }
     if(!node) {
-      //console.log("EagleElement.get",{owner,ref,node});
     }
     let elem = this.map.get(node);
     if(!elem) {
@@ -40,29 +35,23 @@ export class EagleElement extends EagleNode {
   }
 
   constructor(owner, ref, raw) {
-    //  console.log('new EagleElement', { owner, ref, raw }, Util.getCallers(1, 7).map(f => f.toString()));
     super(owner, ref, raw);
-
     Util.define(this, 'handlers', {});
-    //    Object.defineProperty(this, 'handlers', { value: {}, enumerable: false });
-
-    let path = this.ref.path; /*.clone()*/
+    let path = this.ref.path;
     if(owner === null) throw new Error('owner == null');
     if(raw === undefined || (raw.tagName === undefined && raw.attributes === undefined && raw.children === undefined)) {
       try {
         raw = this.ref.dereference();
       } catch(error) {}
     }
-
     if(raw === null || typeof raw != 'object') throw new Error('ref: ' + this.ref.inspect() + ' entity: ' + EagleNode.prototype.inspect.call(this));
     let { tagName, attributes, children } = raw;
     this.tagName = tagName;
     this.attrMap = {};
+    let doc = this.document;
+    let elem = this;
     if(!Util.isEmpty(attributes)) {
       const names = this.names();
-
-      //    msg`package names=${names} ref=${this.ref}`;
-
       for(let key in attributes) {
         let prop = trkl.property(this.attrMap, key);
         let handler = ['deviceset', 'package', 'device'].includes(key)
@@ -79,9 +68,6 @@ export class EagleElement extends EagleNode {
         prop(attributes[key]);
         prop.subscribe(value => (value !== undefined ? (raw.attributes[key] = '' + value) : delete raw.attributes[key]));
         this.handlers[key] = prop;
-
-        // if(key == 'package')
-
         if(Object.keys(names).indexOf(key) != -1) {
           msg`key=${key} names=${names}`;
           trkl.bind(this, key, v => (v ? v.names.forEach(name => this.handlers[name](v.names[name])) : this.library[key + 's'][this.attrMap[key]]));
@@ -96,70 +82,42 @@ export class EagleElement extends EagleNode {
               }
             } else {
               const library = this.document.find(e => e.tagName == 'library' && e.attributes.name == this.attributes.library);
-              //console.log("part:",this, { library });
-              //console.log("this:", this);
-
               const deviceset = library.find(e => e.tagName == 'deviceset' && e.attributes.name == this.attrMap.deviceset);
               const device = deviceset.find(e => e.tagName == 'device' && e.attributes.name == this.attrMap.device);
-              //console.log("part:",{ deviceset, device });
               return device;
             }
           };
           trkl.bind(this, key, fn);
         } else if(EagleElement.isRelation(key) || ['package', 'library', 'layer'].indexOf(key) != -1) {
-          let doc = this.document;
-          let elem = this;
           let fn;
-
           if(key == 'package') {
-            // fn = v => (v ? this.handlers[key](typeof v == 'string' ? v : v.name) : [...this.library.getAll(e => e.name == this.handlers[key])][0]);
             fn = value => {
-              //  let value = elem.handlers[key]();
               const libName = elem.handlers['library']();
               const pkgName = elem.handlers['package']();
               const lib = doc.get(e => e.tagName == 'library' && e.attributes['name'] == libName);
               const libs = [...doc.getAll(e => e.tagName == 'library')].map(e => e.name);
-              //  console.log('relation ', { libName, pkgName, lib, libs });
               return lib.get({ tagName: 'package', name: pkgName });
             };
           } else if(tagName == 'instance') {
             fn = value => {
               const part = doc.get(e => e.tagName == 'part' && e.attributes['name']);
-
               if(key == 'part') return part;
-
               const library = elem.document.find(e => e.tagName == 'library' && e.attributes.name == part.attrMap.library);
-
               const deviceset = library.find(e => e.tagName == 'deviceset' && e.attributes.name == part.attrMap.deviceset);
               const gate = deviceset.find(e => e.tagName == 'gate' && e.attributes.name == part.attrMap.gate);
-
               console.log('relation ', { part, library, deviceset, gate });
-
               if(key == 'gate') return gate;
-              /*              const pkgName = elem.handlers['package']();
-              const lib = doc.get(e => e.tagName == 'library' && e.attributes['name'] == libName);
-              const libs = [...doc.getAll(e => e.tagName == 'library')].map(e => e.name);
-              //  console.log('relation ', { libName, pkgName, lib, libs });
-              return lib.get({ tagName: 'package', name: pkgName });*/
             };
           } else {
             let id = key == 'layer' ? 'number' : 'name';
-
-            //if(key != 'layer') console.log(`relation`, { key, id, elem: this });
-
             fn = () => {
               let r,
                 value = elem.attrMap[key];
-              // console.log('relation ', {  key,id });
-
               r = doc.get(e => e.tagName == key && e.attributes[id] == value);
-              console.log(`relation get(${key}, ${elem.attributes[id]}) = `, r);
+              //console.log(`relation get(${key}, ${elem.attributes[id]}) = `, r);
               return r;
             };
-
             this.initRelation(key, this.handlers[key], fn);
-            // console.log(`relation ${key}`, this[key]);
-            //  fn = v => (v ? this.handlers[key](typeof v == 'string' ? v : v.name) : doc[key == 'library' ? 'libraries' : key + 's'][this.handlers[key]()]);
           }
           trkl.bind(this, key, fn);
         } else {
@@ -167,9 +125,7 @@ export class EagleElement extends EagleNode {
         }
       }
     }
-
     var childList = null;
-
     trkl.bind(this, 'children', value => {
       if(value === undefined) {
         if(childList === null) childList = makeEagleNodeList(this, [...this.ref.path, 'children'], children);
@@ -181,17 +137,15 @@ export class EagleElement extends EagleNode {
     if(tagName == 'gate') {
       lazyProperty(this, 'symbol', () => this.parentNode.elementChain().library.find(e => e.tagName == 'symbol' && e.attributes.name == this.attributes.symbol));
     } else if(tagName == 'instance') {
-      const part = this.document.find(e => e.tagName == 'part' && e.attributes.name == this.attributes.part);
-      const library = part.document.find(e => e.tagName == 'library' && e.attributes.name == part.attributes.library);
-      //console.log("instance:",{ part, library });
+      const part = doc.find(e => e.tagName == 'part' && e.attributes.name == this.attributes.part);
+      const library = doc.find(e => e.tagName == 'library' && e.attributes.name == part.attributes.library);
+      //console.log("instance", doc,part,library);
 
       const deviceset = library.find(e => e.tagName == 'deviceset' && e.attributes.name == part.attributes.deviceset);
-      //console.log("instance:",{ deviceset});
-
       const device = deviceset.find(e => e.tagName == 'device' && e.attributes.name == part.attributes.device);
-      //console.log("instance:",{ part, library, deviceset, device});
 
       lazyProperty(this, 'gate', () => deviceset.find(e => e.tagName == 'gate' && e.attributes.name == this.attributes.gate));
+
       Util.defineGetter(this, 'symbol', () => this.gate.symbol);
     } else if(tagName == 'device') {
       lazyProperty(this, 'package', () => {
@@ -200,7 +154,6 @@ export class EagleElement extends EagleNode {
         return pkg;
       });
     }
-
     this.initCache(EagleElement);
   }
 
@@ -217,12 +170,10 @@ export class EagleElement extends EagleNode {
         constructor(props) {
           Object.defineProperties(this, props);
         }
-
         *[Symbol.iterator]() {
           for(let key of attributeNames) yield [key, attributeHandlers[key]()];
         }
       }
-
       Util.extend(EagleAttributes.prototype, {
         entries: () => attributeNames.map(key => [key, attributeHandlers[key]()]),
         keys: () => attributeNames,
@@ -256,20 +207,9 @@ export class EagleElement extends EagleNode {
     let bb, pos;
     if(this.tagName == 'element') {
       const { raw, ref, path, attributes, owner, document } = this;
-      // const { attributes } = this.raw;
-
-      //console.log('getBounds', { raw, ref, path, attributes, root, document });
       const libName = raw.attributes['library'];
-      //console.log('getBounds', { owner, document });
-
-      //console.log('getBounds', { libName, libs: owner.find('libraries') });
-
       let lib = owner.libraries[libName];
-      //console.log('getBounds', { lib, libName: raw.attributes['library'] });
-
       let pkg = lib.get(e => e.tagName == 'package' && e.attributes['name'] == raw.attributes['package']);
-      //console.log('getBounds', { pkg, lib });
-
       bb = pkg.getBounds();
       pos = this.geometry();
       bb.move(pos.x, pos.y);
@@ -277,7 +217,6 @@ export class EagleElement extends EagleNode {
       return bb;
     } else if(this.tagName == 'instance') {
       const { part, symbol, gate, rot } = this;
-      //console.log("instance", { part, symbol, gate });
       const { deviceset, device, value } = part;
       let t = new TransformationList();
       t.translate(+this.x, +this.y);

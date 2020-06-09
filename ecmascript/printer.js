@@ -19,7 +19,7 @@ export class Printer {
     this.indent = indent || 2;
     this.comments = comments || [];
 
-    this.color = Util.color(color);
+    this.color = Util.coloring(color);
 
     this.colorText = Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: text => this.color.text(text, ...codes) }), {});
     this.colorCode = Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: () => this.color.code(...codes) }), {});
