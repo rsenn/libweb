@@ -2,7 +2,7 @@ import Util from '../util.js';
 import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { makeEagleNodeList } from './nodeList.js';
-import { EagleReference } from './locator.js';
+import { EagleReference, EagleRef } from './locator.js';
 import { inspect, Rotation } from './common.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList } from '../geom.js';
@@ -126,9 +126,12 @@ export class EagleElement extends EagleNode {
       }
     }
     var childList = null;
+
     trkl.bind(this, 'children', value => {
       if(value === undefined) {
-        if(childList === null) childList = makeEagleNodeList(this, [...this.ref.path, 'children'], children);
+        let root = elem.root;
+
+        if(childList === null) childList = makeEagleNodeList(elem, ['children']);
         return childList;
       } else {
         o.children = value.raw;
@@ -174,12 +177,12 @@ export class EagleElement extends EagleNode {
           for(let key of attributeNames) yield [key, attributeHandlers[key]()];
         }
       }
-      Util.extend(EagleAttributes.prototype, {
+      /*Util.extend(EagleAttributes.prototype, {
         entries: () => attributeNames.map(key => [key, attributeHandlers[key]()]),
         keys: () => attributeNames,
         has: key => attributeNames.includes(key),
         values: () => attributeNames.map(key => attributeHandlers[key]())
-      });
+      });*/
       Object.assign(
         EagleAttributes.prototype,
         attributeNames.reduce((acc, key) => ({ ...acc, [key]: attributeHandlers[key]() }), {})
