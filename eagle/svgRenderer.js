@@ -386,7 +386,17 @@ export class EagleSVGRenderer {
     const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;
     //console.log(bounds);
     //console.log(bounds.clone(r => (r.y = 0)));
-    if(!parent) parent = this.create('svg', { width, height, viewBox: rect.clone(r => (r.y = 0)).toString({ separator: ' ' }), ...props }, parent);
+    if(!parent)
+      parent = this.create(
+        'svg',
+        {
+          width,
+          height,
+          viewBox: rect.clone(r => (r.y = 0)).toString({ separator: ' ' }),
+          ...props
+        },
+        parent
+      );
     //this.renderLayers(parent);
     const step = 2.54;
     const gridColor = '#0000aa';

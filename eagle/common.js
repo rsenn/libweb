@@ -107,31 +107,6 @@ export const toXML = function(o, z = 10000) {
   return s.trim();
 };
 
-export const inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {
-  const { depth, breakLength } = c;
-  let o = e;
-  if(typeof e == 'string') return text(e, 1, 36);
-  let x = '';
-  try {
-    x = Util.inspect(o, {
-      depth: depth * 2,
-      breakLength,
-      colors: !Util.isBrowser()
-    });
-  } catch(err) {}
-  let s = '⏐';
-  x = x.substring(x.indexOf('tagName') + 14);
-  x = Object.entries((e && e.attributes) || {}).map(([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36));
-  x.unshift(e.tagName);
-  let [p, ...arr] = x;
-  p = text(`〔`, 1, 37) + text(p, 38, 5, 199);
-  let l = e.path + '';
-  let type = (e.nodeType || (d && d.type)) + '';
-  let ret = [text(type, 38, 5, 219), p, text('⧃❋⭗', 38, 5, 112), arr.join(' ').trimRight(), text(`〕`, 1, 37)];
-  if(c.path) ret.unshift(l + Util.pad(l, pathPadding, ' '));
-  return ret.join(' ');
-};
-
 export const Rotation = (rot, f = 1) => {
   let mirror, angle;
   if(!rot) {
@@ -149,6 +124,31 @@ export const Rotation = (rot, f = 1) => {
 };
 
 export class EagleInterface {
+  static inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {
+    const { depth, breakLength } = c;
+    let o = e;
+    if(typeof e == 'string') return text(e, 1, 36);
+    let x = '';
+    try {
+      x = Util.inspect(o, {
+        depth: depth * 2,
+        breakLength,
+        colors: !Util.isBrowser()
+      });
+    } catch(err) {}
+    let s = '⏐';
+    x = x.substring(x.indexOf('tagName') + 14);
+    x = Object.entries((e && e.attributes) || {}).map(([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36));
+    x.unshift(e.tagName);
+    let [p, ...arr] = x;
+    p = text(`〔`, 1, 37) + text(p, 38, 5, 199);
+    let l = e.path + '';
+    let type = (e.nodeType || (d && d.type)) + '';
+    let ret = [text(type, 38, 5, 219), p, text('⧃❋⭗', 38, 5, 112), arr.join(' ').trimRight(), text(`〕`, 1, 37)];
+
+    return (c.path ? l + '\n  ' : '') + ret.join(' ');
+  };
+
   constructor(owner) {
     Util.define(this, { owner });
 

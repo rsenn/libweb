@@ -1,5 +1,5 @@
 import Util from '../util.js';
-import { text, inspect, toXML, dump } from './common.js';
+import { text, EagleInterface, toXML, dump } from './common.js';
 
 export function DereferenceError(object, member, pos, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);

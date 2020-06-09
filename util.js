@@ -394,6 +394,35 @@ Util.copyEntries = (obj, entries) => {
   return obj;
 };
 
+Util.extend = (...args) => {
+  var deep = false;
+  if(typeof args[0] == 'boolean') deep = args.shift();
+
+  var result = args[0];
+  if(Util.isUnextendable(result)) throw new Error('extendee must be an object');
+  var extenders = args.slice(1);
+  var len = extenders.length;
+  for(var i = 0; i < len; i++) {
+    var extender = extenders[i];
+    for(var key in extender) {
+      if(extender.hasOwnProperty(key)) {
+        var value = extender[key];
+        if(deep && Util.isCloneable(value)) {
+          var base = Array.isArray(value) ? [] : {};
+          result[key] = extend(true, result.hasOwnProperty(key) && !Util.isUnextendable(result[key]) ? result[key] : base, value);
+        } else {
+          result[key] = value;
+        }
+      }
+    }
+  }
+  return result;
+};
+
+Util.isCloneable = obj => Array.isArray(obj) || {}.toString.call(obj) == '[object Object]';
+
+Util.isUnextendable = val => !val || (typeof val != 'object' && typeof val != 'function');
+/*
 Util.extend = (obj, ...args) => {
   for(let other of args) {
     for(let key of Util.iterateMembers(other, (k, value) => obj[k] === undefined && [k, value])) {
@@ -411,7 +440,7 @@ Util.extend = (obj, ...args) => {
     }
   }
   return obj;
-};
+};*/
 
 Util.static = (obj, functions, thisObj, pred = (k, v, f) => true) => {
   for(let [name, fn] of Util.iterateMembers(
@@ -942,9 +971,9 @@ Util.isString = function(v) {
  */
 Util.isNumeric = v => /^[-+]?[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test(v);
 
-Util.isObject = obj => typeof obj === 'object' && obj !== null;
+Util.isObject = (...args) => args.every(obj => typeof obj === 'object' && obj !== null);
 Util.isFunction = fn => !!(fn && fn.constructor && fn.call && fn.apply);
-Util.isArrowFunction = fn => Util.isFunction(fn) && ( ( !('prototype' in fn) )) ||  /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
+Util.isArrowFunction = fn => (Util.isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
 
 Util.isEmptyString = v => Util.isString(v) && (v == '' || v.length == 0);
 
@@ -2053,30 +2082,28 @@ Util.flatTree = function(tree, addOutput) {
 };
 Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
-  if(typeof tree == 'object' && tree !== null && typeof tree.children == 'object' && tree.children !== null && tree.children.length) for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
+  if(Util.isObject(tree, tree.childre) && tree.children.length > 0) for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
 };
+
 Util.walkTree = function(node, pred, t, depth = 0, parent = null) {
   return (function*() {
     if(!pred) pred = i => true;
     if(!t)
       t = function(i) {
         i.depth = depth;
-        /*if(parent) i.parent = parent; */ return i;
+        return i;
       };
-    /*      let thisNode = node;
-      let nodeId = node.id;*/
-    //node = t(node);
     if(pred(node, depth, parent)) {
       yield t(node);
       if(typeof node == 'object' && node !== null && typeof node.children == 'object' && node.children.length) {
         for(let child of [...node.children]) {
-          /*   if(pred(child, depth + 1, node))*/
           yield* Util.walkTree(child, pred, t, depth + 1, node.parent_id);
         }
       }
     }
   })();
 };
+
 Util.isPromise = function(obj) {
   return (Boolean(obj) && typeof obj.then === 'function') || obj instanceof Promise;
 };

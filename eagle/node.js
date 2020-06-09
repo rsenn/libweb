@@ -3,7 +3,7 @@ import Util from '../util.js';
 import deep from '../deep.js';
 import { lazyMembers } from '../lazyInitializer.js';
 import { trkl } from '../trkl.js';
-import { text, inspect, EagleInterface, concat, ansi } from './common.js';
+import { text, EagleInterface, concat, ansi } from './common.js';
 
 import { makeEagleNodeMap } from './nodeMap.js';
 
@@ -82,7 +82,7 @@ export class EagleNode extends EagleInterface {
 
     let r = ref.path.apply(root, true) || ref.path.apply(owner, true);
     if(!r) {
-      //console.log('raw:', { ref, root, owner, path });
+      console.log('raw:', { ref, root, owner, path });
       r = ref.path.apply(root) || ref.path.apply(owner);
     }
 
@@ -116,6 +116,7 @@ export class EagleNode extends EagleInterface {
 
   initCache(ctor = this.childConstructor) {
     let fields = this.cacheFields();
+    let node = this;
 
     if(fields) {
       Util.define(this, 'cache', {});
@@ -171,8 +172,9 @@ export class EagleNode extends EagleInterface {
     this.ref.replace(node);
   }
 
-  *getAll(pred, transform) {
+  *getAll(predicate, transform) {
     let name;
+    let pred = predicate;
     if(pred instanceof RegExp) {
       name = pred;
       pred = (v, p, o) => name.test(v.tagName);
@@ -180,7 +182,7 @@ export class EagleNode extends EagleInterface {
       name = pred;
       pred = (v, p, o) => v.tagName === name;
     } else if(Util.isObject(pred) && typeof pred != 'function') {
-      let keys = Object.keys(pred);
+      let keys = Util.isArray(pred) ? pred : Object.keys(pred);
       let values = keys.reduce((acc, key) => [...acc, pred[key]], []);
 
       pred = (v, p, o) => keys.every((key, i) => (key == 'tagName' ? v[key] == values[i] : v.attributes[key] == values[i]));
@@ -190,9 +192,13 @@ export class EagleNode extends EagleInterface {
 
     transform = transform || ((...args) => args);
 
-    //    pred = (...args)=> { console.log("args:", args[1].toString()); return pred(...args); }
+    let cond = (...args) => {
+      if(args[0].tagName === undefined) return false;
+      /*console.log("path:", args[1].join('/'));*/ return pred(...args);
+    };
 
-    for(let [v, p, o] of deep.iterate(this.raw, pred, [])) {
+    for(let [v, p, o] of deep.iterate(this.raw, cond, [])) {
+      // console.log('getAll',  v.tagName, p.join('.'));
       yield transform(v, p, o);
     }
   }
@@ -254,7 +260,7 @@ export class EagleNode extends EagleInterface {
     /*   const ref = this.ref.up(2);*/
     const { ref, path, root, raw } = this;
     //console.log("parentNode", {path,root, raw});
-    return this[Symbol.species].get(root, path.up(1));
+    return this[Symbol.species].get(root, path.up(2));
   }
 
   get firstChild() {
@@ -265,6 +271,13 @@ export class EagleNode extends EagleInterface {
   get lastChild() {
     const ref = this.ref.lastChild;
     return ref ? new this[Symbol.species](this, ref) : null;
+  }
+
+  [Symbol.toStringTag]() {
+    return this[Symbol.for('nodejs.util.inspect.custom')]();
+  }
+  toString() {
+    return this[Symbol.toStringTag]();
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
@@ -282,7 +295,7 @@ export class EagleNode extends EagleInterface {
     return (ret = concat(ret, text('', 0)));
   }
 
-  inspect() {
-    return EagleNode.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, arguments);
+  inspect(...args) {
+    return EagleNode.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, args);
   }
 }

@@ -3,31 +3,32 @@ import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { makeEagleNodeList } from './nodeList.js';
 import { EagleReference } from './locator.js';
-import { inspect, Rotation } from './common.js';
+import { EagleInterface, Rotation } from './common.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList } from '../geom.js';
 
 export class EagleElement extends EagleNode {
   tagName = '';
+
   static map = new WeakMap();
 
-  static get(owner, ref, node) {
+  static get(owner, ref, raw) {
     if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(Util.isObject(owner) && 'raw' in owner ? owner.raw : owner, ref);
-    if(!node) {
-      node = ref.path.apply(ref.root, true);
-    }
-    if(!node) {
-    }
-    let elem = this.map.get(node);
-    if(!elem) {
-      elem = new EagleElement(owner, ref, node);
+
+    if(!raw) raw = ref.path.apply(ref.root, true);
+
+    // console.log('Element.get', Object.keys(raw));
+    let inst = this.map.get(raw);
+    //console.log('Element.get', inst);
+    if(!inst) {
+      inst = new EagleElement(owner, ref, raw);
       try {
-        this.map.set(node, elem);
+        this.map.set(raw, inst);
       } catch(err) {
-        console.log('EagleElement.get', { node, err });
+        console.log('EagleElement.get', { raw, err });
       }
     }
-    return elem;
+    return inst;
   }
 
   get [Symbol.species]() {
@@ -128,7 +129,7 @@ export class EagleElement extends EagleNode {
     var childList = null;
     trkl.bind(this, 'children', value => {
       if(value === undefined) {
-        if(childList === null) childList = makeEagleNodeList(this, [...this.ref.path, 'children'], children);
+        if(childList === null) childList = makeEagleNodeList(this, ['children'], this.raw.children);
         return childList;
       } else {
         o.children = value.raw;
@@ -158,7 +159,7 @@ export class EagleElement extends EagleNode {
   }
 
   get text() {
-    let text = this.raw.children[0];
+    let text = this.raw.children ? this.raw.children[0] : '';
     if(typeof text == 'string') return text;
   }
 
@@ -323,8 +324,8 @@ export class EagleElement extends EagleNode {
   }
 
   toString(entity = this) {
-    const { text, ownerDocument } = entity;
-    return inspect(entity, ownerDocument);
+    const { text, document } = entity;
+    return EagleInterface.inspect(entity, document);
   }
 
   *getAll(pred, transform) {
