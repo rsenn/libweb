@@ -78,9 +78,9 @@ export class ReactComponent {
       if(!children) children = arg.children;
 
       let a = toChildArray(children);
-      console.log('a:', a);
+      //console.log('a:', a);
       children = a.length > 0 ? this.toObject(...a) : [];
-      console.log('children:', children);
+      //console.log('children:', children);
       obj.children = Util.isArray(children) ? children : [children];
       if(innerHTML) obj.children.push(innerHTML);
       ret.push(obj);
