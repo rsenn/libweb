@@ -35,6 +35,8 @@ export class EagleProject {
     try {
       doc = new EagleDocument(str, this, file);
     } catch(error) {
+      console.log('EagleProject.error ', error.stack);
+
       err = error;
     }
     if(doc) this.documents.push(doc);

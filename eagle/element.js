@@ -262,7 +262,7 @@ export class EagleElement extends EagleNode {
   }
 
   static isRelation(name) {
-    let relationNames = ['class', 'element', 'gate', 'layer', 'library', 'package', 'pad', 'part', 'pin', 'symbol'];
+    let relationNames = ['class', 'element', 'gate', 'layer', 'library', 'package', 'pad', 'part', 'pin', 'symbol', 'device', 'deviceset'];
     return relationNames.indexOf(name) != -1;
   }
 

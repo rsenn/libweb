@@ -36,7 +36,9 @@ Object.assign(EagleNodeMap.prototype, {
     return (this.list.raw || this.list).length;
   },
   values() {
-    return [...this.list];
+    let r = this.entries().map(([k, v]) => v);
+    //console.log("r:",r);
+    return r;
   },
   entries(key = this.key) {
     return [...this[Symbol.iterator](key)];

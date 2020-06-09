@@ -20,7 +20,7 @@ export function DereferenceError(object, member, pos, locator) {
     error,
     { object, member, pos, locator },
     {
-      message: `Error dereferencing ${Util.className(object)} @ ${locator.toString() /*map((part, i) => (i == pos ? '<<' + part + '>>' : part)).join(',')*/} xml: ${Util.abbreviate(toXML(locator.root))}  no member '${member}' \n` + stack.join('\n'),
+      message: `Error dereferencing ${Util.className(object)} @ ${locator.toString() /*map((part, i) => (i == pos ? '<<' + part + '>>' : part)).join(',')*/} xml: ${Util.abbreviate(toXML(object), 80)}  no member '${member}' \n` + stack.join('\n'),
       stack
     }
   );
@@ -36,13 +36,11 @@ const ChildrenSym = Symbol('⊳');
 export const EaglePath = Util.immutableClass(
   class EaglePath extends Array {
     constructor(path = []) {
-      super(/*path.length*/);
+      super();
       for(let i = 0; i < path.length; i++) {
-        let value = /*(path[i] == 'children' || path[i] === ChildrenSym) ? ChildrenSym : */ typeof path[0] == 'string' && /^[0-9]+$/.test(path[i]) ? parseInt(path[i]) : path[i];
-
-        Array.prototype.push.call(this, value); // this.push(value); //[i] = value;
+        let value = typeof path[0] == 'string' && /^[0-9]+$/.test(path[i]) ? parseInt(path[i]) : path[i];
+        Array.prototype.push.call(this, value);
       }
-      //      this.length = path.length;
     }
 
     get [Symbol.species]() {
@@ -145,12 +143,36 @@ export const EaglePath = Util.immutableClass(
         },
         { o, n: 0 }
       );
-      if(a.o == null && !noThrow) throw new DereferenceError(obj, a.n, a.n, this);
-      //console.log("path.apply", this.toString(), Util.abbreviate(toXML(o), 40) );
+      if(a.o == null && !noThrow) {
+        //console.log('EaglePath[', this.toString(), '].apply(', Util.toString(obj, { depth: 0, spacing: ' ', padding: ' ', indent: ' ' }) + ', ', noThrow ? { noThrow } : '', ')');
+        throw new DereferenceError(obj, a.n, a.n, this);
+      } //console.log("path.apply", this.toString(), Util.abbreviate(toXML(o), 40) );
+      //console.log("EaglePath[",this.toString()  ,"].apply = ", Util.className(a.o));
       return a.o;
     }
 
     xpath(obj) {
+      const ConstXPath = Util.immutableClass(
+        function XPath(parts = []) {
+          // console.log('Parts:', parts);
+          for(let part of [...parts]) this.push(part);
+          return this;
+        },
+        ctor => {
+          ctor.prototype = Util.filterKeys(Util.getMethods([], 1, 1), ['concat', 'slice', 'entries', 'values', 'forEach', 'map', 'some', 'every', 'reduce', 'find', 'findIndex']);
+          //console.log("ctor:", ctor);
+          ctor.prototype.push = function(...args) {
+            return Array.prototype.concat.call(this, args);
+          };
+
+          ctor.prototype.map = Array.prototype.map;
+          ctor.prototype.constructor = ctor;
+          ctor.prototype[Symbol.species] = ctor;
+
+          //console.log('methods:', Util.getMemberNames(ctor.prototype));
+        }
+      );
+
       let s = [];
       let o = obj;
       let n;
@@ -181,7 +203,7 @@ export const EaglePath = Util.immutableClass(
       s.toString = function() {
         return '/' + this.join('/');
       };
-      return s;
+      return new ConstXPath([...s]);
     }
 
     existsIn(root) {
@@ -197,7 +219,6 @@ export const EaglePath = Util.immutableClass(
 
     toString(hl = -1) {
       let y = this.map(item => (item == 'children' ? '⎿' : item == 'attributes' ? '＠' : item)).map((part, i) => text(part, ...(hl == i ? [38, 5, 124] : [38, 5, 82])));
-
       y = text('♈ ', 38, 5, 45) + y.join('') + text(' 🔚', 38, 5, 172);
       return y.trim();
     }
@@ -271,9 +292,10 @@ export const EaglePath = Util.immutableClass(
 
 export class EagleReference {
   constructor(root, path) {
-    this.path = path instanceof EaglePath ? path : new EaglePath(path);
+    this.path = /*(Util.isObject(path)  && 'apply' in path)  ? path  :*/ new EaglePath(path);
     this.root = root;
     if(!this.dereference(true)) {
+      //console.log('new EagleReference:', { path, root: Util.abbreviate(toXML(root), 40) });
       //console.log('dereference:', { path, root: Util.abbreviate(toXML(root), 10) });
       throw new Error(this.path.join(','));
     }
@@ -289,7 +311,7 @@ export class EagleReference {
     try {
       r = (Util.isObject(root) && 'owner' in root && path.apply(root.owner, true)) || path.apply(root);
     } catch(err) {
-      console.log('err:', err.message, err.stack);
+      //console.log('err:', err.message, err.stack);
     }
     return r;
   }
@@ -298,6 +320,7 @@ export class EagleReference {
     const obj = this.path.up().apply(this.root);
     return (obj[this.path.last] = value);
   }
+
   entry() {
     if(this.path.size > 0) {
       let key = this.path.last;
@@ -345,30 +368,15 @@ export class EagleReference {
 }
 
 export const EagleRef = function EagleRef(root, path) {
-  if(Util.isObject(root) && Util.isObject(root.root)) root = root.root;
-
+  path = new EaglePath(path);
+  /*  if(Util.className(root) == 'Object') {
+      //console.log(
+        'stack:',
+        Util.getCallers(2, 10).map(f => f.toString())
+      );throw new Error();
+    }*/
+  //console.log('EagleRef(', Util.className(root) + Util.toString(root, { depth: 0, spacing: ' ', padding: ' ', indent: ' ' }) + ', ', path, ')');
   let obj = new EagleReference(root, path);
   return Object.freeze(obj);
 };
-/*
-["up", "down", "left", "right", "slice"].forEach(method =>
-    (EagleReference.prototype[method] = function(...args) {
-      return EagleRef(this.root, this.path[method](...args));
-    })
-);*/
 Object.assign(EagleReference.prototype, {});
-
-/*let props = ["nextSibling", "prevSibling", "parent", "parentNode", "firstChild", "lastChild", "depth"].reduce((acc, method) => ({
-    ...acc,
-    [method]: {
-      get: function(...args) {
-        let path = this.path[method](...args); //EaglePath.prototype[method].apply(this.path, args);
-        //console.log(method+" path:",path.join(','), " this.path:",this.path.join(','));
-        return path.existsIn(this.root) ? new EagleRef(this.root, path) : null;
-      }
-    }
-  }), {});
-
-//console.log("props:", props);
-Object.defineProperties(EagleReference.prototype, props);
-*/

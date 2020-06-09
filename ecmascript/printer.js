@@ -556,9 +556,9 @@ export class Printer {
     } else */ {
       code = this.printNode(body);
 
-      console.log('body:', Util.className(body));
+      /* console.log('body:', Util.className(body));
       console.log('body:', body);
-
+*/
       if(Util.className(body).startsWith('Object')) code = '(' + code + ')';
     }
     output += code;

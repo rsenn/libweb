@@ -22,12 +22,17 @@ export class EagleNode extends EagleInterface {
   }
 
   constructor(owner, ref, raw) {
-    if(!owner) owner = new EagleReference(ref.root, []).dereference();
+    // if(!owner) owner = new EagleReference(ref.root, []).dereference();
     super(owner);
+    if(!(ref instanceof EagleReference)) {
+      console.log('EagleNode.constructor ', { ref, owner, raw });
+
+      ref = new EagleRef(owner.dereference(), [...ref]);
+    }
+
     if(!raw) raw = ref.dereference();
 
     /*    if(ref)*/ {
-      if(!(ref instanceof EagleReference)) ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
       Util.define(this, 'ref', ref);
     }
     //console.log('EagleNode.constructor ', { ref, raw });
@@ -268,18 +273,19 @@ export class EagleNode extends EagleInterface {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    let attrs = [''];
+    let l = [''];
+
     let a = this.raw.attributes || this.attributes;
-    if(a) attrs = Object.keys(a).reduce((attrs, attr) => concat(attrs, text(attr, 1, 33), text(':', 1, 36), text("'" + a[attr] + "'", 1, 32)), attrs);
-    let children = this.raw.children || this.children;
-    let numChildren = children.length;
-    let ret = ['']; //`${Util.className(this)} `;
-    let tag = this.raw.tagName || this.tagName;
-    //console.realLog("attrs:",attrs);
-    if(tag) ret = concat(ret, text('<', 1, 36), text(tag + ' ', 1, 31), attrs, text(numChildren == 0 ? '/>' : '>', 1, 36));
-    if(this.filename) ret = concat(ret, ` filename="${this.filename}"`);
-    if(numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${this.tagName}>`);
-    return (ret = concat(ret, text('', 0)));
+    if(a) l = Object.keys(a).reduce((l, attr) => concat(l, text(attr, 1, 33), text(':', 1, 36), text("'" + a[attr] + "'", 1, 32)), l);
+    let c = this.raw.children || this.children;
+    let n = c.length;
+    let r = [''];
+    r = concat(r, this.xpath().slice(0, -1));
+    let t = this.raw.tagName || this.tagName;
+    if(t) r = concat(r, text('<', 1, 36), text(t + ' ', 1, 31), l, text(n == 0 ? '/>' : '>', 1, 36));
+    if(this.filename) r = concat(r, ` filename="${this.filename}"`);
+    if(n > 0) r = concat(r, `{...${n} children...}</${this.tagName}>`);
+    return (r = concat(r, text('', 0)));
   }
 
   inspect() {
