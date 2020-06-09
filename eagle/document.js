@@ -81,7 +81,7 @@ export class EagleDocument extends EagleNode {
   }
 
   *getAll(name) {
-    yield* super.getAll(name, (v, l, p) =>  EagleElement.get(this, l, v));
+    yield* super.getAll(name, (v, l, p) => EagleElement.get(this, l, v));
   }
 
   getBounds() {

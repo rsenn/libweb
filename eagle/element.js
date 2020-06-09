@@ -13,8 +13,7 @@ export class EagleElement extends EagleNode {
   static map = new WeakMap();
 
   static get(owner, ref, node) {
-    if('owner' in owner)
-      owner = owner.owner;
+    if('owner' in owner) owner = owner.owner;
     if(!node) {
       node = ref.dereference();
       console.log('Element get ', { ref, node, owner });
@@ -72,7 +71,7 @@ export class EagleElement extends EagleNode {
 
         // if(key == 'package')
 
-        if( Object.keys(names).indexOf(key) != -1) {
+        if(Object.keys(names).indexOf(key) != -1) {
           msg`key=${key} names=${names}`;
           trkl.bind(this, key, v => (v ? v.names.forEach(name => this.handlers[name](v.names[name])) : this.library[key + 's'][this.attrMap[key]]));
         } else if(key == 'device') {
@@ -106,9 +105,9 @@ export class EagleElement extends EagleNode {
 
               const lib = doc.get(e => e.tagName == 'library' && e.attributes['name'] == libName);
 
-const libs = [...doc.getAll(e => e.tagName == 'library')].map(e => e.name);
+              const libs = [...doc.getAll(e => e.tagName == 'library')].map(e => e.name);
 
-              console.log("No such library", {libName, libs: libs.join(','), doc});
+              console.log('No such library', { libName, libs: libs.join(','), doc });
               window.blah = doc;
               const pkg = lib.get(e => e.tagName == 'package' && e.attributes['name'] == pkgName);
 
@@ -318,7 +317,7 @@ const libs = [...doc.getAll(e => e.tagName == 'library')].map(e => e.name);
   }
 
   *getAll(pred, transform) {
-    yield* super.getAll(pred, transform || ((v, l, p) =>  EagleElement.get(this, l, v)));
+    yield* super.getAll(pred, transform || ((v, l, p) => EagleElement.get(this, l, v)));
   }
 
   setAttribute(name, value) {

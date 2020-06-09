@@ -1970,35 +1970,35 @@ Util.getCallerFunctionNames = function(position = 2) {
 Util.getCaller = function(index, stack) {
   const methods = ['getThis', 'getTypeName', 'getFunction', 'getFunctionName', 'getMethodName', 'getFileName', 'getLineNumber', 'getColumnNumber', 'getEvalOrigin', 'isToplevel', 'isEval', 'isNative', 'isConstructor'];
 
-    const frame = stack[index];
-    // console.log("frame keys:",frame, Util.getMemberNames(frame, 0, 10));
-    return methods.reduce(
-      (acc, m) => {
-        if(frame[m]) {
-          const name = m == 'getThis' ? 'thisObj' : Util.lcfirst(m.replace(/^(get|is)/, ''));
+  const frame = stack[index];
+  // console.log("frame keys:",frame, Util.getMemberNames(frame, 0, 10));
+  return methods.reduce(
+    (acc, m) => {
+      if(frame[m]) {
+        const name = m == 'getThis' ? 'thisObj' : Util.lcfirst(m.replace(/^(get|is)/, ''));
 
-          let value = frame[m]();
-          if(typeof value == 'string') value = value.replace('file://' + process.cwd() + '/', '');
-          if(value !== undefined) {
-            acc[name] = value;
-          }
-        }
-        return acc;
-      },
-      {
-        get position() {
-          const { fileName, columnNumber, lineNumber } = this;
-          return fileName ? `${fileName}:${lineNumber}:${columnNumber}` : null;
-        },
-        toString() {
-          const { methodName, functionName, position } = this;
-          return `${methodName || functionName || ''} ${position}`;
-        },
-        [Symbol.toStringTag]() {
-          return this.toString();
+        let value = frame[m]();
+        if(typeof value == 'string') value = value.replace('file://' + process.cwd() + '/', '');
+        if(value !== undefined) {
+          acc[name] = value;
         }
       }
-    );
+      return acc;
+    },
+    {
+      get position() {
+        const { fileName, columnNumber, lineNumber } = this;
+        return fileName ? `${fileName}:${lineNumber}:${columnNumber}` : null;
+      },
+      toString() {
+        const { methodName, functionName, position } = this;
+        return `${methodName || functionName || ''} ${position}`;
+      },
+      [Symbol.toStringTag]() {
+        return this.toString();
+      }
+    }
+  );
 };
 Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER, pred = () => true) {
   let stack = Util.getCallerStack(start + 1);
@@ -2441,7 +2441,12 @@ Util.clamp = curry((min, max, value) => Math.max(min, Math.min(max, value)));
 Util.color = (useColor = true) =>
   !useColor || Util.isBrowser()
     ? {
-        palette: Util.range(0, 15).map(i => `rgb(${Util.range(0, 2).map(bitno => Util.getBit(i, bitno) * (i & 0x08 ? 255 : 127)).join(',')})`) ,
+        palette: Util.range(0, 15).map(
+          i =>
+            `rgb(${Util.range(0, 2)
+              .map(bitno => Util.getBit(i, bitno) * (i & 0x08 ? 255 : 127))
+              .join(',')})`
+        ),
         code: function(...args) {
           let o = {};
           for(let arg of args) {
@@ -2451,7 +2456,7 @@ Util.color = (useColor = true) =>
           return o;
         },
         text(text, ...color) {
-                    return [ `%c${text}`, this.code(...color) ];
+          return [`%c${text}`, this.code(...color)];
         }
       }
     : {

@@ -123,8 +123,8 @@ export const EaglePath = Util.immutableClass(
     apply(obj) {
       let o = obj;
       if(o === undefined) {
-      window. stack =  Util.getCallers(1,10);
-        throw new Error(`Object ${o}`+ stack.join("\n"));
+        window.stack = Util.getCallers(1, 10);
+        throw new Error(`Object ${o}` + stack.join('\n'));
       }
       o = this.reduce(
         (a, i) => {

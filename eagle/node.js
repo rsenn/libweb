@@ -24,14 +24,13 @@ export class EagleNode extends EagleInterface {
     super(owner);
 
     if(ref) {
-    if(!(ref instanceof EagleReference)) {
+      if(!(ref instanceof EagleReference)) {
+        ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
+        console.log('EagleNode.constructor ', { owner, ref, raw });
+      }
 
-    ref = new EagleRef((owner && 'ref' in owner) ? owner.ref.root : owner, [...ref]);
-console.log("EagleNode.constructor ",{owner,ref,raw});
+      Util.define(this, 'ref', ref);
     }
-
-    Util.define(this, 'ref', ref);
-  }
   }
 
   get path() {
@@ -172,9 +171,7 @@ console.log("EagleNode.constructor ",{owner,ref,raw});
 
     let ctor = this[Symbol.species];
 
-
-    transform =
-      transform || ((...args) => args);
+    transform = transform || ((...args) => args);
 
     for(let [v, p, o] of deep.iterate(this.raw, pred, [])) {
       yield transform(v, p, o);
