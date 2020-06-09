@@ -944,7 +944,7 @@ Util.isNumeric = v => /^[-+]?[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test(v);
 
 Util.isObject = obj => typeof obj === 'object' && obj !== null;
 Util.isFunction = fn => !!(fn && fn.constructor && fn.call && fn.apply);
-Util.isArrowFunction = fn => (Util.isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
+Util.isArrowFunction = fn => Util.isFunction(fn) && /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
 
 Util.isEmptyString = v => Util.isString(v) && (v == '' || v.length == 0);
 
@@ -955,9 +955,9 @@ Util.isEmpty = function(v) {
   return false;
 };
 Util.isNonEmpty = v => !Util.isEmpty(v);
-Util.hasProps = function(obj, props) {
+Util.hasProps = function(obj) {
   const keys = Object.keys(obj);
-  return props ? props.every(prop => 'prop' in obj) : keys.length > 0;
+  return keys.length > 0;
 };
 Util.validatePassword = function(value) {
   return value.length > 7 && /^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]/.test(value) && !/\s/.test(value);
@@ -2017,7 +2017,7 @@ Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER, pred = () =
       let frame = Util.getCaller(i, stack);
       if(pred(frame)) {
         //if(frame === null) break;
-        ret.push(frame.toString());
+        ret.push(frame);
       }
     } catch(err) {}
     i++;

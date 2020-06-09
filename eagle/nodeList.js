@@ -3,17 +3,26 @@ import { makeEagleElement, EagleElement } from './element.js';
 import Util from '../util.js';
 import { toXML, text } from './common.js';
 
-export function EagleNodeList(owner, ref) {
+export function EagleNodeList(owner, ref, raw) {
   if(Util.isObject(ref) && !('dereference' in ref)) {
-    console.log(" new EagleNodeList", owner, {ref});
+    //  console.log("EagleNodeList", {owner,ref});
     ref = new EagleReference(owner.root, ref);
   }
- /* if(!raw) {
-    raw = ref.dereference();
-  }*/
 
+  if(!raw) {
+    raw = ref.dereference();
+    //  msg`raw = ${raw}, ref = ${ref}`;
+  }
+
+  //if('owner' in owner && owner.xml === undefined) owner = owner.owner;
+
+  if(!(ref instanceof EagleReference)) {
+    ref = new EagleReference(owner.raw, ref);
+  }
   let species = Util.getConstructor(owner);
-  Util.define(this, { ref, owner, [Symbol.species]: species });
+  //console.log(text('new',1,31)+text(' EagleNodeList',1,33), { ref,owner });
+
+  Util.define(this, { ref, owner, raw, [Symbol.species]: species });
 }
 
 Object.defineProperties(EagleNodeList.prototype, {
@@ -27,7 +36,7 @@ Object.assign(EagleNodeList.prototype, {
     const { owner, ref, raw } = this;
     //console.log('EagleNodeList', { ref, owner, raw });
 
-    if(Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner, ['children', pos]);
+    if(Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner, [...ref.path, pos], raw[pos]);
   },
   *[Symbol.iterator]() {
     const { ref, owner, raw } = this;
@@ -74,21 +83,22 @@ Object.assign(EagleNodeList.prototype, {
   }*/
 });
 
-EagleNodeList.make = function(owner, ref) {
+EagleNodeList.make = function(owner, ref, raw) {
   const Ctor = EagleNodeList;
-  console.log('EagleNodeList.make', owner,"\n", ref );
-  return { instance: new Ctor(owner, ref), Ctor };
+  //console.log("EagleNodeList.make",{owner,ref,raw});
+  return { instance: new Ctor(owner, ref, raw), Ctor };
 };
 
-export function makeEagleNodeList(owner, path) {
-  let { ref, root } = owner;
-  let listPath = new EaglePath(['children']);
+export function makeEagleNodeList(owner, ref, raw) {
+  let path = new EaglePath(ref);
 
+  ref = EagleRef(owner.raw, ['children']);
 
-let listRef = new EagleReference( owner.raw, listPath);
-
-console.log("makeEagleNodeList ", owner, {listRef});
-  const { Ctor, instance } = EagleNodeList.make(owner, listRef);
+  /*  let document = owner.document;
+  let root = document;
+    //console.log("makeEagleNodeList", { owner, root,node, path: ref });
+*/
+  const { Ctor, instance } = EagleNodeList.make(owner, ref);
   return new Proxy(instance, {
     set(target, prop, value) {
       if(typeof prop == 'number' || (typeof prop == 'string' && /^[0-9]+$/.test(prop))) {
@@ -101,7 +111,6 @@ console.log("makeEagleNodeList ", owner, {listRef});
       } else {
         return Reflect.set(target, prop, value);
       }
-
     },
     get(target, prop, receiver) {
       let index;
