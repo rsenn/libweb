@@ -122,6 +122,7 @@ export class EagleNode extends EagleInterface {
   initCache(ctor = this.childConstructor) {
     let fields = this.cacheFields();
 
+    console.log('fields:', fields);
     if(fields) {
       Util.define(this, 'cache', {});
       Util.define(this, 'lists', {});
@@ -195,9 +196,12 @@ export class EagleNode extends EagleInterface {
 
     transform = transform || ((...args) => args);
 
-    //    pred = (...args)=> { console.log("args:", args[1].toString()); return pred(...args); }
+    let cond = (...args) => {
+      console.log('args:', args[0]);
+      return pred(...args);
+    };
 
-    for(let [v, p, o] of deep.iterate(this.raw, pred, [])) {
+    for(let [v, p, o] of deep.iterate(this.raw, cond, [])) {
       yield transform(v, p, o);
     }
   }

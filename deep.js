@@ -84,13 +84,20 @@ export const select = (root, filter, path) => {
   return selected;
 };
 
-export const iterate = function*(value, filter = v => true, path = []) {
-  let root = arguments[3] || value,
-    selected = [],
-    r;
+export const iterate = function*(value, filter = v => true, path = [], root) {
+  let r;
+  let selected = [];
 
-  if((r = filter(value, path, root))) yield [value, path, root];
-  if(r !== -1) if (Util.isObject(value)) for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
+  root = root || value;
+
+  if((r = filter(value, path, root)) & 1) yield [value, path, root];
+  if(Util.isObject(value)) {
+    for(let k in value) {
+      let v = value[k];
+      let p = [...path, k];
+      if(filter(v, p, root) & 2) yield* iterate(v, p, root);
+    }
+  }
 };
 
 export const flatten = function(iter, dst = {}) {
