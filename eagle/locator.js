@@ -196,9 +196,9 @@ export const EaglePath = Util.immutableClass(
     }
 
     toString(hl = -1) {
-      let y = this.map(item => (item == 'children' ? '⎿' : item == 'attributes' ? '＠' : item)).map((part, i) => text(part, ...(hl == i ? [38, 5, 124] : [38, 5, 82])));
+      let y = this.map(item => (item == 'children' ? '⎿' : item == 'attributes' ? '＠' : item)).map((part, i) => text(part, ...(hl == i ? [1, 31] : [1, 32])));
 
-      y = text('♈ ', 38, 5, 45) + y.join('') + text(' 🔚', 38, 5, 172);
+      y = text('♈ ', 1, 36) + y.join('') + text(' 🔚', 1, 35);
       return y.trim();
     }
 

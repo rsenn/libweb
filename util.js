@@ -128,7 +128,15 @@ Util.generalLog = function(n, x) {
 };
 Util.toSource = function(arg, opts = {}) {
   const { color = true } = opts;
-  const c = Util.coloring(color);
+  const c = Util.coloring(false);
+  if(Util.isArray(arg)) {
+    let o = '';
+    for(let item of arg) {
+      if(o.length > 0) o += ',';
+      o += Util.toSource(item);
+    }
+    return `[${o}]`;
+  }
   if(typeof arg == 'string') return c.text(`'${arg}'`, 1, 36);
   if(arg && arg.x !== undefined && arg.y !== undefined) return `[${c.text(arg.x, 1, 32)},${c.text(arg.y, 1, 32)}]`;
   if(arg && arg.toSource) return arg.toSource();
@@ -2490,7 +2498,19 @@ Util.compose = function compose(fn1, fn2 /*, fn3, etc */) {
 Util.clamp = curry((min, max, value) => Math.max(min, Math.min(max, value)));
 
 Util.coloring = (useColor = true) =>
-  !useColor || Util.isBrowser()
+  !useColor
+    ? {
+        code(...args) {
+          return '';
+        },
+        text(text) {
+          return text;
+        },
+        concat(...args) {
+          return args.join('');
+        }
+      }
+    : Util.isBrowser()
     ? {
         palette: ['rgb(0,0,0)', 'rgb(80,0,0)', 'rgb(0,80,0)', 'rgb(80,80,0)', 'rgb(0,0,80)', 'rgb(80,0,80)', 'rgb(0,80,80)', 'rgb(80,80,80)', 'rgb(0,0,0)', 'rgb(160,0,0)', 'rgb(0,160,0)', 'rgb(160,160,0)', 'rgb(0,0,160)', 'rgb(160,0,160)', 'rgb(0,160,160)', 'rgb(160,160,160)'],
         /*Util.range(0, 15).map(
@@ -2542,6 +2562,7 @@ Util.coloring = (useColor = true) =>
           return args.join('');
         }
       };
+
 let color;
 Util.colorText = (...args) => {
   if(!color) color = Util.coloring();

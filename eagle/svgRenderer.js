@@ -120,8 +120,8 @@ export class EagleSVGRenderer {
           //...LayerAttributes(l),
           stroke,
           'data-name': l.name,
-          ...(active == 'yes' ? { 'data-active': true } : {}),
-          ...(visible == 'yes' ? { 'data-visible': true } : {})
+          ...(active == 'yes' ? { 'data-active': 'yes' } : {}),
+          ...(visible == 'yes' ? { 'data-visible': 'yes' } : {})
         },
         layerGroup
       );

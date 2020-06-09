@@ -14,20 +14,21 @@ export class EagleElement extends EagleNode {
 
   static get(owner, ref, raw) {
     if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(Util.isObject(owner) && 'raw' in owner ? owner.raw : owner, ref);
-
     if(!raw) raw = ref.path.apply(ref.root, true);
-
     // console.log('Element.get', Object.keys(raw));
     let inst = this.map.get(raw);
-    //console.log('Element.get', inst);
+    let cached = !!inst;
     if(!inst) {
+      //console.log(`Element.get ref: [${[...ref.path].join(',')}]   tag: ${raw.tagName} owner.tagName: ${owner.tagName}`);
       inst = new EagleElement(owner, ref, raw);
       try {
         this.map.set(raw, inst);
       } catch(err) {
-        console.log('EagleElement.get', { raw, err });
+        //console.log('EagleElement.get', { raw, err });
       }
     }
+    //console.log(`Element.get inst.xpath() = ${inst.xpath()}`);
+    //console.log('Element.get cached:', cached+' '+ Util.className(inst)+' '+inst.tagName);
     return inst;
   }
 
@@ -36,6 +37,11 @@ export class EagleElement extends EagleNode {
   }
 
   constructor(owner, ref, raw) {
+    //console.log('new EagleElement owner ', Util.className(owner), ' ', raw.tagName);
+    if(Util.className(owner) == 'Object') {
+      throw new Error();
+    }
+
     super(owner, ref, raw);
     Util.define(this, 'handlers', {});
     let path = this.ref.path;
@@ -49,7 +55,7 @@ export class EagleElement extends EagleNode {
     let { tagName, attributes, children } = raw;
     this.tagName = tagName;
     this.attrMap = {};
-    let doc = this.document;
+    let doc = this.getDocument();
     let elem = this;
     if(!Util.isEmpty(attributes)) {
       const names = this.names();
@@ -138,9 +144,11 @@ export class EagleElement extends EagleNode {
     if(tagName == 'gate') {
       lazyProperty(this, 'symbol', () => this.parentNode.elementChain().library.find(e => e.tagName == 'symbol' && e.attributes.name == this.attributes.symbol));
     } else if(tagName == 'instance') {
+      let { tagName } = this;
+      //console.log('instance', { doc, owner, tagName });
+
       const part = doc.find(e => e.tagName == 'part' && e.attributes.name == this.attributes.part);
       const library = doc.find(e => e.tagName == 'library' && e.attributes.name == part.attributes.library);
-      //console.log("instance", doc,part,library);
 
       const deviceset = library.find(e => e.tagName == 'deviceset' && e.attributes.name == part.attributes.deviceset);
       const device = deviceset.find(e => e.tagName == 'device' && e.attributes.name == part.attributes.device);
@@ -348,12 +356,12 @@ export class EagleElement extends EagleNode {
   get pos() {
     return `(${(this.x / 25.4).toFixed(1)} ${(this.y / 25.4).toFixed(1)})`;
   }
-
+  /*
   static create(owner, ref, ...args) {
     if('length' in ref) ref = owner.ref.down(...ref);
     if(args.length > 0) ref = ref.down(...args);
     return EagleElement.get(owner, ref);
-  }
+  }*/
 }
 
 export const makeEagleElement = (owner, ref, raw) => {

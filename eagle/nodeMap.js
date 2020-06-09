@@ -56,7 +56,7 @@ Object.assign(EagleNodeMap.prototype, {
 export function makeEagleNodeMap(list, key = 'name') {
   const Ctor = EagleNodeMap;
 
-  console.log('makeEagleNodeMap', list, { key });
+ // console.log('makeEagleNodeMap', list, { key });
 
   const instance = new Ctor(list, key);
 

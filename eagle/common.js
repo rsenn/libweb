@@ -6,7 +6,7 @@ import { BBox, TransformationList } from '../geom.js';
 
 const pathPadding = Util.isBrowser() ? 0 : 40;
 
-export const coloring = Util.coloring();
+export const coloring = Util.coloring(false);
 //console.log('coloring: ', coloring);
 export const ansi = coloring.code.bind(coloring); //Util.isBrowser() ? () => '' : (...args) => `\u001b[${[...args].join(';')}m`;
 
@@ -175,6 +175,16 @@ export class EagleInterface {
         yield v;
       }
     }
+  }
+
+  find(...args) {
+    let { path, predicate, transform } = parseArgs([...arguments]);
+    if(!transform) transform = ([v, l, d]) => (typeof v == 'object' && v !== null && 'tagName' in v ? new EagleElement(d, l, v) : v);
+    for(let [v, p, d] of this.iterator()) {
+      if(typeof v == 'string') continue;
+      if(predicate(v, p, d)) return transform([v, p, d]);
+    }
+    return transform([null, [], []]);
   }
 
   getBounds(pred = e => true) {

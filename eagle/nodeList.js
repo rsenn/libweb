@@ -26,8 +26,8 @@ Object.assign(EagleNodeList.prototype, {
     const ctor = owner.constructor;
     for(let i = 0; i < raw.length; i++) {
       let childRef = EagleRef(owner.raw, [...ref.path, i]);
-      let r = makeEagleElement(owner.raw, childRef, raw[i]);
-     // console.log('EagleNodeList  [Symbol.iterator]()', { childRef, r });
+      let r = makeEagleElement(owner, childRef, raw[i]);
+      // console.log('EagleNodeList  [Symbol.iterator]()', { childRef, r });
       yield r;
     }
   },
@@ -52,7 +52,7 @@ Object.assign(EagleNodeList.prototype, {
 
 EagleNodeList.make = function(owner, ref, raw) {
   const Ctor = EagleNodeList;
- // console.log('EagleNodeList.make', owner.path, ref);
+  // console.log('EagleNodeList.make', owner.path, ref);
   return { instance: new Ctor(owner, ref, raw), Ctor };
 };
 

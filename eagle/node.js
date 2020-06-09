@@ -259,8 +259,9 @@ export class EagleNode extends EagleInterface {
 
     /*   const ref = this.ref.up(2);*/
     const { ref, path, root, raw } = this;
-    //console.log("parentNode", {path,root, raw});
-    return this[Symbol.species].get(root, path.up(2));
+    let doc = this.getDocument();
+  //P  console.log('parentNode', path + '', doc);
+    return this[Symbol.species].get(doc, ref.up(2));
   }
 
   get firstChild() {
@@ -283,13 +284,13 @@ export class EagleNode extends EagleInterface {
   [Symbol.for('nodejs.util.inspect.custom')]() {
     let attrs = [''];
     let a = this.raw.attributes || this.attributes;
-    if(a) attrs = Object.keys(a).reduce((attrs, attr) => concat(attrs, text(attr, 1, 33), text(':', 1, 36), text("'" + a[attr] + "'", 1, 32)), attrs);
+    if(a) attrs = Object.keys(a).reduce((attrs, attr) => concat(attrs, ' ', text(attr, 1, 33), text(':', 1, 36), text("'" + a[attr] + "'", 1, 32)), attrs);
     let children = this.raw.children || this.children;
     let numChildren = children.length;
     let ret = ['']; //`${Util.className(this)} `;
     let tag = this.raw.tagName || this.tagName;
     //console.realLog("attrs:",attrs);
-    if(tag) ret = concat(ret, text('<', 1, 36), text(tag + ' ', 1, 31), attrs, text(numChildren == 0 ? '/>' : '>', 1, 36));
+    if(tag) ret = concat(ret, text('<', 1, 36), text(tag , 1, 31), attrs, text(numChildren == 0 ? ' />' : '>', 1, 36));
     if(this.filename) ret = concat(ret, ` filename="${this.filename}"`);
     if(numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${this.tagName}>`);
     return (ret = concat(ret, text('', 0)));
