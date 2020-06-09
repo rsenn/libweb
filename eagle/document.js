@@ -11,7 +11,7 @@ import { BBox, Rect, PointList } from '../geom.js';
 export class EagleDocument extends EagleNode {
   static types = ['brd', 'sch', 'lbr'];
   xml = null;
-  path = null;
+  file = null;
   type = null;
 
   constructor(xmlStr, project, filename, type) {
@@ -19,7 +19,7 @@ export class EagleDocument extends EagleNode {
     super(project, EagleRef(deepClone(xml[0]), []));
     type = type || /<library>/.test(xmlStr) ? 'lbr' : /<element\ /.test(xmlStr) ? 'brd' : 'sch';
     if(filename) {
-      this.path = filename;
+      this.file = filename;
       type = type || filename.replace(/.*\//g, '').replace(/.*\./g, '');
     }
     //console.log('load document:', { project, xml: xmlStr.substring(0, 100), type });
@@ -32,14 +32,14 @@ export class EagleDocument extends EagleNode {
   }
 
   get filename() {
-    return this.path && this.path.replace(/.*\//g, '');
+    return this.file && this.file.replace(/.*\//g, '');
   }
   get dirname() {
-    return this.path && (/\//.test(this.path) ? this.path.replace(/\/[^\/]*\/?$/g, '') : '.');
+    return this.file && (/\//.test(this.file) ? this.file.replace(/\/[^\/]*\/?$/g, '') : '.');
   }
 
   get basename() {
-    return this.path && this.filename.replace(/\.[a-z][a-z][a-z]$/i, '');
+    return this.file && this.filename.replace(/\.[a-z][a-z][a-z]$/i, '');
   }
 
   get changes() {
@@ -65,13 +65,13 @@ export class EagleDocument extends EagleNode {
   }
 
   /* prettier-ignore */
-  saveTo(path, overwrite = false) {
+  saveTo(file, overwrite = false) {
     let { fs } = this.project;
     const data = Buffer.from(this.toString());
 
    return new Promise((resolve,reject) => {
-    fs.writeFile(path, data);
-    resolve([path,data.length]);
+    fs.writeFile(file, data);
+    resolve([file,data.length]);
   });
   }
 
@@ -89,10 +89,14 @@ export class EagleDocument extends EagleNode {
 
     for(let instance of this.getAll((e, p) => e.tagName == 'instance')) {
       let part = instance.part;
-      let device = part.device;
-      let deviceset = part.deviceset;
-      let gate = deviceset.gates[instance.attributes.gate];
-      let symbol = part.library.symbols[gate.attributes.symbol];
+      let library = this.document.find(e => e.tagName == 'library' && e.attributes.name == part.attributes.library);
+
+      let deviceset = library.find(e => e.tagName == 'deviceset' && e.attributes.name == part.attributes.deviceset);
+      let device = library.find(e => e.tagName == 'device' && e.attributes.name == part.attributes.device);
+
+      let gate = deviceset.find(e => e.tagName == 'gate' && e.attributes.name == instance.attributes.gate);
+
+      let symbol = library.find(e => e.tagName == 'symbol' && e.attributes.name == gate.attributes.symbol);
       let geometries = {
         gate: gate.geometry(),
         symbol: new Rect(symbol.getBounds()).toPoints(),
@@ -114,8 +118,8 @@ export class EagleDocument extends EagleNode {
       bb.update(bbrect);
     }
 
-    for(let [name, signal] of this.signals) {
-      console.log('signal:', signal);
+    for(let signal of this.getAll(e => e.tagName == 'signal')) {
+      //console.log('signal:', signal);
       let bbrect = signal.getBounds();
 
       bb.update(bbrect);

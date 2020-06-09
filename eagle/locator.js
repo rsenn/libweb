@@ -1,23 +1,27 @@
 import Util from '../util.js';
 import { text, inspect, toXML, dump } from './common.js';
 
-export function DereferenceError(object, member, pos, part, locator) {
+export function DereferenceError(object, member, pos, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
+  let { owner, ref } = object;
+  console.log('DereferenceError', { object, member, locator });
+  console.log('DereferenceError', { ref });
+  let stack = Util.getCallerStack()
+    .filter(frame => null !== frame.getFileName())
+    .map(frame => {
+      let method = frame.getMethodName();
+      if(method) method = (frame.getTypeName() || Util.className(frame.getThis())) + '.' + method;
+      else method = frame.getFunctionName();
+
+      return `${('' + frame.getFileName()).replace(/.*plot-cv\//, '')}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
+    });
 
   return Object.assign(
     error,
     { object, member, pos, locator },
     {
-      message: `Error dereferencing ${Util.className(object)} @ ${locator.map((part, i) => (i == pos ? '<<' + part + '>>' : part)).join(',')} w/ keys={${Object.keys(part).join(',')}} no member '${member}' `,
-      stack: Util.getCallerStack()
-        .filter(frame => null !== frame.getFileName())
-        .map(frame => {
-          let method = frame.getMethodName();
-          if(method) method = (frame.getTypeName() || Util.className(frame.getThis())) + '.' + method;
-          else method = frame.getFunctionName();
-
-          return `${('' + frame.getFileName()).replace(/.*plot-cv\//, '')}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
-        })
+      message: `Error dereferencing ${Util.className(object)} @ ${locator.toString() /*map((part, i) => (i == pos ? '<<' + part + '>>' : part)).join(',')*/} xml: ${Util.abbreviate(toXML(locator.root))}  no member '${member}' \n` + stack.join('\n'),
+      stack
     }
   );
 }
@@ -120,25 +124,31 @@ export const EaglePath = Util.immutableClass(
     /* prettier-ignore */ get lastChild() { return this.nthChild(-1); }
     /* prettier-ignore */ get depth() { return this.length; }
 
-    apply(obj) {
+    apply(obj, noThrow) {
       let o = obj;
-      if(o === undefined) {
-        window.stack = Util.getCallers(1, 10);
+      if(o === undefined && !noThrow) {
+        let stack = Util.getCallers(1, 10);
+
         throw new Error(`Object ${o}` + stack.join('\n'));
       }
-      o = this.reduce(
+      let a = this.reduce(
         (a, i) => {
-          let r = i === ChildrenSym ? a.o.children : i < 0 && a.o instanceof Array ? a.o[a.o.length + i] : a.o[i];
-          if(r === undefined) throw new DereferenceError(obj, i, a.n, a.o, this);
-          a.o = r;
-          a.n++;
+          if(a.o) {
+            let r = i === ChildrenSym ? a.o.children : i < 0 && a.o instanceof Array ? a.o[a.o.length + i] : a.o[i];
+
+            a.o = r;
+            a.n++;
+          }
+
           return a;
         },
         { o, n: 0 }
-      ).o;
+      );
+      if(a.o == null && !noThrow) throw new DereferenceError(obj, a.n, a.n, this);
+
       //console.log("path.apply", this.toString(), Util.abbreviate(toXML(o), 40) );
 
-      return o;
+      return a.o;
     }
 
     xpath(obj) {
@@ -231,10 +241,10 @@ export const EaglePath = Util.immutableClass(
     concat(a) {
       return new EaglePath(this.toArray().concat(Array.from(a)));
     }
-    reduce(fn, acc) {
+    /* reduce(fn, acc) {
       for(let i = 0; i < this.length; i++) acc = fn(acc, this[i], i, this);
       return acc;
-    }
+    }*/
     map(fn) {
       let ret = [];
       for(let i = 0; i < this.length; i++) ret.push(fn(this[i], i, this));
@@ -259,17 +269,29 @@ export class EagleReference {
 
     this.path = path instanceof EaglePath ? path : new EaglePath(path);
     this.root = root;
+
+    if(!this.dereference(true)) {
+      console.log('dereference:', { path, root: Util.abbreviate(toXML(root), 10) });
+      throw new Error(this.path.join(','));
+    }
   }
+
   get type() {
     return typeof this.path.last == 'number' ? Array : Object;
   }
 
-  dereference() {
-    const { root, path } = this;
-    let raw = path.apply(root);
+  dereference(noThrow) {
+    const { path, root } = this;
 
-    // console.log("dereference:",path.toString(),Util.abbreviate(toXML(raw),10), root);
-    return raw;
+    let r;
+
+    try {
+      r = (Util.isObject(root) && 'owner' in root && path.apply(root.owner, true)) || path.apply(root);
+    } catch(err) {
+      console.log('err:', err.message, err.stack);
+      //process.exit()
+    }
+    return r;
   }
 
   replace(value) {

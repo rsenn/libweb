@@ -2,6 +2,7 @@ import { EagleRef, EagleReference } from './locator.js';
 import Util from '../util.js';
 import deep from '../deep.js';
 import { lazyMembers } from '../lazyInitializer.js';
+import { trkl } from '../trkl.js';
 import { text, inspect, EagleInterface } from './common.js';
 
 import { makeEagleNodeMap } from './nodeMap.js';
@@ -21,16 +22,15 @@ export class EagleNode extends EagleInterface {
   }
 
   constructor(owner, ref, raw) {
+    if(!owner) owner = new EagleReference(ref.root, []).dereference();
     super(owner);
+    if(!raw) raw = ref.dereference();
 
-    if(ref) {
-      if(!(ref instanceof EagleReference)) {
-        ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
-        console.log('EagleNode.constructor ', { owner, ref, raw });
-      }
-
+    /*    if(ref)*/ {
+      if(!(ref instanceof EagleReference)) ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
       Util.define(this, 'ref', ref);
     }
+    //console.log('EagleNode.constructor ', { ref, raw });
   }
 
   get path() {
@@ -44,7 +44,14 @@ export class EagleNode extends EagleInterface {
 
   get document() {
     let doc = this;
-    while(doc.owner !== undefined) doc = doc.owner;
+    let i = 0;
+    while(doc.owner !== undefined) {
+      if(doc.xml !== undefined) break;
+      doc = doc.owner;
+
+      i++;
+    }
+    //console.log('doc:', i, Util.className(doc), this);
     return doc;
   }
 
@@ -77,17 +84,15 @@ export class EagleNode extends EagleInterface {
 
   get raw() {
     if(this.xml && this.xml[0]) return this.xml[0];
+    const { ref, owner, root, path } = this;
 
-    let obj = this;
-    while('ref' in obj) {
-      let ref = obj.ref;
-      obj = ref.dereference();
-      if('raw' in obj) {
-        obj = obj.raw;
-        break;
-      }
+    let r = ref.path.apply(root, true) || ref.path.apply(owner, true);
+    if(!r) {
+      //console.log('raw:', { ref, root, owner, path });
+      r = ref.path.apply(root) || ref.path.apply(owner);
     }
-    return obj;
+
+    return r;
   }
 
   cacheFields() {
@@ -111,7 +116,7 @@ export class EagleNode extends EagleInterface {
     let protos = Util.getPrototypeChain(this);
     if(Util.fnName(protos[0].constructor) == 'EagleDocument') protos.shift();
     let ctor = protos[0].constructor;
-    console.log('ctor:', ctor);
+    //console.log('ctor:', ctor);
     return ctor;
   }
 
@@ -138,6 +143,16 @@ export class EagleNode extends EagleInterface {
       lazyMembers(this.cache, lazy);
       lazyMembers(this, maps);
     }
+  }
+
+  initRelation(key, fn) {
+          trkl.bind(this, key,  v => {
+
+                  if(v !== undefined) 
+                 return   this.handlers[key](typeof v == 'string' ? v : v.name);
+
+               return fn(this.handlers[key](), this, this.document);
+             });
   }
 
   appendChild(node, attributes = {}) {
@@ -167,11 +182,18 @@ export class EagleNode extends EagleInterface {
     } else if(typeof pred == 'string') {
       name = pred;
       pred = (v, p, o) => v.tagName === name;
+    } else if(Util.isObject(pred) && typeof pred != 'function') {
+      let keys = Object.keys(pred);
+      let values = keys.reduce((acc, key) => [...acc, pred[key]], []);
+
+      pred = (v, p, o) => keys.every((key, i) => (key == 'tagName' ? v[key] == values[i] : v.attributes[key] == values[i]));
     }
 
     let ctor = this[Symbol.species];
 
     transform = transform || ((...args) => args);
+
+    //    pred = (...args)=> { console.log("args:", args[1].toString()); return pred(...args); }
 
     for(let [v, p, o] of deep.iterate(this.raw, pred, [])) {
       yield transform(v, p, o);
@@ -179,11 +201,17 @@ export class EagleNode extends EagleInterface {
   }
 
   get(pred, transform) {
-    return [...this.getAll(pred, transform)][0] || null;
+    let it = this.getAll(pred, transform);
+    let a = [...it];
+    const { root, path, raw } = this;
+
+    //   console.log("EagleNode.get",{className: Util.className(this), root,path,raw,pred: pred+'',it,a});
+
+    return a[0] || null;
   }
 
-  find(name) {
-    const a = [...this.getAll(name)];
+  find(name, transform = v => v) {
+    const a = [...this.getAll(name, transform)];
     return a[0];
   }
 
@@ -224,10 +252,12 @@ export class EagleNode extends EagleInterface {
   }
 
   get parentNode() {
-    const ref = this.ref.up(2);
     if(this.path.length == 0) return null;
 
-    return ref ? this[Symbol.species].create(this, ref) : null;
+    /*   const ref = this.ref.up(2);*/
+    const { ref, path, root, raw } = this;
+    //console.log("parentNode", {path,root, raw});
+    return this[Symbol.species].get(root, path.up(1));
   }
 
   get firstChild() {
@@ -246,11 +276,10 @@ export class EagleNode extends EagleInterface {
     if(a) attrs = Object.keys(a).reduce((attrs, attr) => attrs + ` ${text(attr, 1, 33)}${text(':', 1, 36)}${text("'" + a[attr] + "'", 1, 32)}`, ``);
     let children = this.raw.children || this.children;
     let numChildren = children.length;
-    if(numChildren == 0) attrs += ' /';
-    let ret = `${Util.className(this)}`;
+    let ret = ''; //`${Util.className(this)} `;
     let tag = this.raw.tagName || this.tagName;
 
-    if(tag) ret += ` <${tag + attrs}>`;
+    if(tag) ret += `${text('<',1,36)}${text(tag, 1, 31)}${attrs}${text(numChildren == 0 ? ' />' : '>',1,36)}`;
     if(this.filename) ret += ` filename="${this.filename}"`;
     if(numChildren > 0) ret += `{...${numChildren} children...}</${this.tagName}>`;
     return ret;

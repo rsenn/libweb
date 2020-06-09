@@ -1,3 +1,5 @@
+import Util from '../util.js';
+
 export function EagleNodeMap(list, key) {
   this.list = list;
   this.key = key;
@@ -53,6 +55,8 @@ Object.assign(EagleNodeMap.prototype, {
 
 export function makeEagleNodeMap(list, key = 'name') {
   const Ctor = EagleNodeMap;
+
+  //console.log("makeEagleNodeMap", Util.className(list),{key});
 
   const instance = new Ctor(list, key);
 

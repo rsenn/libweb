@@ -147,20 +147,16 @@ export const Rotation = (rot, f = 1) => {
 
 export class EagleInterface {
   constructor(owner) {
-    Object.defineProperty(this, 'owner', {
-      value: owner,
-      enumerable: false,
-      configurable: true,
-      writable: true
-    });
+    Util.define(this, { owner });
 
-    Object.defineProperty(this, 'children', {
-      enumerable: true,
-      configurable: true,
-      get: function() {
+    Util.defineGetter(
+      this,
+      'children',
+      function() {
         return this.root.children;
-      }
-    });
+      },
+      true
+    );
   }
 
   *findAll(...args) {

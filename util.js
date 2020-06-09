@@ -435,7 +435,7 @@ Util.defineGetter = (obj, key, get, enumerable = false) =>
   obj[key] === undefined &&
   Object.defineProperty(obj, key, {
     enumerable,
-    configurable: false,
+    configurable: true,
     get
   });
 Util.defineGetterSetter = (obj, key, get, set, enumerable = false) =>
@@ -2004,7 +2004,7 @@ Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER, pred = () =
   let stack = Util.getCallerStack(start + 1);
   let ret = [];
   let i = 0;
-  while(ret.length < num) {
+  while(i < num) {
     try {
       let frame = Util.getCaller(i, stack);
       if(pred(frame)) {
