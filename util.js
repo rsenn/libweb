@@ -944,7 +944,7 @@ Util.isNumeric = v => /^[-+]?[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test(v);
 
 Util.isObject = obj => typeof obj === 'object' && obj !== null;
 Util.isFunction = fn => !!(fn && fn.constructor && fn.call && fn.apply);
-Util.isArrowFunction = fn => Util.isFunction(fn) && /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
+Util.isArrowFunction = fn => Util.isFunction(fn) && ( ( !('prototype' in fn) )) ||  /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
 
 Util.isEmptyString = v => Util.isString(v) && (v == '' || v.length == 0);
 
@@ -955,9 +955,9 @@ Util.isEmpty = function(v) {
   return false;
 };
 Util.isNonEmpty = v => !Util.isEmpty(v);
-Util.hasProps = function(obj) {
+Util.hasProps = function(obj, props) {
   const keys = Object.keys(obj);
-  return keys.length > 0;
+  return props ? props.every(prop => 'prop' in obj) : keys.length > 0;
 };
 Util.validatePassword = function(value) {
   return value.length > 7 && /^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]/.test(value) && !/\s/.test(value);
