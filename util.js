@@ -68,7 +68,8 @@ const formatAnnotatedObject = function(subject, o) {
  * @class      Util (name)
  */
 export function Util(g) {
-  if(g) Util.globalObject = g;
+  Util.assignGlobal(g);
+  //  if(g) Util.globalObject = g;
 }
 
 function curry(fn, arity) {
@@ -1968,7 +1969,7 @@ Util.getCallerFunctionNames = function(position = 2) {
 };
 Util.getCaller = function(index, stack) {
   const methods = ['getThis', 'getTypeName', 'getFunction', 'getFunctionName', 'getMethodName', 'getFileName', 'getLineNumber', 'getColumnNumber', 'getEvalOrigin', 'isToplevel', 'isEval', 'isNative', 'isConstructor'];
-  if(Util.isObject(stack)) {
+
     const frame = stack[index];
     // console.log("frame keys:",frame, Util.getMemberNames(frame, 0, 10));
     return methods.reduce(
@@ -1992,10 +1993,12 @@ Util.getCaller = function(index, stack) {
         toString() {
           const { methodName, functionName, position } = this;
           return `${methodName || functionName || ''} ${position}`;
+        },
+        [Symbol.toStringTag]() {
+          return this.toString();
         }
       }
     );
-  }
 };
 Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER, pred = () => true) {
   let stack = Util.getCallerStack(start + 1);
@@ -2438,8 +2441,18 @@ Util.clamp = curry((min, max, value) => Math.max(min, Math.min(max, value)));
 Util.color = (useColor = true) =>
   !useColor || Util.isBrowser()
     ? {
-        code: () => '',
-        text: (text, ...color) => (color.indexOf(1) != -1 ? `${text}` : text)
+        palette: Util.range(0, 15).map(i => `rgb(${Util.range(0, 2).map(bitno => Util.getBit(i, bitno) * (i & 0x08 ? 255 : 127)).join(',')})`) ,
+        code: function(...args) {
+          let o = {};
+          for(let arg of args) {
+            if(arg >= 40) o['background-color'] = this.palette[arg & 0xf];
+            else if(arg >= 30) o['color'] = this.palette[arg & 0xf];
+          }
+          return o;
+        },
+        text(text, ...color) {
+                    return [ `%c${text}`, this.code(...color) ];
+        }
       }
     : {
         code(...args) {
@@ -2544,6 +2557,6 @@ Object.assign(Util.is, {
   false: val => val === 'false' || val === false
 });
 
-Util.assignGlobal = Util.weakAssign(Util.getGlobalObject(), Util);
+Util.assignGlobal = () => Util.weakAssign(Util.getGlobalObject(), Util);
 
 export default Util;

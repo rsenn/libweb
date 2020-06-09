@@ -13,9 +13,11 @@ export class EagleElement extends EagleNode {
   static map = new WeakMap();
 
   static get(owner, ref, node) {
+    if('owner' in owner)
+      owner = owner.owner;
     if(!node) {
       node = ref.dereference();
-      //console.log('Element get ', { ref, node, owner });
+      console.log('Element get ', { ref, node, owner });
     }
     let elem = this.map.get(node);
     if(!elem) {
@@ -31,7 +33,7 @@ export class EagleElement extends EagleNode {
 
   constructor(d, l, o) {
     //   console.log('new EagleElement', { d, l, o }, Util.getCallers(1, 7).map(f => f.toString()));
-    super(d, l);
+    super(d, l, o);
     Object.defineProperty(this, 'handlers', { value: {}, enumerable: false });
     let owner = this.owner;
     let path = this.ref.path; /*.clone()*/
@@ -70,7 +72,7 @@ export class EagleElement extends EagleNode {
 
         // if(key == 'package')
 
-        if(false && Object.keys(names).indexOf(key) != -1) {
+        if( Object.keys(names).indexOf(key) != -1) {
           msg`key=${key} names=${names}`;
           trkl.bind(this, key, v => (v ? v.names.forEach(name => this.handlers[name](v.names[name])) : this.library[key + 's'][this.attrMap[key]]));
         } else if(key == 'device') {
@@ -97,12 +99,17 @@ export class EagleElement extends EagleNode {
             fn = v => {
               //console.log(`relation ${key} ${this.handlers[key]()}`);
 
-              const doc = this.owner;
+              const doc = this.document;
               const libName = this.handlers['library']();
               const pkgName = this.handlers['package']();
               //console.log('relation:', { pkgName, libName, doc });
 
               const lib = doc.get(e => e.tagName == 'library' && e.attributes['name'] == libName);
+
+const libs = [...doc.getAll(e => e.tagName == 'library')].map(e => e.name);
+
+              console.log("No such library", {libName, libs: libs.join(','), doc});
+              window.blah = doc;
               const pkg = lib.get(e => e.tagName == 'package' && e.attributes['name'] == pkgName);
 
               //console.log("relation ", lib, pkg );
@@ -310,8 +317,8 @@ export class EagleElement extends EagleNode {
     return inspect(entity, ownerDocument);
   }
 
-  *getAll(predicate) {
-    yield* super.getAll(predicate, (v, l, o) => EagleElement.get(this, this.ref.down(...l)));
+  *getAll(pred, transform) {
+    yield* super.getAll(pred, transform || ((v, l, p) =>  EagleElement.get(this, l, v)));
   }
 
   setAttribute(name, value) {

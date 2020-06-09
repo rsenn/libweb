@@ -20,10 +20,18 @@ export class EagleNode extends EagleInterface {
     return EagleNode;
   }
 
-  constructor(owner, ref) {
+  constructor(owner, ref, raw) {
     super(owner);
-    ref = ref instanceof EagleReference ? ref : EagleRef(owner.ref.root, ref);
+
+    if(ref) {
+    if(!(ref instanceof EagleReference)) {
+
+    ref = new EagleRef((owner && 'ref' in owner) ? owner.ref.root : owner, [...ref]);
+console.log("EagleNode.constructor ",{owner,ref,raw});
+    }
+
     Util.define(this, 'ref', ref);
+  }
   }
 
   get path() {
@@ -36,8 +44,8 @@ export class EagleNode extends EagleInterface {
   }
 
   get document() {
-    let doc = this.owner;
-    while(doc.owner !== undefined && doc.xml === undefined) doc = doc.owner;
+    let doc = this;
+    while(doc.owner !== undefined) doc = doc.owner;
     return doc;
   }
 
@@ -162,11 +170,11 @@ export class EagleNode extends EagleInterface {
       pred = (v, p, o) => v.tagName === name;
     }
 
+    let ctor = this[Symbol.species];
+
+
     transform =
-      transform ||
-      function() {
-        return [...arguments];
-      };
+      transform || ((...args) => args);
 
     for(let [v, p, o] of deep.iterate(this.raw, pred, [])) {
       yield transform(v, p, o);
