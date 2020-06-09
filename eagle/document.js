@@ -89,8 +89,8 @@ export class EagleDocument extends EagleNode {
 
     for(let instance of this.getAll((e, p) => e.tagName == 'instance')) {
       let { part, gate } = instance;
-      let symbol = gate.symbol; 
-/*
+      let symbol = gate.symbol;
+      /*
       console.log('instance:\n  ', instance, '\n  ', instance.xpath());
       console.log('part:\n  ', part, '\n  ', part.xpath());
       console.log('gate:\n  ', gate, '\n  ', gate.xpath());
