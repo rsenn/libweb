@@ -1,7 +1,8 @@
-"use strict";
+/* https://github.com/samvv/js-proxy-deep */ P;
+('use strict');
 
 function parsePath(text) {
-  return text.split(".");
+  return text.split('.');
 }
 
 function push(arr, el) {
@@ -11,22 +12,7 @@ function push(arr, el) {
 }
 
 // names of the traps that can be registered with ES6's Proxy object
-const trapNames = [
-  "apply",
-  "construct",
-  "defineProperty",
-  "deleteProperty",
-  "enumerate",
-  "get",
-  "getOwnPropertyDescriptor",
-  "getPrototypeOf",
-  "has",
-  "isExtensible",
-  "ownKeys",
-  "preventExtensions",
-  "set",
-  "setPrototypeOf"
-];
+const trapNames = ['apply', 'construct', 'defineProperty', 'deleteProperty', 'enumerate', 'get', 'getOwnPropertyDescriptor', 'getPrototypeOf', 'has', 'isExtensible', 'ownKeys', 'preventExtensions', 'set', 'setPrototypeOf'];
 
 // a list of paramer indexes that indicate that the a recieves a key at that parameter
 // this information will be used to update the path accordingly
@@ -43,10 +29,10 @@ export function DeepProxy(rootTarget, traps, options) {
   let path = [];
   let userData = {};
 
-  if(options !== undefined && typeof options.path !== "undefined") {
+  if(options !== undefined && typeof options.path !== 'undefined') {
     path = parsePath(options.path);
   }
-  if(options !== undefined && typeof options.userData !== "undefined") {
+  if(options !== undefined && typeof options.userData !== 'undefined') {
     userData = options.userData;
   }
 
@@ -61,8 +47,8 @@ export function DeepProxy(rootTarget, traps, options) {
       const keyParamIdx = keys[trapName],
         trap = traps[trapName];
 
-      if(typeof trap !== "undefined") {
-        if(typeof keyParamIdx !== "undefined") {
+      if(typeof trap !== 'undefined') {
+        if(typeof keyParamIdx !== 'undefined') {
           realTraps[trapName] = function() {
             const key = arguments[keyParamIdx];
 
