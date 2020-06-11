@@ -192,10 +192,10 @@ export class EagleNode extends EagleInterface {
 
     transform = transform || ((...args) => args);
 
-    let cond = (...args) => {
+    let cond = pred; /*(...args) => {
       if(args[0].tagName === undefined) return false;
-      /*console.log("path:", args[1].join('/'));*/ return pred(...args);
-    };
+   return pred(...args);
+    };*/
 
     for(let [v, p, o] of deep.iterate(this.raw, cond, [])) {
       // console.log('getAll',  v.tagName, p.join('.'));
