@@ -84,7 +84,7 @@ export class BoardRenderer extends EagleSVGRenderer {
           parent
         );
 
-        console.log('name:', name);
+      //  console.log('name:', name);
         if(name) {
           svg(
             'tspan',

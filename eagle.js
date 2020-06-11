@@ -530,7 +530,7 @@ export { eagle, eagleProps };
 export const instances = {};
 for(let c in eagleProps.classes) {
   const name = c;
-  console.log('name: ', c);
+  //console.log('name: ', c);
   const ctor = eagleProps.classes[c];
   const proto = ctor.prototype;
   eagleProps.elementMap[name.toLowerCase()] = eagleProps.classes[c];
