@@ -8,10 +8,10 @@ import { text, EagleInterface, concat, ansi } from './common.js';
 import { makeEagleNodeMap } from './nodeMap.js';
 
 export const makeEagleNode = (owner, ref, ctor) => {
-	if (!ctor) ctor = owner[Symbol.species];
+  if (!ctor) ctor = owner[Symbol.species];
 
-	let e = ctor.get ? ctor.get(owner, ref) : new ctor(owner, ref);
-	return e;
+  let e = ctor.get ? ctor.get(owner, ref) : new ctor(owner, ref);
+  return e;
 };
 
 export class EagleNode extends EagleInterface {
