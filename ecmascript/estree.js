@@ -339,10 +339,11 @@ export class YieldStatement extends Statement {
 }
 
 export class ImportStatement extends Statement {
-  constructor(identifiers, sourceFile) {
+  constructor(identifiers, sourceFile, doExport = false) {
     super('ImportStatement');
     this.identifiers = identifiers;
     this.source = sourceFile;
+    if(doExport) this.export = true;
   }
 }
 

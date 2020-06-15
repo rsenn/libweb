@@ -2571,29 +2571,39 @@ Object.assign(Util.is, {
 
 Util.assignGlobal = () => Util.weakAssign(Util.getGlobalObject(), Util);
 
+Util.weakMapper = createFn => {
+  const map = new WeakMap();
+  return (obj, ...args) => {
+    let ret = map.get(obj);
+    if(!ret) {
+      ret = createFn(obj, ...args);
+      map.set(obj, ret);
+    }
+    return ret;
+  };
+};
+
 Util.proxyObject = (root, handler) => {
   const ptr = path => path.reduce((a, i) => a[i], root);
-  const nodes = new WeakMap();
-
-  function node(path) {
-    let value = ptr(path);
-    //console.log("node:",{path,value});
-
-    let proxy = nodes.get(value);
-
-    if(!proxy) {
-      proxy = new Proxy(value, {
+  const nodes = Util.weakMapper(
+    (value, path) =>
+      new Proxy(value, {
         get(target, key) {
-          //  let loc = [...path, key];
-          let prop = value[key]; //ptr(loc);
+          let prop = value[key];
 
           if(Util.isObject(prop) || Util.isArray(prop)) return new node([...path, key]);
 
           return handler && handler.get ? handler.get(prop, key) : prop;
         }
-      });
-      nodes.set(value, proxy);
-    }
+      })
+  );
+
+  function node(path) {
+    let value = ptr(path);
+    //console.log("node:",{path,value});
+
+    let proxy = nodes(value, path);
+
     return proxy;
   }
 

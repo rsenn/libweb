@@ -1456,8 +1456,16 @@ export class ECMAScriptParser extends Parser {
       stmt = new this.estree.ExportStatement(id, this.parseAssignmentExpression());
     } else if(this.matchPunctuators('{')) {
       // this.expectPunctuators('{');
+      let bindingPattern = this.parseBindingPattern();
 
-      stmt = new this.estree.ExportStatement(null, this.parseBindingPattern());
+      if(this.matchKeywords('from')) {
+        this.expectKeywords('from');
+        console.log('export from!');
+
+        stmt = new this.estree.ImportStatement(bindingPattern, this.expectLiteral(), true);
+      } else {
+        stmt = new this.estree.ExportStatement(null, bindingPattern);
+      }
 
       //  this.expectPunctuators('}');
     }

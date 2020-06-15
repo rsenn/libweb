@@ -49,7 +49,7 @@ export class EagleDocument extends EagleNode {
   cacheFields() {
     switch (this.type) {
       case 'sch':
-        return ['settings', 'layers', 'libraries', 'classes', 'parts', 'sheets', 'instances', 'nets'];
+        return ['settings', 'layers', 'libraries', 'classes', 'parts', 'sheets' /*, 'instances', 'nets'*/];
       case 'brd':
         return ['settings', 'layers', 'libraries', 'classes', 'designrules', 'elements', 'signals', 'pads', 'plain'];
       case 'lbr':
@@ -88,7 +88,7 @@ export class EagleDocument extends EagleNode {
     let bb = new BBox();
 
     for(let instance of this.getAll((e, p) => e.tagName == 'instance')) {
-      let { part, gate } = instance;
+      let { gate } = instance;
       let symbol = gate.symbol;
       /*
       //console.log('instance:\n  ', instance, '\n  ', instance.xpath());

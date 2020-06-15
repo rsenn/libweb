@@ -22,7 +22,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
   constructor(doc, factory) {
     super(doc, factory);
 
-    const { layers, nets, parts, sheets, symbols } = doc;
+    const { sheets } = doc;
     this.sheets = sheets;
     this.id = 0;
 
@@ -31,7 +31,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(collection, parent, opts) {
-    const { transform, pos, rot } = opts;
+    const { transform } = opts;
 
     //  let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
@@ -51,7 +51,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
    * @param      {<type>}  [opts={}]  The options
    */
   renderItem(item, parent, opts = {}) {
-    const { labelText, pos, transform, rot } = opts;
+    const { transform } = opts;
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
@@ -190,10 +190,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
   }
 
   renderInstance(instance, parent, opts = {}) {
-    let { x, y, rot, part, gate, symbol } = instance;
-    let { transform, pos } = opts;
+    let { x, y, rot, part, symbol } = instance;
     let coordFn = MakeCoordTransformer(this.transform);
-    let { deviceset, device, library, name, value } = part;
+    let { deviceset, name, value } = part;
     let t = new TransformationList();
     t.translate(x, y);
     if(rot) {
@@ -224,7 +223,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
       },
       parent
     );
-    for(let instance of this.sheets[sheetNo].getAll('instance')) {
+    for(let instance of this.sheets[sheetNo].find('instances').children) {
       let t = new TransformationList();
       t.translate(+instance.x, +instance.y);
       let b = instance.getBounds();

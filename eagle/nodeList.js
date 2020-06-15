@@ -23,7 +23,6 @@ Object.assign(EagleNodeList.prototype, {
   },
   *[Symbol.iterator]() {
     const { ref, owner, raw } = this;
-    const ctor = owner.constructor;
     for(let i = 0; i < raw.length; i++) {
       let childRef = EagleRef(owner.raw, [...ref.path, i]);
       let r = makeEagleElement(owner, childRef, raw[i]);
@@ -64,7 +63,6 @@ export function makeEagleNodeList(owner, ref, raw) {
       if(typeof prop == 'number' || (typeof prop == 'string' && /^[0-9]+$/.test(prop))) {
         prop = +prop;
         let list = instance.ref.dereference();
-        let len = list.length;
         if(typeof value == 'object' && 'raw' in value) value = value.raw;
         Reflect.set(list, prop, value);
         return true;

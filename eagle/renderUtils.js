@@ -128,7 +128,6 @@ export const LinesToPath = lines => {
 };
 
 export function MakeCoordTransformer(matrix) {
-  let transformStr = matrix + '';
   if(matrix && matrix.toMatrix) matrix = matrix.toMatrix();
 
   //S if(matrix && matrix.clone) matrix = Object.freeze(matrix.clone());

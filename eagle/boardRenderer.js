@@ -12,7 +12,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
   constructor(obj, factory) {
     super(obj, factory);
-    const { settings, layers, libraries, classes, designrules, elements, signals, plain, sheets } = obj;
+    const { layers, elements, signals, sheets } = obj;
 
     let board = obj;
 
@@ -37,7 +37,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         },
         parent
       );
-    const { labelText, coordFn = i => i, rot } = opts;
+    const { coordFn = i => i } = opts;
     switch (item.tagName) {
       case 'via':
       case 'pad': {
@@ -121,7 +121,7 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(coll, parent, opts = {}) {
-    const { predicate = i => true, transform, pos, rot } = opts;
+    const { predicate = i => true, transform } = opts;
     //console.log(`BoardRenderer.renderCollection`, { transform, pos, rot });
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;

@@ -410,11 +410,13 @@ export class Printer {
   }
 
   printImportStatement(import_statement) {
-    const { identifiers } = import_statement;
-    let output = identifiers.exported ? 'export ' : 'import ';
+    const { identifiers, export: doExport } = import_statement;
+    let output = doExport ? 'export ' : 'import ';
     //console.log(identifiers);
 
-    output += identifiers.declarations.map(decl => this.printNode(decl)).join(', ');
+    if(identifiers.declarations) output += identifiers.declarations.map(decl => this.printNode(decl)).join(', ');
+    else output += this.printNode(identifiers);
+
     output += ' from ';
 
     //console.log('import_statement.source:', import_statement.source);

@@ -67,7 +67,6 @@ export const parseArgs = args => {
 
 export const traverse = function*(obj, path = [], doc) {
   if(!(path instanceof EaglePath)) path = new EaglePath(path);
-  if(false && typeof obj == 'object') if (obj !== null && 'name' in obj.attributes) path[path.length - 1] = { name: obj.attributes.name };
   yield [obj, path, doc];
   if(typeof obj == 'object') {
     if(Util.isArray(obj)) {
@@ -88,16 +87,13 @@ export const toXML = function(o, z = 10000) {
   let attrs = attributes || obj;
   for(let k in attrs) s += ` ${k}="${attrs[k]}"`;
   const a = children && children.length !== undefined ? children : [];
-  const text = o.text;
   if(a && a.length > 0) {
     s += tagName[0] != '?' ? '>' : '?>';
     const textChildren = typeof a[0] == 'string';
     let nl = textChildren ? '' : tagName == 'text' && a.length == 1 ? '' : tagName[0] != '?' ? '\n  ' : '\n';
     if(textChildren) s += a.join('\n') + `</${tagName}>`;
     else {
-      if(true /*z === true || z > 0*/) {
-        for(let child of a) s += nl + toXML(child, z === true ? z : z - 1).replace(/>\n/g, '>' + nl);
-      } else s += '...';
+      for(let child of a) s += nl + toXML(child, z === true ? z : z - 1).replace(/>\n/g, '>' + nl);
       if(tagName[0] != '?') s += `${nl.replace(/ /g, '')}</${tagName}>`;
     }
   } else {
@@ -212,11 +208,12 @@ export class EagleInterface {
       else return Point.bind(this, null, makeGetterSetter);
     }
   }
-
+  /*
   locate(...args) {
     let { element, path, predicate, transform } = parseArgs(args);
+    console.log("locate", {element,path,predicate});
     return predicate(this.find((v, l, d) => v === element, path));
-  }
+  }*/
 
   getDocument() {
     let o = this;

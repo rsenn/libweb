@@ -82,7 +82,7 @@ export class EagleNode extends EagleInterface {
 
     let r = ref.path.apply(root, true) || ref.path.apply(owner, true);
     if(!r) {
-      console.log('raw:', { ref, root, owner, path });
+      //console.log('raw:', { ref, root, owner, path });
       r = ref.path.apply(root) || ref.path.apply(owner);
     }
 
@@ -172,14 +172,13 @@ export class EagleNode extends EagleInterface {
     this.ref.replace(node);
   }
 
-  *getAll(predicate, transform) {
-    let name;
+  static makePredicate(predicate) {
     let pred = predicate;
     if(pred instanceof RegExp) {
-      name = pred;
-      pred = (v, p, o) => name.test(v.tagName);
+      let re = pred;
+      pred = (v, p, o) => re.test(v.tagName);
     } else if(typeof pred == 'string') {
-      name = pred;
+      let name = pred;
       pred = (v, p, o) => v.tagName === name;
     } else if(Util.isObject(pred) && typeof pred != 'function') {
       let keys = Util.isArray(pred) ? pred : Object.keys(pred);
@@ -187,6 +186,13 @@ export class EagleNode extends EagleInterface {
 
       pred = (v, p, o) => keys.every((key, i) => (key == 'tagName' ? v[key] == values[i] : v.attributes[key] == values[i]));
     }
+    return pred;
+  }
+
+  *getAll(predicate, transform) {
+    //console.log('getAll', this, predicate + '');
+    let name;
+    let pred = EagleNode.makePredicate(predicate);
 
     let ctor = this[Symbol.species];
 
@@ -204,7 +210,10 @@ export class EagleNode extends EagleInterface {
   }
 
   get(pred, transform) {
-    let it = this.getAll(pred, transform);
+    //console.log('get', this, pred);
+
+    pred = EagleNode.makePredicate(pred);
+    let it = this.getAll((v, p, o) => (pred(v, p, o) ? -1 : false), transform);
     let a = [...it];
     const { root, path, raw } = this;
 
@@ -214,7 +223,11 @@ export class EagleNode extends EagleInterface {
   }
 
   find(name, transform) {
-    const a = [...this.getAll(name, transform)];
+    //console.log('find', this, name + '');
+
+    let pred = EagleNode.makePredicate(name);
+
+    const a = [...this.getAll((v, p, o) => (pred(v, p, o) ? -1 : false), transform)];
     return a[0];
   }
 

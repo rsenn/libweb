@@ -24,7 +24,7 @@ export class EagleSVGRenderer {
     Object.setPrototypeOf(this, ctor.prototype);
     this.doc = doc;
     this.create = factory; //(tag, attrs, parent) => factory(tag, 'id' in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
-    const { settings, layers, libraries, classes, designrules, elements, signals, plain } = doc;
+    const { layers, elements, signals } = doc;
     this.elements = elements;
     this.signals = signals;
     this.plain = doc.get('plain', (v, l) => EagleElement.get(doc, l));
@@ -107,7 +107,7 @@ export class EagleSVGRenderer {
     let layers = [];
 
     for(let l of layerList) {
-      const { name, number, color, active, visible } = l;
+      const { color, active, visible } = l;
 
       if(active == 'no' && visible == 'no') continue;
 
@@ -144,13 +144,13 @@ export class EagleSVGRenderer {
 
     let transform = new TransformationList();
     let coordFn = pos
-      ? ({ x1, y1, x2, y2, x, y, width, height }) => ({
-          x: x + pos.x,
-          x1: x1 + pos.x,
-          x2: x2 + pos.x,
-          y: y + pos.y,
-          y1: y1 + pos.y,
-          y2: y2 + pos.y
+      ? coords => ({
+          x: coords.x + pos.x,
+          x1: coords.x1 + pos.x,
+          x2: coords.x2 + pos.x,
+          y: coords.y + pos.y,
+          y1: coords.y1 + pos.y,
+          y2: coords.y2 + pos.y
         })
       : i => i;
 
@@ -183,10 +183,8 @@ export class EagleSVGRenderer {
         break;
       }
       case 'rectangle': {
-        const { width, rot } = item;
         const { x1, x2, y1, y2 } = coordFn(item);
         let rect = new Rect({ x1, x2, y1, y2 });
-        let center = rect.center;
         svg(
           'rect',
           {
@@ -204,7 +202,7 @@ export class EagleSVGRenderer {
         break;
       }
       case 'label': {
-        const { size, rot, align } = item;
+        const { align } = item;
         const { x, y } = coordFn(item);
         const transform = new TransformationList(`translate(${x},${y})`);
 
@@ -312,7 +310,6 @@ export class EagleSVGRenderer {
       case 'contactref':
         break;
       default: {
-        const { width, radius } = item;
         const { x, y } = coordFn(item);
 
         break;

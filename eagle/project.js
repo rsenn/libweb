@@ -117,7 +117,6 @@ export class EagleProject {
     //console.log('documents:', this.documents);
 
     const { schematic, board } = this;
-    const entityNames = ['package', 'symbol', 'deviceset'];
 
     let libraries = {
       file: l[name],
@@ -148,10 +147,7 @@ export class EagleProject {
       const destLib = libProps(libraries[k]);
       const srcLib = libProps(libraries.file);
       for(let entity in destLib) {
-        //console.log('entity:', entity);
-        const srcMap = srcLib[entity];
         const dstMap = destLib[entity];
-        const transformName = n => n.replace(/[.,][0-9]*/g, '').replace(/([^0-9])([0-9])([^0-9])/g, '$10$2$3');
         let ent = srcLib[entity].entries();
         let m = new Map(ent);
         //console.log(`dstMap:`, dstMap);

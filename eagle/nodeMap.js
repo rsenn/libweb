@@ -17,7 +17,9 @@ Object.assign(EagleNodeMap.prototype, {
   get(name, key = this.key) {
     const { owner, ref, raw } = this.list;
     const idx = raw.findIndex(item => item.attributes[key] == name);
-    return raw[idx] ? owner.constructor.get(owner, ref.down(idx), raw[idx]) : null;
+    let value = raw[idx];
+    //console.log("EagleNodeMap", {name,key,idx,owner, ref, value});
+    return raw[idx] ? owner.constructor.get(owner, ['children', idx], value) : null;
   },
   set(name, value) {
     const list = this.list.raw;
@@ -63,6 +65,13 @@ export function makeEagleNodeMap(list, key = 'name') {
   return new Proxy(instance, {
     get(target, prop, receiver) {
       let index;
+
+      let item = instance.get(prop);
+
+      if(item) {
+        //console.log("EagleNodeMap.get", {prop, item});
+        return item;
+      }
 
       if(typeof prop == 'number' || (typeof prop == 'string' && /^[0-9]+$/.test(prop))) {
         prop = +prop;

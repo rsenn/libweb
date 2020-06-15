@@ -25,8 +25,6 @@ export function Renderer(doc, factory) {
 }
 
 export function renderDocument(doc, container) {
-  const gridColor = 'hsla(230,100%,60%,0.3)';
-  const gridWidth = 0.1;
   const factory = SVG.factory(
     {
       append_to(e, p) {
@@ -57,8 +55,7 @@ export function renderDocument(doc, container) {
   let objects = [];
   let defs;
   let palette;
-  let rng,
-    str = '';
+  let rng;
   let randN = Util.randInt(0, 30000);
   rng = new Alea(1340);
   let bgColor = doc.type == 'sch' ? 'rgb(255,255,255)' : 'rgba(0,0,0,0.0)';

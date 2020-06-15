@@ -27,7 +27,7 @@ export function Stack() {
   return stack
     .filter(s => s.functionName != 'esfactory')
     .map(function({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) {
-      return `  ${functionName.padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`;
+      return `  ${(functionName || '').padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`;
     });
 
   /*
