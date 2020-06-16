@@ -13,7 +13,7 @@ export class EagleElement extends EagleNode {
   static map = new WeakMap();
 
   static get(owner, ref, raw) {
-    if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(Util.isObject(owner) && 'raw' in owner ? owner.raw : owner, ref);
+    if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(/*Util.isObject(owner) && 'raw' in owner ? owner.raw : */ owner, ref);
     if(!raw) raw = ref.path.apply(ref.root, true);
     // console.log('Element.get', Object.keys(raw));
     let inst = this.map.get(raw);
@@ -38,7 +38,7 @@ export class EagleElement extends EagleNode {
   constructor(owner, ref, raw) {
     //console.log('new EagleElement owner ', Util.className(owner), ' ', raw.tagName);
     if(Util.className(owner) == 'Object') {
-      throw new Error();
+      throw new Error(`${Util.inspect(owner, 1)}`);
     }
 
     super(owner, ref, raw);
@@ -56,6 +56,7 @@ export class EagleElement extends EagleNode {
     this.attrMap = {};
     let doc = this.getDocument();
     let elem = this;
+
     if(!Util.isEmpty(attributes)) {
       const names = this.names();
       for(let key in attributes) {
@@ -144,7 +145,13 @@ export class EagleElement extends EagleNode {
       }
     });
     if(tagName == 'gate') {
-      lazyProperty(this, 'symbol', () => this.parentNode.elementChain().library.find(e => e.tagName == 'symbol' && e.attributes.name == this.attributes.symbol));
+      /*console.log("this.parentNode", this.parentNode);
+      console.log("this.parentNode.elementChain()", this.parentNode.elementChain());*/
+      // console.log('path', path);
+      let library = this.elementChain().library || EagleElement.get(this.owner, path.up(8));
+      // console.log('library', library);
+
+      lazyProperty(this, 'symbol', () => library.find({ tagName: 'symbol', name: this.attributes.symbol }));
     } else if(tagName == 'instance') {
       let { tagName } = this;
       //console.log('instance', { doc, owner, tagName });
@@ -342,11 +349,11 @@ export class EagleElement extends EagleNode {
   }
 
   *getAll(pred, transform) {
-    yield* super.getAll(pred, transform || ((v, l, p) => EagleElement.get(this, l, v)));
+    yield* super.getAll(pred, transform || ((v, l, p) => EagleElement.get(this.owner, l, v)));
   }
 
   find(pred, transform) {
-    return super.find(pred, transform || ((v, l, p) => EagleElement.get(this, l, v)));
+    return super.find(pred, transform || ((v, l, p) => EagleElement.get(this.owner, l, v)));
   }
 
   setAttribute(name, value) {

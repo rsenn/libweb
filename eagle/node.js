@@ -10,6 +10,8 @@ import { makeEagleNodeMap } from './nodeMap.js';
 export const makeEagleNode = (owner, ref, ctor) => {
   if(!ctor) ctor = owner[Symbol.species];
 
+  //console.log('makeEagleNode', owner);
+
   let e = ctor.get ? ctor.get(owner, ref) : new ctor(owner, ref);
   return e;
 };
@@ -44,16 +46,6 @@ export class EagleNode extends EagleInterface {
 
   get document() {
     return this.getDocument();
-    let doc = this;
-    let i = 0;
-    while(doc.owner !== undefined) {
-      if(doc.xml !== undefined) break;
-      doc = doc.owner;
-
-      i++;
-    }
-    //  console.log('doc:', i, Util.className(doc), this);
-    return doc;
   }
 
   get chain() {
@@ -118,7 +110,7 @@ export class EagleNode extends EagleInterface {
     let fields = this.cacheFields();
     let node = this;
 
-    if(fields) {
+    if(fields && fields.length) {
       Util.define(this, 'cache', {});
       Util.define(this, 'lists', {});
 
@@ -126,10 +118,13 @@ export class EagleNode extends EagleInterface {
       let lists = {};
       let maps = {};
       let ref = this.ref;
+      let owner = this.document;
 
-      for(let [value, path] of deep.iterate(ref.dereference(), v => v && fields.indexOf(v.tagName) != -1)) {
+      //console.log('initCache', { owner, ref });
+
+      for(let [value, path] of deep.iterate(ref.dereference(), (v, p) => v && fields.indexOf(v.tagName) != -1)) {
         const key = value.tagName;
-        lazy[key] = () => makeEagleNode(this, ref.down(...path), ctor);
+        lazy[key] = () => makeEagleNode(owner, ref.down(...path), ctor);
         lists[key] = () => lazy[key]().children;
 
         maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => makeEagleNodeMap(lazy[key]().children, key == 'instances' ? 'part' : key == 'layers' ? 'number' : 'name');
@@ -190,21 +185,12 @@ export class EagleNode extends EagleInterface {
   }
 
   *getAll(predicate, transform) {
-    //console.log('getAll', this, predicate + '');
     let name;
     let pred = EagleNode.makePredicate(predicate);
-
     let ctor = this[Symbol.species];
-
     transform = transform || ((...args) => args);
-
-    let cond = pred; /*(...args) => {
-      if(args[0].tagName === undefined) return false;
-   return pred(...args);
-    };*/
-
-    for(let [v, p, o] of deep.iterate(this.raw, cond, [])) {
-      // console.log('getAll',  v.tagName, p.join('.'));
+    let cond = pred;
+    for(let [v, p, o] of deep.iterate(this.raw, cond, [...this.path])) {
       yield transform(v, p, o);
     }
   }
@@ -273,7 +259,7 @@ export class EagleNode extends EagleInterface {
     /*   const ref = this.ref.up(2);*/
     const { ref, path, root, raw } = this;
     let doc = this.getDocument();
-    //P  console.log('parentNode', path + '', doc);
+    //      console.log('parentNode', path + '', doc);
     return this[Symbol.species].get(doc, ref.up(2));
   }
 

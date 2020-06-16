@@ -278,16 +278,10 @@ Util.range = function(start, end) {
   return r;
 };
 Util.set = Util.curry((obj, prop, value) => (obj[prop] = value));
-Util.inspect = function(
-  obj,
-  opts = {
-    indent: '  ',
-    newline: '\n',
-    depth: 2,
-    spacing: ' '
-  }
-) {
-  return formatAnnotatedObject(obj, opts);
+Util.inspect = (obj, opts = false) => {
+  const { indent = '  ', newline = '\n', depth = 2, spacing = ' ' } = typeof opts == 'object' ? opts : { indent: '', newline: '', depth: typeof opts == 'number' ? opts : 10, spacing: ' ' };
+
+  return formatAnnotatedObject(obj, { indent, newline, depth, spacing });
 };
 Util.bitArrayToNumbers = function(arr) {
   let numbers = [];

@@ -19,7 +19,7 @@ export function DereferenceError(object, member, pos, locator) {
     error,
     { object, member, pos, locator },
     {
-      message: `Error dereferencing ${Util.className(object)} @ ${locator.toString() /*map((part, i) => (i == pos ? '<<' + part + '>>' : part)).join(',')*/} xml: ${Util.abbreviate(toXML(locator.root))}  no member '${member}' \n` + stack.join('\n'),
+      message: `Error dereferencing ${Util.className(object)} @ ${locator.toString() /*map((part, i) => (i == pos ? '<<' + part + '>>' : part)).join(',')*/} xml: ${Util.abbreviate(toXML(locator.root))}  no member '${member}' in ${Util.inspect(object)} \n` + stack.join('\n'),
       stack
     }
   );
@@ -136,7 +136,18 @@ export const EaglePath = Util.immutableClass(
       let a = this.reduce(
         (a, i) => {
           if(a.o) {
-            let r = i === ChildrenSym ? a.o.children : i < 0 && a.o instanceof Array ? a.o[a.o.length + i] : a.o[i];
+            let r;
+            if(i === ChildrenSym || i == 'children') r = 'raw' in a.o ? a.o.raw.children : a.o.children;
+            else if(Util.isArray(a.o)) {
+              if(typeof i == 'object') {
+                let ent = Object.entries(i);
+                r = a.o.find(child => ent.every(([prop, value]) => child[prop] == value));
+              } else if(typeof i == 'number' && i < 0) r = a.o[a.o.length + i];
+              else r = a.o[+i];
+            } else {
+              r = a.o[i];
+            }
+
             a.o = r;
             a.n++;
           }
@@ -282,13 +293,25 @@ export class EagleReference {
     return typeof this.path.last == 'number' ? Array : Object;
   }
 
+  getPath(root) {
+    let path = new EaglePath();
+    let ref = this;
+
+    do {
+      path = ref.path.concat(path);
+
+      if(root === undefined || root == ref) break;
+    } while(true);
+    return path;
+  }
+
   dereference(noThrow) {
     const { path, root } = this;
     let r;
     try {
       r = (Util.isObject(root) && 'owner' in root && path.apply(root.owner, true)) || path.apply(root);
     } catch(err) {
-      console.log('err:', err.message, err.stack);
+      //console.log('err:', err.message, err.stack);
     }
     return r;
   }

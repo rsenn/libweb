@@ -218,9 +218,8 @@ export class EagleInterface {
   getDocument() {
     let o = this;
     while(o.owner) {
-      o = o.owner;
-
       if(o.xml !== undefined) break;
+      o = o.owner;
     }
     return o;
   }
