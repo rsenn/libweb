@@ -114,8 +114,12 @@ export class Element extends Node {
   }
 
   static *childIterator(elem) {
-    if(elem.firstChild) for(let c = elem.firstChild; c; c = c.nextSibling) yield c;
-    else for(let i = 0; i < elem.children.length; i++) yield elem.children[i];
+    if(elem.firstElementChild) {
+      for(let c = elem.firstElementChild; c; c = c.nextElementSibling) yield c;
+    } else {
+      let children = [...elem.children];
+      for(let i = 0; i < children.length; i++) yield children[i];
+    }
   }
 
   static toObject(elem, opts = { children: true }) {
@@ -804,6 +808,18 @@ export class Element extends Node {
     });
     ret.cancel = cancel;
     return ret;
+  }
+
+  static toString(e) {
+    let o = e.__proto__ === Object.prototype ? e : Element.toObject(e);
+    const { tagName, ns, children = [], ...a } = o;
+    let s = `<${tagName}`;
+    s += Object.entries(a)
+      .map(([name, value]) => ` ${name}="${value}"`)
+      .join('');
+    s += children.length ? `>` : ` />`;
+    if(children.length) s += children.map(Element.toString).join('') + `</${tagName}`;
+    return s;
   }
 }
 
