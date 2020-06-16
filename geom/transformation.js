@@ -603,6 +603,10 @@ export class TransformationList extends Array {
   join(sep = ' ') {
     return Array.prototype.join.call(this, sep);
   }
+
+  clear() {
+   return this.splice(0, this.length);
+  }
 }
 
 const { concat, copyWithin, find, findIndex, lastIndexOf, pop, push, shift, unshift, slice, splice, includes, indexOf, entries, filter, map, every, some, reduce, reduceRight } = Array.prototype;

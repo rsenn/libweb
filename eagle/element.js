@@ -107,7 +107,7 @@ export class EagleElement extends EagleNode {
             };
           } else if(tagName == 'instance') {
             fn = value => {
-              const part = doc.get(e => e.tagName == 'part' && e.attributes['name']);
+              const part = doc.parts[elem.attrMap['part']]; // get(e => e.tagName == 'part' && e.attributes['name']);
 
               if(key == 'part') return part;
               const library = elem.document.libraries[part.attrMap.library];
@@ -225,12 +225,19 @@ export class EagleElement extends EagleNode {
     if(this.raw.tagName == 'description') return 'Document';
   }
 
+
+  lookup(xpath) {
+    return super.lookup(xpath, (o,p,v) => EagleElement.get(o,p,v));
+  }
+
+
   getBounds(pred = e => true) {
     let bb, pos;
     if(this.tagName == 'element') {
       const { raw, ref, path, attributes, owner, document } = this;
       const libName = raw.attributes['library'];
-      let lib = owner.libraries[libName];
+     // console.log("document.libraries", document.libraries);
+      let lib = document.libraries[libName];
       let pkg = lib.get(e => e.tagName == 'package' && e.attributes['name'] == raw.attributes['package']);
       bb = pkg.getBounds();
       pos = this.geometry();

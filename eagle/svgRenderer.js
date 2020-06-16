@@ -137,7 +137,7 @@ export class EagleSVGRenderer {
   renderItem(item, parent, opts = {}) {
     let { labelText, pos, rot } = opts;
 
-    //S   console.log(`EagleSVGRenderer.renderItem`, {  labelText, pos, rot, transform });
+       //console.log(`EagleSVGRenderer.renderItem`, {  labelText, pos, rot });
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...attr }, parent);
@@ -224,12 +224,19 @@ export class EagleSVGRenderer {
         break;
       }
       case 'text': {
-        let { text, align, size, font, rot } = item;
+        let { children = [], text: innerText, align, size, font, rot } = item;
+        let text = innerText || labelText || children.join("\n");
         let { x, y } = coordFn(item);
+        //console.log("text", {text});
+
+
         if(text.startsWith('&gt;')) {
           const prop = text.slice(4).toLowerCase();
+          //console.log("text", {text, prop, opts});
           text = prop in opts ? opts[prop] : text;
         }
+        if(text == '') break;
+        
         const translation = new TransformationList(`translate(${x},${y})`);
 
         //console.log("translation:", Util.className(translation));
@@ -377,7 +384,8 @@ export class EagleSVGRenderer {
     //console.log('bounds:', bounds.toString({ separator: ' ' }));
     const { width, height } = new Size(bounds).toCSS('mm');
 
-    this.transform.translate(0, bounds.height + bounds.y);
+    this.transform.clear();
+    this.transform.translate(0, rect.height + rect.y);
     this.transform.scale(1, -1);
 
     const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;

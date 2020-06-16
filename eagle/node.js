@@ -84,17 +84,17 @@ export class EagleNode extends EagleInterface {
   cacheFields() {
     switch (this.tagName) {
       case 'schematic':
-        return ['settings', 'layers', 'libraries', 'classes', 'parts', 'sheets'];
+        return [['settings'],['layers'],['libraries'],['classes'],['parts'],['sheets']];
       case 'board':
-        return ['plain', 'libraries'];
+        return [['plain'], ['libraries']];
       case 'sheet':
-        return ['busses', 'nets', 'instances'];
+        return [['busses'], ['nets'], ['instances']];
       case 'deviceset':
-        return ['gates', 'devices'];
+        return [['gates'],['devices']];
       case 'device':
-        return ['connects', 'technologies'];
+        return [['connects'],['technologies']];
       case 'library':
-        return ['packages', 'symbols', 'devicesets'];
+        return [['packages'],['symbols'],['devicesets']];
     }
   }
 
@@ -120,14 +120,16 @@ export class EagleNode extends EagleInterface {
       let ref = this.ref;
       let owner = this.document;
 
-      //console.log('initCache', { owner, ref });
+      //console.log('initCache',fields );
+      for(let xpath of fields) {
+        let key = xpath[xpath.length - 1];
 
-      for(let [value, path] of deep.iterate(ref.dereference(), (v, p) => v && fields.indexOf(v.tagName) != -1)) {
-        const key = value.tagName;
-        lazy[key] = () => makeEagleNode(owner, ref.down(...path), ctor);
+   /*   for(let [value, path] of deep.iterate(ref.dereference(), (v, p) => v && fields.indexOf(v.tagName) != -1)) {
+        const key = value.tagName;*/
+        lazy[key] = () =>  { console.log(`lazy[${key}]()`, xpath); return this.lookup(xpath); } //makeEagleNode(owner,, ctor);
         lists[key] = () => lazy[key]().children;
 
-        maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => makeEagleNodeMap(lazy[key]().children, key == 'instances' ? 'part' : key == 'layers' ? 'number' : 'name');
+        maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => makeEagleNodeMap(lists[key](), key == 'instances' ? 'part' : key == 'layers' ? 'number' : 'name');
       }
       lazyMembers(this.lists, lists);
       lazyMembers(this.cache, lazy);

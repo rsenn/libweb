@@ -183,6 +183,18 @@ export class EagleInterface {
     return transform([null, [], []]);
   }
 
+  lookup(xpath, t = (o,p,v) => [o,p]) {
+    if(typeof(xpath) == 'string')
+      xpath = xpath.split(/\//g);
+    xpath = xpath.reduce((acc,p) => [...acc, 'children', typeof(p) == 'string' ? { tagName: p } : p ], []);
+
+
+
+    let ret = t(...[this, new EaglePath(xpath)]);
+      //console.log("lookup:", {xpath,ret});
+return ret;
+  }
+
   getBounds(pred = e => true) {
     let bb = new BBox();
     for(let element of this.getAll(e => e.tagName !== undefined && pred(e))) {
@@ -211,7 +223,7 @@ export class EagleInterface {
   /*
   locate(...args) {
     let { element, path, predicate, transform } = parseArgs(args);
-    console.log("locate", {element,path,predicate});
+    //console.log("locate", {element,path,predicate});
     return predicate(this.find((v, l, d) => v === element, path));
   }*/
 
