@@ -261,6 +261,7 @@ export const EaglePath = Util.immutableClass(
     concat(a) {
       return new EaglePath(this.toArray().concat(Array.from(a)));
     }
+
     /* reduce(fn, acc) {
       for(let i = 0; i < this.length; i++) acc = fn(acc, this[i], i, this);
       return acc;
@@ -377,6 +378,7 @@ export const EagleRef = function EagleRef(root, path) {
   let obj = new EagleReference(root, path);
   return Object.freeze(obj);
 };
+
 /*
 ["up", "down", "left", "right", "slice"].forEach(method =>
     (EagleReference.prototype[method] = function(...args) {

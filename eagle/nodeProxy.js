@@ -20,6 +20,7 @@ function Node(path, context) {
   }
   return proxy;
 }
+
 /*
 function NodeList(path, context) {
   let value = context.ptr(path);

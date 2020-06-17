@@ -88,7 +88,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
       case 'pin': {
         const { length, rot, name, visible } = item;
         const { x, y } = coordFn(item);
-        const func = item['function'];
+        const func = item.function;
 
         const angle = +(rot || '0').replace(/R/, '');
         let veclen = SchematicRenderer.pinSizes[length] * 2.54;
@@ -257,6 +257,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
         g
       );
     }
+
     /*
     r.outset(0);
     r.round(2.54);

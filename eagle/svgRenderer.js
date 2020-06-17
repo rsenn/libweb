@@ -79,7 +79,7 @@ export class EagleSVGRenderer {
     let c = this.palette[color] || /*this.colors[color] || */ 'rgb(165,165,165)';
     // console.log('getColor', color, c);
 
-    /* if(c) 
+    /* if(c)
     Util.colorDump([c]);*/
     //    console.log(Util.getCallers());
     return c;
@@ -190,6 +190,7 @@ export class EagleSVGRenderer {
           {
             stroke: 'none',
             fill: color,
+
             /*      x: -rect.width / 2,
             y: -rect.height / 2,
             width: rect.width,

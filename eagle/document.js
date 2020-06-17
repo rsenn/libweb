@@ -92,10 +92,10 @@ export class EagleDocument extends EagleNode {
     let { fs } = this.project;
     const data = Buffer.from(this.toString());
 
-   return new Promise((resolve,reject) => {
-    fs.writeFile(file, data);
-    resolve([file,data.length]);
-  });
+    return new Promise((resolve,reject) => {
+      fs.writeFile(file, data);
+      resolve([file,data.length]);
+    });
   }
 
   index(path, transform = arg => arg) {

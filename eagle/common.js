@@ -96,10 +96,8 @@ export const toXML = function(o, z = 10000) {
       for(let child of a) s += nl + toXML(child, z === true ? z : z - 1).replace(/>\n/g, '>' + nl);
       if(tagName[0] != '?') s += `${nl.replace(/ /g, '')}</${tagName}>`;
     }
-  } else {
-    if(Object.keys(attrs).length == 0) s += `></${tagName}>`;
-    else s += ' />';
-  }
+  } else if(Object.keys(attrs).length == 0) s += `></${tagName}>`;
+  else s += ' />';
   return s.trim();
 };
 
@@ -224,9 +222,10 @@ export class EagleInterface {
       const { x, y } = Point(this);
       if(keys.includes('radius')) return Circle.bind(this, null, makeGetterSetter);
       if(['width', 'height'].every(prop => keys.includes(prop))) return Rect.bind(this, null, makeGetterSetter);
-      else return Point.bind(this, null, makeGetterSetter);
+      return Point.bind(this, null, makeGetterSetter);
     }
   }
+
   /*
   locate(...args) {
     let { element, path, predicate, transform } = parseArgs(args);

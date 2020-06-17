@@ -77,7 +77,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         svg(
           'path',
           {
-            fill: this.colors['Pads'] || this.palette[2],
+            fill: this.colors.Pads || this.palette[2],
             d: data + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
             transform
           },

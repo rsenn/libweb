@@ -67,9 +67,8 @@ export function makeEagleNodeList(owner, ref, raw) {
         if(typeof value == 'object' && 'raw' in value) value = value.raw;
         Reflect.set(list, prop, value);
         return true;
-      } else {
-        return Reflect.set(target, prop, value);
       }
+      return Reflect.set(target, prop, value);
     },
     get(target, prop, receiver) {
       let index;

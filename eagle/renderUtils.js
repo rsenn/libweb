@@ -39,7 +39,7 @@ export const InvertY = item => {
 };
 
 export const PolarToCartesian = (cx, cy, radius, angle) => {
-  var a = ((angle - 90) * Math.PI) / 180.0;
+  let a = ((angle - 90) * Math.PI) / 180.0;
   return {
     x: cx + radius * Math.cos(a),
     y: cy + radius * Math.sin(a)

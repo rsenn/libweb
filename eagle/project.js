@@ -48,9 +48,9 @@ export class EagleProject {
     return doc;
   }
 
-  /* prettier-ignore */ get schematic() {return this.documents.find(doc => doc.type == "sch"); }
-  /* prettier-ignore */ get board() {return this.documents.find(doc => doc.type == "brd"); }
-  /* prettier-ignore */ get libraries() {return this.documents.filter(doc => doc.type == "lbr"); }
+  /* prettier-ignore */ get schematic() {return this.documents.find(doc => doc.type == 'sch'); }
+  /* prettier-ignore */ get board() {return this.documents.find(doc => doc.type == 'brd'); }
+  /* prettier-ignore */ get libraries() {return this.documents.filter(doc => doc.type == 'lbr'); }
   /* prettier-ignore */ get root() { let children = this.documents; return { children }; }
   /* prettier-ignore */ get children() { let children = this.documents; return children; }
   /* prettier-ignore */ get library() { return this.data.lbr; }

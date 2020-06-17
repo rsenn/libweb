@@ -89,14 +89,14 @@ export class EagleElement extends EagleNode {
           let fn;
           if(key == 'package') {
             fn = value => {
-              const libName = elem.handlers['library']();
-              const pkgName = elem.handlers['package']();
+              const libName = elem.handlers.library();
+              const pkgName = elem.handlers.package();
               const library = doc.libraries[libName]; //(e => e.tagName == 'library' && e.attributes['name'] == libName);
               return library.packages[pkgName]; //({ tagName: 'package', name: pkgName });
             };
           } else if(tagName == 'instance') {
             fn = value => {
-              const part = doc.parts[elem.attrMap['part']]; // get(e => e.tagName == 'part' && e.attributes['name']);
+              const part = doc.parts[elem.attrMap.part]; // get(e => e.tagName == 'part' && e.attributes['name']);
 
               if(key == 'part') return part;
               const library = elem.document.libraries[part.attrMap.library];
@@ -125,8 +125,9 @@ export class EagleElement extends EagleNode {
         }
       }
     }
-    var childList = null;
+    let childList = null;
     lazyProperty(this, 'children', () => makeEagleNodeList(elem, ['children'], children));
+
     /*    trkl.bind(this, 'children', value => {
       if(value === undefined) {
         if(childList === null) childList = makeEagleNodeList(this, ['children'], this.raw.children);
@@ -189,6 +190,7 @@ export class EagleElement extends EagleNode {
         has: key => attributeNames.includes(key),
         values: () => attributeNames.map(key => attributeHandlers[key]())
       });
+
       /*Object.assign(
         EagleAttributes.prototype,
         attributeNames.reduce((acc, key) => ({ ...acc, [key]: attributeHandlers[key]() }), {})
@@ -225,11 +227,11 @@ export class EagleElement extends EagleNode {
       pos = this.geometry();
     if(this.tagName == 'element') {
       const { raw, ref, path, attributes, owner, document } = this;
-      const libName = raw.attributes['library'];
+      const libName = raw.attributes.library;
       // console.log("document.libraries", document.libraries);
       let library = document.libraries[libName];
 
-      let pkg = library.packages[raw.attributes['package']];
+      let pkg = library.packages[raw.attributes.package];
       bb = pkg.getBounds();
       bb.move(pos.x, pos.y);
       bb = bb.round(v => Util.roundTo(v, 1.27));
@@ -248,6 +250,7 @@ export class EagleElement extends EagleNode {
       bb.update(p.bbox());
     } else if(this.tagName == 'sheet') {
       console.log('this', this, this.tagName);
+
       /* for(let instance of this['instances'].children) {
         bb.update(instance.getBounds(), 0, instance);
       }*/
@@ -282,7 +285,7 @@ export class EagleElement extends EagleNode {
       const { x, y } = Point(this);
       if(keys.includes('radius')) return Circle.bind(this, null, makeGetterSetter);
       if(['width', 'height'].every(prop => keys.includes(prop))) return Rect.bind(this, null, makeGetterSetter);
-      else return Point.bind(this, null, makeGetterSetter);
+      return Point.bind(this, null, makeGetterSetter);
     }
   }
 
@@ -370,6 +373,7 @@ export class EagleElement extends EagleNode {
   get pos() {
     return `(${(this.x / 25.4).toFixed(1)} ${(this.y / 25.4).toFixed(1)})`;
   }
+
   /*
   static create(owner, ref, ...args) {
     if('length' in ref) ref = owner.ref.down(...ref);
@@ -378,6 +382,4 @@ export class EagleElement extends EagleNode {
   }*/
 }
 
-export const makeEagleElement = (owner, ref, raw) => {
-  return EagleElement.get(owner, ref, raw);
-};
+export const makeEagleElement = (owner, ref, raw) => EagleElement.get(owner, ref, raw);
