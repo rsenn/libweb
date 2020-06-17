@@ -129,7 +129,7 @@ export class EagleNode extends EagleInterface {
    /*   for(let [value, path] of deep.iterate(ref.dereference(), (v, p) => v && fields.indexOf(v.tagName) != -1)) {
         const key = value.tagName;*/
         lazy[key] = () => {
-          console.log(`lazy[${key}]()`, xpath, this.tagName, this);
+          //console.log(`lazy[${key}]()`, xpath, this.tagName, this);
           return this.lookup(xpath);
         };
 
@@ -291,7 +291,7 @@ export class EagleNode extends EagleInterface {
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
     let attrs = [''];
-    console.log('Inspect:', this.path, this.raw);
+    //console.log('Inspect:', this.path, this.raw);
 
     let r = this; //'tagName' in this ? this : this.raw; // this.ref ? this.ref.dereference()  : this;
     let a = r.attrMap ? r.attrMap : r.attributes;
@@ -300,7 +300,7 @@ export class EagleNode extends EagleInterface {
         .filter(name => typeof a[name] != 'function')
         .reduce((attrs, attr) => concat(attrs, ' ', text(attr, 1, 33), text(':', 1, 36), text("'" + a[attr] + "'", 1, 32)), attrs);
 
-      console.log('Inspect:', a, a.keys ? a.keys() : Object.getOwnPropertyNames(a));
+      //console.log('Inspect:', a, a.keys ? a.keys() : Object.getOwnPropertyNames(a));
     }
 
     let children = r.children;

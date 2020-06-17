@@ -13,23 +13,19 @@ export class EagleElement extends EagleNode {
   static map = new WeakMap();
 
   static get(owner, ref, raw) {
-    if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(/*Util.isObject(owner) && 'raw' in owner ? owner.raw : */ owner, ref);
+    if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference( owner, ref);
     if(!raw) raw = ref.path.apply(ref.root, true);
-    // console.log('Element.get', Object.keys(raw));
     let inst = this.map.get(raw);
     if(!inst) {
-      //console.log(`Element.get ref: [${[...ref.path].join(',')}]   tag: ${raw.tagName} owner.tagName: ${owner.tagName}`);
       inst = new EagleElement(owner, ref, raw);
       try {
         this.map.set(raw, inst);
       } catch(err) {
-        //console.log('EagleElement.get', { raw, err });
       }
     }
-    //console.log(`Element.get inst.xpath() = ${inst.xpath()}`);
-    //console.log('Element.get cached:', cached+' '+ Util.className(inst)+' '+inst.tagName);
     return inst;
   }
+
 
   get [Symbol.species]() {
     return EagleElement;
@@ -51,7 +47,7 @@ export class EagleElement extends EagleNode {
       } catch(error) {}
     }
     if(raw === null || typeof raw != 'object') throw new Error('ref: ' + this.ref.inspect() + ' entity: ' + EagleNode.prototype.inspect.call(this));
-    let { tagName, attributes } = raw;
+    let { tagName, attributes, children = [] } = raw;
     this.tagName = tagName;
     this.attrMap = {};
     let doc = this.getDocument();
@@ -136,14 +132,15 @@ export class EagleElement extends EagleNode {
       }
     }
     var childList = null;
-    trkl.bind(this, 'children', value => {
+    lazyProperty(this, 'children' , () =>  makeEagleNodeList(elem, ['children'], children) );
+/*    trkl.bind(this, 'children', value => {
       if(value === undefined) {
         if(childList === null) childList = makeEagleNodeList(this, ['children'], this.raw.children);
         return childList;
       } else {
-        o.children = value.raw;
+        o.children = value.raw || [];
       }
-    });
+    });*/
     if(tagName == 'gate') {
       /*console.log("this.parentNode", this.parentNode);
       console.log("this.parentNode.elementChain()", this.parentNode.elementChain());*/
@@ -247,7 +244,7 @@ export class EagleElement extends EagleNode {
     } else if(this.tagName == 'instance') {
       const { part, gate, rot } = this;
       const { symbol } = gate;
-      console.log('instance', { gate, symbol });
+     // console.log('instance', { gate, symbol });
       let t = new TransformationList();
       t.translate(+this.x, +this.y);
       t = t.concat(Rotation(rot));

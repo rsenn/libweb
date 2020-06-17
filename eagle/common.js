@@ -188,11 +188,12 @@ export class EagleInterface {
     if(typeof(xpath) == 'string')
       xpath = xpath.split(/\//g);
     xpath = xpath.reduce((acc,p) => [...acc, 'children', typeof(p) == 'string' ? { tagName: p } : p ], []);
-
+let elem = this;
+      console.log("lookup:", {elem,xpath});
 
 
     let ret = t(...[this, new EaglePath(xpath)]);
-      //console.log("lookup:", {xpath,ret});
+      console.log("lookup:", {xpath,ret});
 return ret;
   }
 
