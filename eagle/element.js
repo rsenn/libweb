@@ -2,7 +2,7 @@ import Util from '../util.js';
 import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { makeEagleNodeList } from './nodeList.js';
-import { EagleReference } from './locator.js';
+import { EagleReference, EagleRef } from './locator.js';
 import { EagleInterface, Rotation } from './common.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList } from '../geom.js';
@@ -172,7 +172,7 @@ export class EagleElement extends EagleNode {
         return pkg;
       });
     }
-    this.initCache(EagleElement);
+    this.initCache(EagleElement, makeEagleNodeList);
   }
 
   get text() {
@@ -245,10 +245,13 @@ export class EagleElement extends EagleNode {
       bb = bb.round(v => Util.roundTo(v, 1.27));
       return bb;
     } else if(this.tagName == 'instance') {
-      const { part, symbol, gate, rot } = this;
+      const { part, gate, rot } = this;
+      const { symbol } = gate;
+      console.log('instance', { gate, symbol });
       let t = new TransformationList();
       t.translate(+this.x, +this.y);
       t = t.concat(Rotation(rot));
+
       let b = symbol.getBounds(e => e.tagName != 'text');
       let p = b.rect.toPoints();
       let m = t.toMatrix();
@@ -256,9 +259,10 @@ export class EagleElement extends EagleNode {
       return p.bbox();
     } else if(this.tagName == 'sheet') {
       let bb = new BBox();
-      for(let instance of this.getAll('instance')) {
+      console.log('this', this, this.tagName);
+      /* for(let instance of this['instances'].children) {
         bb.update(instance.getBounds(), 0, instance);
-      }
+      }*/
       return bb;
     } else {
       return super.getBounds(pred);
@@ -298,14 +302,19 @@ export class EagleElement extends EagleNode {
     let node = this;
     let ret = {};
     let prev = null;
-    do {
-      if(node == prev) break;
-      //console.log(Util.className(this) + '.elementChain ', ret, node.path);
+    let i = 0;
+    //   console.log( '.elementChain ', this.owner, node.xpath());
 
-      if(node.attributes.name) ret[node.tagName] = node;
+    do {
+      // console.log('.elementChain ', i, node, node.owner);
+
+      if(node == prev) break;
+
+      if(node.attributes && node.attributes.name) ret[node.tagName] = node;
 
       prev = node;
-    } while((node = node.parentNode));
+      i++;
+    } while((node = node.parentNode || node.owner));
 
     return ret;
   }
