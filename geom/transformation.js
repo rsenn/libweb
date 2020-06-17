@@ -605,7 +605,7 @@ export class TransformationList extends Array {
   }
 
   clear() {
-   return this.splice(0, this.length);
+    return this.splice(0, this.length);
   }
 }
 

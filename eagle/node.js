@@ -10,9 +10,6 @@ import { makeEagleNodeMap } from './nodeMap.js';
 
 export const makeEagleNode = (owner, ref, ctor) => {
   if(!ctor) ctor = owner[Symbol.species];
-
-  //console.log('makeEagleNode', owner);
-
   let e = ctor.get ? ctor.get(owner, ref) : new ctor(owner, ref);
   return e;
 };
@@ -28,12 +25,10 @@ export class EagleNode extends EagleInterface {
     if(!owner) owner = new EagleReference(ref.root, []).dereference();
     super(owner);
     if(!raw) raw = ref.dereference();
-
-    /*    if(ref)*/ {
+    {
       if(!(ref instanceof EagleReference)) ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
       Util.define(this, 'ref', ref);
     }
-    //console.log('EagleNode.constructor ', { ref, raw });
   }
 
   get path() {
@@ -71,32 +66,28 @@ export class EagleNode extends EagleInterface {
 
   get raw() {
     if(this.xml && this.xml[0]) return this.xml[0];
-
     const { ref, owner, root, path } = this;
-
-    let r = ref.path.apply(root, true); /*|| ref.path.apply(owner, true)*/
+    let r = ref.path.apply(root, true);
     if(!r) {
-      //console.log('raw:', { ref, root, owner, path });
       r = ref.path.apply(root) || ref.path.apply(owner);
     }
-
     return r;
   }
 
   cacheFields() {
     switch (this.tagName) {
       case 'schematic':
-        return [['settings'],['layers'],['libraries'],['classes'],['parts'],['sheets']];
+        return [['settings'], ['layers'], ['libraries'], ['classes'], ['parts'], ['sheets']];
       case 'board':
         return [['plain'], ['libraries']];
       case 'sheet':
         return [['busses'], ['nets'], ['instances'], ['plain']];
       case 'deviceset':
-        return [['gates'],['devices']];
+        return [['gates'], ['devices']];
       case 'device':
-        return [['connects'],['technologies']];
+        return [['connects'], ['technologies']];
       case 'library':
-        return [['packages'],['symbols'],['devicesets']];
+        return [['packages'], ['symbols'], ['devicesets']];
     }
   }
 
@@ -122,21 +113,14 @@ export class EagleNode extends EagleInterface {
       let ref = this.ref;
       let owner = this.document;
 
-      //console.log('initCache',fields );
       for(let xpath of fields) {
         let key = xpath[xpath.length - 1];
-
-   /*   for(let [value, path] of deep.iterate(ref.dereference(), (v, p) => v && fields.indexOf(v.tagName) != -1)) {
-        const key = value.tagName;*/
         lazy[key] = () => {
-          //console.log(`lazy[${key}]()`, xpath, this.tagName, this);
+          // console.log('lookup', key, this.ref);
           return this.lookup(xpath);
         };
-
-        //makeEagleNode(owner,, ctor);
         lists[key] = () => listCtor(this, this.ref.down('children'), lazy[key]().children);
-
-        maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => makeEagleNodeMap(lazy[key]().children /*lists[key]()*/, key == 'instances' ? 'part' : key == 'layers' ? 'number' : 'name');
+        maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => makeEagleNodeMap(lazy[key]().children, key == 'instances' ? 'part' : key == 'layers' ? 'number' : 'name');
       }
       lazyMembers(this.lists, lists);
       lazyMembers(this.cache, lazy);

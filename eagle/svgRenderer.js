@@ -137,7 +137,7 @@ export class EagleSVGRenderer {
   renderItem(item, parent, opts = {}) {
     let { labelText, pos, rot } = opts;
 
-       //console.log(`EagleSVGRenderer.renderItem`, {  labelText, pos, rot });
+    //console.log(`EagleSVGRenderer.renderItem`, {  labelText, pos, rot });
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...attr }, parent);
@@ -235,7 +235,7 @@ export class EagleSVGRenderer {
           text = prop in opts ? opts[prop] : text;
         }
         if(text == '') break;
-        
+
         const translation = new TransformationList(`translate(${x},${y})`);
 
         //console.log("translation:", Util.className(translation));

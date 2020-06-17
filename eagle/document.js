@@ -49,11 +49,34 @@ export class EagleDocument extends EagleNode {
   cacheFields() {
     switch (this.type) {
       case 'sch':
-        return [['eagle','drawing','settings'],['eagle','drawing','layers'],['eagle','drawing','schematic','libraries'],['eagle','drawing','schematic','classes'],['eagle','drawing','schematic','parts'],['eagle','drawing','schematic','sheets']];
+        return [
+          ['eagle', 'drawing', 'settings'],
+          ['eagle', 'drawing', 'layers'],
+          ['eagle', 'drawing', 'schematic', 'libraries'],
+          ['eagle', 'drawing', 'schematic', 'classes'],
+          ['eagle', 'drawing', 'schematic', 'parts'],
+          ['eagle', 'drawing', 'schematic', 'sheets']
+        ];
       case 'brd':
-        return [['eagle','drawing','settings'],['eagle','drawing','layers'],['eagle','drawing','board','libraries'],['eagle','drawing','board','classes'],['eagle','drawing','board','designrules'],['eagle','drawing','board','elements'],['eagle','drawing','board','signals'],['eagle','drawing','board','plain']];
+        return [
+          ['eagle', 'drawing', 'settings'],
+          ['eagle', 'drawing', 'layers'],
+          ['eagle', 'drawing', 'board', 'libraries'],
+          ['eagle', 'drawing', 'board', 'classes'],
+          ['eagle', 'drawing', 'board', 'designrules'],
+          ['eagle', 'drawing', 'board', 'elements'],
+          ['eagle', 'drawing', 'board', 'signals'],
+          ['eagle', 'drawing', 'board', 'plain']
+        ];
       case 'lbr':
-        return [['eagle','drawing','settings'],['eagle','drawing','layers'],['eagle','drawing','library'],['eagle','drawing','library','packages'],['eagle','drawing','library','symbols'],['eagle','drawing','library','devicesets']];
+        return [
+          ['eagle', 'drawing', 'settings'],
+          ['eagle', 'drawing', 'layers'],
+          ['eagle', 'drawing', 'library'],
+          ['eagle', 'drawing', 'library', 'packages'],
+          ['eagle', 'drawing', 'library', 'symbols'],
+          ['eagle', 'drawing', 'library', 'devicesets']
+        ];
     }
     return super.cacheFields();
   }
@@ -84,37 +107,41 @@ export class EagleDocument extends EagleNode {
     yield* super.getAll(pred, transform || ((v, l, p) => EagleElement.get(this, l, v)));
   }
 
-  
   lookup(xpath) {
-    return super.lookup(xpath, (o,p,v) => EagleElement.get(o,p,v));
+    let doc = this;
+    return super.lookup(xpath, (o, p, v) => EagleElement.get(o, p, v));
   }
 
-
-  getBounds() {
+  getBounds(sheetNo = 0) {
     let bb = new BBox();
 
-    for(let instance of this.getAll((e, p) => e.tagName == 'instance')) {
-      let { gate } = instance;
-      let symbol = gate.symbol;
-      /*
+    let sheet = this.sheets ? this.sheets[sheetNo] : null;
+
+    if(sheet) {
+      for(let instance of sheet.instances.list) {
+        let { gate, part } = instance;
+        let symbol = gate.symbol;
+
+        /*
       //console.log('instance:\n  ', instance, '\n  ', instance.xpath());
       //console.log('part:\n  ', part, '\n  ', part.xpath());
       //console.log('gate:\n  ', gate, '\n  ', gate.xpath());
       //console.log('symbol:\n  ', symbol, '\n  ', symbol.xpath());
 */
-      let geometries = {
-        gate: gate.geometry(),
-        symbol: new Rect(symbol.getBounds()).toPoints(),
-        instance: instance.transformation()
-      };
-      let matrix = geometries.instance.toMatrix();
-      let points = new PointList([...matrix.transform_points(geometries.symbol)]);
-      let bbrect = points.boundingRect();
+        let geometries = {
+          gate: gate.geometry(),
+          symbol: new Rect(symbol.getBounds()).toPoints(),
+          instance: instance.transformation()
+        };
+        let matrix = geometries.instance.toMatrix();
+        let points = new PointList([...matrix.transform_points(geometries.symbol)]);
+        let bbrect = points.boundingRect();
 
-      let sb = symbol.getBounds();
-      let sbr = new Rect(sb);
+        let sb = symbol.getBounds();
+        let sbr = new Rect(sb);
 
-      bb.update(bbrect, 0, instance);
+        bb.update(bbrect, 0, instance);
+      }
     }
 
     for(let element of this.getAll((e, p) => e.tagName == 'element')) {

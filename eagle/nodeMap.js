@@ -32,7 +32,7 @@ Object.assign(EagleNodeMap.prototype, {
     else list.push(value);
   },
   keys(key = this.key) {
-    return (this.list.raw || this.list).map(item => item.attributes[key]);
+    return Util.unique((this.list.raw || this.list).map(item => item.attributes[key]));
   },
   size(key = this.key) {
     return (this.list.raw || this.list).length;

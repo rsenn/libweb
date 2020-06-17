@@ -184,17 +184,15 @@ export class EagleInterface {
     return transform([null, [], []]);
   }
 
-  lookup(xpath, t = (o,p,v) => [o,p]) {
-    if(typeof(xpath) == 'string')
-      xpath = xpath.split(/\//g);
-    xpath = xpath.reduce((acc,p) => [...acc, 'children', typeof(p) == 'string' ? { tagName: p } : p ], []);
-let elem = this;
-      console.log("lookup:", {elem,xpath});
-
+  lookup(xpath, t = (o, p, v) => [o, p]) {
+    if(typeof xpath == 'string') xpath = xpath.split(/\//g);
+    xpath = xpath.reduce((acc, p) => [...acc, 'children', typeof p == 'string' ? { tagName: p } : p], []);
+    let elem = this;
+    //console.log("lookup:", {elem,xpath});
 
     let ret = t(...[this, new EaglePath(xpath)]);
-      console.log("lookup:", {xpath,ret});
-return ret;
+    //console.log("lookup:", {xpath,ret});
+    return ret;
   }
 
   getBounds(pred = e => true) {

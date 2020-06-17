@@ -159,7 +159,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
   }
 
   renderSheet(sheet, parent) {
-    //console.log(`${Util.className(this)}.renderSheet`, { sheet, parent });
+    let instances = sheet.instances;
+    console.log(`${Util.className(this)}.renderSheet`, { sheet, parent, instances });
+
     let netsGroup = this.create('g', { className: 'nets' }, parent);
     let instancesGroup = this.create('g', { className: 'instances' }, parent);
 
@@ -224,6 +226,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
       },
       parent
     );
+
     for(let instance of this.sheets[sheetNo].find('instances').children) {
       let t = new TransformationList();
       t.translate(+instance.x, +instance.y);

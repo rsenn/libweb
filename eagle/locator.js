@@ -19,7 +19,7 @@ export function DereferenceError(object, member, pos, locator) {
     error,
     { object, member, pos, locator },
     {
-      message: `Error dereferencing ${Util.className(object)} @ ${locator.toString() /*map((part, i) => (i == pos ? '<<' + part + '>>' : part)).join(',')*/} xml: ${Util.abbreviate(toXML(locator.root))}  no member '${member}' in ${Util.inspect(object)} \n` + stack.join('\n'),
+      message: `Error dereferencing ${Util.className(object)} @ ${locator.toString() /*map((part, i) => (i == pos ? '<<' + part + '>>' : part)).join(',')*/}\nxml: ${Util.abbreviate(toXML(locator.root))}\nno member '${member}' in ${Util.inspect(object, 2)} \n` + stack.join('\n'),
       stack
     }
   );
@@ -128,11 +128,14 @@ export const EaglePath = Util.immutableClass(
     /* prettier-ignore */ get depth() { return this.length; }
 
     apply(obj, noThrow) {
+      if('raw' in obj) obj = obj.raw;
+
       let o = obj;
       if(o === undefined && !noThrow) {
         let stack = Util.getCallers(1, 10);
         throw new Error(`Object ${o}` + stack.join('\n'));
       }
+
       let a = this.reduce(
         (a, i) => {
           if(a.o) {
@@ -141,21 +144,22 @@ export const EaglePath = Util.immutableClass(
             else if(Util.isArray(a.o)) {
               if(typeof i == 'object') {
                 let ent = Object.entries(i);
-                r = a.o.find(child => ent.every(([prop, value]) => child[prop] == value));
-              } else if(typeof i == 'number' && i < 0) r = a.o[a.o.length + i];
-              else r = a.o[+i];
-            } else {
-              r = a.o[i];
+                i = a.o.findIndex(child => ent.every(([prop, value]) => child[prop] == value));
+              } else if(typeof i == 'number' && i < 0) i = a.o.length + i;
+              else i = +i;
             }
+            r = a.o[i];
 
+            a.p = a.o;
             a.o = r;
+            a.i = i;
             a.n++;
           }
           return a;
         },
         { o, n: 0 }
       );
-      if(a.o == null && !noThrow) throw new DereferenceError(obj, a.n, a.n, this);
+      if(a.o == null && !noThrow) throw new DereferenceError(obj, a.i, a.n, this);
       //console.log("path.apply", this.toString(), Util.abbreviate(toXML(o), 40) );
       return a.o;
     }
@@ -208,12 +212,12 @@ export const EaglePath = Util.immutableClass(
     toString(hl = -1) {
       let y = this.map(item => (item == 'children' ? '⎿' : item == 'attributes' ? '＠' : item)).map((part, i) => text(part, ...(hl == i ? [1, 31] : [1, 32])));
 
-      y = text('♈ ', 1, 36) + y.join('') + text(' 🔚', 1, 35);
+      y = text('❪ ', 1, 36) + y.map(x => (typeof x == 'object' ? `${x.tagName}` : `${x}`)).join('·') + text(' ❫', 1, 35);
       return y.trim();
     }
 
     [Symbol.for('nodejs.util.inspect.custom')]() {
-      return `EaglePath [${this.map(part => (part === ChildrenSym ? String.fromCharCode(10143) : text(typeof part == 'number' ? part : "'" + part + "'", 1, typeof part == 'number' ? 33 : 32))).join(', ')}]`;
+      return `EaglePath [${this.map(part => (part === ChildrenSym ? String.fromCharCode(10143) : text(typeof part == 'number' ? part : Util.inspect(part), 1, typeof part == 'number' ? 33 : 32))).join(', ')}]`;
     }
 
     inspect() {
@@ -283,7 +287,7 @@ export class EagleReference {
   constructor(root, path) {
     this.path = path instanceof EaglePath ? path : new EaglePath(path);
     this.root = root;
-    if(!this.dereference(true)) {
+    if(!this.dereference(false)) {
       //console.log('dereference:', { path, root: Util.abbreviate(toXML(root), 10) });
       throw new Error(this.path.join(','));
     }
@@ -311,6 +315,7 @@ export class EagleReference {
     try {
       r = (Util.isObject(root) && 'owner' in root && path.apply(root.owner, true)) || path.apply(root);
     } catch(err) {
+      if(!noThrow) throw err;
       //console.log('err:', err.message, err.stack);
     }
     return r;

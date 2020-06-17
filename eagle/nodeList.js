@@ -19,7 +19,8 @@ Object.defineProperties(EagleNodeList.prototype, {
 Object.assign(EagleNodeList.prototype, {
   at(pos) {
     const { owner, ref, raw } = this;
-    if(Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner, [...ref.path, pos], raw[pos]);
+    //console.log(`at(${pos})`, { owner, ownerPath: owner.path, ownerOwner: owner.owner, ref, raw });
+    if(Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner.owner, [...owner.path, 'children', pos], raw[pos]);
   },
   *[Symbol.iterator]() {
     const { ref, owner, raw } = this;
