@@ -15,18 +15,8 @@ export class EagleElement extends EagleNode {
   //  new WeakMap();
 
   static get(owner, ref, raw) {
-    //let o =EagleElement.map( owner.ref.dereference());
-
     if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(owner, ref);
     if(!raw) raw = ref.path.apply(ref.root, true);
-
-    /* if(Util.className(owner) != 'EagleDocument') {
-      throw new Error('not document');
-    }*/
-
-    //console.log("get", { ownerPath: owner.path, path:ref.path});
-    //  console.log("EagleElement", {owner,ref,raw});
-
     let inst = EagleElement.map(raw, owner, ref);
     return inst;
   }
@@ -102,7 +92,6 @@ export class EagleElement extends EagleNode {
               const libName = elem.handlers['library']();
               const pkgName = elem.handlers['package']();
               const lib = doc.get(e => e.tagName == 'library' && e.attributes['name'] == libName);
-              //const libs = [...doc.getAll(e => e.tagName == 'library')].map(e => e.name);
               return lib.get({ tagName: 'package', name: pkgName });
             };
           } else if(tagName == 'instance') {
@@ -146,9 +135,9 @@ export class EagleElement extends EagleNode {
       }
     });*/
     if(tagName == 'gate') {
-      //console.log('this.elementChain()', this.elementChain());
-      //console.log('this.xpath()', this.xpath());
-      //console.log('this.ref', this.ref);
+    /*  console.log('this.elementChain()', this.elementChain());
+      console.log('this.xpath()', this.xpath());
+      console.log('this.ref', this.ref);*/
       let library = this.elementChain().library || EagleElement.get(this.owner, path.up(8));
 
       lazyProperty(this, 'symbol', () => library.find({ tagName: 'symbol', name: this.attributes.symbol }));

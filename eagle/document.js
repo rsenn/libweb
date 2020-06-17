@@ -126,8 +126,9 @@ export class EagleDocument extends EagleNode {
       //console.log('instance:\n  ', instance, '\n  ', instance.xpath());
       //console.log('part:\n  ', part, '\n  ', part.xpath());
       //console.log('gate:\n  ', gate, '\n  ', gate.xpath());
-      //console.log('symbol:\n  ', symbol, '\n  ', symbol.xpath());
+      
 */
+console.log('symbol:', symbol);
         let geometries = {
           gate: gate.geometry(),
           symbol: new Rect(symbol.getBounds()).toPoints(),
@@ -144,17 +145,21 @@ export class EagleDocument extends EagleNode {
       }
     }
 
-    for(let element of this.getAll((e, p) => e.tagName == 'element')) {
-      let bbrect = element.getBounds();
+    if(this.elements) {
+      for(let element of this.elements.list) {
+        let bbrect = element.getBounds();
 
-      bb.update(bbrect);
+        bb.update(bbrect);
+      }
     }
 
-    for(let signal of this.getAll(e => e.tagName == 'signal')) {
-      //console.log('signal:', signal);
-      let bbrect = signal.getBounds();
+    if(this.signals) {
+      for(let signal of this.signals.list) {
+        //console.log('signal:', signal);
+        let bbrect = signal.getBounds();
 
-      bb.update(bbrect);
+        bb.update(bbrect);
+      }
     }
 
     return bb;
