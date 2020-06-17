@@ -2781,7 +2781,7 @@ ClipperLib.ClipperBase.prototype.AddPath = function(pg, polyType, Closed) {
 
 ClipperLib.ClipperBase.prototype.AddPaths = function(ppg, polyType, closed) {
   //  console.log("-------------------------------------------");
-  //  console.log(JSON.stringify(ppg));
+  //  console.log(JSON.toString(ppg));
   var result = false;
   for(var i = 0, ilen = ppg.length; i < ilen; ++i) if(this.AddPath(ppg[i], polyType, closed)) result = true;
   return result;
@@ -4391,7 +4391,7 @@ ClipperLib.Clipper.prototype.BuildIntersectList = function(topY) {
   if(this.m_ActiveEdges === null) return;
   //prepare for sorting ...
   var e = this.m_ActiveEdges;
-  //console.log(JSON.stringify(JSON.decycle( e )));
+  //console.log(JSON.toString(JSON.decycle( e )));
   this.m_SortedEdges = e;
   while(e !== null) {
     e.PrevInSEL = e.PrevInAEL;
@@ -5841,7 +5841,7 @@ ClipperLib.ClipperOffset.prototype.Execute = function() {
       clpr.Execute(ClipperLib.ClipType.ctUnion, solution, ClipperLib.PolyFillType.pftNegative, ClipperLib.PolyFillType.pftNegative);
       if(solution.length > 0) solution.splice(0, 1);
     }
-    //console.log(JSON.stringify(solution));
+    //console.log(JSON.toString(solution));
   } // function (polytree, delta)
   else {
     var solution = a[0],

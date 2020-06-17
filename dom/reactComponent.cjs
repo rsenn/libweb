@@ -86,7 +86,7 @@ class ReactComponent {
     return ret;
   }
 
-  static stringify(obj) {
+  static toString(obj) {
     const tagName = obj.tagName,
           children = obj.children,
           props = (0, _objectWithoutProperties2.default)(obj, ["tagName", "children"]);

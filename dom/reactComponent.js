@@ -72,14 +72,14 @@ export class ReactComponent {
     H: 2
   };
 
-  static stringify(obj, opts = {}) {
+  static toString(obj, opts = {}) {
     let { fmt = 0 } = opts;
     let s = '';
     if(obj.__ === null && 'key' in obj && 'ref' in obj) obj = this.toObject(obj);
     if(Util.isArray(obj)) {
       for(let item of obj) {
         s += fmt < 2 ? '\n' : s == '' ? '' : `, `;
-        s += this.stringify(item);
+        s += this.toString(item);
       }
       return s;
     } else if(typeof obj == 'string') {
@@ -105,7 +105,7 @@ export class ReactComponent {
       s += fmt == 0 ? ' />' : ` })`;
     } else {
       s += fmt < 2 ? `>` : ` }, [ `;
-      s += Util.indent(this.stringify(children));
+      s += Util.indent(this.toString(children));
       s += fmt < 2 ? `</${tagName}>` : ` ])`;
     }
     return s;

@@ -261,7 +261,7 @@ ${js(body)}
                 cheating :)
              */
 
-      return JSON.stringify(value);
+      return JSON.toString(value);
     }
 
     function js_identifier({ name }) {

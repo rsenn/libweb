@@ -285,13 +285,13 @@ tXml.filter = function(children, f) {
 };
 
 /**
- * stringify a previously parsed string object.
+ * toString a previously parsed string object.
  * this is useful,
  *  1. to remove whitespaces
  * 2. to recreate xml data, with some changed data.
  * @param {tNode} O the object to Stringify
  */
-tXml.stringify = function TOMObjToXML(O) {
+tXml.toString = function TOMObjToXML(O) {
   var out = '';
 
   function writeChildren(O) {
@@ -466,12 +466,12 @@ var s = document.body.innerHTML.toLowerCase();
 var start = new Date().getTime();
 var o = tXml(s,'content');
 var end = new Date().getTime();
-//console.log(JSON.stringify(o,undefined,'\t'));
+//console.log(JSON.toString(o,undefined,'\t'));
 console.log("MILLISECONDS",end-start);
 var nodeCount=document.querySelectorAll('*').length;
 console.log('node count',nodeCount);
 console.log("speed:",(1000/(end-start))*nodeCount,'Nodes / second')
-//console.log(JSON.stringify(tXml('<html><head><title>testPage</title></head><body><h1>TestPage</h1><p>this is a <b>test</b>page</p></body></html>'),undefined,'\t'));
+//console.log(JSON.toString(tXml('<html><head><title>testPage</title></head><body><h1>TestPage</h1><p>this is a <b>test</b>page</p></body></html>'),undefined,'\t'));
 var p = new DOMParser();
 var s2='<body>'+s+'</body>'
 var start2= new Date().getTime();

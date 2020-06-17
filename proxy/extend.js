@@ -69,7 +69,7 @@ export const extend = (_value, _extension = nullObject) => {
         return true;
       }
 
-      // Implement `toJSON` for boxed primitives (otherwise `JSON.stringify` will not work properly).
+      // Implement `toJSON` for boxed primitives (otherwise `JSON.toString` will not work properly).
       if(propKey === 'toJSON' && (isString || isNumber)) {
         return true;
       }
@@ -111,7 +111,7 @@ export const extend = (_value, _extension = nullObject) => {
       } else {
         // Fallback: property is present in neither the target nor the extension
 
-        // Implement `toJSON` for boxed primitives (otherwise `JSON.stringify` will not work properly).
+        // Implement `toJSON` for boxed primitives (otherwise `JSON.toString` will not work properly).
         if(propKey === 'toJSON') {
           if(isString) {
             targetProp = target.toString.bind(target);

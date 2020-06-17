@@ -24,7 +24,7 @@ const client = (options = {}) => {
   };
 
   const graphql = async (query, variables, queryOptions = {}) => {
-    const body = JSON.stringify({ query, variables });
+    const body = JSON.toString({ query, variables });
     const { noCache = false } = queryOptions;
 
     if(!noCache) {

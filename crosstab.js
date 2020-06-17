@@ -414,7 +414,7 @@
     function setLocalStorageItem(key, data) {
       var storageItem = { id: crosstab.id, data: data, timestamp: util.now() };
 
-      localStorage.setItem(key, JSON.stringify(storageItem));
+      localStorage.setItem(key, JSON.toString(storageItem));
     }
 
     function getLocalStorageItem(key) {

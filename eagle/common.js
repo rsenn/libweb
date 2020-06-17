@@ -197,13 +197,20 @@ export class EagleInterface {
 
   getBounds(pred = e => true) {
     let bb = new BBox();
-    for(let element of this.getAll(e => e.tagName !== undefined && pred(e))) {
-      let g = element.geometry();
-      if(g) {
-        let bound = typeof g.bbox == 'function' ? g.bbox() : g;
-        bb.update(bound, 0, element);
+
+    if(this.children && this.children.length) {
+      for(let element of this.getAll(e => e.tagName !== undefined && pred(e))) {
+        let g = element.geometry();
+        if(g) {
+          let bound = typeof g.bbox == 'function' ? g.bbox() : g;
+          bb.update(bound, 0, element);
+        }
       }
     }
+    let g = this.geometry();
+
+    if(g) bb.update(g);
+
     return bb;
   }
 

@@ -227,7 +227,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
       parent
     );
 
-    for(let instance of this.sheets[sheetNo].find('instances').children) {
+    for(let instance of this.sheets[sheetNo].instances.list) {
       let t = new TransformationList();
       t.translate(+instance.x, +instance.y);
       let b = instance.getBounds();

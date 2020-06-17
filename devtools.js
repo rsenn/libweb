@@ -527,7 +527,7 @@ export function ws(cmd = 'send', filename, data) {
       console.log('ws.onopen ', { event });
       if(cmd == 'send' || cmd == 'recv') {
         let json = { cmd, filename, data: data ? window.btoa(encodeURIComponent(data)) : null };
-        ws.send(JSON.stringify(json) + '\r\n');
+        ws.send(JSON.toString(json) + '\r\n');
         console.log('ws.send ', json);
         if(cmd == 'recv') {
           ws.onmessage = msg => {
@@ -564,7 +564,7 @@ export function settext(en, fa) {
     console.log('settext: ', obj);
     ws({
       send: filename,
-      data: JSON.stringify({ ...x, ...obj })
+      data: JSON.toString({ ...x, ...obj })
         .replace(/\",\"/g, '",' + nl + '"')
         .replace(/{\"/g, '{' + nl + '"')
         .replace(/\"}/g, '"' + nl + '}' + nl)

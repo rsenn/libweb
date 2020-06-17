@@ -26,7 +26,7 @@ export class Observe {
 
   get(target, key, context) {
     if(Reflect.has(target, key)) {
-      this.fn.apply(this, [{ name: key, object: JSON.stringify(target), type: 'get' }]);
+      this.fn.apply(this, [{ name: key, object: JSON.toString(target), type: 'get' }]);
       return Reflect.get(target, key, context);
     } else {
       throw new ReferenceError(`${key} doesnt exist`);
@@ -35,16 +35,16 @@ export class Observe {
 
   set(target, key, value, context) {
     if(Reflect.has(target, key)) {
-      this.fn.apply(this, [{ name: key, object: JSON.stringify(target), type: 'update', oldValue: target[key] }]);
+      this.fn.apply(this, [{ name: key, object: JSON.toString(target), type: 'update', oldValue: target[key] }]);
       return Reflect.set(target, key, value, context);
     } else {
-      this.fn.apply(this, [{ name: key, object: JSON.stringify(target), type: 'add' }]);
+      this.fn.apply(this, [{ name: key, object: JSON.toString(target), type: 'add' }]);
       return Reflect.set(target, key, value, context);
     }
   }
 
   deleteProperty(target, key) {
-    this.fn.apply(this, [{ name: key, object: JSON.stringify(target), type: 'delete', oldValue: target[key] }]);
+    this.fn.apply(this, [{ name: key, object: JSON.toString(target), type: 'delete', oldValue: target[key] }]);
     return Reflect.deleteProperty(target, key);
   }
 
@@ -52,9 +52,9 @@ export class Observe {
     this.fn.apply(this, [
       {
         name: key,
-        object: JSON.stringify(target),
+        object: JSON.toString(target),
         type: 'reconfigure',
-        descriptor: JSON.stringify(desc)
+        descriptor: JSON.toString(desc)
       }
     ]);
     return Reflect.defineProperty(target, key, desc);
@@ -63,10 +63,10 @@ export class Observe {
   setPrototypeOf(target, proto) {
     this.fn.apply(this, [
       {
-        name: JSON.stringify(proto),
-        object: JSON.stringify(target),
+        name: JSON.toString(proto),
+        object: JSON.toString(target),
         type: 'setPrototype',
-        oldValue: JSON.stringify(target)
+        oldValue: JSON.toString(target)
       }
     ]);
     return Reflect.setPrototypeOf(target, proto);

@@ -38,7 +38,7 @@ Object.assign(EagleNodeMap.prototype, {
     return (this.list.raw || this.list).length;
   },
   values() {
-    return [...this.list];
+    return this.list; //[...this.list];
   },
   entries(key = this.key) {
     return [...this[Symbol.iterator](key)];
@@ -74,9 +74,7 @@ export function makeEagleNodeMap(list, key = 'name') {
       }
 
       if(typeof prop == 'number' || (typeof prop == 'string' && /^[0-9]+$/.test(prop))) {
-        prop = +prop;
-
-        return instance.list.raw ? instance.list.raw[prop] : instance.list[prop];
+        return instance.at(+prop);
       } else if(typeof prop == 'string') {
         if(prop == 'ref' || prop == 'raw') return instance.list[prop];
         if(prop == 'instance') return instance;

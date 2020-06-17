@@ -9,7 +9,7 @@ exports.makeAutoStoreHandler = exports.makeDummyStorage = exports.makeLocalStore
 const makeLocalStorage = () => {
   if (global.window && window.localStorage) return {
     get: name => JSON.parse(window.localStorage.getItem(name)),
-    set: (name, data) => window.localStorage.setItem(name, JSON.stringify(data)),
+    set: (name, data) => window.localStorage.setItem(name, JSON.toString(data)),
     remove: name => window.localStorage.removeItem(name)
   };
   return {

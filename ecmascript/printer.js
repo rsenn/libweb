@@ -31,42 +31,28 @@ export class Printer {
     try {
       className = Util.className(node);
       name = Util.isObject(node) ? className : null;
-
       fn =
         this['print' + name] ||
         function(...args) {
-          //console.log(`Non-existent:`, args);
           args = args.map(a => Util.className(a));
           throw new Error(`Non-existent print${name}(${args})`);
         };
     } catch(err) {
-      //console.log("printNode error: ", err);
-      //console.log("node:", node);
       process.exit(0);
     }
-    /* if(!fn) {
-      throw new Error(`No print function ${className}`);
-    }*/
-    //console.log("position:", node.position);
-
     let ret = '';
-    let comments = node.comments || []; //this.adjacent.filter(entry => entry.nodes[1][2] === node);
-
+    let comments = ESNode.assoc(node).comments;
     if(comments.length) {
-      //console.log("comments:", comments);
       for(let comment of comments) {
         ret += comment.value;
       }
     }
-
     ret += fn.call(this, node);
-
-    // console.log("printNode: " + ret);
     return ret;
   }
 
   print(tree) {
-    this.nodes = [...deep.iterate(tree, node => Util.isObject(node) && 'position' in node)].map(([node, path]) => [node.position, path.join('.'), node]) /*.sort((a,b) => a[0] - b[0])*/;
+    this.nodes = [...deep.iterate(tree, node => Util.isObject(node) && 'position' in node)].map(([node, path]) => [node.position, path.join('.'), node]);
 
     //  console.log("comments: ", this.comments);
 
@@ -732,7 +718,7 @@ export class Printer {
       output += ` ${attr}`;
 
       if(!(value instanceof Literal && value.value === true) && !(value.value == attr && this.format)) {
-        console.log('printJSXLiteral', attr, value.value);
+        //console.log('printJSXLiteral', attr, value.value);
 
         output += this.format ? `: ` : `=`;
         if(value instanceof Literal) output += this.printNode(value);

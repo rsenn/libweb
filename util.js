@@ -154,7 +154,7 @@ Util.debug = function(message) {
     return value;
   };
   const str = args
-    .map(arg => (typeof arg === 'object' ? JSON.stringify(arg, removeCircular) : arg))
+    .map(arg => (typeof arg === 'object' ? JSON.toString(arg, removeCircular) : arg))
     .join(' ')
     .replace(/\n/g, '');
   //console.log("STR: "+str);
@@ -549,7 +549,7 @@ Util.adapter.localStorage = function(s) {
     l => l.length,
     (l, i) => l.key(i),
     (l, key) => JSON.parse(l.getItem(key)),
-    (l, key, v) => l.setItem(key, JSON.stringify(v))
+    (l, key, v) => l.setItem(key, JSON.toString(v))
   );
 };
 var doExtendArray = Util.extendArray;
@@ -814,7 +814,7 @@ Util.toString = (obj, opts = {}, indent = '') => {
     if(!multiline) obj = obj.replace(/(\n| anonymous)/g, '');
     return obj;
   } else if(typeof obj == 'string') {
-    return JSON.stringify(obj);
+    return JSON.toString(obj);
   } else if(!Util.isObject(obj)) {
     return '' + obj;
   }
@@ -999,7 +999,7 @@ Util.clone = function(obj, proto) {
 };
 //deep copy
 Util.deepClone = function(data) {
-  return JSON.parse(JSON.stringify(data));
+  return JSON.parse(JSON.toString(data));
 };
 // Function
 Util.findVal = function(object, propName, maxDepth = 10) {
@@ -1287,7 +1287,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
         if(property.indexOf('$') !== 0 && typeof object[property] !== 'function' && !desc.get && !desc.set) {
           if(typeof object[property] === 'object') {
             try {
-              JSON.stringify(object[property]);
+              JSON.toString(object[property]);
             } catch(err) {
               continue;
             }
@@ -2567,8 +2567,7 @@ Object.assign(Util.is, {
 
 Util.assignGlobal = () => Util.weakAssign(Util.getGlobalObject(), Util);
 
-Util.weakMapper = createFn => {
-  const map = new WeakMap();
+Util.weakMapper = (createFn, map = new WeakMap()) => {
   return (obj, ...args) => {
     let ret = map.get(obj);
     if(!ret) {
@@ -2576,6 +2575,19 @@ Util.weakMapper = createFn => {
       map.set(obj, ret);
     }
     return ret;
+  };
+};
+Util.merge = (...args) => args.reduce((acc, arg) => ({ ...acc, ...arg }), {});
+
+Util.weakAssoc = (fn = (value, ...args) => Object.assign(value, ...args)) => {
+  let mapper = Util.tryCatch(
+    () => new WeakMap(),
+    map => Util.weakMapper((obj, ...args) => Util.merge(...args), map),
+    () => (obj, ...args) => Util.define(obj, ...args)
+  );
+  return (obj, ...args) => {
+    let value = mapper(obj, ...args);
+    return fn(value, ...args);
   };
 };
 

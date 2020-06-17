@@ -64,9 +64,11 @@ export class Parser {
   };
 
   handleConstruct = (ctor, args, instance) => {
-    let pos = instance.position || this.position();
+    let assoc = ESNode.assoc(instance, {});
+    let pos = assoc.position || this.position();
+    let position;
     if(this.stack[0]) {
-      instance.position = this.stack[0].position;
+      assoc.position = this.stack[0].position;
       this.lastPos = this.stack[0].position;
     }
     // this.lastTok = this.processed.length;
@@ -76,24 +78,16 @@ export class Parser {
 
   onNewNode = node => {
     const range = [this.lastTok, this.processed.length];
-
     this.nodeTokenMap[node] = range;
-    /* const tokens = this.processed
-      .slice(...this.nodeTokenMap[node])
-      .map(tok => tok.value)
-      .join(',');
-
-    console.log('onNewNode:', Util.className(node), { tokens });*/
   };
 
   onReturnNode = (node, stackEntry, stack) => {
     const { tokenIndex } = this.lexer;
     const { methodName } = stackEntry;
     const range = [stackEntry.start, stackEntry.end];
-    // let name = Util.className(node);
-    let obj = node;
+    let obj = ESNode.assoc(node, {});
+
     if(obj.object !== undefined) {
-      //    console.log("node:", name);
       do {
         if(obj.tokenRange && obj.tokenRange[0] < range[0]) range[0] = obj.tokenRange[0];
       } while((obj = obj.object));
@@ -111,31 +105,14 @@ export class Parser {
       this.lastTok = range[1];
     }
     let tokens = new TokenList([...this.processed, ...this.tokens].slice(...range));
-
     if(!tokens || tokens.length == 0 || tokens[0] === undefined) return;
     let last = Util.tail(tokens);
-
-    /*console.log("last:", last);
-    console.log("last.position:", last.position);*/
     let positions = [tokens[0].offset, last.end];
-    //let text = this.lexer.source.slice(...positions);
     let comments = [];
-
-    //node.range = positions;
-    Util.define(node, { range: positions, tokenRange: range, tokens });
-    /*    Util.define(node, 'range', positions);
-    Util.define(node, 'tokenRange', range);
-    Util.define(node, 'tokens', tokens);*/
-    /*  if(node instanceof MemberExpression)
-      if(stackEntry.depth > 2 && range.size < 100 && !(node instanceof Identifier))
-        console.log('onReturnNode:', util.inspect(node, { depth: 2, colors: true }), {
-          range,
-          methodName,
-          tokens: this.constructor.printToks(tokens),
-          positions,
-          text
-        });*/
+    //  let assoc = ESNode.assoc(node, { range: positions, tokenRange: range, tokens, comments });
+    Object.assign(obj, { range: positions, tokenRange: range, tokens, comments });
   };
+
   addCommentsToNodes = root => {
     let nodes = new MultiMap();
     for(let [node, path] of deep.iterate(root, n => n instanceof ESNode)) {
@@ -145,8 +122,10 @@ export class Parser {
     }
     for(let key of nodes.keys()) {
       const node = nodes.get(key)[0];
+      let assoc = ESNode.assoc(node);
+      console.log('assoc:', assoc);
       while(this.comments.length > 0 && +key >= this.comments[0].offset) {
-        Util.define(node, 'comments', add(node.comments, this.comments.shift()));
+        assoc.comments = add(assoc.comments, this.comments.shift());
       }
       // if(node.comments) console.log('addCommentsToNodes', util.inspect(node, { depth: 2, colors: true }));
     }
@@ -306,7 +285,7 @@ function backTrace() {
 
 function toStr(a) {
   if(a && a.toString !== undefined) return a.toString();
-  return typeof a === 'object' ? JSON.stringify(a).substring(0, 20) : String(a);
+  return typeof a === 'object' ? JSON.toString(a).substring(0, 20) : String(a);
 }
 
 /*const stackFunc = (name, fn) =>
@@ -1304,7 +1283,7 @@ export class ECMAScriptParser extends Parser {
     }
     if(this.matchIdentifier()) {
       tag = this.expectIdentifier();
-      console.log('tag:', tag);
+      //console.log('tag:', tag);
 
       if(this.matchPunctuators(['.', '['])) tag = this.parseRemainingMemberExpression(tag);
       //  console.log('token:', this.token);

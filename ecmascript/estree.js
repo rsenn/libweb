@@ -4,12 +4,13 @@ export class ESNode {
   //  position = null;
 
   static lastNode = null;
+  static assoc = Util.weakAssoc();
 
   constructor(type) {
     //this.type = type;
     //this.loc = null; // TODO: For now avoid dealing with location information.
     // Fix it later.
-    Object.defineProperty(this, 'position', { value: null, enumerable: false, writable: true });
+    //Object.defineProperty(this, 'position', { value: null, enumerable: false, writable: true });
 
     ESNode.lastNode = this;
   }
@@ -368,7 +369,7 @@ export class ClassDeclaration extends ESNode {
     this.extending = extending;
     this.members = members;
     //this.exported = exported;
-    // console.log('New ClassDeclaration: ', JSON.stringify({ id, extending, // exported }));
+    // console.log('New ClassDeclaration: ', JSON.toString({ id, extending, // exported }));
   }
 }
 
@@ -386,7 +387,7 @@ export class ArrowFunction extends ESNode {
     this.is_async = is_async;
     this.params = params;
     this.body = body;
-    // console.log('New FunctionDeclaration: ', JSON.stringify({ id, params, // exported }));
+    // console.log('New FunctionDeclaration: ', JSON.toString({ id, params, // exported }));
   }
 }
 
@@ -396,7 +397,7 @@ export class VariableDeclaration extends Declaration {
     this.kind = kind;
     //this.exported = exported;
     this.declarations = declarations;
-    // console.log('New VariableDeclaration: ', JSON.stringify({ kind, exported
+    // console.log('New VariableDeclaration: ', JSON.toString({ kind, exported
     // }));
   }
 }
@@ -406,7 +407,7 @@ export class VariableDeclarator extends ESNode {
     super('VariableDeclarator');
     this.id = identifier;
     this.init = initialValue;
-    // console.log('New VariableDeclarator: ', JSON.stringify({ identifier:
+    // console.log('New VariableDeclarator: ', JSON.toString({ identifier:
     // identifier.value }));
   }
 }

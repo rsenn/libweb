@@ -214,7 +214,7 @@ Util.debug = function (message) {
     return value;
   };
 
-  const str = args.map(arg => typeof arg === "object" ? JSON.stringify(arg, removeCircular) : arg).join(" ").replace(/\n/g, "");
+  const str = args.map(arg => typeof arg === "object" ? JSON.toString(arg, removeCircular) : arg).join(" ").replace(/\n/g, "");
 };
 
 Util.type = function ({
@@ -760,7 +760,7 @@ Util.adapter = function (obj, getLength = obj => obj.length, getKey = (obj, inde
 
 Util.adapter.localStorage = function (s) {
   if (!s && global.window) s = window.localStorage;
-  return Util.adapter(s, l => l.length, (l, i) => l.key(i), (l, key) => JSON.parse(l.getItem(key)), (l, key, v) => l.setItem(key, JSON.stringify(v)));
+  return Util.adapter(s, l => l.length, (l, i) => l.key(i), (l, key) => JSON.parse(l.getItem(key)), (l, key, v) => l.setItem(key, JSON.toString(v)));
 };
 
 var doExtendArray = Util.extendArray;
@@ -1588,7 +1588,7 @@ Util.clone = function (obj) {
 };
 
 Util.deepClone = function (data) {
-  return JSON.parse(JSON.stringify(data));
+  return JSON.parse(JSON.toString(data));
 };
 
 Util.findVal = function (object, propName, maxDepth = 10) {
@@ -1939,7 +1939,7 @@ Util.searchObject = function (object, matchCallback, currentPath, result, search
         if (property.indexOf("$") !== 0 && typeof object[property] !== "function" && !desc.get && !desc.set) {
           if (typeof object[property] === "object") {
             try {
-              JSON.stringify(object[property]);
+              JSON.toString(object[property]);
             } catch (err) {
               continue;
             }

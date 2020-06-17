@@ -89,7 +89,7 @@ window.SignalingChannel = (function() {
       roomid: this.roomId_,
       clientid: this.clientId_
     };
-    this.websocket_.send(JSON.stringify(registerMessage));
+    this.websocket_.send(JSON.toString(registerMessage));
     this.registered_ = true;
 
     // TODO(tkchin): Better notion of whether registration succeeded. Basically

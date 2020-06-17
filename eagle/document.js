@@ -128,12 +128,14 @@ export class EagleDocument extends EagleNode {
       //console.log('gate:\n  ', gate, '\n  ', gate.xpath());
       
 */
-console.log('symbol:', symbol);
+        //console.log('symbol:', symbol);
         let geometries = {
           gate: gate.geometry(),
           symbol: new Rect(symbol.getBounds()).toPoints(),
           instance: instance.transformation()
         };
+
+        //console.log('geometries:', geometries);
         let matrix = geometries.instance.toMatrix();
         let points = new PointList([...matrix.transform_points(geometries.symbol)]);
         let bbrect = points.boundingRect();

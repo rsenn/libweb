@@ -99,14 +99,14 @@ export class ReactComponent {
     H: 2
   };
 
-  static stringify(obj, opts = {}) {
+  static toString(obj, opts = {}) {
     let { fmt = 0 } = opts;
     let s = '';
-    if(obj && obj.__ === null && 'key' in obj && 'ref' in obj) obj = this.toObject(obj);
+    if(obj && '__' in obj && 'key' in obj && 'ref' in obj) obj = this.toObject(obj);
     if(Util.isArray(obj)) {
       for(let item of obj) {
         s += fmt < 2 ? '\n' : s == '' ? '' : `, `;
-        s += this.stringify(item);
+        s += this.toString(item);
       }
       return s;
     } else if(typeof obj == 'string') {
@@ -134,9 +134,19 @@ export class ReactComponent {
       s += fmt == 0 ? ' />' : ` })`;
     } else {
       s += fmt < 2 ? `>` : ` }, [ `;
-      s += '\n  ' + Util.indent(this.stringify(children)).trimRight() + '\n';
+      s += '\n  ' + Util.indent(this.toString(children)).trimRight() + '\n';
       s += fmt < 2 ? `</${tagName}>` : ` ])`;
     }
     return s;
+  }
+
+  static async parse(jsx) {
+    let ecmascript = await import('../ecmascript.js');
+    Object.assign(Util.getGlobalObject(), ecmascript);
+    let parser = new ecmascript.ECMAScriptParser(jsx);
+    let printer = new ecmascript.Printer();
+    //console.log("parser", Util.getMethodNames(parser, 2, 1));
+    let ast = parser.parseJSX();
+    return printer.printNode(ast instanceof Array ? ast[0] : ast);
   }
 }
