@@ -16,7 +16,7 @@ export const concat = coloring.concat.bind(coloring); //? (text, ...color) => (c
 export const dingbatCode = digit => (digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1));
 
 export const dump = (o, depth = 2, breakLength = 400) => {
-  const isElement = o => Util.isObject(o) && ['EagleElement', 'EagleNode'].indexOf(Util.className(o)) != -1;
+  const isElement = o => Util.isObject(o) && ['EagleElement', 'EagleNode', 'EagleDocument'].indexOf(Util.className(o)) != -1;
   let s;
   if(o instanceof Array) {
     s = '';
@@ -25,7 +25,7 @@ export const dump = (o, depth = 2, breakLength = 400) => {
       s += dump(i, depth - 1, breakLength);
     }
   } else if(isElement(o)) {
-    s = inspect(o, undefined, { depth, path: false });
+    s = EagleInterface.inspect(o, undefined, { depth, path: false });
     depth * 4;
   } else
     s = Util.inspect(o, {
@@ -123,10 +123,11 @@ export class EagleInterface {
   static inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {
     const { depth, breakLength } = c;
     let o = e;
-    if(typeof e == 'string') return text(e, 1, 36);
+    let r = (e && e.raw) || e;
+    if(typeof r == 'string') return text(r, 1, 36);
     let x = '';
     try {
-      x = Util.inspect(o, {
+      x = Util.inspect(r, {
         depth: depth * 2,
         breakLength,
         colors: !Util.isBrowser()
@@ -134,8 +135,8 @@ export class EagleInterface {
     } catch(err) {}
     let s = '⏐';
     x = x.substring(x.indexOf('tagName') + 14);
-    x = Object.entries((e && e.attributes) || {}).map(([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36));
-    x.unshift(e.tagName);
+    x = Object.entries((r && r.attributes) || {}).map(([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36));
+    x.unshift(r.tagName);
     let [p, ...arr] = x;
     p = text(`〔`, 1, 37) + text(p, 38, 5, 199);
     let l = e.path + '';

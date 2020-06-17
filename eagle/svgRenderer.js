@@ -27,7 +27,7 @@ export class EagleSVGRenderer {
     const { layers, elements, signals } = doc;
     this.elements = elements;
     this.signals = signals;
-    this.plain = doc.get('plain', (v, l) => EagleElement.get(doc, l));
+    // this.plain = doc.get('plain', (v, l) => EagleElement.get(doc, l));
     this.layers = layers;
     return this;
   }
@@ -225,10 +225,9 @@ export class EagleSVGRenderer {
       }
       case 'text': {
         let { children = [], text: innerText, align, size, font, rot } = item;
-        let text = innerText || labelText || children.join("\n");
+        let text = innerText || labelText || children.join('\n');
         let { x, y } = coordFn(item);
         //console.log("text", {text});
-
 
         if(text.startsWith('&gt;')) {
           const prop = text.slice(4).toLowerCase();

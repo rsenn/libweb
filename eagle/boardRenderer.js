@@ -18,7 +18,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     this.elements = elements;
     this.signals = signals;
-    this.plain = board.get('plain', (v, l) => EagleElement.get(board, l));
+    // this.plain = board.plain; //get('plain', (v, l) => EagleElement.get(board, l));
     this.layers = layers;
     this.sheets = sheets;
 
@@ -256,9 +256,9 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     for(let element of this.elements.list) this.renderElement(element, elementsGroup);
 
-    let [plain] = [...this.doc.getAll('plain')];
+    let plain = [...this.doc.plain];
 
-    this.renderCollection(plain.children, plainGroup);
+    this.renderCollection(plain, plainGroup);
     this.bounds = bounds;
     this.rect = bounds.rect;
     return parent;

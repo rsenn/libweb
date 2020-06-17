@@ -6,6 +6,7 @@ import { trkl } from '../trkl.js';
 import { text, EagleInterface, concat, ansi } from './common.js';
 
 import { makeEagleNodeMap } from './nodeMap.js';
+//import { makeEagleNodeList } from './nodeList.js';
 
 export const makeEagleNode = (owner, ref, ctor) => {
   if(!ctor) ctor = owner[Symbol.species];
@@ -70,9 +71,10 @@ export class EagleNode extends EagleInterface {
 
   get raw() {
     if(this.xml && this.xml[0]) return this.xml[0];
+
     const { ref, owner, root, path } = this;
 
-    let r = ref.path.apply(root, true) || ref.path.apply(owner, true);
+    let r = ref.path.apply(root, true); /*|| ref.path.apply(owner, true)*/
     if(!r) {
       //console.log('raw:', { ref, root, owner, path });
       r = ref.path.apply(root) || ref.path.apply(owner);
@@ -88,7 +90,7 @@ export class EagleNode extends EagleInterface {
       case 'board':
         return [['plain'], ['libraries']];
       case 'sheet':
-        return [['busses'], ['nets'], ['instances']];
+        return [['busses'], ['nets'], ['instances'], ['plain']];
       case 'deviceset':
         return [['gates'],['devices']];
       case 'device':
@@ -106,7 +108,7 @@ export class EagleNode extends EagleInterface {
     return ctor;
   }
 
-  initCache(ctor = this.childConstructor) {
+  initCache(ctor = this.childConstructor, listCtor = (o, p, v) => v) {
     let fields = this.cacheFields();
     let node = this;
 
@@ -126,10 +128,15 @@ export class EagleNode extends EagleInterface {
 
    /*   for(let [value, path] of deep.iterate(ref.dereference(), (v, p) => v && fields.indexOf(v.tagName) != -1)) {
         const key = value.tagName;*/
-        lazy[key] = () =>  { console.log(`lazy[${key}]()`, xpath); return this.lookup(xpath); } //makeEagleNode(owner,, ctor);
-        lists[key] = () => lazy[key]().children;
+        lazy[key] = () => {
+          console.log(`lazy[${key}]()`, xpath, this.tagName, this);
+          return this.lookup(xpath);
+        };
 
-        maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => makeEagleNodeMap(lists[key](), key == 'instances' ? 'part' : key == 'layers' ? 'number' : 'name');
+        //makeEagleNode(owner,, ctor);
+        lists[key] = () => listCtor(this, this.ref.down('children'), lazy[key]().children);
+
+        maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => makeEagleNodeMap(lazy[key]().children /*lists[key]()*/, key == 'instances' ? 'part' : key == 'layers' ? 'number' : 'name');
       }
       lazyMembers(this.lists, lists);
       lazyMembers(this.cache, lazy);
@@ -284,17 +291,27 @@ export class EagleNode extends EagleInterface {
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
     let attrs = [''];
-    let a = this.raw.attributes || this.attributes;
-    if(a) attrs = Object.keys(a).reduce((attrs, attr) => concat(attrs, ' ', text(attr, 1, 33), text(':', 1, 36), text("'" + a[attr] + "'", 1, 32)), attrs);
-    let children = this.raw.children || this.children;
+    console.log('Inspect:', this.path, this.raw);
+
+    let r = this; //'tagName' in this ? this : this.raw; // this.ref ? this.ref.dereference()  : this;
+    let a = r.attrMap ? r.attrMap : r.attributes;
+    if(a) {
+      attrs = Object.getOwnPropertyNames(a)
+        .filter(name => typeof a[name] != 'function')
+        .reduce((attrs, attr) => concat(attrs, ' ', text(attr, 1, 33), text(':', 1, 36), text("'" + a[attr] + "'", 1, 32)), attrs);
+
+      console.log('Inspect:', a, a.keys ? a.keys() : Object.getOwnPropertyNames(a));
+    }
+
+    let children = r.children;
     let numChildren = children.length;
     let ret = ['']; //`${Util.className(this)} `;
-    let tag = this.raw.tagName || this.tagName;
+    let tag = r.tagName || r.raw.tagName;
     //console.realLog("attrs:",attrs);
     if(tag) ret = concat(ret, text('<', 1, 36), text(tag, 1, 31), attrs, text(numChildren == 0 ? ' />' : '>', 1, 36));
     if(this.filename) ret = concat(ret, ` filename="${this.filename}"`);
-    if(numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${this.tagName}>`);
-    return (ret = concat(ret, text('', 0)));
+    if(numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${tag}>`);
+    return (ret = concat(text(Util.className(r) + ' ', 0), ret));
   }
 
   inspect(...args) {

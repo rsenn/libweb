@@ -59,7 +59,7 @@ const formatAnnotatedObject = function(subject, o) {
     j = separator + (opts.newline || spacing) + i;
   }
   //padding = x => '';
-  let ret = '{' + opts.newline + r.map(arr => padding(arr[0]) + arr[0] + ':' + spacing + arr[1]).join(j) + opts.newline;
+  let ret = '{' + opts.newline + r.map(arr => padding(arr[0]) + arr[0] + ':' + spacing + arr[1]).join(j) + opts.newline + spacing + '}';
   return ret;
 };
 /**
@@ -2006,8 +2006,10 @@ Util.getCallerFunctionNames = function(position = 2) {
     return ret;
   }
 };
-Util.getCaller = function(index, stack) {
+Util.getCaller = function(index = 1, stack) {
   const methods = ['getThis', 'getTypeName', 'getFunction', 'getFunctionName', 'getMethodName', 'getFileName', 'getLineNumber', 'getColumnNumber', 'getEvalOrigin', 'isToplevel', 'isEval', 'isNative', 'isConstructor'];
+  //stack = stack || Util.getCallerStack(index+1);
+  //console.log("stack:", stack)
 
   const frame = stack[index];
   // console.log("frame keys:",frame, Util.getMemberNames(frame, 0, 10));
@@ -2043,7 +2045,7 @@ Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER, pred = () =
   let stack = Util.getCallerStack(start + 1);
   let ret = [];
   let i = 0;
-  while(i < num) {
+  while(i < num && stack[i]) {
     try {
       let frame = Util.getCaller(i, stack);
       if(pred(frame)) {

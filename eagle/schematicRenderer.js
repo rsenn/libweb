@@ -175,6 +175,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     this.bounds = bounds;
     this.rect = rect;
+    //this.plain = sheet.plain;
 
     rect.outset(1.27);
     rect.round(2.54);
@@ -202,7 +203,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     //console.log(`SchematicRenderer.renderPart`, { x, y, pos, rot, t });
     const g = this.create('g', { className: `part.${part.name}`, transform: t }, parent);
     if(!value) value = deviceset.name;
-    opts = (deviceset.uservalue == 'yes' || true) ? { name, value } : { name, value: '' };
+    opts = deviceset.uservalue == 'yes' || true ? { name, value } : { name, value: '' };
     this.renderCollection(symbol.children, g, {
       ...opts,
       rot /*pos: new Point(x, y), transform: t.slice()*/
