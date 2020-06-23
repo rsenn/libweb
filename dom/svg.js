@@ -1,4 +1,4 @@
-import { Element } from './element.js';
+import { Element, isElement } from './element.js';
 import { Size, isSize } from '../geom/size.js';
 import { Point } from '../geom/point.js';
 import { Rect } from '../geom/rect.js';
@@ -284,15 +284,22 @@ export class SVG extends Element {
     }
   }
 
-  static *pathIterator(e, numPoints, fn = p => p) {
-    const len = e.getTotalLength();
+  static *pathIterator(e, opts, fn = p => p) {
+    opts = typeof opts == 'number' ? { numPoints: opts } : opts;
+    let { numPoints, step } = opts;
+    let len = e.getTotalLength();
 
-    if(!numPoints) numPoints = Math.ceil(len / 2);
+    let pos = i => (i * len) / (numPoints - 1);
+
+    if(step !== undefined) {
+      numPoints = Math.floor(len / step);
+      //len = numPoints * step;
+      pos = i => (i == numPoints ? len : i * step);
+    } else if(!numPoints) numPoints = Math.ceil(len / 2);
 
     let p,
       y,
       prev = {};
-    const pos = i => (i * len) / numPoints;
 
     var do_point = point => {
       const { x, y, slope, next, prev, i, isin } = point;
@@ -312,9 +319,10 @@ export class SVG extends Element {
       }
     };
 
-    for(let i = 0; i < numPoints - 1; i++) {
+    for(let i = 0; i < numPoints; i++) {
       const point = e.getPointAtLength(pos(i));
       const next = e.getPointAtLength(pos(i + 1));
+      console.log('iterator', point, next);
       const isin = {
         stroke: e.isPointInStroke(point),
         fill: e.isPointInFill(point),
@@ -330,7 +338,7 @@ export class SVG extends Element {
       }
       prev = p;
     }
-    p = new Point(e.getPointAtLength(pos(numPoints - 1)));
+    p = new Point(e.getPointAtLength(len));
     p = Object.assign(p, {
       slope: null,
       next: null,
@@ -393,6 +401,19 @@ export class SVG extends Element {
     if(rect) element.setAttribute('viewBox', 'toString' in rect ? rect.toString() : rect);
     vbattr = Element.attr(element, 'viewBox');
     return new Rect(vbattr.split(/\s+/g).map(parseFloat));
+  }
+
+  static splitPath(path, tfn) {
+    if(isElement(path)) {
+      path = path.getAttribute('d');
+    }
+    let ret = [...path.matchAll(/[A-Za-z][^A-Za-z]*/g)].map(command => [...command][0].trim().split(/\s+/g));
+    if(tfn) ret = ret.map(tfn);
+    return ret;
+  }
+
+  static pathToPoints(path) {
+    return SVG.splitPath(path, cmd => new Point(...cmd.slice(-2).map(n => +n)));
   }
 }
 SVG.ns = 'http://www.w3.org/2000/svg';

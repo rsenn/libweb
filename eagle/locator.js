@@ -19,7 +19,7 @@ export function DereferenceError(object, member, pos, locator) {
     error,
     { object, member, pos, locator },
     {
-      message: `Error dereferencing ${Util.className(object)} @ ${locator.toString() /*map((part, i) => (i == pos ? '<<' + part + '>>' : part)).join(',')*/}\nxml: ${Util.abbreviate(toXML(locator.root))}\nno member '${member}' in ${Util.inspect(object, 2)} \n` + stack.join('\n'),
+      message: `Error dereferencing ${Util.className(object)} @ ${locator.toString() /*map((part, i) => (i == pos ? '<<' + part + '>>' : part)).join(',')*/}\nxml: ${Util.abbreviate(toXML(locator.root))}\nno member '${Util.inspect(member)}' in ${Util.inspect(object, 2)} \n` + stack.join('\n'),
       stack
     }
   );
@@ -145,6 +145,7 @@ export const EaglePath = Util.immutableClass(
               if(typeof i == 'object') {
                 let ent = Object.entries(i);
                 i = a.o.findIndex(child => ent.every(([prop, value]) => child[prop] == value));
+                if(i == -1) i = Object.fromEntries(ent);
               } else if(typeof i == 'number' && i < 0) i = a.o.length + i;
               else i = +i;
             }

@@ -11,6 +11,7 @@ export class EagleElement extends EagleNode {
   tagName = '';
 
   static map = Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw));
+  static list = [];
 
   //  new WeakMap();
 
@@ -32,6 +33,8 @@ export class EagleElement extends EagleNode {
     }
 
     super(owner, ref, raw);
+    EagleElement.list.push(this);
+
     Util.define(this, 'handlers', {});
     let path = this.ref.path;
     if(owner === null) throw new Error('owner == null');
@@ -145,9 +148,12 @@ export class EagleElement extends EagleNode {
       lazyProperty(this, 'symbol', () => library.symbols[elem.attributes.symbol] /*library.find({ tagName: 'symbol', name: this.attributes.symbol })*/);
     } else if(tagName == 'instance') {
       let { tagName } = this;
-      //console.log('instance', { doc, owner, tagName });
 
+      //
       const part = doc.parts[this.attributes.part];
+
+      if(!part.attributes) console.log('instance', this.raw, { doc, owner, tagName });
+
       const library = doc.libraries[part.attributes.library];
 
       const deviceset = library.devicesets[part.attributes.deviceset];
@@ -218,8 +224,15 @@ export class EagleElement extends EagleNode {
     if(this.raw.tagName == 'description') return 'Document';
   }
 
-  lookup(xpath) {
-    return super.lookup(xpath, (o, p, v) => EagleElement.get(o, p, v));
+  lookup(xpath, create) {
+    return super.lookup(xpath, (o, p, v) => {
+      if(create && !v) {
+        const { tagName } = p.last;
+        o.raw.children.push({ tagName, attributes: {}, children: [] });
+        //console.log("Element.lookup", {xpath,create, o, p, v})
+      }
+      return EagleElement.get(o, p, v);
+    });
   }
 
   getBounds(pred = e => true) {

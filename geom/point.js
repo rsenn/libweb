@@ -54,6 +54,19 @@ export function Point(arg) {
 }
 Point.prototype[SymSpecies] = Point;
 
+Object.defineProperties(Point.prototype, {
+  X: {
+    get() {
+      return this.x;
+    }
+  },
+  Y: {
+    get() {
+      return this.y;
+    }
+  }
+});
+
 Point.prototype.move = function(x, y) {
   this.x += x;
   this.y += y;
@@ -120,9 +133,10 @@ Point.prototype.quot = function(other) {
   other = isPoint(other) ? other : { x: other, y: other };
   return new Point(this.x / other.x, this.y / other.y);
 };
-Point.prototype.div = function(f) {
-  this.x /= f;
-  this.y /= f;
+Point.prototype.div = function(other) {
+  other = isPoint(other) ? other : { x: other, y: other };
+  this.x /= other.x;
+  this.y /= other.y;
   return this;
 };
 Point.prototype.comp = function() {

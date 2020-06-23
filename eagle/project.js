@@ -1,6 +1,7 @@
 import Util from '../util.js';
 import { EagleDocument } from './document.js';
 import { EagleElement } from './element.js';
+import { EagleNodeMap } from './nodeMap.js';
 import { dump } from './common.js';
 
 export class EagleProject {
@@ -13,11 +14,20 @@ export class EagleProject {
     this.filename = file.replace(/\.(brd|sch)$/, '');
     this.fs = fs;
 
-    this.open(this.filename + '.sch');
-    this.open(this.filename + '.brd');
+    this.eaglePath = EagleProject.determineEaglePath(fs); //.then(path => this.eaglePath = path);
 
-    this.loadLibraries();
-    //console.log("Opened project:", this.filename);
+    Util.tryCatch(() => this.open(this.filename + '.sch'));
+    Util.tryCatch(() => this.open(this.filename + '.brd'));
+
+    Util.tryCatch(
+      () => this.loadLibraries(),
+      () => {},
+      () => (this.failed = true)
+    );
+
+    if(!this.schematic || !this.board) this.failed = true;
+
+    if(!this.failed) console.log('Opened project:', this.filename, this.pathPath);
   }
 
   /**
@@ -46,6 +56,30 @@ export class EagleProject {
       //console.log("Opened library:", doc.basename);
     } else this.data[doc.type] = doc;
     return doc;
+  }
+
+  static determineEaglePath(fs) {
+    let path = Util.tryCatch(
+      () => process.env['PATH'],
+      path => path.split(/:/g),
+      []
+    );
+    let bin;
+
+    for(let dir of path) {
+      bin = dir + '/eagle';
+
+      if(fs.exists(bin)) {
+        if(!/(eagle)/i.test(dir)) {
+          bin = fs.realpath(bin);
+          dir = bin.replace(/\/[^\/]+$/, '');
+        }
+        dir = dir.replace(/[\\\/]bin$/i, '');
+        console.log('dir:', dir, bin);
+
+        return dir;
+      }
+    }
   }
 
   /* prettier-ignore */ get schematic() {return this.documents.find(doc => doc.type == 'sch'); }
@@ -81,15 +115,24 @@ export class EagleProject {
 
   libraryPath() {
     let docDirs = this.getDocumentDirectories();
-    return [...docDirs, ...docDirs.map(dir => `${dir}/lbr`)]; //.filter(fs.existsSync);
+    let path = [...docDirs, ...docDirs.map(dir => `${dir}/lbr`)]; //.filter(fs.existsSync);
+    if(this.eaglePath) path.push(this.eaglePath + '/lbr');
+    return path;
   }
 
   getLibraryNames() {
-    return Util.unique([
-      ...(function*(libraries) {
-        for(let library of libraries) yield library.attributes.name;
-      })([...this.schematic.libraries.raw, ...this.board.libraries.raw])
-    ]);
+    let libraryNames = [];
+
+    Util.tryCatch(
+      () => this.schematic.libraries.keys(),
+      names => (libraryNames = libraryNames.concat(names))
+    );
+    Util.tryCatch(
+      () => this.board.libraries.keys(),
+      names => (libraryNames = libraryNames.concat(names))
+    );
+
+    return Util.unique(libraryNames);
   }
 
   findLibrary(name, dirs = this.libraryPath()) {
@@ -123,7 +166,7 @@ export class EagleProject {
       schematic: schematic.libraries[name],
       board: board.libraries[name]
     };
-    let layers = {
+    /*  let layers = {
       schematic: Util.toMap(
         schematic.layers.list.filter(l => l.active == 'yes'),
         l => [l.number, l]
@@ -132,21 +175,25 @@ export class EagleProject {
         board.layers.list.filter(l => l.active == 'yes'),
         l => [l.number, l]
       )
-    };
+    };*/
 
     //console.log('libraries.schematic:', libraries.schematic);
     for(let k of ['schematic', 'board']) {
       //console.log(`project[${k}].libraries:`, this[k].libraries);
       //console.log(`libraries[${k}]:`, libraries[k]);
       //console.log(`libraries[${k}].packages:`, libraries[k].packages);
-      const libProps = lib => {
-        const { packages, devicesets, symbols } = lib;
+      const libProps = lib => lib;
+      /*  const { packages, devicesets, symbols } = lib;
         return Object.fromEntries(['packages', 'symbols', 'devicesets'].map(k => [k, lib[k]]).filter(([k, v]) => v));
-        return { packages, devicesets, symbols };
-      };
+      };*/
       const destLib = libProps(libraries[k]);
       const srcLib = libProps(libraries.file);
-      for(let entity in destLib) {
+      for(let entity of ['packages', 'symbols', 'devicesets']) {
+        if(!(entity in destLib)) continue;
+        if(!(destLib[entity] instanceof EagleNodeMap)) continue;
+        /*console.log('destLib', destLib);
+        console.log('destLib[entity]', destLib[entity]);*/
+
         const dstMap = destLib[entity];
         let ent = srcLib[entity].entries();
         let m = new Map(ent);

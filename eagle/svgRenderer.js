@@ -99,7 +99,7 @@ export class EagleSVGRenderer {
   renderLayers(parent) {
     //console.log(`${Util.className(this)}.renderLayers`);
 
-    const layerGroup = this.create('g', { className: 'layers' }, parent);
+    // const layerGroup = this.create('g', { className: 'layers' }, parent);
     const layerList = [...this.doc.layers.list].sort((a, b) => a.number - b.number);
     const colors = {};
 
@@ -286,8 +286,8 @@ export class EagleSVGRenderer {
             ...EagleSVGRenderer.alignmentAttrs(alignment, VERTICAL),
 
             'font-size': (size * 1.6).toFixed(2),
-            'font-family': font || 'Fixed'
-            // transform: finalTransformation
+            'font-family': font || 'Fixed',
+            transform: finalTransformation
           },
           parent
         );
@@ -373,15 +373,14 @@ export class EagleSVGRenderer {
     let bounds = doc.getBounds();
     let rect = bounds.rect;
 
-    this.bounds = bounds;
-    this.rect = rect;
-
     rect.outset(1.27);
     rect.round(2.54, 6);
 
-    this.bounds = bounds;
     this.rect = rect;
-    //console.log('bounds:', bounds.toString({ separator: ' ' }));
+    this.bounds = new BBox().update(rect);
+
+    console.log('bounds:', bounds.toString({ separator: ' ' }));
+
     const { width, height } = new Size(bounds).toCSS('mm');
 
     this.transform.clear();
@@ -395,8 +394,8 @@ export class EagleSVGRenderer {
       parent = this.create(
         'svg',
         {
-          width,
-          height,
+          /*  width,
+          height,*/
           viewBox: rect.clone(r => (r.y = 0)).toString({ separator: ' ' }),
           ...props
         },
@@ -416,8 +415,8 @@ export class EagleSVGRenderer {
       },
       this.create('pattern', { id: 'grid', width: step, height: step, patternUnits: 'userSpaceOnUse' }, this.create('defs', {}, parent))
     );
-    this.group = this.create('g', { transform }, parent);
-    let bgGroup = this.create('g', { id: 'bg' }, this.group);
+    this.group = this.create('g', { id: 'bg' }, parent);
+    let bgGroup = this.create('g', { transform }, this.group);
 
     this.create('rect', { ...rect.toObject(), fill: 'rgb(255,255,255)' }, bgGroup);
     this.create('rect', { ...rect.toObject(), id: 'grid', fill: 'url(#grid)' }, bgGroup);

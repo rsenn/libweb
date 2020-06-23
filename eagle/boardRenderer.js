@@ -197,7 +197,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       'g',
       {
         id: `element.${name}`,
-        className: 'element',
+        className: `element ${name}`,
         'data-name': name,
         'data-value': value,
         'data-library': library.name,
@@ -215,13 +215,13 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderSignal(signal, parent, options = {}) {
-    let signalGroup = this.create('g', { className: `signal.${signal.name}` }, parent);
+    let signalGroup = this.create('g', { id: `signal.${signal.name}`, className: `signal ${signal.name}` }, parent);
 
     return this.renderCollection(signal.children, signalGroup, options);
   }
 
   render(doc = this.doc, parent, props = {}) {
-    let bounds = doc.getBounds();
+    /* let bounds = doc.getBounds();
     let rect = bounds.rect;
 
     this.bounds = bounds;
@@ -229,15 +229,19 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     rect.outset(1.27);
     rect.round(2.54);
-
+*/
     parent = super.render(doc, parent, props);
 
-    this.renderLayers(parent);
+    const { bounds, rect } = this;
 
-    let signalsGroup = parent; // this.create('g', { className: 'signals', strokeLinecap: 'round' }, parent);
-    let elementsGroup = parent; //this.create('g', { className: 'elements' }, parent);
+    //  this.renderLayers(parent);
 
-    let plainGroup = this.create('g', { className: 'plain' }, parent);
+    let transform = this.transform+'';
+
+    let signalsGroup = this.create('g', { className: 'signals', strokeLinecap: 'round', transform }, parent);
+    let elementsGroup = this.create('g', { className: 'elements', transform }, parent);
+
+    let plainGroup = this.create('g', { className: 'plain', transform }, parent);
 
     //console.log('bounds: ', bounds);
 

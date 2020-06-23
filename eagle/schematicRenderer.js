@@ -219,10 +219,10 @@ export class SchematicRenderer extends EagleSVGRenderer {
       'g',
       {
         className: 'instances rects',
-        stroke: new HSLA(220, 100, 50),
+        fill: new HSLA(220, 100, 50, 0.5),
         'stroke-width': 0.2,
         'stroke-dasharray': '0.25 0.25',
-        fill: 'none'
+        stroke: 'none'
       },
       parent
     );
@@ -258,23 +258,19 @@ export class SchematicRenderer extends EagleSVGRenderer {
       );
     }
 
-    /*
-    r.outset(0);
-    r.round(2.54);
-*/
-    b.outset(0.15);
+    /*  b.outset(0.15);
 
     this.create(
       'rect',
       {
         ...b.toObject(),
-        stroke: new HSLA(290, 100, 50),
+        fill: new HSLA(290, 100, 50, 0.5),
         'stroke-width': 0.1,
         'stroke-dasharray': '0.9 0.6',
-        fill: 'none'
+        stroke: 'none'
       },
       parent
-    );
+    );*/
   }
 }
 

@@ -107,6 +107,7 @@ Rect.prototype.getArea = function() {
   return this.width * this.height;
 };
 Rect.prototype.toString = function(opts = {}) {
+  if(typeof opts == 'string') opts = { separator: opts };
   const { precision = 0.001, unit = '', separator = ' ', left = '', right = '' } = opts;
 
   return left + Point.prototype.toString.call(this, opts) + separator + Size.prototype.toString.call(this, opts) + right;

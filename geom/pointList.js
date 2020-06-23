@@ -3,42 +3,71 @@ import { Rect } from './rect.js';
 import { Line } from './line.js';
 import Util from '../util.js';
 
-export function PointList(points, base = Array) {
-  let args = [...arguments];
-  let ret = this instanceof PointList ? this : [];
-  if(Util.isArray(args[0]) || Util.isGenerator(args[0])) args = [...args[0]];
+export class PointList extends Array {
+  constructor(points, tfn = p => new Point(p)) {
+    super();
+    const base = Array;
+    let args = [...arguments];
+    let ret = this instanceof PointList ? this : [];
+    if(Util.isArray(args[0]) || Util.isGenerator(args[0])) args = [...args[0]];
 
-  if(typeof points === 'string') {
-    const matches = [...points.matchAll(/[-.0-9,]+/g)];
-    for(let i = 0; i < matches.length; i++) {
-      const coords = String(matches[i]).split(',');
-      ret.push(Point(coords));
+    if(typeof points === 'string') {
+      const matches = [...points.matchAll(/[-.0-9,]+/g)];
+      for(let i = 0; i < matches.length; i++) {
+        const coords = String(matches[i]).split(',');
+        ret.push(tfn(coords));
+      }
+    } else if(args[0] && args[0].length == 2) {
+      for(let i = 0; i < args.length; i++) ret.push(this instanceof PointList ? new Point(args[i]) : Point(args[i]));
+    } else if(args.length !== undefined) {
+      console.log('args:', args);
+      for(let i = 0; i < args.length; i++) {
+        ret.push(args[i] instanceof Point ? args[i] : tfn(args[i]));
+      }
     }
-  } else if(args[0] && args[0].length == 2) {
-    for(let i = 0; i < args.length; i++) ret.push(this instanceof PointList ? new Point(args[i]) : Point(args[i]));
-  } else if(args.length !== undefined) {
-    for(let i = 0; i < args.length; i++) {
-      ret.push(args[i] instanceof Point ? args[i] : this instanceof PointList ? new Point(args[i]) : Point(args[i]));
-    }
-  }
-  let proto = PointList.prototype;
-  /*
+    let proto = PointList.prototype;
+    /*
   if(base !== Array) {
     proto = Util.clone(PointList.prototype);
     Object.setPrototypeOf(proto, base);
   }*/
-  Object.setPrototypeOf(ret, proto);
+    Object.setPrototypeOf(ret, proto);
 
-  if(!(this instanceof PointList)) return ret;
+    if(!(this instanceof PointList)) return ret;
+  }
 }
 
 //PointList.prototype[Symbol.species] = PointList;
+//Util.extend(PointList.prototype, Array.prototype);
+//PointList.prototype = Util.getMethods(Array.prototype);
+//PointList.prototype.constructor = PointList;
 
 PointList.prototype[Symbol.toStringTag] = function() {
   return PointList.prototype.toString.apply(this, arguments);
 };
-PointList.prototype[Symbol.isConcatSpreadable] = true;
+//PointList[Symbol.species] = PointList;
 
+Util.defineGetter(PointList, Symbol.species, () => PointList);
+PointList.prototype[Symbol.isConcatSpreadable] = true;
+//PointList.prototype[Symbol.species] = PointList;
+/*PointList.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
+PointList.prototype.forEach = Array.prototype.forEach;
+PointList.prototype.map = Array.prototype.map;
+PointList.prototype.sort = Array.prototype.sort;
+PointList.prototype.reverse = function() {
+  let ret = this.clone();
+  Array.prototype.reverse.call(ret);
+  return ret;
+};
+PointList.prototype.reduce = Array.prototype.reduce;
+PointList.prototype.reduceRight = Array.prototype.reduceRight;
+PointList.prototype.unshift = Array.prototype.unshift;
+PointList.prototype.concat = Array.prototype.concat;*/
+PointList.prototype.rotateRight = function(n) {
+  this.unshift(...this.splice(n, this.length));
+  return this;
+};
+/*
 PointList.prototype.concat = function(...args) {
   let ret = this.clone();
   for(let arg of args) {
@@ -47,7 +76,7 @@ PointList.prototype.concat = function(...args) {
   }
   Object.setPrototypeOf(ret, PointList.prototype);
   return ret;
-};
+};*/
 
 PointList.prototype.push = function(...args) {
   for(let arg of args) {
@@ -77,12 +106,12 @@ Object.defineProperty(PointList.prototype, 'size', {
   }
 });
 
-Object.defineProperty(PointList, Symbol.species, {
+/*Object.defineProperty(PointList, Symbol.species, {
   get: function() {
     return PointList;
   }
 });
-
+*/
 PointList.prototype.at = function(index) {
   return this[+index];
 };
@@ -259,8 +288,6 @@ PointList.prototype.filter = function(pred) {
   return ret;
 };
 
-Util.extend(PointList.prototype, Array.prototype);
-
 PointList.prototype.getLineIndex = function(index) {
   const len = PointList.prototype.getLength.call(this);
   return (index < 0 ? len + index : index) % len;
@@ -297,9 +324,9 @@ PointList.prototype.toString = function(sep = ',', prec) {
 PointList.prototype.toSource = function() {
   return 'new PointList([' + PointList.prototype.map.call(this, point => Point.prototype.toSource.call(point)).join(',') + '])';
 };
-PointList.prototype.rotateRight = function(n) {
+/*PointList.prototype.rotateRight = function(n) {
   return Util.rotateRight(this, n);
-};
+};*/
 PointList.prototype.add = function(pt) {
   if(!(pt instanceof Point)) pt = new Point(...arguments);
   PointList.prototype.forEach.call(this, it => Point.prototype.add.call(it, pt));
@@ -318,9 +345,28 @@ PointList.prototype.diff = function(pt) {
   let ret = PointList.prototype.clone.call(this);
   return PointList.prototype.sub.apply(ret, arguments);
 };
-
+PointList.prototype.mul = function(pt) {
+  if(typeof pt == 'number') pt = new Point({ x: pt, y: pt });
+  if(!(pt instanceof Point)) pt = new Point(...arguments);
+  PointList.prototype.forEach.call(this, it => Point.prototype.mul.call(it, pt));
+  return this;
+};
+PointList.prototype.prod = function(pt) {
+  let ret = PointList.prototype.clone.call(this);
+  return PointList.prototype.mul.apply(ret, arguments);
+};
+PointList.prototype.div = function(pt) {
+  if(typeof pt == 'number') pt = new Point({ x: pt, y: pt });
+  if(!(pt instanceof Point)) pt = new Point(...arguments);
+  PointList.prototype.forEach.call(this, it => Point.prototype.div.call(it, pt));
+  return this;
+};
+PointList.prototype.quot = function(pt) {
+  let ret = PointList.prototype.clone.call(this);
+  return PointList.prototype.div.apply(ret, arguments);
+};
 PointList.prototype.round = function(prec) {
-  PointList.prototype.forEach.call(this, it => Point.prototype.round.call(it, prec));
+  PointList.prototype.forEach.call(this, it => Point.round.call(null, it, prec));
   return this;
 };
 
