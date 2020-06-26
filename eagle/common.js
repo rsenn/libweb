@@ -93,7 +93,7 @@ export const toXML = function(o, z = 10000) {
     let nl = textChildren ? '' : tagName == 'text' && a.length == 1 ? '' : tagName[0] != '?' ? '\n  ' : '\n';
     if(textChildren) s += a.join('\n') + `</${tagName}>`;
     else {
-      for(let child of a) s += nl + toXML(child, z === true ? z : z - 1).replace(/>\n/g, '>' + nl);
+      for(let child of a) s += nl + toXML(child, z === true || z > 0 ? z : z - 1).replace(/>\n/g, '>' + nl);
       if(tagName[0] != '?') s += `${nl.replace(/ /g, '')}</${tagName}>`;
     }
   } else if(Object.keys(attrs).length == 0) s += `></${tagName}>`;
