@@ -30,10 +30,11 @@ DereferenceError.prototype.toString = function() {
   return `${message}\n${dump({ object, member, pos, locator, stack }, 2)}`;
 };
 
-const ChildrenSym = Symbol('⊳');
+export const ChildrenSym = Symbol('⊳');
 
 export const EaglePath = Util.immutableClass(
   class EaglePath extends Array {
+    static CHILDREN = ChildrenSym;
     constructor(path = []) {
       super(/*path.length*/);
       for(let i = 0; i < path.length; i++) {
@@ -211,7 +212,7 @@ export const EaglePath = Util.immutableClass(
     }
 
     toString(hl = -1) {
-      let y = this.map(item => (item == 'children' ? '⎿' : item == 'attributes' ? '＠' : item)).map((part, i) => text(part, ...(hl == i ? [1, 31] : [1, 32])));
+      let y = this.map(item => (item == 'children' || item == ChildrenSym ? '⎿' : item == 'attributes' ? '＠' : item)).map((part, i) => text(part, ...(hl == i ? [1, 31] : [1, 32])));
 
       y = text('❪ ', 1, 36) + y.map(x => (typeof x == 'object' ? `${x.tagName}` : `${x}`)).join('·') + text(' ❫', 1, 35);
       return y.trim();
