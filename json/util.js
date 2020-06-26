@@ -1,4 +1,5 @@
 import { Path } from './path.js';
+import Util from '../util.js';
 
 export const toXML = function(o, z = 10000, q = '"') {
   if(typeof o == 'object' && o !== null && 'raw' in o) o = o.raw;
@@ -15,9 +16,9 @@ export const toXML = function(o, z = 10000, q = '"') {
     const textChildren = typeof a[0] == 'string';
     let nl = textChildren ? '' : tagName == 'text' && a.length == 1 ? '' : tagName[0] != '?' ? '\n  ' : '\n';
     if(textChildren) s += a.join('\n') + `</${tagName}>`;
-    else {
-      for(let child of a) s += nl + toXML(child, z === true || z > 0 ? z : z - 1).replace(/>\n/g, '>' + nl);
-      if(tagName[0] != '?') s += `${ntl.replace(/ /g, '')}</${tagName}>`;
+    else if(z > 0) {
+      for(let child of a) s += nl + toXML(child, z > 0 ? z - 1 : z).replace(/>\n/g, '>' + nl);
+      if(tagName[0] != '?') s += `${nl.replace(/ /g, '')}</${tagName}>`;
     }
   } else if(Object.keys(attrs).length == 0) s += `></${tagName}>`;
   else s += ' />';
@@ -46,3 +47,22 @@ export const findXPath = (xpath, flat, { root, recursive = true, entries = false
   }
   return entries ? r : new Map(r);
 };
+
+export function* XmlIterator(obj, predicate = null, path = [], root) {
+  if(!root) root = obj;
+  //console.log("XmlIterator", {obj,path});
+
+  if(!predicate || predicate(obj, path)) yield [obj, path];
+
+  if(obj.children && obj.children.length > 0) {
+    let a = obj.children;
+    //  console.log({path},path+'');
+    let p = (path || []).concat(['children']);
+
+    for(let i = 0; i < a.length; i++) {
+      // console.log("XmlIterator", {a,i});
+
+      yield* XmlIterator(a[i], predicate, p.concat([i]), root);
+    }
+  }
+}

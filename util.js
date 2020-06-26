@@ -789,8 +789,8 @@ Util.injectProps = function(options) {
     }
   }
 }*/
-Util.toString = (obj, opts = {}, indent = '') => {
-  const { quote = '"', multiline = false, color = true, spacing = '', padding = '', separator = ',', colon = ':', depth = 10 } = opts;
+Util.toString = (obj, opts = {}) => {
+  const { quote = '"', multiline = false, indent = '', color = true, stringColor = [1, 36], spacing = '', padding = '', separator = ',', colon = ':', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
 
   if(depth < 0) {
     if(Util.isArray(obj)) return `[...${obj.length}...]`;
@@ -827,13 +827,18 @@ Util.toString = (obj, opts = {}, indent = '') => {
     s += `${c.text(key, 1, 33)}${c.text(colon, 1, 36)}` + spacing;
     /*if(Util.isArray(value)) s+= Util.toString(value);
       else*/ if(Util.isObject(value)) s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
-    else if(typeof value == 'string') s += c.text(`${quote}${value}${quote}`, 1, 36);
+    else if(typeof value == 'string') s += c.text(`${quote}${value}${quote}`, ...stringColor);
     else if(typeof value == 'number') s += c.text(value, 1, 32);
     else s += value;
     i++;
   }
   return s + sep(false) + c.text(`${padding}}`, 1, 36);
 };
+Util.toString.defaultOpts = {
+  spacing: ' ',
+  padding: ' '
+};
+
 Util.dump = function(name, props) {
   const args = [name];
   for(let key in props) {
@@ -852,6 +857,10 @@ Util.ucfirst = function(str) {
 };
 Util.lcfirst = function(str) {
   return str.substring(0, 1).toLowerCase() + str.substring(1);
+};
+Util.typeOf = function(v) {
+  if(Util.isObject(v) && Object.getPrototypeOf(v) != Object.prototype) return `class ${Util.className(v)}`;
+  return Util.ucfirst(typeof v);
 };
 /**
  * Camelize a string, cutting the string by multiple separators like

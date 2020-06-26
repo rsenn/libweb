@@ -61,7 +61,7 @@ export const Path = Util.immutableClass(
         else while(a.length > 0 && a[0] === '') a.shift();
 
       for(let i = 0; i < a.length; i++) {
-        Array.prototype.push.call(this, a[i] === '' ? '' : isNaN(+a[i]) ? a[i] : +a[i]);
+        Array.prototype.push.call(this, Path.isChildren(a[i]) ? 'children' : a[i] === '' ? '' : typeof a[i] == 'symbol' || isNaN(+a[i]) ? a[i] : +a[i]);
       }
     }
 
@@ -97,6 +97,37 @@ export const Path = Util.immutableClass(
         r.push(o);
       }
       return new this(r);
+    }
+
+    static partToString(a) {
+      let s = '';
+      let part = a.shift();
+      switch (typeof part) {
+        case 'object': {
+          s += `[@`;
+          let attrs = Object.entries(part.attributes || {}).map(([name, value]) => `${name}='${value}'`);
+          s += attrs.join(',');
+          s += ']';
+          break;
+        }
+        case 'string':
+          if(part == 'children') {
+            s += Path.CHILDREN_STR + ' ';
+            part = a.shift();
+          }
+          if(!Util.isNumeric(part)) {
+            s += `[${part}]`;
+            break;
+          }
+        case 'number': {
+          s += `${part}`;
+          break;
+        }
+        case 'symbol': {
+          break;
+        }
+      }
+      return s;
     }
 
     get [Symbol.species]() {
@@ -247,10 +278,16 @@ export const Path = Util.immutableClass(
       let a = [...this];
       if(a.length >= 1 && a[0] === '') a = a.slice(1);
 
-      let r = a
-        .map(part => Path.partToString(part))
-        .join(`${sep}`)
-        .replace(/[/.]?\[/g, '[');
+      let r = [];
+
+      do {
+        let p = Path.partToString(a);
+        if(!p) break;
+
+        r.push(p);
+      } while(true);
+
+      r = r.join(sep).replace(/[/.]?\[/g, '[');
       return (this.absolute && r != '' ? sep : '') + r;
     }
 
@@ -269,7 +306,7 @@ export const Path = Util.immutableClass(
     makeAbsolute(parent) {
       if(this.absolute) return this;
       let r = [...parent, ...this];
-      if(r[0] !== '' ) r.unshift('');
+      if(r[0] !== '') r.unshift('');
       return new this.constructor(r, parent.absolute);
     }
 
@@ -279,37 +316,25 @@ export const Path = Util.immutableClass(
       let thisPath = this;
       class XPath extends Path {
         static get [Symbol.species]() {
-
           return this;
         }
         constructor(parts = [], absolute) {
           super();
 
-          for(let arg of parts) 
-            Array.prototype.push.call(this, arg);
+          for(let arg of parts) Array.prototype.push.call(this, arg);
 
-          if(absolute && (this.length == 0 ||this[0] !== ''))
-            Array.prototype.unshift.call(this, '');
-          
+          if(absolute && (this.length == 0 || this[0] !== '')) Array.prototype.unshift.call(this, '');
+
           return this;
         }
         toString() {
           let a = this.toArray();
           let abs = this.length > 0 && this[0] === '';
-           /*   while(a.length > 0 && a[0] == '') {
-                 a = a.slice(1);
-                abs = true;
-              }*/
-
-          let s =  this.filter(p => p != '');
-
+          let s = this.filter(p => p != '');
           s = Array.prototype.join.call(s, '/');
-          s = s .replace(/,/g, "/").replace(/\/\[/g, '[');
-  //s        console.log("s: ",s);
-//return s;
-          return ((abs && !s.startsWith('/')) ? '/' : '') +s;
+          s = s.replace(/,/g, '/').replace(/\/\[/g, '[');
+          return (abs && !s.startsWith('/') ? '/' : '') + s;
         }
-
         [Symbol.toStringTag]() {
           return XPath.prototype.toString.call(this);
         }
@@ -317,24 +342,19 @@ export const Path = Util.immutableClass(
           return XPath.prototype.toString.call(this);
         }
       }
-     /* XPath.prototype.unshift = Path.prototype.unshift;
-      XPath.prototype.shift = Path.prototype.shift;
-      XPath.prototype.concat = Path.prototype.concat;
-      XPath.prototype.push = Path.prototype.push;
-      XPath.prototype.pop = Path.prototype.pop;
-      XPath.prototype.toArray = Path.prototype.toArray;
-      XPath.prototype.slice = Path.prototype.slice;
-*/
+
       let s = [];
       let i = 0;
       while(i < this.length && this[i] === '') i++;
       while(i < this.length) {
         let p = this[i++];
+        if(p == 'attributes' || p == 'children') break;
+
         if(Path.isChildren(p)) p = 'children';
         let e = o[p];
         if(p == 'children') {
           n = e.length;
-        } else {
+        } else if(Util.isObject(e) && e.tagName !== undefined) {
           let pt = [];
           if(e.tagName) {
             s.push(e.tagName);
@@ -348,8 +368,8 @@ export const Path = Util.immutableClass(
         }
         o = e;
       }
-      s = new XPath(s, this.absolute) ;
-      
+      s = new XPath(s, this.absolute);
+
       return s;
     }
 
@@ -366,32 +386,6 @@ export const Path = Util.immutableClass(
         obj = obj[this[i]];
       }
       return this[i] in obj;
-    }
-
-    static partToString(part) {
-      let s = '';
-      switch (typeof part) {
-        case 'object': {
-          s += `[@`;
-          let attrs = Object.entries(part.attributes || {}).map(([name, value]) => `${name}='${value}'`);
-          s += attrs.join(',');
-          s += ']';
-          break;
-        }
-        case 'string':
-          if(!Util.isNumeric(part)) {
-            s += part;
-            break;
-          }
-        case 'number': {
-          s += `${part}`;
-          break;
-        }
-        case 'symbol': {
-          break;
-        }
-      }
-      return s;
     }
 
     split(pred) {
