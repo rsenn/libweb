@@ -1,9 +1,8 @@
 import Util from '../util.js';
+import { toXML } from './util.js';
 
 export function DereferenceError(object, member, pos, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
-  //console.log('DereferenceError', { object, member, locator });
-  //console.log('DereferenceError', { ref });
   let stack = Util.getCallerStack()
     .filter(frame => null !== frame.getFileName())
     .map(frame => {
@@ -18,7 +17,7 @@ export function DereferenceError(object, member, pos, locator) {
     error,
     { object, member, pos, locator },
     {
-      message: `Error dereferencing ${Util.className(object)} @ ${locator.toString() /*map((part, i) => (i == pos ? '<<' + part + '>>' : part)).join(',')*/}\nxml: ${Util.abbreviate(toXML(locator.root))}\nno member '${Util.inspect(member)}' in ${Util.inspect(object, 2)} \n` + stack.join('\n'),
+      message: `Error dereferencing ${Util.className(object)} @ ${locator.toString()}\nxml: ${Util.abbreviate(toXML(locator.root))}\nno member '${Util.inspect(member)}' in ${Util.inspect(object, 2)} \n` + stack.join('\n'),
       stack
     }
   );
@@ -26,52 +25,62 @@ export function DereferenceError(object, member, pos, locator) {
 
 DereferenceError.prototype.toString = function() {
   const { message, object, member, pos, locator, stack } = this;
-  return `${message}\n${dump({ object, member, pos, locator, stack }, 2)}`;
+  return `${message}\n${Util.inspect({ object, member, pos, locator, stack }, 2)}`;
 };
-
-export const ChildrenSym = Symbol('⊳');
 
 export const Path = Util.immutableClass(
   class Path extends Array {
-    static CHILDREN = ChildrenSym;
-    constructor(path = []) {
-      super(/*path.length*/);
-      for(let i = 0; i < path.length; i++) {
-        let value = /*(path[i] == 'children' || path[i] === ChildrenSym) ? ChildrenSym : */ typeof path[0] == 'string' && /^[0-9]+$/.test(path[i]) ? parseInt(path[i]) : path[i];
+    static CHILDREN = Symbol('⊳');
 
-        Array.prototype.push.call(this, value); // this.push(value); //[i] = value;
-      }
-      //      this.length = path.length;
+    static SymToString(a) {
+      if(typeof a == 'symbol' && a === this.CHILDREN) a = 'children';
+      return a;
     }
 
-    static parseXPath(pathStr) {
-      let list = pathStr.replace(/\[/g, '/[').split(/\//g);
-      let r = [];
-      if(list[0] == '') {
-        list.shift(); //list[0] = '?xml';
-      }
+    static StringToSym(a) {
+      if(a === 'children') a = this.CHILDREN;
+      return a;
+    }
 
-      for(let part of list) {
-        let bi = part.indexOf('[');
-        let i = bi != -1 ? part.substring(bi + 1, part.indexOf(']')) : '';
-        //console.log('part', part);
+    constructor(path = []) {
+      super();
+      for(let i = 0; i < path.length; i++) {
+        let value = typeof path[0] == 'string' && /^[0-9]+$/.test(path[i]) ? parseInt(path[i]) : path[i];
+
+        Array.prototype.push.call(this, value);
+      }
+    }
+
+    static parseXPath(s) {
+      let l = s.replace(/\[([0-9])/g, '/[$1').split(/\//g);
+      let r = [];
+      if(l[0] == '') l.shift();
+
+      for(let p of l) {
+        let j = p.indexOf('[');
+        let i = j != -1 ? p.substring(j + 1, p.indexOf(']')) : '';
+        let o = {};
+        let t = p.substring(0, j == -1 ? p.length : j);
 
         if(i) {
-          //console.log('i', i);
-          if(Util.isNumeric(i)) {
+          if(!isNaN(+i)) {
             r.push('children');
             r.push(+i);
+            continue;
           } else if(i[0] == '@') {
-            let k = i.substring(1, i.indexOf('='));
-            let v = i.substring(i.indexOf('=') + 1, i.length);
-            v = v.replace(/^['"]?(.*)['"]?$/, '$1');
-            //console.log('k', { k, v });
-            r.push({ [k]: v });
+            let ei = i.indexOf('=');
+            let k = i.substring(1, ei);
+            let v = i.substring(ei + 1, i.length);
+            v = v.replace(/^['"](.*)['"]$/g, '$1');
+            if(!o.attributes) o.attributes = {};
+
+            o.attributes[k] = v;
           }
-        } else {
-          r.push('children');
-          r.push({ tagName: part });
         }
+        if(t != '') o.tagName = t;
+
+        r.push('children');
+        r.push(o);
       }
       return new this(r);
     }
@@ -121,7 +130,6 @@ export const Path = Util.immutableClass(
      * @return     {Path}
      */
     up(n = 1) {
-      //   const i = Math.max(1, Math.min(this.size, n));
       return new Path(this.toArray().slice(0, this.length - n));
     }
 
@@ -159,6 +167,23 @@ export const Path = Util.immutableClass(
     /* prettier-ignore */ get lastChild() { return this.nthChild(-1); }
     /* prettier-ignore */ get depth() { return this.length; }
 
+    static compare(obj, other) {
+      let ret = true;
+      for(let prop in other) {
+        const value = other[prop];
+        if(Util.isObject(value)) {
+          if(!this.compare(obj[prop], value)) {
+            ret = false;
+            break;
+          }
+        } else if(value != obj[prop]) {
+          ret = false;
+          break;
+        }
+      }
+      return ret;
+    }
+
     apply(obj, noThrow) {
       if('raw' in obj) obj = obj.raw;
 
@@ -172,11 +197,10 @@ export const Path = Util.immutableClass(
         (a, i) => {
           if(a.o) {
             let r;
-            if(i === ChildrenSym || i == 'children') r = 'raw' in a.o ? a.o.raw.children : a.o.children;
+            if(i === Path.CHILDREN || i == 'children') r = 'raw' in a.o ? a.o.raw.children : a.o.children;
             else if(Util.isArray(a.o)) {
               if(typeof i == 'object') {
-                let ent = Object.entries(i);
-                i = a.o.findIndex(child => ent.every(([prop, value]) => child[prop] == value));
+                i = a.o.findIndex(child => Path.compare(child, i)); //ent.every(([prop, value]) => (prop in child ? child[prop] == value : child.attributes && prop in child.attributes ? child.attributes[prop] == value : false)));
                 if(i == -1) i = Object.fromEntries(ent);
               } else if(typeof i == 'number' && i < 0) i = a.o.length + i;
               else i = +i;
@@ -193,7 +217,6 @@ export const Path = Util.immutableClass(
         { o, n: 0 }
       );
       if(a.o == null && !noThrow) throw new DereferenceError(obj, a.i, a.n, this);
-      //console.log("path.apply", this.toString(), Util.abbreviate(toXML(o), 40) );
       return a.o;
     }
 
@@ -204,12 +227,10 @@ export const Path = Util.immutableClass(
       for(let i = 0; i < this.length; i++) {
         const p = this[i];
         if(!o || !(p in o)) {
-          //console.log(!o || !(p in o) ? 'failed:' : 'xpart:', { i, p, o: Util.className(o), ...(o.length !== undefined ? { l: o.length } : {}) });
           if(!o || !(p in o)) return null;
         }
         const e = o[p];
         if(p == 'children') {
-          //  s += '/';
           n = e.length;
         } else {
           let pt = [];
@@ -228,7 +249,12 @@ export const Path = Util.immutableClass(
       s.toString = function() {
         return '/' + this.join('/').replace(/\/\[/g, '[');
       };
+
       return s;
+    }
+
+    [Symbol.for('nodejs.util.inspect.custom')]() {
+      return Path.prototype.toString.call(this);
     }
 
     existsIn(root) {
@@ -243,15 +269,15 @@ export const Path = Util.immutableClass(
     }
 
     toString(hl = -1) {
-      let y = this.map(item => (item == 'children' || item == ChildrenSym ? '⎿' : item == 'attributes' ? '＠' : item)).map((part, i) => part);
+      let y = this.map(item => (item == 'children' || item == Path.CHILDREN ? '⎿' : item == 'attributes' ? '＠' : item)).map((part, i) => part);
 
-      y = '❪ ' + y.map(x => (typeof x == 'object' ? `${x.tagName}` : `${x}`)).join('·') + ' ❫';
+      y = '❪ ' + y.map(x => (typeof x == 'object' ? `${x.tagName}` : `${x}`)).join(' ') + ' ❫';
       return y.trim();
     }
-
+    /*
     [Symbol.for('nodejs.util.inspect.custom')]() {
-      return `Path [${this.map(part => (part === ChildrenSym ? String.fromCharCode(10143) : typeof part == 'number' ? part : Util.inspect(part))).join(', ')}]`;
-    }
+      return `Path [${this.map(part => (part === Path.CHILDREN ? String.fromCharCode(10143) : typeof part == 'number' ? part : Util.inspect(part))).join(', ')}]`;
+    }*/
 
     inspect() {
       return Path.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, arguments);

@@ -9,13 +9,11 @@ export class PathMapper {
   }
 
   at(path) {
-    if(typeof path == 'string') {
-      path = Path.parseXPath(path);
-      console.log('xpath:', path);
-    }
+    if(typeof path == 'string' && path[0] == '/') path = Path.parseXPath(path);
     if(!(path instanceof Path)) path = new Path(path);
     return path.apply(this.root, true);
   }
+
   xpath(obj) {
     let path = this.get(obj);
     return path ? path.xpath(this.root) : null;
@@ -34,7 +32,11 @@ export class PathMapper {
 
   walk(obj, fn = path => path) {
     let path = this.get(obj);
+        if(path === null)
+      return null;
     path = fn(path);
+    if(path === null)
+      return null;
     if(!(path instanceof Path)) path = new Path(path);
     return this.at(path);
   }
