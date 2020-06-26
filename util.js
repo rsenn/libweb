@@ -1,5 +1,3 @@
-//import debug from "debug";
-
 const formatAnnotatedObject = function(subject, o) {
   const { indent = '  ', spacing = ' ', separator = ',', newline = '\n', maxlen = 30, depth = 1 } = o;
   const i = indent.repeat(Math.abs(1 - depth));
@@ -11,22 +9,14 @@ const formatAnnotatedObject = function(subject, o) {
   if(subject && subject.toSource !== undefined) return subject.toSource();
   if(subject instanceof Date) return `new Date('${new Date().toISOString()}')`;
   if(typeof subject == 'string') return `'${subject}'`;
-  if(subject != null && subject['y2'] !== undefined) {
-    return `rect[${spacing}${subject['x']}${separator}${subject['y']} | ${subject['x2']}${separator}${subject['y2']} (${subject['w']}x${subject['h']}) ]`;
-  }
-  if(Util.isObject(subject) && 'map' in subject && typeof subject.map == 'function') {
-    //subject instanceof Array || (subject && subject.length !== undefined)) {
-    return /*(opts.depth <= 0) ? subject.length + '' : */ `[${nl}${/*(opts.depth <= 0) ? subject.length + '' : */ subject.map(i => formatAnnotatedObject(i, opts)).join(separator + nl)}]`;
-  }
-  if(typeof subject === 'string' || subject instanceof String) {
-    return `'${subject}'`;
-  }
+  if(subject != null && subject['y2'] !== undefined) return `rect[${spacing}${subject['x']}${separator}${subject['y']} | ${subject['x2']}${separator}${subject['y2']} (${subject['w']}x${subject['h']}) ]`;
+  if(Util.isObject(subject) && 'map' in subject && typeof subject.map == 'function') return `[${nl}${subject.map(i => formatAnnotatedObject(i, opts)).join(separator + nl)}]`;
+  if(typeof subject === 'string' || subject instanceof String) return `'${subject}'`;
   let longest = '';
   let r = [];
   for(let k in subject) {
     if(k.length > longest.length) longest = k;
     let s = '';
-    //if(typeof(subject[k]) == 'string') s = subject[k];
     if(typeof subject[k] === 'symbol') {
       s = 'Symbol';
     } else if(typeof subject[k] === 'string' || subject[k] instanceof String) {
@@ -51,17 +41,16 @@ const formatAnnotatedObject = function(subject, o) {
     }
     r.push([k, s]);
   }
-  //console.log("longest: ", longest)
   let padding = x => (opts.newline != '' ? Util.pad(x, longest.length, spacing) : spacing);
   let j = separator + spacing;
   if(r.length > 6) {
     nl = opts.newline + i;
     j = separator + (opts.newline || spacing) + i;
   }
-  //padding = x => '';
   let ret = '{' + opts.newline + r.map(arr => padding(arr[0]) + arr[0] + ':' + spacing + arr[1]).join(j) + opts.newline + spacing + '}';
   return ret;
 };
+
 /**
  * Class for utility.
  *
