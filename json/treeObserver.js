@@ -1,39 +1,125 @@
 import ObservableMembrane from '../proxy/observableMembrane.js';
 import Util from '../util.js';
 import { PathMapper } from './pathMapper.js';
+import { Path } from './path.js';
 
 export class TreeObserver extends ObservableMembrane {
-  constructor(pathMapper) {
+  static readOnly = false;
+  handlers = [];
+
+  getType(value, path) {
+    let type = null;
+    path = path || this.mapper.get(value);
+    if(Util.isArray(value)) type = 'NodeList';
+    else if('tagName' in value) type = 'Element';
+    else if(Util.isObject(path) && path[path.length - 1] == 'attributes') type = 'AttributeMap';
+    else type = 'Node';
+    return type;
+  }
+
+  constructor(pathMapper, readOnly = true) {
     if(!(pathMapper instanceof PathMapper)) pathMapper = new PathMapper();
 
     super({
       valueObserved: function(target, key) {
-        let p = pathMapper.get(this.unwrapProxy(target) || target);
-        let v;
-        if(Util.isObject(p)) {
-          v = p[key] || target[key];
-          if(Util.isObject(v)) {
-            for(let prop in v)
-              if(Util.isObject(v[prop])) {
-                pathMapper.set(v[prop], Util.isNumeric(prop) ? [...p, 'children', +prop] : [...p, prop]);
-              }
-          }
-          p = [...p, key];
+        let path = getPath.call(this, target /*, key*/);
+        if(!path) return;
+        const value = target[key];
+        if(Util.isObject(value)) {
+          pathMapper.set(value, path.down(key));
+          // console.log('valueObserved',key, value , path.down(key));
+          for(let handler of this.handlers) handler('access', target, key, path.down(key));
+        }
+        this.last = { target, key };
+      },
+
+      valueMutated: function(target, key) {
+        let path = getPath.call(this, target);
+        let obj = target;
+        let value = target[key];
+
+        if(key != 'tagName') {
+          delete obj[key];
+          obj = obj.attributes;
+          obj[key] = value;
+
+          if(path) path = path.down('attributes' /*, key*/);
+        }
+        for(let handler of this.handlers) {
+          handler('change', target, key, path);
         }
       },
-      valueMutated: function(target, key) {},
       valueDistortion: function(value) {
-        if(!Util.isObject(value)) return value;
-        let q = typeof value == 'object' ? Object.getPrototypeOf(value) : Object.prototype;
-        let p = pathMapper.get(value);
-        const a = [...arguments];
-        if(q === Proxy.prototype) value = this.getReadOnlyProxy(value);
+        const { target, key } = this.last || {};
+
+        if(!Util.isObject(target)) return value;
+        const path = pathMapper.get(value);
+        //console.log("valueDistortion", { key, path, pathStr: [path||[]].join("/")});
+        let q = Util.isObject(value) ? Object.getPrototypeOf(value) : Object.prototype;
+        if(typeof value == 'string' && !isNaN(+value)) value = +value;
+
+        if(q === Proxy.prototype) {
+          value = this.get(value);
+        }
+        if(Util.isObject(value)) {
+          value.type = this.getType(value);
+        }
         return value;
       }
     });
+
+    function getPath(target, key) {
+      let path = pathMapper.get(this.unwrapProxy(target)) || pathMapper.get(target) || null;
+      let value;
+
+      if(path !== null && Util.isObject(target) && key) {
+        let obj = target[key] ? null : pathMapper.at(path);
+        value = obj ? obj[key] : target[key];
+        if(Util.isObject(value)) {
+          for(let prop in value)
+            if(Util.isObject(value[prop])) {
+              pathMapper.set(value[prop], Util.isNumeric(prop) && !Path.isChildren(path.last) ? path.down('children', +prop) : path.down(prop));
+            }
+        }
+        path = [...path, key];
+      }
+      if(path === null) console.log('getPath:', { target, path, key });
+
+      return path;
+    }
+
     let treeObserver = this;
     ['valueDistortion', 'valueMutated', 'valueObserved'].forEach(name => (treeObserver[name] = treeObserver[name].bind(treeObserver)));
 
     this.mapper = pathMapper;
+    this.readOnly = !!readOnly;
+  }
+
+  get(arg) {
+    let ret = this[this.readOnly ? 'getReadOnlyProxy' : 'getProxy'](arg);
+
+    if(this.root === undefined) this.root = arg;
+    else if(this.mapper.root && this.mapper.root != this.root) this.root = this.mapper.root;
+
+    let type = 'Element'; //this.getType(this.unwrap(ret), new Path) ||this.getType(ret, new Path);
+    //if(Util.isObject(ret))
+    ret.type = type;
+
+    return ret;
+  }
+
+  getPath(node) {
+    return this.mapper.get(node) || this.mapper.get(this.unwrap(node));
+  }
+  getXPath(node) {
+    let path = this.getPath(node);
+    return this.root ? path.xpath(this.root) : path;
+  }
+
+  unwrap(arg) {
+    return this.unwrapProxy(arg);
+  }
+  subscribe(handler) {
+    this.handlers.push(handler);
   }
 }

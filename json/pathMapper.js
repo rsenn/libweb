@@ -1,4 +1,5 @@
 import { Path } from './path.js';
+import Util from '../util.js';
 
 export class PathMapper {
   map = null;
@@ -23,6 +24,9 @@ export class PathMapper {
     if(!(path instanceof Path)) path = new Path(path);
     if(path.length === 0) this.root = obj;
     this.map.set(obj, path);
+    let properties = 'tagName' in obj ? ['children', 'attributes'] : Object.keys(obj);
+
+    for(let prop of properties) if(prop in obj && Util.isObject(obj[prop])) this.map.set(obj[prop], path.down(prop));
   }
 
   get(obj) {

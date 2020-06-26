@@ -42,6 +42,10 @@ export const Path = Util.immutableClass(
       return a;
     }
 
+    static isChildren(a) {
+      return a === 'children' || a === this.CHILDREN;
+    }
+
     constructor(path = []) {
       super();
       for(let i = 0; i < path.length; i++) {
@@ -134,7 +138,15 @@ export const Path = Util.immutableClass(
     }
 
     down(...args) {
-      return new Path(this.toArray().concat(args));
+      let r = new Path([...this]);
+
+      if(Path.isChildren(this.last) && Path.isChildren(args[0])) args.shift();
+
+      for(let arg of args) {
+        r = r.concat([arg]);
+      }
+
+      return r;
     }
 
     /**
@@ -247,8 +259,14 @@ export const Path = Util.immutableClass(
         o = e;
       }
       s.toString = function() {
-        return '/' + this.join('/').replace(/\/\[/g, '[');
+        return (
+          '/' +
+          this.filter(p => p != '')
+            .join('/')
+            .replace(/\/\[/g, '[')
+        );
       };
+      s[Symbol.for('nodejs.util.inspect.custom')] = s.toString;
 
       return s;
     }
@@ -268,16 +286,62 @@ export const Path = Util.immutableClass(
       return this[i] in obj;
     }
 
-    toString(hl = -1) {
-      let y = this.map(item => (item == 'children' || item == Path.CHILDREN ? '⎿' : item == 'attributes' ? '＠' : item)).map((part, i) => part);
-
-      y = '❪ ' + y.map(x => (typeof x == 'object' ? `${x.tagName}` : `${x}`)).join(' ') + ' ❫';
-      return y.trim();
+    static partToString(part) {
+      let s = '';
+      switch (typeof part) {
+        case 'object': {
+          s += `[@`;
+          let attrs = Object.entries(part.attributes || {}).map(([name, value]) => `${name}='${value}'`);
+          s += attrs.join(',');
+          s += ']';
+          break;
+        }
+        case 'string':
+          if(!Util.isNumeric(part)) {
+            s += part;
+            break;
+          }
+        case 'number': {
+          s += `[${part}]`;
+          break;
+        }
+        case 'symbol': {
+          break;
+        }
+      }
+      return s;
     }
-    /*
-    [Symbol.for('nodejs.util.inspect.custom')]() {
-      return `Path [${this.map(part => (part === Path.CHILDREN ? String.fromCharCode(10143) : typeof part == 'number' ? part : Util.inspect(part))).join(', ')}]`;
-    }*/
+
+    toString(hl = -1) {
+      /*      let r = '';
+          let s;
+      for(let i = 0; i < this.length; i++) {
+        let o = this[i];
+        s='';
+        if(o == 'children' || o == Path.CHILDREN) {
+          r += '/children';
+continue;
+        }
+                               const isObj = Util.isObject(o);
+       let k = isObj ? Object.keys(o) : [];
+          if(isObj && 'tagName' in o && typeof o.tagName == 'string') s += o.tagName;
+         if(Util.isNumeric(o)) s += `[${o}]`;
+        else if(isObj && 'attributes' in o) {
+            s += `[@`;
+            let attrs = Object.entries(o.attributes).map(([name, value]) => `${name}='${value}'`);
+            s += attrs.join(',');
+            s += ']';
+          }   else if(typeof(o) == 'string') {
+          s += o;
+                } else {
+                  s+=o;}
+          r += `/${s}`;
+        }
+      return r;*/
+      let r = this.map(part => Path.partToString(part)).join('/');
+      //console.log("toString", r);
+      return '/' + r;
+    }
 
     inspect() {
       return Path.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, arguments);
