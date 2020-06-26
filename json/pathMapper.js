@@ -32,11 +32,9 @@ export class PathMapper {
 
   walk(obj, fn = path => path) {
     let path = this.get(obj);
-        if(path === null)
-      return null;
+    if(path === null) return null;
     path = fn(path);
-    if(path === null)
-      return null;
+    if(path === null) return null;
     if(!(path instanceof Path)) path = new Path(path);
     return this.at(path);
   }
