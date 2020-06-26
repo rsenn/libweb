@@ -34,7 +34,7 @@ function json2xml_translator() {
           }
         }
         if(name != null) {
-          xml += (xml.charAt(xml.length - 1) == '\n' ? ind : '') + '</' + name + '>';
+          xml += (xml.charAt(xml.length - 1) == '\n' ? ind : '') + '</' + name + '>\n';
         }
       } else if(typeof v == 'object') {
         var hasChild = false;
@@ -81,7 +81,7 @@ function json2xml_translator() {
             else if(m.charAt(0) != '@') xml += X.toXml(v[m], m, ind + '\t', newSiblingAttrs[m]) + '\n';
           }
           if(name != null) {
-            xml += (xml.charAt(xml.length - 1) == '\n' ? ind : '') + '</' + name + '>';
+            xml += (xml.charAt(xml.length - 1) == '\n' ? ind : '') + '</' + name + '>\n';
           }
         }
       } else {
@@ -92,28 +92,25 @@ function json2xml_translator() {
           xml += ' ' + m + '="' + mySiblingAttrs[m].toString() + '"';
         }
         xml += '>';
-        xml += v.toString() + '</' + name + '>';
+        xml += v.toString() + '</' + name + '>\n';
       }
       return xml;
     },
     parseJson: function(jsonString) {
-      var obj;
-      // TODO: Should use real JSON parser (in a way that works both in node and browser)
-      eval('obj = ' + jsonString + ';');
+      // console.log('parseJSON:', jsonString);
+      var obj = typeof jsonString == 'string' ? JSON.parse(jsonString) : jsonString;
       return obj;
     }
   };
   return X;
 }
 
-function json2xml(json, tab) {
+export function json2xml(json, tab) {
   var X = json2xml_translator();
   var xml = X.toXml(X.parseJson(json));
   // If tab given, do pretty print, otherwise remove white space
-  return tab ? xml.replace(/\t/g, tab) : xml.replace(/\t|\n/g, '');
+  return tab ? xml.replace(/\t/g, tab) : xml.replace(/\t/g, '');
 }
+export const json2xmlTranslator = json2xml_translator();
 
-// node.js
-if(typeof module != 'undefined') {
-  module.exports = json2xml_translator();
-}
+export default json2xml;

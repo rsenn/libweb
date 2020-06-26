@@ -1,5 +1,4 @@
 import Util from '../util.js';
-import { text, EagleInterface, toXML, dump } from './common.js';
 
 export function DereferenceError(object, member, pos, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
@@ -32,8 +31,8 @@ DereferenceError.prototype.toString = function() {
 
 export const ChildrenSym = Symbol('⊳');
 
-export const EaglePath = Util.immutableClass(
-  class EaglePath extends Array {
+export const Path = Util.immutableClass(
+  class Path extends Array {
     static CHILDREN = ChildrenSym;
     constructor(path = []) {
       super(/*path.length*/);
@@ -78,11 +77,11 @@ export const EaglePath = Util.immutableClass(
     }
 
     get [Symbol.species]() {
-      return EaglePath;
+      return Path;
     }
 
     clone() {
-      return new EaglePath(this);
+      return new Path(this);
     }
 
     get size() {
@@ -93,18 +92,18 @@ export const EaglePath = Util.immutableClass(
      * @brief Return new locator advanced to right
      *
      * @param      {number}  [n=1]   Number of steps to right
-     * @return     {EaglePath}
+     * @return     {Path}
      */
     right(n = 1) {
       const [base, last] = this.split(-1);
-      return new EaglePath([...base, this.last + 1]);
+      return new Path([...base, this.last + 1]);
     }
 
     /**
      * @brief Return new locator advanced to left
      *
      * @param      {number}  [n=1]   Number of steps to left
-     * @return     {EaglePath}
+     * @return     {Path}
      */
     left(n = 1) {
       let i = this.lastId,
@@ -119,22 +118,22 @@ export const EaglePath = Util.immutableClass(
      * @brief Return new locator advanced upwards
      *
      * @param      {number}  [n=1]   Number of steps up
-     * @return     {EaglePath}
+     * @return     {Path}
      */
     up(n = 1) {
       //   const i = Math.max(1, Math.min(this.size, n));
-      return new EaglePath(this.toArray().slice(0, this.length - n));
+      return new Path(this.toArray().slice(0, this.length - n));
     }
 
     down(...args) {
-      return new EaglePath(this.toArray().concat(args));
+      return new Path(this.toArray().concat(args));
     }
 
     /**
      * @brief Return new locator for n-th child
      *
      * @param      {number}  [i]   Index of child
-     * @return     {EaglePath}
+     * @return     {Path}
      */
     nthChild(i) {
       return this.down('children', i);
@@ -145,7 +144,7 @@ export const EaglePath = Util.immutableClass(
       for(i = 0; i < this.length; i++) {
         if(this[i] != other[i]) return null;
       }
-      return new EaglePath(other.slice(i, other.length - i));
+      return new Path(other.slice(i, other.length - i));
     }
 
     /* prettier-ignore */ get lastId() {return this.length - 1; }
@@ -244,18 +243,18 @@ export const EaglePath = Util.immutableClass(
     }
 
     toString(hl = -1) {
-      let y = this.map(item => (item == 'children' || item == ChildrenSym ? '⎿' : item == 'attributes' ? '＠' : item)).map((part, i) => text(part, ...(hl == i ? [1, 31] : [1, 32])));
+      let y = this.map(item => (item == 'children' || item == ChildrenSym ? '⎿' : item == 'attributes' ? '＠' : item)).map((part, i) => part);
 
-      y = text('❪ ', 1, 36) + y.map(x => (typeof x == 'object' ? `${x.tagName}` : `${x}`)).join('·') + text(' ❫', 1, 35);
+      y = '❪ ' + y.map(x => (typeof x == 'object' ? `${x.tagName}` : `${x}`)).join('·') + ' ❫';
       return y.trim();
     }
 
     [Symbol.for('nodejs.util.inspect.custom')]() {
-      return `EaglePath [${this.map(part => (part === ChildrenSym ? String.fromCharCode(10143) : text(typeof part == 'number' ? part : Util.inspect(part), 1, typeof part == 'number' ? 33 : 32))).join(', ')}]`;
+      return `Path [${this.map(part => (part === ChildrenSym ? String.fromCharCode(10143) : typeof part == 'number' ? part : Util.inspect(part))).join(', ')}]`;
     }
 
     inspect() {
-      return EaglePath.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, arguments);
+      return Path.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, arguments);
     }
 
     toSource() {
@@ -277,23 +276,23 @@ export const EaglePath = Util.immutableClass(
     }
 
     slice(start = 0, end = this.length) {
-      return new EaglePath(Array.prototype.slice.call(this.toArray(), start, end));
+      return new Path(Array.prototype.slice.call(this.toArray(), start, end));
     }
 
     push(...args) {
-      return new EaglePath(this.toArray().concat(args));
+      return new Path(this.toArray().concat(args));
     }
     pop(n = 1) {
       return this.slice(0, this.length - n);
     }
     unshift(...args) {
-      return new EaglePath(args.concat(this.toArray()));
+      return new Path(args.concat(this.toArray()));
     }
     shift(n = 1) {
       return this.slice(n);
     }
     concat(a) {
-      return new EaglePath(this.toArray().concat(Array.from(a)));
+      return new Path(this.toArray().concat(Array.from(a)));
     }
 
     /* reduce(fn, acc) {
@@ -317,121 +316,3 @@ export const EaglePath = Util.immutableClass(
     }
   }
 );
-
-export class EagleReference {
-  constructor(root, path) {
-    this.path = path instanceof EaglePath ? path : new EaglePath(path);
-    this.root = root;
-    if(!this.dereference(false)) {
-      //console.log('dereference:', { path, root: Util.abbreviate(toXML(root), 10) });
-      throw new Error(this.path.join(','));
-    }
-  }
-
-  get type() {
-    return typeof this.path.last == 'number' ? Array : Object;
-  }
-
-  getPath(root) {
-    let path = new EaglePath();
-    let ref = this;
-
-    do {
-      path = ref.path.concat(path);
-
-      if(root === undefined || root == ref) break;
-    } while(true);
-    return path;
-  }
-
-  dereference(noThrow) {
-    const { path, root } = this;
-    let r;
-    try {
-      r = (Util.isObject(root) && 'owner' in root && path.apply(root.owner, true)) || path.apply(root);
-    } catch(err) {
-      if(!noThrow) throw err;
-      //console.log('err:', err.message, err.stack);
-    }
-    return r;
-  }
-
-  replace(value) {
-    const obj = this.path.up().apply(this.root);
-    return (obj[this.path.last] = value);
-  }
-  entry() {
-    if(this.path.size > 0) {
-      let key = this.path.last;
-      let obj = this.path.up().apply(this.root);
-      return [obj[key], key, obj];
-    }
-    return [this.root];
-  }
-
-  get parent() {
-    return EagleRef(this.root, this.path.slice(0, -1));
-  }
-
-  get nextSibling() {
-    return EagleRef(this.root, this.path.nextSibling);
-  }
-
-  get firstChild() {
-    return EagleRef(this.root, this.path.firstChild);
-  }
-
-  down(...args) {
-    return new EagleReference(this.root, [...this.path.toArray(), ...args]);
-  }
-  up(n = 1) {
-    return new EagleReference(this.root, this.path.up(n));
-  }
-
-  shift(n = 1) {
-    let root = this.root;
-    if(n < 0) n = this.path.length + n;
-    for(let i = 0; i < n; i++) {
-      let k = this.path[i];
-      root = root[k];
-    }
-    return new EagleReference(root, this.path.slice(n));
-  }
-
-  [Symbol.for('nodejs.util.inspect.custom')]() {
-    return `EagleReference { path:${this.path.inspect()}, root:${Util.abbreviate(toXML(this.root, 0), 40)}  }`;
-  }
-  inspect() {
-    return this[Symbol.for('nodejs.util.inspect.custom')](...arguments);
-  }
-}
-
-export const EagleRef = function EagleRef(root, path) {
-  if(Util.isObject(root) && Util.isObject(root.root)) root = root.root;
-
-  let obj = new EagleReference(root, path);
-  return Object.freeze(obj);
-};
-
-/*
-["up", "down", "left", "right", "slice"].forEach(method =>
-    (EagleReference.prototype[method] = function(...args) {
-      return EagleRef(this.root, this.path[method](...args));
-    })
-);*/
-Object.assign(EagleReference.prototype, {});
-
-/*let props = ["nextSibling", "prevSibling", "parent", "parentNode", "firstChild", "lastChild", "depth"].reduce((acc, method) => ({
-    ...acc,
-    [method]: {
-      get: function(...args) {
-        let path = this.path[method](...args); //EaglePath.prototype[method].apply(this.path, args);
-        //console.log(method+" path:",path.join(','), " this.path:",this.path.join(','));
-        return path.existsIn(this.root) ? new EagleRef(this.root, path) : null;
-      }
-    }
-  }), {});
-
-//console.log("props:", props);
-Object.defineProperties(EagleReference.prototype, props);
-*/
