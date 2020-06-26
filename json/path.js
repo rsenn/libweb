@@ -54,11 +54,12 @@ export const Path = Util.immutableClass(
       if(typeof path == 'string') {
         path = path.replace(/⊳ /g, 'children.').replace(/[./]\[/g, '[');
         a = path.split(/[./]/g);
-      } else a = path;
+      } else a = [...path];
       a = a || [];
-      if(absolute) {
+      if(absolute)
         if(a.length == 0 || a[0] !== '') a.unshift('');
-      }
+        else while(a.length > 0 && a[0] === '') a.shift();
+
       for(let i = 0; i < a.length; i++) {
         Array.prototype.push.call(this, a[i] === '' ? '' : isNaN(+a[i]) ? a[i] : +a[i]);
       }
@@ -103,7 +104,7 @@ export const Path = Util.immutableClass(
     }
 
     clone() {
-      return new Path(this);
+      return new this.constructor(this, this.absolute);
     }
 
     get size() {
@@ -118,7 +119,7 @@ export const Path = Util.immutableClass(
      */
     right(n = 1) {
       const [base, last] = this.split(-1);
-      return new Path([...base, this.last + 1]);
+      return new this.constructor([...base, this.last + 1], this.absolute);
     }
 
     /**
@@ -143,11 +144,11 @@ export const Path = Util.immutableClass(
      * @return     {Path}
      */
     up(n = 1) {
-      return new Path(this.toArray().slice(0, this.length - n));
+      return new this.constructor(this.toArray().slice(0, this.length - n), this.absolute);
     }
 
     down(...args) {
-      let r = new Path([...this]);
+      let r = new Path([...this], this.absolute);
 
       //  if(Path.isChildren(this.last) && Path.isChildren(args[0])) args.shift();
 
@@ -171,7 +172,7 @@ export const Path = Util.immutableClass(
       for(i = 0; i < this.length; i++) {
         if(this[i] != other[i]) return null;
       }
-      return new Path(other.slice(i, other.length - i));
+      return new this.constructor(other.slice(i, other.length - i), this.absolute);
     }
 
     /* prettier-ignore */ get lastId() {return this.length - 1; }
@@ -250,15 +251,15 @@ export const Path = Util.immutableClass(
         .map(part => Path.partToString(part))
         .join(`${sep}`)
         .replace(/[/.]?\[/g, '[');
-      return (this.absolute ? sep : '') + r;
+      return (this.absolute && r != '' ? sep : '') + r;
     }
 
     inspect() {
       return Path.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, arguments);
     }
 
-    toSource() {
-      return `[${this.filter(item => item != 'children').join(',')}]`;
+    toSource(sep = ',') {
+      return `[${this.filter(item => item != 'children').join(sep)}]`;
     }
 
     get absolute() {
@@ -268,35 +269,71 @@ export const Path = Util.immutableClass(
     makeAbsolute(parent) {
       if(this.absolute) return this;
       let r = [...parent, ...this];
-      if(r[0] !== '') r.unshift('');
-      return new Path(r);
+      if(r[0] !== '' ) r.unshift('');
+      return new this.constructor(r, parent.absolute);
     }
 
     xpath(obj) {
-      let s = [];
       let o = obj;
       let n;
+      let thisPath = this;
+      class XPath extends Path {
+        static get [Symbol.species]() {
 
+          return this;
+        }
+        constructor(parts = [], absolute) {
+          super();
+
+          for(let arg of parts) 
+            Array.prototype.push.call(this, arg);
+
+          if(absolute && (this.length == 0 ||this[0] !== ''))
+            Array.prototype.unshift.call(this, '');
+          
+          return this;
+        }
+        toString() {
+          let a = this.toArray();
+          let abs = this.length > 0 && this[0] === '';
+           /*   while(a.length > 0 && a[0] == '') {
+                 a = a.slice(1);
+                abs = true;
+              }*/
+
+          let s =  this.filter(p => p != '');
+
+          s = Array.prototype.join.call(s, '/');
+          s = s .replace(/,/g, "/").replace(/\/\[/g, '[');
+  //s        console.log("s: ",s);
+//return s;
+          return ((abs && !s.startsWith('/')) ? '/' : '') +s;
+        }
+
+        [Symbol.toStringTag]() {
+          return XPath.prototype.toString.call(this);
+        }
+        [Symbol.for('nodejs.util.inspect.custom')]() {
+          return XPath.prototype.toString.call(this);
+        }
+      }
+     /* XPath.prototype.unshift = Path.prototype.unshift;
+      XPath.prototype.shift = Path.prototype.shift;
+      XPath.prototype.concat = Path.prototype.concat;
+      XPath.prototype.push = Path.prototype.push;
+      XPath.prototype.pop = Path.prototype.pop;
+      XPath.prototype.toArray = Path.prototype.toArray;
+      XPath.prototype.slice = Path.prototype.slice;
+*/
+      let s = [];
       let i = 0;
-
       while(i < this.length && this[i] === '') i++;
-
       while(i < this.length) {
         let p = this[i++];
-
         if(Path.isChildren(p)) p = 'children';
-
-        /*    if(!o || !(p in o)) 
-          if(!o || !(p in o)) return null;
-*/
         let e = o[p];
-        //console.log('xpath', { i, p });
-
         if(p == 'children') {
           n = e.length;
-          /* p = this[i++];
-          s.push(`[${p}]`);
-e = e[p];*/
         } else {
           let pt = [];
           if(e.tagName) {
@@ -306,22 +343,13 @@ e = e[p];*/
           if(Util.isObject(e.attributes) && e.attributes.name) s.push(`[@name='${e.attributes.name}']`);
           else if(pt.length != 1) {
             if(typeof p == 'number' && n != 1) s.push(`[${p + 1}]`);
-            //  s.push(p+1);
           }
           n = undefined;
         }
         o = e;
       }
-      let thisPath = this;
-      s.toString = function() {
-        return (
-          (thisPath.absolute ? '/' : '') + this.filter(p => p != '').join('/')
-          // .replace(/\/\[/g, '[')
-        );
-      };
-      s[Symbol.for('nodejs.util.inspect.custom')] = s.toString;
-      //console.log('xpath() s=', s.toString());
-
+      s = new XPath(s, this.absolute) ;
+      
       return s;
     }
 
@@ -385,24 +413,34 @@ e = e[p];*/
       return null;
     }
 
+    /**
+     * { function_description }
+     *
+     * @param      {number}  [start=0]          The start
+     * @param      {number}  [end=this.length]  The end
+     * @return     {Path}    { description_of_the_return_value }
+     */
     slice(start = 0, end = this.length) {
-      return new Path(Array.prototype.slice.call(this.toArray(), start, end));
+      if(start < 0) start = this.length + start;
+      if(end < 0) end = this.length + end;
+      let a = Array.prototype.slice.call([...this], start, end);
+      return new this.constructor(a, a[0] === '');
     }
 
     push(...args) {
-      return new Path(this.toArray().concat(args));
+      return new this.constructor(this.toArray().concat(args), this.absolute);
     }
     pop(n = 1) {
       return this.slice(0, this.length - n);
     }
     unshift(...args) {
-      return new Path(args.concat(this.toArray()));
+      return new this.constructor(args.concat(this.toArray()), args[0] === '' ? true : false);
     }
     shift(n = 1) {
-      return this.slice(n);
+      return new this.constructor([...this].slice(n), this.absolute && n < 1);
     }
     concat(a) {
-      return new Path(this.toArray().concat(Array.from(a)));
+      return new this.constructor(this.toArray().concat(Array.from(a)), this.absolute);
     }
 
     /* reduce(fn, acc) {

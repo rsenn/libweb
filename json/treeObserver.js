@@ -10,6 +10,7 @@ export class TreeObserver extends ObservableMembrane {
   getType(value, path) {
     let type = null;
     path = path || this.mapper.get(value);
+    if(!Util.isObject(value)) return null;
     if(Util.isArray(value)) type = 'NodeList';
     else if('tagName' in value) type = 'Element';
     else if(Util.isObject(path) && path[path.length - 1] == 'attributes') type = 'AttributeMap';
@@ -28,7 +29,7 @@ export class TreeObserver extends ObservableMembrane {
         if(Util.isObject(value)) {
           pathMapper.set(value, path.down(key));
           // console.log('valueObserved',key, value , path.down(key));
-          for(let handler of this.handlers) handler('access', target, key, path.down(key));
+          for(let handler of this.handlers) handler('access', target, key, path.down(key), value);
         }
         this.last = { target, key };
       },
@@ -38,32 +39,25 @@ export class TreeObserver extends ObservableMembrane {
         let obj = target;
         let value = target[key];
 
-        if(Util.isObject(obj) && key != 'tagName') {
-          delete obj[key];
+        if(Util.isObject(obj) && !Util.isArray(obj) && key != 'tagName') {
+          /* delete obj[key];
           //  obj = obj.attributes;
-          obj[key] = value;
+          obj[key] = value;*/
 
-          if(path) path = path.down('attributes' /*, key*/);
+          if(path) path = path.down('attributes', key);
         }
         for(let handler of this.handlers) {
-          handler('change', target, key, path);
+          handler('change', target, key, path, value);
         }
       },
       valueDistortion: function(value) {
         const { target, key } = this.last || {};
-
         if(!Util.isObject(target)) return value;
         const path = pathMapper.get(value);
-        //console.log("valueDistortion", { key, path, pathStr: [path||[]].join("/")});
         let q = Util.isObject(value) ? Object.getPrototypeOf(value) : Object.prototype;
         if(typeof value == 'string' && !isNaN(+value)) value = +value;
+        if(Util.isObject(value)) value.type = this.getType(value, path);
 
-        if(q === Proxy.prototype) {
-          value = this.get(value);
-        }
-        if(Util.isObject(value)) {
-          value.type = this.getType(value);
-        }
         return value;
       }
     });

@@ -114,7 +114,7 @@ export const flatten = function(iter, dst = {}, filter = (v, p) => true, map = p
   if(!iter.next) iter = iterate(iter, filter);
 
   if(dst instanceof Map) insert = (name, value) => dst.set(name, value);
-  else if(dst.push) insert = (name, value) => dst.push([name, value]);
+  else if(typeof dst.push == 'function') insert = (name, value) => dst.push([name, value]);
   else insert = (name, value) => (dst[name] = value);
 
   for(let [value, path] of iter) insert(map(path, value), conv(value, path));

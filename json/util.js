@@ -26,6 +26,7 @@ export const toXML = function(o, z = 10000, q = '"') {
 
 export const findXPath = (xpath, flat, { root, recursive = true, entries = false }) => {
   let r = [];
+  let absolute = xpath.startsWith('/');
   let s = (xpath + '').substring(0, xpath.length) + (recursive ? '([[/].*|)' : '[^/]*');
   s = s.replace(/[_:'%]/g, '[^/]');
   if(s[s.length - 1] != '$') s += '$';
@@ -40,6 +41,7 @@ export const findXPath = (xpath, flat, { root, recursive = true, entries = false
     let tmp = new Path(path == '' ? [] : path, true);
     obj = tmp.apply(root);
     let xpath = tmp.xpath(root); //(obj2path(obj));
+    if(absolute && !(xpath + '').startsWith('/')) xpath = '/' + xpath;
     if(m(xpath)) r.push([xpath, obj]);
   }
   return entries ? r : new Map(r);
