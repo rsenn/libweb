@@ -99,7 +99,7 @@ export const Path = Util.immutableClass(
       return new this(r);
     }
 
-    static partToString(a) {
+    static partToString(a, sep) {
       let s = '';
       let part = a.shift();
       switch (typeof part) {
@@ -112,11 +112,13 @@ export const Path = Util.immutableClass(
         }
         case 'string':
           if(part == 'children') {
-            s += Path.CHILDREN_STR + ' ';
+            s += part + sep; //Path.CHILDREN_STR + ' ';
             part = a.shift();
           }
-          if(!Util.isNumeric(part)) {
-            s += `[${part}]`;
+          if(Util.isNumeric(part)) {
+            part = +part;
+          } else {
+            s += `${part}`;
             break;
           }
         case 'number': {
@@ -281,7 +283,7 @@ export const Path = Util.immutableClass(
       let r = [];
 
       do {
-        let p = Path.partToString(a);
+        let p = Path.partToString(a, sep);
         if(!p) break;
 
         r.push(p);
@@ -314,19 +316,18 @@ export const Path = Util.immutableClass(
       let o = obj;
       let n;
       let thisPath = this;
+
       class XPath extends Path {
         static get [Symbol.species]() {
           return this;
         }
         constructor(parts = [], absolute) {
-          super();
+          if(absolute && (parts.length == 0 || parts[0] !== '')) Array.prototype.unshift.call(parts, '');
 
-          for(let arg of parts) Array.prototype.push.call(this, arg);
-
-          if(absolute && (this.length == 0 || this[0] !== '')) Array.prototype.unshift.call(this, '');
-
+          super(parts);
           return this;
         }
+
         toString() {
           let a = this.toArray();
           let abs = this.length > 0 && this[0] === '';
@@ -345,10 +346,13 @@ export const Path = Util.immutableClass(
 
       let s = [];
       let i = 0;
-      while(i < this.length && this[i] === '') i++;
-      while(i < this.length) {
-        let p = this[i++];
-        if(p == 'attributes' || p == 'children') break;
+      let a = [...thisPath];
+      while(i < a.length && a[i] === '') i++;
+
+      while(i < a.length) {
+        let p = a[i++];
+        //    console.log("i:",i );
+        if(p == 'attributes') break;
 
         if(Path.isChildren(p)) p = 'children';
         let e = o[p];
@@ -368,9 +372,9 @@ export const Path = Util.immutableClass(
         }
         o = e;
       }
-      s = new XPath(s, this.absolute);
-
-      return s;
+      let r = new XPath(s, this.absolute);
+      //console.log("xpath", thisPath.absolute,{ a, r },r+'');
+      return r;
     }
 
     [Symbol.for('nodejs.util.inspect.custom')]() {
