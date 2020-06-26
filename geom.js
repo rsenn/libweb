@@ -10,6 +10,7 @@ import { isPoint, Point } from './geom/point.js';
 import { isCircle, Circle } from './geom/circle.js';
 import { PointList, Polyline } from './geom/pointList.js';
 import { PolygonFinder } from './geom/polygonFinder.js';
+import { Polygon } from './geom/polygon.js';
 import { isRect, Rect } from './geom/rect.js';
 import { isSize, Size } from './geom/size.js';
 import { SweepLineClass } from './geom/sweepLine.js';
@@ -23,6 +24,7 @@ export { Graph } from './geom/graph.js';
 export { Intersection } from './geom/intersection.js';
 export { isLine, Line } from './geom/line.js';
 export { LineList } from './geom/lineList.js';
+export { Polygon } from './geom/polygon.js';
 
 export { isMatrix, Matrix } from './geom/matrix.js';
 export { isPoint, Point } from './geom/point.js';
@@ -66,5 +68,6 @@ export default {
   TransformationList,
   Translation,
   TRBL,
-  Vector
+  Vector,
+  Polygon
 };

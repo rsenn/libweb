@@ -222,7 +222,7 @@ Line.prototype.functions = function() {
   return fns;
 };
 Line.prototype.angle = function() {
-  return Point.prototype.angle.call(Line.prototype.getSlope.call(this));
+  return Point.prototype.angle.call(Line.prototype.getVector.call(this));
 };
 Line.prototype.getLength = function() {
   const { a, b } = this;

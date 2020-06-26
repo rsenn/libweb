@@ -8,7 +8,7 @@ import Util from './util.js';
 //import { toJS } from "mobx";
 import { trkl } from './trkl.js';
 import HashList from './hashList.js';
-import { Polygon } from './polygon.js';
+import { Polygon } from './geom.js';
 import { TouchListener } from './touchHandler.js';
 import { makeLocalStorage } from './autoStore.js';
 

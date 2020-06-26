@@ -236,12 +236,13 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     //  this.renderLayers(parent);
 
-    let transform = this.transform+'';
+    let transform = this.transform + '';
+
+    let plainGroup = this.create('g', { className: 'plain', transform }, parent);
 
     let signalsGroup = this.create('g', { className: 'signals', strokeLinecap: 'round', transform }, parent);
     let elementsGroup = this.create('g', { className: 'elements', transform }, parent);
 
-    let plainGroup = this.create('g', { className: 'plain', transform }, parent);
 
     //console.log('bounds: ', bounds);
 

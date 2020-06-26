@@ -1,3 +1,6 @@
+import { PointList } from './pointList.js';
+import { Line } from './line.js';
+
 export const Polygon = function Polygon() {};
 
 Polygon.area = polygon => {
@@ -78,6 +81,18 @@ Polygon.toPath = (polygon, relative = true) => {
 
   path += 'z';
   return path;
+};
+
+Polygon.fromLine = (arg, offset, steps = 3) => {
+  let line = new Line(arg);
+  const PI2 = Math.PI * 0.5;
+  const step = Util.range(0, steps - 1).map(i => (i * Math.PI) / (steps - 1));
+  const a = line.angle();
+  let vl = new PointList();
+  //console.log('step:', step);
+  vl = vl.concat(step.map(va => Point.fromAngle(a - PI2 - va, offset).sum(line.a)));
+  vl = vl.concat(step.map(va => Point.fromAngle(a + PI2 - va, offset).sum(line.b)));
+  return vl;
 };
 
 export default Polygon;

@@ -2,7 +2,7 @@
 import { Element, HSLA, Point, Rect, Renderer, Select, SVG } from '../lib/dom.js';
 import { httpClient as axios } from './axios.js';
 import Util from './util.js';
-import { Polygon } from './polygon.js';
+import { Polygon } from './geom.js';
 import devtools, { storage, select } from './devtools.js';
 import { TouchListener } from './touchHandler.js';
 import { lazyInitializer } from './lazyInitializer.js';
