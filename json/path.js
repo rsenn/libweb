@@ -30,7 +30,8 @@ DereferenceError.prototype.toString = function() {
 
 export const Path = Util.immutableClass(
   class Path extends Array {
-    static CHILDREN = Symbol('⊳');
+    static CHILDREN_STR = '⊳';
+    static CHILDREN = Symbol(Path.CHILDREN_STR);
 
     static SymToString(a) {
       if(typeof a == 'symbol' && a === this.CHILDREN) a = 'children';
@@ -46,19 +47,27 @@ export const Path = Util.immutableClass(
       return a === 'children' || a === this.CHILDREN;
     }
 
-    constructor(path = []) {
+    constructor(path = [], absolute) {
       super();
-      for(let i = 0; i < path.length; i++) {
-        let value = typeof path[0] == 'string' && /^[0-9]+$/.test(path[i]) ? parseInt(path[i]) : path[i];
-
-        Array.prototype.push.call(this, value);
+      // console.log('Path.constructor', path);
+      let a;
+      if(typeof path == 'string') {
+        path = path.replace(/⊳ /g, 'children.').replace(/[./]\[/g, '[');
+        a = path.split(/[./]/g);
+      } else a = path;
+      a = a || [];
+      if(absolute) {
+        if(a.length == 0 || a[0] !== '') a.unshift('');
+      }
+      for(let i = 0; i < a.length; i++) {
+        Array.prototype.push.call(this, a[i] === '' ? '' : isNaN(+a[i]) ? a[i] : +a[i]);
       }
     }
 
     static parseXPath(s) {
       let l = s.replace(/\[([0-9])/g, '/[$1').split(/\//g);
       let r = [];
-      if(l[0] == '') l.shift();
+      // if(l[0] == '') l.shift();
 
       for(let p of l) {
         let j = p.indexOf('[');
@@ -140,13 +149,11 @@ export const Path = Util.immutableClass(
     down(...args) {
       let r = new Path([...this]);
 
-      if(Path.isChildren(this.last) && Path.isChildren(args[0])) args.shift();
+      //  if(Path.isChildren(this.last) && Path.isChildren(args[0])) args.shift();
 
-      for(let arg of args) {
-        r = r.concat([arg]);
-      }
+      //   for(let arg of args)      r = r.concat([arg]);
 
-      return r;
+      return r.concat(args);
     }
 
     /**
@@ -204,8 +211,11 @@ export const Path = Util.immutableClass(
         let stack = Util.getCallers(1, 10);
         throw new Error(`Object ${o}` + stack.join('\n'));
       }
+      let a = [...this];
 
-      let a = this.reduce(
+      while(a.length >= 1 && a[0] === '') a = a.slice(1);
+
+      a = a.reduce(
         (a, i) => {
           if(a.o) {
             let r;
@@ -213,7 +223,7 @@ export const Path = Util.immutableClass(
             else if(Util.isArray(a.o)) {
               if(typeof i == 'object') {
                 i = a.o.findIndex(child => Path.compare(child, i)); //ent.every(([prop, value]) => (prop in child ? child[prop] == value : child.attributes && prop in child.attributes ? child.attributes[prop] == value : false)));
-                if(i == -1) i = Object.fromEntries(ent);
+                //  if(i == -1) i = Object.fromEntries(ent);
               } else if(typeof i == 'number' && i < 0) i = a.o.length + i;
               else i = +i;
             }
@@ -232,18 +242,61 @@ export const Path = Util.immutableClass(
       return a.o;
     }
 
+    toString(sep = '/') {
+      let a = [...this];
+      if(a.length >= 1 && a[0] === '') a = a.slice(1);
+
+      let r = a
+        .map(part => Path.partToString(part))
+        .join(`${sep}`)
+        .replace(/[/.]?\[/g, '[');
+      return (this.absolute ? sep : '') + r;
+    }
+
+    inspect() {
+      return Path.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, arguments);
+    }
+
+    toSource() {
+      return `[${this.filter(item => item != 'children').join(',')}]`;
+    }
+
+    get absolute() {
+      return this[0] === '';
+    }
+
+    makeAbsolute(parent) {
+      if(this.absolute) return this;
+      let r = [...parent, ...this];
+      if(r[0] !== '') r.unshift('');
+      return new Path(r);
+    }
+
     xpath(obj) {
       let s = [];
       let o = obj;
       let n;
-      for(let i = 0; i < this.length; i++) {
-        const p = this[i];
-        if(!o || !(p in o)) {
+
+      let i = 0;
+
+      while(i < this.length && this[i] === '') i++;
+
+      while(i < this.length) {
+        let p = this[i++];
+
+        if(Path.isChildren(p)) p = 'children';
+
+        /*    if(!o || !(p in o)) 
           if(!o || !(p in o)) return null;
-        }
-        const e = o[p];
+*/
+        let e = o[p];
+        //console.log('xpath', { i, p });
+
         if(p == 'children') {
           n = e.length;
+          /* p = this[i++];
+          s.push(`[${p}]`);
+e = e[p];*/
         } else {
           let pt = [];
           if(e.tagName) {
@@ -253,20 +306,21 @@ export const Path = Util.immutableClass(
           if(Util.isObject(e.attributes) && e.attributes.name) s.push(`[@name='${e.attributes.name}']`);
           else if(pt.length != 1) {
             if(typeof p == 'number' && n != 1) s.push(`[${p + 1}]`);
+            //  s.push(p+1);
           }
           n = undefined;
         }
         o = e;
       }
+      let thisPath = this;
       s.toString = function() {
         return (
-          '/' +
-          this.filter(p => p != '')
-            .join('/')
-            .replace(/\/\[/g, '[')
+          (thisPath.absolute ? '/' : '') + this.filter(p => p != '').join('/')
+          // .replace(/\/\[/g, '[')
         );
       };
       s[Symbol.for('nodejs.util.inspect.custom')] = s.toString;
+      //console.log('xpath() s=', s.toString());
 
       return s;
     }
@@ -302,7 +356,7 @@ export const Path = Util.immutableClass(
             break;
           }
         case 'number': {
-          s += `[${part}]`;
+          s += `${part}`;
           break;
         }
         case 'symbol': {
@@ -310,45 +364,6 @@ export const Path = Util.immutableClass(
         }
       }
       return s;
-    }
-
-    toString(hl = -1) {
-      /*      let r = '';
-          let s;
-      for(let i = 0; i < this.length; i++) {
-        let o = this[i];
-        s='';
-        if(o == 'children' || o == Path.CHILDREN) {
-          r += '/children';
-continue;
-        }
-                               const isObj = Util.isObject(o);
-       let k = isObj ? Object.keys(o) : [];
-          if(isObj && 'tagName' in o && typeof o.tagName == 'string') s += o.tagName;
-         if(Util.isNumeric(o)) s += `[${o}]`;
-        else if(isObj && 'attributes' in o) {
-            s += `[@`;
-            let attrs = Object.entries(o.attributes).map(([name, value]) => `${name}='${value}'`);
-            s += attrs.join(',');
-            s += ']';
-          }   else if(typeof(o) == 'string') {
-          s += o;
-                } else {
-                  s+=o;}
-          r += `/${s}`;
-        }
-      return r;*/
-      let r = this.map(part => Path.partToString(part)).join('/');
-      //console.log("toString", r);
-      return '/' + r;
-    }
-
-    inspect() {
-      return Path.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, arguments);
-    }
-
-    toSource() {
-      return `[${this.filter(item => item != 'children').join(',')}]`;
     }
 
     split(pred) {
@@ -363,6 +378,11 @@ continue;
       while(i < this.length && !pred(this[0], i, this)) a.push(this[i++]);
       while(i < this.length) b.push(this[i++]);
       return [a, b];
+    }
+
+    relativeTo(other = []) {
+      if([...other].every((part, i) => this[i] == part)) return this.slice(other.length, this.length);
+      return null;
     }
 
     slice(start = 0, end = this.length) {
@@ -403,6 +423,21 @@ continue;
       let ret = [];
       for(let i = 0; i < this.length; i++) ret.push(this[i]);
       return ret;
+    }
+
+    equal(other = []) {
+      if(other.length != this.length) return false;
+
+      for(let i = 0; i < other.length; i++) {
+        if(this[i] != other[i]) return false;
+      }
+      return true;
+    }
+    get parent() {
+      let r = this.slice(0, this.length - 1);
+      /*   if( Path.isChildren(r[r.length - 1]))
+        r = r.slice(0, r.length - 1);*/
+      return r;
     }
   }
 );

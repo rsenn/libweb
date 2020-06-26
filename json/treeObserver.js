@@ -38,9 +38,9 @@ export class TreeObserver extends ObservableMembrane {
         let obj = target;
         let value = target[key];
 
-        if(key != 'tagName') {
+        if(Util.isObject(obj) && key != 'tagName') {
           delete obj[key];
-          obj = obj.attributes;
+          //  obj = obj.attributes;
           obj[key] = value;
 
           if(path) path = path.down('attributes' /*, key*/);
@@ -83,7 +83,7 @@ export class TreeObserver extends ObservableMembrane {
         }
         path = [...path, key];
       }
-      if(path === null) console.log('getPath:', { target, path, key });
+      //   if(path === null) console.log('getPath:', { target, path, key });
 
       return path;
     }

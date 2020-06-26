@@ -84,6 +84,22 @@ export const select = (root, filter, path) => {
   return selected;
 };
 
+export const find = (node, filter, path, root) => {
+  let k,
+    ret = null;
+  path = (typeof path == 'string' ? path.split(/\.\//) : path) || [];
+  if(!root) root = node;
+  if(filter(node, path, root)) {
+    ret = { path: path, value: node, root };
+  } else if(Util.isObject(node)) {
+    for(k in node) {
+      ret = find(node[k], filter, [...path, k], root);
+      if(ret) break;
+    }
+  }
+  return ret;
+};
+
 export const iterate = function*(value, filter = v => true, path = []) {
   let root = arguments[3] || value,
     selected = [],
@@ -93,15 +109,15 @@ export const iterate = function*(value, filter = v => true, path = []) {
   if(r !== -1) if (Util.isObject(value)) for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
 };
 
-export const flatten = function(iter, dst = {}) {
+export const flatten = function(iter, dst = {}, filter = (v, p) => true, map = p => p.join('.'), conv = (v, p) => Util.filterKeys(v, k => k != 'children')) {
   let insert;
-  if(!iter.next) iter = iterate(iter, v => true);
+  if(!iter.next) iter = iterate(iter, filter);
 
   if(dst instanceof Map) insert = (name, value) => dst.set(name, value);
-  else if(dst.length) insert = (name, value) => dst.push([name, value]);
+  else if(dst.push) insert = (name, value) => dst.push([name, value]);
   else insert = (name, value) => (dst[name] = value);
 
-  for(let [value, path] of iter) insert(path.join('.'), value);
+  for(let [value, path] of iter) insert(map(path, value), conv(value, path));
 
   return dst;
 };
@@ -162,6 +178,7 @@ export default {
   equals,
   extend,
   select,
+  find,
   get,
   set,
   transform,

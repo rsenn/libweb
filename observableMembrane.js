@@ -613,6 +613,7 @@ class ReactiveMembrane {
         const proxy = new Proxy(createShadowTarget(distortedValue), reactiveHandler);
         registerProxy(proxy, value);
         ObjectDefineProperty(this, 'reactive', { value: proxy });
+        ObjectDefineProperty(this, 'handler', { value: reactiveHandler });
         return proxy;
       },
       get readOnly() {
@@ -621,6 +622,7 @@ class ReactiveMembrane {
         const proxy = new Proxy(createShadowTarget(distortedValue), readOnlyHandler);
         registerProxy(proxy, value);
         ObjectDefineProperty(this, 'readOnly', { value: proxy });
+        ObjectDefineProperty(this, 'handler', { value: readOnlyHandler });
         return proxy;
       }
     };
