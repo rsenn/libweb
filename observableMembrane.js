@@ -2,9 +2,22 @@
  * Copyright (C) 2017 salesforce.com, inc.
  */
 const { isArray } = Array;
-const { getPrototypeOf, create: ObjectCreate, defineProperty: ObjectDefineProperty, defineProperties: ObjectDefineProperties, isExtensible, getOwnPropertyDescriptor, getOwnPropertyNames, getOwnPropertySymbols, preventExtensions, hasOwnProperty } = Object;
+const {
+  getPrototypeOf,
+  create: ObjectCreate,
+  defineProperty: ObjectDefineProperty,
+  defineProperties: ObjectDefineProperties,
+  isExtensible,
+  getOwnPropertyDescriptor,
+  getOwnPropertyNames,
+  getOwnPropertySymbols,
+  preventExtensions,
+  hasOwnProperty
+} = Object;
+
 const { push: ArrayPush, concat: ArrayConcat, map: ArrayMap } = Array.prototype;
 const OtS = {}.toString;
+
 function toString(obj) {
   if(obj && obj.toString) {
     return obj.toString();
@@ -14,16 +27,20 @@ function toString(obj) {
     return obj + '';
   }
 }
+
 function isUndefined(obj) {
   return obj === undefined;
 }
+
 function isFunction(obj) {
   return typeof obj === 'function';
 }
+
 const proxyToValueMap = new WeakMap();
 function registerProxy(proxy, value) {
   proxyToValueMap.set(proxy, value);
 }
+
 const unwrap = replicaOrAny => proxyToValueMap.get(replicaOrAny) || replicaOrAny;
 
 class BaseProxyHandler {
@@ -31,6 +48,7 @@ class BaseProxyHandler {
     this.originalTarget = value;
     this.membrane = membrane;
   }
+
   // Shared utility methods
   wrapDescriptor(descriptor) {
     if(hasOwnProperty.call(descriptor, 'value')) {
@@ -44,8 +62,10 @@ class BaseProxyHandler {
         descriptor.set = this.wrapSetter(originalSet);
       }
     }
+
     return descriptor;
   }
+
   copyDescriptorIntoShadowTarget(shadowTarget, key) {
     const { originalTarget } = this;
     // Note: a property might get defined multiple times in the shadowTarget
@@ -57,9 +77,13 @@ class BaseProxyHandler {
       ObjectDefineProperty(shadowTarget, key, wrappedDesc);
     }
   }
+
   lockShadowTarget(shadowTarget) {
     const { originalTarget } = this;
-    const targetKeys = ArrayConcat.call(getOwnPropertyNames(originalTarget), getOwnPropertySymbols(originalTarget));
+    const targetKeys = ArrayConcat.call(
+      getOwnPropertyNames(originalTarget),
+      getOwnPropertySymbols(originalTarget)
+    );
     targetKeys.forEach(key => {
       this.copyDescriptorIntoShadowTarget(shadowTarget, key);
     });
@@ -71,13 +95,16 @@ class BaseProxyHandler {
     }
     preventExtensions(shadowTarget);
   }
+
   // Shared Traps
   apply(shadowTarget, thisArg, argArray) {
     /* No op */
   }
+
   construct(shadowTarget, argArray, newTarget) {
     /* No op */
   }
+
   get(shadowTarget, key) {
     const {
       originalTarget,
@@ -87,6 +114,7 @@ class BaseProxyHandler {
     valueObserved(originalTarget, key);
     return this.wrapValue(value);
   }
+
   has(shadowTarget, key) {
     const {
       originalTarget,
@@ -97,34 +125,43 @@ class BaseProxyHandler {
     // we can simply compare them as the second part of the condition.
     return key in originalTarget || key === tagPropertyKey;
   }
+
   ownKeys(shadowTarget) {
     const {
       originalTarget,
       membrane: { tagPropertyKey }
     } = this;
     // if the membrane tag key exists and it is not in the original target, we add it to the keys.
-    const keys = isUndefined(tagPropertyKey) || hasOwnProperty.call(originalTarget, tagPropertyKey) ? [] : [tagPropertyKey];
+    const keys =
+      isUndefined(tagPropertyKey) || hasOwnProperty.call(originalTarget, tagPropertyKey)
+        ? []
+        : [tagPropertyKey];
     // small perf optimization using push instead of concat to avoid creating an extra array
     ArrayPush.apply(keys, getOwnPropertyNames(originalTarget));
     ArrayPush.apply(keys, getOwnPropertySymbols(originalTarget));
     return keys;
   }
+
   isExtensible(shadowTarget) {
     const { originalTarget } = this;
     // optimization to avoid attempting to lock down the shadowTarget multiple times
     if(!isExtensible(shadowTarget)) {
       return false; // was already locked down
     }
+
     if(!isExtensible(originalTarget)) {
       this.lockShadowTarget(shadowTarget);
       return false;
     }
+
     return true;
   }
+
   getPrototypeOf(shadowTarget) {
     const { originalTarget } = this;
     return getPrototypeOf(originalTarget);
   }
+
   getOwnPropertyDescriptor(shadowTarget, key) {
     const {
       originalTarget,
@@ -137,16 +174,19 @@ class BaseProxyHandler {
       if(key !== tagPropertyKey) {
         return undefined;
       }
+
       // if the key is the membrane tag key, and is not in the original target,
       // we produce a synthetic descriptor and install it on the shadow target
       desc = { value: undefined, writable: false, configurable: false, enumerable: false };
       ObjectDefineProperty(shadowTarget, tagPropertyKey, desc);
       return desc;
     }
+
     if(desc.configurable === false) {
       // updating the descriptor to non-configurable on the shadow
       this.copyDescriptorIntoShadowTarget(shadowTarget, key);
     }
+
     // Note: by accessing the descriptor, the key is marked as observed
     // but access to the value, setter or getter (if available) cannot observe
     // mutations, just like regular methods, in which case we just do nothing.
@@ -163,11 +203,13 @@ class ReactiveProxyHandler extends BaseProxyHandler {
   wrapValue(value) {
     return this.membrane.getProxy(value);
   }
+
   wrapGetter(originalGet) {
     const wrappedGetter = getterMap.get(originalGet);
     if(!isUndefined(wrappedGetter)) {
       return wrappedGetter;
     }
+
     const handler = this;
     const get = function() {
       // invoking the original getter with the original target
@@ -177,11 +219,13 @@ class ReactiveProxyHandler extends BaseProxyHandler {
     reverseGetterMap.set(get, originalGet);
     return get;
   }
+
   wrapSetter(originalSet) {
     const wrappedSetter = setterMap.get(originalSet);
     if(!isUndefined(wrappedSetter)) {
       return wrappedSetter;
     }
+
     const set = function(v) {
       // invoking the original setter with the original target
       originalSet.call(unwrap(this), unwrap(v));
@@ -190,6 +234,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
     reverseSetterMap.set(set, originalSet);
     return set;
   }
+
   unwrapDescriptor(descriptor) {
     if(hasOwnProperty.call(descriptor, 'value')) {
       // dealing with a data descriptor
@@ -199,17 +244,21 @@ class ReactiveProxyHandler extends BaseProxyHandler {
       if(!isUndefined(get)) {
         descriptor.get = this.unwrapGetter(get);
       }
+
       if(!isUndefined(set)) {
         descriptor.set = this.unwrapSetter(set);
       }
     }
+
     return descriptor;
   }
+
   unwrapGetter(redGet) {
     const reverseGetter = reverseGetterMap.get(redGet);
     if(!isUndefined(reverseGetter)) {
       return reverseGetter;
     }
+
     const handler = this;
     const get = function() {
       // invoking the red getter with the proxy of this
@@ -219,11 +268,13 @@ class ReactiveProxyHandler extends BaseProxyHandler {
     reverseGetterMap.set(redGet, get);
     return get;
   }
+
   unwrapSetter(redSet) {
     const reverseSetter = reverseSetterMap.get(redSet);
     if(!isUndefined(reverseSetter)) {
       return reverseSetter;
     }
+
     const handler = this;
     const set = function(v) {
       // invoking the red setter with the proxy of this
@@ -233,6 +284,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
     reverseSetterMap.set(redSet, set);
     return set;
   }
+
   set(shadowTarget, key, value) {
     const {
       originalTarget,
@@ -249,8 +301,10 @@ class ReactiveProxyHandler extends BaseProxyHandler {
       // to support this use case.
       valueMutated(originalTarget, key);
     }
+
     return true;
   }
+
   deleteProperty(shadowTarget, key) {
     const {
       originalTarget,
@@ -260,11 +314,17 @@ class ReactiveProxyHandler extends BaseProxyHandler {
     valueMutated(originalTarget, key);
     return true;
   }
+
   setPrototypeOf(shadowTarget, prototype) {
     if(process.env.NODE_ENV !== 'production') {
-      throw new Error(`Invalid setPrototypeOf invocation for reactive proxy ${toString(this.originalTarget)}. Prototype of reactive objects cannot be changed.`);
+      throw new Error(
+        `Invalid setPrototypeOf invocation for reactive proxy ${toString(
+          this.originalTarget
+        )}. Prototype of reactive objects cannot be changed.`
+      );
     }
   }
+
   preventExtensions(shadowTarget) {
     if(isExtensible(shadowTarget)) {
       const { originalTarget } = this;
@@ -275,10 +335,13 @@ class ReactiveProxyHandler extends BaseProxyHandler {
       if(isExtensible(originalTarget)) {
         return false;
       }
+
       this.lockShadowTarget(shadowTarget);
     }
+
     return true;
   }
+
   defineProperty(shadowTarget, key, descriptor) {
     const {
       originalTarget,
@@ -292,11 +355,13 @@ class ReactiveProxyHandler extends BaseProxyHandler {
       // is an small compromise for the sake of not having to diff the descriptors.
       return true;
     }
+
     ObjectDefineProperty(originalTarget, key, this.unwrapDescriptor(descriptor));
     // intentionally testing if false since it could be undefined as well
     if(descriptor.configurable === false) {
       this.copyDescriptorIntoShadowTarget(shadowTarget, key);
     }
+
     valueMutated(originalTarget, key);
     return true;
   }
@@ -304,15 +369,18 @@ class ReactiveProxyHandler extends BaseProxyHandler {
 
 const getterMap$1 = new WeakMap();
 const setterMap$1 = new WeakMap();
+
 class ReadOnlyHandler extends BaseProxyHandler {
   wrapValue(value) {
     return this.membrane.getReadOnlyProxy(value);
   }
+
   wrapGetter(originalGet) {
     const wrappedGetter = getterMap$1.get(originalGet);
     if(!isUndefined(wrappedGetter)) {
       return wrappedGetter;
     }
+
     const handler = this;
     const get = function() {
       // invoking the original getter with the original target
@@ -321,56 +389,80 @@ class ReadOnlyHandler extends BaseProxyHandler {
     getterMap$1.set(originalGet, get);
     return get;
   }
+
   wrapSetter(originalSet) {
     const wrappedSetter = setterMap$1.get(originalSet);
     if(!isUndefined(wrappedSetter)) {
       return wrappedSetter;
     }
+
     const handler = this;
     const set = function(v) {
       if(process.env.NODE_ENV !== 'production') {
         const { originalTarget } = handler;
-        throw new Error(`Invalid mutation: Cannot invoke a setter on "${originalTarget}". "${originalTarget}" is read-only.`);
+        throw new Error(
+          `Invalid mutation: Cannot invoke a setter on "${originalTarget}". "${originalTarget}" is read-only.`
+        );
       }
     };
     setterMap$1.set(originalSet, set);
     return set;
   }
+
   set(shadowTarget, key, value) {
     if(process.env.NODE_ENV !== 'production') {
       const { originalTarget } = this;
-      throw new Error(`Invalid mutation: Cannot set "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`);
+      throw new Error(
+        `Invalid mutation: Cannot set "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`
+      );
     }
+
     return false;
   }
+
   deleteProperty(shadowTarget, key) {
     if(process.env.NODE_ENV !== 'production') {
       const { originalTarget } = this;
-      throw new Error(`Invalid mutation: Cannot delete "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`);
+      throw new Error(
+        `Invalid mutation: Cannot delete "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`
+      );
     }
+
     return false;
   }
+
   setPrototypeOf(shadowTarget, prototype) {
     if(process.env.NODE_ENV !== 'production') {
       const { originalTarget } = this;
-      throw new Error(`Invalid prototype mutation: Cannot set prototype on "${originalTarget}". "${originalTarget}" prototype is read-only.`);
+      throw new Error(
+        `Invalid prototype mutation: Cannot set prototype on "${originalTarget}". "${originalTarget}" prototype is read-only.`
+      );
     }
   }
+
   preventExtensions(shadowTarget) {
     if(process.env.NODE_ENV !== 'production') {
       const { originalTarget } = this;
-      throw new Error(`Invalid mutation: Cannot preventExtensions on ${originalTarget}". "${originalTarget} is read-only.`);
+      throw new Error(
+        `Invalid mutation: Cannot preventExtensions on ${originalTarget}". "${originalTarget} is read-only.`
+      );
     }
+
     return false;
   }
+
   defineProperty(shadowTarget, key, descriptor) {
     if(process.env.NODE_ENV !== 'production') {
       const { originalTarget } = this;
-      throw new Error(`Invalid mutation: Cannot defineProperty "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`);
+      throw new Error(
+        `Invalid mutation: Cannot defineProperty "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`
+      );
     }
+
     return false;
   }
 }
+
 
 function extract(objectOrArray) {
   if(isArray(objectOrArray)) {
@@ -379,9 +471,11 @@ function extract(objectOrArray) {
       if(original !== item) {
         return extract(original);
       }
+
       return item;
     });
   }
+
   const obj = ObjectCreate(getPrototypeOf(objectOrArray));
   const names = getOwnPropertyNames(objectOrArray);
   return ArrayConcat.call(names, getOwnPropertySymbols(objectOrArray)).reduce((seed, key) => {
@@ -392,9 +486,11 @@ function extract(objectOrArray) {
     } else {
       seed[key] = item;
     }
+
     return seed;
   }, obj);
 }
+
 const formatter = {
   header: plainOrProxy => {
     const originalTarget = unwrap(plainOrProxy);
@@ -402,6 +498,7 @@ const formatter = {
     if(!originalTarget || originalTarget === plainOrProxy) {
       return null;
     }
+
     const obj = extract(plainOrProxy);
     return ['object', { object: obj }];
   },
@@ -412,6 +509,7 @@ const formatter = {
     return null;
   }
 };
+
 // Inspired from paulmillr/es6-shim
 // https://github.com/paulmillr/es6-shim/blob/master/es6-shim.js#L176-L185
 function getGlobal() {
@@ -420,23 +518,29 @@ function getGlobal() {
   if(typeof globalThis !== 'undefined') {
     return globalThis;
   }
+
   if(typeof self !== 'undefined') {
     return self;
   }
+
   if(typeof window !== 'undefined') {
     return window;
   }
+
   if(typeof global !== 'undefined') {
     return global;
   }
+
   // Gracefully degrade if not able to locate the global object
   return {};
 }
+
 function init() {
   if(process.env.NODE_ENV === 'production') {
     // this method should never leak to prod
     throw new ReferenceError();
   }
+
   const global = getGlobal();
   // Custom Formatter for Dev Tools. To enable this, open Chrome Dev Tools
   //  - Go to Settings,
@@ -447,35 +551,44 @@ function init() {
   global.devtoolsFormatters = devtoolsFormatters;
 }
 
+
 if(process.env.NODE_ENV !== 'production') {
   init();
 }
+
 const ObjectDotPrototype = Object.prototype;
 function defaultValueIsObservable(value) {
   // intentionally checking for null
   if(value === null) {
     return false;
   }
+
   // treat all non-object types, including undefined, as non-observable values
   if(typeof value !== 'object') {
     return false;
   }
+
   if(isArray(value)) {
     return true;
   }
+
   const proto = getPrototypeOf(value);
   return proto === ObjectDotPrototype || proto === null || getPrototypeOf(proto) === null;
 }
+
 const defaultValueObserved = (obj, key) => {
   /* do nothing */
 };
+
 const defaultValueMutated = (obj, key) => {
   /* do nothing */
 };
+
 const defaultValueDistortion = value => value;
 function createShadowTarget(value) {
   return isArray(value) ? [] : {};
 }
+
 class ReactiveMembrane {
   constructor(options) {
     this.valueDistortion = defaultValueDistortion;
@@ -484,14 +597,23 @@ class ReactiveMembrane {
     this.valueIsObservable = defaultValueIsObservable;
     this.objectGraph = new WeakMap();
     if(!isUndefined(options)) {
-      const { valueDistortion, valueMutated, valueObserved, valueIsObservable, tagPropertyKey } = options;
+      const {
+        valueDistortion,
+        valueMutated,
+        valueObserved,
+        valueIsObservable,
+        tagPropertyKey
+      } = options;
       this.valueDistortion = isFunction(valueDistortion) ? valueDistortion : defaultValueDistortion;
       this.valueMutated = isFunction(valueMutated) ? valueMutated : defaultValueMutated;
       this.valueObserved = isFunction(valueObserved) ? valueObserved : defaultValueObserved;
-      this.valueIsObservable = isFunction(valueIsObservable) ? valueIsObservable : defaultValueIsObservable;
+      this.valueIsObservable = isFunction(valueIsObservable)
+        ? valueIsObservable
+        : defaultValueIsObservable;
       this.tagPropertyKey = tagPropertyKey;
     }
   }
+
   getProxy(value) {
     const unwrappedValue = unwrap(value);
     const distorted = this.valueDistortion(unwrappedValue);
@@ -501,25 +623,31 @@ class ReactiveMembrane {
       // we return the readonly.
       return o.readOnly === value ? value : o.reactive;
     }
+
     return distorted;
   }
+
   getReadOnlyProxy(value) {
     value = unwrap(value);
     const distorted = this.valueDistortion(value);
     if(this.valueIsObservable(distorted)) {
       return this.getReactiveState(value, distorted).readOnly;
     }
+
     return distorted;
   }
+
   unwrapProxy(p) {
     return unwrap(p);
   }
+
   getReactiveState(value, distortedValue) {
     const { objectGraph } = this;
     let reactiveState = objectGraph.get(distortedValue);
     if(reactiveState) {
       return reactiveState;
     }
+
     const membrane = this;
     reactiveState = {
       get reactive() {
@@ -543,6 +671,7 @@ class ReactiveMembrane {
     return reactiveState;
   }
 }
+
 
 export default ReactiveMembrane;
 /** version: 1.0.0 */
