@@ -1,8 +1,12 @@
 /**
- * Copyright (C) 2017 salesforce.com, inc.
+ * Copyright (C) 2017
+ * salesforce.com, inc.
  */
+import Util from '../util.js';
+
 const { isArray } = Array;
-const { getPrototypeOf, create: ObjectCreate, defineProperty: ObjectDefineProperty, defineProperties: ObjectDefineProperties, isExtensible, getOwnPropertyDescriptor, getOwnPropertyNames, getOwnPropertySymbols, preventExtensions, hasOwnProperty } = Object;
+const { getPrototypeOf, create: ObjectCreate, /* defineProperty: ObjectDefineProperty,*/ defineProperties: ObjectDefineProperties, isExtensible, getOwnPropertyDescriptor, getOwnPropertyNames, getOwnPropertySymbols, preventExtensions, hasOwnProperty } = Object;
+const ObjectDefineProperty = Util.define;
 
 const { push: ArrayPush, concat: ArrayConcat, map: ArrayMap } = Array.prototype;
 const OtS = {}.toString;

@@ -354,23 +354,28 @@ Util.indent = (text, space = '  ') => {
   if(!/\n/.test(text)) return text;
   return text.replace(/(\n)/g, '\n' + space) + '\n';
 };
-Util.define = (obj, key, value, enumerable = false) => {
-  if(typeof key == 'object') {
-    let decl = Object.getOwnPropertyDescriptors(key);
+Util.define = (obj, ...args) => {
+  if(typeof args[0] == 'object') {
+    // let args = [...arguments].slice(1);
+    for(let arg of args) {
+      let decl = Object.getOwnPropertyDescriptors(arg);
 
-    for(let prop in decl) {
-      decl[prop].enumerable = enumerable;
-      decl[prop].configurable = true;
-      decl[prop].writeable = true;
+      for(let prop in decl) {
+        if(!(prop in obj)) decl[prop] = { ...decl[prop], enumerable: false /*,configurable: true, writeable: true*/ };
+        else delete decl[prop];
+      }
+
+      Object.defineProperties(obj, decl);
     }
 
-    Object.defineProperties(obj, decl);
     /* console.log('Util.define', { decl, keys: Object.getOwnPropertyNames(obj) });
     console.log('Util.define', { decl, values: Object.getOwnPropertyNames(obj).map(key => obj[key]) });*/
 
     //    for(let prop in key) Util.define(obj, prop, key[prop], Util.isBool(value) ? value : false);
     return obj;
   }
+  const [key, value, enumerable = false] = args;
+
   /*obj[key] === undefined &&*/
   Object.defineProperty(obj, key, {
     enumerable,
@@ -379,6 +384,13 @@ Util.define = (obj, key, value, enumerable = false) => {
     value
   });
   return obj;
+};
+Util.copyWhole = (dst, ...args) => {
+  let chain = [];
+  for(let src of args) chain = chain.concat(Util.getPrototypeChain(src).reverse());
+  console.log('chain:', ...chain);
+  Util.define(dst, ...chain);
+  return dst;
 };
 Util.copyEntries = (obj, entries) => {
   for(let [k, v] of entries) obj[k] = v;

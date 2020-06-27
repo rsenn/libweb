@@ -483,7 +483,7 @@ export class Element extends Node {
     const d = document !== undefined ? document : global.document;
     //console.log('Element.getCSS ', { w, d, element });
 
-    let parent = element.parentElement ? element.parentElement : element.parentNode;
+    let parent = Util.isObject(element) && element.parentElement ? element.parentElement : element.parentNode;
 
     let estyle = /*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element);
     let pstyle = parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {};

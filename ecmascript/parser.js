@@ -651,7 +651,7 @@ export class ECMAScriptParser extends Parser {
     else body = this.parseAssignmentExpression();
 
     //console.log("body:",body);
-    console.log('args:', args);
+    //&', args);
 
     // parseArrow
     if(args instanceof SequenceExpression) args = args.expressions;

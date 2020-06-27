@@ -19,7 +19,7 @@ export class PointList extends Array {
     } else if(args[0] && args[0].length == 2) {
       for(let i = 0; i < args.length; i++) ret.push(this instanceof PointList ? new Point(args[i]) : Point(args[i]));
     } else if(args.length !== undefined) {
-      console.log('args:', args);
+      //&', args);
       for(let i = 0; i < args.length; i++) {
         ret.push(args[i] instanceof Point ? args[i] : tfn(args[i]));
       }

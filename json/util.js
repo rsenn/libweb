@@ -48,48 +48,97 @@ export const findXPath = (xpath, flat, { root, recursive = true, entries = false
   return entries ? r : new Map(r);
 };
 
-export function* XmlIterator(obj, predicate = null, path = [], root) {
+export function* XmlIterator(obj, filter = null, path = [], root) {
   if(!root) root = obj;
-  //console.log("XmlIterator", {obj,path});
-
-  if(!predicate || predicate(obj, path)) yield [obj, path];
-
+  if(!filter || filter(obj, path)) yield [obj, path];
   if(obj.children && obj.children.length > 0) {
     let a = obj.children;
-    //  console.log({path},path+'');
     let p = (path || []).concat(['children']);
-
-    for(let i = 0; i < a.length; i++) {
-      // console.log("XmlIterator", {a,i});
-
-      yield* XmlIterator(a[i], predicate, p.concat([i]), root);
-    }
+    for(let i = 0; i < a.length; i++) yield* XmlIterator(a[i], filter, p.concat([i]), root);
   }
 }
 
-export class XmlObject {
-  constructor(obj) {
-    const { attributes, children, tagName } = obj;
+class XMLAttribute {
+  name = '';
+  value = null;
 
-    Util.define(this, { [0]: tagName, length: 1, children });
-    Object.assign(this, attributes);
+  static getAttributesFor = Util.weakMapper(obj => {
+    let { length: l, [0]: tagName, children, ...attributes } = obj;
+    let keys = Object.keys(attributes);
+    /* prettier-ignore */ let a = keys.reduce((acc, name, i) => ({...acc, get [i]() {return this[name]; } }), {} );
+    let length = keys.length;
+    let i = 0;
+    Util.define(a, { length });
+
+    for(let name of keys) if(a[name] === undefined) a[name] = new XMLAttribute(name, obj);
+
+    return a;
+  });
+
+  static getByName(name, element) {
+    return this.getAttributesFor(element)[name];
+  }
+
+  static getOrCreate(name, element, value) {
+    const a = this.getAttributesFor(element);
+    if(a[name] === undefined) {
+      a[name] = new this(name, element, value);
+      /* prettier-ignore */
+
+      Util.defineGetter(a, a.length, () =>  a[name], true);
+      a.length++;
+    }
+    return a[name];
+  }
+
+  constructor(name, element, value) {
+    if(value === undefined) value = element[name];
+    Object.assign(this, { name, value });
+  }
+}
+
+class XMLObject {
+  children = [];
+
+  constructor({ attributes, children, tagName }) {
+    Array.prototype.push.call(this, tagName);
+    /* prettier-ignore */ Object.assign(this, Object.keys(attributes).reduce((acc, key) => ({ ...acc, [key]: attributes[key] }), {}) );
+    if(Util.isObject(children) && children.length !== undefined) this.children = [].concat(children);
+  }
+
+  get attributes() {
+    return XMLAttribute.getAttributesFor(this);
+  }
+
+  getAttribute(name) {
+    const { value } = XMLAttribute.getAttributesFor(this)[name] || {};
+    return value;
+  }
+
+  setAttribute(name, value) {
+    let attr = XMLAttribute.getOrCreate(name, this, value);
+    attr.value = value + '';
     return this;
   }
 
-  get tagName() {
-    return this[0];
-  }
-
   toObject() {
-    const { tagName, children, ...attributes } = this;
-    return { tagName, children, attributes };
+    let { length, [0]: tagName, children, ...attributes } = this;
+    if(Util.isArray(children)) children = [].concat(children);
+
+    return { tagName, attributes, children };
   }
 }
-
-Util.extend(
-  XmlObject.prototype,
-  ['toLocaleString', 'toString', Symbol.toStringTag, Symbol.iterator].reduce((acc, prop) => {
-    acc[prop] = Array.prototype[prop];
-    return acc;
-  }, {})
-);
+// prettier-ignore
+Object.assign(XMLObject.prototype, Util.filterKeys(Util.getMembers(Array.prototype), k => typeof k == 'symbol' || ['slice', 'splice', 'toLocaleString', 'toString', 'back', 'front'].indexOf(k) != -1) );
+// prettier-ignore
+Util.define(XMLObject.prototype, {get [Symbol.species]() {return XMLObject; } });
+Util.define(XMLObject.prototype, {
+  [Symbol.for('nodejs.util.inspect.custom')]() {
+    return [this[0], this[1], ...(Util.isArray(this[2]) ? this[2] : [])];
+  },
+  [Symbol.toStringTag]() {
+    return this.toString();
+  }
+});
+export const XmlObject = XMLObject;
+export const XmlAttr = XMLAttribute;
