@@ -321,7 +321,7 @@ Element.setCSS(c.root, { width: '100%', height: '100%' });
     fill: '#ff0',
     transform: 'translate(150,150)'
   });
-  console.log('c: ', c);
+  //console.log('c: ', c);
 
   c.appendChild(f.root);
   console.log(p);

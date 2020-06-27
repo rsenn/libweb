@@ -27,7 +27,8 @@ DereferenceError.prototype.toString = function() {
   const { message, object, member, pos, locator, stack } = this;
   return `${message}\n${Util.inspect({ object, member, pos, locator, stack }, 2)}`;
 };
-export const MutablePath = class Path extends Array {
+
+export class MutablePath extends Array {
   static CHILDREN_STR = '\u220d';
   static CHILDREN = Symbol('children');
 
@@ -286,7 +287,7 @@ export const MutablePath = class Path extends Array {
     for(let i = 0; ; i++) {
       let p = Path.partToString(a, sep, Path[childrenVar]);
       if(!p) break;
-      //  console.log(`p[${r.length}] = ${p}`);
+      //console.log(`p[${r.length}] = ${p}`);
       r.push(p);
     }
     //if(this.length > 1) console.log("r:",r);
@@ -322,63 +323,7 @@ export const MutablePath = class Path extends Array {
 
     //console.log("thisPath:",thisPath);
 
-    let XPath = Util.immutableClass(
-      class XPath extends MutablePath {
-        static get [Symbol.species]() {
-          return this;
-        }
-
-        constructor(parts = [], absolute, root) {
-          if(absolute && (parts.length == 0 || parts[0] !== '')) Array.prototype.unshift.call(parts, '');
-
-          super(parts);
-          this.root = root;
-          return this;
-        }
-        get descendand() {
-          let i = this.offset(v => v === '');
-          if(i < this.length && this[i] === '/') return 1;
-          return 0;
-        }
-        get absolute() {
-          let i = this.offset(v => v === '/');
-          if(i < this.length && this[i] === '') return 1;
-          return 0;
-        }
-
-        slice(start, end) {
-          let { descendand, absolute } = this;
-          let i = this.offset();
-          let a = this.toArray();
-          let l = a.length;
-          if(start < 0) start = l + start;
-          if(start < 0) {
-            //end -= start;
-            start = 0;
-          }
-                    if(start === undefined || isNaN(start)) start = 0;
-          if(end === undefined || isNaN(end)) end = l;
-          else if(end < 0) end = l + end;
-          else if(end > l) end = l;
-          if(start > 0) descendand = true;
-//          console.log('slice:', { start, end,a });
-          a = super.slice(start, end);
-          let prefix = [];
-          if(descendand) a = a.unshift('/');
-          else if(absolute) a = a.unshift('');
-     //     console.log('slice:', /*[...a],*/ { descendand, absolute });
-          console.log('slice:',  a);
-          return a;
-        }
-       toString() {
-          let a = super.slice();
-          let r = [].concat(a.filter(p => p != 'children'));
-          let s = Array.prototype.join.call(r, '/');
-          s = s.replace(/,/g, '/').replace(/\/\[/g, '[');
-          return ((this.descendand > 0 || this.absolute) && !s.startsWith('/') ? (this.descendand ? '//' : '/') : '') + s;
-        }
-      }
-    );
+    let XPath = Util.immutableClass(MutableXPath);
     let s = [];
     let i = 0;
     let a = [...thisPath];
@@ -406,7 +351,6 @@ export const MutablePath = class Path extends Array {
       o = e;
     }
 
-
     let r = new XPath(s, this.absolute, obj);
     //console.log("xpath", thisPath.absolute,{ a, r },r+'');
     return r;
@@ -416,7 +360,9 @@ export const MutablePath = class Path extends Array {
     let s = this.toString('/');
     let c = Util.className(this);
     c = c.startsWith('Immutable') ? (c = c.replace(/Immutable/g, '')) : 'Mutable' + c.replace(/Mutable/g, '');
-    return `\x1b[1;31m${c}\x1b[1;34m ${s}\x1b[0m`;
+  //  console.log('c', c);
+    let code = c.startsWith('Mutable') ? 31 : 32;
+    return `\x1b[1;${code}m${c}\x1b[1;34m ${s}\x1b[0m`;
   }
 
   [Symbol.toStringTag]() {
@@ -536,22 +482,64 @@ export const MutablePath = class Path extends Array {
         r = r.slice(0, r.length - 1);*/
     return r;
   }
-};
-
-export const Path = Util.immutableClass(MutablePath);
+}
 
 export class MutableXPath extends MutablePath {
-  constructor(arg) {
-    console.log('arg', arg);
-    let path = MutablePath.parseXPath(arg);
+  static get [Symbol.species]() {
+    return this;
+  }
 
-    //let proto = Object.getPrototypeOf(path);
-    Object.setPrototypeOf(path, MutableXPath.prototype);
+  constructor(parts = [], absolute, root) {
+    if(absolute && (parts.length == 0 || parts[0] !== '')) Array.prototype.unshift.call(parts, '');
 
-    return path;
+    super(parts);
+    this.root = root;
+    return this;
+  }
+  get descendand() {
+    let i = this.offset(v => v === '');
+    if(i < this.length && this[i] === '/') return 1;
+    return 0;
+  }
+  get absolute() {
+    let i = this.offset(v => v === '/');
+    if(i < this.length && this[i] === '') return 1;
+    return 0;
+  }
+
+  slice(start, end) {
+    let { descendand, absolute } = this;
+    let i = this.offset();
+    let a = this.toArray();
+    let l = a.length;
+    if(start < 0) start = l + start;
+    if(start < 0) {
+      //end -= start;
+      start = 0;
+    }
+    if(start === undefined || isNaN(start)) start = 0;
+    if(end === undefined || isNaN(end)) end = l;
+    else if(end < 0) end = l + end;
+    else if(end > l) end = l;
+    if(start > 0) descendand = true;
+    //console.log('slice:', { start, end,a });
+    a = super.slice(start, end);
+    let prefix = [];
+    if(descendand) a = a.unshift('/');
+    else if(absolute) a = a.unshift('');
+    //console.log('slice:', /*[...a],*/ { descendand, absolute });
+    //console.log('slice:',  a);
+    return a;
+  }
+  toString() {
+    let a = super.slice();
+    let r = [].concat(a.filter(p => p != 'children'));
+    let s = Array.prototype.join.call(r, '/');
+    s = s.replace(/,/g, '/').replace(/\/\[/g, '[');
+    return ((this.descendand > 0 || this.absolute) && !s.startsWith('/') ? (this.descendand ? '//' : '/') : '') + s;
   }
 }
 
-//Object.assign(MutableXPath.prototype, Util.getMethods(MutablePath.prototype));
+export const Path = Util.immutableClass(MutablePath);
 
-export const XPath = /*Util.immutableClass*/ MutableXPath;
+export const XPath = Util.immutableClass(MutableXPath);

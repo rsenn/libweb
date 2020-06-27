@@ -2346,7 +2346,8 @@ Util.immutable = args => {
   return new Proxy(args, handler);
 };
 Util.immutableClass = (orig, ...proto) => {
-  let name = Util.fnName(orig);
+  let name = Util.fnName(orig).replace(/Mutable/g, '');
+  let imName = 'Immutable' + name;
   proto = proto || [];
   let initialProto = proto.map(p =>
     Util.isArrowFunction(p)
@@ -2355,24 +2356,18 @@ Util.immutableClass = (orig, ...proto) => {
           for(let n in p) ctor.prototype[n] = p[n];
         }
   );
-  //console.log('initialProto', initialProto);
-  let body = ` class Immutable${name} extends Original {
-    constructor(...args) {
-      //console.log("${name} args", args);
-      super(...args);
-      if(new.target === Immutable${name})
-        return Object.freeze(this);
-    }
+  let body = ` class ${imName} extends ${name} {
+    constructor(...args) { super(...args); if(new.target === ${imName}) return Object.freeze(this); }
   };
-    Immutable${name}.prototype = new Original();
-//console.log(Immutable${name}.prototype);
-    Immutable${name}.prototype.constructor = Immutable${name};
-  Immutable${name}.prototype[Symbol.species] = Immutable${name};
-  return Immutable${name};`;
-  for(let p of initialProto) {
-    p(orig);
-  }
-  let ctor = new Function('Original', body)(orig);
+  ${imName}.prototype = new ${name}();
+  ${imName}.prototype.constructor = ${imName};
+  ${imName}.prototype[Symbol.species] = ${imName};
+  return ${imName};`;
+  // console.log('immutableClass', { initialProto},  (orig));
+
+  for(let p of initialProto) p(orig);
+
+  let ctor = new Function(name, body)(orig);
   return ctor;
 };
 
