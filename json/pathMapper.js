@@ -26,7 +26,7 @@ export class PathMapper {
     this.map.set(obj, path);
     let properties = 'tagName' in obj ? ['children', 'attributes'] : Object.keys(obj);
 
-    for(let prop of properties) if(prop in obj && Util.isObject(obj[prop])) this.map.set(obj[prop], path.down(prop));
+    for(let prop of properties) if(prop in obj && Util.isObject(obj[prop])) this.map.set(obj[prop], path.concat([prop]));
   }
 
   get(obj) {

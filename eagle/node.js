@@ -118,7 +118,7 @@ export class EagleNode extends EagleInterface {
         lazy[key] = () =>
           // console.log('lookup', key, this.ref);
           this.lookup(xpath, true);
-        lists[key] = () => listCtor(this, this.ref.down('children'), lazy[key]().children);
+        lists[key] = () => listCtor(this, this.ref.concat(['children']), lazy[key]().children);
 
         maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => makeEagleNodeMap(lazy[key]().children, key == 'instances' ? 'part' : key == 'layers' ? 'number' : 'name');
       }
@@ -150,7 +150,7 @@ export class EagleNode extends EagleInterface {
     }
     node.attributes = attributes;
     this.ref
-      .down('children')
+      .concat(['children'])
       .dereference()
       .push(node);
     return this.lastChild;
@@ -216,7 +216,7 @@ export class EagleNode extends EagleInterface {
     return null;
   }
 
-  getByName(element, name, attr = 'name', t = ([v, l, d]) => makeEagleNode(d, this.ref.down(...l), this.childConstructor)) {
+  getByName(element, name, attr = 'name', t = ([v, l, d]) => makeEagleNode(d, this.ref.concat([...l]), this.childConstructor)) {
     for(let [v, l, d] of this.iterator([], it => it)) {
       if(typeof v == 'object' && 'tagName' in v && 'attributes' in v && attr in v.attributes) {
         if(v.tagName == element && v.attributes[attr] == name) return t([v, l, d]);

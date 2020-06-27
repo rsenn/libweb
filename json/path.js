@@ -177,17 +177,12 @@ export class MutablePath extends Array {
    * @return     {Path}
    */
   up(n = 1) {
-    return new this.constructor(this.toArray().slice(0, this.length - n), this.absolute);
+    return this.slice(0, this.length - n);
+    //    return new this.constructor(this.toArray().slice(0, this.length - n), this.absolute);
   }
 
   down(...args) {
-    let r = new Path([...this], this.absolute);
-
-    //  if(Path.isChildren(this.last) && Path.isChildren(args[0])) args.shift();
-
-    //   for(let arg of args)      r = r.concat([arg]);
-
-    return r.concat(args);
+    return this.concat(args);
   }
 
   /**
@@ -447,7 +442,7 @@ export class MutablePath extends Array {
 
   offset(predicate = (p, i) => p === '' || p === '/') {
     let i = 0;
-    for(; i < this.length; i++) if(!predicate(this[i], i)) break;
+    for(; i < this.length; i++) if(!predicate(this[i], i, this)) break;
     return i;
   }
 
@@ -482,11 +477,16 @@ export class MutablePath extends Array {
         r = r.slice(0, r.length - 1);*/
     return r;
   }
+
+  *walk(t = p => p.up(1)) {
+    let p = this;
+    for(p = this; p; p = t(p)) yield p;
+  }
 }
 
 export class MutableXPath extends MutablePath {
   static get [Symbol.species]() {
-    return this;
+    return MutableXPath;
   }
 
   constructor(parts = [], absolute, root) {
@@ -531,12 +531,25 @@ export class MutableXPath extends MutablePath {
     //console.log('slice:',  a);
     return a;
   }
+
   toString() {
     let a = super.slice();
     let r = [].concat(a.filter(p => p != 'children'));
     let s = Array.prototype.join.call(r, '/');
     s = s.replace(/,/g, '/').replace(/\/\[/g, '[');
-    return ((this.descendand > 0 || this.absolute) && !s.startsWith('/') ? (this.descendand ? '//' : '/') : '') + s;
+    s = ((this.descendand > 0 || this.absolute) && !s.startsWith('/') ? (this.descendand ? '//' : '/') : '') + s;
+    return s;
+  }
+  toRegExp() {
+    let s = this.toString();
+    s = s.replace(/\/\//g, '/?(.*/|)(');
+    s = s.replace(/(\[|\])/g, '\\$1');
+
+    s = s.replace(/\//g, '[./]');
+    s = s.replace(/['"`]/g, `['"\`]?`);
+    //s = s.replace(/^(\([^\)]*\))/g,  "$1?");
+    // console.log("s:",s);
+    return new RegExp('' + s + ')([^/.][^/.]*|)$', 'gi');
   }
 }
 

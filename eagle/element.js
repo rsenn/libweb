@@ -389,8 +389,8 @@ export class EagleElement extends EagleNode {
 
   /*
   static create(owner, ref, ...args) {
-    if('length' in ref) ref = owner.ref.down(...ref);
-    if(args.length > 0) ref = ref.down(...args);
+    if('length' in ref) ref = owner.ref.concat([...ref]);
+    if(args.length > 0) ref = ref.concat([...args]);
     return EagleElement.get(owner, ref);
   }*/
 }

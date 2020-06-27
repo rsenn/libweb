@@ -137,7 +137,7 @@ export const EaglePath = Util.immutableClass(
      * @return     {EaglePath}
      */
     nthChild(i) {
-      return this.down('children', i);
+      return this.concat(['children', i]);
     }
 
     diff(other) {

@@ -29,9 +29,9 @@ export class TreeObserver extends ObservableMembrane {
         if(!(path instanceof Path)) path = new Path(path);
 
         if(Util.isObject(value)) {
-          pathMapper.set(value, path.down(key));
-          //console.log('valueObserved',key, value , path.down(key));
-          for(let handler of this.handlers) handler('access', target, /*key, */ path.down(key), value);
+          pathMapper.set(value, path.concat([key]));
+          //console.log('valueObserved',key, value , path.concat([key]));
+          for(let handler of this.handlers) handler('access', target, /*key, */ path.concat([key]), value);
         }
 
         this.last = { target, key, path };
@@ -46,7 +46,7 @@ export class TreeObserver extends ObservableMembrane {
 
         if(Util.isObject(obj) && !Util.isArray(obj) && key != 'tagName') {
         }
-        if(key) path = path.down(key);
+        if(key) path = path.concat([key]);
 
         for(let handler of this.handlers) {
           handler('change', target, /*key,*/ path, value);
@@ -59,7 +59,7 @@ export class TreeObserver extends ObservableMembrane {
         let valueClass = Util.className(value);
         let valueKeys = Util.isObject(value) ? Object.keys(value) : [];
         if(key || path) {
-          if(key) path = path.down(key);
+          if(key) path = path.concat([key]);
 
           //console.log(`valueDistortion valueType=${valueType} valueClass=${valueClass} valueKeys=${valueKeys.length} key='${key}' path='${key}'`);
 
@@ -79,7 +79,7 @@ export class TreeObserver extends ObservableMembrane {
         let obj = target[key] ? null : pathMapper.at(path);
         value = obj ? obj[key] : target[key];
         if(Util.isObject(value)) {
-          for(let prop in value) if(Util.isObject(value[prop])) pathMapper.set(value[prop], Util.isNumeric(prop) && !Path.isChildren(path.last) ? path.down('children', +prop) : path.down(prop));
+          for(let prop in value) if(Util.isObject(value[prop])) pathMapper.set(value[prop], Util.isNumeric(prop) && !Path.isChildren(path.last) ? path.concat(['children', +prop]) : path.concat([prop]));
         }
         path = [...path, key];
       }

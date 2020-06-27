@@ -70,9 +70,9 @@ export const traverse = function*(obj, path = [], doc) {
   yield [obj, path, doc];
   if(typeof obj == 'object') {
     if(Util.isArray(obj)) {
-      for(let i = 0; i < obj.length; i++) yield* traverse(obj[i], path.down(i), doc);
+      for(let i = 0; i < obj.length; i++) yield* traverse(obj[i], path.concat([i]), doc);
     } else if('children' in obj && Util.isArray(obj.children)) {
-      for(let i = 0; i < obj.children.length; i++) yield* traverse(obj.children[i], path.down('children', i), doc);
+      for(let i = 0; i < obj.children.length; i++) yield* traverse(obj.children[i], path.concat(['children', i]), doc);
     }
   }
 };

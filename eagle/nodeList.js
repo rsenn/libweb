@@ -39,7 +39,7 @@ Object.assign(EagleNodeList.prototype, {
     const instance = this;
     return function*() {
       const list = instance.ref.dereference();
-      for(let i = 0; i < list.length; i++) yield makeEagleElement(this.owner, instance.ref.down(i));
+      for(let i = 0; i < list.length; i++) yield makeEagleElement(this.owner, instance.ref.concat([i]));
     };
   },
   entries() {
@@ -93,7 +93,7 @@ export function makeEagleNodeList(owner, ref, raw) {
       if(prop == 'find')
         return name => {
           const idx = list.findIndex(e => e.attributes.name == name);
-          return idx == -1 ? null : makeEagleElement(instance, instance.ref.down(idx));
+          return idx == -1 ? null : makeEagleElement(instance, instance.ref.concat([idx]));
         };
       if(prop == 'entries') return () => list.map((item, i) => [item.attributes.name, item]);
       if(typeof Array.prototype[prop] == 'function') return Array.prototype[prop].bind(instance);
