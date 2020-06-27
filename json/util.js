@@ -66,3 +66,30 @@ export function* XmlIterator(obj, predicate = null, path = [], root) {
     }
   }
 }
+
+export class XmlObject {
+  constructor(obj) {
+    const { attributes, children, tagName } = obj;
+
+    Util.define(this, { [0]: tagName, length: 1, children });
+    Object.assign(this, attributes);
+    return this;
+  }
+
+  get tagName() {
+    return this[0];
+  }
+
+  toObject() {
+    const { tagName, children, ...attributes } = this;
+    return { tagName, children, attributes };
+  }
+}
+
+Util.extend(
+  XmlObject.prototype,
+  ['toLocaleString', 'toString', Symbol.toStringTag, Symbol.iterator].reduce((acc, prop) => {
+    acc[prop] = Array.prototype[prop];
+    return acc;
+  }, {})
+);
