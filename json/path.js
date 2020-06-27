@@ -350,31 +350,23 @@ export const MutablePath = class Path extends Array {
           let { descendand, absolute } = this;
           let i = this.offset();
           let a = this.toArray();
-
           let l = a.length;
-
-
           if(start < 0) start = l + start;
           if(start < 0) {
             //end -= start;
             start = 0;
           }
                     if(start === undefined || isNaN(start)) start = 0;
-
           if(end === undefined || isNaN(end)) end = l;
           else if(end < 0) end = l + end;
           else if(end > l) end = l;
-
           if(start > 0) descendand = true;
-
-
-          console.log('slice:', { start, end,a });
-
+//          console.log('slice:', { start, end,a });
           a = super.slice(start, end);
           let prefix = [];
           if(descendand) a = a.unshift('/');
           else if(absolute) a = a.unshift('');
-          console.log('slice:', /*[...a],*/ { descendand, absolute });
+     //     console.log('slice:', /*[...a],*/ { descendand, absolute });
           console.log('slice:',  a);
           return a;
         }
