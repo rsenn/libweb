@@ -360,7 +360,7 @@ export class MutablePath extends Array {
     let s = this.toString('/');
     let c = Util.className(this);
     c = c.startsWith('Immutable') ? (c = c.replace(/Immutable/g, '')) : 'Mutable' + c.replace(/Mutable/g, '');
-  //  console.log('c', c);
+    //  console.log('c', c);
     let code = c.startsWith('Mutable') ? 31 : 32;
     return `\x1b[1;${code}m${c}\x1b[1;34m ${s}\x1b[0m`;
   }
