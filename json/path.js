@@ -352,49 +352,48 @@ export const MutablePath = class Path extends Array {
           let a = this.toArray();
 
           let l = a.length;
+
+
           if(start < 0) start = l + start;
           if(start < 0) {
             //end -= start;
             start = 0;
           }
+                    if(start === undefined || isNaN(start)) start = 0;
 
           if(end === undefined || isNaN(end)) end = l;
           else if(end < 0) end = l + end;
           else if(end > l) end = l;
 
           if(start > 0) descendand = true;
-          console.log('slice:', a, { start, end });
+
+
+          console.log('slice:', { start, end,a });
 
           a = super.slice(start, end);
           let prefix = [];
           if(descendand) a = a.unshift('/');
           else if(absolute) a = a.unshift('');
-          console.log('slice:', /*[...a],*/ { descendand, absolute }, [start, end], a);
+          console.log('slice:', /*[...a],*/ { descendand, absolute });
+          console.log('slice:',  a);
           return a;
         }
-
-        toString() {
-          let a = this.toArray(false);
-
-          let s = this.filter(p => p != 'children');
-
-          s = Array.prototype.join.call(s, '/');
+       toString() {
+          let a = super.slice();
+          let r = [].concat(a.filter(p => p != 'children'));
+          let s = Array.prototype.join.call(r, '/');
           s = s.replace(/,/g, '/').replace(/\/\[/g, '[');
           return ((this.descendand > 0 || this.absolute) && !s.startsWith('/') ? (this.descendand ? '//' : '/') : '') + s;
         }
       }
     );
-
     let s = [];
     let i = 0;
     let a = [...thisPath];
     while(i < a.length && a[i] === '') i++;
-
     while(i < a.length) {
       let p = a[i++];
-      //    console.log("i:",i );
       if(p == 'attributes') break;
-
       if(Path.isChildren(p)) p = 'children';
       let e = o[p];
       if(p == 'children') {
@@ -414,6 +413,8 @@ export const MutablePath = class Path extends Array {
       }
       o = e;
     }
+
+
     let r = new XPath(s, this.absolute, obj);
     //console.log("xpath", thisPath.absolute,{ a, r },r+'');
     return r;
