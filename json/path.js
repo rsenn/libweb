@@ -316,7 +316,11 @@ export const MutablePath = class Path extends Array {
   xpath(obj) {
     let o = obj;
     let n;
-    let thisPath = this;
+    let thisPath = this.toArray();
+
+    // while(thisPath.length > 0 && thisPath[0] === '') thisPath.shift();
+
+    //console.log("thisPath:",thisPath);
 
     let XPath = Util.immutableClass(
       class XPath extends MutablePath {
@@ -324,20 +328,59 @@ export const MutablePath = class Path extends Array {
           return this;
         }
 
-        constructor(parts = [], absolute) {
+        constructor(parts = [], absolute, root) {
           if(absolute && (parts.length == 0 || parts[0] !== '')) Array.prototype.unshift.call(parts, '');
 
           super(parts);
+          this.root = root;
           return this;
+        }
+        get descendand() {
+          let i = this.offset(v => v === '');
+          if(i < this.length && this[i] === '/') return 1;
+          return 0;
+        }
+        get absolute() {
+          let i = this.offset(v => v === '/');
+          if(i < this.length && this[i] === '') return 1;
+          return 0;
+        }
+
+        slice(start, end) {
+          let { descendand, absolute } = this;
+          let i = this.offset();
+          let a = this.toArray();
+
+          let l = a.length;
+          if(start < 0) start = l + start;
+          if(start < 0) {
+            //end -= start;
+            start = 0;
+          }
+
+          if(end === undefined || isNaN(end)) end = l;
+          else if(end < 0) end = l + end;
+          else if(end > l) end = l;
+
+          if(start > 0) descendand = true;
+          console.log('slice:', a, { start, end });
+
+          a = super.slice(start, end);
+          let prefix = [];
+          if(descendand) a = a.unshift('/');
+          else if(absolute) a = a.unshift('');
+          console.log('slice:', /*[...a],*/ { descendand, absolute }, [start, end], a);
+          return a;
         }
 
         toString() {
-          let a = this.toArray();
-          let abs = this.length > 0 && this[0] === '';
-          let s = this.filter(p => p != '');
+          let a = this.toArray(false);
+
+          let s = this.filter(p => p != 'children');
+
           s = Array.prototype.join.call(s, '/');
           s = s.replace(/,/g, '/').replace(/\/\[/g, '[');
-          return (abs && !s.startsWith('/') ? '/' : '') + s;
+          return ((this.descendand > 0 || this.absolute) && !s.startsWith('/') ? (this.descendand ? '//' : '/') : '') + s;
         }
       }
     );
@@ -355,6 +398,7 @@ export const MutablePath = class Path extends Array {
       if(Path.isChildren(p)) p = 'children';
       let e = o[p];
       if(p == 'children') {
+        s.push('children');
         n = e.length;
       } else if(Util.isObject(e) && e.tagName !== undefined) {
         let pt = [];
@@ -370,13 +414,16 @@ export const MutablePath = class Path extends Array {
       }
       o = e;
     }
-    let r = new XPath(s, this.absolute);
+    let r = new XPath(s, this.absolute, obj);
     //console.log("xpath", thisPath.absolute,{ a, r },r+'');
     return r;
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    return this.toString('/', 'CHILDREN_STR');
+    let s = this.toString('/');
+    let c = Util.className(this);
+    c = c.startsWith('Immutable') ? (c = c.replace(/Immutable/g, '')) : 'Mutable' + c.replace(/Mutable/g, '');
+    return `\x1b[1;31m${c}\x1b[1;34m ${s}\x1b[0m`;
   }
 
   [Symbol.toStringTag]() {
@@ -421,26 +468,27 @@ export const MutablePath = class Path extends Array {
    * @return     {Path}    { description_of_the_return_value }
    */
   slice(start = 0, end = this.length) {
-    if(start < 0) start = this.length + start;
-    if(end < 0) end = this.length + end;
-    let a = Array.prototype.slice.call([...this], start, end);
+    let a = this.toArray();
+    if(start < 0) start = a.length + start;
+    if(end < 0) end = a.length + end;
+    a = Array.prototype.slice.call(a, start, end);
     return new this.constructor(a, a[0] === '');
   }
 
   push(...args) {
-    return new this.constructor(this.toArray().concat(args), this.absolute);
+    return new (this.constructor[Symbol.species] || this.constructor)(this.toArray().concat(args), this.absolute);
   }
   pop(n = 1) {
     return this.slice(0, this.length - n);
   }
   unshift(...args) {
-    return new this.constructor(args.concat(this.toArray()), args[0] === '' ? true : false);
+    return new (this.constructor[Symbol.species] || this.constructor)(args.concat(this.toArray()), args[0] === '' ? true : false);
   }
   shift(n = 1) {
-    return new this.constructor([...this].slice(n), this.absolute && n < 1);
+    return new (this.constructor[Symbol.species] || this.constructor)(this.toArray().slice(n), this.absolute && n < 1);
   }
   concat(a) {
-    return new this.constructor(this.toArray().concat(Array.from(a)), this.absolute);
+    return new (this.constructor[Symbol.species] || this.constructor)(this.toArray().concat(Array.from(a)), this.absolute);
   }
 
   /* reduce(fn, acc) {
@@ -457,20 +505,38 @@ export const MutablePath = class Path extends Array {
     for(let i = 0; i < this.length; i++) if(fn(this[i], i, this)) ret.push(this[i]);
     return ret;
   }
-  toArray() {
+
+  offset(predicate = (p, i) => p === '' || p === '/') {
+    let i = 0;
+    for(; i < this.length; i++) if(!predicate(this[i], i)) break;
+    return i;
+  }
+
+  toArray(skip = true, n = 1) {
     let ret = [];
-    for(let i = 0; i < this.length; i++) ret.push(this[i]);
+    let i = this.offset();
+    for(; i < this.length; i += n) {
+      if(n > 1) ret = ret.concat(this.slice(i, i + 2));
+      else ret.push(this[i]);
+    }
     return ret;
   }
 
   equal(other = []) {
-    if(other.length != this.length) return false;
-
-    for(let i = 0; i < other.length; i++) {
-      if(this[i] != other[i]) return false;
+    const thisPath = this;
+    console.log('equal', { thisPath, other });
+    console.log('thisPath', thisPath.length, ...[...thisPath]);
+    console.log('other', other.length, ...[...other]);
+    if(other.absolute && other.length != this.length) return false;
+    if(!other.absolute && other.length < this.length) {
+      let prepend = this.slice(0, this.length - other.length);
+      other = prepend.concat(other);
     }
+    for(let i = 0; i < other.length; i++) if(this[i] != other[i]) return false;
+
     return true;
   }
+
   get parent() {
     let r = this.slice(0, this.length - 1);
     /*   if( Path.isChildren(r[r.length - 1]))
@@ -480,3 +546,19 @@ export const MutablePath = class Path extends Array {
 };
 
 export const Path = Util.immutableClass(MutablePath);
+
+export class MutableXPath extends MutablePath {
+  constructor(arg) {
+    console.log('arg', arg);
+    let path = MutablePath.parseXPath(arg);
+
+    //let proto = Object.getPrototypeOf(path);
+    Object.setPrototypeOf(path, MutableXPath.prototype);
+
+    return path;
+  }
+}
+
+//Object.assign(MutableXPath.prototype, Util.getMethods(MutablePath.prototype));
+
+export const XPath = /*Util.immutableClass*/ MutableXPath;

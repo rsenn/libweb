@@ -2358,6 +2358,7 @@ Util.immutableClass = (orig, ...proto) => {
   //console.log('initialProto', initialProto);
   let body = ` class Immutable${name} extends Original {
     constructor(...args) {
+      //console.log("${name} args", args);
       super(...args);
       if(new.target === Immutable${name})
         return Object.freeze(this);

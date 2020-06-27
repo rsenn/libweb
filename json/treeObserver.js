@@ -30,7 +30,7 @@ export class TreeObserver extends ObservableMembrane {
 
         if(Util.isObject(value)) {
           pathMapper.set(value, path.down(key));
-          // console.log('valueObserved',key, value , path.down(key));
+          //console.log('valueObserved',key, value , path.down(key));
           for(let handler of this.handlers) handler('access', target, /*key, */ path.down(key), value);
         }
 
@@ -61,7 +61,7 @@ export class TreeObserver extends ObservableMembrane {
         if(key || path) {
           if(key) path = path.down(key);
 
-          //   console.log(`valueDistortion valueType=${valueType} valueClass=${valueClass} valueKeys=${valueKeys.length} key='${key}' path='${key}'`);
+          //console.log(`valueDistortion valueType=${valueType} valueClass=${valueClass} valueKeys=${valueKeys.length} key='${key}' path='${key}'`);
 
           if(!Util.isObject(target)) return value;
           let q = Util.isObject(value) ? Object.getPrototypeOf(value) : Object.prototype;

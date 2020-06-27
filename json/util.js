@@ -34,7 +34,7 @@ export const findXPath = (xpath, flat, { root, recursive = true, entries = false
   s = s.replace(/^\/\//, '/(|.*/)');
 
   if(s[0] != '^' && xpath.substring(0, 2) != '//') s = '^' + s;
-  console.log('', { s });
+  //console.log('', { s });
   let re = new RegExp(s);
   let m = other => re.test(other);
 
@@ -50,6 +50,7 @@ export const findXPath = (xpath, flat, { root, recursive = true, entries = false
 
 export function* XmlIterator(obj, filter = null, path = [], root) {
   if(!root) root = obj;
+  //console.log("XmlIterate",{obj,filter,path,root})
   if(!filter || filter(obj, path)) yield [obj, path];
   if(obj.children && obj.children.length > 0) {
     let a = obj.children;

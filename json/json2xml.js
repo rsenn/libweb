@@ -97,7 +97,7 @@ function json2xml_translator() {
       return xml;
     },
     parseJson: function(jsonString) {
-      // console.log('parseJSON:', jsonString);
+      //console.log('parseJSON:', jsonString);
       var obj = typeof jsonString == 'string' ? JSON.parse(jsonString) : jsonString;
       return obj;
     }
