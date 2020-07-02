@@ -2594,6 +2594,7 @@ Util.weakMapper = (createFn, map = new WeakMap()) => {
   };
   self.set = (k, v) => map.set(k, v);
   self.get = k => map.get(k);
+  //self.map = map;
   return self;
 };
 Util.merge = (...args) => args.reduce((acc, arg) => ({ ...acc, ...arg }), {});

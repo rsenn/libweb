@@ -9,14 +9,13 @@ export class TreeObserver extends ObservableMembrane {
 
   getType(value, path) {
     let type = null;
-    type = this.types.get(value);
-    if(type) return type;
     path = path || this.mapper.get(value);
     if(!Util.isObject(value)) return null;
     if(Util.isArray(value) || Path.isChildren([...path][path.length - 1])) type = 'NodeList';
     else if('tagName' in value) type = 'Element';
     else if(Util.isObject(path) && [...path].indexOf('attributes') != -1) type = 'AttributeMap';
     else type = /attributes/.test(path + '') ? 'AttributeMap' : 'Node';
+    console.log('getType', type);
     return type;
   }
 
@@ -68,7 +67,9 @@ export class TreeObserver extends ObservableMembrane {
           if(!Util.isObject(target)) return value;
           let q = Util.isObject(value) ? Object.getPrototypeOf(value) : Object.prototype;
           if(typeof value == 'string' && !isNaN(+value)) value = +value;
-          if(Util.isObject(value)) value.type = this.getType(value, key);
+          if(Util.isObject(value)) {
+            //   this.types(value, key);
+          }
         }
         return value;
       }
@@ -95,16 +96,36 @@ export class TreeObserver extends ObservableMembrane {
     this.readOnly = !!readOnly;
   }
 
-  types = new WeakMap();
-
+  types = Util.weakMapper((obj, key) => {
+    console.log('types:', key, obj);
+    return this.getType(obj, key);
+  });
+  /*
   get = Util.weakMapper((arg, p) => {
     let ret = this[this.readOnly ? 'getReadOnlyProxy' : 'getProxy'](arg);
     if(this.root === undefined) this.root = arg;
     else if(this.mapper.root && this.mapper.root != this.root) this.root = this.mapper.root;
-    let type = 'Element';
-    this.types.set(ret, type);
     return ret;
+  });*/
+
+  entry = Util.weakMapper((arg, path) => {
+    const { readOnly, root, mapper } = this;
+    let proxy = this[readOnly ? 'getReadOnlyProxy' : 'getProxy'](arg);
+    /*if(root === undefined) this.root = arg;
+    else if(mapper.root && mapper.root != root) this.root = mapper.root;*/
+    //console.log('entry(', Util.className(arg), path, ') = ', proxy);
+    let type = null; //this.getType(arg,path || []);
+    return { proxy, type };
   });
+
+  get = (arg, path = []) => {
+    let ret = this.entry(arg, path);
+    if(Util.isObject(ret) && 'proxy' in ret) ret = ret.proxy;
+    else ret = null;
+    // console.log('get(', Util.className(arg), path, ') = ', Util.className(ret));
+    return ret;
+  };
+  /* type = (...args) => this.entry(...args).type;*/
 
   getPath(node) {
     return this.mapper.get(node) || this.mapper.get(this.unwrap(node));
