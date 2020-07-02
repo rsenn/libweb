@@ -2610,7 +2610,14 @@ Util.weakAssoc = (fn = (value, ...args) => Object.assign(value, ...args)) => {
     return fn(value, ...args);
   };
 };
-
+Util.transform = (a, ...l) =>
+  (l || []).reduce(
+    (c, f) =>
+      function(...v) {
+        return f.apply(this, [c.apply(this, v), ...v]);
+      },
+    a
+  );
 Util.proxyObject = (root, handler) => {
   const ptr = path => path.reduce((a, i) => a[i], root);
   const nodes = Util.weakMapper(

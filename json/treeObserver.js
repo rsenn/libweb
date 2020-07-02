@@ -108,27 +108,22 @@ export class TreeObserver extends ObservableMembrane {
     return ret;
   });*/
 
-  entry = Util.weakMapper((arg, path) => {
+  entry = Util.weakMapper((arg, path, type) => {
     const { readOnly, root, mapper } = this;
     let proxy = this[readOnly ? 'getReadOnlyProxy' : 'getProxy'](arg);
-    /*if(root === undefined) this.root = arg;
-    else if(mapper.root && mapper.root != root) this.root = mapper.root;*/
-    //console.log('entry(', Util.className(arg), path, ') = ', proxy);
-    let type = null; //this.getType(arg,path || []);
-    return { proxy, type };
+    path = path || this.getPath(arg) ||[];
+    type = type || this.getType(arg, path);
+    return { proxy, path, type };
   });
 
-  get = (arg, path = []) => {
-    let ret = this.entry(arg, path);
-    if(Util.isObject(ret) && 'proxy' in ret) ret = ret.proxy;
-    else ret = null;
-    // console.log('get(', Util.className(arg), path, ') = ', Util.className(ret));
-    return ret;
-  };
-  /* type = (...args) => this.entry(...args).type;*/
+  getField = field => Util.transform(this.entry, ret => (Util.isObject(ret) && field in ret ? ret[field] : ret));
+
+  get = this.getField('proxy');
+  type = this.getField('type');
+  path = this.getField('path');
 
   getPath(node) {
-    return this.mapper.get(node) || this.mapper.get(this.unwrap(node));
+    return  this.mapper.get(node) || this.mapper.get(this.unwrap(node));
   }
   getXPath(node) {
     let path = this.getPath(node);
