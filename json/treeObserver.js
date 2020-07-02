@@ -125,6 +125,7 @@ export class TreeObserver extends ObservableMembrane {
   getPath(node) {
     return  this.mapper.get(node) || this.mapper.get(this.unwrap(node));
   }
+
   getXPath(node) {
     let path = this.getPath(node);
     return this.root ? path.xpath(this.root) : path;
@@ -133,6 +134,7 @@ export class TreeObserver extends ObservableMembrane {
   unwrap(arg) {
     return this.unwrapProxy(arg);
   }
+  
   subscribe(handler) {
     this.handlers.push(handler);
   }
