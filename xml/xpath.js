@@ -105,13 +105,13 @@ export class MutableXPath extends MutablePath {
     return MutablePath.partToString([p]);
   }
 
-  toString() {
+  toString(sep = '\u2044') {
     let a = super.slice();
     let r = [].concat(a /*.filter(p => p != 'children')*/).map((p, i, a) => MutableXPath.partToString(p));
     let s = Array.prototype.join.call(r, '/');
     s = s.replace(/,/g, '/').replace(/\/\[/g, '[');
     s = ((this.descendand > 0 || this.absolute) && !s.startsWith('/') ? (this.descendand ? '//' : '/') : '') + s;
-    return s;
+    return s.replace(/\//g, sep);
   }
 
   toRegExp() {

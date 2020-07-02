@@ -101,10 +101,10 @@ export class MutablePath extends Array {
 
           part = a.shift();
           let num = +part;
-          s += c('\u2504' || '\u2039',30,1); //this.CHILDREN_STR  ; //Path.CHILDREN_STR + ' ';
+          s += c('\u007c' ||'\u23d0'||'\u205e' ||'\u2e3d' ||' \u2504' || '\u2039', 30, 1); //this.CHILDREN_STR  ; //Path.CHILDREN_STR + ' ';
 
           s += c(`${num}`, 36, 1);
-          s += c('\u2504' || `\u203a`,30,1 );
+          s += c('\u007c' ||'\ufe32' ||'\u205e' ||'\u2e3d' ||'\u2504' || `\u203a`, 30, 1);
           s += `\x1b[1;34m`;
           //   s += num+'';
         } else {
@@ -282,18 +282,19 @@ export class MutablePath extends Array {
     let n = a.length;
     let r = [];
     for(let i = 0; ; i++) {
-      let p = Path.partToString(a, sep, MutablePath[childrenVar]);
+      let p = Path.partToString(a, '/', MutablePath[childrenVar]);
       if(!p) break;
       // console.log("toString p",p);
       r = r.concat(p);
     }
     //console.log("toString r",r);
-    r = r.join(sep).replace(/[/.]?\[/g, '[');
-    return (this.absolute && r != '' && sep == '/' ? sep : '') + r;
+    r = r.join('/').replace(/[/.]?\[/g, '[');
+    r = (this.absolute && r != '' && sep == '/' ? sep : '') + r;
+    return r.replace(/\//g, sep);
   }
 
   [Symbol.for('nodejs.util.inspect.custom')](...args) {
-    return Util.className(this) + ' ' + this.toString('/');
+    return Util.className(this) + ' ' + this.toString('\uff0f');
   }
 
   toSource(sep = ',') {
@@ -313,7 +314,7 @@ export class MutablePath extends Array {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    let p = this.toString('/');
+    let p = this.toString('\u2571' || '\u29f8');
     let n = Util.className(this);
     //n = n.startsWith('Immutable') ? (n = n.replace(/Immutable/g, '')) : 'Mutable' + n.replace(/Mutable/g, '');
     let c = n.startsWith('Mutable') ? 31 : 32;
