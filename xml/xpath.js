@@ -112,13 +112,24 @@ export class MutableXPath extends MutablePath {
       ret.push('children');
     }
     if(Util.isObject(p[0])) {
+      const { tagName, children, attributes = {}, ...rest } = p[0];
+
       const keys = Object.keys(p[0]);
-      if(keys.length == 1 && keys.indexOf('tagName') !== -1) {
-        let item = p.shift();
-        let prop = item[keys[0]];
-        return prop;
-      }
+      let s = '';
+
+      if(tagName) s += tagName;
+
+      let a = Object.entries(attributes).map(([k, v]) => `@${k}='${v}'`);
+      //console.log("attributes",a);
+      if(a.length) s += `[${a.join('&&')}]`;
+
+      if(s != '') ret.push(s);
     }
+    if(ret.length) {
+      p.shift();
+      return ret;
+    }
+
     return MutablePath.partToString(p, sep, childrenSym, c);
   }
 
@@ -148,40 +159,38 @@ export class MutableXPath extends MutablePath {
     let s = MutableXPath.prototype.toString.call(this, '/', '', c);
     let n = Util.className(this);
     //if(absolute) s = '/' + s;
-    s =
-      c(n, 1, 31) +
-      ' ' +
-      s
-        .split(/[\/]/g)
-        .map(p => {
-          const matches = /([^\[]*)(\[[^/]*\])?/.exec(p);
-          let [tag, brack = ''] = [...matches].slice(1);
-          brack = (brack + '').substring(1, brack.length - 1);
+    s = s.split(/[\/]/g);
+    s = s
+      .filter(i => !MutablePath.isChildren(i))
 
-          let bmatches = /(@?[-_A-Za-z][-_A-Za-z0-9]*)([^'"]*)(['"][^'"]*['"])?/g.exec(brack);
-          let [total, name, op, value] = bmatches || ['', '', '', ''];
-   
-         console.log('matches:', { tag, brack, /*bmatches,*/ /*total,*/ name, op, value });
+      .map(p => {
+        const matches = /([^\[]*)(\[[^/]*\])?/.exec(p);
+        let [tag, brack = ''] = [...matches].slice(1);
+        brack = (brack + '').substring(1, brack.length - 1);
 
+        let bmatches = /(@)?([-_A-Za-z][-_A-Za-z0-9]*)([^'"]*)(['"][^'"]*['"])?/g.exec(brack);
+        let [total, at,name, op, value] = bmatches || ['', '', '', ''];
 
-          if(total) {
-            p = tag;
-            p += '[' + c(name, 1, 33) + c(op, 1, 36) + c(value, 1, 35) + c(']', 1, 32);
-          } else {
+        //      console.log('matches:', { tag, brack, /*bmatches,*/ /*total,*/ name, op, value });
 
-        p = c(p, 38, 5, 56);
-      }
-          return p;
-        })
-        .reduce((acc, p) => {
-          /*console.log("",{acc,p});*/ if(p.startsWith('[') && acc.length) acc[acc.length - 1] += c(p, 1, 32);
-          else acc.push(p);
-          return acc;
-        }, []);
+        if(total) {
+          p = c(tag,1,32) + c('[',38,5,243);
+          p +=  c(at, 38,5,196) +  c(name, 1, 33) + c(op, 1, 36) + c(value, 1, 35) + c(']', 38,5,243/*1, 32*/);
+        } else {
+          p = c(p, 38, 5, 99 /*129 56*/);
+        }
+        return p;
+      })
+      .reduce((acc, p) => {
+        /*console.log("",{acc,p});*/ if(p.startsWith('[') && acc.length) acc[acc.length - 1] += c(p, 1, 32);
+        else acc.push(p);
+        return acc;
+      }, []);
 
-//s=s.join(c('/', 1, 36));
+    s = s.join(c('/',38,5,51/* 1, 36*/));
+    s = c(n, 1, 31) + ' ' + s;
     //console.log(`MutableXPath.prototype[Symbol.for('nodejs.util.inspect.custom')] s=`, [...this]);
-console.log("inspect.custom",s);
+    console.log('inspect.custom', s);
     return s;
   }
 
