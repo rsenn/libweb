@@ -66,9 +66,10 @@ export class MutableXPath extends MutablePath {
   constructor(parts, absolute = false, root) {
     if(Util.isArray(parts)) {
       parts = parseXPath(parts);
-      //console.log('MutableXPath.constructor', parts, absolute);
+      //console.log('MutableXPath.constructor', ...parts.reduce((acc,p) => acc =  acc.concat(acc.length ? [",",p] : [p]), []), {absolute});
     }
     super(parts, absolute, root);
+
     this.root = root;
     return this;
   }
@@ -78,6 +79,7 @@ export class MutableXPath extends MutablePath {
     if(i < this.length && this[i] === '/') return 1;
     return 0;
   }
+
   get absolute() {
     let i = this.offset(v => v === '/');
     if(i < this.length && this[i] === '') return 1;
@@ -150,9 +152,24 @@ export class MutableXPath extends MutablePath {
       c(n, 1, 31) +
       ' ' +
       s
-        .split(/\//g)
-        .map(p => c(p, 38, 5, 220))
-        .join(c('/', 38, 5, 201));
+        .split(/[\/]/g)
+        .map(p => {
+          const matches = /([^\[]*)(\[[^/]*\])?/.exec(p);
+          let [tag, brack = ''] = [...matches].slice(1);
+  brack = (brack+'').substring(1,brack.length-1);
+
+          let bmatches = /(@?[-_A-Za-z][-_A-Za-z0-9]*)([^'"]*)(['"][^'"]*['"])?/g.exec(brack);
+           let [total,name,op,value] = bmatches || ['','','',''];
+            console.log('matches:', { tag, brack, /*bmatches,*//*total,*/name,op,value });
+
+            if(total)
+              p = c('[',1,32)+c(name, 1,33)+c(op,1,36)+c(value,1,35)+c(']',1,32);
+            else
+          p = c(p, 38, 5, 56);
+          return p;
+        })
+        .reduce((acc,p) => { /*console.log("",{acc,p});*/if(p.startsWith('[') && acc.length)  acc[acc.length-1]+= p; else acc.push(p); return acc; }, [])
+        .join(c('/', 1, 36));
     //console.log(`MutableXPath.prototype[Symbol.for('nodejs.util.inspect.custom')] s=`, [...this]);
 
     return s;
