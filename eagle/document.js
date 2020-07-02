@@ -124,12 +124,7 @@ export class EagleDocument extends EagleNode {
         let { gate, part } = instance;
         let symbol = gate.symbol;
 
-        /*
-      //console.log('instance:\n  ', instance, '\n  ', instance.xpath());
-      //console.log('part:\n  ', part, '\n  ', part.xpath());
-      //console.log('gate:\n  ', gate, '\n  ', gate.xpath());
-      
-*/
+    
         //console.log('symbol:', symbol);
         let geometries = {
           gate: gate.geometry(),

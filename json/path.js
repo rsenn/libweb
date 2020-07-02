@@ -7,7 +7,7 @@ export function DereferenceError(object, member, pos, locator) {
     .filter(frame => null !== frame.getFileName())
     .map(frame => {
       let method = frame.getMethodName();
-      if(method) method = (frame.getTypeName() || Util.className(frame.getThis())) + '.' + method;
+      if (method) method = (frame.getTypeName() || Util.className(frame.getThis())) + '.' + method;
       else method = frame.getFunctionName();
 
       return `${('' + frame.getFileName()).replace(/.*plot-cv\//, '')}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
@@ -28,6 +28,8 @@ DereferenceError.prototype.toString = function() {
   return `${message}\n${Util.inspect({ object, member, pos, locator, stack }, 2)}`;
 };
 
+export const  IsChildren = (a) => a === 'children' || a === MutablePath.CHILDREN_STR || a === MutablePath.CHILDREN;
+
 export class MutablePath extends Array {
   static CHILDREN_STR = ' '; //\u220d';
   static CHILDREN_FN = args => {
@@ -36,9 +38,7 @@ export class MutablePath extends Array {
   };
   static CHILDREN = Symbol('children');
 
-  static isChildren(a) {
-    return a === 'children' || a === this.CHILDREN_STR || a === this.CHILDREN;
-  }
+  static isChildren(arg) {return  IsChildren(arg); }
 
   static [Symbol.hasInstance](instance) {
     const name = Util.className(instance);
@@ -49,97 +49,67 @@ export class MutablePath extends Array {
   constructor(path = [], absolute) {
     super();
     let a;
-    if(typeof path == 'string') {
+    if (typeof path == 'string') {
       path = path /*.replace(new RegExp(Path.CHILDREN_STR, 'g'), 'children')*/
         .replace(/[./]\[/g, '[');
       a = path.split(/[./]/g);
-    } else {
+    }
+    else {
       a = [...path];
     }
     a = a || [];
-    a = a.map(p => (Path.isChildren(p) ? 'children' : p));
+    a = a.map(p => (IsChildren(p) ? 'children' : p));
     //   if(absolute===2) console.log('Path.constructor', a.join(" / "));
-    if(absolute)
-      if(a.length == 0 || a[0] !== '') a.unshift('');
-      else while(a.length > 0 && a[0] === '') a.shift();
-    for(let i = 0; i < a.length; i++) Array.prototype.push.call(this, /*Path.isChildren(a[i]) ? 'children' :*/ a[i] === '' ? '' : typeof a[i] == 'symbol' || isNaN(+a[i]) ? a[i] : +a[i]);
+    if (absolute)
+      if (a.length == 0 || a[0] !== '') a.unshift('');
+      else while (a.length > 0 && a[0] === '') a.shift();
+    for (let i = 0; i < a.length; i++) Array.prototype.push.call(this, /*IsChildren(a[i]) ? 'children' :*/ a[i] === '' ? '' : typeof a[i] == 'symbol' || isNaN(+a[i]) ? a[i] : +a[i]);
   }
 
-  static parseXPath(s) {
-    let l = s.replace(/\[([0-9])/g, '/[$1').split(/\//g);
-    let r = [];
-    // if(l[0] == '') l.shift();
-
-    for(let p of l) {
-      let j = p.indexOf('[');
-      let i = j != -1 ? p.substring(j + 1, p.indexOf(']')) : '';
-      let o = {};
-      let t = p.substring(0, j == -1 ? p.length : j);
-
-      if(i) {
-        if(!isNaN(+i)) {
-          r.push('children');
-          r.push(+i);
-          continue;
-        } else if(i[0] == '@') {
-          let ei = i.indexOf('=');
-          let k = i.substring(1, ei);
-          let v = i.substring(ei + 1, i.length);
-          v = v.replace(/^['"](.*)['"]$/g, '$1');
-          if(!o.attributes) o.attributes = {};
-
-          o.attributes[k] = v;
-        }
-      }
-      if(t != '') o.tagName = t;
-
-      r.push(Path.CHILDREN_STR);
-      r.push(o);
-    }
-    return new this(r);
-  }
 
   static partToString(a, sep, childrenSym) {
     let s = '';
     let part = a.shift();
     switch (typeof part) {
-      case 'object': {
-        s += `[@`;
-        let attrs = Object.entries(part.attributes || {}).map(([name, value]) => `${name}='${value}'`);
-        s += attrs.join(',');
-        s += ']';
-        break;
+    case 'object': {
+      s += `[@`;
+      let attrs = Object.entries(part.attributes || {}).map(([name, value]) => `${name}='${value}'`);
+      s += attrs.join(',');
+      s += ']';
+      break;
+    }
+    case 'string':
+      if (IsChildren(part)) {
+        let sym = typeof childrenSym == 'function' ? childrenSym(a) : childrenSym;
+        s += (sym !== undefined ? sym : part) + sep; //Path.CHILDREN_STR + ' ';
+        part = a.shift();
       }
-      case 'string':
-        if(Path.isChildren(part) || part == 'children') {
-          let sym = typeof childrenSym == 'function' ? childrenSym(a) : childrenSym;
-          s += (sym !== undefined ? sym : part) + sep; //Path.CHILDREN_STR + ' ';
-          part = a.shift();
-        }
-        if(Util.isNumeric(part)) {
-          part = +part;
-        } else {
-          s += `${part}`;
-          break;
-        }
-      case 'number': {
+      if (Util.isNumeric(part)) {
+        part = +part;
+      }
+      else {
         s += `${part}`;
         break;
       }
-      case 'symbol': {
-        break;
-      }
+    case 'number': {
+      s += `${part}`;
+      break;
+    }
+    case 'symbol': {
+      break;
+    }
     }
     return s;
   }
 
   static get [Symbol.species]() {
-    return ImmutablePath;
+    return MutablePath;
   }
 
   getSpecies() {
     return this.constructor[Symbol.species] || this.constructor;
   }
+
   /*
   get [Symbol.species]() {
     let ret = this.constructor;
@@ -177,7 +147,7 @@ export class MutablePath extends Array {
   left(n = 1) {
     let i = this.lastId,
       l = this.slice();
-    if(i >= 0) {
+    if (i >= 0) {
       l[i] = Math.max(0, l[i] - n);
       return l;
     }
@@ -210,8 +180,8 @@ export class MutablePath extends Array {
   diff(other) {
     let i;
     const ctor = this.getSpecies();
-    for(i = 0; i < this.length; i++) {
-      if(this[i] != other[i]) return null;
+    for (i = 0; i < this.length; i++) {
+      if (this[i] != other[i]) return null;
     }
     return new ctor(other.slice(i, other.length - i), this.absolute);
   }
@@ -230,14 +200,15 @@ export class MutablePath extends Array {
 
   static compare(obj, other) {
     let ret = true;
-    for(let prop in other) {
+    for (let prop in other) {
       const value = other[prop];
-      if(Util.isObject(value)) {
-        if(!this.compare(obj[prop], value)) {
+      if (Util.isObject(value)) {
+        if (!this.compare(obj[prop], value)) {
           ret = false;
           break;
         }
-      } else if(value != obj[prop]) {
+      }
+      else if (value != obj[prop]) {
         ret = false;
         break;
       }
@@ -246,27 +217,28 @@ export class MutablePath extends Array {
   }
 
   apply(obj, noThrow) {
-    if('raw' in obj) obj = obj.raw;
+    if ('raw' in obj) obj = obj.raw;
 
     let o = obj;
-    if(o === undefined && !noThrow) {
+    if (o === undefined && !noThrow) {
       let stack = Util.getCallers(1, 10);
       throw new Error(`Object ${o}` + stack.join('\n'));
     }
     let a = [...this];
 
-    while(a.length >= 1 && a[0] === '') a = a.slice(1);
+    while (a.length >= 1 && a[0] === '') a = a.slice(1);
 
     a = a.reduce(
       (a, i) => {
-        if(a.o) {
+        if (a.o) {
           let r;
-          if(i === Path.CHILDREN || i == 'children') r = 'raw' in a.o ? a.o.raw.children : a.o.children;
-          else if(Util.isArray(a.o)) {
-            if(typeof i == 'object') {
+          if (i === Path.CHILDREN || i == 'children') r = 'raw' in a.o ? a.o.raw.children : a.o.children;
+          else if (Util.isArray(a.o)) {
+            if (typeof i == 'object') {
               i = a.o.findIndex(child => Path.compare(child, i)); //ent.every(([prop, value]) => (prop in child ? child[prop] == value : child.attributes && prop in child.attributes ? child.attributes[prop] == value : false)));
               //  if(i == -1) i = Object.fromEntries(ent);
-            } else if(typeof i == 'number' && i < 0) i = a.o.length + i;
+            }
+            else if (typeof i == 'number' && i < 0) i = a.o.length + i;
             else i = +i;
           }
           r = a.o[i];
@@ -280,18 +252,18 @@ export class MutablePath extends Array {
       },
       { o, n: 0 }
     );
-    if(a.o == null && !noThrow) throw new DereferenceError(obj, a.i, a.n, this);
+    if (a.o == null && !noThrow) throw new DereferenceError(obj, a.i, a.n, this);
     return a.o;
   }
 
   toString(sep = '/', childrenVar = 'CHILDREN_') {
     let a = this.toArray();
-    while(a.length > 0 && a[0] === '') a.shift();
+    while (a.length > 0 && a[0] === '') a.shift();
     let n = a.length;
     let r = [];
-    for(let i = 0; ; i++) {
+    for (let i = 0; ; i++) {
       let p = Path.partToString(a, sep, MutablePath[childrenVar]);
-      if(!p) break;
+      if (!p) break;
       r.push(p);
     }
     r = r.join(sep).replace(/[/.]?\[/g, '[');
@@ -312,51 +284,10 @@ export class MutablePath extends Array {
 
   makeAbsolute(parent) {
     const ctor = this.getSpecies();
-    if(this.absolute) return this;
+    if (this.absolute) return this;
     let r = [...parent, ...this];
-    if(r[0] !== '') r.unshift('');
+    if (r[0] !== '') r.unshift('');
     return new ctor(r, parent.absolute);
-  }
-
-  xpath(obj) {
-    let o = obj,
-      n,
-      thisPath = this.toArray();
-
-    // while(thisPath.length > 0 && thisPath[0] === '') thisPath.shift();
-
-    //console.log("thisPath:",thisPath);
-
-    let s = [],
-      i = 0,
-      a = [...thisPath];
-    while(i < a.length && a[i] === '') i++;
-    while(i < a.length) {
-      let p = a[i++];
-      if(p == 'attributes') break;
-      if(Path.isChildren(p)) p = 'children';
-      let e = o[p];
-      if(p == 'children') {
-        s.push('children');
-        n = e.length;
-      } else if(Util.isObject(e) && e.tagName !== undefined) {
-        let pt = [];
-        if(e.tagName) {
-          s.push(e.tagName);
-          pt = o.filter(sib => sib.tagName == e.tagName);
-        }
-        if(Util.isObject(e.attributes) && e.attributes.name) s.push(`[@name='${e.attributes.name}']`);
-        else if(pt.length != 1) {
-          if(typeof p == 'number' && n != 1) s.push(`[${p + 1}]`);
-        }
-        n = undefined;
-      }
-      o = e;
-    }
-
-    let r = new ImmutableXPath(s, this.absolute, obj);
-    //console.log("xpath", thisPath.absolute,{ a, r },r+'');
-    return r;
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
@@ -374,9 +305,9 @@ export class MutablePath extends Array {
   existsIn(root) {
     let i,
       obj = root;
-    for(i = 0; i + 1 < this.length; i++) {
+    for (i = 0; i + 1 < this.length; i++) {
       const key = this[i];
-      if(!(key in obj)) throw new Error(`No path ${this.join(',')} in ${typeof root}`);
+      if (!(key in obj)) throw new Error(`No path ${this.join(',')} in ${typeof root}`);
       obj = obj[this[i]];
     }
     return this[i] in obj;
@@ -387,17 +318,17 @@ export class MutablePath extends Array {
       a = [],
       b = [],
       n;
-    if(typeof pred == 'number') {
+    if (typeof pred == 'number') {
       n = pred < 0 ? this.length + pred : pred;
       pred = (part, index) => index === n;
     }
-    while(i < this.length && !pred(this[0], i, this)) a.push(this[i++]);
-    while(i < this.length) b.push(this[i++]);
+    while (i < this.length && !pred(this[0], i, this)) a.push(this[i++]);
+    while (i < this.length) b.push(this[i++]);
     return [a, b];
   }
 
   relativeTo(other = []) {
-    if([...other].every((part, i) => this[i] == part)) return this.slice(other.length, this.length);
+    if ([...other].every((part, i) => this[i] == part)) return this.slice(other.length, this.length);
     return null;
   }
 
@@ -411,8 +342,8 @@ export class MutablePath extends Array {
   slice(start = 0, end = this.length) {
     const ctor = this.getSpecies();
     let a = this.toArray();
-    if(start < 0) start = a.length + start;
-    if(end < 0) end = a.length + end;
+    if (start < 0) start = a.length + start;
+    if (end < 0) end = a.length + end;
     a = Array.prototype.slice.call(a, start, end);
     return new ctor(a, a[0] === '');
   }
@@ -427,7 +358,7 @@ export class MutablePath extends Array {
   }
   unshift(...args) {
     const ctor = this.getSpecies();
-    return new ctor(args.concat(this.toArray()), args[0] === '' ? true : false);
+    return new ctor(args.concat(this.toArray()), args[0] === '');
   }
   shift(n = 1) {
     const ctor = this.getSpecies();
@@ -446,26 +377,26 @@ export class MutablePath extends Array {
     }*/
   map(fn) {
     let ret = [];
-    for(let i = 0; i < this.length; i++) ret.push(fn(this[i], i, this));
+    for (let i = 0; i < this.length; i++) ret.push(fn(this[i], i, this));
     return ret;
   }
   filter(fn) {
     let ret = [];
-    for(let i = 0; i < this.length; i++) if(fn(this[i], i, this)) ret.push(this[i]);
+    for (let i = 0; i < this.length; i++) if (fn(this[i], i, this)) ret.push(this[i]);
     return ret;
   }
 
   offset(predicate = (p, i) => p === '' || p === '/') {
     let i = 0;
-    for(; i < this.length; i++) if(!predicate(this[i], i, this)) break;
+    for (; i < this.length; i++) if (!predicate(this[i], i, this)) break;
     return i;
   }
 
   toArray(skip = true, n = 1) {
     let ret = [];
     let i = this.offset();
-    for(; i < this.length; i += n) {
-      if(n > 1) ret = ret.concat(this.slice(i, i + 2));
+    for (; i < this.length; i += n) {
+      if (n > 1) ret = ret.concat(this.slice(i, i + 2));
       else ret.push(this[i]);
     }
     return ret;
@@ -476,29 +407,31 @@ export class MutablePath extends Array {
     console.log('equal', { thisPath, other });
     console.log('thisPath', thisPath.length, ...[...thisPath]);
     console.log('other', other.length, ...[...other]);
-    if(other.absolute && other.length != this.length) return false;
-    if(!other.absolute && other.length < this.length) {
+    if (other.absolute && other.length != this.length) return false;
+    if (!other.absolute && other.length < this.length) {
       let prepend = this.slice(0, this.length - other.length);
       other = prepend.concat(other);
     }
-    for(let i = 0; i < other.length; i++) if(this[i] != other[i]) return false;
+    for (let i = 0; i < other.length; i++) if (this[i] != other[i]) return false;
 
     return true;
   }
 
   get parent() {
     let r = this.slice(0, this.length - 1);
-    /*   if( Path.isChildren(r[r.length - 1]))
+
+    /*   if( IsChildren(r[r.length - 1]))
         r = r.slice(0, r.length - 1);*/
     return r;
   }
 
   *walk(t = p => p.up(1)) {
     let p = this;
-    for(p = this; p; p = t(p)) yield p;
+    for (p = this; p; p = t(p)) yield p;
   }
 }
 export const Path = Util.immutableClass(MutablePath);
+
 /*ImmutablePath[Symbol.hasInstance] = function(instance) {
 
 };*/

@@ -141,7 +141,6 @@ export class EagleElement extends EagleNode {
     });*/
     if(tagName == 'gate') {
       /*  console.log('this.elementChain()', this.elementChain());
-      console.log('this.xpath()', this.xpath());
       console.log('this.ref', this.ref);*/
       let library = this.elementChain().library || EagleElement.get(this.owner, path.up(8));
 

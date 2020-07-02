@@ -1,4 +1,5 @@
 import { ImmutablePath } from '../json/path.js';
+import { ImmutableXPath } from '../xml/xpath.js';
 //  import { EagleElement } from "./element.js";
 import Util from '../util.js';
 import deep from '../deep.js';
@@ -251,7 +252,7 @@ export class EagleInterface {
       o = o.owner;
     } while(o.ref);
     let d = o;
-    let x = p.xpath(d);
+    let x = ImmutableXPath.from(p, d);
     return x;
   }
 

@@ -9,7 +9,7 @@ import { makeEagleNodeMap } from './nodeMap.js';
 //import { makeEagleNodeList } from './nodeList.js';
 
 export const makeEagleNode = (owner, ref, ctor) => {
-  if(!ctor) ctor = owner[Symbol.species];
+  if (!ctor) ctor = owner.constructor[Symbol.species];
   let e = ctor.get ? ctor.get(owner, ref) : new ctor(owner, ref);
   return e;
 };
@@ -22,11 +22,11 @@ export class EagleNode extends EagleInterface {
   }
 
   constructor(owner, ref, raw) {
-    if(!owner) owner = new EagleReference(ref.root, []).dereference();
+    if (!owner) owner = new EagleReference(ref.root, []).dereference();
     super(owner);
-    if(!raw) raw = ref.dereference();
+    if (!raw) raw = ref.dereference();
     {
-      if(!(ref instanceof EagleReference)) ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
+      if (!(ref instanceof EagleReference)) ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
       Util.define(this, 'ref', ref);
     }
   }
@@ -47,7 +47,7 @@ export class EagleNode extends EagleInterface {
   get chain() {
     let doc = this.owner;
     let ret = [];
-    while(doc !== undefined) {
+    while (doc !== undefined) {
       ret.push(doc);
       doc = doc.owner;
     }
@@ -55,7 +55,7 @@ export class EagleNode extends EagleInterface {
   }
 
   get project() {
-    if(Util.className(this.owner) == 'EagleProject') return this.owner;
+    if (Util.className(this.owner) == 'EagleProject') return this.owner;
     return this.document.owner;
   }
 
@@ -65,10 +65,10 @@ export class EagleNode extends EagleInterface {
   }
 
   get raw() {
-    if(this.xml && this.xml[0]) return this.xml[0];
+    if (this.xml && this.xml[0]) return this.xml[0];
     const { ref, owner, root, path } = this;
     let r = ref.path.apply(root, true);
-    if(!r) {
+    if (!r) {
       r = ref.path.apply(root) || ref.path.apply(owner);
     }
     return r;
@@ -76,24 +76,24 @@ export class EagleNode extends EagleInterface {
 
   cacheFields() {
     switch (this.tagName) {
-      case 'schematic':
-        return [['settings'], ['layers'], ['libraries'], ['classes'], ['parts'], ['sheets']];
-      case 'board':
-        return [['plain'], ['libraries']];
-      case 'sheet':
-        return [['busses'], ['nets'], ['instances'], ['plain']];
-      case 'deviceset':
-        return [['gates'], ['devices']];
-      case 'device':
-        return [['connects'], ['technologies']];
-      case 'library':
-        return [['packages'], ['symbols'], ['devicesets']];
+    case 'schematic':
+      return [['settings'], ['layers'], ['libraries'], ['classes'], ['parts'], ['sheets']];
+    case 'board':
+      return [['plain'], ['libraries']];
+    case 'sheet':
+      return [['busses'], ['nets'], ['instances'], ['plain']];
+    case 'deviceset':
+      return [['gates'], ['devices']];
+    case 'device':
+      return [['connects'], ['technologies']];
+    case 'library':
+      return [['packages'], ['symbols'], ['devicesets']];
     }
   }
 
   get childConstructor() {
     let protos = Util.getPrototypeChain(this);
-    if(Util.fnName(protos[0].constructor) == 'EagleDocument') protos.shift();
+    if (Util.fnName(protos[0].constructor) == 'EagleDocument') protos.shift();
     let ctor = protos[0].constructor;
     //console.log('ctor:', ctor);
     return ctor;
@@ -103,7 +103,7 @@ export class EagleNode extends EagleInterface {
     let fields = this.cacheFields();
     let node = this;
 
-    if(fields && fields.length) {
+    if (fields && fields.length) {
       Util.define(this, 'cache', {});
       Util.define(this, 'lists', {});
 
@@ -113,7 +113,7 @@ export class EagleNode extends EagleInterface {
       let ref = this.ref;
       let owner = this.document;
 
-      for(let xpath of fields) {
+      for (let xpath of fields) {
         let key = xpath[xpath.length - 1];
         lazy[key] = () =>
           // console.log('lookup', key, this.ref);
@@ -131,7 +131,7 @@ export class EagleNode extends EagleInterface {
   initRelation(key, handler, fn) {
     let elem = this;
     trkl.bind(this, key, v => {
-      if(v !== undefined) return handler(typeof v == 'string' ? v : v.name);
+      if (v !== undefined) return handler(typeof v == 'string' ? v : v.name);
       let value = handler() || elem.attrMap[key] || elem.attributes[key];
 
       return fn(value, elem, elem.document);
@@ -142,7 +142,7 @@ export class EagleNode extends EagleInterface {
   }
 
   appendChild(node, attributes = {}) {
-    if(typeof node == 'string') {
+    if (typeof node == 'string') {
       node = {
         tagName: node,
         children: []
@@ -162,13 +162,15 @@ export class EagleNode extends EagleInterface {
 
   static makePredicate(predicate) {
     let pred = predicate;
-    if(pred instanceof RegExp) {
+    if (pred instanceof RegExp) {
       let re = pred;
       pred = (v, p, o) => re.test(v.tagName);
-    } else if(typeof pred == 'string') {
+    }
+    else if (typeof pred == 'string') {
       let name = pred;
       pred = (v, p, o) => v.tagName === name;
-    } else if(Util.isObject(pred) && typeof pred != 'function') {
+    }
+    else if (Util.isObject(pred) && typeof pred != 'function') {
       let keys = Util.isArray(pred) ? pred : Object.keys(pred);
       let values = keys.reduce((acc, key) => [...acc, pred[key]], []);
 
@@ -183,7 +185,7 @@ export class EagleNode extends EagleInterface {
     let ctor = this[Symbol.species];
     transform = transform || ((...args) => args);
     let cond = pred;
-    for(let [v, p, o] of deep.iterate(this.raw, cond, [...this.path])) {
+    for (let [v, p, o] of deep.iterate(this.raw, cond, [...this.path])) {
       yield transform(v, p, o);
     }
   }
@@ -212,14 +214,14 @@ export class EagleNode extends EagleInterface {
 
   getMap(entity) {
     let a = this.cache[entity + 's'];
-    if(a && a.children) return new Map([...a.children].map(e => [e.name, e]));
+    if (a && a.children) return new Map([...a.children].map(e => [e.name, e]));
     return null;
   }
 
   getByName(element, name, attr = 'name', t = ([v, l, d]) => makeEagleNode(d, this.ref.concat([...l]), this.childConstructor)) {
-    for(let [v, l, d] of this.iterator([], it => it)) {
-      if(typeof v == 'object' && 'tagName' in v && 'attributes' in v && attr in v.attributes) {
-        if(v.tagName == element && v.attributes[attr] == name) return t([v, l, d]);
+    for (let [v, l, d] of this.iterator([], it => it)) {
+      if (typeof v == 'object' && 'tagName' in v && 'attributes' in v && attr in v.attributes) {
+        if (v.tagName == element && v.attributes[attr] == name) return t([v, l, d]);
       }
     }
     return null;
@@ -230,9 +232,9 @@ export class EagleNode extends EagleInterface {
     let ref = this.ref;
     do {
       let node = ref.dereference();
-      if(node.attributes.name !== undefined) names.push([node.tagName, node.attributes.name]);
+      if (node.attributes.name !== undefined) names.push([node.tagName, node.attributes.name]);
       ref = ref.up(2);
-    } while(ref.path.length);
+    } while (ref.path.length);
     return Object.fromEntries(names);
   }
 
@@ -247,7 +249,7 @@ export class EagleNode extends EagleInterface {
   }
 
   get parentNode() {
-    if(this.path.length == 0) return null;
+    if (this.path.length == 0) return null;
 
     /*   const ref = this.ref.up(2);*/
     const { ref, path, root, raw } = this;
@@ -279,7 +281,7 @@ export class EagleNode extends EagleInterface {
 
     let r = this; //'tagName' in this ? this : this.raw; // this.ref ? this.ref.dereference()  : this;
     let a = r.attrMap ? r.attrMap : r.attributes;
-    if(a) {
+    if (a) {
       attrs = Object.getOwnPropertyNames(a)
         .filter(name => typeof a[name] != 'function')
         .reduce((attrs, attr) => concat(attrs, ' ', text(attr, 1, 33), text(':', 1, 36), text("'" + a[attr] + "'", 1, 32)), attrs);
@@ -292,9 +294,9 @@ export class EagleNode extends EagleInterface {
     let ret = ['']; //`${Util.className(this)} `;
     let tag = r.tagName || r.raw.tagName;
     //console.realLog("attrs:",attrs);
-    if(tag) ret = concat(ret, text('<', 1, 36), text(tag, 1, 31), attrs, text(numChildren == 0 ? ' />' : '>', 1, 36));
-    if(this.filename) ret = concat(ret, ` filename="${this.filename}"`);
-    if(numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${tag}>`);
+    if (tag) ret = concat(ret, text('<', 1, 36), text(tag, 1, 31), attrs, text(numChildren == 0 ? ' />' : '>', 1, 36));
+    if (this.filename) ret = concat(ret, ` filename="${this.filename}"`);
+    if (numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${tag}>`);
     return (ret = concat(text(Util.className(r) + ' ', 0), ret));
   }
 

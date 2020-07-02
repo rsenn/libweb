@@ -3,24 +3,25 @@
 	License: http://creativecommons.org/licenses/LGPL/2.1/
    Version: 0.10
 	Author:  Stefan Goessner/2006, Henrik Ingo/2013
-	Web:     https://github.com/henrikingo/xml2json 
+	Web:     https://github.com/henrikingo/xml2json
 */
 function xml2json_translator() {
   var X = {
-    err: function(msg) {
+    err(msg) {
       alert('Error: ' + msg);
     },
+
     /**
      * Return a js object from given xml.
      * We represent element attributes as siblings, not children, of their
      * element, hence they need to be added to parent element.
      */
-    toObj: function(xml, parent) {
+    toObj(xml, parent) {
       if(xml.nodeType == 9)
         // document.node
         return X.toObj(xml.documentElement, parent);
 
-      var o = {};
+      let o = {};
 
       if(
         !parent || // no parent = root element = first step in recursion
@@ -40,15 +41,15 @@ function xml2json_translator() {
 
         if(xml.attributes.length)
           // element with attributes  ..
-          for(var i = 0; i < xml.attributes.length; i++) parent[/*xml.nodeName + "@" +*/ xml.attributes[i].nodeName] = xml.attributes[i].nodeValue;
+          for(let i = 0; i < xml.attributes.length; i++) parent[/*xml.nodeName + "@" +*/ xml.attributes[i].nodeName] = xml.attributes[i].nodeValue;
 
         if(xml.firstChild) {
           // element has child nodes. Figure out some properties of it's structure, to guide us later.
-          var textChild = 0,
+          let textChild = 0,
             cdataChild = 0,
             hasElementChild = false,
             needsArray = false;
-          var elemCount = {};
+          let elemCount = {};
           for(var n = xml.firstChild; n; n = n.nextSibling) {
             if(n.nodeType == 1) {
               hasElementChild = true;
@@ -98,9 +99,9 @@ function xml2json_translator() {
               else {
                 // element
                 /*                           // at least in browser, cannot create new object with value of a variable as key
-                           var newObj = {}; 
+                           var newObj = {};
                            // must set the key here separately
-                           newObj[n.nodeName] = X.toObj(n, o); 
+                           newObj[n.nodeName] = X.toObj(n, o);
                            o[o.length] = newObj; // push
 */
                 o[o.length] = X.toObj(n, o); //push
@@ -122,12 +123,12 @@ function xml2json_translator() {
 
       return o;
     },
-    toJson: function(o, ind) {
-      var json = '';
+    toJson(o, ind) {
+      let json = '';
       if(o instanceof Array) {
         for(var i = 0, n = o.length; i < n; i++) {
           // strings usually follow the colon, but in arrays we must add the usual indent
-          var extra_indent = '';
+          let extra_indent = '';
           if(typeof o[i] == 'string') extra_indent = ind + '\t';
           o[i] = extra_indent + X.toJson(o[i], ind + '\t');
         }
@@ -149,43 +150,43 @@ function xml2json_translator() {
       } else json += o.toString();
       return json;
     },
-    innerXml: function(node) {
-      var s = '';
+    innerXml(node) {
+      let s = '';
       if('innerHTML' in node) s = node.innerHTML;
       else {
         var asXml = function(n) {
-          var s = '';
+          let s = '';
           if(n.nodeType == 1) {
             s += '<' + n.nodeName;
-            for(var i = 0; i < n.attributes.length; i++) s += ' ' + n.attributes[i].nodeName + '="' + (n.attributes[i].nodeValue || '').toString() + '"';
+            for(let i = 0; i < n.attributes.length; i++) s += ' ' + n.attributes[i].nodeName + '="' + (n.attributes[i].nodeValue || '').toString() + '"';
             if(n.firstChild) {
               s += '>';
-              for(var c = n.firstChild; c; c = c.nextSibling) s += asXml(c);
+              for(let c = n.firstChild; c; c = c.nextSibling) s += asXml(c);
               s += '</' + n.nodeName + '>';
             } else s += '/>';
           } else if(n.nodeType == 3) s += n.nodeValue;
           else if(n.nodeType == 4) s += '<![CDATA[' + n.nodeValue + ']]>';
           return s;
         };
-        for(var c = node.firstChild; c; c = c.nextSibling) s += asXml(c);
+        for(let c = node.firstChild; c; c = c.nextSibling) s += asXml(c);
       }
       return s;
     },
-    escape: function(txt) {
+    escape(txt) {
       return txt
         .replace(/[\\]/g, '\\\\')
         .replace(/[\"]/g, '\\"')
         .replace(/[\n]/g, '\\n')
         .replace(/[\r]/g, '\\r');
     },
-    removeWhite: function(e) {
+    removeWhite(e) {
       e.normalize();
-      for(var n = e.firstChild; n; ) {
+      for(let n = e.firstChild; n; ) {
         if(n.nodeType == 3) {
           // text node
           if(!n.nodeValue.match(/[^ \f\n\r\t\v]/)) {
             // pure whitespace text node
-            var nxt = n.nextSibling;
+            let nxt = n.nextSibling;
             e.removeChild(n);
             n = nxt;
           } else n = n.nextSibling;
@@ -198,9 +199,9 @@ function xml2json_translator() {
       }
       return e;
     },
-    parseXml: function(xmlString) {
-      var dom = null;
-      var xml = require('libxml');
+    parseXml(xmlString) {
+      let dom = null;
+      let xml = require('libxml');
       dom = xml.parseFromString(xmlString);
       return dom;
     }
@@ -210,12 +211,12 @@ function xml2json_translator() {
 }
 
 export function xml2json(xml, tab) {
-  var X = xml2json_translator();
+  let X = xml2json_translator();
   if(xml.nodeType == 9)
     // document node
     xml = xml.documentElement;
-  var o = X.toObj(X.removeWhite(xml));
-  var json = X.toJson(o, '');
+  let o = X.toObj(X.removeWhite(xml));
+  let json = X.toJson(o, '');
   // If tab given, do pretty print, otherwise remove white space
   return tab ? json.replace(/\t/g, tab) : json.replace(/\t|\n/g, '');
 }

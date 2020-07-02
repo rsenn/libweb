@@ -2612,7 +2612,7 @@ Util.weakAssoc = (fn = (value, ...args) => Object.assign(value, ...args)) => {
     return fn(value, ...args);
   };
 };
-Util.transform = (a, ...l) =>
+Util.transformer = (a, ...l) =>
   (l || []).reduce(
     (c, f) =>
       function(...v) {

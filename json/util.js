@@ -25,29 +25,6 @@ export const toXML = function(o, z = 10000, q = '"') {
   return s.trim();
 };
 
-export const findXPath = (xpath, flat, { root, recursive = true, entries = false }) => {
-  let r = [];
-  let absolute = xpath.startsWith('/');
-  let s = (xpath + '').substring(0, xpath.length) + (recursive ? '([[/].*|)' : '[^/]*');
-  s = s.replace(/[_:'%]/g, '[^/]');
-  if(s[s.length - 1] != '$') s += '$';
-  s = s.replace(/^\/\//, '/(|.*/)');
-
-  if(s[0] != '^' && xpath.substring(0, 2) != '//') s = '^' + s;
-  //console.log('', { s });
-  let re = new RegExp(s);
-  let m = other => re.test(other);
-
-  for(let [path, obj] of flat) {
-    let tmp = new Path(path == '' ? [] : path, true);
-    obj = tmp.apply(root);
-    let xpath = tmp.xpath(root); //(obj2path(obj));
-    if(absolute && !(xpath + '').startsWith('/')) xpath = '/' + xpath;
-    if(m(xpath)) r.push([xpath, obj]);
-  }
-  return entries ? r : new Map(r);
-};
-
 export class Iterator {
   [Symbol.iterator]() {
     if(typeof this.next == 'function') return this;
@@ -84,9 +61,9 @@ class XMLAttribute {
   value = null;
 
   static getAttributesFor = Util.weakMapper(obj => {
-    let { length: l, [0]: tagName, children, ...attributes } = obj;
+    let { length: l, 0: tagName, children, ...attributes } = obj;
     let keys = Object.keys(attributes);
-    /* prettier-ignore */ let a = keys.reduce((acc, name, i) => ({...acc, get [i]() {return this[name]; } }), {} );
+    /* prettier-ignore */ let a = keys.reduce((acc, name, i) => ({ ...acc, get [i]() {return this[name]; } }), {} );
     let length = keys.length;
     let i = 0;
     Util.define(a, { length });
@@ -104,6 +81,7 @@ class XMLAttribute {
     const a = this.getAttributesFor(element);
     if(a[name] === undefined) {
       a[name] = new this(name, element, value);
+
       /* prettier-ignore */
 
       Util.defineGetter(a, a.length, () =>  a[name], true);
@@ -143,7 +121,7 @@ class XMLObject {
   }
 
   toObject() {
-    let { length, [0]: tagName, children, ...attributes } = this;
+    let { length, 0: tagName, children, ...attributes } = this;
     if(Util.isArray(children)) children = [].concat(children);
 
     return { tagName, attributes, children };
@@ -152,7 +130,7 @@ class XMLObject {
 // prettier-ignore
 Object.assign(XMLObject.prototype, Util.filterKeys(Util.getMembers(Array.prototype), k => typeof k == 'symbol' || ['slice', 'splice', 'toLocaleString', 'toString', 'back', 'front'].indexOf(k) != -1) );
 // prettier-ignore
-Util.define(XMLObject.prototype, {get [Symbol.species]() {return XMLObject; } });
+Util.define(XMLObject.prototype, { get [Symbol.species]() {return XMLObject; } });
 Util.define(XMLObject.prototype, {
   [Symbol.for('nodejs.util.inspect.custom')]() {
     return [this[0], this[1], ...(Util.isArray(this[2]) ? this[2] : [])];

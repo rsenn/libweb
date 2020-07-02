@@ -3,16 +3,16 @@
 	License: http://creativecommons.org/licenses/LGPL/2.1/
    Version: 0.10
 	Author:  Stefan Goessner/2006, Henrik Ingo/2013
-	Web:     https://github.com/henrikingo/xml2json 
+	Web:     https://github.com/henrikingo/xml2json
 */
 function json2xml_translator() {
   var X = {
-    toXml: function(v, name, ind, mySiblingAttrs) {
+    toXml(v, name, ind, mySiblingAttrs) {
       if(typeof name == 'undefined') name = null;
       if(typeof ind == 'undefined') ind = '';
       if(typeof mySiblingAttrs == 'undefined') mySiblingAttrs = {};
 
-      var xml = '';
+      let xml = '';
 
       if(v instanceof Array) {
         xml += ind + '<' + name;
@@ -22,7 +22,7 @@ function json2xml_translator() {
           xml += ' ' + m + '="' + mySiblingAttrs[m].toString() + '"';
         }
         xml += '>\n';
-        for(var i = 0, n = v.length; i < n; i++) {
+        for(let i = 0, n = v.length; i < n; i++) {
           if(v[i] instanceof Array) {
             // TODO: Honestly, I have no idea what this does, nor what it should do... (nested lists, what does that even mean in xml?)
             xml += ind + X.toXml(v[i], name, ind + '\t') + '\n';
@@ -37,7 +37,7 @@ function json2xml_translator() {
           xml += (xml.charAt(xml.length - 1) == '\n' ? ind : '') + '</' + name + '>\n';
         }
       } else if(typeof v == 'object') {
-        var hasChild = false;
+        let hasChild = false;
         if(name === null) {
           // root element
           // note: for convenience, if the top level in json has multiple elements, we'll just output multiple xml documents after each other
@@ -47,11 +47,11 @@ function json2xml_translator() {
         }
         // Before doing anything else, check for and separate those that
         // are attributes of the "sibling attribute" type (see below)
-        var newSiblingAttrs = {};
+        let newSiblingAttrs = {};
         for(var m in v) {
           if(m.search('@') >= 1) {
             // @ exists, but is not the first character
-            var parts = m.split('@');
+            let parts = m.split('@');
             if(typeof newSiblingAttrs[parts[0]] == 'undefined') newSiblingAttrs[parts[0]] = {};
             newSiblingAttrs[parts[0]][parts[1]] = v[m];
             delete v[m];
@@ -96,9 +96,9 @@ function json2xml_translator() {
       }
       return xml;
     },
-    parseJson: function(jsonString) {
+    parseJson(jsonString) {
       //console.log('parseJSON:', jsonString);
-      var obj = typeof jsonString == 'string' ? JSON.parse(jsonString) : jsonString;
+      let obj = typeof jsonString == 'string' ? JSON.parse(jsonString) : jsonString;
       return obj;
     }
   };
@@ -106,8 +106,8 @@ function json2xml_translator() {
 }
 
 export function json2xml(json, tab) {
-  var X = json2xml_translator();
-  var xml = X.toXml(X.parseJson(json));
+  let X = json2xml_translator();
+  let xml = X.toXml(X.parseJson(json));
   // If tab given, do pretty print, otherwise remove white space
   return tab ? xml.replace(/\t/g, tab) : xml.replace(/\t/g, '');
 }
