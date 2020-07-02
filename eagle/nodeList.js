@@ -20,7 +20,6 @@ Object.assign(EagleNodeList.prototype, {
   at(pos) {
     const { owner, ref, raw } = this;
 
-
     //console.log(`at(${pos})`, { owner, ownerPath: owner.path, ownerOwner: owner.owner, ref, raw });
     if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner.owner, [...owner.path, 'children', pos], raw[pos]);
   },
@@ -82,7 +81,7 @@ export function makeEagleNodeList(owner, ref, raw) {
         prop = +prop;
         return instance.at(prop);
       }
-      if(prop == 'length') {
+      if(prop == 'length'  && instance.raw) {
         return instance.raw.length;
       }
       if(prop == 'raw') {
@@ -100,7 +99,7 @@ export function makeEagleNodeList(owner, ref, raw) {
         };
       if(prop == 'entries') return () => list.map((item, i) => [item.attributes.name, item]);
       if(typeof Array.prototype[prop] == 'function') return Array.prototype[prop].bind(instance);
-      if((!is_symbol && /^([0-9]+|length)$/.test('' + prop)) || prop == Symbol.iterator || ['findIndex'].indexOf(prop) !== -1) {
+      if(list && (!is_symbol && /^([0-9]+|length)$/.test('' + prop)) || prop == Symbol.iterator || ['findIndex'].indexOf(prop) !== -1) {
         if(prop in list) return list[prop];
       }
       return Reflect.get(instance, prop, receiver);

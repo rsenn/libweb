@@ -711,18 +711,17 @@ Util.fnName = function(f, parent) {
 };
 Util.keys = obj => {
   if(Util.isObject(obj)) {
+    if(obj[Symbol.iterator] !== undefined && typeof obj.item == 'function' && obj.getPropertyValue !== undefined) return obj[Symbol.iterator]();
 
-  if(obj[Symbol.iterator] !== undefined && typeof obj.item == 'function' && obj.getPropertyValue !== undefined) return obj[Symbol.iterator]();
+    if('length' in obj && typeof obj[0] == 'string' && obj[obj[0]] !== undefined)
+      return (function*() {
+        for(let i = 0; i < obj.length; i++) yield obj[i];
+      })();
+    let r = [];
 
-  if('length' in obj && typeof obj[0] == 'string' && obj[obj[0]] !== undefined)
-    return (function*() {
-      for(let i = 0; i < obj.length; i++) yield obj[i];
-    })();
-      let r = [];
-
-  for(let i in obj) r.push(i);
-  return r;
- }
+    for(let i in obj) r.push(i);
+    return r;
+  }
 };
 Util.objName = function(o) {
   if(o === undefined || o == null) return `${o}`;

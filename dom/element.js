@@ -455,6 +455,7 @@ export class Element extends Node {
 
   static setCSS(element, prop, value) {
     if(typeof element == 'string') element = Element.find(element);
+    if(!isElement(element)) return false;
     if(typeof prop == 'string' && typeof value == 'string') prop = { [prop]: value };
 
     // console.log("Element.setCSS ", { element, prop });
@@ -477,23 +478,23 @@ export class Element extends Node {
   }
 
   static getCSS(element, property = undefined, receiver = null) {
-    element = isElement(element) ? element :  Element.find(element);
+    element = isElement(element) ? element : Element.find(element);
 
     const w = window !== undefined ? window : global.window;
     const d = document !== undefined ? document : global.document;
     //console.log('Element.getCSS ', { w, d, element });
 
-    let parent = Util.isObject(element)  ?   element.parentElement || element.parentNode : null;
+    let parent = Util.isObject(element) ? element.parentElement || element.parentNode : null;
 
-    let estyle = Util.tryPredicate(() =>  (Util.isObject(w) && w.getComputedStyle) ? w.getComputedStyle(element) : d.getComputedStyle(element), null);
-    let pstyle = Util.tryPredicate(() => parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {}, null);
+    let estyle = Util.tryPredicate(() => (Util.isObject(w) && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element)), null);
+    let pstyle = Util.tryPredicate(() => (parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {}), null);
 
-
-if(!estyle || !pstyle)
-  return null;
+    if(!estyle || !pstyle) return null;
     //    let styles = [estyle,pstyle].map(s => Object.fromEntries([...Node.map(s)].slice(0,20)));
 
-    let style = Util.removeEqual(estyle, pstyle);
+    let style = Util.tryPredicate(() => Util.removeEqual(estyle, pstyle), null);
+
+    if(!style) return null;
     let keys = Object.keys(style).filter(k => !/^__/.test(k));
     //console.log("style: ", style);
     // console.log("Element.getCSS ", style);
