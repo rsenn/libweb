@@ -11,35 +11,34 @@ export class MutableXPath extends MutablePath {
   }
 
   static from(path, obj) {
-    //   while(path.length > 0 && path[0] === '') path.shift();
-
-    if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path, true);
-    /*   console.log('path:', [...path]);
-    //console.log('obj:', obj);*/
-
+    let absolute = false;
+    path = [...path];
+    {
+      while(path.length > 0 && path[0] === '') {
+        path.shift();
+        absolute = true;
+      }
+      if(absolute) if (path.length == 0 || path[0] !== '') path = [''].concat(path);
+    }
     let o = obj,
       n,
-      thisPath = Util.isObject(path) && typeof path.toArray == 'function' ? path.toArray() : [...path];
-
+      a = Util.isObject(path) && typeof path.toArray == 'function' ? path.toArray() : [...path];
     let e,
       s = [],
-      i = 0,
-      a = [...thisPath];
-
-    // console.log('XPath from:', a /*, "\n object:",o*/); //    while(i < a.length && a[i] === '') i++;
+      i = 0;
+    if(a.length > 0 && (a[0] === '' || a[0] === '/')) {
+      if(a.shift() === '') absolute = true;
+    }
+    // if(absolute) s.push('');
 
     for(; i < a.length; i++) {
       let p = a[i];
-
-      //   console.log(i + '/' + a.length + ':', { p, o });
+      //  console.log(i + '/' + a.length + ':', { p, o });
       if(MutablePath.isChildren(p)) p = 'children';
-
       e = o[p];
-      // console.log(i + '/' + a.length + ':', { e });
-
+      //console.log(i + '/' + a.length + ':', { e });
       if(p == 'children') {
         s.push(p);
-        //        s.push(MutablePath.CHILDREN_STR);
         n = e.length;
       } else if(Util.isObject(e) && e.tagName !== undefined) {
         let pt = [];
@@ -54,24 +53,19 @@ export class MutableXPath extends MutablePath {
         }
         n = undefined;
       }
-
       o = e;
-      // if(p == 'attributes') break;
     }
+    //  console.log('XPath from:', a, "\n  to:", s);
 
-    let r = new ImmutableXPath(s, this.absolute, obj);
-    //   console.log('xpath', thisPath.absolute, { s, a, r }, r + '');
+    let r = new ImmutableXPath(s, absolute, obj);
     return r;
   }
 
-  constructor(parts = [], absolute, root) {
+  constructor(parts, absolute = false, root) {
+    super(parts, absolute, root);
 
-    if(absolute && (parts.length == 0 || parts[0] !== '')) Array.prototype.unshift.call(parts, '');
-
-    super(parts);
-    console.log('MutableXPath.constructor', MutablePath.prototype.toString.call(this, '/', 'CHILDREN_STR'));
+    // console.log(Util.className(this)+".constructor", ...arguments);
     this.root = root;
-
     return this;
   }
 
@@ -85,7 +79,7 @@ export class MutableXPath extends MutablePath {
     if(i < this.length && this[i] === '') return 1;
     return 0;
   }
-
+  /*
   slice(start, end) {
     let { descendand, absolute } = this;
     let i = this.offset();
@@ -103,57 +97,71 @@ export class MutableXPath extends MutablePath {
     if(descendand) a = a.unshift('/');
     else if(absolute) a = a.unshift('');
     return a;
-  }
+  }*/
 
-  static partToString(p, sep = '/', childrenSym, c = text => text/*(text, c = 33, b = 0) => `\x1b[${b};${c}m${text}\x1b[0m`*/) {
+  static partToString(p, sep = '/', childrenSym, c = (text, c = 33, b = 0) => `\x1b[${b};${c}m${text}\x1b[0m`) {
     let ret = [];
     if(MutablePath.isChildren(p[0]) || p[0] == 'children') {
       p.shift();
       ret.push('children');
     }
-
     if(Util.isObject(p[0])) {
       const keys = Object.keys(p[0]);
-      //      console.log(Util.fnName(this) + '.partToString keys.length:',keys.length, ' keys[0]:',keys[0], 'obj:', p[0], 'keys:', keys);
       if(keys.length == 1 && keys.indexOf('tagName') !== -1) {
-        /*       let prop = item[keys[0]];
-    //console.log(Util.fnName(this) + '.partToString p[0]:', item, prop);
-  //      return [prop];
-*/ let item = p.shift();
+        let item = p.shift();
         let prop = item[keys[0]];
-        //   p.unshift(prop);
         return [prop];
       }
     }
-    /*
-      let { tagName, ...attrs } = p.shift();
-      return tagName + (Object.keys(attrs).length == 0 ? '' : Util.toString(attrs, { spacing: '', padding: '' }));
-    }*/
     return MutablePath.partToString(p, sep, childrenSym, c);
   }
 
-  toString(sep = '/', childrenVar = 'CHILDREN_STR_') {
+  toString(sep = '/', childrenVar = 'CHILDREN_STR', c = (text, c = 33, b = 0) => `\x1b[${b};${c}m${text}\x1b[0m`) {
     let a = Array.prototype.slice.call(this); //Array.prototype.slice.call(this);
     //a = a.filter(p =>  p!== undefined);
-
 
     a = a.map(p => (MutablePath.isChildren(p) && MutablePath[childrenVar]) || p);
     let r = [];
 
     while(a.length > 0) {
-      let res = MutableXPath.partToString(a, '/', MutableXPath[childrenVar], text => text);  if(!res) break;
-       console.log("toString res",res);
+      let res = MutableXPath.partToString(a, '/', MutableXPath[childrenVar], c);
+      if(!res) break;
+      //console.log('toString res =',res);
       r = r.concat(res);
     }
-    //console.log('r===', r);
+    while(r.length > 1 && r[0] === '' && r[1] === '') r.shift();
+    //    console.log('r===', r);
+
     let s = Array.prototype.join.call(r, '/');
 
-        s = s.replace(/,/g, '/').replace(/\/\[/g, '[');
-    s = ((this.descendand > 0 || this.absolute) && !s.startsWith('/') ? (this.descendand ? '//' : '/') : '') + s;
+    s = s.replace(/,/g, '/').replace(/\/\[/g, '[');
+    //s = ((this.descendand > 0 || this.absolute) && !s.startsWith('/') ? (this.descendand ? '//' : '/') : '') + s;
     s = s.replace(/\//g, sep);
-  console.log('r=', r, '\ns=', s, '\na=', a);
+    // console.log(' s =', s, ' r =', r);
 
     return s;
+  }
+
+  [Symbol.for('nodejs.util.inspect.custom')](c) {
+    let { absolute } = this;
+    c = c || ((text, ...colors) => `\x1b[${colors.join(';')}m${text}\x1b[0m`);
+    let s = MutableXPath.prototype.toString.call(this, '/', '', c);
+    let n = Util.className(this);
+    //if(absolute) s = '/' + s;
+    s =
+      c(n, 1, 31) +
+      ' ' +
+      s
+        .split(/\//g)
+        .map(p => c(p, 38, 5, 220))
+        .join(c('/', 38, 5, 201));
+    console.log(`MutableXPath.prototype[Symbol.for('nodejs.util.inspect.custom')] s=`, s);
+
+    return s;
+  }
+
+  [Symbol.toStringTag]() {
+    return MutableXPath.prototype[Symbol.for('nodejs.util.inspect.custom')].call(this, text => text);
   }
 
   toRegExp() {
