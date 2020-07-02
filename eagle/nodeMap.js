@@ -16,10 +16,12 @@ Object.assign(EagleNodeMap.prototype, {
   },
   get(name, key = this.key) {
     const { owner, ref, raw } = this.list;
+    console.log("EagleNodeMap", {raw,name});
+    if(raw) {
     const idx = raw.findIndex(item => item.attributes[key] == name);
     let value = raw[idx];
-    //console.log("EagleNodeMap", {name,key,idx,owner, ref, value});
     return raw[idx] ? owner.constructor.get(owner, ['children', idx], value) : null;
+  }
   },
   set(name, value) {
     const list = this.list.raw;

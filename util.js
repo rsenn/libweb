@@ -710,16 +710,19 @@ Util.fnName = function(f, parent) {
   return undefined;
 };
 Util.keys = obj => {
-  if(Symbol.iterator in obj && typeof obj.item == 'function' && obj.getPropertyValue !== undefined) return obj[Symbol.iterator]();
+  if(Util.isObject(obj)) {
+
+  if(obj[Symbol.iterator] !== undefined && typeof obj.item == 'function' && obj.getPropertyValue !== undefined) return obj[Symbol.iterator]();
 
   if('length' in obj && typeof obj[0] == 'string' && obj[obj[0]] !== undefined)
     return (function*() {
       for(let i = 0; i < obj.length; i++) yield obj[i];
     })();
+      let r = [];
 
-  let r = [];
   for(let i in obj) r.push(i);
   return r;
+ }
 };
 Util.objName = function(o) {
   if(o === undefined || o == null) return `${o}`;

@@ -109,9 +109,9 @@ export class TreeObserver extends ObservableMembrane {
   });*/
 
   entry = Util.weakMapper((arg, path, type) => {
-    const { readOnly, root, mapper } = this;
+    const { readOnly } = this;
     let proxy = this[readOnly ? 'getReadOnlyProxy' : 'getProxy'](arg);
-    path = path || this.getPath(arg) ||[];
+    path = path || this.getPath(arg) || [];
     type = type || this.getType(arg, path);
     return { proxy, path, type };
   });
@@ -123,7 +123,7 @@ export class TreeObserver extends ObservableMembrane {
   path = this.getField('path');
 
   getPath(node) {
-    return  this.mapper.get(node) || this.mapper.get(this.unwrap(node));
+    return this.mapper.get(node) || this.mapper.get(this.unwrap(node));
   }
 
   getXPath(node) {
@@ -134,7 +134,7 @@ export class TreeObserver extends ObservableMembrane {
   unwrap(arg) {
     return this.unwrapProxy(arg);
   }
-  
+
   subscribe(handler) {
     this.handlers.push(handler);
   }

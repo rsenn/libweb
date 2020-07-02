@@ -477,17 +477,20 @@ export class Element extends Node {
   }
 
   static getCSS(element, property = undefined, receiver = null) {
-    element = typeof element === 'string' ? Element.find(element) : element;
+    element = isElement(element) ? element :  Element.find(element);
 
     const w = window !== undefined ? window : global.window;
     const d = document !== undefined ? document : global.document;
     //console.log('Element.getCSS ', { w, d, element });
 
-    let parent = Util.isObject(element) && element.parentElement ? element.parentElement : element.parentNode;
+    let parent = Util.isObject(element)  ?   element.parentElement || element.parentNode : null;
 
-    let estyle = /*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element);
-    let pstyle = parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {};
+    let estyle = Util.tryPredicate(() =>  (Util.isObject(w) && w.getComputedStyle) ? w.getComputedStyle(element) : d.getComputedStyle(element), null);
+    let pstyle = Util.tryPredicate(() => parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {}, null);
 
+
+if(!estyle || !pstyle)
+  return null;
     //    let styles = [estyle,pstyle].map(s => Object.fromEntries([...Node.map(s)].slice(0,20)));
 
     let style = Util.removeEqual(estyle, pstyle);
@@ -726,7 +729,7 @@ export class Element extends Node {
   }
 
   static at(x, y, options) {
-    if(Element.isElement(x)) return Element.isat.apply(Element, arguments);
+    if(isElement(x)) return Element.isat.apply(Element, arguments);
     let args = [...arguments];
     const p = Point(args);
     const w = global.window;
@@ -865,5 +868,5 @@ Element.padding = element => Element.getTRBL(element, 'padding');
 Element.border = element => Element.getTRBL(element, 'border');
 
 export function isElement(e) {
-  return e.tagName !== undefined;
+  return Util.isObject(e) && e.tagName !== undefined;
 }

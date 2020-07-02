@@ -19,12 +19,15 @@ Object.defineProperties(EagleNodeList.prototype, {
 Object.assign(EagleNodeList.prototype, {
   at(pos) {
     const { owner, ref, raw } = this;
+
+
     //console.log(`at(${pos})`, { owner, ownerPath: owner.path, ownerOwner: owner.owner, ref, raw });
-    if(Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner.owner, [...owner.path, 'children', pos], raw[pos]);
+    if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner.owner, [...owner.path, 'children', pos], raw[pos]);
   },
   *[Symbol.iterator]() {
-    const { ref, owner, raw } = this;
-    for(let i = 0; i < raw.length; i++) {
+    let { ref, owner, raw, length } = this;
+
+    for(let i = 0; i < length; i++) {
       let childRef = EagleRef(owner.raw, [...ref.path, i]);
       let r = makeEagleElement(owner, childRef, raw[i]);
       // console.log('EagleNodeList  [Symbol.iterator]()', { childRef, r });
@@ -85,11 +88,11 @@ export function makeEagleNodeList(owner, ref, raw) {
       if(prop == 'raw') {
         const { raw, ref } = instance;
         //console.log("prop raw", {raw, ref });
-        return raw || ref.dereference();
+        return raw || (ref && ref.dereference());
       }
       if(prop == 'instance') return instance;
       if(typeof Ctor.prototype[prop] == 'function') return Ctor.prototype[prop].bind(instance);
-      let list = instance.ref.dereference();
+      let list = instance && instance.ref ? instance.ref.dereference() : null;
       if(prop == 'find')
         return name => {
           const idx = list.findIndex(e => e.attributes.name == name);

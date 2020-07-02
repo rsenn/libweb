@@ -118,7 +118,7 @@ export class EagleNode extends EagleInterface {
         lazy[key] = () =>
           // console.log('lookup', key, this.ref);
           this.lookup(xpath, true);
-        lists[key] = () => listCtor(this, this.ref.concat(['children']), lazy[key]().children);
+        lists[key] = () => listCtor(this, this.ref.down('children'), lazy[key]().children);
 
         maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => makeEagleNodeMap(lazy[key]().children, key == 'instances' ? 'part' : key == 'layers' ? 'number' : 'name');
       }

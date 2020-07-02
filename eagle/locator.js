@@ -1,5 +1,6 @@
 import Util from '../util.js';
 import { text, EagleInterface, toXML, dump } from './common.js';
+import {  ImmutablePath } from '../json.js';
 
 export function DereferenceError(object, member, pos, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
@@ -32,7 +33,7 @@ DereferenceError.prototype.toString = function() {
 
 export const ChildrenSym = Symbol('⊳');
 
-export const EaglePath = Util.immutableClass(
+export const EaglePath = /*ImmutablePath ||*/ Util.immutableClass(
   class EaglePath extends Array {
     static CHILDREN = ChildrenSym;
     constructor(path = []) {

@@ -188,6 +188,8 @@ export class EagleProject {
       };*/
       const destLib = libProps(libraries[k]);
       const srcLib = libProps(libraries.file);
+      console.log('libraries', libraries);
+      console.log('destLib', destLib);
       for(let entity of ['packages', 'symbols', 'devicesets']) {
         if(!(entity in destLib)) continue;
         if(!(destLib[entity] instanceof EagleNodeMap)) continue;
