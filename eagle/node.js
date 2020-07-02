@@ -116,7 +116,7 @@ export class EagleNode extends EagleInterface {
       for(let xpath of fields) {
         let key = xpath[xpath.length - 1];
         lazy[key] = () =>
-          // console.log('lookup', key, this.ref);
+          //console.log('lookup', key, this.ref);
           this.lookup(xpath, true);
         lists[key] = () => listCtor(this, this.ref.down('children'), lazy[key]().children);
 
@@ -196,7 +196,7 @@ export class EagleNode extends EagleInterface {
     let a = [...it];
     const { root, path, raw } = this;
 
-    //   console.log("EagleNode.get",{className: Util.className(this), root,path,raw,pred: pred+'',it,a});
+    //console.log("EagleNode.get",{className: Util.className(this), root,path,raw,pred: pred+'',it,a});
 
     return a[0] || null;
   }
@@ -252,7 +252,7 @@ export class EagleNode extends EagleInterface {
     /*   const ref = this.ref.up(2);*/
     const { ref, path, root, raw } = this;
     let doc = this.getDocument();
-    //      console.log('parentNode', path + '', doc);
+    //console.log('parentNode', path + '', doc);
     return this[Symbol.species].get(doc, ref.up(2));
   }
 

@@ -141,7 +141,7 @@ export class EagleElement extends EagleNode {
     });*/
     if(tagName == 'gate') {
       /*  console.log('this.elementChain()', this.elementChain());
-      console.log('this.ref', this.ref);*/
+      //console.log('this.ref', this.ref);*/
       let library = this.elementChain().library || EagleElement.get(this.owner, path.up(8));
 
       lazyProperty(this, 'symbol', () => library.symbols[elem.attributes.symbol] /*library.find({ tagName: 'symbol', name: this.attributes.symbol })*/);
@@ -149,7 +149,7 @@ export class EagleElement extends EagleNode {
       let { tagName } = this;
 
       const part = doc.find({ tagName: 'part', name: this.attributes.part }); //doc.parts[this.attributes.part];
-      //  console.log('part2:', part);
+      //console.log('part2:', part);
       if(!part.attributes) console.log('instance', this.raw, { doc, owner, tagName });
 
       const library = doc.find({ tagName: 'library', name: part.attributes.library });
@@ -239,7 +239,7 @@ export class EagleElement extends EagleNode {
     if(this.tagName == 'element') {
       const { raw, ref, path, attributes, owner, document } = this;
       const libName = raw.attributes.library;
-      // console.log("document.libraries", document.libraries);
+      //console.log("document.libraries", document.libraries);
       let library = document.libraries[libName];
 
       let pkg = library.packages[raw.attributes.package];
@@ -249,7 +249,7 @@ export class EagleElement extends EagleNode {
     } else if(this.tagName == 'instance') {
       const { part, gate, rot } = this;
       const { symbol } = gate;
-      // console.log('instance', { gate, symbol });
+      //console.log('instance', { gate, symbol });
       let t = new TransformationList();
       t.translate(+this.x, +this.y);
       t = t.concat(Rotation(rot));
@@ -260,8 +260,7 @@ export class EagleElement extends EagleNode {
       p = new PointList([...m.transform_points(p)]);
       bb.update(p.bbox());
     } else if(this.tagName == 'sheet') {
-      console.log('this', this, this.tagName);
-
+      //console.log('this', this, this.tagName);
       /* for(let instance of this['instances'].children) {
         bb.update(instance.getBounds(), 0, instance);
       }*/

@@ -77,11 +77,11 @@ export class EagleSVGRenderer {
 
   getColor(color) {
     let c = this.palette[color] || /*this.colors[color] || */ 'rgb(165,165,165)';
-    // console.log('getColor', color, c);
+    //console.log('getColor', color, c);
 
     /* if(c)
     Util.colorDump([c]);*/
-    //    console.log(Util.getCallers());
+    //console.log(Util.getCallers());
     return c;
   }
 
@@ -379,7 +379,7 @@ export class EagleSVGRenderer {
     this.rect = rect;
     this.bounds = new BBox().update(rect);
 
-    console.log('bounds:', bounds.toString({ separator: ' ' }));
+    //console.log('bounds:', bounds.toString({ separator: ' ' }));
 
     const { width, height } = new Size(bounds).toCSS('mm');
 

@@ -26,7 +26,7 @@ export class PathMapper {
   }
 
   set(obj, path) {
-    console.log(Util.className(this) + '.set(', obj, path, ')');
+    //console.log(Util.className(this) + '.set(', obj, path, ')');
     if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
     if(path.length === 0) this.root = obj;
     this.map.set(obj, path);

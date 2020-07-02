@@ -75,7 +75,7 @@ export class EagleProject {
           dir = bin.replace(/\/[^\/]+$/, '');
         }
         dir = dir.replace(/[\\\/]bin$/i, '');
-        console.log('dir:', dir, bin);
+        //console.log('dir:', dir, bin);
 
         return dir;
       }
@@ -188,13 +188,13 @@ export class EagleProject {
       };*/
       const destLib = libProps(libraries[k]);
       const srcLib = libProps(libraries.file);
-      console.log('libraries', libraries);
-      console.log('destLib', destLib);
+      //console.log('libraries', libraries);
+      //console.log('destLib', destLib);
       for(let entity of ['packages', 'symbols', 'devicesets']) {
         if(!(entity in destLib)) continue;
         if(!(destLib[entity] instanceof EagleNodeMap)) continue;
         /*console.log('destLib', destLib);
-        console.log('destLib[entity]', destLib[entity]);*/
+        //console.log('destLib[entity]', destLib[entity]);*/
 
         const dstMap = destLib[entity];
         let ent = srcLib[entity].entries();

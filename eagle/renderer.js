@@ -139,7 +139,7 @@ export function renderDocument(doc, container) {
     for(let layer of renderer.doc.layers.list) {
       const { color, number, name, active, fill, visible } = layer.attributes;
       if(active == 'no') continue;
-      // console.log("layer:,", layer.attributes);
+      //console.log("layer:,", layer.attributes);
       insert([color, { number, name, color, active, fill, visible }]);
     }
     const rgba1 = renderer.palette.map((color, i) => RGBA.fromString(color));

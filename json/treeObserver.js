@@ -54,7 +54,7 @@ export class TreeObserver extends ObservableMembrane {
         let valueClass = Util.className(value);
         let valueKeys = Util.isObject(value) ? Object.keys(value) : [];
         if(key || path) {
-          //   console.log('valueDistortion', { key, path, valueType, valueClass, valueKeys });
+          //console.log('valueDistortion', { key, path, valueType, valueClass, valueKeys });
           if(!Util.isObject(target)) return value;
           let q = Util.isObject(value) ? Object.getPrototypeOf(value) : Object.prototype;
           if(typeof value == 'string' && !isNaN(+value)) value = +value;
@@ -72,7 +72,7 @@ export class TreeObserver extends ObservableMembrane {
 
       path = new ImmutablePath(path, true);
       //  path = path.concat(key ? [key] : []);
-      //  console.log('getPath', { key, path, target });
+      //console.log('getPath', { key, path, target });
       let value;
       if(path !== null && Util.isObject(target) && key) {
         let obj = target[key] ? null : pathMapper.at(path);

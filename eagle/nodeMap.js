@@ -16,7 +16,7 @@ Object.assign(EagleNodeMap.prototype, {
   },
   get(name, key = this.key) {
     const { owner, ref, raw } = this.list;
-    console.log('EagleNodeMap', { raw, name });
+    //console.log('EagleNodeMap', { raw, name });
     if(raw) {
       const idx = raw.findIndex(item => item.attributes[key] == name);
       let value = raw[idx];

@@ -46,7 +46,7 @@ export class MutablePath extends Array {
 
   static [Symbol.hasInstance](instance) {
     const name = Util.className(instance);
-    // console.log("name:",name);
+    //console.log("name:",name);
     return ['MutablePath', 'ImmutablePath', 'Path'].indexOf(name) != -1;
   }
 
@@ -99,14 +99,14 @@ export class MutablePath extends Array {
 
     for(let i = 0; i < a.length; i++) {
       let item = a[i] === '' ? '' : typeof a[i] == 'symbol' || isNaN(+a[i]) ? a[i] : +a[i];
-      // console.log(`i=${i} item=`, item);
+      //console.log(`i=${i} item=`, item);
       Array.prototype.push.call(this, /*IsChildren(a[i]) ? 'children' :*/ item);
     }
     const { length } = a;
     const last = a[a.length - 1];
     const first = a[0];
 
-    //    console.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
+    //console.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
   }
 
   static partToString(a, sep = '/', childrenSym, c = (text, c = 33, b = 0) => `\x1b[${b};${c}m${text}\x1b[0m`) {
@@ -314,10 +314,10 @@ export class MutablePath extends Array {
     for(let i = 0; ; i++) {
       let p = MutablePath.partToString(a, '/', MutablePath[childrenVar], text => text);
       if(!p) break;
-      // console.log("toString p",p);
+      //console.log("toString p",p);
       r = r.concat(p);
     }
-    //    console.log('toString r', r);
+    //console.log('toString r', r);
     r = r.join('/').replace(/[/.]?\[/g, '[');
     r = (this.absolute && r != '' && sep == '/' ? sep : '') + r;
     return r.replace(/\//g, sep);
@@ -407,7 +407,7 @@ export class MutablePath extends Array {
 
     let ctor = this.constructor;
 
-    console.log('species:', species, 'ctor:', ctor);
+    //console.log('species:', species, 'ctor:', ctor);
     //    arr = arr.concat(args);
 
     return new species(arr, this.absolute);
@@ -465,8 +465,8 @@ export class MutablePath extends Array {
   equal(other = []) {
     const thisPath = this;
     /*console.log('equal', { thisPath, other });
-    console.log('thisPath', thisPath.length, ...[...thisPath]);
-    console.log('other', other.length, ...[...other]);*/
+    //console.log('thisPath', thisPath.length, ...[...thisPath]);
+    //console.log('other', other.length, ...[...other]);*/
     if(other.absolute && other.length != this.length) return false;
     if(!other.absolute && other.length < this.length) {
       let prepend = this.slice(0, this.length - other.length);
