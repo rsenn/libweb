@@ -116,7 +116,7 @@ export class MutableXPath extends MutablePath {
       if(keys.length == 1 && keys.indexOf('tagName') !== -1) {
         let item = p.shift();
         let prop = item[keys[0]];
-        return [prop];
+        return prop;
       }
     }
     return MutablePath.partToString(p, sep, childrenSym, c);
@@ -156,22 +156,32 @@ export class MutableXPath extends MutablePath {
         .map(p => {
           const matches = /([^\[]*)(\[[^/]*\])?/.exec(p);
           let [tag, brack = ''] = [...matches].slice(1);
-  brack = (brack+'').substring(1,brack.length-1);
+          brack = (brack + '').substring(1, brack.length - 1);
 
           let bmatches = /(@?[-_A-Za-z][-_A-Za-z0-9]*)([^'"]*)(['"][^'"]*['"])?/g.exec(brack);
-           let [total,name,op,value] = bmatches || ['','','',''];
-            console.log('matches:', { tag, brack, /*bmatches,*//*total,*/name,op,value });
+          let [total, name, op, value] = bmatches || ['', '', '', ''];
+   
+         console.log('matches:', { tag, brack, /*bmatches,*/ /*total,*/ name, op, value });
 
-            if(total)
-              p = c('[',1,32)+c(name, 1,33)+c(op,1,36)+c(value,1,35)+c(']',1,32);
-            else
-          p = c(p, 38, 5, 56);
+
+          if(total) {
+            p = tag;
+            p += '[' + c(name, 1, 33) + c(op, 1, 36) + c(value, 1, 35) + c(']', 1, 32);
+          } else {
+
+        p = c(p, 38, 5, 56);
+      }
           return p;
         })
-        .reduce((acc,p) => { /*console.log("",{acc,p});*/if(p.startsWith('[') && acc.length)  acc[acc.length-1]+= p; else acc.push(p); return acc; }, [])
-        .join(c('/', 1, 36));
-    //console.log(`MutableXPath.prototype[Symbol.for('nodejs.util.inspect.custom')] s=`, [...this]);
+        .reduce((acc, p) => {
+          /*console.log("",{acc,p});*/ if(p.startsWith('[') && acc.length) acc[acc.length - 1] += c(p, 1, 32);
+          else acc.push(p);
+          return acc;
+        }, []);
 
+//s=s.join(c('/', 1, 36));
+    //console.log(`MutableXPath.prototype[Symbol.for('nodejs.util.inspect.custom')] s=`, [...this]);
+console.log("inspect.custom",s);
     return s;
   }
 
