@@ -101,10 +101,13 @@ export class MutablePath extends Array {
 
           part = a.shift();
           let num = +part;
-          s += c('\u220a' ||'\u23d0'||'\u205e' ||'\u2e3d' ||' \u2504' || '\u2039', 30, 1); //this.CHILDREN_STR  ; //Path.CHILDREN_STR + ' ';
-          s += c(`${num}\u200a`, 36, 1);
-         //s += c('\u0fda'||'\u23e3' ||'\ufe32' ||'\u205e' ||'\u2e3d' ||'\u2504' || `\u203a`, 30, 1);
+          s += c('\u200b\u220a\u200a'/* || '\u23d0' || '\u205e' || '\u2e3d' || ' \u2504' || '\u2039'*/, 35, 0); //this.CHILDREN_STR  ; //Path.CHILDREN_STR + ' ';
+          s += c(`${num}`, 33, 1);
+          //s += c('\u0fda'||'\u23e3' ||'\ufe32' ||'\u205e' ||'\u2e3d' ||'\u2504' || `\u203a`, 30, 1);
+        s += '\u200b';
           s += `\x1b[1;34m`;
+
+
           //   s += num+'';
         } else {
           if(Util.isNumeric(part)) part = +part;
@@ -293,7 +296,7 @@ export class MutablePath extends Array {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')](...args) {
-    return Util.className(this) + ' ' + this.toString('\uff0f');
+    return Util.className(this) + ' ' + this.toString('/');
   }
 
   toSource(sep = ',') {
@@ -313,7 +316,7 @@ export class MutablePath extends Array {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    let p = this.toString('\u2571' || '\u29f8');
+    let p = this.toString('/' || '\u2571' || '\u29f8');
     let n = Util.className(this);
     //n = n.startsWith('Immutable') ? (n = n.replace(/Immutable/g, '')) : 'Mutable' + n.replace(/Mutable/g, '');
     let c = n.startsWith('Mutable') ? 31 : 32;
