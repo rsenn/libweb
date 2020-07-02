@@ -29,7 +29,11 @@ DereferenceError.prototype.toString = function() {
 };
 
 export class MutablePath extends Array {
-  static CHILDREN_STR = '\u220d';
+  static CHILDREN_STR = ' '; //\u220d';
+  static CHILDREN_FN = args => {
+    args[0] = '[' + args[0] + ']';
+    return '';
+  };
   static CHILDREN = Symbol('children');
 
   static SymToString(a) {
@@ -44,6 +48,12 @@ export class MutablePath extends Array {
 
   static isChildren(a) {
     return a === 'children' || a === this.CHILDREN_STR || a === this.CHILDREN;
+  }
+
+  static [Symbol.hasInstance](instance) {
+    const name = Util.className(instance);
+    // console.log("name:",name);
+    return ['MutablePath', 'ImmutablePath', 'Path'].indexOf(name) != -1;
   }
 
   constructor(path = [], absolute) {
@@ -111,8 +121,9 @@ export class MutablePath extends Array {
         break;
       }
       case 'string':
-        if(Path.isChildren(part)) {
-          s += (childrenSym || part) + sep; //Path.CHILDREN_STR + ' ';
+        if(Path.isChildren(part) || part == 'children') {
+          let sym = typeof childrenSym == 'function' ? childrenSym(a) : childrenSym;
+          s += (sym !== undefined ? sym : part) + sep; //Path.CHILDREN_STR + ' ';
           part = a.shift();
         }
         if(Util.isNumeric(part)) {
@@ -271,27 +282,22 @@ export class MutablePath extends Array {
     return a.o;
   }
 
-  toString(sep = '/', childrenVar /*= 'CHILDREN_STR'*/) {
+  toString(sep = '/', childrenVar = 'CHILDREN_FN') {
     let a = this.toArray();
-
     while(a.length > 0 && a[0] === '') a.shift();
     let n = a.length;
-    /*console.log(`n =`, n);
-      console.log(`a =`, a);*/
     let r = [];
     for(let i = 0; ; i++) {
-      let p = Path.partToString(a, sep, Path[childrenVar]);
+      let p = Path.partToString(a, sep, MutablePath[childrenVar]);
       if(!p) break;
-      //console.log(`p[${r.length}] = ${p}`);
       r.push(p);
     }
-    //if(this.length > 1) console.log("r:",r);
     r = r.join(sep).replace(/[/.]?\[/g, '[');
     return (this.absolute && r != '' && sep == '/' ? sep : '') + r;
   }
 
-  inspect() {
-    return Path.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, arguments);
+  [Symbol.for('nodejs.util.inspect.custom')](...args) {
+    return Util.className(this) + ' ' + this.toString('/');
   }
 
   toSource(sep = ',') {
@@ -310,18 +316,17 @@ export class MutablePath extends Array {
   }
 
   xpath(obj) {
-    let o = obj;
-    let n;
-    let thisPath = this.toArray();
+    let o = obj,
+      n,
+      thisPath = this.toArray();
 
     // while(thisPath.length > 0 && thisPath[0] === '') thisPath.shift();
 
     //console.log("thisPath:",thisPath);
 
-    let XPath = Util.immutableClass(MutableXPath);
-    let s = [];
-    let i = 0;
-    let a = [...thisPath];
+    let s = [],
+      i = 0,
+      a = [...thisPath];
     while(i < a.length && a[i] === '') i++;
     while(i < a.length) {
       let p = a[i++];
@@ -346,18 +351,17 @@ export class MutablePath extends Array {
       o = e;
     }
 
-    let r = new XPath(s, this.absolute, obj);
+    let r = new ImmutableXPath(s, this.absolute, obj);
     //console.log("xpath", thisPath.absolute,{ a, r },r+'');
     return r;
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    let s = this.toString('/');
-    let c = Util.className(this);
-    c = c.startsWith('Immutable') ? (c = c.replace(/Immutable/g, '')) : 'Mutable' + c.replace(/Mutable/g, '');
-    //  console.log('c', c);
-    let code = c.startsWith('Mutable') ? 31 : 32;
-    return `\x1b[1;${code}m${c}\x1b[1;34m ${s}\x1b[0m`;
+    let p = this.toString('/');
+    let n = Util.className(this);
+    //n = n.startsWith('Immutable') ? (n = n.replace(/Immutable/g, '')) : 'Mutable' + n.replace(/Mutable/g, '');
+    let c = n.startsWith('Mutable') ? 31 : 32;
+    return `\x1b[1;${c}m${n}\x1b[1;34m ${p}\x1b[0m`;
   }
 
   [Symbol.toStringTag]() {
@@ -376,10 +380,10 @@ export class MutablePath extends Array {
   }
 
   split(pred) {
-    let i = 0;
-    let a = [],
-      b = [];
-    let n;
+    let i = 0,
+      a = [],
+      b = [],
+      n;
     if(typeof pred == 'number') {
       n = pred < 0 ? this.length + pred : pred;
       pred = (part, index) => index === n;
@@ -489,6 +493,10 @@ export class MutableXPath extends MutablePath {
     return MutableXPath;
   }
 
+  static [Symbol.hasInstance](instance) {
+    return ['MutableXPath', 'ImmutableXPath', 'XPath'].indexOf(Util.className(instance)) != -1;
+  }
+
   constructor(parts = [], absolute, root) {
     if(absolute && (parts.length == 0 || parts[0] !== '')) Array.prototype.unshift.call(parts, '');
 
@@ -513,22 +521,16 @@ export class MutableXPath extends MutablePath {
     let a = this.toArray();
     let l = a.length;
     if(start < 0) start = l + start;
-    if(start < 0) {
-      //end -= start;
-      start = 0;
-    }
+    if(start < 0) start = 0;
     if(start === undefined || isNaN(start)) start = 0;
     if(end === undefined || isNaN(end)) end = l;
     else if(end < 0) end = l + end;
     else if(end > l) end = l;
     if(start > 0) descendand = true;
-    //console.log('slice:', { start, end,a });
     a = super.slice(start, end);
     let prefix = [];
     if(descendand) a = a.unshift('/');
     else if(absolute) a = a.unshift('');
-    //console.log('slice:', /*[...a],*/ { descendand, absolute });
-    //console.log('slice:',  a);
     return a;
   }
 
@@ -540,19 +542,22 @@ export class MutableXPath extends MutablePath {
     s = ((this.descendand > 0 || this.absolute) && !s.startsWith('/') ? (this.descendand ? '//' : '/') : '') + s;
     return s;
   }
+
   toRegExp() {
     let s = this.toString();
     s = s.replace(/\/\//g, '/?(.*/|)(');
     s = s.replace(/(\[|\])/g, '\\$1');
-
     s = s.replace(/\//g, '[./]');
     s = s.replace(/['"`]/g, `['"\`]?`);
-    //s = s.replace(/^(\([^\)]*\))/g,  "$1?");
-    // console.log("s:",s);
     return new RegExp('' + s + ')([^/.][^/.]*|)$', 'gi');
   }
 }
 
 export const Path = Util.immutableClass(MutablePath);
+/*ImmutablePath[Symbol.hasInstance] = function(instance) {
+
+};*/
+export const ImmutablePath = Path;
 
 export const XPath = Util.immutableClass(MutableXPath);
+export const ImmutableXPath = XPath;

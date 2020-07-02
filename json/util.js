@@ -48,14 +48,34 @@ export const findXPath = (xpath, flat, { root, recursive = true, entries = false
   return entries ? r : new Map(r);
 };
 
-export function* XmlIterator(obj, filter = null, path = [], root) {
-  if(!root) root = obj;
-  //console.log("XmlIterate",{obj,filter,path,root})
-  if(!filter || filter(obj, path)) yield [obj, path];
-  if(obj.children && obj.children.length > 0) {
-    let a = obj.children;
-    let p = (path || []).concat(['children']);
-    for(let i = 0; i < a.length; i++) yield* XmlIterator(a[i], filter, p.concat([i]), root);
+export class Iterator {
+  [Symbol.iterator]() {
+    if(typeof this.next == 'function') return this;
+    if(this.gen !== undefined) return this.gen;
+  }
+}
+
+export class IteratorAdapter extends Iterator {
+  constructor(gen) {
+    super();
+    if(gen) Util.define(this, { gen });
+  }
+}
+
+export class XMLIterator extends IteratorAdapter {
+  constructor(...args) {
+    let gen = XMLIterator.iterate(...args);
+    super(gen);
+  }
+
+  static *iterate(node, f = null, path = [], root) {
+    if(!root) root = node;
+    if(!f || f(node, path)) yield [node, path];
+    if(node.children && node.children.length > 0) {
+      let a = node.children;
+      let p = (path || []).concat(['children']);
+      for(let i = 0; i < a.length; i++) yield* this.iterate(a[i], f, p.concat([i]), root);
+    }
   }
 }
 
@@ -143,3 +163,4 @@ Util.define(XMLObject.prototype, {
 });
 export const XmlObject = XMLObject;
 export const XmlAttr = XMLAttribute;
+export const XmlIterator = XMLIterator;

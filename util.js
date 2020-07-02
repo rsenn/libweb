@@ -2357,17 +2357,27 @@ Util.immutableClass = (orig, ...proto) => {
         }
   );
   let body = ` class ${imName} extends ${name} {
+    
     constructor(...args) { super(...args); if(new.target === ${imName}) return Object.freeze(this); }
   };
-  ${imName}.prototype = new ${name}();
+
   ${imName}.prototype.constructor = ${imName};
   ${imName}.prototype[Symbol.species] = ${imName};
+
+   /* ${imName}[Symbol.hasInstance] = function(instance) {
+         // console.log("name2:",n, instance,r);
+      const n = Util.className(instance);
+      const fn = Util.fnName(this);
+      const r =  ["${name}","Immutable${name}", "${imName}",fn].indexOf(n);
+      return r!=-1;
+    }; */
   return ${imName};`;
   // console.log('immutableClass', { initialProto},  (orig));
 
   for(let p of initialProto) p(orig);
 
   let ctor = new Function(name, body)(orig);
+
   return ctor;
 };
 
