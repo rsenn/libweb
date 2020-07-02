@@ -2,7 +2,6 @@ import Util from '../util.js';
 import { toXML } from './common.js';
 import { ImmutablePath } from '../json.js';
 
-
 export const ChildrenSym = Symbol('⊳');
 
 export class EagleReference {

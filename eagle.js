@@ -4,7 +4,7 @@ export { VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, 
 export { SchematicRenderer } from './eagle/schematicRenderer.js';
 export { EagleDocument } from './eagle/document.js';
 export { EagleInterface } from './eagle/common.js';
-export {  EagleReference, EagleRef } from './eagle/ref.js';
+export { EagleReference, EagleRef } from './eagle/ref.js';
 export { makeEagleNode, EagleNode } from './eagle/node.js';
 export { Renderer, renderDocument } from './eagle/renderer.js';
 export { EagleProject } from './eagle/project.js';

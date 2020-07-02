@@ -36,16 +36,6 @@ export class MutablePath extends Array {
   };
   static CHILDREN = Symbol('children');
 
-  static SymToString(a) {
-    if(typeof a == 'symbol' && a === this.CHILDREN) a = this.CHILDREN_STR; //'children';
-    return a;
-  }
-
-  static StringToSym(a) {
-    if(a === 'children') a = this.CHILDREN;
-    return a;
-  }
-
   static isChildren(a) {
     return a === 'children' || a === this.CHILDREN_STR || a === this.CHILDREN;
   }
@@ -143,12 +133,23 @@ export class MutablePath extends Array {
     return s;
   }
 
-  get [Symbol.species]() {
-    return Path;
+  static get [Symbol.species]() {
+    return ImmutablePath;
   }
 
+  getSpecies() {
+return this.constructor[Symbol.species] || this.constructor;
+  }
+/*
+  get [Symbol.species]() {
+    let ret = this.constructor;
+    if(ret[Symbol.species]) ret = ret[Symbol.species]();
+    return ret;
+  }*/
+
   clone() {
-    return new this.constructor(this, this.absolute);
+    const ctor = this.getSpecies();
+    return new ctor(this, this.absolute);
   }
 
   get size() {
@@ -163,7 +164,8 @@ export class MutablePath extends Array {
    */
   right(n = 1) {
     const [base, last] = this.split(-1);
-    return new this.constructor([...base, this.last + 1], this.absolute);
+    const ctor = this.getSpecies();
+    return new ctor([...base, this.last + 1], this.absolute);
   }
 
   /**
@@ -189,7 +191,6 @@ export class MutablePath extends Array {
    */
   up(n = 1) {
     return this.slice(0, this.length - n);
-    //    return new this.constructor(this.toArray().slice(0, this.length - n), this.absolute);
   }
 
   down(...args) {
@@ -208,10 +209,11 @@ export class MutablePath extends Array {
 
   diff(other) {
     let i;
+    const ctor = this.getSpecies();
     for(i = 0; i < this.length; i++) {
       if(this[i] != other[i]) return null;
     }
-    return new this.constructor(other.slice(i, other.length - i), this.absolute);
+    return new ctor(other.slice(i, other.length - i), this.absolute);
   }
 
   /* prettier-ignore */ get lastId() {return this.length - 1; }
@@ -309,10 +311,11 @@ export class MutablePath extends Array {
   }
 
   makeAbsolute(parent) {
+    const ctor = this.getSpecies();
     if(this.absolute) return this;
     let r = [...parent, ...this];
     if(r[0] !== '') r.unshift('');
-    return new this.constructor(r, parent.absolute);
+    return new ctor(r, parent.absolute);
   }
 
   xpath(obj) {
@@ -406,27 +409,36 @@ export class MutablePath extends Array {
    * @return     {Path}    { description_of_the_return_value }
    */
   slice(start = 0, end = this.length) {
+        const ctor = this.getSpecies();
+
     let a = this.toArray();
     if(start < 0) start = a.length + start;
     if(end < 0) end = a.length + end;
     a = Array.prototype.slice.call(a, start, end);
-    return new this.constructor(a, a[0] === '');
+    return new ctor(a, a[0] === '');
   }
 
   push(...args) {
-    return new (this.constructor[Symbol.species] || this.constructor)(this.toArray().concat(args), this.absolute);
+    const ctor = this.getSpecies();
+
+    return new ctor(this.toArray().concat(args), this.absolute);
   }
   pop(n = 1) {
     return this.slice(0, this.length - n);
   }
   unshift(...args) {
-    return new (this.constructor[Symbol.species] || this.constructor)(args.concat(this.toArray()), args[0] === '' ? true : false);
+    const ctor = this.getSpecies();
+    return new ctor(args.concat(this.toArray()), args[0] === '' ? true : false);
   }
   shift(n = 1) {
-    return new (this.constructor[Symbol.species] || this.constructor)(this.toArray().slice(n), this.absolute && n < 1);
+    const ctor = this.getSpecies();
+
+    return new ctor(this.toArray().slice(n), this.absolute && n < 1);
   }
   concat(a) {
-    return new (this.constructor[Symbol.species] || this.constructor)(this.toArray().concat(Array.from(a)), this.absolute);
+    const ctor = this.getSpecies();
+
+    return new ctor(this.toArray().concat(Array.from(a)), this.absolute);
   }
 
   /* reduce(fn, acc) {
