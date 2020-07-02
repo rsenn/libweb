@@ -138,9 +138,9 @@ export class MutablePath extends Array {
   }
 
   getSpecies() {
-return this.constructor[Symbol.species] || this.constructor;
+    return this.constructor[Symbol.species] || this.constructor;
   }
-/*
+  /*
   get [Symbol.species]() {
     let ret = this.constructor;
     if(ret[Symbol.species]) ret = ret[Symbol.species]();
@@ -409,8 +409,7 @@ return this.constructor[Symbol.species] || this.constructor;
    * @return     {Path}    { description_of_the_return_value }
    */
   slice(start = 0, end = this.length) {
-        const ctor = this.getSpecies();
-
+    const ctor = this.getSpecies();
     let a = this.toArray();
     if(start < 0) start = a.length + start;
     if(end < 0) end = a.length + end;
@@ -420,9 +419,9 @@ return this.constructor[Symbol.species] || this.constructor;
 
   push(...args) {
     const ctor = this.getSpecies();
-
     return new ctor(this.toArray().concat(args), this.absolute);
   }
+
   pop(n = 1) {
     return this.slice(0, this.length - n);
   }
