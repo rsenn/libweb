@@ -1,4 +1,4 @@
-import { EaglePath } from './locator.js';
+import { ImmutablePath } from '../json/path.js';
 //  import { EagleElement } from "./element.js";
 import Util from '../util.js';
 import deep from '../deep.js';
@@ -41,10 +41,10 @@ export const parseArgs = args => {
   let ret = { path: [] };
 
   while(args.length > 0) {
-    if(args[0] instanceof EaglePath) {
+    if(args[0] instanceof ImmutablePath) {
       ret.path = args.shift();
     } else if(args[0] instanceof Array) {
-      ret.path = new EaglePath(args.shift());
+      ret.path = new ImmutablePath(args.shift());
     } else if(typeof args[0] == 'function') {
       if(ret.predicate === undefined) ret.predicate = args.shift();
       else ret.transform = args.shift();
@@ -66,7 +66,7 @@ export const parseArgs = args => {
 };
 
 export const traverse = function*(obj, path = [], doc) {
-  if(!(path instanceof EaglePath)) path = new EaglePath(path);
+  if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
   yield [obj, path, doc];
   if(typeof obj == 'object') {
     if(Util.isArray(obj)) {
@@ -188,7 +188,7 @@ export class EagleInterface {
     let elem = this;
     //console.log("lookup:", {elem,xpath});
 
-    let ret = t(...[this, new EaglePath(xpath)]);
+    let ret = t(...[this, new ImmutablePath(xpath)]);
     //console.log("lookup:", {xpath,ret});
     return ret;
   }
@@ -243,7 +243,7 @@ export class EagleInterface {
   }
 
   xpath() {
-    let p = new EaglePath();
+    let p = new ImmutablePath();
     let o = this;
     do {
       p = o.ref.path.concat(p);
@@ -274,7 +274,7 @@ export class EagleInterface {
     let node = root;
     if(path.length > 0) node = deep.get(node, path);
     for(let [v, l] of deep.iterate(node, (v, p) => (predicate(v, p) ? -1 : p.length > 1 ? p[p.length - 2] == 'children' : true))) {
-      if(!(l instanceof EaglePath)) l = new EaglePath(l);
+      if(!(l instanceof ImmutablePath)) l = new ImmutablePath(l);
       if(typeof v == 'object' && v !== null && 'tagName' in v) if (predicate(v, l, owner)) yield t([v, l, owner]);
     }
   }

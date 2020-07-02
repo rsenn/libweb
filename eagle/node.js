@@ -1,9 +1,9 @@
-import { EagleRef, EagleReference } from './locator.js';
+import { EagleRef, EagleReference } from './ref.js';
 import Util from '../util.js';
 import deep from '../deep.js';
 import { lazyMembers } from '../lazyInitializer.js';
 import { trkl } from '../trkl.js';
-import { text, EagleInterface, concat, ansi } from './common.js';
+import { text, EagleInterface, concat } from './common.js';
 
 import { makeEagleNodeMap } from './nodeMap.js';
 //import { makeEagleNodeList } from './nodeList.js';

@@ -2,7 +2,7 @@ import Util from '../util.js';
 import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { makeEagleNodeList } from './nodeList.js';
-import { EagleReference, EagleRef, EaglePath } from './locator.js';
+import { EagleReference } from './ref.js';
 import { EagleInterface, Rotation } from './common.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList } from '../geom.js';
@@ -99,12 +99,12 @@ export class EagleElement extends EagleNode {
             };
           } else if(tagName == 'instance') {
             fn = value => {
-              const part = doc.parts[elem.attrMap.part]; // get(e => e.tagName == 'part' && e.attributes['name']);
+              const part = doc.find({ tagName: 'part', name: elem.attrMap.part }); // get(e => e.tagName == 'part' && e.attributes['name']);
 
               if(key == 'part') return part;
-              const library = elem.document.libraries[part.attrMap.library];
-              const deviceset = library.devicesets[part.attrMap.deviceset];
-              const gate = deviceset.gates[part.attrMap.gate];
+              const library = elem.document.find({ tagName: 'library', name: part.attrMap.library });
+              const deviceset = library.find({ tagName: 'deviceset', name: part.attrMap.deviceset });
+              const gate = deviceset.find({ tagName: 'gates', name: part.attrMap.gate });
               //console.log('relation ', { part, library, deviceset, gate });
               if(key == 'gate') return gate;
             };
@@ -150,7 +150,7 @@ export class EagleElement extends EagleNode {
       let { tagName } = this;
 
       const part = doc.find({ tagName: 'part', name: this.attributes.part }); //doc.parts[this.attributes.part];
-      console.log('part:', part);
+      //  console.log('part2:', part);
       if(!part.attributes) console.log('instance', this.raw, { doc, owner, tagName });
 
       const library = doc.find({ tagName: 'library', name: part.attributes.library });

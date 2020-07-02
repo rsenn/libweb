@@ -2,7 +2,9 @@ import tXml from '../tXml.js';
 import Util from '../util.js';
 import deepClone from '../clone.js';
 import deepDiff from '../deep-diff.js';
-import { EaglePath, EagleRef } from './locator.js';
+import { EagleRef } from './ref.js';
+import { ImmutablePath } from '../json/path.js';
+
 import { EagleNode } from './node.js';
 import { EagleElement } from './element.js';
 import { toXML } from './common.js';
@@ -99,7 +101,7 @@ export class EagleDocument extends EagleNode {
   }
 
   index(path, transform = arg => arg) {
-    if(!(path instanceof EaglePath)) path = new EaglePath(path);
+    if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
     return transform(path.apply(this));
   }
 

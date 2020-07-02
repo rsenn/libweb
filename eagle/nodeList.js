@@ -1,7 +1,6 @@
-import { EaglePath, EagleRef, EagleReference } from './locator.js';
+import { EagleRef } from './ref.js';
 import { makeEagleElement, EagleElement } from './element.js';
 import Util from '../util.js';
-import { toXML } from './common.js';
 export function EagleNodeList(owner, ref, raw) {
   if(Util.isObject(ref) && !('dereference' in ref)) ref = EagleRef(owner, ref);
   if(!raw) {

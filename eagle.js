@@ -4,10 +4,11 @@ export { VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, 
 export { SchematicRenderer } from './eagle/schematicRenderer.js';
 export { EagleDocument } from './eagle/document.js';
 export { EagleInterface } from './eagle/common.js';
-export { DereferenceError, EaglePath, EagleReference, EagleRef } from './eagle/locator.js';
+export { DereferenceError, EagleReference, EagleRef } from './eagle/ref.js';
 export { makeEagleNode, EagleNode } from './eagle/node.js';
 export { Renderer, renderDocument } from './eagle/renderer.js';
 export { EagleProject } from './eagle/project.js';
 export { EagleElement, makeEagleElement } from './eagle/element.js';
 export { EagleNodeMap, makeEagleNodeMap } from './eagle/nodeMap.js';
 export { EagleSVGRenderer } from './eagle/svgRenderer.js';
+export { ImmutablePath } from './json/path.js';
