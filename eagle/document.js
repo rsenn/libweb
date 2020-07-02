@@ -124,7 +124,6 @@ export class EagleDocument extends EagleNode {
         let { gate, part } = instance;
         let symbol = gate.symbol;
 
-    
         //console.log('symbol:', symbol);
         let geometries = {
           gate: gate.geometry(),

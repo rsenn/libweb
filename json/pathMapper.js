@@ -9,13 +9,12 @@ export class PathMapper {
 
   constructor(parser) {
     this.map = new WeakMap();
-    if (parser)
-      this.parser = parser;
+    if(parser) this.parser = parser;
   }
 
   at(path, parser = this.parser) {
-    if (typeof path == 'string' && path[0] == '/') path = parser(path);
-    if (!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
+    if(typeof path == 'string' && path[0] == '/') path = parser(path);
+    if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
     return path.apply(this.root, true);
   }
 
@@ -25,12 +24,12 @@ export class PathMapper {
   }
 
   set(obj, path) {
-    if (!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
-    if (path.length === 0) this.root = obj;
+    if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
+    if(path.length === 0) this.root = obj;
     this.map.set(obj, path);
     let properties = 'tagName' in obj ? ['children', 'attributes'] : Object.keys(obj);
 
-    for (let prop of properties) if (prop in obj && Util.isObject(obj[prop])) this.map.set(obj[prop], path.concat([prop]));
+    for(let prop of properties) if(prop in obj && Util.isObject(obj[prop])) this.map.set(obj[prop], path.concat([prop]));
   }
 
   get(obj) {
@@ -40,10 +39,10 @@ export class PathMapper {
 
   walk(obj, fn = path => path) {
     let path = this.get(obj);
-    if (path === null) return null;
+    if(path === null) return null;
     path = fn(path);
-    if (path === null) return null;
-    if (!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
+    if(path === null) return null;
+    if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
     return this.at(path);
   }
 

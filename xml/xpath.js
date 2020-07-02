@@ -12,8 +12,8 @@ export class MutableXPath extends MutablePath {
 
   static from(path, obj) {
     //  if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path, true);
-    console.log('path:', path);
-    console.log('obj:', obj);
+    //console.log('path:', path);
+    //console.log('obj:', obj);
 
     let o = obj,
       n,
@@ -25,12 +25,11 @@ export class MutableXPath extends MutablePath {
       i = 0,
       a = [...thisPath];
 
-    while(i < a.length && a[i] === '') i++;
-    console.log(i + ':', a.length);
+    //console.log('XPath from:',a);//    while(i < a.length && a[i] === '') i++;
 
     for(; i < a.length; i++) {
       let p = a[i];
-      console.log(i + ':', { a, p }, a.length);
+      //console.log(i + '/'+a.length+':',  p, o);
 
       //if(p == 'attributes') break;
       if(MutablePath.isChildren(p)) p = 'children';
@@ -57,7 +56,7 @@ export class MutableXPath extends MutablePath {
     }
 
     let r = new ImmutableXPath(s, this.absolute, obj);
-    console.log('xpath', thisPath.absolute, { a, r }, r + '');
+    //console.log('xpath', thisPath.absolute, { a, r }, r + '');
     return r;
   }
 
@@ -98,24 +97,34 @@ export class MutableXPath extends MutablePath {
     return a;
   }
 
+  static partToString(p) {
+    if(typeof p == 'object') {
+      let { tagName, ...attrs } = p;
+      return tagName + (Object.keys(attrs).length == 0 ? '' : Util.toString(attrs, { spacing: '', padding: '' }));
+    }
+    return MutablePath.partToString([p]);
+  }
+
   toString() {
     let a = super.slice();
-    let r = [].concat(a.filter(p => p != 'children'));
+    let r = [].concat(a /*.filter(p => p != 'children')*/).map((p, i, a) => MutableXPath.partToString(p));
     let s = Array.prototype.join.call(r, '/');
     s = s.replace(/,/g, '/').replace(/\/\[/g, '[');
     s = ((this.descendand > 0 || this.absolute) && !s.startsWith('/') ? (this.descendand ? '//' : '/') : '') + s;
     return s;
   }
 
-   toRegExp() {
+  toRegExp() {
     let s = this.toString();
-    s = s.replace(/\/\//g, '/?(.*/|)(');
+    s = s.replace(/\/\//g, '/?(.*/|)');
     s = s.replace(/(\[|\])/g, '\\$1');
     s = s.replace(/\//g, '[./]');
- s = s.replace(/[\'\"\`]/g, `[\'\"\`]`);
-    return new RegExp('' + s + ')([^/.][^/.]*|)$', 'gi');
+    s = s.replace(/['"`]/g, '[\'"`]');
+    s = '(' + s + ')([^/.][^/.]*|)$';
+    let re = new RegExp(s, 'gi');
+    // console.log("toRegExp",{s,re})
+    return re;
   }
-
 }
 
 export const parseXPath = s => {
