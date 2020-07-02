@@ -1,22 +1,24 @@
 import { ImmutablePath } from './path.js';
 import Util from '../util.js';
-import { ImmutableXPath, MutableXPath, XPath, findXPath, parseXPath } from '../xml/xpath.js';
+import { ImmutableXPath } from '../xml/xpath.js';
 
 export class PathMapper {
   map = null;
   root = null;
   parser = null;
 
-  constructor(parser) {
+  constructor(root, parser) {
     this.map = new WeakMap();
+    if(root) this.root = root;
     if(parser) this.parser = parser;
   }
 
-  at(path, parser = this.parser) {
+  /*at(path, parser = this.parser) {
     if(typeof path == 'string' && path[0] == '/') path = parser(path);
     if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
+
     return path.apply(this.root, true);
-  }
+  }*/
 
   xpath(obj) {
     let path = this.get(obj);
@@ -24,6 +26,7 @@ export class PathMapper {
   }
 
   set(obj, path) {
+    console.log(Util.className(this) + '.set(', obj, path, ')');
     if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
     if(path.length === 0) this.root = obj;
     this.map.set(obj, path);
@@ -33,8 +36,7 @@ export class PathMapper {
   }
 
   get(obj) {
-    let path = this.map.get(obj) || null;
-    return path;
+    return this.map.get(obj);
   }
 
   walk(obj, fn = path => path) {
@@ -61,4 +63,8 @@ export class PathMapper {
   previousSibling(obj) {
     return this.walk(obj, path => path.previousSibling);
   }
+
+  /*setFactory(fn) {
+    this.factory = (typeof(fn) == 'function') ? fn : null;
+  }*/
 }

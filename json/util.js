@@ -1,4 +1,3 @@
-import { Path } from './path.js';
 import Util from '../util.js';
 
 export const toXML = function(o, z = 10000, q = '"') {

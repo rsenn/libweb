@@ -802,7 +802,7 @@ Util.toString = (obj, opts = {}) => {
   }
   const { c = Util.coloring(color) } = opts;
 
-  const sep = multiline ? (space = false) => '\n' + indent + (space ? '  ' : '') : (space = false) => (space ? spacing : '');
+  const sep = multiline && depth > 0 ? (space = false) => '\n' + indent + (space ? '  ' : '') : (space = false) => (space ? spacing : '');
   if(Util.isArray(obj)) {
     let i,
       s = c.text(`[`, 1, 36);
