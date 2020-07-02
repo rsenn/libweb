@@ -1,39 +1,9 @@
 import Util from '../util.js';
-import { toXML, dump } from './common.js';
-import { ImmutablePath, MutablePath } from '../json.js';
+import { toXML } from './common.js';
+import { ImmutablePath } from '../json.js';
 
-export function DereferenceError(object, member, pos, locator) {
-  let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
-  //console.log('DereferenceError', { object, member, locator });
-  //console.log('DereferenceError', { ref });
-  let stack = Util.getCallerStack()
-    .filter(frame => null !== frame.getFileName())
-    .map(frame => {
-      let method = frame.getMethodName();
-      if(method) method = (frame.getTypeName() || Util.className(frame.getThis())) + '.' + method;
-      else method = frame.getFunctionName();
-
-      return `${('' + frame.getFileName()).replace(/.*plot-cv\//, '')}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
-    });
-
-  return Object.assign(
-    error,
-    { object, member, pos, locator },
-    {
-      message: `Error dereferencing ${Util.className(object)} @ ${locator.toString() /*map((part, i) => (i == pos ? '<<' + part + '>>' : part)).join(',')*/}\nxml: ${Util.abbreviate(toXML(locator.root))}\nno member '${Util.inspect(member)}' in ${Util.inspect(object, 2)} \n` + stack.join('\n'),
-      stack
-    }
-  );
-}
-
-DereferenceError.prototype.toString = function() {
-  const { message, object, member, pos, locator, stack } = this;
-  return `${message}\n${dump({ object, member, pos, locator, stack }, 2)}`;
-};
 
 export const ChildrenSym = Symbol('⊳');
-
-//export const EaglePath = ImmutablePath || Util.immutableClass(MutablePath);
 
 export class EagleReference {
   constructor(root, path) {
