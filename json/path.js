@@ -101,10 +101,10 @@ export class MutablePath extends Array {
 
           part = a.shift();
           let num = +part;
-          s += c('\u007c' ||'\u23d0'||'\u205e' ||'\u2e3d' ||' \u2504' || '\u2039', 30, 1); //this.CHILDREN_STR  ; //Path.CHILDREN_STR + ' ';
+          s += c('\u220a ' ||'\u23d0'||'\u205e' ||'\u2e3d' ||' \u2504' || '\u2039', 30, 1); //this.CHILDREN_STR  ; //Path.CHILDREN_STR + ' ';
 
           s += c(`${num}`, 36, 1);
-          s += c('\u007c' ||'\ufe32' ||'\u205e' ||'\u2e3d' ||'\u2504' || `\u203a`, 30, 1);
+         // s += c('\u007c' ||'\ufe32' ||'\u205e' ||'\u2e3d' ||'\u2504' || `\u203a`, 30, 1);
           s += `\x1b[1;34m`;
           //   s += num+'';
         } else {
