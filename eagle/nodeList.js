@@ -81,7 +81,7 @@ export function makeEagleNodeList(owner, ref, raw) {
         prop = +prop;
         return instance.at(prop);
       }
-      if(prop == 'length'  && instance.raw) {
+      if(prop == 'length' && instance.raw) {
         return instance.raw.length;
       }
       if(prop == 'raw') {
@@ -99,7 +99,7 @@ export function makeEagleNodeList(owner, ref, raw) {
         };
       if(prop == 'entries') return () => list.map((item, i) => [item.attributes.name, item]);
       if(typeof Array.prototype[prop] == 'function') return Array.prototype[prop].bind(instance);
-      if(list && (!is_symbol && /^([0-9]+|length)$/.test('' + prop)) || prop == Symbol.iterator || ['findIndex'].indexOf(prop) !== -1) {
+      if((list && !is_symbol && /^([0-9]+|length)$/.test('' + prop)) || prop == Symbol.iterator || ['findIndex'].indexOf(prop) !== -1) {
         if(prop in list) return list[prop];
       }
       return Reflect.get(instance, prop, receiver);

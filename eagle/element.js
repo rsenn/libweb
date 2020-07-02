@@ -149,15 +149,14 @@ export class EagleElement extends EagleNode {
     } else if(tagName == 'instance') {
       let { tagName } = this;
 
-            const part = doc.find({ tagName:'part', name:this.attributes.part }); //doc.parts[this.attributes.part];
-console.log("part:",part);
+      const part = doc.find({ tagName: 'part', name: this.attributes.part }); //doc.parts[this.attributes.part];
+      console.log('part:', part);
       if(!part.attributes) console.log('instance', this.raw, { doc, owner, tagName });
 
-      const library = doc.find({tagName:'library', name: part.attributes.library });
+      const library = doc.find({ tagName: 'library', name: part.attributes.library });
 
- 
-      const deviceset = library.find({tagName:'deviceset', name:part.attributes.deviceset });
-      const device = deviceset.find({tagName:'device', name:part.attributes.device});
+      const deviceset = library.find({ tagName: 'deviceset', name: part.attributes.deviceset });
+      const device = deviceset.find({ tagName: 'device', name: part.attributes.device });
 
       //   lazyProperty(this, 'deviceset', () => deviceset.gates [elem.attributes.gate]);
       lazyProperty(this, 'gate', () => deviceset.gates[elem.attributes.gate]);
