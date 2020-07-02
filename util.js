@@ -2584,7 +2584,7 @@ Object.assign(Util.is, {
 Util.assignGlobal = () => Util.weakAssign(Util.getGlobalObject(), Util);
 
 Util.weakMapper = (createFn, map = new WeakMap()) => {
-  return (obj, ...args) => {
+  let self = function(obj, ...args) {
     let ret = map.get(obj);
     if(!ret) {
       ret = createFn(obj, ...args);
@@ -2592,6 +2592,9 @@ Util.weakMapper = (createFn, map = new WeakMap()) => {
     }
     return ret;
   };
+  self.set = (k, v) => map.set(k, v);
+  self.get = k => map.get(k);
+  return self;
 };
 Util.merge = (...args) => args.reduce((acc, arg) => ({ ...acc, ...arg }), {});
 

@@ -282,7 +282,7 @@ export class MutablePath extends Array {
     return a.o;
   }
 
-  toString(sep = '/', childrenVar = 'CHILDREN_FN') {
+  toString(sep = '/', childrenVar = 'CHILDREN_') {
     let a = this.toArray();
     while(a.length > 0 && a[0] === '') a.shift();
     let n = a.length;

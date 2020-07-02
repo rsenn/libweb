@@ -9,6 +9,8 @@ export class TreeObserver extends ObservableMembrane {
 
   getType(value, path) {
     let type = null;
+    type = this.types.get(value);
+    if(type) return type;
     path = path || this.mapper.get(value);
     if(!Util.isObject(value)) return null;
     if(Util.isArray(value) || Path.isChildren([...path][path.length - 1])) type = 'NodeList';
@@ -93,14 +95,16 @@ export class TreeObserver extends ObservableMembrane {
     this.readOnly = !!readOnly;
   }
 
-  get(arg) {
+  types = new WeakMap();
+
+  get = Util.weakMapper((arg, p) => {
     let ret = this[this.readOnly ? 'getReadOnlyProxy' : 'getProxy'](arg);
     if(this.root === undefined) this.root = arg;
     else if(this.mapper.root && this.mapper.root != this.root) this.root = this.mapper.root;
     let type = 'Element';
-    ret.type = type;
+    this.types.set(ret, type);
     return ret;
-  }
+  });
 
   getPath(node) {
     return this.mapper.get(node) || this.mapper.get(this.unwrap(node));
