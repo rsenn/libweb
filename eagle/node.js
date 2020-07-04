@@ -202,7 +202,7 @@ export class EagleNode extends EagleInterface {
   }
 
   find(name, transform) {
-    //console.log('find', this, name + '');
+    console.log('find', this, name + '');
 
     let pred = EagleNode.makePredicate(name);
 

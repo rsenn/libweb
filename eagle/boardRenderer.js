@@ -84,7 +84,7 @@ export class BoardRenderer extends EagleSVGRenderer {
           parent
         );
 
-        //console.log('name:', name);
+        console.log('name:', name);
         if(name) {
           svg(
             'tspan',
@@ -121,8 +121,8 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(coll, parent, opts = {}) {
-    const { predicate = i => true, transform } = opts;
-    //console.log(`BoardRenderer.renderCollection`, { transform, pos, rot });
+    const { predicate = i => true, transform, pos, rot } = opts;
+    console.log(`BoardRenderer.renderCollection`, { transform, pos, rot });
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
@@ -157,14 +157,14 @@ export class BoardRenderer extends EagleSVGRenderer {
         return line;
       });
 
-      //console.log('Lines:', [...lines]);
+      console.log('Lines:', [...lines]);
 
       const path = LinesToPath(lines);
       const layer = layers[layerId];
       const width = widths[layerId];
 
-      //console.log("layerId:", layerId);
-      //console.log("layers:", layers);
+      console.log('layerId:', layerId);
+      console.log('layers:', layers);
       const color = this.getColor(layer.color);
 
       this.create(
@@ -187,6 +187,8 @@ export class BoardRenderer extends EagleSVGRenderer {
 
   renderElement(element, parent) {
     const { name, library, value, x, y, rot } = element;
+
+    console.log(`BoardRenderer.renderElement`, { name, library, value, x, y, rot });
 
     let transform = new TransformationList();
     let rotation = Rotation(rot);
@@ -217,6 +219,8 @@ export class BoardRenderer extends EagleSVGRenderer {
   renderSignal(signal, parent, options = {}) {
     let signalGroup = this.create('g', { id: `signal.${signal.name}`, className: `signal ${signal.name}` }, parent);
 
+    console.log(`BoardRenderer.renderSignal`, signal.name);
+
     return this.renderCollection(signal.children, signalGroup, options);
   }
 
@@ -234,6 +238,8 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     const { bounds, rect } = this;
 
+    console.log(`BoardRenderer.render`, { bounds, rect });
+
     //  this.renderLayers(parent);
 
     let transform = this.transform + '';
@@ -243,7 +249,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     let signalsGroup = this.create('g', { className: 'signals', strokeLinecap: 'round', transform }, parent);
     let elementsGroup = this.create('g', { className: 'elements', transform }, parent);
 
-    //console.log('bounds: ', bounds);
+    console.log('bounds: ', bounds);
 
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {

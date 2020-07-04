@@ -35,7 +35,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     //  let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-    //console.log(`SchematicRenderer.renderCollection`, { transform, pos, rot });
+    console.log(`SchematicRenderer.renderCollection`, { transform, pos, rot });
 
     const arr = [...collection];
 
@@ -55,7 +55,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-    //if(rot)    console.log(`SchematicRenderer.renderItem`, {labelText, pos ,transform,   rot });
+    if(rot) console.log(`SchematicRenderer.renderItem`, { labelText, pos, transform, rot });
 
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
@@ -153,14 +153,14 @@ export class SchematicRenderer extends EagleSVGRenderer {
   }
 
   renderNet(net, parent) {
-    //console.log(`${Util.className(this)}.renderNet`, { net, parent });
+    console.log(`${Util.className(this)}.renderNet`, { net, parent });
     let g = this.create('g', { className: `net.${net.name}` }, parent);
     for(let segment of net.children) this.renderCollection(segment.children, g, { labelText: net.name });
   }
 
   renderSheet(sheet, parent) {
     let instances = sheet.instances;
-    //console.log(`${Util.className(this)}.renderSheet`, { sheet, parent, instances });
+    console.log(`${Util.className(this)}.renderSheet`, { sheet, parent, instances });
 
     let netsGroup = this.create('g', { className: 'nets' }, parent);
     let instancesGroup = this.create('g', { className: 'instances' }, parent);
@@ -171,6 +171,8 @@ export class SchematicRenderer extends EagleSVGRenderer {
   }
 
   render(doc = this.doc, parent, props = {}, sheetNo = 0) {
+    console.log(`SchematicRenderer.render`, { sheetNo });
+
     let sheet = this.sheets[sheetNo];
     let bounds = sheet.getBounds();
     let rect = bounds.rect;
@@ -182,7 +184,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     rect.outset(1.27);
     rect.round(2.54);
 
-    //console.log('bounds:', rect);
+    console.log('bounds:', rect);
     parent = super.render(doc, parent, props);
 
     this.renderSheet(sheet, this.group);
@@ -202,7 +204,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
       rot = Rotation(rot);
       t = t.concat(rot);
     }
-    //console.log(`SchematicRenderer.renderPart`, { x, y, pos, rot, t });
+    console.log(`SchematicRenderer.renderPart`, { x, y, pos, rot, t });
     const g = this.create('g', { className: `part.${part.name}`, transform: t }, parent);
     if(!value) value = deviceset.name;
     opts = deviceset.uservalue == 'yes' || true ? { name, value } : { name, value: '' };
@@ -214,7 +216,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
   }
 
   renderInstances(parent, sheetNo = 0, b) {
-    //console.log('b:', b);
+    console.log('b:', b);
     let g = this.create(
       'g',
       {

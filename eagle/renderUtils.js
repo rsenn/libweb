@@ -64,7 +64,7 @@ export const CalculateArcRadius = (p1, p2, angle) => {
 
   if(2 + 2 * c == 0) {
     r = r2;
-    //console.log('CalculateArcRadius', { d, c, r2, r });
+    console.log('CalculateArcRadius', { d, c, r2, r });
   }
   if(isNaN(r)) throw new Error('Arc radius for angle: ' + angle);
 
@@ -153,7 +153,7 @@ export function MakeCoordTransformer(matrix) {
     let oldCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: obj[k] }), {});
     let newCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: Util.roundTo(coords[k], 0.254) }), {});
 
-    //console.log(`CoordTransform [${transformStr}]`, oldCoords, ' -> ', newCoords);
+    console.log(`CoordTransform [${transformStr}]`, oldCoords, ' -> ', newCoords);
     // Object.assign(obj, newCoords);
     return { ...newCoords };
   };

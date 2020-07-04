@@ -18,7 +18,7 @@ export class EagleSVGRenderer {
   transform = new TransformationList();
 
   constructor(doc, factory) {
-    //console.log(Util.className(this), Util.fnName(new.target));
+    console.log(Util.className(this), Util.fnName(new.target));
     if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
     let ctor = EagleSVGRenderer.rendererTypes[doc.type];
     Object.setPrototypeOf(this, ctor.prototype);
@@ -77,11 +77,11 @@ export class EagleSVGRenderer {
 
   getColor(color) {
     let c = this.palette[color] || /*this.colors[color] || */ 'rgb(165,165,165)';
-    //console.log('getColor', color, c);
+    console.log('getColor', color, c);
 
     /* if(c)
     Util.colorDump([c]);*/
-    //console.log(Util.getCallers());
+    console.log(Util.getCallers());
     return c;
   }
 
@@ -97,7 +97,7 @@ export class EagleSVGRenderer {
   }
 
   renderLayers(parent) {
-    //console.log(`${Util.className(this)}.renderLayers`);
+    console.log(`${Util.className(this)}.renderLayers`);
 
     // const layerGroup = this.create('g', { className: 'layers' }, parent);
     const layerList = [...this.doc.layers.list].sort((a, b) => a.number - b.number);
@@ -137,7 +137,7 @@ export class EagleSVGRenderer {
   renderItem(item, parent, opts = {}) {
     let { labelText, pos, rot } = opts;
 
-    //console.log(`EagleSVGRenderer.renderItem`, {  labelText, pos, rot });
+    console.log(`EagleSVGRenderer.renderItem`, { labelText, pos, rot });
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...attr }, parent);
@@ -228,20 +228,20 @@ export class EagleSVGRenderer {
         let { children = [], text: innerText, align, size, font, rot } = item;
         let text = innerText || labelText || children.join('\n');
         let { x, y } = coordFn(item);
-        //console.log("text", {text});
+        console.log('text', { text });
 
         if(text.startsWith('&gt;')) {
           const prop = text.slice(4).toLowerCase();
-          //console.log("text", {text, prop, opts});
+          console.log('text', { text, prop, opts });
           text = prop in opts ? opts[prop] : text;
         }
         if(text == '') break;
 
         const translation = new TransformationList(`translate(${x},${y})`);
 
-        //console.log("translation:", Util.className(translation));
+        console.log('translation:', Util.className(translation));
         const rotation = translation.concat(Rotation(rot));
-        //console.log("rotation:", Util.className(rotation));
+        console.log('rotation:', Util.className(rotation));
         let wholeTransform = transform.concat(Rotation(rot));
         let wholeAngle = ClampAngle(wholeTransform.decompose().rotate);
 
@@ -255,11 +255,11 @@ export class EagleSVGRenderer {
           // .rotate(Math.abs(wholeAngle % 180))
           .collapseAll();
 
-        //console.log(`wholeAngle ${text}`, wholeAngle);
+        console.log(`wholeAngle ${text}`, wholeAngle);
         /*console.log(`undoAngle ${text}`, undoAngle);
-        //console.log(`angle ${text}`, angle);*/
-        //console.log(`finalTransformation ${text}`, finalTransformation.toString());
-        //console.log(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);
+        console.log(`angle ${text}`, angle);*/
+        console.log(`finalTransformation ${text}`, finalTransformation.toString());
+        console.log(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);
 
         if(finalTransformation.rotation) {
           if(finalTransformation.rotation.angle < 0) finalTransformation.rotation.angle = Math.abs(finalTransformation.rotation.angle);
@@ -273,7 +273,11 @@ export class EagleSVGRenderer {
           .rotate((rotateAlignment * Math.PI) / 180)
           .round(0.5);
 
-        //console.log(`render alignment ${text}`, Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + '']), EagleSVGRenderer.alignmentAttrs(alignment, VERTICAL) );
+        console.log(
+          `render alignment ${text}`,
+          Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + '']),
+          EagleSVGRenderer.alignmentAttrs(alignment, VERTICAL)
+        );
 
         const e = svg(
           'text',
@@ -379,7 +383,7 @@ export class EagleSVGRenderer {
     this.rect = rect;
     this.bounds = new BBox().update(rect);
 
-    //console.log('bounds:', bounds.toString({ separator: ' ' }));
+    console.log('bounds:', this.bounds.toString({ separator: ' ' }));
 
     const { width, height } = new Size(bounds).toCSS('mm');
 
@@ -388,8 +392,8 @@ export class EagleSVGRenderer {
     this.transform.scale(1, -1);
 
     const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;
-    //console.log(bounds);
-    //console.log(bounds.clone(r => (r.y = 0)));
+    console.log(bounds);
+
     if(!parent)
       parent = this.create(
         'svg',

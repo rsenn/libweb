@@ -48,8 +48,8 @@ export function renderDocument(doc, container) {
     svg = container;
     container = container.parentElement;
   }
-  //console.log("renderer:", { container, svg });
-  //console.log('doc:', doc);
+  console.log('renderer:', { container, svg });
+  console.log('doc:', doc);
   const ctor = doc.type == 'sch' ? SchematicRenderer : BoardRenderer;
   const renderer = new ctor(doc, factory);
   let objects = [];
@@ -59,8 +59,8 @@ export function renderDocument(doc, container) {
   let randN = Util.randInt(0, 30000);
   rng = new Alea(1340);
   let bgColor = doc.type == 'sch' ? 'rgb(255,255,255)' : 'rgba(0,0,0,0.0)';
-  //console.log(`${Util.className(renderer)} palette=${renderer.palette}`);
-  //console.log(`doc type=${doc.type} path=${doc.path}`);
+  console.log(`${Util.className(renderer)} palette=${renderer.palette}`);
+  console.log(`doc type=${doc.type} path=${doc.path}`);
   renderer.colors = {};
   let first = svg.firstElementChild;
   if(!first || (first.tagName + '').toLowerCase() != 'defs') {
@@ -139,13 +139,13 @@ export function renderDocument(doc, container) {
     for(let layer of renderer.doc.layers.list) {
       const { color, number, name, active, fill, visible } = layer.attributes;
       if(active == 'no') continue;
-      //console.log("layer:,", layer.attributes);
+      console.log('layer:,', layer.attributes);
       insert([color, { number, name, color, active, fill, visible }]);
     }
     const rgba1 = renderer.palette.map((color, i) => RGBA.fromString(color));
     const cmap = (window.colormap = new ColorMap(renderer.palette));
-    //console.log('cmap:', cmap);
-    //console.log('cmap:', [...cmap.toScalar({ fmt: n => `0b${n.toString(2)}` })]);
+    console.log('cmap:', cmap);
+    console.log('cmap:', [...cmap.toScalar({ fmt: n => `0b${n.toString(2)}` })]);
     const layerNames = Util.unique([...eagle.getAll(e => e.tagName)].filter(e => e.layer).map(e => e.layer.name));
 
     Util.colorDump(rgba1, (c, n) => ('    ' + n).slice(-3) + '   ' + getLayersForColor(n).join(' '));
@@ -181,10 +181,10 @@ export function renderDocument(doc, container) {
   let gridObj = new Rect(gridRect).outset(1.27);
   sbox.outset(2.54 * 2.54);
   Object.assign(renderer, { sbox, obox, gbox, aspects });
-  //console.log("render", { sbox, obox, gbox, aspects });
+  console.log('render', { sbox, obox, gbox, aspects });
   let srect = new Rect(sbox);
-  //console.log('sbox:', srect.toString());
-  //console.log('obox:', obox.toString());
+  console.log('sbox:', srect.toString());
+  console.log('obox:', obox.toString());
 
   obox.outset(2.54 * 2.54);
   grid.parentElement.insertBefore(SVG.create('rect', { ...gridObj, fill: bgColor, transform: 'scale(2.54,2.54)' }), grid);
