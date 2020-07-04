@@ -148,10 +148,11 @@ export class MutableXPath extends MutablePath {
     let { absolute } = this;
     c = typeof c == 'function' ? c : (text, ...colors) => `\x1b[${colors.join(';')}m${text}\x1b[0m`;
     let s = MutableXPath.prototype.toString.call(this, '/', '', c);
-    let n = Util.className(this).replace(/Immutable/, "");
+    let n = Util.className(this).replace(/Immutable/, '');
     //if(absolute) s = '/' + s;
     s = s.split(/[\/]/g);
-    s = s      .filter(i => !MutablePath.isChildren(i))
+    s = s
+      .filter(i => !MutablePath.isChildren(i))
       .map(p => {
         const matches = /([^\[]*)(\[[^/]*\])?/.exec(p);
         let [tag, brack = ''] = [...matches].slice(1);
@@ -159,9 +160,9 @@ export class MutableXPath extends MutablePath {
         let bmatches = /(@)?([-_A-Za-z][-_A-Za-z0-9]*)([^'"]*)(['"][^'"]*['"])?/g.exec(brack);
         let [total, at, name, op, value] = bmatches || ['', '', '', ''];
         //      console.log('matches:', { tag, brack, /*bmatches,*/ /*total,*/ name, op, value });
-          if(total) {
-            p = c(tag, 1, 32) + c('[', 38, 5, 243);
-            p += c(at, 38, 5, 196) + c(name, 1, 33) + c(op, 1, 36) + c(value, 1, 35) + c(']', 38, 5, 243 /*1, 32*/);
+        if(total) {
+          p = c(tag, 1, 32) + c('[', 38, 5, 243);
+          p += c(at, 38, 5, 196) + c(name, 1, 33) + c(op, 1, 36) + c(value, 1, 35) + c(']', 38, 5, 243 /*1, 32*/);
         } else {
           p = c(p, 38, 5, 99 /*129 56*/);
         }
@@ -173,7 +174,7 @@ export class MutableXPath extends MutablePath {
         return acc;
       }, []);
     s = s.join(c('/', 38, 5, 51 /* 1, 36*/));
-    s = c(n, 1, ...(/Mutable/.test(n) ? [38,5,124  ] /*[1,32]*/ : [38,5,214   /*1,31*/])) + ' ' + s;
+    s = c(n, 1, ...(/Mutable/.test(n) ? [38, 5, 124] /*[1,32]*/ : [38, 5, 214 /*1,31*/])) + ' ' + s;
     //console.log(`MutableXPath.prototype[Symbol.for('nodejs.util.inspect.custom')] s=`, [...this]);
     console.log('inspect.custom', s);
     return s;
