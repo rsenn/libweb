@@ -128,7 +128,11 @@ export const LinesToPath = lines => {
 };
 
 export function MakeCoordTransformer(matrix) {
+  const transformStr = matrix + '';
+
   if(matrix && matrix.toMatrix) matrix = matrix.toMatrix();
+
+  if(matrix.isIdentity()) return obj => obj;
 
   //S if(matrix && matrix.clone) matrix = Object.freeze(matrix.clone());
 
@@ -153,8 +157,7 @@ export function MakeCoordTransformer(matrix) {
     let oldCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: obj[k] }), {});
     let newCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: Util.roundTo(coords[k], 0.254) }), {});
 
-    console.log(`CoordTransform [${transformStr}]`, oldCoords, ' -> ', newCoords);
-    // Object.assign(obj, newCoords);
+    //console.log(`CoordTransform [${transformStr}]`, oldCoords, ' -> ', newCoords);
     return { ...newCoords };
   };
 }

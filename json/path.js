@@ -12,12 +12,15 @@ export function DereferenceError(object, member, pos, locator) {
 
       return `${('' + frame.getFileName()).replace(/.*plot-cv\//, '')}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
     });
-
+  console.log('member:', member);
   return Object.assign(
     error,
     { object, member, pos, locator },
     {
-      message: `Error dereferencing ${Util.className(object)} @ ${locator.toString()}\nxml: ${Util.abbreviate(toXML(locator.root))}\nno member '${Util.inspect(member)}' in ${Util.inspect(object, 2)} \n` + stack.join('\n'),
+      message:
+        `Error dereferencing ${Util.className(object)} @ ${locator.toString()}
+xml: ${Util.abbreviate(toXML(locator.root))}
+no member '${Util.inspect(member, { colors: false })}' in ${Util.toString(object, { depth: 2, multiline: true, indent: '  ', colors: false })} \n` + stack.join('\n'),
       stack
     }
   );
@@ -25,20 +28,22 @@ export function DereferenceError(object, member, pos, locator) {
 
 DereferenceError.prototype.toString = function() {
   const { message, object, member, pos, locator, stack } = this;
-  return `${message}\n${Util.inspect({ object, member, pos, locator, stack }, 2)}`;
+  return `${message}\n${Util.inspect({ object, member, pos, locator, stack }, { depth: 2, colors: false })}`;
 };
 
 export const IsChildren = a => a === 'children' || a === MutablePath.CHILDREN_STR || a === MutablePath.CHILDREN;
 
+const CHILDREN_SPACE = ''; //'\u200a';
+
 export class MutablePath extends Array {
-  static CHILDREN_STR = '\u2208';
+  static CHILDREN_STR = '\u220a';
   static CHILDREN_FN = args => {
     //console.log("args",args);
     for(let i = 0; i < args.length; i++) args[i] = (args[i] + '').replace(/children/g, this.CHILDREN_STR);
     //  args[0] = args[0].replace(/children/g, "\u220d"); // args[0] = '[' + args[0] + ']';
     return '';
   };
-  static CHILDREN = Symbol('children');
+  static CHILDREN = Symbol.for('children');
 
   static isChildren(arg) {
     return IsChildren(arg);
@@ -65,15 +70,15 @@ export class MutablePath extends Array {
       //a = new ImmutablePath(a);
       a = a.reduce((acc, p) => {
         if(IsChildren(p)) {
-          acc.push('children');
+          acc.push(MutablePath.CHILDREN);
           return acc;
         } else if(!isNaN(+p)) {
-          if(!MutablePath.isChildren(acc[acc.length - 1])) acc.push('children');
+          if(!MutablePath.isChildren(acc[acc.length - 1])) acc.push(MutablePath.CHILDREN);
           acc.push(+p);
           return acc;
         } else if(typeof p == 'string') {
           if(/\[.*\]/.test(p + '')) {
-            acc = acc.concat(['children', p.substring(1, p.length - 0)]);
+            acc = acc.concat([MutablePath.CHILDREN, p.substring(1, p.length - 0)]);
             return acc;
           } else if(typeof p == 'string' && /^[A-Za-z]/.test(p)) {
             const idx = ['attributes', 'tagName', 'children'].indexOf(p);
@@ -98,7 +103,7 @@ export class MutablePath extends Array {
     if(absolute) if (a.length == 0 || a[0] !== '') a = ['', ...a];
 
     for(let i = 0; i < a.length; i++) {
-      let item = a[i] === '' ? '' : typeof a[i] == 'symbol' || isNaN(+a[i]) ? a[i] : +a[i];
+      let item = a[i] === '' ? '' : (typeof a[i] == 'symbol' || isNaN(+a[i])) ? a[i] : +a[i];
       //console.log(`i=${i} item=`, item);
       Array.prototype.push.call(this, /*IsChildren(a[i]) ? 'children' :*/ item);
     }
@@ -109,17 +114,29 @@ export class MutablePath extends Array {
     //console.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
   }
 
-  static partToString(a, sep = '/', childrenSym, c = (text, c = 33, b = 0) => `\x1b[${b};${c}m${text}\x1b[0m`) {
-    //console.log('partToString:', a, sep, childrenSym, c);
-
+  static partToString(a, sep = '/', childrenStr, c = (text, c = 33, b = 0) => `\x1b[${b};${c}m${text}\x1b[0m`) {
     if(a.length == 0) return null;
     let s = '';
     let part = a.shift();
-    let { tagName, ...partObj } = part;
-    let keys = Util.isObject(partObj) ? Object.keys(partObj) : [];
-    if(keys.length == 0) part = '/';
-
-    switch (typeof part) {
+    if(Util.isObject(part)) {
+      let { tagName, ...partObj } = part;
+      let keys = Object.keys(partObj);
+      if(keys.length == 0) part = tagName;
+    }
+    let type = typeof part;
+    switch (type) {
+      case 'symbol':
+      case 'string':
+        if(IsChildren(part)) {
+          let sym = childrenStr; //(typeof childrenSym == 'function' ? childrenSym(a) : childrenSym) || MutablePath.CHILDREN_STR;
+          s += c(sym, 33, 1);
+          s += c('', 1, 34);
+          break;
+        } else {
+          if(Util.isNumeric(part)) part = +part;
+          else s += `${part}`;
+          break;
+        }
       case 'object': {
         s += `[@`;
         let attrs = Object.entries(part.attributes || {}).map(([name, value]) => `${name}='${value}'`);
@@ -127,46 +144,22 @@ export class MutablePath extends Array {
         s += ']';
         break;
       }
-      case 'symbol':
-      case 'string':
-        if(IsChildren(part)) {
-          let sym = typeof childrenSym == 'function' ? childrenSym(a) : childrenSym;
-
-          part = a.shift();
-          s += c('\u220a\u200a', 35, 0);
-          s += c(part, 33, 1);
-          s += '';
-          s += `\x1b[1;34m`;
-        } else {
-          if(Util.isNumeric(part)) part = +part;
-          else s += `${part}`;
-        }
-        break;
       case 'number': {
         s += `${part}`;
         break;
       }
-      case 'symbol': {
-        break;
-      }
+   
     }
-    return s.split(/\//g);
+    return s;
   }
 
   static get [Symbol.species]() {
-    return MutablePath;
+  return MutablePath;
   }
 
   getSpecies() {
-    return this.constructor[Symbol.species] || this.constructor;
+    return this.constructor[Symbol.species];
   }
-
-  /*
-  get [Symbol.species]() {
-    let ret = this.constructor;
-    if(ret[Symbol.species]) ret = ret[Symbol.species]();
-    return ret;
-  }*/
 
   clone() {
     const ctor = this.getSpecies();
@@ -225,7 +218,7 @@ export class MutablePath extends Array {
    * @return     {Path}
    */
   nthChild(i) {
-    return this.down('children', i);
+    return this.down(MutablePath.CHILDREN, i);
   }
 
   diff(other) {
@@ -282,8 +275,10 @@ export class MutablePath extends Array {
       (a, i) => {
         if(a.o) {
           let r;
-          if(i === Path.CHILDREN || i == 'children') r = 'raw' in a.o ? a.o.raw.children : a.o.children;
-          else if(Util.isArray(a.o)) {
+          console.log("i:",i);
+          if(MutablePath.isChildren(i)) { 
+          i = 'children'; // i === MutablePath.CHILDREN || i == 'children') r = 'raw' in a.o ? a.o.raw.children : a.o.children;
+          } else if(Util.isArray(a.o)) {
             if(typeof i == 'object') {
               i = a.o.findIndex(child => Path.compare(child, i)); //ent.every(([prop, value]) => (prop in child ? child[prop] == value : child.attributes && prop in child.attributes ? child.attributes[prop] == value : false)));
               //  if(i == -1) i = Object.fromEntries(ent);
@@ -305,30 +300,29 @@ export class MutablePath extends Array {
     return a.o;
   }
 
-  toString(sep = '/', childrenVar = 'CHILDREN_ST') {
-    let a = this.toArray();
+  toString(sep = '.', childrenStr = MutablePath['CHILDREN_STR']+CHILDREN_SPACE) {
+           //     console.log("childrenStr:",`'${childrenStr}'`,childrenStr.codePointAt(1), Util.getCallers(0).toString());
 
+    let a = this.toArray();
     while(a.length > 0 && a[0] === '') a.shift();
     let n = a.length;
     let r = [];
     for(let i = 0; ; i++) {
-      let p = MutablePath.partToString(a, '/', MutablePath[childrenVar], text => text);
+      let p = MutablePath.partToString(a, '/', childrenStr, text => text);
       if(!p) break;
-      //console.log("toString p",p);
-      r = r.concat(p);
+      r = r.concat([p]);
     }
-    //console.log('toString r', r);
-    r = r.join('/').replace(/[/.]?\[/g, '[');
+    r = r.join(sep).replace(/[/.]?\[/g, '[');
     r = (this.absolute && r != '' && sep == '/' ? sep : '') + r;
-    return r.replace(/\//g, sep);
+    return r.replace(/\//g, sep).replace(new RegExp(childrenStr+"\\.",'g'), childrenStr+' ')
   }
-
+/*
   [Symbol.for('nodejs.util.inspect.custom')](...args) {
     return Util.className(this) + ' ' + this.toString('/', 'CHILDREN_STR');
-  }
+  }*/
 
   toSource(sep = ',') {
-    return `[${this.filter(item => item != 'children').join(sep)}]`;
+    return `[${this.filter(item => !MutablePath.isChildren(item)).join(sep)}]`;
   }
 
   get absolute() {
@@ -343,27 +337,30 @@ export class MutablePath extends Array {
     return new ctor(r, parent.absolute);
   }
 
-  [Symbol.for('nodejs.util.inspect.custom')](sep = '/', childrenVar = 'CHILDREN_STR', color = true) {
-    let p = MutablePath.prototype.toString.call(this, sep || '\u2571' || '\u29f8', childrenVar, text => text);
+  [Symbol.for('nodejs.util.inspect.custom')](sep = '/', childrenStr = '\u220a'+CHILDREN_SPACE, color = true) {
+
+    let p = MutablePath.prototype.toString.call(this, sep || '\u2571' || '\u29f8', childrenStr, text => text);
     let n = Util.className(this);
     //n = n.startsWith('Immutable') ? (n = n.replace(/Immutable/g, '')) : 'Mutable' + n.replace(/Mutable/g, '');
     let c = n.startsWith('Mutable') ? 31 : 32;
+
     return color ? `\x1b[1;${c}m${n}\x1b[1;34m ${p}\x1b[0m` : p;
   }
 
   [Symbol.toStringTag]() {
-    return MutablePath.prototype.toString.call('.' /*, 'CHILDREN_STR'*/);
+
+    return MutablePath.prototype.toString.call('.', '\u220a'+CHILDREN_SPACE);
   }
 
   existsIn(root) {
     let i,
       obj = root;
     for(i = 0; i + 1 < this.length; i++) {
-      const key = this[i];
+      const key = this.at(i);
       if(!(key in obj)) throw new Error(`No path ${this.join(',')} in ${typeof root}`);
-      obj = obj[this[i]];
+      obj = obj[key];
     }
-    return this[i] in obj;
+    return this.at(i) in obj;
   }
 
   split(pred) {
@@ -437,18 +434,29 @@ export class MutablePath extends Array {
     }*/
   map(fn) {
     let ret = [];
-    for(let i = 0; i < this.length; i++) ret.push(fn(this[i], i, this));
+    for(let i = 0; i < this.length; i++) {
+      let r = fn(this.at(i), i, this);
+      ret.push(r === 'children' ? MutablePath.CHILDREN : r);
+    }
     return ret;
   }
   filter(fn) {
     let ret = [];
-    for(let i = 0; i < this.length; i++) if(fn(this[i], i, this)) ret.push(this[i]);
+    for(let i = 0; i < this.length; i++) if(fn(this.at(i), i, this)) ret.push(this[i]);
     return ret;
+  }
+
+  at(i) {
+    const part = this[i];
+    return MutablePath.isChildren(part) ? 'children' :part;
   }
 
   offset(predicate = (p, i) => p === '' || p === '/') {
     let i = 0;
-    for(; i < this.length; i++) if(!predicate(this[i], i, this)) break;
+    for(; i < this.length; i++) {
+      const part = this.at(i);
+      if(!predicate(part, i, this)) break;
+    }
     return i;
   }
 

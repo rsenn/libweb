@@ -329,10 +329,10 @@ Rect.prototype.align = function(align_to, a = 0) {
   pC: return this;
 };
 
-Rect.prototype.round = function(precision = 0.001, digits) {
+Rect.prototype.round = function(precision = 0.001, digits, type = 'round') {
   let { x1, y1, x2, y2 } = this.toObject(true);
-  let a = new Point(x1, y1).round(precision, digits);
-  let b = new Point(x2, y2).round(precision, digits);
+  let a = new Point(x1, y1).round(precision, digits, type);
+  let b = new Point(x2, y2).round(precision, digits, type);
   this.x = a.x;
   this.y = a.y;
   this.width = b.x - this.x;

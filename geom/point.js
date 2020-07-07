@@ -157,10 +157,10 @@ Point.prototype.equals = function(other) {
   //console.log(`Point.equals ${this} ${other}`);
   return +this.x == +other.x && +this.y == +other.y;
 };
-Point.prototype.round = function(precision = 0.001, digits) {
+Point.prototype.round = function(precision = 0.001, digits, type = 'round') {
   let { x, y } = this;
-  this.x = Util.roundTo(x, precision, digits);
-  this.y = Util.roundTo(y, precision, digits);
+  this.x = Util.roundTo(x, precision, digits, type);
+  this.y = Util.roundTo(y, precision, digits, type);
   return this;
 };
 Point.prototype.sides = function() {

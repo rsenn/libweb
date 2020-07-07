@@ -1,4 +1,5 @@
 import Util from '../util.js';
+import { EagleElement } from './element.js';
 
 export function EagleNodeMap(list, key) {
   this.list = list;
@@ -20,7 +21,7 @@ Object.assign(EagleNodeMap.prototype, {
     if(raw) {
       const idx = raw.findIndex(item => item.attributes[key] == name);
       let value = raw[idx];
-      return raw[idx] ? owner.constructor.get(owner, ['children', idx], value) : null;
+      return raw[idx] ? EagleElement.get(owner, ref.down(idx), value) : null;
     }
   },
   set(name, value) {
@@ -78,7 +79,7 @@ export function makeEagleNodeMap(list, key = 'name') {
       if(typeof prop == 'number' || (typeof prop == 'string' && /^[0-9]+$/.test(prop))) {
         return instance.at(+prop);
       } else if(typeof prop == 'string') {
-        if(prop == 'ref' || prop == 'raw') return instance.list[prop];
+        if(prop == 'ref' || prop == 'raw' || prop == 'owner') return instance.list[prop];
         if(prop == 'instance') return instance;
         if(prop == 'length' || prop == 'size') return (instance.list.raw || instance.list).length;
         if(prop == 'entries') return instance.entries;

@@ -1,5 +1,5 @@
 import { Point, isPoint } from './point.js';
-import { Rect } from './rect.js';
+import { BBox } from './bbox.js';
 import Util from '../util.js';
 
 export function Line(x1, y1, x2, y2) {
@@ -277,12 +277,8 @@ Line.prototype.transform = function(m) {
   return this;
 };
 Line.prototype.bbox = function() {
-  return new Rect({
-    x1: this.x1 < this.x2 ? this.x1 : this.x2,
-    x2: this.x1 > this.x2 ? this.x1 : this.x2,
-    y1: this.y1 < this.y2 ? this.y1 : this.y2,
-    y2: this.y1 > this.y2 ? this.y1 : this.y2
-  });
+  const { x1, y1, x2, y2 } = this;
+  return new BBox(x1, y1, x2, y2);
 };
 
 Line.prototype.points = function() {

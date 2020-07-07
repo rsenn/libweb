@@ -1,4 +1,3 @@
-import { Rect } from '../geom/rect.js';
 import Util from '../util.js';
 
 export class BBox {
@@ -31,7 +30,7 @@ export class BBox {
   }
 
   update(arg, offset = 0.0, obj = null) {
-    console.log('BBox.update', { arg, offset, obj });
+    //console.log('BBox.update', { arg, offset, obj });
     if(Util.isArray(arg)) return this.updateList(arg, offset);
 
     if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset, name => (this.__objs[name] = obj || arg));
@@ -102,7 +101,22 @@ export class BBox {
     this.y2 = this.y1 + h;
   }
   get rect() {
-    return new Rect(this);
+    const { x1, y1, x2, y2 } = this;
+    return {
+      x: x1,
+      y: y1,
+      width: x2 - x1,
+      height: y2 - y1
+    };
+  }
+  toObject() {
+    const { x1, y1, x2, y2 } = this;
+    let obj = Object.create(null);
+    obj.x1 = x1;
+    obj.y1 = y1;
+    obj.x2 = x2;
+    obj.y2 = y2;
+    return obj;
   }
   toString() {
     return `${this.x1} ${this.y1} ${this.x2} ${this.y2}`;

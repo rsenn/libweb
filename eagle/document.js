@@ -3,12 +3,12 @@ import Util from '../util.js';
 import deepClone from '../clone.js';
 import deepDiff from '../deep-diff.js';
 import { EagleRef } from './ref.js';
-import { ImmutablePath } from '../json/path.js';
-
+import { toXML, ImmutablePath } from '../json.js';
 import { EagleNode } from './node.js';
 import { EagleElement } from './element.js';
-import { toXML } from './common.js';
 import { BBox, Rect, PointList } from '../geom.js';
+import { makeEagleNodeList } from './nodeList.js';
+import { lazyProperty } from '../lazyInitializer.js';
 
 export class EagleDocument extends EagleNode {
   static types = ['brd', 'sch', 'lbr'];
@@ -31,6 +31,8 @@ export class EagleDocument extends EagleNode {
     const orig = xml[0];
     Util.define(this, 'orig', orig);
     this.initCache(EagleElement);
+
+    lazyProperty(this, 'children', () => makeEagleNodeList(this, ['children'], this.raw.children));
   }
 
   get filename() {

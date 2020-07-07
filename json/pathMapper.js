@@ -12,21 +12,13 @@ export class PathMapper {
     if(root) this.root = root;
     if(parser) this.parser = parser;
   }
-
-  /*at(path, parser = this.parser) {
-    if(typeof path == 'string' && path[0] == '/') path = parser(path);
-    if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
-
-    return path.apply(this.root, true);
-  }*/
-
+/*
   xpath(obj) {
     let path = this.get(obj);
     return path ? ImmutableXPath.from(path, this.root) : null;
-  }
+  }*/
 
   set(obj, path) {
-    //console.log(Util.className(this) + '.set(', obj, path, ')');
     if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
     if(path.length === 0) this.root = obj;
     this.map.set(obj, path);

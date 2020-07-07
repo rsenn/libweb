@@ -68,9 +68,9 @@ export class MutableXPath extends MutablePath {
       parts = parseXPath(parts);
       //console.log('MutableXPath.constructor', ...parts.reduce((acc,p) => acc =  acc.concat(acc.length ? [",",p] : [p]), []), {absolute});
     }
-    super(parts, absolute, root);
+    super(parts, absolute);
 
-    this.root = root;
+    if(root !== undefined) Util.define(this, { root });
     return this;
   }
 
@@ -128,6 +128,10 @@ export class MutableXPath extends MutablePath {
     return MutablePath.partToString(p, sep, childrenSym, c);
   }
 
+  toArray() {
+    return [...this];
+  }
+
   toString(sep = '/', childrenVar = 'CHILDREN_STR', c = (text, c = 33, b = 0) => `\x1b[${b};${c}m${text}\x1b[0m`) {
     let a = Array.prototype.slice.call(this);
     a = a.map(p => (MutablePath.isChildren(p) && MutablePath[childrenVar]) || p);
@@ -176,7 +180,7 @@ export class MutableXPath extends MutablePath {
     s = s.join(c('/', 38, 5, 51 /* 1, 36*/));
     s = c(n, 1, ...(/Mutable/.test(n) ? [38, 5, 124] /*[1,32]*/ : [38, 5, 214 /*1,31*/])) + ' ' + s;
     //console.log(`MutableXPath.prototype[Symbol.for('nodejs.util.inspect.custom')] s=`, [...this]);
-    console.log('inspect.custom', s);
+    //console.log('inspect.custom', s);
     return s;
   }
 
@@ -234,8 +238,15 @@ export const parseXPath = s => {
           o.attributes[k] = v;
         }
       }
+      const isSpecialAttr = attr => ['children', 'attributes'].indexOf(attr) != -1;
       if(t != '') o.tagName = t;
-      p = ['children', 'attributes'].indexOf(t) != -1 ? t : o;
+      if(isSpecialAttr(t) || r[r.length - 1] == 'attributes') {
+        p = t;
+      } else {
+        /*  if(r[r.length - 1] != 'children') 
+        r.push('children');*/
+        p = o;
+      }
     }
     //console.log('p', r);
     r.push(p);

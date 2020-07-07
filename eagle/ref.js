@@ -1,6 +1,5 @@
 import Util from '../util.js';
-import { toXML } from './common.js';
-import { ImmutablePath } from '../json.js';
+import { toXML, ImmutablePath } from '../json.js';
 
 export const ChildrenSym = Symbol('⊳');
 
@@ -8,6 +7,8 @@ export class EagleReference {
   constructor(root, path) {
     this.path = path instanceof ImmutablePath ? path : new ImmutablePath(path);
     this.root = root;
+    //console.log('EagleReference', { root: Util.abbreviate(toXML(root), 10), path });
+
     if(!this.dereference(false)) {
       //console.log('dereference:', { path, root: Util.abbreviate(toXML(root), 10) });
       throw new Error(this.path.join(','));

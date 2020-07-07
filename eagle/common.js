@@ -1,5 +1,5 @@
-import { ImmutablePath } from '../json/path.js';
-import { ImmutableXPath } from '../xml/xpath.js';
+import { toXML, ImmutablePath } from '../json.js';
+import { ImmutableXPath } from '../xml.js';
 //  import { EagleElement } from "./element.js";
 import Util from '../util.js';
 import deep from '../deep.js';
@@ -78,30 +78,6 @@ export const traverse = function*(obj, path = [], doc) {
   }
 };
 
-export const toXML = function(o, z = 10000) {
-  if(typeof o == 'object' && o !== null && 'raw' in o) o = o.raw;
-  if(o instanceof Array) return o.map(toXML).join('\n');
-  else if(typeof o == 'string') return o;
-  else if(typeof o != 'object' || o.tagName === undefined) return '';
-  let { tagName, attributes, children, ...obj } = o;
-  let s = `<${tagName}`;
-  let attrs = attributes || obj;
-  for(let k in attrs) s += ` ${k}="${attrs[k]}"`;
-  const a = children && children.length !== undefined ? children : [];
-  if(a && a.length > 0) {
-    s += tagName[0] != '?' ? '>' : '?>';
-    const textChildren = typeof a[0] == 'string';
-    let nl = textChildren ? '' : tagName == 'text' && a.length == 1 ? '' : tagName[0] != '?' ? '\n  ' : '\n';
-    if(textChildren) s += a.join('\n') + `</${tagName}>`;
-    else {
-      for(let child of a) s += nl + toXML(child, z === true || z > 0 ? z : z - 1).replace(/>\n/g, '>' + nl);
-      if(tagName[0] != '?') s += `${nl.replace(/ /g, '')}</${tagName}>`;
-    }
-  } else if(Object.keys(attrs).length == 0) s += `></${tagName}>`;
-  else s += ' />';
-  return s.trim();
-};
-
 export const Rotation = (rot, f = 1) => {
   let mirror, angle;
   if(!rot) {
@@ -148,14 +124,14 @@ export class EagleInterface {
   constructor(owner) {
     Util.define(this, { owner });
 
-    Util.defineGetter(
+    /*    Util.defineGetter(
       this,
       'children',
       function() {
         return this.root.children;
       },
       true
-    );
+    );*/
   }
 
   *findAll(...args) {
@@ -184,13 +160,20 @@ export class EagleInterface {
   }
 
   lookup(xpath, t = (o, p, v) => [o, p]) {
+    const { tagName, owner, raw, document } = this;
     if(typeof xpath == 'string') xpath = xpath.split(/\//g);
-    xpath = xpath.reduce((acc, p) => [...acc, 'children', typeof p == 'string' ? { tagName: p } : p], []);
-    let elem = this;
-    //console.log("lookup:", {elem,xpath});
 
-    let ret = t(...[this, new ImmutablePath(xpath)]);
-    //console.log("lookup:", {xpath,ret});
+    if(!(xpath instanceof ImmutableXPath)) xpath = new ImmutableXPath(xpath);
+
+    //console.log('lookup:', xpath);
+
+    let path = new ImmutablePath(xpath.toArray().reduce((acc, p) => [...acc, 'children', p], []));
+    let value = path.apply(raw);
+
+    path = this.ref.path.concat(path);
+    //console.log('lookup:', tagName||raw, { document, path, value});
+
+    let ret = t(document, path, value);
     return ret;
   }
 
@@ -244,15 +227,15 @@ export class EagleInterface {
   }
 
   xpath() {
-    let p = new ImmutablePath();
+    /* let p = new ImmutablePath();
     let o = this;
     do {
       p = o.ref.path.concat(p);
       if(!o.owner || o.xml != undefined) break;
       o = o.owner;
     } while(o.ref);
-    let d = o;
-    let x = ImmutableXPath.from(p, d);
+    let d = o;*/
+    let x = ImmutableXPath.from(this.path, this.owner);
     return x;
   }
 
@@ -319,6 +302,6 @@ export class EagleInterface {
   }
 
   toXML(depth = Number.MAX_SAFE_INTEGER) {
-    return toXML(this.ref.dereference(), depth);
+    return toXML(this.raw, depth);
   }
 }

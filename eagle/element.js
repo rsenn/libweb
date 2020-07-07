@@ -22,7 +22,7 @@ export class EagleElement extends EagleNode {
     return inst;
   }
 
-  get [Symbol.species]() {
+  static get [Symbol.species]() {
     return EagleElement;
   }
 
@@ -81,9 +81,9 @@ export class EagleElement extends EagleNode {
                 this.handlers.device(names.device);
               }
             } else {
-              const library = this.document.find({ tagName: 'library', name: this.attributes.library });
-              const deviceset = library.find({ tagName: 'deviceset', name: this.attrMap.deviceset });
-              const device = deviceset.find({ tagName: 'device', name: this.attrMap.device });
+              const library = doc.libraries[this.attributes.library];
+              const deviceset = library.devicesets[this.attributes.deviceset];
+              const device = deviceset.devices[this.attributes.device];
               return device;
             }
           };
@@ -97,19 +97,26 @@ export class EagleElement extends EagleNode {
               const library = doc.libraries[libName]; //(e => e.tagName == 'library' && e.attributes['name'] == libName);
               return library.packages[pkgName]; //({ tagName: 'package', name: pkgName });
             };
+          } else if(tagName == 'part') {
+            fn = value => {
+              const library = doc.libraries[this.attributes.library];
+              if(key == 'library') return library;
+              const deviceset = library.devicesets[this.attributes.deviceset];
+              if(key == 'deviceset') return deviceset;
+              if(key == 'device') return deviceset.devices[this.attributes.device];
+            };
           } else if(tagName == 'instance') {
             fn = value => {
-              const part = doc.find({ tagName: 'part', name: elem.attrMap.part }); // get(e => e.tagName == 'part' && e.attributes['name']);
+              const part = doc.parts[elem.attributes.part]; // get(e => e.tagName == 'part' && e.attributes['name']);
 
               if(key == 'part') return part;
-              const library = elem.document.find({ tagName: 'library', name: part.attrMap.library });
-              const deviceset = library.find({ tagName: 'deviceset', name: part.attrMap.deviceset });
-              const gate = deviceset.find({ tagName: 'gates', name: part.attrMap.gate });
+              const library = doc.libraries[part.attributes.library];
+              const deviceset = library.devicesets[part.attributes.deviceset];
               //console.log('relation ', { part, library, deviceset, gate });
-              if(key == 'gate') return gate;
+              if(key == 'gate') return deviceset.gates[part.attributes.gate];
             };
-          } else if(key + 's' in this.document) {
-            fn = () => this.document[key + 's'][elem.attrMap[key] + ''];
+          } else if(key + 's' in doc) {
+            fn = () => doc[key + 's'][elem.attrMap[key] + ''];
           } else {
             let id = key == 'layer' ? 'number' : 'name';
             fn = () => {
@@ -129,7 +136,7 @@ export class EagleElement extends EagleNode {
       }
     }
     let childList = null;
-    lazyProperty(this, 'children', () => makeEagleNodeList(elem, ['children'], children));
+    lazyProperty(this, 'children', () => makeEagleNodeList(doc, this.ref.down('children') /*[...this.path, 'children']*/, this.raw.children));
 
     /*    trkl.bind(this, 'children', value => {
       if(value === undefined) {
@@ -144,27 +151,20 @@ export class EagleElement extends EagleNode {
       //console.log('this.ref', this.ref);*/
       let library = this.elementChain().library || EagleElement.get(this.owner, path.up(8));
 
-      lazyProperty(this, 'symbol', () => library.symbols[elem.attributes.symbol] /*library.find({ tagName: 'symbol', name: this.attributes.symbol })*/);
+      lazyProperty(this, 'symbol', () => library.symbols[elem.attributes.symbol]);
     } else if(tagName == 'instance') {
       let { tagName } = this;
-
-      const part = doc.find({ tagName: 'part', name: this.attributes.part }); //doc.parts[this.attributes.part];
-      //console.log('part2:', part);
+      const part = doc.parts[this.attributes.part];
       if(!part.attributes) console.log('instance', this.raw, { doc, owner, tagName });
-
-      const library = doc.find({ tagName: 'library', name: part.attributes.library });
-
-      const deviceset = library.find({ tagName: 'deviceset', name: part.attributes.deviceset });
-      const device = deviceset.find({ tagName: 'device', name: part.attributes.device });
-
-      //   lazyProperty(this, 'deviceset', () => deviceset.gates [elem.attributes.gate]);
+      const library = doc.libraries[part.attributes.library];
+      const deviceset = library.devicesets[part.attributes.deviceset];
+      const device = deviceset.devices[part.attributes.device];
       lazyProperty(this, 'gate', () => deviceset.gates[elem.attributes.gate]);
-
       Util.defineGetter(this, 'symbol', () => this.gate.symbol);
     } else if(tagName == 'device') {
       lazyProperty(this, 'package', () => {
         const library = this.parentNode.elementChain().library;
-        let pkg = library.find(e => e.tagName == 'package' && e.attributes.name == this.attributes.package);
+        let pkg = library.packages[this.attributes.package];
         return pkg;
       });
     }
@@ -255,15 +255,15 @@ export class EagleElement extends EagleNode {
       t = t.concat(Rotation(rot));
 
       let b = symbol.getBounds(e => e.tagName != 'text');
-      let p = b.rect.toPoints();
+      let p = new Rect(b.rect).toPoints();
       let m = t.toMatrix();
       p = new PointList([...m.transform_points(p)]);
       bb.update(p.bbox());
     } else if(this.tagName == 'sheet') {
-      //console.log('this', this, this.tagName);
-      /* for(let instance of this['instances'].children) {
+      for(let instance of this.instances.list) {
+        //console.log('instance', instance);
         bb.update(instance.getBounds(), 0, instance);
-      }*/
+      }
     } else if(['package', 'signal', 'polygon', 'symbol'].indexOf(this.tagName) != -1) {
       for(let child of this.children) bb.update(child.getBounds());
     } else if(pos) {
@@ -300,7 +300,7 @@ export class EagleElement extends EagleNode {
   }
 
   static isRelation(name) {
-    let relationNames = ['class', 'element', 'gate', 'layer', 'library', 'package', 'pad', 'part', 'pin', 'symbol'];
+    let relationNames = ['class', 'element', 'gate', 'layer', 'library', 'package', 'pad', 'part', 'pin', 'symbol', 'deviceset', 'device'];
     return relationNames.indexOf(name) != -1;
   }
 

@@ -9,6 +9,7 @@ const formatAnnotatedObject = function(subject, o) {
   if(subject && subject.toSource !== undefined) return subject.toSource();
   if(subject instanceof Date) return `new Date('${new Date().toISOString()}')`;
   if(typeof subject == 'string') return `'${subject}'`;
+  if(typeof subject == 'number') return subject;
   if(subject != null && subject['y2'] !== undefined) return `rect[${spacing}${subject['x']}${separator}${subject['y']} | ${subject['x2']}${separator}${subject['y2']} (${subject['w']}x${subject['h']}) ]`;
   if(Util.isObject(subject) && 'map' in subject && typeof subject.map == 'function') return `[${nl}${subject.map(i => formatAnnotatedObject(i, opts)).join(separator + nl)}]`;
   if(typeof subject === 'string' || subject instanceof String) return `'${subject}'`;
@@ -47,7 +48,7 @@ const formatAnnotatedObject = function(subject, o) {
     nl = opts.newline + i;
     j = separator + (opts.newline || spacing) + i;
   }
-  let ret = '{' + opts.newline + r.map(arr => padding(arr[0]) + arr[0] + ':' + spacing + arr[1]).join(j) + opts.newline + spacing + '}';
+  let ret = '{' + opts.newline + r.map(arr => padding(arr[0]) + arr[0] + ':' + spacing + arr[1]).join(j) + opts.newline + i + '}';
   return ret;
 };
 
@@ -361,7 +362,7 @@ Util.define = (obj, ...args) => {
       let decl = Object.getOwnPropertyDescriptors(arg);
 
       for(let prop in decl) {
-        if(!(prop in obj)) decl[prop] = { ...decl[prop], enumerable: false /*,configurable: true, writeable: true*/ };
+        if(!Object.getOwnPropertyDescriptor(obj, prop)) decl[prop] = { ...decl[prop], enumerable: false /*,configurable: true, writeable: true*/ };
         else delete decl[prop];
       }
 
@@ -793,14 +794,14 @@ Util.injectProps = function(options) {
   }
 }*/
 Util.toString = (obj, opts = {}) => {
-  const { quote = '"', multiline = false, indent = '', color = true, stringColor = [1, 36], spacing = '', padding = '', separator = ',', colon = ':', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
+  const { quote = '"', multiline = false, indent = '', colors = true, stringColor = [1, 36], spacing = '', padding = '', separator = ',', colon = ':', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
 
   if(depth < 0) {
     if(Util.isArray(obj)) return `[...${obj.length}...]`;
     if(Util.isObject(obj)) return `{ ..${Object.keys(obj).length}.. }`;
     return '' + obj;
   }
-  const { c = Util.coloring(color) } = opts;
+  const { c = Util.coloring(colors) } = opts;
 
   const sep = multiline && depth > 0 ? (space = false) => '\n' + indent + (space ? '  ' : '') : (space = false) => (space ? spacing : '');
   if(Util.isArray(obj)) {
@@ -1695,12 +1696,13 @@ Util.numberParts = (num, base) => {
   while(num < 1) (num *= base), exp--;
   return { sign: sgn, mantissa: num, exponent: exp };
 };
-Util.roundTo = function(value, prec, digits) {
-  if(prec == 1) return Math.round(value);
+Util.roundTo = function(value, prec, digits, type = 'round') {
+  const fn = Math[type];
+  if(prec == 1) return fn(value);
   /*  const decimals = Math.log10(prec);
   const digits = Math.ceil(-decimals);
   console.log('digits:', digits);*/
-  let ret = Math.round(value / prec) * prec;
+  let ret = fn(value / prec) * prec;
 
   if(typeof digits == 'number') ret = +ret.toFixed(digits);
   return ret;
@@ -1730,7 +1732,16 @@ Util.isArray = function(obj) {
 Util.equals = function(a, b) {
   if(Util.isArray(a) && Util.isArray(b)) {
     return a.length == b.length && a.every((e, i) => b[i] === e);
+  } else if(Util.isObject(a) && Util.isObject(b)) {
+    const size_a = Util.size(a);
+
+    if(size_a != Util.size(b)) return false;
+
+    for(let k in a) if(!Util.equals(a[k], b[k])) return false;
+
+    return true;
   }
+  return a == b;
 };
 /*
 Util.isObject = function(obj) {
@@ -2057,7 +2068,7 @@ Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER, pred = () =
   let stack = Util.getCallerStack(start + 1);
   let ret = [];
   let i = 0;
-  while(i < num && stack[i]) {
+  while(i < num && stack[i] !== undefined) {
     try {
       let frame = Util.getCaller(i, stack);
       if(pred(frame)) {
@@ -2067,6 +2078,12 @@ Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER, pred = () =
     } catch(err) {}
     i++;
   }
+  ret.toString = function() {
+    return this.map(frame => frame.toString()).join("\n");
+  };
+   ret[Symbol.toStringTag] = function() {
+        return this.toString();
+      };
   return ret;
 };
 Util.rotateLeft = function(x, n) {
@@ -2646,5 +2663,10 @@ Util.proxyObject = (root, handler) => {
 
   return node([]);
 };
+Util.parseXML = xmlStr =>
+  Util.tryCatch(
+    () => new DOMParser(),
+    parser => parser.parseFromString(xmlStr, 'application/xml')
+  );
 
 export default Util;

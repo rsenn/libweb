@@ -493,6 +493,10 @@ export class TransformationList extends Array {
     return this.map(t => t.toString(t.type.startsWith('scale') ? '' : t.type.startsWith('rotate') ? rUnit : tUnit)).join(' ');
   }
 
+  [Symbol.toStringTag]() {
+    return this.toString();
+  }
+
   toSource() {
     let s = Util.colorText('new ', 1, 31) + Util.colorText(Util.className(this), 1, 33) + Util.colorText('([', 1, 36);
 

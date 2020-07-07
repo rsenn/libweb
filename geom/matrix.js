@@ -45,7 +45,13 @@ Object.assign(Matrix.prototype, Array.prototype);
 Matrix.prototype.splice = Array.prototype.splice;
 Matrix.prototype.slice = Array.prototype.slice;
 */
-Matrix.prototype[Symbol.species] = Matrix;
+
+Object.defineProperty(Matrix, Symbol.species, {
+  get: function() {
+    return Matrix;
+  }
+});
+
 Matrix.prototype[Symbol.toStringTag] = function() {
   return Matrix.prototype.toString.apply(this, arguments);
 };

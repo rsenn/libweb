@@ -65,11 +65,12 @@ export class EagleNode extends EagleInterface {
   }
 
   get raw() {
+    const { owner, ref } = this;
+    // console.log(`${Util.className(this)}.raw`,  {owner},ref);
     if(this.xml && this.xml[0]) return this.xml[0];
-    const { ref, owner, root, path } = this;
-    let r = ref.path.apply(root, true);
+    let r = ref.path.apply(owner, true);
     if(!r) {
-      r = ref.path.apply(root) || ref.path.apply(owner);
+      r = ref.path.apply(ref.root) || ref.path.apply(owner);
     }
     return r;
   }
@@ -202,7 +203,9 @@ export class EagleNode extends EagleInterface {
   }
 
   find(name, transform) {
-    console.log('find', this, name + '');
+    //    console.log('find', this, name, Util.getCallers(0));
+
+    //throw new Error("find");
 
     let pred = EagleNode.makePredicate(name);
 
@@ -253,17 +256,17 @@ export class EagleNode extends EagleInterface {
     const { ref, path, root, raw } = this;
     let doc = this.getDocument();
     //console.log('parentNode', path + '', doc);
-    return this[Symbol.species].get(doc, ref.up(2));
+    return this.constructor[Symbol.species].get(doc, ref.up(2));
   }
 
   get firstChild() {
     const ref = this.ref.firstChild;
-    return ref ? new this[Symbol.species](this, ref) : null;
+    return ref ? new this.constructor[Symbol.species](this, ref) : null;
   }
 
   get lastChild() {
     const ref = this.ref.lastChild;
-    return ref ? new this[Symbol.species](this, ref) : null;
+    return ref ? new this.constructor[Symbol.species](this, ref) : null;
   }
 
   [Symbol.toStringTag]() {

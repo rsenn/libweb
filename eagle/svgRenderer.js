@@ -5,7 +5,7 @@ import { EagleElement } from './element.js';
 import { Util } from '../util.js';
 import { Size } from '../dom.js';
 import { Rotation } from './common.js';
-import { VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes } from './renderUtils.js';
+import { VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
 
 export class EagleSVGRenderer {
   static rendererTypes = {};
@@ -77,11 +77,10 @@ export class EagleSVGRenderer {
 
   getColor(color) {
     let c = this.palette[color] || /*this.colors[color] || */ 'rgb(165,165,165)';
-    console.log('getColor', color, c);
+    //console.log('getColor', color, c);
 
     /* if(c)
     Util.colorDump([c]);*/
-    console.log(Util.getCallers());
     return c;
   }
 
@@ -135,15 +134,18 @@ export class EagleSVGRenderer {
   }
 
   renderItem(item, parent, opts = {}) {
-    let { labelText, pos, rot } = opts;
+    let { labelText, transform = new TransformationList() } = opts;
 
-    console.log(`EagleSVGRenderer.renderItem`, { labelText, pos, rot });
+    //console.log(`EagleSVGRenderer.renderItem`, opts);
+
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...attr }, parent);
 
-    let transform = new TransformationList();
-    let coordFn = pos
+    let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
+
+    //let transform = new TransformationList();
+    /*let coordFn = pos
       ? coords => ({
           x: coords.x + pos.x,
           x1: coords.x1 + pos.x,
@@ -152,13 +154,13 @@ export class EagleSVGRenderer {
           y1: coords.y1 + pos.y,
           y2: coords.y2 + pos.y
         })
-      : i => i;
+      : i => i;*/
 
-    if(pos) {
+    /* if(pos) {
       transform.translate(-pos.x, -pos.y);
       if(rot) transform.rotate(-rot.angle);
       transform.translate(pos.x, pos.y);
-    }
+    }*/
     //  let transformation = (opts.transformation || new TransformationList()).slice();
 
     switch (item.tagName) {
@@ -228,11 +230,11 @@ export class EagleSVGRenderer {
         let { children = [], text: innerText, align, size, font, rot } = item;
         let text = innerText || labelText || children.join('\n');
         let { x, y } = coordFn(item);
-        console.log('text', { text });
+        //console.log('text', { text });
 
         if(text.startsWith('&gt;')) {
           const prop = text.slice(4).toLowerCase();
-          console.log('text', { text, prop, opts });
+          //console.log('text', { text, prop, opts });
           text = prop in opts ? opts[prop] : text;
         }
         if(text == '') break;
@@ -375,7 +377,7 @@ export class EagleSVGRenderer {
     doc = doc || this.doc;
 
     let bounds = doc.getBounds();
-    let rect = bounds.rect;
+    let rect = new Rect(bounds.rect);
 
     rect.outset(1.27);
     rect.round(2.54, 6);
