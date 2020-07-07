@@ -4,7 +4,7 @@ import { Rect } from '../geom/rect.js';
 import { ColorMap } from '../draw/colorMap.js';
 import Alea from '../alea.js';
 import { Util } from '../util.js';
-import { RGBA } from '../dom/rgba.js';
+import { RGBA } from '../color/rgba.js';
 import { Size } from '../dom.js';
 import { SchematicRenderer } from './schematicRenderer.js';
 import { BoardRenderer } from './boardRenderer.js';

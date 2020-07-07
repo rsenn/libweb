@@ -1,5 +1,5 @@
 import { Util } from '../util.js';
-import { RGBA } from '../dom/rgba.js';
+import { RGBA } from '../color/rgba.js';
 import { HSLA } from '../dom/hsla.js';
 
 export function ColorMap(...args) {

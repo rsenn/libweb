@@ -8,17 +8,20 @@ export function EagleNodeList(owner, ref, raw) {
     raw = ref.dereference();
   }
   let species = Util.getConstructor(owner);
-  Util.define(this, { ref, owner, raw, [Symbol.species]: species });
+  Util.define(this, { ref, owner, raw /*, [Symbol.species]: species*/ });
 }
-
+/*
 Object.defineProperties(EagleNodeList.prototype, {
   ref: { writable: true, configurable: true, enumerable: false, value: null },
   owner: { writable: true, configurable: true, enumerable: false, value: null },
   raw: { writable: true, configurable: true, enumerable: false, value: null }
-});
+});*/
+
 Object.assign(EagleNodeList.prototype, {
   at(pos) {
     const { owner, ref, raw } = this;
+
+    if(pos < 0) pos += raw.length;
 
     //console.log(`EagleNodeList.at(${pos})`, { owner,  ref, raw });
     if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner, [...ref.path, pos], raw[pos]);
@@ -79,8 +82,9 @@ export function makeEagleNodeList(owner, ref, raw) {
 
       //console.log("EagleNodeList get", {target, prop });
 
-      if(typeof prop == 'number' || (typeof prop == 'string' && /^[0-9]+$/.test(prop))) {
+      if(typeof prop == 'number' || (typeof prop == 'string' && /^-?[0-9]+$/.test(prop))) {
         prop = +prop;
+
         return instance.at(prop);
       }
       if(prop == 'length' && instance.raw) {
@@ -108,7 +112,7 @@ export function makeEagleNodeList(owner, ref, raw) {
     },
     getPrototypeOf(target) {
       return EagleNodeList.prototype;
-      return Reflect.getPrototypeOf(instance);
+      // return Reflect.getPrototypeOf(instance);
     }
   });
 }

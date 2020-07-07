@@ -88,6 +88,8 @@ export class EagleElement extends EagleNode {
             }
           };
           trkl.bind(this, key, fn);
+        } else if(tagName == 'layer' && key == 'color') {
+
         } else if(EagleElement.isRelation(key) || ['package', 'library', 'layer'].indexOf(key) != -1) {
           let fn;
           if(key == 'package') {
@@ -259,11 +261,12 @@ export class EagleElement extends EagleNode {
       let m = t.toMatrix();
       p = new PointList([...m.transform_points(p)]);
       bb.update(p.bbox());
-    } else if(this.tagName == 'sheet') {
-      for(let instance of this.instances.list) {
-        //console.log('instance', instance);
-        bb.update(instance.getBounds(), 0, instance);
-      }
+    } else if(this.tagName == 'sheet' || this.tagName == 'board') {
+      const plain = this.find('plain');
+      let list = [...plain.getAll(e => e.tagName == 'wire' && e.attributes.layer == '47')];
+      if(list.length <= 0) list = this.instances.list;
+      //console.log(`${this.tagName}.getBounds`, plain,list);
+      for(let instance of list) bb.update(instance.getBounds(), 0, instance);
     } else if(['package', 'signal', 'polygon', 'symbol'].indexOf(this.tagName) != -1) {
       for(let child of this.children) bb.update(child.getBounds());
     } else if(pos) {

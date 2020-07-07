@@ -16,6 +16,11 @@ export const concat = coloring.concat.bind(coloring); //? (text, ...color) => (c
 
 export const dingbatCode = digit => (digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1));
 
+export  const Palette = {
+  board: (m = (r,g,b) => [r,g,b]) => [[255,255,255], [75,75,165], [75,165,75], [75,165,165], [165,75,75], [165,75,165], [165,165,75], [175,175,175], [75,75,255], [75,255,75], [75,255,255], [255,75,75], [255,75,255], [255,255,75], [75,75,75], [165,165,165]].map(c => m(...c)),
+  schematic:  (m = (r,g,b) => [r,g,b]) => [[255,255,255], [75,75,165], [75,165,75], [75,165,165], [165,75,75], [165,75,165], [165,165,75], [175,175,175], [75,75,255], [75,255,75], [75,255,255], [255,75,75], [255,75,255], [255,255,75], [75,75,75], [165,165,165]].map(c => m(...c))
+};
+
 export const dump = (o, depth = 2, breakLength = 400) => {
   const isElement = o => Util.isObject(o) && ['EagleElement', 'EagleNode', 'EagleDocument'].indexOf(Util.className(o)) != -1;
   let s;
@@ -235,7 +240,9 @@ export class EagleInterface {
       o = o.owner;
     } while(o.ref);
     let d = o;*/
-    let x = ImmutableXPath.from(this.path, this.owner);
+    const { ref, owner } = this;
+    console.log('EagleInterface.xpath', { ref, owner });
+    let x = ImmutableXPath.from(ref.path, owner.raw);
     return x;
   }
 

@@ -145,6 +145,11 @@ export class EagleDocument extends EagleNode {
       }
     }
 
+    if(this.type == 'brd') {
+      const board = this.lookup(['eagle', 'drawing', 'board']);
+      return board.getBounds();
+    }
+
     if(this.elements) {
       for(let element of this.elements.list) {
         let bbrect = element.getBounds();

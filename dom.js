@@ -6,7 +6,7 @@ import { Size, isSize } from './geom/size.js';
 import { Line, isLine } from './geom/line.js';
 import { Rect, isRect } from './geom/rect.js';
 import { PointList, Polyline } from './geom/pointList.js';
-import { RGBA, isRGBA } from './dom/rgba.js';
+import { RGBA, isRGBA } from './color/rgba.js';
 import { HSLA, isHSLA } from './dom/hsla.js';
 import { Matrix, isMatrix } from './geom/matrix.js';
 import { BBox } from './geom/bbox.js';

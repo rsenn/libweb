@@ -3,9 +3,9 @@ import { Rect } from '../geom/rect.js';
 import { Line } from '../geom/line.js';
 import { TransformationList } from '../geom/transformation.js';
 import { Util } from '../util.js';
-import { RGBA } from '../dom/rgba.js';
+import { RGBA } from '../color/rgba.js';
 import { HSLA } from '../dom/hsla.js';
-import { Rotation } from './common.js';
+import { Rotation, Palette } from './common.js';
 import { LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 
@@ -17,7 +17,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     point: 0
   };
 
-  static palette = ['rgb(255,255,255)', 'rgb(75,75,165)', 'rgb(75,165,75)', 'rgb(75,165,165)', 'rgb(165,75,75)', 'rgb(165,75,165)', 'rgb(165,165,75)', 'rgb(175,175,175)', 'rgb(75,75,255)', 'rgb(75,255,75)', 'rgb(75,255,255)', 'rgb(255,75,75)', 'rgb(255,75,255)', 'rgb(255,255,75)', 'rgb(75,75,75)', 'rgb(165,165,165)'];
+  static palette = Palette.schematic((r,g,b) => `rgb(${r},${g},${b})`);
 
   constructor(doc, factory) {
     super(doc, factory);

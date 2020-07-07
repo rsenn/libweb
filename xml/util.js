@@ -101,6 +101,6 @@ Util.define(XMLObject.prototype, {
     return this.toString();
   }
 });
-  export const XmlObject = XMLObject;
-  export const XmlAttr = XMLAttribute;
-  export const XmlIterator = XMLIterator;
+export const XmlObject = XMLObject;
+export const XmlAttr = XMLAttribute;
+export const XmlIterator = XMLIterator;

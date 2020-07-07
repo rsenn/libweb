@@ -12,7 +12,7 @@ export class PathMapper {
     if(root) this.root = root;
     if(parser) this.parser = parser;
   }
-/*
+  /*
   xpath(obj) {
     let path = this.get(obj);
     return path ? ImmutableXPath.from(path, this.root) : null;

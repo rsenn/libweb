@@ -2079,11 +2079,11 @@ Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER, pred = () =
     i++;
   }
   ret.toString = function() {
-    return this.map(frame => frame.toString()).join("\n");
+    return this.map(frame => frame.toString()).join('\n');
   };
-   ret[Symbol.toStringTag] = function() {
-        return this.toString();
-      };
+  ret[Symbol.toStringTag] = function() {
+    return this.toString();
+  };
   return ret;
 };
 Util.rotateLeft = function(x, n) {
@@ -2381,7 +2381,8 @@ Util.immutableClass = (orig, ...proto) => {
   };
 
   ${imName}.prototype.constructor = ${imName};
-  ${imName}.prototype[Symbol.species] = ${imName};
+
+  //${imName}[Symbol.species] = ${imName};
 
    /* ${imName}[Symbol.hasInstance] = function(instance) {
          // console.log("name2:",n, instance,r);
@@ -2396,6 +2397,11 @@ Util.immutableClass = (orig, ...proto) => {
   for(let p of initialProto) p(orig);
 
   let ctor = new Function(name, body)(orig);
+
+  //ctor[Symbol.species] = ctor;
+  Util.defineGetter(ctor, Symbol.species, function() {
+    return ctor;
+  });
 
   return ctor;
 };
