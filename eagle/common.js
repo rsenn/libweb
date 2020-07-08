@@ -277,7 +277,7 @@ export class EagleInterface {
     } while(o.ref);
     let d = o;*/
     const { ref, owner } = this;
-    console.log('EagleInterface.xpath', { ref, owner });
+    //console.log('EagleInterface.xpath', { ref, owner });
     let x = ImmutableXPath.from(ref.path, owner.raw);
     return x;
   }

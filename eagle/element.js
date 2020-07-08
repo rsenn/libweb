@@ -53,7 +53,9 @@ export class EagleElement extends EagleNode {
     if(raw === null || typeof raw != 'object') throw new Error('ref: ' + this.ref.inspect() + ' entity: ' + EagleNode.prototype.inspect.call(this));
     let { tagName, attributes, children = [] } = raw;
     this.tagName = tagName;
-    this.attrMap = {};
+
+    Util.define(this, 'attrMap', {});
+
     let doc = this.getDocument();
     let elem = this;
 
@@ -316,9 +318,10 @@ export class EagleElement extends EagleNode {
   }
 
   geometry() {
-    const { attributes } = this.raw;
-    const keys = Object.keys(attributes);
-    const makeGetterSetter = k => v => (v === undefined ? this[k] : (this[k] = v));
+    const { raw } = this;
+    const keys = Object.keys(raw.attributes);
+    const makeGetterSetter = k => v => (v === undefined ? +raw.attributes[k] : (raw.attributes[k] = v + ''));
+
     if(['x1', 'y1', 'x2', 'y2'].every(prop => keys.includes(prop))) {
       return Line.bind(this, null, makeGetterSetter);
     } else if(['x', 'y'].every(prop => keys.includes(prop))) {

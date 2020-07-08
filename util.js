@@ -2621,8 +2621,8 @@ Util.bindProperties = (proxy, target, props, gen) => {
         };
       },
       {
-        __getter_setter__: { value: gen, enumerable: false },
-        __bound_target__: { value: target, enumerable: false }
+        __getter_setter__: { get: () => gen, enumerable: false },
+        __bound_target__: { get: () => target, enumerable: false }
       }
     )
   );

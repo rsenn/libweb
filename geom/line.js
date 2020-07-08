@@ -191,6 +191,9 @@ Line.prototype.isVertical = function() {
   return Line.prototype.getVector.call(this).x === 0;
 };
 
+Line.prototype.isNull = function() {
+  return this.x1 == 0 && this.y1 == 0 && this.x2 == 0 && this.y2 == 0;
+};
 Line.prototype.equations = function() {
   let intercept = {
     y: Line.prototype.yIntercept.call(this),
@@ -285,6 +288,14 @@ Line.prototype.bbox = function() {
   const { x1, y1, x2, y2 } = this;
   return new BBox(x1, y1, x2, y2);
 };
+Line.prototype.add = function(other) {
+  const { x1, y1, x2, y2 } = Line(...arguments);
+  this.x1 += x1;
+  this.y1 += y1;
+  this.x2 += x2;
+  this.y2 += y2;
+  return this;
+};
 
 Line.prototype.points = function() {
   const { a, b } = this;
@@ -321,12 +332,12 @@ Line.prototype.clone = function() {
   return new Line(x1, y1, x2, y2);
 };
 
-Line.prototype.round = function(precision = 0.001) {
+Line.prototype.round = function(precision = 0.001, digits) {
   let { x1, y1, x2, y2 } = this;
-  this.a.x = Util.roundTo(x1, precision);
-  this.a.y = Util.roundTo(y1, precision);
-  this.b.x = Util.roundTo(x2, precision);
-  this.b.y = Util.roundTo(y2, precision);
+  this.a.x = Util.roundTo(x1, precision, digits);
+  this.a.y = Util.roundTo(y1, precision, digits);
+  this.b.x = Util.roundTo(x2, precision, digits);
+  this.b.y = Util.roundTo(y2, precision, digits);
   return this;
 };
 
@@ -393,8 +404,7 @@ Util.defineInspect(Line.prototype, 'x1', 'y1', 'x2', 'y2');
 Line.bind = (o, p, gen) => {
   const [x1, y1, x2, y2] = p || ['x1', 'y1', 'x2', 'y2'];
   if(!gen) gen = k => v => (v === undefined ? o[k] : (o[k] = v));
-  let a = Point.bind(o, [x1, y1], gen);
-  let b = Point.bind(o, [x2, y2], gen);
-  let proxy = new Line(a, b);
-  return proxy;
+
+  let proxy = { a: Point.bind(o, [x1, y1], gen), b: Point.bind(o, [x2, y2], gen) };
+  return Object.setPrototypeOf(proxy, Line.prototype);
 };

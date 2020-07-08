@@ -93,7 +93,7 @@ export class EagleDocument extends EagleNode {
   }
 
   toString() {
-    let xml = toXML(this.root /*dereference()*/);
+    let xml = toXML(this.raw);
     //console.log("xml:", toXML(this.root, 7));
     return xml; //.map(e => toXML(e)).join("\n") + "\n";
   }

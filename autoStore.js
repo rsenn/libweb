@@ -1,9 +1,13 @@
+import Util from './util.js';
+
 export const makeLocalStorage = () => {
-  if(global.window && window.localStorage)
+  let w = Util.tryCatch(() => window);
+
+  if(w && w.localStorage)
     return {
-      get: name => JSON.parse(window.localStorage.getItem(name)),
-      set: (name, data) => window.localStorage.setItem(name, JSON.toString(data)),
-      remove: name => window.localStorage.removeItem(name),
+      get: name => JSON.parse(w.localStorage.getItem(name)),
+      set: (name, data) => w.localStorage.setItem(name, JSON.stringify(data)),
+      remove: name => w.localStorage.removeItem(name),
       keys: () => {
         let i = 0,
           key,
@@ -61,8 +65,10 @@ export const makeDummyStorage = () => ({
 });
 
 export function getLocalStorage() {
+  let w = Util.tryCatch(() => global.window);
+
   if(getLocalStorage.store === undefined) {
-    getLocalStorage.store = global.window && window.localStorage ? makeLocalStorage() : makeDummyStorage();
+    getLocalStorage.store = w && w.localStorage ? makeLocalStorage() : makeDummyStorage();
   }
   return getLocalStorage.store;
 }

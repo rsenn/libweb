@@ -31,7 +31,7 @@ export class MutableXPath extends MutablePath {
     }
     // if(absolute) s.push('');
 
-    console.log(Util.fnName(this) + '.from', { path, obj });
+    //console.log(Util.fnName(this) + '.from', { path, obj });
 
     for(; i < a.length; i++) {
       let p = a[i];

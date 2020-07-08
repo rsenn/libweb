@@ -243,6 +243,9 @@ Point.prototype.toCSS = function(precision = 0.001) {
 Point.prototype.toFixed = function(digits) {
   return new Point(+this.x.toFixed(digits), +this.y.toFixed(digits));
 };
+Point.prototype.isNull = function() {
+  return this.x == 0 && this.y == 0;
+};
 Point.prototype.inside = function(rect) {
   return this.x >= rect.x && this.x < rect.x + rect.width && this.y >= rect.y && this.y < rect.y + rect.height;
 };
