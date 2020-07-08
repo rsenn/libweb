@@ -585,7 +585,7 @@ Util.toMap = function(hash = {}, fn) {
   else gen = Object.entries(hash);
 
   m = new Map(gen);
-  /*  
+  /*
   if(m instanceof Array) m[Symbol.iterator] = m.entries;*/
   try {
     //if(m.toObject === undefined) Util.extendMap();
@@ -699,16 +699,17 @@ Util.sum = function(arr) {
   }
 );*/
 Util.fnName = function(f, parent) {
-  if(f !== undefined && f.name !== undefined) return f.name;
-  const s = f.toSource ? f.toSource() : `${f}`;
-  const matches = /([A-Za-z_][0-9A-Za-z_]*)\w*[(\]]/.exec(s);
-  if(matches) return matches[1];
-  if(parent !== undefined) {
-    for(let key in parent) {
-      if(parent[key] === f) return key;
+  if(typeof f == 'function') {
+    if(f.name !== undefined) return f.name;
+    const s = typeof f.toSource == 'function' ? f.toSource() : f + '';
+    const matches = /([A-Za-z_][0-9A-Za-z_]*)\w*[(\]]/.exec(s);
+    if(matches) return matches[1];
+    if(parent !== undefined) {
+      for(let key in parent) {
+        if(parent[key] === f) return key;
+      }
     }
   }
-  return undefined;
 };
 Util.keys = obj => {
   if(Util.isObject(obj)) {
@@ -1527,21 +1528,26 @@ Util.isIterable = obj => {
 };
 Util.isNativeFunction = x => typeof x == 'function' && /\[(native\ code|[^\n]*)\]/.test(x + '');
 Util.isConstructor = x => {
-  let ret;
-  const handler = {
-    construct() {
-      return handler;
+  if(x !== undefined) {
+    let ret,
+      members = [];
+    const handler = {
+      construct(target, args) {
+        return Object.create(target.prototype);
+      }
+    };
+    try {
+      ret = new new Proxy(x, handler)();
+    } catch(e) {
+      ret = false;
     }
-  }; //Must return ANY object, so reuse one
-  try {
-    ret = new new Proxy(x, handler)();
-  } catch(e) {
-    ret = false;
+    let proto = (x && x.prototype) || Object.getPrototypeOf(ret);
+    members = Util.getMemberNames(proto).filter(m => m !== 'constructor');
+    //console.log('members:', !!ret, members, Util.fnName(x));
+    return !!ret && members.length > 0;
   }
-  let members = Util.getMemberNames(x.prototype, 1, 0);
-  //  console.log("ret:",ret, ret instanceof x);
-  return !!ret && members.length > 0;
 };
+
 Util.filter = function(a, pred) {
   if(Util.isGenerator(a))
     return (function*() {
@@ -1891,13 +1897,16 @@ Util.pushUnique = function(arr) {
   });
   return arr;
 };
-Util.iterateMembers = function*(obj, predicate = (name, depth, obj) => true, depth = 0) {
+Util.iterateMembers = function*(obj, predicate = (name, depth, obj, proto) => true, depth = 0) {
   let names = [];
   let pred = Util.predicate(predicate);
-  for(let name in obj) if(pred(name, depth, obj)) yield name;
-  for(let name of Object.getOwnPropertyNames(obj)) if(pred(name, depth, obj)) yield name;
-  for(let symbol of Object.getOwnPropertySymbols(obj)) if(pred(symbol, depth, obj)) yield symbol;
   const proto = Object.getPrototypeOf(obj);
+
+  for(let name in obj) if(pred(name, depth, obj)) yield name;
+  for(let name of Object.getOwnPropertyNames(obj)) {
+    if(pred(name, depth, obj)) yield name;
+  }
+  for(let symbol of Object.getOwnPropertySymbols(obj)) if(pred(symbol, depth, obj)) yield symbol;
   if(proto) yield* Util.iterateMembers(proto, predicate, depth + 1);
 };
 
@@ -1909,10 +1918,11 @@ Util.members = Util.curry((pred, obj) => Util.unique([...Util.iterateMembers(obj
 Util.memberNameFilter = (depth = 1, start = 0) =>
   Util.and(
     (m, l, o) => start <= l && l < depth + start,
-    (m, l, o) => typeof m != 'string' || ['caller', 'callee', 'constructor', 'arguments'].indexOf(m) == -1
+    (m, l, o) => typeof m != 'string' || ['caller', 'callee', 'constructor', 'arguments'].indexOf(m) == -1,
+    (name, depth, obj, proto) => obj != Object.prototype
   );
 
-Util.getMemberNames = (obj, depth = 1, start = 0) => Util.members(Util.memberNameFilter(depth, start))(obj);
+Util.getMemberNames = (obj, depth = Number.Infinity, start = 0) => Util.members(Util.memberNameFilter(depth, start))(obj);
 
 Util.objectReducer = (filterFn, accFn = (a, m, o) => ({ ...a, [m]: o[m] }), accu = {}) => (obj, ...args) =>
   Util.members(filterFn(...args), obj).reduce(
@@ -1985,6 +1995,25 @@ Util.weakAssign = function(obj) {
   });
   return obj;
 };
+/*Util.getErrorStack = function(position = 2) {
+  let stack=[];
+  let error;
+    Error.stackTraceLimit = 100;
+     const oldPrepareStackTrace = Error.prepareStackTrace;
+  Error.prepareStackTrace = (_, stack) => stack;
+ try {
+
+  throw new Error('my error');
+
+ } catch(e) {
+  console.log("e.stack",[...e.stack]);
+  stack = e.stack;
+ }
+ Error.prepareStackTrace = oldPrepareStackTrace;
+
+ return stack;
+}*/
+
 Util.getCallerStack = function(position = 2) {
   Error.stackTraceLimit = 100;
   if(position >= Error.stackTraceLimit) {
@@ -1992,9 +2021,39 @@ Util.getCallerStack = function(position = 2) {
   }
   const oldPrepareStackTrace = Error.prepareStackTrace;
   Error.prepareStackTrace = (_, stack) => stack;
-  const stack = new Error().stack;
-  Error.prepareStackTrace = oldPrepareStackTrace;
-  return stack !== null && typeof stack === 'object' ? stack.slice(position) : null;
+  let stack = new Error().stack;
+  stack = stack.slice(position);
+  stack.forEach(frame => {
+    Util.define(frame, 'toString', function() {
+      const { position } = this;
+      let s = position;
+      if(this.getMethodName()) s = this.getMethodName() + ' ' + s;
+      else if(this.getFunctionName()) s = this.getFunctionName() + ' ' + s;
+
+      //console.log("Object.getPrototypeOf(this)", ());
+      window.frameProto = Object.getPrototypeOf(this);
+
+      window.CallSite = window.frameProto.constructor;
+      //console.log("Object.keys(this)", Object.keys(this));
+      if(this.getTypeName()) s = this.getTypeName() + '.' + s;
+
+      return s;
+    });
+
+    Util.defineGetter(frame, 'position', function() {
+      return this.getFileName() ? `${this.getFileName()}:${this.getLineNumber()}:${this.getColumnNumber()}` : null;
+    });
+  });
+  Util.define(stack, {
+    toString() {
+      return this.map(frame => frame.toString()).join('\n');
+    },
+    [Symbol.toStringTag]() {
+      return this.toString();
+    }
+  });
+  window.stack = stack;
+  return stack;
 };
 Util.getCallerFile = function(position = 2) {
   let stack = Util.getCallerStack();
@@ -2376,7 +2435,7 @@ Util.immutableClass = (orig, ...proto) => {
         }
   );
   let body = ` class ${imName} extends ${name} {
-    
+
     constructor(...args) { super(...args); if(new.target === ${imName}) return Object.freeze(this); }
   };
 
@@ -2528,7 +2587,7 @@ Util.defineInspect = (proto, ...props) => {
             acc[key] = obj[key];
             return acc;
           }, {}),
-          { multiline: false, colon: ':', spacing: '', separator: ', ', padding: '' }
+          { multiline: false, colon: ':', spacing: '', separator: ', ', padding: ' ' }
         )
       );
     };
@@ -2674,5 +2733,18 @@ Util.parseXML = xmlStr =>
     () => new DOMParser(),
     parser => parser.parseFromString(xmlStr, 'application/xml')
   );
+
+Util.once = fn => {
+  let done = false;
+  let ret;
+
+  return (...args) => {
+    if(!done) {
+      ret = fn(...args);
+      done = true;
+    }
+    return ret;
+  };
+};
 
 export default Util;

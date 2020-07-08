@@ -2,117 +2,140 @@ import { EagleRef } from './ref.js';
 import { makeEagleElement, EagleElement } from './element.js';
 import Util from '../util.js';
 
-export function EagleNodeList(owner, ref, raw) {
-  if(Util.isObject(ref) && !('dereference' in ref)) ref = EagleRef(owner, ref);
-  if(!raw) {
-    raw = ref.dereference();
+export class EagleNodeList {
+  constructor(owner, ref, raw) {
+    if(Util.isObject(ref) && !('dereference' in ref)) ref = EagleRef(owner, ref);
+    if(!raw) {
+      raw = ref.dereference();
+    }
+    let species = Util.getConstructor(owner);
+    Util.define(this, { ref, owner, raw /*, [Symbol.species]: species*/ });
   }
-  let species = Util.getConstructor(owner);
-  Util.define(this, { ref, owner, raw /*, [Symbol.species]: species*/ });
-}
-/*
+  /*
 Object.defineProperties(EagleNodeList.prototype, {
   ref: { writable: true, configurable: true, enumerable: false, value: null },
   owner: { writable: true, configurable: true, enumerable: false, value: null },
   raw: { writable: true, configurable: true, enumerable: false, value: null }
 });*/
 
-Object.assign(EagleNodeList.prototype, {
-  at(pos) {
+  item(pos) {
     const { owner, ref, raw } = this;
 
     if(pos < 0) pos += raw.length;
 
-    //console.log(`EagleNodeList.at(${pos})`, { owner,  ref, raw });
+    //console.log(`EagleNodeList.item(${pos})`, { owner,  ref, raw });
     if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner, [...ref.path, pos], raw[pos]);
-  },
-  *[Symbol.iterator]() {
-    let { ref, owner, raw, length } = this;
-    //  console.log('EagleNodeList  [Symbol.iterator]()', { owner , length }, ref);
+  }
 
-    for(let i = 0; i < raw.length; i++) {
-      let childRef = ref.down(i); //EagleRef(owner.raw, [...ref.path, i]);
-      let r = makeEagleElement(owner, childRef, raw[i]);
-      yield r;
-    }
-  },
+  *[Symbol.iterator]() {
+    let { ref, owner, raw } = this;
+    for(let i = 0; i < raw.length; i++) yield EagleElement.get(owner, ref.down(i), raw[i]);
+  }
+
   get length() {
     const { ref, owner, raw } = this;
     return raw ? raw.length : 0;
-  },
+  }
+
   iterator() {
     const instance = this;
     return function*() {
       const list = instance.ref.dereference();
-      for(let i = 0; i < list.length; i++) yield makeEagleElement(this.owner, instance.ref.concat([i]));
+      for(let i = 0; i < list.length; i++) yield EagleElement.get(this.owner, instance.ref.concat([i]));
     };
-  },
+  }
+
   entries() {
     return [...this[Symbol.iterator]()].map((v, i) => [i, v]);
-  },
+  }
+
+  remove(pred) {
+    let { raw } = this;
+    if(typeof pred == 'number') {
+      let num = pred;
+      pred = (child, i, list) => i === num;
+    }
+    for(let i = raw.length - 1; i >= 0; i--) {
+      if(pred(raw[i], i, this)) raw.splice(i, 1);
+    }
+    return this;
+  }
+
+  append(...args) {
+    let { raw, ref } = this;
+    let parent = ref.parent.dereference();
+    args = args.map(({ tagName, attributes, children }) => EagleElement.create(tagName, attributes, children));
+    parent.children.splice(parent.children.length, parent.children.length, ...args);
+    return this;
+  }
+
+  toXML() {
+    let s = '';
+    for(let elem of this[Symbol.iterator]()) {
+      if(s != '') s += '\n';
+      s += elem.toXML();
+    }
+    return s;
+  }
+
   [Symbol.for('nodejs.util.inspect.custom')]() {
     return this.entries().map(([k, v]) => v);
   }
-});
 
-EagleNodeList.make = function(owner, ref, raw) {
-  const Ctor = EagleNodeList;
-  //console.log('EagleNodeList.make', {owner}, ref, raw);
-  return { instance: new Ctor(owner, ref, raw), Ctor };
-};
+  static create(owner, ref, raw) {
+    let instance = new EagleNodeList(owner, ref, raw);
+    return new Proxy(instance, {
+      set(target, prop, value) {
+        if(typeof prop == 'number' || (typeof prop == 'string' && /^[0-9]+$/.test(prop))) {
+          prop = +prop;
+          let list = instance.ref.dereference();
+          if(typeof value == 'object' && 'raw' in value) value = value.raw;
+          Reflect.set(list, prop, value);
+          return true;
+        }
+        return Reflect.set(target, prop, value);
+      },
+      get(target, prop, receiver) {
+        let index;
+        let is_symbol = typeof prop == 'symbol';
+        let e;
 
-export function makeEagleNodeList(owner, ref, raw) {
-  //console.log('makeEagleNodeList', {owner}, ref,raw);
-  const { Ctor, instance } = EagleNodeList.make(owner, ref /*|| ['children']*/, raw);
-  return new Proxy(instance, {
-    set(target, prop, value) {
-      if(typeof prop == 'number' || (typeof prop == 'string' && /^[0-9]+$/.test(prop))) {
-        prop = +prop;
-        let list = instance.ref.dereference();
-        if(typeof value == 'object' && 'raw' in value) value = value.raw;
-        Reflect.set(list, prop, value);
-        return true;
-      }
-      return Reflect.set(target, prop, value);
-    },
-    get(target, prop, receiver) {
-      let index;
-      let is_symbol = typeof prop == 'symbol';
-      let e;
+        //console.log("EagleNodeList get", {target, prop });
 
-      //console.log("EagleNodeList get", {target, prop });
+        if(typeof prop == 'number' || (typeof prop == 'string' && /^-?[0-9]+$/.test(prop))) {
+          prop = +prop;
 
-      if(typeof prop == 'number' || (typeof prop == 'string' && /^-?[0-9]+$/.test(prop))) {
-        prop = +prop;
+          return instance.item(prop);
+        }
+        if(prop == 'length' && instance.raw) {
+          return instance.raw.length;
+        }
+        if(prop == 'raw') {
+          const { raw, ref } = instance;
+          //console.log("prop raw", {raw, ref });
+          return raw || (ref && ref.dereference());
+        }
+        if(prop == 'instance') return instance;
+        if(typeof EagleNodeList.prototype[prop] == 'function') return EagleNodeList.prototype[prop] /*.bind(instance)*/;
+        if(instance[prop] !== undefined) return instance[prop];
+        let list = instance && instance.ref ? instance.ref.dereference() : null;
+        if(prop == 'find')
+          return name => {
+            const idx = list.findIndex(e => e.attributes.name == name);
+            return idx == -1 ? null : EagleElement.get(instance, instance.ref.concat([idx]));
+          };
+        if(prop == 'entries') return () => list.map((item, i) => [item.attributes.name, item]);
 
-        return instance.at(prop);
+        // if(typeof Array.prototype[prop] == 'function') return Array.prototype[prop].bind(instance);
+        if((list && !is_symbol && /^([0-9]+|length)$/.test('' + prop)) || /* prop == Symbol.iterator ||*/ ['findIndex'].indexOf(prop) !== -1) {
+          if(prop in list) return list[prop];
+        }
+
+        return Reflect.get(target, prop, receiver);
+      },
+      getPrototypeOf(target) {
+        return EagleNodeList.prototype;
       }
-      if(prop == 'length' && instance.raw) {
-        return instance.raw.length;
-      }
-      if(prop == 'raw') {
-        const { raw, ref } = instance;
-        //console.log("prop raw", {raw, ref });
-        return raw || (ref && ref.dereference());
-      }
-      if(prop == 'instance') return instance;
-      if(typeof Ctor.prototype[prop] == 'function') return Ctor.prototype[prop].bind(instance);
-      let list = instance && instance.ref ? instance.ref.dereference() : null;
-      if(prop == 'find')
-        return name => {
-          const idx = list.findIndex(e => e.attributes.name == name);
-          return idx == -1 ? null : makeEagleElement(instance, instance.ref.concat([idx]));
-        };
-      if(prop == 'entries') return () => list.map((item, i) => [item.attributes.name, item]);
-      if(typeof Array.prototype[prop] == 'function') return Array.prototype[prop].bind(instance);
-      if((list && !is_symbol && /^([0-9]+|length)$/.test('' + prop)) || /* prop == Symbol.iterator ||*/ ['findIndex'].indexOf(prop) !== -1) {
-        if(prop in list) return list[prop];
-      }
-      return Reflect.get(instance, prop, receiver);
-    },
-    getPrototypeOf(target) {
-      return EagleNodeList.prototype;
-      // return Reflect.getPrototypeOf(instance);
-    }
-  });
+    });
+  }
 }

@@ -48,8 +48,8 @@ export function Line(x1, y1, x2, y2) {
     ret = 0;
   }
 
-  if(!('a' in obj) || !obj.a) obj.a = new Point(obj.x1, obj.y1);
-  if(!('b' in obj) || !obj.b) obj.b = new Point(obj.x2, obj.y2);
+  if(!('a' in obj) || obj.a === undefined) Object.defineProperty(obj, 'a', { value: new Point(obj.x1, obj.y1), enumerable: false });
+  if(!('b' in obj) || obj.b === undefined) Object.defineProperty(obj, 'b', { value: new Point(obj.x2, obj.y2), enumerable: false });
 
   if(!isLine(obj)) {
     //console.log('ERROR: is not a line: ', Util.toString(arg), Util.toString(obj));
@@ -73,6 +73,10 @@ Line.prototype.intersect = function(other) {
     y: (ma * mb * (other[0].x - this[0].x) + mb * this[0].y - ma * other[0].y) / (mb - ma)
   });
 };
+
+/*Object.defineProperty(Line.prototype, 'a', { value: new Point(), enumerable: false });
+Object.defineProperty(Line.prototype, 'b', { value: new Point(), enumerable: false });*/
+
 Object.defineProperty(Line.prototype, 0, {
   get: function() {
     return this.a;
@@ -149,6 +153,7 @@ Object.defineProperty(Line.prototype, 'y2', {
   },
   enumerable: true
 });
+
 Line.prototype.direction = function() {
   var dist = Point.prototype.distance.call(this.a, this.b);
   return Point.prototype.quot.call(Line.prototype.getSlope.call(this), dist);

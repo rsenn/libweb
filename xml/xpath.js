@@ -113,9 +113,9 @@ export class MutableXPath extends MutablePath {
 
   static partToString(p, sep = '/', childrenSym, c = (text, c = 33, b = 0) => `\x1b[${b};${c}m${text}\x1b[0m`) {
     let ret = [];
-    if(MutablePath.isChildren(p[0]) || p[0] == 'children') {
+    if(MutablePath.isChildren(p[0])) {
       p.shift();
-      ret.push('children');
+      ret.push(childrenSym);
     }
     if(Util.isObject(p[0])) {
       const { tagName, children, attributes = {}, ...rest } = p[0];
@@ -123,7 +123,7 @@ export class MutableXPath extends MutablePath {
       let s = '';
       if(tagName) s += tagName;
       let a = Object.entries(attributes).map(([k, v]) => `@${k}='${v}'`);
-      //console.log("attributes",a);
+      // console.log("partToString",p[0], { tagName, s, a });
       if(a.length) s += `[${a.join('&&')}]`;
       if(s != '') ret.push(s);
     }
@@ -141,8 +141,8 @@ export class MutableXPath extends MutablePath {
   toString(sep = '/') {
     let ctor = this.constructor;
     let a = [...this].map(p => (typeof p == 'number' ? `/[${p}]` : p));
-    let s = super.toString.call(a, sep);
-    return s.replace(new RegExp(ctor.CHILDREN_STR + '/', 'g'), '');
+    let s = super.toString.call(a, sep, MutableXPath.partToString, ctor.CHILDREN_STR);
+    return sep + s.replace(new RegExp(ctor.CHILDREN_STR + '/', 'g'), '');
   }
   /* toString(sep = '/', childrenVar = 'CHILDREN_STR', c = (text, c = 33, b = 0) => `\x1b[${b};${c}m${text}\x1b[0m`) {
    let ctor = this.constructor;

@@ -1,6 +1,6 @@
 import { Util } from '../util.js';
 import { RGBA } from '../color/rgba.js';
-import { HSLA } from '../dom/hsla.js';
+import { HSLA } from '../color/hsla.js';
 
 export function ColorMap(...args) {
   let isNew = this instanceof ColorMap;

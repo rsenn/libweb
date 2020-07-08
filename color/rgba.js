@@ -335,6 +335,9 @@ RGBA.prototype.invert = function() {
   let b = 255 - this.b;
   return new RGBA(r, g, b, this.a);
 };
+RGBA.prototype.blackwhite = function(a = this.a) {
+  return this.luminanace() >= 0.2 ? new RGBA(255, 255, 255, a) : new RGBA(0, 0, 0, a);
+};
 RGBA.prototype.distance = function(other) {
   return Math.sqrt(Math.pow(other.r - this.r, 2) + Math.pow(other.g - this.g, 2) + Math.pow(other.b - this.b, 2)) / 441.67295593006370984949;
 };
@@ -352,6 +355,11 @@ RGBA.prototype.contrast = function contrast(other) {
   var brightest = Math.max(lum1, lum2);
   var darkest = Math.min(lum1, lum2);
   return (brightest + 0.05) / (darkest + 0.05);
+};
+RGBA.prototype.toConsole = function(fn = 'toString') {
+  const textColor = this.invert().blackwhite();
+  const bgColor = this.blackwhite(255);
+  return [`%c${this[fn]()}%c`, `text-shadow: 1px 1px 1px ${bgColor.hex()}; border: 1px solid black; padding: 2px; font-size: 1.5em; background-color: ${this.toString()}; color: ${textColor};`, `background-color: none;`];
 };
 
 RGBA.random = function(r = [0, 255], g = [0, 255], b = [0, 255], a = [255, 255], rng = Math.random) {

@@ -1,7 +1,7 @@
 //import React from "react";
 //import ReactDOM from "react-dom";
 // prettier-ignore
-import dom, {TRBL, CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, Line, Matrix, Point, PointList, Rect, RGBA, Size, SVG, Timer, Node, isElement } from "./dom.js";
+import dom, {TRBL, CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, Line, Matrix, Point, PointList, Rect, Size, SVG, Timer, Node, isElement } from "./dom.js";
 //import { SvgOverlay, SvgPathTracer } from "./svg/overlay.js";
 //import { SvgPath } from "./svg/path.js";
 import Util from './util.js';
@@ -1057,7 +1057,7 @@ export function storage(name) {
 }
 // prettier-ignore
 export function assign_to(obj) {
-  // prettier-ignore  
+  // prettier-ignore
   Object.assign(obj, { devtools});
   Object.assign(obj,  devtools);
 }

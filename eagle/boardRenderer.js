@@ -2,12 +2,13 @@ import { Point, Line } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
 import { Util } from '../util.js';
+import { RGBA } from '../color.js';
 import { Rotation, Palette } from './common.js';
 import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 
 export class BoardRenderer extends EagleSVGRenderer {
-  static palette = Palette.board((r,g,b) => `rgb(${r},${g},${b})`);
+  static palette = Palette.board((r, g, b) => new RGBA(r, g, b));
 
   constructor(obj, factory) {
     super(obj, factory);
@@ -83,7 +84,7 @@ export class BoardRenderer extends EagleSVGRenderer {
           parent
         );
 
-        console.log('name:', name);
+        //this.debug('name:', name);
         if(name) {
           svg(
             'tspan',
@@ -121,7 +122,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
   renderCollection(coll, parent, opts = {}) {
     const { predicate = i => true, transform, pos, rot } = opts;
-    console.log(`BoardRenderer.renderCollection`, { transform, pos, rot });
+    this.debug(`BoardRenderer.renderCollection`, { transform, pos, rot });
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
@@ -156,15 +157,15 @@ export class BoardRenderer extends EagleSVGRenderer {
         return line;
       });
 
-      console.log('Lines:', [...lines]);
+      //this.debug('Lines:', [...lines]);
 
       const path = LinesToPath(lines);
       const layer = layers[layerId];
       const width = widths[layerId];
 
-      console.log('layerId:', layerId);
-      console.log('layers:', layers);
-      const color = this.getColor(layer.color);
+      //this.debug('layerId:', layerId);
+      //this.debug('layers:', layers);
+      const color = layer.color;
 
       this.create(
         'path',
@@ -187,7 +188,7 @@ export class BoardRenderer extends EagleSVGRenderer {
   renderElement(element, parent) {
     const { name, library, value, x, y, rot } = element;
 
-    console.log(`BoardRenderer.renderElement`, { name, library, value, x, y, rot });
+    this.debug(`BoardRenderer.renderElement`, { name, library, value, x, y, rot });
 
     let transform = new TransformationList();
     let rotation = Rotation(rot);
@@ -218,7 +219,7 @@ export class BoardRenderer extends EagleSVGRenderer {
   renderSignal(signal, parent, options = {}) {
     let signalGroup = this.create('g', { id: `signal.${signal.name}`, className: `signal ${signal.name}` }, parent);
 
-    console.log(`BoardRenderer.renderSignal`, signal.name);
+    this.debug(`BoardRenderer.renderSignal`, signal.name);
 
     return this.renderCollection(signal.children, signalGroup, options);
   }
@@ -237,7 +238,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     const { bounds, rect } = this;
 
-    console.log(`BoardRenderer.render`, { bounds, rect });
+    this.debug(`BoardRenderer.render`, { bounds, rect });
 
     //  this.renderLayers(parent);
 
@@ -248,7 +249,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     let signalsGroup = this.create('g', { className: 'signals', strokeLinecap: 'round', transform }, parent);
     let elementsGroup = this.create('g', { className: 'elements', transform }, parent);
 
-    console.log('bounds: ', bounds);
+    //this.debug('bounds: ', bounds);
 
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {

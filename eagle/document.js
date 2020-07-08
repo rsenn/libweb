@@ -7,7 +7,9 @@ import { toXML, ImmutablePath } from '../json.js';
 import { EagleNode } from './node.js';
 import { EagleElement } from './element.js';
 import { BBox, Rect, PointList } from '../geom.js';
-import { makeEagleNodeList } from './nodeList.js';
+import { RGBA } from '../color.js';
+import { EagleNodeList } from './nodeList.js';
+import { Palette } from './common.js';
 import { lazyProperty } from '../lazyInitializer.js';
 
 export class EagleDocument extends EagleNode {
@@ -30,9 +32,14 @@ export class EagleDocument extends EagleNode {
     Util.define(this, 'xml', xml);
     const orig = xml[0];
     Util.define(this, 'orig', orig);
+    Util.define(
+      this,
+      'palette',
+      Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b))
+    );
     this.initCache(EagleElement);
 
-    lazyProperty(this, 'children', () => makeEagleNodeList(this, ['children'], this.raw.children));
+    lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'], this.raw.children));
   }
 
   get filename() {
@@ -96,6 +103,9 @@ export class EagleDocument extends EagleNode {
     let { fs } = this.project;
     const data = Buffer.from(this.toString());
 
+    if(!file)
+       file = this.file;
+
     return new Promise((resolve,reject) => {
       fs.writeFile(file, data);
       resolve([file,data.length]);
@@ -118,6 +128,13 @@ export class EagleDocument extends EagleNode {
 
   getBounds(sheetNo = 0) {
     let bb = new BBox();
+
+    if(this.type == 'brd') {
+      const board = this.lookup(['eagle', 'drawing', 'board']);
+      let ret = board.getBounds();
+      //  console.log("board:", board, ret.objects);
+      return ret;
+    }
 
     let sheet = this.sheets ? this.sheets[sheetNo] : null;
 
@@ -145,11 +162,6 @@ export class EagleDocument extends EagleNode {
       }
     }
 
-    if(this.type == 'brd') {
-      const board = this.lookup(['eagle', 'drawing', 'board']);
-      return board.getBounds();
-    }
-
     if(this.elements) {
       for(let element of this.elements.list) {
         let bbrect = element.getBounds();
@@ -168,5 +180,13 @@ export class EagleDocument extends EagleNode {
     }
 
     return bb;
+  }
+
+  getMeasures() {
+    //console.log("this.type", this.type);
+    let bounds = this.getBounds();
+    let values = [...bounds.getObjects().values()];
+    let measures = values.filter(obj => obj.layer && obj.layer.name == 'Measures');
+    return measures.length > 0 ? measures : null;
   }
 }

@@ -1,5 +1,6 @@
 import { Point, isPoint } from './point.js';
-import { PointList } from './pointList.js';
+//import { PointList } from './pointList.js';
+import { Line } from './line.js';
 import { Size, isSize } from './size.js';
 import { Align, Anchor } from './align.js';
 import { TRBL, isTRBL } from './trbl.js';
@@ -193,9 +194,9 @@ Object.defineProperty(Rect.prototype, 'size', {
     return size;
   }
 });
-Rect.prototype.points = function() {
+Rect.prototype.points = function(ctor = items => Array.from(items)) {
   const c = this.corners();
-  return new PointList(c);
+  return ctor(c);
 };
 Rect.prototype.toCSS = Rect.toCSS;
 
@@ -287,14 +288,18 @@ Rect.prototype.toArray = function() {
   const { x, y, width, height } = this;
   return [x, y, width, height];
 };
-Rect.prototype.toPoints = function() {
+Rect.prototype.toPoints = function(ctor = points => Array.from(points)) {
   const { x, y, width, height } = this;
-  var list = new PointList();
-  list.push(new Point(x, y));
-  list.push(new Point(x, y + height));
-  list.push(new Point(x + width, y + height));
-  list.push(new Point(x + width, y));
-  return list;
+  return ctor([new Point(x, y), new Point(x + width, y), new Point(x + width, y + height), new Point(x, y + height)]);
+};
+Rect.prototype.toLines = function(ctor = lines => Array.from(lines, points => new Line(...points))) {
+  let [a, b, c, d] = Rect.prototype.toPoints.call(this);
+  return ctor([
+    [a, b],
+    [b, c],
+    [c, d],
+    [d, a]
+  ]);
 };
 Rect.prototype.align = function(align_to, a = 0) {
   const xdiff = (align_to.width || 0) - this.width;
@@ -332,11 +337,11 @@ Rect.prototype.align = function(align_to, a = 0) {
 Rect.prototype.round = function(precision = 0.001, digits, type = 'round') {
   let { x1, y1, x2, y2 } = this.toObject(true);
   let a = new Point(x1, y1).round(precision, digits, type);
-  let b = new Point(x2, y2).round(precision, digits, type);
+  let b = new Point(x2, y2).round(precision, null, type);
   this.x = a.x;
   this.y = a.y;
-  this.width = b.x - this.x;
-  this.height = b.y - this.y;
+  this.width = +(b.x - this.x).toFixed(digits);
+  this.height = +(b.y - this.y).toFixed(digits);
   return this;
 };
 Rect.prototype.toObject = function(bb = false) {
@@ -362,6 +367,18 @@ Rect.bind = rect => {
 Rect.inside = (rect, point) => {
   return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
 };
+Rect.from = function(obj) {
+  //const { x1,y1,x2,y2 } = obj;
+  const fn = (v1, v2) => [Math.min(v1, v2), Math.max(v1, v2)];
+
+  const h = fn(obj.x1, obj.x2);
+  const v = fn(obj.y1, obj.y2);
+
+  const [x1, x2, y1, y2] = [...h, ...v];
+
+  return new Rect({ x1, y1, x2, y2 }); //h[0], v[0], h[1] - h[0], v[1] - v[0]);
+};
+
 Rect.fromCircle = function(...args) {
   const { x, y } = Point(args);
   const radius = args.shift();

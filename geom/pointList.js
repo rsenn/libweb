@@ -313,8 +313,9 @@ PointList.prototype.round = function(prec) {
 };
 if(!Util.isBrowser()) {
   let c = Util.coloring();
-  PointList.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
-    return `${c.text('PointList', 1, 33)} ${c.text('(', 1, 36)}${c.text(this.getLength(), 1, 35) + c.code(1, 36)}) [\n  ${this.map(({ x, y }) => Util.toString({ x, y }, { multiline: false, spacing: ' ' })).join(',\n  ')}\n]`;
+  let sym = Symbol.for('nodejs.util.inspect.custom');
+  PointList.prototype[sym] = function() {
+    return `${c.text('PointList', 1, 31)}${c.text('(', 1, 36)}${c.text(this.getLength(), 1, 35) + c.code(1, 36)}) [\n  ${this.map(point => point[sym]() || Util.toString({ x, y }, { multiline: false, spacing: ' ' })).join(',\n  ')}\n${c.text(']', 1, 36)}`;
   };
 }
 for(let name of ['push', 'splice', 'clone', 'area', 'centroid', 'avg', 'bbox', 'rect', 'xrange', 'yrange', 'boundingRect']) {

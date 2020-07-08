@@ -16,18 +16,21 @@ export class EagleProject {
 
     this.eaglePath = EagleProject.determineEaglePath(fs); //.then(path => this.eaglePath = path);
 
+    this.load();
+
+    // if(!this.failed) console.log('Opened project:', this.filename/*, this.eaglePath*/);
+  }
+
+  load() {
     Util.tryCatch(() => this.open(this.filename + '.sch'));
     Util.tryCatch(() => this.open(this.filename + '.brd'));
-
     Util.tryCatch(
       () => this.loadLibraries(),
       () => {},
       () => (this.failed = true)
     );
-
     if(!this.schematic || !this.board) this.failed = true;
-
-    if(!this.failed) console.log('Opened project:', this.filename, this.pathPath);
+    return !this.failed;
   }
 
   /**
@@ -41,14 +44,16 @@ export class EagleProject {
     str = this.fs.readFile(file);
     if(typeof str != 'string' && 'toString' in str) str = str.toString();
 
-    //console.log('EagleProject.open', { file });
     try {
       doc = new EagleDocument(str, this, file);
     } catch(error) {
       err = error;
     }
-    if(doc) this.documents.push(doc);
-    else throw new Error(`EagleProject: error opening '${file}': ${err}`);
+    if(doc) {
+      console.log('Opened document', file);
+
+      this.documents.push(doc);
+    } else throw new Error(`EagleProject: error opening '${file}': ${err}`);
     //console.log("Opened:", file);
 
     if(doc.type == 'lbr') {
@@ -241,5 +246,14 @@ export class EagleProject {
     return doc.index(path);
   }
 
-  saveTo = (dir = '.', overwrite = false) => new Promise((resolve, reject) => Promise.all(this.documents.map(doc => doc.saveTo([dir, doc.filename].join('/'), overwrite))).then(result => resolve(Object.fromEntries(result))));
+  saveTo(dir = '.', overwrite = false) {
+    return new Promise((resolve, reject) => {
+      let promises = this.documents.map(doc => doc.saveTo([dir, doc.filename].join('/'), overwrite));
+
+      return Promise.all(promises).then(result => {
+        //console.log('result:', result);
+        resolve(Object.fromEntries(result));
+      });
+    });
+  }
 }

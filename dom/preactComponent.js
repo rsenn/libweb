@@ -43,6 +43,11 @@ export class ReactComponent {
   static append(tag, attr, parent) {
     let { children, ...props } = attr;
     let elem = h(tag, props, children);
+    /*if(tag === 'rect') {
+      const { width, height } = attr;
+      console.log('ReactComponent.append', tag, attr, parent);
+      if(+width < 0 || +height < 0) throw new Error('rect');
+    }*/
     if(parent) {
       const { props } = parent;
 

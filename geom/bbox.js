@@ -21,7 +21,11 @@ export class BBox {
       this.y2 = undefined;
     }
 
-    this.__objs = {};
+    Util.define(this, 'objects', {});
+  }
+
+  getObjects() {
+    return new Map(Object.entries(this.objects));
   }
 
   updateList(list, offset = 0.0) {
@@ -33,9 +37,9 @@ export class BBox {
     //console.log('BBox.update', { arg, offset, obj });
     if(Util.isArray(arg)) return this.updateList(arg, offset);
 
-    if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset, name => (this.__objs[name] = obj || arg));
-    if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0, name => (this.__objs[name] = obj || arg));
-    if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0, name => (this.__objs[name] = obj || arg));
+    if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset, name => (this.objects[name] = obj || arg));
+    if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0, name => (this.objects[name] = obj || arg));
+    if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0, name => (this.objects[name] = obj || arg));
     return this;
   }
 

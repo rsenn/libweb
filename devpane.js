@@ -1,5 +1,7 @@
 //import ReactDOM from "react-dom";
-import { Element, HSLA, Point, Rect, Renderer, Select, SVG } from '../lib/dom.js';
+import { Element, Point, Rect, Renderer, Select, SVG } from './dom.js';
+import { RGBA, HSLA } from './color.js';
+
 import { httpClient as axios } from './axios.js';
 import Util from './util.js';
 import { Polygon } from './geom.js';

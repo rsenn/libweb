@@ -6,13 +6,12 @@ import { Size, isSize } from './geom/size.js';
 import { Line, isLine } from './geom/line.js';
 import { Rect, isRect } from './geom/rect.js';
 import { PointList, Polyline } from './geom/pointList.js';
-import { RGBA, isRGBA } from './color/rgba.js';
-import { HSLA, isHSLA } from './dom/hsla.js';
 import { Matrix, isMatrix } from './geom/matrix.js';
 import { BBox } from './geom/bbox.js';
 import { TRBL } from './geom/trbl.js';
 import { Timer } from './dom/timer.js';
 import { Tree } from './dom/tree.js';
+import { Event } from './dom/event.js';
 import { Node } from './dom/node.js';
 import { Element, isElement } from './dom/element.js';
 import { CSS } from './dom/css.js';
@@ -172,8 +171,6 @@ export { Size, isSize } from './geom/size.js';
 export { Line, isLine } from './geom/line.js';
 export { Rect, isRect } from './geom/rect.js';
 export { PointList, Polyline } from './geom/pointList.js';
-export { RGBA, isRGBA } from './dom/rgba.js';
-export { HSLA, isHSLA } from './dom/hsla.js';
 export { Matrix, isMatrix } from './geom/matrix.js';
 export { BBox } from './geom/bbox.js';
 export { TRBL } from './geom/trbl.js';
@@ -205,15 +202,12 @@ export default Object.assign(dom, {
   ElementTransformation,
   ElementWHProps,
   ElementXYProps,
-  HSLA,
   isElement,
-  isHSLA,
   isLine,
   isMatrix,
   isNumber,
   isPoint,
   isRect,
-  isRGBA,
   isSize,
   Line,
   Matrix,
@@ -224,8 +218,7 @@ export default Object.assign(dom, {
   //ReactComponent,
   Rect,
   Renderer,
-  RGBA,
-  HSLA,
+
   // Select,
   Size,
   SVG,
@@ -233,5 +226,6 @@ export default Object.assign(dom, {
   Transition,
   TransitionList,
   TRBL,
-  Tree
+  Tree,
+  Event
 });

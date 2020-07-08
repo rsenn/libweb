@@ -134,7 +134,7 @@ export class MutablePath extends Array {
         break;
       }
     }
-    return s;
+    return [s];
   }
 
   getSpecies() {
@@ -278,19 +278,19 @@ export class MutablePath extends Array {
     return a.o;
   }
 
-  toString(sep = '.', childrenStr = MutablePath['CHILDREN_STR'] + CHILDREN_SPACE) {
+  toString(sep = '.', partToStr = MutablePath.partToString, childrenStr = MutablePath['CHILDREN_STR'] + CHILDREN_SPACE) {
     let a = [...this];
     while(a.length > 0 && a[0] === '') a.shift();
     let n = a.length;
     let r = [];
     for(let i = 0; ; i++) {
-      let p = MutablePath.partToString(a, '/', childrenStr, text => text);
+      let p = partToStr(a, '/', childrenStr, text => text);
       if(!p) break;
-      r = r.concat([p]);
+      r = r.concat(p);
     }
     r = r.join(sep).replace(/[/.]?\[/g, '[');
     r = (this.absolute && r != '' && sep == '/' ? sep : '') + r;
-    return r.replace(/\//g, sep).replace(new RegExp(childrenStr + '\\.', 'g'), childrenStr + ' ');
+    return r.replace(/\//g, sep).replace(new RegExp(childrenStr, 'g'), 'children' /*childrenStr + ' '*/);
   }
 
   toSource(sep = ',') {
