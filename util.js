@@ -2364,6 +2364,8 @@ Util.decodeHTMLEntities = function(text) {
     return entities[entity] || match;
   });
 };
+Util.encodeHTMLEntities = (str, charset = '\u00A0-\u9999<>&') => str.replace(new RegExp(`[${charset}](?!#)`, 'gim'), i => '&#' + i.charCodeAt(0) + ';');
+
 Util.stripAnsi = function(str) {
   return (str + '').replace(/\x1B[[(?);]{0,2}(;?\d)*./g, '');
 };

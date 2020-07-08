@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 import { Element } from './element.js';
 import Util from '../util.js';

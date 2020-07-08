@@ -1,4 +1,4 @@
-import { Iterator, IteratorAdapter } from '../json/util.js';
+import { IteratorAdapter } from '../json/util.js';
 import Util from '../util.js';
 
 export class XMLIterator extends IteratorAdapter {

@@ -2,7 +2,6 @@ import { Point } from '../geom/point.js';
 import { Rect } from '../geom/rect.js';
 import { Line } from '../geom/line.js';
 import { TransformationList } from '../geom/transformation.js';
-import { Util } from '../util.js';
 import { RGBA } from '../color/rgba.js';
 import { HSLA } from '../color/hsla.js';
 import { Rotation, Palette } from './common.js';
@@ -55,7 +54,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-    if(rot) this.debug(`SchematicRenderer.renderItem`, { labelText, pos, transform, rot });
+    if(rot) this.debug(`SchematicRenderer.renderItem`, { labelText, pos, transform, rot }, item.xpath().toString());
 
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
@@ -154,7 +153,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
   renderNet(net, parent) {
     this.debug(`SchematicRenderer.renderNet`, { net, parent });
-    let g = this.create('g', { className: `net.${net.name}` }, parent);
+    let g = this.create('g', { className: `net ${net.name}` }, parent);
     for(let segment of net.children) this.renderCollection(segment.children, g, { labelText: net.name });
   }
 

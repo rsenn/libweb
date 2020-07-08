@@ -1,7 +1,6 @@
 import { Lexer, lexMatch } from './lexer.js';
 import { Parser, Node } from './parser.js';
 import Util from '../util.js';
-import { SubMatch } from './match.js';
 
 const nodeInspect = Symbol.for('nodejs.util.inspect.custom');
 

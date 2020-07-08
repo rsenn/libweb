@@ -2,7 +2,7 @@ import ObservableMembrane from '../proxy/observableMembrane.js';
 import Util from '../util.js';
 import { PathMapper } from './pathMapper.js';
 import { ImmutablePath } from './path.js';
-import { ImmutableXPath, MutableXPath, XPath, findXPath, parseXPath } from '../xml/xpath.js';
+import { ImmutableXPath } from '../xml/xpath.js';
 
 export class TreeObserver extends ObservableMembrane {
   static readOnly = false;

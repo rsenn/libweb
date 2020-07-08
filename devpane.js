@@ -1,6 +1,6 @@
 //import ReactDOM from "react-dom";
 import { Element, Point, Rect, Renderer, Select, SVG } from './dom.js';
-import { RGBA, HSLA } from './color.js';
+import { HSLA } from './color.js';
 
 import { httpClient as axios } from './axios.js';
 import Util from './util.js';
@@ -8,7 +8,6 @@ import { Polygon } from './geom.js';
 import devtools, { storage, select } from './devtools.js';
 import { TouchListener } from './touchHandler.js';
 import { lazyInitializer } from './lazyInitializer.js';
-import { makeLocalStorage } from './autoStore.js';
 
 import SvgPath from './svg/path.js';
 

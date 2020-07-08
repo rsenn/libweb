@@ -268,17 +268,11 @@ export class EagleInterface {
   }
 
   xpath() {
-    /* let p = new ImmutablePath();
-    let o = this;
-    do {
-      p = o.ref.path.concat(p);
-      if(!o.owner || o.xml != undefined) break;
-      o = o.owner;
-    } while(o.ref);
-    let d = o;*/
     const { ref, owner } = this;
-    //console.log('EagleInterface.xpath', { ref, owner });
     let x = ImmutableXPath.from(ref.path, owner.raw);
+    //console.log('PATH', ref.path);
+    //console.log('ARRAY', [...x]);
+    //console.log('XPATH', x.toString());
     return x;
   }
 

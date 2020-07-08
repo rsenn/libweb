@@ -1,5 +1,5 @@
 import { Matrix, isMatrix } from '../geom/matrix.js';
-import { Point, isPoint } from '../geom/point.js';
+import { Point } from '../geom/point.js';
 import { Util } from '../util.js';
 
 export class Transformation {

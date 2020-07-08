@@ -1,5 +1,5 @@
 import { EagleRef } from './ref.js';
-import { makeEagleElement, EagleElement } from './element.js';
+import { EagleElement } from './element.js';
 import Util from '../util.js';
 
 export class EagleNodeList {

@@ -2,8 +2,8 @@ import { Point, isPoint } from './point.js';
 //import { PointList } from './pointList.js';
 import { Line } from './line.js';
 import { Size, isSize } from './size.js';
-import { Align, Anchor } from './align.js';
-import { TRBL, isTRBL } from './trbl.js';
+import { Align } from './align.js';
+import { TRBL } from './trbl.js';
 import { Util } from '../util.js';
 
 export function Rect(arg) {

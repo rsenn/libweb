@@ -1,4 +1,4 @@
-import { Point, isPoint, Size, PointList, Line, BBox } from './geom.js';
+import { Point, Size, PointList, Line, BBox } from './geom.js';
 import Util from './util.js';
 
 /* From https://github.com/ehayon/FDGraph */

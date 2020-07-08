@@ -1,4 +1,4 @@
-import { Line, isLine } from './line.js';
+import { Line } from './line.js';
 import Util from '../util.js';
 
 export class LineList extends Array {

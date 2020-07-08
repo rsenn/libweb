@@ -1,4 +1,4 @@
-import { Point, isPoint } from './point.js';
+import { Point } from './point.js';
 import { Rect } from './rect.js';
 import { Line } from './line.js';
 import Util from '../util.js';

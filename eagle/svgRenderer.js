@@ -140,7 +140,7 @@ export class EagleSVGRenderer {
 
     const color = layer && layer.color; //(opts && opts.color) || (layer && this.getColor(layer.color));
 
-    // this.debug(`EagleSVGRenderer.renderItem`, item.tagName, color || item.attributes.layer);
+    this.debug(`EagleSVGRenderer.renderItem`, item, item.xpath().toString());
 
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...attr }, parent);
 

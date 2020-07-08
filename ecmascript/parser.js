@@ -5,7 +5,6 @@ import deep from '../deep.js';
 import { Token, TokenList } from './token.js';
 import { Printer } from './printer.js';
 import { estree, ESNode, Factory, PropertyDefinition, BinaryExpression, Identifier, TemplateLiteral, ImportStatement, Literal, MemberExpression, FunctionDeclaration, ArrowFunction, SequenceExpression, ObjectBindingPattern } from './estree.js';
-import { SortedMap } from '../container/sortedMap.js';
 import MultiMap from '../container/multiMap.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];

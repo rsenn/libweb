@@ -1,4 +1,3 @@
-import { Node, NodeList } from './parser.js';
 import Util from '../util.js';
 
 export class Rule {

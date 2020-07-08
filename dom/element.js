@@ -1,10 +1,10 @@
 import { Node } from './node.js';
 import { TRBL } from '../geom/trbl.js';
-import { Point, isPoint } from '../geom/point.js';
+import { Point } from '../geom/point.js';
 import { Rect, isRect } from '../geom/rect.js';
-import { Size, isSize } from '../geom/size.js';
-import { Align, Anchor } from '../geom/align.js';
-import { iterator, eventIterator } from './iterator.js';
+import { Size } from '../geom/size.js';
+import { Anchor } from '../geom/align.js';
+import { iterator } from './iterator.js';
 import Util from '../util.js';
 /**
  * Class for element.
@@ -60,6 +60,7 @@ export class Element extends Node {
     }
     return ret.length ? ret : null;
   }
+
   static *skip(elem, fn = (e, next) => next(e.parentElement)) {
     elem = typeof elem == 'string' ? Element.find(elem) : elem;
     // let [iter,push] = new iterator();
@@ -162,11 +163,15 @@ export class Element extends Node {
     if(typeof parent == 'string') parent = Element.find(parent);
     if(!parent && globalObj.document) parent = globalObj.document;
 
-    return typeof arg === 'string' ? parent.querySelector(arg) : arg;
+    if(typeof arg != 'string') throw new Error(arg + '');
+
+    if(arg.startsWith('/')) arg = arg.substring(1).replace(/\//g, ' > ');
+
+    return parent.querySelector(arg);
   }
 
   static findAll(arg, parent) {
-    parent = Element.find(parent);
+    parent = typeof parent == 'string' ? Element.find(parent) : parent;
     return [...(parent && parent.querySelectorAll ? parent.querySelectorAll(arg) : document.querySelectorAll(arg))];
   }
 
@@ -376,7 +381,7 @@ export class Element extends Node {
   }
 
   static moveRelative(element, to, position) {
-    var e = Element.find(element);
+    var e = typeof element == 'string' ? Element.find(element) : element;
 
     var pos = Object.freeze(new Rect(to || Element.rect(e)));
     function move(x, y) {
@@ -392,7 +397,7 @@ export class Element extends Node {
   }
 
   static resize(element, ...dimensions) {
-    let e = Element.find(element);
+    let e = typeof element == 'string' ? Element.find(element) : element;
     let size = new Size(...dimensions);
     const css = Size.toCSS(size);
     //console.log("Element.resize: ", { e, size, css });
@@ -478,7 +483,7 @@ export class Element extends Node {
   }
 
   static getCSS(element, property = undefined, receiver = null) {
-    element = isElement(element) ? element : Element.find(element);
+    element = typeof element == 'string' ? Element.find(element) : element;
 
     const w = window !== undefined ? window : global.window;
     const d = document !== undefined ? document : global.document;
@@ -538,15 +543,17 @@ export class Element extends Node {
 
   static xpath(elt, relative_to = null) {
     let path = '';
+    for(let e of this.skip(elt, (e, next) => next(e.parentElement !== relative_to && e.parentElement))) path = '/' + Element.unique(e) + path;
+
     //console.log('relative_to: ', relative_to);
-    for(; elt && elt.nodeType == 1; elt = elt.parentNode) {
+    /*    for(; elt && elt.nodeType == 1; elt = elt.parentNode) {
       const xname = Element.unique(elt);
       path = xname + path;
       if(elt == relative_to) {
         break;
       }
       path = '/' + path;
-    }
+    }*/
     return path;
   }
 
@@ -625,7 +632,7 @@ export class Element extends Node {
   }
 
   static unique(elem, opts = {}) {
-    const { idx = true, use_id = true } = opts;
+    const { idx = false, use_id = true } = opts;
     let name = elem.tagName.toLowerCase();
     if(use_id && elem.id && elem.id.length) return name + '#' + elem.id;
     const classNames = [...elem.classList]; //String(elem.className).split(new RegExp("/[ \t]/"));

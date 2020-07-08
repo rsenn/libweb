@@ -1,6 +1,5 @@
 import Util from '../util.js';
 import { Element } from './element.js';
-import { Node } from './node.js';
 
 export class CSS {
   static get document() {
