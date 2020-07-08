@@ -1,9 +1,7 @@
-import { Point } from '../geom/point.js';
-import { Rect } from '../geom/rect.js';
-import { TransformationList } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
 import { Util } from '../util.js';
 import { Size } from '../dom.js';
+import { Point,Rect,BBox,TransformationList } from '../geom.js';
 import { Rotation } from './common.js';
 import { VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
 
@@ -363,7 +361,7 @@ export class EagleSVGRenderer {
     rect.outset(1.27);
     rect.round(2.54, 6);
 
-    this.debug('stack:', (window.stack = Util.getCallerStack(1)).toString());
+    //this.debu§g('stack:', (window.stack = Util.getCallerStack(1)).toString());
 
     this.rect = rect;
     this.bounds = new BBox().update(rect);

@@ -107,7 +107,7 @@ export class ReactComponent {
   static toString(obj, opts = {}) {
     let { fmt = 0 } = opts;
     let s = '';
-    if(obj && '__' in obj && 'key' in obj && 'ref' in obj) obj = this.toObject(obj);
+    if(Util.isObject(obj) && '__' in obj && 'key' in obj && 'ref' in obj) obj = this.toObject(obj);
     if(Util.isArray(obj)) {
       for(let item of obj) {
         s += fmt < 2 ? '\n' : s == '' ? '' : `, `;
