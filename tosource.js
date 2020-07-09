@@ -3,7 +3,7 @@ export default function toSource(object, replacer = a => a, indent = '  ', start
   const seen = [];
   return walk(object, replacer, indent === false ? '' : indent, startingIndent, seen);
 
-  function walk(object, replacer =(a => a), indent, currentIndent, seen) {
+  function walk(object, replacer = a => a, indent, currentIndent, seen) {
     const nextIndent = currentIndent + indent;
     object = replacer ? replacer(object) : object;
 

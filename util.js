@@ -62,7 +62,8 @@ export function Util(g) {
   //  if(g) Util.globalObject = g;
 }
 
-function curry(fn, arity) {
+Util.curry =
+ (fn, arity) => {
   return function curried() {
     if(arity == null) arity = fn.length;
 
@@ -75,8 +76,7 @@ function curry(fn, arity) {
       };
     }
   };
-}
-Util.curry = curry;
+};
 Util.getGlobalObject = () =>
   Util.tryCatch(
     () => global,
@@ -98,7 +98,7 @@ Util.isDebug = function() {
   if(process !== undefined && process.env.NODE_ENV === 'production') return false;
   return true;
 };
-Util.log = curry(function(n, base) {
+Util.log = Util.curry(function(n, base) {
   return Math.log(n) / (base ? Math.log(base) : 1);
 });
 Util.msg = (strings, ...substitutions) => {
@@ -267,7 +267,15 @@ Util.range = function(start, end) {
   //console.log("Util.range ", r);
   return r;
 };
-Util.set = Util.curry((obj, prop, value) => (obj[prop] = value));
+Util.set = function(obj,prop,value) {
+  const set = obj instanceof Map ?  ((prop,value) => obj.set(prop,value)) : ((prop,value) => obj[prop] = value);
+  if(arguments.length == 1) return (prop,value) => { set(prop,value); return set; };
+  if(arguments.length == 2) return value =>  set(prop,value);
+  return set(prop,value);
+};
+Util.get = Util.curry((obj, prop) => obj instanceof Map ? obj.get(prop) : obj[prop]);
+
+
 Util.inspect = (obj, opts = false) => {
   const { indent = '  ', newline = '\n', depth = 2, spacing = ' ' } = typeof opts == 'object' ? opts : { indent: '', newline: '', depth: typeof opts == 'number' ? opts : 10, spacing: ' ' };
 
@@ -711,20 +719,7 @@ Util.fnName = function(f, parent) {
     }
   }
 };
-Util.keys = obj => {
-  if(Util.isObject(obj)) {
-    if(obj[Symbol.iterator] !== undefined && typeof obj.item == 'function' && obj.getPropertyValue !== undefined) return obj[Symbol.iterator]();
 
-    if('length' in obj && typeof obj[0] == 'string' && obj[obj[0]] !== undefined)
-      return (function*() {
-        for(let i = 0; i < obj.length; i++) yield obj[i];
-      })();
-    let r = [];
-
-    for(let i in obj) r.push(i);
-    return r;
-  }
-};
 Util.objName = function(o) {
   if(o === undefined || o == null) return `${o}`;
   if(typeof o === 'function' || o instanceof Function) return Util.fnName(o);
@@ -896,7 +891,7 @@ Util.ifThenElse = function(pred = value => !!value, _then = () => {}, _else = ()
   };
 };
 
-Util.transform = curry(function*(fn, arr) {
+Util.transform = Util.curry(function*(fn, arr) {
   for(let item of arr) yield fn(item);
 });
 
@@ -1852,12 +1847,34 @@ Util.numbersConvert = function(str) {
     .join('');
 };
 Util.entries = function(arg) {
-  if(typeof arg == 'object' && arg !== null) {
-    return typeof arg.entries !== 'undefined' ? arg.entries() : Object.entries(arg);
+  let ret;
+  if(Util.isObject(arg)) {
+    ret = typeof arg.entries == 'function' ? arg.entries : function*() {
+        for(let key in arg) yield [key,arg[key]];
+      }
   }
-  //console.log("Util.entries", arg);
-  return null;
+  if(ret) return ret.call(arg);
 };
+Util.keys = function(arg) {
+  let ret;
+  if(Util.isObject(arg)) {
+     ret = typeof arg.keys == 'function' ? arg.keys : function*() {
+        for(let key in arg) yield key;
+      }
+  }
+  if(ret) return ret.call(arg);
+};
+Util.values = function(arg) {
+  let ret;
+  if(Util.isObject(arg)) {
+
+      ret = typeof arg.values == 'function' ? arg.values : function*() {
+        for(let key in arg) yield arg[key];
+      }
+  }
+  if(ret) return ret.call(arg);
+};
+
 Util.traverse = function(o, fn) {
   if(typeof fn == 'function')
     return Util.foreach(o, (v, k, a) => {
@@ -2498,7 +2515,7 @@ Util.compose = function compose(fn1, fn2 /*, fn3, etc */) {
     return result;
   };
 };
-Util.clamp = curry((min, max, value) => Math.max(min, Math.min(max, value)));
+Util.clamp = Util.curry((min, max, value) => Math.max(min, Math.min(max, value)));
 
 Util.coloring = (useColor = true) =>
   !useColor
@@ -2601,7 +2618,7 @@ Util.predicate = fn_or_regex => {
   else fn = fn_or_regex;
   return fn;
 };
-Util.inRange = curry((a, b, value) => value >= a && value <= b);
+Util.inRange = Util.curry((a, b, value) => value >= a && value <= b);
 
 Util.bindProperties = (proxy, target, props, gen) => {
   if(props instanceof Array) props = Object.fromEntries(props.map(name => [name, name]));
