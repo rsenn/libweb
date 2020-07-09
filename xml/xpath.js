@@ -66,8 +66,8 @@ export class MutableXPath extends MutablePath {
           //console.log('XPath.from: ', { i, x, max: maxCount(), number, tagName, counts, siblings });
         }
         }*/
-        siblings =[];
-        counts={};
+        siblings = [];
+        counts = {};
 
         s.push(x);
         n = undefined;
@@ -77,7 +77,7 @@ export class MutableXPath extends MutablePath {
 
     //  console.log('XPath.from = ', s);
     let r = new ImmutableXPath(s, absolute, obj);
-   // console.log('XPath.from(', a, ')');
+    // console.log('XPath.from(', a, ')');
     console.log('XPath.from = ', r.toString());
     return r;
   }
@@ -129,7 +129,7 @@ export class MutableXPath extends MutablePath {
       }
       r.push(o);
     }
-   // console.log('XPath.parse = ', r);
+    // console.log('XPath.parse = ', r);
     return r;
   }
 

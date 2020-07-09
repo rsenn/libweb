@@ -1,7 +1,7 @@
 import { EagleElement } from './element.js';
 import { Util } from '../util.js';
 import { Size } from '../dom.js';
-import { Point,Rect,BBox,TransformationList } from '../geom.js';
+import { Point, Rect, BBox, TransformationList } from '../geom.js';
 import { Rotation } from './common.js';
 import { VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
 
