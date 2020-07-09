@@ -29,17 +29,13 @@ export class MutableXPath extends MutablePath {
     let i = 0;
     let siblings, counts;
     const maxCount = () => Math.max(...Object.values(counts));
-
     if(a.length > 0 && (a[0] === '' || a[0] === '/')) if (a.shift() === '') absolute = true;
-
     for(; i < a.length; i++) {
       let p = a[i];
       if(MutablePath.isChildren(p)) p = 'children';
       else if(Util.isObject(p) && Util.isArray(o)) p = o.findIndex(item => item.tagName === p.tagName);
       e = o[p];
-
       //console.log(`XPath.from[${i}] `, p);
-
       if(p == 'children') {
         s.push(p);
         n = e.length;
@@ -47,11 +43,8 @@ export class MutableXPath extends MutablePath {
         siblings = e.reduce((acc, sib, idx) => [...acc, [incr(counts, sib.tagName), sib.tagName]], []);
       } else if(Util.isObject(e) && e.tagName !== undefined) {
         const [number, tagName] = siblings[p];
-
         let x = '';
-
         if(tagName) x += tagName;
-
         if(Util.isObject(e.attributes) && e.attributes.name) {
           let name = e.attributes.name;
           name = name.replace('/', '&#47;').replace("'", '&#39;');
@@ -68,17 +61,14 @@ export class MutableXPath extends MutablePath {
         }*/
         siblings = [];
         counts = {};
-
         s.push(x);
         n = undefined;
       }
       o = e;
     }
-
-    //  console.log('XPath.from = ', s);
     let r = new ImmutableXPath(s, absolute, obj);
     // console.log('XPath.from(', a, ')');
-    console.log('XPath.from = ', r.toString());
+    //console.log('XPath.from = ', r.toString());
     return r;
   }
 

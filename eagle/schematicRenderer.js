@@ -214,30 +214,11 @@ export class SchematicRenderer extends EagleSVGRenderer {
       br = br.round(0.254, 5);
 
       //  console.log("br:", br);
-      this.create(
-        'rect',
-        {
-          ...br.toObject(),
-          //   transform: 'none',
-          'data-part': instance.part.name /*,
-          'data-device': part.device.name,
-          'data-gate': gate.name,
-          'data-value': part.value || ''*/
-        },
-        g
-      );
+
+
+      this.create('rect', {...br.toObject(), 'data-part': instance.part.name }, g);
       t.rotate(45);
-      this.create(
-        'path',
-        {
-          d: `M 0,-1 L 0,1 M -1,0 L 1,0`,
-          transform: t,
-          stroke: new RGBA(255, 255, 0),
-          'stroke-linecap': 'round',
-          'stroke-width': 0.2
-        },
-        g
-      );
+      this.create('path', { d: `M 0,-1 L 0,1 M -1,0 L 1,0`, transform: t, stroke: new RGBA(255, 255, 0), 'stroke-linecap': 'round', 'stroke-width': 0.2 }, g);
     }
 
     /*  b.outset(0.15);
@@ -275,7 +256,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     this.renderSheet(sheet, parent);
 
-    this.renderInstances(parent, sheetNo, rect);
+    //this.renderInstances(parent, sheetNo, rect);
 
     return parent;
   }
