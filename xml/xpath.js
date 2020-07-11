@@ -51,7 +51,12 @@ export class MutableXPath extends MutablePath {
           //x =  this.matchObj(tagName, { name });
           x += `[@name='${name}']`;
         } else if(siblings.length > 1 && maxCount() > 1) {
-          x = `[${p + 1}]`;
+          if(siblings[p]) p = siblings.slice(0, p).filter(([idx, tagName]) => tagName == e.tagName).length;
+          else x = '';
+
+          //          console.log('', { p, x });
+
+          x += '[' + (p + 1).toString(10) + `]`;
         } /* else {
           const uniform = Object.keys(counts).length == 1;
           if(!uniform || maxCount() > 1) {
@@ -167,13 +172,18 @@ export class MutableXPath extends MutablePath {
     let ret = [];
     if(MutablePath.isChildren(p[0])) {
       //console.log('p[0]:', p[0], 'p[1]:', p[1]);
-      if(Util.isObject(p[1])) {
+      if(Util.isArray(p[1]) && p[1].length == 2) {
+        p.shift();
+        let arr = p.shift();
+        ret.push(childrenSym);
+        ret.push(c(arr[1], 1, 31) + c(`[${arr[0] + 1}]`, 1, 35));
+      } else if(Util.isObject(p[1])) {
         p.shift();
         ret.push(childrenSym);
         const { tagName, children, attributes = {}, ...rest } = p[0];
         const keys = Object.keys(p[0]);
         let s = '';
-        if(tagName) s += tagName;
+        if(tagName) s += c(tagName, 1, 31);
         let a = Object.entries(attributes).map(([k, v]) => `@${k}='${v}'`);
         if(a.length) s += `[${a.join('&&')}]`;
         if(s != '') {
@@ -182,8 +192,9 @@ export class MutableXPath extends MutablePath {
         }
       } else if(Util.isNumeric(p[1])) {
         p.shift();
+        let num = +p.shift();
         ret.push(childrenSym);
-        ret.push(`[${p.shift() + 1}]`);
+        ret.push(c(`[${num + 1}]`, 1, 36));
       }
       if(ret.length) return ret;
     }
@@ -195,12 +206,15 @@ export class MutableXPath extends MutablePath {
     return [...this];
   }
 
-  toString(sep = '/') {
+  toString(sep = '/', childrenSym = ctor.CHILDREN_STR, tfn = text => text) {
     let ctor = this.constructor;
     let a = [...this];
     let r = [];
-    while(a.length > 0) r = r.concat(MutableXPath.partToString(a, sep, ctor.CHILDREN_STR, text => text));
-    r = r.filter(part => !MutableXPath.isChildren(part));
+    //    console.log('this:', a);
+
+    while(a.length > 0) r = r.concat(MutableXPath.partToString(a, sep, childrenSym, tfn));
+    //  console.log('r:', r);
+    // r = r.filter(part => !MutableXPath.isChildren(part));
     let s = r.join('/');
     return sep + s;
   }
@@ -210,12 +224,12 @@ export class MutableXPath extends MutablePath {
 
     let { absolute } = this;
     c = typeof c == 'function' ? c : (text, ...colors) => `\x1b[${colors.join(';')}m${text}\x1b[0m`;
-    let s = MutableXPath.prototype.toString.call(this, '/', '', c);
     let n = Util.className(this).replace(/Immutable/, '');
-    s = s.split(/[\/]/g);
-    s = s
-      .filter(i => !ctor.isChildren(i))
-      .map(p => {
+
+    let s = MutableXPath.prototype.toString.call(this, '/', MutableXPath.CHILDREN_STR, c);
+    s = s.split(/[\.\/]/g);
+    s = s.filter(i => !MutableXPath.isChildren(i.replace(/\x1b\[[^a-z]*(.)/g, '')));
+    /* s=s.map(p => {
         const matches = /([^\[]*)(\[[^/]*\])?/.exec(p);
         let [tag, brack = ''] = [...matches].slice(1);
         brack = (brack + '').substring(1, brack.length - 1);
@@ -223,19 +237,22 @@ export class MutableXPath extends MutablePath {
         let [total, at, name, op, value] = bmatches || ['', '', '', ''];
         if(total) {
           p = c(tag, 1, 32) + c('[', 38, 5, 243);
-          p += c(at, 38, 5, 196) + c(name, 1, 33) + c(op, 1, 36) + c(value, 1, 35) + c(']', 38, 5, 243 /*1, 32*/);
+          p += c(at, 38, 5, 196) + c(name, 1, 33) + c(op, 1, 36) + c(value, 1, 35) + c(']', 38, 5, 243);
         } else {
-          p = c(p, 38, 5, 99 /*129 56*/);
+          p = c(p, 38, 5, 99);
         }
         return p;
-      })
-      .reduce((acc, p) => {
-        if(p.startsWith('[') && acc.length) acc[acc.length - 1] += c(p, 1, 32);
-        else acc.push(p);
-        return acc;
-      }, []);
-    s = s.join(c('/', 38, 5, 51 /* 1, 36*/));
-    s = c(n, 1, ...(/Mutable/.test(n) ? [38, 5, 124] /*[1,32]*/ : [38, 5, 214 /*1,31*/])) + ' ' + s;
+      });*/
+    s = s.reduce((acc, p) => {
+      if(p.startsWith('[') && acc.length) acc[acc.length - 1] += c(p, 1, 32);
+      else acc.push(p);
+      return acc;
+    }, []);
+
+    s = s.join(c('/', 1, 36));
+
+    s = c(n, 1, ...(/Mutable/.test(n) ? [38, 5, 124] : [38, 5, 214])) + ' ' + s;
+
     return s;
   }
 

@@ -21,7 +21,7 @@ export function RGBA(r = 0, g = 0, b = 0, a = 255) {
     ret.r = r;
     ret.g = g;
     ret.b = b;
-    ret.a = a;
+    if(!isNaN(+a) && +a !== 255) ret.a = a;
   } else if(args.length == 1) {
     const arg = args[0];
     if(typeof arg === 'string') {
@@ -30,12 +30,15 @@ export function RGBA(r = 0, g = 0, b = 0, a = 255) {
 
         let mul = arg.length >= 7 ? 1 : 17;
 
-        //console.log('RGBA match:', c, ' mul:', mul);
+        // console.log('RGBA match:', c, ' mul:', mul);
 
         ret.r = parseInt(c[1], 16) * mul;
         ret.g = parseInt(c[2], 16) * mul;
         ret.b = parseInt(c[3], 16) * mul;
-        ret.a = c.length > 3 ? parseInt(c[4], 16) * mul : 255;
+        if(c.length > 3) {
+          let a = parseInt(c[4], 16) * mul;
+          if(a !== 255) ret.a = a;
+        }
       } else if(arg.toLowerCase().startsWith('rgb')) {
         c = arg.match(/[\d.%]+/g).map(x => (x.endsWith('%') ? parseFloat(x.slice(0, -1)) * 2.55 : +x));
 
@@ -44,12 +47,12 @@ export function RGBA(r = 0, g = 0, b = 0, a = 255) {
         ret.r = Math.round(c[0]);
         ret.g = Math.round(c[1]);
         ret.b = Math.round(c[2]);
-        ret.a = Math.round(c.length > 3 && !isNaN(c[3]) ? c[3] : 255);
+        if(c.length > 3) ret.a = Math.round(c[3]);
       } else if(typeof arg === 'object' && arg.r !== undefined) {
         ret.r = arg.r;
         ret.g = arg.g;
         ret.b = arg.b;
-        ret.a = arg.a !== undefined ? arg.a : 255;
+        if(arg.a !== undefined) ret.a = arg.a;
       } else {
         ret.r = 0;
         ret.g = 0;
@@ -58,7 +61,7 @@ export function RGBA(r = 0, g = 0, b = 0, a = 255) {
       }
     }
   }
-  if(isNaN(ret.a)) ret.a = 255;
+  if(ret.a !== undefined && isNaN(+ret.a)) ret.a = 255;
 
   //console.log('RGBA ', {c, ret, args});
   if(!(ret instanceof RGBA)) return ret; //Object.setPrototypeOf(ret, RGBA.prototype);
@@ -123,13 +126,13 @@ RGBA.prototype.css = () => prop => (prop ? prop + ':' : '') + 'rgba(' + this.r +
 
 RGBA.prototype.toString = function(sep = ',', fmt = num => +num.toFixed(3)) {
   const { r, g, b, a } = this;
-  if(a >= 255) return 'rgb(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + ')';
+  if(a === undefined) return 'rgb(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + ')';
   else return 'rgba(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + sep + a / 255 + ')';
 };
 
 RGBA.prototype.toSource = function(sep = ',') {
   let a = this.a;
-  if(a >= 255) return 'new RGBA(' + this.r + sep + this.g + sep + this.b + ')';
+  if(a === undefined) return 'new RGBA(' + this.r + sep + this.g + sep + this.b + ')';
   else return 'new RGBA(' + this.r + sep + this.g + sep + this.b + sep + (a / 255).toFixed(3) + ')';
 };
 
@@ -360,6 +363,67 @@ RGBA.prototype.toConsole = function(fn = 'toString') {
   const textColor = this.invert().blackwhite();
   const bgColor = this.blackwhite(255);
   return [`%c${this[fn]()}%c`, `text-shadow: 1px 1px 1px ${bgColor.hex()}; border: 1px solid black; padding: 2px; font-size: 1.5em; background-color: ${this.toString()}; color: ${textColor};`, `background-color: none;`];
+};
+
+RGBA.prototype.toAnsi = function(background = false) {
+  const { r, g, b } = this;
+
+  return `\u001b[${background ? 48 : 38};2;${[r,g,b].join(";")}m  `;
+};
+RGBA.fromAnsi256 = function(n) {
+  let r, g, b;
+  let c;
+  if(n < 16) {
+    r = n & 1;
+    n >>= 1;
+    g = n & 1;
+    n >>= 1;
+    b = n & 1;
+    n >>= 1;
+    c = [r, g, b].map(v => [n & 1 ? 85 : 0, n & 1 ? 255 : 170][v]);
+  } else if(n >= 16 && n < 232) {
+    n -= 16;
+    b = n % 6;
+    n /= 6;
+    g = n % 6;
+    n /= 6;
+    r = n % 6;
+    c = [r, g, b].map(n => (n * 255) / 5);
+  } else if(n >= 232) {
+    n -= 231;
+    r = g = b = (n * 255) / (255 - 231);
+    c = [r, g, b];
+  }
+  if(c) {
+    c = c.map(Math.round);
+    c = c.map(n => Math.min(255, n));
+    return new RGBA(...c);
+  }
+};
+
+RGBA.prototype.toAnsi256 = function(background = false) {
+  const { r, g, b } = this;
+  const fromRGB = (r, g, b) => {
+    if(r === g && g === b) {
+      if(r < 8) return 16;
+      if(r > 248) return 231;
+      return Math.round(((r - 8) / 247) * 24) + 232;
+    }
+    return 16 + 36 * Math.round((r / 255) * 5) + 6 * Math.round((g / 255) * 5) + Math.round((b / 255) * 5);
+  };
+  let value = fromRGB(r, g, b);
+  const toString = (background = false) => new String(`\x1b[${background ? 48 : 38};5;${value}m`);
+  let ret = toString(background);
+  ret.value = value;
+  return ret;
+};
+
+RGBA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
+  const { r, g, b, a } = this;
+  let arr = a !== undefined ? [r, g, b, a] : [r, g, b];
+  let ret =  arr/*.map(n => '0x' + ('0'+(+n).toString(16)).slice(-2))*/.join(',');
+
+  return this.toAnsi256(true) + `RGBA(${ret})\x1b[0m`;
 };
 
 RGBA.random = function(r = [0, 255], g = [0, 255], b = [0, 255], a = [255, 255], rng = Math.random) {

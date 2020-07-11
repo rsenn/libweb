@@ -109,22 +109,22 @@ export const iterate = function*(value, filter = v => true, path = []) {
   if(r !== -1) if (Util.isObject(value)) for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
 };
 
-export const flatten = function(iter, dst = {}, filter = (v, p) => true, map = p => p.join('.'), conv = (v, p) => Util.filterKeys(v, k => k != 'children')) {
+export const flatten = function(iter, dst = {}, filter = (v, p) => typeof v != 'object', map = (p, v) => [p.join('.'), v]) {
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 
-  if(dst instanceof Map) insert = (name, value) => dst.set(name, value);
+  if(typeof dst.set == 'function') insert = (name, value) => dst.set(name, value);
   else if(typeof dst.push == 'function') insert = (name, value) => dst.push([name, value]);
   else insert = (name, value) => (dst[name] = value);
 
-  for(let [value, path] of iter) insert(map(path, value), conv(value, path));
+  for(let [value, path] of iter) insert(...map(path, value));
 
   return dst;
 };
 
 export const get = (root, path) => {
   let len;
-  path = typeof path == 'string' ? path.split(/\.\//) : path;
+  path = typeof path == 'string' ? path.split(/[\.\/]/) : path;
   path = Util.clone(path);
   for(let j = 0, len = path.length; j < len; j++) {
     let pathElement = path[j];
@@ -134,13 +134,17 @@ export const get = (root, path) => {
 };
 
 export const set = (root, path, value) => {
-  path = typeof path == 'string' ? path.split(/\.\//) : path;
-  path = Util.clone(path);
-  let lastPath = path.pop();
-  for(let j = 0, len = path.length; j < len; j++) {
-    let pathElement = path[j];
+  path = typeof path == 'string' ? path.split(/[\.\/]/) : [...path];
+
+  if(path.length == 0) return Object.assign(root, value);
+
+  for(let j = 0, len = path.length; j + 1 < len; j++) {
+    let pathElement = isNaN(path[j]) ? path[j] : +path[j];
+    if(!(pathElement in root)) root[pathElement] = /^[0-9]+$/.test(path[j + 1]) ? [] : {};
     root = root[pathElement];
   }
+  let lastPath = path.pop();
+
   return (root[lastPath] = value);
 };
 

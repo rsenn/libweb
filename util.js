@@ -62,8 +62,7 @@ export function Util(g) {
   //  if(g) Util.globalObject = g;
 }
 
-Util.curry =
- (fn, arity) => {
+Util.curry = (fn, arity) => {
   return function curried() {
     if(arity == null) arity = fn.length;
 
@@ -267,14 +266,17 @@ Util.range = function(start, end) {
   //console.log("Util.range ", r);
   return r;
 };
-Util.set = function(obj,prop,value) {
-  const set = obj instanceof Map ?  ((prop,value) => obj.set(prop,value)) : ((prop,value) => obj[prop] = value);
-  if(arguments.length == 1) return (prop,value) => { set(prop,value); return set; };
-  if(arguments.length == 2) return value =>  set(prop,value);
-  return set(prop,value);
+Util.set = function(obj, prop, value) {
+  const set = obj instanceof Map ? (prop, value) => obj.set(prop, value) : (prop, value) => (obj[prop] = value);
+  if(arguments.length == 1)
+    return (prop, value) => {
+      set(prop, value);
+      return set;
+    };
+  if(arguments.length == 2) return value => set(prop, value);
+  return set(prop, value);
 };
-Util.get = Util.curry((obj, prop) => obj instanceof Map ? obj.get(prop) : obj[prop]);
-
+Util.get = Util.curry((obj, prop) => (obj instanceof Map ? obj.get(prop) : obj[prop]));
 
 Util.inspect = (obj, opts = false) => {
   const { indent = '  ', newline = '\n', depth = 2, spacing = ' ' } = typeof opts == 'object' ? opts : { indent: '', newline: '', depth: typeof opts == 'number' ? opts : 10, spacing: ' ' };
@@ -1455,8 +1457,8 @@ Util.isServer = function() {
 Util.isMobile = function() {
   return true;
 };
-Util.uniquePred = (el, i, arr) => arr.indexOf(el) === i;
-Util.unique = arr => arr.filter(Util.uniquePred);
+Util.uniquePred = (cmp = null) => (cmp === null ? (el, i, arr) => arr.indexOf(el) === i : (el, i, arr) => arr.findIndex(item => cmp(el, item)) === i);
+Util.unique = arr => arr.filter(Util.uniquePred());
 
 Util.concat = function*(...args) {
   for(let arg of args) {
@@ -1569,15 +1571,13 @@ Util.mapFunctional = fn =>
 Util.map = function(obj, fn) {
   if(typeof obj == 'function') return Util.mapFunctional(...arguments);
   if(typeof fn != 'function') return Util.toMap(...arguments);
+  if(typeof obj.map == 'function') return obj.map(fn);
+
   let ret = {};
   for(let key in obj) {
     if(obj.hasOwnProperty(key)) {
       let item = fn(key, obj[key], obj);
-      if(item instanceof Array && item.length == 2) ret[item[0]] = item[1];
-      else {
-        if(!(ret instanceof Array)) ret = [];
-        ret.push(item);
-      }
+      if(item) ret[item[0]] = item[1];
     }
   }
   return ret;
@@ -1849,28 +1849,36 @@ Util.numbersConvert = function(str) {
 Util.entries = function(arg) {
   let ret;
   if(Util.isObject(arg)) {
-    ret = typeof arg.entries == 'function' ? arg.entries : function*() {
-        for(let key in arg) yield [key,arg[key]];
-      }
+    ret =
+      typeof arg.entries == 'function'
+        ? arg.entries
+        : function*() {
+            for(let key in arg) yield [key, arg[key]];
+          };
   }
   if(ret) return ret.call(arg);
 };
 Util.keys = function(arg) {
   let ret;
   if(Util.isObject(arg)) {
-     ret = typeof arg.keys == 'function' ? arg.keys : function*() {
-        for(let key in arg) yield key;
-      }
+    ret =
+      typeof arg.keys == 'function'
+        ? arg.keys
+        : function*() {
+            for(let key in arg) yield key;
+          };
   }
   if(ret) return ret.call(arg);
 };
 Util.values = function(arg) {
   let ret;
   if(Util.isObject(arg)) {
-
-      ret = typeof arg.values == 'function' ? arg.values : function*() {
-        for(let key in arg) yield arg[key];
-      }
+    ret =
+      typeof arg.values == 'function'
+        ? arg.values
+        : function*() {
+            for(let key in arg) yield arg[key];
+          };
   }
   if(ret) return ret.call(arg);
 };

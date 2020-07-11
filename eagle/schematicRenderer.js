@@ -215,8 +215,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
       //  console.log("br:", br);
 
-
-      this.create('rect', {...br.toObject(), 'data-part': instance.part.name }, g);
+      this.create('rect', { ...br.toObject(), 'data-part': instance.part.name }, g);
       t.rotate(45);
       this.create('path', { d: `M 0,-1 L 0,1 M -1,0 L 1,0`, transform: t, stroke: new RGBA(255, 255, 0), 'stroke-linecap': 'round', 'stroke-width': 0.2 }, g);
     }

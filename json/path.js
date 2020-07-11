@@ -66,7 +66,7 @@ export class MutablePath extends Array {
       a = a || [];
       a = a.reduce((acc, p) => {
         if(IsChildren(p)) {
-          p = MutablePath.CHILDREN;
+          p = 'children'; //MutablePath.CHILDREN;
         } else if(!isNaN(+p)) {
           if(!MutablePath.isChildren(acc[acc.length - 1])) acc.push(MutablePath.CHILDREN);
           p = +p;
@@ -170,10 +170,12 @@ export class MutablePath extends Array {
    */
   left(n = 1) {
     let i = this.lastId,
-      l = this.slice();
+      l = [...this];
     if(i >= 0) {
       l[i] = Math.max(0, l[i] - n);
-      return l;
+      const ctor = this.getSpecies();
+
+      return new ctor(l);
     }
   }
 
@@ -184,7 +186,7 @@ export class MutablePath extends Array {
    * @return     {Path}
    */
   up(n = 1) {
-    return this.slice(0, this.length - n);
+    if(this.length >= n) return this.slice(0, this.length - n);
   }
 
   down(...args) {
@@ -278,8 +280,10 @@ export class MutablePath extends Array {
     return a.o;
   }
 
-  toString(sep = '.', partToStr = MutablePath.partToString, childrenStr = MutablePath['CHILDREN_STR'] + CHILDREN_SPACE) {
+  toString(...args) {
+    const [sep = '.', partToStr = MutablePath.partToString, childrenStr = MutablePath['CHILDREN_STR'] + CHILDREN_SPACE] = args;
     let a = [...this];
+    //console.log("toString",{sep,partToStr, childrenStr});
     while(a.length > 0 && a[0] === '') a.shift();
     let n = a.length;
     let r = [];
@@ -290,7 +294,7 @@ export class MutablePath extends Array {
     }
     r = r.join(sep).replace(/[/.]?\[/g, '[');
     r = (this.absolute && r != '' && sep == '/' ? sep : '') + r;
-    return r.replace(/\//g, sep).replace(new RegExp(childrenStr, 'g'), 'children' /*childrenStr + ' '*/);
+    return r.replace(/\//g, sep) /*.replace(new RegExp(childrenStr, 'g'), 'children')*/;
   }
 
   toSource(sep = ',') {
@@ -310,10 +314,10 @@ export class MutablePath extends Array {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')](sep = '/', childrenStr = '\u220a' + CHILDREN_SPACE, color = true) {
-    let p = MutablePath.prototype.toString.call(this, sep || '\u2571' || '\u29f8', childrenStr, text => text);
+    let p = MutablePath.prototype.toString.call(this /*, sep || '\u2571' || '\u29f8', childrenStr, text => text*/);
     let n = Util.className(this);
     let c = n.startsWith('Mutable') ? 31 : 32;
-    return color ? `\x1b[1;${c}m${n}\x1b[1;34m ${p}\x1b[0m` : p;
+    return color ? `\x1b[1;${c}m${n.replace(/^Immutable/, '')}\x1b[1;34m ${p}\x1b[0m` : p;
   }
 
   [Symbol.toStringTag]() {
@@ -433,7 +437,7 @@ export class MutablePath extends Array {
     return ret;
   }
 
-  equal(other = []) {
+  equals(other = []) {
     const thisPath = this;
     /*console.log('equal', { thisPath, other });
     //console.log('thisPath', thisPath.length, ...[...thisPath]);
@@ -457,6 +461,17 @@ export class MutablePath extends Array {
     let p = this;
     for(p = this; p; p = t(p)) yield p;
   }
+
+  static compare(a, b) {
+    if(a.length != b.length) return a.length - b.length;
+    for(let i = 0, len = a.length; i < len; i++) {
+      if(a[i] < b[i]) return -1;
+      if(a[i] > b[i]) return 1;
+    }
+    return 0;
+  }
+
+  static equal = (a, b) => this.compare(a, b) === 0;
 }
 
 Util.defineGetter(MutablePath, Symbol.species, function() {

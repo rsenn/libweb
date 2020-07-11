@@ -2,49 +2,57 @@ import { Util } from '../util.js';
 import { RGBA } from '../color/rgba.js';
 import { HSLA } from '../color/hsla.js';
 
-export function ColorMap(...args) {
-  let isNew = this instanceof ColorMap;
-  let obj = isNew ? this : [];
+export class ColorMap extends Array {
+  constructor(...args) {
+    super();
+    let isNew = this instanceof ColorMap;
+    let obj = isNew ? this : [];
 
-  for(let arg of args) {
-    for(let color of arg) {
-      // console.log("arg:", color);
+    for(let arg of args) {
+      for(let color of arg) {
+        //        console.log('arg:', color);
 
-      let item;
-      /*if(typeof(arg) == 'string')
+        let item;
+        /*if(typeof(arg) == 'string')
    item = RGBA.fromString(arg);*/
 
-      if(!(color instanceof RGBA || color instanceof HSLA)) item = RGBA.fromString(color);
-      obj.push(item || color);
+        if(!(color instanceof RGBA || color instanceof HSLA)) item = RGBA.fromString(color);
+        obj.push(item || color);
+      }
+    }
+
+    Util.define(obj, { type: RGBA, base: 10 });
+
+    if(!isNew) return obj;
+  }
+
+  toString(opts = {}) {
+    const base = opts.base || this.base;
+    let a = [];
+    for(let color of this) a.push(color.toString ? color.toString(',', num => num.toString(base)) : '' + color);
+    a.join(',');
+  }
+
+  *toScalar(ofpts = {}) {
+    const base = opts.base || this.base;
+    const fmt = opts.fmt || this.fmt || (n => n.toFixed(3));
+    for(let color of this) {
+      if(color instanceof HSLA) color = color.toRGBA();
+      if(!(color instanceof RGBA)) color = RGBA.fromString(color);
+      let { r, g, b, a } = color;
+      yield [r, g, b, a].map(fmt);
     }
   }
 
-  if(!isNew) return obj;
+  [Symbol.for('nodejs.util.inspect.custom')]() {
+    return this;
+  }
 }
 
-ColorMap.prototype = new Array();
+//ColorMap.prototype = new Array();
 
 //Object.assign(ColorMap.prototype, Util.getMethods(Array.prototype));
 
-ColorMap.prototype.type = RGBA;
-ColorMap.prototype.base = 10;
-
-ColorMap.prototype.toString = function(opts = {}) {
-  const base = opts.base || this.base;
-  let a = [];
-  for(let color of this) a.push(color.toString ? color.toString(',', num => num.toString(base)) : '' + color);
-  a.join(',');
-};
-ColorMap.prototype.toScalar = function*(opts = {}) {
-  const base = opts.base || this.base;
-  const fmt = opts.fmt || this.fmt || (n => n.toFixed(3));
-  for(let color of this) {
-    if(color instanceof HSLA) color = color.toRGBA();
-    if(!(color instanceof RGBA)) color = RGBA.fromString(color);
-    let { r, g, b, a } = color;
-    yield [r, g, b, a].map(fmt);
-  }
-};
 /*
 
     a.push(color.toString ? color.toString(',', num => num.toString(base)) : ''+color);
