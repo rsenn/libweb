@@ -277,14 +277,8 @@ RGBA.prototype.toLAB = function() {
   y = y > 0.008856 ? Math.pow(y, 1 / 3) : 7.787 * y + 16 / 116;
   z = z > 0.008856 ? Math.pow(z, 1 / 3) : 7.787 * z + 16 / 116;
 
-  return {
-    l: /*Math.round*/ 116 * y - 16,
-    a: /*Math.round*/ 500 * (x - y),
-    b: /*Math.round*/ 200 * (y - z),
-    alpha: this.a
-  };
+  return { l: 116 * y - 16, a: 500 * (x - y), b: 200 * (y - z), a: this.a };
 };
-
 RGBA.prototype.fromLAB = function(lab) {
   var y = (lab.l + 16) / 116,
     x = lab.a / 500 + y,
@@ -368,7 +362,7 @@ RGBA.prototype.toConsole = function(fn = 'toString') {
 RGBA.prototype.toAnsi = function(background = false) {
   const { r, g, b } = this;
 
-  return `\u001b[${background ? 48 : 38};2;${[r,g,b].join(";")}m  `;
+  return `\u001b[${background ? 48 : 38};2;${[r, g, b].join(';')}m  `;
 };
 RGBA.fromAnsi256 = function(n) {
   let r, g, b;
@@ -421,9 +415,15 @@ RGBA.prototype.toAnsi256 = function(background = false) {
 RGBA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
   const { r, g, b, a } = this;
   let arr = a !== undefined ? [r, g, b, a] : [r, g, b];
-  let ret =  arr/*.map(n => '0x' + ('0'+(+n).toString(16)).slice(-2))*/.join(',');
+  let ret = arr.map(n => (n + '').padStart(3, ' ')).join(',');
+  const color = this.toAnsi256(true);
+  const l = this.toHSLA().l;
+  let s = '';
 
-  return this.toAnsi256(true) + `RGBA(${ret})\x1b[0m`;
+  s += arr.map(n => `\x1b[0;33m${n}\x1b[0m`).join('');
+  s = color + s;
+
+  return color + `\x1b[${l > 50 ? 30 : 37}mRGBA(${ret}${color})\x1b[0m`;
 };
 
 RGBA.random = function(r = [0, 255], g = [0, 255], b = [0, 255], a = [255, 255], rng = Math.random) {
