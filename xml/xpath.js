@@ -206,7 +206,7 @@ export class MutableXPath extends MutablePath {
     return [...this];
   }
 
-  toString(sep = '/', childrenSym = ctor.CHILDREN_STR, tfn = text => text) {
+  toString(sep = '/', childrenSym = ctor.CHILDREN_GLYPH, tfn = text => text) {
     let ctor = this.constructor;
     let a = [...this];
     let r = [];
@@ -226,7 +226,7 @@ export class MutableXPath extends MutablePath {
     c = typeof c == 'function' ? c : (text, ...colors) => `\x1b[${colors.join(';')}m${text}\x1b[0m`;
     let n = Util.className(this).replace(/Immutable/, '');
 
-    let s = MutableXPath.prototype.toString.call(this, '/', MutableXPath.CHILDREN_STR, c);
+    let s = MutableXPath.prototype.toString.call(this, '/', MutableXPath.CHILDREN_GLYPH, c);
     s = s.split(/[\.\/]/g);
     s = s.filter(i => !MutableXPath.isChildren(i.replace(/\x1b\[[^a-z]*(.)/g, '')));
     /* s=s.map(p => {

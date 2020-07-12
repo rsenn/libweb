@@ -423,8 +423,7 @@ RGBA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
   s += arr.map(n => `\x1b[0;33m${n}\x1b[0m`).join('');
   s = color + s;
 
-  return color + `\x1b[${l > 50 ? 30 : 37}mRGBA(${ret}${color})\x1b[0m`;
-};
+  return `\x1b[1;31mRGBA\x1b[1;36m` + `(${ret})`.padEnd(18, ' ') + ` ${color}    \x1b[0m`; };
 
 RGBA.random = function(r = [0, 255], g = [0, 255], b = [0, 255], a = [255, 255], rng = Math.random) {
   return new RGBA(Util.randInt(...r, rng), Util.randInt(...g, rng), Util.randInt(...b, rng), Util.randInt(...a, rng));
