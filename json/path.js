@@ -157,9 +157,10 @@ export class MutablePath extends Array {
    * @return     {Path}
    */
   right(n = 1) {
-    const [base, last] = this.split(-1);
-    const ctor = this.getSpecies();
-    return new ctor([...base, this.last + 1], this.absolute);
+    if(this.last + n < this.length) {
+      const ctor = this.getSpecies();
+      return new ctor(this.splice(-1, 1, Math.min(this.length, this.last + n)));
+    }
   }
 
   /**
@@ -169,13 +170,9 @@ export class MutablePath extends Array {
    * @return     {Path}
    */
   left(n = 1) {
-    let i = this.lastId,
-      l = [...this];
-    if(i >= 0) {
-      l[i] = Math.max(0, l[i] - n);
+    if(this.last >= n) {
       const ctor = this.getSpecies();
-
-      return new ctor(l);
+      return new ctor(this.splice(-1, 1, Math.max(0, this.last - n)));
     }
   }
 
@@ -367,6 +364,18 @@ export class MutablePath extends Array {
     if(start < 0) start = a.length + start;
     if(end < 0) end = a.length + end;
     a = Array.prototype.slice.call(a, start, end);
+    return new ctor(a, a[0] === '');
+  }
+
+  splice(start = 0, remove = this.length, ...insert) {
+    const ctor = this.getSpecies();
+    let a = this.toArray();
+    if(start < 0) start = a.length + start;
+    if(remove < 0) remove = a.length - (-remove - 1);
+
+    remove = Math.min(this.length - start, remove);
+
+    Array.prototype.splice.call(a, start, remove, ...insert);
     return new ctor(a, a[0] === '');
   }
 
