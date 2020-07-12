@@ -117,10 +117,12 @@ export class EagleNode extends EagleInterface {
 
       for(let xpath of fields) {
         let key = xpath[xpath.length - 1];
-        lazy[key] = () =>
-          //console.log('lookup', key, this.ref);
-          this.lookup(xpath, true);
-        lists[key] = () => /*listCtor(this, this.path.down('children'),*/ lazy[key]().children;
+        lazy[key] = () => {
+          let ret = this.lookup(xpath);
+          console.log('lookup', xpath, ret, this);
+          return ret;
+        };
+        lists[key] = () => lazy[key]().children;
 
         maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => EagleNodeMap.create(lists[key](), key == 'instances' ? 'part' : key == 'layers' ? ['number', 'name'] : 'name');
       }

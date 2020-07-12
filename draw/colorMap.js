@@ -9,8 +9,11 @@ export class ColorMap extends Map {
     let isNew = this instanceof ColorMap;
     let obj = isNew ? this : new Map();
     let type;
+    let i = -1;
     for(let arg of args) {
-      if(Util.isConstructor(arg)) {
+      i++;
+
+      if(i == 0 && Util.isConstructor(arg)) {
         type = arg;
         continue;
       }

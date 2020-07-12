@@ -206,13 +206,13 @@ export class EagleInterface {
 
     if(!(xpath instanceof ImmutableXPath)) xpath = new ImmutableXPath(xpath);
 
-    //console.log('lookup:', xpath);
-
     let path = new ImmutablePath(xpath.toArray().reduce((acc, p) => [...acc, 'children', p], []));
-    let value = path.apply(raw);
+    let value = path.apply(raw, true);
+    console.log('lookup:', { raw });
+    console.log('lookup:', { path: [...path] });
 
     path = this.ref.path.concat(path);
-    //console.log('lookup:', tagName||raw, { document, path, value});
+    console.log('lookup:', tagName, { document, path, value });
 
     let ret = t(document, path, value);
     return ret;

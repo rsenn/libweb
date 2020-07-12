@@ -148,6 +148,19 @@ export const set = (root, path, value) => {
   return (root[lastPath] = value);
 };
 
+export const delegate = (root, path) => {
+  if(path) {
+    const last = path.pop();
+    const obj = get(root, path);
+    return function(value) {
+      return value !== undefined ? (obj[last] = value) : obj[last];
+    };
+  }
+  return function(path, value) {
+    return value !== undefined ? obj.set(root, path, value) : obj.get(root, path);
+  };
+};
+
 export const transform = (obj, filter, t) => {
   let k,
     transformed,

@@ -123,7 +123,7 @@ export class EagleDocument extends EagleNode {
 
   lookup(xpath) {
     let doc = this;
-    return super.lookup(xpath, (o, p, v) => EagleElement.get(o, p, v));
+    return super.lookup(xpath, (o, p, v) => v && EagleElement.get(o, p, v));
   }
 
   getBounds(sheetNo = 0) {

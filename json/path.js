@@ -18,7 +18,7 @@ export function DereferenceError(object, member, pos, locator) {
     { object, member, pos, locator },
     {
       message:
-        `Error dereferencing ${Util.className(object)} @ ${locator.toString()}
+        `Error dereferencing ${Util.className(object)} @ ${[...locator] + ''}
 xml: ${Util.abbreviate(toXML(locator.root))}
 no member '${Util.inspect(member, { colors: false })}' in ${Util.toString(object, { depth: 2, multiline: true, indent: '  ', colors: false })} \n` + stack.join('\n'),
       stack
@@ -291,7 +291,14 @@ export class MutablePath extends Array {
       if(!p) break;
       r = r.concat(p);
     }
-    r = r.join(sep).replace(/[/.]?\[/g, '[');
+    const color = (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
+  const pad = (s, n = 1) => " ".repeat(n)+ s +  " ".repeat(n);
+
+
+    r = r.reduce((acc, p) => [...acc, ...(/^[A-Za-z]/.test(p) ? [color(pad(['\u2b21','\u274a','\u229b',/*'\ud83d',*/'\u273d','\u20f0','\u20f0','\u272a','\u262a',
+                                                                           /*'\ud83d',*/'\u21f9','\u29bf',/*'\ud81a','\ud83d','\ud83d','\ud83d',*/'\u25c7','\u2b20','\u267d','\u267c','\u267b','\u2693',/*'\ud83d',*/'\u0fd6','\u0fd5','\u2620','\u0e1e'][10]), 1, 35), color(p, 1, 33)] : [sep, p])], []);
+
+    r = r.join('').replace(/[/.]?\[/g, '[');
     r = (this.absolute && r != '' && sep == '/' ? sep : '') + r;
     return r
       .replace(/\//g, sep)

@@ -288,7 +288,7 @@ export const findXPath = (xpath, flat, { root, recursive = true, entries = false
 
   for(let [path, obj] of flat) {
     let tmp = new Path(path == '' ? [] : path, true);
-    obj = tmp.apply(root);
+    obj = tmp.apply(root, true);
     let xpath = ImmutableXPath.from(tmp, root); //(obj2path(obj));
     if(absolute && !(xpath + '').startsWith('/')) xpath = '/' + xpath;
     if(m(xpath)) r.push([xpath, obj]);

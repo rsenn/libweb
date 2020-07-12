@@ -2079,7 +2079,7 @@ Util.getCallerStack = function(position = 2) {
       return this.toString();
     }
   });
-  window.stack = stack;
+  Util.tryCatch(() => (window.stack = stack));
   return stack;
 };
 Util.getCallerFile = function(position = 2) {
