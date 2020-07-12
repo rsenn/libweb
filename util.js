@@ -1838,6 +1838,8 @@ Util.filterKeys = function(obj, pred) {
   return ret;
 };
 Util.filterOutKeys = function(obj, arr) {
+  if(typeof obj != 'object') return obj;
+
   return Util.filterKeys(obj, key => arr.indexOf(key) == -1);
 };
 Util.numbersConvert = function(str) {

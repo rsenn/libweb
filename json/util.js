@@ -9,6 +9,7 @@ export const toXML = function(o, z = 10000, q = '"') {
   let { tagName, attributes, children, ...obj } = o;
   let s = `<${tagName}`;
   let attrs = attributes || obj;
+  if(!Util.isEmpty(attrs)) console.log('attrs:', attributes);
   for(let k in attrs) s += ` ${k}=${q}${attrs[k]}${q}`;
   const a = children && children.length !== undefined ? children : [];
   if(a && a.length > 0) {

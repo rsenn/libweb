@@ -1,30 +1,27 @@
 import { Util } from '../util.js';
 import { RGBA } from '../color/rgba.js';
 import { HSLA } from '../color/hsla.js';
+import { Iterator } from '../iterator.js';
 
 export class ColorMap extends Map {
   constructor(...args) {
     super();
     let isNew = this instanceof ColorMap;
-    let obj = isNew ? this : [];
-
+    let obj = isNew ? this : new Map();
+    let type;
     for(let arg of args) {
+      if(Util.isConstructor(arg)) {
+        type = arg;
+        continue;
+      }
       for(let [key, color] of Util.entries(arg)) {
-        //console.log('arg:', {key,color});
-
-        let item;
-        /*if(typeof(arg) == 'string')
-   item = RGBA.fromString(arg);*/
-
-        if(!(color instanceof RGBA || color instanceof HSLA)) item = RGBA.fromString(color);
-
+        let item = color;
+        if(!(color instanceof RGBA || color instanceof HSLA)) item = RGBA.fromString(item);
+        if(type === HSLA) item = item.toHSLA();
         obj.set(key, item || color);
-        //        obj.push(item || color);
       }
     }
-
     Util.define(obj, { type: RGBA, base: 10 });
-
     if(!isNew) return obj;
   }
 

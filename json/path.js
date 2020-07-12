@@ -473,7 +473,18 @@ export class MutablePath extends Array {
 
   *walk(t = p => p.up(1)) {
     let p = this;
-    for(p = this; p; p = t(p)) yield p;
+    let run = true;
+    let skip;
+    let next;
+    const abort = () => (run = false);
+    const set = v => (p = v);
+    const ignore = () => (skip = true);
+    for(let p = this, i = 0; p; p = next) {
+      next = t(p, i++, abort, ignore);
+      if(!skip) yield p;
+      if(!run) break;
+      skip = false;
+    }
   }
 
   static compare(a, b) {

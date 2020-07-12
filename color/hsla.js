@@ -165,6 +165,18 @@ HSLA.prototype.dump = function() {
   return this;
 };
 
+HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
+  const { h, s, l, a } = this;
+  let arr = !isNaN(a) ? [h, s, l, a] : [h, s, l];
+  let ret = arr.map((n, i) => Util.roundTo(n, i == 0 ? 1 : 100 / 255, 1) + '' /*.padStart(3, ' ')*/).join(', ');
+  const color = this.toRGBA().toAnsi256(true);
+  let o = '';
+  o += arr.map(n => `\x1b[0;33m${n}\x1b[0m`).join('');
+  o = color + o;
+
+  return `\x1b[1;31mHSLA\x1b[1;36m` + `(${ret})`.padEnd(24, ' ') + ` ${color}    \x1b[0m`;
+};
+
 for(let name of ['css', 'toHSL', 'clamp', 'round', 'hex', 'toRGBA', 'toString']) {
   HSLA[name] = hsla => HSLA.prototype[name].call(hsla || new HSLA());
 }

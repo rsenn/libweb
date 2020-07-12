@@ -415,7 +415,8 @@ RGBA.prototype.toAnsi256 = function(background = false) {
 RGBA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
   const { r, g, b, a } = this;
   let arr = a !== undefined ? [r, g, b, a] : [r, g, b];
-  let ret = arr.map(n => (n + '').padStart(3, ' ')).join(',');
+  let ret = arr /*.map(n => (n + '').padStart(3, ' '))*/
+    .join(',');
   const color = this.toAnsi256(true);
   const l = this.toHSLA().l;
   let s = '';

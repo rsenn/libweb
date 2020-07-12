@@ -206,8 +206,8 @@ export class MutableXPath extends MutablePath {
     return [...this];
   }
 
-  toString(sep = '/', childrenSym = ctor.CHILDREN_GLYPH, tfn = text => text) {
-    let ctor = this.constructor;
+  toString(sep = '/', childrenSym = MutableXPath.CHILDREN_GLYPH, tfn = text => text) {
+    //  let ctor = this.constructor;
     let a = [...this];
     let r = [];
     //    console.log('this:', a);
