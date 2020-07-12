@@ -36,10 +36,8 @@ export const IsChildren = a => a === MutablePath.CHILDREN_GLYPH || a === Mutable
 const CHILDREN_SPACE = '';
 
 export class MutablePath extends Array {
-  static CHILDREN_GLYPH = /*'\u220d'*/ /*'\u27c1' */
-    '▸'
-//    '\u00bb'
-    ;
+  static CHILDREN_GLYPH /*'\u27c1' */ /*'\u220d'*/ = '▸';
+  //    '\u00bb'
   static CHILDREN_FN = args => {
     for(let i = 0; i < args.length; i++) args[i] = (args[i] + '').replace(/children/g, this.CHILDREN_GLYPH);
     return '';
@@ -295,7 +293,10 @@ export class MutablePath extends Array {
     }
     r = r.join(sep).replace(/[/.]?\[/g, '[');
     r = (this.absolute && r != '' && sep == '/' ? sep : '') + r;
-    return r.replace(/\//g, sep) .replace(new RegExp(childrenStr+'.', 'g'), childrenStr+' \x1b[1;36m').replace(new RegExp('.'+childrenStr, 'g'), ` \x1b[1;30m`+childrenStr);
+    return r
+      .replace(/\//g, sep)
+      .replace(new RegExp(childrenStr + '.', 'g'), childrenStr + ' \x1b[1;36m')
+      .replace(new RegExp('.' + childrenStr, 'g'), ` \x1b[1;30m` + childrenStr);
   }
 
   toSource(sep = ',') {
