@@ -46,6 +46,47 @@ export class ColorMap extends Map {
     }
   }
 
+  static generate(hues, tones, prng) {
+    const gcd = (...input) => {
+      var len, a, b;
+      len = input.length;
+      if(!len) {
+        return null;
+      }
+      a = input[0];
+      for(var i = 1; i < len; i++) {
+        b = input[i];
+        a = gcd_two_numbers(a, b);
+      }
+      return a;
+    };
+    const gcd_two_numbers = (x, y) => {
+      x = Math.abs(x);
+      y = Math.abs(y);
+      while(y) {
+        var t = y;
+        y = x % y;
+        x = t;
+      }
+      return x;
+    };
+    function lcm_two_numbers(x, y) {
+      if(typeof x !== 'number' || typeof y !== 'number') return false;
+      return !x || !y ? 0 : Math.abs((x * y) / gcd_two_numbers(x, y));
+    }
+    let sq = Math.round(Math.sqrt(hues));
+
+    let a = Util.range(1, hues).map((e,i) => Util.randInt(-36,+36,prng));
+
+
+let b = Util.range(0, sq).map((e,i) => i * 360 / (sq)).map(Util.add(Util.randInt(0,360)));
+
+
+    let f = Util.chunkArray( a, sq).map((g,i) =>   g.sort((a,b) => a -b).map(Util.add(b[i])));
+    let g = gcd_two_numbers(Math.round(sq * tones * 10), hues);
+    return [f];
+  }
+
   [Symbol.for('nodejs.util.inspect.custom')]() {
     return this;
   }

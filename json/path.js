@@ -37,7 +37,7 @@ const CHILDREN_SPACE = '';
 
 export class MutablePath extends Array {
   //'\u2b21', '\u274a', '\u229b', '\u273d', '\u20f0', '\u20f0', '\u272a', '\u262a',  '\u21f9', '\u29bf','\u25c7', '\u2b20', '\u267d', '\u267c', '\u267b', '\u2693','\u0fd6', '\u0fd5', '\u2620', '\u0e1e'
-  static CHILDREN_GLYPH /* */ = '⬡' /*'⊛'*/ /*'▸'*/;
+  static CHILDREN_GLYPH /* */ = '➟' /* '▻'*/ /*'∍'*/ /*'⬡'*/ /*'⊛'*/ /*'▸'*/;
   //    '\u00bb'
   static CHILDREN_FN = args => {
     for(let i = 0; i < args.length; i++) args[i] = (args[i] + '').replace(/children/g, this.CHILDREN_GLYPH);
@@ -300,7 +300,7 @@ export class MutablePath extends Array {
       r = r.concat(p);
     }
     const pad = (s, n = 1) => ' '.repeat(n) + s + ' '.repeat(n);
-    //   console.log("r:",r);
+    //console.log("r:",r);
 
     /*
     r = r.reduce(

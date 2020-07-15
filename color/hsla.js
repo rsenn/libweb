@@ -157,8 +157,8 @@ HSLA.prototype.toString = function() {
   return `hsla(${h},${s}%,${l}%,${a})`;
 };
 
-HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [1, 1], rng = Math.random) {
-  return new HSLA(Util.randInt(h, rng), Util.randInt(s, rng), Util.randInt(l, rng), Util.randInt(a, rng));
+HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [0, 1], rng = Math.random) {
+  return new HSLA(Util.randInt(h, rng), Util.randInt(s, rng), Util.randInt(l, rng), Util.randFloat(...a, rng));
 };
 HSLA.prototype.dump = function() {
   console.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
@@ -168,7 +168,7 @@ HSLA.prototype.dump = function() {
 HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
   const { h, s, l, a } = this;
   let arr = !isNaN(a) ? [h, s, l, a] : [h, s, l];
-  let ret = arr.map((n, i) => Util.roundTo(n, i == 0 ? 1 : 100 / 255, 1) + '' /*.padStart(3, ' ')*/).join(', ');
+  let ret = arr.map((n, i) => Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 3) + '' /*.padStart(3, ' ')*/).join(', ');
   const color = this.toRGBA().toAnsi256(true);
   let o = '';
   o += arr.map(n => `\x1b[0;33m${n}\x1b[0m`).join('');

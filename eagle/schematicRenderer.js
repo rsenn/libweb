@@ -213,7 +213,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
       let br = new Rect(b.rect); /*.round(0.254, 5)*/
       br = br.round(0.254, 5);
 
-      //  console.log("br:", br);
+      //console.log("br:", br);
 
       this.create('rect', { ...br.toObject(), 'data-part': instance.part.name }, g);
       t.rotate(45);

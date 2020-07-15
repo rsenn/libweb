@@ -54,7 +54,7 @@ export class MutableXPath extends MutablePath {
           if(siblings[p]) p = siblings.slice(0, p).filter(([idx, tagName]) => tagName == e.tagName).length;
           else x = '';
 
-          //          console.log('', { p, x });
+          //console.log('', { p, x });
 
           x += '[' + (p + 1).toString(10) + `]`;
         } /* else {
@@ -72,7 +72,7 @@ export class MutableXPath extends MutablePath {
       o = e;
     }
     let r = new ImmutableXPath(s, absolute, obj);
-    // console.log('XPath.from(', a, ')');
+    //console.log('XPath.from(', a, ')');
     //console.log('XPath.from = ', r.toString());
     return r;
   }
@@ -124,7 +124,7 @@ export class MutableXPath extends MutablePath {
       }
       r.push(o);
     }
-    // console.log('XPath.parse = ', r);
+    //console.log('XPath.parse = ', r);
     return r;
   }
 
@@ -210,10 +210,10 @@ export class MutableXPath extends MutablePath {
     //  let ctor = this.constructor;
     let a = [...this];
     let r = [];
-    //    console.log('this:', a);
+    //console.log('this:', a);
 
     while(a.length > 0) r = r.concat(MutableXPath.partToString(a, sep, childrenSym, tfn));
-    //  console.log('r:', r);
+    //console.log('r:', r);
     // r = r.filter(part => !MutableXPath.isChildren(part));
     let s = r.join('/');
     return sep + s;

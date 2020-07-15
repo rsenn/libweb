@@ -70,7 +70,7 @@ export class EagleNode {
 
   get raw() {
     const { owner, ref } = this;
-    // console.log(`${Util.className(this)}.raw`,  {owner},ref);
+    //console.log(`${Util.className(this)}.raw`,  {owner},ref);
     if(this.xml && this.xml[0]) return this.xml[0];
     let r = ref.path.apply(owner, true);
     if(!r) {
@@ -127,7 +127,7 @@ export class EagleNode {
 
         let value = path.apply(raw, true);
 
-        //  console.log('path', { path, value }, listCtor + '');
+        //console.log('path', { path, value }, listCtor + '');
         /*      lazy[key] = () =>
           //
           this.lookup(xpath);*/

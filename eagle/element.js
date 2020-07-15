@@ -17,7 +17,7 @@ export class EagleElement extends EagleNode {
 
   static get(owner, ref, raw) {
     let root = ref.root || owner.raw ? owner.raw : owner;
-    //  console.log('EagleElement.get(', , ')');
+    //console.log('EagleElement.get(', , ')');
     if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(root, ref);
     if(!raw) raw = ref.path.apply(root, true);
     if(!raw) raw = ref.dereference();
@@ -181,7 +181,7 @@ export class EagleElement extends EagleNode {
         throw new Error('');
       }
       lazyProperty(this, 'symbol', () => {
-  //      console.log('library:', library);
+        //console.log('library:', library);
         return library.symbols[elem.attributes.symbol];
       });
     } else if(tagName == 'instance') {

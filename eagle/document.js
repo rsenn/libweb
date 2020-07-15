@@ -47,7 +47,7 @@ export class EagleDocument extends EagleNode {
       Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b))
     );
 
-    //  console.log("EagleDocument.constructor", {xmlStr,project,filename,type});
+    //console.log("EagleDocument.constructor", {xmlStr,project,filename,type});
     this.initCache(EagleElement, EagleNodeList.create);
 
     lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'], this.raw.children));
@@ -145,7 +145,7 @@ export class EagleDocument extends EagleNode {
     if(this.type == 'brd') {
       const board = this.lookup(['eagle', 'drawing', 'board']);
       let ret = board.getBounds();
-      //  console.log("board:", board, ret.objects);
+      //console.log("board:", board, ret.objects);
       return ret;
     }
 

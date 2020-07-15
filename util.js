@@ -1,3 +1,4 @@
+
 const formatAnnotatedObject = function(subject, o) {
   const { indent = '  ', spacing = ' ', separator = ',', newline = '\n', maxlen = 30, depth = 1 } = o;
   const i = indent.repeat(Math.abs(1 - depth));
@@ -695,16 +696,11 @@ Util.flatten = function(arr) {
   }
   return ret;
 };
-Util.chunkArray = function(myArray, chunk_size) {
-  let index = 0;
-  const arrayLength = myArray.length;
-  const tempArray = [];
-  for(index = 0; index < arrayLength; index += chunk_size) {
-    myChunk = myArray.slice(index, index + chunk_size);
-    // Do something if you want with the group
-    tempArray.push(myChunk);
-  }
-  return tempArray;
+Util.chunkArray = function(a, size) {
+  let r = [];
+  for(let i = 0; i <  a.length; i += size)
+    r.push(a.slice(i, i + size));
+  return r;
 };
 Util.chances = function(numbers, matches) {
   const f = Util.factorial;
@@ -713,6 +709,18 @@ Util.chances = function(numbers, matches) {
 Util.sum = function(arr) {
   return arr.reduce((acc, n) => acc + n, 0);
 };
+
+Util.add = Util.curry((num, other) => num + other);
+Util.sub = Util.curry((num, other) => num - other);
+Util.mul = Util.curry((num, other) => num * other);
+Util.div = Util.curry((num, other) => num / other);
+Util.xor = Util.curry((num, other) => num ^ other);
+Util.or = Util.curry((num, other) => num | other);
+Util.and = Util.curry((num, other) => num & other);
+Util.mod = Util.curry((num, other) => num % other);
+Util.pow = Util.curry((num, other) => num ** other);
+
+
 /*Util.define(String.prototype,
   'splice',
   function(index, delcount, insert) {

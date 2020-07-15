@@ -170,7 +170,7 @@ export class EagleSVGRenderer {
         const { x1, x2, y1, y2 } = coordFn(item);
         let rect = Rect.from({ x1, x2, y1, y2 });
 
-        //        console.log("rect:",Size(rect));
+        //console.log("rect:",Size(rect));
         svg(
           'rect',
           {

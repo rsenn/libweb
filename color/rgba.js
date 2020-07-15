@@ -61,9 +61,11 @@ export function RGBA(r = 0, g = 0, b = 0, a = 255) {
       }
     }
   }
-  if(ret.a !== undefined && isNaN(+ret.a)) ret.a = 255;
 
-  //console.log('RGBA ', {c, ret, args});
+  if(ret.a !== undefined && isNaN(+ret.a)) ret.a = 255;
+  if(isNaN(ret.a)) ret.a = 255;
+
+  //console.log('RGBA ', ret);
   if(!(ret instanceof RGBA)) return ret; //Object.setPrototypeOf(ret, RGBA.prototype);
 }
 
