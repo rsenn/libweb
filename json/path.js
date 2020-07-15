@@ -58,55 +58,45 @@ export class MutablePath extends Array {
   constructor(p = [], absolute) {
     super(typeof p == 'number' ? p : 0);
 
-    const a = MutablePath.parse(p, this);
+    MutablePath.parse(p, this);
+    //console.log("a:",a);
+    console.log('this:', this);
 
-    const { length } = a;
-    const last = a[a.length - 1];
-    const first = a[0];
+    const { length } = this;
+    const last = this[length - 1];
+    const first = this[0];
 
     //console.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
   }
 
-  static parse(p, out) {
-    let a = [],
-      path = p;
-    if(typeof p != 'number') {
-      if(typeof p == 'string') {
-        p = p.replace(/[./]\[/g, '[');
-        a = path.split(/[./]/g);
-      } else {
-        a = a.concat(path);
+  static parse(path, out) {
+    const len = path.length;
+    if(typeof path != 'number') {
+      if(typeof path == 'string') {
+        path = path.replace(/[./]\[/g, '[');
+        path = path.split(/[./]/g);
       }
-      a = a || [];
-      a = a.reduce((acc, p) => {
-        if(IsChildren(p)) {
-          p = 'children'; //MutablePath.CHILDREN_SYM;
-        } else if(!isNaN(+p)) {
-          if(!MutablePath.isChildren(acc[acc.length - 1])) acc.push(MutablePath.CHILDREN_STR);
-          p = +p;
-        } else if(typeof p == 'string') {
-          if(/\[.*\]/.test(p + '')) {
-            acc = acc.concat([MutablePath.CHILDREN_STR, p.substring(1, p.length - 0)]);
-            return acc;
-          } else if(typeof p == 'string' && /^[A-Za-z]/.test(p)) {
-            const idx = ['attributes', 'tagName', 'children'].indexOf(p);
-            if(idx == -1) p = { tagName: p };
+      const len = path.length;
+
+      for(let i = 0; i < len; i++) {
+        let part = path[i];
+
+        if(part.codePointAt(0) >= 256 || part == 'children') {
+          part = 'children';
+        } else if(typeof part == 'number' || (typeof part == 'string' && !isNaN(part))) {
+          part = +part;
+        } else if(typeof part == 'string') {
+          if(/\[.*\]/.test(part + '')) {
+            out.splice(out.length, out.length, ...['children', part.substring(1, part.length - 0)]);
+            continue;
+          } else if(/^[A-Za-z]/.test(part)) {
+            const idx = ['attributes', 'tagName', 'children'].indexOf(part);
+            if(idx == -1) part = { tagName: part };
           }
         }
-        if(acc[acc.length - 1] !== p) acc.push(p);
-        return acc;
-      }, []);
+        if(out[out.length - 1] !== part) Array.prototype.push.call(out, part);
+      }
     }
-    a = [...a];
-    while(a.length > 0 && a[0] === '') a.shift();
-
-    //  if(absolute) if (a.length == 0 || a[0] !== '') a = ['', ...a];
-
-    for(let i = 0; i < a.length; i++) {
-      let item = a[i] === '' ? '' : typeof a[i] == 'symbol' || isNaN(+a[i]) ? a[i] : +a[i];
-      Array.prototype.push.call(out, item);
-    }
-    return a;
   }
 
   static partToString(a, sep = '/', childrenStr, c = (text, c = 33, b = 0) => `\x1b[${b};${c}m${text}\x1b[0m`) {
