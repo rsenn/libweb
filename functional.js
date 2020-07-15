@@ -717,7 +717,7 @@ export class Functional {
 
   static sort = this.curry2(this.builtin(Array.prototype.sort));
 
-  static uniqfn = this.curry2((as, fn)  => {
+  static uniqfn = this.curry2((as, fn) => {
     var fned;
     if(!as) {
       return as;
