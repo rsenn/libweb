@@ -3,7 +3,7 @@ import { EagleElement } from './element.js';
 
 export class EagleNodeMap {
   constructor(list, key) {
-    console.log('EagleNodeMap.constructor', { list, key });
+    //console.log('EagleNodeMap.constructor', { list, key });
     if(!list) throw new Error('List=' + list);
     this.list = list;
     this.key = key;
@@ -58,7 +58,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
   }
   *[Symbol.iterator](keyAttr = this.key) {
     const list = this.list && this.list.raw ? this.list.raw : this.list;
-    console.log('NodeMap ', this.list);
+    //console.log('NodeMap ', this.list);
     for(let i = 0; i < this.list.length; i++) yield [list[i].attributes[keyAttr], this.item(i)];
   }
   toMap(key = this.key) {
@@ -70,7 +70,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
 
   static create(list, key = 'name') {
     const Ctor = EagleNodeMap;
-    console.log('EagleNodeMap.create', { list, key });
+    //console.log('EagleNodeMap.create', { list, key });
 
     const instance = new Ctor(list, key);
 

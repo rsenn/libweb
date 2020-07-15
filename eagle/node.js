@@ -31,7 +31,7 @@ export class EagleNode {
     //console.log("EagleNode.constructor",{owner,ref,raw});
 
     //Object.assign(this, { ref, owner });
-    Object.defineProperty(this, 'owner', { value: owner, enumerable: false,writable: true });
+    Object.defineProperty(this, 'owner', { value: owner, enumerable: false, writable: true });
     Util.define(this, 'ref', ref);
   }
 
@@ -127,7 +127,7 @@ export class EagleNode {
 
         let value = path.apply(raw, true);
 
-        console.log('path', { path, value }, listCtor + '');
+        //  console.log('path', { path, value }, listCtor + '');
         /*      lazy[key] = () =>
           //
           this.lookup(xpath);*/
@@ -215,7 +215,7 @@ export class EagleNode {
   }
 
   find(name, transform) {
-    console.log('find', this, name, Util.getCallers(0));
+    //console.log('find', this, name, Util.getCallers(0));
 
     //throw new Error("find");
 
@@ -331,7 +331,7 @@ export class EagleNode {
       }
     }
   }
-/*
+  /*
   find(...args) {
     let { path, predicate, transform } = parseArgs(args);
     if(!transform) transform = ([v, l, d]) => (Util.isObject(v) && 'tagName' in v ? new this.constructor[Symbol.species](d, l, v) : v);
@@ -345,20 +345,20 @@ export class EagleNode {
   }*/
 
   lookup(xpath, t = (o, p, v) => [o, p]) {
-    console.log('lookup(', ...arguments, ')');
+    //console.log('lookup(', ...arguments, ')');
 
     const { tagName, owner, raw, document } = this;
     if(typeof xpath == 'string') xpath = xpath.split(/\//g);
 
     if(!(xpath instanceof ImmutableXPath)) xpath = new ImmutableXPath(xpath);
 
-    console.log('lookup:', { xpath });
+    //console.log('lookup:', { xpath });
     let path = new ImmutablePath(xpath.toArray().reduce((acc, p) => [...acc, 'children', p], []));
     let value = this.path.concat(path).apply(raw, true);
 
     //  path = this.path.concat(path);
     //  value = path.apply(this.raw,true);
-    console.log('lookup:', { tagName, owner, raw, path, value });
+    //console.log('lookup:', { tagName, owner, raw, path, value });
 
     let ret = t(this, path, value);
     //console.log('lookup =', ret);

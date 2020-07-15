@@ -98,7 +98,7 @@ export class EagleReference {
 
 export const EagleRef = function EagleRef(root, path) {
   if(Util.isObject(root) && Util.isObject(root.root)) root = root.root;
-console.log("EagleRef",{root,path});
+  //console.log('EagleRef', { root, path });
   let obj = new EagleReference(root, path);
   return Object.freeze(obj);
 };

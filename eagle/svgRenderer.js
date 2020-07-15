@@ -76,7 +76,7 @@ export class EagleSVGRenderer {
 
   getColor(color) {
     let c = this.palette[color] || /*this.colors[color] || */ 'rgb(165,165,165)';
-    this.debug('getColor', color, c);
+    //this.debug('getColor', color, c);
 
     /* if(c)
     Util.colorDump([c]);*/

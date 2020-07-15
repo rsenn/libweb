@@ -27,7 +27,7 @@ export class EagleDocument extends EagleNode {
   constructor(xmlStr, project, filename, type) {
     const xml = new tXml(xmlStr);
     let xmlObj = deep.clone(xml[0]);
-        console.log("EagleDocument.constructor", {xml,xmlStr});
+    //console.log('EagleDocument.constructor', { xml, xmlStr });
 
     super(project, EagleRef(xmlObj, []));
     type = type || /<library>/.test(xmlStr) ? 'lbr' : /<element\ /.test(xmlStr) ? 'brd' : 'sch';
@@ -47,7 +47,7 @@ export class EagleDocument extends EagleNode {
       Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b))
     );
 
-  //  console.log("EagleDocument.constructor", {xmlStr,project,filename,type});
+    //  console.log("EagleDocument.constructor", {xmlStr,project,filename,type});
     this.initCache(EagleElement, EagleNodeList.create);
 
     lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'], this.raw.children));

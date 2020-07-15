@@ -13,7 +13,6 @@ export class EagleElement extends EagleNode {
   static map = Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw));
   static list = [];
 
-
   //  new WeakMap();
 
   static get(owner, ref, raw) {
@@ -22,7 +21,7 @@ export class EagleElement extends EagleNode {
     if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(root, ref);
     if(!raw) raw = ref.path.apply(root, true);
     if(!raw) raw = ref.dereference();
-    console.log('EagleElement.get', { owner, ref, raw });
+    //console.log('EagleElement.get', { owner, ref, raw });
     let inst = EagleElement.map(raw, owner, ref);
     //console.log("EagleElement.get =",inst);
     return inst;
@@ -182,7 +181,7 @@ export class EagleElement extends EagleNode {
         throw new Error('');
       }
       lazyProperty(this, 'symbol', () => {
-        console.log('library:', library);
+  //      console.log('library:', library);
         return library.symbols[elem.attributes.symbol];
       });
     } else if(tagName == 'instance') {
@@ -274,7 +273,7 @@ export class EagleElement extends EagleNode {
         const { tagName } = p.last;
         o.raw.children.push({ tagName, attributes: {}, children: [] });
       }
-      console.log('EagleElement.lookup', { o, p, v });
+      //console.log('EagleElement.lookup', { o, p, v });
 
       if(!v) v = p.apply(o);
 
