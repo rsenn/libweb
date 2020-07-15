@@ -9,6 +9,7 @@ import { EagleElement } from './element.js';
 import { BBox, Rect, PointList } from '../geom.js';
 import { RGBA } from '../color.js';
 import { EagleNodeList } from './nodeList.js';
+import { PathMapper } from '../json/pathMapper.js';
 import { Palette } from './common.js';
 import { lazyProperty } from '../lazyInitializer.js';
 
@@ -17,6 +18,7 @@ export class EagleDocument extends EagleNode {
   xml = null;
   file = null;
   type = null;
+  //elements = new PathMapper(ImmutablePath);
 
   constructor(xmlStr, project, filename, type) {
     const xml = new tXml(xmlStr);
@@ -37,7 +39,7 @@ export class EagleDocument extends EagleNode {
       'palette',
       Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b))
     );
-    this.initCache(EagleElement);
+    this.initCache(EagleElement, EagleNodeList.create);
 
     lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'], this.raw.children));
   }
@@ -122,8 +124,10 @@ export class EagleDocument extends EagleNode {
   }
 
   lookup(xpath) {
+    //console.log("EagleDocument.lookup(",...arguments, ")");
+
     let doc = this;
-    return super.lookup(xpath, (o, p, v) => v && EagleElement.get(o, p, v));
+    return super.lookup(xpath, (o, p, v) => EagleElement.get(o, p, v));
   }
 
   getBounds(sheetNo = 0) {
@@ -163,6 +167,7 @@ export class EagleDocument extends EagleNode {
     }
 
     if(this.elements) {
+      console.log("elements:",this.elements);
       for(let element of this.elements.list) {
         let bbrect = element.getBounds();
 

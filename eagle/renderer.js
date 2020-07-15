@@ -30,6 +30,7 @@ export function Renderer(doc, factory, debug = false) {
   ret.debug = debug ? (...args) => console.log(...args) : () => {};
   return ret;
 }
+
 /*
 export function renderDocument(doc, container) {
   const factory = SVG.factory(

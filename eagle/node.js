@@ -3,9 +3,11 @@ import Util from '../util.js';
 import deep from '../deep.js';
 import { lazyMembers } from '../lazyInitializer.js';
 import { trkl } from '../trkl.js';
-import { text, EagleInterface, concat } from './common.js';
+import { text,  concat, parseArgs } from './common.js';
 
 import { EagleNodeMap } from './nodeMap.js';
+import { ImmutableXPath } from '../xml.js';
+import { ImmutablePath } from '../json.js';
 
 export const makeEagleNode = (owner, ref, ctor) => {
   if(!ctor) ctor = owner.constructor[Symbol.species];
@@ -13,7 +15,7 @@ export const makeEagleNode = (owner, ref, ctor) => {
   return e;
 };
 
-export class EagleNode extends EagleInterface {
+export class EagleNode  {
   ref = null;
 
   get [Symbol.species]() {
@@ -21,13 +23,18 @@ export class EagleNode extends EagleInterface {
   }
 
   constructor(owner, ref, raw) {
-    if(!owner) owner = new EagleReference(ref.root, []).dereference();
-    super(owner);
-    if(!raw) raw = ref.dereference();
-    {
+   // if(!owner) owner = new EagleReference(ref.root, []).dereference();
+
       if(!(ref instanceof EagleReference)) ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
-      Util.define(this, 'ref', ref);
-    }
+    if(!raw) raw = ref.dereference();
+
+//console.log("EagleNode.constructor",{owner,ref,raw});
+
+
+      //Object.assign(this, { ref, owner });
+    Object.defineProperty(this, 'owner', { value: owner, enumerable: false });
+    Util.define(this, 'ref',ref);
+
   }
 
   get path() {
@@ -77,7 +84,7 @@ export class EagleNode extends EagleInterface {
   cacheFields() {
     switch (this.tagName) {
       case 'schematic':
-        return [['settings'], ['layers'], ['libraries'], ['classes'], ['parts'], ['sheets'], ['modules']];
+        return [/*['settings'], ['layers'],*/ ['libraries'], ['classes'], ['parts'], ['sheets']/*, ['modules']*/];
       case 'board':
         return [['plain'], ['libraries'], ['classes'], ['elements'], ['signals']];
       case 'module':
@@ -114,17 +121,24 @@ export class EagleNode extends EagleInterface {
       let maps = {};
       let ref = this.ref;
       let owner = this.document;
+      let raw = this.raw;
 
       for(let xpath of fields) {
         let key = xpath[xpath.length - 1];
-        lazy[key] = () => {
-          let ret = this.lookup(xpath);
-          console.log('lookup', xpath, ret, this);
-          return ret;
-        };
-        lists[key] = () => lazy[key]().children;
+        let path =new ImmutablePath(xpath.reduce((acc,p) => [...acc,'children',p], []).concat(['children']));
 
-        maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => EagleNodeMap.create(lists[key](), key == 'instances' ? 'part' : key == 'layers' ? ['number', 'name'] : 'name');
+
+let value = path.apply(raw, true);
+
+console.log('path', { path, value }, listCtor+'');
+  /*      lazy[key] = () =>
+          //
+          this.lookup(xpath);*/
+        lists[key] = () => listCtor(owner, this.path.down(...path), value);
+
+
+
+        maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? () => lists[key]() : () => EagleNodeMap.create(lists[key](), key == 'instances' ? 'part' : key == 'layers' ? ['number', 'name'] : 'name');
       }
       lazyMembers(this.lists, lists);
       lazyMembers(this.cache, lazy);
@@ -206,7 +220,7 @@ export class EagleNode extends EagleInterface {
   }
 
   find(name, transform) {
-    //    console.log('find', this, name, Util.getCallers(0));
+        console.log('find', this, name, Util.getCallers(0));
 
     //throw new Error("find");
 
@@ -279,7 +293,7 @@ export class EagleNode extends EagleInterface {
     return this[Symbol.toStringTag]();
   }
 
-  [Symbol.for('nodejs.util.inspect.custom')]() {
+ /* [Symbol.for('nodejs.util.inspect.custom')]() {
     let attrs = [''];
     //console.log('Inspect:', this.path, this.raw);
 
@@ -302,9 +316,124 @@ export class EagleNode extends EagleInterface {
     if(this.filename) ret = concat(ret, ` filename="${this.filename}"`);
     if(numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${tag}>`);
     return (ret = concat(text(Util.className(r) + ' ', 0), ret));
-  }
+  }*/
 
   inspect(...args) {
     return EagleNode.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, args);
+  }
+
+    *findAll(...args) {
+    let { path, predicate, transform } = parseArgs(args);
+    for(let [v, l, d] of this.iterator(
+      e => true,
+      [],
+      arg => arg
+    )) {
+      if(!d) d = this;
+      if(predicate(v, l, d)) {
+        if(transform) v = transform([v, l, d]);
+        yield v;
+      }
+    }
+  }
+
+  find(...args) {
+    let { path, predicate, transform } = parseArgs([...arguments]);
+    if(!transform) transform = ([v, l, d]) => (typeof v == 'object' && v !== null && 'tagName' in v ? new this.constructor[Symbol.species](d, l, v) : v);
+    for(let [v, p, d] of this.iterator()) {
+      if(typeof v == 'string') continue;
+      if(predicate(v, p, d)) return transform([v, p, d]);
+    }
+    return transform([null, [], []]);
+  }
+
+
+  lookup(xpath, t = (o, p, v) => [o, p]) {
+    console.log('lookup(', ...arguments, ')');
+
+    const { tagName, owner, raw, document } = this;
+    if(typeof xpath == 'string') xpath = xpath.split(/\//g);
+
+    if(!(xpath instanceof ImmutableXPath)) xpath = new ImmutableXPath(xpath);
+
+    console.log('lookup:', { xpath });
+    let path = new ImmutablePath(xpath.toArray().reduce((acc, p) => [...acc, 'children', p], []));
+    let value = this.path.concat(path).apply(raw, true);
+
+    //  path = this.path.concat(path);
+    //  value = path.apply(this.raw,true);
+    console.log('lookup:', { tagName, owner,raw, path, value });
+
+    let ret = t(this, path, value);
+    //console.log('lookup =', ret);
+    return ret;
+  }
+
+  getBounds(pred = e => true) {
+    let bb = new BBox();
+
+    if(this.children && this.children.length) {
+      for(let element of this.getAll(e => e.tagName !== undefined && pred(e))) {
+        let g = element.geometry();
+        if(g) {
+          let bound = typeof g.bbox == 'function' ? g.bbox() : g;
+          bb.update(bound, 0, element);
+        }
+      }
+    }
+    let g = this.geometry();
+
+    if(g) bb.update(g);
+
+    return bb;
+  }
+  geometry() {
+    const { attributes } = this.raw;
+    const keys = Object.keys(attributes);
+    const makeGetterSetter = k => v => (v === undefined ? this[k] : (this[k] = v));
+    if(['x1', 'y1', 'x2', 'y2'].every(prop => keys.includes(prop))) {
+      return Line.bind(this, null, makeGetterSetter);
+    } else if(['x', 'y'].every(prop => keys.includes(prop))) {
+      const { x, y } = Point(this);
+      if(keys.includes('radius')) return Circle.bind(this, null, makeGetterSetter);
+      if(['width', 'height'].every(prop => keys.includes(prop))) return Rect.bind(this, null, makeGetterSetter);
+      return Point.bind(this, null, makeGetterSetter);
+    }
+  }
+  getDocument() {
+    let o = this;
+    while(o.owner) {
+      if(o.xml !== undefined) break;
+      o = o.owner;
+    }
+    return o;
+  }
+  xpath() {
+    const { ref, owner } = this;
+    let x = ImmutableXPath.from(ref.path, owner.raw);
+    //console.log('PATH', ref.path);
+    //console.log('ARRAY', [...x]);
+    //console.log('XPATH', x.toString());
+    return x;
+  }
+  entries(t = ([v, l, d]) => [l[l.length - 1], EagleElement.get(d, l)]) {
+    return this.iterator([], t);
+  }
+  *iterator(...args) {
+    let predicate = typeof args[0] == 'function' ? args.shift() : arg => true;
+    let path = (Util.isArray(args[0]) && args.shift()) || [];
+    let t = typeof args[0] == 'function' ? args.shift() : ([v, l, d]) => [typeof v == 'object' && v !== null && 'tagName' in v ? new this.constructor(d, l) : v, l, d];
+    let owner = Util.isObject(this) && 'owner' in this ? this.owner : this;
+    let root = this.root || (owner.xml && owner.xml[0]);
+    let node = root;
+    if(path.length > 0) node = deep.get(node, path);
+    for(let [v, l] of deep.iterate(node, (v, p) => (predicate(v, p) ? -1 : p.length > 1 ? p[p.length - 2] == 'children' : true))) {
+      if(!(l instanceof ImmutablePath)) l = new ImmutablePath(l);
+      if(typeof v == 'object' && v !== null && 'tagName' in v) if (predicate(v, l, owner)) yield t([v, l, owner]);
+    }
+  }
+
+  toXML(depth = Number.MAX_SAFE_INTEGER) {
+    return toXML(this.raw, depth);
   }
 }

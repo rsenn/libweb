@@ -1,42 +1,51 @@
 import { ImmutablePath } from './path.js';
 import Util from '../util.js';
-import { ImmutableXPath } from '../xml/xpath.js';
 
 export class PathMapper {
-  map = null;
+  map = new WeakMap();
   root = null;
-  parser = null;
+  ctor = ImmutablePath;
 
-  constructor(root, parser) {
-    this.map = new WeakMap();
+  constructor(root, ctor = ImmutablePath) {
     if(root) this.root = root;
-    if(parser) this.parser = parser;
+    if(ctor) Util.define(this, { ctor });
   }
-  /*
-  xpath(obj) {
-    let path = this.get(obj);
-    return path ? ImmutableXPath.from(path, this.root) : null;
-  }*/
 
   set(obj, path) {
-    if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
-    if(path.length === 0) this.root = obj;
-    this.map.set(obj, path);
-    let properties = 'tagName' in obj ? ['children', 'attributes'] : Object.keys(obj);
+    const { map, ctor } = this;
 
-    for(let prop of properties) if(prop in obj && Util.isObject(obj[prop])) this.map.set(obj[prop], path.concat([prop]));
+    if(map.get(obj))
+      return;
+
+    if(!(path instanceof ctor)) path = new ctor(path);
+    // if(path.length === 0) this.root = obj;
+    map.set(obj, path);
+  /*  let properties = 'tagName' in obj ? ['children', 'attributes'] : Object.keys(obj);
+
+    for(let prop of properties) if(prop in obj && Util.isObject(obj[prop])) map.set(obj[prop], path.concat([prop]));*/
   }
 
   get(obj) {
-    return this.map.get(obj);
+        const { map } = this;
+    return map.get(obj);
+  }
+
+  at(path) {
+    let { root } = this;
+    for(let prop of path)
+      root = root[prop];
+    this.set(root, path);
+    return root;
   }
 
   walk(obj, fn = path => path) {
-    let path = this.get(obj);
+            const { map,ctor } = this;
+
+    let path = map.get(obj);
     if(path === null) return null;
     path = fn(path);
     if(path === null) return null;
-    if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
+    if(!(path instanceof ctor)) path = new ctor(path);
     return this.at(path);
   }
 

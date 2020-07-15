@@ -5,8 +5,11 @@ export const ChildrenSym = Symbol('⊳');
 
 export class EagleReference {
   constructor(root, path) {
-    this.path = path instanceof ImmutablePath ? path : new ImmutablePath(path);
+    if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
+
+    this.path = path;
     this.root = root;
+
     //console.log('EagleReference', { root: Util.abbreviate(toXML(root), 10), path });
 
     if(!this.dereference(false)) {
@@ -86,7 +89,7 @@ export class EagleReference {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    return `EagleReference { path:${this.path}, root:${Util.abbreviate(toXML(this.root, 0), 40)}  }`;
+    return `EagleReference { path:`+ Util.toSource(this.path, {multiline: false, newline: ''})+ `, root:${Util.abbreviate(toXML(this.root, 0), 40)}  }`;
   }
   inspect() {
     return this[Symbol.for('nodejs.util.inspect.custom')](...arguments);

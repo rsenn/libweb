@@ -192,7 +192,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
   renderInstances(parent, sheetNo = 0, b) {
     const { transform } = this;
-    //this.debug('b:', b);
+    this.debug('b:', b);
     let g = this.create(
       'g',
       {
@@ -239,6 +239,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
     this.debug(`SchematicRenderer.render`, { doc, sheetNo });
 
     let sheet = this.sheets[sheetNo];
+
+        this.debug(`sheet`, sheet);
+        this.debug(`sheets`, this.sheets);
     let bounds = sheet.getBounds();
     let rect = new Rect(bounds.rect);
 
@@ -251,7 +254,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     parent = super.render(doc, parent, props);
 
-    //this.debug('this.transform:', this.transform, 'this.rect:', this.rect, 'doc:', doc);
+    this.debug('this.transform:', this.transform, 'this.rect:', this.rect, 'doc:', doc);
 
     this.renderSheet(sheet, parent);
 

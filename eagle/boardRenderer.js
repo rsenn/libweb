@@ -84,7 +84,7 @@ export class BoardRenderer extends EagleSVGRenderer {
           parent
         );
 
-        //this.debug('name:', name);
+        this.debug('name:', name);
         if(name) {
           svg(
             'tspan',
@@ -157,14 +157,14 @@ export class BoardRenderer extends EagleSVGRenderer {
         return line;
       });
 
-      //this.debug('Lines:', [...lines]);
+      this.debug('Lines:', [...lines]);
 
       const path = LinesToPath(lines);
       const layer = layers[layerId];
       const width = widths[layerId];
 
-      //this.debug('layerId:', layerId);
-      //this.debug('layers:', layers);
+      this.debug('layerId:', layerId);
+      this.debug('layers:', layers);
       const color = layer.color;
 
       this.create(
@@ -249,7 +249,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     let signalsGroup = this.create('g', { className: 'signals', strokeLinecap: 'round', transform }, parent);
     let elementsGroup = this.create('g', { className: 'elements', transform }, parent);
 
-    //this.debug('bounds: ', bounds);
+    this.debug('bounds: ', bounds);
 
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {

@@ -3,7 +3,7 @@ import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleReference } from './ref.js';
-import { EagleInterface, Rotation } from './common.js';
+import {  Rotation } from './common.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList } from '../geom.js';
 
@@ -16,9 +16,22 @@ export class EagleElement extends EagleNode {
   //  new WeakMap();
 
   static get(owner, ref, raw) {
-    if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(owner, ref);
-    if(!raw) raw = ref.path.apply(ref.root, true);
+let root = ref.root || owner.raw ? owner.raw : owner;
+
+
+  //  console.log('EagleElement.get(', , ')');
+
+    if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(root, ref);
+
+    if(!raw) raw = ref.path.apply(root, true);
+    if(!raw) raw = ref.dereference();
+
+
+    console.log('EagleElement.get', { owner, ref, raw });
+
+
     let inst = EagleElement.map(raw, owner, ref);
+    //console.log("EagleElement.get =",inst);
     return inst;
   }
 
@@ -36,7 +49,7 @@ export class EagleElement extends EagleNode {
   constructor(owner, ref, raw) {
     //console.log('new EagleElement owner ', Util.className(owner), ' ', raw.tagName);
     if(Util.className(owner) == 'Object') {
-      throw new Error(`${Util.inspect(owner, 1)}`);
+      throw new Error(`${Util.inspect(owner, 0)} ${Util.inspect(ref, 1)}`);
     }
 
     super(owner, ref, raw);
@@ -153,7 +166,7 @@ export class EagleElement extends EagleNode {
       }
     }
     let childList = null;
-    lazyProperty(this, 'children', () => EagleNodeList.create(doc, this.ref.down('children') /*[...this.path, 'children']*/, this.raw.children));
+    lazyProperty(this, 'children', () => EagleNodeList.create(this.document, this.path  .down('children'),this.raw.children));
 
     /*    trkl.bind(this, 'children', value => {
       if(value === undefined) {
@@ -166,9 +179,19 @@ export class EagleElement extends EagleNode {
     if(tagName == 'gate') {
       /*  console.log('this.elementChain()', this.elementChain());
       //console.log('this.ref', this.ref);*/
-      let library = this.elementChain().library || EagleElement.get(this.owner, path.up(8));
+      let library = this.elementChain().library; /*|| EagleElement.get(this.owner, ref.up(8))*/
 
-      lazyProperty(this, 'symbol', () => library.symbols[elem.attributes.symbol]);
+      if(!library) {
+        console.log('chain:', this.chain);
+        console.log('path:', this.ref.path);
+        console.log('this:', this);
+        console.log('xpath:', this.xpath());
+        throw new Error('');
+      }
+      lazyProperty(this, 'symbol', () => {
+        console.log('library:', library);
+        return library.symbols[elem.attributes.symbol];
+      });
     } else if(tagName == 'instance') {
       let { tagName } = this;
 
@@ -197,7 +220,7 @@ export class EagleElement extends EagleNode {
         return pkg;
       });
     }
-    this.initCache(EagleElement /*, EagleNodeList.create*/);
+    this.initCache(EagleElement, EagleNodeList.create);
   }
 
   get text() {
@@ -252,12 +275,17 @@ export class EagleElement extends EagleNode {
   }
 
   lookup(xpath, create) {
+    //console.log("EagleElement.lookup(",...arguments, ")");
     return super.lookup(xpath, (o, p, v) => {
       if(create && !v) {
         const { tagName } = p.last;
         o.raw.children.push({ tagName, attributes: {}, children: [] });
-        //console.log("Element.lookup", {xpath,create, o, p, v})
       }
+      console.log('EagleElement.lookup', { o, p, v });
+
+      if(!v)
+        v = p.apply(o);
+
       return EagleElement.get(o, p, v);
     });
   }

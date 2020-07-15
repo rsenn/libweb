@@ -18,7 +18,7 @@ export function DereferenceError(object, member, pos, locator) {
     { object, member, pos, locator },
     {
       message:
-        `Error dereferencing ${Util.className(object)} @ ${[...locator] + ''}
+        `Error dereferencing ${Util.className(object)} @ ${locator+''}, { newline: '', multiline: false, colors: false }) + ''}
 xml: ${Util.abbreviate(toXML(locator.root))}
 no member '${Util.inspect(member, { colors: false })}' in ${Util.toString(object, { depth: 2, multiline: true, indent: '  ', colors: false })} \n` + stack.join('\n'),
       stack
@@ -36,7 +36,8 @@ export const IsChildren = a => a === MutablePath.CHILDREN_GLYPH || a === Mutable
 const CHILDREN_SPACE = '';
 
 export class MutablePath extends Array {
-  static CHILDREN_GLYPH /*'\u27c1' */ /*'\u220d'*/ = '▸';
+  //'\u2b21', '\u274a', '\u229b', '\u273d', '\u20f0', '\u20f0', '\u272a', '\u262a',  '\u21f9', '\u29bf','\u25c7', '\u2b20', '\u267d', '\u267c', '\u267b', '\u2693','\u0fd6', '\u0fd5', '\u2620', '\u0e1e'
+  static CHILDREN_GLYPH /* */  ='⬡' /*'⊛'*/ /*'▸'*/;
   //    '\u00bb'
   static CHILDREN_FN = args => {
     for(let i = 0; i < args.length; i++) args[i] = (args[i] + '').replace(/children/g, this.CHILDREN_GLYPH);
@@ -139,12 +140,12 @@ export class MutablePath extends Array {
     return [s];
   }
 
-  getSpecies() {
-    return this.constructor[Symbol.species];
+  static get [Symbol.species]() {
+    return this;
   }
 
   clone() {
-    const ctor = this.getSpecies();
+    const ctor = this.constructor[Symbol.species];
     return new ctor(this, this.absolute);
   }
 
@@ -160,7 +161,7 @@ export class MutablePath extends Array {
    */
   right(n = 1) {
     if(this.last + n < this.length) {
-      const ctor = this.getSpecies();
+      const ctor = this.constructor[Symbol.species];
       return new ctor(this.splice(-1, 1, Math.min(this.length, this.last + n)));
     }
   }
@@ -173,7 +174,7 @@ export class MutablePath extends Array {
    */
   left(n = 1) {
     if(this.last >= n) {
-      const ctor = this.getSpecies();
+      const ctor = this.constructor[Symbol.species];
       return new ctor(this.splice(-1, 1, Math.max(0, this.last - n)));
     }
   }
@@ -204,7 +205,7 @@ export class MutablePath extends Array {
 
   diff(other) {
     let i;
-    const ctor = this.getSpecies();
+    const ctor = this.constructor[Symbol.species];
     for(i = 0; i < this.length; i++) {
       if(this[i] != other[i]) return null;
     }
@@ -223,12 +224,13 @@ export class MutablePath extends Array {
   /* prettier-ignore */ get lastChild() { return this.nthChild(-1); }
   /* prettier-ignore */ get depth() { return this.length; }
 
-  static compare(obj, other) {
+  static compareObj(obj, other) {
+    //console.log("MutablePath.compareObj",{obj,other});
     let ret = true;
     for(let prop in other) {
       const value = other[prop];
       if(Util.isObject(value)) {
-        if(!this.compare(obj[prop], value)) {
+        if(!this.compareObj(obj[prop], value)) {
           ret = false;
           break;
         }
@@ -248,7 +250,9 @@ export class MutablePath extends Array {
       let stack = Util.getCallers(1, 10);
       throw new Error(`Object ${o}` + stack.join('\n'));
     }
-    let a = [...this];
+    let a = this.toArray();
+
+    //console.log("MutablePath.apply",this, {o,a});
 
     while(a.length >= 1 && a[0] === '') a = a.slice(1);
 
@@ -256,11 +260,14 @@ export class MutablePath extends Array {
       (a, i) => {
         if(a.o) {
           let r;
+          //console.log(`MutablePath.apply[`,a.n,`]`,Util.isArray(a.o),a.o,i);
           if(MutablePath.isChildren(i)) {
             i = 'children';
           } else if(Util.isArray(a.o)) {
             if(typeof i == 'object') {
-              i = a.o.findIndex(child => Path.compare(child, i));
+              //console.log(`MutablePath.apply findIndex`,a.o,i);
+
+              i = a.o.findIndex(child => MutablePath.compareObj(child, i));
             } else if(typeof i == 'number' && i < 0) i = a.o.length + i;
             else i = +i;
           }
@@ -280,6 +287,7 @@ export class MutablePath extends Array {
   }
 
   toString(...args) {
+    const color = (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
     const [sep = '.', partToStr = MutablePath.partToString, childrenStr = MutablePath['CHILDREN_GLYPH'] + CHILDREN_SPACE] = args;
     let a = [...this];
     //console.log("toString",{sep,partToStr, childrenStr});
@@ -287,24 +295,26 @@ export class MutablePath extends Array {
     let n = a.length;
     let r = [];
     for(let i = 0; ; i++) {
-      let p = partToStr(a, '/', childrenStr, text => text);
+      let p = partToStr(a, '/', childrenStr, color);
       if(!p) break;
       r = r.concat(p);
     }
-    const color = (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
     const pad = (s, n = 1) => ' '.repeat(n) + s + ' '.repeat(n);
+ //   console.log("r:",r);
 
+/*
     r = r.reduce(
-      (acc, p) => [...acc, ...(/^[A-Za-z]/.test(p) ? [color(pad(['\u2b21', '\u274a', '\u229b', /*'\ud83d',*/ '\u273d', '\u20f0', '\u20f0', '\u272a', '\u262a', /*'\ud83d',*/ '\u21f9', '\u29bf', /*'\ud81a','\ud83d','\ud83d','\ud83d',*/ '\u25c7', '\u2b20', '\u267d', '\u267c', '\u267b', '\u2693', /*'\ud83d',*/ '\u0fd6', '\u0fd5', '\u2620', '\u0e1e'][10]), 1, 35), color(p, 1, 33)] : [sep, p])],
+      (acc, p) => [...acc, ...(/^[A-Za-z]/.test(p) ? [pad(color(['\u2b21', '\u274a', '\u229b', '\u273d', '\u20f0', '\u20f0', '\u272a', '\u262a',  '\u21f9', '\u29bf','\u25c7', '\u2b20', '\u267d', '\u267c', '\u267b', '\u2693','\u0fd6', '\u0fd5', '\u2620', '\u0e1e'][10], 1, 35)), color(p || "''", 1, 33)] : [sep, p])],
       []
-    );
+    );*/
 
-    r = r.join('').replace(/[/.]?\[/g, '[');
+
+    r = r.join(' '); //.replace(/[/\.]\[/g, '[');
     r = (this.absolute && r != '' && sep == '/' ? sep : '') + r;
     return r
       .replace(/\//g, sep)
-      .replace(new RegExp(childrenStr + '.', 'g'), childrenStr + ' \x1b[1;36m')
-      .replace(new RegExp('.' + childrenStr, 'g'), ` \x1b[1;30m` + childrenStr);
+ /*     .replace(new RegExp(childrenStr + '.', 'g'), childrenStr + ' \x1b[1;36m')
+      .replace(new RegExp('.' + childrenStr, 'g'), ` \x1b[1;30m` + childrenStr)*/;
   }
 
   toSource(sep = ',') {
@@ -316,7 +326,7 @@ export class MutablePath extends Array {
   }
 
   makeAbsolute(parent) {
-    const ctor = this.getSpecies();
+    const ctor = this.constructor[Symbol.species];
     if(this.absolute) return this;
     let r = [...parent, ...this];
     if(r[0] !== '') r.unshift('');
@@ -372,7 +382,7 @@ export class MutablePath extends Array {
    * @return     {Path}    { description_of_the_return_value }
    */
   slice(start = 0, end = this.length) {
-    const ctor = this.getSpecies();
+    const ctor = this.constructor[Symbol.species];
     let a = this.toArray();
     if(start < 0) start = a.length + start;
     if(end < 0) end = a.length + end;
@@ -381,7 +391,7 @@ export class MutablePath extends Array {
   }
 
   splice(start = 0, remove = this.length, ...insert) {
-    const ctor = this.getSpecies();
+    const ctor = this.constructor[Symbol.species];
     let a = this.toArray();
     if(start < 0) start = a.length + start;
     if(remove < 0) remove = a.length - (-remove - 1);
@@ -393,7 +403,7 @@ export class MutablePath extends Array {
   }
 
   push(...args) {
-    const species = this.getSpecies();
+    const species = this.constructor[Symbol.species];
     let arr = this.toArray();
     let ctor = this.constructor;
     return new species(arr, this.absolute);
@@ -402,17 +412,20 @@ export class MutablePath extends Array {
   pop(n = 1) {
     return this.slice(0, this.length - n);
   }
+
   unshift(...args) {
-    const ctor = this.getSpecies();
+    const ctor = this.constructor[Symbol.species];
     return new ctor(args.concat(this.toArray()), args[0] === '');
   }
+
   shift(n = 1) {
-    const ctor = this.getSpecies();
+    const ctor = this.constructor[Symbol.species];
 
     return new ctor(this.toArray().slice(n), this.absolute && n < 1);
   }
+
   concat(a) {
-    const ctor = this.getSpecies();
+    const ctor = this.constructor[Symbol.species];
 
     return new ctor(this.toArray().concat(Array.from(a)), this.absolute);
   }
@@ -464,12 +477,16 @@ export class MutablePath extends Array {
     /*console.log('equal', { thisPath, other });
     //console.log('thisPath', thisPath.length, ...[...thisPath]);
     //console.log('other', other.length, ...[...other]);*/
-    if(other.absolute && other.length != this.length) return false;
+    if(/*other.absolute &&*/ other.length != this.length) return false;
     if(!other.absolute && other.length < this.length) {
       let prepend = this.slice(0, this.length - other.length);
       other = prepend.concat(other);
     }
-    for(let i = 0; i < other.length; i++) if(this[i] != other[i]) return false;
+    for(let i = 0; i < other.length; i++) {
+
+      if(typeof(this[i]) != 'object') { if(this[i] != other[i]) return false;
+} else if(!Util.equals(this[i],other[i])) { return false; }
+    }
 
     return true;
   }

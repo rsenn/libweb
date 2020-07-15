@@ -16,7 +16,8 @@ export class EagleSVGRenderer {
   transform = new TransformationList();
 
   constructor(doc, factory) {
-    //this.debug(Util.className(this), Util.fnName(new.target));
+    console.log(Util.className(this), Util.fnName(new.target));
+
     if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
     let ctor = EagleSVGRenderer.rendererTypes[doc.type];
     Object.setPrototypeOf(this, ctor.prototype);
@@ -75,7 +76,7 @@ export class EagleSVGRenderer {
 
   getColor(color) {
     let c = this.palette[color] || /*this.colors[color] || */ 'rgb(165,165,165)';
-    //this.debug('getColor', color, c);
+    this.debug('getColor', color, c);
 
     /* if(c)
     Util.colorDump([c]);*/
@@ -213,20 +214,20 @@ export class EagleSVGRenderer {
         let { children = [], text: innerText, align, size, font, rot } = item;
         let text = innerText || labelText || children.join('\n');
         let { x, y } = coordFn(item);
-        //this.debug('text', { text });
+        this.debug('text', { text });
 
         if(text.startsWith('&gt;')) {
           const prop = text.slice(4).toLowerCase();
-          //this.debug('text', { text, prop, opts });
+          this.debug('text', { text, prop, opts });
           text = prop in opts ? opts[prop] : text;
         }
         if(text == '') break;
 
         const translation = new TransformationList(`translate(${x},${y})`);
 
-        //this.debug('translation:', Util.className(translation));
+        this.debug('translation:', Util.className(translation));
         const rotation = translation.concat(Rotation(rot));
-        //this.debug('rotation:', Util.className(rotation));
+        this.debug('rotation:', Util.className(rotation));
         let wholeTransform = transform.concat(Rotation(rot));
         let wholeAngle = ClampAngle(wholeTransform.decompose().rotate);
 
@@ -240,11 +241,11 @@ export class EagleSVGRenderer {
           // .rotate(Math.abs(wholeAngle % 180))
           .collapseAll();
 
-        //this.debug(`wholeAngle ${text}`, wholeAngle);
+        this.debug(`wholeAngle ${text}`, wholeAngle);
         /*this.debug(`undoAngle ${text}`, undoAngle);
-        //this.debug(`angle ${text}`, angle);*/
-        //this.debug(`finalTransformation ${text}`, finalTransformation.toString());
-        //this.debug(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);
+        this.debug(`angle ${text}`, angle);*/
+        this.debug(`finalTransformation ${text}`, finalTransformation.toString());
+        this.debug(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);
 
         if(finalTransformation.rotation) {
           if(finalTransformation.rotation.angle < 0) finalTransformation.rotation.angle = Math.abs(finalTransformation.rotation.angle);
@@ -258,7 +259,11 @@ export class EagleSVGRenderer {
           .rotate((rotateAlignment * Math.PI) / 180)
           .round(0.5);
 
-        //this.debug(`render alignment ${text}`, Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + '']), EagleSVGRenderer.alignmentAttrs(alignment, VERTICAL) );
+        this.debug(
+          `render alignment ${text}`,
+          Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + '']),
+          EagleSVGRenderer.alignmentAttrs(alignment, VERTICAL)
+        );
 
         const e = svg(
           'text',
@@ -361,12 +366,12 @@ export class EagleSVGRenderer {
     rect.outset(1.27);
     rect.round(2.54, 6);
 
-    //this.debu§g('stack:', (window.stack = Util.getCallerStack(1)).toString());
+    Util.tryCatch(() => this.debug('stack:', (window.stack = Util.getCallerStack(1)).toString()));
 
     this.rect = rect;
     this.bounds = new BBox().update(rect);
 
-    //this.debug('bounds:', this.bounds.toString({ separator: ' ' }));
+    this.debug('bounds:', this.bounds.toString({ separator: ' ' }));
 
     const { width, height } = new Size(bounds).toCSS('mm');
 
@@ -375,7 +380,7 @@ export class EagleSVGRenderer {
     this.transform.scale(1, -1);
 
     const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;
-    //this.debug(bounds);
+    this.debug(bounds);
 
     if(!parent)
       parent = this.create(

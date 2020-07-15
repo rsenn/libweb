@@ -116,21 +116,34 @@ Util.generalLog = function(n, x) {
   return Math.log(x) / Math.log(n);
 };
 Util.toSource = function(arg, opts = {}) {
-  const { color = true } = opts;
-  const c = Util.coloring(false);
+  const { colors = false, multiline = true } = opts;
+  const c = Util.coloring(colors);
   if(Util.isArray(arg)) {
     let o = '';
     for(let item of arg) {
-      if(o.length > 0) o += ',';
-      o += Util.toSource(item);
+      if(o.length > 0) o += ', ';
+      o += Util.toSource(item, opts);
     }
     return `[${o}]`;
   }
   if(typeof arg == 'string') return c.text(`'${arg}'`, 1, 36);
   if(arg && arg.x !== undefined && arg.y !== undefined) return `[${c.text(arg.x, 1, 32)},${c.text(arg.y, 1, 32)}]`;
-  if(arg && arg.toSource) return arg.toSource();
+  //if(arg && arg.toSource) return arg.toSource();
+  if(typeof(arg) == 'object') {
+    let o='';
+    for(const prop in arg) {
+let s = Util.toSource(arg[prop], opts);
+      let  m = new RegExp(`^\\*?${prop}\\s*\\(`).test(s);
+   if(o!='') o+= (m && multiline) ? '\n  ' : ', ';
+   if(m)
+    o += s;
+  else
+   o+= prop+': '+s;
+    }
+    return multiline ? `{\n  ${o}\n}` : `{ ${o} }`;
+  }
   let cls = arg && arg.constructor && Util.fnName(arg.constructor);
-  return String(arg);
+  return arg+'';
 };
 Util.debug = function(message) {
   const args = [...arguments];
