@@ -1,4 +1,3 @@
-
 const formatAnnotatedObject = function(subject, o) {
   const { indent = '  ', spacing = ' ', separator = ',', newline = '\n', maxlen = 30, depth = 1 } = o;
   const i = indent.repeat(Math.abs(1 - depth));
@@ -64,19 +63,96 @@ export function Util(g) {
 }
 
 Util.curry = (fn, arity) => {
-  return function curried() {
-    if(arity == null) arity = fn.length;
+  if(arity == null) arity = fn.length;
+  let ret = function curried(...args) {
+    let thisObj = this;
+    if(args.length >= arity) return fn.apply(this, args);
 
-    var args = [...arguments]; //[].slice.call(arguments);
-    if(args.length >= arity) {
-      return fn.apply(this, args);
-    } else {
+    let n = arity - args.length;
+    let a = Array.from({ length: n }, (v, i) => String.fromCharCode(65 + i));
+    let Curried = (...a) => curried.apply(thisObj, a); // ;
+    return [() => Curried(...args), a => Curried(...args, a), (a, b) => Curried(...args, a, b), (a, b, c) => r(...args, a, b, c), (a, b, c, d) => Curried(...args, a, b, c, d)][n];
+    return new Function(...a, `const { curried,thisObj,args} = this; return curried.apply(thisObj, args.concat([${a.join(',')}]))`).bind({ args, thisObj, curried });
+  };
+  Object.defineProperty(ret, 'length', { value: arity, configurable: true, writable: true, enumerable: false });
+  return ret;
+};
+Util.arityN = (fn, n) => {
+  const arityFn = [
+    function(fn) {
       return function() {
-        return curried.apply(this, args.concat([...arguments] /*.slice.call(arguments)*/));
+        return fn();
+      };
+    },
+    function(fn) {
+      return function(a) {
+        return fn(a);
+      };
+    },
+    function(fn) {
+      return function(a, b) {
+        return fn(a, b);
+      };
+    },
+    function(fn) {
+      return function(a, b, c) {
+        return fn(a, b, c);
+      };
+    },
+    function(fn) {
+      return function(a, b, c, d) {
+        return fn(a, b, c, d);
+      };
+    },
+    function(fn) {
+      return function(a, b, c, d, e) {
+        return fn(a, b, c, d, e);
+        H;
       };
     }
+  ];
+  if(n && n <= 5) return arityFn[n](fn);
+  else return fn;
+};
+/*Util.compose2 = () => {
+  let i;
+  return (f, g, j) => {
+    if(j == 0) i = 0;
+    console.log('f,g', f + '', g + '');
+    let gfn = args => {
+      let r = g(...args.slice(i, i + g.length));
+      console.log('g(', ...args.slice(i, i + g.length).reduce((a, p) => (a.length ? [...a, ',', p] : [p]), []), ')');
+      i += g.length;
+      return r;
+    };
+    let ffn = args => {
+      let r = f(...args);
+      console.log('f(', ...args.reduce((a, p) => (a.length ? [...a, ',', p] : [p]), []), ')');
+      return r;
+    };
+    return function(...args) {
+      console.log('args', { args });
+      let r;
+      if(f) {
+        r = ffn(args);
+        args.unshift(r);
+      }
+      r = gfn(args);
+      return r;
+    };
   };
 };
+Util.compose = (...functions) => {
+  const funcs = functions.filter(fn => typeof fn === 'function');
+  let lastIdx = funcs.length - 1;
+  let arity = 0;
+  if(funcs.length <= 0) throw new Error('No funcs passed');
+  //if (lastIdx >= 0 && funcs[lastIdx]) arity = funcs[lastIdx].length;
+  arity = funcs.reduce((n, f) => n + f.length, 0);
+  console.log('arity:', arity);
+  return Util.arityN(funcs.reduce(Util.compose2()), arity);
+};*/
+
 Util.getGlobalObject = () =>
   Util.tryCatch(
     () => global,
@@ -698,8 +774,7 @@ Util.flatten = function(arr) {
 };
 Util.chunkArray = function(a, size) {
   let r = [];
-  for(let i = 0; i <  a.length; i += size)
-    r.push(a.slice(i, i + size));
+  for(let i = 0; i < a.length; i += size) r.push(a.slice(i, i + size));
   return r;
 };
 Util.chances = function(numbers, matches) {
@@ -710,16 +785,51 @@ Util.sum = function(arr) {
   return arr.reduce((acc, n) => acc + n, 0);
 };
 
-Util.add = Util.curry((num, other) => num + other);
-Util.sub = Util.curry((num, other) => num - other);
-Util.mul = Util.curry((num, other) => num * other);
-Util.div = Util.curry((num, other) => num / other);
-Util.xor = Util.curry((num, other) => num ^ other);
-Util.or = Util.curry((num, other) => num | other);
-Util.and = Util.curry((num, other) => num & other);
-Util.mod = Util.curry((num, other) => num % other);
-Util.pow = Util.curry((num, other) => num ** other);
+Util.expr = fn => {
+  let nargs = fn.length;
+  let ret = Util.curry(fn);
 
+  return ret;
+  return expr;
+  function expr(...args) {
+    let nums = [];
+
+    function addArgs(args) {
+      while(args.length > 0) {
+        const arg = args.shift();
+
+        if(typeof arg == 'function') args.unshift(arg(...args.splice(0, arg.length)));
+        else if(typeof arg == 'number') nums.push(arg);
+      }
+    }
+    addArgs(args);
+    console.log('nargs:', nargs);
+    console.log('nums.length:', nums.length);
+    if(nums.length >= nargs) return fn(...nums);
+
+    //    let args = ['a','b','c','d'].slice(0,nargs - nums.length);
+    let ret = function returnFn(...args) {
+      addArgs(args.slice(0, nargs - nums.length));
+
+      // console.log('nums.length:', nums.length);
+      if(nums.length >= nargs) return fn(...nums);
+      return returnFn;
+    };
+    ret.nums = nums;
+
+    return ret;
+  }
+};
+
+Util.add = Util.curry((a, b) => a + b);
+Util.sub = Util.curry((a, b) => a - b);
+Util.mul = Util.curry((a, b) => a * b);
+Util.div = Util.curry((a, b) => a / b);
+Util.xor = Util.curry((a, b) => a ^ b);
+Util.or = Util.curry((a, b) => a | b);
+Util.and = Util.curry((a, b) => a & b);
+Util.mod = Util.curry((a, b) => a % b);
+Util.pow = Util.curry((a, b) => a ** b);
 
 /*Util.define(String.prototype,
   'splice',
@@ -2529,21 +2639,6 @@ Util.partial = function partial(fn /*, arg1, arg2 etc */) {
   };
 };
 
-Util.compose = function compose(fn1, fn2 /*, fn3, etc */) {
-  if(!arguments.length) {
-    throw new Error('expected at least one (and probably more) function arguments');
-  }
-  var fns = arguments;
-
-  return function() {
-    var result = fns[0].apply(this, arguments);
-    var len = fns.length;
-    for(var i = 1; i < len; i++) {
-      result = fns[i].call(this, result);
-    }
-    return result;
-  };
-};
 Util.clamp = Util.curry((min, max, value) => Math.max(min, Math.min(max, value)));
 
 Util.coloring = (useColor = true) =>

@@ -76,13 +76,13 @@ export class ColorMap extends Map {
     }
     let sq = Math.round(Math.sqrt(hues));
 
-    let a = Util.range(1, hues).map((e,i) => Util.randInt(-36,+36,prng));
+    let a = Util.range(1, hues).map((e, i) => Util.randInt(-36, +36, prng));
 
+    let b = Util.range(0, sq)
+      .map((e, i) => (i * 360) / sq)
+      .map(Util.add(Util.randInt(0, 360)));
 
-let b = Util.range(0, sq).map((e,i) => i * 360 / (sq)).map(Util.add(Util.randInt(0,360)));
-
-
-    let f = Util.chunkArray( a, sq).map((g,i) =>   g.sort((a,b) => a -b).map(Util.add(b[i])));
+    let f = Util.chunkArray(a, sq).map((g, i) => g.sort((a, b) => a - b).map(Util.add(b[i])));
     let g = gcd_two_numbers(Math.round(sq * tones * 10), hues);
     return [f];
   }

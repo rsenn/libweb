@@ -57,6 +57,17 @@ export class MutablePath extends Array {
 
   constructor(p = [], absolute) {
     super(typeof p == 'number' ? p : 0);
+
+    const a = MutablePath.parse(p, this);
+
+    const { length } = a;
+    const last = a[a.length - 1];
+    const first = a[0];
+
+    //console.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
+  }
+
+  static parse(p, out) {
     let a = [],
       path = p;
     if(typeof p != 'number') {
@@ -89,17 +100,13 @@ export class MutablePath extends Array {
     a = [...a];
     while(a.length > 0 && a[0] === '') a.shift();
 
-    if(absolute) if (a.length == 0 || a[0] !== '') a = ['', ...a];
+    //  if(absolute) if (a.length == 0 || a[0] !== '') a = ['', ...a];
 
     for(let i = 0; i < a.length; i++) {
       let item = a[i] === '' ? '' : typeof a[i] == 'symbol' || isNaN(+a[i]) ? a[i] : +a[i];
-      Array.prototype.push.call(this, item);
+      Array.prototype.push.call(out, item);
     }
-    const { length } = a;
-    const last = a[a.length - 1];
-    const first = a[0];
-
-    //console.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
+    return a;
   }
 
   static partToString(a, sep = '/', childrenStr, c = (text, c = 33, b = 0) => `\x1b[${b};${c}m${text}\x1b[0m`) {
