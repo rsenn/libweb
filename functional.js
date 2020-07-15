@@ -663,7 +663,7 @@ export class Functional {
     return -1;
   });
 
-  static indexfn = this.curry2(function(as, fn) {
+  static indexfn = this.curry2((as, fn) => {
     var i, l;
     l = as.length;
     i = -1;
@@ -673,7 +673,7 @@ export class Functional {
     return -1;
   });
 
-  static firstfn = this.curry2(function(as, fn) {
+  static firstfn = this.curry2((as, fn) => {
     var i, l, r;
     r = null;
     l = (as != null ? as.length : void 0) || 0;
@@ -687,7 +687,7 @@ export class Functional {
     return null;
   });
 
-  static lastfn = this.curry2(function(as, fn) {
+  static lastfn = this.curry2((as, fn) => {
     var i, r;
     r = null;
     i = (as != null ? as.length : void 0) - 1;
@@ -702,7 +702,7 @@ export class Functional {
 
   static join = this.curry2var(this.builtin(Array.prototype.join));
 
-  static map = this.curry2(function(as, f) {
+  static map = this.curry2((as, f) => {
     var i, l, r;
     r = Array(as.length);
     l = as.length;
@@ -717,13 +717,13 @@ export class Functional {
 
   static sort = this.curry2(this.builtin(Array.prototype.sort));
 
-  static uniqfn = this.curry2(function(as, fn) {
+  static uniqfn = this.curry2((as, fn)  => {
     var fned;
     if(!as) {
       return as;
     }
-    fned = Functional.map(as, fn);
-    return Functional._filter(as, function(v, i) {
+    fned = this.map(as, fn);
+    return this._filter(as, (v, i) => {
       return fned.indexOf(fned[i]) === i;
     });
   });
@@ -732,7 +732,7 @@ export class Functional {
     if(!as) {
       return as;
     }
-    return this._filter(as, function(v, i) {
+    return this._filter(as, (v, i) => {
       return as.indexOf(v) === i;
     });
   };
