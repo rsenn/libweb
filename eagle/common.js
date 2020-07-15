@@ -85,6 +85,9 @@ export const parseArgs = args => {
   while(args.length > 0) {
     if(args[0] instanceof ImmutablePath) {
       ret.path = args.shift();
+    } else   if(args[0] instanceof RegExp) {
+      let re = args.shift();
+      ret.predicate = it => re.test(it.tagName);
     } else if(args[0] instanceof Array) {
       ret.path = new ImmutablePath(args.shift());
     } else if(typeof args[0] == 'function') {

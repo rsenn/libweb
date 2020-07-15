@@ -240,8 +240,8 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     let sheet = this.sheets[sheetNo];
 
-        this.debug(`sheet`, sheet);
-        this.debug(`sheets`, this.sheets);
+    this.debug(`sheet`, sheet);
+    this.debug(`sheets`, this.sheets);
     let bounds = sheet.getBounds();
     let rect = new Rect(bounds.rect);
 

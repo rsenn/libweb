@@ -3,7 +3,7 @@ import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleReference } from './ref.js';
-import {  Rotation } from './common.js';
+import { Rotation } from './common.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList } from '../geom.js';
 
@@ -13,23 +13,16 @@ export class EagleElement extends EagleNode {
   static map = Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw));
   static list = [];
 
+
   //  new WeakMap();
 
   static get(owner, ref, raw) {
-let root = ref.root || owner.raw ? owner.raw : owner;
-
-
-  //  console.log('EagleElement.get(', , ')');
-
+    let root = ref.root || owner.raw ? owner.raw : owner;
+    //  console.log('EagleElement.get(', , ')');
     if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(root, ref);
-
     if(!raw) raw = ref.path.apply(root, true);
     if(!raw) raw = ref.dereference();
-
-
     console.log('EagleElement.get', { owner, ref, raw });
-
-
     let inst = EagleElement.map(raw, owner, ref);
     //console.log("EagleElement.get =",inst);
     return inst;
@@ -166,7 +159,7 @@ let root = ref.root || owner.raw ? owner.raw : owner;
       }
     }
     let childList = null;
-    lazyProperty(this, 'children', () => EagleNodeList.create(this.document, this.path  .down('children'),this.raw.children));
+    lazyProperty(this, 'children', () => EagleNodeList.create(this.document, this.path.down('children'), this.raw.children));
 
     /*    trkl.bind(this, 'children', value => {
       if(value === undefined) {
@@ -283,8 +276,7 @@ let root = ref.root || owner.raw ? owner.raw : owner;
       }
       console.log('EagleElement.lookup', { o, p, v });
 
-      if(!v)
-        v = p.apply(o);
+      if(!v) v = p.apply(o);
 
       return EagleElement.get(o, p, v);
     });

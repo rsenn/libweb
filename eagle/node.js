@@ -3,11 +3,11 @@ import Util from '../util.js';
 import deep from '../deep.js';
 import { lazyMembers } from '../lazyInitializer.js';
 import { trkl } from '../trkl.js';
-import { text,  concat, parseArgs } from './common.js';
+import { text, concat, parseArgs } from './common.js';
 
 import { EagleNodeMap } from './nodeMap.js';
 import { ImmutableXPath } from '../xml.js';
-import { ImmutablePath } from '../json.js';
+import { ImmutablePath, toXML } from '../json.js';
 
 export const makeEagleNode = (owner, ref, ctor) => {
   if(!ctor) ctor = owner.constructor[Symbol.species];
@@ -15,7 +15,7 @@ export const makeEagleNode = (owner, ref, ctor) => {
   return e;
 };
 
-export class EagleNode  {
+export class EagleNode {
   ref = null;
 
   get [Symbol.species]() {
@@ -23,18 +23,16 @@ export class EagleNode  {
   }
 
   constructor(owner, ref, raw) {
-   // if(!owner) owner = new EagleReference(ref.root, []).dereference();
+    // if(!owner) owner = new EagleReference(ref.root, []).dereference();
 
-      if(!(ref instanceof EagleReference)) ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
+    if(!(ref instanceof EagleReference)) ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
     if(!raw) raw = ref.dereference();
 
-//console.log("EagleNode.constructor",{owner,ref,raw});
+    //console.log("EagleNode.constructor",{owner,ref,raw});
 
-
-      //Object.assign(this, { ref, owner });
-    Object.defineProperty(this, 'owner', { value: owner, enumerable: false });
-    Util.define(this, 'ref',ref);
-
+    //Object.assign(this, { ref, owner });
+    Object.defineProperty(this, 'owner', { value: owner, enumerable: false,writable: true });
+    Util.define(this, 'ref', ref);
   }
 
   get path() {
@@ -84,7 +82,7 @@ export class EagleNode  {
   cacheFields() {
     switch (this.tagName) {
       case 'schematic':
-        return [/*['settings'], ['layers'],*/ ['libraries'], ['classes'], ['parts'], ['sheets']/*, ['modules']*/];
+        return [/*['settings'], ['layers'],*/ ['libraries'], ['classes'], ['parts'], ['sheets'] /*, ['modules']*/];
       case 'board':
         return [['plain'], ['libraries'], ['classes'], ['elements'], ['signals']];
       case 'module':
@@ -125,18 +123,15 @@ export class EagleNode  {
 
       for(let xpath of fields) {
         let key = xpath[xpath.length - 1];
-        let path =new ImmutablePath(xpath.reduce((acc,p) => [...acc,'children',p], []).concat(['children']));
+        let path = new ImmutablePath(xpath.reduce((acc, p) => [...acc, 'children', p], []).concat(['children']));
 
+        let value = path.apply(raw, true);
 
-let value = path.apply(raw, true);
-
-console.log('path', { path, value }, listCtor+'');
-  /*      lazy[key] = () =>
+        console.log('path', { path, value }, listCtor + '');
+        /*      lazy[key] = () =>
           //
           this.lookup(xpath);*/
         lists[key] = () => listCtor(owner, this.path.down(...path), value);
-
-
 
         maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? () => lists[key]() : () => EagleNodeMap.create(lists[key](), key == 'instances' ? 'part' : key == 'layers' ? ['number', 'name'] : 'name');
       }
@@ -220,7 +215,7 @@ console.log('path', { path, value }, listCtor+'');
   }
 
   find(name, transform) {
-        console.log('find', this, name, Util.getCallers(0));
+    console.log('find', this, name, Util.getCallers(0));
 
     //throw new Error("find");
 
@@ -293,7 +288,7 @@ console.log('path', { path, value }, listCtor+'');
     return this[Symbol.toStringTag]();
   }
 
- /* [Symbol.for('nodejs.util.inspect.custom')]() {
+  /* [Symbol.for('nodejs.util.inspect.custom')]() {
     let attrs = [''];
     //console.log('Inspect:', this.path, this.raw);
 
@@ -322,7 +317,7 @@ console.log('path', { path, value }, listCtor+'');
     return EagleNode.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, args);
   }
 
-    *findAll(...args) {
+  *findAll(...args) {
     let { path, predicate, transform } = parseArgs(args);
     for(let [v, l, d] of this.iterator(
       e => true,
@@ -336,17 +331,18 @@ console.log('path', { path, value }, listCtor+'');
       }
     }
   }
-
+/*
   find(...args) {
-    let { path, predicate, transform } = parseArgs([...arguments]);
-    if(!transform) transform = ([v, l, d]) => (typeof v == 'object' && v !== null && 'tagName' in v ? new this.constructor[Symbol.species](d, l, v) : v);
+    let { path, predicate, transform } = parseArgs(args);
+    if(!transform) transform = ([v, l, d]) => (Util.isObject(v) && 'tagName' in v ? new this.constructor[Symbol.species](d, l, v) : v);
+    console.log("find",path,predicate+'',transform);
     for(let [v, p, d] of this.iterator()) {
       if(typeof v == 'string') continue;
+      console.log("find",{v,p});
       if(predicate(v, p, d)) return transform([v, p, d]);
     }
     return transform([null, [], []]);
-  }
-
+  }*/
 
   lookup(xpath, t = (o, p, v) => [o, p]) {
     console.log('lookup(', ...arguments, ')');
@@ -362,7 +358,7 @@ console.log('path', { path, value }, listCtor+'');
 
     //  path = this.path.concat(path);
     //  value = path.apply(this.raw,true);
-    console.log('lookup:', { tagName, owner,raw, path, value });
+    console.log('lookup:', { tagName, owner, raw, path, value });
 
     let ret = t(this, path, value);
     //console.log('lookup =', ret);
@@ -422,7 +418,7 @@ console.log('path', { path, value }, listCtor+'');
   *iterator(...args) {
     let predicate = typeof args[0] == 'function' ? args.shift() : arg => true;
     let path = (Util.isArray(args[0]) && args.shift()) || [];
-    let t = typeof args[0] == 'function' ? args.shift() : ([v, l, d]) => [typeof v == 'object' && v !== null && 'tagName' in v ? new this.constructor(d, l) : v, l, d];
+    let t = typeof args[0] == 'function' ? args.shift() : ([v, l, d]) => [typeof v == 'object' && v !== null && 'tagName' in v ? new this.constructor[Symbol.species](d, l) : v, l, d];
     let owner = Util.isObject(this) && 'owner' in this ? this.owner : this;
     let root = this.root || (owner.xml && owner.xml[0]);
     let node = root;

@@ -89,7 +89,7 @@ export class EagleReference {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    return `EagleReference { path:`+ Util.toSource(this.path, {multiline: false, newline: ''})+ `, root:${Util.abbreviate(toXML(this.root, 0), 40)}  }`;
+    return `EagleReference { path:` + Util.toSource(this.path, { multiline: false, newline: '' }) + `, root:${Util.abbreviate(toXML(this.root, 0), 40)}  }`;
   }
   inspect() {
     return this[Symbol.for('nodejs.util.inspect.custom')](...arguments);
@@ -98,7 +98,7 @@ export class EagleReference {
 
 export const EagleRef = function EagleRef(root, path) {
   if(Util.isObject(root) && Util.isObject(root.root)) root = root.root;
-
+console.log("EagleRef",{root,path});
   let obj = new EagleReference(root, path);
   return Object.freeze(obj);
 };

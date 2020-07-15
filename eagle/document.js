@@ -1,6 +1,6 @@
 import tXml from '../tXml.js';
 import Util from '../util.js';
-import deepClone from '../clone.js';
+import deep from '../deep.js';
 import deepDiff from '../deep-diff.js';
 import { EagleRef } from './ref.js';
 import { toXML, ImmutablePath } from '../json.js';
@@ -20,9 +20,16 @@ export class EagleDocument extends EagleNode {
   type = null;
   //elements = new PathMapper(ImmutablePath);
 
+  static get [Symbol.species]() {
+    return EagleElement;
+  }
+
   constructor(xmlStr, project, filename, type) {
     const xml = new tXml(xmlStr);
-    super(project, EagleRef(deepClone(xml[0]), []));
+    let xmlObj = deep.clone(xml[0]);
+        console.log("EagleDocument.constructor", {xml,xmlStr});
+
+    super(project, EagleRef(xmlObj, []));
     type = type || /<library>/.test(xmlStr) ? 'lbr' : /<element\ /.test(xmlStr) ? 'brd' : 'sch';
     if(filename) {
       this.file = filename;
@@ -39,6 +46,8 @@ export class EagleDocument extends EagleNode {
       'palette',
       Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b))
     );
+
+  //  console.log("EagleDocument.constructor", {xmlStr,project,filename,type});
     this.initCache(EagleElement, EagleNodeList.create);
 
     lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'], this.raw.children));
@@ -167,7 +176,7 @@ export class EagleDocument extends EagleNode {
     }
 
     if(this.elements) {
-      console.log("elements:",this.elements);
+      console.log('elements:', this.elements);
       for(let element of this.elements.list) {
         let bbrect = element.getBounds();
 

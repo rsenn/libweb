@@ -129,21 +129,19 @@ Util.toSource = function(arg, opts = {}) {
   if(typeof arg == 'string') return c.text(`'${arg}'`, 1, 36);
   if(arg && arg.x !== undefined && arg.y !== undefined) return `[${c.text(arg.x, 1, 32)},${c.text(arg.y, 1, 32)}]`;
   //if(arg && arg.toSource) return arg.toSource();
-  if(typeof(arg) == 'object') {
-    let o='';
+  if(typeof arg == 'object') {
+    let o = '';
     for(const prop in arg) {
-let s = Util.toSource(arg[prop], opts);
-      let  m = new RegExp(`^\\*?${prop}\\s*\\(`).test(s);
-   if(o!='') o+= (m && multiline) ? '\n  ' : ', ';
-   if(m)
-    o += s;
-  else
-   o+= prop+': '+s;
+      let s = Util.toSource(arg[prop], opts);
+      let m = new RegExp(`^\\*?${prop}\\s*\\(`).test(s);
+      if(o != '') o += m && multiline ? '\n  ' : ', ';
+      if(m) o += s;
+      else o += prop + ': ' + s;
     }
     return multiline ? `{\n  ${o}\n}` : `{ ${o} }`;
   }
   let cls = arg && arg.constructor && Util.fnName(arg.constructor);
-  return arg+'';
+  return arg + '';
 };
 Util.debug = function(message) {
   const args = [...arguments];

@@ -18,7 +18,7 @@ export function DereferenceError(object, member, pos, locator) {
     { object, member, pos, locator },
     {
       message:
-        `Error dereferencing ${Util.className(object)} @ ${locator+''}, { newline: '', multiline: false, colors: false }) + ''}
+        `Error dereferencing ${Util.className(object)} @ ${locator + ''}, { newline: '', multiline: false, colors: false }) + ''}
 xml: ${Util.abbreviate(toXML(locator.root))}
 no member '${Util.inspect(member, { colors: false })}' in ${Util.toString(object, { depth: 2, multiline: true, indent: '  ', colors: false })} \n` + stack.join('\n'),
       stack
@@ -37,7 +37,7 @@ const CHILDREN_SPACE = '';
 
 export class MutablePath extends Array {
   //'\u2b21', '\u274a', '\u229b', '\u273d', '\u20f0', '\u20f0', '\u272a', '\u262a',  '\u21f9', '\u29bf','\u25c7', '\u2b20', '\u267d', '\u267c', '\u267b', '\u2693','\u0fd6', '\u0fd5', '\u2620', '\u0e1e'
-  static CHILDREN_GLYPH /* */  ='⬡' /*'⊛'*/ /*'▸'*/;
+  static CHILDREN_GLYPH /* */ = '⬡' /*'⊛'*/ /*'▸'*/;
   //    '\u00bb'
   static CHILDREN_FN = args => {
     for(let i = 0; i < args.length; i++) args[i] = (args[i] + '').replace(/children/g, this.CHILDREN_GLYPH);
@@ -300,21 +300,19 @@ export class MutablePath extends Array {
       r = r.concat(p);
     }
     const pad = (s, n = 1) => ' '.repeat(n) + s + ' '.repeat(n);
- //   console.log("r:",r);
+    //   console.log("r:",r);
 
-/*
+    /*
     r = r.reduce(
       (acc, p) => [...acc, ...(/^[A-Za-z]/.test(p) ? [pad(color(['\u2b21', '\u274a', '\u229b', '\u273d', '\u20f0', '\u20f0', '\u272a', '\u262a',  '\u21f9', '\u29bf','\u25c7', '\u2b20', '\u267d', '\u267c', '\u267b', '\u2693','\u0fd6', '\u0fd5', '\u2620', '\u0e1e'][10], 1, 35)), color(p || "''", 1, 33)] : [sep, p])],
       []
     );*/
 
-
     r = r.join(' '); //.replace(/[/\.]\[/g, '[');
     r = (this.absolute && r != '' && sep == '/' ? sep : '') + r;
-    return r
-      .replace(/\//g, sep)
- /*     .replace(new RegExp(childrenStr + '.', 'g'), childrenStr + ' \x1b[1;36m')
-      .replace(new RegExp('.' + childrenStr, 'g'), ` \x1b[1;30m` + childrenStr)*/;
+    return r.replace(/\//g, sep);
+    /*     .replace(new RegExp(childrenStr + '.', 'g'), childrenStr + ' \x1b[1;36m')
+      .replace(new RegExp('.' + childrenStr, 'g'), ` \x1b[1;30m` + childrenStr)*/
   }
 
   toSource(sep = ',') {
@@ -483,9 +481,11 @@ export class MutablePath extends Array {
       other = prepend.concat(other);
     }
     for(let i = 0; i < other.length; i++) {
-
-      if(typeof(this[i]) != 'object') { if(this[i] != other[i]) return false;
-} else if(!Util.equals(this[i],other[i])) { return false; }
+      if(typeof this[i] != 'object') {
+        if(this[i] != other[i]) return false;
+      } else if(!Util.equals(this[i], other[i])) {
+        return false;
+      }
     }
 
     return true;

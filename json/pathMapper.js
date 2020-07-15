@@ -14,32 +14,30 @@ export class PathMapper {
   set(obj, path) {
     const { map, ctor } = this;
 
-    if(map.get(obj))
-      return;
+    if(map.get(obj)) return;
 
     if(!(path instanceof ctor)) path = new ctor(path);
     // if(path.length === 0) this.root = obj;
     map.set(obj, path);
-  /*  let properties = 'tagName' in obj ? ['children', 'attributes'] : Object.keys(obj);
+    /*  let properties = 'tagName' in obj ? ['children', 'attributes'] : Object.keys(obj);
 
     for(let prop of properties) if(prop in obj && Util.isObject(obj[prop])) map.set(obj[prop], path.concat([prop]));*/
   }
 
   get(obj) {
-        const { map } = this;
+    const { map } = this;
     return map.get(obj);
   }
 
   at(path) {
     let { root } = this;
-    for(let prop of path)
-      root = root[prop];
+    for(let prop of path) root = root[prop];
     this.set(root, path);
     return root;
   }
 
   walk(obj, fn = path => path) {
-            const { map,ctor } = this;
+    const { map, ctor } = this;
 
     let path = map.get(obj);
     if(path === null) return null;
