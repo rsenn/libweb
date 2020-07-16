@@ -17,19 +17,19 @@ export class EagleSVGRenderer {
 
   constructor(doc, factory) {
     if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
-    //  let ctor = EagleSVGRenderer.rendererTypes[doc.type];
-    //  Object.setPrototypeOf(this, ctor.prototype);
+    //let ctor = EagleSVGRenderer.rendererTypes[doc.type];
+    //Object.setPrototypeOf(this, ctor.prototype);
     this.doc = doc;
     this.create = factory; //(tag, attrs, parent) => factory(tag, 'id' in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
 
-    console.log('EagleSVGRenderer.constructor(', doc, factory, ')');
+   // console.log('EagleSVGRenderer.constructor(', doc, factory, ')');
     /* const { layers, elements, signals } = doc || {};
     this.elements = elements;
     this.signals = signals;
     this.layers = layers;*/
-    // this.plain = doc.get('plain', (v, l) => EagleElement.get(doc, l));
+    //this.plain = doc.get('plain', (v, l) => EagleElement.get(doc, l));
 
-    //  return this;
+    //return this;
   }
 
   pushTransform(transform) {
@@ -98,7 +98,7 @@ export class EagleSVGRenderer {
   renderLayers(parent) {
     this.debug(`EagleSVGRenderer.renderLayers`);
 
-    // const layerGroup = this.create('g', { className: 'layers' }, parent);
+    //const layerGroup = this.create('g', { className: 'layers' }, parent);
     const layerList = [...this.doc.layers.list].sort((a, b) => a.number - b.number);
     const colors = {};
 
@@ -140,7 +140,8 @@ export class EagleSVGRenderer {
 
     const color = layer && layer.color; //(opts && opts.color) || (layer && this.getColor(layer.color));
 
-    this.debug(`EagleSVGRenderer.renderItem`, item, item.xpath().toString());
+    this.debug(`EagleSVGRenderer.renderItem`, item);
+    this.debug(`EagleSVGRenderer.renderItem`, item.xpath().toString());
 
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...attr }, parent);
 
@@ -239,7 +240,7 @@ export class EagleSVGRenderer {
 
         const finalTransformation = rotation
           .concat(undoTransform)
-          // .rotate(Math.abs(wholeAngle % 180))
+          //.rotate(Math.abs(wholeAngle % 180))
           .collapseAll();
 
         this.debug(`wholeAngle ${text}`, wholeAngle);
@@ -250,7 +251,7 @@ export class EagleSVGRenderer {
 
         if(finalTransformation.rotation) {
           if(finalTransformation.rotation.angle < 0) finalTransformation.rotation.angle = Math.abs(finalTransformation.rotation.angle);
-          // finalTransformation.rotation.angle %= 180;
+          //finalTransformation.rotation.angle %= 180;
         }
 
         const baseAlignment = EagleSVGRenderer.alignment(align);

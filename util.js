@@ -1689,7 +1689,12 @@ Util.filter = function(a, pred) {
   for(let [k, v] of Util.entries(a)) if(pred(v, k, a)) fn(k, v);
   return ret;
 };
-Util.reduce = function(obj, fn, accu) {
+Util.reduce = (obj, fn, accu) => {
+  if(Util.isGenerator(obj)) {
+    let i = 0;
+    for(let item of obj) accu = fn(accu, item, i++, obj);
+    return accu;
+  }
   for(let key in obj) accu = fn(accu, obj[key], key, obj);
   return accu;
 };
@@ -1697,10 +1702,16 @@ Util.mapFunctional = fn =>
   function*(arg) {
     for(let item of arg) yield fn(item);
   };
-Util.map = function(obj, fn) {
+Util.map = (obj, fn) => {
   if(typeof obj == 'function') return Util.mapFunctional(...arguments);
-  if(typeof fn != 'function') return Util.toMap(...arguments);
+  if(Util.isGenerator(obj))
+    return (function*() {
+      let i = 0;
+      for(let item of obj) yield fn(item, i++, obj);
+    })();
+
   if(typeof obj.map == 'function') return obj.map(fn);
+  if(typeof fn != 'function') return Util.toMap(...arguments);
 
   let ret = {};
   for(let key in obj) {

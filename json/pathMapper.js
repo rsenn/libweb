@@ -64,3 +64,14 @@ export class PathMapper {
     this.factory = (typeof(fn) == 'function') ? fn : null;
   }*/
 }
+
+export class WrapperMapper {
+  obj2wrapper = new WeakMap();
+  ctor = null;
+
+  constructor(ctor) {
+    if(ctor) Util.define(this, { ctor });
+  }
+
+  get(obj) {}
+}

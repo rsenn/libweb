@@ -63,7 +63,7 @@ const Pin = ({ length, rot, name, visible, x, y, function: func }) => {
           'text-anchor': 'left',
           'alignment-baseline': 'central',
           children: name
-          //     transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
+          //transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
         },
         parent
       )

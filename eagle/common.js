@@ -1,6 +1,6 @@
 import { toXML, ImmutablePath } from '../json.js';
 import { ImmutableXPath } from '../xml.js';
-//  import { EagleElement } from "./element.js";
+//import { EagleElement } from "./element.js";
 import Util from '../util.js';
 import deep from '../deep.js';
 import { BBox, TransformationList } from '../geom.js';

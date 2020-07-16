@@ -10,7 +10,7 @@ export class EagleProject {
   data = { sch: null, brd: null, lbr: {} };
 
   constructor(file, fs = { readFile: filename => '', exists: filename => false }) {
-    //  super();
+    //super();
     this.filename = file.replace(/\.(brd|sch)$/, '');
     this.fs = fs;
 

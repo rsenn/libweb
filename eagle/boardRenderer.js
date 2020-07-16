@@ -18,7 +18,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     this.elements = elements;
     this.signals = signals;
-    // this.plain = board.plain; //get('plain', (v, l) => EagleElement.get(board, l));
+    //this.plain = board.plain; //get('plain', (v, l) => EagleElement.get(board, l));
     this.layers = layers;
     this.sheets = sheets;
 
@@ -171,7 +171,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         'path',
         {
           className: 'wire',
-          //  ...LayerAttributes(layer),
+          //...LayerAttributes(layer),
           d: path,
           stroke: color,
           'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
@@ -240,7 +240,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     this.debug(`BoardRenderer.render`, { bounds, rect });
 
-    //  this.renderLayers(parent);
+    //this.renderLayers(parent);
 
     let transform = this.transform + '';
 

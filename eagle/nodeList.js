@@ -140,7 +140,7 @@ Object.defineProperties(EagleNodeList.prototype, {
           };
         if(prop == 'entries') return () => list.map((item, i) => [item.attributes.name, item]);
 
-        // if(typeof Array.prototype[prop] == 'function') return Array.prototype[prop].bind(instance);
+        //if(typeof Array.prototype[prop] == 'function') return Array.prototype[prop].bind(instance);
         if((list && !is_symbol && /^([0-9]+|length)$/.test('' + prop)) || /* prop == Symbol.iterator ||*/ ['findIndex'].indexOf(prop) !== -1) {
           if(prop in list) return list[prop];
         }

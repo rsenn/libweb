@@ -15,7 +15,7 @@ export class EagleElement extends EagleNode {
   static map = Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw));
   static list = [];
 
-  //  new WeakMap();
+  //new WeakMap();
 
   static get(owner, ref, raw) {
     let root = ref.root || owner.raw ? owner.raw : owner;
@@ -171,9 +171,15 @@ export class EagleElement extends EagleNode {
       }
     });*/
     if(tagName == 'gate') {
-      /*  console.log('this.elementChain()', this.elementChain());
-      //console.log('this.ref', this.ref);*/
-      let library = this.elementChain().library; /*|| EagleElement.get(this.owner, ref.up(8))*/
+      let chain = this.elementChain((o, p, v) => [v.tagName, EagleElement.get(o, p, v)]);
+      console.log('this.elementChain()', chain);
+     let names = this.names();
+           console.log('this.names()', names);
+
+       /* console.log('this.owner', this.owner);
+        +console.log('this.ref', this.ref);
+*/
+      let library = chain.library; /*|| EagleElement.get(this.owner, ref.up(8))*/
 
       if(!library) {
         console.log('chain:', this.chain);
@@ -228,7 +234,7 @@ export class EagleElement extends EagleNode {
     const Attributes = () => {
       class EagleAttributes {
         constructor(props) {
-          //  Object.defineProperties(this, props);
+          //Object.defineProperties(this, props);
         }
         *[Symbol.iterator]() {
           for(let key of attributeNames) yield [key, attributeHandlers[key]()];
@@ -271,7 +277,7 @@ export class EagleElement extends EagleNode {
   lookup(xpath, create) {
     /* if(!(xpath instanceof ImmutableXPath))
     xpath = new ImmutableXPath([...xpath]);*/
-    console.log('EagleElement.lookup(', xpath, create, ')');
+    //console.log('EagleElement.lookup(', xpath, create, ')');
     let r = super.lookup(xpath, (o, p, v) => {
       if(create && !v) {
         const { tagName } = p.last;
@@ -280,7 +286,7 @@ export class EagleElement extends EagleNode {
       if(!v) v = p.apply(o.raw, true);
       return EagleElement.get(o, p, v);
     });
-    console.log('EagleElement.lookup = ', r);
+    //console.log('EagleElement.lookup = ', r);
     return r;
   }
 
@@ -359,7 +365,28 @@ export class EagleElement extends EagleNode {
     return relationNames.indexOf(name) != -1;
   }
 
-  elementChain() {
+  elementChain(t = (o, p, v) => [v.tagName, v]) {
+    const { owner, path, document } = this;
+    let chain = Object.fromEntries(
+      Util.map(
+        path.walk((p, i, abort, ignore) => {
+          let value = p.apply(owner.raw, true);
+
+          if(i == 0) ignore();
+          if(!value || !value.attributes || !value.attributes.name) ignore();
+
+          return p.up(2);
+        }),
+        path => {
+          let v = path.apply(owner.raw, true);
+          return t(owner, path, v);
+        }
+      )
+    );
+    //console.log('chain:', chain);
+
+    return chain;
+
     let node = this;
     let ret = {};
     let prev = null;

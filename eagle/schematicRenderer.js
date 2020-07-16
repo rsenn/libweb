@@ -20,19 +20,20 @@ export class SchematicRenderer extends EagleSVGRenderer {
     //const { sheets } = doc;
     super(doc, factory);
 
-    //  this. sheets  = sheets;
+    //this. sheets  = sheets;
     this.id = 0;
 
     //this.setPalette(SchematicRenderer.palette);
     this.palette = SchematicRenderer.palette;
-    // console.log('found:', new ImmutablePath([...doc.path, 'children', { tagName: 'eagle' }, 'children', { tagName: 'drawing' }, 'children', { tagName: 'schematic' }]));
-    console.log('SchematicRenderer.constructor(', doc, factory, ')');
+    //console.log('found:', new ImmutablePath([...doc.path, 'children', { tagName: 'eagle' }, 'children', { tagName: 'drawing' }, 'children', { tagName: 'schematic' }]));
+
+    //console.log('SchematicRenderer.constructor(', doc, factory, ')');
   }
 
   renderCollection(collection, parent, opts) {
     /*    if(pos !== undefined || rot !== undefined)
       throw new Error();*/
-    //  let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
+    //let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
     this.debug(`SchematicRenderer.renderCollection`, opts);
 
@@ -138,7 +139,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
               'text-anchor': 'left',
               'alignment-baseline': 'central',
               children: name
-              //     transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
+              //transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
             },
             parent
           );
@@ -249,17 +250,17 @@ export class SchematicRenderer extends EagleSVGRenderer {
     //console.log('doc.sheets:',sheets);
 
     let sheet = sheets[sheetNo];
-    // console.log('sheet.getBounds', sheet.getBounds+'');
+    //console.log('sheet.getBounds', sheet.getBounds+'');
 
     let bounds = new BBox();
 
-    //  bounds = Util.tryFunction(() => sheet.getBounds());
+    //bounds = Util.tryFunction(() => sheet.getBounds());
 
     let rect = new Rect(bounds.rect);
 
     this.bounds = bounds;
     this.rect = rect;
-    //    this.plain = sheet.plain;
+    //this.plain = sheet.plain;
 
     rect.outset(1.27);
     rect.round(2.54);

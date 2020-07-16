@@ -93,7 +93,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
           if(prop == 'length' || prop == 'size') return (instance.list.raw || instance.list).length;
           if(prop == 'entries') return instance.entries;
         }
-        //  if(prop == Symbol.iterator) return instance.entries()[Symbol.iterator];
+        //if(prop == Symbol.iterator) return instance.entries()[Symbol.iterator];
 
         if((index = instance.keys().indexOf(prop)) != -1) return instance.list[index];
         if(typeof instance[prop] == 'function') return instance[prop].bind(instance);

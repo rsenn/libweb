@@ -14,6 +14,7 @@ export class MutableXPath extends MutablePath {
   }
 
   static from(path, obj) {
+    //console.log("MutableXPath.from",{path,obj});
     let absolute = false;
     path = [...path];
     while(path.length > 0 && path[0] === '') {
@@ -35,9 +36,9 @@ export class MutableXPath extends MutablePath {
       if(MutablePath.isChildren(p)) p = 'children';
       else if(Util.isObject(p) && Util.isArray(o)) p = o.findIndex(item => item.tagName === p.tagName);
       e = o[p];
-      //console.log(`XPath.from[${i}] `, p);
+      //console.log(`MutableXPath.from[${i}] `, p);
       if(p == 'children') {
-        s.push(p);
+        //s.push(p);
         n = e.length;
         counts = {};
         siblings = e.reduce((acc, sib, idx) => [...acc, [incr(counts, sib.tagName), sib.tagName]], []);
@@ -53,15 +54,13 @@ export class MutableXPath extends MutablePath {
         } else if(siblings.length > 1 && maxCount() > 1) {
           if(siblings[p]) p = siblings.slice(0, p).filter(([idx, tagName]) => tagName == e.tagName).length;
           else x = '';
-
           //console.log('', { p, x });
-
           x += '[' + (p + 1).toString(10) + `]`;
         } /* else {
           const uniform = Object.keys(counts).length == 1;
           if(!uniform || maxCount() > 1) {
             x += `[${number}]`;
-          //console.log('XPath.from: ', { i, x, max: maxCount(), number, tagName, counts, siblings });
+          //console.log('MutableXPath.from: ', { i, x, max: maxCount(), number, tagName, counts, siblings });
         }
         }*/
         siblings = [];
@@ -72,8 +71,8 @@ export class MutableXPath extends MutablePath {
       o = e;
     }
     let r = new ImmutableXPath(s, absolute, obj);
-    //console.log('XPath.from(', a, ')');
-    //console.log('XPath.from = ', r.toString());
+    //console.log('MutableXPath.from(', s, ')');
+    //console.log('MutableXPath.from = ', r.toString());
     return r;
   }
 
@@ -82,9 +81,11 @@ export class MutableXPath extends MutablePath {
   static parse(l) {
     l = Util.isArray(l) ? l : l.split(/[.\/]/g);
     if(l[0] == '') l.shift();
-
-    //   console.log('XPath.parse', { l });
-
+    if(l.indexOf('children') != -1) {
+      l = l.filter(p => !ImmutablePath.isChildren(p));
+      //  throw new Error('children');
+    }
+    //console.log('MutableXPath.parse', { l });
     l = l.map(p => {
       let o = p;
       if(typeof p == 'string') {
@@ -93,7 +94,6 @@ export class MutableXPath extends MutablePath {
         let t = p.substring(0, j == -1 ? p.length : j);
         let s = '';
         o = {};
-
         if(t != '') o.tagName = t;
         if(i != '') {
           const num = isNaN(+i) ? -1 : +i - 1;
@@ -116,10 +116,8 @@ export class MutableXPath extends MutablePath {
       }
       return o;
     });
-
     l = [...l].reduce((acc, part) => [...acc, 'children', part], []);
-
-    console.log(` XPath.parse = `, l, ``);
+    //console.log(`MutableXPath.parse = `, l, ``);
     return l;
   }
 
@@ -201,52 +199,28 @@ export class MutableXPath extends MutablePath {
   }
 
   toString(sep = '/', childrenSym = MutableXPath.CHILDREN_GLYPH, tfn = text => text) {
-    //  let ctor = this.constructor;
     let a = [...this];
     let r = [];
-    //console.log('this:', a);
-
     while(a.length > 0) r = r.concat(MutableXPath.partToString(a, sep, childrenSym, tfn));
-    //console.log('r:', r);
-    // r = r.filter(part => !MutableXPath.isChildren(part));
     let s = r.join('/');
     return sep + s;
   }
 
   [Symbol.for('nodejs.util.inspect.custom')](c) {
     let ctor = this.constructor;
-
     let { absolute } = this;
     c = typeof c == 'function' ? c : (text, ...colors) => `\x1b[${colors.join(';')}m${text}\x1b[0m`;
     let n = Util.className(this).replace(/Immutable/, '');
-
     let s = MutableXPath.prototype.toString.call(this, '/', MutableXPath.CHILDREN_GLYPH, c);
     s = s.split(/[\.\/]/g);
     s = s.filter(i => !MutableXPath.isChildren(i.replace(/\x1b\[[^a-z]*(.)/g, '')));
-    /* s=s.map(p => {
-        const matches = /([^\[]*)(\[[^/]*\])?/.exec(p);
-        let [tag, brack = ''] = [...matches].slice(1);
-        brack = (brack + '').substring(1, brack.length - 1);
-        let bmatches = /(@)?([-_A-Za-z][-_A-Za-z0-9]*)([^'"]*)(['"][^'"]*['"])?/g.exec(brack);
-        let [total, at, name, op, value] = bmatches || ['', '', '', ''];
-        if(total) {
-          p = c(tag, 1, 32) + c('[', 38, 5, 243);
-          p += c(at, 38, 5, 196) + c(name, 1, 33) + c(op, 1, 36) + c(value, 1, 35) + c(']', 38, 5, 243);
-        } else {
-          p = c(p, 38, 5, 99);
-        }
-        return p;
-      });*/
     s = s.reduce((acc, p) => {
       if(p.startsWith('[') && acc.length) acc[acc.length - 1] += c(p, 1, 32);
       else acc.push(p);
       return acc;
     }, []);
-
     s = s.join(c('/', 1, 36));
-
     s = c(n, 1, ...(/Mutable/.test(n) ? [38, 5, 124] : [38, 5, 214])) + ' ' + s;
-
     return s;
   }
 

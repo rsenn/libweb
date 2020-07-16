@@ -6,12 +6,9 @@ export const ChildrenSym = Symbol('⊳');
 export class EagleReference {
   constructor(root, path) {
     if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
-
     this.path = path;
     this.root = root;
-
     //console.log('EagleReference', { root: Util.abbreviate(toXML(root), 10), path });
-
     if(!this.dereference(false)) {
       //console.log('dereference:', { path, root: Util.abbreviate(toXML(root), 10) });
       throw new Error(this.path.join(','));
@@ -25,10 +22,8 @@ export class EagleReference {
   getPath(root) {
     let path = new ImmutablePath();
     let ref = this;
-
     do {
       path = ref.path.concat(path);
-
       if(root === undefined || root == ref) break;
     } while(true);
     return path;
@@ -50,6 +45,7 @@ export class EagleReference {
     const obj = this.path.up().apply(this.root);
     return (obj[this.path.last] = value);
   }
+
   entry() {
     if(this.path.size > 0) {
       let key = this.path.last;
@@ -103,25 +99,4 @@ export const EagleRef = function EagleRef(root, path) {
   return Object.freeze(obj);
 };
 
-/*
-["up", "down", "left", "right", "slice"].forEach(method =>
-    (EagleReference.prototype[method] = function(...args) {
-      return EagleRef(this.root, this.path[method](...args));
-    })
-);*/
 Object.assign(EagleReference.prototype, {});
-
-/*let props = ["nextSibling", "prevSibling", "parent", "parentNode", "firstChild", "lastChild", "depth"].reduce((acc, method) => ({
-    ...acc,
-    [method]: {
-      get: function(...args) {
-        let path = this.path[method](...args); //ImmutablePath.prototype[method].apply(this.path, args);
-        //console.log(method+" path:",path.join(','), " this.path:",this.path.join(','));
-        return path.existsIn(this.root) ? new EagleRef(this.root, path) : null;
-      }
-    }
-  }), {});
-
-//console.log("props:", props);
-Object.defineProperties(EagleReference.prototype, props);
-*/
