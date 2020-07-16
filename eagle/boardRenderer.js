@@ -225,15 +225,9 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   render(doc = this.doc, parent, props = {}) {
-    /* let bounds = doc.getBounds();
-    let rect = bounds.rect;
+    /*if(!this.bounds)
+    this.bounds = doc.getBounds();*/
 
-    this.bounds = bounds;
-    this.rect = rect;
-
-    rect.outset(1.27);
-    rect.round(2.54);
-*/
     parent = super.render(doc, parent, props);
 
     const { bounds, rect } = this;

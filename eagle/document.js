@@ -157,7 +157,9 @@ export class EagleDocument extends EagleNode {
     let sheet = this.sheets ? this.sheets[sheetNo] : null;
 
     if(sheet) {
-      for(let instance of sheet.instances.list) {
+      let instances = sheet.find('instances').children;
+
+      for(let instance of instances) {
         let { gate, part } = instance;
         let symbol = gate.symbol;
 

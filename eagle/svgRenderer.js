@@ -22,7 +22,7 @@ export class EagleSVGRenderer {
     this.doc = doc;
     this.create = factory; //(tag, attrs, parent) => factory(tag, 'id' in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
 
-   // console.log('EagleSVGRenderer.constructor(', doc, factory, ')');
+    // console.log('EagleSVGRenderer.constructor(', doc, factory, ')');
     /* const { layers, elements, signals } = doc || {};
     this.elements = elements;
     this.signals = signals;
@@ -362,7 +362,7 @@ export class EagleSVGRenderer {
   render(doc, parent, props = {}) {
     doc = doc || this.doc;
 
-    let bounds = new BBox(); //doc.getBounds();
+    let bounds = doc.getBounds();
     let rect = new Rect(bounds.rect);
 
     rect.outset(1.27);

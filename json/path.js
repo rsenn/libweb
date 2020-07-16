@@ -281,7 +281,7 @@ export class MutablePath extends Array {
   }
 
   toString(...args) {
-    const color =Util.isBrowser() ? text => text :  (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
+    const color = Util.isBrowser() ? text => text : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
     const [sep = '.', partToStr = MutablePath.partToString, childrenStr = MutablePath['CHILDREN_GLYPH'] + CHILDREN_SPACE] = args;
     let a = [...this];
     //console.log("toString",{sep,partToStr, childrenStr});
