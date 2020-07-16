@@ -18,7 +18,7 @@ export class EagleProject {
 
     this.load();
 
-    // if(!this.failed) console.log('Opened project:', this.filename/*, this.eaglePath*/);
+    if(!this.failed) console.log('Opened project:', this.filename, this.eaglePath);
   }
 
   load() {

@@ -59,12 +59,7 @@ export class MutablePath extends Array {
     super(typeof p == 'number' ? p : 0);
 
     MutablePath.parse(p, this);
-    //console.log("a:",a);
-    console.log('this:', this);
-
-    const { length } = this;
-    const last = this[length - 1];
-    const first = this[0];
+    //   console.log('this:',this);
 
     //console.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
   }
@@ -77,24 +72,26 @@ export class MutablePath extends Array {
         path = path.split(/[./]/g);
       }
       const len = path.length;
+      path = [...path];
 
       for(let i = 0; i < len; i++) {
         let part = path[i];
 
-        if(part.codePointAt(0) >= 256 || part == 'children') {
+        if(typeof part == 'string' && ((part && part.codePointAt && part.codePointAt(0) >= 256) || part == 'children')) {
           part = 'children';
         } else if(typeof part == 'number' || (typeof part == 'string' && !isNaN(part))) {
           part = +part;
         } else if(typeof part == 'string') {
           if(/\[.*\]/.test(part + '')) {
-            out.splice(out.length, out.length, ...['children', part.substring(1, part.length - 0)]);
-            continue;
+            p = part.substring(1, part.length - 0);
           } else if(/^[A-Za-z]/.test(part)) {
             const idx = ['attributes', 'tagName', 'children'].indexOf(part);
             if(idx == -1) part = { tagName: part };
           }
         }
-        if(out[out.length - 1] !== part) Array.prototype.push.call(out, part);
+
+        // if(out[out.length - 1] !== part)
+        Array.prototype.push.call(out, part);
       }
     }
   }

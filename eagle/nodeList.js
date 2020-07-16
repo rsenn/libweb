@@ -37,8 +37,8 @@ Object.defineProperties(EagleNodeList.prototype, {
 
     if(pos < 0) pos += raw.length;
 
-    //console.log(`EagleNodeList.item(${pos})`, { owner,  ref, raw });
-    if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner, [...ref.path, pos], raw[pos]);
+    console.log(`EagleNodeList.item(${pos})`, { owner, ref, raw });
+    if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner, ['children', pos], raw[pos]);
   }
 
   *[Symbol.iterator]() {

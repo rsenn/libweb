@@ -1,6 +1,4 @@
-import { Point } from '../geom/point.js';
-import { Rect } from '../geom/rect.js';
-import { Line } from '../geom/line.js';
+import { Point, Rect, Line, BBox } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
 import { RGBA } from '../color/rgba.js';
 import { HSLA } from '../color/hsla.js';
@@ -19,14 +17,16 @@ export class SchematicRenderer extends EagleSVGRenderer {
   static palette = Palette.schematic((r, g, b) => new RGBA(r, g, b));
 
   constructor(doc, factory) {
+    //const { sheets } = doc;
     super(doc, factory);
 
-    const { sheets } = doc;
-    this.sheets = sheets;
+    //  this. sheets  = sheets;
     this.id = 0;
 
     //this.setPalette(SchematicRenderer.palette);
     this.palette = SchematicRenderer.palette;
+    // console.log('found:', new ImmutablePath([...doc.path, 'children', { tagName: 'eagle' }, 'children', { tagName: 'drawing' }, 'children', { tagName: 'schematic' }]));
+    console.log('SchematicRenderer.constructor(', doc, factory, ')');
   }
 
   renderCollection(collection, parent, opts) {
@@ -159,18 +159,24 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
   renderSheet(sheet, parent) {
     const { transform } = this;
-    let instances = sheet.instances;
-    this.debug(`SchematicRenderer.renderSheet`, { sheet, parent, instances });
+
+    this.debug(`SchematicRenderer.renderSheet`, { sheet, parent, transform });
+
+    let instances = sheet.find('instances');
+
+    this.debug(`SchematicRenderer.renderSheet`, sheet);
 
     let netsGroup = this.create('g', { className: 'nets', transform }, parent);
     let instancesGroup = this.create('g', { className: 'instances', transform }, parent);
 
-    for(let instance of sheet.instances.list) this.renderInstance(instance, instancesGroup);
+    for(let instance of instances.children) this.renderInstance(instance, instancesGroup);
 
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
   }
 
   renderInstance(instance, parent, opts = {}) {
+    this.debug(`SchematicRenderer.renderInstance`, instance);
+
     let { x, y, rot, part, symbol } = instance;
     //let coordFn = MakeCoordTransformer(this.transform);
     let { deviceset, name, value } = part;
@@ -236,18 +242,24 @@ export class SchematicRenderer extends EagleSVGRenderer {
   }
 
   render(doc = this.doc, parent, props = {}, sheetNo = 0) {
-    this.debug(`SchematicRenderer.render`, { doc, sheetNo });
+    //console.log('doc:', doc);
 
-    let sheet = this.sheets[sheetNo];
+    const sheets = doc.find('sheets').children;
 
-    this.debug(`sheet`, sheet);
-    this.debug(`sheets`, this.sheets);
-    let bounds = sheet.getBounds();
+    //console.log('doc.sheets:',sheets);
+
+    let sheet = sheets[sheetNo];
+    // console.log('sheet.getBounds', sheet.getBounds+'');
+
+    let bounds = new BBox();
+
+    //  bounds = Util.tryFunction(() => sheet.getBounds());
+
     let rect = new Rect(bounds.rect);
 
     this.bounds = bounds;
     this.rect = rect;
-    //this.plain = sheet.plain;
+    //    this.plain = sheet.plain;
 
     rect.outset(1.27);
     rect.round(2.54);
@@ -256,6 +268,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     this.debug('this.transform:', this.transform, 'this.rect:', this.rect, 'doc:', doc);
 
+    this.debug(`SchematicRenderer.render`, { doc, sheetNo, bounds });
     this.renderSheet(sheet, parent);
 
     //this.renderInstances(parent, sheetNo, rect);

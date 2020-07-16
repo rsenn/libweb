@@ -18,18 +18,20 @@ export class EagleDocument extends EagleNode {
   xml = null;
   file = null;
   type = null;
-  //elements = new PathMapper(ImmutablePath);
+  mapper = new PathMapper(ImmutablePath);
 
   static get [Symbol.species]() {
     return EagleElement;
   }
 
   constructor(xmlStr, project, filename, type) {
-    const xml = new tXml(xmlStr);
-    let xmlObj = deep.clone(xml[0]);
-    //console.log('EagleDocument.constructor', { xml, xmlStr });
+    // console.log('EagleDocument.constructor', Util.abbreviate(xmlStr), { project, filename, type });
+    const xml = tXml(xmlStr);
 
-    super(project, EagleRef(xmlObj, []));
+    let xmlObj = deep.clone(xml[0]); //(xml[0]);
+    //console.log('EagleDocument.constructor', xmlObj);
+
+    super(project, EagleRef(xmlObj, []), xmlObj);
     type = type || /<library>/.test(xmlStr) ? 'lbr' : /<element\ /.test(xmlStr) ? 'brd' : 'sch';
     if(filename) {
       this.file = filename;

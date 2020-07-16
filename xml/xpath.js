@@ -79,25 +79,19 @@ export class MutableXPath extends MutablePath {
 
   static matchObj = (tagName, attr_or_index = {}) => (typeof attr_or_index == 'number' ? [attr_or_index, tagName] : { tagName, attributes: attr_or_index });
 
-  static parse(s) {
-    let l = Util.isArray(s) ? [...s] : s.split(/[.\/]/g);
-    let r = [];
-    // if(l[0] == '') l.shift();
+  static parse(l) {
+    l = Util.isArray(l) ? l : l.split(/[.\/]/g);
+    if(l[0] == '') l.shift();
 
-    /*l = (l || []).reduce((acc, part) => {
-      if(acc.length && part[0] == '[') acc[acc.length - 1] += part;
-      else acc.push(part);
-      return acc;
-    }, []);*/
-    //console.log(` XPath.parse(`, l, `)`);
-    let o;
-    for(let p of l) {
+    //   console.log('XPath.parse', { l });
+
+    l = l.map(p => {
+      let o = p;
       if(typeof p == 'string') {
         let j = p.indexOf('[');
         let i = j != -1 ? p.substring(j + 1, p.indexOf(']')) : '';
         let t = p.substring(0, j == -1 ? p.length : j);
         let s = '';
-        //console.log('XPath.parse:', { p, j, i, t });
         o = {};
 
         if(t != '') o.tagName = t;
@@ -118,23 +112,23 @@ export class MutableXPath extends MutablePath {
             }
           }
         }
-        if(isSpecialAttr(t) || r[r.length - 1] == 'attributes') o = t;
-
-        //console.log('XPath.parse', { i, o, t, p });
+        //   if(isSpecialAttr(t) || r[r.length - 1] == 'attributes') o = t;
       }
-      r.push(o);
-    }
-    //console.log('XPath.parse = ', r);
-    return r;
+      return o;
+    });
+
+    l = [...l].reduce((acc, part) => [...acc, 'children', part], []);
+
+    console.log(` XPath.parse = `, l, ``);
+    return l;
   }
 
   constructor(parts, absolute = false /*, root*/) {
-    // if(typeof(parts) == 'string')
-    parts = MutableXPath.parse(parts);
+    ///console.log('MutableXPath.parse = ', parts);
+    let a = MutableXPath.parse(parts);
 
-    super(parts, absolute);
-
-    return this;
+    super(a, absolute);
+    //console.log('MutableXPath.parse = ',  this);
   }
 
   get descendand() {

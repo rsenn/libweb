@@ -6,8 +6,9 @@ import { trkl } from '../trkl.js';
 import { text, concat, parseArgs } from './common.js';
 
 import { EagleNodeMap } from './nodeMap.js';
-import { ImmutableXPath } from '../xml.js';
-import { ImmutablePath, toXML } from '../json.js';
+
+import { ImmutableXPath, XPath } from '../xml.js';
+import { ImmutablePath, Path, toXML } from '../json.js';
 
 export const makeEagleNode = (owner, ref, ctor) => {
   if(!ctor) ctor = owner.constructor[Symbol.species];
@@ -123,17 +124,20 @@ export class EagleNode {
 
       for(let xpath of fields) {
         let key = xpath[xpath.length - 1];
+
         let path = new ImmutablePath(xpath.reduce((acc, p) => [...acc, 'children', p], []).concat(['children']));
 
-        let value = path.apply(raw, true);
+        //let value = path.apply(raw, true);
 
-        //console.log('path', { path, value }, listCtor + '');
-        /*      lazy[key] = () =>
-          //
-          this.lookup(xpath);*/
-        lists[key] = () => listCtor(owner, this.path.down(...path), value);
+        console.log('xpath', { xpath, key });
 
-        maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? () => lists[key]() : () => EagleNodeMap.create(lists[key](), key == 'instances' ? 'part' : key == 'layers' ? ['number', 'name'] : 'name');
+        lazy[key] = () => this.lookup(xpath, true);
+
+        console.log(`lazy[${key}]()`, lazy[key]());
+
+        lists[key] = () => listCtor(owner, this.ref.down(...path));
+
+        maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => EagleNodeMap.create(lists[key](), key == 'instances' ? 'part' : key == 'layers' ? ['number', 'name'] : 'name');
       }
       lazyMembers(this.lists, lists);
       lazyMembers(this.cache, lazy);
@@ -345,23 +349,16 @@ export class EagleNode {
   }*/
 
   lookup(xpath, t = (o, p, v) => [o, p]) {
-    //console.log('lookup(', ...arguments, ')');
+    console.log('EagleNode.lookup(', ...arguments, ')');
 
-    const { tagName, owner, raw, document } = this;
-    if(typeof xpath == 'string') xpath = xpath.split(/\//g);
+    xpath = new ImmutableXPath(xpath);
+    let path = new ImmutablePath(xpath);
+    console.log('EagleNode.lookup  xpath:', xpath, ' path:', path);
 
-    if(!(xpath instanceof ImmutableXPath)) xpath = new ImmutableXPath(xpath);
-
-    //console.log('lookup:', { xpath });
-    let path = new ImmutablePath(xpath.toArray().reduce((acc, p) => [...acc, 'children', p], []));
-    let value = this.path.concat(path).apply(raw, true);
-
-    //  path = this.path.concat(path);
-    //  value = path.apply(this.raw,true);
-    //console.log('lookup:', { tagName, owner, raw, path, value });
+    let value = path.apply(this.raw, true);
 
     let ret = t(this, path, value);
-    //console.log('lookup =', ret);
+    console.log('EagleNode.lookup =', toXML(ret, 1));
     return ret;
   }
 

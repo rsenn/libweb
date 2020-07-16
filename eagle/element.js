@@ -3,6 +3,8 @@ import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleReference } from './ref.js';
+import { ImmutableXPath, XPath } from '../xml.js';
+import { ImmutablePath, Path } from '../json.js';
 import { Rotation } from './common.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList } from '../geom.js';
@@ -158,7 +160,7 @@ export class EagleElement extends EagleNode {
       }
     }
     let childList = null;
-    lazyProperty(this, 'children', () => EagleNodeList.create(this.document, this.path.down('children'), this.raw.children));
+    lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.down('children'), this.raw.children));
 
     /*    trkl.bind(this, 'children', value => {
       if(value === undefined) {
@@ -267,18 +269,19 @@ export class EagleElement extends EagleNode {
   }
 
   lookup(xpath, create) {
-    //console.log("EagleElement.lookup(",...arguments, ")");
-    return super.lookup(xpath, (o, p, v) => {
+    /* if(!(xpath instanceof ImmutableXPath))
+    xpath = new ImmutableXPath([...xpath]);*/
+    console.log('EagleElement.lookup(', xpath, create, ')');
+    let r = super.lookup(xpath, (o, p, v) => {
       if(create && !v) {
         const { tagName } = p.last;
         o.raw.children.push({ tagName, attributes: {}, children: [] });
       }
-      //console.log('EagleElement.lookup', { o, p, v });
-
-      if(!v) v = p.apply(o);
-
+      if(!v) v = p.apply(o.raw, true);
       return EagleElement.get(o, p, v);
     });
+    console.log('EagleElement.lookup = ', r);
+    return r;
   }
 
   getBounds(pred = e => true) {

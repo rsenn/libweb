@@ -2,7 +2,7 @@ import { ImmutablePath } from './path.js';
 import Util from '../util.js';
 
 export class PathMapper {
-  map = new WeakMap();
+  obj2path = new WeakMap();
   root = null;
   ctor = ImmutablePath;
 
@@ -12,34 +12,31 @@ export class PathMapper {
   }
 
   set(obj, path) {
-    const { map, ctor } = this;
+    const { obj2path, ctor } = this;
 
-    if(map.get(obj)) return;
+    if(obj2path.get(obj)) return;
 
     if(!(path instanceof ctor)) path = new ctor(path);
-    // if(path.length === 0) this.root = obj;
-    map.set(obj, path);
-    /*  let properties = 'tagName' in obj ? ['children', 'attributes'] : Object.keys(obj);
-
-    for(let prop of properties) if(prop in obj && Util.isObject(obj[prop])) map.set(obj[prop], path.concat([prop]));*/
+    obj2path.set(obj, path);
   }
 
   get(obj) {
-    const { map } = this;
-    return map.get(obj);
+    const { obj2path } = this;
+    return obj2path.get(obj);
   }
 
   at(path) {
-    let { root } = this;
-    for(let prop of path) root = root[prop];
-    this.set(root, path);
-    return root;
+    let { root, ctor } = this;
+    if(!(path instanceof ctor)) path = new ctor(path);
+    let obj = path.apply(root, true);
+    if(typeof obj == 'object') this.set(obj, path);
+    return obj;
   }
 
   walk(obj, fn = path => path) {
-    const { map, ctor } = this;
+    const { obj2path, ctor } = this;
 
-    let path = map.get(obj);
+    let path = obj2path.get(obj);
     if(path === null) return null;
     path = fn(path);
     if(path === null) return null;

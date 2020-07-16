@@ -16,19 +16,20 @@ export class EagleSVGRenderer {
   transform = new TransformationList();
 
   constructor(doc, factory) {
-    console.log(Util.className(this), Util.fnName(new.target));
-
     if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
-    let ctor = EagleSVGRenderer.rendererTypes[doc.type];
-    Object.setPrototypeOf(this, ctor.prototype);
+    //  let ctor = EagleSVGRenderer.rendererTypes[doc.type];
+    //  Object.setPrototypeOf(this, ctor.prototype);
     this.doc = doc;
     this.create = factory; //(tag, attrs, parent) => factory(tag, 'id' in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
-    const { layers, elements, signals } = doc;
+
+    console.log('EagleSVGRenderer.constructor(', doc, factory, ')');
+    /* const { layers, elements, signals } = doc || {};
     this.elements = elements;
     this.signals = signals;
+    this.layers = layers;*/
     // this.plain = doc.get('plain', (v, l) => EagleElement.get(doc, l));
-    this.layers = layers;
-    return this;
+
+    //  return this;
   }
 
   pushTransform(transform) {
@@ -360,7 +361,7 @@ export class EagleSVGRenderer {
   render(doc, parent, props = {}) {
     doc = doc || this.doc;
 
-    let bounds = doc.getBounds();
+    let bounds = new BBox(); //doc.getBounds();
     let rect = new Rect(bounds.rect);
 
     rect.outset(1.27);
@@ -412,6 +413,9 @@ export class EagleSVGRenderer {
 
     this.create('rect', { ...rect.toObject(), fill: 'rgb(255,255,255)' }, bgGroup);
     this.create('rect', { ...rect.toObject(), id: 'grid', fill: 'url(#grid)' }, bgGroup);
+
+    this.debug(`EagleSVGRenderer.render`, { doc, parent, props });
+
     return parent;
   }
 }
