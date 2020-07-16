@@ -1,9 +1,7 @@
-import { toXML, ImmutablePath } from '../json.js';
-import { ImmutableXPath } from '../xml.js';
+import { ImmutablePath } from '../json.js';
 //import { EagleElement } from "./element.js";
 import Util from '../util.js';
-import deep from '../deep.js';
-import { BBox, TransformationList } from '../geom.js';
+import { TransformationList } from '../geom.js';
 
 const pathPadding = Util.isBrowser() ? 0 : 40;
 

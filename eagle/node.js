@@ -5,8 +5,8 @@ import { lazyMembers } from '../lazyInitializer.js';
 import { trkl } from '../trkl.js';
 import { text, concat, parseArgs } from './common.js';
 import { EagleNodeMap } from './nodeMap.js';
-import { ImmutableXPath, XPath } from '../xml.js';
-import { ImmutablePath, Path, toXML } from '../json.js';
+import { ImmutableXPath } from '../xml.js';
+import { ImmutablePath, toXML } from '../json.js';
 
 export const makeEagleNode = (owner, ref, ctor) => {
   if(!ctor) ctor = owner.constructor[Symbol.species];
