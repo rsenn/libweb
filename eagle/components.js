@@ -1,6 +1,6 @@
 import { h, Component } from '../../node_modules/htm/preact/standalone.mjs';
 import { Point, Line } from '../geom.js';
-import { VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
+import { MakeCoordTransformer } from './renderUtils.js';
 
 const PinSizes = {
   long: 3,
