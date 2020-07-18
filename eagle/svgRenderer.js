@@ -3,6 +3,7 @@ import { Util } from '../util.js';
 import { Size } from '../dom.js';
 import { Point, Rect, BBox, TransformationList } from '../geom.js';
 import { Rotation } from './common.js';
+import Components from './components.js';
 import { VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
 
 export class EagleSVGRenderer {
@@ -136,16 +137,20 @@ export class EagleSVGRenderer {
   renderItem(item, parent, opts = {}) {
     let { labelText, transform = new TransformationList() } = opts;
 
-    const layer = item.layer;
-
-    const color = layer && layer.color; //(opts && opts.color) || (layer && this.getColor(layer.color));
-
-    this.debug(`EagleSVGRenderer.renderItem`, item);
+     this.debug(`EagleSVGRenderer.renderItem`, item);
     this.debug(`EagleSVGRenderer.renderItem`, item.xpath().toString());
 
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...attr }, parent);
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
+    let comp = Util.ucfirst(item.tagName);
+    const { layer } = item;
+    const color = layer && layer.color; //(opts && opts.color) || (layer && this.getColor(layer.color));
+
+    if(Components[comp]) {
+      const elem = this.create(Components[comp], { item, transform }, parent);
+return;
+    }
 
     switch (item.tagName) {
       case 'wire': {

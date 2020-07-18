@@ -6,23 +6,12 @@ import Util from '../util.js';
 export class EagleNodeList {
   constructor(owner, ref, raw) {
     //console.log('EagleNodeList.constructor', { owner, ref, raw });
-    /*
-    if(Util.className(owner).endsWith('Document'))
-      */
-
-    /*   let p1 = new ImmutablePath(['children', 'eagle']);
-    let p2 = ref.slice(0, 2);
-    console.log('', { p1, p2 }, [...p1], [...p2], p1.equals(p2));
-    if(!raw && !p1.equals(p2)) throw new Error('document');*/
 
     if(Util.isObject(ref) && !('dereference' in ref)) ref = EagleRef(owner, ref);
 
-    if(!raw) {
+    if(!raw)
       raw = ref.dereference();
-    }
-
     let species = Util.getConstructor(owner);
-
     Util.define(this, { ref, owner, raw /*, [Symbol.species]: species*/ });
   }
   /*

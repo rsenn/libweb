@@ -1,5 +1,6 @@
-import { h, Component } from '../modules/htm/preact/standalone.mjs';
+import { h, Component } from '../../node_modules/htm/preact/standalone.mjs';
 import { Point, Line } from '../geom.js';
+import { VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
 
 const PinSizes = {
   long: 3,
@@ -8,7 +9,7 @@ const PinSizes = {
   point: 0
 };
 
-const Pin = ({ length, rot, name, visible, x, y, function: func }) => {
+export const Pin = ({ length, rot, name, visible, x, y, function: func }) => {
   const angle = +(rot || '0').replace(/R/, '');
   let veclen = PinSizes[length] * 2.54;
   if(func == 'dot') veclen -= 1.5;
@@ -71,3 +72,30 @@ const Pin = ({ length, rot, name, visible, x, y, function: func }) => {
 
   return ret;
 };
+
+export const Wire =props => {
+console.log("item:",props.item.raw);
+ const [item,setItem] = useState(() => {a:0});
+  //const [transform,setTransform] = useState(props.transform);
+
+      let coordFn = props.transform ? MakeCoordTransformer(props.transform) : i => i;
+
+  const { width, curve = '', layer, x1, y1, x2, y2  } = coordFn(props.item);
+
+    const color = layer && layer.color; //(opts && opts.color) || (layer && this.getColor(layer.color));
+
+
+  return h('line', {
+    stroke: color,
+    x1,
+    x2,
+    y1,
+    y2,
+    'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
+    'data-curve': curve,
+    'data-layer': layer.name,
+    transform
+  }, []);
+};
+
+export default { Pin, Wire };

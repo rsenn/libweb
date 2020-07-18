@@ -1,5 +1,6 @@
 import Util from '../util.js';
 import { toXML, ImmutablePath } from '../json.js';
+import { text, concat, parseArgs } from './common.js';
 
 export const ChildrenSym = Symbol('⊳');
 
@@ -85,7 +86,7 @@ export class EagleReference {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    return `EagleReference { path:` + Util.toSource(this.path, { multiline: false, newline: '' }) + `, root:${Util.abbreviate(toXML(this.root, 0), 40)}  }`;
+    return text(Util.className(this), 38, 5, 219) +' { '+this.path[Symbol.for('nodejs.util.inspect.custom')]()+ ` , root:${Util.abbreviate(toXML(this.root, 0), 40)}  }`;
   }
   inspect() {
     return this[Symbol.for('nodejs.util.inspect.custom')](...arguments);

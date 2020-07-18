@@ -268,15 +268,15 @@ export class EagleNode {
   }
 
   [Symbol.toStringTag]() {
-    return this[Symbol.for('nodejs.util.inspect.custom')]();
+    return EagleNode.inspect(this);
   }
   toString() {
     return this[Symbol.toStringTag]();
   }
 
-  /* [Symbol.for('nodejs.util.inspect.custom')]() {
+inspect() {
     let attrs = [''];
-    //console.log('Inspect:', this.path, this.raw);
+    console.log('Inspect:', this.path);
 
     let r = this; //'tagName' in this ? this : this.raw; // this.ref ? this.ref.dereference()  : this;
     let a = r.attrMap ? r.attrMap : r.attributes;
@@ -297,12 +297,16 @@ export class EagleNode {
     if(this.filename) ret = concat(ret, ` filename="${this.filename}"`);
     if(numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${tag}>`);
     return (ret = concat(text(Util.className(r) + ' ', 0), ret));
-  }*/
-
-  inspect(...args) {
-    return EagleNode.prototype[Symbol.for('nodejs.util.inspect.custom')].apply(this, args);
   }
-
+/*
+  inspect(...args) {
+    return this[Symbol.for('nodejs.util.inspect.custom')](...args);
+  }
+*/
+[Symbol.for('nodejs.util.inspect.custom')]() {
+  return EagleNode.inspect(this);
+  return this.inspect();
+}
   *findAll(...args) {
     let { path, predicate, transform } = parseArgs(args);
     for(let [v, l, d] of this.iterator(
@@ -410,4 +414,32 @@ export class EagleNode {
   toXML(depth = Number.MAX_SAFE_INTEGER) {
     return toXML(this.raw, depth);
   }
+    static inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {
+    const { depth, breakLength } = c;
+    let o = e;
+    let r = (e && e.raw) || e;
+    if(typeof r == 'string') return text(r, 1, 36);
+    let x = '';
+    try {
+      x = Util.inspect(r, {
+        depth: depth * 2,
+        breakLength,
+        colors: !Util.isBrowser()
+      });
+    } catch(err) {}
+    let s = '⏐';
+    x = x.substring(x.indexOf('tagName') + 14);
+    x = Object.entries((r && r.attributes) || {}).map(([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36));
+    x.unshift(r.tagName);
+    let [p, ...arr] = x;
+    p = text(`〔`, 1, 37) + text(p, 38, 5, 199);
+    let l = e.path + '';
+    let type = Util.className(e);
+    if(arr.length)
+      arr.unshift('');
+    let ret = [text(type, 38, 5, 219), p, text('⧃❋⭗', 38, 5, 112), ...arr, text(`〕`, 1, 37)];
+
+    return (l.trim() ? l + '  ' : '') + ret.join(' ')+text('',0);
+  };
+
 }

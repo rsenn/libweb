@@ -5,7 +5,7 @@ import { TransformationList } from '../geom.js';
 
 const pathPadding = Util.isBrowser() ? 0 : 40;
 
-export const coloring = Util.coloring(false);
+export const coloring = Util.coloring(!Util.isBrowser());
 //console.log('coloring: ', coloring);
 export const ansi = coloring.code.bind(coloring); //Util.isBrowser() ? () => '' : (...args) => `\u001b[${[...args].join(';')}m`;
 

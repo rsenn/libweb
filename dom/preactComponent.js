@@ -4,9 +4,8 @@ import { h, Component } from '../../node_modules/htm/preact/standalone.mjs';
 import { Element } from './element.js';
 import Util from '../util.js';
 
-const React = { hydrate, Fragment, createRef, isValidElement, cloneElement, toChildArray };
 
-const add = (arr, ...items) => [...(arr || []), ...items];
+const add = (arr, ...items) => [...((Util.isArray(arr) ? arr : [arr]) || []), ...items];
 
 export class ReactComponent {
   static create(...args) {
@@ -21,8 +20,12 @@ export class ReactComponent {
     }
     let children = args.shift();
 
-    const elem = h.create(Tag, restOfProps, children);
+    const elem = h(Tag, props, children);
     return elem;
+  }
+
+  static isComponent(obj) {
+    return Util.isObject(obj) && ['__', '__v', 'ref', 'props', 'key'].every(prop => obj[prop] !== 'undefined');
   }
 
   static factory(render_to, root) {
@@ -40,22 +43,24 @@ export class ReactComponent {
     return ret.bind(ret);
   }
 
-  static append(tag, attr, parent) {
-    let { children, ...props } = attr;
-    let elem = h(tag, props, children);
-    /*if(tag === 'rect') {
-      const { width, height } = attr;
-      console.log('ReactComponent.append', tag, attr, parent);
-      if(+width < 0 || +height < 0) throw new Error('rect');
-    }*/
+  static append(...args) {
+    let tag,elem, parent, attr;
+    if(args.length == 2 && ReactComponent.isComponent(args[0])) {
+      [elem, parent] = args;
+    } else {
+      [tag, attr, parent] = args;
+      let { children, ...props } = attr;
+      if(Util.isArray(parent)) {
+        children = add(children, ...parent);
+        parent = null;
+      }
+      console.log("append", [tag,props,children]);
+      elem = h(tag, props, children);
+    }
     if(parent) {
+      //console.log("parent:",parent);
       const { props } = parent;
-
       props.children = add(props.children, elem);
-      /*
-      if(Util.isArray(props.children))  props.children.push(elem);
-      else if(props.children) props.children = [props.children, elem];
-      else props.children = elem;*/
     }
     return elem;
   }
@@ -82,7 +87,7 @@ export class ReactComponent {
 
       if(!children) children = arg.children;
 
-      let a = toChildArray(children);
+      let a = this.toChildArray(children);
       //console.log('a:', a);
       children = a.length > 0 ? this.toObject(...a) : [];
       //console.log('children:', children);
@@ -94,15 +99,19 @@ export class ReactComponent {
   }
   /*
    */
-  dummy() {
+/*  dummy() {
     x = h(React.Fragment, { id: 'test' }, [h('blah', { className: 'test' }), h('p', { style: { width: '100%' } })]);
-  }
+  }*/
 
   static formats = {
     HTML: 0,
     JSX: 1,
     H: 2
   };
+
+  static toChildArray(a) {
+return Util.isArray(a) ? a : [a];
+  }
 
   static toString(obj, opts = {}) {
     let { fmt = 0 } = opts;

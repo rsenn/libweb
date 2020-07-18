@@ -443,9 +443,9 @@ export class EagleElement extends EagleNode {
     return [tagName, attributes, children];
   }
 
-  toString(entity = this) {
+ toString(entity = this) {
     const { document } = entity;
-    return EagleInterface.inspect(entity, document);
+    return EagleNode.inspect(entity, document);
   }
 
   *getAll(pred, transform) {
