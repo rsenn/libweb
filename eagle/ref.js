@@ -86,7 +86,7 @@ export class EagleReference {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    return text(Util.className(this), 38, 5, 219) +' { '+this.path[Symbol.for('nodejs.util.inspect.custom')]()+ ` , root:${Util.abbreviate(toXML(this.root, 0), 40)}  }`;
+    return text(Util.className(this), 38, 5, 219) + ' { ' + this.path[Symbol.for('nodejs.util.inspect.custom')]() + ` , root:${Util.abbreviate(toXML(this.root, 0), 40)}  }`;
   }
   inspect() {
     return this[Symbol.for('nodejs.util.inspect.custom')](...arguments);

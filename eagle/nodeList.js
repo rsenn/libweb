@@ -9,8 +9,7 @@ export class EagleNodeList {
 
     if(Util.isObject(ref) && !('dereference' in ref)) ref = EagleRef(owner, ref);
 
-    if(!raw)
-      raw = ref.dereference();
+    if(!raw) raw = ref.dereference();
     let species = Util.getConstructor(owner);
     Util.define(this, { ref, owner, raw /*, [Symbol.species]: species*/ });
   }

@@ -4,7 +4,6 @@ import { h, Component } from '../../node_modules/htm/preact/standalone.mjs';
 import { Element } from './element.js';
 import Util from '../util.js';
 
-
 const add = (arr, ...items) => [...((Util.isArray(arr) ? arr : [arr]) || []), ...items];
 
 export class ReactComponent {
@@ -44,7 +43,7 @@ export class ReactComponent {
   }
 
   static append(...args) {
-    let tag,elem, parent, attr;
+    let tag, elem, parent, attr;
     if(args.length == 2 && ReactComponent.isComponent(args[0])) {
       [elem, parent] = args;
     } else {
@@ -54,7 +53,7 @@ export class ReactComponent {
         children = add(children, ...parent);
         parent = null;
       }
-      console.log("append", [tag,props,children]);
+      console.log('append', [tag, props, children]);
       elem = h(tag, props, children);
     }
     if(parent) {
@@ -99,7 +98,7 @@ export class ReactComponent {
   }
   /*
    */
-/*  dummy() {
+  /*  dummy() {
     x = h(React.Fragment, { id: 'test' }, [h('blah', { className: 'test' }), h('p', { style: { width: '100%' } })]);
   }*/
 
@@ -110,7 +109,7 @@ export class ReactComponent {
   };
 
   static toChildArray(a) {
-return Util.isArray(a) ? a : [a];
+    return Util.isArray(a) ? a : [a];
   }
 
   static toString(obj, opts = {}) {

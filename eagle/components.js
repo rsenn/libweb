@@ -73,29 +73,34 @@ export const Pin = ({ length, rot, name, visible, x, y, function: func }) => {
   return ret;
 };
 
-export const Wire =props => {
-console.log("item:",props.item.raw);
- const [item,setItem] = useState(() => {a:0});
+export const Wire = props => {
+  console.log('item:', props.item.raw);
+  const [item, setItem] = useState(() => {
+    a: 0;
+  });
   //const [transform,setTransform] = useState(props.transform);
 
-      let coordFn = props.transform ? MakeCoordTransformer(props.transform) : i => i;
+  let coordFn = props.transform ? MakeCoordTransformer(props.transform) : i => i;
 
-  const { width, curve = '', layer, x1, y1, x2, y2  } = coordFn(props.item);
+  const { width, curve = '', layer, x1, y1, x2, y2 } = coordFn(props.item);
 
-    const color = layer && layer.color; //(opts && opts.color) || (layer && this.getColor(layer.color));
+  const color = layer && layer.color; //(opts && opts.color) || (layer && this.getColor(layer.color));
 
-
-  return h('line', {
-    stroke: color,
-    x1,
-    x2,
-    y1,
-    y2,
-    'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
-    'data-curve': curve,
-    'data-layer': layer.name,
-    transform
-  }, []);
+  return h(
+    'line',
+    {
+      stroke: color,
+      x1,
+      x2,
+      y1,
+      y2,
+      'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
+      'data-curve': curve,
+      'data-layer': layer.name,
+      transform
+    },
+    []
+  );
 };
 
 export default { Pin, Wire };

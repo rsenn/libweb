@@ -443,7 +443,7 @@ export class EagleElement extends EagleNode {
     return [tagName, attributes, children];
   }
 
- toString(entity = this) {
+  toString(entity = this) {
     const { document } = entity;
     return EagleNode.inspect(entity, document);
   }

@@ -274,7 +274,7 @@ export class EagleNode {
     return this[Symbol.toStringTag]();
   }
 
-inspect() {
+  inspect() {
     let attrs = [''];
     console.log('Inspect:', this.path);
 
@@ -298,15 +298,15 @@ inspect() {
     if(numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${tag}>`);
     return (ret = concat(text(Util.className(r) + ' ', 0), ret));
   }
-/*
+  /*
   inspect(...args) {
     return this[Symbol.for('nodejs.util.inspect.custom')](...args);
   }
 */
-[Symbol.for('nodejs.util.inspect.custom')]() {
-  return EagleNode.inspect(this);
-  return this.inspect();
-}
+  [Symbol.for('nodejs.util.inspect.custom')]() {
+    return EagleNode.inspect(this);
+    return this.inspect();
+  }
   *findAll(...args) {
     let { path, predicate, transform } = parseArgs(args);
     for(let [v, l, d] of this.iterator(
@@ -414,7 +414,7 @@ inspect() {
   toXML(depth = Number.MAX_SAFE_INTEGER) {
     return toXML(this.raw, depth);
   }
-    static inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {
+  static inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {
     const { depth, breakLength } = c;
     let o = e;
     let r = (e && e.raw) || e;
@@ -435,11 +435,9 @@ inspect() {
     p = text(`〔`, 1, 37) + text(p, 38, 5, 199);
     let l = e.path + '';
     let type = Util.className(e);
-    if(arr.length)
-      arr.unshift('');
+    if(arr.length) arr.unshift('');
     let ret = [text(type, 38, 5, 219), p, text('⧃❋⭗', 38, 5, 112), ...arr, text(`〕`, 1, 37)];
 
-    return (l.trim() ? l + '  ' : '') + ret.join(' ')+text('',0);
+    return (l.trim() ? l + '  ' : '') + ret.join(' ') + text('', 0);
   };
-
 }
