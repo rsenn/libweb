@@ -13,12 +13,6 @@ export class EagleNodeList {
     let species = Util.getConstructor(owner);
     Util.define(this, { ref, owner, raw /*, [Symbol.species]: species*/ });
   }
-  /*
-Object.defineProperties(EagleNodeList.prototype, {
-  ref: { writable: true, configurable: true, enumerable: false, value: null },
-  owner: { writable: true, configurable: true, enumerable: false, value: null },
-  raw: { writable: true, configurable: true, enumerable: false, value: null }
-});*/
 
   item(pos) {
     const { owner, ref, raw } = this;
@@ -26,7 +20,7 @@ Object.defineProperties(EagleNodeList.prototype, {
     if(pos < 0) pos += raw.length;
 
     console.log(`EagleNodeList.item(${pos})`, { owner, ref, raw });
-    if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner, ['children', pos], raw[pos]);
+    if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner.document, ref.down(pos), raw[pos]);
   }
 
   *[Symbol.iterator]() {

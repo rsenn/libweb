@@ -1,4 +1,4 @@
-import { h, Component } from '../../node_modules/htm/preact/standalone.mjs';
+import { h, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../dom/preactComponent.js';
 import { Point, Line } from '../geom.js';
 import { MakeCoordTransformer } from './renderUtils.js';
 
@@ -74,17 +74,21 @@ export const Pin = ({ length, rot, name, visible, x, y, function: func }) => {
 };
 
 export const Wire = props => {
-  console.log('item:', props.item.raw);
-  const [item, setItem] = useState(() => {
-    a: 0;
-  });
-  //const [transform,setTransform] = useState(props.transform);
+  //console.log('item:', props.item.raw);
+  const [item, setItem] = useState(props.item);
+  const [transform, setTransform] = useState(props.transform);
 
   let coordFn = props.transform ? MakeCoordTransformer(props.transform) : i => i;
 
   const { width, curve = '', layer, x1, y1, x2, y2 } = coordFn(props.item);
 
   const color = layer && layer.color; //(opts && opts.color) || (layer && this.getColor(layer.color));
+
+  useEffect(() => {
+    let handler = props.item.subscribe((name, value) => setItem({ ...item, [name]: value }));
+
+    return () => props.item.unsubscribe(handler);
+  });
 
   return h(
     'line',

@@ -8,8 +8,11 @@ import { Rotation } from './common.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList } from '../geom.js';
 
+const add = (arr, ...items) => [...(arr || []), ...items];
+
 export class EagleElement extends EagleNode {
   tagName = '';
+  subscribers = [];
 
   static map = Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw));
   static list = [];
@@ -18,7 +21,7 @@ export class EagleElement extends EagleNode {
 
   static get(owner, ref, raw) {
     let root = ref.root || owner.raw ? owner.raw : owner;
-    //console.log('EagleElement.get(', , ')');
+    //console.log('EagleElement.get(', { owner, ref, raw }, ')');
     if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(root, ref);
     if(!raw) raw = ref.path.apply(root, true);
     if(!raw) raw = ref.dereference();
@@ -69,7 +72,67 @@ export class EagleElement extends EagleNode {
       const names = this.names();
       for(let key in attributes) {
         let prop = trkl.property(this.attrMap, key);
-        let handler = ['deviceset', 'package', 'device'].includes(key)
+        let handler = [
+          'active',
+          'addlevel',
+          'align',
+          'altunit',
+          'altunitdist',
+          'alwaysvectorfont',
+          'bgcolor',
+          'cap',
+          'color',
+          'constant',
+          'cream',
+          'device',
+          'deviceset',
+          'direction',
+          'display',
+          'element',
+          'encoding',
+          'first',
+          'font',
+          'function',
+          'gate',
+          'href',
+          'language',
+          'length',
+          'library',
+          'module',
+          'moduleinst',
+          'name',
+          'orphans',
+          'package',
+          'pad',
+          'part',
+          'pin',
+          'port',
+          'prefix',
+          'refer',
+          'rot',
+          'route',
+          'severity',
+          'shape',
+          'side',
+          'smashed',
+          'stop',
+          'style',
+          'symbol',
+          'technology',
+          'text',
+          'thermals',
+          'title',
+          'unit',
+          'unitdist',
+          'uservalue',
+          'valign',
+          'value',
+          'verticaltext',
+          'visible',
+          'xref',
+          'xreflabel',
+          'xrefpart'
+        ].includes(key)
           ? Util.ifThenElse(
               v => v !== undefined,
               v => prop('' + v),
@@ -156,6 +219,9 @@ export class EagleElement extends EagleNode {
         } else {
           trkl.bind(this, key, handler);
         }
+        prop.subscribe(value => value !== undefined && this.event(key, value));
+
+        //console.log("prop:",key,prop.subscribe);
       }
     }
     let childList = null;
@@ -170,25 +236,10 @@ export class EagleElement extends EagleNode {
       }
     });*/
     if(tagName == 'gate') {
-      let chain = this.elementChain((o, p, v) => [v.tagName, EagleElement.get(o, p, v)]);
-      //console.log('this.elementChain()', chain);
-      let names = this.names();
-      //console.log('this.names()', names);
-
-      /* console.log('this.owner', this.owner);
-        +console.log('this.ref', this.ref);
-*/
-      let library = chain.library; /*|| EagleElement.get(this.owner, ref.up(8))*/
-
-      if(!library) {
-        console.log('chain:', this.chain);
-        console.log('path:', this.ref.path);
-        console.log('this:', this);
-        console.log('xpath:', this.xpath());
-        throw new Error('');
-      }
       lazyProperty(this, 'symbol', () => {
-        //console.log('library:', library);
+        let chain = this.elementChain((o, p, v) => [v.tagName, EagleElement.get(o, p, v)]);
+
+        let library = chain.library;
         return library.symbols[elem.attributes.symbol];
       });
     } else if(tagName == 'instance') {
@@ -196,20 +247,23 @@ export class EagleElement extends EagleNode {
 
       const module = this.chain['module'] || doc;
 
-      const part = module.parts[this.attributes.part];
-
-      if(!part) {
+      /*   if(!part) {
         let parts = doc.find('parts');
         //console.log('parts:', parts.children);
         //console.log('doc.parts:', doc.parts);
         //console.log('instance', this.attributes.part, doc.parts.keys().indexOf(this.attributes.part));
       }
       if(!part.attributes) console.log('instance', this.raw, { doc, owner, tagName });
+*/
 
-      const library = doc.libraries[part.attributes.library];
-      const deviceset = library.devicesets[part.attributes.deviceset];
-      const device = deviceset.devices[part.attributes.device];
-      lazyProperty(this, 'gate', () => deviceset.gates[elem.attributes.gate]);
+      lazyProperty(this, 'gate', () => {
+        const part = module.parts[this.attributes.part];
+
+        const library = doc.libraries[part.attributes.library];
+        const deviceset = library.devicesets[part.attributes.deviceset];
+        const device = deviceset.devices[part.attributes.device];
+        return deviceset.gates[elem.attributes.gate];
+      });
 
       Util.defineGetter(this, 'symbol', () => this.gate.symbol);
     } else if(tagName == 'device') {
@@ -220,6 +274,25 @@ export class EagleElement extends EagleNode {
       });
     }
     this.initCache(EagleElement, EagleNodeList.create);
+  }
+
+  event(name) {
+    const value = this[name];
+    console.log('event:', this, { name, value });
+
+    for(let subscriber of this.subscribers) {
+      subscriber.call(this, name, value);
+    }
+  }
+
+  subscribe(handler) {
+    this.subscribers = add(this.subscribers, handler);
+    return handler;
+  }
+
+  unsubscribe(handler) {
+    this.subscribers = this.subscribers.filter(h => h != handler);
+    return handler;
   }
 
   get text() {

@@ -1,5 +1,6 @@
-import { hydrate, Fragment, createRef, isValidElement, cloneElement, toChildArray } from '../../node_modules/preact/dist/preact.mjs';
-import { h, Component } from '../../node_modules/htm/preact/standalone.mjs';
+//import { hydrate, Fragment, createRef, isValidElement, cloneElement, toChildArray } from '../../node_modules/preact/dist/preact.mjs';
+import { h, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../../node_modules/htm/preact/standalone.mjs';
+export { h, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../../node_modules/htm/preact/standalone.mjs';
 
 import { Element } from './element.js';
 import Util from '../util.js';
@@ -53,7 +54,7 @@ export class ReactComponent {
         children = add(children, ...parent);
         parent = null;
       }
-      console.log('append', [tag, props, children]);
+      //console.log('append', [tag, props, children]);
       elem = h(tag, props, children);
     }
     if(parent) {
