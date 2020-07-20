@@ -193,7 +193,7 @@ Util.generalLog = function(n, x) {
   return Math.log(x) / Math.log(n);
 };
 Util.toSource = function(arg, opts = {}) {
-  const { colors = false, multiline = true } = opts;
+  const { quote = "'", colors = false, multiline = true } = opts;
   const c = Util.coloring(colors);
   if(Util.isArray(arg)) {
     let o = '';
@@ -203,7 +203,7 @@ Util.toSource = function(arg, opts = {}) {
     }
     return `[${o}]`;
   }
-  if(typeof arg == 'string') return c.text(`'${arg}'`, 1, 36);
+  if(typeof arg == 'string') return c.text(`${quote}${arg}${quote}`, 1, 36);
   if(arg && arg.x !== undefined && arg.y !== undefined) return `[${c.text(arg.x, 1, 32)},${c.text(arg.y, 1, 32)}]`;
   //if(arg && arg.toSource) return arg.toSource();
   if(typeof arg == 'object') {
@@ -457,14 +457,21 @@ Util.define = (obj, ...args) => {
   if(typeof args[0] == 'object') {
     // let args = [...arguments].slice(1);
     for(let arg of args) {
-      let decl = Object.getOwnPropertyDescriptors(arg);
+      let adecl = Object.getOwnPropertyDescriptors(arg);
+let odecl = {};
 
-      for(let prop in decl) {
-        if(!Object.getOwnPropertyDescriptor(obj, prop)) decl[prop] = { ...decl[prop], enumerable: false /*,configurable: true, writeable: true*/ };
-        else delete decl[prop];
+      for(let prop in adecl) {
+             //   delete obj[prop];
+
+       if(Object.getOwnPropertyDescriptor(obj, prop))  delete odecl[prop]; else
+odecl[prop] = { ...adecl[prop], enumerable: false ,configurable: true, writeable: true };
+
+
+      //  odecl[prop].enumerable=false;
+
       }
-
-      Object.defineProperties(obj, decl);
+console.log("odecl:",odecl);
+      Object.defineProperties(obj, odecl);
     }
 
     /* console.log('Util.define', { decl, keys: Object.getOwnPropertyNames(obj) });
@@ -1687,7 +1694,7 @@ Util.filter = function(a, pred) {
   let ret = {};
   let fn = (k, v) => (ret[k] = v);
   for(let [k, v] of Util.entries(a)) if(pred(v, k, a)) fn(k, v);
-  return ret;
+  return Object.setPrototypeOf(ret, Object.getPrototypeOf(a));
 };
 Util.reduce = (obj, fn, accu) => {
   if(Util.isGenerator(obj)) {
@@ -1713,14 +1720,14 @@ Util.map = (obj, fn) => {
   if(typeof obj.map == 'function') return obj.map(fn);
   if(typeof fn != 'function') return Util.toMap(...arguments);
 
-  let ret = {};
+  let ret ={};
   for(let key in obj) {
     if(obj.hasOwnProperty(key)) {
       let item = fn(key, obj[key], obj);
       if(item) ret[item[0]] = item[1];
     }
   }
-  return ret;
+  return ret;  // Object.setPrototypeOf(ret,Object.getPrototypeOf(obj));
 };
 /*Util.indexedMap = (arr, fn = arg => arg.name) => {
   return new Proxy(arr, {
@@ -2723,6 +2730,20 @@ Util.colorText = (...args) => {
   if(!color) color = Util.coloring();
   return color.text(...args);
 };
+Util.stripAnsi = (str) => {
+  let o ='';
+  for(let i = 0; i < str.length; i++) {
+
+if(str[i] == '\x1b' && str[i+1]=='[') {
+  while(!/[A-Za-z]/.test(str[i])) i++;
+  continue;
+}
+o += str[i];
+}
+return o;
+};
+
+
 Util.ansiCode = (...args) => {
   if(!color) color = Util.coloring();
   return color.code(...args);

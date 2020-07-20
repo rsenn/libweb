@@ -13,6 +13,8 @@ import { Timer } from './dom/timer.js';
 import { Tree } from './dom/tree.js';
 import { Event } from './dom/event.js';
 import { Node } from './dom/node.js';
+import { HSLA,RGBA  } from './color.js';
+export { HSLA,RGBA  } from './color.js';
 import { Element, isElement } from './dom/element.js';
 import { CSS } from './dom/css.js';
 import { SVG } from './dom/svg.js';

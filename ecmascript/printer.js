@@ -42,7 +42,7 @@ export class Printer {
     }
     let ret = '';
     let comments = ESNode.assoc(node).comments;
-    if(comments.length) {
+    if(comments && comments.length) {
       for(let comment of comments) {
         ret += comment.value;
       }
@@ -109,7 +109,7 @@ export class Printer {
     let output = '';
     output += this.printNode(id);
 
-    console.log('printBindingProperty:', value.value, id.value);
+    //console.log('printBindingProperty:', value.value, id.value);
 
     if(value.value != id.value) output += ': ' + this.printNode(value);
 
@@ -224,7 +224,7 @@ export class Printer {
     const { expressions } = sequence_expression;
 
     let output = '(';
-    console.log('expressions: ', expressions);
+    //console.log('expressions: ', expressions);
 
     output += expressions
       .flat()
@@ -413,7 +413,7 @@ export class Printer {
   printExportStatement(export_statement) {
     const { what, declarations } = export_statement;
 
-    console.log('declarations:', declarations);
+    //console.log('declarations:', declarations);
 
     let output = 'export ';
 
@@ -480,7 +480,7 @@ export class Printer {
 
       let s = this.printNode(member);
 
-      console.log('member:', member);
+      //console.log('member:', member);
 
       if(member instanceof FunctionDeclaration) s = s.replace(/function\s/, '');
 
@@ -544,8 +544,8 @@ export class Printer {
     } else */ {
       code = this.printNode(body);
 
-      console.log('body:', Util.className(body));
-      console.log('body:', body);
+    /*  console.log('body:', Util.className(body));
+      //console.log('body:', body);*/
 
       if(Util.className(body).startsWith('Object')) code = '(' + code + ')';
     }
@@ -586,7 +586,7 @@ export class Printer {
 
         property = property.expr;
       } else if(property.id == null) {
-        console.log('Property:', property);
+        //console.log('Property:', property);
         throw new Error();
       }*/
       //if(this.position().line >= 2497)
@@ -634,7 +634,7 @@ export class Printer {
       if(property.flags && !(property instanceof BindingProperty) && !(object_literal instanceof ObjectBindingPattern)) {
         line = name + ' = ' + line;
       } else if(name && name != line) {
-        console.log('printObjectLiteral ', { name, line });
+        //console.log('printObjectLiteral ', { name, line });
         line = name + (isFunction ? '' : ': ') + line;
         if(!property.flags) is_prototype = false;
       }
@@ -668,7 +668,7 @@ export class Printer {
     if(!(id instanceof Identifier)) prop = '[' + prop + ']';
     s += prop;
 
-    console.log('printPropertyDefinition:', value.value, id.value);
+    //console.log('printPropertyDefinition:', value.value, id.value);
 
     if(!(id instanceof Identifier) || id.value != value.value) {
       if(!(value instanceof FunctionDeclaration)) s += this.colorText.punctuators(': ');

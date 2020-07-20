@@ -1,3 +1,6 @@
+import Util from '../util.js';
+
+
 // Module constants
 const CMP = Symbol('insort.CMP');
 const ORDER = Symbol('insort.ORDER');
@@ -23,8 +26,8 @@ function bisect(arr, cmp, val) {
  * Map subclass that efficiently maintains a sorted iteration order.
  */
 export class SortedMap extends Map {
-  [CMP] = null;
-  [ORDER] = null;
+  /*[CMP] = null;
+  [ORDER] = null;*/
 
   /**
    * Create a new SortedMap.
@@ -46,8 +49,7 @@ export class SortedMap extends Map {
       }
     }
 
-    this[ORDER] = order.sort(cmp);
-    this[CMP] = cmp;
+    Util.define(this, {  [ORDER]:order.sort(cmp), [CMP]: cmp });
   }
 
   clear() {

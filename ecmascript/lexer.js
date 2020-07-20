@@ -35,7 +35,7 @@ export function Stack() {
   stack = stack.filter(({ typeName }) => typeName == "Parser");
   stack = stack.map(({ functionName, methodName, position }) => ({
     method: functionName || methodName,
-    position: position 
+    position: position
   }));*/
 }
 /*
@@ -392,7 +392,7 @@ export class Lexer {
   }
 
   addToken(type) {
-    if(type == Token.types.templateLiteral) console.log('addToken', this.token);
+    //if(type == Token.types.templateLiteral) console.log('addToken', this.token);
     const { start, pos, column, line, source } = this;
     const token = new Token(type, source.substring(start, pos), new Range(this.position(this.start), this.pos - this.start), this.start);
     this.tokens.push(token);
