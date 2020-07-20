@@ -1,6 +1,5 @@
 import Util from '../util.js';
 
-
 // Module constants
 const CMP = Symbol('insort.CMP');
 const ORDER = Symbol('insort.ORDER');
@@ -49,7 +48,7 @@ export class SortedMap extends Map {
       }
     }
 
-    Util.define(this, {  [ORDER]:order.sort(cmp), [CMP]: cmp });
+    Util.define(this, { [ORDER]: order.sort(cmp), [CMP]: cmp });
   }
 
   clear() {

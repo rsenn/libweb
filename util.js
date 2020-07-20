@@ -458,19 +458,17 @@ Util.define = (obj, ...args) => {
     // let args = [...arguments].slice(1);
     for(let arg of args) {
       let adecl = Object.getOwnPropertyDescriptors(arg);
-let odecl = {};
+      let odecl = {};
 
       for(let prop in adecl) {
-             //   delete obj[prop];
+        //   delete obj[prop];
 
-       if(Object.getOwnPropertyDescriptor(obj, prop))  delete odecl[prop]; else
-odecl[prop] = { ...adecl[prop], enumerable: false ,configurable: true, writeable: true };
+        if(Object.getOwnPropertyDescriptor(obj, prop)) delete odecl[prop];
+        else odecl[prop] = { ...adecl[prop], enumerable: false, configurable: true, writeable: true };
 
-
-      //  odecl[prop].enumerable=false;
-
+        //  odecl[prop].enumerable=false;
       }
-console.log("odecl:",odecl);
+      // console.log('odecl:', odecl);
       Object.defineProperties(obj, odecl);
     }
 
@@ -1720,14 +1718,14 @@ Util.map = (obj, fn) => {
   if(typeof obj.map == 'function') return obj.map(fn);
   if(typeof fn != 'function') return Util.toMap(...arguments);
 
-  let ret ={};
+  let ret = {};
   for(let key in obj) {
     if(obj.hasOwnProperty(key)) {
       let item = fn(key, obj[key], obj);
       if(item) ret[item[0]] = item[1];
     }
   }
-  return ret;  // Object.setPrototypeOf(ret,Object.getPrototypeOf(obj));
+  return ret; // Object.setPrototypeOf(ret,Object.getPrototypeOf(obj));
 };
 /*Util.indexedMap = (arr, fn = arg => arg.name) => {
   return new Proxy(arr, {
@@ -2730,19 +2728,17 @@ Util.colorText = (...args) => {
   if(!color) color = Util.coloring();
   return color.text(...args);
 };
-Util.stripAnsi = (str) => {
-  let o ='';
+Util.stripAnsi = str => {
+  let o = '';
   for(let i = 0; i < str.length; i++) {
-
-if(str[i] == '\x1b' && str[i+1]=='[') {
-  while(!/[A-Za-z]/.test(str[i])) i++;
-  continue;
-}
-o += str[i];
-}
-return o;
+    if(str[i] == '\x1b' && str[i + 1] == '[') {
+      while(!/[A-Za-z]/.test(str[i])) i++;
+      continue;
+    }
+    o += str[i];
+  }
+  return o;
 };
-
 
 Util.ansiCode = (...args) => {
   if(!color) color = Util.coloring();

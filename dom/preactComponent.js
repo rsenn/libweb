@@ -115,21 +115,23 @@ export class ReactComponent {
 
   static toSource(obj, opts = {}, depth = 0) {
     const { quote = "'" } = opts;
-    const { type, props: { children, ...props }} = obj;
-let o = `h('${type}', {`;
-  let nl = "\n"+(" ".repeat((depth)*2));
-let p = Object.entries(props).map(([name,value])=> `${nl}  ${name}: ${Util.toSource(value, { quote})}`).join(",");
-if(p != '')
-o += ` ${p}${nl}`;
-o+= `}`;
-let s = ReactComponent.toSource;
-let c = Util.isArray(children) ? `[${children.map(obj => nl+'  '+s(obj, opts, depth + 1)).join(",")}]` : children ?  '  '+s(children, opts, depth + 1) : '';
-if(c != '')
-   o += `,${nl}${c}`;
-   o += (( c != '') ? nl : '') + ')';
-   return o;
+    const {
+      type,
+      props: { children, ...props }
+    } = obj;
+    let o = `h('${type}', {`;
+    let nl = '\n' + ' '.repeat(depth * 2);
+    let p = Object.entries(props)
+      .map(([name, value]) => `${nl}  ${name}: ${Util.toSource(value, { quote })}`)
+      .join(',');
+    if(p != '') o += ` ${p}${nl}`;
+    o += `}`;
+    let s = ReactComponent.toSource;
+    let c = Util.isArray(children) ? `[${children.map(obj => nl + '  ' + s(obj, opts, depth + 1)).join(',')}]` : children ? '  ' + s(children, opts, depth + 1) : '';
+    if(c != '') o += `,${nl}${c}`;
+    o += (c != '' ? nl : '') + ')';
+    return o;
   }
-
 
   static toString(obj, opts = {}) {
     let { fmt = 0 } = opts;

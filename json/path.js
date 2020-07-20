@@ -302,7 +302,7 @@ export class MutablePath extends Array {
       []
     );*/
 
-    r = r.join(color(sep,1,36)+color('',1,30)); //.replace(/[/\.]\[/g, '[');
+    r = r.join(color(sep, 1, 36) + color('', 1, 30)); //.replace(/[/\.]\[/g, '[');
     r = (this.absolute && r != '' && sep == '/' ? sep : '') + r;
     return r.replace(/\//g, sep);
     /*     .replace(new RegExp(childrenStr + '.', 'g'), childrenStr + ' \x1b[1;36m')
@@ -326,20 +326,21 @@ export class MutablePath extends Array {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    const sep = '.', childrenStr = '\u220a' + CHILDREN_SPACE, color = true;
+    const sep = '.',
+      childrenStr = '\u220a' + CHILDREN_SPACE,
+      color = true;
 
-    let p = MutablePath.prototype.toString.call(this/*, sep || '\u2571' || '\u29f8', childrenStr, text => text*/);
+    let p = MutablePath.prototype.toString.call(this /*, sep || '\u2571' || '\u29f8', childrenStr, text => text*/);
     let n = Util.className(this);
     let c = n.startsWith('Mutable') ? 31 : 32;
-    let t = color ? (text, ...args) => `\u001b[${args.join(";")}m`+text : text => text;
-let max = 100;
+    let t = color ? (text, ...args) => `\u001b[${args.join(';')}m` + text : text => text;
+    let max = 100;
 
     if(Util.stripAnsi(p).length > max) {
-let pos = p.length-max;
-if(p.substring(pos).indexOf(sep) != -1)
-pos += p.substring(pos).indexOf(sep)+1;
-      const num = p.substring(0,pos-1).split(sep).length;
-      p =  t(`... ${num} components ...`,1,36)+ ' | ' +p.substring(pos, p.length);
+      let pos = p.length - max;
+      if(p.substring(pos).indexOf(sep) != -1) pos += p.substring(pos).indexOf(sep) + 1;
+      const num = p.substring(0, pos - 1).split(sep).length;
+      p = t(`... ${num} components ...`, 1, 36) + ' | ' + p.substring(pos, p.length);
     }
     return color ? `\x1b[1;${c}m${n.replace(/^Immutable/, '')}\x1b[1;30m ${p}\x1b[0m` : p;
   }

@@ -34,14 +34,14 @@ export class SVG extends Element {
     let arg = [...arguments];
 
     let delegate = 'append_to' in args[0] || 'create' in args[0] || 'setattr' in args[0] ? args.shift() : {};
-    let parent = 'tagName' in args[0] || 'appendChild' in args[0] ? args.shift() : null;
+    let parent = Util.isObject(args[0]) ? ('tagName' in args[0] || 'appendChild' in args[0] ? args.shift() : null) : null;
     let size = isSize(args[0]) ? args.shift() : null;
 
     delegate = {
       create: tag => document.createElementNS(SVG.ns, tag),
       append_to: (elem, root = parent) => root && root.appendChild(elem),
       setattr: (elem, name, value) => name != 'ns' && elem.setAttributeNS(document.namespaceURI, Util.decamelize(name, '-'), value),
-      setcss: (elem, css) => elem.setAttributeNS(null, 'style', css),
+      setcss: (elem, css) => delegate.setattr(elem, 'style', css),
       ...delegate
     };
     // if(size == null) size = new Size(Element.rect(parent));
@@ -51,15 +51,14 @@ export class SVG extends Element {
     if(parent && parent.tagName.toLowerCase() == 'svg') delegate.root = parent;
     else if(this !== SVG && this && this.appendChild) delegate.root = this;
     else
-      delegate.append_to(
-        (delegate.root = SVG.create('svg', {
-          ...size,
-          viewBox: `0 0 ${width || 0} ${height || 0}`
-        })),
-        parent
-      );
+      delegate.root = delegate.create('svg', {
+        ...size,
+        viewBox: `0 0 ${width || 0} ${height || 0}`
+      });
 
-    if(!delegate.root.firstElementChild || delegate.root.firstElementChild.tagName != 'defs') SVG.create('defs', {}, delegate.root);
+    if(delegate.root && parent) delegate.append_to(delegate.root, parent);
+
+    if(delegate.root) delegate.append_to(delegate.create('defs'), delegate.root);
 
     const { append_to } = delegate;
 
@@ -74,7 +73,25 @@ export class SVG extends Element {
       else root.appendChild(elem);*/
       //console.log('append_to ', elem, ', root=', root);
     };
-    return Element.factory(delegate);
+    let factory = function(tag, attr, children) {
+      const create = (tag, attr, parent) => {
+        let e = this.create(tag);
+        for(let a in attr) this.setattr(e, a, attr[a]);
+
+        if(parent) this.append_to(e, parent);
+        return e;
+      };
+
+      let elem = create(tag, attr, this.root);
+
+children = children ? children : [];
+
+      for(let child of children) {
+        factory.apply({ ...delegate, root: elem }, child);
+      }
+      return elem;
+    };
+    return (...args) => factory.apply(delegate, args);
   }
 
   static matrix(element, screen = false) {

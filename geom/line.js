@@ -321,9 +321,9 @@ Line.prototype.reverse = function() {
   const { a, b } = this;
   return new Line(b, a);
 };
-Line.prototype.toObject = function() {
+Line.prototype.toObject = function(t = num => num) {
   const { x1, y1, x2, y2 } = this;
-  const obj = { x1, y1, x2, y2 };
+  const obj = { x1: t(x1), y1: t(y1), x2: t(x2), y2: t(y2) };
   Object.setPrototypeOf(obj, Line.prototype);
   return obj;
 };
