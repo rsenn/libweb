@@ -67,7 +67,7 @@ const Hyphenator = function(patterns, exceptions) {
     } else {
       const work = `.${lword}.`;
 
-      // Initialize array with 0s.
+      //Initialize array with 0s.
       points = Array(...Array(work.length + 1)).map(function() {
         return 0;
       });

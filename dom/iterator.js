@@ -1,10 +1,10 @@
-// Example usage:
+//Example usage:
 //
-// void async function() {
-//   let [clicks, onclick] = iterator()
-//   document.querySelector('button').addEventListener('click', onclick)
-//   for await (let click of clicks) console.log(click)
-// }()
+//void async function() {
+//let [clicks, onclick] = iterator()
+//document.querySelector('button').addEventListener('click', onclick)
+//for await (let click of clicks) console.log(click)
+//}()
 
 export function iterator() {
   let done = false;

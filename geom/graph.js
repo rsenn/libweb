@@ -291,8 +291,8 @@ export class Graph {
         if(!visitedStatusList[neighbor]) {
           visitedStatusList[neighbor] = true;
           if(neighbor === target) {
-            // Check if the path is complete.
-            let path = [target]; // If so, backtrack through the path.
+            //Check if the path is complete.
+            let path = [target]; //If so, backtrack through the path.
             while(node !== source) {
               path.push(node);
               node = predecessorList[node];

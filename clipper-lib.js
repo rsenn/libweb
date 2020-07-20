@@ -62,10 +62,10 @@ if(!isNode) {
   var nav = navigator.userAgent.toString().toLowerCase();
   navigator_appName = navigator.appName;
 } else {
-  var nav = 'chrome'; // Node.js uses Chrome's V8 engine
-  navigator_appName = 'Netscape'; // Firefox, Chrome and Safari returns "Netscape", so Node.js should also
+  var nav = 'chrome'; //Node.js uses Chrome's V8 engine
+  navigator_appName = 'Netscape'; //Firefox, Chrome and Safari returns "Netscape", so Node.js should also
 }
-// Browser test to speedup performance critical functions
+//Browser test to speedup performance critical functions
 var browser = {};
 
 if(nav.indexOf('chrome') != -1 && nav.indexOf('chromium') == -1) browser.chrome = 1;
@@ -95,8 +95,8 @@ else browser.msie7 = 0;
 if(nav.indexOf('msie ') != -1) browser.msie = 1;
 else browser.msie = 0;
 
-// Here starts the actual Clipper library:
-// Helper function to support Inheritance in Javascript
+//Here starts the actual Clipper library:
+//Helper function to support Inheritance in Javascript
 var Inherit = function(ce, ce2) {
   var p;
   if(typeof Object.getOwnPropertyNames === 'undefined') {
@@ -124,12 +124,12 @@ ClipperLib.Path.prototype.push = Array.prototype.push;
  * @constructor
  */
 ClipperLib.Paths = function() {
-  return []; // Was previously [[]], but caused problems when pushed
+  return []; //Was previously [[]], but caused problems when pushed
 };
 
 ClipperLib.Paths.prototype.push = Array.prototype.push;
 
-// PolyTree & PolyNode start
+//PolyTree & PolyNode start
 /**
  * @suppress {missingProperties}
  */
@@ -191,7 +191,7 @@ ClipperLib.PolyNode.prototype.IsHole = function() {
   return this.IsHoleNode();
 };
 
-// PolyTree : PolyNode
+//PolyTree : PolyNode
 /**
  * @suppress {missingProperties}
  * @constructor
@@ -221,7 +221,7 @@ ClipperLib.PolyTree.prototype.Total = function() {
 
 Inherit(ClipperLib.PolyTree, ClipperLib.PolyNode);
 
-// PolyTree & PolyNode end
+//PolyTree & PolyNode end
 
 ClipperLib.Clear = function(a) {
   a.length = 0;
@@ -241,23 +241,23 @@ ClipperLib.FPoint = function() {
   if(ClipperLib.use_xyz) {
     this.Z = 0;
     if(alen === 3) {
-      // public FPoint(cInt x, cInt y, cInt z = 0)
+      //public FPoint(cInt x, cInt y, cInt z = 0)
       this.X = a[0];
       this.Y = a[1];
       this.Z = a[2];
     } else if(alen === 2) {
-      // public FPoint(cInt x, cInt y)
+      //public FPoint(cInt x, cInt y)
       this.X = a[0];
       this.Y = a[1];
       this.Z = 0;
     } else if(alen === 1) {
       if(a[0] instanceof ClipperLib.FPoint) {
-        // public FPoint(FPoint dp)
+        //public FPoint(FPoint dp)
         var dp = a[0];
         this.X = dp.X;
         this.Y = dp.Y;
         this.Z = 0;
-      } // public FPoint(FPoint pt)
+      } //public FPoint(FPoint pt)
       else {
         var pt = a[0];
         if(typeof pt.Z === 'undefined') pt.Z = 0;
@@ -265,31 +265,31 @@ ClipperLib.FPoint = function() {
         this.Y = pt.Y;
         this.Z = pt.Z;
       }
-    } // public FPoint()
+    } //public FPoint()
     else {
       this.X = 0;
       this.Y = 0;
       this.Z = 0;
     }
-  } // if(!ClipperLib.use_xyz)
+  } //if(!ClipperLib.use_xyz)
   else {
     if(alen === 2) {
-      // public FPoint(cInt X, cInt Y)
+      //public FPoint(cInt X, cInt Y)
       this.X = a[0];
       this.Y = a[1];
     } else if(alen === 1) {
       if(a[0] instanceof ClipperLib.FPoint) {
-        // public FPoint(FPoint dp)
+        //public FPoint(FPoint dp)
         var dp = a[0];
         this.X = dp.X;
         this.Y = dp.Y;
-      } // public FPoint(FPoint pt)
+      } //public FPoint(FPoint pt)
       else {
         var pt = a[0];
         this.X = pt.X;
         this.Y = pt.Y;
       }
-    } // public FPoint(FPoint pt)
+    } //public FPoint(FPoint pt)
     else {
       this.X = 0;
       this.Y = 0;
@@ -380,19 +380,19 @@ ClipperLib.FRect = function() {
   var a = arguments,
     alen = a.length;
   if(alen === 4) {
-    // function (l, t, r, b)
+    //function (l, t, r, b)
     this.left = a[0];
     this.top = a[1];
     this.right = a[2];
     this.bottom = a[3];
   } else if(alen === 1) {
-    // function (ir)
+    //function (ir)
     var ir = a[0];
     this.left = ir.left;
     this.top = ir.top;
     this.right = ir.right;
     this.bottom = ir.bottom;
-  } // function ()
+  } //function ()
   else {
     this.left = 0;
     this.top = 0;
@@ -599,10 +599,10 @@ ClipperLib.ClipperBase.Skip = -2;
 ClipperLib.ClipperBase.Unassigned = -1;
 ClipperLib.ClipperBase.tolerance = 1e-20;
 
-// The MAX_VALUE property has a value of 1.7976931348623157e+308. Values larger than MAX_VALUE are represented as "Infinity".
+//The MAX_VALUE property has a value of 1.7976931348623157e+308. Values larger than MAX_VALUE are represented as "Infinity".
 //MIN_VALUE has a value of 5e-324. Values smaller than MIN_VALUE ("underflow values") are converted to 0.
-ClipperLib.ClipperBase.maxValue = Math.sqrt(Number.MAX_VALUE); // 1.3407807929942596e+154
-ClipperLib.ClipperBase.minValue = Math.sqrt(Number.MIN_VALUE); // 2.2227587494850775e-162
+ClipperLib.ClipperBase.maxValue = Math.sqrt(Number.MAX_VALUE); //1.3407807929942596e+154
+ClipperLib.ClipperBase.minValue = Math.sqrt(Number.MIN_VALUE); //2.2227587494850775e-162
 
 ClipperLib.ClipperBase.near_zero = function(val) {
   return val > -ClipperLib.ClipperBase.tolerance && val < ClipperLib.ClipperBase.tolerance;
@@ -640,17 +640,17 @@ ClipperLib.ClipperBase.prototype.SlopesEqual = ClipperLib.ClipperBase.SlopesEqua
     alen = a.length;
   var e1, e2, pt1, pt2, pt3, pt4;
   if(alen === 2) {
-    // function (e1, e2)
+    //function (e1, e2)
     e1 = a[0];
     e2 = a[1];
     return e1.Delta.Y * e2.Delta.X === e1.Delta.X * e2.Delta.Y;
   } else if(alen === 3) {
-    // function (pt1, pt2, pt3)
+    //function (pt1, pt2, pt3)
     pt1 = a[0];
     pt2 = a[1];
     pt3 = a[2];
     return (pt1.Y - pt2.Y) * (pt2.X - pt3.X) - (pt1.X - pt2.X) * (pt2.Y - pt3.Y) === 0;
-  } // function (pt1, pt2, pt3, pt4)
+  } //function (pt1, pt2, pt3, pt4)
   else {
     pt1 = a[0];
     pt2 = a[1];
@@ -982,8 +982,8 @@ ClipperLib.ClipperBase.prototype.AddPath = function(pg, polyType, Closed) {
 };
 
 ClipperLib.ClipperBase.prototype.AddPaths = function(ppg, polyType, closed) {
-  //  console.log("-------------------------------------------");
-  //  console.log(JSON.stringify(ppg));
+  //console.log("-------------------------------------------");
+  //console.log(JSON.stringify(ppg));
   var result = false;
   for(var i = 0, ilen = ppg.length; i < ilen; ++i) if(this.AddPath(ppg[i], polyType, closed)) result = true;
   return result;
@@ -1252,7 +1252,7 @@ ClipperLib.ClipperBase.prototype.DeleteFromAEL = function(e) {
   e.PrevInAEL = null;
 };
 
-// public Clipper(int InitOptions = 0)
+//public Clipper(int InitOptions = 0)
 /**
  * @suppress {missingProperties}
  */
@@ -1292,7 +1292,7 @@ ClipperLib.Clipper = function(InitOptions) {
   this.StrictlySimple = (2 & InitOptions) !== 0;
   this.PreserveCollinear = (4 & InitOptions) !== 0;
   if(ClipperLib.use_xyz) {
-    this.ZFillFunction = null; // function (FPoint bot1, FPoint top1, FPoint bot2, FPoint top2, ref FPoint intersectPt);
+    this.ZFillFunction = null; //function (FPoint bot1, FPoint top1, FPoint bot2, FPoint top2, ref FPoint intersectPt);
   }
 };
 
@@ -1337,13 +1337,13 @@ ClipperLib.Clipper.prototype.InsertMaxima = function(X) {
   }
 };
 
-// ************************************
+//************************************
 ClipperLib.Clipper.prototype.Execute = function() {
   var a = arguments,
     alen = a.length,
     ispolytree = a[1] instanceof ClipperLib.PolyTree;
   if(alen === 4 && !ispolytree) {
-    // function (clipType, solution, subjFillType, clipFillType)
+    //function (clipType, solution, subjFillType, clipFillType)
     var clipType = a[0],
       solution = a[1],
       subjFillType = a[2],
@@ -1366,7 +1366,7 @@ ClipperLib.Clipper.prototype.Execute = function() {
     }
     return succeeded;
   } else if(alen === 4 && ispolytree) {
-    // function (clipType, polytree, subjFillType, clipFillType)
+    //function (clipType, polytree, subjFillType, clipFillType)
     var clipType = a[0],
       polytree = a[1],
       subjFillType = a[2],
@@ -1387,12 +1387,12 @@ ClipperLib.Clipper.prototype.Execute = function() {
     }
     return succeeded;
   } else if(alen === 2 && !ispolytree) {
-    // function (clipType, solution)
+    //function (clipType, solution)
     var clipType = a[0],
       solution = a[1];
     return this.Execute(clipType, solution, ClipperLib.PolyFillType.pftEvenOdd, ClipperLib.PolyFillType.pftEvenOdd);
   } else if(alen === 2 && ispolytree) {
-    // function (clipType, polytree)
+    //function (clipType, polytree)
     var clipType = a[0],
       polytree = a[1];
     return this.Execute(clipType, polytree, ClipperLib.PolyFillType.pftEvenOdd, ClipperLib.PolyFillType.pftEvenOdd);
@@ -2738,7 +2738,7 @@ ClipperLib.Clipper.prototype.ProcessEdgesAtTopOfScanbeam = function(topY) {
 
   while(e !== null) {
     //1. process maxima, treating them as if they're 'bent' horizontal edges,
-    //   but exclude maxima with horizontal edges. nb: e can't be a horizontal.
+    //but exclude maxima with horizontal edges. nb: e can't be a horizontal.
     var IsMaximaEdge = this.IsMaxima(e, topY);
     if(IsMaximaEdge) {
       var eMaxPair = this.GetMaximaPairEx(e);
@@ -3184,8 +3184,8 @@ ClipperLib.Clipper.prototype.JoinPoints = function(j, outRec1, outRec2) {
     return this.JoinHorz(op1, op1b, op2, op2b, Pt, DiscardLeftSide);
   } else {
     //nb: For non-horizontal joins ...
-    //    1. Jr.OutPt1.Pt.Y == Jr.OutPt2.Pt.Y
-    //    2. Jr.OutPt1.Pt > Jr.OffPt.Y
+    //1. Jr.OutPt1.Pt.Y == Jr.OutPt2.Pt.Y
+    //2. Jr.OutPt1.Pt > Jr.OffPt.Y
     //make sure the polygons are correctly oriented ...
     op1b = op1.Next;
     while(ClipperLib.FPoint.op_Equality(op1b.Pt, op1.Pt) && op1b !== op1) op1b = op1b.Next;
@@ -3540,7 +3540,7 @@ ClipperLib.Clipper.prototype.Area = function(op) {
   do {
     a = a + (op.Prev.Pt.X + op.Pt.X) * (op.Prev.Pt.Y - op.Pt.Y);
     op = op.Next;
-  } while(op !== opFirst); // && typeof op !== 'undefined');
+  } while(op !== opFirst); //&& typeof op !== 'undefined');
   return a * 0.5;
 };
 
@@ -3988,7 +3988,7 @@ ClipperLib.ClipperOffset.prototype.Execute = function() {
   var a = arguments,
     ispolytree = a[0] instanceof ClipperLib.PolyTree;
   if(!ispolytree) {
-    // function (solution, delta)
+    //function (solution, delta)
     var solution = a[0],
       delta = a[1];
     ClipperLib.Clear(solution);
@@ -4012,7 +4012,7 @@ ClipperLib.ClipperOffset.prototype.Execute = function() {
       if(solution.length > 0) solution.splice(0, 1);
     }
     //console.log(JSON.stringify(solution));
-  } // function (polytree, delta)
+  } //function (polytree, delta)
   else {
     var solution = a[0],
       delta = a[1];
@@ -4065,7 +4065,7 @@ ClipperLib.ClipperOffset.prototype.OffsetPoint = function(j, k, jointype) {
 		{
 			//dot product ...
 			var cosA = (this.m_normals[k].X * this.m_normals[j].X + this.m_normals[j].Y * this.m_normals[k].Y);
-		 if(cosA > 0) // angle ==> 0 degrees
+		 if(cosA > 0)  //angle ==> 0 degrees
 			{
 				this.m_destPoly.push(new ClipperLib.FPoint2(this.m_srcPoly[j].X + this.m_normals[k].X * this.m_delta,
 					this.m_srcPoly[j].Y + this.m_normals[k].Y * this.m_delta));
@@ -4136,9 +4136,9 @@ ClipperLib.Error = function(message) {
   }
 };
 
-// ---------------------------------------------
+//---------------------------------------------
 
-// JS extension by Timo 2013
+//JS extension by Timo 2013
 ClipperLib.JS = {};
 
 ClipperLib.JS.AreaOfPolygon = function(poly) {
@@ -4162,8 +4162,8 @@ ClipperLib.JS.BoundsOfPaths = function(paths) {
   return bounds;
 };
 
-// Clean() joins vertices that are too near each other
-// and causes distortion to offsetted polygons without cleaning
+//Clean() joins vertices that are too near each other
+//and causes distortion to offsetted polygons without cleaning
 ClipperLib.JS.Clean = function(polygon, delta) {
   if(!(polygon instanceof Array)) return [];
   var isPolygons = polygon[0] instanceof Array;
@@ -4207,9 +4207,9 @@ ClipperLib.JS.Clean = function(polygon, delta) {
   else if(isPolygons && results.length === 0) results = [[]];
   return results;
 };
-// Make deep copy of Polygons or Polygon
-// so that also FPoint objects are cloned and not only referenced
-// This should be the fastest way
+//Make deep copy of Polygons or Polygon
+//so that also FPoint objects are cloned and not only referenced
+//This should be the fastest way
 ClipperLib.JS.Clone = function(polygon) {
   if(!(polygon instanceof Array)) return [];
   if(polygon.length === 0) return [];
@@ -4237,9 +4237,9 @@ ClipperLib.JS.Clone = function(polygon) {
   return results;
 };
 
-// Removes points that doesn't affect much to the visual appearance.
-// If middle point is at or under certain distance (tolerance) of the line segment between
-// start and end point, the middle point is removed.
+//Removes points that doesn't affect much to the visual appearance.
+//If middle point is at or under certain distance (tolerance) of the line segment between
+//start and end point, the middle point is removed.
 ClipperLib.JS.Lighten = function(polygon, tolerance) {
   if(!(polygon instanceof Array)) return [];
   if(typeof tolerance !== 'number' || tolerance === null) {
@@ -4263,12 +4263,12 @@ ClipperLib.JS.Lighten = function(polygon, tolerance) {
     for(
       k = 0;
       k < 1000000;
-      k++ // could be forever loop, but wiser to restrict max repeat count
+      k++ //could be forever loop, but wiser to restrict max repeat count
     ) {
       poly2 = [];
       plen = poly.length;
-      // the first have to added to the end, if first and last are not the same
-      // this way we ensure that also the actual last point can be removed if needed
+      //the first have to added to the end, if first and last are not the same
+      //this way we ensure that also the actual last point can be removed if needed
       if(poly[plen - 1].X !== poly[0].X || poly[plen - 1].Y !== poly[0].Y) {
         addlast = 1;
         poly.push({
@@ -4277,17 +4277,17 @@ ClipperLib.JS.Lighten = function(polygon, tolerance) {
         });
         plen = poly.length;
       } else addlast = 0;
-      rem = []; // Indexes of removed points
+      rem = []; //Indexes of removed points
       for(j = 0; j < plen - 2; j++) {
-        A = poly[j]; // Start point of line segment
-        P = poly[j + 1]; // Middle point. This is the one to be removed.
-        B = poly[j + 2]; // End point of line segment
+        A = poly[j]; //Start point of line segment
+        P = poly[j + 1]; //Middle point. This is the one to be removed.
+        B = poly[j + 2]; //End point of line segment
         ax = A.X;
         ay = A.Y;
         bxax = B.X - ax;
         byay = B.Y - ay;
         if(bxax !== 0 || byay !== 0) {
-          // To avoid Nan, when A==P && P==B. And to avoid peaks (A==B && A!=P), which have lenght, but not area.
+          //To avoid Nan, when A==P && P==B. And to avoid peaks (A==B && A!=P), which have lenght, but not area.
           l = ((P.X - ax) * bxax + (P.Y - ay) * byay) / (bxax * bxax + byay * byay);
           if(l > 1) {
             ax = B.X;
@@ -4302,10 +4302,10 @@ ClipperLib.JS.Lighten = function(polygon, tolerance) {
         d = bxax * bxax + byay * byay;
         if(d <= toleranceSq) {
           rem[j + 1] = 1;
-          j++; // when removed, transfer the pointer to the next one
+          j++; //when removed, transfer the pointer to the next one
         }
       }
-      // add all unremoved points to poly2
+      //add all unremoved points to poly2
       poly2.push({
         X: poly[0].X,
         Y: poly[0].Y
@@ -4320,20 +4320,20 @@ ClipperLib.JS.Lighten = function(polygon, tolerance) {
         X: poly[plen - 1].X,
         Y: poly[plen - 1].Y
       });
-      // if the first point was added to the end, remove it
+      //if the first point was added to the end, remove it
       if(addlast) poly.pop();
-      // break, if there was not anymore removed points
+      //break, if there was not anymore removed points
       if(!rem.length) break;
-      // else continue looping using poly2, to check if there are points to remove
+      //else continue looping using poly2, to check if there are points to remove
       else poly = poly2;
     }
     plen = poly2.length;
-    // remove duplicate from end, if needed
+    //remove duplicate from end, if needed
     if(poly2[plen - 1].X === poly2[0].X && poly2[plen - 1].Y === poly2[0].Y) {
       poly2.pop();
     }
     if(poly2.length > 2)
-      // to avoid two-point-polygons
+      //to avoid two-point-polygons
       results.push(poly2);
   }
   if(!isPolygons) {

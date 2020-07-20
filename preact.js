@@ -89,7 +89,7 @@ function createElement(type, props, children) {
 
   if(arguments.length > 3) {
     children = [children];
-    // https://github.com/preactjs/preact/issues/1916
+    //https://github.com/preactjs/preact/issues/1916
     for(i = 3; i < arguments.length; i++) {
       children.push(arguments[i]);
     }
@@ -98,8 +98,8 @@ function createElement(type, props, children) {
     normalizedProps.children = children;
   }
 
-  // If a Component VNode, check for and apply defaultProps
-  // Note: type may be undefined in development, must never error here.
+  //If a Component VNode, check for and apply defaultProps
+  //Note: type may be undefined in development, must never error here.
   if(typeof type == 'function' && type.defaultProps != null) {
     for(i in type.defaultProps) {
       if(normalizedProps[i] === undefined) {
@@ -124,8 +124,8 @@ function createElement(type, props, children) {
  * @returns {import('./internal').VNode}
  */
 function createVNode(type, props, key, ref, original) {
-  // V8 seems to be better at detecting type shapes if the object is allocated from the same call site
-  // Do not inline into createElement and coerceToVNode!
+  //V8 seems to be better at detecting type shapes if the object is allocated from the same call site
+  //Do not inline into createElement and coerceToVNode!
   const vnode = {
     type,
     props,
@@ -135,10 +135,10 @@ function createVNode(type, props, key, ref, original) {
     _parent: null,
     _depth: 0,
     _dom: null,
-    // _nextDom must be initialized to undefined b/c it will eventually
-    // be set to dom.nextSibling which can return `null` and it is important
-    // to be able to distinguish between an uninitialized _nextDom and
-    // a _nextDom that has been set to `null`
+    //_nextDom must be initialized to undefined b/c it will eventually
+    //be set to dom.nextSibling which can return `null` and it is important
+    //to be able to distinguish between an uninitialized _nextDom and
+    //a _nextDom that has been set to `null`
     _nextDom: undefined,
     _component: null,
     constructor: undefined,
@@ -187,7 +187,7 @@ function Component(props, context) {
  * updated
  */
 Component.prototype.setState = function(update, callback) {
-  // only clone state when copying to nextState the first time.
+  //only clone state when copying to nextState the first time.
   let s;
   if(this._nextState !== this.state) {
     s = this._nextState;
@@ -203,7 +203,7 @@ Component.prototype.setState = function(update, callback) {
     assign(s, update);
   }
 
-  // Skip update if updater function returned null
+  //Skip update if updater function returned null
   if(update == null) return;
 
   if(this._vnode) {
@@ -219,9 +219,9 @@ Component.prototype.setState = function(update, callback) {
  */
 Component.prototype.forceUpdate = function(callback) {
   if(this._vnode) {
-    // Set render mode so that we can differentiate where the render request
-    // is coming from. We need this because forceUpdate should never call
-    // shouldComponentUpdate
+    //Set render mode so that we can differentiate where the render request
+    //is coming from. We need this because forceUpdate should never call
+    //shouldComponentUpdate
     this._force = true;
     if(callback) this._renderCallbacks.push(callback);
     enqueueRender(this);
@@ -246,7 +246,7 @@ Component.prototype.render = Fragment;
  */
 function getDomSibling(vnode, childIndex) {
   if(childIndex == null) {
-    // Use childIndex==null as a signal to resume the search from the vnode's sibling
+    //Use childIndex==null as a signal to resume the search from the vnode's sibling
     return vnode._parent ? getDomSibling(vnode._parent, vnode._parent._children.indexOf(vnode) + 1) : null;
   }
 
@@ -255,18 +255,18 @@ function getDomSibling(vnode, childIndex) {
     sibling = vnode._children[childIndex];
 
     if(sibling != null && sibling._dom != null) {
-      // Since updateParentDomPointers keeps _dom pointer correct,
-      // we can rely on _dom to tell us if this subtree contains a
-      // rendered DOM node, and what the first rendered DOM node is
+      //Since updateParentDomPointers keeps _dom pointer correct,
+      //we can rely on _dom to tell us if this subtree contains a
+      //rendered DOM node, and what the first rendered DOM node is
       return sibling._dom;
     }
   }
 
-  // If we get here, we have not found a DOM node in this vnode's children.
-  // We must resume from this vnode's sibling (in it's parent _children array)
-  // Only climb up and search the parent if we aren't searching through a DOM
-  // VNode (meaning we reached the DOM parent of the original vnode that began
-  // the search)
+  //If we get here, we have not found a DOM node in this vnode's children.
+  //We must resume from this vnode's sibling (in it's parent _children array)
+  //Only climb up and search the parent if we aren't searching through a DOM
+  //VNode (meaning we reached the DOM parent of the original vnode that began
+  //the search)
   return typeof vnode.type == 'function' ? getDomSibling(vnode) : null;
 }
 
@@ -322,7 +322,7 @@ let rerenderQueue = [];
  * @type {(cb: () => void) => void}
  */
 /* istanbul ignore next */
-// Note the following line isn't tree-shaken by rollup cuz of rollup/rollup#2566
+//Note the following line isn't tree-shaken by rollup cuz of rollup/rollup#2566
 const defer = typeof Promise == 'function' ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout;
 
 /*
@@ -353,8 +353,8 @@ function process() {
   while((process._rerenderCount = rerenderQueue.length)) {
     queue = rerenderQueue.sort((a, b) => a._vnode._depth - b._vnode._depth);
     rerenderQueue = [];
-    // Don't update `renderCount` yet. Keep its value non-zero to prevent unnecessary
-    // process() calls from getting scheduled while `queue` is still being consumed.
+    //Don't update `renderCount` yet. Keep its value non-zero to prevent unnecessary
+    //process() calls from getting scheduled while `queue` is still being consumed.
     queue.some(c => {
       if(c._dirty) renderComponent(c);
     });
@@ -385,16 +385,16 @@ process._rerenderCount = 0;
 function diffChildren(parentDom, renderResult, newParentVNode, oldParentVNode, globalContext, isSvg, excessDomChildren, commitQueue, oldDom, isHydrating) {
   let i, j, oldVNode, childVNode, newDom, firstChildDom, refs;
 
-  // This is a compression of oldParentVNode!=null && oldParentVNode != EMPTY_OBJ && oldParentVNode._children || EMPTY_ARR
-  // as EMPTY_OBJ._children should be `undefined`.
+  //This is a compression of oldParentVNode!=null && oldParentVNode != EMPTY_OBJ && oldParentVNode._children || EMPTY_ARR
+  //as EMPTY_OBJ._children should be `undefined`.
   let oldChildren = (oldParentVNode && oldParentVNode._children) || EMPTY_ARR;
 
   let oldChildrenLength = oldChildren.length;
 
-  // Only in very specific places should this logic be invoked (top level `render` and `diffElementNodes`).
-  // I'm using `EMPTY_OBJ` to signal when `diffChildren` is invoked in these situations. I can't use `null`
-  // for this purpose, because `null` is a valid value for `oldDom` which can mean to skip to this logic
-  // (e.g. if mounting a new tree in which the old DOM should be ignored (usually for Fragments).
+  //Only in very specific places should this logic be invoked (top level `render` and `diffElementNodes`).
+  //I'm using `EMPTY_OBJ` to signal when `diffChildren` is invoked in these situations. I can't use `null`
+  //for this purpose, because `null` is a valid value for `oldDom` which can mean to skip to this logic
+  //(e.g. if mounting a new tree in which the old DOM should be ignored (usually for Fragments).
   if(oldDom == EMPTY_OBJ) {
     if(excessDomChildren != null) {
       oldDom = excessDomChildren[0];
@@ -412,9 +412,9 @@ function diffChildren(parentDom, renderResult, newParentVNode, oldParentVNode, g
     if(childVNode == null || typeof childVNode == 'boolean') {
       childVNode = newParentVNode._children[i] = null;
     }
-    // If this newVNode is being reused (e.g. <div>{reuse}{reuse}</div>) in the same diff,
-    // or we are rendering a component (e.g. setState) copy the oldVNodes so it can have
-    // it's own DOM & etc. pointers
+    //If this newVNode is being reused (e.g. <div>{reuse}{reuse}</div>) in the same diff,
+    //or we are rendering a component (e.g. setState) copy the oldVNodes so it can have
+    //it's own DOM & etc. pointers
     else if(typeof childVNode == 'string' || typeof childVNode == 'number') {
       childVNode = newParentVNode._children[i] = createVNode(null, childVNode, null, null, childVNode);
     } else if(Array.isArray(childVNode)) {
@@ -425,8 +425,8 @@ function diffChildren(parentDom, renderResult, newParentVNode, oldParentVNode, g
       childVNode = newParentVNode._children[i] = childVNode;
     }
 
-    // Terser removes the `continue` here and wraps the loop body
-    // in a `if (childVNode) { ... } condition
+    //Terser removes the `continue` here and wraps the loop body
+    //in a `if (childVNode) { ... } condition
     if(childVNode == null) {
       continue;
     }
@@ -434,21 +434,21 @@ function diffChildren(parentDom, renderResult, newParentVNode, oldParentVNode, g
     childVNode._parent = newParentVNode;
     childVNode._depth = newParentVNode._depth + 1;
 
-    // Check if we find a corresponding element in oldChildren.
-    // If found, delete the array item by setting to `undefined`.
-    // We use `undefined`, as `null` is reserved for empty placeholders
-    // (holes).
+    //Check if we find a corresponding element in oldChildren.
+    //If found, delete the array item by setting to `undefined`.
+    //We use `undefined`, as `null` is reserved for empty placeholders
+    //(holes).
     oldVNode = oldChildren[i];
 
     if(oldVNode === null || (oldVNode && childVNode.key == oldVNode.key && childVNode.type === oldVNode.type)) {
       oldChildren[i] = undefined;
     } else {
-      // Either oldVNode === undefined or oldChildrenLength > 0,
-      // so after this loop oldVNode == null or oldVNode is a valid value.
+      //Either oldVNode === undefined or oldChildrenLength > 0,
+      //so after this loop oldVNode == null or oldVNode is a valid value.
       for(j = 0; j < oldChildrenLength; j++) {
         oldVNode = oldChildren[j];
-        // If childVNode is unkeyed, we only match similarly unkeyed nodes, otherwise we match by key.
-        // We always match by type (in either case).
+        //If childVNode is unkeyed, we only match similarly unkeyed nodes, otherwise we match by key.
+        //We always match by type (in either case).
         if(oldVNode && childVNode.key == oldVNode.key && childVNode.type === oldVNode.type) {
           oldChildren[j] = undefined;
           break;
@@ -459,7 +459,7 @@ function diffChildren(parentDom, renderResult, newParentVNode, oldParentVNode, g
 
     oldVNode = oldVNode || EMPTY_OBJ;
 
-    // Morph the old element into the new one, but don't append it to the dom yet
+    //Morph the old element into the new one, but don't append it to the dom yet
     newDom = diff(parentDom, childVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, oldDom, isHydrating);
 
     if((j = childVNode.ref) && oldVNode.ref != j) {
@@ -475,50 +475,50 @@ function diffChildren(parentDom, renderResult, newParentVNode, oldParentVNode, g
 
       oldDom = placeChild(parentDom, childVNode, oldVNode, oldChildren, excessDomChildren, newDom, oldDom);
 
-      // Browsers will infer an option's `value` from `textContent` when
-      // no value is present. This essentially bypasses our code to set it
-      // later in `diff()`. It works fine in all browsers except for IE11
-      // where it breaks setting `select.value`. There it will be always set
-      // to an empty string. Re-applying an options value will fix that, so
-      // there are probably some internal data structures that aren't
-      // updated properly.
+      //Browsers will infer an option's `value` from `textContent` when
+      //no value is present. This essentially bypasses our code to set it
+      //later in `diff()`. It works fine in all browsers except for IE11
+      //where it breaks setting `select.value`. There it will be always set
+      //to an empty string. Re-applying an options value will fix that, so
+      //there are probably some internal data structures that aren't
+      //updated properly.
       //
-      // To fix it we make sure to reset the inferred value, so that our own
-      // value check in `diff()` won't be skipped.
+      //To fix it we make sure to reset the inferred value, so that our own
+      //value check in `diff()` won't be skipped.
       if(newParentVNode.type == 'option') {
         parentDom.value = '';
       } else if(typeof newParentVNode.type == 'function') {
-        // Because the newParentVNode is Fragment-like, we need to set it's
-        // _nextDom property to the nextSibling of its last child DOM node.
+        //Because the newParentVNode is Fragment-like, we need to set it's
+        //_nextDom property to the nextSibling of its last child DOM node.
         //
-        // `oldDom` contains the correct value here because if the last child
-        // is a Fragment-like, then oldDom has already been set to that child's _nextDom.
-        // If the last child is a DOM VNode, then oldDom will be set to that DOM
-        // node's nextSibling.
+        //`oldDom` contains the correct value here because if the last child
+        //is a Fragment-like, then oldDom has already been set to that child's _nextDom.
+        //If the last child is a DOM VNode, then oldDom will be set to that DOM
+        //node's nextSibling.
         newParentVNode._nextDom = oldDom;
       }
     } else if(oldDom && oldVNode._dom == oldDom && oldDom.parentNode != parentDom) {
-      // The above condition is to handle null placeholders. See test in placeholder.test.js:
-      // `efficiently replace null placeholders in parent rerenders`
+      //The above condition is to handle null placeholders. See test in placeholder.test.js:
+      //`efficiently replace null placeholders in parent rerenders`
       oldDom = getDomSibling(oldVNode);
     }
   }
 
   newParentVNode._dom = firstChildDom;
 
-  // Remove children that are not part of any vnode.
+  //Remove children that are not part of any vnode.
   if(excessDomChildren != null && typeof newParentVNode.type != 'function') {
     for(i = excessDomChildren.length; i--; ) {
       if(excessDomChildren[i] != null) removeNode(excessDomChildren[i]);
     }
   }
 
-  // Remove remaining oldChildren if there are any.
+  //Remove remaining oldChildren if there are any.
   for(i = oldChildrenLength; i--; ) {
     if(oldChildren[i] != null) unmount(oldChildren[i], oldChildren[i]);
   }
 
-  // Set refs only after unmount
+  //Set refs only after unmount
   if(refs) {
     for(i = 0; i < refs.length; i++) {
       applyRef(refs[i], refs[++i], refs[++i]);
@@ -545,26 +545,26 @@ function toChildArray(children) {
 function placeChild(parentDom, childVNode, oldVNode, oldChildren, excessDomChildren, newDom, oldDom) {
   let nextDom;
   if(childVNode._nextDom !== undefined) {
-    // Only Fragments or components that return Fragment like VNodes will
-    // have a non-undefined _nextDom. Continue the diff from the sibling
-    // of last DOM child of this child VNode
+    //Only Fragments or components that return Fragment like VNodes will
+    //have a non-undefined _nextDom. Continue the diff from the sibling
+    //of last DOM child of this child VNode
     nextDom = childVNode._nextDom;
 
-    // Eagerly cleanup _nextDom. We don't need to persist the value because
-    // it is only used by `diffChildren` to determine where to resume the diff after
-    // diffing Components and Fragments. Once we store it the nextDOM local var, we
-    // can clean up the property
+    //Eagerly cleanup _nextDom. We don't need to persist the value because
+    //it is only used by `diffChildren` to determine where to resume the diff after
+    //diffing Components and Fragments. Once we store it the nextDOM local var, we
+    //can clean up the property
     childVNode._nextDom = undefined;
   } else if(excessDomChildren == oldVNode || newDom != oldDom || newDom.parentNode == null) {
-    // NOTE: excessDomChildren==oldVNode above:
-    // This is a compression of excessDomChildren==null && oldVNode==null!
-    // The values only have the same type when `null`.
+    //NOTE: excessDomChildren==oldVNode above:
+    //This is a compression of excessDomChildren==null && oldVNode==null!
+    //The values only have the same type when `null`.
 
     outer: if(oldDom == null || oldDom.parentNode !== parentDom) {
       parentDom.appendChild(newDom);
       nextDom = null;
     } else {
-      // `j<oldChildrenLength; j+=2` is an alternative to `j++<oldChildrenLength/2`
+      //`j<oldChildrenLength; j+=2` is an alternative to `j++<oldChildrenLength/2`
       for(let sibDom = oldDom, j = 0; (sibDom = sibDom.nextSibling) && j < oldChildren.length; j += 2) {
         if(sibDom == newDom) {
           break outer;
@@ -575,9 +575,9 @@ function placeChild(parentDom, childVNode, oldVNode, oldChildren, excessDomChild
     }
   }
 
-  // If we have pre-calculated the nextDOM node, use it. Else calculate it now
-  // Strictly check for `undefined` here cuz `null` is a valid value of `nextDom`.
-  // See more detail in create-element.js:createVNode
+  //If we have pre-calculated the nextDOM node, use it. Else calculate it now
+  //Strictly check for `undefined` here cuz `null` is a valid value of `nextDom`.
+  //See more detail in create-element.js:createVNode
   if(nextDom !== undefined) {
     oldDom = nextDom;
   } else {
@@ -671,7 +671,7 @@ function setProperty(dom, name, value, oldValue, isSvg) {
       }
     }
   }
-  // Benchmark for comparison: https://esbench.com/bench/574c954bdb965b9a00965ac6
+  //Benchmark for comparison: https://esbench.com/bench/574c954bdb965b9a00965ac6
   else if(name[0] === 'o' && name[1] === 'n') {
     useCapture = name !== (name = name.replace(/Capture$/, ''));
     nameLower = name.toLowerCase();
@@ -686,8 +686,8 @@ function setProperty(dom, name, value, oldValue, isSvg) {
   } else if(
     name !== 'list' &&
     name !== 'tagName' &&
-    // HTMLButtonElement.form and HTMLInputElement.form are read-only but can be set using
-    // setAttribute
+    //HTMLButtonElement.form and HTMLInputElement.form are read-only but can be set using
+    //setAttribute
     name !== 'form' &&
     name !== 'type' &&
     name !== 'size' &&
@@ -705,12 +705,12 @@ function setProperty(dom, name, value, oldValue, isSvg) {
     } else if(
       value == null ||
       (value === false &&
-        // ARIA-attributes have a different notion of boolean values.
-        // The value `false` is different from the attribute not
-        // existing on the DOM, so we can't remove it. For non-boolean
-        // ARIA-attributes we could treat false as a removal, but the
-        // amount of exceptions would cost us too many bytes. On top of
-        // that other VDOM frameworks also always stringify `false`.
+        //ARIA-attributes have a different notion of boolean values.
+        //The value `false` is different from the attribute not
+        //existing on the DOM, so we can't remove it. For non-boolean
+        //ARIA-attributes we could treat false as a removal, but the
+        //amount of exceptions would cost us too many bytes. On top of
+        //that other VDOM frameworks also always stringify `false`.
         !/^ar/.test(name))
     ) {
       dom.removeAttribute(name);
@@ -770,8 +770,8 @@ function diff(parentDom, newVNode, oldVNode, globalContext, isSvg, excessDomChil
   let tmp,
     newType = newVNode.type;
 
-  // When passing through createElement it assigns the object
-  // constructor as undefined. This to prevent JSON-injection.
+  //When passing through createElement it assigns the object
+  //constructor as undefined. This to prevent JSON-injection.
   if(newVNode.constructor !== undefined) return null;
 
   if((tmp = options._diff)) tmp(newVNode);
@@ -781,20 +781,20 @@ function diff(parentDom, newVNode, oldVNode, globalContext, isSvg, excessDomChil
       let c, isNew, oldProps, oldState, snapshot, clearProcessingException;
       let newProps = newVNode.props;
 
-      // Necessary for createContext api. Setting this property will pass
-      // the context value as `this.context` just for this component.
+      //Necessary for createContext api. Setting this property will pass
+      //the context value as `this.context` just for this component.
       tmp = newType.contextType;
       let provider = tmp && globalContext[tmp._id];
       let componentContext = tmp ? (provider ? provider.props.value : tmp._defaultValue) : globalContext;
 
-      // Get component and set it to `c`
+      //Get component and set it to `c`
       if(oldVNode._component) {
         c = newVNode._component = oldVNode._component;
         clearProcessingException = c._processingException = c._pendingError;
       } else {
-        // Instantiate the new component
+        //Instantiate the new component
         if('prototype' in newType && newType.prototype.render) {
-          newVNode._component = c = new newType(newProps, componentContext); // eslint-disable-line new-cap
+          newVNode._component = c = new newType(newProps, componentContext); //eslint-disable-line new-cap
         } else {
           newVNode._component = c = new Component(newProps, componentContext);
           c.constructor = newType;
@@ -810,7 +810,7 @@ function diff(parentDom, newVNode, oldVNode, globalContext, isSvg, excessDomChil
         c._renderCallbacks = [];
       }
 
-      // Invoke getDerivedStateFromProps
+      //Invoke getDerivedStateFromProps
       if(c._nextState == null) {
         c._nextState = c.state;
       }
@@ -825,7 +825,7 @@ function diff(parentDom, newVNode, oldVNode, globalContext, isSvg, excessDomChil
       oldProps = c.props;
       oldState = c.state;
 
-      // Invoke pre-render lifecycle methods
+      //Invoke pre-render lifecycle methods
       if(isNew) {
         if(newType.getDerivedStateFromProps == null && c.componentWillMount != null) {
           c.componentWillMount();
@@ -842,7 +842,7 @@ function diff(parentDom, newVNode, oldVNode, globalContext, isSvg, excessDomChil
         if((!c._force && c.shouldComponentUpdate != null && c.shouldComponentUpdate(newProps, c._nextState, componentContext) === false) || newVNode._original === oldVNode._original) {
           c.props = newProps;
           c.state = c._nextState;
-          // More info about this here: https://gist.github.com/JoviDeCroock/bec5f2ce93544d2e6070ef8e0036e4e8
+          //More info about this here: https://gist.github.com/JoviDeCroock/bec5f2ce93544d2e6070ef8e0036e4e8
           if(newVNode._original !== oldVNode._original) c._dirty = false;
           c._vnode = newVNode;
           newVNode._dom = oldVNode._dom;
@@ -878,7 +878,7 @@ function diff(parentDom, newVNode, oldVNode, globalContext, isSvg, excessDomChil
 
       tmp = c.render(c.props, c.state, c.context);
 
-      // Handle setState called in render, see #2553
+      //Handle setState called in render, see #2553
       c.state = c._nextState;
 
       if(c.getChildContext != null) {
@@ -961,16 +961,16 @@ function diffElementNodes(dom, newVNode, oldVNode, globalContext, isSvg, excessD
   let oldProps = oldVNode.props;
   let newProps = newVNode.props;
 
-  // Tracks entering and exiting SVG namespace when descending through the tree.
+  //Tracks entering and exiting SVG namespace when descending through the tree.
   isSvg = newVNode.type === 'svg' || isSvg;
 
   if(excessDomChildren != null) {
     for(i = 0; i < excessDomChildren.length; i++) {
       const child = excessDomChildren[i];
 
-      // if newVNode matches an element in excessDomChildren or the `dom`
-      // argument matches an element in excessDomChildren, remove it from
-      // excessDomChildren so it isn't later removed in diffChildren
+      //if newVNode matches an element in excessDomChildren or the `dom`
+      //argument matches an element in excessDomChildren, remove it from
+      //excessDomChildren so it isn't later removed in diffChildren
       if(child != null && ((newVNode.type === null ? child.nodeType === 3 : child.localName === newVNode.type) || dom == child)) {
         dom = child;
         excessDomChildren[i] = null;
@@ -985,9 +985,9 @@ function diffElementNodes(dom, newVNode, oldVNode, globalContext, isSvg, excessD
     }
 
     dom = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', newVNode.type) : document.createElement(newVNode.type, newProps.is && { is: newProps.is });
-    // we created a new parent, so none of the previously attached children can be reused:
+    //we created a new parent, so none of the previously attached children can be reused:
     excessDomChildren = null;
-    // we are creating a new node, so we can assume this is a new subtree (in case we are hydrating), this deopts the hydrate
+    //we are creating a new node, so we can assume this is a new subtree (in case we are hydrating), this deopts the hydrate
     isHydrating = false;
   }
 
@@ -1005,11 +1005,11 @@ function diffElementNodes(dom, newVNode, oldVNode, globalContext, isSvg, excessD
     let oldHtml = oldProps.dangerouslySetInnerHTML;
     let newHtml = newProps.dangerouslySetInnerHTML;
 
-    // During hydration, props are not diffed at all (including dangerouslySetInnerHTML)
-    // @TODO we should warn in debug mode when props don't match here.
+    //During hydration, props are not diffed at all (including dangerouslySetInnerHTML)
+    //@TODO we should warn in debug mode when props don't match here.
     if(!isHydrating) {
-      // But, if we are in a situation where we are using existing DOM (e.g. replaceNode)
-      // we should read the existing DOM attributes to diff them
+      //But, if we are in a situation where we are using existing DOM (e.g. replaceNode)
+      //we should read the existing DOM attributes to diff them
       if(excessDomChildren != null) {
         oldProps = {};
         for(let i = 0; i < dom.attributes.length; i++) {
@@ -1018,7 +1018,7 @@ function diffElementNodes(dom, newVNode, oldVNode, globalContext, isSvg, excessD
       }
 
       if(newHtml || oldHtml) {
-        // Avoid re-applying the same '__html' if it did not changed between re-render
+        //Avoid re-applying the same '__html' if it did not changed between re-render
         if(!newHtml || !oldHtml || newHtml.__html != oldHtml.__html) {
           dom.innerHTML = (newHtml && newHtml.__html) || '';
         }
@@ -1027,7 +1027,7 @@ function diffElementNodes(dom, newVNode, oldVNode, globalContext, isSvg, excessD
 
     diffProps(dom, newProps, oldProps, isSvg, isHydrating);
 
-    // If the new vnode didn't have dangerouslySetInnerHTML, diff its children
+    //If the new vnode didn't have dangerouslySetInnerHTML, diff its children
     if(newHtml) {
       newVNode._children = [];
     } else {
@@ -1035,7 +1035,7 @@ function diffElementNodes(dom, newVNode, oldVNode, globalContext, isSvg, excessD
       diffChildren(dom, Array.isArray(i) ? i : [i], newVNode, oldVNode, globalContext, newVNode.type === 'foreignObject' ? false : isSvg, excessDomChildren, commitQueue, EMPTY_OBJ, isHydrating);
     }
 
-    // (as above, don't diff props during hydration)
+    //(as above, don't diff props during hydration)
     if(!isHydrating) {
       if('value' in newProps && (i = newProps.value) !== undefined && i !== dom.value) {
         setProperty(dom, 'value', i, oldProps.value, false);
@@ -1085,8 +1085,8 @@ function unmount(vnode, parentVNode, skipRemove) {
     skipRemove = (dom = vnode._dom) != null;
   }
 
-  // Must be set to `undefined` to properly clean up `_nextDom`
-  // for which `null` is a valid value. See comment in `create-element.js`
+  //Must be set to `undefined` to properly clean up `_nextDom`
+  //for which `null` is a valid value. See comment in `create-element.js`
   vnode._dom = vnode._nextDom = undefined;
 
   if((r = vnode._component) != null) {
@@ -1128,25 +1128,25 @@ const IS_HYDRATE = EMPTY_OBJ;
 function render(vnode, parentDom, replaceNode) {
   if(options._root) options._root(vnode, parentDom);
 
-  // We abuse the `replaceNode` parameter in `hydrate()` to signal if we
-  // are in hydration mode or not by passing `IS_HYDRATE` instead of a
-  // DOM element.
+  //We abuse the `replaceNode` parameter in `hydrate()` to signal if we
+  //are in hydration mode or not by passing `IS_HYDRATE` instead of a
+  //DOM element.
   let isHydrating = replaceNode === IS_HYDRATE;
 
-  // To be able to support calling `render()` multiple times on the same
-  // DOM node, we need to obtain a reference to the previous tree. We do
-  // this by assigning a new `_children` property to DOM nodes which points
-  // to the last rendered tree. By default this property is not present, which
-  // means that we are mounting a new tree for the first time.
+  //To be able to support calling `render()` multiple times on the same
+  //DOM node, we need to obtain a reference to the previous tree. We do
+  //this by assigning a new `_children` property to DOM nodes which points
+  //to the last rendered tree. By default this property is not present, which
+  //means that we are mounting a new tree for the first time.
   let oldVNode = isHydrating ? null : (replaceNode && replaceNode._children) || parentDom._children;
   vnode = createElement(Fragment, null, [vnode]);
 
-  // List of effects that need to be called after diffing.
+  //List of effects that need to be called after diffing.
   let commitQueue = [];
   diff(
     parentDom,
-    // Determine the new vnode tree and store it on the DOM element on
-    // our custom `_children` property.
+    //Determine the new vnode tree and store it on the DOM element on
+    //our custom `_children` property.
     ((isHydrating ? parentDom : replaceNode || parentDom)._children = vnode),
     oldVNode || EMPTY_OBJ,
     EMPTY_OBJ,
@@ -1157,7 +1157,7 @@ function render(vnode, parentDom, replaceNode) {
     isHydrating
   );
 
-  // Flush all queued effects
+  //Flush all queued effects
   commitRoot(commitQueue, vnode);
 }
 
@@ -1233,11 +1233,11 @@ function createContext(defaultValue) {
 
   context.Consumer.contextType = context;
 
-  // Devtools needs access to the context object when it
-  // encounters a Provider. This is necessary to support
-  // setting `displayName` on the context object instead
-  // of on the component itself. See:
-  // https://reactjs.org/docs/context.html#contextdisplayname
+  //Devtools needs access to the context object when it
+  //encounters a Provider. This is necessary to support
+  //setting `displayName` on the context object instead
+  //of on the component itself. See:
+  //https://reactjs.org/docs/context.html#contextdisplayname
   context.Provider._contextRef = context;
 
   return context;

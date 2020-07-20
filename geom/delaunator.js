@@ -1,4 +1,4 @@
-// https://github.com/mapbox/delaunator
+//https://github.com/mapbox/delaunator
 const EPSILON = Math.pow(2, -52);
 const EDGE_STACK = new Uint32Array(512);
 
@@ -22,19 +22,19 @@ export default class Delaunator {
 
     this.coords = coords;
 
-    // arrays that will store the triangulation graph
+    //arrays that will store the triangulation graph
     const maxTriangles = Math.max(2 * n - 5, 0);
     this._triangles = new Uint32Array(maxTriangles * 3);
     this._halfedges = new Int32Array(maxTriangles * 3);
 
-    // temporary arrays for tracking the edges of the advancing convex hull
+    //temporary arrays for tracking the edges of the advancing convex hull
     this._hashSize = Math.ceil(Math.sqrt(n));
-    this._hullPrev = new Uint32Array(n); // edge to prev edge
-    this._hullNext = new Uint32Array(n); // edge to next edge
-    this._hullTri = new Uint32Array(n); // edge to adjacent triangle
-    this._hullHash = new Int32Array(this._hashSize).fill(-1); // angular edge hash
+    this._hullPrev = new Uint32Array(n); //edge to prev edge
+    this._hullNext = new Uint32Array(n); //edge to next edge
+    this._hullTri = new Uint32Array(n); //edge to adjacent triangle
+    this._hullHash = new Int32Array(this._hashSize).fill(-1); //angular edge hash
 
-    // temporary arrays for sorting points
+    //temporary arrays for sorting points
     this._ids = new Uint32Array(n);
     this._dists = new Float64Array(n);
 
@@ -45,7 +45,7 @@ export default class Delaunator {
     const { coords, _hullPrev: hullPrev, _hullNext: hullNext, _hullTri: hullTri, _hullHash: hullHash } = this;
     const n = coords.length >> 1;
 
-    // populate an array of point indices; calculate input data bbox
+    //populate an array of point indices; calculate input data bbox
     let minX = Infinity;
     let minY = Infinity;
     let maxX = -Infinity;
@@ -66,7 +66,7 @@ export default class Delaunator {
     let minDist = Infinity;
     let i0, i1, i2;
 
-    // pick a seed point close to the center
+    //pick a seed point close to the center
     for(let i = 0; i < n; i++) {
       const d = dist(cx, cy, coords[2 * i], coords[2 * i + 1]);
       if(d < minDist) {
@@ -79,7 +79,7 @@ export default class Delaunator {
 
     minDist = Infinity;
 
-    // find the point closest to the seed
+    //find the point closest to the seed
     for(let i = 0; i < n; i++) {
       if(i === i0) continue;
       const d = dist(i0x, i0y, coords[2 * i], coords[2 * i + 1]);
@@ -93,7 +93,7 @@ export default class Delaunator {
 
     let minRadius = Infinity;
 
-    // find the third point which forms the smallest circumcircle with the first two
+    //find the third point which forms the smallest circumcircle with the first two
     for(let i = 0; i < n; i++) {
       if(i === i0 || i === i1) continue;
       const r = circumradius(i0x, i0y, i1x, i1y, coords[2 * i], coords[2 * i + 1]);
@@ -106,8 +106,8 @@ export default class Delaunator {
     let i2y = coords[2 * i2 + 1];
 
     if(minRadius === Infinity) {
-      // order collinear points by dx (or dy if all x are identical)
-      // and return the list as a hull
+      //order collinear points by dx (or dy if all x are identical)
+      //and return the list as a hull
       for(let i = 0; i < n; i++) {
         this._dists[i] = coords[2 * i] - coords[0] || coords[2 * i + 1] - coords[1];
       }
@@ -127,7 +127,7 @@ export default class Delaunator {
       return;
     }
 
-    // swap the order of the seed points for counter-clockwise orientation
+    //swap the order of the seed points for counter-clockwise orientation
     if(orient(i0x, i0y, i1x, i1y, i2x, i2y)) {
       const i = i1;
       const x = i1x;
@@ -148,10 +148,10 @@ export default class Delaunator {
       this._dists[i] = dist(coords[2 * i], coords[2 * i + 1], center.x, center.y);
     }
 
-    // sort the points by distance from the seed triangle circumcenter
+    //sort the points by distance from the seed triangle circumcenter
     quicksort(this._ids, this._dists, 0, n - 1);
 
-    // set up the seed triangle as the starting hull
+    //set up the seed triangle as the starting hull
     this._hullStart = i0;
     let hullSize = 3;
 
@@ -176,15 +176,15 @@ export default class Delaunator {
       const x = coords[2 * i];
       const y = coords[2 * i + 1];
 
-      // skip near-duplicate points
+      //skip near-duplicate points
       if(k > 0 && Math.abs(x - xp) <= EPSILON && Math.abs(y - yp) <= EPSILON) continue;
       xp = x;
       yp = y;
 
-      // skip seed triangle points
+      //skip seed triangle points
       if(i === i0 || i === i1 || i === i2) continue;
 
-      // find a visible edge on the convex hull using edge hash
+      //find a visible edge on the convex hull using edge hash
       let start = 0;
       for(let j = 0, key = this._hashKey(x, y); j < this._hashSize; j++) {
         start = hullHash[(key + j) % this._hashSize];
@@ -201,44 +201,44 @@ export default class Delaunator {
           break;
         }
       }
-      if(e === -1) continue; // likely a near-duplicate point; skip it
+      if(e === -1) continue; //likely a near-duplicate point; skip it
 
-      // add the first triangle from the point
+      //add the first triangle from the point
       let t = this._addTriangle(e, i, hullNext[e], -1, -1, hullTri[e]);
 
-      // recursively flip triangles from the point until they satisfy the Delaunay condition
+      //recursively flip triangles from the point until they satisfy the Delaunay condition
       hullTri[i] = this._legalize(t + 2);
-      hullTri[e] = t; // keep track of boundary triangles on the hull
+      hullTri[e] = t; //keep track of boundary triangles on the hull
       hullSize++;
 
-      // walk forward through the hull, adding more triangles and flipping recursively
+      //walk forward through the hull, adding more triangles and flipping recursively
       let n = hullNext[e];
       while(((q = hullNext[n]), orient(x, y, coords[2 * n], coords[2 * n + 1], coords[2 * q], coords[2 * q + 1]))) {
         t = this._addTriangle(n, i, q, hullTri[i], -1, hullTri[n]);
         hullTri[i] = this._legalize(t + 2);
-        hullNext[n] = n; // mark as removed
+        hullNext[n] = n; //mark as removed
         hullSize--;
         n = q;
       }
 
-      // walk backward from the other side, adding more triangles and flipping
+      //walk backward from the other side, adding more triangles and flipping
       if(e === start) {
         while(((q = hullPrev[e]), orient(x, y, coords[2 * q], coords[2 * q + 1], coords[2 * e], coords[2 * e + 1]))) {
           t = this._addTriangle(q, i, e, -1, hullTri[e], hullTri[q]);
           this._legalize(t + 2);
           hullTri[q] = t;
-          hullNext[e] = e; // mark as removed
+          hullNext[e] = e; //mark as removed
           hullSize--;
           e = q;
         }
       }
 
-      // update the hull indices
+      //update the hull indices
       this._hullStart = hullPrev[i] = e;
       hullNext[e] = hullPrev[n] = i;
       hullNext[i] = n;
 
-      // save the two new edges in the hash table
+      //save the two new edges in the hash table
       hullHash[this._hashKey(x, y)] = i;
       hullHash[this._hashKey(coords[2 * e], coords[2 * e + 1])] = e;
     }
@@ -249,7 +249,7 @@ export default class Delaunator {
       e = hullNext[e];
     }
 
-    // trim typed triangle mesh arrays
+    //trim typed triangle mesh arrays
     this.triangles = this._triangles.subarray(0, this.trianglesLen);
     this.halfedges = this._halfedges.subarray(0, this.trianglesLen);
   }
@@ -264,7 +264,7 @@ export default class Delaunator {
     let i = 0;
     let ar = 0;
 
-    // recursion eliminated with a fixed-size stack
+    //recursion eliminated with a fixed-size stack
     while(true) {
       const b = halfedges[a];
 
@@ -287,7 +287,7 @@ export default class Delaunator {
       ar = a0 + ((a + 2) % 3);
 
       if(b === -1) {
-        // convex hull edge
+        //convex hull edge
         if(i === 0) break;
         a = EDGE_STACK[--i];
         continue;
@@ -310,7 +310,7 @@ export default class Delaunator {
 
         const hbl = halfedges[bl];
 
-        // edge swapped on the other side of the hull (rare); fix the halfedge reference
+        //edge swapped on the other side of the hull (rare); fix the halfedge reference
         if(hbl === -1) {
           let e = this._hullStart;
           do {
@@ -327,7 +327,7 @@ export default class Delaunator {
 
         const br = b0 + ((b + 1) % 3);
 
-        // don't worry about hitting the cap: it can only happen on extremely degenerate input
+        //don't worry about hitting the cap: it can only happen on extremely degenerate input
         if(i < EDGE_STACK.length) {
           EDGE_STACK[i++] = br;
         }
@@ -345,7 +345,7 @@ export default class Delaunator {
     if(b !== -1) this._halfedges[b] = a;
   }
 
-  // add a new triangle given vertex indices and adjacent half-edge ids
+  //add a new triangle given vertex indices and adjacent half-edge ids
   _addTriangle(i0, i1, i2, a, b, c) {
     const t = this.trianglesLen;
 
@@ -363,10 +363,10 @@ export default class Delaunator {
   }
 }
 
-// monotonically increases with real angle, but doesn't need expensive trigonometry
+//monotonically increases with real angle, but doesn't need expensive trigonometry
 function pseudoAngle(dx, dy) {
   const p = dx / (Math.abs(dx) + Math.abs(dy));
-  return (dy > 0 ? 3 - p : 1 + p) / 4; // [0..1]
+  return (dy > 0 ? 3 - p : 1 + p) / 4; //[0..1]
 }
 
 function dist(ax, ay, bx, by) {
@@ -375,14 +375,14 @@ function dist(ax, ay, bx, by) {
   return dx * dx + dy * dy;
 }
 
-// return 2d orientation sign if we're confident in it through J. Shewchuk's error bound check
+//return 2d orientation sign if we're confident in it through J. Shewchuk's error bound check
 function orientIfSure(px, py, rx, ry, qx, qy) {
   const l = (ry - py) * (qx - px);
   const r = (rx - px) * (qy - py);
   return Math.abs(l - r) >= 3.3306690738754716e-16 * Math.abs(l + r) ? l - r : 0;
 }
 
-// a more robust orientation test that's stable in a given triangle (to fix robustness issues)
+//a more robust orientation test that's stable in a given triangle (to fix robustness issues)
 function orient(rx, ry, qx, qy, px, py) {
   return (orientIfSure(px, py, rx, ry, qx, qy) || orientIfSure(rx, ry, qx, qy, px, py) || orientIfSure(qx, qy, px, py, rx, ry)) < 0;
 }

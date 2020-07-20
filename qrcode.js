@@ -1311,7 +1311,7 @@ var QRCode;
    *    height : 128
    * });
    *
-   * oQRCode.clear(); // Clear the QRCode.
+   * oQRCode.clear();  //Clear the QRCode.
    * oQRCode.makeCode("http://map.naver.com"); // Re-create the QRCode.
    *
    * @param {HTMLElement|String} el target element or 'id' attribute of element.

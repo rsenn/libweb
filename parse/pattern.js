@@ -20,11 +20,11 @@ export function Pattern(patterns, shift, match) {
   } else if(lexIsToken('REGEXP', r)) {
     //str = str.substring(1, str.length - 1);
     let { length } = str;
-    //    str = str.replace(/([-.+*^()]|\[|\]|\?)/g, '\\$1');
+    //str = str.replace(/([-.+*^()]|\[|\]|\?)/g, '\\$1');
     let re = new RegExp(str);
     ret.re = re;
     ret.str = str;
-    //    return re;
+    //return re;
   }
   ret.type = tok;
   if(patterns.length && lexMatch('PUNCTUATION', ch => ch === '+' || ch === '*' || ch === '?', patterns[0])) repeat = shift().str;

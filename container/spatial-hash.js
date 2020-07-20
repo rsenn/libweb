@@ -84,7 +84,7 @@ export class SpatialHash {
     var bounds = getBounds(range),
       cellSize = this.cellSize;
 
-    // range might be larger than the hash's size itself
+    //range might be larger than the hash's size itself
     var x1 = Math.max(~~((bounds.left - this.range.x) / this.cellSize), 0);
     var x2 = Math.min(~~((bounds.right - this.range.x) / this.cellSize), this.horizontalCells - 1);
     var y1 = Math.max(~~((bounds.top - this.range.y) / this.cellSize), 0);

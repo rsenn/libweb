@@ -1,18 +1,18 @@
 /* http://Github.com/Canop/hu.js */
 
-// A simple SVG library by denys.seguret@gmail.com
+//A simple SVG library by denys.seguret@gmail.com
 var hu = (function() {
   'use strict';
   var document = global.window ? global.window.document : null;
   var window = global.window ? global.window : null;
 
-  var nn = 1, // counter for dynamically generated def id
+  var nn = 1, //counter for dynamically generated def id
     U = function(n) {
       this.n = n;
     },
     fn = U.prototype,
     nopx = {
-      // css properties which don't need a unit
+      //css properties which don't need a unit
       'column-count': 1,
       'fill-opacity': 1,
       'flex-grow': 1,
@@ -30,14 +30,14 @@ var hu = (function() {
       if(m) {
         var n = document.createElementNS('http://www.w3.org/2000/svg', m[1]);
         if(/^svg$/i.test(n.tagName)) {
-          // hack to force Firefox to see the dimension of the element
+          //hack to force Firefox to see the dimension of the element
           obj('<rect', n).attr({ width: '100%', height: '100%', opacity: 0 });
         }
         return n;
       }
       return (c || document).querySelector(a);
     }
-    return a[0] || a; // to support jQuery elements and nodelists
+    return a[0] || a; //to support jQuery elements and nodelists
   }
 
   var obj = function(a, c) {
@@ -48,9 +48,9 @@ var hu = (function() {
     if(c && !a.parentNode) c.appendChild(a);
     return new U(a);
   };
-  obj.fn = fn; // so that obj can be easily extended
+  obj.fn = fn; //so that obj can be easily extended
 
-  // reverse camel case : "strokeOpacity" -> "stroke-opacity"
+  //reverse camel case : "strokeOpacity" -> "stroke-opacity"
   function rcc(n) {
     return n.replace(/[A-Z]/g, function(l) {
       return '-' + l.toLowerCase();
@@ -74,8 +74,8 @@ var hu = (function() {
     window = d;
   };
 
-  // removes the graphical nodes, not the defs
-  // (to remove everything, just call the standard DOM functions)
+  //removes the graphical nodes, not the defs
+  //(to remove everything, just call the standard DOM functions)
   fn.empty = function() {
     for(var l = this.n.childNodes, i = l.length; i--; ) {
       if(!/^defs$/i.test(l[i].tagName)) this.n.removeChild(l[i]);
@@ -92,8 +92,8 @@ var hu = (function() {
     return this;
   };
 
-  // stores the passed element in the closest SVG parent of this
-  //  and gives it an automatic id.
+  //stores the passed element in the closest SVG parent of this
+  //and gives it an automatic id.
   fn.def = function(a) {
     var u = obj(a),
       p = this;
@@ -121,8 +121,8 @@ var hu = (function() {
   };
 
   fn.width = function(v) {
-    // window.getComputedStyle is the only thing that seems to work on FF when
-    // there are nested svg elements
+    //window.getComputedStyle is the only thing that seems to work on FF when
+    //there are nested svg elements
     if(v === undefined) return this.n.getBBox().width || parseInt(window.getComputedStyle(this.n).width);
     return this.attrnv('width', v);
   };
@@ -131,7 +131,7 @@ var hu = (function() {
     return this.attrnv('height', v);
   };
 
-  // css name value
+  //css name value
   fn.cssnv = function(name, value) {
     name = rcc(name);
     if(value === undefined) return this.n.style[name];
@@ -146,7 +146,7 @@ var hu = (function() {
     return this;
   };
 
-  // attr name value
+  //attr name value
   fn.attrnv = function(name, value) {
     name = rcc(name);
     if(value === undefined) return this.n.getAttributeNS(null, name);
@@ -180,31 +180,31 @@ var hu = (function() {
     return this;
   };
 
-  // dst is a map containing the destination css or attribute keys and values
+  //dst is a map containing the destination css or attribute keys and values
   fn.animate = function(dst, duration, cb) {
     var u = this,
       vars = [];
-    // the goal of this iteration is to build an array of objects for the
-    // animable properties, with
-    //  - v.k : the key
-    //  - v.f : the function used to set the style or attribute (fn.css or
-    //  fn.attr)
-    //  - v.s : the start value
-    //  - v.e  : the end value
+    //the goal of this iteration is to build an array of objects for the
+    //animable properties, with
+    //- v.k : the key
+    //- v.f : the function used to set the style or attribute (fn.css or
+    //fn.attr)
+    //- v.s : the start value
+    //- v.e  : the end value
     for(var k in dst) {
       var dstk = dst[k];
       k = rcc(k);
       var v = { k: k, e: dstk },
         sk = this.n.style[k];
       if(sk !== undefined && sk !== '') {
-        // 0 or "0" would be ok
+        //0 or "0" would be ok
         v.f = fn.css;
         v.s = parseFloat(sk);
       } else {
         v.f = fn.attr;
         var d = this.n[k] || this.attr(k);
         if(d) {
-          v.s = parseFloat(d.baseVal ? d.baseVal.value : d); // you have a baseval for example in SVGAnimatedLength
+          v.s = parseFloat(d.baseVal ? d.baseVal.value : d); //you have a baseval for example in SVGAnimatedLength
         } else {
           v.s = 0;
         }

@@ -90,7 +90,7 @@ const _unset = (pointer, subject, cursor) => {
   } else if(Array.isArray(subject)) {
     return subject.filter((_, ndx) => ndx != pointer[0]);
   } else if(typeof subject === 'object' && subject !== null) {
-    // eslint-disable-next-line no-unused-vars
+    //eslint-disable-next-line no-unused-vars
     const { [pointer[0]]: _, ...result } = subject;
     return result;
   } else {

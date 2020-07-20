@@ -13,12 +13,12 @@ export function Matrix(arg) {
     ret[4] = arg.yy;
     ret[5] = arg.y0;
   } else if(isObj && arg.a !== undefined && arg.b !== undefined && arg.c !== undefined && arg.d !== undefined && arg.e !== undefined && arg.f !== undefined) {
-    ret[0] = arg.a; // xx
-    ret[1] = arg.c; // xy
-    ret[2] = arg.e; // x0
-    ret[3] = arg.b; // yx
-    ret[4] = arg.d; // yy
-    ret[5] = arg.f; // y0
+    ret[0] = arg.a; //xx
+    ret[1] = arg.c; //xy
+    ret[2] = arg.e; //x0
+    ret[3] = arg.b; //yx
+    ret[4] = arg.d; //yy
+    ret[5] = arg.f; //y0
   } else if(arg instanceof Array) {
     Matrix.prototype.init.call(ret, arg);
   } else if(typeof arg === 'number') {
@@ -112,7 +112,7 @@ const MatrixProps = (obj = {}) =>
 
 Object.defineProperties(Matrix.prototype, MatrixProps());
 
-// prettier-ignore
+//prettier-ignore
 /*Object.defineProperties(Matrix.prototype, {
   xx: {get: function() { return this[0]; }, set: function(v) {this[0] = v; }, enumerable: true },
   xy: {get: function() { return this[1]; }, set: function(v) {this[1] = v; }, enumerable: true },

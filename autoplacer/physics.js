@@ -1,7 +1,7 @@
 (function(global) {
-  // { constants
+  //{ constants
 
-  // }
+  //}
 
   var physics = (global.physics = {});
 

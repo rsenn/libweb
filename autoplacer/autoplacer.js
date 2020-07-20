@@ -52,7 +52,7 @@ export function Autoplacer(opts) {
 }
 
 Autoplacer.prototype.init = function(opts) {
-  // deep cloning array of arrays;
+  //deep cloning array of arrays;
   var b = (this.bodies_ = opts.bodies.slice(0)),
     i,
     len = b.length,
@@ -120,11 +120,11 @@ Autoplacer.prototype.next = function() {
     b = bb[i];
     s = ss[i];
     vel = s.vel;
-    pos = s.pos; // pos is variable, current poisition
-    fix = s.fix; // fix is an initial (constant) position
-    prev = s.prev; // previous position;
+    pos = s.pos; //pos is variable, current poisition
+    fix = s.fix; //fix is an initial (constant) position
+    prev = s.prev; //previous position;
 
-    //  attraction force calculation;
+    //attraction force calculation;
     vset(d, fix);
     vdec(d, pos);
     vsetlen(d, hookelaw(vlen(d)));
@@ -133,7 +133,7 @@ Autoplacer.prototype.next = function() {
     //console.log("pos:", pos);
     //console.log(":", { f, d });
 
-    // repulsion force calculation
+    //repulsion force calculation
 
     for(j = 0; j < total; j++) {
       if(i === j) continue;
@@ -160,13 +160,13 @@ Autoplacer.prototype.next = function() {
     //console.log("step:", step);
 
     //console.log("vel:", vel);
-    //  adjust coordinates/velocities
+    //adjust coordinates/velocities
 
-    // vel = (vel + f*step)*damp;
+    //vel = (vel + f*step)*damp;
     vmul(vinc(vel, vmul(f, step)), damp);
 
     vset(prev, pos);
-    // pos = pos + vel*step
+    //pos = pos + vel*step
     vinc(pos, vmul(vset(d, vel), step));
     vinc(b, d);
 

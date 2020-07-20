@@ -157,18 +157,53 @@ HSLA.prototype.toString = function() {
   return `hsla(${h},${s}%,${l}%,${a})`;
 };
 
-HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [0, 1], rng = Math.random) {
-  return new HSLA(Util.randInt(h, rng), Util.randInt(s, rng), Util.randInt(l, rng), Util.randFloat(...a, rng));
+HSLA.fromString = str => {
+  let c = Util.tryCatch(
+    () => new RGBA(str),
+    c => (c.valid() ? c : null),
+    () => undefined
+  );
+  if(!c)
+    c = Util.tryCatch(
+      () => new HSLA(str),
+      c => (c.valid() ? c : null),
+      () => undefined
+    );
+  return c;
+};
+
+HSLA.prototype.valid = function() {
+  const { h, s, l, a } = this;
+  return [h, s, l, a].every(n => !isNaN(n) && typeof n == 'number');
+};
+HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [0, 1], rng = Util.rng) {
+  return new HSLA(Util.randInt(...h, rng), Util.randInt(...s, rng), Util.randInt(...l, rng), Util.randFloat(...a, rng));
 };
 HSLA.prototype.dump = function() {
-  console.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
+  //console.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
   return this;
+};
+HSLA.prototype.binaryValue = function() {
+  const { h, s, l, a } = this;
+  const byte = (() => {
+    const clamp = Util.clamp(0, 255);
+    return (val, range = 255) => clamp((val * 255) / range) % 256;
+  })();
+
+  return ((byte(h, 360) * 256 + byte(s)) * 256 + byte(l)) * 256 + byte(a, 1);
+  //console.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
+  return this;
+};
+
+HSLA.prototype.compareTo = function(other) {
+  let d = HSLA.prototype.binaryValue.call(other) - HSLA.prototype.binaryValue.call(this);
+  return d < 0 ? -1 : d > 0 ? 1 : 0;
 };
 
 HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
   const { h, s, l, a } = this;
   let arr = !isNaN(a) ? [h, s, l, a] : [h, s, l];
-  let ret = arr.map((n, i) => Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 3) + '' /*.padStart(3, ' ')*/).join(', ');
+  let ret = arr.map((n, i) => (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i == 0 ? 3 : i < 3 ? i + 3 : 1, ' ')).join(', ');
   const color = this.toRGBA().toAnsi256(true);
   let o = '';
   o += arr.map(n => `\x1b[0;33m${n}\x1b[0m`).join('');

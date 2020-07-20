@@ -1,10 +1,10 @@
 window.onload = function() {
-  // { constants
+  //{ constants
   var MAX_BODIES = 15;
   var MAX_SIZE = [90, 90];
   var MIN_SIZE = [20, 20];
-  var MARGIN = 50; // margin from canvas boundary
-  // }
+  var MARGIN = 50; //margin from canvas boundary
+  //}
 
   var canvas = document.getElementById('scene');
   var SCENE_W = canvas.width;

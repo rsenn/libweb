@@ -1,11 +1,11 @@
 import Util from '../util.js';
 
-// Module constants
+//Module constants
 const CMP = Symbol('insort.CMP');
 const ORDER = Symbol('insort.ORDER');
 const CMP_DEFAULT = (a, b) => String(a).localeCompare(b);
 
-// Binary search
+//Binary search
 let floor = Math.floor;
 function bisect(arr, cmp, val) {
   let lo = 0;

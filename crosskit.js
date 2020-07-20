@@ -41,13 +41,13 @@
  *
  *    var cvs = document.getElementById("myCanvas");
  *
- *    WebGL2D.enable(cvs); // adds "webgl-2d" to cvs
+ *    WebGL2D.enable(cvs);  //adds "webgl-2d" to cvs
  *
  *    cvs.getContext("webgl-2d");
  *
  */
 
-// Vector & Matrix libraries from CubicVR.js
+//Vector & Matrix libraries from CubicVR.js
 var M_PI = 3.1415926535897932384626433832795028841968;
 var M_TWO_PI = 2.0 * M_PI;
 var M_HALF_PI = M_PI / 2.0;
@@ -141,7 +141,7 @@ var mat3 = {
   }
 }; //mat3
 
-// Transform library from CubicVR.js
+//Transform library from CubicVR.js
 function Transform(mat) {
   return this.clearStack(mat);
 }
@@ -275,13 +275,13 @@ var WebGL2D = /*this.WebGL2D =*/ function WebGL2D(canvas, options) {
   this.shaderPool = [];
   this.maxTextureSize = undefined;
 
-  // Save a reference to the WebGL2D instance on the canvas object
+  //Save a reference to the WebGL2D instance on the canvas object
   canvas.gl2d = this;
 
-  // Store getContext function for later use
+  //Store getContext function for later use
   canvas.$getContext = canvas.getContext;
 
-  // Override getContext function with "webgl-2d" enabled version
+  //Override getContext function with "webgl-2d" enabled version
   canvas.getContext = (function(gl2d) {
     return function(context) {
       if((gl2d.options.force || context === 'webgl-2d') && !(canvas.width === 0 || canvas.height === 0)) {
@@ -294,23 +294,23 @@ var WebGL2D = /*this.WebGL2D =*/ function WebGL2D(canvas, options) {
         gl2d.initShaders();
         gl2d.initBuffers();
 
-        // Append Canvas2D API features to the WebGL context
+        //Append Canvas2D API features to the WebGL context
         gl2d.initCanvas2DAPI();
 
         gl.viewport(0, 0, gl2d.canvas.width, gl2d.canvas.height);
 
-        // Default white background
+        //Default white background
         gl.clearColor(1, 1, 1, 1);
-        gl.clear(gl.COLOR_BUFFER_BIT); // | gl.DEPTH_BUFFER_BIT);
+        gl.clear(gl.COLOR_BUFFER_BIT); //| gl.DEPTH_BUFFER_BIT);
 
-        // Disables writing to dest-alpha
+        //Disables writing to dest-alpha
         gl.colorMask(1, 1, 1, 0);
 
-        // Depth options
+        //Depth options
         //gl.enable(gl.DEPTH_TEST);
         //gl.depthFunc(gl.LEQUAL);
 
-        // Blending options
+        //Blending options
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
@@ -326,19 +326,19 @@ var WebGL2D = /*this.WebGL2D =*/ function WebGL2D(canvas, options) {
   this.postInit();
 };
 
-// Enables WebGL2D on your canvas
+//Enables WebGL2D on your canvas
 WebGL2D.enable = function(canvas, options) {
   return canvas.gl2d || new WebGL2D(canvas, options);
 };
 
-// Shader Pool BitMasks, i.e. sMask = (shaderMask.texture+shaderMask.stroke)
+//Shader Pool BitMasks, i.e. sMask = (shaderMask.texture+shaderMask.stroke)
 var shaderMask = {
   texture: 1,
   crop: 2,
   path: 4
 };
 
-// Fragment shader source
+//Fragment shader source
 WebGL2D.prototype.getFragmentShaderSource = function getFragmentShaderSource(sMask) {
   var fsSource = [
     '#ifdef GL_ES',
@@ -415,7 +415,7 @@ WebGL2D.prototype.getVertexShaderSource = function getVertexShaderSource(stackDe
   return vsSource;
 };
 
-// Initialize fragment and vertex shaders
+//Initialize fragment and vertex shaders
 WebGL2D.prototype.initShaders = function initShaders(transformStackDepth, sMask) {
   var gl = this.gl;
 
@@ -483,7 +483,7 @@ var rectVertexColorBuffer;
 var pathVertexPositionBuffer;
 var pathVertexColorBuffer;
 
-// 2D Vertices and Texture UV coords
+//2D Vertices and Texture UV coords
 var rectVerts = new Float32Array([0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0]);
 
 WebGL2D.prototype.initBuffers = function initBuffers() {
@@ -499,19 +499,19 @@ WebGL2D.prototype.initBuffers = function initBuffers() {
   gl.bufferData(gl.ARRAY_BUFFER, rectVerts, gl.STATIC_DRAW);
 };
 
-// Maintains an array of all WebGL2D instances
+//Maintains an array of all WebGL2D instances
 WebGL2D.instances = [];
 
 WebGL2D.prototype.postInit = function() {
   WebGL2D.instances.push(this);
 };
 
-// Extends gl context with Canvas2D API
+//Extends gl context with Canvas2D API
 WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   var gl2d = this,
     gl = this.gl;
 
-  // Rendering Canvas for text fonts
+  //Rendering Canvas for text fonts
   var textCanvas = document.createElement('canvas');
   textCanvas.width = gl2d.canvas.width;
   textCanvas.height = gl2d.canvas.height;
@@ -525,7 +525,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   function HSLAToRGBA(h, s, l, a) {
     var r, g, b, m1, m2;
 
-    // Clamp and Normalize values
+    //Clamp and Normalize values
     h = (((h % 360) + 360) % 360) / 360;
     s = s > 100 ? 1 : s / 100;
     s = s < 0 ? 0 : s;
@@ -558,7 +558,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     return [r, g, b, a];
   }
 
-  // Converts rgb(a) color string to gl color vector
+  //Converts rgb(a) color string to gl color vector
   function colorStringToVec4(value) {
     var result = [],
       match,
@@ -584,7 +584,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
           return false;
         }
 
-        // Clamp and normalize values
+        //Clamp and normalize values
         if(isPercent) {
           channel = channel > 100 ? 1 : channel / 100;
           channel = channel < 0 ? 0 : channel;
@@ -611,7 +611,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     } else if(value.toLowerCase() === 'transparent') {
       result = [0, 0, 0, 0];
     } else {
-      // Color keywords not yet implemented, ie "orange", return hot pink
+      //Color keywords not yet implemented, ie "orange", return hot pink
       return false;
     }
 
@@ -766,11 +766,11 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     yellowgreen: '#9acd32'
   };
 
-  // Maintain drawing state params during gl.save and gl.restore. see saveDrawState() and restoreDrawState()
+  //Maintain drawing state params during gl.save and gl.restore. see saveDrawState() and restoreDrawState()
   var drawState = {},
     drawStateStack = [];
 
-  // A fast simple shallow clone
+  //A fast simple shallow clone
   function cloneObject(obj) {
     var target = {};
     for(var i in obj) {
@@ -809,9 +809,9 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     }
   }
 
-  // WebGL requires colors as a vector while Canvas2D sets colors as an rgba string
-  // These getters and setters store the original rgba string as well as convert to a vector
-  drawState.fillStyle = [0, 0, 0, 1]; // default black
+  //WebGL requires colors as a vector while Canvas2D sets colors as an rgba string
+  //These getters and setters store the original rgba string as well as convert to a vector
+  drawState.fillStyle = [0, 0, 0, 1]; //default black
 
   Object.defineProperty(gl, 'fillStyle', {
     get: function() {
@@ -822,7 +822,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     }
   });
 
-  drawState.strokeStyle = [0, 0, 0, 1]; // default black
+  drawState.strokeStyle = [0, 0, 0, 1]; //default black
 
   Object.defineProperty(gl, 'strokeStyle', {
     get: function() {
@@ -833,8 +833,8 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     }
   });
 
-  // WebGL already has a lineWidth() function but Canvas2D requires a lineWidth property
-  // Store the original lineWidth() function for later use
+  //WebGL already has a lineWidth() function but Canvas2D requires a lineWidth property
+  //Store the original lineWidth() function for later use
   gl.$lineWidth = gl.lineWidth;
   drawState.lineWidth = 1.0;
 
@@ -848,7 +848,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     }
   });
 
-  // Currently unsupported attributes and their default values
+  //Currently unsupported attributes and their default values
   drawState.lineCap = 'butt';
 
   Object.defineProperty(gl, 'lineCap', {
@@ -960,7 +960,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     }
   });
 
-  // This attribute will need to control global alpha of objects drawn.
+  //This attribute will need to control global alpha of objects drawn.
   drawState.globalAlpha = 1.0;
 
   Object.defineProperty(gl, 'globalAlpha', {
@@ -972,7 +972,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     }
   });
 
-  // This attribute will need to set the gl.blendFunc mode
+  //This attribute will need to set the gl.blendFunc mode
   drawState.globalCompositeOperation = 'source-over';
 
   Object.defineProperty(gl, 'globalCompositeOperation', {
@@ -984,7 +984,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     }
   });
 
-  // Need a solution for drawing text that isnt stupid slow
+  //Need a solution for drawing text that isnt stupid slow
   gl.fillText = function fillText(text, x, y) {
     textCtx.clearRect(0, 0, gl2d.canvas.width, gl2d.canvas.height);
     textCtx.fillStyle = gl.fillStyle;
@@ -1126,27 +1126,27 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     this.verts = [x, y, 0, 0];
   }
 
-  // Empty the list of subpaths so that the context once again has zero subpaths
+  //Empty the list of subpaths so that the context once again has zero subpaths
   gl.beginPath = function beginPath() {
     subPaths.length = 0;
   };
 
-  // Mark last subpath as closed and create a new subpath with the same starting point as the previous subpath
+  //Mark last subpath as closed and create a new subpath with the same starting point as the previous subpath
   gl.closePath = function closePath() {
     if(subPaths.length) {
-      // Mark last subpath closed.
+      //Mark last subpath closed.
       var prevPath = subPaths[subPaths.length - 1],
         startX = prevPath.verts[0],
         startY = prevPath.verts[1];
       prevPath.closed = true;
 
-      // Create new subpath using the starting position of previous subpath
+      //Create new subpath using the starting position of previous subpath
       var newPath = new SubPath(startX, startY);
       subPaths.push(newPath);
     }
   };
 
-  // Create a new subpath with the specified point as its first (and only) point
+  //Create a new subpath with the specified point as its first (and only) point
   gl.moveTo = function moveTo(x, y) {
     subPaths.push(new SubPath(x, y));
   };
@@ -1155,7 +1155,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     if(subPaths.length) {
       subPaths[subPaths.length - 1].verts.push(x, y, 0, 0);
     } else {
-      // Create a new subpath if none currently exist
+      //Create a new subpath if none currently exist
       gl.moveTo(x, y);
     }
   };
@@ -1166,7 +1166,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
   gl.arcTo = function arcTo() {};
 
-  // Adds a closed rect subpath and creates a new subpath
+  //Adds a closed rect subpath and creates a new subpath
   gl.rect = function rect(x, y, w, h) {
     gl.moveTo(x, y);
     gl.lineTo(x + w, y);
@@ -1254,8 +1254,8 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     imageCache.push(image);
 
-    // we may wish to consider tiling large images like this instead of scaling and
-    // adjust appropriately (flip to next texture source and tile offset) when drawing
+    //we may wish to consider tiling large images like this instead of scaling and
+    //adjust appropriately (flip to next texture source and tile offset) when drawing
     if(image.width > gl2d.maxTextureSize || image.height > gl2d.maxTextureSize) {
       var canvas = document.createElement('canvas');
 
@@ -1275,7 +1275,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
-    // Enable Mip mapping on power-of-2 textures
+    //Enable Mip mapping on power-of-2 textures
     if(isPOT(image.width) && isPOT(image.height)) {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
       gl.generateMipmap(gl.TEXTURE_2D);
@@ -1283,7 +1283,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     }
 
-    // Unbind texture
+    //Unbind texture
     gl.bindTexture(gl.TEXTURE_2D, null);
   }
 

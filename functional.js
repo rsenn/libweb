@@ -96,7 +96,7 @@ export class Functional {
   }
 
   static _nary = (n, fn) => {
-    console.log('_nary', { n, fn });
+    //console.log('_nary', { n, fn });
 
     let ret = (n => {
       switch (n) {
@@ -332,7 +332,7 @@ export class Functional {
   static curry = f => {
     var n;
     n = this.arityof(f);
-    console.log('curry', { f, n });
+    //console.log('curry', { f, n });
     if(n < 2) {
       return f;
     } else if(n === 2) {

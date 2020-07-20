@@ -13,7 +13,7 @@ export class CompositeMap {
           this.data = copyMaps(entries.data, entries.keyLength, 0);
           break;
         case 'on-write':
-          // When using copy-on-write, map being copied must also use copy-on-write mode
+          //When using copy-on-write, map being copied must also use copy-on-write mode
           this.copiedSet = entries.copiedSet = new WeakSet();
           this.keyLength = entries.keyLength;
           this.data = entries.data;
@@ -105,13 +105,13 @@ export class CompositeMap {
     if(!map.has(key[lastKeyPos])) {
       return false;
     }
-    // Prune the tree
+    //Prune the tree
     let deletePoint = lastKeyPos;
     for(; deletePoint > 0; deletePoint--) {
       const map2 = maps[deletePoint];
       if(map2.size > 1) {
-        // Every map has been checked that the corresponding key is present, so if there is only one
-        // element, it must belong to the key we are removing.
+        //Every map has been checked that the corresponding key is present, so if there is only one
+        //element, it must belong to the key we are removing.
         break;
       }
     }
@@ -169,7 +169,7 @@ export class CompositeMap {
     const lastLevel = this.keyLength - 1;
     let levelIterator = lastLevel ? this.data.entries() : this.data.keys();
     const levelIterators = [levelIterator];
-    // TODO: Is key reuse performant?
+    //TODO: Is key reuse performant?
     const key = [];
     const iterator = {
       [Symbol.iterator]() {
@@ -233,7 +233,7 @@ export class CompositeMap {
     const levelIterators = [levelIterator];
     const lastLevel = this.keyLength - 1;
     const key = [];
-    // TODO: Try using push/pop
+    //TODO: Try using push/pop
     const iterator = {
       [Symbol.iterator]() {
         return iterator;
@@ -289,7 +289,7 @@ export class CompositeMap {
   }
 }
 exports.CompositeMap = CompositeMap;
-// tslint:disable:variable-name
+//tslint:disable:variable-name
 exports.CompositeMap1 = CompositeMap;
 exports.CompositeMap2 = CompositeMap;
 exports.CompositeMap3 = CompositeMap;
@@ -299,7 +299,7 @@ exports.CompositeMap6 = CompositeMap;
 exports.CompositeMap7 = CompositeMap;
 exports.CompositeMap8 = CompositeMap;
 exports.CompositeMap9 = CompositeMap;
-// tslint:enable:variable-name
+//tslint:enable:variable-name
 function copyMap(map) {
   const newMap = new Map();
   map.forEach((value, key) => {

@@ -1,6 +1,6 @@
 var validKinds = ['N', 'E', 'A', 'D'];
 
-// nodejs compatible on server side and in the browser.
+//nodejs compatible on server side and in the browser.
 function inherits(ctor, superCtor) {
   ctor.super_ = superCtor;
   ctor.prototype = Object.create(superCtor.prototype, {
@@ -97,7 +97,7 @@ function realTypeOf(subject) {
   return 'object';
 }
 
-// http://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/
+//http://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/
 function hashThisString(string) {
   var hash = 0;
   if(string.length === 0) {
@@ -106,20 +106,20 @@ function hashThisString(string) {
   for(var i = 0; i < string.length; i++) {
     var char = string.charCodeAt(i);
     hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32bit integer
+    hash = hash & hash; //Convert to 32bit integer
   }
   return hash;
 }
 
-// Gets a hash of the given object in an array order-independent fashion
-// also object key order independent (easier since they can be alphabetized)
+//Gets a hash of the given object in an array order-independent fashion
+//also object key order independent (easier since they can be alphabetized)
 function getOrderIndependentHash(object) {
   var accum = 0;
   var type = realTypeOf(object);
 
   if(type === 'array') {
     object.forEach(function(item) {
-      // Addition is commutative so this is order indep
+      //Addition is commutative so this is order indep
       accum += getOrderIndependentHash(item);
     });
 
@@ -138,7 +138,7 @@ function getOrderIndependentHash(object) {
     return accum;
   }
 
-  // Non object, non array...should be good?
+  //Non object, non array...should be good?
   var stringToHash = '[ type: ' + type + ' ; value: ' + object + ']';
   return accum + hashThisString(stringToHash);
 }
@@ -168,7 +168,7 @@ function deepDiff(lhs, rhs, changes, prefilter, path, key, stack, orderIndepende
     currentPath.push(key);
   }
 
-  // Use string comparison for regexes
+  //Use string comparison for regexes
   if(realTypeOf(lhs) === 'regexp' && realTypeOf(rhs) === 'regexp') {
     lhs = lhs.toString();
     rhs = rhs.toString();
@@ -199,7 +199,7 @@ function deepDiff(lhs, rhs, changes, prefilter, path, key, stack, orderIndepende
     if(!other) {
       stack.push({ lhs: lhs, rhs: rhs });
       if(Array.isArray(lhs)) {
-        // If order doesn't matter, we need to sort our arrays
+        //If order doesn't matter, we need to sort our arrays
         if(orderIndependent) {
           lhs.sort(function(a, b) {
             return getOrderIndependentHash(a) - getOrderIndependentHash(b);
@@ -242,7 +242,7 @@ function deepDiff(lhs, rhs, changes, prefilter, path, key, stack, orderIndepende
       }
       stack.length = stack.length - 1;
     } else if(lhs !== rhs) {
-      // lhs is contains a cycle at this element and it differs from rhs
+      //lhs is contains a cycle at this element and it differs from rhs
       changes.push(new DiffEdit(currentPath, lhs, rhs));
     }
   } else if(lhs !== rhs) {
@@ -362,7 +362,7 @@ function applyChange(target, source, change) {
 
 function revertArrayChange(arr, index, change) {
   if(change.path && change.path.length) {
-    // the structure of the object at the index has changed...
+    //the structure of the object at the index has changed...
     var it = arr[index],
       i,
       u = change.path.length - 1;
@@ -384,7 +384,7 @@ function revertArrayChange(arr, index, change) {
         break;
     }
   } else {
-    // the array item is different...
+    //the array item is different...
     switch (change.kind) {
       case 'A':
         revertArrayChange(arr[index], change.index, change.item);
@@ -417,20 +417,20 @@ function revertChange(target, source, change) {
     }
     switch (change.kind) {
       case 'A':
-        // Array was modified...
-        // it will be an array...
+        //Array was modified...
+        //it will be an array...
         revertArrayChange(it[change.path[i]], change.index, change.item);
         break;
       case 'D':
-        // Item was deleted...
+        //Item was deleted...
         it[change.path[i]] = change.lhs;
         break;
       case 'E':
-        // Item was edited...
+        //Item was edited...
         it[change.path[i]] = change.lhs;
         break;
       case 'N':
-        // Item is new...
+        //Item is new...
         delete it[change.path[i]];
         break;
     }
@@ -489,13 +489,13 @@ Object.defineProperties(accumulateDiff, {
   }
 });
 
-// hackish...
+//hackish...
 accumulateDiff.DeepDiff = accumulateDiff;
-// ...but works with:
-// import DeepDiff from 'deep-diff'
-// import { DeepDiff } from 'deep-diff'
-// const DeepDiff = require('deep-diff');
-// const { DeepDiff } = require('deep-diff');
+//...but works with:
+//import DeepDiff from 'deep-diff'
+//import { DeepDiff } from 'deep-diff'
+//const DeepDiff = require('deep-diff');
+//const { DeepDiff } = require('deep-diff');
 
 export const DeepDiff = accumulateDiff;
 export default accumulateDiff;

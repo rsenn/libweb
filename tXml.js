@@ -1,7 +1,7 @@
-// ==ClosureCompiler==
-// @output_file_name default.js
-// @compilation_level SIMPLE_OPTIMIZATIONS
-// ==/ClosureCompiler==
+//==ClosureCompiler==
+//@output_file_name default.js
+//@compilation_level SIMPLE_OPTIMIZATIONS
+//==/ClosureCompiler==
 
 /**
  * @author: Tobias Nickel
@@ -67,7 +67,7 @@ function tXml(S, options) {
               pos = S.length;
             }
           } else {
-            // doctypesupport
+            //doctypesupport
             pos += 2;
             while(S.charCodeAt(pos) !== closeBracketCC && S[pos]) {
               pos++;
@@ -120,13 +120,13 @@ function tXml(S, options) {
     const attributes = {};
     let children = [];
 
-    // parsing attributes
+    //parsing attributes
     while(S.charCodeAt(pos) !== closeBracketCC && S[pos]) {
       var c = S.charCodeAt(pos);
       if((c > 64 && c < 91) || (c > 96 && c < 123)) {
         //if('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(S[pos])!==-1 ){
         var name = parseName();
-        // search beginning of the string
+        //search beginning of the string
         var code = S.charCodeAt(pos);
         while(code && code !== singleQuoteCC && code !== doubleQuoteCC && !((code > 64 && code < 91) || (code > 96 && code < 123)) && code !== closeBracketCC) {
           pos++;
@@ -149,7 +149,7 @@ function tXml(S, options) {
       }
       pos++;
     }
-    // optional parsing of children
+    //optional parsing of children
     if(S.charCodeAt(pos - 1) !== slashCC) {
       if(tagName == 'script') {
         var start = pos + 1;
@@ -245,7 +245,7 @@ tXml.simplify = function simplify(children) {
   if(children.length === 1 && typeof children[0] == 'string') {
     return children[0];
   }
-  // map each object
+  //map each object
   children.forEach(function(child) {
     if(typeof child !== 'object') {
       return;
@@ -411,7 +411,7 @@ tXml.parseStream = function(stream, offset) {
 };
 
 tXml.transformStream = function(offset) {
-  // require through here, so it will not get added to webpack/browserify
+  //require through here, so it will not get added to webpack/browserify
   const through2 = require('through2');
   if(typeof offset === 'string') {
     offset = offset.length + 2;
@@ -478,4 +478,4 @@ var start2= new Date().getTime();
 var o2 = p.parseFromString(s2,'text/html').querySelector('#content')
 var end2=new Date().getTime();
 console.log("MILLISECONDS",end2-start2);
-// */
+ //*/

@@ -7,8 +7,8 @@ function log(source, msg) {
       echo = true;
     case 'recursion':
       echo = true;
-    // case 'alternation': echo = true;
-    // case 'exception': echo = true;
+    //case 'alternation': echo = true;
+    //case 'exception': echo = true;
     case 'ParseState':
       echo = true;
     case 'ParseNode':
@@ -23,7 +23,7 @@ function log(source, msg) {
   if(echo) console.log(dots + source + ': ' + msg);
 }
 
-// Class ParseNode
+//Class ParseNode
 
 ParseNode.prototype.value = function() {
   return buffer.substring(this.start, this.end);
@@ -63,7 +63,7 @@ function ParseNode(type, buffer, start, end) {
   log('ParseNode', this.type + ' start=' + this.start + ' end=' + this.end + ' value=.' + this.value() + '.');
 }
 
-// Class ParseState
+//Class ParseState
 
 ParseState.prototype.charAt = function(offset) {
   return buffer.charAt(this.offset + offset);
@@ -123,7 +123,7 @@ ParseState.prototype.checkComment = function() {
 };
 
 ParseState.prototype.nextToken = function() {
-  // skip any combination of comments and whitespace
+  //skip any combination of comments and whitespace
   var n = 0,
     wn,
     cn;
@@ -151,7 +151,7 @@ function ParseState(rule, buffer, offset, lineNumber) {
   log('ParseState', 'rule=' + this.rule + ' start=' + this.start + ' offset=' + this.offset + ' lineNumber=' + this.lineNumber + ' text=' + buffer.substring(this.offset, this.offset + 20).replace(/(?:\r\n|\r|\n)/g, '\\n'));
 }
 
-// Class Parser
+//Class Parser
 
 Parser.prototype.pushFrame = function(rule) {
   var sstate = null;
@@ -165,7 +165,7 @@ Parser.prototype.pushFrame = function(rule) {
   }
 
   if(recursion > 1) {
-    // allow one, deny more than one
+    //allow one, deny more than one
     log('recursion', 'infinte recursion detected at rule=' + rule + ' offset=' + sstate.offset);
     return null;
   }
@@ -189,7 +189,7 @@ Parser.prototype.popFrame = function(rule, pnode) {
   }
 };
 
-// single character parsing - return 0/1
+//single character parsing - return 0/1
 
 Parser.prototype.parseLetter = function() {
   var c = this.state.current;
@@ -240,7 +240,7 @@ Parser.prototype.parseCharacter = function() {
   return 0;
 };
 
-// multiple character parsing - return node or null
+//multiple character parsing - return node or null
 
 Parser.prototype.parseIdentifier = function() {
   var rule = 'identifier';
@@ -275,7 +275,7 @@ Parser.prototype.parseTerminal = function() {
     }
 
     if(left_quote != pstate.current) {
-      return null; // unterminated terminal
+      return null; //unterminated terminal
     } else {
       pstate.advance(1);
       terminal = pstate.parseNode('terminal');

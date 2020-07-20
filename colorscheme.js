@@ -52,11 +52,11 @@ export class ColorScheme {
       let color = new RGBA(node.cnode.innerHTML);
       let knode = node.cnode.previousSibling;
       let hsla = new HSLA(Util.randInt(0, 360, rng), 100, 50, 1.0);
-      let rgba = hsla.toRGBA(); // new RGBA(Util.randInt(0, 1) * 255, Util.randInt(0, // 1) * 255, Util.randInt(0, 1) * 255, 255);
+      let rgba = hsla.toRGBA(); //new RGBA(Util.randInt(0, 1) * 255, Util.randInt(0, // 1) * 255, Util.randInt(0, 1) * 255, 255);
       const path = getPath(node.cnode).join('/');
       const newColor = /background|gutter/i.test(path) ? '#000' : RGBA.toHex(hsla.toRGBA()); /*.slice(0, 7)*/
       node.cnode.innerHTML = newColor;
-      // console.log(knode);
+      //console.log(knode);
       console.log(path + ': ', rgba, hsla);
     });
     const s = new XMLSerializer();
@@ -74,7 +74,7 @@ export class ColorScheme {
       })
       .then(res => console.log('result: ', res))
       .catch(err => console.error('error: ', err));
-    // clipboardCopy(text);
+    //clipboardCopy(text);
     return { xml, text };
   }
 }

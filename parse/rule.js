@@ -3,7 +3,7 @@ import Util from '../util.js';
 export class Rule {
   productions = [];
   fragment = false;
-  // grammar = null;
+  //grammar = null;
 
   constructor(grammar, fragment) {
     if(grammar) Util.define(this, { grammar });

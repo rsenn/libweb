@@ -42,7 +42,7 @@ class BaseProxyHandler {
     this.membrane = membrane;
   }
 
-  // Shared utility methods
+  //Shared utility methods
   wrapDescriptor(descriptor) {
     if(hasOwnProperty.call(descriptor, 'value')) {
       descriptor.value = this.wrapValue(descriptor.value);
@@ -61,9 +61,9 @@ class BaseProxyHandler {
 
   copyDescriptorIntoShadowTarget(shadowTarget, key) {
     const { originalTarget } = this;
-    // Note: a property might get defined multiple times in the shadowTarget
-    //       but it will always be compatible with the previous descriptor
-    //       to preserve the object invariants, which makes these lines safe.
+    //Note: a property might get defined multiple times in the shadowTarget
+    //but it will always be compatible with the previous descriptor
+    //to preserve the object invariants, which makes these lines safe.
     const originalDescriptor = getOwnPropertyDescriptor(originalTarget, key);
     if(!isUndefined(originalDescriptor)) {
       const wrappedDesc = this.wrapDescriptor(originalDescriptor);
@@ -86,7 +86,7 @@ class BaseProxyHandler {
     preventExtensions(shadowTarget);
   }
 
-  // Shared Traps
+  //Shared Traps
   apply(shadowTarget, thisArg, argArray) {
     /* No op */
   }
@@ -111,8 +111,8 @@ class BaseProxyHandler {
       membrane: { tagPropertyKey, valueObserved }
     } = this;
     valueObserved(originalTarget, key);
-    // since key is never going to be undefined, and tagPropertyKey might be undefined
-    // we can simply compare them as the second part of the condition.
+    //since key is never going to be undefined, and tagPropertyKey might be undefined
+    //we can simply compare them as the second part of the condition.
     return key in originalTarget || key === tagPropertyKey;
   }
 
@@ -121,9 +121,9 @@ class BaseProxyHandler {
       originalTarget,
       membrane: { tagPropertyKey }
     } = this;
-    // if the membrane tag key exists and it is not in the original target, we add it to the keys.
+    //if the membrane tag key exists and it is not in the original target, we add it to the keys.
     const keys = isUndefined(tagPropertyKey) || hasOwnProperty.call(originalTarget, tagPropertyKey) ? [] : [tagPropertyKey];
-    // small perf optimization using push instead of concat to avoid creating an extra array
+    //small perf optimization using push instead of concat to avoid creating an extra array
     ArrayPush.apply(keys, getOwnPropertyNames(originalTarget));
     ArrayPush.apply(keys, getOwnPropertySymbols(originalTarget));
     return keys;
@@ -131,9 +131,9 @@ class BaseProxyHandler {
 
   isExtensible(shadowTarget) {
     const { originalTarget } = this;
-    // optimization to avoid attempting to lock down the shadowTarget multiple times
+    //optimization to avoid attempting to lock down the shadowTarget multiple times
     if(!isExtensible(shadowTarget)) {
-      return false; // was already locked down
+      return false; //was already locked down
     }
 
     if(!isExtensible(originalTarget)) {
@@ -154,7 +154,7 @@ class BaseProxyHandler {
       originalTarget,
       membrane: { valueObserved, tagPropertyKey }
     } = this;
-    // keys looked up via getOwnPropertyDescriptor need to be reactive
+    //keys looked up via getOwnPropertyDescriptor need to be reactive
     valueObserved(originalTarget, key);
     let desc = getOwnPropertyDescriptor(originalTarget, key);
     if(isUndefined(desc)) {
@@ -162,21 +162,21 @@ class BaseProxyHandler {
         return undefined;
       }
 
-      // if the key is the membrane tag key, and is not in the original target,
-      // we produce a synthetic descriptor and install it on the shadow target
+      //if the key is the membrane tag key, and is not in the original target,
+      //we produce a synthetic descriptor and install it on the shadow target
       desc = { value: undefined, writable: false, configurable: false, enumerable: false };
       ObjectDefineProperty(shadowTarget, tagPropertyKey, desc);
       return desc;
     }
 
     if(desc.configurable === false) {
-      // updating the descriptor to non-configurable on the shadow
+      //updating the descriptor to non-configurable on the shadow
       this.copyDescriptorIntoShadowTarget(shadowTarget, key);
     }
 
-    // Note: by accessing the descriptor, the key is marked as observed
-    // but access to the value, setter or getter (if available) cannot observe
-    // mutations, just like regular methods, in which case we just do nothing.
+    //Note: by accessing the descriptor, the key is marked as observed
+    //but access to the value, setter or getter (if available) cannot observe
+    //mutations, just like regular methods, in which case we just do nothing.
     return this.wrapDescriptor(desc);
   }
 }
@@ -199,7 +199,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
 
     const handler = this;
     const get = function() {
-      // invoking the original getter with the original target
+      //invoking the original getter with the original target
       return handler.wrapValue(originalGet.call(unwrap(this)));
     };
     getterMap.set(originalGet, get);
@@ -214,7 +214,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
     }
 
     const set = function(v) {
-      // invoking the original setter with the original target
+      //invoking the original setter with the original target
       originalSet.call(unwrap(this), unwrap(v));
     };
     setterMap.set(originalSet, set);
@@ -224,7 +224,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
 
   unwrapDescriptor(descriptor) {
     if(hasOwnProperty.call(descriptor, 'value')) {
-      // dealing with a data descriptor
+      //dealing with a data descriptor
       descriptor.value = unwrap(descriptor.value);
     } else {
       const { set, get } = descriptor;
@@ -248,7 +248,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
 
     const handler = this;
     const get = function() {
-      // invoking the red getter with the proxy of this
+      //invoking the red getter with the proxy of this
       return unwrap(redGet.call(handler.wrapValue(this)));
     };
     getterMap.set(get, redGet);
@@ -264,7 +264,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
 
     const handler = this;
     const set = function(v) {
-      // invoking the red setter with the proxy of this
+      //invoking the red setter with the proxy of this
       redSet.call(handler.wrapValue(this), handler.wrapValue(v));
     };
     setterMap.set(set, redSet);
@@ -282,10 +282,10 @@ class ReactiveProxyHandler extends BaseProxyHandler {
       originalTarget[key] = value;
       valueMutated(originalTarget, key);
     } else if(key === 'length' && isArray(originalTarget)) {
-      // fix for issue #236: push will add the new index, and by the time length
-      // is updated, the internal length is already equal to the new length value
-      // therefore, the oldValue is equal to the value. This is the forking logic
-      // to support this use case.
+      //fix for issue #236: push will add the new index, and by the time length
+      //is updated, the internal length is already equal to the new length value
+      //therefore, the oldValue is equal to the value. This is the forking logic
+      //to support this use case.
       valueMutated(originalTarget, key);
     }
 
@@ -317,9 +317,9 @@ class ReactiveProxyHandler extends BaseProxyHandler {
     if(isExtensible(shadowTarget)) {
       const { originalTarget } = this;
       preventExtensions(originalTarget);
-      // if the originalTarget is a proxy itself, it might reject
-      // the preventExtension call, in which case we should not attempt to lock down
-      // the shadow target.
+      //if the originalTarget is a proxy itself, it might reject
+      //the preventExtension call, in which case we should not attempt to lock down
+      //the shadow target.
       if(isExtensible(originalTarget)) {
         return false;
       }
@@ -336,16 +336,16 @@ class ReactiveProxyHandler extends BaseProxyHandler {
       membrane: { valueMutated, tagPropertyKey }
     } = this;
     if(key === tagPropertyKey && !hasOwnProperty.call(originalTarget, key)) {
-      // To avoid leaking the membrane tag property into the original target, we must
-      // be sure that the original target doesn't have yet.
-      // NOTE: we do not return false here because Object.freeze and equivalent operations
-      // will attempt to set the descriptor to the same value, and expect no to throw. This
-      // is an small compromise for the sake of not having to diff the descriptors.
+      //To avoid leaking the membrane tag property into the original target, we must
+      //be sure that the original target doesn't have yet.
+      //NOTE: we do not return false here because Object.freeze and equivalent operations
+      //will attempt to set the descriptor to the same value, and expect no to throw. This
+      //is an small compromise for the sake of not having to diff the descriptors.
       return true;
     }
 
     ObjectDefineProperty(originalTarget, key, this.unwrapDescriptor(descriptor));
-    // intentionally testing if false since it could be undefined as well
+    //intentionally testing if false since it could be undefined as well
     if(descriptor.configurable === false) {
       this.copyDescriptorIntoShadowTarget(shadowTarget, key);
     }
@@ -371,7 +371,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
 
     const handler = this;
     const get = function() {
-      // invoking the original getter with the original target
+      //invoking the original getter with the original target
       return handler.wrapValue(originalGet.call(unwrap(this)));
     };
     getterMap$1.set(originalGet, get);
@@ -499,7 +499,7 @@ function extract(objectOrArray) {
 const formatter = {
   header: plainOrProxy => {
     const originalTarget = unwrap(plainOrProxy);
-    // if originalTarget is falsy or not unwrappable, exit
+    //if originalTarget is falsy or not unwrappable, exit
     if(!originalTarget || originalTarget === plainOrProxy) {
       return null;
     }
@@ -515,11 +515,11 @@ const formatter = {
   }
 };
 
-// Inspired from paulmillr/es6-shim
-// https://github.com/paulmillr/es6-shim/blob/master/es6-shim.js#L176-L185
+//Inspired from paulmillr/es6-shim
+//https://github.com/paulmillr/es6-shim/blob/master/es6-shim.js#L176-L185
 function getGlobal() {
-  // the only reliable means to get the global object is `Function('return this')()`
-  // However, this causes CSP violations in Chrome apps.
+  //the only reliable means to get the global object is `Function('return this')()`
+  //However, this causes CSP violations in Chrome apps.
   if(typeof globalThis !== 'undefined') {
     return globalThis;
   }
@@ -536,7 +536,7 @@ function getGlobal() {
     return global;
   }
 
-  // Gracefully degrade if not able to locate the global object
+  //Gracefully degrade if not able to locate the global object
   return {};
 }
 
@@ -547,15 +547,15 @@ function init() {
       process => process.env.NODE_ENV === 'production'
     )
   ) {
-    // this method should never leak to prod
+    //this method should never leak to prod
     throw new ReferenceError();
   }
 
   const global = getGlobal();
-  // Custom Formatter for Dev Tools. To enable this, open Chrome Dev Tools
-  //  - Go to Settings,
-  //  - Under console, select "Enable custom formatters"
-  // For more information, https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview
+  //Custom Formatter for Dev Tools. To enable this, open Chrome Dev Tools
+  //- Go to Settings,
+  //- Under console, select "Enable custom formatters"
+  //For more information, https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview
   const devtoolsFormatters = global.devtoolsFormatters || [];
   ArrayPush.call(devtoolsFormatters, formatter);
   global.devtoolsFormatters = devtoolsFormatters;
@@ -572,12 +572,12 @@ if(
 
 const ObjectDotPrototype = Object.prototype;
 function defaultValueIsObservable(value) {
-  // intentionally checking for null
+  //intentionally checking for null
   if(value === null) {
     return false;
   }
 
-  // treat all non-object types, including undefined, as non-observable values
+  //treat all non-object types, including undefined, as non-observable values
   if(typeof value !== 'object') {
     return false;
   }
@@ -625,8 +625,8 @@ class ReactiveMembrane {
     const distorted = this.valueDistortion(unwrappedValue);
     if(this.valueIsObservable(distorted)) {
       const o = this.getReactiveState(unwrappedValue, distorted);
-      // when trying to extract the writable version of a readonly
-      // we return the readonly.
+      //when trying to extract the writable version of a readonly
+      //we return the readonly.
       return o.readOnly === value ? value : o.reactive;
     }
 
@@ -658,7 +658,7 @@ class ReactiveMembrane {
     reactiveState = {
       get reactive() {
         const reactiveHandler = new ReactiveProxyHandler(membrane, distortedValue);
-        // caching the reactive proxy after the first time it is accessed
+        //caching the reactive proxy after the first time it is accessed
         const proxy = new Proxy(createShadowTarget(distortedValue), reactiveHandler);
         registerProxy(proxy, value);
         ObjectDefineProperty(this, 'reactive', { value: proxy });
@@ -667,7 +667,7 @@ class ReactiveMembrane {
       },
       get readOnly() {
         const readOnlyHandler = new ReadOnlyHandler(membrane, distortedValue);
-        // caching the readOnly proxy after the first time it is accessed
+        //caching the readOnly proxy after the first time it is accessed
         const proxy = new Proxy(createShadowTarget(distortedValue), readOnlyHandler);
         registerProxy(proxy, value);
         ObjectDefineProperty(this, 'readOnly', { value: proxy });

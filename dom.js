@@ -221,7 +221,7 @@ export default Object.assign(dom, {
   Rect,
   Renderer,
 
-  // Select,
+  //Select,
   Size,
   SVG,
   Timer,

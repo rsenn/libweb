@@ -42,7 +42,7 @@ export function splinePoints(points, options) {
       numSteps = Math.max(1, dist / segmentLength);
     }
     if(segmentLength) {
-      numSteps *= 100; // generate 10x more points than necessary
+      numSteps *= 100; //generate 10x more points than necessary
     }
     var step = 1 / numSteps;
     for(var t = 0; t < 1; t += step) {

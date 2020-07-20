@@ -1,7 +1,7 @@
-// Version of `hasOwnProperty` that doesn't conflict
+//Version of `hasOwnProperty` that doesn't conflict
 const hasOwnProperty = (obj, propKey) => Object.prototype.hasOwnProperty.call(obj, propKey);
 
-// Cache some values
+//Cache some values
 const nullObject = Object.create(null);
 const TypedArray = Object.getPrototypeOf(Int8Array);
 const nodeInspectCustom = Symbol.for('nodejs.util.inspect.custom');
@@ -16,7 +16,7 @@ export const extend = (_value, _extension = nullObject) => {
     throw new TypeError(`Extension must be an object, given ${extension}`);
   }
 
-  // Check if the given value is already a proxy with extension. If so, flatten.
+  //Check if the given value is already a proxy with extension. If so, flatten.
   if(typeof value === 'object' && value !== null && proxyKey in value) {
     const unproxied = value[proxyKey];
     value = unproxied.value;
@@ -26,8 +26,8 @@ export const extend = (_value, _extension = nullObject) => {
   let isString = false;
   let isNumber = false;
 
-  // Handle primitive values. Because a Proxy always behaves as an object, we cannot really transparently
-  // "simulate" a primitive. However, we use sensible equivalents where possible.
+  //Handle primitive values. Because a Proxy always behaves as an object, we cannot really transparently
+  //"simulate" a primitive. However, we use sensible equivalents where possible.
   const valueType = typeof value;
   let target = value;
   if(valueType === 'undefined') {
@@ -43,33 +43,33 @@ export const extend = (_value, _extension = nullObject) => {
   } else if(valueType === 'bigint') {
     throw new TypeError(`Cannot construct proxy from bigint, given ${value}`);
   } else if(valueType === 'boolean') {
-    // Note: we could use a boxed `Boolean`, but it would not be very useful because there's not much you can
-    // do with it. Boxed booleans (including `new Boolean(false)`) are treated as truthy in logic operations.
+    //Note: we could use a boxed `Boolean`, but it would not be very useful because there's not much you can
+    //do with it. Boxed booleans (including `new Boolean(false)`) are treated as truthy in logic operations.
     throw new TypeError(`Cannot construct proxy from boolean, given ${value}`);
   } else if(valueType === 'symbol') {
     throw new TypeError(`Cannot construct proxy from symbol, given ${value}`);
   } else if(valueType !== 'object' && valueType !== 'function') {
-    // Note: this shouldn't happen, unless there's a new type of primitive added to JS
+    //Note: this shouldn't happen, unless there's a new type of primitive added to JS
     throw new TypeError(`Cannot construct proxy, given value of unknown type ${valueType}`);
   }
 
-  // Some methods of built-in types cannot be proxied, i.e. they need to bound directly to the
-  // target. Because they explicitly check the type of `this` (e.g. `Date`), or because they need
-  // to access an internal slot of the target (e.g. `String.toString`).
-  // https://stackoverflow.com/questions/36394479/proxies-on-regexps-and-boxed-primitives
-  // https://stackoverflow.com/questions/47874488/proxy-on-a-date-object
-  // https://stackoverflow.com/questions/43927933/why-is-set-incompatible-with-proxy
+  //Some methods of built-in types cannot be proxied, i.e. they need to bound directly to the
+  //target. Because they explicitly check the type of `this` (e.g. `Date`), or because they need
+  //to access an internal slot of the target (e.g. `String.toString`).
+  //https://stackoverflow.com/questions/36394479/proxies-on-regexps-and-boxed-primitives
+  //https://stackoverflow.com/questions/47874488/proxy-on-a-date-object
+  //https://stackoverflow.com/questions/43927933/why-is-set-incompatible-with-proxy
   const usesInternalSlots = target instanceof String || target instanceof Number || target instanceof Boolean || target instanceof Date || target instanceof RegExp || target instanceof Map || target instanceof WeakMap || target instanceof Set || target instanceof WeakSet || target instanceof ArrayBuffer || target instanceof TypedArray;
 
   const handler = {
     has(target, propKey) {
       if(hasOwnProperty(extension, propKey)) {
-        // Note: use `hasOwnProperty` for the extension, rather than `in`, because we do not want to
-        // consider properties in the prototype chain as being part of the extension.
+        //Note: use `hasOwnProperty` for the extension, rather than `in`, because we do not want to
+        //consider properties in the prototype chain as being part of the extension.
         return true;
       }
 
-      // Implement `toJSON` for boxed primitives (otherwise `JSON.toString` will not work properly).
+      //Implement `toJSON` for boxed primitives (otherwise `JSON.toString` will not work properly).
       if(propKey === 'toJSON' && (isString || isNumber)) {
         return true;
       }
@@ -85,8 +85,8 @@ export const extend = (_value, _extension = nullObject) => {
     },
 
     get(target, propKey, receiver) {
-      // Backdoor to get the internal proxied data (value and extension).
-      // Note: use `value` here, not `target` (target is just an internal representation).
+      //Backdoor to get the internal proxied data (value and extension).
+      //Note: use `value` here, not `target` (target is just an internal representation).
       if(propKey === proxyKey) {
         return { value, extension };
       }
@@ -97,9 +97,9 @@ export const extend = (_value, _extension = nullObject) => {
       } else if(propKey in target) {
         targetProp = target[propKey];
 
-        // Note: any getter properties will receive the `target`, rather than the proxy as their `this`
-        // value. Thus, getters will not have access to the extension. If you really need this behavior,
-        // you can use the following. But it's not recommended, due to the impact on performance.
+        //Note: any getter properties will receive the `target`, rather than the proxy as their `this`
+        //value. Thus, getters will not have access to the extension. If you really need this behavior,
+        //you can use the following. But it's not recommended, due to the impact on performance.
         /*
                 if(hasOwnProperty(target, propKey)) {
                     const descriptor = Object.getOwnPropertyDescriptor(target, propKey);
@@ -109,9 +109,9 @@ export const extend = (_value, _extension = nullObject) => {
                 }
                 */
       } else {
-        // Fallback: property is present in neither the target nor the extension
+        //Fallback: property is present in neither the target nor the extension
 
-        // Implement `toJSON` for boxed primitives (otherwise `JSON.toString` will not work properly).
+        //Implement `toJSON` for boxed primitives (otherwise `JSON.toString` will not work properly).
         if(propKey === 'toJSON') {
           if(isString) {
             targetProp = target.toString.bind(target);
@@ -127,10 +127,10 @@ export const extend = (_value, _extension = nullObject) => {
 
       if(typeof targetProp === 'function') {
         if(usesInternalSlots) {
-          // Have `this` bound to the original target
+          //Have `this` bound to the original target
           return targetProp.bind(target);
         } else {
-          // Unbound (i.e. `this` can be bound to anything, usually will be the proxy object)
+          //Unbound (i.e. `this` can be bound to anything, usually will be the proxy object)
           return targetProp;
         }
       } else {
@@ -142,10 +142,10 @@ export const extend = (_value, _extension = nullObject) => {
   return new Proxy(target, handler);
 };
 
-// Whether the given value can be proxied
+//Whether the given value can be proxied
 export const isProxyable = value => {
   if(typeof value === 'object') {
-    // Also covers the case where `value === null`
+    //Also covers the case where `value === null`
     return true;
   } else if(typeof value === 'function') {
     return true;
@@ -158,12 +158,12 @@ export const isProxyable = value => {
   }
 };
 
-// Whether the given value is a proxy
+//Whether the given value is a proxy
 export const isProxy = value => {
   return typeof value === 'object' && value !== null && proxyKey in value;
 };
 
-// Unwrap the given proxy to access its internal data
+//Unwrap the given proxy to access its internal data
 export const unwrapProxy = proxy => {
   if(!isProxy(proxy)) {
     throw new TypeError(`Cannot unwrap input, expected a proxy, received: ${proxy}`);
@@ -172,11 +172,11 @@ export const unwrapProxy = proxy => {
   return proxy[proxyKey];
 };
 
-// Add some properties to `extend` as shorthand
+//Add some properties to `extend` as shorthand
 extend.is = isProxy;
 extend.unwrap = unwrapProxy;
 
-// Make formatting of proxies a little nicer
+//Make formatting of proxies a little nicer
 export const registerProxyFormatter = () => {
   if(typeof require === 'function') {
     const util = require('util');
@@ -186,7 +186,7 @@ export const registerProxyFormatter = () => {
     }
   }
 
-  // https://stackoverflow.com/questions/55733647/chrome-devtools-formatter-for-javascript-proxy
+  //https://stackoverflow.com/questions/55733647/chrome-devtools-formatter-for-javascript-proxy
   if(typeof window === 'object' && window !== null) {
     if(!Array.isArray(window.devtoolsFormatters)) {
       window.devtoolsFormatters = [];

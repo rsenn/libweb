@@ -38,7 +38,7 @@ const CHILDREN_SPACE = '';
 export class MutablePath extends Array {
   //'\u2b21', '\u274a', '\u229b', '\u273d', '\u20f0', '\u20f0', '\u272a', '\u262a',  '\u21f9', '\u29bf','\u25c7', '\u2b20', '\u267d', '\u267c', '\u267b', '\u2693','\u0fd6', '\u0fd5', '\u2620', '\u0e1e'
   static CHILDREN_GLYPH /* */ = '➟' /* '▻'*/ /*'∍'*/ /*'⬡'*/ /*'⊛'*/ /*'▸'*/;
-  //    '\u00bb'
+  //'\u00bb'
   static CHILDREN_FN = args => {
     for(let i = 0; i < args.length; i++) args[i] = (args[i] + '').replace(/children/g, this.CHILDREN_GLYPH);
     return '';
@@ -59,7 +59,7 @@ export class MutablePath extends Array {
     super(typeof p == 'number' ? p : 0);
 
     MutablePath.parse(p, this);
-    //   console.log('this:',this);
+    //console.log('this:',this);
 
     //console.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
   }
@@ -90,7 +90,7 @@ export class MutablePath extends Array {
           }
         }
 
-        // if(out[out.length - 1] !== part)
+        //if(out[out.length - 1] !== part)
         Array.prototype.push.call(out, part);
       }
     }
@@ -185,6 +185,12 @@ export class MutablePath extends Array {
 
   down(...args) {
     return this.concat(args);
+  }
+
+  bottom(obj) {
+    let r = [this.up(1), this.last];
+    if(obj) r[0] = r[0].apply(obj);
+    return r;
   }
 
   /**

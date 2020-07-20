@@ -1,19 +1,19 @@
 /**
  * An asynchronous WebSocket client.
  * @example
- * // Set up connection.
+ *  //Set up connection.
  * const webSocketClient = new WebSocketClient;
- * // Connect.
+ *  //Connect.
  * await webSocketClient.connect('ws://www.example.com/');
- * // Send is synchronous.
+ *  //Send is synchronous.
  * webSocketClient.send('Hello!');
- * // Receive is asynchronous.
+ *  //Receive is asynchronous.
  * console.log(await webSocketClient.receive());
- * // See if there are any more messages received.
+ *  //See if there are any more messages received.
  * if(webSocketClient.dataAvailable !== 0) {
  *     console.log(await webSocketClient.receive());
  * }
- * // Close the connection.
+ *  //Close the connection.
  * await webSocketClient.disconnect();
  */
 export class WebSocketClient {
@@ -90,11 +90,11 @@ export class WebSocketClient {
     }
 
     return new Promise((resolve, reject) => {
-      // It's okay to call resolve/reject multiple times in a promise.
+      //It's okay to call resolve/reject multiple times in a promise.
       var callbacks = {
         resolve: dummy => {
-          // Make sure this object always stays in the queue
-          // until callbacks.reject() (which is resolve) is called.
+          //Make sure this object always stays in the queue
+          //until callbacks.reject() (which is resolve) is called.
           this.receiveCallbacksQueue.push(callbacks);
         },
 
@@ -102,8 +102,8 @@ export class WebSocketClient {
       };
 
       this.receiveCallbacksQueue.push(callbacks);
-      // After this, we will imminently get a close event.
-      // Therefore, this promise will resolve.
+      //After this, we will imminently get a close event.
+      //Therefore, this promise will resolve.
       this.socket.close(code, reason);
     });
   }
@@ -118,8 +118,8 @@ export class WebSocketClient {
     return new Promise((resolve, reject) => {
       var handleMessage = event => {
         var messageEvent = event;
-        // The cast was necessary because Flow's libdef's don't contain
-        // a MessageEventListener definition.
+        //The cast was necessary because Flow's libdef's don't contain
+        //a MessageEventListener definition.
 
         if(this.receiveCallbacksQueue.length !== 0) {
           this.receiveCallbacksQueue.shift().resolve(messageEvent.data);
@@ -134,9 +134,9 @@ export class WebSocketClient {
         socket.addEventListener('close', event => {
           this.closeEvent = event;
 
-          // Whenever a close event fires, the socket is effectively dead.
-          // It's impossible for more messages to arrive.
-          // If there are any promises waiting for messages, reject them.
+          //Whenever a close event fires, the socket is effectively dead.
+          //It's impossible for more messages to arrive.
+          //If there are any promises waiting for messages, reject them.
           while(this.receiveCallbacksQueue.length !== 0) {
             this.receiveCallbacksQueue.shift().reject(this.closeEvent);
           }
@@ -159,7 +159,7 @@ export class WebSocketClient {
   }
 
   get connected() {
-    // Checking != null also checks against undefined.
+    //Checking != null also checks against undefined.
     return this.socket != null && this.socket.readyState === WebSocket.OPEN;
   }
   /**
@@ -176,7 +176,7 @@ export class WebSocketClient {
     }
   }
 }
-// Generate a Promise that listens only once for an event
+//Generate a Promise that listens only once for an event
 function oncePromise(emitter, event) {
   return new Promise(resolve => {
     var handler = (...args) => {

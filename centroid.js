@@ -1,5 +1,5 @@
-// Small utility that sum the results of a function f successively called
-// with the elements of an array taken two by two.
+//Small utility that sum the results of a function f successively called
+//with the elements of an array taken two by two.
 const pairwiseSumReduce = (array, f, init = 0) => {
   const n = array.length;
   return array.reduce((acc, p, i) => {
@@ -11,13 +11,13 @@ const pairwiseSumReduce = (array, f, init = 0) => {
 };
 
 function polygonCentroid(polygonPoints) {
-  // Calculate the area of the polygon.
+  //Calculate the area of the polygon.
   const area = pairwiseSumReduce(polygonPoints, (p1, p2) => p1.x * p2.y - p1.y * p2.x) / 2;
 
-  // Calculate the x coordinate of the centroid.
+  //Calculate the x coordinate of the centroid.
   const cx = pairwiseSumReduce(polygonPoints, (p1, p2) => (p1.x + p2.x) * (p1.x * p2.y - p1.y * p2.x)) / (6 * area);
 
-  // Calculate the y coordinate of the centroid.
+  //Calculate the y coordinate of the centroid.
   const cy = pairwiseSumReduce(polygonPoints, (p1, p2) => (p1.y + p2.y) * (p1.x * p2.y - p1.y * p2.x)) / (6 * area);
 
   return { x: cx, y: cy };

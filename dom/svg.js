@@ -44,7 +44,7 @@ export class SVG extends Element {
       setcss: (elem, css) => delegate.setattr(elem, 'style', css),
       ...delegate
     };
-    // if(size == null) size = new Size(Element.rect(parent));
+    //if(size == null) size = new Size(Element.rect(parent));
 
     const { width, height } = size || {};
     console.log('factory', { delegate, parent, size, arg });
@@ -84,7 +84,7 @@ export class SVG extends Element {
 
       let elem = create(tag, attr, this.root);
 
-children = children ? children : [];
+      children = children ? children : [];
 
       for(let child of children) {
         factory.apply({ ...delegate, root: elem }, child);
@@ -128,7 +128,7 @@ children = children ? children : [];
       rect = new Rect(line);
       rect = { x1: rect.x, y1: rect.y, x2: rect.x2, y2: rect.y2 };
     }
-    //    const { x1, y1, x2, y2 } = line;
+    //const { x1, y1, x2, y2 } = line;
 
     let grad = factory(type + '-gradient', { ...props, ...rect }, defs);
 
@@ -181,7 +181,7 @@ children = children ? children : [];
         props: a.reduce((acc, [name, value]) => (/#/.test(value) ? acc : { ...acc, [name]: value }), {})
       };
       yield value;
-      // console.log(value);
+      //console.log(value);
     }
   }
   static allColors(elem) {
@@ -250,7 +250,7 @@ children = children ? children : [];
         }
         let c = newColor(RGBA.fromString(a.color), index, a.color);
         if(typeof c != 'string') c = c.toString();
-        //   console.log('new color:', c);
+        //console.log('new color:', c);
 
         for(let [elem, prop] of a.elements) elem.setAttribute(prop, c);
 
@@ -291,7 +291,7 @@ children = children ? children : [];
       if(y == undefined) y = y0;
       const move = cmd.code.toLowerCase() == 'm';
       if(prev && !move) {
-        //              const swap = !Point.equals(prev, { x: x0, y: y0 });
+        //const swap = !Point.equals(prev, { x: x0, y: y0 });
 
         let line = new Line({ x: x0, y: y0 }, cmd);
         console.log('lineIterator', { i, code, x, y, x0, y0 }, line.toString());
@@ -392,7 +392,7 @@ children = children ? children : [];
     path.replace(segment, (_, command, args) => {
       var type = command.toLowerCase();
       args = parseValues(args);
-      // overloaded moveTo
+      //overloaded moveTo
       if(type == 'm' && args.length > 2) {
         data.cmd(...[command].concat(args.splice(0, 2)));
         type = 'l';

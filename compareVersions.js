@@ -84,11 +84,11 @@ compareVersions.validate = function(version) {
 };
 
 compareVersions.compare = function(v1, v2, operator) {
-  // Validate operator
+  //Validate operator
   validateOperator(operator);
 
-  // since result of compareVersions can only be -1 or 0 or 1
-  // a simple map can be used to replace switch
+  //since result of compareVersions can only be -1 or 0 or 1
+  //a simple map can be used to replace switch
   var res = compareVersions(v1, v2);
   return operatorResMap[operator].indexOf(res) > -1;
 };

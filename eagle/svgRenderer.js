@@ -23,7 +23,7 @@ export class EagleSVGRenderer {
     this.doc = doc;
     this.create = factory; //(tag, attrs, parent) => factory(tag, 'id' in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
 
-    // console.log('EagleSVGRenderer.constructor(', doc, factory, ')');
+    //console.log('EagleSVGRenderer.constructor(', doc, factory, ')');
     /* const { layers, elements, signals } = doc || {};
     this.elements = elements;
     this.signals = signals;

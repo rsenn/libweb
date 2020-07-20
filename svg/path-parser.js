@@ -150,7 +150,7 @@ function peg$parse(input, options) {
       for(var cmds = [], i = 0; i < data.length; i++) cmds = cmds.concat.apply(cmds, data[i]);
       var first = cmds[0];
       if(first && first.code == 'm') {
-        // Per spec, first moveto is never relative
+        //Per spec, first moveto is never relative
         delete first.relative;
         first.code = 'M';
       }
@@ -2167,8 +2167,8 @@ export const makeAbsolute = function makeSVGPathCommandsAbsolute(commands) {
     cmd.x0 = prevCmd.x;
     cmd.y0 = prevCmd.y;
     for(var a in attr) if(a in cmd) cmd[a] += cmd.relative ? cmd[attr[a]] : 0;
-    if(!('x' in cmd)) cmd.x = prevCmd.x; // V
-    if(!('y' in cmd)) cmd.y = prevCmd.y; // X
+    if(!('x' in cmd)) cmd.x = prevCmd.x; //V
+    if(!('y' in cmd)) cmd.y = prevCmd.y; //X
     cmd.relative = false;
     cmd.code = cmd.code.toUpperCase();
     if(cmd.command == 'closepath') {

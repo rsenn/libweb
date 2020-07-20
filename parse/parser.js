@@ -67,7 +67,7 @@ export class Parser {
       let unget = () => {
         value.unget();
         parser.tokens.splice(tokIndex, parser.tokens.length);
-        //   parser.token = parser.tokens[tokIndex - 1];
+        //parser.token = parser.tokens[tokIndex - 1];
       };
       parser.token = { tok, str };
       parser.tokens = add(parser.tokens, parser.token);
@@ -101,7 +101,7 @@ export class Parser {
   expect(id, s) {
     let r = this.match(id, s);
     const { token } = this;
-    // console.log('token:', token);
+    //console.log('token:', token);
 
     if(!r)
       throw new Error(

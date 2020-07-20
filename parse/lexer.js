@@ -9,9 +9,9 @@ const lexComment = lexer => {
       lexer.skip(2);
     } else {
       lexer.lexUntil(/\n$/);
-      //        lexer.skip(1);
+      //lexer.skip(1);
     }
-    //   console.log('s:', lexer.source.substring(lexer.start, lexer.pos));
+    //console.log('s:', lexer.source.substring(lexer.start, lexer.pos));
     return Lexer.tokens.COMMENT;
   }
 };
@@ -21,7 +21,7 @@ const lexPreProc = lexer => {
     lexer.start += s.indexOf('#');
     lexer.lexUntil(/\n$/);
 
-    //   console.log('s:', lexer.source.substring(lexer.start, lexer.pos));
+    //console.log('s:', lexer.source.substring(lexer.start, lexer.pos));
     return Lexer.tokens.PREPROC;
   }
 };
@@ -109,17 +109,17 @@ const lexIdentifier = lexer => {
 
     for(; (c = lexer.peek()); word += lexer.get()) {
       if(!/[0-9A-Za-z_]/.test(c)) break;
-      //  console.log("lexIdentifier: ", word);
+      //console.log("lexIdentifier: ", word);
     }
 
     if(/[^0-9A-Za-z_]$/.test(word)) lexer.pos--;
 
-    //      console.log("lexIdentifier: ", lexer.source[lexer.pos-1]);
+    //console.log("lexIdentifier: ", lexer.source[lexer.pos-1]);
 
     let s = lexer.source.substring(lexer.start, lexer.pos);
 
     let { start, pos, len } = lexer;
-    // console.log("lexIdentifier: ", {s,start,pos,len});
+    //console.log("lexIdentifier: ", {s,start,pos,len});
 
     return Lexer.tokens.IDENTIFIER;
   }
@@ -328,7 +328,7 @@ export class Lexer {
     let ret,
       c,
       tok = -1;
-    //    console.log('next:', this.start, this.pos,this.len, this.eof);
+    //console.log('next:', this.start, this.pos,this.len, this.eof);
 
     this.lexWhile(/[ \t\r\n]$/);
     this.start = this.pos;
@@ -356,7 +356,7 @@ export class Lexer {
     }
 
     if(tok == Lexer.tokens.COMMENT || tok == Lexer.tokens.PREPROC) {
-      //     console.log(`skip ${Lexer.tokenName(tok)}:`, this.str());
+      //console.log(`skip ${Lexer.tokenName(tok)}:`, this.str());
 
       return this.next();
     }

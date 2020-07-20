@@ -81,7 +81,7 @@ export class TokenList extends Array {
 
     if(Util.isArray(tokens)) for(let token of tokens) this.push(token);
 
-    //    Array.prototype.splice.call(this, this.length, this.length, ...tokens);
+    //Array.prototype.splice.call(this, this.length, this.length, ...tokens);
   }
 
   get [Symbol.isConcatSpreadable]() {

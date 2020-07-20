@@ -280,7 +280,7 @@ for(let name of [
   'sides',
   'dimension',
   'toString',
-  // 'toSource',
+  //'toSource',
   'toCSS',
   'sub',
   'diff',

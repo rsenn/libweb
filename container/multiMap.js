@@ -180,7 +180,7 @@ var safariNext;
 try {
   safariNext = new Function('iterator', 'makeIterator', 'var keysArray = []; for(var key of iterator){keysArray.push(key);} return makeIterator(keysArray).next;');
 } catch(error) {
-  // for of not implemented;
+  //for of not implemented;
 }
 
 function makeIterator(iterator) {
@@ -194,7 +194,7 @@ function makeIterator(iterator) {
     };
   }
 
-  // Only an issue in safari
+  //Only an issue in safari
   if(!iterator.next && safariNext) {
     iterator.next = safariNext(iterator, makeIterator);
   }

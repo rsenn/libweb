@@ -193,7 +193,7 @@ export class EagleElement extends EagleNode {
             fn = value => {
               const module = elem.chain['module'] || doc;
 
-              const part = module.parts[elem.attributes.part]; // get(e => e.tagName == 'part' && e.attributes['name']);
+              const part = module.parts[elem.attributes.part]; //get(e => e.tagName == 'part' && e.attributes['name']);
 
               if(key == 'part') return part;
               const library = doc.libraries[part.attributes.library];

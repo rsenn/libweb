@@ -16,14 +16,14 @@
 })(this, function() {
   'use strict';
 
-  // Slightly dubious tricks to cut down minimized file size
+  //Slightly dubious tricks to cut down minimized file size
   var noop = function() {};
   var undefinedType = 'undefined';
   var isIE = typeof window !== undefinedType && typeof window.navigator !== undefinedType && /Trident\/|MSIE /.test(window.navigator.userAgent);
 
   var logMethods = ['trace', 'debug', 'info', 'warn', 'error'];
 
-  // Cross-browser bind equivalent that works at least back to IE6
+  //Cross-browser bind equivalent that works at least back to IE6
   function bindMethod(obj, methodName) {
     var method = obj[methodName];
     if(typeof method.bind === 'function') {
@@ -32,7 +32,7 @@
       try {
         return Function.prototype.bind.call(method, obj);
       } catch(e) {
-        // Missing bind shim or IE8 + Modernizr, fallback to wrapping
+        //Missing bind shim or IE8 + Modernizr, fallback to wrapping
         return function() {
           return Function.prototype.apply.apply(method, [obj, arguments]);
         };
@@ -40,28 +40,28 @@
     }
   }
 
-  // Trace() doesn't print the message in IE, so for that case we need to wrap it
+  //Trace() doesn't print the message in IE, so for that case we need to wrap it
   function traceForIE() {
     if(console.log) {
       if(console.log.apply) {
         console.log.apply(console, arguments);
       } else {
-        // In old IE, native console methods themselves don't have apply().
+        //In old IE, native console methods themselves don't have apply().
         Function.prototype.apply.apply(console.log, [console, arguments]);
       }
     }
     if(console.trace) console.trace();
   }
 
-  // Build the best logging method possible for this env
-  // Wherever possible we want to bind, not wrap, to preserve stack traces
+  //Build the best logging method possible for this env
+  //Wherever possible we want to bind, not wrap, to preserve stack traces
   function realMethod(methodName) {
     if(methodName === 'debug') {
       methodName = 'log';
     }
 
     if(typeof console === undefinedType) {
-      return false; // No method possible, for now - fixed later by enableLoggingWhenConsoleArrives
+      return false; //No method possible, for now - fixed later by enableLoggingWhenConsoleArrives
     } else if(methodName === 'trace' && isIE) {
       return traceForIE;
     } else if(console[methodName] !== undefined) {
@@ -73,7 +73,7 @@
     }
   }
 
-  // These private functions always need `this` to be set properly
+  //These private functions always need `this` to be set properly
 
   function replaceLoggingMethods(level, loggerName) {
     /*jshint validthis:true */
@@ -82,12 +82,12 @@
       this[methodName] = i < level ? noop : this.methodFactory(methodName, level, loggerName);
     }
 
-    // Define log.log as an alias for log.debug
+    //Define log.log as an alias for log.debug
     this.log = this.debug;
   }
 
-  // In old IE versions, the console isn't present until you first open it.
-  // We build realMethod() replacements here that regenerate logging methods
+  //In old IE versions, the console isn't present until you first open it.
+  //We build realMethod() replacements here that regenerate logging methods
   function enableLoggingWhenConsoleArrives(methodName, level, loggerName) {
     return function() {
       if(typeof console !== undefinedType) {
@@ -97,8 +97,8 @@
     };
   }
 
-  // By default, we use closely bound real methods wherever possible, and
-  // otherwise we wait for a console to appear, and then try again.
+  //By default, we use closely bound real methods wherever possible, and
+  //otherwise we wait for a console to appear, and then try again.
   function defaultMethodFactory(methodName, level, loggerName) {
     /*jshint validthis:true */
     return realMethod(methodName) || enableLoggingWhenConsoleArrives.apply(this, arguments);
@@ -117,13 +117,13 @@
 
       if(typeof window === undefinedType) return;
 
-      // Use localStorage if available
+      //Use localStorage if available
       try {
         window.localStorage[storageKey] = levelName;
         return;
       } catch(ignore) {}
 
-      // Use session cookie as fallback
+      //Use session cookie as fallback
       try {
         window.document.cookie = encodeURIComponent(storageKey) + '=' + levelName + ';';
       } catch(ignore) {}
@@ -138,7 +138,7 @@
         storedLevel = window.localStorage[storageKey];
       } catch(ignore) {}
 
-      // Fallback to cookies if local storage gives us nothing
+      //Fallback to cookies if local storage gives us nothing
       if(typeof storedLevel === undefinedType) {
         try {
           var cookie = window.document.cookie;
@@ -149,7 +149,7 @@
         } catch(ignore) {}
       }
 
-      // If the stored level is not valid, treat it as if nothing was stored.
+      //If the stored level is not valid, treat it as if nothing was stored.
       if(self.levels[storedLevel] === undefined) {
         storedLevel = undefined;
       }
@@ -180,7 +180,7 @@
       if(typeof level === 'number' && level >= 0 && level <= self.levels.SILENT) {
         currentLevel = level;
         if(persist !== false) {
-          // defaults to true
+          //defaults to true
           persistLevelIfPossible(level);
         }
         replaceLoggingMethods.call(self, level, name);
@@ -206,7 +206,7 @@
       self.setLevel(self.levels.SILENT, persist);
     };
 
-    // Initialize with the right level
+    //Initialize with the right level
     var initialLevel = getPersistedLevel();
     if(initialLevel == null) {
       initialLevel = defaultLevel == null ? 'WARN' : defaultLevel;
@@ -235,7 +235,7 @@
     return logger;
   };
 
-  // Grab the current global log variable in case of overwrite
+  //Grab the current global log variable in case of overwrite
   var _log = typeof window !== undefinedType ? window.log : undefined;
   defaultLogger.noConflict = function() {
     if(typeof window !== undefinedType && window.log === defaultLogger) {

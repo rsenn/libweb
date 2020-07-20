@@ -181,7 +181,7 @@ export class SwipeTracker {
           if(inst.position == null) inst.position = new Point(pos.x, pos.y);
           else inst.position.set(pos);
 
-          // inst.position.add(inst.start);
+          //inst.position.add(inst.start);
 
           if(inst.start instanceof Point) {
             inst.delta = inst.position.diff(inst.start);
@@ -199,9 +199,9 @@ export class SwipeTracker {
 
             const { start, position, delta, quadrant } = inst;
             inst.active = true;
-            // console.log(`Swipe move: position=` + position, 'delta=' + delta,
-            // 'quadrant=' + quadrant); console.log('New event: ',
-            // inst.emitEvent(name).toSource());
+            //console.log(`Swipe move: position=` + position, 'delta=' + delta,
+            //'quadrant=' + quadrant); console.log('New event: ',
+            //inst.emitEvent(name).toSource());
           }
         },
         onSwipeEnd: function(pos, event) {

@@ -97,11 +97,11 @@ function getHookState(index, type) {
     options.__h(currentComponent, index, currentHook || type);
   }
 
-  currentHook = 0; // Largely inspired by:
-  // * https://github.com/michael-klein/funcy.js/blob/f6be73468e6ec46b0ff5aa3cc4c9baf72a29025a/src/hooks/core_hooks.mjs
-  // * https://github.com/michael-klein/funcy.js/blob/650beaa58c43c33a74820a3c98b3c7079cf2e333/src/renderer.mjs
-  // Other implementations to look at:
-  // * https://codesandbox.io/s/mnox05qp8
+  currentHook = 0; //Largely inspired by:
+  //* https://github.com/michael-klein/funcy.js/blob/f6be73468e6ec46b0ff5aa3cc4c9baf72a29025a/src/hooks/core_hooks.mjs
+  //* https://github.com/michael-klein/funcy.js/blob/650beaa58c43c33a74820a3c98b3c7079cf2e333/src/renderer.mjs
+  //Other implementations to look at:
+  //* https://codesandbox.io/s/mnox05qp8
 
   var hooks =
     currentComponent.__H ||
@@ -246,18 +246,18 @@ function useCallback(callback, args) {
  */
 
 function useContext(context) {
-  var provider = currentComponent.context[context.__c]; // We could skip this call here, but than we'd not call
-  // `options._hook`. We need to do that in order to make
-  // the devtools aware of this hook.
+  var provider = currentComponent.context[context.__c]; //We could skip this call here, but than we'd not call
+  //`options._hook`. We need to do that in order to make
+  //the devtools aware of this hook.
 
-  var state = getHookState(currentIndex++, 9); // The devtools needs access to the context object to
-  // be able to pull of the default value when no provider
-  // is present in the tree.
+  var state = getHookState(currentIndex++, 9); //The devtools needs access to the context object to
+  //be able to pull of the default value when no provider
+  //is present in the tree.
 
   state.__c = context;
   if(!provider) {
     return context.__;
-  } // This is probably not safe to convert to "!"
+  } //This is probably not safe to convert to "!"
 
   if(state.__ == null) {
     state.__ = true;
@@ -349,9 +349,9 @@ function afterNextFrame(callback) {
   if(HAS_RAF) {
     raf = requestAnimationFrame(done);
   }
-} // Note: if someone used options.debounceRendering = requestAnimationFrame,
-// then effects will ALWAYS run on the NEXT frame instead of the current one, incurring a ~16ms delay.
-// Perhaps this is not such a big deal.
+} //Note: if someone used options.debounceRendering = requestAnimationFrame,
+//then effects will ALWAYS run on the NEXT frame instead of the current one, incurring a ~16ms delay.
+//Perhaps this is not such a big deal.
 
 /**
  * Schedule afterPaintEffects flush after the browser paints

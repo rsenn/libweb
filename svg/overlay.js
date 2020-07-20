@@ -71,7 +71,7 @@ export class SvgOverlay extends React.Component {
   componentDidMount() {
     const ref = this.layerRef.current;
 
-    //    trkl.property(this.layerRef, 'current').subscribe(ref => {
+    //trkl.property(this.layerRef, 'current').subscribe(ref => {
     //console.log("layerRef: ", ref);
     var rect = Element.rect(ref);
     var svg = SVG.create(
@@ -102,7 +102,7 @@ export class SvgOverlay extends React.Component {
     if(typeof svgRef == 'function') svgRef({ svg, factory: f /*(name,props) => f(name,props, svg) */ });
     //console.log("SvgOverlay: ", { svg, rect });
 
-    //   this.createPaths();
+    //this.createPaths();
     //});
   }
 

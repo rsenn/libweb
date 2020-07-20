@@ -4,7 +4,7 @@ function isObject(obj) {
   return Object.prototype.toString.call(obj) === '[object Object]';
 }
 
-// TODO: '.' failures with custom obj props
+//TODO: '.' failures with custom obj props
 function computePath(p1, p2, delimiter) {
   if(!delimiter || delimiter === '.') {
     if(!p1) {
@@ -17,7 +17,7 @@ function computePath(p1, p2, delimiter) {
       return p2;
     }
 
-    // array
+    //array
     return p1 + '[' + p2 + ']';
   }
 }
@@ -73,7 +73,7 @@ function emulateArray(obj, update, dotPath) {
       }
 
       if(property in Array.prototype) {
-        // TODO: what about non-fns?
+        //TODO: what about non-fns?
         return function() {
           return Array.prototype[property].apply(obj, arguments);
         };
@@ -87,7 +87,7 @@ function emulateArray(obj, update, dotPath) {
 
         if(length !== value) {
           length = value;
-          // needed when deleting stuff (splice, shift, pop)
+          //needed when deleting stuff (splice, shift, pop)
           newPath = computePath(path, property);
           update(newPath, value);
         }
@@ -97,8 +97,8 @@ function emulateArray(obj, update, dotPath) {
         newPath = computePath(path, property, '[]');
       }
 
-      // when updating a value check if it's an obj / array, might need to
-      // proxy that set value
+      //when updating a value check if it's an obj / array, might need to
+      //proxy that set value
       updateValue(target, property, value, newPath, update);
 
       if(Number(property) >= length) {
@@ -120,9 +120,9 @@ function emulateArray(obj, update, dotPath) {
   });
 }
 
-// TODO: proxy array root?
-// TODO: implement __isProxy property?
-// https://github.com/ElliotNB/observable-slim/blob/master/observable-slim.js#L110
+//TODO: proxy array root?
+//TODO: implement __isProxy property?
+//https://github.com/ElliotNB/observable-slim/blob/master/observable-slim.js#L110
 function proxyObject(obj, update, dotPath) {
   subProxyObj(obj, update, dotPath);
 

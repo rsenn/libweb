@@ -153,7 +153,7 @@ export function Range(...args) {
 }
 
 Range.prototype = { ...Position.prototype, constructor: Range };
-//  new Position(0, 0, 0, undefined, false);
+//new Position(0, 0, 0, undefined, false);
 //Range.prototype.constructor = Range;
 
 Position.prototype[Symbol.toStringTag] = function() {
@@ -230,7 +230,7 @@ export class Lexer {
     this.accepted = '';
   }
 
-  // Skips over the pending input before this point
+  //Skips over the pending input before this point
   ignore() {
     //const { line, column } = this;
 
@@ -296,10 +296,10 @@ export class Lexer {
     return this.getRange(Math.min(this.pos + offset, this.pos), Math.max(this.pos + offset, this.pos));
   }
 
-  // Returns the next character in the source code
+  //Returns the next character in the source code
   peek(offset = 0) {
     if(this.pos + offset >= this.source.length) {
-      // null represents EOF
+      //null represents EOF
       return null;
     }
 
@@ -308,7 +308,7 @@ export class Lexer {
     return c;
   }
 
-  // Returns the next character in the source code and advance position
+  //Returns the next character in the source code and advance position
   next() {
     const c = this.peek();
     if(c !== null) {
@@ -320,7 +320,7 @@ export class Lexer {
       }
       this.pos++;
       //const { pos, line, column } = this;
-      // console.log("Lexer.next { ", { pos, line, column }, " }");
+      //console.log("Lexer.next { ", { pos, line, column }, " }");
     }
     this.c = c;
     return c;
@@ -347,7 +347,7 @@ export class Lexer {
 
     let diff = pos - this.start;
 
-    //  if(diff < 0) column += diff;
+    //if(diff < 0) column += diff;
 
     //column -= 1;
     //console.log("pos:", this.source.substring(pos, this.pos));
@@ -407,12 +407,12 @@ export class Lexer {
    * Various State Functions
    */
   lexIdentifier() {
-    // Keywords and reserved keywords will be a subset of the words that
-    // can be formed by identifier chars.
-    // Keep accumulating chars and check for keyword later.
+    //Keywords and reserved keywords will be a subset of the words that
+    //can be formed by identifier chars.
+    //Keep accumulating chars and check for keyword later.
     this.acceptRun(isIdentifierChar);
 
-    // Make sure identifier didn't start with a decimal digit
+    //Make sure identifier didn't start with a decimal digit
     const firstChar = this.source[this.start];
     if(isDecimalDigit(firstChar)) {
       throw this.error(`Invalid identifier: ${this.errorRange()}\n${this.currentLine()}`);
@@ -500,35 +500,35 @@ export class Lexer {
   lexNumber() {
     let validator = isDecimalDigit;
 
-    // If the first digit is 0, then need to first determine whether it's an
-    // octal number, or a hex number, or a decimal number.
+    //If the first digit is 0, then need to first determine whether it's an
+    //octal number, or a hex number, or a decimal number.
     if(this.accept(oneOf('0'))) {
-      // If number started with 0x or 0X, then it's a hex number.
+      //If number started with 0x or 0X, then it's a hex number.
       if(this.accept(oneOf('xX'))) {
         validator = isHexDigit;
 
-        // The hex number needs to at least be followed by some digit.
+        //The hex number needs to at least be followed by some digit.
         if(!this.accept(validator)) {
           throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
         }
       }
-      // If number starts with 0 followed by an octal digit, then it's an
-      // octal number.
+      //If number starts with 0 followed by an octal digit, then it's an
+      //octal number.
       else if(this.accept(isOctalDigit)) {
         validator = isOctalDigit;
       }
-      // If a 0 isn't a hex nor an octal number, then it's invalid.
+      //If a 0 isn't a hex nor an octal number, then it's invalid.
       else if(this.accept(isDecimalDigit)) {
         throw this.error(`Invalid number: ${this.errorRange()}`);
       }
     }
 
-    // Keep on consuming valid digits until it runs out
+    //Keep on consuming valid digits until it runs out
     this.acceptRun(validator);
 
     if(validator == isDecimalDigit) {
-      // A number could have a decimal in it, followed by a sequence of valid
-      // digits again.
+      //A number could have a decimal in it, followed by a sequence of valid
+      //digits again.
       if(this.accept(oneOf('.'))) {
         this.acceptRun(validator);
       }
@@ -542,9 +542,9 @@ export class Lexer {
       }
     }
 
-    // A number cannot be immediately followed by characters that could be used
-    // for identifiers or keywords. It also cannot be immediately followed by
-    // a string.
+    //A number cannot be immediately followed by characters that could be used
+    //for identifiers or keywords. It also cannot be immediately followed by
+    //a string.
     const c = this.peek();
     if(isIdentifierChar(c) || isQuoteChar(c) || oneOf('.eE')(c)) {
       throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
@@ -561,7 +561,7 @@ export class Lexer {
       prev = '';
     let slashes = 1;
     let validator = c => {
-      //   let last = word.substring(word.length - 1);
+      //let last = word.substring(word.length - 1);
       //console.log("i:" + i + " c:" + c + " prev: " + prev + " slashes: " + slashes);
       i++;
       if(slashes == 1 && c == ' ' && prev == '/') {
@@ -590,11 +590,11 @@ export class Lexer {
       //console.log("word: " + word + " lexText: " + this.getRange(this.start, this.pos));
     };
 
-    // if(this.accept(oneOf('/')))
+    //if(this.accept(oneOf('/')))
 
     if(this.acceptRun(validator) && slashes == 2) {
       print();
-      // this.backup();
+      //this.backup();
       this.addToken(Token.types.regexpLiteral);
       return this.lexText;
     }
@@ -606,14 +606,14 @@ export class Lexer {
   }
 
   lexPunctuator() {
-    // This loop will handle the situation when valid punctuators are next
-    // to each other. E.g. ![x];
+    //This loop will handle the situation when valid punctuators are next
+    //to each other. E.g. ![x];
     while(this.accept(isPunctuatorChar)) {
       let word = this.getRange(this.start, this.pos);
 
-      // Keep accumulating punctuator chars, and as soon as the accumulated
-      // word isn't a valid punctuator, we stop and backup to take the
-      // longest valid punctuator before continuing.
+      //Keep accumulating punctuator chars, and as soon as the accumulated
+      //word isn't a valid punctuator, we stop and backup to take the
+      //longest valid punctuator before continuing.
       if(word != '..' && !isPunctuator(word)) {
         this.backup();
         this.addToken(Token.types.punctuator);
@@ -621,15 +621,15 @@ export class Lexer {
       }
     }
 
-    // Handle the case when punctuator is by itself and not next to
-    // other punctuators.
+    //Handle the case when punctuator is by itself and not next to
+    //other punctuators.
     const word = this.getRange(this.start, this.pos);
     if(isPunctuator(word)) {
       this.addToken(Token.types.punctuator);
       return this.lexText;
     } else {
-      // This shouldn't ever happen, but throw an exception to make sure we
-      // catch it if it does.
+      //This shouldn't ever happen, but throw an exception to make sure we
+      //catch it if it does.
       throw this.error(`Invalid punctuator: ${word}`);
     }
   }
@@ -713,7 +713,7 @@ export class Lexer {
 
   lexQuote(quoteChar) {
     if(quoteChar === '`') {
-      // this.ignore();
+      //this.ignore();
       //console.log("inSubst", this.inSubst);
 
       return this.lexTemplate(this.inSubst);
@@ -723,16 +723,16 @@ export class Lexer {
       let c = '';
       let escapeEncountered = false;
       do {
-        // Keep consuming characters unless we encounter line
-        // terminator, \, or the quote char.
+        //Keep consuming characters unless we encounter line
+        //terminator, \, or the quote char.
         if(this.acceptRun(not(or(isLineTerminator, oneOf(`\\${quoteChar}`))))) {
           escapeEncountered = false;
         }
         prevChar = c;
         c = this.next();
         if(c === null) {
-          // If we reached EOF without the closing quote char, then this string is
-          // incomplete.
+          //If we reached EOF without the closing quote char, then this string is
+          //incomplete.
           throw this.error(`Illegal token: ${this.errorRange()}`);
         } else if(!escapeEncountered) {
           /*   if(quoteChar === "`") {
@@ -742,8 +742,8 @@ export class Lexer {
               c = this.next();
             }
           } else */ if(isLineTerminator(c) && quoteChar !== '`') {
-            // If we somehow reached EOL without encountering the
-            // ending quote char then this string is incomplete.
+            //If we somehow reached EOL without encountering the
+            //ending quote char then this string is incomplete.
             throw this.error(`Illegal token: ${this.errorRange()}`);
           } else if(c === quoteChar) {
             this.addToken(Token.types.stringLiteral);
@@ -759,8 +759,8 @@ export class Lexer {
   }
 
   lexSingleLineComment() {
-    // Single line comment is only terminated by a line terminator
-    // character and nothing else
+    //Single line comment is only terminated by a line terminator
+    //character and nothing else
     this.acceptRun(not(isLineTerminator));
     this.skipComment();
     return this.lexText;
@@ -768,7 +768,7 @@ export class Lexer {
 
   lexMultiLineComment() {
     do {
-      // Multi-line comment is terminated if we see * followed by /
+      //Multi-line comment is terminated if we see * followed by /
       const nextTwo = this.getRange(this.pos, this.pos + 2);
       if(nextTwo === '*/') {
         this.skip(2);
@@ -783,7 +783,7 @@ export class Lexer {
 
   lexText() {
     do {
-      // Examine the next 2 characters to see if we're encountering code comments
+      //Examine the next 2 characters to see if we're encountering code comments
       const nextTwo = this.getRange(this.pos, this.pos + 2);
       if(nextTwo === '//') {
         this.skip(2);
@@ -793,10 +793,10 @@ export class Lexer {
         return this.lexMultiLineComment;
       }
 
-      // Consume the next character and decide what to do
+      //Consume the next character and decide what to do
       const c = this.next();
       if(c === null) {
-        // EOF
+        //EOF
         return null;
       } else if(!this.noRegex && isRegExpChar(c)) {
         return this.lexRegExp;
@@ -873,7 +873,7 @@ function oneOf(str) {
   };
 }
 
-// Whitespace characters as specified by ES1
+//Whitespace characters as specified by ES1
 function isWhitespace(c) {
   if(c === '\u0009' || c === '\u000B' || c === '\u000C' || c === '\u0020') {
     return true;
@@ -966,7 +966,7 @@ function isKeyword(word) {
     case 4:
       switch (word) {
         case 'else':
-        // case 'this':
+        //case 'this':
         case 'void':
         case 'with':
         case 'case':
@@ -983,7 +983,7 @@ function isKeyword(word) {
         case 'catch':
         case 'class':
         case 'const':
-        //  case "super":
+        //case "super":
         case 'throw':
         case 'await':
         case 'yield':

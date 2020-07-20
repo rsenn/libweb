@@ -389,7 +389,7 @@ export default class devpane {
         border: '1px solid black',
         borderRadius: '0.5em',*/
         opacity: 1.0,
-        //   pointerEvents: "none",
+        //pointerEvents: "none",
         ...css
       }
     });
@@ -399,7 +399,7 @@ export default class devpane {
     return SVG.create(tag, attr, parent);
   }
   handleToggle(event, checked) {
-    //    const { currentTarget } = event;
+    //const { currentTarget } = event;
     if(checked === undefined) checked = this.open;
     const what = checked ? 'add' : 'remove';
     const fn = `${what}EventListener`;
@@ -470,7 +470,7 @@ export default class devpane {
       const value = t.options[key];
       if(t.inputs.en) t.inputs.en.value = value;
     };
-    //  t.chooser = <Select name='en_translations' options={options} onChange={t.handleChange} />;
+    //t.chooser = <Select name='en_translations' options={options} onChange={t.handleChange} />;
     t.layer = this.createLayer({ id: 'devpane-layer' });
     t.factory = Element.factory({ append_to: e => t.layer.appendChild(e) });
     t.renderer = new Renderer(t.chooser, t.factory('div'));
@@ -647,7 +647,7 @@ export default class devpane {
               let bbox = Element.rect(res);
               let css = Element.getCSS(res);
 
-              bbText.innerHTML = `${Rect.toSource(bbox)}\nfont-size: ${css.fontSize}`; // `x: ${bbox.x}\ny: ${bbox.y}\nw: ${bbox.width}\nh: ${bbox.height}`;
+              bbText.innerHTML = `${Rect.toSource(bbox)}\nfont-size: ${css.fontSize}`; //`x: ${bbox.x}\ny: ${bbox.y}\nw: ${bbox.width}\nh: ${bbox.height}`;
             }
             console.log('selectElement (resolved) = ', res);
 
@@ -713,7 +713,7 @@ export default class devpane {
       });
     }
 
-    //   this.writeLayer(`date: ${new Date().toJSON()}<br />cookie: ${document.cookie}`);
+    //this.writeLayer(`date: ${new Date().toJSON()}<br />cookie: ${document.cookie}`);
 
     return elm;
   }
@@ -823,12 +823,12 @@ export default class devpane {
       if(inside) accu.push(rect);
       return accu;
     }, []);
-    // rects = rects.filter(item => rect.boxes != null && rect.serial == serial);
+    //rects = rects.filter(item => rect.boxes != null && rect.serial == serial);
 
     rects.sort((a, b) => Rect.area(b) - Rect.area(a));
     rects = rects.filter(item => Rect.area(item) > 0);
 
-    // console.log("devp.mouseMove", { target, clientX, clientY, rects });
+    //console.log("devp.mouseMove", { target, clientX, clientY, rects });
     //this.log().innerHTML =target.outerHTML;
 
     //if(rects.length) console.log("rects: ", rects);
@@ -859,11 +859,11 @@ export default class devpane {
       padding: '2px',
       overflow: 'scroll'
     });
-    // prettier-ignore
+    //prettier-ignore
     selectedList.innerHTML = `<pre>${rects .map(({color, e}) => `<span style="color: ${color.toString()};">` + Element.xpath(e, document.body) + `</span>` ) .reverse() .join("\n")}${`</pre>`}`;
     if(rects[0]) {
       this.rect = rects[0];
-      // this.renderPaneLayer();
+      //this.renderPaneLayer();
     }
   }
 

@@ -1,15 +1,15 @@
-//     relation-manager
+//relation-manager
 //
-//     Copyright (c) 2016 Simon Y. Blackwell, AnyWhichWay
-//     MIT License - http://opensource.org/licenses/mit-license.php
+//Copyright (c) 2016 Simon Y. Blackwell, AnyWhichWay
+//MIT License - http://opensource.org/licenses/mit-license.php
 'use strict';
 
-// uppercases first letter in a string
+//uppercases first letter in a string
 function uFirst(s) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-// returns an Array specialized for managing Relations
+//returns an Array specialized for managing Relations
 function RelationManager(instance, subjectSpec, spec) {
   this.instance = instance;
   this.subjectSpec = subjectSpec;
@@ -76,12 +76,12 @@ function Relation() {
     subjectSpec = me.specs[0],
     added = false,
     key = subjectSpec.relation ? subjectSpec.relation : subjectSpec.property;
-  // if there is only one spec it must be symmetric
+  //if there is only one spec it must be symmetric
   if(me.specs.length === 1) {
     if(!(subject instanceof subjectSpec.class)) {
       throw new TypeError(key + ' is not instanceof ' + subjectSpec.class.name);
     }
-    // we must store values in an array
+    //we must store values in an array
     me[key] = [subject];
     objects.forEach(function(object) {
       me[key].push(object);
@@ -90,7 +90,7 @@ function Relation() {
     if(!(subject instanceof subjectSpec.class)) {
       throw new TypeError(key + ' is not instanceof ' + subjectSpec.class.name);
     }
-    // store each part of the relation in a different key
+    //store each part of the relation in a different key
     me[key] = subject;
     me.specs.slice(1).forEach(function(spec, i) {
       var key = spec.relation ? spec.relation : spec.property;
@@ -100,7 +100,7 @@ function Relation() {
       me[key] = objects[i];
     });
   }
-  // add the other side of the relations to the object
+  //add the other side of the relations to the object
   if(subjectSpec.cardinality > 1) {
     objects.forEach(function(object) {
       added = object[subjectSpec.property].add(subject);
@@ -113,25 +113,25 @@ function Relation() {
       }
     });
   }
-  // only save the relation instance if we actually had to add data, avoids duplicating symmetric relations
+  //only save the relation instance if we actually had to add data, avoids duplicating symmetric relations
   if(added) {
     this.instances.push(this);
   }
 }
 function addRelations(instance, specs) {
   function enhance(instance, subjectSpec, spec) {
-    // does class checking and sets reflecting relation for cardinality=1, used as second part of if ... else below
+    //does class checking and sets reflecting relation for cardinality=1, used as second part of if ... else below
     function set(subject) {
-      // stopping set when value already in place prevents infinite recursion
+      //stopping set when value already in place prevents infinite recursion
       if(set.value !== subject) {
         if(subject && !(subject instanceof subjectSpec.class)) {
           throw new TypeError(subjectSpec.property + '.add(object) ... object is not instanceof ' + subjectSpec.class.name);
         }
         var oldvalue = set.value;
         set.value = subject;
-        // special handling if setting to null, i.e. subject = null
+        //special handling if setting to null, i.e. subject = null
         if(!subject && oldvalue && oldvalue[spec.property] === instance) {
-          // set the reflecting property in oldvalue to null
+          //set the reflecting property in oldvalue to null
           oldvalue[spec.property] = null;
         } else if(subject && spec.cardinality === 1 && subject[spec.property] !== instance) {
           subject[spec.property] = instance;
@@ -141,7 +141,7 @@ function addRelations(instance, specs) {
       }
     }
     set.value = null;
-    // does class checking and sets reflecting relation for cardinality>1
+    //does class checking and sets reflecting relation for cardinality>1
     if(subjectSpec.cardinality > 1 && !Array.isArray(instance[subjectSpec.property])) {
       Object.defineProperty(instance, subjectSpec.property, { enumerable: subjectSpec.enumerable, configurable: true, writable: false, value: new RelationManager(instance, subjectSpec, spec) });
     } else if(!instance[subjectSpec.property]) {
@@ -201,17 +201,17 @@ Relation.define = function(scope) {
       sname = uFirst(s) + sname;
     }
     head = head ? (head += ',' + s) : s;
-    // make sure we are pointing to most current definition since they get updated as we go through loop
+    //make sure we are pointing to most current definition since they get updated as we go through loop
     spec.class = spec.class && scope[spec.class.name] ? scope[spec.class.name] : spec.class;
-    // default to Object if no class specified
+    //default to Object if no class specified
     spec.class = spec.class ? spec.class : Object;
     if(!spec.class.prototype.relations) {
-      // create a Proxy for the class participating in the relation so that it adds the relations
+      //create a Proxy for the class participating in the relation so that it adds the relations
       var cons = new Proxy(spec.class, {
         construct: function(target, argumentList) {
           var object = Object.create(target.prototype);
           target.prototype.constructor.call(object, ...argumentList);
-          // walk up the ptototype chaing to add relations defined at a higher level
+          //walk up the ptototype chaing to add relations defined at a higher level
           var proto = object;
           while(proto) {
             addRelations(object, proto.relations);
@@ -220,9 +220,9 @@ Relation.define = function(scope) {
           return object;
         }
       });
-      // save a version of the spec class in this closure scope
+      //save a version of the spec class in this closure scope
       var cls = spec.class;
-      // add ability to restore from one side of relations using from JSON
+      //add ability to restore from one side of relations using from JSON
       cons.fromJSON = function(object) {
         var instance = Object.create(cls);
         var proto = object;
@@ -231,9 +231,9 @@ Relation.define = function(scope) {
           proto = Object.getPrototypeOf(proto);
         }
         Object.keys(object).forEach(function(key) {
-          // if the property key is part of a relation spec and is an Array
+          //if the property key is part of a relation spec and is an Array
           if(subjectSpec.property[key] && subjectSpec.class && Array.isArray(object[key])) {
-            // loop through the items and restore them
+            //loop through the items and restore them
             object[key].forEach(function(item) {
               instance[key].add(subjectSpec.class.prototype.fromJSON(item));
             });
@@ -243,9 +243,9 @@ Relation.define = function(scope) {
         });
         return instance;
       };
-      // update the spec to refer to the Proxy
+      //update the spec to refer to the Proxy
       spec.class = cons;
-      // make the Proxy be the object exposed to the scope
+      //make the Proxy be the object exposed to the scope
       scope[spec.class.name] = cons;
     }
     spec.class.prototype.relations = spec.class.prototype.relations ? spec.class.prototype.relations : [];
@@ -256,6 +256,6 @@ Relation.define = function(scope) {
   if(specs.length === 1) {
     subjectSpec.class.prototype.relations.push({ subject: subjectSpec, object: subjectSpec });
   }
-  // define the actual Relation class
+  //define the actual Relation class
   return defineRelation(scope, name, sname, head, specs);
 };

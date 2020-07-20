@@ -5,7 +5,7 @@ const META = 1 << 1;
 const ALT = 1 << 2;
 const SHIFT = 1 << 3;
 
-// Key Events
+//Key Events
 export const KeyEvents = {
   DOWN: 1 << 0,
   PRESS: 1 << 1,
@@ -265,49 +265,49 @@ export class Keyboard {
     const includeKeyDown = events & KeyEvents.DOWN;
 
     if(includeKeyUp && didHaveMeta === true && willHaveMeta === false) {
-      // Release the meta key.
+      //Release the meta key.
       currentModifierState &= ~META;
       target.dispatchEvent(this.createEventFromKeystroke('keyup', new Keystroke(currentModifierState, this._actionKeyCodeMap.META), target));
     }
 
     if(includeKeyUp && didHaveCtrl === true && willHaveCtrl === false) {
-      // Release the ctrl key.
+      //Release the ctrl key.
       currentModifierState &= ~CTRL;
       target.dispatchEvent(this.createEventFromKeystroke('keyup', new Keystroke(currentModifierState, this._actionKeyCodeMap.CTRL), target));
     }
 
     if(includeKeyUp && didHaveShift === true && willHaveShift === false) {
-      // Release the shift key.
+      //Release the shift key.
       currentModifierState &= ~SHIFT;
       target.dispatchEvent(this.createEventFromKeystroke('keyup', new Keystroke(currentModifierState, this._actionKeyCodeMap.SHIFT), target));
     }
 
     if(includeKeyUp && didHaveAlt === true && willHaveAlt === false) {
-      // Release the alt key.
+      //Release the alt key.
       currentModifierState &= ~ALT;
       target.dispatchEvent(this.createEventFromKeystroke('keyup', new Keystroke(currentModifierState, this._actionKeyCodeMap.ALT), target));
     }
 
     if(includeKeyDown && didHaveMeta === false && willHaveMeta === true) {
-      // Press the meta key.
+      //Press the meta key.
       currentModifierState |= META;
       target.dispatchEvent(this.createEventFromKeystroke('keydown', new Keystroke(currentModifierState, this._actionKeyCodeMap.META), target));
     }
 
     if(includeKeyDown && didHaveCtrl === false && willHaveCtrl === true) {
-      // Press the ctrl key.
+      //Press the ctrl key.
       currentModifierState |= CTRL;
       target.dispatchEvent(this.createEventFromKeystroke('keydown', new Keystroke(currentModifierState, this._actionKeyCodeMap.CTRL), target));
     }
 
     if(includeKeyDown && didHaveShift === false && willHaveShift === true) {
-      // Press the shift key.
+      //Press the shift key.
       currentModifierState |= SHIFT;
       target.dispatchEvent(this.createEventFromKeystroke('keydown', new Keystroke(currentModifierState, this._actionKeyCodeMap.SHIFT), target));
     }
 
     if(includeKeyDown && didHaveAlt === false && willHaveAlt === true) {
-      // Press the alt key.
+      //Press the alt key.
       currentModifierState |= ALT;
       target.dispatchEvent(this.createEventFromKeystroke('keydown', new Keystroke(currentModifierState, this._actionKeyCodeMap.ALT), target));
     }
@@ -386,101 +386,101 @@ export class Keyboard {
 }
 
 const US_ENGLISH_CHARCODE_KEYCODE_MAP = {
-  32: new Keystroke(0, 32), // <space>
-  33: new Keystroke(SHIFT, 49), // !
-  34: new Keystroke(SHIFT, 222), // "
-  35: new Keystroke(SHIFT, 51), // #
-  36: new Keystroke(SHIFT, 52), // $
-  37: new Keystroke(SHIFT, 53), // %
-  38: new Keystroke(SHIFT, 55), // &
-  39: new Keystroke(0, 222), // '
-  40: new Keystroke(SHIFT, 57), // (
-  41: new Keystroke(SHIFT, 48), // )
-  42: new Keystroke(SHIFT, 56), // *
-  43: new Keystroke(SHIFT, 187), // +
-  44: new Keystroke(0, 188), // ,
-  45: new Keystroke(0, 189), // -
-  46: new Keystroke(0, 190), // .
-  47: new Keystroke(0, 191), // /
-  48: new Keystroke(0, 48), // 0
-  49: new Keystroke(0, 49), // 1
-  50: new Keystroke(0, 50), // 2
-  51: new Keystroke(0, 51), // 3
-  52: new Keystroke(0, 52), // 4
-  53: new Keystroke(0, 53), // 5
-  54: new Keystroke(0, 54), // 6
-  55: new Keystroke(0, 55), // 7
-  56: new Keystroke(0, 56), // 8
-  57: new Keystroke(0, 57), // 9
-  58: new Keystroke(SHIFT, 186), // :
-  59: new Keystroke(0, 186), // ;
-  60: new Keystroke(SHIFT, 188), // <
-  61: new Keystroke(0, 187), // =
-  62: new Keystroke(SHIFT, 190), // >
-  63: new Keystroke(SHIFT, 191), // ?
-  64: new Keystroke(SHIFT, 50), // @
-  65: new Keystroke(SHIFT, 65), // A
-  66: new Keystroke(SHIFT, 66), // B
-  67: new Keystroke(SHIFT, 67), // C
-  68: new Keystroke(SHIFT, 68), // D
-  69: new Keystroke(SHIFT, 69), // E
-  70: new Keystroke(SHIFT, 70), // F
-  71: new Keystroke(SHIFT, 71), // G
-  72: new Keystroke(SHIFT, 72), // H
-  73: new Keystroke(SHIFT, 73), // I
-  74: new Keystroke(SHIFT, 74), // J
-  75: new Keystroke(SHIFT, 75), // K
-  76: new Keystroke(SHIFT, 76), // L
-  77: new Keystroke(SHIFT, 77), // M
-  78: new Keystroke(SHIFT, 78), // N
-  79: new Keystroke(SHIFT, 79), // O
-  80: new Keystroke(SHIFT, 80), // P
-  81: new Keystroke(SHIFT, 81), // Q
-  82: new Keystroke(SHIFT, 82), // R
-  83: new Keystroke(SHIFT, 83), // S
-  84: new Keystroke(SHIFT, 84), // T
-  85: new Keystroke(SHIFT, 85), // U
-  86: new Keystroke(SHIFT, 86), // V
-  87: new Keystroke(SHIFT, 87), // W
-  88: new Keystroke(SHIFT, 88), // X
-  89: new Keystroke(SHIFT, 89), // Y
-  90: new Keystroke(SHIFT, 90), // Z
-  91: new Keystroke(0, 219), // [
-  92: new Keystroke(0, 220), // \
-  93: new Keystroke(0, 221), // ]
-  94: new Keystroke(SHIFT, 54), // ^
-  95: new Keystroke(SHIFT, 189), // _
-  96: new Keystroke(0, 192), // `
-  97: new Keystroke(0, 65), // a
-  98: new Keystroke(0, 66), // b
-  99: new Keystroke(0, 67), // c
-  100: new Keystroke(0, 68), // d
-  101: new Keystroke(0, 69), // e
-  102: new Keystroke(0, 70), // f
-  103: new Keystroke(0, 71), // g
-  104: new Keystroke(0, 72), // h
-  105: new Keystroke(0, 73), // i
-  106: new Keystroke(0, 74), // j
-  107: new Keystroke(0, 75), // k
-  108: new Keystroke(0, 76), // l
-  109: new Keystroke(0, 77), // m
-  110: new Keystroke(0, 78), // n
-  111: new Keystroke(0, 79), // o
-  112: new Keystroke(0, 80), // p
-  113: new Keystroke(0, 81), // q
-  114: new Keystroke(0, 82), // r
-  115: new Keystroke(0, 83), // s
-  116: new Keystroke(0, 84), // t
-  117: new Keystroke(0, 85), // u
-  118: new Keystroke(0, 86), // v
-  119: new Keystroke(0, 87), // w
-  120: new Keystroke(0, 88), // x
-  121: new Keystroke(0, 89), // y
-  122: new Keystroke(0, 90), // z
-  123: new Keystroke(SHIFT, 219), // {
-  124: new Keystroke(SHIFT, 220), // |
-  125: new Keystroke(SHIFT, 221), // }
-  126: new Keystroke(SHIFT, 192) // ~
+  32: new Keystroke(0, 32), //<space>
+  33: new Keystroke(SHIFT, 49), //!
+  34: new Keystroke(SHIFT, 222), //"
+  35: new Keystroke(SHIFT, 51), //#
+  36: new Keystroke(SHIFT, 52), //$
+  37: new Keystroke(SHIFT, 53), //%
+  38: new Keystroke(SHIFT, 55), //&
+  39: new Keystroke(0, 222), //'
+  40: new Keystroke(SHIFT, 57), //(
+  41: new Keystroke(SHIFT, 48), //)
+  42: new Keystroke(SHIFT, 56), //*
+  43: new Keystroke(SHIFT, 187), //+
+  44: new Keystroke(0, 188), //,
+  45: new Keystroke(0, 189), //-
+  46: new Keystroke(0, 190), //.
+  47: new Keystroke(0, 191), ///
+  48: new Keystroke(0, 48), //0
+  49: new Keystroke(0, 49), //1
+  50: new Keystroke(0, 50), //2
+  51: new Keystroke(0, 51), //3
+  52: new Keystroke(0, 52), //4
+  53: new Keystroke(0, 53), //5
+  54: new Keystroke(0, 54), //6
+  55: new Keystroke(0, 55), //7
+  56: new Keystroke(0, 56), //8
+  57: new Keystroke(0, 57), //9
+  58: new Keystroke(SHIFT, 186), //:
+  59: new Keystroke(0, 186), //;
+  60: new Keystroke(SHIFT, 188), //<
+  61: new Keystroke(0, 187), //=
+  62: new Keystroke(SHIFT, 190), //>
+  63: new Keystroke(SHIFT, 191), //?
+  64: new Keystroke(SHIFT, 50), //@
+  65: new Keystroke(SHIFT, 65), //A
+  66: new Keystroke(SHIFT, 66), //B
+  67: new Keystroke(SHIFT, 67), //C
+  68: new Keystroke(SHIFT, 68), //D
+  69: new Keystroke(SHIFT, 69), //E
+  70: new Keystroke(SHIFT, 70), //F
+  71: new Keystroke(SHIFT, 71), //G
+  72: new Keystroke(SHIFT, 72), //H
+  73: new Keystroke(SHIFT, 73), //I
+  74: new Keystroke(SHIFT, 74), //J
+  75: new Keystroke(SHIFT, 75), //K
+  76: new Keystroke(SHIFT, 76), //L
+  77: new Keystroke(SHIFT, 77), //M
+  78: new Keystroke(SHIFT, 78), //N
+  79: new Keystroke(SHIFT, 79), //O
+  80: new Keystroke(SHIFT, 80), //P
+  81: new Keystroke(SHIFT, 81), //Q
+  82: new Keystroke(SHIFT, 82), //R
+  83: new Keystroke(SHIFT, 83), //S
+  84: new Keystroke(SHIFT, 84), //T
+  85: new Keystroke(SHIFT, 85), //U
+  86: new Keystroke(SHIFT, 86), //V
+  87: new Keystroke(SHIFT, 87), //W
+  88: new Keystroke(SHIFT, 88), //X
+  89: new Keystroke(SHIFT, 89), //Y
+  90: new Keystroke(SHIFT, 90), //Z
+  91: new Keystroke(0, 219), //[
+  92: new Keystroke(0, 220), //\
+  93: new Keystroke(0, 221), //]
+  94: new Keystroke(SHIFT, 54), //^
+  95: new Keystroke(SHIFT, 189), //_
+  96: new Keystroke(0, 192), //`
+  97: new Keystroke(0, 65), //a
+  98: new Keystroke(0, 66), //b
+  99: new Keystroke(0, 67), //c
+  100: new Keystroke(0, 68), //d
+  101: new Keystroke(0, 69), //e
+  102: new Keystroke(0, 70), //f
+  103: new Keystroke(0, 71), //g
+  104: new Keystroke(0, 72), //h
+  105: new Keystroke(0, 73), //i
+  106: new Keystroke(0, 74), //j
+  107: new Keystroke(0, 75), //k
+  108: new Keystroke(0, 76), //l
+  109: new Keystroke(0, 77), //m
+  110: new Keystroke(0, 78), //n
+  111: new Keystroke(0, 79), //o
+  112: new Keystroke(0, 80), //p
+  113: new Keystroke(0, 81), //q
+  114: new Keystroke(0, 82), //r
+  115: new Keystroke(0, 83), //s
+  116: new Keystroke(0, 84), //t
+  117: new Keystroke(0, 85), //u
+  118: new Keystroke(0, 86), //v
+  119: new Keystroke(0, 87), //w
+  120: new Keystroke(0, 88), //x
+  121: new Keystroke(0, 89), //y
+  122: new Keystroke(0, 90), //z
+  123: new Keystroke(SHIFT, 219), //{
+  124: new Keystroke(SHIFT, 220), //|
+  125: new Keystroke(SHIFT, 221), //}
+  126: new Keystroke(SHIFT, 192) //~
 };
 
 const US_ENGLISH_ACTION_KEYCODE_MAP = {

@@ -1,4 +1,4 @@
-// Tie everything together
+//Tie everything together
 var run = async () => {
   var i = 0;
   var clicks = streamify('click', document.querySelector('body'));
@@ -15,14 +15,14 @@ var run = async () => {
   });
 };
 
-// Turn any event emitter into a stream
+//Turn any event emitter into a stream
 var streamify = async function*(event, element) {
   while(true) {
     yield await oncePromise(element, event);
   }
 };
 
-// Generate a Promise that listens only once for an event
+//Generate a Promise that listens only once for an event
 var oncePromise = (emitter, event) => {
   return new Promise(resolve => {
     var handler = (...args) => {
@@ -33,7 +33,7 @@ var oncePromise = (emitter, event) => {
   });
 };
 
-// Only pass along events that meet a condition
+//Only pass along events that meet a condition
 var filter = async function*(stream, test) {
   for await (var event of stream) {
     if(test(event)) {
@@ -42,14 +42,14 @@ var filter = async function*(stream, test) {
   }
 };
 
-// Transform every event of the stream
+//Transform every event of the stream
 var map = async function*(stream, transform) {
   for await (var event of stream) {
     yield transform(event);
   }
 };
 
-// Only pass along event if some time has passed since the last one
+//Only pass along event if some time has passed since the last one
 var throttle = async function*(stream, delay) {
   var lastTime;
   var thisTime;
@@ -64,7 +64,7 @@ var throttle = async function*(stream, delay) {
 
 var identity = e => e;
 
-// Only pass along events that differ from the last one
+//Only pass along events that differ from the last one
 var distinct = async function*(stream, extract = identity) {
   var lastVal;
   var thisVal;
@@ -77,7 +77,7 @@ var distinct = async function*(stream, extract = identity) {
   }
 };
 
-// Invoke a callback every time an event arrives
+//Invoke a callback every time an event arrives
 var subscribe = async (stream, callback) => {
   for await (var event of stream) {
     callback(event);

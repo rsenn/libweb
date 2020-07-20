@@ -7,7 +7,7 @@ export class Transformation {
 
   constructor(type) {
     Util.define(this, 'type', type);
-    //    this.type = type;
+    //this.type = type;
 
     return this;
   }
@@ -65,7 +65,7 @@ export class Transformation {
     let t;
     let unit;
 
-    //  console.log("fromString",{arg,argStr,args});
+    //console.log("fromString",{arg,argStr,args});
 
     args = args
       .filter(arg => /^[-+0-9.]+[a-z]*$/.test(arg))
@@ -151,7 +151,7 @@ export class Rotation extends Transformation {
     super('rotate');
 
     if(typeof axis == 'string' && ['x', 'y', 'z'].indexOf(axis.toLowerCase()) != -1) this.axis = axis.toLowerCase();
-    // else this.axis = 'z';
+    //else this.axis = 'z';
     this.angle = angle;
   }
   /*
@@ -470,7 +470,7 @@ export class TransformationList extends Array {
     let trans = this.filter(t => !t.type.startsWith('translate'));
     let vec = new Point(x, y);
 
-    //   trans.toMatrix().transform_point(vec);
+    //trans.toMatrix().transform_point(vec);
 
     vec = vec.round(0.00001, 5);
     //console.log("from:", new Point(x,y), " to:", vec);

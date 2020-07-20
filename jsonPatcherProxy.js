@@ -42,7 +42,7 @@ const JSONPatcherProxy = (function() {
     const pathComponents = [];
     let parenthood = instance._parenthoodMap.get(tree);
     while(parenthood && parenthood.key) {
-      // because we're walking up-tree, we need to use the array as a stack
+      //because we're walking up-tree, we need to use the array as a stack
       pathComponents.unshift(parenthood.key);
       parenthood = instance._parenthoodMap.get(parenthood.parent);
     }
@@ -96,10 +96,10 @@ const JSONPatcherProxy = (function() {
     const isTreeAnArray = Array.isArray(tree);
     const isNonSerializableArrayProperty = isTreeAnArray && !Number.isInteger(+key.toString());
 
-    // if the new value is an object, make sure to watch it
+    //if the new value is an object, make sure to watch it
     if(newValue && typeof newValue == 'object' && !instance._treeMetadataMap.has(newValue)) {
       if(isNonSerializableArrayProperty) {
-        // This happens in Vue 1-2 (should not happen in Vue 3). See: https://github.com/vuejs/vue/issues/427, https://github.com/vuejs/vue/issues/9259
+        //This happens in Vue 1-2 (should not happen in Vue 3). See: https://github.com/vuejs/vue/issues/427, https://github.com/vuejs/vue/issues/9259
         console.warn(`JSONPatcherProxy noticed a non-integer property ('${key}') was set for an array. This interception will not emit a patch. The value is an object, but it was not proxified, because it would not be addressable in JSON-Pointer`);
         warnedAboutNonIntegrerArrayProp = true;
       } else {
@@ -107,14 +107,14 @@ const JSONPatcherProxy = (function() {
         newValue = instance._proxifyTreeRecursively(tree, newValue, key);
       }
     }
-    // let's start with this operation, and may or may not update it later
+    //let's start with this operation, and may or may not update it later
     const valueBeforeReflection = tree[key];
     const wasKeyInTreeBeforeReflection = tree.hasOwnProperty(key);
     if(isTreeAnArray && !isNonSerializableArrayProperty) {
       const index = parseInt(key, 10);
       if(index > tree.length) {
-        // force call trapForSet for implicit undefined elements of the array added by the JS engine
-        // because JSON-Patch spec prohibits adding an index that is higher than array.length
+        //force call trapForSet for implicit undefined elements of the array added by the JS engine
+        //because JSON-Patch spec prohibits adding an index that is higher than array.length
         trapForSet(instance, tree, index - 1 + '', undefined);
       }
     }
@@ -124,15 +124,15 @@ const JSONPatcherProxy = (function() {
       path: pathToKey
     };
     if(typeof newValue == 'undefined') {
-      // applying De Morgan's laws would be a tad faster, but less readable
+      //applying De Morgan's laws would be a tad faster, but less readable
       if(!isTreeAnArray && !wasKeyInTreeBeforeReflection) {
-        // `undefined` is being set to an already undefined value, keep silent
+        //`undefined` is being set to an already undefined value, keep silent
         return reflectionResult;
       } else {
         if(wasKeyInTreeBeforeReflection && !isSignificantChange(valueBeforeReflection, newValue, isTreeAnArray)) {
-          return reflectionResult; // Value wasn't actually changed with respect to its JSON projection
+          return reflectionResult; //Value wasn't actually changed with respect to its JSON projection
         }
-        // when array element is set to `undefined`, should generate replace to `null`
+        //when array element is set to `undefined`, should generate replace to `null`
         if(isTreeAnArray) {
           operation.value = null;
           if(wasKeyInTreeBeforeReflection) {
@@ -161,9 +161,9 @@ const JSONPatcherProxy = (function() {
       if(wasKeyInTreeBeforeReflection) {
         if(typeof valueBeforeReflection !== 'undefined' || isTreeAnArray) {
           if(!isSignificantChange(valueBeforeReflection, newValue, isTreeAnArray)) {
-            return reflectionResult; // Value wasn't actually changed with respect to its JSON projection
+            return reflectionResult; //Value wasn't actually changed with respect to its JSON projection
           }
-          operation.op = 'replace'; // setting `undefined` array elements is a `replace` op
+          operation.op = 'replace'; //setting `undefined` array elements is a `replace` op
         }
       }
       operation.value = newValue;
@@ -260,7 +260,7 @@ const JSONPatcherProxy = (function() {
     this._isObserving = false;
     this._treeMetadataMap = new Map();
     this._parenthoodMap = new Map();
-    // default to true
+    //default to true
     if(typeof showDetachedWarning !== 'boolean') {
       showDetachedWarning = true;
     }
@@ -283,7 +283,7 @@ const JSONPatcherProxy = (function() {
       deleteProperty: (...args) => trapForDeleteProperty(this, ...args)
     };
     const treeMetadata = Proxy.revocable(tree, handler);
-    // cache the object that contains traps to disable them later.
+    //cache the object that contains traps to disable them later.
     treeMetadata.handler = handler;
     treeMetadata.originalObject = tree;
 
@@ -294,7 +294,7 @@ const JSONPatcherProxy = (function() {
     this._treeMetadataMap.set(treeMetadata.proxy, treeMetadata);
     return treeMetadata.proxy;
   };
-  // grab tree's leaves one by one, encapsulate them into a proxy and return
+  //grab tree's leaves one by one, encapsulate them into a proxy and return
   JSONPatcherProxy.prototype._proxifyTreeRecursively = function(parent, tree, key) {
     for(let key in tree) {
       if(tree.hasOwnProperty(key)) {
@@ -305,7 +305,7 @@ const JSONPatcherProxy = (function() {
     }
     return this._generateProxyAtKey(parent, tree, key);
   };
-  // this function is for aesthetic purposes
+  //this function is for aesthetic purposes
   JSONPatcherProxy.prototype._proxifyRoot = function(root) {
     /*
     while proxifying object tree,

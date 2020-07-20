@@ -13,18 +13,18 @@ var has = Object.prototype.hasOwnProperty,
 function Events() {}
 
 //
-// We try to not inherit from `Object.prototype`. In some engines creating an
-// instance in this way is faster than calling `Object.create(null)` directly.
-// If `Object.create(null)` is not supported we prefix the event names with a
-// character to make sure that the built-in object properties are not
-// overridden or used as an attack vector.
+//We try to not inherit from `Object.prototype`. In some engines creating an
+//instance in this way is faster than calling `Object.create(null)` directly.
+//If `Object.create(null)` is not supported we prefix the event names with a
+//character to make sure that the built-in object properties are not
+//overridden or used as an attack vector.
 //
 if(Object.create) {
   Events.prototype = Object.create(null);
 
   //
-  // This hack is needed because the `__proto__` property is still inherited in
-  // some old browsers like Android 4, iPhone 5.1, Opera 11 and Safari 5.
+  //This hack is needed because the `__proto__` property is still inherited in
+  //some old browsers like Android 4, iPhone 5.1, Opera 11 and Safari 5.
   //
   if(!new Events().__proto__) prefix = false;
 }
@@ -303,7 +303,7 @@ WeakEventEmitter.prototype.removeListener = function removeListener(event, fn, c
     }
 
     //
-    // Reset the array, or remove it completely if we have no more listeners.
+    //Reset the array, or remove it completely if we have no more listeners.
     //
     var _events = this._weakMap.get(this);
     if(events.length) _events[evt] = events.length === 1 ? events[0] : events;
@@ -336,23 +336,23 @@ WeakEventEmitter.prototype.removeAllListeners = function removeAllListeners(even
 };
 
 //
-// Alias methods names because people roll like that.
+//Alias methods names because people roll like that.
 //
 WeakEventEmitter.prototype.off = WeakEventEmitter.prototype.removeListener;
 WeakEventEmitter.prototype.addListener = WeakEventEmitter.prototype.on;
 
 //
-// Expose the prefix.
+//Expose the prefix.
 //
 WeakEventEmitter.prefixed = prefix;
 
 //
-// Allow `WeakEventEmitter` to be imported as module namespace.
+//Allow `WeakEventEmitter` to be imported as module namespace.
 //
 WeakEventEmitter.WeakEventEmitter = WeakEventEmitter;
 
 //
-// Expose the module.
+//Expose the module.
 //
 if('undefined' !== typeof module) {
   module.exports = WeakEventEmitter;

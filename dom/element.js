@@ -63,7 +63,7 @@ export class Element extends Node {
 
   static *skip(elem, fn = (e, next) => next(e.parentElement)) {
     elem = typeof elem == 'string' ? Element.find(elem) : elem;
-    // let [iter,push] = new iterator();
+    //let [iter,push] = new iterator();
     let emit = n => (elem = n);
 
     while(elem) {
@@ -75,7 +75,7 @@ export class Element extends Node {
   static walk(elem, fn, accu = {}) {
     if(typeof elem == 'string') elem = Element.find(elem);
     const root = elem;
-    // const rootPath = Element.xpath(elem);
+    //const rootPath = Element.xpath(elem);
     let depth = 0;
     while(elem) {
       accu = fn(this.wrap(elem), accu, root, depth);
@@ -264,13 +264,13 @@ export class Element extends Node {
       r.y -= off.y;
     }
 
-    // console.log("Element.rect(", r, ")");
+    //console.log("Element.rect(", r, ")");
 
     if(options.border) {
       const border = Element.border(e);
       Rect.outset(r, border);
 
-      // console.log("Element.rect(", r, ") // with border = ", border);
+      //console.log("Element.rect(", r, ") // with border = ", border);
     }
 
     const { scrollTop, scrollY } = window;
@@ -331,13 +331,13 @@ export class Element extends Node {
       if(e.style.removeProperty) e.style.removeProperty(remove);
       else e.style[remove] = undefined;
     }
-    //  css.position = position;
+    //css.position = position;
     css.width = Math.round(rect.width) + (unit || unit);
     css.height = Math.round(rect.height) + (unit || unit);
     //console.log("Element.setRect ", css);
     Element.setCSS(e, css);
-    //  Object.assign(e.style, css);
-    //    Element.setCSS(e, css);
+    //Object.assign(e.style, css);
+    //Element.setCSS(e, css);
     return e;
   }
 
@@ -367,7 +367,7 @@ export class Element extends Node {
       y: getValue('top') || 0
     });
     off = new Point(Element.rect(element, { round: false }));
-    //   off = Point.diff(off, current);
+    //off = Point.diff(off, current);
     Point.add(current, Point.diff(to, off));
     /*
     if(position == 'relative') {
@@ -464,7 +464,7 @@ export class Element extends Node {
     if(!isElement(element)) return false;
     if(typeof prop == 'string' && typeof value == 'string') prop = { [prop]: value };
 
-    // console.log("Element.setCSS ", { element, prop });
+    //console.log("Element.setCSS ", { element, prop });
 
     for(let key in prop) {
       let value = prop[key];
@@ -496,14 +496,14 @@ export class Element extends Node {
     let pstyle = Util.tryPredicate(() => (parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {}), null);
 
     if(!estyle || !pstyle) return null;
-    //    let styles = [estyle,pstyle].map(s => Object.fromEntries([...Node.map(s)].slice(0,20)));
+    //let styles = [estyle,pstyle].map(s => Object.fromEntries([...Node.map(s)].slice(0,20)));
 
     let style = Util.tryPredicate(() => Util.removeEqual(estyle, pstyle), null);
 
     if(!style) return null;
     let keys = Object.keys(style).filter(k => !/^__/.test(k));
     //console.log("style: ", style);
-    // console.log("Element.getCSS ", style);
+    //console.log("Element.getCSS ", style);
 
     let ret = {};
     if(receiver == null) {
@@ -677,7 +677,7 @@ export class Element extends Node {
       };
     }
 
-    if(!delegate.setcss) delegate.setcss = (elem, css) => Object.assign(elem.style, css); // Element.setCSS(elem, css);
+    if(!delegate.setcss) delegate.setcss = (elem, css) => Object.assign(elem.style, css); //Element.setCSS(elem, css);
 
     delegate.bound_factory = (tag, attr = {}, parent = null) => {
       if(typeof tag == 'object') {
@@ -833,6 +833,39 @@ export class Element extends Node {
     if(children.length) s += children.map(Element.toString).join('') + `</${tagName}`;
     return s;
   }
+
+  static clipboardCopy = text =>
+    new Promise((resolve, reject) => {
+      if(navigator.clipboard) {
+        return navigator.clipboard
+          .writeText(text)
+          .then(() => resolve(true))
+          .catch(err => reject(err !== undefined ? err : new DOMException('The request is not allowed', 'NotAllowedError')));
+      }
+      let ok = false;
+      try {
+        const d = document,
+          w = window;
+        let e = d.createElement('e');
+        e.textContent = text;
+        e.style.whiteSpace = 'pre';
+        d.body.appendChild(e);
+        let s = w.getSelection();
+        let r = w.d.createRange();
+        s.removeAllRanges();
+        r.selectNode(e);
+        s.addRange(r);
+        try {
+          ok = w.d.execCommand('copy');
+        } catch(err) {
+          console.log('error', err);
+        }
+        s.removeAllRanges();
+        w.d.body.removeChild(e);
+      } catch(err) {}
+      if(ok) resolve(ok);
+      else reject(new DOMException('The request is not allowed', 'NotAllowedError'));
+    });
 }
 
 Element.children = function*(elem, tfn = e => e) {

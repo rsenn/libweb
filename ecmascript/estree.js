@@ -1,7 +1,7 @@
 import Util from '../util.js';
 
 export class ESNode {
-  //  position = null;
+  //position = null;
 
   static lastNode = null;
   static assoc = Util.weakAssoc();
@@ -9,7 +9,7 @@ export class ESNode {
   constructor(type) {
     //this.type = type;
     //this.loc = null; // TODO: For now avoid dealing with location information.
-    // Fix it later.
+    //Fix it later.
     //Object.defineProperty(this, 'position', { value: null, enumerable: false, writable: true });
 
     ESNode.lastNode = this;
@@ -369,7 +369,7 @@ export class ClassDeclaration extends ESNode {
     this.extending = extending;
     this.members = members;
     //this.exported = exported;
-    // console.log('New ClassDeclaration: ', JSON.toString({ id, extending, // exported }));
+    //console.log('New ClassDeclaration: ', JSON.toString({ id, extending, // exported }));
   }
 }
 
@@ -387,7 +387,7 @@ export class ArrowFunction extends ESNode {
     this.is_async = is_async;
     this.params = params;
     this.body = body;
-    // console.log('New FunctionDeclaration: ', JSON.toString({ id, params, // exported }));
+    //console.log('New FunctionDeclaration: ', JSON.toString({ id, params, // exported }));
   }
 }
 
@@ -397,8 +397,8 @@ export class VariableDeclaration extends Declaration {
     this.kind = kind;
     //this.exported = exported;
     this.declarations = declarations;
-    // console.log('New VariableDeclaration: ', JSON.toString({ kind, exported
-    // }));
+    //console.log('New VariableDeclaration: ', JSON.toString({ kind, exported
+    //}));
   }
 }
 
@@ -407,8 +407,8 @@ export class VariableDeclarator extends ESNode {
     super('VariableDeclarator');
     this.id = identifier;
     this.init = initialValue;
-    // console.log('New VariableDeclarator: ', JSON.toString({ identifier:
-    // identifier.value }));
+    //console.log('New VariableDeclarator: ', JSON.toString({ identifier:
+    //identifier.value }));
   }
 }
 
@@ -416,7 +416,7 @@ export class ObjectLiteral extends ESNode {
   constructor(members) {
     super('ObjectLiteral');
     this.members = members;
-    // console.log('New ObjectLiteral: ', Object.keys(members));
+    //console.log('New ObjectLiteral: ', Object.keys(members));
   }
 }
 
@@ -448,7 +448,7 @@ export class ArrayLiteral extends ESNode {
   constructor(elements) {
     super('ArrayLiteral');
     this.elements = elements;
-    // console.log('New ArrayLiteral: ', Object.keys(members));
+    //console.log('New ArrayLiteral: ', Object.keys(members));
   }
 }
 
@@ -461,7 +461,7 @@ export class JSXLiteral extends ESNode {
     this.selfClosing = selfClosing;
     this.children = children;
     this.spread = spread;
-    // console.log('New JSXLiteral: ', tag, JSX.keys(attributes));
+    //console.log('New JSXLiteral: ', tag, JSX.keys(attributes));
   }
 }
 

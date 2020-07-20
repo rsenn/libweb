@@ -27,13 +27,13 @@ export class Intersection {
     a = numerator1 / denominator;
     b = numerator2 / denominator;
 
-    // if we cast these lines infinitely in both directions, they intersect here:
+    //if we cast these lines infinitely in both directions, they intersect here:
     result.point.x = line1.x1 + a * (line1.x2 - line1.x1);
     result.point.y = line1.y1 + a * (line1.y2 - line1.y1);
     result.line1 = line1;
     result.line2 = line2;
 
-    // if line1 is a segment and line2 is infinite, they intersect if:
+    //if line1 is a segment and line2 is infinite, they intersect if:
     if(a > 0 && a < 1 && b > 0 && b < 1) {
       return result;
     } else {

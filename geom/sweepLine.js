@@ -35,10 +35,10 @@ export class SweepLineClass {
 
   sortNode(node) {
     function moveNode() {
-      // Remove node from current position in queue.
+      //Remove node from current position in queue.
       this.deleteNode(node);
 
-      // Add node to new position in queue.
+      //Add node to new position in queue.
       if(newLocation === null) {
         node.prev = null;
         node.next = this.queueHead;
@@ -51,10 +51,10 @@ export class SweepLineClass {
       }
     }
 
-    // Walk the queue, moving node into the
-    // proper spot of the queue based on the x
-    // value.  First check against the 'prev' queue
-    // node...
+    //Walk the queue, moving node into the
+    //proper spot of the queue based on the x
+    //value.  First check against the 'prev' queue
+    //node...
     let newLocation = node.prev;
     while(newLocation && node.x < newLocation.x) {
       newLocation = newLocation.prev;
@@ -62,7 +62,7 @@ export class SweepLineClass {
 
     if(newLocation !== node.prev) moveNode.call(this);
 
-    // ...then against the 'next' queue node.
+    //...then against the 'next' queue node.
     newLocation = node;
     while(newLocation.next && newLocation.next.x < node.x) {
       newLocation = newLocation.next;
@@ -93,7 +93,7 @@ export class SweepLineClass {
         }
         activeObjects.add(object);
       } else {
-        // node.loHi === SweepLineClass._HI
+        //node.loHi === SweepLineClass._HI
         activeObjects.delete(node.object);
       }
 

@@ -4,8 +4,8 @@
  * by Gaëtan Renaudeau 2014 - 2015 – MIT License
  */
 
-// These values are established by empiricism with tests (tradeoff: performance
-// VS precision)
+//These values are established by empiricism with tests (tradeoff: performance
+//VS precision)
 var NEWTON_ITERATIONS = 4;
 var NEWTON_MIN_SLOPE = 0.001;
 var SUBDIVISION_PRECISION = 0.0000001;
@@ -26,12 +26,12 @@ function C(aA1) {
   return 3.0 * aA1;
 }
 
-// Returns x(t) given t, x1, and x2, or y(t) given t, y1, and y2.
+//Returns x(t) given t, x1, and x2, or y(t) given t, y1, and y2.
 function calcBezier(aT, aA1, aA2) {
   return ((A(aA1, aA2) * aT + B(aA1, aA2)) * aT + C(aA1)) * aT;
 }
 
-// Returns dx/dt given t, x1, and x2, or dy/dt given t, y1, and y2.
+//Returns dx/dt given t, x1, and x2, or dy/dt given t, y1, and y2.
 function getSlope(aT, aA1, aA2) {
   return 3.0 * A(aA1, aA2) * aT * aT + 2.0 * B(aA1, aA2) * aT + C(aA1);
 }
@@ -77,7 +77,7 @@ module.exports = function bezier(mX1, mY1, mX2, mY2) {
     return LinearEasing;
   }
 
-  // Precompute samples table
+  //Precompute samples table
   var sampleValues = float32ArraySupported ? new Float32Array(kSplineTableSize) : new Array(kSplineTableSize);
   for(var i = 0; i < kSplineTableSize; ++i) {
     sampleValues[i] = calcBezier(i * kSampleStepSize, mX1, mX2);
@@ -93,7 +93,7 @@ module.exports = function bezier(mX1, mY1, mX2, mY2) {
     }
     --currentSample;
 
-    // Interpolate to provide an initial guess for t
+    //Interpolate to provide an initial guess for t
     var dist = (aX - sampleValues[currentSample]) / (sampleValues[currentSample + 1] - sampleValues[currentSample]);
     var guessForT = intervalStart + dist * kSampleStepSize;
 
@@ -108,8 +108,8 @@ module.exports = function bezier(mX1, mY1, mX2, mY2) {
   }
 
   return function BezierEasing(x) {
-    // Because JavaScript number are imprecise, we should guarantee the extremes
-    // are right.
+    //Because JavaScript number are imprecise, we should guarantee the extremes
+    //are right.
     if(x === 0) {
       return 0;
     }

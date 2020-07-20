@@ -17,7 +17,7 @@
 export function SpatialHash(config) {
   config = config || {};
   this.cell_size = config.cell_size || 50;
-  // optimization to replace division by multiplication
+  //optimization to replace division by multiplication
   this.reverse_cell_size = 1 / this.cell_size;
   this.buckets = {};
 }
@@ -62,11 +62,11 @@ SpatialHash.prototype.retrieve = function(point) {
     halfHeight = h / 2;
     box = [
       { x: x, y: y },
-      // BOX POINTS
+      //BOX POINTS
       { x: x - halfWidth, y: y - halfHeight }, //TOP LEFT
       { x: x - halfWidth, y: y + halfHeight }, //BOTTOM LEFT
       { x: x + halfWidth, y: y - halfHeight }, //TOP RIGHT
-      { x: x + halfWidth, y: y + halfHeight } // BOTTOM RIGHT
+      { x: x + halfWidth, y: y + halfHeight } //BOTTOM RIGHT
     ];
   } else {
     box = [{ x: x, y: y }];
@@ -74,7 +74,7 @@ SpatialHash.prototype.retrieve = function(point) {
   len = box.length;
   while(len--) {
     hash = this.hash(box[len]);
-    // make sure there's no doubles
+    //make sure there's no doubles
     if(doubleCmp.indexOf(hash) == -1) {
       doubleCmp.push(hash);
       foundBucket = this.buckets[hash];

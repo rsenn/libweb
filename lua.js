@@ -529,7 +529,7 @@ class MoonScriptGenerator {
     }
 
     function moonscript_literal(node) {
-      // if(/^[-+]?[0-9.]*[0-9]$/.test(node.value)) return node.value;
+      //if(/^[-+]?[0-9.]*[0-9]$/.test(node.value)) return node.value;
 
       const value = node.value === null ? 'nil' : String(node.value);
       return `${node.quote || ''}${value}${node.quote || ''}`;
@@ -579,9 +579,9 @@ class MoonScriptGenerator {
 
     function moonscript_table_expression(node) {
       let list = 0;
-      // const types = Util.histogram(node.fields.map(f => f.type));
+      //const types = Util.histogram(node.fields.map(f => f.type));
       const indent = `${generator.indent}  `;
-      // console.error('TYPES: ', types);
+      //console.error('TYPES: ', types);
 
       const fields = node.fields.map(field => {
         let key = generator.subtree(field.key, false);
@@ -692,7 +692,7 @@ ${other}`;
 
       if(node.type == undefined) {
         console.error('node = ', node);
-        // throw { message: "node.type == undefined",  node };
+        //throw { message: "node.type == undefined",  node };
         return '';
       }
 
@@ -1254,7 +1254,7 @@ class Parser {
           this.depth -= 1;
           return ret;
         };
-        //      console.error('Function: ', name, parser[name]);
+        //console.error('Function: ', name, parser[name]);
       }
     }
   }
@@ -1278,7 +1278,7 @@ class Parser {
     name = name + Util.pad(name, 80);
     args.unshift(name);
 
-    //    process.stderr.write(util.inspect(args)+"\n");
+    //process.stderr.write(util.inspect(args)+"\n");
 
     console.error(...args);
   }
@@ -1365,7 +1365,7 @@ class Parser {
   }
 
   parse_chunk() {
-    //   console.error('parse_chunk');
+    //console.error('parse_chunk');
     /* chunk       ::=   {<stat> [`;`]} */
     let stats = [];
     while(!this.is_block_follow()) {
@@ -1680,7 +1680,7 @@ class Parser {
 
     let primaryexp = this.parse_primaryexp();
 
-    //  console.error('EXPR_STAT ', this.cur_token);
+    //console.error('EXPR_STAT ', this.cur_token);
 
     if(primaryexp.type == 'CallExpression') {
       return this.ast.expr_stat(primaryexp);
@@ -1745,7 +1745,7 @@ class Parser {
             subexpr     ::=(<unary> <subexpr> | <simpleexp>) {<binary> <subexpr>}
          */
 
-    //  console.error('TOKEN: ', this.cur_token);
+    //console.error('TOKEN: ', this.cur_token);
 
     min_prec = min_prec || 0;
 
@@ -1796,7 +1796,7 @@ class Parser {
       return this.ast.comment(text);
     }
     if(this.cur_token.type == Token.NUMBER || this.cur_token.type == Token.STRING) {
-      //   console.error("this.cur_token: ", this.lexer.quote, this.cur_token);
+      //console.error("this.cur_token: ", this.lexer.quote, this.cur_token);
       let q = this.lexer.quote;
       let cur_token = this.next();
       return this.ast.literal(cur_token.value, false, q);
@@ -2014,7 +2014,7 @@ class Parser {
 
     let node = this.parse_expr();
 
-    // parse_assignment
+    //parse_assignment
 
     console.error('EXPR: ', node);
 

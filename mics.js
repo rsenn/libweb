@@ -23,7 +23,7 @@ export { mix, is, like };
  * @return {function}
  */
 function mix(...args) {
-  // todo: refactor to make const
+  //todo: refactor to make const
   let superclass = (!isFactory(args[0]) && args.shift()) || baseclass;
   let factory = (isFactory(args[args.length - 1]) && args.pop()) || derive;
   superclass = isMixin(superclass) ? superclass.class : derive(superclass);
@@ -85,11 +85,11 @@ function is(x, type) {
  * })
  *
  * var Viewer = {
- *   look() {} // same interface as Looker
+ *   look() {}  //same interface as Looker
  * }
  *
  * var viewer = new Viewer()
- * like(viewer, Looker) // true
+ * like(viewer, Looker)  //true
  *
  * @param {object|function} x
  * @param {function} type

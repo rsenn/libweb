@@ -11,11 +11,11 @@ function push(arr, el) {
   return newArr;
 }
 
-// names of the traps that can be registered with ES6's Proxy object
+//names of the traps that can be registered with ES6's Proxy object
 const trapNames = ['apply', 'construct', 'defineProperty', 'deleteProperty', 'enumerate', 'get', 'getOwnPropertyDescriptor', 'getPrototypeOf', 'has', 'isExtensible', 'ownKeys', 'preventExtensions', 'set', 'setPrototypeOf'];
 
-// a list of paramer indexes that indicate that the a recieves a key at that parameter
-// this information will be used to update the path accordingly
+//a list of paramer indexes that indicate that the a recieves a key at that parameter
+//this information will be used to update the path accordingly
 const keys = {
   get: 1,
   set: 1,
@@ -37,7 +37,7 @@ export function DeepProxy(rootTarget, traps, options) {
   }
 
   function createProxy(target, path) {
-    // avoid creating a new object between two traps
+    //avoid creating a new object between two traps
     const context = { rootTarget, path };
     Object.assign(context, userData);
 
@@ -52,7 +52,7 @@ export function DeepProxy(rootTarget, traps, options) {
           realTraps[trapName] = function() {
             const key = arguments[keyParamIdx];
 
-            // update context for this trap
+            //update context for this trap
             context.nest = function(nestedTarget) {
               if(nestedTarget === undefined) nestedTarget = rootTarget;
               return createProxy(nestedTarget, push(path, key));
@@ -62,7 +62,7 @@ export function DeepProxy(rootTarget, traps, options) {
           };
         } else {
           realTraps[trapName] = function() {
-            // update context for this trap
+            //update context for this trap
             context.nest = function(nestedTarget) {
               if(nestedTarget === undefined) nestedTarget = {};
               return createProxy(nestedTarget, path);

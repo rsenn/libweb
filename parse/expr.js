@@ -14,7 +14,7 @@ export function optional(arg) {
   return arg => {
     const result = arg(arg);
     if(result.error) {
-      return arg; // as if nothing happened
+      return arg; //as if nothing happened
     } else {
       return result;
     }

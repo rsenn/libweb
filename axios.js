@@ -9,7 +9,7 @@ const httpClient = (() => {
   client.interceptors.response.use(
     res => {
       const { data, status, statusText, headers, config, request } = res;
-      // console.error("axios SUCCESS:", { status, statusText, data });
+      //console.error("axios SUCCESS:", { status, statusText, data });
 
       return res;
     },
@@ -17,7 +17,7 @@ const httpClient = (() => {
       const { code, config, request } = await err;
       const { url, method, data } = (await config) || {};
       console.error('axios ERROR:', { code, url, method, data });
-      // throw new Error(err.response.data.message);
+      //throw new Error(err.response.data.message);
     }
   );
 
@@ -28,7 +28,7 @@ const httpClient = (() => {
       if(typeof args[0] == 'string' && args[0].startsWith('/')) {
         args[0] = Util.makeURL({ location: args[0] });
       }
-      //  console.error(`axios ${name}:`, args);
+      //console.error(`axios ${name}:`, args);
 
       return await fn.apply(client, args);
     };

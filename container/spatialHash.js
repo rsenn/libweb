@@ -91,7 +91,7 @@ SpatialHash.prototype.srch = function(range, selector, callback, returnOnFirst) 
   var b = getBounds(range),
     bucketSize = this.bucketSize;
 
-  // range might be larger than the hash's size itself
+  //range might be larger than the hash's size itself
   var x1 = Math.max(~~(b.left / bucketSize), this.x1);
   var x2 = Math.min(~~(b.right / bucketSize), this.x2);
   var y1 = Math.max(~~(b.top / bucketSize), this.y1);

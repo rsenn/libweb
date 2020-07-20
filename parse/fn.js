@@ -60,10 +60,10 @@ export function many(parser) {
 
     for(;;) {
       let parsed = parser(target, position);
-      // if the parser received is successful
+      //if the parser received is successful
       if(parsed[0]) {
-        result.push(parsed[1]); // store the result
-        position = parsed[2]; // update the reading position
+        result.push(parsed[1]); //store the result
+        position = parsed[2]; //update the reading position
         success = true;
       } else {
         break;
@@ -84,7 +84,7 @@ export function choice(...parsers) {
 
     for(let i = 0; i < parsers.length; i++) {
       let parsed = parsers[i](target, position);
-      // If parsing is successful, return the result as it is
+      //If parsing is successful, return the result as it is
       if(parsed[0]) {
         //console.log(`position: ${position} choice: `,parsed);
 
@@ -113,7 +113,7 @@ export function seq(...parsers) {
 
         position = parsed[2];
       } else {
-        // If even one returns a failure, this parser itself returns a failure
+        //If even one returns a failure, this parser itself returns a failure
         return parsed;
       }
     }
@@ -159,7 +159,7 @@ export function regex(re) {
     let regexResult = re.exec(target.slice(position));
 
     if(regexResult && regexResult.index == 0) {
-      // console.log(`position: ${position} regex: ${re}`, regexResult);
+      //console.log(`position: ${position} regex: ${re}`, regexResult);
 
       position += regexResult[0].length;
       return [true, regexResult[0], position];

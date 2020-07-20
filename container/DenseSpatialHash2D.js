@@ -140,7 +140,7 @@ export default class DenseSpatialHash2D {
     for(let i = minY; i <= maxY; i++) {
       for(let j = minX; j <= maxX; j++) {
         const bucket = buckets[i * hashY + j];
-        // TODO: benchmark
+        //TODO: benchmark
         const index = bucket.indexOf(id);
         if(index === bucket.length - 1) {
           bucket.pop();
@@ -148,7 +148,7 @@ export default class DenseSpatialHash2D {
           bucket[index] = bucket.pop();
         }
         changedBuckets.add(bucket);
-        // bucket.splice( index )
+        //bucket.splice( index )
       }
     }
   }

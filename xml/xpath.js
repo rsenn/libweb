@@ -83,7 +83,7 @@ export class MutableXPath extends MutablePath {
     if(l[0] == '') l.shift();
     if(l.indexOf('children') != -1) {
       l = l.filter(p => !ImmutablePath.isChildren(p));
-      //  throw new Error('children');
+      //throw new Error('children');
     }
     //console.log('MutableXPath.parse', { l });
     l = l.map(p => {
@@ -100,7 +100,7 @@ export class MutableXPath extends MutablePath {
           if(num >= 0) {
             //r.push('children');
             o = t != '' ? [num, t] : num;
-            //  continue;
+            //continue;
           } else {
             if(i[0] == '@') {
               let ei = i.indexOf('=');
@@ -112,7 +112,7 @@ export class MutableXPath extends MutablePath {
             }
           }
         }
-        //   if(isSpecialAttr(t) || r[r.length - 1] == 'attributes') o = t;
+        //if(isSpecialAttr(t) || r[r.length - 1] == 'attributes') o = t;
       }
       return o;
     });

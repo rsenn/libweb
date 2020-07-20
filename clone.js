@@ -9,8 +9,8 @@ export const clone = (function() {
   try {
     nativeMap = Map;
   } catch(_) {
-    // maybe a reference error because no `Map`. Give it a dummy value that no
-    // value will ever be an instanceof.
+    //maybe a reference error because no `Map`. Give it a dummy value that no
+    //value will ever be an instanceof.
     nativeMap = function() {};
   }
 
@@ -56,8 +56,8 @@ export const clone = (function() {
       includeNonEnumerable = circular.includeNonEnumerable;
       circular = circular.circular;
     }
-    // maintain two arrays for circular references, where corresponding parents
-    // and children have the same index
+    //maintain two arrays for circular references, where corresponding parents
+    //and children have the same index
     var allParents = [];
     var allChildren = [];
 
@@ -67,9 +67,9 @@ export const clone = (function() {
 
     if(typeof depth == 'undefined') depth = Infinity;
 
-    // recurse this function so we don't reset allParents and allChildren
+    //recurse this function so we don't reset allParents and allChildren
     function _clone(parent, depth) {
-      // cloning null always returns null
+      //cloning null always returns null
       if(parent === null) return null;
 
       if(depth === 0) return parent;
@@ -104,10 +104,10 @@ export const clone = (function() {
         child = new Date(parent.getTime());
       } else if(useBuffer && Buffer.isBuffer(parent)) {
         if(Buffer.allocUnsafe) {
-          // Node.js >= 4.5.0
+          //Node.js >= 4.5.0
           child = Buffer.allocUnsafe(parent.length);
         } else {
-          // Older Node.js versions
+          //Older Node.js versions
           child = new Buffer(parent.length);
         }
         parent.copy(child);
@@ -163,8 +163,8 @@ export const clone = (function() {
       if(Object.getOwnPropertySymbols) {
         var symbols = Object.getOwnPropertySymbols(parent);
         for(var i = 0; i < symbols.length; i++) {
-          // Don't need to worry about cloning a symbol because it is a primitive,
-          // like a number or string.
+          //Don't need to worry about cloning a symbol because it is a primitive,
+          //like a number or string.
           var symbol = symbols[i];
           var descriptor = Object.getOwnPropertyDescriptor(parent, symbol);
           if(descriptor && !descriptor.enumerable && !includeNonEnumerable) {
@@ -215,7 +215,7 @@ export const clone = (function() {
     return new c();
   };
 
-  // private utility functions
+  //private utility functions
 
   function __objToStr(o) {
     return Object.prototype.toString.call(o);

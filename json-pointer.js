@@ -54,11 +54,11 @@ export class JsonReference {
   }
 }
 
-var root = this; // either the module or the window (in a browser)
+var root = this; //either the module or the window (in a browser)
 var savedJsonPointer = JsonPointer;
 
 function replace(str, find, repl) {
-  // modified from http://jsperf.com/javascript-replace-all/10
+  //modified from http://jsperf.com/javascript-replace-all/10
   var orig = str.toString();
   var res = '';
   var rem = orig;
@@ -274,7 +274,7 @@ function compilePointerDereference(path) {
   body = `${body}) {
   return obj;
 }`;
-  return new Function(['obj'], body); // eslint-disable-line no-new-func
+  return new Function(['obj'], body); //eslint-disable-line no-new-func
 }
 
 function setValueAtPath(target, val, path, force) {
@@ -319,7 +319,7 @@ function setValueAtPath(target, val, path, force) {
               it[step] = val;
               return nonexistent;
             }
-            // if the next step is an array index, this step should be an array.
+            //if the next step is an array index, this step should be an array.
             if(toArrayIndexReference(it[step], path[cursor + 1]) !== -1) {
               it = it[step] = [];
               continue;

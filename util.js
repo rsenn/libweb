@@ -59,7 +59,7 @@ const formatAnnotatedObject = function(subject, o) {
  */
 export function Util(g) {
   Util.assignGlobal(g);
-  //  if(g) Util.globalObject = g;
+  //if(g) Util.globalObject = g;
 }
 
 Util.curry = (fn, arity) => {
@@ -70,7 +70,7 @@ Util.curry = (fn, arity) => {
 
     let n = arity - args.length;
     let a = Array.from({ length: n }, (v, i) => String.fromCharCode(65 + i));
-    let Curried = (...a) => curried.apply(thisObj, a); // ;
+    let Curried = (...a) => curried.apply(thisObj, a); //;
     return [() => Curried(...args), a => Curried(...args, a), (a, b) => Curried(...args, a, b), (a, b, c) => r(...args, a, b, c), (a, b, c, d) => Curried(...args, a, b, c, d)][n];
     return new Function(...a, `const { curried,thisObj,args} = this; return curried.apply(thisObj, args.concat([${a.join(',')}]))`).bind({ args, thisObj, curried });
   };
@@ -395,10 +395,10 @@ Util.sortNum = function(arr) {
   //console.log("Util.sortNum ", { arr });
   return arr;
 };
-Util.draw = function(arr, n, rnd = Util.rng) {
-  const r = Util.shuffle(arr, rnd).splice(0, n);
-  //console.log("Util.draw ", { arr, n, r });
-  return r;
+Util.draw = (arr, n = 1, rnd = Util.rng) => {
+  let pos = Util.randInt(0, arr.length - n - 1, rnd);
+  const r = arr.splice(pos, n);
+  return n == 1 ? r[0] : r;
 };
 Util.is = function(what, ...pred) {
   let fnlist = pred.map(type => this.is[type]);
@@ -455,27 +455,27 @@ Util.indent = (text, space = '  ') => {
 };
 Util.define = (obj, ...args) => {
   if(typeof args[0] == 'object') {
-    // let args = [...arguments].slice(1);
+    //let args = [...arguments].slice(1);
     for(let arg of args) {
       let adecl = Object.getOwnPropertyDescriptors(arg);
       let odecl = {};
 
       for(let prop in adecl) {
-        //   delete obj[prop];
+        //delete obj[prop];
 
         if(Object.getOwnPropertyDescriptor(obj, prop)) delete odecl[prop];
         else odecl[prop] = { ...adecl[prop], enumerable: false, configurable: true, writeable: true };
 
-        //  odecl[prop].enumerable=false;
+        //odecl[prop].enumerable=false;
       }
-      // console.log('odecl:', odecl);
+      //console.log('odecl:', odecl);
       Object.defineProperties(obj, odecl);
     }
 
     /* console.log('Util.define', { decl, keys: Object.getOwnPropertyNames(obj) });
     console.log('Util.define', { decl, values: Object.getOwnPropertyNames(obj).map(key => obj[key]) });*/
 
-    //    for(let prop in key) Util.define(obj, prop, key[prop], Util.isBool(value) ? value : false);
+    //for(let prop in key) Util.define(obj, prop, key[prop], Util.isBool(value) ? value : false);
     return obj;
   }
   const [key, value, enumerable = false] = args;
@@ -812,11 +812,11 @@ Util.expr = fn => {
     console.log('nums.length:', nums.length);
     if(nums.length >= nargs) return fn(...nums);
 
-    //    let args = ['a','b','c','d'].slice(0,nargs - nums.length);
+    //let args = ['a','b','c','d'].slice(0,nargs - nums.length);
     let ret = function returnFn(...args) {
       addArgs(args.slice(0, nargs - nums.length));
 
-      // console.log('nums.length:', nums.length);
+      //console.log('nums.length:', nums.length);
       if(nums.length >= nargs) return fn(...nums);
       return returnFn;
     };
@@ -925,6 +925,16 @@ Util.injectProps = function(options) {
     }
   }
 }*/
+
+Util.greatestCommonDenominator = (a, b) => (b ? Util.greatestCommonDenominator(b, a % b) : a);
+
+Util.leastCommonMultiple = (n1, n2) => {
+  //Find the gcd first
+  let gcd = Util.greatestCommonDenominator(n1, n2);
+
+  //then calculate the lcm
+  return (n1 * n2) / gcd;
+};
 Util.toString = (obj, opts = {}) => {
   const { quote = '"', multiline = false, indent = '', colors = true, stringColor = [1, 36], spacing = '', padding = '', separator = ',', colon = ':', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
 
@@ -1049,7 +1059,7 @@ Util.bucketInserter = (map, ...extraArgs) => {
   inserter =
     typeof map.has == 'function'
       ? function(...args) {
-          // console.log("bucketInsert:",map,args);
+          //console.log("bucketInsert:",map,args);
           for(let [k, v] of args) {
             let a;
             map.has(k) ? (a = map.get(k)) : map.set(k, (a = []));
@@ -1076,11 +1086,11 @@ Util.fifo = function fifo() {
   let resolve = () => {};
   const queue = [];
 
-  // (there's no arrow function syntax for this)
+  //(there's no arrow function syntax for this)
   async function* generator() {
     for(;;) {
       if(!queue.length) {
-        // there's nothing in the queue, wait until push()
+        //there's nothing in the queue, wait until push()
         await new Promise(r => (resolve = r));
       }
       yield queue.shift();
@@ -1091,7 +1101,7 @@ Util.fifo = function fifo() {
     push: function(...args) {
       for(let event of args) {
         queue.push(event);
-        if(queue.length === 1) resolve(); // allow the generator to resume
+        if(queue.length === 1) resolve(); //allow the generator to resume
       }
       return this;
     },
@@ -1146,7 +1156,7 @@ Util.clone = function(obj, proto) {
 Util.deepClone = function(data) {
   return JSON.parse(JSON.toString(data));
 };
-// Function
+//Function
 Util.findVal = function(object, propName, maxDepth = 10) {
   if(maxDepth <= 0) return null;
   for(let key in object) {
@@ -1253,7 +1263,7 @@ Util.removeEqual = function(a, b) {
     //console.log(`removeEqual '${a[key]}' === '${b[key]}'`);
     c[key] = a[key];
   }
-  // console.log(`removeEqual`,c);
+  //console.log(`removeEqual`,c);
 
   return c;
 };
@@ -1592,7 +1602,7 @@ Util.isMobile = function() {
   return true;
 };
 Util.uniquePred = (cmp = null) => (cmp === null ? (el, i, arr) => arr.indexOf(el) === i : (el, i, arr) => arr.findIndex(item => cmp(el, item)) === i);
-Util.unique = arr => arr.filter(Util.uniquePred());
+Util.unique = (arr, cmp) => arr.filter(Util.uniquePred(cmp));
 
 Util.concat = function*(...args) {
   for(let arg of args) {
@@ -1615,6 +1625,19 @@ Util.distinct = function(arr) {
 Util.rangeMinMax = function(arr, field) {
   const numbers = [...arr].map(obj => obj[field]);
   return [Math.min(...numbers), Math.max(...numbers)];
+};
+
+Util.remap = (...args) => {
+  const getR = () => (Util.isArray(args[0]) ? args.shift() : args.splice(0, 2));
+  const from = getR(),
+    to = getR();
+
+  const f = [to[1] - to[0], from[1] - from[0]];
+  const factor = f[0] / f[1];
+
+  const r = val => (val - from[0]) * factor + to[0];
+
+  return r;
 };
 Util.mergeLists = function(arr1, arr2, key = 'id') {
   let hash = {};
@@ -1725,7 +1748,7 @@ Util.map = (obj, fn) => {
       if(item) ret[item[0]] = item[1];
     }
   }
-  return ret; // Object.setPrototypeOf(ret,Object.getPrototypeOf(obj));
+  return ret; //Object.setPrototypeOf(ret,Object.getPrototypeOf(obj));
 };
 /*Util.indexedMap = (arr, fn = arg => arg.name) => {
   return new Proxy(arr, {
@@ -1755,7 +1778,7 @@ Util.parseDate = function(d) {
     d = new Date(d);
   }
   return d;
-  //  return /^[0-9]+$/.test(d) ? Util.fromUnixTime(d) : new Date(d);
+  //return /^[0-9]+$/.test(d) ? Util.fromUnixTime(d) : new Date(d);
 };
 Util.isoDate = function(date) {
   try {
@@ -1822,13 +1845,13 @@ Util.rng = Math.random;
 Util.randFloat = function(min, max, rnd = Util.rng) {
   return rnd() * (max - min) + min;
 };
-Util.randInt = function(min, max = 16777215, rnd = Util.rng) {
-  let args = [...arguments];
-  let range = args[0] instanceof Array ? args.shift() : args.splice(0, typeof args[1] == 'number' ? 2 : 1);
-  let prng = typeof args[0] == 'function' ? args.shift() : Util.rng;
+Util.randInt = (...args) => {
+  let range = args.splice(0, 2);
+  let rnd = args.shift() || Util.rng;
   if(range.length < 2) range.unshift(0);
-  return Math.round(Util.randFloat(...range, prng));
+  return Math.round(Util.randFloat(...range, rnd));
 };
+
 Util.hex = function(num, numDigits = 0) {
   let n = typeof num == 'number' ? num : parseInt(num);
   return ('0'.repeat(numDigits) + n.toString(16)).slice(-numDigits);
@@ -2266,7 +2289,7 @@ Util.getCaller = function(index = 1, stack) {
   //console.log("stack:", stack)
 
   const frame = stack[index];
-  // console.log("frame keys:",frame, Util.getMemberNames(frame, 0, 10));
+  //console.log("frame keys:",frame, Util.getMemberNames(frame, 0, 10));
   return methods.reduce(
     (acc, m) => {
       if(frame[m]) {
@@ -2403,16 +2426,16 @@ Util.getImageAverageColor = function(imageElement, options) {
   }
   options = options || {};
   const settings = {
-    tooDark: (options.tooDark || 0.03) * 255 * 3, // How dark is too dark for a pixel
-    tooLight: (options.tooLight || 0.97) * 255 * 3, // How light is too light for a pixel
-    tooAlpha: (options.tooAlpha || 0.1) * 255 // How transparent is too transparent for a pixel
+    tooDark: (options.tooDark || 0.03) * 255 * 3, //How dark is too dark for a pixel
+    tooLight: (options.tooLight || 0.97) * 255 * 3, //How light is too light for a pixel
+    tooAlpha: (options.tooAlpha || 0.1) * 255 //How transparent is too transparent for a pixel
   };
   const w = imageElement.width;
   let h = imageElement.height;
-  // Setup canvas and draw image onto it
+  //Setup canvas and draw image onto it
   const context = document.createElement('canvas').getContext('2d');
   context.drawImage(imageElement, 0, 0, w, h);
-  // Extract the rgba data for the image from the canvas
+  //Extract the rgba data for the image from the canvas
   const subpixels = context.getImageData(0, 0, w, h).data;
   const pixels = {
     r: 0,
@@ -2427,17 +2450,17 @@ Util.getImageAverageColor = function(imageElement, options) {
     b: 0,
     a: 0
   };
-  let luma = 0; // Having luma in the pixel object caused ~10% performance penalty for some reason
-  // Loop through the rgba data
+  let luma = 0; //Having luma in the pixel object caused ~10% performance penalty for some reason
+  //Loop through the rgba data
   for(let i = 0, l = w * h * 4; i < l; i += 4) {
     pixel.r = subpixels[i];
     pixel.g = subpixels[i + 1];
     pixel.b = subpixels[i + 2];
     pixel.a = subpixels[i + 4];
-    // Only consider pixels that aren't black, white, or too transparent
+    //Only consider pixels that aren't black, white, or too transparent
     if(
       pixel.a > settings.tooAlpha &&
-      (luma = pixel.r + pixel.g + pixel.b) > settings.tooDark && // Luma is assigned inside the conditional to avoid re-calculation when alpha is not met
+      (luma = pixel.r + pixel.g + pixel.b) > settings.tooDark && //Luma is assigned inside the conditional to avoid re-calculation when alpha is not met
       luma < settings.tooLight
     ) {
       pixels.r += pixel.r;
@@ -2447,7 +2470,7 @@ Util.getImageAverageColor = function(imageElement, options) {
       processedPixels++;
     }
   }
-  // Values of the channels that make up the average color
+  //Values of the channels that make up the average color
   let channels = {
     r: null,
     g: null,
@@ -2464,17 +2487,17 @@ Util.getImageAverageColor = function(imageElement, options) {
   }
   const o = Object.assign({}, channels, {
     toStringRgb() {
-      // Returns a CSS compatible RGB string (e.g. '255, 255, 255')
+      //Returns a CSS compatible RGB string (e.g. '255, 255, 255')
       const { r, g, b } = this;
       return [r, g, b].join(', ');
     },
     toStringRgba() {
-      // Returns a CSS compatible RGBA string (e.g. '255, 255, 255, 1.0')
+      //Returns a CSS compatible RGBA string (e.g. '255, 255, 255, 1.0')
       const { r, g, b, a } = this;
       return [r, g, b, a].join(', ');
     },
     toStringHex() {
-      // Returns a CSS compatible HEX coloor string (e.g. 'FFA900')
+      //Returns a CSS compatible HEX coloor string (e.g. 'FFA900')
       const toHex = function(d) {
         h = Math.round(d).toString(16);
         if(h.length < 2) {
@@ -2618,14 +2641,14 @@ Util.immutableClass = (orig, ...proto) => {
   //${imName}[Symbol.species] = ${imName};
 
    /* ${imName}[Symbol.hasInstance] = function(instance) {
-         // console.log("name2:",n, instance,r);
+          //console.log("name2:",n, instance,r);
       const n = Util.className(instance);
       const fn = Util.fnName(this);
       const r =  ["${name}","Immutable${name}", "${imName}",fn].indexOf(n);
       return r!=-1;
     }; */
   return ${imName};`;
-  // console.log('immutableClass', { initialProto},  (orig));
+  //console.log('immutableClass', { initialProto},  (orig));
 
   for(let p of initialProto) p(orig);
 
@@ -2684,7 +2707,7 @@ Util.coloring = (useColor = true) =>
           for(let arg of args) {
             let c = (arg % 10) + bold;
             let rgb = this.palette[c];
-            //     console.realLog("code:", {arg, c, rgb});
+            //console.realLog("code:", {arg, c, rgb});
             if(arg >= 40) css += `background-color:${rgb};`;
             else if(arg >= 30) css += `color:${rgb};`;
             else if(arg == 1) bold = 8;
@@ -2916,6 +2939,137 @@ Util.once = fn => {
     }
     return ret;
   };
+};
+Util.copyTextToClipboard = (i, { target: t } = {}) => {
+  let doc = Util.tryCatch(() => document);
+  if(!doc) return;
+  if(!t) t = doc.body;
+  const e = doc.createElement('textarea');
+  const prev = doc.activeElement;
+  e.value = i;
+  e.setAttribute('readonly', '');
+  e.style.contain = 'strict';
+  e.style.position = 'absolute';
+  e.style.left = '-9999px';
+  e.style.fontSize = '12pt';
+  const s = doc.getSelection();
+  let orig = false;
+  if(s.rangeCount > 0) {
+    orig = s.getRangeAt(0);
+  }
+  t.append(e);
+  e.select();
+  e.selectionStart = 0;
+  e.selectionEnd = i.length;
+  let isSuccess = false;
+  try {
+    isSuccess = doc.execCommand('copy');
+  } catch(_) {}
+  e.remove();
+  if(orig) {
+    s.removeAllRanges();
+    s.addRange(orig);
+  }
+  if(prev) {
+    prev.focus();
+  }
+  return isSuccess;
+};
+
+Util.toPlainObject = (obj, t = (v, n) => v) => [...Util.getMemberNames(obj)].reduce((acc, k) => ({ ...acc, [k]: t(obj[k], k) }), {});
+
+Util.timer = msecs => {
+  let ret, id, rej, createdTime, startTime, stopTime, endTime, res, delay, n, timer;
+  createdTime = new Date();
+  const remaining = () => {
+    let r = startTime + msecs - (typeof stopTime == 'number' ? stopTime : new Date());
+    return r >= 0 ? r : 0;
+  };
+  const finish = callback => {
+    stopTime = new Date();
+    if(stopTime.valueOf() > endTime.valueOf()) stopTime = endTime;
+    if(typeof callback == 'function') callback(stopTime);
+    res((n = remaining()));
+  };
+  const log = (method, ...args) => console.log(`${Date.now() - createdTime.valueOf()} timer#${id}.${method}`, ...args.map(obj => Util.toPlainObject(obj || {}, v => v || (v instanceof Date ? `+${v.valueOf() - createdTime}` : v))));
+  const timeout = (msecs, tmr = timer) => {
+    let now = Date.now();
+    if(!startTime) startTime = new Date(now);
+    endTime = new Date(now + msecs);
+    stopTime = undefined;
+    id = setTimeout(() => {
+      finish(typeof tmr.callback == 'function' ? (...args) => tmr.callback(...args) : () => {});
+      log(`finish`, tmr);
+    }, msecs);
+    log('start', tmr);
+  };
+  const add = (arr, ...items) => [...(arr ? arr : []), ...items];
+
+  timer = {
+    subscribers: [],
+    /* prettier-ignore */ get delay() { return delay; },
+    /* prettier-ignore */ get created() { return createdTime; },
+    /* prettier-ignore */ get start() { return startTime || new Date(endTime.valueOf() - delay); },
+    /* prettier-ignore */ get stop() { return stopTime instanceof Date ? stopTime : undefined; },
+    /* prettier-ignore */ get elapsed() { return delay  + (stopTime || new Date()).valueOf() - endTime.valueOf(); },
+    /* prettier-ignore */ get end() {return endTime; },
+    /* prettier-ignore */ get remain() {return endTime.valueOf() - (stopTime || new Date()).valueOf(); },
+    cancel() {
+      log('cancel', this);
+      clearTimeout(id);
+      finish();
+      return this;
+    },
+    pause() {
+      let { remain, pause } = this;
+      stopTime = new Date();
+      clearTimeout(id);
+      this.resume = function() {
+        timeout(remain, this);
+        this.pause = pause;
+        delete this.resume;
+        delete this.restart;
+        log('resume', this);
+        return this;
+      };
+      this.restart = function() {
+        timeout(delay, this);
+        this.pause = pause;
+        delete this.resume;
+        delete this.restart;
+        log('restart', this);
+        return this;
+      };
+      delete this.pause;
+      log('pause', this);
+      return this;
+    },
+    callback(...args) {
+      log('callback', this);
+      const { subscribers } = this;
+      for(let f of subscribers) f.call(this, ...args);
+      return this;
+    },
+    subscribe(f) {
+      const { subscribers } = this;
+      if(subscribers.indexOf(f) == -1) subscribers.push(f);
+      return this;
+    },
+    unsubscribe(f) {
+      const { subscribers } = this;
+      let idx = subscribers.indexOf(f);
+      if(idx != -1) subscribers.splice(idx, idx + 1);
+      return this;
+    }
+  };
+  const start = () =>
+    new Promise((resolve, reject) => {
+      res = resolve;
+      rej = reject;
+      timeout((delay = msecs));
+    });
+  ret = start();
+  return Util.define(ret, timer);
 };
 
 export default Util;

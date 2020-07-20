@@ -1,7 +1,7 @@
 export const Event = {
   simulateKey(keyCode, type, modifiers, target = window) {
     var evtName = typeof type === 'string' ? 'key' + type : 'keydown';
-    //  var modifier = (typeof(modifiers) === "object") ? modifier : {};
+    //var modifier = (typeof(modifiers) === "object") ? modifier : {};
 
     const { ctrlKey = false, shiftKey = false, altKey = false, metaKey = false } = modifiers || {};
 
@@ -14,7 +14,7 @@ export const Event = {
 
     //event.initEvent(evtName, true, false);
 
-    //  Object.assign(event, {ctrlKey,shiftKey,altKey,metaKey});
+    //Object.assign(event, {ctrlKey,shiftKey,altKey,metaKey});
 
     console.log('event:', event);
     target.dispatchEvent(event);

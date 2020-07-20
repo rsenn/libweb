@@ -120,7 +120,7 @@ export class Enum {
       nameToEnumMap[name.toUpperCase()] = enumInstance;
     });
 
-    // Define non-writable, non-enumerable properties
+    //Define non-writable, non-enumerable properties
     Object.defineProperty(newEnum, 'valueToEnumMap', { value: valueToEnumMap });
     Object.defineProperty(newEnum, 'nameToEnumMap', { value: nameToEnumMap });
 

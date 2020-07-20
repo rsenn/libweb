@@ -11,12 +11,12 @@
  * @returns {void} Nothing.
  */
 export function loadSVGs() {
-  // Find our SVGs.
+  //Find our SVGs.
   const svgs = document.querySelectorAll('svg[data-url]');
 
-  // Loop and process.
+  //Loop and process.
   for(let i = 0; i < svgs.length; ++i) {
-    // Grab the URL and delete the attribute; we no longer need it.
+    //Grab the URL and delete the attribute; we no longer need it.
     let url = svgs[i].getAttribute('data-url');
     svgs[i].removeAttribute('data-url');
 
@@ -60,23 +60,23 @@ export async function inlineSVG(url, el) {
     CacheSVG.put(url, data);
   }
 
-  // This response should be an XML document we can parse.
+  //This response should be an XML document we can parse.
   const parser = new DOMParser();
   const parsed = parser.parseFromString(data, 'image/svg+xml');
 
-  // The file might not actually begin with "<svg>", and
-  // for that matter there could be none, or many.
+  //The file might not actually begin with "<svg>", and
+  //for that matter there could be none, or many.
   let svg = parsed.getElementsByTagName('svg');
   if(svg.length) {
-    // But we only want the first.
+    //But we only want the first.
     svg = svg[0];
 
-    // Copy over the attributes first.
+    //Copy over the attributes first.
     const attr = svg.attributes;
     const attrLen = attr.length;
     for(let i = 0; i < attrLen; ++i) {
       if(attr[i].specified) {
-        // Merge classes.
+        //Merge classes.
         if(attr[i].name === 'class') {
           const classes = attr[i].value
             .replace(/\s+/g, ' ')
@@ -87,16 +87,16 @@ export async function inlineSVG(url, el) {
             el.classList.add(classes[j]);
           }
         }
-        // Add/replace anything else.
+        //Add/replace anything else.
         else {
           el.setAttribute(attr[i].name, attr[i].value);
         }
       }
     }
 
-    // Now transfer over the children. Note: IE does not
-    // assign an innerHTML property to SVGs, so we need to
-    // go node by node.
+    //Now transfer over the children. Note: IE does not
+    //assign an innerHTML property to SVGs, so we need to
+    //go node by node.
     while(svg.childNodes.length) {
       el.appendChild(svg.childNodes[0]);
     }

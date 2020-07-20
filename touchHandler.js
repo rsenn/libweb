@@ -37,7 +37,7 @@ export function MovementListener(handler, options) {
 
     //console.log("MovementListener", { type, started, ends });
 
-    //  console.log("Touch ", type);
+    //console.log("Touch ", type);
 
     if(ends) {
       let x = prev && prev.x !== undefined ? prev.x : 0;
@@ -463,7 +463,7 @@ export const TouchHandler = (handle, options) => {
     } else if(type.endsWith('end') || type.endsWith('up')) {
       running = false;
       handle.end(event);
-      //  event.cancel();
+      //event.cancel();
     } else if(type.endsWith('cancel')) handle.cancel(event);
   };
   return TouchListener(fn, options);

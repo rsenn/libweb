@@ -77,9 +77,9 @@ export const makeAutoStoreHandler = (name, store, runner /* = mobx.autorun */) =
   if(!store) store = getLocalStorage();
   var fn = function(_this, _member) {
     let firstRun = false; //true;
-    // will run on change
+    //will run on change
     const disposer = runner(() => {
-      // on load check if there's an existing store on localStorage and extend the store
+      //on load check if there's an existing store on localStorage and extend the store
       if(firstRun) {
         const existingStore = store.get(name);
         if(existingStore) {

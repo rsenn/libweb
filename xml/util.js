@@ -89,9 +89,9 @@ class XMLObject {
     return { tagName, attributes, children };
   }
 }
-// prettier-ignore
+//prettier-ignore
 Object.assign(XMLObject.prototype, Util.filterKeys(Util.getMembers(Array.prototype), k => typeof k == 'symbol' || ['slice', 'splice', 'toLocaleString', 'toString', 'back', 'front'].indexOf(k) != -1) );
-// prettier-ignore
+//prettier-ignore
 Util.define(XMLObject.prototype, { get [Symbol.species]() {return XMLObject; } });
 Util.define(XMLObject.prototype, {
   [Symbol.for('nodejs.util.inspect.custom')]() {

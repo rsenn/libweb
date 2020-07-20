@@ -23,7 +23,7 @@
    * Changes to HashMap
    */
 
-  // Same as Haskmap.get(), but stores an empty array (and returns that) when the value for the key is undefined
+  //Same as Haskmap.get(), but stores an empty array (and returns that) when the value for the key is undefined
   HashMap.prototype.Get = function(key) {
     var data = this.get(key);
     if(!data) {
@@ -97,7 +97,7 @@
     Array.prototype.push.call(orig, other);
   };
 
-  // Remove duplicates and specific items from an array
+  //Remove duplicates and specific items from an array
   var sanitize = function(arr, exclude) {
     if(!(exclude instanceof Array)) {
       exclude = [exclude];
@@ -113,8 +113,8 @@
     return result;
   };
 
-  // Same as sanitize, but without exclusions
-  // This saves quite some (slow) indexOf() calls
+  //Same as sanitize, but without exclusions
+  //This saves quite some (slow) indexOf() calls
   var removeDuplicates = function(arr) {
     var result = [];
     for(var i = 0, len = arr.length; i < len; i++) {
@@ -125,10 +125,10 @@
     }
   };
 
-  // Same as removeDuplicates, but for cells
-  // Cell objects may be unequal (checked by ===),
-  // But may refer to the same cell:
-  // var c1 = {x:3, y:5}; var c2 = {x:3, y:5}; c1 === c2; // false, but refer to same cell
+  //Same as removeDuplicates, but for cells
+  //Cell objects may be unequal (checked by ===),
+  //But may refer to the same cell:
+  //var c1 = {x:3, y:5}; var c2 = {x:3, y:5}; c1 === c2; // false, but refer to same cell
   var removeDuplicateCells = function(arr) {
     var result = [];
     for(var i = 0, len = arr.length; i < len; i++) {
@@ -171,21 +171,21 @@
   };
 
   SpatialHashMap.prototype.moveAndResizeBy = SpatialHashMap.prototype.moveAndResize = function(diff, obj) {
-    // Get the cells the object WAS in
+    //Get the cells the object WAS in
     var object = this.objects.get(obj);
     var aabb = object.AABB;
     var oldCells = this.cellsForAABB(aabb);
 
-    // Update the AABB
+    //Update the AABB
     aabb.x += diff.x;
     aabb.y += diff.y;
     aabb.w += diff.w;
     aabb.h += diff.w;
 
-    // Get the cells the object IS in
+    //Get the cells the object IS in
     var newCells = this.cellsForAABB(aabb);
 
-    // Make a diff: which cells should the object be removed from, and to which should it be added?
+    //Make a diff: which cells should the object be removed from, and to which should it be added?
     var cellsToRemove = oldCells.map(function(cell) {
       return newCells.indexOf(cell) === -1;
     });
@@ -193,11 +193,11 @@
       return oldCells.indexOf(cell) === -1;
     });
 
-    // Do that
+    //Do that
     removeFromCells(this.grid, cellsToRemove, obj);
     addToCells(this.grid, cellsToAdd, obj);
 
-    // Update the object's cells attribute
+    //Update the object's cells attribute
     object.cells = newCells;
 
     return this;

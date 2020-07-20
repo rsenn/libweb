@@ -15,8 +15,8 @@ export var LogJS = {
 
 var appenders = {};
 
-// This is the method for logging.  It passes off to the
-// appenders to perform the actual logging.
+//This is the method for logging.  It passes off to the
+//appenders to perform the actual logging.
 var log = function(type, message, url, lineNumber) {
   var now = new Date().getTime();
 
@@ -37,7 +37,7 @@ var log = function(type, message, url, lineNumber) {
   }
 };
 
-// Redirect the onerror handler for the global object (if it exists)
+//Redirect the onerror handler for the global object (if it exists)
 var win = LogJS.window_;
 
 var gErrorHandler;
@@ -52,7 +52,7 @@ win.onerror = function onErrorLogJS(message, url, lineNumber) {
   }
 };
 
-// --------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 LogJS.error = function(message, url, lineNumber) {
   log(LogJS.ERROR, message, url, lineNumber);
@@ -66,7 +66,7 @@ LogJS.info = function(message, url, lineNumber) {
   log(LogJS.INFO, message, url, lineNumber);
 };
 
-// --------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 LogJS.addAppender = function(appender) {
   if(appender !== undefined) {
@@ -98,8 +98,8 @@ Object.defineProperty(LogJS, 'config', {
   enumerable: false
 });
 
-// --------------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 LogJS.BaseAppender = function() {};
 
@@ -123,7 +123,7 @@ Object.defineProperty(LogJS.BaseAppender.prototype, 'name', {
   enumerable: false
 });
 
-// Angular
+//Angular
 if(typeof angular !== 'undefined') {
   LogJS.config.global = {
     debug: true

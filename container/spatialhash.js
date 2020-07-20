@@ -8,20 +8,20 @@
  * 2D Spatial Hash
  * example:
  *
- * // the trick is to pick the right size for your hash based on your usage (i.e., the expected size of your objects)
+ *  //the trick is to pick the right size for your hash based on your usage (i.e., the expected size of your objects)
  * var hash = new SpatialHash(100);
  *
- * // use your own 2D graphics libraries--I like PIXI.js
+ *  //use your own 2D graphics libraries--I like PIXI.js
  * var circle = new Circle(10, 10, 5);
  *
- * // each object must have an AABB bounding box {top-left x, top-left y, width, height}
+ *  //each object must have an AABB bounding box {top-left x, top-left y, width, height}
  * circle.AABB = {5, 5, 10, 10};
  * hash.insert(circle);
  *
- * // returns the circle
+ *  //returns the circle
  * var results = hash.query({x: 0, y: 0, width: 10, height: 10});
  *
- * // or iterate over the results to avoid creating new arrays
+ *  //or iterate over the results to avoid creating new arrays
  * hash.query({x: 0, y: 0, width: 10, height: 10},
  *  function(object)
  *  {
@@ -61,7 +61,7 @@ export class SpatialHash {
     x2 = x2 >= this.width ? this.width - 1 : x2;
     var y2 = Math.floor((AABB.y + AABB.height) / this.cellSize);
     y2 = y2 >= this.height ? this.height - 1 : y2;
-    // only remove and insert if mapping has changed
+    //only remove and insert if mapping has changed
     if(object.spatial.x1 !== x1 || object.spatial.y1 !== y1 || object.spatial.x2 !== x2 || object.spatial.y2 !== y2) {
       if(object.spatial.maps.length) {
         this.remove(object);

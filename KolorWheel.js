@@ -1,8 +1,8 @@
-// KolorWheel.js - ern0 at linkbroker.hu
-// docs: http://linkbroker.hu/stuff/kolorwheel.js/
+//KolorWheel.js - ern0 at linkbroker.hu
+//docs: http://linkbroker.hu/stuff/kolorwheel.js/
 //
-// started 2014.03.04
-// updated 2014.03.24
+//started 2014.03.04
+//updated 2014.03.24
 
 export function KolorWheel(color) {
   this.resultList = [this];
@@ -13,8 +13,8 @@ export function KolorWheel(color) {
     this.setHsl([color.h, color.s, color.l]);
   } else {
     this.setColor(color);
-  } // else clone
-} // KolorWheel() ctor
+  } //else clone
+} //KolorWheel() ctor
 
 KolorWheel.prototype.setColor = function(color) {
   if(typeof color == 'undefined') return;
@@ -24,7 +24,7 @@ KolorWheel.prototype.setColor = function(color) {
   } else {
     this.setHex(color);
   }
-}; // setColor()
+}; //setColor()
 
 KolorWheel.prototype.setHsl = function(hsl) {
   this.h = hsl[0];
@@ -33,7 +33,7 @@ KolorWheel.prototype.setHsl = function(hsl) {
   this.validateHsl();
 
   return this;
-}; // setHsl()
+}; //setHsl()
 
 KolorWheel.prototype.validateHsl = function() {
   this.h = this.h % 360;
@@ -43,7 +43,7 @@ KolorWheel.prototype.validateHsl = function() {
   if(this.s > 100) this.s = 100;
   if(this.l < 0) this.l = 0;
   if(this.l > 100) this.l = 100;
-}; // validateHsl()
+}; //validateHsl()
 
 KolorWheel.prototype.setHex = function(hex) {
   if(hex.substring(0, 1) == '#') hex = hex.substring(1);
@@ -54,7 +54,7 @@ KolorWheel.prototype.setHex = function(hex) {
   this.setRgb([r, g, b]);
 
   return this;
-}; // setHex()
+}; //setHex()
 
 KolorWheel.prototype.setRgb = function(rgb) {
   var r = rgb[0] / 255;
@@ -68,7 +68,7 @@ KolorWheel.prototype.setRgb = function(rgb) {
   this.l = this.h;
 
   if(max == min) {
-    // achromatic
+    //achromatic
 
     this.h = 0;
     this.s = 0;
@@ -86,17 +86,17 @@ KolorWheel.prototype.setRgb = function(rgb) {
       case b:
         this.h = (r - g) / d + 4;
         break;
-    } // switch
+    } //switch
 
     this.h = this.h / 6;
-  } // else achromatic
+  } //else achromatic
 
   this.h = 360 * this.h;
   this.s = 100 * this.s;
   this.l = 100 * this.l;
 
   return this;
-}; // setRgb()
+}; //setRgb()
 
 KolorWheel.prototype.hue2rgb = function(p, q, t) {
   if(t < 0) t += 1;
@@ -106,7 +106,7 @@ KolorWheel.prototype.hue2rgb = function(p, q, t) {
   if(t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
 
   return p;
-}; // hue2rgb()
+}; //hue2rgb()
 
 KolorWheel.prototype.getRgb = function() {
   this.validateHsl();
@@ -125,10 +125,10 @@ KolorWheel.prototype.getRgb = function() {
     r = this.hue2rgb(p, q, h + 1 / 3);
     g = this.hue2rgb(p, q, h);
     b = this.hue2rgb(p, q, h - 1 / 3);
-  } // if not achromatic
+  } //if not achromatic
 
   return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-}; // getRgb()
+}; //getRgb()
 
 KolorWheel.prototype.getHex = function() {
   var result = this.getRgb();
@@ -138,19 +138,19 @@ KolorWheel.prototype.getHex = function() {
   hex += this.toHexByte(result[2]);
 
   return '#' + hex.toUpperCase();
-}; // getHex()
+}; //getHex()
 
 KolorWheel.prototype.toHexByte = function(number) {
   var hexByte = number.toString(16);
   if(hexByte.length < 2) hexByte = '0' + hexByte;
 
   return hexByte;
-}; // toHexByte()
+}; //toHexByte()
 
 KolorWheel.prototype.getHsl = function() {
   this.validateHsl();
   return [this.h, this.s, this.l];
-}; // getHsl()
+}; //getHsl()
 
 KolorWheel.prototype.multi = function(fn, p1, p2, p3, p4, p5, p6, p7, p8, p9) {
   var sourceList = [].concat(this.resultList);
@@ -161,7 +161,7 @@ KolorWheel.prototype.multi = function(fn, p1, p2, p3, p4, p5, p6, p7, p8, p9) {
     if(fn == 'rel') KolorWheel.prototype.spinSingle.call(src, 'rel', p1, p2, p3, p4, p5, p6, p7, p8, p9);
     if(fn == 'abs') KolorWheel.prototype.spinSingle.call(src, 'abs', p1, p2, p3, p4, p5, p6, p7, p8, p9);
     this.resultList = this.resultList.concat(src.workList);
-  } // foreach sourceList
+  } //foreach sourceList
 
   if(this.resultList.length == 0) return this;
 
@@ -171,11 +171,11 @@ KolorWheel.prototype.multi = function(fn, p1, p2, p3, p4, p5, p6, p7, p8, p9) {
   this.l = lastResult.l;
 
   return this;
-}; // multi()
+}; //multi()
 
 KolorWheel.prototype.rel = function(dh, ds, dl, length, start) {
   return this.multi('rel', dh, ds, dl, length, start);
-}; // rel()
+}; //rel()
 
 KolorWheel.prototype.abs = function(dh, ds, dl, length, start) {
   var isDhAColor = false;
@@ -184,7 +184,7 @@ KolorWheel.prototype.abs = function(dh, ds, dl, length, start) {
   } else {
     if(('' + dh).substring(0, 1) == '#') isDhAColor = true;
     if(('' + dh).length > 4) isDhAColor = true;
-  } // if dh is object
+  } //if dh is object
 
   if(isDhAColor) {
     var conv = new KolorWheel(dh);
@@ -192,7 +192,7 @@ KolorWheel.prototype.abs = function(dh, ds, dl, length, start) {
   } else {
     return this.multi('abs', dh, ds, dl, length, start);
   }
-}; // abs()
+}; //abs()
 
 KolorWheel.prototype.spinSingle = function(mode, dh, ds, dl, length, start) {
   var unchanged = mode == 'abs' ? -1 : 0;
@@ -252,7 +252,7 @@ KolorWheel.prototype.spinSingle = function(mode, dh, ds, dl, length, start) {
       result.h += parmh;
       result.s += parms;
       result.l += parml;
-    } // if rel
+    } //if rel
     else {
       if(dh == unchanged) {
         result.h = this.h;
@@ -281,42 +281,42 @@ KolorWheel.prototype.spinSingle = function(mode, dh, ds, dl, length, start) {
           result.l = parml;
         }
       }
-    } // else abs
+    } //else abs
 
     result.step = step;
     if(jquery) result.elm = jquery.eq(step);
 
     this.workList[step] = result;
-  } // for step
-}; // spinSingle()
+  } //for step
+}; //spinSingle()
 
 KolorWheel.prototype.calcLinearGradientStep = function(step, length, base, target) {
   var progress = step / (length - 1);
   var result = base + (target - base) * progress;
 
   return result;
-}; // calcLinearGradientStep();
+}; //calcLinearGradientStep();
 
 KolorWheel.prototype.each = function(fn) {
   for(var i in this.resultList) {
     fn.call(this.resultList[i], this.resultList[i].elm);
-  } // foreach result
-}; // each()
+  } //foreach result
+}; //each()
 
 KolorWheel.prototype.get = function(n) {
   if(typeof n == 'undefined') n = 0;
   return this.resultList[n];
-}; // get()
+}; //get()
 
 KolorWheel.prototype.isDark = function() {
   return !this.isLight();
-}; // isDark()
+}; //isDark()
 
 KolorWheel.prototype.isLight = function() {
   var rgb = this.getRgb();
   var lum = 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2];
 
   return lum > 127;
-}; // isLight()
+}; //isLight()
 
 export default KolorWheel;

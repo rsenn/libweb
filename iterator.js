@@ -41,7 +41,7 @@ export class IteratorForwarder extends IteratorInterface {
   }
 
   next(...args) {
-    // console.log(this, "IteratorForwarder.next(",...args,")");
+    //console.log(this, "IteratorForwarder.next(",...args,")");
     return this.delegate(...args);
   }
 }
@@ -50,11 +50,11 @@ export class Iterator extends IterableInterface {
   constructor(arg) {
     let ret;
     super();
-    // if(isIterable(arg)) arg = arg[Symbol.iterator]();
+    //if(isIterable(arg)) arg = arg[Symbol.iterator]();
 
     if(isIterator(arg)) {
       ret = this;
-      //    ret.next = arg.next.bind(arg); // ((...args) => arg.next(...args));
+      //ret.next = arg.next.bind(arg); // ((...args) => arg.next(...args));
       ret.next = (...args) => {
         let ret = arg.next(...args);
         //console.log("arg.next(",...args,") =",ret);
@@ -80,7 +80,7 @@ export class Iterator extends IterableInterface {
       if(Object.hasOwnProperty(ret, 'next')) Object.setPrototypeOf(ret, Iterator.prototype);
       else Util.extend(ret, Util.getMethods(Iterator.prototype));
 
-    // console.log("ret.next = ",ret.next+'');
+    //console.log("ret.next = ",ret.next+'');
 
     /*
                             //console.log("Iterator ", ret);

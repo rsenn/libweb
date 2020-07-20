@@ -30,7 +30,7 @@ export function RGBA(r = 0, g = 0, b = 0, a = 255) {
 
         let mul = arg.length >= 7 ? 1 : 17;
 
-        // console.log('RGBA match:', c, ' mul:', mul);
+        //console.log('RGBA match:', c, ' mul:', mul);
 
         ret.r = parseInt(c[1], 16) * mul;
         ret.g = parseInt(c[2], 16) * mul;
@@ -86,7 +86,30 @@ RGBA.fromString = str => {
     );
   return c;
 };
+RGBA.order = {
+  RGBA: 0,
+  BGRA: 1,
+  ARGB: 2,
+  ABGR: 3
+};
+RGBA.fmt = [({ r, g, b, a }) => [r, g, b, a], ({ b, g, r, a }) => [b, g, r, a], ({ a, r, g, b }) => [a, r, g, b], ({ a, b, g, r }) => [a, b, g, r]];
+RGBA.calculators = [({ r, g, b, a }) => ((r * 256 + g) * 256 + b) * 256 + a, ({ b, g, r, a }) => ((b * 256 + g) * 256 + r) * 256 + a, ({ a, r, g, b }) => ((a * 256 + r) * 256 + g) * 256 + b, ({ a, b, g, r }) => ((a * 256 + b) * 256 + g) * 256 + r];
+RGBA.prototype.binaryValue = function(order = 0) {
+  const { r, g, b, a } = this;
+  return RGBA.calculators[order](RGBA.clamp(this));
+};
+RGBA.prototype.valid = function() {
+  const { r, g, b, a } = this;
+  return [r, g, b, a].every(n => {
+    n = +n;
+    return !isNaN(n) && n >= 0 && n <= 255;
+  });
+};
 
+RGBA.prototype.compareTo = function(other) {
+  let d = RGBA.prototype.binaryValue.call(other) - RGBA.prototype.binaryValue.call(this);
+  return d < 0 ? -1 : d > 0 ? 1 : 0;
+};
 RGBA.fromHex = (hex, alpha = 255) => {
   const matches = hex && (hex.length >= 7 ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(hex) : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(hex));
   if(matches === null) return null;
@@ -97,9 +120,10 @@ RGBA.fromHex = (hex, alpha = 255) => {
   return new RGBA(r, g, b, matches.length > 3 && !isNaN(a) ? a : alpha);
 };
 
-RGBA.prototype.hex = function() {
+RGBA.prototype.hex = function(opts = {}) {
+  const { bits } = opts;
   const { r, g, b, a } = RGBA.clamp(RGBA.round(this));
-  return '#' + ('0000000' + ((r << 16) | (g << 8) | b).toString(16)).slice(-6) + (a !== undefined && a != 255 ? ('0' + a.toString(16)).slice(-2) : '');
+  return '#' + ('0000000' + ((r << 16) | (g << 8) | b).toString(16)).slice(-6) + ((bits > 24 || (a >= 1 && a < 255)) && !isNaN(+a) ? (+a).toString(16).substring(-2) : '');
 };
 
 RGBA.prototype.toRGB = function() {
@@ -211,7 +235,7 @@ RGBA.prototype.toHSLA = function() {
   var l = (max + min) / 2;
 
   if(max == min) {
-    h = s = 0; // achromatic
+    h = s = 0; //achromatic
   } else {
     var d = max - min;
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
@@ -309,30 +333,28 @@ RGBA.prototype.fromLAB = function(lab) {
 };
 
 RGBA.prototype.linear = function() {
-  // make it decimal
-  let r = this.r / 255.0; // red channel decimal
-  let g = this.g / 255.0; // green channel decimal
-  let b = this.b / 255.0; // blue channel decimal
-  // apply gamma
+  //make it decimal
+  let r = this.r / 255.0; //red channel decimal
+  let g = this.g / 255.0; //green channel decimal
+  let b = this.b / 255.0; //blue channel decimal
+  //apply gamma
   let gamma = 2.2;
-  r = Math.pow(r, gamma); // linearize red
-  g = Math.pow(g, gamma); // linearize green
-  b = Math.pow(b, gamma); // linearize blue
+  r = Math.pow(r, gamma); //linearize red
+  g = Math.pow(g, gamma); //linearize green
+  b = Math.pow(b, gamma); //linearize blue
   return { r, g, b };
 };
 
 RGBA.prototype.luminance = function() {
   let lin = RGBA.prototype.linear.call(this);
-  let Y = 0.2126 * lin.r; // red channel
-  Y = Y + 0.7152 * lin.g; // green channel
-  Y = Y + 0.0722 * lin.b; // blue channel
+  let Y = 0.2126 * lin.r; //red channel
+  Y = Y + 0.7152 * lin.g; //green channel
+  Y = Y + 0.0722 * lin.b; //blue channel
   return Y;
 };
 RGBA.prototype.invert = function() {
-  let r = 255 - this.r;
-  let g = 255 - this.g;
-  let b = 255 - this.b;
-  return new RGBA(r, g, b, this.a);
+  const  {r,g,b,a} = this.clamp();
+  return new RGBA(255-r, 255-g, 255-b, a);
 };
 RGBA.prototype.blackwhite = function(a = this.a) {
   return this.luminanace() >= 0.2 ? new RGBA(255, 255, 255, a) : new RGBA(0, 0, 0, a);

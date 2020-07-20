@@ -18,33 +18,33 @@ const PROPS_ASSIGN = 4;
 const PROP_SET = MODE_PROP_SET;
 const PROP_APPEND = MODE_PROP_APPEND;
 
-// Turn a result of a build(...) call into a tree that is more
-// convenient to analyze and transform (e.g. Babel plugins).
-// For example:
-// 	treeify(
-//		build'<div href="1${a}" ...${b}><${x} /></div>`,
-//		[X, Y, Z]
-//	)
-// returns:
-// 	{
-// 		tag: 'div',
-//		props: [ { href: ["1", X] },	Y ],
-// 		children: [ { tag: Z, props: [], children: [] } ]
-// 	}
+//Turn a result of a build(...) call into a tree that is more
+//convenient to analyze and transform (e.g. Babel plugins).
+//For example:
+//treeify(
+//build'<div href="1${a}" ...${b}><${x} /></div>`,
+//[X, Y, Z]
+//)
+//returns:
+//{
+//tag: 'div',
+//props: [ { href: ["1", X] },	Y ],
+//children: [ { tag: Z, props: [], children: [] } ]
+//}
 
 const evaluate = (h$$1, built, fields, args) => {
   let tmp;
 
-  // `build()` used the first element of the operation list as
-  // temporary workspace. Now that `build()` is done we can use
-  // that space to track whether the current element is "dynamic"
-  // (i.e. it or any of its descendants depend on dynamic values).
+  //`build()` used the first element of the operation list as
+  //temporary workspace. Now that `build()` is done we can use
+  //that space to track whether the current element is "dynamic"
+  //(i.e. it or any of its descendants depend on dynamic values).
   built[0] = 0;
 
   for(let i = 1; i < built.length; i++) {
     const type = built[i++];
 
-    // Set `built[0]`'s appropriate bits if this element depends on a dynamic value.
+    //Set `built[0]`'s appropriate bits if this element depends on a dynamic value.
     const value = built[i] ? ((built[0] |= type ? 1 : 2), fields[built[i++]]) : built[++i];
 
     if(type === TAG_SET) {
@@ -56,26 +56,26 @@ const evaluate = (h$$1, built, fields, args) => {
     } else if(type === PROP_APPEND) {
       args[1][built[++i]] += value + '';
     } else if(type) {
-      // type === CHILD_RECURSE
-      // Set the operation list (including the staticness bits) as
-      // `this` for the `h` call.
+      //type === CHILD_RECURSE
+      //Set the operation list (including the staticness bits) as
+      //`this` for the `h` call.
       tmp = h$$1.apply(value, evaluate(h$$1, value, fields, ['', null]));
       args.push(tmp);
 
       if(value[0]) {
-        // Set the 2nd lowest bit it the child element is dynamic.
+        //Set the 2nd lowest bit it the child element is dynamic.
         built[0] |= 2;
       } else {
-        // Rewrite the operation list in-place if the child element is static.
-        // The currently evaluated piece `CHILD_RECURSE, 0, [...]` becomes
-        // `CHILD_APPEND, 0, tmp`.
-        // Essentially the operation list gets optimized for potential future
-        // re-evaluations.
+        //Rewrite the operation list in-place if the child element is static.
+        //The currently evaluated piece `CHILD_RECURSE, 0, [...]` becomes
+        //`CHILD_APPEND, 0, tmp`.
+        //Essentially the operation list gets optimized for potential future
+        //re-evaluations.
         built[i - 2] = CHILD_APPEND;
         built[i] = tmp;
       }
     } else {
-      // type === CHILD_APPEND
+      //type === CHILD_APPEND
       args.push(value);
     }
   }
@@ -155,7 +155,7 @@ const build = function(statics) {
 
       if(mode === MODE_TEXT) {
         if(char === '<') {
-          // commit buffer
+          //commit buffer
           commit();
           if(MINI) {
             current = [current, '', null];
@@ -167,7 +167,7 @@ const build = function(statics) {
           buffer += char;
         }
       } else if(mode === MODE_COMMENT) {
-        // Ignore everything until the last three characters are '-', '-' and '>'
+        //Ignore everything until the last three characters are '-', '-' and '>'
         if(buffer === '--' && char === '>') {
           mode = MODE_TEXT;
           buffer = '';
@@ -186,7 +186,7 @@ const build = function(statics) {
         commit();
         mode = MODE_TEXT;
       } else if(!mode) {
-        // Ignore everything until the tag ends
+        //Ignore everything until the tag ends
       } else if(char === '=') {
         mode = MODE_PROP_SET;
         propName = buffer;
@@ -204,7 +204,7 @@ const build = function(statics) {
         }
         mode = MODE_SLASH;
       } else if(char === ' ' || char === '\t' || char === '\n' || char === '\r') {
-        // <a disabled>
+        //<a disabled>
         commit();
         mode = MODE_WHITESPACE;
       } else {

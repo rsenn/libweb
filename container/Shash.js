@@ -25,7 +25,7 @@ Shash.prototype.neighbour = function(object, ogrid) {
 Shash.prototype.check = function() {
   if(!this.onNeighbour) return;
 
-  // Clear grids
+  //Clear grids
   var i = Math.ceil(this.size.x / this.gridSize.x),
     J = Math.ceil(this.size.y / this.gridSize.y);
   this.grid = [];
@@ -35,7 +35,7 @@ Shash.prototype.check = function() {
     while(j--) this.grid[i][j] = [];
   }
 
-  // Re-assign grid objects, based on their coordinates
+  //Re-assign grid objects, based on their coordinates
   i = this.objects.length;
   while(i--) {
     var grob = this.objects[i];
@@ -46,25 +46,25 @@ Shash.prototype.check = function() {
   i = this.grid.length;
   while(i--) {
     var gridx = this.grid[i],
-      iLUB = i !== this.grid.length - 1; // I: not last element
+      iLUB = i !== this.grid.length - 1; //I: not last element
     j = gridx.length;
     while(j--) {
-      var grid = gridx[j], // Focused grid cell
+      var grid = gridx[j], //Focused grid cell
         k = grid.length,
-        jLUB = j !== gridx.length - 1, // J: not last element
-        jG0 = j !== 0; // J: not first element
+        jLUB = j !== gridx.length - 1, //J: not last element
+        jG0 = j !== 0; //J: not first element
       while(k--) {
-        grob = grid[k]; // Focused grid object
+        grob = grid[k]; //Focused grid object
         var ok = k;
-        while(ok--) this.onNeighbour(grob.object, grid[ok].object); // Check same cell
+        while(ok--) this.onNeighbour(grob.object, grid[ok].object); //Check same cell
         if(iLUB) {
-          // If there is space to the right
-          var ogridx = this.grid[i + 1]; // Row of grids to the right of focused grid
-          if(jG0) this.neighbour(grob.object, ogridx[j - 1]); // Check top-right
-          this.neighbour(grob.object, ogridx[j]); // Check right
-          if(jLUB) this.neighbour(grob.object, ogridx[j + 1]); // Check bottom-right
+          //If there is space to the right
+          var ogridx = this.grid[i + 1]; //Row of grids to the right of focused grid
+          if(jG0) this.neighbour(grob.object, ogridx[j - 1]); //Check top-right
+          this.neighbour(grob.object, ogridx[j]); //Check right
+          if(jLUB) this.neighbour(grob.object, ogridx[j + 1]); //Check bottom-right
         }
-        if(jLUB) this.neighbour(grob.object, gridx[j + 1]); // If there is space to the below, check below
+        if(jLUB) this.neighbour(grob.object, gridx[j + 1]); //If there is space to the below, check below
       }
     }
   }

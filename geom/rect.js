@@ -392,7 +392,7 @@ for(let name of [
   'isSquare',
   'getArea',
   'toString',
-  // 'toSource',
+  //'toSource',
   'points',
   'toCSS',
   'toTRBL',

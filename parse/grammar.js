@@ -7,7 +7,7 @@ const nodeInspect = Symbol.for('nodejs.util.inspect.custom');
 export class Rule {
   productions = [];
   fragment = false;
-  // grammar = null;
+  //grammar = null;
 
   static Symbol = class Symbol extends Node {
     constructor(str, id) {
@@ -64,7 +64,7 @@ export class Rule {
         this.push(sym);
         i++;
       }
-      //   if(symbols[0] && symbols[0].str == this.rule.name) console.log('SELF:', this.rule.name, this);
+      //if(symbols[0] && symbols[0].str == this.rule.name) console.log('SELF:', this.rule.name, this);
     }
 
     generate() {
@@ -95,7 +95,7 @@ export class Rule {
       super();
       this.op = op;
       this.args = args;
-      //  return this;
+      //return this;
     }
 
     toString() {
@@ -243,7 +243,7 @@ export class Grammar {
     rule.name = name;
     //console.log("productions:",productions);
     rule.parse(productions);
-    //   if(fragment) rule.fragment = fragment;
+    //if(fragment) rule.fragment = fragment;
     this.rules.set(name, rule);
     return rule;
   }

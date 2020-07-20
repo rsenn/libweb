@@ -32,17 +32,17 @@
 
 (function(factory, root) {
   if(typeof define == 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
+    //AMD. Register as an anonymous module.
     define(factory);
   } else if(typeof module != 'undefined' && typeof exports == 'object') {
-    // Node/CommonJS style
+    //Node/CommonJS style
     module.exports = factory();
   } else {
-    // No AMD or CommonJS support so we place log4javascript in (probably) the global variable
+    //No AMD or CommonJS support so we place log4javascript in (probably) the global variable
     root.log4javascript = factory();
   }
 })(function() {
-  // Array-related stuff. Next three methods are solely for IE5, which is missing them
+  //Array-related stuff. Next three methods are solely for IE5, which is missing them
   if(!Array.prototype.push) {
     Array.prototype.push = function() {
       for(var i = 0, len = arguments.length; i < len; i++) {
@@ -70,7 +70,7 @@
       var itemsAfterDeleted = this.slice(startIndex + deleteCount);
       var itemsDeleted = this.slice(startIndex, startIndex + deleteCount);
       this.length = startIndex;
-      // Copy the arguments into a proper Array object
+      //Copy the arguments into a proper Array object
       var argumentsArray = [];
       for(var i = 0, len = arguments.length; i < len; i++) {
         argumentsArray[i] = arguments[i];
@@ -90,7 +90,7 @@
   }
 
   /* ---------------------------------------------------------------------- */
-  // Custom event support
+  //Custom event support
 
   function EventSupport() {}
 
@@ -151,7 +151,7 @@
   var newLine = '\r\n';
   var pageLoaded = false;
 
-  // Create main log4javascript object; this will be assigned public properties
+  //Create main log4javascript object; this will be assigned public properties
   function Log4JavaScript() {}
   Log4JavaScript.prototype = new EventSupport();
 
@@ -160,7 +160,7 @@
   log4javascript.edition = 'log4javascript';
 
   /* -------------------------------------------------------------------------- */
-  // Utility functions
+  //Utility functions
 
   function toStr(obj) {
     if(obj && obj.toString) {
@@ -180,13 +180,13 @@
     }
   }
 
-  // Gets the portion of the URL after the last slash
+  //Gets the portion of the URL after the last slash
   function getUrlFileName(url) {
     var lastSlashIndex = Math.max(url.lastIndexOf('/'), url.lastIndexOf('\\'));
     return url.substr(lastSlashIndex + 1);
   }
 
-  // Returns a nicely formatted representation of an error
+  //Returns a nicely formatted representation of an error
   function getExceptionStringRep(ex) {
     if(ex) {
       var exStr = 'Exception: ' + getExceptionMessage(ex);
@@ -217,7 +217,7 @@
   }
 
   function splitIntoLines(text) {
-    // Ensure all line breaks are \n only
+    //Ensure all line breaks are \n only
     var text2 = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
     return text2.split('\n');
   }
@@ -333,7 +333,7 @@
   }
 
   /* ---------------------------------------------------------------------- */
-  // Simple logging for log4javascript itself
+  //Simple logging for log4javascript itself
 
   var logLog = {
     quietMode: false,
@@ -407,8 +407,8 @@
     return useTimeStampsInMilliseconds;
   };
 
-  // This evaluates the given expression in the current scope, thus allowing
-  // scripts to access private variables. Particularly useful for testing
+  //This evaluates the given expression in the current scope, thus allowing
+  //scripts to access private variables. Particularly useful for testing
   log4javascript.evalInScope = function(expr) {
     return eval(expr);
   };
@@ -420,7 +420,7 @@
   };
 
   /* ---------------------------------------------------------------------- */
-  // Levels
+  //Levels
 
   var Level = function(level, name) {
     this.level = level;
@@ -451,7 +451,7 @@
   log4javascript.Level = Level;
 
   /* ---------------------------------------------------------------------- */
-  // Timers
+  //Timers
 
   function Timer(name, level) {
     this.name = name;
@@ -464,7 +464,7 @@
   };
 
   /* ---------------------------------------------------------------------- */
-  // Loggers
+  //Loggers
 
   var anonymousLoggerName = '[anonymous]';
   var defaultLoggerName = '[default]';
@@ -490,7 +490,7 @@
       childLogger.invalidateAppenderCache();
     };
 
-    // Additivity
+    //Additivity
     var additive = true;
     this.getAdditivity = function() {
       return additive;
@@ -504,7 +504,7 @@
       }
     };
 
-    // Create methods that use the appenders variable in this scope
+    //Create methods that use the appenders variable in this scope
     this.addAppender = function(appender) {
       if(isNull) {
         handleError('Logger.addAppender: you may not add an appender to the null logger');
@@ -540,7 +540,7 @@
 
     this.getEffectiveAppenders = function() {
       if(appenderCache === null || appenderCacheInvalidated) {
-        // Build appender cache
+        //Build appender cache
         var parentEffectiveAppenders = isRoot || !this.getAdditivity() ? [] : this.parent.getEffectiveAppenders();
         appenderCache = parentEffectiveAppenders.concat(appenders);
         appenderCacheInvalidated = false;
@@ -557,7 +557,7 @@
 
     this.log = function(level, params) {
       if(enabled && level.isGreaterOrEqual(this.getEffectiveLevel())) {
-        // Check whether last param is an exception
+        //Check whether last param is an exception
         var exception;
         var finalParamIndex = params.length - 1;
         var lastParam = params[finalParamIndex];
@@ -566,7 +566,7 @@
           finalParamIndex--;
         }
 
-        // Construct genuine array for the params
+        //Construct genuine array for the params
         var messages = [];
         for(var i = 0; i <= finalParamIndex; i++) {
           messages[i] = params[i];
@@ -586,7 +586,7 @@
     };
 
     this.setLevel = function(level) {
-      // Having a level of null on the root logger would be very bad.
+      //Having a level of null on the root logger would be very bad.
       if(isRoot && level === null) {
         handleError('Logger.setLevel: you cannot set the level of the root logger to null');
       } else if(level instanceof Level) {
@@ -736,9 +736,9 @@
   Logger.prototype.fatal.isEntryPoint = true;
 
   /* ---------------------------------------------------------------------- */
-  // Logger access methods
+  //Logger access methods
 
-  // Hashtable of loggers keyed by logger name
+  //Hashtable of loggers keyed by logger name
   var loggers = {};
   var loggerNames = [];
 
@@ -751,29 +751,29 @@
   };
 
   log4javascript.getLogger = function(loggerName) {
-    // Use default logger if loggerName is not specified or invalid
+    //Use default logger if loggerName is not specified or invalid
     if(typeof loggerName != 'string') {
       loggerName = anonymousLoggerName;
       logLog.warn('log4javascript.getLogger: non-string logger name ' + toStr(loggerName) + ' supplied, returning anonymous logger');
     }
 
-    // Do not allow retrieval of the root logger by name
+    //Do not allow retrieval of the root logger by name
     if(loggerName == rootLoggerName) {
       handleError('log4javascript.getLogger: root logger may not be obtained by name');
     }
 
-    // Create the logger for this name if it doesn't already exist
+    //Create the logger for this name if it doesn't already exist
     if(!loggers[loggerName]) {
       var logger = new Logger(loggerName);
       loggers[loggerName] = logger;
       loggerNames.push(loggerName);
 
-      // Set up parent logger, if it doesn't exist
+      //Set up parent logger, if it doesn't exist
       var lastDotIndex = loggerName.lastIndexOf('.');
       var parentLogger;
       if(lastDotIndex > -1) {
         var parentLoggerName = loggerName.substring(0, lastDotIndex);
-        parentLogger = log4javascript.getLogger(parentLoggerName); // Recursively sets up grandparents etc.
+        parentLogger = log4javascript.getLogger(parentLoggerName); //Recursively sets up grandparents etc.
       } else {
         parentLogger = rootLogger;
       }
@@ -799,14 +799,14 @@
     return nullLogger;
   };
 
-  // Destroys all loggers
+  //Destroys all loggers
   log4javascript.resetConfiguration = function() {
     rootLogger.setLevel(ROOT_LOGGER_DEFAULT_LEVEL);
     loggers = {};
   };
 
   /* ---------------------------------------------------------------------- */
-  // Logging events
+  //Logging events
 
   var LoggingEvent = function(logger, timeStamp, level, messages, exception) {
     this.logger = logger;
@@ -834,7 +834,7 @@
   log4javascript.LoggingEvent = LoggingEvent;
 
   /* ---------------------------------------------------------------------- */
-  // Layout prototype
+  //Layout prototype
 
   var Layout = function() {};
 
@@ -909,8 +909,8 @@
         for(var i = 0, len = this.customFields.length; i < len; i++) {
           var val = this.customFields[i].value;
 
-          // Check if the value is a function. If so, execute it, passing it the
-          // current layout and the logging event
+          //Check if the value is a function. If so, execute it, passing it the
+          //current layout and the logging event
           if(typeof val === 'function') {
             val = val(this, loggingEvent);
           }
@@ -963,7 +963,7 @@
   log4javascript.Layout = Layout;
 
   /* ---------------------------------------------------------------------- */
-  // Appender prototype
+  //Appender prototype
 
   var Appender = function() {};
 
@@ -973,8 +973,8 @@
   Appender.prototype.threshold = Level.ALL;
   Appender.prototype.loggers = [];
 
-  // Performs threshold checks before delegating actual logging to the
-  // subclass's specific append method.
+  //Performs threshold checks before delegating actual logging to the
+  //subclass's specific append method.
   Appender.prototype.doAppend = function(loggingEvent) {
     if(enabled && loggingEvent.level.level >= this.threshold.level) {
       this.append(loggingEvent);
@@ -1025,7 +1025,7 @@
   log4javascript.Appender = Appender;
 
   /* ---------------------------------------------------------------------- */
-  // SimpleLayout
+  //SimpleLayout
 
   function SimpleLayout() {
     this.customFields = [];
@@ -1047,7 +1047,7 @@
 
   log4javascript.SimpleLayout = SimpleLayout;
   /* ----------------------------------------------------------------------- */
-  // NullLayout
+  //NullLayout
 
   function NullLayout() {
     this.customFields = [];
@@ -1075,7 +1075,7 @@
 
   log4javascript.NullLayout = NullLayout;
   /* ---------------------------------------------------------------------- */
-  // XmlLayout
+  //XmlLayout
 
   function XmlLayout(combineMessages) {
     this.combineMessages = extractBooleanFromParam(combineMessages, true);
@@ -1140,7 +1140,7 @@
 
   log4javascript.XmlLayout = XmlLayout;
   /* ---------------------------------------------------------------------- */
-  // JsonLayout related
+  //JsonLayout related
 
   function escapeNewLines(str) {
     return str.replace(/\r\n|\r|\n/g, '\\r\\n');
@@ -1160,7 +1160,7 @@
   }
 
   /* ---------------------------------------------------------------------- */
-  // JsonLayout
+  //JsonLayout
 
   JsonLayout.prototype = new Layout();
 
@@ -1179,8 +1179,8 @@
     var i, len;
 
     function formatValue(val, prefix, expand) {
-      // Check the type of the data value to decide whether quotation marks
-      // or expansion are required
+      //Check the type of the data value to decide whether quotation marks
+      //or expansion are required
       var formattedValue;
       var valType = typeof val;
       if(val instanceof Date) {
@@ -1230,7 +1230,7 @@
 
   log4javascript.JsonLayout = JsonLayout;
   /* ---------------------------------------------------------------------- */
-  // HttpPostDataLayout
+  //HttpPostDataLayout
 
   function HttpPostDataLayout() {
     this.setKeys();
@@ -1240,7 +1240,7 @@
 
   HttpPostDataLayout.prototype = new Layout();
 
-  // Disable batching
+  //Disable batching
   HttpPostDataLayout.prototype.allowBatching = function() {
     return false;
   };
@@ -1265,7 +1265,7 @@
 
   log4javascript.HttpPostDataLayout = HttpPostDataLayout;
   /* ---------------------------------------------------------------------- */
-  // formatObjectExpansion
+  //formatObjectExpansion
 
   function formatObjectExpansion(obj, depth, indentation) {
     var objectsExpanded = [];
@@ -1339,7 +1339,7 @@
     return doFormat(obj, depth, indentation);
   }
   /* ---------------------------------------------------------------------- */
-  // Date-related stuff
+  //Date-related stuff
 
   var SimpleDateFormat;
 
@@ -1400,7 +1400,7 @@
     };
 
     Date.prototype.getPreviousSunday = function() {
-      // Using midday avoids any possibility of DST messing things up
+      //Using midday avoids any possibility of DST messing things up
       var midday = new Date(this.getFullYear(), this.getMonth(), this.getDate(), 12, 0, 0);
       var previousSunday = new Date(midday.getTime() - this.getDay() * ONE_DAY);
       return newDateAtMidnight(previousSunday.getFullYear(), previousSunday.getMonth(), previousSunday.getDate());
@@ -1472,7 +1472,7 @@
 
     var formatNumber = function(data, numberOfLetters) {
       var dataString = '' + data;
-      // Pad with 0s as necessary
+      //Pad with 0s as necessary
       return padWithZeroes(dataString, numberOfLetters);
     };
 
@@ -1486,7 +1486,7 @@
         var otherLetters = result[3];
         var otherCharacters = result[4];
 
-        // If the pattern matched is quoted string, output the text between the quotes
+        //If the pattern matched is quoted string, output the text between the quotes
         if(quotedString) {
           if(quotedString == "''") {
             formattedString += "'";
@@ -1494,12 +1494,12 @@
             formattedString += quotedString.substring(1, quotedString.length - 1);
           }
         } else if(otherLetters) {
-          // Swallow non-pattern letters by doing nothing here
+          //Swallow non-pattern letters by doing nothing here
         } else if(otherCharacters) {
-          // Simply output other characters
+          //Simply output other characters
           formattedString += otherCharacters;
         } else if(patternLetters) {
-          // Replace pattern letters
+          //Replace pattern letters
           var patternLetter = patternLetters.charAt(0);
           var numberOfLetters = patternLetters.length;
           var rawData = '';
@@ -1556,10 +1556,10 @@
               rawData = date.getMilliseconds();
               break;
             case 'Z':
-              rawData = date.getTimezoneOffset(); // This returns the number of minutes since GMT was this time.
+              rawData = date.getTimezoneOffset(); //This returns the number of minutes since GMT was this time.
               break;
           }
-          // Format the raw data depending on the type
+          //Format the raw data depending on the type
           switch (types[patternLetter]) {
             case TEXT2:
               formattedString += formatText(rawData, numberOfLetters, 2);
@@ -1572,7 +1572,7 @@
               break;
             case YEAR:
               if(numberOfLetters <= 3) {
-                // Output a 2-digit year
+                //Output a 2-digit year
                 var dataString = '' + rawData;
                 formattedString += dataString.substr(2, 2);
               } else {
@@ -1583,21 +1583,21 @@
               if(numberOfLetters >= 3) {
                 formattedString += formatText(monthNames[rawData], numberOfLetters, numberOfLetters);
               } else {
-                // NB. Months returned by getMonth are zero-based
+                //NB. Months returned by getMonth are zero-based
                 formattedString += formatNumber(rawData + 1, numberOfLetters);
               }
               break;
             case TIMEZONE:
               var isPositive = rawData > 0;
-              // The following line looks like a mistake but isn't
-              // because of the way getTimezoneOffset measures.
+              //The following line looks like a mistake but isn't
+              //because of the way getTimezoneOffset measures.
               var prefix = isPositive ? '-' : '+';
               var absData = Math.abs(rawData);
 
-              // Hours
+              //Hours
               var hours = '' + Math.floor(absData / 60);
               hours = padWithZeroes(hours, 2);
-              // Minutes
+              //Minutes
               var minutes = '' + (absData % 60);
               minutes = padWithZeroes(minutes, 2);
 
@@ -1614,7 +1614,7 @@
   log4javascript.SimpleDateFormat = SimpleDateFormat;
 
   /* ---------------------------------------------------------------------- */
-  // PatternLayout
+  //PatternLayout
 
   function PatternLayout(pattern) {
     if(pattern) {
@@ -1639,7 +1639,7 @@
     var result;
     var searchString = this.pattern;
 
-    // Cannot use regex global flag since it doesn't work with exec in IE5
+    //Cannot use regex global flag since it doesn't work with exec in IE5
     while((result = regex.exec(searchString))) {
       var matchedString = result[0];
       var padding = result[1];
@@ -1648,16 +1648,16 @@
       var specifier = result[5];
       var text = result[6];
 
-      // Check if the pattern matched was just normal text
+      //Check if the pattern matched was just normal text
       if(text) {
         formattedString += '' + text;
       } else {
-        // Create a raw replacement string based on the conversion
-        // character and specifier
+        //Create a raw replacement string based on the conversion
+        //character and specifier
         var replacement = '';
         switch (conversionCharacter) {
-          case 'a': // Array of messages
-          case 'm': // Message
+          case 'a': //Array of messages
+          case 'm': //Message
             var depth = 0;
             if(specifier) {
               depth = parseInt(specifier, 10);
@@ -1678,7 +1678,7 @@
               }
             }
             break;
-          case 'c': // Logger name
+          case 'c': //Logger name
             var loggerName = loggingEvent.logger.name;
             if(specifier) {
               var precision = parseInt(specifier, 10);
@@ -1692,11 +1692,11 @@
               replacement = loggerName;
             }
             break;
-          case 'd': // Date
+          case 'd': //Date
             var dateFormat = PatternLayout.ISO8601_DATEFORMAT;
             if(specifier) {
               dateFormat = specifier;
-              // Pick up special cases
+              //Pick up special cases
               if(dateFormat == 'ISO8601') {
                 dateFormat = PatternLayout.ISO8601_DATEFORMAT;
               } else if(dateFormat == 'ABSOLUTE') {
@@ -1705,10 +1705,10 @@
                 dateFormat = PatternLayout.DATETIME_DATEFORMAT;
               }
             }
-            // Format the date
+            //Format the date
             replacement = new SimpleDateFormat(dateFormat).format(loggingEvent.timeStamp);
             break;
-          case 'f': // Custom field
+          case 'f': //Custom field
             if(this.hasCustomFields()) {
               var fieldIndex = 0;
               if(specifier) {
@@ -1730,27 +1730,27 @@
               replacement = val;
             }
             break;
-          case 'n': // New line
+          case 'n': //New line
             replacement = newLine;
             break;
-          case 'p': // Level
+          case 'p': //Level
             replacement = loggingEvent.level.name;
             break;
-          case 'r': // Milliseconds since log4javascript startup
+          case 'r': //Milliseconds since log4javascript startup
             replacement = '' + loggingEvent.timeStamp.getDifference(applicationStartDate);
             break;
-          case '%': // Literal % sign
+          case '%': //Literal % sign
             replacement = '%';
             break;
           default:
             replacement = matchedString;
             break;
         }
-        // Format the replacement according to any padding or
-        // truncation specified
+        //Format the replacement according to any padding or
+        //truncation specified
         var l;
 
-        // First, truncation
+        //First, truncation
         if(truncation) {
           l = parseInt(truncation.substr(1), 10);
           var strLen = replacement.length;
@@ -1758,17 +1758,17 @@
             replacement = replacement.substring(strLen - l, strLen);
           }
         }
-        // Next, padding
+        //Next, padding
         if(padding) {
           if(padding.charAt(0) == '-') {
             l = parseInt(padding.substr(1), 10);
-            // Right pad with spaces
+            //Right pad with spaces
             while(replacement.length < l) {
               replacement += ' ';
             }
           } else {
             l = parseInt(padding, 10);
-            // Left pad with spaces
+            //Left pad with spaces
             while(replacement.length < l) {
               replacement = ' ' + replacement;
             }
@@ -1791,7 +1791,7 @@
 
   log4javascript.PatternLayout = PatternLayout;
   /* ---------------------------------------------------------------------- */
-  // AlertAppender
+  //AlertAppender
 
   function AlertAppender() {}
 
@@ -1809,8 +1809,8 @@
 
   log4javascript.AlertAppender = AlertAppender;
   /* ---------------------------------------------------------------------- */
-  // BrowserConsoleAppender (only works in Opera and Safari and Firefox with
-  // Firebug extension)
+  //BrowserConsoleAppender (only works in Opera and Safari and Firefox with
+  //Firebug extension)
 
   function BrowserConsoleAppender() {}
 
@@ -1829,8 +1829,8 @@
     var console = window.console;
 
     if(console && console.log) {
-      // Log to Firebug or the browser console using specific logging
-      // methods or revert to console.log otherwise
+      //Log to Firebug or the browser console using specific logging
+      //methods or revert to console.log otherwise
       var consoleMethodName;
 
       if(console.debug && Level.DEBUG.isGreaterOrEqual(loggingEvent.level)) {
@@ -1851,7 +1851,7 @@
         console[consoleMethodName](getFormattedMessage(true));
       }
     } else if(typeof opera != 'undefined' && opera.postError) {
-      // Opera
+      //Opera
       opera.postError(getFormattedMessage(true));
     }
   };
@@ -1874,7 +1874,7 @@
 
   log4javascript.BrowserConsoleAppender = BrowserConsoleAppender;
   /* ---------------------------------------------------------------------- */
-  // AjaxAppender related
+  //AjaxAppender related
 
   var xhrFactory = function() {
     return new XMLHttpRequest();
@@ -1891,8 +1891,8 @@
 
   var withCredentialsSupported = false;
   var getXmlHttp = function(errorHandler) {
-    // This is only run the first time; the value of getXmlHttp gets
-    // replaced with the factory that succeeds on the first run
+    //This is only run the first time; the value of getXmlHttp gets
+    //replaced with the factory that succeeds on the first run
     var xmlHttp = null,
       factory;
     for(var i = 0, len = xmlHttpFactories.length; i < len; i++) {
@@ -1904,7 +1904,7 @@
         return xmlHttp;
       } catch(e) {}
     }
-    // If we're here, all factories have failed, so throw an error
+    //If we're here, all factories have failed, so throw an error
     if(errorHandler) {
       errorHandler();
     } else {
@@ -1917,7 +1917,7 @@
   }
 
   /* ---------------------------------------------------------------------- */
-  // AjaxAppender
+  //AjaxAppender
 
   function AjaxAppender(url, withCredentials) {
     var appender = this;
@@ -1944,8 +1944,8 @@
     var sending = false;
     var initialized = false;
 
-    // Configuration methods. The function scope is used to prevent
-    // direct alteration to the appender configuration properties.
+    //Configuration methods. The function scope is used to prevent
+    //direct alteration to the appender configuration properties.
     function checkCanConfigure(configOptionName) {
       if(initialized) {
         handleError("AjaxAppender: configuration option '" + configOptionName + "' may not be set after the appender has been initialized");
@@ -1965,7 +1965,7 @@
     this.setLayout = function(layoutParam) {
       if(checkCanConfigure('layout')) {
         this.layout = layoutParam;
-        // Set the session id as a custom field on the layout, if not already present
+        //Set the session id as a custom field on the layout, if not already present
         if(sessionId !== null) {
           this.setSessionId(sessionId);
         }
@@ -2045,14 +2045,14 @@
       }
     };
 
-    // Internal functions
+    //Internal functions
     function sendAll() {
       if(isSupported && enabled) {
         sending = true;
         var currentRequestBatch;
         if(waitForResponse) {
-          // Send the first request then use this function as the callback once
-          // the response comes back
+          //Send the first request then use this function as the callback once
+          //the response comes back
           if(queuedRequests.length > 0) {
             currentRequestBatch = queuedRequests.shift();
             sendRequest(preparePostData(currentRequestBatch), sendAll);
@@ -2063,7 +2063,7 @@
             }
           }
         } else {
-          // Rattle off all the requests without waiting to see the response
+          //Rattle off all the requests without waiting to see the response
           while((currentRequestBatch = queuedRequests.shift())) {
             sendRequest(preparePostData(currentRequestBatch));
           }
@@ -2077,25 +2077,25 @@
 
     this.sendAll = sendAll;
 
-    // Called when the window unloads. At this point we're past caring about
-    // waiting for responses or timers or incomplete batches - everything
-    // must go, now
+    //Called when the window unloads. At this point we're past caring about
+    //waiting for responses or timers or incomplete batches - everything
+    //must go, now
     function sendAllRemaining() {
       var sendingAnything = false;
       if(isSupported && enabled) {
-        // Create requests for everything left over, batched as normal
+        //Create requests for everything left over, batched as normal
         var actualBatchSize = appender.getLayout().allowBatching() ? batchSize : 1;
         var currentLoggingEvent;
         var batchedLoggingEvents = [];
         while((currentLoggingEvent = queuedLoggingEvents.shift())) {
           batchedLoggingEvents.push(currentLoggingEvent);
           if(queuedLoggingEvents.length >= actualBatchSize) {
-            // Queue this batch of log entries
+            //Queue this batch of log entries
             queuedRequests.push(batchedLoggingEvents);
             batchedLoggingEvents = [];
           }
         }
-        // If there's a partially completed batch, add it
+        //If there's a partially completed batch, add it
         if(batchedLoggingEvents.length > 0) {
           queuedRequests.push(batchedLoggingEvents);
         }
@@ -2110,14 +2110,14 @@
     this.sendAllRemaining = sendAllRemaining;
 
     function preparePostData(batchedLoggingEvents) {
-      // Format the logging events
+      //Format the logging events
       var formattedMessages = [];
       var currentLoggingEvent;
       var postData = '';
       while((currentLoggingEvent = batchedLoggingEvents.shift())) {
         formattedMessages.push(appender.getLayout().formatWithException(currentLoggingEvent));
       }
-      // Create the post data string
+      //Create the post data string
       if(batchedLoggingEvents.length == 1) {
         postData = formattedMessages.join('');
       } else {
@@ -2125,7 +2125,7 @@
       }
       if(contentType == appender.defaults.contentType) {
         postData = appender.getLayout().returnsPostData ? postData : urlEncode(postVarName) + '=' + urlEncode(postData);
-        // Add the layout name to the post data
+        //Add the layout name to the post data
         if(postData.length > 0) {
           postData += '&';
         }
@@ -2172,7 +2172,7 @@
             }
           };
           xmlHttp.open('POST', url, true);
-          // Add withCredentials to facilitate CORS requests with cookies
+          //Add withCredentials to facilitate CORS requests with cookies
           if(withCredentials && withCredentialsSupported) {
             xmlHttp.withCredentials = true;
           }
@@ -2216,11 +2216,11 @@
           while((currentLoggingEvent = queuedLoggingEvents.shift())) {
             batchedLoggingEvents.push(currentLoggingEvent);
           }
-          // Queue this batch of log entries
+          //Queue this batch of log entries
           queuedRequests.push(batchedLoggingEvents);
 
-          // If using a timer, the queue of requests will be processed by the
-          // timer function, so nothing needs to be done here.
+          //If using a timer, the queue of requests will be processed by the
+          //timer function, so nothing needs to be done here.
           if(!timed && (!waitForResponse || (waitForResponse && !sending))) {
             sendAll();
           }
@@ -2230,7 +2230,7 @@
 
     function init() {
       initialized = true;
-      // Add unload event to send outstanding messages
+      //Add unload event to send outstanding messages
       if(sendAllOnUnload) {
         var oldBeforeUnload = window.onbeforeunload;
         window.onbeforeunload = function() {
@@ -2240,7 +2240,7 @@
           sendAllRemaining();
         };
       }
-      // Start timer
+      //Start timer
       if(timed) {
         scheduleSending();
       }
@@ -2269,7 +2269,7 @@
 
   log4javascript.AjaxAppender = AjaxAppender;
   /* ---------------------------------------------------------------------- */
-  // PopUpAppender and InPageAppender related
+  //PopUpAppender and InPageAppender related
 
   function setCookie(name, value, days, path) {
     var expires;
@@ -2299,8 +2299,8 @@
     return null;
   }
 
-  // Gets the base URL of the location of the log4javascript script.
-  // This is far from infallible.
+  //Gets the base URL of the location of the log4javascript script.
+  //This is far from infallible.
   function getBaseUrl() {
     var scripts = document.getElementsByTagName('script');
     for(var i = 0, len = scripts.length; i < len; ++i) {
@@ -2321,11 +2321,11 @@
   }
 
   /* ---------------------------------------------------------------------- */
-  // ConsoleAppender (prototype for PopUpAppender and InPageAppender)
+  //ConsoleAppender (prototype for PopUpAppender and InPageAppender)
 
   var ConsoleAppender;
 
-  // Create an anonymous function to protect base console methods
+  //Create an anonymous function to protect base console methods
   (function() {
     var getConsoleHtmlLines = function() {
       return [
@@ -2554,17 +2554,17 @@
         '				},',
         '',
         '				reverseChildren: function() {',
-        '					// Invert the order of the log entries',
+        '					 //Invert the order of the log entries',
         '					var node = null;',
         '',
-        '					// Remove all the log container nodes',
+        '					 //Remove all the log container nodes',
         '					var childDomNodes = [];',
         '				 while((node = this.contentDiv.firstChild)) {',
         '						this.contentDiv.removeChild(node);',
         '						childDomNodes.push(node);',
         '					}',
         '',
-        '					// Put them all back in reverse order',
+        '					 //Put them all back in reverse order',
         '				 while((node = childDomNodes.pop())) {',
         '						this.contentDiv.appendChild(node);',
         '					}',
@@ -2818,11 +2818,11 @@
         '					var logEntry = this;',
         '					var containerDomNode = this.group.contentDiv;',
         '',
-        '					// Support for the CSS attribute white-space in IE for Windows is',
-        '					// non-existent pre version 6 and slightly odd in 6, so instead',
-        '					// use two different HTML elements',
+        '					 //Support for the CSS attribute white-space in IE for Windows is',
+        '					 //non-existent pre version 6 and slightly odd in 6, so instead',
+        '					 //use two different HTML elements',
         '				 if(isIe) {',
-        '						this.formattedMessage = this.formattedMessage.replace(/\\r\\n/g, "\\r"); // Workaround for IE\'s treatment of white space',
+        '						this.formattedMessage = this.formattedMessage.replace(/\\r\\n/g, "\\r");  //Workaround for IE\'s treatment of white space',
         '						this.unwrappedElementContainer = new LogEntryUnwrappedElementContainer(this, this.getUnwrappedDomContainer());',
         '						this.wrappedElementContainer = new LogEntryWrappedElementContainer(this, this.getWrappedDomContainer());',
         '						this.elementContainers = [this.unwrappedElementContainer, this.wrappedElementContainer];',
@@ -2837,7 +2837,7 @@
         '				setContent: function(content, wrappedContent) {',
         '				 if(content != this.content) {',
         '					 if(isIe && (content !== this.formattedMessage)) {',
-        '							content = content.replace(/\\r\\n/g, "\\r"); // Workaround for IE\'s treatment of white space',
+        '							content = content.replace(/\\r\\n/g, "\\r");  //Workaround for IE\'s treatment of white space',
         '						}',
         '					 for(var i = 0, len = this.elementContainers.length; i < len; i++) {',
         '							this.elementContainers[i].setContent(content, wrappedContent);',
@@ -2942,7 +2942,7 @@
         '			/*----------------------------------------------------------------*/',
         '',
         '			window.onload = function() {',
-        '				// Sort out document.domain',
+        '				 //Sort out document.domain',
         '			 if(location.search) {',
         '					var queryBits = unescape(location.search).substr(1).split("&"), nameValueBits;',
         '				 for(var i = 0, len = queryBits.length; i < len; i++) {',
@@ -2954,7 +2954,7 @@
         '					}',
         '				}',
         '',
-        '				// Create DOM objects',
+        '				 //Create DOM objects',
         '				logMainContainer = $("log");',
         '			 if(isIePre7) {',
         '					addClass(logMainContainer, "oldIe");',
@@ -2981,60 +2981,60 @@
         '				$("command").autocomplete = "off";',
         '				$("command").onkeydown = function(evt) {',
         '					evt = getEvent(evt);',
-        '				 if(evt.keyCode == 10 || evt.keyCode == 13) { // Return/Enter',
+        '				 if(evt.keyCode == 10 || evt.keyCode == 13) {  //Return/Enter',
         '						evalCommandLine();',
         '						stopPropagation(evt);',
-        '					} else if(evt.keyCode == 27) { // Escape',
+        '					} else if(evt.keyCode == 27) {  //Escape',
         '						this.value = "";',
         '						this.focus();',
-        '					} else if(evt.keyCode == 38 && commandHistory.length > 0) { // Up',
+        '					} else if(evt.keyCode == 38 && commandHistory.length > 0) {  //Up',
         '						currentCommandIndex = Math.max(0, currentCommandIndex - 1);',
         '						this.value = commandHistory[currentCommandIndex];',
         '						moveCaretToEnd(this);',
-        '					} else if(evt.keyCode == 40 && commandHistory.length > 0) { // Down',
+        '					} else if(evt.keyCode == 40 && commandHistory.length > 0) {  //Down',
         '						currentCommandIndex = Math.min(commandHistory.length - 1, currentCommandIndex + 1);',
         '						this.value = commandHistory[currentCommandIndex];',
         '						moveCaretToEnd(this);',
         '					}',
         '				};',
         '',
-        '				// Prevent the keypress moving the caret in Firefox',
+        '				 //Prevent the keypress moving the caret in Firefox',
         '				$("command").onkeypress = function(evt) {',
         '					evt = getEvent(evt);',
-        '				 if(evt.keyCode == 38 && commandHistory.length > 0 && evt.preventDefault) { // Up',
+        '				 if(evt.keyCode == 38 && commandHistory.length > 0 && evt.preventDefault) {  //Up',
         '						evt.preventDefault();',
         '					}',
         '				};',
         '',
-        '				// Prevent the keyup event blurring the input in Opera',
+        '				 //Prevent the keyup event blurring the input in Opera',
         '				$("command").onkeyup = function(evt) {',
         '					evt = getEvent(evt);',
-        '				 if(evt.keyCode == 27 && evt.preventDefault) { // Up',
+        '				 if(evt.keyCode == 27 && evt.preventDefault) {  //Up',
         '						evt.preventDefault();',
         '						this.focus();',
         '					}',
         '				};',
         '',
-        '				// Add document keyboard shortcuts',
+        '				 //Add document keyboard shortcuts',
         '				document.onkeydown = function keyEventHandler(evt) {',
         '					evt = getEvent(evt);',
         '					switch (evt.keyCode) {',
-        '						case 69: // Ctrl + shift + E: re-execute last command',
+        '						case 69:  //Ctrl + shift + E: re-execute last command',
         '						 if(evt.shiftKey && (evt.ctrlKey || evt.metaKey)) {',
         '								evalLastCommand();',
         '								cancelKeyEvent(evt);',
         '								return false;',
         '							}',
         '							break;',
-        '						case 75: // Ctrl + shift + K: focus search',
+        '						case 75:  //Ctrl + shift + K: focus search',
         '						 if(evt.shiftKey && (evt.ctrlKey || evt.metaKey)) {',
         '								focusSearch();',
         '								cancelKeyEvent(evt);',
         '								return false;',
         '							}',
         '							break;',
-        '						case 40: // Ctrl + shift + down arrow: focus command line',
-        '						case 76: // Ctrl + shift + L: focus command line',
+        '						case 40:  //Ctrl + shift + down arrow: focus command line',
+        '						case 76:  //Ctrl + shift + L: focus command line',
         '						 if(evt.shiftKey && (evt.ctrlKey || evt.metaKey)) {',
         '								focusCommandLine();',
         '								cancelKeyEvent(evt);',
@@ -3044,7 +3044,7 @@
         '					}',
         '				};',
         '',
-        '				// Workaround to make sure log div starts at the correct size',
+        '				 //Workaround to make sure log div starts at the correct size',
         '				setTimeout(setLogContainerHeight, 20);',
         '',
         '				setShowCommandLine(showCommandLine);',
@@ -3106,7 +3106,7 @@
         '					var visitor = new LogItemContentReverser();',
         '					rootGroup.accept(visitor);',
         '',
-        '					// Reassemble the matches array',
+        '					 //Reassemble the matches array',
         '				 if(currentSearch) {',
         '						var currentMatch = currentSearch.matches[currentMatchIndex];',
         '						var matchIndex = 0;',
@@ -3221,7 +3221,7 @@
         '',
         '			function setLogItems(items) {',
         '				var loggingReallyEnabled = loggingEnabled;',
-        '				// Temporarily turn logging on',
+        '				 //Temporarily turn logging on',
         '				loggingEnabled = true;',
         '			 for(var i = 0, len = items.length; i < len; i++) {',
         '					switch (items[i][0]) {',
@@ -3260,7 +3260,7 @@
         '				logQueuedEventsTimer = null;',
         '				var pruned = pruneLogEntries();',
         '',
-        '				// Render any unrendered log entries and apply the current search to them',
+        '				 //Render any unrendered log entries and apply the current search to them',
         '				var initiallyHasMatches = currentSearch ? currentSearch.hasMatches() : false;',
         '			 for(var i = 0, len = logItems.length; i < len; i++) {',
         '				 if(!logItems[i].rendered) {',
@@ -3365,7 +3365,7 @@
         '			function setMainWindow(win) {',
         '				mainWindow = win;',
         '				mainWindow[windowId] = window;',
-        "				// If this is a pop-up, poll the opener to see if it's closed",
+        "				 //If this is a pop-up, poll the opener to see if it's closed",
         '			 if(opener && closeIfOpenerCloses) {',
         '					pollOpener();',
         '				}',
@@ -3457,7 +3457,7 @@
         '',
         '			/* ------------------------------------------------------------------- */',
         '',
-        '			// Search',
+        '			 //Search',
         '',
         '			var searchTimer = null;',
         '',
@@ -3465,7 +3465,7 @@
         '				try {',
         '					clearTimeout(searchTimer);',
         '				} catch(ex) {',
-        '					// Do nothing',
+        '					 //Do nothing',
         '				}',
         '				searchTimer = setTimeout(doSearch, 500);',
         '			}',
@@ -3513,7 +3513,7 @@
         '							return i;',
         '						}',
         '					}',
-        '					// Start again from the first match',
+        '					 //Start again from the first match',
         '				 for(i = 0; i <= currentMatchIndex; i++) {',
         '					 if(this.matches[i].isVisible()) {',
         '							return i;',
@@ -3528,7 +3528,7 @@
         '							return i;',
         '						}',
         '					}',
-        '					// Start again from the last match',
+        '					 //Start again from the last match',
         '				 for(var i = this.matches.length - 1; i >= currentMatchIndex; i--) {',
         '					 if(this.matches[i].isVisible()) {',
         '							return i;',
@@ -3555,16 +3555,16 @@
         '							var flags = this.isCaseSensitive ? "g" : "gi";',
         '							var capturingRegex = new RegExp("(" + this.searchRegex.source + ")", flags);',
         '',
-        '							// Replace the search term with temporary tokens for the start and end tags',
+        '							 //Replace the search term with temporary tokens for the start and end tags',
         '							var rnd = ("" + Math.random()).substr(2);',
         '							var startToken = "%%s" + rnd + "%%";',
         '							var endToken = "%%e" + rnd + "%%";',
         '							logEntryContent = logEntry.formattedMessage.replace(capturingRegex, startToken + "$1" + endToken);',
         '',
-        '							// Escape the HTML to get rid of angle brackets',
+        '							 //Escape the HTML to get rid of angle brackets',
         '							logEntryContent = escapeHtml(logEntryContent);',
         '',
-        '							// Substitute the proper HTML back in for the search match',
+        '							 //Substitute the proper HTML back in for the search match',
         '							var result;',
         '							var searchString = logEntryContent;',
         '							logEntryContent = "";',
@@ -3628,7 +3628,7 @@
         '					var matchesToRemove = [];',
         '					var i, iLen, j, jLen;',
         '',
-        '					// Establish the list of matches to be removed',
+        '					 //Establish the list of matches to be removed',
         '				 for(i = 0, iLen = this.matches.length; i < iLen; i++) {',
         '					 for(j = 0, jLen = logEntries.length; j < jLen; j++) {',
         '						 if(this.matches[i].belongsTo(logEntries[j])) {',
@@ -3640,9 +3640,9 @@
         '						}',
         '					}',
         '',
-        '					// Set the new current match index if the current match has been deleted',
-        '					// This will be the first match that appears after the first log entry being',
-        "					// deleted, if one exists; otherwise, it's the first match overall",
+        '					 //Set the new current match index if the current match has been deleted',
+        '					 //This will be the first match that appears after the first log entry being',
+        "					 //deleted, if one exists; otherwise, it's the first match overall",
         '					var newMatch = currentMatchRemoved ? null : this.matches[currentMatchIndex];',
         '				 if(currentMatchRemoved) {',
         '					 for(i = currentMatchIndex, iLen = this.matches.length; i < iLen; i++) {',
@@ -3653,18 +3653,18 @@
         '						}',
         '					}',
         '',
-        '					// Remove the matches',
+        '					 //Remove the matches',
         '				 for(i = 0, iLen = matchesToRemove.length; i < iLen; i++) {',
         '						array_remove(this.matches, matchesToRemove[i]);',
         '						matchesToRemove[i].remove();',
         '					}',
         '',
-        '					// Set the new match, if one exists',
+        '					 //Set the new match, if one exists',
         '				 if(this.hasVisibleMatches()) {',
         '					 if(newMatch === null) {',
         '							setCurrentMatchIndex(0);',
         '						} else {',
-        '							// Get the index of the new match',
+        '							 //Get the index of the new match',
         '							var newMatchIndex = 0;',
         '						 for(i = 0, iLen = this.matches.length; i < iLen; i++) {',
         '							 if(newMatch === this.matches[i]) {',
@@ -3693,7 +3693,7 @@
         '',
         '			function scrollIntoView(el) {',
         '				var logContainer = logMainContainer;',
-        '				// Check if the whole width of the element is visible and centre if not',
+        '				 //Check if the whole width of the element is visible and centre if not',
         '			 if(!$("wrap").checked) {',
         '					var logContainerLeft = logContainer.scrollLeft;',
         '					var logContainerRight = logContainerLeft  + logContainer.offsetWidth;',
@@ -3703,7 +3703,7 @@
         '						logContainer.scrollLeft = elLeft - (logContainer.offsetWidth - el.offsetWidth) / 2;',
         '					}',
         '				}',
-        '				// Check if the whole height of the element is visible and centre if not',
+        '				 //Check if the whole height of the element is visible and centre if not',
         '				var logContainerTop = logContainer.scrollTop;',
         '				var logContainerBottom = logContainerTop  + logContainer.offsetHeight;',
         '				var elTop = getPageOffsetTop(el) - getToolBarsHeight();',
@@ -3732,7 +3732,7 @@
         '				 if(isIe) {',
         '						addClass(this.spanInUnwrappedPre, "currentmatch");',
         '						addClass(this.spanInWrappedDiv, "currentmatch");',
-        '						// Scroll the visible one into view',
+        '						 //Scroll the visible one into view',
         '						var elementToScroll = $("wrap").checked ? this.spanInWrappedDiv : this.spanInUnwrappedPre;',
         '						scrollIntoView(elementToScroll);',
         '					} else {',
@@ -3827,7 +3827,7 @@
         '					}',
         '					setLogContainerHeight();',
         '',
-        '					// Highlight the first search match',
+        '					 //Highlight the first search match',
         '				 if(currentSearch.hasVisibleMatches()) {',
         '						setCurrentMatchIndex(0);',
         '						displayMatches();',
@@ -3849,7 +3849,7 @@
         '							setCurrentMatchIndex(currentMatchIndex);',
         '						} else {',
         '							currentMatch.setNotCurrent();',
-        '							// Find the next visible match, if one exists',
+        '							 //Find the next visible match, if one exists',
         '							var nextVisibleMatchIndex = currentSearch.getNextVisibleMatchIndex();',
         '						 if(nextVisibleMatchIndex > -1) {',
         '								setCurrentMatchIndex(nextVisibleMatchIndex);',
@@ -3969,7 +3969,7 @@
         '',
         '			/* ------------------------------------------------------------------------- */',
         '',
-        '			// CSS Utilities',
+        '			 //CSS Utilities',
         '',
         '			function addClass(el, cssClass) {',
         '			 if(!hasClass(el, cssClass)) {',
@@ -3991,7 +3991,7 @@
         '',
         '			function removeClass(el, cssClass) {',
         '			 if(hasClass(el, cssClass)) {',
-        '					// Rebuild the className property',
+        '					 //Rebuild the className property',
         '					var existingClasses = el.className.split(" ");',
         '					var newClasses = [];',
         '				 for(var i = 0, len = existingClasses.length; i < len; i++) {',
@@ -4010,7 +4010,7 @@
         '',
         '			/* ------------------------------------------------------------------------- */',
         '',
-        '			// Other utility functions',
+        '			 //Other utility functions',
         '',
         '			function getElementsByClass(el, cssClass, tagName) {',
         '				var elements = el.getElementsByTagName(tagName);',
@@ -4023,7 +4023,7 @@
         '				return matches;',
         '			}',
         '',
-        '			// Syntax borrowed from Prototype library',
+        '			 //Syntax borrowed from Prototype library',
         '			function $(id) {',
         '				return document.getElementById(id);',
         '			}',
@@ -4145,7 +4145,7 @@
         '					var itemsAfterDeleted = this.slice(startIndex + deleteCount);',
         '					var itemsDeleted = this.slice(startIndex, startIndex + deleteCount);',
         '					this.length = startIndex;',
-        '					// Copy the arguments into a proper Array object',
+        '					 //Copy the arguments into a proper Array object',
         '					var argumentsArray = [];',
         '				 for(var i = 0, len = arguments.length; i < len; i++) {',
         '						argumentsArray[i] = arguments[i];',
@@ -4281,10 +4281,10 @@
         '						log("ERROR", prefix + "Error: " + getErrorMessage(ex));',
         '					}',
         '				}',
-        '				// Update command history',
+        '				 //Update command history',
         '			 if(expr != commandHistory[commandHistory.length - 1]) {',
         '					commandHistory.push(expr);',
-        '					// Update the appender',
+        '					 //Update the appender',
         '				 if(appender) {',
         '						appender.storeCommandHistory(commandHistory);',
         '					}',
@@ -4622,7 +4622,7 @@
     ConsoleAppender.prototype.create = function(inPage, container, lazyInit, initiallyMinimized, useDocumentWrite, width, height, focusConsoleWindow) {
       var appender = this;
 
-      // Common properties
+      //Common properties
       var initialized = false;
       var consoleWindowCreated = false;
       var consoleWindowLoaded = false;
@@ -4632,7 +4632,7 @@
       var isSupported = true;
       var consoleAppenderId = consoleAppenderIdCounter++;
 
-      // Local variables
+      //Local variables
       initiallyMinimized = extractBooleanFromParam(initiallyMinimized, this.defaults.initiallyMinimized);
       lazyInit = extractBooleanFromParam(lazyInit, this.defaults.lazyInit);
       useDocumentWrite = extractBooleanFromParam(useDocumentWrite, this.defaults.useDocumentWrite);
@@ -4648,11 +4648,11 @@
 
       this.setLayout(this.defaults.layout);
 
-      // Functions whose implementations vary between subclasses
+      //Functions whose implementations vary between subclasses
       var init, createWindow, safeToAppend, getConsoleWindow, open;
 
-      // Configuration methods. The function scope is used to prevent
-      // direct alteration to the appender configuration properties.
+      //Configuration methods. The function scope is used to prevent
+      //direct alteration to the appender configuration properties.
       var appenderName = inPage ? 'InPageAppender' : 'PopUpAppender';
       var checkCanConfigure = function(configOptionName) {
         if(consoleWindowCreated) {
@@ -4771,7 +4771,7 @@
         }
       };
 
-      // Common methods
+      //Common methods
       function QueuedLoggingEvent(loggingEvent, formattedMessage) {
         this.loggingEvent = loggingEvent;
         this.levelName = loggingEvent.level.name;
@@ -4798,7 +4798,7 @@
       };
 
       var checkAndAppend = function() {
-        // Next line forces a check of whether the window has been closed
+        //Next line forces a check of whether the window has been closed
         safeToAppend();
         if(!initialized) {
           init();
@@ -4812,7 +4812,7 @@
 
       this.append = function(loggingEvent) {
         if(isSupported) {
-          // Format the message
+          //Format the message
           var formattedMessage = appender.getLayout().formatWithException(loggingEvent);
           queuedLoggingEvents.push(new QueuedLoggingEvent(loggingEvent, formattedMessage));
           checkAndAppend();
@@ -4900,12 +4900,12 @@
       this.evalCommandAndAppend = function(expr) {
         var commandReturnValue = { appendResult: true, isError: false };
         var commandOutput = '';
-        // Evaluate the command
+        //Evaluate the command
         try {
           var result, i;
-          // The next three lines constitute a workaround for IE. Bizarrely, iframes seem to have no
-          // eval method on the window object initially, but once execScript has been called on
-          // it once then the eval method magically appears. See http://www.thismuchiknow.co.uk/?p=25
+          //The next three lines constitute a workaround for IE. Bizarrely, iframes seem to have no
+          //eval method on the window object initially, but once execScript has been called on
+          //it once then the eval method magically appears. See http://www.thismuchiknow.co.uk/?p=25
           if(!commandWindow.eval && commandWindow.execScript) {
             commandWindow.execScript('null');
           }
@@ -4915,8 +4915,8 @@
             commandLineFunctionsHash[commandLineFunctions[i][0]] = commandLineFunctions[i][1];
           }
 
-          // Keep an array of variables that are being changed in the command window so that they
-          // can be restored to their original values afterwards
+          //Keep an array of variables that are being changed in the command window so that they
+          //can be restored to their original values afterwards
           var objectsToRestore = [];
           var addObjectToRestore = function(name) {
             objectsToRestore.push([name, commandWindow[name]]);
@@ -4942,7 +4942,7 @@
             addFunctionToWindow(commandLineFunctions[i][0]);
           }
 
-          // Another bizarre workaround to get IE to eval in the global scope
+          //Another bizarre workaround to get IE to eval in the global scope
           if(commandWindow === window && commandWindow.execScript) {
             addObjectToRestore('evalExpr');
             addObjectToRestore('result');
@@ -4954,7 +4954,7 @@
           }
           commandOutput = isUndefined(result) ? result : formatObjectExpansion(result, commandLineObjectExpansionDepth);
 
-          // Restore variables in the command window to their original state
+          //Restore variables in the command window to their original state
           for(i = 0, len = objectsToRestore.length; i < len; i++) {
             commandWindow[objectsToRestore[i][0]] = objectsToRestore[i][1];
           }
@@ -4962,7 +4962,7 @@
           commandOutput = 'Error evaluating command: ' + getExceptionStringRep(ex);
           commandReturnValue.isError = true;
         }
-        // Append command output
+        //Append command output
         if(commandReturnValue.appendResult) {
           var message = '>>> ' + expr;
           if(!isUndefined(commandOutput)) {
@@ -4997,7 +4997,7 @@
         doc.close();
       };
 
-      // Set up event listeners
+      //Set up event listeners
       this.setEventTypes(['load', 'unload']);
 
       var consoleWindowLoadHandler = function() {
@@ -5011,7 +5011,7 @@
         win.setShowCloseButton(showCloseButton);
         win.setMainWindow(window);
 
-        // Restore command history stored in cookie
+        //Restore command history stored in cookie
         var storedValue = getCookie(commandHistoryCookieName);
         if(storedValue) {
           win.commandHistory = storedValue.split(',');
@@ -5035,7 +5035,7 @@
       var pollConsoleWindow = function(windowTest, interval, successCallback, errorMessage) {
         function doPoll() {
           try {
-            // Test if the console has been closed while polling
+            //Test if the console has been closed while polling
             if(consoleClosed) {
               clearInterval(poll);
             }
@@ -5050,7 +5050,7 @@
           }
         }
 
-        // Poll the pop-up since the onload event is not reliable
+        //Poll the pop-up since the onload event is not reliable
         var poll = setInterval(doPoll, interval);
       };
 
@@ -5059,14 +5059,14 @@
         return useDocumentWrite ? '' : getBaseUrl() + 'console_uncompressed.html' + (documentDomainSet ? '?log4javascript_domain=' + escape(document.domain) : '');
       };
 
-      // Define methods and properties that vary between subclasses
+      //Define methods and properties that vary between subclasses
       if(inPage) {
-        // InPageAppender
+        //InPageAppender
 
         var containerElement = null;
 
-        // Configuration methods. The function scope is used to prevent
-        // direct alteration to the appender configuration properties.
+        //Configuration methods. The function scope is used to prevent
+        //direct alteration to the appender configuration properties.
         var cssProperties = [];
         this.addCssProperty = function(name, value) {
           if(checkCanConfigure('cssProperties')) {
@@ -5074,7 +5074,7 @@
           }
         };
 
-        // Define useful variables
+        //Define useful variables
         var windowCreationStarted = false;
         var iframeContainerDiv;
         var iframeId = uniqueId + '_InPageAppender_' + consoleAppenderId;
@@ -5095,7 +5095,7 @@
           if(initialized) {
             if(consoleWindowCreated) {
               iframeContainerDiv.style.display = 'block';
-              this.setShowCommandLine(showCommandLine); // Force IE to update
+              this.setShowCommandLine(showCommandLine); //Force IE to update
               minimized = false;
             } else if(!windowCreationStarted) {
               createWindow(true);
@@ -5114,7 +5114,7 @@
           }
         };
 
-        // Create open, init, getConsoleWindow and safeToAppend functions
+        //Create open, init, getConsoleWindow and safeToAppend functions
         open = function() {
           var initErrorMessage = 'InPageAppender.open: unable to create console iframe';
 
@@ -5164,14 +5164,14 @@
 
           var iframeSrc = useDocumentWrite ? '' : " src='" + getConsoleUrl() + "'";
 
-          // Adding an iframe using the DOM would be preferable, but it doesn't work
-          // in IE5 on Windows, or in Konqueror prior to version 3.5 - in Konqueror
-          // it creates the iframe fine but I haven't been able to find a way to obtain
-          // the iframe's window object
+          //Adding an iframe using the DOM would be preferable, but it doesn't work
+          //in IE5 on Windows, or in Konqueror prior to version 3.5 - in Konqueror
+          //it creates the iframe fine but I haven't been able to find a way to obtain
+          //the iframe's window object
           iframeContainerDiv.innerHTML = "<iframe id='" + iframeId + "' name='" + iframeId + "' width='100%' height='100%' frameborder='0'" + iframeSrc + " scrolling='no'></iframe>";
           consoleClosed = false;
 
-          // Write the console HTML to the iframe
+          //Write the console HTML to the iframe
           var iframeDocumentExistsTest = function(win) {
             try {
               return bool(win) && bool(win.document);
@@ -5191,7 +5191,7 @@
           if(show || !initiallyMinimized) {
             var pageLoadHandler = function() {
               if(!container) {
-                // Set up default container element
+                //Set up default container element
                 containerElement = document.createElement('div');
                 containerElement.style.position = 'fixed';
                 containerElement.style.left = '0';
@@ -5199,7 +5199,7 @@
                 containerElement.style.bottom = '0';
                 document.body.appendChild(containerElement);
                 appender.addCssProperty('borderWidth', '1px 0 0 0');
-                appender.addCssProperty('zIndex', 1000000); // Can't find anything authoritative that says how big z-index can be
+                appender.addCssProperty('zIndex', 1000000); //Can't find anything authoritative that says how big z-index can be
                 open();
               } else {
                 try {
@@ -5214,7 +5214,7 @@
               }
             };
 
-            // Test the type of the container supplied. First, check if it's an element
+            //Test the type of the container supplied. First, check if it's an element
             if(pageLoaded && container && container.appendChild) {
               containerElement = container;
               open();
@@ -5249,15 +5249,15 @@
           return false;
         };
       } else {
-        // PopUpAppender
+        //PopUpAppender
 
-        // Extract params
+        //Extract params
         var useOldPopUp = appender.defaults.useOldPopUp;
         var complainAboutPopUpBlocking = appender.defaults.complainAboutPopUpBlocking;
         var reopenWhenClosed = this.defaults.reopenWhenClosed;
 
-        // Configuration methods. The function scope is used to prevent
-        // direct alteration to the appender configuration properties.
+        //Configuration methods. The function scope is used to prevent
+        //direct alteration to the appender configuration properties.
         this.isUseOldPopUp = function() {
           return useOldPopUp;
         };
@@ -5280,7 +5280,7 @@
           return focusConsoleWindow;
         };
         this.setFocusPopUp = function(focusPopUpParam) {
-          // This property can be safely altered after logging has started
+          //This property can be safely altered after logging has started
           focusConsoleWindow = bool(focusPopUpParam);
         };
 
@@ -5288,7 +5288,7 @@
           return reopenWhenClosed;
         };
         this.setReopenWhenClosed = function(reopenWhenClosedParam) {
-          // This property can be safely altered after logging has started
+          //This property can be safely altered after logging has started
           reopenWhenClosed = bool(reopenWhenClosedParam);
         };
 
@@ -5298,7 +5298,7 @@
             popUp.close();
             this.unload();
           } catch(ex) {
-            // Do nothing
+            //Do nothing
           }
         };
 
@@ -5320,10 +5320,10 @@
           return safeToAppend();
         };
 
-        // Define useful variables
+        //Define useful variables
         var popUp;
 
-        // Create open, init, getConsoleWindow and safeToAppend functions
+        //Create open, init, getConsoleWindow and safeToAppend functions
         open = function() {
           var windowProperties = 'width=' + width + ',height=' + height + ',status,resizable';
           var frameInfo = '';
@@ -5337,7 +5337,7 @@
           }
           var windowName = 'PopUp_' + location.host.replace(/[^a-z0-9]/gi, '_') + '_' + consoleAppenderId + frameInfo;
           if(!useOldPopUp || !useDocumentWrite) {
-            // Ensure a previous window isn't used by using a unique name
+            //Ensure a previous window isn't used by using a unique name
             windowName = windowName + '_' + uniqueId;
           }
 
@@ -5378,7 +5378,7 @@
                 if(useDocumentWrite) {
                   writeHtml(popUp.document);
                 }
-                // Check if the pop-up window object is available
+                //Check if the pop-up window object is available
                 var popUpLoadedTest = function(win) {
                   return bool(win) && isLoaded(win);
                 };
@@ -5418,7 +5418,7 @@
         safeToAppend = function() {
           if(isSupported && !isUndefined(popUp) && !consoleClosed) {
             if(popUp.closed || (consoleWindowLoaded && isUndefined(popUp.closed))) {
-              // Extra check for Opera
+              //Extra check for Opera
               appender.unload();
               logLog.debug('PopUpAppender: pop-up closed');
               return false;
@@ -5431,7 +5431,7 @@
         };
       }
 
-      // Expose getConsoleWindow so that automated tests can check the DOM
+      //Expose getConsoleWindow so that automated tests can check the DOM
       this.getConsoleWindow = getConsoleWindow;
     };
 
@@ -5504,11 +5504,11 @@
 
     log4javascript.InPageAppender = InPageAppender;
 
-    // Next line for backwards compatibility
+    //Next line for backwards compatibility
     log4javascript.InlineAppender = InPageAppender;
   })();
   /* ---------------------------------------------------------------------- */
-  // Console extension functions
+  //Console extension functions
 
   function padWithSpaces(str, len) {
     if(str.length < len) {
@@ -5525,11 +5525,11 @@
   (function() {
     function dir(obj) {
       var maxLen = 0;
-      // Obtain the length of the longest property name
+      //Obtain the length of the longest property name
       for(var p in obj) {
         maxLen = Math.max(toStr(p).length, maxLen);
       }
-      // Create the nicely formatted property list
+      //Create the nicely formatted property list
       var propList = [];
       for(p in obj) {
         var propNameStr = '  ' + padWithSpaces(toStr(p), maxLen + 2);
@@ -5561,11 +5561,11 @@
 
     var preFormattedElements = ['script', 'pre'];
 
-    // This should be the definitive list, as specified by the XHTML 1.0 Transitional DTD
+    //This should be the definitive list, as specified by the XHTML 1.0 Transitional DTD
     var emptyElements = ['br', 'img', 'hr', 'param', 'link', 'area', 'input', 'col', 'base', 'meta'];
     var indentationUnit = '  ';
 
-    // Create and return an XHTML string from the node specified
+    //Create and return an XHTML string from the node specified
     function getXhtml(rootNode, includeRootNode, indentation, startNewLine, preformatted) {
       includeRootNode = typeof includeRootNode == 'undefined' ? true : !!includeRootNode;
       if(typeof indentation != 'string') {
@@ -5623,7 +5623,7 @@
             var tagName = rootNode.tagName.toLowerCase();
             xhtml = startNewLine ? newLine + indentation : '';
             xhtml += lt;
-            // Allow for namespaces, where present
+            //Allow for namespaces, where present
             var prefix = getNamespace(rootNode);
             var hasPrefix = !!prefix;
             if(hasPrefix) {
@@ -5632,7 +5632,7 @@
             xhtml += tagName;
             for(i = 0, len = rootNode.attributes.length; i < len; i++) {
               var currentAttr = rootNode.attributes[i];
-              // Check the attribute is valid.
+              //Check the attribute is valid.
               if(!currentAttr.specified || currentAttr.nodeValue === null || currentAttr.nodeName.toLowerCase() === 'style' || typeof currentAttr.nodeValue !== 'string' || currentAttr.nodeName.indexOf('_moz') === 0) {
                 continue;
               }
@@ -5640,8 +5640,8 @@
               xhtml += fixAttributeValue(currentAttr.nodeValue);
               xhtml += '"';
             }
-            // Style needs to be done separately as it is not reported as an
-            // attribute in IE
+            //Style needs to be done separately as it is not reported as an
+            //attribute in IE
             if(rootNode.style.cssText) {
               var styleValue = getStyleAttributeValue(rootNode);
               if(styleValue !== '') {
@@ -5652,13 +5652,13 @@
               xhtml += '/' + gt;
             } else {
               xhtml += gt;
-              // Add output for childNodes collection (which doesn't include attribute nodes)
+              //Add output for childNodes collection (which doesn't include attribute nodes)
               var childStartNewLine = !(rootNode.childNodes.length === 1 && rootNode.childNodes[0].nodeType === nodeTypes.TEXT_NODE);
               var childPreformatted = array_contains(preFormattedElements, tagName);
               for(i = 0, len = rootNode.childNodes.length; i < len; i++) {
                 xhtml += getXhtml(rootNode.childNodes[i], true, indentation + indentationUnit, childStartNewLine, childPreformatted);
               }
-              // Add the end tag
+              //Add the end tag
               var endTag = lt + '/' + tagName + gt;
               xhtml += childStartNewLine ? newLine + indentation + endTag : endTag;
             }
@@ -5670,7 +5670,7 @@
               if(preformatted) {
                 xhtml = rootNode.nodeValue;
               } else {
-                // Trim whitespace from each line of the text node
+                //Trim whitespace from each line of the text node
                 var lines = splitIntoLines(trim(rootNode.nodeValue));
                 var trimmedLines = [];
                 for(i = 0, len = lines.length; i < len; i++) {
@@ -5687,7 +5687,7 @@
             return '<![CDA' + 'TA[' + rootNode.nodeValue + ']' + ']>' + newLine;
           case nodeTypes.DOCUMENT_NODE:
             xhtml = '';
-            // Add output for childNodes collection (which doesn't include attribute nodes)
+            //Add output for childNodes collection (which doesn't include attribute nodes)
             for(i = 0, len = rootNode.childNodes.length; i < len; i++) {
               xhtml += getXhtml(rootNode.childNodes[i], true, indentation);
             }
@@ -5697,7 +5697,7 @@
         }
       } else {
         xhtml = '';
-        // Add output for childNodes collection (which doesn't include attribute nodes)
+        //Add output for childNodes collection (which doesn't include attribute nodes)
         for(i = 0, len = rootNode.childNodes.length; i < len; i++) {
           xhtml += getXhtml(rootNode.childNodes[i], true, indentation + indentationUnit);
         }
@@ -5788,7 +5788,7 @@
     }
 
     function init() {
-      // Add command line functions
+      //Add command line functions
       createCommandLineFunctions();
     }
 
@@ -5807,7 +5807,7 @@
   }
 
   /* ---------------------------------------------------------------------- */
-  // Main load
+  //Main load
 
   log4javascript.setDocumentReady = function() {
     pageLoaded = true;

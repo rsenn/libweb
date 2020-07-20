@@ -79,7 +79,7 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
   for(let [k,v] of entries)
     m.set(k, lazyInitializer(v));
 */
-  //  var cache = {};
+  //var cache = {};
 
   var proto = prototyp;
 
@@ -97,7 +97,7 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
   function proxify(arr, cache = {}) {
     return new Proxy(arr, {
       get(target, key, receiver) {
-        // console.log("key:", key);
+        //console.log("key:", key);
         let index = typeof key == 'string' && /^[0-9]+$/.test(key) ? parseInt(key) : key;
         if(cache[key]) return cache[key];
         if(key == 'length') {
@@ -117,8 +117,8 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
           ret = cache[key];
         }
         /*if(typeof index == "number" || typeof index == "string") console.log(`getting  @${index} = ` + ret);*/
-        // console.log("reflect:",{index,key});
-        //  console.log("cache:",Object.keys(cache));
+        //console.log("reflect:",{index,key});
+        //console.log("cache:",Object.keys(cache));
 
         return ret;
       },
@@ -168,7 +168,7 @@ export function lazyArray(elements) {
     i++;
   }
   Object.defineProperties(arr, props);
-  //  arr.length = elements.length;
+  //arr.length = elements.length;
   return arr;
 }
 

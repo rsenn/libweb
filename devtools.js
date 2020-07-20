@@ -1,6 +1,6 @@
 //import React from "react";
 //import ReactDOM from "react-dom";
-// prettier-ignore
+//prettier-ignore
 import dom, {TRBL, CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, Line, Matrix, Point, PointList, Rect, Size, SVG, Timer, Node, isElement } from "./dom.js";
 //import { SvgOverlay, SvgPathTracer } from "./svg/overlay.js";
 //import { SvgPath } from "./svg/path.js";
@@ -136,7 +136,7 @@ export const colors = (() => {
         class: 'colors-item',
         style: {
           margin: 'auto',
-          //  opacity: c.a / 255,
+          //opacity: c.a / 255,
           height: `${opts.height / 16}px`,
           overflow: 'hidden',
           fontFamily: 'Arial',
@@ -168,7 +168,7 @@ export async function getStars() {
   r.svg = r.elements[0].parentNode.parentNode;
 
   function getRect(e) {
-    //  return dom.Element.rect(e);
+    //return dom.Element.rect(e);
     let matrix = new dom.Matrix(e.getAttribute('transform'));
     let rect = dom.SVG.bbox(e);
     rect = matrix.transform_rect(rect);
@@ -1053,9 +1053,9 @@ export function storage(name) {
 
   return self;
 }
-// prettier-ignore
+//prettier-ignore
 export function assign_to(obj) {
-  // prettier-ignore
+   //prettier-ignore
   Object.assign(obj, { devtools});
   Object.assign(obj,  devtools);
 }
@@ -1084,7 +1084,7 @@ export const devtools = {
   storage,
   stores,
   stylesheets,
-  // toJS,
+  //toJS,
   trackElements,
   Util,
   walk,
@@ -1092,7 +1092,7 @@ export const devtools = {
   ws
   /*  React,
   ReactDOM,*/
-  //  mobx: { toJS }
+  //mobx: { toJS }
 };
 
 export default devtools;

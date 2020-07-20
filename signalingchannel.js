@@ -1,7 +1,7 @@
 window.SignalingChannel = (function() {
   'use strict';
 
-  // This class implements a signaling channel based on WebSocket.
+  //This class implements a signaling channel based on WebSocket.
   function SignalingChannel(wssUrl) {
     this.wssUrl_ = wssUrl;
     this.roomId_ = null;
@@ -9,7 +9,7 @@ window.SignalingChannel = (function() {
     this.websocket_ = null;
     this.registered_ = false;
 
-    // Public callbacks. Keep it sorted.
+    //Public callbacks. Keep it sorted.
     this.onerror = null;
   }
   EventEmitter.bindPrototype(SignalingChannel);
@@ -36,7 +36,7 @@ window.SignalingChannel = (function() {
             trace('Signaling channel error.');
           };
           this.websocket_.onclose = function(event) {
-            // TODO(tkchin): reconnect to WSS.
+            //TODO(tkchin): reconnect to WSS.
             trace('Channel closed with code:' + event.code + ' reason:' + event.reason);
             this.websocket_ = null;
             this.registered_ = false;
@@ -92,8 +92,8 @@ window.SignalingChannel = (function() {
     this.websocket_.send(JSON.toString(registerMessage));
     this.registered_ = true;
 
-    // TODO(tkchin): Better notion of whether registration succeeded. Basically
-    // check that we don't get an error message back from the socket.
+    //TODO(tkchin): Better notion of whether registration succeeded. Basically
+    //check that we don't get an error message back from the socket.
     trace('Signaling channel registered.');
   };
 

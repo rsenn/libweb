@@ -42,7 +42,7 @@ import 'svgjs';
   });
 
   SVG.extend(SVG.Line, {
-    // Get point
+    //Get point
     mid: function() {
       return new SVG.Point((this.x1() + this.x2()) / 2.0, (this.y1() + this.y2()) / 2.0);
     }
@@ -120,13 +120,13 @@ import 'svgjs';
   });
 
   SVG.Arc = SVG.invent({
-    // Initialize node
+    //Initialize node
     create: 'path',
 
-    // Inherit from
+    //Inherit from
     inherit: SVG.Path,
 
-    // Add class methods
+    //Add class methods
     extend: {
       plotRadius: function(x1, y1, r, largeArcFlag, sweepFlag, x2, y2) {
         var p = 'M {0},{1} A {2},{2} 0 {3},{4} {5},{6}'.format(x1.toFixed(2), y1.toFixed(2), r.toFixed(2), largeArcFlag.toFixed(0), sweepFlag.toFixed(0), x2.toFixed(2), y2.toFixed(2));
@@ -230,9 +230,9 @@ import 'svgjs';
         } else return this.sweepFlag;
       }
     },
-    // Add parent method
+    //Add parent method
     construct: {
-      // Create a line element
+      //Create a line element
       arc: function(x1, y1, r, sweepFlag, x2, y2) {
         return this.put(new SVG.Arc()).plot(x1, y1, r, sweepFlag, x2, y2);
       }

@@ -47,7 +47,7 @@ export function trkl(initValue) {
     var oldValue = value;
 
     if(newValue === oldValue && (newValue === null || typeof newValue !== 'object')) {
-      return; // bail out
+      return; //bail out
     }
 
     value = newValue;
