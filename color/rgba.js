@@ -353,8 +353,8 @@ RGBA.prototype.luminance = function() {
   return Y;
 };
 RGBA.prototype.invert = function() {
-  const  {r,g,b,a} = this.clamp();
-  return new RGBA(255-r, 255-g, 255-b, a);
+  const { r, g, b, a } = this.clamp();
+  return new RGBA(255 - r, 255 - g, 255 - b, a);
 };
 RGBA.prototype.blackwhite = function(a = this.a) {
   return this.luminanace() >= 0.2 ? new RGBA(255, 255, 255, a) : new RGBA(0, 0, 0, a);

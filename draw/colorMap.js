@@ -61,8 +61,7 @@ export class ColorMap extends Map {
   remap(fn = (c, k) => c) {
     for(let [k, c] of this.entries()) {
       let newColor = fn(Util.clone(c), k);
-      if(newColor && !newColor.equals(c))
-               this.set(k, newColor);
+      if(newColor && !newColor.equals(c)) this.set(k, newColor);
     }
   }
 
