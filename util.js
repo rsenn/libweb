@@ -1862,14 +1862,13 @@ Util.randInt = (...args) => {
   return Math.round(Util.randFloat(...range, rnd));
 };
 Util.randStr = (len, charset, rnd = Util.rng) => {
- let o='';
- if(!charset)
-   charset = "_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  let o = '';
+  if(!charset) charset = '_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
-while(--len >= 0) {
-o+= charset[Util.randInt(charset.length, rnd)];
-}
-return o;
+  while(--len >= 0) {
+    o += charset[Util.randInt(charset.length, rnd)];
+  }
+  return o;
 };
 
 Util.hex = function(num, numDigits = 0) {
