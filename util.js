@@ -193,7 +193,7 @@ Util.generalLog = function(n, x) {
   return Math.log(x) / Math.log(n);
 };
 Util.toSource = function(arg, opts = {}) {
-  const { quote = "'", colors = false, multiline = true } = opts;
+  const { quote = "'", colors = false, multiline = false } = opts;
   const c = Util.coloring(colors);
   if(Util.isArray(arg)) {
     let o = '';
@@ -208,7 +208,8 @@ Util.toSource = function(arg, opts = {}) {
   //if(arg && arg.toSource) return arg.toSource();
   if(typeof arg == 'object') {
     let o = '';
-    for(const prop in arg) {
+    for(const prop of Object.getOwnPropertyNames(arg)) {
+      //if(!Object.hasOwnProperty(arg,prop)) continue;
       let s = Util.toSource(arg[prop], opts);
       let m = new RegExp(`^\\*?${prop}\\s*\\(`).test(s);
       if(o != '') o += m && multiline ? '\n  ' : ', ';
@@ -1126,7 +1127,7 @@ Util.isString = function(v) {
  * @param      {<type>}   v       { parameter_description }
  * @return     {boolean}  True if the specified v is numeric, False otherwise.
  */
-Util.isNumeric = v => /^[-+]?[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test(v);
+Util.isNumeric = v => /^[-+]?(0x|0b|0o|)[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test(v + '');
 
 Util.isObject = (...args) => args.every(obj => typeof obj === 'object' && obj !== null);
 Util.isFunction = fn => !!(fn && fn.constructor && fn.call && fn.apply);
@@ -1141,6 +1142,15 @@ Util.isEmpty = function(v) {
   return false;
 };
 Util.isNonEmpty = v => !Util.isEmpty(v);
+Util.isIpAddress = v => {
+  const n = (v + '').split('.').map(i => +i);
+  return n.length == 4 && n.every(i => !isNaN(i) && i >= 0 && i <= 255);
+};
+Util.isPortNumber = v => {
+  const n = +v;
+  return !isNaN(n) && n >= 0 && n <= 65535;
+};
+
 Util.hasProps = function(obj, props) {
   const keys = Object.keys(obj);
   return props ? props.every(prop => 'prop' in obj) : keys.length > 0;
@@ -1851,6 +1861,16 @@ Util.randInt = (...args) => {
   if(range.length < 2) range.unshift(0);
   return Math.round(Util.randFloat(...range, rnd));
 };
+Util.randStr = (len, charset, rnd = Util.rng) => {
+ let o='';
+ if(!charset)
+   charset = "_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+while(--len >= 0) {
+o+= charset[Util.randInt(charset.length, rnd)];
+}
+return o;
+};
 
 Util.hex = function(num, numDigits = 0) {
   let n = typeof num == 'number' ? num : parseInt(num);
@@ -2084,13 +2104,22 @@ Util.indexByPath = function(o, p) {
   for(let key of p) o = o[key];
   return o;
 };
-Util.pushUnique = function(arr) {
-  let args = [...arguments];
+Util.pushUnique = function(...args) {
   arr = args.shift();
   args.forEach(item => {
     if(arr.indexOf(item) == -1) arr.push(item);
   });
   return arr;
+};
+Util.insertSorted = function(arr, item, cmp = (a, b) => b - a) {
+  let i = 0,
+    len = arr.length;
+  while(i < len) {
+    if(cmp(item, arr[i]) >= 0) break;
+    i++;
+  }
+  i < len ? arr.splice(i, 0, item) : arr.push(item);
+  return i;
 };
 Util.iterateMembers = function*(obj, predicate = (name, depth, obj, proto) => true, depth = 0) {
   let names = [];
