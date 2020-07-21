@@ -19,7 +19,7 @@ export class EagleNodeList {
 
     if(pos < 0) pos += raw.length;
 
-    console.log(`EagleNodeList.item(${pos})`, { owner, ref, raw });
+    //console.log(`EagleNodeList.item(${pos})`, { owner, ref, raw });
     if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner.document, ref.down(pos), raw[pos]);
   }
 

@@ -296,8 +296,13 @@ export class EagleElement extends EagleNode {
   }
 
   get text() {
-    let text = this.raw.children ? this.raw.children[0] : '';
-    if(typeof text == 'string') return text;
+    const { children } = this;
+    let text = '';
+    for(let child of children.raw) {
+    }
+    if(typeof child == 'string') text += child;
+
+    return Util.decodeHTMLEntities(text);
   }
 
   get attributes() {

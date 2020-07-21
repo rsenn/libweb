@@ -203,7 +203,24 @@ export class MutableXPath extends MutablePath {
     let r = [];
     while(a.length > 0) r = r.concat(MutableXPath.partToString(a, sep, childrenSym, tfn));
     let s = r.join('/');
-    return sep + s;
+    return (sep + s).replace(new RegExp(MutableXPath.CHILDREN_GLYPH + '(//*)', 'g'), '$1').replace(/(\/+)/g, '/');
+  }
+
+  toCode(name = '') {
+    return this.toArray().reduce((acc, part) => acc + partToStr(part), name);
+
+    function partToStr(part) {
+      if(Util.isNumeric(part)) return `[${part}]`;
+      if(part.tagName) {
+        const cond = `tagName=='${part.tagName}'`;
+        const attrs = part.attributes ? Object.entries(part.attributes).map(([k, v]) => `attributes.${k} == '${v}'`) : [];
+
+        const pred = `({tagName${attrs.length ? ',attributes' : ''}}) => ${[cond, ...attrs].join(' & ')}`;
+        return `.find(${pred})`;
+      }
+      // if(typeof(part) == 'string')
+      return `.${part}`;
+    }
   }
 
   [Symbol.for('nodejs.util.inspect.custom')](c) {
@@ -221,7 +238,7 @@ export class MutableXPath extends MutablePath {
     }, []);
     s = s.join(c('/', 1, 36));
     s = c(n, 1, ...(/Mutable/.test(n) ? [38, 5, 124] : [38, 5, 214])) + ' ' + s;
-    return s;
+    return s.replace(new RegExp('/' + MutableXPath.CHILDREN_GLYPH, 'g'), '/');
   }
 
   [Symbol.toStringTag]() {

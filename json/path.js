@@ -46,6 +46,8 @@ export class MutablePath extends Array {
   static CHILDREN_SYM = Symbol.for('children');
   static CHILDREN_STR = 'children';
 
+  static REDUCER = (a, p) => a[p];
+
   static isChildren(arg) {
     return IsChildren(arg);
   }
@@ -62,6 +64,12 @@ export class MutablePath extends Array {
     //console.log('this:',this);
 
     //console.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
+  }
+
+  static partMatcher(obj) {
+    const { tagName } = obj;
+    let fn = e => e.tagName == tagName;
+    return fn;
   }
 
   static parse(path, out) {
@@ -86,7 +94,7 @@ export class MutablePath extends Array {
             p = part.substring(1, part.length - 0);
           } else if(/^[A-Za-z]/.test(part)) {
             const idx = ['attributes', 'tagName', 'children'].indexOf(part);
-            if(idx == -1) part = { tagName: part };
+            if(idx == -1) part = partMatcher({ tagName: part });
           }
         }
 
@@ -264,12 +272,16 @@ export class MutablePath extends Array {
           if(MutablePath.isChildren(i)) {
             i = 'children';
           } else if(Util.isArray(a.o)) {
-            if(typeof i == 'object') {
+            if(typeof i == 'function') {
+              const pred = i;
+              i = a.o.findIndex((e, i, a) => pred(e, i, a));
+            } else if(typeof i == 'object') {
               //console.log(`MutablePath.apply findIndex`,a.o,i);
 
               i = a.o.findIndex(child => MutablePath.compareObj(child, i));
-            } else if(typeof i == 'number' && i < 0) i = a.o.length + i;
-            else i = +i;
+            } else if(typeof i == 'number' && i < 0) {
+              i = a.o.length + i;
+            } else i = +i;
           }
           r = a.o[i];
 
@@ -315,8 +327,17 @@ export class MutablePath extends Array {
       .replace(new RegExp('.' + childrenStr, 'g'), ` \x1b[1;30m` + childrenStr)*/
   }
 
-  toSource(sep = ',') {
-    return `[${this.filter(item => !MutablePath.isChildren(item)).join(sep)}]`;
+  toSource(opts = {}) {
+    const { sep = ',', filterChildren = false } = opts;
+    let r = this.toArray();
+    if(filterChildren) r = r.filter(item => !MutablePath.isChildren(item));
+    return `[${r.map(p => (typeof p == 'number' ? p : typeof p == 'string' ? `'${p}'` : p)).join(sep)}]`;
+  }
+  toCode(name) {
+    return this.reduce((acc, part) => acc + (Util.isNumeric(part) ? `[${part}]` : `.${part}`), name || '');
+  }
+  toReduce(name = '') {
+    return this.toSource() + `.reduce((a,p)=>a[p],${name})`;
   }
 
   get absolute() {
