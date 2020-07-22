@@ -1,9 +1,11 @@
 import Util from '../util.js';
 
 export const toXML = function(o, z = 10000, q = '"') {
-  if(Util.isArray(o)) return o.length === 1 ? toXML(o[0]) : o.map(toXML).join('\n');
-  if(typeof o == 'object' && o !== null && 'raw' in o) o = o.raw;
-  else if(typeof o == 'string') return o;
+   if(typeof o == 'object' && o !== null) {
+  if( 'raw' in o) o = o.raw;
+      if(Util.isArray(o)) return o.length === 1 ? toXML(o[0]) : o.map(toXML).join('\n');
+    }
+  if(typeof o == 'string') return o;
   else if(typeof o != 'object') return o + '';
   else if(o.tagName === undefined) return o + '';
   let { tagName, attributes, children, ...obj } = o;
@@ -21,9 +23,9 @@ export const toXML = function(o, z = 10000, q = '"') {
       for(let child of a) s += nl + toXML(child, z > 0 ? z - 1 : z).replace(/>\n/g, '>' + nl);
       if(tagName[0] != '?') s += `${nl.replace(/ /g, '')}</${tagName}>`;
     }
-  } else if(Object.keys(attrs).length == 0) s += `></${tagName}>`;
+  } //else if(Object.keys(attrs).length == 0) s += `></${tagName}>`;
   else s += ' />';
-  return s.trim();
+  return s;
 };
 
 export class Iterator {

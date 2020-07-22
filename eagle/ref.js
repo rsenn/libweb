@@ -69,7 +69,7 @@ export class EagleReference {
   }
 
   down(...args) {
-    return new EagleReference(this.root, [...this.path.toArray(), ...args]);
+    return new EagleReference(this.root, [...this.path, ...args]);
   }
   up(n = 1) {
     return new EagleReference(this.root, this.path.up(n));

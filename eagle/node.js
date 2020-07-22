@@ -44,6 +44,41 @@ export class EagleNode {
     return this.getDocument();
   }
 
+  elementChain(t = (o, p, v) => [v.tagName, v]) {
+    const { owner, path, document } = this;
+    let chain = Object.fromEntries(
+      Util.map(
+        path.walk((p, i, abort, ignore) => {
+          let value = p.apply(owner.raw, true);
+
+          if(i == 0) ignore();
+          if(!value || !value.attributes || !value.attributes.name) ignore();
+
+          return p.up(2);
+        }),
+        path => {
+          let v = path.apply(owner.raw, true);
+          return t(owner, path, v);
+        }
+      )
+    );
+    //console.log('chain:', chain);
+
+    return chain;
+
+    let node = this;
+    let ret = {};
+    let prev = null;
+    let i = 0;
+    do {
+      if(node == prev) break;
+      if((node.attributes && node.attributes.name) || node.tagName == 'sheet') ret[node.tagName] = node;
+      prev = node;
+      i++;
+    } while((node = node.parentNode || node.owner));
+    return ret;
+  }
+
   get chain() {
     let doc = this.owner;
     let ret = [];
@@ -183,13 +218,14 @@ export class EagleNode {
   }
 
   *getAll(predicate, transform) {
+    //  throw new Error();
     let name;
     let pred = EagleNode.makePredicate(predicate);
     let ctor = this[Symbol.species];
     transform = transform || ((...args) => args);
     let cond = pred;
     for(let [v, p, o] of deep.iterate(this.raw, cond, [...this.path])) {
-      yield transform(v, p, o);
+      yield transform(v, p, this.document||this);
     }
   }
 
@@ -203,13 +239,19 @@ export class EagleNode {
     return a[0] || null;
   }
 
-  find(name, transform) {
+  find(name, transform = a => a) {
     //console.log('find', this, name, Util.getCallers(0));
     //throw new Error("find");
     let pred = EagleNode.makePredicate(name);
-    const a = [...this.getAll((v, p, o) => (pred(v, p, o) ? -1 : false), transform)];
-    return a[0];
+    let result= deep.find(this.raw, pred, [...this.path]); //this.getAll((v, p, o) => (pred(v, p, o) ? -1 : false), transform))
+
+if(result) {
+  const {path,value} = result;
+//console.log("found:",{path,value});
+      return value ? transform(value,path) : value;
+    }
   }
+
 
   getMap(entity) {
     let a = this.cache[entity + 's'];

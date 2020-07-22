@@ -87,8 +87,8 @@ export const select = (root, filter, path) => {
 export const find = (node, filter, path, root) => {
   let k,
     ret = null;
-  path = (typeof path == 'string' ? path.split(/\.\//) : path) || [];
-  if(!root) root = node;
+  path = (typeof path == 'string' ? path.split(/[\.\/]/) : path) || [];
+  if(!root) { root = node; ret = {path:null,value: null}; }
   if(filter(node, path, root)) {
     ret = { path: path, value: node, root };
   } else if(Util.isObject(node)) {
@@ -101,6 +101,7 @@ export const find = (node, filter, path, root) => {
 };
 
 export const iterate = function*(value, filter = v => true, path = []) {
+  //throw new Error();
   let root = arguments[3] || value,
     selected = [],
     r;

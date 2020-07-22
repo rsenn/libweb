@@ -1,7 +1,7 @@
 import Util from '../util.js';
 import { toXML } from './util.js';
 
-export function DereferenceError(object, member, pos, locator) {
+export function DereferenceError(object, member, pos, prev,locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
   let stack = Util.getCallerStack()
     .filter(frame => null !== frame.getFileName())
@@ -19,8 +19,8 @@ export function DereferenceError(object, member, pos, locator) {
     {
       message:
         `Error dereferencing ${Util.className(object)} @ ${[...locator] + ''}
-xml: ${Util.abbreviate(toXML(locator.root))}
-no member '${Util.inspect(member, { colors: false })}' in ${Util.toString(object, { depth: 2, multiline: true, indent: '  ', colors: false })} \n` + stack.join('\n'),
+xml: ${Util.abbreviate(toXML(locator.root || object))}
+no member '${Util.inspect(member, { colors: false })}' in ${Util.toString(prev, { depth: 2, multiline: true, indent: '  ', colors: false })} \n` + stack.join('\n'),
       stack
     }
   );
@@ -66,7 +66,9 @@ export class MutablePath extends Array {
     //console.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
   }
 
-  static matchObj = (tagName, attr_or_index) => (typeof attr_or_index == 'number' ? [attr_or_index, tagName] : Util.isObject(attr_or_index) ? { tagName, attributes: attr_or_index } : e => e.tagName === tagName);
+  static matchObj(tagName, attr_or_index) {
+    return (typeof attr_or_index == 'number' ? [attr_or_index, tagName] : Util.isObject(attr_or_index) ? { tagName, attributes: attr_or_index } : e => e.tagName === tagName);
+  }
 
   static partMatcher(obj) {
     const { tagName } = obj;
@@ -263,7 +265,7 @@ export class MutablePath extends Array {
       let stack = Util.getCallers(1, 10);
       throw new Error(`Object ${o}` + stack.join('\n'));
     }
-    let a = this.toArray();
+    let a = this;
 
     //console.log("MutablePath.apply",...[...this], {o,a});
 
@@ -276,7 +278,7 @@ export class MutablePath extends Array {
           //console.log(`MutablePath.apply[`,a.n,`]`,Util.isArray(a.o),a.o,i);
           if(MutablePath.isChildren(i)) {
             i = 'children';
-          } else if(Util.isArray(a.o)) {
+          } else if(a.o.length !== undefined) {
             if(typeof i == 'function') {
               const pred = i;
               i = a.o.findIndex((e, i, a) => pred(e, i, a));
@@ -299,7 +301,7 @@ export class MutablePath extends Array {
       },
       { o, n: 0 }
     );
-    if(a.o == null && !noThrow) throw new DereferenceError(obj, a.i, a.n, this);
+    if(a.o == null && !noThrow) throw new DereferenceError(obj, a.i, a.n, a.p, this);
     return a.o;
   }
 
@@ -418,14 +420,22 @@ export class MutablePath extends Array {
    * @param      {number}  [end=this.length]  The end
    * @return     {Path}    { description_of_the_return_value }
    */
-  slice(start = 0, end = this.length) {
+   slice(start = 0, end = this.length) {
+    const ctor = this.constructor[Symbol.species];
+     let r= [...this].slice(start, end);
+r = Object.setPrototypeOf(r, ctor.prototype);
+if(ctor == ImmutablePath)
+r = Object.freeze(r);
+return r;
+   }
+/*  slice(start = 0, end = this.length) {
     const ctor = this.constructor[Symbol.species];
     let a = this.toArray();
     if(start < 0) start = a.length + start;
     if(end < 0) end = a.length + end;
     a = Array.prototype.slice.call(a, start, end);
     return new ctor(a, a[0] === '');
-  }
+  }*/
 
   splice(start = 0, remove = this.length, ...insert) {
     const ctor = this.constructor[Symbol.species];
@@ -464,7 +474,7 @@ export class MutablePath extends Array {
   concat(a) {
     const ctor = this.constructor[Symbol.species];
 
-    return new ctor(this.toArray().concat(Array.from(a)), this.absolute);
+    return new ctor([...this].concat(Array.from(a)), this.absolute);
   }
 
   /* reduce(fn, acc) {

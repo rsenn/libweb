@@ -134,8 +134,13 @@ export class EagleDocument extends EagleNode {
   }
 
   *getAll(pred, transform) {
-    yield* super.getAll(pred, transform || ((v, l, p) => EagleElement.get(this, l, v)));
+    yield* super.getAll(pred, transform || ((v, p,o) => EagleElement.get(this, p, v)));
   }
+
+  find(pred, transform) {
+    return super.find(pred, transform || ((v, p, o) => EagleElement.get(this, p, v)));
+  }
+
 
   lookup(xpath) {
     //console.log("EagleDocument.lookup(",...arguments, ")");

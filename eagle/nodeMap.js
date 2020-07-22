@@ -14,7 +14,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
   key: { writable: true, configurable: true, enumerable: false, value: null }
 });
 */
-  static makePredicate = (name, key) => {
+  static makePredicate(name, key) {
     const a = Util.isArray(key) ? key : [key];
     return item => a.some(key => item.attributes[key] == name);
   };

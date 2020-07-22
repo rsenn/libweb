@@ -237,7 +237,7 @@ export class EagleElement extends EagleNode {
     });*/
     if(tagName == 'gate') {
       lazyProperty(this, 'symbol', () => {
-        let chain = this.elementChain((o, p, v) => [v.tagName, EagleElement.get(o, p, v)]);
+        let chain = this.elementChain(/*(o, p, v) => [v.tagName, EagleElement.get(o, p, v)]*/);
 
         let library = chain.library;
         return library.symbols[elem.attributes.symbol];
@@ -268,8 +268,11 @@ export class EagleElement extends EagleNode {
       Util.defineGetter(this, 'symbol', () => this.gate.symbol);
     } else if(tagName == 'device') {
       lazyProperty(this, 'package', () => {
-        const library = this.parentNode.elementChain().library;
-        let pkg = library.packages[this.attributes.package];
+        const library = this.chain.library;
+
+        if(!library.packages)
+          console.log("",{tagName}, this.chain);
+        let pkg = library.packages[this.attributes['package']];
         return pkg;
       });
     }
@@ -395,7 +398,7 @@ export class EagleElement extends EagleNode {
       bb.update(p.bbox());
     } else if(this.tagName == 'sheet' || this.tagName == 'board') {
       const plain = this.find('plain');
-      let list = [...plain.getAll(e => e.tagName == 'wire' && e.attributes.layer == '47')];
+      let list = [...plain.children].filter(e => e.tagName == 'wire' && e.attributes.layer == '47');
       if(list.length <= 0) list = this.tagName == 'sheet' ? this.instances.list : this.elements.list;
 
       for(let instance of list) {
@@ -442,40 +445,9 @@ export class EagleElement extends EagleNode {
     return relationNames.indexOf(name) != -1;
   }
 
-  elementChain(t = (o, p, v) => [v.tagName, v]) {
-    const { owner, path, document } = this;
-    let chain = Object.fromEntries(
-      Util.map(
-        path.walk((p, i, abort, ignore) => {
-          let value = p.apply(owner.raw, true);
-
-          if(i == 0) ignore();
-          if(!value || !value.attributes || !value.attributes.name) ignore();
-
-          return p.up(2);
-        }),
-        path => {
-          let v = path.apply(owner.raw, true);
-          return t(owner, path, v);
-        }
-      )
-    );
-    //console.log('chain:', chain);
-
-    return chain;
-
-    let node = this;
-    let ret = {};
-    let prev = null;
-    let i = 0;
-    do {
-      if(node == prev) break;
-      if((node.attributes && node.attributes.name) || node.tagName == 'sheet') ret[node.tagName] = node;
-      prev = node;
-      i++;
-    } while((node = node.parentNode || node.owner));
-    return ret;
-  }
+elementChain(t = (o, p, v) => [v.tagName, EagleElement.get(o, p, v)]) {
+ return super.elementChain(t);
+}
 
   get chain() {
     return this.elementChain();
@@ -527,11 +499,11 @@ export class EagleElement extends EagleNode {
   }
 
   *getAll(pred, transform) {
-    yield* super.getAll(pred, transform || ((v, l, p) => EagleElement.get(this.owner, l, v)));
+    yield* super.getAll(pred, transform || ((v,  p, o) => EagleElement.get(o || this.owner, p, v)));
   }
 
   find(pred, transform) {
-    return super.find(pred, transform || ((v, l, p) => EagleElement.get(this.owner, l, v)));
+    return super.find(pred, transform || ((v, p, o) => EagleElement.get(o ||   this.owner, p, v)));
   }
 
   setAttribute(name, value) {
