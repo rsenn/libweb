@@ -6,7 +6,15 @@ export const isPlainObject = obj => {
 };
 
 export const clone = obj => {
-  let c, k, v, j, len;
+  var out, v, key;
+  out = Array.isArray(obj) ? [] : {};
+  for(key in obj) {
+    v = obj[key];
+    out[key] = typeof v === 'object' && v !== null ? clone(v) : v;
+  }
+  return out;
+
+  /*  let c, k, v, j, len;
   if(Util.isArray(obj)) {
     c = [];
     for(j = 0, len = obj.length; j < len; j++) {
@@ -23,7 +31,7 @@ export const clone = obj => {
     return c;
   } else {
     return obj;
-  }
+  }*/
 };
 
 export const equals = (a, b) => {
@@ -88,7 +96,10 @@ export const find = (node, filter, path, root) => {
   let k,
     ret = null;
   path = (typeof path == 'string' ? path.split(/[\.\/]/) : path) || [];
-  if(!root) { root = node; ret = {path:null,value: null}; }
+  if(!root) {
+    root = node;
+    ret = { path: null, value: null };
+  }
   if(filter(node, path, root)) {
     ret = { path: path, value: node, root };
   } else if(Util.isObject(node)) {

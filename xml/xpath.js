@@ -19,7 +19,7 @@ export class MutableXPath extends MutablePath {
       let [nth, tagName] = part;
       let fn = eval(`(n =>  (e,i) => (n = i == 0 ? -1 : n, e.tagName == '${tagName}' && ++n == ${nth}))()`);
 
-           fn.object = part;
+      fn.object = part;
       part = fn;
       //console.log("part",part+'')
     } else if(Util.isObject(part) && typeof part.tagName == 'string') {
@@ -42,7 +42,7 @@ export class MutableXPath extends MutablePath {
   }
 
   static from(path, obj) {
-      //console.log("MutableXPath.from",{path,obj});
+    //console.log("MutableXPath.from",{path,obj});
     let absolute = false;
     path = [...path];
     while(path.length > 0 && path[0] === '') {
@@ -64,14 +64,14 @@ export class MutableXPath extends MutablePath {
       if(MutablePath.isChildren(p)) p = 'children';
       else if(Util.isObject(p) && Util.isArray(o)) p = o.findIndex(item => item.tagName === p.tagName);
       //console.log(`MutableXPath.from[${i}] `, { p, o, f: p+''   });
-      e = typeof(p) == 'function' ? o.find(p) : o[p];
+      e = typeof p == 'function' ? o.find(p) : o[p];
       if(p == 'children' || Util.isArray(e)) {
         //s.push(p);
         n = e.length;
         counts = {};
         siblings = e.reduce((acc, sib, idx) => [...acc, [incr(counts, sib.tagName), sib.tagName]], []);
       } else if(Util.isObject(e) && e.tagName !== undefined) {
-        const [number, tagName] = siblings[p] || [0,e.tagName];
+        const [number, tagName] = siblings[p] || [0, e.tagName];
         let x = '';
         if(tagName) x += tagName;
         if(Util.isObject(e.attributes) && e.attributes.name) {
@@ -98,7 +98,7 @@ export class MutableXPath extends MutablePath {
       }
       o = e;
     }
-   // console.log('MutableXPath.from(', s, ')');
+    // console.log('MutableXPath.from(', s, ')');
     s = s.reduce((x, p) => [...x, 'children', p], []);
 
     let r = new ImmutableXPath(Object.setPrototypeOf(s, ImmutableXPath.prototype), absolute, obj);
@@ -107,7 +107,6 @@ export class MutableXPath extends MutablePath {
   }
 
   static matchObj = (tagName, attr_or_index = {}) => (typeof attr_or_index == 'number' ? [attr_or_index, tagName] : { tagName, attributes: attr_or_index });
-
 
   static strToPart(p) {
     let o = p;
@@ -177,13 +176,12 @@ export class MutableXPath extends MutablePath {
     if(i < this.length && this[i] === '') return 1;
     return 0;
   }
-   slice(start = 0, end = this.length) {
+  slice(start = 0, end = this.length) {
     const ctor = this.constructor[Symbol.species];
-     let r= super.slice(start, end);
-if(ctor == ImmutableXPath)
-r = Object.freeze(r);
-return r;
-   }
+    let r = super.slice(start, end);
+    if(ctor == ImmutableXPath) r = Object.freeze(r);
+    return r;
+  }
   /*
   slice(start, end) {
     let { descendand, absolute } = this;
@@ -279,9 +277,8 @@ return r;
 
       if(typeof part == 'function' && part.object) part = part.object;
       if(Util.isArray(part)) {
-                part = `find(${ ImmutableXPath.partMatcher(part)})`;
-      } else
-      if(part.tagName) {
+        part = `find(${ImmutableXPath.partMatcher(part)})`;
+      } else if(part.tagName) {
         const cond = `tagName=='${part.tagName}'`;
         const attrs = part.attributes ? Object.entries(part.attributes).map(([k, v]) => `attributes.${k} == '${v}'`) : [];
 

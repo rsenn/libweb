@@ -17,7 +17,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
   static makePredicate(name, key) {
     const a = Util.isArray(key) ? key : [key];
     return item => a.some(key => item.attributes[key] == name);
-  };
+  }
 
   item(pos) {
     return this.list.item(pos);

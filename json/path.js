@@ -1,7 +1,7 @@
 import Util from '../util.js';
 import { toXML } from './util.js';
 
-export function DereferenceError(object, member, pos, prev,locator) {
+export function DereferenceError(object, member, pos, prev, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
   let stack = Util.getCallerStack()
     .filter(frame => null !== frame.getFileName())
@@ -67,7 +67,7 @@ export class MutablePath extends Array {
   }
 
   static matchObj(tagName, attr_or_index) {
-    return (typeof attr_or_index == 'number' ? [attr_or_index, tagName] : Util.isObject(attr_or_index) ? { tagName, attributes: attr_or_index } : e => e.tagName === tagName);
+    return typeof attr_or_index == 'number' ? [attr_or_index, tagName] : Util.isObject(attr_or_index) ? { tagName, attributes: attr_or_index } : e => e.tagName === tagName;
   }
 
   static partMatcher(obj) {
@@ -420,15 +420,14 @@ export class MutablePath extends Array {
    * @param      {number}  [end=this.length]  The end
    * @return     {Path}    { description_of_the_return_value }
    */
-   slice(start = 0, end = this.length) {
+  slice(start = 0, end = this.length) {
     const ctor = this.constructor[Symbol.species];
-     let r= [...this].slice(start, end);
-r = Object.setPrototypeOf(r, ctor.prototype);
-if(ctor == ImmutablePath)
-r = Object.freeze(r);
-return r;
-   }
-/*  slice(start = 0, end = this.length) {
+    let r = [...this].slice(start, end);
+    r = Object.setPrototypeOf(r, ctor.prototype);
+    if(ctor == ImmutablePath) r = Object.freeze(r);
+    return r;
+  }
+  /*  slice(start = 0, end = this.length) {
     const ctor = this.constructor[Symbol.species];
     let a = this.toArray();
     if(start < 0) start = a.length + start;

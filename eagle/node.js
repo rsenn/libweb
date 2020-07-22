@@ -225,7 +225,7 @@ export class EagleNode {
     transform = transform || ((...args) => args);
     let cond = pred;
     for(let [v, p, o] of deep.iterate(this.raw, cond, [...this.path])) {
-      yield transform(v, p, this.document||this);
+      yield transform(v, p, this.document || this);
     }
   }
 
@@ -243,15 +243,14 @@ export class EagleNode {
     //console.log('find', this, name, Util.getCallers(0));
     //throw new Error("find");
     let pred = EagleNode.makePredicate(name);
-    let result= deep.find(this.raw, pred, [...this.path]); //this.getAll((v, p, o) => (pred(v, p, o) ? -1 : false), transform))
+    let result = deep.find(this.raw, pred, [...this.path]); //this.getAll((v, p, o) => (pred(v, p, o) ? -1 : false), transform))
 
-if(result) {
-  const {path,value} = result;
-//console.log("found:",{path,value});
-      return value ? transform(value,path) : value;
+    if(result) {
+      const { path, value } = result;
+      //console.log("found:",{path,value});
+      return value ? transform(value, path) : value;
     }
   }
-
 
   getMap(entity) {
     let a = this.cache[entity + 's'];

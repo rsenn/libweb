@@ -270,8 +270,7 @@ export class EagleElement extends EagleNode {
       lazyProperty(this, 'package', () => {
         const library = this.chain.library;
 
-        if(!library.packages)
-          console.log("",{tagName}, this.chain);
+        if(!library.packages) console.log('', { tagName }, this.chain);
         let pkg = library.packages[this.attributes['package']];
         return pkg;
       });
@@ -445,9 +444,9 @@ export class EagleElement extends EagleNode {
     return relationNames.indexOf(name) != -1;
   }
 
-elementChain(t = (o, p, v) => [v.tagName, EagleElement.get(o, p, v)]) {
- return super.elementChain(t);
-}
+  elementChain(t = (o, p, v) => [v.tagName, EagleElement.get(o, p, v)]) {
+    return super.elementChain(t);
+  }
 
   get chain() {
     return this.elementChain();
@@ -499,11 +498,11 @@ elementChain(t = (o, p, v) => [v.tagName, EagleElement.get(o, p, v)]) {
   }
 
   *getAll(pred, transform) {
-    yield* super.getAll(pred, transform || ((v,  p, o) => EagleElement.get(o || this.owner, p, v)));
+    yield* super.getAll(pred, transform || ((v, p, o) => EagleElement.get(o || this.owner, p, v)));
   }
 
   find(pred, transform) {
-    return super.find(pred, transform || ((v, p, o) => EagleElement.get(o ||   this.owner, p, v)));
+    return super.find(pred, transform || ((v, p, o) => EagleElement.get(o || this.owner, p, v)));
   }
 
   setAttribute(name, value) {
