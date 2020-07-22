@@ -40,7 +40,7 @@ export class EagleDocument extends EagleNode {
       this.file = filename;
       type = type || filename.replace(/.*\//g, '').replace(/.*\./g, '');
     }
-    //console.log('load document:', { project, xml: xmlStr.substring(0, 100), type });
+    //console.log('load document:', { filename, xml: xmlStr.substring(0, 100), type });
     this.type = type;
     if(project) this.owner = project;
     Util.define(this, 'xml', xml);
@@ -106,12 +106,6 @@ export class EagleDocument extends EagleNode {
         ];
     }
     return super.cacheFields();
-  }
-
-  toString() {
-    let xml = toXML(this.raw);
-    //console.log("xml:", toXML(this.root, 7));
-    return xml; //.map(e => toXML(e)).join("\n") + "\n";
   }
 
   /* prettier-ignore */

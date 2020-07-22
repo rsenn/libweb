@@ -47,7 +47,7 @@ export function RGBA(r = 0, g = 0, b = 0, a = 255) {
         ret.r = Math.round(c[0]);
         ret.g = Math.round(c[1]);
         ret.b = Math.round(c[2]);
-        if(c.length > 3) ret.a = Math.round(c[3]);
+        if(c.length > 3) ret.a = Math.round(c[3] * 255);
       } else if(typeof arg === 'object' && arg.r !== undefined) {
         ret.r = arg.r;
         ret.g = arg.g;

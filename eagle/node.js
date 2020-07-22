@@ -7,6 +7,7 @@ import { text, concat, parseArgs } from './common.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { ImmutableXPath } from '../xml.js';
 import { ImmutablePath, toXML } from '../json.js';
+import tXml from '../tXml.js';
 
 export const makeEagleNode = (owner, ref, ctor) => {
   if(!ctor) ctor = owner.constructor[Symbol.species];
@@ -52,7 +53,7 @@ export class EagleNode {
           let value = p.apply(owner.raw, true);
 
           if(i == 0) ignore();
-          if(!value || !value.attributes || !value.attributes.name) ignore();
+          if(!value || !value.attributes || !(value.tagName == 'library' || value.attributes.name)) ignore();
 
           return p.up(2);
         }),
@@ -104,7 +105,7 @@ export class EagleNode {
     let r;
     //console.log(`${Util.className(this)}.raw`,  {owner},ref);
     if(this.xml && this.xml[0]) return this.xml[0];
-    r = ref.path.apply(owner, true);
+    r = ref.path.apply(owner.raw, true);
     if(!r) {
       r = ref.path.apply(ref.root) || ref.path.apply(owner);
       if(!r) r = document.mapper.at(ref.path);
@@ -312,7 +313,7 @@ export class EagleNode {
     return EagleNode.inspect(this);
   }
   toString() {
-    return this[Symbol.toStringTag]();
+    return tXml.toString([this.raw]);
   }
 
   inspect() {
@@ -453,8 +454,9 @@ export class EagleNode {
   }
 
   toXML(depth = Number.MAX_SAFE_INTEGER) {
-    return toXML(this.raw, depth);
+    return tXml.toString([this.raw], depth);
   }
+
   static inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {
     const { depth, breakLength } = c;
     let o = e;

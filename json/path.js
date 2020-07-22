@@ -258,7 +258,7 @@ export class MutablePath extends Array {
   }
 
   apply(obj, noThrow) {
-    if('raw' in obj) obj = obj.raw;
+    // if('raw' in obj) obj = obj.raw;
 
     let o = obj;
     if(o === undefined && !noThrow) {

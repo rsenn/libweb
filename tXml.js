@@ -294,18 +294,26 @@ tXml.filter = function(children, f) {
 tXml.toString = function TOMObjToXML(O) {
   var out = '';
 
-  function writeChildren(O) {
-    if(O)
+  function writeChildren(O, indent = '') {
+    if(O && O.length) {
+      let ret = false;
       for(var i = 0; i < O.length; i++) {
         if(typeof O[i] == 'string') {
           out += O[i].trim();
         } else {
-          writeNode(O[i]);
+          if(indent !== null) {
+            out += '\n' + indent;
+            ret = true;
+          }
+
+          writeNode(O[i], indent == null ? '' : indent);
         }
       }
+      return ret;
+    }
   }
 
-  function writeNode(N) {
+  function writeNode(N, indent = '') {
     out += '<' + N.tagName;
     for(var i in N.attributes) {
       if(N.attributes[i] === null) {
@@ -316,11 +324,16 @@ tXml.toString = function TOMObjToXML(O) {
         out += ' ' + i + "='" + N.attributes[i].trim() + "'";
       }
     }
-    out += '>';
-    writeChildren(N.children);
-    out += '</' + N.tagName + '>';
+
+    if(N.children && N.children.length > 0) {
+      out += '>';
+      if(writeChildren(N.children, N.tagName[0] == '?' ? '' : indent + '  ')) out += '\n' + indent;
+      if(N.tagName[0] != '?') out += '</' + N.tagName + '>';
+    } else {
+      out += ' />';
+    }
   }
-  writeChildren(O);
+  writeChildren(O, null);
 
   return out;
 };

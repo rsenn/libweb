@@ -137,8 +137,8 @@ export class EagleSVGRenderer {
   renderItem(item, parent, opts = {}) {
     let { labelText, transform = new TransformationList() } = opts;
 
-    this.debug(`EagleSVGRenderer.renderItem`, item);
-    this.debug(`EagleSVGRenderer.renderItem`, item.xpath().toString());
+    /*   this.debug(`EagleSVGRenderer.renderItem`, item);
+    this.debug(`EagleSVGRenderer.renderItem`, item.xpath().toString());*/
 
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...attr }, parent);
 

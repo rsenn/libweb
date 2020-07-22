@@ -109,7 +109,6 @@ export class EagleElement extends EagleNode {
           'port',
           'prefix',
           'refer',
-          'rot',
           'route',
           'severity',
           'shape',
@@ -275,6 +274,9 @@ export class EagleElement extends EagleNode {
         return pkg;
       });
     }
+
+    if(['attribute', 'element', 'instance', 'label', 'moduleinst', 'pad', 'pin', 'probe', 'rectangle', 'smd', 'text'].indexOf(tagName) != -1) {
+    }
     this.initCache(EagleElement, EagleNodeList.create);
   }
 
@@ -301,8 +303,8 @@ export class EagleElement extends EagleNode {
     const { children } = this;
     let text = '';
     for(let child of children.raw) {
+      if(typeof child == 'string') text += child;
     }
-    if(typeof child == 'string') text += child;
 
     return Util.decodeHTMLEntities(text);
   }

@@ -34,12 +34,12 @@ export class SchematicRenderer extends EagleSVGRenderer {
     /*    if(pos !== undefined || rot !== undefined)
       throw new Error();*/
     //let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
-
-    this.debug(`SchematicRenderer.renderCollection`, opts);
-
     const arr = [...collection];
 
+    this.debug(`SchematicRenderer.renderCollection`, arr, opts);
+
     for(let item of arr.filter(item => item.tagName != 'text')) this.renderItem(item, parent, opts);
+    this.debug(`SchematicRenderer.renderCollection`, arr, opts);
     for(let item of arr.filter(item => item.tagName == 'text')) this.renderItem(item, parent, opts);
   }
 
@@ -55,7 +55,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-    if(rot) this.debug(`SchematicRenderer.renderItem`, { labelText, pos, transform, rot }, item.xpath().toString());
+    /* if(rot)*/ this.debug(`SchematicRenderer.renderItem`, /* { labelText, pos, transform, rot }, */ item /*, item.xpath().toString()*/, item.raw);
 
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
@@ -163,14 +163,14 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     this.debug(`SchematicRenderer.renderSheet`, { sheet, parent, transform });
 
-    let instances = sheet.find('instances');
+    let instances = sheet.instances; //find('instances');
 
     this.debug(`SchematicRenderer.renderSheet`, sheet);
 
     let netsGroup = this.create('g', { className: 'nets', transform }, parent);
     let instancesGroup = this.create('g', { className: 'instances', transform }, parent);
 
-    for(let instance of instances.children) this.renderInstance(instance, instancesGroup);
+    for(let instance of instances.list) this.renderInstance(instance, instancesGroup);
 
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
   }
@@ -191,9 +191,11 @@ export class SchematicRenderer extends EagleSVGRenderer {
     const g = this.create('g', { className: `part.${part.name}`, transform }, parent);
     if(!value) value = deviceset.name;
     opts = deviceset.uservalue == 'yes' || true ? { name, value } : { name, value: '' };
+
     this.renderCollection(symbol.children, g, {
       ...opts /*pos: new Point(x, y), transform: t.slice()*/
     });
+
     return g;
   }
 

@@ -13,25 +13,6 @@ export const clone = obj => {
     out[key] = typeof v === 'object' && v !== null ? clone(v) : v;
   }
   return out;
-
-  /*  let c, k, v, j, len;
-  if(Util.isArray(obj)) {
-    c = [];
-    for(j = 0, len = obj.length; j < len; j++) {
-      v = obj[j];
-      c.push(clone(v));
-    }
-    return c;
-  } else if(isPlainObject(obj)) {
-    c = {};
-    for(k in obj) {
-      v = obj[k];
-      c[k] = clone(v);
-    }
-    return c;
-  } else {
-    return obj;
-  }*/
 };
 
 export const equals = (a, b) => {
