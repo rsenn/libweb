@@ -25,7 +25,7 @@ export class EagleDocument extends EagleNode {
   }
 
   constructor(xmlStr, project, filename, type) {
-    console.log('EagleDocument.constructor', Util.abbreviate(xmlStr), { project, filename, type });
+    //console.log('EagleDocument.constructor', Util.abbreviate(xmlStr), { project, filename, type });
     const xml = tXml(xmlStr);
 
     let xmlObj = deep.clone(xml[0]); //(xml[0]);

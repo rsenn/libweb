@@ -1741,17 +1741,31 @@ Util.mapFunctional = fn =>
     for(let item of arg) yield fn(item);
   };
 Util.map = (obj, fn) => {
+  let ret = a => a;
   if(typeof obj == 'function') return Util.mapFunctional(...arguments);
-  if(Util.isGenerator(obj))
-    return (function*() {
-      let i = 0;
-      for(let item of obj) yield fn(item, i++, obj);
-    })();
 
   if(typeof obj.map == 'function') return obj.map(fn);
-  if(typeof fn != 'function') return Util.toMap(...arguments);
 
-  let ret = {};
+  if(typeof obj.entries == 'function') {
+    const ctor = obj.constructor;
+    obj = obj.entries();
+    ret = a => new ctor([...a]);
+    //    ret = a => new ctor(a);
+  }
+
+  /*console.log("obj",(obj));
+console.log("isGenerator",Util.isGenerator(obj));*/
+
+  if(Util.isGenerator(obj))
+    return ret(
+      (function*() {
+        let i = 0;
+        for(let item of obj) yield fn(item, i++, obj);
+      })()
+    );
+  //  if(typeof fn != 'function') return Util.toMap(...arguments);
+
+  ret = {};
   for(let key in obj) {
     if(obj.hasOwnProperty(key)) {
       let item = fn(key, obj[key], obj);
@@ -2569,20 +2583,19 @@ Util.splitLines = function(str, max_linelen = Number.MAX_SAFE_INTEGER) {
   if(line != '') lines.push(line);
   return lines;
 };
-Util.matchAll = Util.curry(function *(re,str) {
+Util.matchAll = Util.curry(function*(re, str) {
   re = new RegExp(re);
   let match;
-  while((match = re.exec(str)) != null)
-    yield match;
+  while((match = re.exec(str)) != null) yield match;
 });
 Util.decodeEscapes = function(text) {
   let matches = [...Util.matchAll(/([^\\]*)(\\u[0-9a-f]{4}|\\)/gi, text)];
-    if(matches.length) {
-    matches = matches.map(m => [...m].slice(1)).map(([s,t]) => s+String.fromCodePoint(parseInt(t.substring(2),16)));
+  if(matches.length) {
+    matches = matches.map(m => [...m].slice(1)).map(([s, t]) => s + String.fromCodePoint(parseInt(t.substring(2), 16)));
     text = matches.join('');
   }
   return text;
-}
+};
 
 Util.stripXML = text => text.replace(/<[^>]*>/g, '');
 Util.stripNonPrintable = text => text.replace(/[^\x20-\x7f\x0a\x0d\x09]/g, '');

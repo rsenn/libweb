@@ -18,7 +18,7 @@ export function DereferenceError(object, member, pos, locator) {
     { object, member, pos, locator },
     {
       message:
-        `Error dereferencing ${Util.className(object)} @ ${locator + ''}
+        `Error dereferencing ${Util.className(object)} @ ${[...locator] + ''}
 xml: ${Util.abbreviate(toXML(locator.root))}
 no member '${Util.inspect(member, { colors: false })}' in ${Util.toString(object, { depth: 2, multiline: true, indent: '  ', colors: false })} \n` + stack.join('\n'),
       stack
@@ -97,7 +97,7 @@ export class MutablePath extends Array {
             p = part.substring(1, part.length - 0);
           } else if(/^[A-Za-z]/.test(part)) {
             const idx = ['attributes', 'tagName', 'children'].indexOf(part);
-            if(idx == -1) part = MutablePath.partMatcher({ tagName: part });
+            if(idx == -1) part = (out.constructor.partMatcher || MutablePath.partMatcher)({ tagName: part });
           }
         }
 
@@ -111,6 +111,8 @@ export class MutablePath extends Array {
     if(a.length == 0) return null;
     let s = '';
     let part = a.shift();
+    if(typeof part == 'function' && part.object !== undefined) part = part.object;
+
     if(Util.isObject(part)) {
       let { tagName, ...partObj } = part;
       let keys = Object.keys(partObj);
@@ -263,7 +265,7 @@ export class MutablePath extends Array {
     }
     let a = this.toArray();
 
-    //console.log("MutablePath.apply",this, {o,a});
+    //console.log("MutablePath.apply",...[...this], {o,a});
 
     while(a.length >= 1 && a[0] === '') a = a.slice(1);
 
