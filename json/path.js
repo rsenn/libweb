@@ -66,9 +66,12 @@ export class MutablePath extends Array {
     //console.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
   }
 
+  static matchObj = (tagName, attr_or_index) => (typeof attr_or_index == 'number' ? [attr_or_index, tagName] : Util.isObject(attr_or_index) ? { tagName, attributes: attr_or_index } : e => e.tagName === tagName);
+
   static partMatcher(obj) {
     const { tagName } = obj;
-    let fn = e => e.tagName == tagName;
+    let fn = ImmutablePath.matchObj(obj.tagName);
+    fn.object = obj;
     return fn;
   }
 
@@ -94,7 +97,7 @@ export class MutablePath extends Array {
             p = part.substring(1, part.length - 0);
           } else if(/^[A-Za-z]/.test(part)) {
             const idx = ['attributes', 'tagName', 'children'].indexOf(part);
-            if(idx == -1) part = partMatcher({ tagName: part });
+            if(idx == -1) part = MutablePath.partMatcher({ tagName: part });
           }
         }
 

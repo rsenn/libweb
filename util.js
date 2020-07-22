@@ -2569,7 +2569,23 @@ Util.splitLines = function(str, max_linelen = Number.MAX_SAFE_INTEGER) {
   if(line != '') lines.push(line);
   return lines;
 };
+Util.matchAll = Util.curry(function *(re,str) {
+  re = new RegExp(re);
+  let match;
+  while((match = re.exec(str)) != null)
+    yield match;
+});
+Util.decodeEscapes = function(text) {
+  let matches = [...Util.matchAll(/([^\\]*)(\\u[0-9a-f]{4}|\\)/gi, text)];
+    if(matches.length) {
+    matches = matches.map(m => [...m].slice(1)).map(([s,t]) => s+String.fromCodePoint(parseInt(t.substring(2),16)));
+    text = matches.join('');
+  }
+  return text;
+}
 
+Util.stripXML = text => text.replace(/<[^>]*>/g, '');
+Util.stripNonPrintable = text => text.replace(/[^\x20-\x7f\x0a\x0d\x09]/g, '');
 Util.decodeHTMLEntities = function(text) {
   var entities = {
     amp: '&',
@@ -2891,16 +2907,19 @@ Util.assignGlobal = () => Util.weakAssign(Util.getGlobalObject(), Util);
 
 Util.weakMapper = (createFn, map = new WeakMap()) => {
   let self = function(obj, ...args) {
-    let ret = map.get(obj);
-    if(!ret) {
+    let ret;
+    if(map.has(obj)) {
+      ret = map.get(obj);
+    } else {
       ret = createFn(obj, ...args);
+      //if(ret !== undefined)
       map.set(obj, ret);
     }
     return ret;
   };
   self.set = (k, v) => map.set(k, v);
   self.get = k => map.get(k);
-  //self.map = map;
+  self.map = map;
   return self;
 };
 Util.merge = (...args) => args.reduce((acc, arg) => ({ ...acc, ...arg }), {});
