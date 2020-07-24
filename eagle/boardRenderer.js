@@ -37,7 +37,10 @@ export class BoardRenderer extends EagleSVGRenderer {
         },
         parent
       );
-    const { coordFn = i => i } = opts;
+    const { coordFn = i => i, name, value } = opts;
+
+    console.log('renderItem', { name, value });
+
     switch (item.tagName) {
       case 'via':
       case 'pad': {
@@ -164,8 +167,9 @@ export class BoardRenderer extends EagleSVGRenderer {
       const width = widths[layerId];
 
       this.debug('layerId:', layerId);
-      this.debug('layers:', layers);
-      const color = layer.color;
+      this.debug('layer:', layer);
+      const color = new RGBA(layer.color);
+      this.debug('color:', color, layer.color);
 
       this.create(
         'path',
@@ -173,7 +177,7 @@ export class BoardRenderer extends EagleSVGRenderer {
           className: 'wire',
           //...LayerAttributes(layer),
           d: path,
-          stroke: color,
+          stroke: color + '',
           'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
           fill: 'none',
           'stroke-linecap': 'round',

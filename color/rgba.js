@@ -10,14 +10,16 @@ import Util from '../util.js';
  *
  * @return [description]
  */
-export function RGBA(r = 0, g = 0, b = 0, a = 255) {
-  const args = [...arguments];
+export function RGBA(...args) {
   let ret = this instanceof RGBA ? this : {};
   let c = [];
 
+
+  if(args.length == 1 && Util.isArray(args[0]) && args[0].length >= 3) args = args[0];
   //console.log('RGBA(', args, ')');
 
   if(args.length >= 3) {
+    const [ r = 0, g = 0, b = 0, a = 255 ] = args;
     ret.r = r;
     ret.g = g;
     ret.b = b;
@@ -48,17 +50,17 @@ export function RGBA(r = 0, g = 0, b = 0, a = 255) {
         ret.g = Math.round(c[1]);
         ret.b = Math.round(c[2]);
         if(c.length > 3) ret.a = Math.round(c[3] * 255);
-      } else if(typeof arg === 'object' && arg.r !== undefined) {
-        ret.r = arg.r;
-        ret.g = arg.g;
-        ret.b = arg.b;
-        if(arg.a !== undefined) ret.a = arg.a;
-      } else {
-        ret.r = 0;
-        ret.g = 0;
-        ret.b = 0;
-        ret.a = 0;
       }
+    } else if(typeof arg === 'object' && arg.r !== undefined) {
+      ret.r = arg.r;
+      ret.g = arg.g;
+      ret.b = arg.b;
+      if(arg.a !== undefined) ret.a = arg.a;
+    } else {
+      ret.r = 0;
+      ret.g = 0;
+      ret.b = 0;
+      ret.a = 0;
     }
   }
 
@@ -353,7 +355,7 @@ RGBA.prototype.luminance = function() {
   return Y;
 };
 RGBA.prototype.invert = function() {
-  const { r, g, b, a } = this.clamp();
+  const { r, g, b, a } = RGBA.clamp(this);
   return new RGBA(255 - r, 255 - g, 255 - b, a);
 };
 RGBA.prototype.blackwhite = function(a = this.a) {
@@ -434,6 +436,10 @@ RGBA.prototype.toAnsi256 = function(background = false) {
   let ret = toString(background);
   ret.value = value;
   return ret;
+};
+RGBA.prototype[Symbol.iterator] = function *() {
+  const { r, g, b, a } = this;
+  yield *[r, g, b, a][Symbol.iterator]();
 };
 
 RGBA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {

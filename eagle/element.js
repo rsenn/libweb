@@ -167,9 +167,10 @@ export class EagleElement extends EagleNode {
           trkl.bind(this, key, fn);
         } else if(tagName == 'layer' && key == 'color') {
           Util.defineGetter(this, 'color', () => {
-            let colorIndex = this.attributes.color == undefined ? 15 : +this.attributes.color;
-
-            return this.document.palette[colorIndex];
+            let colorIndex = elem.attributes.color == undefined ? 15 : elem.attributes.color;
+            let color = doc.palette[colorIndex] || doc.palette[15];
+console.log("colorIndex", colorIndex, color);
+            return color;
           });
         } else if(EagleElement.isRelation(key) || ['package', 'library', 'layer'].indexOf(key) != -1) {
           let fn;

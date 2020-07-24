@@ -223,8 +223,8 @@ export class EagleSVGRenderer {
         let { x, y } = coordFn(item);
         this.debug('text', { text });
 
-        if(text.startsWith('&gt;')) {
-          const prop = text.slice(4).toLowerCase();
+        if(text.startsWith('>')) {
+          const prop = text.slice(1).toLowerCase();
           this.debug('text', { text, prop, opts });
           text = prop in opts ? opts[prop] : text;
         }
