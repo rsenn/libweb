@@ -169,7 +169,7 @@ export class EagleElement extends EagleNode {
           Util.defineGetter(this, 'color', () => {
             let colorIndex = elem.attributes.color == undefined ? 15 : elem.attributes.color;
             let color = doc.palette[colorIndex] || doc.palette[15];
-console.log("colorIndex", colorIndex, color);
+            console.log('colorIndex', colorIndex, color);
             return color;
           });
         } else if(EagleElement.isRelation(key) || ['package', 'library', 'layer'].indexOf(key) != -1) {

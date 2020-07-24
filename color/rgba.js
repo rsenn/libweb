@@ -14,12 +14,11 @@ export function RGBA(...args) {
   let ret = this instanceof RGBA ? this : {};
   let c = [];
 
-
   if(args.length == 1 && Util.isArray(args[0]) && args[0].length >= 3) args = args[0];
   //console.log('RGBA(', args, ')');
 
   if(args.length >= 3) {
-    const [ r = 0, g = 0, b = 0, a = 255 ] = args;
+    const [r = 0, g = 0, b = 0, a = 255] = args;
     ret.r = r;
     ret.g = g;
     ret.b = b;
@@ -437,9 +436,9 @@ RGBA.prototype.toAnsi256 = function(background = false) {
   ret.value = value;
   return ret;
 };
-RGBA.prototype[Symbol.iterator] = function *() {
+RGBA.prototype[Symbol.iterator] = function*() {
   const { r, g, b, a } = this;
-  yield *[r, g, b, a][Symbol.iterator]();
+  yield* [r, g, b, a][Symbol.iterator]();
 };
 
 RGBA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
