@@ -64,6 +64,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
         elem,
         {
           className: item.tagName, //...LayerAttributes(layer),
+          'data-path': item.path,
           ...attr
         },
         parent

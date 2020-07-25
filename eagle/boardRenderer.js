@@ -33,6 +33,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         elem,
         {
           className: item.tagName, //...LayerAttributes(layer),
+          'data-path': item.path,
           ...attr
         },
         parent
@@ -160,16 +161,16 @@ export class BoardRenderer extends EagleSVGRenderer {
         return line;
       });
 
-      this.debug('Lines:', [...lines]);
+      //this.debug('Lines:', [...lines]);
 
       const path = LinesToPath(lines);
       const layer = layers[layerId];
       const width = widths[layerId];
 
-      this.debug('layerId:', layerId);
-      this.debug('layer:', layer);
+      /* this.debug('layerId:', layerId);
+      this.debug('layer:', layer);*/
       const color = new RGBA(layer.color);
-      this.debug('color:', color, layer.color);
+      //this.debug('color:', color, layer.color);
 
       this.create(
         'path',
@@ -208,6 +209,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         'data-value': value,
         'data-library': library.name,
         'data-package': element.package.name,
+        'data-path': element.path,
         transform: transform.concat(rotation)
       },
       parent
@@ -221,7 +223,7 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderSignal(signal, parent, options = {}) {
-    let signalGroup = this.create('g', { id: `signal.${signal.name}`, className: `signal ${signal.name}` }, parent);
+    let signalGroup = this.create('g', { id: `signal.${signal.name}`, className: `signal ${signal.name}`, 'data-path': signal.path }, parent);
 
     this.debug(`BoardRenderer.renderSignal`, signal.name);
 

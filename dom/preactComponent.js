@@ -5,7 +5,7 @@ export { h, html, render, Component, createContext, useState, useReducer, useEff
 import { Element } from './element.js';
 import Util from '../util.js';
 
-const add = (arr, ...items) => [...((Util.isArray(arr) ? arr : [arr]) || []), ...items];
+const add = (arr, ...items) => [...(Util.isArray(arr) ? arr : arr ? [arr] : []), ...items];
 
 export class ReactComponent {
   static create(...args) {
@@ -22,6 +22,31 @@ export class ReactComponent {
 
     const elem = h(Tag, props, children);
     return elem;
+  }
+
+  static flatten(obj, dest = new Map(), path = [], pathFn = '.') {
+    if(typeof pathFn == 'string') {
+      const sep = pathFn;
+      pathFn = p => p.join(sep);
+    }
+
+    const insert = {
+      Array: (p, v) => dest.push([p, v]),
+      Map: (p, v) => dest.set(pathFn(p), v),
+      Object: (p, v) => (dest[pathFn(p)] = v)
+    }[Util.typeOf(dest)];
+
+    flatten(obj, path);
+
+    function flatten(obj, path) {
+      insert(path, obj);
+      if(obj.props) {
+        let children = ReactComponent.toChildArray(obj.props.children).map((child, i) => [child, [...path, 'props', 'children', i++]]);
+        children.forEach(args => flatten(...args));
+      }
+    }
+
+    return dest;
   }
 
   static isComponent(obj) {
@@ -110,7 +135,7 @@ export class ReactComponent {
   };
 
   static toChildArray(a) {
-    return Util.isArray(a) ? a : a ? [a] : a;
+    return Util.isArray(a) ? a : a ? [a] : [];
   }
 
   static toSource(obj, opts = {}, depth = 0) {

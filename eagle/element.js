@@ -15,7 +15,9 @@ export class EagleElement extends EagleNode {
   subscribers = [];
 
   static map = Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw));
+
   static list = [];
+  static currentElement = null;
 
   //new WeakMap();
 
@@ -28,6 +30,7 @@ export class EagleElement extends EagleNode {
     //console.log('EagleElement.get', { owner, ref, raw });
     let inst = EagleElement.map(raw, owner, ref);
     //console.log("EagleElement.get =",inst);
+    EagleElement.currentElement = inst;
     return inst;
   }
 
@@ -168,8 +171,8 @@ export class EagleElement extends EagleNode {
         } else if(tagName == 'layer' && key == 'color') {
           Util.defineGetter(this, 'color', () => {
             let colorIndex = elem.attributes.color == undefined ? 15 : elem.attributes.color;
-            let color = doc.palette[colorIndex] || doc.palette[15];
-            console.log('colorIndex', colorIndex, color);
+            let color = doc.palette[colorIndex] || doc.palette[0b0110];
+            //console.log('colorIndex', colorIndex, color);
             return color;
           });
         } else if(EagleElement.isRelation(key) || ['package', 'library', 'layer'].indexOf(key) != -1) {

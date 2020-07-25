@@ -57,22 +57,23 @@ export class MutablePath extends Array {
     return ['MutablePath', 'ImmutablePath', 'Path'].indexOf(name) != -1;
   }
 
-  constructor(p = [], absolute) {
+  constructor(p = [], opts = {}) {
+    const { absolute = false, tagField, specialFields = [] } = opts;
     super(typeof p == 'number' ? p : 0);
-
+    if(tagField) this.tagField = tagField;
+    this.specialFields = specialFields;
     MutablePath.parse(p, this);
     //console.log('this:',this);
 
     //console.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
   }
 
-  static matchObj(tagName, attr_or_index) {
-    return typeof attr_or_index == 'number' ? [attr_or_index, tagName] : Util.isObject(attr_or_index) ? { tagName, attributes: attr_or_index } : e => e.tagName === tagName;
+  static matchObj(tagName, attr_or_index, tagField = 'tagName') {
+    return typeof attr_or_index == 'number' ? [attr_or_index, tagName] : Util.isObject(attr_or_index) ? { tagName, attributes: attr_or_index } : eval(`e => e.${tagField} === '${tagName}'`);
   }
 
-  static partMatcher(obj) {
-    const { tagName } = obj;
-    let fn = ImmutablePath.matchObj(obj.tagName);
+  static partMatcher(obj, tagField = 'tagName') {
+    let fn = ImmutablePath.matchObj(obj[tagField], null, tagField);
     fn.object = obj;
     return fn;
   }
@@ -95,11 +96,11 @@ export class MutablePath extends Array {
         } else if(typeof part == 'number' || (typeof part == 'string' && !isNaN(part))) {
           part = +part;
         } else if(typeof part == 'string') {
-          if(/\[.*\]/.test(part + '')) {
-            p = part.substring(1, part.length - 0);
+          if(/^\[.*\]$/.test(part + '')) {
+            p = part.substring(1, part.length - 1);
           } else if(/^[A-Za-z]/.test(part)) {
-            const idx = ['attributes', 'tagName', 'children'].indexOf(part);
-            if(idx == -1) part = (out.constructor.partMatcher || MutablePath.partMatcher)({ tagName: part });
+            const idx = ['attributes', out.tagField || 'tagName', 'children', ...out.specialFields].indexOf(part);
+            if(idx == -1) part = (out.constructor.partMatcher || MutablePath.partMatcher)({ [out.tagField || 'tagName']: part }, out.tagField || 'tagName');
           }
         }
 
@@ -305,9 +306,8 @@ export class MutablePath extends Array {
     return a.o;
   }
 
-  toString(...args) {
+  toString(sep = '.', partToStr = MutablePath.partToString, childrenStr = MutablePath['CHILDREN_GLYPH'] + CHILDREN_SPACE) {
     const color = Util.isBrowser() ? text => text : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
-    const [sep = '.', partToStr = MutablePath.partToString, childrenStr = MutablePath['CHILDREN_GLYPH'] + CHILDREN_SPACE] = args;
     let a = [...this];
     //console.log("toString",{sep,partToStr, childrenStr});
     while(a.length > 0 && a[0] === '') a.shift();
@@ -319,19 +319,9 @@ export class MutablePath extends Array {
       r = r.concat(p);
     }
     const pad = (s, n = 1) => ' '.repeat(n) + s + ' '.repeat(n);
-    //console.log("r:",r);
-
-    /*
-    r = r.reduce(
-      (acc, p) => [...acc, ...(/^[A-Za-z]/.test(p) ? [pad(color(['\u2b21', '\u274a', '\u229b', '\u273d', '\u20f0', '\u20f0', '\u272a', '\u262a',  '\u21f9', '\u29bf','\u25c7', '\u2b20', '\u267d', '\u267c', '\u267b', '\u2693','\u0fd6', '\u0fd5', '\u2620', '\u0e1e'][10], 1, 35)), color(p || "''", 1, 33)] : [sep, p])],
-      []
-    );*/
-
     r = r.join(color(sep, 1, 36) + color('', 1, 30)); //.replace(/[/\.]\[/g, '[');
     r = (this.absolute && r != '' && sep == '/' ? sep : '') + r;
     return r.replace(/\//g, sep);
-    /*     .replace(new RegExp(childrenStr + '.', 'g'), childrenStr + ' \x1b[1;36m')
-      .replace(new RegExp('.' + childrenStr, 'g'), ` \x1b[1;30m` + childrenStr)*/
   }
 
   toSource(opts = {}) {

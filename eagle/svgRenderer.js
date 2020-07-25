@@ -16,21 +16,50 @@ export class EagleSVGRenderer {
   transformStack = [];
   transform = new TransformationList();
 
+  itemMap = new Map();
+  componentMap = new Map();
+  componentPath = new WeakMap();
+
+  setItem(path, item) {
+    const { itemMap } = this;
+    itemMap.set(path + '', item);
+  }
+
+  setComponent(path, component) {
+    const { componentMap, componentPath } = this;
+    componentMap.set(path + '', component);
+    componentPath.set(component, path);
+  }
+
+  getItem(path) {
+    const { doc } = this;
+    if(Util.isObject(path) && path.type !== undefined) path = this.componentPath.get(path);
+    return doc.mapper.get(path);
+  }
+
+  getComponent(path) {
+    const { componentMap } = this;
+    if(Util.isObject(path) && path.path !== undefined) path = path.path;
+
+    return componentMap.get(path + '');
+  }
+
   constructor(doc, factory) {
     if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
     //let ctor = EagleSVGRenderer.rendererTypes[doc.type];
     //Object.setPrototypeOf(this, ctor.prototype);
     this.doc = doc;
-    this.create = factory; //(tag, attrs, parent) => factory(tag, 'id' in attrs ? attrs : { id: ++this.id, ...attrs }, parent);
-
-    //console.log('EagleSVGRenderer.constructor(', doc, factory, ')');
-    /* const { layers, elements, signals } = doc || {};
-    this.elements = elements;
-    this.signals = signals;
-    this.layers = layers;*/
-    //this.plain = doc.get('plain', (v, l) => EagleElement.get(doc, l));
-
-    //return this;
+    let renderer = this;
+    this.create = function(tag, attrs, parent, element) {
+      let ret = factory(tag, attrs, parent);
+      let path = attrs['data-path'];
+      if(path && !element) element = EagleElement.get(doc, attrs['data-path']);
+      if(!element) element = EagleElement.currentElement;
+      if(!path && element) path = element.path;
+      if(element) renderer.setItem(path, element);
+      renderer.setComponent(path, ret);
+      return ret;
+    };
   }
 
   pushTransform(transform) {
@@ -120,6 +149,7 @@ export class EagleSVGRenderer {
           //...LayerAttributes(l),
           stroke,
           'data-name': l.name,
+          'data-path': l.path,
           ...(active == 'yes' ? { 'data-active': 'yes' } : {}),
           ...(visible == 'yes' ? { 'data-visible': 'yes' } : {})
         },
@@ -140,7 +170,7 @@ export class EagleSVGRenderer {
     /*   this.debug(`EagleSVGRenderer.renderItem`, item);
     this.debug(`EagleSVGRenderer.renderItem`, item.xpath().toString());*/
 
-    const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, ...attr }, parent);
+    const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, 'data-path': item.path, ...attr }, parent);
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
     let comp = Util.ucfirst(item.tagName);
@@ -148,7 +178,7 @@ export class EagleSVGRenderer {
     const color = layer && layer.color; //(opts && opts.color) || (layer && this.getColor(layer.color));
 
     if(Components[comp]) {
-      const elem = this.create(Components[comp], { item, transform }, parent);
+      const elem = svg(Components[comp], { item, transform }, parent);
       return;
     }
 
@@ -176,8 +206,11 @@ export class EagleSVGRenderer {
       case 'rectangle': {
         const { x1, x2, y1, y2 } = coordFn(item);
         let rect = Rect.from({ x1, x2, y1, y2 });
+        let rot = Rotation(item.rot);
+        let center = rect.center;
 
-        //console.log("rect:",Size(rect));
+        console.log('rect:', rect);
+        console.log('rot:', rot);
         svg(
           'rect',
           {
@@ -188,8 +221,8 @@ export class EagleSVGRenderer {
             y: -rect.height / 2,
             width: rect.width,
             height: rect.height,*/
-            ...rect.toObject()
-            //S  transform: `translate(${center.x},${center.y}) ${Rotation(rot)}`
+            ...rect.toObject(),
+            transform: `translate(${center}) ${rot} translate(${center.prod(-1)})`
           },
           parent
         );
@@ -315,7 +348,8 @@ export class EagleSVGRenderer {
         break;
       default: {
         const { x, y } = coordFn(item);
-
+        //  console.log('EagleSVGRenderer.renderItem', { item, parent, opts });
+        //super.renderItem(item,parent,opts);
         break;
       }
     }
