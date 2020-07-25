@@ -1,9 +1,10 @@
+import Util from './lib/util.js';
 //Example usage:
 //
 //void async function() {
 //let [clicks, onclick] = iterator()
 //document.querySelector('button').addEventListener('click', onclick)
-//for await (let click of clicks) console.log(click)
+//for await (let click of clicks) Util.log(click)
 //}()
 
 export function iterator() {

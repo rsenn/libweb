@@ -18,7 +18,7 @@ export class EagleProject {
 
     this.load();
 
-    if(!this.failed) console.log('Opened project:', this.filename, this.eaglePath);
+    if(!this.failed) Util.log('Opened project:', this.filename, this.eaglePath);
   }
 
   load() {
@@ -44,24 +44,24 @@ export class EagleProject {
     str = this.fs.readFile(file);
     if(typeof str != 'string' && 'toString' in str) str = str.toString();
 
-    //console.log("str:",str);
+    //Util.log("str:",str);
 
     try {
       doc = new EagleDocument(str, this, file);
     } catch(error) {
       err = error;
-      console.log('ERROR:', err);
+      Util.log('ERROR:', err);
     }
     if(doc) {
-      console.log('Opened document', file);
+      Util.log('Opened document', file);
 
       this.documents.push(doc);
     } else throw new Error(`EagleProject: error opening '${file}': ${err}`);
-    //console.log("Opened:", file);
+    //Util.log("Opened:", file);
 
     if(doc.type == 'lbr') {
       this.data[doc.type][doc.basename] = doc;
-      //console.log("Opened library:", doc.basename);
+      //Util.log("Opened library:", doc.basename);
     } else this.data[doc.type] = doc;
     return doc;
   }
@@ -83,7 +83,7 @@ export class EagleProject {
           dir = bin.replace(/\/[^\/]+$/, '');
         }
         dir = dir.replace(/[\\\/]bin$/i, '');
-        //console.log('dir:', dir, bin);
+        //Util.log('dir:', dir, bin);
 
         return dir;
       }
@@ -153,7 +153,7 @@ export class EagleProject {
 
   loadLibraries(dirs = this.libraryPath()) {
     const names = this.getLibraryNames();
-    //console.log('loadLibraries:', dirs, names);
+    //Util.log('loadLibraries:', dirs, names);
     for(let name of names) {
       let lib = this.findLibrary(name, dirs);
       if(!lib) throw new Error(`EagleProject library '${name}' not found in:  \n${dirs.join('\n  ')}`);
@@ -163,9 +163,9 @@ export class EagleProject {
 
   updateLibrary(name) {
     const l = this.library;
-    //console.log('name:', name);
-    //console.log('library:', l);
-    //console.log('documents:', this.documents);
+    //Util.log('name:', name);
+    //Util.log('library:', l);
+    //Util.log('documents:', this.documents);
 
     const { schematic, board } = this;
 
@@ -185,39 +185,39 @@ export class EagleProject {
       )
     };*/
 
-    //console.log('libraries.schematic:', libraries.schematic);
+    //Util.log('libraries.schematic:', libraries.schematic);
     for(let k of ['schematic', 'board']) {
-      //console.log(`project[${k}].libraries:`, this[k].libraries);
-      //console.log(`libraries[${k}]:`, libraries[k]);
-      //console.log(`libraries[${k}].packages:`, libraries[k].packages);
+      //Util.log(`project[${k}].libraries:`, this[k].libraries);
+      //Util.log(`libraries[${k}]:`, libraries[k]);
+      //Util.log(`libraries[${k}].packages:`, libraries[k].packages);
       const libProps = lib => lib;
       /*  const { packages, devicesets, symbols } = lib;
         return Object.fromEntries(['packages', 'symbols', 'devicesets'].map(k => [k, lib[k]]).filter(([k, v]) => v));
       };*/
       const destLib = libProps(libraries[k]);
       const srcLib = libProps(libraries.file);
-      //console.log('libraries', libraries);
-      //console.log('destLib', destLib);
+      //Util.log('libraries', libraries);
+      //Util.log('destLib', destLib);
       for(let entity of ['packages', 'symbols', 'devicesets']) {
         if(!(entity in destLib)) continue;
         if(!(destLib[entity] instanceof EagleNodeMap)) continue;
-        /*console.log('destLib', destLib);
-        //console.log('destLib[entity]', destLib[entity]);*/
+        /*Util.log('destLib', destLib);
+        //Util.log('destLib[entity]', destLib[entity]);*/
 
         const dstMap = destLib[entity];
         let ent = srcLib[entity].entries();
         let m = new Map(ent);
-        //console.log(`dstMap:`, dstMap);
-        //console.log(`dstMap:`, Util.className(dstMap));
+        //Util.log(`dstMap:`, dstMap);
+        //Util.log(`dstMap:`, Util.className(dstMap));
         for(let value of srcLib[entity].values()) {
           const key = value.name;
           dstMap.set(key, value);
         }
-        //console.log('dstMap.ref:', dump(dstMap.ref, 2));
-        //console.log('dstMap.raw:', dump(dstMap.raw, 2));
-        //console.log('dstMap.keys:', dump(dstMap.raw.map(item => item.attributes.name).sort(), 2));
-        //console.log('dstMap.keys:', dump(dstMap.keys().length, 2));
-        //console.log('dstMap.map:', dump(dstMap.map().size, 2));
+        //Util.log('dstMap.ref:', dump(dstMap.ref, 2));
+        //Util.log('dstMap.raw:', dump(dstMap.raw, 2));
+        //Util.log('dstMap.keys:', dump(dstMap.raw.map(item => item.attributes.name).sort(), 2));
+        //Util.log('dstMap.keys:', dump(dstMap.keys().length, 2));
+        //Util.log('dstMap.map:', dump(dstMap.map().size, 2));
       }
     }
   }
@@ -254,7 +254,7 @@ export class EagleProject {
       let promises = this.documents.map(doc => doc.saveTo([dir, doc.filename].join('/'), overwrite));
 
       return Promise.all(promises).then(result => {
-        //console.log('result:', result);
+        //Util.log('result:', result);
         resolve(Object.fromEntries(result));
       });
     });

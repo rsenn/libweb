@@ -161,7 +161,7 @@ export class SwipeTracker {
     if(vec.x < 0) amount *= 10;
     if(vec.x > 0) amount *= 0.1;
     this.setState({ amount });
-    console.log('Payment.handleSwipeDirection ', { event, direction, vec });
+    Util.log('Payment.handleSwipeDirection ', { event, direction, vec });
   };
 
   getEventHandlers() {
@@ -169,7 +169,7 @@ export class SwipeTracker {
     return Util.bindMethods(
       {
         onSwipeStart: function(event) {
-          console.log('swipestart: ', { event });
+          Util.log('swipestart: ', { event });
           inst.end = null;
           inst.start = null;
         },
@@ -199,8 +199,8 @@ export class SwipeTracker {
 
             const { start, position, delta, quadrant } = inst;
             inst.active = true;
-            //console.log(`Swipe move: position=` + position, 'delta=' + delta,
-            //'quadrant=' + quadrant); console.log('New event: ',
+            //Util.log(`Swipe move: position=` + position, 'delta=' + delta,
+            //'quadrant=' + quadrant); Util.log('New event: ',
             //inst.emitEvent(name).toSource());
           }
         },

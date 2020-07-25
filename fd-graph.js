@@ -23,7 +23,7 @@ export class Graph {
   constructor(options = {}) {
     let { origin = new Point(0, 0), size = new Size(1000, 1000), prng = Math.random, gravitate_to_origin = true, charge = 100, mass = 240, spacing = 3, timestep = 150, damping = 0.000005, onUpdateNode = node => true, onUpdateEdge = edge => true, onRenderGraph = graph => true } = options;
 
-    console.log(`Graph(${origin},${gravitate_to_origin})`);
+    Util.log(`Graph(${origin},${gravitate_to_origin})`);
     this.nodes = [];
     this.edges = [];
     this.config = { origin, spacing, size };
@@ -306,7 +306,7 @@ export class Graph {
       node.label = n.label;
       node.id = n.id;
       if(n.color !== undefined) node.color = n.color;
-      //console.log("node:", node);
+      //Util.log("node:", node);
     }
     for(let e of edges) {
       let edge = this.addEdge(this.nodes[e[0]], this.nodes[e[1]]);
@@ -357,7 +357,7 @@ export class Node extends Point {
     this.netforce = new Point(0, 0);
     this.label = label;
     /*
-    console.log(`Node(${label},${charge})`,
+    Util.log(`Node(${label},${charge})`,
       Util.inspect(this, { newline: "", indent: "", spacing: " " })
     );*/
   }

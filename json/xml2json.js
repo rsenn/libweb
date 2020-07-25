@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 /*	This work is licensed under Creative Commons GNU LGPL License.
 
 	License: http://creativecommons.org/licenses/LGPL/2.1/

@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 export function Vector(init, n, base = Int32Array) {
   if(n === undefined) n = init.length;
   let buf = new ArrayBuffer(base.BYTES_PER_ELEMENT * n);

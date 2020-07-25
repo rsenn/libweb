@@ -23,13 +23,13 @@ export class EagleElement extends EagleNode {
 
   static get(owner, ref, raw) {
     let root = ref.root || owner.raw ? owner.raw : owner;
-    //console.log('EagleElement.get(', { owner, ref, raw }, ')');
+    //Util.log('EagleElement.get(', { owner, ref, raw }, ')');
     if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(root, ref);
     if(!raw) raw = ref.path.apply(root, true);
     if(!raw) raw = ref.dereference();
-    //console.log('EagleElement.get', { owner, ref, raw });
+    //Util.log('EagleElement.get', { owner, ref, raw });
     let inst = EagleElement.map(raw, owner, ref);
-    //console.log("EagleElement.get =",inst);
+    //Util.log("EagleElement.get =",inst);
     EagleElement.currentElement = inst;
     return inst;
   }
@@ -46,7 +46,7 @@ export class EagleElement extends EagleNode {
   }
 
   constructor(owner, ref, raw) {
-    //console.log('new EagleElement owner ', Util.className(owner), ' ', raw.tagName);
+    //Util.log('new EagleElement owner ', Util.className(owner), ' ', raw.tagName);
     if(Util.className(owner) == 'Object') {
       throw new Error(`${Util.inspect(owner, 0)} ${Util.inspect(ref, 1)}`);
     }
@@ -172,7 +172,7 @@ export class EagleElement extends EagleNode {
           Util.defineGetter(this, 'color', () => {
             let colorIndex = elem.attributes.color == undefined ? 15 : elem.attributes.color;
             let color = doc.palette[colorIndex] || doc.palette[0b0110];
-            //console.log('colorIndex', colorIndex, color);
+            //Util.log('colorIndex', colorIndex, color);
             return color;
           });
         } else if(EagleElement.isRelation(key) || ['package', 'library', 'layer'].indexOf(key) != -1) {
@@ -201,7 +201,7 @@ export class EagleElement extends EagleNode {
               if(key == 'part') return part;
               const library = doc.libraries[part.attributes.library];
               const deviceset = library.devicesets[part.attributes.deviceset];
-              //console.log('relation ', { part, library, deviceset, gate });
+              //Util.log('relation ', { part, library, deviceset, gate });
               if(key == 'gate') return deviceset.gates[part.attributes.gate];
             };
           } else if(key + 's' in doc) {
@@ -213,7 +213,7 @@ export class EagleElement extends EagleNode {
                 value = elem.attrMap[key];
               let list = key == 'library' ? 'libraries' : key + 's';
               r = list in doc ? doc[list][value] : doc.get({ tagName: key, [id]: value });
-              //console.log(`relation get(${key}, ${elem.attributes[id]}) = `, r);
+              //Util.log(`relation get(${key}, ${elem.attributes[id]}) = `, r);
               return r;
             };
             this.initRelation(key, this.handlers[key], fn);
@@ -224,7 +224,7 @@ export class EagleElement extends EagleNode {
         }
         prop.subscribe(value => value !== undefined && this.event(key, value));
 
-        //console.log("prop:",key,prop.subscribe);
+        //Util.log("prop:",key,prop.subscribe);
       }
     }
     let childList = null;
@@ -252,11 +252,11 @@ export class EagleElement extends EagleNode {
 
       /*   if(!part) {
         let parts = doc.find('parts');
-        //console.log('parts:', parts.children);
-        //console.log('doc.parts:', doc.parts);
-        //console.log('instance', this.attributes.part, doc.parts.keys().indexOf(this.attributes.part));
+        //Util.log('parts:', parts.children);
+        //Util.log('doc.parts:', doc.parts);
+        //Util.log('instance', this.attributes.part, doc.parts.keys().indexOf(this.attributes.part));
       }
-      if(!part.attributes) console.log('instance', this.raw, { doc, owner, tagName });
+      if(!part.attributes) Util.log('instance', this.raw, { doc, owner, tagName });
 */
 
       lazyProperty(this, 'gate', () => {
@@ -273,7 +273,7 @@ export class EagleElement extends EagleNode {
       lazyProperty(this, 'package', () => {
         const library = this.chain.library;
 
-        if(!library.packages) console.log('', { tagName }, this.chain);
+        if(!library.packages) Util.log('', { tagName }, this.chain);
         let pkg = library.packages[this.attributes['package']];
         return pkg;
       });
@@ -286,7 +286,7 @@ export class EagleElement extends EagleNode {
 
   event(name) {
     const value = this[name];
-    console.log('event:', this, { name, value });
+    Util.log('event:', this, { name, value });
 
     for(let subscriber of this.subscribers) {
       subscriber.call(this, name, value);
@@ -362,7 +362,7 @@ export class EagleElement extends EagleNode {
   lookup(xpath, create) {
     /* if(!(xpath instanceof ImmutableXPath))
     xpath = new ImmutableXPath([...xpath]);*/
-    //console.log('EagleElement.lookup(', xpath, create, ')');
+    //Util.log('EagleElement.lookup(', xpath, create, ')');
     let r = super.lookup(xpath, (o, p, v) => {
       if(create && !v) {
         const { tagName } = p.last;
@@ -371,7 +371,7 @@ export class EagleElement extends EagleNode {
       if(!v) v = p.apply(o.raw, true);
       return EagleElement.get(o, p, v);
     });
-    //console.log('EagleElement.lookup = ', r);
+    //Util.log('EagleElement.lookup = ', r);
     return r;
   }
 
@@ -381,7 +381,7 @@ export class EagleElement extends EagleNode {
     if(this.tagName == 'element') {
       const { raw, ref, path, attributes, owner, document } = this;
       const libName = raw.attributes.library;
-      //console.log("document.libraries", document.libraries);
+      //Util.log("document.libraries", document.libraries);
       let library = document.libraries[libName];
 
       let pkg = library.packages[raw.attributes.package];
@@ -391,7 +391,7 @@ export class EagleElement extends EagleNode {
     } else if(this.tagName == 'instance') {
       const { part, gate, rot } = this;
       const { symbol } = gate;
-      //console.log('instance', { gate, symbol });
+      //Util.log('instance', { gate, symbol });
       let t = new TransformationList();
       t.translate(+this.x, +this.y);
       t = t.concat(Rotation(rot));

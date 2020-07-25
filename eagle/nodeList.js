@@ -5,7 +5,7 @@ import Util from '../util.js';
 
 export class EagleNodeList {
   constructor(owner, ref, raw) {
-    //console.log('EagleNodeList.constructor', { owner, ref, raw });
+    //Util.log('EagleNodeList.constructor', { owner, ref, raw });
 
     if(Util.isObject(ref) && !('dereference' in ref)) ref = EagleRef(owner, ref);
 
@@ -19,7 +19,7 @@ export class EagleNodeList {
 
     if(pos < 0) pos += raw.length;
 
-    //console.log(`EagleNodeList.item(${pos})`, { owner, ref, raw });
+    //Util.log(`EagleNodeList.item(${pos})`, { owner, ref, raw });
     if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner.document, ref.down(pos), raw[pos]);
   }
 
@@ -96,7 +96,7 @@ export class EagleNodeList {
         let is_symbol = typeof prop == 'symbol';
         let e;
 
-        //console.log("EagleNodeList get", {target, prop });
+        //Util.log("EagleNodeList get", {target, prop });
 
         if(typeof prop == 'number' || (typeof prop == 'string' && /^-?[0-9]+$/.test(prop))) {
           prop = +prop;
@@ -108,7 +108,7 @@ export class EagleNodeList {
         }
         if(prop == 'raw') {
           const { raw, ref } = instance;
-          //console.log("prop raw", {raw, ref });
+          //Util.log("prop raw", {raw, ref });
           return raw || (ref && ref.dereference());
         }
         if(prop == 'instance') return instance;

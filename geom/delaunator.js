@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 //https://github.com/mapbox/delaunator
 const EPSILON = Math.pow(2, -52);
 const EDGE_STACK = new Uint32Array(512);

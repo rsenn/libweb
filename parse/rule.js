@@ -46,14 +46,14 @@ export class Rule {
     for(i = 0; i < this.length; i++) {
       const production = this[i];
       if(production.match(y)) {
-        console.log('production:', production);
+        Util.log('production:', production);
 
         r = i;
         y.copyTo(parser);
         y = parser.clone();
       }
 
-      if(y.tokens.length) console.log('tokens:', y.tokens);
+      if(y.tokens.length) Util.log('tokens:', y.tokens);
       if(r != -1) break;
     }
     return r;

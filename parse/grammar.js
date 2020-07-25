@@ -49,7 +49,7 @@ export class Rule {
       if(symbols[symbols.length - 1] == Grammar.SKIP) {
         symbols = symbols.slice(0, -1);
         this.skip = true;
-        console.log('SKIP!');
+        Util.log('SKIP!');
       }
 
       let i = 0;
@@ -60,11 +60,11 @@ export class Rule {
           this.rule.selfReferential = true;
         }
 
-        //console.log("sym:", sym);
+        //Util.log("sym:", sym);
         this.push(sym);
         i++;
       }
-      //if(symbols[0] && symbols[0].str == this.rule.name) console.log('SELF:', this.rule.name, this);
+      //if(symbols[0] && symbols[0].str == this.rule.name) Util.log('SELF:', this.rule.name, this);
     }
 
     generate() {
@@ -146,14 +146,14 @@ export class Rule {
     for(i = 0; i < this.length; i++) {
       const production = this[i];
       if(production.match(y)) {
-        //console.log('production:', production);
+        //Util.log('production:', production);
 
         r = i;
         y.copyTo(parser);
         y = parser.clone();
       }
 
-      if(y.tokens.length) console.log('tokens:', y.tokens);
+      if(y.tokens.length) Util.log('tokens:', y.tokens);
       if(r != -1) break;
     }
     return r;
@@ -170,11 +170,11 @@ export class Rule {
     };
     if(f == 'choice' /*|| f == null*/) sep = ',\n  ';
     let cls = Util.className(a);
-    //if(a.str && a.str[0] == '[') console.log("a:",(a.str, Util.className(a)), a.id);
+    //if(a.str && a.str[0] == '[') Util.log("a:",(a.str, Util.className(a)), a.id);
 
     if(a.length == 1 && (f == 'seq' || f == 'choice')) {
       f = null;
-      //console.log('f:', a.length, f);
+      //Util.log('f:', a.length, f);
     }
     if(a.id == Lexer.tokens.REGEXP) {
       f = 'regex';
@@ -182,12 +182,12 @@ export class Rule {
     } else if(a instanceof Rule.Literal) {
       let fn = 'token';
       if(/[\r\n\t\ ]/.test(a.str) || a.str == '\\n' || a.str == '\\r') fn = 'char';
-      //console.log("a.str:",a.str);
+      //Util.log("a.str:",a.str);
       //{ f = a.str.length ==1 ? 'char': 'token'; s = a.str ? `'${a.str}'` : a; }
       return (s = a.str.length == 1 ? `${fn}('${a.str}')` : `${fn}('${a.str}')`);
     } else if(a instanceof Rule.Operator) s = Rule.generate(a.args, operatorFunctions[a.op]);
     else if(a instanceof Rule.Match /*|| a instanceof Array*/) {
-      //console.log('a:', a);
+      //Util.log('a:', a);
       if(f == null && a.length > 1) {
         f = 'seq';
         sep = ', ';
@@ -198,7 +198,7 @@ export class Rule {
 
       if(a.length <= 1) f = null;
     } else if(a instanceof Array) {
-      //console.log('arr:', a, f);
+      //Util.log('arr:', a, f);
       if(f == null && a.length > 1) {
         f = 'seq';
         sep = ', ';
@@ -207,7 +207,7 @@ export class Rule {
     } else if(cls == 'Symbol' || a instanceof Rule.Symbol) s = a.str;
     else s = `${Util.className(a)}(${a.str ? a.str : a})`;
 
-    if(f == 'x') console.log(Util.className(a), a);
+    if(f == 'x') Util.log(Util.className(a), a);
 
     if(f) s = `${f}(${sep.substring(1)}${s}${sep[1]})`;
 
@@ -241,7 +241,7 @@ export class Grammar {
   addRule(name, productions, fragment) {
     let rule = new Rule(this, fragment);
     rule.name = name;
-    //console.log("productions:",productions);
+    //Util.log("productions:",productions);
     rule.parse(productions);
     //if(fragment) rule.fragment = fragment;
     this.rules.set(name, rule);
@@ -276,12 +276,12 @@ export class Grammar {
   }
 
   parsePatterns(endTok = [';', '|']) {
-    //console.log('parsePatterns', { endTok });
+    //Util.log('parsePatterns', { endTok });
     const { parser } = this;
     let r, n;
     let patterns = [];
     while((r = parser.getTok())) {
-      //console.log('r', r);
+      //Util.log('r', r);
       if(lexMatch(Lexer.tokens.PUNCTUATION, endTok, r)) {
         r.unget();
         break;
@@ -330,7 +330,7 @@ export class Grammar {
   }
 
   parseRule(startTok = ':', endTok = ';', name) {
-    //console.log('parseRule', { startTok, endTok, name });
+    //Util.log('parseRule', { startTok, endTok, name });
     const { parser } = this;
     let patterns = [],
       matches = [];
@@ -347,7 +347,7 @@ export class Grammar {
       if(r.str == '|' && patterns.length) addPatterns();
       invert = false;
       patterns = this.parsePatterns([endTok, '|']);
-      //console.log(parser.token);
+      //Util.log(parser.token);
     }
     addPatterns();
     return matches;
@@ -398,7 +398,7 @@ export class Grammar {
     s += `function wrap(parser, name) {
   return (str,pos) => {
     let r = parser(str,pos);
-    if(r[0] || name.startsWith('direct')) console.log("matched ("+name+") "+pos+" - " +r[2]+": '", r[1] ,"'");
+    if(r[0] || name.startsWith('direct')) Util.log("matched ("+name+") "+pos+" - " +r[2]+": '", r[1] ,"'");
     return r;
   };
 }
@@ -418,7 +418,7 @@ export class Grammar {
           let o = a[1];
 
           if(o.length > 1) {
-            //console.log('o:', o);
+            //Util.log('o:', o);
             o = new Rule.Operator('|', ...o);
             s;
           }
@@ -428,7 +428,7 @@ export class Grammar {
           if(e.length > 1) e = new Rule.Operator('|', ...e);
           m.splice(0, m.length, e, o);
           rule.productions = [m];
-          //console.log(':', o);
+          //Util.log(':', o);
         }
         /*
 { 
@@ -440,8 +440,8 @@ append.productions = new Rule.Operator('*', new Rule.Operator('|', ...a[1]));
 
 }*/
 
-        //console.log('rule:', rule);
-        //console.log('a:', a);
+        //Util.log('rule:', rule);
+        //Util.log('a:', a);
       }
 
       calls = rule.generate().replace(/\n/g, '\n  ');
@@ -451,9 +451,9 @@ append.productions = new Rule.Operator('*', new Rule.Operator('|', ...a[1]));
       s += `function ${name}(...args) {
   return wrap( ${calls}, '${name}' )(...args);
 }`;
-      //console.log("rule:", rule);
+      //Util.log("rule:", rule);
       //
-      //console.log("rule:", rule);
+      //Util.log("rule:", rule);
       //s += `const ${name} = ` + rule.generate();
       s += `\n\n`;
       names.push(name);

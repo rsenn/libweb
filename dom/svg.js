@@ -47,7 +47,7 @@ export class SVG extends Element {
     //if(size == null) size = new Size(Element.rect(parent));
 
     const { width, height } = size || {};
-    console.log('factory', { delegate, parent, size, arg });
+    Util.log('factory', { delegate, parent, size, arg });
     if(parent && parent.tagName.toLowerCase() == 'svg') delegate.root = parent;
     else if(this !== SVG && this && this.appendChild) delegate.root = this;
     else
@@ -71,7 +71,7 @@ export class SVG extends Element {
 
       /*if(typeof root.append == "function") root.append(elem);
       else root.appendChild(elem);*/
-      //console.log('append_to ', elem, ', root=', root);
+      //Util.log('append_to ', elem, ', root=', root);
     };
     let factory = function(tag, attr, children) {
       const create = (tag, attr, parent) => {
@@ -98,7 +98,7 @@ export class SVG extends Element {
     let e = typeof element === 'string' ? Element.find(element) : element;
     let fn = screen ? 'getScreenCTM' : 'getCTM';
     let ctm = e[fn]();
-    console.log('ctm:', ctm);
+    Util.log('ctm:', ctm);
     if(e && e[fn]) return new Matrix(ctm);
     return null;
   }
@@ -133,7 +133,7 @@ export class SVG extends Element {
     let grad = factory(type + '-gradient', { ...props, ...rect }, defs);
 
     map.forEach((color, o) => {
-      //console.log('color:' + color + ' o:' + o);
+      //Util.log('color:' + color + ' o:' + o);
       factory('stop', { offset: Math.round(o * 100) + '%', stopColor: color }, grad);
     });
 
@@ -181,7 +181,7 @@ export class SVG extends Element {
         props: a.reduce((acc, [name, value]) => (/#/.test(value) ? acc : { ...acc, [name]: value }), {})
       };
       yield value;
-      //console.log(value);
+      //Util.log(value);
     }
   }
   static allColors(elem) {
@@ -216,7 +216,7 @@ export class SVG extends Element {
       dump() {
         for(let i = 0; i < this.list.length; i++) {
           const { color, elements } = this.list[i];
-          console.log(`${i}: %c    %c ${color}`, `background: ${color};`, `background: none`);
+          Util.log(`${i}: %c    %c ${color}`, `background: ${color};`, `background: none`);
         }
         return this;
       },
@@ -250,7 +250,7 @@ export class SVG extends Element {
         }
         let c = newColor(RGBA.fromString(a.color), index, a.color);
         if(typeof c != 'string') c = c.toString();
-        //console.log('new color:', c);
+        //Util.log('new color:', c);
 
         for(let [elem, prop] of a.elements) elem.setAttribute(prop, c);
 
@@ -294,7 +294,7 @@ export class SVG extends Element {
         //const swap = !Point.equals(prev, { x: x0, y: y0 });
 
         let line = new Line({ x: x0, y: y0 }, cmd);
-        console.log('lineIterator', { i, code, x, y, x0, y0 }, line.toString());
+        Util.log('lineIterator', { i, code, x, y, x0, y0 }, line.toString());
         yield line;
       }
       prev = cmd;
@@ -326,7 +326,7 @@ export class SVG extends Element {
       point.ok = !point.move && prev.angle != point.angle;
       const pad = Util.padFn(12, ' ', (str, pad) => `${pad}${str}`);
       if(point.ok) {
-        //console.log(`pos: ${pad(i, 3)}, move: ${isin || point.move} point: ${pad(point )}, slope: ${pad(slope && slope.toFixed(3) )}, angle: ${point.angle.toFixed(3)}, d: ${d.toFixed(3)}` );
+        //Util.log(`pos: ${pad(i, 3)}, move: ${isin || point.move} point: ${pad(point )}, slope: ${pad(slope && slope.toFixed(3) )}, angle: ${point.angle.toFixed(3)}, d: ${d.toFixed(3)}` );
         let ret;
 
         try {
@@ -339,7 +339,7 @@ export class SVG extends Element {
     for(let i = 0; i < numPoints; i++) {
       const point = e.getPointAtLength(pos(i));
       const next = e.getPointAtLength(pos(i + 1));
-      console.log('iterator', point, next);
+      Util.log('iterator', point, next);
       const isin = {
         stroke: e.isPointInStroke(point),
         fill: e.isPointInFill(point),

@@ -369,7 +369,7 @@ export class ClassDeclaration extends ESNode {
     this.extending = extending;
     this.members = members;
     //this.exported = exported;
-    //console.log('New ClassDeclaration: ', JSON.toString({ id, extending, // exported }));
+    //Util.log('New ClassDeclaration: ', JSON.toString({ id, extending, // exported }));
   }
 }
 
@@ -387,7 +387,7 @@ export class ArrowFunction extends ESNode {
     this.is_async = is_async;
     this.params = params;
     this.body = body;
-    //console.log('New FunctionDeclaration: ', JSON.toString({ id, params, // exported }));
+    //Util.log('New FunctionDeclaration: ', JSON.toString({ id, params, // exported }));
   }
 }
 
@@ -397,7 +397,7 @@ export class VariableDeclaration extends Declaration {
     this.kind = kind;
     //this.exported = exported;
     this.declarations = declarations;
-    //console.log('New VariableDeclaration: ', JSON.toString({ kind, exported
+    //Util.log('New VariableDeclaration: ', JSON.toString({ kind, exported
     //}));
   }
 }
@@ -407,7 +407,7 @@ export class VariableDeclarator extends ESNode {
     super('VariableDeclarator');
     this.id = identifier;
     this.init = initialValue;
-    //console.log('New VariableDeclarator: ', JSON.toString({ identifier:
+    //Util.log('New VariableDeclarator: ', JSON.toString({ identifier:
     //identifier.value }));
   }
 }
@@ -416,7 +416,7 @@ export class ObjectLiteral extends ESNode {
   constructor(members) {
     super('ObjectLiteral');
     this.members = members;
-    //console.log('New ObjectLiteral: ', Object.keys(members));
+    //Util.log('New ObjectLiteral: ', Object.keys(members));
   }
 }
 
@@ -448,7 +448,7 @@ export class ArrayLiteral extends ESNode {
   constructor(elements) {
     super('ArrayLiteral');
     this.elements = elements;
-    //console.log('New ArrayLiteral: ', Object.keys(members));
+    //Util.log('New ArrayLiteral: ', Object.keys(members));
   }
 }
 
@@ -461,7 +461,7 @@ export class JSXLiteral extends ESNode {
     this.selfClosing = selfClosing;
     this.children = children;
     this.spread = spread;
-    //console.log('New JSXLiteral: ', tag, JSX.keys(attributes));
+    //Util.log('New JSXLiteral: ', tag, JSX.keys(attributes));
   }
 }
 
@@ -597,7 +597,7 @@ export function Factory() {
     ctor = typeof ctor == 'string' ? CTORS[ctor] : ctor;
     let instance = new ctor(...args);
     self.callback(ctor, args, instance);
-    /*console.log("factory ret:",instance);*/
+    /*Util.log("factory ret:",instance);*/
     return instance;
   };
   self.nodes = nodeList;

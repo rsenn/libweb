@@ -51,7 +51,7 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
     ret.a = 0;
   }
 
-  //console.log('HSLA ', { c, ret, args });
+  //Util.log('HSLA ', { c, ret, args });
   if(!(ret instanceof HSLA)) return ret;
 }
 
@@ -180,7 +180,7 @@ HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [0, 1], rng
   return new HSLA(Util.randInt(...h, rng), Util.randInt(...s, rng), Util.randInt(...l, rng), Util.randFloat(...a, rng));
 };
 HSLA.prototype.dump = function() {
-  //console.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
+  //Util.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
   return this;
 };
 HSLA.prototype.binaryValue = function() {
@@ -191,7 +191,7 @@ HSLA.prototype.binaryValue = function() {
   })();
 
   return ((byte(h, 360) * 256 + byte(s)) * 256 + byte(l)) * 256 + byte(a, 1);
-  //console.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
+  //Util.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
   return this;
 };
 

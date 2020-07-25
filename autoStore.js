@@ -43,16 +43,16 @@ export const makeLocalStore = name => ({
   name,
   storage: makeLocalStorage(),
   get() {
-    //console.log(`localStore[${this.name}].get()`);
+    //Util.log(`localStore[${this.name}].get()`);
     return this.storage.get(this.name);
   },
   set(data) {
-    //console.log(`localStore[${this.name}].set(data)`);
+    //Util.log(`localStore[${this.name}].set(data)`);
 
     return this.storage.set(this.name, data);
   },
   remove() {
-    //console.log(`localStore[${this.name}].remove()`);
+    //Util.log(`localStore[${this.name}].remove()`);
 
     return this.storage.remove(this.name);
   }
@@ -88,7 +88,7 @@ export const makeAutoStoreHandler = (name, store, runner /* = mobx.autorun */) =
       }
       const updatedStore = _this[_member];
 
-      /*      console.log("AutoStoreHandler: ", {
+      /*      Util.log("AutoStoreHandler: ", {
         name,
         obj: toJS(_this),
         key: _member,
@@ -108,7 +108,7 @@ export const makeAutoStoreHandler = (name, store, runner /* = mobx.autorun */) =
     try {
       store.set(name, updatedStore);
     } catch(err) {
-      //console.log("ERROR: ", err);
+      //Util.log("ERROR: ", err);
     }
   };
 

@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 import { Point, isPoint } from './point.js';
 //import { PointList } from './pointList.js';
 import { Line } from './line.js';
@@ -247,7 +248,7 @@ Rect.COVER = 32;
 
 Rect.prototype.fit = function(other, align = Align.CENTER | Align.MIDDLE | Rect.CONTAIN) {
   let factors = Size.prototype.fitFactors.call(this, new Size(other)).sort((a, b) => a - b);
-  //console.log('factors:', factors);
+  //Util.log('factors:', factors);
 
   let rects = factors.reduce((acc, factor) => {
     let rect = new Rect(0, 0, this.width, this.height);
@@ -258,7 +259,7 @@ Rect.prototype.fit = function(other, align = Align.CENTER | Align.MIDDLE | Rect.
     return acc;
   }, []);
 
-  //console.log("rects:", rects);
+  //Util.log("rects:", rects);
 
   return rects;
 };

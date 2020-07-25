@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 import { Rect } from './rect.js';
 
 /**
@@ -35,7 +36,7 @@ export function TRBL(arg) {
     Object.defineProperty(ret, name, { enumerable: true, value: TRBL.prototype[name] })
   ); */
 
-  //console.log('ret: ', ret);
+  //Util.log('ret: ', ret);
 
   if(!this || this === TRBL) return Object.assign(ret, TRBL.prototype);
 }

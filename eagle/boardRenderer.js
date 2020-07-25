@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 import { Point, Line } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
@@ -40,7 +41,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       );
     const { coordFn = i => i, name, value } = opts;
 
-    console.log('renderItem', { name, value });
+    //Util.log('renderItem', { name, value });
 
     switch (item.tagName) {
       case 'via':

@@ -17,7 +17,7 @@ export function Circle(x, y, radius) {
     obj.radius = +arg.radius;
   }
 
-  //console.log('arguments:', [...arguments]);
+  //Util.log('arguments:', [...arguments]);
 
   if(obj === null) obj = Object.create(Circle.prototype);
 
@@ -53,7 +53,7 @@ export function Circle(x, y, radius) {
   }
 
   if(!isCircle(obj)) {
-    //console.log('ERROR: is not a circle: ', Util.className(obj), Util.toString(arg), Util.toString(obj));
+    //Util.log('ERROR: is not a circle: ', Util.className(obj), Util.toString(arg), Util.toString(obj));
   }
 
   /*  if(this !== obj)*/ return obj;

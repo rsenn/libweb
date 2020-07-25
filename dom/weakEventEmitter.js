@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 'use strict';
 
 var has = Object.prototype.hasOwnProperty,

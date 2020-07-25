@@ -12,7 +12,7 @@ export function DereferenceError(object, member, pos, prev, locator) {
 
       return `${('' + frame.getFileName()).replace(/.*plot-cv\//, '')}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
     });
-  console.log('member:', member);
+  Util.log('member:', member);
   return Object.assign(
     error,
     { object, member, pos, locator },
@@ -63,9 +63,9 @@ export class MutablePath extends Array {
     if(tagField) this.tagField = tagField;
     this.specialFields = specialFields;
     MutablePath.parse(p, this);
-    //console.log('this:',this);
+    //Util.log('this:',this);
 
-    //console.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
+    //Util.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
   }
 
   static matchObj(tagName, attr_or_index, tagField = 'tagName') {
@@ -241,7 +241,7 @@ export class MutablePath extends Array {
   /* prettier-ignore */ get depth() { return this.length; }
 
   static compareObj(obj, other) {
-    //console.log("MutablePath.compareObj",{obj,other});
+    //Util.log("MutablePath.compareObj",{obj,other});
     let ret = true;
     for(let prop in other) {
       const value = other[prop];
@@ -268,7 +268,7 @@ export class MutablePath extends Array {
     }
     let a = this;
 
-    //console.log("MutablePath.apply",...[...this], {o,a});
+    //Util.log("MutablePath.apply",...[...this], {o,a});
 
     while(a.length >= 1 && a[0] === '') a = a.slice(1);
 
@@ -276,7 +276,7 @@ export class MutablePath extends Array {
       (a, i) => {
         if(a.o) {
           let r;
-          //console.log(`MutablePath.apply[`,a.n,`]`,Util.isArray(a.o),a.o,i);
+          //Util.log(`MutablePath.apply[`,a.n,`]`,Util.isArray(a.o),a.o,i);
           if(MutablePath.isChildren(i)) {
             i = 'children';
           } else if(a.o.length !== undefined) {
@@ -284,7 +284,7 @@ export class MutablePath extends Array {
               const pred = i;
               i = a.o.findIndex((e, i, a) => pred(e, i, a));
             } else if(typeof i == 'object') {
-              //console.log(`MutablePath.apply findIndex`,a.o,i);
+              //Util.log(`MutablePath.apply findIndex`,a.o,i);
 
               i = a.o.findIndex(child => MutablePath.compareObj(child, i));
             } else if(typeof i == 'number' && i < 0) {
@@ -309,7 +309,7 @@ export class MutablePath extends Array {
   toString(sep = '.', partToStr = MutablePath.partToString, childrenStr = MutablePath['CHILDREN_GLYPH'] + CHILDREN_SPACE) {
     const color = Util.isBrowser() ? text => text : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
     let a = [...this];
-    //console.log("toString",{sep,partToStr, childrenStr});
+    //Util.log("toString",{sep,partToStr, childrenStr});
     while(a.length > 0 && a[0] === '') a.shift();
     let n = a.length;
     let r = [];
@@ -510,9 +510,9 @@ export class MutablePath extends Array {
 
   equals(other = []) {
     const thisPath = this;
-    /*console.log('equal', { thisPath, other });
-    //console.log('thisPath', thisPath.length, ...[...thisPath]);
-    //console.log('other', other.length, ...[...other]);*/
+    /*Util.log('equal', { thisPath, other });
+    //Util.log('thisPath', thisPath.length, ...[...thisPath]);
+    //Util.log('other', other.length, ...[...other]);*/
     if(/*other.absolute &&*/ other.length != this.length) return false;
     if(!other.absolute && other.length < this.length) {
       let prepend = this.slice(0, this.length - other.length);

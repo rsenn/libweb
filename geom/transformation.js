@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 import { Matrix, isMatrix } from '../geom/matrix.js';
 import { Point } from '../geom/point.js';
 import { Util } from '../util.js';
@@ -65,7 +66,7 @@ export class Transformation {
     let t;
     let unit;
 
-    //console.log("fromString",{arg,argStr,args});
+    //Util.log("fromString",{arg,argStr,args});
 
     args = args
       .filter(arg => /^[-+0-9.]+[a-z]*$/.test(arg))
@@ -473,7 +474,7 @@ export class TransformationList extends Array {
     //trans.toMatrix().transform_point(vec);
 
     vec = vec.round(0.00001, 5);
-    //console.log("from:", new Point(x,y), " to:", vec);
+    //Util.log("from:", new Point(x,y), " to:", vec);
 
     Array.prototype.push.call(this, new Translation(vec.x, vec.y));
     return this;

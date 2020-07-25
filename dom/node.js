@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 export class Node {
   static parents(node) {
     return (function*() {

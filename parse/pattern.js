@@ -12,7 +12,7 @@ export function Pattern(patterns, shift, match) {
     str = str.substring(1, str.length - 1);
     ret.str = str;
   } else if(lexIsToken('IDENTIFIER', r)) {
-    console.log('Pattern ', Lexer.tokenName(r.tok), r.str);
+    Util.log('Pattern ', Lexer.tokenName(r.tok), r.str);
 
     ret.rule = str;
 
@@ -29,7 +29,7 @@ export function Pattern(patterns, shift, match) {
   ret.type = tok;
   if(patterns.length && lexMatch('PUNCTUATION', ch => ch === '+' || ch === '*' || ch === '?', patterns[0])) repeat = shift().str;
   if(repeat) ret.repeat = repeat;
-  //console.log("Pattern.parse",patterns[0]);
+  //Util.log("Pattern.parse",patterns[0]);
   Object.assign(ret, repeat !== undefined ? { tok, str, repeat } : { tok, str });
   return ret;
 }
@@ -57,7 +57,7 @@ Pattern.prototype.match = function(parser) {
       y.copyTo(parser);
     }
   }
-  if(ret) console.log('Pattern.match:', { ret, tok1: t, tok2: { tok, str } });
+  if(ret) Util.log('Pattern.match:', { ret, tok1: t, tok2: { tok, str } });
 
   return null;
 };

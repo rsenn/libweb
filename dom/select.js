@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 import { Element } from './element.js';
 
 export class Select {

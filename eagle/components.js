@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 import { h, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../dom/preactComponent.js';
 import { Point, Line } from '../geom.js';
 import { MakeCoordTransformer } from './renderUtils.js';
@@ -74,7 +75,7 @@ export const Pin = ({ length, rot, name, visible, x, y, function: func }) => {
 };
 
 export const Wire = props => {
-  //console.log('item:', props.item.raw);
+  //Util.log('item:', props.item.raw);
   const [item, setItem] = useState(props.item);
   const [transform, setTransform] = useState(props.transform);
 

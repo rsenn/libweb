@@ -3,7 +3,7 @@ import { EagleElement } from './element.js';
 
 export class EagleNodeMap {
   constructor(list, key) {
-    //console.log('EagleNodeMap.constructor', { list, key });
+    //Util.log('EagleNodeMap.constructor', { list, key });
     if(!list) throw new Error('List=' + list);
     this.list = list;
     this.key = key;
@@ -24,7 +24,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
   }
   get(name, key = this.key) {
     const { owner, ref, raw } = this.list || {};
-    //console.log('EagleNodeMap', { raw, name });
+    //Util.log('EagleNodeMap', { raw, name });
     if(raw) {
       const fn = EagleNodeMap.makePredicate(name, key);
       const idx = raw.findIndex(fn);
@@ -39,7 +39,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
     const idx = list.findIndex(fn);
 
     if('raw' in value) value = value.raw;
-    //console.log("write map property:", idx, value);
+    //Util.log("write map property:", idx, value);
 
     if(idx != -1) list[idx] = value;
     else list.push(value);
@@ -58,7 +58,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
   }
   *[Symbol.iterator](keyAttr = this.key) {
     const list = this.list && this.list.raw ? this.list.raw : this.list;
-    //console.log('NodeMap ', this.list);
+    //Util.log('NodeMap ', this.list);
     for(let i = 0; i < this.list.length; i++) yield [list[i].attributes[keyAttr], this.item(i)];
   }
   toMap(key = this.key) {
@@ -70,7 +70,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
 
   static create(list, key = 'name') {
     const Ctor = EagleNodeMap;
-    //console.log('EagleNodeMap.create', { list, key });
+    //Util.log('EagleNodeMap.create', { list, key });
 
     const instance = new Ctor(list, key);
 
@@ -81,7 +81,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
         let item = instance.get(prop);
 
         if(item) {
-          //console.log("EagleNodeMap.get", {prop, item});
+          //Util.log("EagleNodeMap.get", {prop, item});
           return item;
         }
 

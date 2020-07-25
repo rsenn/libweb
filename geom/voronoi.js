@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 /*!
 Copyright (C) 2010-2013 Raymond Hill: https://github.com/gorhill/Javascript-Voronoi
 MIT License: See https://github.com/gorhill/Javascript-Voronoi/LICENSE.md
@@ -1617,14 +1618,14 @@ Voronoi.prototype.closeCells = function(bbox) {
 //Debugging helper
 /*
 Voronoi.prototype.dumpBeachline = function(y) {
-    //console.log('Voronoi.dumpBeachline(%f) > Beachsections, from left to right:', y);
+    //Util.log('Voronoi.dumpBeachline(%f) > Beachsections, from left to right:', y);
     if( !this.beachline ) {
-        //console.log('  None');
+        //Util.log('  None');
         }
     else {
         var bs = this.beachline.getFirst(this.beachline.root);
         while( bs ) {
-            //console.log('  site %d: xl: %f, xr: %f', bs.site.voronoiId, this.leftBreakPoint(bs, y), this.rightBreakPoint(bs, y));
+            //Util.log('  site %d: xl: %f, xr: %f', bs.site.voronoiId, this.leftBreakPoint(bs, y), this.rightBreakPoint(bs, y));
             bs = bs.rbNext;
             }
         }

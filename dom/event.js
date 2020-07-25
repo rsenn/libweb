@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 export const Event = {
   simulateKey(keyCode, type, modifiers, target = window) {
     var evtName = typeof type === 'string' ? 'key' + type : 'keydown';
@@ -16,7 +17,7 @@ export const Event = {
 
     //Object.assign(event, {ctrlKey,shiftKey,altKey,metaKey});
 
-    console.log('event:', event);
+    Util.log('event:', event);
     target.dispatchEvent(event);
     return event;
   }

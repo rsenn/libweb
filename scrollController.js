@@ -7,7 +7,7 @@ export class ScrollController {
     e = e || this.element.event;
     e.returnValue = false;
 
-    //console.log('preventDefault ', Util.className(e));
+    //Util.log('preventDefault ', Util.className(e));
     if(e.preventDefault) e.preventDefault();
   }
 
@@ -38,7 +38,7 @@ export class ScrollController {
       passive: true
     });
     this.element.document.onkeydown = this.constructor.preventDefaultForScrollKeys;
-    //console.log("Scrolling disabled");
+    //Util.log("Scrolling disabled");
     this.disabled = true;
   }
 
@@ -49,7 +49,7 @@ export class ScrollController {
     ['wheel', 'mousemove', /*'touchstart','touchcancel','touchend',*/ 'touchmove'].forEach(name => removeEventListener(name, this.constructor.preventDefault, { passive: false }));
     this.element.removeEventListener('keydown', this.constructor.preventDefaultForScrollKeys);
     this.element.document.onkeydown = null;
-    //console.log("Scrolling enabled");
+    //Util.log("Scrolling enabled");
 
     this.disabled = false;
   }

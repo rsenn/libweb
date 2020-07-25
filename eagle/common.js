@@ -6,7 +6,7 @@ import { TransformationList } from '../geom.js';
 const pathPadding = Util.isBrowser() ? 0 : 40;
 
 export const coloring = Util.coloring(!Util.isBrowser());
-//console.log('coloring: ', coloring);
+//Util.log('coloring: ', coloring);
 export const ansi = coloring.code.bind(coloring); //Util.isBrowser() ? () => '' : (...args) => `\u001b[${[...args].join(';')}m`;
 
 export const text = coloring.text.bind(coloring); //? (text, ...color) => (color.indexOf(1) != -1 ? `${text}` : text) : (text, ...color) => ansi(...color) + text + ansi(0);

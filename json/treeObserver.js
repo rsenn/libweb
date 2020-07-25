@@ -17,7 +17,7 @@ export class TreeObserver extends ObservableMembrane {
     else if(Util.isObject(path) && [...path].reverse()[0] == 'attributes') type = 'AttributeMap';
     else if(Util.isObject(path) && [...path].reverse()[0] == 'children') type = 'NodeList';
     else type = /attributes/.test(path + '') ? 'AttributeMap' : 'Node';
-    //console.log('getType', type);
+    //Util.log('getType', type);
     return type;
   }
 
@@ -54,7 +54,7 @@ export class TreeObserver extends ObservableMembrane {
         let valueClass = Util.className(value);
         let valueKeys = Util.isObject(value) ? Object.keys(value) : [];
         if(key || path) {
-          //console.log('valueDistortion', { key, path, valueType, valueClass, valueKeys });
+          //Util.log('valueDistortion', { key, path, valueType, valueClass, valueKeys });
           if(!Util.isObject(target)) return value;
           let q = Util.isObject(value) ? Object.getPrototypeOf(value) : Object.prototype;
           if(typeof value == 'string' && !isNaN(+value)) value = +value;
@@ -72,7 +72,7 @@ export class TreeObserver extends ObservableMembrane {
 
       path = new ImmutablePath(path, true);
       //path = path.concat(key ? [key] : []);
-      //console.log('getPath', { key, path, target });
+      //Util.log('getPath', { key, path, target });
       let value;
       if(path !== null && Util.isObject(target) && key) {
         let obj = target[key] ? null : pathMapper.at(path);
@@ -94,7 +94,7 @@ export class TreeObserver extends ObservableMembrane {
   }
 
   types = Util.weakMapper((obj, key) => {
-    //console.log('types:', key, obj);
+    //Util.log('types:', key, obj);
     return this.getType(obj, key);
   });
 

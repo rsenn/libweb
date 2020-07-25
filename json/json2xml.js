@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 /*	This work is licensed under Creative Commons GNU LGPL License.
 
 	License: http://creativecommons.org/licenses/LGPL/2.1/
@@ -97,7 +98,7 @@ function json2xml_translator() {
       return xml;
     },
     parseJson(jsonString) {
-      //console.log('parseJSON:', jsonString);
+      //Util.log('parseJSON:', jsonString);
       let obj = typeof jsonString == 'string' ? JSON.parse(jsonString) : jsonString;
       return obj;
     }

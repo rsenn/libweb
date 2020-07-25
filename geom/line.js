@@ -52,7 +52,7 @@ export function Line(x1, y1, x2, y2) {
   if(!('b' in obj) || obj.b === undefined) Object.defineProperty(obj, 'b', { value: new Point(obj.x2, obj.y2), enumerable: false });
 
   if(!isLine(obj)) {
-    //console.log('ERROR: is not a line: ', Util.toString(arg), Util.toString(obj));
+    //Util.log('ERROR: is not a line: ', Util.toString(arg), Util.toString(obj));
   }
 
   /*  if(this !== obj)*/ return obj;
@@ -235,9 +235,9 @@ Line.prototype.angle = function() {
 Line.prototype.getLength = function() {
   const { a, b } = this;
   const { x1, y1, x2, y2 } = this;
-  //console.log("a:",a, " b:",b);
-  //console.log('a:', a, ' b:', b);
-  //console.log('this:', this);
+  //Util.log("a:",a, " b:",b);
+  //Util.log('a:', a, ' b:', b);
+  //Util.log('this:', this);
   return Point.prototype.distance.call(a, b);
 };
 Line.prototype.endpointDist = function(point) {
@@ -351,7 +351,7 @@ Line.prototype.includes = function(point) {
   return Point.prototype.equals.call(this.a, point) || Point.prototype.equals.call(this.b, point);
 };
 Line.prototype.equals = function(other) {
-  //console.log('Line.equals', this, other);
+  //Util.log('Line.equals', this, other);
   other = Line(other);
   if(Point.equals(this.a, other.a) && Point.equals(this.b, other.b)) return 1;
   if(Point.equals(this.a, other.b) && Point.equals(this.b, other.a)) return -1;

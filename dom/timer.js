@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 export function Timer(timeout, fn, props = {}, { create = setInterval, destroy = clearInterval }) {
   let t;
 
@@ -32,7 +33,7 @@ Timer.std = {
 };
 
 Timer.debug = (impl = Timer.std) => ({
-  log: msg => console.log(msg),
+  log: msg => Util.log(msg),
   create(fn, timeout) {
     var id, str;
     id = impl.create(() => {

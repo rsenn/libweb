@@ -174,9 +174,31 @@ Util.isDebug = function() {
   if(process !== undefined && process.env.NODE_ENV === 'production') return false;
   return true;
 };
-Util.log = Util.curry(function(n, base) {
+/*Util.log = Util.curry(function(n, base) {
   return Math.log(n) / (base ? Math.log(base) : 1);
-});
+});*/
+Util.log = (...args) => {
+  let location;
+
+  if(args[0] instanceof Util.location) location = args.shift();
+  else location = Util.getStackFrame().getLocation();
+  let locationStr = location.toString(true);
+  args.unshift(locationStr);
+  let filters = Util.log.filters; // || [/.*/];
+  let results = filters.map(f => f.test(locationStr));
+
+  if(!filters.every(f => !f.test(locationStr))) console.log(...args);
+
+  // console.log("results:",results);
+};
+Util.log.filters = [/.*/];
+Util.log.setFilters = function(args) {
+  this.filters = [...args].map(arg => (arg instanceof RegExp ? arg : new RegExp(arg)));
+};
+Util.log.getFilters = function() {
+  return this.filters;
+};
+
 Util.msg = (strings, ...substitutions) => {
   let i,
     o = [];
@@ -2413,7 +2435,7 @@ Util.define(Util.stackFrame.prototype, {
     return new Util.location(this);
   },
   get location() {
-return this.getLocation();
+    return this.getLocation();
   },
   [Symbol.toStringTag]() {
     return this.toString(false);
@@ -2645,12 +2667,12 @@ Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER, pred = () =
   return this.getCallerStack(2);
   }
 });*/
-Util.getStackFrame = function(offset = 1) {
+Util.getStackFrame = function(offset = 2) {
   let frames = Util.getCallerStack(0);
- frames =  frames.map(frame => {
-  if(Object.getPrototypeOf(frame) !== Util.stackFrame.prototype) frame = Util.stackFrame(frame);
-  return frame;
-});
+  frames = frames.map(frame => {
+    if(Object.getPrototypeOf(frame) !== Util.stackFrame.prototype) frame = Util.stackFrame(frame);
+    return frame;
+  });
 
   return frames[offset];
 };

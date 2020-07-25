@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 export function Align(arg) {}
 
 Align.CENTER = 0;

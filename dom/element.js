@@ -25,7 +25,7 @@ export class Element extends Node {
     let parent = args.shift();
     parent = typeof parent == 'string' ? Element.find(parent) : parent;
 
-    //console.log('Element.create ', { tagName, props, parent });
+    //Util.log('Element.create ', { tagName, props, parent });
 
     let d = document || window.document;
     let e = ns ? d.createElementNS(ns, tagName) : d.createElement(tagName);
@@ -184,12 +184,12 @@ export class Element extends Node {
    */
   static attr(e, attrs_or_name) {
     const elem = typeof e === 'string' ? Element.find(e) : e;
-    console.log('Element.attr', { elem, attrs_or_name });
+    Util.log('Element.attr', { elem, attrs_or_name });
     if(!Util.isArray(attrs_or_name) && typeof attrs_or_name === 'object' && elem) {
       for(let key in attrs_or_name) {
         const name = Util.decamelize(key, '-');
         const value = attrs_or_name[key];
-        /*        console.log('attr(', elem, ', ', { name, key, value, }, ')')
+        /*        Util.log('attr(', elem, ', ', { name, key, value, }, ')')
          */ if(key.startsWith('on') && !/svg/.test(elem.namespaceURI)) elem[key] = value;
         else if(elem.setAttribute) elem.setAttribute(name, value);
         else elem[key] = value;
@@ -228,7 +228,7 @@ export class Element extends Node {
       e = e.offsetParent || e.parentNode;
     }
     const bbrect = elem.getBoundingClientRect();
-    //console.log('getRect: ', { bbrect });
+    //Util.log('getRect: ', { bbrect });
     return {
       x: bbrect.left + window.scrollX,
       y: bbrect.top + window.scrollY,
@@ -264,13 +264,13 @@ export class Element extends Node {
       r.y -= off.y;
     }
 
-    //console.log("Element.rect(", r, ")");
+    //Util.log("Element.rect(", r, ")");
 
     if(options.border) {
       const border = Element.border(e);
       Rect.outset(r, border);
 
-      //console.log("Element.rect(", r, ") // with border = ", border);
+      //Util.log("Element.rect(", r, ") // with border = ", border);
     }
 
     const { scrollTop, scrollY } = window;
@@ -278,14 +278,14 @@ export class Element extends Node {
       r.y += scrollY;
     }
     r = new Rect(round ? Rect.round(r) : r);
-    //console.log('Element.rect(', element, ') =', r);
+    //Util.log('Element.rect(', element, ') =', r);
     return r;
   }
 
   static setRect(element, rect, opts = {}) {
     let { anchor, unit = 'px', scale } = opts;
     const e = typeof element === 'string' ? Element.find(element) : element;
-    //console.log("Element.setRect(", element, ",", rect, ", ", anchor, ") ");
+    //Util.log("Element.setRect(", element, ",", rect, ", ", anchor, ") ");
     if(typeof anchor == 'string') {
       e.style.position = anchor;
       anchor = 0;
@@ -302,7 +302,7 @@ export class Element extends Node {
     /* const stack = Util.getCallers(3, 4);*/
     const ptrbl = Rect.toTRBL(prect);
     const trbl = Rect.toTRBL(rect);
-    //console.log("Element.setRect ", { trbl, ptrbl });
+    //Util.log("Element.setRect ", { trbl, ptrbl });
     let css = {};
     let remove;
     switch (Anchor.horizontal(anchor)) {
@@ -334,7 +334,7 @@ export class Element extends Node {
     //css.position = position;
     css.width = Math.round(rect.width) + (unit || unit);
     css.height = Math.round(rect.height) + (unit || unit);
-    //console.log("Element.setRect ", css);
+    //Util.log("Element.setRect ", css);
     Element.setCSS(e, css);
     //Object.assign(e.style, css);
     //Element.setCSS(e, css);
@@ -353,12 +353,12 @@ export class Element extends Node {
     let to = { x, y };
     let position = rest.shift() || Element.getCSS(element, 'position') || 'relative';
     let off;
-    //console.log('Element.move ', { element, to, position });
+    //Util.log('Element.move ', { element, to, position });
     const getValue = prop => {
       const property = Element.getCSS(element, prop);
       if(property === undefined) return undefined;
       const matches = /([-0-9.]+)(.*)/.exec(property) || [];
-      //console.log({ match, value, unit });
+      //Util.log({ match, value, unit });
       return parseFloat(matches[1]);
     };
 
@@ -375,8 +375,8 @@ export class Element extends Node {
       to.y -= off.y;
     }*/
     let css = Point.toCSS(current);
-    //console.log("Element.move: ", { position, to, css, off, current });
-    //console.log('move newpos: ', Point.toCSS(pt));
+    //Util.log("Element.move: ", { position, to, css, off, current });
+    //Util.log('move newpos: ', Point.toCSS(pt));
     Element.setCSS(element, { ...css, position });
     return element;
   }
@@ -401,7 +401,7 @@ export class Element extends Node {
     let e = typeof element == 'string' ? Element.find(element) : element;
     let size = new Size(...dimensions);
     const css = Size.toCSS(size);
-    //console.log("Element.resize: ", { e, size, css });
+    //Util.log("Element.resize: ", { e, size, css });
     Element.setCSS(e, css);
     return e;
   }
@@ -455,7 +455,7 @@ export class Element extends Node {
       const name = prefix + (prefix == '' ? pos.toLowerCase() : pos);
       return { ...acc, [name]: trbl[pos.toLowerCase()] };
     }, {});
-    //console.log('Element.setTRBL ', attrs);
+    //Util.log('Element.setTRBL ', attrs);
     return Element.setCSS(element, attrs);
   }
 
@@ -464,7 +464,7 @@ export class Element extends Node {
     if(!isElement(element)) return false;
     if(typeof prop == 'string' && typeof value == 'string') prop = { [prop]: value };
 
-    //console.log("Element.setCSS ", { element, prop });
+    //Util.log("Element.setCSS ", { element, prop });
 
     for(let key in prop) {
       let value = prop[key];
@@ -488,7 +488,7 @@ export class Element extends Node {
 
     const w = window !== undefined ? window : global.window;
     const d = document !== undefined ? document : global.document;
-    //console.log('Element.getCSS ', { w, d, element });
+    //Util.log('Element.getCSS ', { w, d, element });
 
     let parent = Util.isObject(element) ? element.parentElement || element.parentNode : null;
 
@@ -502,8 +502,8 @@ export class Element extends Node {
 
     if(!style) return null;
     let keys = Object.keys(style).filter(k => !/^__/.test(k));
-    //console.log("style: ", style);
-    //console.log("Element.getCSS ", style);
+    //Util.log("style: ", style);
+    //Util.log("Element.getCSS ", style);
 
     let ret = {};
     if(receiver == null) {
@@ -546,7 +546,7 @@ export class Element extends Node {
     let path = '';
     for(let e of this.skip(elt, (e, next) => next(e.parentElement !== relative_to && e.parentElement))) path = '/' + Element.unique(e) + path;
 
-    //console.log('relative_to: ', relative_to);
+    //Util.log('relative_to: ', relative_to);
     /*    for(; elt && elt.nodeType == 1; elt = elt.parentNode) {
       const xname = Element.unique(elt);
       path = xname + path;
@@ -672,7 +672,7 @@ export class Element extends Node {
     if(!delegate.create) delegate.create = tag => document.createElement(tag);
     if(!delegate.setattr) {
       delegate.setattr = (elem, attr, value) => {
-        //console.log('setattr ', { attr, value });
+        //Util.log('setattr ', { attr, value });
         elem.setAttribute(attr, value);
       };
     }
@@ -704,12 +704,12 @@ export class Element extends Node {
         else if(elem.attributes['class']) elem.attributes['class'].value += ' ' + className;
       }
       for(let k in props) delegate.setattr(elem, k, props[k]);
-      /*console.log("bound_factory: ", { _this: this, tag, style, children, parent, props, to, append_to: this.append_to });*/
+      /*Util.log("bound_factory: ", { _this: this, tag, style, children, parent, props, to, append_to: this.append_to });*/
       if(delegate.append_to) delegate.append_to(elem, parent);
       return elem;
     };
 
-    /*  console.log("delegate: ", delegate);*/
+    /*  Util.log("delegate: ", delegate);*/
     /*    let proxy = function() {
       let obj = this && this.create ? this : delegate;
       return obj.bound_factory.apply(obj, arguments);
@@ -766,7 +766,7 @@ export class Element extends Node {
   }
   /*
       e=Util.shuffle(Element.findAll('rect'))[0]; r=Element.rect(e); a=rect(r, new dom.HSLA(200,100,50,0.5));
-      t=Element.transition(a, { transform: 'translate(100px,100px) scale(2,2) rotate(45deg)' }, 10000, ctx => console.log("run",ctx)); t.then(done => console.log({done}))
+      t=Element.transition(a, { transform: 'translate(100px,100px) scale(2,2) rotate(45deg)' }, 10000, ctx => Util.log("run",ctx)); t.then(done => Util.log({done}))
 
 */
   static transition(element, css, time, easing = 'linear', callback = null) {
@@ -789,18 +789,18 @@ export class Element extends Node {
     }
     const tlist = a.join(', ');
 
-    //console.log("Element.transition", { ctx, tlist });
+    //Util.log("Element.transition", { ctx, tlist });
 
     var cancel;
     let ret = new Promise((resolve, reject) => {
       var trun = function(e) {
         this.event = e;
-        //console.log("Element.transitionRun event", this);
+        //Util.log("Element.transitionRun event", this);
         callback(this);
       };
       var tend = function(e) {
         this.event = e;
-        //console.log("Element.transitionEnd event", this);
+        //Util.log("Element.transitionEnd event", this);
         this.e.removeEventListener('transitionend', this);
         this.e.style.setProperty('transition', '');
         delete this.cancel;
@@ -858,7 +858,7 @@ export class Element extends Node {
         try {
           ok = w.d.execCommand('copy');
         } catch(err) {
-          console.log('error', err);
+          Util.log('error', err);
         }
         s.removeAllRanges();
         w.d.body.removeChild(e);

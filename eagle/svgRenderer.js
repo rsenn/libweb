@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 import { EagleElement } from './element.js';
 import { Util } from '../util.js';
 import { Size } from '../dom.js';
@@ -209,8 +210,8 @@ export class EagleSVGRenderer {
         let rot = Rotation(item.rot);
         let center = rect.center;
 
-        console.log('rect:', rect);
-        console.log('rot:', rot);
+        //Util.log('rect:', rect);
+        //Util.log('rot:', rot);
         svg(
           'rect',
           {
@@ -348,7 +349,7 @@ export class EagleSVGRenderer {
         break;
       default: {
         const { x, y } = coordFn(item);
-        //  console.log('EagleSVGRenderer.renderItem', { item, parent, opts });
+        //  Util.log('EagleSVGRenderer.renderItem', { item, parent, opts });
         //super.renderItem(item,parent,opts);
         break;
       }

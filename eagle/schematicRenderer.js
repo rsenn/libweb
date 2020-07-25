@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 import { Point, Rect, Line, BBox } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
 import { RGBA } from '../color/rgba.js';
@@ -25,9 +26,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     //this.setPalette(SchematicRenderer.palette);
     this.palette = SchematicRenderer.palette;
-    //console.log('found:', new ImmutablePath([...doc.path, 'children', { tagName: 'eagle' }, 'children', { tagName: 'drawing' }, 'children', { tagName: 'schematic' }]));
+    //Util.log('found:', new ImmutablePath([...doc.path, 'children', { tagName: 'eagle' }, 'children', { tagName: 'drawing' }, 'children', { tagName: 'schematic' }]));
 
-    //console.log('SchematicRenderer.constructor(', doc, factory, ')');
+    //Util.log('SchematicRenderer.constructor(', doc, factory, ')');
   }
 
   renderCollection(collection, parent, opts) {
@@ -223,7 +224,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
       let br = new Rect(b.rect); /*.round(0.254, 5)*/
       br = br.round(0.254, 5);
 
-      //console.log("br:", br);
+      //Util.log("br:", br);
 
       this.create('rect', { ...br.toObject(), 'data-part': instance.part.name }, g);
       t.rotate(45);
@@ -246,14 +247,14 @@ export class SchematicRenderer extends EagleSVGRenderer {
   }
 
   render(doc = this.doc, parent, props = {}, sheetNo = 0) {
-    //console.log('doc:', doc);
+    //Util.log('doc:', doc);
 
     const sheets = doc.find('sheets').children;
 
-    //console.log('doc.sheets:',sheets);
+    //Util.log('doc.sheets:',sheets);
 
     let sheet = sheets[sheetNo];
-    //console.log('sheet.getBounds', sheet.getBounds+'');
+    //Util.log('sheet.getBounds', sheet.getBounds+'');
 
     let bounds = new BBox();
 

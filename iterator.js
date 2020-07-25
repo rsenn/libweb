@@ -18,10 +18,10 @@ export class IteratorInterface extends IterableInterface {
   map(fn = (x, i, it) => x) {
     const it = this;
     let i = 0;
-    //console.log("MAP", it.next+'', i);
+    //Util.log("MAP", it.next+'', i);
 
     return new IteratorForwarder(function(...args) {
-      //console.log("Iterator.map next", args);
+      //Util.log("Iterator.map next", args);
       let { value, done } = it.next(...args);
 
       if(done) return { done };
@@ -35,13 +35,13 @@ export class IteratorForwarder extends IteratorInterface {
   constructor(it) {
     super();
     this.delegate = typeof it.next == 'function' ? it.next.bind(it) : it;
-    //console.log("this.delegate", this.delegate);
+    //Util.log("this.delegate", this.delegate);
     //this.next = it.next.bind(it);
     return this;
   }
 
   next(...args) {
-    //console.log(this, "IteratorForwarder.next(",...args,")");
+    //Util.log(this, "IteratorForwarder.next(",...args,")");
     return this.delegate(...args);
   }
 }
@@ -57,7 +57,7 @@ export class Iterator extends IterableInterface {
       //ret.next = arg.next.bind(arg); // ((...args) => arg.next(...args));
       ret.next = (...args) => {
         let ret = arg.next(...args);
-        //console.log("arg.next(",...args,") =",ret);
+        //Util.log("arg.next(",...args,") =",ret);
 
         return ret;
       };
@@ -80,13 +80,13 @@ export class Iterator extends IterableInterface {
       if(Object.hasOwnProperty(ret, 'next')) Object.setPrototypeOf(ret, Iterator.prototype);
       else Util.extend(ret, Util.getMethods(Iterator.prototype));
 
-    //console.log("ret.next = ",ret.next+'');
+    //Util.log("ret.next = ",ret.next+'');
 
     /*
-                            //console.log("Iterator ", ret);
-                            //console.log("Iterator methods", Util.getMethods(ret, 2,0));
-                            //console.log("Iterator next", ret.next);
-                            //console.log("Iterator next()", ret.next());*/
+                            //Util.log("Iterator ", ret);
+                            //Util.log("Iterator methods", Util.getMethods(ret, 2,0));
+                            //Util.log("Iterator next", ret.next);
+                            //Util.log("Iterator next()", ret.next());*/
 
     return ret;
   }

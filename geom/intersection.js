@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 import { Point } from './point.js';
 import { Line } from './line.js';
 

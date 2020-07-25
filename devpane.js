@@ -13,7 +13,7 @@ import SvgPath from './svg/path.js';
 
 if(global.window) {
   window.addEventListener('load', () => {
-    console.log('New cookie: ', document.cookie);
+    Util.log('New cookie: ', document.cookie);
   });
 }
 
@@ -108,7 +108,7 @@ export default class devpane {
     this.observe = Element.find(observe);
     this.factory = Element.factory(this.parent);
     this.rect = Rect(0, 0, 0, 0);
-    //console.log('devpane.constructor: ', { factory: Object.keys(this.factory) });
+    //Util.log('devpane.constructor: ', { factory: Object.keys(this.factory) });
     window.addEventListener('keydown', this.handleKeypress.bind(this));
     this.mouseEvent = this.mouseEvent.bind(this);
     this.mouseMove = this.mouseMove.bind(this);
@@ -119,7 +119,7 @@ export default class devpane {
     this.touch = TouchListener(this.handleTouch.bind(this));
     this.svg.factory = lazyInitializer(() => SVG.factory(this.svg()));
     const cfg = this.config();
-    //console.log("devpane cfg=", cfg);
+    //Util.log("devpane cfg=", cfg);
     this.open = !cfg.open;
 
     /* if(this.open === true) */ this.toggleOpenClose();
@@ -127,7 +127,7 @@ export default class devpane {
 
   toggleOpenClose() {
     this.open = !this.open;
-    //console.log("devpane.toggleOpenClose open=" + this.open);
+    //Util.log("devpane.toggleOpenClose open=" + this.open);
     this.config.assign({ open: this.open });
     if(this.pane()) this.pane().style.display = this.open ? 'inline-block' : 'none';
     if(this.open) {
@@ -193,7 +193,7 @@ export default class devpane {
       this.prevTouch = event;
     } else {
       this.path.abs();
-      console.log('touch event: ', event);
+      Util.log('touch event: ', event);
       move = { x: event.start.x + event.x, y: event.start.y + event.y };
       this.path.line(move.x, move.y);
       //this.path.line(move.x - this.prevTouch.x, move.y - this.prevTouch.y);
@@ -226,7 +226,7 @@ export default class devpane {
     if(svgpath) {
       let str = this.path.str();
       if(/L/.test(str)) Element.attr(svgpath, { d: str });
-      //console.log("Touch event: ", { svgpath, str });
+      //Util.log("Touch event: ", { svgpath, str });
     }
   }
 
@@ -242,7 +242,7 @@ export default class devpane {
         if(rect.x == 0 && rect.y == 0) {
           const { offsetParent } = elem;
           const offsetRect = offsetParent ? Element.getRect(offsetParent) : null;
-          //console.log("Zero ", { elem, rect, offsetParent, offsetRect });
+          //Util.log("Zero ", { elem, rect, offsetParent, offsetRect });
         }
 
         const ns = elem.namespaceURI.replace(/.*\//, '');
@@ -256,7 +256,7 @@ export default class devpane {
           return `${this.ns}:${this.tag}`;
         };
         if(pred ? pred(elem) : Rect.area(rect) > 0) {
-          //console.log("buildRectList ", { ns, tag, rect });
+          //Util.log("buildRectList ", { ns, tag, rect });
 
           rect.e = elem;
           rect.box = null;
@@ -273,7 +273,7 @@ export default class devpane {
               let r = offset(rect);
               r.name = name;
               const idx = Rect.indexOf(r, a);
-              //console.log('Rect.indexOf(', r, ',accu) = ', idx);
+              //Util.log('Rect.indexOf(', r, ',accu) = ', idx);
               if(idx == -1) a.push(r);
               return a;
             }, []),
@@ -321,16 +321,16 @@ export default class devpane {
   handleKeypress(e) {
     const { key, keyCode, charCode } = e;
     const modifiers = ['alt', 'shift', 'ctrl', 'meta'].reduce((mod, key) => (e[`${key}Key`] === true ? [...mod, key] : mod), []).toString();
-    //console.log('keypress: ', { key, keyCode, charCode, modifiers });
+    //Util.log('keypress: ', { key, keyCode, charCode, modifiers });
 
     if(e.key == 'D' && (e.metaKey || e.ctrlKey || e.altKey) && e.shiftKey) {
       this.toggleOpenClose();
     } else if(e.key == 's' && e.ctrlKey) {
-      select().then(e => console.log('select() = ', e));
+      select().then(e => Util.log('select() = ', e));
     } /* if(e.key == 'g') {
-      gettext().then(r => console.log("gettext() = ", r));
+      gettext().then(r => Util.log("gettext() = ", r));
     } else*/ else if(e.key == 't' && e.ctrlKey) {
-      console.log('devpane ', this);
+      Util.log('devpane ', this);
       this.renderTranslateLayer();
 
       let boxes = [];
@@ -348,7 +348,7 @@ export default class devpane {
       /*      window.translations((translations) => {
         elementPicker.init({ onClick: e => {
           const text = this.getTextParts(e); //gettext(e); // e.innerText || e.textContent;
-          console.log("translate(", translations, ", ",text, ")")
+          Util.log("translate(", translations, ", ",text, ")")
           text.forEach(t => {
           });
         }});
@@ -404,7 +404,7 @@ export default class devpane {
     const what = checked ? 'add' : 'remove';
     const fn = `${what}EventListener`;
 
-    console.log(`devpane.handleToggle ${fn}`);
+    Util.log(`devpane.handleToggle ${fn}`);
     const mouseEvents = elem => ['mouseenter', 'mouseleave'].forEach(listener => elem[fn](listener, this.mouseEvent));
 
     window[`${what}EventListener`]('mousemove', this.mouseMove);
@@ -462,7 +462,7 @@ export default class devpane {
 
     t.set = (lang, str) => {
       const e = t.inputs[lang];
-      console.log('t.set ', { e });
+      Util.log('t.set ', { e });
       e.value = str;
     };
     t.handleChange = ({ currentTarget, target }) => {
@@ -520,7 +520,7 @@ export default class devpane {
     };
 
     this.getTranslations(res => {
-      console.log('language store: ', res);
+      Util.log('language store: ', res);
     });
 
     const createTable = ({ rows, spacing = 0, padding = 0, border = 0, ...props }) => {
@@ -564,7 +564,7 @@ export default class devpane {
       let en = this.inputs['en'].value;
       let fa = this.inputs['fa'].value;
       if(fa != '') {
-        console.log(`Saving EN: ${en} FA: ${fa} `);
+        Util.log(`Saving EN: ${en} FA: ${fa} `);
         settext({ [en]: fa });
         this.form.parentNode.removeChild(this.form);
       }
@@ -609,7 +609,7 @@ export default class devpane {
 
           t.layer.insertBefore(tbl, t.layer.firstElementChild);
 
-          console.log('Load ', { json, obj });
+          Util.log('Load ', { json, obj });
           elem.innerHTML = json;
 
           t.trans = json;
@@ -649,7 +649,7 @@ export default class devpane {
 
               bbText.innerHTML = `${Rect.toSource(bbox)}\nfont-size: ${css.fontSize}`; //`x: ${bbox.x}\ny: ${bbox.y}\nw: ${bbox.width}\nh: ${bbox.height}`;
             }
-            console.log('selectElement (resolved) = ', res);
+            Util.log('selectElement (resolved) = ', res);
 
             if(res && res.length) {
               this.elements = this.elements.concat(res);
@@ -660,9 +660,9 @@ export default class devpane {
                   .map(e => e.toString())
                   .sort()
                   .join(', ');
-              //console.log("selectElement (resolved) = ", res);
+              //Util.log("selectElement (resolved) = ", res);
               /*     const css = Element.getCSS(res);
-              //console.log("selectElement (fontSize) = ", css.fontSize);*/
+              //Util.log("selectElement (fontSize) = ", css.fontSize);*/
             }
           });
         }
@@ -690,7 +690,7 @@ export default class devpane {
             const elem1 = this.elements[0].e;
             const elem2 = this.elements[1].e;
 
-            //console.log(elem1);
+            //Util.log(elem1);
 
             const rect1 = Element.rect(elem1);
             const rect2 = Element.rect(elem2);
@@ -702,7 +702,7 @@ export default class devpane {
               .outset(rect2)
               .round();
 
-            console.log('Clearance: ', { rect1, border1, rect2, border2 });
+            Util.log('Clearance: ', { rect1, border1, rect2, border2 });
           }
         }
       });
@@ -731,23 +731,23 @@ export default class devpane {
   }
 
   selectElement() {
-    console.log('devpane.selectElement()');
+    Util.log('devpane.selectElement()');
     //if(!this.rectList
     if(!this.rectList || !this.rectList.length) {
       let page = Element.find('.page');
-      console.log('page ', page);
+      Util.log('page ', page);
 
       this.rectList = this.buildRectList(page, ({ innerText, textContent }) => {
         let text = innerText || textContent || '';
         return text.length > 0;
       }); //e.textContent && e.textContent.length > 0);
-      console.log('this.rectList ', this.rectList);
+      Util.log('this.rectList ', this.rectList);
     }
 
     Element.remove('#select-rect');
-    //console.log('selectElement');
+    //Util.log('selectElement');
     this.rectList.sort((a, b) => Rect.area(a) - Rect.area(b));
-    console.log(this.rectList);
+    Util.log(this.rectList);
     this.active = true;
     let selected = new Promise((resolve, reject) => {
       window.onmousemove = event => {
@@ -768,10 +768,10 @@ export default class devpane {
           //Rect.set(r, elm);
           this.selected = this.getRectAt(clientX, clientY, true);
           if(this.selected.length) {
-            console.log('selectElement selected: ', this.selected);
+            Util.log('selectElement selected: ', this.selected);
             elm.innerHTML = this.selected.map(({ e }) => `#${e.id}`).join(',');
             this.fontSize = Element.getCSS(this.selected[0].e, 'font-size');
-            console.log(`${Element.xpath(this.selected[0].e)} font-size: `, this.fontSize);
+            Util.log(`${Element.xpath(this.selected[0].e)} font-size: `, this.fontSize);
           } else {
             elm.innerHTML = '';
           }
@@ -814,7 +814,7 @@ export default class devpane {
           )
         );
       } else if(!inside && rect.boxes) {
-        //console.log('parent: ', rect.boxes.parentNode, ' boxes: ', rect.boxes);
+        //Util.log('parent: ', rect.boxes.parentNode, ' boxes: ', rect.boxes);
         while(rect.boxes.firstChild) rect.boxes.removeChild(rect.boxes.firstChild);
         rect.boxes.parentNode.removeChild(rect.boxes);
         rect.boxes = null;
@@ -828,10 +828,10 @@ export default class devpane {
     rects.sort((a, b) => Rect.area(b) - Rect.area(a));
     rects = rects.filter(item => Rect.area(item) > 0);
 
-    //console.log("devp.mouseMove", { target, clientX, clientY, rects });
+    //Util.log("devp.mouseMove", { target, clientX, clientY, rects });
     //this.log().innerHTML =target.outerHTML;
 
-    //if(rects.length) console.log("rects: ", rects);
+    //if(rects.length) Util.log("rects: ", rects);
     let svg = this.svg();
     [...svg.querySelectorAll('rect')].forEach(e => e.parentElement.removeChild(e));
     let f = SVG.factory(svg);
@@ -868,7 +868,7 @@ export default class devpane {
   }
 
   mouseEvent(event) {
-    //console.log("devp.mouseEvent", event);
+    //Util.log("devp.mouseEvent", event);
     const { target, type, clientX, clientY } = event;
     if(type == 'mouseenter') {
       const r = Rect.round(Element.rect(target));

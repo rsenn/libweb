@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 import { Element } from './element.js';
 import { Point } from '../geom/point.js';
 import { Size } from '../geom/size.js';
@@ -53,7 +54,7 @@ const propSetter = (prop, proxy) => value => {
   //proxy.changeRect(rect => { rect[prop] = value; return rect; })
   let r = proxy.getRect();
   r[prop] = value;
-  //console.log('New rect: ', r);
+  //Util.log('New rect: ', r);
   proxy.setRect(r);
 };
 

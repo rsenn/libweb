@@ -108,7 +108,7 @@ Point.prototype.add = function(...args) {
 Point.prototype.diff = function(...args) {
   const p = new Point(...args);
   let r = new Point(this.x, this.y);
-  //console.log({ t: this, args, p, r });
+  //Util.log({ t: this, args, p, r });
   r.x -= p.x;
   r.y -= p.y;
   return r;
@@ -154,7 +154,7 @@ Point.prototype.distance = function(other = { x: 0, y: 0 }) {
   return Math.sqrt(Point.prototype.distanceSquared.call(this, other));
 };
 Point.prototype.equals = function(other) {
-  //console.log(`Point.equals ${this} ${other}`);
+  //Util.log(`Point.equals ${this} ${other}`);
   return +this.x == +other.x && +this.y == +other.y;
 };
 Point.prototype.round = function(precision = 0.001, digits, type = 'round') {

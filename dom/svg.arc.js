@@ -1,3 +1,4 @@
+import Util from './lib/util.js';
 import 'svgjs';
 
 (function() {

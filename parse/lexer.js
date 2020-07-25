@@ -11,7 +11,7 @@ const lexComment = lexer => {
       lexer.lexUntil(/\n$/);
       //lexer.skip(1);
     }
-    //console.log('s:', lexer.source.substring(lexer.start, lexer.pos));
+    //Util.log('s:', lexer.source.substring(lexer.start, lexer.pos));
     return Lexer.tokens.COMMENT;
   }
 };
@@ -21,7 +21,7 @@ const lexPreProc = lexer => {
     lexer.start += s.indexOf('#');
     lexer.lexUntil(/\n$/);
 
-    //console.log('s:', lexer.source.substring(lexer.start, lexer.pos));
+    //Util.log('s:', lexer.source.substring(lexer.start, lexer.pos));
     return Lexer.tokens.PREPROC;
   }
 };
@@ -41,7 +41,7 @@ const lexString = lexer => {
       }
       if(ret === -1) break;
       if(s.endsWith('\\\\')) {
-        console.log('lexer.source.substring', lexer.source.substring(lexer.pos - 1, lexer.pos + 1));
+        Util.log('lexer.source.substring', lexer.source.substring(lexer.pos - 1, lexer.pos + 1));
         lexer.skip();
         continue;
       }
@@ -95,7 +95,7 @@ const lexPunctuation = lexer => {
     if(s[0] == '-' && c == '>') lexer.get();
 
     lexer.lexWhile(/^[-~.<>;,\(\):|+\?*]$/);
-    //console.log("PUNCT", s);
+    //Util.log("PUNCT", s);
     return Lexer.tokens.PUNCTUATION;
   }
 };
@@ -109,17 +109,17 @@ const lexIdentifier = lexer => {
 
     for(; (c = lexer.peek()); word += lexer.get()) {
       if(!/[0-9A-Za-z_]/.test(c)) break;
-      //console.log("lexIdentifier: ", word);
+      //Util.log("lexIdentifier: ", word);
     }
 
     if(/[^0-9A-Za-z_]$/.test(word)) lexer.pos--;
 
-    //console.log("lexIdentifier: ", lexer.source[lexer.pos-1]);
+    //Util.log("lexIdentifier: ", lexer.source[lexer.pos-1]);
 
     let s = lexer.source.substring(lexer.start, lexer.pos);
 
     let { start, pos, len } = lexer;
-    //console.log("lexIdentifier: ", {s,start,pos,len});
+    //Util.log("lexIdentifier: ", {s,start,pos,len});
 
     return Lexer.tokens.IDENTIFIER;
   }
@@ -241,7 +241,7 @@ export class Lexer {
       lexer.lexWhile(/[ \n\r\t]$/);
       if(lexer.start < lexer.pos) return Lexer.tokens.WHITESPACE;
       if(!(lexer.start < lexer.pos)) {
-        console.log(`ERROR file=${lexer.file} pos=${lexer.line}:${lexer.column} start=${lexer.start} pos=${lexer.pos} len=${lexer.len}'${lexer.source.substring(lexer.start, lexer.pos + 1)}'`);
+        Util.log(`ERROR file=${lexer.file} pos=${lexer.line}:${lexer.column} start=${lexer.start} pos=${lexer.pos} len=${lexer.len}'${lexer.source.substring(lexer.start, lexer.pos + 1)}'`);
         return 0;
       }
     }
@@ -256,7 +256,7 @@ export class Lexer {
     Util.define(this, { source, tokIndex, file, len, line: 1, column: 1, eof: false });
 
     const { pos, start } = this;
-    console.log('Lexer.constructor', { file, pos, start, tokIndex, len });
+    Util.log('Lexer.constructor', { file, pos, start, tokIndex, len });
   }
 
   clone() {
@@ -310,7 +310,7 @@ export class Lexer {
         this.tokIndex--;
       };
       Util.define(value, { unget });
-      //console.log(`token ${this.line}:`, value);
+      //Util.log(`token ${this.line}:`, value);
       return {
         value,
         done
@@ -328,7 +328,7 @@ export class Lexer {
     let ret,
       c,
       tok = -1;
-    //console.log('next:', this.start, this.pos,this.len, this.eof);
+    //Util.log('next:', this.start, this.pos,this.len, this.eof);
 
     this.lexWhile(/[ \t\r\n]$/);
     this.start = this.pos;
@@ -342,7 +342,7 @@ export class Lexer {
 
     this.peek();
 
-    //console.log('this', { start, pos, len });
+    //Util.log('this', { start, pos, len });
     let retvals = [];
     let positions = [];
 
@@ -356,15 +356,15 @@ export class Lexer {
     }
 
     if(tok == Lexer.tokens.COMMENT || tok == Lexer.tokens.PREPROC) {
-      //console.log(`skip ${Lexer.tokenName(tok)}:`, this.str());
+      //Util.log(`skip ${Lexer.tokenName(tok)}:`, this.str());
 
       return this.next();
     }
 
     if(tok == -1 || tok === 0) {
-      if(tok === 0) console.log('source:', this.source.substring(this.start).split(/\n/g)[0]);
-      /*console.log('retvals:', retvals);
-      console.log('posisionts:', positions);*/
+      if(tok === 0) Util.log('source:', this.source.substring(this.start).split(/\n/g)[0]);
+      /*Util.log('retvals:', retvals);
+      Util.log('posisionts:', positions);*/
 
       return result(tok, null, true);
     }
