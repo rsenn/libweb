@@ -27,7 +27,7 @@ export function Renderer(doc, factory, debug) {
     default:
       throw new Error('No such document type: ' + doc.type);
   }
-  Renderer.debug = ret.debug = debug ? (...args) => console.log(...args) : () => {};
+  Renderer.debug = ret.debug = debug ? (...args) => console.log(Util.getStackFrame(2 ).getLocation() + '', ...args) : () => {};
   return ret;
 }
 

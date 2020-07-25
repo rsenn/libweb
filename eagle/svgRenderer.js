@@ -407,7 +407,7 @@ export class EagleSVGRenderer {
     rect.outset(1.27);
     rect.round(2.54, 6);
 
-    Util.tryCatch(() => this.debug('stack:', (window.stack = Util.getCallerStack(1)).toString()));
+    // Util.tryCatch(() => this.debug('stack:', (window.stack = Util.getCallerStack(1)).toString()));
 
     this.rect = rect;
     this.bounds = new BBox().update(rect);

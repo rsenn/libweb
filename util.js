@@ -648,7 +648,11 @@ Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index
   return adapter;
 };
 Util.adapter.localStorage = function(s) {
-  if(!s && global.window) s = window.localStorage;
+  s = Util.tryCatch(
+    () => !s && global.window,
+    w => w.localStorage,
+    () => s
+  );
 
   return Util.adapter(
     s,
@@ -993,10 +997,16 @@ Util.dump = function(name, props) {
     args.push(`\n\t${key}: `);
     args.push(props[key]);
   }
-  if('window' in global !== false) {
+  const w = Util.tryCatch(
+    () => global.window,
+    w => w,
+    () => null
+  );
+
+  if(w) {
     //if(window.alert !== undefined)
     //alert(args);
-    if(window.console !== undefined) console.log(...args);
+    if(w.console !== undefined) w.console.log(...args);
   }
 };
 Util.ucfirst = function(str) {
@@ -1342,7 +1352,13 @@ Util.clearCookies = function(c) {
   return Util.setCookies(Object.keys(Util.parseCookie(c)).reduce((acc, name) => Object.assign(acc, { [name]: `; max-age=0; expires=${new Date().toUTCString()}` }), {}));
 };
 Util.deleteCookie = function(name) {
-  if(global.window) document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+  const w = Util.tryCatch(
+    () => global.window,
+    w => w,
+    () => null
+  );
+
+  if(w) document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
 };
 Util.accAdd = function(arg1, arg2) {
   let r1, r2, m;
@@ -1478,16 +1494,10 @@ Util.getURL = function(req = {}) {
       let proto = Util.tryCatch(() => (process.env.NODE_ENV === 'production' ? 'https' : null)) || 'http';
       let port = Util.tryCatch(() => (process.env.PORT ? parseInt(process.env.PORT) : process.env.NODE_ENV === 'production' ? 443 : null)) || 3000;
       let host = Util.tryCatch(() => global.ip) || Util.tryCatch(() => global.host) || Util.tryCatch(() => window.location.host.replace(/:.*/g, '')) || 'localhost';
-      if(req && req.headers && req.headers.host !== undefined) {
-        host = req.headers.host.replace(/:.*/, '');
-      } else {
-        Util.tryCatch(() => process.env.HOST !== undefined && (host = process.env.HOST));
-      }
-      //Util.tryCatch(() => global.window !== undefined && window.location !== undefined && return window.location.href)
+      if(req && req.headers && req.headers.host !== undefined) host = req.headers.host.replace(/:.*/, '');
+      else Util.tryCatch(() => process.env.HOST !== undefined && (host = process.env.HOST));
       if(req.url !== undefined) return req.url;
-      //if(global.process !== undefined && global.process.url !== undefined) return global.process.url;
       const url = `${proto}://${host}:${port}`;
-      //console.log("getURL process ", { url });
       return url;
     }
   );
@@ -1599,6 +1609,7 @@ Util.tryPredicate = (fn, defaultRet) =>
 
 Util.isBrowser = function() {
   let ret = false;
+
   Util.tryCatch(
     () => window,
     w => (Util.isObject(w) ? (ret = true) : undefined),
@@ -1916,13 +1927,24 @@ Util.roundTo = function(value, prec, digits, type = 'round') {
   if(typeof digits == 'number') ret = +ret.toFixed(digits);
   return ret;
 };
-Util.base64 = {
-  encode: utf8 => {
-    if(global.window) return window.btoa(unescape(encodeURIComponent(utf8)));
-    return Buffer.from(utf8).toString('base64');
-  },
-  decode: base64 => decodeURIComponent(escape(window.atob(base64)))
-};
+Util.base64 = (() => {
+  const w = Util.tryCatch(
+    () => global.window,
+    w => w,
+    () => null
+  );
+
+  return {
+    encode: utf8 => {
+      if(w) return w.btoa(w.unescape(w.encodeURIComponent(utf8)));
+      return Buffer.from(utf8).toString('base64');
+    },
+    decode: base64 => {
+      if(w) return w.decodeURIComponent(w.escape(w.atob(base64)));
+    }
+  };
+})();
+
 Util.formatRecord = function(obj) {
   let ret = {};
   for(let key in obj) {
@@ -2284,38 +2306,133 @@ Util.exception = function Exception(...args) {
   return Object.setPrototypeOf(e, proto);
 };
 
-Object.defineProperties(Util.exception.prototype, {
-  toString: {
-    value: function(color = false) {
-      const { message, stack, proto } = this;
-      return `${Util.fnName(proto.constructor || this.constructor)}: ${message}
+Util.define(Util.exception.prototype, {
+  toString(color = false) {
+    const { message, stack, proto } = this;
+    return `${Util.fnName(proto.constructor || this.constructor)}: ${message}
 Stack:${Util.stack.prototype.toString.call(stack, color, stack.columnWidths)}`;
-    }
   },
-  [Symbol.toStringTag]: {
-    value: function() {
-      return this.toString(false);
-    }
+  [Symbol.toStringTag]() {
+    return this.toString(false);
   },
-  [Symbol.for('nodejs.util.inspect.custom')]: {
-    value: function() {
-      return Util.exception.prototype.toString.call(this, true);
-    }
+  [Symbol.for('nodejs.util.inspect.custom')]() {
+    return Util.exception.prototype.toString.call(this, true);
   }
 });
+Util.location = function Location(...args) {
+  let ret = this instanceof Util.location ? this : Object.setPrototypeOf({}, Util.location.prototype);
+  if(args.length == 3) {
+    const [fileName, lineNumber, columnNumber] = args;
+    Object.assign(ret, { fileName, lineNumber, columnNumber });
+  } else if(args.length == 1 && args[0].fileName !== undefined) {
+    const { fileName, lineNumber, columnNumber } = args.shift();
+    Object.assign(ret, { fileName, lineNumber, columnNumber });
+  }
+  return ret;
+};
+Util.define(Util.location.prototype, {
+  toString(color = false) {
+    let { fileName, columnNumber, lineNumber } = this;
+    fileName = fileName.replace(new RegExp(Util.getURL() + '/', 'g'), '');
+    const c = color ? (t, ...num) => `\x1b[${num.join(';')}m${t}` : t => t;
+    let a = [c(fileName, 1, 33), c(lineNumber, 1, 36), c(columnNumber, 1, 36)];
+    return a.join(c(':', 1, 35)) + c(':', 0);
+  },
+  [Symbol.toStringTag]() {
+    return Util.location.prototype.toString.call(this, false);
+  },
+  [Symbol.for('nodejs.util.inspect.custom')]() {
+    return Util.location.prototype.toString.call(this, true);
+  },
+  getFileName() {
+    return this.fileName;
+  },
+  getLineNumber() {
+    return this.lineNumber;
+  },
+  getColumnNumber() {
+    return this.columnNumber;
+  }
+});
+
 Util.stackFrame = function StackFrame(frame) {
+  ['methodName', 'functionName', 'fileName', 'lineNumber', 'columnNumber', 'typeName'].forEach(prop => {
+    let fn = 'get' + Util.ucfirst(prop);
+    if(frame[prop] === undefined && typeof frame[fn] == 'function') frame[prop] = frame[fn]();
+  });
   return Object.setPrototypeOf(frame, Util.stackFrame.prototype);
 };
+Util.define(Util.stackFrame.prototype, {
+  getMethodName() {
+    return this.methodName;
+  },
+  getFunctionName() {
+    return this.functionName;
+  },
+  getTypeName() {
+    return this.typeName;
+  },
+  getFileName() {
+    return this.fileName;
+  },
+  getLineNumber() {
+    return this.lineNumber;
+  },
+  getColumnNumber() {
+    return this.columnNumber;
+  }
+});
+
+Util.define(Util.stackFrame.prototype, {
+  get() {
+    const { fileName, columnNumber, lineNumber } = this;
+    return fileName ? `${fileName}:${lineNumber}:${columnNumber}` : null;
+  },
+  toString(color = true, columnWidths = [0, 0, 0, 0]) {
+    // console.log('toString', { color });
+
+    const c = color ? (t, ...num) => `\x1b[${num.join(';')}m${t}` : t => t;
+    let fields = ['functionName', 'fileName', 'lineNumber', 'columnNumber'];
+    const colors = [
+      [1, 32],
+      [1, 33],
+      [1, 36],
+      [1, 36]
+    ];
+
+    //const { functionName, fileName, columnNumber, lineNumber } = this;
+    let columns = fields.map(fn => this[fn]);
+
+    columns = columns.map((f, i) => (f + '')[i >= 2 ? 'padStart' : 'padEnd'](columnWidths[i] || 0, ' '));
+    columns = columns.map((fn, i) => c(fn, ...colors[i]));
+    const [functionName, fileName, lineNumber, columnNumber] = columns;
+
+    return `${functionName} ${fileName}:${lineNumber}:${columnNumber}` + c('', 0);
+  },
+  getLocation() {
+    return new Util.location(this);
+  },
+  get location() {
+return this.getLocation();
+  },
+  [Symbol.toStringTag]() {
+    return this.toString(false);
+  },
+  [Symbol.for('nodejs.util.inspect.custom')](...args) {
+    return Util.stackFrame.prototype.toString.call(this, true, this.columnWidths);
+  }
+});
 Util.scriptName = () =>
   Util.tryCatch(
     () => process.argv[1],
     script => script + '',
     () => Util.getURL()
   );
-Util.functionName = () => {
+Util.getFunctionName = () => {
   const frame = Util.getCallerStack(2)[0];
   return frame.getFunctionName() || frame.getMethodName();
 };
+
 Util.scriptDir = () =>
   Util.tryCatch(
     () => Util.scriptName(),
@@ -2323,6 +2440,10 @@ Util.scriptDir = () =>
     () => Util.getURL()
   );
 Util.stack = function Stack(stack) {
+  if(Util.isArray(stack)) {
+    stack = [...stack].map(f => f + '').join('\n');
+  }
+
   if(typeof stack == 'string') {
     stack = stack.split(/\n/g).slice(1);
     const re = new RegExp('.* at ([^ ][^ ]*) \\(([^)]*)\\)');
@@ -2356,52 +2477,16 @@ Util.stack = function Stack(stack) {
   //console.log('Util.stack:', stack.toString(true));
   return stack;
 };
-Object.defineProperties(Util.stackFrame.prototype, {
-  get: {
-    get() {
-      const { fileName, columnNumber, lineNumber } = this;
-      return fileName ? `${fileName}:${lineNumber}:${columnNumber}` : null;
-    }
-  },
-  toString: {
-    value: function toString(color = true, columnWidths = [0, 0, 0, 0]) {
-      // console.log('toString', { color });
-
-      const c = color ? (t, ...num) => `\x1b[${num.join(';')}m${t}` : t => t;
-      let fields = ['functionName', 'fileName', 'lineNumber', 'columnNumber'];
-      const colors = [
-        [1, 32],
-        [1, 33],
-        [1, 36],
-        [1, 36]
-      ];
-
-      //const { functionName, fileName, columnNumber, lineNumber } = this;
-      let columns = fields.map(fn => this[fn]);
-
-      columns = columns.map((f, i) => (f + '')[i >= 2 ? 'padStart' : 'padEnd'](columnWidths[i] || 0, ' '));
-      columns = columns.map((fn, i) => c(fn, ...colors[i]));
-      const [functionName, fileName, lineNumber, columnNumber] = columns;
-
-      return `${functionName} ${fileName}:${lineNumber}:${columnNumber}` + c('', 0);
-    }
-  },
-  [Symbol.toStringTag]: {
-    value: function() {
-      return this.toString(false);
-    }
-  },
-  [Symbol.for('nodejs.util.inspect.custom')]: {
-    value: function(...args) {
-      return Util.stackFrame.prototype.toString.call(this, true, this.columnWidths);
-    }
-  }
-});
 
 Util.stack.prototype = Object.assign(Util.stack.prototype, Util.getMethods(new Array(), 1, 1));
+Object.defineProperty(Util.stack, Symbol.species, { get: () => Util.stack });
+
 Util.stack.prototype = Object.assign(Util.stack.prototype, {
   toString(color = false) {
-    return '\n' + this.map(frame => Util.stackFrame.prototype.toString.call(frame, color, this.columnWidths)).join('\n') + '\n';
+    let a = [...this].map(frame => Util.stackFrame.prototype.toString.call(frame, color, this.columnWidths));
+
+    let s = a.join('\n');
+    return s + '\n';
   },
   [Symbol.toStringTag]() {
     return Util.stack.prototype.toString.call(this);
@@ -2429,7 +2514,10 @@ Util.getCallerStack = function(position = 2) {
   const oldPrepareStackTrace = Error.prepareStackTrace;
   Error.prepareStackTrace = (_, stack) => stack;
   let stack = new Error().stack;
+
+  stack = Util.stack(stack);
   stack = stack.slice(position);
+  /*
   stack.forEach(frame => {
     Util.define(frame, 'toString', function() {
       const { position } = this;
@@ -2437,14 +2525,28 @@ Util.getCallerStack = function(position = 2) {
       if(this.getMethodName()) s = this.getMethodName() + ' ' + s;
       else if(this.getFunctionName()) s = this.getFunctionName() + ' ' + s;
 
-      //console.log("Object.getPrototypeOf(this)", ());
-      window.frameProto = Object.getPrototypeOf(this);
+      const w =
+        Util.tryCatch(
+          () => global.window,
+          w => w,
+          () => null
+        ) || {};
 
-      window.CallSite = window.frameProto.constructor;
-      //console.log("Object.keys(this)", Object.keys(this));
+      w.frameProto = Object.getPrototypeOf(frame);
+
+      w.CallSite = w.frameProto.constructor;
       if(this.getTypeName()) s = this.getTypeName() + '.' + s;
 
       return s;
+    });
+    Util.define(frame, {
+      get location() {
+        const fileName = this.getFileName().replace(new RegExp(Util.getURL() + '/', 'g'), '');
+        const lineNumber = this.getLineNumber();
+        const columnNumber = this.getColumnNumber();
+
+        return [fileName, lineNumber, columnNumber].join(':');
+      }
     });
 
     Util.defineGetter(frame, 'position', function() {
@@ -2455,11 +2557,12 @@ Util.getCallerStack = function(position = 2) {
     toString() {
       return this.map(frame => frame.toString()).join('\n');
     },
+
     [Symbol.toStringTag]() {
       return this.toString();
     }
   });
-  Util.tryCatch(() => (window.stack = stack));
+  Util.tryCatch(() => (window.stack = stack));*/
   return stack;
 };
 Util.getCallerFile = function(position = 2) {
@@ -2536,6 +2639,20 @@ Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER, pred = () =
     return this.toString();
   };
   return ret;
+};
+/*Object.defineProperty(Util, 'stackFrame', {
+  get: function() {
+  return this.getCallerStack(2);
+  }
+});*/
+Util.getStackFrame = function(offset = 1) {
+  let frames = Util.getCallerStack(0);
+ frames =  frames.map(frame => {
+  if(Object.getPrototypeOf(frame) !== Util.stackFrame.prototype) frame = Util.stackFrame(frame);
+  return frame;
+});
+
+  return frames[offset];
 };
 Util.rotateLeft = function(x, n) {
   n = n & 0x1f;
