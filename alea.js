@@ -1,7 +1,6 @@
 //From http://baagoe.com/en/RandomMusings/javascript/
 
-export function Alea() {
-  const args = [...arguments];
+export function Alea(...args) {
   //Johannes Baagøe <baagoe@baagoe.com>, 2010
   var s0 = 0;
   var s1 = 0;
@@ -14,7 +13,7 @@ export function Alea() {
     s1 = s2;
 
     let r = (s2 = t - (c = t | 0));
-    console.log('Alea() =', r);
+    // console.log('Alea() =', r);
     return r;
   };
   random.uint32 = function() {

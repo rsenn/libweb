@@ -1926,7 +1926,7 @@ Util.randStr = (len, charset, rnd = Util.rng) => {
   if(!charset) charset = '_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
   while(--len >= 0) {
-    o += charset[Util.randInt(charset.length, rnd)];
+    o += charset[Math.round(rnd() * (charset.length - 1))];
   }
   return o;
 };
@@ -2080,7 +2080,7 @@ Util.counter = function() {
     return this.i;
   };
 };
-Util.filterKeys = function(obj, pred) {
+Util.filterKeys = function(obj, pred = k => true) {
   let args = [...arguments];
   obj = args.shift();
   let ret = {};
@@ -2099,6 +2099,12 @@ Util.filterOutKeys = function(obj, arr) {
   if(typeof obj != 'object') return obj;
 
   return Util.filterKeys(obj, key => arr.indexOf(key) == -1);
+};
+Util.getKeys = function(obj, arr) {
+  let ret = {};
+  for(let key of arr) ret[key] = obj[key];
+
+  return ret;
 };
 Util.numbersConvert = function(str) {
   return str
@@ -3439,5 +3445,8 @@ Util.timer = msecs => {
   ret = start();
   return Util.define(ret, timer);
 };
+Util.thenableReject = error => ({
+  then: (resolve, reject) => reject(error)
+});
 
 export default Util;

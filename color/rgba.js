@@ -96,12 +96,7 @@ RGBA.order = {
   ABGR: 3
 };
 
-RGBA.decode = [
-  /*RGBA:*/ n => ({ r: (n >> 24) & 0xff, g: (n >> 16) & 0xff, b: (n >> 8) & 0xff, a: n & 0xff }),
-  /*BGRA:*/ n => ({ b: (n >> 24) & 0xff, g: (n >> 16) & 0xff, r: (n >> 8) & 0xff, a: n & 0xff }),
-  /*ARGB:*/ n => ({ a: (n >> 24) & 0xff, r: (n >> 16) & 0xff, g: (n >> 8) & 0xff, b: n & 0xff }),
-  /*ABGR:*/ n => ({ a: (n >> 24) & 0xff, b: (n >> 16) & 0xff, g: (n >> 8) & 0xff, r: n & 0xff })
-];
+RGBA.decode = [/*RGBA:*/ n => ({ r: (n >> 24) & 0xff, g: (n >> 16) & 0xff, b: (n >> 8) & 0xff, a: n & 0xff }), /*BGRA:*/ n => ({ b: (n >> 24) & 0xff, g: (n >> 16) & 0xff, r: (n >> 8) & 0xff, a: n & 0xff }), /*ARGB:*/ n => ({ a: (n >> 24) & 0xff, r: (n >> 16) & 0xff, g: (n >> 8) & 0xff, b: n & 0xff }), /*ABGR:*/ n => ({ a: (n >> 24) & 0xff, b: (n >> 16) & 0xff, g: (n >> 8) & 0xff, r: n & 0xff })];
 RGBA.encode = [
   /*RGBA:*/ ({ r, g, b, a }) => [r, g, b, a].map(n => ('00' + (n & 0xff).toString(16)).slice(-2)).join(''),
   /*BGRA:*/ ({ r, g, b, a }) => [b, g, r, a].map(n => ('00' + (n & 0xff).toString(16)).slice(-2)).join(''),
@@ -110,12 +105,7 @@ RGBA.encode = [
 ];
 RGBA.fmt = [({ r, g, b, a }) => [r, g, b, a], ({ b, g, r, a }) => [b, g, r, a], ({ a, r, g, b }) => [a, r, g, b], ({ a, b, g, r }) => [a, b, g, r]];
 
-RGBA.calculators = [
-  ({ r, g, b, a }) => ((r * 256 + g) * 256 + b) * 256 + a,
-  ({ b, g, r, a }) => ((b * 256 + g) * 256 + r) * 256 + a,
-  ({ a, r, g, b }) => ((a * 256 + r) * 256 + g) * 256 + b,
-  ({ a, b, g, r }) => ((a * 256 + b) * 256 + g) * 256 + r
-];
+RGBA.calculators = [({ r, g, b, a }) => ((r * 256 + g) * 256 + b) * 256 + a, ({ b, g, r, a }) => ((b * 256 + g) * 256 + r) * 256 + a, ({ a, r, g, b }) => ((a * 256 + r) * 256 + g) * 256 + b, ({ a, b, g, r }) => ((a * 256 + b) * 256 + g) * 256 + r];
 
 RGBA.prototype.binaryValue = function(order = 0) {
   const { r, g, b, a } = this;
@@ -134,8 +124,7 @@ RGBA.prototype.compareTo = function(other) {
   return d < 0 ? -1 : d > 0 ? 1 : 0;
 };
 RGBA.fromHex = (hex, alpha = 255) => {
-  const matches =
-    hex && (hex.length >= 7 ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(hex) : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(hex));
+  const matches = hex && (hex.length >= 7 ? /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})?$/i.exec(hex) : /^#?([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])?$/i.exec(hex));
   if(matches === null) return null;
   let mul = hex.length >= 7 ? 1 : 17;
 
@@ -408,11 +397,7 @@ RGBA.prototype.contrast = function contrast(other) {
 RGBA.prototype.toConsole = function(fn = 'toString') {
   const textColor = this.invert().blackwhite();
   const bgColor = this.blackwhite(255);
-  return [
-    `%c${this[fn]()}%c`,
-    `text-shadow: 1px 1px 1px ${bgColor.hex()}; border: 1px solid black; padding: 2px; font-size: 1.5em; background-color: ${this.toString()}; color: ${textColor};`,
-    `background-color: none;`
-  ];
+  return [`%c${this[fn]()}%c`, `text-shadow: 1px 1px 1px ${bgColor.hex()}; border: 1px solid black; padding: 2px; font-size: 1.5em; background-color: ${this.toString()}; color: ${textColor};`, `background-color: none;`];
 };
 
 RGBA.prototype.toAnsi = function(background = false) {
