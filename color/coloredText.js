@@ -201,6 +201,7 @@ export class ColoredText extends Array {
         return this;
       },
       toConsole(c = console) {
+        throw new Error("coloredText.toConsole");
         c.log(...this[INSPECT]());
       }
     });

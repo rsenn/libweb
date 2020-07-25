@@ -13,6 +13,7 @@ import { EagleSVGRenderer } from './svgRenderer.js';
 
 export { EagleSVGRenderer } from './svgRenderer.js';
 export { SchematicRenderer } from './schematicRenderer.js';
+export { LibraryRenderer } from './libraryRenderer.js';
 export { BoardRenderer } from './boardRenderer.js';
 
 export function Renderer(doc, factory, debug) {
@@ -24,10 +25,14 @@ export function Renderer(doc, factory, debug) {
     case 'sch':
       ret = new SchematicRenderer(doc, factory);
       break;
+
+    case 'lbr':
+      ret = new LibraryRenderer(doc, factory);
+      break;
     default:
       throw new Error('No such document type: ' + doc.type);
   }
-  Renderer.debug = ret.debug = debug ? (...args) => Util.log(Util.getStackFrame().getLocation(), ...args) : () => {};
+  Renderer.debug = ret.debug = debug ? (...args) => console.log(Util.getStackFrame().getLocation(), ...args) : () => {};
   return ret;
 }
 

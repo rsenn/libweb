@@ -16,7 +16,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
 */
   static makePredicate(name, key) {
     const a = Util.isArray(key) ? key : [key];
-    return item => a.some(key => item.attributes[key] == name);
+    return key == 'tagName' ? (item => item.tagName == name) : (item => a.some(key => item.attributes[key] == name));
   }
 
   item(pos) {
@@ -45,7 +45,8 @@ Object.defineProperties(EagleNodeMap.prototype, {
     else list.push(value);
   }
   keys(key = this.key) {
-    return Util.unique((this.list && [...this.list]) || [...this]).map(item => item.attributes[key]);
+    const fn = key == 'tagName' ? (item => item.tagName) : (item => item.attributes[key]);
+    return Util.unique((this.list && [...this.list]) || [...this]).map(fn);
   }
   size(key = this.key) {
     return (this.list.raw || this.list).length;
@@ -59,7 +60,9 @@ Object.defineProperties(EagleNodeMap.prototype, {
   *[Symbol.iterator](keyAttr = this.key) {
     const list = this.list && this.list.raw ? this.list.raw : this.list;
     //Util.log('NodeMap ', this.list);
-    for(let i = 0; i < this.list.length; i++) yield [list[i].attributes[keyAttr], this.item(i)];
+        const fn = keyAttr == 'tagName' ? (item => item.tagName) : (item => item.attributes[keyAttr]);
+
+    for(let i = 0; i < this.list.length; i++) yield [fn(list[i]), this.item(i)];
   }
   toMap(key = this.key) {
     return new Map(this.entries(key));
@@ -71,15 +74,11 @@ Object.defineProperties(EagleNodeMap.prototype, {
   static create(list, key = 'name') {
     const Ctor = EagleNodeMap;
     //Util.log('EagleNodeMap.create', { list, key });
-
     const instance = new Ctor(list, key);
-
     return new Proxy(instance, {
       get(target, prop, receiver) {
         let index;
-
         let item = instance.get(prop);
-
         if(item) {
           //Util.log("EagleNodeMap.get", {prop, item});
           return item;

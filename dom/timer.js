@@ -33,7 +33,7 @@ Timer.std = {
 };
 
 Timer.debug = (impl = Timer.std) => ({
-  log: msg => Util.log(msg),
+  log: msg => console.log(msg),
   create(fn, timeout) {
     var id, str;
     id = impl.create(() => {

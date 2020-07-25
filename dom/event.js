@@ -17,7 +17,7 @@ export const Event = {
 
     //Object.assign(event, {ctrlKey,shiftKey,altKey,metaKey});
 
-    Util.log('event:', event);
+    console.log('event:', event);
     target.dispatchEvent(event);
     return event;
   }

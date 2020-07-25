@@ -95,7 +95,7 @@ export class ReactComponent {
     }
     if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
 
-    //Util.log('tagName:', tagName);
+    //console.log('tagName:', tagName);
 
     tagName += '';
 

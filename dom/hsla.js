@@ -51,7 +51,7 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
     ret.a = 0;
   }
 
-  //Util.log('HSLA ', { c, ret, args });
+  //console.log('HSLA ', { c, ret, args });
   if(!(ret instanceof HSLA)) return ret;
 }
 
@@ -161,7 +161,7 @@ HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [1, 1], rng
   return new HSLA(Util.randInt(h, rng), Util.randInt(s, rng), Util.randInt(l, rng), Util.randInt(a, rng));
 };
 HSLA.prototype.dump = function() {
-  Util.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
+  console.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
   return this;
 };
 

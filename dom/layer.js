@@ -23,7 +23,7 @@ export class Renderer {
     const e = (this.element = this.root_node.firstChild);
     const xpath = Element.xpath(e);
 
-    //Util.log('Renderer.refresh ', { xpath, e });
+    //console.log('Renderer.refresh ', { xpath, e });
     return e;
   }
   clear() {

@@ -1170,6 +1170,9 @@ Util.isNumeric = v => /^[-+]?(0x|0b|0o|)[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test
 
 Util.isObject = (obj, proto = null) => typeof obj === 'object' && obj !== null && (proto === null || Object.getPrototypeOf(obj) === proto);
 Util.isFunction = fn => !!(fn && fn.constructor && fn.call && fn.apply);
+
+Util.isAsync  = fn => typeof(fn) == 'function' &&  (/async/.test(fn+'') /*|| fn() instanceof Promise*/);
+
 Util.isArrowFunction = fn => (Util.isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
 
 Util.isEmptyString = v => Util.isString(v) && (v == '' || v.length == 0);
@@ -1616,7 +1619,15 @@ Util.tryFunction = (fn, resolve = a => a, reject = () => null) => {
     var cval = reject;
     reject = () => cval;
   }
-  return function(...args) {
+  return Util.isAsync(fn) ? async function(...args) {
+    let ret;
+    try {
+      ret = await fn(...args);
+    } catch(err) {
+      return  reject(err, ...args);
+    }
+    return  resolve(ret, ...args);
+  } : function(...args) {
     let ret;
     try {
       ret = fn(...args);
@@ -1627,6 +1638,19 @@ Util.tryFunction = (fn, resolve = a => a, reject = () => null) => {
   };
 };
 Util.tryCatch = (fn, resolve = a => a, reject = () => null, ...args) => Util.tryFunction(fn, resolve, reject)(...args);
+
+Util.trap = fn => Util.tryFunction(
+   fn,
+    ret => ret,
+    error => {
+    console.error('error:', error+'');
+    console.error('stack:', [...error.stack].map(f => (f + '').replace(Util.getURL() + '/', '')).join('\n'));
+/*     consterror message, stack } = error;
+
+      console['error']('ERROR:', message, '\nstack:\n' + stack.map(f => f + ''));*/
+      //return error;
+    }
+  );
 
 Util.tryPredicate = (fn, defaultRet) =>
   Util.tryFunction(
@@ -2903,7 +2927,7 @@ Util.splitLines = function(str, max_linelen = Number.MAX_SAFE_INTEGER) {
   return lines;
 };
 Util.matchAll = Util.curry(function*(re, str) {
-  re = new RegExp(re);
+  re = new RegExp(re + '', 'g');
   let match;
   while((match = re.exec(str)) != null) yield match;
 });
@@ -2916,7 +2940,12 @@ Util.decodeEscapes = function(text) {
   return text;
 };
 
-Util.stripXML = text => text.replace(/<[^>]*>/g, '');
+Util.stripXML = text =>
+  text
+    .replace(/<br(|\ *\/)>/gi, '\n')
+    .replace(/<[^>]*>/g, '')
+    .replace(/[\t ]+/g, ' ')
+    .replace(/(\n[\t ]*)+\n/g, '\n');
 Util.stripNonPrintable = text => text.replace(/[^\x20-\x7f\x0a\x0d\x09]/g, '');
 Util.decodeHTMLEntities = function(text) {
   var entities = {

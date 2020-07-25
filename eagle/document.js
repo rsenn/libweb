@@ -79,6 +79,7 @@ export class EagleDocument extends EagleNode {
         return [
           ['eagle', 'drawing', 'settings'],
           ['eagle', 'drawing', 'layers'],
+          ['eagle', 'drawing', 'schematic'],
           ['eagle', 'drawing', 'schematic', 'libraries'],
           ['eagle', 'drawing', 'schematic', 'classes'],
           ['eagle', 'drawing', 'schematic', 'parts'],
@@ -88,6 +89,7 @@ export class EagleDocument extends EagleNode {
         return [
           ['eagle', 'drawing', 'settings'],
           ['eagle', 'drawing', 'layers'],
+          ['eagle', 'drawing', 'board'],
           ['eagle', 'drawing', 'board', 'libraries'],
           ['eagle', 'drawing', 'board', 'classes'],
           ['eagle', 'drawing', 'board', 'designrules'],

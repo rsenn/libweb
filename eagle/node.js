@@ -26,7 +26,7 @@ export class EagleNode {
     //if(!owner) owner = new EagleReference(ref.root, []).dereference();
     if(!(ref instanceof EagleReference)) ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
     if(!raw) raw = ref.dereference();
-    //Util.log("EagleNode.constructor",{owner,ref,raw});
+    //console.log("EagleNode.constructor",{owner,ref,raw});
     //Object.assign(this, { ref, owner });
     Object.defineProperty(this, 'owner', { value: owner, enumerable: false, writable: true });
     Util.define(this, 'ref', ref);
@@ -63,7 +63,7 @@ export class EagleNode {
         }
       )
     );
-    //Util.log('chain:', chain);
+    //console.log('chain:', chain);
 
     return chain;
 
@@ -103,7 +103,7 @@ export class EagleNode {
   get raw() {
     const { owner, ref, document } = this;
     let r;
-    //Util.log(`${Util.className(this)}.raw`,  {owner},ref);
+    //console.log(`${Util.className(this)}.raw`,  {owner},ref);
     if(this.xml && this.xml[0]) return this.xml[0];
     r = ref.path.apply(owner.raw, true);
     if(!r) {
@@ -136,7 +136,7 @@ export class EagleNode {
     let protos = Util.getPrototypeChain(this);
     if(Util.fnName(protos[0].constructor) == 'EagleDocument') protos.shift();
     let ctor = protos[0].constructor;
-    Util.log('childConstructor:', this, ctor);
+    console.log('childConstructor:', this, ctor);
     return ctor;
   }
 
@@ -156,14 +156,18 @@ export class EagleNode {
       let raw = this.raw;
 
       for(let xpath of fields) {
+
         let key = xpath[xpath.length - 1];
         let path = new ImmutablePath(xpath.reduce((acc, p) => [...acc, 'children', p], []).concat(['children']));
-        //let value = path.apply(raw, true);
-        //Util.log('xpath', { xpath, key });
+         //console.log('initCache', { xpath, key,path });
+
+//let value = path.apply(raw, true);
         lazy[key] = () => this.lookup(xpath, true);
-        //Util.log(`lazy[${key}]()`, lazy[key]());
+
+        //console.log(`lazy[${key}]()`, lazy[key]());
+
         lists[key] = () => listCtor(owner, this.ref.down(...path));
-        maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => EagleNodeMap.create(lists[key](), key == 'instances' ? 'part' : key == 'layers' ? ['number', 'name'] : 'name');
+        maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => EagleNodeMap.create(lists[key](), ['board','schematic','library'].indexOf(key) != -1 ? 'tagName' : key == 'instances' ? 'part' : key == 'layers' ? ['number', 'name'] : 'name');
       }
       lazyMembers(this.lists, lists);
       lazyMembers(this.cache, lazy);
@@ -178,7 +182,7 @@ export class EagleNode {
       let value = handler() || elem.attrMap[key] || elem.attributes[key];
       return fn(value, elem, elem.document);
     });
-    //Util.log(`initRelation`,key,this[key]);
+    //console.log(`initRelation`,key,this[key]);
     return this;
   }
 
@@ -231,24 +235,24 @@ export class EagleNode {
   }
 
   get(pred, transform) {
-    //Util.log('get', this, pred);
+    //console.log('get', this, pred);
     pred = EagleNode.makePredicate(pred);
     let it = this.getAll((v, p, o) => (pred(v, p, o) ? -1 : false), transform);
     let a = [...it];
     const { root, path, raw } = this;
-    //Util.log("EagleNode.get",{className: Util.className(this), root,path,raw,pred: pred+'',it,a});
+    //console.log("EagleNode.get",{className: Util.className(this), root,path,raw,pred: pred+'',it,a});
     return a[0] || null;
   }
 
   find(name, transform = a => a) {
-    //Util.log('find', this, name, Util.getCallers(0));
+    //console.log('find', this, name, Util.getCallers(0));
     //throw new Error("find");
     let pred = EagleNode.makePredicate(name);
     let result = deep.find(this.raw, pred, [...this.path]); //this.getAll((v, p, o) => (pred(v, p, o) ? -1 : false), transform))
 
     if(result) {
       const { path, value } = result;
-      //Util.log("found:",{path,value});
+      //console.log("found:",{path,value});
       return value ? transform(value, path) : value;
     }
   }
@@ -295,7 +299,7 @@ export class EagleNode {
     /*   const ref = this.ref.up(2);*/
     const { ref, path, root, raw } = this;
     let doc = this.getDocument();
-    //Util.log('parentNode', path + '', doc);
+    //console.log('parentNode', path + '', doc);
     return this.constructor[Symbol.species].get(doc, ref.up(2));
   }
 
@@ -318,7 +322,7 @@ export class EagleNode {
 
   inspect() {
     let attrs = [''];
-    Util.log('Inspect:', this.path);
+    console.log('Inspect:', this.path);
 
     let r = this; //'tagName' in this ? this : this.raw; // this.ref ? this.ref.dereference()  : this;
     let a = r.attrMap ? r.attrMap : r.attributes;
@@ -327,7 +331,7 @@ export class EagleNode {
         .filter(name => typeof a[name] != 'function')
         .reduce((attrs, attr) => concat(attrs, ' ', text(attr, 1, 33), text(':', 1, 36), text("'" + a[attr] + "'", 1, 32)), attrs);
 
-      //Util.log('Inspect:', a, a.keys ? a.keys() : Object.getOwnPropertyNames(a));
+      //console.log('Inspect:', a, a.keys ? a.keys() : Object.getOwnPropertyNames(a));
     }
 
     let children = r.children;
@@ -363,27 +367,15 @@ export class EagleNode {
       }
     }
   }
-  /*
-  find(...args) {
-    let { path, predicate, transform } = parseArgs(args);
-    if(!transform) transform = ([v, l, d]) => (Util.isObject(v) && 'tagName' in v ? new this.constructor[Symbol.species](d, l, v) : v);
-    Util.log("find",path,predicate+'',transform);
-    for(let [v, p, d] of this.iterator()) {
-      if(typeof v == 'string') continue;
-      Util.log("find",{v,p});
-      if(predicate(v, p, d)) return transform([v, p, d]);
-    }
-    return transform([null, [], []]);
-  }*/
 
   lookup(xpath, t = (o, p, v) => [o, p]) {
-    //Util.log('EagleNode.lookup(', ...arguments, ')');
+    //console.log('EagleNode.lookup(', ...arguments, ')');
     xpath = new ImmutableXPath(xpath);
     let path = new ImmutablePath(xpath);
-    //Util.log('EagleNode.lookup  xpath:', xpath, ' path:', path);
+    //console.log('EagleNode.lookup  xpath:', xpath, ' path:', path);
     let value = path.apply(this.raw, true);
     let ret = t(this, path, value);
-    //Util.log('EagleNode.lookup =', toXML(ret, 1));
+    //console.log('EagleNode.lookup =', toXML(ret, 1));
     return ret;
   }
 
@@ -429,9 +421,9 @@ export class EagleNode {
   xpath() {
     const { ref, owner } = this;
     let x = ImmutableXPath.from(ref.path, ref.root);
-    /* Util.log('PATH', ref.path);
-    Util.log('ARRAY', [...x]);
-    Util.log('XPATH', x.toString());*/
+    /* console.log('PATH', ref.path);
+    console.log('ARRAY', [...x]);
+    console.log('XPATH', x.toString());*/
     return x;
   }
 

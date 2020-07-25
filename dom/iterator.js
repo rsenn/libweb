@@ -4,7 +4,7 @@ import Util from '../util.js';
 //void async function() {
 //let [clicks, onclick] = iterator()
 //document.querySelector('button').addEventListener('click', onclick)
-//for await (let click of clicks) Util.log(click)
+//for await (let click of clicks) console.log(click)
 //}()
 
 export function iterator() {

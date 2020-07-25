@@ -126,7 +126,7 @@ export class CSS {
 
     let keyList = [...props.keys()].filter(k => trblExpr.test(k) || cswExpr.test(k));
 
-    //Util.log("props:",Util.unique(keyList.filter(k => k.startsWith('border')).map(k => k.replace(/^border/, "").replace(trblExpr, ""))));
+    //console.log("props:",Util.unique(keyList.filter(k => k.startsWith('border')).map(k => k.replace(/^border/, "").replace(trblExpr, ""))));
     for(let key of keyList) {
     }
   }

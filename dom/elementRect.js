@@ -54,7 +54,7 @@ const propSetter = (prop, proxy) => value => {
   //proxy.changeRect(rect => { rect[prop] = value; return rect; })
   let r = proxy.getRect();
   r[prop] = value;
-  //Util.log('New rect: ', r);
+  //console.log('New rect: ', r);
   proxy.setRect(r);
 };
 

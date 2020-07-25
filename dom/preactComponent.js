@@ -79,11 +79,11 @@ export class ReactComponent {
         children = add(children, ...parent);
         parent = null;
       }
-      //Util.log('append', [tag, props, children]);
+      //console.log('append', [tag, props, children]);
       elem = h(tag, props, children);
     }
     if(parent) {
-      //Util.log("parent:",parent);
+      //console.log("parent:",parent);
       const { props } = parent;
       props.children = add(props.children, elem);
     }
@@ -113,9 +113,9 @@ export class ReactComponent {
       if(!children) children = arg.children;
 
       let a = this.toChildArray(children);
-      //Util.log('a:', a);
+      //console.log('a:', a);
       children = a.length > 0 ? this.toObject(...a) : [];
-      //Util.log('children:', children);
+      //console.log('children:', children);
       obj.children = Util.isArray(children) ? children : [children];
       if(innerHTML) obj.children.push(innerHTML);
       ret.push(obj);
@@ -184,7 +184,7 @@ export class ReactComponent {
     }
     if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
 
-    //Util.log('tagName:', tagName);
+    //console.log('tagName:', tagName);
 
     tagName += '';
 
@@ -204,7 +204,7 @@ export class ReactComponent {
     Object.assign(Util.getGlobalObject(), ecmascript);
     let parser = new ecmascript.ECMAScriptParser(jsx);
     let printer = new ecmascript.Printer();
-    //Util.log("parser", Util.getMethodNames(parser, 2, 1));
+    //console.log("parser", Util.getMethodNames(parser, 2, 1));
     let ast = parser.parseJSX();
     return printer.printNode(ast instanceof Array ? ast[0] : ast);
   }
