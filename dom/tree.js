@@ -1,4 +1,4 @@
-import Util from './lib/util.js';
+import Util from '../util.js';
 /**
  * DOM Tree
  * @param {[type]} root [description]

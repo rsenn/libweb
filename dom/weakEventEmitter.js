@@ -1,5 +1,5 @@
-import Util from './lib/util.js';
-'use strict';
+import Util from '../util.js';
+('use strict');
 
 var has = Object.prototype.hasOwnProperty,
   prefix = '~';

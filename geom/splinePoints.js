@@ -1,4 +1,4 @@
-import Util from './lib/util.js';
+import Util from '../util.js';
 function distance(a, b) {
   return distance3(a, b[0], b[1], b[2]);
 }

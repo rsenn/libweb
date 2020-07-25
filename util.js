@@ -179,18 +179,24 @@ Util.isDebug = function() {
 });*/
 Util.log = (...args) => {
   let location;
-
   if(args[0] instanceof Util.location) location = args.shift();
   else location = Util.getStackFrame().getLocation();
   let locationStr = location.toString(true);
-  args.unshift(locationStr);
-  let filters = Util.log.filters; // || [/.*/];
+  let c = locationStr[Symbol.for('nodejs.util.inspect.custom')]();
+  c.append([' ']);
+  let filters = Util.log.filters;
   let results = filters.map(f => f.test(locationStr));
-
-  if(!filters.every(f => !f.test(locationStr))) console.log(...args);
-
-  // console.log("results:",results);
+  if(filters.every(f => !f.test(locationStr))) return;
+  args = args.reduce((a, p) => {
+    if(Util.isObject(p) && p[Util.log.methodName]) p = p[Util.log.methodName]();
+    a.append([p]);
+    return a;
+  }, c);
+  args.toConsole();
 };
+
+Object.defineProperty(Util.log, 'methodName', { get: () => (Util.isBrowser() ? 'toConsole' : 'toAnsi256') });
+
 Util.log.filters = [/.*/];
 Util.log.setFilters = function(args) {
   this.filters = [...args].map(arg => (arg instanceof RegExp ? arg : new RegExp(arg)));
@@ -1162,7 +1168,7 @@ Util.isString = function(v) {
  */
 Util.isNumeric = v => /^[-+]?(0x|0b|0o|)[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test(v + '');
 
-Util.isObject = (...args) => args.every(obj => typeof obj === 'object' && obj !== null);
+Util.isObject = (obj, proto = null) => typeof obj === 'object' && obj !== null && (proto === null || Object.getPrototypeOf(obj) === proto);
 Util.isFunction = fn => !!(fn && fn.constructor && fn.call && fn.apply);
 Util.isArrowFunction = fn => (Util.isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
 
@@ -2350,21 +2356,31 @@ Util.location = function Location(...args) {
     const { fileName, lineNumber, columnNumber } = args.shift();
     Object.assign(ret, { fileName, lineNumber, columnNumber });
   }
+  if(Util.colorCtor) ret.colorCtor = Util.colorCtor;
+
   return ret;
 };
 Util.define(Util.location.prototype, {
   toString(color = false) {
     let { fileName, columnNumber, lineNumber } = this;
     fileName = fileName.replace(new RegExp(Util.getURL() + '/', 'g'), '');
-    const c = color ? (t, ...num) => `\x1b[${num.join(';')}m${t}` : t => t;
-    let a = [c(fileName, 1, 33), c(lineNumber, 1, 36), c(columnNumber, 1, 36)];
-    return a.join(c(':', 1, 35)) + c(':', 0);
+    let text = color ? new this.colorCtor() : '';
+
+    const c = color ? (t, color) => text.write(t, color /*, [0, 0, 0]*/) : t => (text += t);
+
+    c(fileName, [128, 128, 0]);
+    c(':', [255, 0, 255]);
+
+    c(lineNumber, [0, 255, 255]);
+    c(':', [255, 0, 255]);
+    c(columnNumber, [0, 255, 255]);
+    return text;
   },
   [Symbol.toStringTag]() {
     return Util.location.prototype.toString.call(this, false);
   },
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    return Util.location.prototype.toString.call(this, true);
+    return Util.location.prototype.toString.call(this, !Util.isBrowser());
   },
   getFileName() {
     return this.fileName;
@@ -2382,6 +2398,8 @@ Util.stackFrame = function StackFrame(frame) {
     let fn = 'get' + Util.ucfirst(prop);
     if(frame[prop] === undefined && typeof frame[fn] == 'function') frame[prop] = frame[fn]();
   });
+  if(Util.colorCtor) frame.colorCtor = Util.colorCtor;
+
   return Object.setPrototypeOf(frame, Util.stackFrame.prototype);
 };
 Util.define(Util.stackFrame.prototype, {
@@ -2406,27 +2424,28 @@ Util.define(Util.stackFrame.prototype, {
 });
 
 Util.define(Util.stackFrame.prototype, {
+  colorCtor: null,
   get() {
     const { fileName, columnNumber, lineNumber } = this;
     return fileName ? `${fileName}:${lineNumber}:${columnNumber}` : null;
   },
-  toString(color = true, columnWidths = [0, 0, 0, 0]) {
+  toString(color, columnWidths = [0, 0, 0, 0]) {
     // console.log('toString', { color });
-
-    const c = color ? (t, ...num) => `\x1b[${num.join(';')}m${t}` : t => t;
+    let text = color ? new this.colorCtor() : '';
+    const c = color ? (t, color) => text.write(t, color) : t => (text += t);
     let fields = ['functionName', 'fileName', 'lineNumber', 'columnNumber'];
     const colors = [
-      [1, 32],
-      [1, 33],
-      [1, 36],
-      [1, 36]
+      [0, 255, 0],
+      [255, 255, 0],
+      [0, 255, 255],
+      [0, 255, 255]
     ];
 
     //const { functionName, fileName, columnNumber, lineNumber } = this;
     let columns = fields.map(fn => this[fn]);
 
     columns = columns.map((f, i) => (f + '')[i >= 2 ? 'padStart' : 'padEnd'](columnWidths[i] || 0, ' '));
-    columns = columns.map((fn, i) => c(fn, ...colors[i]));
+    columns = columns.map((fn, i) => c(fn, colors[i]));
     const [functionName, fileName, lineNumber, columnNumber] = columns;
 
     return `${functionName} ${fileName}:${lineNumber}:${columnNumber}` + c('', 0);
@@ -2516,7 +2535,7 @@ Util.stack.prototype = Object.assign(Util.stack.prototype, {
   [Symbol.for('nodejs.util.inspect.custom')](...args) {
     //const fields = ['functionName','fileName','lineNumber','columnNumber'];
     //this.columnWidths = this.reduce((a,f) => fields.slice(0,1).map((fn,i) => Math.max(a[i],(f[fn]+'').length)), [0,0,0,0]);
-    return '\n' + this.map(f => f.toString(true, this.columnWidths)).join('\n');
+    return '\n' + this.map(f => f.toString(!Util.isBrowser(), this.columnWidths)).join('\n');
   }
 });
 

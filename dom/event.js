@@ -1,4 +1,4 @@
-import Util from './lib/util.js';
+import Util from '../util.js';
 export const Event = {
   simulateKey(keyCode, type, modifiers, target = window) {
     var evtName = typeof type === 'string' ? 'key' + type : 'keydown';

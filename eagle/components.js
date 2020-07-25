@@ -1,4 +1,4 @@
-import Util from './lib/util.js';
+import Util from '../util.js';
 import { h, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../dom/preactComponent.js';
 import { Point, Line } from '../geom.js';
 import { MakeCoordTransformer } from './renderUtils.js';

@@ -1,4 +1,4 @@
-import Util from './lib/util.js';
+import Util from '../util.js';
 export class DotPath extends Array {
   constructor(path) {
     super();

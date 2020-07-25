@@ -1,4 +1,4 @@
-import Util from './lib/util.js';
+import Util from '../util.js';
 import { Point, Rect, Line, BBox } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
 import { RGBA } from '../color/rgba.js';

@@ -1,4 +1,4 @@
-import Util from './lib/util.js';
+import Util from '../util.js';
 import { Graph } from './graph.js';
 import { Intersection } from './intersection.js';
 

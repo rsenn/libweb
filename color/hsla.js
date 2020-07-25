@@ -199,7 +199,10 @@ HSLA.prototype.compareTo = function(other) {
   let d = HSLA.prototype.binaryValue.call(other) - HSLA.prototype.binaryValue.call(this);
   return d < 0 ? -1 : d > 0 ? 1 : 0;
 };
-
+HSLA.prototype.toAnsi256 = function() {
+  const rgba = HSLA.prototype.toRGBA.call(this);
+  return RGBA.prototype.toAnsi256.call(rgba);
+};
 HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
   const { h, s, l, a } = this;
   let arr = !isNaN(a) ? [h, s, l, a] : [h, s, l];
