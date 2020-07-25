@@ -1,4 +1,14 @@
-const formatAnnotatedObject = function(subject, o) {
+/**
+ * Class for utility.
+ *
+ * @class      Util (name)
+ */
+export function Util(g) {
+  Util.assignGlobal(g);
+  //if(g) Util.globalObject = g;
+}
+
+Util.formatAnnotatedObject = function(subject, o) {
   const { indent = '  ', spacing = ' ', separator = ',', newline = '\n', maxlen = 30, depth = 1 } = o;
   const i = indent.repeat(Math.abs(1 - depth));
   let nl = newline != '' ? newline + i : spacing;
@@ -11,7 +21,7 @@ const formatAnnotatedObject = function(subject, o) {
   if(typeof subject == 'string') return `'${subject}'`;
   if(typeof subject == 'number') return subject;
   if(subject != null && subject['y2'] !== undefined) return `rect[${spacing}${subject['x']}${separator}${subject['y']} | ${subject['x2']}${separator}${subject['y2']} (${subject['w']}x${subject['h']}) ]`;
-  if(Util.isObject(subject) && 'map' in subject && typeof subject.map == 'function') return `[${nl}${subject.map(i => formatAnnotatedObject(i, opts)).join(separator + nl)}]`;
+  if(Util.isObject(subject) && 'map' in subject && typeof subject.map == 'function') return `[${nl}${subject.map(i => Util.formatAnnotatedObject(i, opts)).join(separator + nl)}]`;
   if(typeof subject === 'string' || subject instanceof String) return `'${subject}'`;
   let longest = '';
   let r = [];
@@ -31,14 +41,14 @@ const formatAnnotatedObject = function(subject, o) {
       s = 'null';
     } else if(subject[k] && subject[k].length !== undefined) {
       try {
-        s = depth <= 0 ? `Array(${subject[k].length})` : `[ ${subject[k].map(item => formatAnnotatedObject(item, opts)).join(', ')} ]`;
+        s = depth <= 0 ? `Array(${subject[k].length})` : `[ ${subject[k].map(item => Util.formatAnnotatedObject(item, opts)).join(', ')} ]`;
       } catch(err) {
         s = `[${subject[k]}]`;
       }
     } else if(subject[k] && subject[k].toSource !== undefined) {
       s = subject[k].toSource();
     } else if(opts.depth >= 0) {
-      s = s.length > maxlen ? `[Object ${Util.objName(subject[k])}]` : formatAnnotatedObject(subject[k], opts);
+      s = s.length > maxlen ? `[Object ${Util.objName(subject[k])}]` : Util.formatAnnotatedObject(subject[k], opts);
     }
     r.push([k, s]);
   }
@@ -51,17 +61,6 @@ const formatAnnotatedObject = function(subject, o) {
   let ret = '{' + opts.newline + r.map(arr => padding(arr[0]) + arr[0] + ':' + spacing + arr[1]).join(j) + opts.newline + i + '}';
   return ret;
 };
-
-/**
- * Class for utility.
- *
- * @class      Util (name)
- */
-export function Util(g) {
-  Util.assignGlobal(g);
-  //if(g) Util.globalObject = g;
-}
-
 Util.curry = (fn, arity) => {
   if(arity == null) arity = fn.length;
   let ret = function curried(...args) {
@@ -70,11 +69,34 @@ Util.curry = (fn, arity) => {
 
     let n = arity - args.length;
     let a = Array.from({ length: n }, (v, i) => String.fromCharCode(65 + i));
-    let Curried = (...a) => curried.apply(thisObj, a); //;
-    return [() => Curried(...args), a => Curried(...args, a), (a, b) => Curried(...args, a, b), (a, b, c) => r(...args, a, b, c), (a, b, c, d) => Curried(...args, a, b, c, d)][n];
+    let Curried = function(...a) {
+      return curried.apply(thisObj, a);
+    }; //;
+    return [
+      function() {
+        return Curried(...args);
+      },
+      function(a) {
+        return Curried(...args, a);
+      },
+      function(a, b) {
+        return Curried(...args, a, b);
+      },
+      function(a, b, c) {
+        return r(...args, a, b, c);
+      },
+      function(a, b, c, d) {
+        return Curried(...args, a, b, c, d);
+      }
+    ][n];
     return new Function(...a, `const { curried,thisObj,args} = this; return curried.apply(thisObj, args.concat([${a.join(',')}]))`).bind({ args, thisObj, curried });
   };
-  Object.defineProperty(ret, 'length', { value: arity, configurable: true, writable: true, enumerable: false });
+  Object.defineProperty(ret, 'length', {
+    value: arity,
+    configurable: true,
+    writable: true,
+    enumerable: false
+  });
   return ret;
 };
 Util.arityN = (fn, n) => {
@@ -195,7 +217,9 @@ Util.log = (...args) => {
   args.toConsole();
 };
 
-Object.defineProperty(Util.log, 'methodName', { get: () => (Util.isBrowser() ? 'toConsole' : 'toAnsi256') });
+Object.defineProperty(Util.log, 'methodName', {
+  get: () => (Util.isBrowser() ? 'toConsole' : 'toAnsi256')
+});
 
 Util.log.filters = [/.*/];
 Util.log.setFilters = function(args) {
@@ -398,7 +422,7 @@ Util.get = Util.curry((obj, prop) => (obj instanceof Map ? obj.get(prop) : obj[p
 Util.inspect = (obj, opts = false) => {
   const { indent = '  ', newline = '\n', depth = 2, spacing = ' ' } = typeof opts == 'object' ? opts : { indent: '', newline: '', depth: typeof opts == 'number' ? opts : 10, spacing: ' ' };
 
-  return formatAnnotatedObject(obj, { indent, newline, depth, spacing });
+  return Util.formatAnnotatedObject(obj, { indent, newline, depth, spacing });
 };
 Util.bitArrayToNumbers = function(arr) {
   let numbers = [];
@@ -1171,7 +1195,7 @@ Util.isNumeric = v => /^[-+]?(0x|0b|0o|)[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test
 Util.isObject = (obj, proto = null) => typeof obj === 'object' && obj !== null && (proto === null || Object.getPrototypeOf(obj) === proto);
 Util.isFunction = fn => !!(fn && fn.constructor && fn.call && fn.apply);
 
-Util.isAsync  = fn => typeof(fn) == 'function' &&  (/async/.test(fn+'') /*|| fn() instanceof Promise*/);
+Util.isAsync = fn => typeof fn == 'function' && /async/.test(fn + '') /*|| fn() instanceof Promise*/;
 
 Util.isArrowFunction = fn => (Util.isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
 
@@ -1619,38 +1643,41 @@ Util.tryFunction = (fn, resolve = a => a, reject = () => null) => {
     var cval = reject;
     reject = () => cval;
   }
-  return Util.isAsync(fn) ? async function(...args) {
-    let ret;
-    try {
-      ret = await fn(...args);
-    } catch(err) {
-      return  reject(err, ...args);
-    }
-    return  resolve(ret, ...args);
-  } : function(...args) {
-    let ret;
-    try {
-      ret = fn(...args);
-    } catch(err) {
-      return reject(err, ...args);
-    }
-    return resolve(ret, ...args);
-  };
+  return Util.isAsync(fn)
+    ? async function(...args) {
+        let ret;
+        try {
+          ret = await fn(...args);
+        } catch(err) {
+          return reject(err, ...args);
+        }
+        return resolve(ret, ...args);
+      }
+    : function(...args) {
+        let ret;
+        try {
+          ret = fn(...args);
+        } catch(err) {
+          return reject(err, ...args);
+        }
+        return resolve(ret, ...args);
+      };
 };
 Util.tryCatch = (fn, resolve = a => a, reject = () => null, ...args) => Util.tryFunction(fn, resolve, reject)(...args);
+Util.putError = err => {
+  let s = Util.stack(err.stack);
 
-Util.trap = fn => Util.tryFunction(
-   fn,
-    ret => ret,
-    error => {
-    console.error('error:', error+'');
-    console.error('stack:', [...error.stack].map(f => (f + '').replace(Util.getURL() + '/', '')).join('\n'));
-/*     consterror message, stack } = error;
+  let e = Util.exception(err);
 
-      console['error']('ERROR:', message, '\nstack:\n' + stack.map(f => f + ''));*/
-      //return error;
-    }
-  );
+  console['error']('ERROR:', e.message, '\nstack:\n', s.toString());
+};
+
+Util.trap = (() => {
+  Error.stackTraceLimit = 100;
+  return fn => /* prettier-ignore */ {
+    return Util.tryFunction(fn, ret => ret, Util.putError);
+  };
+})();
 
 Util.tryPredicate = (fn, defaultRet) =>
   Util.tryFunction(
@@ -2221,6 +2248,90 @@ Util.insertSorted = function(arr, item, cmp = (a, b) => b - a) {
   i < len ? arr.splice(i, 0, item) : arr.push(item);
   return i;
 };
+Util.inserter = (dest, next = (k, v) => {}) => {
+  // if(typeof dest == 'function' && dest.map !== undefined) dest = dest.map;
+
+  const insert =
+    /*dest instanceof Map ||
+    dest instanceof WeakMap ||*/
+    typeof dest.set == 'function' && dest.set.length >= 2 ? (k, v) => dest.set(k, v) : Util.isArray(dest) ? (k, v) => dest.push([k, v]) : (k, v) => (dest[k] = v);
+  let fn;
+  fn = function(key, value) {
+    insert(key, value);
+    next(key, value);
+    return fn;
+  };
+  fn.dest = dest;
+  fn.insert = insert;
+  return fn;
+};
+
+Util.mapAdapter = getSetFunction => {
+  let r = {
+    get(key) {
+      return getSetFunction(key);
+    },
+    set(key, value) {
+      getSetFunction(key, value);
+      return this;
+    }
+  };
+  return Util.mapFunction(r);
+};
+
+/**
+ * @param Array   forward
+ * @param Array   backward
+ *
+ * component2path,  path2eagle  => component2eagle
+ *  eagle2path, path2component =>
+ */
+Util.mapFunction = map => {
+  let fn;
+  fn = function(key, value) {
+    if(value === undefined) return fn.get(key);
+    else return fn.set(key, value);
+  };
+
+  fn.map = map;
+  fn.set = (key, value) => (map.set(key, value), (k, v) => fn(k, v));
+  fn.get = key => map.get(key);
+
+  if(typeof map.keys == 'function') fn.keys = () => map.keys();
+  if(typeof map.has == 'function') fn.has = key => map.has(key);
+  return fn;
+};
+
+Util.mapWrapper = (map, toKey = key => key, fromKey = key => key) => {
+  let fn = Util.mapFunction(map);
+  fn.set = (key, value) => (map.set(toKey(key), value), (k, v) => fn(k, v));
+  fn.get = key => map.get(toKey(key));
+  if(typeof map.keys == 'function') fn.keys = () => [...map.keys()].map(fromKey);
+  if(typeof map.has == 'function') fn.has = key => map.has(toKey(key));
+  return fn;
+};
+
+/**
+ * @param Array   forward
+ * @param Array   backward
+ *
+ * component2path,  path2eagle  => component2eagle
+ *  eagle2path, path2component =>
+ */
+Util.mapCombinator = (forward, backward) => {
+  let fn;
+  fn = function(key, value) {
+    if(value === undefined) return fn.get(key);
+    else return fn.set(key, value);
+  };
+  /* prettier-ignore */
+  fn.get=  forward.reduceRight((a,m) => makeGetter(m, key => a(key)), a => a);
+  return fn;
+  function makeGetter(map, next = a => a) {
+    return key => (false && console.log('getter', { map, key }), next(map.get(key)));
+  }
+};
+
 Util.predicate = fn_or_regex => {
   let fn;
   if(fn_or_regex instanceof RegExp) fn = (...args) => fn_or_regex.test(args + '');
@@ -2380,30 +2491,33 @@ Stack:${Util.stack.prototype.toString.call(stack, color, stack.columnWidths)}`;
 Util.location = function Location(...args) {
   let ret = this instanceof Util.location ? this : Object.setPrototypeOf({}, Util.location.prototype);
   if(args.length == 3) {
-    const [fileName, lineNumber, columnNumber] = args;
-    Object.assign(ret, { fileName, lineNumber, columnNumber });
+    const [fileName, lineNumber, columnNumber, functionName] = args;
+    Object.assign(ret, { fileName, lineNumber, columnNumber, functionName });
   } else if(args.length == 1 && args[0].fileName !== undefined) {
-    const { fileName, lineNumber, columnNumber } = args.shift();
-    Object.assign(ret, { fileName, lineNumber, columnNumber });
+    const { fileName, lineNumber, columnNumber, functionName } = args.shift();
+    Object.assign(ret, { fileName, lineNumber, columnNumber, functionName });
   }
   if(Util.colorCtor) ret.colorCtor = Util.colorCtor;
 
   return ret;
 };
+
+// prettier-ignore
+Util.location.palettes = [[[128, 128, 0], [255, 0, 255], [0, 255, 255] ], [[9, 119, 18], [139, 0, 255], [0, 165, 255]]];
+
 Util.define(Util.location.prototype, {
   toString(color = false) {
-    let { fileName, columnNumber, lineNumber } = this;
+    let { fileName, lineNumber, columnNumber, functionName } = this;
     fileName = fileName.replace(new RegExp(Util.getURL() + '/', 'g'), '');
     let text = color ? new this.colorCtor() : '';
-
     const c = color ? (t, color) => text.write(t, color /*, [0, 0, 0]*/) : t => (text += t);
-
-    c(fileName, [128, 128, 0]);
-    c(':', [255, 0, 255]);
-
-    c(lineNumber, [0, 255, 255]);
-    c(':', [255, 0, 255]);
-    c(columnNumber, [0, 255, 255]);
+    const palette = Util.location.palettes[Util.isBrowser() ? 1 : 0];
+    c(fileName, palette[0]);
+    c(':', palette[1]);
+    c(lineNumber, palette[2]);
+    c(':', palette[1]);
+    c(columnNumber, palette[2]);
+    if(functionName) c(' ' + functionName.replace(/\s*\[.*/g, '').replace(/^Function\./, ''), palette[1]);
     return text;
   },
   [Symbol.toStringTag]() {
@@ -2460,7 +2574,6 @@ Util.define(Util.stackFrame.prototype, {
     return fileName ? `${fileName}:${lineNumber}:${columnNumber}` : null;
   },
   toString(color, columnWidths = [0, 0, 0, 0]) {
-    // console.log('toString', { color });
     let text = color ? new this.colorCtor() : '';
     const c = color ? (t, color) => text.write(t, color) : t => (text += t);
     let fields = ['functionName', 'fileName', 'lineNumber', 'columnNumber'];
@@ -2475,8 +2588,10 @@ Util.define(Util.stackFrame.prototype, {
     let columns = fields.map(fn => this[fn]);
 
     columns = columns.map((f, i) => (f + '')[i >= 2 ? 'padStart' : 'padEnd'](columnWidths[i] || 0, ' '));
-    columns = columns.map((fn, i) => c(fn, colors[i]));
+    // columns = columns.map((fn, i) => c(fn, colors[i]));
+
     const [functionName, fileName, lineNumber, columnNumber] = columns;
+    //console.log('stackFrame.toString', { color ,columnWidths, functionName, fileName, lineNumber, columnNumber});
 
     return `${functionName} ${fileName}:${lineNumber}:${columnNumber}` + c('', 0);
   },
@@ -2535,8 +2650,18 @@ Util.stack = function Stack(stack) {
         .map(n => (!isNaN(+n) ? +n : n))
     ]);
     stack = stack.map(([func, file]) => [func, file.length >= 3 ? file : ['', '', ...file]]);
-    stack = stack.map(([func, [columnNumber, lineNumber, ...file]]) => ({ functionName: func, fileName: file.reverse().join(':'), lineNumber, columnNumber }));
-    stack = stack.map(({ functionName: func, fileName: file, columnNumber: column, lineNumber: line }) => ({ functionName: func, fileName: file.replace(new RegExp(Util.getURL() + '/', 'g'), ''), lineNumber: line, columnNumber: column }));
+    stack = stack.map(([func, [columnNumber, lineNumber, ...file]]) => ({
+      functionName: func,
+      fileName: file.reverse().join(':'),
+      lineNumber,
+      columnNumber
+    }));
+    stack = stack.map(({ functionName: func, fileName: file, columnNumber: column, lineNumber: line }) => ({
+      functionName: func,
+      fileName: file.replace(new RegExp(Util.getURL() + '/', 'g'), ''),
+      lineNumber: line,
+      columnNumber: column
+    }));
   } else {
     stack = Util.getCallers(2, Number.MAX_SAFE_INTEGER, () => true, stack);
   }
@@ -2554,8 +2679,8 @@ Object.defineProperty(Util.stack, Symbol.species, { get: () => Util.stack });
 
 Util.stack.prototype = Object.assign(Util.stack.prototype, {
   toString(color = false) {
-    let a = [...this].map(frame => Util.stackFrame.prototype.toString.call(frame, color, this.columnWidths));
-
+    let columns = this.columnWidths;
+    let a = [...this].map(frame => Util.stackFrame.prototype.toString.call(frame, color, columns));
     let s = a.join('\n');
     return s + '\n';
   },
@@ -3009,6 +3134,44 @@ Util.proxyTree = function proxyTree(...callbacks) {
   return node([]);
 };
 
+/*
+ * Calls a constructor with an arbitrary number of arguments.
+ *
+ * This idea was borrowed from a StackOverflow answer:
+ * http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible/1608546#1608546
+ *
+ * And from this MDN doc:
+ * https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/function/apply
+ *
+ * @param constructor- Constructor to call
+ * @param arguments- any number of arguments
+ * @return A 'new' instance of the constructor with the arguments passed
+ */
+Util.construct = constructor => {
+  function F(args) {
+    return constructor.apply(this, args);
+  }
+
+  F.prototype = constructor.prototype;
+
+  // since arguments isn't a first-class array, we'll use a shim
+  // Big thanks to Felix Geisendörfer for the idea:
+  // http://debuggable.com/posts/turning-javascript-s-arguments-object-into-an-array:4ac50ef8-3bd0-4a2d-8c2e-535ccbdd56cb
+  return new F(Array.prototype.slice.call(arguments, 1));
+};
+
+/*
+ * Calls construct() with a constructor and an array of arguments.
+ *
+ * @param constructor- Constructor to call
+ * @param array- an array of arguments to apply
+ * @return A 'new' instance of the constructor with the arguments passed
+ */
+Util.constructApply = (constructor, array) => {
+  var args = [].slice.call(array);
+  return construct.apply(null, [constructor].concat(args));
+};
+
 Util.immutable = args => {
   const argsType = typeof args === 'object' && Util.isArray(args) ? 'array' : 'object';
   const errorText = argsType === 'array' ? "Error! You can't change elements of this array" : "Error! You can't change properties of this object";
@@ -3037,33 +3200,23 @@ Util.immutableClass = (orig, ...proto) => {
         }
   );
   let body = ` class ${imName} extends ${name} {
+  constructor(...args) {
+    super(...args);
+    //this.constructor = ${imName};
+    //this[Symbol.species] = ${imName}[Symbol.species] || ${imName};
+    if(new.target === ${imName})
+      return Object.freeze(this);
+  }
+};
 
-    constructor(...args) { super(...args); if(new.target === ${imName}) return Object.freeze(this); }
-  };
+${imName}.prototype.constructor = ${imName};
 
-  ${imName}.prototype.constructor = ${imName};
-
-  //${imName}[Symbol.species] = ${imName};
-
-   /* ${imName}[Symbol.hasInstance] = function(instance) {
-          //console.log("name2:",n, instance,r);
-      const n = Util.className(instance);
-      const fn = Util.fnName(this);
-      const r =  ["${name}","Immutable${name}", "${imName}",fn].indexOf(n);
-      return r!=-1;
-    }; */
-  return ${imName};`;
-  //console.log('immutableClass', { initialProto},  (orig));
-
+return ${imName};`;
   for(let p of initialProto) p(orig);
-
   let ctor = new Function(name, body)(orig);
-
-  //ctor[Symbol.species] = ctor;
-  Util.defineGetter(ctor, Symbol.species, function() {
-    return ctor;
-  });
-
+  //console.log('immutableClass', { initialProto, body }, orig);
+  let species = ctor;
+  /* prettier-ignore */ Util.defineGetterSetter(ctor, Symbol.species, function() {return species; }, function(value) {species = value; });
   return ctor;
 };
 

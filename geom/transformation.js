@@ -140,6 +140,8 @@ Object.defineProperty(Transformation, Symbol.hasInstance, {
   }
 });
 
+export const ImmutableTransformation = Util.immutableClass(Transformation);
+
 export class Rotation extends Transformation {
   angle = 0;
   //axis = undefined;
@@ -211,6 +213,8 @@ export class Rotation extends Transformation {
   }
 }
 
+export const ImmutableRotation = Util.immutableClass(Rotation);
+
 export class Translation extends Transformation {
   x = 0;
   y = 0;
@@ -261,6 +265,8 @@ export class Translation extends Transformation {
     return new Translation(this.x + other.x, this.y + other.y);
   }
 }
+
+export const ImmutableTranslation = Util.immutableClass(Translation);
 
 export class Scaling extends Transformation {
   x = 1;
@@ -313,6 +319,8 @@ export class Scaling extends Transformation {
   }
 }
 
+export const ImmutableScaling = Util.immutableClass(Scaling);
+
 export class MatrixTransformation extends Transformation {
   matrix = Matrix.IDENTITY;
 
@@ -350,6 +358,8 @@ export class MatrixTransformation extends Transformation {
     return new MatrixTransformation(this.matrix.multiply(other.matrix));
   }
 }
+
+export const ImmutableMatrixTransformation = Util.immutableClass(MatrixTransformation);
 
 export class TransformationList extends Array {
   constructor(init, ...rest) {
@@ -648,3 +658,8 @@ Util.inherit(
 );
 
 //Object.setPrototypeOf(TransformationList.prototype, Transformation.prototype);
+
+export const ImmutableTransformationList = Util.immutableClass(TransformationList);
+Util.defineGetter(ImmutableTransformationList, Symbol.species, function() {
+  return ImmutableTransformationList;
+});

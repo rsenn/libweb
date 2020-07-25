@@ -3,7 +3,7 @@ import Util from '../util.js';
 import deep from '../deep.js';
 import deepDiff from '../deep-diff.js';
 import { EagleRef } from './ref.js';
-import { toXML, ImmutablePath } from '../json.js';
+import { ImmutablePath } from '../json.js';
 import { EagleNode } from './node.js';
 import { EagleElement } from './element.js';
 import { BBox, Rect, PointList } from '../geom.js';
@@ -18,7 +18,7 @@ export class EagleDocument extends EagleNode {
   xml = null;
   file = null;
   type = null;
-  mapper = null;
+  elementMapper = Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw));
 
   static get [Symbol.species]() {
     return EagleElement;
@@ -33,7 +33,22 @@ export class EagleDocument extends EagleNode {
 
     super(project, EagleRef(xmlObj, []), xmlObj);
 
-    this.mapper = new PathMapper(xmlObj, ImmutablePath);
+    this.pathMapper = new PathMapper(xmlObj, ImmutablePath);
+
+    const { pathMapper, elementMapper } = this;
+
+    const [obj2path, path2obj] = pathMapper.maps.map(Util.mapFunction);
+    const [obj2eagle, path2eagle] = [Util.mapFunction(elementMapper), Util.mapAdapter((key, value) => (value === undefined ? this.lookup(key) : undefined))];
+    const [eagle2path, eagle2obj] = [Util.mapAdapter((key, value) => (value === undefined ? key.path : undefined)), Util.mapAdapter((key, value) => (value === undefined ? key.raw : undefined))];
+
+    this.maps = {
+      eagle2obj,
+      eagle2path,
+      obj2eagle,
+      obj2path,
+      path2eagle,
+      path2obj
+    };
 
     type = type || /<library>/.test(xmlStr) ? 'lbr' : /<element\ /.test(xmlStr) ? 'brd' : 'sch';
     if(filename) {
@@ -203,11 +218,16 @@ export class EagleDocument extends EagleNode {
     return bb;
   }
 
-  getMeasures() {
+  getMeasures(geometry = false) {
     //Util.log("this.type", this.type);
+
     let bounds = this.getBounds();
     let values = [...bounds.getObjects().values()];
+
     let measures = values.filter(obj => obj.layer && obj.layer.name == 'Measures');
+
+    if(geometry) measures = measures.map(e => e.geometry());
+
     return measures.length > 0 ? measures : null;
   }
 }

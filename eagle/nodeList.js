@@ -1,6 +1,5 @@
 import { EagleRef } from './ref.js';
 import { EagleElement } from './element.js';
-import { ImmutablePath } from '../json.js';
 import Util from '../util.js';
 
 export class EagleNodeList {
@@ -113,7 +112,11 @@ export class EagleNodeList {
         }
         if(prop == 'instance') return instance;
         if(typeof EagleNodeList.prototype[prop] == 'function') return EagleNodeList.prototype[prop] /*.bind(instance)*/;
+
+        if(prop == 'path') return instance.ref.path;
+
         if(instance[prop] !== undefined) return instance[prop];
+
         let list = instance && instance.ref ? instance.ref.dereference() : null;
         if(prop == 'find')
           return name => {

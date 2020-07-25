@@ -1,4 +1,5 @@
 import { Line } from './line.js';
+import { BBox } from './bbox.js';
 import Util from '../util.js';
 
 export class LineList extends Array {
@@ -12,6 +13,12 @@ export class LineList extends Array {
       }
     }
   }
+
+  bbox() {
+    let bb = new BBox();
+    for(let line of this) bb.update(Line.prototype.toObject.call(line));
+    return bb;
+  }
 }
 
 if(!Util.isBrowser()) {
@@ -21,3 +28,12 @@ if(!Util.isBrowser()) {
     return `${c.text('LineList', 1, 31)}${c.text('(', 1, 36)}${c.text(this.length, 1, 35) + c.code(1, 36)}) [\n  ${this.map(line => line[sym]() /*({ x1, y1,x2,y2 }) => Util.toString({ x1,y1,x2, y2  }, { multiline: false, spacing: ' ' })*/).join(',\n  ')}\n${c.text(']', 1, 36)}`;
   };
 }
+
+Util.defineGetter(LineList, Symbol.species, function() {
+  return this;
+});
+
+export const ImmutableLineList = Util.immutableClass(LineList);
+Util.defineGetter(ImmutableLineList, Symbol.species, function() {
+  return ImmutableLineList;
+});

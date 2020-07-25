@@ -126,3 +126,11 @@ for(let name of ['null', 'isNaN', 'outset', 'toRect', 'toSource']) {
 export function isTRBL(obj) {
   return top in obj && right in obj && bottom in obj && left in obj;
 }
+
+Util.defineGetter(TRBL, Symbol.species, function() {
+  return this;
+});
+export const ImmutableTRBL = Util.immutableClass(TRBL);
+Util.defineGetter(ImmutableTRBL, Symbol.species, function() {
+  return ImmutableTRBL;
+});

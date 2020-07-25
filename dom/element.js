@@ -184,7 +184,7 @@ export class Element extends Node {
    */
   static attr(e, attrs_or_name) {
     const elem = typeof e === 'string' ? Element.find(e) : e;
-    console.log('Element.attr', { elem, attrs_or_name });
+    //console.log('Element.attr', { elem, attrs_or_name });
     if(!Util.isArray(attrs_or_name) && typeof attrs_or_name === 'object' && elem) {
       for(let key in attrs_or_name) {
         const name = Util.decamelize(key, '-');

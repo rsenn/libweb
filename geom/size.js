@@ -202,3 +202,12 @@ export const isSize = o => o && ((o.width !== undefined && o.height !== undefine
 for(let name of ['toCSS', 'isSquare', 'round', 'sum', 'add', 'diff', 'sub', 'prod', 'mul', 'quot', 'div']) {
   Size[name] = (size, ...args) => Size.prototype[name].call(size || new Size(size), ...args);
 }
+
+Util.defineGetter(Size, Symbol.species, function() {
+  return this;
+});
+
+export const ImmutableSize = Util.immutableClass(Size);
+Util.defineGetter(ImmutableSize, Symbol.species, function() {
+  return ImmutableSize;
+});

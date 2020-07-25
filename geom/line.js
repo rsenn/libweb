@@ -328,8 +328,9 @@ Line.prototype.toObject = function(t = num => num) {
   return obj;
 };
 Line.prototype.clone = function() {
+  const ctor = this.constructor[Symbol.species];
   const { x1, y1, x2, y2 } = this;
-  return new Line(x1, y1, x2, y2);
+  return new ctor(x1, y1, x2, y2);
 };
 
 Line.prototype.round = function(precision = 0.001, digits) {
@@ -408,3 +409,12 @@ Line.bind = (o, p, gen) => {
   let proxy = { a: Point.bind(o, [x1, y1], gen), b: Point.bind(o, [x2, y2], gen) };
   return Object.setPrototypeOf(proxy, Line.prototype);
 };
+
+Util.defineGetter(Line, Symbol.species, function() {
+  return this;
+});
+
+export const ImmutableLine = Util.immutableClass(Line);
+Util.defineGetter(ImmutableLine, Symbol.species, function() {
+  return ImmutableLine;
+});

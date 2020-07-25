@@ -17,49 +17,64 @@ export class EagleSVGRenderer {
   transform = new TransformationList();
 
   itemMap = new Map();
-  componentMap = new Map();
-  componentPath = new WeakMap();
+  path2component = null;
+  component2path = new WeakMap();
 
-  setItem(path, item) {
+  /*setItem(path, item) {
     const { itemMap } = this;
     itemMap.set(path + '', item);
   }
 
   setComponent(path, component) {
-    const { componentMap, componentPath } = this;
-    componentMap.set(path + '', component);
-    componentPath.set(component, path);
+    const { path2component, component2path } = this;
+    path2component.set(path + '', component);
+    component2path.set(component, path);
   }
 
   getItem(path) {
     const { doc } = this;
-    if(Util.isObject(path) && path.type !== undefined) path = this.componentPath.get(path);
+    if(Util.isObject(path) && path.type !== undefined) path = this.component2path.get(path);
     return doc.mapper.get(path);
   }
 
   getComponent(path) {
-    const { componentMap } = this;
+    const { path2component } = this;
     if(Util.isObject(path) && path.path !== undefined) path = path.path;
 
-    return componentMap.get(path + '');
+    return path2component.get(path + '');
   }
-
+*/
   constructor(doc, factory) {
     if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
     //let ctor = EagleSVGRenderer.rendererTypes[doc.type];
     //Object.setPrototypeOf(this, ctor.prototype);
     this.doc = doc;
     let renderer = this;
+
+    this.path2component = Util.mapWrapper(
+      new Map(),
+      path => (Util.isObject(path) && path.path !== undefined ? path.path : path) + '',
+      key => new ImmutablePath(key)
+    );
+
+    const insertCtoP = Util.inserter(this.component2path);
+    const insert = Util.inserter(this.path2component, (k, v) => insertCtoP(v, k));
+
     this.create = function(tag, attrs, parent, element) {
       let ret = factory(tag, attrs, parent);
       let path = attrs['data-path'];
       if(path && !element) element = EagleElement.get(doc, attrs['data-path']);
       if(!element) element = EagleElement.currentElement;
       if(!path && element) path = element.path;
-      if(element) renderer.setItem(path, element);
-      renderer.setComponent(path, ret);
+      // if(element) renderer.setItem(path, element);
+      if(path) insert(path, ret);
       return ret;
     };
+  }
+
+  get maps() {
+    const { path2component, component2path } = this;
+    return [path2component, component2path];
   }
 
   pushTransform(transform) {

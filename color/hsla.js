@@ -1,4 +1,4 @@
-import { RGBA } from './rgba.js';
+import { RGBA, ImmutableRGBA } from './rgba.js';
 import Util from '../util.js';
 
 /**
@@ -57,6 +57,11 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
 
 HSLA.prototype.properties = ['h', 's', 'l', 'a'];
 
+HSLA.prototype.clone = function() {
+  const ctor = this.constructor[Symbol.species];
+  const { h, s, l, a } = this;
+  return new ctor(h, s, l, a);
+};
 //export const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(prop));
 
 HSLA.prototype.css = function() {
@@ -76,10 +81,13 @@ HSLA.prototype.clamp = function() {
   return this;
 };
 HSLA.prototype.round = function() {
-  this.h = Math.round(this.h);
-  this.s = Math.round(this.s);
-  this.l = Math.round(this.l);
-  this.a = Math.round(this.a);
+  const { h, s, l, a } = this;
+  let x = [h, s, l, a].map(n => Math.round(n));
+  if(Object.isFrozen(this)) return new HSLA(...x);
+  this.h = x[0];
+  this.s = x[1];
+  this.l = x[2];
+  this.a = x[3];
   return this;
 };
 HSLA.prototype.add = function(h, s = 0, l = 0, a = 0) {
@@ -144,7 +152,7 @@ HSLA.prototype.toRGBA = function() {
   b = Math.round((b + m) * 255);
   a = Math.round(a * 255);
 
-  return new RGBA(r, g, b, a);
+  return new (Object.isFrozen(this) ? ImmutableRGBA : RGBA)(r, g, b, a);
 };
 
 HSLA.prototype.toString = function() {
@@ -220,3 +228,11 @@ for(let name of ['css', 'toHSL', 'clamp', 'round', 'hex', 'toRGBA', 'toString'])
 }
 
 export const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(prop));
+
+Util.defineGetter(HSLA, Symbol.species, function() {
+  return this;
+});
+export const ImmutableHSLA = Util.immutableClass(HSLA);
+Util.defineGetter(ImmutableHSLA, Symbol.species, function() {
+  return ImmutableHSLA;
+});

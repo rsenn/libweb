@@ -39,17 +39,13 @@ PointList.prototype.rotateRight = function(n) {
   return this;
 };
 PointList.prototype.push = function(...args) {
-  for(let arg of args) {
-    if(!(arg instanceof Point)) arg = new Point(arg);
-    Array.prototype.push.call(this, arg);
-  }
+  while(args.length > 0) Array.prototype.push.call(this, new Point(args));
   return this;
 };
 PointList.prototype.unshift = function(...args) {
-  for(let arg of args.reverse()) {
-    if(!(arg instanceof Point)) arg = new Point(arg);
-    Array.prototype.unshift.call(this, arg);
-  }
+  let points = [];
+  while(args.length > 0) points.push(new Point(args));
+  Array.prototype.splice.call(this, 0, 0, ...points);
   return this;
 };
 PointList.prototype.length = 0;
@@ -92,9 +88,9 @@ PointList.prototype.toPath = function(options = {}) {
   return out;
 };
 PointList.prototype.clone = function() {
-  let ret = new PointList();
-  ret.splice.apply(ret, [0, ret.length, ...PointList.prototype.map.call(this, p => new Point(p.x, p.y))]);
-  return ret;
+  const ctor = this.constructor[Symbol.species];
+  let points = PointList.prototype.map.call(this, p => Point.prototype.clone.call(p));
+  return new ctor(points);
 };
 PointList.prototype.toPolar = function(tfn) {
   let ret = new PointList();
@@ -346,3 +342,12 @@ Polyline.prototype = new PointList();
 Polyline.prototype.toSVG = function(factory, attrs = {}, parent = null) {
   return factory('polyline', { points: PointList.prototype.toString.call(this), ...attrs }, parent);
 };
+
+Util.defineGetter(PointList, Symbol.species, function() {
+  return this;
+});
+
+export const ImmutablePointList = Util.immutableClass(PointList);
+Util.defineGetter(ImmutablePointList, Symbol.species, function() {
+  return ImmutablePointList;
+});

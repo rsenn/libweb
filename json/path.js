@@ -60,8 +60,14 @@ export class MutablePath extends Array {
   constructor(p = [], opts = {}) {
     const { absolute = false, tagField, specialFields = [] } = opts;
     super(typeof p == 'number' ? p : 0);
+
+    /*
     if(tagField) this.tagField = tagField;
-    this.specialFields = specialFields;
+    this.specialFields = specialFields;*/
+
+    Util.define(this, tagField ? { tagField } : {});
+    if(specialFields.length > 0) Util.define(this, 'specialFields', specialFields);
+
     MutablePath.parse(p, this);
     //Util.log('this:',this);
 
@@ -99,7 +105,7 @@ export class MutablePath extends Array {
           if(/^\[.*\]$/.test(part + '')) {
             p = part.substring(1, part.length - 1);
           } else if(/^[A-Za-z]/.test(part)) {
-            const idx = ['attributes', out.tagField || 'tagName', 'children', ...out.specialFields].indexOf(part);
+            const idx = ['attributes', out.tagField || 'tagName', 'children', ...(out.specialFields || [])].indexOf(part);
             if(idx == -1) part = (out.constructor.partMatcher || MutablePath.partMatcher)({ [out.tagField || 'tagName']: part }, out.tagField || 'tagName');
           }
         }
@@ -561,6 +567,7 @@ export class MutablePath extends Array {
 
   static equal = (a, b) => this.compare(a, b) === 0;
 }
+//Util.define(MutablePath.prototype,specialFields', []);
 
 Util.defineGetter(MutablePath, Symbol.species, function() {
   return MutablePath;

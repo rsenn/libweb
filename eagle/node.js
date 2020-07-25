@@ -156,18 +156,17 @@ export class EagleNode {
       let raw = this.raw;
 
       for(let xpath of fields) {
-
         let key = xpath[xpath.length - 1];
         let path = new ImmutablePath(xpath.reduce((acc, p) => [...acc, 'children', p], []).concat(['children']));
-         //console.log('initCache', { xpath, key,path });
+        //console.log('initCache', { xpath, key,path });
 
-//let value = path.apply(raw, true);
+        //let value = path.apply(raw, true);
         lazy[key] = () => this.lookup(xpath, true);
 
         //console.log(`lazy[${key}]()`, lazy[key]());
 
         lists[key] = () => listCtor(owner, this.ref.down(...path));
-        maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => EagleNodeMap.create(lists[key](), ['board','schematic','library'].indexOf(key) != -1 ? 'tagName' : key == 'instances' ? 'part' : key == 'layers' ? ['number', 'name'] : 'name');
+        maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => EagleNodeMap.create(lists[key](), ['board', 'schematic', 'library'].indexOf(key) != -1 ? 'tagName' : key == 'instances' ? 'part' : key == 'layers' ? ['number', 'name'] : 'name');
       }
       lazyMembers(this.lists, lists);
       lazyMembers(this.cache, lazy);

@@ -168,7 +168,8 @@ Matrix.prototype.entries = function() {
   return Object.entries(Matrix.prototype.toObject.call(this));
 };
 Matrix.prototype.clone = function() {
-  return new Matrix(Array.from(this));
+  const ctor = this.constructor[Symbol.species];
+  return new ctor(Array.from(this));
 };
 Matrix.prototype.row = function(row) {
   let i = row * 3;
@@ -507,4 +508,13 @@ for(let name of ['transform_distance', 'transform_xy', 'transform_point', 'trans
   }
 }
 
+Util.defineGetter(Matrix, Symbol.species, function() {
+  return this;
+});
+
 export const isMatrix = m => Util.isObject(m) && (m instanceof Matrix || (m.length !== undefined && (m.length == 6 || m.length == 9) && m.every(el => typeof el == 'number')));
+
+export const ImmutableMatrix = Util.immutableClass(Matrix);
+Util.defineGetter(ImmutableMatrix, Symbol.species, function() {
+  return ImmutableMatrix;
+});

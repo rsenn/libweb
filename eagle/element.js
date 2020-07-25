@@ -14,8 +14,6 @@ export class EagleElement extends EagleNode {
   tagName = '';
   subscribers = [];
 
-  static map = Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw));
-
   static list = [];
   static currentElement = null;
 
@@ -23,12 +21,23 @@ export class EagleElement extends EagleNode {
 
   static get(owner, ref, raw) {
     let root = ref.root || owner.raw ? owner.raw : owner;
+
+    let doc = owner.document;
+
+    const { pathMapper, elementMapper } = doc;
+
+    let insert = Util.inserter(pathMapper); //doc.maps.obj2path);
+    //console.log('mapper:', mapper);
+
     //Util.log('EagleElement.get(', { owner, ref, raw }, ')');
+
     if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(root, ref);
     if(!raw) raw = ref.path.apply(root, true);
     if(!raw) raw = ref.dereference();
     //Util.log('EagleElement.get', { owner, ref, raw });
-    let inst = EagleElement.map(raw, owner, ref);
+    let inst = elementMapper(raw, owner, ref);
+
+    insert(inst, ref.path);
     //Util.log("EagleElement.get =",inst);
     EagleElement.currentElement = inst;
     return inst;

@@ -1,4 +1,4 @@
-import { HSLA } from './hsla.js';
+import { HSLA, ImmutableHSLA } from './hsla.js';
 import Util from '../util.js';
 
 /**
@@ -107,6 +107,11 @@ RGBA.fmt = [({ r, g, b, a }) => [r, g, b, a], ({ b, g, r, a }) => [b, g, r, a], 
 
 RGBA.calculators = [({ r, g, b, a }) => ((r * 256 + g) * 256 + b) * 256 + a, ({ b, g, r, a }) => ((b * 256 + g) * 256 + r) * 256 + a, ({ a, r, g, b }) => ((a * 256 + r) * 256 + g) * 256 + b, ({ a, b, g, r }) => ((a * 256 + b) * 256 + g) * 256 + r];
 
+RGBA.prototype.clone = function() {
+  const ctor = this.constructor[Symbol.species];
+  const { r, g, b, a } = this;
+  return new ctor(r, g, b, a);
+};
 RGBA.prototype.binaryValue = function(order = 0) {
   const { r, g, b, a } = this;
   return RGBA.calculators[order](RGBA.clamp(this));
@@ -152,11 +157,15 @@ RGBA.toHex = rgba => RGBA.prototype.hex.call(rgba);
 
 RGBA.clamp = rgba => RGBA(Math.min(Math.max(rgba.r, 0), 255), Math.min(Math.max(rgba.g, 0), 255), Math.min(Math.max(rgba.b, 0), 255), Math.min(Math.max(rgba.a, 0), 255));
 RGBA.round = rgba => RGBA.prototype.round.call(rgba);
+
 RGBA.prototype.round = function() {
-  this.r = Math.round(this.r);
-  this.g = Math.round(this.g);
-  this.b = Math.round(this.b);
-  this.a = Math.round(this.a);
+  const { r, g, b, a } = this;
+  let x = [r, g, b, a].map(n => Math.round(n));
+  if(Object.isFrozen(this)) return new RGBA(...x);
+  this.r = x[0];
+  this.g = x[1];
+  this.b = x[2];
+  this.a = x[3];
   return this;
 };
 RGBA.normalize = (rgba, from = 255, to = 1.0) => ({
@@ -239,18 +248,15 @@ RGBA.prototype.toAlpha = function(color) {
 
 RGBA.prototype.toHSLA = function() {
   let { r, g, b, a } = this;
-
   r /= 255;
   g /= 255;
   b /= 255;
   a /= 255;
-
   var max = Math.max(r, g, b);
   var min = Math.min(r, g, b);
   var h;
   var s;
   var l = (max + min) / 2;
-
   if(max == min) {
     h = s = 0; //achromatic
   } else {
@@ -276,7 +282,7 @@ RGBA.prototype.toHSLA = function() {
 
   //Util.log("RGBA.toHSLA ", { h, s, l, a });
 
-  return new HSLA(Math.round(h), Util.roundTo(s, 100 / 255), Util.roundTo(l, 100 / 255), Util.roundTo(a, 1 / 255));
+  return new (Object.isFrozen(this) ? ImmutableHSLA : HSLA)(Math.round(h), Util.roundTo(s, 100 / 255), Util.roundTo(l, 100 / 255), Util.roundTo(a, 1 / 255));
 };
 
 RGBA.prototype.toCMYK = function() {
@@ -542,3 +548,11 @@ for(let name of ['fromLAB']) {
     return RGBA.prototype[name].call(ret, arg);
   };
 }
+
+Util.defineGetter(RGBA, Symbol.species, function() {
+  return this;
+});
+export const ImmutableRGBA = Util.immutableClass(RGBA);
+Util.defineGetter(ImmutableRGBA, Symbol.species, function() {
+  return ImmutableRGBA;
+});

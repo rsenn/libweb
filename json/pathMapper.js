@@ -2,7 +2,7 @@ import { ImmutablePath } from './path.js';
 import Util from '../util.js';
 
 export class PathMapper {
-  obj2path = new WeakMap();
+  map = new WeakMap();
   root = null;
   ctor = ImmutablePath;
 
@@ -12,17 +12,17 @@ export class PathMapper {
   }
 
   set(obj, path) {
-    const { obj2path, ctor } = this;
+    const { map, ctor } = this;
 
-    if(obj2path.get(obj)) return;
+    if(map.get(obj)) return;
 
     if(!(path instanceof ctor)) path = new ctor(path);
-    obj2path.set(obj, path);
+    map.set(obj, path);
   }
 
   get(obj) {
-    const { obj2path } = this;
-    return obj2path.get(obj);
+    const { map } = this;
+    return map.get(obj);
   }
 
   at(path) {
@@ -34,9 +34,9 @@ export class PathMapper {
   }
 
   walk(obj, fn = path => path) {
-    const { obj2path, ctor } = this;
+    const { map, ctor } = this;
 
-    let path = obj2path.get(obj);
+    let path = map.get(obj);
     if(path === null) return null;
     path = fn(path);
     if(path === null) return null;
@@ -58,6 +58,37 @@ export class PathMapper {
   }
   previousSibling(obj) {
     return this.walk(obj, path => path.previousSibling);
+  }
+
+  get path2obj() {
+    return {
+      get: path => this.at(path),
+      has: path => this.has(path),
+      set: (path, obj) => this.set(obj, path)
+    };
+  }
+
+  get obj2path() {
+    return {
+      map: this.map,
+      get: function(obj) {
+        const { map } = this;
+        return map.get(obj);
+      },
+      has: function(obj) {
+        const { map } = this;
+        return map.has(obj);
+      },
+      set: function(obj, path) {
+        const { map } = this;
+        map.set(obj, path);
+        return this;
+      }
+    };
+  }
+
+  get maps() {
+    return [this.obj2path, this.path2obj];
   }
 
   /*setFactory(fn) {

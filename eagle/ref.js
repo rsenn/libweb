@@ -1,6 +1,6 @@
 import Util from '../util.js';
 import { toXML, ImmutablePath } from '../json.js';
-import { text, concat, parseArgs } from './common.js';
+import { text, concat } from './common.js';
 
 export const ChildrenSym = Symbol('⊳');
 

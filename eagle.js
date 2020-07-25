@@ -1,7 +1,7 @@
-export { BoardRenderer } from './eagle/boardRenderer.js';
+export { EagleSVGRenderer, SchematicRenderer, BoardRenderer, LibraryRenderer } from './eagle/renderer.js';
+
 export { EagleNodeList } from './eagle/nodeList.js';
 export { VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, RotateTransformation, LayerAttributes, InvertY, PolarToCartesian, Arc, CalculateArcRadius, LinesToPath, MakeCoordTransformer } from './eagle/renderUtils.js';
-export { SchematicRenderer } from './eagle/schematicRenderer.js';
 export { EagleDocument } from './eagle/document.js';
 export { Rotation } from './eagle/common.js';
 export { EagleReference, EagleRef } from './eagle/ref.js';
@@ -10,5 +10,4 @@ export { Renderer } from './eagle/renderer.js';
 export { EagleProject } from './eagle/project.js';
 export { EagleElement, makeEagleElement } from './eagle/element.js';
 export { EagleNodeMap } from './eagle/nodeMap.js';
-export { EagleSVGRenderer } from './eagle/svgRenderer.js';
 export { ImmutablePath, DereferenceError } from './json.js';

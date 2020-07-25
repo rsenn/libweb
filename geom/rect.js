@@ -66,6 +66,11 @@ export function Rect(arg) {
     Size.apply(obj, arg.slice(argi, argc));
     ret = argi + argc;
   }
+
+  if(typeof obj.x != 'number' || isNaN(obj.x)) obj.x = 0;
+  if(typeof obj.y != 'number' || isNaN(obj.y)) obj.y = 0;
+  if(typeof obj.width != 'number' || isNaN(obj.width)) obj.width = 0;
+  if(typeof obj.height != 'number' || isNaN(obj.height)) obj.height = 0;
   /*  if(obj.round === undefined) {
     Object.defineProperty(obj, 'round', {
       value: function() {
@@ -75,6 +80,7 @@ export function Rect(arg) {
       writable: false
     });
   }*/
+  return obj;
   if(!(this instanceof Rect) || new.target === undefined) return obj;
 }
 Rect.prototype = {
@@ -82,9 +88,10 @@ Rect.prototype = {
   ...Point.prototype,
   ...Rect.prototype
 };
-Rect.prototype[Symbol.species] = Rect;
+
 Rect.prototype.clone = function(fn) {
-  let ret = new Rect(this.x, this.y, this.width, this.height);
+  const ctor = this.constructor[Symbol.species];
+  let ret = new ctor(this.x, this.y, this.width, this.height);
   if(fn) fn(ret);
   return ret;
 };
@@ -435,3 +442,15 @@ for(let f of ['scale', 'resize', 'translate']) {
 Util.defineInspect(Rect.prototype, 'x', 'y', 'width', 'height');
 
 export const isRect = rect => isPoint(rect) && isSize(rect);
+
+Util.defineGetter(Rect, Symbol.species, function() {
+  return this;
+});
+
+export const ImmutableRect = Util.immutableClass(Rect);
+
+delete ImmutableRect[Symbol.species];
+
+Util.defineGetter(ImmutableRect, Symbol.species, function() {
+  return ImmutableRect;
+});

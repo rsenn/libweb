@@ -44,15 +44,17 @@ export function Point(arg) {
     p.x = 0;
     p.y = 0;
   }
+  if(p.x === undefined) p.x = 0;
+  if(p.y === undefined) p.y = 0;
   if(isNaN(p.x)) p.x = undefined;
   if(isNaN(p.y)) p.y = undefined;
+
   if(!this || this === Point) {
     if(p.prototype == Object) p.prototype = Point.prototype;
     else Object.assign(p, Point.prototype);
     return p;
   }
 }
-Point.prototype[SymSpecies] = Point;
 
 Object.defineProperties(Point.prototype, {
   X: {
@@ -90,7 +92,9 @@ Point.prototype.set = function(fn) {
   return fn(this.x, this.y);
 };
 Point.prototype.clone = function() {
-  return new Point({ x: this.x, y: this.y });
+  const ctor = this[Symbol.species] || this.constructor[Symbol.species];
+
+  return new ctor({ x: this.x, y: this.y });
 };
 Point.prototype.sum = function(...args) {
   const p = new Point(...args);
@@ -200,6 +204,12 @@ Point.prototype.rotate = function(angle, origin = { x: 0, y: 0 }) {
 Point.prototype.dimension = function() {
   return [this.width, this.height];
 };
+Util.defineGetter(Point.prototype, Symbol.iterator, function() {
+  const { x, y } = this;
+  let a = [x, y];
+  return a[Symbol.iterator].bind(a);
+});
+
 Point.prototype.toString = function(opts = {}) {
   const { precision = 0.001, unit = '', separator = ',', left = '', right = '' } = opts;
   const x = Util.roundTo(this.x, precision);
@@ -304,3 +314,12 @@ Point.bind = (o, p, gen) => {
   return Util.bindProperties(new Point(0, 0), o, { x, y }, gen);
 };
 export default Point;
+
+Util.defineGetter(Point, Symbol.species, function() {
+  return this;
+});
+
+export const ImmutablePoint = Util.immutableClass(Point);
+Util.defineGetter(ImmutablePoint, Symbol.species, function() {
+  return ImmutablePoint;
+});

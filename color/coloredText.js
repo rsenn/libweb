@@ -180,7 +180,7 @@ export class ColoredText extends Array {
           else v.push(a);
           i++;
         }
-        this[0] += s;
+        this[0] += ' ' + s;
         if(v.length) Array.prototype.splice.call(this, this.length, 0, ...v);
         return this;
       },
@@ -198,10 +198,10 @@ export class ColoredText extends Array {
         return this;
       },
       [INSPECT]() {
-        return this;
+        return [...this]; //.reduce((a,p) => a ? [...a, ' ', p] : [p], []);
       },
       toConsole(c = console) {
-        throw new Error("coloredText.toConsole");
+        //throw new Error('coloredText.toConsole');
         c.log(...this[INSPECT]());
       }
     });
