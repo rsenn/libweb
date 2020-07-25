@@ -1,59 +1,67 @@
+// @flow
 /**
  * An asynchronous WebSocket client.
  * @example
- *  //Set up connection.
+ * // Set up connection.
  * const webSocketClient = new WebSocketClient;
- *  //Connect.
+ * // Connect.
  * await webSocketClient.connect('ws://www.example.com/');
- *  //Send is synchronous.
+ * // Send is synchronous.
  * webSocketClient.send('Hello!');
- *  //Receive is asynchronous.
+ * // Receive is asynchronous.
  * console.log(await webSocketClient.receive());
- *  //See if there are any more messages received.
+ * // See if there are any more messages received.
  * if(webSocketClient.dataAvailable !== 0) {
  *     console.log(await webSocketClient.receive());
  * }
- *  //Close the connection.
+ * // Close the connection.
  * await webSocketClient.disconnect();
  */
 export class WebSocketClient {
-  receiveDataQueue = [];
-  receiveCallbacksQueue = [];
-  closeEvent = null;
+  constructor(ctor) {
+    this._reset();
 
-  constructor() {
-    //this.reset();
+    Object.defineProperty(this, 'ctor', { value: ctor, enumerable: false });
   }
-
   /**
    * Whether a connection is currently open.
    * @returns true if the connection is open.
    */
+  get connected() {
+    // Checking != null also checks against undefined.
+    return this._socket != null && this._socket.readyState === this.ctor.OPEN;
+  }
+  /**
+   * The number of messages available to receive.
+   * @returns The number of queued messages that can be retrieved with {@link #receive}
+   */
+  get dataAvailable() {
+    return this._receiveDataQueue.length;
+  }
 
   /**
    * Sets up a WebSocket connection to specified url. Resolves when the
    * connection is established. Can be called again to reconnect to any url.
    */
   connect(url, protocols) {
-    return this.disconnect().then(() => {
-      this.reset();
-
-      this.socket = new WebSocket(url, protocols);
-      this.socket.binaryType = 'arraybuffer';
-      return this.setupListenersOnConnect();
+    var ws = this;
+    return this.disconnect().then(function() {
+      ws._reset();
+      ws._socket = new ws.ctor(url, protocols);
+      ws._socket.binaryType = 'arraybuffer';
+      return ws._setupListenersOnConnect();
     });
   }
-
   /**
    * Send data through the websocket.
    * Must be connected. See {@link #connected}.
    */
   send(data) {
-    if(!this.connected) throw this.closeEvent || new Error('Not connected.');
-
-    this.socket.send(data);
+    if(!this.connected) {
+      throw this._closeEvent || new Error('Not connected.');
+    }
+    this._socket.send(data);
   }
-
   /**
    * Asynchronously receive data from the websocket.
    * Resolves immediately if there is buffered, unreceived data.
@@ -62,112 +70,91 @@ export class WebSocketClient {
    * @returns A promise that resolves with the data received.
    */
   receive() {
-    if(this.receiveDataQueue.length !== 0) return Promise.resolve(this.receiveDataQueue.shift());
-
-    if(!this.connected) return Promise.reject(this.closeEvent || new Error('Not connected.'));
-
-    var receivePromise = new Promise((resolve, reject) => this.receiveCallbacksQueue.push({ resolve: resolve, reject: reject }));
-
+    var ws = this;
+    if(this._receiveDataQueue.length !== 0) {
+      return Promise.resolve(this._receiveDataQueue.shift());
+    }
+    if(!this.connected) {
+      return Promise.reject(this._closeEvent || new Error('Not connected.'));
+    }
+    var receivePromise = new Promise(function(resolve, reject) {
+      ws._receiveCallbacksQueue.push({ resolve: resolve, reject: reject });
+    });
     return receivePromise;
   }
-
   /**
    * Initiates the close handshake if there is an active connection.
    * Returns a promise that will never reject.
    * The promise resolves once the WebSocket connection is closed.
    */
   disconnect(code, reason) {
-    if(!this.connected) return Promise.resolve(this.closeEvent);
-
-    return new Promise((resolve, reject) => {
-      //It's okay to call resolve/reject multiple times in a promise.
+    var ws = this;
+    if(!this.connected) {
+      return Promise.resolve(this._closeEvent);
+    }
+    return new Promise(function(resolve, reject) {
+      // It's okay to call resolve/reject multiple times in a promise.
       var callbacks = {
-        //Make sure this object always stays in the queue
-        //until callbacks.reject() (which is resolve) is called.
-        resolve: dummy => this.receiveCallbacksQueue.push(callbacks),
+        resolve: function(dummy) {
+          // Make sure this object always stays in the queue
+          // until callbacks.reject() (which is resolve) is called.
+          ws._receiveCallbacksQueue.push(callbacks);
+        },
         reject: resolve
       };
-
-      this.receiveCallbacksQueue.push(callbacks);
-      //After this, we will imminently get a close event.
-      //Therefore, this promise will resolve.
-      this.socket.close(code, reason);
+      ws._receiveCallbacksQueue.push(callbacks);
+      // After this, we will imminently get a close event.
+      // Therefore, this promise will resolve.
+      ws._socket.close(code, reason);
     });
   }
-
   /**
    * Sets up the event listeners, which do the bulk of the work.
    * @private
    */
-  setupListenersOnConnect() {
-    var socket = this.socket;
-
-    return new Promise((resolve, reject) => {
-      var handleMessage = event => {
-        var messageEvent = event;
-        //The cast was necessary because Flow's libdef's don't contain
-        //a MessageEventListener definition.
-
-        if(this.receiveCallbacksQueue.length !== 0) {
-          this.receiveCallbacksQueue.shift().resolve(messageEvent.data);
+  _setupListenersOnConnect() {
+    var ws = this;
+    var socket = this._socket;
+    return new Promise(function(resolve, reject) {
+      var handleMessage = function(event) {
+        var messageEvent = function(event) {
+          return;
+        };
+        // The cast was necessary because Flow's libdef's don't contain
+        // a MessageEventListener definition.
+        if(ws._receiveCallbacksQueue.length !== 0) {
+          ws._receiveCallbacksQueue.shift().resolve(messageEvent.data);
           return;
         }
-
-        this.receiveDataQueue.push(messageEvent.data);
+        ws._receiveDataQueue.push(messageEvent.data);
       };
-
-      var handleOpen = event => {
+      var handleOpen = function(event) {
         socket.addEventListener('message', handleMessage);
-        socket.addEventListener('close', event => {
-          this.closeEvent = event;
-
-          //Whenever a close event fires, the socket is effectively dead.
-          //It's impossible for more messages to arrive.
-          //If there are any promises waiting for messages, reject them.
-          while(this.receiveCallbacksQueue.length !== 0) this.receiveCallbacksQueue.shift().reject(this.closeEvent);
+        socket.addEventListener('close', function(event) {
+          ws._closeEvent = function(event) {
+            return;
+          };
+          // Whenever a close event fires, the socket is effectively dead.
+          // It's impossible for more messages to arrive.
+          // If there are any promises waiting for messages, reject them.
+          while(ws._receiveCallbacksQueue.length !== 0) {
+            ws._receiveCallbacksQueue.shift().reject(ws._closeEvent);
+          }
         });
         resolve();
       };
-
       socket.addEventListener('error', reject);
       socket.addEventListener('open', handleOpen);
     });
   }
-
   /**
    * @private
    */
-  reset() {
-    this.receiveDataQueue = [];
-    this.receiveCallbacksQueue = [];
-    this.closeEvent = null;
+  _reset() {
+    this._receiveDataQueue = [];
+    this._receiveCallbacksQueue = [];
+    this._closeEvent = null;
   }
-
-  get connected() {
-    //Checking != null also checks against undefined.
-    return this.socket != null && this.socket.readyState === WebSocket.OPEN;
-  }
-  /**
-   * The number of messages available to receive.
-   * @returns The number of queued messages that can be retrieved with {@link #receive}
-   */
-  get dataAvailable() {
-    return this.receiveDataQueue.length;
-  }
-
-  async *[Symbol.asyncIterator]() {
-    while(this.readyState !== 3) yield (await oncePromise(this.socket, 'message')).data;
-  }
-}
-//Generate a Promise that listens only once for an event
-function oncePromise(emitter, event) {
-  return new Promise(resolve => {
-    var handler = (...args) => {
-      emitter.removeEventListener(event, handler);
-      resolve(...args);
-    };
-    emitter.addEventListener(event, handler);
-  });
 }
 
 export default WebSocketClient;

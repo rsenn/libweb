@@ -17,29 +17,12 @@
  * await webSocketClient.disconnect();
  */
 export class WebSocketClient {
-  /*receiveDataQueue = [];
+  receiveDataQueue = [];
   receiveCallbacksQueue = [];
-  closeEvent = null;*/
+  closeEvent = null;
 
-  constructor(ctor) {
-    this.reset();
-
-    if(!ctor)
-      ctor = Util.tryCatch(
-        () => Util.isObject(window),
-        () => window.WebSocket,
-        null
-      );
-
-    Object.defineProperties(
-      this,
-      [
-        ['ctor', ctor],
-        ['receiveDataQueue', []],
-        ['receiveCallbacksQueue', []],
-        ['closeEvent', null]
-      ].reduce((acc, [name, value]) => ({ ...acc, [name]: { value, enumerable: false } }), {})
-    );
+  constructor() {
+    //this.reset();
   }
 
   /**
@@ -52,11 +35,10 @@ export class WebSocketClient {
    * connection is established. Can be called again to reconnect to any url.
    */
   connect(url, protocols) {
-    let ws = this;
     return this.disconnect().then(() => {
       this.reset();
 
-      this.socket = new ws.ctor(url, protocols);
+      this.socket = new WebSocket(url, protocols);
       this.socket.binaryType = 'arraybuffer';
       return this.setupListenersOnConnect();
     });
@@ -67,7 +49,9 @@ export class WebSocketClient {
    * Must be connected. See {@link #connected}.
    */
   send(data) {
-    if(!this.connected) throw this.closeEvent || new Error('Not connected.');
+    if(!this.connected) {
+      throw this.closeEvent || new Error('Not connected.');
+    }
 
     this.socket.send(data);
   }
@@ -80,11 +64,17 @@ export class WebSocketClient {
    * @returns A promise that resolves with the data received.
    */
   receive() {
-    if(this.receiveDataQueue.length !== 0) return Promise.resolve(this.receiveDataQueue.shift());
+    if(this.receiveDataQueue.length !== 0) {
+      return Promise.resolve(this.receiveDataQueue.shift());
+    }
 
-    if(!this.connected) return Promise.reject(this.closeEvent || new Error('Not connected.'));
+    if(!this.connected) {
+      return Promise.reject(this.closeEvent || new Error('Not connected.'));
+    }
 
-    const receivePromise = new Promise((resolve, reject) => this.receiveCallbacksQueue.push({ resolve: resolve, reject: reject }));
+    var receivePromise = new Promise((resolve, reject) => {
+      this.receiveCallbacksQueue.push({ resolve: resolve, reject: reject });
+    });
 
     return receivePromise;
   }
@@ -95,11 +85,13 @@ export class WebSocketClient {
    * The promise resolves once the WebSocket connection is closed.
    */
   disconnect(code, reason) {
-    if(!this.connected) return Promise.resolve(this.closeEvent);
+    if(!this.connected) {
+      return Promise.resolve(this.closeEvent);
+    }
 
     return new Promise((resolve, reject) => {
       //It's okay to call resolve/reject multiple times in a promise.
-      const callbacks = {
+      var callbacks = {
         resolve: dummy => {
           //Make sure this object always stays in the queue
           //until callbacks.reject() (which is resolve) is called.
@@ -121,11 +113,11 @@ export class WebSocketClient {
    * @private
    */
   setupListenersOnConnect() {
-    const { socket } = this;
+    var socket = this.socket;
 
     return new Promise((resolve, reject) => {
-      const handleMessage = event => {
-        const messageEvent = event;
+      var handleMessage = event => {
+        var messageEvent = event;
         //The cast was necessary because Flow's libdef's don't contain
         //a MessageEventListener definition.
 
@@ -137,7 +129,7 @@ export class WebSocketClient {
         this.receiveDataQueue.push(messageEvent.data);
       };
 
-      const handleOpen = event => {
+      var handleOpen = event => {
         socket.addEventListener('message', handleMessage);
         socket.addEventListener('close', event => {
           this.closeEvent = event;
@@ -167,9 +159,8 @@ export class WebSocketClient {
   }
 
   get connected() {
-    const { socket, ctor } = this;
     //Checking != null also checks against undefined.
-    return socket != null && socket.readyState === ctor.OPEN;
+    return this.socket != null && this.socket.readyState === WebSocket.OPEN;
   }
   /**
    * The number of messages available to receive.
@@ -180,13 +171,15 @@ export class WebSocketClient {
   }
 
   async *[Symbol.asyncIterator]() {
-    while(this.readyState !== 3) yield (await oncePromise(this.socket, 'message')).data;
+    while(this.readyState !== 3) {
+      yield (await oncePromise(this.socket, 'message')).data;
+    }
   }
 }
 //Generate a Promise that listens only once for an event
 function oncePromise(emitter, event) {
   return new Promise(resolve => {
-    const handler = (...args) => {
+    var handler = (...args) => {
       emitter.removeEventListener(event, handler);
       resolve(...args);
     };

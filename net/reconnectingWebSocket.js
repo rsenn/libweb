@@ -1,279 +1,163 @@
-export function ReconnectingWebSocket(url, protocols, options) {
-  // Default settings
-  var settings = {
-    /** Whether this instance should log debug messages. */
-    debug: false,
+import Util from '../util.js';
 
-    /** Whether or not the websocket should attempt to connect immediately upon instantiation. */
-    automaticOpen: true,
+const RECONNECT_DELAY = 5000;
+const MAX_RECONNECT_ATTEMPTS = 3;
 
-    /** The number of milliseconds to delay before attempting to reconnect. */
-    reconnectInterval: 1000,
-    /** The maximum number of milliseconds to delay a reconnection attempt. */
-    maxReconnectInterval: 30000,
-    /** The rate of increase of the reconnect delay. Allows reconnect attempts to back off when problems persist. */
-    reconnectDecay: 1.5,
-
-    /** The maximum time in milliseconds to wait for a connection to succeed before closing and retrying. */
-    timeoutInterval: 2000,
-
-    /** The maximum number of reconnection attempts to make. Unlimited if null. */
-    maxReconnectAttempts: null,
-
-    /** The binary type, possible values 'blob' or 'arraybuffer', default 'blob'. */
-    binaryType: 'blob'
-  };
-  if(!options) {
-    options = {};
-  }
-
-  // Overwrite and define settings with options if they exist.
-  for(var key in settings) {
-    if(typeof options[key] !== 'undefined') {
-      this[key] = options[key];
-    } else {
-      this[key] = settings[key];
-    }
-  }
-
-  const { ctor } = options;
-  ReconnectingWebSocket.CONNECTING = ctor.CONNECTING;
-  ReconnectingWebSocket.OPEN = ctor.OPEN;
-  ReconnectingWebSocket.CLOSING = ctor.CLOSING;
-  ReconnectingWebSocket.CLOSED = ctor.CLOSED;
-
-  // These should be treated as read-only properties
-
-  /** The URL as resolved by the constructor. This is always an absolute URL. Read only. */
-  this.url = url;
-
-  /** The number of attempted reconnects since starting, or the last successful connection. Read only. */
-  this.reconnectAttempts = 0;
+/**
+ * @author Fabian Wennink
+ */
+export class ReconnectingWebSocket {
+  // url ~ Holds the server URL.
+  // protocols ~ Holds the supported protocols.
+  // socket ~ Holds the WebSocket object.
+  // callbacks ~ Holds the callbacks.
+  // reconnectAttempts ~ The amount of reconnection attempts.
 
   /**
-   * The current state of the connection.
-   * Can be one of: ctor.CONNECTING, ctor.OPEN, ctor.CLOSING, ctor.CLOSED
-   * Read only.
+   * Initiate the socket connection as a client.
+   * @param {String} host The host address of the server to connect to.
+   * @param {Array} protocols The protocols supported by the server.
+   * @returns {ReconnectingWebSocket} A new instance of the WebSocketWrapper.
    */
-  this.readyState = ctor.CONNECTING;
+  constructor(host, protocols = [], ctor) {
+    this.socket = new ctor(host, protocols);
+    this.url = host;
+    this.protocols = protocols;
+    this.callbacks = [];
+    this.reconnectAttempts = 0;
 
-  /**
-   * A string indicating the name of the sub-protocol the server selected; this will be one of
-   * the strings specified in the protocols parameter when creating the ctor object.
-   * Read only.
-   */
-  this.protocol = null;
-
-  // Private state variables
-
-  var self = this;
-  var ws;
-  var forcedClose = false;
-  var timedOut = false;
-  var eventTarget = {
-    dispatchEvent() {}
-  }; //document.createElement('div');
-
-  // Wire up "on*" properties as event handlers
-  /*
-  eventTarget.addEventListener('open', function(event) {
-    self.onopen(event);
-  });
-  eventTarget.addEventListener('close', function(event) {
-    self.onclose(event);
-  });
-  eventTarget.addEventListener('connecting', function(event) {
-    self.onconnecting(event);
-  });
-  eventTarget.addEventListener('message', function(event) {
-    self.onmessage(event);
-  });
-  eventTarget.addEventListener('error', function(event) {
-    self.onerror(event);
-  });*/
-
-  // Expose the API required by EventTarget
-  /*
-  this.addEventListener = eventTarget.addEventListener.bind(eventTarget);
-  this.removeEventListener = eventTarget.removeEventListener.bind(eventTarget);
-  this.dispatchEvent = eventTarget.dispatchEvent.bind(eventTarget);
-*/
-  /**
-   * This function generates an event that is compatible with standard
-   * compliant browsers and IE9 - IE11
-   *
-   * This will prevent the error:
-   * Object doesn't support this action
-   *
-   * http://stackoverflow.com/questions/19345392/why-arent-my-parameters-getting-passed-through-to-a-dispatched-event/19345563#19345563
-   * @param s String The name that the event should use
-   * @param args Object an optional object that the event will use
-   */
-  function Event(n) {
-    this.name = n;
-  }
-  Event.prototype.initCustomEvent = function() {};
-  function createEvent(n) {
-    return new Event(n);
-  }
-  function generateEvent(s, args) {
-    var evt = createEvent('CustomEvent');
-    evt.initCustomEvent(s, false, false, args);
-    return evt;
-  }
-
-  this.open = function(reconnectAttempt) {
-    ws = new ctor(self.url, protocols || []);
-    ws.binaryType = this.binaryType;
-
-    if(reconnectAttempt) {
-      if(this.maxReconnectAttempts && this.reconnectAttempts > this.maxReconnectAttempts) {
-        return;
-      }
-    } else {
-      eventTarget.dispatchEvent(generateEvent('connecting'));
-      this.reconnectAttempts = 0;
-    }
-
-    if(self.debug || ReconnectingWebSocket.debugAll) {
-      console.debug('ReconnectingWebSocket', 'attempt-connect', self.url);
-    }
-
-    var localWs = ws;
-    var timeout = setTimeout(function() {
-      if(self.debug || ReconnectingWebSocket.debugAll) {
-        console.debug('ReconnectingWebSocket', 'connection-timeout', self.url);
-      }
-      timedOut = true;
-      localWs.close();
-      timedOut = false;
-    }, self.timeoutInterval);
-
-    ws.onopen = function(event) {
-      clearTimeout(timeout);
-      if(self.debug || ReconnectingWebSocket.debugAll) {
-        console.debug('ReconnectingWebSocket', 'onopen', self.url);
-      }
-      self.protocol = ws.protocol;
-      self.readyState = ctor.OPEN;
-      self.reconnectAttempts = 0;
-      var e = generateEvent('open');
-      e.isReconnect = reconnectAttempt;
-      reconnectAttempt = false;
-      eventTarget.dispatchEvent(e);
-    };
-
-    ws.onclose = function(event) {
-      clearTimeout(timeout);
-      ws = null;
-      if(forcedClose) {
-        self.readyState = ctor.CLOSED;
-        eventTarget.dispatchEvent(generateEvent('close'));
-      } else {
-        self.readyState = ctor.CONNECTING;
-        var e = generateEvent('connecting');
-        e.code = event.code;
-        e.reason = event.reason;
-        e.wasClean = event.wasClean;
-        eventTarget.dispatchEvent(e);
-        if(!reconnectAttempt && !timedOut) {
-          if(self.debug || ReconnectingWebSocket.debugAll) {
-            console.debug('ReconnectingWebSocket', 'onclose', self.url);
-          }
-          eventTarget.dispatchEvent(generateEvent('close'));
-        }
-
-        var timeout = self.reconnectInterval * Math.pow(self.reconnectDecay, self.reconnectAttempts);
-        setTimeout(
-          function() {
-            self.reconnectAttempts++;
-            self.open(true);
-          },
-          timeout > self.maxReconnectInterval ? self.maxReconnectInterval : timeout
-        );
-      }
-    };
-    ws.onmessage = function(event) {
-      if(self.debug || ReconnectingWebSocket.debugAll) {
-        console.debug('ReconnectingWebSocket', 'onmessage', self.url, event.data);
-      }
-      var e = generateEvent('message');
-      e.data = event.data;
-      eventTarget.dispatchEvent(e);
-    };
-    ws.onerror = function(event) {
-      if(self.debug || ReconnectingWebSocket.debugAll) {
-        console.debug('ReconnectingWebSocket', 'onerror', self.url, event);
-      }
-      eventTarget.dispatchEvent(generateEvent('error'));
-    };
-  };
-
-  // Whether or not to create a websocket upon instantiation
-  if(this.automaticOpen == true) {
-    this.open(false);
+    this.registerReconnectionListeners();
+    Util.define(this, { ctor });
   }
 
   /**
-   * Transmits data to the server over the ctor connection.
-   *
-   * @param data a text string, ArrayBuffer or Blob to send to the server.
+   * Bind a callback to the Message event of the socket server.
+   * @param {Function} callback The event callback.
    */
-  this.send = function(data) {
-    if(ws) {
-      if(self.debug || ReconnectingWebSocket.debugAll) {
-        console.debug('ReconnectingWebSocket', 'send', self.url, data);
+  onMessage(callback) {
+    this.on(SocketEvent.MESSAGE, callback);
+  }
+
+  /**
+   * Bind a callback to the Open event of the socket server.
+   * @param {Function} callback The event callback.
+   */
+  onConnect(callback) {
+    this.on(SocketEvent.OPEN, callback);
+  }
+
+  /**
+   * Bind a callback to the Close event of the socket server.
+   * @param {Function} callback The event callback.
+   */
+  onDisconnect(callback) {
+    this.on(SocketEvent.CLOSE, callback);
+  }
+
+  /**
+   * Bind a callback to the Error event of the socket server.
+   * @param {Function} callback The event callback.
+   */
+  onError(callback) {
+    this.on(SocketEvent.ERROR, callback);
+  }
+
+  /**
+   * Send a socket message to the websocket server.
+   * @param content The content to send to the server.
+   */
+  send(content) {
+    this.socket.send(content);
+  }
+
+  /**
+   * Unsubscribe a callback from a certain socket event.
+   * @param {SocketEvent} eventType The socket event type to unsubscribe the callback from.
+   * @param {Function} callback The event callback.
+   */
+  unsubscribe(eventType, callback) {
+    const index = this.callbacks.findIndex(cb => cb.event === eventType && cb.callback === callback);
+    if(index > 0) {
+      const registeredCallback = this.callbacks[index].callback;
+
+      // Remove the event listener for the specific event.
+      this.socket.removeEventListener(eventType, registeredCallback);
+      this.callbacks.splice(index, 1);
+    }
+  }
+
+  /**
+   * Internally used to register events with callbacks to the websocket.
+   * The callback will be stored in cache for later reference.
+   * @param {SocketEvent} event The socket event type being bound.
+   * @param {Function} callback The event callback.
+   * @private
+   */
+  on(event, callback) {
+    this.socket.on(event, callback);
+
+    // Push the callback into the cache.
+    this.callbacks.push({ event, callback });
+  }
+
+  /**
+   * Re-binds all earlier bound callbacks.
+   * @private
+   */
+  rebindCallbacks() {
+    // Create a temporary array and clear the real one.
+    const callbacks = [...this.callbacks];
+    this.callbacks = [];
+
+    // Re-bind the callbacks, since reconnecting a WebSocket isn't officially supported.
+    // Binds would be lost while recreating (reconnecting) a socket.
+    callbacks.forEach(data => {
+      this.on(data.event, data.callback);
+    });
+  }
+
+  /**
+   * Registers default event listeners which help detecting
+   * abnormal connection closing/refusing. Will automatically
+   * call {@link attemptReconnecting} if problems are detected.
+   * @private
+   */
+  registerReconnectionListeners() {
+    this.onDisconnect(e => {
+      if(e.code !== 1000) {
+        // code 1000 indicates CLOSE_NORMAL
+        this.attemptReconnecting();
       }
-      return ws.send(data);
-    } else {
-      throw 'INVALID_STATE_ERR : Pausing to reconnect websocket';
-    }
-  };
+    });
+
+    this.onError(e => {
+      if(e.code === 'ECONNREFUSED') {
+        this.attemptReconnecting();
+      }
+    });
+  }
 
   /**
-   * Closes the ctor connection or connection attempt, if any.
-   * If the connection is already CLOSED, this method does nothing.
+   * Tries to reconnect to the socket server.
+   * @private
    */
-  this.close = function(code, reason) {
-    // Default CLOSE_NORMAL code
-    if(typeof code == 'undefined') {
-      code = 1000;
-    }
-    forcedClose = true;
-    if(ws) {
-      ws.close(code, reason);
-    }
-  };
+  attemptReconnecting() {
+    let ws = this;
+    if(this.reconnectAttempts > MAX_RECONNECT_ATTEMPTS) return;
 
-  /**
-   * Additional public API method to refresh the connection if still open (close, re-open).
-   * For example, if the app suspects bad data / missed heart beats, it can try to refresh.
-   */
-  this.refresh = function() {
-    if(ws) {
-      ws.close();
-    }
-  };
+    setTimeout(() => {
+      this.socket = new ws.ctor(this.url, this.protocols);
+      this.reconnectAttempts++;
+      this.rebindCallbacks();
+    }, RECONNECT_DELAY);
+  }
 }
 
-/**
- * An event listener to be called when the ctor connection's readyState changes to OPEN;
- * this indicates that the connection is ready to send and receive data.
- */
-ReconnectingWebSocket.prototype.onopen = function(event) {};
-/** An event listener to be called when the ctor connection's readyState changes to CLOSED. */
-ReconnectingWebSocket.prototype.onclose = function(event) {};
-/** An event listener to be called when a connection begins being attempted. */
-ReconnectingWebSocket.prototype.onconnecting = function(event) {};
-/** An event listener to be called when a message is received from the server. */
-ReconnectingWebSocket.prototype.onmessage = function(event) {};
-/** An event listener to be called when an error occurs. */
-ReconnectingWebSocket.prototype.onerror = function(event) {};
-
-/**
- * Whether all instances of ReconnectingWebSocket should log debug messages.
- * Setting this to true is the equivalent of setting all instances of ReconnectingWebSocket.debug to true.
- */
-ReconnectingWebSocket.debugAll = false;
+const SocketEvent = Object.freeze({
+  OPEN: 'open',
+  MESSAGE: 'message',
+  ERROR: 'error',
+  CLOSE: 'close'
+});
 
 export default ReconnectingWebSocket;
