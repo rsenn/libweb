@@ -257,8 +257,8 @@ export class EagleSVGRenderer {
             y,
             ...EagleSVGRenderer.alignmentAttrs(align),
             children: labelText,
-            'font-size': 3,
-            'font-family': 'Fixed' /*,
+     /*       'font-size': 3,
+            'font-family': 'Fixed'*/ /*,
             transform: transform.undo(transformation)*/
           },
           parent
@@ -330,8 +330,8 @@ export class EagleSVGRenderer {
             y,
             ...EagleSVGRenderer.alignmentAttrs(alignment, VERTICAL),
 
-            'font-size': (size * 1.6).toFixed(2),
-            'font-family': font || 'Fixed',
+        /*    'font-size': (size * 1.6).toFixed(2),
+            'font-family': font || 'Fixed',*/
             transform: finalTransformation
           },
           parent
@@ -445,6 +445,7 @@ export class EagleSVGRenderer {
           /*  width,
           height,*/
           viewBox: rect.clone(r => (r.y = 0)).toString({ separator: ' ' }),
+          preserveAspectRatio: 'xMinYMin', //"xMidYMid meet"
           ...props
         },
         parent
@@ -453,6 +454,9 @@ export class EagleSVGRenderer {
     const step = 2.54;
     const gridColor = '#0000aa';
     const gridWidth = 0.05;
+
+const cssStyle = this.create('style', { children: [`text { font-size: 1.5pt; }`] }, parent);
+
     this.create(
       'path',
       {
