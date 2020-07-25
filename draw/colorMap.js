@@ -1,4 +1,4 @@
-import { Util } from '../util.js';
+import Util from '../util.js';
 import { RGBA } from '../color/rgba.js';
 import { HSLA } from '../color/hsla.js';
 import { Iterator } from '../iterator.js';

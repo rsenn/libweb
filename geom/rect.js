@@ -1,11 +1,10 @@
-import Util from './lib/util.js';
 import { Point, isPoint } from './point.js';
 //import { PointList } from './pointList.js';
 import { Line } from './line.js';
 import { Size, isSize } from './size.js';
 import { Align } from './align.js';
 import { TRBL } from './trbl.js';
-import { Util } from '../util.js';
+import Util from '../util.js';
 
 export function Rect(arg) {
   let obj = this instanceof Rect ? this : {};

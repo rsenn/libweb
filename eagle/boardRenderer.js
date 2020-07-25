@@ -2,7 +2,6 @@ import Util from './lib/util.js';
 import { Point, Line } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
-import { Util } from '../util.js';
 import { RGBA } from '../color.js';
 import { Rotation, Palette } from './common.js';
 import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer } from './renderUtils.js';

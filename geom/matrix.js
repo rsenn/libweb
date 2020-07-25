@@ -1,5 +1,4 @@
-import Util from './lib/util.js';
-import { Util } from '../util.js';
+import Util from '../util.js';
 
 export function Matrix(arg) {
   let ret = this instanceof Matrix || new.target === Matrix ? this : [undefined, 0, 0, undefined, 0, 0, undefined, 0, 0];

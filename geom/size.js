@@ -1,5 +1,4 @@
-import Util from './lib/util.js';
-import { Util } from '../util.js';
+import Util from '../util.js';
 import { isPoint } from './point.js';
 
 export function Size(arg) {

@@ -1,6 +1,5 @@
-import Util from './lib/util.js';
 import { Point } from '../geom/point.js';
-import { Util } from '../util.js';
+import Util from '../util.js';
 import { Rotation } from './common.js';
 
 export const VERTICAL = 1;
