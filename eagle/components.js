@@ -61,7 +61,7 @@ export const Pin = ({ length, rot, name, visible, x, y, function: func }) => {
           x: vec.x + 2.54,
           y: vec.y + 0,
           'font-size': 2,
-      //    'font-family': 'Fixed Medium',
+          //    'font-family': 'Fixed Medium',
           'text-anchor': 'left',
           'alignment-baseline': 'central',
           children: name

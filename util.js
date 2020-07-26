@@ -2293,7 +2293,10 @@ Util.mapFunction = map => {
     else return fn.set(key, value);
   };
 
- fn.map = (m => {  while(Util.isFunction(m) && m.map !== undefined) m = m.map; return m; })(map);
+  fn.map = (m => {
+    while(Util.isFunction(m) && m.map !== undefined) m = m.map;
+    return m;
+  })(map);
 
   fn.set = (key, value) => (map.set(key, value), (k, v) => fn(k, v));
   fn.get = key => map.get(key);
@@ -2310,7 +2313,10 @@ Util.mapWrapper = (map, toKey = key => key, fromKey = key => key) => {
   if(typeof map.keys == 'function') fn.keys = () => [...map.keys()].map(fromKey);
   if(typeof map.has == 'function') fn.has = key => map.has(toKey(key));
 
- fn.map = (m => {  while(Util.isFunction(m) && m.map !== undefined) m = m.map; return m; })(map);
+  fn.map = (m => {
+    while(Util.isFunction(m) && m.map !== undefined) m = m.map;
+    return m;
+  })(map);
 
   return fn;
 };
