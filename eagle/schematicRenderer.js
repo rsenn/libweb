@@ -137,7 +137,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
               x: vec.x + 2.54,
               y: vec.y + 0,
               'font-size': 2,
-              'font-family': 'Fixed',
+              //  'font-family': 'Fixed',
               'text-anchor': 'left',
               'alignment-baseline': 'central',
               children: name

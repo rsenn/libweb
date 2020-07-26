@@ -106,9 +106,9 @@ export class BoardRenderer extends EagleSVGRenderer {
                 y: -0.04,
                 filter: 'url(#shadow)',
                 ...EagleSVGRenderer.alignmentAttrs('center', VERTICAL),
-                'font-size': 0.9,
-                fontStyle: 'bold',
-                'font-family': 'Fixed',
+                //  'font-size': 0.9,
+                'font-style': 'bold',
+                // 'font-family': 'Fixed',
                 transform: `${transform} ${RotateTransformation(opts.rot, -1)} scale(1,-1)`
               },
               parent

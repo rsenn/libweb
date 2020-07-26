@@ -256,10 +256,10 @@ export class EagleSVGRenderer {
             x,
             y,
             ...EagleSVGRenderer.alignmentAttrs(align),
-            children: labelText,
-     /*       'font-size': 3,
-            'font-family': 'Fixed'*/ /*,
+            children: labelText /*,
             transform: transform.undo(transformation)*/
+            /*       'font-size': 3,
+            'font-family': 'Fixed'*/
           },
           parent
         );
@@ -330,7 +330,7 @@ export class EagleSVGRenderer {
             y,
             ...EagleSVGRenderer.alignmentAttrs(alignment, VERTICAL),
 
-        /*    'font-size': (size * 1.6).toFixed(2),
+            /*    'font-size': (size * 1.6).toFixed(2),
             'font-family': font || 'Fixed',*/
             transform: finalTransformation
           },
@@ -455,7 +455,7 @@ export class EagleSVGRenderer {
     const gridColor = '#0000aa';
     const gridWidth = 0.05;
 
-const cssStyle = this.create('style', { children: [`text { font-size: 1.5pt; }`] }, parent);
+    const cssStyle = this.create('style', { children: [`text { font-size: 1pt; }`] }, parent);
 
     this.create(
       'path',
