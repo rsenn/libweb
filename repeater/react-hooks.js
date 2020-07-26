@@ -1,5 +1,5 @@
 import { useState, useEffect } from '../dom/preactComponent.js';
-import { Repeater } from '../../node_modules/@repeaterjs/repeater/lib/repeater.esm.js';
+import { Repeater } from './repeater.js';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
