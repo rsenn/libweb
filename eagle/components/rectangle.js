@@ -20,8 +20,8 @@ export const Rectangle = ({ data, opts = {}, ...props }) => {
   let rot = Rotation(data.rot);
   let center = rect.center;
 
-  //Util.log('rect:', rect);
-  //Util.log('rot:', rot);
+  //console.log('rect:', rect);
+  //console.log('rot:', rot);
   return h('rect', {
     stroke: 'none',
     fill: color,
