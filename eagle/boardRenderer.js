@@ -108,7 +108,7 @@ export class BoardRenderer extends EagleSVGRenderer {
                 ...EagleSVGRenderer.alignmentAttrs('center', VERTICAL),
                 //  'font-size': 0.9,
                 'font-style': 'bold',
-                // 'font-family': 'Fixed',
+                // 'font-family': 'Fixed Medium',
                 transform: `${transform} ${RotateTransformation(opts.rot, -1)} scale(1,-1)`
               },
               parent

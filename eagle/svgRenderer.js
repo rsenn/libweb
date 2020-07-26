@@ -259,7 +259,7 @@ export class EagleSVGRenderer {
             children: labelText /*,
             transform: transform.undo(transformation)*/
             /*       'font-size': 3,
-            'font-family': 'Fixed'*/
+            'font-family': 'Fixed Medium'*/
           },
           parent
         );
@@ -331,7 +331,7 @@ export class EagleSVGRenderer {
             ...EagleSVGRenderer.alignmentAttrs(alignment, VERTICAL),
 
             /*    'font-size': (size * 1.6).toFixed(2),
-            'font-family': font || 'Fixed',*/
+            'font-family': font || 'Fixed Medium',*/
             transform: finalTransformation
           },
           parent
