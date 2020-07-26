@@ -455,7 +455,7 @@ export class EagleSVGRenderer {
     const gridColor = '#0000aa';
     const gridWidth = 0.05;
 
-    const cssStyle = this.create('style', { children: [`text { font-size: 1pt; }`] }, parent);
+    const cssStyle = this.create('style', { children: [`text { font-size: 0.1333rem; }`] }, parent);
 
     this.create(
       'path',
