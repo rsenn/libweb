@@ -190,7 +190,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
       transform = transform.concat(rot);
     }
     this.debug(`SchematicRenderer.renderInstance`, { x, y, transform });
-    const g = this.create('g', { className: `part.${part.name}`, transform }, parent);
+
+    const g = this.create('g', { className: `part.${part.name}`, 'data-path': part.path, transform }, parent);
+
     if(!value) value = deviceset.name;
     opts = deviceset.uservalue == 'yes' || true ? { name, value } : { name, value: '' };
 
