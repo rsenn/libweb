@@ -9,9 +9,6 @@ import { Size } from '../dom.js';
 import { SchematicRenderer } from './schematicRenderer.js';
 import { BoardRenderer } from './boardRenderer.js';
 import { LibraryRenderer } from './libraryRenderer.js';
-
-import { EagleSVGRenderer } from './svgRenderer.js';
-
 export { EagleSVGRenderer } from './svgRenderer.js';
 export { SchematicRenderer } from './schematicRenderer.js';
 export { LibraryRenderer } from './libraryRenderer.js';

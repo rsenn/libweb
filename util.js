@@ -174,8 +174,23 @@ Util.compose = (...functions) => {
   console.log('arity:', arity);
   return Util.arityN(funcs.reduce(Util.compose2()), arity);
 };*/
+Util.memoize = fn => {
+  let cache = {};
+  return (...args) => {
+    let n = args[0]; // just taking one argument here
+    if(n in cache) {
+      //console.log('Fetching from cache');
+      return cache[n];
+    } else {
+      //console.log('Calculating result');
+      let result = fn(n);
+      cache[n] = result;
+      return result;
+    }
+  };
+};
 
-Util.getGlobalObject = () =>
+Util.getGlobalObject = Util.memoize(() =>
   Util.tryCatch(
     () => global,
     g => g,
@@ -190,12 +205,13 @@ Util.getGlobalObject = () =>
             err => console.log('Util.getGlobalObject:', err)
           )
       )
-  );
+  )
+);
 
-Util.isDebug = function() {
+Util.isDebug = Util.memoize(function() {
   if(process !== undefined && process.env.NODE_ENV === 'production') return false;
   return true;
-};
+});
 /*Util.log = Util.curry(function(n, base) {
   return Math.log(n) / (base ? Math.log(base) : 1);
 });*/
@@ -1541,7 +1557,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
   }
   return result;
 };
-Util.getURL = function(req = {}) {
+Util.getURL = Util.memoize(function(req = {}) {
   return Util.tryCatch(
     () => process.argv[1],
     () => 'file://' + Util.scriptDir(),
@@ -1556,7 +1572,7 @@ Util.getURL = function(req = {}) {
       return url;
     }
   );
-};
+});
 Util.parseQuery = function(url = Util.getURL()) {
   let startIndex;
   let query = {};
@@ -1670,6 +1686,10 @@ Util.putError = err => {
   let e = Util.exception(err);
 
   console['error']('ERROR:', e.message, '\nstack:\n', s.toString());
+};
+Util.putStack = stack => {
+  stack = stack || Util.stack(new Error().stack);
+  console['error']('STACK TRACE:', stack.toString());
 };
 
 Util.trap = (() => {
@@ -2522,12 +2542,13 @@ Util.define(Util.location.prototype, {
     let text = color ? new this.colorCtor() : '';
     const c = color ? (t, color) => text.write(t, color /*, [0, 0, 0]*/) : t => (text += t);
     const palette = Util.location.palettes[Util.isBrowser() ? 1 : 0];
+    if(functionName) c(functionName.replace(/\s*\[.*/g, '').replace(/^Function\./, '') + ' ', palette[1]);
+
     c(fileName, palette[0]);
     c(':', palette[1]);
     c(lineNumber, palette[2]);
     c(':', palette[1]);
     c(columnNumber, palette[2]);
-    if(functionName) c(' ' + functionName.replace(/\s*\[.*/g, '').replace(/^Function\./, ''), palette[1]);
     return text;
   },
   [Symbol.toStringTag]() {
@@ -3640,5 +3661,63 @@ Util.timer = msecs => {
 Util.thenableReject = error => ({
   then: (resolve, reject) => reject(error)
 });
+Util.wrapGenerator = fn =>
+  Util.isGenerator(fn)
+    ? function(...args) {
+        return [...fn.call(this, ...args)];
+      }
+    : fn;
+
+Util.decorateIterable = (proto, generators = false) => {
+  const methods = {
+    forEach(fn, thisArg) {
+      let i = 0;
+      for(let item of this) fn.call(thisArg, item, i++, this);
+    },
+    *map(fn, thisArg) {
+      let i = 0;
+
+      for(let item of this) yield fn.call(thisArg, item, i++, this);
+    },
+    *filter(pred, thisArg) {
+      let i = 0;
+
+      for(let item of this) if(pred.call(thisArg, item, i++, this)) yield item;
+    },
+    findIndex(pred, thisArg) {
+      let i = 0;
+      for(let item of this) if(pred(item, i++, this)) return i;
+      return -1;
+    },
+    find(pred, thisArg) {
+      let i = 0;
+      for(let item of this) if(pred(item, i++, this)) return item;
+    },
+    every(pred, thisArg) {
+      let i = 0;
+      for(let item of this) if(!pred(item, i++, this)) return false;
+      return true;
+    },
+    some(pred, thisArg) {
+      let i = 0;
+      for(let item of this) if(pred(item, i++, this)) return true;
+      return false;
+    },
+    reduce(fn, accu) {
+      let i = 0;
+      for(let item of this) accu = fn(accu, item, i++, this);
+      return accu;
+    }
+  };
+  Util.define(proto, methods);
+  if(!generators) {
+    for(let name in methods) {
+      let gen = proto[name];
+      proto[name] = Util.wrapGenerator(gen);
+    }
+  }
+
+  return proto;
+};
 
 export default Util;

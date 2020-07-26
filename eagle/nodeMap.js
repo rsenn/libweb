@@ -95,7 +95,8 @@ Object.defineProperties(EagleNodeMap.prototype, {
         //if(prop == Symbol.iterator) return instance.entries()[Symbol.iterator];
 
         if((index = instance.keys().indexOf(prop)) != -1) return instance.list[index];
-        if(typeof instance[prop] == 'function') return instance[prop].bind(instance);
+        if(typeof instance[prop] == 'function') return instance[prop] /*.bind(instance)*/;
+        if(typeof instance.list[prop] == 'function') return instance.list[prop].bind(instance.list);
 
         return Reflect.get(target, prop, receiver);
       },
@@ -105,3 +106,5 @@ Object.defineProperties(EagleNodeMap.prototype, {
     });
   }
 }
+
+//Util.decorateIterable(EagleNodeMap.prototype);

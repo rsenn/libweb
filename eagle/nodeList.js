@@ -138,3 +138,5 @@ export class EagleNodeList {
     });
   }
 }
+
+Util.decorateIterable(EagleNodeList.prototype);

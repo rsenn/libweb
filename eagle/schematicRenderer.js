@@ -6,6 +6,9 @@ import { HSLA } from '../color/hsla.js';
 import { Rotation, Palette } from './common.js';
 import { LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
+import { Instance } from './components/instance.js';
+import { ReactComponent } from '../dom/preactComponent.js';
+import deep from '../deep.js';
 
 export class SchematicRenderer extends EagleSVGRenderer {
   static pinSizes = {
@@ -172,7 +175,13 @@ export class SchematicRenderer extends EagleSVGRenderer {
     let netsGroup = this.create('g', { className: 'nets', transform }, parent);
     let instancesGroup = this.create('g', { className: 'instances', transform }, parent);
 
-    for(let instance of instances.list) this.renderInstance(instance, instancesGroup);
+    instancesGroup.props.children = [...instances.list].map(data => h(Instance, { data }));
+
+    //    ReactComponent.append([...instances.list].map(data => h(Instance, { data })), instancesGroup);
+
+    console.log('instancesGroup:', instancesGroup);
+
+    //    for(let instance of instances.list) this.renderInstance(instance, instancesGroup);
 
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
   }
