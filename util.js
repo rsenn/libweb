@@ -190,6 +190,19 @@ Util.memoize = fn => {
   };
 };
 
+Util.once = function(fn) {
+  let ran = false;
+  let ret;
+
+  return function(...args) {
+    if(!ran) {
+      ret = fn(...args);
+      ran = true;
+    }
+    return ret;
+  };
+};
+
 Util.getGlobalObject = Util.memoize(() =>
   Util.tryCatch(
     () => global,
@@ -2178,7 +2191,7 @@ Util.getKeys = function(obj, arr) {
 Util.numbersConvert = function(str) {
   return str
     .split('')
-    .map((ch, i) => (/[ :,./]/.test(ch) ? ch : String.fromCharCode((str.charCodeAt(i) & 0x0f) + 0x30)))
+    .map((ch, i) => (new RegExp('[ :,./]').test(ch) ? ch : String.fromCharCode((str.charCodeAt(i) & 0x0f) + 0x30)))
     .join('');
 };
 Util.entries = function(arg) {
@@ -2651,7 +2664,7 @@ Util.getFunctionName = () => {
 Util.scriptDir = () =>
   Util.tryCatch(
     () => Util.scriptName(),
-    script => (script + '').replace(/\/[^/]*$/g, ''),
+    script => (script + '').replace(new RegExp('\\/[^/]*$', 'g'), ''),
     () => Util.getURL()
   );
 Util.stack = function Stack(stack) {
@@ -2734,7 +2747,7 @@ Object.defineProperties(Util.stack.prototype, {
 Util.getCallerStack = function(position = 2) {
   Error.stackTraceLimit = 100;
   if(position >= Error.stackTraceLimit) {
-    throw new TypeError(`getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: \`${position}\` and Error.stackTraceLimit was: \`${Error.stackTraceLimit}\``);
+    throw new TypeError(`getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: '${position}' and Error.stackTraceLimit was: '${Error.stackTraceLimit}'`);
   }
   const oldPrepareStackTrace = Error.prepareStackTrace;
   Error.prepareStackTrace = (_, stack) => stack;
@@ -3058,7 +3071,7 @@ Util.jsonToObject = function(jsonStr) {
     let pos = +('' + error)
       .split('\n')
       .reverse()[0]
-      .replace(/.*position ([0-9]+).*/, '$1');
+      .replace(/.*position\ ([0-9]+).*/, '$1');
     console.error('Unexpected token: ', jsonStr);
     console.error('Unexpected token at:', jsonStr.substring(pos));
     ret = null;
@@ -3098,8 +3111,8 @@ Util.stripXML = text =>
   text
     .replace(/<br(|\ *\/)>/gi, '\n')
     .replace(/<[^>]*>/g, '')
-    .replace(/[\t ]+/g, ' ')
-    .replace(/(\n[\t ]*)+\n/g, '\n');
+    .replace(/[\t\ ]+/g, ' ')
+    .replace(/(\n[\t\ ]*)+\n/g, '\n');
 Util.stripNonPrintable = text => text.replace(/[^\x20-\x7f\x0a\x0d\x09]/g, '');
 Util.decodeHTMLEntities = function(text) {
   var entities = {
@@ -3114,14 +3127,14 @@ Util.decodeHTMLEntities = function(text) {
     nbsp: ' ',
     quot: '"'
   };
-  return text.replace(/&([^;]+);/gm, function(match, entity) {
+  return text.replace(new RegExp('&([^;]+);', 'gm'), function(match, entity) {
     return entities[entity] || match;
   });
 };
 Util.encodeHTMLEntities = (str, charset = '\u00A0-\u9999<>&') => str.replace(new RegExp(`[${charset}](?!#)`, 'gim'), i => '&#' + i.charCodeAt(0) + ';');
 
 Util.stripAnsi = function(str) {
-  return (str + '').replace(/\x1B[[(?);]{0,2}(;?\d)*./g, '');
+  return (str + '').replace(new RegExp('\x1b[[(?);]{0,2}(;?[0-9])*.', 'g'), '');
 };
 Util.proxy = (obj = {}, handler) =>
   new Proxy(obj, {
@@ -3500,31 +3513,18 @@ Util.proxyObject = (root, handler) => {
     let value = ptr(path);
     //console.log("node:",{path,value});
 
-    let proxy = nodes(value, path);
-
-    return proxy;
+    return nodes(value, path);
   }
 
   return node([]);
 };
-Util.parseXML = xmlStr =>
-  Util.tryCatch(
+Util.parseXML = function(xmlStr) {
+  return Util.tryCatch(
     () => new DOMParser(),
     parser => parser.parseFromString(xmlStr, 'application/xml')
   );
-
-Util.once = fn => {
-  let done = false;
-  let ret;
-
-  return (...args) => {
-    if(!done) {
-      ret = fn(...args);
-      done = true;
-    }
-    return ret;
-  };
 };
+
 Util.copyTextToClipboard = (i, { target: t } = {}) => {
   let doc = Util.tryCatch(() => document);
   if(!doc) return;

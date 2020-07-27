@@ -853,7 +853,7 @@ export class ECMAScriptParser extends Parser {
       console.log('ast lhs:', { result, token: this.token.value });
       //console.log("lhs:", Util.className(lhs));
       //console.log("line:", this.lexer.currentLine());
-      throw new SyntaxError(`ConditionalExpression no ast`);
+      throw this.error(`ConditionalExpression no ast`);
     }
 
     if(this.matchPunctuators('?')) {
@@ -2048,7 +2048,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
     let msg = s + ` ${quoteList(this.stack[depth].tokens || [])}` + `  ${quoteArg(args)}`;
 
     //if(!/match/.test(methodName)) console.log(msg);
-    console.log('methodName:', methodName);
+    //console.log('methodName:', methodName);
 
     let ret = methods[methodName].call(this, ...args);
     let { token } = this;
