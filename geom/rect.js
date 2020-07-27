@@ -338,7 +338,7 @@ Rect.prototype.align = function(align_to, a = 0) {
   }
   /*  this.tx = this.x - oldx;
   this.ty = this.y - oldy;*/
-  pC: return this;
+  return this;
 };
 
 Rect.prototype.round = function(precision = 0.001, digits, type = 'round') {

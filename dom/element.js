@@ -12,6 +12,15 @@ import Util from '../util.js';
  * @class      Element (name)
  */
 export class Element extends Node {
+  static EDGES = { upperLeft: 0, upperCenter: 0.5, upperRight: 1, centerRight: 1.5, lowerRight: 2, lowerCenter: 2.5, lowerLeft: 3, centerLeft: 3.5 };
+
+  static edges = arg => Element.getEdgesXYWH(Element.rect(arg));
+  static Axis = { H: 0, V: 2 };
+
+  static margin = element => Element.getTRBL(element, 'margin');
+  static padding = element => Element.getTRBL(element, 'padding');
+  static border = element => Element.getTRBL(element, 'border');
+
   static wrap(e) {
     if(!this.methods) this.methods = Util.static({}, this, this, (k, fn) => k != 'wrap' && fn.length > 0);
 
@@ -94,22 +103,25 @@ export class Element extends Node {
     return accu;
   }
 
-  static *iterator(elem, predicate = (e, d, r) => true) {
+  static *iterator(elem, predicate = (e, d, r) => true, getProp) {
+    if(getProp == 'node') getProp = (obj, prop) => obj[prop.replace(/Element$/, 'Node').replace(/Element/, '')];
+
+    if(!getProp) getProp = (obj, prop) => obj[prop];
     if(typeof elem == 'string') elem = Element.find(elem);
     const root = elem;
     let depth = 0;
     while(elem) {
       if(predicate(elem, depth, root)) yield this.wrap(elem);
-      if(elem.firstElementChild) depth++;
+      if(getProp(elem, 'firstElementChild')) depth++;
       elem =
-        elem.firstElementChild ||
-        elem.nextElementSibling ||
+        getProp(elem, 'firstElementChild') ||
+        getProp(elem, 'nextElementSibling') ||
         (function() {
           do {
-            if(!(elem = elem.parentElement)) break;
+            if(!(elem = getProp(elem, 'parentElement'))) break;
             depth--;
-          } while(depth > 0 && !elem.nextElementSibling);
-          return elem && elem != root ? elem.nextElementSibling : null;
+          } while(depth > 0 && !getProp(elem, 'nextElementSibling'));
+          return elem && elem != root ? getProp(elem, 'nextElementSibling') : null;
         })();
     }
   }
@@ -151,12 +163,12 @@ export class Element extends Node {
     s = `${cmd}('${tagName}', {${s}}`;
     let c = elem.children;
     if(c.length >= 1) s = `${s}, [\n  ${c.map(e => Element.toCommand(e, opts).replace(/\n/g, '\n  ')).join(',\n  ')}\n]`;
-    s = `${s}${parent ? `, ${parent}` : ''})`;
+    s += parent ? ', ' + parent : '';
     if(elem.firstElementChild && varName) {
       v = parent ? String.fromCharCode(parent.charCodeAt(0) + 1) : varName;
       s = `${v} = ${s}`;
     }
-    return s.replace(/;*$/g, '');
+    return s.replace(new RegExp(';*$', 'g'), '');
   }
 
   static find(arg, parent, globalObj = Util.getGlobalObject()) {
@@ -890,24 +902,6 @@ Element.recurse = function*(elem, tfn = e => e) {
     if(elem !== null) yield tfn(elem);
   } while(elem);
 };
-
-Element.EDGES = {
-  upperLeft: 0,
-  upperCenter: 0.5,
-  upperRight: 1,
-  centerRight: 1.5,
-  lowerRight: 2,
-  lowerCenter: 2.5,
-  lowerLeft: 3,
-  centerLeft: 3.5
-};
-
-Element.edges = arg => Element.getEdgesXYWH(Element.rect(arg));
-Element.Axis = { H: 0, V: 2 };
-
-Element.margin = element => Element.getTRBL(element, 'margin');
-Element.padding = element => Element.getTRBL(element, 'padding');
-Element.border = element => Element.getTRBL(element, 'border');
 
 export function isElement(e) {
   return Util.isObject(e) && e.tagName !== undefined;

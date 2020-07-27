@@ -182,6 +182,15 @@ export const transform = (obj, filter, t) => {
   }
 };
 
+export const unset = (object, path) => {
+  if(object && typeof object === 'object') {
+    var parts = typeof path == 'string' ? path.split('.') : path;
+
+    parts.length > 1 ? unset(object[parts.shift()], parts) : delete object[path];
+  }
+  return object;
+};
+
 export default {
   isPlainObject,
   clone,
@@ -193,5 +202,6 @@ export default {
   set,
   transform,
   iterate,
-  flatten
+  flatten,
+  unset
 };

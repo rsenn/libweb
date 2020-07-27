@@ -297,12 +297,14 @@ export class ForStatement extends Statement {
 }
 
 export class ForInStatement extends Statement {
-  constructor(left, right, body, operator = 'in') {
+  constructor(left, right, body, operator = 'in', async = false) {
     super('ForInStatement');
     this.left = left;
     this.right = right;
     this.body = body;
     this.operator = operator;
+    if(async)
+      this.async = true;
   }
 }
 
@@ -369,7 +371,7 @@ export class ClassDeclaration extends ESNode {
     this.extending = extending;
     this.members = members;
     //this.exported = exported;
-    //Util.log('New ClassDeclaration: ', JSON.toString({ id, extending, // exported }));
+    //console.log('New ClassDeclaration: ', JSON.toString({ id, extending, // exported }));
   }
 }
 
@@ -387,7 +389,7 @@ export class ArrowFunction extends ESNode {
     this.is_async = is_async;
     this.params = params;
     this.body = body;
-    //Util.log('New FunctionDeclaration: ', JSON.toString({ id, params, // exported }));
+    //console.log('New FunctionDeclaration: ', JSON.toString({ id, params, // exported }));
   }
 }
 
@@ -397,7 +399,7 @@ export class VariableDeclaration extends Declaration {
     this.kind = kind;
     //this.exported = exported;
     this.declarations = declarations;
-    //Util.log('New VariableDeclaration: ', JSON.toString({ kind, exported
+    //console.log('New VariableDeclaration: ', JSON.toString({ kind, exported
     //}));
   }
 }
@@ -407,7 +409,7 @@ export class VariableDeclarator extends ESNode {
     super('VariableDeclarator');
     this.id = identifier;
     this.init = initialValue;
-    //Util.log('New VariableDeclarator: ', JSON.toString({ identifier:
+    //console.log('New VariableDeclarator: ', JSON.toString({ identifier:
     //identifier.value }));
   }
 }
@@ -416,7 +418,7 @@ export class ObjectLiteral extends ESNode {
   constructor(members) {
     super('ObjectLiteral');
     this.members = members;
-    //Util.log('New ObjectLiteral: ', Object.keys(members));
+    //console.log('New ObjectLiteral: ', Object.keys(members));
   }
 }
 
@@ -448,7 +450,7 @@ export class ArrayLiteral extends ESNode {
   constructor(elements) {
     super('ArrayLiteral');
     this.elements = elements;
-    //Util.log('New ArrayLiteral: ', Object.keys(members));
+    //console.log('New ArrayLiteral: ', Object.keys(members));
   }
 }
 
@@ -461,7 +463,7 @@ export class JSXLiteral extends ESNode {
     this.selfClosing = selfClosing;
     this.children = children;
     this.spread = spread;
-    //Util.log('New JSXLiteral: ', tag, JSX.keys(attributes));
+    //console.log('New JSXLiteral: ', tag, JSX.keys(attributes));
   }
 }
 
@@ -597,7 +599,7 @@ export function Factory() {
     ctor = typeof ctor == 'string' ? CTORS[ctor] : ctor;
     let instance = new ctor(...args);
     self.callback(ctor, args, instance);
-    /*Util.log("factory ret:",instance);*/
+    /*console.log("factory ret:",instance);*/
     return instance;
   };
   self.nodes = nodeList;

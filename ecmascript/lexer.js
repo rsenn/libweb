@@ -54,7 +54,7 @@ export class SyntaxError extends Error {
     this.ctx = ctx;
     this.ast = ast;
     this.pos = pos;
-    //Util.log("pos:", Util.inspect(pos, { depth: 10 }));
+    //console.log("pos:", Util.inspect(pos, { depth: 10 }));
   }
 }
 
@@ -95,8 +95,8 @@ const countLinesCols = (s, p1, p2, lc = { line: 1, column: 1 }) => {
 export function Position(line, column, pos, file, freeze = true) {
   let obj = this || new.target.test || this ? this : {};
 
-  /*Util.log("obj.constructor:",obj.constructor);
-  //Util.log("freeze:",freeze);*/
+  /*console.log("obj.constructor:",obj.constructor);
+  //console.log("freeze:",freeze);*/
   Object.assign(
     obj,
     {
@@ -180,7 +180,7 @@ Object.defineProperties(Range.prototype, {
   start: {
     get: function() {
       const { file, line, column, pos } = this;
-      //Util.log("start:", this);
+      //console.log("start:", this);
       return new Position(line, column, pos, file);
     }
   },
@@ -254,7 +254,7 @@ export class Lexer {
 
     const start = new Position(line, column, this.start, this.fileName);
 
-    //Util.log("comment:", this.get(-comment.length));
+    //console.log("comment:", this.get(-comment.length));
 
     this.ignore();
 
@@ -283,7 +283,7 @@ export class Lexer {
      end -= range.length-80;
     end += 3;
   }*/
-    //Util.log("start: ", { start, end });
+    //console.log("start: ", { start, end });
 
     range = range
       .split('')
@@ -320,7 +320,7 @@ export class Lexer {
       }
       this.pos++;
       //const { pos, line, column } = this;
-      //Util.log("Lexer.next { ", { pos, line, column }, " }");
+      //console.log("Lexer.next { ", { pos, line, column }, " }");
     }
     this.c = c;
     return c;
@@ -330,7 +330,7 @@ export class Lexer {
     let c;
     while(n-- > 0) {
       c = this.next();
-      //Util.log(`skipped char '${c}'`);
+      //console.log(`skipped char '${c}'`);
     }
     return c;
   }
@@ -350,7 +350,7 @@ export class Lexer {
     //if(diff < 0) column += diff;
 
     //column -= 1;
-    //Util.log("pos:", this.source.substring(pos, this.pos));
+    //console.log("pos:", this.source.substring(pos, this.pos));
     //
 
     return new Position(line + 1, column + 1, pos, fileName);
@@ -392,7 +392,7 @@ export class Lexer {
   }
 
   addToken(type) {
-    //if(type == Token.types.templateLiteral) Util.log('addToken', this.token);
+    //if(type == Token.types.templateLiteral) console.log('addToken', this.token);
     const { start, pos, column, line, source } = this;
     const token = new Token(type, source.substring(start, pos), new Range(this.position(this.start), this.pos - this.start), this.start);
     this.tokens.push(token);
@@ -423,7 +423,7 @@ export class Lexer {
     if(c == '`') {
       const { pos, start } = this;
 
-      //Util.log("tok", { pos, start }, this.getRange(this.start, this.pos));
+      //console.log("tok", { pos, start }, this.getRange(this.start, this.pos));
 
       this.addToken(Token.types.identifier);
 
@@ -492,7 +492,7 @@ export class Lexer {
     let lines = this.source.split(/\n/g).entries();
     lines = lines.slice(start, end);
     lines.print = function() {
-      for(let [lineno, str] of this) Util.log(`${lineno.padStart(10)}: ${str}`);
+      for(let [lineno, str] of this) console.log(`${lineno.padStart(10)}: ${str}`);
     };
     return lines;
   }
@@ -562,7 +562,7 @@ export class Lexer {
     let slashes = 1;
     let validator = c => {
       //let last = word.substring(word.length - 1);
-      //Util.log("i:" + i + " c:" + c + " prev: " + prev + " slashes: " + slashes);
+      //console.log("i:" + i + " c:" + c + " prev: " + prev + " slashes: " + slashes);
       i++;
       if(slashes == 1 && c == ' ' && prev == '/') {
         return false;
@@ -587,7 +587,7 @@ export class Lexer {
     };
     const print = () => {
       word = this.getRange(this.start, this.pos);
-      //Util.log("word: " + word + " lexText: " + this.getRange(this.start, this.pos));
+      //console.log("word: " + word + " lexText: " + this.getRange(this.start, this.pos));
     };
 
     //if(this.accept(oneOf('/')))
@@ -600,7 +600,7 @@ export class Lexer {
     }
 
     this.backup(this.pos - this.start - 1);
-    Util.log('this.getRange()', this.getRange(this.start, this.pos));
+    //console.log('this.getRange()', this.getRange(this.start, this.pos));
 
     return this.lexPunctuator();
   }
@@ -714,7 +714,7 @@ export class Lexer {
   lexQuote(quoteChar) {
     if(quoteChar === '`') {
       //this.ignore();
-      //Util.log("inSubst", this.inSubst);
+      //console.log("inSubst", this.inSubst);
 
       return this.lexTemplate(this.inSubst);
     }
@@ -836,12 +836,12 @@ export class Lexer {
 
     let idx = this.tokenIndex;
     do {
-      //Util.log("lex: ",this.tokenIndex ,  this.stateFn);
+      //console.log("lex: ",this.tokenIndex ,  this.stateFn);
 
       this.stateFn = this.stateFn();
     } while(this.stateFn !== null && this.tokenIndex >= this.tokens.length);
     let tok = this.nextToken();
-    //Util.log("lex: ",this.tokenIndex , tok, this.stateFn);
+    //console.log("lex: ",this.tokenIndex , tok, this.stateFn);
     return tok;
   }
 

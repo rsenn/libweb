@@ -31,8 +31,10 @@ export class Printer {
     try {
       className = Util.className(node);
       name = Util.isObject(node) ? className : null;
+
       fn =
         this['print' + name] ||
+        (() => '') ||
         function(...args) {
           args = args.map(a => Util.className(a));
           throw new Error(`Non-existent print${name}(${args})`);
@@ -41,7 +43,8 @@ export class Printer {
       process.exit(0);
     }
     let ret = '';
-    let comments = ESNode.assoc(node).comments;
+    //    console.log("node:",node);
+    let comments = (node && ESNode.assoc(node).comments) || [];
     if(comments && comments.length) {
       for(let comment of comments) {
         ret += comment.value;
@@ -54,9 +57,9 @@ export class Printer {
   print(tree) {
     this.nodes = [...deep.iterate(tree, node => Util.isObject(node) && 'position' in node)].map(([node, path]) => [node.position, path.join('.'), node]);
 
-    //Util.log("comments: ", this.comments);
+    //console.log("comments: ", this.comments);
 
-    //Util.log("nodes: ", this.nodes);
+    //console.log("nodes: ", this.nodes);
     this.adjacent = this.comments.map(({ text, pos, len }) => ({
       start: pos,
       end: pos + len,
@@ -64,7 +67,7 @@ export class Printer {
       nodes: this.nodes.slice(this.nodes.findIndex(([position, path]) => position > pos + len) - 1).slice(0, 2)
     }));
 
-    //Util.log("adjacent: ", this.adjacent);
+    //console.log("adjacent: ", this.adjacent);
 
     return this.printNode(tree);
   }
@@ -73,8 +76,9 @@ export class Printer {
     let output = '';
     for(let statement of program.body) {
       let line = this.printNode(statement);
+      if(line == '') continue;
       if(/\n/.test(line) && output != '') output += '\n';
-      //Util.log(`line:'${line.replace(/\n/g, "\\n")}'`);
+      //console.log(`line:'${line.replace(/\n/g, "\\n")}'`);
       output += line + (line.trim().endsWith(';') ? '\n' : ';\n');
     }
     output = output.replace(/[;\n ]*$/, '');
@@ -109,7 +113,7 @@ export class Printer {
     let output = '';
     output += this.printNode(id);
 
-    //Util.log('printBindingProperty:', value.value, id.value);
+    //console.log('printBindingProperty:', value.value, id.value);
 
     if(value.value != id.value) output += ': ' + this.printNode(value);
 
@@ -123,7 +127,7 @@ export class Printer {
 
   printTemplateLiteral(template_literal) {
     let s = '';
-    //Util.log("template_literal:", template_literal);
+    //console.log("template_literal:", template_literal);
 
     for(let part of template_literal.parts) {
       if(part instanceof Literal) s += part.value;
@@ -173,7 +177,7 @@ export class Printer {
   printLogicalExpression(logical_expression) {
     const { operator, left, right } = logical_expression;
 
-    //Util.log('logical_expression', logical_expression);
+    //console.log('logical_expression', logical_expression);
 
     return `${this.printNode(left)} ${operator} ${this.printNode(right)}`;
   }
@@ -181,13 +185,13 @@ export class Printer {
   printMemberExpression(member_expression) {
     const { object, property } = member_expression;
     let left, right;
-    //Util.log("member_expression:", member_expression);
+    //console.log("member_expression:", member_expression);
     left = this.printNode(object);
     right = this.printNode(property);
 
     if(!(object instanceof Identifier) && !(object instanceof MemberExpression)) left = '(' + left + ')';
 
-    ///null.*{/.test(left) && Util.log("object:", object);
+    ///null.*{/.test(left) && console.log("object:", object);
 
     if(/^[0-9]+$/.test(right) || /[\.\']/.test(right) || !(property instanceof Identifier)) return left + '[' + right + ']';
     return left + '.' + right;
@@ -195,7 +199,7 @@ export class Printer {
 
   printConditionalExpression(conditional_expression) {
     const { test, consequent, alternate } = conditional_expression;
-    //Util.log('conditional_expression:', conditional_expression);
+    //console.log('conditional_expression:', conditional_expression);
 
     if(!test) {
       throw new Error('');
@@ -224,7 +228,7 @@ export class Printer {
     const { expressions } = sequence_expression;
 
     let output = '(';
-    //Util.log('expressions: ', expressions);
+    //console.log('expressions: ', expressions);
 
     output += expressions
       .flat()
@@ -242,14 +246,14 @@ export class Printer {
     const { body } = block_statement;
     let s = '';
     if(!body) {
-      //Util.log("block_statement:", block_statement);
+      //console.log("block_statement:", block_statement);
       process.exit();
     }
     if('length' in body) {
       if(body.length == 0) return this.colorText.punctuators('{}');
       for(let statement of body) {
         if(statement == null) {
-          //Util.log("printBlockStatement: ", body);
+          //console.log("printBlockStatement: ", body);
           throw new Error();
         }
         let line = this.printNode(statement);
@@ -257,7 +261,7 @@ export class Printer {
         let multiline = /\n/.test(line);
         s += multiline && s.length ? '\n\n  ' : '\n  ';
         let eol = (new RegExp('(;|\n|})$').test(line.trimEnd()) ? '' : this.colorCode.punctuators() + ';') + (multiline ? '\n' : '');
-        //Util.log("line:", { line, eol });
+        //console.log("line:", { line, eol });
 
         if(line != '') s += line.replace(/\n/g, '\n  ') + eol;
       }
@@ -346,8 +350,8 @@ export class Printer {
     output += this.printNode(body);
     output += this.colorCode.keywords() + 'while' + this.colorCode.punctuators() + `(` + this.printNode(test) + this.colorCode.punctuators() + ')';
     return output;
-    //Util.log(arguments[0]);
-    //Util.log(Object.keys(arguments[0]).join(", "));
+    //console.log(arguments[0]);
+    //console.log(Object.keys(arguments[0]).join(", "));
     throw new Error(arguments[0]);
   }
 
@@ -365,12 +369,12 @@ export class Printer {
   }
 
   printForInStatement(for_in_statement) {
-    const { left, right, body, operator = 'in' } = for_in_statement;
+    const { left, right, body, operator = 'in',async } = for_in_statement;
 
     let key = this.printNode(left).replace(/;$/, '');
     let object = this.printNode(right);
 
-    let output = `for(${key} ${operator} ${object})`;
+    let output = `for${async ? ' await' : ''}(${key} ${operator} ${object})`;
     let code = this.printNode(body);
     if(code[0] == '{' || !/\n./.test(code)) output += ' ';
     else output += '\n';
@@ -398,14 +402,14 @@ export class Printer {
   printImportStatement(import_statement) {
     const { identifiers, export: doExport } = import_statement;
     let output = doExport ? 'export ' : 'import ';
-    //Util.log(identifiers);
+    //console.log(identifiers);
 
     if(identifiers.declarations) output += identifiers.declarations.map(decl => this.printNode(decl)).join(', ');
     else output += this.printNode(identifiers);
 
     output += ' from ';
 
-    //Util.log('import_statement.source:', import_statement.source);
+    //console.log('import_statement.source:', import_statement.source);
     output += this.printNode(import_statement.source);
     return output;
   }
@@ -413,7 +417,7 @@ export class Printer {
   printExportStatement(export_statement) {
     const { what, declarations } = export_statement;
 
-    //Util.log('declarations:', declarations);
+    //console.log('declarations:', declarations);
 
     let output = 'export ';
 
@@ -469,18 +473,18 @@ export class Printer {
     let name = id ? this.printNode(id) : '';
     if(name != '') output += ' ' + this.colorText.identifiers(name);
     if(extending) output += this.colorText.keywords(' extends ') + this.printNode(extending);
-    //Util.log('members:', util.inspect(members, { depth: 2, colors: true }));
+    //console.log('members:', util.inspect(members, { depth: 2, colors: true }));
 
     output += ' {';
 
     for(let member of members) {
       if(member.comments) {
-        //Util.log('member.comments', util.inspect(member, { depth: 0, colors: true }), member.comments);
+        //console.log('member.comments', util.inspect(member, { depth: 0, colors: true }), member.comments);
       }
 
       let s = this.printNode(member);
 
-      //Util.log('member:', member);
+      //console.log('member:', member);
 
       if(member instanceof FunctionDeclaration) s = s.replace(/function\s/, '');
 
@@ -517,7 +521,7 @@ export class Printer {
         : this.printNode(params)) +
       ') ';
 
-    //Util.log("body: ",function_declaration);
+    //console.log("body: ",function_declaration);
 
     output += this.printNode(body);
 
@@ -544,8 +548,8 @@ export class Printer {
     } else */ {
       code = this.printNode(body);
 
-      /*  Util.log('body:', Util.className(body));
-      //Util.log('body:', body);*/
+      /*  console.log('body:', Util.className(body));
+      //console.log('body:', body);*/
 
       if(Util.className(body).startsWith('Object')) code = '(' + code + ')';
     }
@@ -586,17 +590,17 @@ export class Printer {
 
         property = property.expr;
       } else if(property.id == null) {
-        //Util.log('Property:', property);
+        //console.log('Property:', property);
         throw new Error();
       }*/
       //if(this.position().line >= 2497)
-      //Util.log("Property:", property);
+      //console.log("Property:", property);
 
       /*      if(Util.className(property.id) == "Identifier") {
-        //Util.log("property.id:", Util.className(property.id));
+        //console.log("property.id:", Util.className(property.id));
         throw new Error();
       }*/
-      //Util.log('printObjectLiteral:', { property });
+      //console.log('printObjectLiteral:', { property });
 
       let name, value;
       let isFunction = false;
@@ -614,7 +618,7 @@ export class Printer {
       }
 
       if(property.value instanceof FunctionDeclaration) {
-        //Util.log("function.id:", property.value.id);
+        //console.log("function.id:", property.value.id);
         let functionName = property.value.id ? this.printNode(property.value.id) : '';
         if(functionName != '') {
           name = functionName;
@@ -629,12 +633,12 @@ export class Printer {
 
       line += value.replace(/\n/g, '\n  ');
 
-      //Util.log("printObjectLiteral.line:", { name,line});
+      //console.log("printObjectLiteral.line:", { name,line});
 
       if(property.flags && !(property instanceof BindingProperty) && !(object_literal instanceof ObjectBindingPattern)) {
         line = name + ' = ' + line;
       } else if(name && name != line) {
-        //Util.log('printObjectLiteral ', { name, line });
+        //console.log('printObjectLiteral ', { name, line });
         line = name + (isFunction ? '' : ': ') + line;
         if(!property.flags) is_prototype = false;
       }
@@ -668,7 +672,7 @@ export class Printer {
     if(!(id instanceof Identifier)) prop = '[' + prop + ']';
     s += prop;
 
-    //Util.log('printPropertyDefinition:', value.value, id.value);
+    //console.log('printPropertyDefinition:', value.value, id.value);
 
     if(!(id instanceof Identifier) || id.value != value.value) {
       if(!(value instanceof FunctionDeclaration)) s += this.colorText.punctuators(': ');
@@ -718,7 +722,7 @@ export class Printer {
       output += ` ${attr}`;
 
       if(!(value instanceof Literal && value.value === true) && !(value.value == attr && this.format)) {
-        //Util.log('printJSXLiteral', attr, value.value);
+        //console.log('printJSXLiteral', attr, value.value);
 
         output += this.format ? `: ` : `=`;
         if(value instanceof Literal) output += this.printNode(value);
@@ -748,7 +752,7 @@ export class Printer {
   printArrayBindingPattern(array_binding_pattern) {
     const { elements } = array_binding_pattern;
 
-    //Util.log('printArrayBindingPattern', { elements });
+    //console.log('printArrayBindingPattern', { elements });
     let output = '';
 
     for(let element of elements) {
@@ -764,12 +768,12 @@ export class Printer {
 
   printObjectBindingPattern(object_binding_pattern) {
     const { value, properties } = object_binding_pattern;
-    //Util.log('properties:', util.inspect(properties, { depth: 2, colors: true }));
+    //console.log('properties:', util.inspect(properties, { depth: 2, colors: true }));
     let output = '';
     for(let binding_property of properties) {
       if(output != '') output += ', ';
 
-      //Util.log('binding_property:', binding_property);
+      //console.log('binding_property:', binding_property);
 
       if(!(binding_property instanceof PropertyDefinition)) {
         output += this.printNode(binding_property);

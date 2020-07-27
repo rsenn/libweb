@@ -2,8 +2,6 @@ import { h, Component, Fragment } from '../../dom/preactComponent.js';
 import { ElementToComponent } from '../components.js';
 
 export const SchematicSymbol = ({ data, opts, ...props }) => {
-
-
   console.log(`SchematicSymbol.render`, data, opts);
   const children = [...data.children];
 

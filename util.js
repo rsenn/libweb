@@ -308,7 +308,7 @@ Util.debug = function(message) {
   //Util.log.apply(Util, args)
 };
 Util.type = function({ type }) {
-  return (type && String(type).split(/[ ()]/)[1]) || '';
+  return (type && String(type).split(new RegExp('[ ()]', 'g'))[1]) || '';
 };
 Util.functionName = function(fn) {
   const matches = /function\s*([^(]*)\(.*/g.exec(String(fn));
@@ -636,18 +636,18 @@ Util.static = (obj, functions, thisObj, pred = (k, v, f) => true) => {
   }
   return obj;
 };
-Util.defineGetter = (obj, key, get, enumerable = false) =>
+Util.defineGetter = (obj, key, fn, enumerable = false) =>
   obj[key] === undefined &&
   Object.defineProperty(obj, key, {
     enumerable,
     configurable: true,
-    get
+    get: fn
   });
-Util.defineGetterSetter = (obj, key, get, set, enumerable = false) =>
+Util.defineGetterSetter = (obj, key, g, s, enumerable = false) =>
   obj[key] === undefined &&
   Object.defineProperty(obj, key, {
-    get,
-    set,
+    get: g,
+    set: s,
     enumerable
   });
 Util.extendArray = function(arr = Array.prototype) {
@@ -773,9 +773,7 @@ Util.extendMap = function(map) {
   if(map.entries === undefined) {
     map.entries = function* iterator() {
       for(let entry of map) {
-        if(entry.name !== undefined && entry.value !== undefined) yield [entry.name, entry.value];
-        else if(entry[0] !== undefined && entry[1] !== undefined) yield entry;
-        else yield [entry, map[entry]];
+        yield entry.name !== undefined && entry.value !== undefined ? [entry.name, entry.value] : entry[0] !== undefined && entry[1] !== undefined ? entry : [entry, map[entry]];
       }
     };
   }
@@ -907,7 +905,7 @@ Util.xor = Util.curry((a, b) => a ^ b);
 Util.or = Util.curry((a, b) => a | b);
 Util.and = Util.curry((a, b) => a & b);
 Util.mod = Util.curry((a, b) => a % b);
-Util.pow = Util.curry((a, b) => a ** b);
+Util.pow = Util.curry((a, b) => Math.pow(a,b));
 
 /*Util.define(String.prototype,
   'splice',
@@ -1030,7 +1028,7 @@ Util.toString = (obj, opts = {}) => {
     return s + (i > 0 ? sep() + padding : '') + `]`;
   } else if(typeof obj == 'function' || obj instanceof Function || Util.className(obj) == 'Function') {
     obj = '' + obj;
-    if(!multiline) obj = obj.replace(/(\n| anonymous)/g, '');
+    if(!multiline) obj = obj.replace(/(\n|\ anonymous)/g, '');
     return obj;
   } else if(typeof obj == 'string') {
     return JSON.toString(obj);
@@ -1238,7 +1236,7 @@ Util.hasProps = function(obj, props) {
   return props ? props.every(prop => 'prop' in obj) : keys.length > 0;
 };
 Util.validatePassword = function(value) {
-  return value.length > 7 && /^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]/.test(value) && !/\s/.test(value);
+  return value.length > 7 && new RegExp("^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]").test(value) && !/\s/.test(value);
 };
 Util.clone = function(obj, proto) {
   if(Util.isArray(obj)) return obj.slice();
@@ -1596,7 +1594,7 @@ Util.encodeQuery = function(data) {
   return ret.join('&');
 };
 Util.parseURL = function(href = this.getURL()) {
-  const matches = /^([^:]*):\/\/([^/:]*)(:[0-9]*)?(\/?.*)/.exec(href);
+  const matches = new RegExp("^([^:]*):\/\/([^/:]*)(:[0-9]*)?(\/?.*)").exec(href);
   if(!matches) return null;
   const argstr = matches[4].indexOf('?') != -1 ? matches[4].replace(/^[^?]*\?/, '') : ''; /* + "&test=1"*/
   const pmatches =
@@ -1756,13 +1754,13 @@ Util.rangeMinMax = function(arr, field) {
 
 Util.remap = (...args) => {
   const getR = () => (Util.isArray(args[0]) ? args.shift() : args.splice(0, 2));
-  const from = getR(),
+  const _from = getR(),
     to = getR();
 
-  const f = [to[1] - to[0], from[1] - from[0]];
+  const f = [to[1] - to[0], _from[1] - _from[0]];
   const factor = f[0] / f[1];
 
-  const r = val => (val - from[0]) * factor + to[0];
+  const r = val => (val - _from[0]) * factor + to[0];
 
   return r;
 };
@@ -1977,7 +1975,7 @@ Util.timeSpan = function(s) {
   s = Math.floor(s / 7);
   const weeks = s;
   let ret = '';
-  ret = `${`0${hours}`.substring(0, 2)}:${`0${minutes}`.substring(0, 2)}:${`0${seconds}`.substring(0, 2)}`;
+  ret = `${('0'+hours).substring(0, 2)}:${('0'+minutes).substring(0, 2)}:${('0'+seconds).substring(0, 2)}`;
   if(days) ret = `${days} days ${ret}`;
   if(weeks) ret = `${weeks} weeks ${ret}`;
   return ret;
