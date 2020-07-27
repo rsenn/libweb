@@ -303,8 +303,7 @@ export class ForInStatement extends Statement {
     this.right = right;
     this.body = body;
     this.operator = operator;
-    if(async)
-      this.async = true;
+    if(async) this.async = true;
   }
 }
 

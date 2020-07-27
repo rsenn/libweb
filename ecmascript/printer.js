@@ -369,7 +369,7 @@ export class Printer {
   }
 
   printForInStatement(for_in_statement) {
-    const { left, right, body, operator = 'in',async } = for_in_statement;
+    const { left, right, body, operator = 'in', async } = for_in_statement;
 
     let key = this.printNode(left).replace(/;$/, '');
     let object = this.printNode(right);

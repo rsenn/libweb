@@ -905,7 +905,7 @@ Util.xor = Util.curry((a, b) => a ^ b);
 Util.or = Util.curry((a, b) => a | b);
 Util.and = Util.curry((a, b) => a & b);
 Util.mod = Util.curry((a, b) => a % b);
-Util.pow = Util.curry((a, b) => Math.pow(a,b));
+Util.pow = Util.curry((a, b) => Math.pow(a, b));
 
 /*Util.define(String.prototype,
   'splice',
@@ -1236,7 +1236,7 @@ Util.hasProps = function(obj, props) {
   return props ? props.every(prop => 'prop' in obj) : keys.length > 0;
 };
 Util.validatePassword = function(value) {
-  return value.length > 7 && new RegExp("^(?![\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\da-zA-Z!#$ %^&*]").test(value) && !/\s/.test(value);
+  return value.length > 7 && new RegExp('^(?![d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[da-zA-Z!#$ %^&*]').test(value) && !/\s/.test(value);
 };
 Util.clone = function(obj, proto) {
   if(Util.isArray(obj)) return obj.slice();
@@ -1594,7 +1594,7 @@ Util.encodeQuery = function(data) {
   return ret.join('&');
 };
 Util.parseURL = function(href = this.getURL()) {
-  const matches = new RegExp("^([^:]*):\/\/([^/:]*)(:[0-9]*)?(\/?.*)").exec(href);
+  const matches = new RegExp('^([^:]*)://([^/:]*)(:[0-9]*)?(/?.*)').exec(href);
   if(!matches) return null;
   const argstr = matches[4].indexOf('?') != -1 ? matches[4].replace(/^[^?]*\?/, '') : ''; /* + "&test=1"*/
   const pmatches =
@@ -1975,7 +1975,7 @@ Util.timeSpan = function(s) {
   s = Math.floor(s / 7);
   const weeks = s;
   let ret = '';
-  ret = `${('0'+hours).substring(0, 2)}:${('0'+minutes).substring(0, 2)}:${('0'+seconds).substring(0, 2)}`;
+  ret = `${('0' + hours).substring(0, 2)}:${('0' + minutes).substring(0, 2)}:${('0' + seconds).substring(0, 2)}`;
   if(days) ret = `${days} days ${ret}`;
   if(weeks) ret = `${weeks} weeks ${ret}`;
   return ret;

@@ -2048,7 +2048,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
     let msg = s + ` ${quoteList(this.stack[depth].tokens || [])}` + `  ${quoteArg(args)}`;
 
     //if(!/match/.test(methodName)) console.log(msg);
-    console.log("methodName:",methodName);
+    console.log('methodName:', methodName);
 
     let ret = methods[methodName].call(this, ...args);
     let { token } = this;
