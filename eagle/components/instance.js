@@ -6,14 +6,12 @@ import { useValue, useResult, useAsyncIter, useRepeater } from '../../repeater/r
 import { EagleElement } from '../element.js';
 
 export const Instance = ({ data, opts = {}, transformation, ...props }) => {
-  let { owner, path, raw } = data;
-
-  data = EagleElement.get(owner, path, raw);
+ /*
 
   if(!window.instances) window.instances = new Set();
 
   window.instances.add(data);
-
+*/
   let instance =
     useValue(async function*() {
       for await (let change of data.repeater) {
