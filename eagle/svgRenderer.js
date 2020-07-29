@@ -257,61 +257,46 @@ export class EagleSVGRenderer {
         );
         break;
       }
-      case 'text': {
+      /*  case 'text': {
         let { children = [], text: innerText, align, size, font, rot } = item;
         let text = innerText || labelText || children.join('\n');
         let { x, y } = coordFn(item);
         this.debug('text', { text });
-
         if(text.startsWith('>')) {
           const prop = text.slice(1).toLowerCase();
           this.debug('text', { text, prop, opts });
           text = prop in opts ? opts[prop] : text;
         }
         if(text == '') break;
-
         const translation = new TransformationList(`translate(${x},${y})`);
-
         this.debug('translation:', Util.className(translation));
         const rotation = translation.concat(Rotation(rot));
         this.debug('rotation:', Util.className(rotation));
         let wholeTransform = transform.concat(Rotation(rot));
         let wholeAngle = ClampAngle(wholeTransform.decompose().rotate);
-
         let undoTransform = new TransformationList().scale(1, -1).rotate(wholeAngle);
         let undoAngle = ClampAngle(undoTransform.decompose().rotate);
-
         let angle = ClampAngle(undoAngle - wholeAngle, 180);
-
         const finalTransformation = rotation
           .concat(undoTransform)
-          //.rotate(Math.abs(wholeAngle % 180))
           .collapseAll();
-
         this.debug(`wholeAngle ${text}`, wholeAngle);
-        /*this.debug(`undoAngle ${text}`, undoAngle);
-        this.debug(`angle ${text}`, angle);*/
         this.debug(`finalTransformation ${text}`, finalTransformation.toString());
         this.debug(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);
-
         if(finalTransformation.rotation) {
           if(finalTransformation.rotation.angle < 0) finalTransformation.rotation.angle = Math.abs(finalTransformation.rotation.angle);
-          //finalTransformation.rotation.angle %= 180;
         }
-
         const baseAlignment = EagleSVGRenderer.alignment(align);
         const rotateAlignment = AlignmentAngle(wholeAngle);
         const alignment = baseAlignment
           .clone()
           .rotate((rotateAlignment * Math.PI) / 180)
           .round(0.5);
-
         this.debug(
           `render alignment ${text}`,
           Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + '']),
           EagleSVGRenderer.alignmentAttrs(alignment, VERTICAL)
         );
-
         const e = svg(
           'text',
           {
@@ -321,19 +306,16 @@ export class EagleSVGRenderer {
             x,
             y,
             ...EagleSVGRenderer.alignmentAttrs(alignment, VERTICAL),
-
-            /*    'font-size': (size * 1.6).toFixed(2),
-            'font-family': font || 'Fixed Medium',*/
             transform: finalTransformation
           },
           parent
-        );
-
+        );g
         let attrs = EagleSVGRenderer.alignmentAttrs(alignment, HORIZONTAL);
         if(align !== undefined) attrs['data-align'] = align;
         this.create('tspan', { ...attrs, children: text }, e);
         break;
       }
+*/
       /*      case 'circle': {
         const { width, radius } = item;
         const { x, y } = coordFn(item);
@@ -472,3 +454,4 @@ export class EagleSVGRenderer {
 }
 EagleSVGRenderer.horizontalAlignment = ['start', 'middle', 'end'];
 EagleSVGRenderer.verticalAlignment = ['hanging', 'mathematical', 'baseline'];
+

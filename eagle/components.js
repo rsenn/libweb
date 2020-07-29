@@ -4,8 +4,9 @@ import { Wire } from './components/wire.js';
 import { Rectangle } from './components/rectangle.js';
 import { Pin } from './components/pin.js';
 import { Circle } from './components/circle.js';
+import { TextElement } from './components/text.js';
 
-export const PrimitiveComponents = { Wire, Rectangle, Pin, Circle };
+export const PrimitiveComponents = { Wire, Rectangle, Pin, Circle, Text: TextElement };
 
 export const ElementNameToComponent = name => {
   let comp = PrimitiveComponents[Util.ucfirst(name)];
