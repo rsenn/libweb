@@ -2199,7 +2199,6 @@ Util.entries = function(arg) {
 };
 Util.keys = function(arg) {
   let ret;
-  console.log('Util.keys', arg);
   if(Util.isObject(arg)) {
     ret =
       typeof arg.keys == 'function'
