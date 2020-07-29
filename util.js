@@ -233,17 +233,19 @@ Util.log = (...args) => {
   if(args[0] instanceof Util.location) location = args.shift();
   else location = Util.getStackFrame().getLocation();
   let locationStr = location.toString(true);
-  let c = locationStr[Symbol.for('nodejs.util.inspect.custom')]();
-  c.append([' ']);
+  let c = (locationStr[Symbol.for('nodejs.util.inspect.custom')] || locationStr.toString).call(locationStr);
+  c += ' '; //.append([' ']);
   let filters = Util.log.filters;
   let results = filters.map(f => f.test(locationStr));
   if(filters.every(f => !f.test(locationStr))) return;
   args = args.reduce((a, p) => {
     if(Util.isObject(p) && p[Util.log.methodName]) p = p[Util.log.methodName]();
-    a.append([p]);
+    a += p;
+    //    a.append([p]);
     return a;
   }, c);
-  args.toConsole();
+  if(args.toConsole) args.toConsole();
+  else console.log(args);
 };
 
 Object.defineProperty(Util.log, 'methodName', {
@@ -2550,8 +2552,8 @@ Util.define(Util.location.prototype, {
   toString(color = false) {
     let { fileName, lineNumber, columnNumber, functionName } = this;
     fileName = fileName.replace(new RegExp(Util.getURL() + '/', 'g'), '');
-    let text = color ? new this.colorCtor() : '';
-    const c = color ? (t, color) => text.write(t, color /*, [0, 0, 0]*/) : t => (text += t);
+    let text = /*color ? new this.colorCtor() : */ '';
+    const c = /*color ? (t, color) => text.write(t, color) :*/ t => (text += t);
     const palette = Util.location.palettes[Util.isBrowser() ? 1 : 0];
     if(functionName) c(functionName.replace(/\s*\[.*/g, '').replace(/^Function\./, '') + ' ', palette[1]);
 

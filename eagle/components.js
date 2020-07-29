@@ -7,10 +7,17 @@ import { SchematicSymbol } from './components/symbol.js';
 */
 import { Wire } from './components/wire.js';
 import { Rectangle } from './components/rectangle.js';
+import { Pin } from './components/pin.js';
+import { Circle } from './components/circle.js';
 
-export const PrimitiveComponents = { Wire, Rectangle };
+export const PrimitiveComponents = { Wire, Rectangle, Pin, Circle };
 
-export const ElementNameToComponent = name => PrimitiveComponents[Util.ucfirst(name)];
+export const ElementNameToComponent = name => {
+  let comp = PrimitiveComponents[Util.ucfirst(name)];
+
+  if(!comp) console.warn(`No component '${name}'`);
+  return comp;
+};
 
 export const ElementToComponent = element => ElementNameToComponent(element.tagName);
 
@@ -20,7 +27,7 @@ const PinSizes = {
   short: 1,
   point: 0
 };
-
+/*
 export const Pin = ({ length, rot, name, visible, x, y, function: func }) => {
   const angle = +(rot || '0').replace(/R/, '');
   let veclen = PinSizes[length] * 2.54;
@@ -83,7 +90,7 @@ export const Pin = ({ length, rot, name, visible, x, y, function: func }) => {
     );
 
   return ret;
-};
+};*/
 /*
 export const Wire = props => {
   const [item, setItem] = useState(props.item);

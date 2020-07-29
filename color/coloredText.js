@@ -130,6 +130,10 @@ export class ColoredText extends Array {
     return a.join('');
   }
 
+  valueOf(color = true) {
+    return this.toString(color);
+  }
+
   [Symbol.for('nodejs.util.inspect.custom')]() {
     return Util.isBrowser() ? this.toConsole() : this.toAnsi256();
   }
