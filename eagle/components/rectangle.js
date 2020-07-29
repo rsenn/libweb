@@ -1,5 +1,4 @@
 import { h, Component } from '../../dom/preactComponent.js';
-import Util from '../../util.js';
 import { Rect } from '../../geom.js';
 import { MakeCoordTransformer } from '../renderUtils.js';
 import { Rotation } from '../common.js';

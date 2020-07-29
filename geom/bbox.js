@@ -35,6 +35,9 @@ export class BBox {
 
   update(arg, offset = 0.0, obj = null) {
     //Util.log('BBox.update', { arg, offset, obj });
+
+    if(Util.isObject(arg) && typeof arg.bbox == 'function') arg = arg.bbox();
+
     if(Util.isArray(arg)) return this.updateList(arg, offset);
 
     if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset, name => (this.objects[name] = obj || arg));

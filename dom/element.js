@@ -397,11 +397,13 @@ export class Element extends Node {
     var e = typeof element == 'string' ? Element.find(element) : element;
 
     var pos = Object.freeze(new Rect(to || Element.rect(e)));
+
     function move(x, y) {
       let rect = new Rect(pos.x + x, pos.y + y, pos.width, pos.height);
       move.last = rect;
-      return Element.move(e, rect, position);
+      return Element.move(e, rect, 'absolute');
     }
+
     move.pos = pos;
     move.cancel = () => move(0, 0);
     move.jump = () => Element.moveRelative(e);
@@ -500,17 +502,17 @@ export class Element extends Node {
 
     const w = window !== undefined ? window : global.window;
     const d = document !== undefined ? document : global.document;
-    //console.log('Element.getCSS ', { w, d, element });
+    // console.log('Element.getCSS ', { w, d, element });
 
     let parent = Util.isObject(element) ? element.parentElement || element.parentNode : null;
 
-    let estyle = Util.tryPredicate(() => (Util.isObject(w) && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element)), null);
-    let pstyle = Util.tryPredicate(() => (parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {}), null);
+    let estyle = Util.tryPredicate(() => (Util.isObject(w) && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element)), null)();
+    let pstyle = Util.tryPredicate(() => (parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {}), null)();
 
     if(!estyle || !pstyle) return null;
     //let styles = [estyle,pstyle].map(s => Object.fromEntries([...Node.map(s)].slice(0,20)));
 
-    let style = Util.tryPredicate(() => Util.removeEqual(estyle, pstyle), null);
+    let style = Util.tryPredicate(() => Util.removeEqual(estyle, pstyle), null)();
 
     if(!style) return null;
     let keys = Object.keys(style).filter(k => !/^__/.test(k));

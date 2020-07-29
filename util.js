@@ -233,19 +233,19 @@ Util.log = (...args) => {
   if(args[0] instanceof Util.location) location = args.shift();
   else location = Util.getStackFrame().getLocation();
   let locationStr = location.toString(true);
-  let c = (locationStr[Symbol.for('nodejs.util.inspect.custom')] || locationStr.toString).call(locationStr);
-  c += ' '; //.append([' ']);
+  let c = [(locationStr[Symbol.for('nodejs.util.inspect.custom')] || locationStr.toString).call(locationStr)];
+  c.push(' ');
   let filters = Util.log.filters;
   let results = filters.map(f => f.test(locationStr));
   if(filters.every(f => !f.test(locationStr))) return;
   args = args.reduce((a, p) => {
     if(Util.isObject(p) && p[Util.log.methodName]) p = p[Util.log.methodName]();
-    a += p;
+    a.push(p);
     //    a.append([p]);
     return a;
   }, c);
   if(args.toConsole) args.toConsole();
-  else console.log(args);
+  else console.log(...args);
 };
 
 Object.defineProperty(Util.log, 'methodName', {
@@ -1361,17 +1361,6 @@ Util.moveIf = function(src, pred, dst = []) {
 
   return dst;
 };
-Util.removeEqual = function(a, b) {
-  let c = {};
-  for(let key of Util.keys(a)) {
-    if(b[key] === a[key]) continue;
-    //console.log(`removeEqual '${a[key]}' === '${b[key]}'`);
-    c[key] = a[key];
-  }
-  //console.log(`removeEqual`,c);
-
-  return c;
-};
 //Remove the storage when logging out
 Util.logOutClearStorage = function() {
   localStorage.removeItem('userToken');
@@ -2210,6 +2199,7 @@ Util.entries = function(arg) {
 };
 Util.keys = function(arg) {
   let ret;
+  console.log('Util.keys', arg);
   if(Util.isObject(arg)) {
     ret =
       typeof arg.keys == 'function'
@@ -2232,7 +2222,17 @@ Util.values = function(arg) {
   }
   if(ret) return ret.call(arg);
 };
+Util.removeEqual = function(a, b) {
+  let c = {};
+  for(let key of Util.keys(a)) {
+    if(b[key] === a[key]) continue;
+    //console.log(`removeEqual '${a[key]}' === '${b[key]}'`);
+    c[key] = a[key];
+  }
+  //console.log(`removeEqual`,c);
 
+  return c;
+};
 Util.traverse = function(o, fn) {
   if(typeof fn == 'function')
     return Util.foreach(o, (v, k, a) => {
@@ -3370,7 +3370,25 @@ Util.ansiCode = (...args) => {
   return color.code(...args);
 };
 Util.ansi = Util.coloring(true);
-
+Util.wordWrap = (str, width, delimiter) => {
+  // use this on single lines of text only
+  if(str.length > width) {
+    let p = width;
+    for(; p > 0 && str[p] != ' '; p--) {}
+    if(p > 0) {
+      let left = str.substring(0, p);
+      let right = str.substring(p + 1);
+      return left + delimiter + Util.wordWrap(right, width, delimiter);
+    }
+  }
+  return str;
+};
+Util.multiParagraphWordWrap = (str, width, delimiter) => {
+  // use this on multi-paragraph lines of xcltext
+  let arr = str.split(delimiter);
+  for(let i = 0; i < arr.length; i++) if(arr[i].length > width) arr[i] = Util.wordWrap(arr[i], width, delimiter);
+  return arr.join(delimiter);
+};
 Util.defineInspect = (proto, ...props) => {
   if(!Util.isBrowser()) {
     const c = Util.coloring();

@@ -444,7 +444,9 @@ export class EagleElement extends EagleNode {
     const keys = Object.keys(raw.attributes);
     const makeGetterSetter = k => v => (v === undefined ? +raw.attributes[k] : (raw.attributes[k] = v + ''));
 
-    if(['x1', 'y1', 'x2', 'y2'].every(prop => keys.includes(prop))) {
+    if(['x', 'y', 'radius'].every(prop => keys.includes(prop))) {
+      return Circle.bind(this, null, makeGetterSetter);
+    } else if(['x1', 'y1', 'x2', 'y2'].every(prop => keys.includes(prop))) {
       return Line.bind(this, null, makeGetterSetter);
     } else if(['x', 'y'].every(prop => keys.includes(prop))) {
       const { x, y } = Point(this);

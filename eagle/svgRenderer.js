@@ -3,8 +3,8 @@ import Util from '../util.js';
 import { Size } from '../dom.js';
 import { Point, Rect, BBox, TransformationList } from '../geom.js';
 import { Rotation } from './common.js';
-import Components from './components.js';
 import { VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
+import { ElementToComponent, ElementNameToComponent } from './components.js';
 
 export class EagleSVGRenderer {
   static rendererTypes = {};
@@ -188,17 +188,17 @@ export class EagleSVGRenderer {
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, 'data-path': item.path, ...attr }, parent);
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
-    let comp = Util.ucfirst(item.tagName);
     const { layer } = item;
     const color = layer && layer.color; //(opts && opts.color) || (layer && this.getColor(layer.color));
 
-    if(Components[comp]) {
-      const elem = svg(Components[comp], { item, transform }, parent);
+    const comp = ElementToComponent(item);
+    if(comp) {
+      const elem = svg(comp, { data: item, transform }, parent);
       return;
     }
 
     switch (item.tagName) {
-      case 'wire': {
+      /*case 'wire': {
         const { width, curve = '' } = item;
         const { x1, y1, x2, y2 } = coordFn(item);
         svg(
@@ -217,32 +217,24 @@ export class EagleSVGRenderer {
           parent
         );
         break;
-      }
-      case 'rectangle': {
+      }*/
+      /*case 'rectangle': {
         const { x1, x2, y1, y2 } = coordFn(item);
         let rect = Rect.from({ x1, x2, y1, y2 });
         let rot = Rotation(item.rot);
         let center = rect.center;
-
-        //Util.log('rect:', rect);
-        //Util.log('rot:', rot);
         svg(
           'rect',
           {
             stroke: 'none',
             fill: color,
-
-            /*      x: -rect.width / 2,
-            y: -rect.height / 2,
-            width: rect.width,
-            height: rect.height,*/
             ...rect.toObject(),
             transform: `translate(${center}) ${rot} translate(${center.prod(-1)})`
           },
           parent
         );
         break;
-      }
+      }*/
       case 'label': {
         const { align } = item;
         const { x, y } = coordFn(item);
@@ -342,7 +334,7 @@ export class EagleSVGRenderer {
         this.create('tspan', { ...attrs, children: text }, e);
         break;
       }
-      case 'circle': {
+      /*      case 'circle': {
         const { width, radius } = item;
         const { x, y } = coordFn(item);
         svg(
@@ -358,7 +350,7 @@ export class EagleSVGRenderer {
           parent
         );
         break;
-      }
+      }*/
       case 'contactref':
         break;
       default: {

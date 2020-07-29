@@ -1,8 +1,5 @@
-import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import Util from '../../util.js';
-import { Rect } from '../../geom.js';
+import { h, Component } from '../../dom/preactComponent.js';
 import { MakeCoordTransformer } from '../renderUtils.js';
-import { Rotation } from '../common.js';
 import { TransformationList } from '../../geom/transformation.js';
 
 export const PinSizes = {

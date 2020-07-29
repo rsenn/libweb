@@ -3,7 +3,7 @@ import { Rect } from './rect.js';
 import Util from '../util.js';
 
 export function Circle(x, y, radius) {
-  let obj = this || {};
+  let obj = this || null;
   let arg;
   let args = [...arguments];
   let ret;
@@ -60,10 +60,10 @@ export function Circle(x, y, radius) {
 }
 
 export const isCircle = obj => ['x', 'y', 'radius'].every(prop => obj[prop] !== undefined);
-/*
-Object.defineProperty(Circle.prototype, 'a', { value: new Point(), enumerable: true });
-Object.defineProperty(Circle.prototype, 'b', { value: new Point(), enumerable: true });
-*/
+
+Object.defineProperty(Circle.prototype, 'x', { value: 0, enumerable: true, writable: true });
+Object.defineProperty(Circle.prototype, 'y', { value: 0, enumerable: true, writable: true });
+Object.defineProperty(Circle.prototype, 'radius', { value: 0, enumerable: true, writable: true });
 
 Object.defineProperty(Circle.prototype, 'center', {
   get: function() {
