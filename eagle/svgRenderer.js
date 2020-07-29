@@ -192,10 +192,7 @@ export class EagleSVGRenderer {
 
     const comp = ElementToComponent(item);
     if(comp) {
-      console.log(
-        'EagleSVGRenderer render component ',
-        this.transform.filter(t => ['translate'].indexOf(t.type) == -1)
-      );
+      //console.log('EagleSVGRenderer render component ', this.transform.filter(t => ['translate'].indexOf(t.type) == -1));
       const elem = svg(comp, { data: item, transform, opts: { ...opts, transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1) } }, parent);
       return;
     }

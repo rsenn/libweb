@@ -2,11 +2,22 @@ import { h, Component } from '../../dom/preactComponent.js';
 import { TransformationList } from '../../geom/transformation.js';
 import { SchematicSymbol } from './symbol.js';
 import { Rotation } from '../renderUtils.js';
+import { useValue, useResult, useAsyncIter, useRepeater } from '../../repeater/react-hooks.js';
 
 export const Instance = ({ data, opts = {}, transformation, ...props }) => {
-  let { x, y, rot, part, symbol } = data;
+  let instance =
+    useValue(async function*() {
+      for await (let change of data.repeater) {
+        console.log('change:', change);
+        yield change;
+      }
+    }) || data;
+
+  let { x, y, rot, part, symbol } = instance;
   let { deviceset, name, value } = part;
   let { transform = new TransformationList() } = opts;
+
+  console.log('instance:', instance);
 
   transform.translate(x, y);
   if(rot) {

@@ -7,6 +7,7 @@ import { ImmutableXPath } from '../xml.js';
 import { Rotation, Alignment } from './renderUtils.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList, Translation } from '../geom.js';
+import { Repeater } from '../repeater/repeater.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
 
@@ -79,84 +80,25 @@ export class EagleElement extends EagleNode {
 
     let doc = this.getDocument();
     let elem = this;
+    const attributeList = EagleElement.attributeLists[tagName] || Object.keys(attributes);
 
-    if(!Util.isEmpty(attributes)) {
+    /*    if(!Util.isEmpty(attributes))*/ {
       const names = this.names();
-      for(let key in attributes) {
+
+      for(let key of attributeList) {
         let prop = trkl.property(this.attrMap, key);
-        let handler = [
-          'active',
-          'addlevel',
-          'align',
-          'altunit',
-          'altunitdist',
-          'alwaysvectorfont',
-          'bgcolor',
-          'cap',
-          'color',
-          'constant',
-          'cream',
-          'device',
-          'deviceset',
-          'direction',
-          'display',
-          'element',
-          'encoding',
-          'first',
-          'font',
-          'function',
-          'gate',
-          'href',
-          'language',
-          'length',
-          'library',
-          'module',
-          'moduleinst',
-          'name',
-          'orphans',
-          'package',
-          'pad',
-          'part',
-          'pin',
-          'port',
-          'prefix',
-          'refer',
-          'route',
-          'severity',
-          'shape',
-          'side',
-          'smashed',
-          'stop',
-          'style',
-          'symbol',
-          'technology',
-          'text',
-          'thermals',
-          'title',
-          'unit',
-          'unitdist',
-          'uservalue',
-          'valign',
-          'value',
-          'verticaltext',
-          'visible',
-          'xref',
-          'xreflabel',
-          'xrefpart'
-        ].includes(key)
-          ? Util.ifThenElse(
+        // prettier-ignore
+        let handler = Util.ifThenElse(
               v => v !== undefined,
-              v => prop('' + v),
-              v => '' + prop()
-            )
-          : Util.ifThenElse(
-              v => v !== undefined,
-              v => prop(v),
-              v => (/^[-+]?[0-9.]+$/.test(prop()) ? parseFloat(prop()) : prop())
+              v => prop(v+''),
+              () => { let v = prop(); if(Util.isNumeric(v)) v = parseFloat(v); return v; }
             );
+
         prop(attributes[key]);
         prop.subscribe(value => (value !== undefined ? (raw.attributes[key] = '' + value) : delete raw.attributes[key]));
+        prop.subscribe(value => (this.pushEvent ? this.pushEvent() : void 0));
         this.handlers[key] = prop;
+
         if(Object.keys(names).indexOf(key) != -1 && !(['instance', 'part'].indexOf(tagName) != -1 && ['name', 'value'].indexOf(key) != -1)) {
           msg`key=${key} names=${names}`;
           trkl.bind(this, key, v => (v ? v.names.forEach(name => this.handlers[name](v.names[name])) : this.library[key + 's'][this.attrMap[key]]));
@@ -194,32 +136,46 @@ export class EagleElement extends EagleNode {
               return library.packages[pkgName]; //({ tagName: 'package', name: pkgName });
             };
           } else if(tagName == 'part') {
-            fn = value => {
-              if(key == 'name') return this.attributes.name;
+            switch (key) {
+              case 'name':
+                fn = () => this.attributes.name;
+                break;
+              case 'library':
+                fn = () => doc.libraries[this.attributes.library];
+                break;
+              case 'deviceset':
+                fn = () => this.library.devicesets[this.attributes.deviceset];
+                break;
+              case 'value':
+                fn = () => this.attributes.value || this.attributes.deviceset;
+                break;
+              case 'device':
+                fn = () => this.deviceset.devices[this.attributes.device];
+                break;
+            }
+          } else if(tagName == 'instance' || tagName == 'pinref') {
+            const module = elem.chain['module'] || doc;
 
-              const library = doc.libraries[this.attributes.library];
-              if(key == 'library') return library;
-              const deviceset = library.devicesets[this.attributes.deviceset];
-              if(key == 'deviceset') return deviceset;
-              if(key == 'value') return this.attributes.value || deviceset.name;
+            if(this.library === undefined) trkl.bind(this, 'library', () => this.part.library || this.document.libraries[this.part.attributes.library]);
 
-              if(key == 'device') return deviceset.devices[this.attributes.device];
-            };
-          } else if(tagName == 'instance') {
-            fn = value => {
-              const module = elem.chain['module'] || doc;
-              if(key == 'name') return elem.attributes.part;
+            if(this.deviceset === undefined) trkl.bind(this, 'deviceset', () => this.part.deviceset || this.library.devicesets[this.part.attributes.deviceset]);
 
-              const part = module.parts[elem.attributes.part]; //get(e => e.tagName == 'part' && e.attributes['name']);
+            if(this.value === undefined) trkl.bind(this, 'value', () => this.part.value || this.deviceset.name);
 
-              if(key == 'part') return part;
-              const library = doc.libraries[part.attributes.library];
-              const deviceset = library.devicesets[part.attributes.deviceset];
-              if(key == 'value') return part.value || deviceset.name;
-
-              //Util.log('relation ', { part, library, deviceset, gate });
-              if(key == 'gate') return deviceset.gates[part.attributes.gate];
-            };
+            switch (key) {
+              case 'part':
+                fn = () => module.parts[this.attributes.part];
+                break;
+              case 'gate':
+                fn = () => this.part.deviceset.gates[this.attributes.gate];
+                break;
+              case 'symbol':
+                fn = () => this.gate.symbol;
+                break;
+              case 'pin':
+                fn = () => this.gate.symbol.pins[this.attributes.pin];
+                break;
+            }
           } else if(key + 's' in doc) {
             fn = () => doc[key + 's'][elem.attrMap[key] + ''];
           } else {
@@ -244,18 +200,10 @@ export class EagleElement extends EagleNode {
       }
     }
     let childList = null;
-    lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.down('children'), this.raw.children));
+    lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.down('children')));
 
-    /*    trkl.bind(this, 'children', value => {
-      if(value === undefined) {
-        if(childList === null) childList = EagleNodeList.create(this, ['children'], this.raw.children);
-        return childList;
-      } else {
-        o.children = value.raw || [];
-      }
-    });*/
     if(tagName == 'gate') {
-      lazyProperty(this, 'symbol', () => {
+      trkl.bind(this, 'symbol', () => {
         let chain = this.elementChain(/*(o, p, v) => [v.tagName, EagleElement.get(o, p, v)]*/);
 
         let library = chain.library;
@@ -296,6 +244,13 @@ export class EagleElement extends EagleNode {
     }
 
     if(['attribute', 'element', 'instance', 'label', 'moduleinst', 'pad', 'pin', 'probe', 'rectangle', 'smd', 'text'].indexOf(tagName) != -1) {
+    }
+
+    if(tagName == 'symbol') {
+      lazyProperty(this, 'pins', () => {
+        let list = EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'pin');
+        return EagleNodeMap.create(list, 'name');
+      });
     }
     this.initCache(EagleElement, EagleNodeList.create);
   }
@@ -460,7 +415,7 @@ export class EagleElement extends EagleNode {
         let height = 10;
 
         let rect = new Rect(pos.x, pos.y, width, height);
-        console.log('getBounds()', /* this, text, align, Alignment(align), pos.toObject(),*/ rect);
+        //console.log('getBounds()', /* this, text, align, Alignment(align), pos.toObject(),*/ rect);
         if(false) return rect.bbox();
       }
 
@@ -506,12 +461,27 @@ export class EagleElement extends EagleNode {
     return relationNames.indexOf(name) != -1;
   }
 
-  elementChain(t = (o, p, v) => [v.tagName, EagleElement.get(o, p, v)]) {
-    return super.elementChain(t);
+  elementChain(t = (o, p, v) => [v.tagName, EagleElement.get(o, p, v)], r = e => Object.fromEntries(e)) {
+    return super.elementChain(t, r);
   }
 
   get chain() {
     return this.elementChain();
+  }
+
+  getParent(tagName) {
+    let e = this;
+    do {
+      if(e.tagName == tagName) return e;
+    } while((e = e.parentNode));
+  }
+
+  get sheet() {
+    return this.getParent('sheet');
+  }
+  get sheetNumber() {
+    let sheet = this.sheet;
+    if(sheet) return this.getParent('sheets').children.indexOf(sheet);
   }
 
   names() {
@@ -586,6 +556,67 @@ export class EagleElement extends EagleNode {
     if(args.length > 0) ref = ref.concat([...args]);
     return EagleElement.get(owner, ref);
   }*/
+
+  get repeater() {
+    let r = new Repeater(async (push, stop) => {
+      this.pushEvent = () => push(this);
+      await stop;
+    });
+    return r;
+  }
+
+  static attributeLists = {
+    approved: ['hash'],
+    attribute: ['name', 'x', 'y', 'size', 'layer', 'rot', 'align', 'ratio', 'font', 'value', 'constant', 'display'],
+    bus: ['name'],
+    circle: ['x', 'y', 'radius', 'width', 'layer'],
+    class: ['number', 'name', 'width', 'drill'],
+    clearance: ['class', 'value'],
+    connect: ['gate', 'pin', 'pad', 'route'],
+    contactref: ['element', 'pad', 'route', 'routetag'],
+    description: ['language'],
+    designrules: ['name'],
+    device: ['name', 'package'],
+    deviceset: ['name', 'prefix', 'uservalue'],
+    dimension: ['x1', 'y1', 'x2', 'y2', 'x3', 'y3', 'textsize', 'layer', 'visible', 'width', 'extwidth', 'unit', 'textratio'],
+    eagle: ['version'],
+    element: ['name', 'library', 'package', 'value', 'x', 'y', 'rot', 'smashed'],
+    frame: ['x1', 'y1', 'x2', 'y2', 'columns', 'rows', 'layer'],
+    gate: ['name', 'symbol', 'x', 'y', 'swaplevel', 'addlevel'],
+    grid: ['distance', 'unitdist', 'unit', 'style', 'multiple', 'display', 'altdistance', 'altunitdist', 'altunit'],
+    hole: ['x', 'y', 'drill'],
+    instance: ['part', 'gate', 'x', 'y', 'rot', 'smashed'],
+    junction: ['x', 'y'],
+    label: ['x', 'y', 'size', 'layer', 'rot', 'xref', 'ratio', 'font'],
+    layer: ['number', 'name', 'color', 'fill', 'visible', 'active'],
+    library: ['name'],
+    moduleinst: ['name', 'module', 'x', 'y', 'rot'],
+    module: ['name', 'prefix', 'dx', 'dy'],
+    net: ['name', 'class'],
+    note: ['version', 'minversion', 'severity'],
+    package: ['name'],
+    pad: ['name', 'x', 'y', 'drill', 'shape', 'diameter', 'rot', 'stop', 'first', 'thermals'],
+    param: ['name', 'value'],
+    part: ['name', 'library', 'deviceset', 'device', 'value', 'technology'],
+    pass: ['name', 'refer', 'active'],
+    pin: ['name', 'x', 'y', 'visible', 'length', 'direction', 'function', 'rot', 'swaplevel'],
+    pinref: ['part', 'gate', 'pin'],
+    polygon: ['width', 'layer', 'isolate', 'orphans', 'thermals'],
+    port: ['name', 'side', 'coord', 'direction'],
+    portref: ['moduleinst', 'port'],
+    rectangle: ['x1', 'y1', 'x2', 'y2', 'layer', 'rot'],
+    schematic: ['xreflabel', 'xrefpart'],
+    setting: ['alwaysvectorfont', 'verticaltext'],
+    signal: ['name', 'class'],
+    smd: ['name', 'x', 'y', 'dx', 'dy', 'layer', 'rot', 'stop', 'cream', 'roundness'],
+    symbol: ['name'],
+    technology: ['name'],
+    text: ['x', 'y', 'size', 'layer', 'ratio', 'rot', 'align', 'font', 'distance'],
+    vertex: ['x', 'y', 'curve'],
+    via: ['x', 'y', 'extent', 'drill', 'shape', 'diameter'],
+    wire: ['x1', 'y1', 'x2', 'y2', 'width', 'layer', 'curve', 'style', 'cap', 'extent'],
+    '?xml': ['version', 'encoding']
+  };
 }
 
 export const makeEagleElement = (owner, ref, raw) => EagleElement.get(owner, ref, raw);

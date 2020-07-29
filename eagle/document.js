@@ -70,7 +70,7 @@ export class EagleDocument extends EagleNode {
     //Util.log("EagleDocument.constructor", {xmlStr,project,filename,type});
     this.initCache(EagleElement, EagleNodeList.create);
 
-    lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'], this.raw.children));
+    lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
   }
 
   get filename() {

@@ -136,44 +136,7 @@ Util.arityN = (fn, n) => {
   if(n && n <= 5) return arityFn[n](fn);
   else return fn;
 };
-/*Util.compose2 = () => {
-  let i;
-  return (f, g, j) => {
-    if(j == 0) i = 0;
-    console.log('f,g', f + '', g + '');
-    let gfn = args => {
-      let r = g(...args.slice(i, i + g.length));
-      console.log('g(', ...args.slice(i, i + g.length).reduce((a, p) => (a.length ? [...a, ',', p] : [p]), []), ')');
-      i += g.length;
-      return r;
-    };
-    let ffn = args => {
-      let r = f(...args);
-      console.log('f(', ...args.reduce((a, p) => (a.length ? [...a, ',', p] : [p]), []), ')');
-      return r;
-    };
-    return function(...args) {
-      console.log('args', { args });
-      let r;
-      if(f) {
-        r = ffn(args);
-        args.unshift(r);
-      }
-      r = gfn(args);
-      return r;
-    };
-  };
-};
-Util.compose = (...functions) => {
-  const funcs = functions.filter(fn => typeof fn === 'function');
-  let lastIdx = funcs.length - 1;
-  let arity = 0;
-  if(funcs.length <= 0) throw new Error('No funcs passed');
-  //if (lastIdx >= 0 && funcs[lastIdx]) arity = funcs[lastIdx].length;
-  arity = funcs.reduce((n, f) => n + f.length, 0);
-  console.log('arity:', arity);
-  return Util.arityN(funcs.reduce(Util.compose2()), arity);
-};*/
+
 Util.memoize = fn => {
   let cache = {};
   return (...args) => {
@@ -539,22 +502,27 @@ Util.indent = (text, space = '  ') => {
 };
 Util.define = (obj, ...args) => {
   if(typeof args[0] == 'object') {
+    const [arg, overwrite = true] = args;
+
     //let args = [...arguments].slice(1);
-    for(let arg of args) {
-      let adecl = Object.getOwnPropertyDescriptors(arg);
-      let odecl = {};
+    let adecl = Object.getOwnPropertyDescriptors(arg);
+    let odecl = {};
 
-      for(let prop in adecl) {
-        //delete obj[prop];
+    for(let prop in adecl) {
+      //delete obj[prop];
 
-        if(Object.getOwnPropertyDescriptor(obj, prop)) delete odecl[prop];
-        else odecl[prop] = { ...adecl[prop], enumerable: false, configurable: true, writeable: true };
-
-        //odecl[prop].enumerable=false;
+      if(prop in obj) {
+        if(!overwrite) continue;
+        else delete obj[prop];
       }
-      //console.log('odecl:', odecl);
-      Object.defineProperties(obj, odecl);
+
+      if(Object.getOwnPropertyDescriptor(obj, prop)) delete odecl[prop];
+      else odecl[prop] = { ...adecl[prop], enumerable: false, configurable: true, writeable: true };
+
+      //odecl[prop].enumerable=false;
     }
+    //console.log('odecl:', odecl);
+    Object.defineProperties(obj, odecl);
 
     /* console.log('Util.define', { decl, keys: Object.getOwnPropertyNames(obj) });
     console.log('Util.define', { decl, values: Object.getOwnPropertyNames(obj).map(key => obj[key]) });*/
@@ -577,7 +545,7 @@ Util.copyWhole = (dst, ...args) => {
   let chain = [];
   for(let src of args) chain = chain.concat(Util.getPrototypeChain(src).reverse());
   console.log('chain:', ...chain);
-  Util.define(dst, ...chain);
+  for(let obj of chain) Util.define(dst, obj);
   return dst;
 };
 Util.copyEntries = (obj, entries) => {
@@ -1803,6 +1771,8 @@ Util.all = function(obj, pred) {
 Util.isGenerator = function(fn) {
   return (typeof fn == 'function' && /^[^(]*\*/.test(fn.toString())) || (['function', 'object'].indexOf(typeof fn) != -1 && fn.next !== undefined);
 };
+Util.isIterator = obj => Util.isObject(obj) && typeof obj.next == 'function';
+
 Util.isIterable = obj => {
   try {
     for(let item of obj) return true;
@@ -1861,6 +1831,13 @@ Util.mapFunctional = fn =>
   };
 Util.map = (obj, fn) => {
   let ret = a => a;
+
+  if(Util.isIterator(obj)) {
+    return ret(function*() {
+      let i = 0;
+      for(let item of obj) yield fn(item, i++, obj);
+    })();
+  }
   if(typeof obj == 'function') return Util.mapFunctional(...arguments);
 
   if(typeof obj.map == 'function') return obj.map(fn);
@@ -2517,19 +2494,23 @@ Util.exception = function Exception(...args) {
   return Object.setPrototypeOf(e, proto);
 };
 
-Util.define(Util.exception.prototype, {
-  toString(color = false) {
-    const { message, stack, proto } = this;
-    return `${Util.fnName(proto.constructor || this.constructor)}: ${message}
+Util.define(
+  Util.exception.prototype,
+  {
+    toString(color = false) {
+      const { message, stack, proto } = this;
+      return `${Util.fnName(proto.constructor || this.constructor)}: ${message}
 Stack:${Util.stack.prototype.toString.call(stack, color, stack.columnWidths)}`;
+    },
+    [Symbol.toStringTag]() {
+      return this.toString(false);
+    },
+    [Symbol.for('nodejs.util.inspect.custom')]() {
+      return Util.exception.prototype.toString.call(this, true);
+    }
   },
-  [Symbol.toStringTag]() {
-    return this.toString(false);
-  },
-  [Symbol.for('nodejs.util.inspect.custom')]() {
-    return Util.exception.prototype.toString.call(this, true);
-  }
-});
+  true
+);
 Util.location = function Location(...args) {
   let ret = this instanceof Util.location ? this : Object.setPrototypeOf({}, Util.location.prototype);
   if(args.length == 3) {
@@ -2589,68 +2570,76 @@ Util.stackFrame = function StackFrame(frame) {
 
   return Object.setPrototypeOf(frame, Util.stackFrame.prototype);
 };
-Util.define(Util.stackFrame.prototype, {
-  getMethodName() {
-    return this.methodName;
+Util.define(
+  Util.stackFrame.prototype,
+  {
+    getMethodName() {
+      return this.methodName;
+    },
+    getFunctionName() {
+      return this.functionName;
+    },
+    getTypeName() {
+      return this.typeName;
+    },
+    getFileName() {
+      return this.fileName;
+    },
+    getLineNumber() {
+      return this.lineNumber;
+    },
+    getColumnNumber() {
+      return this.columnNumber;
+    }
   },
-  getFunctionName() {
-    return this.functionName;
-  },
-  getTypeName() {
-    return this.typeName;
-  },
-  getFileName() {
-    return this.fileName;
-  },
-  getLineNumber() {
-    return this.lineNumber;
-  },
-  getColumnNumber() {
-    return this.columnNumber;
-  }
-});
+  true
+);
 
-Util.define(Util.stackFrame.prototype, {
-  colorCtor: null,
-  get() {
-    const { fileName, columnNumber, lineNumber } = this;
-    return fileName ? `${fileName}:${lineNumber}:${columnNumber}` : null;
-  },
-  toString(color, columnWidths = [0, 0, 0, 0]) {
-    let text = color ? new this.colorCtor() : '';
-    const c = color ? (t, color) => text.write(t, color) : t => (text += t);
-    let fields = ['functionName', 'fileName', 'lineNumber', 'columnNumber'];
-    const colors = [
-      [0, 255, 0],
-      [255, 255, 0],
-      [0, 255, 255],
-      [0, 255, 255]
-    ];
+Util.define(
+  Util.stackFrame.prototype,
+  {
+    colorCtor: null,
+    get() {
+      const { fileName, columnNumber, lineNumber } = this;
+      return fileName ? `${fileName}:${lineNumber}:${columnNumber}` : null;
+    },
+    toString(color, columnWidths = [0, 0, 0, 0]) {
+      let text = color ? new this.colorCtor() : '';
+      const c = color ? (t, color) => text.write(t, color) : t => (text += t);
+      let fields = ['functionName', 'fileName', 'lineNumber', 'columnNumber'];
+      const colors = [
+        [0, 255, 0],
+        [255, 255, 0],
+        [0, 255, 255],
+        [0, 255, 255]
+      ];
 
-    //const { functionName, fileName, columnNumber, lineNumber } = this;
-    let columns = fields.map(fn => this[fn]);
+      //const { functionName, fileName, columnNumber, lineNumber } = this;
+      let columns = fields.map(fn => this[fn]);
 
-    columns = columns.map((f, i) => (f + '')[i >= 2 ? 'padStart' : 'padEnd'](columnWidths[i] || 0, ' '));
-    // columns = columns.map((fn, i) => c(fn, colors[i]));
+      columns = columns.map((f, i) => (f + '')[i >= 2 ? 'padStart' : 'padEnd'](columnWidths[i] || 0, ' '));
+      // columns = columns.map((fn, i) => c(fn, colors[i]));
 
-    const [functionName, fileName, lineNumber, columnNumber] = columns;
-    //console.log('stackFrame.toString', { color ,columnWidths, functionName, fileName, lineNumber, columnNumber});
+      const [functionName, fileName, lineNumber, columnNumber] = columns;
+      //console.log('stackFrame.toString', { color ,columnWidths, functionName, fileName, lineNumber, columnNumber});
 
-    return `${functionName} ${fileName}:${lineNumber}:${columnNumber}` + c('', 0);
+      return `${functionName} ${fileName}:${lineNumber}:${columnNumber}` + c('', 0);
+    },
+    getLocation() {
+      return new Util.location(this);
+    },
+    get location() {
+      return this.getLocation();
+    },
+    [Symbol.toStringTag]() {
+      return this.toString(false);
+    },
+    [Symbol.for('nodejs.util.inspect.custom')](...args) {
+      return Util.stackFrame.prototype.toString.call(this, true, this.columnWidths);
+    }
   },
-  getLocation() {
-    return new Util.location(this);
-  },
-  get location() {
-    return this.getLocation();
-  },
-  [Symbol.toStringTag]() {
-    return this.toString(false);
-  },
-  [Symbol.for('nodejs.util.inspect.custom')](...args) {
-    return Util.stackFrame.prototype.toString.call(this, true, this.columnWidths);
-  }
-});
+  true
+);
 Util.scriptName = () =>
   Util.tryCatch(
     () => process.argv[1],
@@ -2724,6 +2713,7 @@ Util.stack.prototype = Object.assign(Util.stack.prototype, {
   toString(color = false) {
     let columns = this.columnWidths;
     let a = [...this].map(frame => Util.stackFrame.prototype.toString.call(frame, color, columns));
+    console.log('a:', a);
     let s = a.join('\n');
     return s + '\n';
   },
@@ -3688,47 +3678,53 @@ Util.wrapGenerator = fn =>
 Util.decorateIterable = (proto, generators = false) => {
   const methods = {
     forEach(fn, thisArg) {
-      let i = 0;
-      for(let item of this) fn.call(thisArg, item, i++, this);
+      for(let [i, item] of this.entries()) fn.call(thisArg, item, i, this);
     },
     *map(fn, thisArg) {
-      let i = 0;
-
-      for(let item of this) yield fn.call(thisArg, item, i++, this);
+      for(let [i, item] of this.entries()) yield fn.call(thisArg, item, i, this);
     },
     *filter(pred, thisArg) {
-      let i = 0;
-
-      for(let item of this) if(pred.call(thisArg, item, i++, this)) yield item;
+      for(let [i, item] of this.entries()) if(pred.call(thisArg, item, i, this)) yield item;
     },
     findIndex(pred, thisArg) {
-      let i = 0;
-      for(let item of this) if(pred(item, i++, this)) return i;
+      for(let [i, item] of this.entries()) if(pred(item, i, this)) return i;
       return -1;
     },
+    indexOf(item, startIndex = -1) {
+      return this.findIndex((e, i) => i >= startIndex && e == item);
+    },
     find(pred, thisArg) {
-      let i = 0;
-      for(let item of this) if(pred(item, i++, this)) return item;
+      let idx = this.findIndex(pred, thisArg);
+      if(idx != -1) return typeof this.item == 'function' ? this.item(idx) : this[idx];
     },
     every(pred, thisArg) {
-      let i = 0;
-      for(let item of this) if(!pred(item, i++, this)) return false;
+      for(let [i, item] of this.entries()) if(!pred(item, i++, this)) return false;
       return true;
     },
     some(pred, thisArg) {
-      let i = 0;
-      for(let item of this) if(pred(item, i++, this)) return true;
+      for(let [i, item] of this.entries()) if(pred(item, i, this)) return true;
       return false;
     },
     reduce(fn, accu) {
-      let i = 0;
-      for(let item of this) accu = fn(accu, item, i++, this);
+      for(let [i, item] of this.entries()) accu = fn(accu, item, i, this);
       return accu;
+    },
+    *entries() {
+      let i = 0;
+      for(let item of this) yield [i++, item];
+    },
+    *keys() {
+      for(let [i, item] of this.entries()) yield i;
+    },
+    *values() {
+      for(let [i, item] of this.entries()) yield item;
     }
   };
-  Util.define(proto, methods);
+  Util.define(proto, methods, false);
   if(!generators) {
     for(let name in methods) {
+      if(typeof name == 'symbol') continue;
+      if(name == 'entries') continue;
       let gen = proto[name];
       proto[name] = Util.wrapGenerator(gen);
     }

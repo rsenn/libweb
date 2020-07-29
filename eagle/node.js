@@ -53,7 +53,7 @@ export class EagleNode {
           let value = p.apply(owner.raw, true);
 
           if(i == 0) ignore();
-          if(!value || !value.attributes || !(value.tagName == 'library' || value.attributes.name)) ignore();
+          if(!value || !value.attributes || !(value.tagName == 'library' || value.tagName == 'sheet' || value.attributes.name)) ignore();
 
           return p.up(2);
         }),
@@ -63,11 +63,10 @@ export class EagleNode {
         }
       )
     );
-    //console.log('chain:', chain);
 
     return chain;
 
-    let node = this;
+    /*    let node = this;
     let ret = {};
     let prev = null;
     let i = 0;
@@ -77,19 +76,8 @@ export class EagleNode {
       prev = node;
       i++;
     } while((node = node.parentNode || node.owner));
-    return ret;
+    return ret;*/
   }
-
-  get chain() {
-    let doc = this.owner;
-    let ret = [];
-    while(doc !== undefined) {
-      ret.push(doc);
-      doc = doc.owner;
-    }
-    return ret;
-  }
-
   get project() {
     if(Util.className(this.owner) == 'EagleProject') return this.owner;
     return this.document.owner;
@@ -343,30 +331,12 @@ export class EagleNode {
     if(numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${tag}>`);
     return (ret = concat(text(Util.className(r) + ' ', 0), ret));
   }
-  /*
-  inspect(...args) {
-    return this[Symbol.for('nodejs.util.inspect.custom')](...args);
-  }
-*/
+
   [Symbol.for('nodejs.util.inspect.custom')]() {
     return EagleNode.inspect(this);
     return this.inspect();
   }
-  /**findAll(...args) {
-    let { path, predicate, transform } = parseArgs(args);
-    for(let [v, l, d] of this.iterator(
-      e => true,
-      [],
-      arg => arg
-    )) {
-      if(!d) d = this;
-      if(predicate(v, l, d)) {
-        if(transform) v = transform([v, l, d]);
-        yield v;
-      }
-    }
-  }
-*/
+
   lookup(xpath, t = (o, p, v) => [o, p]) {
     //console.log('EagleNode.lookup(', ...arguments, ')');
     xpath = new ImmutableXPath(xpath);
@@ -420,9 +390,6 @@ export class EagleNode {
   xpath() {
     const { ref, owner } = this;
     let x = ImmutableXPath.from(ref.path, ref.root);
-    /* console.log('PATH', ref.path);
-    console.log('ARRAY', [...x]);
-    console.log('XPATH', x.toString());*/
     return x;
   }
 

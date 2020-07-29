@@ -63,7 +63,7 @@ export const AlignmentAttrs = (align, hv = HORIZONTAL_VERTICAL, rot = 0) => {
   const [vAlign, hAlign] = SVGAlignments;
   let r = {};
 
-  console.log('AlignmentAttrs', { x, y });
+  //console.log('AlignmentAttrs', { x, y });
   if(hv & VERTICAL) r['dominant-baseline'] = vAlign[Math.round(y) + 1];
   if(hv & HORIZONTAL) r['text-anchor'] = hAlign[Math.round(x) + 1];
   return r;
