@@ -6,7 +6,7 @@ import { useValue, useResult, useAsyncIter, useRepeater } from '../../repeater/r
 import { EagleElement } from '../element.js';
 
 export const Instance = ({ data, opts = {}, transformation, ...props }) => {
- /*
+  /*
 
   if(!window.instances) window.instances = new Set();
 

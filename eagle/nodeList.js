@@ -14,7 +14,14 @@ export class EagleNodeList {
 
   item(pos) {
     let { owner, ref, raw, pred } = this;
-    if(typeof pred == 'function') raw = raw.filter(pred);
+
+    let entries = [...raw.entries()];
+    if(typeof pred == 'function') {
+      entries = entries.filter(([i, v]) => pred(v, i, raw));
+
+      pos = entries[pos][0];
+    }
+    console.log('entries:', entries);
 
     if(pos < 0) pos += raw.length;
     if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner.document, ref.down(pos) /*, raw[pos]*/);

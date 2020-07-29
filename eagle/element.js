@@ -412,6 +412,16 @@ export class EagleElement extends EagleNode {
     }
   }
 
+  position(offset = null) {
+    const keys = Object.keys(this.attributes);
+    const makeGetterSetter = k => v => (v === undefined ? +this.handlers[k]() : this.handlers[k](+v));
+
+    if(['x', 'y'].every(prop => keys.includes(prop))) {
+      let pos = offset ? new Point(this.x, this.y).sum(offset) : Point.bind(this, null, makeGetterSetter);
+      return pos;
+    }
+  }
+
   static isRelation(name) {
     let relationNames = ['class', 'element', 'gate', 'layer', 'library', 'package', 'pad', 'part', 'pin', 'symbol', 'deviceset', 'device'];
     return relationNames.indexOf(name) != -1;
