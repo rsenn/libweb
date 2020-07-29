@@ -352,7 +352,7 @@ export class EagleNode {
     return EagleNode.inspect(this);
     return this.inspect();
   }
-  *findAll(...args) {
+  /**findAll(...args) {
     let { path, predicate, transform } = parseArgs(args);
     for(let [v, l, d] of this.iterator(
       e => true,
@@ -366,7 +366,7 @@ export class EagleNode {
       }
     }
   }
-
+*/
   lookup(xpath, t = (o, p, v) => [o, p]) {
     //console.log('EagleNode.lookup(', ...arguments, ')');
     xpath = new ImmutableXPath(xpath);

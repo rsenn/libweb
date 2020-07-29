@@ -1,6 +1,5 @@
 import { Point } from '../geom/point.js';
 import Util from '../util.js';
-import { Rotation } from './common.js';
 
 export const VERTICAL = 1;
 export const HORIZONTAL = 2;
@@ -14,6 +13,60 @@ export const ClampAngle = (a, mod = 360) => {
 export const AlignmentAngle = a => {
   a %= 360;
   return Math.abs(a - (a % 180));
+};
+
+export const Rotation = (rot, f = 1) => {
+  let mirror, angle;
+  if(!rot) {
+    mirror = 0;
+    angle = 0;
+  } else {
+    mirror = /M/.test(rot) ? 1 : 0;
+    angle = +(rot || '').replace(/M?R/, '') || 0;
+  }
+  let transformations = new TransformationList();
+  if(angle !== 0) transformations.rotate(-angle);
+  if(mirror !== 0) transformations.scale(-1, 1);
+
+  return transformations;
+};
+
+export const EagleAlignments = {
+  'bottom-left': [-1, -1],
+  'bottom-center': [-1, 0],
+  'bottom-right': [-1, 1],
+  'center-left': [0, -1],
+  center: [0, 0],
+  'center-right': [0, 1],
+  'top-left': [1, -1],
+  'top-center': [1, 0],
+  'top-right': [1, 1]
+};
+
+export const Alignment = (align, def = 'bottom-left', rot = 0) => {
+  let [y, x] = EagleAlignments[align] || EagleAlignments[def];
+  let ret = new Point(x, y);
+  if(Math.abs(rot) > 0) ret.rotate((rot * Math.PI) / 180);
+  return ret;
+};
+
+export const SVGAlignments = [
+  ['baseline', 'mathematical', 'hanging'],
+  ['start', 'middle', 'end']
+];
+
+export const AlignmentAttrs = (align, hv = HORIZONTAL_VERTICAL, rot = 0) => {
+  // if(Math.abs(rot) > 0) coord.rotate((rot * Math.PI) / 180);
+  const def = { y: 1, x: -1 };
+
+  const { x, y } = align || def;
+  const [vAlign, hAlign] = SVGAlignments;
+  let r = {};
+
+  console.log('AlignmentAttrs', { x, y });
+  if(hv & VERTICAL) r['dominant-baseline'] = vAlign[Math.round(y) + 1];
+  if(hv & HORIZONTAL) r['text-anchor'] = hAlign[Math.round(x) + 1];
+  return r;
 };
 
 export const RotateTransformation = (rot, f = 1) => {

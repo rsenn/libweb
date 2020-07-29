@@ -32,7 +32,8 @@ export const Palette = {
       [255, 75, 255],
       [255, 255, 75],
       [75, 75, 75],
-      [165, 165, 165]
+      [165, 165, 165],
+      [175, 175, 175]
     ].map(c => m(...c)),
   schematic: (m = (r, g, b) => [r, g, b]) =>
     [
@@ -51,7 +52,8 @@ export const Palette = {
       [255, 75, 255],
       [255, 255, 75],
       [75, 75, 75],
-      [165, 165, 165]
+      [165, 165, 165],
+      [175, 175, 175]
     ].map(c => m(...c))
 };
 
@@ -118,20 +120,4 @@ export const traverse = function*(obj, path = [], doc) {
       for(let i = 0; i < obj.children.length; i++) yield* traverse(obj.children[i], path.concat(['children', i]), doc);
     }
   }
-};
-
-export const Rotation = (rot, f = 1) => {
-  let mirror, angle;
-  if(!rot) {
-    mirror = 0;
-    angle = 0;
-  } else {
-    mirror = /M/.test(rot) ? 1 : 0;
-    angle = +(rot || '').replace(/M?R/, '') || 0;
-  }
-  let transformations = new TransformationList();
-  if(angle !== 0) transformations.rotate(-angle);
-  if(mirror !== 0) transformations.scale(-1, 1);
-
-  return transformations;
 };

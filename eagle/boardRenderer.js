@@ -3,8 +3,8 @@ import { Point, Line } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
 import { RGBA } from '../color.js';
-import { Rotation, Palette } from './common.js';
-import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer } from './renderUtils.js';
+import { Palette } from './common.js';
+import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, Rotation } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 
 export class BoardRenderer extends EagleSVGRenderer {
@@ -118,6 +118,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         break;
       }
       default: {
+        console.log('boardRenderer other renderItem', { item, parent, transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1) });
         super.renderItem(item, parent, { ...opts, color });
         break;
       }

@@ -1,9 +1,8 @@
 export { EagleSVGRenderer, SchematicRenderer, BoardRenderer, LibraryRenderer } from './eagle/renderer.js';
 
 export { EagleNodeList } from './eagle/nodeList.js';
-export { VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, RotateTransformation, LayerAttributes, InvertY, PolarToCartesian, Arc, CalculateArcRadius, LinesToPath, MakeCoordTransformer } from './eagle/renderUtils.js';
+export { Rotation, VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, RotateTransformation, LayerAttributes, InvertY, PolarToCartesian, Arc, CalculateArcRadius, LinesToPath, MakeCoordTransformer } from './eagle/renderUtils.js';
 export { EagleDocument } from './eagle/document.js';
-export { Rotation } from './eagle/common.js';
 export { EagleReference, EagleRef } from './eagle/ref.js';
 export { makeEagleNode, EagleNode } from './eagle/node.js';
 export { Renderer } from './eagle/renderer.js';

@@ -1,7 +1,6 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import { Rect } from '../../geom.js';
-import { MakeCoordTransformer } from '../renderUtils.js';
-import { Rotation } from '../common.js';
+import { Rotation, MakeCoordTransformer } from '../renderUtils.js';
 import { TransformationList } from '../../geom/transformation.js';
 
 export const Rectangle = ({ data, opts = {}, ...props }) => {

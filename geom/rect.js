@@ -359,6 +359,15 @@ Rect.prototype.toObject = function(bb = false) {
   const { x, y, width, height } = this;
   return { x, y, width, height };
 };
+Rect.prototype.bbox = function() {
+  return this.toObject(true);
+};
+
+Rect.prototype.transform = function(m) {
+  if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
+  Matrix.prototype.transform_rect.call(m, this);
+  return this;
+};
 
 Rect.round = rect => Rect.prototype.round.call(rect);
 Rect.align = (rect, align_to, a = 0) => Rect.prototype.align.call(rect, align_to, a);

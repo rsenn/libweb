@@ -3,8 +3,8 @@ import { Point, Rect, Line, BBox } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
 import { RGBA } from '../color/rgba.js';
 import { HSLA } from '../color/hsla.js';
-import { Rotation, Palette } from './common.js';
-import { LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
+import { Palette } from './common.js';
+import { Rotation, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { Instance } from './components/instance.js';
 import { ReactComponent } from '../dom/preactComponent.js';
@@ -175,7 +175,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     let netsGroup = this.create('g', { className: 'nets', transform }, parent);
     let instancesGroup = this.create('g', { className: 'instances', transform }, parent);
 
-    instancesGroup.props.children = [...instances.list].map(data => h(Instance, { data }));
+    instancesGroup.props.children = [...instances.list].map(data => h(Instance, { data, transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1) }));
 
     //    ReactComponent.append([...instances.list].map(data => h(Instance, { data })), instancesGroup);
 

@@ -128,6 +128,7 @@ export class BBox {
   toString() {
     return `${this.x1} ${this.y1} ${this.x2} ${this.y2}`;
   }
+
   transform(fn = arg => arg, out) {
     if(!out) out = this;
     for(let prop of ['x1', 'y1', 'x2', 'y2']) {
@@ -136,6 +137,7 @@ export class BBox {
     }
     return this;
   }
+
   round(fn = arg => Math.round(arg)) {
     let ret = new BBox();
     this.transform(fn, ret);

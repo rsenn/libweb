@@ -1,91 +1,30 @@
 import { h, Component } from '../../dom/preactComponent.js';
-import { Rotation } from '../common.js';
 import Util from '../../util.js';
-import { VERTICAL, HORIZONTAL, ClampAngle, AlignmentAngle, MakeCoordTransformer } from '../renderUtils.js';
-
-const Alignments = [
-  ['hanging', 'mathematical', 'baseline'],
-  ['start', 'middle', 'end']
-];
-
-const EagleAlignments = {
-  'bottom-left': [-1, -1],
-  'bottom-center': [-1, 0],
-  'bottom-right': [-1, 1],
-  'center-left': [0, -1],
-  center: [0, 0],
-  'center-right': [0, 1],
-  'top-left': [1, -1],
-  'top-center': [1, 0],
-  'top-right': [1, 1]
-};
-
-const Alignment = (align, def = [-1, 1], rot = 0) => {
- /* let h, v;
-  const [verticalAlignment, horizontalAlignment] = Alignments;
-
-  for(let tok of (align || horizontalAlignment[def[0] + 1] + '-' + verticalAlignment[def[1] + 1]).split(/-/g)) {
-    switch (tok) {
-      case 'center': {
-        if(h === undefined) h = 0;
-        if(v === undefined) v = 0;
-        break;
-      }
-      case 'bottom':
-      case 'top': {
-        v = tok == 'top' ? -1 : 1;
-        break;
-      }
-      case 'left':
-      case 'right': {
-        h = tok == 'left' ? -1 : 1;
-        break;
-      }
-    }
-  }*/
-  let a = EagleAlignments[align] || def;
-  console.log("a:",{ a, align });
-  let ret = new Point(...a);
-  if(Math.abs(rot) > 0) ret.rotate((rot * Math.PI) / 180);
-  return ret;
-};
-
-const AlignmentAttrs = (align, hv = HORIZONTAL_VERTICAL, rot = 0) => {
-  let coord = align instanceof Point ? align : Alignment(align, [-1, 1]);
-  if(Math.abs(rot) > 0) coord.rotate((rot * Math.PI) / 180);
-  const defaultY = 1;
-  const defaultX = -1;
-
-  const { x, y } = coord;
-  const [verticalAlignment, horizontalAlignment] = Alignments;
-  let r = {};
-  if(hv & VERTICAL) r['dominant-baseline'] = verticalAlignment[Math.round(y) + 1] || verticalAlignment[defaultY + 1];
-  if(hv & HORIZONTAL) r['text-anchor'] = horizontalAlignment[Math.round(x) + 1] || horizontalAlignment[defaultX + 1];
-  return r;
-};
+import { Rotation, VERTICAL, HORIZONTAL, ClampAngle, AlignmentAngle, MakeCoordTransformer } from '../renderUtils.js';
+import { Text } from './text.js';
 
 export const TextElement = ({ data, opts = {}, ...props }) => {
-  console.log(`TextElement.render`, { data, opts });
   data = data || props.item;
 
-  let { transform = new TransformationList() } = opts;
+  let { transform = new TransformationList(), transformation } = opts;
+
+  if(!transformation) Util.putStack();
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-  let { children = [], text: innerText, align, size, font, rot, layer } = data;
+  let { children = [], text: innerText, align = 'bottom-left', size, font, rot, layer } = data;
   let text = innerText || labelText || children.join('\n');
   let { x, y } = coordFn(data);
   const color = layer && layer.color;
-
-  console.log('text', { text, align });
 
   if(text.startsWith('>')) {
     const prop = text.slice(1).toLowerCase();
     console.log('text', { text, prop, opts });
     text = prop in opts ? opts[prop] : text;
   }
+  console.log(`TextElement.render`, text, { align, opts });
 
-  const translation = new TransformationList();
+  /*const translation = new TransformationList();
 
   console.log('translation:', Util.className(translation));
   const rotation = translation.concat(Rotation(rot));
@@ -104,8 +43,8 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
     .collapseAll();
 
   console.log(`wholeAngle ${text}`, wholeAngle);
-  /*console.log(`undoAngle ${text}`, undoAngle);
-        console.log(`angle ${text}`, angle);*/
+  //console.log(`undoAngle ${text}`, undoAngle);
+        //console.log(`angle ${text}`, angle);
   console.log(`finalTransformation ${text}`, finalTransformation.toString());
   console.log(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);
 
@@ -123,27 +62,24 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
 
   console.log(
     `render alignment ${text}`,
-    Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + '']),
-    AlignmentAttrs(alignment, VERTICAL)
-  );
+    Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + ''])
+  );*/
 
-  let attrs = AlignmentAttrs(alignment, HORIZONTAL);
+  let attrs = {};
   if(align !== undefined) attrs['data-align'] = align;
+  if(data.path !== undefined) attrs['data-path'] = data.path;
+  if(rot !== undefined) attrs['data-rot'] = rot;
+  attrs['data-alignment'] = [...Alignment(align)].join('|');
 
-  return h(
-    'text',
-    {
-      fill: color,
-      stroke: 'none',
-      'stroke-width': 0.05,
-      x,
-      y,
-      ...AlignmentAttrs(alignment, VERTICAL),
+  return h(Text, {
+    color,
 
-      /*    'font-size': (size * 1.6).toFixed(2),
-            'font-family': font || 'Fixed Medium',*/
-      transform: finalTransformation
-    },
-    h('tspan', { ...attrs, children: text })
-  );
+    x,
+    y,
+    rot,
+    alignment: align,
+    text,
+    transformation,
+    ...attrs
+  });
 };

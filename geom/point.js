@@ -259,10 +259,11 @@ Point.prototype.isNull = function() {
 Point.prototype.inside = function(rect) {
   return this.x >= rect.x && this.x < rect.x + rect.width && this.y >= rect.y && this.y < rect.y + rect.height;
 };
-/*Point.prototype.transform = function(m) {
+Point.prototype.transform = function(m) {
+  if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
   Matrix.prototype.transform_point.call(m, this);
   return this;
-};*/
+};
 Point.prototype.normalize = function(minmax) {
   return new Point({
     x: (this.x - minmax.x1) / (minmax.x2 - minmax.x1),

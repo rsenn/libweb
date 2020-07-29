@@ -2,8 +2,7 @@ import { EagleElement } from './element.js';
 import Util from '../util.js';
 import { Size } from '../dom.js';
 import { Point, Rect, BBox, TransformationList } from '../geom.js';
-import { Rotation } from './common.js';
-import { VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
+import { Rotation, VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
 import { ElementToComponent, ElementNameToComponent } from './components.js';
 
 export class EagleSVGRenderer {
@@ -193,7 +192,11 @@ export class EagleSVGRenderer {
 
     const comp = ElementToComponent(item);
     if(comp) {
-      const elem = svg(comp, { data: item, transform }, parent);
+      console.log(
+        'EagleSVGRenderer render component ',
+        this.transform.filter(t => ['translate'].indexOf(t.type) == -1)
+      );
+      const elem = svg(comp, { data: item, transform, opts: { ...opts, transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1) } }, parent);
       return;
     }
 
@@ -429,7 +432,7 @@ export class EagleSVGRenderer {
     const gridColor = '#0000aa';
     const gridWidth = 0.05;
 
-    const cssStyle = this.create('style', { children: [`text { font-size: 0.1333rem; }`] }, parent);
+    const cssStyle = this.create('style', { children: [`text { font-size: 0.0875rem; }`] }, parent);
 
     this.create(
       'path',
@@ -454,4 +457,3 @@ export class EagleSVGRenderer {
 }
 EagleSVGRenderer.horizontalAlignment = ['start', 'middle', 'end'];
 EagleSVGRenderer.verticalAlignment = ['hanging', 'mathematical', 'baseline'];
-

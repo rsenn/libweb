@@ -255,7 +255,7 @@ export class Translation extends Transformation {
 
   invert() {
     const { x, y, z } = this;
-    return z !== undefined ? new Translation(-x, -y, -z) : new Translation(-x, -y);
+    return z !== undefined ? new Translation(-x, -y, -z) : new Translation(Math.abs(x) == 0 ? 0 : -x, Math.abs(y) == 0 ? 0 : -y);
   }
 
   accumulate(other) {
@@ -485,7 +485,8 @@ export class TransformationList extends Array {
     vec = vec.round(0.00001, 5);
     //Util.log("from:", new Point(x,y), " to:", vec);
 
-    Array.prototype.push.call(this, new Translation(vec.x, vec.y));
+    if(Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) Array.prototype.push.call(this, new Translation(vec.x, vec.y));
+
     return this;
   }
 
@@ -611,7 +612,7 @@ export class TransformationList extends Array {
 
   invert() {
     //return this.reduce((acc, t) => [t.invert(), ...acc], []);
-    return this.reduceRight((acc, t) => [...acc, t.invert()], []);
+    return new TransformationList(this.reduceRight((acc, t) => [...acc, t.invert()], []));
   }
 
   join(sep = ' ') {

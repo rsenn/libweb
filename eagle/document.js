@@ -172,9 +172,13 @@ export class EagleDocument extends EagleNode {
     let sheet = this.sheets ? this.sheets[sheetNo] : null;
 
     if(sheet) {
-      let instances = sheet.find('instances').children;
+      return sheet.getBounds();
 
-      for(let instance of instances) {
+      let instances = sheet.instances;
+
+      for(let instance of instances.list) {
+        bb.update(instance.getBounds());
+        /*
         let { gate, part } = instance;
         let symbol = gate.symbol;
 
@@ -193,20 +197,16 @@ export class EagleDocument extends EagleNode {
         let sb = symbol.getBounds();
         let sbr = new Rect(sb);
 
-        bb.update(bbrect, 0, instance);
+        bb.update(bbrect, 0, instance);*/
       }
-    }
-
-    if(this.elements) {
+    } else if(this.elements) {
       Util.log('elements:', this.elements);
       for(let element of this.elements.list) {
         let bbrect = element.getBounds();
 
         bb.update(bbrect);
       }
-    }
-
-    if(this.signals) {
+    } else if(this.signals) {
       for(let signal of this.signals.list) {
         //Util.log('signal:', signal);
         let bbrect = signal.getBounds();

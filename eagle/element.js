@@ -4,9 +4,9 @@ import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleReference } from './ref.js';
 import { ImmutableXPath } from '../xml.js';
-import { Rotation } from './common.js';
+import { Rotation, Alignment } from './renderUtils.js';
 import { lazyProperty } from '../lazyInitializer.js';
-import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList } from '../geom.js';
+import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList, Translation } from '../geom.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
 
@@ -157,7 +157,7 @@ export class EagleElement extends EagleNode {
         prop(attributes[key]);
         prop.subscribe(value => (value !== undefined ? (raw.attributes[key] = '' + value) : delete raw.attributes[key]));
         this.handlers[key] = prop;
-        if(Object.keys(names).indexOf(key) != -1) {
+        if(Object.keys(names).indexOf(key) != -1 && !(['instance', 'part'].indexOf(tagName) != -1 && ['name', 'value'].indexOf(key) != -1)) {
           msg`key=${key} names=${names}`;
           trkl.bind(this, key, v => (v ? v.names.forEach(name => this.handlers[name](v.names[name])) : this.library[key + 's'][this.attrMap[key]]));
         } else if(key == 'device') {
@@ -195,21 +195,28 @@ export class EagleElement extends EagleNode {
             };
           } else if(tagName == 'part') {
             fn = value => {
+              if(key == 'name') return this.attributes.name;
+
               const library = doc.libraries[this.attributes.library];
               if(key == 'library') return library;
               const deviceset = library.devicesets[this.attributes.deviceset];
               if(key == 'deviceset') return deviceset;
+              if(key == 'value') return this.attributes.value || deviceset.name;
+
               if(key == 'device') return deviceset.devices[this.attributes.device];
             };
           } else if(tagName == 'instance') {
             fn = value => {
               const module = elem.chain['module'] || doc;
+              if(key == 'name') return elem.attributes.part;
 
               const part = module.parts[elem.attributes.part]; //get(e => e.tagName == 'part' && e.attributes['name']);
 
               if(key == 'part') return part;
               const library = doc.libraries[part.attributes.library];
               const deviceset = library.devicesets[part.attributes.deviceset];
+              if(key == 'value') return part.value || deviceset.name;
+
               //Util.log('relation ', { part, library, deviceset, gate });
               if(key == 'gate') return deviceset.gates[part.attributes.gate];
             };
@@ -384,9 +391,16 @@ export class EagleElement extends EagleNode {
     return r;
   }
 
-  getBounds(pred = e => true) {
+  getBounds(pred = e => true, opts = {}) {
     let bb = new BBox(),
       pos = this.geometry();
+
+    if(pos) {
+      if(pos.toObject) pos = pos.toObject();
+      else if(pos.clone) pos = pos.clone();
+      else pos = Util.clone(pos);
+    }
+
     if(this.tagName == 'element') {
       const { raw, ref, path, attributes, owner, document } = this;
       const libName = raw.attributes.library;
@@ -398,29 +412,60 @@ export class EagleElement extends EagleNode {
       bb.move(pos.x, pos.y);
       bb = bb.round(v => Util.roundTo(v, 1.27));
     } else if(this.tagName == 'instance') {
-      const { part, gate, rot } = this;
+      const { part, gate, rot, x, y } = this;
       const { symbol } = gate;
       //Util.log('instance', { gate, symbol });
       let t = new TransformationList();
       t.translate(+this.x, +this.y);
       t = t.concat(Rotation(rot));
 
-      let b = symbol.getBounds(e => e.tagName != 'text');
+      const name = part.name;
+      const value = part.value || part.deviceset.name;
+
+      let b = symbol.getBounds(e => true, { x, y, name, value });
+      //console.log("symbol.getBounds():", symbol.name, b);
+
       let p = new Rect(b.rect).toPoints();
       let m = t.toMatrix();
       p = new PointList([...m.transform_points(p)]);
-      bb.update(p.bbox());
+      bb.update(p);
     } else if(this.tagName == 'sheet' || this.tagName == 'board') {
       const plain = this.find('plain');
       let list = [...plain.children].filter(e => e.tagName == 'wire' && e.attributes.layer == '47');
+
       if(list.length <= 0) list = this.tagName == 'sheet' ? this.instances.list : this.elements.list;
 
       for(let instance of list) {
         bb.update(instance.getBounds(), 0, instance);
       }
     } else if(['package', 'signal', 'polygon', 'symbol'].indexOf(this.tagName) != -1) {
-      for(let child of this.children) bb.update(child.getBounds());
+      for(let child of this.children) bb.update(child.getBounds(e => true, opts));
     } else if(pos) {
+      const { x = 0, y = 0 } = opts;
+
+      if(Util.isObject(pos) && typeof pos.bbox == 'function') pos = new Rect(pos.bbox());
+
+      /*
+      let t = new Translation(x, y);
+      pos.transform(t);*/
+
+      if(this.tagName == 'text') {
+        let text = this.text;
+        let align = this.align || 'bottom-left';
+
+        if(opts.name) text = text.replace(/>NAME/, opts.name);
+        if(opts.value) text = text.replace(/>VALUE/, opts.value);
+
+        let width = text.length * 6;
+        let height = 10;
+
+        let rect = new Rect(pos.x, pos.y, width, height);
+        console.log('getBounds()', /* this, text, align, Alignment(align), pos.toObject(),*/ rect);
+        if(false) return rect.bbox();
+      }
+
+      if(Util.isObject(pos) && typeof pos.bbox == 'function') pos = pos.bbox();
+
       bb.update(pos);
     } else if(['description'].indexOf(this.tagName) != -1) {
     } else {
