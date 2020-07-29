@@ -5,7 +5,7 @@ import { MakeCoordTransformer } from '../renderUtils.js';
 export const Wire = ({ data, opts = {}, ...props }) => {
   data = data || props.item;
 
-  console.log('Wire.render ', { data, opts });
+  //console.log('Wire.render ', { data, opts });
 
   //Util.putStack();
 

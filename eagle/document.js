@@ -73,6 +73,9 @@ export class EagleDocument extends EagleNode {
     lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
   }
 
+  get raw() {
+    return this.xml[0];
+  }
   get filename() {
     return this.file && this.file.replace(/.*\//g, '');
   }

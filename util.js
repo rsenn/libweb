@@ -137,7 +137,7 @@ Util.arityN = (fn, n) => {
   else return fn;
 };
 
-Util.memoize = fn => {
+Util.memoize = (fn, thisObj) => {
   let cache = {};
   return (...args) => {
     let n = args[0]; // just taking one argument here
@@ -146,20 +146,20 @@ Util.memoize = fn => {
       return cache[n];
     } else {
       //console.log('Calculating result');
-      let result = fn(n);
+      let result = fn.call(thisObj, n);
       cache[n] = result;
       return result;
     }
   };
 };
 
-Util.once = function(fn) {
+Util.once = function(fn, thisArg) {
   let ran = false;
   let ret;
 
   return function(...args) {
     if(!ran) {
-      ret = fn(...args);
+      ret = fn.call(thisArg, ...args);
       ran = true;
     }
     return ret;

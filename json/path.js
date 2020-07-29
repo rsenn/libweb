@@ -274,28 +274,30 @@ export class MutablePath extends Array {
     }
     let a = this;
 
-    //Util.log("MutablePath.apply",...[...this], {o,a});
+    // console.log("MutablePath.apply",...[...this], {o,a});
 
-    while(a.length >= 1 && a[0] === '') a = a.slice(1);
+    //   while(a.length >= 1 && a[0] === '') a = a.slice(1);
 
     a = a.reduce(
       (a, i) => {
         if(a.o) {
           let r;
-          //Util.log(`MutablePath.apply[`,a.n,`]`,Util.isArray(a.o),a.o,i);
-          if(MutablePath.isChildren(i)) {
-            i = 'children';
-          } else if(a.o.length !== undefined) {
-            if(typeof i == 'function') {
-              const pred = i;
-              i = a.o.findIndex((e, i, a) => pred(e, i, a));
-            } else if(typeof i == 'object') {
-              //Util.log(`MutablePath.apply findIndex`,a.o,i);
+          let t = typeof i;
 
-              i = a.o.findIndex(child => MutablePath.compareObj(child, i));
-            } else if(typeof i == 'number' && i < 0) {
-              i = a.o.length + i;
-            } else i = +i;
+          //Util.log(`MutablePath.apply[`,a.n,`]`,Util.isArray(a.o),a.o,i);
+          if(t != 'string') {
+            if(a.o.length !== undefined) {
+              if(t == 'function') {
+                const pred = i;
+                i = a.o.findIndex((e, i, a) => pred(e, i, a));
+              } else if(t == 'object') {
+                //Util.log(`MutablePath.apply findIndex`,a.o,i);
+
+                i = a.o.findIndex(child => MutablePath.compareObj(child, i));
+              } else if(t == 'number' && i < 0) {
+                i = a.o.length + i;
+              } else i = +i;
+            }
           }
           r = a.o[i];
 
@@ -467,9 +469,9 @@ export class MutablePath extends Array {
   }
 
   concat(a) {
-    const ctor = this.constructor[Symbol.species];
+    const ctor = this.constructor[Symbol.species] || this.constructor;
 
-    return new ctor([...this].concat(Array.from(a)), this.absolute);
+    return Object.setPrototypeOf([...this].concat(a), ctor.prototype);
   }
 
   /* reduce(fn, acc) {
@@ -477,17 +479,22 @@ export class MutablePath extends Array {
       return acc;
     }*/
   map(fn) {
+    const ctor = this.constructor[Symbol.species] || this.constructor;
+
     let ret = [];
     for(let i = 0; i < this.length; i++) {
       let r = fn(this.at(i), i, this);
-      ret.push(r === 'children' ? MutablePath.CHILDREN_SYM : r);
+      ret.push(r);
     }
-    return ret;
+    return Object.setPrototypeOf(ret, ctor.prototype);
   }
+
   filter(fn) {
+    const ctor = this.constructor[Symbol.species] || this.constructor;
+
     let ret = [];
     for(let i = 0; i < this.length; i++) if(fn(this.at(i), i, this)) ret.push(this[i]);
-    return ret;
+    return Object.setPrototypeOf(ret, ctor.prototype);
   }
 
   at(i) {

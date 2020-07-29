@@ -3,8 +3,17 @@ import { TransformationList } from '../../geom/transformation.js';
 import { SchematicSymbol } from './symbol.js';
 import { Rotation } from '../renderUtils.js';
 import { useValue, useResult, useAsyncIter, useRepeater } from '../../repeater/react-hooks.js';
+import { EagleElement } from '../element.js';
 
 export const Instance = ({ data, opts = {}, transformation, ...props }) => {
+  let { owner, path, raw } = data;
+
+  data = EagleElement.get(owner, path, raw);
+
+  if(!window.instances) window.instances = new Set();
+
+  window.instances.add(data);
+
   let instance =
     useValue(async function*() {
       for await (let change of data.repeater) {
@@ -12,12 +21,11 @@ export const Instance = ({ data, opts = {}, transformation, ...props }) => {
         yield change;
       }
     }) || data;
+  console.log('instance:', data.r);
 
-  let { x, y, rot, part, symbol } = instance;
+  let { x, y, rot, part, symbol } = instance; /* && instance[2] || data*/
   let { deviceset, name, value } = part;
   let { transform = new TransformationList() } = opts;
-
-  console.log('instance:', instance);
 
   transform.translate(x, y);
   if(rot) {

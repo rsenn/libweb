@@ -2,30 +2,46 @@ import Util from '../util.js';
 import { EagleElement } from './element.js';
 
 export class EagleNodeMap {
-  constructor(list, key, filter) {
+  constructor(list, key) {
     //Util.log('EagleNodeMap.constructor', { list, key });
     if(!list) throw new Error('List=' + list);
-
     this.list = list;
     this.key = key;
-
-    if(filter) this.filter = filter;
   }
-
+  /*
+Object.defineProperties(EagleNodeMap.prototype, {
+  list: { writable: true, configurable: true, enumerable: false, value: null },
+  key: { writable: true, configurable: true, enumerable: false, value: null }
+});
+*/
   static makePredicate(name, key) {
     const a = Util.isArray(key) ? key : [key];
-    return key == 'tagName' ? item => item.tagName == name : item => Util.isObject(item.attributes) && a.some(key => item.attributes[key] == name);
+    return key == 'tagName' ? item => item.tagName == name : item => a.some(key => item.attributes[key] == name);
+  }
+
+  item(pos) {
+    return this.list.item(pos);
   }
 
   get(name, key = this.key) {
-    return this.list.find(EagleNodeMap.makePredicate(name, key));
+    const { owner, ref, raw } = this.list || {};
+    //Util.log('EagleNodeMap', { raw, name });
+    if(raw) {
+      const fn = EagleNodeMap.makePredicate(name, key);
+      const idx = raw.findIndex(fn);
+      let value = raw[idx];
+      return raw[idx] ? EagleElement.get(owner, ref.down(idx)) : null;
+    }
   }
 
-  set(name, value, key = this.key) {
-    const { list } = this;
-    const idx = list.findIndex(EagleNodeMap.makePredicate(name, key));
+  set(name, value) {
+    const list = this.list.raw;
+    const fn = EagleNodeMap.makePredicate(name, key);
 
-    Util.log('write map property:', idx, value);
+    const idx = list.findIndex(fn);
+
+    if('raw' in value) value = value.raw;
+    //Util.log("write map property:", idx, value);
 
     if(idx != -1) list[idx] = value;
     else list.push(value);
