@@ -156,12 +156,10 @@ export class EagleElement extends EagleNode {
           } else if(tagName == 'instance' || tagName == 'pinref') {
             const module = elem.chain['module'] || doc;
 
-            if(this.library === undefined) trkl.bind(this, 'library', () => this.part.library || this.document.libraries[this.part.attributes.library]);
-
-            if(this.deviceset === undefined) trkl.bind(this, 'deviceset', () => this.part.deviceset || this.library.devicesets[this.part.attributes.deviceset]);
-
-            if(this.value === undefined) trkl.bind(this, 'value', () => this.part.value || this.deviceset.name);
-
+            /*        if(this.library === undefined) trkl.bind(this, 'library', () => this.part.library || this.document.libraries[this.part.attributes.library]);
+              if(this.deviceset === undefined) trkl.bind(this, 'deviceset', () => this.part.deviceset || this.library.devicesets[this.part.attributes.deviceset]);
+              if(this.value === undefined) trkl.bind(this, 'value', () => this.part.value || this.deviceset.name);
+*/
             switch (key) {
               case 'part':
                 fn = () => module.parts[this.attributes.part];
@@ -209,30 +207,12 @@ export class EagleElement extends EagleNode {
         let library = chain.library;
         return library.symbols[elem.attributes.symbol];
       });
+
+      trkl.bind(this, 'pins', () => this.symbol.pins);
     } else if(tagName == 'instance') {
-      let { tagName } = this;
+      trkl.bind(this, 'pins', () => this.symbol.pins);
 
-      const module = this.chain['module'] || doc;
-
-      /*   if(!part) {
-        let parts = doc.find('parts');
-        //Util.log('parts:', parts.children);
-        //Util.log('doc.parts:', doc.parts);
-        //Util.log('instance', this.attributes.part, doc.parts.keys().indexOf(this.attributes.part));
-      }
-      if(!part.attributes) Util.log('instance', this.raw, { doc, owner, tagName });
-*/
-
-      lazyProperty(this, 'gate', () => {
-        const part = module.parts[this.attributes.part];
-
-        const library = doc.libraries[part.attributes.library];
-        const deviceset = library.devicesets[part.attributes.deviceset];
-        const device = deviceset.devices[part.attributes.device];
-        return deviceset.gates[elem.attributes.gate];
-      });
-
-      Util.defineGetter(this, 'symbol', () => this.gate.symbol);
+      trkl.bind(this, 'symbol', () => this.gate.symbol);
     } else if(tagName == 'device') {
       lazyProperty(this, 'package', () => {
         const library = this.chain.library;
