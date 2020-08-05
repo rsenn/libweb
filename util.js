@@ -254,7 +254,7 @@ Util.toSource = function(arg, opts = {}) {
   //if(arg && arg.toSource) return arg.toSource();
   if(typeof arg == 'object') {
     let o = '';
-    for(const prop of Object.getOwnPropertyNames(arg)) {
+    for(const prop in arg) {
       //if(!Object.hasOwnProperty(arg,prop)) continue;
       let s = Util.toSource(arg[prop], opts);
       let m = new RegExp(`^\\*?${prop}\\s*\\(`).test(s);
@@ -1902,6 +1902,7 @@ Util.parseDate = function(d) {
 };
 Util.isoDate = function(date) {
   try {
+    if(typeof date == 'number') date = new Date(date);
     const minOffset = date.getTimezoneOffset();
     const milliseconds = date.valueOf() - minOffset * 60 * 1000;
     date = new Date(milliseconds);
@@ -1927,6 +1928,7 @@ Util.fromUnixTime = function(epoch, utc = false) {
 Util.formatTime = function(date = new Date(), format = 'HH:MM:SS') {
   let n;
   let out = '';
+  if(typeof date == 'number') date = new Date(date);
   for(let i = 0; i < format.length; i += n) {
     n = 1;
     while(format[i] == format[i + n]) n++;

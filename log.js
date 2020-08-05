@@ -1,3 +1,4 @@
+import Util from './util.js';
 /**
  * LogJS (c)2013 Brett Fattori
  * Lightweight JavaScript logging framework
@@ -10,7 +11,13 @@ export var LogJS = {
   INFO: 'INFO',
 
   version: 'LogJS v1.2.2',
-  window_: global
+  get window_() {
+    return Util.tryCatch(
+      () => global,
+      g => g,
+      () => window
+    );
+  }
 };
 
 var appenders = {};
