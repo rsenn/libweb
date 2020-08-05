@@ -6,6 +6,7 @@ import { Size } from '../geom/size.js';
 import { Anchor } from '../geom/align.js';
 import { iterator } from './iterator.js';
 import Util from '../util.js';
+
 /**
  * Class for element.
  *
@@ -22,10 +23,23 @@ export class Element extends Node {
   static border = element => Element.getTRBL(element, 'border');
 
   static wrap(e) {
-    if(!this.methods) this.methods = Util.static({}, this, this, (k, fn) => k != 'wrap' && fn.length > 0);
-
+    let names;
+    if(!names) names = Util.getMethodNames(Element, 1, 0);
     if(typeof e == 'string') e = Element.find(e);
-    return Util.extend(e, this.methods);
+    let props = names.reduce((acc, name) => {
+      if(typeof acc[name] != 'function') {
+        try {
+          delete acc[name];
+          acc[name] = function(...args) {
+            args.unshift(this);
+            return Element[name].call(Element, ...args);
+          };
+        } catch(err) {}
+      }
+      return acc;
+    }, e);
+    //console.log("props:",props);
+    return e;
   }
 
   static create() {
