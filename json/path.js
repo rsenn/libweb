@@ -314,24 +314,6 @@ export class MutablePath extends Array {
     return a.o;
   }
 
-  toString(sep = '.', partToStr = MutablePath.partToString, childrenStr = MutablePath['CHILDREN_GLYPH'] + CHILDREN_SPACE) {
-    const color = Util.isBrowser() ? text => text : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
-    let a = [...this];
-    //Util.log("toString",{sep,partToStr, childrenStr});
-    while(a.length > 0 && a[0] === '') a.shift();
-    let n = a.length;
-    let r = [];
-    for(let i = 0; ; i++) {
-      let p = partToStr(a, '/', childrenStr, color);
-      if(!p) break;
-      r = r.concat(p);
-    }
-    const pad = (s, n = 1) => ' '.repeat(n) + s + ' '.repeat(n);
-    r = r.join(color(sep, 1, 36) + color('', 1, 30)); //.replace(/[/\.]\[/g, '[');
-    r = (this.absolute && r != '' && sep == '/' ? sep : '') + r;
-    return r.replace(/\//g, sep);
-  }
-
   toSource(opts = {}) {
     const { sep = ',', filterChildren = false } = opts;
     let r = this.toArray();
@@ -358,11 +340,11 @@ export class MutablePath extends Array {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    const sep = '.',
+    const sep = this.indexOf('children') != -1 ? ' ' : '.',
       childrenStr = '\u220a' + CHILDREN_SPACE,
       color = true;
-
-    let p = MutablePath.prototype.toString.call(this /*, sep || '\u2571' || '\u29f8', childrenStr, text => text*/);
+    //console.log("sep:",sep, [...this]);
+    let p = MutablePath.prototype.toString.call(this, sep /* || '\u2571' || '\u29f8', childrenStr, text => text*/);
     let n = Util.className(this);
     let c = n.startsWith('Mutable') ? 31 : 32;
     let t = color ? (text, ...args) => `\u001b[${args.join(';')}m` + text : text => text;
@@ -374,9 +356,28 @@ export class MutablePath extends Array {
       const num = p.substring(0, pos - 1).split(sep).length;
       p = t(`... ${num} components ...`, 1, 36) + ' | ' + p.substring(pos, p.length);
     }
+
     return color ? `\x1b[1;${c}m${n.replace(/^Immutable/, '')}\x1b[1;30m ${p}\x1b[0m` : p;
   }
 
+  toString(sep = '.', partToStr = MutablePath.partToString, childrenStr = MutablePath['CHILDREN_GLYPH'] + CHILDREN_SPACE) {
+    const color = Util.isBrowser() ? text => text : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
+    let a = [...this];
+    if(this[0] == 'children') sep = ' ';
+    //Util.log("toString",{sep,partToStr, childrenStr});
+    while(a.length > 0 && a[0] === '') a.shift();
+    let n = a.length;
+    let r = [];
+    for(let i = 0; ; i++) {
+      let p = partToStr(a, '/', childrenStr, color);
+      if(!p) break;
+      r = r.concat(p);
+    }
+    const pad = (s, n = 1) => ' '.repeat(n) + s + ' '.repeat(n);
+    r = r.join(color(sep, 1, 36) + color('', 1, 30)); //.replace(/[/\.]\[/g, '[');
+    r = (this.absolute && r != '' && sep == '/' ? sep : '') + r;
+    return r.replace(/\//g, sep);
+  }
   [Symbol.toStringTag]() {
     return MutablePath.prototype.toString.call('.', '\u220a' + CHILDREN_SPACE);
   }

@@ -137,7 +137,7 @@ export class EagleDocument extends EagleNode {
 
     if(!file)
        file = this.file;
-     console.log("data: ",data);
+     console.log("saveTo data: ",Util.abbreviate(data));
 
     return new Promise((resolve,reject) => {
       fs.writeFile(file, data);

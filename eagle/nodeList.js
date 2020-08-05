@@ -48,14 +48,14 @@ export class EagleNodeList {
     return this[Symbol.iterator];
   }
 
-  remove(pred) {
-    let { raw } = this;
-    if(typeof pred == 'number') {
-      let num = pred;
-      pred = (child, i, list) => i === num;
+  remove(cond) {
+    let { raw, pred = i => true } = this;
+    if(typeof cond == 'number') {
+      let num = cond;
+      cond = (child, i, list) => i === num;
     }
 
-    for(let i = raw.length - 1; i >= 0; i--) if(this.pred(raw[i], i, this) && pred(raw[i], i, this)) raw.splice(i, 1);
+    for(let i = raw.length - 1; i >= 0; i--) if(pred(raw[i], i, this) && cond(raw[i], i, this)) raw.splice(i, 1);
 
     return this;
   }

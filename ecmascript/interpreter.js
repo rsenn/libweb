@@ -41,7 +41,7 @@ export class ECMAScriptValue {
     if(obj.type === undefined || this.constructor.prototype !== ECMAScriptValue.prototype) delete obj.type;
     else if(t) obj.type = t[0];
     Object.setPrototypeOf(obj, { constructor: this.constructor });
-    return inspect(obj, { colors: true, depth: 1 });
+    return ECMAScriptValue.util.inspect(obj, { colors: true, depth: 1 });
   }
 }
 
@@ -117,9 +117,11 @@ class Scope {
 export class ECMAScriptInterpreter {
   scope = null;
 
-  constructor() {
+  constructor(util) {
     this.globalThis = new Scope();
     this.scope = this.globalThis;
+    this.util = util;
+    ECMAScriptValue.util = util;
   }
 
   pushScope() {
