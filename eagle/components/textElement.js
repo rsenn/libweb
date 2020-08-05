@@ -19,16 +19,16 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
 
   if(text.startsWith('>')) {
     const prop = text.slice(1).toLowerCase();
-    console.log('text', { text, prop, opts });
+    //console.log('text', { text, prop, opts });
     text = prop in opts ? opts[prop] : text;
   }
-  console.log(`TextElement.render`, text, { align, opts });
+  //console.log(`TextElement.render`, text, { align, opts });
 
   /*const translation = new TransformationList();
 
-  console.log('translation:', Util.className(translation));
+  //console.log('translation:', Util.className(translation));
   const rotation = translation.concat(Rotation(rot));
-  console.log('rotation:', Util.className(rotation));
+  //console.log('rotation:', Util.className(rotation));
   let wholeTransform = transform.concat(Rotation(rot));
   let wholeAngle = ClampAngle(wholeTransform.decompose().rotate);
 
@@ -42,11 +42,11 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
     //.rotate(Math.abs(wholeAngle % 180))
     .collapseAll();
 
-  console.log(`wholeAngle ${text}`, wholeAngle);
+  //console.log(`wholeAngle ${text}`, wholeAngle);
   //console.log(`undoAngle ${text}`, undoAngle);
         //console.log(`angle ${text}`, angle);
-  console.log(`finalTransformation ${text}`, finalTransformation.toString());
-  console.log(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);
+  //console.log(`finalTransformation ${text}`, finalTransformation.toString());
+  //console.log(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);
 
   if(finalTransformation.rotation) {
     if(finalTransformation.rotation.angle < 0) finalTransformation.rotation.angle = Math.abs(finalTransformation.rotation.angle);
@@ -60,7 +60,7 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
     .rotate((rotateAlignment * Math.PI) / 180)
     .round(0.5);
 
-  console.log(
+  //console.log(
     `render alignment ${text}`,
     Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + ''])
   );*/

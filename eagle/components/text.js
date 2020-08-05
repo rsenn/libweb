@@ -4,7 +4,7 @@ import { Rotation, Alignment, VERTICAL, HORIZONTAL, ClampAngle, AlignmentAngle, 
 import { TransformationList } from '../../geom.js';
 
 export const Text = ({ x, y, text, color, alignment, rot, transformation, ...props }) => {
-  console.log(`Text.render`, { x, y, text, alignment, rot, transformation, ...props });
+  //console.log(`Text.render`, { x, y, text, alignment, rot, transformation, ...props });
 
   let transform = new TransformationList();
   transform.translate(x, y);

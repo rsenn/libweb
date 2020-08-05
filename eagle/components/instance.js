@@ -9,7 +9,7 @@ export const Instance = ({ data, opts = {}, transformation, ...props }) => {
   let instance =
     useValue(async function*() {
       for await (let change of data.repeater) {
-        console.log('change:', change);
+        //console.log('change:', change);
         yield change;
       }
     }) || data;
@@ -35,7 +35,7 @@ export const Instance = ({ data, opts = {}, transformation, ...props }) => {
     }
   });
 
-  console.log('Instance.render', { name, sym, transform, transformation: transformation.concat(transform.filter(t => ['translate'].indexOf(t.type) == -1)) });
+  //console.log('Instance.render', { name, sym, transform, transformation: transformation.concat(transform.filter(t => ['translate'].indexOf(t.type) == -1)) });
 
   return h('g', { className: `part.${part.name}`, 'data-path': part.path.toString(' '), transform }, [sym]);
 };

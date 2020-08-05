@@ -12,7 +12,7 @@ export const PinSizes = {
 export const Circle = ({ data, opts = {}, ...props }) => {
   data = data || props.item;
 
-  console.log('Circle.render ', { data, opts });
+  //console.log('Circle.render ', { data, opts });
   let { transform = new TransformationList() } = opts;
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;

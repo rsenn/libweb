@@ -4,7 +4,7 @@ import { Line } from './line.js';
 import Util from '../util.js';
 
 export class PointList extends Array {
-  constructor(points, tfn = p => new Point(p)) {
+  constructor(points, tfn = (...args) => new Point(...args)) {
     super();
     const base = Array;
     let args = [...arguments];
@@ -12,9 +12,11 @@ export class PointList extends Array {
     if(Util.isArray(args[0]) || Util.isGenerator(args[0])) args = [...args[0]];
     if(typeof points === 'string') {
       const matches = [...points.matchAll(/[-.0-9,]+/g)];
+      //console.log("matches:",matches);
       for(let i = 0; i < matches.length; i++) {
-        const coords = String(matches[i]).split(',');
-        ret.push(tfn(coords));
+        const coords = (matches[i][0] + '').split(/,/g).map(n => +n);
+        // console.log(`matches[${i}]:`,matches[i], coords);
+        ret.push(tfn(...coords));
       }
     } else if(args[0] && args[0].length == 2) {
       for(let i = 0; i < args.length; i++) ret.push(this instanceof PointList ? new Point(args[i]) : Point(args[i]));
@@ -35,7 +37,15 @@ PointList.prototype[Symbol.toStringTag] = function() {
 Util.defineGetter(PointList, Symbol.species, () => PointList);
 PointList.prototype[Symbol.isConcatSpreadable] = true;
 PointList.prototype.rotateRight = function(n) {
-  this.unshift(...this.splice(n, this.length));
+  this.unshift(...this.splice(n % this.length, this.length));
+  return this;
+};
+PointList.prototype.rotateLeft = function(n) {
+  return this.rotateRight(this.length - (n % this.length));
+};
+PointList.prototype.rotate = function(n) {
+  if(n < 0) return this.rotateLeft(-n);
+  if(n > 0) return this.rotateRight(n);
   return this;
 };
 PointList.prototype.push = function(...args) {
@@ -94,7 +104,7 @@ PointList.prototype.clone = function() {
 };
 PointList.prototype.toPolar = function(tfn) {
   let ret = new PointList();
-  let t = typeof tfn == 'function' ? tfn : (x, y) => ({ x: (x * 180) / Math.PI, y });
+  let t = typeof tfn == 'function' ? tfn : (x, y) => ({ x /*: (x * 180) / Math.PI*/, y });
   ret.splice.apply(ret, [
     0,
     ret.length,
@@ -107,7 +117,7 @@ PointList.prototype.toPolar = function(tfn) {
 };
 PointList.prototype.fromPolar = function(tfn) {
   let ret = new PointList();
-  let t = typeof tfn == 'function' ? tfn : (x, y) => ({ x: (x * Math.PI) / 180, y });
+  let t = typeof tfn == 'function' ? tfn : (x, y) => ({ x /*: (x * Math.PI) / 180*/, y });
   ret.splice.apply(ret, [
     0,
     ret.length,
@@ -224,6 +234,16 @@ PointList.prototype.translate = function(x, y) {
   PointList.prototype.forEach.call(this, it => Point.prototype.move.call(it, x, y));
   return this;
 };
+PointList.prototype.transform = function(m) {
+  if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
+  if(Util.isObject(m) && typeof m.transform_point == 'function') {
+    this.forEach(p => m.transform_point(p));
+    return this;
+  }
+  for(let i = 0; i < this.length; i++) Point.prototype.transform.call(this[i], m);
+  return this;
+};
+
 PointList.prototype.filter = function(pred) {
   let ret = new PointList();
   PointList.prototype.forEach.call(this, (p, i, l) => pred(p, i, l) && ret.push(new Point(l[i])));
@@ -259,11 +279,17 @@ PointList.prototype.lines = function(closed = false) {
   };
   return iterableObj;
 };
+PointList.prototype.sort = function(pred) {
+  return Array.prototype.sort.call(this, pred || ((a, b) => Point.prototype.valueOf.call(a) - Point.prototype.valueOf.call(b)));
+};
 PointList.prototype.toString = function(sep = ',', prec) {
   return Array.prototype.map.call(this, point => (Point.prototype.toString ? Point.prototype.toString.call(point, prec, sep) : point + '')).join(' ');
 };
-PointList.prototype.toSource = function() {
-  return 'new PointList([' + PointList.prototype.map.call(this, point => Point.prototype.toSource.call(point)).join(',') + '])';
+PointList.prototype.toSource = function(opts = {}) {
+  if(opts.asString) return `new PointList("${this.toString(opts)}")`;
+
+  let fn = opts.asArray ? p => `[${p.x},${p.y}]` : opts.plainObj ? p => Point.toSource(p, { space: '', padding: ' ', separator: ',' }) : point => Point.prototype.toSource.call(point, { ...opts, plainObj: true });
+  return 'new PointList([' + PointList.prototype.map.call(this, fn).join(',') + '])';
 };
 PointList.prototype.add = function(pt) {
   if(!(pt instanceof Point)) pt = new Point(...arguments);
@@ -304,14 +330,24 @@ PointList.prototype.quot = function(pt) {
   return PointList.prototype.div.apply(ret, arguments);
 };
 PointList.prototype.round = function(prec) {
-  PointList.prototype.forEach.call(this, it => Point.round.call(null, it, prec));
+  PointList.prototype.forEach.call(this, it => Point.prototype.round.call(it, prec));
+  return this;
+};
+PointList.prototype.ceil = function(prec) {
+  PointList.prototype.forEach.call(this, it => Point.prototype.ceil.call(it, prec));
+  return this;
+};
+PointList.prototype.floor = function(prec) {
+  PointList.prototype.forEach.call(this, it => Point.prototype.floor.call(it, prec));
   return this;
 };
 if(!Util.isBrowser()) {
   let c = Util.coloring();
   let sym = Symbol.for('nodejs.util.inspect.custom');
   PointList.prototype[sym] = function() {
-    return `${c.text('PointList', 1, 31)}${c.text('(', 1, 36)}${c.text(this.getLength(), 1, 35) + c.code(1, 36)}) [\n  ${this.map(point => point[sym]() || Util.toString({ x, y }, { multiline: false, spacing: ' ' })).join(',\n  ')}\n${c.text(']', 1, 36)}`;
+    return `${c.text('PointList', 1, 31)}${c.text('(', 1, 36)}${c.text(this.getLength(), 1, 35) + c.code(1, 36)}) [\n  ${this.map((
+      { x, y } ///*Point.prototype.toSource.call(point, { plainObj: true, colors: true })  ||*/ Util.toSource(point, {colors: true }) || point[sym]() ||
+    ) => Util.toString({ x, y }, { multiline: false, spacing: ' ' })).join(',\n  ')}\n${c.text(']', 1, 36)}`;
   };
 }
 for(let name of ['push', 'splice', 'clone', 'area', 'centroid', 'avg', 'bbox', 'rect', 'xrange', 'yrange', 'boundingRect']) {
@@ -343,8 +379,10 @@ Polyline.prototype.toSVG = function(factory, attrs = {}, parent = null) {
   return factory('polyline', { points: PointList.prototype.toString.call(this), ...attrs }, parent);
 };
 
-Util.defineGetter(PointList, Symbol.species, function() {
-  return this;
+Util.define(PointList, {
+  get [Symbol.species]() {
+    return PointList;
+  }
 });
 
 export const ImmutablePointList = Util.immutableClass(PointList);

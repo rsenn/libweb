@@ -107,4 +107,4 @@ Object.defineProperties(EagleNodeMap.prototype, {
   }
 }
 
-Util.decorateIterable(EagleNodeMap.prototype, true);
+Util.decorateIterable(EagleNodeMap.prototype, false);

@@ -12,6 +12,31 @@ import { Repeater } from '../repeater/repeater.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
 
+const TList = (child, elem, matrix) => {
+  matrix = matrix || new Matrix().translate(elem.x, elem.y);
+  let instance = { child, elem, matrix };
+
+  let round = n => Util.roundTo(n, 0.0001, 4);
+  return new Proxy(instance.child, {
+    get(target, prop) {
+      let v = Reflect.get(instance.child, prop);
+      if(['x', 'y'].indexOf(prop) != -1) {
+        v = instance.elem[prop] + target[prop];
+        v = round(v);
+        /*                } else if(prop == 'raw') {
+                       let { attributes, ...raw } = target[prop];
+                       attributes = {...attributes, x: round(instance.child.x + elem.x)+'', y: round(instance.child.y+elem.y)+'' };
+                     v = {...raw, attributes };*/
+      } else if(prop == 'geometry') {
+        v = target[prop];
+        v = v.clone();
+        v = v.transform(matrix);
+      }
+      return v;
+    }
+  });
+};
+
 export class EagleElement extends EagleNode {
   tagName = '';
   subscribers = [];
@@ -84,7 +109,25 @@ export class EagleElement extends EagleNode {
     let elem = this;
     const attributeList = EagleElement.attributeLists[tagName] || Object.keys(attributes || {});
 
-    /*    if(!Util.isEmpty(attributes))*/ {
+    if(tagName == 'contactref') {
+      lazyProperty(this, 'element', () => {
+        const { element, pad } = attributes;
+        return doc.elements[element];
+      });
+      lazyProperty(this, 'pad', () => {
+        const padName = elem.raw.attributes['pad'];
+        const elementName = elem.raw.attributes['element'];
+        let element = elem.element;
+        let pkg = element['package'];
+
+        console.log("lazyProperty 'pad'", element, pkg);
+
+        /*
+        let pads = pkg.pads;
+        return TList(pads[padName], elem.element);*/
+      });
+    } else {
+      /*    if(!Util.isEmpty(attributes))*/
       const names = this.names();
 
       for(let key of attributeList) {
@@ -93,7 +136,7 @@ export class EagleElement extends EagleNode {
         let handler = Util.ifThenElse(
               v => v !== undefined,
               v => prop(v+''),
-              () => { let v = prop(); if(Util.isNumeric(v)) v = parseFloat(v); return v; }
+              () => { let v = prop(); if(Util.isNumeric(v) && key != 'name') v = parseFloat(v); return v; }
             );
 
         prop(attributes[key]);
@@ -188,9 +231,9 @@ export class EagleElement extends EagleNode {
               //Util.log(`relation get(${key}, ${attributes[id]}) = `, r);
               return r;
             };
-            this.initRelation(key, this.handlers[key], fn);
+            if(this[key] == undefined) this.initRelation(key, this.handlers[key], fn);
           }
-          trkl.bind(this, key, fn);
+          if(this[key] == undefined) trkl.bind(this, key, fn);
         } else {
           trkl.bind(this, key, handler);
         }
@@ -227,6 +270,7 @@ export class EagleElement extends EagleNode {
 
     if(['attribute', 'element', 'instance', 'label', 'moduleinst', 'pad', 'pin', 'probe', 'rectangle', 'smd', 'text'].indexOf(tagName) != -1) {
     }
+    this.initCache(EagleElement, EagleNodeList.create);
 
     if(tagName == 'symbol') {
       lazyProperty(this, 'pins', () => {
@@ -234,7 +278,28 @@ export class EagleElement extends EagleNode {
         return EagleNodeMap.create(list, 'name');
       });
     }
-    this.initCache(EagleElement, EagleNodeList.create);
+    if(tagName == 'element') {
+      for(let key of ['pad', 'wire', 'circle', 'text', 'rectangle'])
+        lazyProperty(this, key + 's', () => {
+          let list = EagleNodeList.create(
+            this,
+            this.package.path.down('children'),
+            e => e.tagName == key,
+            (o, p, r) => TList(EagleElement.get(o, p, r), elem)
+          );
+
+          if(key != 'pad') return list;
+          return EagleNodeMap.create(list, 'name');
+        });
+    }
+    if(tagName == 'signal') {
+      for(let prop of ['via', 'wire', 'contactref']) lazyProperty(this, prop + 's', () => EagleNodeList.create(this, this.path.down('children'), e => e.tagName == prop));
+    }
+    if(tagName == 'package') {
+      lazyProperty(this, 'vias', () => EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'via'));
+      lazyProperty(this, 'pads', () => EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'pad'));
+      lazyProperty(this, 'wires', () => EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'wire'));
+    }
   }
 
   get repeater() {
@@ -306,7 +371,7 @@ export class EagleElement extends EagleNode {
 
   getBounds(pred = e => true, opts = {}) {
     let bb = new BBox(),
-      pos = this.geometry();
+      pos = this.geometry;
 
     if(pos) {
       if(pos.toObject) pos = pos.toObject();
@@ -397,7 +462,7 @@ export class EagleElement extends EagleNode {
     return ret;
   }
 
-  geometry() {
+  get geometry() {
     const { raw } = this;
     const keys = Object.keys(raw.attributes);
     const makeGetterSetter = k => v => (v === undefined ? +raw.attributes[k] : (raw.attributes[k] = v + ''));

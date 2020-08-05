@@ -6,7 +6,7 @@ import { TransformationList } from '../../geom/transformation.js';
 export const Rectangle = ({ data, opts = {}, ...props }) => {
   data = data || props.item;
 
-  console.log('Rectangle.render ', { data, opts });
+  //console.log('Rectangle.render ', { data, opts });
   let { transform = new TransformationList() } = opts;
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;

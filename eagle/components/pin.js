@@ -14,7 +14,7 @@ export const PinSizes = {
 export const Pin = ({ data, opts = {}, ...props }) => {
   data = data || props.item;
 
-  console.log('Pin.render ', { data, opts });
+  //console.log('Pin.render ', { data, opts });
   let { transform = new TransformationList() } = opts;
 
   let { transformation } = opts;

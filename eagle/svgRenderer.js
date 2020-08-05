@@ -63,7 +63,7 @@ export class EagleSVGRenderer {
       let ret = factory(tag, attrs, parent);
       let path = attrs['data-path'];
       if(path && !element) {
-        console.log('path:', path);
+        //console.log('path:', path);
         element = EagleElement.get(doc, path);
       }
       if(!element) element = EagleElement.currentElement;

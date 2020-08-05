@@ -205,7 +205,7 @@ export class Parser {
   log() {
     return;
     const width = 72;
-    let args = [...arguments].map(a => (typeof a === 'string' ? `"${a}"` : toStr(a)).replace(new RegExp('[\n\r\t ]+','g'), ''));
+    let args = [...arguments].map(a => (typeof a === 'string' ? `"${a}"` : toStr(a)).replace(new RegExp('[\n\r\t ]+', 'g'), ''));
     let name = Util.abbreviate(Util.trim(args.join(''), '\'"'), width);
     let stack = Util.getCallerStack().map(st => st.getFunctionName());
     /*this.stack.map((name, i) => `${i}:${name}`).join(", ");*/

@@ -55,7 +55,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         const transform = `translate(${x},${y})`;
 
         const padColor = this.layers['Pads'].color || 2;
-        console.log('Pad color:', padColor);
+        //console.log('Pad color:', padColor);
 
         switch (shape) {
           case 'long': {
@@ -122,7 +122,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         break;
       }
       default: {
-        console.log('boardRenderer other renderItem', { item, parent, transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1) });
+        //       console.log('boardRenderer other renderItem', { item, parent, transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1) });
         super.renderItem(item, parent, { ...opts, color });
         break;
       }

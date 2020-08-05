@@ -38,6 +38,7 @@ export { SweepLineClass } from './geom/sweepLine.js';
 export { MatrixTransformation, Rotation, Scaling, Transformation, TransformationList, Translation, ImmutableMatrixTransformation, ImmutableRotation, ImmutableScaling, ImmutableTransformation, ImmutableTransformationList, ImmutableTranslation } from './geom/transformation.js';
 export { isTRBL, TRBL } from './geom/trbl.js';
 export { Vector } from './geom/vector.js';
+export { Voronoi } from './geom/voronoi.js';
 
 export default {
   Align,

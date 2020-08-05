@@ -352,19 +352,19 @@ export class EagleNode {
     let bb = new BBox();
     if(this.children && this.children.length) {
       for(let element of this.getAll(e => e.tagName !== undefined && pred(e))) {
-        let g = element.geometry();
+        let g = element.geometry;
         if(g) {
           let bound = typeof g.bbox == 'function' ? g.bbox() : g;
           bb.update(bound, 0, element);
         }
       }
     }
-    let g = this.geometry();
+    let g = this.geometry;
     if(g) bb.update(g);
     return bb;
   }
 
-  geometry() {
+  get geometry() {
     const { attributes } = this.raw;
     const keys = Object.keys(attributes);
     const makeGetterSetter = k => v => (v === undefined ? this[k] : (this[k] = v));
@@ -411,7 +411,28 @@ export class EagleNode {
     }
   }
 
-  toXML(depth = Number.MAX_SAFE_INTEGER) {
+  toXML(depth = 0) {
+    let attrNames = Object.keys(this.raw.attributes);
+    let s = `<${this.tagName}`;
+    for(let name of attrNames) {
+      let value = this[name];
+      if(Util.isObject(value)) {
+        if(value.name) value = value.name;
+        else value = this.raw.attributes[name];
+      }
+
+      s += ` ${name}="${value}"`;
+    }
+    if(!this.children.length) {
+      s += ' />';
+    } else {
+      s += '\n';
+      [...this.children].map(child => '  '.repeat(depth + 1) + child.toXML(depth + 1)).join('\n');
+      s += `\n</${this.tagName}>`;
+    }
+    return s;
+
+    return toXML(this);
     return tXml.toString([this.raw], depth);
   }
 

@@ -190,7 +190,7 @@ export class EagleDocument extends EagleNode {
 
         //Util.log('symbol:', symbol);
         let geometries = {
-          gate: gate.geometry(),
+          gate: gate.geometry,
           symbol: new Rect(symbol.getBounds()).toPoints(),
           instance: instance.transformation()
         };
@@ -232,8 +232,21 @@ export class EagleDocument extends EagleNode {
 
     let measures = values.filter(obj => obj.layer && obj.layer.name == 'Measures');
 
-    if(geometry) measures = measures.map(e => e.geometry());
+    if(geometry) measures = measures.map(e => e.geometry);
 
     return measures.length > 0 ? measures : null;
+  }
+
+  signalMap() {
+    return new Map(
+      [...this.signals].map(([name, signal]) => {
+        let objects = [...signal.children]
+          .map(child => [child, child.geometry])
+          .filter(([child, geometry]) => !!geometry || child.tagName == 'contactref')
+          .map(([child, geometry]) => child);
+
+        return [name, objects];
+      })
+    );
   }
 }

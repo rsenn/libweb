@@ -3,12 +3,12 @@ import { EagleElement } from './element.js';
 import Util from '../util.js';
 
 export class EagleNodeList {
-  constructor(owner, ref, pred) {
+  constructor(owner, ref, pred, getOrCreate = EagleElement.get) {
     if(Util.isObject(ref) && !('dereference' in ref)) ref = EagleRef(owner, ref);
     let raw = ref.dereference();
     //Util.log('EagleNodeList.constructor', { owner, ref, pred, raw });
     let species = Util.getConstructor(owner);
-    Util.define(this, { ref, owner, raw });
+    Util.define(this, { ref, owner, raw, getOrCreate });
     if(pred) this.pred = pred;
   }
 
@@ -19,12 +19,12 @@ export class EagleNodeList {
     if(typeof pred == 'function') {
       entries = entries.filter(([i, v]) => pred(v, i, raw));
 
-      pos = entries[pos][0];
+      if(entries[pos]) pos = entries[pos][0];
     }
     //  console.log('entries:', entries);
 
     if(pos < 0) pos += raw.length;
-    if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner.document, ref.down(pos) /*, raw[pos]*/);
+    if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return this.getOrCreate(owner.document, ref.down(pos) /*, raw[pos]*/);
   }
 
   *[Symbol.iterator]() {
@@ -33,7 +33,7 @@ export class EagleNodeList {
     let j = 0;
     for(let i = 0; i < raw.length; i++) {
       if(pred && !pred(raw[i], j, this)) continue;
-      yield EagleElement.get(owner, ref.down(i) /*, raw[i]*/);
+      yield this.getOrCreate(owner, ref.down(i) /*, raw[i]*/);
       j++;
     }
   }
@@ -82,8 +82,8 @@ export class EagleNodeList {
     return this.entries().map(([k, v]) => v);
   }
 
-  static create(owner, ref, pred) {
-    let instance = new EagleNodeList(owner, ref, pred);
+  static create(owner, ref, pred, getOrCreate) {
+    let instance = new EagleNodeList(owner, ref, pred, getOrCreate);
     return new Proxy(instance, {
       set(target, prop, value) {
         if(typeof prop == 'number' || (typeof prop == 'string' && /^[0-9]+$/.test(prop))) {
@@ -123,7 +123,7 @@ export class EagleNodeList {
         if(prop == 'find')
           return name => {
             const idx = list.findIndex(e => e.attributes.name == name);
-            return idx == -1 ? null : EagleElement.get(instance, instance.ref.concat([idx]));
+            return idx == -1 ? null : this.getOrCreate(instance, instance.ref.concat([idx]));
           };
         //      if(prop == 'entries') return () => list.map((item, i) => [item.attributes.name, item]);
 
@@ -140,4 +140,4 @@ export class EagleNodeList {
   }
 }
 
-Util.decorateIterable(EagleNodeList.prototype, true);
+Util.decorateIterable(EagleNodeList.prototype, false);

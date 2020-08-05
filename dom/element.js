@@ -888,30 +888,30 @@ export class Element extends Node {
       if(ok) resolve(ok);
       else reject(new DOMException('The request is not allowed', 'NotAllowedError'));
     });
+
+  static *children(elem, tfn = e => e) {
+    if(typeof elem == 'string') elem = Element.find(elem);
+    for(let e = elem.firstElementChild; e; e = e.nextElementSibling) yield tfn(e);
+  }
+
+  static *recurse(elem, tfn = e => e) {
+    if(typeof elem == 'string') elem = Element.find(elem);
+    let root = elem;
+    do {
+      elem =
+        elem.firstElementChild ||
+        elem.nextElementSibling ||
+        (function() {
+          do {
+            if(!(elem = elem.parentElement)) break;
+          } while(!elem.nextSibling);
+          return elem && elem != root ? elem.nextElementSibling : null;
+        })();
+
+      if(elem !== null) yield tfn(elem);
+    } while(elem);
+  }
 }
-
-Element.children = function*(elem, tfn = e => e) {
-  if(typeof elem == 'string') elem = Element.find(elem);
-  for(let e = elem.firstElementChild; e; e = e.nextElementSibling) yield tfn(e);
-};
-
-Element.recurse = function*(elem, tfn = e => e) {
-  if(typeof elem == 'string') elem = Element.find(elem);
-  let root = elem;
-  do {
-    elem =
-      elem.firstElementChild ||
-      elem.nextElementSibling ||
-      (function() {
-        do {
-          if(!(elem = elem.parentElement)) break;
-        } while(!elem.nextSibling);
-        return elem && elem != root ? elem.nextElementSibling : null;
-      })();
-
-    if(elem !== null) yield tfn(elem);
-  } while(elem);
-};
 
 export function isElement(e) {
   return Util.isObject(e) && e.tagName !== undefined;
