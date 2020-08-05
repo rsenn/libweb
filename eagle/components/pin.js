@@ -1,6 +1,8 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import { MakeCoordTransformer } from '../renderUtils.js';
+import { MakeCoordTransformer, Rotation } from '../renderUtils.js';
 import { TransformationList } from '../../geom/transformation.js';
+import { Palette } from '../common.js';
+import { Text } from './text.js';
 
 export const PinSizes = {
   long: 3,
@@ -14,6 +16,8 @@ export const Pin = ({ data, opts = {}, ...props }) => {
 
   console.log('Pin.render ', { data, opts });
   let { transform = new TransformationList() } = opts;
+
+  let { transformation } = opts;
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
@@ -30,6 +34,7 @@ export const Pin = ({ data, opts = {}, ...props }) => {
   const pp = dir.prod(veclen + 0.75).add(pivot);
   const l = new Line(pivot, vec.add(pivot));
   let children = [];
+  const tp = pivot.diff(dir.prod(2.54));
 
   if(func == 'dot')
     children.push(
@@ -54,17 +59,17 @@ export const Pin = ({ data, opts = {}, ...props }) => {
   );
   if(name != '' && visible != 'off')
     children.push(
-      h('text', {
+      h(Text, {
         class: 'pin',
-        stroke: 'none',
-        fill: this.getColor(6),
-        x: vec.x + 2.54,
-        y: vec.y + 0,
-        'font-size': 2,
-        //  'font-family': 'Fixed Medium',
-        'text-anchor': 'left',
-        'alignment-baseline': 'central',
-        children: name
+        color: Palette.schematic((r, g, b) => new RGBA(r, g, b))[16],
+        x: tp.x,
+        y: tp.y,
+
+        text: name,
+        alignment: new Point(-1, 0),
+        transformation,
+        rot,
+        'data-rot': rot
         //transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
       })
     );

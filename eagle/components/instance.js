@@ -6,12 +6,6 @@ import { useValue, useResult, useAsyncIter, useRepeater } from '../../repeater/r
 import { EagleElement } from '../element.js';
 
 export const Instance = ({ data, opts = {}, transformation, ...props }) => {
-  /*
-
-  if(!window.instances) window.instances = new Set();
-
-  window.instances.add(data);
-*/
   let instance =
     useValue(async function*() {
       for await (let change of data.repeater) {
@@ -19,9 +13,8 @@ export const Instance = ({ data, opts = {}, transformation, ...props }) => {
         yield change;
       }
     }) || data;
-  console.log('instance:', data.r);
 
-  let { x, y, rot, part, symbol } = instance; /* && instance[2] || data*/
+  let { x, y, rot, part, symbol } = instance;
   let { deviceset, name, value } = part;
   let { transform = new TransformationList() } = opts;
 
@@ -44,5 +37,5 @@ export const Instance = ({ data, opts = {}, transformation, ...props }) => {
 
   console.log('Instance.render', { name, sym, transform, transformation: transformation.concat(transform.filter(t => ['translate'].indexOf(t.type) == -1)) });
 
-  return h('g', { className: `part.${part.name}`, 'data-path': part.path, transform }, [sym]);
+  return h('g', { className: `part.${part.name}`, 'data-path': part.path.toString(' '), transform }, [sym]);
 };

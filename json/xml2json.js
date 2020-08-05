@@ -56,7 +56,7 @@ function xml2json_translator() {
               hasElementChild = true;
               elemCount[n.nodeName] = elemCount[n.nodeName] ? elemCount[n.nodeName] + 1 : 1;
               if(elemCount[n.nodeName] > 1) needsArray = true;
-            } else if(n.nodeType == 3 && n.nodeValue.match(/[^ \f\n\r\t\v]/)) textChild++;
+            } else if(n.nodeType == 3 && n.nodeValue.match(/[^\ \f\n\r\t\v]/)) textChild++;
             //non-whitespace text
             else if(n.nodeType == 4) cdataChild++; //cdata section node
           }

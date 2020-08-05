@@ -62,7 +62,10 @@ export class EagleSVGRenderer {
     this.create = function(tag, attrs, parent, element) {
       let ret = factory(tag, attrs, parent);
       let path = attrs['data-path'];
-      if(path && !element) element = EagleElement.get(doc, attrs['data-path']);
+      if(path && !element) {
+        console.log('path:', path);
+        element = EagleElement.get(doc, path);
+      }
       if(!element) element = EagleElement.currentElement;
       if(!path && element) path = element.path;
       // if(element) renderer.setItem(path, element);
@@ -163,7 +166,7 @@ export class EagleSVGRenderer {
           //...LayerAttributes(l),
           stroke,
           'data-name': l.name,
-          'data-path': l.path,
+          'data-path': l.path.toString(' '),
           ...(active == 'yes' ? { 'data-active': 'yes' } : {}),
           ...(visible == 'yes' ? { 'data-visible': 'yes' } : {})
         },
@@ -184,7 +187,7 @@ export class EagleSVGRenderer {
     /*   this.debug(`EagleSVGRenderer.renderItem`, item);
     this.debug(`EagleSVGRenderer.renderItem`, item.xpath().toString());*/
 
-    const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, 'data-path': item.path, ...attr }, parent);
+    const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, 'data-path': item.path.toString(' '), ...attr }, parent);
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
     const { layer } = item;
@@ -249,9 +252,9 @@ export class EagleSVGRenderer {
             y,
             ...EagleSVGRenderer.alignmentAttrs(align),
             children: labelText /*,
-            transform: transform.undo(transformation)*/
-            /*       'font-size': 3,
-            'font-family': 'Fixed Medium'*/
+            transform: transform.undo(transformation)*/,
+            'font-size': '0.1px',
+            'font-family': 'Fixed Medium'
           },
           parent
         );

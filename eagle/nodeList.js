@@ -21,7 +21,7 @@ export class EagleNodeList {
 
       pos = entries[pos][0];
     }
-    console.log('entries:', entries);
+    //  console.log('entries:', entries);
 
     if(pos < 0) pos += raw.length;
     if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return EagleElement.get(owner.document, ref.down(pos) /*, raw[pos]*/);
@@ -29,7 +29,7 @@ export class EagleNodeList {
 
   *[Symbol.iterator]() {
     let { ref, owner, raw, pred } = this;
-    console.log('Symbol.iterator', { ref, owner, raw, pred: pred + '' });
+    //console.log('Symbol.iterator', { ref, owner, raw, pred: pred + '' });
     let j = 0;
     for(let i = 0; i < raw.length; i++) {
       if(pred && !pred(raw[i], j, this)) continue;

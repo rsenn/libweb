@@ -24,6 +24,7 @@ export const Rectangle = ({ data, opts = {}, ...props }) => {
     stroke: 'none',
     fill: color,
     ...rect.toObject(),
+    ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
     transform: `translate(${center}) ${rot} translate(${center.prod(-1)})`
   });
 };

@@ -62,13 +62,13 @@ export class SchematicRenderer extends EagleSVGRenderer {
     /* if(rot)*/ this.debug(`SchematicRenderer.renderItem`, /* { labelText, pos, transform, rot }, */ item /*, item.xpath().toString()*/, item.raw);
 
     const layer = item.layer;
-    const color = (opts && opts.color) || (layer && this.getColor(layer.color));
+    const color = layer ? layer.color : SchematicRenderer.palette[16];
     const svg = (elem, attr, parent) =>
       this.create(
         elem,
         {
           className: item.tagName, //...LayerAttributes(layer),
-          'data-path': item.path,
+          'data-path': item.path.toString(' '),
           ...attr
         },
         parent
@@ -136,7 +136,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
             {
               class: 'pin',
               stroke: 'none',
-              fill: this.getColor(6),
+              fill: SchematicRenderer.palette[6],
               x: vec.x + 2.54,
               y: vec.y + 0,
               'font-size': 2,
@@ -200,7 +200,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     }
     this.debug(`SchematicRenderer.renderInstance`, { x, y, transform });
 
-    const g = this.create('g', { className: `part.${part.name}`, 'data-path': part.path, transform }, parent);
+    const g = this.create('g', { className: `part.${part.name}`, 'data-path': part.path.toString(' '), transform }, parent);
 
     if(!value) value = deviceset.name;
     opts = deviceset.uservalue == 'yes' || true ? { name, value } : { name, value: '' };

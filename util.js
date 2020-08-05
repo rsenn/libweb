@@ -2713,7 +2713,7 @@ Util.stack.prototype = Object.assign(Util.stack.prototype, {
   toString(color = false) {
     let columns = this.columnWidths;
     let a = [...this].map(frame => Util.stackFrame.prototype.toString.call(frame, color, columns));
-    console.log('a:', a);
+    //    console.log('a:', a);
     let s = a.join('\n');
     return s + '\n';
   },

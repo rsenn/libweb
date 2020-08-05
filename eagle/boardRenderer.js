@@ -26,14 +26,15 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderItem(item, parent, opts = {}) {
-    const layer = item.layer;
-    const color = layer ? this.getColor(layer.color) : BoardRenderer.palette[2];
+    const layer = item.layer || this.layers['tPlace'];
+    const color = layer.color;
     const svg = (elem, attr, parent) =>
       this.create(
         elem,
         {
           className: item.tagName, //...LayerAttributes(layer),
-          'data-path': item.path,
+          'data-path': item.path.toString(' '),
+          ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
           ...attr
         },
         parent
@@ -52,6 +53,9 @@ export class BoardRenderer extends EagleSVGRenderer {
         const ri = +(drill / 3).toFixed(3);
         let data = '';
         const transform = `translate(${x},${y})`;
+
+        const padColor = this.layers['Pads'].color || 2;
+        console.log('Pad color:', padColor);
 
         switch (shape) {
           case 'long': {
@@ -81,7 +85,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         svg(
           'path',
           {
-            fill: this.colors.Pads || this.palette[2],
+            fill: this.palette[padColor],
             d: data + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
             transform
           },
@@ -136,10 +140,13 @@ export class BoardRenderer extends EagleSVGRenderer {
     let layers = {},
       widths = {};
 
+    const { tPlace } = this.layers;
+
     for(let item of coll) {
       if(item.tagName === 'wire') {
-        const layerId = item.attributes.layer;
-        layers[layerId] = item.layer;
+        const layerId = item.attributes.layer || tPlace.number;
+        layers[layerId] = item.layer || tPlace;
+
         if('width' in item) widths[layerId] = item.width;
         if(wireMap.has(layerId)) wireMap.get(layerId).push(item);
         else wireMap.set(layerId, [item]);
@@ -165,7 +172,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       //this.debug('Lines:', [...lines]);
 
       const path = LinesToPath(lines);
-      const layer = layers[layerId];
+      const layer = layers[layerId] || this.layers['Bottom'];
       const width = widths[layerId];
 
       /* this.debug('layerId:', layerId);
@@ -184,7 +191,7 @@ export class BoardRenderer extends EagleSVGRenderer {
           fill: 'none',
           'stroke-linecap': 'round',
           'stroke-linejoin': 'round',
-          'data-layer': layer.name
+          'data-layer': `${layer.number} ${layer.name}`
         },
         parent
       );
@@ -210,7 +217,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         'data-value': value,
         'data-library': library.name,
         'data-package': element.package.name,
-        'data-path': element.path,
+        'data-path': element.path.toString(' '),
         transform: transform.concat(rotation)
       },
       parent
@@ -224,7 +231,7 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderSignal(signal, parent, options = {}) {
-    let signalGroup = this.create('g', { id: `signal.${signal.name}`, className: `signal ${signal.name}`, 'data-path': signal.path }, parent);
+    let signalGroup = this.create('g', { id: `signal.${signal.name}`, className: `signal ${signal.name}`, 'data-path': signal.path.toString(' ') }, parent);
 
     this.debug(`BoardRenderer.renderSignal`, signal.name);
 

@@ -45,7 +45,7 @@ export class LibraryRenderer extends EagleSVGRenderer {
         elem,
         {
           className: item.tagName, //...LayerAttributes(layer),
-          'data-path': item.path,
+          'data-path': item.path.toString(' '),
           ...attr
         },
         parent

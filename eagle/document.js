@@ -24,7 +24,7 @@ export class EagleDocument extends EagleNode {
     return EagleElement;
   }
 
-  constructor(xmlStr, project, filename, type) {
+  constructor(xmlStr, project, filename, type, fs) {
     //Util.log('EagleDocument.constructor', Util.abbreviate(xmlStr), { project, filename, type });
     const xml = tXml(xmlStr);
 
@@ -58,9 +58,11 @@ export class EagleDocument extends EagleNode {
     //Util.log('load document:', { filename, xml: xmlStr.substring(0, 100), type });
     this.type = type;
     if(project) this.owner = project;
+    if(fs) Util.define(this, { fs });
     Util.define(this, 'xml', xml);
     const orig = xml[0];
     Util.define(this, 'orig', orig);
+
     Util.define(
       this,
       'palette',
@@ -130,11 +132,12 @@ export class EagleDocument extends EagleNode {
 
   /* prettier-ignore */
   saveTo(file, overwrite = false) {
-    let { fs } = this.project;
-    const data = Buffer.from(this.toString());
+    let  fs  = this.project ? this.project.fs  : this.fs;
+    const data = this.toXML();
 
     if(!file)
        file = this.file;
+     console.log("data: ",data);
 
     return new Promise((resolve,reject) => {
       fs.writeFile(file, data);

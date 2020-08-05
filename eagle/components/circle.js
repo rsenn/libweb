@@ -27,6 +27,7 @@ export const Circle = ({ data, opts = {}, ...props }) => {
     cy: y,
     r: radius,
     'stroke-width': width * 0.8,
-    fill: 'none'
+    fill: 'none',
+    ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {})
   });
 };

@@ -58,7 +58,7 @@ export class MutablePath extends Array {
   }
 
   constructor(p = [], opts = {}) {
-    const { absolute = false, tagField, specialFields = [] } = opts;
+    const { absolute = false, tagField, separator = '.', specialFields = [] } = opts;
     super(typeof p == 'number' ? p : 0);
 
     /*
@@ -68,7 +68,7 @@ export class MutablePath extends Array {
     Util.define(this, tagField ? { tagField } : {});
     if(specialFields.length > 0) Util.define(this, 'specialFields', specialFields);
 
-    MutablePath.parse(p, this);
+    MutablePath.parse(p, this, separator);
     //Util.log('this:',this);
 
     //Util.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
@@ -84,7 +84,7 @@ export class MutablePath extends Array {
     return fn;
   }
 
-  static parse(path, out) {
+  static parse(path, out, separator = '.') {
     const len = path.length;
     if(typeof path != 'number') {
       if(typeof path == 'string') {

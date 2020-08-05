@@ -25,7 +25,7 @@ export const Wire = ({ data, opts = {}, ...props }) => {
     'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
     'stroke-linecap': 'round',
     'data-curve': curve,
-    'data-layer': layer.name,
+    'data-layer': `${layer.number} ${layer.name}`,
     transform
   });
 };

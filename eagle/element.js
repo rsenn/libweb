@@ -4,6 +4,7 @@ import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleReference } from './ref.js';
 import { ImmutableXPath } from '../xml.js';
+import { ImmutablePath } from '../json.js';
 import { Rotation, Alignment } from './renderUtils.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList, Translation } from '../geom.js';
@@ -31,6 +32,7 @@ export class EagleElement extends EagleNode {
     //console.log('mapper:', mapper);
 
     //Util.log('EagleElement.get(', { owner, ref, raw }, ')');
+    if(typeof ref == 'string') ref = new ImmutablePath(ref, { separator: ' ' });
 
     if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(root, ref);
     if(!raw) raw = ref.path.apply(root, true);
@@ -80,7 +82,7 @@ export class EagleElement extends EagleNode {
 
     let doc = this.getDocument();
     let elem = this;
-    const attributeList = EagleElement.attributeLists[tagName] || Object.keys(attributes);
+    const attributeList = EagleElement.attributeLists[tagName] || Object.keys(attributes || {});
 
     /*    if(!Util.isEmpty(attributes))*/ {
       const names = this.names();

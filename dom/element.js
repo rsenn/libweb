@@ -135,19 +135,23 @@ export class Element extends Node {
     }
   }
 
-  static toObject(elem, opts = { children: true }) {
-    elem = Element.find(elem);
-    let children = [];
-    if(opts.children) {
-      [...this.childIterator(elem)].forEach(c => (Util.isObject(c) && 'tagName' in c ? children.push(Element.toObject(c, elem)) : (c.textContent + '').trim() != '' ? children.push(c.textContent) : undefined));
+  static toObject(elem, opts = {}) {
+    const { no_children = false, predicate } = opts;
+    if(typeof elem == 'string') elem = Element.find(elem);
+    let l = [];
+    if(!no_children) {
+      l = [...this.childIterator(elem)];
+      if(predicate) l = l.filter(predicate);
+      l = l.reduce((l, c) => (Util.isObject(c) && 'tagName' in c ? l.push(Element.toObject(c, elem, opts)) : (c.textContent + '').trim() != '' ? l.push(c.textContent) : undefined, l), l);
     }
+
     let attributes = (opts ? opts.namespaceURI : document.body.namespaceURI) != elem.namespaceURI ? { ns: elem.namespaceURI } : {};
     let a = 'length' in elem.attributes ? Element.attr(elem) : elem.attributes;
     for(let key in a) attributes[key] = '' + a[key];
     return {
       tagName: /[a-z]/.test(elem.tagName) ? elem.tagName : elem.tagName.toLowerCase(),
       ...attributes,
-      ...(children.length > 0 ? { children } : {})
+      ...(l.length > 0 ? { children: l } : {})
     };
   }
 
@@ -836,15 +840,19 @@ export class Element extends Node {
     return ret;
   }
 
-  static toString(e) {
+  static toString(e, opts = {}) {
+    const { indent = '  ', newline = '', depth = 0 } = opts;
+
     let o = e.__proto__ === Object.prototype ? e : Element.toObject(e);
     const { tagName, ns, children = [], ...a } = o;
-    let s = `<${tagName}`;
+    let i = newline != '' ? indent.repeat(depth) : '';
+    let s = i + `<${tagName}`;
     s += Object.entries(a)
       .map(([name, value]) => ` ${name}="${value}"`)
       .join('');
     s += children.length ? `>` : ` />`;
-    if(children.length) s += children.map(Element.toString).join('') + `</${tagName}`;
+    if(children.length) s += newline + children.map(e => Element.toString(e, { ...opts, depth: depth + 1 })).join(newline) + i + `</${tagName}>`;
+    s += newline;
     return s;
   }
 
