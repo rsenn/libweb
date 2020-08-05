@@ -1,6 +1,6 @@
 import { ESNode, Literal, PropertyDefinition, MemberVariable, FunctionDeclaration, Identifier, ClassDeclaration, BindingProperty, ObjectBindingPattern, SpreadElement, MemberExpression } from './estree.js';
 import Util from '../util.js';
-import { inspect } from 'util';
+//import { inspect } from 'util';
 import deep from '../deep.js';
 
 //import util from 'util';

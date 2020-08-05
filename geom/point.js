@@ -238,10 +238,10 @@ Point.prototype.toSource = function(opts = {}) {
 /*Point.prototype.toSource = function() {
   return '{x:' + this.x + ',y:' + this.y + '}';
 };*/
-Point.prototype.toObject = function() {
+Point.prototype.toObject = function(proto = Point.prototype) {
   const { x, y } = this;
   const obj = { x, y };
-  Object.setPrototypeOf(obj, Point.prototype);
+  Object.setPrototypeOf(obj, proto);
   return obj;
 };
 Point.prototype.toCSS = function(precision = 0.001) {
@@ -261,7 +261,14 @@ Point.prototype.inside = function(rect) {
 };
 Point.prototype.transform = function(m) {
   if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
-  Matrix.prototype.transform_point.call(m, this);
+  if(Util.isObject(m) && typeof m.transform_point == 'function') return m.transform_point(this);
+
+  const x = m[0] * this.x + m[1] * this.y + m[2];
+  const y = m[3] * this.x + m[4] * this.y + m[5];
+
+  this.x = x;
+  this.y = y;
+
   return this;
 };
 Point.prototype.normalize = function(minmax) {

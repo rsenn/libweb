@@ -62,7 +62,7 @@ if(typeof global != 'undefined') {
   })(this, 0, []);
 }
 
-export const  wru = (function(window) {
+export const wru = (function(window) {
   'use strict';
 
   /**
