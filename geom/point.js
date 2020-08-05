@@ -74,7 +74,7 @@ Point.prototype.move = function(x, y) {
   this.y += y;
   return this;
 };
-Point.prototype.move_to = function(x, y) {
+Point.prototype.moveTo = function(x, y) {
   this.x = x;
   this.y = y;
   return this;
@@ -167,14 +167,6 @@ Point.prototype.round = function(precision = 0.001, digits, type = 'round') {
   this.y = Util.roundTo(y, precision, digits, type);
   return this;
 };
-Point.prototype.sides = function() {
-  return {
-    top: this.y,
-    right: this.x + this.w1idth,
-    bottom: this.y + this.height,
-    left: this.x
-  };
-};
 Point.prototype.dot = function(other) {
   return this.x * other.x + this.y * other.y;
 };
@@ -200,9 +192,6 @@ Point.prototype.rotate = function(angle, origin = { x: 0, y: 0 }) {
   this.x = xnew;
   this.y = ynew;
   return this;
-};
-Point.prototype.dimension = function() {
-  return [this.width, this.height];
 };
 Util.defineGetter(Point.prototype, Symbol.iterator, function() {
   const { x, y } = this;
@@ -230,10 +219,10 @@ Point.prototype.toSource = function(opts = {}) {
   const { asArray = false, pad = a => a /*a.padStart(4, ' ')*/, showNew = true } = opts;
   let x = pad(this.x + '');
   let y = pad(this.y + '');
-
+  let c = t => t;
   if(typeof this != 'object' || this === null) return '';
   if(asArray) return `[${x},${y}]`;
-  return `${Util.colorText(showNew ? 'new ' : '', 1, 31)}${Util.colorText('Point', 1, 33)}${Util.colorText('(', 1, 36)}${Util.colorText(x, 1, 32)}${Util.colorText(',', 1, 36)}${Util.colorText(y, 1, 32)}${Util.colorText(')', 1, 36)}`;
+  return `${c(showNew ? 'new ' : '', 1, 31)}${c('Point', 1, 33)}${c('(', 1, 36)}${c(x, 1, 32)}${c(',', 1, 36)}${c(y, 1, 32)}${c(')', 1, 36)}`;
 };
 /*Point.prototype.toSource = function() {
   return '{x:' + this.x + ',y:' + this.y + '}';

@@ -1,9 +1,9 @@
 import wru from '../wru.js';
-import { Point } from '../geom/point.js';
+import { Point, isPoint } from '../geom/point.js';
 
 wru.test([
   {
-    name: 'Point.prototype.move',
+    name: 'Point.move()',
     test: () => {
       let point = new Point(50, 50);
       point.move(10, 20);
@@ -12,16 +12,16 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.move_to',
+    name: 'Point.moveTo()',
     test: () => {
       let point = new Point(50, 50);
-      point.move_to(60, 70);
+      point.moveTo(60, 70);
       wru.assert('point.x == 60', point.x == 60);
       wru.assert('point.y == 70', point.y == 70);
     }
   },
   {
-    name: 'Point.prototype.clear',
+    name: 'Point.clear()',
     test: () => {
       let point = new Point(50, 50);
       point.clear();
@@ -30,7 +30,7 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.set',
+    name: 'Point.set()',
     test: () => {
       let point = new Point(50, 50);
       point.set(10, 5);
@@ -39,7 +39,7 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.clone',
+    name: 'Point.clone()',
     test: () => {
       let point = new Point(50, 50);
       let c = point.clone();
@@ -48,7 +48,7 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.sum',
+    name: 'Point.sum()',
     test: () => {
       let point = new Point(10, 10);
       let sum = point.sum(5, 2);
@@ -57,7 +57,7 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.add',
+    name: 'Point.add()',
     test: () => {
       let point = new Point(50, 50);
       point.add(5, 10);
@@ -69,7 +69,7 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.diff',
+    name: 'Point.diff()',
     test: () => {
       let point = new Point(50, 50);
       let d = point.diff(10, 20);
@@ -78,7 +78,7 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.sub',
+    name: 'Point.sub()',
     test: () => {
       let point = new Point(50, 50);
       point.sub(5, 10);
@@ -90,7 +90,7 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.prod',
+    name: 'Point.prod()',
     test: () => {
       let point = new Point(50, 50);
       let prod = point.prod(4);
@@ -98,7 +98,7 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.mul',
+    name: 'Point.mul()',
     test: () => {
       let point = new Point(50, 50);
       point.mul(0.2);
@@ -106,7 +106,7 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.quot',
+    name: 'Point.quot()',
     test: () => {
       let point = new Point(84, 56);
       let quot = point.quot(7);
@@ -114,7 +114,7 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.div',
+    name: 'Point.div()',
     test: () => {
       let point = new Point(84, 56);
       point.div(7);
@@ -122,42 +122,42 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.comp',
+    name: 'Point.comp()',
     test: () => {
       let point = new Point(50, 50);
       wru.assert('point.comp().equals(new Point(-50,-50))', point.comp().equals(new Point(-50, -50)));
     }
   },
   {
-    name: 'Point.prototype.neg',
+    name: 'Point.neg()',
     test: () => {
       let point = new Point(50, 50);
       wru.assert('point.neg().equals(new Point(-50,-50))', point.neg().equals(new Point(-50, -50)));
     }
   },
   {
-    name: 'Point.prototype.distanceSquared',
+    name: 'Point.distanceSquared()',
     test: () => {
       let point = new Point(50, 50);
       wru.assert('point.distanceSquared()==5000', point.distanceSquared() == 5000);
     }
   },
   {
-    name: 'Point.prototype.distance',
+    name: 'Point.distance()',
     test: () => {
       let point = new Point(Math.sqrt(50), Math.sqrt(50));
       wru.assert('point.distance() == 10', point.distance() == 10);
     }
   },
   {
-    name: 'Point.prototype.equals',
+    name: 'Point.equals()',
     test: () => {
       let point = new Point(50, 50);
       wru.assert('equals', point.equals({ x: 50, y: 50 }));
     }
   },
   {
-    name: 'Point.prototype.round',
+    name: 'Point.round()',
     test: () => {
       let point = new Point(5.0025, 5.0025);
       let rounded = point.round(0.001);
@@ -166,14 +166,7 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.sides',
-    test: () => {
-      let point = new Point(50, 50);
-      wru.assert('sides', !(point.sides() instanceof Point));
-    }
-  },
-  {
-    name: 'Point.prototype.dot',
+    name: 'Point.dot()',
     test: () => {
       let point = new Point(1, 2);
       let scalar = point.dot({ x: 2, y: 1 });
@@ -181,21 +174,14 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.fromAngle',
-    test: () => {
-      let point = Point.fromAngle((45 * Math.PI) / 180);
-      wru.assert('fromAngle', point.round(0.00001).equals({ x: 0.70711, y: 0.70711 }));
-    }
-  },
-  {
-    name: 'Point.prototype.toAngle',
+    name: 'Point.toAngle()',
     test: () => {
       let point = new Point(50, 50);
       wru.assert('toAngle', (point.toAngle() * 180) / Math.PI == 45);
     }
   },
   {
-    name: 'Point.prototype.angle',
+    name: 'Point.angle()',
     test: () => {
       let point = new Point(50, 50);
       let angle = point.angle({ x: 100, y: 50 });
@@ -203,7 +189,7 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.rotate',
+    name: 'Point.rotate()',
     test: () => {
       let point = new Point(50, 50);
       let rotated = point.rotate((45 * Math.PI) / 180);
@@ -211,29 +197,24 @@ wru.test([
       wru.assert('rotate', rotated.round(0.001).equals({ x: 0, y: 70.711 }));
     }
   },
+
   {
-    name: 'Point.prototype.dimension',
+    name: 'Point.toString()',
     test: () => {
-      let point = new Point(50, 50);
-      wru.assert('dimension', !(point.dimension() instanceof Point));
+      let point = new Point(50, 100);
+      wru.assert('toString', point.toString() == '50,100');
     }
   },
   {
-    name: 'Point.prototype.toString',
+    name: 'Point.toSource()',
     test: () => {
-      let point = new Point(50, 50);
-      wru.assert('toString', !(point.toString() instanceof Point));
+      let point = new Point(50, 100);
+      wru.assert('toSource', point.toSource({ showNew: false }) == 'Point(50,100)');
+      wru.assert('toSource', point.toSource({ showNew: true }) == 'new Point(50,100)');
     }
   },
   {
-    name: 'Point.prototype.toSource',
-    test: () => {
-      let point = new Point(50, 50);
-      wru.assert('toSource', !(point.toSource() instanceof Point));
-    }
-  },
-  {
-    name: 'Point.prototype.toObject',
+    name: 'Point.toObject()',
     test: () => {
       let point = new Point(50, 50);
       let obj = point.toObject();
@@ -242,7 +223,7 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.toCSS',
+    name: 'Point.toCSS()',
     test: () => {
       let point = new Point(50, 50);
       let css = point.toCSS();
@@ -251,7 +232,7 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.toFixed',
+    name: 'Point.toFixed()',
     test: () => {
       let point = new Point(7.0711, 7.0711);
       let fixed = point.toFixed();
@@ -259,21 +240,21 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.isNull',
+    name: 'Point.isNull()',
     test: () => {
       let point = new Point(0, 0);
-      wru.assert('isNull', !(point.isNull() instanceof Point));
+      wru.assert('isNull', point.isNull());
     }
   },
   {
-    name: 'Point.prototype.inside',
+    name: 'Point.inside()',
     test: () => {
       let point = new Point(50, 50);
       wru.assert('inside', point.inside({ x: 0, y: 0, width: 100, height: 100 }));
     }
   },
   {
-    name: 'Point.prototype.transform',
+    name: 'Point.transform()',
     test: () => {
       let point = new Point(50, 50);
       let matrix = [1.4142135623730951, -1.414213562373095, 10, 1.414213562373095, 1.4142135623730951, 10, 0, 0, 1];
@@ -282,10 +263,42 @@ wru.test([
     }
   },
   {
-    name: 'Point.prototype.normalize',
+    name: 'Point.normalize()',
     test: () => {
       let point = new Point(50, 50);
       wru.assert('normalize', point.normalize({ x1: 0, x2: 100, y1: 0, y2: 100 }));
+    }
+  },
+  {
+    name: 'static Point.fromAngle()',
+    test: () => {
+      let point = Point.fromAngle((45 * Math.PI) / 180);
+      wru.assert('fromAngle', point.round(0.00001).equals({ x: 0.70711, y: 0.70711 }));
+    }
+  },
+  {
+    name: 'static Point.bind()',
+    test: () => {
+      let raw = [10, 5];
+
+      let point = Point.bind(raw, [0, 1]);
+
+      wru.assert('bind', point.equals({ x: 10, y: 5 }));
+      point.x = 100;
+      point.y = 50;
+      wru.assert('raw[0] == 100', raw[0] == 100);
+      wru.assert('raw[1] == 50', raw[1] == 50);
+    }
+  },
+  {
+    name: 'isPoint()',
+    test: () => {
+      let a = Point({ x: 10, y: 5 });
+
+      let b = new Point([0, 1]);
+
+      wru.assert('isPoint', isPoint(a));
+      wru.assert('isPoint', isPoint(b));
     }
   }
 ]);
