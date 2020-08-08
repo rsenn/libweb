@@ -18,6 +18,31 @@ export class EagleDocument extends EagleNode {
   xml = null;
   file = null;
   type = null;
+
+  get typeName() {
+    return {
+      brd: 'board',
+      sch: 'schematic',
+      lbr: 'library'
+    }[this.type];
+  }
+
+  static typeName(fileExtension) {
+    return {
+      brd: 'board',
+      sch: 'schematic',
+      lbr: 'library'
+    }[fileExtension];
+  }
+
+  static baseOf(filename) {
+    return filename.replace(/\.(brd|sch|lbr)$/i, '');
+  }
+
+  static typeOf(filename) {
+    return this.typeName(filename.replace(/.*\./g, '').toLowerCase());
+  }
+
   elementMapper = Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw));
 
   static get [Symbol.species]() {

@@ -376,15 +376,18 @@ export class Element extends Node {
     return e;
   }
 
-  static position(element, pos = 'absolute') {
-    if(typeof element == 'string') element = Element.find(element);
-    const { x, y } = element.getBoundingClientRect();
+  static position(element, edges = ['left', 'top']) {
+    console.log('Element.position ', { element, edges });
+
+    //if(typeof element == 'string') element = Element.find(element);
+    const trbl = Element.rect(element).toTRBL();
+    const [x, y] = edges.map(e => (e == 'right' ? window.innerWidth - trbl[e] : e == 'bottom' ? window.innerHeight - trbl[e] : trbl[e]));
     return new Point({ x, y });
   }
 
-  static move(element, point, pos) {
+  static move(element, point, pos, edges = ['left', 'top']) {
     let [e, ...rest] = [...arguments];
-    let { x = Element.position(element).x, y = Element.position(element).y } = new Point(rest);
+    let { x = Element.position(element, edges).x, y = Element.position(element, edges).y } = new Point(rest);
     let to = { x, y };
     let position = rest.shift() || Element.getCSS(element, 'position') || 'relative';
     let off;
@@ -398,10 +401,10 @@ export class Element extends Node {
     };
 
     const current = new Point({
-      x: getValue('left') || 0,
-      y: getValue('top') || 0
+      x: getValue(edges[0]) || 0,
+      y: getValue(edges[1]) || 0
     });
-    off = new Point(Element.rect(element, { round: false }));
+    off = new Point(Element.position(element, edges));
     //off = Point.diff(off, current);
     Point.add(current, Point.diff(to, off));
     /*
@@ -409,27 +412,32 @@ export class Element extends Node {
       to.x -= off.x;
       to.y -= off.y;
     }*/
-    let css = Point.toCSS(current);
-    //console.log("Element.move: ", { position, to, css, off, current });
+    let css = Point.toCSS(current, 1, edges);
+    console.log('Element.move: ', { position, to, css, off, current, edges });
     //console.log('move newpos: ', Point.toCSS(pt));
     Element.setCSS(element, { ...css, position });
     return element;
   }
 
-  static moveRelative(element, to, position) {
+  static moveRelative(element, to, edges = ['left', 'top']) {
     var e = typeof element == 'string' ? Element.find(element) : element;
+    var origin = Object.freeze(to ? new Point(to) : Element.position(e, edges));
+    const f = [edges[0] == 'left' ? 1 : -1, edges[1] == 'top' ? 1 : -1];
 
-    var pos = Object.freeze(new Rect(to || Element.rect(e)));
+    console.log('moveRelative', { e, to, edges, f });
 
     function move(x, y) {
-      let rect = new Rect(pos.x + x, pos.y + y, pos.width, pos.height);
-      move.last = rect;
-      return Element.move(e, rect, 'absolute');
+      let pos = new Point(origin.x + x * f[0], origin.y + y * f[1]);
+      move.last = pos;
+      let css = pos.toCSS(1, edges);
+      //      console.log('move', { pos, css });
+      return Element.setCSS(e, css);
+      return Element.move(e, pos, 'absolute', edges);
     }
 
-    move.pos = pos;
+    move.origin = origin;
     move.cancel = () => move(0, 0);
-    move.jump = () => Element.moveRelative(e);
+    move.jump = () => Element.moveRelative(e, to, edges);
 
     return move;
   }
@@ -486,14 +494,18 @@ export class Element extends Node {
     if(typeof element == 'string') element = Element.find(element);
 
     const names = ['Top', 'Right', 'Bottom', 'Left'].map(pos => prefix + (prefix == '' ? pos.toLowerCase() : pos + (prefix == 'border' ? 'Width' : '')));
+    const getCSS = prefix == '' ? () => ({}) : Util.memoize(() => Element.getCSS(element));
+
     /*let entries = Object.entries(element.style);
+
 
     entries  = entries.filter(([name,value]) => names.indexOf(name) != -1);
     entries  = entries.map(([name,value]) => [name.replace(/^[^A-Z]*([A-Z][a-z]*)(|Width)$/, "$1").toLowerCase(),(value+'').replace(/px/, "") ]);*/
-    let entries = names.map(prop => [prop, element.style.getPropertyValue(prop)]);
+    let entries = names.map(prop => [Util.decamelize(prop).split('-'), element.style.getPropertyValue(prop) || getCSS()[prop]]);
     console.log('getTRBL', { names, entries });
+    entries = entries.map(([prop, value]) => [prop[1] || prop[0], typeof value == 'string' ? +value.replace(/px$/, '') : value]);
 
-    return new TRBL(Object.fromEntries(entries));
+    return /*new TRBL*/ Object.fromEntries(entries);
   }
 
   static setTRBL(element, trbl, prefix = 'margin') {

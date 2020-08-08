@@ -39,16 +39,14 @@ export class CSS {
 
   static list = Util.memoize(doc => {
     if(!doc) doc = this.document;
-let adapter = Util.adapter(
-        [...doc.styleSheets],
-        obj => obj.length,
-        (obj, i) => obj[i].href || obj[i].ownerNode.id || i,
-        getStyleSheet
-      );
+    let adapter = Util.adapter(
+      [...doc.styleSheets],
+      obj => obj.length,
+      (obj, i) => obj[i].href || obj[i].ownerNode.id || i,
+      getStyleSheet
+    );
 
-    return [
-      ...adapter
-    ].map(([file, stylesheet]) => ({ file, stylesheet }));
+    return [...adapter].map(([file, stylesheet]) => ({ file, stylesheet }));
   });
 
   static styles(stylesheet) {

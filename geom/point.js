@@ -254,10 +254,10 @@ Point.prototype.toObject = function(proto = Point.prototype) {
   Object.setPrototypeOf(obj, proto);
   return obj;
 };
-Point.prototype.toCSS = function(precision = 0.001) {
+Point.prototype.toCSS = function(precision = 0.001, edges = ['left', 'top']) {
   return {
-    left: Util.roundTo(this.x, precision) + 'px',
-    top: Util.roundTo(this.y, precision) + 'px'
+    [edges[0]]: Util.roundTo(this.x, precision) + 'px',
+    [edges[1]]: Util.roundTo(this.y, precision) + 'px'
   };
 };
 Point.prototype.toFixed = function(digits) {
@@ -281,11 +281,15 @@ Point.prototype.transform = function(m) {
 
   return this;
 };
-Point.prototype.normalize = function(minmax) {
+Point.prototype.scaleTo = function(minmax) {
   return new Point({
     x: (this.x - minmax.x1) / (minmax.x2 - minmax.x1),
     y: (this.y - minmax.y1) / (minmax.y2 - minmax.y1)
   });
+};
+Point.prototype.normal = function() {
+  let d = Point.prototype.distance.call(this);
+  return new Point({ x: this.x / d, y: this.y / d });
 };
 
 Point.move = (point, x, y) => Point.prototype.move.call(point, x, y);
