@@ -415,6 +415,14 @@ export function select() {
   return select.promise;
 }
 
+export function maxZindex(root = 'body') {
+  return Element.findAll('*[style*=z-index]', root).reduce((accu, e) => {
+    const z = +e.style.zIndex;
+    //Util.log(Element.xpath(elem, body));
+    return !isNaN(z) && z > accu ? z : accu;
+  }, 0);
+}
+
 export function boxes(state) {
   var boxes = Element.find('.boxes');
   var body = Element.find('body');
@@ -428,16 +436,6 @@ export function boxes(state) {
     });
     let cr = Element.rect(page);
     //Util.log('container Rect: ', cr);
-    let accu = Element.walk(
-      container,
-      function(elem, accu, root) {
-        const z = parseInt(Element.getCSS(elem, 'z-index'));
-        //Util.log(Element.xpath(elem, body));
-        return z > accu ? z : accu;
-      },
-      0
-    );
-    //Util.log('accu: ', accu);
     Element.setCSS(boxes, {
       backgroundImage: 'url(/static/img/boxes-480.svg)',
       backgroundPosition: 'upperLeft',
@@ -903,18 +901,11 @@ export function circle(point, radius = 10) {
 }
 
 export function rect(arg) {
+  let self = rect;
   let args = [...arguments];
   let e, r;
   let a = (rect.list = rect.list || []);
-  let zIndex = (rect.zIndex =
-    rect.zIndex ||
-    [...Element.recurse('body')]
-      .map(e => window.getComputedStyle(e).zIndex)
-      .filter(Util.uniquePred)
-      .filter(Util.isNumeric)
-      .sort()
-      .reverse()[0] ||
-    10000);
+  let zIndex = maxZindex() + 1;
 
   while(args.length > 0) {
     if(args[0] instanceof dom.Rect) r = args.shift();
@@ -944,7 +935,8 @@ export function rect(arg) {
       Util.log('rect:', rect);
     }
 
-    let color = args.shift() || RGBA.random([0, 255], [0, 255], [0, 255], [127, 127]);
+    let color = args.shift() || RGBA.random([0, 255], [0, 255], [0, 255], [64, 64]);
+    color.a = 64;
     let borderColor = args.shift() || '#0f0';
     parent = parent || args.shift() || body;
     if(typeof parent == 'string') parent = Element.find(parent);
@@ -952,21 +944,8 @@ export function rect(arg) {
     if(parent != body && parent.style && !parent.style.position) parent.style.setProperty('position', 'relative');
 
     let e = Element.create('div', { parent });
-
-    Object.assign(e.style, {
-      /*display: "inline-block",
-        class: "tracker-rect",*/
-      position: 'absolute',
-      border: `1px dashed ${typeof borderColor == 'string' ? borderColor : '#0f0'}`,
-      borderRadius: '0px',
-      backgroundColor: color,
-      zIndex,
-      pointerEvents: 'none' /*,
-                ...rect.round(1).toCSS(),*/
-
-      /*   WebkitBoxShadow: '0px 0px 9px 0px #000000',
-      boxShadow: '0px 0px 9px 0px #000000',*/
-    });
+    console.log('backgroundColor', color, color.toString());
+    Object.assign(e.style, { position: 'absolute', border: `${self.border || 1}px dashed ${typeof borderColor == 'string' ? borderColor : '#0f0'}`, borderRadius: '0px', backgroundColor: color.toString(), zIndex, pointerEvents: 'none' });
 
     //Util.log("__rect ", rect, color);
 
@@ -1089,7 +1068,8 @@ export const devtools = {
   Util,
   walk,
   trkl,
-  ws
+  ws,
+  maxZindex
   /*  React,
   ReactDOM,*/
   //mobx: { toJS }

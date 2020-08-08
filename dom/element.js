@@ -296,9 +296,14 @@ export class Element extends Node {
 
     //console.log("Element.rect(", r, ")");
 
-    if(options.border) {
+    if(options.border === false) {
       const border = Element.border(e);
-      Rect.outset(r, border);
+      Rect.inset(r, border);
+
+      //console.log("Element.rect(", r, ") // with border = ", border);
+    } else if(options.margin) {
+      const margin = Element.margin(e);
+      Rect.outset(r, margin);
 
       //console.log("Element.rect(", r, ") // with border = ", border);
     }
@@ -478,8 +483,17 @@ export class Element extends Node {
   }
 
   static getTRBL(element, prefix = '') {
+    if(typeof element == 'string') element = Element.find(element);
+
     const names = ['Top', 'Right', 'Bottom', 'Left'].map(pos => prefix + (prefix == '' ? pos.toLowerCase() : pos + (prefix == 'border' ? 'Width' : '')));
-    return new TRBL(Element.getCSS(element, names));
+    /*let entries = Object.entries(element.style);
+
+    entries  = entries.filter(([name,value]) => names.indexOf(name) != -1);
+    entries  = entries.map(([name,value]) => [name.replace(/^[^A-Z]*([A-Z][a-z]*)(|Width)$/, "$1").toLowerCase(),(value+'').replace(/px/, "") ]);*/
+    let entries = names.map(prop => [prop, element.style.getPropertyValue(prop)]);
+    console.log('getTRBL', { names, entries });
+
+    return new TRBL(Object.fromEntries(entries));
   }
 
   static setTRBL(element, trbl, prefix = 'margin') {
@@ -520,7 +534,7 @@ export class Element extends Node {
 
     const w = window !== undefined ? window : global.window;
     const d = document !== undefined ? document : global.document;
-    // console.log('Element.getCSS ', { w, d, element });
+    // console.log('Element.getCSS ', { element,property });
 
     let parent = Util.isObject(element) ? element.parentElement || element.parentNode : null;
 

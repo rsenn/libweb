@@ -54,7 +54,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         let data = '';
         const transform = `translate(${x},${y})`;
 
-        const padColor = this.layers['Pads'].color || 2;
+        const padColor = /*this.layers['Pads'].color ||*/ 2;
         //console.log('Pad color:', padColor);
 
         switch (shape) {
@@ -103,14 +103,14 @@ export class BoardRenderer extends EagleSVGRenderer {
             svg(
               'text',
               {
-                fill: 'hsl(180,100%,60%)',
-                stroke: 'black',
-                'stroke-width': 0.01,
+                fill: 'hsla(180,100%,60%,0.5)',
+                stroke: 'none',
+                //                'stroke-width': 0.01,
                 x: 0.04,
                 y: -0.04,
-                filter: 'url(#shadow)',
+                //     filter: 'url(#shadow)',
                 ...EagleSVGRenderer.alignmentAttrs('center', VERTICAL),
-                //  'font-size': 0.9,
+                'font-size': 0.6,
                 'font-style': 'bold',
                 // 'font-family': 'Fixed Medium',
                 transform: `${transform} ${RotateTransformation(opts.rot, -1)} scale(1,-1)`
@@ -218,6 +218,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         'data-library': library.name,
         'data-package': element.package.name,
         'data-path': element.path.toString(' '),
+        'data-rot': rot,
         transform: transform.concat(rotation)
       },
       parent

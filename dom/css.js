@@ -1,57 +1,74 @@
 import Util from '../util.js';
 import { Element } from './element.js';
 
+const getStyleMap = (obj, key) => {
+  let rule = Util.find(obj, item => item['selectorText'] == key);
+  return Util.adapter(
+    rule,
+    obj => (obj && obj.styleMap && obj.styleMap.size !== undefined ? obj.styleMap.size : 0),
+    (obj, i) => [...obj.styleMap.keys()][i],
+    (obj, key) =>
+      obj.styleMap
+        .getAll(key)
+        .map(v => String(v))
+        .join(' ')
+  );
+};
+const getStyleSheet = (obj, key) => {
+  let sheet = obj.cssRules ? obj : Util.find(obj, entry => entry.href == key || entry.ownerNode.id == key) || obj[key];
+
+  return Util.adapter(
+    sheet.rules,
+    obj => (obj && obj.length !== undefined ? obj.length : 0),
+    (obj, i) => obj[i].selectorText,
+    getStyleMap
+  );
+};
+
 export class CSS {
   static get document() {
-    try {
-      return window.document;
-    } catch(err) {}
-    return null;
+    return CSS.getDocument();
   }
 
-  static list(doc) {
+  static getDocument = Util.memoize(() =>
+    Util.tryCatch(
+      () => window.document,
+      d => (console.log('document:', d), d)
+    )
+  );
+
+  static list = Util.memoize(doc => {
     if(!doc) doc = this.document;
-
-    const getStyleMap = (obj, key) => {
-      let rule = Util.find(obj, item => item['selectorText'] == key);
-      return Util.adapter(
-        rule,
-        obj => (obj && obj.styleMap && obj.styleMap.size !== undefined ? obj.styleMap.size : 0),
-        (obj, i) => [...obj.styleMap.keys()][i],
-        (obj, key) =>
-          obj.styleMap
-            .getAll(key)
-            .map(v => String(v))
-            .join(' ')
+let adapter = Util.adapter(
+        [...doc.styleSheets],
+        obj => obj.length,
+        (obj, i) => obj[i].href || obj[i].ownerNode.id || i,
+        getStyleSheet
       );
-    };
-    const getStyleSheet = (obj, key) => {
-      let sheet = Util.find(obj, entry => entry.href == key || entry.ownerNode.id == key) || obj[key];
 
-      return Util.adapter(
-        sheet.rules,
-        obj => (obj && obj.length !== undefined ? obj.length : 0),
-        (obj, i) => obj[i].selectorText,
-        getStyleMap
-      );
-    };
-    return Util.adapter(
-      [...doc.styleSheets],
-      obj => obj.length,
-      (obj, i) => obj[i].href || obj[i].ownerNode.id || i,
-      getStyleSheet
-    );
-  }
+    return [
+      ...adapter
+    ].map(([file, stylesheet]) => ({ file, stylesheet }));
+  });
 
   static styles(stylesheet) {
-    const list = stylesheet && stylesheet.cssRules ? [stylesheet] : CSS.list(stylesheet);
-    let ret = [];
+    let ret;
 
+    if(Util.isObject(stylesheet) && stylesheet.cssRules !== undefined) ret = getStyleSheet(stylesheet);
+    else {
+      ret = [...CSS.list()];
+      ret = typeof stylesheet == 'number' ? ret[stylesheet] : ret.find((item, i) => i === stylesheet || item.file === stylesheet);
+
+      if(ret) ret = ret.stylesheet;
+    }
+
+    console.log('ret:', ret);
+    /*
     list.forEach(s =>
-      [...(s.cssRules || s.rules)].forEach(rule => {
+        [...(s.cssRules || s.rules)].forEach(rule => {
         ret.push(rule.cssText);
       })
-    );
+    );*/
     return ret;
   }
 

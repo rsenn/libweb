@@ -663,7 +663,7 @@ Util.extendArray = function(arr = Array.prototype) {
   });*/
 };
 Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index) => obj.key(index), getItem = (obj, key) => obj[key], setItem = (obj, index, value) => (obj[index] = value)) {
-  const adapter = {
+  const adapter = obj && {
     get length() {
       return getLength(obj);
     },
@@ -675,6 +675,9 @@ Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index
     },
     get(key) {
       return getItem(obj, key);
+    },
+    has(key) {
+      return this.get(key) !== undefined;
     },
     set(key, value) {
       return setItem(obj, key, value);
@@ -3676,6 +3679,11 @@ Util.wrapGenerator = fn =>
         return [...fn.call(this, ...args)];
       }
     : fn;
+
+Util.wrapGeneratorMethods = obj => {
+  for(let name of Util.getMethodNames(obj, 1, 0)) obj[name] = Util.wrapGenerator(obj[name]);
+  return obj;
+};
 
 Util.decorateIterable = (proto, generators = false) => {
   const methods = {

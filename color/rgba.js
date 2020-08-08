@@ -179,7 +179,7 @@ RGBA.prototype.css = () => prop => (prop ? prop + ':' : '') + 'rgba(' + this.r +
 RGBA.prototype.toString = function(sep = ',', fmt = num => +num.toFixed(3)) {
   const { r, g, b, a } = this;
   if(a === undefined) return 'rgb(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + ')';
-  else return 'rgba(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + sep + a + ')';
+  else return 'rgba(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + sep + (a * 100) / 255 + '%)';
 };
 
 RGBA.prototype.toSource = function(sep = ',') {

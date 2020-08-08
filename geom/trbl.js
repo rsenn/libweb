@@ -9,17 +9,19 @@ import { Rect } from './rect.js';
 export function TRBL(arg) {
   let ret = this instanceof TRBL ? this : {};
   let args = [...arguments];
+  // console.log("TRBL",{arg})
 
-  if(typeof arg === 'object' && !arg instanceof Array) {
+  if(typeof arg === 'object' && !Util.isArray(arg)) {
     Object.keys(arg).forEach(k => {
       const matches = /(top|right|bottom|left)/i.exec(k);
+      //console.log("TRBL.constructor",{arg,matches,k});
       ret[matches[0].toLowerCase()] = parseInt(arg[k]);
     });
   } else if(arg) {
     if(args.length > 1) arg = args;
 
     if(typeof arg === 'string') arg = [...arg.matchAll(/^[0-9.]+(|px|em|rem|pt|cm|mm)$/g)];
-    else if(arg.length == 4) arg = arg.map(v => parseInt(v));
+    else if(arg.length == 4) arg = arg.map(v => parseInt(v.replace(/[a-z]*$/g, '')));
 
     ret.top = arg[0];
     ret.right = arg[1];
