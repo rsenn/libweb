@@ -2,6 +2,7 @@ import { h, Component } from '../../dom/preactComponent.js';
 import Util from '../../util.js';
 import { Rotation, VERTICAL, HORIZONTAL, ClampAngle, AlignmentAngle, MakeCoordTransformer } from '../renderUtils.js';
 import { Text } from './text.js';
+import { useTrkl } from '../renderUtils.js';
 
 export const TextElement = ({ data, opts = {}, ...props }) => {
   data = data || props.item;
@@ -15,7 +16,11 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
   let { children = [], text: innerText, align = 'bottom-left', size, font, rot, layer } = data;
   let text = innerText || labelText || children.join('\n');
   let { x, y } = coordFn(data);
-  const color = layer && layer.color;
+  const color = data.getColor();
+
+  let visible = layer ? useTrkl(layer.handlers['visible']) : true;
+
+  //  const visible = layer ? layer.isVisible(data) : true;
 
   if(text.startsWith('>')) {
     const prop = text.slice(1).toLowerCase();
@@ -81,6 +86,7 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
     alignment: align,
     text,
     transformation,
+    visible,
     ...attrs
   });
 };

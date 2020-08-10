@@ -3,7 +3,7 @@ import Util from '../../util.js';
 import { Rotation, Alignment, VERTICAL, HORIZONTAL, ClampAngle, AlignmentAngle, MakeCoordTransformer } from '../renderUtils.js';
 import { TransformationList } from '../../geom.js';
 
-export const Text = ({ x, y, text, color, alignment, rot, transformation, ...props }) => {
+export const Text = ({ x, y, text, color, alignment, rot, transformation, visible, ...props }) => {
   //console.log(`Text.render`, { x, y, text, alignment, rot, transformation, ...props });
 
   let transform = new TransformationList();
@@ -29,6 +29,7 @@ export const Text = ({ x, y, text, color, alignment, rot, transformation, ...pro
         fill: color,
         stroke: 'none',
         'stroke-width': 0.05,
+        style: visible ? {} : { display: 'none' },
         ...AlignmentAttrs(alignment, VERTICAL),
         ...props,
         transform: transform.concat(transformation.slice(0, 1).invert())

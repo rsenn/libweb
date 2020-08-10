@@ -62,7 +62,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     /* if(rot)*/ this.debug(`SchematicRenderer.renderItem`, /* { labelText, pos, transform, rot }, */ item /*, item.xpath().toString()*/, item.raw);
 
     const layer = item.layer;
-    const color = layer ? layer.color : SchematicRenderer.palette[16];
+    const color = typeof item.getColor == 'function' ? item.getColor() : SchematicRenderer.palette[16];
     const svg = (elem, attr, parent) =>
       this.create(
         elem,

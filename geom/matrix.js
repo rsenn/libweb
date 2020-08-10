@@ -231,14 +231,14 @@ Matrix.prototype.toString = function(separator = ' ') {
   let name = rows[0].length == 3 ? 'matrix' : 'matrix3d';
 
   if(rows[0].length == 3) {
-    rows = [['a', 'b', 'c', 'd', 'e', 'f'].map(k => this[Matrix.prototype.keyIndex[k]])];
+    rows = [['a', 'b', 'c', 'd', 'e', 'f'].map(k => this[keyIndexes[k]])];
   }
 
   return `${name}(` + rows.map(row => row.join(',' + separator)).join(',' + separator) + ')';
 };
 
 Matrix.prototype.toSVG = function() {
-  return 'matrix(' + ['a', 'b', 'c', 'd', 'e', 'f'].map(k => this[Matrix.prototype.keyIndex[k]]).join(',') + ')';
+  return 'matrix(' + ['a', 'b', 'c', 'd', 'e', 'f'].map(k => this[keyIndexes[k]]).join(',') + ')';
 };
 
 Matrix.prototype.toDOM = function(ctor = DOMMatrix) {

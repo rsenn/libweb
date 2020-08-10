@@ -133,15 +133,33 @@ export class EagleElement extends EagleNode {
       for(let key of attributeList) {
         let prop = trkl.property(this.attrMap, key);
         // prettier-ignore
-        let handler = Util.ifThenElse(
-              v => v !== undefined,
-              v => prop(v+''),
-              () => { let v = prop(); if(Util.isNumeric(v) && key != 'name') v = parseFloat(v); return v; }
-            );
+        let handler;
+
+        if(['visible', 'active'].indexOf(key) != -1)
+          handler = Util.ifThenElse(
+            v => v !== undefined,
+            v => prop(v === true ? 'yes' : v === false ? 'no' : v),
+            () => {
+              let v = prop();
+              if(v == 'yes') v = true;
+              else if(v == 'no') v = false;
+              return v;
+            }
+          );
+        else
+          handler = Util.ifThenElse(
+            v => v !== undefined,
+            v => prop(v + ''),
+            () => {
+              let v = prop();
+              if(Util.isNumeric(v) && key != 'name') v = parseFloat(v);
+              return v;
+            }
+          );
 
         prop(attributes[key]);
         prop.subscribe(value => (value !== undefined ? (raw.attributes[key] = '' + value) : delete raw.attributes[key]));
-        prop.subscribe(value => (elem.pushEvent ? elem.pushEvent([key, value]) : void 0));
+        prop.subscribe(value => (elem.pushEvent ? elem.pushEvent(elem, key, value) : void 0));
         this.handlers[key] = prop;
 
         if(Object.keys(names).indexOf(key) != -1 && !(['instance', 'part'].indexOf(tagName) != -1 && ['name', 'value'].indexOf(key) != -1)) {
@@ -300,15 +318,53 @@ export class EagleElement extends EagleNode {
       lazyProperty(this, 'pads', () => EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'pad'));
       lazyProperty(this, 'wires', () => EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'wire'));
     }
+
+    if(tagName == 'layer') {
+      this.getColor = function(element) {
+        if(element) this.elements.add(element);
+        return this.color;
+      };
+      this.isVisible = function(element) {
+        if(element) this.elements.add(element);
+        return this.visible;
+      };
+    }
+    if(this.layer) {
+      this.getColor = function() {
+        this.layer.elements.add(this);
+        return this.layer.color;
+      };
+    }
+
+    if(tagName == 'layer') this.elements = new Set();
+    /*
+    if(this.layer)
+      this.layer.elements.add(this);*/
+    let tmp = this.repeater;
   }
 
   get repeater() {
-    if(!this.r)
+    let pushFn;
+    if(!this.r) {
       this.r = new Repeater(async (push, stop) => {
-        this.pushEvent = ([k, v]) => push(this);
+        push(this);
+        pushFn = push;
         push(this);
         await stop;
       });
+      this.r.next().then(
+        ({ value, done }) =>
+          (value.pushEvent = function(...args) {
+            const [e, k] = args;
+            const v = e[k];
+
+            //console.log(`pushEvent`, ...args);
+            //console.log(`pushEvent`, {e,k,v});
+            if(this.tagName == 'layer') this.elements.forEach(elem => elem.pushEvent(...args));
+            pushFn(this);
+          })
+      );
+    }
 
     return this.r;
   }
@@ -377,6 +433,15 @@ export class EagleElement extends EagleNode {
       if(pos.toObject) pos = pos.toObject();
       else if(pos.clone) pos = pos.clone();
       else pos = Util.clone(pos);
+    }
+
+    if(this.tagName == 'board') {
+      const measures = [...this.plain].filter(e => e.layer.name == 'Measures');
+      if(measures.length >= 4) {
+        bb.update(measures);
+        console.log('bb', bb);
+        return bb;
+      }
     }
 
     if(this.tagName == 'element') {

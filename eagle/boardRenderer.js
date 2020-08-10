@@ -6,6 +6,11 @@ import { RGBA } from '../color.js';
 import { Palette } from './common.js';
 import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, Rotation } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
+import { Repeater } from '../repeater/repeater.js';
+import { useTrkl } from './renderUtils.js';
+import { useValue, useResult, useAsyncIter, useRepeater } from '../repeater/react-hooks.js';
+
+import { h, Component, useEffect } from '../dom/preactComponent.js';
 
 export class BoardRenderer extends EagleSVGRenderer {
   static palette = Palette.board((r, g, b) => new RGBA(r, g, b));
@@ -27,7 +32,8 @@ export class BoardRenderer extends EagleSVGRenderer {
 
   renderItem(item, parent, opts = {}) {
     const layer = item.layer || this.layers['tPlace'];
-    const color = layer.color;
+    const color = typeof item.getColor == 'function' ? item.getColor() : BoardRenderer.palette[16];
+
     const svg = (elem, attr, parent) =>
       this.create(
         elem,
@@ -165,6 +171,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
       const lines = wires.map(wire => {
         let line = new Line(coordFn(wire));
+        line.element = wire;
         if('curve' in wire) line.curve = wire.curve;
         return line;
       });
@@ -175,14 +182,37 @@ export class BoardRenderer extends EagleSVGRenderer {
       const layer = layers[layerId] || this.layers['Bottom'];
       const width = widths[layerId];
 
+      /*      wires.forEach(wire => layer.elements.add(wire));
+
+      let repeater = new Repeater(async (push, stop) => {
+        let prev;
+        for await (let event of Repeater.merge(wires.map(wire => wire.repeater))) {
+          if(!Util.equals(prev, event))
+            //console.log("event:", event);
+            push(event);
+        }
+        prev = event;
+      });*/
+
       /* this.debug('layerId:', layerId);
       this.debug('layer:', layer);*/
-      const color = new RGBA(layer.color);
+      const color = layer.color;
       //this.debug('color:', color, layer.color);
 
-      this.create(
-        'path',
-        {
+      const WirePath = ({ path, color, width, layer }) => {
+        /*let [visible, setVisible] = useState(layer.isVisible());
+
+        useEffect(() => {
+          let updateVisible = v => v && setVisible(v == 'yes');
+
+          let handler = layer.handlers['visible'];
+          handler.subscribe(updateVisible);
+          return () => handler.unsubscribe(updateVisible);
+        });
+       */
+        let visible = useTrkl(layer.handlers['visible']);
+
+        return h('path', {
           className: 'wire',
           //...LayerAttributes(layer),
           d: path,
@@ -191,10 +221,11 @@ export class BoardRenderer extends EagleSVGRenderer {
           fill: 'none',
           'stroke-linecap': 'round',
           'stroke-linejoin': 'round',
-          'data-layer': `${layer.number} ${layer.name}`
-        },
-        parent
-      );
+          'data-layer': `${layer.number} ${layer.name}`,
+          style: visible ? {} : { display: 'none' }
+        });
+      };
+      this.create(WirePath, { path, color, width, layer }, parent);
     }
   }
 

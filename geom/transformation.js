@@ -3,13 +3,23 @@ import { Point } from '../geom/point.js';
 import Util from '../util.js';
 
 export class Transformation {
-  type = null;
+  //typeName = null;
 
-  constructor(type) {
-    Util.define(this, 'type', type);
+  constructor(typeName) {
+    //Util.define(this, { typeName });
     //this.type = type;
 
     return this;
+  }
+
+  get type() {
+    let type =
+      this.typeName ||
+      Util.className(this)
+        .toLowerCase()
+        .replace(/transform(ation)?/, '')
+        .replace(/(ion|ing)$/, 'e');
+    return type;
   }
 
   get [Symbol.isConcatSpreadable]() {
@@ -78,15 +88,15 @@ export class Transformation {
         return +arg;
       });
 
-    if(cmd.startsWith('rotate')) {
+    if(cmd.startsWith('rotat')) {
       const axis = cmd.slice(6);
       args = axis != '' ? [args[0], axis] : args;
       t = new Rotation(...args);
-    } else if(cmd.startsWith('translate')) {
+    } else if(cmd.startsWith('translat')) {
       const axis = cmd.slice(9);
       args = axis != '' ? [args[0], axis] : args;
       t = new Translation(...args);
-    } else if(cmd.startsWith('scale')) {
+    } else if(cmd.startsWith('scal')) {
       const axis = cmd.slice(5);
       args = axis != '' ? [args[0], axis] : args;
       t = new Scaling(...args);
@@ -314,8 +324,8 @@ export class Scaling extends Transformation {
   accumulate(other) {
     if(this.type !== other.type) throw new Error(Util.className(this) + ': accumulate mismatch');
 
-    if(this.is3D) return new Translation(this.x * other.x, this.y * other.y, this.z * other.z);
-    return new Translation(this.x * other.x, this.y * other.y);
+    if(this.is3D) return new Scaling(this.x * other.x, this.y * other.y, this.z * other.z);
+    return new Scaling(this.x * other.x, this.y * other.y);
   }
 }
 
@@ -460,7 +470,7 @@ export class TransformationList extends Array {
   }
 
   clone() {
-    return this.slice();
+    return this.map(t => t.clone()); // this.slice();
   }
 
   unshift(...args) {
@@ -477,7 +487,7 @@ export class TransformationList extends Array {
   }
 
   translate(x, y) {
-    let trans = this.filter(t => !t.type.startsWith('translate'));
+    let trans = this.filter(t => !t.type.startsWith('translat'));
     let vec = new Point(x, y);
 
     //trans.toMatrix().transform_point(vec);
@@ -501,7 +511,7 @@ export class TransformationList extends Array {
   }
 
   toString(tUnit, rUnit) {
-    return this.map(t => t.toString(t.type.startsWith('scale') ? '' : t.type.startsWith('rotate') ? rUnit : tUnit)).join(' ');
+    return this.map(t => t.toString(t.type.startsWith('scal') ? '' : t.type.startsWith('rotat') ? rUnit : tUnit)).join(' ');
   }
 
   [Symbol.toStringTag]() {
@@ -563,15 +573,15 @@ export class TransformationList extends Array {
   }
 
   get rotation() {
-    return this.findLast(item => item.type == 'rotate');
+    return this.findLast(item => item.type.startsWith('rotat'));
   }
 
   get scaling() {
-    return this.findLast(item => item.type == 'scale');
+    return this.findLast(item => item.type.startsWith('scal'));
   }
 
   get translation() {
-    return this.findLast(item => item.type == 'translation');
+    return this.findLast(item => item.type.startsWith('translat'));
   }
 
   /*  map(...args) {

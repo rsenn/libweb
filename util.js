@@ -166,23 +166,24 @@ Util.once = function(fn, thisArg) {
   };
 };
 
-Util.getGlobalObject = Util.memoize(() =>
-  Util.tryCatch(
+Util.getGlobalObject = Util.memoize(arg => {
+  const retfn = arg ? g => g[arg] : g => g;
+  return Util.tryCatch(
     () => global,
-    g => g,
+    retfn,
     err =>
       Util.tryCatch(
         () => globalThis,
-        g => g,
+        retfn,
         err =>
           Util.tryCatch(
             () => window,
-            g => g,
+            retfn,
             err => console.log('Util.getGlobalObject:', err)
           )
       )
-  )
-);
+  );
+});
 
 Util.isDebug = Util.memoize(function() {
   if(process !== undefined && process.env.NODE_ENV === 'production') return false;
@@ -232,9 +233,9 @@ Util.msg = (strings, ...substitutions) => {
   }
   console.log(...o);
 };
-Util.logBase = function(n, base) {
-  return Math.log(n) / Math.log(base);
-};
+
+Util.logBase = Util.curry((base, n) => Math.log(n) / Math.log(base));
+
 Util.generalLog = function(n, x) {
   return Math.log(x) / Math.log(n);
 };
@@ -1569,9 +1570,13 @@ Util.encodeQuery = function(data) {
   return ret.join('&');
 };
 Util.parseURL = function(href = this.getURL()) {
-  const matches = new RegExp('^([^:]*)://([^/:]*)(:[0-9]*)?(/?.*)').exec(href);
+  console.log('href:', href);
+  const matches = /^([^:]+:\/\/)?([^/:]*)(:[0-9]*)?(\/?.*)?/g.exec(href);
+  // = /^([^:]*):\/\/([^/:]*)(:[0-9]*)?(\/?.*)?/g.exec(href);
+  const [all, proto, host, port, location = ''] = matches;
+  console.log('matches:', matches);
   if(!matches) return null;
-  const argstr = matches[4].indexOf('?') != -1 ? matches[4].replace(/^[^?]*\?/, '') : ''; /* + "&test=1"*/
+  const argstr = location.indexOf('?') != -1 ? location.replace(/^[^?]*\?/, '') : ''; /* + "&test=1"*/
   const pmatches =
     typeof argstr === 'string'
       ? argstr
@@ -1589,10 +1594,10 @@ Util.parseURL = function(href = this.getURL()) {
   }, {});
   //console.log("PARAMS: ", { argstr, pmatches, params });
   return {
-    protocol: matches[1],
-    host: matches[2],
-    port: typeof matches[3] === 'string' ? parseInt(matches[3].substring(1)) : 443,
-    location: matches[4].replace(/\?.*/, ''),
+    protocol: proto,
+    host: host,
+    port: typeof port === 'string' ? parseInt(port.substring(1)) : 443,
+    location: location.replace(/\?.*/, ''),
     query: params,
     href(override) {
       if(typeof override === 'object') Object.assign(this, override);

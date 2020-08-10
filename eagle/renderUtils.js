@@ -1,5 +1,7 @@
 import { Point } from '../geom/point.js';
 import Util from '../util.js';
+import { h, Component, useEffect, useState } from '../dom/preactComponent.js';
+import trkl from '../trkl.js';
 
 export const VERTICAL = 1;
 export const HORIZONTAL = 2;
@@ -214,3 +216,15 @@ export function MakeCoordTransformer(matrix) {
     return { ...newCoords };
   };
 }
+
+export const useTrkl = fn => {
+  const [value, setValue] = useState(fn());
+
+  useEffect(() => {
+    let updateValue = v => v !== undefined && setValue(v === 'yes' ? true : v === 'no' ? false : v);
+
+    fn.subscribe(updateValue);
+    return () => fn.unsubscribe(updateValue);
+  });
+  return value;
+};

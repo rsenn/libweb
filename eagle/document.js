@@ -195,7 +195,14 @@ export class EagleDocument extends EagleNode {
 
     if(this.type == 'brd') {
       const board = this.lookup(['eagle', 'drawing', 'board']);
-      let ret = board.getBounds();
+
+      const measures = [...this.plain].filter(e => e.layer.name == 'Measures');
+
+      let ret;
+
+      if(measures.length >= 4) ret = bb.update(measures);
+      else ret = board.getBounds();
+      console.log('ret', ret);
       //Util.log("board:", board, ret.objects);
       return ret;
     }

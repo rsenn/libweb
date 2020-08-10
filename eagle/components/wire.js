@@ -1,11 +1,21 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import Util from '../../util.js';
 import { MakeCoordTransformer } from '../renderUtils.js';
+import { useValue, useResult, useAsyncIter, useRepeater } from '../../repeater/react-hooks.js';
+import LogJS from '../../log.js';
+import { useTrkl } from '../renderUtils.js';
 
 export const Wire = ({ data, opts = {}, ...props }) => {
-  data = data || props.item;
+  //  data = data || props.item;
+  LogJS.info('Wire.render ', { data, opts });
 
-  //console.log('Wire.render ', { data, opts });
+  let wire =
+    useValue(async function*() {
+      for await (let change of data.repeater) {
+        console.log('change:', change);
+        yield change;
+      }
+    }) || data;
 
   //Util.putStack();
 
@@ -13,8 +23,9 @@ export const Wire = ({ data, opts = {}, ...props }) => {
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-  const { width, curve = '', layer, x1, y1, x2, y2 } = coordFn(data);
-  const color = layer && layer.color;
+  const { width, curve = '', layer, x1, y1, x2, y2 } = coordFn(wire);
+  const color = wire.getColor();
+  let visible = layer ? useTrkl(layer.handlers['visible']) : true;
 
   return h('line', {
     stroke: color,
@@ -26,6 +37,7 @@ export const Wire = ({ data, opts = {}, ...props }) => {
     'stroke-linecap': 'round',
     'data-curve': curve,
     'data-layer': `${layer.number} ${layer.name}`,
-    transform
+    transform,
+    style: visible ? {} : { display: 'none' }
   });
 };

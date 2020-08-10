@@ -1,6 +1,7 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import { MakeCoordTransformer } from '../renderUtils.js';
 import { TransformationList } from '../../geom/transformation.js';
+import { useTrkl } from '../renderUtils.js';
 
 export const PinSizes = {
   long: 3,
@@ -19,7 +20,8 @@ export const Circle = ({ data, opts = {}, ...props }) => {
 
   const { width, radius, layer } = data;
   const { x, y } = coordFn(data);
-  const color = layer && layer.color; //(opts && opts.color) || (layer && this.getColor(layer.color));
+  const color = data.getColor(); //(opts && opts.color) || (layer && this.getColor(layer.color));
+  let visible = layer ? useTrkl(layer.handlers['visible']) : true;
 
   return h('circle', {
     stroke: color,
@@ -28,6 +30,7 @@ export const Circle = ({ data, opts = {}, ...props }) => {
     r: radius,
     'stroke-width': width * 0.8,
     fill: 'none',
-    ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {})
+    ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
+    style: visible ? {} : { display: 'none' }
   });
 };

@@ -191,7 +191,7 @@ export class EagleSVGRenderer {
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
     const { layer } = item;
-    const color = layer && layer.color; //(opts && opts.color) || (layer && this.getColor(layer.color));
+    const color = typeof item.getColor == 'function' ? item.getColor() : this.constructor.palette[16];
 
     const comp = ElementToComponent(item);
     if(comp) {
@@ -397,8 +397,8 @@ export class EagleSVGRenderer {
     let rect = new Rect(bounds.rect);
 
     rect.outset(1.27);
-    rect.round(2.54, 6);
-
+    /*  rect.round(2.54, 6);
+     */
     // Util.tryCatch(() => this.debug('stack:', (window.stack = Util.getCallerStack(1)).toString()));
 
     this.rect = rect;
