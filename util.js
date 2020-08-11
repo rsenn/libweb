@@ -2317,8 +2317,25 @@ Util.mapFunction = map => {
     return m;
   })(map);
 
-  fn.set = (key, value) => (map.set(key, value), (k, v) => fn(k, v));
-  fn.get = key => map.get(key);
+  if(map instanceof Map || (Util.isObject(map) && typeof map.get == 'function' && typeof map.set == 'function')) {
+    fn.set = (key, value) => (map.set(key, value), (k, v) => fn(k, v));
+    fn.get = key => map.get(key);
+  } else {
+    fn.set = (key, value) => ((map[key] = value), (k, v) => fn(k, v));
+    fn.get = key => map[key];
+  }
+
+  fn.update = function(key, fn = (k, v) => v) {
+    let oldValue = this.get(key);
+    let newValue = fn(oldValue, key);
+    if(oldValue != newValue) {
+      if(newValue === undefined && typeof map.delete == 'function') map.delete(key);
+      else {
+        this.set(key, newValue);
+      }
+    }
+    return newValue;
+  };
 
   if(typeof map.keys == 'function') fn.keys = () => map.keys();
   if(typeof map.has == 'function') fn.has = key => map.has(key);
@@ -3747,5 +3764,8 @@ Util.decorateIterable = (proto, generators = false) => {
 
   return proto;
 };
+
+Util.swap = (a, b) => [b, a];
+Util.swapArray = ([a, b]) => [b, a];
 
 export default Util;

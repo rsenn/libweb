@@ -2,7 +2,7 @@ import Util from '../util.js';
 import { Point, Line } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
-import { Cross } from './components/cross.js';
+import { Cross, Arc } from './components.js';
 import { RGBA } from '../color.js';
 import { Palette } from './common.js';
 import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, Rotation } from './renderUtils.js';
@@ -262,6 +262,12 @@ export class BoardRenderer extends EagleSVGRenderer {
       transform: rotation.slice()
     });
     this.create(Cross, { x, y }, g);
+    /*    let angle = Util.randInt(0, 360);
+    let angles = [angle, angle + 120, angle + 240, angle + 360];
+    this.create(Arc, { x, y, radius: 1, width: 0.508, color: '#f00', startAngle: angles[0], endAngle: angles[1] }, parent);
+    this.create(Arc, { x, y, radius: 1, width: 0.508, color: '#f80', startAngle: angles[1], endAngle: angles[2] }, parent);
+    this.create(Arc, { x, y, radius: 1, width: 0.508, color: '#ff0', startAngle: angles[2], endAngle: angles[3] }, parent);
+    this.create(Arc, { x, y, radius: 2, width: 0.127, color: '#08f', startAngle: angles[0], endAngle: angles[3] }, parent);*/
   }
 
   renderSignal(signal, parent, options = {}) {

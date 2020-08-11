@@ -76,7 +76,7 @@ if(elem)
 */
 
     function show(el) {
-      console.log('show(', el, ')');
+      //console.log('show(', el, ')');
       [attr, text, elem] = opts.getTitle(el);
       //el.title = '';
 
@@ -90,7 +90,7 @@ if(elem)
     }
 
     function hide(isAutoHiding, el) {
-      console.log('hide(', isAutoHiding, el, ')');
+      //console.log('hide(', isAutoHiding, el, ')');
       if(isAuto === isAutoHiding) {
         showTimer = clearTimeout(showTimer);
         var parent = tooltipEl && tooltipEl.parentElement;
@@ -129,7 +129,7 @@ if(elem)
     } else {
       html = text.replace(/\n/g, '<br />');
     }
-    console.log('html:', html);
+    //console.log('html:', html);
     tooltipEl.innerHTML = html;
 
     el.appendChild(tooltipEl);

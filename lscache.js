@@ -1,3 +1,5 @@
+import Util from './util.js';
+
 /**
  * lscache library
  * Copyright (c) 2011, Pamela Fox
@@ -51,12 +53,12 @@ function supportsStorage() {
   }
 
   try {
-    setItem.call(this, key, value);
-    removeItem.call(this, key);
+    Implementations.localStorage.setItem.call(this, key, value);
+    Implementations.localStorage.removeItem.call(this, key);
     this.cachedStorage = true;
   } catch(e) {
     // If we hit the limit, and we don't have an empty localStorage then it means we have support
-    if(isOutOfSpace.call(this, e) && localStorage.length) {
+    if(Implementations.localStorage.supported() /*isOutOfSpace.call(this, e) && localStorage.length*/) {
       this.cachedStorage = true; // just maxed it out and even the set test failed.
     } else {
       this.cachedStorage = false;
@@ -109,32 +111,144 @@ function currentTime() {
  * Wrapper functions for localStorage methods
  */
 
-function getItem(key) {
-  return localStorage.getItem(CACHE_PREFIX + this.cacheBucket + key);
-}
+const Implementations = {
+  browserCache: {
+    supported() {
+      return /native/.test(window.caches.constructor + '');
+    },
 
-function setItem(key, value) {
-  // Fix for iPad issue - sometimes throws QUOTA_EXCEEDED_ERR on setItem.
-  localStorage.removeItem(CACHE_PREFIX + this.cacheBucket + key);
-  localStorage.setItem(CACHE_PREFIX + this.cacheBucket + key, value);
-}
+    async response(result, clone) {
+      let tmp;
 
-function removeItem(key) {
-  localStorage.removeItem(CACHE_PREFIX + this.cacheBucket + key);
-}
+      if(clone && Util.isObject(result) && typeof result.clone == 'function') {
+        try {
+          tmp = result.clone();
+          if(!tmp) tmp = Object.create(Object.getPrototypeOf(result), Object.getOwnPropertyDescriptors());
 
-function eachKey(fn) {
-  var prefixRegExp = new RegExp('^' + CACHE_PREFIX + escapeRegExpSpecialCharacters.call(this, this.cacheBucket) + '(.*)');
-  // Loop in reverse as removing items will change indices of tail
-  for(var i = localStorage.length - 1; i >= 0; --i) {
-    var key = localStorage.key(i);
-    key = key && key.match(prefixRegExp);
-    key = key && key[1];
-    if(key && key.indexOf(CACHE_SUFFIX) < 0) {
-      fn(key, expirationKey.call(this, key));
+          if(!tmp) throw new Error('clone failed');
+          result = tmp;
+        } catch(error) {}
+      }
+
+      try {
+        if(result instanceof Response || (Util.isObject(result) && typeof result.text == 'function')) tmp = await result.text();
+        result = tmp;
+      } catch(error) {}
+
+      if(typeof result == 'string') {
+        try {
+          tmp = JSON.parse(result);
+          result = tmp;
+        } catch(error) {}
+      }
+
+      return result;
+    },
+
+    request(obj) {
+      if(obj instanceof Request || (Util.isObject(obj) && typeof obj.url == 'string')) obj = obj.url;
+      return obj;
+    },
+
+    /*    response(obj) {
+
+    }
+*/
+    async getItem(request, opts = {}) {
+      let response = await this.cache.match(request, opts);
+      //console.log("getItem", {request,response});
+      //      if(response instanceof Response || (Util.isObject(response) && typeof response.json == 'function')) response = await response.json();
+      console.log('getItem:', { response, request });
+      if(response) {
+        let { status, type, ok, statusText, headers } = response;
+        let text;
+        /* if(response instanceof Response || (Util.isObject(response) && typeof response.text == 'function'))
+           text = await response.text();
+*/
+
+        if(text) {
+          console.log('text:', text);
+          return text;
+        }
+      }
+      return response;
+    },
+
+    async setItem(request, response) {
+      const { cache } = this;
+
+      console.log('setItem:', { request, response }); // Fix for iPad issue - sometimes throws QUOTA_EXCEEDED_ERR on setItem.
+
+      if(!cache) throw new Error(`Cache = ${cache}`);
+
+      let type = 'text/html';
+      if(typeof response != 'string' && !(response instanceof Response) && !(response instanceof Blob)) {
+        response = JSON.stringify(response);
+        type = 'application/json';
+      }
+      if(typeof response == 'string') response = new Blob([response], { type }); // the blob
+      //   console.log('setItem', { request, response });
+      if(!(response instanceof Response)) response = new Response(response, { status: 200, statusText: 'OK', headers: { 'Content-Type': type } });
+      if(typeof cache.put == 'function') return await cache.put(request, response);
+    },
+
+    async removeItem(request) {
+      const { cache } = this;
+      return await cache.delete(request, {});
+    },
+
+    async eachKey(fn) {
+      const { cache } = this;
+
+      let keys = await cache.keys();
+      for await (let request of keys) await fn(request);
+    }
+  },
+  localStorage: {
+    supported() {
+      return /native/.test(localStorage.constructor + '');
+    },
+
+    response(r) {
+      return r;
+    },
+
+    request(r) {
+      return r;
+    },
+
+    getItem(key) {
+      const { obj } = this;
+      return localStorage.getItem(CACHE_PREFIX + obj.cacheBucket + key);
+    },
+
+    setItem(key, value) {
+      const { obj } = this;
+      // Fix for iPad issue - sometimes throws QUOTA_EXCEEDED_ERR on setItem.
+      localStorage.removeItem(CACHE_PREFIX + obj.cacheBucket + key);
+      localStorage.setItem(CACHE_PREFIX + obj.cacheBucket + key, value);
+    },
+
+    removeItem(key) {
+      const { obj } = this;
+      localStorage.removeItem(CACHE_PREFIX + obj.cacheBucket + key);
+    },
+
+    eachKey(fn) {
+      const { obj } = this;
+      var prefixRegExp = new RegExp('^' + CACHE_PREFIX + escapeRegExpSpecialCharacters(obj.cacheBucket) + '(.*)');
+      // Loop in reverse as removing items will change indices of tail
+      for(var i = localStorage.length - 1; i >= 0; --i) {
+        var key = localStorage.key(i);
+        key = key && key.match(prefixRegExp);
+        key = key && key[1];
+        if(key && key.indexOf(CACHE_SUFFIX) < 0) {
+          fn.call(this, key, expirationKey.call(this, key));
+        }
+      }
     }
   }
-}
+};
 
 function flushItem(key) {
   var exprKey = expirationKey.call(this, key);
@@ -144,8 +258,9 @@ function flushItem(key) {
 }
 
 function flushExpiredItem(key) {
+  console.log('flushExpiredItem', 'key:', key, 'this:', this);
   var exprKey = expirationKey.call(this, key);
-  var expr = getItem.call(this, exprKey);
+  var expr = this.getItem.call(this, exprKey);
 
   if(expr) {
     var expirationTime = parseInt(expr, EXPIRY_RADIX);
@@ -169,32 +284,87 @@ function warn(message, err) {
 function calculateMaxDate(expiryMilliseconds) {
   return Math.floor(8.64e15 / expiryMilliseconds);
 }
+export function lscache(cache) {
+  const obj = new.target ? this : lscache;
 
-export function lscache(key, value) {
-  if(!new.target && key !== undefined) {
+  //  const cache = await window.caches.open(name);
+
+  const impl = { ...Implementations.localStorage, cache };
+
+  obj.impl = impl;
+
+  /*  if(!new.target && key !== undefined) {
+    const [key, value] = args;
     if(value === undefined) return lscache.get(key);
     else return lscache.set(key, value);
+    return;
   }
+*/
 
-  if(new.target) return this;
+  //  Object.assign(this, impl);
+
+  //  if(new.target) return this;
+  return obj;
 }
 
-const proto = {
-  expiryMilliseconds: 60 * 1000,
+export function brcache(cache) {
+  let cacheName, tmp;
+
+  const obj = new.target ? this : brcache;
+
+  //  const cache = await window.caches.open(name);
+
+  let impl = { ...Implementations.browserCache /*, cache */ /*, get cacheBucket() { return obj.cacheBucket; } */ };
+
+  if(Util.isObject(cache) && typeof cache.match == 'function') {
+    impl.cache = cache;
+  } else {
+    if(typeof cache == 'string') {
+      cacheName = obj.cacheName = cache;
+      tmp = Util.tryCatch(() => window.caches);
+
+      Util.define(impl, {
+        async getCache() {
+          if(tmp && typeof tmp.open == 'function') return await tmp.open(cacheName);
+        },
+        get cache() {
+          return this.getCache();
+        }
+      });
+    }
+  }
+
+  obj.impl = impl;
+
+  //  Object.assign(brcache, brcache.prototype);
+
+  if(typeof obj.keys != 'function') Object.assign(obj, Util.getMethods(BaseCache.prototype, 1, 0));
+
+  Object.assign(obj, { cacheBucket: '', warnings: false, hits: {} });
+
+  return obj;
+}
+
+export class BaseCache {
+  expiryMilliseconds = 60 * 1000;
+
   // ECMAScript max Date (epoch + 1e8 days)
   get maxDate() {
     return calculateMaxDate(this.expiryMilliseconds);
-  },
-  cacheBucket: '',
-  warnings: false,
+  }
 
   get supportsStorage() {
     return supportsStorage.call(this);
-  },
+  }
   get supportsJSON() {
     return supportsJSON.call(this);
-  },
+  }
 
+  incrementHits(key) {
+    let hits = Util.mapFunction(this.hits);
+
+    return hits.update('key', (v = 0) => v + 1);
+  }
   /**
    * Stores the value in localStorage. Expires after specified number of minutes.
    * @param {string} key
@@ -203,15 +373,18 @@ const proto = {
    * @return {boolean} whether the value was inserted successfully
    */
   set(key, value, time) {
-    if(!this.supportsStorage) return false;
+    const { impl, cache, cacheBucket } = this;
+
+    console.log(this, `.set():`, { impl, cache, key, value, time });
+    // if(!this.supportsStorage) return false;
 
     // If we don't get a string value, try to stringify
     // In future, localStorage may properly support storing non-strings
     // and this can be removed.
 
-    if(!this.supportsJSON) return false;
+    //if(!this.supportsJSON) return false;
     try {
-      value = JSON.stringify(value);
+      value = typeof value == 'string' ? value : value instanceof Response ? value : JSON.stringify(value);
     } catch(e) {
       // Sometimes we can't stringify due to circular refs
       // in complex objects, so we won't bother storing then.
@@ -219,15 +392,15 @@ const proto = {
     }
 
     try {
-      setItem.call(this, key, value);
+      impl.setItem(key, value);
     } catch(e) {
-      if(isOutOfSpace.call(this, e)) {
+      if(isOutOfSpace(e)) {
         // If we exceeded the quota, then we will sort
         // by the expire time, and then remove the N oldest
         var storedKeys = [];
         var storedKey;
-        eachKey.call(this, function(key, exprKey) {
-          var expiration = getItem.call(this, exprKey);
+        impl.eachKey((key, exprKey) => {
+          var expiration = impl.getItem(exprKey);
           if(expiration) {
             expiration = parseInt(expiration, EXPIRY_RADIX);
           } else {
@@ -236,7 +409,7 @@ const proto = {
           }
           storedKeys.push({
             key: key,
-            size: (getItem.call(this, key) || '').length,
+            size: (impl.getItem(key) || '').length,
             expiration: expiration
           });
         });
@@ -248,61 +421,80 @@ const proto = {
         var targetSize = (value || '').length;
         while(storedKeys.length && targetSize > 0) {
           storedKey = storedKeys.pop();
-          warn.call(this, "Cache is full, removing item with key '" + key + "'");
-          flushItem.call(this, storedKey.key);
+          impl.warn("Cache is full, removing item with key '" + key + "'");
+          impl.flushItem(storedKey.key);
           targetSize -= storedKey.size;
         }
         try {
-          setItem.call(this, key, value);
+          impl.setItem(key, value);
         } catch(e) {
           // value may be larger than total quota
-          warn.call(this, "Could not add item with key '" + key + "', perhaps it's too big?", e);
+          impl.warn("Could not add item with key '" + key + "', perhaps it's too big?", e);
           return false;
         }
       } else {
         // If it was some other error, just give up.
-        warn.call(this, "Could not add item with key '" + key + "'", e);
+        impl.warn("Could not add item with key '" + key + "'", e);
         return false;
       }
     }
 
     // If a time is specified, store expiration info in localStorage
     if(time) {
-      setItem.call(this, expirationKey.call(this, key), (currentTime.call(this) + time).toString(EXPIRY_RADIX));
+      impl.setItem(expirationKey(key), (currentTime.call(this) + time).toString(EXPIRY_RADIX));
     } else {
+      //console.log('impl.removeItem', impl.removeItem);
       // In case they previously set a time, remove that info from localStorage.
-      removeItem.call(this, expirationKey.call(this, key));
+      impl.removeItem(expirationKey(key));
     }
     return true;
-  },
-
+  }
   /**
    * Retrieves specified value from localStorage, if not expired.
    * @param {string} key
    * @return {string|Object}
    */
   get(key) {
-    if(!this.supportsStorage) return null;
-
+    const { impl, cache } = this;
+    //    if(!this.supportsStorage) return null;
     // Return the de-serialized item if not expired
-    if(flushExpiredItem.call(this, key)) {
+    if(flushExpiredItem.call(impl, key)) {
       return null;
     }
-
     // Tries to de-serialize stored value if its an object, and returns the normal value otherwise.
-    var value = getItem.call(this, key);
-    if(!value || !this.supportsJSON) {
-      return value;
-    }
+    return impl.getItem(key).then(value => {
+      //if(!value || !this.supportsJSON) return value;
+      this.incrementHits(key);
 
-    try {
-      // We can't tell if its JSON or a string, so we try to parse
-      return JSON.parse(value);
-    } catch(e) {
-      // If we can't parse, it's probably because it isn't an object
+      console.log('value:', value);
+
+      if(Util.isObject(impl) && typeof impl.response == 'function') value = impl.response(value);
+
+      console.log('value:', value);
+
+      try {
+        // We can't tell if its JSON or a string, so we try to parse
+        let obj = JSON.parse(value);
+        value = obj;
+      } catch(e) {
+        // If we can't parse, it's probably because it isn't an object
+      }
       return value;
-    }
-  },
+    });
+  }
+
+  /*getOrCreate(createfn) {
+    const { impl, cache } = this;
+    const that = this;
+    return (key, ...args) => {
+      let value = that.get.call(that, key);
+      if(!value) {
+        value = createfn(key, ...args);
+        that.set.call(that, key, value);
+      }
+      return value;
+    };
+  }*/
 
   /**
    * Removes a value from localStorage.
@@ -310,11 +502,15 @@ const proto = {
    * @param {string} key
    */
   remove(key) {
+    const { impl, cache } = this;
     if(!this.supportsStorage) return;
 
-    flushItem.call(this, key);
-  },
-
+    impl.flushItem(key);
+  }
+  async clear() {
+    const { impl } = this;
+    for(let key of await this.keys()) impl.removeItem(key);
+  }
   /**
    * Returns whether local storage is supported.
    * Currently exposed for testing purposes.
@@ -322,53 +518,45 @@ const proto = {
    */
   supported() {
     return this.supportsStorage;
-  },
-
+  }
   /**
    * Flushes all lscache items and expiry markers without affecting rest of localStorage
    */
   flush() {
+    const { impl, cache } = this;
     if(!this.supportsStorage) return;
 
-    eachKey.call(this, function(key) {
-      flushItem.call(this, key);
-    });
-  },
-
+    impl.eachKey(key => impl.flushItem(key));
+  }
   /**
    * Flushes expired lscache items and expiry markers without affecting rest of localStorage
    */
   flushExpired() {
+    const { impl, cache } = this;
     if(!this.supportsStorage) return;
 
-    eachKey.call(this, function(key) {
-      flushExpiredItem.call(this, key);
-    });
-  },
-
+    impl.eachKey(key => flushExpiredItem.call(impl, key));
+  }
   /**
    * Appends CACHE_PREFIX so lscache will partition data in to different buckets.
    * @param {string} bucket
    */
   setBucket(bucket) {
     this.cacheBucket = bucket;
-  },
-
+  }
   /**
    * Resets the string being appended to CACHE_PREFIX so lscache will use the default storage behavior.
    */
   resetBucket() {
     this.cacheBucket = '';
-  },
-
+  }
   /**
    * @returns {number} The currently set number of milliseconds each time unit represents in
    *   the set() function's "time" argument.
    */
   getExpiryMilliseconds() {
     return this.expiryMilliseconds;
-  },
-
+  }
   /**
    * Sets the number of milliseconds each time unit represents in the set() function's
    *   "time" argument.
@@ -381,27 +569,78 @@ const proto = {
    */
   setExpiryMilliseconds(milliseconds) {
     this.expiryMilliseconds = milliseconds;
-    this.maxDate = calculateMaxDate.call(this, this.expiryMilliseconds);
-  },
-
+    this.maxDate = impl.calculateMaxDate(this.expiryMilliseconds);
+  }
   /**
    * Sets whether to display this.warnings when an item is removed from the cache or not.
    */
   enableWarnings(enabled) {
     this.warnings = enabled;
-  },
-
-  keys() {
+  }
+  async keys() {
+    const { impl, cache } = this;
     let keys = [];
     let lscache = this;
-    console.log('keys()', { lscache });
+    // console.log('keys()', { lscache });
 
-    eachKey.call(this, key => keys.push(key));
+    await impl.eachKey(key => keys.push(impl.request(key)));
     return keys;
   }
-};
+}
 
-Object.assign(lscache.prototype, proto);
-Object.assign(lscache, proto);
+Object.setPrototypeOf(lscache.prototype, new (class LocalStorageCache extends BaseCache {})());
+
+brcache.prototype = new (class BrowserCache extends BaseCache {})();
+
+brcache.impl = Implementations.browserCache;
+
+// https://api.github.com/repos/rsenn/an-tronics/contents/eagle
+
+export function CachedFetch(fn, cacheObj) {
+  let request, response;
+  let url, cacheName, tmp;
+
+  if(typeof cacheObj == 'string') {
+    cacheName = cacheObj;
+    tmp = Util.tryCatch(() => window.caches.open(cacheName));
+
+    console.log('CachedFetch', fn + '', { cacheName, cacheObj, tmp });
+    if(Util.isObject(tmp) && typeof tmp.match == 'function') cacheObj = tmp;
+  }
+
+  let { impl } = cacheObj;
+  if(impl) {
+    impl.obj = cacheObj;
+    impl.cache = null;
+  }
+
+  console.info('cache instance:', cacheObj);
+  console.info('cache impl:', impl);
+  async function self(...args) {
+    request = args[0] instanceof Request ? args.shift() : new Request(...args);
+    response = null;
+    try {
+      response = await impl.getItem(request);
+      //      console.info("cache hit", request);
+      url = impl.request(request);
+
+      cacheObj.hits[url] = (cacheObj.hits[url] || 0) + 1;
+    } catch(error) {}
+    if(!response) {
+      try {
+        response = await fetch(request);
+      } catch(error) {}
+    }
+    if(response) {
+      let r = impl.response ? await impl.response(response, true) : response;
+      await impl.setItem(request, response);
+      return r;
+    }
+  }
+  self.cache = cacheObj;
+  self.impl = impl;
+
+  return self.bind(impl);
+}
 
 export default lscache;
