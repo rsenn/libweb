@@ -1,6 +1,5 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import Util from '../../util.js';
-import { Rotation, Alignment, VERTICAL, HORIZONTAL, ClampAngle, AlignmentAngle, MakeCoordTransformer } from '../renderUtils.js';
+import { Rotation, Alignment, VERTICAL, HORIZONTAL } from '../renderUtils.js';
 import { TransformationList } from '../../geom.js';
 
 export const Text = ({ x, y, text, color, alignment, rot, transformation, visible, ...props }) => {

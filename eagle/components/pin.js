@@ -1,5 +1,5 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import { MakeCoordTransformer, Rotation } from '../renderUtils.js';
+import { MakeCoordTransformer } from '../renderUtils.js';
 import { TransformationList } from '../../geom/transformation.js';
 import { Palette } from '../common.js';
 import { Text } from './text.js';

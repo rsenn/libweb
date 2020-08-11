@@ -2,8 +2,7 @@ import { h, Component } from '../../dom/preactComponent.js';
 import { TransformationList } from '../../geom/transformation.js';
 import { SchematicSymbol } from './symbol.js';
 import { Rotation } from '../renderUtils.js';
-import { useValue, useResult, useAsyncIter, useRepeater } from '../../repeater/react-hooks.js';
-import { EagleElement } from '../element.js';
+import { useValue } from '../../repeater/react-hooks.js';
 
 export const Instance = ({ data, opts = {}, transformation, ...props }) => {
   let instance =

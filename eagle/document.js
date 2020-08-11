@@ -50,7 +50,7 @@ export class EagleDocument extends EagleNode {
   }
 
   constructor(xmlStr, project, filename, type, fs) {
-    //Util.log('EagleDocument.constructor', Util.abbreviate(xmlStr), { project, filename, type });
+    Util.log('EagleDocument.constructor', { data: Util.abbreviate(xmlStr), project, filename, type });
     const xml = tXml(xmlStr);
 
     let xmlObj = deep.clone(xml[0]); //(xml[0]);
@@ -59,6 +59,8 @@ export class EagleDocument extends EagleNode {
     super(project, EagleRef(xmlObj, []), xmlObj);
 
     this.pathMapper = new PathMapper(xmlObj, ImmutablePath);
+
+    this.data = xmlStr;
 
     const { pathMapper, elementMapper } = this;
 
@@ -75,7 +77,8 @@ export class EagleDocument extends EagleNode {
       path2obj
     };
 
-    type = type || /<library>/.test(xmlStr) ? 'lbr' : /<element\ /.test(xmlStr) ? 'brd' : 'sch';
+    type = type || /<library>/.test(xmlStr) ? 'lbr' : /(<element\ |<board)/.test(xmlStr) ? 'brd' : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr) ? 'sch' : null;
+
     if(filename) {
       this.file = filename;
       type = type || filename.replace(/.*\//g, '').replace(/.*\./g, '');
@@ -196,7 +199,7 @@ export class EagleDocument extends EagleNode {
     if(this.type == 'brd') {
       const board = this.lookup(['eagle', 'drawing', 'board']);
 
-      const measures = [...this.plain].filter(e => e.layer.name == 'Measures');
+      const measures = [...this.plain].filter(e => e.layer && e.layer.name == 'Measures');
 
       let ret;
 

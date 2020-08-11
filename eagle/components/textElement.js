@@ -1,6 +1,6 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import Util from '../../util.js';
-import { Rotation, VERTICAL, HORIZONTAL, ClampAngle, AlignmentAngle, MakeCoordTransformer } from '../renderUtils.js';
+import { Rotation, ClampAngle, AlignmentAngle, MakeCoordTransformer } from '../renderUtils.js';
 import { Text } from './text.js';
 import { useTrkl } from '../renderUtils.js';
 

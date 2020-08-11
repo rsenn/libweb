@@ -44,7 +44,7 @@ export class EagleProject {
     str = this.fs.readFile(file);
     if(typeof str != 'string' && 'toString' in str) str = str.toString();
 
-    //console.log("str:",str);
+    console.log('this.fs:', this.fs);
 
     try {
       doc = new EagleDocument(str, this, file);

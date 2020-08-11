@@ -1,68 +1,136 @@
+import Util from './util.js';
+
 export function tlite(getTooltipOpts) {
-  document.addEventListener('mouseover', function (e) {
+  document.addEventListener('mouseover', function(e) {
     var el = e.target;
     var opts = getTooltipOpts(el);
 
-    if (!opts) {
+    if(!opts) {
       el = el.parentElement;
       opts = el && getTooltipOpts(el);
     }
+    let getTitle;
+    if(opts.attrib) {
+      let a = opts.attrib;
+
+      if(a instanceof Array || (typeof a == 'object' && a !== null && typeof a.length == 'number')) {
+        getTitle = e => {
+          let x = a
+            .filter(attrName => e.hasAttribute(attrName))
+            .map(attrName => [attrName, (e.hasAttribute(attrName) && e.getAttribute(attrName)) || '', e.hasAttribute(attrName) ? e : null])
+            .filter(([attrName, attrVal]) => attrVal != '' && attrVal != null);
+          return x[0] || [];
+        };
+      } else {
+        getTitle = e => [opts.attrib, (e.hasAttribute(opts.attrib) && e.getAttribute(opts.attrib)) || '', e.hasAttribute(opts.attrib) ? e : null];
+      }
+    }
+    if(!getTitle) getTitle = e => ['title', (e.hasAttribute('title') && e.getAttribute('title')) || '', e];
+    opts.getTitle = e => {
+      let attrName,
+        title,
+        i = 0;
+      do {
+        if(!e) break;
+        [attrName, title] = getTitle(e);
+        if(typeof title == 'string' && title.length > 0) break;
+        i++;
+      } while((e = e.parentElement));
+      if(title != '')
+        //console.log(`getTitle[${i}]:`, title);
+        return [attrName, title, e];
+    };
 
     opts && tlite.show(el, opts, true);
   });
 }
 
-tlite.show = function (el, opts, isAuto) {
-  var fallbackAttrib = 'data-tlite';
+tlite.show = function(el, opts, isAuto) {
   opts = opts || {};
+  var fallbackAttrib = /*opts.attrib ||*/ 'data-tlite';
+
+  let mapper = this.mapper || Util.weakMapper(createTooltip);
+
+  this.mapper = mapper;
+  //console.info('tlite.show:', el, opts, isAuto, fallbackAttrib);
 
   (el.tooltip || Tooltip(el, opts)).show();
 
   function Tooltip(el, opts) {
-    var tooltipEl;
     var showTimer;
-    var text;
+    var text, attr, elem;
+    [attr, text, elem] = opts.getTitle(el);
 
-    el.addEventListener('mousedown', autoHide);
-    el.addEventListener('mouseleave', autoHide);
+    var tooltipEl;
 
-    function show() {
-      text = el.title || el.getAttribute(fallbackAttrib) || text;
-      el.title = '';
-      el.setAttribute(fallbackAttrib, '');
-      text && !showTimer && (showTimer = setTimeout(fadeIn, isAuto ? 150 : 1))
+    /*
+if(!elem)
+  elem =el;*/
+
+    el.addEventListener('mousedown', () => autoHide(el));
+    el.addEventListener('mouseleave', () => autoHide(el));
+
+    /*
+if(elem)
+  el=elem;
+*/
+
+    function show(el) {
+      console.log('show(', el, ')');
+      [attr, text, elem] = opts.getTitle(el);
+      //el.title = '';
+
+      //el.setAttribute(fallbackAttrib, text);
+      // console.info('show():',{attr,text,elem});
+      text && !showTimer && (showTimer = setTimeout(() => fadeIn(el), isAuto ? 150 : 1));
     }
 
-    function autoHide() {
-      tlite.hide(el, true);
+    function autoHide(el) {
+      tlite.hide(el, true, opts);
     }
 
-    function hide(isAutoHiding) {
-      if (isAuto === isAutoHiding) {
+    function hide(isAutoHiding, el) {
+      console.log('hide(', isAutoHiding, el, ')');
+      if(isAuto === isAutoHiding) {
         showTimer = clearTimeout(showTimer);
-        var parent = tooltipEl && tooltipEl.parentNode;
+        var parent = tooltipEl && tooltipEl.parentElement;
         parent && parent.removeChild(tooltipEl);
         tooltipEl = undefined;
       }
     }
 
-    function fadeIn() {
-      if (!tooltipEl) {
-        tooltipEl = createTooltip(el, text, opts);
+    function fadeIn(el) {
+      if(!tooltipEl) {
+        tooltipEl = mapper(el, text, opts);
+        if(tooltipEl.parentElement) tooltipEl.parentElement.removeChild(tooltipEl);
+
+        (elem || el).appendChild(tooltipEl);
       }
+      //    setTimeout( () => hide(isAuto), 1000);
     }
 
-    return el.tooltip = {
-      show: show,
-      hide: hide
-    };
+    return (el.tooltip = {
+      show: () => show(el),
+      hide: isAuto => hide(isAuto, el)
+    });
   }
 
   function createTooltip(el, text, opts) {
     var tooltipEl = document.createElement('span');
-    var grav = opts.grav || el.getAttribute('data-tlite') || 'n';
+    const { grav } = opts;
+    var [attr, text, elem] = opts.getTitle(el);
 
-    tooltipEl.innerHTML = text;
+    if(elem) el = elem;
+
+    let html;
+    if(/\t/.test(text)) {
+      let cells = text.split(/\n/g).map(row => row.split(/\t/g));
+      html = '<table border="0" cellspacing="0" cellpadding="0" class="tlite-table" style="margin: 0px; padding: 0px; color: white; ">\n' + cells.map((row, j) => `<tr class="tlite-table tlite-row-${j}">` + row.map((col, i) => `<td class="tlite-table tlite-row-${j} tlite-col-${i}">` + col + '</td>').join('') + '</tr>\n').join('') + '</table>';
+    } else {
+      html = text.replace(/\n/g, '<br />');
+    }
+    console.log('html:', html);
+    tooltipEl.innerHTML = html;
 
     el.appendChild(tooltipEl);
 
@@ -75,8 +143,9 @@ tlite.show = function (el, opts, isAuto) {
       var arrowSize = 10;
       var top = el.offsetTop;
       var left = el.offsetLeft;
+      tooltipEl.style.position = 'fixed';
 
-      if (tooltipEl.offsetParent === el) {
+      if(tooltipEl.offsetParent === el) {
         top = left = 0;
       }
 
@@ -84,37 +153,37 @@ tlite.show = function (el, opts, isAuto) {
       var height = el.offsetHeight;
       var tooltipHeight = tooltipEl.offsetHeight;
       var tooltipWidth = tooltipEl.offsetWidth;
-      var centerEl = left + (width / 2);
+      var centerEl = left + width / 2;
 
-      tooltipEl.style.top = (
-        vertGrav === 's' ? (top - tooltipHeight - arrowSize) :
-        vertGrav === 'n' ? (top + height + arrowSize) :
-        (top + (height / 2) - (tooltipHeight / 2))
-      ) + 'px';
+      const pos = {
+        top: vertGrav === 's' ? top - tooltipHeight - arrowSize : vertGrav === 'n' ? top + height + arrowSize : top + height / 2 - tooltipHeight / 2,
+        left: horzGrav === 'w' ? left : horzGrav === 'e' ? left + width - tooltipWidth : vertGrav === 'w' ? left + width + arrowSize : vertGrav === 'e' ? left - tooltipWidth - arrowSize : centerEl - tooltipWidth / 2
+      };
 
-      tooltipEl.style.left = (
-        horzGrav === 'w' ? left :
-        horzGrav === 'e' ? left + width - tooltipWidth :
-        vertGrav === 'w' ? (left + width + arrowSize) :
-        vertGrav === 'e' ? (left - tooltipWidth - arrowSize) :
-        (centerEl - tooltipWidth / 2)
-      ) + 'px';
+      if(pos.left < 0) pos.left = 0;
+
+      tooltipEl.style.top = pos.top + 'px';
+      tooltipEl.style.left = pos.left + 'px';
+
+      const { top: y, left: x, position } = tooltipEl.style;
+
+      //   console.log('tooltipEl.style', { x, y, position });
     }
 
     positionTooltip();
 
     var rect = tooltipEl.getBoundingClientRect();
 
-    if (vertGrav === 's' && rect.top < 0) {
+    if(vertGrav === 's' && rect.top < 0) {
       vertGrav = 'n';
       positionTooltip();
-    } else if (vertGrav === 'n' && rect.bottom > window.innerHeight) {
+    } else if(vertGrav === 'n' && rect.bottom > window.innerHeight) {
       vertGrav = 's';
       positionTooltip();
-    } else if (vertGrav === 'e' && rect.left < 0) {
+    } else if(vertGrav === 'e' && rect.left < 0) {
       vertGrav = 'w';
       positionTooltip();
-    } else if (vertGrav === 'w' && rect.right > window.innerWidth) {
+    } else if(vertGrav === 'w' && rect.right > window.innerWidth) {
       vertGrav = 'e';
       positionTooltip();
     }
@@ -123,9 +192,14 @@ tlite.show = function (el, opts, isAuto) {
 
     return tooltipEl;
   }
-};
+}.bind(tlite);
 
-tlite.hide = function (el, isAuto) {
+tlite.hide = function(el, isAuto, opts) {
+  let tooltipEl = this.mapper.get(el);
+  //const     [attr,text,elem] = opts.getTitle(el);
+  /*if(elem)
+  eleml = elem;
+*/
   el.tooltip && el.tooltip.hide(isAuto);
 };
 

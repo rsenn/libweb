@@ -151,7 +151,7 @@ function flushExpiredItem(key) {
     var expirationTime = parseInt(expr, EXPIRY_RADIX);
 
     // Check if we should actually kick item out of storage
-    if(currentTime.call(this, ) >= expirationTime) {
+    if(currentTime.call(this) >= expirationTime) {
       removeItem.call(this, key);
       removeItem.call(this, exprKey);
       return true;
@@ -170,216 +170,238 @@ function calculateMaxDate(expiryMilliseconds) {
   return Math.floor(8.64e15 / expiryMilliseconds);
 }
 
-export const lscache = Object.assign(
-  function lscache(key, value) {
-    if(key !== undefined) {
-      if(value === undefined) return lscache.get(key);
-      else return lscache.set(key, value);
-    }
+export function lscache(key, value) {
+  if(!new.target && key !== undefined) {
+    if(value === undefined) return lscache.get(key);
+    else return lscache.set(key, value);
+  }
+
+  if(new.target) return this;
+}
+
+const proto = {
+  expiryMilliseconds: 60 * 1000,
+  // ECMAScript max Date (epoch + 1e8 days)
+  get maxDate() {
+    return calculateMaxDate(this.expiryMilliseconds);
   },
-  {
-      expiryMilliseconds:  60 * 1000,
-// ECMAScript max Date (epoch + 1e8 days)
-  get maxDate() { return  calculateMaxDate(this.expiryMilliseconds); },
-  cacheBucket:  '',
-  warnings:  false,
+  cacheBucket: '',
+  warnings: false,
 
-    /**
-     * Stores the value in localStorage. Expires after specified number of minutes.
-     * @param {string} key
-     * @param {Object|string} value
-     * @param {number} time
-     * @return {boolean} whether the value was inserted successfully
-     */
-    set(key, value, time) {
-      if(!supportsStorage.call(this, )) return false;
+  get supportsStorage() {
+    return supportsStorage.call(this);
+  },
+  get supportsJSON() {
+    return supportsJSON.call(this);
+  },
 
-      // If we don't get a string value, try to stringify
-      // In future, localStorage may properly support storing non-strings
-      // and this can be removed.
+  /**
+   * Stores the value in localStorage. Expires after specified number of minutes.
+   * @param {string} key
+   * @param {Object|string} value
+   * @param {number} time
+   * @return {boolean} whether the value was inserted successfully
+   */
+  set(key, value, time) {
+    if(!this.supportsStorage) return false;
 
-      if(!supportsJSON.call(this, )) return false;
-      try {
-        value = JSON.stringify(value);
-      } catch(e) {
-        // Sometimes we can't stringify due to circular refs
-        // in complex objects, so we won't bother storing then.
-        return false;
-      }
+    // If we don't get a string value, try to stringify
+    // In future, localStorage may properly support storing non-strings
+    // and this can be removed.
 
-      try {
-        setItem.call(this, key, value);
-      } catch(e) {
-        if(isOutOfSpace.call(this, e)) {
-          // If we exceeded the quota, then we will sort
-          // by the expire time, and then remove the N oldest
-          var storedKeys = [];
-          var storedKey;
-          eachKey.call(this, function(key, exprKey) {
-            var expiration = getItem.call(this, exprKey);
-            if(expiration) {
-              expiration = parseInt(expiration, EXPIRY_RADIX);
-            } else {
-              // TODO: Store date added for non-expiring items for smarter removal
-              expiration = this.maxDate;
-            }
-            storedKeys.push({
-              key: key,
-              size: (getItem.call(this, key) || '').length,
-              expiration: expiration
-            });
-          });
-          // Sorts the keys with oldest expiration time last
-          storedKeys.sort(function(a, b) {
-            return b.expiration - a.expiration;
-          });
+    if(!this.supportsJSON) return false;
+    try {
+      value = JSON.stringify(value);
+    } catch(e) {
+      // Sometimes we can't stringify due to circular refs
+      // in complex objects, so we won't bother storing then.
+      return false;
+    }
 
-          var targetSize = (value || '').length;
-          while(storedKeys.length && targetSize > 0) {
-            storedKey = storedKeys.pop();
-            warn.call(this, "Cache is full, removing item with key '" + key + "'");
-            flushItem.call(this, storedKey.key);
-            targetSize -= storedKey.size;
+    try {
+      setItem.call(this, key, value);
+    } catch(e) {
+      if(isOutOfSpace.call(this, e)) {
+        // If we exceeded the quota, then we will sort
+        // by the expire time, and then remove the N oldest
+        var storedKeys = [];
+        var storedKey;
+        eachKey.call(this, function(key, exprKey) {
+          var expiration = getItem.call(this, exprKey);
+          if(expiration) {
+            expiration = parseInt(expiration, EXPIRY_RADIX);
+          } else {
+            // TODO: Store date added for non-expiring items for smarter removal
+            expiration = this.maxDate;
           }
-          try {
-            setItem.call(this, key, value);
-          } catch(e) {
-            // value may be larger than total quota
-            warn.call(this, "Could not add item with key '" + key + "', perhaps it's too big?", e);
-            return false;
-          }
-        } else {
-          // If it was some other error, just give up.
-          warn.call(this, "Could not add item with key '" + key + "'", e);
+          storedKeys.push({
+            key: key,
+            size: (getItem.call(this, key) || '').length,
+            expiration: expiration
+          });
+        });
+        // Sorts the keys with oldest expiration time last
+        storedKeys.sort(function(a, b) {
+          return b.expiration - a.expiration;
+        });
+
+        var targetSize = (value || '').length;
+        while(storedKeys.length && targetSize > 0) {
+          storedKey = storedKeys.pop();
+          warn.call(this, "Cache is full, removing item with key '" + key + "'");
+          flushItem.call(this, storedKey.key);
+          targetSize -= storedKey.size;
+        }
+        try {
+          setItem.call(this, key, value);
+        } catch(e) {
+          // value may be larger than total quota
+          warn.call(this, "Could not add item with key '" + key + "', perhaps it's too big?", e);
           return false;
         }
-      }
-
-      // If a time is specified, store expiration info in localStorage
-      if(time) {
-        setItem.call(this, expirationKey.call(this, key), (currentTime.call(this, ) + time).toString(EXPIRY_RADIX));
       } else {
-        // In case they previously set a time, remove that info from localStorage.
-        removeItem.call(this, expirationKey.call(this, key));
+        // If it was some other error, just give up.
+        warn.call(this, "Could not add item with key '" + key + "'", e);
+        return false;
       }
-      return true;
-    },
-
-    /**
-     * Retrieves specified value from localStorage, if not expired.
-     * @param {string} key
-     * @return {string|Object}
-     */
-    get(key) {
-      if(!supportsStorage.call(this)) return null;
-
-      // Return the de-serialized item if not expired
-      if(flushExpiredItem.call(this, key)) {
-        return null;
-      }
-
-      // Tries to de-serialize stored value if its an object, and returns the normal value otherwise.
-      var value = getItem.call(this, key);
-      if(!value || !supportsJSON.call(this, )) {
-        return value;
-      }
-
-      try {
-        // We can't tell if its JSON or a string, so we try to parse
-        return JSON.parse(value);
-      } catch(e) {
-        // If we can't parse, it's probably because it isn't an object
-        return value;
-      }
-    },
-
-    /**
-     * Removes a value from localStorage.
-     * Equivalent to 'delete' in memcache, but that's a keyword in JS.
-     * @param {string} key
-     */
-    remove(key) {
-      if(!supportsStorage.call(this, )) return;
-
-      flushItem.call(this, key);
-    },
-
-    /**
-     * Returns whether local storage is supported.
-     * Currently exposed for testing purposes.
-     * @return {boolean}
-     */
-    supported() {
-      return supportsStorage.call(this, );
-    },
-
-    /**
-     * Flushes all lscache items and expiry markers without affecting rest of localStorage
-     */
-    flush() {
-      if(!supportsStorage.call(this, )) return;
-
-      eachKey.call(this, function(key) {
-        flushItem.call(this, key);
-      });
-    },
-
-    /**
-     * Flushes expired lscache items and expiry markers without affecting rest of localStorage
-     */
-    flushExpired() {
-      if(!supportsStorage.call(this, )) return;
-
-      eachKey.call(this, function(key) {
-        flushExpiredItem.call(this, key);
-      });
-    },
-
-    /**
-     * Appends CACHE_PREFIX so lscache will partition data in to different buckets.
-     * @param {string} bucket
-     */
-    setBucket(bucket) {
-      this.cacheBucket = bucket;
-    },
-
-    /**
-     * Resets the string being appended to CACHE_PREFIX so lscache will use the default storage behavior.
-     */
-    resetBucket() {
-      this.cacheBucket = '';
-    },
-
-    /**
-     * @returns {number} The currently set number of milliseconds each time unit represents in
-     *   the set() function's "time" argument.
-     */
-    getExpiryMilliseconds() {
-      return this.expiryMilliseconds;
-    },
-
-    /**
-     * Sets the number of milliseconds each time unit represents in the set() function's
-     *   "time" argument.
-     * Sample values:
-     *  1: each time unit = 1 millisecond
-     *  1000: each time unit = 1 second
-     *  60000: each time unit = 1 minute (Default value)
-     *  360000: each time unit = 1 hour
-     * @param {number} milliseconds
-     */
-    setExpiryMilliseconds(milliseconds) {
-      this.expiryMilliseconds = milliseconds;
-      this.maxDate = calculateMaxDate.call(this, this.expiryMilliseconds);
-    },
-
-    /**
-     * Sets whether to display this.warnings when an item is removed from the cache or not.
-     */
-    enableWarnings(enabled) {
-      this.warnings = enabled;
     }
+
+    // If a time is specified, store expiration info in localStorage
+    if(time) {
+      setItem.call(this, expirationKey.call(this, key), (currentTime.call(this) + time).toString(EXPIRY_RADIX));
+    } else {
+      // In case they previously set a time, remove that info from localStorage.
+      removeItem.call(this, expirationKey.call(this, key));
+    }
+    return true;
+  },
+
+  /**
+   * Retrieves specified value from localStorage, if not expired.
+   * @param {string} key
+   * @return {string|Object}
+   */
+  get(key) {
+    if(!this.supportsStorage) return null;
+
+    // Return the de-serialized item if not expired
+    if(flushExpiredItem.call(this, key)) {
+      return null;
+    }
+
+    // Tries to de-serialize stored value if its an object, and returns the normal value otherwise.
+    var value = getItem.call(this, key);
+    if(!value || !this.supportsJSON) {
+      return value;
+    }
+
+    try {
+      // We can't tell if its JSON or a string, so we try to parse
+      return JSON.parse(value);
+    } catch(e) {
+      // If we can't parse, it's probably because it isn't an object
+      return value;
+    }
+  },
+
+  /**
+   * Removes a value from localStorage.
+   * Equivalent to 'delete' in memcache, but that's a keyword in JS.
+   * @param {string} key
+   */
+  remove(key) {
+    if(!this.supportsStorage) return;
+
+    flushItem.call(this, key);
+  },
+
+  /**
+   * Returns whether local storage is supported.
+   * Currently exposed for testing purposes.
+   * @return {boolean}
+   */
+  supported() {
+    return this.supportsStorage;
+  },
+
+  /**
+   * Flushes all lscache items and expiry markers without affecting rest of localStorage
+   */
+  flush() {
+    if(!this.supportsStorage) return;
+
+    eachKey.call(this, function(key) {
+      flushItem.call(this, key);
+    });
+  },
+
+  /**
+   * Flushes expired lscache items and expiry markers without affecting rest of localStorage
+   */
+  flushExpired() {
+    if(!this.supportsStorage) return;
+
+    eachKey.call(this, function(key) {
+      flushExpiredItem.call(this, key);
+    });
+  },
+
+  /**
+   * Appends CACHE_PREFIX so lscache will partition data in to different buckets.
+   * @param {string} bucket
+   */
+  setBucket(bucket) {
+    this.cacheBucket = bucket;
+  },
+
+  /**
+   * Resets the string being appended to CACHE_PREFIX so lscache will use the default storage behavior.
+   */
+  resetBucket() {
+    this.cacheBucket = '';
+  },
+
+  /**
+   * @returns {number} The currently set number of milliseconds each time unit represents in
+   *   the set() function's "time" argument.
+   */
+  getExpiryMilliseconds() {
+    return this.expiryMilliseconds;
+  },
+
+  /**
+   * Sets the number of milliseconds each time unit represents in the set() function's
+   *   "time" argument.
+   * Sample values:
+   *  1: each time unit = 1 millisecond
+   *  1000: each time unit = 1 second
+   *  60000: each time unit = 1 minute (Default value)
+   *  360000: each time unit = 1 hour
+   * @param {number} milliseconds
+   */
+  setExpiryMilliseconds(milliseconds) {
+    this.expiryMilliseconds = milliseconds;
+    this.maxDate = calculateMaxDate.call(this, this.expiryMilliseconds);
+  },
+
+  /**
+   * Sets whether to display this.warnings when an item is removed from the cache or not.
+   */
+  enableWarnings(enabled) {
+    this.warnings = enabled;
+  },
+
+  keys() {
+    let keys = [];
+    let lscache = this;
+    console.log('keys()', { lscache });
+
+    eachKey.call(this, key => keys.push(key));
+    return keys;
   }
-);
+};
+
+Object.assign(lscache.prototype, proto);
+Object.assign(lscache, proto);
 
 export default lscache;
