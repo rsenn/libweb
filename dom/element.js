@@ -424,7 +424,7 @@ export class Element extends Node {
     var origin = Object.freeze(to ? new Point(to) : Element.position(e, edges));
     const f = [edges[0] == 'left' ? 1 : -1, edges[1] == 'top' ? 1 : -1];
 
-    console.log('moveRelative', { e, to, edges, f });
+    //console.log('moveRelative', { e, to, edges, f });
 
     function move(x, y) {
       let pos = new Point(origin.x + x * f[0], origin.y + y * f[1]);
@@ -496,13 +496,8 @@ export class Element extends Node {
     const names = ['Top', 'Right', 'Bottom', 'Left'].map(pos => prefix + (prefix == '' ? pos.toLowerCase() : pos + (prefix == 'border' ? 'Width' : '')));
     const getCSS = prefix == '' ? () => ({}) : Util.memoize(() => Element.getCSS(element));
 
-    /*let entries = Object.entries(element.style);
-
-
-    entries  = entries.filter(([name,value]) => names.indexOf(name) != -1);
-    entries  = entries.map(([name,value]) => [name.replace(/^[^A-Z]*([A-Z][a-z]*)(|Width)$/, "$1").toLowerCase(),(value+'').replace(/px/, "") ]);*/
     let entries = names.map(prop => [Util.decamelize(prop).split('-'), element.style.getPropertyValue(prop) || getCSS()[prop]]);
-    console.log('getTRBL', { names, entries });
+    //console.log('getTRBL', { names, entries });
     entries = entries.map(([prop, value]) => [prop[1] || prop[0], typeof value == 'string' ? +value.replace(/px$/, '') : value]);
 
     return /*new TRBL*/ Object.fromEntries(entries);

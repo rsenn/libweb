@@ -2,7 +2,7 @@ import Util from '../util.js';
 import { Point, Line } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
-import { Cross, Arc } from './components.js';
+import { Cross, Arc, Grid, Pattern } from './components.js';
 import { RGBA } from '../color.js';
 import { Palette } from './common.js';
 import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, Rotation } from './renderUtils.js';
@@ -281,24 +281,15 @@ export class BoardRenderer extends EagleSVGRenderer {
   render(doc = this.doc, parent, props = {}) {
     /*if(!this.bounds)
     this.bounds = doc.getBounds();*/
-
     parent = super.render(doc, parent, props);
-
     const { bounds, rect } = this;
-
     this.debug(`BoardRenderer.render`, { bounds, rect });
-
     //this.renderLayers(parent);
-
     let transform = this.transform + '';
-
     let plainGroup = this.create('g', { className: 'plain', transform }, parent);
-
     let signalsGroup = this.create('g', { className: 'signals', strokeLinecap: 'round', transform }, parent);
     let elementsGroup = this.create('g', { className: 'elements', transform }, parent);
-
     this.debug('bounds: ', bounds);
-
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {
         predicate: i => i.attributes.layer == '16'
@@ -311,11 +302,8 @@ export class BoardRenderer extends EagleSVGRenderer {
       this.renderSignal(signal, signalsGroup, {
         predicate: i => i.attributes.layer === undefined
       });
-
     for(let element of this.elements.list) this.renderElement(element, elementsGroup);
-
     let plain = [...this.doc.plain];
-
     this.renderCollection(plain, plainGroup);
     this.bounds = bounds;
     this.rect = bounds.rect;

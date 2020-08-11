@@ -116,6 +116,12 @@ export class BBox {
       height: y2 - y1
     };
   }
+
+  toRect(proto) {
+    let r = this.rect;
+    return Object.setPrototypeOf(r, proto || Object.prototype);
+  }
+
   toObject() {
     const { x1, y1, x2, y2 } = this;
     let obj = Object.create(null);
@@ -173,5 +179,10 @@ export class BBox {
       r.update(p);
     }
     return r;
+  }
+
+  *[Symbol.iterator]() {
+    let [x1, x2, y1, y2] = this;
+    for(let prop of [x1, x2, y1, y2]) yield prop;
   }
 }

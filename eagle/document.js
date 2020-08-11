@@ -205,7 +205,7 @@ export class EagleDocument extends EagleNode {
 
       if(measures.length >= 4) ret = bb.update(measures);
       else ret = board.getBounds();
-      console.log('ret', ret);
+      //      console.log('ret', ret);
       //Util.log("board:", board, ret.objects);
       return ret;
     }
@@ -264,14 +264,22 @@ export class EagleDocument extends EagleNode {
 
     let bounds = this.getBounds();
     let values = [...bounds.getObjects().values()];
-
     let measures = values.filter(obj => obj.layer && obj.layer.name == 'Measures');
-
     if(geometry) measures = measures.map(e => e.geometry);
-
     return measures.length > 0 ? measures : null;
   }
 
+  get measures() {
+    let bb = new BBox().update(this.getMeasures(true));
+    let rect = new Rect(bb.rect).round(0.00127, 3);
+    return rect;
+  }
+
+  get dimensions() {
+    let size = this.measures.size;
+    size.units.width = size.units.height = 'mm';
+    return size;
+  }
   signalMap() {
     return new Map(
       [...this.signals].map(([name, signal]) => {

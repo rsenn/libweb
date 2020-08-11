@@ -1,6 +1,7 @@
 import { ImmutablePath } from '../json.js';
 //import { EagleElement } from "./element.js";
 import Util from '../util.js';
+import trkl from '../trkl.js';
 import { TransformationList } from '../geom.js';
 
 const pathPadding = Util.isBrowser() ? 0 : 40;

@@ -2631,8 +2631,8 @@ Util.define(
       return fileName ? `${fileName}:${lineNumber}:${columnNumber}` : null;
     },
     toString(color, columnWidths = [0, 0, 0, 0]) {
-      let text = color ? new this.colorCtor() : '';
-      const c = color ? (t, color) => text.write(t, color) : t => (text += t);
+      let text = color && this.colorCtor ? new this.colorCtor() : '';
+      const c = color && this.colorCtor ? (t, color) => text.write(t, color) : t => (text += t);
       let fields = ['functionName', 'fileName', 'lineNumber', 'columnNumber'];
       const colors = [
         [0, 255, 0],
@@ -2684,10 +2684,31 @@ Util.scriptDir = () =>
     script => (script + '').replace(new RegExp('\\/[^/]*$', 'g'), ''),
     () => Util.getURL()
   );
-Util.stack = function Stack(stack) {
-  if(Util.isArray(stack)) {
-    stack = [...stack].map(f => f + '').join('\n');
+Util.stack = function Stack(stack,offset) {
+
+  if(typeof(stack) == 'number')
+    return Object.setPrototypeOf(new Array(stack), Util.stack.prototype);
+
+  console.log('stack ctor:',offset,stack);
+
+  function stackToString(st,start=0) {
+    if(Util.isArray(st)) {
+      st = [
+        ...(function*() {
+          for(let i = start; i < st.length; i++) yield st[i];
+        })()
+      ].join('\n');
+    }
+    return st;
   }
+
+  stack = stackToString(stack,offset);
+  console.log('stack String:', offset, typeof stack, stack);
+
+  if(typeof stack == 'number') {
+    throw new Error();
+  }
+
 
   if(typeof stack == 'string') {
     stack = stack.split(/\n/g).slice(1);
@@ -2710,7 +2731,7 @@ Util.stack = function Stack(stack) {
     ]);
     stack = stack.map(([func, file]) => [func, file.length >= 3 ? file : ['', '', ...file]]);
     stack = stack.map(([func, [columnNumber, lineNumber, ...file]]) => ({
-      functionName: func,
+      functionName: func.replace(/Function\.Util/, "Util"),
       fileName: file.reverse().join(':'),
       lineNumber,
       columnNumber
@@ -2722,14 +2743,15 @@ Util.stack = function Stack(stack) {
       columnNumber: column
     }));
   } else {
-    stack = Util.getCallers(2, Number.MAX_SAFE_INTEGER, () => true, stack);
+    stack = Util.getCallers(1, Number.MAX_SAFE_INTEGER, () => true, stack);
   }
   stack = stack.map(frame => Object.setPrototypeOf(frame, Util.stackFrame.prototype));
-
   //stack =stack.map(f => f+'');
-
   stack = Object.setPrototypeOf(stack, Util.stack.prototype);
-  //console.log('Util.stack:', stack.toString(true));
+
+  console.log('Util.stack:', stack /*.toString(true)*/);
+  console.log('Util.stack:', [...stack]);
+
   return stack;
 };
 
@@ -2740,7 +2762,6 @@ Util.stack.prototype = Object.assign(Util.stack.prototype, {
   toString(color = false) {
     let columns = this.columnWidths;
     let a = [...this].map(frame => Util.stackFrame.prototype.toString.call(frame, color, columns));
-    //    console.log('a:', a);
     let s = a.join('\n');
     return s + '\n';
   },
@@ -2748,8 +2769,6 @@ Util.stack.prototype = Object.assign(Util.stack.prototype, {
     return Util.stack.prototype.toString.call(this);
   },
   [Symbol.for('nodejs.util.inspect.custom')](...args) {
-    //const fields = ['functionName','fileName','lineNumber','columnNumber'];
-    //this.columnWidths = this.reduce((a,f) => fields.slice(0,1).map((fn,i) => Math.max(a[i],(f[fn]+'').length)), [0,0,0,0]);
     return '\n' + this.map(f => f.toString(!Util.isBrowser(), this.columnWidths)).join('\n');
   }
 });
@@ -2768,11 +2787,10 @@ Util.getCallerStack = function(position = 2) {
     throw new TypeError(`getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: '${position}' and Error.stackTraceLimit was: '${Error.stackTraceLimit}'`);
   }
   const oldPrepareStackTrace = Error.prepareStackTrace;
-  Error.prepareStackTrace = (_, stack) => stack;
+  Error._ = (_, stack) => stack;
   let stack = new Error().stack;
 
-  stack = Util.stack(stack);
-  stack = stack.slice(position);
+  stack = Util.stack(stack,position);
   /*
   stack.forEach(frame => {
     Util.define(frame, 'toString', function() {

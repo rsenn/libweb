@@ -228,3 +228,14 @@ export const useTrkl = fn => {
   });
   return value;
 };
+
+export const useAttributes = (element, attributeNames) => {
+  attributeNames = attributeNames || Object.keys(element.attributes);
+
+  let ret = {};
+
+  for(let attr of attributeNames) {
+    ret[attr] = useTrkl(element.handlers[attr]);
+  }
+  return ret;
+};

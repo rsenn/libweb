@@ -90,11 +90,12 @@ Rect.prototype = {
 };
 
 Rect.prototype.clone = function(fn) {
-  const ctor = this.constructor[Symbol.species];
+  const ctor = this.constructor[Symbol.species] || this.constructor;
   let ret = new ctor(this.x, this.y, this.width, this.height);
   if(fn) fn(ret);
   return ret;
 };
+
 Rect.prototype.corners = function() {
   const rect = this;
   return [
@@ -113,12 +114,6 @@ if(Rect.prototype.isSquare === undefined) {
 Rect.prototype.constructor = Rect;
 Rect.prototype.getArea = function() {
   return this.width * this.height;
-};
-Rect.prototype.toString = function(opts = {}) {
-  if(typeof opts == 'string') opts = { separator: opts };
-  const { precision = 0.001, unit = '', separator = ' ', left = '', right = '' } = opts;
-
-  return left + Point.prototype.toString.call(this, opts) + separator + Size.prototype.toString.call(this, opts) + right;
 };
 Rect.prototype.toSource = function(opts = {}) {
   const { color = true } = opts;
@@ -369,6 +364,11 @@ Rect.prototype.transform = function(m) {
   return this;
 };
 
+Rect.prototype[Symbol.iterator] = function*() {
+  let { x, y, width, height } = this;
+  for(let prop of [x, y, width, height]) yield prop;
+};
+
 Rect.round = rect => Rect.prototype.round.call(rect);
 Rect.align = (rect, align_to, a = 0) => Rect.prototype.align.call(rect, align_to, a);
 Rect.toCSS = rect => Rect.prototype.toCSS.call(rect);
@@ -392,7 +392,7 @@ Rect.from = function(obj) {
 
   const [x1, x2, y1, y2] = [...h, ...v];
 
-  return new Rect({ x1, y1, x2, y2 }); //h[0], v[0], h[1] - h[0], v[1] - v[0]);
+  return new Rect(x1, y1, x2 - x1, y2 - y1); //h[0], v[0], h[1] - h[0], v[1] - v[0]);
 };
 
 Rect.fromCircle = function(...args) {
@@ -463,3 +463,13 @@ delete ImmutableRect[Symbol.species];
 Util.defineGetter(ImmutableRect, Symbol.species, function() {
   return ImmutableRect;
 });
+
+Rect.prototype.toString = function(opts = {}) {
+  if(typeof opts == 'string') opts = { separator: opts };
+  const { precision = 0.001, unit = '', separator = ' ', left = '', right = '' } = opts;
+  let { x, y, width, height } = this;
+  let props = [x, y, width, height];
+  return left + props.map(p => p + unit).join(' ') + right;
+
+  //  return left + Point.prototype.toString.call(this, opts) + separator + Size.prototype.toString.call(this, opts) + right;
+};

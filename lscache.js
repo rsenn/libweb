@@ -345,6 +345,8 @@ export function brcache(cache) {
   return obj;
 }
 
+//Object.assign(brcache.prototype, Util.getMethods(BaseCache.prototype, 1, 0));
+
 export class BaseCache {
   expiryMilliseconds = 60 * 1000;
 

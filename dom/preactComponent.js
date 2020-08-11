@@ -65,9 +65,8 @@ export class ReactComponent {
       root = root || render_to;
       render_to = component => require('react-dom').render(component, root || render_to);
     }
-    let ret = function() {
-      let args = [...arguments];
-      let ret = ReactComponent.create.apply(ReactComponent, args);
+    let ret = function(...args) {
+      let ret = ReactComponent.create(...args);
       return ret;
     };
     ret.root = root;
@@ -75,24 +74,25 @@ export class ReactComponent {
   }
 
   static append(...args) {
+    console.log('PreactComponent.append', ...args);
     let tag, elem, parent, attr;
     if(args.length == 2 && ReactComponent.isComponent(args[0])) {
       [elem, parent] = args;
     } else {
-      [tag, attr, parent] = args;
+      [tag, attr, parent] = args.splice(0, 3);
       let { children, ...props } = attr;
       if(Util.isArray(parent)) {
         children = add(children, ...parent);
-        parent = null;
+        parent = args[0];
       }
-      //console.log('append', [tag, props, children]);
       elem = h(tag, props, children);
     }
     if(parent) {
-      //console.log("parent:",parent);
+      console.log('PreactComponent.append parent:', parent);
       const { props } = parent;
       props.children = add(props.children, elem);
     }
+    //      console.log('PreactComponent.append', {tag, props, children,parent });
     return elem;
   }
 

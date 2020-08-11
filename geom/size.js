@@ -182,10 +182,14 @@ Size.prototype.fitFactors = function(other) {
   return [hf, vf];
 };
 Size.prototype.toString = function(opts = {}) {
-  const { unit = '', separator = 'x', left = '', right = '' } = opts;
-  const { width, height } = this;
-  return `${left}${width}${unit}${separator}${height}${unit}${right}`;
+  const { unit = '', separator = ' x ', left = '', right = '' } = opts;
+  const { width, height, units = { width: unit, height: unit } } = this;
+  return `${left}${width}${units.width || ''}${separator}${height}${units.height || ''}${right}`;
 };
+/*Size.prototype[Symbol.iterator] = function() {
+    let [width,height]= this;
+    return [width,height][Symbol.iterator]();
+  }*/
 Size.area = sz => Size.prototype.area.call(sz);
 Size.aspect = sz => Size.prototype.aspect.call(sz);
 

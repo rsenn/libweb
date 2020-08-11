@@ -3,7 +3,9 @@ import Util from '../util.js';
 import { Size } from '../dom.js';
 import { Point, Rect, BBox, TransformationList } from '../geom.js';
 import { Rotation, VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
-import { ElementToComponent, ElementNameToComponent } from './components.js';
+import { ElementToComponent, ElementNameToComponent, Pattern, Grid } from './components.js';
+import trkl from '../trkl.js';
+import { h, Fragment, Component } from '../dom/preactComponent.js';
 
 export class EagleSVGRenderer {
   static rendererTypes = {};
@@ -58,9 +60,10 @@ export class EagleSVGRenderer {
 
     const insertCtoP = Util.inserter(this.component2path);
     const insert = Util.inserter(this.path2component, (k, v) => insertCtoP(v, k));
+    console.log('factory:' + factory);
+    this.create = function(tag, attrs, children, parent, element) {
+      let ret = factory(tag, attrs, children, parent, element);
 
-    this.create = function(tag, attrs, parent, element) {
-      let ret = factory(tag, attrs, parent);
       let path = attrs['data-path'];
       if(path && !element) {
         //console.log('path:', path);
@@ -94,8 +97,20 @@ export class EagleSVGRenderer {
     let renderer = new EagleSVGRenderer.rendererTypes[doc.type](doc, factory);
     return renderer;
   }
-
   setPalette(palette) {
+    //console.log("setPalette 1",palette)
+    palette = palette.map((color, i) => trkl(((color.valueOf = () => i), color)));
+    let ncolors = palette.length;
+    palette = palette.reduce((acc, color, i) => ({ ...acc, [i + '']: color }), {
+      length: trkl(ncolors)
+    });
+    //console.log("setPalette 2",palette)
+
+    palette = window.palette = trkl.bind({ handlers: palette }, palette);
+    Object.setPrototypeOf(palette, Object.assign(class Palette {}.prototype, { length: 0 }));
+    //console.log("setPalette 3",palette)
+    //console.log("setPalette 4",palette)
+
     Object.defineProperty(this, 'palette', {
       value: palette || (this.doc.type == 'brd' ? BoardRenderer.palette : SchematicRenderer.palette),
       writable: false,
@@ -196,7 +211,18 @@ export class EagleSVGRenderer {
     const comp = ElementToComponent(item);
     if(comp) {
       //console.log('EagleSVGRenderer render component ', this.transform.filter(t => ['translate'].indexOf(t.type) == -1));
-      const elem = svg(comp, { data: item, transform, opts: { ...opts, transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1) } }, parent);
+      const elem = svg(
+        comp,
+        {
+          data: item,
+          transform,
+          opts: {
+            ...opts,
+            transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1)
+          }
+        },
+        parent
+      );
       return;
     }
 
@@ -394,7 +420,10 @@ export class EagleSVGRenderer {
     doc = doc || this.doc;
 
     let bounds = doc.getBounds();
-    let rect = new Rect(bounds.rect);
+    console.log('EagleSVGRenderer.render', { bounds });
+    let rect = bounds.toRect(Rect.prototype);
+
+    console.log('EagleSVGRenderer.render', { bounds, rect });
 
     rect.outset(1.27);
     /*  rect.round(2.54, 6);
@@ -415,24 +444,32 @@ export class EagleSVGRenderer {
     const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;
     this.debug(bounds);
 
+    console.log('viewBox rect:', rect, rect.toString(), rect.valueOf);
+
     if(!parent)
       parent = this.create(
         'svg',
         {
           /*  width,
           height,*/
-          viewBox: rect.clone(r => (r.y = 0)).toString({ separator: ' ' }),
+          viewBox: new Rect(rect).toString(), //+'', //rect.clone(r => (r.y = 0)).toString({ separator: ' ' }),
           preserveAspectRatio: 'xMinYMin', //"xMidYMid meet"
           ...props
         },
         parent
       );
+
+    const cssStyle = this.create('style', { children: [`text { font-size: 0.0875rem; }`] }, parent);
     //this.renderLayers(parent);
-    const step = 2.54;
+    /*    const step = 2.54;
     const gridColor = '#0000aa';
     const gridWidth = 0.05;
 
-    const cssStyle = this.create('style', { children: [`text { font-size: 0.0875rem; }`] }, parent);
+*/
+    let grid = project.doc.lookup('/eagle/drawing/grid');
+
+    let defs =
+      /*
 
     this.create(
       'path',
@@ -442,13 +479,13 @@ export class EagleSVGRenderer {
         stroke: gridColor,
         'stroke-width': gridWidth
       },
-      this.create('pattern', { id: 'grid', width: step, height: step, patternUnits: 'userSpaceOnUse' }, this.create('defs', {}, parent))
-    );
-    this.group = this.create('g', { id: 'bg' }, parent);
-    let bgGroup = this.create('g', { transform }, this.group);
+      this.create('pattern', { id: 'grid', width: step, height: step, patternUnits: 'userSpaceOnUse' }, defs)
+    );*/
+      this.create('defs', {}, h(Pattern, { id: 'grid', step: 2.54, color: '#0000aa', width: 0.05 }), parent);
 
-    this.create('rect', { ...rect.toObject(), fill: 'rgb(255,255,255)' }, bgGroup);
-    this.create('rect', { ...rect.toObject(), id: 'grid', fill: 'url(#grid)' }, bgGroup);
+    this.create('g', { id: 'bg' }, h('g', { transform }, h(Grid, { data: grid, background: 'rgb(255,255,255)' })), parent);
+
+    //  this.create('rect', { ...rect.toObject(), id: 'grid', fill: 'url(#grid)' }, bgGroup);
 
     this.debug(`EagleSVGRenderer.render`, { doc, parent, props });
 
