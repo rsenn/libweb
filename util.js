@@ -2684,14 +2684,12 @@ Util.scriptDir = () =>
     script => (script + '').replace(new RegExp('\\/[^/]*$', 'g'), ''),
     () => Util.getURL()
   );
-Util.stack = function Stack(stack,offset) {
+Util.stack = function Stack(stack, offset) {
+  if(typeof stack == 'number') return Object.setPrototypeOf(new Array(stack), Util.stack.prototype);
 
-  if(typeof(stack) == 'number')
-    return Object.setPrototypeOf(new Array(stack), Util.stack.prototype);
+  console.log('stack ctor:', offset, stack);
 
-  console.log('stack ctor:',offset,stack);
-
-  function stackToString(st,start=0) {
+  function stackToString(st, start = 0) {
     if(Util.isArray(st)) {
       st = [
         ...(function*() {
@@ -2702,13 +2700,12 @@ Util.stack = function Stack(stack,offset) {
     return st;
   }
 
-  stack = stackToString(stack,offset);
+  stack = stackToString(stack, offset);
   console.log('stack String:', offset, typeof stack, stack);
 
   if(typeof stack == 'number') {
     throw new Error();
   }
-
 
   if(typeof stack == 'string') {
     stack = stack.split(/\n/g).slice(1);
@@ -2731,7 +2728,7 @@ Util.stack = function Stack(stack,offset) {
     ]);
     stack = stack.map(([func, file]) => [func, file.length >= 3 ? file : ['', '', ...file]]);
     stack = stack.map(([func, [columnNumber, lineNumber, ...file]]) => ({
-      functionName: func.replace(/Function\.Util/, "Util"),
+      functionName: func.replace(/Function\.Util/, 'Util'),
       fileName: file.reverse().join(':'),
       lineNumber,
       columnNumber
@@ -2790,7 +2787,7 @@ Util.getCallerStack = function(position = 2) {
   Error._ = (_, stack) => stack;
   let stack = new Error().stack;
 
-  stack = Util.stack(stack,position);
+  stack = Util.stack(stack, position);
   /*
   stack.forEach(frame => {
     Util.define(frame, 'toString', function() {
