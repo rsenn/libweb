@@ -633,11 +633,12 @@ export function CachedFetch(fn, cacheObj) {
         response = await fetch(request);
       } catch(error) {}
     }
-    if(response) {
+    if(response && impl) {
       let r = impl.response ? await impl.response(response, true) : response;
       await impl.setItem(request, response);
       return r;
     }
+    return response;
   }
   self.cache = cacheObj;
   self.impl = impl;

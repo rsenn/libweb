@@ -60,8 +60,9 @@ export class EagleSVGRenderer {
 
     const insertCtoP = Util.inserter(this.component2path);
     const insert = Util.inserter(this.path2component, (k, v) => insertCtoP(v, k));
-    console.log('factory:' + factory);
+    //console.log('factory:' + factory);
     this.create = function(tag, attrs, children, parent, element) {
+
       let ret = factory(tag, attrs, children, parent, element);
 
       let path = attrs['data-path'];
@@ -481,9 +482,9 @@ export class EagleSVGRenderer {
       },
       this.create('pattern', { id: 'grid', width: step, height: step, patternUnits: 'userSpaceOnUse' }, defs)
     );*/
-      this.create('defs', {}, h(Pattern, { id: 'grid', step: 2.54, color: '#0000aa', width: 0.05 }), parent);
+      this.create('defs', { children: h(Pattern, { id: 'grid', step: 2.54, color: '#0000aa', width: 0.05 }) }, parent);
 
-    this.create('g', { id: 'bg' }, h('g', { transform }, h(Grid, { data: grid, background: 'rgb(255,255,255)' })), parent);
+    this.create('g', { id: 'bg', children: h('g', { transform }, h(Grid, { data: grid, rect, background: 'rgb(255,255,255)' })) }, parent);
 
     //  this.create('rect', { ...rect.toObject(), id: 'grid', fill: 'url(#grid)' }, bgGroup);
 

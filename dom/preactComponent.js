@@ -11,7 +11,7 @@ export const React = { create: h, html, render, Component, Fragment, createConte
 
 import Util from '../util.js';
 
-const add = (arr, ...items) => [...(Util.isArray(arr) ? arr : arr ? [arr] : []), ...items];
+const add = (arr, ...items) => [...ReactComponent.toChildArray(arr), ...items];
 
 export class ReactComponent {
   static create(...args) {
@@ -74,7 +74,7 @@ export class ReactComponent {
   }
 
   static append(...args) {
-    console.log('PreactComponent.append', ...args);
+    console.log('PreactComponent.append', ...args.reduce((acc,a) => [...acc, '\n', a],  []));
     let tag, elem, parent, attr;
     if(args.length == 2 && ReactComponent.isComponent(args[0])) {
       [elem, parent] = args;
@@ -88,7 +88,7 @@ export class ReactComponent {
       elem = h(tag, props, children);
     }
     if(parent) {
-      console.log('PreactComponent.append parent:', parent);
+      console.log('PreactComponent.append\nparent:', parent, "\nelement:", elem);
       const { props } = parent;
       props.children = add(props.children, elem);
     }

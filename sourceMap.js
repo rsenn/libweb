@@ -1,44 +1,26 @@
-//'use strict';
-/*var fs = require('fs');
-var path = require('path');
-var SafeBuffer = require('safe-buffer');
-*/
+import Util from './util.js';
+
+//const { decode: decodeBase64, encode: encodeBase64 } = Util.base64;
+const [ encodeBase64, decodeBase64 ] = [
+s => { console.log(`encode('${s}')`); return Util.base64.encode(s); },
+s => { console.log(`decode('${s}')`);return Util.base64.decode(s); }
+];
 
 export class SourceMap {
-  static get getCommentRegex() {
+  static get commentRegex() {
     return /^\s*\/(?:\/|\*)[@#]\s+sourceMappingURL=data:(?:application|text)\/json;(?:charset[:=]\S+?;)?base64,(?:.*)$/gm;
   }
 
-  static get getMapFileCommentRegex() {
+  static get mapFileCommentRegex() {
     // Matches sourceMappingURL in either // or /* comment styles.
     return /(?:\/\/[@#][ \t]+sourceMappingURL=([^\s'"`]+?)[ \t]*$)|(?:\/\*[@#][ \t]+sourceMappingURL=([^\*]+?)[ \t]*(?:\*\/){1}[ \t]*$)/gm;
   }
-  static decodeBase64(base64) {
-    return SafeBuffer.Buffer.from(base64, 'base64').toString();
-  }
-  static stripComment(sm) {
-    return sm.split(',').pop();
-  }
-  static readFromFileMap(sm, dir) {
-    // NOTE: this will only work on the server since it attempts to read the map file
 
-    var r = exports.mapFileCommentRegex.exec(sm);
-
-    // for some odd reason //# .. captures in 1 and /* .. */ in 2
-    var filename = r[1] || r[2];
-    var filepath = path.resolve(dir, filename);
-
-    try {
-      return fs.readFileSync(filepath, 'utf8');
-    } catch(e) {
-      throw new Error('An error occurred while trying to read the map file at ' + filepath + '\n' + e);
-    }
-  }
   static Converter = class Converter {
-    constructor(sm, opts) {
+    constructor(sm, opts, filesystem = {}) {
       opts = opts || {};
 
-      if(opts.isFileComment) sm = readFromFileMap(sm, opts.commentFileDir);
+      if(opts.isFileComment) sm = readFromFileMap(sm, opts.commentFileDir, filesystem);
       if(opts.hasComment) sm = stripComment(sm);
       if(opts.isEncoded) sm = decodeBase64(sm);
       if(opts.isJSON || opts.isEncoded) sm = JSON.parse(sm);
@@ -52,7 +34,7 @@ export class SourceMap {
 
     toBase64() {
       var json = this.toJSON();
-      return SafeBuffer.Buffer.from(json, 'utf8').toString('base64');
+      return encodeBase64(json);
     }
 
     toComment(options) {
@@ -81,50 +63,61 @@ export class SourceMap {
     }
   };
 
-  static fromObject(obj) {
-    return new Converter(obj);
-  }
+  static fromObject = obj => new this.Converter(obj);
 
-  static fromJSON(json) {
-    return new Converter(json, { isJSON: true });
-  }
+  static fromJSON = json => new this.Converter(json, { isJSON: true });
 
-  static fromBase64(base64) {
-    return new Converter(base64, { isEncoded: true });
-  }
+  static fromBase64 = base64 => new this.Converter(base64, { isEncoded: true });
 
-  static fromComment(comment) {
-    comment = comment.replace(/^\/\*/g, '//').replace(/\*\/$/g, '');
+  static fromComment = comment => new this.Converter(comment.replace(/^\/\*/g, '//').replace(/\*\/$/g, ''), { isEncoded: true, hasComment: true });
 
-    return new Converter(comment, { isEncoded: true, hasComment: true });
-  }
-
-  static fromMapFileComment(comment, dir) {
-    return new Converter(comment, { commentFileDir: dir, isFileComment: true, isJSON: true });
-  }
+  static fromMapFileComment = (comment, dir, filesystem) => new this.Converter(comment, { commentFileDir: dir, isFileComment: true, isJSON: true }, filesystem);
 
   // Finds last sourcemap comment in file or returns null if none was found
-  static fromSource(content) {
-    var m = content.match(exports.commentRegex);
-    return m ? exports.fromComment(m.pop()) : null;
-  }
+  static fromSource = content => {
+    var m = content.match(this.commentRegex);
+    return m ? this.fromComment(m.pop()) : null;
+  };
 
   // Finds last sourcemap comment in file or returns null if none was found
-  static fromMapFileSource(content, dir) {
-    var m = content.match(exports.mapFileCommentRegex);
-    return m ? exports.fromMapFileComment(m.pop(), dir) : null;
-  }
+  static fromMapFileSource = (content, dir) => {
+    var m = content.match(this.mapFileCommentRegex);
+    return m ? this.fromMapFileComment(m.pop(), dir) : null;
+  };
 
-  static removeComments(src) {
-    return src.replace(exports.commentRegex, '');
-  }
+  static removeComments = src => src.replace(this.commentRegex, '');
 
-  static removeMapFileComments(src) {
-    return src.replace(exports.mapFileCommentRegex, '');
-  }
+  static removeMapFileComments = src => src.replace(this.mapFileCommentRegex, '');
 
-  static generateMapFileComment(file, options) {
+  static generateMapFileComment = (file, options) => {
     var data = 'sourceMappingURL=' + file;
     return options && options.multiline ? '/*# ' + data + ' */' : '//# ' + data;
+  };
+}
+
+function stripComment(sm) {
+  return sm.split(',').pop();
+}
+
+function readFromFileMap(sm, dir, filesystem) {
+  // NOTE: this will only work on the server since it attempts to read the map file
+
+  var r = SourceMap.mapFileCommentRegex.exec(sm);
+
+  console.log("r:",r, {sm});
+
+
+  // for some odd reason //# .. captures in 1 and /* .. */ in 2
+  var filename = r[1] || r[2];
+  var filepath = dir
+    .split(/[\/\\]+/g)
+    .concat([filename])
+    .join('/');
+
+  try {
+    return filesystem.readFile(filepath, 'utf8');
+  } catch(e) {
+    throw new Error('An error occurred while trying to read the map file at ' + filepath + '\n' + e);
   }
 }
+

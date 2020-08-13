@@ -17,7 +17,7 @@ export const Pattern = ({ id = 'pattern', step = 2.54, color = '#0000aa', width 
   );
 };
 
-export const Grid = ({ data, rect, background = 'rgb(255,255,255)', opts = {}, ...props }) => {
+export const Grid = ({ data, rect, isVisible, background = 'rgb(255,255,255)', opts = {}, ...props }) => {
   data = data || props.item;
 
   //console.log('Grid.render ', { data, opts });
@@ -25,8 +25,12 @@ export const Grid = ({ data, rect, background = 'rgb(255,255,255)', opts = {}, .
 
   const { distance, unitdist, unit, style, multiple, display, altdistance, altunitdist, altunit } = useAttributes(data);
 
+
+  let visible = typeof(isVisible) == 'function' ? useTrkl(isVisible) : true;
+
+
   return h(Fragment, {}, [
-    h('rect', { ...rect.toObject(), fill: background }, bgGroup),
+    h('rect', { ...rect.toObject(), fill: background }),
 
     h('rect', {
       stroke: 'none',

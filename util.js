@@ -167,7 +167,8 @@ Util.once = function(fn, thisArg) {
 };
 
 Util.getGlobalObject = Util.memoize(arg => {
-  const retfn = arg ? g => g[arg] : g => g;
+  const retfn = typeof arg == 'function' ? arg : typeof arg == 'string' ? g => g[arg] : g => g;
+
   return Util.tryCatch(
     () => global,
     retfn,
@@ -2016,20 +2017,11 @@ Util.roundTo = function(value, prec, digits, type = 'round') {
   return ret;
 };
 Util.base64 = (() => {
-  const w = Util.tryCatch(
-    () => global.window,
-    w => w,
-    () => null
-  );
+  const g = Util.getGlobalObject();
 
   return {
-    encode: utf8 => {
-      if(w) return w.btoa(w.unescape(w.encodeURIComponent(utf8)));
-      return Buffer.from(utf8).toString('base64');
-    },
-    decode: base64 => {
-      if(w) return w.decodeURIComponent(w.escape(w.atob(base64)));
-    }
+    encode: Util.tryFunction(utf8 => g.btoa(g.unescape(g.encodeURIComponent(utf8))), v => v, utf8 =>  Buffer.from(utf8).toString('base64')),
+    decode: Util.tryFunction(base64 => g.decodeURIComponent(g.escape(g.atob(base64))), v => v, string =>  Buffer.from(string, 'base64').toString('utf-8'))
   };
 })();
 
