@@ -2,12 +2,14 @@
 import { h, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../../node_modules/htm/preact/standalone.mjs';
 export { h, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../../node_modules/htm/preact/standalone.mjs';
 
-import { Fragment } from '../preact.js';
-export { Fragment } from '../preact.js';
+/*import { Fragment } from '../preact.js';
+export { Fragment } from '../preact.js';*/
+export const Fragment = props => ReactComponent.toChildArray(props.children);
 
 import { Element } from './element.js';
 
 export const React = { create: h, html, render, Component, Fragment, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue };
+export default React;
 
 import Util from '../util.js';
 
@@ -74,7 +76,7 @@ export class ReactComponent {
   }
 
   static append(...args) {
-    console.log('PreactComponent.append', ...args.reduce((acc,a) => [...acc, '\n', a],  []));
+    //console.log('PreactComponent.append', ...args.reduce((acc, a) => [...acc, '\n', a], []));
     let tag, elem, parent, attr;
     if(args.length == 2 && ReactComponent.isComponent(args[0])) {
       [elem, parent] = args;
@@ -88,7 +90,7 @@ export class ReactComponent {
       elem = h(tag, props, children);
     }
     if(parent) {
-      console.log('PreactComponent.append\nparent:', parent, "\nelement:", elem);
+      //console.log('PreactComponent.append\nparent:', parent, '\nelement:', elem);
       const { props } = parent;
       props.children = add(props.children, elem);
     }
@@ -213,5 +215,67 @@ export class ReactComponent {
     //console.log("parser", Util.getMethodNames(parser, 2, 1));
     let ast = parser.parseJSX();
     return printer.printNode(ast instanceof Array ? ast[0] : ast);
+  }
+}
+
+/** Redirect rendering of descendants into the given CSS selector.
+ *  @example
+ *    <Portal into="body">
+ *      <div>I am rendered into document.body</div>
+ *    </Portal>
+ */
+export class Portal extends Component {
+  componentDidUpdate(props) {
+    for(let i in props) {
+      if(props[i] !== this.props[i]) {
+        return setTimeout(this.renderLayer);
+      }
+    }
+  }
+
+  componentDidMount() {
+    this.isMounted = true;
+    this.renderLayer = this.renderLayer.bind(this);
+    this.renderLayer();
+  }
+
+  componentWillUnmount() {
+    this.renderLayer(false);
+    this.isMounted = false;
+    if(this.remote && this.remote.parentNode) this.remote.parentNode.removeChild(this.remote);
+  }
+
+  findNode(node) {
+    return typeof node === 'string' ? document.querySelector(node) : node;
+  }
+
+  renderLayer(show = true) {
+    if(!this.isMounted) return;
+
+    // clean up old node if moving bases:
+    if(this.props.into !== this.intoPointer) {
+      this.intoPointer = this.props.into;
+      if(this.into && this.remote) {
+        this.remote = render(h(PortalProxy), this.into, this.remote);
+      }
+      this.into = this.findNode(this.props.into);
+    }
+
+    this.remote = render((h(PortalProxy, { context: this.context }), (show && this.props.children) || null), this.into, this.remote);
+  }
+
+  render() {
+    return null;
+  }
+}
+
+// high-order component that renders its first child if it exists.
+// used as a conditional rendering proxy.
+class PortalProxy extends Component {
+  getChildContext() {
+    return this.props.context;
+  }
+  render({ children }) {
+    return (children && children[0]) || null;
   }
 }

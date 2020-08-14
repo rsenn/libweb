@@ -25,9 +25,7 @@ export const Grid = ({ data, rect, isVisible, background = 'rgb(255,255,255)', o
 
   const { distance, unitdist, unit, style, multiple, display, altdistance, altunitdist, altunit } = useAttributes(data);
 
-
-  let visible = typeof(isVisible) == 'function' ? useTrkl(isVisible) : true;
-
+  let visible = typeof isVisible == 'function' ? useTrkl(isVisible) : true;
 
   return h(Fragment, {}, [
     h('rect', { ...rect.toObject(), fill: background }),

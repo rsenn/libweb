@@ -37,10 +37,12 @@ export function trkl(initValue) {
     if(immediate) {
       subscriber(value);
     }
+    return this;
   }
 
   self['unsubscribe'] = function(subscriber) {
     remove(subscribers, subscriber);
+    return this;
   };
 
   function write(newValue) {
@@ -77,6 +79,7 @@ export function trkl(initValue) {
 }
 
 trkl.prototype = Object.create({ ...Function.prototype, constructor: trkl });
+trkl.is = arg => typeof arg == 'function' && typeof arg.subscribe == 'function';
 
 trkl.getset = function(arg) {
   let trkl = arg || new trkl(arg);

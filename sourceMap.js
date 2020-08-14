@@ -1,9 +1,15 @@
 import Util from './util.js';
 
 //const { decode: decodeBase64, encode: encodeBase64 } = Util.base64;
-const [ encodeBase64, decodeBase64 ] = [
-s => { console.log(`encode('${s}')`); return Util.base64.encode(s); },
-s => { console.log(`decode('${s}')`);return Util.base64.decode(s); }
+const [encodeBase64, decodeBase64] = [
+  s => {
+    console.log(`encode('${s}')`);
+    return Util.base64.encode(s);
+  },
+  s => {
+    console.log(`decode('${s}')`);
+    return Util.base64.decode(s);
+  }
 ];
 
 export class SourceMap {
@@ -104,8 +110,7 @@ function readFromFileMap(sm, dir, filesystem) {
 
   var r = SourceMap.mapFileCommentRegex.exec(sm);
 
-  console.log("r:",r, {sm});
-
+  console.log('r:', r, { sm });
 
   // for some odd reason //# .. captures in 1 and /* .. */ in 2
   var filename = r[1] || r[2];
@@ -120,4 +125,3 @@ function readFromFileMap(sm, dir, filesystem) {
     throw new Error('An error occurred while trying to read the map file at ' + filepath + '\n' + e);
   }
 }
-

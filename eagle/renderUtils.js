@@ -226,7 +226,7 @@ export const useTrkl = fn => {
     fn.subscribe(updateValue);
     return () => fn.unsubscribe(updateValue);
   });
-  return value;
+  return [value, fn];
 };
 
 export const useAttributes = (element, attributeNames) => {

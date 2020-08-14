@@ -2020,8 +2020,16 @@ Util.base64 = (() => {
   const g = Util.getGlobalObject();
 
   return {
-    encode: Util.tryFunction(utf8 => g.btoa(g.unescape(g.encodeURIComponent(utf8))), v => v, utf8 =>  Buffer.from(utf8).toString('base64')),
-    decode: Util.tryFunction(base64 => g.decodeURIComponent(g.escape(g.atob(base64))), v => v, string =>  Buffer.from(string, 'base64').toString('utf-8'))
+    encode: Util.tryFunction(
+      utf8 => g.btoa(g.unescape(g.encodeURIComponent(utf8))),
+      v => v,
+      utf8 => Buffer.from(utf8).toString('base64')
+    ),
+    decode: Util.tryFunction(
+      base64 => g.decodeURIComponent(g.escape(g.atob(base64))),
+      v => v,
+      string => Buffer.from(string, 'base64').toString('utf-8')
+    )
   };
 })();
 
@@ -2679,7 +2687,7 @@ Util.scriptDir = () =>
 Util.stack = function Stack(stack, offset) {
   if(typeof stack == 'number') return Object.setPrototypeOf(new Array(stack), Util.stack.prototype);
 
-  console.log('stack ctor:', offset, stack);
+  //console.log('stack ctor:', offset, stack);
 
   function stackToString(st, start = 0) {
     if(Util.isArray(st)) {
@@ -2693,7 +2701,7 @@ Util.stack = function Stack(stack, offset) {
   }
 
   stack = stackToString(stack, offset);
-  console.log('stack String:', offset, typeof stack, stack);
+  //console.log('stack String:', offset, typeof stack, stack);
 
   if(typeof stack == 'number') {
     throw new Error();
@@ -2738,8 +2746,8 @@ Util.stack = function Stack(stack, offset) {
   //stack =stack.map(f => f+'');
   stack = Object.setPrototypeOf(stack, Util.stack.prototype);
 
-  console.log('Util.stack:', stack /*.toString(true)*/);
-  console.log('Util.stack:', [...stack]);
+  //console.log('Util.stack:', stack /*.toString(true)*/);
+  //console.log('Util.stack:', [...stack]);
 
   return stack;
 };
