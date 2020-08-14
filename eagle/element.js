@@ -324,15 +324,20 @@ export class EagleElement extends EagleNode {
         if(element) this.elements.add(element);
         return this.color;
       };
-      this.isVisible = function(element) {
+      this.isVisible = element => {
         if(element) this.elements.add(element);
         return this.visible;
       };
+      this.setVisible = value => (value === undefined ? this.handlers.visible() == 'yes' : this.handlers.visible(value ? 'yes' : 'no'));
+      this.setVisible.subscribe = fn => this.handlers.visible.subscribe(value => fn(value == 'yes'));
+      this.setVisible.subscribe = fn => this.handlers.visible.subscribe(value => fn(value == 'yes'));
     }
-    if(this.layer) {
+    //    let layer  = this.tagName == 'pad' ? this.document.layers['Pads'] :  this.layer;
+    if(this.layer || this.tagName == 'pad' || this.tagName == 'via') {
       this.getColor = function() {
-        this.layer.elements.add(this);
-        return this.layer.color;
+        let layer = this.layer || this.document.layers[Util.ucfirst(this.tagName) + 's'];
+        layer.elements.add(this);
+        return layer.color;
       };
     }
 

@@ -1709,7 +1709,13 @@ Util.isMobile = function() {
 };
 Util.uniquePred = (cmp = null) => (cmp === null ? (el, i, arr) => arr.indexOf(el) === i : (el, i, arr) => arr.findIndex(item => cmp(el, item)) === i);
 Util.unique = (arr, cmp) => arr.filter(Util.uniquePred(cmp));
-
+Util.histogram = (arr, t = item => item) => {
+  let r= arr.reduce((acc,item) => {
+    acc[t(item)] = (acc[t(item)] || 0) + 1;
+    return acc;
+    }, {});
+  return r;
+}
 Util.concat = function*(...args) {
   for(let arg of args) {
     if(Util.isGenerator(arg)) {
@@ -2443,7 +2449,30 @@ Util.inherit = (dst, src, depth = 1) => {
   for(let k of Util.getMethodNames(src, depth)) dst[k] = src[k];
   return dst;
 };
-
+Util.inherits =
+  typeof Object.create === 'function'
+    ? function inherits(ctor, superCtor) {
+        if(superCtor) {
+          ctor.super_ = superCtor;
+          ctor.prototype = Object.create(superCtor.prototype, {
+            constructor: {
+              value: ctor,
+              enumerable: false,
+              writable: true,
+              configurable: true
+            }
+          });
+        }
+      } // old school shim for old browsers
+    : function inherits(ctor, superCtor) {
+        if(superCtor) {
+          ctor.super_ = superCtor;
+          var TempCtor = function() {};
+          TempCtor.prototype = superCtor.prototype;
+          ctor.prototype = new TempCtor();
+          ctor.prototype.constructor = ctor;
+        }
+      };
 Util.bindMethods = function(methods, obj) {
   for(let name in methods) {
     methods[name] = methods[name].bind(obj);

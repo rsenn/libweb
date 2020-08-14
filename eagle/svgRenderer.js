@@ -117,7 +117,7 @@ export class EagleSVGRenderer {
       configurable: false
     });
   }
-
+  /*
   findLayer(id) {
     if(id instanceof EagleElement) {
       if('layer' in id) id = id.layer;
@@ -136,7 +136,7 @@ export class EagleSVGRenderer {
       if(layer.name === id) return layer;
     }
   }
-
+*/
   getColor(color) {
     let c = this.palette[color] || /*this.colors[color] || */ 'rgb(165,165,165)';
     //this.debug('getColor', color, c);

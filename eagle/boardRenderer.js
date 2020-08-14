@@ -60,9 +60,10 @@ export class BoardRenderer extends EagleSVGRenderer {
         const ri = +(drill / 3).toFixed(3);
         let data = '';
         const transform = `translate(${x},${y})`;
+        const layer = this.layers['Pads'];
 
-        const padColor = /*this.layers['Pads'].color ||*/ 2;
-        //console.log('Pad color:', padColor);
+        console.log('item:', item);
+        const padColor = item.getColor() || this.palette[2];
 
         switch (shape) {
           case 'long': {
@@ -92,7 +93,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         svg(
           'path',
           {
-            fill: this.palette[padColor],
+            fill: padColor,
             d: data + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
             transform
           },
@@ -115,6 +116,7 @@ export class BoardRenderer extends EagleSVGRenderer {
                 //                'stroke-width': 0.01,
                 x: 0.04,
                 y: -0.04,
+                ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
                 //     filter: 'url(#shadow)',
                 ...EagleSVGRenderer.alignmentAttrs('center', VERTICAL),
                 'font-size': 0.6,
@@ -153,6 +155,8 @@ export class BoardRenderer extends EagleSVGRenderer {
       if(item.tagName === 'wire') {
         const layerId = item.attributes.layer || tPlace.number;
         layers[layerId] = item.layer || tPlace;
+
+        if(item.layer) item.layer.elements.add(item);
 
         if('width' in item) widths[layerId] = item.width;
         if(wireMap.has(layerId)) wireMap.get(layerId).push(item);
@@ -211,7 +215,7 @@ export class BoardRenderer extends EagleSVGRenderer {
           return () => handler.unsubscribe(updateVisible);
         });
        */
-        let visible = useTrkl(layer.handlers['visible']);
+        let [visible] = useTrkl(layer.handlers['visible']);
 
         return h('path', {
           className: 'wire',
