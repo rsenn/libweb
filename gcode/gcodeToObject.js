@@ -1,7 +1,6 @@
 import Util from '../util.js';
 import { objectToGcode } from './objectToGcode.js';
 
-
 export class GcodeObject {
   constructor() {
     this.command = undefined;
@@ -106,6 +105,16 @@ export function gcodeToObject(gcode) {
   });
 
   return gcodeObject;
+}
+
+export function* parseGcode(data) {
+  if(typeof data == 'string') data = data.split(/\n/g);
+
+  for(let line of data) {
+    let gcodeObj = gcodeToObject(line);
+
+    if(gcodeObj.command !== undefined || Object.keys(gcodeObj.args).length > 0) yield gcodeObj;
+  }
 }
 
 export default gcodeToObject;
