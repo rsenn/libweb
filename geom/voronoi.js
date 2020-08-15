@@ -1171,21 +1171,18 @@ export class Voronoi {
 
   //---------------------------------------------------------------------------
   //Debugging helper
-  /*
-dumpBeachline(y) {
-    //Util.log('Voronoi.dumpBeachline(%f) > Beachsections, from left to right:', y);
-    if( !this.beachline ) {
-        //Util.log('  None');
-        }
-    else {
-        var bs = this.beachline.getFirst(this.beachline.root);
-        while( bs ) {
-            //Util.log('  site %d: xl: %f, xr: %f', bs.site.voronoiId, this.leftBreakPoint(bs, y), this.rightBreakPoint(bs, y));
-            bs = bs.rbNext;
-            }
-        }
-    };
-*/
+  dumpBeachline(y) {
+    console.log('Voronoi.dumpBeachline(%f) > Beachsections, from left to right:', y);
+    if(!this.beachline) {
+      console.log('  None');
+    } else {
+      var bs = this.beachline.getFirst(this.beachline.root);
+      while(bs) {
+        console.log('  site %d: xl: %f, xr: %f', bs.site.voronoiId, this.leftBreakPoint(bs, y), this.rightBreakPoint(bs, y));
+        bs = bs.rbNext;
+      }
+    }
+  }
 
   //---------------------------------------------------------------------------
   //Helper: Quantize sites

@@ -28,8 +28,8 @@ export class BBox {
     return new Map(Object.entries(this.objects));
   }
 
-  updateList(list, offset = 0.0) {
-    for(let arg of list) this.update(arg, offset);
+  updateList(list, offset = 0.0, objFn = item => item, t = a => a) {
+    for(let arg of list) this.update(t(arg), offset, objFn(arg));
     return this;
   }
 

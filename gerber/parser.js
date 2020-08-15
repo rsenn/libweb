@@ -123,8 +123,7 @@ var commandMap = {
 // function takes in the number string to be converted and the format object
 function normalizeCoord(number, format) {
   // make sure we're dealing with a string
-  if(number == null)
-    return NaN;
+  if(number == null) return NaN;
 
   var numberString = '' + number;
 

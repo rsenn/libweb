@@ -33,14 +33,14 @@ export class SVG extends Element {
   static factory(...args) {
     let arg = [...arguments];
 
-    let delegate = 'append_to' in args[0] || 'create' in args[0] || 'setattr' in args[0] ? args.shift() : {};
+    let delegate = Util.isObject(args[0]) && ('append_to' in args[0] || 'create' in args[0] || 'setattr' in args[0]) ? args.shift() : {};
     let parent = Util.isObject(args[0]) ? ('tagName' in args[0] || 'appendChild' in args[0] ? args.shift() : null) : null;
     let size = isSize(args[0]) ? args.shift() : null;
 
     delegate = {
       create: tag => document.createElementNS(SVG.ns, tag),
       append_to: (elem, root = parent) => root && root.appendChild(elem),
-      setattr: (elem, name, value) => name != 'ns' && elem.setAttributeNS(document.namespaceURI, Util.decamelize(name, '-'), value),
+      setattr: (elem, name, value) => name != 'ns' && elem.setAttributeNS(document.namespaceURI, /*Util.decamelize*/ name, value),
       setcss: (elem, css) => delegate.setattr(elem, 'style', css),
       ...delegate
     };

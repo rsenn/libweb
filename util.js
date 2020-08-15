@@ -1710,12 +1710,12 @@ Util.isMobile = function() {
 Util.uniquePred = (cmp = null) => (cmp === null ? (el, i, arr) => arr.indexOf(el) === i : (el, i, arr) => arr.findIndex(item => cmp(el, item)) === i);
 Util.unique = (arr, cmp) => arr.filter(Util.uniquePred(cmp));
 Util.histogram = (arr, t = item => item) => {
-  let r= arr.reduce((acc,item) => {
+  let r = arr.reduce((acc, item) => {
     acc[t(item)] = (acc[t(item)] || 0) + 1;
     return acc;
-    }, {});
+  }, {});
   return r;
-}
+};
 Util.concat = function*(...args) {
   for(let arg of args) {
     if(Util.isGenerator(arg)) {
