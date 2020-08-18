@@ -62,7 +62,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         const transform = `translate(${x},${y})`;
         const layer = this.layers['Pads'];
 
-        console.log('item:', item);
+        //  console.log('item:', item);
         const padColor = item.getColor() || this.palette[2];
 
         switch (shape) {

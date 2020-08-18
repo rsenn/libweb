@@ -7,6 +7,9 @@ export class BBox {
     bb.update(pts);
     return bb;
   }
+  static fromRect(rect) {
+    return new BBox(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height);
+  }
 
   constructor(x1, y1, x2, y2) {
     if(x1 !== undefined && y1 !== undefined && x2 !== undefined && y2 !== undefined) {
@@ -34,15 +37,18 @@ export class BBox {
   }
 
   update(arg, offset = 0.0, obj = null) {
-    //Util.log('BBox.update', { arg, offset, obj });
-
-    if(Util.isObject(arg) && typeof arg.bbox == 'function') arg = arg.bbox();
-
+    //console.log('BBox.update', { arg, offset, obj });
     if(Util.isArray(arg)) return this.updateList(arg, offset);
+    else if(Util.isObject(arg)) {
+      if(typeof arg.bbox == 'function') {
+        arg = arg.bbox();
+      } else {
+        if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset, name => (this.objects[name] = obj || arg));
+        if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0, name => (this.objects[name] = obj || arg));
+        if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0, name => (this.objects[name] = obj || arg));
+      }
+    }
 
-    if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset, name => (this.objects[name] = obj || arg));
-    if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0, name => (this.objects[name] = obj || arg));
-    if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0, name => (this.objects[name] = obj || arg));
     return this;
   }
 
@@ -64,7 +70,7 @@ export class BBox {
       this.y2 = y + offset;
       set('y2');
     }
-    //if(Object.keys(updated)) Util.log(`BBox update ${x},${y} `, updated);
+    //if(Object.keys(updated)) console.log(`BBox update ${x},${y} `, updated);
     return this;
   }
 

@@ -423,15 +423,14 @@ export class EagleSVGRenderer {
     console.log('EagleSVGRenderer.render', { bounds });
     let rect = bounds.toRect(Rect.prototype);
 
-    console.log('EagleSVGRenderer.render', { bounds, rect });
-
     rect.outset(1.27);
     /*  rect.round(2.54, 6);
      */
     // Util.tryCatch(() => this.debug('stack:', (window.stack = Util.getCallerStack(1)).toString()));
 
     this.rect = rect;
-    this.bounds = new BBox().update(rect);
+    this.bounds = BBox.fromRect(rect);
+    console.log('EagleSVGRenderer.render', { bounds: this.bounds, rect });
 
     this.debug('bounds:', this.bounds.toString({ separator: ' ' }));
 

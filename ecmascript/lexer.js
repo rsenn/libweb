@@ -117,10 +117,10 @@ Position.prototype.toString = function(showFilename = true) {
   const { file, line, column } = this;
   return file && showFilename ? `${file}:${line}:${column}` : `${line}:${column}`;
 };
-
+/*
 Position.prototype.valueOf = function() {
   return this.pos;
-};
+};*/
 
 Util.define(Position.prototype, {
   get offset() {

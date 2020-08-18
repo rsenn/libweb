@@ -18,7 +18,7 @@ export function DereferenceError(object, member, pos, prev, locator) {
     { object, member, pos, locator },
     {
       message:
-        `Error dereferencing ${Util.className(object)} @ ${[...locator] + ''}
+        `Error dereferencing ${Util.className(object)} @ ${MutablePath.prototype.toString.call(locator, '/', MutablePath.partToString, 'children')}
 xml: ${Util.abbreviate(toXML(locator.root || object))}
 no member '${Util.inspect(member, { colors: false })}' in ${Util.toString(prev, { depth: 2, multiline: true, indent: '  ', colors: false })} \n` + stack.join('\n'),
       stack
@@ -360,11 +360,11 @@ export class MutablePath extends Array {
     return color ? `\x1b[1;${c}m${n.replace(/^Immutable/, '')}\x1b[1;30m ${p}\x1b[0m` : p;
   }
 
-  toString(sep = '.', partToStr = MutablePath.partToString, childrenStr = MutablePath['CHILDREN_GLYPH'] + CHILDREN_SPACE) {
+  toString(sep = ' ', partToStr = MutablePath.partToString, childrenStr = MutablePath['CHILDREN_GLYPH'] + CHILDREN_SPACE) {
+    // console.log("MutablePath.toString",{sep,partToStr, childrenStr});
     const color = Util.isBrowser() ? text => text : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
     let a = [...this];
-    if(this[0] == 'children') sep = ' ';
-    //Util.log("toString",{sep,partToStr, childrenStr});
+    //   if(this[0] == 'children') sep = ' ';
     while(a.length > 0 && a[0] === '') a.shift();
     let n = a.length;
     let r = [];

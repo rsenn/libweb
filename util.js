@@ -137,20 +137,29 @@ Util.arityN = (fn, n) => {
   else return fn;
 };
 
-Util.memoize = (fn, thisObj) => {
-  let cache = {};
-  return (...args) => {
+Util.getter = target => (typeof target == 'object' && target !== null ? (typeof target.get == 'function' ? key => target.get(key) : key => target[key]) : null);
+Util.setter = target => (typeof target == 'object' && target !== null ? (typeof target.set == 'function' ? (key, value) => target.set(key, value) : (key, value) => (target[key] = value)) : null);
+Util.remover = target => (typeof target == 'object' && target !== null ? (typeof target['delete'] == 'function' ? key => target['delete'](key) : key => delete target[key]) : null);
+Util.hasFn = target => (typeof target == 'object' && target !== null ? (typeof target['has'] == 'function' ? key => target['has'](key) : key => key in target) : null);
+
+Util.memoize = (fn, storage) => {
+  let self,
+    cache = [Util.getter(storage), Util.setter(storage)];
+
+  self = function(...args) {
     let n = args[0]; // just taking one argument here
     if(n in cache) {
       //console.log('Fetching from cache');
       return cache[n];
     } else {
       //console.log('Calculating result');
-      let result = fn.call(thisObj, n);
+      let result = fn(n);
       cache[n] = result;
       return result;
     }
   };
+  self.cache = cache;
+  return Object.freeze(self);
 };
 
 Util.once = function(fn, thisArg) {
@@ -450,7 +459,7 @@ Util.draw = (arr, n = 1, rnd = Util.rng) => {
   return n == 1 ? r[0] : r;
 };
 Util.is = function(what, ...pred) {
-  let fnlist = pred.map(type => this.is[type]);
+  let fnlist = pred.map(type => (Util.isConstructor(type) ? what instanceof type : this.is[type]));
   console.log('fnlist:', fnlist);
   return fnlist.every(fn => fn(what));
 };
@@ -1194,7 +1203,31 @@ Util.isString = function(v) {
  */
 Util.isNumeric = v => /^[-+]?(0x|0b|0o|)[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test(v + '');
 
-Util.isObject = (obj, proto = null) => typeof obj === 'object' && obj !== null && (proto === null || Object.getPrototypeOf(obj) === proto);
+Util.isObject = (obj, ...protoOrPropNames) => {
+  let isObj = arg => ['object', 'function'].indexOf(typeof arg) != -1 && arg !== null;
+
+  do {
+    if(!isObj(obj)) return false;
+
+    if(protoOrPropNames.length == 0) break;
+
+    let p = protoOrPropNames.shift();
+    if(Util.isArrowFunction(p)) {
+      obj = p(obj);
+      if(isObj(obj))
+        //return obj;
+        continue;
+    }
+
+    if(!isObj(p)) {
+      obj = obj[p];
+      continue;
+    }
+
+    if(Object.getPrototypeOf(obj) !== p) return false;
+  } while(true);
+  return obj || false;
+};
 Util.isFunction = fn => !!(fn && fn.constructor && fn.call && fn.apply);
 
 Util.isAsync = fn => typeof fn == 'function' && /async/.test(fn + '') /*|| fn() instanceof Promise*/;
@@ -1663,8 +1696,8 @@ Util.putError = err => {
   let s = Util.stack(err.stack);
 
   let e = Util.exception(err);
-
-  console['error']('ERROR:', e.message, '\nstack:\n', s.toString());
+  console.info('Util.putError ', e);
+  console.error('ERROR:\n' + err.message + '\nstack:\n' + s.toString());
 };
 Util.putStack = stack => {
   stack = stack || Util.stack(new Error().stack);
@@ -1701,6 +1734,21 @@ Util.isBrowser = function() {
   return ret;
   //return !!(global.window && global.window.document);
 };
+Util.waitFor = msecs => {
+  let promise, clear, timerId;
+  promise = new Promise(async (resolve, reject) => {
+    timerId = setTimeout(resolve, msecs);
+    clear = () => {
+      clearTimeout(timerId);
+      reject();
+    };
+
+    /**/ t;
+  });
+  promise.clear = clear;
+  return promise;
+};
+Util.timeout = async (msecs, ...promises) => await Promise.race([Util.waitFor(msecs), ...promises]);
 Util.isServer = function() {
   return !Util.isBrowser();
 };
@@ -1844,7 +1892,8 @@ Util.mapFunctional = fn =>
   function*(arg) {
     for(let item of arg) yield fn(item);
   };
-Util.map = (obj, fn) => {
+Util.map = (...args) => {
+  const [obj, fn] = args;
   let ret = a => a;
 
   if(Util.isIterator(obj)) {
@@ -1853,7 +1902,7 @@ Util.map = (obj, fn) => {
       for(let item of obj) yield fn(item, i++, obj);
     })();
   }
-  if(typeof obj == 'function') return Util.mapFunctional(...arguments);
+  if(typeof obj == 'function') return Util.mapFunctional(...args);
 
   if(typeof obj.map == 'function') return obj.map(fn);
 
@@ -2179,16 +2228,14 @@ Util.numbersConvert = function(str) {
     .join('');
 };
 Util.entries = function(arg) {
-  let ret;
   if(Util.isObject(arg)) {
-    ret =
-      typeof arg.entries == 'function'
-        ? arg.entries
-        : function*() {
-            for(let key in arg) yield [key, arg[key]];
-          };
+    if(typeof arg.entries == 'function') return arg.entries();
+    else if(Util.isIterable(arg))
+      return (function*() {
+        for(let key in arg) yield [key, arg[key]];
+      })();
+    else return Object.entries(arg);
   }
-  if(ret) return ret.call(arg);
 };
 Util.keys = function(arg) {
   let ret;
@@ -2426,6 +2473,37 @@ Util.objectReducer = (filterFn, accFn = (a, m, o) => ({ ...a, [m]: o[m] }), accu
     ),
     accu
   );
+Util.counter = (incFn = (c, n, self) => (self.count = c + n)) => {
+  let self, incr;
+  if(typeof incFn == 'number') {
+    incr = incFn;
+    incFn = (c, n, self) => (self.count = +c + +n * incr);
+  }
+  const inc = (i, n = 1) => self.incFn.call(self, i || 0, n, self);
+  self = function Count(n = 1) {
+    self.count = inc(self.count, n, self);
+    return self;
+  };
+  self.incFn = incFn;
+  self.valueOf = function() {
+    return this.count;
+  };
+  return self;
+};
+
+Util.mapReducer = (setFn, filterFn = (key, value) => true, mapObj = new Map()) => {
+  var fn,
+    next = Util.tryFunction(((acc, mem, idx) => (filterFn(mem, idx) ? (setFn(idx, mem), acc) : null), r => r, () => mapObj));
+  setFn = setFn || Util.setter(mapObj);
+  fn = function MapReduce(arg, acc = mapObj) {
+    if(Util.isObject(arg, o => typeof o.reduce == 'function')) return arg.reduce((acc, arg) => (Util.isArray(arg) ? arg : Util.members(arg)).reduce(reducer, acc), self.map);
+    let c = Util.counter();
+
+    for(let mem of arg) acc = next(acc, mem, c());
+    return acc;
+  };
+  return Object.assign(fn, { setFn, filterFn, mapObj, next });
+};
 
 Util.getMembers = Util.objectReducer(Util.memberNameFilter);
 
@@ -2537,7 +2615,7 @@ Util.exception = function Exception(...args) {
     let exc = args.shift();
     const { message, stack: callerStack } = exc;
     e = { message };
-    e.proto = Object.getPrototypeOf(exc);
+    //   e.proto = Object.getPrototypeOf(exc);
 
     if(callerStack) stack = callerStack;
   } else {
@@ -3811,5 +3889,62 @@ Util.decorateIterable = (proto, generators = false) => {
 
 Util.swap = (a, b) => [b, a];
 Util.swapArray = ([a, b]) => [b, a];
+
+Util.cacheAdapter = (storage, defaultOpts = {}) => {
+  if(typeof storage == 'string')
+    storage = Util.tryCatch(
+      () => window.caches,
+      async c => c.open(storage),
+      () => null
+    );
+  return {
+    async getItem(request, opts = {}) {
+      if(typeof request == 'number') request = await this.key(request);
+      return await (await storage).match(request, { ...defaultOpts, ...opts });
+    },
+    async setItem(request, response) {
+      return await (await storage).put(request, response);
+    },
+    async addItem(request) {
+      await (await storage).add(request);
+      let response = await this.getItem(request);
+      if(response) response = response.clone();
+      return response;
+    },
+    async removeItem(request, opts = {}) {
+      if(typeof request == 'number') request = await this.key(request);
+      return await (await storage).delete(request, { ...defaultOpts, ...opts });
+    },
+    async key(index) {
+      return (await (await storage).keys())[index];
+    },
+    async clear() {
+      let keys = await (await storage).keys();
+      for(let key of keys) await this.removeItem(key);
+    }
+  };
+};
+Util.cachedFetch = (fetch = Util.getGlobalObject('fetch'), cache = 'fetch', defaultOpts = {}) => {
+  cache = Util.cacheAdapter(cache);
+  let self = async function CachedFetch(request, opts = {}) {
+    let response;
+    try {
+      response = await cache.getItem(request, { ...self.defaultOpts, ...opts });
+
+      if(response == undefined) {
+        response = await self.fetch(request, { ...self.defaultOpts, ...opts });
+
+        if(response) cache.setItem(request, response.clone());
+      } else {
+        response.cached = true;
+      }
+    } catch(err) {
+      throw new Error(`CachedFetch: ` + (request.url || request) + ' ' + err.message);
+    }
+    return response;
+  };
+  Util.define(self, { fetch, cache, defaultOpts });
+  return self;
+};
 
 export default Util;

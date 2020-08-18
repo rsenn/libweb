@@ -43,8 +43,8 @@ export class FunctionLiteral extends ESNode {
     this.params = params;
     this.body = body;
     //this.exported = exported;
-    this.is_async = is_async;
-    this.generator = generator;
+    if(is_async) this.is_async = is_async;
+    if(generator) this.generator = generator;
   }
 }
 
@@ -377,15 +377,14 @@ export class ClassDeclaration extends ESNode {
 export class FunctionDeclaration extends FunctionLiteral {
   constructor(id, params, body, exported = false, is_async = false, generator = false) {
     super('FunctionDeclaration', id, params, body, is_async, generator);
-
-    this.exported = exported;
+    if(exported) this.exported = exported;
   }
 }
 
 export class ArrowFunction extends ESNode {
   constructor(params, body, is_async) {
     super('ArrowFunction');
-    this.is_async = is_async;
+    if(is_async) this.is_async = is_async;
     this.params = params;
     this.body = body;
     //console.log('New FunctionDeclaration: ', JSON.toString({ id, params, // exported }));

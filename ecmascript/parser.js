@@ -346,7 +346,7 @@ export class ECMAScriptParser extends Parser {
 
     return new this.estree.Identifier(token.value);
   }
-
+  9;
   expectKeywords(keywords) {
     this.log(`expectKeywords(${keywords}) `);
     const token = this.consume();
@@ -937,7 +937,7 @@ export class ECMAScriptParser extends Parser {
       const token = this.next();
       throw this.error(`Expecting AssignmentExpression, but got ${token.type} with value '${token.value}'`);
     }
-    //console.log("expression: ", expression);
+    // console.log("expression: ", expression);
 
     while(this.matchPunctuators(',')) {
       this.expectPunctuators(',');
@@ -2095,8 +2095,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
       msg = msg + '    ' + annotate.join(', ');
     }
 
-    //if(ret || !/match/.test(methodName))
-    //console.log(msg);
+    //  if(ret || !/match/.test(methodName))  console.log(msg);
 
     return ret;
   };
