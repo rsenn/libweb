@@ -2,32 +2,32 @@
  * 2d-math stuff;
  */
 
-var inc = function(t, s) {
+var inc = function (t, s) {
   t[0] += s[0];
   t[1] += s[1];
   return t;
 };
-var dec = function(t, s) {
+var dec = function (t, s) {
   t[0] -= s[0];
   t[1] -= s[1];
   return t;
 };
-var mul = function(t, s) {
+var mul = function (t, s) {
   t[0] *= s;
   t[1] *= s;
   return t;
 };
-var sqrlen = function(t) {
+var sqrlen = function (t) {
   var t0 = t[0],
     t1 = t[1];
   return t0 * t0 + t1 * t1;
 };
-var len = function(t) {
+var len = function (t) {
   var t0 = t[0],
     t1 = t[1];
   return Math.sqrt(t0 * t0 + t1 * t1);
 };
-var setlen = function(t, newlen) {
+var setlen = function (t, newlen) {
   var t0 = t[0],
     t1 = t[1],
     k;
@@ -40,7 +40,7 @@ var setlen = function(t, newlen) {
   return t;
 };
 
-var rectptmid = function(r) {
+var rectptmid = function (r) {
   return [r[0] + r[2] / 2, r[1] + r[3] / 2];
 };
 

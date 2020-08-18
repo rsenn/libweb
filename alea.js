@@ -7,7 +7,7 @@ export function Alea(...args) {
   var s2 = 0;
   var c = 1;
 
-  var random = function() {
+  var random = function () {
     var t = 2091639 * s0 + c * 2.3283064365386963e-10; //2^-32
     s0 = s1;
     s1 = s2;
@@ -16,26 +16,26 @@ export function Alea(...args) {
     // console.log('Alea() =', r);
     return r;
   };
-  random.uint32 = function() {
+  random.uint32 = function () {
     return random() * 0x100000000; //2^32
   };
-  random.int32 = function() {
+  random.int32 = function () {
     return random() * 0x100000000 - 0x7fffffff; //2^31-1
   };
-  random.signed = function() {
+  random.signed = function () {
     return random() * 2 - 1.0;
   };
-  random.fract53 = function() {
+  random.fract53 = function () {
     return random() + ((random() * 0x200000) | 0) * 1.1102230246251565e-16; //2^-53
   };
-  random.color = function() {
+  random.color = function () {
     return {
       h: random() * 360,
       s: random() * 100,
       l: random() * 100
     };
   };
-  random.seed = function() {
+  random.seed = function () {
     let args = [...arguments];
     if(args.length == 0) {
       args = [+new Date()];
@@ -68,10 +68,10 @@ export function Alea(...args) {
   random.seed.apply(random, args);
 
   //my own additions to sync state between two generators
-  random.exportState = function() {
+  random.exportState = function () {
     return [s0, s1, s2, c];
   };
-  random.importState = function(i) {
+  random.importState = function (i) {
     s0 = +i[0] || 0;
     s1 = +i[1] || 0;
     s2 = +i[2] || 0;
@@ -84,7 +84,7 @@ export function Alea(...args) {
 function Mash() {
   var n = 0xefc8249d;
 
-  var mash = function(data) {
+  var mash = function (data) {
     data = data.toString();
     for(var i = 0; i < data.length; i++) {
       n += data.charCodeAt(i);
@@ -104,7 +104,7 @@ function Mash() {
 }
 
 //importState to sync generator states
-Alea.importState = function(i) {
+Alea.importState = function (i) {
   var random = new Alea();
   random.importState(i);
   return random;

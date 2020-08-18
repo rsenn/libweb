@@ -66,13 +66,13 @@ const EXTENDED_SEARCH_UNAVAILABLE = 'Extended search is not available';
 
 const INCORRECT_INDEX_TYPE = "Incorrect 'index' type";
 
-const LOGICAL_SEARCH_INVALID_QUERY_FOR_KEY = key => `Invalid value for key ${key}`;
+const LOGICAL_SEARCH_INVALID_QUERY_FOR_KEY = (key) => `Invalid value for key ${key}`;
 
-const PATTERN_LENGTH_TOO_LARGE = max => `Pattern length exceeds max of ${max}.`;
+const PATTERN_LENGTH_TOO_LARGE = (max) => `Pattern length exceeds max of ${max}.`;
 
-const MISSING_KEY_PROPERTY = name => `Missing ${name} property in key`;
+const MISSING_KEY_PROPERTY = (name) => `Missing ${name} property in key`;
 
-const INVALID_KEY_WEIGHT_VALUE = key => `Property 'weight' in key '${key}' must be a positive integer`;
+const INVALID_KEY_WEIGHT_VALUE = (key) => `Property 'weight' in key '${key}' must be a positive integer`;
 
 const hasOwn = Object.prototype.hasOwnProperty;
 
@@ -83,7 +83,7 @@ class KeyStore {
 
     let totalWeight = 0;
 
-    keys.forEach(key => {
+    keys.forEach((key) => {
       let obj = createKey(key);
 
       totalWeight += obj.weight;
@@ -95,7 +95,7 @@ class KeyStore {
     });
 
     // Normalize weights so that their sum is equal to 1
-    this._keys.forEach(key => {
+    this._keys.forEach((key) => {
       key.weight /= totalWeight;
     });
   }
@@ -446,7 +446,7 @@ function transformMatches(result, data) {
     return;
   }
 
-  matches.forEach(match => {
+  matches.forEach((match) => {
     if(!isDefined(match.indices) || !match.indices.length) {
       return;
     }
@@ -1064,11 +1064,11 @@ const OR_TOKEN = '|';
 // Example:
 // "^core go$ | rb$ | py$ xy$" => [["^core", "go$"], ["rb$"], ["py$", "xy$"]]
 function parseQuery(pattern, options = {}) {
-  return pattern.split(OR_TOKEN).map(item => {
+  return pattern.split(OR_TOKEN).map((item) => {
     let query = item
       .trim()
       .split(SPACE_RE)
-      .filter(item => item && !!item.trim());
+      .filter((item) => item && !!item.trim());
 
     let results = [];
     for(let i = 0, len = query.length; i < len; i += 1) {
@@ -1259,14 +1259,14 @@ const KeyType = {
   PATTERN: '$val'
 };
 
-const isExpression = query => !!(query[LogicalOperator.AND] || query[LogicalOperator.OR]);
+const isExpression = (query) => !!(query[LogicalOperator.AND] || query[LogicalOperator.OR]);
 
-const isPath = query => !!query[KeyType.PATH];
+const isPath = (query) => !!query[KeyType.PATH];
 
-const isLeaf = query => !isArray(query) && isObject(query) && !isExpression(query);
+const isLeaf = (query) => !isArray(query) && isObject(query) && !isExpression(query);
 
-const convertToExplicit = query => ({
-  [LogicalOperator.AND]: Object.keys(query).map(key => ({
+const convertToExplicit = (query) => ({
+  [LogicalOperator.AND]: Object.keys(query).map((key) => ({
     [key]: query[key]
   }))
 });
@@ -1274,7 +1274,7 @@ const convertToExplicit = query => ({
 // When `auto` is `true`, the parse function will infer and initialize and add
 // the appropriate `Searcher` instance
 function parse(query, options, { auto = true } = {}) {
-  const next = query => {
+  const next = (query) => {
     let keys = Object.keys(query);
 
     const isQueryPath = isPath(query);
@@ -1309,11 +1309,11 @@ function parse(query, options, { auto = true } = {}) {
       operator: keys[0]
     };
 
-    keys.forEach(key => {
+    keys.forEach((key) => {
       const value = query[key];
 
       if(isArray(value)) {
-        value.forEach(item => {
+        value.forEach((item) => {
           node.children.push(next(item));
         });
       }
@@ -1593,7 +1593,7 @@ class Fuse {
 
 // Practical scoring function
 function computeScore$1(results, { ignoreFieldNorm = Config.ignoreFieldNorm }) {
-  results.forEach(result => {
+  results.forEach((result) => {
     let totalScore = 1;
 
     result.matches.forEach(({ key, norm, score }) => {
@@ -1612,7 +1612,7 @@ function format(results, docs, { includeMatches = Config.includeMatches, include
   if(includeMatches) transformers.push(transformMatches);
   if(includeScore) transformers.push(transformScore);
 
-  return results.map(result => {
+  return results.map((result) => {
     const { idx } = result;
 
     const data = {
@@ -1621,7 +1621,7 @@ function format(results, docs, { includeMatches = Config.includeMatches, include
     };
 
     if(transformers.length) {
-      transformers.forEach(transformer => {
+      transformers.forEach((transformer) => {
         transformer(result, data);
       });
     }

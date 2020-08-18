@@ -185,10 +185,10 @@ Deque.prototype.dequeue = Deque.prototype.shift;
 Deque.prototype.toJSON = Deque.prototype.toArray;
 
 Object.defineProperty(Deque.prototype, 'length', {
-  get: function() {
+  get: function () {
     return this._length;
   },
-  set: function() {
+  set: function () {
     throw new RangeError('');
   }
 });

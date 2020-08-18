@@ -1,11 +1,11 @@
 import Util from './util.js';
 
-export const isPlainObject = obj => {
+export const isPlainObject = (obj) => {
   if((obj != null ? obj.constructor : void 0) == null) return false;
   return obj.constructor.name === 'Object';
 };
 
-export const clone = obj => {
+export const clone = (obj) => {
   var out, v, key;
   out = Array.isArray(obj) ? [] : {};
   for(key in obj) {
@@ -92,7 +92,7 @@ export const find = (node, filter, path, root) => {
   return ret;
 };
 
-export const iterate = function*(value, filter = v => true, path = []) {
+export const iterate = function* (value, filter = (v) => true, path = []) {
   //throw new Error();
   let root = arguments[3] || value,
     selected = [],
@@ -102,7 +102,7 @@ export const iterate = function*(value, filter = v => true, path = []) {
   if(r !== -1) if (Util.isObject(value)) for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
 };
 
-export const flatten = function(iter, dst = {}, filter = (v, p) => typeof v != 'object', map = (p, v) => [p.join('.'), v]) {
+export const flatten = function (iter, dst = {}, filter = (v, p) => typeof v != 'object', map = (p, v) => [p.join('.'), v]) {
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 
@@ -145,11 +145,11 @@ export const delegate = (root, path) => {
   if(path) {
     const last = path.pop();
     const obj = get(root, path);
-    return function(value) {
+    return function (value) {
       return value !== undefined ? (obj[last] = value) : obj[last];
     };
   }
-  return function(path, value) {
+  return function (path, value) {
     return value !== undefined ? obj.set(root, path, value) : obj.get(root, path);
   };
 };

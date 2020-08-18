@@ -38,7 +38,7 @@ class Node {
     for(let prop in node) {
       if(prop == 'type') continue;
       let value = node[prop];
-      if(value instanceof Array || (value && value.map !== undefined)) value = value.map(v => `${indent}  ${v.toString ? v.toString() : v}`).join('\n');
+      if(value instanceof Array || (value && value.map !== undefined)) value = value.map((v) => `${indent}  ${v.toString ? v.toString() : v}`).join('\n');
       else value = node[prop] && node[prop].toString ? node[prop].toString() : node[prop];
       str += indent + `  ${prop}:${value}\n`;
     }
@@ -54,7 +54,7 @@ class Node {
 
 class AST {
   constructor(visitor) {
-    this.visitor = node => {
+    this.visitor = (node) => {
       node = new Node(node);
       if(visitor) {
         visitor(node);
@@ -270,7 +270,7 @@ ${js(body)}
 
     function js_call_expression(node) {
       const callee = js(node.callee);
-      const params = node.params.map(param => js(param)).join(', ');
+      const params = node.params.map((param) => js(param)).join(', ');
       return `${callee}(${params})`;
     }
 
@@ -355,7 +355,7 @@ for(;;) {
     }
 
     function js_function_declaration(node) {
-      const params = node.params.map(param => js(param)).join(', ');
+      const params = node.params.map((param) => js(param)).join(', ');
 
       return `function ${js(node.id)}(${params}) {
                 ${js(node.body)}
@@ -363,7 +363,7 @@ for(;;) {
     }
 
     function js_return_statement(node) {
-      const params = node.params.map(param => js(param)).join(', ');
+      const params = node.params.map((param) => js(param)).join(', ');
       return `return ${params}`;
     }
 
@@ -499,9 +499,7 @@ class MoonScriptGenerator {
     }
 
     function moonscript_body(code, indent = '  ') {
-      return moonscript(code)
-        .trimEnd()
-        .replace(/\n/g, '\n  ');
+      return moonscript(code).trimEnd().replace(/\n/g, '\n  ');
     }
 
     function moonscript_program({ body }) {
@@ -545,7 +543,7 @@ class MoonScriptGenerator {
 
       ////console.error('node: ', generator.stack[1].type);
       const callee = moonscript(node.callee);
-      const params = node.params && node.params.map ? node.params.map(param => moonscript(param)).join(', ') : '';
+      const params = node.params && node.params.map ? node.params.map((param) => moonscript(param)).join(', ') : '';
       return paren ? `${callee}(${params})` : `${callee} ${params}`;
     }
 
@@ -583,7 +581,7 @@ class MoonScriptGenerator {
       const indent = `${generator.indent}  `;
       //console.error('TYPES: ', types);
 
-      const fields = node.fields.map(field => {
+      const fields = node.fields.map((field) => {
         let key = generator.subtree(field.key, false);
         let num = parseInt(key);
         if(!isNaN(num)) key = num;
@@ -642,7 +640,7 @@ until ${moonscript(cond)}`;
     }
 
     function moonscript_function_declaration(node) {
-      const params = node.params.map(param => moonscript(param)).join(', ');
+      const params = node.params.map((param) => moonscript(param)).join(', ');
       const name = moonscript(node.id);
       const assignment = name == '' ? '' : `${name} = `;
 
@@ -652,7 +650,7 @@ until ${moonscript(cond)}`;
     }
 
     function moonscript_return_statement(node) {
-      const params = node.params.map(param => moonscript(param)).join(', ');
+      const params = node.params.map((param) => moonscript(param)).join(', ');
       return `return ${params}`;
     }
     function moonscript_comment(node) {
@@ -1228,7 +1226,7 @@ class Parser {
     this.depth = 0;
     this.lexer = lexer;
     this.cur_token = null;
-    this.ast = new AST(node => {
+    this.ast = new AST((node) => {
       if(visitor) {
         visitor(node);
       }
@@ -1240,7 +1238,7 @@ class Parser {
     for(let name of Util.getMethodNames(this)) {
       if(name.startsWith('parse_')) {
         let fn = this[name];
-        parser[name] = function() {
+        parser[name] = function () {
           const args = [...arguments];
           this.depth += 1;
           let indent = '  '.repeat(this.depth);
@@ -2240,7 +2238,7 @@ class Interpreter {
     const self = this;
     let i = 1;
 
-    fields.map(field => {
+    fields.map((field) => {
       if(field.type == 'Recfield') {
         //identifier
         let key = field.key.name;
@@ -2278,7 +2276,7 @@ class Interpreter {
 
   evaluate_return_statment({ params }, env) {
     const self = this;
-    let results = params.map(param => self.evaluate(param, env));
+    let results = params.map((param) => self.evaluate(param, env));
     return results[results.length - 1];
   }
 
@@ -2364,7 +2362,7 @@ class Interpreter {
     const callee = this.evaluate(node.callee, env);
     const self = this;
 
-    return callee(...node.params.map(arg => self.evaluate(arg, env)));
+    return callee(...node.params.map((arg) => self.evaluate(arg, env)));
   }
 
   evaluate_if_statement(node, env) {
@@ -2443,49 +2441,49 @@ Object.assign(Interpreter, {
     and(left, right) {
       return left && right;
     },
-    '<': function(left, right) {
+    '<': function (left, right) {
       return left < right;
     },
-    '>': function(left, right) {
+    '>': function (left, right) {
       return left > right;
     },
-    '<=': function(left, right) {
+    '<=': function (left, right) {
       return left <= right;
     },
-    '>=': function(left, right) {
+    '>=': function (left, right) {
       return left >= right;
     },
-    '==': function(left, right) {
+    '==': function (left, right) {
       return left == right;
     },
-    '~=': function(left, right) {
+    '~=': function (left, right) {
       return left != right;
     },
-    '..': function(left, right) {
+    '..': function (left, right) {
       return `${left}${right}`;
     },
-    '+': function(left, right) {
+    '+': function (left, right) {
       return left + right;
     },
-    '-': function(left, right) {
+    '-': function (left, right) {
       return left - right;
     },
-    '*': function(left, right) {
+    '*': function (left, right) {
       return left * right;
     },
-    '/': function(left, right) {
+    '/': function (left, right) {
       return left / right;
     },
-    '^': function(left, rihgt) {
+    '^': function (left, rihgt) {
       return math.pow(left, right);
     },
-    '#-': function(right) {
+    '#-': function (right) {
       return -right;
     },
     not(right) {
       return !right;
     },
-    '#': function(right) {
+    '#': function (right) {
       if(typeof right !== 'string') {
         throw new Error('attempt to get length of a nonstring value');
       }

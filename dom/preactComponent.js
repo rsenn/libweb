@@ -4,7 +4,7 @@ export { h, html, render, Component, createContext, useState, useReducer, useEff
 
 /*import { Fragment } from '../preact.js';
 export { Fragment } from '../preact.js';*/
-export const Fragment = props => ReactComponent.toChildArray(props.children);
+export const Fragment = (props) => ReactComponent.toChildArray(props.children);
 
 import { Element } from './element.js';
 
@@ -35,7 +35,7 @@ export class ReactComponent {
   static flatten(obj, dest = new Map(), path = [], pathFn = '.') {
     if(typeof pathFn == 'string') {
       const sep = pathFn;
-      pathFn = p => p.join(sep);
+      pathFn = (p) => p.join(sep);
     }
 
     const insert = {
@@ -50,7 +50,7 @@ export class ReactComponent {
       insert(path, obj);
       if(obj.props) {
         let children = ReactComponent.toChildArray(obj.props.children).map((child, i) => [child, [...path, 'props', 'children', i++]]);
-        children.forEach(args => flatten(...args));
+        children.forEach((args) => flatten(...args));
       }
     }
 
@@ -58,16 +58,16 @@ export class ReactComponent {
   }
 
   static isComponent(obj) {
-    return Util.isObject(obj) && ['__', '__v', 'ref', 'props', 'key'].every(prop => obj[prop] !== 'undefined');
+    return Util.isObject(obj) && ['__', '__v', 'ref', 'props', 'key'].every((prop) => obj[prop] !== 'undefined');
   }
 
   static factory(render_to, root) {
     if(typeof render_to === 'string') render_to = Element.find(render_to);
     if(typeof render_to !== 'function') {
       root = root || render_to;
-      render_to = component => require('react-dom').render(component, root || render_to);
+      render_to = (component) => require('react-dom').render(component, root || render_to);
     }
-    let ret = function(...args) {
+    let ret = function (...args) {
       let ret = ReactComponent.create(...args);
       return ret;
     };
@@ -160,7 +160,7 @@ export class ReactComponent {
     if(p != '') o += ` ${p}${nl}`;
     o += `}`;
     let s = ReactComponent.toSource;
-    let c = Util.isArray(children) ? `[${children.map(obj => nl + '  ' + s(obj, opts, depth + 1)).join(',')}]` : children ? '  ' + s(children, opts, depth + 1) : '';
+    let c = Util.isArray(children) ? `[${children.map((obj) => nl + '  ' + s(obj, opts, depth + 1)).join(',')}]` : children ? '  ' + s(children, opts, depth + 1) : '';
     if(c != '') o += `,${nl}${c}`;
     o += (c != '' ? nl : '') + ')';
     return o;

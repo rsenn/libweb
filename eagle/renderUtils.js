@@ -12,7 +12,7 @@ export const ClampAngle = (a, mod = 360) => {
   a %= mod;
   return a > 180 ? a - 360 : a;
 };
-export const AlignmentAngle = a => {
+export const AlignmentAngle = (a) => {
   a %= 360;
   return Math.abs(a - (a % 180));
 };
@@ -77,14 +77,14 @@ export const RotateTransformation = (rot, f = 1) => {
   return r.toString();
 };
 
-export const LayerAttributes = layer =>
+export const LayerAttributes = (layer) =>
   layer
     ? {
         'data-layer': `${layer.number} ${layer.name} color: ${layer.color}`
       }
     : {};
 
-export const InvertY = item => {
+export const InvertY = (item) => {
   let ret = {};
   for(let prop in item.attributes) {
     if(prop.startsWith('y')) ret[prop] = -+item.attributes[prop];
@@ -126,7 +126,7 @@ export const CalculateArcRadius = (p1, p2, angle) => {
   return Math.abs(angle) > 90 ? r / 2 : Math.sqrt(r2);
 };
 
-export const LinesToPath = lines => {
+export const LinesToPath = (lines) => {
   let l = lines.shift(),
     m;
   let start = l.a;
@@ -187,13 +187,13 @@ export function MakeCoordTransformer(matrix) {
 
   if(matrix && matrix.toMatrix) matrix = matrix.toMatrix();
 
-  if(matrix.isIdentity()) return obj => obj;
+  if(matrix.isIdentity()) return (obj) => obj;
 
   //S if(matrix && matrix.clone) matrix = Object.freeze(matrix.clone());
 
   let tr = matrix.transformer();
 
-  return obj => {
+  return (obj) => {
     let coords = {};
     if('x' in obj && 'y' in obj) {
       const [x, y] = tr.xy(obj.x, obj.y);
@@ -217,11 +217,11 @@ export function MakeCoordTransformer(matrix) {
   };
 }
 
-export const useTrkl = fn => {
+export const useTrkl = (fn) => {
   const [value, setValue] = useState(fn());
 
   useEffect(() => {
-    let updateValue = v => v !== undefined && setValue(v === 'yes' ? true : v === 'no' ? false : v);
+    let updateValue = (v) => v !== undefined && setValue(v === 'yes' ? true : v === 'no' ? false : v);
 
     fn.subscribe(updateValue);
     return () => fn.unsubscribe(updateValue);

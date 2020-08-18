@@ -185,7 +185,7 @@ function parse$1(coord, format) {
   }
 
   // pull out the x, y, i, and j
-  var parsed = MATCH.reduce(function(result, matcher) {
+  var parsed = MATCH.reduce(function (result, matcher) {
     var coordMatch = coord.match(matcher.test);
 
     if(coordMatch) {
@@ -257,7 +257,7 @@ function parseMacroExpression(parser, expr) {
   }
 
   // parse addition and subtraction tokens
-  parseExpression = function() {
+  parseExpression = function () {
     var exp = parseMultiplication();
     var t = tokens[0];
     while(t === '+' || t === '-') {
@@ -299,7 +299,7 @@ function parseMacroExpression(parser, expr) {
   }
 
   // return the evaluation function bound to the parsed expression tree
-  return function(mods) {
+  return function (mods) {
     return evaluate(tree, mods);
   };
 }
@@ -537,7 +537,7 @@ function parseMacroDef(parser, block) {
     parser.warn('hyphens in macro name are illegal: ' + name);
   }
   var blockMatch = macroMatch[2].length ? macroMatch[2].split('*') : [];
-  var blocks = blockMatch.filter(Boolean).map(function(block) {
+  var blocks = blockMatch.filter(Boolean).map(function (block) {
     return parseMacroBlock(parser, block);
   });
 
@@ -886,7 +886,7 @@ function parseBlock(parser, block, line) {
 
 function flush(parser) {
   if(parser.drillStash.length) {
-    parser.drillStash.forEach(function(data) {
+    parser.drillStash.forEach(function (data) {
       if(!parser.format.zero && reCOORD$1.test(data.block)) {
         parser.format.zero = 'T';
         parser.warn('zero suppression missing and not detectable;' + ' assuming trailing suppression');
@@ -905,7 +905,7 @@ function parse$2(parser, block) {
     // check for kicad format hints
     var formatHints = parseCommentForFormatHints(parser, block, parser.line);
 
-    Object.keys(formatHints).forEach(function(key) {
+    Object.keys(formatHints).forEach(function (key) {
       if(!parser.format[key]) {
         parser.format[key] = formatHints[key];
       }

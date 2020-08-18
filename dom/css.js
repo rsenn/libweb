@@ -2,24 +2,24 @@ import Util from '../util.js';
 import { Element } from './element.js';
 
 const getStyleMap = (obj, key) => {
-  let rule = Util.find(obj, item => item['selectorText'] == key);
+  let rule = Util.find(obj, (item) => item['selectorText'] == key);
   return Util.adapter(
     rule,
-    obj => (obj && obj.styleMap && obj.styleMap.size !== undefined ? obj.styleMap.size : 0),
+    (obj) => (obj && obj.styleMap && obj.styleMap.size !== undefined ? obj.styleMap.size : 0),
     (obj, i) => [...obj.styleMap.keys()][i],
     (obj, key) =>
       obj.styleMap
         .getAll(key)
-        .map(v => String(v))
+        .map((v) => String(v))
         .join(' ')
   );
 };
 const getStyleSheet = (obj, key) => {
-  let sheet = obj.cssRules ? obj : Util.find(obj, entry => entry.href == key || entry.ownerNode.id == key) || obj[key];
+  let sheet = obj.cssRules ? obj : Util.find(obj, (entry) => entry.href == key || entry.ownerNode.id == key) || obj[key];
 
   return Util.adapter(
     sheet.rules,
-    obj => (obj && obj.length !== undefined ? obj.length : 0),
+    (obj) => (obj && obj.length !== undefined ? obj.length : 0),
     (obj, i) => obj[i].selectorText,
     getStyleMap
   );
@@ -33,15 +33,15 @@ export class CSS {
   static getDocument = Util.memoize(() =>
     Util.tryCatch(
       () => window.document,
-      d => (console.log('document:', d), d)
+      (d) => (console.log('document:', d), d)
     )
   );
 
-  static list = Util.memoize(doc => {
+  static list = Util.memoize((doc) => {
     if(!doc) doc = this.document;
     let adapter = Util.adapter(
       [...doc.styleSheets],
-      obj => obj.length,
+      (obj) => obj.length,
       (obj, i) => obj[i].href || obj[i].ownerNode.id || i,
       getStyleSheet
     );
@@ -73,8 +73,8 @@ export class CSS {
   static classes(selector = '*') {
     return Util.unique(
       [...Element.findAll(selector)]
-        .filter(e => e.classList.length)
-        .map(e => [...e.classList])
+        .filter((e) => e.classList.length)
+        .map((e) => [...e.classList])
         .flat()
     );
   }
@@ -139,7 +139,7 @@ export class CSS {
     const trblExpr = /(Top|Right|Bottom|Left)/;
     const cswExpr = /(Color|Style|Width)/;
 
-    let keyList = [...props.keys()].filter(k => trblExpr.test(k) || cswExpr.test(k));
+    let keyList = [...props.keys()].filter((k) => trblExpr.test(k) || cswExpr.test(k));
 
     //console.log("props:",Util.unique(keyList.filter(k => k.startsWith('border')).map(k => k.replace(/^border/, "").replace(trblExpr, ""))));
     for(let key of keyList) {

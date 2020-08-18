@@ -4,7 +4,7 @@ export function autofillEvent(window, changeHandler) {
   //console.log("autofillEvent ", { window, rootElement });
 
   window.handleAutoFillEvent = changeHandler;
-  window.checkAndTriggerAutoFillEvent = function(els) {
+  window.checkAndTriggerAutoFillEvent = function (els) {
     els = this.nodeName === 'INPUT' ? [this] : els;
     var i, el;
     for(i = 0; i < els.length; i++) {
@@ -23,10 +23,10 @@ export function autofillEvent(window, changeHandler) {
   //Need to use blur and not change event
   //as Chrome does not fire change events in all cases an input is changed
   //(e.g. when starting to type and then finish the input by auto filling a username)
-  addGlobalEventListener('blur', function(target) {
+  addGlobalEventListener('blur', function (target) {
     //setTimeout needed for Chrome as it fills other
     //form fields a little later...
-    window.setTimeout(function() {
+    window.setTimeout(function () {
       var parentForm = findParentForm(target);
       if(!parentForm) return;
       window.checkAndTriggerAutoFillEvent(parentForm.querySelectorAll('input'));
@@ -39,7 +39,7 @@ export function autofillEvent(window, changeHandler) {
     //mark all values that are present when the DOM is ready.
     //We don't need to trigger a change event here,
     //as js libs start with those values already being set!
-    inputElements.forEach(el => {
+    inputElements.forEach((el) => {
       //markValue(el);
       el.checkAndTriggerAutoFillEvent = window.checkAndTriggerAutoFillEvent;
     });
@@ -47,7 +47,7 @@ export function autofillEvent(window, changeHandler) {
 
     //The timeout is needed for Chrome as it auto fills
     //login forms some time after DOMContentLoaded!
-    window.setTimeout(function() {
+    window.setTimeout(function () {
       window.checkAndTriggerAutoFillEvent(inputElements);
     }, 200);
   }

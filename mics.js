@@ -27,7 +27,7 @@ function mix(...args) {
   let superclass = (!isFactory(args[0]) && args.shift()) || baseclass;
   let factory = (isFactory(args[args.length - 1]) && args.pop()) || derive;
   superclass = isMixin(superclass) ? superclass.class : derive(superclass);
-  if(args.length) factory = (org => superclass => org(args.reduce((s, m) => m.mixin(s), superclass)))(factory);
+  if(args.length) factory = ((org) => (superclass) => org(args.reduce((s, m) => m.mixin(s), superclass)))(factory);
 
   function mixin(superclass) {
     const result = is(superclass, mixin) ? superclass : factory(superclass);
@@ -41,11 +41,11 @@ function mix(...args) {
   });
   const Class = mixin(superclass);
   const constructor = Class.hasOwnProperty('constructor') ? Class.constructor.bind(Class) : (...args) => new Class(...args);
-  Object.getOwnPropertyNames(Class).forEach(k => Object.defineProperty(constructor, k, { value: Class[k] }));
+  Object.getOwnPropertyNames(Class).forEach((k) => Object.defineProperty(constructor, k, { value: Class[k] }));
   return Object.defineProperties(constructor, {
     mixin: { value: mixin, writable: false },
     class: { value: Class, writable: false },
-    interface: { get: (x => () => (x ? x : (x = getInterface(Class.prototype))))() }
+    interface: { get: ((x) => () => (x ? x : (x = getInterface(Class.prototype))))() }
   });
 }
 
@@ -145,4 +145,4 @@ function isFactory(x) {
 }
 
 const baseclass = class Object {};
-const derive = superclass => ({}[superclass.name || 'Object'] = class extends superclass {});
+const derive = (superclass) => ({}[superclass.name || 'Object'] = class extends superclass {});

@@ -7,22 +7,22 @@ var vlen = m2d.len;
 var vset = m2d.set;
 var vsetlen = m2d.setlen;
 
-var vset = function(a, b) {
+var vset = function (a, b) {
   a[0] = b[0];
   a[1] = b[1];
   return a;
 };
-var rect = function(r) {
+var rect = function (r) {
   return [r[0] + r[2] / 2, r[1] + r[3] / 2];
 };
-var rectmid = function(r) {
+var rectmid = function (r) {
   return [r[0] + r[2] / 2, r[1] + r[3] / 2];
 };
 
 /**
  * calculates the area of overlap btw two rectangles;
  */
-var rectoverlap = function(a, b) {
+var rectoverlap = function (a, b) {
   //console.log("rectoverlap", {a,b});
   var x11 = a[0],
     y11 = a[1],
@@ -51,7 +51,7 @@ export function Autoplacer(opts) {
   }
 }
 
-Autoplacer.prototype.init = function(opts) {
+Autoplacer.prototype.init = function (opts) {
   //deep cloning array of arrays;
   var b = (this.bodies_ = opts.bodies.slice(0)),
     i,
@@ -77,7 +77,7 @@ Autoplacer.prototype.init = function(opts) {
   this.kin_ = 0;
   this.step_ = opts.step || 2;
   this.damp_ = opts.damp || 0.87;
-  this.hookelaw_ = function(length) {
+  this.hookelaw_ = function (length) {
     return Math.pow(length, 0.86) * 0.001;
   };
 };
@@ -88,7 +88,7 @@ Autoplacer.prototype.init = function(opts) {
  * return inner bodies array or null if cond() == false
  *
  */
-Autoplacer.prototype.next = function() {
+Autoplacer.prototype.next = function () {
   if(this.count_ > 0 && !this.cond()) {
     return null;
   }
@@ -174,31 +174,31 @@ Autoplacer.prototype.next = function() {
     this.kin_ += s.mass * velmod * velmod;
   }
 
-  return this.states_.map(b => b);
+  return this.states_.map((b) => b);
 };
 
 /**
  * retuns true if optimal placement has not been reached yet
  */
-Autoplacer.prototype.cond = function() {
+Autoplacer.prototype.cond = function () {
   return this.count_ < this.limit && this.kin_ > this.threshold_;
 };
 
 /**
  *
  */
-Autoplacer.prototype.loop = function() {
+Autoplacer.prototype.loop = function () {
   do {
     this.next();
   } while(this.cond());
   return this.bodies;
 };
 
-Autoplacer.prototype.animate = function(animator, interval) {
+Autoplacer.prototype.animate = function (animator, interval) {
   var me = this;
   interval = interval || 100;
   var recur;
-  recur = function() {
+  recur = function () {
     me.next();
     animator(me.bodies);
     if(me.cond()) {

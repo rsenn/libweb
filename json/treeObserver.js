@@ -87,7 +87,7 @@ export class TreeObserver extends ObservableMembrane {
     }
 
     let treeObserver = this;
-    ['valueDistortion', 'valueMutated', 'valueObserved'].forEach(name => (treeObserver[name] = treeObserver[name].bind(treeObserver)));
+    ['valueDistortion', 'valueMutated', 'valueObserved'].forEach((name) => (treeObserver[name] = treeObserver[name].bind(treeObserver)));
 
     this.mapper = pathMapper;
     this.readOnly = !!readOnly;
@@ -114,7 +114,7 @@ export class TreeObserver extends ObservableMembrane {
     return { proxy, path, type };
   });
 
-  getField = field => Util.transformer(this.entry, ret => (Util.isObject(ret) && field in ret ? ret[field] : ret));
+  getField = (field) => Util.transformer(this.entry, (ret) => (Util.isObject(ret) && field in ret ? ret[field] : ret));
 
   get = this.getField('proxy');
   type = this.getField('type');

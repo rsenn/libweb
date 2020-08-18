@@ -21,7 +21,7 @@ import Util from './util.js';
 
 export class Graph {
   constructor(options = {}) {
-    let { origin = new Point(0, 0), size = new Size(1000, 1000), prng = Math.random, gravitate_to_origin = true, charge = 100, mass = 240, spacing = 3, timestep = 150, damping = 0.000005, onUpdateNode = node => true, onUpdateEdge = edge => true, onRenderGraph = graph => true } = options;
+    let { origin = new Point(0, 0), size = new Size(1000, 1000), prng = Math.random, gravitate_to_origin = true, charge = 100, mass = 240, spacing = 3, timestep = 150, damping = 0.000005, onUpdateNode = (node) => true, onUpdateEdge = (edge) => true, onRenderGraph = (graph) => true } = options;
 
     Util.log(`Graph(${origin},${gravitate_to_origin})`);
     this.nodes = [];
@@ -45,7 +45,7 @@ export class Graph {
     let i = 0;
     g.done_rendering = false;
 
-    this.timer = Timer.interval(5, function() {
+    this.timer = Timer.interval(5, function () {
       if(!g.done_rendering) {
         g.checkRedraw();
       }
@@ -184,10 +184,7 @@ export class Graph {
         node.netforce.x = Math.abs(node.netforce.x) < 1 ? 0 : node.netforce.x;
         node.netforce.y = Math.abs(node.netforce.y) < 1 ? 0 : node.netforce.y;
 
-        let newVel = node.netforce
-          .prod(this.timestep)
-          .sum(node.velocity)
-          .prod(this.damping);
+        let newVel = node.netforce.prod(this.timestep).sum(node.velocity).prod(this.damping);
 
         node.velocity.x = node.netforce.x == 0 ? 0 : newVel.x;
         node.velocity.y = node.netforce.y == 0 ? 0 : newVel.y;
@@ -222,11 +219,11 @@ export class Graph {
     const distributeLeafNodes = () => {
       for(let node of this.branchNodes()) {
         let connections = [...this.getConnections(node)];
-        let nonLeafNodes = connections.filter(c => !this.isLeafNode(c));
-        let leafNodes = connections.filter(c => this.isLeafNode(c));
+        let nonLeafNodes = connections.filter((c) => !this.isLeafNode(c));
+        let leafNodes = connections.filter((c) => this.isLeafNode(c));
 
-        let lines = nonLeafNodes.map(c => new Line(node, c));
-        let angles = lines.map(l => l.angle());
+        let lines = nonLeafNodes.map((c) => new Line(node, c));
+        let angles = lines.map((l) => l.angle());
         let middleAngle;
         let gapLen;
 
@@ -289,8 +286,8 @@ export class Graph {
 
   serialize() {
     return {
-      nodes: this.nodes.map(node => Node.prototype.toJS.call(node)),
-      edges: this.edges.map(edge => Edge.prototype.toIdx.call(edge, this)),
+      nodes: this.nodes.map((node) => Node.prototype.toJS.call(node)),
+      edges: this.edges.map((edge) => Edge.prototype.toIdx.call(edge, this)),
       bbox: this.bbox,
       config: this.config
     };
@@ -383,7 +380,7 @@ export class Node extends Point {
   }
 
   toJS() {
-    let ret = Util.filterKeys(this, key => ['charge', 'mass', 'label', 'x', 'y', 'id', 'color'].indexOf(key) != -1);
+    let ret = Util.filterKeys(this, (key) => ['charge', 'mass', 'label', 'x', 'y', 'id', 'color'].indexOf(key) != -1);
     if(this.node && this.node.id !== undefined) ret.id = this.node.id;
     Point.round(ret, 0.001);
     return ret;

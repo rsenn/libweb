@@ -28,8 +28,8 @@ export class SwipeTracker {
     this.updateSwipeRectangle = this.updateSwipeRectangle.bind(this);
 
     if(global.window) {
-      const mouseObserver = trkl.from(observable => {
-        window.addEventListener('mousemove', e => {
+      const mouseObserver = trkl.from((observable) => {
+        window.addEventListener('mousemove', (e) => {
           const pos = {
             x: e.clientX + window.pageXOffset,
             y: e.clientY + window.pageYOffset
@@ -37,18 +37,18 @@ export class SwipeTracker {
           observable(pos);
         });
       });
-      mouseObserver.subscribe(pos => {
+      mouseObserver.subscribe((pos) => {
         if(this.mouse === null || !this.mouse || typeof this.mouse.move != 'function') this.mouse = new Point(pos);
         else this.mouse.move(pos.x, pos.y);
       });
-      const touchObserver = trkl.from(observable => {
-        const handler = event => {
+      const touchObserver = trkl.from((observable) => {
+        const handler = (event) => {
           let pos = {
             x: event.clientX + window.pageXOffset,
             y: event.clientY + window.pageYOffset
           };
           if(event.touches && event.touches.length !== undefined) {
-            [...event.touches].forEach(touch => {
+            [...event.touches].forEach((touch) => {
               pos.x = touch.clientX;
               pos.y = touch.clientY;
             });
@@ -58,15 +58,15 @@ export class SwipeTracker {
           }
           observable(pos);
         };
-        ['touchstart', 'touchmove', 'touchend'].forEach(name => window.addEventListener(name, handler));
+        ['touchstart', 'touchmove', 'touchend'].forEach((name) => window.addEventListener(name, handler));
       });
-      touchObserver.subscribe(pos => {
+      touchObserver.subscribe((pos) => {
         if(!this.touch || typeof this.touch.move !== 'function') this.touch = new Point(pos);
         else this.touch.move(pos.x, pos.y);
       });
     }
 
-    this.emitEvent = function(name) {
+    this.emitEvent = function (name) {
       const e = this.createSwipeEvent(name);
       this.handler(e);
       return e;
@@ -126,7 +126,7 @@ export class SwipeTracker {
     }
     SwipeEvent.prototype = {
       ...(global.document ? document.createEvent('Event') : {}),
-      getAxis: function() {
+      getAxis: function () {
         let ret = '';
         if(this.quadrant) {
           if(Math.abs(this.quadrant.x) > 0) ret += 'H';
@@ -134,23 +134,23 @@ export class SwipeTracker {
         }
         return ret;
       },
-      getDist: function() {
+      getDist: function () {
         return this.axis & SwipeTracker.H ? this.delta.x : this.delta.y;
       },
-      toSource: function() {
+      toSource: function () {
         return Object.keys(this)
-          .map(key => {
+          .map((key) => {
             let value = Util.toSource(this[key]);
             return `${key}:${value}`;
           })
           .join(', ');
       },
-      toString: function() {
+      toString: function () {
         return `SwipeEvent ${this.name.toUpperCase()}(` + (this.delta && this.delta.toString(false)) + ') ' + this.getAxis() + ' ' + this.dist + ' [' + (this.mouse && this.mouse.toSource(false)) + ']';
       }
     };
     Object.defineProperty(SwipeEvent.prototype, 'dist', {
-      get: function() {
+      get: function () {
         return this.getDist();
       }
     });
@@ -168,12 +168,12 @@ export class SwipeTracker {
     const inst = this;
     return Util.bindMethods(
       {
-        onSwipeStart: function(event) {
+        onSwipeStart: function (event) {
           Util.log('swipestart: ', { event });
           inst.end = null;
           inst.start = null;
         },
-        onSwipeMove: function(pos, event) {
+        onSwipeMove: function (pos, event) {
           let name = 'move';
           if(!inst.start) {
             inst.start = new Point(this.mouse);
@@ -204,7 +204,7 @@ export class SwipeTracker {
             //inst.emitEvent(name).toSource());
           }
         },
-        onSwipeEnd: function(pos, event) {
+        onSwipeEnd: function (pos, event) {
           const { start, end, delta, quadrant } = this;
           const position = new Point(pos.x, pos.y);
           if(inst.start && inst.start.x !== undefined) {

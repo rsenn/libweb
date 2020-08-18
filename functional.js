@@ -9,7 +9,7 @@ export class Functional {
 
   static _toString = this.builtin(Object.prototype.toString);
 
-  static shallow = a => {
+  static shallow = (a) => {
     var i, q, r, ref, ref1, t;
     if(!a) {
       return a;
@@ -32,7 +32,7 @@ export class Functional {
     return r;
   };
 
-  static clone = a => {
+  static clone = (a) => {
     var i, k, q, ref, s, v;
     if(!a) {
       return a;
@@ -53,22 +53,22 @@ export class Functional {
 
   static isplain = (() => {
     var iscons, isobject, isobjobj, isprot, isprotobj;
-    isobject = function(o) {
+    isobject = function (o) {
       return !!o && typeof o === 'object';
     };
-    isobjobj = function(o) {
+    isobjobj = function (o) {
       return this.isobject(o) && Object.prototype.toString.call(o) === '[object Object]';
     };
-    iscons = function(o) {
+    iscons = function (o) {
       return typeof o.constructor === 'function';
     };
-    isprot = function(o) {
+    isprot = function (o) {
       return this.isobjobj(o.constructor.prototype);
     };
-    isprotobj = function(o) {
+    isprotobj = function (o) {
       return o.constructor.prototype.hasOwnProperty('isPrototypeOf');
     };
-    return function(o) {
+    return function (o) {
       return this.isobjobj(o) && this.iscons(o) && this.isprot(o) && this.isprotobj(o);
     };
   })();
@@ -77,10 +77,8 @@ export class Functional {
     return o != null;
   }
 
-  static type = a => {
-    return this._toString(a)
-      .slice(8, -1)
-      .toLowerCase();
+  static type = (a) => {
+    return this._toString(a).slice(8, -1).toLowerCase();
   };
 
   static head(a) {
@@ -98,50 +96,50 @@ export class Functional {
   static _nary = (n, fn) => {
     //console.log('_nary', { n, fn });
 
-    let ret = (n => {
+    let ret = ((n) => {
       switch (n) {
         case 0:
-          return function() {
+          return function () {
             return fn.apply(null, arguments);
           };
         case 1:
-          return function(a) {
+          return function (a) {
             return fn.apply(null, arguments);
           };
         case 2:
-          return function(a, b) {
+          return function (a, b) {
             return fn.apply(null, arguments);
           };
         case 3:
-          return function(a, b, c) {
+          return function (a, b, c) {
             return fn.apply(null, arguments);
           };
         case 4:
-          return function(a, b, c, d) {
+          return function (a, b, c, d) {
             return fn.apply(null, arguments);
           };
         case 5:
-          return function(a, b, c, d, e) {
+          return function (a, b, c, d, e) {
             return fn.apply(null, arguments);
           };
         case 6:
-          return function(a, b, c, d, e, f) {
+          return function (a, b, c, d, e, f) {
             return fn.apply(null, arguments);
           };
         case 7:
-          return function(a, b, c, d, e, f, g) {
+          return function (a, b, c, d, e, f, g) {
             return fn.apply(null, arguments);
           };
         case 8:
-          return function(a, b, c, d, e, f, g, h) {
+          return function (a, b, c, d, e, f, g, h) {
             return fn.apply(null, arguments);
           };
         case 9:
-          return function(a, b, c, d, e, f, g, h, i) {
+          return function (a, b, c, d, e, f, g, h, i) {
             return fn.apply(null, arguments);
           };
         case 10:
-          return function(a, b, c, d, e, f, g, h, i, j) {
+          return function (a, b, c, d, e, f, g, h, i, j) {
             return fn.apply(null, arguments);
           };
       }
@@ -153,7 +151,7 @@ export class Functional {
   static arity(fn, n) {
     if(arguments.length === 1) {
       n = fn;
-      return function(fn) {
+      return function (fn) {
         return Functional._nary(n, fn);
       };
     } else {
@@ -161,27 +159,27 @@ export class Functional {
     }
   }
 
-  static arityof = f => {
+  static arityof = (f) => {
     if(typeof f === 'function') {
       if(f.arity !== undefined) return f.arity;
       return f.length;
     }
   };
 
-  static unary = fn => {
-    return function(a) {
+  static unary = (fn) => {
+    return function (a) {
       return fn.apply(null, arguments);
     };
   };
 
-  static binary = fn => {
-    return function(a, b) {
+  static binary = (fn) => {
+    return function (a, b) {
       return fn.apply(null, arguments);
     };
   };
 
-  static ternary = fn => {
-    return function(a, b, c) {
+  static ternary = (fn) => {
+    return function (a, b, c) {
       return fn.apply(null, arguments);
     };
   };
@@ -202,7 +200,7 @@ export class Functional {
       throw new Error('Bad ncurry ' + n);
     }
     l = n - as.length;
-    nf = this._nary(l, function() {
+    nf = this._nary(l, function () {
       var bs, cs;
       bs = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       cs = (bs.length <= l ? bs : v ? bs : bs.slice(0, l)).concat(as);
@@ -212,7 +210,7 @@ export class Functional {
         return f.apply(null, cs);
       }
     });
-    return this._defprop(nf, '__fnuc_curry', function() {
+    return this._defprop(nf, '__fnuc_curry', function () {
       if(as.length === 0) {
         return f;
       } else {
@@ -221,17 +219,17 @@ export class Functional {
     });
   };
 
-  static curry2 = f => {
+  static curry2 = (f) => {
     var f2;
     return this._defprop(
-      (f2 = function(a, b) {
+      (f2 = function (a, b) {
         var n;
         n = arguments.length;
         if(n === 0) {
           return f2;
         } else if(n === 1) {
           b = a;
-          return function(a) {
+          return function (a) {
             return f(a, b);
           };
         } else {
@@ -239,23 +237,23 @@ export class Functional {
         }
       }),
       '__fnuc_curry',
-      function() {
+      function () {
         return f;
       }
     );
   };
 
-  static curry2var = f => {
+  static curry2var = (f) => {
     var f2;
     return this._defprop(
-      (f2 = function(a, b) {
+      (f2 = function (a, b) {
         var n;
         n = arguments.length;
         if(n === 0) {
           return f2;
         } else if(n === 1) {
           b = a;
-          return function(a) {
+          return function (a) {
             return f.apply(null, slice1.call(arguments).concat([b]));
           };
         } else {
@@ -263,29 +261,29 @@ export class Functional {
         }
       }),
       '__fnuc_curry',
-      function() {
+      function () {
         return f;
       }
     );
   };
 
-  static curry3 = f => {
+  static curry3 = (f) => {
     var f2;
     return this._defprop(
-      (f2 = function(a, b, c) {
+      (f2 = function (a, b, c) {
         var n;
         n = arguments.length;
         if(n === 0) {
           return f2;
         } else if(n === 1) {
           c = a;
-          return Functional.curry2(function(a, b) {
+          return Functional.curry2(function (a, b) {
             return f(a, b, c);
           });
         } else if(n === 2) {
           c = b;
           b = a;
-          return function(a) {
+          return function (a) {
             return f(a, b, c);
           };
         } else {
@@ -293,29 +291,29 @@ export class Functional {
         }
       }),
       '__fnuc_curry',
-      function() {
+      function () {
         return f;
       }
     );
   };
 
-  static curry3var = f => {
+  static curry3var = (f) => {
     var f2;
     return this._defprop(
-      (f2 = function(a, b, c) {
+      (f2 = function (a, b, c) {
         var n;
         n = arguments.length;
         if(n === 0) {
           return f2;
         } else if(n === 1) {
           c = a;
-          return Functional.curry2var(function(a, b) {
+          return Functional.curry2var(function (a, b) {
             return f.apply(null, slice1.call(arguments).concat([c]));
           });
         } else if(n === 2) {
           c = b;
           b = a;
-          return function(a) {
+          return function (a) {
             return f.apply(null, slice1.call(arguments).concat([b], [c]));
           };
         } else {
@@ -323,13 +321,13 @@ export class Functional {
         }
       }),
       '__fnuc_curry',
-      function() {
+      function () {
         return f;
       }
     );
   };
 
-  static curry = f => {
+  static curry = (f) => {
     var n;
     n = this.arityof(f);
     //console.log('curry', { f, n });
@@ -344,7 +342,7 @@ export class Functional {
     }
   };
 
-  static _uncurry = f => {
+  static _uncurry = (f) => {
     if(f.__fnuc_curry) {
       return f.__fnuc_curry();
     } else {
@@ -357,7 +355,7 @@ export class Functional {
     (f = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []);
     f = this._uncurry(f);
     n = this.arityof(f) - as.length;
-    fn = function() {
+    fn = function () {
       var bs;
       bs = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       return f.apply(null, as.concat(bs));
@@ -374,7 +372,7 @@ export class Functional {
     (f = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []);
     f = this._uncurry(f);
     n = this.arityof(f) - as.length;
-    fn = function() {
+    fn = function () {
       var bs;
       bs = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       return f.apply(null, bs.slice(0, n).concat(as));
@@ -386,13 +384,13 @@ export class Functional {
     }
   }
 
-  static flip = f => {
+  static flip = (f) => {
     var g;
     if(f.__fnuc_flip) {
       return f.__fnuc_flip;
     }
     g = this.curry(
-      this._nary(this.arityof(f), function() {
+      this._nary(this.arityof(f), function () {
         var as;
         as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
         return Functional._uncurry(f).apply(null, as.reverse());
@@ -409,7 +407,7 @@ export class Functional {
       Functional.arityof(Functional.last(fs)),
       true,
       Functional.fold1(fs, (f, g) => {
-        return function() {
+        return function () {
           var as;
           as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
           return f(g.apply(null, as));
@@ -422,8 +420,8 @@ export class Functional {
     var ar, fn, fs;
     fs = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
     fs = this._pliftall(fs);
-    fn = this.foldr1(fs, function(f, g) {
-      return function() {
+    fn = this.foldr1(fs, function (f, g) {
+      return function () {
         var as;
         as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
         return f(g.apply(null, as));
@@ -437,19 +435,19 @@ export class Functional {
     }
   }
 
-  static converge = this.curry3var(function() {
+  static converge = this.curry3var(function () {
     var after, ar, fn, fs, q;
     (fs = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])), (after = arguments[q++]);
     fs = this._pliftall(fs);
     after = this.plift(after);
     ar = this.apply(Math.max)(this.map(fs, arityof));
-    fn = function() {
+    fn = function () {
       var args, context;
       args = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       context = this;
       return after.apply(
         context,
-        Functional.map(fs, function(fn) {
+        Functional.map(fs, function (fn) {
           return fn.apply(context, args);
         })
       );
@@ -461,29 +459,29 @@ export class Functional {
     }
   });
 
-  static typeis = this.curry2(function(a, s) {
+  static typeis = this.curry2(function (a, s) {
     return Functional.type(a) === s;
   });
 
-  static tap = this.curry2(function(a, f) {
+  static tap = this.curry2(function (a, f) {
     f(a);
     return a;
   });
 
-  static call = this.curry2var(function() {
+  static call = this.curry2var(function () {
     var as, fn;
     (fn = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []);
     return fn.apply(null, as);
   });
 
-  static apply = fn => {
-    return function(as) {
+  static apply = (fn) => {
+    return function (as) {
       return fn.apply(null, as);
     };
   };
 
-  static unapply = fn => {
-    return function() {
+  static unapply = (fn) => {
+    return function () {
       var as;
       as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       return fn(as);
@@ -494,7 +492,7 @@ export class Functional {
     this.curry(
       this._nary(
         this.arityof(c),
-        this.plift(function() {
+        this.plift(function () {
           var as;
           as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
           if(c.apply(null, as)) {
@@ -507,9 +505,9 @@ export class Functional {
     )
   );
 
-  static maybe = fn => {
+  static maybe = (fn) => {
     return this.unary(
-      this.plift(function() {
+      this.plift(function () {
         var as;
         as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
         if(as.every(isdef)) {
@@ -519,15 +517,15 @@ export class Functional {
     );
   };
 
-  static always = v => {
-    return this.plift(function() {
+  static always = (v) => {
+    return this.plift(function () {
       return v;
     });
   };
 
-  static nth = n => {
+  static nth = (n) => {
     return this.curry(
-      this._nary(n + 1, function() {
+      this._nary(n + 1, function () {
         var as;
         as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
         return as[n];
@@ -535,10 +533,10 @@ export class Functional {
     );
   };
 
-  static once = fn => {
+  static once = (fn) => {
     var ran, ret;
     ran = ret = null;
-    return function() {
+    return function () {
       var as;
       as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       if(ran) {
@@ -550,13 +548,13 @@ export class Functional {
     };
   };
 
-  static at = this.curry2(function(as, n) {
+  static at = this.curry2(function (as, n) {
     return as[n];
   });
 
-  static cond = cs => {
+  static cond = (cs) => {
     return this.curry(
-      this._nary(this.arityof(cs[0][0]), function() {
+      this._nary(this.arityof(cs[0][0]), function () {
         var as, fn, len1, q, ref;
         as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
         for(q = 0, len1 = cs.length; q < len1; q++) {
@@ -574,11 +572,11 @@ export class Functional {
 
   static any = this.curry2var(this.builtin(Array.prototype.some));
 
-  static contains = this.curry2(function(as, a) {
+  static contains = this.curry2(function (as, a) {
     return Functional.index(as, a) >= 0;
   });
 
-  static concat = this.curry2var(function() {
+  static concat = this.curry2var(function () {
     var as, ref;
     as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
     return (ref = []).concat.apply(ref, as);
@@ -586,7 +584,7 @@ export class Functional {
 
   static each = this.curry2var(this.builtin(Array.prototype.forEach));
 
-  static filter = this.curry2(function(as, f) {
+  static filter = this.curry2(function (as, f) {
     var len1, q, r, ri, v;
     r = [];
     ri = -1;
@@ -728,7 +726,7 @@ export class Functional {
     });
   });
 
-  static uniq = as => {
+  static uniq = (as) => {
     if(!as) {
       return as;
     }
@@ -750,14 +748,14 @@ export class Functional {
     return t;
   }
 
-  static mixin = this.curry2var(function() {
+  static mixin = this.curry2var(function () {
     var os;
     os = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
     return merge.apply(null, [{}].concat(slice1.call(os)));
   });
 
   static plift = (() => {
-    const isthenable = p => {
+    const isthenable = (p) => {
       var ref;
       if(!p) {
         return false;
@@ -767,10 +765,10 @@ export class Functional {
       }
       return typeof p.then === 'function';
     };
-    const thenbind = p => {
+    const thenbind = (p) => {
       return p.then.bind(p);
     };
-    const firstthen = as => {
+    const firstthen = (as) => {
       var t;
       t = this.firstfn(isthenable)(as);
       if(t) {
@@ -779,18 +777,18 @@ export class Functional {
         return null;
       }
     };
-    const promapply = errfn => {
+    const promapply = (errfn) => {
       return (pfn, parg) => {
         var fn;
         fn = null;
-        const onacc = arg => {
+        const onacc = (arg) => {
           if(errfn) {
             return arg;
           } else {
             return fn(arg);
           }
         };
-        const onrej = err => {
+        const onrej = (err) => {
           if(errfn) {
             return errfn(err);
           } else {
@@ -798,20 +796,20 @@ export class Functional {
           }
         };
         return pfn
-          .then(_fn => {
+          .then((_fn) => {
             fn = _fn;
             return parg;
           })
           .then(onacc, onrej);
       };
     };
-    return f => {
+    return (f) => {
       var nf;
       if(f.__fnuc_plift) {
         return f;
       }
       nf = this.curry(
-        this._nary(this.arityof(f), function() {
+        this._nary(this.arityof(f), function () {
           var alws, as, currfn, failfn, t0;
           as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
           t0 = firstthen(as);
@@ -837,7 +835,7 @@ export class Functional {
 
   static _pliftall = this.map(this.plift);
 
-  static pfail = f => {
+  static pfail = (f) => {
     return this.plift(this._defprop(f, '__fnuc_fail', true));
   };
 
@@ -848,34 +846,34 @@ export class Functional {
   static pall = (() => {
     var args;
     args = this.plift(this.unapply(this.I));
-    return as => args.apply(null, as);
+    return (as) => args.apply(null, as);
   })();
 
-  static has = this.curry2(function(o, k) {
+  static has = this.curry2(function (o, k) {
     return o.hasOwnProperty(k);
   });
 
-  static get = this.curry2(function(o, k) {
+  static get = this.curry2(function (o, k) {
     return o[k];
   });
 
-  static set = this.curry3(function(o, k, v) {
+  static set = this.curry3(function (o, k, v) {
     o[k] = v;
     f;
     return o;
   });
 
-  static keys = o => {
+  static keys = (o) => {
     return Object.keys(o);
   };
 
-  static values = o => {
-    return this.map(this.keys(o), function(k) {
+  static values = (o) => {
+    return this.map(this.keys(o), function (k) {
       return o[k];
     });
   };
 
-  static ofilter = this.curry2(function(o, f) {
+  static ofilter = this.curry2(function (o, f) {
     var k, r, v;
     r = {};
     for(k in o) {
@@ -887,7 +885,7 @@ export class Functional {
     return r;
   });
 
-  static omap = this.curry2(function(o, f) {
+  static omap = this.curry2(function (o, f) {
     var k, r, v;
     r = {};
     for(k in o) {
@@ -908,7 +906,7 @@ export class Functional {
   });
 
   static pick = this.curry2var(
-    function() {
+    function () {
       var as, k, len1, o, q, r;
       (o = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []);
       if(Functional.typeis(as[0], 'array')) {
@@ -943,15 +941,15 @@ export class Functional {
 
   static lcase = this.unary(this.builtin(String.prototype.toLowerCase));
 
-  static slice = this.curry3(function(s, m, n) {
+  static slice = this.curry3(function (s, m, n) {
     return s.slice(m, n);
   });
 
-  static drop = this.curry2(function(s, n) {
+  static drop = this.curry2(function (s, n) {
     return s.slice(n);
   });
 
-  static take = this.curry2(function(s, n) {
+  static take = this.curry2(function (s, n) {
     return s.slice(0, n);
   });
 
@@ -959,82 +957,82 @@ export class Functional {
     return t.length;
   }
 
-  static add = this.curry2var(function() {
+  static add = this.curry2var(function () {
     var as;
     as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
-    return Functional.fold1(as, function(a, b) {
+    return Functional.fold1(as, function (a, b) {
       return a + b;
     });
   });
 
-  static sub = this.curry2var(function() {
+  static sub = this.curry2var(function () {
     var as;
     as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
-    return Functional.fold1(as, function(a, b) {
+    return Functional.fold1(as, function (a, b) {
       return a - b;
     });
   });
 
-  static mul = this.curry2var(function() {
+  static mul = this.curry2var(function () {
     var as;
     as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
-    return Functional.fold1(as, function(a, b) {
+    return Functional.fold1(as, function (a, b) {
       return a * b;
     });
   });
 
-  static div = this.curry2var(function() {
+  static div = this.curry2var(function () {
     var as;
     as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
-    return Functional.fold1(as, function(a, b) {
+    return Functional.fold1(as, function (a, b) {
       return a / b;
     });
   });
 
-  static mod = this.curry2var(function() {
+  static mod = this.curry2var(function () {
     var as;
     as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
-    return Functional.fold1(as, function(a, b) {
+    return Functional.fold1(as, function (a, b) {
       return a % b;
     });
   });
 
-  static min = this.curry2var(function() {
+  static min = this.curry2var(function () {
     var as;
     as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
     return Math.min.apply(Math, as);
   });
 
-  static max = this.curry2var(function() {
+  static max = this.curry2var(function () {
     var as;
     as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
     return Math.max.apply(Math, as);
   });
 
-  static gt = this.curry2(function(a, b) {
+  static gt = this.curry2(function (a, b) {
     return a > b;
   });
 
-  static gte = this.curry2(function(a, b) {
+  static gte = this.curry2(function (a, b) {
     return a >= b;
   });
 
-  static lt = this.curry2(function(a, b) {
+  static lt = this.curry2(function (a, b) {
     return a < b;
   });
 
-  static lte = this.curry2(function(a, b) {
+  static lte = this.curry2(function (a, b) {
     return a <= b;
   });
 
   static eq = (() => {
     var _;
     _ = {};
-    return this.curry2var(function() {
+    return this.curry2var(function () {
       var as;
       as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       return (
-        Functional.fold1(as, function(a, b) {
+        Functional.fold1(as, function (a, b) {
           if(a === b) {
             return a;
           } else {
@@ -1045,18 +1043,18 @@ export class Functional {
     });
   })();
 
-  static aand = this.curry2var(function() {
+  static aand = this.curry2var(function () {
     var as;
     as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
-    return Functional.fold1(as, function(a, b) {
+    return Functional.fold1(as, function (a, b) {
       return !!a && !!b;
     });
   });
 
-  static oor = this.curry2var(function() {
+  static oor = this.curry2var(function () {
     var as;
     as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
-    return Functional.fold1(as, function(a, b) {
+    return Functional.fold1(as, function (a, b) {
       return !!a || !!b;
     });
   });
@@ -1065,10 +1063,10 @@ export class Functional {
     return !a;
   }
 
-  static both = this.curry2var(function() {
+  static both = this.curry2var(function () {
     var fs;
     fs = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
-    return Functional.unary(function() {
+    return Functional.unary(function () {
       var as, i, l;
       as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       i = 0;
@@ -1082,10 +1080,10 @@ export class Functional {
     });
   });
 
-  static either = this.curry2var(function() {
+  static either = this.curry2var(function () {
     var fs;
     fs = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
-    return Functional.unary(function() {
+    return Functional.unary(function () {
       var as, i, l;
       as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       i = 0;
@@ -1099,15 +1097,15 @@ export class Functional {
     });
   });
 
-  static comp = f => {
-    return this.unary(function() {
+  static comp = (f) => {
+    return this.unary(function () {
       var as;
       as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       return !f.apply(null, as);
     });
   };
 
-  static zipwith = this.curry3var(function() {
+  static zipwith = this.curry3var(function () {
     var as, f, i, ml, n, q, ref, results, u;
     (as = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])), (f = arguments[q++]);
     ml = Functional.apply(min)(Functional.map(as, len));
@@ -1116,7 +1114,7 @@ export class Functional {
       results.push(
         f.apply(
           null,
-          (function() {
+          (function () {
             var ref1, results1, w;
             results1 = [];
             for(n = w = 0, ref1 = as.length; w < ref1; n = w += 1) {
@@ -1130,7 +1128,7 @@ export class Functional {
     return results;
   });
 
-  static zip = this.zipwith(function() {
+  static zip = this.zipwith(function () {
     var as;
     as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
     return as;
@@ -1138,12 +1136,12 @@ export class Functional {
 
   static zipobj = (() => {
     var fn;
-    fn = obj => {
+    fn = (obj) => {
       return this.zipwith((k, v) => {
         return this.set(obj, k, v);
       });
     };
-    return function(ks, vs) {
+    return function (ks, vs) {
       var ret;
       fn((ret = {}))(ks, vs);
       return ret;
@@ -1152,10 +1150,10 @@ export class Functional {
 
   static eql = (() => {
     var eqarr, eqobj, eqplain, eqtype, sortstr;
-    eqtype = function(a, b) {
+    eqtype = function (a, b) {
       return Functional.type(a) === Functional.type(b);
     };
-    eqarr = function(a, b) {
+    eqarr = function (a, b) {
       var i, q, ref;
       if(a.length !== b.length) {
         return false;
@@ -1167,14 +1165,14 @@ export class Functional {
       }
       return true;
     };
-    eqplain = function(a, b) {
+    eqplain = function (a, b) {
       return Functional.isplain(a) && Functional.isplain(b);
     };
-    sortstr = Functional.sort(function(s1, s2) {
+    sortstr = Functional.sort(function (s1, s2) {
       return s1.localeCompare(s2);
     });
 
-    eqobj = function(a, b) {
+    eqobj = function (a, b) {
       var k, ka, len1, q;
       ka = sortstr(this.keys(a));
       if(!eqarr(ka, sortstr(this.keys(b)))) {
@@ -1188,20 +1186,20 @@ export class Functional {
       }
       return true;
     };
-    return Functional.curry2(function(a, b) {
+    return Functional.curry2(function (a, b) {
       if(a === b) {
         return true;
       }
       return Functional.both(
         eqtype,
-        (function() {
+        (function () {
           switch (Functional.type(a)) {
             case 'object':
               return Functional.both(eqplain, eqobj);
             case 'array':
               return eqarr;
             default:
-              return function() {
+              return function () {
                 return false;
               };
           }
@@ -1210,7 +1208,7 @@ export class Functional {
     });
   })();
 
-  static asprop = fn => {
+  static asprop = (fn) => {
     return {
       value: fn,
       enumerable: true,
@@ -1222,16 +1220,16 @@ export class Functional {
   static expose = (() => {
     var guard;
     guard = '__fnuc';
-    return function(exp) {
-      return function() {
+    return function (exp) {
+      return function () {
         var as, fns, ks, obj, ofexp, props, valid;
         (obj = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []);
         if(obj[guard]) {
           return;
         }
         ofexp = Functional.partial(get, exp);
-        valid = function(as) {
-          return Functional.map(as, function(a) {
+        valid = function (as) {
+          return Functional.map(as, function (a) {
             if(ofexp(a)) {
               return a;
             } else {

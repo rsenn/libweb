@@ -13,7 +13,7 @@ export function ScrollHandler(handler) {
 
   self.handler = handler;
 
-  self.subscribe(event => {
+  self.subscribe((event) => {
     var type = event.type;
 
     //console.log("ScrollListener.event ", { type, event });
@@ -24,7 +24,7 @@ export function ScrollHandler(handler) {
   return self;
 }
 
-export const ScrollEvents = listener => ({
+export const ScrollEvents = (listener) => ({
   onScroll: listener,
   onWheel: listener,
   DOMMouseScroll: listener,
@@ -74,7 +74,7 @@ export function ScrollDisabler(disabledfn = () => true, element) {
   try {
     element = element || global.window;
   } catch(err) {}
-  var listen = ScrollHandler(event => {
+  var listen = ScrollHandler((event) => {
     let disabled = disabledfn();
 
     if(disabled) {

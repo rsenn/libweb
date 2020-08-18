@@ -49,7 +49,7 @@ export class EagleNodeList {
   }
 
   remove(cond) {
-    let { raw, pred = i => true } = this;
+    let { raw, pred = (i) => true } = this;
     if(typeof cond == 'number') {
       let num = cond;
       cond = (child, i, list) => i === num;
@@ -121,8 +121,8 @@ export class EagleNodeList {
         if(instance[prop] !== undefined) return instance[prop];
         let list = instance && instance.ref ? instance.ref.dereference() : null;
         if(prop == 'find')
-          return name => {
-            const idx = list.findIndex(e => e.attributes.name == name);
+          return (name) => {
+            const idx = list.findIndex((e) => e.attributes.name == name);
             return idx == -1 ? null : this.getOrCreate(instance, instance.ref.concat([idx]));
           };
         //      if(prop == 'entries') return () => list.map((item, i) => [item.attributes.name, item]);

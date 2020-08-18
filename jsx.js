@@ -1,6 +1,6 @@
 function oneObject(str) {
   var obj = {};
-  str.split(',').forEach(_ => (obj[_] = true));
+  str.split(',').forEach((_) => (obj[_] = true));
   return obj;
 }
 var voidTag = oneObject('area,base,basefont,br,col,frame,hr,img,input,link,meta,param,embed,command,keygen,source,track,wbr');
@@ -8,7 +8,7 @@ var specalTag = oneObject('xmp,style,script,noscript,textarea,template,#comment'
 
 var hiddenTag = oneObject('style,script,noscript,template');
 
-var JSXParser = function(a, f) {
+var JSXParser = function (a, f) {
   if(!(this instanceof JSXParser)) {
     return parse(a, f);
   }
@@ -16,7 +16,7 @@ var JSXParser = function(a, f) {
   this.getOne = f;
 };
 JSXParser.prototype = {
-  parse: function() {
+  parse: function () {
     return parse(this.input, this.getOne);
   }
 };
@@ -44,7 +44,7 @@ function lexer(string, getOne) {
   var origString = string;
   var origLength = string.length;
 
-  stack.last = function() {
+  stack.last = function () {
     return stack[stack.length - 1];
   };
   var ret = [];
@@ -330,7 +330,7 @@ function getOpenTag(string) {
 
 function getText(node) {
   var ret = '';
-  node.children.forEach(function(el) {
+  node.children.forEach(function (el) {
     if(el.type === '#text') {
       ret += el.nodeValue;
     } else if(el.children && !hiddenTag[el.type]) {

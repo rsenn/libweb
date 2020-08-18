@@ -46,7 +46,7 @@ function Arguments() {
   //TODO: add es3 'arguments.callee'?
 }
 
-Arguments.prototype.toString = function() {
+Arguments.prototype.toString = function () {
   return '[object Arguments]';
 };
 
@@ -89,7 +89,7 @@ export class Environment extends EventEmitter {
       globalObjects = [globalObjects];
     }
     var parent;
-    globalObjects.forEach(function(vars) {
+    globalObjects.forEach(function (vars) {
       parent = createVariableStore(parent, vars);
     });
     // the topmost store is our current store
@@ -158,14 +158,14 @@ export class Environment extends EventEmitter {
         BreakStatement: this.generateBreakStatement,
         SwitchStatement: this.generateSwitchStatement
       }[type] ||
-      function() {
+      function () {
         console.warn('Not implemented yet: ' + type);
         return noop;
       }
     ).call(this, node);
 
     if(this.DEBUG) {
-      return function() {
+      return function () {
         var info = 'closure for ' + type + ' called';
         var line = ((node.loc || {}).start || {}).line;
         if(line) {
@@ -222,7 +222,7 @@ export class Environment extends EventEmitter {
       '&&': function*() { return (yield* callExpression(a)) && (yield* callExpression(b)); }
     }[node.operator];
 
-    return function() {
+    return function () {
       // FIXME: Convert to yield*
       var iter = cmp();
       var res = iter.next();
@@ -237,8 +237,8 @@ export class Environment extends EventEmitter {
     const { identifiers, source } = node;
     console.log(ESNode.assoc(node).position.toString(), 'ImportStatement:', node);
     let importFile = source.value;
-    return function() {
-      import(importFile).then(handle => {
+    return function () {
+      import(importFile).then((handle) => {
         console.log(ESNode.assoc(node).position.toString(), 'handle:', handle);
       });
     };
@@ -259,7 +259,7 @@ export class Environment extends EventEmitter {
       void: function() { return void a(); }
     }[node.operator];
 
-    return function() {
+    return function () {
       return op();
     };
   }
@@ -268,7 +268,7 @@ export class Environment extends EventEmitter {
     var obj = this.generateObject(node.argument);
     var attr = this.generateName(node.argument);
 
-    return function() {
+    return function () {
       return delete obj()[attr()];
     };
   }
@@ -277,7 +277,7 @@ export class Environment extends EventEmitter {
     //TODO property.kind: don't assume init when it can also be set/get
     var self = this;
     var items = [];
-    node.properties.forEach(function(property) {
+    node.properties.forEach(function (property) {
       // object expression keys are static so can be calculated
       // immediately
       var key = self.objKey(property.key)();
@@ -287,9 +287,9 @@ export class Environment extends EventEmitter {
       });
     });
 
-    return function() {
+    return function () {
       var result = {};
-      items.forEach(function(item) {
+      items.forEach(function (item) {
         result[item.key] = item.getVal();
       });
       return result;
@@ -299,7 +299,7 @@ export class Environment extends EventEmitter {
   generateArrayExpression(node) {
     var items = node.elements.map(this.boundGen);
 
-    return function() {
+    return function () {
       return items.map(execute);
     };
   }
@@ -314,7 +314,7 @@ export class Environment extends EventEmitter {
       key = this.generateClosure(node)();
     }
 
-    return function() {
+    return function () {
       return key;
     };
   }
@@ -325,7 +325,7 @@ export class Environment extends EventEmitter {
     if(node.callee.type === 'MemberExpression') {
       var obj = self.generateObject(node.callee);
       var name = self.generateName(node.callee);
-      callee = function() {
+      callee = function () {
         var theObj = obj();
         return theObj[name()].bind(theObj);
       };
@@ -334,7 +334,7 @@ export class Environment extends EventEmitter {
     }
     var args = node.arguments.map(self.generateClosure.bind(self));
 
-    return function*() {
+    return function* () {
       self.emit('line', startLine(node));
       var c = callee();
 
@@ -367,7 +367,7 @@ export class Environment extends EventEmitter {
     var args = node.arguments.map(this.boundGen);
     var self = this;
 
-    return function*() {
+    return function* () {
       self.emit('line', startLine(node));
       var cl = callee();
       var ar = args.map(execute);
@@ -387,7 +387,7 @@ export class Environment extends EventEmitter {
     let member = this.memberExpressionProperty(node);
     var str = (s, v = 'node.value') => (s + '').replace(/\s+/g, ' ').replace(/(node\.value|key)/g, v);
     //  console.log(ESNode.assoc(node).position.toString(), 'MemberExpression\n  obj()      = ', obj() || str(obj,`'${node.object.value}'`), '\n  property() = ', property());
-    return function() {
+    return function () {
       self.emit('line', startLine(node));
       return obj()[member()];
     };
@@ -399,16 +399,16 @@ export class Environment extends EventEmitter {
 
   generateThisExpression() {
     var self = this;
-    return function() {
+    return function () {
       return self.currentThis;
     };
   }
 
   generateSequenceExpression(node) {
     var exprs = node.expressions.map(this.boundGen);
-    return function() {
+    return function () {
       var result;
-      exprs.forEach(function(expr) {
+      exprs.forEach(function (expr) {
         result = expr();
       });
       return result;
@@ -425,7 +425,7 @@ export class Environment extends EventEmitter {
       '++false': function(obj, name) { return obj[name]++; } }[node.operator + node.prefix];
     var obj = this.generateObject(node.argument);
     var name = this.generateName(node.argument);
-    return function*() {
+    return function* () {
       self.emit('line', startLine(node));
       yield;
       return update(obj(), name());
@@ -449,7 +449,7 @@ export class Environment extends EventEmitter {
     let type = node.type || Util.className(node);
 
     if(type === 'Identifier') {
-      return function() {
+      return function () {
         return node.value;
       };
     } else if(type === 'MemberExpression') {
@@ -461,7 +461,7 @@ export class Environment extends EventEmitter {
   }
 
   generateLiteral(node) {
-    return function() {
+    return function () {
       return node.value;
     };
   }
@@ -470,7 +470,7 @@ export class Environment extends EventEmitter {
     var self = this;
     console.log(ESNode.assoc(node).position.toString(), node);
 
-    return function() {
+    return function () {
       return self.getVariableStore(node.value)[node.value];
     };
   }
@@ -509,7 +509,7 @@ export class Environment extends EventEmitter {
     var obj = this.generateObject(node.left);
     var name = this.generateName(node.left);
     var val = this.generateClosure(node.right);
-    return function*() {
+    return function* () {
       self.emit('line', node.left.loc.start.line);
       var v = val();
       if(v !== undefined) {
@@ -525,7 +525,7 @@ export class Environment extends EventEmitter {
     const id = node.id || new Identifier('');
     console.log(ESNode.assoc(node).position.toString(), 'FunctionDeclaration:', { id, node });
     this.currentDeclarations[id.value] = this.generateFunctionExpression(node);
-    return function*() {
+    return function* () {
       return noop;
     };
   }
@@ -568,9 +568,9 @@ export class Environment extends EventEmitter {
     self.currentDeclarations = oldDeclarations;
 
     // reset var store
-    return function() {
+    return function () {
       var parent = self.currentVariableStore;
-      return function*() {
+      return function* () {
         // build arguments object var args = new Arguments();
         args.length = arguments.length;
         for(var i = 0; i < arguments.length; i++) {
@@ -587,7 +587,7 @@ export class Environment extends EventEmitter {
         self.currentVariableStore.vars.arguments = args;
 
         // add function args to var store
-        node.params.forEach(function(param, i) {
+        node.params.forEach(function (param, i) {
           self.currentVariableStore.vars[param.name] = args[i];
         });
 
@@ -607,11 +607,11 @@ export class Environment extends EventEmitter {
 
   generateProgram(node) {
     var self = this;
-    var stmtClosures = node.body.map(function(stmt) {
+    var stmtClosures = node.body.map(function (stmt) {
       return self.generateClosure(stmt);
     });
 
-    return function*() {
+    return function* () {
       var result;
       for(var i = 0; i < stmtClosures.length; i++) {
         if(stmtClosures[i].constructor.name === 'GeneratorFunction') {
@@ -646,7 +646,7 @@ export class Environment extends EventEmitter {
     let { position } = assoc;
     const line = position.line;
     console.log(ESNode.assoc(node).position.toString(), node);
-    return function() {
+    return function () {
       self.emit('line', line);
       return new Return(arg());
     };
@@ -654,18 +654,18 @@ export class Environment extends EventEmitter {
 
   generateIfStatement(node) {
     var self = this;
-    var test = function() {
+    var test = function () {
       self.emit('line', startLine(node));
       return self.generateClosure(node.test)();
     };
     var consequent = this.generateClosure(node.consequent);
     var alternate = node.alternate
       ? this.generateClosure(node.alternate)
-      : function*() {
+      : function* () {
           return noop;
         };
 
-    return function*() {
+    return function* () {
       var result = test() ? yield* consequent() : yield* alternate();
       return result;
     };
@@ -673,14 +673,14 @@ export class Environment extends EventEmitter {
 
   generateConditionalStatement(node) {
     var self = this;
-    var test = function() {
+    var test = function () {
       self.emit('line', startLine(node));
       return self.generateClosure(node.test)();
     };
     var consequent = this.generateClosure(node.consequent);
     var alternate = node.alternate ? this.generateClosure(node.alternate) : noop;
 
-    return function() {
+    return function () {
       return test() ? consequent() : alternate();
     };
   }
@@ -692,7 +692,7 @@ export class Environment extends EventEmitter {
     /* prettier-ignore */ var update = node.update ? this.generateClosure(node.update) : function*() {return noop; };
     body = body || this.generateClosure(node.body);
 
-    return function*() {
+    return function* () {
       self.emit('line', startLine(node));
       var resp;
       for(yield* init(); yield* test(); yield* update()) {
@@ -717,7 +717,7 @@ export class Environment extends EventEmitter {
     var body = this.generateClosure(node.body);
     var loop = this.generateLoopStatement(node, body);
 
-    return function*() {
+    return function* () {
       yield* body();
       yield* loop();
     };
@@ -733,7 +733,7 @@ export class Environment extends EventEmitter {
       self.currentDeclarations[left.declarations[0].id.name] = noop;
       left = left.declarations[0].id;
     }
-    return function*() {
+    return function* () {
       self.emit('line', startLine(node));
       var resp;
       for(var x in right()) {
@@ -756,7 +756,7 @@ export class Environment extends EventEmitter {
     var self = this;
     var obj = self.generateClosure(node.object);
     var body = self.generateClosure(node.body);
-    return function*() {
+    return function* () {
       self.currentVariableStore = createVariableStore(self.currentVariableStore, obj());
       var result = yield* body();
       self.currentVariableStore = self.currentVariableStore.parent;
@@ -766,7 +766,7 @@ export class Environment extends EventEmitter {
 
   generateThrowStatement(node) {
     var arg = this.generateClosure(node.argument);
-    return function() {
+    return function () {
       throw arg();
     };
   }
@@ -776,11 +776,11 @@ export class Environment extends EventEmitter {
     var handler = this.generateCatchHandler(node.handler);
     var finalizer = node.finalizer
       ? this.generateClosure(node.finalizer)
-      : function(x) {
+      : function (x) {
           return x;
         };
 
-    return function() {
+    return function () {
       try {
         return finalizer(block());
       } catch(err) {
@@ -795,7 +795,7 @@ export class Environment extends EventEmitter {
     }
     var self = this;
     var body = self.generateClosure(node.body);
-    return function(err) {
+    return function (err) {
       var old = self.currentVariableStore.vars[node.param.name];
       self.currentVariableStore.vars[node.param.name] = err;
       var resp = body();
@@ -806,13 +806,13 @@ export class Environment extends EventEmitter {
   }
 
   generateContinueStatement() {
-    return function() {
+    return function () {
       return Continue;
     };
   }
 
   generateBreakStatement() {
-    return function() {
+    return function () {
       return Break;
     };
   }
@@ -821,14 +821,14 @@ export class Environment extends EventEmitter {
     var self = this;
 
     var discriminant = self.generateClosure(node.discriminant);
-    var cases = node.cases.map(function(currentCase) {
+    var cases = node.cases.map(function (currentCase) {
       return {
         test: currentCase.test ? self.generateClosure(currentCase.test) : null,
         code: self.generateProgram({ body: currentCase.consequent })
       };
     });
 
-    return function*() {
+    return function* () {
       var foundMatch = false;
       var discriminantVal = discriminant();
       var resp, defaultCase;

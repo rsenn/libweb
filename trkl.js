@@ -8,7 +8,7 @@ export function trkl(initValue) {
   var value = initValue;
   var subscribers = [];
 
-  var self = function(writeValue) {
+  var self = function (writeValue) {
     if(arguments.length) {
       write(writeValue);
     } else {
@@ -40,7 +40,7 @@ export function trkl(initValue) {
     return this;
   }
 
-  self['unsubscribe'] = function(subscriber) {
+  self['unsubscribe'] = function (subscriber) {
     remove(subscribers, subscriber);
     return this;
   };
@@ -79,20 +79,20 @@ export function trkl(initValue) {
 }
 
 trkl.prototype = Object.create({ ...Function.prototype, constructor: trkl });
-trkl.is = arg => typeof arg == 'function' && typeof arg.subscribe == 'function';
+trkl.is = (arg) => typeof arg == 'function' && typeof arg.subscribe == 'function';
 
-trkl.getset = function(arg) {
+trkl.getset = function (arg) {
   let trkl = arg || new trkl(arg);
   return Object.create(
     {
       get: () => trkl(),
-      set: value => trkl(value)
+      set: (value) => trkl(value)
     },
     {}
   );
 };
 
-trkl.computed = function(fn) {
+trkl.computed = function (fn) {
   var self = trkl();
   var computationToken = {
     _subscriber: runComputed
@@ -118,13 +118,13 @@ trkl.computed = function(fn) {
   }
 };
 
-trkl['from'] = function(executor) {
+trkl['from'] = function (executor) {
   var self = trkl();
   executor(self);
   return self;
 };
 
-trkl.property = function(object, name, options = { enumerable: true, configurable: true, deletable: false }) {
+trkl.property = function (object, name, options = { enumerable: true, configurable: true, deletable: false }) {
   const { value, ...opts } = options;
   var self = trkl(value);
   Object.defineProperty(object, name, {
@@ -133,7 +133,7 @@ trkl.property = function(object, name, options = { enumerable: true, configurabl
     set: self
   });
   if(options.deletable) {
-    trkl.subscribe(value => (value === undefined ? self.delete() : undefined));
+    trkl.subscribe((value) => (value === undefined ? self.delete() : undefined));
     self.delete = () => {
       delete object[name];
       self(null);
@@ -142,7 +142,7 @@ trkl.property = function(object, name, options = { enumerable: true, configurabl
   return self;
 };
 
-trkl.bind = function(object, name, handler) {
+trkl.bind = function (object, name, handler) {
   var self = handler;
   if(typeof name == 'object')
     Object.defineProperties(
@@ -159,7 +159,7 @@ trkl.bind = function(object, name, handler) {
   return object;
 };
 
-trkl.object = function(handlers, ret = {}) {
+trkl.object = function (handlers, ret = {}) {
   for(let prop in handlers) trkl.bind(ret, prop, handlers[prop]);
 
   return ret;

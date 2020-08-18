@@ -2,7 +2,7 @@ export function isJpeg(buf) {
   return typeof buf == 'object' && buf !== null && buf.length >= 10 ? buf.readUInt32LE(6) == 0x4649464a : false;
 }
 
-export const jpegProps = data => {
+export const jpegProps = (data) => {
   var ret = {};
   //data is an array of bytes
   var off = 0;

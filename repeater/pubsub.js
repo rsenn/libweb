@@ -16,7 +16,7 @@ and limitations under the License.
 ***************************************************************************** */
 
 function __awaiter(thisArg, _arguments, P, generator) {
-  return new (P || (P = Promise))(function(resolve, reject) {
+  return new (P || (P = Promise))(function (resolve, reject) {
     function fulfilled(value) {
       try {
         step(generator.next(value));
@@ -34,7 +34,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
     function step(result) {
       result.done
         ? resolve(result.value)
-        : new P(function(resolve) {
+        : new P(function (resolve) {
             resolve(result.value);
           }).then(fulfilled, rejected);
     }
@@ -45,7 +45,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
 function __generator(thisArg, body) {
   var _ = {
       label: 0,
-      sent: function() {
+      sent: function () {
         if(t[0] & 1) throw t[1];
         return t[1];
       },
@@ -59,13 +59,13 @@ function __generator(thisArg, body) {
   return (
     (g = { next: verb(0), throw: verb(1), return: verb(2) }),
     typeof Symbol === 'function' &&
-      (g[Symbol.iterator] = function() {
+      (g[Symbol.iterator] = function () {
         return this;
       }),
     g
   );
   function verb(n) {
-    return function(v) {
+    return function (v) {
       return step([n, v]);
     };
   }
@@ -132,18 +132,18 @@ function __values(o) {
     i = 0;
   if(m) return m.call(o);
   return {
-    next: function() {
+    next: function () {
       if(o && i >= o.length) o = void 0;
       return { value: o && o[i++], done: !o };
     }
   };
 }
 
-var InMemoryPubSub = /** @class */ (function() {
+var InMemoryPubSub = /** @class */ (function () {
   function InMemoryPubSub() {
     this.publishers = {};
   }
-  InMemoryPubSub.prototype.publish = function(topic, value) {
+  InMemoryPubSub.prototype.publish = function (topic, value) {
     var e_1, _a;
     var publishers = this.publishers[topic];
     if(publishers != null) {
@@ -170,7 +170,7 @@ var InMemoryPubSub = /** @class */ (function() {
       }
     }
   };
-  InMemoryPubSub.prototype.unpublish = function(topic, reason) {
+  InMemoryPubSub.prototype.unpublish = function (topic, reason) {
     var e_2, _a;
     var publishers = this.publishers[topic];
     if(publishers == null) {
@@ -192,15 +192,15 @@ var InMemoryPubSub = /** @class */ (function() {
     }
     publishers.clear();
   };
-  InMemoryPubSub.prototype.subscribe = function(topic, buffer) {
+  InMemoryPubSub.prototype.subscribe = function (topic, buffer) {
     var _this = this;
     if(this.publishers[topic] == null) {
       this.publishers[topic] = new Set();
     }
-    return new Repeater(function(push, stop) {
-      return __awaiter(_this, void 0, void 0, function() {
+    return new Repeater(function (push, stop) {
+      return __awaiter(_this, void 0, void 0, function () {
         var publisher;
-        return __generator(this, function(_a) {
+        return __generator(this, function (_a) {
           switch (_a.label) {
             case 0:
               publisher = { push: push, stop: stop };
@@ -215,7 +215,7 @@ var InMemoryPubSub = /** @class */ (function() {
       });
     }, buffer);
   };
-  InMemoryPubSub.prototype.close = function(reason) {
+  InMemoryPubSub.prototype.close = function (reason) {
     var e_3, _a;
     try {
       for(var _b = __values(Object.keys(this.publishers)), _c = _b.next(); !_c.done; _c = _b.next()) {

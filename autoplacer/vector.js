@@ -1,5 +1,5 @@
-(function() {
-  Array.prototype.plus = function(other) {
+(function () {
+  Array.prototype.plus = function (other) {
     var result = [];
     var len = this.length;
     for(var i = 0; i < len; i++) {
@@ -8,7 +8,7 @@
     return result;
   };
 
-  Array.prototype.minus = function(other) {
+  Array.prototype.minus = function (other) {
     var len = this.length;
     var result = [];
     for(var i = 0; i < len; i++) {
@@ -17,7 +17,7 @@
     return result;
   };
 
-  Array.prototype.scale = function(num) {
+  Array.prototype.scale = function (num) {
     var len = this.length;
     var result = [];
     for(var i = 0; i < len; i++) {
@@ -26,7 +26,7 @@
     return result;
   };
 
-  Array.prototype.scaleto = function(newlength) {
+  Array.prototype.scaleto = function (newlength) {
     var len = this.veclength();
     if(len == 0) {
       return [0, 0];
@@ -34,7 +34,7 @@
     return this.scale(newlength / len);
   };
 
-  Array.prototype.veclength = function() {
+  Array.prototype.veclength = function () {
     var len = this.length;
     var sum = 0;
     var element;
@@ -45,11 +45,11 @@
     return Math.sqrt(sum);
   };
 
-  Array.prototype.x = function() {
+  Array.prototype.x = function () {
     return this[0];
   };
 
-  Array.prototype.y = function() {
+  Array.prototype.y = function () {
     return this[1];
   };
 })();

@@ -1,8 +1,8 @@
 import Util from '../util.js';
 import 'svgjs';
 
-(function() {
-  var Trig = (function() {
+(function () {
+  var Trig = (function () {
     function Trig() {}
 
     return Trig;
@@ -13,28 +13,28 @@ import 'svgjs';
   Trig.TOLERANCE_DISTANCE_SQR = 16;
 
   if(!String.prototype.format) {
-    String.prototype.format = function() {
+    String.prototype.format = function () {
       var args = arguments;
-      return this.replace(/{(\d+)}/g, function(match, number) {
+      return this.replace(/{(\d+)}/g, function (match, number) {
         return typeof args[number] != 'undefined' ? args[number] : match;
       });
     };
   }
 
   SVG.extend(SVG.Element, {
-    x1: function() {
+    x1: function () {
       return this.attr('x1');
     },
-    y1: function() {
+    y1: function () {
       return this.attr('y1');
     },
-    x2: function() {
+    x2: function () {
       return this.attr('x2');
     },
-    y2: function() {
+    y2: function () {
       return this.attr('y2');
     },
-    translateFull: function(x, y, relative) {
+    translateFull: function (x, y, relative) {
       return this.transform({ x: x, y: y }, relative);
     },
     container() {
@@ -44,22 +44,22 @@ import 'svgjs';
 
   SVG.extend(SVG.Line, {
     //Get point
-    mid: function() {
+    mid: function () {
       return new SVG.Point((this.x1() + this.x2()) / 2.0, (this.y1() + this.y2()) / 2.0);
     }
   });
 
   SVG.extend(SVG.Point, {
-    distance: function(pt) {
+    distance: function (pt) {
       var dx = this.x - pt.x;
       var dy = this.y - pt.y;
       return Math.sqrt(dx * dx + dy * dy);
     },
 
-    distanceToLine: function(pt1, pt2) {
+    distanceToLine: function (pt1, pt2) {
       return Math.abs((pt2.y - pt1.y) * this.x - (pt2.x - pt1.x) * this.y + pt2.x * pt1.y - pt2.y * pt1.x) / Math.sqrt((pt2.y - pt1.y) * (pt2.y - pt1.y) + (pt2.x - pt1.x) * (pt2.x - pt1.x));
     },
-    withinLineRange: function(pt1, pt2) {
+    withinLineRange: function (pt1, pt2) {
       var minX = Math.min(pt1.x, pt2.x);
       var minY = Math.min(pt1.y, pt2.y);
       var maxX = Math.max(pt1.x, pt2.x);
@@ -67,7 +67,7 @@ import 'svgjs';
 
       return this.x >= minX - Trig.CLOSE_ENOUGH_DISTANCE && this.x <= maxX + Trig.CLOSE_ENOUGH_DISTANCE && this.y >= minY - Trig.CLOSE_ENOUGH_DISTANCE && this.y <= maxY + Trig.CLOSE_ENOUGH_DISTANCE;
     },
-    onArc: function(arc) {
+    onArc: function (arc) {
       //x = cx + rx*cos(theta)
       //y = cy + ry*sin(theta)
       if(arc.bbox().contains(this)) {
@@ -82,7 +82,7 @@ import 'svgjs';
       this.y = this.y + y;
       return this;
     },
-    equals: function(p) {
+    equals: function (p) {
       return this.x == p.x && this.y == p.y;
     },
     closeEnough(x, y) {
@@ -91,31 +91,31 @@ import 'svgjs';
   });
 
   SVG.extend(SVG.BBox, {
-    contains: function(pt) {
+    contains: function (pt) {
       return pt.x >= this.x && pt.y >= this.y && pt.x <= this.x + this.width && pt.y <= this.y + this.height;
     }
   });
 
   SVG.extend(SVG.Circle, {
-    inside: function(x, y) {
+    inside: function (x, y) {
       return x >= this.cx() - this.rx() && y >= this.cy() - this.ry() && x <= this.cx() + this.rx() && y <= this.cy() + this.ry();
     }
   });
 
   SVG.extend(SVG.Rect, {
-    leftTopX: function() {
+    leftTopX: function () {
       return this.x();
     },
-    leftTopY: function() {
+    leftTopY: function () {
       return this.y();
     },
-    rightBottomX: function() {
+    rightBottomX: function () {
       return this.x() + this.width();
     },
-    rightBottomY: function() {
+    rightBottomY: function () {
       return this.y() + this.height();
     },
-    inside: function(x, y) {
+    inside: function (x, y) {
       return x >= this.x() && x <= this.x() + this.width() && y >= this.y() && y <= this.y() + this.height();
     }
   });
@@ -129,7 +129,7 @@ import 'svgjs';
 
     //Add class methods
     extend: {
-      plotRadius: function(x1, y1, r, largeArcFlag, sweepFlag, x2, y2) {
+      plotRadius: function (x1, y1, r, largeArcFlag, sweepFlag, x2, y2) {
         var p = 'M {0},{1} A {2},{2} 0 {3},{4} {5},{6}'.format(x1.toFixed(2), y1.toFixed(2), r.toFixed(2), largeArcFlag.toFixed(0), sweepFlag.toFixed(0), x2.toFixed(2), y2.toFixed(2));
         this.r = r;
         this.largeArcFlag = largeArcFlag;
@@ -142,7 +142,7 @@ import 'svgjs';
         return this.attr('d', (this._array = new SVG.PathArray(p)));
       },
 
-      plot: function(x1, y1, h, sweepFlag, x2, y2) {
+      plot: function (x1, y1, h, sweepFlag, x2, y2) {
         //cord length
         var lc = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
         //cord lineAngle
@@ -184,7 +184,7 @@ import 'svgjs';
         }
         return false;
       },
-      mid: function() {
+      mid: function () {
         var cordMidX = (this.x11 + this.x12) / 2.0;
         var cordMidY = (this.y11 + this.y12) / 2.0;
         var h = this.r - this.r * Math.cos(this.ang / 2.0);
@@ -194,37 +194,37 @@ import 'svgjs';
         var cy = cordMidY + Math.cos(theta) * h * sign;
         return new SVG.Point(cx, cy);
       },
-      length: function() {
+      length: function () {
         return this.r * this.ang;
       },
-      cx: function() {
+      cx: function () {
         return this.center.x;
       },
-      cy: function() {
+      cy: function () {
         return this.center.y;
       },
-      x1: function() {
+      x1: function () {
         return this.x11;
       },
-      y1: function() {
+      y1: function () {
         return this.y11;
       },
-      x2: function() {
+      x2: function () {
         return this.x12;
       },
-      y2: function() {
+      y2: function () {
         return this.y12;
       },
-      h: function() {
+      h: function () {
         return this.r - this.r * Math.cos(this.ang / 2.0);
       },
-      angle: function() {
+      angle: function () {
         return this.ang;
       },
-      flag: function() {
+      flag: function () {
         return this.largeArcFlag;
       },
-      sweep: function(f) {
+      sweep: function (f) {
         if(f != undefined) {
           this.sweepFlag = f;
           this.plot(this.x1(), this.y1(), this.h(), this.sweepFlag, this.x2(), this.y2());
@@ -234,7 +234,7 @@ import 'svgjs';
     //Add parent method
     construct: {
       //Create a line element
-      arc: function(x1, y1, r, sweepFlag, x2, y2) {
+      arc: function (x1, y1, r, sweepFlag, x2, y2) {
         return this.put(new SVG.Arc()).plot(x1, y1, r, sweepFlag, x2, y2);
       }
     }

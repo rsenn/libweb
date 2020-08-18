@@ -12,22 +12,22 @@ const MSRGX = /\s{2,}/g,
   CRGX = /[a-z]/,
   ACRGX = /[.a-z]/;
 
-const Hyphenator = function(patterns, exceptions) {
+const Hyphenator = function (patterns, exceptions) {
   this.tree = {};
   this.exceptions = {};
 
-  this._insert_exception = function(ex) {
+  this._insert_exception = function (ex) {
     const a = [0];
-    const x = ex.split(CRGX).forEach(function(h) {
+    const x = ex.split(CRGX).forEach(function (h) {
       a.push(h === '-' ? 1 : 0);
     });
     this.exceptions[ex.replace('-', '')] = a;
   };
 
-  this._insert_pattern = function(pat) {
+  this._insert_pattern = function (pat) {
     const chars = pat.replace(DRGX, '');
 
-    const points = pat.split(ACRGX).map(function(h) {
+    const points = pat.split(ACRGX).map(function (h) {
       return parseInt(h) || 0;
     });
 
@@ -54,7 +54,7 @@ const Hyphenator = function(patterns, exceptions) {
    * @return string
    *   The word, hyphenated.
    */
-  this.hyphenate_word = function(word) {
+  this.hyphenate_word = function (word) {
     if(word.length <= 4) {
       return [word];
     }
@@ -68,7 +68,7 @@ const Hyphenator = function(patterns, exceptions) {
       const work = `.${lword}.`;
 
       //Initialize array with 0s.
-      points = Array(...Array(work.length + 1)).map(function() {
+      points = Array(...Array(work.length + 1)).map(function () {
         return 0;
       });
 
@@ -107,14 +107,8 @@ const Hyphenator = function(patterns, exceptions) {
     return pieces;
   };
 
-  patterns
-    .replace(MSRGX, ' ')
-    .split(' ')
-    .forEach(this._insert_pattern.bind(this));
-  exceptions
-    .replace(MSRGX, ' ')
-    .split(' ')
-    .forEach(this._insert_exception.bind(this));
+  patterns.replace(MSRGX, ' ').split(' ').forEach(this._insert_pattern.bind(this));
+  exceptions.replace(MSRGX, ' ').split(' ').forEach(this._insert_exception.bind(this));
 };
 
 /**
@@ -491,10 +485,10 @@ patterns +=
 const exceptions = 'as-so-ciate as-so-ciates dec-li-na-tion oblig-a-tory phil-an-thropic present presents project projects reci-procity re-cog-ni-zance ref-or-ma-tion ret-ri-bu-tion ta-ble';
 const hyphenator = new Hyphenator(patterns, exceptions);
 
-const main = function() {
+const main = function () {
   const resp = process.argv[2]
     .split(' ')
-    .map(function(word) {
+    .map(function (word) {
       return hyphenator.hyphenate_word(word).join('-');
     })
     .join(' ');

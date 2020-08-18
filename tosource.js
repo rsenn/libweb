@@ -1,9 +1,9 @@
 /* toSource by Marcello Bastea-Forte - zlib license */
-export default function toSource(object, replacer = a => a, indent = '  ', startingIndent = '') {
+export default function toSource(object, replacer = (a) => a, indent = '  ', startingIndent = '') {
   const seen = [];
   return walk(object, replacer, indent === false ? '' : indent, startingIndent, seen);
 
-  function walk(object, replacer = a => a, indent, currentIndent, seen) {
+  function walk(object, replacer = (a) => a, indent, currentIndent, seen) {
     const nextIndent = currentIndent + indent;
     object = replacer ? replacer(object) : object;
 
@@ -48,11 +48,11 @@ export default function toSource(object, replacer = a => a, indent = '  ', start
     }
 
     if(Array.isArray(object)) {
-      return `[${join(object.map(element => walk(element, replacer, indent, nextIndent, seen.slice())))}]`;
+      return `[${join(object.map((element) => walk(element, replacer, indent, nextIndent, seen.slice())))}]`;
     }
     const keys = Object.keys(object);
     if(keys.length) {
-      return `{${join(keys.map(key => (legalKey(key) ? key : JSON.stringify(key)) + ':' + walk(object[key], replacer, indent, nextIndent, seen.slice())))}}`;
+      return `{${join(keys.map((key) => (legalKey(key) ? key : JSON.stringify(key)) + ':' + walk(object[key], replacer, indent, nextIndent, seen.slice())))}}`;
     }
     return '{}';
   }

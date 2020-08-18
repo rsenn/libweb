@@ -508,15 +508,15 @@ export class SpreadElement extends ESNode {
 
 ESNode.prototype.type = null;
 
-ESNode.prototype.toString = function() {
+ESNode.prototype.toString = function () {
   let s = '';
-  ['alternate', 'argument', 'arguments', 'body', 'callee', 'computed', 'consequent', 'declarations', 'exported', 'expression', 'expressions', 'id', 'identifiers', 'init', 'kind', 'left', 'loc', 'members', 'object', 'operator', 'params', 'prefix', 'property', 'right', 'source', 'test', 'update', 'value'].forEach(field => {
+  ['alternate', 'argument', 'arguments', 'body', 'callee', 'computed', 'consequent', 'declarations', 'exported', 'expression', 'expressions', 'id', 'identifiers', 'init', 'kind', 'left', 'loc', 'members', 'object', 'operator', 'params', 'prefix', 'property', 'right', 'source', 'test', 'update', 'value'].forEach((field) => {
     if(this[field]) {
       let value = this[field];
       if(value.value !== undefined) {
         value = `"${value.value}"`;
       } else if(value instanceof Array) {
-        value = `[\n  ${this[field].map(child => child.toString().replace(/\n/g, '\n  ')).join(',\n  ')}\n]`;
+        value = `[\n  ${this[field].map((child) => child.toString().replace(/\n/g, '\n  ')).join(',\n  ')}\n]`;
         value = value.replace(/\n/g, '\n  ');
       } else if(typeof value === 'object' && !(value instanceof Array)) {
         value = Util.className(value);
@@ -603,11 +603,11 @@ export function Factory() {
   self.nodes = nodeList;
   self.stack = [];
   self.loc = { pos: -1, column: -1, line: -1 };
-  self.callback = node => self.nodes.push(node);
+  self.callback = (node) => self.nodes.push(node);
   self.classes = Object.keys(CTORS).reduce(
     (acc, nodeName) => ({
       ...acc,
-      [nodeName]: function(...args) {
+      [nodeName]: function (...args) {
         return self(nodeName, ...args);
       }
     }),
@@ -617,7 +617,7 @@ export function Factory() {
   return self;
 }
 
-export const estree = (function() {
+export const estree = (function () {
   const factory = Factory();
   return factory.classes;
 })();

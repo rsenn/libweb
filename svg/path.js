@@ -13,7 +13,7 @@
 'use strict';
 
 var absCommands = ['M', 'Z', 'L', 'H', 'V', 'C', 'S', 'Q', 'T', 'A'];
-var relCommands = absCommands.map(function(letter) {
+var relCommands = absCommands.map(function (letter) {
   return letter.toLowerCase();
 });
 var commands = absCommands.concat(relCommands);
@@ -37,7 +37,7 @@ export function SvgPath() {
  * Turns relative mode on (lowercase commands will be used)
  * @returns {SvgPath}
  */
-SvgPath.prototype.rel = function() {
+SvgPath.prototype.rel = function () {
   this.relative = true;
   return this;
 };
@@ -46,7 +46,7 @@ SvgPath.prototype.rel = function() {
  * Turns relative mode off (uppercase commands will be used)
  * @returns {SvgPath}
  */
-SvgPath.prototype.abs = function() {
+SvgPath.prototype.abs = function () {
   this.relative = false;
   return this;
 };
@@ -55,7 +55,7 @@ SvgPath.prototype.abs = function() {
  * Closes subpath (Z command)
  * @returns {SvgPath}
  */
-SvgPath.prototype.close = function() {
+SvgPath.prototype.close = function () {
   return this._cmd('Z')();
 };
 
@@ -66,7 +66,7 @@ SvgPath.prototype.close = function() {
  * @param y
  * @returns {SvgPath}
  */
-SvgPath.prototype.to = function(x, y) {
+SvgPath.prototype.to = function (x, y) {
   var point = typeof x === 'object' ? x : { x: x, y: y };
   return this._cmd('M')(point.x, point.y);
 };
@@ -78,7 +78,7 @@ SvgPath.prototype.to = function(x, y) {
  * @param y
  * @returns {SvgPath}
  */
-SvgPath.prototype.line = function(x, y) {
+SvgPath.prototype.line = function (x, y) {
   var point = typeof x === 'object' ? x : { x: x, y: y };
   return this._cmd('L')(point.x, point.y);
 };
@@ -88,7 +88,7 @@ SvgPath.prototype.line = function(x, y) {
  * @param x
  * @returns {SvgPath}
  */
-SvgPath.prototype.hline = function(x) {
+SvgPath.prototype.hline = function (x) {
   return this._cmd('H')(x);
 };
 
@@ -97,7 +97,7 @@ SvgPath.prototype.hline = function(x) {
  * @param y
  * @returns {SvgPath}
  */
-SvgPath.prototype.vline = function(y) {
+SvgPath.prototype.vline = function (y) {
   return this._cmd('V')(y);
 };
 
@@ -113,7 +113,7 @@ SvgPath.prototype.vline = function(y) {
  * @param y
  * @returns {SvgPath}
  */
-SvgPath.prototype.bezier3 = function(x1, y1, x2, y2, x, y) {
+SvgPath.prototype.bezier3 = function (x1, y1, x2, y2, x, y) {
   var usePoints = typeof x1 === 'object';
   var shortcut = usePoints ? arguments.length < 3 : arguments.length < 6;
   var p1 = { x: x1, y: y1 };
@@ -141,7 +141,7 @@ SvgPath.prototype.bezier3 = function(x1, y1, x2, y2, x, y) {
  * @param y
  * @returns {SvgPath}
  */
-SvgPath.prototype.bezier2 = function(x1, y1, x, y) {
+SvgPath.prototype.bezier2 = function (x1, y1, x, y) {
   var usePoints = typeof x1 === 'object';
   var shortcut = usePoints ? arguments.length < 2 : arguments.length < 4;
   var p1 = { x: x1, y: y1 };
@@ -169,12 +169,12 @@ SvgPath.prototype.bezier2 = function(x1, y1, x, y) {
  * @param y
  * @returns {*}
  */
-SvgPath.prototype.arc = function(rx, ry, rotation, large, sweep, x, y) {
+SvgPath.prototype.arc = function (rx, ry, rotation, large, sweep, x, y) {
   var point = typeof x === 'object' ? x : { x: x, y: y };
   return this._cmd('A')(rx, ry, rotation, large ? 1 : 0, sweep ? 1 : 0, point.x, point.y);
 };
 
-SvgPath.prototype.cmd = function(...args) {
+SvgPath.prototype.cmd = function (...args) {
   let command = args.shift();
   let fn = this[command];
   return fn.apply(this, args);
@@ -184,17 +184,17 @@ SvgPath.prototype.cmd = function(...args) {
  * String representation of command chain
  * @returns {string}
  */
-SvgPath.prototype.str = function() {
+SvgPath.prototype.str = function () {
   return this.commands
-    .map(function(command) {
+    .map(function (command) {
       return command.toString();
     })
     .join(' ');
 };
 
 //setting letter commands
-commands.forEach(function(commandName) {
-  SvgPath.prototype[commandName] = function() {
+commands.forEach(function (commandName) {
+  SvgPath.prototype[commandName] = function () {
     var args = Array.prototype.slice.call(arguments, 0);
     args.unshift(commandName);
     var command = new Command(args);
@@ -209,7 +209,7 @@ commands.forEach(function(commandName) {
  * @returns {function}
  * @private
  */
-SvgPath.prototype._cmd = function(letter) {
+SvgPath.prototype._cmd = function (letter) {
   var actualName = this.relative ? letter.toLowerCase() : letter.toUpperCase();
   //TODO maybe direct invokation is better than binding?
   return this[actualName].bind(this);
@@ -231,7 +231,7 @@ function Command(name) {
  * String representation of a command
  * @returns {string}
  */
-Command.prototype.toString = function() {
+Command.prototype.toString = function () {
   return this.name + /*" " +*/ this.args.join(' ');
 };
 
