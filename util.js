@@ -8,7 +8,7 @@ export function Util(g) {
   //if(g) Util.globalObject = g;
 }
 
-Util.formatAnnotatedObject = function(subject, o) {
+Util.formatAnnotatedObject = function (subject, o) {
   const { indent = '  ', spacing = ' ', separator = ',', newline = '\n', maxlen = 30, depth = 1 } = o;
   const i = indent.repeat(Math.abs(1 - depth));
   let nl = newline != '' ? newline + i : spacing;
@@ -21,7 +21,7 @@ Util.formatAnnotatedObject = function(subject, o) {
   if(typeof subject == 'string') return `'${subject}'`;
   if(typeof subject == 'number') return subject;
   if(subject != null && subject['y2'] !== undefined) return `rect[${spacing}${subject['x']}${separator}${subject['y']} | ${subject['x2']}${separator}${subject['y2']} (${subject['w']}x${subject['h']}) ]`;
-  if(Util.isObject(subject) && 'map' in subject && typeof subject.map == 'function') return `[${nl}${subject.map(i => Util.formatAnnotatedObject(i, opts)).join(separator + nl)}]`;
+  if(Util.isObject(subject) && 'map' in subject && typeof subject.map == 'function') return `[${nl}${subject.map((i) => Util.formatAnnotatedObject(i, opts)).join(separator + nl)}]`;
   if(typeof subject === 'string' || subject instanceof String) return `'${subject}'`;
   let longest = '';
   let r = [];
@@ -41,7 +41,7 @@ Util.formatAnnotatedObject = function(subject, o) {
       s = 'null';
     } else if(subject[k] && subject[k].length !== undefined) {
       try {
-        s = depth <= 0 ? `Array(${subject[k].length})` : `[ ${subject[k].map(item => Util.formatAnnotatedObject(item, opts)).join(', ')} ]`;
+        s = depth <= 0 ? `Array(${subject[k].length})` : `[ ${subject[k].map((item) => Util.formatAnnotatedObject(item, opts)).join(', ')} ]`;
       } catch(err) {
         s = `[${subject[k]}]`;
       }
@@ -52,13 +52,13 @@ Util.formatAnnotatedObject = function(subject, o) {
     }
     r.push([k, s]);
   }
-  let padding = x => (opts.newline != '' ? Util.pad(x, longest.length, spacing) : spacing);
+  let padding = (x) => (opts.newline != '' ? Util.pad(x, longest.length, spacing) : spacing);
   let j = separator + spacing;
   if(r.length > 6) {
     nl = opts.newline + i;
     j = separator + (opts.newline || spacing) + i;
   }
-  let ret = '{' + opts.newline + r.map(arr => padding(arr[0]) + arr[0] + ':' + spacing + arr[1]).join(j) + opts.newline + i + '}';
+  let ret = '{' + opts.newline + r.map((arr) => padding(arr[0]) + arr[0] + ':' + spacing + arr[1]).join(j) + opts.newline + i + '}';
   return ret;
 };
 Util.curry = (fn, arity) => {
@@ -69,23 +69,23 @@ Util.curry = (fn, arity) => {
 
     let n = arity - args.length;
     let a = Array.from({ length: n }, (v, i) => String.fromCharCode(65 + i));
-    let Curried = function(...a) {
+    let Curried = function (...a) {
       return curried.apply(thisObj, a);
     }; //;
     return [
-      function() {
+      function () {
         return Curried(...args);
       },
-      function(a) {
+      function (a) {
         return Curried(...args, a);
       },
-      function(a, b) {
+      function (a, b) {
         return Curried(...args, a, b);
       },
-      function(a, b, c) {
+      function (a, b, c) {
         return r(...args, a, b, c);
       },
-      function(a, b, c, d) {
+      function (a, b, c, d) {
         return Curried(...args, a, b, c, d);
       }
     ][n];
@@ -101,33 +101,33 @@ Util.curry = (fn, arity) => {
 };
 Util.arityN = (fn, n) => {
   const arityFn = [
-    function(fn) {
-      return function() {
+    function (fn) {
+      return function () {
         return fn();
       };
     },
-    function(fn) {
-      return function(a) {
+    function (fn) {
+      return function (a) {
         return fn(a);
       };
     },
-    function(fn) {
-      return function(a, b) {
+    function (fn) {
+      return function (a, b) {
         return fn(a, b);
       };
     },
-    function(fn) {
-      return function(a, b, c) {
+    function (fn) {
+      return function (a, b, c) {
         return fn(a, b, c);
       };
     },
-    function(fn) {
-      return function(a, b, c, d) {
+    function (fn) {
+      return function (a, b, c, d) {
         return fn(a, b, c, d);
       };
     },
-    function(fn) {
-      return function(a, b, c, d, e) {
+    function (fn) {
+      return function (a, b, c, d, e) {
         return fn(a, b, c, d, e);
         H;
       };
@@ -137,16 +137,16 @@ Util.arityN = (fn, n) => {
   else return fn;
 };
 
-Util.getter = target => (typeof target == 'object' && target !== null ? (typeof target.get == 'function' ? key => target.get(key) : key => target[key]) : null);
-Util.setter = target => (typeof target == 'object' && target !== null ? (typeof target.set == 'function' ? (key, value) => target.set(key, value) : (key, value) => (target[key] = value)) : null);
-Util.remover = target => (typeof target == 'object' && target !== null ? (typeof target['delete'] == 'function' ? key => target['delete'](key) : key => delete target[key]) : null);
-Util.hasFn = target => (typeof target == 'object' && target !== null ? (typeof target['has'] == 'function' ? key => target['has'](key) : key => key in target) : null);
+Util.getter = (target) => (typeof target == 'object' && target !== null ? (typeof target.get == 'function' ? (key) => target.get(key) : (key) => target[key]) : null);
+Util.setter = (target) => (typeof target == 'object' && target !== null ? (typeof target.set == 'function' ? (key, value) => target.set(key, value) : (key, value) => (target[key] = value)) : null);
+Util.remover = (target) => (typeof target == 'object' && target !== null ? (typeof target['delete'] == 'function' ? (key) => target['delete'](key) : (key) => delete target[key]) : null);
+Util.hasFn = (target) => (typeof target == 'object' && target !== null ? (typeof target['has'] == 'function' ? (key) => target['has'](key) : (key) => key in target) : null);
 
 Util.memoize = (fn, storage) => {
   let self,
     cache = [Util.getter(storage), Util.setter(storage)];
 
-  self = function(...args) {
+  self = function (...args) {
     let n = args[0]; // just taking one argument here
     if(n in cache) {
       //console.log('Fetching from cache');
@@ -162,11 +162,11 @@ Util.memoize = (fn, storage) => {
   return Object.freeze(self);
 };
 
-Util.once = function(fn, thisArg) {
+Util.once = function (fn, thisArg) {
   let ran = false;
   let ret;
 
-  return function(...args) {
+  return function (...args) {
     if(!ran) {
       ret = fn.call(thisArg, ...args);
       ran = true;
@@ -175,27 +175,27 @@ Util.once = function(fn, thisArg) {
   };
 };
 
-Util.getGlobalObject = Util.memoize(arg => {
-  const retfn = typeof arg == 'function' ? arg : typeof arg == 'string' ? g => g[arg] : g => g;
+Util.getGlobalObject = Util.memoize((arg) => {
+  const retfn = typeof arg == 'function' ? arg : typeof arg == 'string' ? (g) => g[arg] : (g) => g;
 
   return Util.tryCatch(
     () => global,
     retfn,
-    err =>
+    (err) =>
       Util.tryCatch(
         () => globalThis,
         retfn,
-        err =>
+        (err) =>
           Util.tryCatch(
             () => window,
             retfn,
-            err => console.log('Util.getGlobalObject:', err)
+            (err) => console.log('Util.getGlobalObject:', err)
           )
       )
   );
 });
 
-Util.isDebug = Util.memoize(function() {
+Util.isDebug = Util.memoize(function () {
   if(process !== undefined && process.env.NODE_ENV === 'production') return false;
   return true;
 });
@@ -210,8 +210,8 @@ Util.log = (...args) => {
   let c = [(locationStr[Symbol.for('nodejs.util.inspect.custom')] || locationStr.toString).call(locationStr)];
   c.push(' ');
   let filters = Util.log.filters;
-  let results = filters.map(f => f.test(locationStr));
-  if(filters.every(f => !f.test(locationStr))) return;
+  let results = filters.map((f) => f.test(locationStr));
+  if(filters.every((f) => !f.test(locationStr))) return;
   args = args.reduce((a, p) => {
     if(Util.isObject(p) && p[Util.log.methodName]) p = p[Util.log.methodName]();
     a.push(p);
@@ -227,10 +227,10 @@ Object.defineProperty(Util.log, 'methodName', {
 });
 
 Util.log.filters = [/.*/];
-Util.log.setFilters = function(args) {
-  this.filters = [...args].map(arg => (arg instanceof RegExp ? arg : new RegExp(arg)));
+Util.log.setFilters = function (args) {
+  this.filters = [...args].map((arg) => (arg instanceof RegExp ? arg : new RegExp(arg)));
 };
-Util.log.getFilters = function() {
+Util.log.getFilters = function () {
   return this.filters;
 };
 
@@ -246,10 +246,10 @@ Util.msg = (strings, ...substitutions) => {
 
 Util.logBase = Util.curry((base, n) => Math.log(n) / Math.log(base));
 
-Util.generalLog = function(n, x) {
+Util.generalLog = function (n, x) {
   return Math.log(x) / Math.log(n);
 };
-Util.toSource = function(arg, opts = {}) {
+Util.toSource = function (arg, opts = {}) {
   const { quote = "'", colors = false, multiline = false } = opts;
   const c = Util.coloring(colors);
   if(Util.isArray(arg)) {
@@ -278,10 +278,10 @@ Util.toSource = function(arg, opts = {}) {
   let cls = arg && arg.constructor && Util.fnName(arg.constructor);
   return arg + '';
 };
-Util.debug = function(message) {
+Util.debug = function (message) {
   const args = [...arguments];
   let cache = [];
-  const removeCircular = function(key, value) {
+  const removeCircular = function (key, value) {
     if(typeof value === 'object' && value !== null) {
       if(cache.indexOf(value) !== -1) return;
       cache.push(value);
@@ -289,22 +289,22 @@ Util.debug = function(message) {
     return value;
   };
   const str = args
-    .map(arg => (typeof arg === 'object' ? JSON.toString(arg, removeCircular) : arg))
+    .map((arg) => (typeof arg === 'object' ? JSON.toString(arg, removeCircular) : arg))
     .join(' ')
     .replace(/\n/g, '');
   //console.log("STR: "+str);
   //console.log.call(console, str);
   //Util.log.apply(Util, args)
 };
-Util.type = function({ type }) {
+Util.type = function ({ type }) {
   return (type && String(type).split(new RegExp('[ ()]', 'g'))[1]) || '';
 };
-Util.functionName = function(fn) {
+Util.functionName = function (fn) {
   const matches = /function\s*([^(]*)\(.*/g.exec(String(fn));
   if(matches && matches[1]) return matches[1];
   return null;
 };
-Util.className = function(obj) {
+Util.className = function (obj) {
   let proto;
   //console.log("class:", obj);
   try {
@@ -316,7 +316,7 @@ Util.className = function(obj) {
   }
   if(Util.isObject(proto) && 'constructor' in proto) return Util.fnName(proto.constructor);
 };
-Util.unwrapComponent = function(c) {
+Util.unwrapComponent = function (c) {
   for(;;) {
     if(c.wrappedComponent) c = c.wrappedComponent;
     else if(c.WrappedComponent) c = c.WrappedComponent;
@@ -324,7 +324,7 @@ Util.unwrapComponent = function(c) {
   }
   return c;
 };
-Util.componentName = function(c) {
+Util.componentName = function (c) {
   for(;;) {
     if(c.displayName || c.name) {
       return (c.displayName || c.name).replace(/.*\(([A-Za-z0-9_]+).*/, '$1');
@@ -334,24 +334,24 @@ Util.componentName = function(c) {
   }
   return Util.fnName(c);
 };
-Util.count = function(s, ch) {
+Util.count = function (s, ch) {
   return (String(s).match(new RegExp(ch, 'g')) || Util.array()).length;
 };
-Util.parseNum = function(str) {
+Util.parseNum = function (str) {
   let num = parseFloat(str);
   if(isNaN(num)) num = 0;
   return num;
 };
-Util.minmax = function(num, min, max) {
+Util.minmax = function (num, min, max) {
   return Math.min(Math.max(num, min), max);
 };
-Util.getExponential = function(num) {
+Util.getExponential = function (num) {
   let str = typeof num == 'string' ? num : num.toExponential();
   const matches = /e\+?(.*)$/.exec(str);
   //console.log("matches: ", matches);
   return parseInt(matches[1]);
 };
-Util.getNumberParts = function(num) {
+Util.getNumberParts = function (num) {
   let str = typeof num == 'string' ? num : num.toExponential();
   const matches = /^(-?)(.*)e\+?(.*)$/.exec(str);
   //console.log("matches: ", matches);
@@ -362,47 +362,45 @@ Util.getNumberParts = function(num) {
     exponent: parseInt(matches[3])
   };
 };
-Util.pow2 = function(n) {
+Util.pow2 = function (n) {
   return Math.pow(2, n);
 };
-Util.pow10 = function(n) {
+Util.pow10 = function (n) {
   return n >= 0 ? Math.pow(10, n) : 1 / Math.pow(10, -n);
 };
-Util.bitValue = function(n) {
+Util.bitValue = function (n) {
   return Util.pow2(n - 1);
 };
-Util.toBinary = function(num) {
+Util.toBinary = function (num) {
   return parseInt(num).toString(2);
 };
-Util.toBits = function(num) {
-  let a = Util.toBinary(num)
-    .split('')
-    .reverse();
-  return Array.from(Object.assign({}, a, { length: 50 }), bit => (bit ? 1 : 0));
+Util.toBits = function (num) {
+  let a = Util.toBinary(num).split('').reverse();
+  return Array.from(Object.assign({}, a, { length: 50 }), (bit) => (bit ? 1 : 0));
 };
-Util.getBit = function(v, n) {
+Util.getBit = function (v, n) {
   let s = v.toString(2);
   return n < s.length ? parseInt(s[s.length - n - 1]) : 0;
 };
-Util.isSet = function(v, n) {
+Util.isSet = function (v, n) {
   return Util.getBit(v, n) == 1;
 };
-Util.bitCount = function(n) {
+Util.bitCount = function (n) {
   return Util.count(Util.toBinary(n), '1');
 };
-Util.toggleBit = function(num, bit) {
+Util.toggleBit = function (num, bit) {
   const n = Number(num);
   return Util.isSet(n, bit) ? n - Util.pow2(bit) : n + Util.pow2(bit);
 };
-Util.setBit = function(num, bit) {
+Util.setBit = function (num, bit) {
   const n = Number(num);
   return Util.isSet(n, bit) ? n : n + Util.pow2(bit);
 };
-Util.clearBit = function(num, bit) {
+Util.clearBit = function (num, bit) {
   const n = Number(num);
   return Util.isSet(n, bit) ? n - Util.pow2(bit) : n;
 };
-Util.range = function(start, end) {
+Util.range = function (start, end) {
   if(start > end) {
     let ret = [];
     while(start >= end) ret.push(start--);
@@ -412,14 +410,14 @@ Util.range = function(start, end) {
   //console.log("Util.range ", r);
   return r;
 };
-Util.set = function(obj, prop, value) {
+Util.set = function (obj, prop, value) {
   const set = obj instanceof Map ? (prop, value) => obj.set(prop, value) : (prop, value) => (obj[prop] = value);
   if(arguments.length == 1)
     return (prop, value) => {
       set(prop, value);
       return set;
     };
-  if(arguments.length == 2) return value => set(prop, value);
+  if(arguments.length == 2) return (value) => set(prop, value);
   return set(prop, value);
 };
 Util.get = Util.curry((obj, prop) => (obj instanceof Map ? obj.get(prop) : obj[prop]));
@@ -429,7 +427,7 @@ Util.inspect = (obj, opts = false) => {
 
   return Util.formatAnnotatedObject(obj, { indent, newline, depth, spacing });
 };
-Util.bitArrayToNumbers = function(arr) {
+Util.bitArrayToNumbers = function (arr) {
   let numbers = [];
   for(let i = 0; i < arr.length; i++) {
     const number = i + 1;
@@ -437,18 +435,18 @@ Util.bitArrayToNumbers = function(arr) {
   }
   return numbers;
 };
-Util.bitsToNumbers = function(bits) {
+Util.bitsToNumbers = function (bits) {
   let a = Util.toBinary(bits).split('');
   let r = [];
   //return a;
   a.forEach((val, key, arr) => val == '1' && r.unshift(a.length - key));
   return r;
 };
-Util.shuffle = function(arr, rnd = Util.rng) {
+Util.shuffle = function (arr, rnd = Util.rng) {
   arr.sort((a, b) => 0.5 - rnd());
   return arr;
 };
-Util.sortNum = function(arr) {
+Util.sortNum = function (arr) {
   arr.sort((a, b) => a - b);
   //console.log("Util.sortNum ", { arr });
   return arr;
@@ -458,51 +456,51 @@ Util.draw = (arr, n = 1, rnd = Util.rng) => {
   const r = arr.splice(pos, n);
   return n == 1 ? r[0] : r;
 };
-Util.is = function(what, ...pred) {
-  let fnlist = pred.map(type => (Util.isConstructor(type) ? what instanceof type : this.is[type]));
+Util.is = function (what, ...pred) {
+  let fnlist = pred.map((type) => (Util.isConstructor(type) ? what instanceof type : this.is[type]));
   console.log('fnlist:', fnlist);
-  return fnlist.every(fn => fn(what));
+  return fnlist.every((fn) => fn(what));
 };
 
-Util.onoff = function(val) {
+Util.onoff = function (val) {
   if(Util.is.on(val)) return true;
   if(Util.is.off(val)) return false;
   return undefined;
 };
-Util.numbersToBits = function(arr) {
+Util.numbersToBits = function (arr) {
   return arr.reduce((bits, num) => bits + Util.bitValue(num), 0);
 };
-Util.randomNumbers = function([start, end], draws) {
+Util.randomNumbers = function ([start, end], draws) {
   const r = Util.draw(Util.range(start, end), draws);
   //console.log("Util.randomNumbers ", { start, end, draws, r });
   return r;
 };
-Util.randomBits = function(r = [1, 50], n = 5) {
+Util.randomBits = function (r = [1, 50], n = 5) {
   return Util.numbersToBits(Util.randomNumbers(r, n));
 };
-Util.padFn = function(len, char = ' ', fn = (str, pad) => pad) {
+Util.padFn = function (len, char = ' ', fn = (str, pad) => pad) {
   return (s, n = len) => {
     let m = Util.stripAnsi(s).length;
     s = s ? s.toString() : '' + s;
     return fn(s, m < n ? char.repeat(n - m) : '');
   };
 };
-Util.pad = function(s, n, char = ' ') {
+Util.pad = function (s, n, char = ' ') {
   return Util.padFn(n, char)(s);
 };
-Util.abbreviate = function(str, max = 40, suffix = '...') {
+Util.abbreviate = function (str, max = 40, suffix = '...') {
   str = '' + str;
   if(str.length > max) {
     return str.substring(0, max - suffix.length) + suffix;
   }
   return str;
 };
-Util.trim = function(str, charset) {
+Util.trim = function (str, charset) {
   const r1 = RegExp(`^[${charset}]*`);
   const r2 = RegExp(`[${charset}]*$`);
   return str.replace(r1, '').replace(r2, '');
 };
-Util.trimRight = function(str, charset) {
+Util.trimRight = function (str, charset) {
   const r2 = RegExp(`[${charset}]*$`);
   return str.replace(r2, '');
 };
@@ -589,9 +587,9 @@ Util.extend = (...args) => {
   return result;
 };
 
-Util.isCloneable = obj => Array.isArray(obj) || {}.toString.call(obj) == '[object Object]';
+Util.isCloneable = (obj) => Array.isArray(obj) || {}.toString.call(obj) == '[object Object]';
 
-Util.isUnextendable = val => !val || (typeof val != 'object' && typeof val != 'function');
+Util.isUnextendable = (val) => !val || (typeof val != 'object' && typeof val != 'function');
 /*
 Util.extend = (obj, ...args) => {
   for(let other of args) {
@@ -618,7 +616,7 @@ Util.static = (obj, functions, thisObj, pred = (k, v, f) => true) => {
 
     Util.tryPredicate((key, depth) => obj[key] === undefined && typeof functions[key] == 'function' && pred(key, depth, functions) && [key, value])
   )) {
-    const value = function(...args) {
+    const value = function (...args) {
       return fn.call(thisObj || obj, this, ...args);
     };
     try {
@@ -644,27 +642,27 @@ Util.defineGetterSetter = (obj, key, g, s, enumerable = false) =>
     set: s,
     enumerable
   });
-Util.extendArray = function(arr = Array.prototype) {
+Util.extendArray = function (arr = Array.prototype) {
   /*  Util.define(arr, 'tail', function() {
     return this[this.length - 1];
   });*/
-  Util.define(arr, 'match', function(pred) {
+  Util.define(arr, 'match', function (pred) {
     return Util.match(this, pred);
   });
-  Util.define(arr, 'clear', function() {
+  Util.define(arr, 'clear', function () {
     this.splice(0, this, length);
     return this;
   });
-  Util.define(arr, 'unique', function() {
+  Util.define(arr, 'unique', function () {
     return this.filter((item, i, a) => a.indexOf(item) == i);
   });
   Util.defineGetterSetter(
     arr,
     'tail',
-    function() {
+    function () {
       return Util.tail(this);
     },
-    function(value) {
+    function (value) {
       if(this.length == 0) this.push(value);
       else this[this.length - 1] = value;
     }
@@ -673,7 +671,7 @@ Util.extendArray = function(arr = Array.prototype) {
     return Util.inspect(this, { depth: 100, ...opts });
   });*/
 };
-Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index) => obj.key(index), getItem = (obj, key) => obj[key], setItem = (obj, index, value) => (obj[index] = value)) {
+Util.adapter = function (obj, getLength = (obj) => obj.length, getKey = (obj, index) => obj.key(index), getItem = (obj, key) => obj[key], setItem = (obj, index, value) => (obj[index] = value)) {
   const adapter = obj && {
     get length() {
       return getLength(obj);
@@ -712,23 +710,23 @@ Util.adapter = function(obj, getLength = obj => obj.length, getKey = (obj, index
   };
   return adapter;
 };
-Util.adapter.localStorage = function(s) {
+Util.adapter.localStorage = function (s) {
   s = Util.tryCatch(
     () => !s && global.window,
-    w => w.localStorage,
+    (w) => w.localStorage,
     () => s
   );
 
   return Util.adapter(
     s,
-    l => l.length,
+    (l) => l.length,
     (l, i) => l.key(i),
     (l, key) => JSON.parse(l.getItem(key)),
     (l, key, v) => l.setItem(key, JSON.toString(v))
   );
 };
 var doExtendArray = Util.extendArray;
-Util.array = function(a) {
+Util.array = function (a) {
   if(!(a instanceof Array)) {
     if(Util.isObject(a) && 'length' in a) a = Array.from(a);
   }
@@ -743,13 +741,13 @@ Util.array = function(a) {
     } catch(err) {}
   return a;
 };
-Util.arrayFromEntries = entries =>
+Util.arrayFromEntries = (entries) =>
   Array.from(
     entries.map(([k, v]) => k),
-    key => entries.find(([k, v]) => k === key)[1]
+    (key) => entries.find(([k, v]) => k === key)[1]
   );
 
-Util.toMap = function(hash = {}, fn) {
+Util.toMap = function (hash = {}, fn) {
   let m, gen;
   if(hash instanceof Array && typeof fn == 'function') hash = hash.map(fn);
 
@@ -766,7 +764,7 @@ Util.toMap = function(hash = {}, fn) {
   } catch(err) {}
   return m;
 };
-Util.extendMap = function(map) {
+Util.extendMap = function (map) {
   if(map.entries === undefined) {
     map.entries = function* iterator() {
       for(let entry of map) {
@@ -774,16 +772,16 @@ Util.extendMap = function(map) {
       }
     };
   }
-  map.toObject = function() {
+  map.toObject = function () {
     return Object.fromEntries(this.entries());
   };
-  map.match = function(...args) {
+  map.match = function (...args) {
     return Util.match.apply(this, args);
   };
 };
 Util.fromEntries = Object.fromEntries
   ? Object.fromEntries
-  : entries => {
+  : (entries) => {
       let ret = {};
       for(let [k, v] of entries) {
         ret[k] = v;
@@ -791,44 +789,44 @@ Util.fromEntries = Object.fromEntries
       return ret;
     };
 
-Util.objectFrom = function(any) {
+Util.objectFrom = function (any) {
   if('toJS' in any) any = any.toJS();
   else if(Util.isArray(any)) return Util.fromEntries(any);
   else if('entries' in any) return Util.fromEntries(any.entries());
   return Object.assign({}, any);
 };
-Util.tail = function(arr) {
+Util.tail = function (arr) {
   return arr && arr.length > 0 ? arr[arr.length - 1] : null;
 };
-Util.splice = function(str, index, delcount, insert) {
+Util.splice = function (str, index, delcount, insert) {
   const chars = str.split('');
   Array.prototype.splice.apply(chars, arguments);
   return chars.join('');
 };
-Util.keyOf = function(obj, prop) {
+Util.keyOf = function (obj, prop) {
   const keys = Object.keys(obj);
   for(let k in keys) {
     if(obj[k] === prop) return k;
   }
   return undefined;
 };
-Util.rotateRight = function(arr, n) {
+Util.rotateRight = function (arr, n) {
   arr.unshift(...arr.splice(n, arr.length));
   return arr;
 };
-Util.repeater = function(n, what) {
+Util.repeater = function (n, what) {
   if(typeof what == 'function')
-    return (function*() {
+    return (function* () {
       for(let i = 0; i < n; i++) yield what();
     })();
-  return (function*() {
+  return (function* () {
     for(let i = 0; i < n; i++) yield what;
   })();
 };
-Util.repeat = function(n, what) {
+Util.repeat = function (n, what) {
   return [...Util.repeater(n, what)];
 };
-Util.arrayDim = function(dimensions, init) {
+Util.arrayDim = function (dimensions, init) {
   let args = [...dimensions];
   args.reverse();
   let ret = init;
@@ -838,27 +836,27 @@ Util.arrayDim = function(dimensions, init) {
   }
   return ret;
 };
-Util.flatten = function(arr) {
+Util.flatten = function (arr) {
   let ret = [];
   for(let i = 0; i < arr.length; i++) {
     ret = [...ret, ...arr[i]];
   }
   return ret;
 };
-Util.chunkArray = function(a, size) {
+Util.chunkArray = function (a, size) {
   let r = [];
   for(let i = 0; i < a.length; i += size) r.push(a.slice(i, i + size));
   return r;
 };
-Util.chances = function(numbers, matches) {
+Util.chances = function (numbers, matches) {
   const f = Util.factorial;
   return f(numbers) / (f(matches) * f(numbers - matches));
 };
-Util.sum = function(arr) {
+Util.sum = function (arr) {
   return arr.reduce((acc, n) => acc + n, 0);
 };
 
-Util.expr = fn => {
+Util.expr = (fn) => {
   let nargs = fn.length;
   let ret = Util.curry(fn);
 
@@ -910,7 +908,7 @@ Util.pow = Util.curry((a, b) => Math.pow(a, b));
     return Util.splice.apply(this, [this, ...arguments]);
   }
 );*/
-Util.fnName = function(f, parent) {
+Util.fnName = function (f, parent) {
   if(typeof f == 'function') {
     if(f.name !== undefined) return f.name;
     const s = typeof f.toSource == 'function' ? f.toSource() : f + '';
@@ -924,26 +922,26 @@ Util.fnName = function(f, parent) {
   }
 };
 
-Util.objName = function(o) {
+Util.objName = function (o) {
   if(o === undefined || o == null) return `${o}`;
   if(typeof o === 'function' || o instanceof Function) return Util.fnName(o);
   if(o.constructor) return Util.fnName(o.constructor);
   const s = `${o.type}`;
   return s;
 };
-Util.findKey = function(obj, value) {
-  let pred = typeof value == 'function' ? value : v => v === value;
+Util.findKey = function (obj, value) {
+  let pred = typeof value == 'function' ? value : (v) => v === value;
   for(let k in obj) if(pred(obj[k], k)) return k;
 };
-Util.find = function(arr, value, prop = 'id', acc = Util.array()) {
+Util.find = function (arr, value, prop = 'id', acc = Util.array()) {
   let pred;
   if(typeof value == 'function') pred = value;
   else if(prop && prop.length !== undefined) {
-    pred = function(obj) {
+    pred = function (obj) {
       if(obj[prop] == value) return true;
       return false;
     };
-  } else pred = obj => obj[prop] == value;
+  } else pred = (obj) => obj[prop] == value;
   for(let v of arr) {
     //console.log("v: ", v, "k:", k);
     /*if(Util.isArray(v)) {
@@ -956,7 +954,7 @@ Util.find = function(arr, value, prop = 'id', acc = Util.array()) {
   }
   return null;
 };
-Util.match = function(arg, pred) {
+Util.match = function (arg, pred) {
   let match = pred;
   if(pred instanceof RegExp) {
     const re = pred;
@@ -974,12 +972,12 @@ Util.match = function(arg, pred) {
   }
   return Util.filter(arg, match);
 };
-Util.toHash = function(map, keyTransform = k => Util.camelize('' + k)) {
+Util.toHash = function (map, keyTransform = (k) => Util.camelize('' + k)) {
   let ret = {};
   Util.foreach(map, (v, k) => (ret[keyTransform(k)] = v));
   return ret;
 };
-Util.indexOf = function(obj, prop) {
+Util.indexOf = function (obj, prop) {
   for(let key in obj) {
     if(obj[key] === prop) return key;
   }
@@ -1053,7 +1051,7 @@ Util.toString.defaultOpts = {
   padding: ' '
 };
 
-Util.dump = function(name, props) {
+Util.dump = function (name, props) {
   const args = [name];
   for(let key in props) {
     f;
@@ -1062,7 +1060,7 @@ Util.dump = function(name, props) {
   }
   const w = Util.tryCatch(
     () => global.window,
-    w => w,
+    (w) => w,
     () => null
   );
 
@@ -1072,14 +1070,14 @@ Util.dump = function(name, props) {
     if(w.console !== undefined) w.console.log(...args);
   }
 };
-Util.ucfirst = function(str) {
+Util.ucfirst = function (str) {
   if(typeof str != 'string') str = String(str);
   return str.substring(0, 1).toUpperCase() + str.substring(1);
 };
-Util.lcfirst = function(str) {
+Util.lcfirst = function (str) {
   return str.substring(0, 1).toLowerCase() + str.substring(1);
 };
-Util.typeOf = function(v) {
+Util.typeOf = function (v) {
   if(Util.isObject(v) && Object.getPrototypeOf(v) != Object.prototype) return `${Util.className(v)}`;
   return Util.ucfirst(typeof v);
 };
@@ -1091,12 +1089,12 @@ Util.typeOf = function(v) {
  * @return string Camelized text
  */
 Util.camelize = (text, sep = '') =>
-  text.replace(/^([A-Z])|[\s-_]+(\w)/g, function(match, p1, p2, offset) {
+  text.replace(/^([A-Z])|[\s-_]+(\w)/g, function (match, p1, p2, offset) {
     if(p2) return sep + p2.toUpperCase();
     return p1.toLowerCase();
   });
 
-Util.decamelize = function(str, separator = '-') {
+Util.decamelize = function (str, separator = '-') {
   return /.[A-Z]/.test(str)
     ? str
         .replace(/([a-z\d])([A-Z])/g, `$1${separator}$2`)
@@ -1104,15 +1102,15 @@ Util.decamelize = function(str, separator = '-') {
         .toLowerCase()
     : str;
 };
-Util.ifThenElse = function(pred = value => !!value, _then = () => {}, _else = () => {}) {
-  return function(value) {
+Util.ifThenElse = function (pred = (value) => !!value, _then = () => {}, _else = () => {}) {
+  return function (value) {
     var result = pred(value);
     var ret = !!result ? _then(value) : _else(value);
     return ret;
   };
 };
 
-Util.transform = Util.curry(function*(fn, arr) {
+Util.transform = Util.curry(function* (fn, arr) {
   for(let item of arr) yield fn(item);
 });
 
@@ -1133,7 +1131,7 @@ Util.bucketInserter = (map, ...extraArgs) => {
   var inserter;
   inserter =
     typeof map.has == 'function'
-      ? function(...args) {
+      ? function (...args) {
           //console.log("bucketInsert:",map,args);
           for(let [k, v] of args) {
             let a;
@@ -1142,7 +1140,7 @@ Util.bucketInserter = (map, ...extraArgs) => {
           }
           return inserter;
         }
-      : function(...args) {
+      : function (...args) {
           for(let arg of args) {
             for(let k in arg) {
               const v = arg[k];
@@ -1166,14 +1164,14 @@ Util.fifo = function fifo() {
     for(;;) {
       if(!queue.length) {
         //there's nothing in the queue, wait until push()
-        await new Promise(r => (resolve = r));
+        await new Promise((r) => (resolve = r));
       }
       yield queue.shift();
     }
   }
 
   return {
-    push: function(...args) {
+    push: function (...args) {
       for(let event of args) {
         queue.push(event);
         if(queue.length === 1) resolve(); //allow the generator to resume
@@ -1189,10 +1187,10 @@ Util.fifo = function fifo() {
     }
   };
 };
-Util.isEmail = function(v) {
-  return /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(v);
+Util.isEmail = function (v) {
+  return /^[\-\w]+(\.[\-\w]+)*@[\-\w]+(\.[\-\w]+)+$/.test(v);
 };
-Util.isString = function(v) {
+Util.isString = function (v) {
   return Object.prototype.toString.call(v) == '[object String]';
 };
 /**
@@ -1201,10 +1199,10 @@ Util.isString = function(v) {
  * @param      {<type>}   v       { parameter_description }
  * @return     {boolean}  True if the specified v is numeric, False otherwise.
  */
-Util.isNumeric = v => /^[-+]?(0x|0b|0o|)[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test(v + '');
+Util.isNumeric = (v) => /^[-+]?(0x|0b|0o|)[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test(v + '');
 
 Util.isObject = (obj, ...protoOrPropNames) => {
-  let isObj = arg => ['object', 'function'].indexOf(typeof arg) != -1 && arg !== null;
+  let isObj = (arg) => ['object', 'function'].indexOf(typeof arg) != -1 && arg !== null;
 
   do {
     if(!isObj(obj)) return false;
@@ -1228,47 +1226,47 @@ Util.isObject = (obj, ...protoOrPropNames) => {
   } while(true);
   return obj || false;
 };
-Util.isFunction = fn => !!(fn && fn.constructor && fn.call && fn.apply);
+Util.isFunction = (fn) => !!(fn && fn.constructor && fn.call && fn.apply);
 
-Util.isAsync = fn => typeof fn == 'function' && /async/.test(fn + '') /*|| fn() instanceof Promise*/;
+Util.isAsync = (fn) => typeof fn == 'function' && /async/.test(fn + '') /*|| fn() instanceof Promise*/;
 
-Util.isArrowFunction = fn => (Util.isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
+Util.isArrowFunction = (fn) => (Util.isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
 
-Util.isEmptyString = v => Util.isString(v) && (v == '' || v.length == 0);
+Util.isEmptyString = (v) => Util.isString(v) && (v == '' || v.length == 0);
 
-Util.isEmpty = function(v) {
+Util.isEmpty = function (v) {
   if(typeof v == 'object' && !!v && v.constructor == Object && Object.keys(v).length == 0) return true;
   if(!v || v === null) return true;
   if(typeof v == 'object' && v.length !== undefined && v.length === 0) return true;
   return false;
 };
-Util.isNonEmpty = v => !Util.isEmpty(v);
-Util.isIpAddress = v => {
-  const n = (v + '').split('.').map(i => +i);
-  return n.length == 4 && n.every(i => !isNaN(i) && i >= 0 && i <= 255);
+Util.isNonEmpty = (v) => !Util.isEmpty(v);
+Util.isIpAddress = (v) => {
+  const n = (v + '').split('.').map((i) => +i);
+  return n.length == 4 && n.every((i) => !isNaN(i) && i >= 0 && i <= 255);
 };
-Util.isPortNumber = v => {
+Util.isPortNumber = (v) => {
   const n = +v;
   return !isNaN(n) && n >= 0 && n <= 65535;
 };
 
-Util.hasProps = function(obj, props) {
+Util.hasProps = function (obj, props) {
   const keys = Object.keys(obj);
-  return props ? props.every(prop => 'prop' in obj) : keys.length > 0;
+  return props ? props.every((prop) => 'prop' in obj) : keys.length > 0;
 };
-Util.validatePassword = function(value) {
+Util.validatePassword = function (value) {
   return value.length > 7 && new RegExp('^(?![d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[da-zA-Z!#$ %^&*]').test(value) && !/\s/.test(value);
 };
-Util.clone = function(obj, proto) {
+Util.clone = function (obj, proto) {
   if(Util.isArray(obj)) return obj.slice();
   else if(typeof obj == 'object') return Object.create(proto || obj.constructor.prototype || Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
 };
 //deep copy
-Util.deepClone = function(data) {
+Util.deepClone = function (data) {
   return JSON.parse(JSON.toString(data));
 };
 //Function
-Util.findVal = function(object, propName, maxDepth = 10) {
+Util.findVal = function (object, propName, maxDepth = 10) {
   if(maxDepth <= 0) return null;
   for(let key in object) {
     if(key === propName) {
@@ -1282,7 +1280,7 @@ Util.findVal = function(object, propName, maxDepth = 10) {
   }
 };
 //Deep copy for ObservableArray/Object == There is a problem
-Util.deepCloneObservable = function(data) {
+Util.deepCloneObservable = function (data) {
   let o;
   const t = typeof data;
   if(t === 'object') return data;
@@ -1302,7 +1300,7 @@ Util.deepCloneObservable = function(data) {
   }
 };
 //Convert ObservableArray to Array
-Util.toArray = function(observableArray) {
+Util.toArray = function (observableArray) {
   return observableArray.slice();
 };
 /**
@@ -1312,7 +1310,7 @@ Util.toArray = function(observableArray) {
  * @param pId parent id field
  * @param appId the parent id value of the level one array
  */
-Util.arryToTree = function(data, id, pId, appId) {
+Util.arryToTree = function (data, id, pId, appId) {
   const arr = [];
   data.map((e, i) => {
     e[pId] === appId && arr.push(e);
@@ -1327,7 +1325,7 @@ Util.arryToTree = function(data, id, pId, appId) {
  * @param id id field
  * @param pId parent id field
  */
-Util.to3wei = function(a, old, id, pId) {
+Util.to3wei = function (a, old, id, pId) {
   a.map((e, i) => {
     a[i].children = [];
     old.map((se, si) => {
@@ -1348,19 +1346,19 @@ Util.to3wei = function(a, old, id, pId) {
  * @param i First element Starting from 0
  * @param j The second element starts at 0
  */
-Util.arrExchangePos = function(arr, i, j) {
+Util.arrExchangePos = function (arr, i, j) {
   arr[i] = arr.splice(j, 1, arr[i])[0];
 };
-Util.arrRemove = function(arr, i) {
+Util.arrRemove = function (arr, i) {
   const index = arr.indexOf(i);
   if(index > -1) arr.splice(index, 1);
 };
-Util.move = function(src, dst = []) {
+Util.move = function (src, dst = []) {
   let items = src.splice(0, src.length);
   dst.splice(dst.length, 0, ...items);
   return dst;
 };
-Util.moveIf = function(src, pred, dst = []) {
+Util.moveIf = function (src, pred, dst = []) {
   let items = src.splice(0, src.length);
   let i = 0;
   for(let item of items) (pred(item, i++) ? src : dst).push(item);
@@ -1368,7 +1366,7 @@ Util.moveIf = function(src, pred, dst = []) {
   return dst;
 };
 //Remove the storage when logging out
-Util.logOutClearStorage = function() {
+Util.logOutClearStorage = function () {
   localStorage.removeItem('userToken');
   localStorage.removeItem('userLoginPermission');
   localStorage.removeItem('ssoToken');
@@ -1378,30 +1376,30 @@ Util.logOutClearStorage = function() {
   localStorage.removeItem('gameAuthList');
 };
 //Take the cookies
-Util.getCookie = function(cookie, name) {
+Util.getCookie = function (cookie, name) {
   let arr = cookie.match(new RegExp(`(^| )${name}=([^;]*)(;|$)`));
   if(arr != null) return unescape(arr[2]);
   return null;
 };
-Util.parseCookie = function(c = document.cookie) {
+Util.parseCookie = function (c = document.cookie) {
   if(!(typeof c == 'string' && c && c.length > 0)) return {};
   let key = '';
   let value = '';
   const ws = ' \r\n\t';
   let i = 0;
   let ret = {};
-  const skip = (pred = char => ws.indexOf(char) != -1) => {
+  const skip = (pred = (char) => ws.indexOf(char) != -1) => {
     let start = i;
     while(i < c.length && pred(c[i])) i++;
     let r = c.substring(start, i);
     return r;
   };
   do {
-    let str = skip(char => char != '=' && char != ';');
+    let str = skip((char) => char != '=' && char != ';');
     if(c[i] == '=' && str != 'path') {
       i++;
       key = str;
-      value = skip(char => char != ';');
+      value = skip((char) => char != ';');
     } else {
       i++;
       skip();
@@ -1418,28 +1416,28 @@ Util.parseCookie = function(c = document.cookie) {
       return { ...acc, [a[0]]: decodeURIComponent(a[1]) };
     }, {});
   };*/
-Util.encodeCookie = c =>
+Util.encodeCookie = (c) =>
   Object.entries(c)
     .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
     .join('; ');
-Util.setCookies = c =>
+Util.setCookies = (c) =>
   Object.entries(c).forEach(([key, value]) => {
     document.cookie = `${key}=${value}`;
     //console.log(`Setting cookie[${key}] = ${value}`);
   });
-Util.clearCookies = function(c) {
+Util.clearCookies = function (c) {
   return Util.setCookies(Object.keys(Util.parseCookie(c)).reduce((acc, name) => Object.assign(acc, { [name]: `; max-age=0; expires=${new Date().toUTCString()}` }), {}));
 };
-Util.deleteCookie = function(name) {
+Util.deleteCookie = function (name) {
   const w = Util.tryCatch(
     () => global.window,
-    w => w,
+    (w) => w,
     () => null
   );
 
   if(w) document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
 };
-Util.accAdd = function(arg1, arg2) {
+Util.accAdd = function (arg1, arg2) {
   let r1, r2, m;
   try {
     r1 = arg1.toString().split('.')[1].length;
@@ -1456,7 +1454,7 @@ Util.accAdd = function(arg1, arg2) {
 };
 //js subtraction calculation
 //
-Util.Subtr = function(arg1, arg2) {
+Util.Subtr = function (arg1, arg2) {
   let r1, r2, m, n;
   try {
     r1 = arg1.toString().split('.')[1].length;
@@ -1476,7 +1474,7 @@ Util.Subtr = function(arg1, arg2) {
 };
 //js division function
 //
-Util.accDiv = function(arg1, arg2) {
+Util.accDiv = function (arg1, arg2) {
   let t1 = 0;
   let t2 = 0;
   let r1;
@@ -1493,7 +1491,7 @@ Util.accDiv = function(arg1, arg2) {
 };
 //js multiplication function
 //
-Util.accMul = function(arg1, arg2) {
+Util.accMul = function (arg1, arg2) {
   let m = 0;
   const s1 = arg1.toString();
   const s2 = arg2.toString();
@@ -1505,7 +1503,7 @@ Util.accMul = function(arg1, arg2) {
   } catch(e) {}
   return (Number(s1.replace('.', '')) * Number(s2.replace('.', ''))) / Math.pow(10, m);
 };
-Util.dateFormatter = function(date, formate) {
+Util.dateFormatter = function (date, formate) {
   const year = date.getFullYear();
   let month = date.getMonth() + 1;
   month = month > 9 ? month : `0${month}`;
@@ -1525,11 +1523,11 @@ Util.dateFormatter = function(date, formate) {
     .replace(/m+/, minute)
     .replace(/s+/, second);
 };
-Util.numberFormatter = function(numStr) {
+Util.numberFormatter = function (numStr) {
   let numSplit = numStr.split('.');
   return numSplit[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',').concat(`.${numSplit[1]}`);
 };
-Util.searchObject = function(object, matchCallback, currentPath, result, searched) {
+Util.searchObject = function (object, matchCallback, currentPath, result, searched) {
   currentPath = currentPath || '';
   result = result || [];
   searched = searched || [];
@@ -1565,7 +1563,7 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
   }
   return result;
 };
-Util.getURL = Util.memoize(function(req = {}) {
+Util.getURL = Util.memoize(function (req = {}) {
   return Util.tryCatch(
     () => process.argv[1],
     () => 'file://' + Util.scriptDir(),
@@ -1581,7 +1579,7 @@ Util.getURL = Util.memoize(function(req = {}) {
     }
   );
 });
-Util.parseQuery = function(url = Util.getURL()) {
+Util.parseQuery = function (url = Util.getURL()) {
   let startIndex;
   let query = {};
   try {
@@ -1598,12 +1596,12 @@ Util.parseQuery = function(url = Util.getURL()) {
     return undefined;
   }
 };
-Util.encodeQuery = function(data) {
+Util.encodeQuery = function (data) {
   const ret = [];
   for(let d in data) ret.push(`${encodeURIComponent(d)}=${encodeURIComponent(data[d])}`);
   return ret.join('&');
 };
-Util.parseURL = function(href = this.getURL()) {
+Util.parseURL = function (href = this.getURL()) {
   console.log('href:', href);
   const matches = /^([^:]+:\/\/)?([^/:]*)(:[0-9]*)?(\/?.*)?/g.exec(href);
   // = /^([^:]*):\/\/([^/:]*)(:[0-9]*)?(\/?.*)?/g.exec(href);
@@ -1615,7 +1613,7 @@ Util.parseURL = function(href = this.getURL()) {
     typeof argstr === 'string'
       ? argstr
           .split(/&/g)
-          .map(part => {
+          .map((part) => {
             let a = part.split(/=/);
             let b = a.shift();
             return [b, a.join('=')];
@@ -1640,7 +1638,7 @@ Util.parseURL = function(href = this.getURL()) {
     }
   };
 };
-Util.makeURL = function(...args) {
+Util.makeURL = function (...args) {
   let href = typeof args[0] == 'string' ? args.shift() : Util.getURL();
   let url = Util.parseURL(href);
   let obj = typeof args[0] == 'object' ? args.shift() : {};
@@ -1652,7 +1650,7 @@ Util.makeURL = function(...args) {
   urlObj = this.parseURL(href);
   return urlObj ? urlObj.href(args[0]) : null;*/
 };
-Util.numberFromURL = function(url, fn) {
+Util.numberFromURL = function (url, fn) {
   const obj = typeof url === 'object' ? url : this.parseURL(url);
   const nr_match = RegExp('.*[^0-9]([0-9]+)$').exec(url.location);
   const nr_arg = nr_match ? nr_match[1] : undefined;
@@ -1660,9 +1658,9 @@ Util.numberFromURL = function(url, fn) {
   if(!isNaN(nr) && typeof fn === 'function') fn(nr);
   return nr;
 };
-Util.tryPromise = fn => new Promise((resolve, reject) => Util.tryCatch(fn, resolve, reject));
+Util.tryPromise = (fn) => new Promise((resolve, reject) => Util.tryCatch(fn, resolve, reject));
 
-Util.tryFunction = (fn, resolve = a => a, reject = () => null) => {
+Util.tryFunction = (fn, resolve = (a) => a, reject = () => null) => {
   if(typeof resolve != 'function') {
     var rval = resolve;
     resolve = () => rval;
@@ -1672,7 +1670,7 @@ Util.tryFunction = (fn, resolve = a => a, reject = () => null) => {
     reject = () => cval;
   }
   return Util.isAsync(fn)
-    ? async function(...args) {
+    ? async function (...args) {
         let ret;
         try {
           ret = await fn(...args);
@@ -1681,7 +1679,7 @@ Util.tryFunction = (fn, resolve = a => a, reject = () => null) => {
         }
         return resolve(ret, ...args);
       }
-    : function(...args) {
+    : function (...args) {
         let ret;
         try {
           ret = fn(...args);
@@ -1691,22 +1689,22 @@ Util.tryFunction = (fn, resolve = a => a, reject = () => null) => {
         return resolve(ret, ...args);
       };
 };
-Util.tryCatch = (fn, resolve = a => a, reject = () => null, ...args) => Util.tryFunction(fn, resolve, reject)(...args);
-Util.putError = err => {
+Util.tryCatch = (fn, resolve = (a) => a, reject = () => null, ...args) => Util.tryFunction(fn, resolve, reject)(...args);
+Util.putError = (err) => {
   let s = Util.stack(err.stack);
 
   let e = Util.exception(err);
   console.info('Util.putError ', e);
   console.error('ERROR:\n' + err.message + '\nstack:\n' + s.toString());
 };
-Util.putStack = stack => {
+Util.putStack = (stack) => {
   stack = stack || Util.stack(new Error().stack);
   console['error']('STACK TRACE:', stack.toString());
 };
 
 Util.trap = (() => {
   Error.stackTraceLimit = 100;
-  return fn => /* prettier-ignore */ {
+  return (fn) => /* prettier-ignore */ {
     return Util.tryFunction(fn, ret => ret, Util.putError);
   };
 })();
@@ -1714,30 +1712,30 @@ Util.trap = (() => {
 Util.tryPredicate = (fn, defaultRet) =>
   Util.tryFunction(
     fn,
-    ret => ret,
+    (ret) => ret,
     () => defaultRet
   );
 
-Util.isBrowser = function() {
+Util.isBrowser = function () {
   let ret = false;
 
   Util.tryCatch(
     () => window,
-    w => (Util.isObject(w) ? (ret = true) : undefined),
+    (w) => (Util.isObject(w) ? (ret = true) : undefined),
     () => {}
   );
   Util.tryCatch(
     () => document,
-    w => (Util.isObject(w) ? (ret = true) : undefined),
+    (w) => (Util.isObject(w) ? (ret = true) : undefined),
     () => {}
   );
   return ret;
   //return !!(global.window && global.window.document);
 };
-Util.waitFor = msecs => {
+Util.waitFor = (msecs) => {
   let promise, clear, timerId;
   promise = new Promise(async (resolve, reject) => {
-    timerId = setTimeout(resolve, msecs);
+    timerId = setTimeout(() => resolve(), msecs);
     clear = () => {
       clearTimeout(timerId);
       reject();
@@ -1749,22 +1747,22 @@ Util.waitFor = msecs => {
   return promise;
 };
 Util.timeout = async (msecs, ...promises) => await Promise.race([Util.waitFor(msecs), ...promises]);
-Util.isServer = function() {
+Util.isServer = function () {
   return !Util.isBrowser();
 };
-Util.isMobile = function() {
+Util.isMobile = function () {
   return true;
 };
-Util.uniquePred = (cmp = null) => (cmp === null ? (el, i, arr) => arr.indexOf(el) === i : (el, i, arr) => arr.findIndex(item => cmp(el, item)) === i);
+Util.uniquePred = (cmp = null) => (cmp === null ? (el, i, arr) => arr.indexOf(el) === i : (el, i, arr) => arr.findIndex((item) => cmp(el, item)) === i);
 Util.unique = (arr, cmp) => arr.filter(Util.uniquePred(cmp));
-Util.histogram = (arr, t = item => item) => {
+Util.histogram = (arr, t = (item) => item) => {
   let r = arr.reduce((acc, item) => {
     acc[t(item)] = (acc[t(item)] || 0) + 1;
     return acc;
   }, {});
   return r;
 };
-Util.concat = function*(...args) {
+Util.concat = function* (...args) {
   for(let arg of args) {
     if(Util.isGenerator(arg)) {
       console.error('isGenerator:', arg);
@@ -1777,13 +1775,13 @@ Util.concat = function*(...args) {
     }*/
   }
 };
-Util.distinct = function(arr) {
-  return Array.prototype.filter.call(arr, function(value, index, me) {
+Util.distinct = function (arr) {
+  return Array.prototype.filter.call(arr, function (value, index, me) {
     return me.indexOf(value) === index;
   });
 };
-Util.rangeMinMax = function(arr, field) {
-  const numbers = [...arr].map(obj => obj[field]);
+Util.rangeMinMax = function (arr, field) {
+  const numbers = [...arr].map((obj) => obj[field]);
   return [Math.min(...numbers), Math.max(...numbers)];
 };
 
@@ -1795,11 +1793,11 @@ Util.remap = (...args) => {
   const f = [to[1] - to[0], _from[1] - _from[0]];
   const factor = f[0] / f[1];
 
-  const r = val => (val - _from[0]) * factor + to[0];
+  const r = (val) => (val - _from[0]) * factor + to[0];
 
   return r;
 };
-Util.mergeLists = function(arr1, arr2, key = 'id') {
+Util.mergeLists = function (arr1, arr2, key = 'id') {
   let hash = {};
 
   for(let obj of arr1) hash[obj[key]] = obj;
@@ -1813,37 +1811,37 @@ Util.mergeLists = function(arr1, arr2, key = 'id') {
   }
   return ret;*/
 };
-Util.throttle = function(fn, wait) {
+Util.throttle = function (fn, wait) {
   let time = Date.now();
-  return function() {
+  return function () {
     if(time + wait - Date.now() < 0) {
       fn();
       time = Date.now();
     }
   };
 };
-Util.foreach = function(o, fn) {
+Util.foreach = function (o, fn) {
   for(let [k, v] of Util.entries(o)) {
     if(fn(v, k, o) === false) break;
   }
 };
-Util.all = function(obj, pred) {
+Util.all = function (obj, pred) {
   for(let k in obj) if(!pred(obj[k])) return false;
   return true;
 };
-Util.isGenerator = function(fn) {
+Util.isGenerator = function (fn) {
   return (typeof fn == 'function' && /^[^(]*\*/.test(fn.toString())) || (['function', 'object'].indexOf(typeof fn) != -1 && fn.next !== undefined);
 };
-Util.isIterator = obj => Util.isObject(obj) && typeof obj.next == 'function';
+Util.isIterator = (obj) => Util.isObject(obj) && typeof obj.next == 'function';
 
-Util.isIterable = obj => {
+Util.isIterable = (obj) => {
   try {
     for(let item of obj) return true;
   } catch(err) {}
   return false;
 };
-Util.isNativeFunction = x => typeof x == 'function' && /\[(native\ code|[^\n]*)\]/.test(x + '');
-Util.isConstructor = x => {
+Util.isNativeFunction = (x) => typeof x == 'function' && /\[(native\ code|[^\n]*)\]/.test(x + '');
+Util.isConstructor = (x) => {
   if(x !== undefined) {
     let ret,
       members = [];
@@ -1858,20 +1856,20 @@ Util.isConstructor = x => {
       ret = false;
     }
     let proto = (x && x.prototype) || Object.getPrototypeOf(ret);
-    members = Util.getMemberNames(proto).filter(m => m !== 'constructor');
+    members = Util.getMemberNames(proto).filter((m) => m !== 'constructor');
     //console.log('members:', !!ret, members, Util.fnName(x));
     return !!ret && members.length > 0;
   }
 };
 
-Util.filter = function(a, pred) {
+Util.filter = function (a, pred) {
   if(Util.isGenerator(a))
-    return (function*() {
+    return (function* () {
       for(let item of a) if(pred(item)) yield item;
     })();
   let isa = Util.isArray(a);
   if(isa)
-    return (function*() {
+    return (function* () {
       for(let [k, v] of a.entries()) if(pred(v, k, a)) yield v;
     })();
   let ret = {};
@@ -1888,16 +1886,16 @@ Util.reduce = (obj, fn, accu) => {
   for(let key in obj) accu = fn(accu, obj[key], key, obj);
   return accu;
 };
-Util.mapFunctional = fn =>
-  function*(arg) {
+Util.mapFunctional = (fn) =>
+  function* (arg) {
     for(let item of arg) yield fn(item);
   };
 Util.map = (...args) => {
   const [obj, fn] = args;
-  let ret = a => a;
+  let ret = (a) => a;
 
   if(Util.isIterator(obj)) {
-    return ret(function*() {
+    return ret(function* () {
       let i = 0;
       for(let item of obj) yield fn(item, i++, obj);
     })();
@@ -1909,7 +1907,7 @@ Util.map = (...args) => {
   if(typeof obj.entries == 'function') {
     const ctor = obj.constructor;
     obj = obj.entries();
-    ret = a => new ctor([...a]);
+    ret = (a) => new ctor([...a]);
     //    ret = a => new ctor(a);
   }
 
@@ -1918,7 +1916,7 @@ console.log("isGenerator",Util.isGenerator(obj));*/
 
   if(Util.isGenerator(obj))
     return ret(
-      (function*() {
+      (function* () {
         let i = 0;
         for(let item of obj) yield fn(item, i++, obj);
       })()
@@ -1946,7 +1944,7 @@ console.log("isGenerator",Util.isGenerator(obj));*/
   });
 };*/
 
-Util.entriesToObj = function(arr) {
+Util.entriesToObj = function (arr) {
   return [...arr].reduce((acc, item) => {
     const k = item[0];
     const v = item[1];
@@ -1954,17 +1952,17 @@ Util.entriesToObj = function(arr) {
     return acc;
   }, {});
 };
-Util.isDate = function(d) {
+Util.isDate = function (d) {
   return d instanceof Date || (typeof d == 'string' && /[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/.test(d));
 };
-Util.parseDate = function(d) {
+Util.parseDate = function (d) {
   if(Util.isDate(d)) {
     d = new Date(d);
   }
   return d;
   //return /^[0-9]+$/.test(d) ? Util.fromUnixTime(d) : new Date(d);
 };
-Util.isoDate = function(date) {
+Util.isoDate = function (date) {
   try {
     if(typeof date == 'number') date = new Date(date);
     const minOffset = date.getTimezoneOffset();
@@ -1974,22 +1972,22 @@ Util.isoDate = function(date) {
   } catch(err) {}
   return null;
 };
-Util.toUnixTime = function(dateObj, utc = false) {
+Util.toUnixTime = function (dateObj, utc = false) {
   if(!(dateObj instanceof Date)) dateObj = new Date(dateObj);
   let epoch = Math.floor(dateObj.getTime() / 1000);
   if(utc) epoch += dateObj.getTimezoneOffset() * 60;
   return epoch;
 };
-Util.unixTime = function(utc = false) {
+Util.unixTime = function (utc = false) {
   return Util.toUnixTime(new Date(), utc);
 };
-Util.fromUnixTime = function(epoch, utc = false) {
+Util.fromUnixTime = function (epoch, utc = false) {
   let t = parseInt(epoch);
   let d = new Date(0);
   utc ? d.setUTCSeconds(t) : d.setSeconds(t);
   return d;
 };
-Util.formatTime = function(date = new Date(), format = 'HH:MM:SS') {
+Util.formatTime = function (date = new Date(), format = 'HH:MM:SS') {
   let n;
   let out = '';
   if(typeof date == 'number') date = new Date(date);
@@ -2005,13 +2003,13 @@ Util.formatTime = function(date = new Date(), format = 'HH:MM:SS') {
   }
   return out;
 };
-Util.leapYear = function(year) {
+Util.leapYear = function (year) {
   if(year % 400 == 0) return true;
   if(year % 100 == 0) return false;
   if(year % 4 == 0) return true;
   return false;
 };
-Util.timeSpan = function(s) {
+Util.timeSpan = function (s) {
   const seconds = s % 60;
   s = Math.floor(s / 60);
   const minutes = s % 60;
@@ -2028,7 +2026,7 @@ Util.timeSpan = function(s) {
   return ret;
 };
 Util.rng = Math.random;
-Util.randFloat = function(min, max, rnd = Util.rng) {
+Util.randFloat = function (min, max, rnd = Util.rng) {
   return rnd() * (max - min) + min;
 };
 Util.randInt = (...args) => {
@@ -2047,7 +2045,7 @@ Util.randStr = (len, charset, rnd = Util.rng) => {
   return o;
 };
 
-Util.hex = function(num, numDigits = 0) {
+Util.hex = function (num, numDigits = 0) {
   let n = typeof num == 'number' ? num : parseInt(num);
   return ('0'.repeat(numDigits) + n.toString(16)).slice(-numDigits);
 };
@@ -2060,7 +2058,7 @@ Util.numberParts = (num, base) => {
   while(num < 1) (num *= base), exp--;
   return { sign: sgn, mantissa: num, exponent: exp };
 };
-Util.roundTo = function(value, prec, digits, type = 'round') {
+Util.roundTo = function (value, prec, digits, type = 'round') {
   const fn = Math[type];
   if(prec == 1) return fn(value);
   /*  const decimals = Math.log10(prec);
@@ -2076,23 +2074,23 @@ Util.base64 = (() => {
 
   return {
     encode: Util.tryFunction(
-      utf8 => g.btoa(g.unescape(g.encodeURIComponent(utf8))),
-      v => v,
-      utf8 => Buffer.from(utf8).toString('base64')
+      (utf8) => g.btoa(g.unescape(g.encodeURIComponent(utf8))),
+      (v) => v,
+      (utf8) => Buffer.from(utf8).toString('base64')
     ),
     decode: Util.tryFunction(
-      base64 => g.decodeURIComponent(g.escape(g.atob(base64))),
-      v => v,
-      string => Buffer.from(string, 'base64').toString('utf-8')
+      (base64) => g.decodeURIComponent(g.escape(g.atob(base64))),
+      (v) => v,
+      (string) => Buffer.from(string, 'base64').toString('utf-8')
     )
   };
 })();
 
-Util.formatRecord = function(obj) {
+Util.formatRecord = function (obj) {
   let ret = {};
   for(let key in obj) {
     let val = obj[key];
-    if(val instanceof Array) val = val.map(item => Util.formatRecord(item));
+    if(val instanceof Array) val = val.map((item) => Util.formatRecord(item));
     else if(/^-?[0-9]+$/.test(val)) val = parseInt(val);
     else if(/^-?[.0-9]+$/.test(val)) val = parseFloat(val);
     else if(val == 'true' || val == 'false') val = Boolean(val);
@@ -2100,10 +2098,10 @@ Util.formatRecord = function(obj) {
   }
   return ret;
 };
-Util.isArray = function(obj) {
+Util.isArray = function (obj) {
   return (obj && !Util.isGetter(obj, 'length') && Util.isObject(obj) && 'length' in obj && !(obj instanceof String) && !(obj instanceof Function) && typeof obj == 'function') || obj instanceof Array;
 };
-Util.equals = function(a, b) {
+Util.equals = function (a, b) {
   if(Util.isArray(a) && Util.isArray(b)) {
     return a.length == b.length && a.every((e, i) => b[i] === e);
   } else if(Util.isObject(a) && Util.isObject(b)) {
@@ -2131,18 +2129,18 @@ Util.isGetter = (obj, propName) => {
   }
   return false;
 };
-Util.isBool = value => value === true || value === false;
-Util.size = function(obj) {
+Util.isBool = (value) => value === true || value === false;
+Util.size = function (obj) {
   if(Util.isObject(obj)) {
     if('length' in obj) return obj.length;
     return Object.keys(obj).length;
   }
   return undefined;
 };
-Util.isMap = function(obj) {
+Util.isMap = function (obj) {
   return (obj && obj.get !== undefined && obj.keys !== undefined) || obj instanceof Map;
 };
-Util.effectiveDeviceWidth = function() {
+Util.effectiveDeviceWidth = function () {
   let deviceWidth = window.orientation == 0 ? window.screen.width : window.screen.height;
   //iOS returns available pixels, Android returns pixels / pixel ratio
   //http://www.quirksmode.org/blog/archives/2012/07/more_about_devi.html
@@ -2151,10 +2149,10 @@ Util.effectiveDeviceWidth = function() {
   }
   return deviceWidth;
 };
-Util.getFormFields = function(initialState) {
+Util.getFormFields = function (initialState) {
   return Util.mergeObjects([initialState, [...document.forms].reduce((acc, { elements }) => [...elements].reduce((acc2, { name, value }) => (name == '' || value == undefined || value == 'undefined' ? acc2 : Object.assign(acc2, { [name]: value })), acc), {})]);
 };
-Util.mergeObjects = function(objArr, predicate = (dst, src, key) => (src[key] == '' ? undefined : src[key])) {
+Util.mergeObjects = function (objArr, predicate = (dst, src, key) => (src[key] == '' ? undefined : src[key])) {
   let args = objArr;
   let obj = {};
   for(let i = 0; i < args.length; i++) {
@@ -2165,103 +2163,103 @@ Util.mergeObjects = function(objArr, predicate = (dst, src, key) => (src[key] ==
   }
   return obj;
 };
-Util.getUserAgent = function(headers = req.headers) {
+Util.getUserAgent = function (headers = req.headers) {
   const agent = useragent.parse(headers['user-agent']);
   return agent;
 };
-Util.factor = function(start, end) {
+Util.factor = function (start, end) {
   let f = 1;
   for(let i = start; i <= end; i++) {
     f = f * i;
   }
   return f;
 };
-Util.factorial = function(n) {
+Util.factorial = function (n) {
   return Util.factor(1, n);
 };
-Util.lottoChances = function(numbers, draws) {
+Util.lottoChances = function (numbers, draws) {
   const f = Util.factorial;
   return f(numbers) / (f(numbers - draws) * f(draws));
 };
-Util.increment = function(obj, key) {
+Util.increment = function (obj, key) {
   if(obj[key] >= 1) obj[key] == 0;
   obj[key]++;
   return obj[key];
 };
-Util.counter = function() {
+Util.counter = function () {
   this.i = 0;
-  this.incr = function() {
+  this.incr = function () {
     this.i++;
     return this.i;
   };
 };
-Util.filterKeys = function(obj, pred = k => true) {
+Util.filterKeys = function (obj, pred = (k) => true) {
   let args = [...arguments];
   obj = args.shift();
   let ret = {};
   if(pred instanceof RegExp) {
     var re = pred;
-    pred = str => re.test(str);
+    pred = (str) => re.test(str);
   } else if(Util.isArray(pred)) {
     var a = pred;
-    pred = str => a.indexOf(str) != -1;
+    pred = (str) => a.indexOf(str) != -1;
   }
   for(let key in obj) if(pred(key)) ret[key] = obj[key];
   Object.setPrototypeOf(ret, Object.getPrototypeOf(obj));
   return ret;
 };
-Util.filterOutKeys = function(obj, arr) {
+Util.filterOutKeys = function (obj, arr) {
   if(typeof obj != 'object') return obj;
 
-  return Util.filterKeys(obj, key => arr.indexOf(key) == -1);
+  return Util.filterKeys(obj, (key) => arr.indexOf(key) == -1);
 };
-Util.getKeys = function(obj, arr) {
+Util.getKeys = function (obj, arr) {
   let ret = {};
   for(let key of arr) ret[key] = obj[key];
 
   return ret;
 };
-Util.numbersConvert = function(str) {
+Util.numbersConvert = function (str) {
   return str
     .split('')
     .map((ch, i) => (new RegExp('[ :,./]').test(ch) ? ch : String.fromCharCode((str.charCodeAt(i) & 0x0f) + 0x30)))
     .join('');
 };
-Util.entries = function(arg) {
+Util.entries = function (arg) {
   if(Util.isObject(arg)) {
     if(typeof arg.entries == 'function') return arg.entries();
     else if(Util.isIterable(arg))
-      return (function*() {
+      return (function* () {
         for(let key in arg) yield [key, arg[key]];
       })();
     else return Object.entries(arg);
   }
 };
-Util.keys = function(arg) {
+Util.keys = function (arg) {
   let ret;
   if(Util.isObject(arg)) {
     ret =
       typeof arg.keys == 'function'
         ? arg.keys
-        : function*() {
+        : function* () {
             for(let key in arg) yield key;
           };
   }
   if(ret) return ret.call(arg);
 };
-Util.values = function(arg) {
+Util.values = function (arg) {
   let ret;
   if(Util.isObject(arg)) {
     ret =
       typeof arg.values == 'function'
         ? arg.values
-        : function*() {
+        : function* () {
             for(let key in arg) yield arg[key];
           };
   }
   if(ret) return ret.call(arg);
 };
-Util.removeEqual = function(a, b) {
+Util.removeEqual = function (a, b) {
   let c = {};
   for(let key of Util.keys(a)) {
     if(b[key] === a[key]) continue;
@@ -2272,7 +2270,7 @@ Util.removeEqual = function(a, b) {
 
   return c;
 };
-Util.traverse = function(o, fn) {
+Util.traverse = function (o, fn) {
   if(typeof fn == 'function')
     return Util.foreach(o, (v, k, a) => {
       fn(v, k, a);
@@ -2286,7 +2284,7 @@ Util.traverse = function(o, fn) {
   }
   return walker(o);
 };
-Util.traverseWithPath = function(o, rootPath = []) {
+Util.traverseWithPath = function (o, rootPath = []) {
   for(let key of rootPath) o = o[key];
 
   function* walker(o, path) {
@@ -2299,18 +2297,18 @@ Util.traverseWithPath = function(o, rootPath = []) {
 
   return walker(o, []);
 };
-Util.indexByPath = function(o, p) {
+Util.indexByPath = function (o, p) {
   for(let key of p) o = o[key];
   return o;
 };
-Util.pushUnique = function(...args) {
+Util.pushUnique = function (...args) {
   arr = args.shift();
-  args.forEach(item => {
+  args.forEach((item) => {
     if(arr.indexOf(item) == -1) arr.push(item);
   });
   return arr;
 };
-Util.insertSorted = function(arr, item, cmp = (a, b) => b - a) {
+Util.insertSorted = function (arr, item, cmp = (a, b) => b - a) {
   let i = 0,
     len = arr.length;
   while(i < len) {
@@ -2328,7 +2326,7 @@ Util.inserter = (dest, next = (k, v) => {}) => {
     dest instanceof WeakMap ||*/
     typeof dest.set == 'function' && dest.set.length >= 2 ? (k, v) => dest.set(k, v) : Util.isArray(dest) ? (k, v) => dest.push([k, v]) : (k, v) => (dest[k] = v);
   let fn;
-  fn = function(key, value) {
+  fn = function (key, value) {
     insert(key, value);
     next(key, value);
     return fn;
@@ -2338,7 +2336,7 @@ Util.inserter = (dest, next = (k, v) => {}) => {
   return fn;
 };
 
-Util.mapAdapter = getSetFunction => {
+Util.mapAdapter = (getSetFunction) => {
   let r = {
     get(key) {
       return getSetFunction(key);
@@ -2358,27 +2356,27 @@ Util.mapAdapter = getSetFunction => {
  * component2path,  path2eagle  => component2eagle
  *  eagle2path, path2component =>
  */
-Util.mapFunction = map => {
+Util.mapFunction = (map) => {
   let fn;
-  fn = function(key, value) {
+  fn = function (key, value) {
     if(value === undefined) return fn.get(key);
     else return fn.set(key, value);
   };
 
-  fn.map = (m => {
+  fn.map = ((m) => {
     while(Util.isFunction(m) && m.map !== undefined) m = m.map;
     return m;
   })(map);
 
   if(map instanceof Map || (Util.isObject(map) && typeof map.get == 'function' && typeof map.set == 'function')) {
     fn.set = (key, value) => (map.set(key, value), (k, v) => fn(k, v));
-    fn.get = key => map.get(key);
+    fn.get = (key) => map.get(key);
   } else {
     fn.set = (key, value) => ((map[key] = value), (k, v) => fn(k, v));
-    fn.get = key => map[key];
+    fn.get = (key) => map[key];
   }
 
-  fn.update = function(key, fn = (k, v) => v) {
+  fn.update = function (key, fn = (k, v) => v) {
     let oldValue = this.get(key);
     let newValue = fn(oldValue, key);
     if(oldValue != newValue) {
@@ -2391,18 +2389,18 @@ Util.mapFunction = map => {
   };
 
   if(typeof map.keys == 'function') fn.keys = () => map.keys();
-  if(typeof map.has == 'function') fn.has = key => map.has(key);
+  if(typeof map.has == 'function') fn.has = (key) => map.has(key);
   return fn;
 };
 
-Util.mapWrapper = (map, toKey = key => key, fromKey = key => key) => {
+Util.mapWrapper = (map, toKey = (key) => key, fromKey = (key) => key) => {
   let fn = Util.mapFunction(map);
   fn.set = (key, value) => (map.set(toKey(key), value), (k, v) => fn(k, v));
-  fn.get = key => map.get(toKey(key));
+  fn.get = (key) => map.get(toKey(key));
   if(typeof map.keys == 'function') fn.keys = () => [...map.keys()].map(fromKey);
-  if(typeof map.has == 'function') fn.has = key => map.has(toKey(key));
+  if(typeof map.has == 'function') fn.has = (key) => map.has(toKey(key));
 
-  fn.map = (m => {
+  fn.map = ((m) => {
     while(Util.isFunction(m) && m.map !== undefined) m = m.map;
     return m;
   })(map);
@@ -2419,25 +2417,25 @@ Util.mapWrapper = (map, toKey = key => key, fromKey = key => key) => {
  */
 Util.mapCombinator = (forward, backward) => {
   let fn;
-  fn = function(key, value) {
+  fn = function (key, value) {
     if(value === undefined) return fn.get(key);
     else return fn.set(key, value);
   };
   /* prettier-ignore */
   fn.get=  forward.reduceRight((a,m) => makeGetter(m, key => a(key)), a => a);
   return fn;
-  function makeGetter(map, next = a => a) {
-    return key => (false && console.log('getter', { map, key }), next(map.get(key)));
+  function makeGetter(map, next = (a) => a) {
+    return (key) => (false && console.log('getter', { map, key }), next(map.get(key)));
   }
 };
 
-Util.predicate = fn_or_regex => {
+Util.predicate = (fn_or_regex) => {
   let fn;
   if(fn_or_regex instanceof RegExp) fn = (...args) => fn_or_regex.test(args + '');
   else fn = fn_or_regex;
   return fn;
 };
-Util.iterateMembers = function*(obj, predicate = (name, depth, obj, proto) => true, depth = 0) {
+Util.iterateMembers = function* (obj, predicate = (name, depth, obj, proto) => true, depth = 0) {
   let names = [];
   let pred = Util.predicate(predicate);
   const proto = Object.getPrototypeOf(obj);
@@ -2450,8 +2448,8 @@ Util.iterateMembers = function*(obj, predicate = (name, depth, obj, proto) => tr
   if(proto) yield* Util.iterateMembers(proto, predicate, depth + 1);
 };
 
-Util.and = (...predicates) => (...args) => predicates.every(pred => pred(...args));
-Util.or = (...predicates) => (...args) => predicates.some(pred => pred(...args));
+Util.and = (...predicates) => (...args) => predicates.every((pred) => pred(...args));
+Util.or = (...predicates) => (...args) => predicates.some((pred) => pred(...args));
 
 Util.members = Util.curry((pred, obj) => Util.unique([...Util.iterateMembers(obj, Util.tryPredicate(pred))]));
 
@@ -2485,7 +2483,7 @@ Util.counter = (incFn = (c, n, self) => (self.count = c + n)) => {
     return self;
   };
   self.incFn = incFn;
-  self.valueOf = function() {
+  self.valueOf = function () {
     return this.count;
   };
   return self;
@@ -2493,10 +2491,10 @@ Util.counter = (incFn = (c, n, self) => (self.count = c + n)) => {
 
 Util.mapReducer = (setFn, filterFn = (key, value) => true, mapObj = new Map()) => {
   var fn,
-    next = Util.tryFunction(((acc, mem, idx) => (filterFn(mem, idx) ? (setFn(idx, mem), acc) : null), r => r, () => mapObj));
+    next = Util.tryFunction(((acc, mem, idx) => (filterFn(mem, idx) ? (setFn(idx, mem), acc) : null), (r) => r, () => mapObj));
   setFn = setFn || Util.setter(mapObj);
   fn = function MapReduce(arg, acc = mapObj) {
-    if(Util.isObject(arg, o => typeof o.reduce == 'function')) return arg.reduce((acc, arg) => (Util.isArray(arg) ? arg : Util.members(arg)).reduce(reducer, acc), self.map);
+    if(Util.isObject(arg, (o) => typeof o.reduce == 'function')) return arg.reduce((acc, arg) => (Util.isArray(arg) ? arg : Util.members(arg)).reduce(reducer, acc), self.map);
     let c = Util.counter();
 
     for(let mem of arg) acc = next(acc, mem, c());
@@ -2545,26 +2543,26 @@ Util.inherits =
     : function inherits(ctor, superCtor) {
         if(superCtor) {
           ctor.super_ = superCtor;
-          var TempCtor = function() {};
+          var TempCtor = function () {};
           TempCtor.prototype = superCtor.prototype;
           ctor.prototype = new TempCtor();
           ctor.prototype.constructor = ctor;
         }
       };
-Util.bindMethods = function(methods, obj) {
+Util.bindMethods = function (methods, obj) {
   for(let name in methods) {
     methods[name] = methods[name].bind(obj);
   }
   return methods;
 };
-Util.bindMethodsTo = function(dest, obj, methods) {
+Util.bindMethodsTo = function (dest, obj, methods) {
   for(let name in methods) {
     dest[name] = methods[name].bind(obj);
   }
   return dest;
 };
-Util.getConstructor = obj => obj.constructor || Object.getPrototypeOf(obj).constructor;
-Util.getPrototypeChain = function(obj, fn = p => p) {
+Util.getConstructor = (obj) => obj.constructor || Object.getPrototypeOf(obj).constructor;
+Util.getPrototypeChain = function (obj, fn = (p) => p) {
   let ret = [];
   let proto;
   do {
@@ -2579,10 +2577,10 @@ Util.getPrototypeChain = function(obj, fn = p => p) {
 
 Util.getConstructorChain = (ctor, fn = (c, p) => c) => Util.getPrototypeChain(ctor, (p, o) => fn(o, p));
 
-Util.weakAssign = function(obj) {
+Util.weakAssign = function (obj) {
   let args = [...arguments];
   obj = args.shift();
-  args.forEach(other => {
+  args.forEach((other) => {
     for(let key in other) {
       if(obj[key] === undefined) obj[key] = other[key];
     }
@@ -2667,7 +2665,7 @@ Util.define(Util.location.prototype, {
     let { fileName, lineNumber, columnNumber, functionName } = this;
     fileName = fileName.replace(new RegExp(Util.getURL() + '/', 'g'), '');
     let text = /*color ? new this.colorCtor() : */ '';
-    const c = /*color ? (t, color) => text.write(t, color) :*/ t => (text += t);
+    const c = /*color ? (t, color) => text.write(t, color) :*/ (t) => (text += t);
     const palette = Util.location.palettes[Util.isBrowser() ? 1 : 0];
     if(functionName) c(functionName.replace(/\s*\[.*/g, '').replace(/^Function\./, '') + ' ', palette[1]);
 
@@ -2696,7 +2694,7 @@ Util.define(Util.location.prototype, {
 });
 
 Util.stackFrame = function StackFrame(frame) {
-  ['methodName', 'functionName', 'fileName', 'lineNumber', 'columnNumber', 'typeName'].forEach(prop => {
+  ['methodName', 'functionName', 'fileName', 'lineNumber', 'columnNumber', 'typeName'].forEach((prop) => {
     let fn = 'get' + Util.ucfirst(prop);
     if(frame[prop] === undefined && typeof frame[fn] == 'function') frame[prop] = frame[fn]();
   });
@@ -2739,7 +2737,7 @@ Util.define(
     },
     toString(color, columnWidths = [0, 0, 0, 0]) {
       let text = color && this.colorCtor ? new this.colorCtor() : '';
-      const c = color && this.colorCtor ? (t, color) => text.write(t, color) : t => (text += t);
+      const c = color && this.colorCtor ? (t, color) => text.write(t, color) : (t) => (text += t);
       let fields = ['functionName', 'fileName', 'lineNumber', 'columnNumber'];
       const colors = [
         [0, 255, 0],
@@ -2749,7 +2747,7 @@ Util.define(
       ];
 
       //const { functionName, fileName, columnNumber, lineNumber } = this;
-      let columns = fields.map(fn => this[fn]);
+      let columns = fields.map((fn) => this[fn]);
 
       columns = columns.map((f, i) => (f + '')[i >= 2 ? 'padStart' : 'padEnd'](columnWidths[i] || 0, ' '));
       // columns = columns.map((fn, i) => c(fn, colors[i]));
@@ -2777,7 +2775,7 @@ Util.define(
 Util.scriptName = () =>
   Util.tryCatch(
     () => process.argv[1],
-    script => script + '',
+    (script) => script + '',
     () => Util.getURL()
   );
 Util.getFunctionName = () => {
@@ -2788,7 +2786,7 @@ Util.getFunctionName = () => {
 Util.scriptDir = () =>
   Util.tryCatch(
     () => Util.scriptName(),
-    script => (script + '').replace(new RegExp('\\/[^/]*$', 'g'), ''),
+    (script) => (script + '').replace(new RegExp('\\/[^/]*$', 'g'), ''),
     () => Util.getURL()
   );
 Util.stack = function Stack(stack, offset) {
@@ -2799,7 +2797,7 @@ Util.stack = function Stack(stack, offset) {
   function stackToString(st, start = 0) {
     if(Util.isArray(st)) {
       st = [
-        ...(function*() {
+        ...(function* () {
           for(let i = start; i < st.length; i++) yield st[i];
         })()
       ].join('\n');
@@ -2817,21 +2815,21 @@ Util.stack = function Stack(stack, offset) {
   if(typeof stack == 'string') {
     stack = stack.split(/\n/g).slice(1);
     const re = new RegExp('.* at ([^ ][^ ]*) \\(([^)]*)\\)');
-    stack = stack.map(frame =>
+    stack = stack.map((frame) =>
       typeof frame == 'string'
         ? frame
             .replace(/^\s*at\s+/, '')
             .split(/[()]+/g)
-            .map(part => part.trim())
+            .map((part) => part.trim())
         : frame
     );
-    stack = stack.map(frame => (Util.isArray(frame) ? (frame.length < 2 ? ['', ...frame] : frame).slice(0, 2) : frame));
+    stack = stack.map((frame) => (Util.isArray(frame) ? (frame.length < 2 ? ['', ...frame] : frame).slice(0, 2) : frame));
     stack = stack.map(([func, file]) => [
       func,
       file
         .split(/:/g)
         .reverse()
-        .map(n => (!isNaN(+n) ? +n : n))
+        .map((n) => (!isNaN(+n) ? +n : n))
     ]);
     stack = stack.map(([func, file]) => [func, file.length >= 3 ? file : ['', '', ...file]]);
     stack = stack.map(([func, [columnNumber, lineNumber, ...file]]) => ({
@@ -2849,7 +2847,7 @@ Util.stack = function Stack(stack, offset) {
   } else {
     stack = Util.getCallers(1, Number.MAX_SAFE_INTEGER, () => true, stack);
   }
-  stack = stack.map(frame => Object.setPrototypeOf(frame, Util.stackFrame.prototype));
+  stack = stack.map((frame) => Object.setPrototypeOf(frame, Util.stackFrame.prototype));
   //stack =stack.map(f => f+'');
   stack = Object.setPrototypeOf(stack, Util.stack.prototype);
 
@@ -2865,7 +2863,7 @@ Object.defineProperty(Util.stack, Symbol.species, { get: () => Util.stack });
 Util.stack.prototype = Object.assign(Util.stack.prototype, {
   toString(color = false) {
     let columns = this.columnWidths;
-    let a = [...this].map(frame => Util.stackFrame.prototype.toString.call(frame, color, columns));
+    let a = [...this].map((frame) => Util.stackFrame.prototype.toString.call(frame, color, columns));
     let s = a.join('\n');
     return s + '\n';
   },
@@ -2873,19 +2871,19 @@ Util.stack.prototype = Object.assign(Util.stack.prototype, {
     return Util.stack.prototype.toString.call(this);
   },
   [Symbol.for('nodejs.util.inspect.custom')](...args) {
-    return '\n' + this.map(f => f.toString(!Util.isBrowser(), this.columnWidths)).join('\n');
+    return '\n' + this.map((f) => f.toString(!Util.isBrowser(), this.columnWidths)).join('\n');
   }
 });
 
 Object.defineProperties(Util.stack.prototype, {
   columnWidths: {
-    get: function() {
+    get: function () {
       return this.reduce((a, f) => ['functionName'].map((fn, i) => Math.max(a[i], (f[fn] + '').length)), [0, 0, 0, 0]);
     }
   }
 });
 
-Util.getCallerStack = function(position = 2) {
+Util.getCallerStack = function (position = 2) {
   Error.stackTraceLimit = 100;
   if(position >= Error.stackTraceLimit) {
     throw new TypeError(`getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: '${position}' and Error.stackTraceLimit was: '${Error.stackTraceLimit}'`);
@@ -2943,28 +2941,28 @@ Util.getCallerStack = function(position = 2) {
   Util.tryCatch(() => (window.stack = stack));*/
   return stack;
 };
-Util.getCallerFile = function(position = 2) {
+Util.getCallerFile = function (position = 2) {
   let stack = Util.getCallerStack();
   if(stack !== null && typeof stack === 'object') {
     const frame = stack[position];
     return frame ? `${frame.getFileName()}:${frame.getLineNumber()}` : undefined;
   }
 };
-Util.getCallerFunction = function(position = 2) {
+Util.getCallerFunction = function (position = 2) {
   let stack = Util.getCallerStack(position + 1);
   if(stack !== null && typeof stack === 'object') {
     const frame = stack[0];
     return frame ? frame.getFunction() : undefined;
   }
 };
-Util.getCallerFunctionName = function(position = 2) {
+Util.getCallerFunctionName = function (position = 2) {
   let stack = Util.getCallerStack(position + 1);
   if(stack !== null && typeof stack === 'object') {
     const frame = stack[0];
     return frame ? frame.getMethodName() || frame.getFunctionName() : undefined;
   }
 };
-Util.getCallerFunctionNames = function(position = 2) {
+Util.getCallerFunctionNames = function (position = 2) {
   let stack = Util.getCallerStack(position + 1);
   if(stack !== null && typeof stack === 'object') {
     let ret = [];
@@ -2976,7 +2974,7 @@ Util.getCallerFunctionNames = function(position = 2) {
     return ret;
   }
 };
-Util.getCaller = function(index = 1, stack) {
+Util.getCaller = function (index = 1, stack) {
   const methods = ['getThis', 'getTypeName', 'getFunction', 'getFunctionName', 'getMethodName', 'getFileName', 'getLineNumber', 'getColumnNumber', 'getEvalOrigin', 'isToplevel', 'isEval', 'isNative', 'isConstructor'];
   //stack = stack || Util.getCallerStack(index+1);
   //console.log("stack:", stack)
@@ -2996,7 +2994,7 @@ Util.getCaller = function(index = 1, stack) {
     return acc;
   }, Util.stack.prototype);
 };
-Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER, pred = () => true, stack) {
+Util.getCallers = function (start = 2, num = Number.MAX_SAFE_INTEGER, pred = () => true, stack) {
   stack = stack || Util.getCallerStack(start + 1);
   let ret = [];
   let i = 0;
@@ -3010,10 +3008,10 @@ Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER, pred = () =
     } catch(err) {}
     i++;
   }
-  ret.toString = function() {
-    return this.map(frame => frame.toString()).join('\n');
+  ret.toString = function () {
+    return this.map((frame) => frame.toString()).join('\n');
   };
-  ret[Symbol.toStringTag] = function() {
+  ret[Symbol.toStringTag] = function () {
     return this.toString();
   };
   return ret;
@@ -3023,24 +3021,24 @@ Util.getCallers = function(start = 2, num = Number.MAX_SAFE_INTEGER, pred = () =
   return this.getCallerStack(2);
   }
 });*/
-Util.getStackFrame = function(offset = 2) {
+Util.getStackFrame = function (offset = 2) {
   let frames = Util.getCallerStack(0);
-  frames = frames.map(frame => {
+  frames = frames.map((frame) => {
     if(Object.getPrototypeOf(frame) !== Util.stackFrame.prototype) frame = Util.stackFrame(frame);
     return frame;
   });
 
   return frames[offset];
 };
-Util.rotateLeft = function(x, n) {
+Util.rotateLeft = function (x, n) {
   n = n & 0x1f;
   return (x << n) | ((x >> (32 - n)) & ~((-1 >> n) << n));
 };
-Util.rotateRight = function(x, n) {
+Util.rotateRight = function (x, n) {
   n = n & 0x1f;
   return Util.rotateLeft(x, 32 - n);
 };
-Util.hashString = function(string, bits = 32, mask = 0xffffffff) {
+Util.hashString = function (string, bits = 32, mask = 0xffffffff) {
   let ret = 0;
   let bitc = 0;
   for(let i = 0; i < string.length; i++) {
@@ -3052,23 +3050,23 @@ Util.hashString = function(string, bits = 32, mask = 0xffffffff) {
   }
   return ret & 0x7fffffff;
 };
-Util.flatTree = function(tree, addOutput) {
+Util.flatTree = function (tree, addOutput) {
   const ret = [];
-  if(!addOutput) addOutput = arg => ret.push(arg);
-  addOutput(Util.filterKeys(tree, key => key !== 'children'));
+  if(!addOutput) addOutput = (arg) => ret.push(arg);
+  addOutput(Util.filterKeys(tree, (key) => key !== 'children'));
   if(typeof tree.children == 'object' && tree.children !== null && tree.children.length) for(let child of tree.children) Util.flatTree(child, addOutput);
   return ret;
 };
-Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
+Util.traverseTree = function (tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
   if(Util.isObject(tree, tree.childre) && tree.children.length > 0) for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
 };
 
-Util.walkTree = function(node, pred, t, depth = 0, parent = null) {
-  return (function*() {
-    if(!pred) pred = i => true;
+Util.walkTree = function (node, pred, t, depth = 0, parent = null) {
+  return (function* () {
+    if(!pred) pred = (i) => true;
     if(!t)
-      t = function(i) {
+      t = function (i) {
         i.depth = depth;
         return i;
       };
@@ -3083,13 +3081,13 @@ Util.walkTree = function(node, pred, t, depth = 0, parent = null) {
   })();
 };
 
-Util.isPromise = function(obj) {
+Util.isPromise = function (obj) {
   return (Boolean(obj) && typeof obj.then === 'function') || obj instanceof Promise;
 };
 
 /* eslint-disable no-use-before-define */
-if(typeof setImmediate !== 'function') var setImmediate = fn => setTimeout(fn, 0);
-Util.next = function(iter, observer, prev = undefined) {
+if(typeof setImmediate !== 'function') var setImmediate = (fn) => setTimeout(fn, 0);
+Util.next = function (iter, observer, prev = undefined) {
   let item;
   try {
     item = iter.next(prev);
@@ -3100,11 +3098,11 @@ Util.next = function(iter, observer, prev = undefined) {
   if(item.done) return observer.complete();
   if(isPromise(value)) {
     value
-      .then(val => {
+      .then((val) => {
         observer.next(val);
         setImmediate(() => Util.next(iter, observer, val));
       })
-      .catch(err => {
+      .catch((err) => {
         return observer.error(err);
       });
   } else {
@@ -3112,7 +3110,7 @@ Util.next = function(iter, observer, prev = undefined) {
     setImmediate(() => Util.next(iter, observer, value));
   }
 };
-Util.getImageAverageColor = function(imageElement, options) {
+Util.getImageAverageColor = function (imageElement, options) {
   if(!imageElement) {
     return false;
   }
@@ -3190,7 +3188,7 @@ Util.getImageAverageColor = function(imageElement, options) {
     },
     toStringHex() {
       //Returns a CSS compatible HEX coloor string (e.g. 'FFA900')
-      const toHex = function(d) {
+      const toHex = function (d) {
         h = Math.round(d).toString(16);
         if(h.length < 2) {
           h = `0${h}`;
@@ -3203,7 +3201,7 @@ Util.getImageAverageColor = function(imageElement, options) {
   });
   return o;
 };
-Util.jsonToObject = function(jsonStr) {
+Util.jsonToObject = function (jsonStr) {
   let ret = null;
   try {
     ret = JSON.parse(jsonStr);
@@ -3218,7 +3216,7 @@ Util.jsonToObject = function(jsonStr) {
   }
   return ret;
 };
-Util.splitLines = function(str, max_linelen = Number.MAX_SAFE_INTEGER) {
+Util.splitLines = function (str, max_linelen = Number.MAX_SAFE_INTEGER) {
   const tokens = str.split(/\s/g);
   let lines = [];
   let line = tokens.shift();
@@ -3233,28 +3231,28 @@ Util.splitLines = function(str, max_linelen = Number.MAX_SAFE_INTEGER) {
   if(line != '') lines.push(line);
   return lines;
 };
-Util.matchAll = Util.curry(function*(re, str) {
+Util.matchAll = Util.curry(function* (re, str) {
   re = new RegExp(re + '', 'g');
   let match;
   while((match = re.exec(str)) != null) yield match;
 });
-Util.decodeEscapes = function(text) {
+Util.decodeEscapes = function (text) {
   let matches = [...Util.matchAll(/([^\\]*)(\\u[0-9a-f]{4}|\\)/gi, text)];
   if(matches.length) {
-    matches = matches.map(m => [...m].slice(1)).map(([s, t]) => s + String.fromCodePoint(parseInt(t.substring(2), 16)));
+    matches = matches.map((m) => [...m].slice(1)).map(([s, t]) => s + String.fromCodePoint(parseInt(t.substring(2), 16)));
     text = matches.join('');
   }
   return text;
 };
 
-Util.stripXML = text =>
+Util.stripXML = (text) =>
   text
     .replace(/<br(|\ *\/)>/gi, '\n')
     .replace(/<[^>]*>/g, '')
     .replace(/[\t\ ]+/g, ' ')
     .replace(/(\n[\t\ ]*)+\n/g, '\n');
-Util.stripNonPrintable = text => text.replace(/[^\x20-\x7f\x0a\x0d\x09]/g, '');
-Util.decodeHTMLEntities = function(text) {
+Util.stripNonPrintable = (text) => text.replace(/[^\x20-\x7f\x0a\x0d\x09]/g, '');
+Util.decodeHTMLEntities = function (text) {
   var entities = {
     amp: '&',
     apos: "'",
@@ -3267,13 +3265,13 @@ Util.decodeHTMLEntities = function(text) {
     nbsp: ' ',
     quot: '"'
   };
-  return text.replace(new RegExp('&([^;]+);', 'gm'), function(match, entity) {
+  return text.replace(new RegExp('&([^;]+);', 'gm'), function (match, entity) {
     return entities[entity] || match;
   });
 };
-Util.encodeHTMLEntities = (str, charset = '\u00A0-\u9999<>&') => str.replace(new RegExp(`[${charset}](?!#)`, 'gim'), i => '&#' + i.charCodeAt(0) + ';');
+Util.encodeHTMLEntities = (str, charset = '\u00A0-\u9999<>&') => str.replace(new RegExp(`[${charset}](?!#)`, 'gim'), (i) => '&#' + i.charCodeAt(0) + ';');
 
-Util.stripAnsi = function(str) {
+Util.stripAnsi = function (str) {
   return (str + '').replace(new RegExp('\x1b[[(?);]{0,2}(;?[0-9])*.', 'g'), '');
 };
 Util.proxy = (obj = {}, handler) =>
@@ -3289,7 +3287,7 @@ Util.proxy = (obj = {}, handler) =>
     ...handler
   });
 
-Util.propertyLookup = (obj = {}, handler = key => null) =>
+Util.propertyLookup = (obj = {}, handler = (key) => null) =>
   Util.proxy(obj, {
     get(target, key, receiver) {
       return handler(key);
@@ -3329,7 +3327,7 @@ Util.proxyTree = function proxyTree(...callbacks) {
  * @param arguments- any number of arguments
  * @return A 'new' instance of the constructor with the arguments passed
  */
-Util.construct = constructor => {
+Util.construct = (constructor) => {
   function F(args) {
     return constructor.apply(this, args);
   }
@@ -3354,7 +3352,7 @@ Util.constructApply = (constructor, array) => {
   return construct.apply(null, [constructor].concat(args));
 };
 
-Util.immutable = args => {
+Util.immutable = (args) => {
   const argsType = typeof args === 'object' && Util.isArray(args) ? 'array' : 'object';
   const errorText = argsType === 'array' ? "Error! You can't change elements of this array" : "Error! You can't change properties of this object";
   const handler = {
@@ -3374,10 +3372,10 @@ Util.immutableClass = (orig, ...proto) => {
   let name = Util.fnName(orig).replace(/Mutable/g, '');
   let imName = 'Immutable' + name;
   proto = proto || [];
-  let initialProto = proto.map(p =>
+  let initialProto = proto.map((p) =>
     Util.isArrowFunction(p)
       ? p
-      : ctor => {
+      : (ctor) => {
           for(let n in p) ctor.prototype[n] = p[n];
         }
   );
@@ -3407,7 +3405,7 @@ Util.partial = function partial(fn /*, arg1, arg2 etc */) {
   if(!partialArgs.length) {
     return fn;
   }
-  return function() {
+  return function () {
     var args = [].slice.call(arguments);
     var derivedArgs = [];
     for(var i = 0; i < partialArgs.length; i++) {
@@ -3491,7 +3489,7 @@ Util.colorText = (...args) => {
   if(!color) color = Util.coloring();
   return color.text(...args);
 };
-Util.stripAnsi = str => {
+Util.stripAnsi = (str) => {
   let o = '';
   for(let i = 0; i < str.length; i++) {
     if(str[i] == '\x1b' && str[i + 1] == '[') {
@@ -3530,7 +3528,7 @@ Util.multiParagraphWordWrap = (str, width, delimiter) => {
 Util.defineInspect = (proto, ...props) => {
   if(!Util.isBrowser()) {
     const c = Util.coloring();
-    proto[Symbol.for('nodejs.util.inspect.custom')] = function() {
+    proto[Symbol.for('nodejs.util.inspect.custom')] = function () {
       const obj = this;
       return (
         c.text(Util.fnName(proto.constructor) + ' ', 1, 31) +
@@ -3549,9 +3547,9 @@ Util.defineInspect = (proto, ...props) => {
 Util.inRange = Util.curry((a, b, value) => value >= a && value <= b);
 
 Util.bindProperties = (proxy, target, props, gen) => {
-  if(props instanceof Array) props = Object.fromEntries(props.map(name => [name, name]));
+  if(props instanceof Array) props = Object.fromEntries(props.map((name) => [name, name]));
   const propNames = Object.keys(props);
-  if(!gen) gen = p => v => (v === undefined ? target[p] : (target[p] = v));
+  if(!gen) gen = (p) => (v) => (v === undefined ? target[p] : (target[p] = v));
   Object.defineProperties(
     proxy,
     propNames.reduce(
@@ -3576,10 +3574,10 @@ Util.bindProperties = (proxy, target, props, gen) => {
   return proxy;
 };
 
-Util.weakKey = (function() {
+Util.weakKey = (function () {
   const map = new WeakMap();
   let index = 0;
-  return obj => {
+  return (obj) => {
     let key = map.get(obj);
     if(!key) {
       key = 'weak-key-' + index++;
@@ -3606,16 +3604,16 @@ Object.assign(Util.is, {
   promise: Util.isPromise,
   function: Util.isFunction,
   string: Util.isString,
-  on: val => val == 'on' || val === 'true' || val === true,
-  off: val => val == 'off' || val === 'false' || val === false,
-  true: val => val === 'true' || val === true,
-  false: val => val === 'false' || val === false
+  on: (val) => val == 'on' || val === 'true' || val === true,
+  off: (val) => val == 'off' || val === 'false' || val === false,
+  true: (val) => val === 'true' || val === true,
+  false: (val) => val === 'false' || val === false
 });
 
 Util.assignGlobal = () => Util.weakAssign(Util.getGlobalObject(), Util);
 
 Util.weakMapper = (createFn, map = new WeakMap()) => {
-  let self = function(obj, ...args) {
+  let self = function (obj, ...args) {
     let ret;
     if(map.has(obj)) {
       ret = map.get(obj);
@@ -3627,7 +3625,7 @@ Util.weakMapper = (createFn, map = new WeakMap()) => {
     return ret;
   };
   self.set = (k, v) => map.set(k, v);
-  self.get = k => map.get(k);
+  self.get = (k) => map.get(k);
   self.map = map;
   return self;
 };
@@ -3636,7 +3634,7 @@ Util.merge = (...args) => args.reduce((acc, arg) => ({ ...acc, ...arg }), {});
 Util.weakAssoc = (fn = (value, ...args) => Object.assign(value, ...args)) => {
   let mapper = Util.tryCatch(
     () => new WeakMap(),
-    map => Util.weakMapper((obj, ...args) => Util.merge(...args), map),
+    (map) => Util.weakMapper((obj, ...args) => Util.merge(...args), map),
     () => (obj, ...args) => Util.define(obj, ...args)
   );
   return (obj, ...args) => {
@@ -3647,13 +3645,13 @@ Util.weakAssoc = (fn = (value, ...args) => Object.assign(value, ...args)) => {
 Util.transformer = (a, ...l) =>
   (l || []).reduce(
     (c, f) =>
-      function(...v) {
+      function (...v) {
         return f.apply(this, [c.apply(this, v), ...v]);
       },
     a
   );
 Util.proxyObject = (root, handler) => {
-  const ptr = path => path.reduce((a, i) => a[i], root);
+  const ptr = (path) => path.reduce((a, i) => a[i], root);
   const nodes = Util.weakMapper(
     (value, path) =>
       new Proxy(value, {
@@ -3676,10 +3674,10 @@ Util.proxyObject = (root, handler) => {
 
   return node([]);
 };
-Util.parseXML = function(xmlStr) {
+Util.parseXML = function (xmlStr) {
   return Util.tryCatch(
     () => new DOMParser(),
-    parser => parser.parseFromString(xmlStr, 'application/xml')
+    (parser) => parser.parseFromString(xmlStr, 'application/xml')
   );
 };
 
@@ -3721,20 +3719,20 @@ Util.copyTextToClipboard = (i, { target: t } = {}) => {
 
 Util.toPlainObject = (obj, t = (v, n) => v) => [...Util.getMemberNames(obj)].reduce((acc, k) => ({ ...acc, [k]: t(obj[k], k) }), {});
 
-Util.timer = msecs => {
+Util.timer = (msecs) => {
   let ret, id, rej, createdTime, startTime, stopTime, endTime, res, delay, n, timer;
   createdTime = new Date();
   const remaining = () => {
     let r = startTime + msecs - (typeof stopTime == 'number' ? stopTime : new Date());
     return r >= 0 ? r : 0;
   };
-  const finish = callback => {
+  const finish = (callback) => {
     stopTime = new Date();
     if(stopTime.valueOf() > endTime.valueOf()) stopTime = endTime;
     if(typeof callback == 'function') callback(stopTime);
     res((n = remaining()));
   };
-  const log = (method, ...args) => console.log(`${Date.now() - createdTime.valueOf()} timer#${id}.${method}`, ...args.map(obj => Util.toPlainObject(obj || {}, v => v || (v instanceof Date ? `+${v.valueOf() - createdTime}` : v))));
+  const log = (method, ...args) => console.log(`${Date.now() - createdTime.valueOf()} timer#${id}.${method}`, ...args.map((obj) => Util.toPlainObject(obj || {}, (v) => v || (v instanceof Date ? `+${v.valueOf() - createdTime}` : v))));
   const timeout = (msecs, tmr = timer) => {
     let now = Date.now();
     if(!startTime) startTime = new Date(now);
@@ -3767,7 +3765,7 @@ Util.timer = msecs => {
       let { remain, pause } = this;
       stopTime = new Date();
       clearTimeout(id);
-      this.resume = function() {
+      this.resume = function () {
         timeout(remain, this);
         this.pause = pause;
         delete this.resume;
@@ -3775,7 +3773,7 @@ Util.timer = msecs => {
         log('resume', this);
         return this;
       };
-      this.restart = function() {
+      this.restart = function () {
         timeout(delay, this);
         this.pause = pause;
         delete this.resume;
@@ -3814,17 +3812,17 @@ Util.timer = msecs => {
   ret = start();
   return Util.define(ret, timer);
 };
-Util.thenableReject = error => ({
+Util.thenableReject = (error) => ({
   then: (resolve, reject) => reject(error)
 });
-Util.wrapGenerator = fn =>
+Util.wrapGenerator = (fn) =>
   Util.isGenerator(fn)
-    ? function(...args) {
+    ? function (...args) {
         return [...fn.call(this, ...args)];
       }
     : fn;
 
-Util.wrapGeneratorMethods = obj => {
+Util.wrapGeneratorMethods = (obj) => {
   for(let name of Util.getMethodNames(obj, 1, 0)) obj[name] = Util.wrapGenerator(obj[name]);
   return obj;
 };
@@ -3894,7 +3892,7 @@ Util.cacheAdapter = (storage, defaultOpts = {}) => {
   if(typeof storage == 'string')
     storage = Util.tryCatch(
       () => window.caches,
-      async c => c.open(storage),
+      async (c) => c.open(storage),
       () => null
     );
   return {

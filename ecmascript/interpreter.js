@@ -155,8 +155,8 @@ export class ECMAScriptInterpreter {
     fn =
       this['eval' + name] ||
       //(() => '') ||
-      function(...args) {
-        args = args.map(a => Util.className(a));
+      function (...args) {
+        args = args.map((a) => Util.className(a));
         if(node instanceof ESNode) {
           console.log('node:', ESNode.assoc(node).position.toString());
         }
@@ -297,7 +297,7 @@ export class ECMAScriptInterpreter {
     const { kind, declarations } = variable_declaration;
     //    console.log('eval: VariableDeclaration', {declarations});
 
-    let decls = declarations.map(node => this.evalNode(node));
+    let decls = declarations.map((node) => this.evalNode(node));
 
     console.log('eval: VariableDeclaration', decls);
     return decls;
@@ -317,7 +317,7 @@ export class ECMAScriptInterpreter {
 
   evalCallExpression(call_expression) {
     let { arguments: args, callee: fn } = call_expression;
-    args = args.map(arg => this.evalNode(arg));
+    args = args.map((arg) => this.evalNode(arg));
     fn = this.evalNode(fn);
     let r = Scope.find(this.scope, fn);
     console.log('eval: CallExpression:', { args, fn, r });
@@ -342,7 +342,7 @@ export class ECMAScriptInterpreter {
 
   evalNewExpression(new_expression) {
     let { arguments: args, callee: fn } = new_expression;
-    args = args.map(arg => this.evalNode(arg));
+    args = args.map((arg) => this.evalNode(arg));
     fn = this.evalNode(fn);
     let r = Scope.find(this.scope, fn);
     console.log('eval: NewExpression:', { args, fn, r });

@@ -24,7 +24,7 @@ class WebSocketAutoReconnect {
    */
   _open(url) {
     this.socket = new WebSocket(url);
-    this.socket.onclose = evt => {
+    this.socket.onclose = (evt) => {
       if(!this.timerId && evt.code !== 1000) {
         // Ignore normal closure (1000)
         this.timerId = setTimeout(() => {
@@ -33,16 +33,16 @@ class WebSocketAutoReconnect {
       }
       this.onclose(evt);
     };
-    this.socket.onopen = evt => {
+    this.socket.onopen = (evt) => {
       while(this.queue.length) {
         this.socket.send(this.queue.pop());
       }
       this.onopen(evt);
     };
-    this.socket.onerror = evt => {
+    this.socket.onerror = (evt) => {
       this.onerror(evt);
     };
-    this.socket.onmessage = evt => {
+    this.socket.onmessage = (evt) => {
       this.onmessage(evt);
     };
   }

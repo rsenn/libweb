@@ -1,11 +1,11 @@
 /*(function(undefined) {
   "use strict";
 */
-export const BehaveHooks = (function() {
+export const BehaveHooks = (function () {
   var hooks = {};
 
   return {
-    add: function(hookName, fn) {
+    add: function (hookName, fn) {
       if(typeof hookName == 'object') {
         var i;
         for(i = 0; i < hookName.length; i++) {
@@ -22,7 +22,7 @@ export const BehaveHooks = (function() {
         hooks[hookName].push(fn);
       }
     },
-    get: function(hookName) {
+    get: function (hookName) {
       if(hooks[hookName]) {
         return hooks[hookName];
       }
@@ -30,9 +30,9 @@ export const BehaveHooks = (function() {
   };
 })();
 
-export const Behave = function(userOpts) {
+export const Behave = function (userOpts) {
   if(typeof String.prototype.repeat !== 'function') {
-    String.prototype.repeat = function(times) {
+    String.prototype.repeat = function (times) {
       if(times < 1) {
         return '';
       }
@@ -45,7 +45,7 @@ export const Behave = function(userOpts) {
   }
 
   if(typeof Array.prototype.filter !== 'function') {
-    Array.prototype.filter = function(func /*, thisp */) {
+    Array.prototype.filter = function (func /*, thisp */) {
       if(this === null) {
         throw new TypeError();
       }
@@ -92,7 +92,7 @@ export const Behave = function(userOpts) {
       ]
     },
     utils = {
-      _callHook: function(hookName, passData) {
+      _callHook: function (hookName, passData) {
         var hooks = BehaveHooks.get(hookName);
         passData = typeof passData == 'boolean' && passData === false ? false : true;
 
@@ -126,7 +126,7 @@ export const Behave = function(userOpts) {
           }
         }
       },
-      defineNewLine: function() {
+      defineNewLine: function () {
         var ta = document.createElement('textarea');
         ta.value = '\n';
 
@@ -136,7 +136,7 @@ export const Behave = function(userOpts) {
           newLine = '\n';
         }
       },
-      defineTabSize: function(tabSize) {
+      defineTabSize: function (tabSize) {
         if(typeof defaults.textarea.style.OTabSize != 'undefined') {
           defaults.textarea.style.OTabSize = tabSize;
           return;
@@ -151,10 +151,10 @@ export const Behave = function(userOpts) {
         }
       },
       cursor: {
-        getLine: function(textVal, pos) {
+        getLine: function (textVal, pos) {
           return textVal.substring(0, pos).split('\n').length;
         },
-        get: function() {
+        get: function () {
           if(typeof document.createElement('textarea').selectionStart === 'number') {
             return defaults.textarea.selectionStart;
           } else if(document.selection) {
@@ -170,7 +170,7 @@ export const Behave = function(userOpts) {
             return caretPos;
           }
         },
-        set: function(start, end) {
+        set: function (start, end) {
           if(!end) {
             end = start;
           }
@@ -185,7 +185,7 @@ export const Behave = function(userOpts) {
             range.select();
           }
         },
-        selection: function() {
+        selection: function () {
           var textAreaElement = defaults.textarea,
             start = 0,
             end = 0,
@@ -236,17 +236,17 @@ export const Behave = function(userOpts) {
         }
       },
       editor: {
-        getLines: function(textVal) {
+        getLines: function (textVal) {
           return textVal.split('\n').length;
         },
-        get: function() {
+        get: function () {
           return defaults.textarea.value.replace(/\r/g, '');
         },
-        set: function(data) {
+        set: function (data) {
           defaults.textarea.value = data;
         }
       },
-      fenceRange: function() {
+      fenceRange: function () {
         if(typeof defaults.fence == 'string') {
           var data = utils.editor.get(),
             pos = utils.cursor.get(),
@@ -273,10 +273,10 @@ export const Behave = function(userOpts) {
           return true;
         }
       },
-      isEven: function(_this, i) {
+      isEven: function (_this, i) {
         return i % 2;
       },
-      levelsDeep: function() {
+      levelsDeep: function () {
         var pos = utils.cursor.get(),
           val = utils.editor.get();
 
@@ -304,12 +304,7 @@ export const Behave = function(userOpts) {
         for(i = 0; i < charSettings.keyMap.length; i++) {
           if(charSettings.keyMap[i].canBreak) {
             for(j in quoteMap) {
-              toDecrement +=
-                left
-                  .split(quoteMap[j])
-                  .filter(utils.isEven)
-                  .join('')
-                  .split(charSettings.keyMap[i].open).length - 1;
+              toDecrement += left.split(quoteMap[j]).filter(utils.isEven).join('').split(charSettings.keyMap[i].open).length - 1;
             }
           }
         }
@@ -318,7 +313,7 @@ export const Behave = function(userOpts) {
 
         return finalLevels >= 0 ? finalLevels : 0;
       },
-      deepExtend: function(destination, source) {
+      deepExtend: function (destination, source) {
         for(var property in source) {
           if(source[property] && source[property].constructor && source[property].constructor === Object) {
             destination[property] = destination[property] || {};
@@ -343,7 +338,7 @@ export const Behave = function(userOpts) {
           element.detachEvent('on' + eventName, func);
         }
       },
-      preventDefaultEvent: function(e) {
+      preventDefaultEvent: function (e) {
         if(e.preventDefault) {
           e.preventDefault();
         } else {
@@ -352,7 +347,7 @@ export const Behave = function(userOpts) {
       }
     },
     intercept = {
-      tabKey: function(e) {
+      tabKey: function (e) {
         if(!utils.fenceRange()) {
           return;
         }
@@ -420,7 +415,7 @@ export const Behave = function(userOpts) {
         }
         return toReturn;
       },
-      enterKey: function(e) {
+      enterKey: function (e) {
         if(!utils.fenceRange()) {
           return;
         }
@@ -462,7 +457,7 @@ export const Behave = function(userOpts) {
           utils._callHook('enter:after');
         }
       },
-      deleteKey: function(e) {
+      deleteKey: function (e) {
         if(!utils.fenceRange()) {
           return;
         }
@@ -504,7 +499,7 @@ export const Behave = function(userOpts) {
       }
     },
     charFuncs = {
-      openedChar: function(_char, e) {
+      openedChar: function (_char, e) {
         utils.preventDefaultEvent(e);
         utils._callHook('openChar:before');
         var pos = utils.cursor.get(),
@@ -517,7 +512,7 @@ export const Behave = function(userOpts) {
         utils.cursor.set(pos + 1);
         utils._callHook('openChar:after');
       },
-      closedChar: function(_char, e) {
+      closedChar: function (_char, e) {
         var pos = utils.cursor.get(),
           val = utils.editor.get(),
           toOverwrite = val.substring(pos, pos + 1);
@@ -532,7 +527,7 @@ export const Behave = function(userOpts) {
       }
     },
     action = {
-      filter: function(e) {
+      filter: function (e) {
         if(!utils.fenceRange()) {
           return;
         }
@@ -558,7 +553,7 @@ export const Behave = function(userOpts) {
           }
         }
       },
-      listen: function() {
+      listen: function () {
         if(defaults.replaceTab) {
           utils.addEvent(defaults.textarea, 'keydown', intercept.tabKey);
         }
@@ -571,15 +566,15 @@ export const Behave = function(userOpts) {
 
         utils.addEvent(defaults.textarea, 'keypress', action.filter);
 
-        utils.addEvent(defaults.textarea, 'keydown', function() {
+        utils.addEvent(defaults.textarea, 'keydown', function () {
           utils._callHook('keydown');
         });
-        utils.addEvent(defaults.textarea, 'keyup', function() {
+        utils.addEvent(defaults.textarea, 'keyup', function () {
           utils._callHook('keyup');
         });
       }
     },
-    init = function(opts) {
+    init = function (opts) {
       if(opts.textarea) {
         utils._callHook('init:before', false);
         utils.deepExtend(defaults, opts);
@@ -598,7 +593,7 @@ export const Behave = function(userOpts) {
       }
     };
 
-  this.destroy = function() {
+  this.destroy = function () {
     utils.removeEvent(defaults.textarea, 'keydown', intercept.tabKey);
     utils.removeEvent(defaults.textarea, 'keydown', intercept.enterKey);
     utils.removeEvent(defaults.textarea, 'keydown', intercept.deleteKey);

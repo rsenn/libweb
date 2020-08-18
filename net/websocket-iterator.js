@@ -11,7 +11,7 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
   const resolvers = [];
   const ctor = Util.tryCatch(
     () => window.WebSocket,
-    ws => ws,
+    (ws) => ws,
     () => websocket.constructor
   );
 
@@ -27,7 +27,7 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
       });
   };
 
-  const push = data => {
+  const push = (data) => {
     if(done) return;
 
     if(resolvers.length > 0) {
@@ -37,12 +37,12 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
     }
   };
 
-  const pushError = error => {
+  const pushError = (error) => {
     push(thenableReject(error));
     close();
   };
 
-  const pushEvent = event =>
+  const pushEvent = (event) =>
     push({
       value: event,
       done: false
@@ -55,7 +55,7 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
         value: undefined,
         done: true
       });
-    return new Promise(resolve => resolvers.push(resolve));
+    return new Promise((resolve) => resolvers.push(resolve));
   };
 
   const initSocket = () => {
@@ -65,7 +65,7 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
   };
 
   if(websocket.readyState === ctor.CONNECTING) {
-    websocket.addEventListener('open', event => {
+    websocket.addEventListener('open', (event) => {
       if(emitOpen) pushEvent(event);
       initSocket();
     });
@@ -76,7 +76,7 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
   const iterator = {
     [Symbol.asyncIterator]: () => iterator,
     next,
-    throw: async value => {
+    throw: async (value) => {
       pushError(value);
       if(websocket.readyState === ctor.OPEN) websocket.close();
       return next();

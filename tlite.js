@@ -1,7 +1,7 @@
 import Util from './util.js';
 
 export function tlite(getTooltipOpts) {
-  document.addEventListener('mouseover', function(e) {
+  document.addEventListener('mouseover', function (e) {
     var el = e.target;
     var opts = getTooltipOpts(el);
 
@@ -14,19 +14,19 @@ export function tlite(getTooltipOpts) {
       let a = opts.attrib;
 
       if(a instanceof Array || (typeof a == 'object' && a !== null && typeof a.length == 'number')) {
-        getTitle = e => {
+        getTitle = (e) => {
           let x = a
-            .filter(attrName => e.hasAttribute(attrName))
-            .map(attrName => [attrName, (e.hasAttribute(attrName) && e.getAttribute(attrName)) || '', e.hasAttribute(attrName) ? e : null])
+            .filter((attrName) => e.hasAttribute(attrName))
+            .map((attrName) => [attrName, (e.hasAttribute(attrName) && e.getAttribute(attrName)) || '', e.hasAttribute(attrName) ? e : null])
             .filter(([attrName, attrVal]) => attrVal != '' && attrVal != null);
           return x[0] || [];
         };
       } else {
-        getTitle = e => [opts.attrib, (e.hasAttribute(opts.attrib) && e.getAttribute(opts.attrib)) || '', e.hasAttribute(opts.attrib) ? e : null];
+        getTitle = (e) => [opts.attrib, (e.hasAttribute(opts.attrib) && e.getAttribute(opts.attrib)) || '', e.hasAttribute(opts.attrib) ? e : null];
       }
     }
-    if(!getTitle) getTitle = e => ['title', (e.hasAttribute('title') && e.getAttribute('title')) || '', e];
-    opts.getTitle = e => {
+    if(!getTitle) getTitle = (e) => ['title', (e.hasAttribute('title') && e.getAttribute('title')) || '', e];
+    opts.getTitle = (e) => {
       let attrName,
         title,
         i = 0;
@@ -45,7 +45,7 @@ export function tlite(getTooltipOpts) {
   });
 }
 
-tlite.show = function(el, opts, isAuto) {
+tlite.show = function (el, opts, isAuto) {
   opts = opts || {};
   var fallbackAttrib = /*opts.attrib ||*/ 'data-tlite';
 
@@ -111,7 +111,7 @@ if(elem)
 
     return (el.tooltip = {
       show: () => show(el),
-      hide: isAuto => hide(isAuto, el)
+      hide: (isAuto) => hide(isAuto, el)
     });
   }
 
@@ -124,7 +124,7 @@ if(elem)
 
     let html;
     if(/\t/.test(text)) {
-      let cells = text.split(/\n/g).map(row => row.split(/\t/g));
+      let cells = text.split(/\n/g).map((row) => row.split(/\t/g));
       html = '<table border="0" cellspacing="0" cellpadding="0" class="tlite-table" style="margin: 0px; padding: 0px; color: white; ">\n' + cells.map((row, j) => `<tr class="tlite-table tlite-row-${j}">` + row.map((col, i) => `<td class="tlite-table tlite-row-${j} tlite-col-${i}">` + col + '</td>').join('') + '</tr>\n').join('') + '</table>';
     } else {
       html = text.replace(/\n/g, '<br />');
@@ -194,7 +194,7 @@ if(elem)
   }
 }.bind(tlite);
 
-tlite.hide = function(el, isAuto, opts) {
+tlite.hide = function (el, isAuto, opts) {
   let tooltipEl = this.mapper.get(el);
   //const     [attr,text,elem] = opts.getTitle(el);
   /*if(elem)

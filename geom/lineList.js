@@ -24,16 +24,16 @@ export class LineList extends Array {
 if(!Util.isBrowser()) {
   let c = Util.coloring();
   const sym = Symbol.for('nodejs.util.inspect.custom');
-  LineList.prototype[sym] = function() {
-    return `${c.text('LineList', 1, 31)}${c.text('(', 1, 36)}${c.text(this.length, 1, 35) + c.code(1, 36)}) [\n  ${this.map(line => line[sym]() /*({ x1, y1,x2,y2 }) => Util.toString({ x1,y1,x2, y2  }, { multiline: false, spacing: ' ' })*/).join(',\n  ')}\n${c.text(']', 1, 36)}`;
+  LineList.prototype[sym] = function () {
+    return `${c.text('LineList', 1, 31)}${c.text('(', 1, 36)}${c.text(this.length, 1, 35) + c.code(1, 36)}) [\n  ${this.map((line) => line[sym]() /*({ x1, y1,x2,y2 }) => Util.toString({ x1,y1,x2, y2  }, { multiline: false, spacing: ' ' })*/).join(',\n  ')}\n${c.text(']', 1, 36)}`;
   };
 }
 
-Util.defineGetter(LineList, Symbol.species, function() {
+Util.defineGetter(LineList, Symbol.species, function () {
   return this;
 });
 
 export const ImmutableLineList = Util.immutableClass(LineList);
-Util.defineGetter(ImmutableLineList, Symbol.species, function() {
+Util.defineGetter(ImmutableLineList, Symbol.species, function () {
   return ImmutableLineList;
 });

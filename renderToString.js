@@ -1,17 +1,13 @@
 import { options, Fragment, createElement } from './preact.js';
 
 var IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|^--/i;
-var encodeEntities = function(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+var encodeEntities = function (s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 };
-var indent = function(s, char) {
+var indent = function (s, char) {
   return String(s).replace(/(\n+)/g, '$1' + (char || '\t'));
 };
-var isLargeString = function(s, length, ignoreLines) {
+var isLargeString = function (s, length, ignoreLines) {
   return String(s).length > (length || 40) || (!ignoreLines && String(s).indexOf('\n') !== -1) || String(s).indexOf('<') !== -1;
 };
 var JS_TO_CSS = {};
@@ -56,9 +52,9 @@ var SHALLOW = {
 };
 var UNNAMED = [];
 var VOID_ELEMENTS = /^(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/;
-var noop = function() {};
+var noop = function () {};
 renderToString.render = renderToString;
-var shallowRender = function(vnode, context) {
+var shallowRender = function (vnode, context) {
   return renderToString(vnode, context, SHALLOW);
 };
 function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {

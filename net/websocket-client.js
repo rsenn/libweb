@@ -45,7 +45,7 @@ export class WebSocketClient {
    */
   connect(url, protocols) {
     var ws = this;
-    return this.disconnect().then(function() {
+    return this.disconnect().then(function () {
       ws._reset();
       ws._socket = new ws.ctor(url, protocols);
       ws._socket.binaryType = 'arraybuffer';
@@ -77,7 +77,7 @@ export class WebSocketClient {
     if(!this.connected) {
       return Promise.reject(this._closeEvent || new Error('Not connected.'));
     }
-    var receivePromise = new Promise(function(resolve, reject) {
+    var receivePromise = new Promise(function (resolve, reject) {
       ws._receiveCallbacksQueue.push({ resolve: resolve, reject: reject });
     });
     return receivePromise;
@@ -92,10 +92,10 @@ export class WebSocketClient {
     if(!this.connected) {
       return Promise.resolve(this._closeEvent);
     }
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       // It's okay to call resolve/reject multiple times in a promise.
       var callbacks = {
-        resolve: function(dummy) {
+        resolve: function (dummy) {
           // Make sure this object always stays in the queue
           // until callbacks.reject() (which is resolve) is called.
           ws._receiveCallbacksQueue.push(callbacks);
@@ -115,9 +115,9 @@ export class WebSocketClient {
   _setupListenersOnConnect() {
     var ws = this;
     var socket = this._socket;
-    return new Promise(function(resolve, reject) {
-      var handleMessage = function(event) {
-        var messageEvent = function(event) {
+    return new Promise(function (resolve, reject) {
+      var handleMessage = function (event) {
+        var messageEvent = function (event) {
           return;
         };
         // The cast was necessary because Flow's libdef's don't contain
@@ -128,10 +128,10 @@ export class WebSocketClient {
         }
         ws._receiveDataQueue.push(messageEvent.data);
       };
-      var handleOpen = function(event) {
+      var handleOpen = function (event) {
         socket.addEventListener('message', handleMessage);
-        socket.addEventListener('close', function(event) {
-          ws._closeEvent = function(event) {
+        socket.addEventListener('close', function (event) {
+          ws._closeEvent = function (event) {
             return;
           };
           // Whenever a close event fires, the socket is effectively dead.

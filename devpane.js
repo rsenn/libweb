@@ -61,7 +61,7 @@ export default class devpane {
     const nl = '\r\n';
     ws({
       recv: filename,
-      data: x => {
+      data: (x) => {
         this.translations = x;
         done(x);
       }
@@ -252,7 +252,7 @@ export default class devpane {
         //rect.ns = ns;
         rect.tag = tag;
         rect.text = text;
-        rect.toString = function() {
+        rect.toString = function () {
           return `${this.ns}:${this.tag}`;
         };
         if(pred ? pred(elem) : Rect.area(rect) > 0) {
@@ -260,7 +260,7 @@ export default class devpane {
 
           rect.e = elem;
           rect.box = null;
-          rect.test = function(point, serial) {
+          rect.test = function (point, serial) {
             const inside = Point.inside(point, this);
             if(inside) this.serial = serial;
             return inside;
@@ -326,7 +326,7 @@ export default class devpane {
     if(e.key == 'D' && (e.metaKey || e.ctrlKey || e.altKey) && e.shiftKey) {
       this.toggleOpenClose();
     } else if(e.key == 's' && e.ctrlKey) {
-      select().then(e => Util.log('select() = ', e));
+      select().then((e) => Util.log('select() = ', e));
     } /* if(e.key == 'g') {
       gettext().then(r => Util.log("gettext() = ", r));
     } else*/ else if(e.key == 't' && e.ctrlKey) {
@@ -405,7 +405,7 @@ export default class devpane {
     const fn = `${what}EventListener`;
 
     Util.log(`devpane.handleToggle ${fn}`);
-    const mouseEvents = elem => ['mouseenter', 'mouseleave'].forEach(listener => elem[fn](listener, this.mouseEvent));
+    const mouseEvents = (elem) => ['mouseenter', 'mouseleave'].forEach((listener) => elem[fn](listener, this.mouseEvent));
 
     window[`${what}EventListener`]('mousemove', this.mouseMove);
 
@@ -442,7 +442,7 @@ export default class devpane {
     });
     const createRow = (parent, tag = 'td', cells, style = {}) => {
       parent = Element.create('tr', { parent });
-      cells.forEach(innerHTML =>
+      cells.forEach((innerHTML) =>
         Element.create(tag, {
           parent,
           innerHTML,
@@ -472,10 +472,10 @@ export default class devpane {
     };
     //t.chooser = <Select name='en_translations' options={options} onChange={t.handleChange} />;
     t.layer = this.createLayer({ id: 'devpane-layer' });
-    t.factory = Element.factory({ append_to: e => t.layer.appendChild(e) });
+    t.factory = Element.factory({ append_to: (e) => t.layer.appendChild(e) });
     t.renderer = new Renderer(t.chooser, t.factory('div'));
     t.form = t.factory('form', {}, { display: 'flex', flexFlow: 'row nowrap', alignItems: 'flex-end', padding: '4px' });
-    t.form.addEventListener('submit', e => false);
+    t.form.addEventListener('submit', (e) => false);
     t.select = t.renderer.refresh();
 
     t.select.addEventListener('change', ({ target }) => {
@@ -488,7 +488,7 @@ export default class devpane {
       style: { minWidth: '100px' }
     });
 
-    const createLabel = text =>
+    const createLabel = (text) =>
       Element.create('label', {
         innerHTML: text,
         parent: t.fields,
@@ -519,7 +519,7 @@ export default class devpane {
       );
     };
 
-    this.getTranslations(res => {
+    this.getTranslations((res) => {
       Util.log('language store: ', res);
     });
 
@@ -530,10 +530,10 @@ export default class devpane {
         border,
         ...props
       });
-      rows.forEach(row => {
+      rows.forEach((row) => {
         let r = Element.create('tr', { parent: tbl });
         tbl.appendChild(r);
-        row.forEach(col => {
+        row.forEach((col) => {
           let lang = col.charCodeAt(0) > 255 ? (lang = 'fa') : 'en';
           let c = Element.create('td', {
             parent: r,
@@ -560,7 +560,7 @@ export default class devpane {
         style: { margin: '1em auto 0 auto' }
       });
 
-    t.save = function(event) {
+    t.save = function (event) {
       let en = this.inputs['en'].value;
       let fa = this.inputs['fa'].value;
       if(fa != '') {
@@ -573,11 +573,11 @@ export default class devpane {
     t.inputs = {};
     t.labels = {};
 
-    ['en', 'fa'].forEach(lang => {
+    ['en', 'fa'].forEach((lang) => {
       t.inputs[lang] = createEditBox(
         lang,
         '',
-        function({ currentTarget }) {
+        function ({ currentTarget }) {
           this[lang] = currentTarget.value;
         }.bind(t)
       );
@@ -585,7 +585,7 @@ export default class devpane {
     });
 
     t.buttons = {
-      save: createButton('Save', e => t.save(e)),
+      save: createButton('Save', (e) => t.save(e)),
       new: createButton('New', () => this.renderTranslateBox()),
       load: createButton('Load', () => {
         axios.get('/api/read/static/locales/fa-IR/common.json').then(({ data }) => {
@@ -637,11 +637,11 @@ export default class devpane {
         parent: elm,
         value: 'Select an Element',
         style: { border: '2px outset #ddd' },
-        onclick: event => {
+        onclick: (event) => {
           console.error('selectElement');
           event.preventDefault();
           const e = select();
-          e.then(res => {
+          e.then((res) => {
             if(res) {
               let bbText = Element.find('#bbox');
               let bbox = Element.rect(res);
@@ -657,7 +657,7 @@ export default class devpane {
               p.innerHTML =
                 `${this.elements.length} Elements: ` +
                 this.elements
-                  .map(e => e.toString())
+                  .map((e) => e.toString())
                   .sort()
                   .join(', ');
               //Util.log("selectElement (resolved) = ", res);
@@ -673,7 +673,7 @@ export default class devpane {
         parent: elm,
         value: 'Clear',
         style: { border: '2px outset #ddd' },
-        onclick: event => {
+        onclick: (event) => {
           this.elements.splice(0, this.elements.length);
           p.innerHTML = '';
         }
@@ -685,7 +685,7 @@ export default class devpane {
         parent: elm,
         value: 'Clearance',
         style: { border: '2px outset #ddd' },
-        onclick: event => {
+        onclick: (event) => {
           if(this.elements.length >= 2) {
             const elem1 = this.elements[0].e;
             const elem2 = this.elements[1].e;
@@ -695,12 +695,8 @@ export default class devpane {
             const rect1 = Element.rect(elem1);
             const rect2 = Element.rect(elem2);
 
-            const border1 = Element.border(elem1)
-              .outset(rect1)
-              .round();
-            const border2 = Element.border(elem2)
-              .outset(rect2)
-              .round();
+            const border1 = Element.border(elem1).outset(rect1).round();
+            const border2 = Element.border(elem2).outset(rect2).round();
 
             Util.log('Clearance: ', { rect1, border1, rect2, border2 });
           }
@@ -721,7 +717,7 @@ export default class devpane {
   render() {
     const { rect, fontSize } = this;
     return (
-      <form action='none' onSubmit={e => e.preventDefault()}>
+      <form action='none' onSubmit={(e) => e.preventDefault()}>
         <input type='checkbox' onChange={this.handleToggle} />
         Bounding boxes
         <br />
@@ -750,7 +746,7 @@ export default class devpane {
     Util.log(this.rectList);
     this.active = true;
     let selected = new Promise((resolve, reject) => {
-      window.onmousemove = event => {
+      window.onmousemove = (event) => {
         const { target, clientX, clientY } = event;
         const r = this.getRectAt(clientX, clientY);
 
@@ -826,14 +822,14 @@ export default class devpane {
     //rects = rects.filter(item => rect.boxes != null && rect.serial == serial);
 
     rects.sort((a, b) => Rect.area(b) - Rect.area(a));
-    rects = rects.filter(item => Rect.area(item) > 0);
+    rects = rects.filter((item) => Rect.area(item) > 0);
 
     //Util.log("devp.mouseMove", { target, clientX, clientY, rects });
     //this.log().innerHTML =target.outerHTML;
 
     //if(rects.length) Util.log("rects: ", rects);
     let svg = this.svg();
-    [...svg.querySelectorAll('rect')].forEach(e => e.parentElement.removeChild(e));
+    [...svg.querySelectorAll('rect')].forEach((e) => e.parentElement.removeChild(e));
     let f = SVG.factory(svg);
 
     this.svgRects = rects;

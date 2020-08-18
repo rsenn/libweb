@@ -4,21 +4,18 @@ const { curry } = Util;
 
 export const nil = '';
 
-const compile = pointer => {
+const compile = (pointer) => {
   if(pointer.length > 0 && pointer[0] !== '/') {
     throw Error('Invalid JSON Pointer');
   }
 
-  return pointer
-    .split('/')
-    .slice(1)
-    .map(unescape);
+  return pointer.split('/').slice(1).map(unescape);
 };
 
 export const get = (pointer, value = undefined) => {
   const ptr = compile(pointer);
 
-  const fn = value =>
+  const fn = (value) =>
     ptr.reduce(
       ([value, pointer], segment) => {
         return [applySegment(value, segment, pointer), append(segment, pointer)];
@@ -76,7 +73,7 @@ const _assign = (pointer, subject, value, cursor) => {
 
 export const unset = (pointer, subject = undefined) => {
   const ptr = compile(pointer);
-  const fn = subject => _unset(ptr, subject, nil);
+  const fn = (subject) => _unset(ptr, subject, nil);
   return subject === undefined ? fn : fn(subject);
 };
 
@@ -100,7 +97,7 @@ const _unset = (pointer, subject, cursor) => {
 
 const remove = (pointer, subject = undefined) => {
   const ptr = compile(pointer);
-  const fn = subject => _remove(ptr, subject, nil);
+  const fn = (subject) => _remove(ptr, subject, nil);
   return subject === undefined ? fn : fn(subject);
 };
 
@@ -122,18 +119,10 @@ const _remove = (pointer, subject, cursor) => {
   }
 };
 
-export const append = curry((pointer, ...segments) => pointer + segments.map(segment => '/' + escape(segment)).join(''));
+export const append = curry((pointer, ...segments) => pointer + segments.map((segment) => '/' + escape(segment)).join(''));
 
-const escape = segment =>
-  segment
-    .toString()
-    .replace(/~/g, '~0')
-    .replace(/\//g, '~1');
-const unescape = segment =>
-  segment
-    .toString()
-    .replace(/~1/g, '/')
-    .replace(/~0/g, '~');
+const escape = (segment) => segment.toString().replace(/~/g, '~0').replace(/\//g, '~1');
+const unescape = (segment) => segment.toString().replace(/~1/g, '/').replace(/~0/g, '~');
 const computeSegment = (value, segment) => (Array.isArray(value) && segment === '-' ? value.length : segment);
 
 const applySegment = (value, segment, cursor = '') => {
@@ -149,6 +138,6 @@ const applySegment = (value, segment, cursor = '') => {
   return value[computedSegment];
 };
 
-const isScalar = value => value === null || typeof value !== 'object';
+const isScalar = (value) => value === null || typeof value !== 'object';
 
 export default { nil, append, get, set, assign, unset, delete: remove };

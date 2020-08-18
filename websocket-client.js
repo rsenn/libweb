@@ -92,7 +92,7 @@ export class WebSocketClient {
     return new Promise((resolve, reject) => {
       //It's okay to call resolve/reject multiple times in a promise.
       var callbacks = {
-        resolve: dummy => {
+        resolve: (dummy) => {
           //Make sure this object always stays in the queue
           //until callbacks.reject() (which is resolve) is called.
           this.receiveCallbacksQueue.push(callbacks);
@@ -116,7 +116,7 @@ export class WebSocketClient {
     var socket = this.socket;
 
     return new Promise((resolve, reject) => {
-      var handleMessage = event => {
+      var handleMessage = (event) => {
         var messageEvent = event;
         //The cast was necessary because Flow's libdef's don't contain
         //a MessageEventListener definition.
@@ -129,9 +129,9 @@ export class WebSocketClient {
         this.receiveDataQueue.push(messageEvent.data);
       };
 
-      var handleOpen = event => {
+      var handleOpen = (event) => {
         socket.addEventListener('message', handleMessage);
-        socket.addEventListener('close', event => {
+        socket.addEventListener('close', (event) => {
           this.closeEvent = event;
 
           //Whenever a close event fires, the socket is effectively dead.
@@ -178,7 +178,7 @@ export class WebSocketClient {
 }
 //Generate a Promise that listens only once for an event
 function oncePromise(emitter, event) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     var handler = (...args) => {
       emitter.removeEventListener(event, handler);
       resolve(...args);

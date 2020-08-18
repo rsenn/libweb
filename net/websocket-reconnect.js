@@ -12,7 +12,7 @@
  * ReconnectSocket.clear() // clear buffer if you want to instantiate new connection
  */
 
-var ReconnectSocket = (function() {
+var ReconnectSocket = (function () {
   'use strict';
 
   var socket,
@@ -20,19 +20,19 @@ var ReconnectSocket = (function() {
     bufferedSends = [],
     isJSON = 0; // flag to indicate whether you send JSON message
 
-  var status = function() {
+  var status = function () {
     return socket && socket.readyState;
   };
 
-  var isReady = function() {
+  var isReady = function () {
     return socket && socket.readyState === 1;
   };
 
-  var isClose = function() {
+  var isClose = function () {
     return !socket || socket.readyState === 3;
   };
 
-  var sendBufferedSends = function() {
+  var sendBufferedSends = function () {
     while(bufferedSends.length > 0) {
       if(isJSON) {
         socket.send(JSON.stringify(bufferedSends.shift()));
@@ -42,30 +42,30 @@ var ReconnectSocket = (function() {
     }
   };
 
-  var init = function() {
+  var init = function () {
     if(isClose()) {
       socket = new WebSocket(socketUrl);
     }
 
-    socket.onopen = function() {
+    socket.onopen = function () {
       sendBufferedSends();
     };
 
     // implement your server response handling here
-    socket.onmessage = function(msg) {
+    socket.onmessage = function (msg) {
       console.log(msg);
     };
 
-    socket.onclose = function(e) {
+    socket.onclose = function (e) {
       console.log('socket closed', e);
     };
 
-    socket.onerror = function(error) {
+    socket.onerror = function (error) {
       console.log('socket error', error);
     };
   };
 
-  var send = function(data) {
+  var send = function (data) {
     // check if its close then initilaize again
     if(isClose()) {
       bufferedSends.push(data);
@@ -81,14 +81,14 @@ var ReconnectSocket = (function() {
     }
   };
 
-  var close = function() {
+  var close = function () {
     bufferedSends = [];
     if(socket) {
       socket.close();
     }
   };
 
-  var clear = function() {
+  var clear = function () {
     bufferedSends = [];
   };
 

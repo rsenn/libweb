@@ -1248,7 +1248,7 @@ export class Voronoi {
 
     //Initialize site event queue
     var siteEvents = sites.slice(0);
-    siteEvents.sort(function(a, b) {
+    siteEvents.sort(function (a, b) {
       var r = b.y - a.y;
       if(r) {
         return r;
@@ -1654,7 +1654,7 @@ export class Cell {
     //There was no real benefits in doing so, performance on
     //Firefox 3.6 was improved marginally, while performance on
     //Opera 11 was penalized marginally.
-    halfedges.sort(function(a, b) {
+    halfedges.sort(function (a, b) {
       return b.angle - a.angle;
     });
     return halfedges.length;

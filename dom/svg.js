@@ -19,9 +19,9 @@ export class SVG extends Element {
     if(name == 'svg') {
       attr.version = '1.1';
       attr.xmlns = SVG.ns;
-      attrfn = n => n;
+      attrfn = (n) => n;
     } else {
-      attrfn = arg => arg; //Util.decamelize;
+      attrfn = (arg) => arg; //Util.decamelize;
     }
     Util.foreach(attr, (value, name) => svg.setAttribute(attrfn(name, '-'), value));
 
@@ -38,7 +38,7 @@ export class SVG extends Element {
     let size = isSize(args[0]) ? args.shift() : null;
 
     delegate = {
-      create: tag => document.createElementNS(SVG.ns, tag),
+      create: (tag) => document.createElementNS(SVG.ns, tag),
       append_to: (elem, root = parent) => root && root.appendChild(elem),
       setattr: (elem, name, value) => name != 'ns' && elem.setAttributeNS(document.namespaceURI, /*Util.decamelize*/ name, value),
       setcss: (elem, css) => delegate.setattr(elem, 'style', css),
@@ -62,7 +62,7 @@ export class SVG extends Element {
 
     const { append_to } = delegate;
 
-    delegate.append_to = function(elem, p) {
+    delegate.append_to = function (elem, p) {
       var root = p || this.root;
 
       if(elem.tagName.indexOf('Gradient') != -1) root = root.querySelector('defs');
@@ -73,7 +73,7 @@ export class SVG extends Element {
       else root.appendChild(elem);*/
       //console.log('append_to ', elem, ', root=', root);
     };
-    let factory = function(tag, attr, children) {
+    let factory = function (tag, attr, children) {
       const create = (tag, attr, parent) => {
         let e = this.create(tag);
         for(let a in attr) this.setattr(e, a, attr[a]);
@@ -141,12 +141,12 @@ export class SVG extends Element {
   }
 
   static owner(elem) {
-    var ret = function(tag, props, parent) {
+    var ret = function (tag, props, parent) {
       if(tag === undefined) return this.element;
       return SVG.create.call(SVG, tag, props, parent || this.element);
     };
     ret.element = elem.ownerSVGElement;
-    Util.defineGetterSetter(ret, 'rect', function() {
+    Util.defineGetterSetter(ret, 'rect', function () {
       return Element.rect(this.element);
     });
     return ret;
@@ -171,7 +171,7 @@ export class SVG extends Element {
   }
 
   static *coloredElements(elem) {
-    for(let item of Element.iterator(elem, (e, d) => ['fill', 'stroke'].some(a => e.hasAttribute(a)))) {
+    for(let item of Element.iterator(elem, (e, d) => ['fill', 'stroke'].some((a) => e.hasAttribute(a)))) {
       const { fill, stroke } = this.getProperties(item, ['fill', 'stroke']);
       const a = Object.entries({ fill, stroke }).filter(([k, v]) => v !== undefined && v !== 'none');
       if(a.length == 0) continue;
@@ -194,20 +194,20 @@ export class SVG extends Element {
       for(let prop in props) addColor(props[prop], item, prop);
     }
 
-    let list = [...map.keys()].map(color => ({ color, elements: map.get(color) }));
+    let list = [...map.keys()].map((color) => ({ color, elements: map.get(color) }));
     return {
       list,
       get colors() {
-        return this.list.map(item => item.color);
+        return this.list.map((item) => item.color);
       },
       index(name) {
-        return typeof name == 'number' && this.list[name] ? name : this.list.findIndex(item => item.color === name);
+        return typeof name == 'number' && this.list[name] ? name : this.list.findIndex((item) => item.color === name);
       },
       name(i) {
         return typeof i == 'number' ? this.list[i].name : typeof i == 'string' ? i : null;
       },
       get(arg) {
-        return this.list[arg] || this.list.find(item => item.color == arg);
+        return this.list[arg] || this.list.find((item) => item.color == arg);
       },
       set(index, color, elements) {
         this.list[index] = color ? { color, elements } : color;
@@ -257,7 +257,7 @@ export class SVG extends Element {
         return this.set(index, c, a.elements);
       },
       replaceAll(fn) {
-        const colors = this.list.map(item => item.color);
+        const colors = this.list.map((item) => item.color);
         if(!fn) fn = Util.shuffle(colors);
 
         if(fn instanceof Array) {
@@ -301,24 +301,24 @@ export class SVG extends Element {
     }
   }
 
-  static *pathIterator(e, opts, fn = p => p) {
+  static *pathIterator(e, opts, fn = (p) => p) {
     opts = typeof opts == 'number' ? { numPoints: opts } : opts;
     let { numPoints, step } = opts;
     let len = e.getTotalLength();
 
-    let pos = i => (i * len) / (numPoints - 1);
+    let pos = (i) => (i * len) / (numPoints - 1);
 
     if(step !== undefined) {
       numPoints = Math.floor(len / step);
       //len = numPoints * step;
-      pos = i => (i == numPoints ? len : i * step);
+      pos = (i) => (i == numPoints ? len : i * step);
     } else if(!numPoints) numPoints = Math.ceil(len / 2);
 
     let p,
       y,
       prev = {};
 
-    var do_point = point => {
+    var do_point = (point) => {
       const { x, y, slope, next, prev, i, isin } = point;
       let d = (point.distance = slope ? Point.distance(slope) : Number.POSITIVE_INFINITY);
       point.angle = slope ? slope.toAngle(true) : NaN;
@@ -383,7 +383,7 @@ export class SVG extends Element {
   static parsePath(path) {
     let { length, segment } = this.pathCmd;
     const number = /-?[0-9]*\.?[0-9]+(?:e[-+]?\d+)?/gi;
-    const parseValues = args => {
+    const parseValues = (args) => {
       var numbers = args.match(number);
       return numbers ? numbers.map(Number) : [];
     };
@@ -424,13 +424,13 @@ export class SVG extends Element {
     if(isElement(path)) {
       path = path.getAttribute('d');
     }
-    let ret = [...path.matchAll(/[A-Za-z][^A-Za-z]*/g)].map(command => [...command][0].trim().split(/\s+/g));
+    let ret = [...path.matchAll(/[A-Za-z][^A-Za-z]*/g)].map((command) => [...command][0].trim().split(/\s+/g));
     if(tfn) ret = ret.map(tfn);
     return ret;
   }
 
   static pathToPoints(path) {
-    return SVG.splitPath(path, cmd => new Point(...cmd.slice(-2).map(n => +n)));
+    return SVG.splitPath(path, (cmd) => new Point(...cmd.slice(-2).map((n) => +n)));
   }
 }
 SVG.ns = 'http://www.w3.org/2000/svg';

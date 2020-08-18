@@ -12,7 +12,7 @@ export function MovementListener(handler, options) {
   var points = new PointList();
   var prev;
 
-  const cancel = trkl(event => {
+  const cancel = trkl((event) => {
     start = null;
     move = {};
     end = {};
@@ -27,7 +27,7 @@ export function MovementListener(handler, options) {
   options = { step: 1, round: false, angle: false, noscroll: true, ...options };
   //console.log("new MovementListener(", handler, ",", options, ")");
 
-  var self = function(event) {
+  var self = function (event) {
     const { nativeEvent, button, buttons } = event;
     let currentTarget = nativeEvent ? nativeEvent.currentTarget : event.currentTarget;
 
@@ -142,8 +142,8 @@ export function MovementListener(handler, options) {
     self.scrollDisabler = ScrollDisabler(self.isActive, options.element);
     self.handler.scrollDisabler = self.scrollDisabler;
 
-    self.handler.start.subscribe(event => (event === null ? self.scrollDisabler.remove() : self.scrollDisabler.add()));
-    self.handler.end.subscribe(event => self.scrollDisabler.remove());
+    self.handler.start.subscribe((event) => (event === null ? self.scrollDisabler.remove() : self.scrollDisabler.add()));
+    self.handler.end.subscribe((event) => self.scrollDisabler.remove());
   }
 
   return self;
@@ -174,7 +174,7 @@ export function MultitouchListener(handler, options) {
     //console.log('MultitouchListener cancelled');
   });
 
-  var self = function(event) {
+  var self = function (event) {
     var type = event.type;
     var started = type.endsWith('start') || type.endsWith('down');
     var ends = type.endsWith('end') || type.endsWith('cancel') || type.endsWith('up');
@@ -230,7 +230,7 @@ export function MultitouchListener(handler, options) {
   };
 
   self.handler = trkl();
-  self.handler.subscribe(event => {
+  self.handler.subscribe((event) => {
     //console.debug('MultitouchListener handler(', event, ')');
 
     return handler(event);
@@ -254,7 +254,7 @@ export function TurnListener(handler, options) {
   }
 
   return MultitouchListener(
-    MovementListener(event => {
+    MovementListener((event) => {
       const { points, x, y } = event;
       const type = event.type || '';
       var end = type.endsWith('up') || type.endsWith('cancel') || type.endsWith('end') || event.active === false;
@@ -329,7 +329,7 @@ export function SelectionListener(handler, options) {
     event.cancel();
     return;
   }
-  var callback = function(event) {
+  var callback = function (event) {
     const { start, x, y, type } = event;
     event.cancel.subscribe(cancel);
 
@@ -385,14 +385,14 @@ export function SelectionRenderer() {
   };
 }
 
-export const TouchEvents = listener => ({
+export const TouchEvents = (listener) => ({
   onTouchStart: listener,
   onTouchEnd: listener,
   onTouchMove: listener,
   onTouchCancel: listener
 });
 
-export const MouseEvents = listener => ({
+export const MouseEvents = (listener) => ({
   onMouseDown: listener,
   onMouseMove: listener,
   onMouseUp: listener //e => {console.log("onMouseUp"); listener(e); }
@@ -442,7 +442,7 @@ export const TouchHandler = (handle, options) => {
   var running = false;
   //console.log("new TouchHandler ", { handle, options });
 
-  var fn = function(event) {
+  var fn = function (event) {
     const { nativeEvent } = event;
     event = typeof event.type == 'string' && event.type.length >= 1 ? event : nativeEvent;
     const { type } = event;

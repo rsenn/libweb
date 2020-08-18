@@ -81,6 +81,6 @@ export class Matrix3D {
 }
 
 export const ImmutableMatrix3D = Util.immutableClass(Matrix3D);
-Util.defineGetter(ImmutableMatrix3D, Symbol.species, function() {
+Util.defineGetter(ImmutableMatrix3D, Symbol.species, function () {
   return ImmutableMatrix3D;
 });

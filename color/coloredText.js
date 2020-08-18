@@ -107,7 +107,7 @@ export class ColoredText extends Array {
   }
 
   stripColors() {
-    return this.filter(p => !Util.isObject(p) && p !== NO_COLOR);
+    return this.filter((p) => !Util.isObject(p) && p !== NO_COLOR);
   }
 
   output() {

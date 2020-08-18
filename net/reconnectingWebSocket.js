@@ -76,7 +76,7 @@ export class ReconnectingWebSocket {
    * @param {Function} callback The event callback.
    */
   unsubscribe(eventType, callback) {
-    const index = this.callbacks.findIndex(cb => cb.event === eventType && cb.callback === callback);
+    const index = this.callbacks.findIndex((cb) => cb.event === eventType && cb.callback === callback);
     if(index > 0) {
       const registeredCallback = this.callbacks[index].callback;
 
@@ -111,7 +111,7 @@ export class ReconnectingWebSocket {
 
     // Re-bind the callbacks, since reconnecting a WebSocket isn't officially supported.
     // Binds would be lost while recreating (reconnecting) a socket.
-    callbacks.forEach(data => {
+    callbacks.forEach((data) => {
       this.on(data.event, data.callback);
     });
   }
@@ -123,14 +123,14 @@ export class ReconnectingWebSocket {
    * @private
    */
   registerReconnectionListeners() {
-    this.onDisconnect(e => {
+    this.onDisconnect((e) => {
       if(e.code !== 1000) {
         // code 1000 indicates CLOSE_NORMAL
         this.attemptReconnecting();
       }
     });
 
-    this.onError(e => {
+    this.onError((e) => {
       if(e.code === 'ECONNREFUSED') {
         this.attemptReconnecting();
       }

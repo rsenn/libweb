@@ -4,7 +4,7 @@ import { Line } from './line.js';
 
 export const Polygon = function Polygon() {};
 
-Polygon.area = polygon => {
+Polygon.area = (polygon) => {
   var area = 0;
   var j = polygon.length - 1;
   var p1;
@@ -24,7 +24,7 @@ Polygon.area = polygon => {
   return area;
 };
 
-Polygon.center = polygon => {
+Polygon.center = (polygon) => {
   var x = 0;
   var y = 0;
   var f;
@@ -87,12 +87,12 @@ Polygon.toPath = (polygon, relative = true) => {
 Polygon.fromLine = (arg, offset, steps = 3) => {
   let line = new Line(arg);
   const PI2 = Math.PI * 0.5;
-  const step = Util.range(0, steps - 1).map(i => (i * Math.PI) / (steps - 1));
+  const step = Util.range(0, steps - 1).map((i) => (i * Math.PI) / (steps - 1));
   const a = line.angle();
   let vl = new PointList();
   //Util.log('step:', step);
-  vl = vl.concat(step.map(va => Point.fromAngle(a - PI2 - va, offset).sum(line.a)));
-  vl = vl.concat(step.map(va => Point.fromAngle(a + PI2 - va, offset).sum(line.b)));
+  vl = vl.concat(step.map((va) => Point.fromAngle(a - PI2 - va, offset).sum(line.a)));
+  vl = vl.concat(step.map((va) => Point.fromAngle(a + PI2 - va, offset).sum(line.b)));
   return vl;
 };
 

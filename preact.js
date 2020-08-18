@@ -164,7 +164,7 @@ function Fragment(props) {
  * @param {*} vnode
  * @returns {vnode is import('./internal').VNode}
  */
-const isValidElement = vnode => vnode != null && vnode.constructor === undefined;
+const isValidElement = (vnode) => vnode != null && vnode.constructor === undefined;
 
 /**
  * Base Component class. Provides `setState()` and `forceUpdate()`, which
@@ -186,7 +186,7 @@ function Component(props, context) {
  * @param {() => void} [callback] A function to be called once component state is
  * updated
  */
-Component.prototype.setState = function(update, callback) {
+Component.prototype.setState = function (update, callback) {
   //only clone state when copying to nextState the first time.
   let s;
   if(this._nextState !== this.state) {
@@ -217,7 +217,7 @@ Component.prototype.setState = function(update, callback) {
  * @param {() => void} [callback] A function to be called after component is
  * re-rendered
  */
-Component.prototype.forceUpdate = function(callback) {
+Component.prototype.forceUpdate = function (callback) {
   if(this._vnode) {
     //Set render mode so that we can differentiate where the render request
     //is coming from. We need this because forceUpdate should never call
@@ -355,7 +355,7 @@ function process() {
     rerenderQueue = [];
     //Don't update `renderCount` yet. Keep its value non-zero to prevent unnecessary
     //process() calls from getting scheduled while `queue` is still being consumed.
-    queue.some(c => {
+    queue.some((c) => {
       if(c._dirty) renderComponent(c);
     });
   }
@@ -929,11 +929,11 @@ function diff(parentDom, newVNode, oldVNode, globalContext, isSvg, excessDomChil
 function commitRoot(commitQueue, root) {
   if(options._commit) options._commit(root, commitQueue);
 
-  commitQueue.some(c => {
+  commitQueue.some((c) => {
     try {
       commitQueue = c._renderCallbacks;
       c._renderCallbacks = [];
-      commitQueue.some(cb => {
+      commitQueue.some((cb) => {
         cb.call(c);
       });
     } catch(e) {
@@ -1208,16 +1208,16 @@ function createContext(defaultValue) {
           return ctx;
         };
 
-        this.shouldComponentUpdate = _props => {
+        this.shouldComponentUpdate = (_props) => {
           if(this.props.value !== _props.value) {
-            subs.some(c => {
+            subs.some((c) => {
               c.context = _props.value;
               enqueueRender(c);
             });
           }
         };
 
-        this.sub = c => {
+        this.sub = (c) => {
           subs.push(c);
           let old = c.componentWillUnmount;
           c.componentWillUnmount = () => {
