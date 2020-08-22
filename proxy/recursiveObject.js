@@ -27,7 +27,7 @@ function subProxyObj(obj, update, dotPath) {
   var newPath = '';
   var isArray = Array.isArray(obj);
 
-  Object.keys(obj).forEach(function(property) {
+  Object.keys(obj).forEach(function (property) {
     if(isArray) {
       newPath = computePath(path, property, '[]');
     } else {
@@ -63,7 +63,7 @@ function emulateArray(obj, update, dotPath) {
   var newPath = '';
 
   return new Proxy(obj, {
-    get: function(target, property) {
+    get: function (target, property) {
       if(property === 'length') {
         return length;
       }
@@ -74,12 +74,12 @@ function emulateArray(obj, update, dotPath) {
 
       if(property in Array.prototype) {
         //TODO: what about non-fns?
-        return function() {
+        return function () {
           return Array.prototype[property].apply(obj, arguments);
         };
       }
     },
-    set: function(target, property, value) {
+    set: function (target, property, value) {
       if(property === 'length') {
         for(var i = value; i < length; i++) {
           delete target[i];
@@ -130,10 +130,10 @@ function proxyObject(obj, update, dotPath) {
   var newPath = '';
 
   return new Proxy(obj, {
-    get: function(target, property) {
+    get: function (target, property) {
       return target[property];
     },
-    set: function(target, property, value) {
+    set: function (target, property, value) {
       newPath = computePath(path, property);
 
       updateValue(target, property, value, newPath, update);

@@ -1,5 +1,5 @@
 import Util from '../util.js';
-export default function(element) {
+export default function (element) {
   if(element.ownerDocument.designMode && element.ownerDocument.designMode.toLowerCase() === 'on') {
     return true;
   }

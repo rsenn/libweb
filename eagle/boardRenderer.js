@@ -46,7 +46,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         },
         parent
       );
-    const { coordFn = i => i, name, value } = opts;
+    const { coordFn = (i) => i, name, value } = opts;
 
     //Util.log('renderItem', { name, value });
 
@@ -72,14 +72,14 @@ export class BoardRenderer extends EagleSVGRenderer {
             break;
           }
           case 'square': {
-            const points = [new Point(-1, -1), new Point(1, -1), new Point(1, 1), new Point(-1, 1)].map(p => p.prod(ro * 1.27));
+            const points = [new Point(-1, -1), new Point(1, -1), new Point(1, 1), new Point(-1, 1)].map((p) => p.prod(ro * 1.27));
 
             data = points.map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
 
             break;
           }
           case 'octagon': {
-            const points = Util.range(0, 7).map(i => Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.4));
+            const points = Util.range(0, 7).map((i) => Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.4));
 
             data = points.map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
             break;
@@ -139,10 +139,10 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(coll, parent, opts = {}) {
-    const { predicate = i => true, transform, pos, rot } = opts;
+    const { predicate = (i) => true, transform, pos, rot } = opts;
     this.debug(`BoardRenderer.renderCollection`, { transform, pos, rot });
 
-    let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
+    let coordFn = transform ? MakeCoordTransformer(transform) : (i) => i;
 
     let wireMap = new Map(),
       other = [];
@@ -174,7 +174,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       let classList = (parent && parent.classList) || [];
       if([...classList].indexOf('plain') != -1) continue;
 
-      const lines = wires.map(wire => {
+      const lines = wires.map((wire) => {
         let line = new Line(coordFn(wire));
         line.element = wire;
         if('curve' in wire) line.curve = wire.curve;
@@ -296,15 +296,15 @@ export class BoardRenderer extends EagleSVGRenderer {
     this.debug('bounds: ', bounds);
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {
-        predicate: i => i.attributes.layer == '16'
+        predicate: (i) => i.attributes.layer == '16'
       });
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {
-        predicate: i => i.attributes.layer == '1'
+        predicate: (i) => i.attributes.layer == '1'
       });
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {
-        predicate: i => i.attributes.layer === undefined
+        predicate: (i) => i.attributes.layer === undefined
       });
     for(let element of this.elements.list) this.renderElement(element, elementsGroup);
     let plain = [...this.doc.plain];

@@ -79,11 +79,11 @@ function validateOperator(op) {
   }
 }
 
-compareVersions.validate = function(version) {
+compareVersions.validate = function (version) {
   return typeof version === 'string' && semver.test(version);
 };
 
-compareVersions.compare = function(v1, v2, operator) {
+compareVersions.compare = function (v1, v2, operator) {
   //Validate operator
   validateOperator(operator);
 

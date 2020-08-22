@@ -16,14 +16,14 @@ and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
 
-var extendStatics = function(d, b) {
+var extendStatics = function (d, b) {
   extendStatics =
     Object.setPrototypeOf ||
     ({ __proto__: [] } instanceof Array &&
-      function(d, b) {
+      function (d, b) {
         d.__proto__ = b;
       }) ||
-    function(d, b) {
+    function (d, b) {
       for(var p in b) if(b.hasOwnProperty(p)) d[p] = b[p];
     };
   return extendStatics(d, b);
@@ -38,7 +38,7 @@ function __extends(d, b) {
 }
 
 function __awaiter(thisArg, _arguments, P, generator) {
-  return new (P || (P = Promise))(function(resolve, reject) {
+  return new (P || (P = Promise))(function (resolve, reject) {
     function fulfilled(value) {
       try {
         step(generator.next(value));
@@ -56,7 +56,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
     function step(result) {
       result.done
         ? resolve(result.value)
-        : new P(function(resolve) {
+        : new P(function (resolve) {
             resolve(result.value);
           }).then(fulfilled, rejected);
     }
@@ -67,7 +67,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
 function __generator(thisArg, body) {
   var _ = {
       label: 0,
-      sent: function() {
+      sent: function () {
         if(t[0] & 1) throw t[1];
         return t[1];
       },
@@ -81,13 +81,13 @@ function __generator(thisArg, body) {
   return (
     (g = { next: verb(0), throw: verb(1), return: verb(2) }),
     typeof Symbol === 'function' &&
-      (g[Symbol.iterator] = function() {
+      (g[Symbol.iterator] = function () {
         return this;
       }),
     g
   );
   function verb(n) {
-    return function(v) {
+    return function (v) {
       return step([n, v]);
     };
   }
@@ -154,14 +154,14 @@ function __values(o) {
     i = 0;
   if(m) return m.call(o);
   return {
-    next: function() {
+    next: function () {
       if(o && i >= o.length) o = void 0;
       return { value: o && o[i++], done: !o };
     }
   };
 }
 
-var TimeoutError = /** @class */ (function(_super) {
+var TimeoutError = /** @class */ (function (_super) {
   __extends(TimeoutError, _super);
   function TimeoutError(message) {
     var _newTarget = this.constructor;
@@ -182,21 +182,21 @@ var TimeoutError = /** @class */ (function(_super) {
   }
   return TimeoutError;
 })(Error);
-var Timer = /** @class */ (function() {
+var Timer = /** @class */ (function () {
   function Timer(wait) {
     var _this = this;
     this.wait = wait;
-    this.promise = new Promise(function(resolve, reject) {
+    this.promise = new Promise(function (resolve, reject) {
       _this.resolve = resolve;
       _this.reject = reject;
     });
   }
-  Timer.prototype.run = function(fn) {
+  Timer.prototype.run = function (fn) {
     var _this = this;
     if(this.timeout != null) {
       throw new Error('Cannot run a timer multiple times');
     }
-    this.timeout = setTimeout(function() {
+    this.timeout = setTimeout(function () {
       try {
         var value = fn();
         _this.resolve(value);
@@ -205,7 +205,7 @@ var Timer = /** @class */ (function() {
       }
     }, this.wait);
   };
-  Timer.prototype.clear = function() {
+  Timer.prototype.clear = function () {
     clearTimeout(this.timeout);
     // In code below, this method is only called after the repeater is
     // stopped. Because repeaters swallow rejections which settle after stop, we
@@ -217,24 +217,24 @@ var Timer = /** @class */ (function() {
 })();
 function delay(wait) {
   var _this = this;
-  return new Repeater(function(push, stop) {
-    return __awaiter(_this, void 0, void 0, function() {
+  return new Repeater(function (push, stop) {
+    return __awaiter(_this, void 0, void 0, function () {
       var timers, stopped, _loop_1, timers_1, timers_1_1, timer;
       var e_1, _a;
-      return __generator(this, function(_b) {
+      return __generator(this, function (_b) {
         switch (_b.label) {
           case 0:
             timers = new Set();
             stopped = false;
-            stop.then(function() {
+            stop.then(function () {
               return (stopped = true);
             });
             _b.label = 1;
           case 1:
             _b.trys.push([1, , 5, 6]);
-            _loop_1 = function() {
+            _loop_1 = function () {
               var timer;
-              return __generator(this, function(_a) {
+              return __generator(this, function (_a) {
                 switch (_a.label) {
                   case 0:
                     timer = new Timer(wait);
@@ -242,7 +242,7 @@ function delay(wait) {
                     if(timers.size > MAX_QUEUE_LENGTH) {
                       throw new RepeaterOverflowError('No more than ' + MAX_QUEUE_LENGTH + ' calls to next are allowed on a single delay repeater.');
                     }
-                    timer.run(function() {
+                    timer.run(function () {
                       timers.delete(timer);
                       return Date.now();
                     });
@@ -287,14 +287,14 @@ function delay(wait) {
 }
 function timeout(wait) {
   var _this = this;
-  return new Repeater(function(push, stop) {
-    return __awaiter(_this, void 0, void 0, function() {
+  return new Repeater(function (push, stop) {
+    return __awaiter(_this, void 0, void 0, function () {
       var timer, stopped;
-      return __generator(this, function(_a) {
+      return __generator(this, function (_a) {
         switch (_a.label) {
           case 0:
             stopped = false;
-            stop.then(function() {
+            stop.then(function () {
               return (stopped = true);
             });
             _a.label = 1;
@@ -307,7 +307,7 @@ function timeout(wait) {
               timer.resolve(undefined);
             }
             timer = new Timer(wait);
-            timer.run(function() {
+            timer.run(function () {
               throw new TimeoutError(wait + 'ms elapsed without next being called');
             });
             return [4 /*yield*/, push(timer.promise)];
@@ -333,14 +333,14 @@ function interval(wait, buffer) {
   if(buffer === void 0) {
     buffer = new SlidingBuffer(1);
   }
-  return new Repeater(function(push, stop) {
-    return __awaiter(_this, void 0, void 0, function() {
+  return new Repeater(function (push, stop) {
+    return __awaiter(_this, void 0, void 0, function () {
       var timer;
-      return __generator(this, function(_a) {
+      return __generator(this, function (_a) {
         switch (_a.label) {
           case 0:
             push(Date.now());
-            timer = setInterval(function() {
+            timer = setInterval(function () {
               return push(Date.now());
             }, wait);
             return [4 /*yield*/, stop];

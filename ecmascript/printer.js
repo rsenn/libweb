@@ -21,7 +21,7 @@ export class Printer {
 
     this.color = Util.coloring(color);
 
-    this.colorText = Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: text => this.color.text(text, ...codes) }), {});
+    this.colorText = Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: (text) => this.color.text(text, ...codes) }), {});
     this.colorCode = Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: () => this.color.code(...codes) }), {});
     this.format = format;
   }
@@ -35,8 +35,8 @@ export class Printer {
       fn =
         this['print' + name] ||
         (() => '') ||
-        function(...args) {
-          args = args.map(a => Util.className(a));
+        function (...args) {
+          args = args.map((a) => Util.className(a));
           throw new Error(`Non-existent print${name}(${args})`);
         };
     } catch(err) {
@@ -55,7 +55,7 @@ export class Printer {
   }
 
   print(tree) {
-    this.nodes = [...deep.iterate(tree, node => Util.isObject(node) && 'position' in node)].map(([node, path]) => [node.position, path.join('.'), node]);
+    this.nodes = [...deep.iterate(tree, (node) => Util.isObject(node) && 'position' in node)].map(([node, path]) => [node.position, path.join('.'), node]);
 
     //console.log("comments: ", this.comments);
 
@@ -213,7 +213,7 @@ export class Printer {
 
   printCallExpression(call_expression) {
     const { arguments: args, callee } = call_expression;
-    return this.printNode(callee) + this.colorCode.punctuators() + '(' + args.map(arg => this.printNode(arg)).join(this.colorCode.punctuators() + ', ') + this.colorCode.punctuators() + ')';
+    return this.printNode(callee) + this.colorCode.punctuators() + '(' + args.map((arg) => this.printNode(arg)).join(this.colorCode.punctuators() + ', ') + this.colorCode.punctuators() + ')';
   }
   /*
   /*
@@ -232,7 +232,7 @@ export class Printer {
 
     output += expressions
       .flat()
-      .map(expr => {
+      .map((expr) => {
         let node = this.printNode(expr);
         return node;
       })
@@ -328,9 +328,7 @@ export class Printer {
       const { value, body } = case_clause;
       if(value == null) output += '  default:';
       else output += '  case ' + this.printNode(value) + ':';
-      let case_body = this.printNode(body)
-        .trim()
-        .replace(/\n/g, '\n  ');
+      let case_body = this.printNode(body).trim().replace(/\n/g, '\n  ');
       output += /^[^{].*\n/.test(case_body) ? '\n  ' : ' ';
       output += case_body + (/\n/.test(case_body) ? '\n\n' : '\n');
     }
@@ -389,7 +387,7 @@ export class Printer {
     let output = 'try ';
     output += this.printNode(body);
     if(catch_block) {
-      output += ` catch(` + parameters.map(param => this.printNode(param)).join(', ') + ') ';
+      output += ` catch(` + parameters.map((param) => this.printNode(param)).join(', ') + ') ';
       output += this.printNode(catch_block);
     }
     if(finally_block) {
@@ -404,7 +402,7 @@ export class Printer {
     let output = doExport ? 'export ' : 'import ';
     //console.log(identifiers);
 
-    if(identifiers.declarations) output += identifiers.declarations.map(decl => this.printNode(decl)).join(', ');
+    if(identifiers.declarations) output += identifiers.declarations.map((decl) => this.printNode(decl)).join(', ');
     else output += this.printNode(identifiers);
 
     output += ' from ';
@@ -516,7 +514,7 @@ export class Printer {
       '(' +
       (params.length !== undefined
         ? Array.from(params)
-            .map(param => this.printNode(param))
+            .map((param) => this.printNode(param))
             .join(', ')
         : this.printNode(params)) +
       ') ';
@@ -536,7 +534,7 @@ export class Printer {
       '(' +
       (params.length !== undefined
         ? Array.from(params)
-            .map(param => this.printNode(param))
+            .map((param) => this.printNode(param))
             .join(', ')
         : this.printNode(params)) +
       this.colorCode.punctuators() +
@@ -562,7 +560,7 @@ export class Printer {
     let output = exported ? 'export ' : '';
 
     output += kind != '' ? this.colorText.keywords(kind) + ' ' : '';
-    output += declarations.map(decl => this.printNode(decl)).join(', ');
+    output += declarations.map((decl) => this.printNode(decl)).join(', ');
     return output + ';';
   }
 
@@ -705,7 +703,7 @@ export class Printer {
 
   printArrayLiteral(array_literal) {
     const { elements } = array_literal;
-    let output = elements.map(elem => this.printNode(elem)).join(', ');
+    let output = elements.map((elem) => this.printNode(elem)).join(', ');
     return output.length ? `[ ${output} ]` : '[]';
   }
 
@@ -736,7 +734,7 @@ export class Printer {
       if(children.length == 1) {
         if(children[0] instanceof Literal) output += children[0].value.replace(/\\n/g, '\n');
         else output += this.printNode(children[0]);
-      } else output += `\n    ` + children.map(child => this.printNode(child).replace(/\n/g, '\n    ')).join(this.format ? ',\n    ' : '\n    ') + `\n  `;
+      } else output += `\n    ` + children.map((child) => this.printNode(child).replace(/\n/g, '\n    ')).join(this.format ? ',\n    ' : '\n    ') + `\n  `;
 
       if(!this.format) output += `</${tag}>`;
     }

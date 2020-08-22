@@ -1,8 +1,8 @@
 import Util from './util.js';
 
-export const isIterator = arg => typeof arg == 'object' && arg !== null && typeof arg.next == 'function';
+export const isIterator = (arg) => typeof arg == 'object' && arg !== null && typeof arg.next == 'function';
 
-export const isIterable = arg => typeof arg == 'object' && arg !== null && arg[Symbol.iterator] !== undefined;
+export const isIterable = (arg) => typeof arg == 'object' && arg !== null && arg[Symbol.iterator] !== undefined;
 
 export class IterableInterface {
   [Symbol.iterator]() {
@@ -20,7 +20,7 @@ export class IteratorInterface extends IterableInterface {
     let i = 0;
     //Util.log("MAP", it.next+'', i);
 
-    return new IteratorForwarder(function(...args) {
+    return new IteratorForwarder(function (...args) {
       //Util.log("Iterator.map next", args);
       let { value, done } = it.next(...args);
 
@@ -65,11 +65,11 @@ export class Iterator extends IterableInterface {
       ret = this;
       ret.next = arg;
     } else if(((typeof arg == 'object' && arg !== null) || typeof arg == 'string') && arg.length !== undefined) {
-      ret = (function*() {
+      ret = (function* () {
         for(let i = 0; i < arg.length; i++) yield arg[i];
       })();
     } else if(typeof arg == 'number') {
-      ret = (function*() {
+      ret = (function* () {
         for(let i = 0; i < arg; i++) yield i;
       })();
     } else {
@@ -99,35 +99,35 @@ export class Iterator extends IterableInterface {
     return ret;
   };
 }*/
-Iterator.map = function*(it, fn = (x, i, it) => x) {
+Iterator.map = function* (it, fn = (x, i, it) => x) {
   let i = 0;
   for(let item of it) yield fn(item, i++, it);
 };
 
-Iterator.reduce = function(it, fn = (acc, x, i, it) => x, acc) {
+Iterator.reduce = function (it, fn = (acc, x, i, it) => x, acc) {
   let i = 0;
   for(let item of it) acc = fn(acc, item, i++, it);
   return acc;
 };
 
-Iterator.filter = function*(it, fn = (x, i, it) => true) {
+Iterator.filter = function* (it, fn = (x, i, it) => true) {
   let i = 0;
   for(let item of it) if(fn(item, i++, it)) yield item;
 };
 
-Iterator.some = function*(it, fn = (x, i, it) => false) {
+Iterator.some = function* (it, fn = (x, i, it) => false) {
   let i = 0;
   for(let item of it) if(fn(item, i++, it)) return true;
   return false;
 };
 
-Iterator.every = function*(it, fn = (x, i, it) => false) {
+Iterator.every = function* (it, fn = (x, i, it) => false) {
   let i = 0;
   for(let item of it) if(!fn(item, i++, it)) return false;
   return true;
 };
 
-Iterator.forEach = function*(it, fn = (x, i, it) => true) {
+Iterator.forEach = function* (it, fn = (x, i, it) => true) {
   let i = 0;
   for(let item of it) fn(item, i++, it);
 };

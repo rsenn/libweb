@@ -118,7 +118,7 @@ function getOrderIndependentHash(object) {
   var type = realTypeOf(object);
 
   if(type === 'array') {
-    object.forEach(function(item) {
+    object.forEach(function (item) {
       //Addition is commutative so this is order indep
       accum += getOrderIndependentHash(item);
     });
@@ -201,11 +201,11 @@ function deepDiff(lhs, rhs, changes, prefilter, path, key, stack, orderIndepende
       if(Array.isArray(lhs)) {
         //If order doesn't matter, we need to sort our arrays
         if(orderIndependent) {
-          lhs.sort(function(a, b) {
+          lhs.sort(function (a, b) {
             return getOrderIndependentHash(a) - getOrderIndependentHash(b);
           });
 
-          rhs.sort(function(a, b) {
+          rhs.sort(function (a, b) {
             return getOrderIndependentHash(a) - getOrderIndependentHash(b);
           });
         }
@@ -269,7 +269,7 @@ function orderIndependentDeepDiff(lhs, rhs, changes, prefilter, path, key, stack
 
 function accumulateDiff(lhs, rhs, prefilter, accum) {
   var observer = accum
-    ? function(difference) {
+    ? function (difference) {
         if(difference) {
           accum.push(difference);
         }
@@ -281,7 +281,7 @@ function accumulateDiff(lhs, rhs, prefilter, accum) {
 
 function accumulateOrderIndependentDiff(lhs, rhs, prefilter, accum) {
   var observer = accum
-    ? function(difference) {
+    ? function (difference) {
         if(difference) {
           accum.push(difference);
         }
@@ -439,7 +439,7 @@ function revertChange(target, source, change) {
 
 function applyDiff(target, source, filter) {
   if(target && source) {
-    var onChange = function(change) {
+    var onChange = function (change) {
       if(!filter || filter(target, source, change)) {
         applyChange(target, source, change);
       }
@@ -482,7 +482,7 @@ Object.defineProperties(accumulateDiff, {
     enumerable: true
   },
   isConflict: {
-    value: function() {
+    value: function () {
       return typeof $conflict !== 'undefined';
     },
     enumerable: true

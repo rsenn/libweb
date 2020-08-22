@@ -92,11 +92,11 @@ export class Parser {
     return value;
   }
 
-  matchPunctuation = s => this.match(Lexer.tokens.PUNCTUATION, s);
-  matchIdentifier = s => this.match(Lexer.tokens.IDENTIFIER, s);
-  matchString = s => this.match(Lexer.tokens.IDENTIFIER, s);
-  matchNumber = s => this.match(Lexer.tokens.NUMBER, s);
-  matchRegex = s => this.match(Lexer.tokens.REGEXP, s);
+  matchPunctuation = (s) => this.match(Lexer.tokens.PUNCTUATION, s);
+  matchIdentifier = (s) => this.match(Lexer.tokens.IDENTIFIER, s);
+  matchString = (s) => this.match(Lexer.tokens.IDENTIFIER, s);
+  matchNumber = (s) => this.match(Lexer.tokens.NUMBER, s);
+  matchRegex = (s) => this.match(Lexer.tokens.REGEXP, s);
 
   expect(id, s) {
     let r = this.match(id, s);
@@ -113,9 +113,9 @@ export class Parser {
     return this.getTok();
   }
 
-  expectPunctuation = s => this.expect(Lexer.tokens.PUNCTUATION, s);
-  expectIdentifier = s => this.expect(Lexer.tokens.IDENTIFIER, s);
-  expectString = s => this.expect(Lexer.tokens.IDENTIFIER, s);
-  expectNumber = s => this.expect(Lexer.tokens.NUMBER, s);
-  expectRegex = s => this.expect(Lexer.tokens.REGEXP, s);
+  expectPunctuation = (s) => this.expect(Lexer.tokens.PUNCTUATION, s);
+  expectIdentifier = (s) => this.expect(Lexer.tokens.IDENTIFIER, s);
+  expectString = (s) => this.expect(Lexer.tokens.IDENTIFIER, s);
+  expectNumber = (s) => this.expect(Lexer.tokens.NUMBER, s);
+  expectRegex = (s) => this.expect(Lexer.tokens.REGEXP, s);
 }

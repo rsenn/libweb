@@ -1,10 +1,10 @@
-export const proxyClone = obj => {
+export const proxyClone = (obj) => {
   const override = Object.create(null);
   const deleted = Object.create(null);
 
   const debug = (...args) => console.log('DEBUG proxyClone', ...args); //Util.debug("proxy-clone");
 
-  const get = name => {
+  const get = (name) => {
     let value;
     if(!deleted[name]) value = override[name] || obj[name];
     if(Util.isObject(value)) {
@@ -65,7 +65,7 @@ export const proxyClone = obj => {
       const keys = Object.keys(obj)
         .concat(Object.keys(override))
         .filter(Util.uniquePred)
-        .filter(key => !deleted[key]);
+        .filter((key) => !deleted[key]);
       debug(`ownKeys`, keys);
       return keys;
     },

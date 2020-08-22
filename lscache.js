@@ -391,7 +391,7 @@ export class BaseCache {
           });
         });
         // Sorts the keys with oldest expiration time last
-        storedKeys.sort(function(a, b) {
+        storedKeys.sort(function (a, b) {
           return b.expiration - a.expiration;
         });
 
@@ -442,7 +442,7 @@ export class BaseCache {
       return null;
     }
     // Tries to de-serialize stored value if its an object, and returns the normal value otherwise.
-    return impl.getItem.call(this, key).then(response => {
+    return impl.getItem.call(this, key).then((response) => {
       let time = Date.now();
       //if(!response || !this.supportsJSON) return response;
       this.incrementHits(response.url);
@@ -511,7 +511,7 @@ export class BaseCache {
     const { impl, cache } = this;
     if(!this.supportsStorage) return;
 
-    impl.eachKey.call(this, key => impl.flushItem.call(this, key));
+    impl.eachKey.call(this, (key) => impl.flushItem.call(this, key));
   }
   /**
    * Flushes expired lscache items and expiry markers without affecting rest of localStorage
@@ -520,7 +520,7 @@ export class BaseCache {
     const { impl, cache } = this;
     if(!this.supportsStorage) return;
 
-    impl.eachKey.call(this, key => flushExpiredItem.call(impl, key));
+    impl.eachKey.call(this, (key) => flushExpiredItem.call(impl, key));
   }
   /**
    * Appends CACHE_PREFIX so lscache will partition data in to different buckets.
@@ -568,7 +568,7 @@ export class BaseCache {
     let lscache = this;
     // console.log('keys()', { lscache });
 
-    await impl.eachKey.call(this, key => keys.push(impl.request.call(this, key)));
+    await impl.eachKey.call(this, (key) => keys.push(impl.request.call(this, key)));
     return keys;
   }
 }

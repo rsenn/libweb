@@ -17,7 +17,7 @@ and limitations under the License.
 ***************************************************************************** */
 
 function __awaiter(thisArg, _arguments, P, generator) {
-  return new (P || (P = Promise))(function(resolve, reject) {
+  return new (P || (P = Promise))(function (resolve, reject) {
     function fulfilled(value) {
       try {
         step(generator.next(value));
@@ -35,7 +35,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
     function step(result) {
       result.done
         ? resolve(result.value)
-        : new P(function(resolve) {
+        : new P(function (resolve) {
             resolve(result.value);
           }).then(fulfilled, rejected);
     }
@@ -46,7 +46,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
 function __generator(thisArg, body) {
   var _ = {
       label: 0,
-      sent: function() {
+      sent: function () {
         if(t[0] & 1) throw t[1];
         return t[1];
       },
@@ -60,13 +60,13 @@ function __generator(thisArg, body) {
   return (
     (g = { next: verb(0), throw: verb(1), return: verb(2) }),
     typeof Symbol === 'function' &&
-      (g[Symbol.iterator] = function() {
+      (g[Symbol.iterator] = function () {
         return this;
       }),
     g
   );
   function verb(n) {
-    return function(v) {
+    return function (v) {
       return step([n, v]);
     };
   }
@@ -160,7 +160,7 @@ function __spread() {
 function createPrimedRepeater(buffer) {
   var push;
   var stop;
-  var repeater = new Repeater(function(push1, stop1) {
+  var repeater = new Repeater(function (push1, stop1) {
     push = push1;
     stop = stop1;
     // this value is thrown away
@@ -172,7 +172,7 @@ function createPrimedRepeater(buffer) {
 }
 function useRepeater(buffer) {
   var _a = __read(
-      useState(function() {
+      useState(function () {
         return createPrimedRepeater(buffer);
       }),
       1
@@ -188,18 +188,18 @@ function useAsyncIter(callback, deps) {
     repeater = _a[0],
     push = _a[1];
   var _b = __read(
-      useState(function() {
+      useState(function () {
         return callback(repeater);
       }),
       1
     ),
     iter = _b[0];
-  useEffect(function() {
+  useEffect(function () {
     push(deps);
   }, __spread([push], deps)); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(
-    function() {
-      return function() {
+    function () {
+      return function () {
         if(iter.return != null) {
           // TODO: handle return errors
           iter.return().catch();
@@ -217,12 +217,12 @@ function useResult(callback, deps) {
     result = _a[0],
     setResult = _a[1];
   useEffect(
-    function() {
+    function () {
       var mounted = true;
-      (function() {
-        return __awaiter(_this, void 0, void 0, function() {
+      (function () {
+        return __awaiter(_this, void 0, void 0, function () {
           var result_1, err_1;
-          return __generator(this, function(_a) {
+          return __generator(this, function (_a) {
             switch (_a.label) {
               case 0:
                 _a.trys.push([0, 4, , 5]);
@@ -244,7 +244,7 @@ function useResult(callback, deps) {
               case 4:
                 err_1 = _a.sent();
                 if(mounted) {
-                  setResult(function() {
+                  setResult(function () {
                     throw err_1;
                   });
                 }
@@ -255,7 +255,7 @@ function useResult(callback, deps) {
           });
         });
       })();
-      return function() {
+      return function () {
         mounted = false;
       };
     },

@@ -36,13 +36,13 @@ EventEmitter.defaultMaxListeners = 10;
 
 // Obviously not all Emitters should be limited to 10. This function allows
 // that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function(n) {
+EventEmitter.prototype.setMaxListeners = function (n) {
   if(!isNumber(n) || n < 0 || isNaN(n)) throw TypeError('n must be a positive number');
   this._maxListeners = n;
   return this;
 };
 
-EventEmitter.prototype.emit = function(type) {
+EventEmitter.prototype.emit = function (type) {
   var er, handler, len, args, i, listeners;
 
   if(!this._events) this._events = {};
@@ -93,7 +93,7 @@ EventEmitter.prototype.emit = function(type) {
   return true;
 };
 
-EventEmitter.prototype.addListener = function(type, listener) {
+EventEmitter.prototype.addListener = function (type, listener) {
   var m;
 
   if(!isFunction(listener)) throw TypeError('listener must be a function');
@@ -136,7 +136,7 @@ EventEmitter.prototype.addListener = function(type, listener) {
 
 EventEmitter.prototype.on = EventEmitter.prototype.addListener;
 
-EventEmitter.prototype.once = function(type, listener) {
+EventEmitter.prototype.once = function (type, listener) {
   if(!isFunction(listener)) throw TypeError('listener must be a function');
 
   var fired = false;
@@ -157,7 +157,7 @@ EventEmitter.prototype.once = function(type, listener) {
 };
 
 // emits a 'removeListener' event iff the listener was removed
-EventEmitter.prototype.removeListener = function(type, listener) {
+EventEmitter.prototype.removeListener = function (type, listener) {
   var list, position, length, i;
 
   if(!isFunction(listener)) throw TypeError('listener must be a function');
@@ -194,7 +194,7 @@ EventEmitter.prototype.removeListener = function(type, listener) {
   return this;
 };
 
-EventEmitter.prototype.removeAllListeners = function(type) {
+EventEmitter.prototype.removeAllListeners = function (type) {
   var key, listeners;
 
   if(!this._events) return this;
@@ -230,7 +230,7 @@ EventEmitter.prototype.removeAllListeners = function(type) {
   return this;
 };
 
-EventEmitter.prototype.listeners = function(type) {
+EventEmitter.prototype.listeners = function (type) {
   var ret;
   if(!this._events || !this._events[type]) ret = [];
   else if(isFunction(this._events[type])) ret = [this._events[type]];
@@ -238,7 +238,7 @@ EventEmitter.prototype.listeners = function(type) {
   return ret;
 };
 
-EventEmitter.prototype.listenerCount = function(type) {
+EventEmitter.prototype.listenerCount = function (type) {
   if(this._events) {
     var evlistener = this._events[type];
 
@@ -248,7 +248,7 @@ EventEmitter.prototype.listenerCount = function(type) {
   return 0;
 };
 
-EventEmitter.listenerCount = function(emitter, type) {
+EventEmitter.listenerCount = function (emitter, type) {
   return emitter.listenerCount(type);
 };
 

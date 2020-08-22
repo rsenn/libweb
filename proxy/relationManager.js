@@ -23,11 +23,11 @@ function RelationManager(instance, subjectSpec, spec) {
 RelationManager.prototype = [];
 RelationManager.prototype.constructor = RelationManager;
 if(!RelationManager.prototype.includes) {
-  RelationManager.prototype.includes = function(subject) {
+  RelationManager.prototype.includes = function (subject) {
     return this.indexOf(subject) >= 0;
   };
 }
-RelationManager.prototype.add = function(subject, recursing) {
+RelationManager.prototype.add = function (subject, recursing) {
   var instance = this.instance,
     subjectSpec = this.subjectSpec,
     spec = this.spec;
@@ -51,7 +51,7 @@ RelationManager.prototype.add = function(subject, recursing) {
   }
   return false;
 };
-RelationManager.prototype.delete = function(subject, recursing) {
+RelationManager.prototype.delete = function (subject, recursing) {
   var instance = this.instance,
     spec = this.spec;
   var i = [].indexOf.call(this, subject);
@@ -83,7 +83,7 @@ function Relation() {
     }
     //we must store values in an array
     me[key] = [subject];
-    objects.forEach(function(object) {
+    objects.forEach(function (object) {
       me[key].push(object);
     });
   } else {
@@ -92,7 +92,7 @@ function Relation() {
     }
     //store each part of the relation in a different key
     me[key] = subject;
-    me.specs.slice(1).forEach(function(spec, i) {
+    me.specs.slice(1).forEach(function (spec, i) {
       var key = spec.relation ? spec.relation : spec.property;
       if(!(objects[i] instanceof spec.class)) {
         throw new TypeError(key + ' is not instanceof ' + spec.class.name);
@@ -102,11 +102,11 @@ function Relation() {
   }
   //add the other side of the relations to the object
   if(subjectSpec.cardinality > 1) {
-    objects.forEach(function(object) {
+    objects.forEach(function (object) {
       added = object[subjectSpec.property].add(subject);
     });
   } else {
-    objects.forEach(function(object) {
+    objects.forEach(function (object) {
       if(object[subjectSpec.property] !== subject) {
         added = true;
         object[subjectSpec.property] = subject;
@@ -148,7 +148,7 @@ function addRelations(instance, specs) {
       Object.defineProperty(instance, subjectSpec.property, {
         enumerable: subjectSpec.enumerable,
         configurable: true,
-        get: function() {
+        get: function () {
           return set.value;
         },
         set: set
@@ -156,7 +156,7 @@ function addRelations(instance, specs) {
     }
   }
   if(specs) {
-    specs.forEach(function(spec) {
+    specs.forEach(function (spec) {
       if(instance instanceof spec.object.class) {
         enhance(instance, spec.subject, spec.object);
         enhance(instance, spec.object, spec.subject);
@@ -174,7 +174,7 @@ function defineRelation(scope, name, sname, head, specs) {
   cons.instances = cons.prototype.instances;
   scope[name] = cons;
   if(specs.length === 2) {
-    scope[sname] = function() {
+    scope[sname] = function () {
       var args = [].slice.call(arguments).reverse();
       return new cons(...args);
     };
@@ -187,14 +187,14 @@ function defineRelation(scope, name, sname, head, specs) {
   }
   return cons;
 }
-Relation.define = function(scope) {
+Relation.define = function (scope) {
   var specs = [].slice.call(arguments, 1),
     subjectSpec = specs[0],
     name = '',
     head,
     sname = uFirst(subjectSpec.relation ? subjectSpec.relation : subjectSpec.property);
   (subjectSpec.class = subjectSpec.class ? subjectSpec.class : Object), head;
-  specs.forEach(function(spec, i) {
+  specs.forEach(function (spec, i) {
     var s = spec.relation ? spec.relation : spec.property;
     name += uFirst(s);
     if(i > 0) {
@@ -208,7 +208,7 @@ Relation.define = function(scope) {
     if(!spec.class.prototype.relations) {
       //create a Proxy for the class participating in the relation so that it adds the relations
       var cons = new Proxy(spec.class, {
-        construct: function(target, argumentList) {
+        construct: function (target, argumentList) {
           var object = Object.create(target.prototype);
           target.prototype.constructor.call(object, ...argumentList);
           //walk up the ptototype chaing to add relations defined at a higher level
@@ -223,18 +223,18 @@ Relation.define = function(scope) {
       //save a version of the spec class in this closure scope
       var cls = spec.class;
       //add ability to restore from one side of relations using from JSON
-      cons.fromJSON = function(object) {
+      cons.fromJSON = function (object) {
         var instance = Object.create(cls);
         var proto = object;
         while(proto) {
           addRelations(object, proto.relations);
           proto = Object.getPrototypeOf(proto);
         }
-        Object.keys(object).forEach(function(key) {
+        Object.keys(object).forEach(function (key) {
           //if the property key is part of a relation spec and is an Array
           if(subjectSpec.property[key] && subjectSpec.class && Array.isArray(object[key])) {
             //loop through the items and restore them
-            object[key].forEach(function(item) {
+            object[key].forEach(function (item) {
               instance[key].add(subjectSpec.class.prototype.fromJSON(item));
             });
           } else {

@@ -20,7 +20,7 @@ Tree.walk = function walk(node, fn, accu = {}) {
     elem =
       elem.firstChild ||
       elem.nextSibling ||
-      (function() {
+      (function () {
         do {
           if(!(elem = elem.parentNode)) break;
           depth--;

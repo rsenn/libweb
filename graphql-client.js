@@ -15,7 +15,7 @@ const client = (options = {}) => {
   }
 
   let innerHeaders = { ...headers };
-  const setHeaders = callback => {
+  const setHeaders = (callback) => {
     if(typeof callback === 'function') {
       innerHeaders = callback(innerHeaders);
     } else {
@@ -46,8 +46,8 @@ const client = (options = {}) => {
           method: 'POST',
           headers: callHeaders
         })
-          .then(res => res.json())
-          .then(res => {
+          .then((res) => res.json())
+          .then((res) => {
             if(res.errors) {
               if(logger && logger.trace) logger.trace(res.errors);
               else if(logger && typeof logger === 'function') logger('error', res.errors);
@@ -67,7 +67,7 @@ const client = (options = {}) => {
         if(typeof token === 'function') {
           const innerToken = token();
           if(innerToken.then) {
-            return innerToken.then(newToken => call({ token: newToken }));
+            return innerToken.then((newToken) => call({ token: newToken }));
           }
           return call({ token: innerToken });
         }

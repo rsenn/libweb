@@ -17,7 +17,7 @@ if(typeof global != 'undefined') {
     clearInterval = global.clearInterval,
     clearTimeout = global.clearTimeout;
   setTimeout ||
-    (function(timer, ids, slice, counter) {
+    (function (timer, ids, slice, counter) {
       // did you know?
       //  all browsers but IE accept one or more arguments
       //  to pass to the callbacl after the timer/delay number
@@ -40,7 +40,7 @@ if(typeof global != 'undefined') {
       function schedule(fn, delay, args, interval) {
         var id = ++counter;
         ids[id] = new JavaAdapter(java.util.TimerTask, {
-          run: function() {
+          run: function () {
             fn.apply(null, args);
           }
         });
@@ -50,7 +50,7 @@ if(typeof global != 'undefined') {
     })(new java.util.Timer(), {}, [].slice, 0);
 } else {
   // jsc specific hack
-  !(function(global, i, cbs, slice) {
+  !(function (global, i, cbs, slice) {
     function setTimeout(cb, delay) {
       var t = new Date();
       while(new Date() - t < delay);
@@ -58,11 +58,11 @@ if(typeof global != 'undefined') {
     }
     slice = cbs.slice;
     global.setTimeout = global.setInterval = setTimeout;
-    global.clearInterval = global.clearTimeout = function() {};
+    global.clearInterval = global.clearTimeout = function () {};
   })(this, 0, []);
 }
 
-export const wru = (function(window) {
+export const wru = (function (window) {
   'use strict';
 
   /**
@@ -269,7 +269,7 @@ export const wru = (function(window) {
 
         // if in *TIMEOUT* time nothing happens ...
         timeout = setTimeout(
-          function() {
+          function () {
             // p is flagged as 0
             p = 0;
 
@@ -347,7 +347,7 @@ export const wru = (function(window) {
       // optionally a function setup and a function teardown too
       test: function test(list, after) {
         // in case you need to do something after
-        wru.after = after || function() {};
+        wru.after = after || function () {};
 
         // test may be called multiple times
         // queue should simply concatenate other calls
@@ -406,7 +406,7 @@ export const wru = (function(window) {
     tmp,
     called;
 
-  wru.log = function(obj, printOnly) {
+  wru.log = function (obj, printOnly) {
     try {
       if(printOnly) {
         throw new Error();
@@ -426,15 +426,15 @@ export const wru = (function(window) {
     window.log = wru.log;
     window.random = false;
     Object.defineProperty(window, 'status', {
-      get: function() {
+      get: function () {
         return wru.status;
       }
     });
     Object.defineProperty(window, 'timeout', {
-      get: function() {
+      get: function () {
         return wru.timeout;
       },
-      set: function(value) {
+      set: function (value) {
         wru.timeout = parseInt(value, 10) || wru.timeout;
       }
     });
@@ -447,12 +447,12 @@ export const wru = (function(window) {
   // must be eventually defined after wru.export.js, if used
 
   // "THE CURSOR" http://3site.eu/cursor
-  setInterval(function() {
+  setInterval(function () {
     waitForIt && log(EMPTY + charAt.call(cursor, ci++ % 4) + '\b\b', true);
   }, TIMEOUT);
 
   //^ this is useful to test internals on non minified version
-  wru.debug = function(O_o) {
+  wru.debug = function (O_o) {
     return eval('(' + O_o + ')');
   };
   //$ and this block is removed at build time

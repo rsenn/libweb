@@ -5,7 +5,7 @@ export class Container {
   static factory(parent, size = null) {
     let delegate = {
       root: null,
-      append_to: function(elem, p = null) {
+      append_to: function (elem, p = null) {
         if(p == null) {
           if(this.root == null) {
             this.root = document.createElement('div');

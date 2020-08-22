@@ -11,7 +11,7 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
 
   if(!transformation) Util.putStack();
 
-  let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
+  let coordFn = transform ? MakeCoordTransformer(transform) : (i) => i;
 
   let { children = [], text: innerText, align = 'bottom-left', size, font, rot, layer } = data;
   let text = innerText || labelText || children.join('\n');

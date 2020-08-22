@@ -31,7 +31,7 @@ export class BBox {
     return new Map(Object.entries(this.objects));
   }
 
-  updateList(list, offset = 0.0, objFn = item => item, t = a => a) {
+  updateList(list, offset = 0.0, objFn = (item) => item, t = (a) => a) {
     for(let arg of list) this.update(t(arg), offset, objFn(arg));
     return this;
   }
@@ -43,9 +43,9 @@ export class BBox {
       if(typeof arg.bbox == 'function') {
         arg = arg.bbox();
       } else {
-        if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset, name => (this.objects[name] = obj || arg));
-        if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0, name => (this.objects[name] = obj || arg));
-        if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0, name => (this.objects[name] = obj || arg));
+        if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset, (name) => (this.objects[name] = obj || arg));
+        if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0, (name) => (this.objects[name] = obj || arg));
+        if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0, (name) => (this.objects[name] = obj || arg));
       }
     }
 
@@ -141,7 +141,7 @@ export class BBox {
     return `${this.x1} ${this.y1} ${this.x2} ${this.y2}`;
   }
 
-  transform(fn = arg => arg, out) {
+  transform(fn = (arg) => arg, out) {
     if(!out) out = this;
     for(let prop of ['x1', 'y1', 'x2', 'y2']) {
       const v = this[prop];
@@ -150,7 +150,7 @@ export class BBox {
     return this;
   }
 
-  round(fn = arg => Math.round(arg)) {
+  round(fn = (arg) => Math.round(arg)) {
     let ret = new BBox();
     this.transform(fn, ret);
     return ret;
@@ -164,7 +164,7 @@ export class BBox {
     return this;
   }
 
-  static from(iter, tp = p => p) {
+  static from(iter, tp = (p) => p) {
     if(typeof iter == 'object' && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
 
     let r = new BBox();

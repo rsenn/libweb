@@ -246,7 +246,7 @@ tXml.simplify = function simplify(children) {
     return children[0];
   }
   //map each object
-  children.forEach(function(child) {
+  children.forEach(function (child) {
     if(typeof child !== 'object') {
       return;
     }
@@ -272,9 +272,9 @@ tXml.simplify = function simplify(children) {
  * @params children{Array} the children of a node
  * @param f{function} the filter method
  */
-tXml.filter = function(children, f) {
+tXml.filter = function (children, f) {
   var out = [];
-  children.forEach(function(child) {
+  children.forEach(function (child) {
     if(typeof child === 'object' && f(child)) out.push(child);
     if(child.children) {
       var kids = tXml.filter(child.children, f);
@@ -344,10 +344,10 @@ tXml.toString = function TOMObjToXML(O) {
  * this text has some <b>big</b> text and a <a href=''>link</a>
  * @return {string}
  */
-tXml.toContentString = function(tDom) {
+tXml.toContentString = function (tDom) {
   if(Array.isArray(tDom)) {
     var out = '';
-    tDom.forEach(function(e) {
+    tDom.forEach(function (e) {
       out += ' ' + tXml.toContentString(e);
       out = out.trim();
     });
@@ -359,7 +359,7 @@ tXml.toContentString = function(tDom) {
   }
 };
 
-tXml.getElementById = function(S, id, simplified) {
+tXml.getElementById = function (S, id, simplified) {
   var out = tXml(S, {
     attrValue: id
   });
@@ -370,7 +370,7 @@ tXml.getElementById = function(S, id, simplified) {
  * more: the class attribute contains XXX
  * @param
  */
-tXml.getElementsByClassName = function(S, classname, simplified) {
+tXml.getElementsByClassName = function (S, classname, simplified) {
   const out = tXml(S, {
     attrName: 'class',
     attrValue: '[a-zA-Z0-9-s ]*' + classname + '[a-zA-Z0-9-s ]*'
@@ -378,7 +378,7 @@ tXml.getElementsByClassName = function(S, classname, simplified) {
   return simplified ? tXml.simplify(out) : out;
 };
 
-tXml.parseStream = function(stream, offset) {
+tXml.parseStream = function (stream, offset) {
   if(typeof offset === 'string') {
     offset = offset.length + 2;
   }
@@ -390,7 +390,7 @@ tXml.parseStream = function(stream, offset) {
 
   var position = offset;
   var data = '';
-  stream.on('data', function(chunk) {
+  stream.on('data', function (chunk) {
     data += chunk;
     var lastPos = 0;
     do {
@@ -417,13 +417,13 @@ tXml.parseStream = function(stream, offset) {
       }
     } while(1);
   });
-  stream.on('end', function() {
+  stream.on('end', function () {
     console.log('end');
   });
   return stream;
 };
 
-tXml.transformStream = function(offset) {
+tXml.transformStream = function (offset) {
   //require through here, so it will not get added to webpack/browserify
   const through2 = require('through2');
   if(typeof offset === 'string') {
@@ -432,7 +432,7 @@ tXml.transformStream = function(offset) {
 
   var position = offset || 0;
   var data = '';
-  const stream = through2({ readableObjectMode: true }, function(chunk, enc, callback) {
+  const stream = through2({ readableObjectMode: true }, function (chunk, enc, callback) {
     data += chunk;
     var lastPos = 0;
     do {

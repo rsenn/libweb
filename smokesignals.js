@@ -2,7 +2,7 @@
 //I think that is the right choice for this library.  If you're adding and
 //triggering A LOT of events, you might want to use a different library.
 smokesignals = {
-  convert: function(obj, handlers) {
+  convert: function (obj, handlers) {
     //we store the list of handlers as a local variable inside the scope
     //so that we don't have to add random properties to the object we are
     //converting. (prefixing variables in the object with an underscore or
@@ -15,7 +15,7 @@ smokesignals = {
     handlers = {};
 
     //add a listener
-    obj.on = function(eventName, handler) {
+    obj.on = function (eventName, handler) {
       //either use the existing array or create a new one for this event
       //this isn't the most efficient way to do this, but is the shorter
       //than other more efficient ways, so we'll go with it for now.
@@ -27,7 +27,7 @@ smokesignals = {
     };
 
     //add a listener that will only be called once
-    obj.once = function(eventName, handler) {
+    obj.once = function (eventName, handler) {
       //create a wrapper listener, that will remove itself after it is called
       function wrappedHandler() {
         //remove ourself, and then call the real handler with the args
@@ -44,7 +44,7 @@ smokesignals = {
     };
 
     //remove a listener
-    obj.off = function(eventName, handler) {
+    obj.off = function (eventName, handler) {
       //loop through all handlers for this eventName, assuming a handler
       //was passed in, to see if the handler passed in was any of them so
       //we can remove it
@@ -67,7 +67,7 @@ smokesignals = {
       return obj;
     };
 
-    obj.emit = function(eventName) {
+    obj.emit = function (eventName) {
       //loop through all handlers for this event name and call them all
       //it would be more efficient to stash the length and compare i
       //to that, but that is longer so we'll go with this.

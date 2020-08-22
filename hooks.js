@@ -19,7 +19,7 @@ var oldBeforeUnmount = options.unmount;
 var RAF_TIMEOUT = 100;
 var prevRaf;
 
-options.__r = function(vnode) {
+options.__r = function (vnode) {
   if(oldBeforeRender) {
     oldBeforeRender(vnode);
   }
@@ -36,7 +36,7 @@ options.__r = function(vnode) {
   }
 };
 
-options.diffed = function(vnode) {
+options.diffed = function (vnode) {
   if(oldAfterDiff) {
     oldAfterDiff(vnode);
   }
@@ -47,16 +47,16 @@ options.diffed = function(vnode) {
   }
 };
 
-options.__c = function(vnode, commitQueue) {
-  commitQueue.some(function(component) {
+options.__c = function (vnode, commitQueue) {
+  commitQueue.some(function (component) {
     try {
       component.__h.forEach(invokeCleanup);
 
-      component.__h = component.__h.filter(function(cb) {
+      component.__h = component.__h.filter(function (cb) {
         return cb.__ ? invokeEffect(cb) : true;
       });
     } catch(e) {
-      commitQueue.some(function(c) {
+      commitQueue.some(function (c) {
         if(c.__h) {
           c.__h = [];
         }
@@ -71,7 +71,7 @@ options.__c = function(vnode, commitQueue) {
   }
 };
 
-options.unmount = function(vnode) {
+options.unmount = function (vnode) {
   if(oldBeforeUnmount) {
     oldBeforeUnmount(vnode);
   }
@@ -140,7 +140,7 @@ function useReducer(reducer, initialState, init) {
     hookState.__c = currentComponent;
     hookState.__ = [
       !init ? invokeOrReturn(undefined, initialState) : init(initialState),
-      function(action) {
+      function (action) {
         var nextValue = hookState._reducer(hookState.__[0], action);
 
         if(hookState.__[0] !== nextValue) {
@@ -188,7 +188,7 @@ function useLayoutEffect(callback, args) {
 }
 function useRef(initialValue) {
   currentHook = 5;
-  return useMemo(function() {
+  return useMemo(function () {
     return {
       current: initialValue
     };
@@ -203,7 +203,7 @@ function useRef(initialValue) {
 function useImperativeHandle(ref, createHandle, args) {
   currentHook = 6;
   useLayoutEffect(
-    function() {
+    function () {
       if(typeof ref == 'function') {
         ref(createHandle());
       } else if(ref) {
@@ -237,7 +237,7 @@ function useMemo(factory, args) {
 
 function useCallback(callback, args) {
   currentHook = 8;
-  return useMemo(function() {
+  return useMemo(function () {
     return callback;
   }, args);
 }
@@ -282,7 +282,7 @@ function useErrorBoundary(cb) {
   state.__ = cb;
 
   if(!currentComponent.componentDidCatch) {
-    currentComponent.componentDidCatch = function(err) {
+    currentComponent.componentDidCatch = function (err) {
       if(state.__) {
         state.__(err);
       }
@@ -292,7 +292,7 @@ function useErrorBoundary(cb) {
 
   return [
     errState[0],
-    function() {
+    function () {
       errState[1](undefined);
     }
   ];
@@ -302,7 +302,7 @@ function useErrorBoundary(cb) {
  */
 
 function flushAfterPaintEffects() {
-  afterPaintEffects.some(function(component) {
+  afterPaintEffects.some(function (component) {
     if(component.__P) {
       try {
         component.__H.__h.forEach(invokeCleanup);
@@ -389,7 +389,7 @@ function invokeEffect(hook) {
 function argsChanged(oldArgs, newArgs) {
   return (
     !oldArgs ||
-    newArgs.some(function(arg, index) {
+    newArgs.some(function (arg, index) {
       return arg !== oldArgs[index];
     })
   );

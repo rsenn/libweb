@@ -54,14 +54,14 @@ export class EagleSVGRenderer {
 
     this.path2component = Util.mapWrapper(
       new Map(),
-      path => (Util.isObject(path) && path.path !== undefined ? path.path : path) + '',
-      key => new ImmutablePath(key)
+      (path) => (Util.isObject(path) && path.path !== undefined ? path.path : path) + '',
+      (key) => new ImmutablePath(key)
     );
 
     const insertCtoP = Util.inserter(this.component2path);
     const insert = Util.inserter(this.path2component, (k, v) => insertCtoP(v, k));
     //console.log('factory:' + factory);
-    this.create = function(tag, attrs, children, parent, element) {
+    this.create = function (tag, attrs, children, parent, element) {
       let ret = factory(tag, attrs, children, parent, element);
 
       let path = attrs['data-path'];
@@ -204,7 +204,7 @@ export class EagleSVGRenderer {
 
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, 'data-path': item.path.toString(' '), ...attr }, parent);
 
-    let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
+    let coordFn = transform ? MakeCoordTransformer(transform) : (i) => i;
     const { layer } = item;
     const color = typeof item.getColor == 'function' ? item.getColor() : this.constructor.palette[16];
 
@@ -218,7 +218,7 @@ export class EagleSVGRenderer {
           transform,
           opts: {
             ...opts,
-            transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1)
+            transformation: this.transform.filter((t) => ['translate'].indexOf(t.type) == -1)
           }
         },
         parent

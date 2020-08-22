@@ -83,7 +83,7 @@ const evaluate = (h$$1, built, fields, args) => {
   return args;
 };
 
-const build = function(statics) {
+const build = function (statics) {
   const fields = arguments;
   const h$$1 = this;
 
@@ -93,7 +93,7 @@ const build = function(statics) {
   let current = [0];
   let char, propName;
 
-  const commit = field => {
+  const commit = (field) => {
     if(mode === MODE_TEXT && (field || (buffer = buffer.replace(/^\s*\n\s*|\s*\n\s*$/g, '')))) {
       if(MINI) {
         current.push(field ? fields[field] : buffer);
@@ -240,7 +240,7 @@ const build = function(statics) {
 
 const CACHES = new Map();
 
-const regular = function(statics) {
+const regular = function (statics) {
   let tmp = CACHES.get(this);
   if(!tmp) {
     tmp = new Map();

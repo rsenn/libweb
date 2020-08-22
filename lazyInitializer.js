@@ -4,7 +4,7 @@ import { trkl } from './trkl.js';
 export function Instance({ trackable = false, callback, initVal = null }) {
   let inst = trackable && trackable.subscribe !== undefined ? trackable : trkl(initVal);
 
-  if(callback) inst.subscribe(value => callback(value, inst));
+  if(callback) inst.subscribe((value) => callback(value, inst));
   /* inst.subscribe(newVal => {
     if(newVal) console.log('new instance: ', value);
   });*/
@@ -18,7 +18,7 @@ export function Instance({ trackable = false, callback, initVal = null }) {
 }
 
 function TrackedInstance(initVal = null) {
-  const callback = value => {};
+  const callback = (value) => {};
   var inst = Instance({ trackable: true, callback, initVal });
 
   return inst;
@@ -48,10 +48,10 @@ export function lazyMembers(obj, members) {
     initializers[name] = lazyInitializer(members[name]);
 
     Object.defineProperty(obj, name, {
-      get: function() {
+      get: function () {
         return initializers[name]();
       },
-      set: function(value) {
+      set: function (value) {
         initializers[name](value);
         return initializers[name]();
       },
@@ -73,7 +73,7 @@ export function lazyProperty(obj, name, fn) {
  * @param      {<type>}    prototyp                  The prototyp
  * @return     {Proxy}     { description_of_the_return_value }
  */
-export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prototyp) {
+export function lazyMap(arr, lookup = (item) => item.name, ctor = (arg) => arg, prototyp) {
   /*  let m = new Map();
 
   for(let [k,v] of entries)
@@ -160,7 +160,7 @@ export function lazyArray(elements) {
   for(let fn of elements) {
     let lazy = lazyInitializer(fn);
     props[i] = {
-      get: function() {
+      get: function () {
         return lazy();
       }, //set: function(value) {lazy(value); },
       enumerable: true

@@ -24,8 +24,8 @@
 
 /* global define */
 /* global global */
-(function(window, define) {
-  define('crosstab', function(require, exports, module) {
+(function (window, define) {
+  define('crosstab', function (require, exports, module) {
     'use strict';
 
     //--- Handle Support ---
@@ -103,19 +103,19 @@
 
     util.isArray =
       Array.isArray ||
-      function(arr) {
+      function (arr) {
         return arr instanceof Array;
       };
 
-    util.isNumber = function(num) {
+    util.isNumber = function (num) {
       return typeof num === 'number';
     };
 
-    util.isFunction = function(fn) {
+    util.isFunction = function (fn) {
       return typeof fn === 'function';
     };
 
-    util.forEachObj = function(obj, fn) {
+    util.forEachObj = function (obj, fn) {
       for(var key in obj) {
         if(obj.hasOwnProperty(key)) {
           fn.call(obj, obj[key], key, obj);
@@ -123,14 +123,14 @@
       }
     };
 
-    util.forEachArr = function(arr, fn) {
+    util.forEachArr = function (arr, fn) {
       var len = arr.length;
       for(var i = 0; i < len; i++) {
         fn.call(arr, arr[i], i, arr);
       }
     };
 
-    util.forEach = function(thing, fn) {
+    util.forEach = function (thing, fn) {
       if(util.isArray(thing)) {
         util.forEachArr(thing, fn);
       } else {
@@ -138,27 +138,27 @@
       }
     };
 
-    util.map = function(thing, fn) {
+    util.map = function (thing, fn) {
       var res = [];
-      util.forEach(thing, function(item, key, obj) {
+      util.forEach(thing, function (item, key, obj) {
         res.push(fn(item, key, obj));
       });
 
       return res;
     };
 
-    util.filter = function(thing, fn) {
+    util.filter = function (thing, fn) {
       var isArr = util.isArray(thing);
       var res = isArr ? [] : {};
 
       if(isArr) {
-        util.forEachArr(thing, function(value, key) {
+        util.forEachArr(thing, function (value, key) {
           if(fn(value, key)) {
             res.push(value);
           }
         });
       } else {
-        util.forEachObj(thing, function(value, key) {
+        util.forEachObj(thing, function (value, key) {
           if(fn(value, key)) {
             res[key] = value;
           }
@@ -168,10 +168,10 @@
       return res;
     };
 
-    util.reduce = function(thing, fn, accumulator) {
+    util.reduce = function (thing, fn, accumulator) {
       var first = arguments.length < 3;
 
-      util.forEach(thing, function(item, key, obj) {
+      util.forEach(thing, function (item, key, obj) {
         if(first) {
           accumulator = item;
           first = false;
@@ -183,7 +183,7 @@
       return accumulator;
     };
 
-    util.now = function() {
+    util.now = function () {
       return new Date().getTime();
     };
 
@@ -199,7 +199,7 @@
 
     util.storageEventKeys = util.reduce(
       util.keys,
-      function(keys, val) {
+      function (keys, val) {
         keys[val] = 1;
         return keys;
       },
@@ -209,11 +209,11 @@
     //--- Events ---
     //node.js style events, with the main difference being able
     //to add/remove events by key.
-    util.createEventHandler = function() {
+    util.createEventHandler = function () {
       var events = {};
       var subscribeKeyToListener = {};
 
-      var findHandlerByKey = function(event, key) {
+      var findHandlerByKey = function (event, key) {
         var handler;
         if(subscribeKeyToListener[event]) {
           handler = subscribeKeyToListener[event][key];
@@ -221,7 +221,7 @@
         return handler;
       };
 
-      var findHandlerIndex = function(event, listener) {
+      var findHandlerIndex = function (event, listener) {
         var listenerIndex = -1;
         var eventList = events[event];
         if(eventList && listener) {
@@ -236,7 +236,7 @@
         return listenerIndex;
       };
 
-      var addListener = function(event, listener, key) {
+      var addListener = function (event, listener, key) {
         var handlers = listeners(event);
 
         var storedHandler = findHandlerByKey(event, key);
@@ -261,7 +261,7 @@
         return key || listener;
       };
 
-      var removeListener = function(event, key) {
+      var removeListener = function (event, key) {
         var handler = util.isFunction(key) ? key : findHandlerByKey(event, key);
 
         var listenerIndex = findHandlerIndex(event, handler);
@@ -275,7 +275,7 @@
         return false;
       };
 
-      var removeAllListeners = function(event) {
+      var removeAllListeners = function (event) {
         var successful = false;
         if(event) {
           if(events[event]) {
@@ -294,18 +294,18 @@
         return successful;
       };
 
-      var emit = function(event) {
+      var emit = function (event) {
         var args = Array.prototype.slice.call(arguments, 1);
         var handlers = listeners(event);
 
-        util.forEach(handlers, function(listener) {
+        util.forEach(handlers, function (listener) {
           if(util.isFunction(listener)) {
             listener.apply(this, args);
           }
         });
       };
 
-      var once = function(event, listener, key) {
+      var once = function (event, listener, key) {
         //Generate a unique id for this listener
         while(!key || findHandlerByKey(event, key) !== undefined) {
           key = util.generateId();
@@ -313,7 +313,7 @@
 
         addListener(
           event,
-          function() {
+          function () {
             removeListener(event, key);
             var args = Array.prototype.slice.call(arguments);
             listener.apply(this, args);
@@ -324,12 +324,12 @@
         return key;
       };
 
-      var listeners = function(event) {
+      var listeners = function (event) {
         var handlers = (events[event] = events[event] || []);
         return handlers;
       };
 
-      var destructor = function() {
+      var destructor = function () {
         clearInterval(crosstab.keepAliveInterval);
         removeAllListeners();
       };
@@ -338,7 +338,7 @@
         addListener: addListener,
         destructor: destructor,
         on: addListener,
-        off: function(event, key) {
+        off: function (event, key) {
           var argsLen = arguments.length;
           if(!argsLen) {
             return removeAllListeners();
@@ -431,7 +431,7 @@
     function unload() {
       crosstab.stopKeepalive = true;
       var numTabs = 0;
-      util.forEach(util.tabs, function(tab, key) {
+      util.forEach(util.tabs, function (tab, key) {
         if(key !== util.keys.MASTER_TAB) {
           numTabs++;
         }
@@ -481,7 +481,7 @@
 
     function masterTabElection() {
       var maxId = null;
-      util.forEach(util.tabs, function(tab) {
+      util.forEach(util.tabs, function (tab) {
         if(!maxId || tab.id < maxId) {
           maxId = tab.id;
         }
@@ -500,7 +500,7 @@
 
     //Handle other tabs closing by updating internal tab model, and promoting
     //self if we are the lowest tab id
-    eventHandler.addListener(util.eventTypes.tabClosed, function(message) {
+    eventHandler.addListener(util.eventTypes.tabClosed, function (message) {
       var id = message.data;
       if(id in util.tabs) {
         delete util.tabs[id];
@@ -520,7 +520,7 @@
       }
     });
 
-    eventHandler.addListener(util.eventTypes.tabUpdated, function(message) {
+    eventHandler.addListener(util.eventTypes.tabUpdated, function (message) {
       var tab = message.data;
       util.tabs[tab.id] = tab;
 
@@ -539,7 +539,7 @@
     });
 
     var bullying;
-    eventHandler.addListener(util.eventTypes.tabPromoted, function(message) {
+    eventHandler.addListener(util.eventTypes.tabPromoted, function (message) {
       var id = message.data;
       var lastUpdated = message.timestamp;
       var previousMaster = getMasterId();
@@ -547,7 +547,7 @@
       //Bully out competing broadcasts if our id is lower
       if(crosstab.id < id) {
         if(!bullying) {
-          bullying = setTimeout(function() {
+          bullying = setTimeout(function () {
             bullying = 0;
             broadcast(util.eventTypes.tabPromoted, crosstab.id);
           }, 0);
@@ -581,7 +581,7 @@
       return new Array(width - numStr.length + 1).join(padChar) + numStr;
     }
 
-    util.generateId = function() {
+    util.generateId = function () {
       /*jshint bitwise: false*/
       return util.now().toString() + pad((Math.random() * 0x7fffffff) | 0, 10);
     };
@@ -618,11 +618,11 @@
 
     //---- Return ----
     var setupComplete = false;
-    util.events.once('setupComplete', function() {
+    util.events.once('setupComplete', function () {
       setupComplete = true;
     });
 
-    var crosstab = function(fn) {
+    var crosstab = function (fn) {
       if(setupComplete) {
         fn();
       } else {
@@ -715,7 +715,7 @@
       }
 
       var deadTabs = util.filter(util.tabs, notAlive);
-      util.forEach(deadTabs, function(tab) {
+      util.forEach(deadTabs, function (tab) {
         broadcast(util.eventTypes.tabClosed, tab.id);
       });
 
@@ -727,7 +727,7 @@
           var timeout;
           var start;
 
-          crosstab.util.events.once('PONG', function() {
+          crosstab.util.events.once('PONG', function () {
             if(!setupComplete) {
               clearTimeout(timeout);
               //set supported to true / frozen to false
@@ -743,7 +743,7 @@
           //timeout, with iters "yields" to the event loop. So at least
           //iters number of blocks of javascript will be able to run
           //covering at least 100ms
-          var recursiveTimeout = function(iters) {
+          var recursiveTimeout = function (iters) {
             var diff = util.now() - start;
 
             if(!setupComplete) {
@@ -751,7 +751,7 @@
                 frozenTabEnvironmentDetected();
                 util.events.emit('setupComplete');
               } else {
-                timeout = setTimeout(function() {
+                timeout = setTimeout(function () {
                   recursiveTimeout(iters - 1);
                 }, 5);
               }
@@ -759,7 +759,7 @@
           };
 
           var iterations = 5;
-          timeout = setTimeout(function() {
+          timeout = setTimeout(function () {
             recursiveTimeout(5);
           }, PING_TIMEOUT - 5 * iterations);
           crosstab.broadcastMaster('PING');
@@ -786,7 +786,7 @@
       //swap `beforeunload` to `unload` after DOM is loaded
       window.addEventListener('DOMContentLoaded', swapUnloadEvents, false);
 
-      util.events.on('PING', function(message) {
+      util.events.on('PING', function (message) {
         //only handle direct messages
         if(!message.destination || message.destination !== crosstab.id) {
           return;
@@ -822,15 +822,15 @@
   //Second arg -- the define object
   typeof define === 'function' && define.amd
     ? define
-    : (function(context) {
+    : (function (context) {
         'use strict';
         return typeof module === 'object'
-          ? function(name, factory) {
+          ? function (name, factory) {
               factory(require, exports, module);
             }
-          : function(name, factory) {
+          : function (name, factory) {
               var module = { exports: {} };
-              var require = function(n) {
+              var require = function (n) {
                 if(n === 'jquery') {
                   n = 'jQuery';
                 }

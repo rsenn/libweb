@@ -10,7 +10,7 @@ export const Rectangle = ({ data, opts = {}, ...props }) => {
   //console.log('Rectangle.render ', { data, opts });
   let { transform = new TransformationList() } = opts;
 
-  let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
+  let coordFn = transform ? MakeCoordTransformer(transform) : (i) => i;
 
   const { layer, x1, x2, y1, y2 } = coordFn(data);
   const color = data.getColor();

@@ -1,4 +1,4 @@
-export const clone = (function() {
+export const clone = (function () {
   'use strict';
 
   function _instanceof(obj, type) {
@@ -11,21 +11,21 @@ export const clone = (function() {
   } catch(_) {
     //maybe a reference error because no `Map`. Give it a dummy value that no
     //value will ever be an instanceof.
-    nativeMap = function() {};
+    nativeMap = function () {};
   }
 
   var nativeSet;
   try {
     nativeSet = Set;
   } catch(_) {
-    nativeSet = function() {};
+    nativeSet = function () {};
   }
 
   var nativePromise;
   try {
     nativePromise = Promise;
   } catch(_) {
-    nativePromise = function() {};
+    nativePromise = function () {};
   }
 
   /**
@@ -85,12 +85,12 @@ export const clone = (function() {
       } else if(_instanceof(parent, nativeSet)) {
         child = new nativeSet();
       } else if(_instanceof(parent, nativePromise)) {
-        child = new nativePromise(function(resolve, reject) {
+        child = new nativePromise(function (resolve, reject) {
           parent.then(
-            function(value) {
+            function (value) {
               resolve(_clone(value, depth - 1));
             },
-            function(err) {
+            function (err) {
               reject(_clone(err, depth - 1));
             }
           );
@@ -135,14 +135,14 @@ export const clone = (function() {
       }
 
       if(_instanceof(parent, nativeMap)) {
-        parent.forEach(function(value, key) {
+        parent.forEach(function (value, key) {
           var keyChild = _clone(key, depth - 1);
           var valueChild = _clone(value, depth - 1);
           child.set(keyChild, valueChild);
         });
       }
       if(_instanceof(parent, nativeSet)) {
-        parent.forEach(function(value) {
+        parent.forEach(function (value) {
           var entryChild = _clone(value, depth - 1);
           child.add(entryChild);
         });
@@ -210,7 +210,7 @@ export const clone = (function() {
   clone.clonePrototype = function clonePrototype(parent) {
     if(parent === null) return null;
 
-    var c = function() {};
+    var c = function () {};
     c.prototype = parent;
     return new c();
   };

@@ -34,7 +34,7 @@ function registerProxy(proxy, value) {
   proxyToValueMap.set(proxy, value);
 }
 
-const unwrap = replicaOrAny => proxyToValueMap.get(replicaOrAny) || replicaOrAny;
+const unwrap = (replicaOrAny) => proxyToValueMap.get(replicaOrAny) || replicaOrAny;
 
 class BaseProxyHandler {
   constructor(membrane, value) {
@@ -74,7 +74,7 @@ class BaseProxyHandler {
   lockShadowTarget(shadowTarget) {
     const { originalTarget } = this;
     const targetKeys = ArrayConcat.call(getOwnPropertyNames(originalTarget), getOwnPropertySymbols(originalTarget));
-    targetKeys.forEach(key => {
+    targetKeys.forEach((key) => {
       this.copyDescriptorIntoShadowTarget(shadowTarget, key);
     });
     const {
@@ -198,7 +198,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
     }
 
     const handler = this;
-    const get = function() {
+    const get = function () {
       //invoking the original getter with the original target
       return handler.wrapValue(originalGet.call(unwrap(this)));
     };
@@ -213,7 +213,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
       return wrappedSetter;
     }
 
-    const set = function(v) {
+    const set = function (v) {
       //invoking the original setter with the original target
       originalSet.call(unwrap(this), unwrap(v));
     };
@@ -247,7 +247,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
     }
 
     const handler = this;
-    const get = function() {
+    const get = function () {
       //invoking the red getter with the proxy of this
       return unwrap(redGet.call(handler.wrapValue(this)));
     };
@@ -263,7 +263,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
     }
 
     const handler = this;
-    const set = function(v) {
+    const set = function (v) {
       //invoking the red setter with the proxy of this
       redSet.call(handler.wrapValue(this), handler.wrapValue(v));
     };
@@ -306,7 +306,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
     if(
       Util.tryCatch(
         () => process,
-        process => process.env.NODE_ENV !== 'production'
+        (process) => process.env.NODE_ENV !== 'production'
       )
     ) {
       throw new Error(`Invalid setPrototypeOf invocation for reactive proxy ${toString(this.originalTarget)}. Prototype of reactive objects cannot be changed.`);
@@ -370,7 +370,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
     }
 
     const handler = this;
-    const get = function() {
+    const get = function () {
       //invoking the original getter with the original target
       return handler.wrapValue(originalGet.call(unwrap(this)));
     };
@@ -385,11 +385,11 @@ class ReadOnlyHandler extends BaseProxyHandler {
     }
 
     const handler = this;
-    const set = function(v) {
+    const set = function (v) {
       if(
         Util.tryCatch(
           () => process,
-          process => process.env.NODE_ENV !== 'production'
+          (process) => process.env.NODE_ENV !== 'production'
         )
       ) {
         const { originalTarget } = handler;
@@ -404,7 +404,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
     if(
       Util.tryCatch(
         () => process,
-        process => process.env.NODE_ENV !== 'production'
+        (process) => process.env.NODE_ENV !== 'production'
       )
     ) {
       const { originalTarget } = this;
@@ -418,7 +418,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
     if(
       Util.tryCatch(
         () => process,
-        process => process.env.NODE_ENV !== 'production'
+        (process) => process.env.NODE_ENV !== 'production'
       )
     ) {
       const { originalTarget } = this;
@@ -432,7 +432,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
     if(
       Util.tryCatch(
         () => process,
-        process => process.env.NODE_ENV !== 'production'
+        (process) => process.env.NODE_ENV !== 'production'
       )
     ) {
       const { originalTarget } = this;
@@ -444,7 +444,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
     if(
       Util.tryCatch(
         () => process,
-        process => process.env.NODE_ENV !== 'production'
+        (process) => process.env.NODE_ENV !== 'production'
       )
     ) {
       const { originalTarget } = this;
@@ -458,7 +458,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
     if(
       Util.tryCatch(
         () => process,
-        process => process.env.NODE_ENV !== 'production'
+        (process) => process.env.NODE_ENV !== 'production'
       )
     ) {
       const { originalTarget } = this;
@@ -471,7 +471,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
 
 function extract(objectOrArray) {
   if(isArray(objectOrArray)) {
-    return objectOrArray.map(item => {
+    return objectOrArray.map((item) => {
       const original = unwrap(item);
       if(original !== item) {
         return extract(original);
@@ -497,7 +497,7 @@ function extract(objectOrArray) {
 }
 
 const formatter = {
-  header: plainOrProxy => {
+  header: (plainOrProxy) => {
     const originalTarget = unwrap(plainOrProxy);
     //if originalTarget is falsy or not unwrappable, exit
     if(!originalTarget || originalTarget === plainOrProxy) {
@@ -544,7 +544,7 @@ function init() {
   if(
     Util.tryCatch(
       () => process,
-      process => process.env.NODE_ENV === 'production'
+      (process) => process.env.NODE_ENV === 'production'
     )
   ) {
     //this method should never leak to prod
@@ -564,7 +564,7 @@ function init() {
 if(
   Util.tryCatch(
     () => process,
-    process => process.env.NODE_ENV !== 'production'
+    (process) => process.env.NODE_ENV !== 'production'
   )
 ) {
   init();
@@ -598,7 +598,7 @@ const defaultValueMutated = (obj, key) => {
   /* do nothing */
 };
 
-const defaultValueDistortion = value => value;
+const defaultValueDistortion = (value) => value;
 function createShadowTarget(value) {
   return isArray(value) ? [] : {};
 }

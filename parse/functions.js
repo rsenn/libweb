@@ -1,10 +1,10 @@
-const nothing = str => ['', str];
+const nothing = (str) => ['', str];
 
-const char = c => str => (str.length && str[0] === c ? [str[0], str.slice(1)] : []);
+const char = (c) => (str) => (str.length && str[0] === c ? [str[0], str.slice(1)] : []);
 
-const range = (start, end) => str => (str[0] >= start && str[0] <= end ? [str[0], str.slice(1)] : []);
+const range = (start, end) => (str) => (str[0] >= start && str[0] <= end ? [str[0], str.slice(1)] : []);
 
-const some = parser => str => {
+const some = (parser) => (str) => {
   const recurse = (memo, remaining) => {
     if(!remaining) {
       return [memo, remaining];
@@ -15,7 +15,7 @@ const some = parser => str => {
   return recurse('', str);
 };
 
-const seq = (parsers, reducer = results => results.join('')) => str => {
+const seq = (parsers, reducer = (results) => results.join('')) => (str) => {
   const recurse = (remainingParsers, [memo, remainingStr]) => {
     if(!remainingParsers.length) {
       return [memo, remainingStr];
@@ -28,7 +28,7 @@ const seq = (parsers, reducer = results => results.join('')) => str => {
   return !result ? [] : [reducer(result), remaining];
 };
 
-const choice = (...parsers) => str => {
+const choice = (...parsers) => (str) => {
   if(!parsers.length) {
     return [];
   }

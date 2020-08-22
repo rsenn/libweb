@@ -14,8 +14,8 @@ export class Parser {
   lastTok = 0;
   nodeTokenMap = new WeakMap();
 
-  static printToks = tokens => tokens.map(tok => (/(literal|identifier)/i.test(tok.type) && /^[^'"]/.test(tok.value) ? '‹' + tok.value + '›' : tok.value)).join(' ');
-  static tokArray = tokens => tokens.map(tok => tok.value);
+  static printToks = (tokens) => tokens.map((tok) => (/(literal|identifier)/i.test(tok.type) && /^[^'"]/.test(tok.value) ? '‹' + tok.value + '›' : tok.value)).join(' ');
+  static tokArray = (tokens) => tokens.map((tok) => tok.value);
 
   constructor(sourceText, fileName) {
     this.tokens = [];
@@ -30,8 +30,8 @@ export class Parser {
     var parser = this;
     this.estree = Util.propertyLookup(
       classes,
-      key =>
-        function(...args) {
+      (key) =>
+        function (...args) {
           let node = /*new.target ||*/ classes[key](...args);
 
           parser.onNewNode(node);
@@ -75,7 +75,7 @@ export class Parser {
     let index = this.nodes.indexOf(instance);
   };
 
-  onNewNode = node => {
+  onNewNode = (node) => {
     const range = [this.lastTok, this.processed.length];
     this.nodeTokenMap[node] = range;
   };
@@ -92,7 +92,7 @@ export class Parser {
       } while((obj = obj.object));
     }
     Object.defineProperty(range, 'size', {
-      get: function() {
+      get: function () {
         return this[1] - this[0];
       },
       enumerable: false,
@@ -112,9 +112,9 @@ export class Parser {
     Object.assign(obj, { range: positions, tokenRange: range, tokens, comments });
   };
 
-  addCommentsToNodes = root => {
+  addCommentsToNodes = (root) => {
     let nodes = new MultiMap();
-    for(let [node, path] of deep.iterate(root, n => n instanceof ESNode)) {
+    for(let [node, path] of deep.iterate(root, (n) => n instanceof ESNode)) {
       let { tokenRange, tokens, source } = node;
       let range = tokenRange;
       if(tokens) nodes.set(tokens[0].offset, node);
@@ -130,14 +130,14 @@ export class Parser {
     }
   };
 
-  tokensForNode = root => {
+  tokensForNode = (root) => {
     let tokens = [];
-    for(let [node, path] of deep.iterate(root, n => n instanceof ESNode)) {
+    for(let [node, path] of deep.iterate(root, (n) => n instanceof ESNode)) {
       const token = this.nodeTokenMap[node];
       tokens.push({ token, path });
     }
     tokens.sort((a, b) => a.token[1] - b.token[1]);
-    let range = [tokens[0], Util.tail(tokens)].map(range => range.token[1]);
+    let range = [tokens[0], Util.tail(tokens)].map((range) => range.token[1]);
     return [...this.processed, ...this.tokens].slice(...range);
   };
 
@@ -182,7 +182,7 @@ export class Parser {
   state = () => {
     var n = this.processed.length;
     var parser = this;
-    return function() {
+    return function () {
       parser.tokens.unshift(...parser.processed.splice(n, parser.processed.length));
     };
   };
@@ -205,9 +205,9 @@ export class Parser {
   log() {
     return;
     const width = 72;
-    let args = [...arguments].map(a => (typeof a === 'string' ? `"${a}"` : toStr(a)).replace(new RegExp('[\n\r\t ]+', 'g'), ''));
+    let args = [...arguments].map((a) => (typeof a === 'string' ? `"${a}"` : toStr(a)).replace(new RegExp('[\n\r\t ]+', 'g'), ''));
     let name = Util.abbreviate(Util.trim(args.join(''), '\'"'), width);
-    let stack = Util.getCallerStack().map(st => st.getFunctionName());
+    let stack = Util.getCallerStack().map((st) => st.getFunctionName());
     /*this.stack.map((name, i) => `${i}:${name}`).join(", ");*/
 
     const posstr = this.prefix + String(this.pos);
@@ -242,7 +242,7 @@ function backTrace() {
   let arr = str.split(/\n/g);
 
   arr = arr
-    .map(line => {
+    .map((line) => {
       let matches = /^(.*)\s\((.*):([0-9]*):([0-9]*)\)$/.exec(line);
       if(matches && !/estree/.test(line)) {
         let name = matches[1].replace(/Parser\./, 'Parser.prototype.');
@@ -263,8 +263,8 @@ function backTrace() {
       }
       return null;
     })
-    .filter(e => e != null)
-    .map(e => ` ${e.file}:${e.line}:${e.column} ${e.name} `);
+    .filter((e) => e != null)
+    .map((e) => ` ${e.file}:${e.line}:${e.column} ${e.name} `);
 
   //console.log("STACK: ", arr.join("\n"));
 
@@ -593,7 +593,7 @@ export class ECMAScriptParser extends Parser {
   parseArguments() {
     const args = [];
     let rest_of = false;
-    const checkRestOf = parser => {
+    const checkRestOf = (parser) => {
       if(parser.matchPunctuators('...')) {
         parser.expectPunctuators('...');
         rest_of = true;
@@ -657,7 +657,7 @@ export class ECMAScriptParser extends Parser {
 
     if(!Util.isArray(args)) args = [args];
 
-    args = args.map(arg => {
+    args = args.map((arg) => {
       if(arg instanceof ObjectBindingPattern) {
       }
       return arg;
@@ -1074,7 +1074,7 @@ export class ECMAScriptParser extends Parser {
     return new this.estree.BlockStatement(statements);
   }
 
-  parseList(insideIteration = false, insideFunction = false, check = p => false) {
+  parseList(insideIteration = false, insideFunction = false, check = (p) => false) {
     this.log(`parseList()`);
 
     const statements = [];
@@ -1631,7 +1631,7 @@ export class ECMAScriptParser extends Parser {
       cv = kw.value == 'default' ? null : this.parseExpression();
       this.expectPunctuators(':');
 
-      stmt = this.parseList(true, insideFunction, p => p.matchKeywords(['case', 'default']));
+      stmt = this.parseList(true, insideFunction, (p) => p.matchKeywords(['case', 'default']));
 
       cases.push(new this.estree.CaseClause(cv, stmt));
 
@@ -2005,20 +2005,20 @@ var fns = [];
 const methodNames = [...Util.getMethodNames(ECMAScriptParser.prototype)];
 var methods = {};
 
-const quoteArray = arr => (arr.length < 5 ? `[${arr.join(', ')}]` : `[${arr.length}]`);
+const quoteArray = (arr) => (arr.length < 5 ? `[${arr.join(', ')}]` : `[${arr.length}]`);
 
-const quoteList = (l, delim = ' ') => '' + l.map(t => (typeof t == 'string' ? `'${t}'` : '' + t)).join(delim) + '';
-const quoteToks = l => quoteList(l.map(t => t.value));
-const quoteObj = i => (i instanceof Array ? quoteArg(i) : Util.className(i) == 'Object' ? Object.keys(i) : typeof i == 'object' ? Util.className(i) : `'${i}'`);
+const quoteList = (l, delim = ' ') => '' + l.map((t) => (typeof t == 'string' ? `'${t}'` : '' + t)).join(delim) + '';
+const quoteToks = (l) => quoteList(l.map((t) => t.value));
+const quoteObj = (i) => (i instanceof Array ? quoteArg(i) : Util.className(i) == 'Object' ? Object.keys(i) : typeof i == 'object' ? Util.className(i) : `'${i}'`);
 
-const quoteArg = a => a.map(i => (Util.isObject(i) && i.value !== undefined ? i.value : quoteObj(i)));
-const quoteStr = s => s.replace(/\n/g, '\\n');
+const quoteArg = (a) => a.map((i) => (Util.isObject(i) && i.value !== undefined ? i.value : quoteObj(i)));
+const quoteStr = (s) => s.replace(/\n/g, '\\n');
 
-Parser.prototype.trace = function() {
-  return this.stack.map(frame => `${(frame.tokenIndex + '').padStart(5)} ${frame.position.toString().padStart(6)} ${(frame.methodName + '(' + quoteList(frame.args || [], ',') + ')').padEnd(50)} ${(frame.tokens || []).join(' ')}`).join('\n');
+Parser.prototype.trace = function () {
+  return this.stack.map((frame) => `${(frame.tokenIndex + '').padStart(5)} ${frame.position.toString().padStart(6)} ${(frame.methodName + '(' + quoteList(frame.args || [], ',') + ')').padEnd(50)} ${(frame.tokens || []).join(' ')}`).join('\n');
 };
 
-Parser.prototype.onToken = function(tok) {
+Parser.prototype.onToken = function (tok) {
   let i = 0;
   while(i < this.stack.length && !/parse/.test(this.stack[i].methodName)) i++;
   let frame = this.stack[0];
@@ -2032,7 +2032,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
 
   const printer = new Printer();
 
-  var esfactory = function(...args) {
+  var esfactory = function (...args) {
     let { lexer, stack } = this;
     let { tokenIndex } = lexer;
 
@@ -2068,7 +2068,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
 
     //if(token) lastTok--;
     newNodes = [];
-    for(let [node, path] of deep.iterate(nodes, n => n instanceof ESNode)) {
+    for(let [node, path] of deep.iterate(nodes, (n) => n instanceof ESNode)) {
       const name = Util.className(node);
       newNodes.push(name);
     }
@@ -2086,7 +2086,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
 
     annotate.push(`returned: ${objectStr}`);
 
-    if(lexed.length) annotate.push(`lexed[${lexed.map(t => Util.abbreviate(quoteStr(t.value), 20)).join(', ')}]`);
+    if(lexed.length) annotate.push(`lexed[${lexed.map((t) => Util.abbreviate(quoteStr(t.value), 20)).join(', ')}]`);
     if(nodes.length) annotate.push(`yielded: ` + quoteArray(newNodes));
     nodes.splice(0, nodes.length);
     depth--;
@@ -2095,7 +2095,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
       msg = msg + '    ' + annotate.join(', ');
     }
 
-    //  if(ret || !/match/.test(methodName))  console.log(msg);
+    if(ret || !/match/.test(methodName)) console.log(msg);
 
     return ret;
   };
@@ -2105,8 +2105,8 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
 Object.assign(
   ECMAScriptParser.prototype,
   Util.getMethodNames(new ECMAScriptParser(), 2)
-    .filter(name => /^(expect|parse)/.test(name))
-    .reduce(function(acc, methodName) {
+    .filter((name) => /^(expect|parse)/.test(name))
+    .reduce(function (acc, methodName) {
       var fn = ECMAScriptParser.prototype[methodName];
       methods[methodName] = fn;
 
@@ -2114,7 +2114,7 @@ Object.assign(
     }, {})
 );
 
-const timeout = ms =>
+const timeout = (ms) =>
   new Promise((resolve, reject) => {
     setTimeout(() => resolve(), ms);
   });

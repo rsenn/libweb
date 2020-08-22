@@ -1,7 +1,7 @@
 import Util from '../util.js';
 
 const map = new WeakMap();
-const wm = o => map.get(o);
+const wm = (o) => map.get(o);
 /*const fetch = require('node-fetch');
 const fs = require('fs-extra');
 */
@@ -22,10 +22,10 @@ const requires = (i, args) => {
   if(args.length < i) throw new TypeError(`${i} argument required, but only ${args.length} present.`);
 };
 
-const isReq = req => req && req[Symbol.toStringTag] === 'Request';
-const isRes = res => res && res[Symbol.toStringTag] === 'Response';
-const strToBase64 = str => new Buffer(str).toString('hex');
-const base64ToStr = hex => new Buffer(hex, 'hex').toString();
+const isReq = (req) => req && req[Symbol.toStringTag] === 'Request';
+const isRes = (res) => res && res[Symbol.toStringTag] === 'Response';
+const strToBase64 = (str) => new Buffer(str).toString('hex');
+const base64ToStr = (hex) => new Buffer(hex, 'hex').toString();
 
 export class Cache {
   constructor(cacheName, folder) {
@@ -97,7 +97,7 @@ export class Cache {
 
       let clone = req.clone();
 
-      await fetch(req).then(res => {
+      await fetch(req).then((res) => {
         if(res.status === 206) throw new TypeError('Partial response (status code 206) is unsupported');
 
         if(!res.ok) throw new TypeError('Request failed');
@@ -106,7 +106,7 @@ export class Cache {
       });
     }
 
-    await Promise.all(results.map(a => this.put(...a)));
+    await Promise.all(results.map((a) => this.put(...a)));
   }
 
   /**
@@ -159,7 +159,7 @@ export class Cache {
 
     res.body.pipe(fileStream);
 
-    return new Promise(rs => fileStream.on('close', rs));
+    return new Promise((rs) => fileStream.on('close', rs));
   }
 
   // Finds the Cache entry whose key is the request, and if found,
@@ -190,9 +190,9 @@ export class Cache {
 
     let search =
       request === undefined
-        ? a => a
-        : a =>
-            a.filter(a => {
+        ? (a) => a
+        : (a) =>
+            a.filter((a) => {
               a = base64ToStr(a);
               if(ignoreSearch) {
                 a = a.split('?')[0];
@@ -202,7 +202,7 @@ export class Cache {
             });
 
     return new Promise((resolve, reject) => {
-      fs.readdir(folder, (err, files) => (err ? reject(err) : resolve(search(files).map(file => new Request(base64ToStr(file))))));
+      fs.readdir(folder, (err, files) => (err ? reject(err) : resolve(search(files).map((file) => new Request(base64ToStr(file))))));
     });
   }
 }

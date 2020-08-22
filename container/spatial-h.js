@@ -26,7 +26,7 @@ export function SpatialHash(config) {
  * Point object must have "id" option if object removing is implied
  * @param point {x, y}
  */
-SpatialHash.prototype.insert = function(point) {
+SpatialHash.prototype.insert = function (point) {
   var hash = this.hash(point);
   var buckets = this.buckets;
   if(!buckets[hash]) {
@@ -43,7 +43,7 @@ SpatialHash.prototype.insert = function(point) {
  *  }
  *  Retrieves buckets for the given point or for all 4 points of bounding box if width/heights are set
  */
-SpatialHash.prototype.retrieve = function(point) {
+SpatialHash.prototype.retrieve = function (point) {
   var x = point.x,
     y = point.y,
     w = point.w || 0,
@@ -90,18 +90,18 @@ SpatialHash.prototype.retrieve = function(point) {
 };
 
 /** @param point {x, y} */
-SpatialHash.prototype.hash = function(point) {
+SpatialHash.prototype.hash = function (point) {
   var cell = this.reverse_cell_size;
   var hash = '' + parseInt(point.x * cell, 10);
   hash += parseInt(point.y * cell, 10);
   return hash;
 };
 
-SpatialHash.prototype.clear = function() {
+SpatialHash.prototype.clear = function () {
   this.buckets = {};
 };
 
-SpatialHash.prototype.remove = function(id) {
+SpatialHash.prototype.remove = function (id) {
   var list = [];
   for(var bucket in this.buckets) {
     if(this.buckets.hasOwnProperty(bucket)) {

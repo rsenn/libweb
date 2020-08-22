@@ -173,7 +173,7 @@ export class EagleDocument extends EagleNode {
     });
   }
 
-  index(path, transform = arg => arg) {
+  index(path, transform = (arg) => arg) {
     if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
     return transform(path.apply(this));
   }
@@ -199,7 +199,7 @@ export class EagleDocument extends EagleNode {
     if(this.type == 'brd') {
       const board = this.lookup(['eagle', 'drawing', 'board']);
 
-      const measures = [...this.plain].filter(e => e.layer && e.layer.name == 'Measures');
+      const measures = [...this.plain].filter((e) => e.layer && e.layer.name == 'Measures');
 
       let ret;
 
@@ -264,8 +264,8 @@ export class EagleDocument extends EagleNode {
 
     let bounds = this.getBounds();
     let values = [...bounds.getObjects().values()];
-    let measures = values.filter(obj => obj.layer && obj.layer.name == 'Measures');
-    if(geometry) measures = measures.map(e => e.geometry);
+    let measures = values.filter((obj) => obj.layer && obj.layer.name == 'Measures');
+    if(geometry) measures = measures.map((e) => e.geometry);
     return measures.length > 0 ? measures : null;
   }
 
@@ -284,7 +284,7 @@ export class EagleDocument extends EagleNode {
     return new Map(
       [...this.signals].map(([name, signal]) => {
         let objects = [...signal.children]
-          .map(child => [child, child.geometry])
+          .map((child) => [child, child.geometry])
           .filter(([child, geometry]) => !!geometry || child.tagName == 'contactref')
           .map(([child, geometry]) => child);
 

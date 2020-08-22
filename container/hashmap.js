@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with BackBee. If not, see <http://www.gnu.org/licenses/>.
  */
-(function(window) {
+(function (window) {
   'use strict';
 
   var setValues = function hashMapSetValues(HashMap, values) {
@@ -52,7 +52,7 @@
         configurable: false
       });
     },
-    HashMap = function(values) {
+    HashMap = function (values) {
       defineArrayProperty(this, 'map_keys');
 
       defineArrayProperty(this, 'map_values');
@@ -237,7 +237,7 @@
   };
 
   if(typeof define === 'function' && define.amd) {
-    define('bbhashmap', [], function() {
+    define('bbhashmap', [], function () {
       return HashMap;
     });
   } else {

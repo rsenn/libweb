@@ -30,11 +30,11 @@ export function dom() {
   let ret = [];
 
   const extend = (e, functions) => {
-    const keys = [...Util.members(functions)].filter(key => ['callee', 'caller', 'arguments', 'call', 'bind', 'apply', 'prototype', 'constructor', 'length'].indexOf(key) == -1 && typeof functions[key] == 'function');
+    const keys = [...Util.members(functions)].filter((key) => ['callee', 'caller', 'arguments', 'call', 'bind', 'apply', 'prototype', 'constructor', 'length'].indexOf(key) == -1 && typeof functions[key] == 'function');
     for(let key of keys) if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
   };
 
-  args = args.map(arg => (typeof arg == 'string' ? Element.findAll(arg) : arg));
+  args = args.map((arg) => (typeof arg == 'string' ? Element.findAll(arg) : arg));
 
   for(let e of args) {
     if(e instanceof SVGSVGElement) extend(e, SVG);
@@ -51,7 +51,7 @@ export function dom() {
   return ret;
 }
 
-export const isNumber = a => {
+export const isNumber = (a) => {
   return String(a).replace(/^[0-9]*$/, '') == '';
 };
 
@@ -82,7 +82,7 @@ export const ElementTransformation = () => ({
   }
 });
 
-export const CSSTransformSetters = element => ({
+export const CSSTransformSetters = (element) => ({
   transformation: ElementTransformation(),
   get rotate() {
     return this.transformation.rotate;
@@ -134,11 +134,11 @@ export class TransitionList extends Array {
   constructor() {
     const args = [...arguments];
 
-    args.forEach(arg => this.push(arg));
+    args.forEach((arg) => this.push(arg));
   }
 
   propertyList(name) {
-    return this.map(transition => transition[name]);
+    return this.map((transition) => transition[name]);
   }
 
   get css() {

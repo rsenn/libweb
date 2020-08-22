@@ -6,7 +6,7 @@ export function PathReplacer() {
   try {
     let pwd = process.cwd();
     re = new RegExp(`(file://)?${pwd}/`, 'g');
-    t = s => s.replace(re, '');
+    t = (s) => s.replace(re, '');
   } catch(err) {}
   return (path, to = '') => (re ? path.replace(re, to) : path);
 }
@@ -14,19 +14,19 @@ export function PathReplacer() {
 export function Stack() {
   let stack = Util.getCallers(4, 30);
   let re,
-    t = s => s;
+    t = (s) => s;
 
   try {
     let pwd = process.cwd();
     re = new RegExp(`(file://)?${pwd}/`, 'g');
-    t = s => s.replace(re, '');
+    t = (s) => s.replace(re, '');
   } catch(err) {}
 
   let maxLen = stack.reduce((acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc), 0);
 
   return stack
-    .filter(s => s.functionName != 'esfactory')
-    .map(function({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) {
+    .filter((s) => s.functionName != 'esfactory')
+    .map(function ({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) {
       return `  ${(functionName || '').padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`;
     });
 
@@ -58,12 +58,12 @@ export class SyntaxError extends Error {
   }
 }
 
-SyntaxError.prototype.toString = function() {
+SyntaxError.prototype.toString = function () {
   const { msg, pos, ctx } = this;
   return pos + ': ' + (ctx ? ctx + ' error: ' : '') + msg;
 };
 
-SyntaxError.prototype[Symbol.toStringTag] = function() {
+SyntaxError.prototype[Symbol.toStringTag] = function () {
   return this.toString();
 };
 
@@ -71,7 +71,7 @@ const distTo = (s, pos, inc, fn) => {
   let i;
   if(typeof fn == 'string' && fn.length == 1) {
     let ch = fn;
-    fn = c => c === ch;
+    fn = (c) => c === ch;
   }
   for(i = pos; !fn(s[i], i); i += inc) {}
   return i - pos;
@@ -110,10 +110,10 @@ export function Position(line, column, pos, file, freeze = true) {
   return freeze && obj.constructor === Position ? Object.freeze(obj) : obj;
 }
 
-Position.prototype[Symbol.toStringTag] = function() {
+Position.prototype[Symbol.toStringTag] = function () {
   return this.toString();
 };
-Position.prototype.toString = function(showFilename = true) {
+Position.prototype.toString = function (showFilename = true) {
   const { file, line, column } = this;
   return file && showFilename ? `${file}:${line}:${column}` : `${line}:${column}`;
 };
@@ -156,17 +156,17 @@ Range.prototype = { ...Position.prototype, constructor: Range };
 //new Position(0, 0, 0, undefined, false);
 //Range.prototype.constructor = Range;
 
-Position.prototype[Symbol.toStringTag] = function() {
+Position.prototype[Symbol.toStringTag] = function () {
   return Range.prototype.toString.call(this);
 };
 
-Range.prototype.toString = function(showFile = true) {
+Range.prototype.toString = function (showFile = true) {
   const { file, line, column, pos, length } = this;
   const f = file && showFile ? `${file}:` : '';
   return `${f}${line}:${column} - ${f}${line}:${column + length}`;
 };
 
-Range.prototype.in = function(other) {
+Range.prototype.in = function (other) {
   if(other instanceof Position) {
     let pos = other.valueOf();
     return this.start.valueOf() <= pos && pos <= this.end.valueOf();
@@ -178,21 +178,21 @@ Range.prototype.in = function(other) {
 
 Object.defineProperties(Range.prototype, {
   start: {
-    get: function() {
+    get: function () {
       const { file, line, column, pos } = this;
       //console.log("start:", this);
       return new Position(line, column, pos, file);
     }
   },
   end: {
-    get: function() {
+    get: function () {
       const { file, line, column, pos, length } = this;
       return new Position(line, column, pos + length, file);
     }
   }
 });
 
-Range.prototype.valueOf = function() {
+Range.prototype.valueOf = function () {
   return [this.pos, this.pos + this.length];
 };
 
@@ -491,7 +491,7 @@ export class Lexer {
   lineRange(start, end) {
     let lines = this.source.split(/\n/g).entries();
     lines = lines.slice(start, end);
-    lines.print = function() {
+    lines.print = function () {
       for(let [lineno, str] of this) console.log(`${lineno.padStart(10)}: ${str}`);
     };
     return lines;
@@ -560,7 +560,7 @@ export class Lexer {
     let word = '',
       prev = '';
     let slashes = 1;
-    let validator = c => {
+    let validator = (c) => {
       //let last = word.substring(word.length - 1);
       //console.log("i:" + i + " c:" + c + " prev: " + prev + " slashes: " + slashes);
       i++;
@@ -681,7 +681,7 @@ export class Lexer {
       let escapeEncountered = false;
       let n = 0;
       do {
-        if(this.acceptRun(not(or(c => c === '$', oneOf('\\`{$'))))) {
+        if(this.acceptRun(not(or((c) => c === '$', oneOf('\\`{$'))))) {
           escapeEncountered = false;
         }
         prevChar = c;
@@ -718,7 +718,7 @@ export class Lexer {
 
       return this.lexTemplate(this.inSubst);
     }
-    return function() {
+    return function () {
       let prevChar = '';
       let c = '';
       let escapeEncountered = false;
@@ -855,20 +855,20 @@ export class Lexer {
 }
 
 function not(fn) {
-  return c => {
+  return (c) => {
     const result = fn(c);
     return !result;
   };
 }
 
 function or(fn1, fn2) {
-  return c => {
+  return (c) => {
     return fn1(c) || fn2(c);
   };
 }
 
 function oneOf(str) {
-  return c => {
+  return (c) => {
     return str.indexOf(c) >= 0;
   };
 }

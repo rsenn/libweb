@@ -40,7 +40,7 @@ export class PubSub {
    * @returns {object} Observable
    */
   fire(e, value, prev) {
-    this.fns.any.concat(e in this.fns ? this.fns[e] : []).forEach(fn => fn(value, prev, e));
+    this.fns.any.concat(e in this.fns ? this.fns[e] : []).forEach((fn) => fn(value, prev, e));
     return this;
   }
 

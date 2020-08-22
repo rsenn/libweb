@@ -4,8 +4,8 @@ import { toXML } from './util.js';
 export function DereferenceError(object, member, pos, prev, locator) {
   let error = this instanceof DereferenceError ? this : new DereferenceError(object.index);
   let stack = Util.getCallerStack()
-    .filter(frame => null !== frame.getFileName())
-    .map(frame => {
+    .filter((frame) => null !== frame.getFileName())
+    .map((frame) => {
       let method = frame.getMethodName();
       if(method) method = (frame.getTypeName() || Util.className(frame.getThis())) + '.' + method;
       else method = frame.getFunctionName();
@@ -26,12 +26,12 @@ no member '${Util.inspect(member, { colors: false })}' in ${Util.toString(prev, 
   );
 }
 
-DereferenceError.prototype.toString = function() {
+DereferenceError.prototype.toString = function () {
   const { message, object, member, pos, locator, stack } = this;
   return `${message}\n${Util.inspect({ object, member, pos, locator, stack }, { depth: 2, colors: false })}`;
 };
 
-export const IsChildren = a => a === MutablePath.CHILDREN_GLYPH || a === MutablePath.CHILDREN_STR || a === MutablePath.CHILDREN_SYM;
+export const IsChildren = (a) => a === MutablePath.CHILDREN_GLYPH || a === MutablePath.CHILDREN_STR || a === MutablePath.CHILDREN_SYM;
 
 const CHILDREN_SPACE = '';
 
@@ -39,7 +39,7 @@ export class MutablePath extends Array {
   //'\u2b21', '\u274a', '\u229b', '\u273d', '\u20f0', '\u20f0', '\u272a', '\u262a',  '\u21f9', '\u29bf','\u25c7', '\u2b20', '\u267d', '\u267c', '\u267b', '\u2693','\u0fd6', '\u0fd5', '\u2620', '\u0e1e'
   static CHILDREN_GLYPH /* */ = '➟' /* '▻'*/ /*'∍'*/ /*'⬡'*/ /*'⊛'*/ /*'▸'*/;
   //'\u00bb'
-  static CHILDREN_FN = args => {
+  static CHILDREN_FN = (args) => {
     for(let i = 0; i < args.length; i++) args[i] = (args[i] + '').replace(/children/g, this.CHILDREN_GLYPH);
     return '';
   };
@@ -293,7 +293,7 @@ export class MutablePath extends Array {
               } else if(t == 'object') {
                 //Util.log(`MutablePath.apply findIndex`,a.o,i);
 
-                i = a.o.findIndex(child => MutablePath.compareObj(child, i));
+                i = a.o.findIndex((child) => MutablePath.compareObj(child, i));
               } else if(t == 'number' && i < 0) {
                 i = a.o.length + i;
               } else i = +i;
@@ -317,8 +317,8 @@ export class MutablePath extends Array {
   toSource(opts = {}) {
     const { sep = ',', filterChildren = false } = opts;
     let r = this.toArray();
-    if(filterChildren) r = r.filter(item => !MutablePath.isChildren(item));
-    return `[${r.map(p => (typeof p == 'number' ? p : typeof p == 'string' ? `'${p}'` : p)).join(sep)}]`;
+    if(filterChildren) r = r.filter((item) => !MutablePath.isChildren(item));
+    return `[${r.map((p) => (typeof p == 'number' ? p : typeof p == 'string' ? `'${p}'` : p)).join(sep)}]`;
   }
   toCode(name) {
     return this.reduce((acc, part) => acc + (Util.isNumeric(part) ? `[${part}]` : `.${part}`), name || '');
@@ -347,7 +347,7 @@ export class MutablePath extends Array {
     let p = MutablePath.prototype.toString.call(this, sep /* || '\u2571' || '\u29f8', childrenStr, text => text*/);
     let n = Util.className(this);
     let c = n.startsWith('Mutable') ? 31 : 32;
-    let t = color ? (text, ...args) => `\u001b[${args.join(';')}m` + text : text => text;
+    let t = color ? (text, ...args) => `\u001b[${args.join(';')}m` + text : (text) => text;
     let max = 100;
 
     if(Util.stripAnsi(p).length > max) {
@@ -362,7 +362,7 @@ export class MutablePath extends Array {
 
   toString(sep = ' ', partToStr = MutablePath.partToString, childrenStr = MutablePath['CHILDREN_GLYPH'] + CHILDREN_SPACE) {
     // console.log("MutablePath.toString",{sep,partToStr, childrenStr});
-    const color = Util.isBrowser() ? text => text : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
+    const color = Util.isBrowser() ? (text) => text : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
     let a = [...this];
     //   if(this[0] == 'children') sep = ' ';
     while(a.length > 0 && a[0] === '') a.shift();
@@ -548,13 +548,13 @@ export class MutablePath extends Array {
     return r;
   }
 
-  *walk(t = p => p.up(1)) {
+  *walk(t = (p) => p.up(1)) {
     let p = this;
     let run = true;
     let skip;
     let next;
     const abort = () => (run = false);
-    const set = v => (p = v);
+    const set = (v) => (p = v);
     const ignore = () => (skip = true);
     for(let p = this, i = 0; p; p = next) {
       next = t(p, i++, abort, ignore);
@@ -577,7 +577,7 @@ export class MutablePath extends Array {
 }
 //Util.define(MutablePath.prototype,specialFields', []);
 
-Util.defineGetter(MutablePath, Symbol.species, function() {
+Util.defineGetter(MutablePath, Symbol.species, function () {
   return MutablePath;
 });
 
@@ -585,6 +585,6 @@ export const Path = Util.immutableClass(MutablePath);
 
 export const ImmutablePath = Path;
 
-Util.defineGetter(Path, Symbol.species, function() {
+Util.defineGetter(Path, Symbol.species, function () {
   return ImmutablePath;
 });

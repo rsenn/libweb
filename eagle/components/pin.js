@@ -19,7 +19,7 @@ export const Pin = ({ data, opts = {}, ...props }) => {
 
   let { transformation } = opts;
 
-  let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
+  let coordFn = transform ? MakeCoordTransformer(transform) : (i) => i;
 
   const { length, rot, name, visible } = data;
   const { x, y } = coordFn(data);

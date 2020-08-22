@@ -1,4 +1,4 @@
-window.SignalingChannel = (function() {
+window.SignalingChannel = (function () {
   'use strict';
 
   //This class implements a signaling channel based on WebSocket.
@@ -13,10 +13,10 @@ window.SignalingChannel = (function() {
     this.onerror = null;
   }
   EventEmitter.bindPrototype(SignalingChannel);
-  SignalingChannel.prototype.isRegistered = function() {
+  SignalingChannel.prototype.isRegistered = function () {
     return this.registered_;
   };
-  SignalingChannel.prototype.open = function() {
+  SignalingChannel.prototype.open = function () {
     if(this.websocket_) {
       trace('ERROR: SignalingChannel has already opened.');
       return;
@@ -26,16 +26,16 @@ window.SignalingChannel = (function() {
     }
     trace('Opening signaling channel.');
     return new Promise(
-      function(resolve, reject) {
+      function (resolve, reject) {
         this.websocket_ = new WebSocket(this.wssUrl_);
 
-        this.websocket_.onopen = function() {
+        this.websocket_.onopen = function () {
           trace('Signaling channel opened.');
 
-          this.websocket_.onerror = function() {
+          this.websocket_.onerror = function () {
             trace('Signaling channel error.');
           };
-          this.websocket_.onclose = function(event) {
+          this.websocket_.onclose = function (event) {
             //TODO(tkchin): reconnect to WSS.
             trace('Channel closed with code:' + event.code + ' reason:' + event.reason);
             this.websocket_ = null;
@@ -49,21 +49,21 @@ window.SignalingChannel = (function() {
           resolve();
         }.bind(this);
 
-        this.websocket_.onmessage = function(event) {
+        this.websocket_.onmessage = function (event) {
           trace('WSS->C: ' + event.data);
 
           var message = JSON.parse(event.data);
           this.emit('message', message);
         }.bind(this);
 
-        this.websocket_.onerror = function() {
+        this.websocket_.onerror = function () {
           reject(Error('WebSocket error.'));
         };
       }.bind(this)
     );
   };
 
-  SignalingChannel.prototype.register = function(roomId, clientId) {
+  SignalingChannel.prototype.register = function (roomId, clientId) {
     if(this.registered_) {
       trace('ERROR: SignalingChannel has already registered.');
       return;
@@ -97,7 +97,7 @@ window.SignalingChannel = (function() {
     trace('Signaling channel registered.');
   };
 
-  SignalingChannel.prototype.close = function() {
+  SignalingChannel.prototype.close = function () {
     if(this.websocket_) {
       this.websocket_.close();
       this.websocket_ = null;
@@ -112,7 +112,7 @@ window.SignalingChannel = (function() {
     this.registered_ = false;
   };
 
-  SignalingChannel.prototype.send = function(message) {
+  SignalingChannel.prototype.send = function (message) {
     if(!this.roomId_ || !this.clientId_) {
       trace('ERROR: SignalingChannel has not registered.');
       return;

@@ -7,7 +7,7 @@ export function Circle(x, y, radius) {
   let arg;
   let args = [...arguments];
   let ret;
-  if(args.length >= 3 && args.every(arg => !isNaN(parseFloat(arg)))) {
+  if(args.length >= 3 && args.every((arg) => !isNaN(parseFloat(arg)))) {
     arg = { x: +args[0], y: +args[1], radius: +args[2] };
   } else if(args.length == 1) {
     arg = args[0];
@@ -40,7 +40,7 @@ export function Circle(x, y, radius) {
     obj.x2 = parseFloat(args[1].x);
     obj.y2 = parseFloat(args[1].y);*/
     ret = 2;
-  } else if(arg && arg.length >= 3 && arg.slice(0, 3).every(arg => !isNaN(parseFloat(arg)))) {
+  } else if(arg && arg.length >= 3 && arg.slice(0, 3).every((arg) => !isNaN(parseFloat(arg)))) {
     obj.x = +arg[0];
     obj.y = +arg[1];
     obj.radius + arg[2];
@@ -59,15 +59,15 @@ export function Circle(x, y, radius) {
   /*  if(this !== obj)*/ return obj;
 }
 
-export const isCircle = obj => ['x', 'y', 'radius'].every(prop => obj[prop] !== undefined);
+export const isCircle = (obj) => ['x', 'y', 'radius'].every((prop) => obj[prop] !== undefined);
 
 Object.defineProperty(Circle.prototype, 'x', { value: 0, enumerable: true, writable: true });
 Object.defineProperty(Circle.prototype, 'y', { value: 0, enumerable: true, writable: true });
 Object.defineProperty(Circle.prototype, 'radius', { value: 0, enumerable: true, writable: true });
 
 Object.defineProperty(Circle.prototype, 'center', {
-  get: function() {
-    return Point.bind(this, null, value => {
+  get: function () {
+    return Point.bind(this, null, (value) => {
       if(value === undefined) return new Point(this.x, this.y);
 
       this.x = value.x;
@@ -76,7 +76,7 @@ Object.defineProperty(Circle.prototype, 'center', {
   }
 });
 
-Circle.prototype.bbox = function(width = 0) {
+Circle.prototype.bbox = function (width = 0) {
   const { x, y, radius } = this;
   let distance = radius + width;
 
@@ -87,7 +87,7 @@ Circle.prototype.bbox = function(width = 0) {
     y2: y + distance
   });
 };
-Circle.prototype.transform = function(m) {
+Circle.prototype.transform = function (m) {
   if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
   Matrix.prototype.transform_point.call(m, this);
   this.radius = Matrix.prototype.transform_wh.call(m, this.radius, this.radius)[0];
@@ -98,6 +98,6 @@ Util.defineInspect(Circle.prototype, 'x', 'y', 'radius');
 
 Circle.bind = (o, p, gen) => {
   const [x, y, radius] = p || ['x', 'y', 'radius'];
-  if(!gen) gen = k => v => (v === undefined ? o[k] : (o[k] = v));
+  if(!gen) gen = (k) => (v) => (v === undefined ? o[k] : (o[k] = v));
   return Util.bindProperties(new Circle(0, 0, 0), o, { x, y, radius }, gen);
 };

@@ -1,7 +1,7 @@
 import Util from '../util.js';
 export class Node {
   static parents(node) {
-    return (function*() {
+    return (function* () {
       var n = node;
       do {
         if(n) yield n;
@@ -31,7 +31,7 @@ export class Node {
   }
 
   static *map(map, propFn) {
-    if(!propFn && 'getPropertyValue' in map) propFn = k => [k, map.getPropertyValue(k)];
+    if(!propFn && 'getPropertyValue' in map) propFn = (k) => [k, map.getPropertyValue(k)];
 
     if(!propFn && typeof map.item == 'function')
       propFn = (k, i) => {

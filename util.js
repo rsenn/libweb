@@ -1603,7 +1603,7 @@ Util.encodeQuery = function (data) {
 };
 Util.parseURL = function (href = this.getURL()) {
   console.log('href:', href);
-  const matches = /^([^:]+:\/\/)?([^/:]*)(:[0-9]*)?(\/?.*)?/g.exec(href);
+  const matches = new RegExp('^([^:]+://)?([^/:]*)(:[0-9]*)?(/?.*)?', 'g').exec(href);
   // = /^([^:]*):\/\/([^/:]*)(:[0-9]*)?(\/?.*)?/g.exec(href);
   const [all, proto, host, port, location = ''] = matches;
   console.log('matches:', matches);
@@ -1699,7 +1699,7 @@ Util.putError = (err) => {
 };
 Util.putStack = (stack) => {
   stack = stack || Util.stack(new Error().stack);
-  console['error']('STACK TRACE:', stack.toString());
+  console['error']('STACK TRACE:', stack /*.toString()*/);
 };
 
 Util.trap = (() => {
@@ -1740,13 +1740,11 @@ Util.waitFor = (msecs) => {
       clearTimeout(timerId);
       reject();
     };
-
-    /**/ t;
   });
   promise.clear = clear;
   return promise;
 };
-Util.timeout = async (msecs, ...promises) => await Promise.race([Util.waitFor(msecs), ...promises]);
+Util.timeout = async (msecs, promises, promiseClass = Promise) => await promiseClass.race([Util.waitFor(msecs)].concat(Util.isArray(promises) ? promises : [promises]));
 Util.isServer = function () {
   return !Util.isBrowser();
 };
@@ -2490,13 +2488,12 @@ Util.counter = (incFn = (c, n, self) => (self.count = c + n)) => {
 };
 
 Util.mapReducer = (setFn, filterFn = (key, value) => true, mapObj = new Map()) => {
-  var fn,
-    next = Util.tryFunction(((acc, mem, idx) => (filterFn(mem, idx) ? (setFn(idx, mem), acc) : null), (r) => r, () => mapObj));
   setFn = setFn || Util.setter(mapObj);
-  fn = function MapReduce(arg, acc = mapObj) {
+  let fn;
+  let next = Util.tryFunction(((acc, mem, idx) => (filterFn(mem, idx) ? (setFn(idx, mem), acc) : null), (r) => r, () => mapObj));
+  fn = function ReduceIntoMap(arg, acc = mapObj) {
     if(Util.isObject(arg, (o) => typeof o.reduce == 'function')) return arg.reduce((acc, arg) => (Util.isArray(arg) ? arg : Util.members(arg)).reduce(reducer, acc), self.map);
     let c = Util.counter();
-
     for(let mem of arg) acc = next(acc, mem, c());
     return acc;
   };
@@ -3612,7 +3609,7 @@ Object.assign(Util.is, {
 
 Util.assignGlobal = () => Util.weakAssign(Util.getGlobalObject(), Util);
 
-Util.weakMapper = (createFn, map = new WeakMap()) => {
+Util.weakMapper = function (createFn, map = new WeakMap()) {
   let self = function (obj, ...args) {
     let ret;
     if(map.has(obj)) {
@@ -3629,19 +3626,11 @@ Util.weakMapper = (createFn, map = new WeakMap()) => {
   self.map = map;
   return self;
 };
-Util.merge = (...args) => args.reduce((acc, arg) => ({ ...acc, ...arg }), {});
 
-Util.weakAssoc = (fn = (value, ...args) => Object.assign(value, ...args)) => {
-  let mapper = Util.tryCatch(
-    () => new WeakMap(),
-    (map) => Util.weakMapper((obj, ...args) => Util.merge(...args), map),
-    () => (obj, ...args) => Util.define(obj, ...args)
-  );
-  return (obj, ...args) => {
-    let value = mapper(obj, ...args);
-    return fn(value, ...args);
-  };
+Util.merge = function (...args) {
+  return args.reduce((acc, arg) => ({ ...acc, ...arg }), {});
 };
+
 Util.transformer = (a, ...l) =>
   (l || []).reduce(
     (c, f) =>
@@ -3650,36 +3639,6 @@ Util.transformer = (a, ...l) =>
       },
     a
   );
-Util.proxyObject = (root, handler) => {
-  const ptr = (path) => path.reduce((a, i) => a[i], root);
-  const nodes = Util.weakMapper(
-    (value, path) =>
-      new Proxy(value, {
-        get(target, key) {
-          let prop = value[key];
-
-          if(Util.isObject(prop) || Util.isArray(prop)) return new node([...path, key]);
-
-          return handler && handler.get ? handler.get(prop, key) : prop;
-        }
-      })
-  );
-
-  function node(path) {
-    let value = ptr(path);
-    //console.log("node:",{path,value});
-
-    return nodes(value, path);
-  }
-
-  return node([]);
-};
-Util.parseXML = function (xmlStr) {
-  return Util.tryCatch(
-    () => new DOMParser(),
-    (parser) => parser.parseFromString(xmlStr, 'application/xml')
-  );
-};
 
 Util.copyTextToClipboard = (i, { target: t } = {}) => {
   let doc = Util.tryCatch(() => document);
@@ -3916,6 +3875,9 @@ Util.cacheAdapter = (storage, defaultOpts = {}) => {
     async key(index) {
       return (await (await storage).keys())[index];
     },
+    async keys() {
+      return await (await storage).keys();
+    },
     async clear() {
       let keys = await (await storage).keys();
       for(let key of keys) await this.removeItem(key);
@@ -3927,10 +3889,11 @@ Util.cachedFetch = (fetch = Util.getGlobalObject('fetch'), cache = 'fetch', defa
   let self = async function CachedFetch(request, opts = {}) {
     let response;
     try {
+      if(typeof request == 'string') request = new Request(request, { ...self.defaultOpts, ...opts });
       response = await cache.getItem(request, { ...self.defaultOpts, ...opts });
 
       if(response == undefined) {
-        response = await self.fetch(request, { ...self.defaultOpts, ...opts });
+        response = await /*self.*/ fetch(request, { ...self.defaultOpts, ...opts });
 
         if(response) cache.setItem(request, response.clone());
       } else {
@@ -3945,4 +3908,41 @@ Util.cachedFetch = (fetch = Util.getGlobalObject('fetch'), cache = 'fetch', defa
   return self;
 };
 
+Util.proxyObject = (root, handler) => {
+  const ptr = (path) => path.reduce((a, i) => a[i], root);
+  const nodes = Util.weakMapper(
+    (value, path) =>
+      new Proxy(value, {
+        get(target, key) {
+          let prop = value[key];
+          if(Util.isObject(prop) || Util.isArray(prop)) return new node([...path, key]);
+          return handler && handler.get ? handler.get(prop, key) : prop;
+        }
+      })
+  );
+  function node(path) {
+    let value = ptr(path);
+    //console.log("node:",{path,value});
+    return nodes(value, path);
+  }
+  return node([]);
+};
+Util.parseXML = function (xmlStr) {
+  return Util.tryCatch(
+    () => new DOMParser(),
+    (parser) => parser.parseFromString(xmlStr, 'application/xml')
+  );
+};
+
+Util.weakAssoc = (fn = (value, ...args) => Object.assign(value, ...args)) => {
+  let mapper = Util.tryCatch(
+    () => new WeakMap(),
+    (map) => Util.weakMapper((obj, ...args) => Util.merge(...args), map),
+    () => (obj, ...args) => Util.define(obj, ...args)
+  );
+  return (obj, ...args) => {
+    let value = mapper(obj, ...args);
+    return fn(value, ...args);
+  };
+};
 export default Util;

@@ -18,8 +18,8 @@ const checkArgs = (checkFn, options) => {
   return Promise.resolve();
 };
 
-const wrapSyncMethod = checkFn => {
-  return iteration => {
+const wrapSyncMethod = (checkFn) => {
+  return (iteration) => {
     return new Promise((resolve, reject) => {
       try {
         resolve(checkFn(iteration));
@@ -36,7 +36,7 @@ const eventLoop = (checkFn, options) => {
     const iterationCheck = () => {
       iteration++;
       checkFn(iteration)
-        .then(result => {
+        .then((result) => {
           return resolve({
             iterations: iteration,
             result
@@ -53,6 +53,6 @@ const eventLoop = (checkFn, options) => {
   });
 };
 
-const isFunction = obj => toString.call(obj) === '[object Function]';
+const isFunction = (obj) => toString.call(obj) === '[object Function]';
 
 export default busywait;
