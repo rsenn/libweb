@@ -507,7 +507,7 @@ export class SpreadElement extends ESNode {
 }
 
 ESNode.prototype.type = null;
-
+/*
 ESNode.prototype.toString = function () {
   let s = '';
   ['alternate', 'argument', 'arguments', 'body', 'callee', 'computed', 'consequent', 'declarations', 'exported', 'expression', 'expressions', 'id', 'identifiers', 'init', 'kind', 'left', 'loc', 'members', 'object', 'operator', 'params', 'prefix', 'property', 'right', 'source', 'test', 'update', 'value'].forEach((field) => {
@@ -516,7 +516,7 @@ ESNode.prototype.toString = function () {
       if(value.value !== undefined) {
         value = `"${value.value}"`;
       } else if(value instanceof Array) {
-        value = `[\n  ${this[field].map((child) => child.toString().replace(/\n/g, '\n  ')).join(',\n  ')}\n]`;
+        value = `[\n  ${this[field].filter(child => child !== undefined).map((child) => child.toString().replace(/\n/g, '\n  ')).join(',\n  ')}\n]`;
         value = value.replace(/\n/g, '\n  ');
       } else if(typeof value === 'object' && !(value instanceof Array)) {
         value = Util.className(value);
@@ -527,7 +527,7 @@ ESNode.prototype.toString = function () {
   });
   return `${this.type} {\n  ${s}\n}`;
 };
-
+*/
 export const CTORS = {
   ArrayBindingPattern,
   ArrayLiteral,

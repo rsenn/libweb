@@ -191,7 +191,13 @@ export class Element extends Node {
 
   static find(arg, parent, globalObj = Util.getGlobalObject()) {
     if(typeof parent == 'string') parent = Element.find(parent);
-    if(!parent && globalObj.document) parent = globalObj.document;
+    if(!parent && globalObj.document)
+      parent =
+        globalObj.document ||
+        Util.tryCatch(
+          () => document,
+          (d) => d
+        );
 
     if(typeof arg != 'string') throw new Error(arg + '');
 

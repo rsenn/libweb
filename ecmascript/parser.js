@@ -2095,7 +2095,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
       msg = msg + '    ' + annotate.join(', ');
     }
 
-    if(ret || !/match/.test(methodName)) console.log(msg);
+    // if(ret || !/match/.test(methodName)) console.log(msg);
 
     return ret;
   };

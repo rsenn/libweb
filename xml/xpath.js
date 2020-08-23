@@ -41,6 +41,10 @@ export class MutableXPath extends MutablePath {
     return part;
   }
 
+  static isMemberName(name, out = {}) {
+    return ['attributes', out.tagField || 'tagName', 'children', ...(out.specialFields || [])].indexOf(name) != -1;
+  }
+
   static from(path, obj) {
     //Util.log("MutableXPath.from",{path,obj});
     let absolute = false;

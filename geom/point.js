@@ -160,7 +160,7 @@ Point.prototype.distance = function (other = { x: 0, y: 0 }) {
   return Math.sqrt(Point.prototype.distanceSquared.call(this, other));
 };
 Point.prototype.equals = function (other) {
-  //Util.log(`Point.equals ${this} ${other}`);
+  //console.warn(`Point.equals`, this, other);
   return +this.x == +other.x && +this.y == +other.y;
 };
 Point.prototype.round = function (precision = 0.001, digits, type = 'round') {
@@ -184,6 +184,10 @@ Point.prototype.floor = function () {
 
 Point.prototype.dot = function (other) {
   return this.x * other.x + this.y * other.y;
+};
+
+Point.prototype.values = function () {
+  return [this.x, this.y];
 };
 Point.prototype.fromAngle = function (angle, dist = 1.0) {
   this.x = Math.cos(angle) * dist;

@@ -103,19 +103,29 @@ export class SVG extends Element {
     return null;
   }
 
-  static bbox(element, options = { parent: null, absolute: false }) {
+  static bbox(element, options = { parent: null, absolute: false, client: false, screen: false }) {
     let e = typeof element === 'string' ? Element.find(element, options.parent) : element;
     let bb;
-    if(e && e.getBBox) {
-      bb = new Rect(e.getBBox());
-      if(options.absolute) {
-        let r = SVG.bbox(e.ownerSVGElement ? e.ownerSVGElement : e);
-        bb.x -= r.x;
-        bb.y -= r.y;
+    if(Util.isObject(e)) {
+      if(options.client && e.getBoundingClientRect) {
+        bb = new Rect(e.getBoundingClientRect());
+      } else if(e.getBBox) {
+        bb = new Rect(e.getBBox());
+        if(options.absolute) {
+          let r = SVG.bbox(e.ownerSVGElement ? e.ownerSVGElement : e);
+          bb.x -= r.x;
+          bb.y -= r.y;
+        }
       }
-      return bb;
+
+      if(options.screen && typeof e.getScreenCTM == 'function') {
+        let m = new Matrix(e.getScreenCTM());
+        bb.transform(m);
+      }
+      if(!bb) bb = Element.rect(e);
     }
-    return Element.rect(e);
+
+    return bb;
   }
 
   static gradient(type, { stops, factory = SVG.create, parent = null, line = false, ...props }) {

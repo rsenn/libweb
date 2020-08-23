@@ -290,9 +290,17 @@ Rect.prototype.toArray = function () {
   const { x, y, width, height } = this;
   return [x, y, width, height];
 };
-Rect.prototype.toPoints = function (ctor = (points) => Array.from(points)) {
+Rect.prototype.toPoints = function (...args) {
+  let ctor = Util.isConstructor(args[0])
+    ? (() => {
+        let arg = args.shift();
+        return (points) => new arg(points);
+      })()
+    : (points) => Array.from(points);
+  let num = typeof args[0] == 'number' ? args.shift() : 4;
   const { x, y, width, height } = this;
-  return ctor([new Point(x, y), new Point(x + width, y), new Point(x + width, y + height), new Point(x, y + height)]);
+  let a = num == 2 ? [new Point(x, y), new Point(x + width, y + height)] : [new Point(x, y), new Point(x + width, y), new Point(x + width, y + height), new Point(x, y + height)];
+  return ctor(a);
 };
 Rect.prototype.toLines = function (ctor = (lines) => Array.from(lines, (points) => new Line(...points))) {
   let [a, b, c, d] = Rect.prototype.toPoints.call(this);

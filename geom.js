@@ -39,7 +39,8 @@ export { MatrixTransformation, Rotation, Scaling, Transformation, Transformation
 export { isTRBL, TRBL } from './geom/trbl.js';
 export { Vector } from './geom/vector.js';
 export { Voronoi } from './geom/voronoi.js';
-
+import { simplifyRadialDist, simplifyDPStep, simplifyDouglasPeucker, simplify } from './geom/simplify.js';
+export { simplifyRadialDist, simplifyDPStep, simplifyDouglasPeucker, simplify } from './geom/simplify.js';
 export default {
   Align,
   Anchor,
@@ -83,5 +84,10 @@ export default {
   ImmutableTransformation,
   ImmutableTransformationList,
   ImmutableTranslation,
-  ImmutableTRBL
+  ImmutableTRBL,
+
+  simplifyRadialDist,
+  simplifyDPStep,
+  simplifyDouglasPeucker,
+  simplify
 };

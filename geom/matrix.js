@@ -326,20 +326,15 @@ Matrix.prototype.transform_xywh = function (x, y, width, height) {
 };
 
 Matrix.prototype.transform_rect = function (rect) {
-  if('x' in rect && 'y' in rect) {
-    Matrix.prototype.transform_point.call(this, rect);
-  } else if('x1' in rect && 'y1' in rect) {
-    const [x, y] = Matrix.prototype.transform_xy.call(this, rect.x1, rect.y1);
-    rect.x1 = x;
-    rect.y1 = y;
-  }
-  if('width' in rect && 'width' in rect) {
-    Matrix.prototype.transform_size.call(this, rect);
-  } else if('x2' in rect && 'y2' in rect) {
-    const [x, y] = Matrix.prototype.transform_xy.call(this, rect.x2, rect.y2);
-    rect.x2 = x;
-    rect.y2 = y;
-  }
+  let { x1, y1, x2, y2 } = rect;
+  [x1, y1] = Matrix.prototype.transform_xy.call(this, x1, y1);
+  [x2, y2] = Matrix.prototype.transform_xy.call(this, x2, y2);
+  let xrange = [x1, x2];
+  let yrange = [y1, y2];
+
+  [x1, x2] = [Math.min, Math.max].map((fn) => fn(...xrange));
+  [y1, y2] = [Math.min, Math.max].map((fn) => fn(...yrange));
+  Object.assign(rect, { x1, x2, y1, y2 });
   return rect;
 };
 

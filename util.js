@@ -142,7 +142,7 @@ Util.setter = (target) => (typeof target == 'object' && target !== null ? (typeo
 Util.remover = (target) => (typeof target == 'object' && target !== null ? (typeof target['delete'] == 'function' ? (key) => target['delete'](key) : (key) => delete target[key]) : null);
 Util.hasFn = (target) => (typeof target == 'object' && target !== null ? (typeof target['has'] == 'function' ? (key) => target['has'](key) : (key) => key in target) : null);
 
-Util.memoize = (fn, storage) => {
+Util.memoize = (fn, storage = new Map()) => {
   let self,
     cache = [Util.getter(storage), Util.setter(storage)];
 
@@ -843,11 +843,14 @@ Util.flatten = function (arr) {
   }
   return ret;
 };
-Util.chunkArray = function (a, size) {
-  let r = [];
-  for(let i = 0; i < a.length; i += size) r.push(a.slice(i, i + size));
-  return r;
-};
+Util.chunkArray = (a, size) =>
+  a.reduce((acc, item, i) => {
+    const idx = i % size;
+    if(idx == 0) acc.push(new Array(size));
+
+    acc[acc.length - 1][idx] = item;
+    return acc;
+  }, []);
 Util.chances = function (numbers, matches) {
   const f = Util.factorial;
   return f(numbers) / (f(matches) * f(numbers - matches));
@@ -2063,8 +2066,9 @@ Util.roundTo = function (value, prec, digits, type = 'round') {
   const digits = Math.ceil(-decimals);
   console.log('digits:', digits);*/
   let ret = fn(value / prec) * prec;
+  digits = digits || -Math.min(0, Math.floor(Math.log10(prec)));
 
-  if(typeof digits == 'number') ret = +ret.toFixed(digits);
+  if(typeof digits == 'number' && digits >= 1) ret = +ret.toFixed(digits);
   return ret;
 };
 Util.base64 = (() => {
@@ -2268,6 +2272,13 @@ Util.removeEqual = function (a, b) {
 
   return c;
 };
+Util.remove = function (arr, item) {
+  let idx,
+    count = 0;
+  for(count = 0; (idx = arr.findIndex((other) => other === item)) != -1; count++) arr.splice(idx, idx + 1);
+  return count;
+};
+
 Util.traverse = function (o, fn) {
   if(typeof fn == 'function')
     return Util.foreach(o, (v, k, a) => {
@@ -2299,13 +2310,8 @@ Util.indexByPath = function (o, p) {
   for(let key of p) o = o[key];
   return o;
 };
-Util.pushUnique = function (...args) {
-  arr = args.shift();
-  args.forEach((item) => {
-    if(arr.indexOf(item) == -1) arr.push(item);
-  });
-  return arr;
-};
+Util.pushUnique = (arr, ...args) => args.reduce((acc, item) => (arr.indexOf(item) == -1 ? (arr.push(item), acc + 1) : acc), 0);
+
 Util.insertSorted = function (arr, item, cmp = (a, b) => b - a) {
   let i = 0,
     len = arr.length;
@@ -2344,6 +2350,12 @@ Util.mapAdapter = (getSetFunction) => {
       return this;
     }
   };
+  if(getSetFunction[Symbol.iterator]) r.entries = getSetFunction[Symbol.iterator];
+  else {
+    let g = getSetFunction();
+    if(Util.isIterable(g) || Util.isGenerator(g)) r.entries = () => getSetFunction();
+  }
+
   return Util.mapFunction(r);
 };
 
@@ -2379,14 +2391,51 @@ Util.mapFunction = (map) => {
     let newValue = fn(oldValue, key);
     if(oldValue != newValue) {
       if(newValue === undefined && typeof map.delete == 'function') map.delete(key);
-      else {
-        this.set(key, newValue);
-      }
+      else this.set(key, newValue);
     }
     return newValue;
   };
 
-  if(typeof map.keys == 'function') fn.keys = () => map.keys();
+  if(typeof map.entries == 'function') {
+    fn.entries = function* () {
+      for(let [key, value] of map.entries()) yield [key, value];
+    };
+    fn.values = function* () {
+      for(let [key, value] of map.entries()) yield value;
+    };
+    fn.keys = function* () {
+      for(let [key, value] of map.entries()) yield key;
+    };
+    fn[Symbol.iterator] = fn.entries;
+    fn[Symbol.for('nodejs.util.inspect.custom')] = function () {
+      return new Map(this.map(([key, value]) => [Util.isArray(key) ? key.join('.') : key, value]));
+    };
+  }
+  if(typeof fn.entries == 'function') {
+    fn.filter = function (pred) {
+      return Util.mapFunction(
+        new Map(
+          (function* () {
+            let i = 0;
+            for(let [key, value] of fn.entries()) if(pred([key, value], i++)) yield [key, value];
+          })()
+        )
+      );
+    };
+    fn.map = function (t) {
+      return Util.mapFunction(
+        new Map(
+          (function* () {
+            let i = 0;
+
+            for(let [key, value] of fn.entries()) yield t([key, value], i++);
+          })()
+        )
+      );
+    };
+  }
+  if(typeof map['delete'] == 'function') fn['delete'] = (key) => map['delete'](key);
+
   if(typeof map.has == 'function') fn.has = (key) => map.has(key);
   return fn;
 };
@@ -2396,7 +2445,16 @@ Util.mapWrapper = (map, toKey = (key) => key, fromKey = (key) => key) => {
   fn.set = (key, value) => (map.set(toKey(key), value), (k, v) => fn(k, v));
   fn.get = (key) => map.get(toKey(key));
   if(typeof map.keys == 'function') fn.keys = () => [...map.keys()].map(fromKey);
+  if(typeof map.entries == 'function')
+    fn.entries = function* () {
+      for(let [key, value] of map.entries()) yield [fromKey(key), value];
+    };
+  if(typeof map.values == 'function')
+    fn.values = function* () {
+      for(let value of map.values()) yield value;
+    };
   if(typeof map.has == 'function') fn.has = (key) => map.has(toKey(key));
+  if(typeof map['delete'] == 'function') fn['delete'] = (key) => map['delete'](toKey(key));
 
   fn.map = ((m) => {
     while(Util.isFunction(m) && m.map !== undefined) m = m.map;

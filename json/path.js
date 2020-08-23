@@ -84,6 +84,10 @@ export class MutablePath extends Array {
     return fn;
   }
 
+  static isMemberName(name, out = {}) {
+    return true;
+  }
+
   static parse(path, out, separator = '.') {
     const len = path.length;
     if(typeof path != 'number') {
@@ -105,8 +109,7 @@ export class MutablePath extends Array {
           if(/^\[.*\]$/.test(part + '')) {
             p = part.substring(1, part.length - 1);
           } else if(/^[A-Za-z]/.test(part)) {
-            const idx = ['attributes', out.tagField || 'tagName', 'children', ...(out.specialFields || [])].indexOf(part);
-            if(idx == -1) part = (out.constructor.partMatcher || MutablePath.partMatcher)({ [out.tagField || 'tagName']: part }, out.tagField || 'tagName');
+            if(!out.constructor.isMemberName(part, out)) part = (out.constructor.partMatcher || MutablePath.partMatcher)({ [out.tagField || 'tagName']: part }, out.tagField || 'tagName');
           }
         }
 
