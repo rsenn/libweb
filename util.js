@@ -2433,6 +2433,11 @@ Util.mapFunction = (map) => {
         )
       );
     };
+    fn.forEach = function (fn) {
+      let i = 0;
+
+      for(let [key, value] of this.entries()) fn([key, value], i++);
+    };
   }
   if(typeof map['delete'] == 'function') fn['delete'] = (key) => map['delete'](key);
 

@@ -853,7 +853,8 @@ export class ECMAScriptParser extends Parser {
       console.log('ast lhs:', { result, token: this.token.value });
       //console.log("lhs:", Util.className(lhs));
       //console.log("line:", this.lexer.currentLine());
-      throw this.error(`ConditionalExpression no ast`);
+      ast = new Identifier('undefined');
+      //throw this.error(`ConditionalExpression no ast`);
     }
 
     if(this.matchPunctuators('?')) {

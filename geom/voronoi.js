@@ -249,8 +249,10 @@ export class Voronoi {
   //rhill 2011-06-07: For some reasons, performance suffers significantly
   //when instanciating a literal object instead of an empty ctor
   get Beachsection() {
-    return class Beachsection {};
+    return this.getBeachsection();
   }
+
+  getBeachsection = Util.memoize(() => function Beachsection() {});
 
   //rhill 2011-06-02: A lot of Beachsection instanciations
   //occur during the computation of the Voronoi diagram,
@@ -602,21 +604,26 @@ export class Voronoi {
   //rhill 2011-06-07: For some reasons, performance suffers significantly
   //when instanciating a literal object instead of an empty ctor
   get CircleEvent() {
-    return class CircleEvent {
-      constructor() {
-        //rhill 2013-10-12: it helps to state exactly what we are at ctor time.
-        this.arc = null;
-        this.rbLeft = null;
-        this.rbNext = null;
-        this.rbParent = null;
-        this.rbPrevious = null;
-        this.rbRed = false;
-        this.rbRight = null;
-        this.site = null;
-        this.x = this.y = this.ycenter = 0;
-      }
-    };
+    return this.getCircleEvent();
   }
+
+  getCircleEvent = Util.memoize(
+    () =>
+      class CircleEvent {
+        constructor() {
+          //rhill 2013-10-12: it helps to state exactly what we are at ctor time.
+          this.arc = null;
+          this.rbLeft = null;
+          this.rbNext = null;
+          this.rbParent = null;
+          this.rbPrevious = null;
+          this.rbRed = false;
+          this.rbRight = null;
+          this.site = null;
+          this.x = this.y = this.ycenter = 0;
+        }
+      }
+  );
 
   attachCircleEvent(arc) {
     var lArc = arc.rbPrevious,

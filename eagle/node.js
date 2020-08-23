@@ -131,35 +131,24 @@ export class EagleNode {
   initCache(ctor = this.childConstructor, listCtor = (o, p, v) => v) {
     let fields = this.cacheFields();
     let node = this;
-
     if(fields && fields.length) {
       Util.define(this, 'cache', {});
       Util.define(this, 'lists', {});
-
       let lazy = {};
       let lists = {};
       let maps = {};
       let ref = this.ref;
       let owner = this.document;
       let raw = this.raw;
-
       for(let xpath of fields) {
         let key = xpath[xpath.length - 1];
-        let path = new ImmutablePath(xpath.reduce((acc, p) => [...acc, 'children', p], []).concat(['children']));
-        // console.log('initCache', { xpath, key,path });
-
-        //let value = path.apply(raw, true);
+        let path = new ImmutableXPath(xpath).concat(['children']);
         lazy[key] = () => this.lookup(xpath, true);
-
-        //   console.log(`lazy[${key}]()`, lazy[key]());
-
         if(!path.apply(raw, true)) {
-          console.log('path not found', /*this.xpath() + '',*/ path + '');
+          console.log('path not found',  path + '');
           continue;
         }
-
         path = this.ref.path.down(...path);
-
         lists[key] = () => listCtor(owner, path);
         maps[key] = ['sheets', 'connects', 'plain'].indexOf(key) != -1 ? lists[key] : () => EagleNodeMap.create(lists[key](), ['board', 'schematic', 'library'].indexOf(key) != -1 ? 'tagName' : key == 'instances' ? 'part' : key == 'layers' ? ['number', 'name'] : 'name');
       }

@@ -173,12 +173,9 @@ RGBA.prototype.round = function () {
   this.a = x[3];
   return this;
 };
-RGBA.normalize = (rgba, from = 255, to = 1.0) => ({
-  r: (rgba.r * to) / from,
-  g: (rgba.g * to) / from,
-  b: (rgba.b * to) / from,
-  a: (rgba.a * to) / from
-});
+RGBA.normalize = function (rgba, src = 255, dst = 1.0) {
+  return new RGBA((rgba.r * dst) / src, (rgba.g * dst) / src, (rgba.b * dst) / src, (rgba.a * dst) / src);
+};
 RGBA.prototype.css = () => (prop) => (prop ? prop + ':' : '') + 'rgba(' + this.r + ', ' + this.g + ', ' + this.b + ', ' + (this.a / 255).toFixed(3) + ')';
 
 RGBA.prototype.toString = function (sep = ',', fmt = (num) => +num.toFixed(3)) {
@@ -193,8 +190,8 @@ RGBA.prototype.toSource = function (sep = ',') {
   else return 'new RGBA(' + this.r + sep + this.g + sep + this.b + sep + (a / 255).toFixed(3) + ')';
 };
 
-RGBA.prototype.normalize = function (from = 255, to = 1.0) {
-  const mul = to / from;
+RGBA.prototype.normalize = function (src = 255, dst = 1.0) {
+  const mul = dst / src;
   this.r *= mul;
   this.g *= mul;
   this.b *= mul;

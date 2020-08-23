@@ -148,10 +148,9 @@ export class ReactComponent {
 
   static toSource(obj, opts = {}, depth = 0) {
     const { quote = "'" } = opts;
-    const {
-      type,
-      props: { children, ...props }
-    } = obj;
+    const { type, props: allProps } = obj;
+    let { children, ...props } = allProps;
+
     let o = `h('${type}', {`;
     let nl = '\n' + ' '.repeat(depth * 2);
     let p = Object.entries(props)
@@ -207,7 +206,7 @@ export class ReactComponent {
     return s;
   }
 
-  static async parse(jsx) {
+  /*static async parse(jsx) {
     let ecmascript = await import('../ecmascript.js');
     Object.assign(Util.getGlobalObject(), ecmascript);
     let parser = new ecmascript.ECMAScriptParser(jsx);
@@ -215,7 +214,7 @@ export class ReactComponent {
     //console.log("parser", Util.getMethodNames(parser, 2, 1));
     let ast = parser.parseJSX();
     return printer.printNode(ast instanceof Array ? ast[0] : ast);
-  }
+  }*/
 }
 
 /** Redirect rendering of descendants into the given CSS selector.

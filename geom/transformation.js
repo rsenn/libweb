@@ -70,7 +70,7 @@ export class Transformation {
   static fromString(arg) {
     let cmdLen = arg.indexOf('(');
     let argStr = arg.slice(cmdLen + 1, arg.indexOf(')'));
-    let args = argStr.split(/[,\s ]+/g);
+    let args = argStr.split(/[,\s\ ]+/g);
     let cmd = arg.substring(0, cmdLen);
     let t;
     let unit;
