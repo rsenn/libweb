@@ -207,8 +207,7 @@ Util.log = (...args) => {
   if(args[0] instanceof Util.location) location = args.shift();
   else {
     let stack = Util.getStackFrames(2);
-    if(/\/util\.js$/.test(stack[0].fileName))
-      stack = stack.slice(1);
+    if(/\/util\.js$/.test(stack[0].fileName)) stack = stack.slice(1);
     location = stack[0].getLocation();
   }
   let locationStr = location.toString(true);
@@ -218,16 +217,14 @@ Util.log = (...args) => {
   let results = filters.map((f) => f.test(locationStr));
   if(filters.every((f) => !f.test(locationStr))) return;
   args = args.reduce((a, p, i) => {
-      if(Util.isObject(p) && p[Util.log.methodName]) p = p[Util.log.methodName]();
- else if(Util.isObject(p) && p[Symbol.for('nodejs.util.inspect.custom')]) p = p[Symbol.for('nodejs.util.inspect.custom')]();
-else if(typeof(p) != 'string') {
-if(Util.isObject(p) && typeof(p.toString) == 'function' && !Util.isNativeFunction(p.toString))
-  p = p.toString();
-else
- p = Util.toString(p, {multiline: false});
-}
+    if(Util.isObject(p) && p[Util.log.methodName]) p = p[Util.log.methodName]();
+    else if(Util.isObject(p) && p[Symbol.for('nodejs.util.inspect.custom')]) p = p[Symbol.for('nodejs.util.inspect.custom')]();
+    else if(typeof p != 'string') {
+      if(Util.isObject(p) && typeof p.toString == 'function' && !Util.isNativeFunction(p.toString)) p = p.toString();
+      else p = Util.toString(p, { multiline: false });
+    }
 
-  //  if(i > 0) a.push(',');
+    //  if(i > 0) a.push(',');
     a.push(p);
     //    a.append([p]);
     return a;
@@ -1019,7 +1016,7 @@ Util.leastCommonMultiple = (n1, n2) => {
   return (n1 * n2) / gcd;
 };
 Util.toString = (obj, opts = {}) => {
-  const { quote = '"', multiline = true, stringFn = str => str/*.replace(/\n/g, "\\n")*/, indent = '', colors = true, stringColor = [1, 36], spacing = '', padding = '', separator = ',', colon = ':', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
+  const { quote = '"', multiline = true, stringFn = (str) => str /*.replace(/\n/g, "\\n")*/, indent = '', colors = true, stringColor = [1, 36], spacing = '', padding = '', separator = ',', colon = ':', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
   if(depth < 0) {
     if(Util.isArray(obj)) return `[...${obj.length}...]`;
     if(Util.isObject(obj)) return `{ ..${Object.keys(obj).length}.. }`;
@@ -1029,7 +1026,7 @@ Util.toString = (obj, opts = {}) => {
   const sep = multiline && depth > 0 ? (space = false) => '\n' + indent + (space ? '  ' : '') : (space = false) => (space ? spacing : '');
   if(typeof obj == 'number') {
     return c.text(obj + '', 1, 36);
-  } else if(  Util.isArray(obj)) {
+  } else if(Util.isArray(obj)) {
     let i,
       s = c.text(`[`, 1, 36);
     for(i = 0; i < obj.length; i++) {
@@ -1039,37 +1036,37 @@ Util.toString = (obj, opts = {}) => {
     }
     return s + (i > 0 ? sep() + padding : '') + `]`;
   } else if(Util.isObject(obj)) {
-  let isMap = obj instanceof Map;
-  let keys = isMap ? [...obj.keys()] : Object.keys(obj);
-  let s = '';
-s = '[object '+Util.className(obj)+']';
-s = c.text( Util.className(obj),1,31)+' ';
+    let isMap = obj instanceof Map;
+    let keys = isMap ? [...obj.keys()] : Object.keys(obj);
+    let s = '';
+    s = '[object ' + Util.className(obj) + ']';
+    s = c.text(Util.className(obj), 1, 31) + ' ';
 
-  s += isMap ? `Map(${keys.length}) {\n  ` : c.text('{' + padding, 1, 36);
-  let i = 0;
-  let getFn = isMap ? (key) => obj.get(key) : (key) => obj[key];
-  let propSep = isMap ? c.text(' => ', 0) : c.text(colon + spacing, 1, 36);
-  for(let key of keys) {
-    const value = getFn(key);
-    s += i > 0 ? c.text(separator + sep(true), 36) : '';
-    s += c.text(key, 1, 33) + propSep;
-    if(Util.isObject(value) || typeof value == 'number') s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
-    else if(typeof value == 'string') s += c.text(`'${value}'`, 1, 32);
-    else s += value;
-    i++;
-  }
-  return s + sep(false) + c.text(`${multiline ? '' : padding}}`, 1, 36);
-}else  if(typeof obj == 'function' /*|| obj instanceof Function || Util.className(obj) == 'Function'*/) {
+    s += isMap ? `Map(${keys.length}) {\n  ` : c.text('{' + padding, 1, 36);
+    let i = 0;
+    let getFn = isMap ? (key) => obj.get(key) : (key) => obj[key];
+    let propSep = isMap ? c.text(' => ', 0) : c.text(colon + spacing, 1, 36);
+    for(let key of keys) {
+      const value = getFn(key);
+      s += i > 0 ? c.text(separator + sep(true), 36) : '';
+      s += c.text(key, 1, 33) + propSep;
+      if(Util.isObject(value) || typeof value == 'number') s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
+      else if(typeof value == 'string') s += c.text(`'${value}'`, 1, 32);
+      else s += value;
+      i++;
+    }
+    return s + sep(false) + c.text(`${multiline ? '' : padding}}`, 1, 36);
+  } else if(typeof obj == 'function' /*|| obj instanceof Function || Util.className(obj) == 'Function'*/) {
     obj = '' + obj;
     if(!multiline) obj = obj.replace(/(\n|\ anonymous)/g, '');
     return obj;
   } else if(typeof obj == 'string') {
-    return c.text(`'${stringFn(obj)}'`,1,36);
+    return c.text(`'${stringFn(obj)}'`, 1, 36);
   } else if(!Util.isObject(obj)) {
     return '' + obj;
   } else if(obj instanceof Date) {
     return c.text(`new `, 1, 31) + c.text(`Date`, 1, 33) + c.text(`(`, 1, 36) + c.text(obj.getTime() + obj.getMilliseconds() / 1000, 1, 36) + c.text(`)`, 1, 36);
-  } 
+  }
 };
 
 Util.toString.defaultOpts = {
@@ -3133,7 +3130,7 @@ Util.getStackFrames = function (offset = 2) {
   return frames.slice(offset);
 };
 Util.getStackFrame = function (offset = 2) {
-return Util.getStackFrames(offset)[0];
+  return Util.getStackFrames(offset)[0];
 };
 Util.rotateLeft = function (x, n) {
   n = n & 0x1f;
@@ -4057,7 +4054,11 @@ Util.getArgs = Util.memoize(() =>
   Util.tryCatch(
     () => process.argv,
     (a) => a.slice(2),
-    () => scriptArgs
+    () =>
+      Util.tryCatch(
+        () => scriptArgs,
+        (a) => a.slice(1)
+      )
   )
 );
 Util.getEnv = async (varName) =>
@@ -4067,5 +4068,11 @@ Util.getEnv = async (varName) =>
     () => Util.tryCatch(async () => await import('std').then((std) => std.getenv(varName)))
   );
 
-Util.callMain = (fn) => fn(...Util.getArgs());
+Util.callMain = async (fn) => {
+  const args = Util.getArgs();
+  if(Util.isAsync(fn)) {
+    await fn(...args).catch(console.error);
+  } else fn(...args);
+};
+
 export default Util;
