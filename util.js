@@ -1005,7 +1005,7 @@ Util.leastCommonMultiple = (n1, n2) => {
   return (n1 * n2) / gcd;
 };
 Util.toString = (obj, opts = {}) => {
-  const { quote = '"', multiline = false, indent = '', colors = true, stringColor = [1, 36], spacing = '', padding = '', separator = ',', colon = ':', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
+  const { quote = '"', multiline = true, indent = '', colors = true, stringColor = [1, 36], spacing = '', padding = '', separator = ',', colon = ':', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
 
   if(depth < 0) {
     if(Util.isArray(obj)) return `[...${obj.length}...]`;
@@ -1031,9 +1031,9 @@ Util.toString = (obj, opts = {}) => {
   } else if(typeof obj == 'string') {
     return JSON.toString(obj);
   } else if(!Util.isObject(obj)) {
-    return '' + obj; 
-     } else if(obj instanceof Date) {
-    return c.text(`new `,1,31)+c.text(`Date`,1,33)+c.text(`(`,1,36)+c.text(obj.getTime()+(obj.getMilliseconds()/1000),1,36)+c.text(`)`,1,36);
+    return '' + obj;
+  } else if(obj instanceof Date) {
+    return c.text(`new `, 1, 31) + c.text(`Date`, 1, 33) + c.text(`(`, 1, 36) + c.text(obj.getTime() + obj.getMilliseconds() / 1000, 1, 36) + c.text(`)`, 1, 36);
   }
   let s = c.text(`{` + padding, 1, 36);
   let i = 0;
@@ -1231,17 +1231,17 @@ Util.isObject = (obj, ...protoOrPropNames) => {
   } while(true);
   return obj || false;
 };
-Util.isFunction = arg =>  {
- if(arg !== undefined )
-return typeof(arg) == 'function' || !!(arg && arg.constructor && arg.call && arg.apply);
-/*
+Util.isFunction = (arg) => {
+  if(arg !== undefined) return typeof arg == 'function' || !!(arg && arg.constructor && arg.call && arg.apply);
+  /*
   let fn = arg => Util.isFunction(arg);
   fn.inverse = arg => !Util.isFunction(arg);
   return fn;*/
 };
-Util.not = fn =>  function(...args) {
-  return !fn(...args);
-};
+Util.not = (fn) =>
+  function (...args) {
+    return !fn(...args);
+  };
 Util.isAsync = (fn) => typeof fn == 'function' && /async/.test(fn + '') /*|| fn() instanceof Promise*/;
 
 Util.isArrowFunction = (fn) => (Util.isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
@@ -2217,18 +2217,20 @@ Util.filterKeys = function (obj, pred = (k) => true) {
     var a = pred;
     pred = (str) => a.indexOf(str) != -1;
   }
-  for(let key in obj) if(pred(key,obj[key], obj)) ret[key] = obj[key];
+  for(let key in obj) if(pred(key, obj[key], obj)) ret[key] = obj[key];
   //Object.setPrototypeOf(ret, Object.getPrototypeOf(obj));
   return ret;
 };
-Util.filterMembers = function (obj, fn ) {
-const pred =  (k,v,o) => fn(v,k,o);
-return Util.filterKeys(obj, pred);
+Util.filterMembers = function (obj, fn) {
+  const pred = (k, v, o) => fn(v, k, o);
+  return Util.filterKeys(obj, pred);
 };
-Util.filterOutMembers = function (obj, fn ) {
-const pred =  (v,k,o) => !fn(v,k,o);
-return Util.filterMembers(obj, pred);
+Util.filterOutMembers = function (obj, fn) {
+  const pred = (v, k, o) => !fn(v, k, o);
+  return Util.filterMembers(obj, pred);
 };
+Util.dumpMembers = obj => Util.filterOutMembers(obj, Util.isFunction);
+
 
 Util.filterOutKeys = function (obj, arr) {
   if(typeof obj != 'object') return obj;
