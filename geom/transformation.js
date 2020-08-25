@@ -2,9 +2,8 @@ import { Matrix, isMatrix } from '../geom/matrix.js';
 import { Point } from '../geom/point.js';
 import Util from '../util.js';
 
-
-  const RAD2DEG = 180 / Math.PI;
-  const DEG2RAD = Math.PI / 180;
+const RAD2DEG = 180 / Math.PI;
+const DEG2RAD = Math.PI / 180;
 
 export class Transformation {
   //typeName = null;

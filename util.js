@@ -1036,17 +1036,17 @@ Util.toString = (obj, opts = {}) => {
     return c.text(`new `, 1, 31) + c.text(`Date`, 1, 33) + c.text(`(`, 1, 36) + c.text(obj.getTime() + obj.getMilliseconds() / 1000, 1, 36) + c.text(`)`, 1, 36);
   }
   let isMap = obj instanceof Map;
-   let keys = isMap? [...obj.keys()] : Object.keys(obj);
- let s = isMap ? `Map(${keys.length}) {\n  `: c.text('{' + padding, 1, 36);
+  let keys = isMap ? [...obj.keys()] : Object.keys(obj);
+  let s = isMap ? `Map(${keys.length}) {\n  ` : c.text('{' + padding, 1, 36);
   let i = 0;
-  let getFn = isMap ? key =>  obj.get(key) : key => obj[key];
-  let propSep =isMap? c.text(' => ',0) : c.text(colon+spacing,1,36);
+  let getFn = isMap ? (key) => obj.get(key) : (key) => obj[key];
+  let propSep = isMap ? c.text(' => ', 0) : c.text(colon + spacing, 1, 36);
   for(let key of keys) {
     const value = getFn(key);
     s += i > 0 ? c.text(separator + sep(true), 36) : '';
-    s += c.text(key, 1, 33)+ propSep;
-    if(Util.isObject(value) || typeof value == 'number' ) s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
-    else if(typeof(value) == 'string') s += c.text(`'${value}'`,1,32);
+    s += c.text(key, 1, 33) + propSep;
+    if(Util.isObject(value) || typeof value == 'number') s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
+    else if(typeof value == 'string') s += c.text(`'${value}'`, 1, 32);
     else s += value;
     i++;
   }
@@ -4031,15 +4031,19 @@ Util.weakAssoc = (fn = (value, ...args) => Object.assign(value, ...args)) => {
     return fn(value, ...args);
   };
 };
-Util.getArgs = Util.memoize(() => Util.tryCatch(
+Util.getArgs = Util.memoize(() =>
+  Util.tryCatch(
     () => process.argv,
     (a) => a.slice(2),
-    () =>  scriptArgs
-  ));
-Util.getEnv = async varName => Util.tryCatch(
+    () => scriptArgs
+  )
+);
+Util.getEnv = async (varName) =>
+  Util.tryCatch(
     () => process.env,
     async (e) => e[varName],
-    () =>  Util.tryCatch(async () => await import('std').then(std => std.getenv(varName))));
+    () => Util.tryCatch(async () => await import('std').then((std) => std.getenv(varName)))
+  );
 
-Util.callMain = fn => fn(...Util.getArgs());
+Util.callMain = (fn) => fn(...Util.getArgs());
 export default Util;
