@@ -1859,12 +1859,12 @@ Util.putError = (err) => {
   let s = Util.stack(err.stack);
 
   let e = Util.exception(err);
-  console.info('Util.putError ', e);
-  console.error('ERROR:\n' + err.message + '\nstack:\n' + s.toString());
+  (console.info || console.log)('Util.putError ', e);
+  (console.error || console.log)('ERROR:\n' + err.message + '\nstack:\n' + s.toString());
 };
 Util.putStack = (stack) => {
   stack = stack || Util.stack(new Error().stack);
-  console['error']('STACK TRACE:', stack /*.toString()*/);
+  (console.error || console.log)('STACK TRACE:', stack /*.toString()*/);
 };
 
 Util.trap = (() => {
@@ -2901,7 +2901,7 @@ Util.define(
   {
     toString(color = false) {
       const { message, stack, proto } = this;
-      return `${Util.fnName(proto.constructor || this.constructor)}: ${message}
+      return `${Util.fnName((proto && proto.constructor) || this.constructor)}: ${message}
 Stack:${Util.stack.prototype.toString.call(stack, color, stack.columnWidths)}`;
     },
     [Symbol.toStringTag]() {
@@ -2953,7 +2953,7 @@ Util.define(Util.location.prototype, {
     return Util.location.prototype.toString.call(this, !Util.isBrowser());
   },
   getFileName() {
-    return this.fileName;
+    return this.fileName.replace(/:.*/g, '');
   },
   getLineNumber() {
     return this.lineNumber;
@@ -3024,8 +3024,11 @@ Util.define(
 
       const [functionName, fileName, lineNumber, columnNumber] = columns;
       //console.log('stackFrame.toString', { color ,columnWidths, functionName, fileName, lineNumber, columnNumber});
-
-      return `${functionName} ${fileName}:${lineNumber}:${columnNumber}` + c('', 0);
+      let colonList = [fileName, lineNumber, columnNumber]
+        .map((p) => ('' + p == 'undefined' ? undefined : p))
+        .filter((p) => p !== undefined && p != 'undefined' && ['number', 'string'].indexOf(typeof p) != -1)
+        .join(':');
+      return `${functionName} ${colonList}` + c('', 0);
     },
     getLocation() {
       return new Util.location(this);
@@ -3110,9 +3113,17 @@ Util.stack = function Stack(stack, offset) {
     }));
     stack = stack.map(({ functionName: func, fileName: file, columnNumber: column, lineNumber: line }) => ({
       functionName: func,
-      fileName: file.replace(new RegExp(Util.getURL() + '/', 'g'), ''),
-      lineNumber: line,
-      columnNumber: column
+      fileName: file.replace(new RegExp(Util.getURL() + '/', 'g'), '').replace(/:.*/g, ''),
+      lineNumber: Util.ifThenElse(
+        (s) => s != '',
+        (s) => +s,
+        () => undefined
+      )(line + file.replace(/.*[^0-9]([0-9]*)$/g, '$1')),
+      columnNumber: Util.ifThenElse(
+        (s) => s != '',
+        (s) => +s,
+        () => undefined
+      )(column)
     }));
   } else {
     stack = Util.getCallers(1, Number.MAX_SAFE_INTEGER, () => true, stack);
@@ -4239,11 +4250,22 @@ Util.getEnv = async (varName) =>
     () => Util.tryCatch(async () => await import('std').then((std) => std.getenv(varName)))
   );
 
-Util.callMain = async (fn) => {
+Util.callMain = async (fn, trapExceptions) => {
   const args = Util.getArgs();
-  if(Util.isAsync(fn)) {
-    await fn(...args).catch(console.error);
-  } else fn(...args);
+  const isAsync = Util.isAsync(fn);
+
+  let exec = isAsync ? async () => await fn(...args) : () => fn(...args);
+
+  if(trapExceptions) 
+    exec = Util.tryFunction(exec, a => a, err => {
+ //    let st = Util.stack(err.stack); 
+      console.log("main Exception:", err.message, "\n", err.stack);
+    });
+
+
+  let ret = await exec();
+
+  return ret;
 };
 
 export default Util;

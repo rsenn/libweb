@@ -56,17 +56,17 @@ export class EagleElement extends EagleNode {
     let insert = Util.inserter(pathMapper); //doc.maps.obj2path);
     //console.log('mapper:', mapper);
 
-    //Util.log('EagleElement.get(', { owner, ref, raw }, ')');
+    //console.log('EagleElement.get(', { owner, ref, raw }, ')');
     if(typeof ref == 'string') ref = new ImmutablePath(ref, { separator: ' ' });
 
     if(!Util.isObject(ref) || !('dereference' in ref)) ref = new EagleReference(root, ref);
     if(!raw) raw = ref.path.apply(root, true);
     if(!raw) raw = ref.dereference();
-    //Util.log('EagleElement.get', { owner, ref, raw });
+    //console.log('EagleElement.get', { owner, ref, raw });
     let inst = doc.elementMapper(raw, owner, ref);
 
     insert(inst, ref.path);
-    //Util.log("EagleElement.get =",inst);
+    //console.log("EagleElement.get =",inst);
     EagleElement.currentElement = inst;
     return inst;
   }
@@ -83,7 +83,7 @@ export class EagleElement extends EagleNode {
   }
 
   constructor(owner, ref, raw) {
-    //Util.log('new EagleElement owner ', Util.className(owner), ' ', raw.tagName);
+    //console.log('new EagleElement owner ', Util.className(owner), ' ', raw.tagName);
     if(Util.className(owner) == 'Object') {
       throw new Error(`${Util.inspect(owner, 0)} ${Util.inspect(ref, 1)}`);
     }
@@ -186,7 +186,7 @@ export class EagleElement extends EagleNode {
           Util.defineGetter(this, 'color', () => {
             let colorIndex = attributes.color == undefined ? 15 : attributes.color;
             let color = doc.palette[colorIndex] || doc.palette[0b0110];
-            //Util.log('colorIndex', colorIndex, color);
+            //console.log('colorIndex', colorIndex, color);
             return color;
           });
         } else if(EagleElement.isRelation(key) || ['package', 'library', 'layer'].indexOf(key) != -1) {
@@ -246,7 +246,7 @@ export class EagleElement extends EagleNode {
                 value = elem.attrMap[key];
               let list = key == 'library' ? 'libraries' : key + 's';
               r = list in doc ? doc[list][value] : doc.get({ tagName: key, [id]: value });
-              //Util.log(`relation get(${key}, ${attributes[id]}) = `, r);
+              //console.log(`relation get(${key}, ${attributes[id]}) = `, r);
               return r;
             };
             if(this[key] == undefined) this.initRelation(key, this.handlers[key], fn);
@@ -257,7 +257,7 @@ export class EagleElement extends EagleNode {
         }
         // prop.subscribe(value => value !== undefined && this.event(key, value));
 
-        //Util.log("prop:",key,prop.subscribe);
+        //console.log("prop:",key,prop.subscribe);
       }
     }
     let childList = null;
@@ -280,7 +280,7 @@ export class EagleElement extends EagleNode {
       lazyProperty(this, 'package', () => {
         const library = this.chain.library;
 
-        if(!library.packages) Util.log('', { tagName }, this.chain);
+        if(!library.packages) console.log('', { tagName }, this.chain);
         let pkg = library.packages[attributes['package']];
         return pkg;
       });
@@ -376,7 +376,7 @@ export class EagleElement extends EagleNode {
 
   event(name) {
     const value = this[name];
-    Util.log('event:', this, { name, value });
+    console.log('event:', this, { name, value });
 
     /*    for(let subscriber of this.subscribers) {
       subscriber.call(this, name, value);
@@ -417,7 +417,7 @@ export class EagleElement extends EagleNode {
   lookup(xpath, create) {
     /* if(!(xpath instanceof ImmutableXPath))
     xpath = new ImmutableXPath([...xpath]);*/
-    //Util.log('EagleElement.lookup(', xpath, create, ')');
+    //console.log('EagleElement.lookup(', xpath, create, ')');
     let r = super.lookup(xpath, (o, p, v) => {
       if(create && !v) {
         const { tagName } = p.last;
@@ -426,7 +426,7 @@ export class EagleElement extends EagleNode {
       if(!v) v = p.apply(o.raw, true);
       return EagleElement.get(o, p, v);
     });
-    //Util.log('EagleElement.lookup = ', r);
+    //console.log('EagleElement.lookup = ', r);
     return r;
   }
 
@@ -452,7 +452,7 @@ export class EagleElement extends EagleNode {
     if(this.tagName == 'element') {
       const { raw, ref, path, attributes, owner, document } = this;
       const libName = raw.attributes.library;
-      //Util.log("document.libraries", document.libraries);
+      //console.log("document.libraries", document.libraries);
       let library = document.libraries[libName];
 
       let pkg = library.packages[raw.attributes.package];
@@ -462,7 +462,7 @@ export class EagleElement extends EagleNode {
     } else if(this.tagName == 'instance') {
       const { part, gate, rot, x, y } = this;
       const { symbol } = gate;
-      //Util.log('instance', { gate, symbol });
+      //console.log('instance', { gate, symbol });
       let t = new TransformationList();
       t.translate(+this.x, +this.y);
       t = t.concat(Rotation(rot));

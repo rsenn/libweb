@@ -6,7 +6,7 @@ export class EagleNodeList {
   constructor(owner, ref, pred, getOrCreate = EagleElement.get) {
     if(Util.isObject(ref) && !('dereference' in ref)) ref = EagleRef(owner, ref);
     let raw = ref.dereference();
-    //Util.log('EagleNodeList.constructor', { owner, ref, pred, raw });
+    //console.log('EagleNodeList.constructor', { owner, ref, pred, raw });
     let species = Util.getConstructor(owner);
     Util.define(this, { ref, owner, raw, getOrCreate });
     if(pred) this.pred = pred;

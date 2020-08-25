@@ -9,9 +9,9 @@ export class EagleReference {
     if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
     this.path = path;
     this.root = root;
-    //Util.log('EagleReference', { root: Util.abbreviate(toXML(root), 10), path });
+    //console.log('EagleReference', { root: Util.abbreviate(toXML(root), 10), path });
     if(!this.dereference(false)) {
-      //Util.log('dereference:', { path, root: Util.abbreviate(toXML(root), 10) });
+      //console.log('dereference:', { path, root: Util.abbreviate(toXML(root), 10) });
       throw new Error(this.path.join(','));
     }
   }
@@ -37,7 +37,7 @@ export class EagleReference {
       r = (Util.isObject(root) && 'owner' in root && path.apply(root.owner, true)) || path.apply(root);
     } catch(err) {
       if(!noThrow) throw err;
-      //Util.log('err:', err.message, err.stack);
+      //console.log('err:', err.message, err.stack);
     }
     return r;
   }
@@ -95,7 +95,7 @@ export class EagleReference {
 
 export const EagleRef = function EagleRef(root, path) {
   if(Util.isObject(root) && Util.isObject(root.root)) root = root.root;
-  //Util.log('EagleRef', { root, path });
+  //console.log('EagleRef', { root, path });
   let obj = new EagleReference(root, path);
   return Object.freeze(obj);
 };

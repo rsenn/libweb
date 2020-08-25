@@ -2,7 +2,7 @@ import Util from '../util.js';
 
 function Node(path, context) {
   let value = context.ptr(path);
-  //Util.log("Node:",{path,value});
+  //console.log("Node:",{path,value});
 
   let proxy = context.nodes.get(value);
 
@@ -24,7 +24,7 @@ function Node(path, context) {
 /*
 function NodeList(path, context) {
   let value = context.ptr(path);
-  //Util.log("NodeList:",{path,value});
+  //console.log("NodeList:",{path,value});
 
   let proxy = context.nodes.get(value);
 

@@ -53,7 +53,8 @@ export class ColorMap extends Map {
     for(let [k, v] of this) {
       let newVal = fn(v[chan], k);
       if(v !== newVal) {
-        v = Util.clone(v);
+       // v = Util.clone(v);
+        console.log("remapChannel", v,chan );
         v[chan] = newVal;
         this.set(k, v);
       }

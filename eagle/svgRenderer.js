@@ -112,7 +112,7 @@ export class EagleSVGRenderer {
           }
         },
         {
-          constructor: { value: class Palette {} , enumerable: false, writable: false, configurable: false },
+          constructor: { value: class Palette {}, enumerable: false, writable: false, configurable: false },
           handlers: { value: null, enumerable: false, writable: true },
           length: { value: 0, enumerable: false, configurable: true, writable: true }
         }
@@ -376,7 +376,7 @@ export class EagleSVGRenderer {
         break;
       default: {
         const { x, y } = coordFn(item);
-        //  Util.log('EagleSVGRenderer.renderItem', { item, parent, opts });
+        //  console.log('EagleSVGRenderer.renderItem', { item, parent, opts });
         //super.renderItem(item,parent,opts);
         break;
       }

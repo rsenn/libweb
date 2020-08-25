@@ -48,7 +48,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       );
     const { coordFn = (i) => i, name, value } = opts;
 
-    //Util.log('renderItem', { name, value });
+    //console.log('renderItem', { name, value });
 
     switch (item.tagName) {
       case 'via':

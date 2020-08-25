@@ -50,11 +50,11 @@ export class EagleDocument extends EagleNode {
   }
 
   constructor(xmlStr, project, filename, type, fs) {
-    Util.log('EagleDocument.constructor', { data: Util.abbreviate(xmlStr), project, filename, type });
+    console.log('EagleDocument.constructor', { data: Util.abbreviate(xmlStr), project, filename, type });
     const xml = tXml(xmlStr);
 
     let xmlObj = deep.clone(xml[0]); //(xml[0]);
-    //Util.log('EagleDocument.constructor', xmlObj);
+    //console.log('EagleDocument.constructor', xmlObj);
 
     super(project, EagleRef(xmlObj, []), xmlObj);
 
@@ -83,7 +83,7 @@ export class EagleDocument extends EagleNode {
       this.file = filename;
       type = type || filename.replace(/.*\//g, '').replace(/.*\./g, '');
     }
-    //Util.log('load document:', { filename, xml: xmlStr.substring(0, 100), type });
+    //console.log('load document:', { filename, xml: xmlStr.substring(0, 100), type });
     this.type = type;
     if(project) this.owner = project;
     if(fs) Util.define(this, { fs });
@@ -97,7 +97,7 @@ export class EagleDocument extends EagleNode {
       Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b))
     );
 
-    //Util.log("EagleDocument.constructor", {xmlStr,project,filename,type});
+    //console.log("EagleDocument.constructor", {xmlStr,project,filename,type});
     this.initCache(EagleElement, EagleNodeList.create);
 
     lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
@@ -187,7 +187,7 @@ export class EagleDocument extends EagleNode {
   }
 
   lookup(xpath) {
-    //Util.log("EagleDocument.lookup(",...arguments, ")");
+    //console.log("EagleDocument.lookup(",...arguments, ")");
 
     let doc = this;
     return super.lookup(xpath, (o, p, v) => EagleElement.get(o, p, v));
@@ -209,7 +209,7 @@ export class EagleDocument extends EagleNode {
       if(measures.length >= 4) ret = bb.update(measures);
       else ret = board.getBounds();
       //      console.log('ret', ret);
-      //Util.log("board:", board, ret.objects);
+      //console.log("board:", board, ret.objects);
       return ret;
     }
 
@@ -226,14 +226,14 @@ export class EagleDocument extends EagleNode {
         let { gate, part } = instance;
         let symbol = gate.symbol;
 
-        //Util.log('symbol:', symbol);
+        //console.log('symbol:', symbol);
         let geometries = {
           gate: gate.geometry,
           symbol: new Rect(symbol.getBounds()).toPoints(),
           instance: instance.transformation()
         };
 
-        //Util.log('geometries:', geometries);
+        //console.log('geometries:', geometries);
         let matrix = geometries.instance.toMatrix();
         let points = new PointList([...matrix.transform_points(geometries.symbol)]);
         let bbrect = points.boundingRect();
@@ -244,7 +244,7 @@ export class EagleDocument extends EagleNode {
         bb.update(bbrect, 0, instance);*/
       }
     } else if(this.elements) {
-      Util.log('elements:', this.elements);
+      console.log('elements:', this.elements);
       for(let element of this.elements.list) {
         let bbrect = element.getBounds();
 
@@ -252,7 +252,7 @@ export class EagleDocument extends EagleNode {
       }
     } else if(this.signals) {
       for(let signal of this.signals.list) {
-        //Util.log('signal:', signal);
+        //console.log('signal:', signal);
         let bbrect = signal.getBounds();
 
         bb.update(bbrect);
@@ -263,7 +263,7 @@ export class EagleDocument extends EagleNode {
   }
 
   getMeasures(geometry = false) {
-    //Util.log("this.type", this.type);
+    //console.log("this.type", this.type);
 
     let bounds = this.getBounds();
     let values = [...bounds.getObjects().values()];

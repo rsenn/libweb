@@ -3,7 +3,7 @@ import { EagleElement } from './element.js';
 
 export class EagleNodeMap {
   constructor(list, key) {
-    //Util.log('EagleNodeMap.constructor', { list, key });
+    //console.log('EagleNodeMap.constructor', { list, key });
     if(!list) throw new Error('List=' + list);
     this.list = list;
     this.key = key;
@@ -25,7 +25,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
 
   get(name, key = this.key) {
     const { owner, ref, raw } = this.list || {};
-    //Util.log('EagleNodeMap', { raw, name });
+    //console.log('EagleNodeMap', { raw, name });
     if(raw) {
       const fn = EagleNodeMap.makePredicate(name, key);
       const idx = raw.findIndex(fn);
@@ -41,7 +41,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
     const idx = list.findIndex(fn);
 
     if('raw' in value) value = value.raw;
-    //Util.log("write map property:", idx, value);
+    //console.log("write map property:", idx, value);
 
     if(idx != -1) list[idx] = value;
     else list.push(value);
@@ -70,7 +70,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
 
   static create(list, key = 'name', filter) {
     const Ctor = EagleNodeMap;
-    //Util.log('EagleNodeMap.create', { list, key });
+    //console.log('EagleNodeMap.create', { list, key });
     const instance = new Ctor(list, key, filter);
     return new Proxy(instance, {
       get(target, prop, receiver) {
@@ -78,7 +78,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
         if(typeof prop != 'symbol') {
           let item = instance.get(prop) || instance.list.item(prop);
           if(item) {
-            // Util.log("EagleNodeMap.get", {prop, item});
+            // console.log("EagleNodeMap.get", {prop, item});
             return item;
           }
         }

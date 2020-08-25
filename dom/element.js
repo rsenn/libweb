@@ -384,11 +384,13 @@ export class Element extends Node {
 
   static position(element, edges = ['left', 'top']) {
     console.log('Element.position ', { element, edges });
-
+const rect = Element.rect(element);
+if(rect) {
     //if(typeof element == 'string') element = Element.find(element);
-    const trbl = Element.rect(element).toTRBL();
+    const trbl = rect.toTRBL();
     const [x, y] = edges.map((e) => (e == 'right' ? window.innerWidth - trbl[e] : e == 'bottom' ? window.innerHeight - trbl[e] : trbl[e]));
     return new Point({ x, y });
+  }
   }
 
   static move(element, point, pos, edges = ['left', 'top']) {

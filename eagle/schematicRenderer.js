@@ -29,9 +29,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     //this.setPalette(SchematicRenderer.palette);
     this.palette = SchematicRenderer.palette;
-    //Util.log('found:', new ImmutablePath([...doc.path, 'children', { tagName: 'eagle' }, 'children', { tagName: 'drawing' }, 'children', { tagName: 'schematic' }]));
+    //console.log('found:', new ImmutablePath([...doc.path, 'children', { tagName: 'eagle' }, 'children', { tagName: 'drawing' }, 'children', { tagName: 'schematic' }]));
 
-    //Util.log('SchematicRenderer.constructor(', doc, factory, ')');
+    //console.log('SchematicRenderer.constructor(', doc, factory, ')');
   }
 
   renderCollection(collection, parent, opts) {
@@ -235,7 +235,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
       let br = new Rect(b.rect); /*.round(0.254, 5)*/
       br = br.round(0.254, 5);
 
-      //Util.log("br:", br);
+      //console.log("br:", br);
 
       this.create('rect', { ...br.toObject(), 'data-part': instance.part.name }, g);
       t.rotate(45);
@@ -258,14 +258,14 @@ export class SchematicRenderer extends EagleSVGRenderer {
   }
 
   render(doc = this.doc, parent, props = {}, sheetNo = 0) {
-    //Util.log('doc:', doc);
+    //console.log('doc:', doc);
 
     const sheets = doc.find('sheets').children;
 
-    //Util.log('doc.sheets:',sheets);
+    //console.log('doc.sheets:',sheets);
 
     let sheet = sheets[sheetNo];
-    //Util.log('sheet.getBounds', sheet.getBounds+'');
+    //console.log('sheet.getBounds', sheet.getBounds+'');
 
     let bounds = new BBox();
 
