@@ -1014,7 +1014,7 @@ Util.toString = (obj, opts = {}) => {
   const { c = Util.coloring(colors) } = opts;
   const sep = multiline && depth > 0 ? (space = false) => '\n' + indent + (space ? '  ' : '') : (space = false) => (space ? spacing : '');
   if(typeof obj == 'number') {
-    return c.text(obj+'', 1, 36);
+    return c.text(obj + '', 1, 36);
   } else if(Util.isArray(obj)) {
     let i,
       s = c.text(`[`, 1, 36);
@@ -1041,7 +1041,7 @@ Util.toString = (obj, opts = {}) => {
     const value = obj[key];
     s += i > 0 ? c.text(separator + sep(true), 36) : '';
     s += `${c.text(key, 1, 33)}${c.text(colon, 1, 36)}` + spacing;
-     if(Util.isObject(value) ||typeof value == 'number'||typeof value == 'string') s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
+    if(Util.isObject(value) || typeof value == 'number' || typeof value == 'string') s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
     else s += value;
     i++;
   }
@@ -2226,8 +2226,7 @@ Util.filterOutMembers = function (obj, fn) {
   const pred = (v, k, o) => !fn(v, k, o);
   return Util.filterMembers(obj, pred);
 };
-Util.dumpMembers = obj => Util.filterOutMembers(obj, Util.isFunction);
-
+Util.dumpMembers = (obj) => Util.filterOutMembers(obj, Util.isFunction);
 
 Util.filterOutKeys = function (obj, arr) {
   if(typeof obj != 'object') return obj;
@@ -4027,4 +4026,11 @@ Util.weakAssoc = (fn = (value, ...args) => Object.assign(value, ...args)) => {
     return fn(value, ...args);
   };
 };
+Util.getArgs = Util.memoize(() => Util.tryCatch(
+    () => process.argv,
+    (a) => a.slice(2),
+    () =>  scriptArgs
+  ));
+
+Util.callMain = fn => fn(...Util.getArgs());
 export default Util;

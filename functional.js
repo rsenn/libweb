@@ -853,15 +853,9 @@ export class Functional {
     return o.hasOwnProperty(k);
   });
 
-  static get = this.curry2(function (o, k) {
-    return o[k];
-  });
+  //static get = this.curry2(function (o, k) { return o[k]; });
 
-  static set = this.curry3(function (o, k, v) {
-    o[k] = v;
-    f;
-    return o;
-  });
+  //static set = this.curry3(function (o, k, v) { o[k] = v; f; return o; });
 
   static keys = (o) => {
     return Object.keys(o);
