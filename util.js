@@ -209,8 +209,6 @@ Util.log = (...args) => {
     let stack = Util.getStackFrames(2);
     if(/\/util\.js$/.test(stack[0].fileName))
       stack = stack.slice(1);
-    
-    console.log("stack:",stack[0].fileName)
     location = stack[0].getLocation();
   }
   let locationStr = location.toString(true);
