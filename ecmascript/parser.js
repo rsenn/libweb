@@ -42,7 +42,7 @@ export class Parser {
 
     //
 
-    this.factory.callback = this.handleConstruct;
+    this.factory.callback = (...args) => this.handleConstruct(...args);
 
     //console.log("this.estree.Identifier", this.estree.Identifier);
     //console.log("parser: ", this.parser);
@@ -55,32 +55,32 @@ export class Parser {
     return new SyntaxError('parse', pos.toString() + ': ' + errorMessage, astNode, pos);
   }
 
-  handleComment = (comment, start, end) => {
+  handleComment(comment, start, end) {
     if(comment.startsWith('//')) comment += '\n';
     let token = new Token('comment', comment, new Range(start, comment.length), start.valueOf());
     //console.log('commentToken: ', util.inspect(token, { depth: 0, colors: true }));
     this.comments = add(this.comments, token);
-  };
+  }
 
-  handleConstruct = (ctor, args, instance) => {
+  handleConstruct(ctor, args, instance) {
     let assoc = ESNode.assoc(instance, {});
-    let pos = assoc.position || this.position();
+    let pos = assoc && assoc.position; /* || this.position()*/
     let position;
-    if(this.stack[0]) {
+    if(this && this.stack && this.stack[0]) {
       assoc.position = this.stack[0].position;
       this.lastPos = this.stack[0].position;
     }
     //this.lastTok = this.processed.length;
     this.nodes = add(this.nodes, instance);
     let index = this.nodes.indexOf(instance);
-  };
+  }
 
-  onNewNode = (node) => {
+  onNewNode(node) {
     const range = [this.lastTok, this.processed.length];
     this.nodeTokenMap[node] = range;
-  };
+  }
 
-  onReturnNode = (node, stackEntry, stack) => {
+  onReturnNode(node, stackEntry, stack) {
     const { tokenIndex } = this.lexer;
     const { methodName } = stackEntry;
     const range = [stackEntry.start, stackEntry.end];
@@ -110,9 +110,9 @@ export class Parser {
     let comments = [];
     //let assoc = ESNode.assoc(node, { range: positions, tokenRange: range, tokens, comments });
     Object.assign(obj, { range: positions, tokenRange: range, tokens, comments });
-  };
+  }
 
-  addCommentsToNodes = (root) => {
+  addCommentsToNodes(root) {
     let nodes = new MultiMap();
     for(let [node, path] of deep.iterate(root, (n) => n instanceof ESNode)) {
       let { tokenRange, tokens, source } = node;
@@ -128,9 +128,9 @@ export class Parser {
       }
       //if(node.comments) console.log('addCommentsToNodes', util.inspect(node, { depth: 2, colors: true }));
     }
-  };
+  }
 
-  tokensForNode = (root) => {
+  tokensForNode(root) {
     let tokens = [];
     for(let [node, path] of deep.iterate(root, (n) => n instanceof ESNode)) {
       const token = this.nodeTokenMap[node];
@@ -139,7 +139,7 @@ export class Parser {
     tokens.sort((a, b) => a.token[1] - b.token[1]);
     let range = [tokens[0], Util.tail(tokens)].map((range) => range.token[1]);
     return [...this.processed, ...this.tokens].slice(...range);
-  };
+  }
 
   /*
    * Lexer Interactions
@@ -179,13 +179,13 @@ export class Parser {
     //parseRemainingMemberExpression2;
   }
 
-  state = () => {
+  state() {
     var n = this.processed.length;
     var parser = this;
     return function () {
       parser.tokens.unshift(...parser.processed.splice(n, parser.processed.length));
     };
-  };
+  }
 
   printtoks() {
     let token = this.token;
