@@ -218,8 +218,14 @@ Util.log = (...args) => {
   let results = filters.map((f) => f.test(locationStr));
   if(filters.every((f) => !f.test(locationStr))) return;
   args = args.reduce((a, p, i) => {
-    if(Util.isObject(p) && p[Util.log.methodName]) p = p[Util.log.methodName]();
-    else if(typeof(p) != 'string') p = Util.toString(p, {multiline: false});
+      if(Util.isObject(p) && p[Util.log.methodName]) p = p[Util.log.methodName]();
+ else if(Util.isObject(p) && p[Symbol.for('nodejs.util.inspect.custom')]) p = p[Symbol.for('nodejs.util.inspect.custom')]();
+else if(typeof(p) != 'string') {
+if(Util.isObject(p) && typeof(p.toString) == 'function' && !Util.isNativeFunction(p.toString))
+  p = p.toString();
+else
+ p = Util.toString(p, {multiline: false});
+}
 
   //  if(i > 0) a.push(',');
     a.push(p);
