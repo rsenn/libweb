@@ -7,7 +7,7 @@ import { Palette } from './common.js';
 import { Rotation, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { Instance } from './components/instance.js';
-import { ReactComponent } from '../dom/preactComponent.js';
+import { h, ReactComponent } from '../dom/preactComponent.js';
 import deep from '../deep.js';
 
 export class SchematicRenderer extends EagleSVGRenderer {

@@ -2,6 +2,10 @@ import { Matrix, isMatrix } from '../geom/matrix.js';
 import { Point } from '../geom/point.js';
 import Util from '../util.js';
 
+
+  const RAD2DEG = 180 / Math.PI;
+  const DEG2RAD = Math.PI / 180;
+
 export class Transformation {
   //typeName = null;
 
@@ -109,11 +113,11 @@ export class Transformation {
   /*
 
   static rad2deg(radians) {
-    return radians * this.RAD2DEG;
+    return radians * RAD2DEG;
   }
 
   static deg2rad(degrees) {
-    return degrees * this.DEG2RAD;
+    return degrees * DEG2RAD;
   }*/
   /*
   [Symbol.toStringTag]() {
@@ -155,9 +159,6 @@ export const ImmutableTransformation = Util.immutableClass(Transformation);
 export class Rotation extends Transformation {
   angle = 0;
   //axis = undefined;
-
-  static RAD2DEG = 180 / Math.PI;
-  static DEG2RAD = 1 / Rotation.RAD2DEG;
 
   constructor(angle, axis) {
     super('rotate');
@@ -201,7 +202,7 @@ export class Rotation extends Transformation {
   }
 
   toMatrix() {
-    return Matrix.rotate(Rotation.DEG2RAD * this.angle);
+    return Matrix.rotate(DEG2RAD * this.angle);
   }
 
   accumulate(other) {
@@ -214,7 +215,7 @@ export class Rotation extends Transformation {
       case 'deg':
         return angle;
       case 'rad':
-        return this.DEG2RAD * angle;
+        return DEG2RAD * angle;
       case 'turn':
         return angle / 360;
       default:

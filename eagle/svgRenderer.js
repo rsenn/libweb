@@ -465,7 +465,7 @@ export class EagleSVGRenderer {
     const gridWidth = 0.05;
 
 */
-    let grid = project.doc.lookup('/eagle/drawing/grid');
+    let grid = doc.lookup('/eagle/drawing/grid');
 
     let defs =
       /*

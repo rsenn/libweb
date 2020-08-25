@@ -14,8 +14,8 @@ export var LogJS = {
   get window_() {
     return Util.tryCatch(
       () => global,
-      (g) => g,
-      () => window
+      (g) => g.window,
+      () => globalThis
     );
   }
 };

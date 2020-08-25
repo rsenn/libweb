@@ -1035,17 +1035,22 @@ Util.toString = (obj, opts = {}) => {
   } else if(obj instanceof Date) {
     return c.text(`new `, 1, 31) + c.text(`Date`, 1, 33) + c.text(`(`, 1, 36) + c.text(obj.getTime() + obj.getMilliseconds() / 1000, 1, 36) + c.text(`)`, 1, 36);
   }
-  let s = c.text(`{` + padding, 1, 36);
+  let isMap = obj instanceof Map;
+   let keys = isMap? [...obj.keys()] : Object.keys(obj);
+ let s = isMap ? `Map(${keys.length}) {\n  `: c.text('{' + padding, 1, 36);
   let i = 0;
-  for(let key in obj) {
-    const value = obj[key];
+  let getFn = isMap ? key =>  obj.get(key) : key => obj[key];
+  let propSep =isMap? c.text(' => ',0) : c.text(colon+spacing,1,36);
+  for(let key of keys) {
+    const value = getFn(key);
     s += i > 0 ? c.text(separator + sep(true), 36) : '';
-    s += `${c.text(key, 1, 33)}${c.text(colon, 1, 36)}` + spacing;
-    if(Util.isObject(value) || typeof value == 'number' || typeof value == 'string') s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
+    s += c.text(key, 1, 33)+ propSep;
+    if(Util.isObject(value) || typeof value == 'number' ) s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
+    else if(typeof(value) == 'string') s += c.text(`'${value}'`,1,32);
     else s += value;
     i++;
   }
-  return s + sep(false) + c.text(`${padding}}`, 1, 36);
+  return s + sep(false) + c.text(`${multiline ? '' : padding}}`, 1, 36);
 };
 
 Util.toString.defaultOpts = {
@@ -4031,6 +4036,10 @@ Util.getArgs = Util.memoize(() => Util.tryCatch(
     (a) => a.slice(2),
     () =>  scriptArgs
   ));
+Util.getEnv = async varName => Util.tryCatch(
+    () => process.env,
+    async (e) => e[varName],
+    () =>  Util.tryCatch(async () => await import('std').then(std => std.getenv(varName))));
 
 Util.callMain = fn => fn(...Util.getArgs());
 export default Util;
