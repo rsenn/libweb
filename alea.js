@@ -6,6 +6,7 @@ export function Alea(...args) {
   var s1 = 0;
   var s2 = 0;
   var c = 1;
+  var mash;
 
   var random = function () {
     var t = 2091639 * s0 + c * 2.3283064365386963e-10; //2^-32
@@ -35,8 +36,7 @@ export function Alea(...args) {
       l: random() * 100
     };
   };
-  random.seed = function () {
-    let args = [...arguments];
+  random.seed = function (...args) {
     if(args.length == 0) {
       args = [+new Date()];
     }
@@ -63,11 +63,48 @@ export function Alea(...args) {
     return this;
   };
 
+  random.seed = function (...args) {
+    if(args.length == 0) {
+      args = [+new Date()];
+    }
+    mash = Mash();
+    s0 = mash(' ');
+    s1 = mash(' ');
+    s2 = mash(' ');
+
+    return random.mash(args);
+  };
+  random.mash = function (...args) {
+    mash = mash || Mash();
+
+    for(var i = 0; i < args.length; i++) {
+      s0 -= mash(args[i]);
+      if(s0 < 0) {
+        s0 += 1;
+      }
+      s1 -= mash(args[i]);
+      if(s1 < 0) {
+        s1 += 1;
+      }
+      s2 -= mash(args[i]);
+      if(s2 < 0) {
+        s2 += 1;
+      }
+    }
+    mash = null;
+    return random;
+  };
+
   random.version = 'Alea 0.9';
   random.args = args;
   random.seed.apply(random, args);
 
   //my own additions to sync state between two generators
+  random.clone = function () {
+    let r = new Alea();
+    r.importState(this.exportState());
+    return r;
+  };
   random.exportState = function () {
     return [s0, s1, s2, c];
   };

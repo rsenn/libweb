@@ -6,6 +6,7 @@ import { Rotation, VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, Alignm
 import { ElementToComponent, ElementNameToComponent, Pattern, Grid } from './components.js';
 import trkl from '../trkl.js';
 import { h, Fragment, Component } from '../dom/preactComponent.js';
+import { ColorMap } from '../draw/colorMap.js';
 
 export class EagleSVGRenderer {
   static rendererTypes = {};
@@ -47,31 +48,23 @@ export class EagleSVGRenderer {
 */
   constructor(doc, factory) {
     if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
-    //let ctor = EagleSVGRenderer.rendererTypes[doc.type];
-    //Object.setPrototypeOf(this, ctor.prototype);
     this.doc = doc;
     let renderer = this;
-
     this.path2component = Util.mapWrapper(
       new Map(),
       (path) => (Util.isObject(path) && path.path !== undefined ? path.path : path) + '',
       (key) => new ImmutablePath(key)
     );
-
     const insertCtoP = Util.inserter(this.component2path);
     const insert = Util.inserter(this.path2component, (k, v) => insertCtoP(v, k));
-    //console.log('factory:' + factory);
     this.create = function (tag, attrs, children, parent, element) {
       let ret = factory(tag, attrs, children, parent, element);
-
       let path = attrs['data-path'];
       if(path && !element) {
-        //console.log('path:', path);
         element = EagleElement.get(doc, path);
       }
       if(!element) element = EagleElement.currentElement;
       if(!path && element) path = element.path;
-      // if(element) renderer.setItem(path, element);
       if(path) insert(path, ret);
       return ret;
     };
@@ -97,6 +90,7 @@ export class EagleSVGRenderer {
     let renderer = new EagleSVGRenderer.rendererTypes[doc.type](doc, factory);
     return renderer;
   }
+
   setPalette(palette) {
     //console.log("setPalette 1",palette)
     palette = palette.map((color, i) => trkl(((color.valueOf = () => i), color)));
@@ -105,9 +99,25 @@ export class EagleSVGRenderer {
       length: trkl(ncolors)
     });
     //console.log("setPalette 2",palette)
+    //palette = new ColorMap(palette);
+    console.log('setPalette 2', palette);
 
-    palette = window.palette = trkl.bind({ handlers: palette }, palette);
-    Object.setPrototypeOf(palette, Object.assign(class Palette {}.prototype, { length: 0 }));
+    palette = window.palette = trkl.bind(Util.define({}, { handlers: palette }), palette);
+    Object.setPrototypeOf(
+      palette,
+      Object.defineProperties(
+        {
+          *[Symbol.iterator]() {
+            for(let i = 0; i < this.length; i++) yield this[i];
+          }
+        },
+        {
+          constructor: { value: class Palette {} , enumerable: false, writable: false, configurable: false },
+          handlers: { value: null, enumerable: false, writable: true },
+          length: { value: 0, enumerable: false, configurable: true, writable: true }
+        }
+      )
+    );
     //console.log("setPalette 3",palette)
     //console.log("setPalette 4",palette)
 

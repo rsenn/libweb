@@ -145,12 +145,14 @@ RGBA.fromHex = (hex, alpha = 255) => {
 
 RGBA.prototype.hex = function (opts = {}) {
   const { bits, prefix = '#', order = RGBA.order.ARGB } = opts;
-
   const { r, g, b, a } = RGBA.clamp(RGBA.round(this));
-
   const n = RGBA.encode[order]({ r, g, b, a });
-
   return prefix + ('0000000000' + n.toString(16)).slice(a == 255 ? -6 : -8);
+};
+
+RGBA.prototype.valueOf = function () {
+  const hex = RGBA.prototype.hex.call(this);
+  return parseInt('0x' + hex.slice(1));
 };
 
 RGBA.prototype.toRGB = function () {
@@ -406,6 +408,18 @@ RGBA.prototype.toConsole = function (fn = 'toString') {
   const textColor = this.invert().blackwhite();
   const bgColor = this.blackwhite(255);
   return [`%c${this[fn]()}%c`, `text-shadow: 1px 1px 1px ${bgColor.hex()}; border: 1px solid black; padding: 2px; font-size: 1.5em; background-color: ${this.toString()}; color: ${textColor};`, `background-color: none;`];
+};
+
+RGBA.prototype.equals = function (other) {
+  const { r, g, b, a } = this;
+  return r == other.r && g == other.g && b == other.b && a == other.a;
+};
+RGBA.prototype.toObject = function () {
+  const { r, g, b, a } = RGBA.clamp(this);
+  return { r, g, b, a };
+};
+RGBA.prototype.toArray = function () {
+  return Uint8Array.from(this);
 };
 
 RGBA.prototype.toAnsi = function (background = false) {

@@ -19,6 +19,8 @@ export class ColorMap extends Map {
       }
       for(let [key, color] of Util.entries(arg)) {
         let item = color;
+        if(Util.isNumeric(key)) key = +key;
+
         if(typeof item == 'string') {
           console.log(type);
           item = type.fromString(item);
@@ -75,6 +77,7 @@ export class ColorMap extends Map {
       yield [r, g, b, a].map(fmt);
     }
   }
+
   /*
 
   static generate(hues, tones, prng) {

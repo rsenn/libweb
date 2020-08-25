@@ -91,11 +91,18 @@ Util.curry = (fn, arity) => {
     ][n];
     return new Function(...a, `const { curried,thisObj,args} = this; return curried.apply(thisObj, args.concat([${a.join(',')}]))`).bind({ args, thisObj, curried });
   };
-  Object.defineProperty(ret, 'length', {
-    value: arity,
-    configurable: true,
-    writable: true,
-    enumerable: false
+  Object.defineProperties(ret, {
+    length: {
+      value: arity,
+      configurable: true,
+      writable: true,
+      enumerable: false
+    },
+    orig: {
+      get() {
+        return fn;
+      }
+    }
   });
   return ret;
 };
@@ -137,10 +144,109 @@ Util.arityN = (fn, n) => {
   else return fn;
 };
 
-Util.getter = (target) => (typeof target == 'object' && target !== null ? (typeof target.get == 'function' ? (key) => target.get(key) : (key) => target[key]) : null);
-Util.setter = (target) => (typeof target == 'object' && target !== null ? (typeof target.set == 'function' ? (key, value) => target.set(key, value) : (key, value) => (target[key] = value)) : null);
+Util.getter = (target) => {
+  let self;
+  self = function (key) {
+    if(!target) {
+      if(this !== self && this) target = this;
+      self.target = target;
+    }
+    let obj = target;
+    if(!self.fn) {
+      if(typeof obj == 'object' && obj !== null) {
+        if(typeof obj.get == 'function') self.fn = (key) => obj.get(key);
+      }
+      if(!self.fn) self.fn = (key) => obj[key];
+    }
+    return self.fn(key);
+  };
+  if(target !== undefined) self.target = target;
+  return self;
+};
+Util.setter = (target) => {
+  let self;
+  self = function (key, value) {
+    if(!target) {
+      if(this !== self && this) target = this;
+      self.target = target;
+    }
+    let obj = target;
+    if(!self.fn) {
+      if(typeof obj == 'object' && obj !== null) {
+        if(typeof obj.set == 'function') self.fn = (key, value) => obj.set(key, value);
+      }
+    }
+    if(!self.fn) self.fn = (key, value) => ((obj[key] = value), obj);
+    return self.fn(key, value);
+  };
+  if(target !== undefined) self.target = target;
+  return self;
+};
 Util.remover = (target) => (typeof target == 'object' && target !== null ? (typeof target['delete'] == 'function' ? (key) => target['delete'](key) : (key) => delete target[key]) : null);
 Util.hasFn = (target) => (typeof target == 'object' && target !== null ? (typeof target['has'] == 'function' ? (key) => target['has'](key) : (key) => key in target) : null);
+Util.adder = (target) => {
+  let self;
+
+  self = function (obj, arg = 1) {
+    if(!target) {
+      if(obj) target = obj;
+    }
+    if(!self.fn) {
+      ChooseFn(arg, obj);
+      console.log('adder', self.fn + '');
+    }
+
+    // if(!self.fn) console.log('adder', { target, thisObj: this, fn: self.fn + '', arg });
+    return self.fn(obj, arg);
+  };
+  if(target && !self.fn) {
+    ChooseFn(',', target);
+    target = null;
+  }
+
+  return self;
+
+  function ChooseFn(a, o) {
+    if(!self.fn) {
+      if(typeof target == 'object' && target !== null) {
+        if(typeof target.add == 'function') self.fn = (obj, arg) => (obj.add(arg), undefined);
+        else if(typeof target.push == 'function') self.fn = (obj, arg) => (obj.push(arg), undefined);
+      }
+    }
+    let isNum = Util.isNumeric(a);
+    console.log('ChooseFn', { a, o, f: self.fn });
+    if(!self.fn) {
+      if(typeof o == 'string') self.fn = (obj, arg) => (obj == '' ? '' : obj + ', ') + arg;
+      else if(a) self.fn = (obj, arg) => ((obj || (isNum || typeof arg == 'number' ? 0 : '')) + isNum ? +arg : ',' + arg);
+    }
+  }
+};
+Util.updater = (target, get, set, fn) => {
+  let value;
+
+  get = get || Util.getter(target);
+  set = set || Util.setter(target);
+
+  return (k, f, i) => doUpdate(k, f || fn, i);
+  function doUpdate(key, func, i) {
+    value = get(key);
+    let tmp = func(value, i, key);
+
+    if(tmp !== undefined && tmp != value) {
+      set(key, tmp);
+
+      value = get(key);
+    }
+    return value;
+  }
+};
+Util.getOrCreate = (target, create = () => ({}), set) => {
+  const get = Util.getter(target),
+    has = Util.hasFn(target);
+  set = set || Util.setter(target);
+  let value;
+  return (key) => (value = has(key) ? get(key) : ((value = create(key, target)), set(key, value), value));
+};
 
 Util.memoize = (fn, storage = new Map()) => {
   let self,
@@ -382,6 +488,34 @@ Util.pow10 = function (n) {
 Util.bitValue = function (n) {
   return Util.pow2(n - 1);
 };
+Util.bitMask = function (bits, start = 0) {
+  let r = 0;
+  let b = 1 << start;
+
+  for(let i = 0; i < bits; i++) {
+    r |= b;
+    b <<= 1;
+  }
+  return r;
+};
+
+Util.bitGroups = function (num, bpp) {
+  let m = Util.bitMask(bpp, 0);
+  let n = Math.floor(64 / bpp);
+  let r = [];
+  for(let i = 0; i < n; i++) {
+    r.push(num & m);
+    num /= m + 1;
+  }
+  while(r.length > 0 && r[r.length - 1] == 0 /* && Util.mod(r.length *bpp, 8) > 0*/) r.pop();
+  return r;
+};
+
+Util.bitStuff = (arr, bpp) => {
+  const m = Util.bitMask(bpp, 0);
+  return arr.reduce(([b, f], n) => [b + (n & m) * f, f * (m + 1)], [0, 1])[0];
+};
+
 Util.toBinary = function (num) {
   return parseInt(num).toString(2);
 };
@@ -857,9 +991,9 @@ Util.flatten = function (arr) {
 Util.chunkArray = (a, size) =>
   a.reduce((acc, item, i) => {
     const idx = i % size;
-    if(idx == 0) acc.push(new Array(size));
+    if(idx == 0) acc.push([]);
 
-    acc[acc.length - 1][idx] = item;
+    acc[acc.length - 1].push(item);
     return acc;
   }, []);
 Util.chances = function (numbers, matches) {
@@ -913,7 +1047,7 @@ Util.div = Util.curry((a, b) => a / b);
 Util.xor = Util.curry((a, b) => a ^ b);
 Util.or = Util.curry((a, b) => a | b);
 Util.and = Util.curry((a, b) => a & b);
-Util.mod = Util.curry((a, b) => a % b);
+Util.mod = (a, b) => (typeof b == 'number' ? ((a % b) + b) % b : (n) => ((n % a) + a) % a);
 Util.pow = Util.curry((a, b) => Math.pow(a, b));
 
 /*Util.define(String.prototype,
@@ -1233,11 +1367,9 @@ Util.isObject = (obj, ...protoOrPropNames) => {
     if(protoOrPropNames.length == 0) break;
 
     let p = protoOrPropNames.shift();
-    if(Util.isArrowFunction(p)) {
+    if(Util.isFunction(p) || Util.isArrowFunction(p)) {
       obj = p(obj);
-      if(isObj(obj))
-        //return obj;
-        continue;
+      continue;
     }
 
     if(!isObj(p)) {
@@ -1247,6 +1379,7 @@ Util.isObject = (obj, ...protoOrPropNames) => {
 
     if(Object.getPrototypeOf(obj) !== p) return false;
   } while(true);
+
   return obj || false;
 };
 Util.isFunction = (arg) => {
@@ -1785,11 +1918,48 @@ Util.isMobile = function () {
 };
 Util.uniquePred = (cmp = null) => (cmp === null ? (el, i, arr) => arr.indexOf(el) === i : (el, i, arr) => arr.findIndex((item) => cmp(el, item)) === i);
 Util.unique = (arr, cmp) => arr.filter(Util.uniquePred(cmp));
-Util.histogram = (arr, t = (item) => item) => {
-  let r = arr.reduce((acc, item) => {
-    acc[t(item)] = (acc[t(item)] || 0) + 1;
-    return acc;
-  }, {});
+
+Util.histogram = (arr, t, out = false ? {} : new Map(), initVal = () => 0 /* new Set()*/, setVal = (v) => v) => {
+  const set = /*Util.isObject(out) && typeof out.set == 'function' ? (k, v) => out.set(k, v) :*/ Util.setter(out);
+  const get = Util.getOrCreate(out, initVal, set);
+  let ctor = Object.getPrototypeOf(out) !== Object.prototype ? out.constructor : null;
+  let tmp;
+  const defKeyFunc = (it) => it;
+  t = t || defKeyFunc;
+  const upd = Util.updater(out, get, set);
+  if(Util.isObject(arr, (o) => typeof o.entries == 'function')) arr = arr.entries();
+  arr = [...arr];
+  let entries = arr.map((it, i) => [i, it]);
+  //let adder = add();
+  let x = {};
+  let iv = initVal();
+  const add = Util.adder(iv);
+  console.log('add:', add.fn + '', { iv });
+  console.log('arr:', arr);
+  let r = arr.map((item, i) => {
+    let arg;
+    let key;
+    tmp = t(item, i);
+    if(tmp) {
+      key = tmp;
+      //  console.log('tmp:', tmp);
+      if(Util.isArray(tmp) && tmp.length >= 2) [key, arg] = tmp.slice(-2);
+      else arg = tmp;
+
+      // console.log('tmp:', { key, i, arg });
+    }
+    [key, arg] = [key].concat(setVal(arg, i)).slice(-2);
+    //console.log('upd(', { key, i, arg }, ')');
+    return [key, upd(key, (entry, idx, key) => add(entry, arg))];
+  });
+  console.log('r:', r);
+  if(ctor) {
+    let entries = r;
+    let keys = r.map(([k, v]) => k);
+    entries = [...entries].sort((a, b) => b[1] - a[1]);
+    let tmp = new ctor(entries);
+    r = tmp;
+  }
   return r;
 };
 Util.concat = function* (...args) {
@@ -2097,7 +2267,8 @@ Util.roundTo = function (value, prec, digits, type = 'round') {
   let ret = fn(value / prec) * prec;
   digits = digits || -Math.min(0, Math.floor(Math.log10(prec)));
 
-  if(typeof digits == 'number' && digits >= 1) ret = +ret.toFixed(digits);
+  if(digits == 0) ret = Math[type](ret);
+  else if(typeof digits == 'number' && digits >= 1) ret = +ret.toFixed(digits);
   return ret;
 };
 Util.base64 = (() => {
@@ -2267,7 +2438,7 @@ Util.numbersConvert = function (str) {
     .join('');
 };
 Util.entries = function (arg) {
-  if(Util.isObject(arg)) {
+  if(Util.isArray(arg) || Util.isObject(arg)) {
     if(typeof arg.entries == 'function') return arg.entries();
     else if(Util.isIterable(arg))
       return (function* () {

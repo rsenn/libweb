@@ -212,9 +212,9 @@ export class MutablePath extends Array {
     return this.concat(args);
   }
 
-  bottom(obj) {
+  bottom(obj, noThrow = false) {
     let r = [this.up(1), this.last];
-    if(obj) r[0] = r[0].apply(obj);
+    if(obj) r[0] = r[0].apply(obj, noThrow);
     return r;
   }
 
