@@ -1006,14 +1006,12 @@ Util.leastCommonMultiple = (n1, n2) => {
 };
 Util.toString = (obj, opts = {}) => {
   const { quote = '"', multiline = true, indent = '', colors = true, stringColor = [1, 36], spacing = '', padding = '', separator = ',', colon = ':', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
-
   if(depth < 0) {
     if(Util.isArray(obj)) return `[...${obj.length}...]`;
     if(Util.isObject(obj)) return `{ ..${Object.keys(obj).length}.. }`;
     return '' + obj;
   }
   const { c = Util.coloring(colors) } = opts;
-
   const sep = multiline && depth > 0 ? (space = false) => '\n' + indent + (space ? '  ' : '') : (space = false) => (space ? spacing : '');
   if(typeof obj == 'number') {
     return c.text(obj+'', 1, 36);
@@ -1042,17 +1040,14 @@ Util.toString = (obj, opts = {}) => {
   for(let key in obj) {
     const value = obj[key];
     s += i > 0 ? c.text(separator + sep(true), 36) : '';
-
     s += `${c.text(key, 1, 33)}${c.text(colon, 1, 36)}` + spacing;
-    /*if(Util.isArray(value)) s+= Util.toString(value);
-      else*/ if(Util.isObject(value) ||typeof value == 'number'||typeof value == 'string') s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
-   // else if(typeof value == 'string') s += c.text(`${quote}${value}${quote}`, ...stringColor);
-  //  else if(typeof value == 'number') s += c.text(value, 1, 36);
+     if(Util.isObject(value) ||typeof value == 'number'||typeof value == 'string') s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
     else s += value;
     i++;
   }
   return s + sep(false) + c.text(`${padding}}`, 1, 36);
 };
+
 Util.toString.defaultOpts = {
   spacing: ' ',
   padding: ' '
