@@ -205,15 +205,25 @@ Util.isDebug = Util.memoize(function () {
 Util.log = (...args) => {
   let location;
   if(args[0] instanceof Util.location) location = args.shift();
-  else location = Util.getStackFrame().getLocation();
+  else {
+    let stack = Util.getStackFrames(2);
+    if(/\/util\.js$/.test(stack[0].fileName))
+      stack = stack.slice(1);
+    
+    console.log("stack:",stack[0].fileName)
+    location = stack[0].getLocation();
+  }
   let locationStr = location.toString(true);
   let c = [(locationStr[Symbol.for('nodejs.util.inspect.custom')] || locationStr.toString).call(locationStr)];
   c.push(' ');
   let filters = Util.log.filters;
   let results = filters.map((f) => f.test(locationStr));
   if(filters.every((f) => !f.test(locationStr))) return;
-  args = args.reduce((a, p) => {
+  args = args.reduce((a, p, i) => {
     if(Util.isObject(p) && p[Util.log.methodName]) p = p[Util.log.methodName]();
+    else if(typeof(p) != 'string') p = Util.toString(p, {multiline: false});
+
+  //  if(i > 0) a.push(',');
     a.push(p);
     //    a.append([p]);
     return a;
@@ -1005,7 +1015,7 @@ Util.leastCommonMultiple = (n1, n2) => {
   return (n1 * n2) / gcd;
 };
 Util.toString = (obj, opts = {}) => {
-  const { quote = '"', multiline = true, indent = '', colors = true, stringColor = [1, 36], spacing = '', padding = '', separator = ',', colon = ':', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
+  const { quote = '"', multiline = true, stringFn = str => str/*.replace(/\n/g, "\\n")*/, indent = '', colors = true, stringColor = [1, 36], spacing = '', padding = '', separator = ',', colon = ':', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
   if(depth < 0) {
     if(Util.isArray(obj)) return `[...${obj.length}...]`;
     if(Util.isObject(obj)) return `{ ..${Object.keys(obj).length}.. }`;
@@ -1015,7 +1025,7 @@ Util.toString = (obj, opts = {}) => {
   const sep = multiline && depth > 0 ? (space = false) => '\n' + indent + (space ? '  ' : '') : (space = false) => (space ? spacing : '');
   if(typeof obj == 'number') {
     return c.text(obj + '', 1, 36);
-  } else if(Util.isArray(obj)) {
+  } else if(  Util.isArray(obj)) {
     let i,
       s = c.text(`[`, 1, 36);
     for(i = 0; i < obj.length; i++) {
@@ -1024,20 +1034,14 @@ Util.toString = (obj, opts = {}) => {
       s += Util.toString(obj[i], { ...opts, c, depth: depth - 1 }, indent + (multiline ? '  ' : ''));
     }
     return s + (i > 0 ? sep() + padding : '') + `]`;
-  } else if(typeof obj == 'function' || obj instanceof Function || Util.className(obj) == 'Function') {
-    obj = '' + obj;
-    if(!multiline) obj = obj.replace(/(\n|\ anonymous)/g, '');
-    return obj;
-  } else if(typeof obj == 'string') {
-    return JSON.toString(obj);
-  } else if(!Util.isObject(obj)) {
-    return '' + obj;
-  } else if(obj instanceof Date) {
-    return c.text(`new `, 1, 31) + c.text(`Date`, 1, 33) + c.text(`(`, 1, 36) + c.text(obj.getTime() + obj.getMilliseconds() / 1000, 1, 36) + c.text(`)`, 1, 36);
-  }
+  } else if(Util.isObject(obj)) {
   let isMap = obj instanceof Map;
   let keys = isMap ? [...obj.keys()] : Object.keys(obj);
-  let s = isMap ? `Map(${keys.length}) {\n  ` : c.text('{' + padding, 1, 36);
+  let s = '';
+s = '[object '+Util.className(obj)+']';
+s = c.text( Util.className(obj),1,31)+' ';
+
+  s += isMap ? `Map(${keys.length}) {\n  ` : c.text('{' + padding, 1, 36);
   let i = 0;
   let getFn = isMap ? (key) => obj.get(key) : (key) => obj[key];
   let propSep = isMap ? c.text(' => ', 0) : c.text(colon + spacing, 1, 36);
@@ -1051,6 +1055,17 @@ Util.toString = (obj, opts = {}) => {
     i++;
   }
   return s + sep(false) + c.text(`${multiline ? '' : padding}}`, 1, 36);
+}else  if(typeof obj == 'function' /*|| obj instanceof Function || Util.className(obj) == 'Function'*/) {
+    obj = '' + obj;
+    if(!multiline) obj = obj.replace(/(\n|\ anonymous)/g, '');
+    return obj;
+  } else if(typeof obj == 'string') {
+    return c.text(`'${stringFn(obj)}'`,1,36);
+  } else if(!Util.isObject(obj)) {
+    return '' + obj;
+  } else if(obj instanceof Date) {
+    return c.text(`new `, 1, 31) + c.text(`Date`, 1, 33) + c.text(`(`, 1, 36) + c.text(obj.getTime() + obj.getMilliseconds() / 1000, 1, 36) + c.text(`)`, 1, 36);
+  } 
 };
 
 Util.toString.defaultOpts = {
@@ -3104,14 +3119,17 @@ Util.getCallers = function (start = 2, num = Number.MAX_SAFE_INTEGER, pred = () 
   return this.getCallerStack(2);
   }
 });*/
-Util.getStackFrame = function (offset = 2) {
+Util.getStackFrames = function (offset = 2) {
   let frames = Util.getCallerStack(0);
   frames = frames.map((frame) => {
     if(Object.getPrototypeOf(frame) !== Util.stackFrame.prototype) frame = Util.stackFrame(frame);
     return frame;
   });
 
-  return frames[offset];
+  return frames.slice(offset);
+};
+Util.getStackFrame = function (offset = 2) {
+return Util.getStackFrames(offset)[0];
 };
 Util.rotateLeft = function (x, n) {
   n = n & 0x1f;
