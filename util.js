@@ -1015,7 +1015,9 @@ Util.toString = (obj, opts = {}) => {
   const { c = Util.coloring(colors) } = opts;
 
   const sep = multiline && depth > 0 ? (space = false) => '\n' + indent + (space ? '  ' : '') : (space = false) => (space ? spacing : '');
-  if(Util.isArray(obj)) {
+  if(typeof obj == 'number') {
+    return c.text(obj+'', 1, 36);
+  } else if(Util.isArray(obj)) {
     let i,
       s = c.text(`[`, 1, 36);
     for(i = 0; i < obj.length; i++) {
@@ -1043,9 +1045,9 @@ Util.toString = (obj, opts = {}) => {
 
     s += `${c.text(key, 1, 33)}${c.text(colon, 1, 36)}` + spacing;
     /*if(Util.isArray(value)) s+= Util.toString(value);
-      else*/ if(Util.isObject(value)) s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
-    else if(typeof value == 'string') s += c.text(`${quote}${value}${quote}`, ...stringColor);
-    else if(typeof value == 'number') s += c.text(value, 1, 32);
+      else*/ if(Util.isObject(value) ||typeof value == 'number'||typeof value == 'string') s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
+   // else if(typeof value == 'string') s += c.text(`${quote}${value}${quote}`, ...stringColor);
+  //  else if(typeof value == 'number') s += c.text(value, 1, 36);
     else s += value;
     i++;
   }
