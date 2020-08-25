@@ -66,7 +66,7 @@ export class EagleDocument extends EagleNode {
 
     const [obj2path, path2obj] = pathMapper.maps.map(Util.mapFunction);
     const [obj2eagle, path2eagle] = [Util.mapFunction(elementMapper), Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined))];
-    const [eagle2path, eagle2obj] = [Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.path : undefined)), Util.mapAdapter((key, value) => (value === undefined  && key !== undefined ? key.raw : undefined))];
+    const [eagle2path, eagle2obj] = [Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.path : undefined)), Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))];
 
     this.maps = {
       eagle2obj,
@@ -200,7 +200,7 @@ export class EagleDocument extends EagleNode {
       const board = this.lookup(['eagle', 'drawing', 'board']);
 
       const plain = board.lookup(['plain']);
-console.log("plain:",plain)
+      console.log('plain:', plain);
 
       const measures = plain.children.filter((e) => e.layer && e.layer.name == 'Measures');
 

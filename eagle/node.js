@@ -145,7 +145,7 @@ export class EagleNode {
         let path = new ImmutableXPath(xpath).concat(['children']);
         lazy[key] = () => this.lookup(xpath, true);
         if(!path.apply(raw, true)) {
-          console.log('path not found',  path + '');
+          console.log('path not found', path + '');
           continue;
         }
         path = this.ref.path.down(...path);
