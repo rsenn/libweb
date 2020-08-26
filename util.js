@@ -1155,10 +1155,7 @@ Util.leastCommonMultiple = (n1, n2) => {
   return (n1 * n2) / gcd;
 };
 Util.toString = (obj, opts = {}) => {
-  const { quote = '"', multiline = true, 
-  stringFn = (str) => str /*.replace(/\n/g, "\\n")*/, 
-  indent = '', colors = true, stringColor = [1, 36], spacing = '', 
-  newline = '\n', padding = '', separator = ',', colon = ': ', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
+  const { quote = '"', multiline = true, stringFn = (str) => str /*.replace(/\n/g, "\\n")*/, indent = '', colors = true, stringColor = [1, 36], spacing = '', newline = '\n', padding = '', separator = ',', colon = ': ', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
   if(depth < 0) {
     if(Util.isArray(obj)) return `[...${obj.length}...]`;
     if(Util.isObject(obj)) return `{ ..${Object.keys(obj).length}.. }`;
@@ -1191,7 +1188,7 @@ Util.toString = (obj, opts = {}) => {
     for(let key of keys) {
       const value = getFn(key);
       s += i > 0 ? c.text(separator + sep(true), 36) : '';
-      s += c.text(key, 1, 33) + propSep;
+      s += c.text(typeof(key) == 'symbol' ? key.toString() : key, 1, 33) + propSep;
       if(Util.isObject(value) || typeof value == 'number') s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
       else if(typeof value == 'string') s += c.text(`'${value}'`, 1, 32);
       else s += value;
