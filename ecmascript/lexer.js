@@ -110,9 +110,11 @@ export function Position(line, column, pos, file, freeze = true) {
 Position.prototype[Symbol.toStringTag] = function () {
   return this.toString();
 };
-Position.prototype.toString = function (showFilename = true) {
-  const { file, line, column } = this;
-  return file && showFilename ? `${file}:${line}:${column}` : `${line}:${column}`;
+Position.prototype.toString = function (showFilename = true, t = (p) => p) {
+  let { file, line, column } = this;
+  //console.log(Util.className(this), " ", Util.toString(this));
+
+  return file && showFilename ? `${t(file)}:${line}:${column}` : `${line}:${column}`;
 };
 
 /*

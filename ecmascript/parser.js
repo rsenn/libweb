@@ -976,7 +976,8 @@ export class ECMAScriptParser extends Parser {
 
         this.expectPunctuators(']');
       } else {
-        property = element = this.expectIdentifier();
+        if(this.matchIdentifier())
+         property = element = this.expectIdentifier();
       }
 
       if(rest) {

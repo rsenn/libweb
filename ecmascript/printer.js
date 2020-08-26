@@ -115,7 +115,8 @@ export class Printer {
 
     //console.log('printBindingProperty:', value.value, id.value);
 
-    if(value.value != id.value) output += ': ' + this.printNode(value);
+
+    if([value,id].every(Util.isObject) && value.value != id.value) output += ': ' + this.printNode(value);
 
     return output;
   }
