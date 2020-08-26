@@ -30,9 +30,9 @@ JavaScriptLexerBase.prototype.getCurrentToken = function () {
 };
 
 JavaScriptLexerBase.prototype.nextToken = function () {
-  var next = antlr4.Lexer.prototype.nextToken.call(this);
+  let next = antlr4.Lexer.prototype.nextToken.call(this);
 
-  if(next.channel === antlr4.Token.DEFAULT_CHANNEL) {
+  if (next.channel === antlr4.Token.DEFAULT_CHANNEL) {
     this.lastToken = next;
   }
   return next;
@@ -48,10 +48,10 @@ JavaScriptLexerBase.prototype.ProcessCloseBrace = function () {
 };
 
 JavaScriptLexerBase.prototype.ProcessStringLiteral = function () {
-  if(this.lastToken !== undefined && (this.lastToken === null || this.lastToken.type === JavaScriptLexer.OpenBrace)) {
+  if (this.lastToken !== undefined && (this.lastToken === null || this.lastToken.type === JavaScriptLexer.OpenBrace)) {
     const text = this._input.strdata.slice(0, 'use strict'.length);
-    if(text === '"use strict"' || text === "'use strict'") {
-      if(this.scopeStrictModes.length > 0) {
+    if (text === '"use strict"' || text === "'use strict'") {
+      if (this.scopeStrictModes.length > 0) {
         this.scopeStrictModes.pop();
       }
       this.useStrictCurrent = true;
@@ -61,26 +61,26 @@ JavaScriptLexerBase.prototype.ProcessStringLiteral = function () {
 };
 
 JavaScriptLexerBase.prototype.IsRegexPossible = function () {
-  if(this.lastToken === null) {
+  if (this.lastToken === null) {
     return true;
   }
 
   switch (this.lastToken.type) {
-    case JavaScriptLexer.Identifier:
-    case JavaScriptLexer.NullLiteral:
-    case JavaScriptLexer.BooleanLiteral:
-    case JavaScriptLexer.This:
-    case JavaScriptLexer.CloseBracket:
-    case JavaScriptLexer.CloseParen:
-    case JavaScriptLexer.OctalIntegerLiteral:
-    case JavaScriptLexer.DecimalLiteral:
-    case JavaScriptLexer.HexIntegerLiteral:
-    case JavaScriptLexer.StringLiteral:
-    case JavaScriptLexer.PlusPlus:
-    case JavaScriptLexer.MinusMinus:
-      return false;
-    default:
-      return true;
+  case JavaScriptLexer.Identifier:
+  case JavaScriptLexer.NullLiteral:
+  case JavaScriptLexer.BooleanLiteral:
+  case JavaScriptLexer.This:
+  case JavaScriptLexer.CloseBracket:
+  case JavaScriptLexer.CloseParen:
+  case JavaScriptLexer.OctalIntegerLiteral:
+  case JavaScriptLexer.DecimalLiteral:
+  case JavaScriptLexer.HexIntegerLiteral:
+  case JavaScriptLexer.StringLiteral:
+  case JavaScriptLexer.PlusPlus:
+  case JavaScriptLexer.MinusMinus:
+    return false;
+  default:
+    return true;
   }
 };
 

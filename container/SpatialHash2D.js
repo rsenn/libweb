@@ -34,8 +34,8 @@ export default class SpatialHash2D {
     const y0 = Math.floor(y / cs);
     const x1 = Math.floor((x + w) / cs);
     const y1 = Math.floor((y + h) / cs);
-    for(let i = x0; i <= x1; i++) {
-      for(let j = y0; j <= y1; j++) {
+    for (let i = x0; i <= x1; i++) {
+      for (let j = y0; j <= y1; j++) {
         hashes.push((i << X_BIT) | j);
       }
     }
@@ -43,28 +43,31 @@ export default class SpatialHash2D {
   }
 
   add(rect) {
-    if(this.has(rect)) {
+    if (this.has(rect)) {
       this.delete(rect);
     }
     const hashes = this.evalHashes(rect);
     this.rect2hashes.set(rect, hashes);
     //for ( let hash of hashes ) {
     hashes.forEach((hash) => {
-      if(!this.hash2rects.has(hash)) {
+      if (!this.hash2rects.has(hash)) {
         this.hash2rects.set(hash, new Set([rect]));
-      } else {
+      }
+      else {
         const rects = this.hash2rects.get(hash);
         //for ( let r of rects ) {
         rects.forEach((r) => {
-          if(this.areRectsOverlap(rect, r)) {
-            if(this.overlaps.has(rect)) {
+          if (this.areRectsOverlap(rect, r)) {
+            if (this.overlaps.has(rect)) {
               this.overlaps.get(rect).add(r);
-            } else {
+            }
+            else {
               this.overlaps.set(rect, new Set([r]));
             }
-            if(this.overlaps.has(r)) {
+            if (this.overlaps.has(r)) {
               this.overlaps.get(r).add(rect);
-            } else {
+            }
+            else {
               this.overlaps.set(r, new Set([rect]));
             }
           }
@@ -76,21 +79,22 @@ export default class SpatialHash2D {
   }
 
   delete(rect) {
-    if(this.has(rect)) {
+    if (this.has(rect)) {
       //for ( let hash of this.rect2hashes.get( rect ) ) {
       this.rect2hashes.get(rect).forEach((hash) => {
         const rectsSet = this.hash2rects.get(hash).delete(rect);
-        if(rectsSet.size <= 0) {
+        if (rectsSet.size <= 0) {
           this.hash2rects.delete(hash);
         }
       });
-      if(this.overlaps.has(rect)) {
+      if (this.overlaps.has(rect)) {
         //for ( let r of this.overlaps.get( rect )) {
         this.overlaps.get(rect).forEach((r) => {
           const rs = this.overlaps.get(r);
-          if(rs && rs.size > 1) {
+          if (rs && rs.size > 1) {
             rs.delete(rect);
-          } else {
+          }
+          else {
             this.overlaps.delete(r);
           }
         });

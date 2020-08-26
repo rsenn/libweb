@@ -11,7 +11,7 @@ import { lazyInitializer } from './lazyInitializer.js';
 
 import SvgPath from './svg/path.js';
 
-if(global.window) {
+if (global.window) {
   window.addEventListener('load', () => {
     Util.log('New cookie: ', document.cookie);
   });
@@ -71,7 +71,7 @@ export default class devpane {
   constructor(node = 'body', observe = '.page', reactDOM) {
     this.pane = lazyInitializer(() => {
       let pos = { right: '2em', bottom: '1em' };
-      if(this.config.has('position')) {
+      if (this.config.has('position')) {
         let p = this.config.get('position');
         pos = { left: `${p.x}px`, top: `${p.y}px` };
       }
@@ -129,8 +129,8 @@ export default class devpane {
     this.open = !this.open;
     //Util.log("devpane.toggleOpenClose open=" + this.open);
     this.config.assign({ open: this.open });
-    if(this.pane()) this.pane().style.display = this.open ? 'inline-block' : 'none';
-    if(this.open) {
+    if (this.pane()) this.pane().style.display = this.open ? 'inline-block' : 'none';
+    if (this.open) {
       //this.pane.style.display = 'inline-block';
       //if(global.window)  this.rectList = this.buildRectList(document.body);
       this.root();
@@ -148,23 +148,24 @@ export default class devpane {
 
     let rows = [];
 
-    for(let name in this.entitySources) {
+    for (let name in this.entitySources) {
       const source = this.entitySources[name];
-      if(source !== null) {
-        if(source && source.count > 1) name += `(${source.count})`;
+      if (source !== null) {
+        if (source && source.count > 1) name += `(${source.count})`;
         rows.push([name, source.toString()]);
       }
     }
 
-    if(this.open) {
+    if (this.open) {
       const table = this.renderTable(['entity', 'source'], rows, {
         cellspacing: 0,
         style: {
+
           /*width: '100%'*/
         }
       });
       let pane = this.pane();
-      while(pane.lastElementChild && pane.lastElementChild.tagName.toLowerCase() == 'table') {
+      while (pane.lastElementChild && pane.lastElementChild.tagName.toLowerCase() == 'table') {
         pane.removeChild(pane.lastElementChild);
       }
       pane.appendChild(table);
@@ -172,10 +173,10 @@ export default class devpane {
   }
 
   logEntry(str) {
-    if(this.log) {
+    if (this.log) {
       let log = this.log();
-      if(log) {
-        if(log.parentNode !== this.pane()) this.pane().insertBefore(log, this.pane().firstElementChild);
+      if (log) {
+        if (log.parentNode !== this.pane()) this.pane().insertBefore(log, this.pane().firstElementChild);
         log.insertAdjacentText('beforeend', `${str.trim()}\n`);
         log.scrollTop = log.scrollHeight;
         log.style.height = '4em';
@@ -185,13 +186,14 @@ export default class devpane {
 
   handleTouch(event) {
     let move;
-    if(event.num == 0) {
+    if (event.num == 0) {
       this.path.commands = [];
       this.path.abs();
       this.path.to(event.x, event.y);
       move = { x: event.x, y: event.y };
       this.prevTouch = event;
-    } else {
+    }
+    else {
       this.path.abs();
       Util.log('touch event: ', event);
       move = { x: event.start.x + event.x, y: event.start.y + event.y };
@@ -203,7 +205,7 @@ export default class devpane {
     const svg = this.svg();
     let svgpath = svg && svg.querySelector('#touch-path');
     let svgcircle = svg && svg.querySelector('#touch-pos');
-    if(!(svgpath && svgpath.tagName == 'path')) {
+    if (!(svgpath && svgpath.tagName == 'path')) {
       svgpath = SVG.create(
         'path',
         {
@@ -216,16 +218,16 @@ export default class devpane {
         this.svg()
       );
     }
-    if(!(svgcircle && svgpath.tagName == 'path')) {
+    if (!(svgcircle && svgpath.tagName == 'path')) {
       svgcircle = SVG.create('path', { id: 'touch-pos', stroke: '#80ff00', fill: 'none', strokeWidth: 2 }, this.svg());
     }
-    if(svgcircle) {
+    if (svgcircle) {
       let str = Polygon.toPath(polygon);
       Element.attr(svgcircle, { d: `M${move.x},${move.y} ` + str });
     }
-    if(svgpath) {
+    if (svgpath) {
       let str = this.path.str();
-      if(/L/.test(str)) Element.attr(svgpath, { d: str });
+      if (/L/.test(str)) Element.attr(svgpath, { d: str });
       //Util.log("Touch event: ", { svgpath, str });
     }
   }
@@ -239,7 +241,7 @@ export default class devpane {
         //if(!pred(elem)) return;
         let rect = Element.getRect(elem);
 
-        if(rect.x == 0 && rect.y == 0) {
+        if (rect.x == 0 && rect.y == 0) {
           const { offsetParent } = elem;
           const offsetRect = offsetParent ? Element.getRect(offsetParent) : null;
           //Util.log("Zero ", { elem, rect, offsetParent, offsetRect });
@@ -255,26 +257,26 @@ export default class devpane {
         rect.toString = function () {
           return `${this.ns}:${this.tag}`;
         };
-        if(pred ? pred(elem) : Rect.area(rect) > 0) {
+        if (pred ? pred(elem) : Rect.area(rect) > 0) {
           //Util.log("buildRectList ", { ns, tag, rect });
 
           rect.e = elem;
           rect.box = null;
           rect.test = function (point, serial) {
             const inside = Point.inside(point, this);
-            if(inside) this.serial = serial;
+            if (inside) this.serial = serial;
             return inside;
           };
           rect.bounds = Rect.uniq(
             ['boundary', 'margin', 'border', 'padding'].reduce((a, name) => {
               let o = Element.getTRBL(rect.e, name);
-              if(name == 'margin') o.add(Element.getTRBL(rect.e, 'border'));
+              if (name == 'margin') o.add(Element.getTRBL(rect.e, 'border'));
               const offset = o.isNaN() ? Rect : o.outset;
               let r = offset(rect);
               r.name = name;
               const idx = Rect.indexOf(r, a);
               //Util.log('Rect.indexOf(', r, ',accu) = ', idx);
-              if(idx == -1) a.push(r);
+              if (idx == -1) a.push(r);
               return a;
             }, []),
             ({ name }) => name == 'boundary'
@@ -291,9 +293,9 @@ export default class devpane {
   getRectAt(x, y, multi = false) {
     const p = Point(x, y);
     let ret = [];
-    for(let i = 0; i < this.rectList.length; i++) {
-      if(Point.inside(p, this.rectList[i])) {
-        if(multi == false) return this.rectList[i];
+    for (let i = 0; i < this.rectList.length; i++) {
+      if (Point.inside(p, this.rectList[i])) {
+        if (multi == false) return this.rectList[i];
         ret.push(this.rectList[i]);
       }
     }
@@ -302,17 +304,19 @@ export default class devpane {
 
   getTextParts({ innerHTML, firstElementChild }) {
     let ret = [];
-    if(!innerHTML.match(/<.*>/)) {
+    if (!innerHTML.match(/<.*>/)) {
       ret.push(innerHTML);
-    } else {
+    }
+    else {
       Element.walk(firstElementChild, ({ innerHTML, textContent, innerText }, accu) => {
         let text = '';
-        if(!innerHTML.match(/<.*>/)) {
+        if (!innerHTML.match(/<.*>/)) {
           text = innerHTML.replace(/&nbsp;/g, '');
-        } else {
+        }
+        else {
           text = textContent || innerText || '';
         }
-        if(text.length > 0) ret.push(text);
+        if (text.length > 0) ret.push(text);
       });
     }
     return ret;
@@ -323,20 +327,22 @@ export default class devpane {
     const modifiers = ['alt', 'shift', 'ctrl', 'meta'].reduce((mod, key) => (e[`${key}Key`] === true ? [...mod, key] : mod), []).toString();
     //Util.log('keypress: ', { key, keyCode, charCode, modifiers });
 
-    if(e.key == 'D' && (e.metaKey || e.ctrlKey || e.altKey) && e.shiftKey) {
+    if (e.key == 'D' && (e.metaKey || e.ctrlKey || e.altKey) && e.shiftKey) {
       this.toggleOpenClose();
-    } else if(e.key == 's' && e.ctrlKey) {
+    }
+    else if (e.key == 's' && e.ctrlKey) {
       select().then((e) => Util.log('select() = ', e));
     } /* if(e.key == 'g') {
       gettext().then(r => Util.log("gettext() = ", r));
-    } else*/ else if(e.key == 't' && e.ctrlKey) {
+    } else*/ else if (e.key == 't' && e.ctrlKey) {
       Util.log('devpane ', this);
       this.renderTranslateLayer();
 
       let boxes = [];
       let opts = {};
       Util.foreach(window.translations, (far, eng) => {
-        if(far == '') {
+        if (far == '') {
+
           /*  let box = this.renderTranslateBox(eng,far);
             boxes.push(box);*/
           opts[Object.keys(opts).length.toString()] = eng;
@@ -354,7 +360,8 @@ export default class devpane {
         }});
       });
 */
-    } else if(e.keyCode == 27) {
+    }
+    else if (e.keyCode == 27) {
     }
   }
 
@@ -378,6 +385,7 @@ export default class devpane {
       dir: 'ltr',
       ...props,
       style: {
+
         /*    minWidth: 100,
         minHeight: 100,
         padding: '1em',
@@ -400,7 +408,7 @@ export default class devpane {
   }
   handleToggle(event, checked) {
     //const { currentTarget } = event;
-    if(checked === undefined) checked = this.open;
+    if (checked === undefined) checked = this.open;
     const what = checked ? 'add' : 'remove';
     const fn = `${what}EventListener`;
 
@@ -410,14 +418,14 @@ export default class devpane {
     window[`${what}EventListener`]('mousemove', this.mouseMove);
 
     this.active = checked;
-    if(this.active) {
+    if (this.active) {
       this.svg();
       this.rectList = this.buildRectList(document.body);
     }
   }
 
   renderTranslateLayer() {
-    if(!this.translateLayer) {
+    if (!this.translateLayer) {
       this.translateLayer = this.createLayer();
     }
     return this.translateLayer;
@@ -427,7 +435,7 @@ export default class devpane {
     let layer = this.pane();
 
     layer.innerHTML = typeof inner == 'string' ? inner : '';
-    if(inner && inner.nodeType) {
+    if (inner && inner.nodeType) {
       layer.appendChild(inner);
     }
   }
@@ -468,7 +476,7 @@ export default class devpane {
     t.handleChange = ({ currentTarget, target }) => {
       const key = currentTarget.value || target.value;
       const value = t.options[key];
-      if(t.inputs.en) t.inputs.en.value = value;
+      if (t.inputs.en) t.inputs.en.value = value;
     };
     //t.chooser = <Select name='en_translations' options={options} onChange={t.handleChange} />;
     t.layer = this.createLayer({ id: 'devpane-layer' });
@@ -501,23 +509,21 @@ export default class devpane {
         }
       });
 
-    const createEditBox = (label, value, onChange) => {
-      return (
-        createLabel(label),
-        Element.create('input', {
-          type: 'text',
-          size: '40',
-          parent: t.fields,
-          name: label,
-          defaultValue: value,
-          onchange: onChange,
-          style: {
-            border: '1px inset #848484',
-            backgroundColor: '#fff'
-          }
-        })
-      );
-    };
+    const createEditBox = (label, value, onChange) => (
+      createLabel(label),
+      Element.create('input', {
+        type: 'text',
+        size: '40',
+        parent: t.fields,
+        name: label,
+        defaultValue: value,
+        onchange: onChange,
+        style: {
+          border: '1px inset #848484',
+          backgroundColor: '#fff'
+        }
+      })
+    );
 
     this.getTranslations((res) => {
       Util.log('language store: ', res);
@@ -561,9 +567,9 @@ export default class devpane {
       });
 
     t.save = function (event) {
-      let en = this.inputs['en'].value;
-      let fa = this.inputs['fa'].value;
-      if(fa != '') {
+      let en = this.inputs.en.value;
+      let fa = this.inputs.fa.value;
+      if (fa != '') {
         Util.log(`Saving EN: ${en} FA: ${fa} `);
         settext({ [en]: fa });
         this.form.parentNode.removeChild(this.form);
@@ -628,10 +634,11 @@ export default class devpane {
   }
 
   renderPaneLayer(parent, reactDOM) {
+
     /* const pane = this.pane();
     const { factory } = this;*/
     let elm = reactDOM.render(this.render(), parent);
-    if(true) {
+    if (true) {
       Element.create('input', {
         type: 'button',
         parent: elm,
@@ -642,7 +649,7 @@ export default class devpane {
           event.preventDefault();
           const e = select();
           e.then((res) => {
-            if(res) {
+            if (res) {
               let bbText = Element.find('#bbox');
               let bbox = Element.rect(res);
               let css = Element.getCSS(res);
@@ -651,7 +658,7 @@ export default class devpane {
             }
             Util.log('selectElement (resolved) = ', res);
 
-            if(res && res.length) {
+            if (res && res.length) {
               this.elements = this.elements.concat(res);
               //this.elements.push(res);
               p.innerHTML =
@@ -686,7 +693,7 @@ export default class devpane {
         value: 'Clearance',
         style: { border: '2px outset #ddd' },
         onclick: (event) => {
-          if(this.elements.length >= 2) {
+          if (this.elements.length >= 2) {
             const elem1 = this.elements[0].e;
             const elem2 = this.elements[1].e;
 
@@ -717,8 +724,8 @@ export default class devpane {
   render() {
     const { rect, fontSize } = this;
     return (
-      <form action='none' onSubmit={(e) => e.preventDefault()}>
-        <input type='checkbox' onChange={this.handleToggle} />
+      <form action="none" onSubmit={(e) => e.preventDefault()}>
+        <input type="checkbox" onChange={this.handleToggle} />
         Bounding boxes
         <br />
         <pre id={'bbox'}>{[`x: ${rect.x || 0}`, `y: ${rect.y || 0}`, `width: ${rect.w || 0}`, `height: ${rect.h || 0}`, `font-size: ${fontSize || 0}`].join(',\n')}</pre>
@@ -729,7 +736,7 @@ export default class devpane {
   selectElement() {
     Util.log('devpane.selectElement()');
     //if(!this.rectList
-    if(!this.rectList || !this.rectList.length) {
+    if (!this.rectList || !this.rectList.length) {
       let page = Element.find('.page');
       Util.log('page ', page);
 
@@ -750,9 +757,9 @@ export default class devpane {
         const { target, clientX, clientY } = event;
         const r = this.getRectAt(clientX, clientY);
 
-        if(r) {
+        if (r) {
           let elm = Element.find('#select-rect');
-          if(!elm) {
+          if (!elm) {
             elm = Element.create('div', {
               id: 'select-rect',
               parent: Element.find('body'),
@@ -763,12 +770,13 @@ export default class devpane {
           Element.setRect(elm, r);
           //Rect.set(r, elm);
           this.selected = this.getRectAt(clientX, clientY, true);
-          if(this.selected.length) {
+          if (this.selected.length) {
             Util.log('selectElement selected: ', this.selected);
             elm.innerHTML = this.selected.map(({ e }) => `#${e.id}`).join(',');
             this.fontSize = Element.getCSS(this.selected[0].e, 'font-size');
             Util.log(`${Element.xpath(this.selected[0].e)} font-size: `, this.fontSize);
-          } else {
+          }
+          else {
             elm.innerHTML = '';
           }
         }
@@ -789,15 +797,15 @@ export default class devpane {
     let serial = this.serial + 1;
     this.serial = serial;
     let gparent = rect.boxes ? rect.boxes.parentNode : null;
-    if(gparent) {
+    if (gparent) {
       gparent.removeChild(rect.boxes);
       rect.boxes = null;
     }
     let rects = this.rectList.reduce((accu, rect, idx, { length }) => {
       const inside = rect.test(pos, serial);
       const hue = (360 * idx) / length;
-      if(inside && !rect.box) {
-        if(!rect.boxes) rect.boxes = this.svg.factory('g');
+      if (inside && !rect.box) {
+        if (!rect.boxes) rect.boxes = this.svg.factory('g');
         rect.bounds.forEach((r, i, { length }) =>
           this.svg.factory(
             'rect',
@@ -809,14 +817,15 @@ export default class devpane {
             rect.boxes
           )
         );
-      } else if(!inside && rect.boxes) {
+      }
+      else if (!inside && rect.boxes) {
         //Util.log('parent: ', rect.boxes.parentNode, ' boxes: ', rect.boxes);
-        while(rect.boxes.firstChild) rect.boxes.removeChild(rect.boxes.firstChild);
+        while (rect.boxes.firstChild) rect.boxes.removeChild(rect.boxes.firstChild);
         rect.boxes.parentNode.removeChild(rect.boxes);
         rect.boxes = null;
         rect.serial = serial;
       }
-      if(inside) accu.push(rect);
+      if (inside) accu.push(rect);
       return accu;
     }, []);
     //rects = rects.filter(item => rect.boxes != null && rect.serial == serial);
@@ -837,17 +846,15 @@ export default class devpane {
       color: new HSLA((60 + (index * 360) / 10) % 360, 100, 50, 1),
       ...rect
     }));
-    let svgRects = rects.map(({ x, y, width, height, color }, index) => {
-      return f('rect', {
-        x,
-        y,
-        width,
-        height,
-        stroke: color.toString(),
-        strokeWidth: 3,
-        fill: 'none'
-      });
-    });
+    let svgRects = rects.map(({ x, y, width, height, color }, index) => f('rect', {
+      x,
+      y,
+      width,
+      height,
+      stroke: color.toString(),
+      strokeWidth: 3,
+      fill: 'none'
+    }));
     const selectedList = Element.find('#selected-list');
     Element.setCSS(selectedList, {
       display: 'block',
@@ -856,8 +863,8 @@ export default class devpane {
       overflow: 'scroll'
     });
     //prettier-ignore
-    selectedList.innerHTML = `<pre>${rects .map(({color, e}) => `<span style="color: ${color.toString()};">` + Element.xpath(e, document.body) + `</span>` ) .reverse() .join("\n")}${`</pre>`}`;
-    if(rects[0]) {
+    selectedList.innerHTML = `<pre>${rects .map(({ color, e }) => `<span style="color: ${color.toString()};">` + Element.xpath(e, document.body) + `</span>` ) .reverse() .join('\n')}${`</pre>`}`;
+    if (rects[0]) {
       this.rect = rects[0];
       //this.renderPaneLayer();
     }
@@ -866,9 +873,9 @@ export default class devpane {
   mouseEvent(event) {
     //Util.log("devp.mouseEvent", event);
     const { target, type, clientX, clientY } = event;
-    if(type == 'mouseenter') {
+    if (type == 'mouseenter') {
       const r = Rect.round(Element.rect(target));
-      if(this.svg() == null) this.svg();
+      if (this.svg() == null) this.svg();
       let e = this.svg.factory('rect', { ...r, style: { stroke: '#f00' } });
     }
   }

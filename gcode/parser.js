@@ -23,7 +23,7 @@ const containsLineEnd = (() => {
 // @param {function} iteratee The iteratee invoked per element.
 // @param {function} done The done invoked after the loop has finished.
 const iterateArray = (arr = [], opts = {}, iteratee = noop, done = noop) => {
-  if(typeof opts === 'function') {
+  if (typeof opts === 'function') {
     done = iteratee;
     iteratee = opts;
     opts = {};
@@ -32,10 +32,10 @@ const iterateArray = (arr = [], opts = {}, iteratee = noop, done = noop) => {
   opts.batchSize = opts.batchSize || 1;
 
   const loop = (i = 0) => {
-    for(let count = 0; i < arr.length && count < opts.batchSize; ++i, ++count) {
+    for (let count = 0; i < arr.length && count < opts.batchSize; ++i, ++count) {
       iteratee(arr[i], i, arr);
     }
-    if(i < arr.length) {
+    if (i < arr.length) {
       timers.setImmediate(() => loop(i));
       return;
     }
@@ -51,12 +51,12 @@ const parseLine = (() => {
   // by exor-ing the bytes in the string up to and not including the * character.
   const computeChecksum = (s) => {
     s = s || '';
-    if(s.lastIndexOf('*') >= 0) {
+    if (s.lastIndexOf('*') >= 0) {
       s = s.substr(0, s.lastIndexOf('*'));
     }
 
     let cs = 0;
-    for(let i = 0; i < s.length; ++i) {
+    for (let i = 0; i < s.length; ++i) {
       const c = s[i].charCodeAt(0);
       cs ^= c;
     }
@@ -78,10 +78,10 @@ const parseLine = (() => {
     options.noParseLine = !!options.noParseLine;
 
     const result = {
-      line: line
+      line
     };
 
-    if(options.noParseLine) {
+    if (options.noParseLine) {
       return result;
     }
 
@@ -91,20 +91,20 @@ const parseLine = (() => {
     let cs; // Checksum
     const words = stripComments(line).match(re) || [];
 
-    for(let i = 0; i < words.length; ++i) {
+    for (let i = 0; i < words.length; ++i) {
       const word = words[i];
       const letter = word[0].toUpperCase();
       const argument = word.slice(1);
 
       // Parse % commands for bCNC and CNCjs
       // - %wait Wait until the planner queue is empty
-      if(letter === '%') {
+      if (letter === '%') {
         result.cmds = (result.cmds || []).concat(line.trim());
         continue;
       }
 
       // Parse JSON commands for TinyG and g2core
-      if(letter === '{') {
+      if (letter === '{') {
         result.cmds = (result.cmds || []).concat(line.trim());
         continue;
       }
@@ -112,32 +112,33 @@ const parseLine = (() => {
       // Parse $ commands for Grbl
       // - $C Check gcode mode
       // - $H Run homing cycle
-      if(letter === '$') {
+      if (letter === '$') {
         result.cmds = (result.cmds || []).concat(`${letter}${argument}`);
         continue;
       }
 
       // N: Line number
-      if(letter === 'N' && typeof ln === 'undefined') {
+      if (letter === 'N' && typeof ln === 'undefined') {
         // Line (block) number in program
         ln = Number(argument);
         continue;
       }
 
       // *: Checksum
-      if(letter === '*' && typeof cs === 'undefined') {
+      if (letter === '*' && typeof cs === 'undefined') {
         cs = Number(argument);
         continue;
       }
 
       let value = Number(argument);
-      if(Number.isNaN(value)) {
+      if (Number.isNaN(value)) {
         value = argument;
       }
 
-      if(options.flatten) {
+      if (options.flatten) {
         result.words.push(letter + value);
-      } else {
+      }
+      else {
         result.words.push([letter, value]);
       }
     }
@@ -147,7 +148,7 @@ const parseLine = (() => {
 
     // Checksum
     typeof cs !== 'undefined' && (result.cs = cs);
-    if(result.cs && computeChecksum(line) !== result.cs) {
+    if (result.cs && computeChecksum(line) !== result.cs) {
       result.err = true; // checksum failed
     }
 
@@ -159,7 +160,7 @@ const parseLine = (() => {
 // @param {options} options The options object
 // @param {function} callback The callback function
 export const parseStream = (stream, options, callback = noop) => {
-  if(typeof options === 'function') {
+  if (typeof options === 'function') {
     callback = options;
     options = {};
   }
@@ -179,7 +180,8 @@ export const parseStream = (stream, options, callback = noop) => {
         callback && callback(null, results);
       })
       .on('error', callback);
-  } catch(err) {
+  }
+  catch (err) {
     callback(err);
   }
 
@@ -190,7 +192,7 @@ export const parseStream = (stream, options, callback = noop) => {
 // @param {options} options The options object
 // @param {function} callback The callback function
 export const parseFile = (file, options, callback = noop) => {
-  if(typeof options === 'function') {
+  if (typeof options === 'function') {
     callback = options;
     options = {};
   }
@@ -200,15 +202,13 @@ export const parseFile = (file, options, callback = noop) => {
   return parseStream(s, options, callback);
 };
 
-export const parseFileSync = (file, options) => {
-  return parseStringSync(fs.readFileSync(file, 'utf8'), options);
-};
+export const parseFileSync = (file, options) => parseStringSync(fs.readFileSync(file, 'utf8'), options);
 
 // @param {string} str The G-code text string
 // @param {options} options The options object
 // @param {function} callback The callback function
 export const parseString = (str, options, callback = noop) => {
-  if(typeof options === 'function') {
+  if (typeof options === 'function') {
     callback = options;
     options = {};
   }
@@ -220,9 +220,9 @@ export const parseStringSync = (str, options) => {
   const results = [];
   const lines = str.split('\n');
 
-  for(let i = 0; i < lines.length; ++i) {
+  for (let i = 0; i < lines.length; ++i) {
     const line = lines[i].trim();
-    if(line.length === 0) {
+    if (line.length === 0) {
       continue;
     }
     const result = parseLine(line, {
@@ -270,8 +270,8 @@ class GCodeLineStream extends TransformStream {
     // decode binary chunks as UTF-8
     encoding = encoding || 'utf8';
 
-    if(Buffer.isBuffer(chunk)) {
-      if(encoding === 'buffer') {
+    if (Buffer.isBuffer(chunk)) {
+      if (encoding === 'buffer') {
         encoding = 'utf8';
       }
       chunk = chunk.toString(encoding);
@@ -279,27 +279,28 @@ class GCodeLineStream extends TransformStream {
 
     this.lineBuffer += chunk;
 
-    if(!containsLineEnd(chunk)) {
+    if (!containsLineEnd(chunk)) {
       next();
       return;
     }
 
     const lines = this.lineBuffer.match(this.re);
-    if(!lines || lines.length === 0) {
+    if (!lines || lines.length === 0) {
       next();
       return;
     }
 
     // Do not split CRLF which spans chunks
-    if(this.state.lastChunkEndedWithCR && lines[0] === '\n') {
+    if (this.state.lastChunkEndedWithCR && lines[0] === '\n') {
       lines.shift();
     }
 
     this.state.lastChunkEndedWithCR = this.lineBuffer[this.lineBuffer.length - 1] === '\r';
 
-    if(this.lineBuffer[this.lineBuffer.length - 1] === '\r' || this.lineBuffer[this.lineBuffer.length - 1] === '\n') {
+    if (this.lineBuffer[this.lineBuffer.length - 1] === '\r' || this.lineBuffer[this.lineBuffer.length - 1] === '\n') {
       this.lineBuffer = '';
-    } else {
+    }
+    else {
       const line = lines.pop() || '';
       this.lineBuffer = line;
     }
@@ -309,7 +310,7 @@ class GCodeLineStream extends TransformStream {
       { batchSize: this.options.batchSize },
       (line, key) => {
         line = line.trim();
-        if(line.length > 0) {
+        if (line.length > 0) {
           const result = parseLine(line, {
             flatten: this.options.flatten,
             noParseLine: this.options.noParseLine
@@ -322,9 +323,9 @@ class GCodeLineStream extends TransformStream {
   }
 
   _flush(done) {
-    if(this.lineBuffer) {
+    if (this.lineBuffer) {
       const line = this.lineBuffer.trim();
-      if(line.length > 0) {
+      if (line.length > 0) {
         const result = parseLine(line, {
           flatten: this.options.flatten,
           noParseLine: this.options.noParseLine

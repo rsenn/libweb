@@ -2,12 +2,13 @@ import Util from '../util.js';
 
 const lexComment = (lexer) => {
   let s = lexer.source.substring(lexer.start, lexer.pos + 2);
-  if(s.startsWith('/*') || s.startsWith('//')) {
+  if (s.startsWith('/*') || s.startsWith('//')) {
     lexer.pos += 2;
-    if(s[1] == '*') {
+    if (s[1] == '*') {
       lexer.lexUntil(/\*\/$/);
       lexer.skip(2);
-    } else {
+    }
+    else {
       lexer.lexUntil(/\n$/);
       //lexer.skip(1);
     }
@@ -17,7 +18,7 @@ const lexComment = (lexer) => {
 };
 const lexPreProc = (lexer) => {
   let s = lexer.source.substring(lexer.start, lexer.pos + 1);
-  if(/^\s*#/.test(s)) {
+  if (/^\s*#/.test(s)) {
     lexer.start += s.indexOf('#');
     lexer.lexUntil(/\n$/);
 
@@ -28,24 +29,24 @@ const lexPreProc = (lexer) => {
 
 const lexString = (lexer) => {
   let c = lexer.peek();
-  if(/^['"]/.test(c)) {
+  if (/^['"]/.test(c)) {
     lexer.get();
     do {
       let ret;
       lexer.lexUntil(/([^\\]'|\\\\')$/);
       let s = lexer.source.substring(lexer.start, lexer.pos + 1);
-      if(s.endsWith(c)) {
+      if (s.endsWith(c)) {
         lexer.skip(1);
 
         break;
       }
-      if(ret === -1) break;
-      if(s.endsWith('\\\\')) {
+      if (ret === -1) break;
+      if (s.endsWith('\\\\')) {
         Util.log('lexer.source.substring', lexer.source.substring(lexer.pos - 1, lexer.pos + 1));
         lexer.skip();
         continue;
       }
-    } while(false);
+    } while (false);
     return Lexer.tokens.STRING;
   }
 };
@@ -53,28 +54,28 @@ const lexString = (lexer) => {
 const lexRegExp = (lexer) => {
   let s = lexer.source.substring(lexer.start, lexer.start + 2);
 
-  if(/^\./.test(s)) {
+  if (/^\./.test(s)) {
     lexer.skip();
     lexer.lexWhile(/[^ ]$/);
     return Lexer.tokens.REGEXP;
   }
 
-  if(/^[\[]/.test(s)) {
+  if (/^[\[]/.test(s)) {
     lexer.start = lexer.pos;
     lexer.get();
     do {
       lexer.lexWhile(/.*[^\]]$/);
       lexer.get();
-    } while(lexer.peek() == '[');
-    if(lexer.peek() == '+') lexer.get();
-    if(lexer.peek() == '*') lexer.get();
+    } while (lexer.peek() == '[');
+    if (lexer.peek() == '+') lexer.get();
+    if (lexer.peek() == '*') lexer.get();
 
     return Lexer.tokens.REGEXP;
   }
 };
 
 const lexNumber = (lexer) => {
-  if(/^[0-9]/.test(lexer.peek())) {
+  if (/^[0-9]/.test(lexer.peek())) {
     lexer.get();
     lexer.lexWhile(/[0-9.]$/);
     return Lexer.tokens.NUMBER;
@@ -85,14 +86,14 @@ const lexPunctuation = (lexer) => {
   let s = lexer.source.substring(lexer.start, lexer.pos + 1);
   let c = lexer.peek();
 
-  if(/->$/.test(s)) {
+  if (/->$/.test(s)) {
     lexer.skip(2);
     return Lexer.tokens.PUNCTUATION;
   }
-  if(/^[-~.<>;,\(\):|+\?*]/.test(s)) {
+  if (/^[-~.<>;,\(\):|+\?*]/.test(s)) {
     lexer.get();
     c = lexer.peek();
-    if(s[0] == '-' && c == '>') lexer.get();
+    if (s[0] == '-' && c == '>') lexer.get();
 
     lexer.lexWhile(/^[-~.<>;,\(\):|+\?*]$/);
     //Util.log("PUNCT", s);
@@ -103,16 +104,16 @@ const lexPunctuation = (lexer) => {
 const lexIdentifier = (lexer) => {
   let c;
   let word = '';
-  if(/^[A-Za-z]/.test(lexer.peek())) {
+  if (/^[A-Za-z]/.test(lexer.peek())) {
     c = lexer.get();
     word += c;
 
-    for(; (c = lexer.peek()); word += lexer.get()) {
-      if(!/[0-9A-Za-z_]/.test(c)) break;
+    for (; (c = lexer.peek()); word += lexer.get()) {
+      if (!/[0-9A-Za-z_]/.test(c)) break;
       //Util.log("lexIdentifier: ", word);
     }
 
-    if(/[^0-9A-Za-z_]$/.test(word)) lexer.pos--;
+    if (/[^0-9A-Za-z_]$/.test(word)) lexer.pos--;
 
     //Util.log("lexIdentifier: ", lexer.source[lexer.pos-1]);
 
@@ -126,10 +127,11 @@ const lexIdentifier = (lexer) => {
 };
 
 const lexCond = (cond) => {
-  if(cond instanceof RegExp) {
+  if (cond instanceof RegExp) {
     let re = cond;
     cond = (ch) => re.test(ch);
-  } else if(cond instanceof Array) {
+  }
+  else if (cond instanceof Array) {
     let arr = cond;
     cond = (ch) => arr.indexOf(ch[ch.length - 1]) != -1;
   }
@@ -139,8 +141,8 @@ const lexCond = (cond) => {
 export const lexIsToken = Util.curry((id, result) => {
   let ret;
 
-  if(typeof id == 'string') id = Lexer.tokens[id];
-  if(typeof id != 'function') {
+  if (typeof id == 'string') id = Lexer.tokens[id];
+  if (typeof id != 'function') {
     let the_id = id;
     id = (i) => i == the_id;
   }
@@ -151,16 +153,17 @@ export const lexIsToken = Util.curry((id, result) => {
 
 export const lexMatch = Util.curry((id, str, result) => {
   let ret;
-  if(typeof id == 'string') id = Lexer.tokens[id];
-  if(typeof id != 'function') {
+  if (typeof id == 'string') id = Lexer.tokens[id];
+  if (typeof id != 'function') {
     let the_id = id;
     id = (i) => i == the_id;
   }
 
-  if(Util.isArray(str)) {
+  if (Util.isArray(str)) {
     let the_array = str;
     str = (s) => the_array.indexOf(s) != -1;
-  } else if(typeof str != 'function') {
+  }
+  else if (typeof str != 'function') {
     let the_str = str;
     str = (s) => s == the_str;
   }
@@ -177,13 +180,13 @@ class Token {
   [Symbol.for('nodejs.util.inspect.custom')]() {
     let str = this.str;
 
-    if(this.tok == Lexer.tokens.STRING) str = str.substring(1, str.length - 1);
+    if (this.tok == Lexer.tokens.STRING) str = str.substring(1, str.length - 1);
     return { tok: Lexer.tokenName(this.tok), str };
   }
   toString() {
     let str = this.str;
 
-    if(this.tok == Lexer.tokens.STRING) str = str.substring(1, str.length - 1);
+    if (this.tok == Lexer.tokens.STRING) str = str.substring(1, str.length - 1);
     return `${Lexer.tokenName(this.tok)} ${str}`;
   }
 }
@@ -228,7 +231,7 @@ export class Lexer {
     (lexer) => {
       lexer.lexWhile(/[ \t]$/);
       lexer.start = lexer.pos;
-      if(lexer.eof) return Lexer.EOF;
+      if (lexer.eof) return Lexer.EOF;
     },
     lexComment,
     lexString,
@@ -239,8 +242,8 @@ export class Lexer {
     lexPreProc,
     (lexer) => {
       lexer.lexWhile(/[ \n\r\t]$/);
-      if(lexer.start < lexer.pos) return Lexer.tokens.WHITESPACE;
-      if(!(lexer.start < lexer.pos)) {
+      if (lexer.start < lexer.pos) return Lexer.tokens.WHITESPACE;
+      if (!(lexer.start < lexer.pos)) {
         Util.log(`ERROR file=${lexer.file} pos=${lexer.line}:${lexer.column} start=${lexer.start} pos=${lexer.pos} len=${lexer.len}'${lexer.source.substring(lexer.start, lexer.pos + 1)}'`);
         return 0;
       }
@@ -266,16 +269,16 @@ export class Lexer {
   }
 
   peek(start = 0, num = 1) {
-    if(this.pos == this.len) return -1;
+    if (this.pos == this.len) return -1;
     return this.source.substring(this.pos + start, this.pos + start + num);
   }
 
   get() {
-    if(this.pos == this.len) return -1;
+    if (this.pos == this.len) return -1;
 
     let c = this.source[this.pos];
     this.pos++;
-    if(c == '\n') {
+    if (c == '\n') {
       this.line++;
       this.column = 1;
     }
@@ -283,7 +286,7 @@ export class Lexer {
   }
 
   skip(n = 1) {
-    while(n-- > 0) if(this.get() == -1) return -1;
+    while (n-- > 0) if (this.get() == -1) return -1;
   }
   get position() {
     return `${this.line}:${this.column}`;
@@ -317,7 +320,7 @@ export class Lexer {
       };
     };
 
-    if(this.tok !== undefined) {
+    if (this.tok !== undefined) {
       r = { value: this.tok, done: false };
       this.tok = undefined;
       this.tokIndex++;
@@ -333,8 +336,8 @@ export class Lexer {
     this.lexWhile(/[ \t\r\n]$/);
     this.start = this.pos;
 
-    if(this.eof) return { done: true };
-    if(this.pos == this.len) {
+    if (this.eof) return { done: true };
+    if (this.pos == this.len) {
       this.eof = true;
       return { done: true };
     }
@@ -346,23 +349,24 @@ export class Lexer {
     let retvals = [];
     let positions = [];
 
-    for(let matcher of Lexer.matchers) {
+    for (let matcher of Lexer.matchers) {
       positions.push({ start, pos });
 
       tok = matcher(this);
       retvals.push(tok);
 
-      if(typeof tok == 'number' || tok > 0) break;
+      if (typeof tok == 'number' || tok > 0) break;
     }
 
-    if(tok == Lexer.tokens.COMMENT || tok == Lexer.tokens.PREPROC) {
+    if (tok == Lexer.tokens.COMMENT || tok == Lexer.tokens.PREPROC) {
       //Util.log(`skip ${Lexer.tokenName(tok)}:`, this.str());
 
       return this.next();
     }
 
-    if(tok == -1 || tok === 0) {
-      if(tok === 0) Util.log('source:', this.source.substring(this.start).split(/\n/g)[0]);
+    if (tok == -1 || tok === 0) {
+      if (tok === 0) Util.log('source:', this.source.substring(this.start).split(/\n/g)[0]);
+
       /*Util.log('retvals:', retvals);
       Util.log('posisionts:', positions);*/
 
@@ -385,9 +389,9 @@ export class Lexer {
       c = this.peek();
       s = this.source.substring(this.start, this.pos + 1);
       ret = cond(s);
-      if(!ret) break;
+      if (!ret) break;
       this.get();
-    } while(this.pos < this.len);
+    } while (this.pos < this.len);
     return ret;
   }
 

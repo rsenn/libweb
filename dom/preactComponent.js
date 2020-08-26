@@ -18,10 +18,11 @@ const add = (arr, ...items) => [...ReactComponent.toChildArray(arr), ...items];
 export class ReactComponent {
   static create(...args) {
     let Tag, props;
-    if(typeof args[0] == 'string') {
+    if (typeof args[0] == 'string') {
       Tag = args.shift();
       props = args.shift();
-    } else {
+    }
+    else {
       props = args.shift();
       Tag = props.tagName;
       delete props.tagName;
@@ -33,7 +34,7 @@ export class ReactComponent {
   }
 
   static flatten(obj, dest = new Map(), path = [], pathFn = '.') {
-    if(typeof pathFn == 'string') {
+    if (typeof pathFn == 'string') {
       const sep = pathFn;
       pathFn = (p) => p.join(sep);
     }
@@ -48,7 +49,7 @@ export class ReactComponent {
 
     function flatten(obj, path) {
       insert(path, obj);
-      if(obj.props) {
+      if (obj.props) {
         let children = ReactComponent.toChildArray(obj.props.children).map((child, i) => [child, [...path, 'props', 'children', i++]]);
         children.forEach((args) => flatten(...args));
       }
@@ -62,8 +63,8 @@ export class ReactComponent {
   }
 
   static factory(render_to, root) {
-    if(typeof render_to === 'string') render_to = Element.find(render_to);
-    if(typeof render_to !== 'function') {
+    if (typeof render_to === 'string') render_to = Element.find(render_to);
+    if (typeof render_to !== 'function') {
       root = root || render_to;
       render_to = (component) => require('react-dom').render(component, root || render_to);
     }
@@ -78,18 +79,19 @@ export class ReactComponent {
   static append(...args) {
     //console.log('PreactComponent.append', ...args.reduce((acc, a) => [...acc, '\n', a], []));
     let tag, elem, parent, attr;
-    if(args.length == 2 && ReactComponent.isComponent(args[0])) {
+    if (args.length == 2 && ReactComponent.isComponent(args[0])) {
       [elem, parent] = args;
-    } else {
+    }
+    else {
       [tag, attr, parent] = args.splice(0, 3);
       let { children, ...props } = attr;
-      if(Util.isArray(parent)) {
+      if (Util.isArray(parent)) {
         children = add(children, ...parent);
         parent = args[0];
       }
       elem = h(tag, props, children);
     }
-    if(parent) {
+    if (parent) {
       //console.log('PreactComponent.append\nparent:', parent, '\nelement:', elem);
       const { props } = parent;
       props.children = add(props.children, elem);
@@ -100,36 +102,37 @@ export class ReactComponent {
 
   static toObject(...args) {
     let ret = [];
-    for(let arg of args) {
-      if(typeof arg == 'string') {
+    for (let arg of args) {
+      if (typeof arg == 'string') {
         ret.push(arg);
         continue;
       }
-      if(!typeof arg == 'object' || arg === null || !arg) continue;
+      if (!typeof arg == 'object' || arg === null || !arg) continue;
 
       let tagName;
 
-      if(arg.type && arg.type.name) tagName = arg.type.name;
-      else if(typeof arg.type == 'function') tagName = arg.type;
+      if (arg.type && arg.type.name) tagName = arg.type.name;
+      else if (typeof arg.type == 'function') tagName = arg.type;
       else tagName = arg.type + '';
 
       let { children, key, innerHTML, ...props } = arg.props || {};
 
       let obj = { tagName, ...props };
-      if(Util.isObject(arg.props) && 'key' in arg.props && key !== undefined) obj.key = key;
+      if (Util.isObject(arg.props) && 'key' in arg.props && key !== undefined) obj.key = key;
 
-      if(!children) children = arg.children;
+      if (!children) children = arg.children;
 
       let a = this.toChildArray(children);
       //console.log('a:', a);
       children = a.length > 0 ? this.toObject(...a) : [];
       //console.log('children:', children);
       obj.children = Util.isArray(children) ? children : [children];
-      if(innerHTML) obj.children.push(innerHTML);
+      if (innerHTML) obj.children.push(innerHTML);
       ret.push(obj);
     }
     return Util.isArray(ret) && ret.length == 1 ? ret[0] : ret;
   }
+
   /*
    */
   /*  dummy() {
@@ -156,11 +159,11 @@ export class ReactComponent {
     let p = Object.entries(props)
       .map(([name, value]) => `${nl}  ${name}: ${Util.toSource(value, { quote })}`)
       .join(',');
-    if(p != '') o += ` ${p}${nl}`;
+    if (p != '') o += ` ${p}${nl}`;
     o += `}`;
     let s = ReactComponent.toSource;
     let c = Util.isArray(children) ? `[${children.map((obj) => nl + '  ' + s(obj, opts, depth + 1)).join(',')}]` : children ? '  ' + s(children, opts, depth + 1) : '';
-    if(c != '') o += `,${nl}${c}`;
+    if (c != '') o += `,${nl}${c}`;
     o += (c != '' ? nl : '') + ')';
     return o;
   }
@@ -168,37 +171,39 @@ export class ReactComponent {
   static toString(obj, opts = {}) {
     let { fmt = 0 } = opts;
     let s = '';
-    if(Util.isObject(obj) && '__' in obj && 'key' in obj && 'ref' in obj) obj = this.toObject(obj);
-    if(Util.isArray(obj)) {
-      for(let item of obj) {
+    if (Util.isObject(obj) && '__' in obj && 'key' in obj && 'ref' in obj) obj = this.toObject(obj);
+    if (Util.isArray(obj)) {
+      for (let item of obj) {
         s += fmt < 2 ? '\n' : s == '' ? '' : `, `;
         s += this.toString(item);
       }
       return s;
-    } else if(typeof obj == 'string') {
+    }
+    else if (typeof obj == 'string') {
       return obj;
     }
     let { tagName, children, ...props } = obj;
-    if(props['className']) {
-      props['class'] = props['className'];
-      delete props['className'];
+    if (props.className) {
+      props.class = props.className;
+      delete props.className;
     }
-    for(let prop in props) {
+    for (let prop in props) {
       let value = props[prop];
-      if(value === false) continue;
-      if(value === true) s += ` ${prop}`;
+      if (value === false) continue;
+      if (value === true) s += ` ${prop}`;
       else s += fmt == 0 ? ` ${prop}="${value + ''}"` : fmt == 1 ? ` ${prop}={${Util.toString(value)}}` : (s == '' ? '' : `, `) + ` ${prop}: ${Util.toString(value)}`;
     }
-    if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
+    if (typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
 
     //console.log('tagName:', tagName);
 
     tagName += '';
 
     s = fmt == 0 ? `<${tagName}${s}` : `h('${tagName}', {${s}`;
-    if(!children || !children.length) {
+    if (!children || !children.length) {
       s += fmt == 0 ? ' />' : ` })`;
-    } else {
+    }
+    else {
       s += fmt < 2 ? `>` : ` }, [ `;
       s += '\n  ' + Util.indent(this.toString(children)).trimRight() + '\n';
       s += fmt < 2 ? `</${tagName}>` : ` ])`;
@@ -225,8 +230,8 @@ export class ReactComponent {
  */
 export class Portal extends Component {
   componentDidUpdate(props) {
-    for(let i in props) {
-      if(props[i] !== this.props[i]) {
+    for (let i in props) {
+      if (props[i] !== this.props[i]) {
         return setTimeout(this.renderLayer);
       }
     }
@@ -241,7 +246,7 @@ export class Portal extends Component {
   componentWillUnmount() {
     this.renderLayer(false);
     this.isMounted = false;
-    if(this.remote && this.remote.parentNode) this.remote.parentNode.removeChild(this.remote);
+    if (this.remote && this.remote.parentNode) this.remote.parentNode.removeChild(this.remote);
   }
 
   findNode(node) {
@@ -249,12 +254,12 @@ export class Portal extends Component {
   }
 
   renderLayer(show = true) {
-    if(!this.isMounted) return;
+    if (!this.isMounted) return;
 
     // clean up old node if moving bases:
-    if(this.props.into !== this.intoPointer) {
+    if (this.props.into !== this.intoPointer) {
       this.intoPointer = this.props.into;
-      if(this.into && this.remote) {
+      if (this.into && this.remote) {
         this.remote = render(h(PortalProxy), this.into, this.remote);
       }
       this.into = this.findNode(this.props.into);

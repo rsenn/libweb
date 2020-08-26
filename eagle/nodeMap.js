@@ -4,10 +4,11 @@ import { EagleElement } from './element.js';
 export class EagleNodeMap {
   constructor(list, key) {
     //console.log('EagleNodeMap.constructor', { list, key });
-    if(!list) throw new Error('List=' + list);
+    if (!list) throw new Error('List=' + list);
     this.list = list;
     this.key = key;
   }
+
   /*
 Object.defineProperties(EagleNodeMap.prototype, {
   list: { writable: true, configurable: true, enumerable: false, value: null },
@@ -26,7 +27,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
   get(name, key = this.key) {
     const { owner, ref, raw } = this.list || {};
     //console.log('EagleNodeMap', { raw, name });
-    if(raw) {
+    if (raw) {
       const fn = EagleNodeMap.makePredicate(name, key);
       const idx = raw.findIndex(fn);
       let value = raw[idx];
@@ -40,10 +41,10 @@ Object.defineProperties(EagleNodeMap.prototype, {
 
     const idx = list.findIndex(fn);
 
-    if('raw' in value) value = value.raw;
+    if ('raw' in value) value = value.raw;
     //console.log("write map property:", idx, value);
 
-    if(idx != -1) list[idx] = value;
+    if (idx != -1) list[idx] = value;
     else list.push(value);
   }
 
@@ -58,7 +59,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
 
   *[Symbol.iterator](keyAttr = this.key) {
     const fn = keyAttr == 'tagName' ? (item) => item.tagName : (item) => item.attributes[keyAttr];
-    for(let item of this.list) yield [fn(item), item];
+    for (let item of this.list) yield [fn(item), item];
   }
 
   toMap(key = this.key) {
@@ -75,28 +76,29 @@ Object.defineProperties(EagleNodeMap.prototype, {
     return new Proxy(instance, {
       get(target, prop, receiver) {
         let index;
-        if(typeof prop != 'symbol') {
+        if (typeof prop != 'symbol') {
           let item = instance.get(prop) || instance.list.item(prop);
-          if(item) {
+          if (item) {
             // console.log("EagleNodeMap.get", {prop, item});
             return item;
           }
         }
         /* if(typeof prop == 'number' || (typeof prop == 'string' && /^[0-9]+$/.test(prop))) {
           return instance.list.item(+prop);
-        } else */ if(typeof prop == 'string') {
-          if(prop == 'ref' || prop == 'raw' || prop == 'owner') return instance.list[prop];
-          if(prop == 'instance') return instance;
+        } else */ if (typeof prop == 'string') {
+          if (prop == 'ref' || prop == 'raw' || prop == 'owner') return instance.list[prop];
+          if (prop == 'instance') return instance;
+
           /*          if(prop == 'length' || prop == 'size') return (instance.list.raw || instance.list).length;
           if(prop == 'entries') return instance.entries;*/
-          if(prop == 'length') return instance.size();
+          if (prop == 'length') return instance.size();
         }
         //if(prop == Symbol.iterator) return instance.entries()[Symbol.iterator];
 
         //        if((index = [...instance.keys()].indexOf(prop)) != -1) return instance.list[index];
-        if(typeof instance[prop] == 'function') return instance[prop] /*.bind(instance)*/;
+        if (typeof instance[prop] == 'function') return instance[prop] /*.bind(instance)*/;
 
-        if(typeof instance.list[prop] == 'function') return instance.list[prop].bind(instance.list);
+        if (typeof instance.list[prop] == 'function') return instance.list[prop].bind(instance.list);
 
         return Reflect.get(target, prop, receiver);
       },

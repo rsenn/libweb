@@ -23,6 +23,7 @@ export class WebSocketClient {
 
     Object.defineProperty(this, 'ctor', { value: ctor, enumerable: false });
   }
+
   /**
    * Whether a connection is currently open.
    * @returns true if the connection is open.
@@ -31,6 +32,7 @@ export class WebSocketClient {
     // Checking != null also checks against undefined.
     return this._socket != null && this._socket.readyState === this.ctor.OPEN;
   }
+
   /**
    * The number of messages available to receive.
    * @returns The number of queued messages that can be retrieved with {@link #receive}
@@ -44,24 +46,26 @@ export class WebSocketClient {
    * connection is established. Can be called again to reconnect to any url.
    */
   connect(url, protocols) {
-    var ws = this;
-    return this.disconnect().then(function () {
+    let ws = this;
+    return this.disconnect().then(() => {
       ws._reset();
       ws._socket = new ws.ctor(url, protocols);
       ws._socket.binaryType = 'arraybuffer';
       return ws._setupListenersOnConnect();
     });
   }
+
   /**
    * Send data through the websocket.
    * Must be connected. See {@link #connected}.
    */
   send(data) {
-    if(!this.connected) {
+    if (!this.connected) {
       throw this._closeEvent || new Error('Not connected.');
     }
     this._socket.send(data);
   }
+
   /**
    * Asynchronously receive data from the websocket.
    * Resolves immediately if there is buffered, unreceived data.
@@ -70,32 +74,33 @@ export class WebSocketClient {
    * @returns A promise that resolves with the data received.
    */
   receive() {
-    var ws = this;
-    if(this._receiveDataQueue.length !== 0) {
+    let ws = this;
+    if (this._receiveDataQueue.length !== 0) {
       return Promise.resolve(this._receiveDataQueue.shift());
     }
-    if(!this.connected) {
+    if (!this.connected) {
       return Promise.reject(this._closeEvent || new Error('Not connected.'));
     }
-    var receivePromise = new Promise(function (resolve, reject) {
-      ws._receiveCallbacksQueue.push({ resolve: resolve, reject: reject });
+    let receivePromise = new Promise((resolve, reject) => {
+      ws._receiveCallbacksQueue.push({ resolve, reject });
     });
     return receivePromise;
   }
+
   /**
    * Initiates the close handshake if there is an active connection.
    * Returns a promise that will never reject.
    * The promise resolves once the WebSocket connection is closed.
    */
   disconnect(code, reason) {
-    var ws = this;
-    if(!this.connected) {
+    let ws = this;
+    if (!this.connected) {
       return Promise.resolve(this._closeEvent);
     }
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       // It's okay to call resolve/reject multiple times in a promise.
       var callbacks = {
-        resolve: function (dummy) {
+        resolve (dummy) {
           // Make sure this object always stays in the queue
           // until callbacks.reject() (which is resolve) is called.
           ws._receiveCallbacksQueue.push(callbacks);
@@ -108,36 +113,37 @@ export class WebSocketClient {
       ws._socket.close(code, reason);
     });
   }
+
   /**
    * Sets up the event listeners, which do the bulk of the work.
    * @private
    */
   _setupListenersOnConnect() {
-    var ws = this;
-    var socket = this._socket;
-    return new Promise(function (resolve, reject) {
-      var handleMessage = function (event) {
-        var messageEvent = function (event) {
+    let ws = this;
+    let socket = this._socket;
+    return new Promise((resolve, reject) => {
+      let handleMessage = function (event) {
+        let messageEvent = function (event) {
           return;
         };
         // The cast was necessary because Flow's libdef's don't contain
         // a MessageEventListener definition.
-        if(ws._receiveCallbacksQueue.length !== 0) {
+        if (ws._receiveCallbacksQueue.length !== 0) {
           ws._receiveCallbacksQueue.shift().resolve(messageEvent.data);
           return;
         }
         ws._receiveDataQueue.push(messageEvent.data);
       };
-      var handleOpen = function (event) {
+      let handleOpen = function (event) {
         socket.addEventListener('message', handleMessage);
-        socket.addEventListener('close', function (event) {
+        socket.addEventListener('close', (event) => {
           ws._closeEvent = function (event) {
             return;
           };
           // Whenever a close event fires, the socket is effectively dead.
           // It's impossible for more messages to arrive.
           // If there are any promises waiting for messages, reject them.
-          while(ws._receiveCallbacksQueue.length !== 0) {
+          while (ws._receiveCallbacksQueue.length !== 0) {
             ws._receiveCallbacksQueue.shift().reject(ws._closeEvent);
           }
         });
@@ -147,6 +153,7 @@ export class WebSocketClient {
       socket.addEventListener('open', handleOpen);
     });
   }
+
   /**
    * @private
    */

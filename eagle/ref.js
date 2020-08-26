@@ -6,11 +6,11 @@ export const ChildrenSym = Symbol('⊳');
 
 export class EagleReference {
   constructor(root, path) {
-    if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
+    if (!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
     this.path = path;
     this.root = root;
     //console.log('EagleReference', { root: Util.abbreviate(toXML(root), 10), path });
-    if(!this.dereference(false)) {
+    if (!this.dereference(false)) {
       //console.log('dereference:', { path, root: Util.abbreviate(toXML(root), 10) });
       throw new Error(this.path.join(','));
     }
@@ -25,8 +25,8 @@ export class EagleReference {
     let ref = this;
     do {
       path = ref.path.concat(path);
-      if(root === undefined || root == ref) break;
-    } while(true);
+      if (root === undefined || root == ref) break;
+    } while (true);
     return path;
   }
 
@@ -35,8 +35,9 @@ export class EagleReference {
     let r;
     try {
       r = (Util.isObject(root) && 'owner' in root && path.apply(root.owner, true)) || path.apply(root);
-    } catch(err) {
-      if(!noThrow) throw err;
+    }
+    catch (err) {
+      if (!noThrow) throw err;
       //console.log('err:', err.message, err.stack);
     }
     return r;
@@ -48,7 +49,7 @@ export class EagleReference {
   }
 
   entry() {
-    if(this.path.size > 0) {
+    if (this.path.size > 0) {
       let key = this.path.last;
       let obj = this.path.up().apply(this.root);
       return [obj[key], key, obj];
@@ -77,8 +78,8 @@ export class EagleReference {
 
   shift(n = 1) {
     let root = this.root;
-    if(n < 0) n = this.path.length + n;
-    for(let i = 0; i < n; i++) {
+    if (n < 0) n = this.path.length + n;
+    for (let i = 0; i < n; i++) {
       let k = this.path[i];
       root = root[k];
     }
@@ -94,7 +95,7 @@ export class EagleReference {
 }
 
 export const EagleRef = function EagleRef(root, path) {
-  if(Util.isObject(root) && Util.isObject(root.root)) root = root.root;
+  if (Util.isObject(root) && Util.isObject(root.root)) root = root.root;
   //console.log('EagleRef', { root, path });
   let obj = new EagleReference(root, path);
   return Object.freeze(obj);

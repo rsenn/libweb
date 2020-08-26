@@ -1,7 +1,6 @@
 /* jshint esversion: 6 */
 /* jshint noyield: true */
 
-'use strict';
 
 //TODO:
 //- LabeledStatement -> including use in break/continue
@@ -18,22 +17,22 @@ import { estree, ESNode, Factory, PropertyDefinition, BinaryExpression, Identifi
 function noop() {}
 
 function execute(func) {
-  var result = func();
-  if('' + result === 'null') {
+  let result = func();
+  if ('' + result === 'null') {
     return result;
   }
   // FIXME: Convert to yield*
-  if(result !== undefined) {
-    if(result.next) {
-      var iter = result;
-      var res = iter.next();
-      while(!res.done) {
+  if (result !== undefined) {
+    if (result.next) {
+      let iter = result;
+      let res = iter.next();
+      while (!res.done) {
         res = iter.next();
       }
-      if('' + res.value === 'null') {
+      if ('' + res.value === 'null') {
         return res.value;
       }
-      if('' + res.value === 'undefined') {
+      if ('' + res.value === 'undefined') {
         return res.value;
       }
       return res.value;
@@ -55,20 +54,20 @@ function Return(val) {
 }
 
 // need something unique to compare a against.
-var Break = {};
-var Continue = {};
+let Break = {};
+let Continue = {};
 
 function createVariableStore(parent, vars) {
   vars = vars || {};
   return {
-    parent: parent,
-    vars: vars
+    parent,
+    vars
   };
 }
 
 function addDeclarationsToStore(declarations, varStore) {
-  for(var key in declarations) {
-    if(declarations.hasOwnProperty(key) && !varStore.vars.hasOwnProperty(key)) {
+  for (let key in declarations) {
+    if (declarations.hasOwnProperty(key) && !varStore.vars.hasOwnProperty(key)) {
       varStore.vars[key] = declarations[key]();
     }
   }
@@ -85,11 +84,11 @@ export class Environment extends EventEmitter {
   constructor(globalObjects = {}) {
     super();
     //  EventEmitter.call(this);
-    if(!Array.isArray(globalObjects)) {
+    if (!Array.isArray(globalObjects)) {
       globalObjects = [globalObjects];
     }
-    var parent;
-    globalObjects.forEach(function (vars) {
+    let parent;
+    globalObjects.forEach((vars) => {
       parent = createVariableStore(parent, vars);
     });
     // the topmost store is our current store
@@ -106,13 +105,14 @@ export class Environment extends EventEmitter {
   //util.inherits(Environment, EventEmitter);
 
   generate(node) {
-    var opts = {
+    let opts = {
       locations: true
     };
+
     /*   if(typeof node === 'string')
       node = parse(node, opts);
  */
-    var resp = this.generateClosure(node);
+    let resp = this.generateClosure(node);
     addDeclarationsToStore(this.currentDeclarations, this.currentVariableStore);
     this.currentDeclarations = {};
     return resp;
@@ -120,7 +120,7 @@ export class Environment extends EventEmitter {
 
   generateClosure(node) {
     let type = node.type || Util.className(node);
-    var closure = (
+    let closure = (
       {
         BinaryExpression: this.generateBinaryExpression,
         ImportStatement: this.generateImportStatement,
@@ -164,14 +164,14 @@ export class Environment extends EventEmitter {
       }
     ).call(this, node);
 
-    if(this.DEBUG) {
+    if (this.DEBUG) {
       return function () {
-        var info = 'closure for ' + type + ' called';
-        var line = ((node.loc || {}).start || {}).line;
-        if(line) {
+        let info = 'closure for ' + type + ' called';
+        let line = ((node.loc || {}).start || {}).line;
+        if (line) {
           info += ' while processing line ' + line;
         }
-        var resp = closure();
+        let resp = closure();
         info += '. Result:';
         console.log(ESNode.assoc(node).position.toString(), info, resp);
         return resp;
@@ -181,52 +181,53 @@ export class Environment extends EventEmitter {
   }
 
   generateBinaryExpression(node) {
-    var a = this.generateClosure(node.left);
-    var b = this.generateClosure(node.right);
+    let a = this.generateClosure(node.left);
+    let b = this.generateClosure(node.right);
 
     function* callExpression(expr) {
-      var result;
-      if(expr.constructor.name == 'GeneratorFunction') {
+      let result;
+      if (expr.constructor.name == 'GeneratorFunction') {
         result = yield* expr();
-      } else {
+      }
+      else {
         result = expr();
       }
       return result;
     }
 
     // prettier-ignore
-    var cmp = {
-      '==': function*() {return (yield* callExpression(a)) == (yield* callExpression(b)); },
-      '!=': function*() {return (yield* callExpression(a)) != (yield* callExpression(b)); },
-      '===': function*() {return (yield* callExpression(a)) === (yield* callExpression(b)); },
-      '!==': function*() {return (yield* callExpression(a)) !== (yield* callExpression(b)); },
-      '<': function*() { return (yield* callExpression(a)) < (yield* callExpression(b)); },
-      '<=': function*() { return (yield* callExpression(a)) <= (yield* callExpression(b)); },
-      '>': function*() { return (yield* callExpression(a)) > (yield* callExpression(b)); },
-      '>=': function*() { return (yield* callExpression(a)) >= (yield* callExpression(b)); },
-      '<<': function*() { return (yield* callExpression(a)) << (yield* callExpression(b)); },
-      '>>': function*() { return (yield* callExpression(a)) >> (yield* callExpression(b)); },
-      '>>>': function*() { return (yield* callExpression(a)) >>> (yield* callExpression(b)); },
-      '+': function*() { return (yield* callExpression(a)) + (yield* callExpression(b)); },
-      '-': function*() { return (yield* callExpression(a)) - (yield* callExpression(b)); },
-      '*': function*() { return (yield* callExpression(a)) * (yield* callExpression(b)); },
-      '/': function*() { return (yield* callExpression(a)) / (yield* callExpression(b)); },
-      '%': function*() { return (yield* callExpression(a)) % (yield* callExpression(b)); },
-      '|': function*() { return (yield* callExpression(a)) | (yield* callExpression(b)); },
-      '^': function*() { return (yield* callExpression(a)) ^ (yield* callExpression(b)); },
-      '&': function*() { return (yield* callExpression(a)) & (yield* callExpression(b)); },
-      in: function*() { return (yield* callExpression(a)) in (yield* callExpression(b)); },
-      instanceof: function*() { return (yield* callExpression(a)) instanceof (yield* callExpression(b)); },
+    let cmp = {
+      *'=='() {return (yield* callExpression(a)) == (yield* callExpression(b)); },
+      *'!='() {return (yield* callExpression(a)) != (yield* callExpression(b)); },
+      *'==='() {return (yield* callExpression(a)) === (yield* callExpression(b)); },
+      *'!=='() {return (yield* callExpression(a)) !== (yield* callExpression(b)); },
+      *'<'() { return (yield* callExpression(a)) < (yield* callExpression(b)); },
+      *'<='() { return (yield* callExpression(a)) <= (yield* callExpression(b)); },
+      *'>'() { return (yield* callExpression(a)) > (yield* callExpression(b)); },
+      *'>='() { return (yield* callExpression(a)) >= (yield* callExpression(b)); },
+      *'<<'() { return (yield* callExpression(a)) << (yield* callExpression(b)); },
+      *'>>'() { return (yield* callExpression(a)) >> (yield* callExpression(b)); },
+      *'>>>'() { return (yield* callExpression(a)) >>> (yield* callExpression(b)); },
+      *'+'() { return (yield* callExpression(a)) + (yield* callExpression(b)); },
+      *'-'() { return (yield* callExpression(a)) - (yield* callExpression(b)); },
+      *'*'() { return (yield* callExpression(a)) * (yield* callExpression(b)); },
+      *'/'() { return (yield* callExpression(a)) / (yield* callExpression(b)); },
+      *'%'() { return (yield* callExpression(a)) % (yield* callExpression(b)); },
+      *'|'() { return (yield* callExpression(a)) | (yield* callExpression(b)); },
+      *'^'() { return (yield* callExpression(a)) ^ (yield* callExpression(b)); },
+      *'&'() { return (yield* callExpression(a)) & (yield* callExpression(b)); },
+      *in() { return (yield* callExpression(a)) in (yield* callExpression(b)); },
+      *instanceof() { return (yield* callExpression(a)) instanceof (yield* callExpression(b)); },
       // logic expressions
-      '||': function*() { return (yield* callExpression(a)) || (yield* callExpression(b)); },
-      '&&': function*() { return (yield* callExpression(a)) && (yield* callExpression(b)); }
+      *'||'() { return (yield* callExpression(a)) || (yield* callExpression(b)); },
+      *'&&'() { return (yield* callExpression(a)) && (yield* callExpression(b)); }
     }[node.operator];
 
     return function () {
       // FIXME: Convert to yield*
-      var iter = cmp();
-      var res = iter.next();
-      while(!res.done) {
+      let iter = cmp();
+      let res = iter.next();
+      while (!res.done) {
         res = iter.next();
       }
       return res.value;
@@ -245,18 +246,18 @@ export class Environment extends EventEmitter {
   }
 
   generateUnaryExpression(node) {
-    if(node.operator === 'delete') {
+    if (node.operator === 'delete') {
       return this.generateDelete(node);
     }
-    var a = this.generateClosure(node.argument);
+    let a = this.generateClosure(node.argument);
     // prettier-ignore
-    var op = {
-      '-': function() { return -a(); },
-      '+': function() { return +a(); },
-      '!': function() { return !a(); },
-      '~': function() { return ~a(); },
-      typeof: function() { return typeof a(); },
-      void: function() { return void a(); }
+    let op = {
+      '-'() { return -a(); },
+      '+'() { return +a(); },
+      '!'() { return !a(); },
+      '~'() { return ~a(); },
+      typeof() { return typeof a(); },
+      void() { return void a(); }
     }[node.operator];
 
     return function () {
@@ -265,8 +266,8 @@ export class Environment extends EventEmitter {
   }
 
   generateDelete(node) {
-    var obj = this.generateObject(node.argument);
-    var attr = this.generateName(node.argument);
+    let obj = this.generateObject(node.argument);
+    let attr = this.generateName(node.argument);
 
     return function () {
       return delete obj()[attr()];
@@ -275,21 +276,21 @@ export class Environment extends EventEmitter {
 
   generateObjectExpression(node) {
     //TODO property.kind: don't assume init when it can also be set/get
-    var self = this;
-    var items = [];
-    node.properties.forEach(function (property) {
+    let self = this;
+    let items = [];
+    node.properties.forEach((property) => {
       // object expression keys are static so can be calculated
       // immediately
-      var key = self.objKey(property.key)();
+      let key = self.objKey(property.key)();
       items.push({
-        key: key,
+        key,
         getVal: self.generateClosure(property.value)
       });
     });
 
     return function () {
-      var result = {};
-      items.forEach(function (item) {
+      let result = {};
+      items.forEach((item) => {
         result[item.key] = item.getVal();
       });
       return result;
@@ -297,7 +298,7 @@ export class Environment extends EventEmitter {
   }
 
   generateArrayExpression(node) {
-    var items = node.elements.map(this.boundGen);
+    let items = node.elements.map(this.boundGen);
 
     return function () {
       return items.map(execute);
@@ -307,10 +308,11 @@ export class Environment extends EventEmitter {
   objKey(node) {
     let type = node.type || Util.className(node);
 
-    var key;
-    if(type === 'Identifier') {
+    let key;
+    if (type === 'Identifier') {
       key = node.value;
-    } else {
+    }
+    else {
       key = this.generateClosure(node)();
     }
 
@@ -320,40 +322,42 @@ export class Environment extends EventEmitter {
   }
 
   generateCallExpression(node) {
-    var self = this;
-    var callee;
-    if(node.callee.type === 'MemberExpression') {
-      var obj = self.generateObject(node.callee);
-      var name = self.generateName(node.callee);
+    let self = this;
+    let callee;
+    if (node.callee.type === 'MemberExpression') {
+      let obj = self.generateObject(node.callee);
+      let name = self.generateName(node.callee);
       callee = function () {
-        var theObj = obj();
+        let theObj = obj();
         return theObj[name()].bind(theObj);
       };
-    } else {
+    }
+    else {
       callee = self.generateClosure(node.callee);
     }
-    var args = node.arguments.map(self.generateClosure.bind(self));
+    let args = node.arguments.map(self.generateClosure.bind(self));
 
     return function* () {
       self.emit('line', startLine(node));
-      var c = callee();
+      let c = callee();
 
-      if(c === undefined) {
+      if (c === undefined) {
         return c;
       }
 
-      var result;
-      var res;
+      let result;
+      let res;
 
-      if(c.next) {
+      if (c.next) {
         res = yield* c;
         result = res.apply(self.globalObj, args.map(execute));
-      } else {
+      }
+      else {
         result = c.apply(self.globalObj, args.map(execute));
       }
 
-      if(result !== undefined) {
-        if(result.next) {
+      if (result !== undefined) {
+        if (result.next) {
           res = yield* result;
           return res;
         }
@@ -363,29 +367,29 @@ export class Environment extends EventEmitter {
   }
 
   generateNewExpression(node) {
-    var callee = this.generateClosure(node.callee);
-    var args = node.arguments.map(this.boundGen);
-    var self = this;
+    let callee = this.generateClosure(node.callee);
+    let args = node.arguments.map(this.boundGen);
+    let self = this;
 
     return function* () {
       self.emit('line', startLine(node));
-      var cl = callee();
-      var ar = args.map(execute);
-      var newObject = Object.create(cl.prototype);
-      var constructor = cl.apply(newObject, ar);
+      let cl = callee();
+      let ar = args.map(execute);
+      let newObject = Object.create(cl.prototype);
+      let constructor = cl.apply(newObject, ar);
       yield* constructor;
       return newObject;
     };
   }
 
   generateMemberExpression(node) {
-    var self = this;
+    let self = this;
     let { object, property } = node;
     let memberExpression = { object: object.value, property: property.value };
     console.log(ESNode.assoc(node).position.toString(), 'MemberExpression ', memberExpression);
-    var obj = this.generateClosure(object);
+    let obj = this.generateClosure(object);
     let member = this.memberExpressionProperty(node);
-    var str = (s, v = 'node.value') => (s + '').replace(/\s+/g, ' ').replace(/(node\.value|key)/g, v);
+    let str = (s, v = 'node.value') => (s + '').replace(/\s+/g, ' ').replace(/(node\.value|key)/g, v);
     //  console.log(ESNode.assoc(node).position.toString(), 'MemberExpression\n  obj()      = ', obj() || str(obj,`'${node.object.value}'`), '\n  property() = ', property());
     return function () {
       self.emit('line', startLine(node));
@@ -398,17 +402,17 @@ export class Environment extends EventEmitter {
   }
 
   generateThisExpression() {
-    var self = this;
+    let self = this;
     return function () {
       return self.currentThis;
     };
   }
 
   generateSequenceExpression(node) {
-    var exprs = node.expressions.map(this.boundGen);
+    let exprs = node.expressions.map(this.boundGen);
     return function () {
-      var result;
-      exprs.forEach(function (expr) {
+      let result;
+      exprs.forEach((expr) => {
         result = expr();
       });
       return result;
@@ -416,15 +420,15 @@ export class Environment extends EventEmitter {
   }
 
   generateUpdateExpression(node) {
-    var self = this;
+    let self = this;
     // prettier-ignore
-    var update = {
-      '--true': function(obj, name) { return --obj[name]; },
-      '--false': function(obj, name) { return obj[name]--; },
-      '++true': function(obj, name) { return ++obj[name]; },
-      '++false': function(obj, name) { return obj[name]++; } }[node.operator + node.prefix];
-    var obj = this.generateObject(node.argument);
-    var name = this.generateName(node.argument);
+    let update = {
+      '--true'(obj, name) { return --obj[name]; },
+      '--false'(obj, name) { return obj[name]--; },
+      '++true'(obj, name) { return ++obj[name]; },
+      '++false'(obj, name) { return obj[name]++; } }[node.operator + node.prefix];
+    let obj = this.generateObject(node.argument);
+    let name = this.generateName(node.argument);
     return function* () {
       self.emit('line', startLine(node));
       yield;
@@ -435,29 +439,31 @@ export class Environment extends EventEmitter {
   generateObject(node) {
     let type = node.type || Util.className(node);
 
-    if(type === 'Identifier') {
+    if (type === 'Identifier') {
       return this.getVariableStore.bind(this, node.value);
-    } else if(type === 'MemberExpression') {
-      return this.generateClosure(node.object);
-    } else {
-      console.warn('Unknown generateObject() type: ' + type);
-      return noop;
     }
+    else if (type === 'MemberExpression') {
+      return this.generateClosure(node.object);
+    }
+    console.warn('Unknown generateObject() type: ' + type);
+    return noop;
+    
   }
 
   generateName(node) {
     let type = node.type || Util.className(node);
 
-    if(type === 'Identifier') {
+    if (type === 'Identifier') {
       return function () {
         return node.value;
       };
-    } else if(type === 'MemberExpression') {
-      return this.memberExpressionProperty(node);
-    } else {
-      console.warn('Unknown generateName() type: ' + type);
-      return noop;
     }
+    else if (type === 'MemberExpression') {
+      return this.memberExpressionProperty(node);
+    }
+    console.warn('Unknown generateName() type: ' + type);
+    return noop;
+    
   }
 
   generateLiteral(node) {
@@ -467,7 +473,7 @@ export class Environment extends EventEmitter {
   }
 
   generateIdentifier(node) {
-    var self = this;
+    let self = this;
     console.log(ESNode.assoc(node).position.toString(), node);
 
     return function () {
@@ -476,44 +482,44 @@ export class Environment extends EventEmitter {
   }
 
   getVariableStore(name) {
-    var store = this.currentVariableStore;
+    let store = this.currentVariableStore;
 
     do {
-      if(store.vars.hasOwnProperty(name)) {
+      if (store.vars.hasOwnProperty(name)) {
         console.log(`getVariableStore(${name}) =`, store.vars);
         return store.vars;
       }
-    } while((store = store.parent));
+    } while ((store = store.parent));
 
     // global object as fallback
     return this.globalObj;
   }
 
   generateAssignExpression(node) {
-    var self = this;
+    let self = this;
     // prettier-ignore
-    var setter = {
-      '=': function(obj, name, val) { return (obj[name] = val); },
-      '+=': function(obj, name, val) { return (obj[name] += val); },
-      '-=': function(obj, name, val) { return (obj[name] -= val); },
-      '*=': function(obj, name, val) { return (obj[name] *= val); },
-      '/=': function(obj, name, val) { return (obj[name] /= val); },
-      '%=': function(obj, name, val) { return (obj[name] %= val); },
-      '<<=': function(obj, name, val) { return (obj[name] <<= val); },
-      '>>=': function(obj, name, val) { return (obj[name] >>= val); },
-      '>>>=': function(obj, name, val) { return (obj[name] >>>= val); },
-      '|=': function(obj, name, val) { return (obj[name] |= val); },
-      '^=': function(obj, name, val) { return (obj[name] ^= val); },
-      '&=': function(obj, name, val) { return (obj[name] &= val); }
+    let setter = {
+      '='(obj, name, val) { return (obj[name] = val); },
+      '+='(obj, name, val) { return (obj[name] += val); },
+      '-='(obj, name, val) { return (obj[name] -= val); },
+      '*='(obj, name, val) { return (obj[name] *= val); },
+      '/='(obj, name, val) { return (obj[name] /= val); },
+      '%='(obj, name, val) { return (obj[name] %= val); },
+      '<<='(obj, name, val) { return (obj[name] <<= val); },
+      '>>='(obj, name, val) { return (obj[name] >>= val); },
+      '>>>='(obj, name, val) { return (obj[name] >>>= val); },
+      '|='(obj, name, val) { return (obj[name] |= val); },
+      '^='(obj, name, val) { return (obj[name] ^= val); },
+      '&='(obj, name, val) { return (obj[name] &= val); }
     }[node.operator];
-    var obj = this.generateObject(node.left);
-    var name = this.generateName(node.left);
-    var val = this.generateClosure(node.right);
+    let obj = this.generateObject(node.left);
+    let name = this.generateName(node.left);
+    let val = this.generateClosure(node.right);
     return function* () {
       self.emit('line', node.left.loc.start.line);
-      var v = val();
-      if(v !== undefined) {
-        if(v.next) {
+      let v = val();
+      if (v !== undefined) {
+        if (v.next) {
           v = yield* v;
         }
       }
@@ -531,11 +537,11 @@ export class Environment extends EventEmitter {
   }
 
   generateVariableDeclaration(node) {
-    var assignments = [];
-    for(var i = 0; i < node.declarations.length; i++) {
-      var decl = node.declarations[i];
+    let assignments = [];
+    for (let i = 0; i < node.declarations.length; i++) {
+      let decl = node.declarations[i];
       this.currentDeclarations[decl.id.name] = noop;
-      if(decl.init) {
+      if (decl.init) {
         assignments.push({
           type: 'AssignmentExpression',
           operator: '=',
@@ -559,27 +565,27 @@ export class Environment extends EventEmitter {
   }
 
   generateFunctionExpression(node) {
-    var self = this;
+    let self = this;
 
-    var oldDeclarations = self.currentDeclarations;
+    let oldDeclarations = self.currentDeclarations;
     self.currentDeclarations = {};
-    var body = self.generateClosure(node.body);
-    var declarations = self.currentDeclarations;
+    let body = self.generateClosure(node.body);
+    let declarations = self.currentDeclarations;
     self.currentDeclarations = oldDeclarations;
 
     // reset var store
     return function () {
-      var parent = self.currentVariableStore;
+      let parent = self.currentVariableStore;
       return function* () {
         // build arguments object var args = new Arguments();
         args.length = arguments.length;
-        for(var i = 0; i < arguments.length; i++) {
+        for (let i = 0; i < arguments.length; i++) {
           args[i] = arguments[i];
         }
 
         // switch interpreter 'stack'
-        var oldStore = self.currentVariableStore;
-        var oldThis = self.currentThis;
+        let oldStore = self.currentVariableStore;
+        let oldThis = self.currentThis;
         self.currentVariableStore = createVariableStore(parent);
         self.currentThis = this;
 
@@ -587,18 +593,18 @@ export class Environment extends EventEmitter {
         self.currentVariableStore.vars.arguments = args;
 
         // add function args to var store
-        node.params.forEach(function (param, i) {
+        node.params.forEach((param, i) => {
           self.currentVariableStore.vars[param.name] = args[i];
         });
 
         // run function body
-        var result = yield* body();
+        let result = yield* body();
 
         // switch 'stack' back
         self.currentThis = oldThis;
         self.currentVariableStore = oldStore;
 
-        if(result instanceof Return) {
+        if (result instanceof Return) {
           return result.value;
         }
       };
@@ -606,22 +612,21 @@ export class Environment extends EventEmitter {
   }
 
   generateProgram(node) {
-    var self = this;
-    var stmtClosures = node.body.map(function (stmt) {
-      return self.generateClosure(stmt);
-    });
+    let self = this;
+    let stmtClosures = node.body.map((stmt) => self.generateClosure(stmt));
 
     return function* () {
-      var result;
-      for(var i = 0; i < stmtClosures.length; i++) {
-        if(stmtClosures[i].constructor.name === 'GeneratorFunction') {
+      let result;
+      for (let i = 0; i < stmtClosures.length; i++) {
+        if (stmtClosures[i].constructor.name === 'GeneratorFunction') {
           result = yield* stmtClosures[i]();
           yield;
-        } else {
+        }
+        else {
           result = stmtClosures[i]();
           yield;
         }
-        if(result === Break || result === Continue || result instanceof Return) {
+        if (result === Break || result === Continue || result instanceof Return) {
           break;
         }
       }
@@ -639,8 +644,8 @@ export class Environment extends EventEmitter {
   }
 
   generateReturnStatement(node) {
-    var self = this;
-    var arg = node.argument ? this.generateClosure(node.argument) : noop;
+    let self = this;
+    let arg = node.argument ? this.generateClosure(node.argument) : noop;
 
     let assoc = ESNode.assoc(node);
     let { position } = assoc;
@@ -653,32 +658,32 @@ export class Environment extends EventEmitter {
   }
 
   generateIfStatement(node) {
-    var self = this;
-    var test = function () {
+    let self = this;
+    let test = function () {
       self.emit('line', startLine(node));
       return self.generateClosure(node.test)();
     };
-    var consequent = this.generateClosure(node.consequent);
-    var alternate = node.alternate
+    let consequent = this.generateClosure(node.consequent);
+    let alternate = node.alternate
       ? this.generateClosure(node.alternate)
       : function* () {
-          return noop;
-        };
+        return noop;
+      };
 
     return function* () {
-      var result = test() ? yield* consequent() : yield* alternate();
+      let result = test() ? yield* consequent() : yield* alternate();
       return result;
     };
   }
 
   generateConditionalStatement(node) {
-    var self = this;
-    var test = function () {
+    let self = this;
+    let test = function () {
       self.emit('line', startLine(node));
       return self.generateClosure(node.test)();
     };
-    var consequent = this.generateClosure(node.consequent);
-    var alternate = node.alternate ? this.generateClosure(node.alternate) : noop;
+    let consequent = this.generateClosure(node.consequent);
+    let alternate = node.alternate ? this.generateClosure(node.alternate) : noop;
 
     return function () {
       return test() ? consequent() : alternate();
@@ -686,26 +691,26 @@ export class Environment extends EventEmitter {
   }
 
   generateLoopStatement(node, body) {
-    var self = this;
-    /* prettier-ignore */ var init = node.init ? this.generateClosure(node.init) : function*() {return noop; };
-    /* prettier-ignore */ var test = node.test ? function*() {self.emit('line', startLine(node)); return self.generateClosure(node.test)(); } : function*() { return true; };
-    /* prettier-ignore */ var update = node.update ? this.generateClosure(node.update) : function*() {return noop; };
+    let self = this;
+    /* prettier-ignore */ let init = node.init ? this.generateClosure(node.init) : function*() {return noop; };
+    /* prettier-ignore */ let test = node.test ? function*() {self.emit('line', startLine(node)); return self.generateClosure(node.test)(); } : function*() { return true; };
+    /* prettier-ignore */ let update = node.update ? this.generateClosure(node.update) : function*() {return noop; };
     body = body || this.generateClosure(node.body);
 
     return function* () {
       self.emit('line', startLine(node));
-      var resp;
-      for(yield* init(); yield* test(); yield* update()) {
-        var newResp = yield* body();
+      let resp;
+      for (yield* init(); yield* test(); yield* update()) {
+        let newResp = yield* body();
 
-        if(newResp === Break) {
+        if (newResp === Break) {
           break;
         }
-        if(newResp === Continue) {
+        if (newResp === Continue) {
           continue;
         }
         resp = newResp;
-        if(newResp instanceof Return) {
+        if (newResp instanceof Return) {
           break;
         }
       }
@@ -714,8 +719,8 @@ export class Environment extends EventEmitter {
   }
 
   generateDoWhileStatement(node) {
-    var body = this.generateClosure(node.body);
-    var loop = this.generateLoopStatement(node, body);
+    let body = this.generateClosure(node.body);
+    let loop = this.generateLoopStatement(node, body);
 
     return function* () {
       yield* body();
@@ -724,23 +729,23 @@ export class Environment extends EventEmitter {
   }
 
   generateForInStatement(node) {
-    var self = this;
-    var right = self.generateClosure(node.right);
-    var body = self.generateClosure(node.body);
+    let self = this;
+    let right = self.generateClosure(node.right);
+    let body = self.generateClosure(node.body);
 
-    var left = node.left;
-    if(left.type === 'VariableDeclaration') {
+    let left = node.left;
+    if (left.type === 'VariableDeclaration') {
       self.currentDeclarations[left.declarations[0].id.name] = noop;
       left = left.declarations[0].id;
     }
     return function* () {
       self.emit('line', startLine(node));
-      var resp;
-      for(var x in right()) {
+      let resp;
+      for (let x in right()) {
         self.emit('line', startLine(node));
         yield* self.generateAssignExpression({
           operator: '=',
-          left: left,
+          left,
           right: {
             type: 'Literal',
             value: x
@@ -753,52 +758,53 @@ export class Environment extends EventEmitter {
   }
 
   generateWithStatement(node) {
-    var self = this;
-    var obj = self.generateClosure(node.object);
-    var body = self.generateClosure(node.body);
+    let self = this;
+    let obj = self.generateClosure(node.object);
+    let body = self.generateClosure(node.body);
     return function* () {
       self.currentVariableStore = createVariableStore(self.currentVariableStore, obj());
-      var result = yield* body();
+      let result = yield* body();
       self.currentVariableStore = self.currentVariableStore.parent;
       return result;
     };
   }
 
   generateThrowStatement(node) {
-    var arg = this.generateClosure(node.argument);
+    let arg = this.generateClosure(node.argument);
     return function () {
       throw arg();
     };
   }
 
   generateTryStatement(node) {
-    var block = this.generateClosure(node.block);
-    var handler = this.generateCatchHandler(node.handler);
-    var finalizer = node.finalizer
+    let block = this.generateClosure(node.block);
+    let handler = this.generateCatchHandler(node.handler);
+    let finalizer = node.finalizer
       ? this.generateClosure(node.finalizer)
       : function (x) {
-          return x;
-        };
+        return x;
+      };
 
     return function () {
       try {
         return finalizer(block());
-      } catch(err) {
+      }
+      catch (err) {
         return finalizer(handler(err));
       }
     };
   }
 
   generateCatchHandler(node) {
-    if(!node) {
+    if (!node) {
       return noop;
     }
-    var self = this;
-    var body = self.generateClosure(node.body);
+    let self = this;
+    let body = self.generateClosure(node.body);
     return function (err) {
-      var old = self.currentVariableStore.vars[node.param.name];
+      let old = self.currentVariableStore.vars[node.param.name];
       self.currentVariableStore.vars[node.param.name] = err;
-      var resp = body();
+      let resp = body();
       self.currentVariableStore.vars[node.param.name] = old;
 
       return resp;
@@ -818,44 +824,42 @@ export class Environment extends EventEmitter {
   }
 
   generateSwitchStatement(node) {
-    var self = this;
+    let self = this;
 
-    var discriminant = self.generateClosure(node.discriminant);
-    var cases = node.cases.map(function (currentCase) {
-      return {
-        test: currentCase.test ? self.generateClosure(currentCase.test) : null,
-        code: self.generateProgram({ body: currentCase.consequent })
-      };
-    });
+    let discriminant = self.generateClosure(node.discriminant);
+    let cases = node.cases.map((currentCase) => ({
+      test: currentCase.test ? self.generateClosure(currentCase.test) : null,
+      code: self.generateProgram({ body: currentCase.consequent })
+    }));
 
     return function* () {
-      var foundMatch = false;
-      var discriminantVal = discriminant();
-      var resp, defaultCase;
+      let foundMatch = false;
+      let discriminantVal = discriminant();
+      let resp, defaultCase;
 
-      for(var i = 0; i < cases.length; i++) {
-        var currentCase = cases[i];
-        if(!foundMatch) {
-          if(!currentCase.test) {
+      for (let i = 0; i < cases.length; i++) {
+        let currentCase = cases[i];
+        if (!foundMatch) {
+          if (!currentCase.test) {
             defaultCase = currentCase;
             continue;
           }
-          if(discriminantVal !== currentCase.test()) {
+          if (discriminantVal !== currentCase.test()) {
             continue;
           }
           foundMatch = true;
         }
         // foundMatch is guaranteed to be true here
-        var newResp = yield* currentCase.code();
-        if(newResp === Break) {
+        let newResp = yield* currentCase.code();
+        if (newResp === Break) {
           return resp;
         }
         resp = newResp;
-        if(resp === Continue || resp instanceof Return) {
+        if (resp === Continue || resp instanceof Return) {
           return resp;
         }
       }
-      if(!foundMatch && defaultCase) {
+      if (!foundMatch && defaultCase) {
         return yield* defaultCase.code();
       }
     };
@@ -863,10 +867,10 @@ export class Environment extends EventEmitter {
 }
 
 export function evaluate(code) {
-  var env = new Environment(global);
-  var iterator = env.generate(code)();
-  var result = iterator.next();
-  while(!result.done) {
+  let env = new Environment(global);
+  let iterator = env.generate(code)();
+  let result = iterator.next();
+  while (!result.done) {
     result = iterator.next();
   }
   return result.value;

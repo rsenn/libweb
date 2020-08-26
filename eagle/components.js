@@ -16,7 +16,7 @@ let prevName;
 export const ElementNameToComponent = (name) => {
   let comp = PrimitiveComponents[Util.ucfirst(name)];
 
-  if(!comp && name != prevName) {
+  if (!comp && name != prevName) {
     console.debug(`Not rendering component '${name}'`);
     prevName = name;
   }

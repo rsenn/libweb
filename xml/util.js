@@ -8,12 +8,12 @@ export class XMLIterator extends IteratorAdapter {
   }
 
   static *iterate(node, f = null, path = [], root) {
-    if(!root) root = node;
-    if(!f || f(node, path)) yield [node, path];
-    if(node.children && node.children.length > 0) {
+    if (!root) root = node;
+    if (!f || f(node, path)) yield [node, path];
+    if (node.children && node.children.length > 0) {
       let a = node.children;
       let p = (path || []).concat(['children']);
-      for(let i = 0; i < a.length; i++) yield* this.iterate(a[i], f, p.concat([i]), root);
+      for (let i = 0; i < a.length; i++) yield* this.iterate(a[i], f, p.concat([i]), root);
     }
   }
 }
@@ -30,7 +30,7 @@ class XMLAttribute {
     let i = 0;
     Util.define(a, { length });
 
-    for(let name of keys) if(a[name] === undefined) a[name] = new XMLAttribute(name, obj);
+    for (let name of keys) if (a[name] === undefined) a[name] = new XMLAttribute(name, obj);
 
     return a;
   });
@@ -41,7 +41,7 @@ class XMLAttribute {
 
   static getOrCreate(name, element, value) {
     const a = this.getAttributesFor(element);
-    if(a[name] === undefined) {
+    if (a[name] === undefined) {
       a[name] = new this(name, element, value);
 
       /* prettier-ignore */
@@ -53,7 +53,7 @@ class XMLAttribute {
   }
 
   constructor(name, element, value) {
-    if(value === undefined) value = element[name];
+    if (value === undefined) value = element[name];
     Object.assign(this, { name, value });
   }
 }
@@ -64,7 +64,7 @@ class XMLObject {
   constructor({ attributes, children, tagName }) {
     Array.prototype.push.call(this, tagName);
     /* prettier-ignore */ Object.assign(this, Object.keys(attributes).reduce((acc, key) => ({ ...acc, [key]: attributes[key] }), {}) );
-    if(Util.isObject(children) && children.length !== undefined) this.children = [].concat(children);
+    if (Util.isObject(children) && children.length !== undefined) this.children = [].concat(children);
   }
 
   get attributes() {
@@ -84,7 +84,7 @@ class XMLObject {
 
   toObject() {
     let { length, 0: tagName, children, ...attributes } = this;
-    if(Util.isArray(children)) children = [].concat(children);
+    if (Util.isArray(children)) children = [].concat(children);
 
     return { tagName, attributes, children };
   }

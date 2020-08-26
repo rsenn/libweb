@@ -30,6 +30,7 @@
  * );
  */
 export class SpatialHash {
+
   /**
    * @param {number} cellSize used to create hash
    */
@@ -49,32 +50,33 @@ export class SpatialHash {
    * @param {number} object.AABB.height
    */
   insert(object) {
-    if(!object.spatial) {
+    if (!object.spatial) {
       object.spatial = { hashes: [] };
     }
-    var AABB = object.AABB;
-    var x1 = Math.floor(AABB.x / this.cellSize);
+    let AABB = object.AABB;
+    let x1 = Math.floor(AABB.x / this.cellSize);
     x1 = x1 < 0 ? 0 : x1;
-    var y1 = Math.floor(AABB.y / this.cellSize);
+    let y1 = Math.floor(AABB.y / this.cellSize);
     y1 = y1 < 0 ? 0 : y1;
-    var x2 = Math.floor((AABB.x + AABB.width) / this.cellSize);
+    let x2 = Math.floor((AABB.x + AABB.width) / this.cellSize);
     x2 = x2 >= this.width ? this.width - 1 : x2;
-    var y2 = Math.floor((AABB.y + AABB.height) / this.cellSize);
+    let y2 = Math.floor((AABB.y + AABB.height) / this.cellSize);
     y2 = y2 >= this.height ? this.height - 1 : y2;
     //only remove and insert if mapping has changed
-    if(object.spatial.x1 !== x1 || object.spatial.y1 !== y1 || object.spatial.x2 !== x2 || object.spatial.y2 !== y2) {
-      if(object.spatial.maps.length) {
+    if (object.spatial.x1 !== x1 || object.spatial.y1 !== y1 || object.spatial.x2 !== x2 || object.spatial.y2 !== y2) {
+      if (object.spatial.maps.length) {
         this.remove(object);
       }
-      for(var y = y1; y <= y2; y++) {
-        for(var x = x1; x <= x2; x++) {
-          var key = x + ' ' + y;
-          if(!this.list[key]) {
+      for (let y = y1; y <= y2; y++) {
+        for (let x = x1; x <= x2; x++) {
+          let key = x + ' ' + y;
+          if (!this.list[key]) {
             this.list[key] = [object];
-          } else {
+          }
+          else {
             this.list[key].push(object);
           }
-          object.spatial.hashes.push({ list: list, key: key });
+          object.spatial.hashes.push({ list, key });
         }
       }
       object.spatial.x1 = x1;
@@ -89,12 +91,13 @@ export class SpatialHash {
    * @param {object} object
    */
   remove(object) {
-    while(object.spatial.hashes.length) {
-      var entry = object.spatial.hashes.pop();
-      if(entry.list.length === 1) {
+    while (object.spatial.hashes.length) {
+      let entry = object.spatial.hashes.pop();
+      if (entry.list.length === 1) {
         this.list[entry.key] = null;
-      } else {
-        var index = entry.list.indexOf(object);
+      }
+      else {
+        let index = entry.list.indexOf(object);
         entry.list.splice(index, 1);
       }
     }
@@ -110,19 +113,19 @@ export class SpatialHash {
    * @return {object[]} search results
    */
   query(AABB) {
-    var results = [];
-    var x1 = Math.floor(AABB.x / this.cellSize);
+    let results = [];
+    let x1 = Math.floor(AABB.x / this.cellSize);
     x1 = x1 < 0 ? 0 : x1;
-    var y1 = Math.floor(AABB.y / this.cellSize);
+    let y1 = Math.floor(AABB.y / this.cellSize);
     y1 = y1 < 0 ? 0 : y1;
-    var x2 = Math.floor((AABB.x + AABB.width) / this.cellSize);
+    let x2 = Math.floor((AABB.x + AABB.width) / this.cellSize);
     x2 = x2 >= this.width ? this.width - 1 : x2;
-    var y2 = Math.floor((AABB.y + AABB.height) / this.cellSize);
+    let y2 = Math.floor((AABB.y + AABB.height) / this.cellSize);
     y2 = y2 >= this.height ? this.height - 1 : y2;
-    for(var y = y1; y <= y2; y++) {
-      for(var x = x1; x <= x2; x++) {
-        var entry = this.list[x + ' ' + y];
-        if(entry) {
+    for (let y = y1; y <= y2; y++) {
+      for (let x = x1; x <= x2; x++) {
+        let entry = this.list[x + ' ' + y];
+        if (entry) {
           results = results.concat(entry.list);
         }
       }
@@ -142,20 +145,20 @@ export class SpatialHash {
    * @return {boolean} true if callback returned early
    */
   queryCallback(AABB, callback) {
-    var x1 = Math.floor(AABB.x / this.cellSize);
+    let x1 = Math.floor(AABB.x / this.cellSize);
     x1 = x1 < 0 ? 0 : x1;
-    var y1 = Math.floor(AABB.y / this.cellSize);
+    let y1 = Math.floor(AABB.y / this.cellSize);
     y1 = y1 < 0 ? 0 : y1;
-    var x2 = Math.floor((AABB.x + AABB.width) / this.cellSize);
+    let x2 = Math.floor((AABB.x + AABB.width) / this.cellSize);
     x2 = x2 >= this.width ? this.width - 1 : x2;
-    var y2 = Math.floor((AABB.y + AABB.height) / this.cellSize);
+    let y2 = Math.floor((AABB.y + AABB.height) / this.cellSize);
     y2 = y2 >= this.height ? this.height - 1 : y2;
-    for(var y = y1; y <= y2; y++) {
-      for(var x = x1; x <= x2; x++) {
-        var entry = this.list[x + ' ' + y];
-        if(entry) {
-          for(var i = 0; i < entry.list.length; i++) {
-            if(callback(entry.list[i])) {
+    for (let y = y1; y <= y2; y++) {
+      for (let x = x1; x <= x2; x++) {
+        let entry = this.list[x + ' ' + y];
+        if (entry) {
+          for (let i = 0; i < entry.list.length; i++) {
+            if (callback(entry.list[i])) {
               return true;
             }
           }
@@ -170,8 +173,8 @@ export class SpatialHash {
    * @return {number} the number of buckets in the hash table
    * */
   getBuckets() {
-    var count = 0;
-    for(var key in this.list) {
+    let count = 0;
+    for (let key in this.list) {
       count++;
     }
     return count;
@@ -182,8 +185,8 @@ export class SpatialHash {
    * @return {number} the average number of entries in each bucket
    */
   getAverageSize() {
-    var total = 0;
-    for(var key in this.list) {
+    let total = 0;
+    for (let key in this.list) {
       total += this.list[key].length;
     }
     return total / this.getBuckets();
@@ -194,10 +197,10 @@ export class SpatialHash {
    * @return {number} the largest sized bucket
    */
   getLargest() {
-    var largest = 0,
+    let largest = 0,
       object;
-    for(var key in this.list) {
-      if(this.list[key].length > largest) {
+    for (let key in this.list) {
+      if (this.list[key].length > largest) {
         largest = this.list[key].length;
         object = this.list[key];
       }
@@ -214,14 +217,14 @@ export class SpatialHash {
    * @return {number} sparseness percentage
    */
   getSparseness(AABB) {
-    var count = 0,
+    let count = 0,
       total = 0;
-    var x1 = Math.floor(AABB.x / this.cellSize);
-    var y1 = Math.floor(AABB.y / this.cellSize);
-    var x2 = Math.ceil((AABB.x + AABB.width) / this.cellSize);
-    var y2 = Math.ceil((AABB.y + AABB.height) / this.cellSize);
-    for(var y = y1; y < y2; y++) {
-      for(var x = x1; x < x2; x++) {
+    let x1 = Math.floor(AABB.x / this.cellSize);
+    let y1 = Math.floor(AABB.y / this.cellSize);
+    let x2 = Math.ceil((AABB.x + AABB.width) / this.cellSize);
+    let y2 = Math.ceil((AABB.y + AABB.height) / this.cellSize);
+    for (let y = y1; y < y2; y++) {
+      for (let x = x1; x < x2; x++) {
         count += this.list[x + ' ' + y] ? 1 : 0;
         total++;
       }

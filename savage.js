@@ -12,13 +12,13 @@
  * TODO propper text support
  */
 (function (D, W) {
-  var xl = 'http://www.w3.org/1999/xlink',
+  let xl = 'http://www.w3.org/1999/xlink',
     xm = 'http://www.w3.org/2000/svg',
     each = function (o, f) {
-      for(var k in o) if(o.hasOwnProperty(k)) f(o[k], k);
+      for (let k in o) if (o.hasOwnProperty(k)) f(o[k], k);
     },
     attr = function (e, a) {
-      each(a, function (v, k) {
+      each(a, (v, k) => {
         e.setAttribute(k, v);
       });
     };
@@ -28,11 +28,11 @@
    * @argument height number height of the svg canvas
    * @argument width number width of the svg canvas
    */
-  var S = function (E, h, w) {
-    if(typeof E === 'string') {
+  let S = function (E, h, w) {
+    if (typeof E === 'string') {
       E = D.querySelector(E);
     }
-    var cnv = el('svg', { height: h, width: w, version: 1.1, xmlns: xm });
+    let cnv = el('svg', { height: h, width: w, version: 1.1, xmlns: xm });
     E.appendChild(cnv);
     this.E = cnv;
   };
@@ -42,13 +42,13 @@
    * @argument attributes object attributes of the svg element
    */
   var el = function (t, a) {
-    var e = D.createElementNS(xm, t);
+    let e = D.createElementNS(xm, t);
     attr(e, a);
     a.hasOwnProperty('content') && (e.textContent = a.content);
     return e;
   };
 
-  var P = S.prototype;
+  let P = S.prototype;
 
   /**
    * @argument type string svg element to be drawn e.g. circle, rect, ...
@@ -56,7 +56,7 @@
    * @public
    */
   P.draw = function (t, a) {
-    var e = el(t, a);
+    let e = el(t, a);
     this.E.appendChild(e);
     return new Element(e);
   };
@@ -64,7 +64,7 @@
   /**
    * shortcut functions for all the shapes
    */
-  ['circle', 'ellipse', 'image', 'line', 'marker', 'path', 'polygon', 'radialGradient', 'rect', 'text', 'tspan'].forEach(function (t) {
+  ['circle', 'ellipse', 'image', 'line', 'marker', 'path', 'polygon', 'radialGradient', 'rect', 'text', 'tspan'].forEach((t) => {
     P[t] = function (a) {
       return this.draw(t, a);
     };
@@ -74,7 +74,7 @@
     this.node = e;
   };
 
-  var PE = Element.prototype;
+  let PE = Element.prototype;
   PE.attr = function (a) {
     attr(this.node, a);
     return this;

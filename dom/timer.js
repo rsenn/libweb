@@ -9,7 +9,7 @@ export function Timer(timeout, fn, props = {}, { create = setInterval, destroy =
     id: create(() => fn.call(t, t), timeout, fn, t),
     started: Date.now(),
     stop() {
-      if(this.id !== null) {
+      if (this.id !== null) {
         destroy(this.id);
         this.id = null;
         this.running = false;
@@ -18,7 +18,7 @@ export function Timer(timeout, fn, props = {}, { create = setInterval, destroy =
     ...props
   };
 
-  if(this instanceof Timer) Object.assign(this, t);
+  if (this instanceof Timer) Object.assign(this, t);
   else return t;
 }
 
@@ -35,7 +35,7 @@ Timer.std = {
 Timer.debug = (impl = Timer.std) => ({
   log: (msg) => console.log(msg),
   create(fn, timeout) {
-    var id, str;
+    let id, str;
     id = impl.create(() => {
       this.log(`Timer #${id} END`);
       impl.destroy(id);

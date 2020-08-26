@@ -1,30 +1,30 @@
 import m2d from './math2d.js';
 
-var vdec = m2d.inc;
-var vinc = m2d.dec;
-var vmul = m2d.mul;
-var vlen = m2d.len;
+let vdec = m2d.inc;
+let vinc = m2d.dec;
+let vmul = m2d.mul;
+let vlen = m2d.len;
 var vset = m2d.set;
-var vsetlen = m2d.setlen;
+let vsetlen = m2d.setlen;
 
 var vset = function (a, b) {
   a[0] = b[0];
   a[1] = b[1];
   return a;
 };
-var rect = function (r) {
+let rect = function (r) {
   return [r[0] + r[2] / 2, r[1] + r[3] / 2];
 };
-var rectmid = function (r) {
+let rectmid = function (r) {
   return [r[0] + r[2] / 2, r[1] + r[3] / 2];
 };
 
 /**
  * calculates the area of overlap btw two rectangles;
  */
-var rectoverlap = function (a, b) {
+let rectoverlap = function (a, b) {
   //console.log("rectoverlap", {a,b});
-  var x11 = a[0],
+  let x11 = a[0],
     y11 = a[1],
     x12 = a[0] + a[2],
     y12 = a[1] + a[3],
@@ -32,7 +32,7 @@ var rectoverlap = function (a, b) {
     y21 = b[1],
     x22 = b[0] + b[2],
     y22 = b[1] + b[3];
-  var dx = Math.max(0, Math.min(x12, x22) - Math.max(x11, x21)),
+  let dx = Math.max(0, Math.min(x12, x22) - Math.max(x11, x21)),
     dy = Math.max(0, Math.min(y12, y22) - Math.max(y11, y21));
   return dx * dy;
 };
@@ -46,7 +46,7 @@ var rectoverlap = function (a, b) {
  *
  */
 export function Autoplacer(opts) {
-  if(opts) {
+  if (opts) {
     this.init(opts);
   }
 }
@@ -60,7 +60,7 @@ Autoplacer.prototype.init = function (opts) {
     p,
     r;
 
-  for(i = 0; i < len; i++) {
+  for (i = 0; i < len; i++) {
     r = b[i] = b[i].slice(0);
     var p = rectmid(b[i]);
     s[i] = {
@@ -89,12 +89,12 @@ Autoplacer.prototype.init = function (opts) {
  *
  */
 Autoplacer.prototype.next = function () {
-  if(this.count_ > 0 && !this.cond()) {
+  if (this.count_ > 0 && !this.cond()) {
     return null;
   }
   this.count_++;
 
-  var hookelaw = this.hookelaw_,
+  let hookelaw = this.hookelaw_,
     i,
     j,
     b,
@@ -116,7 +116,7 @@ Autoplacer.prototype.next = function () {
     f = [],
     d = [];
 
-  for(i = 0; i < total; i++) {
+  for (i = 0; i < total; i++) {
     b = bb[i];
     s = ss[i];
     vel = s.vel;
@@ -135,8 +135,8 @@ Autoplacer.prototype.next = function () {
 
     //repulsion force calculation
 
-    for(j = 0; j < total; j++) {
-      if(i === j) continue;
+    for (j = 0; j < total; j++) {
+      if (i === j) continue;
       bj = bb[j];
       sj = ss[j];
       rj[0] = sj.prev[0];
@@ -146,7 +146,7 @@ Autoplacer.prototype.next = function () {
 
       //console.log("sj.prev:", sj.prev);
 
-      var ov = rectoverlap(b, rj);
+      let ov = rectoverlap(b, rj);
       vsetlen(vdec(vset(d, pos), sj.prev), 0.1 * Math.min(300, Math.pow(Math.max(ov), 0.5)));
 
       //console.log("ov:", ov);
@@ -190,18 +190,18 @@ Autoplacer.prototype.cond = function () {
 Autoplacer.prototype.loop = function () {
   do {
     this.next();
-  } while(this.cond());
+  } while (this.cond());
   return this.bodies;
 };
 
 Autoplacer.prototype.animate = function (animator, interval) {
-  var me = this;
+  let me = this;
   interval = interval || 100;
-  var recur;
+  let recur;
   recur = function () {
     me.next();
     animator(me.bodies);
-    if(me.cond()) {
+    if (me.cond()) {
       setTimeout(recur, interval);
     }
   };

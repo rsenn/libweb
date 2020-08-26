@@ -1,4 +1,4 @@
-'use strict';
+
 
 /*
 The properties of these change object are:
@@ -19,28 +19,28 @@ export class Observe {
     //Default ["add", "update", "delete", "reconfigure", "setPrototype", "preventExtensions"]
     this.acceptList = acceptList;
 
-    if(!this.acceptList) {
+    if (!this.acceptList) {
       return new Proxy(target, this);
     }
   }
 
   get(target, key, context) {
-    if(Reflect.has(target, key)) {
+    if (Reflect.has(target, key)) {
       this.fn.apply(this, [{ name: key, object: JSON.toString(target), type: 'get' }]);
       return Reflect.get(target, key, context);
-    } else {
-      throw new ReferenceError(`${key} doesnt exist`);
     }
+    throw new ReferenceError(`${key} doesnt exist`);
+    
   }
 
   set(target, key, value, context) {
-    if(Reflect.has(target, key)) {
+    if (Reflect.has(target, key)) {
       this.fn.apply(this, [{ name: key, object: JSON.toString(target), type: 'update', oldValue: target[key] }]);
       return Reflect.set(target, key, value, context);
-    } else {
-      this.fn.apply(this, [{ name: key, object: JSON.toString(target), type: 'add' }]);
-      return Reflect.set(target, key, value, context);
     }
+    this.fn.apply(this, [{ name: key, object: JSON.toString(target), type: 'add' }]);
+    return Reflect.set(target, key, value, context);
+    
   }
 
   deleteProperty(target, key) {

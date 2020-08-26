@@ -11,17 +11,18 @@ export function TRBL(arg) {
   let args = [...arguments];
   // console.log("TRBL",{arg})
 
-  if(typeof arg === 'object' && !Util.isArray(arg)) {
+  if (typeof arg === 'object' && !Util.isArray(arg)) {
     Object.keys(arg).forEach((k) => {
       const matches = /(top|right|bottom|left)/i.exec(k);
       //console.log("TRBL.constructor",{arg,matches,k});
       ret[matches[0].toLowerCase()] = parseInt(arg[k]);
     });
-  } else if(arg) {
-    if(args.length > 1) arg = args;
+  }
+  else if (arg) {
+    if (args.length > 1) arg = args;
 
-    if(typeof arg === 'string') arg = [...arg.matchAll(/^[0-9.]+(|px|em|rem|pt|cm|mm)$/g)];
-    else if(arg.length == 4) arg = arg.map((v) => parseInt(v.replace(/[a-z]*$/g, '')));
+    if (typeof arg === 'string') arg = [...arg.matchAll(/^[0-9.]+(|px|em|rem|pt|cm|mm)$/g)];
+    else if (arg.length == 4) arg = arg.map((v) => parseInt(v.replace(/[a-z]*$/g, '')));
 
     ret.top = arg[0];
     ret.right = arg[1];
@@ -29,10 +30,10 @@ export function TRBL(arg) {
     ret.left = arg[3];
   }
 
-  if(isNaN(ret.top)) ret.top = 0;
-  if(isNaN(ret.right)) ret.right = 0;
-  if(isNaN(ret.bottom)) ret.bottom = 0;
-  if(isNaN(ret.left)) ret.left = 0;
+  if (isNaN(ret.top)) ret.top = 0;
+  if (isNaN(ret.right)) ret.right = 0;
+  if (isNaN(ret.bottom)) ret.bottom = 0;
+  if (isNaN(ret.left)) ret.left = 0;
 
   /*   ['toString','toSource'].forEach((name) =>
     Object.defineProperty(ret, name, { enumerable: true, value: TRBL.prototype[name] })
@@ -40,7 +41,7 @@ export function TRBL(arg) {
 
   //Util.log('ret: ', ret);
 
-  if(!this || this === TRBL) return Object.assign(ret, TRBL.prototype);
+  if (!this || this === TRBL) return Object.assign(ret, TRBL.prototype);
 }
 
 TRBL.prototype.null = function () {
@@ -121,7 +122,7 @@ TRBL.prototype.toSource = function () {
   return '{top:' + this.top + ',right:' + this.right + ',bottom:' + this.bottom + ',left:' + this.left + '}';
 };
 
-for(let name of ['null', 'isNaN', 'outset', 'toRect', 'toSource']) {
+for (let name of ['null', 'isNaN', 'outset', 'toRect', 'toSource']) {
   TRBL[name] = (points) => TRBL.prototype[name].call(points);
 }
 
@@ -133,6 +134,4 @@ Util.defineGetter(TRBL, Symbol.species, function () {
   return this;
 });
 export const ImmutableTRBL = Util.immutableClass(TRBL);
-Util.defineGetter(ImmutableTRBL, Symbol.species, function () {
-  return ImmutableTRBL;
-});
+Util.defineGetter(ImmutableTRBL, Symbol.species, () => ImmutableTRBL);

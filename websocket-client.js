@@ -49,7 +49,7 @@ export class WebSocketClient {
    * Must be connected. See {@link #connected}.
    */
   send(data) {
-    if(!this.connected) {
+    if (!this.connected) {
       throw this.closeEvent || new Error('Not connected.');
     }
 
@@ -64,16 +64,16 @@ export class WebSocketClient {
    * @returns A promise that resolves with the data received.
    */
   receive() {
-    if(this.receiveDataQueue.length !== 0) {
+    if (this.receiveDataQueue.length !== 0) {
       return Promise.resolve(this.receiveDataQueue.shift());
     }
 
-    if(!this.connected) {
+    if (!this.connected) {
       return Promise.reject(this.closeEvent || new Error('Not connected.'));
     }
 
-    var receivePromise = new Promise((resolve, reject) => {
-      this.receiveCallbacksQueue.push({ resolve: resolve, reject: reject });
+    let receivePromise = new Promise((resolve, reject) => {
+      this.receiveCallbacksQueue.push({ resolve, reject });
     });
 
     return receivePromise;
@@ -85,7 +85,7 @@ export class WebSocketClient {
    * The promise resolves once the WebSocket connection is closed.
    */
   disconnect(code, reason) {
-    if(!this.connected) {
+    if (!this.connected) {
       return Promise.resolve(this.closeEvent);
     }
 
@@ -113,15 +113,15 @@ export class WebSocketClient {
    * @private
    */
   setupListenersOnConnect() {
-    var socket = this.socket;
+    let socket = this.socket;
 
     return new Promise((resolve, reject) => {
-      var handleMessage = (event) => {
-        var messageEvent = event;
+      let handleMessage = (event) => {
+        let messageEvent = event;
         //The cast was necessary because Flow's libdef's don't contain
         //a MessageEventListener definition.
 
-        if(this.receiveCallbacksQueue.length !== 0) {
+        if (this.receiveCallbacksQueue.length !== 0) {
           this.receiveCallbacksQueue.shift().resolve(messageEvent.data);
           return;
         }
@@ -129,7 +129,7 @@ export class WebSocketClient {
         this.receiveDataQueue.push(messageEvent.data);
       };
 
-      var handleOpen = (event) => {
+      let handleOpen = (event) => {
         socket.addEventListener('message', handleMessage);
         socket.addEventListener('close', (event) => {
           this.closeEvent = event;
@@ -137,7 +137,7 @@ export class WebSocketClient {
           //Whenever a close event fires, the socket is effectively dead.
           //It's impossible for more messages to arrive.
           //If there are any promises waiting for messages, reject them.
-          while(this.receiveCallbacksQueue.length !== 0) {
+          while (this.receiveCallbacksQueue.length !== 0) {
             this.receiveCallbacksQueue.shift().reject(this.closeEvent);
           }
         });
@@ -162,6 +162,7 @@ export class WebSocketClient {
     //Checking != null also checks against undefined.
     return this.socket != null && this.socket.readyState === WebSocket.OPEN;
   }
+
   /**
    * The number of messages available to receive.
    * @returns The number of queued messages that can be retrieved with {@link #receive}
@@ -171,7 +172,7 @@ export class WebSocketClient {
   }
 
   async *[Symbol.asyncIterator]() {
-    while(this.readyState !== 3) {
+    while (this.readyState !== 3) {
       yield (await oncePromise(this.socket, 'message')).data;
     }
   }

@@ -1,26 +1,26 @@
 function log(source, msg) {
-  var echo = false;
+  let echo = false;
   switch (source) {
-    case 'stack':
-      echo = true;
-    case 'terminal':
-      echo = true;
-    case 'recursion':
-      echo = true;
+  case 'stack':
+    echo = true;
+  case 'terminal':
+    echo = true;
+  case 'recursion':
+    echo = true;
     //case 'alternation': echo = true;
     //case 'exception': echo = true;
-    case 'ParseState':
-      echo = true;
-    case 'ParseNode':
-      echo = true;
+  case 'ParseState':
+    echo = true;
+  case 'ParseNode':
+    echo = true;
   }
 
-  var dots = '';
-  if(typeof parser != 'undefined') {
-    for(var i = 0; i < parser.stack.length; i++) dots = dots + '.';
+  let dots = '';
+  if (typeof parser != 'undefined') {
+    for (let i = 0; i < parser.stack.length; i++) dots = dots + '.';
   }
 
-  if(echo) console.log(dots + source + ': ' + msg);
+  if (echo) console.log(dots + source + ': ' + msg);
 }
 
 //Class ParseNode
@@ -39,14 +39,14 @@ ParseNode.prototype.addChild = function (child) {
 };
 
 ParseNode.prototype.print = function (indent) {
-  var spaces = '';
-  for(var i = 0; i < indent; i++) spaces = spaces + ' ';
+  let spaces = '';
+  for (var i = 0; i < indent; i++) spaces = spaces + ' ';
 
   console.log(spaces + '{');
   console.log(spaces + '   type: ' + this.type + ' start: ' + this.start + ' end: ' + this.end);
   console.log(spaces + '  value: ' + this.value());
   console.log(spaces + '  children:');
-  for(var i = 0; i < this.children.length; i++) {
+  for (var i = 0; i < this.children.length; i++) {
     this.children[i].print(indent + 2);
   }
   console.log(spaces + '}');
@@ -70,7 +70,7 @@ ParseState.prototype.charAt = function (offset) {
 };
 
 ParseState.prototype.advance = function (n) {
-  var msg = 'offset=' + this.offset + ' n=' + n;
+  let msg = 'offset=' + this.offset + ' n=' + n;
   this.lineNumber += this.buffer.substring(this.offset, this.offset + n).split(/\r*\n/).length - 1;
   this.offset += n;
   this.current = this.buffer.charAt(this.offset);
@@ -78,19 +78,19 @@ ParseState.prototype.advance = function (n) {
 };
 
 ParseState.prototype.parseNode = function (type) {
-  if(this.ruleStart == this.offset) {
+  if (this.ruleStart == this.offset) {
     console.log('parseNode: type=' + type + ' ruleStart=' + this.ruleStart + ' start=' + this.start + ' offset=' + this.offset);
     return null;
-  } else {
-    return new ParseNode(type, this.buffer, this.ruleStart, this.offset);
   }
+  return new ParseNode(type, this.buffer, this.ruleStart, this.offset);
+  
 };
 
 ParseState.prototype.checkWhitespace = function () {
-  var n = 0;
-  var c = this.buffer.charAt(this.offset);
+  let n = 0;
+  let c = this.buffer.charAt(this.offset);
   log('checkWhitespace', 'offset=' + this.offset + ' c=' + c);
-  while(c == ' ' || c == '\t' || c == '\n' || c == '\r') {
+  while (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
     n = n + 1;
     c = this.buffer.charAt(this.offset + n);
     log('checkWhitespace', 'n=' + n + ' c=' + c);
@@ -101,39 +101,40 @@ ParseState.prototype.checkWhitespace = function () {
 
 ParseState.prototype.checkComment = function () {
   log('checkComment', 'offset=' + this.offset);
-  var n = 0;
-  var c1 = this.buffer.charAt(this.offset);
-  var c2 = this.buffer.charAt(this.offset + 1);
-  if(c1 != '(' || c2 != '*') {
+  let n = 0;
+  let c1 = this.buffer.charAt(this.offset);
+  let c2 = this.buffer.charAt(this.offset + 1);
+  if (c1 != '(' || c2 != '*') {
     c2 = '';
-  } else {
+  }
+  else {
     n = 2;
     c1 = this.buffer.charAt(this.offset + n);
     c2 = this.buffer.charAt(this.offset + n + 1);
-    while(!(c1 == '*' && c2 == ')')) {
+    while (!(c1 == '*' && c2 == ')')) {
       c1 = c2;
       n = n + 1;
       c2 = this.buffer.charAt(n);
-      if(c2 == '') break;
+      if (c2 == '') break;
     }
   }
 
-  if(c2 == ')') return n + 1;
-  else return 0;
+  if (c2 == ')') return n + 1;
+  return 0;
 };
 
 ParseState.prototype.nextToken = function () {
   //skip any combination of comments and whitespace
-  var n = 0,
+  let n = 0,
     wn,
     cn;
   do {
     wn = this.checkWhitespace();
-    if(wn == 0) cn = this.checkComment();
+    if (wn == 0) cn = this.checkComment();
     else cn = 0;
     this.advance(wn + cn);
     n += wn + cn;
-  } while(wn != 0 || cn != 0);
+  } while (wn != 0 || cn != 0);
 
   this.start = this.offset;
 };
@@ -154,23 +155,23 @@ function ParseState(rule, buffer, offset, lineNumber) {
 //Class Parser
 
 Parser.prototype.pushFrame = function (rule) {
-  var sstate = null;
-  var recursion = 0;
+  let sstate = null;
+  let recursion = 0;
 
-  for(var i = 0; i < this.stack.length; i++) {
+  for (let i = 0; i < this.stack.length; i++) {
     sstate = this.stack[i];
-    if(sstate.rule == rule && sstate.offset == this.state.offset) {
+    if (sstate.rule == rule && sstate.offset == this.state.offset) {
       recursion++;
     }
   }
 
-  if(recursion > 1) {
+  if (recursion > 1) {
     //allow one, deny more than one
     log('recursion', 'infinte recursion detected at rule=' + rule + ' offset=' + sstate.offset);
     return null;
   }
 
-  var pstate = new ParseState(rule, this.state.buffer, this.state.offset, this.state.lineNumber);
+  let pstate = new ParseState(rule, this.state.buffer, this.state.offset, this.state.lineNumber);
   log('stack', 'push: rule=' + rule);
   this.stack.push(pstate);
   this.state = pstate;
@@ -181,7 +182,7 @@ Parser.prototype.popFrame = function (rule, pnode) {
   log('stack', 'pop: rule: ' + rule + ' state: ' + this.state.rule + ' stack: ' + this.stack.length + ' pnode: ' + (pnode == null ? 'null' : pnode.type));
   this.stack.pop();
   this.state = this.stack[this.stack.length - 1];
-  if(pnode != null && pnode.end > this.maxParseEnd) {
+  if (pnode != null && pnode.end > this.maxParseEnd) {
     log('stack', 'maxParseEnd: ' + this.maxParseEnd + ' pnode.end: ' + pnode.end);
     this.maxParseEnd = pnode.end;
     this.maxParseNode = pnode;
@@ -192,65 +193,65 @@ Parser.prototype.popFrame = function (rule, pnode) {
 //single character parsing - return 0/1
 
 Parser.prototype.parseLetter = function () {
-  var c = this.state.current;
-  if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) return 1;
-  else return 0;
+  let c = this.state.current;
+  if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) return 1;
+  return 0;
 };
 
 Parser.prototype.parseDigit = function () {
-  var c = this.state.current;
-  if(c >= '0' && c <= '9') return 1;
-  else return 0;
+  let c = this.state.current;
+  if (c >= '0' && c <= '9') return 1;
+  return 0;
 };
 
 Parser.prototype.parseNonzero = function () {
-  var c = this.state.current;
-  if(c > '0' && c <= '9') return 1;
-  else return 0;
+  let c = this.state.current;
+  if (c > '0' && c <= '9') return 1;
+  return 0;
 };
 
 Parser.prototype.parseSymbol = function () {
   switch (this.state.current) {
-    case '[':
-    case ']':
-    case '{':
-    case '}':
-    case '(':
-    case ')':
-    case '<':
-    case '>':
-    case this.SQUOTE:
-    case this.DQUOTE:
-    case '=':
-    case '|':
-    case '.':
-    case ',':
-    case ';':
-      return 1;
-    default:
-      return 0;
+  case '[':
+  case ']':
+  case '{':
+  case '}':
+  case '(':
+  case ')':
+  case '<':
+  case '>':
+  case this.SQUOTE:
+  case this.DQUOTE:
+  case '=':
+  case '|':
+  case '.':
+  case ',':
+  case ';':
+    return 1;
+  default:
+    return 0;
   }
 };
 
 Parser.prototype.parseCharacter = function () {
-  if(this.parseLetter()) return 1;
-  if(this.parseDigit()) return 1;
-  if(this.parseSymbol()) return 1;
-  if(this.state.current == '_') return 1;
+  if (this.parseLetter()) return 1;
+  if (this.parseDigit()) return 1;
+  if (this.parseSymbol()) return 1;
+  if (this.state.current == '_') return 1;
   return 0;
 };
 
 //multiple character parsing - return node or null
 
 Parser.prototype.parseIdentifier = function () {
-  var rule = 'identifier';
-  var pstate = this.pushFrame(rule);
-  if(pstate == null) return null;
+  let rule = 'identifier';
+  let pstate = this.pushFrame(rule);
+  if (pstate == null) return null;
 
-  var identifier = null;
-  if(this.parseLetter() > 0) {
+  let identifier = null;
+  if (this.parseLetter() > 0) {
     pstate.advance(1);
-    while(this.parseLetter() > 0 || this.parseDigit(pstate) > 0 || pstate.current == '_') {
+    while (this.parseLetter() > 0 || this.parseDigit(pstate) > 0 || pstate.current == '_') {
       pstate.advance(1);
     }
 
@@ -262,24 +263,24 @@ Parser.prototype.parseIdentifier = function () {
 };
 
 Parser.prototype.parseTerminal = function () {
-  var rule = 'terminal';
-  var pstate = this.pushFrame(rule);
-  if(pstate == null) return null;
+  let rule = 'terminal';
+  let pstate = this.pushFrame(rule);
+  if (pstate == null) return null;
 
-  var terminal = null;
-  if(pstate.current == this.SQUOTE || pstate.current == this.DQUOTE) {
-    var left_quote = pstate.current;
+  let terminal = null;
+  if (pstate.current == this.SQUOTE || pstate.current == this.DQUOTE) {
+    let left_quote = pstate.current;
     pstate.advance(1);
-    while(left_quote != pstate.current && this.parseCharacter() != 0) {
+    while (left_quote != pstate.current && this.parseCharacter() != 0) {
       pstate.advance(1);
     }
 
-    if(left_quote != pstate.current) {
+    if (left_quote != pstate.current) {
       return null; //unterminated terminal
-    } else {
-      pstate.advance(1);
-      terminal = pstate.parseNode('terminal');
     }
+    pstate.advance(1);
+    terminal = pstate.parseNode('terminal');
+    
   }
 
   this.popFrame(rule, terminal);
@@ -287,14 +288,14 @@ Parser.prototype.parseTerminal = function () {
 };
 
 Parser.prototype.parseCount = function () {
-  var rule = 'count';
-  var pstate = this.pushFrame(rule);
-  if(pstate == null) return null;
+  let rule = 'count';
+  let pstate = this.pushFrame(rule);
+  if (pstate == null) return null;
 
-  var count = null;
-  if(this.parseNonzero() > 0) {
+  let count = null;
+  if (this.parseNonzero() > 0) {
     pstate.advance(1);
-    while(this.parseDigit() > 0) {
+    while (this.parseDigit() > 0) {
       pstate.advance(1);
     }
 
@@ -306,13 +307,13 @@ Parser.prototype.parseCount = function () {
 };
 
 Parser.prototype.parseLhs = function () {
-  var rule = 'lhs';
-  var pstate = this.pushFrame(rule);
-  if(pstate == null) return null;
+  let rule = 'lhs';
+  let pstate = this.pushFrame(rule);
+  if (pstate == null) return null;
 
-  var lhs = null;
-  var identifier = this.parseIdentifier();
-  if(identifier != null) {
+  let lhs = null;
+  let identifier = this.parseIdentifier();
+  if (identifier != null) {
     pstate.advance(identifier.nodeLength());
     lhs = pstate.parseNode('lhs');
     lhs.addChild(identifier);
@@ -323,21 +324,21 @@ Parser.prototype.parseLhs = function () {
 };
 
 Parser.prototype._parseBinary = function (rule, parseLeft, operator, parseRight) {
-  var pstate = this.pushFrame(rule);
-  if(pstate == null) return null;
+  let pstate = this.pushFrame(rule);
+  if (pstate == null) return null;
 
-  var binary = null;
-  var left = parseLeft.call(this);
-  if(left != null) {
+  let binary = null;
+  let left = parseLeft.call(this);
+  if (left != null) {
     log(rule, 'left: ' + left.type + ' value: ' + left.value());
     pstate.advance(left.nodeLength());
     pstate.nextToken();
-    if(pstate.current == operator) {
+    if (pstate.current == operator) {
       log(rule, 'operator: ' + operator);
       pstate.advance(1);
       pstate.nextToken();
-      var right = parseRight.call(this);
-      if(right != null) {
+      let right = parseRight.call(this);
+      if (right != null) {
         log(rule, 'right: ' + right.type + ' value: ' + right.value());
         pstate.advance(right.nodeLength());
         log(rule, ' state: start=' + pstate.start + ' offset=' + pstate.offset);
@@ -353,18 +354,18 @@ Parser.prototype._parseBinary = function (rule, parseLeft, operator, parseRight)
 };
 
 Parser.prototype._parseEnclosure = function (rule, beginEnclosure, parseEnclosed, endEnclosure) {
-  var pstate = this.pushFrame(rule);
-  if(pstate == null) return null;
+  let pstate = this.pushFrame(rule);
+  if (pstate == null) return null;
 
-  var enclosure = null;
-  if(pstate.current == beginEnclosure) {
+  let enclosure = null;
+  if (pstate.current == beginEnclosure) {
     pstate.advance(1);
     pstate.nextToken();
-    var enclosed = parseEnclosed.call(this);
-    if(enclosed != null) {
+    let enclosed = parseEnclosed.call(this);
+    if (enclosed != null) {
       pstate.advance(enclosed.nodeLength());
       pstate.nextToken();
-      if(pstate.current == endEnclosure) {
+      if (pstate.current == endEnclosure) {
         pstate.advance(1);
         enclosure = pstate.parseNode(rule);
         enclosure.addChild(enclosed);
@@ -405,13 +406,13 @@ Parser.prototype.parseConcatenation = function () {
 };
 
 Parser.prototype.parseRhs = function () {
-  var rule = 'rhs';
-  var pstate = this.pushFrame(rule);
-  if(pstate == null) return null;
+  let rule = 'rhs';
+  let pstate = this.pushFrame(rule);
+  if (pstate == null) return null;
 
-  var rhs = null;
-  var child = null;
-  var best = null;
+  let rhs = null;
+  let child = null;
+  let best = null;
 
   [
     [this, this.parseCounted],
@@ -423,9 +424,9 @@ Parser.prototype.parseRhs = function () {
     [this, this.parseConcatenation],
     [this, this.parseIdentifier],
     [this, this.parseTerminal]
-  ].forEach(function (parseRule) {
+  ].forEach((parseRule) => {
     child = parseRule[1].call(parseRule[0]);
-    if(child != null) {
+    if (child != null) {
       best = best == null ? child : child.nodeLength() > best.nodeLength() ? child : best;
     }
   });
@@ -439,7 +440,7 @@ Parser.prototype.parseRhs = function () {
   //if (child == null) child = this.parseIdentifier();
   //if (child == null) child = this.parseTerminal();
 
-  if(child != null) {
+  if (child != null) {
     pstate.advance(child.nodeLength());
     rhs = pstate.parseNode('rhs');
     rhs.addChild(child);
@@ -450,32 +451,32 @@ Parser.prototype.parseRhs = function () {
 };
 
 Parser.prototype.parseRule = function () {
-  var rule = 'rule';
-  var pstate = this.pushFrame('rule');
-  if(pstate == null) return null;
+  let rule = 'rule';
+  let pstate = this.pushFrame('rule');
+  if (pstate == null) return null;
 
-  var prule = null;
-  var lhs = this.parseLhs();
+  let prule = null;
+  let lhs = this.parseLhs();
 
-  if(lhs != null) {
+  if (lhs != null) {
     pstate.advance(lhs.nodeLength());
     pstate.nextToken();
-    if(pstate.current != '=') return null;
-    else {
-      pstate.advance(1);
+    if (pstate.current != '=') return null;
+    
+    pstate.advance(1);
+    pstate.nextToken();
+    let rhs = this.parseRhs(pstate);
+    if (rhs != null) {
+      pstate.advance(rhs.nodeLength());
       pstate.nextToken();
-      var rhs = this.parseRhs(pstate);
-      if(rhs != null) {
-        pstate.advance(rhs.nodeLength());
-        pstate.nextToken();
-        if(pstate.current == ';') {
-          pstate.advance(1);
-          prule = pstate.parseNode('rule');
-          prule.addChild(lhs);
-          prule.addChild(rhs);
-        }
+      if (pstate.current == ';') {
+        pstate.advance(1);
+        prule = pstate.parseNode('rule');
+        prule.addChild(lhs);
+        prule.addChild(rhs);
       }
     }
+    
   }
 
   this.popFrame(rule, prule);
@@ -483,26 +484,26 @@ Parser.prototype.parseRule = function () {
 };
 
 Parser.prototype.parseGrammar = function () {
-  var rule = 'grammar';
-  var pstate = this.pushFrame(rule);
-  if(pstate == null) return null;
+  let rule = 'grammar';
+  let pstate = this.pushFrame(rule);
+  if (pstate == null) return null;
 
-  var grammar = null;
-  var rules = new Array();
-  var prule = null;
+  let grammar = null;
+  let rules = new Array();
+  let prule = null;
 
   do {
     prule = this.parseRule();
-    if(prule != null) {
+    if (prule != null) {
       rules.push(prule);
       pstate.advance(prule.nodeLength());
       pstate.nextToken();
       console.log('pstate: ruleStart=' + pstate.ruleStart + ' start=' + pstate.start + ' offset=' + pstate.offset);
     }
-  } while(prule != null);
+  } while (prule != null);
 
   grammar = pstate.parseNode('grammar');
-  for(var i = 0; i < rules.length; i++) {
+  for (let i = 0; i < rules.length; i++) {
     grammar.addChild(rules[i]);
   }
 

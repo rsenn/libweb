@@ -3,7 +3,7 @@
 const pairwiseSumReduce = (array, f, init = 0) => {
   const n = array.length;
   return array.reduce((acc, p, i) => {
-    if(i + 1 >= n) {
+    if (i + 1 >= n) {
       return acc;
     }
     return acc + f(p, array[i + 1], i, array);

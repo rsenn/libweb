@@ -1,19 +1,19 @@
 import Util from './util.js';
 
 export function tlite(getTooltipOpts) {
-  document.addEventListener('mouseover', function (e) {
-    var el = e.target;
-    var opts = getTooltipOpts(el);
+  document.addEventListener('mouseover', (e) => {
+    let el = e.target;
+    let opts = getTooltipOpts(el);
 
-    if(!opts) {
+    if (!opts) {
       el = el.parentElement;
       opts = el && getTooltipOpts(el);
     }
     let getTitle;
-    if(opts.attrib) {
+    if (opts.attrib) {
       let a = opts.attrib;
 
-      if(a instanceof Array || (typeof a == 'object' && a !== null && typeof a.length == 'number')) {
+      if (a instanceof Array || (typeof a == 'object' && a !== null && typeof a.length == 'number')) {
         getTitle = (e) => {
           let x = a
             .filter((attrName) => e.hasAttribute(attrName))
@@ -21,22 +21,23 @@ export function tlite(getTooltipOpts) {
             .filter(([attrName, attrVal]) => attrVal != '' && attrVal != null);
           return x[0] || [];
         };
-      } else {
+      }
+      else {
         getTitle = (e) => [opts.attrib, (e.hasAttribute(opts.attrib) && e.getAttribute(opts.attrib)) || '', e.hasAttribute(opts.attrib) ? e : null];
       }
     }
-    if(!getTitle) getTitle = (e) => ['title', (e.hasAttribute('title') && e.getAttribute('title')) || '', e];
+    if (!getTitle) getTitle = (e) => ['title', (e.hasAttribute('title') && e.getAttribute('title')) || '', e];
     opts.getTitle = (e) => {
       let attrName,
         title,
         i = 0;
       do {
-        if(!e) break;
+        if (!e) break;
         [attrName, title] = getTitle(e);
-        if(typeof title == 'string' && title.length > 0) break;
+        if (typeof title == 'string' && title.length > 0) break;
         i++;
-      } while((e = e.parentElement));
-      if(title != '')
+      } while ((e = e.parentElement));
+      if (title != '')
         //console.log(`getTitle[${i}]:`, title);
         return [attrName, title, e];
     };
@@ -47,7 +48,7 @@ export function tlite(getTooltipOpts) {
 
 tlite.show = function (el, opts, isAuto) {
   opts = opts || {};
-  var fallbackAttrib = /*opts.attrib ||*/ 'data-tlite';
+  let fallbackAttrib = /*opts.attrib ||*/ 'data-tlite';
 
   let mapper = this.mapper || Util.weakMapper(createTooltip);
 
@@ -57,11 +58,11 @@ tlite.show = function (el, opts, isAuto) {
   (el.tooltip || Tooltip(el, opts)).show();
 
   function Tooltip(el, opts) {
-    var showTimer;
-    var text, attr, elem;
+    let showTimer;
+    let text, attr, elem;
     [attr, text, elem] = opts.getTitle(el);
 
-    var tooltipEl;
+    let tooltipEl;
 
     /*
 if(!elem)
@@ -91,18 +92,18 @@ if(elem)
 
     function hide(isAutoHiding, el) {
       //console.log('hide(', isAutoHiding, el, ')');
-      if(isAuto === isAutoHiding) {
+      if (isAuto === isAutoHiding) {
         showTimer = clearTimeout(showTimer);
-        var parent = tooltipEl && tooltipEl.parentElement;
+        let parent = tooltipEl && tooltipEl.parentElement;
         parent && parent.removeChild(tooltipEl);
         tooltipEl = undefined;
       }
     }
 
     function fadeIn(el) {
-      if(!tooltipEl) {
+      if (!tooltipEl) {
         tooltipEl = mapper(el, text, opts);
-        if(tooltipEl.parentElement) tooltipEl.parentElement.removeChild(tooltipEl);
+        if (tooltipEl.parentElement) tooltipEl.parentElement.removeChild(tooltipEl);
 
         (elem || el).appendChild(tooltipEl);
       }
@@ -116,17 +117,18 @@ if(elem)
   }
 
   function createTooltip(el, text, opts) {
-    var tooltipEl = document.createElement('span');
+    let tooltipEl = document.createElement('span');
     const { grav } = opts;
     var [attr, text, elem] = opts.getTitle(el);
 
-    if(elem) el = elem;
+    if (elem) el = elem;
 
     let html;
-    if(/\t/.test(text)) {
+    if (/\t/.test(text)) {
       let cells = text.split(/\n/g).map((row) => row.split(/\t/g));
       html = '<table border="0" cellspacing="0" cellpadding="0" class="tlite-table" style="margin: 0px; padding: 0px; color: white; ">\n' + cells.map((row, j) => `<tr class="tlite-table tlite-row-${j}">` + row.map((col, i) => `<td class="tlite-table tlite-row-${j} tlite-col-${i}">` + col + '</td>').join('') + '</tr>\n').join('') + '</table>';
-    } else {
+    }
+    else {
       html = text.replace(/\n/g, '<br />');
     }
     //console.log('html:', html);
@@ -134,33 +136,33 @@ if(elem)
 
     el.appendChild(tooltipEl);
 
-    var vertGrav = grav[0] || '';
-    var horzGrav = grav[1] || '';
+    let vertGrav = grav[0] || '';
+    let horzGrav = grav[1] || '';
 
     function positionTooltip() {
       tooltipEl.className = 'tlite ' + 'tlite-' + vertGrav + horzGrav;
 
-      var arrowSize = 10;
-      var top = el.offsetTop;
-      var left = el.offsetLeft;
+      let arrowSize = 10;
+      let top = el.offsetTop;
+      let left = el.offsetLeft;
       tooltipEl.style.position = 'fixed';
 
-      if(tooltipEl.offsetParent === el) {
+      if (tooltipEl.offsetParent === el) {
         top = left = 0;
       }
 
-      var width = el.offsetWidth;
-      var height = el.offsetHeight;
-      var tooltipHeight = tooltipEl.offsetHeight;
-      var tooltipWidth = tooltipEl.offsetWidth;
-      var centerEl = left + width / 2;
+      let width = el.offsetWidth;
+      let height = el.offsetHeight;
+      let tooltipHeight = tooltipEl.offsetHeight;
+      let tooltipWidth = tooltipEl.offsetWidth;
+      let centerEl = left + width / 2;
 
       const pos = {
         top: vertGrav === 's' ? top - tooltipHeight - arrowSize : vertGrav === 'n' ? top + height + arrowSize : top + height / 2 - tooltipHeight / 2,
         left: horzGrav === 'w' ? left : horzGrav === 'e' ? left + width - tooltipWidth : vertGrav === 'w' ? left + width + arrowSize : vertGrav === 'e' ? left - tooltipWidth - arrowSize : centerEl - tooltipWidth / 2
       };
 
-      if(pos.left < 0) pos.left = 0;
+      if (pos.left < 0) pos.left = 0;
 
       tooltipEl.style.top = pos.top + 'px';
       tooltipEl.style.left = pos.left + 'px';
@@ -172,18 +174,21 @@ if(elem)
 
     positionTooltip();
 
-    var rect = tooltipEl.getBoundingClientRect();
+    let rect = tooltipEl.getBoundingClientRect();
 
-    if(vertGrav === 's' && rect.top < 0) {
+    if (vertGrav === 's' && rect.top < 0) {
       vertGrav = 'n';
       positionTooltip();
-    } else if(vertGrav === 'n' && rect.bottom > window.innerHeight) {
+    }
+    else if (vertGrav === 'n' && rect.bottom > window.innerHeight) {
       vertGrav = 's';
       positionTooltip();
-    } else if(vertGrav === 'e' && rect.left < 0) {
+    }
+    else if (vertGrav === 'e' && rect.left < 0) {
       vertGrav = 'w';
       positionTooltip();
-    } else if(vertGrav === 'w' && rect.right > window.innerWidth) {
+    }
+    else if (vertGrav === 'w' && rect.right > window.innerWidth) {
       vertGrav = 'e';
       positionTooltip();
     }

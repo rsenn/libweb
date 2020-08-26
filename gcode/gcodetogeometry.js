@@ -116,14 +116,13 @@
  * operations...). It also create the util namespace.
  */
 
-'use strict';
 
 /**
  * Namespace for the library.
  *
  * @namespace
  */
-var util = {};
+let util = {};
 
 /**
  * Constant for converting inches values into millimeters values.
@@ -163,7 +162,7 @@ util.calculateFeedrate = function (feedrate, inMm) {
  * @return {boolean} True if the two values are nearly equal.
  */
 util.nearlyEqual = function (a, b, precision) {
-  var p = precision === undefined ? util.FLOAT_PRECISION : precision;
+  let p = precision === undefined ? util.FLOAT_PRECISION : precision;
   return Math.abs(b - a) <= p;
 };
 
@@ -175,18 +174,19 @@ util.nearlyEqual = function (a, b, precision) {
  */
 util.swapObjects = function (obj1, obj2) {
   function swapSingleField(objA, objB, key) {
-    var temp;
+    let temp;
     temp = objA[key];
     objA[key] = objB[key];
     objB[key] = temp;
   }
-  var keys = Object.keys(obj1);
-  var i = 0;
+  let keys = Object.keys(obj1);
+  let i = 0;
 
-  for(i = 0; i < keys.length; i++) {
-    if(typeof obj1[keys[i]] === 'object') {
+  for (i = 0; i < keys.length; i++) {
+    if (typeof obj1[keys[i]] === 'object') {
       util.swapObjects(obj1[keys[i]], obj2[keys[i]]);
-    } else {
+    }
+    else {
       swapSingleField(obj1, obj2, keys[i]);
     }
   }
@@ -199,13 +199,14 @@ util.swapObjects = function (obj1, obj2) {
  * @return {object} The copy of the object.
  */
 util.copyObject = function (object) {
-  var keys = Object.keys(object);
-  var i = 0;
-  var copy = {};
-  for(i = 0; i < keys.length; i++) {
-    if(typeof object[keys[i]] === 'object') {
+  let keys = Object.keys(object);
+  let i = 0;
+  let copy = {};
+  for (i = 0; i < keys.length; i++) {
+    if (typeof object[keys[i]] === 'object') {
       copy[keys[i]] = util.copyObject(object[keys[i]]);
-    } else {
+    }
+    else {
       copy[keys[i]] = object[keys[i]];
     }
   }
@@ -219,10 +220,10 @@ util.copyObject = function (object) {
  * @param {Point} vector - The vector.
  */
 util.movePoint = function (point, vector) {
-  var keys = Object.keys(vector);
-  var i = 0;
-  for(i = 0; i < keys.length; i++) {
-    if(point[keys[i]] !== undefined) {
+  let keys = Object.keys(vector);
+  let i = 0;
+  for (i = 0; i < keys.length; i++) {
+    if (point[keys[i]] !== undefined) {
       point[keys[i]] += vector[keys[i]];
     }
   }
@@ -272,10 +273,10 @@ util.lengthVector3 = function (v) {
  * @return {Axes} The object defining the real, imaginary and cross axis.
  */
 util.findAxes = function (crossAxe) {
-  if(crossAxe.toLowerCase() === 'x') {
+  if (crossAxe.toLowerCase() === 'x') {
     return { re: 'y', im: 'z', cr: 'x' };
   }
-  if(crossAxe.toLowerCase() === 'y') {
+  if (crossAxe.toLowerCase() === 'y') {
     return { re: 'z', im: 'x', cr: 'y' };
   }
   return { re: 'x', im: 'y', cr: 'z' };
@@ -294,13 +295,13 @@ util.findAxes = function (crossAxe) {
  * @param {string} im - The imaginary axis.
  */
 util.scaleAndRotation = function (center, point, newPoint, angle, length, re, im) {
-  var c = center,
+  let c = center,
     p = point,
     nP = newPoint;
-  var l = length,
+  let l = length,
     cA = Math.cos(angle),
     sA = Math.sin(angle);
-  var pRe = p[re],
+  let pRe = p[re],
     pIm = p[im],
     cRe = c[re],
     cIm = c[im];
@@ -317,12 +318,12 @@ util.scaleAndRotation = function (center, point, newPoint, angle, length, re, im
  * @return {number} The angle in radian.
  */
 util.findAngleVectors2 = function (v1, v2) {
-  var sign = util.crossProduct2(v1, v2) < 0 ? -1 : 1;
-  var dot = util.dotProduct2(v1, v2);
-  var lV1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
-  var lV2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+  let sign = util.crossProduct2(v1, v2) < 0 ? -1 : 1;
+  let dot = util.dotProduct2(v1, v2);
+  let lV1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+  let lV2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
 
-  if(lV1 === 0 || lV2 === 0) {
+  if (lV1 === 0 || lV2 === 0) {
     return 0;
   }
 
@@ -338,12 +339,12 @@ util.findAngleVectors2 = function (v1, v2) {
  * @return {number} The angle in radian.
  */
 util.findAngleOrientedVectors2 = function (v1, v2, positive) {
-  var angle = util.findAngleVectors2(v1, v2);
+  let angle = util.findAngleVectors2(v1, v2);
 
-  if(positive === false && angle > 0) {
+  if (positive === false && angle > 0) {
     return angle - Math.PI * 2;
   }
-  if(positive === true && angle < 0) {
+  if (positive === true && angle < 0) {
     return Math.PI * 2 + angle;
   }
 
@@ -385,9 +386,9 @@ for(i = 0; i < keys.length; i++) {
  * @param {Settings} settings - The modularity settings.
  * @return {StraightLine} An instance of the StraightLine class.
  */
-var StraightLine = function (index, start, end, parsedCommand, settings) {
-  'use strict';
-  var that = this;
+let StraightLine = function (index, start, end, parsedCommand, settings) {
+  
+  let that = this;
 
   /**
    * Returns a line object of type "G0" or "G1" (corresponding to
@@ -436,11 +437,13 @@ var StraightLine = function (index, start, end, parsedCommand, settings) {
     that.word = parsedCommand.type;
     that.start = { x: start.x, y: start.y, z: start.z };
     that.end = end;
-    if(parsedCommand.type === 'G0') {
+    if (parsedCommand.type === 'G0') {
       that.feedrate = 0;
-    } else if(parsedCommand.f === undefined) {
+    }
+    else if (parsedCommand.f === undefined) {
       that.feedrate = settings.feedrate;
-    } else {
+    }
+    else {
       that.feedrate = util.calculateFeedrate(parsedCommand.f, settings.inMm);
     }
   }
@@ -459,22 +462,22 @@ var StraightLine = function (index, start, end, parsedCommand, settings) {
  * @param {Settings} settings - The modularity settings.
  * @return {CurvedLine} An instance of the CurvedLine class.
  */
-var CurvedLine = function (index, start, end, parsedCommand, settings) {
-  'use strict';
-  var that = this;
+let CurvedLine = function (index, start, end, parsedCommand, settings) {
+  
+  let that = this;
 
   // Will give 0 if start and end are the same
   function getBezierAngle() {
-    var axes = util.findAxes(that.crossAxe);
-    var cs = { x: that.start[axes.re] - that.center[axes.re], y: that.start[axes.im] - that.center[axes.im], z: 0 };
-    var ce = { x: that.end[axes.re] - that.center[axes.re], y: that.end[axes.im] - that.center[axes.im], z: 0 };
+    let axes = util.findAxes(that.crossAxe);
+    let cs = { x: that.start[axes.re] - that.center[axes.re], y: that.start[axes.im] - that.center[axes.im], z: 0 };
+    let ce = { x: that.end[axes.re] - that.center[axes.re], y: that.end[axes.im] - that.center[axes.im], z: 0 };
 
     return util.findAngleOrientedVectors2(cs, ce, that.clockwise === false);
   }
 
   function getBezierRadius() {
-    var axes = util.findAxes(that.crossAxe);
-    var cs = { x: that.start[axes.re] - that.center[axes.re], y: that.start[axes.im] - that.center[axes.im], z: 0 };
+    let axes = util.findAxes(that.crossAxe);
+    let cs = { x: that.start[axes.re] - that.center[axes.re], y: that.start[axes.im] - that.center[axes.im], z: 0 };
     return util.lengthVector3(cs);
   }
 
@@ -483,16 +486,17 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
   //radius > 0
   //From Richard A DeVeneza's work
   function cubBez2DInt(angle, radius) {
-    var p0 = {},
+    let p0 = {},
       p1 = {},
       p2 = {},
       p3 = {};
     angle = Math.abs(angle);
-    if(angle === Math.PI / 2) {
+    if (angle === Math.PI / 2) {
       //cos(PI/4) == sin(PI/4) but JavaScript doesn't believe it
       p0 = { x: 0.707106781186548, y: 0.707106781186548, z: 0 };
       p1 = { x: 1.097631072937817, y: 0.316582489435277, z: 0 };
-    } else {
+    }
+    else {
       p0 = { x: Math.cos(angle / 2), y: Math.sin(angle / 2), z: 0 };
       p1 = {
         x: (4 - p0.x) / 3,
@@ -507,7 +511,7 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
     p2 = { x: p1.x, y: -p1.y, z: 0 };
     p3 = { x: p0.x, y: -p0.y, z: 0 };
 
-    return { p0: p0, p1: p1, p2: p2, p3: p3 };
+    return { p0, p1, p2, p3 };
   }
 
   //Transform a 2D cubic Bézier's curve clockwise on XY plane
@@ -515,9 +519,9 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
   // clockwise is bool
   // pitch can be positive or negative
   function cubBez2DTo3D(curve, clockwise, pitch, crossAxe) {
-    var height = 0; //height position for p1, p2 and p3
+    let height = 0; //height position for p1, p2 and p3
 
-    if(clockwise === false) {
+    if (clockwise === false) {
       util.swapObjects(curve.p0, curve.p3);
       util.swapObjects(curve.p1, curve.p2);
     }
@@ -526,12 +530,13 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
     // b = p*alpha*(r - ax)*(3*r -ax)/(ay*(4*r - ax)*Math.tan(alpha))
     //Set the good cross axe and transform into a helical Bézier curve
     height = pitch / 3;
-    if(crossAxe.toLowerCase() === 'z') {
+    if (crossAxe.toLowerCase() === 'z') {
       curve.p0.z = 0;
       curve.p1.z = height;
       curve.p2.z = height * 2;
       curve.p3.z = height * 3;
-    } else if(crossAxe.toLowerCase() === 'x') {
+    }
+    else if (crossAxe.toLowerCase() === 'x') {
       curve.p0.z = curve.p0.y;
       curve.p0.y = curve.p0.x;
       curve.p0.x = 0;
@@ -544,7 +549,8 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
       curve.p3.z = curve.p3.y;
       curve.p3.y = curve.p3.x;
       curve.p3.x = height * 3;
-    } else if(crossAxe.toLowerCase() === 'y') {
+    }
+    else if (crossAxe.toLowerCase() === 'y') {
       curve.p0.z = curve.p0.x;
       curve.p0.x = curve.p0.y;
       curve.p0.y = 0;
@@ -563,7 +569,7 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
   }
 
   function rotAndPlaBez(curve, center, angle, re, im) {
-    var c = { x: 0, y: 0, z: 0 };
+    let c = { x: 0, y: 0, z: 0 };
     util.scaleAndRotation(c, curve.p0, curve.p0, angle, 1, re, im);
     util.scaleAndRotation(c, curve.p1, curve.p1, angle, 1, re, im);
     util.scaleAndRotation(c, curve.p2, curve.p2, angle, 1, re, im);
@@ -577,22 +583,22 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
 
   // The Bézier's curve must be on the good plane
   function getFullBezier(num90, bez90, numSmall, bezSmall, pitch90) {
-    var arcs = [];
-    var center = util.copyObject(that.center);
-    var axes = util.findAxes(that.crossAxe);
-    var cs = { x: that.start[axes.re] - center[axes.re], y: that.start[axes.im] - center[axes.im] };
-    var i = 0,
+    let arcs = [];
+    let center = util.copyObject(that.center);
+    let axes = util.findAxes(that.crossAxe);
+    let cs = { x: that.start[axes.re] - center[axes.re], y: that.start[axes.im] - center[axes.im] };
+    let i = 0,
       angle = 0,
       sign = that.clockwise === true ? -1 : 1;
 
-    if(num90 === 0 && numSmall === 0) {
+    if (num90 === 0 && numSmall === 0) {
       return arcs;
     }
 
-    if(num90 > 0) {
+    if (num90 > 0) {
       angle = util.findAngleOrientedVectors2({ x: bez90.p0[axes.re], y: bez90.p0[axes.im] }, cs, that.clockwise === false);
 
-      for(i = 0; i < num90; i++) {
+      for (i = 0; i < num90; i++) {
         arcs.push(util.copyObject(bez90));
         rotAndPlaBez(arcs[i], center, angle, axes.re, axes.im);
         // angle += Math.PI / 2 * sign;
@@ -601,10 +607,10 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
       }
     }
 
-    if(numSmall > 0) {
+    if (numSmall > 0) {
       angle = util.findAngleOrientedVectors2({ x: bezSmall.p0[axes.re], y: bezSmall.p0[axes.im] }, cs, that.clockwise === false);
 
-      if(num90 !== 0) {
+      if (num90 !== 0) {
         angle += num90 * 1.570796326794897 * sign;
       }
       arcs.push(util.copyObject(bezSmall));
@@ -625,24 +631,24 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
   }
 
   function arcToBezier() {
-    var num90 = 0,
+    let num90 = 0,
       numSmall = 1; //Number arc = pi/2 and arc < pi/2
-    var bez90 = {},
+    let bez90 = {},
       bezSmall = {};
-    var p90 = 0,
+    let p90 = 0,
       pLittle = 0,
       pAngle = 0; //Pitch of the arcs
-    var angle = getBezierAngle();
-    var radius = getBezierRadius();
-    var absAngle = Math.abs(angle),
+    let angle = getBezierAngle();
+    let radius = getBezierRadius();
+    let absAngle = Math.abs(angle),
       halfPI = 1.570796326794897;
 
-    if(angle === 0 || radius === 0) {
+    if (angle === 0 || radius === 0) {
       return [];
     }
 
     //Find number of diferent sections
-    if(absAngle > halfPI) {
+    if (absAngle > halfPI) {
       //Untrustful (as this language) function, should be tested:
       num90 = parseInt(absAngle / halfPI, 10);
       numSmall = absAngle % halfPI !== 0 ? 1 : 0;
@@ -654,13 +660,13 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
     pLittle = (absAngle - num90 * halfPI) * pAngle;
 
     //Find helical Bézier's curves
-    if(num90 > 0) {
+    if (num90 > 0) {
       bez90 = cubBez2DInt(halfPI, radius);
       cubBez2DTo3D(bez90, angle < 0, p90, that.crossAxe);
     }
-    if(numSmall > 0) {
+    if (numSmall > 0) {
       angle = absAngle - num90 * halfPI;
-      if(that.clockwise === true) {
+      if (that.clockwise === true) {
         angle = -angle;
       }
       bezSmall = cubBez2DInt(angle, radius);
@@ -672,18 +678,18 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
 
   //Cannot use arcToBezier because of calculus of oriented angle
   function circleToBezier() {
-    var bez90 = {};
-    var bezier = [];
-    var pitch = 0;
-    var halfPI = 1.570796326794897;
-    var sign = that.clockwise === true ? -1 : 1;
-    var rotAngle = sign * Math.PI * 2;
-    var radius = getBezierRadius();
-    var i = 0;
-    var center = util.copyObject(that.center);
-    var axes = util.findAxes(that.crossAxe);
+    let bez90 = {};
+    let bezier = [];
+    let pitch = 0;
+    let halfPI = 1.570796326794897;
+    let sign = that.clockwise === true ? -1 : 1;
+    let rotAngle = sign * Math.PI * 2;
+    let radius = getBezierRadius();
+    let i = 0;
+    let center = util.copyObject(that.center);
+    let axes = util.findAxes(that.crossAxe);
 
-    if(radius === 0) {
+    if (radius === 0) {
       return [];
     }
 
@@ -693,7 +699,7 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
     bez90 = cubBez2DInt(halfPI, radius);
     cubBez2DTo3D(bez90, that.clockwise, pitch, that.crossAxe);
 
-    for(i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++) {
       bezier.push(util.copyObject(bez90));
       rotAndPlaBez(bezier[i], center, rotAngle, axes.re, axes.im);
       rotAngle += halfPI * sign;
@@ -713,16 +719,17 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
    * @return {Line|boolean} False if impossible line else the line object.
    */
   that.returnLine = function () {
-    var bez = [];
-    var axes = util.findAxes(that.crossAxe);
+    let bez = [];
+    let axes = util.findAxes(that.crossAxe);
 
-    if(that.start[axes.re] === that.end[axes.re] && that.start[axes.im] === that.end[axes.im]) {
+    if (that.start[axes.re] === that.end[axes.re] && that.start[axes.im] === that.end[axes.im]) {
       bez = circleToBezier();
-    } else {
+    }
+    else {
       bez = arcToBezier();
     }
 
-    if(bez.length === 0) {
+    if (bez.length === 0) {
       return false;
     }
 
@@ -745,17 +752,17 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
    * @return {object|boolean} The center point or false.
    */
   function findCenterWithRadius(start, end, radius, clockwise, crossAxe) {
-    var se = { x: end.x - start.x, y: end.y - start.y, z: end.z - start.z };
-    var angle = 0,
+    let se = { x: end.x - start.x, y: end.y - start.y, z: end.z - start.z };
+    let angle = 0,
       l = 1,
       lSE = 0,
       r = Math.abs(radius),
       aCSCE = 0;
-    var center = { x: 0, y: 0, z: 0 };
-    var axes = util.findAxes(crossAxe);
+    let center = { x: 0, y: 0, z: 0 };
+    let axes = util.findAxes(crossAxe);
     lSE = Math.sqrt(se[axes.re] * se[axes.re] + se[axes.im] * se[axes.im]);
 
-    if(lSE > Math.abs(radius * 2) || lSE === 0) {
+    if (lSE > Math.abs(radius * 2) || lSE === 0) {
       return false;
     }
 
@@ -764,18 +771,19 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
     util.scaleAndRotation(start, end, center, angle, l, axes.re, axes.im);
     aCSCE = util.findAngleVectors2({ x: start[axes.re] - center[axes.re], y: start[axes.im] - center[axes.im] }, { x: end[axes.re] - center[axes.re], y: end[axes.im] - center[axes.im] });
 
-    if(clockwise === true) {
-      if(radius > 0 && -Math.PI <= aCSCE && aCSCE <= 0) {
+    if (clockwise === true) {
+      if (radius > 0 && -Math.PI <= aCSCE && aCSCE <= 0) {
         return center;
       }
-      if(radius < 0 && 0 <= aCSCE && aCSCE <= Math.PI) {
+      if (radius < 0 && 0 <= aCSCE && aCSCE <= Math.PI) {
         return center;
       }
-    } else {
-      if(radius > 0 && 0 <= aCSCE && aCSCE <= Math.PI) {
+    }
+    else {
+      if (radius > 0 && 0 <= aCSCE && aCSCE <= Math.PI) {
         return center;
       }
-      if(radius < 0 && -Math.PI <= aCSCE && aCSCE <= 0) {
+      if (radius < 0 && -Math.PI <= aCSCE && aCSCE <= 0) {
         return center;
       }
     }
@@ -786,19 +794,19 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
 
   //radius is positive or negative
   function findCenter(start, end, parsedCommand, clockwise, crossAxe, inMm) {
-    var delta = inMm === false ? 1 : util.MILLIMETER_TO_INCH;
-    var center = { x: start.x, y: start.y, z: start.z };
-    var distCenterStart, distCenterEnd;
-    var axes = util.findAxes(crossAxe);
+    let delta = inMm === false ? 1 : util.MILLIMETER_TO_INCH;
+    let center = { x: start.x, y: start.y, z: start.z };
+    let distCenterStart, distCenterEnd;
+    let axes = util.findAxes(crossAxe);
 
-    if(parsedCommand.r === undefined) {
-      if(parsedCommand.i !== undefined) {
+    if (parsedCommand.r === undefined) {
+      if (parsedCommand.i !== undefined) {
         center.x += parsedCommand.i * delta;
       }
-      if(parsedCommand.j !== undefined) {
+      if (parsedCommand.j !== undefined) {
         center.y += parsedCommand.j * delta;
       }
-      if(parsedCommand.k !== undefined) {
+      if (parsedCommand.k !== undefined) {
         center.z += parsedCommand.k * delta;
       }
 
@@ -809,16 +817,17 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
       distCenterEnd = Math.pow(center[axes.re] - end[axes.re], 2);
       distCenterEnd += Math.pow(center[axes.im] - end[axes.im], 2);
 
-      if(util.nearlyEqual(distCenterStart, 0) === true || util.nearlyEqual(distCenterEnd, 0) === true) {
+      if (util.nearlyEqual(distCenterStart, 0) === true || util.nearlyEqual(distCenterEnd, 0) === true) {
         return false;
       }
 
-      if(util.nearlyEqual(distCenterStart, distCenterEnd) === false) {
+      if (util.nearlyEqual(distCenterStart, distCenterEnd) === false) {
         return false;
       }
-    } else {
+    }
+    else {
       center = findCenterWithRadius(start, end, parsedCommand.r * delta, clockwise, crossAxe);
-      if(center === false) {
+      if (center === false) {
         return false;
       }
     }
@@ -828,7 +837,7 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
 
   function axeCutArc(reValue, imValue, angleBezier, cs) {
     //Find the angle in the same orientation than the Bézier's angle
-    var a = util.findAngleOrientedVectors2(cs, { x: reValue, y: imValue }, that.clockwise === false);
+    let a = util.findAngleOrientedVectors2(cs, { x: reValue, y: imValue }, that.clockwise === false);
     return util.isInclude(a, 0, angleBezier) === true;
   }
 
@@ -841,25 +850,25 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
    * @return {Size} The size.
    */
   that.getSize = function () {
-    var axes = util.findAxes(that.crossAxe);
-    var cs = {
+    let axes = util.findAxes(that.crossAxe);
+    let cs = {
       x: that.start[axes.re] - that.center[axes.re],
       y: that.start[axes.im] - that.center[axes.im]
     };
-    var radius = getBezierRadius(),
+    let radius = getBezierRadius(),
       aBez = getBezierAngle();
-    var min = { x: 0, y: 0, z: 0 },
+    let min = { x: 0, y: 0, z: 0 },
       max = { x: 0, y: 0, z: 0 };
 
     // Is circle
-    if(that.start[axes.re] === that.end[axes.re] && that.start[axes.im] === that.end[axes.im]) {
+    if (that.start[axes.re] === that.end[axes.re] && that.start[axes.im] === that.end[axes.im]) {
       min[axes.re] = that.center[axes.re] - radius;
       min[axes.im] = that.center[axes.im] - radius;
       min[axes.cr] = Math.min(that.start[axes.cr], that.end[axes.cr]);
       max[axes.re] = that.center[axes.re] + radius;
       max[axes.im] = that.center[axes.im] + radius;
       max[axes.cr] = Math.max(that.start[axes.cr], that.end[axes.cr]);
-      return { min: min, max: max };
+      return { min, max };
     }
 
     min.x = Math.min(that.start.x, that.end.x);
@@ -869,20 +878,20 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
     max.y = Math.max(that.start.y, that.end.y);
     max.z = Math.max(that.start.z, that.end.z);
 
-    if(axeCutArc(0, 1, aBez, cs) === true) {
+    if (axeCutArc(0, 1, aBez, cs) === true) {
       max[axes.im] = that.center[axes.im] + radius;
     }
-    if(axeCutArc(0, -1, aBez, cs) === true) {
+    if (axeCutArc(0, -1, aBez, cs) === true) {
       min[axes.im] = that.center[axes.im] - radius;
     }
-    if(axeCutArc(1, 0, aBez, cs) === true) {
+    if (axeCutArc(1, 0, aBez, cs) === true) {
       max[axes.re] = that.center[axes.re] + radius;
     }
-    if(axeCutArc(-1, 0, aBez, cs) === true) {
+    if (axeCutArc(-1, 0, aBez, cs) === true) {
       min[axes.re] = that.center[axes.re] - radius;
     }
 
-    return { min: min, max: max };
+    return { min, max };
   };
 
   function initialize(index, start, parsedCommand, settings) {
@@ -893,9 +902,10 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
     that.clockwise = parsedCommand.type === 'G2';
     that.center = findCenter(start, that.end, parsedCommand, that.clockwise, settings.crossAxe, settings.inMm);
     that.crossAxe = settings.crossAxe;
-    if(parsedCommand.f === undefined) {
+    if (parsedCommand.f === undefined) {
       that.feedrate = settings.feedrate;
-    } else {
+    }
+    else {
       that.feedrate = util.calculateFeedrate(parsedCommand.f, settings.inMm);
     }
   }
@@ -905,7 +915,8 @@ var CurvedLine = function (index, start, end, parsedCommand, settings) {
 
 export { StraightLine, CurvedLine };
 
-var GParser = (function () {
+let GParser = (function () {
+
   /*
    * Generated by PEG.js 0.8.0.
    *
@@ -934,7 +945,7 @@ var GParser = (function () {
   peg$subclass(SyntaxError, Error);
 
   function parse(input) {
-    var options = arguments.length > 1 ? arguments[1] : {},
+    let options = arguments.length > 1 ? arguments[1] : {},
       peg$FAILED = {},
       peg$startRuleFunctions = { start: peg$parsestart },
       peg$startRuleFunction = peg$parsestart,
@@ -942,7 +953,7 @@ var GParser = (function () {
       peg$c1 = null,
       peg$c2 = [],
       peg$c3 = function (num, words) {
-        return { N: num, words: words };
+        return { N: num, words };
       },
       peg$c4 = function (word, value) {
         return [word, value];
@@ -973,10 +984,10 @@ var GParser = (function () {
       peg$c22 = '/',
       peg$c23 = { type: 'literal', value: '/', description: '"/"' },
       peg$c24 = function (left, right) {
-        return { op: 'ATAN', left: left, right: right };
+        return { op: 'ATAN', left, right };
       },
       peg$c25 = function (op, expr) {
-        return { op: op, right: expr };
+        return { op, right: expr };
       },
       peg$c26 = '#',
       peg$c27 = { type: 'literal', value: '#', description: '"#"' },
@@ -1080,8 +1091,8 @@ var GParser = (function () {
       peg$silentFails = 0,
       peg$result;
 
-    if('startRule' in options) {
-      if(!(options.startRule in peg$startRuleFunctions)) {
+    if ('startRule' in options) {
+      if (!(options.startRule in peg$startRuleFunctions)) {
         throw new Error('Can\'t start parsing from rule "' + options.startRule + '".');
       }
 
@@ -1105,7 +1116,7 @@ var GParser = (function () {
     }
 
     function expected(description) {
-      throw peg$buildException(null, [{ type: 'other', description: description }], peg$reportedPos);
+      throw peg$buildException(null, [{ type: 'other', description }], peg$reportedPos);
     }
 
     function error(message) {
@@ -1114,29 +1125,31 @@ var GParser = (function () {
 
     function peg$computePosDetails(pos) {
       function advance(details, startPos, endPos) {
-        var p, ch;
+        let p, ch;
 
-        for(p = startPos; p < endPos; p++) {
+        for (p = startPos; p < endPos; p++) {
           ch = input.charAt(p);
-          if(ch === '\n') {
-            if(!details.seenCR) {
+          if (ch === '\n') {
+            if (!details.seenCR) {
               details.line++;
             }
             details.column = 1;
             details.seenCR = false;
-          } else if(ch === '\r' || ch === '\u2028' || ch === '\u2029') {
+          }
+          else if (ch === '\r' || ch === '\u2028' || ch === '\u2029') {
             details.line++;
             details.column = 1;
             details.seenCR = true;
-          } else {
+          }
+          else {
             details.column++;
             details.seenCR = false;
           }
         }
       }
 
-      if(peg$cachedPos !== pos) {
-        if(peg$cachedPos > pos) {
+      if (peg$cachedPos !== pos) {
+        if (peg$cachedPos > pos) {
           peg$cachedPos = 0;
           peg$cachedPosDetails = { line: 1, column: 1, seenCR: false };
         }
@@ -1148,11 +1161,11 @@ var GParser = (function () {
     }
 
     function peg$fail(expected) {
-      if(peg$currPos < peg$maxFailPos) {
+      if (peg$currPos < peg$maxFailPos) {
         return;
       }
 
-      if(peg$currPos > peg$maxFailPos) {
+      if (peg$currPos > peg$maxFailPos) {
         peg$maxFailPos = peg$currPos;
         peg$maxFailExpected = [];
       }
@@ -1162,22 +1175,25 @@ var GParser = (function () {
 
     function peg$buildException(message, expected, pos) {
       function cleanupExpected(expected) {
-        var i = 1;
+        let i = 1;
 
-        expected.sort(function (a, b) {
-          if(a.description < b.description) {
+        expected.sort((a, b) => {
+          if (a.description < b.description) {
             return -1;
-          } else if(a.description > b.description) {
-            return 1;
-          } else {
-            return 0;
           }
+          else if (a.description > b.description) {
+            return 1;
+          }
+ 
+          return 0;
+          
         });
 
-        while(i < expected.length) {
-          if(expected[i - 1] === expected[i]) {
+        while (i < expected.length) {
+          if (expected[i - 1] === expected[i]) {
             expected.splice(i, 1);
-          } else {
+          }
+          else {
             i++;
           }
         }
@@ -1197,26 +1213,18 @@ var GParser = (function () {
             .replace(/\n/g, '\\n')
             .replace(/\f/g, '\\f')
             .replace(/\r/g, '\\r')
-            .replace(/[\x00-\x07\x0B\x0E\x0F]/g, function (ch) {
-              return '\\x0' + hex(ch);
-            })
-            .replace(/[\x10-\x1F\x80-\xFF]/g, function (ch) {
-              return '\\x' + hex(ch);
-            })
-            .replace(/[\u0180-\u0FFF]/g, function (ch) {
-              return '\\u0' + hex(ch);
-            })
-            .replace(/[\u1080-\uFFFF]/g, function (ch) {
-              return '\\u' + hex(ch);
-            });
+            .replace(/[\x00-\x07\x0B\x0E\x0F]/g, (ch) => '\\x0' + hex(ch))
+            .replace(/[\x10-\x1F\x80-\xFF]/g, (ch) => '\\x' + hex(ch))
+            .replace(/[\u0180-\u0FFF]/g, (ch) => '\\u0' + hex(ch))
+            .replace(/[\u1080-\uFFFF]/g, (ch) => '\\u' + hex(ch));
         }
 
-        var expectedDescs = new Array(expected.length),
+        let expectedDescs = new Array(expected.length),
           expectedDesc,
           foundDesc,
           i;
 
-        for(i = 0; i < expected.length; i++) {
+        for (i = 0; i < expected.length; i++) {
           expectedDescs[i] = expected[i].description;
         }
 
@@ -1227,10 +1235,10 @@ var GParser = (function () {
         return 'Expected ' + expectedDesc + ' but ' + foundDesc + ' found.';
       }
 
-      var posDetails = peg$computePosDetails(pos),
+      let posDetails = peg$computePosDetails(pos),
         found = pos < input.length ? input.charAt(pos) : null;
 
-      if(expected !== null) {
+      if (expected !== null) {
         cleanupExpected(expected);
       }
 
@@ -1238,7 +1246,7 @@ var GParser = (function () {
     }
 
     function peg$parsestart() {
-      var s0;
+      let s0;
 
       s0 = peg$parseline();
 
@@ -1246,29 +1254,31 @@ var GParser = (function () {
     }
 
     function peg$parseline() {
-      var s0, s1, s2, s3;
+      let s0, s1, s2, s3;
 
       s0 = peg$currPos;
       s1 = peg$parseline_number();
-      if(s1 === peg$FAILED) {
+      if (s1 === peg$FAILED) {
         s1 = peg$c1;
       }
-      if(s1 !== peg$FAILED) {
+      if (s1 !== peg$FAILED) {
         s2 = [];
         s3 = peg$parseword();
-        while(s3 !== peg$FAILED) {
+        while (s3 !== peg$FAILED) {
           s2.push(s3);
           s3 = peg$parseword();
         }
-        if(s2 !== peg$FAILED) {
+        if (s2 !== peg$FAILED) {
           peg$reportedPos = s0;
           s1 = peg$c3(s1, s2);
           s0 = s1;
-        } else {
+        }
+        else {
           peg$currPos = s0;
           s0 = peg$c0;
         }
-      } else {
+      }
+      else {
         peg$currPos = s0;
         s0 = peg$c0;
       }
@@ -1277,21 +1287,23 @@ var GParser = (function () {
     }
 
     function peg$parseword() {
-      var s0, s1, s2;
+      let s0, s1, s2;
 
       s0 = peg$currPos;
       s1 = peg$parseletter();
-      if(s1 !== peg$FAILED) {
+      if (s1 !== peg$FAILED) {
         s2 = peg$parsefactor1();
-        if(s2 !== peg$FAILED) {
+        if (s2 !== peg$FAILED) {
           peg$reportedPos = s0;
           s1 = peg$c4(s1, s2);
           s0 = s1;
-        } else {
+        }
+        else {
           peg$currPos = s0;
           s0 = peg$c0;
         }
-      } else {
+      }
+      else {
         peg$currPos = s0;
         s0 = peg$c0;
       }
@@ -1300,28 +1312,31 @@ var GParser = (function () {
     }
 
     function peg$parseline_number() {
-      var s0, s1, s2;
+      let s0, s1, s2;
 
       s0 = peg$currPos;
-      if(input.charCodeAt(peg$currPos) === 78) {
+      if (input.charCodeAt(peg$currPos) === 78) {
         s1 = peg$c5;
         peg$currPos++;
-      } else {
+      }
+      else {
         s1 = peg$FAILED;
-        if(peg$silentFails === 0) {
+        if (peg$silentFails === 0) {
           peg$fail(peg$c6);
         }
       }
-      if(s1 !== peg$FAILED) {
+      if (s1 !== peg$FAILED) {
         s2 = peg$parseinteger();
-        if(s2 !== peg$FAILED) {
+        if (s2 !== peg$FAILED) {
           s1 = [s1, s2];
           s0 = s1;
-        } else {
+        }
+        else {
           peg$currPos = s0;
           s0 = peg$c0;
         }
-      } else {
+      }
+      else {
         peg$currPos = s0;
         s0 = peg$c0;
       }
@@ -1330,36 +1345,39 @@ var GParser = (function () {
     }
 
     function peg$parseinteger() {
-      var s0, s1, s2;
+      let s0, s1, s2;
 
       s0 = peg$currPos;
       s1 = [];
-      if(peg$c7.test(input.charAt(peg$currPos))) {
+      if (peg$c7.test(input.charAt(peg$currPos))) {
         s2 = input.charAt(peg$currPos);
         peg$currPos++;
-      } else {
+      }
+      else {
         s2 = peg$FAILED;
-        if(peg$silentFails === 0) {
+        if (peg$silentFails === 0) {
           peg$fail(peg$c8);
         }
       }
-      if(s2 !== peg$FAILED) {
-        while(s2 !== peg$FAILED) {
+      if (s2 !== peg$FAILED) {
+        while (s2 !== peg$FAILED) {
           s1.push(s2);
-          if(peg$c7.test(input.charAt(peg$currPos))) {
+          if (peg$c7.test(input.charAt(peg$currPos))) {
             s2 = input.charAt(peg$currPos);
             peg$currPos++;
-          } else {
+          }
+          else {
             s2 = peg$FAILED;
-            if(peg$silentFails === 0) {
+            if (peg$silentFails === 0) {
               peg$fail(peg$c8);
             }
           }
         }
-      } else {
+      }
+      else {
         s1 = peg$c0;
       }
-      if(s1 !== peg$FAILED) {
+      if (s1 !== peg$FAILED) {
         peg$reportedPos = s0;
         s1 = peg$c9();
       }
@@ -1369,113 +1387,126 @@ var GParser = (function () {
     }
 
     function peg$parsenumber() {
-      var s0, s1, s2, s3, s4, s5, s6;
+      let s0, s1, s2, s3, s4, s5, s6;
 
       s0 = peg$currPos;
-      if(peg$c10.test(input.charAt(peg$currPos))) {
+      if (peg$c10.test(input.charAt(peg$currPos))) {
         s1 = input.charAt(peg$currPos);
         peg$currPos++;
-      } else {
+      }
+      else {
         s1 = peg$FAILED;
-        if(peg$silentFails === 0) {
+        if (peg$silentFails === 0) {
           peg$fail(peg$c11);
         }
       }
-      if(s1 === peg$FAILED) {
+      if (s1 === peg$FAILED) {
         s1 = peg$c1;
       }
-      if(s1 !== peg$FAILED) {
+      if (s1 !== peg$FAILED) {
         s2 = [];
-        if(peg$c7.test(input.charAt(peg$currPos))) {
+        if (peg$c7.test(input.charAt(peg$currPos))) {
           s3 = input.charAt(peg$currPos);
           peg$currPos++;
-        } else {
+        }
+        else {
           s3 = peg$FAILED;
-          if(peg$silentFails === 0) {
+          if (peg$silentFails === 0) {
             peg$fail(peg$c8);
           }
         }
-        if(s3 !== peg$FAILED) {
-          while(s3 !== peg$FAILED) {
+        if (s3 !== peg$FAILED) {
+          while (s3 !== peg$FAILED) {
             s2.push(s3);
-            if(peg$c7.test(input.charAt(peg$currPos))) {
+            if (peg$c7.test(input.charAt(peg$currPos))) {
               s3 = input.charAt(peg$currPos);
               peg$currPos++;
-            } else {
+            }
+            else {
               s3 = peg$FAILED;
-              if(peg$silentFails === 0) {
+              if (peg$silentFails === 0) {
                 peg$fail(peg$c8);
               }
             }
           }
-        } else {
+        }
+        else {
           s2 = peg$c0;
         }
-        if(s2 !== peg$FAILED) {
+        if (s2 !== peg$FAILED) {
           s3 = peg$currPos;
-          if(peg$c12.test(input.charAt(peg$currPos))) {
+          if (peg$c12.test(input.charAt(peg$currPos))) {
             s4 = input.charAt(peg$currPos);
             peg$currPos++;
-          } else {
+          }
+          else {
             s4 = peg$FAILED;
-            if(peg$silentFails === 0) {
+            if (peg$silentFails === 0) {
               peg$fail(peg$c13);
             }
           }
-          if(s4 !== peg$FAILED) {
+          if (s4 !== peg$FAILED) {
             s5 = [];
-            if(peg$c7.test(input.charAt(peg$currPos))) {
+            if (peg$c7.test(input.charAt(peg$currPos))) {
               s6 = input.charAt(peg$currPos);
               peg$currPos++;
-            } else {
+            }
+            else {
               s6 = peg$FAILED;
-              if(peg$silentFails === 0) {
+              if (peg$silentFails === 0) {
                 peg$fail(peg$c8);
               }
             }
-            if(s6 !== peg$FAILED) {
-              while(s6 !== peg$FAILED) {
+            if (s6 !== peg$FAILED) {
+              while (s6 !== peg$FAILED) {
                 s5.push(s6);
-                if(peg$c7.test(input.charAt(peg$currPos))) {
+                if (peg$c7.test(input.charAt(peg$currPos))) {
                   s6 = input.charAt(peg$currPos);
                   peg$currPos++;
-                } else {
+                }
+                else {
                   s6 = peg$FAILED;
-                  if(peg$silentFails === 0) {
+                  if (peg$silentFails === 0) {
                     peg$fail(peg$c8);
                   }
                 }
               }
-            } else {
+            }
+            else {
               s5 = peg$c0;
             }
-            if(s5 !== peg$FAILED) {
+            if (s5 !== peg$FAILED) {
               s4 = [s4, s5];
               s3 = s4;
-            } else {
+            }
+            else {
               peg$currPos = s3;
               s3 = peg$c0;
             }
-          } else {
+          }
+          else {
             peg$currPos = s3;
             s3 = peg$c0;
           }
-          if(s3 === peg$FAILED) {
+          if (s3 === peg$FAILED) {
             s3 = peg$c1;
           }
-          if(s3 !== peg$FAILED) {
+          if (s3 !== peg$FAILED) {
             peg$reportedPos = s0;
             s1 = peg$c14();
             s0 = s1;
-          } else {
+          }
+          else {
             peg$currPos = s0;
             s0 = peg$c0;
           }
-        } else {
+        }
+        else {
           peg$currPos = s0;
           s0 = peg$c0;
         }
-      } else {
+      }
+      else {
         peg$currPos = s0;
         s0 = peg$c0;
       }
@@ -1484,43 +1515,48 @@ var GParser = (function () {
     }
 
     function peg$parseexpression() {
-      var s0, s1, s2, s3;
+      let s0, s1, s2, s3;
 
       s0 = peg$currPos;
-      if(input.charCodeAt(peg$currPos) === 91) {
+      if (input.charCodeAt(peg$currPos) === 91) {
         s1 = peg$c15;
         peg$currPos++;
-      } else {
+      }
+      else {
         s1 = peg$FAILED;
-        if(peg$silentFails === 0) {
+        if (peg$silentFails === 0) {
           peg$fail(peg$c16);
         }
       }
-      if(s1 !== peg$FAILED) {
+      if (s1 !== peg$FAILED) {
         s2 = peg$parsefactor4();
-        if(s2 !== peg$FAILED) {
-          if(input.charCodeAt(peg$currPos) === 93) {
+        if (s2 !== peg$FAILED) {
+          if (input.charCodeAt(peg$currPos) === 93) {
             s3 = peg$c17;
             peg$currPos++;
-          } else {
+          }
+          else {
             s3 = peg$FAILED;
-            if(peg$silentFails === 0) {
+            if (peg$silentFails === 0) {
               peg$fail(peg$c18);
             }
           }
-          if(s3 !== peg$FAILED) {
+          if (s3 !== peg$FAILED) {
             peg$reportedPos = s0;
             s1 = peg$c19(s2);
             s0 = s1;
-          } else {
+          }
+          else {
             peg$currPos = s0;
             s0 = peg$c0;
           }
-        } else {
+        }
+        else {
           peg$currPos = s0;
           s0 = peg$c0;
         }
-      } else {
+      }
+      else {
         peg$currPos = s0;
         s0 = peg$c0;
       }
@@ -1529,49 +1565,55 @@ var GParser = (function () {
     }
 
     function peg$parseatan_factor() {
-      var s0, s1, s2, s3, s4;
+      let s0, s1, s2, s3, s4;
 
       s0 = peg$currPos;
-      if(input.substr(peg$currPos, 4) === peg$c20) {
+      if (input.substr(peg$currPos, 4) === peg$c20) {
         s1 = peg$c20;
         peg$currPos += 4;
-      } else {
+      }
+      else {
         s1 = peg$FAILED;
-        if(peg$silentFails === 0) {
+        if (peg$silentFails === 0) {
           peg$fail(peg$c21);
         }
       }
-      if(s1 !== peg$FAILED) {
+      if (s1 !== peg$FAILED) {
         s2 = peg$parseexpression();
-        if(s2 !== peg$FAILED) {
-          if(input.charCodeAt(peg$currPos) === 47) {
+        if (s2 !== peg$FAILED) {
+          if (input.charCodeAt(peg$currPos) === 47) {
             s3 = peg$c22;
             peg$currPos++;
-          } else {
+          }
+          else {
             s3 = peg$FAILED;
-            if(peg$silentFails === 0) {
+            if (peg$silentFails === 0) {
               peg$fail(peg$c23);
             }
           }
-          if(s3 !== peg$FAILED) {
+          if (s3 !== peg$FAILED) {
             s4 = peg$parseexpression();
-            if(s4 !== peg$FAILED) {
+            if (s4 !== peg$FAILED) {
               peg$reportedPos = s0;
               s1 = peg$c24(s2, s4);
               s0 = s1;
-            } else {
+            }
+            else {
               peg$currPos = s0;
               s0 = peg$c0;
             }
-          } else {
+          }
+          else {
             peg$currPos = s0;
             s0 = peg$c0;
           }
-        } else {
+        }
+        else {
           peg$currPos = s0;
           s0 = peg$c0;
         }
-      } else {
+      }
+      else {
         peg$currPos = s0;
         s0 = peg$c0;
       }
@@ -1580,21 +1622,23 @@ var GParser = (function () {
     }
 
     function peg$parseunary_factor() {
-      var s0, s1, s2;
+      let s0, s1, s2;
 
       s0 = peg$currPos;
       s1 = peg$parseunary_op();
-      if(s1 !== peg$FAILED) {
+      if (s1 !== peg$FAILED) {
         s2 = peg$parseexpression();
-        if(s2 !== peg$FAILED) {
+        if (s2 !== peg$FAILED) {
           peg$reportedPos = s0;
           s1 = peg$c25(s1, s2);
           s0 = s1;
-        } else {
+        }
+        else {
           peg$currPos = s0;
           s0 = peg$c0;
         }
-      } else {
+      }
+      else {
         peg$currPos = s0;
         s0 = peg$c0;
       }
@@ -1603,35 +1647,38 @@ var GParser = (function () {
     }
 
     function peg$parseparam_value() {
-      var s0, s1, s2;
+      let s0, s1, s2;
 
       s0 = peg$currPos;
-      if(input.charCodeAt(peg$currPos) === 35) {
+      if (input.charCodeAt(peg$currPos) === 35) {
         s1 = peg$c26;
         peg$currPos++;
-      } else {
+      }
+      else {
         s1 = peg$FAILED;
-        if(peg$silentFails === 0) {
+        if (peg$silentFails === 0) {
           peg$fail(peg$c27);
         }
       }
-      if(s1 !== peg$FAILED) {
+      if (s1 !== peg$FAILED) {
         s2 = peg$parseexpression();
-        if(s2 === peg$FAILED) {
+        if (s2 === peg$FAILED) {
           s2 = peg$parsenumber();
-          if(s2 === peg$FAILED) {
+          if (s2 === peg$FAILED) {
             s2 = peg$parseparam_value();
           }
         }
-        if(s2 !== peg$FAILED) {
+        if (s2 !== peg$FAILED) {
           peg$reportedPos = s0;
           s1 = peg$c28(s2);
           s0 = s1;
-        } else {
+        }
+        else {
           peg$currPos = s0;
           s0 = peg$c0;
         }
-      } else {
+      }
+      else {
         peg$currPos = s0;
         s0 = peg$c0;
       }
@@ -1640,16 +1687,16 @@ var GParser = (function () {
     }
 
     function peg$parsefactor1() {
-      var s0;
+      let s0;
 
       s0 = peg$parseexpression();
-      if(s0 === peg$FAILED) {
+      if (s0 === peg$FAILED) {
         s0 = peg$parsenumber();
-        if(s0 === peg$FAILED) {
+        if (s0 === peg$FAILED) {
           s0 = peg$parseatan_factor();
-          if(s0 === peg$FAILED) {
+          if (s0 === peg$FAILED) {
             s0 = peg$parseunary_factor();
-            if(s0 === peg$FAILED) {
+            if (s0 === peg$FAILED) {
               s0 = peg$parseparam_value();
             }
           }
@@ -1660,54 +1707,60 @@ var GParser = (function () {
     }
 
     function peg$parsefactor2() {
-      var s0, s1, s2, s3, s4, s5;
+      let s0, s1, s2, s3, s4, s5;
 
       s0 = peg$currPos;
       s1 = peg$parsefactor1();
-      if(s1 !== peg$FAILED) {
+      if (s1 !== peg$FAILED) {
         s2 = [];
         s3 = peg$currPos;
         s4 = peg$parsegroup1_op();
-        if(s4 !== peg$FAILED) {
+        if (s4 !== peg$FAILED) {
           s5 = peg$parsefactor1();
-          if(s5 !== peg$FAILED) {
+          if (s5 !== peg$FAILED) {
             s4 = [s4, s5];
             s3 = s4;
-          } else {
+          }
+          else {
             peg$currPos = s3;
             s3 = peg$c0;
           }
-        } else {
+        }
+        else {
           peg$currPos = s3;
           s3 = peg$c0;
         }
-        while(s3 !== peg$FAILED) {
+        while (s3 !== peg$FAILED) {
           s2.push(s3);
           s3 = peg$currPos;
           s4 = peg$parsegroup1_op();
-          if(s4 !== peg$FAILED) {
+          if (s4 !== peg$FAILED) {
             s5 = peg$parsefactor1();
-            if(s5 !== peg$FAILED) {
+            if (s5 !== peg$FAILED) {
               s4 = [s4, s5];
               s3 = s4;
-            } else {
+            }
+            else {
               peg$currPos = s3;
               s3 = peg$c0;
             }
-          } else {
+          }
+          else {
             peg$currPos = s3;
             s3 = peg$c0;
           }
         }
-        if(s2 !== peg$FAILED) {
+        if (s2 !== peg$FAILED) {
           peg$reportedPos = s0;
           s1 = peg$c29(s1, s2);
           s0 = s1;
-        } else {
+        }
+        else {
           peg$currPos = s0;
           s0 = peg$c0;
         }
-      } else {
+      }
+      else {
         peg$currPos = s0;
         s0 = peg$c0;
       }
@@ -1716,54 +1769,60 @@ var GParser = (function () {
     }
 
     function peg$parsefactor3() {
-      var s0, s1, s2, s3, s4, s5;
+      let s0, s1, s2, s3, s4, s5;
 
       s0 = peg$currPos;
       s1 = peg$parsefactor2();
-      if(s1 !== peg$FAILED) {
+      if (s1 !== peg$FAILED) {
         s2 = [];
         s3 = peg$currPos;
         s4 = peg$parsegroup2_op();
-        if(s4 !== peg$FAILED) {
+        if (s4 !== peg$FAILED) {
           s5 = peg$parsefactor2();
-          if(s5 !== peg$FAILED) {
+          if (s5 !== peg$FAILED) {
             s4 = [s4, s5];
             s3 = s4;
-          } else {
+          }
+          else {
             peg$currPos = s3;
             s3 = peg$c0;
           }
-        } else {
+        }
+        else {
           peg$currPos = s3;
           s3 = peg$c0;
         }
-        while(s3 !== peg$FAILED) {
+        while (s3 !== peg$FAILED) {
           s2.push(s3);
           s3 = peg$currPos;
           s4 = peg$parsegroup2_op();
-          if(s4 !== peg$FAILED) {
+          if (s4 !== peg$FAILED) {
             s5 = peg$parsefactor2();
-            if(s5 !== peg$FAILED) {
+            if (s5 !== peg$FAILED) {
               s4 = [s4, s5];
               s3 = s4;
-            } else {
+            }
+            else {
               peg$currPos = s3;
               s3 = peg$c0;
             }
-          } else {
+          }
+          else {
             peg$currPos = s3;
             s3 = peg$c0;
           }
         }
-        if(s2 !== peg$FAILED) {
+        if (s2 !== peg$FAILED) {
           peg$reportedPos = s0;
           s1 = peg$c30(s1, s2);
           s0 = s1;
-        } else {
+        }
+        else {
           peg$currPos = s0;
           s0 = peg$c0;
         }
-      } else {
+      }
+      else {
         peg$currPos = s0;
         s0 = peg$c0;
       }
@@ -1772,54 +1831,60 @@ var GParser = (function () {
     }
 
     function peg$parsefactor4() {
-      var s0, s1, s2, s3, s4, s5;
+      let s0, s1, s2, s3, s4, s5;
 
       s0 = peg$currPos;
       s1 = peg$parsefactor3();
-      if(s1 !== peg$FAILED) {
+      if (s1 !== peg$FAILED) {
         s2 = [];
         s3 = peg$currPos;
         s4 = peg$parsegroup3_op();
-        if(s4 !== peg$FAILED) {
+        if (s4 !== peg$FAILED) {
           s5 = peg$parsefactor3();
-          if(s5 !== peg$FAILED) {
+          if (s5 !== peg$FAILED) {
             s4 = [s4, s5];
             s3 = s4;
-          } else {
+          }
+          else {
             peg$currPos = s3;
             s3 = peg$c0;
           }
-        } else {
+        }
+        else {
           peg$currPos = s3;
           s3 = peg$c0;
         }
-        while(s3 !== peg$FAILED) {
+        while (s3 !== peg$FAILED) {
           s2.push(s3);
           s3 = peg$currPos;
           s4 = peg$parsegroup3_op();
-          if(s4 !== peg$FAILED) {
+          if (s4 !== peg$FAILED) {
             s5 = peg$parsefactor3();
-            if(s5 !== peg$FAILED) {
+            if (s5 !== peg$FAILED) {
               s4 = [s4, s5];
               s3 = s4;
-            } else {
+            }
+            else {
               peg$currPos = s3;
               s3 = peg$c0;
             }
-          } else {
+          }
+          else {
             peg$currPos = s3;
             s3 = peg$c0;
           }
         }
-        if(s2 !== peg$FAILED) {
+        if (s2 !== peg$FAILED) {
           peg$reportedPos = s0;
           s1 = peg$c30(s1, s2);
           s0 = s1;
-        } else {
+        }
+        else {
           peg$currPos = s0;
           s0 = peg$c0;
         }
-      } else {
+      }
+      else {
         peg$currPos = s0;
         s0 = peg$c0;
       }
@@ -1828,14 +1893,15 @@ var GParser = (function () {
     }
 
     function peg$parsegroup1_op() {
-      var s0;
+      let s0;
 
-      if(input.substr(peg$currPos, 2) === peg$c31) {
+      if (input.substr(peg$currPos, 2) === peg$c31) {
         s0 = peg$c31;
         peg$currPos += 2;
-      } else {
+      }
+      else {
         s0 = peg$FAILED;
-        if(peg$silentFails === 0) {
+        if (peg$silentFails === 0) {
           peg$fail(peg$c32);
         }
       }
@@ -1844,34 +1910,37 @@ var GParser = (function () {
     }
 
     function peg$parsegroup2_op() {
-      var s0;
+      let s0;
 
-      if(input.charCodeAt(peg$currPos) === 42) {
+      if (input.charCodeAt(peg$currPos) === 42) {
         s0 = peg$c33;
         peg$currPos++;
-      } else {
+      }
+      else {
         s0 = peg$FAILED;
-        if(peg$silentFails === 0) {
+        if (peg$silentFails === 0) {
           peg$fail(peg$c34);
         }
       }
-      if(s0 === peg$FAILED) {
-        if(input.charCodeAt(peg$currPos) === 47) {
+      if (s0 === peg$FAILED) {
+        if (input.charCodeAt(peg$currPos) === 47) {
           s0 = peg$c22;
           peg$currPos++;
-        } else {
+        }
+        else {
           s0 = peg$FAILED;
-          if(peg$silentFails === 0) {
+          if (peg$silentFails === 0) {
             peg$fail(peg$c23);
           }
         }
-        if(s0 === peg$FAILED) {
-          if(input.substr(peg$currPos, 3) === peg$c35) {
+        if (s0 === peg$FAILED) {
+          if (input.substr(peg$currPos, 3) === peg$c35) {
             s0 = peg$c35;
             peg$currPos += 3;
-          } else {
+          }
+          else {
             s0 = peg$FAILED;
-            if(peg$silentFails === 0) {
+            if (peg$silentFails === 0) {
               peg$fail(peg$c36);
             }
           }
@@ -1882,54 +1951,59 @@ var GParser = (function () {
     }
 
     function peg$parsegroup3_op() {
-      var s0;
+      let s0;
 
-      if(input.charCodeAt(peg$currPos) === 43) {
+      if (input.charCodeAt(peg$currPos) === 43) {
         s0 = peg$c37;
         peg$currPos++;
-      } else {
+      }
+      else {
         s0 = peg$FAILED;
-        if(peg$silentFails === 0) {
+        if (peg$silentFails === 0) {
           peg$fail(peg$c38);
         }
       }
-      if(s0 === peg$FAILED) {
-        if(input.charCodeAt(peg$currPos) === 45) {
+      if (s0 === peg$FAILED) {
+        if (input.charCodeAt(peg$currPos) === 45) {
           s0 = peg$c39;
           peg$currPos++;
-        } else {
+        }
+        else {
           s0 = peg$FAILED;
-          if(peg$silentFails === 0) {
+          if (peg$silentFails === 0) {
             peg$fail(peg$c40);
           }
         }
-        if(s0 === peg$FAILED) {
-          if(input.substr(peg$currPos, 2) === peg$c41) {
+        if (s0 === peg$FAILED) {
+          if (input.substr(peg$currPos, 2) === peg$c41) {
             s0 = peg$c41;
             peg$currPos += 2;
-          } else {
+          }
+          else {
             s0 = peg$FAILED;
-            if(peg$silentFails === 0) {
+            if (peg$silentFails === 0) {
               peg$fail(peg$c42);
             }
           }
-          if(s0 === peg$FAILED) {
-            if(input.substr(peg$currPos, 3) === peg$c43) {
+          if (s0 === peg$FAILED) {
+            if (input.substr(peg$currPos, 3) === peg$c43) {
               s0 = peg$c43;
               peg$currPos += 3;
-            } else {
+            }
+            else {
               s0 = peg$FAILED;
-              if(peg$silentFails === 0) {
+              if (peg$silentFails === 0) {
                 peg$fail(peg$c44);
               }
             }
-            if(s0 === peg$FAILED) {
-              if(input.substr(peg$currPos, 3) === peg$c45) {
+            if (s0 === peg$FAILED) {
+              if (input.substr(peg$currPos, 3) === peg$c45) {
                 s0 = peg$c45;
                 peg$currPos += 3;
-              } else {
+              }
+              else {
                 s0 = peg$FAILED;
-                if(peg$silentFails === 0) {
+                if (peg$silentFails === 0) {
                   peg$fail(peg$c46);
                 }
               }
@@ -1942,134 +2016,147 @@ var GParser = (function () {
     }
 
     function peg$parseunary_op() {
-      var s0;
+      let s0;
 
-      if(input.substr(peg$currPos, 3) === peg$c47) {
+      if (input.substr(peg$currPos, 3) === peg$c47) {
         s0 = peg$c47;
         peg$currPos += 3;
-      } else {
+      }
+      else {
         s0 = peg$FAILED;
-        if(peg$silentFails === 0) {
+        if (peg$silentFails === 0) {
           peg$fail(peg$c48);
         }
       }
-      if(s0 === peg$FAILED) {
-        if(input.substr(peg$currPos, 4) === peg$c49) {
+      if (s0 === peg$FAILED) {
+        if (input.substr(peg$currPos, 4) === peg$c49) {
           s0 = peg$c49;
           peg$currPos += 4;
-        } else {
+        }
+        else {
           s0 = peg$FAILED;
-          if(peg$silentFails === 0) {
+          if (peg$silentFails === 0) {
             peg$fail(peg$c50);
           }
         }
-        if(s0 === peg$FAILED) {
-          if(input.substr(peg$currPos, 4) === peg$c51) {
+        if (s0 === peg$FAILED) {
+          if (input.substr(peg$currPos, 4) === peg$c51) {
             s0 = peg$c51;
             peg$currPos += 4;
-          } else {
+          }
+          else {
             s0 = peg$FAILED;
-            if(peg$silentFails === 0) {
+            if (peg$silentFails === 0) {
               peg$fail(peg$c52);
             }
           }
-          if(s0 === peg$FAILED) {
-            if(input.substr(peg$currPos, 3) === peg$c53) {
+          if (s0 === peg$FAILED) {
+            if (input.substr(peg$currPos, 3) === peg$c53) {
               s0 = peg$c53;
               peg$currPos += 3;
-            } else {
+            }
+            else {
               s0 = peg$FAILED;
-              if(peg$silentFails === 0) {
+              if (peg$silentFails === 0) {
                 peg$fail(peg$c54);
               }
             }
-            if(s0 === peg$FAILED) {
-              if(input.substr(peg$currPos, 3) === peg$c55) {
+            if (s0 === peg$FAILED) {
+              if (input.substr(peg$currPos, 3) === peg$c55) {
                 s0 = peg$c55;
                 peg$currPos += 3;
-              } else {
+              }
+              else {
                 s0 = peg$FAILED;
-                if(peg$silentFails === 0) {
+                if (peg$silentFails === 0) {
                   peg$fail(peg$c56);
                 }
               }
-              if(s0 === peg$FAILED) {
-                if(input.substr(peg$currPos, 3) === peg$c57) {
+              if (s0 === peg$FAILED) {
+                if (input.substr(peg$currPos, 3) === peg$c57) {
                   s0 = peg$c57;
                   peg$currPos += 3;
-                } else {
+                }
+                else {
                   s0 = peg$FAILED;
-                  if(peg$silentFails === 0) {
+                  if (peg$silentFails === 0) {
                     peg$fail(peg$c58);
                   }
                 }
-                if(s0 === peg$FAILED) {
-                  if(input.substr(peg$currPos, 3) === peg$c59) {
+                if (s0 === peg$FAILED) {
+                  if (input.substr(peg$currPos, 3) === peg$c59) {
                     s0 = peg$c59;
                     peg$currPos += 3;
-                  } else {
+                  }
+                  else {
                     s0 = peg$FAILED;
-                    if(peg$silentFails === 0) {
+                    if (peg$silentFails === 0) {
                       peg$fail(peg$c60);
                     }
                   }
-                  if(s0 === peg$FAILED) {
-                    if(input.substr(peg$currPos, 5) === peg$c61) {
+                  if (s0 === peg$FAILED) {
+                    if (input.substr(peg$currPos, 5) === peg$c61) {
                       s0 = peg$c61;
                       peg$currPos += 5;
-                    } else {
+                    }
+                    else {
                       s0 = peg$FAILED;
-                      if(peg$silentFails === 0) {
+                      if (peg$silentFails === 0) {
                         peg$fail(peg$c62);
                       }
                     }
-                    if(s0 === peg$FAILED) {
-                      if(input.substr(peg$currPos, 2) === peg$c63) {
+                    if (s0 === peg$FAILED) {
+                      if (input.substr(peg$currPos, 2) === peg$c63) {
                         s0 = peg$c63;
                         peg$currPos += 2;
-                      } else {
+                      }
+                      else {
                         s0 = peg$FAILED;
-                        if(peg$silentFails === 0) {
+                        if (peg$silentFails === 0) {
                           peg$fail(peg$c64);
                         }
                       }
-                      if(s0 === peg$FAILED) {
-                        if(input.substr(peg$currPos, 3) === peg$c65) {
+                      if (s0 === peg$FAILED) {
+                        if (input.substr(peg$currPos, 3) === peg$c65) {
                           s0 = peg$c65;
                           peg$currPos += 3;
-                        } else {
+                        }
+                        else {
                           s0 = peg$FAILED;
-                          if(peg$silentFails === 0) {
+                          if (peg$silentFails === 0) {
                             peg$fail(peg$c66);
                           }
                         }
-                        if(s0 === peg$FAILED) {
-                          if(input.substr(peg$currPos, 4) === peg$c67) {
+                        if (s0 === peg$FAILED) {
+                          if (input.substr(peg$currPos, 4) === peg$c67) {
                             s0 = peg$c67;
                             peg$currPos += 4;
-                          } else {
+                          }
+                          else {
                             s0 = peg$FAILED;
-                            if(peg$silentFails === 0) {
+                            if (peg$silentFails === 0) {
                               peg$fail(peg$c68);
                             }
                           }
-                          if(s0 === peg$FAILED) {
-                            if(input.substr(peg$currPos, 3) === peg$c69) {
+                          if (s0 === peg$FAILED) {
+                            if (input.substr(peg$currPos, 3) === peg$c69) {
                               s0 = peg$c69;
                               peg$currPos += 3;
-                            } else {
+                            }
+                            else {
                               s0 = peg$FAILED;
-                              if(peg$silentFails === 0) {
+                              if (peg$silentFails === 0) {
                                 peg$fail(peg$c70);
                               }
                             }
-                            if(s0 === peg$FAILED) {
-                              if(input.substr(peg$currPos, 6) === peg$c71) {
+                            if (s0 === peg$FAILED) {
+                              if (input.substr(peg$currPos, 6) === peg$c71) {
                                 s0 = peg$c71;
                                 peg$currPos += 6;
-                              } else {
+                              }
+                              else {
                                 s0 = peg$FAILED;
-                                if(peg$silentFails === 0) {
+                                if (peg$silentFails === 0) {
                                   peg$fail(peg$c72);
                                 }
                               }
@@ -2090,204 +2177,224 @@ var GParser = (function () {
     }
 
     function peg$parseletter() {
-      var s0;
+      let s0;
 
-      if(input.charCodeAt(peg$currPos) === 65) {
+      if (input.charCodeAt(peg$currPos) === 65) {
         s0 = peg$c73;
         peg$currPos++;
-      } else {
+      }
+      else {
         s0 = peg$FAILED;
-        if(peg$silentFails === 0) {
+        if (peg$silentFails === 0) {
           peg$fail(peg$c74);
         }
       }
-      if(s0 === peg$FAILED) {
-        if(input.charCodeAt(peg$currPos) === 66) {
+      if (s0 === peg$FAILED) {
+        if (input.charCodeAt(peg$currPos) === 66) {
           s0 = peg$c75;
           peg$currPos++;
-        } else {
+        }
+        else {
           s0 = peg$FAILED;
-          if(peg$silentFails === 0) {
+          if (peg$silentFails === 0) {
             peg$fail(peg$c76);
           }
         }
-        if(s0 === peg$FAILED) {
-          if(input.charCodeAt(peg$currPos) === 67) {
+        if (s0 === peg$FAILED) {
+          if (input.charCodeAt(peg$currPos) === 67) {
             s0 = peg$c77;
             peg$currPos++;
-          } else {
+          }
+          else {
             s0 = peg$FAILED;
-            if(peg$silentFails === 0) {
+            if (peg$silentFails === 0) {
               peg$fail(peg$c78);
             }
           }
-          if(s0 === peg$FAILED) {
-            if(input.charCodeAt(peg$currPos) === 68) {
+          if (s0 === peg$FAILED) {
+            if (input.charCodeAt(peg$currPos) === 68) {
               s0 = peg$c79;
               peg$currPos++;
-            } else {
+            }
+            else {
               s0 = peg$FAILED;
-              if(peg$silentFails === 0) {
+              if (peg$silentFails === 0) {
                 peg$fail(peg$c80);
               }
             }
-            if(s0 === peg$FAILED) {
-              if(input.charCodeAt(peg$currPos) === 70) {
+            if (s0 === peg$FAILED) {
+              if (input.charCodeAt(peg$currPos) === 70) {
                 s0 = peg$c81;
                 peg$currPos++;
-              } else {
+              }
+              else {
                 s0 = peg$FAILED;
-                if(peg$silentFails === 0) {
+                if (peg$silentFails === 0) {
                   peg$fail(peg$c82);
                 }
               }
-              if(s0 === peg$FAILED) {
-                if(input.charCodeAt(peg$currPos) === 71) {
+              if (s0 === peg$FAILED) {
+                if (input.charCodeAt(peg$currPos) === 71) {
                   s0 = peg$c83;
                   peg$currPos++;
-                } else {
+                }
+                else {
                   s0 = peg$FAILED;
-                  if(peg$silentFails === 0) {
+                  if (peg$silentFails === 0) {
                     peg$fail(peg$c84);
                   }
                 }
-                if(s0 === peg$FAILED) {
-                  if(input.charCodeAt(peg$currPos) === 72) {
+                if (s0 === peg$FAILED) {
+                  if (input.charCodeAt(peg$currPos) === 72) {
                     s0 = peg$c85;
                     peg$currPos++;
-                  } else {
+                  }
+                  else {
                     s0 = peg$FAILED;
-                    if(peg$silentFails === 0) {
+                    if (peg$silentFails === 0) {
                       peg$fail(peg$c86);
                     }
                   }
-                  if(s0 === peg$FAILED) {
-                    if(input.charCodeAt(peg$currPos) === 73) {
+                  if (s0 === peg$FAILED) {
+                    if (input.charCodeAt(peg$currPos) === 73) {
                       s0 = peg$c87;
                       peg$currPos++;
-                    } else {
+                    }
+                    else {
                       s0 = peg$FAILED;
-                      if(peg$silentFails === 0) {
+                      if (peg$silentFails === 0) {
                         peg$fail(peg$c88);
                       }
                     }
-                    if(s0 === peg$FAILED) {
-                      if(input.charCodeAt(peg$currPos) === 74) {
+                    if (s0 === peg$FAILED) {
+                      if (input.charCodeAt(peg$currPos) === 74) {
                         s0 = peg$c89;
                         peg$currPos++;
-                      } else {
+                      }
+                      else {
                         s0 = peg$FAILED;
-                        if(peg$silentFails === 0) {
+                        if (peg$silentFails === 0) {
                           peg$fail(peg$c90);
                         }
                       }
-                      if(s0 === peg$FAILED) {
-                        if(input.charCodeAt(peg$currPos) === 75) {
+                      if (s0 === peg$FAILED) {
+                        if (input.charCodeAt(peg$currPos) === 75) {
                           s0 = peg$c91;
                           peg$currPos++;
-                        } else {
+                        }
+                        else {
                           s0 = peg$FAILED;
-                          if(peg$silentFails === 0) {
+                          if (peg$silentFails === 0) {
                             peg$fail(peg$c92);
                           }
                         }
-                        if(s0 === peg$FAILED) {
-                          if(input.charCodeAt(peg$currPos) === 76) {
+                        if (s0 === peg$FAILED) {
+                          if (input.charCodeAt(peg$currPos) === 76) {
                             s0 = peg$c93;
                             peg$currPos++;
-                          } else {
+                          }
+                          else {
                             s0 = peg$FAILED;
-                            if(peg$silentFails === 0) {
+                            if (peg$silentFails === 0) {
                               peg$fail(peg$c94);
                             }
                           }
-                          if(s0 === peg$FAILED) {
-                            if(input.charCodeAt(peg$currPos) === 77) {
+                          if (s0 === peg$FAILED) {
+                            if (input.charCodeAt(peg$currPos) === 77) {
                               s0 = peg$c95;
                               peg$currPos++;
-                            } else {
+                            }
+                            else {
                               s0 = peg$FAILED;
-                              if(peg$silentFails === 0) {
+                              if (peg$silentFails === 0) {
                                 peg$fail(peg$c96);
                               }
                             }
-                            if(s0 === peg$FAILED) {
-                              if(input.charCodeAt(peg$currPos) === 80) {
+                            if (s0 === peg$FAILED) {
+                              if (input.charCodeAt(peg$currPos) === 80) {
                                 s0 = peg$c97;
                                 peg$currPos++;
-                              } else {
+                              }
+                              else {
                                 s0 = peg$FAILED;
-                                if(peg$silentFails === 0) {
+                                if (peg$silentFails === 0) {
                                   peg$fail(peg$c98);
                                 }
                               }
-                              if(s0 === peg$FAILED) {
-                                if(input.charCodeAt(peg$currPos) === 81) {
+                              if (s0 === peg$FAILED) {
+                                if (input.charCodeAt(peg$currPos) === 81) {
                                   s0 = peg$c99;
                                   peg$currPos++;
-                                } else {
+                                }
+                                else {
                                   s0 = peg$FAILED;
-                                  if(peg$silentFails === 0) {
+                                  if (peg$silentFails === 0) {
                                     peg$fail(peg$c100);
                                   }
                                 }
-                                if(s0 === peg$FAILED) {
-                                  if(input.charCodeAt(peg$currPos) === 82) {
+                                if (s0 === peg$FAILED) {
+                                  if (input.charCodeAt(peg$currPos) === 82) {
                                     s0 = peg$c101;
                                     peg$currPos++;
-                                  } else {
+                                  }
+                                  else {
                                     s0 = peg$FAILED;
-                                    if(peg$silentFails === 0) {
+                                    if (peg$silentFails === 0) {
                                       peg$fail(peg$c102);
                                     }
                                   }
-                                  if(s0 === peg$FAILED) {
-                                    if(input.charCodeAt(peg$currPos) === 83) {
+                                  if (s0 === peg$FAILED) {
+                                    if (input.charCodeAt(peg$currPos) === 83) {
                                       s0 = peg$c103;
                                       peg$currPos++;
-                                    } else {
+                                    }
+                                    else {
                                       s0 = peg$FAILED;
-                                      if(peg$silentFails === 0) {
+                                      if (peg$silentFails === 0) {
                                         peg$fail(peg$c104);
                                       }
                                     }
-                                    if(s0 === peg$FAILED) {
-                                      if(input.charCodeAt(peg$currPos) === 84) {
+                                    if (s0 === peg$FAILED) {
+                                      if (input.charCodeAt(peg$currPos) === 84) {
                                         s0 = peg$c105;
                                         peg$currPos++;
-                                      } else {
+                                      }
+                                      else {
                                         s0 = peg$FAILED;
-                                        if(peg$silentFails === 0) {
+                                        if (peg$silentFails === 0) {
                                           peg$fail(peg$c106);
                                         }
                                       }
-                                      if(s0 === peg$FAILED) {
-                                        if(input.charCodeAt(peg$currPos) === 88) {
+                                      if (s0 === peg$FAILED) {
+                                        if (input.charCodeAt(peg$currPos) === 88) {
                                           s0 = peg$c107;
                                           peg$currPos++;
-                                        } else {
+                                        }
+                                        else {
                                           s0 = peg$FAILED;
-                                          if(peg$silentFails === 0) {
+                                          if (peg$silentFails === 0) {
                                             peg$fail(peg$c108);
                                           }
                                         }
-                                        if(s0 === peg$FAILED) {
-                                          if(input.charCodeAt(peg$currPos) === 89) {
+                                        if (s0 === peg$FAILED) {
+                                          if (input.charCodeAt(peg$currPos) === 89) {
                                             s0 = peg$c109;
                                             peg$currPos++;
-                                          } else {
+                                          }
+                                          else {
                                             s0 = peg$FAILED;
-                                            if(peg$silentFails === 0) {
+                                            if (peg$silentFails === 0) {
                                               peg$fail(peg$c110);
                                             }
                                           }
-                                          if(s0 === peg$FAILED) {
-                                            if(input.charCodeAt(peg$currPos) === 90) {
+                                          if (s0 === peg$FAILED) {
+                                            if (input.charCodeAt(peg$currPos) === 90) {
                                               s0 = peg$c111;
                                               peg$currPos++;
-                                            } else {
+                                            }
+                                            else {
                                               s0 = peg$FAILED;
-                                              if(peg$silentFails === 0) {
+                                              if (peg$silentFails === 0) {
                                                 peg$fail(peg$c112);
                                               }
                                             }
@@ -2315,32 +2422,32 @@ var GParser = (function () {
     }
 
     function buildTree(first, rest) {
-      if(rest.length == 0) {
+      if (rest.length == 0) {
         return first;
-      } else {
-        var next = rest.shift();
-        var operator = next[0];
-        var term = next[1];
-        return { left: first, right: buildTree(term, rest), op: operator };
       }
+      let next = rest.shift();
+      let operator = next[0];
+      let term = next[1];
+      return { left: first, right: buildTree(term, rest), op: operator };
+      
     }
 
     peg$result = peg$startRuleFunction();
 
-    if(peg$result !== peg$FAILED && peg$currPos === input.length) {
+    if (peg$result !== peg$FAILED && peg$currPos === input.length) {
       return peg$result;
-    } else {
-      if(peg$result !== peg$FAILED && peg$currPos < input.length) {
-        peg$fail({ type: 'end', description: 'end of input' });
-      }
-
-      throw peg$buildException(null, peg$maxFailExpected, peg$maxFailPos);
     }
+    if (peg$result !== peg$FAILED && peg$currPos < input.length) {
+      peg$fail({ type: 'end', description: 'end of input' });
+    }
+
+    throw peg$buildException(null, peg$maxFailExpected, peg$maxFailPos);
+    
   }
 
   return {
-    SyntaxError: SyntaxError,
-    parse: parse
+    SyntaxError,
+    parse
   };
 })();
 
@@ -2353,10 +2460,10 @@ export { GParser };
  * @returns {ParsedGCode} The parsed GCode.
  */
 export default function parse(code) {
-  'use strict';
+  
 
-  var unitIsSet = false;
-  var setInInch = true;
+  let unitIsSet = false;
+  let setInInch = true;
 
   /**
    * Removes the comments and spaces.
@@ -2364,7 +2471,7 @@ export default function parse(code) {
    * @return  {string}  The command without the commands and spaces.
    */
   function removeCommentsAndSpaces(command) {
-    var s = command.split('(')[0].split(';')[0]; //No need to use regex
+    let s = command.split('(')[0].split(';')[0]; //No need to use regex
     return s.split(/\s/).join('').trim();
   }
 
@@ -2374,26 +2481,27 @@ export default function parse(code) {
    * @return  {array}  Array of object.
    */
   function parseParsedGCode(parsed) {
-    var obj = {};
-    var i = 0;
-    var letter = '',
+    let obj = {};
+    let i = 0;
+    let letter = '',
       number = '';
-    var tab = [];
-    var emptyObj = true;
+    let tab = [];
+    let emptyObj = true;
 
-    for(i = 0; i < parsed.words.length; i++) {
+    for (i = 0; i < parsed.words.length; i++) {
       letter = parsed.words[i][0];
       number = parsed.words[i][1];
-      if(letter === 'G' || letter === 'M') {
+      if (letter === 'G' || letter === 'M') {
         //Make sure multiple commands in one line are interpreted as
         //multiple commands:
-        if(emptyObj === false) {
+        if (emptyObj === false) {
           tab.push(obj);
           obj = {};
         }
         obj.type = letter + number;
         emptyObj = false;
-      } else {
+      }
+      else {
         obj[letter.toLowerCase()] = parseFloat(number, 10);
       }
     }
@@ -2409,20 +2517,20 @@ export default function parse(code) {
    * @return  {bool}  True if there is a wrong parameter.
    */
   function checkWrongParameter(acceptedParameters, parameters) {
-    var i = 0,
+    let i = 0,
       j = 0;
-    var accepted = true;
+    let accepted = true;
 
-    for(j = parameters.length - 1; j >= 0; j--) {
-      for(i = acceptedParameters.length - 1; i >= 0; i--) {
+    for (j = parameters.length - 1; j >= 0; j--) {
+      for (i = acceptedParameters.length - 1; i >= 0; i--) {
         accepted = false;
-        if(parameters[j].toUpperCase() === acceptedParameters[i].toUpperCase()) {
+        if (parameters[j].toUpperCase() === acceptedParameters[i].toUpperCase()) {
           accepted = true;
           acceptedParameters.splice(i, 1);
           break;
         }
       }
-      if(accepted === false) {
+      if (accepted === false) {
         return true;
       }
     }
@@ -2435,13 +2543,13 @@ export default function parse(code) {
    * @param  {object}  size       The added operation size
    */
   function checkTotalSize(totalSize, size) {
-    var keys = ['x', 'y', 'z'];
-    var i = 0;
-    for(i = keys.length - 1; i >= 0; i--) {
-      if(totalSize.min[keys[i]] > size.min[keys[i]]) {
+    let keys = ['x', 'y', 'z'];
+    let i = 0;
+    for (i = keys.length - 1; i >= 0; i--) {
+      if (totalSize.min[keys[i]] > size.min[keys[i]]) {
         totalSize.min[keys[i]] = size.min[keys[i]];
       }
-      if(totalSize.max[keys[i]] < size.max[keys[i]]) {
+      if (totalSize.max[keys[i]] < size.max[keys[i]]) {
         totalSize.max[keys[i]] = size.max[keys[i]];
       }
     }
@@ -2456,7 +2564,7 @@ export default function parse(code) {
    * @return {Error} The error object.
    */
   function createError(line, message, isSkipped) {
-    return { line: line, message: message, isSkipped: isSkipped };
+    return { line, message, isSkipped };
   }
 
   /**
@@ -2469,18 +2577,18 @@ export default function parse(code) {
    *                 feedrate is correct or emits only a warning
    */
   function checkErrorFeedrate(command, errorList, line, settings) {
-    var c = command;
-    var consideredFeedrate = c.f === undefined ? settings.feedrate : c.f;
+    let c = command;
+    let consideredFeedrate = c.f === undefined ? settings.feedrate : c.f;
 
-    if(c.type !== undefined && c.type !== 'G1' && c.type !== 'G2' && c.type !== 'G3') {
+    if (c.type !== undefined && c.type !== 'G1' && c.type !== 'G2' && c.type !== 'G3') {
       return false;
     }
 
-    if(consideredFeedrate > 0) {
+    if (consideredFeedrate > 0) {
       return false;
     }
 
-    if(consideredFeedrate < 0) {
+    if (consideredFeedrate < 0) {
       errorList.push(createError(line, '(warning) Cannot use a negative feed rate ' + '(the absolute value is used).', false));
       c.f = Math.abs(consideredFeedrate);
       return false;
@@ -2499,10 +2607,10 @@ export default function parse(code) {
    *                                        command
    */
   function setGoodType(parsedCommand, previousMoveCommand) {
-    if(parsedCommand.type !== undefined) {
+    if (parsedCommand.type !== undefined) {
       return;
     }
-    if(previousMoveCommand !== '') {
+    if (previousMoveCommand !== '') {
       parsedCommand.type = previousMoveCommand;
     }
   }
@@ -2519,26 +2627,27 @@ export default function parse(code) {
    * @return {object} The point.
    */
   function findPosition(start, parameters, relative, inMm) {
-    var pos = { x: start.x, y: start.y, z: start.z };
-    var d = inMm === false ? 1 : util.MILLIMETER_TO_INCH;
-    if(relative === true) {
-      if(parameters.x !== undefined) {
+    let pos = { x: start.x, y: start.y, z: start.z };
+    let d = inMm === false ? 1 : util.MILLIMETER_TO_INCH;
+    if (relative === true) {
+      if (parameters.x !== undefined) {
         pos.x += parameters.x * d;
       }
-      if(parameters.y !== undefined) {
+      if (parameters.y !== undefined) {
         pos.y += parameters.y * d;
       }
-      if(parameters.z !== undefined) {
+      if (parameters.z !== undefined) {
         pos.z += parameters.z * d;
       }
-    } else {
-      if(parameters.x !== undefined) {
+    }
+    else {
+      if (parameters.x !== undefined) {
         pos.x = parameters.x * d;
       }
-      if(parameters.y !== undefined) {
+      if (parameters.y !== undefined) {
         pos.y = parameters.y * d;
       }
-      if(parameters.z !== undefined) {
+      if (parameters.z !== undefined) {
         pos.z = parameters.z * d;
       }
     }
@@ -2554,11 +2663,11 @@ export default function parse(code) {
    * @return  {bool}   Returns true if the command is done, false if skipped
    */
   function checkG0(command, errorList, line) {
-    var acceptedParameters = ['X', 'Y', 'Z'];
-    var parameters = Object.keys(command);
+    let acceptedParameters = ['X', 'Y', 'Z'];
+    let parameters = Object.keys(command);
     parameters.splice(parameters.indexOf('type'), 1);
 
-    if(checkWrongParameter(acceptedParameters, parameters) === true) {
+    if (checkWrongParameter(acceptedParameters, parameters) === true) {
       errorList.push(createError(line, '(warning) Some parameters are wrong.', false));
     }
     return true;
@@ -2573,11 +2682,11 @@ export default function parse(code) {
    * @return  {bool}   Returns true if the command is done, false if skipped
    */
   function checkG1(command, errorList, line, previousFeedrate) {
-    var acceptedParameters = ['X', 'Y', 'Z', 'F'];
-    var parameters = Object.keys(command);
+    let acceptedParameters = ['X', 'Y', 'Z', 'F'];
+    let parameters = Object.keys(command);
     parameters.splice(parameters.indexOf('type'), 1);
 
-    if(checkWrongParameter(acceptedParameters, parameters) === true) {
+    if (checkWrongParameter(acceptedParameters, parameters) === true) {
       errorList.push(createError(line, '(warning) Some parameters are wrong.', false));
     }
 
@@ -2593,20 +2702,20 @@ export default function parse(code) {
    * @return  {bool}   Returns true if the command is done, false if skipped
    */
   function checkG2G3(command, errorList, line, previousFeedrate) {
-    var acceptedParameters = ['X', 'Y', 'Z', 'F', 'I', 'J', 'K', 'R'];
-    var parameters = Object.keys(command);
+    let acceptedParameters = ['X', 'Y', 'Z', 'F', 'I', 'J', 'K', 'R'];
+    let parameters = Object.keys(command);
     parameters.splice(parameters.indexOf('type'), 1);
 
-    if(checkWrongParameter(acceptedParameters, parameters) === true) {
+    if (checkWrongParameter(acceptedParameters, parameters) === true) {
       errorList.push(createError(line, '(warning) Some parameters are wrong.', false));
     }
 
-    if(command.r === undefined && command.i === undefined && command.j === undefined && command.k === undefined) {
+    if (command.r === undefined && command.i === undefined && command.j === undefined && command.k === undefined) {
       errorList.push(createError(line, '(error) No parameter R, I, J or K.', true));
       return false;
     }
 
-    if(command.r !== undefined && (command.i !== undefined || command.j !== undefined || command.k !== undefined)) {
+    if (command.r !== undefined && (command.i !== undefined || command.j !== undefined || command.k !== undefined)) {
       errorList.push(createError(line, '(error) Cannot use R and I, J or K at the same time.', true));
       return false;
     }
@@ -2624,13 +2733,13 @@ export default function parse(code) {
    * @param  {object}  errorList  The error list
    */
   function manageG0G1(command, settings, lineNumber, lines, totalSize) {
-    var nextPosition = findPosition(settings.position, command, settings.relative, settings.inMm);
-    var line = new StraightLine(lineNumber, settings.position, nextPosition, command, settings);
+    let nextPosition = findPosition(settings.position, command, settings.relative, settings.inMm);
+    let line = new StraightLine(lineNumber, settings.position, nextPosition, command, settings);
     settings.previousMoveCommand = command.type;
     checkTotalSize(totalSize, line.getSize());
     lines.push(line.returnLine());
     settings.position = util.copyObject(line.end);
-    if(command.f !== undefined) {
+    if (command.f !== undefined) {
       settings.feedrate = command.f;
     }
   }
@@ -2645,11 +2754,11 @@ export default function parse(code) {
    * @param  {object}  errorList  The error list
    */
   function manageG2G3(command, settings, lineNumber, lines, totalSize, errorList) {
-    var nextPosition = findPosition(settings.position, command, settings.relative, settings.inMm);
-    var line = new CurvedLine(lineNumber, settings.position, nextPosition, command, settings);
-    if(line.center !== false) {
-      var temp = line.returnLine();
-      if(temp === false) {
+    let nextPosition = findPosition(settings.position, command, settings.relative, settings.inMm);
+    let line = new CurvedLine(lineNumber, settings.position, nextPosition, command, settings);
+    if (line.center !== false) {
+      let temp = line.returnLine();
+      if (temp === false) {
         errorList.push(createError(lineNumber, '(error) Impossible to create arc.', true));
         return;
       }
@@ -2658,7 +2767,8 @@ export default function parse(code) {
       checkTotalSize(totalSize, line.getSize());
       lines.push(temp);
       settings.position = util.copyObject(line.end);
-    } else {
+    }
+    else {
       errorList.push(createError(lineNumber, '(error) Physically impossible to do with those values.', true));
     }
   }
@@ -2675,64 +2785,75 @@ export default function parse(code) {
    */
   function manageCommand(command, settings, lineNumber, lines, totalSize, errorList) {
     //Empty line
-    if(command.type === undefined && Object.keys(command).length === 0) {
+    if (command.type === undefined && Object.keys(command).length === 0) {
       return true;
     }
 
     setGoodType(command, settings.previousMoveCommand);
 
-    if(command.type === undefined) {
-      if(command.f !== undefined) {
+    if (command.type === undefined) {
+      if (command.f !== undefined) {
         checkErrorFeedrate(command, errorList, lineNumber, settings.feedrate);
         settings.feedrate = command.f;
       }
-    } else if(command.type === 'G0' && checkG0(command, errorList, lineNumber) === true) {
+    }
+    else if (command.type === 'G0' && checkG0(command, errorList, lineNumber) === true) {
       manageG0G1(command, settings, lineNumber, lines, totalSize);
-    } else if(command.type === 'G1' && checkG1(command, errorList, lineNumber, settings) === true) {
+    }
+    else if (command.type === 'G1' && checkG1(command, errorList, lineNumber, settings) === true) {
       manageG0G1(command, settings, lineNumber, lines, totalSize);
-    } else if((command.type === 'G2' || command.type === 'G3') && checkG2G3(command, errorList, lineNumber, settings) === true) {
+    }
+    else if ((command.type === 'G2' || command.type === 'G3') && checkG2G3(command, errorList, lineNumber, settings) === true) {
       manageG2G3(command, settings, lineNumber, lines, totalSize, errorList);
-    } else if(command.type === 'G17') {
+    }
+    else if (command.type === 'G17') {
       settings.crossAxe = 'z';
-    } else if(command.type === 'G18') {
+    }
+    else if (command.type === 'G18') {
       settings.crossAxe = 'y';
-    } else if(command.type === 'G19') {
+    }
+    else if (command.type === 'G19') {
       settings.crossAxe = 'x';
-    } else if(command.type === 'G20') {
+    }
+    else if (command.type === 'G20') {
       settings.inMm = false;
-      if(unitIsSet === false) {
+      if (unitIsSet === false) {
         setInInch = true;
         unitIsSet = true;
       }
-    } else if(command.type === 'G21') {
+    }
+    else if (command.type === 'G21') {
       settings.inMm = true;
-      if(unitIsSet === false) {
+      if (unitIsSet === false) {
         setInInch = false;
         unitIsSet = true;
       }
-    } else if(command.type === 'G90') {
+    }
+    else if (command.type === 'G90') {
       settings.relative = false;
-    } else if(command.type === 'G91') {
+    }
+    else if (command.type === 'G91') {
       settings.relative = true;
-    } else if(command.type === 'M2') {
+    }
+    else if (command.type === 'M2') {
       return false;
     }
 
     return true;
   }
 
-  var totalSize = {
+  let totalSize = {
     min: { x: 0, y: 0, z: 0 },
     max: { x: 0, y: 0, z: 0 }
   };
-  var i = 0,
+  let i = 0,
     j = 0;
-  var tabRes = [];
-  var parsing = true;
-  var lines = [];
-  var errorList = [];
+  let tabRes = [];
+  let parsing = true;
+  let lines = [];
+  let errorList = [];
 
-  var settings = {
+  let settings = {
     feedrate: 0,
     previousMoveCommand: '',
     crossAxe: 'z',
@@ -2741,7 +2862,7 @@ export default function parse(code) {
     position: { x: 0, y: 0, z: 0 }
   };
 
-  if(typeof code !== 'string' || code === '') {
+  if (typeof code !== 'string' || code === '') {
     return {
       gcode: [],
       lines: [],
@@ -2750,31 +2871,31 @@ export default function parse(code) {
       errorList: [{ line: 0, message: '(error) No command.' }]
     };
   }
-  var gcode = code.split('\n');
+  let gcode = code.split('\n');
 
   i = 0;
-  while(i < gcode.length && parsing === true) {
+  while (i < gcode.length && parsing === true) {
     //Sorry for not being really readable :'(
     tabRes = parseParsedGCode(GParser.parse(removeCommentsAndSpaces(gcode[i]).toUpperCase()));
 
     j = 0;
-    while(j < tabRes.length && parsing === true) {
+    while (j < tabRes.length && parsing === true) {
       parsing = manageCommand(tabRes[j], settings, i + 1, lines, totalSize, errorList);
       j++;
     }
     i++;
   }
 
-  if(i < gcode.length) {
+  if (i < gcode.length) {
     errorList.push(createError(i + 1, '(warning) The next code is not executed.', false));
   }
 
   return {
-    gcode: gcode,
-    lines: lines,
+    gcode,
+    lines,
     size: totalSize,
     displayInInch: setInInch,
-    errorList: errorList
+    errorList
   };
 }
 

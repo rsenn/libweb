@@ -1,4 +1,5 @@
 import Util from './util.js';
+
 /**
  * LogJS (c)2013 Brett Fattori
  * Lightweight JavaScript logging framework
@@ -20,41 +21,42 @@ export var LogJS = {
   }
 };
 
-var appenders = {};
+let appenders = {};
 
 //This is the method for logging.  It passes off to the
 //appenders to perform the actual logging.
-var log = function (type, message, url, lineNumber) {
-  var now = new Date().getTime();
+let log = function (type, message, url, lineNumber) {
+  let now = new Date().getTime();
 
-  if(message instanceof Error) {
-    if(message.stack) {
+  if (message instanceof Error) {
+    if (message.stack) {
       message = message.message && message.stack.indexOf(message.message) === -1 ? message.message + '\n' + message.stack : message.stack;
-    } else if(message.sourceURL) {
+    }
+    else if (message.sourceURL) {
       message = message.message;
       url = message.sourceURL;
       lineNumber = message.line;
     }
   }
 
-  for(var appender in appenders) {
-    if(appenders.hasOwnProperty(appender)) {
+  for (let appender in appenders) {
+    if (appenders.hasOwnProperty(appender)) {
       appenders[appender].log(type, now, message, url, lineNumber);
     }
   }
 };
 
 //Redirect the onerror handler for the global object (if it exists)
-var win = LogJS.window_;
+let win = LogJS.window_;
 
-var gErrorHandler;
-if(win.onerror !== undefined) {
+let gErrorHandler;
+if (win.onerror !== undefined) {
   gErrorHandler = win.onerror;
 }
 
 win.onerror = function onErrorLogJS(message, url, lineNumber) {
   log(LogJS.EXCEPTION, message, url, lineNumber);
-  if(gErrorHandler) {
+  if (gErrorHandler) {
     gErrorHandler(message, url, lineNumber);
   }
 };
@@ -76,9 +78,9 @@ LogJS.info = function (message, url, lineNumber) {
 //--------------------------------------------------------------------------------------------------
 
 LogJS.addAppender = function (appender) {
-  if(appender !== undefined) {
+  if (appender !== undefined) {
     appender = new appender(LogJS.config);
-    if(appender.LOGJSAPPENDER) {
+    if (appender.LOGJSAPPENDER) {
       appenders[appender.name] = appender;
     }
   }
@@ -89,9 +91,9 @@ LogJS.getAppender = function (appenderName) {
 };
 
 LogJS.getRegisteredAppenders = function () {
-  var registered = [];
-  for(var appender in appenders) {
-    if(appenders.hasOwnProperty(appender)) {
+  let registered = [];
+  for (let appender in appenders) {
+    if (appenders.hasOwnProperty(appender)) {
       registered.push(appender);
     }
   }
@@ -131,36 +133,36 @@ Object.defineProperty(LogJS.BaseAppender.prototype, 'name', {
 });
 
 //Angular
-if(typeof angular !== 'undefined') {
+if (typeof angular !== 'undefined') {
   LogJS.config.global = {
     debug: true
   };
 
   function LogJSProvider() {
     this.config = LogJS.config;
-    var self = this;
+    let self = this;
 
     this.debugEnabled = function (flag) {
-      if(typeof flag !== 'undefined') {
+      if (typeof flag !== 'undefined') {
         this.config.global = {
           debug: flag
         };
         return this;
-      } else {
-        return this.config.global.debug;
       }
+      return this.config.global.debug;
+      
     };
 
     this.$get = function () {
-      var angularLogJS = {};
-      ['error', 'info', 'debug', 'log', 'warn'].forEach(function (e) {
-        var method = LogJS.info;
-        if(LogJS[e]) {
+      let angularLogJS = {};
+      ['error', 'info', 'debug', 'log', 'warn'].forEach((e) => {
+        let method = LogJS.info;
+        if (LogJS[e]) {
           method = LogJS[e];
         }
         angularLogJS[e] = (function (method, e) {
           return function () {
-            if(e !== 'debug' || self.config.global.debug) {
+            if (e !== 'debug' || self.config.global.debug) {
               method.apply(LogJS, arguments);
             }
           };

@@ -5,11 +5,11 @@
  * @author Daniel Lamb <dlamb.open.source@gmail.com>
  */
 
-var AOP = function (obj) {
+let AOP = function (obj) {
   obj.proceed = null;
   obj.result = {};
   obj.before = function (method, f) {
-    var org;
+    let org;
     org = this[method];
     return (this[method] = function () {
       f.apply(this, arguments);
@@ -17,7 +17,7 @@ var AOP = function (obj) {
     });
   };
   obj.after = function (method, f) {
-    var org;
+    let org;
     org = this[method];
     return (this[method] = function () {
       this.result[method] = org.apply(this, arguments);
@@ -25,7 +25,7 @@ var AOP = function (obj) {
     });
   };
   return (obj.around = function (method, f) {
-    var org;
+    let org;
     org = this[method];
     return (this[method] = function () {
       this.proceed = org;

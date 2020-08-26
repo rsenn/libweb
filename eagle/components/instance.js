@@ -18,12 +18,12 @@ export const Instance = ({ data, opts = {}, transformation, ...props }) => {
   let { transform = new TransformationList() } = opts;
 
   transform.translate(x, y);
-  if(rot) {
+  if (rot) {
     rot = Rotation(rot);
     transform = transform.concat(rot);
   }
 
-  if(!value && deviceset) value = deviceset.name;
+  if (!value && deviceset) value = deviceset.name;
 
   const sym = h(SchematicSymbol, {
     data: symbol,

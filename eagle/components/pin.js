@@ -27,7 +27,7 @@ export const Pin = ({ data, opts = {}, ...props }) => {
 
   const angle = +(rot || '0').replace(/R/, '');
   let veclen = PinSizes[length] * 2.54;
-  if(func == 'dot') veclen -= 1.5;
+  if (func == 'dot') veclen -= 1.5;
   const dir = Point.fromAngle((angle * Math.PI) / 180);
   const vec = dir.prod(veclen);
   const pivot = new Point(+x, +y);
@@ -36,7 +36,7 @@ export const Pin = ({ data, opts = {}, ...props }) => {
   let children = [];
   const tp = pivot.diff(dir.prod(2.54));
 
-  if(func == 'dot')
+  if (func == 'dot')
     children.push(
       h('circle', {
         class: 'pin',
@@ -57,7 +57,7 @@ export const Pin = ({ data, opts = {}, ...props }) => {
       'stroke-width': 0.15
     })
   );
-  if(name != '' && visible != 'off')
+  if (name != '' && visible != 'off')
     children.push(
       h(Text, {
         class: 'pin',

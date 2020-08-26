@@ -7,17 +7,19 @@ export function Pattern(patterns, shift, match) {
   let ret = this;
   let r = shift();
   let { str, tok } = r;
-  if(lexIsToken('STRING', r)) {
+  if (lexIsToken('STRING', r)) {
     ret.tok = tok;
     str = str.substring(1, str.length - 1);
     ret.str = str;
-  } else if(lexIsToken('IDENTIFIER', r)) {
+  }
+  else if (lexIsToken('IDENTIFIER', r)) {
     Util.log('Pattern ', Lexer.tokenName(r.tok), r.str);
 
     ret.rule = str;
 
     match.rule.identifiers = addUnique(match.rule.identifiers, str);
-  } else if(lexIsToken('REGEXP', r)) {
+  }
+  else if (lexIsToken('REGEXP', r)) {
     //str = str.substring(1, str.length - 1);
     let { length } = str;
     //str = str.replace(/([-.+*^()]|\[|\]|\?)/g, '\\$1');
@@ -27,8 +29,8 @@ export function Pattern(patterns, shift, match) {
     //return re;
   }
   ret.type = tok;
-  if(patterns.length && lexMatch('PUNCTUATION', (ch) => ch === '+' || ch === '*' || ch === '?', patterns[0])) repeat = shift().str;
-  if(repeat) ret.repeat = repeat;
+  if (patterns.length && lexMatch('PUNCTUATION', (ch) => ch === '+' || ch === '*' || ch === '?', patterns[0])) repeat = shift().str;
+  if (repeat) ret.repeat = repeat;
   //Util.log("Pattern.parse",patterns[0]);
   Object.assign(ret, repeat !== undefined ? { tok, str, repeat } : { tok, str });
   return ret;
@@ -36,7 +38,7 @@ export function Pattern(patterns, shift, match) {
 
 Pattern.prototype.toString = function () {
   let { tok, str } = this;
-  if(tok == Lexer.tokens.STRING) str = "'" + str + "'";
+  if (tok == Lexer.tokens.STRING) str = "'" + str + "'";
 
   return (this.invert ? '~' : '') + Util.colorText(str, 1, this.tok == Lexer.tokens.REGEXP ? 35 : this.tok == Lexer.tokens.IDENTIFIER ? 33 : 36) + (this.repeat ? Util.colorText(this.repeat, 1, 34) : '');
 };
@@ -51,13 +53,13 @@ Pattern.prototype.match = function (parser) {
 
   let { tok, str } = this;
   let ret = null;
-  if(this.tok >= 2 && this.tok <= 3 && t.tok >= 2 && t.tok <= 3) {
-    if(this.str == t.str) {
+  if (this.tok >= 2 && this.tok <= 3 && t.tok >= 2 && t.tok <= 3) {
+    if (this.str == t.str) {
       ret = t;
       y.copyTo(parser);
     }
   }
-  if(ret) Util.log('Pattern.match:', { ret, tok1: t, tok2: { tok, str } });
+  if (ret) Util.log('Pattern.match:', { ret, tok1: t, tok2: { tok, str } });
 
   return null;
 };

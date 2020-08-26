@@ -1,4 +1,5 @@
 import Util from '../util.js';
+
 /**
  * A really simple and basic 4x4 matrix implementation, compatible with CSS. Transform them, and
  * apply the toString() output to a node's transform style. Don't forget perspective :)
@@ -12,7 +13,7 @@ import Util from '../util.js';
 //\  // | |\/| ||  _  | | | ||  _  | \\  /   \\
 //\//  |_|| |_||_| |_| |_| ||_| |_|  \\/     \\
 
-var IDENTITY = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+let IDENTITY = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
 function multiply(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P) {
   return [
@@ -35,8 +36,8 @@ function multiply(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, A, B, C, D, E,
   ];
 }
 
-var sin = Math.sin;
-var cos = Math.cos;
+let sin = Math.sin;
+let cos = Math.cos;
 
 /**
  * Matrix
@@ -58,18 +59,18 @@ export class Matrix3D {
     return this.multiply([s, 0, 0, 0, 0, s, 0, 0, 0, 0, s, 0, 0, 0, 0, 1]);
   }
   rotateX(a) {
-    var c = cos(a);
-    var s = sin(a);
+    let c = cos(a);
+    let s = sin(a);
     return this.multiply([1, 0, 0, 0, 0, c, -s, 0, 0, s, c, 0, 0, 0, 0, 1]);
   }
   rotateY(a) {
-    var c = cos(a);
-    var s = sin(a);
+    let c = cos(a);
+    let s = sin(a);
     return this.multiply([c, 0, s, 0, 0, 1, 0, 0, -s, 0, c, 0, 0, 0, 0, 1]);
   }
   rotateZ(a) {
-    var c = cos(a);
-    var s = sin(a);
+    let c = cos(a);
+    let s = sin(a);
     return this.multiply([c, -s, 0, 0, s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
   }
   translate(x, y, z) {
@@ -81,6 +82,4 @@ export class Matrix3D {
 }
 
 export const ImmutableMatrix3D = Util.immutableClass(Matrix3D);
-Util.defineGetter(ImmutableMatrix3D, Symbol.species, function () {
-  return ImmutableMatrix3D;
-});
+Util.defineGetter(ImmutableMatrix3D, Symbol.species, () => ImmutableMatrix3D);

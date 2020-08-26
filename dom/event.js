@@ -1,7 +1,7 @@
 import Util from '../util.js';
 export const Event = {
   simulateKey(keyCode, type, modifiers, target = window) {
-    var evtName = typeof type === 'string' ? 'key' + type : 'keydown';
+    let evtName = typeof type === 'string' ? 'key' + type : 'keydown';
     //var modifier = (typeof(modifiers) === "object") ? modifier : {};
 
     const { ctrlKey = false, shiftKey = false, altKey = false, metaKey = false } = modifiers || {};
@@ -11,7 +11,7 @@ export const Event = {
 
     //var event = Object.assign(new window.Event('keydown'), {keyCode, key,code, ctrlKey,shiftKey,altKey,metaKey});
     //, srcElement: target, target: target, currentTarget: target, view: window });
-    var event = new KeyboardEvent('key' + type, { bubbles: true, isTrusted: true, keyCode, key, code, ctrlKey, shiftKey, altKey, metaKey, srcElement: target, target: target, currentTarget: target, view: window }); //document.createEvent("Event");
+    let event = new KeyboardEvent('key' + type, { bubbles: true, isTrusted: true, keyCode, key, code, ctrlKey, shiftKey, altKey, metaKey, srcElement: target, target, currentTarget: target, view: window }); //document.createEvent("Event");
 
     //event.initEvent(evtName, true, false);
 

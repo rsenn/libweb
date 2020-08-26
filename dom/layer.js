@@ -27,7 +27,7 @@ export class Renderer {
     return e;
   }
   clear() {
-    if(this.element) {
+    if (this.element) {
       let parent = this.element.parentNode;
       parent.removeChild(this.element);
       this.element = null;

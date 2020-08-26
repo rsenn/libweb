@@ -1,5 +1,5 @@
 //Create a Promise that resolves after ms time
-var timer = function (ms) {
+let timer = function (ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
@@ -8,9 +8,9 @@ var timer = function (ms) {
 /* --- */
 //Repeatedly generate a number starting
 //from 0 after a random amount of time
-var source = async function* () {
-  var i = 0;
-  while(true) {
+let source = async function* () {
+  let i = 0;
+  while (true) {
     await timer(Math.random() * 1000);
     yield i++;
   }
@@ -28,7 +28,7 @@ var source = async function* () {
 /* --- */
 //Tie everything together
 var run = async function () {
-  var stream = source();
+  let stream = source();
   for await (let n of stream) {
     console.log(n);
   }
@@ -86,22 +86,20 @@ ws.addEventListener('message', event => {
 /* --- */
 //Add an async iterator to all WebSockets
 WebSocket.prototype[Symbol.asyncIterator] = async function* () {
-  while(this.readyState !== 3) {
+  while (this.readyState !== 3) {
     yield (await oncePromise(this, 'message')).data;
   }
 };
 
 /* --- */
 //Generate a Promise that listens only once for an event
-var oncePromise = (emitter, event) => {
-  return new Promise((resolve) => {
-    var handler = (...args) => {
-      emitter.removeEventListener(event, handler);
-      resolve(...args);
-    };
-    emitter.addEventListener(event, handler);
-  });
-};
+var oncePromise = (emitter, event) => new Promise((resolve) => {
+  var handler = (...args) => {
+    emitter.removeEventListener(event, handler);
+    resolve(...args);
+  };
+  emitter.addEventListener(event, handler);
+});
 
 /* --- */
 //run();
@@ -113,8 +111,8 @@ var oncePromise = (emitter, event) => {
 /* --- */
 //Tie everything together
 var run = async () => {
-  var i = 0;
-  var clicks = streamify('click', document.querySelector('body'));
+  let i = 0;
+  let clicks = streamify('click', document.querySelector('body'));
 
   clicks = filter(clicks, (e) => e.target.matches('a'));
   clicks = distinct(clicks, (e) => e.target);
@@ -133,7 +131,7 @@ var run = async () => {
 /* --- */
 //Turn any event emitter into a stream
 var streamify = async function* (event, element) {
-  while(true) {
+  while (true) {
     yield await oncePromise(element, event);
   }
 };
@@ -141,8 +139,8 @@ var streamify = async function* (event, element) {
 /* --- */
 //Only pass along events that meet a condition
 var filter = async function* (stream, test) {
-  for await (var event of stream) {
-    if(test(event)) {
+  for await (let event of stream) {
+    if (test(event)) {
       yield event;
     }
   }
@@ -151,21 +149,21 @@ var filter = async function* (stream, test) {
 /* --- */
 //Transform every event of the stream
 var map = async function* (stream, transform) {
-  for await (var event of stream) {
+  for await (let event of stream) {
     yield transform(event);
   }
 };
 
 /* --- */
-var identity = (e) => e;
+let identity = (e) => e;
 
 //Only pass along events that differ from the last one
 var distinct = async function* (stream, extract = identity) {
-  var lastVal;
-  var thisVal;
-  for await (var event of stream) {
+  let lastVal;
+  let thisVal;
+  for await (let event of stream) {
     thisVal = extract(event);
-    if(thisVal !== lastVal) {
+    if (thisVal !== lastVal) {
       lastVal = thisVal;
       yield event;
     }
@@ -175,11 +173,11 @@ var distinct = async function* (stream, extract = identity) {
 /* --- */
 //Only pass along event if some time has passed since the last one
 var throttle = async function* (stream, delay) {
-  var lastTime;
-  var thisTime;
-  for await (var event of stream) {
+  let lastTime;
+  let thisTime;
+  for await (let event of stream) {
     thisTime = new Date().getTime();
-    if(!lastTime || thisTime - lastTime > delay) {
+    if (!lastTime || thisTime - lastTime > delay) {
       lastTime = thisTime;
       yield event;
     }
@@ -189,7 +187,7 @@ var throttle = async function* (stream, delay) {
 /* --- */
 //Invoke a callback every time an event arrives
 var subscribe = async (stream, callback) => {
-  for await (var event of stream) {
+  for await (let event of stream) {
     callback(event);
   }
 };

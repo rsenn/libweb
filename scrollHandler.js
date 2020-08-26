@@ -1,20 +1,20 @@
 import { trkl } from './trkl.js';
 
 export function ScrollHandler(handler) {
-  var start = {};
-  var move = {};
-  var end = {};
-  var index = 0;
-  var active = false;
-  var starttime = 0;
-  var points = [];
+  let start = {};
+  let move = {};
+  let end = {};
+  let index = 0;
+  let active = false;
+  let starttime = 0;
+  let points = [];
 
-  var self = trkl();
+  let self = trkl();
 
   self.handler = handler;
 
   self.subscribe((event) => {
-    var type = event.type;
+    let type = event.type;
 
     //console.log("ScrollListener.event ", { type, event });
 
@@ -33,7 +33,7 @@ export const ScrollEvents = (listener) => ({
 });
 
 export const addScrollListeners = (listener, element, passive = false) => {
-  if(window.devp) devp.logEntry('addScrollListeners');
+  if (window.devp) devp.logEntry('addScrollListeners');
   //console.log("adding scroll listeners ", { disabled: listener.disabledfn() });
   element.addEventListener('scroll', listener, { passive });
   element.addEventListener('wheel', listener, { passive });
@@ -44,8 +44,8 @@ export const addScrollListeners = (listener, element, passive = false) => {
 };
 
 export const removeScrollListeners = (listener, element, passive = false) => {
-  if(listener) {
-    if(window.devp) devp.logEntry('removeScrollListeners');
+  if (listener) {
+    if (window.devp) devp.logEntry('removeScrollListeners');
     //console.log("removing scroll listeners ", { disabled: listener.disabledfn() });
 
     element.removeEventListener('scroll', listener, { passive });
@@ -58,12 +58,13 @@ export const removeScrollListeners = (listener, element, passive = false) => {
 };
 
 export function ScrollListener(handler) {
+
   /*  var fn = handler;
   if(fn && fn.subscribe === undefined) {
     fn = trkl();
     fn.subscribe(handler);
   }*/
-  var listen = ScrollHandler(handler);
+  let listen = ScrollHandler(handler);
   listen.handler.listener = listen;
   listen.handler.events = ScrollEvents(listen);
   return listen.handler;
@@ -73,15 +74,17 @@ export function ScrollDisabler(disabledfn = () => true, element) {
   const keys = [32, 33, 34, 35, 36, 37, 38, 39, 40];
   try {
     element = element || global.window;
-  } catch(err) {}
-  var listen = ScrollHandler((event) => {
+  }
+  catch (err) {}
+  let listen = ScrollHandler((event) => {
     let disabled = disabledfn();
 
-    if(disabled) {
-      if(event.keyCode !== undefined && keys.indexOf(event.keyCode) != -1) {
+    if (disabled) {
+      if (event.keyCode !== undefined && keys.indexOf(event.keyCode) != -1) {
         event.preventDefault();
-      } else if(event.type == 'wheel' || event.type == 'scroll' || event.type == 'touchmove' || event.type == 'DOMMouseScroll') {
-        if(event.cancelable) event.preventDefault();
+      }
+      else if (event.type == 'wheel' || event.type == 'scroll' || event.type == 'touchmove' || event.type == 'DOMMouseScroll') {
+        if (event.cancelable) event.preventDefault();
       }
 
       //console.log('ScrollDisabler.event ', { disabled, event });
@@ -90,7 +93,7 @@ export function ScrollDisabler(disabledfn = () => true, element) {
   });
   listen.disabledfn = disabledfn;
   listen.handler.listener = listen;
-  if(element) listen.handler.element = addScrollListeners(listen, element);
+  if (element) listen.handler.element = addScrollListeners(listen, element);
   else listen.handler.events = ScrollEvents(listen);
   listen.handler.remove = () => {
     //console.log("detach scroll disabler");

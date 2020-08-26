@@ -1,15 +1,15 @@
 export function autofillEvent(window, changeHandler) {
-  var rootElement = window.document.documentElement;
+  let rootElement = window.document.documentElement;
 
   //console.log("autofillEvent ", { window, rootElement });
 
   window.handleAutoFillEvent = changeHandler;
   window.checkAndTriggerAutoFillEvent = function (els) {
     els = this.nodeName === 'INPUT' ? [this] : els;
-    var i, el;
-    for(i = 0; i < els.length; i++) {
+    let i, el;
+    for (i = 0; i < els.length; i++) {
       el = els[i];
-      if(!valueMarked(el)) {
+      if (!valueMarked(el)) {
         markValue(el);
         triggerChangeEvent(el);
       }
@@ -23,12 +23,12 @@ export function autofillEvent(window, changeHandler) {
   //Need to use blur and not change event
   //as Chrome does not fire change events in all cases an input is changed
   //(e.g. when starting to type and then finish the input by auto filling a username)
-  addGlobalEventListener('blur', function (target) {
+  addGlobalEventListener('blur', (target) => {
     //setTimeout needed for Chrome as it fills other
     //form fields a little later...
-    window.setTimeout(function () {
-      var parentForm = findParentForm(target);
-      if(!parentForm) return;
+    window.setTimeout(() => {
+      let parentForm = findParentForm(target);
+      if (!parentForm) return;
       window.checkAndTriggerAutoFillEvent(parentForm.querySelectorAll('input'));
     }, 20);
   });
@@ -47,31 +47,32 @@ export function autofillEvent(window, changeHandler) {
 
     //The timeout is needed for Chrome as it auto fills
     //login forms some time after DOMContentLoaded!
-    window.setTimeout(function () {
+    window.setTimeout(() => {
       window.checkAndTriggerAutoFillEvent(inputElements);
     }, 200);
   }
 
   initAutoFillListeners();
   //IE8 compatibility issue
-  if(!window.document.addEventListener) {
+  if (!window.document.addEventListener) {
     window.document.attachEvent('DOMContentLoaded', initAutoFillListeners);
-  } else {
+  }
+  else {
     window.document.addEventListener('DOMContentLoaded', initAutoFillListeners, false);
   }
 
   //----------
 
   function valueMarked(el) {
-    if(!('$$currentValue' in el)) {
+    if (!('$$currentValue' in el)) {
       //First time we see an element we take it's value attribute
       //as real value. This might have been filled in the backend,
       //...
       el.$$currentValue = el.getAttribute('value');
     }
 
-    var val = el.value;
-    var $$currentValue = el.$$currentValue;
+    let val = el.value;
+    let $$currentValue = el.$$currentValue;
 
     //console.log('valueMarked ', { el, val, $$currentValue });
 
@@ -82,6 +83,7 @@ export function autofillEvent(window, changeHandler) {
     //console.log("markValue ", { el });
     el.$$currentValue = el.value;
   }
+
   /*
   function addValueChangeByJsListener(listener) {
     var jq = window.jQuery || window.angular.element;
@@ -102,21 +104,22 @@ export function autofillEvent(window, changeHandler) {
     //Use a capturing event listener so that
     //we also get the event when it's stopped!
     //Also, the blur event does not bubble.
-    if(!rootElement.addEventListener) {
+    if (!rootElement.addEventListener) {
       rootElement.attachEvent(eventName, onEvent);
-    } else {
+    }
+    else {
       rootElement.addEventListener(eventName, onEvent, true);
     }
 
     function onEvent(event) {
-      var target = event.target;
+      let target = event.target;
       listener(target);
     }
   }
 
   function findParentForm(el) {
-    while(el) {
-      if(el.nodeName === 'FORM') {
+    while (el) {
+      if (el.nodeName === 'FORM') {
         return el;
       }
       el = el.parentNode;
@@ -135,17 +138,18 @@ export function autofillEvent(window, changeHandler) {
   }
 */
   function triggerChangeEvent(element, changeHandler) {
-    var doc = window.document;
-    var event = doc.createEvent('HTMLEvents');
-    var handler = changeHandler || window.handleAutoFillEvent;
+    let doc = window.document;
+    let event = doc.createEvent('HTMLEvents');
+    let handler = changeHandler || window.handleAutoFillEvent;
 
     event.initEvent('change', true, true);
 
     //console.log("triggerChangeEvent ", { element, doc, event });
 
-    if(handler) {
+    if (handler) {
       handler(event);
-    } else {
+    }
+    else {
       element.dispatchEvent(event);
     }
   }

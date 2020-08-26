@@ -5,7 +5,7 @@ export const setErrorCallback = (callback) => {
   errorCallback = callback;
 };
 ClipperLib.Error = (message) => {
-  if(errorCallback) errorCallback(message);
+  if (errorCallback) errorCallback(message);
 };
 
 const CLIPPER = new ClipperLib.Clipper();
@@ -14,9 +14,9 @@ const CLIPPER_OFFSET = new ClipperLib.ClipperOffset();
 export default class Shape {
   constructor(paths = [], closed = true, capitalConversion = false, integerConversion = false, removeDuplicates = false) {
     this.paths = paths;
-    if(capitalConversion) this.paths = this.paths.map(mapLowerToCapital);
-    if(integerConversion) this.paths = this.paths.map(mapToRound);
-    if(removeDuplicates) this.paths = this.paths.map(filterPathsDuplicates);
+    if (capitalConversion) this.paths = this.paths.map(mapLowerToCapital);
+    if (integerConversion) this.paths = this.paths.map(mapToRound);
+    if (removeDuplicates) this.paths = this.paths.map(filterPathsDuplicates);
     this.closed = closed;
   }
 
@@ -25,7 +25,7 @@ export default class Shape {
 
     CLIPPER.Clear();
     CLIPPER.AddPaths(this.paths, ClipperLib.PolyType.ptSubject, this.closed);
-    for(let i = 0; i < clipShapes.length; i++) {
+    for (let i = 0; i < clipShapes.length; i++) {
       const clipShape = clipShapes[i];
       CLIPPER.AddPaths(clipShape.paths, ClipperLib.PolyType.ptClip, clipShape.closed);
     }
@@ -78,31 +78,31 @@ export default class Shape {
   }
 
   firstPoint(toLower = false) {
-    if(this.paths.length === 0) {
+    if (this.paths.length === 0) {
       return;
     }
 
     const firstPath = this.paths[0];
     const firstPoint = firstPath[0];
-    if(toLower) {
+    if (toLower) {
       return vectorToLower(firstPoint);
-    } else {
-      return firstPoint;
     }
+    return firstPoint;
+    
   }
 
   lastPoint(toLower = false) {
-    if(this.paths.length === 0) {
+    if (this.paths.length === 0) {
       return;
     }
 
     const lastPath = this.paths[this.paths.length - 1];
     const lastPoint = this.closed ? lastPath[0] : lastPath[lastPath.length - 1];
-    if(toLower) {
+    if (toLower) {
       return vectorToLower(lastPoint);
-    } else {
-      return lastPoint;
     }
+    return lastPoint;
+    
   }
 
   areas() {
@@ -142,10 +142,10 @@ export default class Shape {
   }
 
   thresholdArea(minArea) {
-    for(const path of [...this.paths]) {
+    for (const path of [...this.paths]) {
       const area = Math.abs(ClipperLib.Clipper.Area(path));
 
-      if(area < minArea) {
+      if (area < minArea) {
         const index = this.paths.indexOf(path);
         this.paths.splice(index, 1);
       }
@@ -183,13 +183,13 @@ export default class Shape {
   }
 
   pointInShape(point, capitalConversion = false, integerConversion = false) {
-    if(capitalConversion) point = vectorToCapital(point);
-    if(integerConversion) point = roundVector(point);
-    for(let i = 0; i < this.paths.length; i++) {
+    if (capitalConversion) point = vectorToCapital(point);
+    if (integerConversion) point = roundVector(point);
+    for (let i = 0; i < this.paths.length; i++) {
       const pointInPath = this.pointInPath(i, point);
       const orientation = this.orientation(i);
 
-      if((!pointInPath && orientation) || (pointInPath && !orientation)) {
+      if ((!pointInPath && orientation) || (pointInPath && !orientation)) {
         return false;
       }
     }
@@ -198,8 +198,8 @@ export default class Shape {
   }
 
   pointInPath(index, point, capitalConversion = false, integerConversion = false) {
-    if(capitalConversion) point = vectorToCapital(point);
-    if(integerConversion) point = roundVector(point);
+    if (capitalConversion) point = vectorToCapital(point);
+    if (integerConversion) point = roundVector(point);
     const path = this.paths[index];
     const intPoint = { X: Math.round(point.X), Y: Math.round(point.Y) };
 
@@ -207,11 +207,11 @@ export default class Shape {
   }
 
   fixOrientation() {
-    if(!this.closed) {
+    if (!this.closed) {
       return this;
     }
 
-    if(this.totalArea() < 0) {
+    if (this.totalArea() < 0) {
       this.reverse();
     }
 
@@ -219,49 +219,51 @@ export default class Shape {
   }
 
   simplify(fillType) {
-    if(this.closed) {
+    if (this.closed) {
       const shape = ClipperLib.Clipper.SimplifyPolygons(this.paths, ClipperLib.PolyFillType[fillType]);
       return new Shape(shape, true);
-    } else {
-      return this;
     }
+    return this;
+    
   }
 
   separateShapes() {
     const shapes = [];
 
-    if(!this.closed) {
-      for(const path of this.paths) {
+    if (!this.closed) {
+      for (const path of this.paths) {
         shapes.push(new Shape([path], false));
       }
-    } else {
+    }
+    else {
       const areas = new WeakMap();
       const outlines = [];
       const holes = [];
 
-      for(let i = 0; i < this.paths.length; i++) {
+      for (let i = 0; i < this.paths.length; i++) {
         const path = this.paths[i];
         const orientation = this.orientation(i);
 
-        if(orientation) {
+        if (orientation) {
           const area = this.area(i);
           areas.set(path, area);
           outlines.push(path);
-        } else {
+        }
+        else {
           holes.push(path);
         }
       }
 
       outlines.sort((a, b) => areas.get(a) - areas.get(b));
 
-      for(const outline of outlines) {
+      for (const outline of outlines) {
         const shape = [outline];
 
         const index = this.paths.indexOf(outline);
 
-        for(const hole of [...holes]) {
+        for (const hole of [...holes]) {
           const pointInHole = this.pointInPath(index, hole[0]);
-          if(pointInHole) {
+          if (pointInHole) {
             shape.push(hole);
 
             const index = holes.indexOf(hole);
@@ -318,7 +320,7 @@ function filterPathsDuplicates(path) {
 }
 
 function filterPathDuplicates(point, i, array) {
-  if(i === 0) return true;
+  if (i === 0) return true;
 
   const prevPoint = array[i - 1];
   return !(point.X === prevPoint.X && point.Y === prevPoint.Y);

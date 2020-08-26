@@ -10,13 +10,10 @@
  * @license MIT
  */
 
-'use strict';
 
-var absCommands = ['M', 'Z', 'L', 'H', 'V', 'C', 'S', 'Q', 'T', 'A'];
-var relCommands = absCommands.map(function (letter) {
-  return letter.toLowerCase();
-});
-var commands = absCommands.concat(relCommands);
+let absCommands = ['M', 'Z', 'L', 'H', 'V', 'C', 'S', 'Q', 'T', 'A'];
+let relCommands = absCommands.map((letter) => letter.toLowerCase());
+let commands = absCommands.concat(relCommands);
 
 /**
  * Creates a path builder. Can be invoked without new.
@@ -25,10 +22,11 @@ var commands = absCommands.concat(relCommands);
  */
 export function SvgPath() {
   //TODO is this check robust enough?
-  if(this instanceof SvgPath) {
+  if (this instanceof SvgPath) {
     //this.relative = false;
     this.commands = [];
-  } else {
+  }
+  else {
     return new SvgPath();
   }
 }
@@ -67,7 +65,7 @@ SvgPath.prototype.close = function () {
  * @returns {SvgPath}
  */
 SvgPath.prototype.to = function (x, y) {
-  var point = typeof x === 'object' ? x : { x: x, y: y };
+  let point = typeof x === 'object' ? x : { x, y };
   return this._cmd('M')(point.x, point.y);
 };
 
@@ -79,7 +77,7 @@ SvgPath.prototype.to = function (x, y) {
  * @returns {SvgPath}
  */
 SvgPath.prototype.line = function (x, y) {
-  var point = typeof x === 'object' ? x : { x: x, y: y };
+  let point = typeof x === 'object' ? x : { x, y };
   return this._cmd('L')(point.x, point.y);
 };
 
@@ -114,21 +112,21 @@ SvgPath.prototype.vline = function (y) {
  * @returns {SvgPath}
  */
 SvgPath.prototype.bezier3 = function (x1, y1, x2, y2, x, y) {
-  var usePoints = typeof x1 === 'object';
-  var shortcut = usePoints ? arguments.length < 3 : arguments.length < 6;
-  var p1 = { x: x1, y: y1 };
-  var p2 = { x: x2, y: y2 };
-  var end = shortcut ? p2 : { x: x, y: y };
-  if(usePoints) {
+  let usePoints = typeof x1 === 'object';
+  let shortcut = usePoints ? arguments.length < 3 : arguments.length < 6;
+  let p1 = { x: x1, y: y1 };
+  let p2 = { x: x2, y: y2 };
+  let end = shortcut ? p2 : { x, y };
+  if (usePoints) {
     p1 = x1;
     p2 = y1;
     end = shortcut ? p2 : x2;
   }
-  if(!shortcut) {
+  if (!shortcut) {
     return this._cmd('C')(p1.x, p1.y, p2.x, p2.y, end.x, end.y);
-  } else {
-    return this._cmd('S')(p1.x, p1.y, end.x, end.y);
   }
+  return this._cmd('S')(p1.x, p1.y, end.x, end.y);
+  
 };
 
 /**
@@ -142,19 +140,19 @@ SvgPath.prototype.bezier3 = function (x1, y1, x2, y2, x, y) {
  * @returns {SvgPath}
  */
 SvgPath.prototype.bezier2 = function (x1, y1, x, y) {
-  var usePoints = typeof x1 === 'object';
-  var shortcut = usePoints ? arguments.length < 2 : arguments.length < 4;
-  var p1 = { x: x1, y: y1 };
-  var end = shortcut ? p1 : { x: x, y: y };
-  if(usePoints) {
+  let usePoints = typeof x1 === 'object';
+  let shortcut = usePoints ? arguments.length < 2 : arguments.length < 4;
+  let p1 = { x: x1, y: y1 };
+  let end = shortcut ? p1 : { x, y };
+  if (usePoints) {
     p1 = x1;
     end = shortcut ? p1 : y1;
   }
-  if(!shortcut) {
+  if (!shortcut) {
     return this._cmd('Q')(p1.x, p1.y, end.x, end.y);
-  } else {
-    return this._cmd('T')(end.x, end.y);
   }
+  return this._cmd('T')(end.x, end.y);
+  
 };
 
 /**
@@ -170,7 +168,7 @@ SvgPath.prototype.bezier2 = function (x1, y1, x, y) {
  * @returns {*}
  */
 SvgPath.prototype.arc = function (rx, ry, rotation, large, sweep, x, y) {
-  var point = typeof x === 'object' ? x : { x: x, y: y };
+  let point = typeof x === 'object' ? x : { x, y };
   return this._cmd('A')(rx, ry, rotation, large ? 1 : 0, sweep ? 1 : 0, point.x, point.y);
 };
 
@@ -186,18 +184,16 @@ SvgPath.prototype.cmd = function (...args) {
  */
 SvgPath.prototype.str = function () {
   return this.commands
-    .map(function (command) {
-      return command.toString();
-    })
+    .map((command) => command.toString())
     .join(' ');
 };
 
 //setting letter commands
-commands.forEach(function (commandName) {
+commands.forEach((commandName) => {
   SvgPath.prototype[commandName] = function () {
-    var args = Array.prototype.slice.call(arguments, 0);
+    let args = Array.prototype.slice.call(arguments, 0);
     args.unshift(commandName);
-    var command = new Command(args);
+    let command = new Command(args);
     this.commands.push(command);
     return this;
   };
@@ -210,7 +206,7 @@ commands.forEach(function (commandName) {
  * @private
  */
 SvgPath.prototype._cmd = function (letter) {
-  var actualName = this.relative ? letter.toLowerCase() : letter.toUpperCase();
+  let actualName = this.relative ? letter.toLowerCase() : letter.toUpperCase();
   //TODO maybe direct invokation is better than binding?
   return this[actualName].bind(this);
 };
@@ -222,7 +218,7 @@ SvgPath.prototype._cmd = function (letter) {
  */
 function Command(name) {
   //TODO more robust array detection
-  var args = name.length > 0 && name.slice ? name : Array.prototype.slice.call(arguments, 0);
+  let args = name.length > 0 && name.slice ? name : Array.prototype.slice.call(arguments, 0);
   this.name = args[0];
   this.args = args.slice(1);
 }

@@ -14,7 +14,7 @@ export const Rectangle = ({ data, opts = {}, ...props }) => {
 
   const { layer, x1, x2, y1, y2 } = coordFn(data);
   const color = data.getColor();
-  let visible = layer ? useTrkl(layer.handlers['visible']) : true;
+  let visible = layer ? useTrkl(layer.handlers.visible) : true;
 
   let rect = Rect.from({ x1, x2, y1, y2 });
   let rot = Rotation(data.rot);

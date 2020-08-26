@@ -29,10 +29,10 @@ export function DeepProxy(rootTarget, traps, options) {
   let path = [];
   let userData = {};
 
-  if(options !== undefined && typeof options.path !== 'undefined') {
+  if (options !== undefined && typeof options.path !== 'undefined') {
     path = parsePath(options.path);
   }
-  if(options !== undefined && typeof options.userData !== 'undefined') {
+  if (options !== undefined && typeof options.userData !== 'undefined') {
     userData = options.userData;
   }
 
@@ -43,28 +43,29 @@ export function DeepProxy(rootTarget, traps, options) {
 
     const realTraps = {};
 
-    for(const trapName of trapNames) {
+    for (const trapName of trapNames) {
       const keyParamIdx = keys[trapName],
         trap = traps[trapName];
 
-      if(typeof trap !== 'undefined') {
-        if(typeof keyParamIdx !== 'undefined') {
+      if (typeof trap !== 'undefined') {
+        if (typeof keyParamIdx !== 'undefined') {
           realTraps[trapName] = function () {
             const key = arguments[keyParamIdx];
 
             //update context for this trap
             context.nest = function (nestedTarget) {
-              if(nestedTarget === undefined) nestedTarget = rootTarget;
+              if (nestedTarget === undefined) nestedTarget = rootTarget;
               return createProxy(nestedTarget, push(path, key));
             };
 
             return trap.apply(context, arguments);
           };
-        } else {
+        }
+        else {
           realTraps[trapName] = function () {
             //update context for this trap
             context.nest = function (nestedTarget) {
-              if(nestedTarget === undefined) nestedTarget = {};
+              if (nestedTarget === undefined) nestedTarget = {};
               return createProxy(nestedTarget, path);
             };
 

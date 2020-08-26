@@ -26,10 +26,10 @@ export class SourceMap {
     constructor(sm, opts, filesystem = {}) {
       opts = opts || {};
 
-      if(opts.isFileComment) sm = readFromFileMap(sm, opts.commentFileDir, filesystem);
-      if(opts.hasComment) sm = stripComment(sm);
-      if(opts.isEncoded) sm = decodeBase64(sm);
-      if(opts.isJSON || opts.isEncoded) sm = JSON.parse(sm);
+      if (opts.isFileComment) sm = readFromFileMap(sm, opts.commentFileDir, filesystem);
+      if (opts.hasComment) sm = stripComment(sm);
+      if (opts.isEncoded) sm = decodeBase64(sm);
+      if (opts.isJSON || opts.isEncoded) sm = JSON.parse(sm);
 
       this.sourcemap = sm;
     }
@@ -39,13 +39,13 @@ export class SourceMap {
     }
 
     toBase64() {
-      var json = this.toJSON();
+      let json = this.toJSON();
       return encodeBase64(json);
     }
 
     toComment(options) {
-      var base64 = this.toBase64();
-      var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+      let base64 = this.toBase64();
+      let data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
       return options && options.multiline ? '/*# ' + data + ' */' : '//# ' + data;
     }
 
@@ -55,7 +55,7 @@ export class SourceMap {
     }
 
     addProperty(key, value) {
-      if(this.sourcemap.hasOwnProperty(key)) throw new Error('property "' + key + '" already exists on the sourcemap, use set property instead');
+      if (this.sourcemap.hasOwnProperty(key)) throw new Error('property "' + key + '" already exists on the sourcemap, use set property instead');
       return this.setProperty(key, value);
     }
 
@@ -81,13 +81,13 @@ export class SourceMap {
 
   // Finds last sourcemap comment in file or returns null if none was found
   static fromSource = (content) => {
-    var m = content.match(this.commentRegex);
+    let m = content.match(this.commentRegex);
     return m ? this.fromComment(m.pop()) : null;
   };
 
   // Finds last sourcemap comment in file or returns null if none was found
   static fromMapFileSource = (content, dir) => {
-    var m = content.match(this.mapFileCommentRegex);
+    let m = content.match(this.mapFileCommentRegex);
     return m ? this.fromMapFileComment(m.pop(), dir) : null;
   };
 
@@ -96,7 +96,7 @@ export class SourceMap {
   static removeMapFileComments = (src) => src.replace(this.mapFileCommentRegex, '');
 
   static generateMapFileComment = (file, options) => {
-    var data = 'sourceMappingURL=' + file;
+    let data = 'sourceMappingURL=' + file;
     return options && options.multiline ? '/*# ' + data + ' */' : '//# ' + data;
   };
 }
@@ -108,20 +108,21 @@ function stripComment(sm) {
 function readFromFileMap(sm, dir, filesystem) {
   // NOTE: this will only work on the server since it attempts to read the map file
 
-  var r = SourceMap.mapFileCommentRegex.exec(sm);
+  let r = SourceMap.mapFileCommentRegex.exec(sm);
 
   console.log('r:', r, { sm });
 
   // for some odd reason //# .. captures in 1 and /* .. */ in 2
-  var filename = r[1] || r[2];
-  var filepath = dir
+  let filename = r[1] || r[2];
+  let filepath = dir
     .split(/[\/\\]+/g)
     .concat([filename])
     .join('/');
 
   try {
     return filesystem.readFile(filepath, 'utf8');
-  } catch(e) {
+  }
+  catch (e) {
     throw new Error('An error occurred while trying to read the map file at ' + filepath + '\n' + e);
   }
 }

@@ -14,7 +14,7 @@ const fromPairs = (pairs) => {
   const length = !pairs ? 0 : pairs.length;
   const result = {};
 
-  while(++index < length) {
+  while (++index < length) {
     const pair = pairs[index];
     result[pair[0]] = pair[1];
   }
@@ -25,18 +25,19 @@ const fromPairs = (pairs) => {
 const partitionWordsByGroup = (words = []) => {
   const groups = [];
 
-  for(let i = 0; i < words.length; ++i) {
+  for (let i = 0; i < words.length; ++i) {
     const word = words[i];
     const letter = word[0];
 
-    if(letter === 'G' || letter === 'M' || letter === 'T') {
+    if (letter === 'G' || letter === 'M' || letter === 'T') {
       groups.push([word]);
       continue;
     }
 
-    if(groups.length > 0) {
+    if (groups.length > 0) {
       groups[groups.length - 1].push(word);
-    } else {
+    }
+    else {
       groups.push([word]);
     }
   }
@@ -47,7 +48,7 @@ const partitionWordsByGroup = (words = []) => {
 const interpret = (self, data) => {
   const groups = partitionWordsByGroup(data.words);
 
-  for(let i = 0; i < groups.length; ++i) {
+  for (let i = 0; i < groups.length; ++i) {
     const words = groups[i];
     const word = words[0] || [];
     const letter = word[0];
@@ -55,28 +56,33 @@ const interpret = (self, data) => {
     let cmd = '';
     let args = {};
 
-    if(letter === 'G') {
+    if (letter === 'G') {
       cmd = letter + code;
       args = fromPairs(words.slice(1));
 
       // Motion Mode
-      if(code === 0 || code === 1 || code === 2 || code === 3 || code === 38.2 || code === 38.3 || code === 38.4 || code === 38.5) {
+      if (code === 0 || code === 1 || code === 2 || code === 3 || code === 38.2 || code === 38.3 || code === 38.4 || code === 38.5) {
         self.motionMode = cmd;
-      } else if(code === 80) {
+      }
+      else if (code === 80) {
         self.motionMode = '';
       }
-    } else if(letter === 'M') {
+    }
+    else if (letter === 'M') {
       cmd = letter + code;
       args = fromPairs(words.slice(1));
-    } else if(letter === 'T') {
+    }
+    else if (letter === 'T') {
       // T1 ; w/o M6
       cmd = letter;
       args = code;
-    } else if(letter === 'F') {
+    }
+    else if (letter === 'F') {
       // F750 ; w/o motion command
       cmd = letter;
       args = code;
-    } else if(letter === 'X' || letter === 'Y' || letter === 'Z' || letter === 'A' || letter === 'B' || letter === 'C' || letter === 'I' || letter === 'J' || letter === 'K') {
+    }
+    else if (letter === 'X' || letter === 'Y' || letter === 'Z' || letter === 'A' || letter === 'B' || letter === 'C' || letter === 'I' || letter === 'J' || letter === 'K') {
       // Use previous motion command if the line does not start with G-code or M-code.
       // @example
       //   G0 Z0.25
@@ -97,18 +103,19 @@ const interpret = (self, data) => {
       args = fromPairs(words);
     }
 
-    if(!cmd) {
+    if (!cmd) {
       continue;
     }
 
-    if(typeof self.handlers[cmd] === 'function') {
+    if (typeof self.handlers[cmd] === 'function') {
       const func = self.handlers[cmd];
       func(args);
-    } else if(typeof self.defaultHandler === 'function') {
+    }
+    else if (typeof self.defaultHandler === 'function') {
       self.defaultHandler(cmd, args);
     }
 
-    if(typeof self[cmd] === 'function') {
+    if (typeof self[cmd] === 'function') {
       const func = self[cmd].bind(self);
       func(args);
     }
@@ -141,7 +148,7 @@ export class Interpreter {
   }
   loadFromFileSync(file, callback = noop) {
     const list = parseFileSync(file);
-    for(let i = 0; i < list.length; ++i) {
+    for (let i = 0; i < list.length; ++i) {
       interpret(this, list[i]);
       callback(list[i], i);
     }
@@ -156,7 +163,7 @@ export class Interpreter {
   }
   loadFromStringSync(str, callback = noop) {
     const list = parseStringSync(str);
-    for(let i = 0; i < list.length; ++i) {
+    for (let i = 0; i < list.length; ++i) {
       interpret(this, list[i]);
       callback(list[i], i);
     }

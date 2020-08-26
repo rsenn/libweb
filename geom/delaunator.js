@@ -8,7 +8,7 @@ export default class Delaunator {
     const n = points.length;
     const coords = new Float64Array(n * 2);
 
-    for(let i = 0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
       const p = points[i];
       coords[2 * i] = getX(p);
       coords[2 * i + 1] = getY(p);
@@ -19,7 +19,7 @@ export default class Delaunator {
 
   constructor(coords) {
     const n = coords.length >> 1;
-    if(n > 0 && typeof coords[0] !== 'number') throw new Error('Expected coords to contain numbers.');
+    if (n > 0 && typeof coords[0] !== 'number') throw new Error('Expected coords to contain numbers.');
 
     this.coords = coords;
 
@@ -52,13 +52,13 @@ export default class Delaunator {
     let maxX = -Infinity;
     let maxY = -Infinity;
 
-    for(let i = 0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
       const x = coords[2 * i];
       const y = coords[2 * i + 1];
-      if(x < minX) minX = x;
-      if(y < minY) minY = y;
-      if(x > maxX) maxX = x;
-      if(y > maxY) maxY = y;
+      if (x < minX) minX = x;
+      if (y < minY) minY = y;
+      if (x > maxX) maxX = x;
+      if (y > maxY) maxY = y;
       this._ids[i] = i;
     }
     const cx = (minX + maxX) / 2;
@@ -68,9 +68,9 @@ export default class Delaunator {
     let i0, i1, i2;
 
     //pick a seed point close to the center
-    for(let i = 0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
       const d = dist(cx, cy, coords[2 * i], coords[2 * i + 1]);
-      if(d < minDist) {
+      if (d < minDist) {
         i0 = i;
         minDist = d;
       }
@@ -81,10 +81,10 @@ export default class Delaunator {
     minDist = Infinity;
 
     //find the point closest to the seed
-    for(let i = 0; i < n; i++) {
-      if(i === i0) continue;
+    for (let i = 0; i < n; i++) {
+      if (i === i0) continue;
       const d = dist(i0x, i0y, coords[2 * i], coords[2 * i + 1]);
-      if(d < minDist && d > 0) {
+      if (d < minDist && d > 0) {
         i1 = i;
         minDist = d;
       }
@@ -95,10 +95,10 @@ export default class Delaunator {
     let minRadius = Infinity;
 
     //find the third point which forms the smallest circumcircle with the first two
-    for(let i = 0; i < n; i++) {
-      if(i === i0 || i === i1) continue;
+    for (let i = 0; i < n; i++) {
+      if (i === i0 || i === i1) continue;
       const r = circumradius(i0x, i0y, i1x, i1y, coords[2 * i], coords[2 * i + 1]);
-      if(r < minRadius) {
+      if (r < minRadius) {
         i2 = i;
         minRadius = r;
       }
@@ -106,18 +106,18 @@ export default class Delaunator {
     let i2x = coords[2 * i2];
     let i2y = coords[2 * i2 + 1];
 
-    if(minRadius === Infinity) {
+    if (minRadius === Infinity) {
       //order collinear points by dx (or dy if all x are identical)
       //and return the list as a hull
-      for(let i = 0; i < n; i++) {
+      for (let i = 0; i < n; i++) {
         this._dists[i] = coords[2 * i] - coords[0] || coords[2 * i + 1] - coords[1];
       }
       quicksort(this._ids, this._dists, 0, n - 1);
       const hull = new Uint32Array(n);
       let j = 0;
-      for(let i = 0, d0 = -Infinity; i < n; i++) {
+      for (let i = 0, d0 = -Infinity; i < n; i++) {
         const id = this._ids[i];
-        if(this._dists[id] > d0) {
+        if (this._dists[id] > d0) {
           hull[j++] = id;
           d0 = this._dists[id];
         }
@@ -129,7 +129,7 @@ export default class Delaunator {
     }
 
     //swap the order of the seed points for counter-clockwise orientation
-    if(orient(i0x, i0y, i1x, i1y, i2x, i2y)) {
+    if (orient(i0x, i0y, i1x, i1y, i2x, i2y)) {
       const i = i1;
       const x = i1x;
       const y = i1y;
@@ -145,7 +145,7 @@ export default class Delaunator {
     this._cx = center.x;
     this._cy = center.y;
 
-    for(let i = 0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
       this._dists[i] = dist(coords[2 * i], coords[2 * i + 1], center.x, center.y);
     }
 
@@ -172,37 +172,37 @@ export default class Delaunator {
     this.trianglesLen = 0;
     this._addTriangle(i0, i1, i2, -1, -1, -1);
 
-    for(let k = 0, xp, yp; k < this._ids.length; k++) {
+    for (let k = 0, xp, yp; k < this._ids.length; k++) {
       const i = this._ids[k];
       const x = coords[2 * i];
       const y = coords[2 * i + 1];
 
       //skip near-duplicate points
-      if(k > 0 && Math.abs(x - xp) <= EPSILON && Math.abs(y - yp) <= EPSILON) continue;
+      if (k > 0 && Math.abs(x - xp) <= EPSILON && Math.abs(y - yp) <= EPSILON) continue;
       xp = x;
       yp = y;
 
       //skip seed triangle points
-      if(i === i0 || i === i1 || i === i2) continue;
+      if (i === i0 || i === i1 || i === i2) continue;
 
       //find a visible edge on the convex hull using edge hash
       let start = 0;
-      for(let j = 0, key = this._hashKey(x, y); j < this._hashSize; j++) {
+      for (let j = 0, key = this._hashKey(x, y); j < this._hashSize; j++) {
         start = hullHash[(key + j) % this._hashSize];
-        if(start !== -1 && start !== hullNext[start]) break;
+        if (start !== -1 && start !== hullNext[start]) break;
       }
 
       start = hullPrev[start];
       let e = start,
         q;
-      while(((q = hullNext[e]), !orient(x, y, coords[2 * e], coords[2 * e + 1], coords[2 * q], coords[2 * q + 1]))) {
+      while (((q = hullNext[e]), !orient(x, y, coords[2 * e], coords[2 * e + 1], coords[2 * q], coords[2 * q + 1]))) {
         e = q;
-        if(e === start) {
+        if (e === start) {
           e = -1;
           break;
         }
       }
-      if(e === -1) continue; //likely a near-duplicate point; skip it
+      if (e === -1) continue; //likely a near-duplicate point; skip it
 
       //add the first triangle from the point
       let t = this._addTriangle(e, i, hullNext[e], -1, -1, hullTri[e]);
@@ -214,7 +214,7 @@ export default class Delaunator {
 
       //walk forward through the hull, adding more triangles and flipping recursively
       let n = hullNext[e];
-      while(((q = hullNext[n]), orient(x, y, coords[2 * n], coords[2 * n + 1], coords[2 * q], coords[2 * q + 1]))) {
+      while (((q = hullNext[n]), orient(x, y, coords[2 * n], coords[2 * n + 1], coords[2 * q], coords[2 * q + 1]))) {
         t = this._addTriangle(n, i, q, hullTri[i], -1, hullTri[n]);
         hullTri[i] = this._legalize(t + 2);
         hullNext[n] = n; //mark as removed
@@ -223,8 +223,8 @@ export default class Delaunator {
       }
 
       //walk backward from the other side, adding more triangles and flipping
-      if(e === start) {
-        while(((q = hullPrev[e]), orient(x, y, coords[2 * q], coords[2 * q + 1], coords[2 * e], coords[2 * e + 1]))) {
+      if (e === start) {
+        while (((q = hullPrev[e]), orient(x, y, coords[2 * q], coords[2 * q + 1], coords[2 * e], coords[2 * e + 1]))) {
           t = this._addTriangle(q, i, e, -1, hullTri[e], hullTri[q]);
           this._legalize(t + 2);
           hullTri[q] = t;
@@ -245,7 +245,7 @@ export default class Delaunator {
     }
 
     this.hull = new Uint32Array(hullSize);
-    for(let i = 0, e = this._hullStart; i < hullSize; i++) {
+    for (let i = 0, e = this._hullStart; i < hullSize; i++) {
       this.hull[i] = e;
       e = hullNext[e];
     }
@@ -266,7 +266,7 @@ export default class Delaunator {
     let ar = 0;
 
     //recursion eliminated with a fixed-size stack
-    while(true) {
+    while (true) {
       const b = halfedges[a];
 
       /* if the pair of triangles doesn't satisfy the Delaunay condition
@@ -287,9 +287,9 @@ export default class Delaunator {
       const a0 = a - (a % 3);
       ar = a0 + ((a + 2) % 3);
 
-      if(b === -1) {
+      if (b === -1) {
         //convex hull edge
-        if(i === 0) break;
+        if (i === 0) break;
         a = EDGE_STACK[--i];
         continue;
       }
@@ -305,22 +305,22 @@ export default class Delaunator {
 
       const illegal = inCircle(coords[2 * p0], coords[2 * p0 + 1], coords[2 * pr], coords[2 * pr + 1], coords[2 * pl], coords[2 * pl + 1], coords[2 * p1], coords[2 * p1 + 1]);
 
-      if(illegal) {
+      if (illegal) {
         triangles[a] = p1;
         triangles[b] = p0;
 
         const hbl = halfedges[bl];
 
         //edge swapped on the other side of the hull (rare); fix the halfedge reference
-        if(hbl === -1) {
+        if (hbl === -1) {
           let e = this._hullStart;
           do {
-            if(this._hullTri[e] === bl) {
+            if (this._hullTri[e] === bl) {
               this._hullTri[e] = a;
               break;
             }
             e = this._hullPrev[e];
-          } while(e !== this._hullStart);
+          } while (e !== this._hullStart);
         }
         this._link(a, hbl);
         this._link(b, halfedges[ar]);
@@ -329,11 +329,12 @@ export default class Delaunator {
         const br = b0 + ((b + 1) % 3);
 
         //don't worry about hitting the cap: it can only happen on extremely degenerate input
-        if(i < EDGE_STACK.length) {
+        if (i < EDGE_STACK.length) {
           EDGE_STACK[i++] = br;
         }
-      } else {
-        if(i === 0) break;
+      }
+      else {
+        if (i === 0) break;
         a = EDGE_STACK[--i];
       }
     }
@@ -343,7 +344,7 @@ export default class Delaunator {
 
   _link(a, b) {
     this._halfedges[a] = b;
-    if(b !== -1) this._halfedges[b] = a;
+    if (b !== -1) this._halfedges[b] = a;
   }
 
   //add a new triangle given vertex indices and adjacent half-edge ids
@@ -436,40 +437,42 @@ function circumcenter(ax, ay, bx, by, cx, cy) {
 }
 
 function quicksort(ids, dists, left, right) {
-  if(right - left <= 20) {
-    for(let i = left + 1; i <= right; i++) {
+  if (right - left <= 20) {
+    for (let i = left + 1; i <= right; i++) {
       const temp = ids[i];
       const tempDist = dists[temp];
       let j = i - 1;
-      while(j >= left && dists[ids[j]] > tempDist) ids[j + 1] = ids[j--];
+      while (j >= left && dists[ids[j]] > tempDist) ids[j + 1] = ids[j--];
       ids[j + 1] = temp;
     }
-  } else {
+  }
+  else {
     const median = (left + right) >> 1;
     let i = left + 1;
     let j = right;
     swap(ids, median, i);
-    if(dists[ids[left]] > dists[ids[right]]) swap(ids, left, right);
-    if(dists[ids[i]] > dists[ids[right]]) swap(ids, i, right);
-    if(dists[ids[left]] > dists[ids[i]]) swap(ids, left, i);
+    if (dists[ids[left]] > dists[ids[right]]) swap(ids, left, right);
+    if (dists[ids[i]] > dists[ids[right]]) swap(ids, i, right);
+    if (dists[ids[left]] > dists[ids[i]]) swap(ids, left, i);
 
     const temp = ids[i];
     const tempDist = dists[temp];
-    while(true) {
+    while (true) {
       do i++;
-      while(dists[ids[i]] < tempDist);
+      while (dists[ids[i]] < tempDist);
       do j--;
-      while(dists[ids[j]] > tempDist);
-      if(j < i) break;
+      while (dists[ids[j]] > tempDist);
+      if (j < i) break;
       swap(ids, i, j);
     }
     ids[left + 1] = ids[j];
     ids[j] = temp;
 
-    if(right - i + 1 >= j - left) {
+    if (right - i + 1 >= j - left) {
       quicksort(ids, dists, i, right);
       quicksort(ids, dists, left, j - 1);
-    } else {
+    }
+    else {
       quicksort(ids, dists, left, j - 1);
       quicksort(ids, dists, i, right);
     }

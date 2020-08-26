@@ -12,13 +12,14 @@ const { push: ArrayPush, concat: ArrayConcat, map: ArrayMap } = Array.prototype;
 const OtS = {}.toString;
 
 function toString(obj) {
-  if(obj && obj.toString) {
+  if (obj && obj.toString) {
     return obj.toString();
-  } else if(typeof obj === 'object') {
-    return OtS.call(obj);
-  } else {
-    return obj + '';
   }
+  else if (typeof obj === 'object') {
+    return OtS.call(obj);
+  }
+  return obj + '';
+  
 }
 
 function isUndefined(obj) {
@@ -44,14 +45,15 @@ class BaseProxyHandler {
 
   //Shared utility methods
   wrapDescriptor(descriptor) {
-    if(hasOwnProperty.call(descriptor, 'value')) {
+    if (hasOwnProperty.call(descriptor, 'value')) {
       descriptor.value = this.wrapValue(descriptor.value);
-    } else {
+    }
+    else {
       const { set: originalSet, get: originalGet } = descriptor;
-      if(!isUndefined(originalGet)) {
+      if (!isUndefined(originalGet)) {
         descriptor.get = this.wrapGetter(originalGet);
       }
-      if(!isUndefined(originalSet)) {
+      if (!isUndefined(originalSet)) {
         descriptor.set = this.wrapSetter(originalSet);
       }
     }
@@ -65,7 +67,7 @@ class BaseProxyHandler {
     //but it will always be compatible with the previous descriptor
     //to preserve the object invariants, which makes these lines safe.
     const originalDescriptor = getOwnPropertyDescriptor(originalTarget, key);
-    if(!isUndefined(originalDescriptor)) {
+    if (!isUndefined(originalDescriptor)) {
       const wrappedDesc = this.wrapDescriptor(originalDescriptor);
       ObjectDefineProperty(shadowTarget, key, wrappedDesc);
     }
@@ -80,7 +82,7 @@ class BaseProxyHandler {
     const {
       membrane: { tagPropertyKey }
     } = this;
-    if(!isUndefined(tagPropertyKey) && !hasOwnProperty.call(shadowTarget, tagPropertyKey)) {
+    if (!isUndefined(tagPropertyKey) && !hasOwnProperty.call(shadowTarget, tagPropertyKey)) {
       ObjectDefineProperty(shadowTarget, tagPropertyKey, ObjectCreate(null));
     }
     preventExtensions(shadowTarget);
@@ -88,10 +90,12 @@ class BaseProxyHandler {
 
   //Shared Traps
   apply(shadowTarget, thisArg, argArray) {
+
     /* No op */
   }
 
   construct(shadowTarget, argArray, newTarget) {
+
     /* No op */
   }
 
@@ -132,11 +136,11 @@ class BaseProxyHandler {
   isExtensible(shadowTarget) {
     const { originalTarget } = this;
     //optimization to avoid attempting to lock down the shadowTarget multiple times
-    if(!isExtensible(shadowTarget)) {
+    if (!isExtensible(shadowTarget)) {
       return false; //was already locked down
     }
 
-    if(!isExtensible(originalTarget)) {
+    if (!isExtensible(originalTarget)) {
       this.lockShadowTarget(shadowTarget);
       return false;
     }
@@ -157,8 +161,8 @@ class BaseProxyHandler {
     //keys looked up via getOwnPropertyDescriptor need to be reactive
     valueObserved(originalTarget, key);
     let desc = getOwnPropertyDescriptor(originalTarget, key);
-    if(isUndefined(desc)) {
-      if(key !== tagPropertyKey) {
+    if (isUndefined(desc)) {
+      if (key !== tagPropertyKey) {
         return undefined;
       }
 
@@ -169,7 +173,7 @@ class BaseProxyHandler {
       return desc;
     }
 
-    if(desc.configurable === false) {
+    if (desc.configurable === false) {
       //updating the descriptor to non-configurable on the shadow
       this.copyDescriptorIntoShadowTarget(shadowTarget, key);
     }
@@ -193,7 +197,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
 
   wrapGetter(originalGet) {
     const wrappedGetter = getterMap.get(originalGet);
-    if(!isUndefined(wrappedGetter)) {
+    if (!isUndefined(wrappedGetter)) {
       return wrappedGetter;
     }
 
@@ -209,7 +213,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
 
   wrapSetter(originalSet) {
     const wrappedSetter = setterMap.get(originalSet);
-    if(!isUndefined(wrappedSetter)) {
+    if (!isUndefined(wrappedSetter)) {
       return wrappedSetter;
     }
 
@@ -223,16 +227,17 @@ class ReactiveProxyHandler extends BaseProxyHandler {
   }
 
   unwrapDescriptor(descriptor) {
-    if(hasOwnProperty.call(descriptor, 'value')) {
+    if (hasOwnProperty.call(descriptor, 'value')) {
       //dealing with a data descriptor
       descriptor.value = unwrap(descriptor.value);
-    } else {
+    }
+    else {
       const { set, get } = descriptor;
-      if(!isUndefined(get)) {
+      if (!isUndefined(get)) {
         descriptor.get = this.unwrapGetter(get);
       }
 
-      if(!isUndefined(set)) {
+      if (!isUndefined(set)) {
         descriptor.set = this.unwrapSetter(set);
       }
     }
@@ -242,7 +247,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
 
   unwrapGetter(redGet) {
     const reverseGetter = reverseGetterMap.get(redGet);
-    if(!isUndefined(reverseGetter)) {
+    if (!isUndefined(reverseGetter)) {
       return reverseGetter;
     }
 
@@ -258,7 +263,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
 
   unwrapSetter(redSet) {
     const reverseSetter = reverseSetterMap.get(redSet);
-    if(!isUndefined(reverseSetter)) {
+    if (!isUndefined(reverseSetter)) {
       return reverseSetter;
     }
 
@@ -278,10 +283,11 @@ class ReactiveProxyHandler extends BaseProxyHandler {
       membrane: { valueMutated }
     } = this;
     const oldValue = originalTarget[key];
-    if(oldValue !== value) {
+    if (oldValue !== value) {
       originalTarget[key] = value;
       valueMutated(originalTarget, key);
-    } else if(key === 'length' && isArray(originalTarget)) {
+    }
+    else if (key === 'length' && isArray(originalTarget)) {
       //fix for issue #236: push will add the new index, and by the time length
       //is updated, the internal length is already equal to the new length value
       //therefore, the oldValue is equal to the value. This is the forking logic
@@ -303,7 +309,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
   }
 
   setPrototypeOf(shadowTarget, prototype) {
-    if(
+    if (
       Util.tryCatch(
         () => process,
         (process) => process.env.NODE_ENV !== 'production'
@@ -314,13 +320,13 @@ class ReactiveProxyHandler extends BaseProxyHandler {
   }
 
   preventExtensions(shadowTarget) {
-    if(isExtensible(shadowTarget)) {
+    if (isExtensible(shadowTarget)) {
       const { originalTarget } = this;
       preventExtensions(originalTarget);
       //if the originalTarget is a proxy itself, it might reject
       //the preventExtension call, in which case we should not attempt to lock down
       //the shadow target.
-      if(isExtensible(originalTarget)) {
+      if (isExtensible(originalTarget)) {
         return false;
       }
 
@@ -335,7 +341,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
       originalTarget,
       membrane: { valueMutated, tagPropertyKey }
     } = this;
-    if(key === tagPropertyKey && !hasOwnProperty.call(originalTarget, key)) {
+    if (key === tagPropertyKey && !hasOwnProperty.call(originalTarget, key)) {
       //To avoid leaking the membrane tag property into the original target, we must
       //be sure that the original target doesn't have yet.
       //NOTE: we do not return false here because Object.freeze and equivalent operations
@@ -346,7 +352,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
 
     ObjectDefineProperty(originalTarget, key, this.unwrapDescriptor(descriptor));
     //intentionally testing if false since it could be undefined as well
-    if(descriptor.configurable === false) {
+    if (descriptor.configurable === false) {
       this.copyDescriptorIntoShadowTarget(shadowTarget, key);
     }
 
@@ -365,7 +371,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
 
   wrapGetter(originalGet) {
     const wrappedGetter = getterMap$1.get(originalGet);
-    if(!isUndefined(wrappedGetter)) {
+    if (!isUndefined(wrappedGetter)) {
       return wrappedGetter;
     }
 
@@ -380,13 +386,13 @@ class ReadOnlyHandler extends BaseProxyHandler {
 
   wrapSetter(originalSet) {
     const wrappedSetter = setterMap$1.get(originalSet);
-    if(!isUndefined(wrappedSetter)) {
+    if (!isUndefined(wrappedSetter)) {
       return wrappedSetter;
     }
 
     const handler = this;
     const set = function (v) {
-      if(
+      if (
         Util.tryCatch(
           () => process,
           (process) => process.env.NODE_ENV !== 'production'
@@ -401,7 +407,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
   }
 
   set(shadowTarget, key, value) {
-    if(
+    if (
       Util.tryCatch(
         () => process,
         (process) => process.env.NODE_ENV !== 'production'
@@ -415,7 +421,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
   }
 
   deleteProperty(shadowTarget, key) {
-    if(
+    if (
       Util.tryCatch(
         () => process,
         (process) => process.env.NODE_ENV !== 'production'
@@ -429,7 +435,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
   }
 
   setPrototypeOf(shadowTarget, prototype) {
-    if(
+    if (
       Util.tryCatch(
         () => process,
         (process) => process.env.NODE_ENV !== 'production'
@@ -441,7 +447,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
   }
 
   preventExtensions(shadowTarget) {
-    if(
+    if (
       Util.tryCatch(
         () => process,
         (process) => process.env.NODE_ENV !== 'production'
@@ -455,7 +461,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
   }
 
   defineProperty(shadowTarget, key, descriptor) {
-    if(
+    if (
       Util.tryCatch(
         () => process,
         (process) => process.env.NODE_ENV !== 'production'
@@ -470,10 +476,10 @@ class ReadOnlyHandler extends BaseProxyHandler {
 }
 
 function extract(objectOrArray) {
-  if(isArray(objectOrArray)) {
+  if (isArray(objectOrArray)) {
     return objectOrArray.map((item) => {
       const original = unwrap(item);
-      if(original !== item) {
+      if (original !== item) {
         return extract(original);
       }
 
@@ -486,9 +492,10 @@ function extract(objectOrArray) {
   return ArrayConcat.call(names, getOwnPropertySymbols(objectOrArray)).reduce((seed, key) => {
     const item = objectOrArray[key];
     const original = unwrap(item);
-    if(original !== item) {
+    if (original !== item) {
       seed[key] = extract(original);
-    } else {
+    }
+    else {
       seed[key] = item;
     }
 
@@ -500,19 +507,15 @@ const formatter = {
   header: (plainOrProxy) => {
     const originalTarget = unwrap(plainOrProxy);
     //if originalTarget is falsy or not unwrappable, exit
-    if(!originalTarget || originalTarget === plainOrProxy) {
+    if (!originalTarget || originalTarget === plainOrProxy) {
       return null;
     }
 
     const obj = extract(plainOrProxy);
     return ['object', { object: obj }];
   },
-  hasBody: () => {
-    return false;
-  },
-  body: () => {
-    return null;
-  }
+  hasBody: () => false,
+  body: () => null
 };
 
 //Inspired from paulmillr/es6-shim
@@ -520,19 +523,19 @@ const formatter = {
 function getGlobal() {
   //the only reliable means to get the global object is `Function('return this')()`
   //However, this causes CSP violations in Chrome apps.
-  if(typeof globalThis !== 'undefined') {
+  if (typeof globalThis !== 'undefined') {
     return globalThis;
   }
 
-  if(typeof self !== 'undefined') {
+  if (typeof self !== 'undefined') {
     return self;
   }
 
-  if(typeof window !== 'undefined') {
+  if (typeof window !== 'undefined') {
     return window;
   }
 
-  if(typeof global !== 'undefined') {
+  if (typeof global !== 'undefined') {
     return global;
   }
 
@@ -541,7 +544,7 @@ function getGlobal() {
 }
 
 function init() {
-  if(
+  if (
     Util.tryCatch(
       () => process,
       (process) => process.env.NODE_ENV === 'production'
@@ -561,7 +564,7 @@ function init() {
   global.devtoolsFormatters = devtoolsFormatters;
 }
 
-if(
+if (
   Util.tryCatch(
     () => process,
     (process) => process.env.NODE_ENV !== 'production'
@@ -573,16 +576,16 @@ if(
 const ObjectDotPrototype = Object.prototype;
 function defaultValueIsObservable(value) {
   //intentionally checking for null
-  if(value === null) {
+  if (value === null) {
     return false;
   }
 
   //treat all non-object types, including undefined, as non-observable values
-  if(typeof value !== 'object') {
+  if (typeof value !== 'object') {
     return false;
   }
 
-  if(isArray(value)) {
+  if (isArray(value)) {
     return true;
   }
 
@@ -591,10 +594,12 @@ function defaultValueIsObservable(value) {
 }
 
 const defaultValueObserved = (obj, key) => {
+
   /* do nothing */
 };
 
 const defaultValueMutated = (obj, key) => {
+
   /* do nothing */
 };
 
@@ -610,7 +615,7 @@ class ReactiveMembrane {
     this.valueObserved = defaultValueObserved;
     this.valueIsObservable = defaultValueIsObservable;
     this.objectGraph = new WeakMap();
-    if(!isUndefined(options)) {
+    if (!isUndefined(options)) {
       const { valueDistortion, valueMutated, valueObserved, valueIsObservable, tagPropertyKey } = options;
       this.valueDistortion = isFunction(valueDistortion) ? valueDistortion : defaultValueDistortion;
       this.valueMutated = isFunction(valueMutated) ? valueMutated : defaultValueMutated;
@@ -623,7 +628,7 @@ class ReactiveMembrane {
   getProxy(value) {
     const unwrappedValue = unwrap(value);
     const distorted = this.valueDistortion(unwrappedValue);
-    if(this.valueIsObservable(distorted)) {
+    if (this.valueIsObservable(distorted)) {
       const o = this.getReactiveState(unwrappedValue, distorted);
       //when trying to extract the writable version of a readonly
       //we return the readonly.
@@ -636,7 +641,7 @@ class ReactiveMembrane {
   getReadOnlyProxy(value) {
     value = unwrap(value);
     const distorted = this.valueDistortion(value);
-    if(this.valueIsObservable(distorted)) {
+    if (this.valueIsObservable(distorted)) {
       return this.getReactiveState(value, distorted).readOnly;
     }
 
@@ -650,7 +655,7 @@ class ReactiveMembrane {
   getReactiveState(value, distortedValue) {
     const { objectGraph } = this;
     let reactiveState = objectGraph.get(distortedValue);
-    if(reactiveState) {
+    if (reactiveState) {
       return reactiveState;
     }
 
@@ -681,4 +686,5 @@ class ReactiveMembrane {
 }
 
 export default ReactiveMembrane;
+
 /** version: 1.0.0 */

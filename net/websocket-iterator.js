@@ -20,7 +20,7 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
   const close = () => {
     done = true;
 
-    while(resolvers.length > 0)
+    while (resolvers.length > 0)
       resolvers.shift()({
         value: undefined,
         done: true
@@ -28,11 +28,12 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
   };
 
   const push = (data) => {
-    if(done) return;
+    if (done) return;
 
-    if(resolvers.length > 0) {
+    if (resolvers.length > 0) {
       resolvers.shift()(data);
-    } else {
+    }
+    else {
       values.push(data);
     }
   };
@@ -49,8 +50,8 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
     });
 
   const next = () => {
-    if(values.length > 0) return Promise.resolve(values.shift());
-    if(done)
+    if (values.length > 0) return Promise.resolve(values.shift());
+    if (done)
       return Promise.resolve({
         value: undefined,
         done: true
@@ -64,12 +65,13 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
     websocket.addEventListener('message', pushEvent);
   };
 
-  if(websocket.readyState === ctor.CONNECTING) {
+  if (websocket.readyState === ctor.CONNECTING) {
     websocket.addEventListener('open', (event) => {
-      if(emitOpen) pushEvent(event);
+      if (emitOpen) pushEvent(event);
       initSocket();
     });
-  } else {
+  }
+  else {
     initSocket();
   }
 
@@ -78,12 +80,12 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
     next,
     throw: async (value) => {
       pushError(value);
-      if(websocket.readyState === ctor.OPEN) websocket.close();
+      if (websocket.readyState === ctor.OPEN) websocket.close();
       return next();
     },
     return: async () => {
       close();
-      if(websocket.readyState === ctor.OPEN) websocket.close();
+      if (websocket.readyState === ctor.OPEN) websocket.close();
       return next();
     }
   };

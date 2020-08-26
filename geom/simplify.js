@@ -5,7 +5,7 @@
  * @returns {number}
  */
 function getSqDist(p1, p2) {
-  var dx = p1[0] - p2[0],
+  let dx = p1[0] - p2[0],
     dy = p1[1] - p2[1];
 
   return dx * dx + dy * dy;
@@ -20,19 +20,20 @@ function getSqDist(p1, p2) {
  * @returns {number}
  */
 function getSqSegDist(p, p1, p2) {
-  var x = p1[0],
+  let x = p1[0],
     y = p1[1],
     dx = p2[0] - x,
     dy = p2[1] - y,
     t;
 
-  if(dx !== 0 || dy !== 0) {
+  if (dx !== 0 || dy !== 0) {
     t = ((p[0] - x) * dx + (p[1] - y) * dy) / (dx * dx + dy * dy);
 
-    if(t > 1) {
+    if (t > 1) {
       x = p2[0];
       y = p2[1];
-    } else if(t > 0) {
+    }
+    else if (t > 0) {
       x += dx * t;
       y += dy * t;
     }
@@ -52,22 +53,22 @@ function getSqSegDist(p, p1, p2) {
  * @returns {*[]}
  */
 export function simplifyRadialDist(points, sqTolerance) {
-  var prevPoint = [points[0], points[1]],
+  let prevPoint = [points[0], points[1]],
     newPoints = prevPoint,
     i = 2,
     n = points.length,
     point;
 
-  for(i; i < n; i += 2) {
+  for (i; i < n; i += 2) {
     point = [points[i], points[i + 1]];
 
-    if(getSqDist(point, prevPoint) > sqTolerance) {
+    if (getSqDist(point, prevPoint) > sqTolerance) {
       newPoints.push(point[0], point[1]);
       prevPoint = point;
     }
   }
 
-  if(prevPoint !== point) {
+  if (prevPoint !== point) {
     newPoints.push(point[0], point[1]);
   }
 
@@ -83,24 +84,24 @@ export function simplifyRadialDist(points, sqTolerance) {
  * @param simplified
  */
 export function simplifyDPStep(points, first, last, sqTolerance, simplified) {
-  var maxSqDist = sqTolerance,
+  let maxSqDist = sqTolerance,
     i = first + 2,
     sqDist,
     index;
 
-  for(i; i < last; i += 2) {
+  for (i; i < last; i += 2) {
     sqDist = getSqSegDist([points[i], points[i + 1]], [points[first], points[first + 1]], [points[last], points[last + 1]]);
 
-    if(sqDist > maxSqDist) {
+    if (sqDist > maxSqDist) {
       index = i;
       maxSqDist = sqDist;
     }
   }
 
-  if(maxSqDist > sqTolerance) {
-    if(index - first > 1) simplifyDPStep(points, first, index, sqTolerance, simplified);
+  if (maxSqDist > sqTolerance) {
+    if (index - first > 1) simplifyDPStep(points, first, index, sqTolerance, simplified);
     simplified.push(points[index], points[index + 1]);
-    if(last - index > 1) simplifyDPStep(points, index, last, sqTolerance, simplified);
+    if (last - index > 1) simplifyDPStep(points, index, last, sqTolerance, simplified);
   }
 }
 
@@ -112,8 +113,8 @@ export function simplifyDPStep(points, first, last, sqTolerance, simplified) {
  * @returns {*[]}
  */
 export function simplifyDouglasPeucker(points, sqTolerance) {
-  var last = points.length - 2;
-  var simplified = [points[0], points[1]];
+  let last = points.length - 2;
+  let simplified = [points[0], points[1]];
 
   simplifyDPStep(points, 0, last, sqTolerance, simplified);
   simplified.push(points[last], points[last + 1]);
@@ -130,9 +131,9 @@ export function simplifyDouglasPeucker(points, sqTolerance) {
  * @returns {number[]}
  */
 export function simplify(points, tolerance, highestQuality) {
-  if(points.length <= 4) return points;
+  if (points.length <= 4) return points;
 
-  var sqTolerance = tolerance !== undefined ? tolerance * tolerance : 1;
+  let sqTolerance = tolerance !== undefined ? tolerance * tolerance : 1;
 
   points = highestQuality ? points : simplifyRadialDist(points, sqTolerance);
   points = simplifyDouglasPeucker(points, sqTolerance);

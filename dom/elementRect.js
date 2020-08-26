@@ -6,19 +6,19 @@ import { Size } from '../geom/size.js';
 export function ElementRectProxy(element) {
   this.element = element;
 
-  if(element.style && element.style.position !== undefined) {
-    if(element.style.position == '') element.style.position = 'relative';
+  if (element.style && element.style.position !== undefined) {
+    if (element.style.position == '') element.style.position = 'relative';
   }
 }
 ElementRectProxy.prototype = {
   element: null,
-  getPos: function (fn = (rect) => rect) {
+  getPos (fn = (rect) => rect) {
     return fn(Element.position(this.element));
   },
-  getRect: function (fn = (rect) => rect) {
+  getRect (fn = (rect) => rect) {
     return fn(Element.rect(this.element, { round: false }));
   },
-  setPos: function () {
+  setPos () {
     let pos = new Point(...arguments);
     this.setRect((rect) => {
       rect.x = pos.x;
@@ -26,7 +26,7 @@ ElementRectProxy.prototype = {
       return rect;
     });
   },
-  setSize: function () {
+  setSize () {
     let size = new Size(...arguments);
     this.setRect((rect) => {
       rect.width = size.width;
@@ -34,17 +34,18 @@ ElementRectProxy.prototype = {
       return rect;
     });
   },
-  changeRect: function (fn = (rect, e) => rect) {
+  changeRect (fn = (rect, e) => rect) {
     let r = Element.getRect(this.element);
-    if(typeof fn == 'function') r = fn(r, this.element);
+    if (typeof fn == 'function') r = fn(r, this.element);
 
     Element.setRect(this.element, r);
   },
-  setRect: function (arg) {
+  setRect (arg) {
     let rect;
-    if(typeof arg == 'function') rect = arg(this.getRect(), this.element);
+    if (typeof arg == 'function') rect = arg(this.getRect(), this.element);
     else rect = new Rect(...arguments);
     Element.setRect(this.element, rect);
+
     /*    rect = new Rect(rect);
     Element.setCSS(this.element, { ...rect.toCSS(rect), position: 'absolute' });
 */
@@ -60,9 +61,9 @@ const propSetter = (prop, proxy) => (value) => {
 
 const computedSetter = (proxy, compute) =>
   function (value) {
-    var r = proxy.getRect();
+    let r = proxy.getRect();
     r = compute(value, r);
-    if(r && r.x !== undefined) proxy.setRect((oldrect) => r);
+    if (r && r.x !== undefined) proxy.setRect((oldrect) => r);
     return r;
   };
 
@@ -201,6 +202,7 @@ export const ElementSizeProps = (element, proxy) => {
 };
 
 export const ElementRectProps = (element, proxy) => {
+
   /*Util.defineGetterSetter(element, 'w', () => proxy.getRect().width, propSetter('width', proxy)); Util.defineGetterSetter(element, 'width', () => proxy.getRect().width, propSetter('width', proxy));
     Util.defineGetterSetter(element, 'h', () => proxy.getRect().height, propSetter('height', proxy)); Util.defineGetterSetter(element, 'height', () => proxy.getRect().height, propSetter('height', proxy) });*/
 };

@@ -12,38 +12,39 @@
  * ReconnectSocket.clear() // clear buffer if you want to instantiate new connection
  */
 
-var ReconnectSocket = (function () {
-  'use strict';
+let ReconnectSocket = (function () {
+  
 
-  var socket,
+  let socket,
     socketUrl = '',
     bufferedSends = [],
     isJSON = 0; // flag to indicate whether you send JSON message
 
-  var status = function () {
+  let status = function () {
     return socket && socket.readyState;
   };
 
-  var isReady = function () {
+  let isReady = function () {
     return socket && socket.readyState === 1;
   };
 
-  var isClose = function () {
+  let isClose = function () {
     return !socket || socket.readyState === 3;
   };
 
-  var sendBufferedSends = function () {
-    while(bufferedSends.length > 0) {
-      if(isJSON) {
+  let sendBufferedSends = function () {
+    while (bufferedSends.length > 0) {
+      if (isJSON) {
         socket.send(JSON.stringify(bufferedSends.shift()));
-      } else {
+      }
+      else {
         socket.send(bufferedSends.shift());
       }
     }
   };
 
-  var init = function () {
-    if(isClose()) {
+  let init = function () {
+    if (isClose()) {
       socket = new WebSocket(socketUrl);
     }
 
@@ -65,37 +66,40 @@ var ReconnectSocket = (function () {
     };
   };
 
-  var send = function (data) {
+  let send = function (data) {
     // check if its close then initilaize again
-    if(isClose()) {
+    if (isClose()) {
       bufferedSends.push(data);
       init();
-    } else if(isReady()) {
-      if(isJSON) {
+    }
+    else if (isReady()) {
+      if (isJSON) {
         socket.send(JSON.stringify(data));
-      } else {
+      }
+      else {
         socket.send(data);
       }
-    } else {
+    }
+    else {
       bufferedSends.push(data);
     }
   };
 
-  var close = function () {
+  let close = function () {
     bufferedSends = [];
-    if(socket) {
+    if (socket) {
       socket.close();
     }
   };
 
-  var clear = function () {
+  let clear = function () {
     bufferedSends = [];
   };
 
   return {
-    init: init,
-    send: send,
-    close: close,
-    clear: clear
+    init,
+    send,
+    close,
+    clear
   };
 })();

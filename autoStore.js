@@ -3,7 +3,7 @@ import Util from './util.js';
 export const makeLocalStorage = () => {
   let w = Util.tryCatch(() => window);
 
-  if(w && w.localStorage)
+  if (w && w.localStorage)
     return {
       get: (name) => JSON.parse(w.localStorage.getItem(name)),
       set: (name, data) => w.localStorage.setItem(name, JSON.stringify(data)),
@@ -12,7 +12,7 @@ export const makeLocalStorage = () => {
         let i = 0,
           key,
           r = [];
-        while((key = localStorage.key(i++))) r.push(key);
+        while ((key = localStorage.key(i++))) r.push(key);
         return r;
       }
     };
@@ -24,20 +24,18 @@ export const makeLocalStorage = () => {
   };
 };
 
-export const logStoreAdapter = (store) => {
-  return {
-    store,
-    get: function (name) {
-      return this.store.get(name);
-    },
-    set: function (name, data) {
-      return this.store && this.store.set ? this.store.set(name, data) : null;
-    },
-    remove: function (name) {
-      return this.store && this.store.remove ? this.store.remove(name) : null;
-    }
-  };
-};
+export const logStoreAdapter = (store) => ({
+  store,
+  get (name) {
+    return this.store.get(name);
+  },
+  set (name, data) {
+    return this.store && this.store.set ? this.store.set(name, data) : null;
+  },
+  remove (name) {
+    return this.store && this.store.remove ? this.store.remove(name) : null;
+  }
+});
 
 export const makeLocalStore = (name) => ({
   name,
@@ -67,22 +65,22 @@ export const makeDummyStorage = () => ({
 export function getLocalStorage() {
   let w = Util.tryCatch(() => global.window);
 
-  if(getLocalStorage.store === undefined) {
+  if (getLocalStorage.store === undefined) {
     getLocalStorage.store = w && w.localStorage ? makeLocalStorage() : makeDummyStorage();
   }
   return getLocalStorage.store;
 }
 
 export const makeAutoStoreHandler = (name, store, runner /* = mobx.autorun */) => {
-  if(!store) store = getLocalStorage();
+  if (!store) store = getLocalStorage();
   var fn = function (_this, _member) {
     let firstRun = false; //true;
     //will run on change
     const disposer = runner(() => {
       //on load check if there's an existing store on localStorage and extend the store
-      if(firstRun) {
+      if (firstRun) {
         const existingStore = store.get(name);
-        if(existingStore) {
+        if (existingStore) {
           _this[_member] = existingStore;
         }
       }
@@ -95,9 +93,10 @@ export const makeAutoStoreHandler = (name, store, runner /* = mobx.autorun */) =
         value: toJS(updatedStore)
       });*/
 
-      if(updatedStore) {
+      if (updatedStore) {
         fn.update ? fn.update(updatedStore) : store.set(name, updatedStore);
-      } else {
+      }
+      else {
         store.remove(name);
       }
     });
@@ -107,7 +106,8 @@ export const makeAutoStoreHandler = (name, store, runner /* = mobx.autorun */) =
   fn.update = function (updatedStore) {
     try {
       store.set(name, updatedStore);
-    } catch(err) {
+    }
+    catch (err) {
       //Util.log("ERROR: ", err);
     }
   };

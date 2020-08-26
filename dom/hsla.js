@@ -14,37 +14,41 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
   const args = [...arguments];
   let c = [];
   let ret = this instanceof HSLA ? this : {};
+
   /*  if(!this) return Object.assign({}, HSLA.prototype, { h, s, l, a });*/
 
-  if(typeof args[0] == 'object' && 'h' in args[0] && 's' in args[0] && 'l' in args[0]) {
+  if (typeof args[0] == 'object' && 'h' in args[0] && 's' in args[0] && 'l' in args[0]) {
     ret.h = args[0].h;
     ret.s = args[0].s;
     ret.l = args[0].l;
     ret.a = args[0].a || 1.0;
-  } else if(args.length >= 3) {
+  }
+  else if (args.length >= 3) {
     ret.h = Math.round(h);
     ret.s = s;
     ret.l = l;
     ret.a = a;
-  } else if(typeof args[0] == 'string') {
+  }
+  else if (typeof args[0] == 'string') {
     const arg = args[0];
-    if(typeof arg === 'string') {
-      var matches = /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) || /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
+    if (typeof arg === 'string') {
+      let matches = /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) || /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
 
-      if(matches != null) c = [...matches].slice(1);
+      if (matches != null) c = [...matches].slice(1);
     }
 
-    if(c.length < 3) throw new Error('Invalid HSLA color:' + args);
+    if (c.length < 3) throw new Error('Invalid HSLA color:' + args);
     ret.h = c[0];
     ret.s = c[1];
     ret.l = c[2];
     ret.a = c[3] !== undefined ? c[3] : 1.0;
 
     ['h', 's', 'l', 'a'].forEach((channel) => {
-      if(String(ret[channel]).endsWith('%')) ret[channel] = parseFloat(ret[channel].slice(0, -1));
+      if (String(ret[channel]).endsWith('%')) ret[channel] = parseFloat(ret[channel].slice(0, -1));
       else ret[channel] = parseFloat(ret[channel]) * (channel == 'a' || channel == 'h' ? 1 : 100);
     });
-  } else {
+  }
+  else {
     ret.h = 0;
     ret.s = 0;
     ret.l = 0;
@@ -52,7 +56,7 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
   }
 
   //console.log('HSLA ', { c, ret, args });
-  if(!(ret instanceof HSLA)) return ret;
+  if (!(ret instanceof HSLA)) return ret;
 }
 
 HSLA.prototype.properties = ['h', 's', 'l', 'a'];
@@ -94,16 +98,16 @@ HSLA.prototype.hex = function () {
 };
 
 HSLA.prototype.toRGBA = function () {
-  var { h, s, l, a } = this;
+  let { h, s, l, a } = this;
 
-  var r, g, b, m, c, x;
+  let r, g, b, m, c, x;
 
-  if(!isFinite(h)) h = 0;
-  if(!isFinite(s)) s = 0;
-  if(!isFinite(l)) l = 0;
+  if (!isFinite(h)) h = 0;
+  if (!isFinite(s)) s = 0;
+  if (!isFinite(l)) l = 0;
 
   h /= 60;
-  if(h < 0) h = 6 - (-h % 6);
+  if (h < 0) h = 6 - (-h % 6);
   h %= 6;
 
   s = Math.max(0, Math.min(1, s / 100));
@@ -112,27 +116,32 @@ HSLA.prototype.toRGBA = function () {
   c = (1 - Math.abs(2 * l - 1)) * s;
   x = c * (1 - Math.abs((h % 2) - 1));
 
-  if(h < 1) {
+  if (h < 1) {
     r = c;
     g = x;
     b = 0;
-  } else if(h < 2) {
+  }
+  else if (h < 2) {
     r = x;
     g = c;
     b = 0;
-  } else if(h < 3) {
+  }
+  else if (h < 3) {
     r = 0;
     g = c;
     b = x;
-  } else if(h < 4) {
+  }
+  else if (h < 4) {
     r = 0;
     g = x;
     b = c;
-  } else if(h < 5) {
+  }
+  else if (h < 5) {
     r = x;
     g = 0;
     b = c;
-  } else {
+  }
+  else {
     r = c;
     g = 0;
     b = x;
@@ -153,7 +162,7 @@ HSLA.prototype.toString = function () {
   const l = Util.roundTo(this.l, 100 / 255, 2);
   const a = Util.roundTo(this.a, 1 / 255, 4);
 
-  if(this.a == 1) return `hsl(${h},${s}%,${l}%)`;
+  if (this.a == 1) return `hsl(${h},${s}%,${l}%)`;
   return `hsla(${h},${s}%,${l}%,${a})`;
 };
 
@@ -165,7 +174,7 @@ HSLA.prototype.dump = function () {
   return this;
 };
 
-for(let name of ['css', 'toHSL', 'clamp', 'round', 'hex', 'toRGBA', 'toString']) {
+for (let name of ['css', 'toHSL', 'clamp', 'round', 'hex', 'toRGBA', 'toString']) {
   HSLA[name] = (hsla) => HSLA.prototype[name].call(hsla || new HSLA());
 }
 

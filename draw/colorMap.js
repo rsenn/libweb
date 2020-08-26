@@ -10,32 +10,33 @@ export class ColorMap extends Map {
     let obj = isNew ? this : new Map();
     let type = RGBA;
     let i = -1;
-    for(let arg of args) {
+    for (let arg of args) {
       i++;
 
-      if(i == 0 && Util.isConstructor(arg)) {
+      if (i == 0 && Util.isConstructor(arg)) {
         type = arg;
         continue;
       }
-      for(let [key, color] of Util.entries(arg)) {
+      for (let [key, color] of Util.entries(arg)) {
         let item = color;
-        if(Util.isNumeric(key)) key = +key;
+        if (Util.isNumeric(key)) key = +key;
 
-        if(typeof item == 'string') {
+        if (typeof item == 'string') {
           console.log(type);
           item = type.fromString(item);
-        } else if(!(color instanceof type) && type === HSLA && Util.isObject(item) && typeof item.toHSLA == 'function') item = item.toHSLA();
+        }
+        else if (!(color instanceof type) && type === HSLA && Util.isObject(item) && typeof item.toHSLA == 'function') item = item.toHSLA();
         obj.set(key, item || color);
       }
     }
     Util.define(obj, { type, base: 10 });
-    if(!isNew) return obj;
+    if (!isNew) return obj;
   }
 
   toString(opts = {}) {
     const base = opts.base || this.base;
     let a = [];
-    for(let [key, color] of this) a.push(color.toString ? color.toString(',', (num) => num.toString(base)) : '' + color);
+    for (let [key, color] of this) a.push(color.toString ? color.toString(',', (num) => num.toString(base)) : '' + color);
     a.join(',');
   }
 
@@ -50,11 +51,11 @@ export class ColorMap extends Map {
   }
 
   remapChannel(chan, fn = (v, k) => v) {
-    for(let [k, v] of this) {
+    for (let [k, v] of this) {
       let newVal = fn(v[chan], k);
-      if(v !== newVal) {
-       // v = Util.clone(v);
-        console.log("remapChannel", v,chan );
+      if (v !== newVal) {
+        // v = Util.clone(v);
+        console.log('remapChannel', v,chan );
         v[chan] = newVal;
         this.set(k, v);
       }
@@ -62,18 +63,18 @@ export class ColorMap extends Map {
   }
 
   remap(fn = (c, k) => c) {
-    for(let [k, c] of this.entries()) {
+    for (let [k, c] of this.entries()) {
       let newColor = fn(Util.clone(c), k);
-      if(newColor && !newColor.equals(c)) this.set(k, newColor);
+      if (newColor && !newColor.equals(c)) this.set(k, newColor);
     }
   }
 
   *toScalar(ofpts = {}) {
     const base = opts.base || this.base;
     const fmt = opts.fmt || this.fmt || ((n) => n.toFixed(3));
-    for(let [key, color] of this) {
-      if(color instanceof HSLA) color = color.toRGBA();
-      if(!(color instanceof RGBA)) color = RGBA.fromString(color);
+    for (let [key, color] of this) {
+      if (color instanceof HSLA) color = color.toRGBA();
+      if (!(color instanceof RGBA)) color = RGBA.fromString(color);
       let { r, g, b, a } = color;
       yield [r, g, b, a].map(fmt);
     }
@@ -105,7 +106,6 @@ export class ColorMap extends Map {
       }
       return x;
     };
-
 
 
     function lcm_two_numbers(x, y) {

@@ -79,14 +79,14 @@ export class EagleDocument extends EagleNode {
 
     type = type || /<library>/.test(xmlStr) ? 'lbr' : /(<element\ |<board)/.test(xmlStr) ? 'brd' : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr) ? 'sch' : null;
 
-    if(filename) {
+    if (filename) {
       this.file = filename;
       type = type || filename.replace(/.*\//g, '').replace(/.*\./g, '');
     }
     //console.log('load document:', { filename, xml: xmlStr.substring(0, 100), type });
     this.type = type;
-    if(project) this.owner = project;
-    if(fs) Util.define(this, { fs });
+    if (project) this.owner = project;
+    if (fs) Util.define(this, { fs });
     Util.define(this, 'xml', xml);
     const orig = xml[0];
     Util.define(this, 'orig', orig);
@@ -123,37 +123,37 @@ export class EagleDocument extends EagleNode {
 
   cacheFields() {
     switch (this.type) {
-      case 'sch':
-        return [
-          ['eagle', 'drawing', 'settings'],
-          ['eagle', 'drawing', 'layers'],
-          ['eagle', 'drawing', 'schematic'],
-          ['eagle', 'drawing', 'schematic', 'libraries'],
-          ['eagle', 'drawing', 'schematic', 'classes'],
-          ['eagle', 'drawing', 'schematic', 'parts'],
-          ['eagle', 'drawing', 'schematic', 'sheets']
-        ];
-      case 'brd':
-        return [
-          ['eagle', 'drawing', 'settings'],
-          ['eagle', 'drawing', 'layers'],
-          ['eagle', 'drawing', 'board'],
-          ['eagle', 'drawing', 'board', 'libraries'],
-          ['eagle', 'drawing', 'board', 'classes'],
-          ['eagle', 'drawing', 'board', 'designrules'],
-          ['eagle', 'drawing', 'board', 'elements'],
-          ['eagle', 'drawing', 'board', 'signals'],
-          ['eagle', 'drawing', 'board', 'plain']
-        ];
-      case 'lbr':
-        return [
-          ['eagle', 'drawing', 'settings'],
-          ['eagle', 'drawing', 'layers'],
-          ['eagle', 'drawing', 'library'],
-          ['eagle', 'drawing', 'library', 'packages'],
-          ['eagle', 'drawing', 'library', 'symbols'],
-          ['eagle', 'drawing', 'library', 'devicesets']
-        ];
+    case 'sch':
+      return [
+        ['eagle', 'drawing', 'settings'],
+        ['eagle', 'drawing', 'layers'],
+        ['eagle', 'drawing', 'schematic'],
+        ['eagle', 'drawing', 'schematic', 'libraries'],
+        ['eagle', 'drawing', 'schematic', 'classes'],
+        ['eagle', 'drawing', 'schematic', 'parts'],
+        ['eagle', 'drawing', 'schematic', 'sheets']
+      ];
+    case 'brd':
+      return [
+        ['eagle', 'drawing', 'settings'],
+        ['eagle', 'drawing', 'layers'],
+        ['eagle', 'drawing', 'board'],
+        ['eagle', 'drawing', 'board', 'libraries'],
+        ['eagle', 'drawing', 'board', 'classes'],
+        ['eagle', 'drawing', 'board', 'designrules'],
+        ['eagle', 'drawing', 'board', 'elements'],
+        ['eagle', 'drawing', 'board', 'signals'],
+        ['eagle', 'drawing', 'board', 'plain']
+      ];
+    case 'lbr':
+      return [
+        ['eagle', 'drawing', 'settings'],
+        ['eagle', 'drawing', 'layers'],
+        ['eagle', 'drawing', 'library'],
+        ['eagle', 'drawing', 'library', 'packages'],
+        ['eagle', 'drawing', 'library', 'symbols'],
+        ['eagle', 'drawing', 'library', 'devicesets']
+      ];
     }
     return super.cacheFields();
   }
@@ -163,9 +163,9 @@ export class EagleDocument extends EagleNode {
     let  fs  = this.project ? this.project.fs  : this.fs;
     const data = this.toXML();
 
-    if(!file)
-       file = this.file;
-     console.log("saveTo data: ",Util.abbreviate(data));
+    if (!file)
+      file = this.file;
+    console.log('saveTo data: ',Util.abbreviate(data));
 
     return new Promise((resolve,reject) => {
       fs.writeFile(file, data);
@@ -174,7 +174,7 @@ export class EagleDocument extends EagleNode {
   }
 
   index(path, transform = (arg) => arg) {
-    if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
+    if (!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
     return transform(path.apply(this));
   }
 
@@ -196,7 +196,7 @@ export class EagleDocument extends EagleNode {
   getBounds(sheetNo = 0) {
     let bb = new BBox();
 
-    if(this.type == 'brd') {
+    if (this.type == 'brd') {
       const board = this.lookup(['eagle', 'drawing', 'board']);
 
       const plain = board.lookup(['plain']);
@@ -206,7 +206,7 @@ export class EagleDocument extends EagleNode {
 
       let ret;
 
-      if(measures.length >= 4) ret = bb.update(measures);
+      if (measures.length >= 4) ret = bb.update(measures);
       else ret = board.getBounds();
       //      console.log('ret', ret);
       //console.log("board:", board, ret.objects);
@@ -215,13 +215,14 @@ export class EagleDocument extends EagleNode {
 
     let sheet = this.sheets ? this.sheets[sheetNo] : null;
 
-    if(sheet) {
+    if (sheet) {
       return sheet.getBounds();
 
       let instances = sheet.instances;
 
-      for(let instance of instances.list) {
+      for (let instance of instances.list) {
         bb.update(instance.getBounds());
+
         /*
         let { gate, part } = instance;
         let symbol = gate.symbol;
@@ -243,15 +244,17 @@ export class EagleDocument extends EagleNode {
 
         bb.update(bbrect, 0, instance);*/
       }
-    } else if(this.elements) {
+    }
+    else if (this.elements) {
       console.log('elements:', this.elements);
-      for(let element of this.elements.list) {
+      for (let element of this.elements.list) {
         let bbrect = element.getBounds();
 
         bb.update(bbrect);
       }
-    } else if(this.signals) {
-      for(let signal of this.signals.list) {
+    }
+    else if (this.signals) {
+      for (let signal of this.signals.list) {
         //console.log('signal:', signal);
         let bbrect = signal.getBounds();
 
@@ -268,7 +271,7 @@ export class EagleDocument extends EagleNode {
     let bounds = this.getBounds();
     let values = [...bounds.getObjects().values()];
     let measures = values.filter((obj) => obj.layer && obj.layer.name == 'Measures');
-    if(geometry) measures = measures.map((e) => e.geometry);
+    if (geometry) measures = measures.map((e) => e.geometry);
     return measures.length > 0 ? measures : null;
   }
 

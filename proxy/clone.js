@@ -6,12 +6,12 @@ export const proxyClone = (obj) => {
 
   const get = (name) => {
     let value;
-    if(!deleted[name]) value = override[name] || obj[name];
-    if(Util.isObject(value)) {
+    if (!deleted[name]) value = override[name] || obj[name];
+    if (Util.isObject(value)) {
       value = Util.proxyClone(value);
       override[name] = value;
     }
-    if(typeof value === 'function') {
+    if (typeof value === 'function') {
       value = value.bind(obj);
     }
     return value;
@@ -30,10 +30,10 @@ export const proxyClone = (obj) => {
     },
     getOwnPropertyDescriptor: (target, name) => {
       let desc;
-      if(!deleted[name]) {
+      if (!deleted[name]) {
         desc = Object.getOwnPropertyDescriptor(override, name) || Object.getOwnPropertyDescriptor(obj, name);
       }
-      if(desc) desc.configurable = true;
+      if (desc) desc.configurable = true;
       debug(`getOwnPropertyDescriptor ${name} =`, desc);
       return desc;
     },

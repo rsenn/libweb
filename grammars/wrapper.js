@@ -1,11 +1,11 @@
 //eslump fuzz test warpper. we haven't pass it yet...
-var cp = require('child_process');
-var fs = require('fs');
-var os = require('os');
+let cp = require('child_process');
+let fs = require('fs');
+let os = require('os');
 module.exports = ({ code, sourceType, reproductionData = {} }) => {
   fs.writeFileSync('gen/temp.js', code);
-  var posixcmd = 'cd gen && grun JavaScript program temp.js 2>&1 1>/dev/null';
-  var cmd = {
+  let posixcmd = 'cd gen && grun JavaScript program temp.js 2>&1 1>/dev/null';
+  let cmd = {
     aix: posixcmd,
     //android: posixcmd
     darwin: posixcmd,
@@ -15,9 +15,9 @@ module.exports = ({ code, sourceType, reproductionData = {} }) => {
     //sunos: posixcmd,
     win32: 'cd gen && grun JavaScript program temp.js 2>&1 1>NUL'
   };
-  var child = cp.execSync(cmd[os.platform()]).toString();
+  let child = cp.execSync(cmd[os.platform()]).toString();
 
-  if(child.length > 0) {
+  if (child.length > 0) {
     console.log('');
     console.log(child);
     return {

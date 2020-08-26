@@ -25,7 +25,7 @@ const httpClient = (() => {
     async function () {
       let args = [...arguments];
 
-      if(typeof args[0] == 'string' && args[0].startsWith('/')) {
+      if (typeof args[0] == 'string' && args[0].startsWith('/')) {
         args[0] = Util.makeURL({ location: args[0] });
       }
       //console.error(`axios ${name}:`, args);
@@ -42,7 +42,7 @@ const httpClient = (() => {
   return ret;
 })();
 
-if(global.window) window.axios = httpClient;
+if (global.window) window.axios = httpClient;
 
 export default httpClient;
 export { httpClient as axios };

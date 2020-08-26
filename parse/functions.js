@@ -6,7 +6,7 @@ const range = (start, end) => (str) => (str[0] >= start && str[0] <= end ? [str[
 
 const some = (parser) => (str) => {
   const recurse = (memo, remaining) => {
-    if(!remaining) {
+    if (!remaining) {
       return [memo, remaining];
     }
     const result = parser(remaining);
@@ -17,7 +17,7 @@ const some = (parser) => (str) => {
 
 const seq = (parsers, reducer = (results) => results.join('')) => (str) => {
   const recurse = (remainingParsers, [memo, remainingStr]) => {
-    if(!remainingParsers.length) {
+    if (!remainingParsers.length) {
       return [memo, remainingStr];
     }
     const result = remainingParsers[0](remainingStr);
@@ -29,7 +29,7 @@ const seq = (parsers, reducer = (results) => results.join('')) => (str) => {
 };
 
 const choice = (...parsers) => (str) => {
-  if(!parsers.length) {
+  if (!parsers.length) {
     return [];
   }
   const result = parsers[0](str);

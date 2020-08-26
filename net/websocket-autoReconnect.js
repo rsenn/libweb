@@ -1,4 +1,4 @@
-'use strict';
+
 
 /**
  * WebSocket replacement class that automatically reconnects after abnormally closed connection,
@@ -7,6 +7,7 @@
  */
 
 class WebSocketAutoReconnect {
+
   /**
    * Creates an instance of WebSocketAutoReconnect use insted of WebSocket
    * @param {url} - Websocket server Url
@@ -25,7 +26,7 @@ class WebSocketAutoReconnect {
   _open(url) {
     this.socket = new WebSocket(url);
     this.socket.onclose = (evt) => {
-      if(!this.timerId && evt.code !== 1000) {
+      if (!this.timerId && evt.code !== 1000) {
         // Ignore normal closure (1000)
         this.timerId = setTimeout(() => {
           this._connect(url);
@@ -34,7 +35,7 @@ class WebSocketAutoReconnect {
       this.onclose(evt);
     };
     this.socket.onopen = (evt) => {
-      while(this.queue.length) {
+      while (this.queue.length) {
         this.socket.send(this.queue.pop());
       }
       this.onopen(evt);
@@ -52,9 +53,10 @@ class WebSocketAutoReconnect {
    * @param {data} - data to send
    */
   send(data) {
-    if(this.socket.readyState === this.socket.OPEN) {
+    if (this.socket.readyState === this.socket.OPEN) {
       this.socket.send(data);
-    } else {
+    }
+    else {
       this.queue.push(data);
     }
   }

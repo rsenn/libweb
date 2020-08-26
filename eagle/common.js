@@ -61,16 +61,18 @@ export const Palette = {
 export const dump = (o, depth = 2, breakLength = 400) => {
   const isElement = (o) => Util.isObject(o) && ['EagleElement', 'EagleNode', 'EagleDocument'].indexOf(Util.className(o)) != -1;
   let s;
-  if(o instanceof Array) {
+  if (o instanceof Array) {
     s = '';
-    for(let i of o) {
-      if(s.length > 0) s += isElement(i) ? ',\n' : ', ';
+    for (let i of o) {
+      if (s.length > 0) s += isElement(i) ? ',\n' : ', ';
       s += dump(i, depth - 1, breakLength);
     }
-  } else if(isElement(o)) {
+  }
+  else if (isElement(o)) {
     s = EagleInterface.inspect(o, undefined, { depth, path: false });
     depth * 4;
-  } else
+  }
+  else
     s = Util.inspect(o, {
       depth,
       newline: '',
@@ -83,42 +85,49 @@ export const dump = (o, depth = 2, breakLength = 400) => {
 export const parseArgs = (args) => {
   let ret = { path: [] };
 
-  while(args.length > 0) {
-    if(args[0] instanceof ImmutablePath) {
+  while (args.length > 0) {
+    if (args[0] instanceof ImmutablePath) {
       ret.path = args.shift();
-    } else if(args[0] instanceof RegExp) {
+    }
+    else if (args[0] instanceof RegExp) {
       let re = args.shift();
       ret.predicate = (it) => re.test(it.tagName);
-    } else if(args[0] instanceof Array) {
+    }
+    else if (args[0] instanceof Array) {
       ret.path = new ImmutablePath(args.shift());
-    } else if(typeof args[0] == 'function') {
-      if(ret.predicate === undefined) ret.predicate = args.shift();
+    }
+    else if (typeof args[0] == 'function') {
+      if (ret.predicate === undefined) ret.predicate = args.shift();
       else ret.transform = args.shift();
-    } else if(typeof args[0] == 'string') {
-      if(ret.element === undefined) ret.element = args.shift();
+    }
+    else if (typeof args[0] == 'string') {
+      if (ret.element === undefined) ret.element = args.shift();
       else ret.name = args.shift();
-    } else if(typeof args[0] == 'object') {
+    }
+    else if (typeof args[0] == 'object') {
       const { predicate, transform, element, name } = args.shift();
       Object.assign(ret, { predicate, transform, element, name });
-    } else {
+    }
+    else {
       throw new Error('unhandled: ' + typeof args[0] + dump(args[0]));
     }
   }
-  if(typeof ret.predicate != 'function' && (ret.element || ret.name)) {
-    if(ret.name) ret.predicate = (v) => v.tagName == ret.element && v.attributes.name == ret.name;
+  if (typeof ret.predicate != 'function' && (ret.element || ret.name)) {
+    if (ret.name) ret.predicate = (v) => v.tagName == ret.element && v.attributes.name == ret.name;
     else ret.predicate = (v) => v.tagName == ret.element;
   }
   return ret;
 };
 
 export const traverse = function* (obj, path = [], doc) {
-  if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
+  if (!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
   yield [obj, path, doc];
-  if(typeof obj == 'object') {
-    if(Util.isArray(obj)) {
-      for(let i = 0; i < obj.length; i++) yield* traverse(obj[i], path.concat([i]), doc);
-    } else if('children' in obj && Util.isArray(obj.children)) {
-      for(let i = 0; i < obj.children.length; i++) yield* traverse(obj.children[i], path.concat(['children', i]), doc);
+  if (typeof obj == 'object') {
+    if (Util.isArray(obj)) {
+      for (let i = 0; i < obj.length; i++) yield* traverse(obj[i], path.concat([i]), doc);
+    }
+    else if ('children' in obj && Util.isArray(obj.children)) {
+      for (let i = 0; i < obj.children.length; i++) yield* traverse(obj.children[i], path.concat(['children', i]), doc);
     }
   }
 };

@@ -27,6 +27,7 @@ export class Token {
     //if(this.position.pos === undefined || isNaN(this.position.pos)) this.position.pos = offset;
 
     this.offset = offset;
+
     /* this.end = end;F
     this.pos = pos;
     const delta = end - start - 1;
@@ -65,10 +66,10 @@ export class Token {
 
     value = value.replace(/\n/g, '\\n').replace(/\t/g, '\\t');
 
-    if(type == 'identifier') value = Util.colorText(value, 1, 33);
-    else if(type == 'keyword') value = Util.colorText(value, 1, 31);
-    else if(type == 'comment') value = Util.colorText(value, 1, 32);
-    else if(type == 'templateLiteral') value = Util.colorText(value, 1, 35);
+    if (type == 'identifier') value = Util.colorText(value, 1, 33);
+    else if (type == 'keyword') value = Util.colorText(value, 1, 31);
+    else if (type == 'comment') value = Util.colorText(value, 1, 32);
+    else if (type == 'templateLiteral') value = Util.colorText(value, 1, 35);
     else value = Util.colorText(value, 1, 36);
 
     return `${position} ${type} ${value}`;
@@ -79,7 +80,7 @@ export class TokenList extends Array {
   constructor(tokens = []) {
     super();
 
-    if(Util.isArray(tokens)) for(let token of tokens) this.push(token);
+    if (Util.isArray(tokens)) for (let token of tokens) this.push(token);
 
     //Array.prototype.splice.call(this, this.length, this.length, ...tokens);
   }
@@ -92,7 +93,7 @@ export class TokenList extends Array {
   }
 
   *[Symbol.iterator]() {
-    for(let i = 0; i < this.length; i++) yield this[i];
+    for (let i = 0; i < this.length; i++) yield this[i];
   }
 
   get first() {

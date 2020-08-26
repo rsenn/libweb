@@ -6,8 +6,8 @@ export class Rule {
   //grammar = null;
 
   constructor(grammar, fragment) {
-    if(grammar) Util.define(this, { grammar });
-    if(fragment) this.fragment = true;
+    if (grammar) Util.define(this, { grammar });
+    if (fragment) this.fragment = true;
     Util.define(this, { resolved: {}, identifiers: [] });
 
     return this;
@@ -15,13 +15,14 @@ export class Rule {
 
   parse(productions) {
     let match, m;
-    while(productions.length) {
+    while (productions.length) {
       match = productions.shift();
 
-      if(match && match[0] && match[0].length) {
+      if (match && match[0] && match[0].length) {
         m = new SubMatch(this);
         m.parse(match[0]);
-      } else {
+      }
+      else {
         m = new Match(this);
         m.parse(match);
       }
@@ -34,7 +35,7 @@ export class Rule {
     let nl = '',
       sep = ' ';
 
-    if(multiline) (nl = '\n'), (sep = ' | ');
+    if (multiline) (nl = '\n'), (sep = ' | ');
     return `Rule ${this.fragment ? 'fragment ' : ''}${name ? Util.colorText(name, 1, 32) + ' ' : ''}${nl}: ${this.productions.map((l) => l.toString()).join(`${nl}${sep}`)}${nl};${nl}`;
   }
 
@@ -43,9 +44,9 @@ export class Rule {
     let r = -1;
     let y = parser.clone();
 
-    for(i = 0; i < this.length; i++) {
+    for (i = 0; i < this.length; i++) {
       const production = this[i];
-      if(production.match(y)) {
+      if (production.match(y)) {
         Util.log('production:', production);
 
         r = i;
@@ -53,8 +54,8 @@ export class Rule {
         y = parser.clone();
       }
 
-      if(y.tokens.length) Util.log('tokens:', y.tokens);
-      if(r != -1) break;
+      if (y.tokens.length) Util.log('tokens:', y.tokens);
+      if (r != -1) break;
     }
     return r;
   }

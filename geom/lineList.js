@@ -5,9 +5,9 @@ import Util from '../util.js';
 export class LineList extends Array {
   constructor(lines) {
     super();
-    if(Util.isArray(lines) || Util.isGenerator(lines)) {
-      for(let line of lines) {
-        if(!(line instanceof Line)) line = Util.isArray(line) ? new Line(...line) : new Line(line);
+    if (Util.isArray(lines) || Util.isGenerator(lines)) {
+      for (let line of lines) {
+        if (!(line instanceof Line)) line = Util.isArray(line) ? new Line(...line) : new Line(line);
 
         this.push(line);
       }
@@ -16,12 +16,12 @@ export class LineList extends Array {
 
   bbox() {
     let bb = new BBox();
-    for(let line of this) bb.update(Line.prototype.toObject.call(line));
+    for (let line of this) bb.update(Line.prototype.toObject.call(line));
     return bb;
   }
 }
 
-if(!Util.isBrowser()) {
+if (!Util.isBrowser()) {
   let c = Util.coloring();
   const sym = Symbol.for('nodejs.util.inspect.custom');
   LineList.prototype[sym] = function () {
@@ -34,6 +34,4 @@ Util.defineGetter(LineList, Symbol.species, function () {
 });
 
 export const ImmutableLineList = Util.immutableClass(LineList);
-Util.defineGetter(ImmutableLineList, Symbol.species, function () {
-  return ImmutableLineList;
-});
+Util.defineGetter(ImmutableLineList, Symbol.species, () => ImmutableLineList);

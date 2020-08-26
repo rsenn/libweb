@@ -7,7 +7,7 @@ function Stack() {
   stack = stack.filter(({ typeName }) => typeName == 'Parser');
   stack = stack.map(({ functionName, methodName, position }) => ({
     method: functionName || methodName,
-    position: position /*, type: s.typeName*/
+    position /*, type: s.typeName*/
   }));
   return stack;
 }
@@ -35,10 +35,10 @@ class Node {
     str += node.type;
     str += `${indent}{\n`;
 
-    for(let prop in node) {
-      if(prop == 'type') continue;
+    for (let prop in node) {
+      if (prop == 'type') continue;
       let value = node[prop];
-      if(value instanceof Array || (value && value.map !== undefined)) value = value.map((v) => `${indent}  ${v.toString ? v.toString() : v}`).join('\n');
+      if (value instanceof Array || (value && value.map !== undefined)) value = value.map((v) => `${indent}  ${v.toString ? v.toString() : v}`).join('\n');
       else value = node[prop] && node[prop].toString ? node[prop].toString() : node[prop];
       str += indent + `  ${prop}:${value}\n`;
     }
@@ -56,7 +56,7 @@ class AST {
   constructor(visitor) {
     this.visitor = (node) => {
       node = new Node(node);
-      if(visitor) {
+      if (visitor) {
         visitor(node);
       }
       return node;
@@ -157,8 +157,8 @@ class Env {
 
   lookup(name) {
     let scope = this;
-    while(scope) {
-      if(scope.vars.hasOwnProperty(name)) {
+    while (scope) {
+      if (scope.vars.hasOwnProperty(name)) {
         return scope;
       }
       scope = scope.parent;
@@ -168,7 +168,7 @@ class Env {
 
   get(name) {
     let scope = this.lookup(name);
-    if(scope) {
+    if (scope) {
       return scope.vars[name];
     }
 
@@ -177,7 +177,7 @@ class Env {
 
   set(name, value) {
     let scope = this.lookup(name);
-    if(!scope) {
+    if (!scope) {
       throw new Error(`Undefined variable ${name}`);
     }
 
@@ -257,6 +257,7 @@ ${js(body)}
     }
 
     function js_literal({ value }) {
+
       /*
                 cheating :)
              */
@@ -284,10 +285,10 @@ ${js(body)}
 
     function js_unary_map(value) {
       switch (value) {
-        case '#-':
-          return '-';
-        default:
-          return value;
+      case '#-':
+        return '-';
+      default:
+        return value;
       }
     }
 
@@ -377,7 +378,7 @@ for(;;) {
         .join('\n');
 
       let other = '';
-      if(node.else) {
+      if (node.else) {
         other = `else {
                     ${js(node.else)}
                 }`;
@@ -393,74 +394,75 @@ ${other}`;
 
     function js(node) {
       switch (node.type) {
-        case 'Program':
-          return js_program(node);
-        case 'Chunk':
-          return js_chunk(node);
-        case 'LocalStatement':
-          return js_local_statement(node);
-        case 'Literal':
-          return js_literal(node);
-        case 'Identifier':
-          return js_identifier(node);
-        case 'ExpressionStatement':
-          return js_expression_statement(node);
-        case 'CallExpression':
-          return js_call_expression(node);
-        case 'BinaryExpression':
-          return js_binary_expression(node);
-        case 'UnaryExpression':
-          return js_unary_expression(node);
-        case 'DoStatement':
-          return js_do_statement(node);
-        case 'BreakStatement':
-          return js_break_statement(node);
-        case 'TableExpression':
-          return js_table_expression(node);
-        case 'MemberExpression':
-          return js_member_expression(node);
-        case 'IndexExpression':
-          return js_index_expression(node);
-        case 'AssignExpression':
-          return js_assign_expression(node);
-        case 'IfStatement':
-          return js_if_statement(node);
-        case 'FornumStatement':
-          return js_fornum_statement(node);
-        case 'ForlistStatement':
-          return js_forlist_statement(node);
-        case 'WhileStatement':
-          return js_while_statement(node);
-        case 'RepeatStatement':
-          return js_repeat_statement(node);
-        case 'FunctionDeclaration':
-          return js_function_declaration(node);
-        case 'ReturnStatement':
-          return js_return_statement(node);
-        default:
-          throw new Error(`Dunno how to generate for ${Util.inspect(node, { newline: ' ' })}`);
+      case 'Program':
+        return js_program(node);
+      case 'Chunk':
+        return js_chunk(node);
+      case 'LocalStatement':
+        return js_local_statement(node);
+      case 'Literal':
+        return js_literal(node);
+      case 'Identifier':
+        return js_identifier(node);
+      case 'ExpressionStatement':
+        return js_expression_statement(node);
+      case 'CallExpression':
+        return js_call_expression(node);
+      case 'BinaryExpression':
+        return js_binary_expression(node);
+      case 'UnaryExpression':
+        return js_unary_expression(node);
+      case 'DoStatement':
+        return js_do_statement(node);
+      case 'BreakStatement':
+        return js_break_statement(node);
+      case 'TableExpression':
+        return js_table_expression(node);
+      case 'MemberExpression':
+        return js_member_expression(node);
+      case 'IndexExpression':
+        return js_index_expression(node);
+      case 'AssignExpression':
+        return js_assign_expression(node);
+      case 'IfStatement':
+        return js_if_statement(node);
+      case 'FornumStatement':
+        return js_fornum_statement(node);
+      case 'ForlistStatement':
+        return js_forlist_statement(node);
+      case 'WhileStatement':
+        return js_while_statement(node);
+      case 'RepeatStatement':
+        return js_repeat_statement(node);
+      case 'FunctionDeclaration':
+        return js_function_declaration(node);
+      case 'ReturnStatement':
+        return js_return_statement(node);
+      default:
+        throw new Error(`Dunno how to generate for ${Util.inspect(node, { newline: ' ' })}`);
       }
     }
   }
 }
 
 class MoonScriptGenerator {
+
   /*  stack = [];
   multiline = true;
   indent = "";*/
 
   constructor(ast, multiline = true, indent = '') {
-    if(ast !== undefined) {
+    if (ast !== undefined) {
       this.ast = ast;
-      if(multiline !== undefined) this.multiline = multiline;
-      if(indent !== undefined) this.indent = indent;
+      if (multiline !== undefined) this.multiline = multiline;
+      if (indent !== undefined) this.indent = indent;
     }
     this.stack = [];
   }
 
   clone(multiline, ast) {
-    if(multiline === undefined) multiline = this.multiline;
-    if(ast === undefined) ast = this.ast;
+    if (multiline === undefined) multiline = this.multiline;
+    if (ast === undefined) ast = this.ast;
     return new MoonScriptGenerator(ast, multiline, this.indent);
   }
 
@@ -474,7 +476,7 @@ class MoonScriptGenerator {
   }
 
   str(node) {
-    if(node === undefined) node = this.ast;
+    if (node === undefined) node = this.ast;
     return this.to_moonscript(node);
   }
 
@@ -485,12 +487,12 @@ class MoonScriptGenerator {
   }
 
   to_moonscript(tree) {
-    if(tree === undefined) tree = this.ast;
+    if (tree === undefined) tree = this.ast;
     return MoonScriptGenerator.to_moonscript(tree, this);
   }
 
   static to_moonscript(tree, generator) {
-    if(generator === undefined) generator = new MoonScriptGenerator();
+    if (generator === undefined) generator = new MoonScriptGenerator();
 
     return moonscript(tree);
 
@@ -512,7 +514,7 @@ class MoonScriptGenerator {
 
     function moonscript_local_statement({ variables, init }) {
       let vars = variables.map(({ name }, i) => ({
-        name: name,
+        name,
         init: moonscript(init[i])
       }));
 
@@ -539,7 +541,7 @@ class MoonScriptGenerator {
 
     function moonscript_call_expression(node) {
       let paren = false;
-      if(generator.stack[1].type == 'MemberExpression') paren = true;
+      if (generator.stack[1].type == 'MemberExpression') paren = true;
 
       ////console.error('node: ', generator.stack[1].type);
       const callee = moonscript(node.callee);
@@ -558,12 +560,12 @@ class MoonScriptGenerator {
 
     function moonscript_unary_map(value) {
       switch (value) {
-        case '#-':
-          return '-';
-        case '!':
-          return 'not';
-        default:
-          return value;
+      case '#-':
+        return '-';
+      case '!':
+        return 'not';
+      default:
+        return value;
       }
     }
 
@@ -584,8 +586,8 @@ class MoonScriptGenerator {
       const fields = node.fields.map((field) => {
         let key = generator.subtree(field.key, false);
         let num = parseInt(key);
-        if(!isNaN(num)) key = num;
-        if(field.type == 'Recfield') return `['${key}']: ` + generator.subtree(field.value, false, `${indent}  `).replace(/\n/g, `\n${indent}`);
+        if (!isNaN(num)) key = num;
+        if (field.type == 'Recfield') return `['${key}']: ` + generator.subtree(field.value, false, `${indent}  `).replace(/\n/g, `\n${indent}`);
         return generator.str(field.value, node.multiline, indent);
       });
       return `{${generator.multiline ? '\n' + indent : ' '}${fields.join(generator.multiline ? '\n' + indent : ', ')}${generator.multiline ? '\n' + generator.indent : ' '}}`;
@@ -602,13 +604,13 @@ class MoonScriptGenerator {
     function moonscript_assign_expression(node) {
       console.error('ASSIGN_EXPRESSION ', node);
 
-      if(node.left && node.left.length >= 2) return `${moonscript(node.left)} = ${moonscript(node.right)}`;
+      if (node.left && node.left.length >= 2) return `${moonscript(node.left)} = ${moonscript(node.right)}`;
 
       return node.left
         .map((variable, i) => {
           let r = node.right[i];
           console.error(`variable.name=${variable.name}, r=`, r);
-          if(r.left && variable.name == r.left.name && ['*', '%', '/', '+', '-'].indexOf(r.op) != -1) {
+          if (r.left && variable.name == r.left.name && ['*', '%', '/', '+', '-'].indexOf(r.op) != -1) {
             return `${moonscript(variable)} ${r.op}${node.op} ${moonscript(node.right[i].right)}`;
           }
 
@@ -669,10 +671,11 @@ until ${moonscript(cond)}`;
       let other = '';
       let thenBody = moonscript_body(node.body);
       let elseBody = node.else ? moonscript_body(node.else) : '';
-      if(elseBody != '') {
+      if (elseBody != '') {
         other = `else
   ${moonscript_body(node.else)}`;
       }
+
       /* else if(thenBody == '') return '';*/
       return `if ${moonscript(node.cond)}
   ${thenBody}
@@ -682,94 +685,94 @@ ${other}`;
 
     function moonscript(node) {
       let ret = '';
-      if(node === undefined) return '';
+      if (node === undefined) return '';
 
       generator.stack.unshift(node);
 
-      if(node.length !== undefined && node.type === undefined && node.map) return node.map(moonscript);
+      if (node.length !== undefined && node.type === undefined && node.map) return node.map(moonscript);
 
-      if(node.type == undefined) {
+      if (node.type == undefined) {
         console.error('node = ', node);
         //throw { message: "node.type == undefined",  node };
         return '';
       }
 
       switch (node.type) {
-        case 'Program':
-          ret = moonscript_program(node);
-          break;
-        case 'Chunk':
-          ret = moonscript_chunk(node);
-          break;
-        case 'LocalStatement':
-          ret = moonscript_local_statement(node);
-          break;
-        case 'Literal':
-          ret = moonscript_literal(node);
-          break;
-        case 'Identifier':
-          ret = moonscript_identifier(node);
-          break;
-        case 'ExpressionStatement':
-          ret = moonscript_expression_statement(node);
-          break;
-        case 'CallExpression':
-          ret = moonscript_call_expression(node);
-          break;
-        case 'BinaryExpression':
-          ret = moonscript_binary_expression(node);
-          break;
-        case 'UnaryExpression':
-          ret = moonscript_unary_expression(node);
-          break;
-        case 'DoStatement':
-          ret = moonscript_do_statement(node);
-          break;
-        case 'BreakStatement':
-          ret = moonscript_break_statement(node);
-          break;
-        case 'TableExpression':
-          ret = moonscript_table_expression(node);
-          break;
-        case 'MemberExpression':
-          ret = moonscript_member_expression(node);
-          break;
-        case 'IndexExpression':
-          ret = moonscript_index_expression(node);
-          break;
-        case 'AssignExpression':
-          ret = moonscript_assign_expression(node);
-          break;
-        case 'IfStatement':
-          ret = moonscript_if_statement(node);
-          break;
-        case 'FornumStatement':
-          ret = moonscript_fornum_statement(node);
-          break;
-        case 'ForlistStatement':
-          ret = moonscript_forlist_statement(node);
-          break;
-        case 'WhileStatement':
-          ret = moonscript_while_statement(node);
-          break;
-        case 'RepeatStatement':
-          ret = moonscript_repeat_statement(node);
-          break;
-        case 'FunctionDeclaration':
-          ret = moonscript_function_declaration(node);
-          break;
-        case 'ReturnStatement':
-          ret = moonscript_return_statement(node);
-          break;
-        case 'Comment':
-          ret = moonscript_comment(node);
-          break;
-        case 'Undefined':
-          ret = '';
-          break;
-        default:
-          throw { message: `Dunno how to generate for ${node.type}` }; //Util.inspect(node, { newline: ' ' }));
-          break;
+      case 'Program':
+        ret = moonscript_program(node);
+        break;
+      case 'Chunk':
+        ret = moonscript_chunk(node);
+        break;
+      case 'LocalStatement':
+        ret = moonscript_local_statement(node);
+        break;
+      case 'Literal':
+        ret = moonscript_literal(node);
+        break;
+      case 'Identifier':
+        ret = moonscript_identifier(node);
+        break;
+      case 'ExpressionStatement':
+        ret = moonscript_expression_statement(node);
+        break;
+      case 'CallExpression':
+        ret = moonscript_call_expression(node);
+        break;
+      case 'BinaryExpression':
+        ret = moonscript_binary_expression(node);
+        break;
+      case 'UnaryExpression':
+        ret = moonscript_unary_expression(node);
+        break;
+      case 'DoStatement':
+        ret = moonscript_do_statement(node);
+        break;
+      case 'BreakStatement':
+        ret = moonscript_break_statement(node);
+        break;
+      case 'TableExpression':
+        ret = moonscript_table_expression(node);
+        break;
+      case 'MemberExpression':
+        ret = moonscript_member_expression(node);
+        break;
+      case 'IndexExpression':
+        ret = moonscript_index_expression(node);
+        break;
+      case 'AssignExpression':
+        ret = moonscript_assign_expression(node);
+        break;
+      case 'IfStatement':
+        ret = moonscript_if_statement(node);
+        break;
+      case 'FornumStatement':
+        ret = moonscript_fornum_statement(node);
+        break;
+      case 'ForlistStatement':
+        ret = moonscript_forlist_statement(node);
+        break;
+      case 'WhileStatement':
+        ret = moonscript_while_statement(node);
+        break;
+      case 'RepeatStatement':
+        ret = moonscript_repeat_statement(node);
+        break;
+      case 'FunctionDeclaration':
+        ret = moonscript_function_declaration(node);
+        break;
+      case 'ReturnStatement':
+        ret = moonscript_return_statement(node);
+        break;
+      case 'Comment':
+        ret = moonscript_comment(node);
+        break;
+      case 'Undefined':
+        ret = '';
+        break;
+      default:
+        throw { message: `Dunno how to generate for ${node.type}` }; //Util.inspect(node, { newline: ' ' }));
+        break;
       }
       //ret = typeof(ret) == 'string' ? ret.trim() : ret;
       /*     if(/Statement$/.test(node.type)) {
@@ -839,6 +842,7 @@ Token.COMMENT = 'COMMENT';
 Token.HASH = '#';
 
 class Lexer {
+
   /*  index = 0;
   pos = 0;
   line = 1;
@@ -905,7 +909,7 @@ class Lexer {
   }
 
   lookahead(n, eat = false) {
-    if(eat) {
+    if (eat) {
       this.eat(n);
       return this.source[this.pos];
     }
@@ -915,7 +919,8 @@ class Lexer {
 
   eat(n = 1) {
     const newpos = this.pos + n;
-    while(this.pos < newpos) {
+    while (this.pos < newpos) {
+
       /*    if(this.source[this.pos] == '\n') {
         this.line++;
         this.column = 0;
@@ -941,15 +946,16 @@ class Lexer {
     let peek;
 
     peek = this.lookahead(0);
-    if(!is_digit(peek)) {
+    if (!is_digit(peek)) {
       return this.croak('not digit');
     }
 
     let sum = 0;
-    for(;;) {
-      if(is_digit(peek)) {
+    for (;;) {
+      if (is_digit(peek)) {
         sum = sum * 10 + parseInt(peek, 10);
-      } else {
+      }
+      else {
         return sum;
       }
 
@@ -959,53 +965,60 @@ class Lexer {
 
   scan_longstring() {
     let comment = [];
-    if(this.lookahead(0) != '[') {
+    if (this.lookahead(0) != '[') {
       this.croak('not [');
     }
     let peek = this.lookahead(1, true);
     let term = 0;
-    if(peek == '=') {
+    if (peek == '=') {
       term++;
-      for(;;) {
+      for (;;) {
         peek = this.lookahead(1, true);
-        if(peek == '=') {
+        if (peek == '=') {
           term++;
           continue;
-        } else if((peek = '[')) {
+        }
+        else if ((peek = '[')) {
           break;
-        } else {
+        }
+        else {
           return this.croak();
         }
       }
-    } else if(peek != '[') {
+    }
+    else if (peek != '[') {
       return this.croak();
     }
-    for(;;) {
+    for (;;) {
       peek = this.lookahead(1, true);
+
       /*
        * try to find ]=*]
        */
-      if(peek == ']') {
+      if (peek == ']') {
         let i;
         this.eat(1);
-        for(i = 0; i < term; i++) {
+        for (i = 0; i < term; i++) {
           peek = this.lookahead(i);
-          if(peek == '=') {
+          if (peek == '=') {
             continue;
-          } else if(peek == undefined) {
+          }
+          else if (peek == undefined) {
             return this.croak(peek);
           }
         }
-        if(i == term) {
+        if (i == term) {
           peek = this.lookahead(term);
-          if(peek == ']') {
+          if (peek == ']') {
             this.lookahead(2 + term, true);
             return comment.join('');
-          } else if(peek == undefined) {
+          }
+          else if (peek == undefined) {
             return this.croak(peek);
           }
         }
-      } else if(peek == undefined) {
+      }
+      else if (peek == undefined) {
         return this.croak(peek);
       }
       comment.push(peek);
@@ -1015,7 +1028,7 @@ class Lexer {
   scan() {
     let identifier, base, string, comment, baes, c, peek, peekpeek;
 
-    for(;;) {
+    for (;;) {
       c = this.lookahead(0);
       peek = this.lookahead(1);
       peekpeek = this.lookahead(2);
@@ -1024,198 +1037,204 @@ class Lexer {
       this.quote = '';
 
       switch (c) {
-        case undefined:
-          return this.token(0, Token.EOS, Token.EOS);
+      case undefined:
+        return this.token(0, Token.EOS, Token.EOS);
 
-        case '\f':
-        case '\r':
-        case ' ':
-        case '\t':
-          this.lookahead(1, true);
-          continue;
-        case '\n':
-          this.line++;
-          this.column = 0;
-          this.lookahead(1, true);
-          continue;
-        case ';':
-          return this.token(1, Token.SEMICOLON, ';');
-        case '+':
-          return this.token(1, Token.PLUS, '+');
-        case '-':
-          if(peek == '-') {
-            if(peekpeek != '[') {
+      case '\f':
+      case '\r':
+      case ' ':
+      case '\t':
+        this.lookahead(1, true);
+        continue;
+      case '\n':
+        this.line++;
+        this.column = 0;
+        this.lookahead(1, true);
+        continue;
+      case ';':
+        return this.token(1, Token.SEMICOLON, ';');
+      case '+':
+        return this.token(1, Token.PLUS, '+');
+      case '-':
+        if (peek == '-') {
+          if (peekpeek != '[') {
+            peek = this.lookahead(1, true);
+            comment = [];
+            for (;;) {
               peek = this.lookahead(1, true);
-              comment = [];
-              for(;;) {
-                peek = this.lookahead(1, true);
-                if(peek == '\n' /*|| peek == undefined*/) {
-                  return this.token(0, Token.COMMENT, comment.join(''));
-                } else {
-                  comment.push(peek);
-                  continue;
-                }
+              if (peek == '\n' /*|| peek == undefined*/) {
+                return this.token(0, Token.COMMENT, comment.join(''));
+              }
+              comment.push(peek);
+              continue;
+                
+            }
+          }
+
+          this.lookahead(2, true);
+          comment = this.scan_longstring();
+          return this.token(0, Token.COMMENT, comment);
+        }
+
+        return this.token(1, Token.MINUS, '-');
+      case '*':
+        return this.token(1, Token.MUL, '*');
+      case '/':
+        return this.token(1, Token.DIV, '/');
+      case '%':
+        return this.token(1, Token.MOD, '%');
+      case '^':
+        return this.token(1, Token.POW, '^');
+      case ',':
+        return this.token(1, Token.COMMA, ',');
+      case '(':
+        return this.token(1, Token.LPAREN, '(');
+      case ')':
+        return this.token(1, Token.RPAREN, ')');
+      case '[':
+        if (peek == '[' || peek == '=') {
+          string = this.scan_longstring();
+          return this.token(0, Token.STRING, string);
+        }
+
+        return this.token(1, Token.LBRACKET, '[');
+      case ']':
+        return this.token(1, Token.RBRACKET, ']');
+      case '{':
+        return this.token(1, Token.LBRACE, '{');
+      case '}':
+        return this.token(1, Token.RBRACE, '}');
+      case '=':
+        if (peek == '=') return this.token(2, Token.EQ, '==');
+
+        return this.token(1, Token.ASSIGN, '=');
+
+      case '>':
+        if (peek == '=') return this.token(2, Token.GE, '>=');
+
+        return this.token(1, Token.GT, '>');
+
+      case '<':
+        if (peek == '=') return this.token(2, Token.LE, '<=');
+
+        return this.token(1, Token.LT, '<');
+
+      case '~':
+        if (peek == '=') return this.token(2, Token.NE, '~=');
+
+        return this.croak();
+
+      case ':':
+        return this.token(1, Token.COLON, ':');
+
+      case '.':
+        if (peek == '.') {
+          if (peekpeek == '.') return this.token(3, Token.ELLIPSES, '...');
+          return this.token(2, Token.CONCAT, '..');
+        }
+
+        return this.token(1, Token.DOT, '.');
+
+      case "'":
+        string = [];
+        for (;;) {
+          peek = this.lookahead(1, true);
+          if (peek == c) {
+            return this.token(1, Token.STRING, string.join(''));
+          }
+          else if (peek == undefined) {
+            return this.croak();
+          }
+          string.push(peek);
+            
+        }
+
+      case '#':
+        return this.token(1, Token.HASH, '#');
+
+      case '"':
+      case "'":
+        this.quote = c;
+        string = [];
+        for (;;) {
+          peek = this.lookahead(1, true);
+          if (peek == c) {
+            return this.token(1, Token.STRING, string.join(''));
+          }
+          else if (peek == undefined) {
+            return this.croak();
+          }
+          string.push(peek);
+            
+        }
+
+      default:
+        if (this.is_digit(c)) {
+          let num = 0;
+          if (peek == 'x' || peek == 'X') {
+            this.eat(1);
+            peek = this.lookahead(1);
+            if (!this.is_hex(peek)) return this.croak();
+            for (;;) {
+              peek = this.lookahead(1, true);
+              if (this.is_hex(peek)) num = 16 * num + parseInt(peek, 16);
+              else return this.token(0, Token.NUMBER, num);
+            }
+          }
+          for (peek = c; ; ) {
+            num = 10 * num + parseInt(peek, 10);
+            peek = this.lookahead(1, true);
+            if (this.is_digit(peek)) continue;
+            else break;
+          }
+          if (peek == '.') {
+            base = 1;
+            for (;;) {
+              peek = this.lookahead(1, true);
+              if (this.is_digit(peek)) {
+                base = base * 0.1;
+                num = base * parseInt(peek, 10) + num;
+              }
+              else {
+                break;
               }
             }
-
-            this.lookahead(2, true);
-            comment = this.scan_longstring();
-            return this.token(0, Token.COMMENT, comment);
           }
-
-          return this.token(1, Token.MINUS, '-');
-        case '*':
-          return this.token(1, Token.MUL, '*');
-        case '/':
-          return this.token(1, Token.DIV, '/');
-        case '%':
-          return this.token(1, Token.MOD, '%');
-        case '^':
-          return this.token(1, Token.POW, '^');
-        case ',':
-          return this.token(1, Token.COMMA, ',');
-        case '(':
-          return this.token(1, Token.LPAREN, '(');
-        case ')':
-          return this.token(1, Token.RPAREN, ')');
-        case '[':
-          if(peek == '[' || peek == '=') {
-            string = this.scan_longstring();
-            return this.token(0, Token.STRING, string);
-          }
-
-          return this.token(1, Token.LBRACKET, '[');
-        case ']':
-          return this.token(1, Token.RBRACKET, ']');
-        case '{':
-          return this.token(1, Token.LBRACE, '{');
-        case '}':
-          return this.token(1, Token.RBRACE, '}');
-        case '=':
-          if(peek == '=') return this.token(2, Token.EQ, '==');
-
-          return this.token(1, Token.ASSIGN, '=');
-
-        case '>':
-          if(peek == '=') return this.token(2, Token.GE, '>=');
-
-          return this.token(1, Token.GT, '>');
-
-        case '<':
-          if(peek == '=') return this.token(2, Token.LE, '<=');
-
-          return this.token(1, Token.LT, '<');
-
-        case '~':
-          if(peek == '=') return this.token(2, Token.NE, '~=');
-
-          return this.croak();
-
-        case ':':
-          return this.token(1, Token.COLON, ':');
-
-        case '.':
-          if(peek == '.') {
-            if(peekpeek == '.') return this.token(3, Token.ELLIPSES, '...');
-            return this.token(2, Token.CONCAT, '..');
-          }
-
-          return this.token(1, Token.DOT, '.');
-
-        case "'":
-          string = [];
-          for(;;) {
+          if (peek == 'E' || peek == 'e') {
             peek = this.lookahead(1, true);
-            if(peek == c) {
-              return this.token(1, Token.STRING, string.join(''));
-            } else if(peek == undefined) {
-              return this.croak();
-            } else {
-              string.push(peek);
-            }
-          }
-
-        case '#':
-          return this.token(1, Token.HASH, '#');
-
-        case '"':
-        case "'":
-          this.quote = c;
-          string = [];
-          for(;;) {
-            peek = this.lookahead(1, true);
-            if(peek == c) {
-              return this.token(1, Token.STRING, string.join(''));
-            } else if(peek == undefined) {
-              return this.croak();
-            } else {
-              string.push(peek);
-            }
-          }
-
-        default:
-          if(this.is_digit(c)) {
-            let num = 0;
-            if(peek == 'x' || peek == 'X') {
+            if (peek == '-') {
               this.eat(1);
-              peek = this.lookahead(1);
-              if(!this.is_hex(peek)) return this.croak();
-              for(;;) {
-                peek = this.lookahead(1, true);
-                if(this.is_hex(peek)) num = 16 * num + parseInt(peek, 16);
-                else return this.token(0, Token.NUMBER, num);
-              }
+              base = -1;
             }
-            for(peek = c; ; ) {
-              num = 10 * num + parseInt(peek, 10);
-              peek = this.lookahead(1, true);
-              if(this.is_digit(peek)) continue;
-              else break;
+            else if (peek == '+') {
+              this.eat(1);
+              base = +1;
             }
-            if(peek == '.') {
-              base = 1;
-              for(;;) {
-                peek = this.lookahead(1, true);
-                if(this.is_digit(peek)) {
-                  base = base * 0.1;
-                  num = base * parseInt(peek, 10) + num;
-                } else {
-                  break;
-                }
-              }
+            else {
+              base = +1;
             }
-            if(peek == 'E' || peek == 'e') {
-              peek = this.lookahead(1, true);
-              if(peek == '-') {
-                this.eat(1);
-                base = -1;
-              } else if(peek == '+') {
-                this.eat(1);
-                base = +1;
-              } else {
-                base = +1;
-              }
-              let integer = base * this.scan_integer();
-              num = num * Math.pow(10, integer);
-            }
-            return this.token(0, Token.NUMBER, num);
+            let integer = base * this.scan_integer();
+            num = num * Math.pow(10, integer);
           }
-          if(this.is_letter(c) || c == '_') {
-            identifier = [c];
-            for(;;) {
-              peek = this.lookahead(1, true);
-              if(!this.is_digit_or_letter(peek) && peek != '_') {
-                identifier = identifier.join('');
-                if(this.keywords[identifier]) return this.token(0, Token.KEYWORD, identifier);
-                return this.token(0, Token.IDENTIFIER, identifier);
-              } else if(peek == undefined) {
-                return this.croak();
-              } else {
-                identifier.push(peek);
-              }
+          return this.token(0, Token.NUMBER, num);
+        }
+        if (this.is_letter(c) || c == '_') {
+          identifier = [c];
+          for (;;) {
+            peek = this.lookahead(1, true);
+            if (!this.is_digit_or_letter(peek) && peek != '_') {
+              identifier = identifier.join('');
+              if (this.keywords[identifier]) return this.token(0, Token.KEYWORD, identifier);
+              return this.token(0, Token.IDENTIFIER, identifier);
             }
+            else if (peek == undefined) {
+              return this.croak();
+            }
+            identifier.push(peek);
+              
           }
-          return this.croak();
+        }
+        return this.croak();
       }
     }
   }
@@ -1227,7 +1246,7 @@ class Parser {
     this.lexer = lexer;
     this.cur_token = null;
     this.ast = new AST((node) => {
-      if(visitor) {
+      if (visitor) {
         visitor(node);
       }
       return node;
@@ -1235,8 +1254,8 @@ class Parser {
     this.location = [];
     let parser = this;
 
-    for(let name of Util.getMethodNames(this)) {
-      if(name.startsWith('parse_')) {
+    for (let name of Util.getMethodNames(this)) {
+      if (name.startsWith('parse_')) {
         let fn = this[name];
         parser[name] = function () {
           const args = [...arguments];
@@ -1244,7 +1263,7 @@ class Parser {
           let indent = '  '.repeat(this.depth);
           this.log('position: ', this.cur_token.position, ' args: ', args);
           let ret = fn.apply(this, args);
-          if(ret && ret !== null) {
+          if (ret && ret !== null) {
             this.log('ret: ', ret.toString ? ret.toString().replace(/\n/g, `\n${indent}`) : ret);
             this.node = ret;
           }
@@ -1267,7 +1286,7 @@ class Parser {
 
     stack = stack.map(({ methodName, functionName, position }) => ({
       method: methodName || functionName,
-      position: position,
+      position,
       toString: () => `${this.method} ${this.position}`
     }));
 
@@ -1294,6 +1313,7 @@ class Parser {
     do {
       this.xy = this.lexer.xy;
       this.cur_token = this.lexer.scan();
+
       /*   let caller = Util.getCallers();
 
       while(!caller[0].methodName.startsWith('parse')) caller.shift();
@@ -1301,21 +1321,21 @@ class Parser {
       const names = caller.map(c => c.methodName);
 */
       ////console.error("cur_token: ", this.cur_token.toString(), "xy:", this.xy, "callers["+names.length+"]:", names.join(','));
-    } while(0); //this.cur_token.type == 'COMMENT');
+    } while (0); //this.cur_token.type == 'COMMENT');
 
     return token;
   }
 
   match(t, v) {
-    if(t) {
-      if(v) {
-        if(this.cur_token.type == t && this.cur_token.val == v) {
+    if (t) {
+      if (v) {
+        if (this.cur_token.type == t && this.cur_token.val == v) {
           let cur_token = this.cur_token;
           this.next();
           return cur_token;
         }
       }
-      if(this.cur_token.type == t) {
+      if (this.cur_token.type == t) {
         let cur_token = this.cur_token;
         this.next();
         return cur_token;
@@ -1325,15 +1345,15 @@ class Parser {
   }
 
   consume(t, v) {
-    if(t) {
-      if(v) {
-        if(this.cur_token.type == t && this.cur_token.value == v) {
+    if (t) {
+      if (v) {
+        if (this.cur_token.type == t && this.cur_token.value == v) {
           let cur_token = this.cur_token;
           this.next();
           return cur_token;
         }
       }
-      if(this.cur_token.type == t) {
+      if (this.cur_token.type == t) {
         let cur_token = this.cur_token;
         this.next();
         return cur_token;
@@ -1354,7 +1374,8 @@ class Parser {
       this.next();
       this.anchor();
       return this.ast.program(this.parse_chunk());
-    } catch(err) {
+    }
+    catch (err) {
       err.token = this.cur_token;
       console.error('ERROR:', err);
       Util.log('ERROR:', err);
@@ -1366,14 +1387,14 @@ class Parser {
     //console.error('parse_chunk');
     /* chunk       ::=   {<stat> [`;`]} */
     let stats = [];
-    while(!this.is_block_follow()) {
-      if(this.cur_token.value == 'return') {
+    while (!this.is_block_follow()) {
+      if (this.cur_token.value == 'return') {
         stats.push(this.parse_stat());
         this.consume(Token.SEMICOLON);
         break;
       }
 
-      if(this.cur_token.type == 'COMMENT') {
+      if (this.cur_token.type == 'COMMENT') {
         stats.push(this.ast.comment(this.cur_token.value));
         this.next();
         continue;
@@ -1386,11 +1407,13 @@ class Parser {
   }
 
   parse_block() {
+
     /* block ::= chunk */
     return this.parse_chunk();
   }
 
   parse_stat() {
+
     /*
         stat        ::=   <do_stat>
                       |   <break_stat>
@@ -1405,30 +1428,31 @@ class Parser {
      */
 
     switch (this.cur_token.value) {
-      case 'do':
-        return this.parse_do_stat();
-      case 'break':
-        return this.parse_break_stat();
-      case 'return':
-        return this.parse_return_stat();
-      case 'function':
-        return this.parse_func_stat();
-      case 'local':
-        return this.parse_local_stat();
-      case 'if':
-        return this.parse_if_stat();
-      case 'for':
-        return this.parse_for_stat();
-      case 'while':
-        return this.parse_while_stat();
-      case 'repeat':
-        return this.parse_repeat_stat();
-      default:
-        return this.parse_expr_stat();
+    case 'do':
+      return this.parse_do_stat();
+    case 'break':
+      return this.parse_break_stat();
+    case 'return':
+      return this.parse_return_stat();
+    case 'function':
+      return this.parse_func_stat();
+    case 'local':
+      return this.parse_local_stat();
+    case 'if':
+      return this.parse_if_stat();
+    case 'for':
+      return this.parse_for_stat();
+    case 'while':
+      return this.parse_while_stat();
+    case 'repeat':
+      return this.parse_repeat_stat();
+    default:
+      return this.parse_expr_stat();
     }
   }
 
   parse_do_stat() {
+
     /* do_stat     ::=  `do` <block> `end` */
 
     this.match(Token.KEYWORD, 'do');
@@ -1439,6 +1463,7 @@ class Parser {
   }
 
   parse_break_stat() {
+
     /* break_stat  ::=  `break` */
 
     this.match(Token.KEYWORD, 'break');
@@ -1447,6 +1472,7 @@ class Parser {
   }
 
   parse_return_stat() {
+
     /* return_stat  ::=  `return` <explist> */
 
     this.next();
@@ -1456,12 +1482,13 @@ class Parser {
   }
 
   parse_func_stat() {
+
     /* func_stat   ::= `function` <funcname> '(' <parlist> ')' <blcok> 'end'*/
     let id;
     this.match(Token.KEYWORD, 'function');
 
     console.error('parse_func_stat ', this.cur_token);
-    if(this.cur_token.type == 'LPAREN') id = '';
+    if (this.cur_token.type == 'LPAREN') id = '';
     else id = this.parse_funcname();
 
     this.match(Token.LPAREN);
@@ -1474,14 +1501,15 @@ class Parser {
   }
 
   parse_parlist() {
+
     /* parlist     ::= [<param> {',' <param>}] */
 
     let parlist = [];
 
-    if(this.is_param()) {
+    if (this.is_param()) {
       parlist.push(this.parse_param());
 
-      while(this.cur_token.value == ',') {
+      while (this.cur_token.value == ',') {
         this.next();
         parlist.push(this.parse_param());
       }
@@ -1491,23 +1519,25 @@ class Parser {
   }
 
   parse_param() {
+
     /* param       ::= <NAME> */
     return this.parse_name();
   }
 
   parse_funcname(members = true) {
+
     /*fname    ::= <NAME> {'.' <NAME>} [':' <NAME>] */
 
     let funcname = this.parse_name();
 
-    if(members) {
-      while(this.cur_token.value == '.') {
+    if (members) {
+      while (this.cur_token.value == '.') {
         this.next();
         funcname = this.ast.member_expr(funcname, '.', this.parse_name());
       }
     }
 
-    if(this.cur_token.value == ':') {
+    if (this.cur_token.value == ':') {
       this.next();
       funcname = this.ast.member_expr(funcname, ':', this.parse_name());
     }
@@ -1516,17 +1546,18 @@ class Parser {
   }
 
   parse_local_stat() {
+
     /* local_stat  ::= `local` <NAME> {',' <NAME>} ['=' <explist1>]
                         | `local` `function` <NAME> '(' <parlist> ')' <blcok> 'end'
    */
 
     this.match(Token.KEYWORD, 'local');
 
-    if(this.cur_token.value == 'function') {
+    if (this.cur_token.value == 'function') {
       this.next();
 
       let id = '';
-      if(this.cur_token.type != 'LPAREN') id = this.parse_name();
+      if (this.cur_token.type != 'LPAREN') id = this.parse_name();
       this.match(Token.LPAREN);
       let params = this.parse_parlist();
       this.match(Token.RPAREN);
@@ -1534,26 +1565,27 @@ class Parser {
       this.match(Token.KEYWORD, 'end');
 
       return this.ast.func_stat(id, params, block);
-    } else {
-      let variables = [];
-      let init = [];
-      variables.push(this.parse_name());
-
-      while(this.cur_token.value == ',') {
-        this.next();
-        variables.push(this.parse_name());
-      }
-
-      if(this.cur_token.value == '=') {
-        this.next();
-        init = this.parse_explist1();
-      }
-
-      return this.ast.local_stat(variables, init);
     }
+    let variables = [];
+    let init = [];
+    variables.push(this.parse_name());
+
+    while (this.cur_token.value == ',') {
+      this.next();
+      variables.push(this.parse_name());
+    }
+
+    if (this.cur_token.value == '=') {
+      this.next();
+      init = this.parse_explist1();
+    }
+
+    return this.ast.local_stat(variables, init);
+    
   }
 
   parse_if_stat() {
+
     /*
         if_stat     ::= `if` <cond> `then` <block> {`elseif` <cond> `then` <block>} [`else` <block>] `end`
         <cond>      ::= <expr>
@@ -1566,7 +1598,7 @@ class Parser {
     let elseif = [];
     let _else = null;
 
-    while(this.cur_token.value == 'elseif') {
+    while (this.cur_token.value == 'elseif') {
       this.next();
       let elsecond = this.parse_cond();
       this.match(Token.KEYWORD, 'then');
@@ -1575,7 +1607,7 @@ class Parser {
       elseif.push(this.ast.if_stat(elsecond, elseblock, []));
     }
 
-    if(this.cur_token.value == 'else') {
+    if (this.cur_token.value == 'else') {
       this.next();
       _else = this.parse_block();
     }
@@ -1586,6 +1618,7 @@ class Parser {
   }
 
   parse_cond() {
+
     /*
             cond ::= <expr>
          */
@@ -1594,6 +1627,7 @@ class Parser {
   }
 
   parse_for_stat() {
+
     /*
             for_stat    ::= <fornum> | <forlist>
             fornum      ::= <NAME> {',' <NAME>} 'in' <explist1> <forbody> 'end'
@@ -1603,13 +1637,13 @@ class Parser {
     this.match(Token.KEYWORD, 'for');
 
     let name = this.parse_name();
-    if(this.cur_token.value == '=') {
+    if (this.cur_token.value == '=') {
       this.next();
       let begin = this.parse_exp1();
       this.match(Token.COMMA, ',');
       let end = this.parse_exp1();
       let step = this.ast.literal(1);
-      if(this.cur_token.value == ',') {
+      if (this.cur_token.value == ',') {
         this.next();
         step = this.parse_exp1();
       }
@@ -1617,21 +1651,22 @@ class Parser {
       let body = this.parse_forbody();
       this.match(Token.KEYWORD, 'end');
       return this.ast.fornum_stat(name, begin, end, step, body);
-    } else {
-      let left = [name];
-      while(this.cur_token.value == ',') {
-        this.next();
-        left.push(this.parse_name());
-      }
-      this.match(Token.KEYWORD, 'in');
-      let right = this.parse_exp1();
-      let body = this.parse_forbody();
-      this.match(Token.KEYWORD, 'end');
-      return this.ast.forlist_stat(name, left, right, body);
     }
+    let left = [name];
+    while (this.cur_token.value == ',') {
+      this.next();
+      left.push(this.parse_name());
+    }
+    this.match(Token.KEYWORD, 'in');
+    let right = this.parse_exp1();
+    let body = this.parse_forbody();
+    this.match(Token.KEYWORD, 'end');
+    return this.ast.forlist_stat(name, left, right, body);
+    
   }
 
   parse_forbody() {
+
     /*
             forbody     ::= 'do' <block>
          */
@@ -1643,6 +1678,7 @@ class Parser {
   }
 
   parse_while_stat() {
+
     /*
             while_stat  ::= `while` <cond> `do` <block> `end`
          */
@@ -1657,6 +1693,7 @@ class Parser {
   }
 
   parse_repeat_stat() {
+
     /*
             repeat_stat ::= `repeat` <chunk> `until` <cond>
          */
@@ -1670,6 +1707,7 @@ class Parser {
   }
 
   parse_expr_stat() {
+
     /*
             expr_stat   ::=  <primaryexp>(<func> | <assignment>)
             if LHS is VCALL then func, otherwise assignment
@@ -1680,24 +1718,24 @@ class Parser {
 
     //console.error('EXPR_STAT ', this.cur_token);
 
-    if(primaryexp.type == 'CallExpression') {
+    if (primaryexp.type == 'CallExpression') {
       return this.ast.expr_stat(primaryexp);
-    } else {
-      let assignment = this.parse_assignment([primaryexp]);
-      return this.ast.expr_stat(assignment);
     }
+    let assignment = this.parse_assignment([primaryexp]);
+    return this.ast.expr_stat(assignment);
+    
   }
 
   parse_assignment(primaryexp) {
-    if(this.cur_token.value == ',') {
-      if(!(primaryexp instanceof Array)) primaryexp = [primaryexp];
+    if (this.cur_token.value == ',') {
+      if (!(primaryexp instanceof Array)) primaryexp = [primaryexp];
 
       do {
         this.match(Token.COMMA);
 
         const node = this.parse_primaryexp();
         primaryexp.push(node);
-      } while(this.cur_token.value == ',');
+      } while (this.cur_token.value == ',');
     }
 
     /*
@@ -1705,7 +1743,7 @@ class Parser {
                           | '=' <explist1>
          */
 
-    if(this.cur_token.value == '=') {
+    if (this.cur_token.value == '=') {
       this.next();
       let right = this.parse_explist1();
       return this.ast.assign_expr('=', primaryexp, right);
@@ -1716,13 +1754,14 @@ class Parser {
   }
 
   parse_explist1() {
+
     /*
         explist1    ::= <expr> {',' <expr>}
      */
 
     let exps = [this.parse_expr()];
 
-    while(this.cur_token.value == ',') {
+    while (this.cur_token.value == ',') {
       this.next();
       exps.push(this.parse_expr());
     }
@@ -1731,6 +1770,7 @@ class Parser {
   }
 
   parse_expr() {
+
     /*
             expr        ::= <subexpr>
          */
@@ -1739,6 +1779,7 @@ class Parser {
   }
 
   parse_subexpr(min_prec) {
+
     /*
             subexpr     ::=(<unary> <subexpr> | <simpleexp>) {<binary> <subexpr>}
          */
@@ -1749,22 +1790,24 @@ class Parser {
 
     let expr;
 
-    if(this.is_unary()) {
+    if (this.is_unary()) {
       let unary = this.parse_unary();
       let argument = this.parse_subexpr();
       expr = this.ast.unary_expr(unary, argument);
-    } else {
+    }
+    else {
       expr = this.parse_simpleexp();
     }
 
-    while(this.is_binary() && Parser.OP[this.cur_token.value].prec >= min_prec) {
+    while (this.is_binary() && Parser.OP[this.cur_token.value].prec >= min_prec) {
       let token = this.next();
       let op = Parser.OP[token.value];
       let next_prec;
 
-      if(op.left) {
+      if (op.left) {
         next_prec = op.prec + 1;
-      } else {
+      }
+      else {
         next_prec = op.prec;
       }
 
@@ -1776,6 +1819,7 @@ class Parser {
   }
 
   parse_simpleexp() {
+
     /*
             simpleexp   ::= NUMBER
                           | STRING
@@ -1788,101 +1832,105 @@ class Parser {
                           | <primaryexp>
          */
 
-    if(this.cur_token.type == Token.COMMENT) {
+    if (this.cur_token.type == Token.COMMENT) {
       let text = this.cur_token.value;
       this.next();
       return this.ast.comment(text);
     }
-    if(this.cur_token.type == Token.NUMBER || this.cur_token.type == Token.STRING) {
+    if (this.cur_token.type == Token.NUMBER || this.cur_token.type == Token.STRING) {
       //console.error("this.cur_token: ", this.lexer.quote, this.cur_token);
       let q = this.lexer.quote;
       let cur_token = this.next();
       return this.ast.literal(cur_token.value, false, q);
-    } else if(this.cur_token.type == Token.KEYWORD) {
+    }
+    else if (this.cur_token.type == Token.KEYWORD) {
       switch (this.cur_token.value) {
-        case 'nil':
-          this.next();
-          return this.ast.literal(null);
-        case 'true':
-          this.next();
-          return this.ast.literal(true);
-        case 'false':
-          this.next();
-          return this.ast.literal(false);
-        case '...':
-          this.next();
-          return this.ast.literal('...');
-        case 'function':
-          const token = this.cur_token;
-          const name = this.ast.undef();
-          this.next();
-          this.match(Token.LPAREN);
-          let params = this.parse_parlist();
-          this.match(Token.RPAREN);
-          let block = this.parse_block();
-          this.match(Token.KEYWORD, 'end');
+      case 'nil':
+        this.next();
+        return this.ast.literal(null);
+      case 'true':
+        this.next();
+        return this.ast.literal(true);
+      case 'false':
+        this.next();
+        return this.ast.literal(false);
+      case '...':
+        this.next();
+        return this.ast.literal('...');
+      case 'function':
+        const token = this.cur_token;
+        const name = this.ast.undef();
+        this.next();
+        this.match(Token.LPAREN);
+        let params = this.parse_parlist();
+        this.match(Token.RPAREN);
+        let block = this.parse_block();
+        this.match(Token.KEYWORD, 'end');
 
-          return this.ast.func_stat(name, params, block);
+        return this.ast.func_stat(name, params, block);
 
-        case 'local':
-          return this.parse_local_stat();
-        default:
-          this.yield_error(`parse_simpleexp ${this.cur_token.value}`);
+      case 'local':
+        return this.parse_local_stat();
+      default:
+        this.yield_error(`parse_simpleexp ${this.cur_token.value}`);
       }
-    } else if(this.cur_token.value == '{') {
+    }
+    else if (this.cur_token.value == '{') {
       return this.parse_constructor();
-    } else {
+    }
+    else {
       return this.parse_primaryexp();
     }
   }
 
   parse_primaryexp() {
+
     /*
             primaryexp  ::= <prefixexp> {'.' <NAME> | '[' <expr> ']'  | ':' <NAME> <funcargs> | <funcargs> }
          */
 
-    if(this.cur_token.line >= 138) {
+    if (this.cur_token.line >= 138) {
       //console.error('\nTOKEN: ', this.cur_token, '\n');
     }
 
     let node = this.parse_prefixexp(true);
     let property;
 
-    while(true) {
+    while (true) {
       switch (this.cur_token.value) {
-        case '.':
-          this.next();
-          property = this.parse_name(true);
-          node = this.ast.member_expr(node, '.', property);
-          break;
-        case '[':
-          this.next();
+      case '.':
+        this.next();
+        property = this.parse_name(true);
+        node = this.ast.member_expr(node, '.', property);
+        break;
+      case '[':
+        this.next();
 
-          if(this.cur_token.line >= 138) {
-            //console.error('\nTOKEN: ', this.cur_token, '\n');
-            //console.error('\nNODE: ', node.toString(), '\n');
-          }
+        if (this.cur_token.line >= 138) {
+          //console.error('\nTOKEN: ', this.cur_token, '\n');
+          //console.error('\nNODE: ', node.toString(), '\n');
+        }
 
-          let index = this.parse_expr();
-          node = this.ast.index_expr(node, index);
-          this.match(Token.RBRACKET);
+        let index = this.parse_expr();
+        node = this.ast.index_expr(node, index);
+        this.match(Token.RBRACKET);
 
-          break;
-        case ':':
-          this.next();
-          property = this.parse_expr();
-          node = this.ast.member_expr(node, ':', property);
-          let params = this.parse_funcargs();
-          node = this.ast.call_expr(node, params);
-          break;
-        default:
-          break;
+        break;
+      case ':':
+        this.next();
+        property = this.parse_expr();
+        node = this.ast.member_expr(node, ':', property);
+        let params = this.parse_funcargs();
+        node = this.ast.call_expr(node, params);
+        break;
+      default:
+        break;
       }
 
-      if(this.cur_token.value == '.') continue;
-      if(this.cur_token.value == '[') continue;
+      if (this.cur_token.value == '.') continue;
+      if (this.cur_token.value == '[') continue;
 
-      if(this.cur_token.value == '(' || this.cur_token.value == '{' || this.cur_token.type == Token.STRING) {
+      if (this.cur_token.value == '(' || this.cur_token.value == '{' || this.cur_token.type == Token.STRING) {
         let params = this.parse_funcargs();
         node = this.ast.call_expr(node, params);
         continue;
@@ -1893,6 +1941,7 @@ class Parser {
   }
 
   parse_funcargs() {
+
     /*
         funcargs    ::= '(' [<explist1>] ')'
                       | constructor
@@ -1901,22 +1950,24 @@ class Parser {
 
     let params = [];
 
-    if(this.cur_token.value == '(') {
+    if (this.cur_token.value == '(') {
       this.next();
-      if(this.cur_token.value != ')') {
+      if (this.cur_token.value != ')') {
         params = this.parse_explist1();
       }
       this.match(Token.RPAREN);
 
       return params;
-    } else if(this.cur_token.type == Token.STRING) {
-      return this.ast.literal(this.cur_token.value);
-    } else {
-      return this.parse_constructor();
     }
+    else if (this.cur_token.type == Token.STRING) {
+      return this.ast.literal(this.cur_token.value);
+    }
+    return this.parse_constructor();
+    
   }
 
   parse_constructor() {
+
     /*
             constructor ::=  '{' [<field> {<fieldsep> <field>} [<fieldsep>] ] '}'
          */
@@ -1926,12 +1977,12 @@ class Parser {
 
     this.match(Token.LBRACE);
 
-    while(true) {
+    while (true) {
       let node;
 
-      while(this.cur_token.type == 'COMMENT') this.next();
+      while (this.cur_token.type == 'COMMENT') this.next();
 
-      if(this.cur_token.type == 'RIGHT BRACE') break;
+      if (this.cur_token.type == 'RIGHT BRACE') break;
 
       lines.push(this.cur_token.line);
 
@@ -1939,7 +1990,7 @@ class Parser {
 
       fields.push(node);
 
-      if(this.is_fieldsep()) this.parse_fieldsep();
+      if (this.is_fieldsep()) this.parse_fieldsep();
     }
 
     this.match(Token.RBRACE);
@@ -1951,12 +2002,13 @@ class Parser {
   }
 
   parse_fieldsep() {
+
     /*
             fieldsep    ::= ','
                           | ';'
          */
 
-    if(this.cur_token.value == ',' || this.cur_token.value == ';') {
+    if (this.cur_token.value == ',' || this.cur_token.value == ';') {
       let cur_token = this.next();
       return this.ast.literal(cur_token.value);
     }
@@ -1966,30 +2018,33 @@ class Parser {
 
   parse_field() {
     this.log();
+
     /*
             field       ::= <recfield>
                           | <listfield>
          */
 
-    if(this.cur_token.value == '[' /* || this.cur_token.type == Token.IDENTIFIER*/) {
+    if (this.cur_token.value == '[' /* || this.cur_token.type == Token.IDENTIFIER*/) {
       return this.parse_recfield();
-    } else {
-      return this.parse_listfield();
     }
+    return this.parse_listfield();
+    
   }
 
   parse_recfield() {
+
     /*
       recfield    ::=( <NAME> | '[' exp1 ']' ) = exp1
    */
 
     let key, value;
 
-    if(this.cur_token.value == '[') {
+    if (this.cur_token.value == '[') {
       this.next();
       key = this.parse_exp1();
       this.match(Token.RBRACKET);
-    } else {
+    }
+    else {
       key = this.parse_name();
     }
 
@@ -2002,6 +2057,7 @@ class Parser {
 
   parse_listfield() {
     this.log();
+
     /*
             listfield   ::= <expr>
         */
@@ -2016,7 +2072,7 @@ class Parser {
 
     console.error('EXPR: ', node);
 
-    if(this.cur_token.type == 'ASSIGN') {
+    if (this.cur_token.type == 'ASSIGN') {
       this.next();
       console.error('TOKEN2: ', this.cur_token);
       index = node;
@@ -2029,22 +2085,24 @@ class Parser {
   }
 
   parse_prefixexp(members = true) {
+
     /*
         prefixexp   ::= <NAME>
                      | '(' <expr> ')'
      */
 
-    if(this.cur_token.value == '(') {
+    if (this.cur_token.value == '(') {
       this.match(Token.LPAREN);
       let expr = this.parse_expr();
       this.match(Token.RPAREN);
       return expr;
-    } else {
-      return this.parse_funcname(members);
     }
+    return this.parse_funcname(members);
+    
   }
 
   parse_exp1() {
+
     /*
         exp1        ::= <expr>
      */
@@ -2053,6 +2111,7 @@ class Parser {
   }
 
   parse_unary() {
+
     /*
             unary ::= '#'
                     | 'not'
@@ -2062,25 +2121,26 @@ class Parser {
     const token = this.next();
 
     switch (token.value) {
-      case '-':
-        return '#-';
-      default:
-        return token.value;
+    case '-':
+      return '#-';
+    default:
+      return token.value;
     }
   }
 
   parse_name() {
-    if(this.cur_token.line >= 138) {
+    if (this.cur_token.line >= 138) {
       //console.error('\nTOKEN: ', this.cur_token, '\n');
     }
 
-    if(this.cur_token.type == 'ELLIPSES' || this.cur_token.value == '...') {
+    if (this.cur_token.type == 'ELLIPSES' || this.cur_token.value == '...') {
       const value = this.cur_token.value;
       this.next();
       return this.ast.literal(value);
     }
 
     let m = this.match(Token.IDENTIFIER);
+
     /*
             name ::= IDENTIFIER
          */
@@ -2089,35 +2149,35 @@ class Parser {
 
   is_unary() {
     switch (this.cur_token.type) {
-      case 'HASH':
-      case 'MINUS':
-        return true;
-      default:
-        if(this.cur_token.value == 'not' || this.cur_token.value == '#') return true;
-        return false;
+    case 'HASH':
+    case 'MINUS':
+      return true;
+    default:
+      if (this.cur_token.value == 'not' || this.cur_token.value == '#') return true;
+      return false;
     }
   }
 
   is_fieldsep() {
     switch (this.cur_token.value) {
-      case ',':
-      case ';':
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  is_binary() {
-    if(Parser.OP[this.cur_token.value] && Parser.OP[this.cur_token.value].binary) {
+    case ',':
+    case ';':
       return true;
-    } else {
+    default:
       return false;
     }
   }
 
+  is_binary() {
+    if (Parser.OP[this.cur_token.value] && Parser.OP[this.cur_token.value].binary) {
+      return true;
+    }
+    return false;
+    
+  }
+
   is_param() {
-    if(this.cur_token.type == Token.IDENTIFIER) {
+    if (this.cur_token.type == Token.IDENTIFIER) {
       return true;
     }
 
@@ -2126,12 +2186,12 @@ class Parser {
 
   is_block_follow() {
     switch (this.cur_token.value) {
-      case 'else':
-      case 'elseif':
-      case 'end':
-      case 'until':
-      case 'EOS':
-        return true;
+    case 'else':
+    case 'elseif':
+    case 'end':
+    case 'until':
+    case 'EOS':
+      return true;
     }
 
     return false;
@@ -2173,50 +2233,50 @@ class Interpreter {
 
   evaluate(node, env) {
     switch (node.type) {
-      case 'Program':
-        return this.evaluate(node.body, env);
-      case 'Chunk':
-        return this.evaluate_chunk(node, env);
-      case 'Identifier':
-        return this.evaluate_identifier(node, env);
-      case 'Literal':
-        return this.evaluate_literal(node, env);
-      case 'AssignExpression':
-        return this.evaluate_assign_expression(node, env);
-      case 'LocalStatement':
-        return this.evaluate_local_stat(node, env);
-      case 'ExpressionStatement':
-        return this.evaluate_expression_stat(node, env);
-      case 'CallExpression':
-        return this.evaluate_call_expression(node, env);
-      case 'UnaryExpression':
-        return this.evaluate_unary_expression(node, env);
-      case 'BinaryExpression':
-        return this.evaluate_binary_expression(node, env);
-      case 'DoStatement':
-        return this.evaluate_do_statment(node, env);
-      case 'BreakStatement':
-        return this.evaluate_break_statment(node, env);
-      case 'ReturnStatement':
-        return this.evaluate_return_statment(node, env);
-      case 'FunctionDeclaration':
-        return this.evaluate_function_declaration(node, env);
-      case 'TableExpression':
-        return this.evaluate_table_expression(node, env);
-      case 'MemberExpression':
-        return this.evaluate_member_expression(node, env);
-      case 'IfStatement':
-        return this.evaluate_if_statement(node, env);
-      case 'FornumStatement':
-        return this.evaluate_fornum_statement(node, env);
-      case 'ForlistStatement':
-        return this.evaluate_forlist_statement(node, env);
-      case 'WhileStatement':
-        return this.evaluate_while_statement(node, env);
-      case 'RepeatStatement':
-        return this.evaluate_repeat_statement(node, env);
-      default:
-        throw new Error(`unknow ast node with ${node.type}`);
+    case 'Program':
+      return this.evaluate(node.body, env);
+    case 'Chunk':
+      return this.evaluate_chunk(node, env);
+    case 'Identifier':
+      return this.evaluate_identifier(node, env);
+    case 'Literal':
+      return this.evaluate_literal(node, env);
+    case 'AssignExpression':
+      return this.evaluate_assign_expression(node, env);
+    case 'LocalStatement':
+      return this.evaluate_local_stat(node, env);
+    case 'ExpressionStatement':
+      return this.evaluate_expression_stat(node, env);
+    case 'CallExpression':
+      return this.evaluate_call_expression(node, env);
+    case 'UnaryExpression':
+      return this.evaluate_unary_expression(node, env);
+    case 'BinaryExpression':
+      return this.evaluate_binary_expression(node, env);
+    case 'DoStatement':
+      return this.evaluate_do_statment(node, env);
+    case 'BreakStatement':
+      return this.evaluate_break_statment(node, env);
+    case 'ReturnStatement':
+      return this.evaluate_return_statment(node, env);
+    case 'FunctionDeclaration':
+      return this.evaluate_function_declaration(node, env);
+    case 'TableExpression':
+      return this.evaluate_table_expression(node, env);
+    case 'MemberExpression':
+      return this.evaluate_member_expression(node, env);
+    case 'IfStatement':
+      return this.evaluate_if_statement(node, env);
+    case 'FornumStatement':
+      return this.evaluate_fornum_statement(node, env);
+    case 'ForlistStatement':
+      return this.evaluate_forlist_statement(node, env);
+    case 'WhileStatement':
+      return this.evaluate_while_statement(node, env);
+    case 'RepeatStatement':
+      return this.evaluate_repeat_statement(node, env);
+    default:
+      throw new Error(`unknow ast node with ${node.type}`);
     }
   }
 
@@ -2226,7 +2286,7 @@ class Interpreter {
 
   evaluate_chunk({ body }, env) {
     let rv;
-    for(let i = 0; i < body.length; i++) {
+    for (let i = 0; i < body.length; i++) {
       rv = this.evaluate(body[i], env);
     }
 
@@ -2239,12 +2299,13 @@ class Interpreter {
     let i = 1;
 
     fields.map((field) => {
-      if(field.type == 'Recfield') {
+      if (field.type == 'Recfield') {
         //identifier
         let key = field.key.name;
         let value = self.evaluate(field.value, env);
         t[key] = value;
-      } else {
+      }
+      else {
         let value = self.evaluate(field.value, env);
         t[i++] = value;
       }
@@ -2259,9 +2320,10 @@ class Interpreter {
 
   evaluate_assign_expression(node, env) {
     node.left.forEach(({ type, name, object, property }, i) => {
-      if(type == 'Identifier') {
+      if (type == 'Identifier') {
         env.set(name, this.evaluate(node.right[i], env));
-      } else if(type == 'MemberExpression') {
+      }
+      else if (type == 'MemberExpression') {
         const obj = env.get(object.name);
         obj[property.name] = this.evaluate(node.right[i], env);
       }
@@ -2302,7 +2364,7 @@ class Interpreter {
 
     scope.def(node.id.name, begin);
 
-    for(let i = begin; i < end; i += step) {
+    for (let i = begin; i < end; i += step) {
       scope.set(node.id.name, i);
       this.evaluate(node.body, scope);
     }
@@ -2312,18 +2374,19 @@ class Interpreter {
     const scope = env.extend();
     const left = node.left;
     const right = this.evaluate(node.right, scope);
-    for(let i = 0; i < left.length; i++) {
+    for (let i = 0; i < left.length; i++) {
       scope.def(left[i].name, null);
     }
 
     let j = 0;
 
-    while(true) {
+    while (true) {
       const iterator = right();
-      if(iterator.done) {
+      if (iterator.done) {
         break;
-      } else {
-        for(let i = 0; i < left.length; i++) {
+      }
+      else {
+        for (let i = 0; i < left.length; i++) {
           scope.set(left[i].name, iterator.value[i]);
         }
         this.evaluate(node.body, scope);
@@ -2333,11 +2396,12 @@ class Interpreter {
 
   evaluate_while_statement(node, env) {
     const scope = env.extend();
-    while(true) {
+    while (true) {
       const cond = this.evaluate(node.cond, scope);
-      if(cond) {
+      if (cond) {
         this.evaluate(node.body, scope);
-      } else {
+      }
+      else {
         break;
       }
     }
@@ -2345,10 +2409,10 @@ class Interpreter {
 
   evaluate_repeat_statement(node, env) {
     const scope = env.extend();
-    while(true) {
+    while (true) {
       this.evaluate(node.body, scope);
       const cond = this.evaluate(node.cond, scope);
-      if(cond == true) {
+      if (cond == true) {
         break;
       }
     }
@@ -2367,26 +2431,26 @@ class Interpreter {
 
   evaluate_if_statement(node, env) {
     let cond = this.evaluate(node.cond, env);
-    if(cond) {
+    if (cond) {
       this.evaluate(node.body, env);
       return true;
-    } else {
-      for(let elseif of node.elseif) {
-        if(this.evaluate(elseif, env)) {
-          return true;
-        }
-      }
-
-      if(node.else) {
-        this.evaluate(node.else, env);
-      }
-      return false;
     }
+    for (let elseif of node.elseif) {
+      if (this.evaluate(elseif, env)) {
+        return true;
+      }
+    }
+
+    if (node.else) {
+      this.evaluate(node.else, env);
+    }
+    return false;
+    
   }
 
   evaluate_member_expression({ sep, object, property }, env) {
     let table, value;
-    if(sep == '.') {
+    if (sep == '.') {
       table = env.get(object.name);
       value = property.name;
     }
@@ -2402,7 +2466,7 @@ class Interpreter {
     let variables = node.variables;
     let init = node.init;
 
-    for(let i = 0; i < variables.length; i++) {
+    for (let i = 0; i < variables.length; i++) {
       let variable = variables[i];
       let value = init[i];
 
@@ -2416,7 +2480,7 @@ class Interpreter {
     function lambda(...args) {
       let params = node.params;
       let scope = env.extend();
-      for(let i = 0; i < params.length; ++i) {
+      for (let i = 0; i < params.length; ++i) {
         scope.def(params[i].name, args[i]);
       }
 
@@ -2424,7 +2488,7 @@ class Interpreter {
     }
 
     let name;
-    if(node.id.type == 'Identifier') {
+    if (node.id.type == 'Identifier') {
       name = node.id.name;
     }
     env.def(name, lambda);
@@ -2441,50 +2505,50 @@ Object.assign(Interpreter, {
     and(left, right) {
       return left && right;
     },
-    '<': function (left, right) {
+    '<' (left, right) {
       return left < right;
     },
-    '>': function (left, right) {
+    '>' (left, right) {
       return left > right;
     },
-    '<=': function (left, right) {
+    '<=' (left, right) {
       return left <= right;
     },
-    '>=': function (left, right) {
+    '>=' (left, right) {
       return left >= right;
     },
-    '==': function (left, right) {
+    '==' (left, right) {
       return left == right;
     },
-    '~=': function (left, right) {
+    '~=' (left, right) {
       return left != right;
     },
-    '..': function (left, right) {
+    '..' (left, right) {
       return `${left}${right}`;
     },
-    '+': function (left, right) {
+    '+' (left, right) {
       return left + right;
     },
-    '-': function (left, right) {
+    '-' (left, right) {
       return left - right;
     },
-    '*': function (left, right) {
+    '*' (left, right) {
       return left * right;
     },
-    '/': function (left, right) {
+    '/' (left, right) {
       return left / right;
     },
-    '^': function (left, rihgt) {
+    '^' (left, rihgt) {
       return math.pow(left, right);
     },
-    '#-': function (right) {
+    '#-' (right) {
       return -right;
     },
     not(right) {
       return !right;
     },
-    '#': function (right) {
-      if(typeof right !== 'string') {
+    '#' (right) {
+      if (typeof right !== 'string') {
         throw new Error('attempt to get length of a nonstring value');
       }
 

@@ -21,7 +21,7 @@ export const Circle = ({ data, opts = {}, ...props }) => {
   const { width, radius, layer } = data;
   const { x, y } = coordFn(data);
   const color = data.getColor(); //(opts && opts.color) || (layer && this.getColor(layer.color));
-  let visible = layer ? useTrkl(layer.handlers['visible']) : true;
+  let visible = layer ? useTrkl(layer.handlers.visible) : true;
 
   return h('circle', {
     stroke: color,

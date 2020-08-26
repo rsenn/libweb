@@ -10,11 +10,12 @@ let floor = Math.floor;
 function bisect(arr, cmp, val) {
   let lo = 0;
   let hi = arr.length;
-  while(lo < hi) {
+  while (lo < hi) {
     let mid = floor((lo + hi) / 2);
-    if(cmp(val, arr[mid]) > 0) {
+    if (cmp(val, arr[mid]) > 0) {
       lo = mid + 1;
-    } else {
+    }
+    else {
       hi = mid;
     }
   }
@@ -25,6 +26,7 @@ function bisect(arr, cmp, val) {
  * Map subclass that efficiently maintains a sorted iteration order.
  */
 export class SortedMap extends Map {
+
   /*[CMP] = null;
   [ORDER] = null;*/
 
@@ -40,10 +42,10 @@ export class SortedMap extends Map {
     super();
 
     let order = [];
-    for(let [key, val] of entries) {
+    for (let [key, val] of entries) {
       let oldSize = this.size;
       super.set(key, val);
-      if(oldSize !== this.size) {
+      if (oldSize !== this.size) {
         order.push(key);
       }
     }
@@ -58,7 +60,7 @@ export class SortedMap extends Map {
 
   delete(key) {
     let had = super.delete(key);
-    if(had) {
+    if (had) {
       let order = this[ORDER];
       order.splice(bisect(order, this[CMP], key), 1);
     }
@@ -66,13 +68,13 @@ export class SortedMap extends Map {
   }
 
   *entries() {
-    for(let key of this[ORDER]) {
+    for (let key of this[ORDER]) {
       yield [key, this.get(key)];
     }
   }
 
   forEach(f, that) {
-    for(let key of this[ORDER]) {
+    for (let key of this[ORDER]) {
       f.call(that, this.get(key), key, this);
     }
   }
@@ -82,8 +84,8 @@ export class SortedMap extends Map {
   }
 
   findKey(pred) {
-    for(let key of this[ORDER]) {
-      if(pred(this.get(key), key, this)) return key;
+    for (let key of this[ORDER]) {
+      if (pred(this.get(key), key, this)) return key;
     }
   }
 
@@ -92,16 +94,16 @@ export class SortedMap extends Map {
   }
 
   find(pred) {
-    for(let key of this[ORDER]) {
+    for (let key of this[ORDER]) {
       const value = this.get(key);
-      if(pred(value, key, this)) return value;
+      if (pred(value, key, this)) return value;
     }
   }
 
   set(key, val) {
     let oldSize = this.size;
     super.set(key, val);
-    if(oldSize !== this.size) {
+    if (oldSize !== this.size) {
       let order = this[ORDER];
       order.splice(bisect(order, this[CMP], key), 0, key);
     }
@@ -109,7 +111,7 @@ export class SortedMap extends Map {
   }
 
   *values() {
-    for(let key of this[ORDER]) {
+    for (let key of this[ORDER]) {
       yield this.get(key);
     }
   }

@@ -17,37 +17,39 @@ and limitations under the License.
 ***************************************************************************** */
 
 function __awaiter(thisArg, _arguments, P, generator) {
-  return new (P || (P = Promise))(function (resolve, reject) {
+  return new (P || (P = Promise))((resolve, reject) => {
     function fulfilled(value) {
       try {
         step(generator.next(value));
-      } catch(e) {
+      }
+      catch (e) {
         reject(e);
       }
     }
     function rejected(value) {
       try {
-        step(generator['throw'](value));
-      } catch(e) {
+        step(generator.throw(value));
+      }
+      catch (e) {
         reject(e);
       }
     }
     function step(result) {
       result.done
         ? resolve(result.value)
-        : new P(function (resolve) {
-            resolve(result.value);
-          }).then(fulfilled, rejected);
+        : new P((resolve) => {
+          resolve(result.value);
+        }).then(fulfilled, rejected);
     }
     step((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 }
 
 function __generator(thisArg, body) {
-  var _ = {
+  let _ = {
       label: 0,
-      sent: function () {
-        if(t[0] & 1) throw t[1];
+      sent () {
+        if (t[0] & 1) throw t[1];
         return t[1];
       },
       trys: [],
@@ -71,86 +73,91 @@ function __generator(thisArg, body) {
     };
   }
   function step(op) {
-    if(f) throw new TypeError('Generator is already executing.');
-    while(_)
+    if (f) throw new TypeError('Generator is already executing.');
+    while (_)
       try {
-        if(((f = 1), y && (t = op[0] & 2 ? y['return'] : op[0] ? y['throw'] || ((t = y['return']) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)) return t;
-        if(((y = 0), t)) op = [op[0] & 2, t.value];
+        if (((f = 1), y && (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)) return t;
+        if (((y = 0), t)) op = [op[0] & 2, t.value];
         switch (op[0]) {
-          case 0:
-          case 1:
+        case 0:
+        case 1:
+          t = op;
+          break;
+        case 4:
+          _.label++;
+          return { value: op[1], done: false };
+        case 5:
+          _.label++;
+          y = op[1];
+          op = [0];
+          continue;
+        case 7:
+          op = _.ops.pop();
+          _.trys.pop();
+          continue;
+        default:
+          if (!((t = _.trys), (t = t.length > 0 && t[t.length - 1])) && (op[0] === 6 || op[0] === 2)) {
+            _ = 0;
+            continue;
+          }
+          if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+            _.label = op[1];
+            break;
+          }
+          if (op[0] === 6 && _.label < t[1]) {
+            _.label = t[1];
             t = op;
             break;
-          case 4:
-            _.label++;
-            return { value: op[1], done: false };
-          case 5:
-            _.label++;
-            y = op[1];
-            op = [0];
-            continue;
-          case 7:
-            op = _.ops.pop();
-            _.trys.pop();
-            continue;
-          default:
-            if(!((t = _.trys), (t = t.length > 0 && t[t.length - 1])) && (op[0] === 6 || op[0] === 2)) {
-              _ = 0;
-              continue;
-            }
-            if(op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-              _.label = op[1];
-              break;
-            }
-            if(op[0] === 6 && _.label < t[1]) {
-              _.label = t[1];
-              t = op;
-              break;
-            }
-            if(t && _.label < t[2]) {
-              _.label = t[2];
-              _.ops.push(op);
-              break;
-            }
-            if(t[2]) _.ops.pop();
-            _.trys.pop();
-            continue;
+          }
+          if (t && _.label < t[2]) {
+            _.label = t[2];
+            _.ops.push(op);
+            break;
+          }
+          if (t[2]) _.ops.pop();
+          _.trys.pop();
+          continue;
         }
         op = body.call(thisArg, _);
-      } catch(e) {
+      }
+      catch (e) {
         op = [6, e];
         y = 0;
-      } finally {
+      }
+      finally {
         f = t = 0;
       }
-    if(op[0] & 5) throw op[1];
+    if (op[0] & 5) throw op[1];
     return { value: op[0] ? op[1] : void 0, done: true };
   }
 }
 
 function __read(o, n) {
-  var m = typeof Symbol === 'function' && o[Symbol.iterator];
-  if(!m) return o;
-  var i = m.call(o),
+  let m = typeof Symbol === 'function' && o[Symbol.iterator];
+  if (!m) return o;
+  let i = m.call(o),
     r,
     ar = [],
     e;
   try {
-    while((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-  } catch(error) {
-    e = { error: error };
-  } finally {
+    while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+  }
+  catch (error) {
+    e = { error };
+  }
+  finally {
     try {
-      if(r && !r.done && (m = i['return'])) m.call(i);
-    } finally {
-      if(e) throw e.error;
+      if (r && !r.done && (m = i.return)) m.call(i);
+    }
+    finally {
+      if (e) throw e.error;
     }
   }
   return ar;
 }
 
 function __spread() {
-  for(var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
+  for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
   return ar;
 }
 
@@ -158,99 +165,93 @@ function __spread() {
 // We need to return push and stop synchronously from the useRepeater hook so
 // we prime the repeater by calling next immediately.
 function createPrimedRepeater(buffer) {
-  var push;
-  var stop;
-  var repeater = new Repeater(function (push1, stop1) {
+  let push;
+  let stop;
+  let repeater = new Repeater(((push1, stop1) => {
     push = push1;
     stop = stop1;
     // this value is thrown away
     push(null);
-  }, buffer);
+  }), buffer);
   // pull and throw away the first value so the executor above runs
   repeater.next();
   return [repeater, push, stop];
 }
 function useRepeater(buffer) {
-  var _a = __read(
-      useState(function () {
-        return createPrimedRepeater(buffer);
-      }),
+  let _a = __read(
+      useState(() => createPrimedRepeater(buffer)),
       1
     ),
     tuple = _a[0];
   return tuple;
 }
 function useAsyncIter(callback, deps) {
-  if(deps === void 0) {
+  if (deps === void 0) {
     deps = [];
   }
-  var _a = __read(useRepeater(), 2),
+  let _a = __read(useRepeater(), 2),
     repeater = _a[0],
     push = _a[1];
-  var _b = __read(
-      useState(function () {
-        return callback(repeater);
-      }),
+  let _b = __read(
+      useState(() => callback(repeater)),
       1
     ),
     iter = _b[0];
-  useEffect(function () {
+  useEffect(() => {
     push(deps);
   }, __spread([push], deps)); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(
-    function () {
-      return function () {
-        if(iter.return != null) {
-          // TODO: handle return errors
-          iter.return().catch();
-        }
-      };
+    () => function () {
+      if (iter.return != null) {
+        // TODO: handle return errors
+        iter.return().catch();
+      }
     },
     [iter]
   );
   return iter;
 }
 function useResult(callback, deps) {
-  var _this = this;
-  var iter = useAsyncIter(callback, deps);
-  var _a = __read(useState(), 2),
+  let _this = this;
+  let iter = useAsyncIter(callback, deps);
+  let _a = __read(useState(), 2),
     result = _a[0],
     setResult = _a[1];
   useEffect(
-    function () {
-      var mounted = true;
+    () => {
+      let mounted = true;
       (function () {
         return __awaiter(_this, void 0, void 0, function () {
-          var result_1, err_1;
-          return __generator(this, function (_a) {
+          let result_1, err_1;
+          return __generator(this, (_a) => {
             switch (_a.label) {
-              case 0:
-                _a.trys.push([0, 4, , 5]);
-                _a.label = 1;
-              case 1:
-                if(!mounted) return [3 /*break*/, 3];
-                return [4 /*yield*/, iter.next()];
-              case 2:
-                result_1 = _a.sent();
-                if(mounted) {
-                  setResult(result_1);
-                }
-                if(result_1.done) {
-                  return [3 /*break*/, 3];
-                }
-                return [3 /*break*/, 1];
-              case 3:
-                return [3 /*break*/, 5];
-              case 4:
-                err_1 = _a.sent();
-                if(mounted) {
-                  setResult(function () {
-                    throw err_1;
-                  });
-                }
-                return [3 /*break*/, 5];
-              case 5:
-                return [2 /*return*/];
+            case 0:
+              _a.trys.push([0, 4, , 5]);
+              _a.label = 1;
+            case 1:
+              if (!mounted) return [3 /*break*/, 3];
+              return [4 /*yield*/, iter.next()];
+            case 2:
+              result_1 = _a.sent();
+              if (mounted) {
+                setResult(result_1);
+              }
+              if (result_1.done) {
+                return [3 /*break*/, 3];
+              }
+              return [3 /*break*/, 1];
+            case 3:
+              return [3 /*break*/, 5];
+            case 4:
+              err_1 = _a.sent();
+              if (mounted) {
+                setResult(() => {
+                  throw err_1;
+                });
+              }
+              return [3 /*break*/, 5];
+            case 5:
+              return [2 /*return*/];
             }
           });
         });
@@ -264,7 +265,7 @@ function useResult(callback, deps) {
   return result;
 }
 function useValue(callback, deps) {
-  var result = useResult(callback, deps);
+  let result = useResult(callback, deps);
   return result && result.value;
 }
 
