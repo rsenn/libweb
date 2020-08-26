@@ -1,17 +1,17 @@
 import Util from '../util.js';
 export default function (element) {
-  if (element.ownerDocument.designMode && element.ownerDocument.designMode.toLowerCase() === 'on') {
+  if(element.ownerDocument.designMode && element.ownerDocument.designMode.toLowerCase() === 'on') {
     return true;
   }
 
   switch (element.tagName.toLowerCase()) {
-  case 'input':
-    return isEditableInput(element);
-  case 'textarea':
-    return true;
+    case 'input':
+      return isEditableInput(element);
+    case 'textarea':
+      return true;
   }
 
-  if (isContentEditable(element)) {
+  if(isContentEditable(element)) {
     return true;
   }
 
@@ -19,10 +19,10 @@ export default function (element) {
 }
 
 function isContentEditable(element) {
-  if (element.contentEditable && element.contentEditable.toLowerCase() === 'true') {
+  if(element.contentEditable && element.contentEditable.toLowerCase() === 'true') {
     return true;
   }
-  if (element.contentEditable && element.contentEditable.toLowerCase() === 'inherit' && element.parentNode) {
+  if(element.contentEditable && element.contentEditable.toLowerCase() === 'inherit' && element.parentNode) {
     return isContentEditable(element.parentNode);
   }
   return false;
@@ -30,19 +30,19 @@ function isContentEditable(element) {
 
 function isEditableInput(input) {
   switch (input.type) {
-  case 'text':
-    return true;
-  case 'email':
-    return true;
-  case 'password':
-    return true;
-  case 'search':
-    return true;
-  case 'tel':
-    return true;
-  case 'url':
-    return true;
-  default:
-    return false;
+    case 'text':
+      return true;
+    case 'email':
+      return true;
+    case 'password':
+      return true;
+    case 'search':
+      return true;
+    case 'tel':
+      return true;
+    case 'url':
+      return true;
+    default:
+      return false;
   }
 }

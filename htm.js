@@ -41,36 +41,31 @@ const evaluate = (h$$1, built, fields, args) => {
   //(i.e. it or any of its descendants depend on dynamic values).
   built[0] = 0;
 
-  for (let i = 1; i < built.length; i++) {
+  for(let i = 1; i < built.length; i++) {
     const type = built[i++];
 
     //Set `built[0]`'s appropriate bits if this element depends on a dynamic value.
     const value = built[i] ? ((built[0] |= type ? 1 : 2), fields[built[i++]]) : built[++i];
 
-    if (type === TAG_SET) {
+    if(type === TAG_SET) {
       args[0] = value;
-    }
-    else if (type === PROPS_ASSIGN) {
+    } else if(type === PROPS_ASSIGN) {
       args[1] = Object.assign(args[1] || {}, value);
-    }
-    else if (type === PROP_SET) {
+    } else if(type === PROP_SET) {
       (args[1] = args[1] || {})[built[++i]] = value;
-    }
-    else if (type === PROP_APPEND) {
+    } else if(type === PROP_APPEND) {
       args[1][built[++i]] += value + '';
-    }
-    else if (type) {
+    } else if(type) {
       //type === CHILD_RECURSE
       //Set the operation list (including the staticness bits) as
       //`this` for the `h` call.
       tmp = h$$1.apply(value, evaluate(h$$1, value, fields, ['', null]));
       args.push(tmp);
 
-      if (value[0]) {
+      if(value[0]) {
         //Set the 2nd lowest bit it the child element is dynamic.
         built[0] |= 2;
-      }
-      else {
+      } else {
         //Rewrite the operation list in-place if the child element is static.
         //The currently evaluated piece `CHILD_RECURSE, 0, [...]` becomes
         //`CHILD_APPEND, 0, tmp`.
@@ -79,8 +74,7 @@ const evaluate = (h$$1, built, fields, args) => {
         built[i - 2] = CHILD_APPEND;
         built[i] = tmp;
       }
-    }
-    else {
+    } else {
       //type === CHILD_APPEND
       args.push(value);
     }
@@ -100,55 +94,45 @@ const build = function (statics) {
   let char, propName;
 
   const commit = (field) => {
-    if (mode === MODE_TEXT && (field || (buffer = buffer.replace(/^\s*\n\s*|\s*\n\s*$/g, '')))) {
-      if (MINI) {
+    if(mode === MODE_TEXT && (field || (buffer = buffer.replace(/^\s*\n\s*|\s*\n\s*$/g, '')))) {
+      if(MINI) {
         current.push(field ? fields[field] : buffer);
-      }
-      else {
+      } else {
         current.push(CHILD_APPEND, field, buffer);
       }
-    }
-    else if (mode === MODE_TAGNAME && (field || buffer)) {
-      if (MINI) {
+    } else if(mode === MODE_TAGNAME && (field || buffer)) {
+      if(MINI) {
         current[1] = field ? fields[field] : buffer;
-      }
-      else {
+      } else {
         current.push(TAG_SET, field, buffer);
       }
       mode = MODE_WHITESPACE;
-    }
-    else if (mode === MODE_WHITESPACE && buffer === '...' && field) {
-      if (MINI) {
+    } else if(mode === MODE_WHITESPACE && buffer === '...' && field) {
+      if(MINI) {
         current[2] = Object.assign(current[2] || {}, fields[field]);
-      }
-      else {
+      } else {
         current.push(PROPS_ASSIGN, field, 0);
       }
-    }
-    else if (mode === MODE_WHITESPACE && buffer && !field) {
-      if (MINI) {
+    } else if(mode === MODE_WHITESPACE && buffer && !field) {
+      if(MINI) {
         (current[2] = current[2] || {})[buffer] = true;
-      }
-      else {
+      } else {
         current.push(PROP_SET, 0, true, buffer);
       }
-    }
-    else if (mode >= MODE_PROP_SET) {
-      if (MINI) {
-        if (mode === MODE_PROP_SET) {
+    } else if(mode >= MODE_PROP_SET) {
+      if(MINI) {
+        if(mode === MODE_PROP_SET) {
           (current[2] = current[2] || {})[propName] = field ? (buffer ? buffer + fields[field] : fields[field]) : buffer;
           mode = MODE_PROP_APPEND;
-        }
-        else if (field || buffer) {
+        } else if(field || buffer) {
           current[2][propName] += field ? buffer + fields[field] : buffer;
         }
-      }
-      else {
-        if (buffer || (!field && mode === MODE_PROP_SET)) {
+      } else {
+        if(buffer || (!field && mode === MODE_PROP_SET)) {
           current.push(mode, 0, buffer, propName);
           mode = MODE_PROP_APPEND;
         }
-        if (field) {
+        if(field) {
           current.push(mode, field, 0, propName);
           mode = MODE_PROP_APPEND;
         }
@@ -158,90 +142,76 @@ const build = function (statics) {
     buffer = '';
   };
 
-  for (let i = 0; i < statics.length; i++) {
-    if (i) {
-      if (mode === MODE_TEXT) {
+  for(let i = 0; i < statics.length; i++) {
+    if(i) {
+      if(mode === MODE_TEXT) {
         commit();
       }
       commit(i);
     }
 
-    for (let j = 0; j < statics[i].length; j++) {
+    for(let j = 0; j < statics[i].length; j++) {
       char = statics[i][j];
 
-      if (mode === MODE_TEXT) {
-        if (char === '<') {
+      if(mode === MODE_TEXT) {
+        if(char === '<') {
           //commit buffer
           commit();
-          if (MINI) {
+          if(MINI) {
             current = [current, '', null];
-          }
-          else {
+          } else {
             current = [current];
           }
           mode = MODE_TAGNAME;
-        }
-        else {
+        } else {
           buffer += char;
         }
-      }
-      else if (mode === MODE_COMMENT) {
+      } else if(mode === MODE_COMMENT) {
         //Ignore everything until the last three characters are '-', '-' and '>'
-        if (buffer === '--' && char === '>') {
+        if(buffer === '--' && char === '>') {
           mode = MODE_TEXT;
           buffer = '';
-        }
-        else {
+        } else {
           buffer = char + buffer[0];
         }
-      }
-      else if (quote) {
-        if (char === quote) {
+      } else if(quote) {
+        if(char === quote) {
           quote = '';
-        }
-        else {
+        } else {
           buffer += char;
         }
-      }
-      else if (char === '"' || char === "'") {
+      } else if(char === '"' || char === "'") {
         quote = char;
-      }
-      else if (char === '>') {
+      } else if(char === '>') {
         commit();
         mode = MODE_TEXT;
-      }
-      else if (!mode) {
+      } else if(!mode) {
         //Ignore everything until the tag ends
-      }
-      else if (char === '=') {
+      } else if(char === '=') {
         mode = MODE_PROP_SET;
         propName = buffer;
         buffer = '';
-      }
-      else if (char === '/' && (mode < MODE_PROP_SET || statics[i][j + 1] === '>')) {
+      } else if(char === '/' && (mode < MODE_PROP_SET || statics[i][j + 1] === '>')) {
         commit();
-        if (mode === MODE_TAGNAME) {
+        if(mode === MODE_TAGNAME) {
           current = current[0];
         }
         mode = current;
-        if (MINI) {
+        if(MINI) {
           (current = current[0]).push(h$$1.apply(null, mode.slice(1)));
-        }
-        else {
+        } else {
           (current = current[0]).push(CHILD_RECURSE, 0, mode);
         }
         mode = MODE_SLASH;
-      }
-      else if (char === ' ' || char === '\t' || char === '\n' || char === '\r') {
+      } else if(char === ' ' || char === '\t' || char === '\n' || char === '\r') {
         //<a disabled>
         commit();
         mode = MODE_WHITESPACE;
-      }
-      else {
+      } else {
         buffer += char;
       }
 
-      if (mode === MODE_TAGNAME && buffer === '!--') {
+      if(mode === MODE_TAGNAME && buffer === '!--') {
         mode = MODE_COMMENT;
         current = current[0];
       }
@@ -249,7 +219,7 @@ const build = function (statics) {
   }
   commit();
 
-  if (MINI) {
+  if(MINI) {
     return current.length > 2 ? current.slice(1) : current[1];
   }
   return current;
@@ -272,7 +242,7 @@ const CACHES = new Map();
 
 const regular = function (statics) {
   let tmp = CACHES.get(this);
-  if (!tmp) {
+  if(!tmp) {
     tmp = new Map();
     CACHES.set(this, tmp);
   }

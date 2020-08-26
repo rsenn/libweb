@@ -15,7 +15,7 @@
   let xl = 'http://www.w3.org/1999/xlink',
     xm = 'http://www.w3.org/2000/svg',
     each = function (o, f) {
-      for (let k in o) if (o.hasOwnProperty(k)) f(o[k], k);
+      for(let k in o) if(o.hasOwnProperty(k)) f(o[k], k);
     },
     attr = function (e, a) {
       each(a, (v, k) => {
@@ -29,7 +29,7 @@
    * @argument width number width of the svg canvas
    */
   let S = function (E, h, w) {
-    if (typeof E === 'string') {
+    if(typeof E === 'string') {
       E = D.querySelector(E);
     }
     let cnv = el('svg', { height: h, width: w, version: 1.1, xmlns: xm });

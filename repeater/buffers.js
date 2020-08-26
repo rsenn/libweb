@@ -2,7 +2,7 @@ export class FixedBuffer {
   constructor(capacity) {
     this.capacity = capacity;
     this.arr = [];
-    if (capacity < 0) {
+    if(capacity < 0) {
       throw new RangeError('FixedBuffer capacity cannot be less than zero');
     }
   }
@@ -13,15 +13,14 @@ export class FixedBuffer {
     return this.arr.length >= this.capacity;
   }
   add(value) {
-    if (this.full) {
+    if(this.full) {
       throw new Error('Buffer full');
-    }
-    else {
+    } else {
       this.arr.push(value);
     }
   }
   remove() {
-    if (this.empty) {
+    if(this.empty) {
       throw new Error('Buffer empty');
     }
     return this.arr.shift();
@@ -33,7 +32,7 @@ export class SlidingBuffer {
     this.capacity = capacity;
     this.arr = [];
     this.full = false;
-    if (capacity <= 0) {
+    if(capacity <= 0) {
       throw new RangeError('SlidingBuffer capacity cannot be less than or equal to zero');
     }
   }
@@ -41,13 +40,13 @@ export class SlidingBuffer {
     return this.arr.length === 0;
   }
   add(value) {
-    while (this.arr.length >= this.capacity) {
+    while(this.arr.length >= this.capacity) {
       this.arr.shift();
     }
     this.arr.push(value);
   }
   remove() {
-    if (this.empty) {
+    if(this.empty) {
       throw new Error('Buffer empty');
     }
     return this.arr.shift();
@@ -58,7 +57,7 @@ export class DroppingBuffer {
     this.capacity = capacity;
     this.arr = [];
     this.full = false;
-    if (capacity <= 0) {
+    if(capacity <= 0) {
       throw new RangeError('DroppingBuffer capacity cannot be less than or equal to zero');
     }
   }
@@ -66,12 +65,12 @@ export class DroppingBuffer {
     return this.arr.length === 0;
   }
   add(value) {
-    if (this.arr.length < this.capacity) {
+    if(this.arr.length < this.capacity) {
       this.arr.push(value);
     }
   }
   remove() {
-    if (this.empty) {
+    if(this.empty) {
       throw new Error('Buffer empty');
     }
     return this.arr.shift();

@@ -20,7 +20,7 @@ export class Node {
 
 export class NodeList extends Array {
   constructor(nodes) {
-    for (let node of [...nodes]) this.push(node);
+    for(let node of [...nodes]) this.push(node);
     return this;
   }
   get [Symbol.species]() {
@@ -52,14 +52,14 @@ export class Parser {
     let { lexer } = this;
 
     const parser = this;
-    if (this.tokIndex < this.tokens.length) return newTok(this.tokens[this.tokIndex]);
+    if(this.tokIndex < this.tokens.length) return newTok(this.tokens[this.tokIndex]);
 
     let it = this.lexer.next();
     let { value, done } = it;
 
     this.prevTok = this.tokens.length;
 
-    if (!done) return newTok(value);
+    if(!done) return newTok(value);
 
     function newTok(value) {
       let { tok, str } = value;
@@ -71,7 +71,7 @@ export class Parser {
       };
       parser.token = { tok, str };
       parser.tokens = add(parser.tokens, parser.token);
-      if (tokIndex > parser.prevTok) Util.log(`Parser.getTok ${parser.position} (${parser.tokens.length - 1})`, parser.token);
+      if(tokIndex > parser.prevTok) Util.log(`Parser.getTok ${parser.position} (${parser.tokens.length - 1})`, parser.token);
       return Util.define({ ...parser.token }, { unget });
     }
     return null;
@@ -83,11 +83,11 @@ export class Parser {
 
   match(id, s) {
     let value = this.getTok();
-    if (value) {
+    if(value) {
       let { tok, str, unget } = value;
       unget();
       let ok = s === undefined ? lexIsToken(id, value) : lexMatch(id, s, value);
-      if (!ok) return false;
+      if(!ok) return false;
     }
     return value;
   }
@@ -103,7 +103,7 @@ export class Parser {
     const { token } = this;
     //Util.log('token:', token);
 
-    if (!r)
+    if(!r)
       throw new Error(
         `Parser.expect ${this.position} (${Lexer.tokenName(id)}, ${Util.toString(s, {
           multiline: false,

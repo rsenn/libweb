@@ -5,9 +5,9 @@ export function Deque(capacity) {
   this._capacity = getCapacity(capacity);
   this._length = 0;
   this._front = 0;
-  if (isArray(capacity)) {
+  if(isArray(capacity)) {
     let len = capacity.length;
-    for (let i = 0; i < len; ++i) {
+    for(let i = 0; i < len; ++i) {
       this[i] = capacity[i];
     }
     this._length = len;
@@ -19,7 +19,7 @@ Deque.prototype.toArray = function Deque$toArray() {
   let ret = new Array(len);
   let front = this._front;
   let capacity = this._capacity;
-  for (let j = 0; j < len; ++j) {
+  for(let j = 0; j < len; ++j) {
     ret[j] = this[(front + j) & (capacity - 1)];
   }
   return ret;
@@ -28,10 +28,10 @@ Deque.prototype.toArray = function Deque$toArray() {
 Deque.prototype.push = function Deque$push(item) {
   let argsLength = arguments.length;
   let length = this._length;
-  if (argsLength > 1) {
+  if(argsLength > 1) {
     let capacity = this._capacity;
-    if (length + argsLength > capacity) {
-      for (var i = 0; i < argsLength; ++i) {
+    if(length + argsLength > capacity) {
+      for(var i = 0; i < argsLength; ++i) {
         this._checkCapacity(length + 1);
         var j = (this._front + length) & (this._capacity - 1);
         this[j] = arguments[i];
@@ -41,16 +41,15 @@ Deque.prototype.push = function Deque$push(item) {
       return length;
     }
     var j = this._front;
-    for (var i = 0; i < argsLength; ++i) {
+    for(var i = 0; i < argsLength; ++i) {
       this[(j + length) & (capacity - 1)] = arguments[i];
       j++;
     }
     this._length = length + argsLength;
     return length + argsLength;
-    
   }
 
-  if (argsLength === 0) return length;
+  if(argsLength === 0) return length;
 
   this._checkCapacity(length + 1);
   var i = (this._front + length) & (this._capacity - 1);
@@ -61,7 +60,7 @@ Deque.prototype.push = function Deque$push(item) {
 
 Deque.prototype.pop = function Deque$pop() {
   let length = this._length;
-  if (length === 0) {
+  if(length === 0) {
     return void 0;
   }
   let i = (this._front + length - 1) & (this._capacity - 1);
@@ -73,7 +72,7 @@ Deque.prototype.pop = function Deque$pop() {
 
 Deque.prototype.shift = function Deque$shift() {
   let length = this._length;
-  if (length === 0) {
+  if(length === 0) {
     return void 0;
   }
   let front = this._front;
@@ -88,10 +87,10 @@ Deque.prototype.unshift = function Deque$unshift(item) {
   let length = this._length;
   let argsLength = arguments.length;
 
-  if (argsLength > 1) {
+  if(argsLength > 1) {
     var capacity = this._capacity;
-    if (length + argsLength > capacity) {
-      for (var i = argsLength - 1; i >= 0; i--) {
+    if(length + argsLength > capacity) {
+      for(var i = argsLength - 1; i >= 0; i--) {
         this._checkCapacity(length + 1);
         var capacity = this._capacity;
         var j = (((this._front - 1) & (capacity - 1)) ^ capacity) - capacity;
@@ -103,7 +102,7 @@ Deque.prototype.unshift = function Deque$unshift(item) {
       return length;
     }
     let front = this._front;
-    for (var i = argsLength - 1; i >= 0; i--) {
+    for(var i = argsLength - 1; i >= 0; i--) {
       var j = (((front - 1) & (capacity - 1)) ^ capacity) - capacity;
       this[j] = arguments[i];
       front = j;
@@ -111,10 +110,9 @@ Deque.prototype.unshift = function Deque$unshift(item) {
     this._front = front;
     this._length = length + argsLength;
     return length + argsLength;
-    
   }
 
-  if (argsLength === 0) return length;
+  if(argsLength === 0) return length;
 
   this._checkCapacity(length + 1);
   var capacity = this._capacity;
@@ -127,7 +125,7 @@ Deque.prototype.unshift = function Deque$unshift(item) {
 
 Deque.prototype.peekBack = function Deque$peekBack() {
   let length = this._length;
-  if (length === 0) {
+  if(length === 0) {
     return void 0;
   }
   let index = (this._front + length - 1) & (this._capacity - 1);
@@ -135,7 +133,7 @@ Deque.prototype.peekBack = function Deque$peekBack() {
 };
 
 Deque.prototype.peekFront = function Deque$peekFront() {
-  if (this._length === 0) {
+  if(this._length === 0) {
     return void 0;
   }
   return this[this._front];
@@ -143,14 +141,14 @@ Deque.prototype.peekFront = function Deque$peekFront() {
 
 Deque.prototype.get = function Deque$get(index) {
   let i = index;
-  if (i !== (i | 0)) {
+  if(i !== (i | 0)) {
     return void 0;
   }
   let len = this._length;
-  if (i < 0) {
+  if(i < 0) {
     i = i + len;
   }
-  if (i < 0 || i >= len) {
+  if(i < 0 || i >= len) {
     return void 0;
   }
   return this[(this._front + i) & (this._capacity - 1)];
@@ -164,7 +162,7 @@ Deque.prototype.clear = function Deque$clear() {
   let len = this._length;
   let front = this._front;
   let capacity = this._capacity;
-  for (let j = 0; j < len; ++j) {
+  for(let j = 0; j < len; ++j) {
     this[(front + j) & (capacity - 1)] = void 0;
   }
   this._length = 0;
@@ -185,16 +183,16 @@ Deque.prototype.dequeue = Deque.prototype.shift;
 Deque.prototype.toJSON = Deque.prototype.toArray;
 
 Object.defineProperty(Deque.prototype, 'length', {
-  get () {
+  get() {
     return this._length;
   },
-  set () {
+  set() {
     throw new RangeError('');
   }
 });
 
 Deque.prototype._checkCapacity = function Deque$_checkCapacity(size) {
-  if (this._capacity < size) {
+  if(this._capacity < size) {
     this._resizeTo(getCapacity(this._capacity * 1.5 + 16));
   }
 };
@@ -204,7 +202,7 @@ Deque.prototype._resizeTo = function Deque$_resizeTo(capacity) {
   this._capacity = capacity;
   let front = this._front;
   let length = this._length;
-  if (front + length > oldCapacity) {
+  if(front + length > oldCapacity) {
     let moveItemsCount = (front + length) & (oldCapacity - 1);
     arrayMove(this, 0, this, oldCapacity, moveItemsCount);
   }
@@ -213,7 +211,7 @@ Deque.prototype._resizeTo = function Deque$_resizeTo(capacity) {
 var isArray = Array.isArray;
 
 function arrayMove(src, srcIndex, dst, dstIndex, len) {
-  for (let j = 0; j < len; ++j) {
+  for(let j = 0; j < len; ++j) {
     dst[j + dstIndex] = src[j + srcIndex];
     src[j + srcIndex] = void 0;
   }
@@ -231,11 +229,10 @@ function pow2AtLeast(n) {
 }
 
 function getCapacity(capacity) {
-  if (typeof capacity !== 'number') {
-    if (isArray(capacity)) {
+  if(typeof capacity !== 'number') {
+    if(isArray(capacity)) {
       capacity = capacity.length;
-    }
-    else {
+    } else {
       return DEQUE_MIN_CAPACITY;
     }
   }

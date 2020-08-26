@@ -9,28 +9,26 @@ export class PointList extends Array {
     const base = Array;
     let args = [...arguments];
     let ret = this instanceof PointList ? this : [];
-    if (Util.isArray(args[0]) || Util.isGenerator(args[0])) args = [...args[0]];
-    if (typeof points === 'string') {
+    if(Util.isArray(args[0]) || Util.isGenerator(args[0])) args = [...args[0]];
+    if(typeof points === 'string') {
       const matches = [...points.matchAll(/[-.0-9,]+/g)];
       //console.log("matches:",matches);
-      for (let i = 0; i < matches.length; i++) {
+      for(let i = 0; i < matches.length; i++) {
         const coords = (matches[i][0] + '').split(/,/g).map((n) => +n);
         // console.log(`matches[${i}]:`,matches[i], coords);
         ret.push(tfn(...coords));
       }
-    }
-    else if (args[0] && args[0].length == 2) {
-      for (let i = 0; i < args.length; i++) ret.push(this instanceof PointList ? new Point(args[i]) : Point(args[i]));
-    }
-    else if (args.length !== undefined) {
+    } else if(args[0] && args[0].length == 2) {
+      for(let i = 0; i < args.length; i++) ret.push(this instanceof PointList ? new Point(args[i]) : Point(args[i]));
+    } else if(args.length !== undefined) {
       //&', args);
-      for (let i = 0; i < args.length; i++) {
+      for(let i = 0; i < args.length; i++) {
         ret.push(args[i] instanceof Point ? args[i] : tfn(args[i]));
       }
     }
     let proto = PointList.prototype;
     Object.setPrototypeOf(ret, proto);
-    if (!(this instanceof PointList)) return ret;
+    if(!(this instanceof PointList)) return ret;
   }
 }
 PointList.prototype[Symbol.toStringTag] = function () {
@@ -46,17 +44,17 @@ PointList.prototype.rotateLeft = function (n) {
   return this.rotateRight(this.length - (n % this.length));
 };
 PointList.prototype.rotate = function (n) {
-  if (n < 0) return this.rotateLeft(-n);
-  if (n > 0) return this.rotateRight(n);
+  if(n < 0) return this.rotateLeft(-n);
+  if(n > 0) return this.rotateRight(n);
   return this;
 };
 PointList.prototype.push = function (...args) {
-  while (args.length > 0) Array.prototype.push.call(this, new Point(args));
+  while(args.length > 0) Array.prototype.push.call(this, new Point(args));
   return this;
 };
 PointList.prototype.unshift = function (...args) {
   let points = [];
-  while (args.length > 0) points.push(new Point(args));
+  while(args.length > 0) points.push(new Point(args));
   Array.prototype.splice.call(this, 0, 0, ...points);
   return this;
 };
@@ -65,7 +63,7 @@ PointList.prototype.getLength = function () {
   return this.length;
 };
 Object.defineProperty(PointList.prototype, 'size', {
-  get () {
+  get() {
     return PointList.prototype.getLength.call(this);
   }
 });
@@ -83,7 +81,7 @@ PointList.prototype.removeSegment = function (index) {
   let indexes = [PointList.prototype.getLineIndex.call(this, index - 1), PointList.prototype.getLineIndex.call(this, index), PointList.prototype.getLineIndex.call(this, index + 1)];
   let lines = indexes.map((i) => PointList.prototype.getLine.call(this, i));
   let point = Line.intersect(lines[0], lines[2]);
-  if (point) {
+  if(point) {
     PointList.prototype.splice.call(this, 0, 2, new Point(point));
   }
 };
@@ -135,11 +133,11 @@ PointList.prototype.draw = function (ctx, close = false) {
   const first = PointList.prototype.at.call(this, 0);
   const len = PointList.prototype.getLength.call(this);
   ctx.to(first.x, first.y);
-  for (let i = 1; i < len; i++) {
+  for(let i = 1; i < len; i++) {
     const { x, y } = PointList.prototype.at.call(this, i);
     ctx.line(x, y);
   }
-  if (close) ctx.line(first.x, first.y);
+  if(close) ctx.line(first.x, first.y);
   return this;
 };
 PointList.prototype.area = function () {
@@ -149,7 +147,7 @@ PointList.prototype.area = function () {
   let point1;
   let point2;
   const len = PointList.prototype.getLength.call(this);
-  for (i = 0, j = len - 1; i < len; j = i, i += 1) {
+  for(i = 0, j = len - 1; i < len; j = i, i += 1) {
     point1 = PointList.prototype.at.call(this, i);
     point2 = PointList.prototype.at.call(this, j);
     area += point1.x * point2.y;
@@ -167,7 +165,7 @@ PointList.prototype.centroid = function () {
   let point1;
   let point2;
   const len = PointList.prototype.getLength.call(this);
-  for (i = 0, j = len - 1; i < len; j = i, i += 1) {
+  for(i = 0, j = len - 1; i < len; j = i, i += 1) {
     point1 = PointList.prototype.at.call(this, i);
     point2 = PointList.prototype.at.call(this, j);
     f = point1.x * point2.y - point2.x * point1.y;
@@ -183,23 +181,23 @@ PointList.prototype.avg = function () {
 };
 PointList.prototype.bbox = function () {
   const len = PointList.prototype.getLength.call(this);
-  if (!len) return {};
+  if(!len) return {};
   const first = PointList.prototype.at.call(this, 0);
   let ret = {
     x1: first.x,
     x2: first.x,
     y1: first.y,
     y2: first.y,
-    toString () {
+    toString() {
       return `{x1:${(this.x1 + '').padStart(4, ' ')},x2:${(this.x2 + '').padStart(4, ' ')},y1:${(this.y1 + '').padStart(4, ' ')},y2:${(this.y2 + '').padStart(4, ' ')}}`;
     }
   };
-  for (let i = 1; i < len; i++) {
+  for(let i = 1; i < len; i++) {
     const { x, y } = PointList.prototype.at.call(this, i);
-    if (x < ret.x1) ret.x1 = x;
-    if (x > ret.x2) ret.x2 = x;
-    if (y < ret.y1) ret.y1 = y;
-    if (y > ret.y2) ret.y2 = y;
+    if(x < ret.x1) ret.x1 = x;
+    if(x > ret.x2) ret.x2 = x;
+    if(y < ret.y1) ret.y1 = y;
+    if(y > ret.y2) ret.y2 = y;
   }
   return ret;
 };
@@ -238,12 +236,12 @@ PointList.prototype.translate = function (x, y) {
   return this;
 };
 PointList.prototype.transform = function (m) {
-  if (Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
-  if (Util.isObject(m) && typeof m.transform_point == 'function') {
+  if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
+  if(Util.isObject(m) && typeof m.transform_point == 'function') {
     this.forEach((p) => m.transform_point(p));
     return this;
   }
-  for (let i = 0; i < this.length; i++) Point.prototype.transform.call(this[i], m);
+  for(let i = 0; i < this.length; i++) Point.prototype.transform.call(this[i], m);
   return this;
 };
 
@@ -271,7 +269,7 @@ PointList.prototype.lines = function (closed = false) {
         next() {
           let value;
           let done = step >= n;
-          if (!done) {
+          if(!done) {
             value = new Line(points[step], points[(step + 1) % points.length]);
             step++;
           }
@@ -293,13 +291,13 @@ PointList.prototype.toPath = function () {
   return Array.prototype.reduce.call(this, (acc, point, i) => (acc ? acc + ' ' : '') + `${acc ? 'L' : 'M'}${point}`);
 };
 PointList.prototype.toSource = function (opts = {}) {
-  if (opts.asString) return `new PointList("${this.toString(opts)}")`;
+  if(opts.asString) return `new PointList("${this.toString(opts)}")`;
 
   let fn = opts.asArray ? (p) => `[${p.x},${p.y}]` : opts.plainObj ? (p) => Point.toSource(p, { space: '', padding: ' ', separator: ',' }) : (point) => Point.prototype.toSource.call(point, { ...opts, plainObj: true });
   return 'new PointList([' + PointList.prototype.map.call(this, fn).join(',') + '])';
 };
 PointList.prototype.add = function (pt) {
-  if (!(pt instanceof Point)) pt = new Point(...arguments);
+  if(!(pt instanceof Point)) pt = new Point(...arguments);
   PointList.prototype.forEach.call(this, (it) => Point.prototype.add.call(it, pt));
   return this;
 };
@@ -308,7 +306,7 @@ PointList.prototype.sum = function (pt) {
   return PointList.prototype.add.apply(ret, arguments);
 };
 PointList.prototype.sub = function (pt) {
-  if (!(pt instanceof Point)) pt = new Point(...arguments);
+  if(!(pt instanceof Point)) pt = new Point(...arguments);
   PointList.prototype.forEach.call(this, (it) => Point.prototype.sub.call(it, pt));
   return this;
 };
@@ -317,8 +315,8 @@ PointList.prototype.diff = function (pt) {
   return PointList.prototype.sub.apply(ret, arguments);
 };
 PointList.prototype.mul = function (pt) {
-  if (typeof pt == 'number') pt = new Point({ x: pt, y: pt });
-  if (!(pt instanceof Point)) pt = new Point(...arguments);
+  if(typeof pt == 'number') pt = new Point({ x: pt, y: pt });
+  if(!(pt instanceof Point)) pt = new Point(...arguments);
   PointList.prototype.forEach.call(this, (it) => Point.prototype.mul.call(it, pt));
   return this;
 };
@@ -327,8 +325,8 @@ PointList.prototype.prod = function (pt) {
   return PointList.prototype.mul.apply(ret, arguments);
 };
 PointList.prototype.div = function (pt) {
-  if (typeof pt == 'number') pt = new Point({ x: pt, y: pt });
-  if (!(pt instanceof Point)) pt = new Point(...arguments);
+  if(typeof pt == 'number') pt = new Point({ x: pt, y: pt });
+  if(!(pt instanceof Point)) pt = new Point(...arguments);
   PointList.prototype.forEach.call(this, (it) => Point.prototype.div.call(it, pt));
   return this;
 };
@@ -351,7 +349,7 @@ PointList.prototype.floor = function (prec) {
 PointList.prototype.toMatrix = function () {
   return Array.prototype.map.call(this, ({ x, y }) => Object.freeze([x, y]));
 };
-if (!Util.isBrowser()) {
+if(!Util.isBrowser()) {
   let c = Util.coloring();
   let sym = Symbol.for('nodejs.util.inspect.custom');
   PointList.prototype[sym] = function () {
@@ -360,29 +358,27 @@ if (!Util.isBrowser()) {
     ) => Util.toString({ x, y }, { multiline: false, spacing: ' ' })).join(',\n  ')}\n${c.text(']', 1, 36)}`;
   };
 }
-for (let name of ['push', 'splice', 'clone', 'area', 'centroid', 'avg', 'bbox', 'rect', 'xrange', 'yrange', 'boundingRect']) {
+for(let name of ['push', 'splice', 'clone', 'area', 'centroid', 'avg', 'bbox', 'rect', 'xrange', 'yrange', 'boundingRect']) {
   PointList[name] = (points) => PointList.prototype[name].call(points);
 }
 export function Polyline(lines) {
   let ret = this instanceof Polyline ? this : new PointList();
   const addUnique = (point) => {
     const ok = ret.length > 0 ? !Point.equals(ret[ret.length - 1], point) : true;
-    if (ok) Array.prototype.push.call(ret, Point.clone(point));
+    if(ok) Array.prototype.push.call(ret, Point.clone(point));
     return ok;
   };
   let prev;
-  for (let i = 0; i < lines.length; i++) {
+  for(let i = 0; i < lines.length; i++) {
     const line = lines.shift();
-    if (isPoint(line)) {
+    if(isPoint(line)) {
       addUnique(line);
       prev = line;
-    }
-    else if (isLine(line)) {
-      if (i > 0) {
+    } else if(isLine(line)) {
+      if(i > 0) {
         const eq = [Point.equals(prev, line.a)];
-        if (!eq[0] && !Point.equals(prev, line.b)) break;
-      }
-      else {
+        if(!eq[0] && !Point.equals(prev, line.b)) break;
+      } else {
         addUnique(line.a);
       }
       addUnique(line.b);
@@ -397,8 +393,8 @@ Polyline.prototype.toSVG = function (factory, attrs = {}, parent = null, prec) {
 };
 Polyline.prototype.push = function (...args) {
   const last = this[this.length - 1];
-  for (let arg of args) {
-    if (last && Point.equals(arg, last)) continue;
+  for(let arg of args) {
+    if(last && Point.equals(arg, last)) continue;
     PointList.prototype.push.call(this, arg);
   }
   return this;
@@ -408,8 +404,8 @@ Polyline.prototype.inside = function (point) {
     j,
     c = false,
     nvert = this.length;
-  for (i = 0, j = nvert - 1; i < nvert; j = i++) {
-    if (this[i].y > point.y !== this[j].y > point.y && point.x < ((this[j].x - this[i].x) * (point.y - this[i].y)) / (this[j].y - this[i].y) + this[i].x) {
+  for(i = 0, j = nvert - 1; i < nvert; j = i++) {
+    if(this[i].y > point.y !== this[j].y > point.y && point.x < ((this[j].x - this[i].x) * (point.y - this[i].y)) / (this[j].y - this[i].y) + this[i].x) {
       c = !c;
     }
   }
@@ -420,7 +416,7 @@ Polyline.inside = function (a, b) {
 };
 Polyline.prototype.isClockwise = function () {
   let sum = 0;
-  for (let i = 0; i < this.length - 1; i++) {
+  for(let i = 0; i < this.length - 1; i++) {
     let cur = this[i],
       next = this[i + 1];
     sum += (next.x - cur.x) * (next.y + cur.y);
@@ -438,7 +434,7 @@ Util.defineGetter(Polyline.prototype, 'counterClockwise', function () {
 
 Polyline.isClockwise = function isClockwise(poly) {
   let sum = 0;
-  for (let i = 0; i < poly.length - 1; i++) {
+  for(let i = 0; i < poly.length - 1; i++) {
     let cur = poly[i],
       next = poly[i + 1];
     sum += (next.x - cur.x) * (next.y + cur.y);

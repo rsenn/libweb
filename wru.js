@@ -11,7 +11,7 @@
 // but it's also RIDICULOUS Rhino does not implement in core timers properly!
 
 // condition to avoid problems with jsc
-if (typeof global != 'undefined') {
+if(typeof global != 'undefined') {
   var setTimeout = global.setTimeout,
     setInterval = global.setInterval,
     clearInterval = global.clearInterval,
@@ -40,7 +40,7 @@ if (typeof global != 'undefined') {
       function schedule(fn, delay, args, interval) {
         let id = ++counter;
         ids[id] = new JavaAdapter(java.util.TimerTask, {
-          run () {
+          run() {
             fn.apply(null, args);
           }
         });
@@ -48,13 +48,12 @@ if (typeof global != 'undefined') {
         return id;
       }
     })(new java.util.Timer(), {}, [].slice, 0);
-}
-else {
+} else {
   // jsc specific hack
   !(function (global, i, cbs, slice) {
     function setTimeout(cb, delay) {
       let t = new Date();
-      while (new Date() - t < delay);
+      while(new Date() - t < delay);
       cb.apply(null, slice.call(arguments, 2));
     }
     slice = cbs.slice;
@@ -64,8 +63,6 @@ else {
 }
 
 export const wru = (function (window) {
-  
-
   /**
    * Copyright (C) 2011 by Andrea Giammarchi, @WebReflection
    *
@@ -91,8 +88,8 @@ export const wru = (function (window) {
   // console specific version
   function isGonnaBeLegen() {
     current = shift.call(queue);
-    if (current) {
-      if (typeof current == 'function') {
+    if(current) {
+      if(typeof current == 'function') {
         current = { name: current[NAME] || 'anonymous', test: current };
       }
       log(OUTPUT_SEPARATOR);
@@ -104,8 +101,7 @@ export const wru = (function (window) {
       giveItATry('setup');
       fatal[LENGTH] || giveItATry('test');
       waitForIt || Dary();
-    }
-    else {
+    } else {
       showSummary();
     }
   }
@@ -115,29 +111,24 @@ export const wru = (function (window) {
     try {
       // node 0.11+ alternative ...
       process.stdout.write(info);
-    }
-    catch (up) {
+    } catch(up) {
       try {
         // node 0.6
         require('util').print(info);
-      }
-      catch (up) {
+      } catch(up) {
         try {
           // node 0.4
           require('sys').print(info);
-        }
-        catch (up) {
+        } catch(up) {
           try {
             // hello Rhino
             // print uses println ... while we need print without \n
             java.lang.System.out.print(info);
-          }
-          catch (up) {
+          } catch(up) {
             try {
               // phantomjs or default fallback
               console.log(info);
-            }
-            catch (up) {
+            } catch(up) {
               // jsc and others
               print(info);
             }
@@ -153,19 +144,19 @@ export const wru = (function (window) {
     log(EMPTY);
     log(OUTPUT_SEPARATOR);
     switch (true) {
-    case !!overallFatal:
-      code++;
-      status = 'error';
-      log(ERROR + '   ' + overallFatal + ' Errors');
-      break;
-    case !!overallFail:
-      code++;
-      status = 'fail';
-      log(FAILURE + EMPTY + overallFail + ' Failures');
-      break;
-    default:
-      status = 'pass';
-      log(OK + '      ' + overallPass + ' Passes');
+      case !!overallFatal:
+        code++;
+        status = 'error';
+        log(ERROR + '   ' + overallFatal + ' Errors');
+        break;
+      case !!overallFail:
+        code++;
+        status = 'fail';
+        log(FAILURE + EMPTY + overallFail + ' Failures');
+        break;
+      default:
+        status = 'pass';
+        log(OK + '      ' + overallPass + ' Passes');
     }
     wru.status = status;
     log(OUTPUT_SEPARATOR);
@@ -174,15 +165,14 @@ export const wru = (function (window) {
     try {
       // node.js
       process.exit(code);
-    }
-    catch (up) {
+    } catch(up) {
       // rhino
       quit();
     }
   }
 
   function writeItOrdered(fail) {
-    for (let i = 0, length = fail[LENGTH]; i < length; log('    ' + ++i + '. ' + fail[i - 1]));
+    for(let i = 0, length = fail[LENGTH]; i < length; log('    ' + ++i + '. ' + fail[i - 1]));
   }
 
   function Dary() {
@@ -190,15 +180,13 @@ export const wru = (function (window) {
     overallPass += pass[LENGTH];
     overallFail += fail[LENGTH];
     overallFatal += fatal[LENGTH];
-    if (fatal[LENGTH]) {
+    if(fatal[LENGTH]) {
       prefix = ERROR;
       writeItOrdered(fatal);
-    }
-    else if (fail[LENGTH]) {
+    } else if(fail[LENGTH]) {
       prefix = FAILURE;
       writeItOrdered(fail);
-    }
-    else {
+    } else {
       prefix = OK;
     }
     log(prefix + ' passes: ' + pass[LENGTH] + ', fails: ' + fail[LENGTH] + ', errors: ' + fatal[LENGTH]);
@@ -209,11 +197,10 @@ export const wru = (function (window) {
 
   // common functions for all versions
   function giveItATry(name) {
-    if (iHasIt(current, name)) {
+    if(iHasIt(current, name)) {
       try {
         current[name](tmp);
-      }
-      catch (doooodeThisIsBAD) {
+      } catch(doooodeThisIsBAD) {
         push.call(fatal, EMPTY + doooodeThisIsBAD);
       }
     }
@@ -228,7 +215,7 @@ export const wru = (function (window) {
   }
 
   function clearDaryTimeou() {
-    if (daryTimeout) {
+    if(daryTimeout) {
       clearTimeout(daryTimeout);
       daryTimeout = 0;
     }
@@ -243,7 +230,7 @@ export const wru = (function (window) {
         // these are both valid wru.assert calls indeed
         // wru.assert(truishValue);
         // wru.assert("test description", truishValue);
-        if (arguments[LENGTH] == 1) {
+        if(arguments[LENGTH] == 1) {
           result = description;
           description = UNKNOWN;
         }
@@ -272,7 +259,7 @@ export const wru = (function (window) {
         // wru.async("test description", function () { ... })
         // wru.async(function () { ... }, timeout)
         // wru.async("test description", function () { ... }, timeout)
-        if (typeof description == 'function') {
+        if(typeof description == 'function') {
           delay = callback || wru.timeout;
           callback = description;
           description = 'asynchronous test #' + p;
@@ -300,7 +287,7 @@ export const wru = (function (window) {
         return function async() {
           // if it's executed after the timeout nothing happens
           // since the failure has been already notified
-          if (!p) return;
+          if(!p) return;
 
           // called is always set as *TRUE* during any assertion
           // this indicates if the callback made at least one assertion
@@ -325,8 +312,7 @@ export const wru = (function (window) {
           // the original callback is called with proper *this* if specified
           try {
             r = callback.apply(this, arguments);
-          }
-          catch (doooodeThisIsBAD) {
+          } catch(doooodeThisIsBAD) {
             // if there is an Error
             // the test is screwed up
             // called has to be set as *TRUE* to invalidate the test
@@ -340,7 +326,7 @@ export const wru = (function (window) {
           prefix = EMPTY;
 
           // a failure or at least an assertion
-          if (called) {
+          if(called) {
             // timeout not necessary anymore
             clearTimeout(timeout);
 
@@ -420,18 +406,17 @@ export const wru = (function (window) {
 
   wru.log = function (obj, printOnly) {
     try {
-      if (printOnly) {
+      if(printOnly) {
         throw new Error();
       }
       console.log(obj);
-    }
-    catch (o_O) {
+    } catch(o_O) {
       log(obj, 0);
     }
   };
 
   // node.js exports
-  if (typeof __dirname != 'undefined') {
+  if(typeof __dirname != 'undefined') {
     window.wru = wru;
     window.assert = wru.assert;
     window.async = wru.async;
@@ -439,15 +424,15 @@ export const wru = (function (window) {
     window.log = wru.log;
     window.random = false;
     Object.defineProperty(window, 'status', {
-      get () {
+      get() {
         return wru.status;
       }
     });
     Object.defineProperty(window, 'timeout', {
-      get () {
+      get() {
         return wru.timeout;
       },
-      set (value) {
+      set(value) {
         wru.timeout = parseInt(value, 10) || wru.timeout;
       }
     });

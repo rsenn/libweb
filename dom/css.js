@@ -38,7 +38,7 @@ export class CSS {
   );
 
   static list = Util.memoize((doc) => {
-    if (!doc) doc = this.document;
+    if(!doc) doc = this.document;
     let adapter = Util.adapter(
       [...doc.styleSheets],
       (obj) => obj.length,
@@ -52,12 +52,12 @@ export class CSS {
   static styles(stylesheet) {
     let ret;
 
-    if (Util.isObject(stylesheet) && stylesheet.cssRules !== undefined) ret = getStyleSheet(stylesheet);
+    if(Util.isObject(stylesheet) && stylesheet.cssRules !== undefined) ret = getStyleSheet(stylesheet);
     else {
       ret = [...CSS.list()];
       ret = typeof stylesheet == 'number' ? ret[stylesheet] : ret.find((item, i) => i === stylesheet || item.file === stylesheet);
 
-      if (ret) ret = ret.stylesheet;
+      if(ret) ret = ret.stylesheet;
     }
 
     console.log('ret:', ret);
@@ -82,7 +82,7 @@ export class CSS {
 
   static section(selector, props) {
     let s = `${selector} {\n`;
-    for (let [name, value] of props) {
+    for(let [name, value] of props) {
       s += `  ${Util.decamelize(name)}: ${value};\n`;
     }
     s += `}\n`;
@@ -108,10 +108,10 @@ export class CSS {
         return this.map.keys();
       },
       *entries() {
-        for (let [selector, props] of this.map.entries()) yield [selector, props.toObject()];
+        for(let [selector, props] of this.map.entries()) yield [selector, props.toObject()];
       },
       update(text = '') {
-        if (text != '') {
+        if(text != '') {
           let node = document.createTextNode('\n' + text);
           this.element.appendChild(node);
           return this;
@@ -120,7 +120,7 @@ export class CSS {
       },
       generate() {
         this.element.innerHTML = '';
-        for (let [selector, props] of this.map) this.update(CSS.section(selector, props));
+        for(let [selector, props] of this.map) this.update(CSS.section(selector, props));
         return this;
       },
       get text() {
@@ -143,7 +143,7 @@ export class CSS {
     let keyList = [...props.keys()].filter((k) => trblExpr.test(k) || cswExpr.test(k));
 
     //console.log("props:",Util.unique(keyList.filter(k => k.startsWith('border')).map(k => k.replace(/^border/, "").replace(trblExpr, ""))));
-    for (let key of keyList) {
+    for(let key of keyList) {
     }
   }
 }

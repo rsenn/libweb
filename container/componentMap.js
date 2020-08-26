@@ -7,7 +7,7 @@ export class BucketStore {
   getBucket(maybeKey) {
     const key = this.getBucketName(maybeKey);
 
-    if (!this.buckets[key]) {
+    if(!this.buckets[key]) {
       this.buckets[key] = { keys: [], values: [] };
     }
 
@@ -18,7 +18,7 @@ export class BucketStore {
     const bucket = this.getBucket(key);
     const index = bucket.keys.indexOf(key);
 
-    if (index >= 0) {
+    if(index >= 0) {
       return bucket.values[index];
     }
   }
@@ -30,14 +30,14 @@ export class BucketStore {
   }
 
   set(key, value) {
-    if (!key || (typeof key !== 'object' && typeof key !== 'function')) {
+    if(!key || (typeof key !== 'object' && typeof key !== 'function')) {
       throw new TypeError('Invalid value used as weak map key');
     }
 
     const bucket = this.getBucket(key);
     let index = bucket.keys.indexOf(key);
 
-    if (index === -1) {
+    if(index === -1) {
       index = bucket.keys.length;
       bucket.keys[index] = key;
       bucket.values[index] = value;
@@ -50,7 +50,7 @@ export class BucketStore {
     const bucket = this.getBucket(key);
     const index = bucket.keys.indexOf(key);
 
-    if (index >= 0) {
+    if(index >= 0) {
       bucket.keys.splice(index, 1);
       bucket.values.splice(index, 1);
     }
@@ -59,14 +59,13 @@ export class BucketStore {
 
 export class BucketMap {
   constructor(options = {}) {
-    if (!options.getBucketName) {
+    if(!options.getBucketName) {
       throw new TypeError('BucketMap constructor requires getBucketName param');
     }
 
-    if (options.WeakMap) {
+    if(options.WeakMap) {
       this.store = new options.WeakMap();
-    }
-    else {
+    } else {
       this.store = new BucketStore(options.getBucketName);
     }
   }

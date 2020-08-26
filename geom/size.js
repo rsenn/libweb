@@ -4,37 +4,34 @@ import { isPoint } from './point.js';
 export function Size(arg) {
   let obj = this instanceof Size ? this : {};
   let args = [...arguments];
-  if (args.length == 1 && Util.isObject(args[0]) && args[0].length !== undefined) {
+  if(args.length == 1 && Util.isObject(args[0]) && args[0].length !== undefined) {
     args = args[0];
     arg = args[0];
   }
-  if (typeof arg == 'object') {
-    if (arg.width !== undefined || arg.height !== undefined) {
+  if(typeof arg == 'object') {
+    if(arg.width !== undefined || arg.height !== undefined) {
       arg = args.shift();
       obj.width = arg.width;
       obj.height = arg.height;
-    }
-    else if (arg.x2 !== undefined && arg.y2 !== undefined) {
+    } else if(arg.x2 !== undefined && arg.y2 !== undefined) {
       arg = args.shift();
       obj.width = arg.x2 - arg.x;
       obj.height = arg.y2 - arg.y;
-    }
-    else if (arg.bottom !== undefined && arg.right !== undefined) {
+    } else if(arg.bottom !== undefined && arg.right !== undefined) {
       arg = args.shift();
       obj.width = arg.right - arg.left;
       obj.height = arg.bottom - arg.top;
     }
-  }
-  else {
-    while (typeof arg == 'object' && (arg instanceof Array || 'length' in arg)) {
+  } else {
+    while(typeof arg == 'object' && (arg instanceof Array || 'length' in arg)) {
       args = [...arg];
       arg = args[0];
     }
-    if (args && args.length >= 2) {
+    if(args && args.length >= 2) {
       let w = args.shift();
       let h = args.shift();
-      if (typeof w == 'object' && 'baseVal' in w) w = w.baseVal.value;
-      if (typeof h == 'object' && 'baseVal' in h) h = h.baseVal.value;
+      if(typeof w == 'object' && 'baseVal' in w) w = w.baseVal.value;
+      if(typeof h == 'object' && 'baseVal' in h) h = h.baseVal.value;
       obj.width = typeof w == 'number' ? w : parseFloat(w.replace(/[^-.0-9]*$/, ''));
       obj.height = typeof h == 'number' ? h : parseFloat(h.replace(/[^-.0-9]*$/, ''));
       Object.defineProperty(obj, 'units', {
@@ -46,27 +43,27 @@ export function Size(arg) {
       });
     }
   }
-  if (isNaN(obj.width)) obj.width = undefined;
-  if (isNaN(obj.height)) obj.height = undefined;
-  if (!(obj instanceof Size)) return obj;
+  if(isNaN(obj.width)) obj.width = undefined;
+  if(isNaN(obj.height)) obj.height = undefined;
+  if(!(obj instanceof Size)) return obj;
 }
 Size.prototype.width = NaN;
 Size.prototype.height = NaN;
 Size.prototype.units = null;
 
 Size.prototype.convertUnits = function (w = 'window' in global ? window : null) {
-  if (w === null) return this;
+  if(w === null) return this;
   const view = {
     vw: w.innerWidth,
     vh: w.innerHeight,
     vmin: w.innerWidth < w.innerHeight ? w.innerWidth : w.innerHeight,
     vmax: w.innerWidth > w.innerHeight ? w.innerWidth : w.innerHeight
   };
-  if (view[this.units.width] !== undefined) {
+  if(view[this.units.width] !== undefined) {
     this.width = (this.width / 100) * view[this.units.width];
     delete this.units.width;
   }
-  if (view[this.units.height] !== undefined) {
+  if(view[this.units.height] !== undefined) {
     this.height = (this.height / 100) * view[this.units.height];
     delete this.units.height;
   }
@@ -79,8 +76,8 @@ Size.prototype.aspect = function () {
 Size.prototype.toCSS = function (units) {
   let ret = {};
   units = typeof units == 'string' ? { width: units, height: units } : units || this.units || { width: 'px', height: 'px' };
-  if (this.width !== undefined) ret.width = this.width + (units.width || 'px');
-  if (this.height !== undefined) ret.height = this.height + (units.height || 'px');
+  if(this.width !== undefined) ret.width = this.width + (units.width || 'px');
+  if(this.height !== undefined) ret.height = this.height + (units.height || 'px');
   return ret;
 };
 Size.prototype.transform = function (m) {
@@ -104,7 +101,7 @@ Size.prototype.sum = function (other) {
   return new Size(this.width + other.width, this.height + other.height);
 };
 Size.prototype.add = function () {
-  for (let other of [...arguments]) {
+  for(let other of [...arguments]) {
     this.width += other.width;
     this.height += other.height;
   }
@@ -114,7 +111,7 @@ Size.prototype.diff = function (other) {
   return new Size(this.width - other.width, this.height - other.height);
 };
 Size.prototype.sub = function () {
-  for (let other of [...arguments]) {
+  for(let other of [...arguments]) {
     this.width -= other.width;
     this.height -= other.height;
   }
@@ -125,7 +122,7 @@ Size.prototype.prod = function (f) {
   return new Size(this.width * o.width, this.height * o.height);
 };
 Size.prototype.mul = function (...args) {
-  for (let f of args) {
+  for(let f of args) {
     const o = isSize(f) ? f : isPoint(f) ? { width: f.x, height: f.y } : { width: f, height: f };
     this.width *= o.width;
     this.height *= o.height;
@@ -139,7 +136,7 @@ Size.prototype.inverse = function (other) {
   return new Size(1 / this.width, 1 / this.height);
 };
 Size.prototype.div = function (f) {
-  for (let f of [...arguments]) {
+  for(let f of [...arguments]) {
     this.width /= f;
     this.height /= f;
   }
@@ -199,15 +196,15 @@ Size.aspect = (sz) => Size.prototype.aspect.call(sz);
 
 Size.bind = (o, p, gen) => {
   const [width, height] = p || ['width', 'height'];
-  if (!gen) gen = (k) => (v) => (v === undefined ? o[k] : (o[k] = v));
+  if(!gen) gen = (k) => (v) => (v === undefined ? o[k] : (o[k] = v));
   return Util.bindProperties(new Size(0, 0), o, { width, height }, gen);
 };
 
-for (let method of Util.getMethodNames(Size.prototype)) Size[method] = (size, ...args) => Size.prototype[method].call(size || new Size(size), ...args);
+for(let method of Util.getMethodNames(Size.prototype)) Size[method] = (size, ...args) => Size.prototype[method].call(size || new Size(size), ...args);
 
 export const isSize = (o) => o && ((o.width !== undefined && o.height !== undefined) || (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) || (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
 
-for (let name of ['toCSS', 'isSquare', 'round', 'sum', 'add', 'diff', 'sub', 'prod', 'mul', 'quot', 'div']) {
+for(let name of ['toCSS', 'isSquare', 'round', 'sum', 'add', 'diff', 'sub', 'prod', 'mul', 'quot', 'div']) {
   Size[name] = (size, ...args) => Size.prototype[name].call(size || new Size(size), ...args);
 }
 

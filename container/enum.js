@@ -13,14 +13,12 @@ let getValidPropertyName = (name) => {
 };
 
 export class Enum {
-
   /**
    * @param {string} name
    * @param {string|int} value
    * @param {*} extra any extra parameter(s)
    */
   constructor(name, value, extra) {
-
     /**
      * @var {string}
      */
@@ -68,22 +66,21 @@ export class Enum {
     let propertyToEnumMap = null;
 
     switch (propertyType) {
-    case 'string':
-      let upperCasedProperty = property.toUpperCase();
-      if (this.nameToEnumMap[upperCasedProperty]) {
-        property = upperCasedProperty;
-        propertyToEnumMap = this.nameToEnumMap;
-      }
-      else {
-        propertyToEnumMap = this.valueToEnumMap;
-      }
-      break;
+      case 'string':
+        let upperCasedProperty = property.toUpperCase();
+        if(this.nameToEnumMap[upperCasedProperty]) {
+          property = upperCasedProperty;
+          propertyToEnumMap = this.nameToEnumMap;
+        } else {
+          propertyToEnumMap = this.valueToEnumMap;
+        }
+        break;
 
-    case 'number':
-      propertyToEnumMap = this.valueToEnumMap;
+      case 'number':
+        propertyToEnumMap = this.valueToEnumMap;
     }
 
-    if (propertyToEnumMap && propertyToEnumMap[property]) {
+    if(propertyToEnumMap && propertyToEnumMap[property]) {
       return propertyToEnumMap[property];
     }
 
@@ -96,11 +93,11 @@ export class Enum {
    * @returns {{}}
    */
   static create(items, extra = null) {
-    if (extra && !Array.isArray(extra)) {
+    if(extra && !Array.isArray(extra)) {
       throw new InvalidArgumentException('Extra params should be an array or null');
     }
 
-    if (Array.isArray(extra) && extra.length !== Object.keys(items).length) {
+    if(Array.isArray(extra) && extra.length !== Object.keys(items).length) {
       throw new InvalidArgumentException('Extra params should be an array of the same length as enum has or null');
     }
 
@@ -110,7 +107,7 @@ export class Enum {
 
     Object.keys(items).map((/** string */ name, index) => {
       let propertyName = getValidPropertyName(name.toUpperCase());
-      if (newEnum.hasOwnProperty(propertyName)) {
+      if(newEnum.hasOwnProperty(propertyName)) {
         throw new InvalidArgumentException('Some names turn to be the same after making them valid JS IdentifierName');
       }
 

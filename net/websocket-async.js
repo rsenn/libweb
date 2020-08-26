@@ -17,7 +17,6 @@
  * await webSocketClient.disconnect();
  */
 export class WebSocketClient {
-
   /*receiveDataQueue = [];
   receiveCallbacksQueue = [];
   closeEvent = null;*/
@@ -25,7 +24,7 @@ export class WebSocketClient {
   constructor(ctor) {
     this.reset();
 
-    if (!ctor)
+    if(!ctor)
       ctor = Util.tryCatch(
         () => Util.isObject(window),
         () => window.WebSocket,
@@ -68,7 +67,7 @@ export class WebSocketClient {
    * Must be connected. See {@link #connected}.
    */
   send(data) {
-    if (!this.connected) throw this.closeEvent || new Error('Not connected.');
+    if(!this.connected) throw this.closeEvent || new Error('Not connected.');
 
     this.socket.send(data);
   }
@@ -81,9 +80,9 @@ export class WebSocketClient {
    * @returns A promise that resolves with the data received.
    */
   receive() {
-    if (this.receiveDataQueue.length !== 0) return Promise.resolve(this.receiveDataQueue.shift());
+    if(this.receiveDataQueue.length !== 0) return Promise.resolve(this.receiveDataQueue.shift());
 
-    if (!this.connected) return Promise.reject(this.closeEvent || new Error('Not connected.'));
+    if(!this.connected) return Promise.reject(this.closeEvent || new Error('Not connected.'));
 
     const receivePromise = new Promise((resolve, reject) => this.receiveCallbacksQueue.push({ resolve, reject }));
 
@@ -96,7 +95,7 @@ export class WebSocketClient {
    * The promise resolves once the WebSocket connection is closed.
    */
   disconnect(code, reason) {
-    if (!this.connected) return Promise.resolve(this.closeEvent);
+    if(!this.connected) return Promise.resolve(this.closeEvent);
 
     return new Promise((resolve, reject) => {
       //It's okay to call resolve/reject multiple times in a promise.
@@ -130,7 +129,7 @@ export class WebSocketClient {
         //The cast was necessary because Flow's libdef's don't contain
         //a MessageEventListener definition.
 
-        if (this.receiveCallbacksQueue.length !== 0) {
+        if(this.receiveCallbacksQueue.length !== 0) {
           this.receiveCallbacksQueue.shift().resolve(messageEvent.data);
           return;
         }
@@ -146,7 +145,7 @@ export class WebSocketClient {
           //Whenever a close event fires, the socket is effectively dead.
           //It's impossible for more messages to arrive.
           //If there are any promises waiting for messages, reject them.
-          while (this.receiveCallbacksQueue.length !== 0) {
+          while(this.receiveCallbacksQueue.length !== 0) {
             this.receiveCallbacksQueue.shift().reject(this.closeEvent);
           }
         });
@@ -182,7 +181,7 @@ export class WebSocketClient {
   }
 
   async *[Symbol.asyncIterator]() {
-    while (this.readyState !== 3) yield (await oncePromise(this.socket, 'message')).data;
+    while(this.readyState !== 3) yield (await oncePromise(this.socket, 'message')).data;
   }
 }
 //Generate a Promise that listens only once for an event

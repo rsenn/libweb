@@ -35,7 +35,6 @@ export class SchematicRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(collection, parent, opts) {
-
     /*    if(pos !== undefined || rot !== undefined)
       throw new Error();*/
     //let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
@@ -43,9 +42,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     this.debug(`SchematicRenderer.renderCollection`, arr, opts);
 
-    for (let item of arr.filter((item) => item.tagName != 'text')) this.renderItem(item, parent, opts);
+    for(let item of arr.filter((item) => item.tagName != 'text')) this.renderItem(item, parent, opts);
     this.debug(`SchematicRenderer.renderCollection`, arr, opts);
-    for (let item of arr.filter((item) => item.tagName == 'text')) this.renderItem(item, parent, opts);
+    for(let item of arr.filter((item) => item.tagName == 'text')) this.renderItem(item, parent, opts);
   }
 
   /**
@@ -75,93 +74,93 @@ export class SchematicRenderer extends EagleSVGRenderer {
         parent
       );
     switch (item.tagName) {
-    case 'junction': {
-      const { x, y } = coordFn(item);
-      svg(
-        'circle',
-        {
-          fill: '#4ba54b',
-          cx: x,
-          cy: y,
-          r: 0.5,
-          stroke: 'none'
-        },
-        parent
-      );
-      break;
-    }
-
-    case 'pin': {
-      const { length, rot, name, visible } = item;
-      const { x, y } = coordFn(item);
-      const func = item.function;
-
-      const angle = +(rot || '0').replace(/R/, '');
-      let veclen = SchematicRenderer.pinSizes[length] * 2.54;
-      if (func == 'dot') veclen -= 1.5;
-      const dir = Point.fromAngle((angle * Math.PI) / 180);
-      const vec = dir.prod(veclen);
-      const pivot = new Point(+x, +y);
-      const pp = dir.prod(veclen + 0.75).add(pivot);
-      const l = new Line(pivot, vec.add(pivot));
-
-      if (func == 'dot') {
+      case 'junction': {
+        const { x, y } = coordFn(item);
         svg(
           'circle',
           {
-            class: 'pin',
-            stroke: '#a54b4b',
-            fill: 'none',
-            cx: pp.x,
-            cy: pp.y,
-            r: 0.75,
-            'stroke-width': 0.3
+            fill: '#4ba54b',
+            cx: x,
+            cy: y,
+            r: 0.5,
+            stroke: 'none'
           },
           parent
         );
+        break;
       }
 
-      svg(
-        'line',
-        {
-          class: 'pin',
-          stroke: '#a54b4b',
-          ...l.toObject(),
-          'stroke-width': 0.15
-        },
-        parent
-      );
-      if (name != '' && visible != 'off')
+      case 'pin': {
+        const { length, rot, name, visible } = item;
+        const { x, y } = coordFn(item);
+        const func = item.function;
+
+        const angle = +(rot || '0').replace(/R/, '');
+        let veclen = SchematicRenderer.pinSizes[length] * 2.54;
+        if(func == 'dot') veclen -= 1.5;
+        const dir = Point.fromAngle((angle * Math.PI) / 180);
+        const vec = dir.prod(veclen);
+        const pivot = new Point(+x, +y);
+        const pp = dir.prod(veclen + 0.75).add(pivot);
+        const l = new Line(pivot, vec.add(pivot));
+
+        if(func == 'dot') {
+          svg(
+            'circle',
+            {
+              class: 'pin',
+              stroke: '#a54b4b',
+              fill: 'none',
+              cx: pp.x,
+              cy: pp.y,
+              r: 0.75,
+              'stroke-width': 0.3
+            },
+            parent
+          );
+        }
+
         svg(
-          'text',
+          'line',
           {
             class: 'pin',
-            stroke: 'none',
-            fill: SchematicRenderer.palette[6],
-            x: vec.x + 2.54,
-            y: vec.y + 0,
-            'font-size': 2,
-            //  'font-family': 'Fixed Medium',
-            'text-anchor': 'left',
-            'alignment-baseline': 'central',
-            children: name
-            //transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
+            stroke: '#a54b4b',
+            ...l.toObject(),
+            'stroke-width': 0.15
           },
           parent
         );
-      break;
-    }
-    default: {
-      super.renderItem(item, parent, opts);
-      break;
-    }
+        if(name != '' && visible != 'off')
+          svg(
+            'text',
+            {
+              class: 'pin',
+              stroke: 'none',
+              fill: SchematicRenderer.palette[6],
+              x: vec.x + 2.54,
+              y: vec.y + 0,
+              'font-size': 2,
+              //  'font-family': 'Fixed Medium',
+              'text-anchor': 'left',
+              'alignment-baseline': 'central',
+              children: name
+              //transform: `translate(${vec.x},${vec.y}) scale(1,-1) rotate(${-angle})`
+            },
+            parent
+          );
+        break;
+      }
+      default: {
+        super.renderItem(item, parent, opts);
+        break;
+      }
     }
   }
 
   renderNet(net, parent) {
     this.debug(`SchematicRenderer.renderNet`, { net, parent });
     let g = this.create('g', { className: `net ${net.name}` }, parent);
-    for (let segment of net.children) this.renderCollection(segment.children, g, { labelText: net.name });
+    for(let segment of net.children) this.renderCollection(segment.children, g, { labelText: net.name });
   }
 
   renderSheet(sheet, parent) {
@@ -184,7 +183,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     //    for(let instance of instances.list) this.renderInstance(instance, instancesGroup);
 
-    for (let net of sheet.nets.list) this.renderNet(net, netsGroup);
+    for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
   }
 
   renderInstance(instance, parent, opts = {}) {
@@ -195,7 +194,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     let { deviceset, name, value } = part;
     let { transform = new TransformationList() } = opts;
     transform.translate(x, y);
-    if (rot) {
+    if(rot) {
       rot = Rotation(rot);
       transform = transform.concat(rot);
     }
@@ -203,7 +202,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     const g = this.create('g', { className: `part.${part.name}`, 'data-path': part.path.toString(' '), transform }, parent);
 
-    if (!value) value = deviceset.name;
+    if(!value) value = deviceset.name;
     opts = deviceset.uservalue == 'yes' || true ? { name, value } : { name, value: '' };
 
     this.renderCollection(symbol.children, g, {
@@ -229,7 +228,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
       parent
     );
 
-    for (let instance of this.sheets[sheetNo].instances.list) {
+    for(let instance of this.sheets[sheetNo].instances.list) {
       let t = new TransformationList();
       t.translate(+instance.x, +instance.y);
       let b = instance.getBounds();

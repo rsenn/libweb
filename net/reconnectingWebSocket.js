@@ -77,7 +77,7 @@ export class ReconnectingWebSocket {
    */
   unsubscribe(eventType, callback) {
     const index = this.callbacks.findIndex((cb) => cb.event === eventType && cb.callback === callback);
-    if (index > 0) {
+    if(index > 0) {
       const registeredCallback = this.callbacks[index].callback;
 
       // Remove the event listener for the specific event.
@@ -124,14 +124,14 @@ export class ReconnectingWebSocket {
    */
   registerReconnectionListeners() {
     this.onDisconnect((e) => {
-      if (e.code !== 1000) {
+      if(e.code !== 1000) {
         // code 1000 indicates CLOSE_NORMAL
         this.attemptReconnecting();
       }
     });
 
     this.onError((e) => {
-      if (e.code === 'ECONNREFUSED') {
+      if(e.code === 'ECONNREFUSED') {
         this.attemptReconnecting();
       }
     });
@@ -143,7 +143,7 @@ export class ReconnectingWebSocket {
    */
   attemptReconnecting() {
     let ws = this;
-    if (this.reconnectAttempts > MAX_RECONNECT_ATTEMPTS) return;
+    if(this.reconnectAttempts > MAX_RECONNECT_ATTEMPTS) return;
 
     setTimeout(() => {
       this.socket = new ws.ctor(this.url, this.protocols);

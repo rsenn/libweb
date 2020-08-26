@@ -6,12 +6,12 @@ function Node(path, context) {
 
   let proxy = context.nodes.get(value);
 
-  if (!proxy) {
+  if(!proxy) {
     proxy = new Proxy(value, {
       get(target, key) {
         let prop = value[key];
 
-        if (Util.isObject(prop) || Util.isArray(prop)) return new Node([...path, key], context);
+        if(Util.isObject(prop) || Util.isArray(prop)) return new Node([...path, key], context);
 
         return context.handler && context.handler.get ? context.handler.get(prop, key) : prop;
       }

@@ -26,8 +26,6 @@
 /* global global */
 (function (window, define) {
   define('crosstab', (require, exports, module) => {
-    
-
     //--- Handle Support ---
     //See: http://detectmobilebrowsers.com/about
     let useragent = (window.navigator && (window.navigator.userAgent || window.navigator.vendor)) || window.opera || 'none';
@@ -41,8 +39,7 @@
     try {
       localStorage = window.localStorage;
       localStorage = window['ie8-eventlistener/storage'] || window.localStorage;
-    }
-    catch (e) {
+    } catch(e) {
       //New versions of Firefox throw a Security exception
       //if cookies are disabled. See
       //https://bugzilla.mozilla.org/show_bug.cgi?id=1028153
@@ -57,8 +54,7 @@
     try {
       localStorage.setItem('__crosstab', '');
       localStorage.removeItem('__crosstab');
-    }
-    catch (e) {
+    } catch(e) {
       setItemAllowed = false;
     }
 
@@ -66,26 +62,26 @@
     let frozenTabEnvironment = false;
 
     function notSupported() {
-      if (crosstab.supported) return;
+      if(crosstab.supported) return;
       let errorMsg = 'crosstab not supported';
       let reasons = [];
-      if (!localStorage) {
+      if(!localStorage) {
         reasons.push('localStorage not availabe');
       }
-      if (!window.addEventListener) {
+      if(!window.addEventListener) {
         reasons.push('addEventListener not available');
       }
-      if (isMobile) {
+      if(isMobile) {
         reasons.push('mobile browser');
       }
-      if (frozenTabEnvironment) {
+      if(frozenTabEnvironment) {
         reasons.push('frozen tab environment detected');
       }
-      if (!setItemAllowed) {
+      if(!setItemAllowed) {
         reasons.push('localStorage.setItem not allowed');
       }
 
-      if (reasons.length > 0) {
+      if(reasons.length > 0) {
         errorMsg += ': ' + reasons.join(', ');
       }
 
@@ -118,8 +114,8 @@
     };
 
     util.forEachObj = function (obj, fn) {
-      for (let key in obj) {
-        if (obj.hasOwnProperty(key)) {
+      for(let key in obj) {
+        if(obj.hasOwnProperty(key)) {
           fn.call(obj, obj[key], key, obj);
         }
       }
@@ -127,16 +123,15 @@
 
     util.forEachArr = function (arr, fn) {
       let len = arr.length;
-      for (let i = 0; i < len; i++) {
+      for(let i = 0; i < len; i++) {
         fn.call(arr, arr[i], i, arr);
       }
     };
 
     util.forEach = function (thing, fn) {
-      if (util.isArray(thing)) {
+      if(util.isArray(thing)) {
         util.forEachArr(thing, fn);
-      }
-      else {
+      } else {
         util.forEachObj(thing, fn);
       }
     };
@@ -154,16 +149,15 @@
       let isArr = util.isArray(thing);
       let res = isArr ? [] : {};
 
-      if (isArr) {
+      if(isArr) {
         util.forEachArr(thing, (value, key) => {
-          if (fn(value, key)) {
+          if(fn(value, key)) {
             res.push(value);
           }
         });
-      }
-      else {
+      } else {
         util.forEachObj(thing, (value, key) => {
-          if (fn(value, key)) {
+          if(fn(value, key)) {
             res[key] = value;
           }
         });
@@ -176,11 +170,10 @@
       let first = arguments.length < 3;
 
       util.forEach(thing, (item, key, obj) => {
-        if (first) {
+        if(first) {
           accumulator = item;
           first = false;
-        }
-        else {
+        } else {
           accumulator = fn(accumulator, item, key, obj);
         }
       });
@@ -220,7 +213,7 @@
 
       let findHandlerByKey = function (event, key) {
         let handler;
-        if (subscribeKeyToListener[event]) {
+        if(subscribeKeyToListener[event]) {
           handler = subscribeKeyToListener[event][key];
         }
         return handler;
@@ -229,10 +222,10 @@
       let findHandlerIndex = function (event, listener) {
         let listenerIndex = -1;
         let eventList = events[event];
-        if (eventList && listener) {
+        if(eventList && listener) {
           let len = eventList.length || 0;
-          for (let i = 0; i < len; i++) {
-            if (eventList[i] === listener) {
+          for(let i = 0; i < len; i++) {
+            if(eventList[i] === listener) {
               listenerIndex = i;
               break;
             }
@@ -247,19 +240,18 @@
         let storedHandler = findHandlerByKey(event, key);
         let listenerIndex;
 
-        if (storedHandler === undefined) {
+        if(storedHandler === undefined) {
           listenerIndex = handlers.length;
           handlers[listenerIndex] = listener;
 
-          if (!subscribeKeyToListener[event]) {
+          if(!subscribeKeyToListener[event]) {
             subscribeKeyToListener[event] = {};
           }
 
-          if (key) {
+          if(key) {
             subscribeKeyToListener[event][key] = listener;
           }
-        }
-        else {
+        } else {
           listenerIndex = findHandlerIndex(event, storedHandler);
           handlers[listenerIndex] = listener;
         }
@@ -271,9 +263,9 @@
         let handler = util.isFunction(key) ? key : findHandlerByKey(event, key);
 
         let listenerIndex = findHandlerIndex(event, handler);
-        if (listenerIndex === -1) return false;
+        if(listenerIndex === -1) return false;
 
-        if (events[event] && events[event][listenerIndex]) {
+        if(events[event] && events[event][listenerIndex]) {
           events[event].splice(listenerIndex, 1);
           delete subscribeKeyToListener[event][key];
           return true;
@@ -283,17 +275,16 @@
 
       let removeAllListeners = function (event) {
         let successful = false;
-        if (event) {
-          if (events[event]) {
+        if(event) {
+          if(events[event]) {
             delete events[event];
             successful = true;
           }
-          if (subscribeKeyToListener[event]) {
+          if(subscribeKeyToListener[event]) {
             delete subscribeKeyToListener[event];
             successful = successful && true;
           }
-        }
-        else {
+        } else {
           events = {};
           subscribeKeyToListener = {};
           successful = true;
@@ -306,7 +297,7 @@
         let handlers = listeners(event);
 
         util.forEach(handlers, function (listener) {
-          if (util.isFunction(listener)) {
+          if(util.isFunction(listener)) {
             listener.apply(this, args);
           }
         });
@@ -314,7 +305,7 @@
 
       let once = function (event, listener, key) {
         //Generate a unique id for this listener
-        while (!key || findHandlerByKey(event, key) !== undefined) {
+        while(!key || findHandlerByKey(event, key) !== undefined) {
           key = util.generateId();
         }
 
@@ -345,16 +336,14 @@
         addListener,
         destructor,
         on: addListener,
-        off (event, key) {
+        off(event, key) {
           let argsLen = arguments.length;
-          if (!argsLen) {
+          if(!argsLen) {
             return removeAllListeners();
-          }
-          else if (argsLen === 1) {
+          } else if(argsLen === 1) {
             return removeAllListeners(event);
           }
           return removeListener(event, key);
-          
         },
         once,
         emit,
@@ -385,39 +374,36 @@
     let lastOldValue;
     function onStorageEvent(event) {
       //Only handle crosstab events
-      if (!event || !(event.key in util.storageEventKeys)) {
+      if(!event || !(event.key in util.storageEventKeys)) {
         return;
       }
 
       let eventValue;
       try {
         eventValue = event.newValue ? JSON.parse(event.newValue) : {};
-      }
-      catch (e) {
+      } catch(e) {
         eventValue = {};
       }
-      if (!eventValue || !eventValue.id || eventValue.id === crosstab.id) {
+      if(!eventValue || !eventValue.id || eventValue.id === crosstab.id) {
         //This is to force IE to behave properly
         return;
       }
-      if (event.newValue === lastNewValue && event.oldValue === lastOldValue) {
+      if(event.newValue === lastNewValue && event.oldValue === lastOldValue) {
         //Fix bug in IE11 where StorageEvents in iframes are sent twice.
         return;
       }
       lastNewValue = event.newValue;
       lastOldValue = event.oldValue;
-      if (event.key === util.keys.MESSAGE_KEY) {
+      if(event.key === util.keys.MESSAGE_KEY) {
         let message = eventValue.data;
         //only handle if this message was meant for this tab.
-        if (!message.destination || message.destination === crosstab.id) {
+        if(!message.destination || message.destination === crosstab.id) {
           eventHandler.emit(message.event, message);
         }
-      }
-      else if (event.key === util.keys.FROZEN_TAB_ENVIRONMENT) {
+      } else if(event.key === util.keys.FROZEN_TAB_ENVIRONMENT) {
         frozenTabEnvironment = eventValue.data;
         crosstab.supported = crosstab.supported && !eventValue.data;
-      }
-      else if (event.key === util.keys.SUPPORTED_KEY) {
+      } else if(event.key === util.keys.SUPPORTED_KEY) {
         crosstab.supported = crosstab.supported && eventValue.data;
       }
     }
@@ -443,16 +429,15 @@
       crosstab.stopKeepalive = true;
       let numTabs = 0;
       util.forEach(util.tabs, (tab, key) => {
-        if (key !== util.keys.MASTER_TAB) {
+        if(key !== util.keys.MASTER_TAB) {
           numTabs++;
         }
       });
 
-      if (numTabs === 1) {
+      if(numTabs === 1) {
         util.tabs = {};
         setStoredTabs();
-      }
-      else {
+      } else {
         broadcast(util.eventTypes.tabClosed, crosstab.id);
       }
     }
@@ -494,16 +479,15 @@
     function masterTabElection() {
       let maxId = null;
       util.forEach(util.tabs, (tab) => {
-        if (!maxId || tab.id < maxId) {
+        if(!maxId || tab.id < maxId) {
           maxId = tab.id;
         }
       });
 
       //only broadcast the promotion if I am the new master
-      if (maxId === crosstab.id) {
+      if(maxId === crosstab.id) {
         broadcast(util.eventTypes.tabPromoted, crosstab.id);
-      }
-      else {
+      } else {
         //this is done so that in the case where multiple tabs are being
         //started at the same time, and there is no current saved tab
         //information, we will still have a value set for the master tab
@@ -515,20 +499,19 @@
     //self if we are the lowest tab id
     eventHandler.addListener(util.eventTypes.tabClosed, (message) => {
       let id = message.data;
-      if (id in util.tabs) {
+      if(id in util.tabs) {
         delete util.tabs[id];
       }
 
       let master = getMaster();
-      if (!master || master.id === id) {
+      if(!master || master.id === id) {
         //If the master was the closed tab, delete it and the highest
         //tab ID becomes the new master, which will save the tabs
-        if (master) {
+        if(master) {
           deleteMaster();
         }
         masterTabElection();
-      }
-      else if (master.id === crosstab.id) {
+      } else if(master.id === crosstab.id) {
         //If I am master, save the new tabs out
         setStoredTabs();
       }
@@ -539,14 +522,14 @@
       util.tabs[tab.id] = tab;
 
       //If there is no master, hold an election
-      if (!getMaster()) {
+      if(!getMaster()) {
         masterTabElection();
       }
 
-      if (getMasterId() === tab.id) {
+      if(getMasterId() === tab.id) {
         setMaster(tab);
       }
-      if (isMaster()) {
+      if(isMaster()) {
         //If I am master, save the new tabs out
         setStoredTabs();
       }
@@ -559,8 +542,8 @@
       let previousMaster = getMasterId();
 
       //Bully out competing broadcasts if our id is lower
-      if (crosstab.id < id) {
-        if (!bullying) {
+      if(crosstab.id < id) {
+        if(!bullying) {
           bullying = setTimeout(() => {
             bullying = 0;
             broadcast(util.eventTypes.tabPromoted, crosstab.id);
@@ -571,15 +554,14 @@
 
       setMaster({ id, lastUpdated });
 
-      if (isMaster()) {
+      if(isMaster()) {
         //set the tabs in localStorage
         setStoredTabs();
       }
-      if (isMaster() && previousMaster !== crosstab.id) {
+      if(isMaster() && previousMaster !== crosstab.id) {
         //emit the become master event so we can handle it accordingly
         util.events.emit(util.eventTypes.becomeMaster);
-      }
-      else if (!isMaster() && previousMaster === crosstab.id) {
+      } else if(!isMaster() && previousMaster === crosstab.id) {
         //emit the demoted from master event so we can clean up resources
         util.events.emit(util.eventTypes.demoteFromMaster);
       }
@@ -589,7 +571,7 @@
       padChar = padChar || '0';
       let numStr = num.toString();
 
-      if (numStr.length >= width) {
+      if(numStr.length >= width) {
         return numStr;
       }
 
@@ -603,7 +585,7 @@
 
     //--- Setup message sending and handling ---
     function broadcast(event, data, destination) {
-      if (!crosstab.supported) {
+      if(!crosstab.supported) {
         notSupported();
       }
 
@@ -618,11 +600,11 @@
 
       //If the destination differs from the origin send it out, otherwise
       //handle it locally
-      if (message.destination !== message.origin) {
+      if(message.destination !== message.origin) {
         setLocalStorageItem(util.keys.MESSAGE_KEY, message);
       }
 
-      if (!message.destination || message.destination === message.origin) {
+      if(!message.destination || message.destination === message.origin) {
         eventHandler.emit(event, message);
       }
     }
@@ -638,10 +620,9 @@
     });
 
     var crosstab = function (fn) {
-      if (setupComplete) {
+      if(setupComplete) {
         fn();
-      }
-      else {
+      } else {
         util.events.once('setupComplete', fn);
       }
     };
@@ -661,28 +642,26 @@
     //--- Crosstab supported ---
     //Check to see if the global frozen tab environment key or supported key has
     //been set.
-    if (!setupComplete && crosstab.supported) {
+    if(!setupComplete && crosstab.supported) {
       let frozenTabsRaw = getLocalStorageRaw(util.keys.FROZEN_TAB_ENVIRONMENT);
 
-      if (frozenTabsRaw.timestamp) {
+      if(frozenTabsRaw.timestamp) {
         let frozenTabs = frozenTabsRaw.data;
-        if (util.now() - frozenTabsRaw.timestamp > CACHE_TIMEOUT) {
+        if(util.now() - frozenTabsRaw.timestamp > CACHE_TIMEOUT) {
           localStorage.removeItem(util.keys.FROZEN_TAB_ENVIRONMENT);
-        }
-        else if (frozenTabs === true) {
+        } else if(frozenTabs === true) {
           frozenTabEnvironmentDetected();
         }
       }
 
       let supportedRaw = getLocalStorageRaw(util.keys.SUPPORTED_KEY);
 
-      if (supportedRaw.timestamp) {
+      if(supportedRaw.timestamp) {
         let supported = supportedRaw.data;
 
-        if (util.now() - supportedRaw.timestamp > CACHE_TIMEOUT) {
+        if(util.now() - supportedRaw.timestamp > CACHE_TIMEOUT) {
           localStorage.removeItem(util.keys.SUPPORTED_KEY);
-        }
-        else if (supported === false || supported === true) {
+        } else if(supported === false || supported === true) {
           //As long as it is explicitely set, use the value
           crosstab.supported = supported;
           util.events.emit('setupComplete');
@@ -738,15 +717,15 @@
       });
 
       //check to see if setup is complete
-      if (!setupComplete) {
+      if(!setupComplete) {
         let master = getMaster();
         //ping master
-        if (master && master.id !== myTab.id) {
+        if(master && master.id !== myTab.id) {
           let timeout;
           let start;
 
           crosstab.util.events.once('PONG', () => {
-            if (!setupComplete) {
+            if(!setupComplete) {
               clearTimeout(timeout);
               //set supported to true / frozen to false
               setLocalStorageItem(util.keys.SUPPORTED_KEY, true);
@@ -764,12 +743,11 @@
           var recursiveTimeout = function (iters) {
             let diff = util.now() - start;
 
-            if (!setupComplete) {
-              if (iters <= 0 && diff > PING_TIMEOUT) {
+            if(!setupComplete) {
+              if(iters <= 0 && diff > PING_TIMEOUT) {
                 frozenTabEnvironmentDetected();
                 util.events.emit('setupComplete');
-              }
-              else {
+              } else {
                 timeout = setTimeout(() => {
                   recursiveTimeout(iters - 1);
                 }, 5);
@@ -782,24 +760,22 @@
             recursiveTimeout(5);
           }, PING_TIMEOUT - 5 * iterations);
           crosstab.broadcastMaster('PING');
-        }
-        else if (master && master.id === myTab.id) {
+        } else if(master && master.id === myTab.id) {
           util.events.emit('setupComplete');
         }
       }
     }
 
     function keepaliveLoop() {
-      if (crosstab.supported && !crosstab.stopKeepalive) {
+      if(crosstab.supported && !crosstab.stopKeepalive) {
         keepalive();
       }
     }
 
     //--- Check if crosstab is supported ---
-    if (!crosstab.supported) {
+    if(!crosstab.supported) {
       crosstab.broadcast = notSupported;
-    }
-    else {
+    } else {
       //---- Setup Storage Listener
       window.addEventListener('storage', onStorageEvent, false);
       //start with the `beforeunload` event due to IE11
@@ -809,11 +785,11 @@
 
       util.events.on('PING', (message) => {
         //only handle direct messages
-        if (!message.destination || message.destination !== crosstab.id) {
+        if(!message.destination || message.destination !== crosstab.id) {
           return;
         }
 
-        if (util.now() - message.timestamp < PING_TIMEOUT) {
+        if(util.now() - message.timestamp < PING_TIMEOUT) {
           crosstab.broadcast('PONG', null, message.origin);
         }
       });
@@ -844,22 +820,21 @@
   typeof define === 'function' && define.amd
     ? define
     : (function (context) {
-      
-      return typeof module === 'object'
-        ? function (name, factory) {
-          factory(require, exports, module);
-        }
-        : function (name, factory) {
-          let module = { exports: {} };
-          let require = function (n) {
-            if (n === 'jquery') {
-              n = 'jQuery';
+        return typeof module === 'object'
+          ? function (name, factory) {
+              factory(require, exports, module);
             }
-            return context[n];
-          };
+          : function (name, factory) {
+              let module = { exports: {} };
+              let require = function (n) {
+                if(n === 'jquery') {
+                  n = 'jQuery';
+                }
+                return context[n];
+              };
 
-          factory(require, module.exports, module);
-          context[name] = module.exports;
-        };
-    })(this)
+              factory(require, module.exports, module);
+              context[name] = module.exports;
+            };
+      })(this)
 );

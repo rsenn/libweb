@@ -9,7 +9,7 @@ export function Timer(timeout, fn, props = {}, { create = setInterval, destroy =
     id: create(() => fn.call(t, t), timeout, fn, t),
     started: Date.now(),
     stop() {
-      if (this.id !== null) {
+      if(this.id !== null) {
         destroy(this.id);
         this.id = null;
         this.running = false;
@@ -18,7 +18,7 @@ export function Timer(timeout, fn, props = {}, { create = setInterval, destroy =
     ...props
   };
 
-  if (this instanceof Timer) Object.assign(this, t);
+  if(this instanceof Timer) Object.assign(this, t);
   else return t;
 }
 

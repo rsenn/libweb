@@ -12,13 +12,12 @@ export class BBox {
   }
 
   constructor(x1, y1, x2, y2) {
-    if (x1 !== undefined && y1 !== undefined && x2 !== undefined && y2 !== undefined) {
+    if(x1 !== undefined && y1 !== undefined && x2 !== undefined && y2 !== undefined) {
       this.x1 = Math.min(x1, x2);
       this.y1 = Math.min(y1, y2);
       this.x2 = Math.max(x1, x2);
       this.y2 = Math.max(y1, y2);
-    }
-    else {
+    } else {
       this.x1 = undefined;
       this.y1 = undefined;
       this.x2 = undefined;
@@ -33,21 +32,20 @@ export class BBox {
   }
 
   updateList(list, offset = 0.0, objFn = (item) => item, t = (a) => a) {
-    for (let arg of list) this.update(t(arg), offset, objFn(arg));
+    for(let arg of list) this.update(t(arg), offset, objFn(arg));
     return this;
   }
 
   update(arg, offset = 0.0, obj = null) {
     //console.log('BBox.update', { arg, offset, obj });
-    if (Util.isArray(arg)) return this.updateList(arg, offset);
-    else if (Util.isObject(arg)) {
-      if (typeof arg.bbox == 'function') {
+    if(Util.isArray(arg)) return this.updateList(arg, offset);
+    else if(Util.isObject(arg)) {
+      if(typeof arg.bbox == 'function') {
         arg = arg.bbox();
-      }
-      else {
-        if (arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset, (name) => (this.objects[name] = obj || arg));
-        if (arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0, (name) => (this.objects[name] = obj || arg));
-        if (arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0, (name) => (this.objects[name] = obj || arg));
+      } else {
+        if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset, (name) => (this.objects[name] = obj || arg));
+        if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0, (name) => (this.objects[name] = obj || arg));
+        if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0, (name) => (this.objects[name] = obj || arg));
       }
     }
 
@@ -56,19 +54,19 @@ export class BBox {
 
   updateXY(x, y, offset = 0, set = () => {}) {
     let updated = {};
-    if (this.x1 === undefined || this.x1 > x - offset) {
+    if(this.x1 === undefined || this.x1 > x - offset) {
       this.x1 = x - offset;
       set('x1');
     }
-    if (this.x2 === undefined || this.x2 < x + offset) {
+    if(this.x2 === undefined || this.x2 < x + offset) {
       this.x2 = x + offset;
       set('x2');
     }
-    if (this.y1 === undefined || this.y1 > y - offset) {
+    if(this.y1 === undefined || this.y1 > y - offset) {
       this.y1 = y - offset;
       set('y1');
     }
-    if (this.y2 === undefined || this.y2 < y + offset) {
+    if(this.y2 === undefined || this.y2 < y + offset) {
       this.y2 = y + offset;
       set('y2');
     }
@@ -144,8 +142,8 @@ export class BBox {
   }
 
   transform(fn = (arg) => arg, out) {
-    if (!out) out = this;
-    for (let prop of ['x1', 'y1', 'x2', 'y2']) {
+    if(!out) out = this;
+    for(let prop of ['x1', 'y1', 'x2', 'y2']) {
       const v = this[prop];
       out[prop] = fn(v);
     }
@@ -167,21 +165,21 @@ export class BBox {
   }
 
   static from(iter, tp = (p) => p) {
-    if (typeof iter == 'object' && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
+    if(typeof iter == 'object' && iter[Symbol.iterator]) iter = iter[Symbol.iterator]();
 
     let r = new BBox();
     let result = iter.next();
     let p;
-    if (result.value) {
+    if(result.value) {
       p = tp(result.value);
       r.x1 = p.x;
       r.x2 = p.x;
       r.y1 = p.y;
       r.y2 = p.y;
     }
-    while (true) {
+    while(true) {
       result = iter.next();
-      if (!result.value) break;
+      if(!result.value) break;
       p = tp(result.value);
 
       r.update(p);
@@ -191,6 +189,6 @@ export class BBox {
 
   *[Symbol.iterator]() {
     let [x1, x2, y1, y2] = this;
-    for (let prop of [x1, x2, y1, y2]) yield prop;
+    for(let prop of [x1, x2, y1, y2]) yield prop;
   }
 }

@@ -9,7 +9,7 @@ export const Text = ({ x, y, text, color, alignment, rot, transformation, visibl
   transform.translate(x, y);
   transform = transform.concat(Rotation(rot));
 
-  if (transform.rotation) transform.rotation.angle %= 180;
+  if(transform.rotation) transform.rotation.angle %= 180;
 
   transform = transform.concat(
     transformation

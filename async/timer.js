@@ -9,7 +9,7 @@ let timer = function (ms) {
 //from 0 after a random amount of time
 let source = async function* () {
   let i = 0;
-  while (true) {
+  while(true) {
     await timer(Math.random() * 1000);
     yield i++;
   }

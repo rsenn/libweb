@@ -60,7 +60,7 @@ export class WebSocketClient {
    * Must be connected. See {@link #connected}.
    */
   send(data) {
-    if (!this.connected) {
+    if(!this.connected) {
       throw this._closeEvent || new Error('Not connected.');
     }
     this._socket.send(data);
@@ -75,10 +75,10 @@ export class WebSocketClient {
    */
   receive() {
     let ws = this;
-    if (this._receiveDataQueue.length !== 0) {
+    if(this._receiveDataQueue.length !== 0) {
       return Promise.resolve(this._receiveDataQueue.shift());
     }
-    if (!this.connected) {
+    if(!this.connected) {
       return Promise.reject(this._closeEvent || new Error('Not connected.'));
     }
     let receivePromise = new Promise((resolve, reject) => {
@@ -94,13 +94,13 @@ export class WebSocketClient {
    */
   disconnect(code, reason) {
     let ws = this;
-    if (!this.connected) {
+    if(!this.connected) {
       return Promise.resolve(this._closeEvent);
     }
     return new Promise((resolve, reject) => {
       // It's okay to call resolve/reject multiple times in a promise.
       var callbacks = {
-        resolve (dummy) {
+        resolve(dummy) {
           // Make sure this object always stays in the queue
           // until callbacks.reject() (which is resolve) is called.
           ws._receiveCallbacksQueue.push(callbacks);
@@ -128,7 +128,7 @@ export class WebSocketClient {
         };
         // The cast was necessary because Flow's libdef's don't contain
         // a MessageEventListener definition.
-        if (ws._receiveCallbacksQueue.length !== 0) {
+        if(ws._receiveCallbacksQueue.length !== 0) {
           ws._receiveCallbacksQueue.shift().resolve(messageEvent.data);
           return;
         }
@@ -143,7 +143,7 @@ export class WebSocketClient {
           // Whenever a close event fires, the socket is effectively dead.
           // It's impossible for more messages to arrive.
           // If there are any promises waiting for messages, reject them.
-          while (ws._receiveCallbacksQueue.length !== 0) {
+          while(ws._receiveCallbacksQueue.length !== 0) {
             ws._receiveCallbacksQueue.shift().reject(ws._closeEvent);
           }
         });

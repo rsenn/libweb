@@ -1,5 +1,4 @@
 const adjs = [
-
   /*  'autumn',
   'hidden',
   'bitter',

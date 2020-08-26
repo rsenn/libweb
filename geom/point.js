@@ -4,9 +4,9 @@ const SymSpecies = Util.tryCatch(
   (sym) => sym.species
 );
 const CTOR = (obj) => {
-  if (obj[SymSpecies]) return obj[SymSpecies];
+  if(obj[SymSpecies]) return obj[SymSpecies];
   let p = Object.getPrototypeOf(obj);
-  if (p[SymSpecies]) return p[SymSpecies];
+  if(p[SymSpecies]) return p[SymSpecies];
   return p.constructor;
 };
 
@@ -15,49 +15,43 @@ export function Point(arg) {
   let p = this instanceof Point ? this : null;
   arg = args.shift();
 
-  if (p === null) {
-    if (arg instanceof Point) return arg;
+  if(p === null) {
+    if(arg instanceof Point) return arg;
     p = {};
   }
 
-  if (typeof arg === 'undefined') {
+  if(typeof arg === 'undefined') {
     p.x = arg;
     p.y = args.shift();
-  }
-  else if (typeof arg === 'number') {
+  } else if(typeof arg === 'number') {
     p.x = parseFloat(arg);
     p.y = parseFloat(args.shift());
-  }
-  else if (typeof arg === 'string') {
+  } else if(typeof arg === 'string') {
     const matches = [...arg.matchAll(/([-+]?d*.?d+)(?:[eE]([-+]?d+))?/g)];
 
     p.x = parseFloat(matches[0]);
     p.y = parseFloat(matches[1]);
-  }
-  else if (typeof arg == 'object' && arg !== null && (arg.x !== undefined || arg.y !== undefined)) {
+  } else if(typeof arg == 'object' && arg !== null && (arg.x !== undefined || arg.y !== undefined)) {
     p.x = arg.x;
     p.y = arg.y;
-  }
-  else if (typeof arg == 'object' && arg !== null && arg.length > 0 && x !== undefined && y !== undefined) {
+  } else if(typeof arg == 'object' && arg !== null && arg.length > 0 && x !== undefined && y !== undefined) {
     p.x = parseFloat(arg.shift());
     p.y = parseFloat(arg.shift());
-  }
-  else if (typeof args[0] === 'number' && typeof args[1] === 'number') {
+  } else if(typeof args[0] === 'number' && typeof args[1] === 'number') {
     p.x = args[0];
     p.y = args[1];
     args.shift(2);
-  }
-  else {
+  } else {
     p.x = 0;
     p.y = 0;
   }
-  if (p.x === undefined) p.x = 0;
-  if (p.y === undefined) p.y = 0;
-  if (isNaN(p.x)) p.x = undefined;
-  if (isNaN(p.y)) p.y = undefined;
+  if(p.x === undefined) p.x = 0;
+  if(p.y === undefined) p.y = 0;
+  if(isNaN(p.x)) p.x = undefined;
+  if(isNaN(p.y)) p.y = undefined;
 
-  if (!this || this === Point) {
-    if (p.prototype == Object) p.prototype = Point.prototype;
+  if(!this || this === Point) {
+    if(p.prototype == Object) p.prototype = Point.prototype;
     else Object.assign(p, Point.prototype);
     return p;
   }
@@ -92,7 +86,7 @@ Point.prototype.clear = function (x, y) {
   return this;
 };
 Point.prototype.set = function (fn) {
-  if (typeof fn != 'function') {
+  if(typeof fn != 'function') {
     Point.apply(this, [...arguments]);
     return this;
   }
@@ -122,7 +116,7 @@ Point.prototype.diff = function (arg) {
     let r = new Point(x, y);
     return r.sub(other);
   };
-  if (arg) return fn(arg);
+  if(arg) return fn(arg);
   return fn;
 };
 Point.prototype.sub = function (...args) {
@@ -249,9 +243,9 @@ Point.prototype.toSource = function (opts = {}) {
   let x = pad(this.x + '');
   let y = pad(this.y + '');
   let c = (t) => t;
-  if (typeof this != 'object' || this === null) return '';
-  if (asArray) return `[${x},${y}]`;
-  if (plainObj) return `{x:${x},y:${y}}`;
+  if(typeof this != 'object' || this === null) return '';
+  if(asArray) return `[${x},${y}]`;
+  if(plainObj) return `{x:${x},y:${y}}`;
 
   return `${c(showNew ? 'new ' : '', 1, 31)}${c('Point', 1, 33)}${c('(', 1, 36)}${c(x, 1, 32)}${c(',', 1, 36)}${c(y, 1, 32)}${c(')', 1, 36)}`;
 };
@@ -281,8 +275,8 @@ Point.prototype.inside = function (rect) {
   return this.x >= rect.x && this.x < rect.x + rect.width && this.y >= rect.y && this.y < rect.y + rect.height;
 };
 Point.prototype.transform = function (m) {
-  if (Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
-  if (Util.isObject(m) && typeof m.transform_point == 'function') return m.transform_point(this);
+  if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
+  if(Util.isObject(m) && typeof m.transform_point == 'function') return m.transform_point(this);
 
   const x = m[0] * this.x + m[1] * this.y + m[2];
   const y = m[3] * this.x + m[4] * this.y + m[5];
@@ -316,7 +310,7 @@ Point.equals = (a, b) => {
 Point.round = (point, prec) => Point.prototype.round.call(point, prec);
 Point.fromAngle = (angle, f) => Point.prototype.fromAngle.call(new Point(0, 0), angle, f);
 
-for (let name of [
+for(let name of [
   'clone',
   'comp',
   'neg',
@@ -343,7 +337,7 @@ Util.defineInspect(Point.prototype, 'x', 'y');
 
 Point.bind = (o, p, gen) => {
   const [x, y] = p || ['x', 'y'];
-  if (!gen) gen = (k) => (v) => (v === undefined ? o[k] : (o[k] = v));
+  if(!gen) gen = (k) => (v) => (v === undefined ? o[k] : (o[k] = v));
   return Util.bindProperties(new Point(0, 0), o, { x, y }, gen);
 };
 export default Point;

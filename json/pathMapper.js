@@ -7,16 +7,16 @@ export class PathMapper {
   ctor = ImmutablePath;
 
   constructor(root, ctor = ImmutablePath) {
-    if (root) this.root = root;
-    if (ctor) Util.define(this, { ctor });
+    if(root) this.root = root;
+    if(ctor) Util.define(this, { ctor });
   }
 
   set(obj, path) {
     const { map, ctor } = this;
 
-    if (map.get(obj)) return;
+    if(map.get(obj)) return;
 
-    if (!(path instanceof ctor)) path = new ctor(path);
+    if(!(path instanceof ctor)) path = new ctor(path);
     map.set(obj, path);
   }
 
@@ -27,9 +27,9 @@ export class PathMapper {
 
   at(path) {
     let { root, ctor } = this;
-    if (!(path instanceof ctor)) path = new ctor(path);
+    if(!(path instanceof ctor)) path = new ctor(path);
     let obj = path.apply(root, true);
-    if (typeof obj == 'object') this.set(obj, path);
+    if(typeof obj == 'object') this.set(obj, path);
     return obj;
   }
 
@@ -37,10 +37,10 @@ export class PathMapper {
     const { map, ctor } = this;
 
     let path = map.get(obj);
-    if (path === null) return null;
+    if(path === null) return null;
     path = fn(path);
-    if (path === null) return null;
-    if (!(path instanceof ctor)) path = new ctor(path);
+    if(path === null) return null;
+    if(!(path instanceof ctor)) path = new ctor(path);
     return this.at(path);
   }
 
@@ -71,15 +71,15 @@ export class PathMapper {
   get obj2path() {
     return {
       map: this.map,
-      get (obj) {
+      get(obj) {
         const { map } = this;
         return map.get(obj);
       },
-      has (obj) {
+      has(obj) {
         const { map } = this;
         return map.has(obj);
       },
-      set (obj, path) {
+      set(obj, path) {
         const { map } = this;
         map.set(obj, path);
         return this;
@@ -101,7 +101,7 @@ export class WrapperMapper {
   ctor = null;
 
   constructor(ctor) {
-    if (ctor) Util.define(this, { ctor });
+    if(ctor) Util.define(this, { ctor });
   }
 
   get(obj) {}

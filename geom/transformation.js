@@ -36,7 +36,7 @@ export class Transformation {
   }
 
   has(axis) {
-    if (this.axis !== undefined) return axis === this.axis;
+    if(this.axis !== undefined) return axis === this.axis;
     return axis in this;
   }
 
@@ -84,7 +84,7 @@ export class Transformation {
     args = args
       .filter((arg) => /^[-+0-9.]+[a-z]*$/.test(arg))
       .map((arg) => {
-        if (/[a-z]$/.test(arg)) {
+        if(/[a-z]$/.test(arg)) {
           unit = arg.replace(/[-+0-9.]*/g, '');
           arg = arg.replace(/[a-z]*$/g, '');
         }
@@ -92,25 +92,22 @@ export class Transformation {
         return +arg;
       });
 
-    if (cmd.startsWith('rotat')) {
+    if(cmd.startsWith('rotat')) {
       const axis = cmd.slice(6);
       args = axis != '' ? [args[0], axis] : args;
       t = new Rotation(...args);
-    }
-    else if (cmd.startsWith('translat')) {
+    } else if(cmd.startsWith('translat')) {
       const axis = cmd.slice(9);
       args = axis != '' ? [args[0], axis] : args;
       t = new Translation(...args);
-    }
-    else if (cmd.startsWith('scal')) {
+    } else if(cmd.startsWith('scal')) {
       const axis = cmd.slice(5);
       args = axis != '' ? [args[0], axis] : args;
       t = new Scaling(...args);
-    }
-    else if (cmd.startsWith('matrix')) {
+    } else if(cmd.startsWith('matrix')) {
       t = new MatrixTransformation(...args);
     }
-    if (unit) t.unit = unit;
+    if(unit) t.unit = unit;
     return t;
   }
 
@@ -129,7 +126,7 @@ export class Transformation {
   }*/
 
   [Symbol.toPrimitive](hint) {
-    if (hint == 'string') return this.toString();
+    if(hint == 'string') return this.toString();
 
     return this.toString() != '';
   }
@@ -153,7 +150,7 @@ export class Transformation {
 }
 
 Object.defineProperty(Transformation, Symbol.hasInstance, {
-  value (inst) {
+  value(inst) {
     return [Transformation, MatrixTransformation, Rotation, Translation, Scaling, TransformationList].some((ctor) => Object.getPrototypeOf(inst) == ctor.prototype);
   }
 });
@@ -167,7 +164,7 @@ export class Rotation extends Transformation {
   constructor(angle, axis) {
     super('rotate');
 
-    if (typeof axis == 'string' && ['x', 'y', 'z'].indexOf(axis.toLowerCase()) != -1) this.axis = axis.toLowerCase();
+    if(typeof axis == 'string' && ['x', 'y', 'z'].indexOf(axis.toLowerCase()) != -1) this.axis = axis.toLowerCase();
     //else this.axis = 'z';
     this.angle = angle;
   }
@@ -211,20 +208,20 @@ export class Rotation extends Transformation {
   }
 
   accumulate(other) {
-    if (this.type !== other.type && this.axis !== other.axis) throw new Error(Util.className(this) + ': accumulate mismatch');
+    if(this.type !== other.type && this.axis !== other.axis) throw new Error(Util.className(this) + ': accumulate mismatch');
     return new Rotation(this.angle + other.angle, this.axis);
   }
 
   static convertAngle(angle, unit) {
     switch (unit) {
-    case 'deg':
-      return angle;
-    case 'rad':
-      return DEG2RAD * angle;
-    case 'turn':
-      return angle / 360;
-    default:
-      return angle;
+      case 'deg':
+        return angle;
+      case 'rad':
+        return DEG2RAD * angle;
+      case 'turn':
+        return angle / 360;
+      default:
+        return angle;
     }
   }
 }
@@ -239,15 +236,14 @@ export class Translation extends Transformation {
   constructor(...args) {
     super('translate');
 
-    if (typeof args[1] == 'string' && ['x', 'y', 'z'].indexOf(args[1].toLowerCase()) != -1) {
+    if(typeof args[1] == 'string' && ['x', 'y', 'z'].indexOf(args[1].toLowerCase()) != -1) {
       const axis = args[1].toLowerCase();
       this[axis] = args[0];
-    }
-    else {
+    } else {
       const [x = 0, y = 0, z] = args;
       this.x = x;
       this.y = y;
-      if (z !== undefined) this.z = z;
+      if(z !== undefined) this.z = z;
     }
   }
 
@@ -276,9 +272,9 @@ export class Translation extends Transformation {
   }
 
   accumulate(other) {
-    if (this.type !== other.type) throw new Error(Util.className(this) + ': accumulate mismatch');
+    if(this.type !== other.type) throw new Error(Util.className(this) + ': accumulate mismatch');
 
-    if (this.is3D) return new Translation(this.x + other.x, this.y + other.y, this.z + other.z);
+    if(this.is3D) return new Translation(this.x + other.x, this.y + other.y, this.z + other.z);
     return new Translation(this.x + other.x, this.y + other.y);
   }
 }
@@ -293,15 +289,14 @@ export class Scaling extends Transformation {
   constructor(...args) {
     super('scale');
 
-    if (typeof args[1] == 'string' && ['x', 'y', 'z'].indexOf(args[1].toLowerCase()) != -1) {
+    if(typeof args[1] == 'string' && ['x', 'y', 'z'].indexOf(args[1].toLowerCase()) != -1) {
       const axis = args[1].toLowerCase();
       this[axis] = args[0];
-    }
-    else {
+    } else {
       const [x = 1, y, z] = args;
       this.x = x;
       this.y = y === undefined ? x : y;
-      if (z !== undefined) this.z = z;
+      if(z !== undefined) this.z = z;
     }
   }
 
@@ -330,9 +325,9 @@ export class Scaling extends Transformation {
   }
 
   accumulate(other) {
-    if (this.type !== other.type) throw new Error(Util.className(this) + ': accumulate mismatch');
+    if(this.type !== other.type) throw new Error(Util.className(this) + ': accumulate mismatch');
 
-    if (this.is3D) return new Scaling(this.x * other.x, this.y * other.y, this.z * other.z);
+    if(this.is3D) return new Scaling(this.x * other.x, this.y * other.y, this.z * other.z);
     return new Scaling(this.x * other.x, this.y * other.y);
   }
 }
@@ -345,8 +340,8 @@ export class MatrixTransformation extends Transformation {
   constructor(init) {
     super('matrix');
 
-    if (init instanceof Matrix) this.matrix = init;
-    else if (isMatrix(init)) this.matrix = new Matrix(init);
+    if(init instanceof Matrix) this.matrix = init;
+    else if(isMatrix(init)) this.matrix = new Matrix(init);
     else this.matrix = new Matrix(...arguments);
   }
 
@@ -371,7 +366,7 @@ export class MatrixTransformation extends Transformation {
   }
 
   accumulate(other) {
-    if (this.type !== other.type) throw new Error(Util.className(this) + ': accumulate mismatch');
+    if(this.type !== other.type) throw new Error(Util.className(this) + ': accumulate mismatch');
 
     return new MatrixTransformation(this.matrix.multiply(other.matrix));
   }
@@ -383,15 +378,15 @@ export class TransformationList extends Array {
   constructor(init, ...rest) {
     super();
 
-    if (init !== undefined) this.initialize(init, ...rest);
+    if(init !== undefined) this.initialize(init, ...rest);
 
     return this;
   }
 
   initialize(init, ...args) {
-    if (typeof init == 'number') while (this.length < init) this.push(undefined);
-    else if (typeof init == 'string') TransformationList.prototype.fromString.call(this, init);
-    else if (init instanceof Array) TransformationList.prototype.fromArray.call(this, init);
+    if(typeof init == 'number') while(this.length < init) this.push(undefined);
+    else if(typeof init == 'string') TransformationList.prototype.fromString.call(this, init);
+    else if(init instanceof Array) TransformationList.prototype.fromArray.call(this, init);
     else throw new Error('No such initialization: ' + init);
     return this;
   }
@@ -413,22 +408,22 @@ export class TransformationList extends Array {
     let n,
       a = [];
 
-    for (let i = 0; i < str.length; i += n) {
+    for(let i = 0; i < str.length; i += n) {
       let s = str.slice(i);
       n = s.indexOf(')') + 1;
-      if (n == 0) n = str.length;
+      if(n == 0) n = str.length;
       s = s.slice(0, n).trim();
-      if (s != '') a.push(s);
+      if(s != '') a.push(s);
     }
     return this.fromArray(a);
   }
 
   fromArray(arr) {
-    for (let i = 0; i < arr.length; i++) {
+    for(let i = 0; i < arr.length; i++) {
       const arg = arr[i];
 
-      if (arg instanceof Transformation) this.push(arg);
-      else if (typeof arg == 'string') this.push(Transformation.fromString(arg));
+      if(arg instanceof Transformation) this.push(arg);
+      else if(typeof arg == 'string') this.push(Transformation.fromString(arg));
       else throw new Error('No such transformation: ' + arg);
     }
 
@@ -469,9 +464,9 @@ export class TransformationList extends Array {
   }
 
   push(...args) {
-    for (let arg of args) {
-      if (typeof arg == 'string') arg = Transformation.fromString(arg);
-      else if (isMatrix(arg)) arg = new MatrixTransformation(arg);
+    for(let arg of args) {
+      if(typeof arg == 'string') arg = Transformation.fromString(arg);
+      else if(isMatrix(arg)) arg = new MatrixTransformation(arg);
 
       Array.prototype.push.call(this, arg);
     }
@@ -483,8 +478,8 @@ export class TransformationList extends Array {
   }
 
   unshift(...args) {
-    for (let arg of args.reverse()) {
-      if (typeof arg == 'string') arg = Transformation.fromString(arg);
+    for(let arg of args.reverse()) {
+      if(typeof arg == 'string') arg = Transformation.fromString(arg);
       Array.prototype.unshift.call(this, arg);
     }
     return this;
@@ -504,7 +499,7 @@ export class TransformationList extends Array {
     vec = vec.round(0.00001, 5);
     //Util.log("from:", new Point(x,y), " to:", vec);
 
-    if (Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) Array.prototype.push.call(this, new Translation(vec.x, vec.y));
+    if(Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) Array.prototype.push.call(this, new Translation(vec.x, vec.y));
 
     return this;
   }
@@ -541,7 +536,7 @@ export class TransformationList extends Array {
   toMatrix() {
     let matrix = Matrix.IDENTITY;
 
-    for (let other of this.toMatrices()) matrix = matrix.multiply(other);
+    for(let other of this.toMatrices()) matrix = matrix.multiply(other);
 
     return matrix;
   }
@@ -549,14 +544,14 @@ export class TransformationList extends Array {
   undo() {
     let ret = new TransformationList();
 
-    for (let i = this.length - 1; i >= 0; i--) Array.prototype.push.call(ret, this[i].invert());
+    for(let i = this.length - 1; i >= 0; i--) Array.prototype.push.call(ret, this[i].invert());
 
     return ret;
   }
 
   merge(...args) {
-    for (let arg of args) {
-      if (typeof arg == 'string') arg = TransformationList.fromString(arg);
+    for(let arg of args) {
+      if(typeof arg == 'string') arg = TransformationList.fromString(arg);
 
       TransformationList.prototype.push.apply(this, arg);
     }
@@ -574,9 +569,9 @@ export class TransformationList extends Array {
   }
 
   findLast(predicate) {
-    for (let i = this.length - 1; i >= 0; --i) {
+    for(let i = this.length - 1; i >= 0; --i) {
       const x = this[i];
-      if (predicate(x)) return x;
+      if(predicate(x)) return x;
     }
     return null;
   }
@@ -605,20 +600,19 @@ export class TransformationList extends Array {
   }
 
   at(pos) {
-    if (pos < 0) pos += this.length;
+    if(pos < 0) pos += this.length;
     return this[pos];
   }
 
   collapse() {
     let ret = new TransformationList();
 
-    for (let i = 0; i < this.length; i++) {
+    for(let i = 0; i < this.length; i++) {
       let item = this[i];
-      if (i + 1 < this.length && this[i + 1].type == this[i].type) {
+      if(i + 1 < this.length && this[i + 1].type == this[i].type) {
         item = item.accumulate(this[i + 1]);
         i++;
-      }
-      else {
+      } else {
         item = item.clone();
       }
       Array.prototype.push.call(ret, item);

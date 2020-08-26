@@ -17,7 +17,7 @@ module.exports = ({ code, sourceType, reproductionData = {} }) => {
   };
   let child = cp.execSync(cmd[os.platform()]).toString();
 
-  if (child.length > 0) {
+  if(child.length > 0) {
     console.log('');
     console.log(child);
     return {

@@ -30,7 +30,6 @@
  * );
  */
 export class SpatialHash {
-
   /**
    * @param {number} cellSize used to create hash
    */
@@ -50,7 +49,7 @@ export class SpatialHash {
    * @param {number} object.AABB.height
    */
   insert(object) {
-    if (!object.spatial) {
+    if(!object.spatial) {
       object.spatial = { hashes: [] };
     }
     let AABB = object.AABB;
@@ -63,17 +62,16 @@ export class SpatialHash {
     let y2 = Math.floor((AABB.y + AABB.height) / this.cellSize);
     y2 = y2 >= this.height ? this.height - 1 : y2;
     //only remove and insert if mapping has changed
-    if (object.spatial.x1 !== x1 || object.spatial.y1 !== y1 || object.spatial.x2 !== x2 || object.spatial.y2 !== y2) {
-      if (object.spatial.maps.length) {
+    if(object.spatial.x1 !== x1 || object.spatial.y1 !== y1 || object.spatial.x2 !== x2 || object.spatial.y2 !== y2) {
+      if(object.spatial.maps.length) {
         this.remove(object);
       }
-      for (let y = y1; y <= y2; y++) {
-        for (let x = x1; x <= x2; x++) {
+      for(let y = y1; y <= y2; y++) {
+        for(let x = x1; x <= x2; x++) {
           let key = x + ' ' + y;
-          if (!this.list[key]) {
+          if(!this.list[key]) {
             this.list[key] = [object];
-          }
-          else {
+          } else {
             this.list[key].push(object);
           }
           object.spatial.hashes.push({ list, key });
@@ -91,12 +89,11 @@ export class SpatialHash {
    * @param {object} object
    */
   remove(object) {
-    while (object.spatial.hashes.length) {
+    while(object.spatial.hashes.length) {
       let entry = object.spatial.hashes.pop();
-      if (entry.list.length === 1) {
+      if(entry.list.length === 1) {
         this.list[entry.key] = null;
-      }
-      else {
+      } else {
         let index = entry.list.indexOf(object);
         entry.list.splice(index, 1);
       }
@@ -122,10 +119,10 @@ export class SpatialHash {
     x2 = x2 >= this.width ? this.width - 1 : x2;
     let y2 = Math.floor((AABB.y + AABB.height) / this.cellSize);
     y2 = y2 >= this.height ? this.height - 1 : y2;
-    for (let y = y1; y <= y2; y++) {
-      for (let x = x1; x <= x2; x++) {
+    for(let y = y1; y <= y2; y++) {
+      for(let x = x1; x <= x2; x++) {
         let entry = this.list[x + ' ' + y];
-        if (entry) {
+        if(entry) {
           results = results.concat(entry.list);
         }
       }
@@ -153,12 +150,12 @@ export class SpatialHash {
     x2 = x2 >= this.width ? this.width - 1 : x2;
     let y2 = Math.floor((AABB.y + AABB.height) / this.cellSize);
     y2 = y2 >= this.height ? this.height - 1 : y2;
-    for (let y = y1; y <= y2; y++) {
-      for (let x = x1; x <= x2; x++) {
+    for(let y = y1; y <= y2; y++) {
+      for(let x = x1; x <= x2; x++) {
         let entry = this.list[x + ' ' + y];
-        if (entry) {
-          for (let i = 0; i < entry.list.length; i++) {
-            if (callback(entry.list[i])) {
+        if(entry) {
+          for(let i = 0; i < entry.list.length; i++) {
+            if(callback(entry.list[i])) {
               return true;
             }
           }
@@ -174,7 +171,7 @@ export class SpatialHash {
    * */
   getBuckets() {
     let count = 0;
-    for (let key in this.list) {
+    for(let key in this.list) {
       count++;
     }
     return count;
@@ -186,7 +183,7 @@ export class SpatialHash {
    */
   getAverageSize() {
     let total = 0;
-    for (let key in this.list) {
+    for(let key in this.list) {
       total += this.list[key].length;
     }
     return total / this.getBuckets();
@@ -199,8 +196,8 @@ export class SpatialHash {
   getLargest() {
     let largest = 0,
       object;
-    for (let key in this.list) {
-      if (this.list[key].length > largest) {
+    for(let key in this.list) {
+      if(this.list[key].length > largest) {
         largest = this.list[key].length;
         object = this.list[key];
       }
@@ -223,8 +220,8 @@ export class SpatialHash {
     let y1 = Math.floor(AABB.y / this.cellSize);
     let x2 = Math.ceil((AABB.x + AABB.width) / this.cellSize);
     let y2 = Math.ceil((AABB.y + AABB.height) / this.cellSize);
-    for (let y = y1; y < y2; y++) {
-      for (let x = x1; x < x2; x++) {
+    for(let y = y1; y < y2; y++) {
+      for(let x = x1; x < x2; x++) {
         count += this.list[x + ' ' + y] ? 1 : 0;
         total++;
       }

@@ -31,7 +31,7 @@ let setlen = function (t, newlen) {
   let t0 = t[0],
     t1 = t[1],
     k;
-  if (t0 === 0 || t1 === 0) {
+  if(t0 === 0 || t1 === 0) {
     return t;
   }
   k = newlen / Math.sqrt(t0 * t0 + t1 * t1);

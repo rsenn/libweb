@@ -3,7 +3,7 @@ define([], () => {
 
   return {
     ZERO,
-    iszero (n) {
+    iszero(n) {
       return n === 0 || Math.abs(n) < ZERO;
     }
   };

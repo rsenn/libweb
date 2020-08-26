@@ -38,18 +38,17 @@ function supportsStorage() {
   let key = '__lscachetest__';
   let value = key;
 
-  if (this.cachedStorage !== undefined) {
+  if(this.cachedStorage !== undefined) {
     return this.cachedStorage;
   }
 
   // some browsers will throw an error if you try to access local storage (e.g. brave browser)
   // hence check is inside a try/catch
   try {
-    if (!localStorage) {
+    if(!localStorage) {
       return false;
     }
-  }
-  catch (ex) {
+  } catch(ex) {
     return false;
   }
 
@@ -57,13 +56,11 @@ function supportsStorage() {
     Implementations.localStorage.setItem.call(this, key, value);
     Implementations.localStorage.removeItem.call(this, key);
     this.cachedStorage = true;
-  }
-  catch (e) {
+  } catch(e) {
     // If we hit the limit, and we don't have an empty localStorage then it means we have support
-    if (Implementations.localStorage.supported() /*isOutOfSpace.call(this, e) && localStorage.length*/) {
+    if(Implementations.localStorage.supported() /*isOutOfSpace.call(this, e) && localStorage.length*/) {
       this.cachedStorage = true; // just maxed it out and even the set test failed.
-    }
-    else {
+    } else {
       this.cachedStorage = false;
     }
   }
@@ -78,7 +75,7 @@ function isOutOfSpace(e) {
 // Determines if native JSON (de-)serialization is supported in the browser.
 function supportsJSON() {
   /*jshint eqnull:true */
-  if (this.cachedJSON === undefined) {
+  if(this.cachedJSON === undefined) {
     this.cachedJSON = window.JSON != null;
   }
   return this.cachedJSON;
@@ -123,22 +120,21 @@ const Implementations = {
     async response(result, clone) {
       let tmp;
 
-      if (clone && Util.isObject(result) && typeof result.clone == 'function') {
+      if(clone && Util.isObject(result) && typeof result.clone == 'function') {
         try {
           tmp = result.clone();
-          if (!tmp) tmp = Object.create(Object.getPrototypeOf(result), Object.getOwnPropertyDescriptors());
+          if(!tmp) tmp = Object.create(Object.getPrototypeOf(result), Object.getOwnPropertyDescriptors());
 
-          if (!tmp) throw new Error('clone failed');
+          if(!tmp) throw new Error('clone failed');
           result = tmp;
-        }
-        catch (error) {}
+        } catch(error) {}
       }
 
       return result;
     },
 
     request(obj) {
-      if (obj instanceof Request || (Util.isObject(obj) && typeof obj.url == 'string')) obj = obj.url;
+      if(obj instanceof Request || (Util.isObject(obj) && typeof obj.url == 'string')) obj = obj.url;
       return obj;
     },
 
@@ -149,12 +145,12 @@ const Implementations = {
     async getItem(request, opts = {}) {
       //console.info("getItem", {request,opts});
 
-      if (request.url) request = request.url;
+      if(request.url) request = request.url;
       let response = await this.cache.match(request, opts);
       //console.info("getItem", {request,response});
       //      if(response instanceof Response || (Util.isObject(response) && typeof response.json == 'function')) response = await response.json();
 
-      if (response) {
+      if(response) {
         let { status, type, ok, statusText, headers } = response;
         let text;
 
@@ -168,7 +164,7 @@ const Implementations = {
 
       //console.info('setItem:', { request, response }); // Fix for iPad issue - sometimes throws QUOTA_EXCEEDED_ERR on setItem.
 
-      if (!cache) throw new Error(`Cache = ${cache}`);
+      if(!cache) throw new Error(`Cache = ${cache}`);
 
       /*
       let type = 'text/html';
@@ -178,8 +174,8 @@ const Implementations = {
       }
       if(typeof response == 'string') response = new Blob([response], { type });*/
       //   console.log('setItem', { request, response });
-      if (!(response instanceof Response)) response = new Response(response, { url: request.url, status: 200, statusText: 'OK', headers: { 'Content-Type': type } });
-      if (typeof cache.put == 'function') return await cache.put(request, response);
+      if(!(response instanceof Response)) response = new Response(response, { url: request.url, status: 200, statusText: 'OK', headers: { 'Content-Type': type } });
+      if(typeof cache.put == 'function') return await cache.put(request, response);
     },
 
     async removeItem(request) {
@@ -229,11 +225,11 @@ const Implementations = {
       const { obj } = this;
       let prefixRegExp = new RegExp('^' + CACHE_PREFIX + escapeRegExpSpecialCharacters(obj.cacheBucket) + '(.*)');
       // Loop in reverse as removing items will change indices of tail
-      for (let i = localStorage.length - 1; i >= 0; --i) {
+      for(let i = localStorage.length - 1; i >= 0; --i) {
         let key = localStorage.key(i);
         key = key && key.match(prefixRegExp);
         key = key && key[1];
-        if (key && key.indexOf(CACHE_SUFFIX) < 0) {
+        if(key && key.indexOf(CACHE_SUFFIX) < 0) {
           fn.call(this, key, expirationKey.call(this, key));
         }
       }
@@ -253,11 +249,11 @@ function flushExpiredItem(key) {
   let exprKey = expirationKey.call(this, key);
   let expr = this.getItem.call(this, exprKey);
 
-  if (expr) {
+  if(expr) {
     let expirationTime = parseInt(expr, EXPIRY_RADIX);
 
     // Check if we should actually kick item out of storage
-    if (currentTime.call(this) >= expirationTime) {
+    if(currentTime.call(this) >= expirationTime) {
       removeItem.call(this, key);
       removeItem.call(this, exprKey);
       return true;
@@ -266,10 +262,10 @@ function flushExpiredItem(key) {
 }
 
 function warn(message, err) {
-  if (!this.warnings) return;
-  if (!('console' in window) || typeof window.console.warn !== 'function') return;
+  if(!this.warnings) return;
+  if(!('console' in window) || typeof window.console.warn !== 'function') return;
   window.console.warn.call(this, 'lscache - ' + message);
-  if (err) window.console.warn.call(this, 'lscache - The error was: ' + err.message);
+  if(err) window.console.warn.call(this, 'lscache - The error was: ' + err.message);
 }
 
 function calculateMaxDate(expiryMilliseconds) {
@@ -295,16 +291,15 @@ export function brcache(cache) {
 
   let impl = { ...Implementations.browserCache /*, cache */ /*, get cacheBucket() { return obj.cacheBucket; } */ };
 
-  if (Util.isObject(cache) && typeof cache.match == 'function') {
+  if(Util.isObject(cache) && typeof cache.match == 'function') {
     impl.cache = cache;
-  }
-  else if (typeof cache == 'string') {
+  } else if(typeof cache == 'string') {
     cacheName = obj.cacheName = cache;
     tmp = Util.tryCatch(() => window.caches);
 
     Util.define(impl, {
       async getCache() {
-        if (tmp && typeof tmp.open == 'function') return await tmp.open(cacheName);
+        if(tmp && typeof tmp.open == 'function') return await tmp.open(cacheName);
       },
       get cache() {
         return this.getCache();
@@ -317,7 +312,7 @@ export function brcache(cache) {
 
   //  Object.assign(brcache, brcache.prototype);
 
-  if (typeof obj.keys != 'function') Object.assign(obj, Util.getMethods(BaseCache.prototype, 1, 0));
+  if(typeof obj.keys != 'function') Object.assign(obj, Util.getMethods(BaseCache.prototype, 1, 0));
 
   Object.assign(obj, { cacheBucket: '', warnings: false, hits: {} });
 
@@ -367,8 +362,7 @@ export class BaseCache {
     //if(!this.supportsJSON) return false;
     try {
       value = typeof value == 'string' ? value : value instanceof Response ? value : JSON.stringify(value);
-    }
-    catch (e) {
+    } catch(e) {
       // Sometimes we can't stringify due to circular refs
       // in complex objects, so we won't bother storing then.
       return false;
@@ -376,19 +370,17 @@ export class BaseCache {
 
     try {
       impl.setItem.call(this, key, value);
-    }
-    catch (e) {
-      if (isOutOfSpace(e)) {
+    } catch(e) {
+      if(isOutOfSpace(e)) {
         // If we exceeded the quota, then we will sort
         // by the expire time, and then remove the N oldest
         let storedKeys = [];
         let storedKey;
         impl.eachKey.call(this, (key, exprKey) => {
           let expiration = impl.getItem.call(this, exprKey);
-          if (expiration) {
+          if(expiration) {
             expiration = parseInt(expiration, EXPIRY_RADIX);
-          }
-          else {
+          } else {
             // TODO: Store date added for non-expiring items for smarter removal
             expiration = this.maxDate;
           }
@@ -402,7 +394,7 @@ export class BaseCache {
         storedKeys.sort((a, b) => b.expiration - a.expiration);
 
         let targetSize = (value || '').length;
-        while (storedKeys.length && targetSize > 0) {
+        while(storedKeys.length && targetSize > 0) {
           storedKey = storedKeys.pop();
           impl.warn.call(this, "Cache is full, removing item with key '" + key + "'");
           impl.flushItem.call(this, storedKey.key);
@@ -410,14 +402,12 @@ export class BaseCache {
         }
         try {
           impl.setItem.call(this, key, value);
-        }
-        catch (e) {
+        } catch(e) {
           // value may be larger than total quota
           impl.warn.call(this, "Could not add item with key '" + key + "', perhaps it's too big?", e);
           return false;
         }
-      }
-      else {
+      } else {
         // If it was some other error, just give up.
         impl.warn.call(this, "Could not add item with key '" + key + "'", e);
         return false;
@@ -425,10 +415,9 @@ export class BaseCache {
     }
 
     // If a time is specified, store expiration info in localStorage
-    if (time) {
+    if(time) {
       impl.setItem.call(this, expirationKey(key), (currentTime.call(this) + time).toString(EXPIRY_RADIX));
-    }
-    else {
+    } else {
       //console.log('impl.removeItem', impl.removeItem);
       // In case they previously set a time, remove that info from localStorage.
       impl.removeItem.call(this, expirationKey(key));
@@ -448,7 +437,7 @@ export class BaseCache {
 
     //    if(!this.supportsStorage) return null;
     // Return the de-serialized item if not expired
-    if (flushExpiredItem.call(impl, key)) {
+    if(flushExpiredItem.call(impl, key)) {
       return null;
     }
     // Tries to de-serialize stored value if its an object, and returns the normal value otherwise.
@@ -498,13 +487,13 @@ export class BaseCache {
    */
   remove(key) {
     const { impl, cache } = this;
-    if (!this.supportsStorage) return;
+    if(!this.supportsStorage) return;
 
     impl.removeItem.call(this, key);
   }
   async clear() {
     const { impl } = this;
-    for (let key of await this.keys()) impl.removeItem.call(this, key);
+    for(let key of await this.keys()) impl.removeItem.call(this, key);
   }
 
   /**
@@ -521,7 +510,7 @@ export class BaseCache {
    */
   flush() {
     const { impl, cache } = this;
-    if (!this.supportsStorage) return;
+    if(!this.supportsStorage) return;
 
     impl.eachKey.call(this, (key) => impl.flushItem.call(this, key));
   }
@@ -531,7 +520,7 @@ export class BaseCache {
    */
   flushExpired() {
     const { impl, cache } = this;
-    if (!this.supportsStorage) return;
+    if(!this.supportsStorage) return;
 
     impl.eachKey.call(this, (key) => flushExpiredItem.call(impl, key));
   }
@@ -603,17 +592,17 @@ export async function CachedFetch(fn, cacheObj) {
   let request, response;
   let url, cacheName, tmp;
 
-  if (typeof cacheObj == 'string') {
+  if(typeof cacheObj == 'string') {
     cacheName = cacheObj;
     tmp = await Util.tryCatch(() => window.caches.open(cacheName));
-    if (Util.isObject(tmp) && typeof tmp.match == 'function') cacheObj = tmp;
+    if(Util.isObject(tmp) && typeof tmp.match == 'function') cacheObj = tmp;
 
     //console.log('CachedFetch', fn + '', { cacheName, cacheObj, tmp });
   }
 
   let browserCache = new brcache(cacheObj);
   let { impl } = cacheObj;
-  if (impl) {
+  if(impl) {
     impl.obj = cacheObj;
     impl.cache = null;
   }
@@ -633,25 +622,22 @@ export async function CachedFetch(fn, cacheObj) {
       url = impl.request.call(this, request);
 
       cacheObj.hits[url] = (cacheObj.hits[url] || 0) + 1;
-    }
-    catch (error) {}
-    if (response) {
+    } catch(error) {}
+    if(response) {
       cached = true;
-    }
-    else {
+    } else {
       try {
         response = await fetch(request);
         response.time = Date.now();
-      }
-      catch (error) {}
-      if (response) {
+      } catch(error) {}
+      if(response) {
         let r = await browserCache.set(request, response.clone());
         console.info('CachedFetch set', { request, response, r });
       }
     }
 
     console.info('cache ', cached ? 'hit' : 'miss', { request, response });
-    if (cached) response.cached = true;
+    if(cached) response.cached = true;
     response.request = request;
 
     return response;

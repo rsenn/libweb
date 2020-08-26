@@ -32,10 +32,10 @@ const Hyphenator = function (patterns, exceptions) {
     let c = '';
     let t = this.tree;
 
-    for (let i = 0; i < chars.length; i++) {
+    for(let i = 0; i < chars.length; i++) {
       c = chars.charAt(i);
 
-      if (!(c in t)) {
+      if(!(c in t)) {
         t[c] = {};
       }
       t = t[c];
@@ -53,35 +53,34 @@ const Hyphenator = function (patterns, exceptions) {
    *   The word, hyphenated.
    */
   this.hyphenate_word = function (word) {
-    if (word.length <= 4) {
+    if(word.length <= 4) {
       return [word];
     }
 
     let points = [];
     const lword = word.toLowerCase();
 
-    if (lword in this.exceptions) {
+    if(lword in this.exceptions) {
       points = this.exceptions[lword];
-    }
-    else {
+    } else {
       const work = `.${lword}.`;
 
       //Initialize array with 0s.
       points = Array(...Array(work.length + 1)).map(() => 0);
 
-      for (let i = 0; i < work.length; i++) {
+      for(let i = 0; i < work.length; i++) {
         let t = this.tree;
         const sub_work = work.substring(i);
 
-        for (let n = 0; n < sub_work.length; n++) {
+        for(let n = 0; n < sub_work.length; n++) {
           c = sub_work[n];
-          if (!(c in t)) break;
+          if(!(c in t)) break;
 
           t = t[c];
-          if (!(null in t)) continue;
+          if(!(null in t)) continue;
 
           const p = t.null;
-          for (let j = 0; j < p.length; j++) {
+          for(let j = 0; j < p.length; j++) {
             points[i + j] = Math.max(points[i + j], p[j]);
           }
         }
@@ -96,7 +95,7 @@ const Hyphenator = function (patterns, exceptions) {
       let c = word[i];
 
       pieces[pieces.length - 1] += c;
-      if (p % 2) {
+      if(p % 2) {
         pieces.push('');
       }
     });
@@ -490,7 +489,7 @@ const main = function () {
   console.log(resp);
 };
 
-if (require.main === module) {
+if(require.main === module) {
   main();
 }
 

@@ -20,7 +20,7 @@ const debounce = function* (stream, interval) {
   //handle event resolution
   const passEvent = () => {
     //if no event to pass
-    if (lastEvent === undefined) {
+    if(lastEvent === undefined) {
       first = true; //reset first state
       return;
     }
@@ -35,11 +35,11 @@ const debounce = function* (stream, interval) {
   reset(true); //set initial state & deferred
   destreamify(stream, (event) => {
     lastEvent = event; //reference event
-    if (first) passEvent(); //if first run, pass it through
+    if(first) passEvent(); //if first run, pass it through
   });
 
   //yield deferred results
-  while (true) {
+  while(true) {
     yield deferred;
   }
 };

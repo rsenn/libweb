@@ -47,7 +47,7 @@ export class EagleSVGRenderer {
   }
 */
   constructor(doc, factory) {
-    if (new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
+    if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
     this.doc = doc;
     let renderer = this;
     this.path2component = Util.mapWrapper(
@@ -60,12 +60,12 @@ export class EagleSVGRenderer {
     this.create = function (tag, attrs, children, parent, element) {
       let ret = factory(tag, attrs, children, parent, element);
       let path = attrs['data-path'];
-      if (path && !element) {
+      if(path && !element) {
         element = EagleElement.get(doc, path);
       }
-      if (!element) element = EagleElement.currentElement;
-      if (!path && element) path = element.path;
-      if (path) insert(path, ret);
+      if(!element) element = EagleElement.currentElement;
+      if(!path && element) path = element.path;
+      if(path) insert(path, ret);
       return ret;
     };
   }
@@ -108,7 +108,7 @@ export class EagleSVGRenderer {
       Object.defineProperties(
         {
           *[Symbol.iterator]() {
-            for (let i = 0; i < this.length; i++) yield this[i];
+            for(let i = 0; i < this.length; i++) yield this[i];
           }
         },
         {
@@ -161,11 +161,11 @@ export class EagleSVGRenderer {
     let layer;
     do {
       layer = element.getAttribute('data-layer') || element.getAttribute('data-layer-id') || element.getAttribute('data-layer-name') || element.getAttribute('layer');
-      if (layer) {
+      if(layer) {
         const layerId = +(layer + '').replace(/\ .*/g, '');
         return this.layers[layerId];
       }
-    } while ((element = element.parentElement));
+    } while((element = element.parentElement));
   }
 
   renderLayers(parent) {
@@ -178,10 +178,10 @@ export class EagleSVGRenderer {
     this.layerElements = {};
     let layers = [];
 
-    for (let l of layerList) {
+    for(let l of layerList) {
       const { color, active, visible } = l;
 
-      if (active == 'no' && visible == 'no') continue;
+      if(active == 'no' && visible == 'no') continue;
 
       const stroke = this.getColor(color);
       const layer = this.create(
@@ -220,7 +220,7 @@ export class EagleSVGRenderer {
     const color = typeof item.getColor == 'function' ? item.getColor() : this.constructor.palette[16];
 
     const comp = ElementToComponent(item);
-    if (comp) {
+    if(comp) {
       //console.log('EagleSVGRenderer render component ', this.transform.filter(t => ['translate'].indexOf(t.type) == -1));
       const elem = svg(
         comp,
@@ -238,8 +238,7 @@ export class EagleSVGRenderer {
     }
 
     switch (item.tagName) {
-
-    /*case 'wire': {
+      /*case 'wire': {
         const { width, curve = '' } = item;
         const { x1, y1, x2, y2 } = coordFn(item);
         svg(
@@ -259,7 +258,7 @@ export class EagleSVGRenderer {
         );
         break;
       }*/
-    /*case 'rectangle': {
+      /*case 'rectangle': {
         const { x1, x2, y1, y2 } = coordFn(item);
         let rect = Rect.from({ x1, x2, y1, y2 });
         let rot = Rotation(item.rot);
@@ -276,29 +275,29 @@ export class EagleSVGRenderer {
         );
         break;
       }*/
-    case 'label': {
-      const { align } = item;
-      const { x, y } = coordFn(item);
-      const transform = new TransformationList(`translate(${x},${y})`);
+      case 'label': {
+        const { align } = item;
+        const { x, y } = coordFn(item);
+        const transform = new TransformationList(`translate(${x},${y})`);
 
-      svg(
-        'text',
-        {
-          fill: '#f0f',
-          stroke: 'none',
-          x,
-          y,
-          ...EagleSVGRenderer.alignmentAttrs(align),
-          children: labelText, /*,            transform: transform.undo(transformation)*/
-          'font-size': '0.1px',
-          'font-family': 'Fixed Medium'
-        },
-        parent
-      );
-      break;
-    }
+        svg(
+          'text',
+          {
+            fill: '#f0f',
+            stroke: 'none',
+            x,
+            y,
+            ...EagleSVGRenderer.alignmentAttrs(align),
+            children: labelText /*,            transform: transform.undo(transformation)*/,
+            'font-size': '0.1px',
+            'font-family': 'Fixed Medium'
+          },
+          parent
+        );
+        break;
+      }
 
-    /*  case 'text': {
+      /*  case 'text': {
         let { children = [], text: innerText, align, size, font, rot } = item;
         let text = innerText || labelText || children.join('\n');
         let { x, y } = coordFn(item);
@@ -357,7 +356,7 @@ export class EagleSVGRenderer {
         break;
       }
 */
-    /*      case 'circle': {
+      /*      case 'circle': {
         const { width, radius } = item;
         const { x, y } = coordFn(item);
         svg(
@@ -374,14 +373,14 @@ export class EagleSVGRenderer {
         );
         break;
       }*/
-    case 'contactref':
-      break;
-    default: {
-      const { x, y } = coordFn(item);
-      //  console.log('EagleSVGRenderer.renderItem', { item, parent, opts });
-      //super.renderItem(item,parent,opts);
-      break;
-    }
+      case 'contactref':
+        break;
+      default: {
+        const { x, y } = coordFn(item);
+        //  console.log('EagleSVGRenderer.renderItem', { item, parent, opts });
+        //super.renderItem(item,parent,opts);
+        break;
+      }
     }
   }
 
@@ -389,42 +388,42 @@ export class EagleSVGRenderer {
     let h, v;
     const { horizontalAlignment, verticalAlignment } = EagleSVGRenderer;
 
-    for (let tok of (align || horizontalAlignment[def[0] + 1] + '-' + verticalAlignment[def[1] + 1]).split(/-/g)) {
+    for(let tok of (align || horizontalAlignment[def[0] + 1] + '-' + verticalAlignment[def[1] + 1]).split(/-/g)) {
       switch (tok) {
-      case 'center': {
-        if (h === undefined) h = 0;
-        if (v === undefined) v = 0;
-        break;
-      }
-      case 'bottom':
-      case 'top': {
-        v = tok == 'top' ? -1 : 1;
-        break;
-      }
-      case 'left':
-      case 'right': {
-        h = tok == 'left' ? -1 : 1;
-        break;
-      }
+        case 'center': {
+          if(h === undefined) h = 0;
+          if(v === undefined) v = 0;
+          break;
+        }
+        case 'bottom':
+        case 'top': {
+          v = tok == 'top' ? -1 : 1;
+          break;
+        }
+        case 'left':
+        case 'right': {
+          h = tok == 'left' ? -1 : 1;
+          break;
+        }
       }
     }
     let ret = new Point(h === undefined ? def[0] : h, v === undefined ? def[1] : v);
-    if (Math.abs(rot) > 0) ret.rotate((rot * Math.PI) / 180);
+    if(Math.abs(rot) > 0) ret.rotate((rot * Math.PI) / 180);
     return ret;
   }
 
   static alignmentAttrs(align, hv = HORIZONTAL_VERTICAL, rot = 0) {
     let coord = align instanceof Point ? align : EagleSVGRenderer.alignment(align, [-1, 1]);
-    if (Math.abs(rot) > 0) coord.rotate((rot * Math.PI) / 180);
+    if(Math.abs(rot) > 0) coord.rotate((rot * Math.PI) / 180);
     const defaultY = 1;
     const defaultX = -1;
 
     const { x, y } = coord;
     const { verticalAlignment, horizontalAlignment } = EagleSVGRenderer;
     let r = {};
-    if (hv & VERTICAL) r['dominant-baseline'] = verticalAlignment[Math.round(y) + 1] || verticalAlignment[defaultY + 1];
+    if(hv & VERTICAL) r['dominant-baseline'] = verticalAlignment[Math.round(y) + 1] || verticalAlignment[defaultY + 1];
 
-    if (hv & HORIZONTAL) r['text-anchor'] = horizontalAlignment[Math.round(x) + 1] || horizontalAlignment[defaultX + 1];
+    if(hv & HORIZONTAL) r['text-anchor'] = horizontalAlignment[Math.round(x) + 1] || horizontalAlignment[defaultX + 1];
     return r;
   }
 
@@ -458,11 +457,10 @@ export class EagleSVGRenderer {
 
     console.log('viewBox rect:', rect, rect.toString(), rect.valueOf);
 
-    if (!parent)
+    if(!parent)
       parent = this.create(
         'svg',
         {
-
           /*  width,
           height,*/
           viewBox: new Rect(rect).toString(), //+'', //rect.clone(r => (r.y = 0)).toString({ separator: ' ' }),
@@ -482,7 +480,6 @@ export class EagleSVGRenderer {
     let grid = doc.lookup('/eagle/drawing/grid');
 
     let defs =
-
       /*
 
     this.create(

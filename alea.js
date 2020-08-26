@@ -37,7 +37,7 @@ export function Alea(...args) {
     };
   };
   random.seed = function (...args) {
-    if (args.length == 0) {
+    if(args.length == 0) {
       args = [+new Date()];
     }
     let mash = Mash();
@@ -45,17 +45,17 @@ export function Alea(...args) {
     s1 = mash(' ');
     s2 = mash(' ');
 
-    for (let i = 0; i < args.length; i++) {
+    for(let i = 0; i < args.length; i++) {
       s0 -= mash(args[i]);
-      if (s0 < 0) {
+      if(s0 < 0) {
         s0 += 1;
       }
       s1 -= mash(args[i]);
-      if (s1 < 0) {
+      if(s1 < 0) {
         s1 += 1;
       }
       s2 -= mash(args[i]);
-      if (s2 < 0) {
+      if(s2 < 0) {
         s2 += 1;
       }
     }
@@ -64,7 +64,7 @@ export function Alea(...args) {
   };
 
   random.seed = function (...args) {
-    if (args.length == 0) {
+    if(args.length == 0) {
       args = [+new Date()];
     }
     mash = Mash();
@@ -77,17 +77,17 @@ export function Alea(...args) {
   random.mash = function (...args) {
     mash = mash || Mash();
 
-    for (let i = 0; i < args.length; i++) {
+    for(let i = 0; i < args.length; i++) {
       s0 -= mash(args[i]);
-      if (s0 < 0) {
+      if(s0 < 0) {
         s0 += 1;
       }
       s1 -= mash(args[i]);
-      if (s1 < 0) {
+      if(s1 < 0) {
         s1 += 1;
       }
       s2 -= mash(args[i]);
-      if (s2 < 0) {
+      if(s2 < 0) {
         s2 += 1;
       }
     }
@@ -123,7 +123,7 @@ function Mash() {
 
   let mash = function (data) {
     data = data.toString();
-    for (let i = 0; i < data.length; i++) {
+    for(let i = 0; i < data.length; i++) {
       n += data.charCodeAt(i);
       let h = 0.02519603282416938 * n;
       n = h >>> 0;

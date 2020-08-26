@@ -16,11 +16,11 @@ SpatialHash.prototype.init = function () {
 
   let z = {};
   let i = this.x1;
-  for (; i <= this.x2; i++) {
+  for(; i <= this.x2; i++) {
     let j = this.y1,
       a = {};
 
-    for (; j <= this.y2; j++) a[j] = [];
+    for(; j <= this.y2; j++) a[j] = [];
     z[i] = a;
   }
 
@@ -33,7 +33,7 @@ SpatialHash.prototype.init = function () {
 };
 
 SpatialHash.prototype.insert = function (item) {
-  if (!item.range) return;
+  if(!item.range) return;
   let b = getBounds(item.range),
     bucketSize = this.bucketSize;
 
@@ -51,17 +51,17 @@ SpatialHash.prototype.insert = function (item) {
 
   let i = x1,
     j;
-  for (; i <= x2; i++) {
+  for(; i <= x2; i++) {
     j = y1;
-    for (; j <= y2; j++) this.hashes[i][j].push(item);
+    for(; j <= y2; j++) this.hashes[i][j].push(item);
   }
 
-  if (this.itemCount++ >= 9e15) throw new Error('SpatialHash: To ensure pure integer stability it must not have more than 9E15 (900 000 000 000 000) objects');
-  else if (this.nId > 9e15 - 1) this.nId = -9e15;
+  if(this.itemCount++ >= 9e15) throw new Error('SpatialHash: To ensure pure integer stability it must not have more than 9E15 (900 000 000 000 000) objects');
+  else if(this.nId > 9e15 - 1) this.nId = -9e15;
 };
 
 SpatialHash.prototype.remove = function (item) {
-  if (!item.b) return;
+  if(!item.b) return;
 
   let x1 = item.b.x1;
   let x2 = item.b.x2;
@@ -71,14 +71,14 @@ SpatialHash.prototype.remove = function (item) {
   let i = x1,
     j,
     k;
-  for (; i <= x2; i++) {
+  for(; i <= x2; i++) {
     j = y1;
-    for (; j <= y2; j++) {
+    for(; j <= y2; j++) {
       k = this.hashes[i][j].indexOf(item);
-      if (k !== -1) this.hashes[i][j].splice(k, 1);
+      if(k !== -1) this.hashes[i][j].splice(k, 1);
     }
   }
-  if (!delete item.b) item.b = undefined;
+  if(!delete item.b) item.b = undefined;
   this.itemCount--;
 };
 
@@ -104,23 +104,23 @@ SpatialHash.prototype.srch = function (range, selector, callback, returnOnFirst)
     m,
     o = [],
     p = [];
-  for (; i <= x2; i++) {
+  for(; i <= x2; i++) {
     j = y1;
-    for (; j <= y2; j++) {
+    for(; j <= y2; j++) {
       k = this.hashes[i][j];
       l = k.length;
       m = 0;
-      for (; m < l; m++)
-        if (intersects(k[m].range, range) && p.indexOf(k[m].b.id) === -1) {
+      for(; m < l; m++)
+        if(intersects(k[m].range, range) && p.indexOf(k[m].b.id) === -1) {
           p.push(k[m].b.id);
-          if (selector) if (!selector(k[m])) continue;
-          if (callback) callback(k[m]);
-          if (returnOnFirst) return true;
+          if(selector) if (!selector(k[m])) continue;
+          if(callback) callback(k[m]);
+          if(returnOnFirst) return true;
           o.push(k[m]);
         }
     }
   }
-  if (returnOnFirst) return false;
+  if(returnOnFirst) return false;
   return o;
 };
 

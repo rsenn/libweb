@@ -10,7 +10,7 @@ import { ImmutablePath, toXML } from '../json.js';
 import tXml from '../tXml.js';
 
 export const makeEagleNode = (owner, ref, ctor) => {
-  if (!ctor) ctor = owner.constructor[Symbol.species];
+  if(!ctor) ctor = owner.constructor[Symbol.species];
   let e = ctor.get ? ctor.get(owner, ref) : new ctor(owner, ref);
   return e;
 };
@@ -24,8 +24,8 @@ export class EagleNode {
 
   constructor(owner, ref, raw) {
     //if(!owner) owner = new EagleReference(ref.root, []).dereference();
-    if (!(ref instanceof EagleReference)) ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
-    if (!raw) raw = ref.dereference();
+    if(!(ref instanceof EagleReference)) ref = new EagleRef(owner && 'ref' in owner ? owner.ref.root : owner, [...ref]);
+    if(!raw) raw = ref.dereference();
     //console.log("EagleNode.constructor",{owner,ref,raw});
     //Object.assign(this, { ref, owner });
     Object.defineProperty(this, 'owner', { value: owner, enumerable: false, writable: true });
@@ -52,8 +52,8 @@ export class EagleNode {
         path.walk((p, i, abort, ignore) => {
           let value = p.apply(owner.raw, true);
 
-          if (i == 0) ignore();
-          if (!value || !value.attributes || !(value.tagName == 'library' || value.tagName == 'sheet' || value.attributes.name)) ignore();
+          if(i == 0) ignore();
+          if(!value || !value.attributes || !(value.tagName == 'library' || value.tagName == 'sheet' || value.attributes.name)) ignore();
 
           return p.up(2);
         }),
@@ -79,7 +79,7 @@ export class EagleNode {
     return ret;*/
   }
   get project() {
-    if (Util.className(this.owner) == 'EagleProject') return this.owner;
+    if(Util.className(this.owner) == 'EagleProject') return this.owner;
     return this.document.owner;
   }
 
@@ -92,37 +92,37 @@ export class EagleNode {
     const { owner, ref, document } = this;
     let r;
     //console.log(`${Util.className(this)}.raw`,  {owner},ref);
-    if (this.xml && this.xml[0]) return this.xml[0];
+    if(this.xml && this.xml[0]) return this.xml[0];
     r = ref.path.apply(owner.raw, true);
-    if (!r) {
+    if(!r) {
       r = ref.path.apply(ref.root) || ref.path.apply(owner);
-      if (!r) r = document.mapper.at(ref.path);
+      if(!r) r = document.mapper.at(ref.path);
     }
     return r;
   }
 
   cacheFields() {
     switch (this.tagName) {
-    case 'schematic':
-      return [/*['settings'], ['layers'],*/ ['libraries'], ['classes'], ['parts'], ['sheets'] /*, ['modules']*/];
-    case 'board':
-      return [['plain'], ['libraries'], ['classes'], ['elements'], ['signals']];
-    case 'module':
-      return [['ports'], ['variantdefs'], ['parts'], ['sheets']];
-    case 'sheet':
-      return [['busses'], ['nets'], ['instances'], ['plain']];
-    case 'deviceset':
-      return [['gates'], ['devices']];
-    case 'device':
-      return [['connects'], ['technologies']];
-    case 'library':
-      return [['packages'], ['symbols'], ['devicesets']];
+      case 'schematic':
+        return [/*['settings'], ['layers'],*/ ['libraries'], ['classes'], ['parts'], ['sheets'] /*, ['modules']*/];
+      case 'board':
+        return [['plain'], ['libraries'], ['classes'], ['elements'], ['signals']];
+      case 'module':
+        return [['ports'], ['variantdefs'], ['parts'], ['sheets']];
+      case 'sheet':
+        return [['busses'], ['nets'], ['instances'], ['plain']];
+      case 'deviceset':
+        return [['gates'], ['devices']];
+      case 'device':
+        return [['connects'], ['technologies']];
+      case 'library':
+        return [['packages'], ['symbols'], ['devicesets']];
     }
   }
 
   get childConstructor() {
     let protos = Util.getPrototypeChain(this);
-    if (Util.fnName(protos[0].constructor) == 'EagleDocument') protos.shift();
+    if(Util.fnName(protos[0].constructor) == 'EagleDocument') protos.shift();
     let ctor = protos[0].constructor;
     console.log('childConstructor:', this, ctor);
     return ctor;
@@ -131,7 +131,7 @@ export class EagleNode {
   initCache(ctor = this.childConstructor, listCtor = (o, p, v) => v) {
     let fields = this.cacheFields();
     let node = this;
-    if (fields && fields.length) {
+    if(fields && fields.length) {
       Util.define(this, 'cache', {});
       Util.define(this, 'lists', {});
       let lazy = {};
@@ -140,11 +140,11 @@ export class EagleNode {
       let ref = this.ref;
       let owner = this.document;
       let raw = this.raw;
-      for (let xpath of fields) {
+      for(let xpath of fields) {
         let key = xpath[xpath.length - 1];
         let path = new ImmutableXPath(xpath).concat(['children']);
         lazy[key] = () => this.lookup(xpath, true);
-        if (!path.apply(raw, true)) {
+        if(!path.apply(raw, true)) {
           console.log('path not found', path + '');
           continue;
         }
@@ -161,7 +161,7 @@ export class EagleNode {
   initRelation(key, handler, fn) {
     let elem = this;
     trkl.bind(this, key, (v) => {
-      if (v !== undefined) return handler(typeof v == 'string' ? v : v.name);
+      if(v !== undefined) return handler(typeof v == 'string' ? v : v.name);
       let value = handler() || elem.attrMap[key] || elem.attributes[key];
       return fn(value, elem, elem.document);
     });
@@ -170,7 +170,7 @@ export class EagleNode {
   }
 
   appendChild(node, attributes = {}) {
-    if (typeof node == 'string') {
+    if(typeof node == 'string') {
       node = {
         tagName: node,
         children: []
@@ -187,15 +187,13 @@ export class EagleNode {
 
   static makePredicate(predicate) {
     let pred = predicate;
-    if (pred instanceof RegExp) {
+    if(pred instanceof RegExp) {
       let re = pred;
       pred = (v, p, o) => re.test(v.tagName);
-    }
-    else if (typeof pred == 'string') {
+    } else if(typeof pred == 'string') {
       let name = pred;
       pred = (v, p, o) => v.tagName === name;
-    }
-    else if (Util.isObject(pred) && typeof pred != 'function') {
+    } else if(Util.isObject(pred) && typeof pred != 'function') {
       let keys = Util.isArray(pred) ? pred : Object.keys(pred);
       let values = keys.reduce((acc, key) => [...acc, pred[key]], []);
 
@@ -211,7 +209,7 @@ export class EagleNode {
     let ctor = this[Symbol.species];
     transform = transform || ((...args) => args);
     let cond = pred;
-    for (let [v, p, o] of deep.iterate(this.raw, cond, [...this.path])) {
+    for(let [v, p, o] of deep.iterate(this.raw, cond, [...this.path])) {
       yield transform(v, p, this.document || this);
     }
   }
@@ -232,7 +230,7 @@ export class EagleNode {
     let pred = EagleNode.makePredicate(name);
     let result = deep.find(this.raw, pred, [...this.path]); //this.getAll((v, p, o) => (pred(v, p, o) ? -1 : false), transform))
 
-    if (result) {
+    if(result) {
       const { path, value } = result;
       //console.log("found:",{path,value});
       return value ? transform(value, path) : value;
@@ -241,14 +239,14 @@ export class EagleNode {
 
   getMap(entity) {
     let a = this.cache[entity + 's'];
-    if (a && a.children) return new Map([...a.children].map((e) => [e.name, e]));
+    if(a && a.children) return new Map([...a.children].map((e) => [e.name, e]));
     return null;
   }
 
   getByName(element, name, attr = 'name', t = ([v, l, d]) => makeEagleNode(d, this.ref.concat([...l]), this.childConstructor)) {
-    for (let [v, l, d] of this.iterator([], (it) => it)) {
-      if (typeof v == 'object' && 'tagName' in v && 'attributes' in v && attr in v.attributes) {
-        if (v.tagName == element && v.attributes[attr] == name) return t([v, l, d]);
+    for(let [v, l, d] of this.iterator([], (it) => it)) {
+      if(typeof v == 'object' && 'tagName' in v && 'attributes' in v && attr in v.attributes) {
+        if(v.tagName == element && v.attributes[attr] == name) return t([v, l, d]);
       }
     }
     return null;
@@ -259,9 +257,9 @@ export class EagleNode {
     let ref = this.ref;
     do {
       let node = ref.dereference();
-      if (node.attributes.name !== undefined) names.push([node.tagName, node.attributes.name]);
+      if(node.attributes.name !== undefined) names.push([node.tagName, node.attributes.name]);
       ref = ref.up(2);
-    } while (ref.path.length);
+    } while(ref.path.length);
     return Object.fromEntries(names);
   }
 
@@ -276,7 +274,7 @@ export class EagleNode {
   }
 
   get parentNode() {
-    if (this.path.length == 0) return null;
+    if(this.path.length == 0) return null;
 
     /*   const ref = this.ref.up(2);*/
     const { ref, path, root, raw } = this;
@@ -308,7 +306,7 @@ export class EagleNode {
 
     let r = this; //'tagName' in this ? this : this.raw; // this.ref ? this.ref.dereference()  : this;
     let a = r.attrMap ? r.attrMap : r.attributes;
-    if (a) {
+    if(a) {
       attrs = Object.getOwnPropertyNames(a)
         .filter((name) => typeof a[name] != 'function')
         .reduce((attrs, attr) => concat(attrs, ' ', text(attr, 1, 33), text(':', 1, 36), text("'" + a[attr] + "'", 1, 32)), attrs);
@@ -321,9 +319,9 @@ export class EagleNode {
     let ret = ['']; //`${Util.className(this)} `;
     let tag = r.tagName || r.raw.tagName;
     //console.realLog("attrs:",attrs);
-    if (tag) ret = concat(ret, text('<', 1, 36), text(tag, 1, 31), attrs, text(numChildren == 0 ? ' />' : '>', 1, 36));
-    if (this.filename) ret = concat(ret, ` filename="${this.filename}"`);
-    if (numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${tag}>`);
+    if(tag) ret = concat(ret, text('<', 1, 36), text(tag, 1, 31), attrs, text(numChildren == 0 ? ' />' : '>', 1, 36));
+    if(this.filename) ret = concat(ret, ` filename="${this.filename}"`);
+    if(numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${tag}>`);
     return (ret = concat(text(Util.className(r) + ' ', 0), ret));
   }
 
@@ -345,17 +343,17 @@ export class EagleNode {
 
   getBounds(pred = (e) => true) {
     let bb = new BBox();
-    if (this.children && this.children.length) {
-      for (let element of this.getAll((e) => e.tagName !== undefined && pred(e))) {
+    if(this.children && this.children.length) {
+      for(let element of this.getAll((e) => e.tagName !== undefined && pred(e))) {
         let g = element.geometry;
-        if (g) {
+        if(g) {
           let bound = typeof g.bbox == 'function' ? g.bbox() : g;
           bb.update(bound, 0, element);
         }
       }
     }
     let g = this.geometry;
-    if (g) bb.update(g);
+    if(g) bb.update(g);
     return bb;
   }
 
@@ -363,21 +361,20 @@ export class EagleNode {
     const { attributes } = this.raw;
     const keys = Object.keys(attributes);
     const makeGetterSetter = (k) => (v) => (v === undefined ? this[k] : (this[k] = v));
-    if (['x1', 'y1', 'x2', 'y2'].every((prop) => keys.includes(prop))) {
+    if(['x1', 'y1', 'x2', 'y2'].every((prop) => keys.includes(prop))) {
       return Line.bind(this, null, makeGetterSetter);
-    }
-    else if (['x', 'y'].every((prop) => keys.includes(prop))) {
+    } else if(['x', 'y'].every((prop) => keys.includes(prop))) {
       const { x, y } = Point(this);
-      if (keys.includes('radius')) return Circle.bind(this, null, makeGetterSetter);
-      if (['width', 'height'].every((prop) => keys.includes(prop))) return Rect.bind(this, null, makeGetterSetter);
+      if(keys.includes('radius')) return Circle.bind(this, null, makeGetterSetter);
+      if(['width', 'height'].every((prop) => keys.includes(prop))) return Rect.bind(this, null, makeGetterSetter);
       return Point.bind(this, null, makeGetterSetter);
     }
   }
 
   getDocument() {
     let o = this;
-    while (o.owner) {
-      if (o.xml !== undefined) break;
+    while(o.owner) {
+      if(o.xml !== undefined) break;
       o = o.owner;
     }
     return o;
@@ -401,29 +398,28 @@ export class EagleNode {
     let owner = Util.isObject(this) && 'owner' in this ? this.owner : this;
     let root = this.root || (owner.xml && owner.xml[0]);
     let node = root;
-    if (path.length > 0) node = deep.get(node, path);
-    for (let [v, l] of deep.iterate(node, (v, p) => (predicate(v, p) ? -1 : p.length > 1 ? p[p.length - 2] == 'children' : true))) {
-      if (!(l instanceof ImmutablePath)) l = new ImmutablePath(l);
-      if (typeof v == 'object' && v !== null && 'tagName' in v) if (predicate(v, l, owner)) yield t([v, l, owner]);
+    if(path.length > 0) node = deep.get(node, path);
+    for(let [v, l] of deep.iterate(node, (v, p) => (predicate(v, p) ? -1 : p.length > 1 ? p[p.length - 2] == 'children' : true))) {
+      if(!(l instanceof ImmutablePath)) l = new ImmutablePath(l);
+      if(typeof v == 'object' && v !== null && 'tagName' in v) if (predicate(v, l, owner)) yield t([v, l, owner]);
     }
   }
 
   toXML(depth = 0) {
     let attrNames = Object.keys(this.raw.attributes);
     let s = `<${this.tagName}`;
-    for (let name of attrNames) {
+    for(let name of attrNames) {
       let value = this[name];
-      if (Util.isObject(value)) {
-        if (value.name) value = value.name;
+      if(Util.isObject(value)) {
+        if(value.name) value = value.name;
         else value = this.raw.attributes[name];
       }
 
       s += ` ${name}="${value}"`;
     }
-    if (!this.children.length) {
+    if(!this.children.length) {
       s += ' />';
-    }
-    else {
+    } else {
       s += '\n';
       [...this.children].map((child) => '  '.repeat(depth + 1) + child.toXML(depth + 1)).join('\n');
       s += `\n</${this.tagName}>`;
@@ -438,7 +434,7 @@ export class EagleNode {
     const { depth, breakLength } = c;
     let o = e;
     let r = (e && e.raw) || e;
-    if (typeof r == 'string') return text(r, 1, 36);
+    if(typeof r == 'string') return text(r, 1, 36);
     let x = '';
     try {
       x = Util.inspect(r, {
@@ -446,8 +442,7 @@ export class EagleNode {
         breakLength,
         colors: !Util.isBrowser()
       });
-    }
-    catch (err) {}
+    } catch(err) {}
     let s = '⏐';
     x = x.substring(x.indexOf('tagName') + 14);
     x = Object.entries((r && r.attributes) || {}).map(([key, value]) => text(key, 33) + text(s, 0, 37) + text(value, 1, 36));
@@ -456,7 +451,7 @@ export class EagleNode {
     p = text(`〔`, 1, 37) + text(p, 38, 5, 199);
     let l = e.path + '';
     let type = Util.className(e);
-    if (arr.length) arr.unshift('');
+    if(arr.length) arr.unshift('');
     let ret = [text(type, 38, 5, 219), p, text('⧃❋⭗', 38, 5, 112), ...arr, text(`〕`, 1, 37)];
 
     return (l.trim() ? l + '  ' : '') + ret.join(' ') + text('', 0);

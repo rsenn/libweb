@@ -1,20 +1,18 @@
-
-
 /* global module, define */
 
 function mapEach(map, operation) {
   let keys = map.keys();
   let next;
-  while (!(next = keys.next()).done) {
+  while(!(next = keys.next()).done) {
     operation(map.get(next.value), next.value, map);
   }
 }
 
 let mapCtor;
-if (typeof Map !== 'undefined') {
+if(typeof Map !== 'undefined') {
   mapCtor = Map;
 
-  if (!Map.prototype.keys) {
+  if(!Map.prototype.keys) {
     Map.prototype.keys = function () {
       let keys = [];
       this.forEach((item, key) => {
@@ -30,13 +28,13 @@ export function Multimap(iterable) {
 
   self._map = mapCtor;
 
-  if (Multimap.Map) {
+  if(Multimap.Map) {
     self._map = Multimap.Map;
   }
 
   self._ = self._map ? new self._map() : {};
 
-  if (iterable) {
+  if(iterable) {
     iterable.forEach((i) => {
       self.set(i[0], i[1]);
     });
@@ -61,9 +59,9 @@ Multimap.prototype.set = function (key, val) {
   key = args.shift();
 
   let entry = this.get(key);
-  if (!entry) {
+  if(!entry) {
     entry = [];
-    if (this._map) this._.set(key, entry);
+    if(this._map) this._.set(key, entry);
     else this._[key] = entry;
   }
 
@@ -77,19 +75,18 @@ Multimap.prototype.set = function (key, val) {
  * @return {boolean} true if any thing changed
  */
 Multimap.prototype.delete = function (key, val) {
-  if (!this.has(key)) return false;
+  if(!this.has(key)) return false;
 
-  if (arguments.length == 1) {
+  if(arguments.length == 1) {
     this._map ? this._.delete(key) : delete this._[key];
     return true;
   }
   let entry = this.get(key);
   let idx = entry.indexOf(val);
-  if (idx != -1) {
+  if(idx != -1) {
     entry.splice(idx, 1);
     return true;
   }
-  
 
   return false;
 };
@@ -102,7 +99,7 @@ Multimap.prototype.delete = function (key, val) {
 Multimap.prototype.has = function (key, val) {
   let hasKey = this._map ? this._.has(key) : this._.hasOwnProperty(key);
 
-  if (arguments.length == 1 || !hasKey) return hasKey;
+  if(arguments.length == 1 || !hasKey) return hasKey;
 
   let entry = this.get(key) || [];
   return entry.indexOf(val) != -1;
@@ -112,7 +109,7 @@ Multimap.prototype.has = function (key, val) {
  * @return {Array} all the keys in the map
  */
 Multimap.prototype.keys = function () {
-  if (this._map) return makeIterator(this._.keys());
+  if(this._map) return makeIterator(this._.keys());
 
   return makeIterator(Object.keys(this._));
 };
@@ -146,10 +143,9 @@ Multimap.prototype.forEach = function (iter) {
 };
 
 Multimap.prototype.clear = function () {
-  if (this._map) {
+  if(this._map) {
     this._.clear();
-  }
-  else {
+  } else {
     this._ = {};
   }
 };
@@ -157,7 +153,7 @@ Multimap.prototype.clear = function () {
 Object.defineProperty(Multimap.prototype, 'size', {
   configurable: false,
   enumerable: true,
-  get () {
+  get() {
     let total = 0;
 
     mapEach(this, (value) => {
@@ -171,7 +167,7 @@ Object.defineProperty(Multimap.prototype, 'size', {
 Object.defineProperty(Multimap.prototype, 'count', {
   configurable: false,
   enumerable: true,
-  get () {
+  get() {
     return this._.size;
   }
 });
@@ -180,24 +176,23 @@ let safariNext;
 
 try {
   safariNext = new Function('iterator', 'makeIterator', 'var keysArray = []; for(var key of iterator){keysArray.push(key);} return makeIterator(keysArray).next;');
-}
-catch (error) {
+} catch(error) {
   //for of not implemented;
 }
 
 function makeIterator(iterator) {
-  if (Array.isArray(iterator)) {
+  if(Array.isArray(iterator)) {
     let nextIndex = 0;
 
     return {
-      next () {
+      next() {
         return nextIndex < iterator.length ? { value: iterator[nextIndex++], done: false } : { done: true };
       }
     };
   }
 
   //Only an issue in safari
-  if (!iterator.next && safariNext) {
+  if(!iterator.next && safariNext) {
     iterator.next = safariNext(iterator, makeIterator);
   }
 

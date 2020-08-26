@@ -1,26 +1,26 @@
 function log(source, msg) {
   let echo = false;
   switch (source) {
-  case 'stack':
-    echo = true;
-  case 'terminal':
-    echo = true;
-  case 'recursion':
-    echo = true;
+    case 'stack':
+      echo = true;
+    case 'terminal':
+      echo = true;
+    case 'recursion':
+      echo = true;
     //case 'alternation': echo = true;
     //case 'exception': echo = true;
-  case 'ParseState':
-    echo = true;
-  case 'ParseNode':
-    echo = true;
+    case 'ParseState':
+      echo = true;
+    case 'ParseNode':
+      echo = true;
   }
 
   let dots = '';
-  if (typeof parser != 'undefined') {
-    for (let i = 0; i < parser.stack.length; i++) dots = dots + '.';
+  if(typeof parser != 'undefined') {
+    for(let i = 0; i < parser.stack.length; i++) dots = dots + '.';
   }
 
-  if (echo) console.log(dots + source + ': ' + msg);
+  if(echo) console.log(dots + source + ': ' + msg);
 }
 
 //Class ParseNode
@@ -40,13 +40,13 @@ ParseNode.prototype.addChild = function (child) {
 
 ParseNode.prototype.print = function (indent) {
   let spaces = '';
-  for (var i = 0; i < indent; i++) spaces = spaces + ' ';
+  for(var i = 0; i < indent; i++) spaces = spaces + ' ';
 
   console.log(spaces + '{');
   console.log(spaces + '   type: ' + this.type + ' start: ' + this.start + ' end: ' + this.end);
   console.log(spaces + '  value: ' + this.value());
   console.log(spaces + '  children:');
-  for (var i = 0; i < this.children.length; i++) {
+  for(var i = 0; i < this.children.length; i++) {
     this.children[i].print(indent + 2);
   }
   console.log(spaces + '}');
@@ -78,19 +78,18 @@ ParseState.prototype.advance = function (n) {
 };
 
 ParseState.prototype.parseNode = function (type) {
-  if (this.ruleStart == this.offset) {
+  if(this.ruleStart == this.offset) {
     console.log('parseNode: type=' + type + ' ruleStart=' + this.ruleStart + ' start=' + this.start + ' offset=' + this.offset);
     return null;
   }
   return new ParseNode(type, this.buffer, this.ruleStart, this.offset);
-  
 };
 
 ParseState.prototype.checkWhitespace = function () {
   let n = 0;
   let c = this.buffer.charAt(this.offset);
   log('checkWhitespace', 'offset=' + this.offset + ' c=' + c);
-  while (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
+  while(c == ' ' || c == '\t' || c == '\n' || c == '\r') {
     n = n + 1;
     c = this.buffer.charAt(this.offset + n);
     log('checkWhitespace', 'n=' + n + ' c=' + c);
@@ -104,22 +103,21 @@ ParseState.prototype.checkComment = function () {
   let n = 0;
   let c1 = this.buffer.charAt(this.offset);
   let c2 = this.buffer.charAt(this.offset + 1);
-  if (c1 != '(' || c2 != '*') {
+  if(c1 != '(' || c2 != '*') {
     c2 = '';
-  }
-  else {
+  } else {
     n = 2;
     c1 = this.buffer.charAt(this.offset + n);
     c2 = this.buffer.charAt(this.offset + n + 1);
-    while (!(c1 == '*' && c2 == ')')) {
+    while(!(c1 == '*' && c2 == ')')) {
       c1 = c2;
       n = n + 1;
       c2 = this.buffer.charAt(n);
-      if (c2 == '') break;
+      if(c2 == '') break;
     }
   }
 
-  if (c2 == ')') return n + 1;
+  if(c2 == ')') return n + 1;
   return 0;
 };
 
@@ -130,11 +128,11 @@ ParseState.prototype.nextToken = function () {
     cn;
   do {
     wn = this.checkWhitespace();
-    if (wn == 0) cn = this.checkComment();
+    if(wn == 0) cn = this.checkComment();
     else cn = 0;
     this.advance(wn + cn);
     n += wn + cn;
-  } while (wn != 0 || cn != 0);
+  } while(wn != 0 || cn != 0);
 
   this.start = this.offset;
 };
@@ -158,14 +156,14 @@ Parser.prototype.pushFrame = function (rule) {
   let sstate = null;
   let recursion = 0;
 
-  for (let i = 0; i < this.stack.length; i++) {
+  for(let i = 0; i < this.stack.length; i++) {
     sstate = this.stack[i];
-    if (sstate.rule == rule && sstate.offset == this.state.offset) {
+    if(sstate.rule == rule && sstate.offset == this.state.offset) {
       recursion++;
     }
   }
 
-  if (recursion > 1) {
+  if(recursion > 1) {
     //allow one, deny more than one
     log('recursion', 'infinte recursion detected at rule=' + rule + ' offset=' + sstate.offset);
     return null;
@@ -182,7 +180,7 @@ Parser.prototype.popFrame = function (rule, pnode) {
   log('stack', 'pop: rule: ' + rule + ' state: ' + this.state.rule + ' stack: ' + this.stack.length + ' pnode: ' + (pnode == null ? 'null' : pnode.type));
   this.stack.pop();
   this.state = this.stack[this.stack.length - 1];
-  if (pnode != null && pnode.end > this.maxParseEnd) {
+  if(pnode != null && pnode.end > this.maxParseEnd) {
     log('stack', 'maxParseEnd: ' + this.maxParseEnd + ' pnode.end: ' + pnode.end);
     this.maxParseEnd = pnode.end;
     this.maxParseNode = pnode;
@@ -194,50 +192,50 @@ Parser.prototype.popFrame = function (rule, pnode) {
 
 Parser.prototype.parseLetter = function () {
   let c = this.state.current;
-  if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) return 1;
+  if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) return 1;
   return 0;
 };
 
 Parser.prototype.parseDigit = function () {
   let c = this.state.current;
-  if (c >= '0' && c <= '9') return 1;
+  if(c >= '0' && c <= '9') return 1;
   return 0;
 };
 
 Parser.prototype.parseNonzero = function () {
   let c = this.state.current;
-  if (c > '0' && c <= '9') return 1;
+  if(c > '0' && c <= '9') return 1;
   return 0;
 };
 
 Parser.prototype.parseSymbol = function () {
   switch (this.state.current) {
-  case '[':
-  case ']':
-  case '{':
-  case '}':
-  case '(':
-  case ')':
-  case '<':
-  case '>':
-  case this.SQUOTE:
-  case this.DQUOTE:
-  case '=':
-  case '|':
-  case '.':
-  case ',':
-  case ';':
-    return 1;
-  default:
-    return 0;
+    case '[':
+    case ']':
+    case '{':
+    case '}':
+    case '(':
+    case ')':
+    case '<':
+    case '>':
+    case this.SQUOTE:
+    case this.DQUOTE:
+    case '=':
+    case '|':
+    case '.':
+    case ',':
+    case ';':
+      return 1;
+    default:
+      return 0;
   }
 };
 
 Parser.prototype.parseCharacter = function () {
-  if (this.parseLetter()) return 1;
-  if (this.parseDigit()) return 1;
-  if (this.parseSymbol()) return 1;
-  if (this.state.current == '_') return 1;
+  if(this.parseLetter()) return 1;
+  if(this.parseDigit()) return 1;
+  if(this.parseSymbol()) return 1;
+  if(this.state.current == '_') return 1;
   return 0;
 };
 
@@ -246,12 +244,12 @@ Parser.prototype.parseCharacter = function () {
 Parser.prototype.parseIdentifier = function () {
   let rule = 'identifier';
   let pstate = this.pushFrame(rule);
-  if (pstate == null) return null;
+  if(pstate == null) return null;
 
   let identifier = null;
-  if (this.parseLetter() > 0) {
+  if(this.parseLetter() > 0) {
     pstate.advance(1);
-    while (this.parseLetter() > 0 || this.parseDigit(pstate) > 0 || pstate.current == '_') {
+    while(this.parseLetter() > 0 || this.parseDigit(pstate) > 0 || pstate.current == '_') {
       pstate.advance(1);
     }
 
@@ -265,22 +263,21 @@ Parser.prototype.parseIdentifier = function () {
 Parser.prototype.parseTerminal = function () {
   let rule = 'terminal';
   let pstate = this.pushFrame(rule);
-  if (pstate == null) return null;
+  if(pstate == null) return null;
 
   let terminal = null;
-  if (pstate.current == this.SQUOTE || pstate.current == this.DQUOTE) {
+  if(pstate.current == this.SQUOTE || pstate.current == this.DQUOTE) {
     let left_quote = pstate.current;
     pstate.advance(1);
-    while (left_quote != pstate.current && this.parseCharacter() != 0) {
+    while(left_quote != pstate.current && this.parseCharacter() != 0) {
       pstate.advance(1);
     }
 
-    if (left_quote != pstate.current) {
+    if(left_quote != pstate.current) {
       return null; //unterminated terminal
     }
     pstate.advance(1);
     terminal = pstate.parseNode('terminal');
-    
   }
 
   this.popFrame(rule, terminal);
@@ -290,12 +287,12 @@ Parser.prototype.parseTerminal = function () {
 Parser.prototype.parseCount = function () {
   let rule = 'count';
   let pstate = this.pushFrame(rule);
-  if (pstate == null) return null;
+  if(pstate == null) return null;
 
   let count = null;
-  if (this.parseNonzero() > 0) {
+  if(this.parseNonzero() > 0) {
     pstate.advance(1);
-    while (this.parseDigit() > 0) {
+    while(this.parseDigit() > 0) {
       pstate.advance(1);
     }
 
@@ -309,11 +306,11 @@ Parser.prototype.parseCount = function () {
 Parser.prototype.parseLhs = function () {
   let rule = 'lhs';
   let pstate = this.pushFrame(rule);
-  if (pstate == null) return null;
+  if(pstate == null) return null;
 
   let lhs = null;
   let identifier = this.parseIdentifier();
-  if (identifier != null) {
+  if(identifier != null) {
     pstate.advance(identifier.nodeLength());
     lhs = pstate.parseNode('lhs');
     lhs.addChild(identifier);
@@ -325,20 +322,20 @@ Parser.prototype.parseLhs = function () {
 
 Parser.prototype._parseBinary = function (rule, parseLeft, operator, parseRight) {
   let pstate = this.pushFrame(rule);
-  if (pstate == null) return null;
+  if(pstate == null) return null;
 
   let binary = null;
   let left = parseLeft.call(this);
-  if (left != null) {
+  if(left != null) {
     log(rule, 'left: ' + left.type + ' value: ' + left.value());
     pstate.advance(left.nodeLength());
     pstate.nextToken();
-    if (pstate.current == operator) {
+    if(pstate.current == operator) {
       log(rule, 'operator: ' + operator);
       pstate.advance(1);
       pstate.nextToken();
       let right = parseRight.call(this);
-      if (right != null) {
+      if(right != null) {
         log(rule, 'right: ' + right.type + ' value: ' + right.value());
         pstate.advance(right.nodeLength());
         log(rule, ' state: start=' + pstate.start + ' offset=' + pstate.offset);
@@ -355,17 +352,17 @@ Parser.prototype._parseBinary = function (rule, parseLeft, operator, parseRight)
 
 Parser.prototype._parseEnclosure = function (rule, beginEnclosure, parseEnclosed, endEnclosure) {
   let pstate = this.pushFrame(rule);
-  if (pstate == null) return null;
+  if(pstate == null) return null;
 
   let enclosure = null;
-  if (pstate.current == beginEnclosure) {
+  if(pstate.current == beginEnclosure) {
     pstate.advance(1);
     pstate.nextToken();
     let enclosed = parseEnclosed.call(this);
-    if (enclosed != null) {
+    if(enclosed != null) {
       pstate.advance(enclosed.nodeLength());
       pstate.nextToken();
-      if (pstate.current == endEnclosure) {
+      if(pstate.current == endEnclosure) {
         pstate.advance(1);
         enclosure = pstate.parseNode(rule);
         enclosure.addChild(enclosed);
@@ -408,7 +405,7 @@ Parser.prototype.parseConcatenation = function () {
 Parser.prototype.parseRhs = function () {
   let rule = 'rhs';
   let pstate = this.pushFrame(rule);
-  if (pstate == null) return null;
+  if(pstate == null) return null;
 
   let rhs = null;
   let child = null;
@@ -426,7 +423,7 @@ Parser.prototype.parseRhs = function () {
     [this, this.parseTerminal]
   ].forEach((parseRule) => {
     child = parseRule[1].call(parseRule[0]);
-    if (child != null) {
+    if(child != null) {
       best = best == null ? child : child.nodeLength() > best.nodeLength() ? child : best;
     }
   });
@@ -440,7 +437,7 @@ Parser.prototype.parseRhs = function () {
   //if (child == null) child = this.parseIdentifier();
   //if (child == null) child = this.parseTerminal();
 
-  if (child != null) {
+  if(child != null) {
     pstate.advance(child.nodeLength());
     rhs = pstate.parseNode('rhs');
     rhs.addChild(child);
@@ -453,30 +450,29 @@ Parser.prototype.parseRhs = function () {
 Parser.prototype.parseRule = function () {
   let rule = 'rule';
   let pstate = this.pushFrame('rule');
-  if (pstate == null) return null;
+  if(pstate == null) return null;
 
   let prule = null;
   let lhs = this.parseLhs();
 
-  if (lhs != null) {
+  if(lhs != null) {
     pstate.advance(lhs.nodeLength());
     pstate.nextToken();
-    if (pstate.current != '=') return null;
-    
+    if(pstate.current != '=') return null;
+
     pstate.advance(1);
     pstate.nextToken();
     let rhs = this.parseRhs(pstate);
-    if (rhs != null) {
+    if(rhs != null) {
       pstate.advance(rhs.nodeLength());
       pstate.nextToken();
-      if (pstate.current == ';') {
+      if(pstate.current == ';') {
         pstate.advance(1);
         prule = pstate.parseNode('rule');
         prule.addChild(lhs);
         prule.addChild(rhs);
       }
     }
-    
   }
 
   this.popFrame(rule, prule);
@@ -486,7 +482,7 @@ Parser.prototype.parseRule = function () {
 Parser.prototype.parseGrammar = function () {
   let rule = 'grammar';
   let pstate = this.pushFrame(rule);
-  if (pstate == null) return null;
+  if(pstate == null) return null;
 
   let grammar = null;
   let rules = new Array();
@@ -494,16 +490,16 @@ Parser.prototype.parseGrammar = function () {
 
   do {
     prule = this.parseRule();
-    if (prule != null) {
+    if(prule != null) {
       rules.push(prule);
       pstate.advance(prule.nodeLength());
       pstate.nextToken();
       console.log('pstate: ruleStart=' + pstate.ruleStart + ' start=' + pstate.start + ' offset=' + pstate.offset);
     }
-  } while (prule != null);
+  } while(prule != null);
 
   grammar = pstate.parseNode('grammar');
-  for (let i = 0; i < rules.length; i++) {
+  for(let i = 0; i < rules.length; i++) {
     grammar.addChild(rules[i]);
   }
 

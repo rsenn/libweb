@@ -9,10 +9,9 @@ export function trkl(initValue) {
   let subscribers = [];
 
   let self = function (writeValue) {
-    if (arguments.length) {
+    if(arguments.length) {
       write(writeValue);
-    }
-    else {
+    } else {
       return read();
     }
   };
@@ -32,10 +31,10 @@ export function trkl(initValue) {
 
   //declaring as a private function means the minifier can scrub its name on internal references
   function subscribe(subscriber, immediate) {
-    if (!~subscribers.indexOf(subscriber)) {
+    if(!~subscribers.indexOf(subscriber)) {
       subscribers.push(subscriber);
     }
-    if (immediate) {
+    if(immediate) {
       subscriber(value);
     }
     return this;
@@ -49,7 +48,7 @@ export function trkl(initValue) {
   function write(newValue) {
     let oldValue = value;
 
-    if (newValue === oldValue && (newValue === null || typeof newValue !== 'object')) {
+    if(newValue === oldValue && (newValue === null || typeof newValue !== 'object')) {
       return; //bail out
     }
 
@@ -60,7 +59,7 @@ export function trkl(initValue) {
     //We don't recheck the length during the loop, as subscribers may be mutated
     //(e.g. when a subscribers unsubs itself)
     let subCount = subscribers.length;
-    for (let i = 0; i < subCount; i++) {
+    for(let i = 0; i < subCount; i++) {
       //If a sub throws an error, the effects array will just keep growing and growing.
       //It won't stop operating properly, but it might eat memory. We're okay with this, I guess?
       effects.pop()(value, oldValue);
@@ -69,7 +68,7 @@ export function trkl(initValue) {
 
   function read() {
     let runningComputation = computedTracker[computedTracker.length - 1];
-    if (runningComputation) {
+    if(runningComputation) {
       subscribe(runningComputation._subscriber);
     }
     return value;
@@ -108,12 +107,11 @@ trkl.computed = function (fn) {
     let errors, result;
     try {
       result = fn();
-    }
-    catch (e) {
+    } catch(e) {
       errors = e;
     }
     computedTracker.pop();
-    if (errors) {
+    if(errors) {
       throw errors;
     }
     self(result);
@@ -134,7 +132,7 @@ trkl.property = function (object, name, options = { enumerable: true, configurab
     get: self,
     set: self
   });
-  if (options.deletable) {
+  if(options.deletable) {
     trkl.subscribe((value) => (value === undefined ? self.delete() : undefined));
     self.delete = () => {
       delete object[name];
@@ -146,7 +144,7 @@ trkl.property = function (object, name, options = { enumerable: true, configurab
 
 trkl.bind = function (object, name, handler) {
   let self = handler;
-  if (typeof name == 'object')
+  if(typeof name == 'object')
     Object.defineProperties(
       object,
       Object.keys(name).reduce((acc, key) => ({ ...acc, [key]: { get: name[key], set: name[key], enumerable: true } }), {})
@@ -162,20 +160,20 @@ trkl.bind = function (object, name, handler) {
 };
 
 trkl.object = function (handlers, ret = {}) {
-  for (let prop in handlers) trkl.bind(ret, prop, handlers[prop]);
+  for(let prop in handlers) trkl.bind(ret, prop, handlers[prop]);
 
   return ret;
 };
 
 function detectCircularity(token) {
-  if (computedTracker.indexOf(token) !== -1) {
+  if(computedTracker.indexOf(token) !== -1) {
     throw Error('Circular computation detected');
   }
 }
 
 function remove(array, item) {
   let position = array.indexOf(item);
-  if (position !== -1) {
+  if(position !== -1) {
     array.splice(position, 1);
   }
 }

@@ -10,7 +10,6 @@
  * @license MIT
  */
 
-
 let absCommands = ['M', 'Z', 'L', 'H', 'V', 'C', 'S', 'Q', 'T', 'A'];
 let relCommands = absCommands.map((letter) => letter.toLowerCase());
 let commands = absCommands.concat(relCommands);
@@ -22,11 +21,10 @@ let commands = absCommands.concat(relCommands);
  */
 export function SvgPath() {
   //TODO is this check robust enough?
-  if (this instanceof SvgPath) {
+  if(this instanceof SvgPath) {
     //this.relative = false;
     this.commands = [];
-  }
-  else {
+  } else {
     return new SvgPath();
   }
 }
@@ -117,16 +115,15 @@ SvgPath.prototype.bezier3 = function (x1, y1, x2, y2, x, y) {
   let p1 = { x: x1, y: y1 };
   let p2 = { x: x2, y: y2 };
   let end = shortcut ? p2 : { x, y };
-  if (usePoints) {
+  if(usePoints) {
     p1 = x1;
     p2 = y1;
     end = shortcut ? p2 : x2;
   }
-  if (!shortcut) {
+  if(!shortcut) {
     return this._cmd('C')(p1.x, p1.y, p2.x, p2.y, end.x, end.y);
   }
   return this._cmd('S')(p1.x, p1.y, end.x, end.y);
-  
 };
 
 /**
@@ -144,15 +141,14 @@ SvgPath.prototype.bezier2 = function (x1, y1, x, y) {
   let shortcut = usePoints ? arguments.length < 2 : arguments.length < 4;
   let p1 = { x: x1, y: y1 };
   let end = shortcut ? p1 : { x, y };
-  if (usePoints) {
+  if(usePoints) {
     p1 = x1;
     end = shortcut ? p1 : y1;
   }
-  if (!shortcut) {
+  if(!shortcut) {
     return this._cmd('Q')(p1.x, p1.y, end.x, end.y);
   }
   return this._cmd('T')(end.x, end.y);
-  
 };
 
 /**
@@ -183,9 +179,7 @@ SvgPath.prototype.cmd = function (...args) {
  * @returns {string}
  */
 SvgPath.prototype.str = function () {
-  return this.commands
-    .map((command) => command.toString())
-    .join(' ');
+  return this.commands.map((command) => command.toString()).join(' ');
 };
 
 //setting letter commands

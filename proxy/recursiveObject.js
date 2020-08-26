@@ -1,25 +1,22 @@
-
-
 function isObject(obj) {
   return Object.prototype.toString.call(obj) === '[object Object]';
 }
 
 //TODO: '.' failures with custom obj props
 function computePath(p1, p2, delimiter) {
-  if (!delimiter || delimiter === '.') {
-    if (!p1) {
+  if(!delimiter || delimiter === '.') {
+    if(!p1) {
       return p2;
     }
 
     return p1 + '.' + p2;
   }
-  if (!p1) {
+  if(!p1) {
     return p2;
   }
 
   //array
   return p1 + '[' + p2 + ']';
-  
 }
 
 function subProxyObj(obj, update, dotPath) {
@@ -28,30 +25,26 @@ function subProxyObj(obj, update, dotPath) {
   let isArray = Array.isArray(obj);
 
   Object.keys(obj).forEach((property) => {
-    if (isArray) {
+    if(isArray) {
       newPath = computePath(path, property, '[]');
-    }
-    else {
+    } else {
       newPath = computePath(path, property);
     }
 
-    if (Array.isArray(obj[property])) {
+    if(Array.isArray(obj[property])) {
       obj[property] = emulateArray(obj[property], update, newPath);
-    }
-    else if (isObject(obj[property])) {
+    } else if(isObject(obj[property])) {
       obj[property] = proxyObject(obj[property], update, newPath);
     }
   });
 }
 
 function updateValue(target, property, value, newPath, update) {
-  if (Array.isArray(value)) {
+  if(Array.isArray(value)) {
     target[property] = emulateArray(value, update, newPath);
-  }
-  else if (isObject(value)) {
+  } else if(isObject(value)) {
     target[property] = proxyObject(value, update, newPath);
-  }
-  else {
+  } else {
     target[property] = value;
   }
 
@@ -67,29 +60,29 @@ function emulateArray(obj, update, dotPath) {
   let newPath = '';
 
   return new Proxy(obj, {
-    get (target, property) {
-      if (property === 'length') {
+    get(target, property) {
+      if(property === 'length') {
         return length;
       }
 
-      if (property in target) {
+      if(property in target) {
         return target[property];
       }
 
-      if (property in Array.prototype) {
+      if(property in Array.prototype) {
         //TODO: what about non-fns?
         return function () {
           return Array.prototype[property].apply(obj, arguments);
         };
       }
     },
-    set (target, property, value) {
-      if (property === 'length') {
-        for (let i = value; i < length; i++) {
+    set(target, property, value) {
+      if(property === 'length') {
+        for(let i = value; i < length; i++) {
           delete target[i];
         }
 
-        if (length !== value) {
+        if(length !== value) {
           length = value;
           //needed when deleting stuff (splice, shift, pop)
           newPath = computePath(path, property);
@@ -99,13 +92,12 @@ function emulateArray(obj, update, dotPath) {
         return true;
       }
       newPath = computePath(path, property, '[]');
-      
 
       //when updating a value check if it's an obj / array, might need to
       //proxy that set value
       updateValue(target, property, value, newPath, update);
 
-      if (Number(property) >= length) {
+      if(Number(property) >= length) {
         length = Number(property) + 1;
         update(computePath(path, 'length', '.'), length);
       }
@@ -113,7 +105,7 @@ function emulateArray(obj, update, dotPath) {
       return true;
     },
     deleteProperty(target, property) {
-      if (property in target) {
+      if(property in target) {
         newPath = computePath(path, property, '[]');
         target[property] = undefined;
         update(newPath, undefined, true);
@@ -134,10 +126,10 @@ function proxyObject(obj, update, dotPath) {
   let newPath = '';
 
   return new Proxy(obj, {
-    get (target, property) {
+    get(target, property) {
       return target[property];
     },
-    set (target, property, value) {
+    set(target, property, value) {
       newPath = computePath(path, property);
 
       updateValue(target, property, value, newPath, update);
@@ -145,7 +137,7 @@ function proxyObject(obj, update, dotPath) {
       return true;
     },
     deleteProperty(target, property) {
-      if (property in target) {
+      if(property in target) {
         newPath = computePath(path, property);
         delete target[property];
         update(newPath, undefined, true);

@@ -6,7 +6,6 @@
  * Make sure that cell_size is equal or bigger than retrieving box
  */
 
-
 /**
  *
  * @params {Object} config {
@@ -29,7 +28,7 @@ export function SpatialHash(config) {
 SpatialHash.prototype.insert = function (point) {
   let hash = this.hash(point);
   let buckets = this.buckets;
-  if (!buckets[hash]) {
+  if(!buckets[hash]) {
     buckets[hash] = [];
   }
   buckets[hash].push(point);
@@ -57,7 +56,7 @@ SpatialHash.prototype.retrieve = function (point) {
     halfHeight,
     len = 0,
     fLen = 0;
-  if (w || h) {
+  if(w || h) {
     halfWidth = w / 2;
     halfHeight = h / 2;
     box = [
@@ -68,20 +67,19 @@ SpatialHash.prototype.retrieve = function (point) {
       { x: x + halfWidth, y: y - halfHeight }, //TOP RIGHT
       { x: x + halfWidth, y: y + halfHeight } //BOTTOM RIGHT
     ];
-  }
-  else {
+  } else {
     box = [{ x, y }];
   }
   len = box.length;
-  while (len--) {
+  while(len--) {
     hash = this.hash(box[len]);
     //make sure there's no doubles
-    if (doubleCmp.indexOf(hash) == -1) {
+    if(doubleCmp.indexOf(hash) == -1) {
       doubleCmp.push(hash);
       foundBucket = this.buckets[hash];
       fLen = foundBucket && foundBucket.length;
-      if (fLen) {
-        while (fLen--) {
+      if(fLen) {
+        while(fLen--) {
           objects = objects.concat(foundBucket[fLen]);
         }
       }
@@ -104,12 +102,12 @@ SpatialHash.prototype.clear = function () {
 
 SpatialHash.prototype.remove = function (id) {
   let list = [];
-  for (let bucket in this.buckets) {
-    if (this.buckets.hasOwnProperty(bucket)) {
+  for(let bucket in this.buckets) {
+    if(this.buckets.hasOwnProperty(bucket)) {
       list = this.buckets[bucket];
       let len = list.length;
-      while (len--) {
-        if (list[len].id == id) {
+      while(len--) {
+        if(list[len].id == id) {
           list.splice(len, 1);
         }
       }

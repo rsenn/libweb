@@ -5,15 +5,15 @@ export function tlite(getTooltipOpts) {
     let el = e.target;
     let opts = getTooltipOpts(el);
 
-    if (!opts) {
+    if(!opts) {
       el = el.parentElement;
       opts = el && getTooltipOpts(el);
     }
     let getTitle;
-    if (opts.attrib) {
+    if(opts.attrib) {
       let a = opts.attrib;
 
-      if (a instanceof Array || (typeof a == 'object' && a !== null && typeof a.length == 'number')) {
+      if(a instanceof Array || (typeof a == 'object' && a !== null && typeof a.length == 'number')) {
         getTitle = (e) => {
           let x = a
             .filter((attrName) => e.hasAttribute(attrName))
@@ -21,23 +21,22 @@ export function tlite(getTooltipOpts) {
             .filter(([attrName, attrVal]) => attrVal != '' && attrVal != null);
           return x[0] || [];
         };
-      }
-      else {
+      } else {
         getTitle = (e) => [opts.attrib, (e.hasAttribute(opts.attrib) && e.getAttribute(opts.attrib)) || '', e.hasAttribute(opts.attrib) ? e : null];
       }
     }
-    if (!getTitle) getTitle = (e) => ['title', (e.hasAttribute('title') && e.getAttribute('title')) || '', e];
+    if(!getTitle) getTitle = (e) => ['title', (e.hasAttribute('title') && e.getAttribute('title')) || '', e];
     opts.getTitle = (e) => {
       let attrName,
         title,
         i = 0;
       do {
-        if (!e) break;
+        if(!e) break;
         [attrName, title] = getTitle(e);
-        if (typeof title == 'string' && title.length > 0) break;
+        if(typeof title == 'string' && title.length > 0) break;
         i++;
-      } while ((e = e.parentElement));
-      if (title != '')
+      } while((e = e.parentElement));
+      if(title != '')
         //console.log(`getTitle[${i}]:`, title);
         return [attrName, title, e];
     };
@@ -92,7 +91,7 @@ if(elem)
 
     function hide(isAutoHiding, el) {
       //console.log('hide(', isAutoHiding, el, ')');
-      if (isAuto === isAutoHiding) {
+      if(isAuto === isAutoHiding) {
         showTimer = clearTimeout(showTimer);
         let parent = tooltipEl && tooltipEl.parentElement;
         parent && parent.removeChild(tooltipEl);
@@ -101,9 +100,9 @@ if(elem)
     }
 
     function fadeIn(el) {
-      if (!tooltipEl) {
+      if(!tooltipEl) {
         tooltipEl = mapper(el, text, opts);
-        if (tooltipEl.parentElement) tooltipEl.parentElement.removeChild(tooltipEl);
+        if(tooltipEl.parentElement) tooltipEl.parentElement.removeChild(tooltipEl);
 
         (elem || el).appendChild(tooltipEl);
       }
@@ -121,14 +120,13 @@ if(elem)
     const { grav } = opts;
     var [attr, text, elem] = opts.getTitle(el);
 
-    if (elem) el = elem;
+    if(elem) el = elem;
 
     let html;
-    if (/\t/.test(text)) {
+    if(/\t/.test(text)) {
       let cells = text.split(/\n/g).map((row) => row.split(/\t/g));
       html = '<table border="0" cellspacing="0" cellpadding="0" class="tlite-table" style="margin: 0px; padding: 0px; color: white; ">\n' + cells.map((row, j) => `<tr class="tlite-table tlite-row-${j}">` + row.map((col, i) => `<td class="tlite-table tlite-row-${j} tlite-col-${i}">` + col + '</td>').join('') + '</tr>\n').join('') + '</table>';
-    }
-    else {
+    } else {
       html = text.replace(/\n/g, '<br />');
     }
     //console.log('html:', html);
@@ -147,7 +145,7 @@ if(elem)
       let left = el.offsetLeft;
       tooltipEl.style.position = 'fixed';
 
-      if (tooltipEl.offsetParent === el) {
+      if(tooltipEl.offsetParent === el) {
         top = left = 0;
       }
 
@@ -162,7 +160,7 @@ if(elem)
         left: horzGrav === 'w' ? left : horzGrav === 'e' ? left + width - tooltipWidth : vertGrav === 'w' ? left + width + arrowSize : vertGrav === 'e' ? left - tooltipWidth - arrowSize : centerEl - tooltipWidth / 2
       };
 
-      if (pos.left < 0) pos.left = 0;
+      if(pos.left < 0) pos.left = 0;
 
       tooltipEl.style.top = pos.top + 'px';
       tooltipEl.style.left = pos.left + 'px';
@@ -176,19 +174,16 @@ if(elem)
 
     let rect = tooltipEl.getBoundingClientRect();
 
-    if (vertGrav === 's' && rect.top < 0) {
+    if(vertGrav === 's' && rect.top < 0) {
       vertGrav = 'n';
       positionTooltip();
-    }
-    else if (vertGrav === 'n' && rect.bottom > window.innerHeight) {
+    } else if(vertGrav === 'n' && rect.bottom > window.innerHeight) {
       vertGrav = 's';
       positionTooltip();
-    }
-    else if (vertGrav === 'e' && rect.left < 0) {
+    } else if(vertGrav === 'e' && rect.left < 0) {
       vertGrav = 'w';
       positionTooltip();
-    }
-    else if (vertGrav === 'w' && rect.right > window.innerWidth) {
+    } else if(vertGrav === 'w' && rect.right > window.innerWidth) {
       vertGrav = 'e';
       positionTooltip();
     }

@@ -35,7 +35,7 @@
     };
 
     let pushForce = function (b) {
-      if (!opts.pushCenter) {
+      if(!opts.pushCenter) {
         return [0, 0];
       }
       let dist = b.move.minus(opts.pushCenter);
@@ -44,7 +44,7 @@
     };
 
     let repulseForce = function (b, other) {
-      if (!opts.pushCenter) {
+      if(!opts.pushCenter) {
         return [0, 0];
       }
       let dist = b.move.minus(other.move);
@@ -52,7 +52,7 @@
       let koef = opts.repulseForce || 500;
 
       let f = [0, 0];
-      if (overlapPoint(b, other.fix)) {
+      if(overlapPoint(b, other.fix)) {
         pdist = b.move.minus(other.fix);
         f = pdist.scaleto(2);
       }
@@ -64,7 +64,7 @@
     let total = bodies.length;
     let step = 3;
     let damp = 0.87;
-    for (i = 0; i < total; i++) {
+    for(i = 0; i < total; i++) {
       b = bodies[i];
       b.vel = [0, 0];
       b.mass = b.size.x() * b.size.y() * 0.001;
@@ -77,12 +77,12 @@
     recur = function () {
       kin = 0;
       loop += 1;
-      for (i = 0; i < total; i++) {
+      for(i = 0; i < total; i++) {
         b = bodies[i];
         f = attractForce(b);
         f = f.plus(pushForce(b));
-        for (j = 0; j < total; j++) {
-          if (i != j) {
+        for(j = 0; j < total; j++) {
+          if(i != j) {
             f = f.plus(repulseForce(b, bodies[j]));
           }
         }
@@ -90,12 +90,12 @@
         b.tomove = b.move.plus(b.vel.scale(step));
         kin += b.mass * Math.pow(b.vel.veclength(), 2);
       }
-      for (i = 0; i < total; i++) {
+      for(i = 0; i < total; i++) {
         b = bodies[i];
         b.move = b.tomove;
       }
       drawscene(bodies);
-      if (kin > 10 || loop < 100) {
+      if(kin > 10 || loop < 100) {
         setTimeout(recur, 20);
       }
     };

@@ -15,7 +15,7 @@ export class SweepLineClass {
   update(object, loVal, hiVal) {
     let n = this.objectNodeMap.get(object);
 
-    if (n) {
+    if(n) {
       n.hiNode.x = hiVal || n.hiNode.x;
       this.sortNode(n.hiNode);
 
@@ -27,7 +27,7 @@ export class SweepLineClass {
   del(object) {
     n = this.objectNodeMap.get(object);
 
-    if (n) {
+    if(n) {
       this.deleteNode(n.hiNode);
       this.deleteNode(n.loNode);
       this.objectNodeMap.delete(object);
@@ -40,15 +40,14 @@ export class SweepLineClass {
       this.deleteNode(node);
 
       //Add node to new position in queue.
-      if (newLocation === null) {
+      if(newLocation === null) {
         node.prev = null;
         node.next = this.queueHead;
         this.queueHead = node;
-      }
-      else {
+      } else {
         node.prev = newLocation;
         node.next = newLocation.next;
-        if (newLocation.next) newLocation.next.prev = node;
+        if(newLocation.next) newLocation.next.prev = node;
         newLocation.next = node;
       }
     }
@@ -58,25 +57,25 @@ export class SweepLineClass {
     //value.  First check against the 'prev' queue
     //node...
     let newLocation = node.prev;
-    while (newLocation && node.x < newLocation.x) {
+    while(newLocation && node.x < newLocation.x) {
       newLocation = newLocation.prev;
     }
 
-    if (newLocation !== node.prev) moveNode.call(this);
+    if(newLocation !== node.prev) moveNode.call(this);
 
     //...then against the 'next' queue node.
     newLocation = node;
-    while (newLocation.next && newLocation.next.x < node.x) {
+    while(newLocation.next && newLocation.next.x < node.x) {
       newLocation = newLocation.next;
     }
 
-    if (newLocation !== node) moveNode.call(this);
+    if(newLocation !== node) moveNode.call(this);
   }
 
   deleteNode(node) {
-    if (node.prev === null) this.queueHead = node.next;
-    if (node.prev) node.prev.next = node.next;
-    if (node.next) node.next.prev = node.prev;
+    if(node.prev === null) this.queueHead = node.next;
+    if(node.prev) node.prev.next = node.next;
+    if(node.next) node.next.prev = node.prev;
   }
 
   findCollisions(collisionFunction) {
@@ -84,18 +83,17 @@ export class SweepLineClass {
     let activeObjects = new Set();
 
     let node = this.queueHead;
-    while (node) {
-      if (node.loHi === SweepLineClass._LO) {
+    while(node) {
+      if(node.loHi === SweepLineClass._LO) {
         let object = node.object;
-        for (let ao of activeObjects) {
+        for(let ao of activeObjects) {
           //const ao = activeObjects[ o ];
-          if (collisionFunction(object, ao)) {
+          if(collisionFunction(object, ao)) {
             collision.push([object, ao]);
           }
         }
         activeObjects.add(object);
-      }
-      else {
+      } else {
         //node.loHi === SweepLineClass._HI
         activeObjects.delete(node.object);
       }
@@ -108,7 +106,7 @@ export class SweepLineClass {
 
   print(printFunction) {
     let n = this.queueHead;
-    while (n) {
+    while(n) {
       printFunction(n.object, n.loHi, n.x);
       n = n.next;
     }
@@ -128,7 +126,7 @@ SweepLineClass.NodeClass = class {
     this.prev = null;
     this.next = null;
 
-    if (sweepLine.queueHead) sweepLine.queueHead.prev = this;
+    if(sweepLine.queueHead) sweepLine.queueHead.prev = this;
     this.next = sweepLine.queueHead;
     sweepLine.queueHead = this;
     sweepLine.sortNode(this);

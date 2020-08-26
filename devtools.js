@@ -14,7 +14,7 @@ import { makeLocalStorage } from './autoStore.js';
 
 const env = 'development';
 
-if (0 && ['development', 'test', 'local'].indexOf(env) != -1 && 'window' in global) {
+if(0 && ['development', 'test', 'local'].indexOf(env) != -1 && 'window' in global) {
   window.accumulateClasses = () => {
     let st = storage('dev');
     let classes = st.get('classes') || [];
@@ -32,7 +32,7 @@ if (0 && ['development', 'test', 'local'].indexOf(env) != -1 && 'window' in glob
       .match(/bp3/);
     dom.Element.findAll('*[class~=bp3]').forEach((e) => newClasses.concat(String(e.class).split(/ /g)));
     newClasses = newClasses.filter((i) => classes.indexOf(i) == -1);
-    if (newClasses.length) {
+    if(newClasses.length) {
       st.set('classes', (classes = Util.unique(classes.concat(newClasses))));
       Util.log('dev.classes ', newClasses);
     }
@@ -48,7 +48,7 @@ if (0 && ['development', 'test', 'local'].indexOf(env) != -1 && 'window' in glob
   });*/
 }
 
-if (!Array.prototype.back) {
+if(!Array.prototype.back) {
   try {
     Util.defineGetterSetter(
       Array.prototype,
@@ -57,17 +57,16 @@ if (!Array.prototype.back) {
         return this.length > 0 ? this[this.length - 1] : undefined;
       },
       function (value) {
-        if (this.length > 0) this[this.length - 1] = value;
+        if(this.length > 0) this[this.length - 1] = value;
         else this.push(value);
         return this;
       },
       false
     );
-  }
-  catch (error) {}
+  } catch(error) {}
 }
 
-if (!Array.prototype.front) {
+if(!Array.prototype.front) {
   try {
     Util.defineGetterSetter(
       Array.prototype,
@@ -76,14 +75,13 @@ if (!Array.prototype.front) {
         return this.length > 0 ? this[0] : undefined;
       },
       function (value) {
-        if (this.length > 0) this[this.length - 1] = value;
+        if(this.length > 0) this[this.length - 1] = value;
         else this.push(value);
         return this;
       },
       false
     );
-  }
-  catch (error) {}
+  } catch(error) {}
 }
 
 export function stylesheets() {
@@ -127,7 +125,7 @@ export const colors = (() => {
     let entries = args.entries();
     let i = 0,
       len = entries.length;
-    for (let [key, color] of entries) {
+    for(let [key, color] of entries) {
       let diff = key - prev;
       prev = key;
       const c = new RGBA(color.r, color.g, color.b, color.a);
@@ -288,7 +286,7 @@ Element.setCSS(c.root, { width: '100%', height: '100%' });
   const edges = 5 * 2;
   const MakePointList = (r) => {
     let ret = new PointList();
-    for (let i = 0; i < edges; i++) {
+    for(let i = 0; i < edges; i++) {
       let angle = (Math.PI * 2 * i) / edges;
       const rad = r[i & 1];
       let pt = new Point(Math.cos(angle) * rad, Math.sin(angle) * rad);
@@ -333,15 +331,15 @@ Element.setCSS(c.root, { width: '100%', height: '100%' });
 export function stores(stores) {
   let args = [...arguments];
   stores = args.shift();
-  if (typeof stores === 'string') stores = [stores];
-  if (!stores) stores = ['RootStore', 'UserStore'];
-  for (let i = 0; i < stores.length; i++) {
+  if(typeof stores === 'string') stores = [stores];
+  if(!stores) stores = ['RootStore', 'UserStore'];
+  for(let i = 0; i < stores.length; i++) {
     const st = stores[i];
     Util.log('store: ', { st, AllStores });
     const store = AllStores[st];
-    while (args.length) {
+    while(args.length) {
       const prop = args.shift();
-      if (prop !== undefined && store[prop] !== undefined) store = store[prop];
+      if(prop !== undefined && store[prop] !== undefined) store = store[prop];
       else break;
     }
     return store;
@@ -349,14 +347,14 @@ export function stores(stores) {
 }
 
 export function gettext(elem, done) {
-  if (!elem) {
+  if(!elem) {
     return select().then((elem) => (elem ? gettext(elem) : null));
   }
   const getNodeText = (node) => {
     let txt = '';
-    if (node.innerHTML && !node.innerHTML.match(/<.*>/)) txt = '"' + node.innerHTML + '": ""';
-    else if (node.placeholder) txt = node.placeholder;
-    else if (node.nodeType == Node.TEXT_NODE && node.textContent) txt = node.textContent;
+    if(node.innerHTML && !node.innerHTML.match(/<.*>/)) txt = '"' + node.innerHTML + '": ""';
+    else if(node.placeholder) txt = node.placeholder;
+    else if(node.nodeType == Node.TEXT_NODE && node.textContent) txt = node.textContent;
     else txt = '';
     return txt;
   };
@@ -366,12 +364,12 @@ export function gettext(elem, done) {
     let text = [];
     let prevParent;
     Element.walk(e, (node, root) => {
-      if (node) {
+      if(node) {
         let parent = node && node.parentNode !== undefined ? node.parentNode : null;
         let path = Element.xpath(node, e);
         let txt = node.innerText || node.textContent;
-        if (txt && !['option', 'script', 'style', '#SL_'].some((tag) => path.indexOf(tag) != -1)) {
-          if (parent != prevParent) {
+        if(txt && !['option', 'script', 'style', '#SL_'].some((tag) => path.indexOf(tag) != -1)) {
+          if(parent != prevParent) {
             //text.push("Parent: "+Element.xpath(parent));
           }
           path = path.replace(/\/[a-z]*\[[^/]*\//g, '/');
@@ -391,7 +389,7 @@ export function gettext(elem, done) {
 }
 
 export function select() {
-  if (!select.promise)
+  if(!select.promise)
     select.promise = new Promise((resolve, reject) => {
       const e = Element.find('body');
       e.style.cursor = 'crosshair';
@@ -410,7 +408,7 @@ export function select() {
         abortsel();
       };
       const onkey = (event) => {
-        if (event.keyCode == 27) abortsel();
+        if(event.keyCode == 27) abortsel();
       };
       e.addEventListener('click', click);
       e.addEventListener('keypress', onkey);
@@ -431,7 +429,7 @@ export function boxes(state) {
   let body = Element.find('body');
   let container = Element.find('#main');
   let page = Element.find('.page');
-  if (!boxes) {
+  if(!boxes) {
     boxes = Element.create('div', {
       className: 'boxes',
       id: 'boxes',
@@ -493,16 +491,14 @@ export function ws(cmd = 'send', filename, data) {
     let url = Util.parseURL();
     url.location = '/ws';
     url.protocol = 'ws';
-    if (typeof args[0] === 'object') {
-      if (args[0].recv) {
+    if(typeof args[0] === 'object') {
+      if(args[0].recv) {
         cmd = 'recv';
         filename = args[0].recv;
-      }
-      else if (args[0].send) {
+      } else if(args[0].send) {
         cmd = 'send';
         filename = args[0].send;
-      }
-      else {
+      } else {
         cmd = args[0].cmd;
         filename = args[0].filename;
       }
@@ -527,21 +523,21 @@ export function ws(cmd = 'send', filename, data) {
   }ch*/
     ws.onopen = function (event) {
       Util.log('ws.onopen ', { event });
-      if (cmd == 'send' || cmd == 'recv') {
+      if(cmd == 'send' || cmd == 'recv') {
         let json = { cmd, filename, data: data ? window.btoa(encodeURIComponent(data)) : null };
         ws.send(JSON.toString(json) + '\r\n');
         Util.log('ws.send ', json);
-        if (cmd == 'recv') {
+        if(cmd == 'recv') {
           ws.onmessage = (msg) => {
             Util.log('ws.msg ', msg);
-            if (msg.data == '') return;
+            if(msg.data == '') return;
             let x = msg.data.charAt(0) != '{' ? decodeBase64(msg.data) : msg.data;
-            if (x.charAt(0) == '{') {
+            if(x.charAt(0) == '{') {
               x = JSON.parse(x);
-              if (x.cmd == 'recv') return;
+              if(x.cmd == 'recv') return;
             }
             Util.log('ws.data ', x);
-            if (typeof data === 'function') data(x);
+            if(typeof data === 'function') data(x);
             ws.close();
             resolve(x);
           };
@@ -554,10 +550,9 @@ export function ws(cmd = 'send', filename, data) {
 export function settext(en, fa) {
   let obj = {};
   const args = [...arguments];
-  if (typeof args[0] === 'object' && args[0].en !== undefined) {
+  if(typeof args[0] === 'object' && args[0].en !== undefined) {
     obj = args[0];
-  }
-  else {
+  } else {
     obj = { [en]: fa };
   }
   const filename = 'static/locales/fa-IR/common.json';
@@ -583,30 +578,30 @@ export async function img(name, arg = {}) {
   let list = root.images
     ? root.images
     : (root.images = new HashList(
-      (obj) => (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, '$1XX$2'),
-      function (arg) {
-        let e = Element.find(arg);
-        let svg = Element.find('svg', e);
+        (obj) => (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, '$1XX$2'),
+        function (arg) {
+          let e = Element.find(arg);
+          let svg = Element.find('svg', e);
 
-        /*let xpath = arg.xpath || Element.xpath(svg);
+          /*let xpath = arg.xpath || Element.xpath(svg);
       if(xpath && xpath.replace) xpath = xpath.replace(/.*\//, '');*/
-        Element.attr(svg, { 'data-name': svg.id });
-        let r = new Rect(0, 0, svg.getAttribute('width'), svg.getAttribute('height'));
-        r = Rect.round(r);
-        let width = this.width + r.width;
+          Element.attr(svg, { 'data-name': svg.id });
+          let r = new Rect(0, 0, svg.getAttribute('width'), svg.getAttribute('height'));
+          r = Rect.round(r);
+          let width = this.width + r.width;
 
-        /*  r.x += width;
+          /*  r.x += width;
         this.width = width;*/
-        Element.setRect(e, r);
-        //Util.log("HashList ctor ", { width, r, id });
-        return e;
-        //return { e, r, id, xpath, svg };
-      }
-    ));
+          Element.setRect(e, r);
+          //Util.log("HashList ctor ", { width, r, id });
+          return e;
+          //return { e, r, id, xpath, svg };
+        }
+      ));
 
   return new Promise(async (resolve, reject) => {
     let path = name.indexOf('.') == -1 ? name + '.svg' : name;
-    if (path.indexOf('/') == -1) path = '/static/img/' + path;
+    if(path.indexOf('/') == -1) path = '/static/img/' + path;
 
     const page = Element.find('.page');
     const body = Element.find('body');
@@ -615,7 +610,7 @@ export async function img(name, arg = {}) {
     const img_name = path.replace(/.*\/(.*)\.[^.]*$/g, '$1');
     const res = await axios.get(path);
 
-    if (await res) {
+    if(await res) {
       /*      .then(res => {
        */ Util.log('Loading image: ', { path, res });
       let e = Element.create('div', {
@@ -638,7 +633,7 @@ export async function img(name, arg = {}) {
       const av = e && e.firstChild && e.firstChild.viewBox && e.firstChild.viewBox.animVal;
       let svg = e.firstChild;
       Element.attr(svg, { id: img_name });
-      while (svg.viewBox === undefined) svg = svg.nextElementSibling;
+      while(svg.viewBox === undefined) svg = svg.nextElementSibling;
       const bbox = new Rect(0, 0, svg.getAttribute('width'), svg.getAttribute('height'));
       let r = Rect(av ? av : bbox);
       Util.log('r = ', r, ' bbox = ', bbox);
@@ -652,7 +647,7 @@ export async function img(name, arg = {}) {
 
       e.svg = svg;
       const arr = list.add(e);
-      if (arr.length == 2) {
+      if(arr.length == 2) {
         Timer.once(1333, () => {
           Util.log('walk(', arr[0].e, ', ', arr[1].e, ')');
           walk(arr[0].e, arr[1].e);
@@ -660,7 +655,7 @@ export async function img(name, arg = {}) {
       }
       Timer.once(50, () => {
         e = document.querySelector('#' + img_name);
-        if (!e) reject();
+        if(!e) reject();
 
         resolve(e);
       });
@@ -683,8 +678,8 @@ createsvg(obj, layer);
 */
 export function createsvg(wh, fixed = false) {
   let args = [...arguments];
-  if (createsvg.element) {
-    if (typeof args[0] == 'object') {
+  if(createsvg.element) {
+    if(typeof args[0] == 'object') {
       let tagName = args[0].tagName;
       delete args[0].tagName;
       args.unshift(tagName);
@@ -719,7 +714,7 @@ export function createsvg(wh, fixed = false) {
 export function setpos(element) {
   let e = Element.find(element);
   //Util.log('e: ', Element.dump(e));
-  if (e) {
+  if(e) {
     window.onmousemove = function (event) {
       let rect = Element.rect(e);
       let pos = Point(event.clientX, event.clientY);
@@ -744,10 +739,9 @@ export function dump(element) {
 export function walk(element) {
   const args = [...arguments];
   let elements = args.map((e) => {
-    if (e && e.charAt && e.charAt(0) != '#') {
+    if(e && e.charAt && e.charAt(0) != '#') {
       e = img(`designs/${e.replace(/^#/, '')}`);
-    }
-    else {
+    } else {
       e = Element.find(e);
     }
     return e;
@@ -769,11 +763,11 @@ export function walk(element) {
       return key.replace(/\//g, ' > ');
     },
     (obj) => {
-      if (obj.id === undefined) Object.assign(obj, { id: Element.attr(obj.e, 'id') });
-      if (obj.e) {
+      if(obj.id === undefined) Object.assign(obj, { id: Element.attr(obj.e, 'id') });
+      if(obj.e) {
         let prev;
         obj.div = obj.e.parentNode;
-        while (obj.div.tagName.toLowerCase() != 'div') {
+        while(obj.div.tagName.toLowerCase() != 'div') {
           prev = obj.div;
           obj.div = obj.div.parentNode;
         }
@@ -783,14 +777,14 @@ export function walk(element) {
       obj.r = Element.rect(obj.e);
       obj.y = Rect.y2(svgr) - Rect.y2(obj.r);
       obj.x = obj.r.x - svgr.x;
-      if (obj.name === undefined) obj.name = Element.xpath(obj.e).replace(/.*\//, '');
+      if(obj.name === undefined) obj.name = Element.xpath(obj.e).replace(/.*\//, '');
       return obj;
     }
   );
   elements.forEach((element) =>
     Element.walk(element, (e) => {
       const text = (e.innerHTML || '').trim();
-      if (text != '' && !text.match(/<.*>/)) {
+      if(text != '' && !text.match(/<.*>/)) {
         const xpath = Element.xpath(e).replace(/.*#img-[^/]*\//, '');
         const rect = Element.rect(e);
         const key = xpath.replace(/.*\//g, '');
@@ -803,9 +797,9 @@ export function walk(element) {
         /*   if(fontFamily.match(/B.*Yekan/i))
       lang = "fa-IR";*/
         //id.match(/_fa/i)
-        if (text.charCodeAt(0) > 255) lang = 'fa-IR';
+        if(text.charCodeAt(0) > 255) lang = 'fa-IR';
 
-        if (text.length > 0 && !(key.startsWith('style') || key.startsWith('script'))) {
+        if(text.length > 0 && !(key.startsWith('style') || key.startsWith('script'))) {
           const ch = text.charCodeAt(0);
           let line = texts.add({ e, id, lang, key, text, rect });
           Util.log('Text ', line[line.length - 1]);
@@ -813,7 +807,7 @@ export function walk(element) {
       }
     })
   );
-  if (global.lines == undefined) global.lines = [[], []];
+  if(global.lines == undefined) global.lines = [[], []];
 
   texts
     .toArray()
@@ -824,20 +818,20 @@ export function walk(element) {
   texts.keys.forEach((key) => {
     let line = texts[key];
     line.sort((a, b) => a.lang.localeCompare(b.lang));
-    if (line.length > 0) {
+    if(line.length > 0) {
       let str;
       line = line.filter((text) => text.text != '\n');
       let strs = line.map((text) => `"${text.text}"`);
-      if (strs.length == 2) str = strs.join(': ');
+      if(strs.length == 2) str = strs.join(': ');
       else str = strs.join('\n  ');
       let rect = texts.rectAt(key);
       let rstr = Rect.toString(rect);
 
-      if (strs.length != 2 && strs.length > 0 && str.length) {
+      if(strs.length != 2 && strs.length > 0 && str.length) {
         global.lines[1].push('  ' + str + ' '.repeat(Math.max(0, 80 - str.length)) + `/* ${key} */`);
       }
       //str = (line.length != 2 ? `/* ${key} */\n/* ${rstr} */\n` : "") + str;
-      else if (Rect.area(rect)) global.lines[0].push(str);
+      else if(Rect.area(rect)) global.lines[0].push(str);
     }
   });
   let out = '\n' + Util.distinct(lines[0]).join('\n') + '\n\n' + Util.distinct(lines[1]).join('\n');
@@ -867,7 +861,7 @@ export function trackElements() {
 
   return Timer.interval(500, () => {
     let i = 0;
-    for (let e of elements) {
+    for(let e of elements) {
       const r = Element.rect(e);
       Element.rect(rects[i], r);
       i++;
@@ -879,9 +873,9 @@ export function polyline(points, closed = false) {
   const width = window.innerWidth;
   const height = window.innerHeight;
 
-  if (typeof points == 'object' && points.toPoints) points = points.toPoints();
+  if(typeof points == 'object' && points.toPoints) points = points.toPoints();
 
-  if (!window.svg)
+  if(!window.svg)
     window.svg = SVG.create(
       'svg',
       {
@@ -899,7 +893,7 @@ export function circle(point, radius = 10) {
   const width = window.innerWidth;
   const height = window.innerHeight;
 
-  if (!window.svg)
+  if(!window.svg)
     window.svg = SVG.create(
       'svg',
       {
@@ -920,9 +914,9 @@ export function rect(arg) {
   let a = (rect.list = rect.list || []);
   let zIndex = maxZindex() + 1;
 
-  while (args.length > 0) {
-    if (args[0] instanceof dom.Rect) r = args.shift();
-    else if (isElement(args[0]) || (typeof args[0] == 'string' && (e = Element.find(args[0])))) r = Element.rect(args.shift());
+  while(args.length > 0) {
+    if(args[0] instanceof dom.Rect) r = args.shift();
+    else if(isElement(args[0]) || (typeof args[0] == 'string' && (e = Element.find(args[0])))) r = Element.rect(args.shift());
     else r = new Rect(args);
 
     Util.log('r:', r);
@@ -942,7 +936,7 @@ export function rect(arg) {
 
     /*   let args = [...arguments];
     let rect = args.shift();*/
-    if (typeof rect == 'string' || rect.tagName !== undefined) {
+    if(typeof rect == 'string' || rect.tagName !== undefined) {
       parent = rect;
       rect = Element.rect(rect);
       Util.log('rect:', rect);
@@ -952,9 +946,9 @@ export function rect(arg) {
     color.a = 64;
     let borderColor = args.shift() || '#0f0';
     parent = parent || args.shift() || body;
-    if (typeof parent == 'string') parent = Element.find(parent);
+    if(typeof parent == 'string') parent = Element.find(parent);
 
-    if (parent != body && parent.style && !parent.style.position) parent.style.setProperty('position', 'relative');
+    if(parent != body && parent.style && !parent.style.position) parent.style.setProperty('position', 'relative');
 
     let e = Element.create('div', { parent });
     console.log('backgroundColor', color, color.toString());
@@ -990,13 +984,13 @@ export function borders(element) {
   rects.margin = b.margin.null() ? Rect.clone(rects.border) : b.margin.outset(rects.border);
   rects.padding = b.padding.null() ? Rect.clone(r) : b.padding.inset(r);
 
-  if (!b.border.null()) rect(rects.border, 'rgba(255,0,0,0.5)', 'red');
+  if(!b.border.null()) rect(rects.border, 'rgba(255,0,0,0.5)', 'red');
 
-  if (!b.margin.null()) rect(rects.margin, 'rgba(0,255,0,0.5)', 'green');
+  if(!b.margin.null()) rect(rects.margin, 'rgba(0,255,0,0.5)', 'green');
 
   rect(r, 'rgba(255,255,0,0.5)', 'yellow');
 
-  if (!b.padding.null()) rect(rects.border, 'rgba(0,80,255,0.5)', 'blue');
+  if(!b.padding.null()) rect(rects.border, 'rgba(0,80,255,0.5)', 'blue');
 
   Util.log('e: ', e, ' b: ', b);
 }
@@ -1006,8 +1000,7 @@ export function storage(name) {
   let value = store.get(name) || '{}';
   try {
     value = JSON.parse(value);
-  }
-  catch (err) {}
+  } catch(err) {}
   let self = trkl(value);
 
   self.subscribe((newValue) => {
@@ -1028,7 +1021,7 @@ export function storage(name) {
   self.set = function () {
     let args = [...arguments];
     let v = this.value;
-    if (args.length >= 2) self.assign({ [args[0]]: args[1] });
+    if(args.length >= 2) self.assign({ [args[0]]: args[1] });
     else v = args[0];
     self(v);
     return this;
@@ -1039,7 +1032,7 @@ export function storage(name) {
 
   self.assign = function (props) {
     let v = this.value;
-    for (let key in props) v[key] = props[key];
+    for(let key in props) v[key] = props[key];
     self(v);
     return this;
   };

@@ -31,14 +31,14 @@ export function dom() {
 
   const extend = (e, functions) => {
     const keys = [...Util.members(functions)].filter((key) => ['callee', 'caller', 'arguments', 'call', 'bind', 'apply', 'prototype', 'constructor', 'length'].indexOf(key) == -1 && typeof functions[key] == 'function');
-    for (let key of keys) if (e[key] === undefined) e[key] = functions[key].bind(functions, e);
+    for(let key of keys) if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
   };
 
   args = args.map((arg) => (typeof arg == 'string' ? Element.findAll(arg) : arg));
 
-  for (let e of args) {
-    if (e instanceof SVGSVGElement) extend(e, SVG);
-    if (isElement(e)) {
+  for(let e of args) {
+    if(e instanceof SVGSVGElement) extend(e, SVG);
+    if(isElement(e)) {
       extend(e, Element);
       ElementPosProps(e);
       ElementSizeProps(e);
@@ -47,7 +47,7 @@ export function dom() {
 
     ret.push(e);
   }
-  if (ret.length == 1) ret = ret[0];
+  if(ret.length == 1) ret = ret[0];
   return ret;
 }
 
@@ -58,10 +58,10 @@ export function Unit(str) {
     this instanceof Unit
       ? this
       : {
-        format(number) {
-          return `${number}${this.name}`;
-        }
-      };
+          format(number) {
+            return `${number}${this.name}`;
+          }
+        };
   u.name = str.replace(/^[a-z]*/, '');
   return u;
 }

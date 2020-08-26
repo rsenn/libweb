@@ -25,7 +25,7 @@ window.onload = function () {
     draw.circle(body.fix, 2);
     draw.color('green');
     draw.crect(body.move, body.size);
-    if (body.move) {
+    if(body.move) {
       draw.color('red');
       draw.circle(body.move, 2);
       draw.line(body.fix, body.move);
@@ -36,7 +36,7 @@ window.onload = function () {
     draw.ctx.clearRect(0, 0, SCENE_W, SCENE_H);
   };
 
-  for (i = 0; i < MAX_BODIES; i++) {
+  for(i = 0; i < MAX_BODIES; i++) {
     body = {
       fix: [rand(MARGIN, SCENE_W - MARGIN), rand(MARGIN, SCENE_H - MARGIN)],
       size: [rand(MIN_SIZE.x(), MAX_SIZE.x()), rand(MIN_SIZE.y(), MAX_SIZE.y())]
@@ -47,7 +47,7 @@ window.onload = function () {
   }
 
   canvas.ondblclick = function () {
-    for (let i = 0; i < MAX_BODIES; i++) {
+    for(let i = 0; i < MAX_BODIES; i++) {
       bodies[i].move = body.fix;
     }
 
@@ -59,7 +59,7 @@ window.onload = function () {
       (bb) => {
         let i = 0;
         draw.clear();
-        for (i = 0; i < MAX_BODIES; i++) {
+        for(i = 0; i < MAX_BODIES; i++) {
           draw.body(bb[i]);
         }
       }

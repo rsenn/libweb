@@ -5,7 +5,7 @@ import { Pattern } from './pattern.js';
 export class Match extends Array {
   constructor(rule) {
     super();
-    if (rule) Util.define(this, { rule });
+    if(rule) Util.define(this, { rule });
     return this;
   }
   get [Symbol.species]() {
@@ -16,32 +16,30 @@ export class Match extends Array {
     let pattern;
     let invert = false,
       match;
-    while (matches.length) {
+    while(matches.length) {
       invert = false;
       match = matches[0];
-      if (match && match.tok == Lexer.token.IDENTIFIER) {
+      if(match && match.tok == Lexer.token.IDENTIFIER) {
         pattern = match.str;
         this.push(pattern);
         match = matches.shift();
       }
-      if (matches.length)
-        if (Util.isObject(matches[0]) && 'length' in matches[0]) {
+      if(matches.length)
+        if(Util.isObject(matches[0]) && 'length' in matches[0]) {
           pattern = new ctor(this.rule).parse(matches.shift(), Match);
-          if (invert) pattern.invert = invert;
-          if (matches && matches.length) {
-            if (/[\*\?\+]/.test(matches[0].str)) {
+          if(invert) pattern.invert = invert;
+          if(matches && matches.length) {
+            if(/[\*\?\+]/.test(matches[0].str)) {
               let sym = matches.shift();
               pattern.repeat = sym.str;
             }
           }
-        }
-        else if (matches[0].tok == 2) {
+        } else if(matches[0].tok == 2) {
           pattern = matches.shift().str;
-        }
-        else {
+        } else {
           pattern = new Pattern(matches, () => matches.shift(), this);
         }
-      if (pattern) this.push(pattern);
+      if(pattern) this.push(pattern);
       pattern = undefined;
     }
     return this;
@@ -58,15 +56,15 @@ export class Match extends Array {
     let ri = values.indexOf(rule);
     Util.log('rule:', ri);
     let p = parser.clone();
-    for (let pattern of this) {
-      if (grammar.rules.has(pattern)) {
+    for(let pattern of this) {
+      if(grammar.rules.has(pattern)) {
         let ruleName = pattern;
         Util.log('rule:', ruleName);
         let stack = Util.getCallerStack();
         Util.log('stack:', stack.length);
       }
-      if (!pattern) continue;
-      if (!pattern.match(p)) {
+      if(!pattern) continue;
+      if(!pattern.match(p)) {
         ret = false;
         break;
       }
@@ -79,7 +77,7 @@ export class Match extends Array {
   }
   toString() {
     const { repeat = '', length, invert } = this;
-    if (this.length == 1) return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
+    if(this.length == 1) return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
     return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${invert ? '~' : ''}[ ${this.join(Util.colorText(' ⏵ ', 1, 30))} ]${repeat}`;
   }
 }
@@ -93,16 +91,16 @@ export class SubMatch extends Match {
   }
   parse(matches, ctor = Match) {
     let pattern, match;
-    while (matches.length) {
+    while(matches.length) {
       let invert = false;
       match = matches[0];
-      if (match.tok == Lexer.token.PUNCTUATION && match.str == '~') {
+      if(match.tok == Lexer.token.PUNCTUATION && match.str == '~') {
         invert = true;
         matches.shift();
       }
       match = matches.shift();
       pattern = new ctor(this.rule).parse(match, SubMatch);
-      if (invert) pattern.invert = invert;
+      if(invert) pattern.invert = invert;
       this.push(pattern);
     }
     return this;

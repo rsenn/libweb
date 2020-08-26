@@ -9,16 +9,15 @@ export class ColorScheme {
     let nodes = [...xml.querySelectorAll('string')].filter((e) => /#[0-9A-Fa-f]/.test(e.innerHTML)).map((e) => ({ element: e.parentElement, cnode: e }));
     function getPath(node, path = []) {
       let p = null;
-      if (node.tagName == 'string') {
+      if(node.tagName == 'string') {
         p = node.previousElementSibling;
-      }
-      else if (node.tagName == 'dict') {
+      } else if(node.tagName == 'dict') {
         {
           let parent = node.parentElement ? node.parentElement.firstElementChild : null;
-          if (parent.innerHTML == 'name') p = parent.nextElementSibling;
+          if(parent.innerHTML == 'name') p = parent.nextElementSibling;
         }
       }
-      if (p == null) return path;
+      if(p == null) return path;
       path.unshift(p.innerHTML);
       return getPath(p.parentElement, path);
     }
@@ -34,20 +33,19 @@ export class ColorScheme {
     let nodes = [...xml.querySelectorAll('string')].filter((e) => /#[0-9A-Fa-f]/.test(e.innerHTML)).map((e) => ({ element: e.parentElement, cnode: e }));
     function getPath(node, path = []) {
       let p = null;
-      if (node.tagName == 'string') {
+      if(node.tagName == 'string') {
         p = node.previousElementSibling;
-      }
-      else if (node.tagName == 'dict') {
+      } else if(node.tagName == 'dict') {
         {
           let parent = node.parentElement ? node.parentElement.firstElementChild : null;
-          if (parent.innerHTML == 'name') p = parent.nextElementSibling;
+          if(parent.innerHTML == 'name') p = parent.nextElementSibling;
         }
       }
 
       /* if(p == null)
     console.log("node: ", node.parentElement);
 */
-      if (p == null) return path;
+      if(p == null) return path;
       path.unshift(p.innerHTML);
       return getPath(p.parentElement, path);
     }

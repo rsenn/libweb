@@ -10,7 +10,7 @@ let timer = function (ms) {
 //from 0 after a random amount of time
 let source = async function* () {
   let i = 0;
-  while (true) {
+  while(true) {
     await timer(Math.random() * 1000);
     yield i++;
   }
@@ -86,20 +86,21 @@ ws.addEventListener('message', event => {
 /* --- */
 //Add an async iterator to all WebSockets
 WebSocket.prototype[Symbol.asyncIterator] = async function* () {
-  while (this.readyState !== 3) {
+  while(this.readyState !== 3) {
     yield (await oncePromise(this, 'message')).data;
   }
 };
 
 /* --- */
 //Generate a Promise that listens only once for an event
-var oncePromise = (emitter, event) => new Promise((resolve) => {
-  var handler = (...args) => {
-    emitter.removeEventListener(event, handler);
-    resolve(...args);
-  };
-  emitter.addEventListener(event, handler);
-});
+var oncePromise = (emitter, event) =>
+  new Promise((resolve) => {
+    var handler = (...args) => {
+      emitter.removeEventListener(event, handler);
+      resolve(...args);
+    };
+    emitter.addEventListener(event, handler);
+  });
 
 /* --- */
 //run();
@@ -131,7 +132,7 @@ var run = async () => {
 /* --- */
 //Turn any event emitter into a stream
 var streamify = async function* (event, element) {
-  while (true) {
+  while(true) {
     yield await oncePromise(element, event);
   }
 };
@@ -140,7 +141,7 @@ var streamify = async function* (event, element) {
 //Only pass along events that meet a condition
 var filter = async function* (stream, test) {
   for await (let event of stream) {
-    if (test(event)) {
+    if(test(event)) {
       yield event;
     }
   }
@@ -163,7 +164,7 @@ var distinct = async function* (stream, extract = identity) {
   let thisVal;
   for await (let event of stream) {
     thisVal = extract(event);
-    if (thisVal !== lastVal) {
+    if(thisVal !== lastVal) {
       lastVal = thisVal;
       yield event;
     }
@@ -177,7 +178,7 @@ var throttle = async function* (stream, delay) {
   let thisTime;
   for await (let event of stream) {
     thisTime = new Date().getTime();
-    if (!lastTime || thisTime - lastTime > delay) {
+    if(!lastTime || thisTime - lastTime > delay) {
       lastTime = thisTime;
       yield event;
     }

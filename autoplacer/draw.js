@@ -5,14 +5,14 @@
   let Draw = global.Draw;
 
   Draw.prototype = {
-    circle (center, radius) {
+    circle(center, radius) {
       let ctx = this.ctx;
       ctx.beginPath();
       ctx.arc(center.x(), center.y(), radius, 0, 2 * Math.PI, false);
       ctx.lineWidth = 1;
       ctx.stroke();
     },
-    line (from, to) {
+    line(from, to) {
       let ctx = this.ctx;
       ctx.beginPath();
       ctx.moveTo(from.x(), from.y());
@@ -20,18 +20,18 @@
       ctx.closePath();
       ctx.stroke();
     },
-    rect (topleft, size) {
+    rect(topleft, size) {
       let context = this.ctx;
       context.beginPath();
       context.rect(topleft.x(), topleft.y(), size.x(), size.y());
       context.closePath();
       context.stroke();
     },
-    crect (center, size) {
+    crect(center, size) {
       let ctx = this.ctx;
       this.rect(center.minus(size.scale(0.5)), size);
     },
-    color (p) {
+    color(p) {
       this.ctx.strokeStyle = p;
     }
   };

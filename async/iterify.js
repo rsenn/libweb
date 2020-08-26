@@ -6,24 +6,23 @@ const asynciterify = (emitter, event, options = {}) => {
   let done = false;
 
   const pushValue = async (args) => {
-    if (pullQueue.length !== 0) {
+    if(pullQueue.length !== 0) {
       const resolver = pullQueue.shift();
       resolver(...args);
-    }
-    else {
+    } else {
       pushQueue.push(args);
     }
   };
 
-  const pullValue = () => new Promise((resolve) => {
-    if (pushQueue.length !== 0) {
-      const args = pushQueue.shift();
-      resolve(...args);
-    }
-    else {
-      pullQueue.push(resolve);
-    }
-  });
+  const pullValue = () =>
+    new Promise((resolve) => {
+      if(pushQueue.length !== 0) {
+        const args = pushQueue.shift();
+        resolve(...args);
+      } else {
+        pullQueue.push(resolve);
+      }
+    });
 
   const handler = (...args) => {
     pushValue(args);

@@ -31,34 +31,32 @@
  */
 
 (function (factory, root) {
-  if (typeof define == 'function' && define.amd) {
+  if(typeof define == 'function' && define.amd) {
     //AMD. Register as an anonymous module.
     define(factory);
-  }
-  else if (typeof module != 'undefined' && typeof exports == 'object') {
+  } else if(typeof module != 'undefined' && typeof exports == 'object') {
     //Node/CommonJS style
     module.exports = factory();
-  }
-  else {
+  } else {
     //No AMD or CommonJS support so we place log4javascript in (probably) the global variable
     root.log4javascript = factory();
   }
 })(() => {
   //Array-related stuff. Next three methods are solely for IE5, which is missing them
-  if (!Array.prototype.push) {
+  if(!Array.prototype.push) {
     Array.prototype.push = function () {
-      for (let i = 0, len = arguments.length; i < len; i++) {
+      for(let i = 0, len = arguments.length; i < len; i++) {
         this[this.length] = arguments[i];
       }
       return this.length;
     };
   }
 
-  if (!Array.prototype.shift) {
+  if(!Array.prototype.shift) {
     Array.prototype.shift = function () {
-      if (this.length > 0) {
+      if(this.length > 0) {
         let firstItem = this[0];
-        for (let i = 0, len = this.length - 1; i < len; i++) {
+        for(let i = 0, len = this.length - 1; i < len; i++) {
           this[i] = this[i + 1];
         }
         this.length = this.length - 1;
@@ -67,18 +65,18 @@
     };
   }
 
-  if (!Array.prototype.splice) {
+  if(!Array.prototype.splice) {
     Array.prototype.splice = function (startIndex, deleteCount) {
       let itemsAfterDeleted = this.slice(startIndex + deleteCount);
       let itemsDeleted = this.slice(startIndex, startIndex + deleteCount);
       this.length = startIndex;
       //Copy the arguments into a proper Array object
       let argumentsArray = [];
-      for (var i = 0, len = arguments.length; i < len; i++) {
+      for(var i = 0, len = arguments.length; i < len; i++) {
         argumentsArray[i] = arguments[i];
       }
       let itemsToAppend = argumentsArray.length > 2 ? (itemsAfterDeleted = argumentsArray.slice(2).concat(itemsAfterDeleted)) : itemsAfterDeleted;
-      for (i = 0, len = itemsToAppend.length; i < len; i++) {
+      for(i = 0, len = itemsToAppend.length; i < len; i++) {
         this.push(itemsToAppend[i]);
       }
       return itemsDeleted;
@@ -99,51 +97,47 @@
   EventSupport.prototype = {
     eventTypes: [],
     eventListeners: {},
-    setEventTypes (eventTypesParam) {
-      if (eventTypesParam instanceof Array) {
+    setEventTypes(eventTypesParam) {
+      if(eventTypesParam instanceof Array) {
         this.eventTypes = eventTypesParam;
         this.eventListeners = {};
-        for (let i = 0, len = this.eventTypes.length; i < len; i++) {
+        for(let i = 0, len = this.eventTypes.length; i < len; i++) {
           this.eventListeners[this.eventTypes[i]] = [];
         }
-      }
-      else {
+      } else {
         handleError('log4javascript.EventSupport [' + this + ']: setEventTypes: eventTypes parameter must be an Array');
       }
     },
 
-    addEventListener (eventType, listener) {
-      if (typeof listener == 'function') {
-        if (!array_contains(this.eventTypes, eventType)) {
+    addEventListener(eventType, listener) {
+      if(typeof listener == 'function') {
+        if(!array_contains(this.eventTypes, eventType)) {
           handleError('log4javascript.EventSupport [' + this + "]: addEventListener: no event called '" + eventType + "'");
         }
         this.eventListeners[eventType].push(listener);
-      }
-      else {
+      } else {
         handleError('log4javascript.EventSupport [' + this + ']: addEventListener: listener must be a function');
       }
     },
 
-    removeEventListener (eventType, listener) {
-      if (typeof listener == 'function') {
-        if (!array_contains(this.eventTypes, eventType)) {
+    removeEventListener(eventType, listener) {
+      if(typeof listener == 'function') {
+        if(!array_contains(this.eventTypes, eventType)) {
           handleError('log4javascript.EventSupport [' + this + "]: removeEventListener: no event called '" + eventType + "'");
         }
         array_remove(this.eventListeners[eventType], listener);
-      }
-      else {
+      } else {
         handleError('log4javascript.EventSupport [' + this + ']: removeEventListener: listener must be a function');
       }
     },
 
-    dispatchEvent (eventType, eventArgs) {
-      if (array_contains(this.eventTypes, eventType)) {
+    dispatchEvent(eventType, eventArgs) {
+      if(array_contains(this.eventTypes, eventType)) {
         let listeners = this.eventListeners[eventType];
-        for (let i = 0, len = listeners.length; i < len; i++) {
+        for(let i = 0, len = listeners.length; i < len; i++) {
           listeners[i](this, eventType, eventArgs);
         }
-      }
-      else {
+      } else {
         handleError('log4javascript.EventSupport [' + this + "]: dispatchEvent: no event called '" + eventType + "'");
       }
     }
@@ -169,22 +163,19 @@
   //Utility functions
 
   function toStr(obj) {
-    if (obj && obj.toString) {
+    if(obj && obj.toString) {
       return obj.toString();
     }
     return String(obj);
-    
   }
 
   function getExceptionMessage(ex) {
-    if (ex.message) {
+    if(ex.message) {
       return ex.message;
-    }
-    else if (ex.description) {
+    } else if(ex.description) {
       return ex.description;
     }
     return toStr(ex);
-    
   }
 
   //Gets the portion of the URL after the last slash
@@ -195,20 +186,19 @@
 
   //Returns a nicely formatted representation of an error
   function getExceptionStringRep(ex) {
-    if (ex) {
+    if(ex) {
       let exStr = 'Exception: ' + getExceptionMessage(ex);
       try {
-        if (ex.lineNumber) {
+        if(ex.lineNumber) {
           exStr += ' on line number ' + ex.lineNumber;
         }
-        if (ex.fileName) {
+        if(ex.fileName) {
           exStr += ' in file ' + getUrlFileName(ex.fileName);
         }
-      }
-      catch (localEx) {
+      } catch(localEx) {
         logLog.warn('Unable to obtain file and line information for error');
       }
-      if (showStackTraces && ex.stack) {
+      if(showStackTraces && ex.stack) {
         exStr += newLine + 'Stack trace:' + newLine + ex.stack;
       }
       return exStr;
@@ -233,31 +223,30 @@
   let urlEncode =
     typeof window.encodeURIComponent != 'undefined'
       ? function (str) {
-        return encodeURIComponent(str);
-      }
+          return encodeURIComponent(str);
+        }
       : function (str) {
-        return escape(str).replace(/\+/g, '%2B').replace(/"/g, '%22').replace(/'/g, '%27').replace(/\//g, '%2F').replace(/=/g, '%3D');
-      };
+          return escape(str).replace(/\+/g, '%2B').replace(/"/g, '%22').replace(/'/g, '%27').replace(/\//g, '%2F').replace(/=/g, '%3D');
+        };
 
   function array_remove(arr, val) {
     let index = -1;
-    for (let i = 0, len = arr.length; i < len; i++) {
-      if (arr[i] === val) {
+    for(let i = 0, len = arr.length; i < len; i++) {
+      if(arr[i] === val) {
         index = i;
         break;
       }
     }
-    if (index >= 0) {
+    if(index >= 0) {
       arr.splice(index, 1);
       return true;
     }
     return false;
-    
   }
 
   function array_contains(arr, val) {
-    for (let i = 0, len = arr.length; i < len; i++) {
-      if (arr[i] == val) {
+    for(let i = 0, len = arr.length; i < len; i++) {
+      if(arr[i] == val) {
         return true;
       }
     }
@@ -265,58 +254,53 @@
   }
 
   function extractBooleanFromParam(param, defaultValue) {
-    if (isUndefined(param)) {
+    if(isUndefined(param)) {
       return defaultValue;
     }
     return bool(param);
-    
   }
 
   function extractStringFromParam(param, defaultValue) {
-    if (isUndefined(param)) {
+    if(isUndefined(param)) {
       return defaultValue;
     }
     return String(param);
-    
   }
 
   function extractIntFromParam(param, defaultValue) {
-    if (isUndefined(param)) {
+    if(isUndefined(param)) {
       return defaultValue;
     }
     try {
       let value = parseInt(param, 10);
       return isNaN(value) ? defaultValue : value;
-    }
-    catch (ex) {
+    } catch(ex) {
       logLog.warn('Invalid int param ' + param, ex);
       return defaultValue;
     }
-    
   }
 
   function extractFunctionFromParam(param, defaultValue) {
-    if (typeof param == 'function') {
+    if(typeof param == 'function') {
       return param;
     }
     return defaultValue;
-    
   }
 
   function isError(err) {
     return err instanceof Error;
   }
 
-  if (!Function.prototype.apply) {
+  if(!Function.prototype.apply) {
     Function.prototype.apply = function (obj, args) {
       let methodName = '__apply__';
-      if (typeof obj[methodName] != 'undefined') {
+      if(typeof obj[methodName] != 'undefined') {
         methodName += String(Math.random()).substr(2);
       }
       obj[methodName] = this;
 
       let argsStrings = [];
-      for (let i = 0, len = args.length; i < len; i++) {
+      for(let i = 0, len = args.length; i < len; i++) {
         argsStrings[i] = 'args[' + i + ']';
       }
       let script = 'obj.' + methodName + '(' + argsStrings.join(',') + ')';
@@ -326,10 +310,10 @@
     };
   }
 
-  if (!Function.prototype.call) {
+  if(!Function.prototype.call) {
     Function.prototype.call = function (obj) {
       let args = [];
-      for (let i = 1, len = arguments.length; i < len; i++) {
+      for(let i = 1, len = arguments.length; i < len; i++) {
         args[i - 1] = arguments[i];
       }
       return this.apply(obj, args);
@@ -344,7 +328,7 @@
 
     debugMessages: [],
 
-    setQuietMode (quietMode) {
+    setQuietMode(quietMode) {
       this.quietMode = bool(quietMode);
     },
 
@@ -352,25 +336,25 @@
 
     alertAllErrors: false,
 
-    setAlertAllErrors (alertAllErrors) {
+    setAlertAllErrors(alertAllErrors) {
       this.alertAllErrors = alertAllErrors;
     },
 
-    debug (message) {
+    debug(message) {
       this.debugMessages.push(message);
     },
 
-    displayDebug () {
+    displayDebug() {
       alert(this.debugMessages.join(newLine));
     },
 
-    warn (message, exception) {},
+    warn(message, exception) {},
 
-    error (message, exception) {
-      if (++this.numberOfErrors == 1 || this.alertAllErrors) {
-        if (!this.quietMode) {
+    error(message, exception) {
+      if(++this.numberOfErrors == 1 || this.alertAllErrors) {
+        if(!this.quietMode) {
           let alertMessage = 'log4javascript error: ' + message;
-          if (exception) {
+          if(exception) {
             alertMessage += newLine + newLine + 'Original error: ' + getExceptionStringRep(exception);
           }
           alert(alertMessage);
@@ -432,13 +416,13 @@
   };
 
   Level.prototype = {
-    toString () {
+    toString() {
       return this.name;
     },
-    equals (level) {
+    equals(level) {
       return this.level == level.level;
     },
-    isGreaterOrEqual (level) {
+    isGreaterOrEqual(level) {
       return this.level >= level.level;
     }
   };
@@ -503,24 +487,22 @@
     this.setAdditivity = function (additivity) {
       let valueChanged = additive != additivity;
       additive = additivity;
-      if (valueChanged) {
+      if(valueChanged) {
         this.invalidateAppenderCache();
       }
     };
 
     //Create methods that use the appenders variable in this scope
     this.addAppender = function (appender) {
-      if (isNull) {
+      if(isNull) {
         handleError('Logger.addAppender: you may not add an appender to the null logger');
-      }
-      else if (appender instanceof log4javascript.Appender) {
-        if (!array_contains(appenders, appender)) {
+      } else if(appender instanceof log4javascript.Appender) {
+        if(!array_contains(appenders, appender)) {
           appenders.push(appender);
           appender.setAddedToLogger(this);
           this.invalidateAppenderCache();
         }
-      }
-      else {
+      } else {
         handleError("Logger.addAppender: appender supplied ('" + toStr(appender) + "') is not a subclass of Appender");
       }
     };
@@ -533,8 +515,8 @@
 
     this.removeAllAppenders = function () {
       let appenderCount = appenders.length;
-      if (appenderCount > 0) {
-        for (let i = 0; i < appenderCount; i++) {
+      if(appenderCount > 0) {
+        for(let i = 0; i < appenderCount; i++) {
           appenders[i].setRemovedFromLogger(this);
         }
         appenders.length = 0;
@@ -543,7 +525,7 @@
     };
 
     this.getEffectiveAppenders = function () {
-      if (appenderCache === null || appenderCacheInvalidated) {
+      if(appenderCache === null || appenderCacheInvalidated) {
         //Build appender cache
         let parentEffectiveAppenders = isRoot || !this.getAdditivity() ? [] : this.parent.getEffectiveAppenders();
         appenderCache = parentEffectiveAppenders.concat(appenders);
@@ -554,25 +536,25 @@
 
     this.invalidateAppenderCache = function () {
       appenderCacheInvalidated = true;
-      for (let i = 0, len = this.children.length; i < len; i++) {
+      for(let i = 0, len = this.children.length; i < len; i++) {
         this.children[i].invalidateAppenderCache();
       }
     };
 
     this.log = function (level, params) {
-      if (enabled && level.isGreaterOrEqual(this.getEffectiveLevel())) {
+      if(enabled && level.isGreaterOrEqual(this.getEffectiveLevel())) {
         //Check whether last param is an exception
         let exception;
         let finalParamIndex = params.length - 1;
         let lastParam = params[finalParamIndex];
-        if (params.length > 1 && isError(lastParam)) {
+        if(params.length > 1 && isError(lastParam)) {
           exception = lastParam;
           finalParamIndex--;
         }
 
         //Construct genuine array for the params
         let messages = [];
-        for (let i = 0; i <= finalParamIndex; i++) {
+        for(let i = 0; i <= finalParamIndex; i++) {
           messages[i] = params[i];
         }
 
@@ -584,20 +566,18 @@
 
     this.callAppenders = function (loggingEvent) {
       let effectiveAppenders = this.getEffectiveAppenders();
-      for (let i = 0, len = effectiveAppenders.length; i < len; i++) {
+      for(let i = 0, len = effectiveAppenders.length; i < len; i++) {
         effectiveAppenders[i].doAppend(loggingEvent);
       }
     };
 
     this.setLevel = function (level) {
       //Having a level of null on the root logger would be very bad.
-      if (isRoot && level === null) {
+      if(isRoot && level === null) {
         handleError('Logger.setLevel: you cannot set the level of the root logger to null');
-      }
-      else if (level instanceof Level) {
+      } else if(level instanceof Level) {
         loggerLevel = level;
-      }
-      else {
+      } else {
         handleError('Logger.setLevel: level supplied to logger ' + this.name + ' is not an instance of log4javascript.Level');
       }
     };
@@ -607,27 +587,27 @@
     };
 
     this.getEffectiveLevel = function () {
-      for (let logger = this; logger !== null; logger = logger.parent) {
+      for(let logger = this; logger !== null; logger = logger.parent) {
         let level = logger.getLevel();
-        if (level !== null) {
+        if(level !== null) {
           return level;
         }
       }
     };
 
     this.group = function (name, initiallyExpanded) {
-      if (enabled) {
+      if(enabled) {
         let effectiveAppenders = this.getEffectiveAppenders();
-        for (let i = 0, len = effectiveAppenders.length; i < len; i++) {
+        for(let i = 0, len = effectiveAppenders.length; i < len; i++) {
           effectiveAppenders[i].group(name, initiallyExpanded);
         }
       }
     };
 
     this.groupEnd = function () {
-      if (enabled) {
+      if(enabled) {
         let effectiveAppenders = this.getEffectiveAppenders();
-        for (let i = 0, len = effectiveAppenders.length; i < len; i++) {
+        for(let i = 0, len = effectiveAppenders.length; i < len; i++) {
           effectiveAppenders[i].groupEnd();
         }
       }
@@ -636,40 +616,36 @@
     let timers = {};
 
     this.time = function (name, level) {
-      if (enabled) {
-        if (isUndefined(name)) {
+      if(enabled) {
+        if(isUndefined(name)) {
           handleError('Logger.time: a name for the timer must be supplied');
-        }
-        else if (level && !(level instanceof Level)) {
+        } else if(level && !(level instanceof Level)) {
           handleError('Logger.time: level supplied to timer ' + name + ' is not an instance of log4javascript.Level');
-        }
-        else {
+        } else {
           timers[name] = new Timer(name, level);
         }
       }
     };
 
     this.timeEnd = function (name) {
-      if (enabled) {
-        if (isUndefined(name)) {
+      if(enabled) {
+        if(isUndefined(name)) {
           handleError('Logger.timeEnd: a name for the timer must be supplied');
-        }
-        else if (timers[name]) {
+        } else if(timers[name]) {
           let timer = timers[name];
           let milliseconds = timer.getElapsedTime();
           this.log(timer.level, ['Timer ' + toStr(name) + ' completed in ' + milliseconds + 'ms']);
           delete timers[name];
-        }
-        else {
+        } else {
           logLog.warn('Logger.timeEnd: no timer found with name ' + name);
         }
       }
     };
 
     this.assert = function (expr) {
-      if (enabled && !expr) {
+      if(enabled && !expr) {
         let args = [];
-        for (let i = 1, len = arguments.length; i < len; i++) {
+        for(let i = 1, len = arguments.length; i < len; i++) {
           args.push(arguments[i]);
         }
         args = args.length > 0 ? args : ['Assertion Failure'];
@@ -685,55 +661,55 @@
   }
 
   Logger.prototype = {
-    trace () {
+    trace() {
       this.log(Level.TRACE, arguments);
     },
 
-    debug () {
+    debug() {
       this.log(Level.DEBUG, arguments);
     },
 
-    info () {
+    info() {
       this.log(Level.INFO, arguments);
     },
 
-    warn () {
+    warn() {
       this.log(Level.WARN, arguments);
     },
 
-    error () {
+    error() {
       this.log(Level.ERROR, arguments);
     },
 
-    fatal () {
+    fatal() {
       this.log(Level.FATAL, arguments);
     },
 
-    isEnabledFor (level) {
+    isEnabledFor(level) {
       return level.isGreaterOrEqual(this.getEffectiveLevel());
     },
 
-    isTraceEnabled () {
+    isTraceEnabled() {
       return this.isEnabledFor(Level.TRACE);
     },
 
-    isDebugEnabled () {
+    isDebugEnabled() {
       return this.isEnabledFor(Level.DEBUG);
     },
 
-    isInfoEnabled () {
+    isInfoEnabled() {
       return this.isEnabledFor(Level.INFO);
     },
 
-    isWarnEnabled () {
+    isWarnEnabled() {
       return this.isEnabledFor(Level.WARN);
     },
 
-    isErrorEnabled () {
+    isErrorEnabled() {
       return this.isEnabledFor(Level.ERROR);
     },
 
-    isFatalEnabled () {
+    isFatalEnabled() {
       return this.isEnabledFor(Level.FATAL);
     }
   };
@@ -762,18 +738,18 @@
 
   log4javascript.getLogger = function (loggerName) {
     //Use default logger if loggerName is not specified or invalid
-    if (typeof loggerName != 'string') {
+    if(typeof loggerName != 'string') {
       loggerName = anonymousLoggerName;
       logLog.warn('log4javascript.getLogger: non-string logger name ' + toStr(loggerName) + ' supplied, returning anonymous logger');
     }
 
     //Do not allow retrieval of the root logger by name
-    if (loggerName == rootLoggerName) {
+    if(loggerName == rootLoggerName) {
       handleError('log4javascript.getLogger: root logger may not be obtained by name');
     }
 
     //Create the logger for this name if it doesn't already exist
-    if (!loggers[loggerName]) {
+    if(!loggers[loggerName]) {
       let logger = new Logger(loggerName);
       loggers[loggerName] = logger;
       loggerNames.push(loggerName);
@@ -781,11 +757,10 @@
       //Set up parent logger, if it doesn't exist
       let lastDotIndex = loggerName.lastIndexOf('.');
       let parentLogger;
-      if (lastDotIndex > -1) {
+      if(lastDotIndex > -1) {
         let parentLoggerName = loggerName.substring(0, lastDotIndex);
         parentLogger = log4javascript.getLogger(parentLoggerName); //Recursively sets up grandparents etc.
-      }
-      else {
+      } else {
         parentLogger = rootLogger;
       }
       parentLogger.addChild(logger);
@@ -795,7 +770,7 @@
 
   let defaultLogger = null;
   log4javascript.getDefaultLogger = function () {
-    if (!defaultLogger) {
+    if(!defaultLogger) {
       defaultLogger = createDefaultLogger();
     }
     return defaultLogger;
@@ -803,7 +778,7 @@
 
   let nullLogger = null;
   log4javascript.getNullLogger = function () {
-    if (!nullLogger) {
+    if(!nullLogger) {
       nullLogger = new Logger(nullLoggerName);
       nullLogger.setLevel(Level.OFF);
     }
@@ -831,13 +806,13 @@
   };
 
   LoggingEvent.prototype = {
-    getThrowableStrRep () {
+    getThrowableStrRep() {
       return this.exception ? getExceptionStringRep(this.exception) : '';
     },
-    getCombinedMessages () {
+    getCombinedMessages() {
       return this.messages.length == 1 ? this.messages[0] : this.messages.join(newLine);
     },
-    toString () {
+    toString() {
       return 'LoggingEvent[' + this.level + ']';
     }
   };
@@ -873,36 +848,36 @@
     overrideTimeStampsSetting: false,
     useTimeStampsInMilliseconds: null,
 
-    format () {
+    format() {
       handleError('Layout.format: layout supplied has no format() method');
     },
 
-    ignoresThrowable () {
+    ignoresThrowable() {
       handleError('Layout.ignoresThrowable: layout supplied has no ignoresThrowable() method');
     },
 
-    getContentType () {
+    getContentType() {
       return 'text/plain';
     },
 
-    allowBatching () {
+    allowBatching() {
       return true;
     },
 
-    setTimeStampsInMilliseconds (timeStampsInMilliseconds) {
+    setTimeStampsInMilliseconds(timeStampsInMilliseconds) {
       this.overrideTimeStampsSetting = true;
       this.useTimeStampsInMilliseconds = bool(timeStampsInMilliseconds);
     },
 
-    isTimeStampsInMilliseconds () {
+    isTimeStampsInMilliseconds() {
       return this.overrideTimeStampsSetting ? this.useTimeStampsInMilliseconds : useTimeStampsInMilliseconds;
     },
 
-    getTimeStampValue (loggingEvent) {
+    getTimeStampValue(loggingEvent) {
       return this.isTimeStampsInMilliseconds() ? loggingEvent.timeStampInMilliseconds : loggingEvent.timeStampInSeconds;
     },
 
-    getDataValues (loggingEvent, combineMessages) {
+    getDataValues(loggingEvent, combineMessages) {
       let dataValues = [
         [this.loggerKey, loggingEvent.logger.name],
         [this.timeStampKey, this.getTimeStampValue(loggingEvent)],
@@ -910,19 +885,19 @@
         [this.urlKey, window.location.href],
         [this.messageKey, combineMessages ? loggingEvent.getCombinedMessages() : loggingEvent.messages]
       ];
-      if (!this.isTimeStampsInMilliseconds()) {
+      if(!this.isTimeStampsInMilliseconds()) {
         dataValues.push([this.millisecondsKey, loggingEvent.milliseconds]);
       }
-      if (loggingEvent.exception) {
+      if(loggingEvent.exception) {
         dataValues.push([this.exceptionKey, getExceptionStringRep(loggingEvent.exception)]);
       }
-      if (this.hasCustomFields()) {
-        for (let i = 0, len = this.customFields.length; i < len; i++) {
+      if(this.hasCustomFields()) {
+        for(let i = 0, len = this.customFields.length; i < len; i++) {
           let val = this.customFields[i].value;
 
           //Check if the value is a function. If so, execute it, passing it the
           //current layout and the logging event
-          if (typeof val === 'function') {
+          if(typeof val === 'function') {
             val = val(this, loggingEvent);
           }
           dataValues.push([this.customFields[i].name, val]);
@@ -931,7 +906,7 @@
       return dataValues;
     },
 
-    setKeys (loggerKey, timeStampKey, levelKey, messageKey, exceptionKey, urlKey, millisecondsKey) {
+    setKeys(loggerKey, timeStampKey, levelKey, messageKey, exceptionKey, urlKey, millisecondsKey) {
       this.loggerKey = extractStringFromParam(loggerKey, this.defaults.loggerKey);
       this.timeStampKey = extractStringFromParam(timeStampKey, this.defaults.timeStampKey);
       this.levelKey = extractStringFromParam(levelKey, this.defaults.levelKey);
@@ -941,32 +916,32 @@
       this.millisecondsKey = extractStringFromParam(millisecondsKey, this.defaults.millisecondsKey);
     },
 
-    setCustomField (name, value) {
+    setCustomField(name, value) {
       let fieldUpdated = false;
-      for (let i = 0, len = this.customFields.length; i < len; i++) {
-        if (this.customFields[i].name === name) {
+      for(let i = 0, len = this.customFields.length; i < len; i++) {
+        if(this.customFields[i].name === name) {
           this.customFields[i].value = value;
           fieldUpdated = true;
         }
       }
-      if (!fieldUpdated) {
+      if(!fieldUpdated) {
         this.customFields.push({ name, value });
       }
     },
 
-    hasCustomFields () {
+    hasCustomFields() {
       return this.customFields.length > 0;
     },
 
-    formatWithException (loggingEvent) {
+    formatWithException(loggingEvent) {
       let formatted = this.format(loggingEvent);
-      if (loggingEvent.exception && this.ignoresThrowable()) {
+      if(loggingEvent.exception && this.ignoresThrowable()) {
         formatted += loggingEvent.getThrowableStrRep();
       }
       return formatted;
     },
 
-    toString () {
+    toString() {
       handleError('Layout.toString: all layouts must override this method');
     }
   };
@@ -987,7 +962,7 @@
   //Performs threshold checks before delegating actual logging to the
   //subclass's specific append method.
   Appender.prototype.doAppend = function (loggingEvent) {
-    if (enabled && loggingEvent.level.level >= this.threshold.level) {
+    if(enabled && loggingEvent.level.level >= this.threshold.level) {
       this.append(loggingEvent);
     }
   };
@@ -995,10 +970,9 @@
   Appender.prototype.append = function (loggingEvent) {};
 
   Appender.prototype.setLayout = function (layout) {
-    if (layout instanceof Layout) {
+    if(layout instanceof Layout) {
       this.layout = layout;
-    }
-    else {
+    } else {
       handleError('Appender.setLayout: layout supplied to ' + this.toString() + ' is not a subclass of Layout');
     }
   };
@@ -1008,10 +982,9 @@
   };
 
   Appender.prototype.setThreshold = function (threshold) {
-    if (threshold instanceof Level) {
+    if(threshold instanceof Level) {
       this.threshold = threshold;
-    }
-    else {
+    } else {
       handleError('Appender.setThreshold: threshold supplied to ' + this.toString() + ' is not a subclass of Level');
     }
   };
@@ -1120,26 +1093,25 @@
     }
 
     let str = '<log4javascript:event logger="' + loggingEvent.logger.name + '" timestamp="' + this.getTimeStampValue(loggingEvent) + '"';
-    if (!this.isTimeStampsInMilliseconds()) {
+    if(!this.isTimeStampsInMilliseconds()) {
       str += ' milliseconds="' + loggingEvent.milliseconds + '"';
     }
     str += ' level="' + loggingEvent.level.name + '">' + newLine;
-    if (this.combineMessages) {
+    if(this.combineMessages) {
       str += formatMessage(loggingEvent.getCombinedMessages());
-    }
-    else {
+    } else {
       str += '<log4javascript:messages>' + newLine;
-      for (i = 0, len = loggingEvent.messages.length; i < len; i++) {
+      for(i = 0, len = loggingEvent.messages.length; i < len; i++) {
         str += formatMessage(loggingEvent.messages[i]) + newLine;
       }
       str += '</log4javascript:messages>' + newLine;
     }
-    if (this.hasCustomFields()) {
-      for (i = 0, len = this.customFields.length; i < len; i++) {
+    if(this.hasCustomFields()) {
+      for(i = 0, len = this.customFields.length; i < len; i++) {
         str += '<log4javascript:customfield name="' + this.customFields[i].name + '"><![CDATA[' + this.customFields[i].value.toString() + ']]></log4javascript:customfield>' + newLine;
       }
     }
-    if (loggingEvent.exception) {
+    if(loggingEvent.exception) {
       str += '<log4javascript:exception><![CDATA[' + getExceptionStringRep(loggingEvent.exception) + ']]></log4javascript:exception>' + newLine;
     }
     str += '</log4javascript:event>' + newLine + newLine;
@@ -1200,33 +1172,30 @@
       //or expansion are required
       let formattedValue;
       let valType = typeof val;
-      if (val instanceof Date) {
+      if(val instanceof Date) {
         formattedValue = String(val.getTime());
-      }
-      else if (expand && val instanceof Array) {
+      } else if(expand && val instanceof Array) {
         formattedValue = '[' + layout.lineBreak;
-        for (let i = 0, len = val.length; i < len; i++) {
+        for(let i = 0, len = val.length; i < len; i++) {
           let childPrefix = prefix + layout.tab;
           formattedValue += childPrefix + formatValue(val[i], childPrefix, false);
-          if (i < val.length - 1) {
+          if(i < val.length - 1) {
             formattedValue += ',';
           }
           formattedValue += layout.lineBreak;
         }
         formattedValue += prefix + ']';
-      }
-      else if (valType !== 'number' && valType !== 'boolean') {
+      } else if(valType !== 'number' && valType !== 'boolean') {
         formattedValue = '"' + escapeNewLines(toStr(val).replace(/\"/g, '\\"')) + '"';
-      }
-      else {
+      } else {
         formattedValue = val;
       }
       return formattedValue;
     }
 
-    for (i = 0, len = dataValues.length - 1; i <= len; i++) {
+    for(i = 0, len = dataValues.length - 1; i <= len; i++) {
       str += this.tab + '"' + dataValues[i][0] + '"' + this.colon + formatValue(dataValues[i][1], this.tab, true);
-      if (i < len) {
+      if(i < len) {
         str += ',';
       }
       str += this.lineBreak;
@@ -1269,7 +1238,7 @@
   HttpPostDataLayout.prototype.format = function (loggingEvent) {
     let dataValues = this.getDataValues(loggingEvent);
     let queryBits = [];
-    for (let i = 0, len = dataValues.length; i < len; i++) {
+    for(let i = 0, len = dataValues.length; i < len; i++) {
       let val = dataValues[i][1] instanceof Date ? String(dataValues[i][1].getTime()) : dataValues[i][1];
       queryBits.push(urlEncode(dataValues[i][0]) + '=' + urlEncode(val));
     }
@@ -1295,69 +1264,60 @@
     function doFormat(obj, depth, indentation) {
       let i, len, childDepth, childIndentation, childLines, expansion, childExpansion;
 
-      if (!indentation) {
+      if(!indentation) {
         indentation = '';
       }
 
       function formatString(text) {
         let lines = splitIntoLines(text);
-        for (let j = 1, jLen = lines.length; j < jLen; j++) {
+        for(let j = 1, jLen = lines.length; j < jLen; j++) {
           lines[j] = indentation + lines[j];
         }
         return lines.join(newLine);
       }
 
-      if (obj === null) {
+      if(obj === null) {
         return 'null';
-      }
-      else if (typeof obj == 'undefined') {
+      } else if(typeof obj == 'undefined') {
         return 'undefined';
-      }
-      else if (typeof obj == 'string') {
+      } else if(typeof obj == 'string') {
         return formatString(obj);
-      }
-      else if (typeof obj == 'object' && array_contains(objectsExpanded, obj)) {
+      } else if(typeof obj == 'object' && array_contains(objectsExpanded, obj)) {
         try {
           expansion = toStr(obj);
-        }
-        catch (ex) {
+        } catch(ex) {
           expansion = 'Error formatting property. Details: ' + getExceptionStringRep(ex);
         }
         return expansion + ' [already expanded]';
-      }
-      else if (obj instanceof Array && depth > 0) {
+      } else if(obj instanceof Array && depth > 0) {
         objectsExpanded.push(obj);
         expansion = '[' + newLine;
         childDepth = depth - 1;
         childIndentation = indentation + '  ';
         childLines = [];
-        for (i = 0, len = obj.length; i < len; i++) {
+        for(i = 0, len = obj.length; i < len; i++) {
           try {
             childExpansion = doFormat(obj[i], childDepth, childIndentation);
             childLines.push(childIndentation + childExpansion);
-          }
-          catch (ex) {
+          } catch(ex) {
             childLines.push(childIndentation + 'Error formatting array member. Details: ' + getExceptionStringRep(ex) + '');
           }
         }
         expansion += childLines.join(',' + newLine) + newLine + indentation + ']';
         return expansion;
-      }
-      else if (Object.prototype.toString.call(obj) == '[object Date]') {
+      } else if(Object.prototype.toString.call(obj) == '[object Date]') {
         return obj.toString();
-      }
-      else if (typeof obj == 'object' && depth > 0) {
+      } else if(typeof obj == 'object' && depth > 0) {
         objectsExpanded.push(obj);
         expansion = '{' + newLine;
         childDepth = depth - 1;
         childIndentation = indentation + '  ';
         childLines = [];
-        for (i in obj) {
+        for(i in obj) {
           try {
             childExpansion = doFormat(obj[i], childDepth, childIndentation);
             childLines.push(childIndentation + i + ': ' + childExpansion);
-          }
-          catch (ex) {
+          } catch(ex) {
             childLines.push(childIndentation + i + ': Error formatting property. Details: ' + getExceptionStringRep(ex));
           }
         }
@@ -1365,7 +1325,6 @@
         return expansion;
       }
       return formatString(toStr(obj));
-      
     }
     return doFormat(obj, depth, indentation);
   }
@@ -1439,7 +1398,7 @@
     };
 
     Date.prototype.getWeekInYear = function (minimalDaysInFirstWeek) {
-      if (isUndefined(this.minimalDaysInFirstWeek)) {
+      if(isUndefined(this.minimalDaysInFirstWeek)) {
         minimalDaysInFirstWeek = DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK;
       }
       let previousSunday = this.getPreviousSunday();
@@ -1447,14 +1406,14 @@
       let numberOfSundays = previousSunday.isBefore(startOfYear) ? 0 : 1 + Math.floor(previousSunday.getTimeSince(startOfYear) / ONE_WEEK);
       let numberOfDaysInFirstWeek = 7 - startOfYear.getDay();
       let weekInYear = numberOfSundays;
-      if (numberOfDaysInFirstWeek < minimalDaysInFirstWeek) {
+      if(numberOfDaysInFirstWeek < minimalDaysInFirstWeek) {
         weekInYear--;
       }
       return weekInYear;
     };
 
     Date.prototype.getWeekInMonth = function (minimalDaysInFirstWeek) {
-      if (isUndefined(this.minimalDaysInFirstWeek)) {
+      if(isUndefined(this.minimalDaysInFirstWeek)) {
         minimalDaysInFirstWeek = DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK;
       }
       let previousSunday = this.getPreviousSunday();
@@ -1462,7 +1421,7 @@
       let numberOfSundays = previousSunday.isBefore(startOfMonth) ? 0 : 1 + Math.floor(previousSunday.getTimeSince(startOfMonth) / ONE_WEEK);
       let numberOfDaysInFirstWeek = 7 - startOfMonth.getDay();
       let weekInMonth = numberOfSundays;
-      if (numberOfDaysInFirstWeek >= minimalDaysInFirstWeek) {
+      if(numberOfDaysInFirstWeek >= minimalDaysInFirstWeek) {
         weekInMonth++;
       }
       return weekInMonth;
@@ -1492,7 +1451,7 @@
     };
 
     let padWithZeroes = function (str, len) {
-      while (str.length < len) {
+      while(str.length < len) {
         str = '0' + str;
       }
       return str;
@@ -1512,135 +1471,129 @@
       let formattedString = '';
       let result;
       let searchString = this.formatString;
-      while ((result = regex.exec(searchString))) {
+      while((result = regex.exec(searchString))) {
         let quotedString = result[1];
         let patternLetters = result[2];
         let otherLetters = result[3];
         let otherCharacters = result[4];
 
         //If the pattern matched is quoted string, output the text between the quotes
-        if (quotedString) {
-          if (quotedString == "''") {
+        if(quotedString) {
+          if(quotedString == "''") {
             formattedString += "'";
-          }
-          else {
+          } else {
             formattedString += quotedString.substring(1, quotedString.length - 1);
           }
-        }
-        else if (otherLetters) {
+        } else if(otherLetters) {
           //Swallow non-pattern letters by doing nothing here
-        }
-        else if (otherCharacters) {
+        } else if(otherCharacters) {
           //Simply output other characters
           formattedString += otherCharacters;
-        }
-        else if (patternLetters) {
+        } else if(patternLetters) {
           //Replace pattern letters
           let patternLetter = patternLetters.charAt(0);
           let numberOfLetters = patternLetters.length;
           let rawData = '';
           switch (patternLetter) {
-          case 'G':
-            rawData = 'AD';
-            break;
-          case 'y':
-            rawData = date.getFullYear();
-            break;
-          case 'M':
-            rawData = date.getMonth();
-            break;
-          case 'w':
-            rawData = date.getWeekInYear(this.getMinimalDaysInFirstWeek());
-            break;
-          case 'W':
-            rawData = date.getWeekInMonth(this.getMinimalDaysInFirstWeek());
-            break;
-          case 'D':
-            rawData = date.getDayInYear();
-            break;
-          case 'd':
-            rawData = date.getDate();
-            break;
-          case 'F':
-            rawData = 1 + Math.floor((date.getDate() - 1) / 7);
-            break;
-          case 'E':
-            rawData = dayNames[date.getDay()];
-            break;
-          case 'a':
-            rawData = date.getHours() >= 12 ? 'PM' : 'AM';
-            break;
-          case 'H':
-            rawData = date.getHours();
-            break;
-          case 'k':
-            rawData = date.getHours() || 24;
-            break;
-          case 'K':
-            rawData = date.getHours() % 12;
-            break;
-          case 'h':
-            rawData = date.getHours() % 12 || 12;
-            break;
-          case 'm':
-            rawData = date.getMinutes();
-            break;
-          case 's':
-            rawData = date.getSeconds();
-            break;
-          case 'S':
-            rawData = date.getMilliseconds();
-            break;
-          case 'Z':
-            rawData = date.getTimezoneOffset(); //This returns the number of minutes since GMT was this time.
-            break;
+            case 'G':
+              rawData = 'AD';
+              break;
+            case 'y':
+              rawData = date.getFullYear();
+              break;
+            case 'M':
+              rawData = date.getMonth();
+              break;
+            case 'w':
+              rawData = date.getWeekInYear(this.getMinimalDaysInFirstWeek());
+              break;
+            case 'W':
+              rawData = date.getWeekInMonth(this.getMinimalDaysInFirstWeek());
+              break;
+            case 'D':
+              rawData = date.getDayInYear();
+              break;
+            case 'd':
+              rawData = date.getDate();
+              break;
+            case 'F':
+              rawData = 1 + Math.floor((date.getDate() - 1) / 7);
+              break;
+            case 'E':
+              rawData = dayNames[date.getDay()];
+              break;
+            case 'a':
+              rawData = date.getHours() >= 12 ? 'PM' : 'AM';
+              break;
+            case 'H':
+              rawData = date.getHours();
+              break;
+            case 'k':
+              rawData = date.getHours() || 24;
+              break;
+            case 'K':
+              rawData = date.getHours() % 12;
+              break;
+            case 'h':
+              rawData = date.getHours() % 12 || 12;
+              break;
+            case 'm':
+              rawData = date.getMinutes();
+              break;
+            case 's':
+              rawData = date.getSeconds();
+              break;
+            case 'S':
+              rawData = date.getMilliseconds();
+              break;
+            case 'Z':
+              rawData = date.getTimezoneOffset(); //This returns the number of minutes since GMT was this time.
+              break;
           }
           //Format the raw data depending on the type
           switch (types[patternLetter]) {
-          case TEXT2:
-            formattedString += formatText(rawData, numberOfLetters, 2);
-            break;
-          case TEXT3:
-            formattedString += formatText(rawData, numberOfLetters, 3);
-            break;
-          case NUMBER:
-            formattedString += formatNumber(rawData, numberOfLetters);
-            break;
-          case YEAR:
-            if (numberOfLetters <= 3) {
-              //Output a 2-digit year
-              let dataString = '' + rawData;
-              formattedString += dataString.substr(2, 2);
-            }
-            else {
+            case TEXT2:
+              formattedString += formatText(rawData, numberOfLetters, 2);
+              break;
+            case TEXT3:
+              formattedString += formatText(rawData, numberOfLetters, 3);
+              break;
+            case NUMBER:
               formattedString += formatNumber(rawData, numberOfLetters);
-            }
-            break;
-          case MONTH:
-            if (numberOfLetters >= 3) {
-              formattedString += formatText(monthNames[rawData], numberOfLetters, numberOfLetters);
-            }
-            else {
-              //NB. Months returned by getMonth are zero-based
-              formattedString += formatNumber(rawData + 1, numberOfLetters);
-            }
-            break;
-          case TIMEZONE:
-            var isPositive = rawData > 0;
-            //The following line looks like a mistake but isn't
-            //because of the way getTimezoneOffset measures.
-            var prefix = isPositive ? '-' : '+';
-            var absData = Math.abs(rawData);
+              break;
+            case YEAR:
+              if(numberOfLetters <= 3) {
+                //Output a 2-digit year
+                let dataString = '' + rawData;
+                formattedString += dataString.substr(2, 2);
+              } else {
+                formattedString += formatNumber(rawData, numberOfLetters);
+              }
+              break;
+            case MONTH:
+              if(numberOfLetters >= 3) {
+                formattedString += formatText(monthNames[rawData], numberOfLetters, numberOfLetters);
+              } else {
+                //NB. Months returned by getMonth are zero-based
+                formattedString += formatNumber(rawData + 1, numberOfLetters);
+              }
+              break;
+            case TIMEZONE:
+              var isPositive = rawData > 0;
+              //The following line looks like a mistake but isn't
+              //because of the way getTimezoneOffset measures.
+              var prefix = isPositive ? '-' : '+';
+              var absData = Math.abs(rawData);
 
-            //Hours
-            var hours = '' + Math.floor(absData / 60);
-            hours = padWithZeroes(hours, 2);
-            //Minutes
-            var minutes = '' + (absData % 60);
-            minutes = padWithZeroes(minutes, 2);
+              //Hours
+              var hours = '' + Math.floor(absData / 60);
+              hours = padWithZeroes(hours, 2);
+              //Minutes
+              var minutes = '' + (absData % 60);
+              minutes = padWithZeroes(minutes, 2);
 
-            formattedString += prefix + hours + minutes;
-            break;
+              formattedString += prefix + hours + minutes;
+              break;
           }
         }
         searchString = searchString.substr(result.index + result[0].length);
@@ -1655,10 +1608,9 @@
   //PatternLayout
 
   function PatternLayout(pattern) {
-    if (pattern) {
+    if(pattern) {
       this.pattern = pattern;
-    }
-    else {
+    } else {
       this.pattern = PatternLayout.DEFAULT_CONVERSION_PATTERN;
     }
     this.customFields = [];
@@ -1679,7 +1631,7 @@
     let searchString = this.pattern;
 
     //Cannot use regex global flag since it doesn't work with exec in IE5
-    while ((result = regex.exec(searchString))) {
+    while((result = regex.exec(searchString))) {
       let matchedString = result[0];
       let padding = result[1];
       let truncation = result[2];
@@ -1688,137 +1640,127 @@
       let text = result[6];
 
       //Check if the pattern matched was just normal text
-      if (text) {
+      if(text) {
         formattedString += '' + text;
-      }
-      else {
+      } else {
         //Create a raw replacement string based on the conversion
         //character and specifier
         let replacement = '';
         switch (conversionCharacter) {
-        case 'a': //Array of messages
-        case 'm': //Message
-          var depth = 0;
-          if (specifier) {
-            depth = parseInt(specifier, 10);
-            if (isNaN(depth)) {
-              handleError("PatternLayout.format: invalid specifier '" + specifier + "' for conversion character '" + conversionCharacter + "' - should be a number");
-              depth = 0;
+          case 'a': //Array of messages
+          case 'm': //Message
+            var depth = 0;
+            if(specifier) {
+              depth = parseInt(specifier, 10);
+              if(isNaN(depth)) {
+                handleError("PatternLayout.format: invalid specifier '" + specifier + "' for conversion character '" + conversionCharacter + "' - should be a number");
+                depth = 0;
+              }
             }
-          }
-          var messages = conversionCharacter === 'a' ? loggingEvent.messages[0] : loggingEvent.messages;
-          for (let i = 0, len = messages.length; i < len; i++) {
-            if (i > 0 && replacement.charAt(replacement.length - 1) !== ' ') {
-              replacement += ' ';
+            var messages = conversionCharacter === 'a' ? loggingEvent.messages[0] : loggingEvent.messages;
+            for(let i = 0, len = messages.length; i < len; i++) {
+              if(i > 0 && replacement.charAt(replacement.length - 1) !== ' ') {
+                replacement += ' ';
+              }
+              if(depth === 0) {
+                replacement += messages[i];
+              } else {
+                replacement += formatObjectExpansion(messages[i], depth);
+              }
             }
-            if (depth === 0) {
-              replacement += messages[i];
-            }
-            else {
-              replacement += formatObjectExpansion(messages[i], depth);
-            }
-          }
-          break;
-        case 'c': //Logger name
-          var loggerName = loggingEvent.logger.name;
-          if (specifier) {
-            let precision = parseInt(specifier, 10);
-            let loggerNameBits = loggingEvent.logger.name.split('.');
-            if (precision >= loggerNameBits.length) {
+            break;
+          case 'c': //Logger name
+            var loggerName = loggingEvent.logger.name;
+            if(specifier) {
+              let precision = parseInt(specifier, 10);
+              let loggerNameBits = loggingEvent.logger.name.split('.');
+              if(precision >= loggerNameBits.length) {
+                replacement = loggerName;
+              } else {
+                replacement = loggerNameBits.slice(loggerNameBits.length - precision).join('.');
+              }
+            } else {
               replacement = loggerName;
             }
-            else {
-              replacement = loggerNameBits.slice(loggerNameBits.length - precision).join('.');
-            }
-          }
-          else {
-            replacement = loggerName;
-          }
-          break;
-        case 'd': //Date
-          var dateFormat = PatternLayout.ISO8601_DATEFORMAT;
-          if (specifier) {
-            dateFormat = specifier;
-            //Pick up special cases
-            if (dateFormat == 'ISO8601') {
-              dateFormat = PatternLayout.ISO8601_DATEFORMAT;
-            }
-            else if (dateFormat == 'ABSOLUTE') {
-              dateFormat = PatternLayout.ABSOLUTETIME_DATEFORMAT;
-            }
-            else if (dateFormat == 'DATE') {
-              dateFormat = PatternLayout.DATETIME_DATEFORMAT;
-            }
-          }
-          //Format the date
-          replacement = new SimpleDateFormat(dateFormat).format(loggingEvent.timeStamp);
-          break;
-        case 'f': //Custom field
-          if (this.hasCustomFields()) {
-            let fieldIndex = 0;
-            if (specifier) {
-              fieldIndex = parseInt(specifier, 10);
-              if (isNaN(fieldIndex)) {
-                handleError("PatternLayout.format: invalid specifier '" + specifier + "' for conversion character 'f' - should be a number");
-              }
-              else if (fieldIndex === 0) {
-                handleError("PatternLayout.format: invalid specifier '" + specifier + "' for conversion character 'f' - must be greater than zero");
-              }
-              else if (fieldIndex > this.customFields.length) {
-                handleError("PatternLayout.format: invalid specifier '" + specifier + "' for conversion character 'f' - there aren't that many custom fields");
-              }
-              else {
-                fieldIndex = fieldIndex - 1;
+            break;
+          case 'd': //Date
+            var dateFormat = PatternLayout.ISO8601_DATEFORMAT;
+            if(specifier) {
+              dateFormat = specifier;
+              //Pick up special cases
+              if(dateFormat == 'ISO8601') {
+                dateFormat = PatternLayout.ISO8601_DATEFORMAT;
+              } else if(dateFormat == 'ABSOLUTE') {
+                dateFormat = PatternLayout.ABSOLUTETIME_DATEFORMAT;
+              } else if(dateFormat == 'DATE') {
+                dateFormat = PatternLayout.DATETIME_DATEFORMAT;
               }
             }
-            let val = this.customFields[fieldIndex].value;
-            if (typeof val == 'function') {
-              val = val(this, loggingEvent);
+            //Format the date
+            replacement = new SimpleDateFormat(dateFormat).format(loggingEvent.timeStamp);
+            break;
+          case 'f': //Custom field
+            if(this.hasCustomFields()) {
+              let fieldIndex = 0;
+              if(specifier) {
+                fieldIndex = parseInt(specifier, 10);
+                if(isNaN(fieldIndex)) {
+                  handleError("PatternLayout.format: invalid specifier '" + specifier + "' for conversion character 'f' - should be a number");
+                } else if(fieldIndex === 0) {
+                  handleError("PatternLayout.format: invalid specifier '" + specifier + "' for conversion character 'f' - must be greater than zero");
+                } else if(fieldIndex > this.customFields.length) {
+                  handleError("PatternLayout.format: invalid specifier '" + specifier + "' for conversion character 'f' - there aren't that many custom fields");
+                } else {
+                  fieldIndex = fieldIndex - 1;
+                }
+              }
+              let val = this.customFields[fieldIndex].value;
+              if(typeof val == 'function') {
+                val = val(this, loggingEvent);
+              }
+              replacement = val;
             }
-            replacement = val;
-          }
-          break;
-        case 'n': //New line
-          replacement = newLine;
-          break;
-        case 'p': //Level
-          replacement = loggingEvent.level.name;
-          break;
-        case 'r': //Milliseconds since log4javascript startup
-          replacement = '' + loggingEvent.timeStamp.getDifference(applicationStartDate);
-          break;
-        case '%': //Literal % sign
-          replacement = '%';
-          break;
-        default:
-          replacement = matchedString;
-          break;
+            break;
+          case 'n': //New line
+            replacement = newLine;
+            break;
+          case 'p': //Level
+            replacement = loggingEvent.level.name;
+            break;
+          case 'r': //Milliseconds since log4javascript startup
+            replacement = '' + loggingEvent.timeStamp.getDifference(applicationStartDate);
+            break;
+          case '%': //Literal % sign
+            replacement = '%';
+            break;
+          default:
+            replacement = matchedString;
+            break;
         }
         //Format the replacement according to any padding or
         //truncation specified
         var l;
 
         //First, truncation
-        if (truncation) {
+        if(truncation) {
           l = parseInt(truncation.substr(1), 10);
           let strLen = replacement.length;
-          if (l < strLen) {
+          if(l < strLen) {
             replacement = replacement.substring(strLen - l, strLen);
           }
         }
         //Next, padding
-        if (padding) {
-          if (padding.charAt(0) == '-') {
+        if(padding) {
+          if(padding.charAt(0) == '-') {
             l = parseInt(padding.substr(1), 10);
             //Right pad with spaces
-            while (replacement.length < l) {
+            while(replacement.length < l) {
               replacement += ' ';
             }
-          }
-          else {
+          } else {
             l = parseInt(padding, 10);
             //Left pad with spaces
-            while (replacement.length < l) {
+            while(replacement.length < l) {
               replacement = ' ' + replacement;
             }
           }
@@ -1879,48 +1821,42 @@
 
     let console = window.console;
 
-    if (console && console.log) {
+    if(console && console.log) {
       //Log to Firebug or the browser console using specific logging
       //methods or revert to console.log otherwise
       let consoleMethodName;
 
-      if (console.debug && Level.DEBUG.isGreaterOrEqual(loggingEvent.level)) {
+      if(console.debug && Level.DEBUG.isGreaterOrEqual(loggingEvent.level)) {
         consoleMethodName = 'debug';
-      }
-      else if (console.info && Level.INFO.equals(loggingEvent.level)) {
+      } else if(console.info && Level.INFO.equals(loggingEvent.level)) {
         consoleMethodName = 'info';
-      }
-      else if (console.warn && Level.WARN.equals(loggingEvent.level)) {
+      } else if(console.warn && Level.WARN.equals(loggingEvent.level)) {
         consoleMethodName = 'warn';
-      }
-      else if (console.error && loggingEvent.level.isGreaterOrEqual(Level.ERROR)) {
+      } else if(console.error && loggingEvent.level.isGreaterOrEqual(Level.ERROR)) {
         consoleMethodName = 'error';
-      }
-      else {
+      } else {
         consoleMethodName = 'log';
       }
 
-      if (typeof console[consoleMethodName].apply == 'function') {
+      if(typeof console[consoleMethodName].apply == 'function') {
         console[consoleMethodName].apply(console, getFormattedMessage(false));
-      }
-      else {
+      } else {
         console[consoleMethodName](getFormattedMessage(true));
       }
-    }
-    else if (typeof opera != 'undefined' && opera.postError) {
+    } else if(typeof opera != 'undefined' && opera.postError) {
       //Opera
       opera.postError(getFormattedMessage(true));
     }
   };
 
   BrowserConsoleAppender.prototype.group = function (name) {
-    if (window.console && window.console.group) {
+    if(window.console && window.console.group) {
       window.console.group(name);
     }
   };
 
   BrowserConsoleAppender.prototype.groupEnd = function () {
-    if (window.console && window.console.groupEnd) {
+    if(window.console && window.console.groupEnd) {
       window.console.groupEnd();
     }
   };
@@ -1953,21 +1889,19 @@
     //replaced with the factory that succeeds on the first run
     let xmlHttp = null,
       factory;
-    for (let i = 0, len = xmlHttpFactories.length; i < len; i++) {
+    for(let i = 0, len = xmlHttpFactories.length; i < len; i++) {
       factory = xmlHttpFactories[i];
       try {
         xmlHttp = factory();
         withCredentialsSupported = factory == xhrFactory && 'withCredentials' in xmlHttp;
         getXmlHttp = factory;
         return xmlHttp;
-      }
-      catch (e) {}
+      } catch(e) {}
     }
     //If we're here, all factories have failed, so throw an error
-    if (errorHandler) {
+    if(errorHandler) {
       errorHandler();
-    }
-    else {
+    } else {
       handleError('getXmlHttp: unable to obtain XMLHttpRequest object');
     }
   };
@@ -1982,7 +1916,7 @@
   function AjaxAppender(url, withCredentials) {
     let appender = this;
     let isSupported = true;
-    if (!url) {
+    if(!url) {
       handleError('AjaxAppender: URL must be specified in constructor');
       isSupported = false;
     }
@@ -2007,7 +1941,7 @@
     //Configuration methods. The function scope is used to prevent
     //direct alteration to the appender configuration properties.
     function checkCanConfigure(configOptionName) {
-      if (initialized) {
+      if(initialized) {
         handleError("AjaxAppender: configuration option '" + configOptionName + "' may not be set after the appender has been initialized");
         return false;
       }
@@ -2023,10 +1957,10 @@
     };
 
     this.setLayout = function (layoutParam) {
-      if (checkCanConfigure('layout')) {
+      if(checkCanConfigure('layout')) {
         this.layout = layoutParam;
         //Set the session id as a custom field on the layout, if not already present
-        if (sessionId !== null) {
+        if(sessionId !== null) {
           this.setSessionId(sessionId);
         }
       }
@@ -2036,7 +1970,7 @@
       return timed;
     };
     this.setTimed = function (timedParam) {
-      if (checkCanConfigure('timed')) {
+      if(checkCanConfigure('timed')) {
         timed = bool(timedParam);
       }
     };
@@ -2045,7 +1979,7 @@
       return timerInterval;
     };
     this.setTimerInterval = function (timerIntervalParam) {
-      if (checkCanConfigure('timerInterval')) {
+      if(checkCanConfigure('timerInterval')) {
         timerInterval = extractIntFromParam(timerIntervalParam, timerInterval);
       }
     };
@@ -2054,7 +1988,7 @@
       return waitForResponse;
     };
     this.setWaitForResponse = function (waitForResponseParam) {
-      if (checkCanConfigure('waitForResponse')) {
+      if(checkCanConfigure('waitForResponse')) {
         waitForResponse = bool(waitForResponseParam);
       }
     };
@@ -2063,7 +1997,7 @@
       return batchSize;
     };
     this.setBatchSize = function (batchSizeParam) {
-      if (checkCanConfigure('batchSize')) {
+      if(checkCanConfigure('batchSize')) {
         batchSize = extractIntFromParam(batchSizeParam, batchSize);
       }
     };
@@ -2072,7 +2006,7 @@
       return sendAllOnUnload;
     };
     this.setSendAllOnUnload = function (sendAllOnUnloadParam) {
-      if (checkCanConfigure('sendAllOnUnload')) {
+      if(checkCanConfigure('sendAllOnUnload')) {
         sendAllOnUnload = extractBooleanFromParam(sendAllOnUnloadParam, sendAllOnUnload);
       }
     };
@@ -2089,7 +2023,7 @@
       return postVarName;
     };
     this.setPostVarName = function (postVarNameParam) {
-      if (checkCanConfigure('postVarName')) {
+      if(checkCanConfigure('postVarName')) {
         postVarName = extractStringFromParam(postVarNameParam, postVarName);
       }
     };
@@ -2098,40 +2032,37 @@
       return headers;
     };
     this.addHeader = function (name, value) {
-      if (name.toLowerCase() == 'content-type') {
+      if(name.toLowerCase() == 'content-type') {
         contentType = value;
-      }
-      else {
+      } else {
         headers.push({ name, value });
       }
     };
 
     //Internal functions
     function sendAll() {
-      if (isSupported && enabled) {
+      if(isSupported && enabled) {
         sending = true;
         let currentRequestBatch;
-        if (waitForResponse) {
+        if(waitForResponse) {
           //Send the first request then use this function as the callback once
           //the response comes back
-          if (queuedRequests.length > 0) {
+          if(queuedRequests.length > 0) {
             currentRequestBatch = queuedRequests.shift();
             sendRequest(preparePostData(currentRequestBatch), sendAll);
-          }
-          else {
+          } else {
             sending = false;
-            if (timed) {
+            if(timed) {
               scheduleSending();
             }
           }
-        }
-        else {
+        } else {
           //Rattle off all the requests without waiting to see the response
-          while ((currentRequestBatch = queuedRequests.shift())) {
+          while((currentRequestBatch = queuedRequests.shift())) {
             sendRequest(preparePostData(currentRequestBatch));
           }
           sending = false;
-          if (timed) {
+          if(timed) {
             scheduleSending();
           }
         }
@@ -2145,21 +2076,21 @@
     //must go, now
     function sendAllRemaining() {
       let sendingAnything = false;
-      if (isSupported && enabled) {
+      if(isSupported && enabled) {
         //Create requests for everything left over, batched as normal
         let actualBatchSize = appender.getLayout().allowBatching() ? batchSize : 1;
         let currentLoggingEvent;
         let batchedLoggingEvents = [];
-        while ((currentLoggingEvent = queuedLoggingEvents.shift())) {
+        while((currentLoggingEvent = queuedLoggingEvents.shift())) {
           batchedLoggingEvents.push(currentLoggingEvent);
-          if (queuedLoggingEvents.length >= actualBatchSize) {
+          if(queuedLoggingEvents.length >= actualBatchSize) {
             //Queue this batch of log entries
             queuedRequests.push(batchedLoggingEvents);
             batchedLoggingEvents = [];
           }
         }
         //If there's a partially completed batch, add it
-        if (batchedLoggingEvents.length > 0) {
+        if(batchedLoggingEvents.length > 0) {
           queuedRequests.push(batchedLoggingEvents);
         }
         sendingAnything = queuedRequests.length > 0;
@@ -2177,20 +2108,19 @@
       let formattedMessages = [];
       let currentLoggingEvent;
       let postData = '';
-      while ((currentLoggingEvent = batchedLoggingEvents.shift())) {
+      while((currentLoggingEvent = batchedLoggingEvents.shift())) {
         formattedMessages.push(appender.getLayout().formatWithException(currentLoggingEvent));
       }
       //Create the post data string
-      if (batchedLoggingEvents.length == 1) {
+      if(batchedLoggingEvents.length == 1) {
         postData = formattedMessages.join('');
-      }
-      else {
+      } else {
         postData = appender.getLayout().batchHeader + formattedMessages.join(appender.getLayout().batchSeparator) + appender.getLayout().batchFooter;
       }
-      if (contentType == appender.defaults.contentType) {
+      if(contentType == appender.defaults.contentType) {
         postData = appender.getLayout().returnsPostData ? postData : urlEncode(postVarName) + '=' + urlEncode(postData);
         //Add the layout name to the post data
-        if (postData.length > 0) {
+        if(postData.length > 0) {
           postData += '&';
         }
         postData += 'layout=' + urlEncode(appender.getLayout().toString());
@@ -2206,7 +2136,7 @@
       let msg = 'AjaxAppender: could not create XMLHttpRequest object. AjaxAppender disabled';
       handleError(msg);
       isSupported = false;
-      if (failCallback) {
+      if(failCallback) {
         failCallback(msg);
       }
     }
@@ -2214,21 +2144,20 @@
     function sendRequest(postData, successCallback) {
       try {
         let xmlHttp = getXmlHttp(xmlHttpErrorHandler);
-        if (isSupported) {
+        if(isSupported) {
           xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState == 4) {
-              if (isHttpRequestSuccessful(xmlHttp)) {
-                if (requestSuccessCallback) {
+            if(xmlHttp.readyState == 4) {
+              if(isHttpRequestSuccessful(xmlHttp)) {
+                if(requestSuccessCallback) {
                   requestSuccessCallback(xmlHttp);
                 }
-                if (successCallback) {
+                if(successCallback) {
                   successCallback(xmlHttp);
                 }
-              }
-              else {
+              } else {
                 let msg = 'AjaxAppender.append: XMLHttpRequest request to URL ' + url + ' returned status code ' + xmlHttp.status;
                 handleError(msg);
-                if (failCallback) {
+                if(failCallback) {
                   failCallback(msg);
                 }
               }
@@ -2238,49 +2167,47 @@
           };
           xmlHttp.open('POST', url, true);
           //Add withCredentials to facilitate CORS requests with cookies
-          if (withCredentials && withCredentialsSupported) {
+          if(withCredentials && withCredentialsSupported) {
             xmlHttp.withCredentials = true;
           }
           try {
-            for (var i = 0, header; (header = headers[i++]); ) {
+            for(var i = 0, header; (header = headers[i++]); ) {
               xmlHttp.setRequestHeader(header.name, header.value);
             }
             xmlHttp.setRequestHeader('Content-Type', contentType);
-          }
-          catch (headerEx) {
+          } catch(headerEx) {
             let msg = "AjaxAppender.append: your browser's XMLHttpRequest implementation" + ' does not support setRequestHeader, therefore cannot post data. AjaxAppender disabled';
             handleError(msg);
             isSupported = false;
-            if (failCallback) {
+            if(failCallback) {
               failCallback(msg);
             }
             return;
           }
           xmlHttp.send(postData);
         }
-      }
-      catch (ex) {
+      } catch(ex) {
         let errMsg = 'AjaxAppender.append: error sending log message to ' + url;
         handleError(errMsg, ex);
         isSupported = false;
-        if (failCallback) {
+        if(failCallback) {
           failCallback(errMsg + '. Details: ' + getExceptionStringRep(ex));
         }
       }
     }
 
     this.append = function (loggingEvent) {
-      if (isSupported) {
-        if (!initialized) {
+      if(isSupported) {
+        if(!initialized) {
           init();
         }
         queuedLoggingEvents.push(loggingEvent);
         let actualBatchSize = this.getLayout().allowBatching() ? batchSize : 1;
 
-        if (queuedLoggingEvents.length >= actualBatchSize) {
+        if(queuedLoggingEvents.length >= actualBatchSize) {
           let currentLoggingEvent;
           let batchedLoggingEvents = [];
-          while ((currentLoggingEvent = queuedLoggingEvents.shift())) {
+          while((currentLoggingEvent = queuedLoggingEvents.shift())) {
             batchedLoggingEvents.push(currentLoggingEvent);
           }
           //Queue this batch of log entries
@@ -2288,7 +2215,7 @@
 
           //If using a timer, the queue of requests will be processed by the
           //timer function, so nothing needs to be done here.
-          if (!timed && (!waitForResponse || (waitForResponse && !sending))) {
+          if(!timed && (!waitForResponse || (waitForResponse && !sending))) {
             sendAll();
           }
         }
@@ -2298,17 +2225,17 @@
     function init() {
       initialized = true;
       //Add unload event to send outstanding messages
-      if (sendAllOnUnload) {
+      if(sendAllOnUnload) {
         let oldBeforeUnload = window.onbeforeunload;
         window.onbeforeunload = function () {
-          if (oldBeforeUnload) {
+          if(oldBeforeUnload) {
             oldBeforeUnload();
           }
           sendAllRemaining();
         };
       }
       //Start timer
-      if (timed) {
+      if(timed) {
         scheduleSending();
       }
     }
@@ -2342,12 +2269,11 @@
   function setCookie(name, value, days, path) {
     let expires;
     path = path ? '; path=' + path : '';
-    if (days) {
+    if(days) {
       let date = new Date();
       date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
       expires = '; expires=' + date.toGMTString();
-    }
-    else {
+    } else {
       expires = '';
     }
     document.cookie = escape(name) + '=' + escape(value) + expires + path;
@@ -2356,12 +2282,12 @@
   function getCookie(name) {
     let nameEquals = escape(name) + '=';
     let ca = document.cookie.split(';');
-    for (let i = 0, len = ca.length; i < len; i++) {
+    for(let i = 0, len = ca.length; i < len; i++) {
       let c = ca[i];
-      while (c.charAt(0) === ' ') {
+      while(c.charAt(0) === ' ') {
         c = c.substring(1, c.length);
       }
-      if (c.indexOf(nameEquals) === 0) {
+      if(c.indexOf(nameEquals) === 0) {
         return unescape(c.substring(nameEquals.length, c.length));
       }
     }
@@ -2372,8 +2298,8 @@
   //This is far from infallible.
   function getBaseUrl() {
     let scripts = document.getElementsByTagName('script');
-    for (let i = 0, len = scripts.length; i < len; ++i) {
-      if (scripts[i].src.indexOf('log4javascript') != -1) {
+    for(let i = 0, len = scripts.length; i < len; ++i) {
+      if(scripts[i].src.indexOf('log4javascript') != -1) {
         let lastSlash = scripts[i].src.lastIndexOf('/');
         return lastSlash == -1 ? '' : scripts[i].src.substr(0, lastSlash + 1);
       }
@@ -2384,8 +2310,7 @@
   function isLoaded(win) {
     try {
       return bool(win.loaded);
-    }
-    catch (ex) {
+    } catch(ex) {
       return false;
     }
   }
@@ -4725,7 +4650,7 @@
       //direct alteration to the appender configuration properties.
       let appenderName = inPage ? 'InPageAppender' : 'PopUpAppender';
       let checkCanConfigure = function (configOptionName) {
-        if (consoleWindowCreated) {
+        if(consoleWindowCreated) {
           handleError(appenderName + ": configuration option '" + configOptionName + "' may not be set after the appender has been initialized");
           return false;
         }
@@ -4741,7 +4666,7 @@
       };
       this.setNewestMessageAtTop = function (newestMessageAtTopParam) {
         newestMessageAtTop = bool(newestMessageAtTopParam);
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().setNewestAtTop(newestMessageAtTop);
         }
       };
@@ -4751,7 +4676,7 @@
       };
       this.setScrollToLatestMessage = function (scrollToLatestMessageParam) {
         scrollToLatestMessage = bool(scrollToLatestMessageParam);
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().setScrollToLatest(scrollToLatestMessage);
         }
       };
@@ -4760,7 +4685,7 @@
         return width;
       };
       this.setWidth = function (widthParam) {
-        if (checkCanConfigure('width')) {
+        if(checkCanConfigure('width')) {
           width = extractStringFromParam(widthParam, width);
         }
       };
@@ -4769,7 +4694,7 @@
         return height;
       };
       this.setHeight = function (heightParam) {
-        if (checkCanConfigure('height')) {
+        if(checkCanConfigure('height')) {
           height = extractStringFromParam(heightParam, height);
         }
       };
@@ -4779,7 +4704,7 @@
       };
       this.setMaxMessages = function (maxMessagesParam) {
         maxMessages = extractIntFromParam(maxMessagesParam, maxMessages);
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().setMaxMessages(maxMessages);
         }
       };
@@ -4789,7 +4714,7 @@
       };
       this.setShowCommandLine = function (showCommandLineParam) {
         showCommandLine = bool(showCommandLineParam);
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().setShowCommandLine(showCommandLine);
         }
       };
@@ -4799,7 +4724,7 @@
       };
       this.setShowHideButton = function (showHideButtonParam) {
         showHideButton = bool(showHideButtonParam);
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().setShowHideButton(showHideButton);
         }
       };
@@ -4809,7 +4734,7 @@
       };
       this.setShowCloseButton = function (showCloseButtonParam) {
         showCloseButton = bool(showCloseButtonParam);
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().setShowCloseButton(showCloseButton);
         }
       };
@@ -4826,7 +4751,7 @@
         return initiallyMinimized;
       };
       this.setInitiallyMinimized = function (initiallyMinimizedParam) {
-        if (checkCanConfigure('initiallyMinimized')) {
+        if(checkCanConfigure('initiallyMinimized')) {
           initiallyMinimized = bool(initiallyMinimizedParam);
           minimized = initiallyMinimized;
         }
@@ -4836,7 +4761,7 @@
         return useDocumentWrite;
       };
       this.setUseDocumentWrite = function (useDocumentWriteParam) {
-        if (checkCanConfigure('useDocumentWrite')) {
+        if(checkCanConfigure('useDocumentWrite')) {
           useDocumentWrite = bool(useDocumentWriteParam);
         }
       };
@@ -4870,19 +4795,18 @@
       let checkAndAppend = function () {
         //Next line forces a check of whether the window has been closed
         safeToAppend();
-        if (!initialized) {
+        if(!initialized) {
           init();
-        }
-        else if (consoleClosed && reopenWhenClosed) {
+        } else if(consoleClosed && reopenWhenClosed) {
           createWindow();
         }
-        if (safeToAppend()) {
+        if(safeToAppend()) {
           appendQueuedLoggingEvents();
         }
       };
 
       this.append = function (loggingEvent) {
-        if (isSupported) {
+        if(isSupported) {
           //Format the message
           let formattedMessage = appender.getLayout().formatWithException(loggingEvent);
           queuedLoggingEvents.push(new QueuedLoggingEvent(loggingEvent, formattedMessage));
@@ -4891,56 +4815,56 @@
       };
 
       this.group = function (name, initiallyExpanded) {
-        if (isSupported) {
+        if(isSupported) {
           queuedLoggingEvents.push(new QueuedGroup(name, initiallyExpanded));
           checkAndAppend();
         }
       };
 
       this.groupEnd = function () {
-        if (isSupported) {
+        if(isSupported) {
           queuedLoggingEvents.push(new QueuedGroupEnd());
           checkAndAppend();
         }
       };
 
       var appendQueuedLoggingEvents = function () {
-        while (queuedLoggingEvents.length > 0) {
+        while(queuedLoggingEvents.length > 0) {
           queuedLoggingEvents.shift().append();
         }
-        if (focusConsoleWindow) {
+        if(focusConsoleWindow) {
           getConsoleWindow().focus();
         }
       };
 
       this.setAddedToLogger = function (logger) {
         this.loggers.push(logger);
-        if (enabled && !lazyInit) {
+        if(enabled && !lazyInit) {
           init();
         }
       };
 
       this.clear = function () {
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().clearLog();
         }
         queuedLoggingEvents.length = 0;
       };
 
       this.focus = function () {
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().focus();
         }
       };
 
       this.focusCommandLine = function () {
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().focusCommandLine();
         }
       };
 
       this.focusSearch = function () {
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().focusSearch();
         }
       };
@@ -4955,7 +4879,7 @@
       };
 
       this.executeLastCommand = function () {
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().evalLastCommand();
         }
       };
@@ -4977,12 +4901,12 @@
           //The next three lines constitute a workaround for IE. Bizarrely, iframes seem to have no
           //eval method on the window object initially, but once execScript has been called on
           //it once then the eval method magically appears. See http://www.thismuchiknow.co.uk/?p=25
-          if (!commandWindow.eval && commandWindow.execScript) {
+          if(!commandWindow.eval && commandWindow.execScript) {
             commandWindow.execScript('null');
           }
 
           let commandLineFunctionsHash = {};
-          for (i = 0, len = commandLineFunctions.length; i < len; i++) {
+          for(i = 0, len = commandLineFunctions.length; i < len; i++) {
             commandLineFunctionsHash[commandLineFunctions[i][0]] = commandLineFunctions[i][1];
           }
 
@@ -5009,36 +4933,34 @@
             };
           };
 
-          for (i = 0, len = commandLineFunctions.length; i < len; i++) {
+          for(i = 0, len = commandLineFunctions.length; i < len; i++) {
             addFunctionToWindow(commandLineFunctions[i][0]);
           }
 
           //Another bizarre workaround to get IE to eval in the global scope
-          if (commandWindow === window && commandWindow.execScript) {
+          if(commandWindow === window && commandWindow.execScript) {
             addObjectToRestore('evalExpr');
             addObjectToRestore('result');
             window.evalExpr = expr;
             commandWindow.execScript('window.result=eval(window.evalExpr);');
             result = window.result;
-          }
-          else {
+          } else {
             result = commandWindow.eval(expr);
           }
           commandOutput = isUndefined(result) ? result : formatObjectExpansion(result, commandLineObjectExpansionDepth);
 
           //Restore variables in the command window to their original state
-          for (i = 0, len = objectsToRestore.length; i < len; i++) {
+          for(i = 0, len = objectsToRestore.length; i < len; i++) {
             commandWindow[objectsToRestore[i][0]] = objectsToRestore[i][1];
           }
-        }
-        catch (ex) {
+        } catch(ex) {
           commandOutput = 'Error evaluating command: ' + getExceptionStringRep(ex);
           commandReturnValue.isError = true;
         }
         //Append command output
-        if (commandReturnValue.appendResult) {
+        if(commandReturnValue.appendResult) {
           let message = '>>> ' + expr;
-          if (!isUndefined(commandOutput)) {
+          if(!isUndefined(commandOutput)) {
             message += newLine + commandOutput;
           }
           let level = commandReturnValue.isError ? Level.ERROR : Level.INFO;
@@ -5064,7 +4986,7 @@
       let writeHtml = function (doc) {
         let lines = getConsoleHtmlLines();
         doc.open();
-        for (let i = 0, len = lines.length; i < len; i++) {
+        for(let i = 0, len = lines.length; i < len; i++) {
           doc.writeln(lines[i]);
         }
         doc.close();
@@ -5086,7 +5008,7 @@
 
         //Restore command history stored in cookie
         let storedValue = getCookie(commandHistoryCookieName);
-        if (storedValue) {
+        if(storedValue) {
           win.commandHistory = storedValue.split(',');
           win.currentCommandIndex = win.commandHistory.length;
         }
@@ -5096,7 +5018,7 @@
 
       this.unload = function () {
         logLog.debug('unload ' + this + ', caller: ' + this.unload.caller);
-        if (!consoleClosed) {
+        if(!consoleClosed) {
           logLog.debug('really doing unload ' + this);
           consoleClosed = true;
           consoleWindowLoaded = false;
@@ -5109,15 +5031,14 @@
         function doPoll() {
           try {
             //Test if the console has been closed while polling
-            if (consoleClosed) {
+            if(consoleClosed) {
               clearInterval(poll);
             }
-            if (windowTest(getConsoleWindow())) {
+            if(windowTest(getConsoleWindow())) {
               clearInterval(poll);
               successCallback();
             }
-          }
-          catch (ex) {
+          } catch(ex) {
             clearInterval(poll);
             isSupported = false;
             handleError(errorMessage, ex);
@@ -5134,7 +5055,7 @@
       };
 
       //Define methods and properties that vary between subclasses
-      if (inPage) {
+      if(inPage) {
         //InPageAppender
 
         let containerElement = null;
@@ -5143,7 +5064,7 @@
         //direct alteration to the appender configuration properties.
         let cssProperties = [];
         this.addCssProperty = function (name, value) {
-          if (checkCanConfigure('cssProperties')) {
+          if(checkCanConfigure('cssProperties')) {
             cssProperties.push([name, value]);
           }
         };
@@ -5154,8 +5075,8 @@
         let iframeId = uniqueId + '_InPageAppender_' + consoleAppenderId;
 
         this.hide = function () {
-          if (initialized && consoleWindowCreated) {
-            if (consoleWindowExists()) {
+          if(initialized && consoleWindowCreated) {
+            if(consoleWindowExists()) {
               getConsoleWindow().$('command').blur();
             }
             iframeContainerDiv.style.display = 'none';
@@ -5164,13 +5085,12 @@
         };
 
         this.show = function () {
-          if (initialized) {
-            if (consoleWindowCreated) {
+          if(initialized) {
+            if(consoleWindowCreated) {
               iframeContainerDiv.style.display = 'block';
               this.setShowCommandLine(showCommandLine); //Force IE to update
               minimized = false;
-            }
-            else if (!windowCreationStarted) {
+            } else if(!windowCreationStarted) {
               createWindow(true);
             }
           }
@@ -5181,7 +5101,7 @@
         };
 
         this.close = function (fromButton) {
-          if (!consoleClosed && (!fromButton || confirm('This will permanently remove the console from the page. No more messages will be logged. Do you wish to continue?'))) {
+          if(!consoleClosed && (!fromButton || confirm('This will permanently remove the console from the page. No more messages will be logged. Do you wish to continue?'))) {
             iframeContainerDiv.parentNode.removeChild(iframeContainerDiv);
             this.unload();
           }
@@ -5193,14 +5113,13 @@
 
           function finalInit() {
             try {
-              if (!initiallyMinimized) {
+              if(!initiallyMinimized) {
                 appender.show();
               }
               consoleWindowLoadHandler();
               consoleWindowLoaded = true;
               appendQueuedLoggingEvents();
-            }
-            catch (ex) {
+            } catch(ex) {
               isSupported = false;
               handleError(initErrorMessage, ex);
             }
@@ -5211,17 +5130,15 @@
               let windowTest = function (win) {
                 return isLoaded(win);
               };
-              if (useDocumentWrite) {
+              if(useDocumentWrite) {
                 writeHtml(getConsoleWindow().document);
               }
-              if (windowTest(getConsoleWindow())) {
+              if(windowTest(getConsoleWindow())) {
                 finalInit();
-              }
-              else {
+              } else {
                 pollConsoleWindow(windowTest, 100, finalInit, initErrorMessage);
               }
-            }
-            catch (ex) {
+            } catch(ex) {
               isSupported = false;
               handleError(initErrorMessage, ex);
             }
@@ -5234,7 +5151,7 @@
           iframeContainerDiv.style.height = height;
           iframeContainerDiv.style.border = 'solid gray 1px';
 
-          for (let i = 0, len = cssProperties.length; i < len; i++) {
+          for(let i = 0, len = cssProperties.length; i < len; i++) {
             iframeContainerDiv.style[cssProperties[i][0]] = cssProperties[i][1];
           }
 
@@ -5251,24 +5168,22 @@
           let iframeDocumentExistsTest = function (win) {
             try {
               return bool(win) && bool(win.document);
-            }
-            catch (ex) {
+            } catch(ex) {
               return false;
             }
           };
-          if (iframeDocumentExistsTest(getConsoleWindow())) {
+          if(iframeDocumentExistsTest(getConsoleWindow())) {
             writeToDocument();
-          }
-          else {
+          } else {
             pollConsoleWindow(iframeDocumentExistsTest, 100, writeToDocument, initErrorMessage);
           }
           consoleWindowCreated = true;
         };
 
         createWindow = function (show) {
-          if (show || !initiallyMinimized) {
+          if(show || !initiallyMinimized) {
             let pageLoadHandler = function () {
-              if (!container) {
+              if(!container) {
                 //Set up default container element
                 containerElement = document.createElement('div');
                 containerElement.style.position = 'fixed';
@@ -5279,30 +5194,26 @@
                 appender.addCssProperty('borderWidth', '1px 0 0 0');
                 appender.addCssProperty('zIndex', 1000000); //Can't find anything authoritative that says how big z-index can be
                 open();
-              }
-              else {
+              } else {
                 try {
                   let el = document.getElementById(container);
-                  if (el.nodeType == 1) {
+                  if(el.nodeType == 1) {
                     containerElement = el;
                   }
                   open();
-                }
-                catch (ex) {
+                } catch(ex) {
                   handleError("InPageAppender.init: invalid container element '" + container + "' supplied", ex);
                 }
               }
             };
 
             //Test the type of the container supplied. First, check if it's an element
-            if (pageLoaded && container && container.appendChild) {
+            if(pageLoaded && container && container.appendChild) {
               containerElement = container;
               open();
-            }
-            else if (pageLoaded) {
+            } else if(pageLoaded) {
               pageLoadHandler();
-            }
-            else {
+            } else {
               log4javascript.addEventListener('load', pageLoadHandler);
             }
             windowCreationStarted = true;
@@ -5316,22 +5227,21 @@
 
         getConsoleWindow = function () {
           let iframe = window.frames[iframeId];
-          if (iframe) {
+          if(iframe) {
             return iframe;
           }
         };
 
         safeToAppend = function () {
-          if (isSupported && !consoleClosed) {
-            if (consoleWindowCreated && !consoleWindowLoaded && getConsoleWindow() && isLoaded(getConsoleWindow())) {
+          if(isSupported && !consoleClosed) {
+            if(consoleWindowCreated && !consoleWindowLoaded && getConsoleWindow() && isLoaded(getConsoleWindow())) {
               consoleWindowLoaded = true;
             }
             return consoleWindowLoaded;
           }
           return false;
         };
-      }
-      else {
+      } else {
         //PopUpAppender
 
         //Extract params
@@ -5345,7 +5255,7 @@
           return useOldPopUp;
         };
         this.setUseOldPopUp = function (useOldPopUpParam) {
-          if (checkCanConfigure('useOldPopUp')) {
+          if(checkCanConfigure('useOldPopUp')) {
             useOldPopUp = bool(useOldPopUpParam);
           }
         };
@@ -5354,7 +5264,7 @@
           return complainAboutPopUpBlocking;
         };
         this.setComplainAboutPopUpBlocking = function (complainAboutPopUpBlockingParam) {
-          if (checkCanConfigure('complainAboutPopUpBlocking')) {
+          if(checkCanConfigure('complainAboutPopUpBlocking')) {
             complainAboutPopUpBlocking = bool(complainAboutPopUpBlockingParam);
           }
         };
@@ -5380,22 +5290,21 @@
           try {
             popUp.close();
             this.unload();
-          }
-          catch (ex) {
+          } catch(ex) {
             //Do nothing
           }
         };
 
         this.hide = function () {
           logLog.debug('hide ' + this);
-          if (consoleWindowExists()) {
+          if(consoleWindowExists()) {
             this.close();
           }
         };
 
         this.show = function () {
           logLog.debug('show ' + this);
-          if (!consoleWindowCreated) {
+          if(!consoleWindowCreated) {
             open();
           }
         };
@@ -5413,33 +5322,31 @@
           let frameInfo = '';
           try {
             let frameEl = window.frameElement;
-            if (frameEl) {
+            if(frameEl) {
               frameInfo = '_' + frameEl.tagName + '_' + (frameEl.name || frameEl.id || '');
             }
-          }
-          catch (e) {
+          } catch(e) {
             frameInfo = '_inaccessibleParentFrame';
           }
           let windowName = 'PopUp_' + location.host.replace(/[^a-z0-9]/gi, '_') + '_' + consoleAppenderId + frameInfo;
-          if (!useOldPopUp || !useDocumentWrite) {
+          if(!useOldPopUp || !useDocumentWrite) {
             //Ensure a previous window isn't used by using a unique name
             windowName = windowName + '_' + uniqueId;
           }
 
           let checkPopUpClosed = function (win) {
-            if (consoleClosed) {
+            if(consoleClosed) {
               return true;
             }
             try {
               return bool(win) && win.closed;
-            }
-            catch (ex) {}
-            
+            } catch(ex) {}
+
             return false;
           };
 
           let popUpClosedCallback = function () {
-            if (!consoleClosed) {
+            if(!consoleClosed) {
               appender.unload();
             }
           };
@@ -5456,42 +5363,38 @@
             popUp = window.open(getConsoleUrl(), windowName, windowProperties);
             consoleClosed = false;
             consoleWindowCreated = true;
-            if (popUp && popUp.document) {
-              if (useDocumentWrite && useOldPopUp && isLoaded(popUp)) {
+            if(popUp && popUp.document) {
+              if(useDocumentWrite && useOldPopUp && isLoaded(popUp)) {
                 popUp.mainPageReloaded();
                 finalInit();
-              }
-              else {
-                if (useDocumentWrite) {
+              } else {
+                if(useDocumentWrite) {
                   writeHtml(popUp.document);
                 }
                 //Check if the pop-up window object is available
                 let popUpLoadedTest = function (win) {
                   return bool(win) && isLoaded(win);
                 };
-                if (isLoaded(popUp)) {
+                if(isLoaded(popUp)) {
                   finalInit();
-                }
-                else {
+                } else {
                   pollConsoleWindow(popUpLoadedTest, 100, finalInit, 'PopUpAppender.init: unable to create console window');
                 }
               }
-            }
-            else {
+            } else {
               isSupported = false;
               logLog.warn('PopUpAppender.init: pop-ups blocked, please unblock to use PopUpAppender');
-              if (complainAboutPopUpBlocking) {
+              if(complainAboutPopUpBlocking) {
                 handleError('log4javascript: pop-up windows appear to be blocked. Please unblock them to use pop-up logging.');
               }
             }
-          }
-          catch (ex) {
+          } catch(ex) {
             handleError('PopUpAppender.init: error creating pop-up', ex);
           }
         };
 
         createWindow = function () {
-          if (!initiallyMinimized) {
+          if(!initiallyMinimized) {
             open();
           }
         };
@@ -5506,14 +5409,14 @@
         };
 
         safeToAppend = function () {
-          if (isSupported && !isUndefined(popUp) && !consoleClosed) {
-            if (popUp.closed || (consoleWindowLoaded && isUndefined(popUp.closed))) {
+          if(isSupported && !isUndefined(popUp) && !consoleClosed) {
+            if(popUp.closed || (consoleWindowLoaded && isUndefined(popUp.closed))) {
               //Extra check for Opera
               appender.unload();
               logLog.debug('PopUpAppender: pop-up closed');
               return false;
             }
-            if (!consoleWindowLoaded && isLoaded(popUp)) {
+            if(!consoleWindowLoaded && isLoaded(popUp)) {
               consoleWindowLoaded = true;
             }
           }
@@ -5602,10 +5505,10 @@
   //Console extension functions
 
   function padWithSpaces(str, len) {
-    if (str.length < len) {
+    if(str.length < len) {
       let spaces = [];
       let numberOfSpaces = Math.max(0, len - str.length);
-      for (let i = 0; i < numberOfSpaces; i++) {
+      for(let i = 0; i < numberOfSpaces; i++) {
         spaces[i] = ' ';
       }
       str += spaces.join('');
@@ -5617,18 +5520,17 @@
     function dir(obj) {
       let maxLen = 0;
       //Obtain the length of the longest property name
-      for (var p in obj) {
+      for(var p in obj) {
         maxLen = Math.max(toStr(p).length, maxLen);
       }
       //Create the nicely formatted property list
       let propList = [];
-      for (p in obj) {
+      for(p in obj) {
         let propNameStr = '  ' + padWithSpaces(toStr(p), maxLen + 2);
         var propVal;
         try {
           propVal = splitIntoLines(toStr(obj[p])).join(padWithSpaces(newLine, maxLen + 6));
-        }
-        catch (ex) {
+        } catch(ex) {
           propVal = '[Error obtaining property. Details: ' + getExceptionMessage(ex) + ']';
         }
         propList.push(propNameStr + propVal);
@@ -5660,7 +5562,7 @@
     //Create and return an XHTML string from the node specified
     function getXhtml(rootNode, includeRootNode, indentation, startNewLine, preformatted) {
       includeRootNode = typeof includeRootNode == 'undefined' ? true : !!includeRootNode;
-      if (typeof indentation != 'string') {
+      if(typeof indentation != 'string') {
         indentation = '';
       }
       startNewLine = !!startNewLine;
@@ -5678,10 +5580,10 @@
       function getStyleAttributeValue(el) {
         let stylePairs = el.style.cssText.split(';');
         let styleValue = '';
-        for (let j = 0, len = stylePairs.length; j < len; j++) {
+        for(let j = 0, len = stylePairs.length; j < len; j++) {
           let nameValueBits = stylePairs[j].split(':');
           let props = [];
-          if (!/^\s*$/.test(nameValueBits[0])) {
+          if(!/^\s*$/.test(nameValueBits[0])) {
             props.push(trim(nameValueBits[0]).toLowerCase() + ':' + trim(nameValueBits[1]));
           }
           styleValue = props.join(';');
@@ -5690,12 +5592,11 @@
       }
 
       function getNamespace(el) {
-        if (el.prefix) {
+        if(el.prefix) {
           return el.prefix;
-        }
-        else if (el.outerHTML) {
+        } else if(el.outerHTML) {
           let regex = new RegExp('<([^:]+):' + el.tagName + '[^>]*>', 'i');
-          if (regex.test(el.outerHTML)) {
+          if(regex.test(el.outerHTML)) {
             return RegExp.$1.toLowerCase();
           }
         }
@@ -5706,92 +5607,88 @@
       let gt = '>';
       let i, len;
 
-      if (includeRootNode && rootNode.nodeType != nodeTypes.DOCUMENT_FRAGMENT_NODE) {
+      if(includeRootNode && rootNode.nodeType != nodeTypes.DOCUMENT_FRAGMENT_NODE) {
         switch (rootNode.nodeType) {
-        case nodeTypes.ELEMENT_NODE:
-          var tagName = rootNode.tagName.toLowerCase();
-          xhtml = startNewLine ? newLine + indentation : '';
-          xhtml += lt;
-          //Allow for namespaces, where present
-          var prefix = getNamespace(rootNode);
-          var hasPrefix = !!prefix;
-          if (hasPrefix) {
-            xhtml += prefix + ':';
-          }
-          xhtml += tagName;
-          for (i = 0, len = rootNode.attributes.length; i < len; i++) {
-            let currentAttr = rootNode.attributes[i];
-            //Check the attribute is valid.
-            if (!currentAttr.specified || currentAttr.nodeValue === null || currentAttr.nodeName.toLowerCase() === 'style' || typeof currentAttr.nodeValue !== 'string' || currentAttr.nodeName.indexOf('_moz') === 0) {
-              continue;
+          case nodeTypes.ELEMENT_NODE:
+            var tagName = rootNode.tagName.toLowerCase();
+            xhtml = startNewLine ? newLine + indentation : '';
+            xhtml += lt;
+            //Allow for namespaces, where present
+            var prefix = getNamespace(rootNode);
+            var hasPrefix = !!prefix;
+            if(hasPrefix) {
+              xhtml += prefix + ':';
             }
-            xhtml += ' ' + currentAttr.nodeName.toLowerCase() + '="';
-            xhtml += fixAttributeValue(currentAttr.nodeValue);
-            xhtml += '"';
-          }
-          //Style needs to be done separately as it is not reported as an
-          //attribute in IE
-          if (rootNode.style.cssText) {
-            let styleValue = getStyleAttributeValue(rootNode);
-            if (styleValue !== '') {
-              xhtml += ' style="' + getStyleAttributeValue(rootNode) + '"';
-            }
-          }
-          if (array_contains(emptyElements, tagName) || (hasPrefix && !rootNode.hasChildNodes())) {
-            xhtml += '/' + gt;
-          }
-          else {
-            xhtml += gt;
-            //Add output for childNodes collection (which doesn't include attribute nodes)
-            let childStartNewLine = !(rootNode.childNodes.length === 1 && rootNode.childNodes[0].nodeType === nodeTypes.TEXT_NODE);
-            let childPreformatted = array_contains(preFormattedElements, tagName);
-            for (i = 0, len = rootNode.childNodes.length; i < len; i++) {
-              xhtml += getXhtml(rootNode.childNodes[i], true, indentation + indentationUnit, childStartNewLine, childPreformatted);
-            }
-            //Add the end tag
-            let endTag = lt + '/' + tagName + gt;
-            xhtml += childStartNewLine ? newLine + indentation + endTag : endTag;
-          }
-          return xhtml;
-        case nodeTypes.TEXT_NODE:
-          if (isWhitespace(rootNode)) {
-            xhtml = '';
-          }
-          else {
-            if (preformatted) {
-              xhtml = rootNode.nodeValue;
-            }
-            else {
-              //Trim whitespace from each line of the text node
-              let lines = splitIntoLines(trim(rootNode.nodeValue));
-              let trimmedLines = [];
-              for (i = 0, len = lines.length; i < len; i++) {
-                trimmedLines[i] = trim(lines[i]);
+            xhtml += tagName;
+            for(i = 0, len = rootNode.attributes.length; i < len; i++) {
+              let currentAttr = rootNode.attributes[i];
+              //Check the attribute is valid.
+              if(!currentAttr.specified || currentAttr.nodeValue === null || currentAttr.nodeName.toLowerCase() === 'style' || typeof currentAttr.nodeValue !== 'string' || currentAttr.nodeName.indexOf('_moz') === 0) {
+                continue;
               }
-              xhtml = trimmedLines.join(newLine + indentation);
+              xhtml += ' ' + currentAttr.nodeName.toLowerCase() + '="';
+              xhtml += fixAttributeValue(currentAttr.nodeValue);
+              xhtml += '"';
             }
-            if (startNewLine) {
-              xhtml = newLine + indentation + xhtml;
+            //Style needs to be done separately as it is not reported as an
+            //attribute in IE
+            if(rootNode.style.cssText) {
+              let styleValue = getStyleAttributeValue(rootNode);
+              if(styleValue !== '') {
+                xhtml += ' style="' + getStyleAttributeValue(rootNode) + '"';
+              }
             }
-          }
-          return xhtml;
-        case nodeTypes.CDATA_SECTION_NODE:
-          return '<![CDA' + 'TA[' + rootNode.nodeValue + ']' + ']>' + newLine;
-        case nodeTypes.DOCUMENT_NODE:
-          xhtml = '';
-          //Add output for childNodes collection (which doesn't include attribute nodes)
-          for (i = 0, len = rootNode.childNodes.length; i < len; i++) {
-            xhtml += getXhtml(rootNode.childNodes[i], true, indentation);
-          }
-          return xhtml;
-        default:
-          return '';
+            if(array_contains(emptyElements, tagName) || (hasPrefix && !rootNode.hasChildNodes())) {
+              xhtml += '/' + gt;
+            } else {
+              xhtml += gt;
+              //Add output for childNodes collection (which doesn't include attribute nodes)
+              let childStartNewLine = !(rootNode.childNodes.length === 1 && rootNode.childNodes[0].nodeType === nodeTypes.TEXT_NODE);
+              let childPreformatted = array_contains(preFormattedElements, tagName);
+              for(i = 0, len = rootNode.childNodes.length; i < len; i++) {
+                xhtml += getXhtml(rootNode.childNodes[i], true, indentation + indentationUnit, childStartNewLine, childPreformatted);
+              }
+              //Add the end tag
+              let endTag = lt + '/' + tagName + gt;
+              xhtml += childStartNewLine ? newLine + indentation + endTag : endTag;
+            }
+            return xhtml;
+          case nodeTypes.TEXT_NODE:
+            if(isWhitespace(rootNode)) {
+              xhtml = '';
+            } else {
+              if(preformatted) {
+                xhtml = rootNode.nodeValue;
+              } else {
+                //Trim whitespace from each line of the text node
+                let lines = splitIntoLines(trim(rootNode.nodeValue));
+                let trimmedLines = [];
+                for(i = 0, len = lines.length; i < len; i++) {
+                  trimmedLines[i] = trim(lines[i]);
+                }
+                xhtml = trimmedLines.join(newLine + indentation);
+              }
+              if(startNewLine) {
+                xhtml = newLine + indentation + xhtml;
+              }
+            }
+            return xhtml;
+          case nodeTypes.CDATA_SECTION_NODE:
+            return '<![CDA' + 'TA[' + rootNode.nodeValue + ']' + ']>' + newLine;
+          case nodeTypes.DOCUMENT_NODE:
+            xhtml = '';
+            //Add output for childNodes collection (which doesn't include attribute nodes)
+            for(i = 0, len = rootNode.childNodes.length; i < len; i++) {
+              xhtml += getXhtml(rootNode.childNodes[i], true, indentation);
+            }
+            return xhtml;
+          default:
+            return '';
         }
-      }
-      else {
+      } else {
         xhtml = '';
         //Add output for childNodes collection (which doesn't include attribute nodes)
-        for (i = 0, len = rootNode.childNodes.length; i < len; i++) {
+        for(i = 0, len = rootNode.childNodes.length; i < len; i++) {
           xhtml += getXhtml(rootNode.childNodes[i], true, indentation + indentationUnit);
         }
         return xhtml;
@@ -5803,7 +5700,7 @@
 
       ConsoleAppender.addGlobalCommandLineFunction('dir', (appender, args, returnValue) => {
         let lines = [];
-        for (let i = 0, len = args.length; i < len; i++) {
+        for(let i = 0, len = args.length; i < len; i++) {
           lines[i] = dir(args[i]);
         }
         return lines.join(newLine + newLine);
@@ -5811,7 +5708,7 @@
 
       ConsoleAppender.addGlobalCommandLineFunction('dirxml', (appender, args, returnValue) => {
         let lines = [];
-        for (let i = 0, len = args.length; i < len; i++) {
+        for(let i = 0, len = args.length; i < len; i++) {
           lines[i] = getXhtml(args[i]);
         }
         return lines.join(newLine + newLine);
@@ -5819,20 +5716,17 @@
 
       ConsoleAppender.addGlobalCommandLineFunction('cd', (appender, args, returnValue) => {
         let win, message;
-        if (args.length === 0 || args[0] === '') {
+        if(args.length === 0 || args[0] === '') {
           win = window;
           message = 'Command line set to run in main window';
-        }
-        else if (args[0].window == args[0]) {
+        } else if(args[0].window == args[0]) {
           win = args[0];
           message = "Command line set to run in frame '" + args[0].name + "'";
-        }
-        else {
+        } else {
           win = window.frames[args[0]];
-          if (win) {
+          if(win) {
             message = "Command line set to run in frame '" + args[0] + "'";
-          }
-          else {
+          } else {
             returnValue.isError = true;
             message = "Frame '" + args[0] + "' does not exist";
             win = appender.getCommandWindow();
@@ -5849,7 +5743,7 @@
 
       ConsoleAppender.addGlobalCommandLineFunction('keys', (appender, args, returnValue) => {
         let keys = [];
-        for (let k in args[0]) {
+        for(let k in args[0]) {
           keys.push(k);
         }
         return keys;
@@ -5857,11 +5751,10 @@
 
       ConsoleAppender.addGlobalCommandLineFunction('values', (appender, args, returnValue) => {
         let values = [];
-        for (let k in args[0]) {
+        for(let k in args[0]) {
           try {
             values.push(args[0][k]);
-          }
-          catch (ex) {
+          } catch(ex) {
             logLog.warn('values(): Unable to obtain value for key ' + k + '. Details: ' + getExceptionMessage(ex));
           }
         }
@@ -5870,14 +5763,13 @@
 
       ConsoleAppender.addGlobalCommandLineFunction('expansionDepth', (appender, args, returnValue) => {
         let expansionDepth = parseInt(args[0], 10);
-        if (isNaN(expansionDepth) || expansionDepth < 0) {
+        if(isNaN(expansionDepth) || expansionDepth < 0) {
           returnValue.isError = true;
           return '' + args[0] + ' is not a valid expansion depth';
         }
- 
+
         appender.setCommandLineObjectExpansionDepth(expansionDepth);
         return 'Object expansion depth set to ' + expansionDepth;
-        
       });
     }
 
@@ -5908,20 +5800,17 @@
     log4javascript.dispatchEvent('load', {});
   };
 
-  if (window.addEventListener) {
+  if(window.addEventListener) {
     window.addEventListener('load', log4javascript.setDocumentReady, false);
-  }
-  else if (window.attachEvent) {
+  } else if(window.attachEvent) {
     window.attachEvent('onload', log4javascript.setDocumentReady);
-  }
-  else {
+  } else {
     let oldOnload = window.onload;
-    if (typeof window.onload != 'function') {
+    if(typeof window.onload != 'function') {
       window.onload = log4javascript.setDocumentReady;
-    }
-    else {
+    } else {
       window.onload = function (evt) {
-        if (oldOnload) {
+        if(oldOnload) {
           oldOnload(evt);
         }
         log4javascript.setDocumentReady();

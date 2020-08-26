@@ -8,37 +8,37 @@ export default function toSource(object, replacer = (a) => a, indent = '  ', sta
     object = replacer ? replacer(object) : object;
 
     switch (typeof object) {
-    case 'string':
-      return JSON.stringify(object);
-    case 'number':
-      if (object === -0) {
-        return '-0';
-      }
-      return String(object);
-    case 'boolean':
-    case 'undefined':
-      return String(object);
-    case 'function':
-      return object.toString();
+      case 'string':
+        return JSON.stringify(object);
+      case 'number':
+        if(object === -0) {
+          return '-0';
+        }
+        return String(object);
+      case 'boolean':
+      case 'undefined':
+        return String(object);
+      case 'function':
+        return object.toString();
     }
 
-    if (object === null) {
+    if(object === null) {
       return 'null';
     }
-    if (object instanceof RegExp) {
+    if(object instanceof RegExp) {
       return object.toString();
     }
-    if (object instanceof Date) {
+    if(object instanceof Date) {
       return `new Date(${object.getTime()})`;
     }
-    if (object instanceof Set) {
+    if(object instanceof Set) {
       return `new Set(${walk(Array.from(object.values()), replacer, indent, nextIndent, seen)})`;
     }
-    if (object instanceof Map) {
+    if(object instanceof Map) {
       return `new Map(${walk(Array.from(object.entries()), replacer, indent, nextIndent, seen)})`;
     }
 
-    if (seen.indexOf(object) >= 0) {
+    if(seen.indexOf(object) >= 0) {
       return '{$circularReference:1}';
     }
     seen.push(object);
@@ -47,11 +47,11 @@ export default function toSource(object, replacer = (a) => a, indent = '  ', sta
       return indent.slice(1) + elements.join(',' + (indent && '\n') + nextIndent) + (indent ? ' ' : '');
     }
 
-    if (Array.isArray(object)) {
+    if(Array.isArray(object)) {
       return `[${join(object.map((element) => walk(element, replacer, indent, nextIndent, seen.slice())))}]`;
     }
     const keys = Object.keys(object);
-    if (keys.length) {
+    if(keys.length) {
       return `{${join(keys.map((key) => (legalKey(key) ? key : JSON.stringify(key)) + ':' + walk(object[key], replacer, indent, nextIndent, seen.slice())))}}`;
     }
     return '{}';

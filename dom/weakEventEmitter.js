@@ -20,14 +20,14 @@ function Events() {}
 //character to make sure that the built-in object properties are not
 //overridden or used as an attack vector.
 //
-if (Object.create) {
+if(Object.create) {
   Events.prototype = Object.create(null);
 
   //
   //This hack is needed because the `__proto__` property is still inherited in
   //some old browsers like Android 4, iPhone 5.1, Opera 11 and Safari 5.
   //
-  if (!new Events().__proto__) prefix = false;
+  if(!new Events().__proto__) prefix = false;
 }
 
 /**
@@ -57,7 +57,7 @@ function EE(fn, context, once) {
  * @private
  */
 function addListener(emitter, event, fn, context, once) {
-  if (typeof fn !== 'function') {
+  if(typeof fn !== 'function') {
     throw new TypeError('The listener must be a function');
   }
 
@@ -65,8 +65,8 @@ function addListener(emitter, event, fn, context, once) {
     evt = prefix ? prefix + event : event;
 
   let _events = emitter._weakMap.get(emitter);
-  if (!_events[evt]) (_events[evt] = listener), emitter._eventsCount++;
-  else if (!_events[evt].fn) _events[evt].push(listener);
+  if(!_events[evt]) (_events[evt] = listener), emitter._eventsCount++;
+  else if(!_events[evt].fn) _events[evt].push(listener);
   else _events[evt] = [_events[evt], listener];
 
   return emitter;
@@ -80,10 +80,9 @@ function addListener(emitter, event, fn, context, once) {
  * @private
  */
 function clearEvent(emitter, evt) {
-  if (--emitter._eventsCount === 0) {
+  if(--emitter._eventsCount === 0) {
     emitter._weakMap.set(emitter, new Events());
-  }
-  else {
+  } else {
     let _events = emitter._weakMap.get(emitter);
     delete _events[evt];
   }
@@ -115,14 +114,14 @@ WeakEventEmitter.prototype.eventNames = function eventNames() {
     events,
     name;
 
-  if (this._eventsCount === 0) return names;
+  if(this._eventsCount === 0) return names;
 
   let _events = this._weakMap.get(this);
-  for (name in (events = _events)) {
-    if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
+  for(name in (events = _events)) {
+    if(has.call(events, name)) names.push(prefix ? name.slice(1) : name);
   }
 
-  if (Object.getOwnPropertySymbols) {
+  if(Object.getOwnPropertySymbols) {
     return names.concat(Object.getOwnPropertySymbols(events));
   }
 
@@ -142,10 +141,10 @@ WeakEventEmitter.prototype.listeners = function listeners(event) {
   let evt = prefix ? prefix + event : event,
     handlers = _events[evt];
 
-  if (!handlers) return [];
-  if (handlers.fn) return [handlers.fn];
+  if(!handlers) return [];
+  if(handlers.fn) return [handlers.fn];
 
-  for (var i = 0, l = handlers.length, ee = new Array(l); i < l; i++) {
+  for(var i = 0, l = handlers.length, ee = new Array(l); i < l; i++) {
     ee[i] = handlers[i].fn;
   }
 
@@ -165,8 +164,8 @@ WeakEventEmitter.prototype.listenerCount = function listenerCount(event) {
   let evt = prefix ? prefix + event : event,
     listeners = _events[evt];
 
-  if (!listeners) return 0;
-  if (listeners.fn) return 1;
+  if(!listeners) return 0;
+  if(listeners.fn) return 1;
   return listeners.length;
 };
 
@@ -181,64 +180,63 @@ WeakEventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
   let evt = prefix ? prefix + event : event;
 
   let _events = this._weakMap.get(this);
-  if (!_events[evt]) return false;
+  if(!_events[evt]) return false;
 
   let listeners = _events[evt],
     len = arguments.length,
     args,
     i;
 
-  if (listeners.fn) {
-    if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
+  if(listeners.fn) {
+    if(listeners.once) this.removeListener(event, listeners.fn, undefined, true);
 
     switch (len) {
-    case 1:
-      return listeners.fn.call(listeners.context), true;
-    case 2:
-      return listeners.fn.call(listeners.context, a1), true;
-    case 3:
-      return listeners.fn.call(listeners.context, a1, a2), true;
-    case 4:
-      return listeners.fn.call(listeners.context, a1, a2, a3), true;
-    case 5:
-      return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
-    case 6:
-      return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
+      case 1:
+        return listeners.fn.call(listeners.context), true;
+      case 2:
+        return listeners.fn.call(listeners.context, a1), true;
+      case 3:
+        return listeners.fn.call(listeners.context, a1, a2), true;
+      case 4:
+        return listeners.fn.call(listeners.context, a1, a2, a3), true;
+      case 5:
+        return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
+      case 6:
+        return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
     }
 
-    for (i = 1, args = new Array(len - 1); i < len; i++) {
+    for(i = 1, args = new Array(len - 1); i < len; i++) {
       args[i - 1] = arguments[i];
     }
 
     listeners.fn.apply(listeners.context, args);
-  }
-  else {
+  } else {
     let length = listeners.length,
       j;
 
-    for (i = 0; i < length; i++) {
-      if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
+    for(i = 0; i < length; i++) {
+      if(listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
 
       switch (len) {
-      case 1:
-        listeners[i].fn.call(listeners[i].context);
-        break;
-      case 2:
-        listeners[i].fn.call(listeners[i].context, a1);
-        break;
-      case 3:
-        listeners[i].fn.call(listeners[i].context, a1, a2);
-        break;
-      case 4:
-        listeners[i].fn.call(listeners[i].context, a1, a2, a3);
-        break;
-      default:
-        if (!args)
-          for (j = 1, args = new Array(len - 1); j < len; j++) {
-            args[j - 1] = arguments[j];
-          }
+        case 1:
+          listeners[i].fn.call(listeners[i].context);
+          break;
+        case 2:
+          listeners[i].fn.call(listeners[i].context, a1);
+          break;
+        case 3:
+          listeners[i].fn.call(listeners[i].context, a1, a2);
+          break;
+        case 4:
+          listeners[i].fn.call(listeners[i].context, a1, a2, a3);
+          break;
+        default:
+          if(!args)
+            for(j = 1, args = new Array(len - 1); j < len; j++) {
+              args[j - 1] = arguments[j];
+            }
 
-        listeners[i].fn.apply(listeners[i].context, args);
+          listeners[i].fn.apply(listeners[i].context, args);
       }
     }
   }
@@ -286,22 +284,21 @@ WeakEventEmitter.prototype.removeListener = function removeListener(event, fn, c
   let evt = prefix ? prefix + event : event;
 
   var _events = this._weakMap.get(this);
-  if (!_events[evt]) return this;
-  if (!fn) {
+  if(!_events[evt]) return this;
+  if(!fn) {
     clearEvent(this, evt);
     return this;
   }
 
   let listeners = _events[evt];
 
-  if (listeners.fn) {
-    if (listeners.fn === fn && (!once || listeners.once) && (!context || listeners.context === context)) {
+  if(listeners.fn) {
+    if(listeners.fn === fn && (!once || listeners.once) && (!context || listeners.context === context)) {
       clearEvent(this, evt);
     }
-  }
-  else {
-    for (var i = 0, events = [], length = listeners.length; i < length; i++) {
-      if (listeners[i].fn !== fn || (once && !listeners[i].once) || (context && listeners[i].context !== context)) {
+  } else {
+    for(var i = 0, events = [], length = listeners.length; i < length; i++) {
+      if(listeners[i].fn !== fn || (once && !listeners[i].once) || (context && listeners[i].context !== context)) {
         events.push(listeners[i]);
       }
     }
@@ -310,7 +307,7 @@ WeakEventEmitter.prototype.removeListener = function removeListener(event, fn, c
     //Reset the array, or remove it completely if we have no more listeners.
     //
     var _events = this._weakMap.get(this);
-    if (events.length) _events[evt] = events.length === 1 ? events[0] : events;
+    if(events.length) _events[evt] = events.length === 1 ? events[0] : events;
     else clearEvent(this, evt);
   }
 
@@ -327,12 +324,11 @@ WeakEventEmitter.prototype.removeListener = function removeListener(event, fn, c
 WeakEventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
   let evt;
 
-  if (event) {
+  if(event) {
     evt = prefix ? prefix + event : event;
     let _events = this._weakMap.get(this);
-    if (_events[evt]) clearEvent(this, evt);
-  }
-  else {
+    if(_events[evt]) clearEvent(this, evt);
+  } else {
     this._weakMap.set(this, new Events());
     this._eventsCount = 0;
   }
@@ -359,6 +355,6 @@ WeakEventEmitter.WeakEventEmitter = WeakEventEmitter;
 //
 //Expose the module.
 //
-if ('undefined' !== typeof module) {
+if('undefined' !== typeof module) {
   module.exports = WeakEventEmitter;
 }

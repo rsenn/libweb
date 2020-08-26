@@ -46,7 +46,7 @@ let rectoverlap = function (a, b) {
  *
  */
 export function Autoplacer(opts) {
-  if (opts) {
+  if(opts) {
     this.init(opts);
   }
 }
@@ -60,7 +60,7 @@ Autoplacer.prototype.init = function (opts) {
     p,
     r;
 
-  for (i = 0; i < len; i++) {
+  for(i = 0; i < len; i++) {
     r = b[i] = b[i].slice(0);
     var p = rectmid(b[i]);
     s[i] = {
@@ -89,7 +89,7 @@ Autoplacer.prototype.init = function (opts) {
  *
  */
 Autoplacer.prototype.next = function () {
-  if (this.count_ > 0 && !this.cond()) {
+  if(this.count_ > 0 && !this.cond()) {
     return null;
   }
   this.count_++;
@@ -116,7 +116,7 @@ Autoplacer.prototype.next = function () {
     f = [],
     d = [];
 
-  for (i = 0; i < total; i++) {
+  for(i = 0; i < total; i++) {
     b = bb[i];
     s = ss[i];
     vel = s.vel;
@@ -135,8 +135,8 @@ Autoplacer.prototype.next = function () {
 
     //repulsion force calculation
 
-    for (j = 0; j < total; j++) {
-      if (i === j) continue;
+    for(j = 0; j < total; j++) {
+      if(i === j) continue;
       bj = bb[j];
       sj = ss[j];
       rj[0] = sj.prev[0];
@@ -190,7 +190,7 @@ Autoplacer.prototype.cond = function () {
 Autoplacer.prototype.loop = function () {
   do {
     this.next();
-  } while (this.cond());
+  } while(this.cond());
   return this.bodies;
 };
 
@@ -201,7 +201,7 @@ Autoplacer.prototype.animate = function (animator, interval) {
   recur = function () {
     me.next();
     animator(me.bodies);
-    if (me.cond()) {
+    if(me.cond()) {
       setTimeout(recur, interval);
     }
   };

@@ -26,10 +26,10 @@ export class SourceMap {
     constructor(sm, opts, filesystem = {}) {
       opts = opts || {};
 
-      if (opts.isFileComment) sm = readFromFileMap(sm, opts.commentFileDir, filesystem);
-      if (opts.hasComment) sm = stripComment(sm);
-      if (opts.isEncoded) sm = decodeBase64(sm);
-      if (opts.isJSON || opts.isEncoded) sm = JSON.parse(sm);
+      if(opts.isFileComment) sm = readFromFileMap(sm, opts.commentFileDir, filesystem);
+      if(opts.hasComment) sm = stripComment(sm);
+      if(opts.isEncoded) sm = decodeBase64(sm);
+      if(opts.isJSON || opts.isEncoded) sm = JSON.parse(sm);
 
       this.sourcemap = sm;
     }
@@ -55,7 +55,7 @@ export class SourceMap {
     }
 
     addProperty(key, value) {
-      if (this.sourcemap.hasOwnProperty(key)) throw new Error('property "' + key + '" already exists on the sourcemap, use set property instead');
+      if(this.sourcemap.hasOwnProperty(key)) throw new Error('property "' + key + '" already exists on the sourcemap, use set property instead');
       return this.setProperty(key, value);
     }
 
@@ -121,8 +121,7 @@ function readFromFileMap(sm, dir, filesystem) {
 
   try {
     return filesystem.readFile(filepath, 'utf8');
-  }
-  catch (e) {
+  } catch(e) {
     throw new Error('An error occurred while trying to read the map file at ' + filepath + '\n' + e);
   }
 }

@@ -51,90 +51,90 @@ export class BoardRenderer extends EagleSVGRenderer {
     //console.log('renderItem', { name, value });
 
     switch (item.tagName) {
-    case 'via':
-    case 'pad': {
-      const { name, drill, diameter, shape } = item;
-      const { x, y } = coordFn(item);
+      case 'via':
+      case 'pad': {
+        const { name, drill, diameter, shape } = item;
+        const { x, y } = coordFn(item);
 
-      const ro = +((diameter || 1.5) / 2.54).toFixed(3);
-      const ri = +(drill / 3).toFixed(3);
-      let data = '';
-      const transform = `translate(${x},${y})`;
-      const layer = this.layers.Pads;
+        const ro = +((diameter || 1.5) / 2.54).toFixed(3);
+        const ri = +(drill / 3).toFixed(3);
+        let data = '';
+        const transform = `translate(${x},${y})`;
+        const layer = this.layers.Pads;
 
-      //  console.log('item:', item);
-      const padColor = item.getColor() || this.palette[2];
+        //  console.log('item:', item);
+        const padColor = item.getColor() || this.palette[2];
 
-      switch (shape) {
-      case 'long': {
-        const w = ro * 0.75;
-        data = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${-w * 2} 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
-        break;
-      }
-      case 'square': {
-        const points = [new Point(-1, -1), new Point(1, -1), new Point(1, 1), new Point(-1, 1)].map((p) => p.prod(ro * 1.27));
+        switch (shape) {
+          case 'long': {
+            const w = ro * 0.75;
+            data = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${-w * 2} 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
+            break;
+          }
+          case 'square': {
+            const points = [new Point(-1, -1), new Point(1, -1), new Point(1, 1), new Point(-1, 1)].map((p) => p.prod(ro * 1.27));
 
-        data = points.map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+            data = points.map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
 
-        break;
-      }
-      case 'octagon': {
-        const points = Util.range(0, 7).map((i) => Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.4));
+            break;
+          }
+          case 'octagon': {
+            const points = Util.range(0, 7).map((i) => Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.4));
 
-        data = points.map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+            data = points.map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+            break;
+          }
+          default: {
+            data = `M 0 ${-ro} A ${ro} ${ro} 0 0 1 0 ${ro} A ${ro} ${ro} 0 0 1 0 ${-ro}`;
+            break;
+          }
+        }
+
+        svg(
+          'path',
+          {
+            fill: padColor,
+            d: data + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
+            transform
+          },
+          parent
+        );
+
+        this.debug('name:', name);
+        if(name) {
+          svg(
+            'tspan',
+            {
+              children: name,
+              ...EagleSVGRenderer.alignmentAttrs('center', HORIZONTAL)
+            },
+            svg(
+              'text',
+              {
+                fill: 'hsla(180,100%,60%,0.5)',
+                stroke: 'none',
+                //                'stroke-width': 0.01,
+                x: 0.04,
+                y: -0.04,
+                ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
+                //     filter: 'url(#shadow)',
+                ...EagleSVGRenderer.alignmentAttrs('center', VERTICAL),
+                'font-size': 0.6,
+                'font-style': 'bold',
+                // 'font-family': 'Fixed Medium',
+                transform: `${transform} ${RotateTransformation(opts.rot, -1)} scale(1,-1)`
+              },
+              parent
+            )
+          );
+        }
         break;
       }
       default: {
-        data = `M 0 ${-ro} A ${ro} ${ro} 0 0 1 0 ${ro} A ${ro} ${ro} 0 0 1 0 ${-ro}`;
+        //       console.log('boardRenderer other renderItem', { item, parent, transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1) });
+        super.renderItem(item, parent, { ...opts, color });
         break;
       }
-      }
-
-      svg(
-        'path',
-        {
-          fill: padColor,
-          d: data + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
-          transform
-        },
-        parent
-      );
-
-      this.debug('name:', name);
-      if (name) {
-        svg(
-          'tspan',
-          {
-            children: name,
-            ...EagleSVGRenderer.alignmentAttrs('center', HORIZONTAL)
-          },
-          svg(
-            'text',
-            {
-              fill: 'hsla(180,100%,60%,0.5)',
-              stroke: 'none',
-              //                'stroke-width': 0.01,
-              x: 0.04,
-              y: -0.04,
-              ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
-              //     filter: 'url(#shadow)',
-              ...EagleSVGRenderer.alignmentAttrs('center', VERTICAL),
-              'font-size': 0.6,
-              'font-style': 'bold',
-              // 'font-family': 'Fixed Medium',
-              transform: `${transform} ${RotateTransformation(opts.rot, -1)} scale(1,-1)`
-            },
-            parent
-          )
-        );
-      }
-      break;
-    }
-    default: {
-      //       console.log('boardRenderer other renderItem', { item, parent, transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1) });
-      super.renderItem(item, parent, { ...opts, color });
-      break;
-    }
     }
   }
 
@@ -151,34 +151,33 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     const { tPlace } = this.layers;
 
-    for (let item of coll) {
-      if (item.tagName === 'wire') {
+    for(let item of coll) {
+      if(item.tagName === 'wire') {
         const layerId = item.attributes.layer || tPlace.number;
         layers[layerId] = item.layer || tPlace;
 
-        if (item.layer) item.layer.elements.add(item);
+        if(item.layer) item.layer.elements.add(item);
 
-        if ('width' in item) widths[layerId] = item.width;
-        if (wireMap.has(layerId)) wireMap.get(layerId).push(item);
+        if('width' in item) widths[layerId] = item.width;
+        if(wireMap.has(layerId)) wireMap.get(layerId).push(item);
         else wireMap.set(layerId, [item]);
-      }
-      else {
+      } else {
         other.push(item);
       }
     }
 
-    for (let item of other) if (predicate(item) && item.tagName == 'pad') this.renderItem(item, parent, { ...opts });
+    for(let item of other) if(predicate(item) && item.tagName == 'pad') this.renderItem(item, parent, { ...opts });
 
-    for (let item of other) if (predicate(item) && item.tagName != 'pad') this.renderItem(item, parent, { ...opts });
+    for(let item of other) if(predicate(item) && item.tagName != 'pad') this.renderItem(item, parent, { ...opts });
 
-    for (let [layerId, wires] of wireMap) {
+    for(let [layerId, wires] of wireMap) {
       let classList = (parent && parent.classList) || [];
-      if ([...classList].indexOf('plain') != -1) continue;
+      if([...classList].indexOf('plain') != -1) continue;
 
       const lines = wires.map((wire) => {
         let line = new Line(coordFn(wire));
         line.element = wire;
-        if ('curve' in wire) line.curve = wire.curve;
+        if('curve' in wire) line.curve = wire.curve;
         return line;
       });
 
@@ -206,7 +205,6 @@ export class BoardRenderer extends EagleSVGRenderer {
       //this.debug('color:', color, layer.color);
 
       const WirePath = ({ path, color, width, layer }) => {
-
         /*let [visible, setVisible] = useState(layer.isVisible());
 
         useEffect(() => {
@@ -286,7 +284,6 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   render(doc = this.doc, parent, props = {}) {
-
     /*if(!this.bounds)
     this.bounds = doc.getBounds();*/
     parent = super.render(doc, parent, props);
@@ -298,19 +295,19 @@ export class BoardRenderer extends EagleSVGRenderer {
     let signalsGroup = this.create('g', { className: 'signals', strokeLinecap: 'round', transform }, parent);
     let elementsGroup = this.create('g', { className: 'elements', transform }, parent);
     this.debug('bounds: ', bounds);
-    for (let signal of this.signals.list)
+    for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {
         predicate: (i) => i.attributes.layer == '16'
       });
-    for (let signal of this.signals.list)
+    for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {
         predicate: (i) => i.attributes.layer == '1'
       });
-    for (let signal of this.signals.list)
+    for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {
         predicate: (i) => i.attributes.layer === undefined
       });
-    for (let element of this.elements.list) this.renderElement(element, elementsGroup);
+    for(let element of this.elements.list) this.renderElement(element, elementsGroup);
     let plain = [...this.doc.plain];
     this.renderCollection(plain, plainGroup);
     this.bounds = bounds;

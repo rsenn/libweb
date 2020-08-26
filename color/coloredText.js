@@ -22,22 +22,21 @@ export class ColoredText extends Array {
 
     const { FG, BG, NC } = ColoredText;
 
-    for (let arg of args) {
-      if (arg === NC) {
+    for(let arg of args) {
+      if(arg === NC) {
         this.current[FG] = null;
         this.current[BG] = null;
-      }
-      else if (Util.isObject(arg)) {
-        if (arg[FG] !== undefined) this.current[FG] = arg[FG] || null;
-        if (arg[BG] !== undefined) this.current[BG] = arg[BG] || null;
+      } else if(Util.isObject(arg)) {
+        if(arg[FG] !== undefined) this.current[FG] = arg[FG] || null;
+        if(arg[BG] !== undefined) this.current[BG] = arg[BG] || null;
       }
       this.push(arg);
     }
   }
 
   write(text, fg, bg) {
-    if (fg) this.setForeground(fg);
-    if (bg) this.setBackground(bg);
+    if(fg) this.setForeground(fg);
+    if(bg) this.setBackground(bg);
     this.push(text);
   }
 
@@ -46,16 +45,16 @@ export class ColoredText extends Array {
   }
 
   setForeground(color) {
-    if (color instanceof Array) color = new RGBA(...color);
+    if(color instanceof Array) color = new RGBA(...color);
     const last = this[this.length - 1];
-    if (Util.isObject(last)) last[FOREGROUND] = color;
+    if(Util.isObject(last)) last[FOREGROUND] = color;
     else this.push({ [FOREGROUND]: color });
   }
 
   setBackground(color) {
-    if (color instanceof Array) color = new RGBA(...color);
+    if(color instanceof Array) color = new RGBA(...color);
     const last = this[this.length - 1];
-    if (Util.isObject(last)) last[BACKGROUND] = color;
+    if(Util.isObject(last)) last[BACKGROUND] = color;
     else this.push({ [BACKGROUND]: color });
   }
 
@@ -75,7 +74,7 @@ export class ColoredText extends Array {
   }
 
   push(...args) {
-    for (let arg of args) Array.prototype.push.call(this, arg);
+    for(let arg of args) Array.prototype.push.call(this, arg);
     return this;
   }
 
@@ -94,13 +93,13 @@ export class ColoredText extends Array {
     let o = {};
     const { FG, BG } = ColoredText;
 
-    if (this.getForeground() !== fg) current[FG] = o[FG] = fg;
+    if(this.getForeground() !== fg) current[FG] = o[FG] = fg;
     else fg = null;
 
-    if (this.getBackground() !== bg) current[BG] = o[BG] = bg;
+    if(this.getBackground() !== bg) current[BG] = o[BG] = bg;
     else bg = null;
 
-    if (fg || bg) this.push(o);
+    if(fg || bg) this.push(o);
   }
 
   clearColors() {
@@ -125,7 +124,7 @@ export class ColoredText extends Array {
   toString(color = true) {
     let a = this;
 
-    if (!color || Util.isBrowser()) a = a.stripColors();
+    if(!color || Util.isBrowser()) a = a.stripColors();
 
     a = Util.isBrowser() ? a : a.toAnsi256();
     return a.join('');
@@ -144,36 +143,34 @@ export class ColoredText extends Array {
     let a = [];
     let t = '';
     let state = { [FG]: null, [BG]: null };
-    for (let p of this) {
-      if (p === NC) {
+    for(let p of this) {
+      if(p === NC) {
         t += '%c';
         a.push('color:none; background-color: none;');
         state[FG] = null;
         state[BG] = null;
-      }
-      else if (Util.isObject(p)) {
+      } else if(Util.isObject(p)) {
         const fg = p[FG];
         const bg = p[BG];
         let css = [];
-        if (fg || bg) {
+        if(fg || bg) {
           t += '%c';
-          if (fg) {
+          if(fg) {
             css.push(`color:${fg.toString()};`);
             state[FG] = fg;
           }
-          if (bg) {
+          if(bg) {
             css.push(`background-color:${bg.toString()};`);
             state[BG] = bg;
           }
         }
-        if (css.length) a.push(css.join(' '));
-      }
-      else {
+        if(css.length) a.push(css.join(' '));
+      } else {
         t += p;
       }
     }
     a.unshift(t);
-    if (state[FG] !== null || state[BG] !== null) {
+    if(state[FG] !== null || state[BG] !== null) {
       this.push(NC);
       return this.toConsole();
     }
@@ -182,26 +179,26 @@ export class ColoredText extends Array {
         let s = '',
           v = [],
           i = 0;
-        for (let a of args) {
-          if (i == 0 || /%c/.test(a)) s += a;
+        for(let a of args) {
+          if(i == 0 || /%c/.test(a)) s += a;
           else v.push(a);
           i++;
         }
         this[0] += ' ' + s;
-        if (v.length) Array.prototype.splice.call(this, this.length, 0, ...v);
+        if(v.length) Array.prototype.splice.call(this, this.length, 0, ...v);
         return this;
       },
       prepend(...args) {
         let s = '',
           v = [],
           i = 0;
-        for (let a of args) {
-          if (i == 0 || /%c/.test(a)) s += a;
+        for(let a of args) {
+          if(i == 0 || /%c/.test(a)) s += a;
           else v.push(a);
           i++;
         }
         this[0] = s + this[0];
-        if (v.length) Array.prototype.splice.call(this, 1, 0, ...v);
+        if(v.length) Array.prototype.splice.call(this, 1, 0, ...v);
         return this;
       },
       [INSPECT]() {
@@ -220,34 +217,32 @@ export class ColoredText extends Array {
     let a = [];
     let state = { [FG]: null, [BG]: null };
 
-    for (let p of this) {
-      if (p === NC) {
+    for(let p of this) {
+      if(p === NC) {
         state[FG] = null;
         state[BG] = null;
-      }
-      else if (Util.isObject(p)) {
-        if (p[FG] !== undefined) state[FG] = p[FG];
-        if (p[BG] !== undefined) state[BG] = p[BG];
+      } else if(Util.isObject(p)) {
+        if(p[FG] !== undefined) state[FG] = p[FG];
+        if(p[BG] !== undefined) state[BG] = p[BG];
       }
       a.push(partToStr(p));
     }
 
-    if (state[FG] !== null || state[BG] !== null) {
+    if(state[FG] !== null || state[BG] !== null) {
       this.push(NC);
       //  console.log("this:",[...this].map(partToStr).join("").split("\x1b"));
       return this.toAnsi256();
     }
     Object.assign(a, {
       append(...args) {
-        for (let other of args) {
-          if (Util.isArray(other)) {
+        for(let other of args) {
+          if(Util.isArray(other)) {
             let i = 0;
-            for (let arg of other) {
+            for(let arg of other) {
               this.push(arg);
               ++i;
             }
-          }
-          else {
+          } else {
             this.push(other);
           }
         }
@@ -258,7 +253,7 @@ export class ColoredText extends Array {
       },
       [TO_STRING]() {
         let s = '';
-        for (let p of [...this]) s += partToStr(p);
+        for(let p of [...this]) s += partToStr(p);
         return s + `\x1b[0m`;
       },
       toConsole(c = console) {
@@ -268,14 +263,12 @@ export class ColoredText extends Array {
 
     function partToStr(p) {
       let s = '';
-      if (typeof p == 'symbol' || p === NC) {
+      if(typeof p == 'symbol' || p === NC) {
         s += `\x1b[0m`;
-      }
-      else if (Util.isObject(p)) {
-        if (Util.isObject(p[FG]) && p[FG].toAnsi256) s += p[FG].toAnsi256(false);
-        if (Util.isObject(p[BG]) && p[BG].toAnsi256) s += p[BG].toAnsi256(true);
-      }
-      else {
+      } else if(Util.isObject(p)) {
+        if(Util.isObject(p[FG]) && p[FG].toAnsi256) s += p[FG].toAnsi256(false);
+        if(Util.isObject(p[BG]) && p[BG].toAnsi256) s += p[BG].toAnsi256(true);
+      } else {
         s += p + '';
       }
       return s;

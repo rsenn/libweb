@@ -1,24 +1,18 @@
 (function (factory, window) {
-  
-
   let hashmapUrl = {
     amd: './hashmap',
     node: 'hashmap',
     browser: 'HashMap'
   };
 
-  if (typeof define === 'function' && define.amd) {
+  if(typeof define === 'function' && define.amd) {
     define([hashmapUrl.amd], factory);
-  }
-  else if (typeof exports === 'object') {
+  } else if(typeof exports === 'object') {
     exports.SpatialHashMap = factory(require(hashmapUrl.node).HashMap);
-  }
-  else {
+  } else {
     window.SpatialHashMap = factory(window[hashmapUrl.browser]);
   }
 })((HashMap) => {
-  
-
   /**
    * HashMap
    *
@@ -28,7 +22,7 @@
   //Same as Haskmap.get(), but stores an empty array (and returns that) when the value for the key is undefined
   HashMap.prototype.Get = function (key) {
     var data = this.get(key);
-    if (!data) {
+    if(!data) {
       var data = [];
       this.set(key, data);
     }
@@ -47,7 +41,7 @@
 
   let Keys = function (cells) {
     let result = [];
-    for (let i = 0, len = cells.length; i < len; i++) {
+    for(let i = 0, len = cells.length; i < len; i++) {
       result.push(this.key(cells[i]));
     }
 
@@ -55,8 +49,8 @@
   };
 
   let cellInArray = function (arr, item) {
-    for (let i = 0, len = arr.length; i < len; i++) {
-      if (arr[i].x === item.x && arr[i].y === item.y) {
+    for(let i = 0, len = arr.length; i < len; i++) {
+      if(arr[i].x === item.x && arr[i].y === item.y) {
         return true;
       }
     }
@@ -69,7 +63,7 @@
     let objectsInCell = grid[key] || [];
     let index = objectsInCell.indexOf(obj);
 
-    if (index > -1) {
+    if(index > -1) {
       grid[key] = objectsInCell.splice(index, 1);
     }
   };
@@ -77,20 +71,20 @@
   let addToCell = function (grid, cell, obj) {
     let key = Key(cell);
     let objectsInCell = grid[key];
-    if (!objectsInCell) {
+    if(!objectsInCell) {
       objectsInCell = grid[key] = [];
     }
     objectsInCell.push(obj);
   };
 
   let removeFromCells = function (grid, cells, obj) {
-    for (let i = 0, len = cells.length; i < len; i++) {
+    for(let i = 0, len = cells.length; i < len; i++) {
       removeFromCell(grid, cells[i], obj);
     }
   };
 
   let addToCells = function (grid, cells, obj) {
-    for (let i = 0, len = cells.length; i < len; i++) {
+    for(let i = 0, len = cells.length; i < len; i++) {
       addToCell(grid, cells[i], obj);
     }
   };
@@ -101,13 +95,13 @@
 
   //Remove duplicates and specific items from an array
   let sanitize = function (arr, exclude) {
-    if (!(exclude instanceof Array)) {
+    if(!(exclude instanceof Array)) {
       exclude = [exclude];
     }
     let result = [];
-    for (let i = 0, len = arr.length; i < len; i++) {
+    for(let i = 0, len = arr.length; i < len; i++) {
       let item = arr[i];
-      if (result.indexOf(item) === -1 && exclude.indexOf(item) === -1) {
+      if(result.indexOf(item) === -1 && exclude.indexOf(item) === -1) {
         result.push(item);
       }
     }
@@ -119,9 +113,9 @@
   //This saves quite some (slow) indexOf() calls
   let removeDuplicates = function (arr) {
     let result = [];
-    for (let i = 0, len = arr.length; i < len; i++) {
+    for(let i = 0, len = arr.length; i < len; i++) {
       let item = arr[i];
-      if (result.indexOf(item) === -1) {
+      if(result.indexOf(item) === -1) {
         result.push(item);
       }
     }
@@ -133,9 +127,9 @@
   //var c1 = {x:3, y:5}; var c2 = {x:3, y:5}; c1 === c2; // false, but refer to same cell
   let removeDuplicateCells = function (arr) {
     let result = [];
-    for (let i = 0, len = arr.length; i < len; i++) {
+    for(let i = 0, len = arr.length; i < len; i++) {
       let item = arr[i];
-      if (!cellInArray(result, arr[i])) {
+      if(!cellInArray(result, arr[i])) {
         result.push(item);
       }
     }
@@ -252,7 +246,7 @@
 
   SpatialHashMap.prototype.getAABBs = function (objs) {
     let aabbs = [];
-    for (let i = 0, len = objs.length; i < len; i++) {
+    for(let i = 0, len = objs.length; i < len; i++) {
       aabbs.push(this.getAABB(objs[i]));
     }
 
@@ -275,8 +269,8 @@
     let Ymax = Math.ceil((aabb.y + aabb.h) / cellSize);
     let cells = [];
 
-    for (let x = Xmin; x < Xmax; x++) {
-      for (let y = Ymin; y < Ymax; y++) {
+    for(let x = Xmin; x < Xmax; x++) {
+      for(let y = Ymin; y < Ymax; y++) {
         cells.push({ x, y });
       }
     }
@@ -286,7 +280,7 @@
 
   SpatialHashMap.prototype.cellsForAABBs = function (aabbs, raw) {
     let cells = [];
-    for (let i = 0, len = aabbs.length; i < len; i++) {
+    for(let i = 0, len = aabbs.length; i < len; i++) {
       concat(cells, this.cellsForAABB(aabbs[i]));
     }
     return raw ? cells : removeDuplicateCells(cells);
@@ -298,7 +292,7 @@
 
   SpatialHashMap.prototype.cellsForObjects = function (objs, raw) {
     let cells = [];
-    for (let i = 0, len = objs.length; i < len; i++) {
+    for(let i = 0, len = objs.length; i < len; i++) {
       concat(cells, this.cellsForObject(objs[i]));
     }
     return raw ? cells : removeDuplicateCells(cells);
@@ -310,7 +304,7 @@
 
   SpatialHashMap.prototype.objectsForCells = function (cells, raw) {
     let objects = [];
-    for (let i = 0, len = cells.length; i < len; i++) {
+    for(let i = 0, len = cells.length; i < len; i++) {
       concat(objects, this.grid.Get(cells[i]));
     }
     return raw ? objects : removeDuplicates(objects);

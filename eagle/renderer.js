@@ -17,18 +17,18 @@ export { BoardRenderer } from './boardRenderer.js';
 export function Renderer(doc, factory, debug) {
   let ret;
   switch (doc.type) {
-  case 'brd':
-    ret = new BoardRenderer(doc, factory);
-    break;
-  case 'sch':
-    ret = new SchematicRenderer(doc, factory);
-    break;
+    case 'brd':
+      ret = new BoardRenderer(doc, factory);
+      break;
+    case 'sch':
+      ret = new SchematicRenderer(doc, factory);
+      break;
 
-  case 'lbr':
-    ret = new LibraryRenderer(doc, factory);
-    break;
-  default:
-    throw new Error('No such document type: ' + doc.type);
+    case 'lbr':
+      ret = new LibraryRenderer(doc, factory);
+      break;
+    default:
+      throw new Error('No such document type: ' + doc.type);
   }
   Renderer.debug = ret.debug = debug ? (...args) => console.log(Util.getStackFrame().getLocation(), ...args) : () => {};
   return ret;

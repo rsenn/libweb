@@ -26,14 +26,13 @@ function getSqSegDist(p, p1, p2) {
     dy = p2[1] - y,
     t;
 
-  if (dx !== 0 || dy !== 0) {
+  if(dx !== 0 || dy !== 0) {
     t = ((p[0] - x) * dx + (p[1] - y) * dy) / (dx * dx + dy * dy);
 
-    if (t > 1) {
+    if(t > 1) {
       x = p2[0];
       y = p2[1];
-    }
-    else if (t > 0) {
+    } else if(t > 0) {
       x += dx * t;
       y += dy * t;
     }
@@ -59,16 +58,16 @@ export function simplifyRadialDist(points, sqTolerance) {
     n = points.length,
     point;
 
-  for (i; i < n; i += 2) {
+  for(i; i < n; i += 2) {
     point = [points[i], points[i + 1]];
 
-    if (getSqDist(point, prevPoint) > sqTolerance) {
+    if(getSqDist(point, prevPoint) > sqTolerance) {
       newPoints.push(point[0], point[1]);
       prevPoint = point;
     }
   }
 
-  if (prevPoint !== point) {
+  if(prevPoint !== point) {
     newPoints.push(point[0], point[1]);
   }
 
@@ -89,19 +88,19 @@ export function simplifyDPStep(points, first, last, sqTolerance, simplified) {
     sqDist,
     index;
 
-  for (i; i < last; i += 2) {
+  for(i; i < last; i += 2) {
     sqDist = getSqSegDist([points[i], points[i + 1]], [points[first], points[first + 1]], [points[last], points[last + 1]]);
 
-    if (sqDist > maxSqDist) {
+    if(sqDist > maxSqDist) {
       index = i;
       maxSqDist = sqDist;
     }
   }
 
-  if (maxSqDist > sqTolerance) {
-    if (index - first > 1) simplifyDPStep(points, first, index, sqTolerance, simplified);
+  if(maxSqDist > sqTolerance) {
+    if(index - first > 1) simplifyDPStep(points, first, index, sqTolerance, simplified);
     simplified.push(points[index], points[index + 1]);
-    if (last - index > 1) simplifyDPStep(points, index, last, sqTolerance, simplified);
+    if(last - index > 1) simplifyDPStep(points, index, last, sqTolerance, simplified);
   }
 }
 
@@ -131,7 +130,7 @@ export function simplifyDouglasPeucker(points, sqTolerance) {
  * @returns {number[]}
  */
 export function simplify(points, tolerance, highestQuality) {
-  if (points.length <= 4) return points;
+  if(points.length <= 4) return points;
 
   let sqTolerance = tolerance !== undefined ? tolerance * tolerance : 1;
 

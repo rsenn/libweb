@@ -9,7 +9,7 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
 
   let { transform = new TransformationList(), transformation } = opts;
 
-  if (!transformation) Util.putStack();
+  if(!transformation) Util.putStack();
 
   let coordFn = transform ? MakeCoordTransformer(transform) : (i) => i;
 
@@ -22,7 +22,7 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
 
   //  const visible = layer ? layer.isVisible(data) : true;
 
-  if (text.startsWith('>')) {
+  if(text.startsWith('>')) {
     const prop = text.slice(1).toLowerCase();
     //console.log('text', { text, prop, opts });
     text = prop in opts ? opts[prop] : text;
@@ -71,10 +71,10 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
   );*/
 
   let attrs = {};
-  if (align !== undefined) attrs['data-align'] = align;
-  if (data.path !== undefined) attrs['data-path'] = data.path.toString(' ');
-  if (rot !== undefined) attrs['data-rot'] = rot;
-  if (layer !== undefined) attrs['data-layer'] = `${layer.number} ${layer.name}`;
+  if(align !== undefined) attrs['data-align'] = align;
+  if(data.path !== undefined) attrs['data-path'] = data.path.toString(' ');
+  if(rot !== undefined) attrs['data-rot'] = rot;
+  if(layer !== undefined) attrs['data-layer'] = `${layer.number} ${layer.name}`;
   attrs['data-alignment'] = [...Alignment(align)].join('|');
 
   return h(Text, {

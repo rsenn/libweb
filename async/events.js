@@ -17,24 +17,25 @@ let run = async () => {
 
 //Turn any event emitter into a stream
 var streamify = async function* (event, element) {
-  while (true) {
+  while(true) {
     yield await oncePromise(element, event);
   }
 };
 
 //Generate a Promise that listens only once for an event
-var oncePromise = (emitter, event) => new Promise((resolve) => {
-  var handler = (...args) => {
-    emitter.removeEventListener(event, handler);
-    resolve(...args);
-  };
-  emitter.addEventListener(event, handler);
-});
+var oncePromise = (emitter, event) =>
+  new Promise((resolve) => {
+    var handler = (...args) => {
+      emitter.removeEventListener(event, handler);
+      resolve(...args);
+    };
+    emitter.addEventListener(event, handler);
+  });
 
 //Only pass along events that meet a condition
 var filter = async function* (stream, test) {
   for await (let event of stream) {
-    if (test(event)) {
+    if(test(event)) {
       yield event;
     }
   }
@@ -53,7 +54,7 @@ var throttle = async function* (stream, delay) {
   let thisTime;
   for await (let event of stream) {
     thisTime = new Date().getTime();
-    if (!lastTime || thisTime - lastTime > delay) {
+    if(!lastTime || thisTime - lastTime > delay) {
       lastTime = thisTime;
       yield event;
     }
@@ -68,7 +69,7 @@ var distinct = async function* (stream, extract = identity) {
   let thisVal;
   for await (let event of stream) {
     thisVal = extract(event);
-    if (thisVal !== lastVal) {
+    if(thisVal !== lastVal) {
       lastVal = thisVal;
       yield event;
     }

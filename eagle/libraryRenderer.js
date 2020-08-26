@@ -51,10 +51,10 @@ export class LibraryRenderer extends EagleSVGRenderer {
         parent
       );
     switch (item.tagName) {
-    default: {
-      super.renderItem(item, parent, opts);
-      break;
-    }
+      default: {
+        super.renderItem(item, parent, opts);
+        break;
+      }
     }
   }
   render(doc = this.doc, parent, props = {}, sheetNo = 0) {

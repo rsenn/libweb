@@ -2,7 +2,7 @@
 //I think that is the right choice for this library.  If you're adding and
 //triggering A LOT of events, you might want to use a different library.
 smokesignals = {
-  convert (obj, handlers) {
+  convert(obj, handlers) {
     //we store the list of handlers as a local variable inside the scope
     //so that we don't have to add random properties to the object we are
     //converting. (prefixing variables in the object with an underscore or
@@ -50,7 +50,7 @@ smokesignals = {
       //we can remove it
       //it would be more efficient to stash the length and compare i
       //to that, but that is longer so we'll go with this.
-      for (var list = handlers[eventName], i = 0; handler && list && list[i]; i++) {
+      for(var list = handlers[eventName], i = 0; handler && list && list[i]; i++) {
         //either this item is the handler passed in, or this item is a
         //wrapper for the handler passed in.  See the 'once' function
         (list[i] != handler && list[i].h != handler) ||
@@ -59,7 +59,7 @@ smokesignals = {
       }
       //if i is 0 (i.e. falsy), then there are no items in the array for this
       //event name (or the array doesn't exist)
-      if (!i) {
+      if(!i) {
         //remove the array for this eventname (if it doesn't exist then
         //this isn't really hurting anything)
         delete handlers[eventName];
@@ -71,7 +71,7 @@ smokesignals = {
       //loop through all handlers for this event name and call them all
       //it would be more efficient to stash the length and compare i
       //to that, but that is longer so we'll go with this.
-      for (let list = handlers[eventName], i = 0; list && list[i]; ) {
+      for(let list = handlers[eventName], i = 0; list && list[i]; ) {
         list[i++].apply(obj, list.slice.call(arguments, 1));
       }
       return obj;

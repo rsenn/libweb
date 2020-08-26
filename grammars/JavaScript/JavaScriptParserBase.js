@@ -41,15 +41,15 @@ JavaScriptParserBase.prototype.here = function (type) {
 JavaScriptParserBase.prototype.lineTerminatorAhead = function () {
   let possibleIndexEosToken = this.getCurrentToken().tokenIndex - 1;
   let ahead = this._input.get(possibleIndexEosToken);
-  if (ahead.channel !== antlr4.Lexer.HIDDEN) {
+  if(ahead.channel !== antlr4.Lexer.HIDDEN) {
     return false;
   }
 
-  if (ahead.type === JavaScriptParser.LineTerminator) {
+  if(ahead.type === JavaScriptParser.LineTerminator) {
     return true;
   }
 
-  if (ahead.type === JavaScriptParser.WhiteSpaces) {
+  if(ahead.type === JavaScriptParser.WhiteSpaces) {
     possibleIndexEosToken = this.getCurrentToken().getTokenIndex() - 2;
     ahead = this._input.get(possibleIndexEosToken);
   }

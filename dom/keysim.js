@@ -19,7 +19,6 @@ KeyEvents.ALL = KeyEvents.DOWN | KeyEvents.PRESS | KeyEvents.UP | KeyEvents.INPU
  * Represents a keystroke, or a single key code with a set of active modifiers.
  */
 export class Keystroke {
-
   /**
    * @param {number} modifiers A bitmask formed by CTRL, META, ALT, and SHIFT.
    * @param {number} keyCode
@@ -71,7 +70,6 @@ export class Keystroke {
  * mapping. Use `US_ENGLISH` to get a pre-configured keyboard.
  */
 export class Keyboard {
-
   /**
    * @param {Object.<number, Keystroke>} charCodeKeyCodeMap
    * @param {Object.<string, number>} actionKeyCodeMap
@@ -89,10 +87,10 @@ export class Keyboard {
    */
   charCodeForKeystroke(keystroke) {
     let map = this._charCodeKeyCodeMap;
-    for (let charCode in map) {
-      if (Object.prototype.hasOwnProperty.call(map, charCode)) {
+    for(let charCode in map) {
+      if(Object.prototype.hasOwnProperty.call(map, charCode)) {
         let keystrokeForCharCode = map[charCode];
-        if (keystroke.keyCode === keystrokeForCharCode.keyCode && keystroke.modifiers === keystrokeForCharCode.modifiers) {
+        if(keystroke.keyCode === keystrokeForCharCode.keyCode && keystroke.modifiers === keystrokeForCharCode.modifiers) {
           return parseInt(charCode, 10);
         }
       }
@@ -117,30 +115,29 @@ export class Keyboard {
 
     try {
       event = new Event(type);
-    }
-    catch (e) {
+    } catch(e) {
       event = document.createEvent('UIEvents');
     }
 
     event.initEvent(type, true, true);
 
     switch (type) {
-    case 'textInput':
-    case 'input':
-      event.data = String.fromCharCode(this.charCodeForKeystroke(keystroke));
-      break;
+      case 'textInput':
+      case 'input':
+        event.data = String.fromCharCode(this.charCodeForKeystroke(keystroke));
+        break;
 
-    case 'keydown':
-    case 'keypress':
-    case 'keyup':
-      event.shiftKey = keystroke.shiftKey;
-      event.altKey = keystroke.altKey;
-      event.metaKey = keystroke.metaKey;
-      event.ctrlKey = keystroke.ctrlKey;
-      event.keyCode = type === 'keypress' ? this.charCodeForKeystroke(keystroke) : keystroke.keyCode;
-      event.charCode = type === 'keypress' ? event.keyCode : 0;
-      event.which = event.keyCode;
-      break;
+      case 'keydown':
+      case 'keypress':
+      case 'keyup':
+        event.shiftKey = keystroke.shiftKey;
+        event.altKey = keystroke.altKey;
+        event.metaKey = keystroke.metaKey;
+        event.ctrlKey = keystroke.ctrlKey;
+        event.keyCode = type === 'keypress' ? this.charCodeForKeystroke(keystroke) : keystroke.keyCode;
+        event.charCode = type === 'keypress' ? event.keyCode : 0;
+        event.which = event.keyCode;
+        break;
     }
 
     return event;
@@ -167,7 +164,7 @@ export class Keyboard {
    */
   dispatchEventsForInput(input, target) {
     let currentModifierState = 0;
-    for (let i = 0, length = input.length; i < length; i++) {
+    for(let i = 0, length = input.length; i < length; i++) {
       const keystroke = this.keystrokeForCharCode(input.charCodeAt(i));
       this.dispatchModifierStateTransition(target, currentModifierState, keystroke.modifiers);
       this.dispatchEventsForKeystroke(keystroke, target, false);
@@ -210,22 +207,22 @@ export class Keyboard {
    * @param {number} events
    */
   dispatchEventsForKeystroke(keystroke, target, transitionModifiers = true, events = KeyEvents.ALL) {
-    if (transitionModifiers) {
+    if(transitionModifiers) {
       this.dispatchModifierStateTransition(target, 0, keystroke.modifiers, events);
     }
 
     let keydownEvent;
-    if (events & KeyEvents.DOWN) {
+    if(events & KeyEvents.DOWN) {
       keydownEvent = this.createEventFromKeystroke('keydown', keystroke, target);
     }
 
-    if (keydownEvent && target.dispatchEvent(keydownEvent) && this.targetCanReceiveTextInput(target)) {
+    if(keydownEvent && target.dispatchEvent(keydownEvent) && this.targetCanReceiveTextInput(target)) {
       let keypressEvent;
-      if (events & KeyEvents.PRESS) {
+      if(events & KeyEvents.PRESS) {
         keypressEvent = this.createEventFromKeystroke('keypress', keystroke, target);
       }
-      if (keypressEvent && keypressEvent.charCode && target.dispatchEvent(keypressEvent)) {
-        if (events & KeyEvents.INPUT) {
+      if(keypressEvent && keypressEvent.charCode && target.dispatchEvent(keypressEvent)) {
+        if(events & KeyEvents.INPUT) {
           const textinputEvent = this.createEventFromKeystroke('textInput', keystroke, target);
           target.dispatchEvent(textinputEvent);
 
@@ -235,12 +232,12 @@ export class Keyboard {
       }
     }
 
-    if (events & KeyEvents.UP) {
+    if(events & KeyEvents.UP) {
       const keyupEvent = this.createEventFromKeystroke('keyup', keystroke, target);
       target.dispatchEvent(keyupEvent);
     }
 
-    if (transitionModifiers) {
+    if(transitionModifiers) {
       this.dispatchModifierStateTransition(target, keystroke.modifiers, 0);
     }
   }
@@ -268,55 +265,55 @@ export class Keyboard {
     const includeKeyUp = events & KeyEvents.UP;
     const includeKeyDown = events & KeyEvents.DOWN;
 
-    if (includeKeyUp && didHaveMeta === true && willHaveMeta === false) {
+    if(includeKeyUp && didHaveMeta === true && willHaveMeta === false) {
       //Release the meta key.
       currentModifierState &= ~META;
       target.dispatchEvent(this.createEventFromKeystroke('keyup', new Keystroke(currentModifierState, this._actionKeyCodeMap.META), target));
     }
 
-    if (includeKeyUp && didHaveCtrl === true && willHaveCtrl === false) {
+    if(includeKeyUp && didHaveCtrl === true && willHaveCtrl === false) {
       //Release the ctrl key.
       currentModifierState &= ~CTRL;
       target.dispatchEvent(this.createEventFromKeystroke('keyup', new Keystroke(currentModifierState, this._actionKeyCodeMap.CTRL), target));
     }
 
-    if (includeKeyUp && didHaveShift === true && willHaveShift === false) {
+    if(includeKeyUp && didHaveShift === true && willHaveShift === false) {
       //Release the shift key.
       currentModifierState &= ~SHIFT;
       target.dispatchEvent(this.createEventFromKeystroke('keyup', new Keystroke(currentModifierState, this._actionKeyCodeMap.SHIFT), target));
     }
 
-    if (includeKeyUp && didHaveAlt === true && willHaveAlt === false) {
+    if(includeKeyUp && didHaveAlt === true && willHaveAlt === false) {
       //Release the alt key.
       currentModifierState &= ~ALT;
       target.dispatchEvent(this.createEventFromKeystroke('keyup', new Keystroke(currentModifierState, this._actionKeyCodeMap.ALT), target));
     }
 
-    if (includeKeyDown && didHaveMeta === false && willHaveMeta === true) {
+    if(includeKeyDown && didHaveMeta === false && willHaveMeta === true) {
       //Press the meta key.
       currentModifierState |= META;
       target.dispatchEvent(this.createEventFromKeystroke('keydown', new Keystroke(currentModifierState, this._actionKeyCodeMap.META), target));
     }
 
-    if (includeKeyDown && didHaveCtrl === false && willHaveCtrl === true) {
+    if(includeKeyDown && didHaveCtrl === false && willHaveCtrl === true) {
       //Press the ctrl key.
       currentModifierState |= CTRL;
       target.dispatchEvent(this.createEventFromKeystroke('keydown', new Keystroke(currentModifierState, this._actionKeyCodeMap.CTRL), target));
     }
 
-    if (includeKeyDown && didHaveShift === false && willHaveShift === true) {
+    if(includeKeyDown && didHaveShift === false && willHaveShift === true) {
       //Press the shift key.
       currentModifierState |= SHIFT;
       target.dispatchEvent(this.createEventFromKeystroke('keydown', new Keystroke(currentModifierState, this._actionKeyCodeMap.SHIFT), target));
     }
 
-    if (includeKeyDown && didHaveAlt === false && willHaveAlt === true) {
+    if(includeKeyDown && didHaveAlt === false && willHaveAlt === true) {
       //Press the alt key.
       currentModifierState |= ALT;
       target.dispatchEvent(this.createEventFromKeystroke('keydown', new Keystroke(currentModifierState, this._actionKeyCodeMap.ALT), target));
     }
 
-    if (currentModifierState !== toModifierState) {
+    if(currentModifierState !== toModifierState) {
       throw new Error(`internal error, expected modifier state: ${toModifierState}` + `, got: ${currentModifierState}`);
     }
   }
@@ -336,32 +333,30 @@ export class Keyboard {
 
     parts.forEach((part) => {
       switch (part.toUpperCase()) {
-      case 'CTRL':
-        modifiers |= CTRL;
-        break;
-      case 'META':
-        modifiers |= META;
-        break;
-      case 'ALT':
-        modifiers |= ALT;
-        break;
-      case 'SHIFT':
-        modifiers |= SHIFT;
-        break;
-      default:
-        throw new Error(`in "${action}", invalid modifier: ${part}`);
+        case 'CTRL':
+          modifiers |= CTRL;
+          break;
+        case 'META':
+          modifiers |= META;
+          break;
+        case 'ALT':
+          modifiers |= ALT;
+          break;
+        case 'SHIFT':
+          modifiers |= SHIFT;
+          break;
+        default:
+          throw new Error(`in "${action}", invalid modifier: ${part}`);
       }
     });
 
-    if (lastPart.toUpperCase() in this._actionKeyCodeMap) {
+    if(lastPart.toUpperCase() in this._actionKeyCodeMap) {
       keyCode = this._actionKeyCodeMap[lastPart.toUpperCase()];
-    }
-    else if (lastPart.length === 1) {
+    } else if(lastPart.length === 1) {
       let lastPartKeystroke = this.keystrokeForCharCode(lastPart.charCodeAt(0));
       modifiers |= lastPartKeystroke.modifiers;
       keyCode = lastPartKeystroke.keyCode;
-    }
-    else {
+    } else {
       throw new Error(`in "${action}", invalid action: ${lastPart}`);
     }
 
@@ -383,7 +378,7 @@ export class Keyboard {
    * @private
    */
   targetCanReceiveTextInput(target) {
-    if (!target) {
+    if(!target) {
       return false;
     }
 

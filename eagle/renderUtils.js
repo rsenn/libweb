@@ -8,7 +8,7 @@ export const HORIZONTAL = 2;
 export const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
 
 export const ClampAngle = (a, mod = 360) => {
-  while (a < 0) a += 360;
+  while(a < 0) a += 360;
   a %= mod;
   return a > 180 ? a - 360 : a;
 };
@@ -19,17 +19,16 @@ export const AlignmentAngle = (a) => {
 
 export const Rotation = (rot, f = 1) => {
   let mirror, angle;
-  if (!rot) {
+  if(!rot) {
     mirror = 0;
     angle = 0;
-  }
-  else {
+  } else {
     mirror = /M/.test(rot) ? 1 : 0;
     angle = +(rot || '').replace(/M?R/, '') || 0;
   }
   let transformations = new TransformationList();
-  if (angle !== 0) transformations.rotate(-angle);
-  if (mirror !== 0) transformations.scale(-1, 1);
+  if(angle !== 0) transformations.rotate(-angle);
+  if(mirror !== 0) transformations.scale(-1, 1);
 
   return transformations;
 };
@@ -49,7 +48,7 @@ export const EagleAlignments = {
 export const Alignment = (align, def = 'bottom-left', rot = 0) => {
   let [y, x] = EagleAlignments[align] || EagleAlignments[def];
   let ret = new Point(x, y);
-  if (Math.abs(rot) > 0) ret.rotate((rot * Math.PI) / 180);
+  if(Math.abs(rot) > 0) ret.rotate((rot * Math.PI) / 180);
   return ret;
 };
 
@@ -67,8 +66,8 @@ export const AlignmentAttrs = (align, hv = HORIZONTAL_VERTICAL, rot = 0) => {
   let r = {};
 
   //console.log('AlignmentAttrs', { x, y });
-  if (hv & VERTICAL) r['dominant-baseline'] = vAlign[Math.round(y) + 1];
-  if (hv & HORIZONTAL) r['text-anchor'] = hAlign[Math.round(x) + 1];
+  if(hv & VERTICAL) r['dominant-baseline'] = vAlign[Math.round(y) + 1];
+  if(hv & HORIZONTAL) r['text-anchor'] = hAlign[Math.round(x) + 1];
   return r;
 };
 
@@ -81,14 +80,14 @@ export const RotateTransformation = (rot, f = 1) => {
 export const LayerAttributes = (layer) =>
   layer
     ? {
-      'data-layer': `${layer.number} ${layer.name} color: ${layer.color}`
-    }
+        'data-layer': `${layer.number} ${layer.name} color: ${layer.color}`
+      }
     : {};
 
 export const InvertY = (item) => {
   let ret = {};
-  for (let prop in item.attributes) {
-    if (prop.startsWith('y')) ret[prop] = -+item.attributes[prop];
+  for(let prop in item.attributes) {
+    if(prop.startsWith('y')) ret[prop] = -+item.attributes[prop];
     else ret[prop] = item.attributes[prop];
   }
   return item;
@@ -118,11 +117,11 @@ export const CalculateArcRadius = (p1, p2, angle) => {
 
   let r = d / Math.sqrt(2 + 2 * c);
 
-  if (2 + 2 * c == 0) {
+  if(2 + 2 * c == 0) {
     r = r2;
     console.log('CalculateArcRadius', { d, c, r2, r });
   }
-  if (isNaN(r)) throw new Error('Arc radius for angle: ' + angle);
+  if(isNaN(r)) throw new Error('Arc radius for angle: ' + angle);
 
   return Math.abs(angle) > 90 ? r / 2 : Math.sqrt(r2);
 };
@@ -136,17 +135,16 @@ export const LinesToPath = (lines) => {
   ret.push(`M ${prevPoint.x} ${prevPoint.y}`);
 
   const lineTo = (point, curve) => {
-    if (curve !== undefined) {
+    if(curve !== undefined) {
       const r = CalculateArcRadius(prevPoint, point, curve).toFixed(4);
 
-      if (r == Number.POSITIVE_INFINITY || r == Number.NEGATIVE_INFINITY) console.log('lineTo', { prevPoint, point, curve });
+      if(r == Number.POSITIVE_INFINITY || r == Number.NEGATIVE_INFINITY) console.log('lineTo', { prevPoint, point, curve });
 
       const largeArc = Math.abs(curve) > 180 ? '1' : '0';
       const sweepArc = curve > 0 ? '1' : '0';
 
       ret.push(`A ${r} ${r} 0 ${largeArc} ${sweepArc} ${point.x} ${point.y}`);
-    }
-    else {
+    } else {
       ret.push(`L ${point.x} ${point.y}`);
     }
     prevPoint = new Point(point.x, point.y);
@@ -156,32 +154,30 @@ export const LinesToPath = (lines) => {
 
   do {
     m = null;
-    for (let i = 0; i < lines.length; i++) {
+    for(let i = 0; i < lines.length; i++) {
       const d = [i, Point.distance(l.b, lines[i].a), Point.distance(l.b, lines[i].b)];
 
-      if (Point.equals(l.b, lines[i].a)) {
+      if(Point.equals(l.b, lines[i].a)) {
         m = lines.splice(i, 1)[0];
         break;
-      }
-      else if (Point.equals(l.b, lines[i].b)) {
+      } else if(Point.equals(l.b, lines[i].b)) {
         const l = lines.splice(i, 1)[0];
         m = l.swap();
-        if (l.curve !== undefined) m.curve = -l.curve;
+        if(l.curve !== undefined) m.curve = -l.curve;
         break;
       }
     }
-    if (m) {
-      if (lines.length == 0 && Point.equals(m.b, start)) ret.push(`Z`);
+    if(m) {
+      if(lines.length == 0 && Point.equals(m.b, start)) ret.push(`Z`);
       else lineTo(m.b, m.curve);
       l = m;
-    }
-    else if (lines.length > 0) {
+    } else if(lines.length > 0) {
       l = lines.shift();
       ret.push(`M ${l.a.x} ${l.a.y}`);
       prevPoint = new Point(l.a.x, l.a.y);
       lineTo(l.b, l.curve);
     }
-  } while (lines.length > 0);
+  } while(lines.length > 0);
 
   return ret.join(' ');
 };
@@ -189,9 +185,9 @@ export const LinesToPath = (lines) => {
 export function MakeCoordTransformer(matrix) {
   const transformStr = matrix + '';
 
-  if (matrix && matrix.toMatrix) matrix = matrix.toMatrix();
+  if(matrix && matrix.toMatrix) matrix = matrix.toMatrix();
 
-  if (matrix.isIdentity()) return (obj) => obj;
+  if(matrix.isIdentity()) return (obj) => obj;
 
   //S if(matrix && matrix.clone) matrix = Object.freeze(matrix.clone());
 
@@ -199,16 +195,16 @@ export function MakeCoordTransformer(matrix) {
 
   return (obj) => {
     let coords = {};
-    if ('x' in obj && 'y' in obj) {
+    if('x' in obj && 'y' in obj) {
       const [x, y] = tr.xy(obj.x, obj.y);
       coords = { ...coords, x, y };
     }
-    if ('width' in obj && 'height' in obj) {
+    if('width' in obj && 'height' in obj) {
       const [width, height] = tr.wh(obj.width, obj.height);
       coords = { ...coords, width, height };
     }
 
-    if ('x1' in obj && 'y1' in obj && 'x2' in obj && 'y2' in obj) {
+    if('x1' in obj && 'y1' in obj && 'x2' in obj && 'y2' in obj) {
       const [x1, y1] = tr.xy(obj.x1, obj.y1);
       const [x2, y2] = tr.xy(obj.x2, obj.y2);
       coords = { ...coords, x1, y1, x2, y2 };
@@ -238,7 +234,7 @@ export const useAttributes = (element, attributeNames) => {
 
   let ret = {};
 
-  for (let attr of attributeNames) {
+  for(let attr of attributeNames) {
     ret[attr] = useTrkl(element.handlers[attr]);
   }
   return ret;

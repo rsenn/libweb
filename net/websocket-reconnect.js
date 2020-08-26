@@ -13,8 +13,6 @@
  */
 
 let ReconnectSocket = (function () {
-  
-
   let socket,
     socketUrl = '',
     bufferedSends = [],
@@ -33,18 +31,17 @@ let ReconnectSocket = (function () {
   };
 
   let sendBufferedSends = function () {
-    while (bufferedSends.length > 0) {
-      if (isJSON) {
+    while(bufferedSends.length > 0) {
+      if(isJSON) {
         socket.send(JSON.stringify(bufferedSends.shift()));
-      }
-      else {
+      } else {
         socket.send(bufferedSends.shift());
       }
     }
   };
 
   let init = function () {
-    if (isClose()) {
+    if(isClose()) {
       socket = new WebSocket(socketUrl);
     }
 
@@ -68,26 +65,23 @@ let ReconnectSocket = (function () {
 
   let send = function (data) {
     // check if its close then initilaize again
-    if (isClose()) {
+    if(isClose()) {
       bufferedSends.push(data);
       init();
-    }
-    else if (isReady()) {
-      if (isJSON) {
+    } else if(isReady()) {
+      if(isJSON) {
         socket.send(JSON.stringify(data));
-      }
-      else {
+      } else {
         socket.send(data);
       }
-    }
-    else {
+    } else {
       bufferedSends.push(data);
     }
   };
 
   let close = function () {
     bufferedSends = [];
-    if (socket) {
+    if(socket) {
       socket.close();
     }
   };

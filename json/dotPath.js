@@ -2,7 +2,7 @@ import Util from '../util.js';
 export class DotPath extends Array {
   constructor(path) {
     super();
-    if (path) {
+    if(path) {
       return this.concat(path);
     }
   }
@@ -12,14 +12,14 @@ export class DotPath extends Array {
   }
 
   static from(path) {
-    if (typeof path === 'string') {
+    if(typeof path === 'string') {
       path = path.split('.');
     }
     return super.from(path);
   }
 
   concat(path) {
-    if (typeof path === 'string') {
+    if(typeof path === 'string') {
       path = path.split('.');
     }
     return super.concat(path);
@@ -35,8 +35,8 @@ export class DotPath extends Array {
 
   navigate(object) {
     let value = object;
-    for (const prop of this) {
-      if (value) {
+    for(const prop of this) {
+      if(value) {
         value = value[prop];
       }
     }

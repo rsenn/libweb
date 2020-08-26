@@ -8,13 +8,12 @@ export function string(str) {
   let len = str.length;
 
   return (target, position) => {
-    if (target.substring(position, position + len) === str) {
+    if(target.substring(position, position + len) === str) {
       //console.log(`position: ${position} token: `,str);
 
       return [true, str, position + len];
     }
     return [false, null, position];
-    
   };
 }
 
@@ -27,11 +26,10 @@ export function token(str) {
 
 export function eof() {
   return (target, position) => {
-    if (position == target.length) {
+    if(position == target.length) {
       return [true, null, position];
     }
     return [false, null, position];
-    
   };
 }
 
@@ -58,15 +56,14 @@ export function many(parser) {
     let result = [];
     let success = false;
 
-    for (;;) {
+    for(;;) {
       let parsed = parser(target, position);
       //if the parser received is successful
-      if (parsed[0]) {
+      if(parsed[0]) {
         result.push(parsed[1]); //store the result
         position = parsed[2]; //update the reading position
         success = true;
-      }
-      else {
+      } else {
         break;
       }
     }
@@ -83,10 +80,10 @@ export function choice(...parsers) {
   return (target, position) => {
     let success = true;
 
-    for (let i = 0; i < parsers.length; i++) {
+    for(let i = 0; i < parsers.length; i++) {
       let parsed = parsers[i](target, position);
       //If parsing is successful, return the result as it is
-      if (parsed[0]) {
+      if(parsed[0]) {
         //console.log(`position: ${position} choice: `,parsed);
 
         return parsed;
@@ -104,17 +101,16 @@ export function choice(...parsers) {
 export function seq(...parsers) {
   return (target, position) => {
     let result = [];
-    for (let i = 0; i < parsers.length; i++) {
+    for(let i = 0; i < parsers.length; i++) {
       let parsed = parsers[i](target, position);
 
-      if (parsed[0]) {
+      if(parsed[0]) {
         //console.log(`position: ${position} i: ${i}`);
 
-        if (parsed[1] !== null) result.push(parsed[1]);
+        if(parsed[1] !== null) result.push(parsed[1]);
 
         position = parsed[2];
-      }
-      else {
+      } else {
         //If even one returns a failure, this parser itself returns a failure
         return parsed;
       }
@@ -139,11 +135,10 @@ export function invert(parser) {
   return (target, position) => {
     let result = parser(target, position);
 
-    if (!result[0]) {
+    if(!result[0]) {
       return [true, target.substring(position, position + 1), position + 1];
     }
     return [false, null, position];
-    
   };
 }
 
@@ -154,20 +149,19 @@ export function invert(parser) {
  * @return {Function}
  */
 export function regex(re) {
-  if (typeof re == 'string') re = new RegExp('^(?:' + re.source + ')', re.ignoreCase ? 'i' : '');
+  if(typeof re == 'string') re = new RegExp('^(?:' + re.source + ')', re.ignoreCase ? 'i' : '');
 
   return (target, position) => {
     re.lastIndex = 0;
     let regexResult = re.exec(target.slice(position));
 
-    if (regexResult && regexResult.index == 0) {
+    if(regexResult && regexResult.index == 0) {
       //console.log(`position: ${position} regex: ${re}`, regexResult);
 
       position += regexResult[0].length;
       return [true, regexResult[0], position];
     }
     return [false, null, position];
-    
   };
 }
 
@@ -178,17 +172,16 @@ export function regex(re) {
  */
 export function char(str, inverse = false) {
   let dict = {};
-  for (let i = 0; i < str.length; i++) dict[str[i]] = str[i];
+  for(let i = 0; i < str.length; i++) dict[str[i]] = str[i];
 
   return (target, position) => {
     let char = target.substr(position, 1);
     let isMatch = !!dict[char];
-    if (inverse ? !isMatch : isMatch) {
+    if(inverse ? !isMatch : isMatch) {
       //console.log(`position: ${position} char: ${char}`);
       return [true, char, position + 1];
     }
     return [false, null, position];
-    
   };
 }
 
@@ -199,7 +192,7 @@ export function char(str, inverse = false) {
 export function lazy(fn) {
   let parser = null;
   return (target, position) => {
-    if (!parser) {
+    if(!parser) {
       parser = fn();
     }
 
@@ -214,11 +207,10 @@ export function lazy(fn) {
 export function option(parser) {
   return (target, position) => {
     let result = parser(target, position);
-    if (result[0]) {
+    if(result[0]) {
       return result;
     }
     return [true, null, position];
-    
   };
 }
 
@@ -246,11 +238,10 @@ export function one(parser) {
 export function map(parser, fn) {
   return (target, position) => {
     let result = parser(target, position);
-    if (result[0]) {
+    if(result[0]) {
       return [result[0], fn(result[1]), result[2]];
     }
     return result;
-    
   };
 }
 
@@ -262,11 +253,10 @@ export function map(parser, fn) {
 export function filter(parser, fn) {
   return (target, position) => {
     let result = parser(target, position);
-    if (result[0]) {
+    if(result[0]) {
       return [fn(result[1]), result[1], result[2]];
     }
     return result;
-    
   };
 }
 

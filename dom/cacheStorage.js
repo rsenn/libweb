@@ -5,11 +5,10 @@ import { Cache } from './cache.js';
 const strToBase64 = (str) => new Buffer(str).toString('base64');
 const base64ToStr = (hex) => new Buffer(hex, 'base64').toString();
 const requires = (i, args) => {
-  if (args.length < i) throw new TypeError(`${i} argument required, but only ${args.length} present.`);
+  if(args.length < i) throw new TypeError(`${i} argument required, but only ${args.length} present.`);
 };
 
 export class CacheStorage {
-
   /**
    * [delete description]
    * @return {[type]} [description]
@@ -20,12 +19,11 @@ export class CacheStorage {
     // Query the entry
     return new Promise((resolve, reject) => {
       fs.stat(tmpDir + cacheName, (err, stats) => {
-        if (err) return resolve(false);
+        if(err) return resolve(false);
 
-        if (stats.isDirectory()) {
+        if(stats.isDirectory()) {
           fs.remove(tmpDir + cacheName, (err) => (err ? reject(err) : resolve(true)));
-        }
-        else {
+        } else {
           resolve(false);
         }
       });
@@ -53,15 +51,15 @@ export class CacheStorage {
         err
           ? reject(err)
           : Promise.all(
-            files.map(
-              (file) =>
-                new Promise((resolve) =>
-                  fs.stat(tmpDir + file, (_, stats) => {
-                    resolve(stats.isDirectory() && file);
-                  })
-                )
-            )
-          ).then((keys) => resolve(keys.filter((a) => a)))
+              files.map(
+                (file) =>
+                  new Promise((resolve) =>
+                    fs.stat(tmpDir + file, (_, stats) => {
+                      resolve(stats.isDirectory() && file);
+                    })
+                  )
+              )
+            ).then((keys) => resolve(keys.filter((a) => a)))
       )
     ).then((keys) => keys.map(base64ToStr));
   }
@@ -76,10 +74,10 @@ export class CacheStorage {
   async match(...args) {
     let keys = await this.keys();
 
-    for (let key of keys) {
+    for(let key of keys) {
       let cache = await this.open(key);
       let result = await cache.match(...args);
-      if (result) return result;
+      if(result) return result;
     }
   }
 

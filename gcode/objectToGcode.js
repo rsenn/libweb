@@ -13,7 +13,7 @@ export function objectToGcode(gcodeObject, args = {}) {
   const epsilon = args.precision;
 
   // Validate input to be of type "object"
-  if (typeof gcodeObject !== 'object') {
+  if(typeof gcodeObject !== 'object') {
     throw new Error(`Input argument must be of type "object". ${gcodeObject} is type "${typeof gcodeObject}"`);
   }
 
@@ -21,7 +21,7 @@ export function objectToGcode(gcodeObject, args = {}) {
   // Start with the command
   // Followed by each axis
   let gcode = '';
-  if (gcodeObject.command) {
+  if(gcodeObject.command) {
     gcode += gcodeObject.command;
   }
 
@@ -30,18 +30,16 @@ export function objectToGcode(gcodeObject, args = {}) {
   let processF = false;
 
   Util.entries(gcodeObject.args).forEach(([key, value]) => {
-    if (key === 'e') {
+    if(key === 'e') {
       processE = true;
-    }
-    else if (key === 'f') {
+    } else if(key === 'f') {
       processF = true;
-    }
-    else {
-      if (gcode.length > 0) {
+    } else {
+      if(gcode.length > 0) {
         gcode += ' ';
       }
       gcode += key.toUpperCase();
-      if (typeof value !== 'boolean') {
+      if(typeof value !== 'boolean') {
         // TODO, allow user to pass prefered precision for any axis or all axes
         const roundedNumber = Number(value.toFixed(epsilon));
         gcode += roundedNumber;
@@ -49,23 +47,23 @@ export function objectToGcode(gcodeObject, args = {}) {
     }
   });
 
-  if (processE) {
-    if (gcode.length > 0) {
+  if(processE) {
+    if(gcode.length > 0) {
       gcode += ' ';
     }
     const roundedNumber = Number(gcodeObject.args.e.toFixed(epsilon));
     gcode += `E${roundedNumber}`;
   }
 
-  if (processF) {
-    if (gcode.length > 0) {
+  if(processF) {
+    if(gcode.length > 0) {
       gcode += ' ';
     }
     const roundedNumber = Number(gcodeObject.args.f.toFixed(epsilon));
     gcode += `F${roundedNumber}`;
   }
 
-  if (gcodeObject.comment && args.comment !== false) {
+  if(gcodeObject.comment && args.comment !== false) {
     gcode += ';';
     gcode += gcodeObject.comment;
   }

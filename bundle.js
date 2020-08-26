@@ -14,7 +14,7 @@ class BundleLoader extends Component {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.load !== this.props.load) {
+    if(nextProps.load !== this.props.load) {
       this.load(nextProps);
     }
   }

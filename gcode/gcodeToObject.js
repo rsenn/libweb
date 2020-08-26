@@ -33,13 +33,13 @@ function parseCommentTag(comment) {
   const result = comment.match(commentTagRegex);
 
   // Don't parse the result unless you have data
-  if (result && result.length >= 2 && result[1]) {
+  if(result && result.length >= 2 && result[1]) {
     const metaCommand = Util.camelize(result[1].toLowerCase());
     commentTag.command = metaCommand;
 
-    if (result[2]) {
+    if(result[2]) {
       const commentTagArgs = result[2].toLowerCase();
-      if (commentTagArgs.includes(':')) {
+      if(commentTagArgs.includes(':')) {
         const commentTagKeyValue = commentTagArgs.split(':');
         const key = Util.camelize(commentTagKeyValue[0]);
 
@@ -47,12 +47,10 @@ function parseCommentTag(comment) {
         const value = Number.isNaN(Number(commentTagKeyValue[1])) ? commentTagKeyValue[1] : Number(commentTagKeyValue[1]);
 
         commentTag.args = JSON.parse(`{"${key}": ${value}}`);
-      }
-      else {
+      } else {
         commentTag.args = JSON.parse(`{"${metaCommand}": ${commentTagArgs}}`);
       }
-    }
-    else {
+    } else {
       commentTag.args = JSON.parse(`{"${metaCommand}": true}`);
     }
   }
@@ -67,7 +65,7 @@ function parseCommentTag(comment) {
  */
 export function gcodeToObject(gcode) {
   // Valdate input to be of type "string"
-  if (typeof gcode !== 'string') {
+  if(typeof gcode !== 'string') {
     throw new Error(`gcode argument must be of type "string". ${gcode} is type "${typeof gcode}"`);
   }
 
@@ -77,7 +75,7 @@ export function gcodeToObject(gcode) {
   // Split the gcode by the first semicolon it sees
   const commentSplits = gcode.split(';');
   const gcodeWithoutComment = commentSplits[0];
-  if (commentSplits.length > 1) {
+  if(commentSplits.length > 1) {
     const comment = commentSplits.slice(1).join(';');
     gcodeObject.comment = comment;
     gcodeObject.commentTag = parseCommentTag(comment);
@@ -98,11 +96,10 @@ export function gcodeToObject(gcode) {
     // In most cases we are looking for an axis followed by a number
     const axisAndFloatRegex = new RegExp(`${axis}\\s*([+-]?([0-9]*[.])?[0-9]+)`);
     const result = gcodeArgString.match(axisAndFloatRegex);
-    if (result) {
+    if(result) {
       gcodeObject.args[axis] = Number(result[1]);
       // If there is an axis, but no trailing number, pass the axis as a boolean flag
-    }
-    else if (gcodeArgString.includes(axis)) {
+    } else if(gcodeArgString.includes(axis)) {
       gcodeObject.args[axis] = true;
     }
   });
@@ -111,12 +108,12 @@ export function gcodeToObject(gcode) {
 }
 
 export function* parseGcode(data) {
-  if (typeof data == 'string') data = data.split(/\n/g);
+  if(typeof data == 'string') data = data.split(/\n/g);
 
-  for (let line of data) {
+  for(let line of data) {
     let gcodeObj = gcodeToObject(line);
 
-    if (gcodeObj.command !== undefined || Object.keys(gcodeObj.args).length > 0) yield gcodeObj;
+    if(gcodeObj.command !== undefined || Object.keys(gcodeObj.args).length > 0) yield gcodeObj;
   }
 }
 

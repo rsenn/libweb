@@ -18,7 +18,7 @@ export class EagleProject {
 
     this.load();
 
-    if (!this.failed) console.log('Opened project:', this.filename, this.eaglePath);
+    if(!this.failed) console.log('Opened project:', this.filename, this.eaglePath);
   }
 
   load() {
@@ -29,7 +29,7 @@ export class EagleProject {
       () => {},
       () => (this.failed = true)
     );
-    if (!this.schematic || !this.board) this.failed = true;
+    if(!this.schematic || !this.board) this.failed = true;
     return !this.failed;
   }
 
@@ -42,30 +42,27 @@ export class EagleProject {
   open(file) {
     let str, doc, err;
     str = this.fs.readFile(file);
-    if (typeof str != 'string' && 'toString' in str) str = str.toString();
+    if(typeof str != 'string' && 'toString' in str) str = str.toString();
 
     console.log('this.fs:', this.fs);
 
     try {
       doc = new EagleDocument(str, this, file);
-    }
-    catch (error) {
+    } catch(error) {
       err = error;
       console.log('ERROR:', err);
     }
-    if (doc) {
+    if(doc) {
       console.log('Opened document', file);
 
       this.documents.push(doc);
-    }
-    else throw new Error(`EagleProject: error opening '${file}': ${err}`);
+    } else throw new Error(`EagleProject: error opening '${file}': ${err}`);
     //console.log("Opened:", file);
 
-    if (doc.type == 'lbr') {
+    if(doc.type == 'lbr') {
       this.data[doc.type][doc.basename] = doc;
       //console.log("Opened library:", doc.basename);
-    }
-    else this.data[doc.type] = doc;
+    } else this.data[doc.type] = doc;
     return doc;
   }
 
@@ -77,11 +74,11 @@ export class EagleProject {
     );
     let bin;
 
-    for (let dir of path) {
+    for(let dir of path) {
       bin = dir + '/eagle';
 
-      if (fs.exists(bin)) {
-        if (!/(eagle)/i.test(dir)) {
+      if(fs.exists(bin)) {
+        if(!/(eagle)/i.test(dir)) {
           bin = fs.realpath(bin);
           dir = bin.replace(/\/[^\/]+$/, '');
         }
@@ -102,7 +99,7 @@ export class EagleProject {
 
   *iterator(t = ([v, l, d]) => [typeof v == 'object' ? EagleElement.get(d, l, v) : v, l, d]) {
     const project = this;
-    for (let doc of this.documents) {
+    for(let doc of this.documents) {
       let prefix = EagleProject.documentKey(doc);
       yield* doc.iterator(t);
     }
@@ -112,12 +109,12 @@ export class EagleProject {
 
   static documentKey(d) {
     switch (d.type) {
-    case 'sch':
-      return ['schematic'];
-    case 'brd':
-      return ['board'];
-    case 'lbr':
-      return ['library', d.basename];
+      case 'sch':
+        return ['schematic'];
+      case 'brd':
+        return ['board'];
+      case 'lbr':
+        return ['library', d.basename];
     }
     return null;
   }
@@ -127,7 +124,7 @@ export class EagleProject {
   libraryPath() {
     let docDirs = this.getDocumentDirectories();
     let path = [...docDirs, ...docDirs.map((dir) => `${dir}/lbr`)]; //.filter(fs.existsSync);
-    if (this.eaglePath) path.push(this.eaglePath + '/lbr');
+    if(this.eaglePath) path.push(this.eaglePath + '/lbr');
     return path;
   }
 
@@ -147,9 +144,9 @@ export class EagleProject {
   }
 
   findLibrary(name, dirs = this.libraryPath()) {
-    for (let dir of dirs) {
+    for(let dir of dirs) {
       const file = `${dir}/${name}.lbr`;
-      if (this.fs.exists(file)) return file;
+      if(this.fs.exists(file)) return file;
     }
     return null;
   }
@@ -157,9 +154,9 @@ export class EagleProject {
   loadLibraries(dirs = this.libraryPath()) {
     const names = this.getLibraryNames();
     //console.log('loadLibraries:', dirs, names);
-    for (let name of names) {
+    for(let name of names) {
       let lib = this.findLibrary(name, dirs);
-      if (!lib) throw new Error(`EagleProject library '${name}' not found in:  \n${dirs.join('\n  ')}`);
+      if(!lib) throw new Error(`EagleProject library '${name}' not found in:  \n${dirs.join('\n  ')}`);
       this.open(lib);
     }
   }
@@ -190,7 +187,7 @@ export class EagleProject {
     };*/
 
     //console.log('libraries.schematic:', libraries.schematic);
-    for (let k of ['schematic', 'board']) {
+    for(let k of ['schematic', 'board']) {
       //console.log(`project[${k}].libraries:`, this[k].libraries);
       //console.log(`libraries[${k}]:`, libraries[k]);
       //console.log(`libraries[${k}].packages:`, libraries[k].packages);
@@ -203,9 +200,9 @@ export class EagleProject {
       const srcLib = libProps(libraries.file);
       //console.log('libraries', libraries);
       //console.log('destLib', destLib);
-      for (let entity of ['packages', 'symbols', 'devicesets']) {
-        if (!(entity in destLib)) continue;
-        if (!(destLib[entity] instanceof EagleNodeMap)) continue;
+      for(let entity of ['packages', 'symbols', 'devicesets']) {
+        if(!(entity in destLib)) continue;
+        if(!(destLib[entity] instanceof EagleNodeMap)) continue;
 
         /*console.log('destLib', destLib);
         //console.log('destLib[entity]', destLib[entity]);*/
@@ -215,7 +212,7 @@ export class EagleProject {
         let m = new Map(ent);
         //console.log(`dstMap:`, dstMap);
         //console.log(`dstMap:`, Util.className(dstMap));
-        for (let value of srcLib[entity].values()) {
+        for(let value of srcLib[entity].values()) {
           const key = value.name;
           dstMap.set(key, value);
         }
@@ -233,25 +230,25 @@ export class EagleProject {
     let key = path.shift();
     let doc, name;
 
-    if (path.length == 0) return this;
+    if(path.length == 0) return this;
 
     switch (key) {
-    case 'board':
-    case 'schematic':
-      doc = this[key];
-      break;
-    case 'library':
-      name = path.shift();
-      doc = this[key][name];
-      break;
-    default:
-      break;
+      case 'board':
+      case 'schematic':
+        doc = this[key];
+        break;
+      case 'library':
+        name = path.shift();
+        doc = this[key][name];
+        break;
+      default:
+        break;
     }
-    if (!doc || !doc.index) {
+    if(!doc || !doc.index) {
       throw new Error('ERROR: project.index(' + l.join(', ') + ' )');
       return null;
     }
-    if (path.length == 0) return doc;
+    if(path.length == 0) return doc;
     return doc.index(path);
   }
 

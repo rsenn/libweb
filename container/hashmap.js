@@ -17,17 +17,14 @@
  * along with BackBee. If not, see <http://www.gnu.org/licenses/>.
  */
 (function (window) {
-  
-
   let setValues = function hashMapSetValues(HashMap, values) {
       let value;
 
-      for (value in values) {
-        if (values.hasOwnProperty(value)) {
-          if (values[value] instanceof Array && 2 === values[value].length) {
+      for(value in values) {
+        if(values.hasOwnProperty(value)) {
+          if(values[value] instanceof Array && 2 === values[value].length) {
             HashMap.set(values[value][0], values[value][1]);
-          }
-          else {
+          } else {
             HashMap.set(value, values[value]);
           }
         }
@@ -83,10 +80,9 @@
   HashMap.prototype.get = function hashMapGet(key) {
     let value = this.map_keys.indexOf(key);
 
-    if (value !== -1) {
+    if(value !== -1) {
       value = this.map_values[value];
-    }
-    else {
+    } else {
       value = undefined;
     }
 
@@ -109,7 +105,7 @@
   HashMap.prototype.delete = function hashMapDelete(key) {
     key = this.map_keys.indexOf(key);
 
-    if (key !== -1) {
+    if(key !== -1) {
       delete this.map_keys[key];
       delete this.map_values[key];
       return true;
@@ -122,7 +118,7 @@
    * Removes all key/value pairs from the HashMap object.
    */
   HashMap.prototype.clear = function hashMapClear() {
-    while (this.map_values.length > 0) {
+    while(this.map_values.length > 0) {
       this.map_values.pop();
       this.map_keys.pop();
     }
@@ -177,7 +173,7 @@
   HashMap.prototype.indexOf = function hashMapIndexOf(value) {
     let key = this.map_values.indexOf(value);
 
-    if (key !== -1) {
+    if(key !== -1) {
       key = this.map_keys[key];
     }
 
@@ -190,7 +186,7 @@
   HashMap.prototype.lastIndexOf = function hashMapLastIndexOf(value) {
     let key = this.map_values.lastIndexOf(value);
 
-    if (key !== -1) {
+    if(key !== -1) {
       key = this.map_keys[key];
     }
 
@@ -212,11 +208,11 @@
    */
   HashMap.prototype.forEach = function hashMapForEach(callback, instance) {
     let key;
-    if (!(instance instanceof {})) {
+    if(!(instance instanceof {})) {
       instance = undefined;
     }
 
-    for (key = 0; key < this.map_values.length; key = key + 1) {
+    for(key = 0; key < this.map_values.length; key = key + 1) {
       callback.call(instance, this.map_values[key], this.map_keys[key], this);
     }
   };
@@ -242,17 +238,16 @@
     let key,
       values = [];
 
-    for (key = 0; key < this.map_values.length; key = key + 1) {
+    for(key = 0; key < this.map_values.length; key = key + 1) {
       values.push([this.map_keys[key], this.map_values[key]]);
     }
 
     return values;
   };
 
-  if (typeof define === 'function' && define.amd) {
+  if(typeof define === 'function' && define.amd) {
     define('bbhashmap', [], () => HashMap);
-  }
-  else {
+  } else {
     window.BBHashMap = HashMap;
   }
 })(window);

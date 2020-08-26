@@ -1,15 +1,14 @@
 (function () {
-  
   function EventEmitter() {}
 
   EventEmitter.prototype.on = function (event, handler) {
-    if (typeof event !== 'string') throw new TypeError('The 1st argument is not a string');
-    if (typeof handler !== 'function') throw new TypeError('The 2nd argument is not a function');
+    if(typeof event !== 'string') throw new TypeError('The 1st argument is not a string');
+    if(typeof handler !== 'function') throw new TypeError('The 2nd argument is not a function');
 
-    if (!this._events) {
+    if(!this._events) {
       this._events = { __proto__: null };
     }
-    if (!this._events[event]) {
+    if(!this._events[event]) {
       this._events[event] = [];
     }
 
@@ -18,8 +17,8 @@
   };
 
   EventEmitter.prototype.once = function (event, handler) {
-    if (typeof event !== 'string') throw new TypeError('The 1st argument is not a string');
-    if (typeof handler !== 'function') throw new TypeError('The 2nd argument is not a function');
+    if(typeof event !== 'string') throw new TypeError('The 1st argument is not a string');
+    if(typeof handler !== 'function') throw new TypeError('The 2nd argument is not a function');
 
     var emitFn = function () {
       handler.apply(this, arguments);
@@ -30,10 +29,10 @@
   };
 
   EventEmitter.prototype.bindEventEmitter = function (target, event) {
-    if (event !== undefined && typeof event !== 'string') {
+    if(event !== undefined && typeof event !== 'string') {
       throw new TypeError('The 2nd argument is not a string');
     }
-    if (!target._events) {
+    if(!target._events) {
       target._events = { __proto__: null };
     }
 
@@ -41,30 +40,28 @@
   };
 
   EventEmitter.prototype.off = function (event, handler) {
-    if (event !== undefined && typeof event !== 'string') {
+    if(event !== undefined && typeof event !== 'string') {
       throw new TypeError('The 1st argument is not a string');
     }
-    if (handler !== undefined && typeof handler !== 'function') {
+    if(handler !== undefined && typeof handler !== 'function') {
       throw new TypeError('The 2nd argument is not a function');
     }
-    if (!this._events) return this;
+    if(!this._events) return this;
 
-    if (event === undefined) {
-      for (let eventName in this._events) {
+    if(event === undefined) {
+      for(let eventName in this._events) {
         delete this._events[eventName];
       }
       return this;
-    }
-    else if (handler === undefined) {
+    } else if(handler === undefined) {
       delete this._events[event];
       return this;
-    }
-    else if (this._events[event] instanceof Array) {
+    } else if(this._events[event] instanceof Array) {
       let allFn = this._events[event];
 
-      for (let i = 0; i < allFn.length; i++) {
+      for(let i = 0; i < allFn.length; i++) {
         let fn = allFn[i];
-        if (fn === handler || fn._eventFn === handler) {
+        if(fn === handler || fn._eventFn === handler) {
           allFn.splice(i, 1);
           return this;
         }
@@ -74,20 +71,18 @@
   };
 
   EventEmitter.prototype.emit = function (event, args) {
-    if (event !== undefined && typeof event !== 'string') {
+    if(event !== undefined && typeof event !== 'string') {
       throw new TypeError('The 1st argument is not a string');
     }
 
-    if (!this._events || !this._events[event]) {
+    if(!this._events || !this._events[event]) {
       return this;
     }
     let extra_arguments = Array.prototype.slice.call(arguments, 1);
     let handlers = this._events[event].slice();
-    handlers.forEach(
-      (fn) => {
-        fn.apply(this, extra_arguments);
-      }
-    );
+    handlers.forEach((fn) => {
+      fn.apply(this, extra_arguments);
+    });
     return this;
   };
   EventEmitter.bindPrototype = function (ctor) {

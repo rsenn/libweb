@@ -11,15 +11,14 @@ export class HashList {
   add(arg, key = null) {
     let args = [...arguments];
     let obj = this.ctor.apply(this, args);
-    if (!key) key = this.keyfn(obj);
-    if (this[key] instanceof Array) {
+    if(!key) key = this.keyfn(obj);
+    if(this[key] instanceof Array) {
       this[key].push(obj);
-    }
-    else {
+    } else {
       this[key] = [];
       this[key].push(obj);
     }
-    if (this.keys.indexOf(key) == -1) this.keys.push(key);
+    if(this.keys.indexOf(key) == -1) this.keys.push(key);
     return this[key];
   }
 
@@ -46,7 +45,7 @@ export class HashList {
 
   indexOf(name) {
     let i = Object.keys(this).indexOf(name);
-    if (i != -1) return name;
+    if(i != -1) return name;
     return Object.keys(this).reduce((acc, key) => (this[key] === name ? key : -1), -1);
   }
 
@@ -84,7 +83,7 @@ export class HashList {
       (obj) => obj.key || obj.id,
       (obj) => obj
     );
-    for (let i = 0; i < arr.length; i++) {
+    for(let i = 0; i < arr.length; i++) {
       ret.add(arr[i]);
     }
     return ret;

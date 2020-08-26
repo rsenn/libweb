@@ -14,13 +14,13 @@
  */
 
 //Map array support
-if (![].map) {
+if(![].map) {
   Array.prototype.map = function (callback, self) {
     let array = this;
     let len = array.length;
     let newArray = new Array(len);
-    for (let i = 0; i < len; i++) {
-      if (i in array) {
+    for(let i = 0; i < len; i++) {
+      if(i in array) {
         newArray[i] = callback.call(self, array[i], i, array);
       }
     }
@@ -29,18 +29,18 @@ if (![].map) {
 }
 
 //Filter array support
-if (![].filter) {
+if(![].filter) {
   Array.prototype.filter = function (callback) {
-    if (this == null) throw new TypeError();
+    if(this == null) throw new TypeError();
     let t = Object(this);
     let len = t.length >>> 0;
-    if (typeof callback !== 'function') throw new TypeError();
+    if(typeof callback !== 'function') throw new TypeError();
     let newArray = [];
     let thisp = arguments[1];
-    for (let i = 0; i < len; i++) {
-      if (i in t) {
+    for(let i = 0; i < len; i++) {
+      if(i in t) {
         let val = t[i];
-        if (callback.call(thisp, val, i, t)) newArray.push(val);
+        if(callback.call(thisp, val, i, t)) newArray.push(val);
       }
     }
     return newArray;
@@ -48,26 +48,25 @@ if (![].filter) {
 }
 
 //Index of array support
-if (![].indexOf) {
+if(![].indexOf) {
   Array.prototype.indexOf = function (searchElement) {
-    if (this == null) throw new TypeError();
+    if(this == null) throw new TypeError();
     let t = Object(this);
     let len = t.length >>> 0;
-    if (len === 0) return -1;
+    if(len === 0) return -1;
     let n = 0;
-    if (arguments.length > 1) {
+    if(arguments.length > 1) {
       n = Number(arguments[1]);
-      if (n != n) {
+      if(n != n) {
         n = 0;
-      }
-      else if (n !== 0 && n != Infinity && n != -Infinity) {
+      } else if(n !== 0 && n != Infinity && n != -Infinity) {
         n = (n > 0 || -1) * Math.floor(Math.abs(n));
       }
     }
-    if (n >= len) return -1;
+    if(n >= len) return -1;
     let k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
-    for (; k < len; k++) {
-      if (k in t && t[k] === searchElement) return k;
+    for(; k < len; k++) {
+      if(k in t && t[k] === searchElement) return k;
     }
     return -1;
   };
@@ -83,7 +82,7 @@ let nativeSplit = String.prototype.split;
 let compliantExecNpcg = /()??/.exec('')[1] === undefined;
 String.prototype.split = function (separator, limit) {
   let str = this;
-  if (Object.prototype.toString.call(separator) !== '[object RegExp]') {
+  if(Object.prototype.toString.call(separator) !== '[object RegExp]') {
     return nativeSplit.call(str, separator, limit);
   }
   let output = [];
@@ -95,42 +94,41 @@ String.prototype.split = function (separator, limit) {
   let lastLength;
   separator = new RegExp(separator.source, flags + 'g');
   str += '';
-  if (!compliantExecNpcg) {
+  if(!compliantExecNpcg) {
     separator2 = new RegExp('^' + separator.source + '$(?!\\s)', flags);
   }
   limit = limit === undefined ? -1 >>> 0 : limit >>> 0;
-  while ((match = separator.exec(str))) {
+  while((match = separator.exec(str))) {
     lastIndex = match.index + match[0].length;
-    if (lastIndex > lastLastIndex) {
+    if(lastIndex > lastLastIndex) {
       output.push(str.slice(lastLastIndex, match.index));
-      if (!compliantExecNpcg && match.length > 1) {
+      if(!compliantExecNpcg && match.length > 1) {
         match[0].replace(separator2, function () {
-          for (let i = 1; i < arguments.length - 2; i++) {
-            if (arguments[i] === undefined) {
+          for(let i = 1; i < arguments.length - 2; i++) {
+            if(arguments[i] === undefined) {
               match[i] = undefined;
             }
           }
         });
       }
-      if (match.length > 1 && match.index < str.length) {
+      if(match.length > 1 && match.index < str.length) {
         Array.prototype.push.apply(output, match.slice(1));
       }
       lastLength = match[0].length;
       lastLastIndex = lastIndex;
-      if (output.length >= limit) {
+      if(output.length >= limit) {
         break;
       }
     }
-    if (separator.lastIndex === match.index) {
+    if(separator.lastIndex === match.index) {
       separator.lastIndex++;
     }
   }
-  if (lastLastIndex === str.length) {
-    if (lastLength || !separator.test('')) {
+  if(lastLastIndex === str.length) {
+    if(lastLength || !separator.test('')) {
       output.push('');
     }
-  }
-  else {
+  } else {
     output.push(str.slice(lastLastIndex));
   }
   return output.length > limit ? output.slice(0, limit) : output;

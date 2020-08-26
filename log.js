@@ -28,19 +28,18 @@ let appenders = {};
 let log = function (type, message, url, lineNumber) {
   let now = new Date().getTime();
 
-  if (message instanceof Error) {
-    if (message.stack) {
+  if(message instanceof Error) {
+    if(message.stack) {
       message = message.message && message.stack.indexOf(message.message) === -1 ? message.message + '\n' + message.stack : message.stack;
-    }
-    else if (message.sourceURL) {
+    } else if(message.sourceURL) {
       message = message.message;
       url = message.sourceURL;
       lineNumber = message.line;
     }
   }
 
-  for (let appender in appenders) {
-    if (appenders.hasOwnProperty(appender)) {
+  for(let appender in appenders) {
+    if(appenders.hasOwnProperty(appender)) {
       appenders[appender].log(type, now, message, url, lineNumber);
     }
   }
@@ -50,13 +49,13 @@ let log = function (type, message, url, lineNumber) {
 let win = LogJS.window_;
 
 let gErrorHandler;
-if (win.onerror !== undefined) {
+if(win.onerror !== undefined) {
   gErrorHandler = win.onerror;
 }
 
 win.onerror = function onErrorLogJS(message, url, lineNumber) {
   log(LogJS.EXCEPTION, message, url, lineNumber);
-  if (gErrorHandler) {
+  if(gErrorHandler) {
     gErrorHandler(message, url, lineNumber);
   }
 };
@@ -78,9 +77,9 @@ LogJS.info = function (message, url, lineNumber) {
 //--------------------------------------------------------------------------------------------------
 
 LogJS.addAppender = function (appender) {
-  if (appender !== undefined) {
+  if(appender !== undefined) {
     appender = new appender(LogJS.config);
-    if (appender.LOGJSAPPENDER) {
+    if(appender.LOGJSAPPENDER) {
       appenders[appender.name] = appender;
     }
   }
@@ -92,8 +91,8 @@ LogJS.getAppender = function (appenderName) {
 
 LogJS.getRegisteredAppenders = function () {
   let registered = [];
-  for (let appender in appenders) {
-    if (appenders.hasOwnProperty(appender)) {
+  for(let appender in appenders) {
+    if(appenders.hasOwnProperty(appender)) {
       registered.push(appender);
     }
   }
@@ -133,7 +132,7 @@ Object.defineProperty(LogJS.BaseAppender.prototype, 'name', {
 });
 
 //Angular
-if (typeof angular !== 'undefined') {
+if(typeof angular !== 'undefined') {
   LogJS.config.global = {
     debug: true
   };
@@ -143,26 +142,25 @@ if (typeof angular !== 'undefined') {
     let self = this;
 
     this.debugEnabled = function (flag) {
-      if (typeof flag !== 'undefined') {
+      if(typeof flag !== 'undefined') {
         this.config.global = {
           debug: flag
         };
         return this;
       }
       return this.config.global.debug;
-      
     };
 
     this.$get = function () {
       let angularLogJS = {};
       ['error', 'info', 'debug', 'log', 'warn'].forEach((e) => {
         let method = LogJS.info;
-        if (LogJS[e]) {
+        if(LogJS[e]) {
           method = LogJS[e];
         }
         angularLogJS[e] = (function (method, e) {
           return function () {
-            if (e !== 'debug' || self.config.global.debug) {
+            if(e !== 'debug' || self.config.global.debug) {
               method.apply(LogJS, arguments);
             }
           };

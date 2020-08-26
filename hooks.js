@@ -23,14 +23,14 @@ let RAF_TIMEOUT = 100;
 let prevRaf;
 
 options.__r = function (vnode) {
-  if (oldBeforeRender) {
+  if(oldBeforeRender) {
     oldBeforeRender(vnode);
   }
   currentComponent = vnode.__c;
   currentIndex = 0;
   let hooks = currentComponent.__H;
 
-  if (hooks) {
+  if(hooks) {
     hooks.__h.forEach(invokeCleanup);
 
     hooks.__h.forEach(invokeEffect);
@@ -40,12 +40,12 @@ options.__r = function (vnode) {
 };
 
 options.diffed = function (vnode) {
-  if (oldAfterDiff) {
+  if(oldAfterDiff) {
     oldAfterDiff(vnode);
   }
   let c = vnode.__c;
 
-  if (c && c.__H && c.__H.__h.length) {
+  if(c && c.__H && c.__H.__h.length) {
     afterPaint(afterPaintEffects.push(c));
   }
 };
@@ -55,11 +55,10 @@ options.__c = function (vnode, commitQueue) {
     try {
       component.__h.forEach(invokeCleanup);
 
-      component.__h = component.__h.filter((cb) => cb.__ ? invokeEffect(cb) : true);
-    }
-    catch (e) {
+      component.__h = component.__h.filter((cb) => (cb.__ ? invokeEffect(cb) : true));
+    } catch(e) {
       commitQueue.some((c) => {
-        if (c.__h) {
+        if(c.__h) {
           c.__h = [];
         }
       });
@@ -68,22 +67,21 @@ options.__c = function (vnode, commitQueue) {
       options.__e(e, component.__v);
     }
   });
-  if (oldCommit) {
+  if(oldCommit) {
     oldCommit(vnode, commitQueue);
   }
 };
 
 options.unmount = function (vnode) {
-  if (oldBeforeUnmount) {
+  if(oldBeforeUnmount) {
     oldBeforeUnmount(vnode);
   }
   let c = vnode.__c;
 
-  if (c && c.__H) {
+  if(c && c.__H) {
     try {
       c.__H.__.forEach(invokeCleanup);
-    }
-    catch (e) {
+    } catch(e) {
       options.__e(e, c.__v);
     }
   }
@@ -97,7 +95,7 @@ options.unmount = function (vnode) {
  */
 
 function getHookState(index, type) {
-  if (options.__h) {
+  if(options.__h) {
     options.__h(currentComponent, index, currentHook || type);
   }
 
@@ -114,7 +112,7 @@ function getHookState(index, type) {
       __h: []
     });
 
-  if (index >= hooks.__.length) {
+  if(index >= hooks.__.length) {
     hooks.__.push({});
   }
 
@@ -138,19 +136,18 @@ function useState(initialState) {
  */
 
 function useReducer(reducer, initialState, init) {
-
   /** @type {import('./internal').ReducerHookState} */
   let hookState = getHookState(currentIndex++, 2);
   hookState._reducer = reducer;
 
-  if (!hookState.__c) {
+  if(!hookState.__c) {
     hookState.__c = currentComponent;
     hookState.__ = [
       !init ? invokeOrReturn(undefined, initialState) : init(initialState),
       function (action) {
         let nextValue = hookState._reducer(hookState.__[0], action);
 
-        if (hookState.__[0] !== nextValue) {
+        if(hookState.__[0] !== nextValue) {
           hookState.__ = [nextValue, hookState.__[1]];
 
           hookState.__c.setState({});
@@ -168,11 +165,10 @@ function useReducer(reducer, initialState, init) {
  */
 
 function useEffect(callback, args) {
-
   /** @type {import('./internal').EffectHookState} */
   let state = getHookState(currentIndex++, 3);
 
-  if (!options.__s && argsChanged(state.__H, args)) {
+  if(!options.__s && argsChanged(state.__H, args)) {
     state.__ = callback;
     state.__H = args;
 
@@ -186,11 +182,10 @@ function useEffect(callback, args) {
  */
 
 function useLayoutEffect(callback, args) {
-
   /** @type {import('./internal').EffectHookState} */
   let state = getHookState(currentIndex++, 4);
 
-  if (!options.__s && argsChanged(state.__H, args)) {
+  if(!options.__s && argsChanged(state.__H, args)) {
     state.__ = callback;
     state.__H = args;
 
@@ -199,9 +194,12 @@ function useLayoutEffect(callback, args) {
 }
 function useRef(initialValue) {
   currentHook = 5;
-  return useMemo(() => ({
-    current: initialValue
-  }), []);
+  return useMemo(
+    () => ({
+      current: initialValue
+    }),
+    []
+  );
 }
 
 /**
@@ -214,10 +212,9 @@ function useImperativeHandle(ref, createHandle, args) {
   currentHook = 6;
   useLayoutEffect(
     () => {
-      if (typeof ref == 'function') {
+      if(typeof ref == 'function') {
         ref(createHandle());
-      }
-      else if (ref) {
+      } else if(ref) {
         ref.current = createHandle();
       }
     },
@@ -231,11 +228,10 @@ function useImperativeHandle(ref, createHandle, args) {
  */
 
 function useMemo(factory, args) {
-
   /** @type {import('./internal').MemoHookState} */
   let state = getHookState(currentIndex++, 7);
 
-  if (argsChanged(state.__H, args)) {
+  if(argsChanged(state.__H, args)) {
     state.__H = args;
     state.__h = factory;
     return (state.__ = factory());
@@ -268,11 +264,11 @@ function useContext(context) {
   //is present in the tree.
 
   state.__c = context;
-  if (!provider) {
+  if(!provider) {
     return context.__;
   } //This is probably not safe to convert to "!"
 
-  if (state.__ == null) {
+  if(state.__ == null) {
     state.__ = true;
     provider.sub(currentComponent);
   }
@@ -286,7 +282,7 @@ function useContext(context) {
  */
 
 function useDebugValue(value, formatter) {
-  if (options.useDebugValue) {
+  if(options.useDebugValue) {
     options.useDebugValue(formatter ? formatter(value) : value);
   }
 }
@@ -295,9 +291,9 @@ function useErrorBoundary(cb) {
   let errState = useState();
   state.__ = cb;
 
-  if (!currentComponent.componentDidCatch) {
+  if(!currentComponent.componentDidCatch) {
     currentComponent.componentDidCatch = function (err) {
-      if (state.__) {
+      if(state.__) {
         state.__(err);
       }
       errState[1](err);
@@ -318,15 +314,14 @@ function useErrorBoundary(cb) {
 
 function flushAfterPaintEffects() {
   afterPaintEffects.some((component) => {
-    if (component.__P) {
+    if(component.__P) {
       try {
         component.__H.__h.forEach(invokeCleanup);
 
         component.__H.__h.forEach(invokeEffect);
 
         component.__H.__h = [];
-      }
-      catch (e) {
+      } catch(e) {
         component.__H.__h = [];
 
         options.__e(e, component.__v);
@@ -354,7 +349,7 @@ let HAS_RAF = typeof requestAnimationFrame == 'function';
 function afterNextFrame(callback) {
   let done = function done() {
     clearTimeout(timeout);
-    if (HAS_RAF) {
+    if(HAS_RAF) {
       cancelAnimationFrame(raf);
     }
     setTimeout(callback);
@@ -363,7 +358,7 @@ function afterNextFrame(callback) {
   var timeout = setTimeout(done, RAF_TIMEOUT);
   let raf;
 
-  if (HAS_RAF) {
+  if(HAS_RAF) {
     raf = requestAnimationFrame(done);
   }
 } //Note: if someone used options.debounceRendering = requestAnimationFrame,
@@ -376,7 +371,7 @@ function afterNextFrame(callback) {
  */
 
 function afterPaint(newQueueLength) {
-  if (newQueueLength === 1 || prevRaf !== options.requestAnimationFrame) {
+  if(newQueueLength === 1 || prevRaf !== options.requestAnimationFrame) {
     prevRaf = options.requestAnimationFrame;
     (prevRaf || afterNextFrame)(flushAfterPaintEffects);
   }
@@ -387,7 +382,7 @@ function afterPaint(newQueueLength) {
  */
 
 function invokeCleanup(hook) {
-  if (typeof hook._cleanup == 'function') {
+  if(typeof hook._cleanup == 'function') {
     hook._cleanup();
   }
 }
@@ -407,10 +402,7 @@ function invokeEffect(hook) {
  */
 
 function argsChanged(oldArgs, newArgs) {
-  return (
-    !oldArgs ||
-    newArgs.some((arg, index) => arg !== oldArgs[index])
-  );
+  return !oldArgs || newArgs.some((arg, index) => arg !== oldArgs[index]);
 }
 
 function invokeOrReturn(arg, f) {
