@@ -1,5 +1,6 @@
 import { Token } from './token.js';
 import Util from '../util.js';
+import path from '../path.js';
 
 export function PathReplacer() {
   let re;
@@ -110,13 +111,24 @@ export function Position(line, column, pos, file, freeze = true) {
 Position.prototype[Symbol.toStringTag] = function () {
   return this.toString();
 };
-Position.prototype.toString = function (showFilename = true, t = (p) => p) {
+
+Position.prototype[Symbol.iterator] = function* () {
   let { file, line, column } = this;
-  //console.log(Util.className(this), " ", Util.toString(this));
-
-  return file && showFilename ? `${t(file)}:${line}:${column}` : `${line}:${column}`;
+  let v = file ? [file, line, column] : [line, column];
+  yield* v;
 };
-
+Position.prototype.toString = function (opts = {}, t = (p) => p) {
+  const { showFilename = true, colors = false } = opts;
+  const c = Util.coloring(colors);
+  let v = [...Position.prototype[Symbol.iterator].call(this)];
+  if(!showFilename && v.length >= 3) v.shift();
+  v = v.map((f, i) => t(f, i));
+  v = v.map((f, i) => c.code(1, i == 0 ? 33 : 35) + f);
+  return v.join(c.code(1, 36) + ':');
+};
+Position.prototype[Symbol.for('nodejs.util.inspect.custom')] = function* () {
+  yield* this;
+};
 /*
 Position.prototype.valueOf = function() {
   return this.pos;

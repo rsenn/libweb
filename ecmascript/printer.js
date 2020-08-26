@@ -44,10 +44,10 @@ export class Printer {
     }
     let ret = '';
     //    console.log("node:",node);
-    let comments = (node && ESNode.assoc(node).comments) || [];
-    if(comments && comments.length) {
-      for(let comment of comments) {
-        ret += comment.value;
+    if(node instanceof ESNode) {
+      let comments = (node && ESNode.assoc(node).comments) || [];
+      if(comments && comments.length) {
+        for(let comment of comments) ret += comment.value;
       }
     }
     ret += fn.call(this, node);
@@ -115,8 +115,7 @@ export class Printer {
 
     //console.log('printBindingProperty:', value.value, id.value);
 
-
-    if([value,id].every(Util.isObject) && value.value != id.value) output += ': ' + this.printNode(value);
+    if([value, id].every(Util.isObject) && value.value != id.value) output += ': ' + this.printNode(value);
 
     return output;
   }

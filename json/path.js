@@ -12,7 +12,7 @@ export function DereferenceError(object, member, pos, prev, locator) {
 
       return `${('' + frame.getFileName()).replace(/.*plot-cv\//, '')}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
     });
-  Util.log('member:', member);
+  console.log('member:', member);
   return Object.assign(
     error,
     { object, member, pos, locator },
@@ -48,6 +48,10 @@ export class MutablePath extends Array {
 
   static REDUCER = (a, p) => a[p];
 
+  static equals(a, b) {
+    return MutablePath.prototype.equals.call(a, b);
+  }
+
   static isChildren(arg) {
     return IsChildren(arg);
   }
@@ -69,9 +73,9 @@ export class MutablePath extends Array {
     if(specialFields.length > 0) Util.define(this, 'specialFields', specialFields);
 
     MutablePath.parse(p, this, separator);
-    //Util.log('this:',this);
+    //console.log('this:',this);
 
-    //Util.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
+    //console.log(`\nnew Path(${[...arguments].length}):  length:`,  length,"", (first ? "first:" : ''), first||'',(last ? "  last:" : ''), last || '',"array:",a);
   }
 
   static matchObj(tagName, attr_or_index, tagField = 'tagName') {
@@ -250,7 +254,7 @@ export class MutablePath extends Array {
   /* prettier-ignore */ get depth() { return this.length; }
 
   static compareObj(obj, other) {
-    //Util.log("MutablePath.compareObj",{obj,other});
+    //console.log("MutablePath.compareObj",{obj,other});
     let ret = true;
     for(let prop in other) {
       const value = other[prop];
@@ -287,14 +291,14 @@ export class MutablePath extends Array {
           let r;
           let t = typeof i;
 
-          //Util.log(`MutablePath.apply[`,a.n,`]`,Util.isArray(a.o),a.o,i);
+          //console.log(`MutablePath.apply[`,a.n,`]`,Util.isArray(a.o),a.o,i);
           if(t != 'string') {
             if(a.o.length !== undefined) {
               if(t == 'function') {
                 const pred = i;
                 i = a.o.findIndex((e, i, a) => pred(e, i, a));
               } else if(t == 'object') {
-                //Util.log(`MutablePath.apply findIndex`,a.o,i);
+                //console.log(`MutablePath.apply findIndex`,a.o,i);
 
                 i = a.o.findIndex((child) => MutablePath.compareObj(child, i));
               } else if(t == 'number' && i < 0) {
@@ -423,8 +427,8 @@ export class MutablePath extends Array {
    * @return     {Path}    { description_of_the_return_value }
    */
   slice(start = 0, end = this.length) {
-    const ctor = this.constructor[Symbol.species];
-    let r = [...this].slice(start, end);
+    const ctor = this.constructor[Symbol.species] || this.constructor;
+    let r = Array.prototype.slice.call(MutablePath.prototype.toArray.call(this), start, end);
     r = Object.setPrototypeOf(r, ctor.prototype);
     if(ctor == ImmutablePath) r = Object.freeze(r);
     return r;
@@ -510,7 +514,7 @@ export class MutablePath extends Array {
   offset(predicate = (p, i) => p === '' || p === '/') {
     let i = 0;
     for(; i < this.length; i++) {
-      const part = this.at(i);
+      const part = MutablePath.prototype.at.call(this, i);
       if(!predicate(part, i, this)) break;
     }
     return i;
@@ -518,7 +522,7 @@ export class MutablePath extends Array {
 
   toArray(skip = true, n = 1) {
     let ret = [];
-    let i = this.offset();
+    let i = MutablePath.prototype.offset.call(this);
     for(; i < this.length; i += n) {
       if(n > 1) ret = ret.concat(Array.prototype.slice.call([...this], i, i + 2));
       else ret.push(this[i]);
@@ -528,10 +532,9 @@ export class MutablePath extends Array {
 
   equals(other = []) {
     const thisPath = this;
-
-    /*Util.log('equal', { thisPath, other });
-    //Util.log('thisPath', thisPath.length, ...[...thisPath]);
-    //Util.log('other', other.length, ...[...other]);*/
+    /*console.log('equal', { thisPath, other });
+    //console.log('thisPath', thisPath.length, ...[...thisPath]);
+    //console.log('other', other.length, ...[...other]);*/
     if(/*other.absolute &&*/ other.length != this.length) return false;
     if(!other.absolute && other.length < this.length) {
       let prepend = this.slice(0, this.length - other.length);
@@ -540,12 +543,21 @@ export class MutablePath extends Array {
     for(let i = 0; i < other.length; i++) {
       if(typeof this[i] != 'object') {
         if(this[i] != other[i]) return false;
-      } else if(!Util.equals(this[i], other[i])) {
-        return false;
+        else if(!Util.equals(this[i], other[i])) return false;
       }
     }
-
     return true;
+  }
+
+  startsWith(other = []) {
+    let a = this.slice(0, other.length);
+    return MutablePath.prototype.equals.call(this, a);
+  }
+
+  endsWith(other = []) {
+    let n = this.length;
+    let a = this.slice(n - other.length, n);
+    return MutablePath.prototype.equals.call(this, a);
   }
 
   get parent() {
@@ -579,6 +591,10 @@ export class MutablePath extends Array {
   }
 
   static equal = (a, b) => this.compare(a, b) === 0;
+
+  [Symbol.iterator]() {
+    return Array.prototype[Symbol.iterator].call(this);
+  }
 }
 //Util.define(MutablePath.prototype,specialFields', []);
 

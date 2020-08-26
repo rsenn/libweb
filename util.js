@@ -1155,14 +1155,17 @@ Util.leastCommonMultiple = (n1, n2) => {
   return (n1 * n2) / gcd;
 };
 Util.toString = (obj, opts = {}) => {
-  const { quote = '"', multiline = true, stringFn = (str) => str /*.replace(/\n/g, "\\n")*/, indent = '', colors = true, stringColor = [1, 36], spacing = '', padding = '', separator = ',', colon = ':', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
+  const { quote = '"', multiline = true, 
+  stringFn = (str) => str /*.replace(/\n/g, "\\n")*/, 
+  indent = '', colors = true, stringColor = [1, 36], spacing = '', 
+  newline = '\n', padding = '', separator = ',', colon = ': ', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
   if(depth < 0) {
     if(Util.isArray(obj)) return `[...${obj.length}...]`;
     if(Util.isObject(obj)) return `{ ..${Object.keys(obj).length}.. }`;
     return '' + obj;
   }
   const { c = Util.coloring(colors) } = opts;
-  const sep = multiline && depth > 0 ? (space = false) => '\n' + indent + (space ? '  ' : '') : (space = false) => (space ? spacing : '');
+  const sep = multiline && depth > 0 ? (space = false) => newline + indent + (space ? '  ' : '') : (space = false) => (space ? spacing : '');
   if(typeof obj == 'number') {
     return c.text(obj + '', 1, 36);
   } else if(Util.isArray(obj)) {
@@ -1181,10 +1184,10 @@ Util.toString = (obj, opts = {}) => {
     s = '[object ' + Util.className(obj) + ']';
     s = c.text(Util.className(obj), 1, 31) + ' ';
 
-    s += isMap ? `Map(${keys.length}) {\n  ` : c.text('{' + padding, 1, 36);
+    s += isMap ? `Map(${keys.length}) {${newline}  ` : c.text('{' + padding, 1, 36);
     let i = 0;
     let getFn = isMap ? (key) => obj.get(key) : (key) => obj[key];
-    let propSep = isMap ? c.text(' => ', 0) : c.text(colon + spacing, 1, 36);
+    let propSep = isMap ? c.text(' => ', 0) : c.text(colon /*+ spacing*/, 1, 36);
     for(let key of keys) {
       const value = getFn(key);
       s += i > 0 ? c.text(separator + sep(true), 36) : '';
@@ -1387,7 +1390,9 @@ Util.isObject = (obj, ...protoOrPropNames) => {
     if(Object.getPrototypeOf(obj) !== p) return false;
   } while(true);
 
-  return obj || false;
+  let r = obj || false;
+  if(!r) console.log('Util.isObject(', obj, ...protoOrPropNames, ')', ` = ${!!r}`);
+  return r;
 };
 Util.isFunction = (arg) => {
   if(arg !== undefined) return typeof arg == 'function' || !!(arg && arg.constructor && arg.call && arg.apply);
@@ -3906,6 +3911,10 @@ Object.assign(Util.is, {
   true: (val) => val === 'true' || val === true,
   false: (val) => val === 'false' || val === false
 });
+
+Util.assert = function Assert(act, message) {
+  if(!act) throw new Error(format('ASSERTION_S', message));
+};
 
 Util.assignGlobal = () => Util.weakAssign(Util.getGlobalObject(), Util);
 

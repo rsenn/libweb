@@ -15,35 +15,35 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
   } else {
     return fallbackhue;
   }
-};
+}
 
 export function hue2rgb(t1, t2, hue) {
   const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
   const rgb = rhue * 6 < 360 ? t1 + ((t2 - t1) * rhue) / 60 : rhue * 2 < 360 ? t2 : rhue * 3 < 720 ? t1 + ((t2 - t1) * (240 - rhue)) / 60 : t1;
   return rgb;
-};
+}
 
 export function luminance2contrast(relativeLuminance1, relativeLuminance2) {
   const l1 = max(relativeLuminance1, relativeLuminance2);
   const l2 = min(relativeLuminance1, relativeLuminance2);
   return (l1 * precision + 0.05 * precision) / (l2 * precision + 0.05 * precision);
-};
+}
 
 export function rgb2value(rgbR, rgbG, rgbB) {
   const value = max(rgbR, rgbG, rgbB);
   return value;
-};
+}
 
 export function rgb2whiteness(rgbR, rgbG, rgbB) {
   const whiteness = min(rgbR, rgbG, rgbB);
   return whiteness;
-};
+}
 
 export function matrix(params, mats) {
   return mats.map((mat) => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
-};
+}
 const precision = 100000000;
-const [ wd50X, wd50Y, wd50Z ] = [ 96.42, 100, 82.49 ];
+const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
 const atan2d = (y, x) => rad2deg(atan2(y, x));
 const cosd = (x) => cos(deg2rad(x));
 const deg2rad = (x) => (x * PI) / 180;
@@ -68,7 +68,7 @@ const kappa = pow(29, 3) / pow(3, 3);
  * concatenanted /home/roman/Dokumente/Sources/js-color/convert-colors/src/lab-ciede.js
  */
 
-export function lab2ciede([ L1, a1, b1 ], [ L2, a2, b2 ]) {
+export function lab2ciede([L1, a1, b1], [L2, a2, b2]) {
   const c1 = sqrt(pow(a1, 2) + pow(b1, 2));
   const c2 = sqrt(pow(a2, 2) + pow(b2, 2));
   const deltaLPrime = L2 - L1;
@@ -110,8 +110,7 @@ export function lab2ciede([ L1, a1, b1 ], [ L2, a2, b2 ]) {
   const term3 = deltaBigHPrime / (kh * sh);
   const term4 = Rt * term2 * term3;
   return sqrt(term1 * term1 + term2 * term2 + term3 * term3 + term4);
-};
+}
 const kl = 1;
 const kc = 1;
 const kh = 1;
-
