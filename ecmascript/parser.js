@@ -4,7 +4,70 @@ import deep from '../deep.js';
 //import util from 'util';
 import { Token, TokenList } from './token.js';
 import { Printer } from './printer.js';
-import { ESNode, Program, Expression, FunctionLiteral, Identifier, ComputedPropertyName, BindingProperty, Literal, TemplateLiteral, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, InExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, CaseClause, WhileStatement, DoStatement, ForStatement, ForInStatement, WithStatement, TryStatement, ThrowStatement, YieldStatement, ImportStatement, ExportStatement, Declaration, ClassDeclaration, FunctionDeclaration, ArrowFunction, VariableDeclaration, VariableDeclarator, ObjectLiteral, PropertyDefinition, MemberVariable, ArrayLiteral, JSXLiteral, BindingPattern, ArrayBindingPattern, ObjectBindingPattern, AwaitExpression, RestOfExpression, SpreadElement, CTORS, Factory } from './estree.js';
+import {
+  ESNode,
+  Program,
+  Expression,
+  FunctionLiteral,
+  Identifier,
+  ComputedPropertyName,
+  BindingProperty,
+  Literal,
+  TemplateLiteral,
+  ThisExpression,
+  UnaryExpression,
+  UpdateExpression,
+  BinaryExpression,
+  AssignmentExpression,
+  LogicalExpression,
+  MemberExpression,
+  InExpression,
+  ConditionalExpression,
+  CallExpression,
+  DecoratorExpression,
+  NewExpression,
+  SequenceExpression,
+  Statement,
+  BlockStatement,
+  StatementList,
+  EmptyStatement,
+  ExpressionStatement,
+  ReturnStatement,
+  ContinueStatement,
+  BreakStatement,
+  IfStatement,
+  SwitchStatement,
+  CaseClause,
+  WhileStatement,
+  DoStatement,
+  ForStatement,
+  ForInStatement,
+  WithStatement,
+  TryStatement,
+  ThrowStatement,
+  YieldStatement,
+  ImportStatement,
+  ExportStatement,
+  Declaration,
+  ClassDeclaration,
+  FunctionDeclaration,
+  ArrowFunction,
+  VariableDeclaration,
+  VariableDeclarator,
+  ObjectLiteral,
+  PropertyDefinition,
+  MemberVariable,
+  ArrayLiteral,
+  JSXLiteral,
+  BindingPattern,
+  ArrayBindingPattern,
+  ObjectBindingPattern,
+  AwaitExpression,
+  RestOfExpression,
+  SpreadElement,
+  CTORS,
+  Factory
+} from './estree.js';
 import MultiMap from '../container/multiMap.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
@@ -543,7 +606,7 @@ export class ECMAScriptParser extends Parser {
 
     if(!is_async && this.matchKeywords('this')) {
       this.expectKeywords('this');
-      expr = new estree.ThisExpression();
+      expr = new ThisExpression();
     } else if(this.matchKeywords('class')) {
       expr = this.parseClass();
     } else if(is_async && this.matchKeywords('function')) {
@@ -560,10 +623,10 @@ export class ECMAScriptParser extends Parser {
 
       /*   } else if(this.matchIdentifier("super") && this.token.value == "super") {
       this.expectIdentifier("super");
-      expr = new estree.Identifier("super");*/
+      expr = new Identifier("super");*/
     } else if(this.matchKeywords('super')) {
       this.expectKeywords('super');
-      expr = new estree.Identifier('super');
+      expr = new Identifier('super');
     } else if(this.matchIdentifier()) {
       let id = this.expectIdentifier();
 
@@ -587,7 +650,7 @@ export class ECMAScriptParser extends Parser {
       expr = expression;
     }
     if(rest_of) {
-      expr = new estree.RestOfExpression(expr);
+      expr = new RestOfExpression(expr);
     }
     return expr;
   }
@@ -1152,7 +1215,7 @@ export class ECMAScriptParser extends Parser {
             this.expectPunctuators(']');
           } else if(this.matchPunctuators([':'])) {
             if(flags & PropertyDefinition.GETTER) {
-              member = new estree.Identifier('get');
+              member = new Identifier('get');
               flags &= ~PropertyDefinition.GETTER;
             }
           } else if(this.matchLiteral()) {
@@ -1760,7 +1823,7 @@ export class ECMAScriptParser extends Parser {
       let stmt = this.parseVariableStatement();
 
       if(exported) {
-        stmt = new estree.ExportStatement(defaultExport || stmt.id, stmt);
+        stmt = new ExportStatement(defaultExport || stmt.id, stmt);
       }
       return stmt;
     } else if(this.matchKeywords('import')) {
@@ -1815,7 +1878,7 @@ export class ECMAScriptParser extends Parser {
       let stmt = this.parseExpressionStatement();
 
       if(defaultExport) {
-        stmt = new estree.ExportStatement('default', stmt);
+        stmt = new ExportStatement('default', stmt);
       }
       return stmt;
     }

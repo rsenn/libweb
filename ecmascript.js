@@ -1,4 +1,4 @@
-export { CTORS, estree, Factory, ESNode } from './ecmascript/estree.js';
+export { CTORS, default as estree, Factory, ESNode } from './ecmascript/estree.js';
 export { Lexer, Stack, PathReplacer } from './ecmascript/lexer.js';
 export { Parser, ECMAScriptParser } from './ecmascript/parser.js';
 export { Printer } from './ecmascript/printer.js';

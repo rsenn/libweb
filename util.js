@@ -1188,7 +1188,7 @@ Util.toString = (obj, opts = {}) => {
     for(let key of keys) {
       const value = getFn(key);
       s += i > 0 ? c.text(separator + sep(true), 36) : '';
-      s += c.text(typeof(key) == 'symbol' ? key.toString() : key, 1, 33) + propSep;
+      s += c.text(typeof key == 'symbol' ? key.toString() : key, 1, 33) + propSep;
       if(Util.isObject(value) || typeof value == 'number') s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
       else if(typeof value == 'string') s += c.text(`'${value}'`, 1, 32);
       else s += value;
@@ -4280,8 +4280,10 @@ Util.callMain = async (fn, trapExceptions) => {
       exec,
       (a) => a,
       (err) => {
-        //    let st = Util.stack(err.stack);
-        console.log('main Exception:', err.message, '\n', err.stack);
+        let { message, stack } = err;
+
+        stack = Util.stack(err.stack);
+        console.log('main Exception:', message, '\n', stack + '');
       }
     );
 
