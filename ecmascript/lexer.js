@@ -47,7 +47,7 @@ export class SyntaxError extends Error {
     super(msg);
 
     this.msg = msg;
-    this.stack = Stack().join('\n');
+    // this.stack = Util.stack(); //Stack().join('\n');
 
     this.ctx = ctx;
     this.ast = ast;

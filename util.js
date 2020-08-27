@@ -1875,9 +1875,10 @@ Util.putError = (err) => {
   (console.info || console.log)('Util.putError ', e);
   (console.error || console.log)('ERROR:\n' + err.message + '\nstack:\n' + s.toString());
 };
-Util.putStack = (stack) => {
-  stack = stack || Util.stack(new Error().stack);
-  (console.error || console.log)('STACK TRACE:', stack /*.toString()*/);
+Util.putStack = (stack = new Error().stack) => {
+  (console.error || console.log)('STACK TRACE:', Util.className(stack), Util.className(stack[1]));
+  stack = stack instanceof Util.stack ? stack : Util.stack(stack);
+  (console.error || console.log)('STACK TRACE:', stack.toString());
 };
 
 Util.trap = (() => {
@@ -3080,6 +3081,8 @@ Util.scriptDir = () =>
     () => Util.getURL()
   );
 Util.stack = function Stack(stack, offset) {
+  console.log('Util.stack (1)', stack);
+
   if(typeof stack == 'number') return Object.setPrototypeOf(new Array(stack), Util.stack.prototype);
 
   //console.log('stack ctor:', offset, stack);
@@ -3104,6 +3107,7 @@ Util.stack = function Stack(stack, offset) {
 
   if(typeof stack == 'string') {
     stack = stack.split(/\n/g).slice(1);
+    console.log('Util.stack (2)', [...stack] /*.toString(true)*/);
     const re = new RegExp('.* at ([^ ][^ ]*) \\(([^)]*)\\)');
     stack = stack.map((frame) =>
       typeof frame == 'string'
@@ -3128,6 +3132,7 @@ Util.stack = function Stack(stack, offset) {
       lineNumber,
       columnNumber
     }));
+
     stack = stack.map(({ functionName: func, fileName: file, columnNumber: column, lineNumber: line }) => ({
       functionName: func,
       fileName: file.replace(new RegExp(Util.getURL() + '/', 'g'), '').replace(/:.*/g, ''),
@@ -3149,7 +3154,9 @@ Util.stack = function Stack(stack, offset) {
   //stack =stack.map(f => f+'');
   stack = Object.setPrototypeOf(stack, Util.stack.prototype);
 
-  //console.log('Util.stack:', stack /*.toString(true)*/);
+  /*    console.log('Util.stack.toString  =', [Util.toString,Util.toSource,Util.inspect, Util.stack.prototype.toString].indexOf(stack.toString));
+      console.log('Util.stack.toString() =', Util.stack.prototype.toString.call(stack));
+*/
   //console.log('Util.stack:', [...stack]);
 
   return stack;
@@ -4281,6 +4288,7 @@ Util.callMain = async (fn, trapExceptions) => {
       (a) => a,
       (err) => {
         let { message, stack } = err;
+        console.log('main stack:' + err.stack);
 
         stack = Util.stack(err.stack);
         console.log('main Exception:', message, '\n', stack + '');
