@@ -1876,7 +1876,7 @@ Util.putError = (err) => {
   (console.error || console.log)('ERROR:\n' + err.message + '\nstack:\n' + s.toString());
 };
 Util.putStack = (stack = new Error().stack) => {
-  (console.error || console.log)('STACK TRACE:', Util.className(stack), Util.className(stack[1]));
+ // (console.error || console.log)('STACK TRACE:', Util.className(stack), Util.className(stack[1]));
   stack = stack instanceof Util.stack ? stack : Util.stack(stack);
   (console.error || console.log)('STACK TRACE:', stack.toString());
 };
@@ -3081,7 +3081,7 @@ Util.scriptDir = () =>
     () => Util.getURL()
   );
 Util.stack = function Stack(stack, offset) {
-  console.log('Util.stack (1)', stack);
+  //console.log('Util.stack (1)', stack);
 
   if(typeof stack == 'number') return Object.setPrototypeOf(new Array(stack), Util.stack.prototype);
 
@@ -3107,7 +3107,7 @@ Util.stack = function Stack(stack, offset) {
 
   if(typeof stack == 'string') {
     stack = stack.split(/\n/g).slice(1);
-    console.log('Util.stack (2)', [...stack] /*.toString(true)*/);
+    //console.log('Util.stack (2)', [...stack] /*.toString(true)*/);
     const re = new RegExp('.* at ([^ ][^ ]*) \\(([^)]*)\\)');
     stack = stack.map((frame) =>
       typeof frame == 'string'
@@ -3303,16 +3303,16 @@ Util.getCaller = function (index = 1, stack) {
 Util.getCallers = function (start = 2, num = Number.MAX_SAFE_INTEGER, pred = () => true, stack) {
   stack = stack || Util.getCallerStack(start + 1);
   let ret = [];
-  let i = 0;
+  let i = -1;
   while(i < num && stack[i] !== undefined) {
-    try {
+     i++;
+   try {
       let frame = Util.getCaller(i, stack);
       if(pred(frame)) {
         //if(frame === null) break;
         ret.push(frame);
       }
     } catch(err) {}
-    i++;
   }
   ret.toString = function () {
     return this.map((frame) => frame.toString()).join('\n');
