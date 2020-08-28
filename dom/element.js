@@ -431,10 +431,10 @@ export class Element extends Node {
 
   static moveRelative(element, to, edges = ['left', 'top']) {
     let e = typeof element == 'string' ? Element.find(element) : element;
-    let origin = Object.freeze(to ? new Point(to) : Element.position(e, edges));
+    let origin = to ? new Point(to) : Element.position(e, edges);
     const f = [edges[0] == 'left' ? 1 : -1, edges[1] == 'top' ? 1 : -1];
 
-    //console.log('moveRelative', { e, to, edges, f });
+    console.log('moveRelative', { e, to, edges, f, origin });
 
     function move(x, y) {
       let pos = new Point(origin.x + x * f[0], origin.y + y * f[1]);
@@ -459,6 +459,26 @@ export class Element extends Node {
     //console.log("Element.resize: ", { e, size, css });
     Element.setCSS(e, css);
     return e;
+  }
+
+  static resizeRelative(element, to, f = 1) {
+    let e = typeof element == 'string' ? Element.find(element) : element;
+    let origin = new Size(to || Element.rect(e));
+    console.log('resizeRelative', { e, to, origin, f });
+    function resize(width, height, rel = true) {
+      let size = new Size(width, height);
+      if(rel) size = origin.sum(size.prod(f));
+      let css = size.toCSS(1, ['px', 'px']);
+      resize.css = css;
+      console.log('resizeRelative', { size, css });
+      resize.last = size;
+
+      return Element.setCSS(e, css);
+    }
+    resize.origin = origin;
+    resize.cancel = () => resize(0, 0);
+    resize.jump = () => Element.resizeRelative(e, to);
+    return resize;
   }
 
   static getEdgesXYWH({ x, y, w, h }) {

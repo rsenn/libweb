@@ -1794,7 +1794,8 @@ export class ECMAScriptParser extends Parser {
     let expression = null;
 
     if(!this.matchPunctuators(';')) expression = this.parseAssignmentExpression();
-
+console.log("expression:",expression)
+if(this.matchPunctuators(';'))
     this.expectPunctuators(';');
     return new ReturnStatement(expression);
   }

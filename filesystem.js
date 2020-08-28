@@ -115,6 +115,9 @@ export function NodeJSFileSystem(fs) {
     },
     stat(filename, dereference = false) {
       return dereference ? fs.statSync(filename) : fs.lstatSync(filename);
+    },
+    readdir(dir) {
+      return fs.readdirSync(dir);
     }
   };
 }

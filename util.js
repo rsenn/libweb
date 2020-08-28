@@ -1876,7 +1876,7 @@ Util.putError = (err) => {
   (console.error || console.log)('ERROR:\n' + err.message + '\nstack:\n' + s.toString());
 };
 Util.putStack = (stack = new Error().stack) => {
- // (console.error || console.log)('STACK TRACE:', Util.className(stack), Util.className(stack[1]));
+  // (console.error || console.log)('STACK TRACE:', Util.className(stack), Util.className(stack[1]));
   stack = stack instanceof Util.stack ? stack : Util.stack(stack);
   (console.error || console.log)('STACK TRACE:', stack.toString());
 };
@@ -3084,6 +3084,7 @@ Util.stack = function Stack(stack, offset) {
   //console.log('Util.stack (1)', stack);
 
   if(typeof stack == 'number') return Object.setPrototypeOf(new Array(stack), Util.stack.prototype);
+  if(!stack) stack = Util.getCallers(1);
 
   //console.log('stack ctor:', offset, stack);
 
@@ -3305,8 +3306,8 @@ Util.getCallers = function (start = 2, num = Number.MAX_SAFE_INTEGER, pred = () 
   let ret = [];
   let i = -1;
   while(i < num && stack[i] !== undefined) {
-     i++;
-   try {
+    i++;
+    try {
       let frame = Util.getCaller(i, stack);
       if(pred(frame)) {
         //if(frame === null) break;
@@ -4298,6 +4299,14 @@ Util.callMain = async (fn, trapExceptions) => {
   let ret = await exec();
 
   return ret;
+};
+Util.printReturnValue = (fn) => (...args) => {
+  let returnValue = fn(...args);
+  let stack = Util.getCallerStack();
+  // let st = Util.stack( stack);
+
+  (console.debug || console.log)('RETURN VAL:', Util.toString(returnValue, { colors: false }), { fn, args, stack });
+  return returnValue;
 };
 
 export default Util;
