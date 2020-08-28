@@ -1733,8 +1733,7 @@
           case '%': //Literal % sign
             replacement = '%';
             break;
-          default:
-            replacement = matchedString;
+          default: replacement = matchedString;
             break;
         }
         //Format the replacement according to any padding or
@@ -5682,8 +5681,7 @@
               xhtml += getXhtml(rootNode.childNodes[i], true, indentation);
             }
             return xhtml;
-          default:
-            return '';
+          default: return '';
         }
       } else {
         xhtml = '';

@@ -13,12 +13,10 @@ export function DereferenceError(object, member, pos, prev, locator) {
       return `${('' + frame.getFileName()).replace(/.*plot-cv\//, '')}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
     });
   console.log('member:', member);
-  return Object.assign(
-    error,
+  return Object.assign(error,
     { object, member, pos, locator },
     {
-      message:
-        `Error dereferencing ${Util.className(object)} @ ${MutablePath.prototype.toString.call(locator, '/', MutablePath.partToString, 'children')}
+      message: `Error dereferencing ${Util.className(object)} @ ${MutablePath.prototype.toString.call(locator, '/', MutablePath.partToString, 'children')}
 xml: ${Util.abbreviate(toXML(locator.root || object))}
 no member '${Util.inspect(member, { colors: false })}' in ${Util.toString(prev, { depth: 2, multiline: true, indent: '  ', colors: false })} \n` + stack.join('\n'),
       stack
@@ -285,8 +283,7 @@ export class MutablePath extends Array {
 
     //   while(a.length >= 1 && a[0] === '') a = a.slice(1);
 
-    a = a.reduce(
-      (a, i) => {
+    a = a.reduce((a, i) => {
         if(a.o) {
           let r;
           let t = typeof i;

@@ -70,8 +70,7 @@ function __generator(thisArg, body) {
     y,
     t,
     g;
-  return (
-    (g = { next: verb(0), throw: verb(1), return: verb(2) }),
+  return ((g = { next: verb(0), throw: verb(1), return: verb(2) }),
     typeof Symbol === 'function' &&
       (g[Symbol.iterator] = function () {
         return this;
@@ -106,8 +105,7 @@ function __generator(thisArg, body) {
             op = _.ops.pop();
             _.trys.pop();
             continue;
-          default:
-            if(!((t = _.trys), (t = t.length > 0 && t[t.length - 1])) && (op[0] === 6 || op[0] === 2)) {
+          default: if (!((t = _.trys), (t = t.length > 0 && t[t.length - 1])) && (op[0] === 6 || op[0] === 2)) {
               _ = 0;
               continue;
             }

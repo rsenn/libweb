@@ -683,8 +683,7 @@ function setProperty(dom, name, value, oldValue, isSvg) {
     } else {
       dom.removeEventListener(name, eventProxy, useCapture);
     }
-  } else if(
-    name !== 'list' &&
+  } else if(name !== 'list' &&
     name !== 'tagName' &&
     //HTMLButtonElement.form and HTMLInputElement.form are read-only but can be set using
     //setAttribute
@@ -702,8 +701,7 @@ function setProperty(dom, name, value, oldValue, isSvg) {
       } else {
         dom.setAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase(), value);
       }
-    } else if(
-      value == null ||
+    } else if(value == null ||
       (value === false &&
         //ARIA-attributes have a different notion of boolean values.
         //The value `false` is different from the attribute not
@@ -1143,8 +1141,7 @@ function render(vnode, parentDom, replaceNode) {
 
   //List of effects that need to be called after diffing.
   let commitQueue = [];
-  diff(
-    parentDom,
+  diff(parentDom,
     //Determine the new vnode tree and store it on the DOM element on
     //our custom `_children` property.
     ((isHydrating ? parentDom : replaceNode || parentDom)._children = vnode),

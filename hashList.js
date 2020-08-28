@@ -79,8 +79,7 @@ export class HashList {
 
   remap(fn) {
     const arr = this.toArray();
-    let ret = new HashList(
-      (obj) => obj.key || obj.id,
+    let ret = new HashList((obj) => obj.key || obj.id,
       (obj) => obj
     );
     for(let i = 0; i < arr.length; i++) {

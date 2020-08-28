@@ -83,8 +83,7 @@ trkl.is = (arg) => typeof arg == 'function' && typeof arg.subscribe == 'function
 
 trkl.getset = function (arg) {
   let trkl = arg || new trkl(arg);
-  return Object.create(
-    {
+  return Object.create({
       get: () => trkl(),
       set: (value) => trkl(value)
     },
@@ -145,8 +144,7 @@ trkl.property = function (object, name, options = { enumerable: true, configurab
 trkl.bind = function (object, name, handler) {
   let self = handler;
   if(typeof name == 'object')
-    Object.defineProperties(
-      object,
+    Object.defineProperties(object,
       Object.keys(name).reduce((acc, key) => ({ ...acc, [key]: { get: name[key], set: name[key], enumerable: true } }), {})
     );
   else

@@ -252,8 +252,7 @@ export function TurnListener(handler, options) {
     return this.cancel(event);
   }
 
-  return MultitouchListener(
-    MovementListener((event) => {
+  return MultitouchListener(MovementListener((event) => {
       const { points, x, y } = event;
       const type = event.type || '';
       let end = type.endsWith('up') || type.endsWith('cancel') || type.endsWith('end') || event.active === false;

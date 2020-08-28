@@ -206,14 +206,12 @@ HSLA.prototype.toString = function (prec = 1 / 255) {
 };
 
 HSLA.fromString = (str) => {
-  let c = Util.tryCatch(
-    () => new RGBA(str),
+  let c = Util.tryCatch(() => new RGBA(str),
     (c) => (c.valid() ? c : null),
     () => undefined
   );
   if(!c)
-    c = Util.tryCatch(
-      () => new HSLA(str),
+    c = Util.tryCatch(() => new HSLA(str),
       (c) => (c.valid() ? c : null),
       () => undefined
     );

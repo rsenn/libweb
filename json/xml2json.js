@@ -25,8 +25,7 @@ function xml2json_translator() {
 
       let o = {};
 
-      if(
-        !parent || //no parent = root element = first step in recursion
+      if(!parent || //no parent = root element = first step in recursion
         parent instanceof Array
       ) {
         //if parent is an Array, we cannot add attributes to it, so handle it with similar extra step as a root element

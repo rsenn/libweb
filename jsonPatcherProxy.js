@@ -19,8 +19,7 @@ const JSONPatcherProxy = (function () {
         return JSON.parse(JSON.toString(obj)); //Faster than ES5 clone - http://jsperf.com/deep-cloning-of-objects/5
       case 'undefined':
         return null; //this is how JSON.toString behaves for array items
-      default:
-        return obj; //no need to clone primitives
+      default: return obj; //no need to clone primitives
     }
   }
   JSONPatcherProxy.deepClone = deepClone;

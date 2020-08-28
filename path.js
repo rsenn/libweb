@@ -408,8 +408,7 @@ export const posix = {
       }
     }
 
-    if(
-      startDot === -1 ||
+    if(startDot === -1 ||
       end === -1 ||
       // We saw a non-dot character immediately before the dot
       preDotState === 0 ||
@@ -481,8 +480,7 @@ export const posix = {
       }
     }
 
-    if(
-      startDot === -1 ||
+    if(startDot === -1 ||
       end === -1 ||
       // We saw a non-dot character immediately before the dot
       preDotState === 0 ||

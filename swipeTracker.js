@@ -166,8 +166,7 @@ export class SwipeTracker {
 
   getEventHandlers() {
     const inst = this;
-    return Util.bindMethods(
-      {
+    return Util.bindMethods({
         onSwipeStart(event) {
           Util.log('swipestart: ', { event });
           inst.end = null;

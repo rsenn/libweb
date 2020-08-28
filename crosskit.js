@@ -1384,8 +1384,7 @@ let WEBGL = 'WEBGL',
   DOM = 'DOM'; //Simple
 
 window.update = function () {
-  return (
-    window.requestAnimationFrame ||
+  return (window.requestAnimationFrame ||
     window.webkitRequestAnimationFrame ||
     window.mozRequestAnimationFrame ||
     window.msRequestAnimationFrame ||

@@ -1620,8 +1620,7 @@ ClipperLib.Clipper.prototype.IsContributing = function (edge) {
     case ClipperLib.PolyFillType.pftPositive:
       if(edge.WindCnt !== 1) return false;
       break;
-    default:
-      if(edge.WindCnt !== -1) return false;
+    default: if (edge.WindCnt !== -1) return false;
       break;
   }
   switch (this.m_ClipType) {
@@ -1632,8 +1631,7 @@ ClipperLib.Clipper.prototype.IsContributing = function (edge) {
           return edge.WindCnt2 !== 0;
         case ClipperLib.PolyFillType.pftPositive:
           return edge.WindCnt2 > 0;
-        default:
-          return edge.WindCnt2 < 0;
+        default: return edge.WindCnt2 < 0;
       }
     case ClipperLib.ClipType.ctUnion:
       switch (pft2) {
@@ -1642,8 +1640,7 @@ ClipperLib.Clipper.prototype.IsContributing = function (edge) {
           return edge.WindCnt2 === 0;
         case ClipperLib.PolyFillType.pftPositive:
           return edge.WindCnt2 <= 0;
-        default:
-          return edge.WindCnt2 >= 0;
+        default: return edge.WindCnt2 >= 0;
       }
     case ClipperLib.ClipType.ctDifference:
       if(edge.PolyTyp === ClipperLib.PolyType.ptSubject)
@@ -1653,8 +1650,7 @@ ClipperLib.Clipper.prototype.IsContributing = function (edge) {
             return edge.WindCnt2 === 0;
           case ClipperLib.PolyFillType.pftPositive:
             return edge.WindCnt2 <= 0;
-          default:
-            return edge.WindCnt2 >= 0;
+          default: return edge.WindCnt2 >= 0;
         }
       else
         switch (pft2) {
@@ -1663,8 +1659,7 @@ ClipperLib.Clipper.prototype.IsContributing = function (edge) {
             return edge.WindCnt2 !== 0;
           case ClipperLib.PolyFillType.pftPositive:
             return edge.WindCnt2 > 0;
-          default:
-            return edge.WindCnt2 < 0;
+          default: return edge.WindCnt2 < 0;
         }
     case ClipperLib.ClipType.ctXor:
       if(edge.WindDelta === 0)
@@ -1674,8 +1669,7 @@ ClipperLib.Clipper.prototype.IsContributing = function (edge) {
             return edge.WindCnt2 === 0;
           case ClipperLib.PolyFillType.pftPositive:
             return edge.WindCnt2 <= 0;
-          default:
-            return edge.WindCnt2 >= 0;
+          default: return edge.WindCnt2 >= 0;
         }
       else return true;
   }
@@ -2228,8 +2222,7 @@ ClipperLib.Clipper.prototype.IntersectEdges = function (e1, e2, pt) {
     case ClipperLib.PolyFillType.pftNegative:
       e1Wc = -e1.WindCnt;
       break;
-    default:
-      e1Wc = Math.abs(e1.WindCnt);
+    default: e1Wc = Math.abs(e1.WindCnt);
       break;
   }
   switch (e2FillType) {
@@ -2239,8 +2232,7 @@ ClipperLib.Clipper.prototype.IntersectEdges = function (e1, e2, pt) {
     case ClipperLib.PolyFillType.pftNegative:
       e2Wc = -e2.WindCnt;
       break;
-    default:
-      e2Wc = Math.abs(e2.WindCnt);
+    default: e2Wc = Math.abs(e2.WindCnt);
       break;
   }
   if(e1Contributing && e2Contributing) {
@@ -2274,8 +2266,7 @@ ClipperLib.Clipper.prototype.IntersectEdges = function (e1, e2, pt) {
       case ClipperLib.PolyFillType.pftNegative:
         e1Wc2 = -e1.WindCnt2;
         break;
-      default:
-        e1Wc2 = Math.abs(e1.WindCnt2);
+      default: e1Wc2 = Math.abs(e1.WindCnt2);
         break;
     }
     switch (e2FillType2) {
@@ -2285,8 +2276,7 @@ ClipperLib.Clipper.prototype.IntersectEdges = function (e1, e2, pt) {
       case ClipperLib.PolyFillType.pftNegative:
         e2Wc2 = -e2.WindCnt2;
         break;
-      default:
-        e2Wc2 = Math.abs(e2.WindCnt2);
+      default: e2Wc2 = Math.abs(e2.WindCnt2);
         break;
     }
     if(e1.PolyTyp !== e2.PolyTyp) {
@@ -3722,8 +3712,7 @@ ClipperLib.Clipper.AddPolyNodeToPaths = function (polynode, nt, paths) {
     case ClipperLib.Clipper.NodeType.ntClosed:
       match = !polynode.IsOpen;
       break;
-    default:
-      break;
+    default: break;
   }
   if(polynode.m_polygon.length > 0 && match) paths.push(polynode.m_polygon);
   for(let $i3 = 0, $t3 = polynode.Childs(), $l3 = $t3.length, pn = $t3[$i3]; $i3 < $l3; $i3++, pn = $t3[$i3]) ClipperLib.Clipper.AddPolyNodeToPaths(pn, nt, paths);
@@ -4045,8 +4034,7 @@ ClipperLib.ClipperOffset.prototype.OffsetPoint = function (j, k, jointype) {
 			}
 			//else angle ==> 180 degrees
 		}
-*/ else if(
-    this.m_sinA < -1
+*/ else if(this.m_sinA < -1
   )
     this.m_sinA = -1.0;
   if(this.m_sinA * this.m_delta < 0) {
@@ -4232,8 +4220,7 @@ ClipperLib.JS.Lighten = function (polygon, tolerance) {
     poly = polygon[i];
     plen = poly.length;
     if(plen === 0) continue;
-    for(
-      k = 0;
+    for(k = 0;
       k < 1000000;
       k++ //could be forever loop, but wiser to restrict max repeat count
     ) {

@@ -220,8 +220,7 @@ export class Rotation extends Transformation {
         return DEG2RAD * angle;
       case 'turn':
         return angle / 360;
-      default:
-        return angle;
+      default: return angle;
     }
   }
 }
@@ -640,9 +639,7 @@ export class TransformationList extends Array {
 
 const { concat, copyWithin, find, findIndex, lastIndexOf, pop, push, shift, unshift, slice, splice, includes, indexOf, entries, filter, map, every, some, reduce, reduceRight } = Array.prototype;
 
-Util.inherit(
-  TransformationList.prototype,
-  {
+Util.inherit(TransformationList.prototype, {
     concat,
     copyWithin,
     find,
@@ -665,8 +662,7 @@ Util.inherit(
   {
     [Symbol.iterator]() {
       return Array.prototype[Symbol.iterator];
-    },
-    [Symbol.isConcatSpreadable]() {
+    }, [Symbol.isConcatSpreadable]() {
       return true;
     }
   }

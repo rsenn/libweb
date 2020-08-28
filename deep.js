@@ -101,7 +101,7 @@ export const iterate = function* (value, filter = (v) => true, path = []) {
   if(r !== -1) if (Util.isObject(value)) for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
 };
 
-export const flatten = function (iter, dst = {}, filter = (v, p) => typeof v != 'object', map = (p, v) => [p.join('.'), v]) {
+export const flatten = function (iter, dst = {}, filter = (v, p) => typeof v != 'object' && v !== null, map = (p, v) => [p.join('.'), v]) {
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 
@@ -131,12 +131,13 @@ export const set = (root, path, value) => {
   if(path.length == 0) return Object.assign(root, value);
 
   for(let j = 0, len = path.length; j + 1 < len; j++) {
-    let pathElement = isNaN(path[j]) ? path[j] : +path[j];
+    let pathElement = isNaN(+path[j]) ? path[j] : +path[j];
     if(!(pathElement in root)) root[pathElement] = /^[0-9]+$/.test(path[j + 1]) ? [] : {};
     root = root[pathElement];
   }
   let lastPath = path.pop();
-
+  root[lastPath] = value;
+  return root;
   return (root[lastPath] = value);
 };
 

@@ -50,8 +50,7 @@ export class CacheStorage {
       fs.readdir(tmpDir, (err, files) =>
         err
           ? reject(err)
-          : Promise.all(
-              files.map(
+          : Promise.all(files.map(
                 (file) =>
                   new Promise((resolve) =>
                     fs.stat(tmpDir + file, (_, stats) => {

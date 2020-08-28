@@ -194,8 +194,7 @@ function useLayoutEffect(callback, args) {
 }
 function useRef(initialValue) {
   currentHook = 5;
-  return useMemo(
-    () => ({
+  return useMemo(() => ({
       current: initialValue
     }),
     []
@@ -210,8 +209,7 @@ function useRef(initialValue) {
 
 function useImperativeHandle(ref, createHandle, args) {
   currentHook = 6;
-  useLayoutEffect(
-    () => {
+  useLayoutEffect(() => {
       if(typeof ref == 'function') {
         ref(createHandle());
       } else if(ref) {

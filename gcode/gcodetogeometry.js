@@ -2738,8 +2738,7 @@ export default function parse(code) {
 
   i = 0;
   while(i < gcode.length && parsing === true) {
-    //Sorry for not being really readable :'(
-    tabRes = parseParsedGCode(GParser.parse(removeCommentsAndSpaces(gcode[i]).toUpperCase()));
+    //Sorry for not being really readable :'(tabRes = parseParsedGCode(GParser.parse(removeCommentsAndSpaces(gcode[i]).toUpperCase()));
 
     j = 0;
     while(j < tabRes.length && parsing === true) {

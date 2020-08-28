@@ -325,8 +325,7 @@ Rect.prototype.align = function (align_to, a = 0) {
     case Align.RIGHT:
       this.x = align_to.x + xdiff;
       break;
-    default:
-      this.x = align_to.x + xdiff / 2;
+    default: this.x = align_to.x + xdiff / 2;
       break;
   }
   switch (Align.vertical(a)) {
@@ -336,8 +335,7 @@ Rect.prototype.align = function (align_to, a = 0) {
     case Align.BOTTOM:
       this.y = align_to.y + ydiff;
       break;
-    default:
-      this.y = align_to.y + ydiff / 2;
+    default: this.y = align_to.y + ydiff / 2;
       break;
   }
 

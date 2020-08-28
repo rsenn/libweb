@@ -37,8 +37,7 @@ export const Pin = ({ data, opts = {}, ...props }) => {
   const tp = pivot.diff(dir.prod(2.54));
 
   if(func == 'dot')
-    children.push(
-      h('circle', {
+    children.push(h('circle', {
         class: 'pin',
         stroke: '#a54b4b',
         fill: 'none',
@@ -49,8 +48,7 @@ export const Pin = ({ data, opts = {}, ...props }) => {
       })
     );
 
-  children.push(
-    h('line', {
+  children.push(h('line', {
       class: 'pin',
       stroke: '#a54b4b',
       ...l.toObject(),
@@ -58,8 +56,7 @@ export const Pin = ({ data, opts = {}, ...props }) => {
     })
   );
   if(name != '' && visible != 'off')
-    children.push(
-      h(Text, {
+    children.push(h(Text, {
         class: 'pin',
         color: Palette.schematic((r, g, b) => new RGBA(r, g, b))[16],
         x: tp.x,

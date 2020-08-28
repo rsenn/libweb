@@ -76,14 +76,12 @@ RGBA.properties = ['r', 'g', 'b', 'a'];
 export const isRGBA = (obj) => RGBA.properties.every((prop) => obj.hasOwnProperty(prop));
 
 RGBA.fromString = (str) => {
-  let c = Util.tryCatch(
-    () => new HSLA(str),
+  let c = Util.tryCatch(() => new HSLA(str),
     (c) => c.toRGBA(),
     () => undefined
   );
   if(!c)
-    c = Util.tryCatch(
-      () => new RGBA(str),
+    c = Util.tryCatch(() => new RGBA(str),
       (c) => c,
       () => undefined
     );

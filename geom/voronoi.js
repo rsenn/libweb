@@ -485,8 +485,7 @@ export class Voronoi {
     let newArc = this.createBeachsection(site);
     this.beachline.rbInsertSuccessor(lArc, newArc);
 
-    //cases:
-    //
+    //cases: //
 
     //[null,null]
     //least likely case: new beach section is the first beach section on the
@@ -608,8 +607,7 @@ export class Voronoi {
     return this.getCircleEvent();
   }
 
-  getCircleEvent = Util.memoize(
-    () =>
+  getCircleEvent = Util.memoize(() =>
       class CircleEvent {
         constructor() {
           //rhill 2013-10-12: it helps to state exactly what we are at ctor time.
@@ -1165,8 +1163,7 @@ export class Voronoi {
               }
             //fall through
 
-            default:
-              throw 'Voronoi.closeCells() > this makes no sense!';
+            default: throw 'Voronoi.closeCells() > this makes no sense!';
           }
         }
         iLeft++;
@@ -1304,8 +1301,7 @@ export class Voronoi {
       }
     }
 
-    //wrapping-up:
-    //connect dangling edges to bounding box
+    //wrapping-up: //connect dangling edges to bounding box
     //cut edges as per bounding box
     //discard edges completely outside bounding box
     //discard edges which are point-like

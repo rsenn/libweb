@@ -5,9 +5,7 @@ import { TransformationList } from '../../geom/transformation.js';
 import { useTrkl, useAttributes } from '../renderUtils.js';
 
 export const Pattern = ({ id = 'pattern', step = 2.54, color = '#0000aa', width = 0.05, ...props }) =>
-  h(
-    'pattern',
-    { id, width: step, height: step, patternUnits: 'userSpaceOnUse' },
+  h('pattern', { id, width: step, height: step, patternUnits: 'userSpaceOnUse' },
     h('path', {
       d: `M ${step},0 L 0,0 L 0,${step}`,
       fill: 'none',

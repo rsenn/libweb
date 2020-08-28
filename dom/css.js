@@ -3,8 +3,7 @@ import { Element } from './element.js';
 
 const getStyleMap = (obj, key) => {
   let rule = Util.find(obj, (item) => item.selectorText == key);
-  return Util.adapter(
-    rule,
+  return Util.adapter(rule,
     (obj) => (obj && obj.styleMap && obj.styleMap.size !== undefined ? obj.styleMap.size : 0),
     (obj, i) => [...obj.styleMap.keys()][i],
     (obj, key) =>
@@ -17,8 +16,7 @@ const getStyleMap = (obj, key) => {
 const getStyleSheet = (obj, key) => {
   let sheet = obj.cssRules ? obj : Util.find(obj, (entry) => entry.href == key || entry.ownerNode.id == key) || obj[key];
 
-  return Util.adapter(
-    sheet.rules,
+  return Util.adapter(sheet.rules,
     (obj) => (obj && obj.length !== undefined ? obj.length : 0),
     (obj, i) => obj[i].selectorText,
     getStyleMap
@@ -31,16 +29,14 @@ export class CSS {
   }
 
   static getDocument = Util.memoize(() =>
-    Util.tryCatch(
-      () => window.document,
+    Util.tryCatch(() => window.document,
       (d) => (console.log('document:', d), d)
     )
   );
 
   static list = Util.memoize((doc) => {
     if(!doc) doc = this.document;
-    let adapter = Util.adapter(
-      [...doc.styleSheets],
+    let adapter = Util.adapter([...doc.styleSheets],
       (obj) => obj.length,
       (obj, i) => obj[i].href || obj[i].ownerNode.id || i,
       getStyleSheet
@@ -72,8 +68,7 @@ export class CSS {
   }
 
   static classes(selector = '*') {
-    return Util.unique(
-      [...Element.findAll(selector)]
+    return Util.unique([...Element.findAll(selector)]
         .filter((e) => e.classList.length)
         .map((e) => [...e.classList])
         .flat()

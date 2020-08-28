@@ -76,8 +76,7 @@ function __generator(thisArg, body) {
     y,
     t,
     g;
-  return (
-    (g = { next: verb(0), throw: verb(1), return: verb(2) }),
+  return ((g = { next: verb(0), throw: verb(1), return: verb(2) }),
     typeof Symbol === 'function' &&
       (g[Symbol.iterator] = function () {
         return this;
@@ -112,8 +111,7 @@ function __generator(thisArg, body) {
             op = _.ops.pop();
             _.trys.pop();
             continue;
-          default:
-            if(!((t = _.trys), (t = t.length > 0 && t[t.length - 1])) && (op[0] === 6 || op[0] === 2)) {
+          default: if (!((t = _.trys), (t = t.length > 0 && t[t.length - 1])) && (op[0] === 6 || op[0] === 2)) {
               _ = 0;
               continue;
             }
@@ -194,8 +192,7 @@ function __asyncGenerator(thisArg, _arguments, generator) {
   let g = generator.apply(thisArg, _arguments || []),
     i,
     q = [];
-  return (
-    (i = {}),
+  return ((i = {}),
     verb('next'),
     verb('throw'),
     verb('return'),
@@ -441,8 +438,7 @@ let RepeaterController = /** @class */ (function () {
       return value;
     });
     this.err = undefined;
-    this.execution = execution.then(
-      () => undefined,
+    this.execution = execution.then(() => undefined,
       () => undefined
     );
     return this.pending === undefined ? execution : this.pending.then(() => execution);
@@ -713,8 +709,7 @@ function asyncIterators(contenders, options) {
       iters.push(contender[Symbol.asyncIterator]());
     } else if(isIterable(contender)) {
       let iter_1 = contender[Symbol.iterator]();
-      iters.push(
-        (function syncToAsyncIterator() {
+      iters.push((function syncToAsyncIterator() {
           return __asyncGenerator(this, arguments, function syncToAsyncIterator_1() {
             let result;
             return __generator(this, (_a) => {
@@ -747,8 +742,7 @@ function asyncIterators(contenders, options) {
         })()
       );
     } else {
-      iters.push(
-        (function valueToAsyncIterator() {
+      iters.push((function valueToAsyncIterator() {
           return __asyncGenerator(this, arguments, function valueToAsyncIterator_1() {
             return __generator(this, (_a) => {
               switch (_a.label) {
@@ -816,8 +810,7 @@ function race(contenders) {
             try {
               for(results_1 = ((e_4 = void 0), __values(results)), results_1_1 = results_1.next(); !results_1_1.done; results_1_1 = results_1.next()) {
                 result_1 = results_1_1.value;
-                Promise.resolve(result_1).then(
-                  (result) => {
+                Promise.resolve(result_1).then((result) => {
                     if(result.done && !stopped) {
                       stop();
                       stopped = true;
@@ -879,8 +872,7 @@ function merge(contenders) {
             stop.then(() => (stopped = true));
             return [
               4 /*yield*/,
-              Promise.all(
-                iters.map((iter) =>
+              Promise.all(iters.map((iter) =>
                   __awaiter(_this, void 0, void 0, function () {
                     let result, _a;
                     return __generator(this, (_b) => {
@@ -1021,8 +1013,7 @@ function latest(contenders) {
             _a.sent();
             return [
               4 /*yield*/,
-              Promise.all(
-                iters.map((iter, i) =>
+              Promise.all(iters.map((iter, i) =>
                   __awaiter(_this, void 0, void 0, function () {
                     let result;
                     return __generator(this, (_a) => {

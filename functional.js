@@ -214,8 +214,7 @@ export class Functional {
 
   static curry2 = (f) => {
     let f2;
-    return this._defprop(
-      (f2 = function (a, b) {
+    return this._defprop((f2 = function (a, b) {
         let n;
         n = arguments.length;
         if(n === 0) {
@@ -235,8 +234,7 @@ export class Functional {
 
   static curry2var = (f) => {
     let f2;
-    return this._defprop(
-      (f2 = function (a, b) {
+    return this._defprop((f2 = function (a, b) {
         let n;
         n = arguments.length;
         if(n === 0) {
@@ -256,8 +254,7 @@ export class Functional {
 
   static curry3 = (f) => {
     let f2;
-    return this._defprop(
-      (f2 = function (a, b, c) {
+    return this._defprop((f2 = function (a, b, c) {
         let n;
         n = arguments.length;
         if(n === 0) {
@@ -281,8 +278,7 @@ export class Functional {
 
   static curry3var = (f) => {
     let f2;
-    return this._defprop(
-      (f2 = function (a, b, c) {
+    return this._defprop((f2 = function (a, b, c) {
         let n;
         n = arguments.length;
         if(n === 0) {
@@ -364,8 +360,7 @@ export class Functional {
     if(f.__fnuc_flip) {
       return f.__fnuc_flip;
     }
-    g = this.curry(
-      this._nary(this.arityof(f), function () {
+    g = this.curry(this._nary(this.arityof(f), function () {
         let as;
         as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
         return Functional._uncurry(f).apply(null, as.reverse());
@@ -378,11 +373,9 @@ export class Functional {
     let fs;
     fs = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
     fs = Functional._pliftall(fs);
-    return Functional.ncurry(
-      Functional.arityof(Functional.last(fs)),
+    return Functional.ncurry(Functional.arityof(Functional.last(fs)),
       true,
-      Functional.fold1(
-        fs,
+      Functional.fold1(fs,
         (f, g) =>
           function () {
             let as;
@@ -397,8 +390,7 @@ export class Functional {
     let ar, fn, fs;
     fs = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
     fs = this._pliftall(fs);
-    fn = this.foldr1(
-      fs,
+    fn = this.foldr1(fs,
       (f, g) =>
         function () {
           let as;
@@ -423,8 +415,7 @@ export class Functional {
       let args, context;
       args = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       context = this;
-      return after.apply(
-        context,
+      return after.apply(context,
         Functional.map(fs, (fn) => fn.apply(context, args))
       );
     };
@@ -460,8 +451,7 @@ export class Functional {
     };
 
   static iif = this.curry3((c, t, f) =>
-    this.curry(
-      this._nary(
+    this.curry(this._nary(
         this.arityof(c),
         this.plift(function () {
           let as;
@@ -476,8 +466,7 @@ export class Functional {
   );
 
   static maybe = (fn) =>
-    this.unary(
-      this.plift(function () {
+    this.unary(this.plift(function () {
         let as;
         as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
         if(as.every(isdef)) {
@@ -489,8 +478,7 @@ export class Functional {
   static always = (v) => this.plift(() => v);
 
   static nth = (n) =>
-    this.curry(
-      this._nary(n + 1, function () {
+    this.curry(this._nary(n + 1, function () {
         let as;
         as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
         return as[n];
@@ -514,8 +502,7 @@ export class Functional {
   static at = this.curry2((as, n) => as[n]);
 
   static cond = (cs) =>
-    this.curry(
-      this._nary(this.arityof(cs[0][0]), function () {
+    this.curry(this._nary(this.arityof(cs[0][0]), function () {
         let as, fn, len1, q, ref;
         as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
         for(q = 0, len1 = cs.length; q < len1; q++) {
@@ -747,8 +734,7 @@ export class Functional {
       if(f.__fnuc_plift) {
         return f;
       }
-      nf = this.curry(
-        this._nary(this.arityof(f), function () {
+      nf = this.curry(this._nary(this.arityof(f), function () {
           let alws, as, currfn, failfn, t0;
           as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
           t0 = firstthen(as);
@@ -823,8 +809,7 @@ export class Functional {
     })
   );
 
-  static pick = this.curry2var(
-    function () {
+  static pick = this.curry2var(function () {
       let as, k, len1, o, q, r;
       (o = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []);
       if(Functional.typeis(as[0], 'array')) {
@@ -925,8 +910,7 @@ export class Functional {
     return this.curry2var(function () {
       let as;
       as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
-      return (
-        Functional.fold1(as, (a, b) => {
+      return (Functional.fold1(as, (a, b) => {
           if(a === b) {
             return a;
           }
@@ -1000,8 +984,7 @@ export class Functional {
     ml = Functional.apply(min)(Functional.map(as, len));
     results = [];
     for(i = u = 0, ref = ml; u < ref; i = u += 1) {
-      results.push(
-        f.apply(
+      results.push(f.apply(
           null,
           (function () {
             let ref1, results1, w;
@@ -1073,16 +1056,14 @@ export class Functional {
       if(a === b) {
         return true;
       }
-      return Functional.both(
-        eqtype,
+      return Functional.both(eqtype,
         (function () {
           switch (Functional.type(a)) {
             case 'object':
               return Functional.both(eqplain, eqobj);
             case 'array':
               return eqarr;
-            default:
-              return function () {
+            default: return function () {
                 return false;
               };
           }

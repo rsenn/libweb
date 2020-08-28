@@ -65,8 +65,7 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
     .rotate((rotateAlignment * Math.PI) / 180)
     .round(0.5);
 
-  //console.log(
-    `render alignment ${text}`,
+  //console.log(`render alignment ${text}`,
     Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + ''])
   );*/
 

@@ -1531,8 +1531,7 @@ class Fuse {
 
       // Iterate over every key (i.e, path), and fetch the value at that key
       keys.forEach((key, keyIndex) => {
-        matches.push(
-          ...this._findMatches({
+        matches.push(...this._findMatches({
             key,
             value: item[keyIndex],
             searcher

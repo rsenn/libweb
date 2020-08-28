@@ -95,9 +95,7 @@ export function Position(line, column, pos, file, freeze = true) {
 
   /*console.log("obj.constructor:",obj.constructor);
   //console.log("freeze:",freeze);*/
-  Object.assign(
-    obj,
-    {
+  Object.assign(obj, {
       line,
       column,
       pos,
@@ -124,10 +122,11 @@ Position.prototype.toString = function (opts = {}, t = (p) => p) {
   if(!showFilename && v.length >= 3) v.shift();
   v = v.map((f, i) => t(f, i));
   v = v.map((f, i) => c.code(1, i == 0 ? 33 : 35) + f);
-  return v.join(c.code(1, 36) + ':');
+  return v.join(c.code(1, 36) + ':') + c.code(0);
 };
-Position.prototype[Symbol.for('nodejs.util.inspect.custom')] = function* () {
-  yield* this;
+Position.prototype[Symbol.for('nodejs.util.inspect.custom')] = function (n, opts) {
+  //  console.debug("args:",args);
+  return this.toString({ colors: true, ...opts });
 };
 /*
 Position.prototype.valueOf = function() {
@@ -154,9 +153,7 @@ export function Range(...args) {
 
   let length = args.shift();
 
-  Object.assign(
-    obj,
-    {
+  Object.assign(obj, {
       length
     },
     obj === this ? {} : Range.prototype
@@ -574,13 +571,17 @@ export class Lexer {
     let word = '',
       prev = '';
     let slashes = 1;
+    let bracket = false;
     let validator = (c) => {
       //let last = word.substring(word.length - 1);
       //console.log("i:" + i + " c:" + c + " prev: " + prev + " slashes: " + slashes);
       i++;
+      if(c == '[' && prev != '\\') if (!bracket) bracket = true;
+      if(c == ']' && prev != '\\') if (bracket) bracket = false;
+
       if(slashes == 1 && c == ' ' && prev == '/') {
         return false;
-      } else if(c == '/' && prev != '\\') {
+      } else if(c == '/' && prev != '\\' && !bracket) {
         slashes++;
       } else if((c == ' ' || c == '\n') && prev != '\\') {
         return false;
@@ -924,8 +925,7 @@ function isPunctuator(word) {
     case 4:
       return ['>>>=', '-->>='].indexOf(word) >= 0;
 
-    default:
-      return false;
+    default: return false;
   }
 }
 
@@ -981,7 +981,7 @@ function isKeyword(word) {
         case 'with':
         case 'case':
         case 'enum':
-        case 'from':
+          //  case 'from':
           return true;
       }
       return false;
@@ -1040,8 +1040,7 @@ function isKeyword(word) {
       }
       return false;
 
-    default:
-      return false;
+    default: return false;
   }
 }
 

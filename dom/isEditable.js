@@ -42,7 +42,6 @@ function isEditableInput(input) {
       return true;
     case 'url':
       return true;
-    default:
-      return false;
+    default: return false;
   }
 }

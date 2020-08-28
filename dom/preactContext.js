@@ -11,8 +11,7 @@
     let utilsExports = utilsFactory();
     let contextValueEmitterExports = contextValueEmitterFactory();
     return contextFactory(tslib, preact, contextValueEmitterExports, utilsExports);
-  })(
-    (tslib, preact, contextValueEmitter, utils) => {
+  })((tslib, preact, contextValueEmitter, utils) => {
       let __extends = tslib.__extends,
         h = preact.h,
         Component = preact.Component,

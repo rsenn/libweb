@@ -52,8 +52,7 @@ Timer.debug = (impl = Timer.std) => ({
 
 Timer.promise = (timeout, impl = Timer.std /*Timer.debug(Timer.std)*/) =>
   new Promise((resolve, reject) =>
-    Timer(
-      timeout,
+    Timer(timeout,
       resolve,
       {},
       {

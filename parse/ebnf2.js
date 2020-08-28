@@ -226,8 +226,7 @@ Parser.prototype.parseSymbol = function () {
     case ',':
     case ';':
       return 1;
-    default:
-      return 0;
+    default: return 0;
   }
 };
 

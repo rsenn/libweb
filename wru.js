@@ -154,8 +154,7 @@ export const wru = (function (window) {
         status = 'fail';
         log(FAILURE + EMPTY + overallFail + ' Failures');
         break;
-      default:
-        status = 'pass';
+      default: status = 'pass';
         log(OK + '      ' + overallPass + ' Passes');
     }
     wru.status = status;
@@ -266,8 +265,7 @@ export const wru = (function (window) {
         }
 
         // if in *TIMEOUT* time nothing happens ...
-        timeout = setTimeout(
-          () => {
+        timeout = setTimeout(() => {
             // p is flagged as 0
             p = 0;
 

@@ -72,9 +72,10 @@ export class BindingProperty extends Expression {
 }
 
 export class Literal extends Expression {
-  constructor(value) {
+  constructor(value, species) {
     super('Literal');
     this.value = value;
+    this.species = species;
   }
 }
 
@@ -606,8 +607,7 @@ export function Factory() {
   self.stack = [];
   self.loc = { pos: -1, column: -1, line: -1 };
   self.callback = (node) => self.nodes.push(node);
-  self.classes = Object.keys(CTORS).reduce(
-    (acc, nodeName) => ({
+  self.classes = Object.keys(CTORS).reduce((acc, nodeName) => ({
       ...acc,
       [nodeName](...args) {
         return self(nodeName, ...args);

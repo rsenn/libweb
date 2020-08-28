@@ -24,8 +24,7 @@ export class EagleProject {
   load() {
     Util.tryCatch(() => this.open(this.filename + '.sch'));
     Util.tryCatch(() => this.open(this.filename + '.brd'));
-    Util.tryCatch(
-      () => this.loadLibraries(),
+    Util.tryCatch(() => this.loadLibraries(),
       () => {},
       () => (this.failed = true)
     );
@@ -67,8 +66,7 @@ export class EagleProject {
   }
 
   static determineEaglePath(fs) {
-    let path = Util.tryCatch(
-      () => process.env.PATH,
+    let path = Util.tryCatch(() => process.env.PATH,
       (path) => path.split(/:/g),
       []
     );
@@ -131,12 +129,10 @@ export class EagleProject {
   getLibraryNames() {
     let libraryNames = [];
 
-    Util.tryCatch(
-      () => this.schematic.libraries.keys(),
+    Util.tryCatch(() => this.schematic.libraries.keys(),
       (names) => (libraryNames = libraryNames.concat(names))
     );
-    Util.tryCatch(
-      () => this.board.libraries.keys(),
+    Util.tryCatch(() => this.board.libraries.keys(),
       (names) => (libraryNames = libraryNames.concat(names))
     );
 
@@ -176,12 +172,10 @@ export class EagleProject {
     };
 
     /*  let layers = {
-      schematic: Util.toMap(
-        schematic.layers.list.filter(l => l.active == 'yes'),
+      schematic: Util.toMap(schematic.layers.list.filter(l => l.active == 'yes'),
         l => [l.number, l]
       ),
-      board: Util.toMap(
-        board.layers.list.filter(l => l.active == 'yes'),
+      board: Util.toMap(board.layers.list.filter(l => l.active == 'yes'),
         l => [l.number, l]
       )
     };*/
@@ -241,8 +235,7 @@ export class EagleProject {
         name = path.shift();
         doc = this[key][name];
         break;
-      default:
-        break;
+      default: break;
     }
     if(!doc || !doc.index) {
       throw new Error('ERROR: project.index(' + l.join(', ') + ' )');

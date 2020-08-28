@@ -18,8 +18,7 @@ export class CompositeMap {
           this.keyLength = entries.keyLength;
           this.data = entries.data;
           break;
-        default:
-          throw new Error(`Unrecognized copy method '${copyMethod}'`);
+        default: throw new Error(`Unrecognized copy method '${copyMethod}'`);
       }
     } else {
       this.keyLength = (options && options.keyLength) || 0;

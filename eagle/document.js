@@ -91,8 +91,7 @@ export class EagleDocument extends EagleNode {
     const orig = xml[0];
     Util.define(this, 'orig', orig);
 
-    Util.define(
-      this,
+    Util.define(this,
       'palette',
       Palette[this.type == 'brd' ? 'board' : 'schematic']((r, g, b) => new RGBA(r, g, b))
     );
@@ -285,8 +284,7 @@ export class EagleDocument extends EagleNode {
     return size;
   }
   signalMap() {
-    return new Map(
-      [...this.signals].map(([name, signal]) => {
+    return new Map([...this.signals].map(([name, signal]) => {
         let objects = [...signal.children]
           .map((child) => [child, child.geometry])
           .filter(([child, geometry]) => !!geometry || child.tagName == 'contactref')

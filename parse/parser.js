@@ -104,8 +104,7 @@ export class Parser {
     //Util.log('token:', token);
 
     if(!r)
-      throw new Error(
-        `Parser.expect ${this.position} (${Lexer.tokenName(id)}, ${Util.toString(s, {
+      throw new Error(`Parser.expect ${this.position} (${Lexer.tokenName(id)}, ${Util.toString(s, {
           multiline: false,
           colors: false
         })})  ${Lexer.tokenName(token.tok)}, ${Util.toString(token.str)}`

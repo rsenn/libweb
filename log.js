@@ -13,8 +13,7 @@ export var LogJS = {
 
   version: 'LogJS v1.2.2',
   get window_() {
-    return Util.tryCatch(
-      () => global,
+    return Util.tryCatch(() => global,
       (g) => g.window,
       () => globalThis
     );

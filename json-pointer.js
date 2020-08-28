@@ -267,8 +267,7 @@ function compilePointerDereference(path) {
       return root;
     };
   }
-  body = path.reduce(
-    (body, p, i) => `${body} &&
+  body = path.reduce((body, p, i) => `${body} &&
     typeof((obj = obj['${replace(path[i], '\\', '\\\\')}'])) !== 'undefined'`,
     `if (typeof(obj) !== 'undefined'`
   );

@@ -230,8 +230,7 @@ WeakEventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
         case 4:
           listeners[i].fn.call(listeners[i].context, a1, a2, a3);
           break;
-        default:
-          if(!args)
+        default: if (!args)
             for(j = 1, args = new Array(len - 1); j < len; j++) {
               args[j - 1] = arguments[j];
             }

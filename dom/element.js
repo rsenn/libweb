@@ -194,8 +194,7 @@ export class Element extends Node {
     if(!parent && globalObj.document)
       parent =
         globalObj.document ||
-        Util.tryCatch(
-          () => document,
+        Util.tryCatch(() => document,
           (d) => d
         );
 
@@ -349,8 +348,7 @@ export class Element extends Node {
     let remove;
     switch (Anchor.horizontal(anchor)) {
       case Anchor.LEFT:
-      default:
-        css.left = Math.round(trbl.left /* - ptrbl.left*/) + unit;
+      default: css.left = Math.round(trbl.left /* - ptrbl.left*/) + unit;
         remove = 'right';
         break;
       case Anchor.RIGHT:
@@ -360,8 +358,7 @@ export class Element extends Node {
     }
     switch (Anchor.vertical(anchor)) {
       case Anchor.TOP:
-      default:
-        css.top = Math.round(trbl.top /* - ptrbl.top*/) + unit;
+      default: css.top = Math.round(trbl.top /* - ptrbl.top*/) + unit;
         remove = 'bottom';
         break;
       case Anchor.BOTTOM:
@@ -673,8 +670,7 @@ export class Element extends Node {
       return accu;
     }
     str = dumpElem(elem, '');
-    str = Element.walk(
-      elem.firstElementChild,
+    str = Element.walk(elem.firstElementChild,
       (e, a, r, d) => {
         if(e && e.attributes) return dumpElem(e, a + '\n', r, d);
         return null;

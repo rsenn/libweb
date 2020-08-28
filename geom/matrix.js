@@ -94,8 +94,7 @@ Matrix.prototype.get = function (field) {
 };
 
 const MatrixProps = (obj = {}) =>
-  Object.entries(keyIndexes).reduce(
-    (acc, [k, i]) => ({
+  Object.entries(keyIndexes).reduce((acc, [k, i]) => ({
       ...acc,
       [k]: {
         get() {

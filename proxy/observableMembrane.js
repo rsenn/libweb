@@ -302,8 +302,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
   }
 
   setPrototypeOf(shadowTarget, prototype) {
-    if(
-      Util.tryCatch(
+    if(Util.tryCatch(
         () => process,
         (process) => process.env.NODE_ENV !== 'production'
       )
@@ -385,8 +384,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
 
     const handler = this;
     const set = function (v) {
-      if(
-        Util.tryCatch(
+      if(Util.tryCatch(
           () => process,
           (process) => process.env.NODE_ENV !== 'production'
         )
@@ -400,8 +398,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
   }
 
   set(shadowTarget, key, value) {
-    if(
-      Util.tryCatch(
+    if(Util.tryCatch(
         () => process,
         (process) => process.env.NODE_ENV !== 'production'
       )
@@ -414,8 +411,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
   }
 
   deleteProperty(shadowTarget, key) {
-    if(
-      Util.tryCatch(
+    if(Util.tryCatch(
         () => process,
         (process) => process.env.NODE_ENV !== 'production'
       )
@@ -428,8 +424,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
   }
 
   setPrototypeOf(shadowTarget, prototype) {
-    if(
-      Util.tryCatch(
+    if(Util.tryCatch(
         () => process,
         (process) => process.env.NODE_ENV !== 'production'
       )
@@ -440,8 +435,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
   }
 
   preventExtensions(shadowTarget) {
-    if(
-      Util.tryCatch(
+    if(Util.tryCatch(
         () => process,
         (process) => process.env.NODE_ENV !== 'production'
       )
@@ -454,8 +448,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
   }
 
   defineProperty(shadowTarget, key, descriptor) {
-    if(
-      Util.tryCatch(
+    if(Util.tryCatch(
         () => process,
         (process) => process.env.NODE_ENV !== 'production'
       )
@@ -536,8 +529,7 @@ function getGlobal() {
 }
 
 function init() {
-  if(
-    Util.tryCatch(
+  if(Util.tryCatch(
       () => process,
       (process) => process.env.NODE_ENV === 'production'
     )
@@ -556,8 +548,7 @@ function init() {
   global.devtoolsFormatters = devtoolsFormatters;
 }
 
-if(
-  Util.tryCatch(
+if(Util.tryCatch(
     () => process,
     (process) => process.env.NODE_ENV !== 'production'
   )

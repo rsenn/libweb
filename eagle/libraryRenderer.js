@@ -41,9 +41,7 @@ export class LibraryRenderer extends EagleSVGRenderer {
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));
     const svg = (elem, attr, parent) =>
-      this.create(
-        elem,
-        {
+      this.create(elem, {
           className: item.tagName, //...LayerAttributes(layer),
           'data-path': item.path.toString(' '),
           ...attr

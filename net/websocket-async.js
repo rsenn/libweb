@@ -25,14 +25,12 @@ export class WebSocketClient {
     this.reset();
 
     if(!ctor)
-      ctor = Util.tryCatch(
-        () => Util.isObject(window),
+      ctor = Util.tryCatch(() => Util.isObject(window),
         () => window.WebSocket,
         null
       );
 
-    Object.defineProperties(
-      this,
+    Object.defineProperties(this,
       [
         ['ctor', ctor],
         ['receiveDataQueue', []],

@@ -114,8 +114,7 @@ peg$SyntaxError.buildMessage = function (expected, found) {
       case 2:
         return descriptions[0] + ' or ' + descriptions[1];
 
-      default:
-        return descriptions.slice(0, -1).join(', ') + ', or ' + descriptions[descriptions.length - 1];
+      default: return descriptions.slice(0, -1).join(', ') + ', or ' + descriptions[descriptions.length - 1];
     }
   }
 
@@ -166,16 +165,14 @@ function peg$parse(input, options) {
     peg$c11 = /^[Hh]/,
     peg$c12 = peg$classExpectation(['H', 'h'], false, false),
     peg$c13 = function (c, args) {
-      return commands(
-        c,
+      return commands(c,
         args.map((x) => ({ x }))
       );
     },
     peg$c14 = /^[Vv]/,
     peg$c15 = peg$classExpectation(['V', 'v'], false, false),
     peg$c16 = function (c, args) {
-      return commands(
-        c,
+      return commands(c,
         args.map((y) => ({ y }))
       );
     },

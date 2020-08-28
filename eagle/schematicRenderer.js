@@ -64,9 +64,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     const layer = item.layer;
     const color = typeof item.getColor == 'function' ? item.getColor() : SchematicRenderer.palette[16];
     const svg = (elem, attr, parent) =>
-      this.create(
-        elem,
-        {
+      this.create(elem, {
           className: item.tagName, //...LayerAttributes(layer),
           'data-path': item.path.toString(' '),
           ...attr
@@ -76,9 +74,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     switch (item.tagName) {
       case 'junction': {
         const { x, y } = coordFn(item);
-        svg(
-          'circle',
-          {
+        svg('circle', {
             fill: '#4ba54b',
             cx: x,
             cy: y,
@@ -105,9 +101,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
         const l = new Line(pivot, vec.add(pivot));
 
         if(func == 'dot') {
-          svg(
-            'circle',
-            {
+          svg('circle', {
               class: 'pin',
               stroke: '#a54b4b',
               fill: 'none',
@@ -120,9 +114,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
           );
         }
 
-        svg(
-          'line',
-          {
+        svg('line', {
             class: 'pin',
             stroke: '#a54b4b',
             ...l.toObject(),
@@ -131,9 +123,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
           parent
         );
         if(name != '' && visible != 'off')
-          svg(
-            'text',
-            {
+          svg('text', {
               class: 'pin',
               stroke: 'none',
               fill: SchematicRenderer.palette[6],
@@ -215,8 +205,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
   renderInstances(parent, sheetNo = 0, b) {
     const { transform } = this;
     this.debug('b:', b);
-    let g = this.create(
-      'g',
+    let g = this.create('g',
       {
         className: 'instances rects',
         fill: new HSLA(220, 100, 50, 0.5),
@@ -244,9 +233,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     /*  b.outset(0.15);
 
-    this.create(
-      'rect',
-      {
+    this.create('rect', {
         ...b.toObject(),
         fill: new HSLA(290, 100, 50, 0.5),
         'stroke-width': 0.1,

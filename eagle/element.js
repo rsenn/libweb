@@ -137,8 +137,7 @@ export class EagleElement extends EagleNode {
         let handler;
 
         if(['visible', 'active'].indexOf(key) != -1)
-          handler = Util.ifThenElse(
-            (v) => v !== undefined,
+          handler = Util.ifThenElse((v) => v !== undefined,
             (v) => prop(v === true ? 'yes' : v === false ? 'no' : v),
             () => {
               let v = prop();
@@ -148,8 +147,7 @@ export class EagleElement extends EagleNode {
             }
           );
         else
-          handler = Util.ifThenElse(
-            (v) => v !== undefined,
+          handler = Util.ifThenElse((v) => v !== undefined,
             (v) => prop(v + ''),
             () => {
               let v = prop();
@@ -300,8 +298,7 @@ export class EagleElement extends EagleNode {
     if(tagName == 'element') {
       for(let key of ['pad', 'wire', 'circle', 'text', 'rectangle'])
         lazyProperty(this, key + 's', () => {
-          let list = EagleNodeList.create(
-            this,
+          let list = EagleNodeList.create(this,
             this.package.path.down('children'),
             (e) => e.tagName == key,
             (o, p, r) => TList(EagleElement.get(o, p, r), elem)
@@ -359,8 +356,7 @@ export class EagleElement extends EagleNode {
         push(this);
         await stop;
       });
-      this.r.next().then(
-        ({ value, done }) =>
+      this.r.next().then(({ value, done }) =>
           (value.pushEvent = function (...args) {
             const [e, k] = args;
             const v = e[k];

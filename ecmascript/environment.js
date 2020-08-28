@@ -1,8 +1,7 @@
 /* jshint esversion: 6 */
 /* jshint noyield: true */
 
-//TODO:
-//- LabeledStatement -> including use in break/continue
+//TODO: //- LabeledStatement -> including use in break/continue
 //- nicer error handling?
 //-> TESTS
 //-> BENCHMARKS
@@ -13,6 +12,42 @@ import EventEmitter from '../eventEmitter.js';
 import Util from '../util.js';
 import { estree, ESNode, Factory, PropertyDefinition, BinaryExpression, Identifier, TemplateLiteral, ImportStatement, Literal, MemberExpression, FunctionDeclaration, ArrowFunction, SequenceExpression, ObjectBindingPattern } from './estree.js';
 
+class NotImplemented extends Error {
+  constructor(type, node) {
+    super(`Not implemented yet: ${type || Util.className(node)}`);
+    this.type = type;
+    this.node = node;
+  }
+}
+function consume(iter) {
+  let yields = [];
+  let retval;
+  let it;
+  do {
+    it = iter.next();
+    if(it.done) retval = it.value;
+    else yields.push(it.value);
+  } while(!it.done);
+  return [yields, retval];
+}
+function log(...args) {
+  let callers = Util.getCallers(2);
+
+  if(!callers[0].functionName) callers.shift();
+
+  while(callers[0].fileName == '<anonymous>' || callers[0].methodName == '<anonymous>' || callers[0].methodName == '') callers.shift();
+
+  //console.debug('callers\n', ...callers.map((c) => c.functionName || c.methodName || c.toString()).map((n) => `  ${n}\n`));
+
+console.debug("callers[0]",callers[0])
+
+  let node = args[0] instanceof ESNode && args[0];
+
+  let pos = node && ESNode.assoc(node).position;
+  if(pos) args.unshift(pos);
+
+  console.log(Util.ansi.text(callers[0].methodName, 1, 34), ...args);
+}
 function noop() {}
 
 function execute(func) {
@@ -74,8 +109,7 @@ function addDeclarationsToStore(declarations, varStore) {
 
 function startLine(node) {
   let assoc = ESNode.assoc(node);
-  let { position } = assoc;
-  const line = position.line;
+  let { position: { line } = {} } = assoc;
   return line;
 }
 
@@ -90,6 +124,8 @@ export class Environment extends EventEmitter {
     globalObjects.forEach((vars) => {
       parent = createVariableStore(parent, vars);
     });
+
+    log({ parent, globalObjects });
     // the topmost store is our current store
     this.currentVariableStore = parent;
     this.currentDeclarations = {};
@@ -111,6 +147,7 @@ export class Environment extends EventEmitter {
     /*   if(typeof node === 'string')
       node = parse(node, opts);
  */
+    log('generate', { node });
     let resp = this.generateClosure(node);
     addDeclarationsToStore(this.currentDeclarations, this.currentVariableStore);
     this.currentDeclarations = {};
@@ -119,15 +156,14 @@ export class Environment extends EventEmitter {
 
   generateClosure(node) {
     let type = node.type || Util.className(node);
-    let closure = (
-      {
+    let closure = ({
         BinaryExpression: this.generateBinaryExpression,
         ImportStatement: this.generateImportStatement,
         LogicalExpression: this.generateBinaryExpression,
         UnaryExpression: this.generateUnaryExpression,
         UpdateExpression: this.generateUpdateExpression,
-        ObjectExpression: this.generateObjectExpression,
-        ArrayExpression: this.generateArrayExpression,
+        ObjectLiteral: this.generateObjectExpression,
+        ArrayLiteral: this.generateArrayLiteral,
         CallExpression: this.generateCallExpression,
         NewExpression: this.generateNewExpression,
         MemberExpression: this.generateMemberExpression,
@@ -137,6 +173,7 @@ export class Environment extends EventEmitter {
         Identifier: this.generateIdentifier,
         AssignmentExpression: this.generateAssignExpression,
         FunctionDeclaration: this.generateFunctionDeclaration,
+        ArrowFunction: this.generateFunctionDeclaration,
         VariableDeclaration: this.generateVariableDeclaration,
         BlockStatement: this.generateProgram,
         Program: this.generateProgram,
@@ -148,7 +185,7 @@ export class Environment extends EventEmitter {
         ConditionalExpression: this.generateConditionalStatement,
         ForStatement: this.generateLoopStatement,
         WhileStatement: this.generateLoopStatement,
-        DoWhileStatement: this.generateDoWhileStatement,
+        DoStatement: this.generateDoWhileStatement,
         ForInStatement: this.generateForInStatement,
         WithStatement: this.generateWithStatement,
         ThrowStatement: this.generateThrowStatement,
@@ -158,6 +195,9 @@ export class Environment extends EventEmitter {
         SwitchStatement: this.generateSwitchStatement
       }[type] ||
       function () {
+        console.debug('node:', node);
+
+        throw new NotImplemented(type, node);
         console.warn('Not implemented yet: ' + type);
         return noop;
       }
@@ -172,7 +212,7 @@ export class Environment extends EventEmitter {
         }
         let resp = closure();
         info += '. Result:';
-        console.log(ESNode.assoc(node).position.toString(), info, resp);
+        log(info, resp);
         return resp;
       };
     }
@@ -190,6 +230,9 @@ export class Environment extends EventEmitter {
       } else {
         result = expr();
       }
+      console.debug('expr:', expr + '');
+      console.debug('expr():', expr());
+      console.debug('result:', result);
       return result;
     }
 
@@ -206,7 +249,18 @@ export class Environment extends EventEmitter {
       *'<<'() { return (yield* callExpression(a)) << (yield* callExpression(b)); },
       *'>>'() { return (yield* callExpression(a)) >> (yield* callExpression(b)); },
       *'>>>'() { return (yield* callExpression(a)) >>> (yield* callExpression(b)); },
-      *'+'() { return (yield* callExpression(a)) + (yield* callExpression(b)); },
+      *'+'() { 
+        const x =  callExpression(a);
+        const y =  callExpression(b);  
+        const u =  yield *x;
+        const v =  yield *y;
+console.debug("generateBinaryExpression", {a:a+'',b:b+''});
+console.debug("generateBinaryExpression", {x,y})
+console.debug("generateBinaryExpression", {u,v})
+        return u+v;
+
+
+         },
       *'-'() { return (yield* callExpression(a)) - (yield* callExpression(b)); },
       *'*'() { return (yield* callExpression(a)) * (yield* callExpression(b)); },
       *'/'() { return (yield* callExpression(a)) / (yield* callExpression(b)); },
@@ -220,25 +274,26 @@ export class Environment extends EventEmitter {
       *'||'() { return (yield* callExpression(a)) || (yield* callExpression(b)); },
       *'&&'() { return (yield* callExpression(a)) && (yield* callExpression(b)); }
     }[node.operator];
+    //  let it = /*function*() {  yield 'test'; return 'blah'; }() ||*/ cmp();
+    // console.debug("iter cmp():",  consume(function*() {  return yield *it; }()));
 
     return function () {
       // FIXME: Convert to yield*
       let iter = cmp();
       let res = iter.next();
-      while(!res.done) {
-        res = iter.next();
-      }
+      while(!res.done) res = iter.next();
+
       return res.value;
     };
   }
 
   generateImportStatement(node) {
     const { identifiers, source } = node;
-    console.log(ESNode.assoc(node).position.toString(), 'ImportStatement:', node);
+    log('ImportStatement:', node);
     let importFile = source.value;
     return function () {
       import(importFile).then((handle) => {
-        console.log(ESNode.assoc(node).position.toString(), 'handle:', handle);
+        log('handle:', handle);
       });
     };
   }
@@ -247,6 +302,7 @@ export class Environment extends EventEmitter {
     if(node.operator === 'delete') {
       return this.generateDelete(node);
     }
+    log({ node, pos: ESNode.assoc(node).position });
     let a = this.generateClosure(node.argument);
     // prettier-ignore
     let op = {
@@ -276,10 +332,13 @@ export class Environment extends EventEmitter {
     //TODO property.kind: don't assume init when it can also be set/get
     let self = this;
     let items = [];
-    node.properties.forEach((property) => {
+    const { members } = node;
+    log({ items, node });
+    node.members.forEach((property) => {
       // object expression keys are static so can be calculated
       // immediately
-      let key = self.objKey(property.key)();
+      log({ property });
+      let key = self.objKey(property.id)();
       items.push({
         key,
         getVal: self.generateClosure(property.value)
@@ -295,7 +354,7 @@ export class Environment extends EventEmitter {
     };
   }
 
-  generateArrayExpression(node) {
+  generateArrayLiteral(node) {
     let items = node.elements.map(this.boundGen);
 
     return function () {
@@ -333,9 +392,12 @@ export class Environment extends EventEmitter {
     }
     let args = node.arguments.map(self.generateClosure.bind(self));
 
+    log({ callee: callee + '', args: args + '' });
+
     return function* () {
       self.emit('line', startLine(node));
       let c = callee();
+      console.log('evalCallExpression', { callee: callee + '', c: c + '', args });
 
       if(c === undefined) {
         return c;
@@ -381,14 +443,17 @@ export class Environment extends EventEmitter {
     let self = this;
     let { object, property } = node;
     let memberExpression = { object: object.value, property: property.value };
-    console.log(ESNode.assoc(node).position.toString(), 'MemberExpression ', memberExpression);
+    log({ ...memberExpression });
     let obj = this.generateClosure(object);
     let member = this.memberExpressionProperty(node);
     let str = (s, v = 'node.value') => (s + '').replace(/\s+/g, ' ').replace(/(node\.value|key)/g, v);
-    //  console.log(ESNode.assoc(node).position.toString(), 'MemberExpression\n  obj()      = ', obj() || str(obj,`'${node.object.value}'`), '\n  property() = ', property());
+
+    //log({obj: obj+'', member: member+'' }); //obj()      = ', obj() || str(obj,`'${node.object.value}'`), '\n  property() = ', property());
     return function () {
       self.emit('line', startLine(node));
-      return obj()[member()];
+      let r = obj();
+      log('evalMemberExpression', { r }, obj + '');
+      return r[member()];
     };
   }
 
@@ -458,14 +523,35 @@ export class Environment extends EventEmitter {
   }
 
   generateLiteral(node) {
+    let value;
+    switch (node.species) {
+      case 'string':
+        value = node.value.replace(/^['"`](.*)['"`]$/, '$1');
+        break;
+      case 'number':
+        value = +node.value;
+        break;
+      case 'boolean':
+        value = Boolean(node.value);
+        break;
+      case 'object':
+        value = node.value;
+        break;
+      default: throw new Error(`generateLiteral: no such species '${node.species}'`);
+    }
+    console.debug('generateLiteral', value);
     return function () {
-      return node.value;
+      return value;
     };
   }
 
   generateIdentifier(node) {
     let self = this;
-    console.log(ESNode.assoc(node).position.toString(), node);
+    log(node);
+    let func = node.value == 'this' ? `function thisObj() { return env.currentThis; }` : `function identifier() { return env.getVariableStore('${node.value}')['${node.value}']; }`;
+    console.debug('generateIdentifier', func);
+
+    return new Function('env', `return ${func}`)(self);
 
     return function () {
       return self.getVariableStore(node.value)[node.value];
@@ -474,10 +560,11 @@ export class Environment extends EventEmitter {
 
   getVariableStore(name) {
     let store = this.currentVariableStore;
+    //log({name,store});
 
     do {
       if(store.vars.hasOwnProperty(name)) {
-        console.log(`getVariableStore(${name}) =`, store.vars);
+        //console.log(`getVariableStore(${name}) =`, store.vars);
         return store.vars;
       }
     } while((store = store.parent));
@@ -507,7 +594,7 @@ export class Environment extends EventEmitter {
     let name = this.generateName(node.left);
     let val = this.generateClosure(node.right);
     return function* () {
-      self.emit('line', node.left.loc.start.line);
+      self.emit('line', (node.left.loc && node.left.loc.start.line) || ESNode.assoc(node.left).position.line);
       let v = val();
       if(v !== undefined) {
         if(v.next) {
@@ -520,8 +607,9 @@ export class Environment extends EventEmitter {
 
   generateFunctionDeclaration(node) {
     const id = node.id || new Identifier('');
-    console.log(ESNode.assoc(node).position.toString(), 'FunctionDeclaration:', { id, node });
+    log('generateFunctionDeclaration', { id, node, currentDeclarations: this.currentDeclarations });
     this.currentDeclarations[id.value] = this.generateFunctionExpression(node);
+    log('generateFunctionDeclaration', { expr: this.currentDeclarations[id.value] });
     return function* () {
       return noop;
     };
@@ -560,15 +648,19 @@ export class Environment extends EventEmitter {
 
     let oldDeclarations = self.currentDeclarations;
     self.currentDeclarations = {};
+    log({ node, self });
     let body = self.generateClosure(node.body);
     let declarations = self.currentDeclarations;
     self.currentDeclarations = oldDeclarations;
+    log({ body, declarations });
 
     // reset var store
     return function () {
       let parent = self.currentVariableStore;
+      //log({ parent });
       return function* () {
-        // build arguments object var args = new Arguments();
+        // build arguments object
+        var args = new Arguments();
         args.length = arguments.length;
         for(let i = 0; i < arguments.length; i++) {
           args[i] = arguments[i];
@@ -588,6 +680,8 @@ export class Environment extends EventEmitter {
           self.currentVariableStore.vars[param.name] = args[i];
         });
 
+        console.log('generateFunctionExpression', { currentVariableStore: self.currentVariableStore, currentThis: self.currentThis });
+
         // run function body
         let result = yield* body();
 
@@ -605,7 +699,7 @@ export class Environment extends EventEmitter {
   generateProgram(node) {
     let self = this;
     let stmtClosures = node.body.map((stmt) => self.generateClosure(stmt));
-
+    log({ stmtClosures });
     return function* () {
       let result;
       for(let i = 0; i < stmtClosures.length; i++) {
@@ -638,9 +732,10 @@ export class Environment extends EventEmitter {
     let arg = node.argument ? this.generateClosure(node.argument) : noop;
 
     let assoc = ESNode.assoc(node);
-    let { position } = assoc;
+    let { position, tokens } = assoc;
+    //console.debug("generateReturnStatement", { assoc,position,tokens});
     const line = position.line;
-    console.log(ESNode.assoc(node).position.toString(), node);
+    log(node);
     return function () {
       self.emit('line', line);
       return new Return(arg());
@@ -682,9 +777,9 @@ export class Environment extends EventEmitter {
 
   generateLoopStatement(node, body) {
     let self = this;
-    /* prettier-ignore */ let init = node.init ? this.generateClosure(node.init) : function*() {return noop; };
-    /* prettier-ignore */ let test = node.test ? function*() {self.emit('line', startLine(node)); return self.generateClosure(node.test)(); } : function*() { return true; };
-    /* prettier-ignore */ let update = node.update ? this.generateClosure(node.update) : function*() {return noop; };
+    /* prettier-ignore */ let init = node.init ? this.generateClosure(node.init) : function*() { return noop; };
+    /* prettier-ignore */ let test = node.test ? function*() { self.emit('line', startLine(node)); return self.generateClosure(node.test)(); } : function*() { return true; };
+    /* prettier-ignore */ let update = node.update ? this.generateClosure(node.update) : function*() { return noop; };
     body = body || this.generateClosure(node.body);
 
     return function* () {
@@ -760,7 +855,8 @@ export class Environment extends EventEmitter {
   }
 
   generateThrowStatement(node) {
-    let arg = this.generateClosure(node.argument);
+    console.debug('generateThrowStatement:', node);
+    let arg = this.generateClosure(node.expression);
     return function () {
       throw arg();
     };
@@ -865,4 +961,4 @@ export function evaluate(code) {
   return result.value;
 }
 
-//console.log(ESNode.assoc(node).position.toString(), exports.evaluate("1 + 1"));
+//log(exports.evaluate("1 + 1"));

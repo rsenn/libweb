@@ -9,8 +9,7 @@ export function websocketEvents(websocket, { emitOpen = false } = {}) {
   let done = false;
   const values = [];
   const resolvers = [];
-  const ctor = Util.tryCatch(
-    () => window.WebSocket,
+  const ctor = Util.tryCatch(() => window.WebSocket,
     (ws) => ws,
     () => websocket.constructor
   );

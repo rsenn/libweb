@@ -345,8 +345,7 @@ export class Keyboard {
         case 'SHIFT':
           modifiers |= SHIFT;
           break;
-        default:
-          throw new Error(`in "${action}", invalid modifier: ${part}`);
+        default: throw new Error(`in "${action}", invalid modifier: ${part}`);
       }
     });
 
@@ -395,8 +394,7 @@ const US_ENGLISH_CHARCODE_KEYCODE_MAP = {
   37: new Keystroke(SHIFT, 53), //%
   38: new Keystroke(SHIFT, 55), //&
   39: new Keystroke(0, 222), //'
-  40: new Keystroke(SHIFT, 57), //(
-  41: new Keystroke(SHIFT, 48), //)
+  40: new Keystroke(SHIFT, 57), //(41: new Keystroke(SHIFT, 48), //)
   42: new Keystroke(SHIFT, 56), //*
   43: new Keystroke(SHIFT, 187), //+
   44: new Keystroke(0, 188), //,

@@ -89,8 +89,7 @@
     ctor.prototype = Object.create(EventEmitter.prototype);
   };
   this.EventEmitter = EventEmitter;
-}.call(
-  (function () {
+}.call((function () {
     return this;
   })()
 ));

@@ -11,8 +11,7 @@ export const Text = ({ x, y, text, color, alignment, rot, transformation, visibl
 
   if(transform.rotation) transform.rotation.angle %= 180;
 
-  transform = transform.concat(
-    transformation
+  transform = transform.concat(transformation
       .slice(1)
       .filter((t) => ['translate'].indexOf(t.type) == -1)
       .invert()
@@ -22,9 +21,7 @@ export const Text = ({ x, y, text, color, alignment, rot, transformation, visibl
   alignment.transform(alignmentTransform.toMatrix());
 
   return h(Fragment, {}, [
-    h(
-      'text',
-      {
+    h('text', {
         fill: color,
         stroke: 'none',
         'stroke-width': 0.05,

@@ -36,9 +36,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     const color = typeof item.getColor == 'function' ? item.getColor() : BoardRenderer.palette[16];
 
     const svg = (elem, attr, parent) =>
-      this.create(
-        elem,
-        {
+      this.create(elem, {
           className: item.tagName, //...LayerAttributes(layer),
           'data-path': item.path.toString(' '),
           ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
@@ -90,9 +88,7 @@ export class BoardRenderer extends EagleSVGRenderer {
           }
         }
 
-        svg(
-          'path',
-          {
+        svg('path', {
             fill: padColor,
             d: data + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
             transform
@@ -102,9 +98,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
         this.debug('name:', name);
         if(name) {
-          svg(
-            'tspan',
-            {
+          svg('tspan', {
               children: name,
               ...EagleSVGRenderer.alignmentAttrs('center', HORIZONTAL)
             },
@@ -244,8 +238,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     transform.translate(x, y);
 
-    const g = this.create(
-      'g',
+    const g = this.create('g',
       {
         id: `element.${name}`,
         className: `element ${name}`,

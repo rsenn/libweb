@@ -79,8 +79,7 @@ JavaScriptLexerBase.prototype.IsRegexPossible = function () {
     case JavaScriptLexer.PlusPlus:
     case JavaScriptLexer.MinusMinus:
       return false;
-    default:
-      return true;
+    default: return true;
   }
 };
 

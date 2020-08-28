@@ -466,8 +466,7 @@ let QRCode;
           return (((i * j) % 2) + ((i * j) % 3)) % 2 == 0;
         case QRMaskPattern.PATTERN111:
           return (((i * j) % 3) + ((i + j) % 2)) % 2 == 0;
-        default:
-          throw new Error('bad maskPattern:' + maskPattern);
+        default: throw new Error('bad maskPattern:' + maskPattern);
       }
     },
     getErrorCorrectPolynomial(errorCorrectLength) {
@@ -488,8 +487,7 @@ let QRCode;
             return 8;
           case QRMode.MODE_KANJI:
             return 8;
-          default:
-            throw new Error('mode:' + mode);
+          default: throw new Error('mode:' + mode);
         }
       } else if(type < 27) {
         switch (mode) {
@@ -501,8 +499,7 @@ let QRCode;
             return 16;
           case QRMode.MODE_KANJI:
             return 10;
-          default:
-            throw new Error('mode:' + mode);
+          default: throw new Error('mode:' + mode);
         }
       } else if(type < 41) {
         switch (mode) {
@@ -514,8 +511,7 @@ let QRCode;
             return 16;
           case QRMode.MODE_KANJI:
             return 12;
-          default:
-            throw new Error('mode:' + mode);
+          default: throw new Error('mode:' + mode);
         }
       } else {
         throw new Error('type:' + type);
@@ -853,8 +849,7 @@ let QRCode;
         return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
       case QRErrorCorrectLevel.H:
         return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
-      default:
-        return undefined;
+      default: return undefined;
     }
   };
   function QRBitBuffer() {
@@ -980,15 +975,13 @@ let QRCode;
       svg.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xlink', 'http://www.w3.org/1999/xlink');
       _el.appendChild(svg);
 
-      svg.appendChild(
-        makeSVG('rect', {
+      svg.appendChild(makeSVG('rect', {
           fill: _htOption.colorLight,
           width: '100%',
           height: '100%'
         })
       );
-      svg.appendChild(
-        makeSVG('rect', {
+      svg.appendChild(makeSVG('rect', {
           fill: _htOption.colorDark,
           width: '1',
           height: '1',

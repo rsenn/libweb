@@ -79,8 +79,7 @@ EventEmitter.prototype.emit = function (type) {
         handler.call(this, arguments[1], arguments[2]);
         break;
       // slower
-      default:
-        args = Array.prototype.slice.call(arguments, 1);
+      default: args = Array.prototype.slice.call(arguments, 1);
         handler.apply(this, args);
     }
   } else if(isObject(handler)) {

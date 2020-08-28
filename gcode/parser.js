@@ -302,9 +302,7 @@ class GCodeLineStream extends TransformStream {
       this.lineBuffer = line;
     }
 
-    iterateArray(
-      lines,
-      { batchSize: this.options.batchSize },
+    iterateArray(lines, { batchSize: this.options.batchSize },
       (line, key) => {
         line = line.trim();
         if(line.length > 0) {

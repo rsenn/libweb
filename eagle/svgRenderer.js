@@ -50,8 +50,7 @@ export class EagleSVGRenderer {
     if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
     this.doc = doc;
     let renderer = this;
-    this.path2component = Util.mapWrapper(
-      new Map(),
+    this.path2component = Util.mapWrapper(new Map(),
       (path) => (Util.isObject(path) && path.path !== undefined ? path.path : path) + '',
       (key) => new ImmutablePath(key)
     );
@@ -103,8 +102,7 @@ export class EagleSVGRenderer {
     console.log('setPalette 2', palette);
 
     palette = window.palette = trkl.bind(Util.define({}, { handlers: palette }), palette);
-    Object.setPrototypeOf(
-      palette,
+    Object.setPrototypeOf(palette,
       Object.defineProperties(
         {
           *[Symbol.iterator]() {
@@ -184,8 +182,7 @@ export class EagleSVGRenderer {
       if(active == 'no' && visible == 'no') continue;
 
       const stroke = this.getColor(color);
-      const layer = this.create(
-        'g',
+      const layer = this.create('g',
         {
           id: `layer-${l.number}`,
           className: 'layer',
@@ -222,8 +219,7 @@ export class EagleSVGRenderer {
     const comp = ElementToComponent(item);
     if(comp) {
       //console.log('EagleSVGRenderer render component ', this.transform.filter(t => ['translate'].indexOf(t.type) == -1));
-      const elem = svg(
-        comp,
+      const elem = svg(comp,
         {
           data: item,
           transform,
@@ -241,9 +237,7 @@ export class EagleSVGRenderer {
       /*case 'wire': {
         const { width, curve = '' } = item;
         const { x1, y1, x2, y2 } = coordFn(item);
-        svg(
-          'line',
-          {
+        svg('line', {
             stroke: color,
             x1,
             x2,
@@ -263,9 +257,7 @@ export class EagleSVGRenderer {
         let rect = Rect.from({ x1, x2, y1, y2 });
         let rot = Rotation(item.rot);
         let center = rect.center;
-        svg(
-          'rect',
-          {
+        svg('rect', {
             stroke: 'none',
             fill: color,
             ...rect.toObject(),
@@ -280,9 +272,7 @@ export class EagleSVGRenderer {
         const { x, y } = coordFn(item);
         const transform = new TransformationList(`translate(${x},${y})`);
 
-        svg(
-          'text',
-          {
+        svg('text', {
             fill: '#f0f',
             stroke: 'none',
             x,
@@ -332,13 +322,11 @@ export class EagleSVGRenderer {
           .clone()
           .rotate((rotateAlignment * Math.PI) / 180)
           .round(0.5);
-        this.debug(
-          `render alignment ${text}`,
+        this.debug(`render alignment ${text}`,
           Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + '']),
           EagleSVGRenderer.alignmentAttrs(alignment, VERTICAL)
         );
-        const e = svg(
-          'text',
+        const e = svg('text',
           {
             fill: color,
             stroke: 'none',
@@ -359,9 +347,7 @@ export class EagleSVGRenderer {
       /*      case 'circle': {
         const { width, radius } = item;
         const { x, y } = coordFn(item);
-        svg(
-          'circle',
-          {
+        svg('circle', {
             stroke: color,
             cx: x,
             cy: y,
@@ -458,8 +444,7 @@ export class EagleSVGRenderer {
     console.log('viewBox rect:', rect, rect.toString(), rect.valueOf);
 
     if(!parent)
-      parent = this.create(
-        'svg',
+      parent = this.create('svg',
         {
           /*  width,
           height,*/
@@ -482,9 +467,7 @@ export class EagleSVGRenderer {
     let defs =
       /*
 
-    this.create(
-      'path',
-      {
+    this.create('path', {
         d: `M ${step},0 L 0,0 L 0,${step}`,
         fill: 'none',
         stroke: gridColor,

@@ -1,6 +1,5 @@
 import Util from '../util.js';
-const SymSpecies = Util.tryCatch(
-  () => Symbol,
+const SymSpecies = Util.tryCatch(() => Symbol,
   (sym) => sym.species
 );
 const CTOR = (obj) => {
@@ -230,8 +229,7 @@ Util.defineGetter(Point.prototype, Symbol.iterator, function () {
   const y = Util.roundTo(this.y, precision);
   return `${left}${x}${unit}${separator}${y}${unit}${right}`;
 };
-Util.defineGetterSetter(
-  Point.prototype,
+Util.defineGetterSetter(Point.prototype,
   Symbol.toStringTag,
   function () {
     return `Point{ ${Point.prototype.toSource.call(this)}`;

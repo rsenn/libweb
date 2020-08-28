@@ -57,8 +57,7 @@ function __generator(thisArg, body) {
     y,
     t,
     g;
-  return (
-    (g = { next: verb(0), throw: verb(1), return: verb(2) }),
+  return ((g = { next: verb(0), throw: verb(1), return: verb(2) }),
     typeof Symbol === 'function' &&
       (g[Symbol.iterator] = function () {
         return this;
@@ -93,8 +92,7 @@ function __generator(thisArg, body) {
             op = _.ops.pop();
             _.trys.pop();
             continue;
-          default:
-            if(!((t = _.trys), (t = t.length > 0 && t[t.length - 1])) && (op[0] === 6 || op[0] === 2)) {
+          default: if (!((t = _.trys), (t = t.length > 0 && t[t.length - 1])) && (op[0] === 6 || op[0] === 2)) {
               _ = 0;
               continue;
             }
@@ -171,8 +169,7 @@ function createPrimedRepeater(buffer) {
   return [repeater, push, stop];
 }
 function useRepeater(buffer) {
-  let _a = __read(
-      useState(() => createPrimedRepeater(buffer)),
+  let _a = __read(useState(() => createPrimedRepeater(buffer)),
       1
     ),
     tuple = _a[0];
@@ -185,23 +182,20 @@ function useAsyncIter(callback, deps) {
   let _a = __read(useRepeater(), 2),
     repeater = _a[0],
     push = _a[1];
-  let _b = __read(
-      useState(() => callback(repeater)),
+  let _b = __read(useState(() => callback(repeater)),
       1
     ),
     iter = _b[0];
   useEffect(() => {
     push(deps);
   }, __spread([push], deps)); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(
-    () =>
+  useEffect(() =>
       function () {
         if(iter.return != null) {
           // TODO: handle return errors
           iter.return().catch();
         }
-      },
-    [iter]
+      }, [iter]
   );
   return iter;
 }

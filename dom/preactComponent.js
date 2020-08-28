@@ -27,6 +27,13 @@ export class ReactComponent {
       delete props.tagName;
     }
     let children = args.shift();
+    if(children)
+      children = children.map((c) => {
+        console.log('child:', c, ReactComponent.isComponent(c));
+        if(!ReactComponent.isComponent(c)) c = ReactComponent.create(...c);
+        return c;
+      });
+    console.log('children:', children);
 
     const elem = h(Tag, props, children);
     return elem;
@@ -58,7 +65,7 @@ export class ReactComponent {
   }
 
   static isComponent(obj) {
-    return Util.isObject(obj) && ['__', '__v', 'ref', 'props', 'key'].every((prop) => obj[prop] !== 'undefined');
+    return Util.isObject(obj) && ['__', '__v', 'ref', 'props', 'key'].every((prop) => obj[prop] !== undefined);
   }
 
   static factory(render_to, root) {
@@ -150,7 +157,8 @@ export class ReactComponent {
   static toSource(obj, opts = {}, depth = 0) {
     const { quote = "'" } = opts;
     const { type, props: allProps } = obj;
-    let { children, ...props } = allProps;
+    console.log('allProps:', allProps);
+    let { children, ...props } = allProps || {};
 
     let o = `h('${type}', {`;
     let nl = '\n' + ' '.repeat(depth * 2);

@@ -286,8 +286,7 @@ ${js(body)}
       switch (value) {
         case '#-':
           return '-';
-        default:
-          return value;
+        default: return value;
       }
     }
 
@@ -369,8 +368,7 @@ for(;;) {
 
     function js_if_statement(node) {
       const elseif = node.elseif
-        .map(
-          ({ cond, body }) => `else if(${js(cond)}) {
+        .map(({ cond, body }) => `else if(${js(cond)}) {
                 ${js(body)}
             }`
         )
@@ -437,8 +435,7 @@ ${other}`;
           return js_function_declaration(node);
         case 'ReturnStatement':
           return js_return_statement(node);
-        default:
-          throw new Error(`Dunno how to generate for ${Util.inspect(node, { newline: ' ' })}`);
+        default: throw new Error(`Dunno how to generate for ${Util.inspect(node, { newline: ' ' })}`);
       }
     }
   }
@@ -562,8 +559,7 @@ class MoonScriptGenerator {
           return '-';
         case '!':
           return 'not';
-        default:
-          return value;
+        default: return value;
       }
     }
 
@@ -660,8 +656,7 @@ until ${moonscript(cond)}`;
 
     function moonscript_if_statement(node) {
       const elseif = node.elseif
-        .map(
-          ({ cond, body }) => `elseif ${moonscript(cond)}
+        .map(({ cond, body }) => `elseif ${moonscript(cond)}
   ${moonscript_body(body)}`
         )
         .join('\n');
@@ -768,8 +763,7 @@ ${other}`;
         case 'Undefined':
           ret = '';
           break;
-        default:
-          throw { message: `Dunno how to generate for ${node.type}` }; //Util.inspect(node, { newline: ' ' }));
+        default: throw { message: `Dunno how to generate for ${node.type}` }; //Util.inspect(node, { newline: ' ' }));
           break;
       }
       //ret = typeof(ret) == 'string' ? ret.trim() : ret;
@@ -1152,8 +1146,7 @@ class Lexer {
             string.push(peek);
           }
 
-        default:
-          if(this.is_digit(c)) {
+        default: if (this.is_digit(c)) {
             let num = 0;
             if(peek == 'x' || peek == 'X') {
               this.eat(1);
@@ -1422,8 +1415,7 @@ class Parser {
         return this.parse_while_stat();
       case 'repeat':
         return this.parse_repeat_stat();
-      default:
-        return this.parse_expr_stat();
+      default: return this.parse_expr_stat();
     }
   }
 
@@ -1822,8 +1814,7 @@ class Parser {
 
         case 'local':
           return this.parse_local_stat();
-        default:
-          this.yield_error(`parse_simpleexp ${this.cur_token.value}`);
+        default: this.yield_error(`parse_simpleexp ${this.cur_token.value}`);
       }
     } else if(this.cur_token.value == '{') {
       return this.parse_constructor();
@@ -1871,8 +1862,7 @@ class Parser {
           let params = this.parse_funcargs();
           node = this.ast.call_expr(node, params);
           break;
-        default:
-          break;
+        default: break;
       }
 
       if(this.cur_token.value == '.') continue;
@@ -2059,8 +2049,7 @@ class Parser {
     switch (token.value) {
       case '-':
         return '#-';
-      default:
-        return token.value;
+      default: return token.value;
     }
   }
 
@@ -2088,8 +2077,7 @@ class Parser {
       case 'HASH':
       case 'MINUS':
         return true;
-      default:
-        if(this.cur_token.value == 'not' || this.cur_token.value == '#') return true;
+      default: if (this.cur_token.value == 'not' || this.cur_token.value == '#') return true;
         return false;
     }
   }
@@ -2099,8 +2087,7 @@ class Parser {
       case ',':
       case ';':
         return true;
-      default:
-        return false;
+      default: return false;
     }
   }
 
@@ -2210,8 +2197,7 @@ class Interpreter {
         return this.evaluate_while_statement(node, env);
       case 'RepeatStatement':
         return this.evaluate_repeat_statement(node, env);
-      default:
-        throw new Error(`unknow ast node with ${node.type}`);
+      default: throw new Error(`unknow ast node with ${node.type}`);
     }
   }
 

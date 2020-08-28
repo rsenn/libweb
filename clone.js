@@ -84,8 +84,7 @@ export const clone = (function () {
         child = new nativeSet();
       } else if(_instanceof(parent, nativePromise)) {
         child = new nativePromise((resolve, reject) => {
-          parent.then(
-            (value) => {
+          parent.then((value) => {
               resolve(_clone(value, depth - 1));
             },
             (err) => {

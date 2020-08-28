@@ -47,8 +47,7 @@ export class EagleNode {
 
   elementChain(t = (o, p, v) => [v.tagName, v]) {
     const { owner, path, document } = this;
-    let chain = Object.fromEntries(
-      Util.map(
+    let chain = Object.fromEntries(Util.map(
         path.walk((p, i, abort, ignore) => {
           let value = p.apply(owner.raw, true);
 

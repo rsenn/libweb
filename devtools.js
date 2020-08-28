@@ -18,13 +18,11 @@ if(0 && ['development', 'test', 'local'].indexOf(env) != -1 && 'window' in globa
   window.accumulateClasses = () => {
     let st = storage('dev');
     let classes = st.get('classes') || [];
-    let newClasses = dom.Element.walk(
-      document.body,
+    let newClasses = dom.Element.walk(document.body,
       (e, acc) => {
         acc.push(e.getAttribute('class'));
         return acc;
-      },
-      []
+      }, []
     )
       .join(' ')
       .split(/\s+/g)
@@ -50,8 +48,7 @@ if(0 && ['development', 'test', 'local'].indexOf(env) != -1 && 'window' in globa
 
 if(!Array.prototype.back) {
   try {
-    Util.defineGetterSetter(
-      Array.prototype,
+    Util.defineGetterSetter(Array.prototype,
       'back',
       function () {
         return this.length > 0 ? this[this.length - 1] : undefined;
@@ -68,8 +65,7 @@ if(!Array.prototype.back) {
 
 if(!Array.prototype.front) {
   try {
-    Util.defineGetterSetter(
-      Array.prototype,
+    Util.defineGetterSetter(Array.prototype,
       'front',
       function () {
         return this.length > 0 ? this[0] : undefined;
@@ -188,9 +184,7 @@ export async function getStars() {
     this.paths.forEach((e) => e.parentElement.removeChild(e));
 
     return (this.stars = this.circles.map((c) =>
-      dom.SVG.create(
-        'circle',
-        {
+      dom.SVG.create('circle', {
           cx: c.position.x.toFixed(3),
           cy: c.position.y.toFixed(3),
           r: c.radius.toFixed(3),
@@ -245,8 +239,7 @@ export function gradient(element) {
     }),
     toString() {
       return Util.decamelize(e.tagName) + '(0deg, ' + this.steps.map((s) => s.toString()).join(', ') + ');';
-    },
-    [Symbol.iterator]: () =>
+    }, [Symbol.iterator]: () =>
       new (class GradientIterator {
         index = 0;
         next() {
@@ -577,8 +570,7 @@ export async function img(name, arg = {}) {
 
   let list = root.images
     ? root.images
-    : (root.images = new HashList(
-        (obj) => (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, '$1XX$2'),
+    : (root.images = new HashList((obj) => (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, '$1XX$2'),
         function (arg) {
           let e = Element.find(arg);
           let svg = Element.find('svg', e);
@@ -747,8 +739,7 @@ export function walk(element) {
     return e;
   });
 
-  let texts = new HashList(
-    (obj) => {
+  let texts = new HashList((obj) => {
       const xpath = Element.xpath(obj.e, obj.e.parentNode);
       //if(obj.name.indexOf("#") != -1) return obj.name;
 
@@ -876,8 +867,7 @@ export function polyline(points, closed = false) {
   if(typeof points == 'object' && points.toPoints) points = points.toPoints();
 
   if(!window.svg)
-    window.svg = SVG.create(
-      'svg',
+    window.svg = SVG.create('svg',
       {
         width,
         height,
@@ -894,8 +884,7 @@ export function circle(point, radius = 10) {
   const height = window.innerHeight;
 
   if(!window.svg)
-    window.svg = SVG.create(
-      'svg',
+    window.svg = SVG.create('svg',
       {
         width,
         height,
@@ -1009,8 +998,7 @@ export function storage(name) {
   });
 
   Util.defineGetterSetter(self, 'name', () => name);
-  Util.defineGetterSetter(
-    self,
+  Util.defineGetterSetter(self,
     'value',
     () => self(),
     (value) => self(value)
