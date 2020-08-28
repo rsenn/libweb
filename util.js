@@ -4204,7 +4204,7 @@ Util.safeFunction = (fn, trapExceptions) => {
   return exec;
 };
 Util.safeCall = async (fn, args) => await Util.safeFunction(fn, true)(args);
-Util.callMain = async (fn, trapExceptions) => await Util.safeFunction(fn, trapExceptions)(Util.getArgs());
+Util.callMain = async (fn, trapExceptions) => await Util.safeFunction(fn, trapExceptions)(...Util.getArgs());
 
 Util.printReturnValue = (fn) => (...args) => {
   let returnValue = fn(...args);
