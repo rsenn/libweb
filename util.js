@@ -9,12 +9,14 @@ export function Util(g) {
 }
 
 Util.formatAnnotatedObject = function (subject, o) {
-  const { indent = '  ', spacing = ' ', separator = ',', newline = '\n', maxlen = 30, depth = 1 } = o;
-  const i = indent.repeat(Math.abs(1 - depth));
+  const { indent = '  ', spacing = ' ', separator = ',', newline = '\n', maxlen = 30, depth = 1, level = 0 } = o;
+  const i = indent.repeat(o.level || 0);
   let nl = newline != '' ? newline + i : spacing;
   const opts = {
+    ...o,
     newline: depth >= 0 ? newline : '',
-    depth: depth - 1
+    depth: depth - 1,
+    level: level + 1
   };
   if(subject && subject.toSource !== undefined) return subject.toSource();
   if(subject instanceof Date) return `new Date('${new Date().toISOString()}')`;
@@ -26,37 +28,44 @@ Util.formatAnnotatedObject = function (subject, o) {
   let longest = '';
   let r = [];
   for(let k in subject) {
+    const v = subject[k];
     if(k.length > longest.length) longest = k;
     let s = '';
-    if(typeof subject[k] === 'symbol') {
+    if(typeof v === 'symbol') {
       s = 'Symbol';
-    } else if(typeof subject[k] === 'string' || subject[k] instanceof String) {
-      s = `'${subject[k]}'`;
-    } else if(typeof subject[k] === 'function') {
-      s = Util.fnName(s) || 'function';
-      s += '()';
-    } else if(typeof subject[k] === 'number' || typeof subject[k] === 'boolean') {
-      s = `${subject[k]}`;
-    } else if(subject[k] === null) {
+    } else if(typeof v === 'string' || v instanceof String) {
+      s = `'${v}'`;
+    } else if(typeof v === 'function') {
+      s = (v + '').replace(/\n/g, '\n' + i);
+      s = (Util.fnName(s) || 'function') + '()';
+    } else if(typeof v === 'number' || typeof v === 'boolean') {
+      s = `${v}`;
+    } else if(v === null) {
       s = 'null';
-    } else if(subject[k] && subject[k].length !== undefined) {
+    } else if(v && v.length !== undefined) {
       try {
-        s = depth <= 0 ? `Array(${subject[k].length})` : `[ ${subject[k].map((item) => Util.formatAnnotatedObject(item, opts)).join(', ')} ]`;
+        s = depth <= 0 ? `Array(${v.length})` : `[ ${v.map((item) => Util.formatAnnotatedObject(item, opts)).join(', ')} ]`;
       } catch(err) {
-        s = `[${subject[k]}]`;
+        s = `[${v}]`;
       }
-    } else if(subject[k] && subject[k].toSource !== undefined) {
-      s = subject[k].toSource();
+    } else if(v && v.toSource !== undefined) {
+      s = v.toSource();
     } else if(opts.depth >= 0) {
-      s = s.length > maxlen ? `[Object ${Util.objName(subject[k])}]` : Util.formatAnnotatedObject(subject[k], opts);
+      s = s.length > maxlen ? `[Object ${Util.objName(v)}]` : Util.formatAnnotatedObject(v, opts);
+    } else {
+      let c = Util.className(v);
+      let t = Util.ucfirst(typeof v);
+
+      s = `[${t}${c !== t ? ' ' : ''}${c !== t ? c : ''}]`;
     }
+    if(s == '') s = typeof v;
     r.push([k, s]);
   }
-  let padding = (x) => (opts.newline != '' ? Util.pad(x, longest.length, spacing) : spacing);
+  let padding = (x) => indent+(opts.newline != '' ? Util.pad(x, longest.length, spacing) : spacing);
   let j = separator + spacing;
   if(r.length > 6) {
     nl = opts.newline + i;
-    j = separator + (opts.newline || spacing) + i;
+    j = separator + (opts.newline != '' ? nl : spacing);
   }
   let ret = '{' + opts.newline + r.map((arr) => padding(arr[0]) + arr[0] + ':' + spacing + arr[1]).join(j) + opts.newline + i + '}';
   return ret;
@@ -564,7 +573,7 @@ Util.set = function (obj, prop, value) {
 };
 Util.get = Util.curry((obj, prop) => (obj instanceof Map ? obj.get(prop) : obj[prop]));
 
-Util.inspect = (obj, opts = false) => {
+Util.inspect = (obj, opts = {}) => {
   const { indent = '  ', newline = '\n', depth = 2, spacing = ' ' } = typeof opts == 'object' ? opts : { indent: '', newline: '', depth: typeof opts == 'number' ? opts : 10, spacing: ' ' };
 
   return Util.formatAnnotatedObject(obj, { indent, newline, depth, spacing });
@@ -4185,6 +4194,7 @@ Util.safeFunction = (fn, trapExceptions) => {
       (err) => {
         let { message, stack } = err;
         //console.debug('main stack:', [...err.stack].map((f) => f + ''));
+        console.log('main stack:', err.stack);
         stack = Util.stack(err.stack);
         // console.log("main Stack:", Util.className(stack), stack.toString+'', Util.className(stack[0]), stack[0].toString)
         console.log('main Exception:', message, '\n' + stack.toString(true) + '');

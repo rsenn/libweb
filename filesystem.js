@@ -17,6 +17,32 @@ export function QuickJSFileSystem(std, os) {
   }
 
   return {
+    Stats: class Stats {
+      constructor(st) {
+        this.mode = st.mode;
+      }
+      isDirectory() {
+        return !!(this.mode & os.S_IFDIR);
+      }
+      isCharacterDevice() {
+        return !!(this.mode & os.S_IFCHR);
+      }
+      isBlockDevice() {
+        return !!(this.mode & os.S_IFBLK);
+      }
+      isFile() {
+        return !!(this.mode & os.S_IFREG);
+      }
+      isFIFO() {
+        return !!(this.mode & os.S_IFIFO);
+      }
+      isSymbolicLink() {
+        return !!(this.mode & os.S_IFLNK);
+      }
+      isSocket() {
+        return !!(this.mode & os.S_IFSOCK);
+      }
+    },
     readFile(filename) {
       let buf,
         size,
@@ -50,12 +76,12 @@ export function QuickJSFileSystem(std, os) {
       }
       return -res.errno;
     },
-    exists(filename) {
-      let file = std.open(filename, 'r');
+    exists(path) {
+      let file = std.open(path, 'r');
       let res = file != null;
       if(file) file.close();
       return res;
-    },
+    } /**/,
     size(filename) {
       let bytes,
         res = { errno: 0 };
@@ -69,25 +95,32 @@ export function QuickJSFileSystem(std, os) {
       }
       return -res.errno;
     },
-    realpath(filename) {
-      let [str, err] = os.realpath(filename);
-      if(!err) return str;
-      return err;
+    stat(path, cb) {
+      let [st, err] = os.stat(path);
+      st = err ? null : new this.Stats(st);
+      return (cb && cb(err, st)) || err ? err : st;
     },
-    stat(filename, dereference = false) {
-      let [st, err] = dereference ? os.stat(filename) : os.lstat(filename);
-      if(err) return err;
-      // prettier-ignore
-      return {
-        ...st,
-        isDirectory() { return !!(this.mode & os.S_IFDIR); },
-        isCharacterDevice() { return !!(this.mode & os.S_IFCHR); },
-        isBlockDevice() { return !!(this.mode & os.S_IFBLK); },
-        isFile() { return !!(this.mode & os.S_IFREG); },
-        isFIFO() { return !!(this.mode & os.S_IFIFO); },
-        isSymbolicLink() { return !!(this.mode & os.S_IFLNK); },
-        isSocket() { return !!(this.mode & os.S_IFSOCK); }
-      };
+    lstat(path, cb) {
+      let [st, err] = os.lstat(path);
+      st = err ? null : new this.Stats(st);
+      return (cb && cb(err, st)) || err ? err : st;
+    },
+
+    realpath(path, cb) {
+      let [str, err] = os.realpath(path);
+      return (cb && cb(err, str)) || err ? err : str;
+    },
+    readdir(dir, cb) {
+      let [arr, err] = os.readdir(dir);
+      return (cb && cb(err, arr)) || err ? err : arr;
+    },
+    getcwd(cb) {
+      let [wd, err] = os.getcwd();
+      return (cb && cb(err, wd)) || err ? err : wd;
+    },
+    chdir(path) {
+      let err = os.chdir(path);
+      return err;
     }
   };
 }
@@ -118,6 +151,19 @@ export function NodeJSFileSystem(fs) {
     },
     readdir(dir) {
       return fs.readdirSync(dir);
+    },
+    getcwd(cb) {
+      let [err, wd] = [undefined, process.cwd];
+      return (cb && cb(err, wd)) || err ? err : wd;
+    },
+    chdir(path) {
+      let err;
+      try {
+        process.chdir(path);
+      } catch(error) {
+        err = error;
+      }
+      return err || 0;
     }
   };
 }

@@ -39,7 +39,7 @@ function log(...args) {
 
   //console.debug('callers\n', ...callers.map((c) => c.functionName || c.methodName || c.toString()).map((n) => `  ${n}\n`));
 
-console.debug("callers[0]",callers[0])
+  console.debug('callers[0]', callers[0]);
 
   let node = args[0] instanceof ESNode && args[0];
 
