@@ -61,7 +61,7 @@ Util.formatAnnotatedObject = function (subject, o) {
     if(s == '') s = typeof v;
     r.push([k, s]);
   }
-  let padding = (x) => indent+(opts.newline != '' ? Util.pad(x, longest.length, spacing) : spacing);
+  let padding = (x) => indent + (opts.newline != '' ? Util.pad(x, longest.length, spacing) : spacing);
   let j = separator + spacing;
   if(r.length > 6) {
     nl = opts.newline + i;
