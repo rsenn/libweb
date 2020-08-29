@@ -55,7 +55,7 @@ export function Point(arg) {
     return p;
   }
 }
-const getArgs = (args) => (typeof args[0] == 'number' ? [{ x: args[0], y: args[1] }] : args);
+const getArgs = (args) => (console.debug('getArgs', ...args), typeof args[0] == 'number' ? [{ x: args[0], y: args[1] }] : args);
 
 Object.defineProperties(Point.prototype, {
   X: {
@@ -156,8 +156,7 @@ Point.prototype.neg = function () {
 Point.prototype.distanceSquared = function (other = { x: 0, y: 0 }) {
   return (other.y - this.y) * (other.y - this.y) + (other.x - this.x) * (other.x - this.x);
 };
-Point.prototype.distance = function (...args) {
-  let [other = { x: 0, y: 0 }] = getArgs(args);
+Point.prototype.distance = function (other = { x: 0, y: 0 }) {
   return Math.sqrt(Point.prototype.distanceSquared.call(this, other));
 };
 Point.prototype.equals = function (other) {

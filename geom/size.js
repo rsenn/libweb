@@ -47,7 +47,7 @@ export function Size(arg) {
   if(isNaN(obj.height)) obj.height = undefined;
   if(!(obj instanceof Size)) return obj;
 }
-const getArgs = (args) => (typeof args[0] == 'number' ? [{ width: args[0], height: args[1] }] : args);
+const getArgs = (args) => (console.debug('getArgs', ...args), typeof args[0] == 'number' ? [{ width: args[0], height: args[1] }] : args);
 
 Size.prototype.width = NaN;
 Size.prototype.height = NaN;
@@ -137,7 +137,7 @@ Size.prototype.quot = function (other) {
 Size.prototype.inverse = function (other) {
   return new Size(1 / this.width, 1 / this.height);
 };
-Size.prototype.div = function (args) {
+Size.prototype.div = function (...args) {
   for(let f of getArgs(args)) {
     this.width /= f;
     this.height /= f;
