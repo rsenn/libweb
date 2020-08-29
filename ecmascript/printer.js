@@ -602,7 +602,7 @@ export class Printer {
         //console.log("property.id:", Util.className(property.id));
         throw new Error();
       }*/
-        console.debug('printObjectLiteral:', Util.className(property), { property });
+      console.debug('printObjectLiteral:', Util.className(property), { property });
 
       let name, value;
       let isFunction = false;
@@ -613,8 +613,8 @@ export class Printer {
         isFunction = true;
       } else if(property instanceof PropertyDefinition || property instanceof BindingProperty || !property.id) {
         value = this.printNode(property);
-          console.debug('printObjectLiteral:', { value });
-      a.push(value);
+        console.debug('printObjectLiteral:', { value });
+        a.push(value);
         continue;
       } else {
         name = this.printNode(property.id);
@@ -676,7 +676,7 @@ export class Printer {
     if(!(id instanceof Identifier)) prop = '[' + prop + ']';
     s += prop;
 
-console.log('printPropertyDefinition:',   { s, prop, id, value, fn });
+    console.log('printPropertyDefinition:', { s, prop, id, value, fn });
 
     if(!(id instanceof Identifier) || (value && value.value != id.value)) {
       if(!(value instanceof FunctionDeclaration)) s += this.colorText.punctuators(': ');
