@@ -453,7 +453,7 @@ export class ECMAScriptParser extends Parser {
       throw this.error(`Expecting Literal, but got ${token.type} with value '${token.value}'`);
     }
 
-    console.log('New literal: ', token);
+    //console.log('New literal: ', token);
     return new Literal(token.value.replace(/\n/g, '\\n'), { stringLiteral: 'string', templateLiteral: 'string', numericLiteral: 'number', booleanLiteral: 'boolean', nullLiteral: 'object', regexpLiteral: 'regexp' }[token.type]);
   }
 
@@ -546,7 +546,7 @@ export class ECMAScriptParser extends Parser {
     const token = this.next();
 
     if(no_keyword) {
-      console.debug('matchIdentifier', { token });
+      //console.debug('matchIdentifier', { token });
     }
     //this.log('matchIdentifier() ');
     return token.type === Token.types.identifier || (no_keyword && token.type === Token.types.keyword);
