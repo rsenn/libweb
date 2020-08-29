@@ -676,9 +676,9 @@ export class Printer {
     if(!(id instanceof Identifier)) prop = '[' + prop + ']';
     s += prop;
 
-console.log('printPropertyDefinition:', { s, prop, id, value });
+console.log('printPropertyDefinition:',   { s, prop, id, value, fn });
 
-    if(!(id instanceof Identifier) || id.value != value.value) {
+    if(!(id instanceof Identifier) || (value && value.value != id.value)) {
       if(!(value instanceof FunctionDeclaration)) s += this.colorText.punctuators(': ');
 
       s += fn;
