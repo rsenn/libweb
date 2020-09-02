@@ -2,7 +2,7 @@
 import { Element, Point, Rect, Renderer, Select, SVG } from './dom.js';
 import { HSLA } from './color.js';
 
-import { httpClient as axios } from './axios.js';
+import {  axios } from './axios.js';
 import Util from './util.js';
 import { Polygon } from './geom.js';
 import devtools, { storage, select } from './devtools.js';

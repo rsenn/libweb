@@ -3,7 +3,7 @@
 /*import events from 'events';
 import fs from 'fs';
 import timers from 'timers';
-import stream, { Transform } from 'stream';
+import stream from 'stream';
 */
 export const noop = () => {};
 

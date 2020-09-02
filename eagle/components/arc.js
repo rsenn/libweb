@@ -1,4 +1,4 @@
-import { h, Fragment, Component } from '../../dom/preactComponent.js';
+import { h, Component } from '../../dom/preactComponent.js';
 
 export function polarToCartesian(x, y, r, deg) {
   const rad = ((deg - 90) * Math.PI) / 180.0;

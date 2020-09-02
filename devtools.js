@@ -1,7 +1,7 @@
 //import React from "react";
 //import ReactDOM from "react-dom";
 //prettier-ignore
-import dom, { TRBL, CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, Line, Matrix, Point, PointList, Rect, Size, SVG, Timer, Node, isElement } from './dom.js';
+import dom, { CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizeProps, ElementTransformation, ElementXYProps, Line, Matrix, Point, PointList, Rect, Size, SVG, Timer, Node, isElement } from './dom.js';
 //import { SvgOverlay, SvgPathTracer } from "./svg/overlay.js";
 //import { SvgPath } from "./svg/path.js";
 import Util from './util.js';

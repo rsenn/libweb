@@ -3008,7 +3008,9 @@ Util.define(Util.stackFrame.prototype, {
       const { fileName, columnNumber, lineNumber } = this;
       return fileName ? `${fileName}:${lineNumber}:${columnNumber}` : null;
     },
-    toString(color, columnWidths = [0, 0, 0, 0]) {
+    toString(color, opts = {}) {
+      const { columnWidths = [0, 0, 0, 0], stripUrl } = opts;
+
       let text = color && this.colorCtor ? new this.colorCtor() : '';
       const c = color && this.colorCtor ? (t, color) => text.write(t, color) : (t) => (text += t);
       let fields = ['functionName', 'fileName', 'lineNumber', 'columnNumber'];
@@ -3025,7 +3027,8 @@ Util.define(Util.stackFrame.prototype, {
       columns = columns.map((f, i) => (f + '')[i >= 2 ? 'padStart' : 'padEnd'](columnWidths[i] || 0, ' '));
       // columns = columns.map((fn, i) => c(fn, colors[i]));
 
-      const [functionName, fileName, lineNumber, columnNumber] = columns;
+      let [functionName, fileName, lineNumber, columnNumber] = columns;
+      if(stripUrl) fileName = fileName.replace(/.*:\/\/[^\/]*\//, '');
       //console.log('stackFrame.toString', { color ,columnWidths, functionName, fileName, lineNumber, columnNumber});
       let colonList = [fileName, lineNumber, columnNumber]
         .map((p) => ('' + p == 'undefined' ? undefined : p))
@@ -3165,14 +3168,15 @@ Object.defineProperty(Util.stack, Symbol.species, { get: () => Util.stack });
 
 Util.stack.prototype = Object.assign(Util.stack.prototype, {
   toString(color = false) {
-    let columns = this.columnWidths;
-    let a = [...this].map((frame) => Util.stackFrame.prototype.toString.call(frame, color, columns));
+    const { columnWidths } = this;
+    let a = [...this].map((frame) => Util.stackFrame.prototype.toString.call(frame, color, { columnWidths }));
     let s = a.join('\n');
     return s + '\n';
   }, [Symbol.toStringTag]() {
     return Util.stack.prototype.toString.call(this);
   }, [Symbol.for('nodejs.util.inspect.custom')](...args) {
-    return '\n' + this.map((f) => f.toString(!Util.isBrowser(), this.columnWidths)).join('\n');
+    const { columnWidths } = this;
+    return '\n' + this.map((f) => f.toString(!Util.isBrowser(), { columnWidths })).join('\n');
   }
 });
 
@@ -3827,8 +3831,8 @@ Object.assign(Util.is, {
   promise: Util.isPromise,
   function: Util.isFunction,
   string: Util.isString,
-  on: (val) => val == 'on' || val === 'true' || val === true,
-  off: (val) => val == 'off' || val === 'false' || val === false,
+  on: (val) => val == 'on' || val == 'yes' || val === 'true' || val === true,
+  off: (val) => val == 'off' || val == 'no' || val === 'false' || val === false,
   true: (val) => val === 'true' || val === true,
   false: (val) => val === 'false' || val === false
 });

@@ -3,9 +3,9 @@ import Util from '../util.js';
 import { Size } from '../dom.js';
 import { Point, Rect, BBox, TransformationList } from '../geom.js';
 import { Rotation, VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
-import { ElementToComponent, ElementNameToComponent, Pattern, Grid } from './components.js';
+import { ElementToComponent, Pattern, Grid } from './components.js';
 import trkl from '../trkl.js';
-import { h, Fragment, Component } from '../dom/preactComponent.js';
+import { h, Component } from '../dom/preactComponent.js';
 import { ColorMap } from '../draw/colorMap.js';
 
 export class EagleSVGRenderer {

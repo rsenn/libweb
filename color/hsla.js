@@ -141,6 +141,14 @@ HSLA.prototype.valueOf = function () {
   const hex = HSLA.prototype.hex.call(this);
   return parseInt('0x' + hex.slice(1));
 };
+HSLA.prototype[Symbol.toStringTag] = function () {
+  return HSLA.prototype.toString.call(this);
+};
+HSLA.prototype[Symbol.toPrimitive] = function (hint) {
+  if(hint == 'default') return HSLA.prototype.hex.call(this);
+  return HSLA.prototype.toString.call(this);
+};
+
 HSLA.prototype.toRGBA = function () {
   let { h, s, l, a } = this;
 

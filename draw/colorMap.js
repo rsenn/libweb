@@ -1,7 +1,6 @@
 import Util from '../util.js';
 import { RGBA } from '../color/rgba.js';
 import { HSLA } from '../color/hsla.js';
-import { Iterator } from '../iterator.js';
 
 export class ColorMap extends Map {
   constructor(...args) {

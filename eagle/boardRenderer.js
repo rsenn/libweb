@@ -2,14 +2,13 @@ import Util from '../util.js';
 import { Point, Line } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
-import { Cross, Arc, Grid, Pattern } from './components.js';
+import { Cross, Arc } from './components.js';
 import { RGBA } from '../color.js';
 import { Palette } from './common.js';
 import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, Rotation } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { Repeater } from '../repeater/repeater.js';
 import { useTrkl } from './renderUtils.js';
-import { useValue, useResult, useAsyncIter, useRepeater } from '../repeater/react-hooks.js';
 
 import { h, Component, useEffect } from '../dom/preactComponent.js';
 
@@ -175,11 +174,12 @@ export class BoardRenderer extends EagleSVGRenderer {
         return line;
       });
 
-      //this.debug('Lines:', [...lines]);
+      this.debug('Lines:', [...lines]);
 
       const path = LinesToPath(lines);
       const layer = layers[layerId] || this.layers.Bottom;
       const width = widths[layerId];
+      this.debug('Lines:', { path, layer, width });
 
       /*      wires.forEach(wire => layer.elements.add(wire));
 
@@ -210,6 +210,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         });
        */
         let [visible] = useTrkl(layer.handlers.visible);
+        this.debug('Lines visible:', visible);
 
         return h('path', {
           className: 'wire',
@@ -221,7 +222,7 @@ export class BoardRenderer extends EagleSVGRenderer {
           'stroke-linecap': 'round',
           'stroke-linejoin': 'round',
           'data-layer': `${layer.number} ${layer.name}`,
-          style: visible ? {} : { display: 'none' }
+          style: Util.is.on(visible) ? {} : { display: 'none' }
         });
       };
       this.create(WirePath, { path, color, width, layer }, parent);

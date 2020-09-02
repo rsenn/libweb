@@ -10,7 +10,7 @@
 //import util from 'util';
 import EventEmitter from '../eventEmitter.js';
 import Util from '../util.js';
-import { estree, ESNode, Factory, PropertyDefinition, BinaryExpression, Identifier, TemplateLiteral, ImportStatement, Literal, MemberExpression, FunctionDeclaration, ArrowFunction, SequenceExpression, ObjectBindingPattern } from './estree.js';
+import { ESNode, BinaryExpression, Identifier, ImportStatement, Literal, MemberExpression, FunctionDeclaration, ArrowFunction, SequenceExpression } from './estree.js';
 
 class NotImplemented extends Error {
   constructor(type, node) {

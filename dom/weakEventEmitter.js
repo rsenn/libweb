@@ -1,4 +1,3 @@
-import Util from '../util.js';
 ('use strict');
 
 let has = Object.prototype.hasOwnProperty,

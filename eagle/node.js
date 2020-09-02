@@ -3,7 +3,7 @@ import Util from '../util.js';
 import deep from '../deep.js';
 import { lazyMembers } from '../lazyInitializer.js';
 import { trkl } from '../trkl.js';
-import { text, concat, parseArgs } from './common.js';
+import { text, concat } from './common.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { ImmutableXPath } from '../xml.js';
 import { ImmutablePath, toXML } from '../json.js';

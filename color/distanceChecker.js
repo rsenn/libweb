@@ -4,21 +4,11 @@
  * - https://en.wikipedia.org/wiki/Color_difference
  */
 
-(function (root, moduleName, factory) {
-  'use strict';
-
-  if(typeof define === 'function' && define.amd) {
-    define(moduleName, factory);
-  } else if(typeof exports === 'object') {
-    exports = module.exports = factory();
-  } else {
-    root[moduleName] = factory();
-  }
-})(this, 'ACDC', function () {
-  'use strict';
-
   const extractHashSign = (hex) => (hex.charAt(0) === '#' ? hex.substring(1, 7) : hex);
-  const generateRGB = (hex) => {
+  const generateRGB = (color) => {
+    if(typeof(color) == 'object' && color !== null && 'r' in color && 'g' in color && 'b' in color)return color;
+    const hex = extractHashSign(color);
+
     const rgb = hex.length === 3 ? [...hex].reduce((total, char) => `${total}${char}${char}`) : hex;
 
     return {
@@ -69,11 +59,12 @@
    */
   const getLabDistance = (a, b) => Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2);
 
-  return (a, b) => {
+  export const distanceChecker =  (a, b) => {
     if(!a && !b) {
       return;
     }
 
-    return getLabDistance(rgbToLab(generateRGB(extractHashSign(a))), rgbToLab(generateRGB(extractHashSign(b))));
+    return getLabDistance(rgbToLab(generateRGB(a)), rgbToLab(generateRGB(b)));
   };
-});
+
+export default distanceChecker;

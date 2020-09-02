@@ -1,7 +1,6 @@
 import { Point, TransformationList } from '../geom.js';
 import Util from '../util.js';
-import { h, Component, useEffect, useState } from '../dom/preactComponent.js';
-import trkl from '../trkl.js';
+import { Component, useEffect, useState } from '../dom/preactComponent.js';
 
 export const VERTICAL = 1;
 export const HORIZONTAL = 2;

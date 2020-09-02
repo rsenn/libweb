@@ -1,6 +1,4 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import { Rect } from '../../geom.js';
-import { Rotation, MakeCoordTransformer } from '../renderUtils.js';
 import { TransformationList } from '../../geom/transformation.js';
 import { useTrkl, useAttributes } from '../renderUtils.js';
 

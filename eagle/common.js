@@ -1,8 +1,6 @@
 import { ImmutablePath } from '../json.js';
 //import { EagleElement } from "./element.js";
 import Util from '../util.js';
-import trkl from '../trkl.js';
-import { TransformationList } from '../geom.js';
 
 const pathPadding = Util.isBrowser() ? 0 : 40;
 
@@ -34,7 +32,7 @@ export const Palette = {
       [255, 255, 75],
       [75, 75, 75],
       [165, 165, 165],
-      [175, 175, 175]
+      [0, 163, 255]
     ].map((c) => m(...c)),
   schematic: (m = (r, g, b) => [r, g, b]) =>
     [

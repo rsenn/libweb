@@ -1,9 +1,9 @@
-//import axios from "axios";
-const axios = require('axios').default;
+import axios from "axios";
+//const axios = require('axios').default;
 
 import Util from './util.js';
 
-const httpClient = (() => {
+export const httpClient = (() => {
   const client = axios.create({ withCredentials: true });
 
   client.interceptors.response.use((res) => {
@@ -45,4 +45,3 @@ if(global.window) window.axios = httpClient;
 
 export default httpClient;
 export { httpClient as axios };
-export { httpClient };

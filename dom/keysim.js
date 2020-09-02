@@ -1,4 +1,3 @@
-import Util from '../util.js';
 import isEditable from './isEditable.js';
 
 const CTRL = 1 << 0;

@@ -2,7 +2,6 @@ import { h, Component } from '../../dom/preactComponent.js';
 import Util from '../../util.js';
 import { MakeCoordTransformer } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
-import LogJS from '../../log.js';
 import { useTrkl } from '../renderUtils.js';
 
 export const Wire = ({ data, opts = {}, ...props }) => {

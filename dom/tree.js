@@ -1,5 +1,3 @@
-import Util from '../util.js';
-
 /**
  * DOM Tree
  * @param {[type]} root [description]

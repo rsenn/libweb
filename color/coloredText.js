@@ -1,5 +1,5 @@
 import Util from '../util.js';
-import { RGBA, HSLA } from '../color.js';
+import { RGBA } from '../color.js';
 
 const FOREGROUND = Symbol.for('foreground');
 const BACKGROUND = Symbol.for('background');

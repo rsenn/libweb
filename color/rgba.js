@@ -183,11 +183,25 @@ RGBA.prototype.toString = function (sep = ',', fmt = (num) => +num.toFixed(3)) {
   if(a === undefined) return 'rgb(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + ')';
   return 'rgba(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + sep + (a * 100) / 255 + '%)';
 };
-
+RGBA.prototype[Symbol.toStringTag] = function () {
+  return RGBA.prototype.toString.call(this);
+};
+RGBA.prototype[Symbol.toPrimitive] = function (hint) {
+  if(hint == 'default') return RGBA.prototype.hex.call(this);
+  return RGBA.prototype.toString.call(this);
+};
+function toHex(n) {
+  return '0x'+('00'+((+n).toString(16))).slice(-2);
+}
 RGBA.prototype.toSource = function (sep = ',') {
   let a = this.a;
   if(a === undefined) return 'new RGBA(' + this.r + sep + this.g + sep + this.b + ')';
-  return 'new RGBA(' + this.r + sep + this.g + sep + this.b + sep + (a / 255).toFixed(3) + ')';
+  let s = 'new RGBA(' + toHex(this.r) + sep + toHex(this.g) + sep + toHex(this.b);
+
+  if(a !=255) s += sep + toHex(a);
+
+  s+=  ')';
+  return s;
 };
 
 RGBA.prototype.normalize = function (src = 255, dst = 1.0) {
@@ -455,21 +469,21 @@ RGBA.fromAnsi256 = function (n) {
     return new RGBA(...c);
   }
 };
-RGBA.nearestColor = (color, palette) => {
+RGBA.nearestColor = (color, palette, distFn = (a,b) => Math.sqrt(Math.pow(a.r - b.r, 2) + Math.pow(a.g - b.g, 2) + Math.pow(a.b - b.b, 2))) => {
   if(!(color instanceof RGBA)) color = new RGBA(color);
   //console.log("RGBA.nearestColor", color.hex(),Util.className(color),Util.className(palette));
   if(!color) return null;
-  let distSq,
-    minDistSq = Infinity,
+  let dist,
+    minDist = Infinity,
     rgb,
     v,
     vi;
   palette || (palette = RGBA.palette16);
   for(let i = 0; i < palette.length; ++i) {
     rgb = palette[i];
-    distSq = Math.pow(color.r - rgb.r, 2) + Math.pow(color.g - rgb.g, 2) + Math.pow(color.b - rgb.b, 2);
-    if(distSq < minDistSq) {
-      minDistSq = distSq;
+    dist = distFn(color, rgb);
+    if(dist < minDist) {
+      minDist = dist;
       v = palette[i];
       vi = i;
     }
@@ -478,7 +492,7 @@ RGBA.nearestColor = (color, palette) => {
     return {
       value: v,
       index: vi,
-      distance: Math.sqrt(minDistSq)
+      distance: minDist
     };
   }
   return v;
@@ -515,14 +529,14 @@ RGBA.prototype[Symbol.iterator] = function* () {
 
 RGBA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function () {
   const { r, g, b, a } = this;
-  let arr = a !== undefined ? [r, g, b, a] : [r, g, b];
-  let ret = arr /*.map(n => (n + '').padStart(3, ' '))*/
+  let arr = a !== undefined && a != 255 ? [r, g, b, a] : [r, g, b];
+  let ret = arr.map(toHex) /*.map(n => (n + '').padStart(3, ' '))*/
     .join(',');
   const color = this.toAnsi256(true);
   const l = this.toHSLA().l;
   let s = '';
 
-  s += arr.map((n) => `\x1b[0;33m${n}\x1b[0m`).join('');
+  s += arr.map((n) => `\x1b[0;33m${toHex(n) }\x1b[0m`).join('');
   s = color + s;
 
   return `\x1b[1;31mRGBA\x1b[1;36m` + `(${ret})`.padEnd(18, ' ') + ` ${color}    \x1b[0m`;
