@@ -277,10 +277,12 @@ export class BoardRenderer extends EagleSVGRenderer {
     return this.renderCollection(signal.children, signalGroup, options);
   }
 
-  render(doc = this.doc, parent, props = {}) {
+  render(doc = this.doc /*, parent, props = {}*/) {
+    let parent, props;
     /*if(!this.bounds)
     this.bounds = doc.getBounds();*/
-    parent = super.render(doc, parent, props);
+    parent = super.render(doc /*, parent, props*/);
+
     const { bounds, rect } = this;
     this.debug(`BoardRenderer.render`, { bounds, rect });
     //this.renderLayers(parent);

@@ -266,16 +266,16 @@ export class SchematicRenderer extends EagleSVGRenderer {
     rect.outset(1.27);
     rect.round(2.54);
 
-    parent = super.render(doc, parent, props);
+    let svgElem = super.render(doc);
 
     this.debug('this.transform:', this.transform, 'this.rect:', this.rect, 'doc:', doc);
 
     this.debug(`SchematicRenderer.render`, { doc, sheetNo, bounds });
-    this.renderSheet(sheet, parent);
+    this.renderSheet(sheet, svgElem);
 
     //this.renderInstances(parent, sheetNo, rect);
 
-    return parent;
+    return svgElem;
   }
 }
 

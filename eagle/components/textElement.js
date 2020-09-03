@@ -1,6 +1,6 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import Util from '../../util.js';
-import { Rotation, ClampAngle, AlignmentAngle, MakeCoordTransformer } from '../renderUtils.js';
+import { MakeCoordTransformer } from '../renderUtils.js';
 import { Text } from './text.js';
 import { useTrkl } from '../renderUtils.js';
 
@@ -27,47 +27,6 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
     //console.log('text', { text, prop, opts });
     text = prop in opts ? opts[prop] : text;
   }
-  //console.log(`TextElement.render`, text, { align, opts });
-
-  /*const translation = new TransformationList();
-
-  //console.log('translation:', Util.className(translation));
-  const rotation = translation.concat(Rotation(rot));
-  //console.log('rotation:', Util.className(rotation));
-  let wholeTransform = transform.concat(Rotation(rot));
-  let wholeAngle = ClampAngle(wholeTransform.decompose().rotate);
-
-  let undoTransform = new TransformationList().scale(1, -1).rotate(wholeAngle);
-  let undoAngle = ClampAngle(undoTransform.decompose().rotate);
-
-  let angle = ClampAngle(undoAngle - wholeAngle, 180);
-
-  const finalTransformation = rotation
-    .concat(undoTransform)
-    //.rotate(Math.abs(wholeAngle % 180))
-    .collapseAll();
-
-  //console.log(`wholeAngle ${text}`, wholeAngle);
-  //console.log(`undoAngle ${text}`, undoAngle);
-        //console.log(`angle ${text}`, angle);
-  //console.log(`finalTransformation ${text}`, finalTransformation.toString());
-  //console.log(`finalTransformation ${text}`, finalTransformation.translation, finalTransformation.rotation, finalTransformation.scaling);
-
-  if(finalTransformation.rotation) {
-    if(finalTransformation.rotation.angle < 0) finalTransformation.rotation.angle = Math.abs(finalTransformation.rotation.angle);
-    //finalTransformation.rotation.angle %= 180;
-  }
-
-  const baseAlignment = Alignment(align);
-  const rotateAlignment = AlignmentAngle(wholeAngle);
-  const alignment = baseAlignment
-    .clone()
-    .rotate((rotateAlignment * Math.PI) / 180)
-    .round(0.5);
-
-  //console.log(`render alignment ${text}`,
-    Util.map({ baseAlignment, rotateAlignment, alignment }, (k, v) => [k, v + ''])
-  );*/
 
   let attrs = {};
   if(align !== undefined) attrs['data-align'] = align;
@@ -78,7 +37,6 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
 
   return h(Text, {
     color,
-
     x,
     y,
     rot,

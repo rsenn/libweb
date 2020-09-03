@@ -3,10 +3,11 @@ import Util from '../util.js';
 import { Size } from '../dom.js';
 import { Point, Rect, BBox, TransformationList } from '../geom.js';
 import { Rotation, VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
-import { ElementToComponent, Pattern, Grid } from './components.js';
+import { ElementToComponent, Pattern, Grid, Background, Drawing } from './components.js';
 import trkl from '../trkl.js';
 import { h, Component } from '../dom/preactComponent.js';
 import { ColorMap } from '../draw/colorMap.js';
+import { SVG } from './components/svg.js';
 
 export class EagleSVGRenderer {
   static rendererTypes = {};
@@ -22,30 +23,6 @@ export class EagleSVGRenderer {
   path2component = null;
   component2path = new WeakMap();
 
-  /*setItem(path, item) {
-    const { itemMap } = this;
-    itemMap.set(path + '', item);
-  }
-
-  setComponent(path, component) {
-    const { path2component, component2path } = this;
-    path2component.set(path + '', component);
-    component2path.set(component, path);
-  }
-
-  getItem(path) {
-    const { doc } = this;
-    if(Util.isObject(path) && path.type !== undefined) path = this.component2path.get(path);
-    return doc.mapper.get(path);
-  }
-
-  getComponent(path) {
-    const { path2component } = this;
-    if(Util.isObject(path) && path.path !== undefined) path = path.path;
-
-    return path2component.get(path + '');
-  }
-*/
   constructor(doc, factory) {
     if(new.target === EagleSVGRenderer) throw new Error('Use SchematicRenderer or BoardRenderer');
     this.doc = doc;
@@ -56,12 +33,12 @@ export class EagleSVGRenderer {
     );
     const insertCtoP = Util.inserter(this.component2path);
     const insert = Util.inserter(this.path2component, (k, v) => insertCtoP(v, k));
+    this.append = factory;
     this.create = function (tag, attrs, children, parent, element) {
       let ret = factory(tag, attrs, children, parent, element);
       let path = attrs['data-path'];
-      if(path && !element) {
-        element = EagleElement.get(doc, path);
-      }
+      if(path && !element) element = EagleElement.get(doc, path);
+
       if(!element) element = EagleElement.currentElement;
       if(!path && element) path = element.path;
       if(path) insert(path, ret);
@@ -413,7 +390,7 @@ export class EagleSVGRenderer {
     return r;
   }
 
-  render(doc, parent, props = {}) {
+  render(doc, props = {}, children = []) {
     doc = doc || this.doc;
 
     let bounds = doc.getBounds();
@@ -421,11 +398,6 @@ export class EagleSVGRenderer {
     let rect = bounds.toRect(Rect.prototype);
 
     rect.outset(1.27);
-
-    /*  rect.round(2.54, 6);
-     */
-    // Util.tryCatch(() => this.debug('stack:', (window.stack = Util.getCallerStack(1)).toString()));
-
     this.rect = rect;
     this.bounds = BBox.fromRect(rect);
     console.log('EagleSVGRenderer.render', { bounds: this.bounds, rect });
@@ -443,47 +415,19 @@ export class EagleSVGRenderer {
 
     console.log('viewBox rect:', rect, rect.toString(), rect.valueOf);
 
-    if(!parent)
-      parent = this.create('svg',
-        {
-          /*  width,
-          height,*/
-          viewBox: new Rect(rect).toString(), //+'', //rect.clone(r => (r.y = 0)).toString({ separator: ' ' }),
-          preserveAspectRatio: 'xMinYMin', //"xMidYMid meet"
-          ...props
-        },
-        parent
-      );
-
-    const cssStyle = this.create('style', { children: [`text { font-size: 0.0875rem; }`] }, parent);
-    //this.renderLayers(parent);
-    /*    const step = 2.54;
-    const gridColor = '#0000aa';
-    const gridWidth = 0.05;
-
-*/
     let grid = doc.lookup('/eagle/drawing/grid');
+    let attrs = { bg: trkl({ color: '#ffffff', visible: true }), grid: trkl({ color: '#0000aa', width: 0.05, visible: true }) };
+    console.log('grid:', grid.attributes);
 
-    let defs =
-      /*
+    trkl.bind(this, attrs);
 
-    this.create('path', {
-        d: `M ${step},0 L 0,0 L 0,${step}`,
-        fill: 'none',
-        stroke: gridColor,
-        'stroke-width': gridWidth
-      },
-      this.create('pattern', { id: 'grid', width: step, height: step, patternUnits: 'userSpaceOnUse' }, defs)
-    );*/
-      this.create('defs', { children: h(Pattern, { id: 'grid', step: 2.54, color: '#0000aa', width: 0.05 }) }, parent);
+    let svgElem = h(Drawing, { rect, attrs, grid, transform }, children);
 
-    this.create('g', { id: 'bg', children: h('g', { transform }, h(Grid, { data: grid, rect, background: 'rgb(255,255,255)' })) }, parent);
+    //     parent = this.create('svg', { viewBox: new Rect(rect).toString(), preserveAspectRatio: 'xMinYMin', ...props }, parent);
+    //  let defs = h('defs', {},   h(Pattern, { id: 'grid', step: 2.54, color: '#0000aa', width: 0.05 }));
 
-    //  this.create('rect', { ...rect.toObject(), id: 'grid', fill: 'url(#grid)' }, bgGroup);
-
-    this.debug(`EagleSVGRenderer.render`, { doc, parent, props });
-
-    return parent;
+    this.debug(`EagleSVGRenderer.render`, { doc, svgElem, props });
+    return svgElem;
   }
 }
 EagleSVGRenderer.horizontalAlignment = ['start', 'middle', 'end'];

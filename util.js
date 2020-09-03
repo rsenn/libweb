@@ -4080,38 +4080,42 @@ Util.decorateIterable = (proto, generators = false) => {
 Util.swap = (a, b) => [b, a];
 Util.swapArray = ([a, b]) => [b, a];
 
-Util.cacheAdapter = (storage, defaultOpts = {}) => {
-  if(typeof storage == 'string')
-    storage = Util.tryCatch(() => window.caches,
-      async (c) => c.open(storage),
+Util.cacheAdapter = (st, defaultOpts = {}) => {
+  if(typeof st == 'string')
+    st = Util.tryCatch(() => window.caches,
+      async (c) => c.open(st),
       () => null
     );
   return {
     async getItem(request, opts = {}) {
       if(typeof request == 'number') request = await this.key(request);
-      return await (await storage).match(request, { ...defaultOpts, ...opts });
+      return await (await st).match(request, { ...defaultOpts, ...opts });
     },
     async setItem(request, response) {
-      return await (await storage).put(request, response);
+      return await (await st).put(request, response);
     },
     async addItem(request) {
-      await (await storage).add(request);
+      await (await st).add(request);
       let response = await this.getItem(request);
       if(response) response = response.clone();
       return response;
     },
     async removeItem(request, opts = {}) {
       if(typeof request == 'number') request = await this.key(request);
-      return await (await storage).delete(request, { ...defaultOpts, ...opts });
+      return await (await st).delete(request, { ...defaultOpts, ...opts });
     },
     async key(index) {
-      return (await (await storage).keys())[index];
+      return (await (await st).keys())[index];
     },
-    async keys() {
-      return await (await storage).keys();
+    async keys(urls = false, t = (a) => a) {
+      let keys = await (await st).keys();
+      if(urls) keys = keys.map((response) => response.url);
+      if(typeof t == 'function') keys = keys.map((r) => t(r));
+
+      return keys;
     },
     async clear() {
-      let keys = await (await storage).keys();
+      let keys = await (await st).keys();
       for(let key of keys) await this.removeItem(key);
     }
   };

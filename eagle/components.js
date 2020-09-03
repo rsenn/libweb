@@ -8,6 +8,9 @@ import { Cross } from './components/cross.js';
 import { Arc } from './components/arc.js';
 import { Grid, Pattern } from './components/grid.js';
 import { TextElement } from './components/textElement.js';
+import { SVG } from './components/svg.js';
+import { Background } from './components/background.js';
+import { Drawing } from './components/drawing.js';
 
 export const PrimitiveComponents = { Wire, Rectangle, Pin, Circle, Cross, Arc, Text: TextElement, Grid, Pattern };
 
@@ -33,3 +36,6 @@ export { Cross } from './components/cross.js';
 export { Arc } from './components/arc.js';
 export { TextElement } from './components/textElement.js';
 export { Grid, Pattern } from './components/grid.js';
+export { SVG } from './components/svg.js';
+export { Background } from './components/background.js';
+export { Drawing } from './components/drawing.js';

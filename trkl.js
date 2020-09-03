@@ -158,7 +158,11 @@ trkl.bind = function (object, name, handler) {
 };
 
 trkl.object = function (handlers, ret = {}) {
-  for(let prop in handlers) trkl.bind(ret, prop, handlers[prop]);
+  for(let prop in handlers) {
+    ret[prop] = handlers[prop]();
+
+    trkl.bind(ret, prop, handlers[prop]);
+  }
 
   return ret;
 };
