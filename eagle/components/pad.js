@@ -23,7 +23,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
   let d;
   let transform = `translate(${x},${y})`;
   let [visible] = layer ? useTrkl(layer.handlers.visible) : [true];
-   
+
   const padColor = layer.color || pad.getColor();
 
   switch (shape) {
