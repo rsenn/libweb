@@ -79,7 +79,7 @@ export class Transformation {
     let t;
     let unit;
 
-    //Util.log("fromString",{arg,argStr,args});
+    //console.log("fromString",{arg,argStr,args});
 
     args = args
       .filter((arg) => /^[-+0-9.]+[a-z]*$/.test(arg))
@@ -554,7 +554,7 @@ export class TransformationList extends Array {
     //trans.toMatrix().transform_point(vec);
 
     vec = vec.round(0.00001, 5);
-    //Util.log("from:", new Point(x,y), " to:", vec);
+    //console.log("from:", new Point(x,y), " to:", vec);
 
     if(Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) Array.prototype.push.call(this, new Translation(vec.x, vec.y));
 

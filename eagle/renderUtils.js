@@ -248,7 +248,7 @@ export function MakeCoordTransformer(matrix) {
 
 export const useTrkl = (fn) => {
   const [value, setValue] = useState(fn());
-  console.debug('useTrkl fn =', fn, ' value =', value);
+  //console.debug('useTrkl fn =', fn, ' value =', value);
 
   useEffect(() => {
     let updateValue = (v) => {
