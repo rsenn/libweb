@@ -8,7 +8,7 @@ import { Palette } from './common.js';
 import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, Rotation } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { Repeater } from '../repeater/repeater.js';
-import { useTrkl } from './renderUtils.js';
+import { useTrkl, ElementToClass, EscapeClassName, UnescapeClassName } from './renderUtils.js';
 
 import { h, Component, useEffect } from '../dom/preactComponent.js';
 
@@ -36,7 +36,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     const svg = (elem, attr, parent) =>
       this.create(elem, {
-          className: item.tagName, //...LayerAttributes(layer),
+          class: ElementToClass(item),
           'data-path': item.path.toString(' '),
           ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
           ...attr
@@ -181,39 +181,15 @@ export class BoardRenderer extends EagleSVGRenderer {
       const width = widths[layerId];
       this.debug('Lines:', { path, layer, width });
 
-      /*      wires.forEach(wire => layer.elements.add(wire));
-
-      let repeater = new Repeater(async (push, stop) => {
-        let prev;
-        for await (let event of Repeater.merge(wires.map(wire => wire.repeater))) {
-          if(!Util.equals(prev, event))
-            //console.log("event:", event);
-            push(event);
-        }
-        prev = event;
-      });*/
-
-      /* this.debug('layerId:', layerId);
-      this.debug('layer:', layer);*/
       const color = layer.color;
       //this.debug('color:', color, layer.color);
 
-      const WirePath = ({ path, color, width, layer }) => {
-        /*let [visible, setVisible] = useState(layer.isVisible());
-
-        useEffect(() => {
-          let updateVisible = v => v && setVisible(v == 'yes');
-
-          let handler = layer.handlers['visible'];
-          handler.subscribe(updateVisible);
-          return () => handler.unsubscribe(updateVisible);
-        });
-       */
+      const WirePath = ({ className, path, color, width, layer }) => {
         let [visible] = useTrkl(layer.handlers.visible);
         this.debug('Lines visible:', visible);
 
         return h('path', {
-          className: 'wire',
+          className,
           //...LayerAttributes(layer),
           d: path,
           stroke: color + '',
@@ -225,7 +201,7 @@ export class BoardRenderer extends EagleSVGRenderer {
           style: Util.is.on(visible) ? {} : { display: 'none' }
         });
       };
-      this.create(WirePath, { path, color, width, layer }, parent);
+      this.create(WirePath, { class: ElementToClass(wires[0], layer.name), path, color, width, layer }, parent);
     }
   }
 
@@ -238,11 +214,12 @@ export class BoardRenderer extends EagleSVGRenderer {
     let rotation = Rotation(rot);
 
     transform.translate(x, y);
+    let elementName = EscapeClassName(name);
 
     const g = this.create('g',
       {
-        id: `element.${name}`,
-        className: `element ${name}`,
+        id: `element-${elementName}`,
+        class: ElementToClass(element),
         'data-name': name,
         'data-value': value,
         'data-library': library.name,
@@ -270,7 +247,7 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderSignal(signal, parent, options = {}) {
-    let signalGroup = this.create('g', { id: `signal.${signal.name}`, className: `signal ${signal.name}`, 'data-path': signal.path.toString(' ') }, parent);
+    let signalGroup = this.create('g', { id: `signal-${EscapeClassName(signal.name)}`, class: ElementToClass(signal), 'data-path': signal.path.toString(' ') }, parent);
 
     this.debug(`BoardRenderer.renderSignal`, signal.name);
 
@@ -287,9 +264,9 @@ export class BoardRenderer extends EagleSVGRenderer {
     const { bounds, rect } = this;
     this.debug(`BoardRenderer.render`, { bounds, rect });
     //this.renderLayers(parent);
-    let plainGroup = this.create('g', { className: 'plain', transform }, parent);
-    let signalsGroup = this.create('g', { className: 'signals', strokeLinecap: 'round', transform }, parent);
-    let elementsGroup = this.create('g', { className: 'elements', transform }, parent);
+    let plainGroup = this.create('g', { class: 'plain', transform }, parent);
+    let signalsGroup = this.create('g', { class: 'signals', strokeLinecap: 'round', transform }, parent);
+    let elementsGroup = this.create('g', { class: 'elements', transform }, parent);
     this.debug('bounds: ', bounds);
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {

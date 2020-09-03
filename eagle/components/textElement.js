@@ -2,8 +2,9 @@ import { h, Component } from '../../dom/preactComponent.js';
 import Util from '../../util.js';
 import { MakeCoordTransformer } from '../renderUtils.js';
 import { Text } from './text.js';
-import { useTrkl } from '../renderUtils.js';
+import { useTrkl, ElementToClass } from '../renderUtils.js';
 import { toXML } from '../../json.js';
+import { classNames } from '../../classNames.js';
 export const TextElement = ({ data, opts = {}, ...props }) => {
   data = data || props.item;
 
@@ -17,6 +18,12 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
   let text = innerText || labelText || children.join('\n');
   let { x, y } = coordFn(data);
   const color = data.getColor();
+  let className = ElementToClass(data);
+  console.debug('className:', className);
+  /*data.tagName;
+
+if(Util.isObject(layer) && typeof(layer.name) == 'string')
+className = classNames(className, layer.name);*/
 
   let [visible] = layer ? useTrkl(layer.handlers.visible) : [true];
 
@@ -36,6 +43,7 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
   attrs['data-alignment'] = [...Alignment(align)].join('|');
 
   return h(Text, {
+    className,
     color,
     x,
     y,

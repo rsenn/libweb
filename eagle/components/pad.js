@@ -1,5 +1,5 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import { MakeCoordTransformer, AlignmentAttrs } from '../renderUtils.js';
+import { MakeCoordTransformer, AlignmentAttrs, ElementToClass } from '../renderUtils.js';
 import { TransformationList } from '../../geom/transformation.js';
 import { Palette } from '../common.js';
 import { Text } from './text.js';
@@ -16,18 +16,15 @@ export const Pad = ({ data, opts = {}, ...props }) => {
     }) || data;
 
   let coordFn = opts.transform ? MakeCoordTransformer(opts.transform) : (i) => i;
-
-  const { name, drill, diameter, shape, layer } = pad;
+  const { name, drill, diameter, shape, layer, rot } = pad;
   const { x, y } = coordFn(pad);
-
   const ro = +((diameter || 1.5) / 2.54).toFixed(3);
   const ri = +(drill / 3).toFixed(3);
-
   let d;
-  const transform = `translate(${x},${y})`;
+  let transform = `translate(${x},${y})`;
   let [visible] = layer ? useTrkl(layer.handlers.visible) : [true];
-  console.log('pad layer=', layer.name, visible);
-  const padColor = pad.getColor();
+   
+  const padColor = layer.color || pad.getColor();
 
   switch (shape) {
     case 'long': {
@@ -36,19 +33,16 @@ export const Pad = ({ data, opts = {}, ...props }) => {
       break;
     }
     case 'square': {
-      const points = [new Point(-1, -1), new Point(1, -1), new Point(1, 1), new Point(-1, 1)].map((p) => p.prod(ro * 1.27));
-
-      d = points
+      d = [new Point(-1, -1), new Point(1, -1), new Point(1, 1), new Point(-1, 1)]
+        .map((p) => p.prod(ro * 1.27))
         .map((p) => p.round())
         .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
         .join(' ');
-
       break;
     }
     case 'octagon': {
-      const points = Util.range(0, 7).map((i) => Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.4));
-
-      d = points
+      d = Util.range(0, 7)
+        .map((i) => Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.4))
         .map((p) => p.round())
         .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
         .join(' ');
@@ -59,31 +53,36 @@ export const Pad = ({ data, opts = {}, ...props }) => {
       break;
     }
   }
+
+  const layerProps = layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {};
   const pathProps = {
-    fill: padColor,
-    d: d + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
-    ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
+    d: d + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`
+  };
+  const baseProps = {
+    class: ElementToClass(pad),
+    //fill: padColor,
     transform
   };
+  const dataProps = {
+    'data-name': pad.name,
+    'data-shape': pad.shape,
+    'data-drill': pad.drill,
+    'data-diameter': pad.diameter,
+    'data-rot': pad.rot
+  };
   const visibleProps = { style: visible ? {} : { display: 'none' } };
-
-  const textElem = name
-    ? h('text',
-        {
-          fill: 'hsla(180,100%,60%,0.5)',
-          stroke: 'none',
-
-          x: 0.04,
-          y: -0.04,
-          ...(layer ? { 'd-layer': `${layer.number} ${layer.name}` } : {}),
-          ...AlignmentAttrs('center', VERTICAL),
-          'font-size': 0.6,
-          'font-style': 'bold',
-          transform: `${transform} ${RotateTransformation(opts.rot, -1)} scale(1,-1)`
-        },
-        /* prettier-ignore */ h('tspan', { ...AlignmentAttrs('center', HORIZONTAL) }, name)
-      )
-    : null;
-
-  return textElem ? h('g', { class: 'pad', ...visibleProps }, [h('path', pathProps), textElem]) : h('path', { class: 'pad', ...pathProps, ...visibleProps });
+  const alignment = Alignment('center');
+  if(name) {
+    const textElem = h('text',
+      {
+        x: 0.04,
+        y: 0.04,
+        ...AlignmentAttrs(alignment, VERTICAL),
+        transform: RotateTransformation(opts.rot, -1) + ` scale(1,-1)`
+      },
+      /* prettier-ignore */ h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL) }, name)
+    );
+    return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [h('path', pathProps), textElem]);
+  }
+  return h('path', { ...baseProps, ...dataProps, ...pathProps, ...visibleProps });
 };

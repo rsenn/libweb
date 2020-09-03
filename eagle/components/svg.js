@@ -6,6 +6,18 @@ export const SVG = ({ viewBox, preserveAspectRatio = 'xMinYMin', children, defs,
       viewBox,
       preserveAspectRatio,
       ...props
-    }, [h('style', {}, [`text { font-size: 0.0875rem; }`]), h('defs', {}, defs), ...children]
+    }, [
+      h('style', {}, [
+        `
+text { font-size: 0.0875rem; }
+text { stroke: none; }
+ .pad { fill: #4ba54b; }
+ .pad > text { fill: #ff33ff; }
+ .pad > text { font-size: 1px; }
+        `
+      ]),
+      h('defs', {}, defs),
+      ...children
+    ]
   );
 };

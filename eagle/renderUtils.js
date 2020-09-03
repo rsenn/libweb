@@ -1,10 +1,40 @@
 import { Point, TransformationList } from '../geom.js';
 import Util from '../util.js';
 import { Component, useEffect, useState } from '../dom/preactComponent.js';
+import { classNames } from '../classNames.js';
 
 export const VERTICAL = 1;
 export const HORIZONTAL = 2;
 export const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
+
+export const EscapeClassName = (name) =>
+  encodeURIComponent(name)
+    .replace(/_/g, '%5f')
+    .replace(/%([0-9A-Fa-f]{2})/g, '_0x$1_');
+
+export const UnescapeClassName = (name) => decodeURIComponent(name.replace(/_0?x?([0-9A-Fa-f]{2})_/g, '%$1'));
+
+export const ElementToClass = (element, layerName) => {
+  layerName = layerName || (element.layer || {}).name || '';
+  //console.debug('ElementToClass', Util.className(element), element.tagName, { element, layerName });
+  let layerClass = layerName.toLowerCase();
+  if(/^[tb][A-Z]/.test(layerName)) {
+    layerClass = layerName
+      .replace(/^t([A-Z].*)/, 'top $1')
+      .replace(/^b([A-Z].*)/, 'bottom $1')
+      .toLowerCase();
+  }
+  if(/s$/.test(layerClass)) layerClass = layerClass.slice(0, -1);
+
+  let tagName, name;
+  if(/*Util.isObject*/ element) {
+    if(element.tagName) tagName = element.tagName;
+    if(element.name) name = EscapeClassName(element.name);
+  }
+  let classes = [tagName, name, layerClass];
+  return classNames(...Util.unique(classes));
+  return classes;
+};
 
 export const ClampAngle = (a, mod = 360) => {
   while(a < 0) a += 360;
@@ -52,7 +82,7 @@ export const Alignment = (align, def = 'bottom-left', rot = 0) => {
 };
 
 export const SVGAlignments = [
-  ['baseline', 'mathematical', 'hanging'],
+  ['baseline', 'middle' /* 'mathematical'*/, 'hanging'],
   ['start', 'middle', 'end']
 ];
 

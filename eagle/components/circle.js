@@ -1,5 +1,5 @@
 import { h, Component } from '../../dom/preactComponent.js';
-import { MakeCoordTransformer } from '../renderUtils.js';
+import { MakeCoordTransformer, ElementToClass } from '../renderUtils.js';
 import { TransformationList } from '../../geom/transformation.js';
 import { useTrkl } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
@@ -33,6 +33,7 @@ export const Circle = ({ data, opts = {}, ...props }) => {
   let [visible] = layer ? useTrkl(layer.handlers.visible) : [true];
 
   return h('circle', {
+    class: ElementToClass(circle),
     stroke: color,
     cx: x,
     cy: y,
@@ -41,6 +42,6 @@ export const Circle = ({ data, opts = {}, ...props }) => {
     fill: 'none',
     ...(layer ? { 'circle-layer': `${layer.number} ${layer.name}` } : {}),
     style: visible ? {} : { display: 'none' },
-     'data-layer': `${layer.number} ${layer.name}`,
- });
+    'data-layer': `${layer.number} ${layer.name}`
+  });
 };

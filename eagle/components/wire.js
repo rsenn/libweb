@@ -1,6 +1,6 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import Util from '../../util.js';
-import { MakeCoordTransformer } from '../renderUtils.js';
+import { MakeCoordTransformer, ElementToClass } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
 import { useTrkl } from '../renderUtils.js';
 
@@ -24,10 +24,10 @@ export const Wire = ({ data, opts = {}, ...props }) => {
 
   const { width, curve = '', layer, x1, y1, x2, y2 } = coordFn(wire);
   const color = wire.getColor();
-  let  [visible] = layer ? useTrkl(layer.handlers.visible) : [true];
+  let [visible] = layer ? useTrkl(layer.handlers.visible) : [true];
 
   return h('line', {
-    class: 'wire',
+    class: ElementToClass(wire, layer.name),
     stroke: color,
     x1,
     x2,

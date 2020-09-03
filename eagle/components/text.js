@@ -2,7 +2,7 @@ import { h, Fragment, Component } from '../../dom/preactComponent.js';
 import { Rotation, Alignment, VERTICAL, HORIZONTAL } from '../renderUtils.js';
 import { TransformationList } from '../../geom.js';
 
-export const Text = ({ x, y, text, color, alignment, rot, transformation, visible, ...props }) => {
+export const Text = ({ x, y, text, color, alignment, rot, transformation, visible, className, ...props }) => {
   //console.log(`Text.render`, { x, y, text, alignment, rot, transformation, ...props });
 
   let transform = new TransformationList();
@@ -22,6 +22,7 @@ export const Text = ({ x, y, text, color, alignment, rot, transformation, visibl
 
   return h(Fragment, {}, [
     h('text', {
+        className,
         fill: color,
         stroke: 'none',
         'stroke-width': 0.05,

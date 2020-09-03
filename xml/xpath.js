@@ -46,7 +46,7 @@ export class MutableXPath extends MutablePath {
   }
 
   static from(path, obj) {
-    //console.log("MutableXPath.from",{path,obj});
+    console.log('MutableXPath.from', { path, obj });
     let absolute = false;
     path = [...path];
     while(path.length > 0 && path[0] === '') {
@@ -67,7 +67,7 @@ export class MutableXPath extends MutablePath {
       let p = a[i];
       if(MutablePath.isChildren(p)) p = 'children';
       else if(Util.isObject(p) && Util.isArray(o)) p = o.findIndex((item) => item.tagName === p.tagName);
-      //console.log(`MutableXPath.from[${i}] `, { p, o, f: p+''   });
+      console.log(`MutableXPath.from[${i}] `, { p, o, f: p + '' });
       e = typeof p == 'function' ? o.find(p) : o[p];
       if(p == 'children' || Util.isArray(e)) {
         n = e.length;

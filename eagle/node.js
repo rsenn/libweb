@@ -382,7 +382,18 @@ export class EagleNode {
   xpath() {
     const { ref, owner } = this;
     console.log('Node.xpath', ref.path, ref.root);
-    let x = ImmutableXPath.from(ref.path, ref.root);
+    let x;
+    try {
+      x = ImmutableXPath.from(ref.path.filter((p) => p != 'children'),
+        ref.root
+      );
+    } catch(err) {}
+    if(x) return x;
+
+    try {
+      x = new ImmutableXPath(ref.path /*.filter(p => p != 'children')*/, ref.root);
+    } catch(err) {}
+
     return x;
   }
 

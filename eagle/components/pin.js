@@ -1,5 +1,5 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import { MakeCoordTransformer } from '../renderUtils.js';
+import { MakeCoordTransformer, ElementToClass } from '../renderUtils.js';
 import { TransformationList } from '../../geom/transformation.js';
 import { Palette } from '../common.js';
 import { Text } from './text.js';
@@ -57,7 +57,7 @@ export const Pin = ({ data, opts = {}, ...props }) => {
   );
   if(name != '' && visible != 'off')
     children.push(h(Text, {
-        class: 'pin',
+        class: ElementToClass(data),
         color: Palette.schematic((r, g, b) => new RGBA(r, g, b))[16],
         x: tp.x,
         y: tp.y,

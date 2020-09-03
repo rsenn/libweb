@@ -53,8 +53,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
   }
 
   *entries(key = this.key) {
-    yield* this;
-    //    for(let [key,item] of this) yield [key, item];
+    for(let [key, item] of this) yield [key || item.name, item];
   }
 
   *[Symbol.iterator](keyAttr = this.key) {
