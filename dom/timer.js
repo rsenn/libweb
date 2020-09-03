@@ -1,4 +1,4 @@
-export function Timer(timeout, fn, props = {}, { create = setInterval, destroy = clearInterval }) {
+function Timer(timeout, fn, props = {}, { create = setInterval, destroy = clearInterval }) {
   let t;
 
   t = {
@@ -63,3 +63,5 @@ Timer.promise = (timeout, impl = Timer.std /*Timer.debug(Timer.std)*/) =>
       }
     )
   );
+
+export default Timer.promise;

@@ -2,7 +2,7 @@ import Util from '../util.js';
 import { Point, Line } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
-import { Cross, Arc } from './components.js';
+import { Cross, Arc, Origin } from './components.js';
 import { RGBA } from '../color.js';
 import { Palette } from './common.js';
 import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, Rotation } from './renderUtils.js';
@@ -45,11 +45,11 @@ export class BoardRenderer extends EagleSVGRenderer {
       );
     const { coordFn = (i) => i, name, value } = opts;
 
-    //console.log('renderItem', { name, value });
+    console.log('renderItem', { name, value });
 
     switch (item.tagName) {
-      case 'via':
-      case 'pad': {
+      case 'xvia':
+      case 'xpad': {
         const { name, drill, diameter, shape } = item;
         const { x, y } = coordFn(item);
 
@@ -259,7 +259,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       rot,
       transform: rotation.slice()
     });
-    this.create(Cross, { x, y }, g);
+    this.create(Origin, { x, y,  layer: this.layers['tOrigins']  }, g);
 
     /*    let angle = Util.randInt(0, 360);
     let angles = [angle, angle + 120, angle + 240, angle + 360];

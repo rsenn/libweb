@@ -3,7 +3,7 @@ import Util from '../../util.js';
 import { MakeCoordTransformer } from '../renderUtils.js';
 import { Text } from './text.js';
 import { useTrkl } from '../renderUtils.js';
-
+ import {   toXML } from '../../json.js';
 export const TextElement = ({ data, opts = {}, ...props }) => {
   data = data || props.item;
 
@@ -26,7 +26,8 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
     const prop = text.slice(1).toLowerCase();
     //console.log('text', { text, prop, opts });
     text = prop in opts ? opts[prop] : text;
-  }
+  }else
+   console.log('TextElement',data.tagName,Util.isObject(data )    && "\n"+toXML(data.raw), "\n"+text );
 
   let attrs = {};
   if(align !== undefined) attrs['data-align'] = align;

@@ -1,19 +1,50 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import { TransformationList } from '../../geom/transformation.js';
 import { useTrkl, useAttributes } from '../renderUtils.js';
+import { useValue } from '../../repeater/react-hooks.js';
 
-export const Pattern = ({ id = 'pattern', attrs = { color: '#0000aa', width: 0.05, step: 2.54 }, ...props }) => {
+export const useGrid = (data) => {
+  const factors = { inch: 25.4, mm: 1 };
+  const calcDist = (value, unit) => {
+    console.log('calcDist:', { value, unit });
+    const f = factors[unit];
+    return value * f;
+  };
+  const { distance, unitdist, unit, style, multiple, display, altdistance, altunitdist, altunit } = useAttributes(data);
+  let result = {
+    distance: calcDist(+distance, unitdist || unit),
+    altdistance: calcDist(+altdistance, altunitdist || altunit),
+    display: display == 'yes',
+    style,
+    multiple: +multiple
+  };
+  return result;
+};
+
+export const Pattern = ({ data, id = 'pattern', attrs = { color: '#0000aa', width: 0.05 }, ...props }) => {
+  data =
+    useValue(async function* () {
+      for await (let change of data.repeater) {
+        console.log('change:', change);
+        yield change;
+      }
+    }) || data;
+  const { distance, style, multiple, display, altdistance } = useGrid(data);
+
+  console.log('Pattern.render:', { distance, style, multiple, display, altdistance });
   let [pattern] = typeof attrs == 'function' ? useTrkl(attrs) : [attrs];
   console.log('Pattern.render ', { pattern });
-  const { width = 0.05, step = 2.54, color = '#0000aa' } = pattern;
-
+  let { width = 0.05, color = '#0000aa' } = pattern;
+  const size = distance * multiple;
+  //if(style == 'dots') width *= 4;
   return h('pattern',
-    { id, width: step, height: step, patternUnits: 'userSpaceOnUse' },
+    { id, width: size, height: size, patternUnits: 'userSpaceOnUse' },
     h('path', {
-      d: `M ${step},0 L 0,0 L 0,${step}`,
+      d: `M ${size},0 L 0,0 L 0,${size}`,
       fill: 'none',
       stroke: color || '#0000aa',
-      'stroke-width': width || 0.05
+      'stroke-width': style == 'dots' ? width * 2 : width,
+      'stroke-dasharray': style == 'dots' ? `${width}  ${size * 4}` : `${size * 2}`
     })
   );
 };
@@ -22,7 +53,8 @@ export const Grid = ({ data, rect, attrs = { visible: true }, opts = {}, ...prop
   //data = data || props.item;
 
   let { transform = new TransformationList() } = opts;
-  const { distance, unitdist, unit, style, multiple, display, altdistance, altunitdist, altunit } = useAttributes(data);
+  const { distance, style, multiple, display, altdistance } = useGrid(data);
+  console.log('Grid.render:', { distance, style, multiple, display, altdistance });
 
   let [grid] = typeof attrs == 'function' ? useTrkl(attrs) : [attrs];
   console.log('Grid.render ', { grid });

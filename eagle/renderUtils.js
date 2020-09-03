@@ -241,8 +241,7 @@ export const useAttributes = (element, attributeNames) => {
 
   let ret = {};
 
-  for(let attr of attributeNames) {
-    ret[attr] = useTrkl(element.handlers[attr]);
-  }
+  for(let attr of attributeNames) ret[attr] = useTrkl(element.handlers[attr])[0];
+
   return ret;
 };

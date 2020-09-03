@@ -27,6 +27,7 @@ export const Wire = ({ data, opts = {}, ...props }) => {
   let visible = layer ? useTrkl(layer.handlers.visible) : true;
 
   return h('line', {
+    class: 'wire',
     stroke: color,
     x1,
     x2,

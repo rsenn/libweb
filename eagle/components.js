@@ -11,8 +11,10 @@ import { TextElement } from './components/textElement.js';
 import { SVG } from './components/svg.js';
 import { Background } from './components/background.js';
 import { Drawing } from './components/drawing.js';
+import { Pad } from './components/pad.js';
+import { Origin } from './components/origin.js';
 
-export const PrimitiveComponents = { Wire, Rectangle, Pin, Circle, Cross, Arc, Text: TextElement, Grid, Pattern };
+export const PrimitiveComponents = { Wire, Rectangle, Pin, Circle, Cross, Arc, Text: TextElement, Grid, Pattern, Pad, Origin };
 
 let prevName;
 
@@ -39,3 +41,4 @@ export { Grid, Pattern } from './components/grid.js';
 export { SVG } from './components/svg.js';
 export { Background } from './components/background.js';
 export { Drawing } from './components/drawing.js';
+export { Origin } from './components/origin.js';

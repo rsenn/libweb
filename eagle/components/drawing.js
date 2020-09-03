@@ -4,5 +4,5 @@ import { SVG } from './svg.js';
 import { Background } from './background.js';
 
 export const Drawing = ({ rect, attrs, grid, transform, children, ...props }) => {
-  return h(SVG, { viewBox: new Rect(rect), defs: h(Pattern, { id: 'grid', attrs: attrs.grid }), ...props }, [h('g', { id: 'bg' }, [h(Background, { rect, attrs: attrs.bg }), h(Grid, { data: grid, rect, attrs: attrs.grid, transform })]), ...toChildArray(children)]);
+  return h(SVG, { viewBox: new Rect(rect), defs: h(Pattern, { data: grid, id: 'grid', attrs: attrs.grid }), ...props }, [h('g', { id: 'bg' }, [h(Background, { rect, attrs: attrs.bg }), h(Grid, { data: grid, rect, attrs: attrs.grid, transform })]), ...toChildArray(children)]);
 };
