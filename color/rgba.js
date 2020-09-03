@@ -191,16 +191,16 @@ RGBA.prototype[Symbol.toPrimitive] = function (hint) {
   return RGBA.prototype.toString.call(this);
 };
 function toHex(n) {
-  return '0x'+('00'+((+n).toString(16))).slice(-2);
+  return '0x' + ('00' + (+n).toString(16)).slice(-2);
 }
 RGBA.prototype.toSource = function (sep = ',') {
   let a = this.a;
   if(a === undefined) return 'new RGBA(' + this.r + sep + this.g + sep + this.b + ')';
   let s = 'new RGBA(' + toHex(this.r) + sep + toHex(this.g) + sep + toHex(this.b);
 
-  if(a !=255) s += sep + toHex(a);
+  if(a != 255) s += sep + toHex(a);
 
-  s+=  ')';
+  s += ')';
   return s;
 };
 
@@ -469,7 +469,7 @@ RGBA.fromAnsi256 = function (n) {
     return new RGBA(...c);
   }
 };
-RGBA.nearestColor = (color, palette, distFn = (a,b) => Math.sqrt(Math.pow(a.r - b.r, 2) + Math.pow(a.g - b.g, 2) + Math.pow(a.b - b.b, 2))) => {
+RGBA.nearestColor = (color, palette, distFn = (a, b) => Math.sqrt(Math.pow(a.r - b.r, 2) + Math.pow(a.g - b.g, 2) + Math.pow(a.b - b.b, 2))) => {
   if(!(color instanceof RGBA)) color = new RGBA(color);
   //console.log("RGBA.nearestColor", color.hex(),Util.className(color),Util.className(palette));
   if(!color) return null;
@@ -530,13 +530,14 @@ RGBA.prototype[Symbol.iterator] = function* () {
 RGBA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function () {
   const { r, g, b, a } = this;
   let arr = a !== undefined && a != 255 ? [r, g, b, a] : [r, g, b];
-  let ret = arr.map(toHex) /*.map(n => (n + '').padStart(3, ' '))*/
+  let ret = arr
+    .map(toHex) /*.map(n => (n + '').padStart(3, ' '))*/
     .join(',');
   const color = this.toAnsi256(true);
   const l = this.toHSLA().l;
   let s = '';
 
-  s += arr.map((n) => `\x1b[0;33m${toHex(n) }\x1b[0m`).join('');
+  s += arr.map((n) => `\x1b[0;33m${toHex(n)}\x1b[0m`).join('');
   s = color + s;
 
   return `\x1b[1;31mRGBA\x1b[1;36m` + `(${ret})`.padEnd(18, ' ') + ` ${color}    \x1b[0m`;
