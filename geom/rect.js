@@ -250,18 +250,20 @@ Rect.COVER = 32;
 
 Rect.prototype.fit = function (other, align = Align.CENTER | Align.MIDDLE | Rect.CONTAIN) {
   let factors = Size.prototype.fitFactors.call(this, new Size(other)).sort((a, b) => a - b);
-  //Util.log('factors:', factors);
+  console.log('Rect.prototype.fit:', this, ...factors, { factors, other, align });
 
   let rects = factors.reduce((acc, factor) => {
     let rect = new Rect(0, 0, this.width, this.height);
-    rect.mul(factor);
+    rect.width *= factor;
+    rect.height *= factor;
+
     rect.align(other, align & 0x0f);
 
     acc.push(rect);
     return acc;
   }, []);
 
-  //Util.log("rects:", rects);
+  console.log('rects:', rects);
 
   return rects;
 };

@@ -262,12 +262,12 @@ export class EagleElement extends EagleNode {
     let childList = null;
     lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.down('children')));
     if(tagName == 'pad') {
-         trkl.bind(this, 'layer', () => {
-       return doc.layers['Pads'];
+      trkl.bind(this, 'layer', () => {
+        return doc.layers['Pads'];
       });
     } else if(tagName == 'via') {
-         trkl.bind(this, 'layer', () => {
-       return doc.layers['Vias'];
+      trkl.bind(this, 'layer', () => {
+        return doc.layers['Vias'];
       });
     }
 

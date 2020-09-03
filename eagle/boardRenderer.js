@@ -259,7 +259,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       rot,
       transform: rotation.slice()
     });
-    this.create(Origin, { x, y,  layer: this.layers['tOrigins']  }, g);
+    this.create(Origin, { x, y, layer: this.layers['tOrigins'] }, g);
 
     /*    let angle = Util.randInt(0, 360);
     let angles = [angle, angle + 120, angle + 240, angle + 360];
@@ -281,12 +281,12 @@ export class BoardRenderer extends EagleSVGRenderer {
     let parent, props;
     /*if(!this.bounds)
     this.bounds = doc.getBounds();*/
-    parent = super.render(doc /*, parent, props*/);
+    let transform = this.transform;
+    parent = super.render(doc, { transform });
 
     const { bounds, rect } = this;
     this.debug(`BoardRenderer.render`, { bounds, rect });
     //this.renderLayers(parent);
-    let transform = this.transform + '';
     let plainGroup = this.create('g', { className: 'plain', transform }, parent);
     let signalsGroup = this.create('g', { className: 'signals', strokeLinecap: 'round', transform }, parent);
     let elementsGroup = this.create('g', { className: 'elements', transform }, parent);

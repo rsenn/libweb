@@ -411,6 +411,7 @@ export class EagleSVGRenderer {
     this.transform.scale(1, -1);
 
     const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;
+    console.log('SVGRendererer transform=', transform, ' this.transform=', this.transform);
     this.debug(bounds);
 
     console.log('viewBox rect:', rect, rect.toString(), rect.valueOf);
@@ -420,8 +421,9 @@ export class EagleSVGRenderer {
     console.log('grid:', grid.attributes);
 
     trkl.bind(this, attrs);
+    console.debug('rect:', rect, bounds.rect);
 
-    let svgElem = h(Drawing, { rect, attrs, grid, transform }, children);
+    let svgElem = h(Drawing, { rect, bounds, attrs, grid, transform }, children);
 
     //     parent = this.create('svg', { viewBox: new Rect(rect).toString(), preserveAspectRatio: 'xMinYMin', ...props }, parent);
     //  let defs = h('defs', {},   h(Pattern, { id: 'grid', step: 2.54, color: '#0000aa', width: 0.05 }));

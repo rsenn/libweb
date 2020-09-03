@@ -25,7 +25,7 @@ export const Rotation = (rot, f = 1) => {
     mirror = /M/.test(rot) ? 1 : 0;
     angle = +(rot || '').replace(/M?R/, '') || 0;
   }
-  let transformations = new TransformationList();
+  let transformations = new TransformationList([], '', '');
   if(angle !== 0) transformations.rotate(-angle);
   if(mirror !== 0) transformations.scale(-1, 1);
 

@@ -26,7 +26,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
   let d;
   const transform = `translate(${x},${y})`;
   let [visible] = layer ? useTrkl(layer.handlers.visible) : [true];
- console.log('pad layer=',layer.name,  visible);
+  console.log('pad layer=', layer.name, visible);
   const padColor = pad.getColor();
 
   switch (shape) {
@@ -38,14 +38,20 @@ export const Pad = ({ data, opts = {}, ...props }) => {
     case 'square': {
       const points = [new Point(-1, -1), new Point(1, -1), new Point(1, 1), new Point(-1, 1)].map((p) => p.prod(ro * 1.27));
 
-      d = points.map(p => p.round()).map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+      d = points
+        .map((p) => p.round())
+        .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+        .join(' ');
 
       break;
     }
     case 'octagon': {
       const points = Util.range(0, 7).map((i) => Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.4));
 
-      d = points.map(p => p.round()).map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+      d = points
+        .map((p) => p.round())
+        .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+        .join(' ');
       break;
     }
     default: {
@@ -54,17 +60,15 @@ export const Pad = ({ data, opts = {}, ...props }) => {
     }
   }
   const pathProps = {
-
     fill: padColor,
     d: d + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
     ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
     transform
   };
-  const visibleProps =  {style:  visible ? {} : { display: 'none' } };
+  const visibleProps = { style: visible ? {} : { display: 'none' } };
 
-
-  const textElem = name ? h(
-        'text',
+  const textElem = name
+    ? h('text',
         {
           fill: 'hsla(180,100%,60%,0.5)',
           stroke: 'none',
@@ -77,11 +81,9 @@ export const Pad = ({ data, opts = {}, ...props }) => {
           'font-style': 'bold',
           transform: `${transform} ${RotateTransformation(opts.rot, -1)} scale(1,-1)`
         },
-      /* prettier-ignore */ h('tspan', { ...AlignmentAttrs('center', HORIZONTAL) }, name)
+        /* prettier-ignore */ h('tspan', { ...AlignmentAttrs('center', HORIZONTAL) }, name)
       )
-     : null;
+    : null;
 
-return textElem ?  h('g', {class: 'pad', ...visibleProps },[ h('path', pathProps), textElem]) : h('path', {class: 'pad' , ... pathProps, ...visibleProps});
-
+  return textElem ? h('g', { class: 'pad', ...visibleProps }, [h('path', pathProps), textElem]) : h('path', { class: 'pad', ...pathProps, ...visibleProps });
 };
- 

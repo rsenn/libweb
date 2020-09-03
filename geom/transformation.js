@@ -236,14 +236,17 @@ export class Translation extends Transformation {
     super('translate');
 
     if(typeof args[1] == 'string' && ['x', 'y', 'z'].indexOf(args[1].toLowerCase()) != -1) {
-      const axis = args[1].toLowerCase();
-      this[axis] = args[0];
+      const n = args.shift();
+      const axis = args.shift().toLowerCase();
+      this[axis] = n;
     } else {
-      const [x = 0, y = 0, z] = args;
-      this.x = x;
-      this.y = y;
-      if(z !== undefined) this.z = z;
+      let numDim = [...args, '.'].findIndex((a) => isNaN(+a));
+      const [x = 0, y = 0, z] = args.splice(0, numDim);
+      this.x = +x;
+      this.y = +y;
+      if(z !== undefined) this.z = +z;
     }
+    if(args.length > 0 && typeof args[0] == 'string') this.unit = args.shift();
   }
 
   get values() {
@@ -289,13 +292,14 @@ export class Scaling extends Transformation {
     super('scale');
 
     if(typeof args[1] == 'string' && ['x', 'y', 'z'].indexOf(args[1].toLowerCase()) != -1) {
-      const axis = args[1].toLowerCase();
-      this[axis] = args[0];
+      const n = args.shift();
+      const axis = args.shift().toLowerCase();
+      this[axis] = n;
     } else {
-      const [x = 1, y, z] = args;
-      this.x = x;
-      this.y = y === undefined ? x : y;
-      if(z !== undefined) this.z = z;
+      const [x = 1, y, z] = args.splice(0, 3);
+      this.x = +x;
+      this.y = y === undefined ? this.x : +y;
+      if(z !== undefined) this.z = +z;
     }
   }
 
@@ -374,15 +378,24 @@ export class MatrixTransformation extends Transformation {
 export const ImmutableMatrixTransformation = Util.immutableClass(MatrixTransformation);
 
 export class TransformationList extends Array {
-  constructor(init, ...rest) {
+  constructor(init, tUnit, rUnit) {
     super();
-
-    if(init !== undefined) this.initialize(init, ...rest);
+    if(Util.isObject(init)) {
+      if(tUnit === undefined) tUnit = init.translationUnit || init.tUnit;
+      if(rUnit == undefined) rUnit = init.rotationUnit || init.rUnit;
+    }
+    if(typeof init != 'number' && typeof init != 'undefined' && !(Util.isArray(init) && init.length == 0)) console.debug(`TransformationList.constructor(`, typeof init == 'string' ? Util.abbreviate(init) : init, tUnit, rUnit, `)`);
+    if(init) {
+      this.initialize(init);
+      if(!(typeof init == 'number' || (Util.isArray(init) && init.length == 0))) console.debug(`TransformationList   initialized to:`, this);
+    }
+    if(typeof tUnit == 'string') this.translationUnit = tUnit;
+    if(typeof rUnit == 'string') this.rotationUnit = rUnit;
 
     return this;
   }
 
-  initialize(init, ...args) {
+  initialize(init) {
     if(typeof init == 'number') while(this.length < init) this.push(undefined);
     else if(typeof init == 'string') TransformationList.prototype.fromString.call(this, init);
     else if(init instanceof Array) TransformationList.prototype.fromArray.call(this, init);
@@ -429,6 +442,21 @@ export class TransformationList extends Array {
     return this;
   }
 
+  get translationUnit() {
+    return (Util.isObject(this.translation) && this.translation.unit) || this.tUnit;
+  }
+  set translationUnit(value) {
+    if(Util.isObject(this.translation)) this.translation.unit = value;
+    else this.tUnit = value;
+  }
+
+  get rotationUnit() {
+    return (Util.isObject(this.rotation) && this.rotation.unit) || this.rUnit;
+  }
+  set rotationUnit(value) {
+    if(Util.isObject(this.rotation)) this.rotation.unit = value;
+    else this.rUnit = value;
+  }
   static fromString(str) {
     return new TransformationList().fromString(str);
   }
@@ -476,6 +504,36 @@ export class TransformationList extends Array {
     return this.map((t) => t.clone()); // this.slice();
   }
 
+  map(fn) {
+    return this.baseCall(Array.prototype.map)(fn);
+  }
+
+  slice(...args) {
+    return this.baseCall(Array.prototype.slice)(...args);
+  }
+
+  splice(...args) {
+    return this.baseCall(Array.prototype.splice)(...args);
+  }
+
+  concat(...args) {
+    return this.baseCall(Array.prototype.concat)(...args);
+  }
+
+  filter(pred) {
+    return this.baseCall(Array.prototype.filter)(pred);
+  }
+
+  baseCall(c = Array.prototype.map) {
+    return (...args) => {
+      const { tUnit, rUnit } = this;
+      let r = c.call(this, ...args);
+      if(tUnit) r.tUnit = tUnit;
+      if(rUnit) r.rUnit = rUnit;
+      return r;
+    };
+  }
+
   unshift(...args) {
     for(let arg of args.reverse()) {
       if(typeof arg == 'string') arg = Transformation.fromString(arg);
@@ -514,7 +572,14 @@ export class TransformationList extends Array {
   }
 
   toString(tUnit, rUnit) {
-    return this.map((t) => t.toString(t.type.startsWith('scal') ? '' : t.type.startsWith('rotat') ? rUnit : tUnit)).join(' ');
+    tUnit = tUnit || this.translationUnit;
+    rUnit = rUnit || this.rotationUnit;
+    let r = this.map((t) => t.toString(t.type.startsWith('scal') ? '' : t.type.startsWith('rotat') ? rUnit : tUnit)).join(' ');
+
+    /*  if(tUnit === undefined || rUnit === undefined) {
+      console.error(tUnit || 'no tUnit', rUnit || 'no rUnit', this, r);
+    }*/
+    return r;
   }
 
   [Symbol.toStringTag]() {
@@ -640,20 +705,20 @@ export class TransformationList extends Array {
 const { concat, copyWithin, find, findIndex, lastIndexOf, pop, push, shift, unshift, slice, splice, includes, indexOf, entries, filter, map, every, some, reduce, reduceRight } = Array.prototype;
 
 Util.inherit(TransformationList.prototype, {
-    concat,
+    // concat,
     copyWithin,
     find,
     findIndex,
     lastIndexOf,
     pop,
     shift,
-    slice,
-    splice,
+    //   slice,
+    //splice,
     includes,
     indexOf,
     entries,
-    filter,
-    map,
+    //  filter,
+    //  map,
     every,
     some,
     reduce,

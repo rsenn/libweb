@@ -24,7 +24,7 @@ export const Wire = ({ data, opts = {}, ...props }) => {
 
   const { width, curve = '', layer, x1, y1, x2, y2 } = coordFn(wire);
   const color = wire.getColor();
-  let visible = layer ? useTrkl(layer.handlers.visible) : true;
+  let  [visible] = layer ? useTrkl(layer.handlers.visible) : [true];
 
   return h('line', {
     class: 'wire',

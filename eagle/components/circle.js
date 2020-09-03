@@ -2,6 +2,7 @@ import { h, Component } from '../../dom/preactComponent.js';
 import { MakeCoordTransformer } from '../renderUtils.js';
 import { TransformationList } from '../../geom/transformation.js';
 import { useTrkl } from '../renderUtils.js';
+import { useValue } from '../../repeater/react-hooks.js';
 
 export const PinSizes = {
   long: 3,
@@ -13,15 +14,23 @@ export const PinSizes = {
 export const Circle = ({ data, opts = {}, ...props }) => {
   data = data || props.item;
 
-  //console.log('Circle.render ', { data, opts });
+  let circle =
+    useValue(async function* () {
+      for await (let change of data.repeater) {
+        //     console.log('change:', change);
+        yield change;
+      }
+    }) || data;
+
+  //console.log('Circle.render ', { circle, opts });
   let { transform = new TransformationList() } = opts;
 
   let coordFn = transform ? MakeCoordTransformer(transform) : (i) => i;
 
-  const { width, radius, layer } = data;
-  const { x, y } = coordFn(data);
-  const color = data.getColor(); //(opts && opts.color) || (layer && this.getColor(layer.color));
-  let visible = layer ? useTrkl(layer.handlers.visible) : true;
+  const { width, radius, layer } = circle;
+  const { x, y } = coordFn(circle);
+  const color = circle.getColor(); //(opts && opts.color) || (layer && this.getColor(layer.color));
+  let [visible] = layer ? useTrkl(layer.handlers.visible) : [true];
 
   return h('circle', {
     stroke: color,
@@ -30,7 +39,8 @@ export const Circle = ({ data, opts = {}, ...props }) => {
     r: radius,
     'stroke-width': width * 0.8,
     fill: 'none',
-    ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
-    style: visible ? {} : { display: 'none' }
-  });
+    ...(layer ? { 'circle-layer': `${layer.number} ${layer.name}` } : {}),
+    style: visible ? {} : { display: 'none' },
+     'data-layer': `${layer.number} ${layer.name}`,
+ });
 };
