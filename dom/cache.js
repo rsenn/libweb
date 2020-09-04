@@ -3,21 +3,14 @@ import Util from '../util.js';
 const map = new WeakMap();
 const wm = (o) => map.get(o);
 
-/*const fetch = require('node-fetch');
-const fs = require('fs-extra');
-*/
 let globalThis = Util.getGlobalObject();
 
-console.log('globalThis:', globalThis);
+//console.log('globalThis:', globalThis);
 
 let { Request, Response, Headers } = globalThis;
 
-console.log('globalThis.fetch:', { Request, Response, Headers });
+//console.log('globalThis.fetch:', { Request, Response, Headers });
 // Remove in fetch v2
-
-/*Request.prototype[Symbol.toStringTag] = 'Request';
-Response.prototype[Symbol.toStringTag] = 'Response';
-*/
 
 const requires = (i, args) => {
   if(args.length < i) throw new TypeError(`${i} argument required, but only ${args.length} present.`);

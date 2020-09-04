@@ -255,7 +255,7 @@ export const useTrkl = (fn) => {
       if(v !== undefined) {
         if(v === 'yes') v = true;
         else if(v === 'no') v = false;
-        console.debug('useTrkl updateValue(', v, ')');
+        //console.debug('useTrkl updateValue(', v, ')');
         setValue(v);
       }
     };
