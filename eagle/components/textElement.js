@@ -5,6 +5,8 @@ import { Text } from './text.js';
 import { useTrkl, ElementToClass } from '../renderUtils.js';
 import { toXML } from '../../json.js';
 import { classNames } from '../../classNames.js';
+
+
 export const TextElement = ({ data, opts = {}, ...props }) => {
   data = data || props.item;
 
@@ -19,22 +21,16 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
   let { x, y } = coordFn(data);
   const color = data.getColor();
   let className = ElementToClass(data);
-  console.debug('className:', className);
-  /*data.tagName;
-
-if(Util.isObject(layer) && typeof(layer.name) == 'string')
-className = classNames(className, layer.name);*/
-
+    
   let [visible] = layer ? useTrkl(layer.handlers.visible) : [true];
 
-  //  const visible = layer ? layer.isVisible(data) : true;
-
+ 
   if(text.startsWith('>')) {
     const prop = text.slice(1).toLowerCase();
-    //console.log('text', { text, prop, opts });
-    text = prop in opts ? opts[prop] : text;
-  } else console.log('TextElement', data.tagName, Util.isObject(data) && '\n' + toXML(data.raw), '\n' + text);
-
+     text = prop in opts ? opts[prop] : text;
+  } else {
+    //console.log('TextElement', data.tagName, Util.isObject(data) && '\n' + toXML(data.raw), '\n' + text);
+ }
   let attrs = {};
   if(align !== undefined) attrs['data-align'] = align;
   if(data.path !== undefined) attrs['data-path'] = data.path.toString(' ');

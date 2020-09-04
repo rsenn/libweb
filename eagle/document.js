@@ -50,16 +50,11 @@ export class EagleDocument extends EagleNode {
   }
 
   constructor(xmlStr, project, filename, type, fs) {
-    console.log('EagleDocument.constructor', { data: Util.abbreviate(xmlStr), project, filename, type });
+    // console.debug('EagleDocument.constructor', { data: Util.abbreviate(xmlStr), project, filename, type });
     const xml = tXml(xmlStr);
-
-    let xmlObj = deep.clone(xml[0]); //(xml[0]);
-    //console.log('EagleDocument.constructor', xmlObj);
-
+    let xmlObj = deep.clone(xml[0]);
     super(project, EagleRef(xmlObj, []), xmlObj);
-
     this.pathMapper = new PathMapper(xmlObj, ImmutablePath);
-
     this.data = xmlStr;
 
     const { pathMapper, elementMapper } = this;
@@ -68,14 +63,8 @@ export class EagleDocument extends EagleNode {
     const [obj2eagle, path2eagle] = [Util.mapFunction(elementMapper), Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined))];
     const [eagle2path, eagle2obj] = [Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.path : undefined)), Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))];
 
-    this.maps = {
-      eagle2obj,
-      eagle2path,
-      obj2eagle,
-      obj2path,
-      path2eagle,
-      path2obj
-    };
+    // prettier-ignore
+    this.maps = { eagle2obj, eagle2path, obj2eagle, obj2path, path2eagle, path2obj };
 
     type = type || /<library>/.test(xmlStr) ? 'lbr' : /(<element\ |<board)/.test(xmlStr) ? 'brd' : /(<instance\ |<sheets>|<schematic>)/.test(xmlStr) ? 'sch' : null;
 
@@ -83,6 +72,7 @@ export class EagleDocument extends EagleNode {
       this.file = filename;
       type = type || filename.replace(/.*\//g, '').replace(/.*\./g, '');
     }
+
     //console.log('load document:', { filename, xml: xmlStr.substring(0, 100), type });
     this.type = type;
     if(project) this.owner = project;
@@ -194,21 +184,14 @@ export class EagleDocument extends EagleNode {
 
   getBounds(sheetNo = 0) {
     let bb = new BBox();
-
     if(this.type == 'brd') {
       const board = this.lookup(['eagle', 'drawing', 'board']);
-
       const plain = board.lookup(['plain']);
-      console.log('plain:', plain);
-
+      //console.debug('plain:', plain);
       const measures = plain.children.filter((e) => e.layer && e.layer.name == 'Measures');
-
       let ret;
-
       if(measures.length >= 4) ret = bb.update(measures);
       else ret = board.getBounds();
-      //      console.log('ret', ret);
-      //console.log("board:", board, ret.objects);
       return ret;
     }
 
@@ -216,45 +199,17 @@ export class EagleDocument extends EagleNode {
 
     if(sheet) {
       return sheet.getBounds();
-
       let instances = sheet.instances;
-
-      for(let instance of instances.list) {
-        bb.update(instance.getBounds());
-
-        /*
-        let { gate, part } = instance;
-        let symbol = gate.symbol;
-
-        //console.log('symbol:', symbol);
-        let geometries = {
-          gate: gate.geometry,
-          symbol: new Rect(symbol.getBounds()).toPoints(),
-          instance: instance.transformation()
-        };
-
-        //console.log('geometries:', geometries);
-        let matrix = geometries.instance.toMatrix();
-        let points = new PointList([...matrix.transform_points(geometries.symbol)]);
-        let bbrect = points.boundingRect();
-
-        let sb = symbol.getBounds();
-        let sbr = new Rect(sb);
-
-        bb.update(bbrect, 0, instance);*/
-      }
+      for(let instance of instances.list) bb.update(instance.getBounds());
     } else if(this.elements) {
       console.log('elements:', this.elements);
       for(let element of this.elements.list) {
         let bbrect = element.getBounds();
-
         bb.update(bbrect);
       }
     } else if(this.signals) {
       for(let signal of this.signals.list) {
-        //console.log('signal:', signal);
         let bbrect = signal.getBounds();
-
         bb.update(bbrect);
       }
     }
@@ -264,7 +219,6 @@ export class EagleDocument extends EagleNode {
 
   getMeasures(geometry = false) {
     //console.log("this.type", this.type);
-
     let bounds = this.getBounds();
     let values = [...bounds.getObjects().values()];
     let measures = values.filter((obj) => obj.layer && obj.layer.name == 'Measures');

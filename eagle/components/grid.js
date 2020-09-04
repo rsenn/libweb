@@ -6,7 +6,7 @@ import { useValue } from '../../repeater/react-hooks.js';
 export const useGrid = (data) => {
   const factors = { inch: 25.4, mm: 1 };
   const calcDist = (value, unit) => {
-    console.log('calcDist:', { value, unit });
+    //    console.debug('calcDist:', { value, unit });
     const f = factors[unit];
     return value * f;
   };
@@ -25,18 +25,17 @@ export const Pattern = ({ data, id = 'pattern', attrs = { color: '#0000aa', widt
   data =
     useValue(async function* () {
       for await (let change of data.repeater) {
-        console.log('change:', change);
+        //console.log('change:', change);
         yield change;
       }
     }) || data;
   const { distance, style, multiple, display, altdistance } = useGrid(data);
 
-  console.log('Pattern.render:', { distance, style, multiple, display, altdistance });
+  //console.log('Pattern.render:', { distance, style, multiple, display, altdistance });
   let [pattern] = typeof attrs == 'function' ? useTrkl(attrs) : [attrs];
-  console.log('Pattern.render ', { pattern });
+  //console.log('Pattern.render ', { pattern });
   let { width = 0.05, color = '#0000aa' } = pattern;
   const size = distance * multiple;
-  //if(style == 'dots') width *= 4;
   return h('pattern',
     { id, width: size, height: size, patternUnits: 'userSpaceOnUse' },
     h('path', {
@@ -50,14 +49,12 @@ export const Pattern = ({ data, id = 'pattern', attrs = { color: '#0000aa', widt
 };
 
 export const Grid = ({ data, rect, attrs = { visible: true }, opts = {}, ...props }) => {
-  //data = data || props.item;
-
   let { transform = new TransformationList() } = opts;
   const { distance, style, multiple, display, altdistance } = useGrid(data);
-  console.log('Grid.render:', { distance, style, multiple, display, altdistance });
+  //console.log('Grid.render:', { distance, style, multiple, display, altdistance });
 
   let [grid] = typeof attrs == 'function' ? useTrkl(attrs) : [attrs];
-  console.log('Grid.render ', { grid });
+  ///console.log('Grid.render ', { grid });
 
   return h('rect', {
     stroke: 'none',

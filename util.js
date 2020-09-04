@@ -328,7 +328,9 @@ Util.log = (...args) => {
   let filters = Util.log.filters;
   let results = filters.map((f) => f.test(locationStr));
   if(filters.every((f) => !f.test(locationStr))) return;
-  args = args.reduce((a, p, i) => {
+ console.log("log", {args,c}); 
+Util.putStack();
+ args = args.reduce((a, p, i) => {
     if(Util.isObject(p) && p[Util.log.methodName]) p = p[Util.log.methodName]();
     else if(Util.isObject(p) && p[Symbol.for('nodejs.util.inspect.custom')]) p = p[Symbol.for('nodejs.util.inspect.custom')]();
     else if(typeof p != 'string') {
@@ -2400,8 +2402,7 @@ Util.counter = function () {
   };
 };
 Util.filterKeys = function (obj, pred = (k) => true) {
-  let args = [...arguments];
-  obj = args.shift();
+ 
   let ret = {};
   if(pred instanceof RegExp) {
     let re = pred;
@@ -2426,8 +2427,9 @@ Util.dumpMembers = (obj) => Util.filterOutMembers(obj, Util.isFunction);
 
 Util.filterOutKeys = function (obj, arr) {
   if(typeof obj != 'object') return obj;
-
-  return Util.filterKeys(obj, (key) => arr.indexOf(key) == -1);
+const pred =typeof(arr) == 'function' ? (v,k,o) =>  arr(k,v,o) : arr instanceof RegExp ?  ((k,v) =>  arr.test(k) /*|| arr.test(v)*/) :
+ (key => arr.indexOf(key) != -1);
+  return Util.filterOutMembers(obj, (v,k,o) => pred(k,v,o));
 };
 Util.getKeys = function (obj, arr) {
   let ret = {};

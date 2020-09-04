@@ -68,15 +68,12 @@ export class EagleSVGRenderer {
   }
 
   setPalette(palette) {
-    //console.log("setPalette 1",palette)
     palette = palette.map((color, i) => trkl(((color.valueOf = () => i), color)));
     let ncolors = palette.length;
     palette = palette.reduce((acc, color, i) => ({ ...acc, [i + '']: color }), {
       length: trkl(ncolors)
     });
-    //console.log("setPalette 2",palette)
     //palette = new ColorMap(palette);
-    console.log('setPalette 2', palette);
 
     palette = window.palette = trkl.bind(Util.define({}, { handlers: palette }), palette);
     Object.setPrototypeOf(palette,
@@ -93,8 +90,8 @@ export class EagleSVGRenderer {
         }
       )
     );
-    //console.log("setPalette 3",palette)
-    //console.log("setPalette 4",palette)
+    //this.debug("setPalette 3",palette)
+    //this.debug("setPalette 4",palette)
 
     Object.defineProperty(this, 'palette', {
       value: palette || (this.doc.type == 'brd' ? BoardRenderer.palette : SchematicRenderer.palette),
@@ -195,7 +192,7 @@ export class EagleSVGRenderer {
 
     const comp = ElementToComponent(item);
     if(comp) {
-      //console.log('EagleSVGRenderer render component ', this.transform.filter(t => ['translate'].indexOf(t.type) == -1));
+      //this.debug('EagleSVGRenderer render component ', this.transform.filter(t => ['translate'].indexOf(t.type) == -1));
       const elem = svg(comp,
         {
           data: item,
@@ -340,7 +337,7 @@ export class EagleSVGRenderer {
         break;
       default: {
         const { x, y } = coordFn(item);
-        //  console.log('EagleSVGRenderer.renderItem', { item, parent, opts });
+        //  this.debug('EagleSVGRenderer.renderItem', { item, parent, opts });
         //super.renderItem(item,parent,opts);
         break;
       }
@@ -394,13 +391,13 @@ export class EagleSVGRenderer {
     doc = doc || this.doc;
 
     let bounds = doc.getBounds();
-    console.log('EagleSVGRenderer.render', { bounds });
+    this.debug('EagleSVGRenderer.render', { bounds });
     let rect = bounds.toRect(Rect.prototype);
 
     rect.outset(1.27);
     this.rect = rect;
     this.bounds = BBox.fromRect(rect);
-    console.log('EagleSVGRenderer.render', { bounds: this.bounds, rect });
+    this.debug('EagleSVGRenderer.render', { bounds: this.bounds, rect });
 
     this.debug('bounds:', this.bounds.toString({ separator: ' ' }));
 
@@ -411,17 +408,17 @@ export class EagleSVGRenderer {
     this.transform.scale(1, -1);
 
     const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;
-    console.log('SVGRendererer transform=', transform, ' this.transform=', this.transform);
+    this.debug('SVGRendererer transform=', transform, ' this.transform=', this.transform);
     this.debug(bounds);
 
-    console.log('viewBox rect:', rect, rect.toString(), rect.valueOf);
+    this.debug('viewBox rect:', rect, rect.toString(), rect.valueOf);
 
     let grid = doc.lookup('/eagle/drawing/grid');
     let attrs = { bg: trkl({ color: '#ffffff', visible: true }), grid: trkl({ color: '#0000aa', width: 0.05, visible: true }) };
-    console.log('grid:', grid.attributes);
+    this.debug('grid:', grid.attributes);
 
     trkl.bind(this, attrs);
-    console.debug('rect:', rect, bounds.rect);
+    this.debug('rect:', rect, bounds.rect);
 
     let svgElem = h(Drawing, { rect, bounds, attrs, grid, transform }, children);
 
