@@ -47,7 +47,7 @@ export function Size(arg) {
   if(isNaN(obj.height)) obj.height = undefined;
   if(!(obj instanceof Size)) return obj;
 }
-const getArgs = (args) => (/*console.debug('getArgs', ...args), */typeof args[0] == 'number' ? [{ width: args[0], height: args[1] }] : args);
+const getArgs = (args) => (/*console.debug('getArgs', ...args), */ typeof args[0] == 'number' ? [{ width: args[0], height: args[1] }] : args);
 
 Size.prototype.width = NaN;
 Size.prototype.height = NaN;

@@ -39,13 +39,11 @@ export const debounceIterator = function* (stream, interval) {
   });
 
   //yield deferred results
-  while(true) 
-    yield deferred;
-
+  while(true) yield deferred;
 };
 
 /* global setTimeout, clearTimeout */
- export function debounceAsync(fn, wait = 0, options = {}) {
+export function debounceAsync(fn, wait = 0, options = {}) {
   let lastCallAt;
   let deferred;
   let timer;
@@ -55,9 +53,8 @@ export const debounceIterator = function* (stream, interval) {
     const currentTime = new Date().getTime();
     const isCold = !lastCallAt || currentTime - lastCallAt > currentWait;
     lastCallAt = currentTime;
-    if(isCold && options.leading) 
-      return options.accumulate ? Promise.resolve(fn.call(this, [args])).then((result) => result[0]) : Promise.resolve(fn.call(this, ...args));
-  
+    if(isCold && options.leading) return options.accumulate ? Promise.resolve(fn.call(this, [args])).then((result) => result[0]) : Promise.resolve(fn.call(this, ...args));
+
     if(deferred) {
       clearTimeout(timer);
     } else {
@@ -78,7 +75,7 @@ export const debounceIterator = function* (stream, interval) {
     pendingArgs = [];
     deferred = null;
   }
-};
+}
 
 function getWait(wait) {
   return typeof wait === 'function' ? wait() : wait;
@@ -92,6 +89,5 @@ function defer() {
   });
   return deferred;
 }
-
 
 export default debounceAsync;
