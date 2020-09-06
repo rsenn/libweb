@@ -7,7 +7,10 @@ function determine(chunk, start, LIMIT) {
 
   while(!filetype && ++index < limit) {
     let c = chunk[index];
-    if(c === '\n') {
+    // console.debug("determine",{index,c, limit, current});
+    if(c === '%' && index == 0) {
+      if(current.length == 0) filetype = 'drill';
+    } else if(c === '\n') {
       if(current.length + index) {
         filetype = 'drill';
         current = [];
@@ -148,7 +151,7 @@ function normalizeCoord(number, format) {
   if(!Number.isFinite(leading) || !Number.isFinite(trailing)) return NaN;
 
   // pad according to trailing or leading zero suppression
-  if(format.zero === 'T') numberString = numberString.padLeft(leading + trailing, '0');
+  if(format.zero === 'T') numberString = numberString.padStart(leading + trailing, '0');
   else if(format.zero === 'L') numberString = numberString.padStart(leading + trailing, '0');
   else return NaN;
 
@@ -879,6 +882,7 @@ function parseBlock(parser, block, line) {
 }
 
 function flush(parser) {
+  console.debug('flush', { parser });
   if(parser.drillStash.length) {
     parser.drillStash.forEach((data) => {
       if(!parser.format.zero && reCOORD$1.test(data.block)) {
@@ -958,17 +962,16 @@ const ArrayWriter = (arr) =>
     }
   });
 
-const LineReader = (str) => {
+const LineReader = (str, chunkEnd = (pos, str) => 1 + str.indexOf('\n', pos) || str.length) => {
   let pos = 0;
   let len = str.length;
   return new ReadableStream({
     start(controller) {
       for(;;) {
         if(pos < str.length) {
-          let i = str.indexOf('\n', pos);
-          let end = i == -1 ? str.length : i;
+          let end = chunkEnd(pos, str);
           controller.enqueue(str.substring(pos, end));
-          pos = end + 1;
+          pos = end;
         } else {
           controller.close();
           break;
@@ -999,6 +1002,7 @@ export class Parser {
     this.stash = '';
     this.index = 0;
     this.drillMode = drillMode.DRILL;
+
     this.syncResult = null;
     this.line = 0;
     this.format = { places, zero, filetype };
@@ -1016,6 +1020,7 @@ export class Parser {
       this.index += next.read;
       this.line += next.lines;
       this.stash += next.rem;
+      console.debug('process', { next, filetype });
 
       if(next.block) {
         if(filetype === 'gerber') {
@@ -1046,8 +1051,10 @@ export class Parser {
       }
       this.format.filetype = filetype;
       this.index = 0;
+      if(filetype == 'drill') this.drillStash = [];
     }
     chunk = this.stash + chunk;
+    console.debug('chunk', chunk);
     this.stash = '';
     this.process(chunk, controller);
     this.index = 0;

@@ -336,6 +336,7 @@ Point.bind = (...args) => {
   const [o, p = ['x', 'y'], gen] = args[0] instanceof Point ? [new Rect(), ...args] : args;
 
   const { x, y } = (Util.isArray(p) && p.reduce((acc, name) => ({ ...acc, [name]: name }), {})) || p;
+  //  console.debug('Point.bind', { args, o, p, gen });
 
   return Util.bindProperties(new Point(0, 0), o, { x, y }, gen);
 };

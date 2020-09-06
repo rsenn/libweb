@@ -13,7 +13,7 @@ export class BBox {
 
   constructor(...args) {
     if(args.length == 4) {
-      const [x1,y1,x2,y2] = args;
+      const [x1, y1, x2, y2] = args;
 
       this.x1 = Math.min(x1, x2);
       this.y1 = Math.min(y1, y2);
@@ -24,11 +24,9 @@ export class BBox {
       this.y1 = undefined;
       this.x2 = undefined;
       this.y2 = undefined;
-   if(args.length > 0)
-      this.updateList(args);
-  }
+      if(args.length > 0) this.updateList(args);
+    }
 
-  
     Util.define(this, 'objects', {});
   }
 
@@ -48,9 +46,9 @@ export class BBox {
       if(typeof arg.bbox == 'function') {
         arg = arg.bbox();
       } else {
-        if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset, (name) => (this.objects[name] = obj || arg));
-        if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0, (name) => (this.objects[name] = obj || arg));
         if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0, (name) => (this.objects[name] = obj || arg));
+        if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0, (name) => (this.objects[name] = obj || arg));
+        if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset, (name) => (this.objects[name] = obj || arg));
       }
     }
 
@@ -131,6 +129,12 @@ export class BBox {
   toRect(proto) {
     let r = this.rect;
     return Object.setPrototypeOf(r, proto || Object.prototype);
+  }
+
+  toSize(ctor = (obj) => Object.setPrototypeOf(obj, Object.prototype)) {
+    let width = this.x2 - this.x1;
+    let height = this.y2 - this.y1;
+    return ctor({ width, height });
   }
 
   toObject() {

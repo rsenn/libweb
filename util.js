@@ -3787,8 +3787,8 @@ Util.bindProperties = (proxy, target, props, gen) => {
   if(!gen) gen = (p) => (v) => (v === undefined ? target[p] : (target[p] = v));
   const propGetSet = propNames.map((k) => [k, propMap[k]]).reduce((a, [k, v]) => ({ ...a, [k]: Util.isFunction(v) ? (...args) => v.call(target, k, ...args) : (gen && gen(k)) || ((...args) => (args.length > 0 ? (target[k] = args[0]) : target[k])) }), {});
 
-  console.log(`Util.bindProperties`, { proxy, target, props, gen });
-  console.log(`Util.bindProperties`, { propMap, propNames, propGetSet });
+  /*  console.log(`Util.bindProperties`, { proxy, target, props, gen });
+  console.log(`Util.bindProperties`, { propMap, propNames, propGetSet });*/
   Object.defineProperties(proxy,
     propNames.reduce(
       (a, k) => {
@@ -4131,18 +4131,19 @@ Util.cacheAdapter = (st, defaultOpts = {}) => {
     }
   };
 };
-Util.cachedFetch = (fetch = Util.getGlobalObject('fetch'), cache = 'fetch', defaultOpts = {}) => {
-  cache = Util.cacheAdapter(cache);
+Util.cachedFetch = (allOpts = {}) => {
+  let { cache = 'fetch', fetch = Util.getGlobalObject('fetch'), debug, print, ...opts } = allOpts;
+  const storage = Util.cacheAdapter(cache);
   let self = async function CachedFetch(request, opts = {}) {
     let response;
     try {
       if(typeof request == 'string') request = new Request(request, { ...self.defaultOpts, ...opts });
-      response = await cache.getItem(request, { ...self.defaultOpts, ...opts });
+      response = await storage.getItem(request, { ...self.defaultOpts, ...opts });
 
       if(response == undefined) {
         response = await /*self.*/ fetch(request, { ...self.defaultOpts, ...opts });
 
-        if(response) cache.setItem(request, response.clone());
+        if(response) storage.setItem(request, response.clone());
       } else {
         response.cached = true;
       }
@@ -4151,7 +4152,9 @@ Util.cachedFetch = (fetch = Util.getGlobalObject('fetch'), cache = 'fetch', defa
     }
     return response;
   };
-  Util.define(self, { fetch, cache, defaultOpts });
+  if(debug) self = Util.printReturnValue(self, { print: print || ((returnValue, fn, ...args) => console.debug(`cachedFetch[${cache}] (`, ...args, `) =`, returnValue)) });
+
+  Util.define(self, { fetch, cache, storage, opts });
   return self;
 };
 
@@ -4231,13 +4234,25 @@ Util.safeFunction = (fn, trapExceptions, thisObj) => {
 Util.safeCall = async (fn, args) => await Util.safeFunction(fn, true)(args);
 Util.callMain = async (fn, trapExceptions) => await Util.safeFunction(fn, trapExceptions)(...Util.getArgs());
 
-Util.printReturnValue = (fn) => (...args) => {
-  let returnValue = fn(...args);
-  let stack = Util.getCallerStack();
-  // let st = Util.stack( stack);
+Util.printReturnValue = (fn, opts = {}) => {
+  const {
+    print = (returnValue, fn, ...args) => {
+      let stack = Util.getCallerStack();
 
-  (console.debug || console.log)('RETURN VAL:', Util.toString(returnValue, { colors: false }), { fn, args, stack });
-  return returnValue;
+      (console.debug || console.log)('RETURN VAL:', Util.toString(returnValue, { colors: false }), { fn, args, stack });
+    }
+  } = opts;
+  let self;
+  self = (...args) => {
+    fn = Util.tryFunction(fn, (returnValue, ...args) => {
+      print.call(self, returnValue, fn, ...args);
+      return returnValue;
+    });
+
+    return fn(...args);
+  };
+  Util.define(self, { fn, opts });
+  return self;
 };
 Util.replaceAll = (needles, haystack) => {
   return Util.entries(needles)

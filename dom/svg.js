@@ -9,7 +9,7 @@ import Util from '../util.js';
 import { RGBA } from '../color/rgba.js';
 
 export class SVG extends Element {
-  static create(name, attr, parent) {
+  static create(name, { outerHTML, ...attr }, parent) {
     let svg = document.createElementNS(SVG.ns, name);
     let text, attrfn;
     if(attr.text !== undefined) {
@@ -25,7 +25,10 @@ export class SVG extends Element {
     }
     Util.foreach(attr, (value, name) => svg.setAttribute(attrfn(name, '-'), value));
 
-    if(parent && parent.appendChild) parent.appendChild(svg);
+    if(parent && parent.appendChild) {
+      parent.appendChild(svg);
+      if(outerHTML) svg.outerHTML = outerHTML;
+    }
     if(text) svg.innerHTML = text;
     return svg;
   }

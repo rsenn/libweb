@@ -223,7 +223,8 @@ export class EagleDocument extends EagleNode {
     let values = [...bounds.getObjects().values()];
     let measures = values.filter((obj) => obj.layer && obj.layer.name == 'Measures');
     if(geometry) measures = measures.map((e) => e.geometry);
-    return measures.length > 0 ? measures : null;
+    else measures = new BBox().update(measures);
+    return measures /*.length > 0 ? measures : null*/;
   }
 
   get measures() {

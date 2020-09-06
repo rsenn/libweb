@@ -188,9 +188,9 @@ Size.prototype.fitFactors = function (other) {
   return [hf, vf];
 };
 Size.prototype.toString = function (opts = {}) {
-  const { unit = '', separator = ' x ', left = '', right = '' } = opts;
+  const { unit = '', separator = ' \u2715 ', left = '', right = '' } = opts;
   const { width, height, units = { width: unit, height: unit } } = this;
-  return `${left}${width}${units.width || ''}${separator}${height}${units.height || ''}${right}`;
+  return `${left}${width}${unit || units.width || ''}${separator}${height}${unit || units.height || ''}${right}`;
 };
 
 /*Size.prototype[Symbol.iterator] = function() {
@@ -201,10 +201,16 @@ Size.area = (sz) => Size.prototype.area.call(sz);
 Size.aspect = (sz) => Size.prototype.aspect.call(sz);
 
 Size.bind = (...args) => {
-  const [o, p = ['width', 'height'], gen = (k) => (v) => (v === undefined ? o[k] : (o[k] = v))] = args[0] instanceof Size ? args : [new Size(), ...args];
-  console.debug('Size.bind', { args, o, p, gen });
+  const o = args[0] instanceof Size ? args.shift() : new Size();
+  const gen = Util.isFunction(args[args.length - 1]) && args.pop();
+  const p = args.length > 1 ? args.pop() : ['width', 'height'];
+  const t = args.pop();
+  gen = gen || ((k) => (v) => (v === undefined ? t[k] : (t[k] = v)));
+
+  // const [  p = ['width', 'height']  ] = args[0] instanceof Size ? args : [new Size(), ...args];
+  console.debug('Size.bind', { args, o, t, p, gen });
   const { width, height } = Util.isArray(p) ? p.reduce((acc, name) => ({ ...acc, [name]: name }), {}) : p;
-  return Util.bindProperties(new Size(0, 0), o, { width, height }, gen);
+  return Util.bindProperties(new Size(0, 0), t, { width, height }, gen);
 };
 
 for(let method of Util.getMethodNames(Size.prototype)) Size[method] = (size, ...args) => Size.prototype[method].call(size || new Size(size), ...args);
