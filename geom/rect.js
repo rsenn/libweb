@@ -165,16 +165,17 @@ Object.defineProperty(Rect.prototype, 'area', {
     return Rect.prototype.getArea.call(this);
   }
 });
-const getSize = Util.memoize((rect) =>
-    Util.bindProperties(new Size(0, 0), rect, ['width', 'height'], (k) => {
-      console.log('gen', { k });
-      return (v) => {
-        return v !== undefined ? (rect[k] = v) : rect[k];
-      };
-    })
 
-  // Size.bind(new Size(),  ['width','height']), new WeakMap())
+const getSize = Util.memoize((rect) =>
+  Util.bindProperties(new Size(0, 0), rect, ['width', 'height'], (k) => {
+    console.log('gen', { k });
+    return (v) => {
+      return v !== undefined ? (rect[k] = v) : rect[k];
+    };
+  })
 );
+
+const getPoint = Util.memoize((rect) => Util.bindProperties(new Point(0, 0), rect, ['x', 'y'], (k) => (v) => (v !== undefined ? (rect[k] = v) : rect[k])));
 
 Object.defineProperty(Rect.prototype, 'center', {
   get() {
@@ -186,6 +187,13 @@ Object.defineProperty(Rect.prototype, 'size', {
   get() {
     let ret = getSize(this);
     console.log('getSize( ) =', ret);
+    return ret;
+  }
+});
+Object.defineProperty(Rect.prototype, 'point', {
+  get() {
+    let ret = getPoint(this);
+    console.log('getPoint( ) =', ret);
     return ret;
   }
 });
