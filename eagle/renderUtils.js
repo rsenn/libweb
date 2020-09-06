@@ -253,8 +253,8 @@ export const useTrkl = (fn) => {
   useEffect(() => {
     let updateValue = (v) => {
       if(v !== undefined) {
-        if(v === 'yes') v = true;
-        else if(v === 'no') v = false;
+        /*  if(v === 'yes') v = true;
+        else if(v === 'no') v = false;*/
         //console.debug('useTrkl updateValue(', v, ')');
         setValue(v);
       }
@@ -263,7 +263,7 @@ export const useTrkl = (fn) => {
     fn.subscribe(updateValue);
     return () => fn.unsubscribe(updateValue);
   });
-  return [value, fn];
+  return value;
 };
 
 export const useAttributes = (element, attributeNames) => {
@@ -271,7 +271,7 @@ export const useAttributes = (element, attributeNames) => {
 
   let ret = {};
 
-  for(let attr of attributeNames) ret[attr] = useTrkl(element.handlers[attr])[0];
+  for(let attr of attributeNames) ret[attr] = useTrkl(element.handlers[attr]);
 
   return ret;
 };

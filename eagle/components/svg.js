@@ -11,10 +11,10 @@ export const SVG = ({ viewBox, preserveAspectRatio = 'xMinYMin', children, defs,
         `
 text { font-size: 0.0875rem; }
 text { stroke: none; }
- .pad { fill: #4ba54b; }
- .pad > text { fill: #ff33ff; }
- .pad > text { font-size: 1px; }
-        `
+.pad { fill: #4ba54b; }
+.pad > text { fill: #ff33ff; }
+.pad > text { font-size: 1px; }
+`
       ]),
       h('defs', {}, defs),
       ...children

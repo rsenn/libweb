@@ -9,15 +9,13 @@ const CTOR = (obj) => {
   return p.constructor;
 };
 
-export function Point(arg) {
-  let args = arg instanceof Array ? arg : [...arguments];
-  let p = this instanceof Point ? this : null;
-  arg = args.shift();
+export function Point(...args) {
+  let isNew = this instanceof Point;
+  args = args[0] instanceof Array ? args.shift() : args;
+  let p = isNew ? this : new Point(...args);
+  let arg = args.shift();
 
-  if(p === null) {
-    if(arg instanceof Point) return arg;
-    p = {};
-  }
+  if(!isNew) if (arg instanceof Point) return arg;
 
   if(typeof arg === 'undefined') {
     p.x = arg;
@@ -49,7 +47,7 @@ export function Point(arg) {
   if(isNaN(p.x)) p.x = undefined;
   if(isNaN(p.y)) p.y = undefined;
 
-  if(!this || this === Point) {
+  if(!isNew) {
     if(p.prototype == Object) p.prototype = Point.prototype;
     else Object.assign(p, Point.prototype);
     return p;
@@ -334,9 +332,11 @@ export const isPoint = (o) => o && ((o.x !== undefined && o.y !== undefined) || 
 Point.isPoint = isPoint;
 Util.defineInspect(Point.prototype, 'x', 'y');
 
-Point.bind = (o, p, gen) => {
-  const [x, y] = p || ['x', 'y'];
-  if(!gen) gen = (k) => (v) => (v === undefined ? o[k] : (o[k] = v));
+Point.bind = (...args) => {
+  const [o, p = ['x', 'y'], gen] = args[0] instanceof Point ? [new Rect(), ...args] : args;
+
+  const { x, y } = (Util.isArray(p) && p.reduce((acc, name) => ({ ...acc, [name]: name }), {})) || p;
+
   return Util.bindProperties(new Point(0, 0), o, { x, y }, gen);
 };
 export default Point;

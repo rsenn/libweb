@@ -119,9 +119,13 @@ Size.prototype.sub = function (...args) {
   }
   return this;
 };
-Size.prototype.prod = function (f) {
-  const o = isSize(f) ? f : isPoint(f) ? { width: f.x, height: f.y } : { width: f, height: f };
-  return new Size(this.width * o.width, this.height * o.height);
+Size.prototype.clone = function (__proto__ = Size.prototype) {
+  const { width, height } = this;
+  // return new Size(width, height); // { width,height, __proto__ };
+  return Object.setPrototypeOf({ width, height }, __proto__);
+};
+Size.prototype.prod = function (...args) {
+  return Size.prototype.clone.call(this).mul(...args);
 };
 Size.prototype.mul = function (...args) {
   for(let f of getArgs(args)) {
@@ -144,7 +148,7 @@ Size.prototype.div = function (...args) {
   }
   return this;
 };
-Size.prototype.round = function (precision = 0.001, digits) {
+Size.prototype.round = function (precision = 1, digits) {
   let { width, height } = this;
   this.width = Util.roundTo(width, precision, digits);
   this.height = Util.roundTo(height, precision, digits);
@@ -196,9 +200,10 @@ Size.prototype.toString = function (opts = {}) {
 Size.area = (sz) => Size.prototype.area.call(sz);
 Size.aspect = (sz) => Size.prototype.aspect.call(sz);
 
-Size.bind = (o, p, gen) => {
-  const [width, height] = p || ['width', 'height'];
-  if(!gen) gen = (k) => (v) => (v === undefined ? o[k] : (o[k] = v));
+Size.bind = (...args) => {
+  const [o, p = ['width', 'height'], gen = (k) => (v) => (v === undefined ? o[k] : (o[k] = v))] = args[0] instanceof Size ? args : [new Size(), ...args];
+  console.debug('Size.bind', { args, o, p, gen });
+  const { width, height } = Util.isArray(p) ? p.reduce((acc, name) => ({ ...acc, [name]: name }), {}) : p;
   return Util.bindProperties(new Size(0, 0), o, { width, height }, gen);
 };
 

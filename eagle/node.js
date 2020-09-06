@@ -131,8 +131,7 @@ export class EagleNode {
     let fields = this.cacheFields();
     let node = this;
     if(fields && fields.length) {
-      Util.define(this, 'cache', {});
-      Util.define(this, 'lists', {});
+      Util.define(this, { cache: {}, lists: {} });
       let lazy = {};
       let lists = {};
       let maps = {};
@@ -144,7 +143,7 @@ export class EagleNode {
         let path = new ImmutableXPath(xpath).concat(['children']);
         lazy[key] = () => this.lookup(xpath, true);
         if(!path.apply(raw, true)) {
-          console.log('path not found', path + '');
+          //   console.warn('path not found', path + '');
           continue;
         }
         path = this.ref.path.down(...path);

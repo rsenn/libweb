@@ -48,7 +48,7 @@ export class EagleSVGRenderer {
 
   get maps() {
     const { path2component, component2path } = this;
-    return [path2component, component2path];
+    return [path2component.map, component2path];
   }
 
   pushTransform(transform) {

@@ -1,8 +1,8 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import { useTrkl, useAttributes } from '../renderUtils.js';
 
-export const Cross = ({ x, y, className = 'cross', radius = 1.27 / 2, width = 0.127 / 2, color = '#f0f', isVisible, ...props }) => {
-  let [visible] = typeof isVisible == 'function' ? useTrkl(isVisible) : [true];
+export const Cross = ({ x, y, className = 'cross', radius = 1.27 / 2, width = 0.127 / 2, color = '#f0f', visible, ...props }) => {
+  // let visible = typeof isVisible == 'function' ? useTrkl(isVisible) : true;
 
   return h('path', {
     className,

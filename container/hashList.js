@@ -1,5 +1,3 @@
-import { Element, Rect } from '../lib/dom.js';
-
 export class HashList {
   constructor(keyfn, ctor) {
     this.keyfn = keyfn ? keyfn : (item) => (item.toString !== undefined ? item.toString() : String(item));
@@ -8,8 +6,8 @@ export class HashList {
     this.keys = [];
   }
 
-  add(arg, key = null) {
-    let args = [...arguments];
+  add(...args) {
+    let [arg, key = null] = args;
     let obj = this.ctor.apply(this, args);
     if(!key) key = this.keyfn(obj);
     if(this[key] instanceof Array) {
@@ -54,12 +52,8 @@ export class HashList {
     return this[key];
   }
 
-  rectAt(name) {
-    return this[name].reduce((acc, it) => Rect.union(acc, Element.rect(it.e)), this[name][0].r);
-  }
-
-  method(name, arg) {
-    let args = [...arguments];
+  method(...args) {
+    let [name, arg] = args;
     let arr = this.toArray();
     name = args.shift();
     return arr[name].apply(arr, args);

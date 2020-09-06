@@ -1,7 +1,11 @@
-//import { hydrate, Fragment, createRef, isValidElement, cloneElement, toChildArray } from '../../node_modules/preact/dist/preact.mjs';
 import { h, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../../node_modules/htm/preact/standalone.mjs';
 export { h, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../../node_modules/htm/preact/standalone.mjs';
 
+/*import { h, html, render, Component, createContext } from '../htm.js';
+import { useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../hooks.js';
+export { h, html, render, Component, createContext } from '../htm.js';
+export { useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../hooks.js';
+*/
 /*import { Fragment } from '../preact.js';
 export { Fragment } from '../preact.js';*/
 export const Fragment = (props) => ReactComponent.toChildArray(props.children);

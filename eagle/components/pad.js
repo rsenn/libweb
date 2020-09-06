@@ -10,7 +10,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
   let pad =
     useValue(async function* () {
       for await (let change of data.repeater) {
-        //     console.log('change:', change);
+        //  console.log('Pad.render:', change);
         yield change;
       }
     }) || data;
@@ -22,9 +22,9 @@ export const Pad = ({ data, opts = {}, ...props }) => {
   const ri = +(drill / 3).toFixed(3);
   let d;
   let transform = `translate(${x},${y})`;
-  let [visible] = layer ? useTrkl(layer.handlers.visible) : [true];
+  let visible = 'yes' == useTrkl(layer.handlers.visible);
 
-  const padColor = layer.color || pad.getColor();
+  const padColor = layer.getColor(pad) || pad.getColor();
 
   switch (shape) {
     case 'long': {
@@ -68,9 +68,10 @@ export const Pad = ({ data, opts = {}, ...props }) => {
     'data-shape': pad.shape,
     'data-drill': pad.drill,
     'data-diameter': pad.diameter,
-    'data-rot': pad.rot
+    'data-rot': pad.rot,
+    'data-layer': `${layer.number} ${layer.name}`
   };
-  const visibleProps = { style: visible ? {} : { display: 'none' } };
+  const visibleProps = visible ? {} : { style: { display: 'none' } };
   const alignment = Alignment('center');
   if(name) {
     const textElem = h('text',
@@ -82,7 +83,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
       },
       /* prettier-ignore */ h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL) }, name)
     );
-    return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [h('path', pathProps), textElem]);
+    return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [h('path', { ...pathProps, ...visibleProps }), textElem]);
   }
   return h('path', { ...baseProps, ...dataProps, ...pathProps, ...visibleProps });
 };

@@ -185,7 +185,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       //this.debug('color:', color, layer.color);
 
       const WirePath = ({ className, path, color, width, layer }) => {
-        let [visible] = useTrkl(layer.handlers.visible);
+        let visible = 'yes' == useTrkl(layer.handlers.visible);
         this.debug('Lines visible:', visible);
 
         return h('path', {
@@ -198,7 +198,7 @@ export class BoardRenderer extends EagleSVGRenderer {
           'stroke-linecap': 'round',
           'stroke-linejoin': 'round',
           'data-layer': `${layer.number} ${layer.name}`,
-          style: Util.is.on(visible) ? {} : { display: 'none' }
+          style: visible ? undefined : { display: 'none' }
         });
       };
       this.create(WirePath, { class: ElementToClass(wires[0], layer.name), path, color, width, layer }, parent);
@@ -236,7 +236,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       rot,
       transform: rotation.slice()
     });
-    this.create(Origin, { x, y, layer: this.layers['tOrigins'] }, g);
+    this.create(Origin, { x, y, color: '#f0f', element, layer: this.layers['tOrigins'] }, g);
 
     /*    let angle = Util.randInt(0, 360);
     let angles = [angle, angle + 120, angle + 240, angle + 360];

@@ -948,12 +948,54 @@ function warning(message, line) {
 // generic file parser for gerber and drill files
 let LIMIT = 65535;
 
-export class Parser extends TransformStream {
-  constructor(places, zero, filetype) {
-    super({ readableObjectMode: true });
+const ArrayWriter = (arr) =>
+  new WritableStream({
+    write(chunk) {
+      arr.push(chunk);
+    },
+    abort(err) {
+      console.log('ArrayWriter error:', err);
+    }
+  });
 
-    // parser properties
-    // this.decoder = new StringDecoder('utf8');
+const LineReader = (str) => {
+  let pos = 0;
+  let len = str.length;
+  return new ReadableStream({
+    start(controller) {
+      for(;;) {
+        if(pos < str.length) {
+          let i = str.indexOf('\n', pos);
+          let end = i == -1 ? str.length : i;
+          controller.enqueue(str.substring(pos, end));
+          pos = end + 1;
+        } else {
+          controller.close();
+          break;
+        }
+      }
+    }
+  });
+};
+
+function readStream(stream, arr) {
+  const reader = stream.getReader();
+  let count = 0;
+  return new Promise((resolve, reject) => {
+    reader.read().then(function processData(res) {
+      if(res.done) {
+        resolve();
+        return;
+      }
+      count++;
+      arr.push(res.value);
+      return reader.read().then(processData);
+    });
+  });
+}
+
+export class Parser {
+  constructor(places, zero, filetype) {
     this.stash = '';
     this.index = 0;
     this.drillMode = drillMode.DRILL;
@@ -961,8 +1003,14 @@ export class Parser extends TransformStream {
     this.line = 0;
     this.format = { places, zero, filetype };
   }
+  start() {
+    console.debug('GerberParser start()!');
+  }
 
-  process(chunk, filetype) {
+  process(chunk, controller) {
+    let { filetype } = this.format;
+    this.controller = controller;
+
     while(this.index < chunk.length) {
       let next = getNext(filetype, chunk, this.index);
       this.index += next.read;
@@ -979,17 +1027,16 @@ export class Parser extends TransformStream {
     }
   }
 
-  transform(chunk, encoding, done) {
+  transform(chunk, controller) {
     let filetype = this.format.filetype;
 
+    const done = controller ? (err) => (err ? controller.error(err) : controller.terminate()) : () => {};
     // decode buffer to string
     //chunk = this.decoder.write(chunk);
-
     // determine filetype within 65535 characters
     if(!filetype) {
       filetype = determine(chunk, this.index, LIMIT);
       this.index += chunk.length;
-
       if(!filetype) {
         if(this.index >= LIMIT) {
           return done(new Error('unable to determine filetype'));
@@ -1000,31 +1047,29 @@ export class Parser extends TransformStream {
       this.format.filetype = filetype;
       this.index = 0;
     }
-
     chunk = this.stash + chunk;
     this.stash = '';
-
-    this.process(chunk, filetype);
-
+    this.process(chunk, controller);
     this.index = 0;
-    done();
+
+    if(chunk === null) {
+      if(controller) controller.terminate();
+      else done();
+    }
   }
 
-  flush(done) {
-    if(this.format.filetype === 'drill') {
-      parseDrill.flush(this);
-    }
+  flush(controller) {
+    if(this.format.filetype === 'drill') parseDrill.flush(this);
 
-    return done && done();
+    return typeof controller == 'object' ? controller.terminate() : controller && controller();
   }
 
   push(data) {
-    if(data.line === -1) {
-      data.line = this.line;
-    }
+    if(data.line === -1) data.line = this.line;
 
-    let pushTarget = !this.syncResult ? this : this.syncResult;
-    pushTarget.push(data);
+    if(this.syncResult) this.syncResult.push(data);
+    else if(this.controller) this.controller.enqueue(data);
+    else this.writable.write(data);
   }
 
   warn(message) {
@@ -1036,10 +1081,19 @@ export class Parser extends TransformStream {
     let filetype = determine(file, this.index, 100 * LIMIT);
     this.format.filetype = filetype;
     this.syncResult = [];
-    this.process(file, filetype);
+    this.process(file);
     this.flush();
 
     return this.syncResult;
+  }
+
+  static async parse(file) {
+    let ret = [];
+    let parser = new Parser();
+
+    await LineReader(file).pipeThrough(new TransformStream(parser)).pipeTo(ArrayWriter(ret));
+    // await readStream(LineReader(file).pipeThrough(new TransformStream(parser)), ret);
+    return ret;
   }
 }
 

@@ -155,39 +155,43 @@ Util.arityN = (fn, n) => {
 
 Util.getter = (target) => {
   let self;
-  self = function (key) {
-    if(!target) {
-      if(this !== self && this) target = this;
-      self.target = target;
-    }
-    let obj = target;
-    if(!self.fn) {
-      if(typeof obj == 'object' && obj !== null) {
-        if(typeof obj.get == 'function') self.fn = (key) => obj.get(key);
+  if(typeof target.get == 'function') self = target.get;
+  else
+    self = function (key) {
+      if(!target) {
+        if(this !== self && this) target = this;
+        self.target = target;
       }
-      if(!self.fn) self.fn = (key) => obj[key];
-    }
-    return self.fn(key);
-  };
+      let obj = target;
+      if(!self.fn) {
+        if(typeof obj == 'object' && obj !== null) {
+          if(typeof obj.get == 'function') self.fn = (key) => obj.get(key);
+        }
+        if(!self.fn) self.fn = (key) => obj[key];
+      }
+      return self.fn(key);
+    };
   if(target !== undefined) self.target = target;
   return self;
 };
 Util.setter = (target) => {
   let self;
-  self = function (key, value) {
-    if(!target) {
-      if(this !== self && this) target = this;
-      self.target = target;
-    }
-    let obj = target;
-    if(!self.fn) {
-      if(typeof obj == 'object' && obj !== null) {
-        if(typeof obj.set == 'function') self.fn = (key, value) => obj.set(key, value);
+  if(typeof target.set == 'function') self = target.set;
+  else
+    self = function (key, value) {
+      if(!target) {
+        if(this !== self && this) target = this;
+        self.target = target;
       }
-    }
-    if(!self.fn) self.fn = (key, value) => ((obj[key] = value), obj);
-    return self.fn(key, value);
-  };
+      let obj = target;
+      if(!self.fn) {
+        if(typeof obj == 'object' && obj !== null) {
+          if(typeof obj.set == 'function') self.fn = (key, value) => obj.set(key, value);
+        }
+      }
+      if(!self.fn) self.fn = (key, value) => ((obj[key] = value), obj);
+      return self.fn(key, value);
+    };
   if(target !== undefined) self.target = target;
   return self;
 };
@@ -258,21 +262,23 @@ Util.getOrCreate = (target, create = () => ({}), set) => {
 };
 
 Util.memoize = (fn, storage = new Map()) => {
-  let self,
-    cache = [Util.getter(storage), Util.setter(storage)];
-
+  let self;
+  const getter = typeof storage.get == 'function' ? storage.get : typeof storage == 'function' ? storage : Util.getter(storage);
+  const setter = typeof storage.set == 'function' ? storage.set : typeof storage == 'function' ? storage : Util.setter(storage);
   self = function (...args) {
-    let n = args[0]; // just taking one argument here
-    if(n in cache) {
+    // let n = args[0]; // just taking one argument here
+    let cached;
+    let key = args[0];
+
+    if((cached = getter.call(storage, key))) {
       //console.log('Fetching from cache');
-      return cache[n];
+      return cached;
     }
-    //console.log('Calculating result');
     let result = fn.call(this, ...args);
-    cache[n] = result;
+    setter.call(storage, key, result);
     return result;
   };
-  self.cache = cache;
+  self.cache = storage;
   return Object.freeze(self);
 };
 
@@ -3776,13 +3782,18 @@ Util.inRange = Util.curry((a, b, value) => value >= a && value <= b);
 
 Util.bindProperties = (proxy, target, props, gen) => {
   if(props instanceof Array) props = Object.fromEntries(props.map((name) => [name, name]));
-  const propNames = Object.keys(props);
+  const [propMap, propNames] = Util.isArray(props) ? [props.reduce((acc, name) => ({ ...acc, [name]: name }), {}), props] : [props, Object.keys(props)];
+
   if(!gen) gen = (p) => (v) => (v === undefined ? target[p] : (target[p] = v));
+  const propGetSet = propNames.map((k) => [k, propMap[k]]).reduce((a, [k, v]) => ({ ...a, [k]: Util.isFunction(v) ? (...args) => v.call(target, k, ...args) : (gen && gen(k)) || ((...args) => (args.length > 0 ? (target[k] = args[0]) : target[k])) }), {});
+
+  console.log(`Util.bindProperties`, { proxy, target, props, gen });
+  console.log(`Util.bindProperties`, { propMap, propNames, propGetSet });
   Object.defineProperties(proxy,
     propNames.reduce(
       (a, k) => {
         const prop = props[k];
-        const get_set = typeof prop == 'function' ? prop : gen(prop);
+        const get_set = propGetSet[k]; //typeof prop == 'function' ? prop : gen(prop);
         return {
           ...a,
           [k]: {
@@ -4192,9 +4203,15 @@ Util.getEnv = async (varName) =>
     async (e) => e[varName],
     () => Util.tryCatch(async () => await import('std').then((std) => std.getenv(varName)))
   );
-Util.safeFunction = (fn, trapExceptions) => {
+Util.safeFunction = (fn, trapExceptions, thisObj) => {
   const isAsync = Util.isAsync(fn);
-  let exec = isAsync ? async (...args) => await fn(...args) : (...args) => fn(...args);
+  let exec = isAsync
+    ? async function (...args) {
+        return await fn.call(this || thisObj, ...args);
+      }
+    : function (...args) {
+        return fn.call(this || thisObj, ...args);
+      };
   if(trapExceptions) {
     Error.stackTraceLimit = Infinity;
     exec = Util.tryFunction(exec, //async (...args) => { Error.stackTraceLimit=Infinity;  return await exec(...args); },

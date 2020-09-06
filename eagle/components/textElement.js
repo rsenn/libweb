@@ -21,7 +21,7 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
   const color = data.getColor();
   let className = ElementToClass(data);
 
-  let [visible] = layer ? useTrkl(layer.handlers.visible) : [true];
+  let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
 
   if(text.startsWith('>')) {
     const prop = text.slice(1).toLowerCase();
@@ -31,7 +31,7 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
   }
   let attrs = {};
   if(align !== undefined) attrs['data-align'] = align;
-  if(data.path !== undefined) attrs['data-path'] = data.path.toString(' ');
+  // if(data.path !== undefined) attrs['data-path'] = data.path.toString(' ');
   if(rot !== undefined) attrs['data-rot'] = rot;
   if(layer !== undefined) attrs['data-layer'] = `${layer.number} ${layer.name}`;
   attrs['data-alignment'] = [...Alignment(align)].join('|');

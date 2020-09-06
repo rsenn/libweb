@@ -7,7 +7,7 @@ import dom, { CSS, CSSTransformSetters, Element, ElementRectProxy, ElementSizePr
 import Util from './util.js';
 //import { toJS } from "mobx";
 import { trkl } from './trkl.js';
-import HashList from './hashList.js';
+import HashList from './container/hashList.js';
 import { makeLocalStorage } from './autoStore.js';
 
 //var root = global.window ? window : global;
@@ -815,7 +815,7 @@ export function walk(element) {
       let strs = line.map((text) => `"${text.text}"`);
       if(strs.length == 2) str = strs.join(': ');
       else str = strs.join('\n  ');
-      let rect = texts.rectAt(key);
+      let rect = texts.at(key).reduce((acc, it) => Rect.union(acc, Element.rect(it.e)), this[name][0].r);
       let rstr = Rect.toString(rect);
 
       if(strs.length != 2 && strs.length > 0 && str.length) {

@@ -22,7 +22,7 @@ export const Rectangle = ({ data, opts = {}, ...props }) => {
   const { x1, x2, y1, y2 } = coordFn(rectangle);
   const { layer } = rectangle;
   const color = rectangle.getColor();
-  let [visible] = layer ? useTrkl(layer.handlers.visible) : [true];
+  let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
 
   let rect = Rect.from({ x1, x2, y1, y2 });
   let rot = Rotation(rectangle.rot);
@@ -36,8 +36,7 @@ export const Rectangle = ({ data, opts = {}, ...props }) => {
     fill: color,
     style: visible ? {} : { display: 'none' },
     ...rect.toObject(),
-    ...(layer ? { 'rectangle-layer': `${layer.number} ${layer.name}` } : {}),
     transform: `translate(${center}) ${rot} translate(${center.prod(-1)})`,
-    ...(layer ? { 'rectangle-layer': `${layer.number} ${layer.name}` } : {})
+    ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {})
   });
 };

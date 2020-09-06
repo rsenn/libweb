@@ -164,29 +164,57 @@ export function NodeJSFileSystem(fs) {
         err = error;
       }
       return err || 0;
+    },
+    rename(filename, to) {
+      try {
+        fs.renameSync(filename, to);
+      } catch(err) {}
+      return !this.exists(filename) && this.exists(to);
     }
   };
 }
 
-export async function PortableFileSystem() {
-  let fs, err;
+export async function CreatePortableFileSystem(ctor, ...args) {
+  return ctor(...(await Promise.all(args)));
+}
 
+export async function GetPortableFileSystem() {
+  let fs, err;
   try {
-    fs = QuickJSFileSystem(...(await Promise.all([import('std'), import('os')])));
+    fs = await CreatePortableFileSystem(QuickJSFileSystem, import('std'), import('os'));
   } catch(error) {
     err = error;
   }
-
   if(fs && !err) return fs;
   err = null;
-
   try {
-    fs = NodeJSFileSystem(await import('fs'));
+    fs = await CreatePortableFileSystem(NodeJSFileSystem, import('fs'));
   } catch(error) {
     err = error;
   }
 
   if(fs && !err) return fs;
+}
+
+export async function PortableFileSystem() {
+  const fs = await GetPortableFileSystem();
+
+  try {
+    return (globalThis.filesystem = fs);
+  } catch(error) {
+    try {
+      return (global.filesystem = fs);
+    } catch(error) {
+      try {
+        return (window.filesystem = fs);
+      } catch(error) {
+        try {
+          return (window.filesystem = fs);
+        } catch(error) {}
+      }
+    }
+  }
+  return fs;
 }
 
 export default PortableFileSystem;

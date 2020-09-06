@@ -165,12 +165,31 @@ Object.defineProperty(Rect.prototype, 'area', {
     return Rect.prototype.getArea.call(this);
   }
 });
+const getSize = Util.memoize((rect) =>
+    Util.bindProperties(new Size(0, 0), rect, ['width', 'height'], (k) => {
+      console.log('gen', { k });
+      return (v) => {
+        return v !== undefined ? (rect[k] = v) : rect[k];
+      };
+    })
+
+  // Size.bind(new Size(),  ['width','height']), new WeakMap())
+);
+
 Object.defineProperty(Rect.prototype, 'center', {
   get() {
     return Rect.center(this);
   }
 });
+Rect.prototype.getSize = Util.memoize;
 Object.defineProperty(Rect.prototype, 'size', {
+  get() {
+    let ret = getSize(this);
+    console.log('getSize( ) =', ret);
+    return ret;
+  }
+});
+/*Object.defineProperty(Rect.prototype, 'size', {
   get() {
     const rect = this;
     const size = new Size(rect.width, rect.height);
@@ -196,7 +215,7 @@ Object.defineProperty(Rect.prototype, 'size', {
     });
     return size;
   }
-});
+});*/
 Rect.prototype.points = function (ctor = (items) => Array.from(items)) {
   const c = this.corners();
   return ctor(c);
@@ -432,11 +451,12 @@ Rect.toSource = (rect, opts = {}) => {
   return `{${sep}${props}${sep}}`;
 };
 
-Rect.bind = (o, p, gen) => {
+Rect.bind = (...args) => {
+  const [o, p, gen = (k) => (v) => (v === undefined ? o[k] : (o[k] = v))] = args[0] instanceof Rect ? [new Rect(), ...args] : args;
+
   const [x, y, width, height] = p || ['x', 'y', 'width', 'height'];
-  if(!gen) gen = (k) => (v) => (v === undefined ? o[k] : (o[k] = v));
-  let pt = Point.bind(o, [x, y], gen);
-  let sz = Size.bind(o, [width, height], gen);
+  let pt = Point.bind(o, ['x', 'y'], gen);
+  let sz = Size.bind(o, ['width', 'height'], gen);
   let proxy = new Rect(pt, sz);
   return proxy;
 };

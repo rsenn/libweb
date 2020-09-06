@@ -6,7 +6,7 @@ import { useTrkl } from '../renderUtils.js';
 
 export const Wire = ({ data, opts = {}, ...props }) => {
   //  data = data || props.item;
-  //console.info('Wire.render ', { data, opts });
+  console.info('Wire.render ', { data, opts });
 
   let wire =
     useValue(async function* () {
@@ -24,7 +24,7 @@ export const Wire = ({ data, opts = {}, ...props }) => {
 
   const { width, curve = '', layer, x1, y1, x2, y2 } = coordFn(wire);
   const color = wire.getColor();
-  let [visible] = layer ? useTrkl(layer.handlers.visible) : [true];
+  let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
 
   return h('line', {
     class: ElementToClass(wire, layer.name),
