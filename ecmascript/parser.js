@@ -1934,7 +1934,7 @@ export class ECMAScriptParser extends Parser {
 
     if(this.matchKeywords('extends')) {
       this.expectKeywords('extends');
-      extending = this.expectIdentifier();
+      extending = this.parseNewOrCallOrMemberExpression();
     }
 
     //Parse function body

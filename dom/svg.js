@@ -9,13 +9,10 @@ import Util from '../util.js';
 import { RGBA } from '../color/rgba.js';
 
 export class SVG extends Element {
-  static create(name, { outerHTML, ...attr }, parent) {
+  static create(name, { outerHTML, innerHTML, text, ...attr }, parent) {
     let svg = document.createElementNS(SVG.ns, name);
-    let text, attrfn;
-    if(attr.text !== undefined) {
-      text = attr.text;
-      delete attr.text;
-    }
+    let attrfn;
+
     if(name == 'svg') {
       attr.version = '1.1';
       attr.xmlns = SVG.ns;
@@ -29,7 +26,8 @@ export class SVG extends Element {
       parent.appendChild(svg);
       if(outerHTML) svg.outerHTML = outerHTML;
     }
-    if(text) svg.innerHTML = text;
+    /*    if(innerHTML) svg.innerHTML = text;
+else */ if(text) svg.innerHTML = innerHTML;
     return svg;
   }
 
