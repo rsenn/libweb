@@ -1,4 +1,5 @@
 import Util from '../util.js';
+import util from 'util';
 import Lexer, { SyntaxError, Position, Range } from './lexer.js';
 import deep from '../deep.js';
 //import util from 'util';
@@ -453,7 +454,8 @@ export class ECMAScriptParser extends Parser {
       throw this.error(`Expecting Literal, but got ${token.type} with value '${token.value}'`);
     }
 
-    //console.log('New literal: ', token);
+    if(token.type == 'regexpLiteral') console.log('New literal: ', util.inspect(token, { breakLength: 1000 }));
+
     return new Literal(token.value.replace(/\n/g, '\\n'), { stringLiteral: 'string', templateLiteral: 'string', numericLiteral: 'number', booleanLiteral: 'boolean', nullLiteral: 'object', regexpLiteral: 'regexp' }[token.type]);
   }
 
@@ -768,7 +770,7 @@ export class ECMAScriptParser extends Parser {
         let arg = this.parseTemplateLiteral();
 
         //console.log("Template call", arg);
-        object = new CallExpression(object, [arg]);
+        object = new CallExpression(object, arg);
       }
     }
     return object;
@@ -1045,37 +1047,41 @@ export class ECMAScriptParser extends Parser {
 
     while(true) {
       let rest, property, element, initializer;
-      rest = this.matchPunctuators('...');
-      if(rest) this.expectPunctuators('...');
-
-      if(!is_array && this.matchPunctuators('[')) {
-        this.expectPunctuators('[');
-        property = element = new ComputedPropertyName(this.parseAssignmentExpression());
-
-        this.expectPunctuators(']');
+      if(this.matchPunctuators(['{', '['])) {
+        property = this.parseBindingPattern();
       } else {
-        if(this.matchIdentifier()) property = element = this.expectIdentifier();
-      }
+        if((rest = this.matchPunctuators('...'))) this.expectPunctuators('...');
 
-      if(rest) {
-        props.push(new RestOfExpression(property));
-      } else {
-        if(this.matchPunctuators(':')) {
-          this.expectPunctuators(':');
-          element = this.expectIdentifier();
-        } else if(this.matchKeywords('as')) {
-          this.expectKeywords('as');
-          element = this.expectIdentifier();
+        if(!is_array && this.matchPunctuators('[')) {
+          this.expectPunctuators('[');
+          property = element = new ComputedPropertyName(this.parseAssignmentExpression());
+
+          this.expectPunctuators(']');
+        } else {
+          if(this.matchIdentifier()) property = element = this.expectIdentifier();
         }
 
-        if(this.matchPunctuators('=')) {
-          this.expectPunctuators('=');
-          initializer = this.parseAssignmentExpression();
-        }
+        if(rest) {
+          property = new RestOfExpression(property);
+        } else {
+          if(this.matchPunctuators(':')) {
+            this.expectPunctuators(':');
+            element = this.expectIdentifier();
+          } else if(this.matchKeywords('as')) {
+            this.expectKeywords('as');
+            element = this.expectIdentifier();
+          }
 
-        props.push(new BindingProperty(property, element, initializer));
+          if(this.matchPunctuators('=')) {
+            this.expectPunctuators('=');
+            initializer = this.parseAssignmentExpression();
+          }
+
+          property = new BindingProperty(property, element, initializer);
+        }
       }
 
+      props.push(property);
       //console.log("this.token", this.token);
 
       if(this.expectPunctuators(['}', ']', ',']).value != ',') break;

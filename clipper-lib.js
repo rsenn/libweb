@@ -48,7 +48,7 @@ ClipperLib.use_lines = true;
 
 //ClipperLib.use_xyz: adds a Z member to FPoint. Adds a minor cost to performance.
 ClipperLib.use_xyz = false;
-
+/*
 let isNode = false;
 if(typeof module !== 'undefined' && module.exports) {
   module.exports = ClipperLib;
@@ -62,9 +62,9 @@ if(!isNode) {
 } else {
   var nav = 'chrome'; //Node.js uses Chrome's V8 engine
   navigator_appName = 'Netscape'; //Firefox, Chrome and Safari returns "Netscape", so Node.js should also
-}
+}*/
 //Browser test to speedup performance critical functions
-let browser = {};
+/*let browser = {};
 
 if(nav.indexOf('chrome') != -1 && nav.indexOf('chromium') == -1) browser.chrome = 1;
 else browser.chrome = 0;
@@ -91,7 +91,7 @@ else browser.msie8 = 0;
 if(nav.indexOf('msie 7') != -1) browser.msie7 = 1;
 else browser.msie7 = 0;
 if(nav.indexOf('msie ') != -1) browser.msie = 1;
-else browser.msie = 0;
+else browser.msie = 0;*/
 
 //Here starts the actual Clipper library:
 //Helper function to support Inheritance in Javascript

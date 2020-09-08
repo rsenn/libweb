@@ -53,7 +53,16 @@ export class Identifier extends Expression {
     super('Identifier');
     this.value = value;
   }
+
+  static string(node) {
+    return node.value.replace(/^['"`](.*)['"`]$/, '$1');
+  }
+
+  [Symbol.for('nodejs.util.inspect.custom')]() {
+    return `Identifier ` + Util.ansi.text(this.value, 1, 33);
+  }
 }
+
 export class ComputedPropertyName extends ESNode {
   constructor(expr) {
     super('ComputedPropertyName');
@@ -75,7 +84,7 @@ export class Literal extends Expression {
   constructor(value, species) {
     super('Literal');
     this.value = value;
-    this.species = species;
+    Util.define(this, { species });
   }
 }
 

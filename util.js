@@ -2854,9 +2854,8 @@ Util.getPrototypeChain = function (obj, fn = (p) => p) {
 
 Util.getConstructorChain = (ctor, fn = (c, p) => c) => Util.getPrototypeChain(ctor, (p, o) => fn(o, p));
 
-Util.weakAssign = function (obj) {
-  let args = [...arguments];
-  obj = args.shift();
+Util.weakAssign = function (...args) {
+  let obj = args.shift();
   args.forEach((other) => {
     for(let key in other) {
       if(obj[key] === undefined) obj[key] = other[key];

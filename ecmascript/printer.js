@@ -1,7 +1,8 @@
-import { ESNode, Literal, PropertyDefinition, MemberVariable, FunctionDeclaration, Identifier, ClassDeclaration, BindingProperty, ObjectBindingPattern, SpreadElement, MemberExpression } from './estree.js';
+import { ESNode, Literal, TemplateLiteral, PropertyDefinition, MemberVariable, FunctionDeclaration, Identifier, ClassDeclaration, BindingProperty, ObjectBindingPattern, SpreadElement, MemberExpression } from './estree.js';
 import Util from '../util.js';
 import deep from '../deep.js';
 //import util from 'util';
+import util from 'util';
 
 export class Printer {
   static colors = {
@@ -213,6 +214,10 @@ export class Printer {
 
   printCallExpression(call_expression) {
     const { arguments: args, callee } = call_expression;
+    //console.log("args:", util.inspect(args, { depth: Infinity, breakLength: 1000 }));
+
+    if(args instanceof TemplateLiteral) return this.printNode(callee) + this.colorCode.punctuators() + this.printNode(args);
+
     return this.printNode(callee) + this.colorCode.punctuators() + '(' + args.map((arg) => this.printNode(arg)).join(this.colorCode.punctuators() + ', ') + this.colorCode.punctuators() + ')';
   }
 
@@ -587,22 +592,7 @@ export class Printer {
     for(let property of members) {
       let line = '';
 
-      /*if(property instanceof SpreadElement) {
-        line += '...';
-
-        property = property.expr;
-      } else if(property.id == null) {
-        //console.log('Property:', property);
-        throw new Error();
-      }*/
-      //if(this.position().line >= 2497)
-      //console.log("Property:", property);
-
-      /*      if(Util.className(property.id) == "Identifier") {
-        //console.log("property.id:", Util.className(property.id));
-        throw new Error();
-      }*/
-      console.debug('printObjectLiteral:', Util.className(property), { property });
+      //console.debug('printObjectLiteral:', Util.className(property), { property });
 
       let name, value;
       let isFunction = false;
@@ -613,7 +603,7 @@ export class Printer {
         isFunction = true;
       } else if(property instanceof PropertyDefinition || property instanceof BindingProperty || !property.id) {
         value = this.printNode(property);
-        console.debug('printObjectLiteral:', { value });
+        //console.debug('printObjectLiteral:', { value });
         a.push(value);
         continue;
       } else {
@@ -676,7 +666,7 @@ export class Printer {
     if(!(id instanceof Identifier)) prop = '[' + prop + ']';
     s += prop;
 
-    console.log('printPropertyDefinition:', { s, prop, id, value, fn });
+    //console.log('printPropertyDefinition:', { s, prop, id, value, fn });
 
     if(!(id instanceof Identifier) || (value && value.value != id.value)) {
       if(!(value instanceof FunctionDeclaration)) s += this.colorText.punctuators(': ');
