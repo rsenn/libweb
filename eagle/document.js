@@ -6,7 +6,8 @@ import { EagleRef } from './ref.js';
 import { ImmutablePath } from '../json.js';
 import { EagleNode } from './node.js';
 import { EagleElement } from './element.js';
-import { BBox, Rect, PointList } from '../geom.js';
+import { LinesToPath } from './renderUtils.js';
+import { BBox, Rect, PointList, Line } from '../geom.js';
 import { RGBA } from '../color.js';
 import { EagleNodeList } from './nodeList.js';
 import { PathMapper } from '../json/pathMapper.js';
@@ -217,14 +218,18 @@ export class EagleDocument extends EagleNode {
     return bb;
   }
 
-  getMeasures(geometry = false) {
+  getMeasures(bbox = false) {
     //console.log("this.type", this.type);
-    let bounds = this.getBounds();
-    let values = [...bounds.getObjects().values()];
-    let measures = values.filter((obj) => obj.layer && obj.layer.name == 'Measures');
-    if(geometry) measures = measures.map((e) => e.geometry);
-    else measures = new BBox().update(measures);
-    return measures /*.length > 0 ? measures : null*/;
+
+    let measures = this.plain.filter((obj) => obj.layer && obj.layer.name == 'Measures');
+    measures = LinesToPath(measures.map((e) => new Line(e)),
+      (p) => p
+    );
+    /*  if(geometry) measures = measures.map((e) => e.geometry);
+    else */
+
+    if(bbox) measures = new BBox().update(measures);
+    return measures;
   }
 
   get measures() {

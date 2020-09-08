@@ -155,30 +155,41 @@ export const CalculateArcRadius = (p1, p2, angle) => {
   return Math.abs(angle) > 90 ? r / 2 : Math.sqrt(r2);
 };
 
-export const LinesToPath = (lines) => {
+export const LinesToPath = (lines, lineFn) => {
   let l = lines.shift(),
     m;
   let start = l.a;
   let ret = [];
   let prevPoint = new Point((l.a && l.a.x) || l.x1, (l.a && l.a.y) || l.y1);
-  ret.push(`M ${prevPoint.x} ${prevPoint.y}`);
+  //ret.push(`M ${prevPoint.x} ${prevPoint.y}`);
 
-  const lineTo = (point, curve) => {
-    if(curve !== undefined) {
-      const r = CalculateArcRadius(prevPoint, point, curve).toFixed(4);
+  lineFn =
+    lineFn ||
+    ((point, curve) => {
+      lineFn = (point, curve) => {
+        if(curve !== undefined) {
+          const r = CalculateArcRadius(prevPoint, point, curve).toFixed(4);
 
-      if(r == Number.POSITIVE_INFINITY || r == Number.NEGATIVE_INFINITY) console.log('lineTo', { prevPoint, point, curve });
+          if(r == Number.POSITIVE_INFINITY || r == Number.NEGATIVE_INFINITY) console.log('lineTo', { prevPoint, point, curve });
 
-      const largeArc = Math.abs(curve) > 180 ? '1' : '0';
-      const sweepArc = curve > 0 ? '1' : '0';
+          const largeArc = Math.abs(curve) > 180 ? '1' : '0';
+          const sweepArc = curve > 0 ? '1' : '0';
 
-      ret.push(`A ${r} ${r} 0 ${largeArc} ${sweepArc} ${point.x} ${point.y}`);
-    } else {
-      ret.push(`L ${point.x} ${point.y}`);
-    }
-    prevPoint = new Point(point.x, point.y);
-  };
+          return `A ${r} ${r} 0 ${largeArc} ${sweepArc} ${point.x} ${point.y}`;
+        } else if(Point.equals(start, point)) {
+          return `Z`;
+        } else {
+          return `L ${point.x} ${point.y}`;
+        }
+        prevPoint = new Point(point.x, point.y);
+      };
+      return `M ${point.x} ${point.y}`;
+      prevPoint = new Point(point.x, point.y);
+    });
 
+  const lineTo = (...args) => ret.push(lineFn(...args));
+
+  lineTo(prevPoint);
   lineTo(l.b, l.curve);
 
   do {
@@ -197,8 +208,8 @@ export const LinesToPath = (lines) => {
       }
     }
     if(m) {
-      if(lines.length == 0 && Point.equals(m.b, start)) ret.push(`Z`);
-      else lineTo(m.b, m.curve);
+      /*if(lines.length == 0 && Point.equals(m.b, start)) ret.push(`Z`);
+      else*/ lineTo(m.b, m.curve);
       l = m;
     } else if(lines.length > 0) {
       l = lines.shift();
@@ -208,7 +219,7 @@ export const LinesToPath = (lines) => {
     }
   } while(lines.length > 0);
 
-  return ret.join(' ');
+  return ret.every((p) => typeof p == 'string') ? ret.join(' ') : ret;
 };
 
 export function MakeCoordTransformer(matrix) {

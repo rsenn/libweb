@@ -1,6 +1,7 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
 import { MakeCoordTransformer, ElementToClass } from '../renderUtils.js';
-import { TransformationList } from '../../geom/transformation.js';
+import { TransformationList, Point, Line } from '../../geom.js';
+import { RGBA } from '../../color.js';
 import { Palette } from '../common.js';
 import { Text } from './text.js';
 

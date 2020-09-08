@@ -390,13 +390,15 @@ export class EagleSVGRenderer {
   render(doc, props = {}, children = []) {
     doc = doc || this.doc;
 
-    let bounds = doc.getBounds();
+    let bounds = doc.getMeasures(true) || doc.getBounds();
     this.debug('EagleSVGRenderer.render', { bounds });
     let rect = bounds.toRect(Rect.prototype);
 
-    rect.outset(1.27);
+    rect.round(1.27);
+    //   rect.outset(1.27);
+    rect.round(2.54);
     this.rect = rect;
-    this.bounds = BBox.fromRect(rect);
+    this.bounds = bounds; //BBox.fromRect(rect);
     this.debug('EagleSVGRenderer.render', { bounds: this.bounds, rect });
 
     this.debug('bounds:', this.bounds.toString({ separator: ' ' }));
@@ -404,7 +406,7 @@ export class EagleSVGRenderer {
     const { width, height } = new Size(bounds).toCSS('mm');
 
     this.transform.clear();
-    this.transform.translate(0, rect.height + rect.y);
+    this.transform.translate(0, rect.height - rect.y);
     this.transform.scale(1, -1);
 
     const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;

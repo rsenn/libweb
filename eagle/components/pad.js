@@ -1,6 +1,6 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
 import { MakeCoordTransformer, AlignmentAttrs, ElementToClass } from '../renderUtils.js';
-import { TransformationList } from '../../geom/transformation.js';
+import { TransformationList, Point } from '../../geom.js';
 import { Palette } from '../common.js';
 import { Text } from './text.js';
 import { useValue } from '../../repeater/react-hooks.js';

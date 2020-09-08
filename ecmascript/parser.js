@@ -1,5 +1,5 @@
 import Util from '../util.js';
-import util from 'util';
+//import util from 'util';
 import Lexer, { SyntaxError, Position, Range } from './lexer.js';
 import deep from '../deep.js';
 //import util from 'util';
@@ -454,7 +454,7 @@ export class ECMAScriptParser extends Parser {
       throw this.error(`Expecting Literal, but got ${token.type} with value '${token.value}'`);
     }
 
-    if(token.type == 'regexpLiteral') console.log('New literal: ', util.inspect(token, { breakLength: 1000 }));
+    //if(token.type == 'regexpLiteral') console.log('New literal: ', util.inspect(token, { breakLength: 1000 }));
 
     return new Literal(token.value.replace(/\n/g, '\\n'), { stringLiteral: 'string', templateLiteral: 'string', numericLiteral: 'number', booleanLiteral: 'boolean', nullLiteral: 'object', regexpLiteral: 'regexp' }[token.type]);
   }

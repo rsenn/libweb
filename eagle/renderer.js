@@ -22,6 +22,6 @@ export function Renderer(doc, factory, debug) {
       break;
     default: throw new Error('No such document type: ' + doc.type);
   }
-  Renderer.debug = ret.debug = debug ? (...args) => console.log(Util.getCallers(2)[0].toString(false, { stripUrl: true }), ...args) : () => {};
+  Renderer.debug = ret.debug = debug ? (...args) => console.log(Util.getCallers(2)[0].toString(false, { stripUrl: true }) + '\n', ...args) : () => {};
   return ret;
 }

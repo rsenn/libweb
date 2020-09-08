@@ -161,7 +161,7 @@ Point.prototype.equals = function (other) {
   //console.warn(`Point.equals`, this, other);
   return +this.x == +other.x && +this.y == +other.y;
 };
-Point.prototype.round = function (precision = 0.001, digits, type = 'round') {
+Point.prototype.round = function (precision = 0.001, digits = 3, type = 'round') {
   let { x, y } = this;
   this.x = Util.roundTo(x, precision, digits, type);
   this.y = Util.roundTo(y, precision, digits, type);

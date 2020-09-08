@@ -373,14 +373,14 @@ Rect.prototype.align = function (align_to, a = 0) {
   return this;
 };
 
-Rect.prototype.round = function (precision = 0.001, digits, type = 'round') {
+Rect.prototype.round = function (precision = 0.001, digits = 3, type = 'round') {
   let { x1, y1, x2, y2 } = this.toObject(true);
-  let a = new Point(x1, y1).round(precision, digits, type);
-  let b = new Point(x2, y2).round(precision, null, type);
-  this.x = a.x;
-  this.y = a.y;
-  this.width = +(b.x - this.x).toFixed(digits);
-  this.height = +(b.y - this.y).toFixed(digits);
+  let a = new Point(-x1, -y1).round(precision, digits, type);
+  let b = new Point(x2, y2).round(precision, digits, type);
+  this.x = -a.x;
+  this.y = -a.y;
+  this.width = b.x - this.x;
+  this.height = b.y - this.y;
   return this;
 };
 Rect.prototype.toObject = function (bb = false) {

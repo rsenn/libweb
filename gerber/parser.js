@@ -882,7 +882,7 @@ function parseBlock(parser, block, line) {
 }
 
 function flush(parser) {
-  console.debug('flush', { parser });
+  //console.debug('flush', { parser });
   if(parser.drillStash.length) {
     parser.drillStash.forEach((data) => {
       if(!parser.format.zero && reCOORD$1.test(data.block)) {
@@ -958,7 +958,7 @@ const ArrayWriter = (arr) =>
       arr.push(chunk);
     },
     abort(err) {
-      console.log('ArrayWriter error:', err);
+      //console.log('ArrayWriter error:', err);
     }
   });
 
@@ -1008,7 +1008,7 @@ export class Parser {
     this.format = { places, zero, filetype };
   }
   start() {
-    console.debug('GerberParser start()!');
+    //console.debug('GerberParser start()!');
   }
 
   process(chunk, controller) {
@@ -1020,7 +1020,7 @@ export class Parser {
       this.index += next.read;
       this.line += next.lines;
       this.stash += next.rem;
-      console.debug('process', { next, filetype });
+      //console.debug('process', { next, filetype });
 
       if(next.block) {
         if(filetype === 'gerber') {
@@ -1054,7 +1054,7 @@ export class Parser {
       if(filetype == 'drill') this.drillStash = [];
     }
     chunk = this.stash + chunk;
-    console.debug('chunk', chunk);
+    //console.debug('chunk', chunk);
     this.stash = '';
     this.process(chunk, controller);
     this.index = 0;
@@ -1080,7 +1080,7 @@ export class Parser {
   }
 
   warn(message) {
-    console.warn(warning(message, this.line));
+    //console.warn(warning(message, this.line));
     //  this.emit('warning', warning(message, this.line));
   }
 

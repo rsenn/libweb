@@ -2,7 +2,7 @@ import { ESNode, Literal, TemplateLiteral, PropertyDefinition, MemberVariable, F
 import Util from '../util.js';
 import deep from '../deep.js';
 //import util from 'util';
-import util from 'util';
+//import util from 'util';
 
 export class Printer {
   static colors = {
@@ -123,7 +123,7 @@ export class Printer {
 
   printLiteral(literal) {
     let { value } = literal;
-    return this.colorText.numberLiterals(value);
+    return this.colorText.numberLiterals(value.replace(/\\n/g, '\n'));
   }
 
   printTemplateLiteral(template_literal) {
@@ -131,7 +131,7 @@ export class Printer {
     //console.log("template_literal:", template_literal);
 
     for(let part of template_literal.parts) {
-      if(part instanceof Literal) s += part.value;
+      if(part instanceof Literal) s += part.value.replace(/\\n/g, '\n');
       else s += '${' + this.printNode(part) + '}';
     }
     return this.colorText.templates(s);

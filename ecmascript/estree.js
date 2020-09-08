@@ -55,7 +55,7 @@ export class Identifier extends Expression {
   }
 
   static string(node) {
-    return node.value.replace(/^['"`](.*)['"`]$/, '$1');
+    return node.value;
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
@@ -85,6 +85,10 @@ export class Literal extends Expression {
     super('Literal');
     this.value = value;
     Util.define(this, { species });
+  }
+
+  static string(node) {
+    return node.value.replace(/^['"`](.*)['"`]$/, '$1').replace(/\\n/g, '\n');
   }
 }
 
