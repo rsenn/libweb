@@ -106,10 +106,10 @@ export function Position(line, column, pos, file, freeze = true) {
   return freeze && obj.constructor === Position ? Object.freeze(obj) : obj;
 }
 
-Position.prototype.clone = function (freeze = false) {
+Position.prototype.clone = function (freeze = false, withFilename = true) {
   const { line, column, pos, file } = this;
 
-  return new Position(line, column, pos, file, freeze);
+  return new Position(line, column, pos, withFilename ? file : null, freeze);
 };
 Position.prototype[Symbol.toStringTag] = function () {
   return this.toString();
