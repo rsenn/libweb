@@ -333,12 +333,11 @@ Point.isPoint = isPoint;
 Util.defineInspect(Point.prototype, 'x', 'y');
 
 Point.bind = (...args) => {
-  const [o, p = ['x', 'y'], gen] = args[0] instanceof Point ? [new Rect(), ...args] : args;
-
-  const { x, y } = (Util.isArray(p) && p.reduce((acc, name) => ({ ...acc, [name]: name }), {})) || p;
-  //  console.debug('Point.bind', { args, o, p, gen });
-
-  return Util.bindProperties(new Point(0, 0), o, { x, y }, gen);
+  const keys = ['x', 'y'];
+  const [o, p = keys] = args;
+  const { x, y } = (Util.isArray(p) && p.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {})) || p;
+  console.debug('Point.bind', { o, x, y });
+  return Object.setPrototypeOf(Util.bindProperties({}, o, { x, y }), Point.prototype);
 };
 export default Point;
 

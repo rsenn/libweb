@@ -407,7 +407,8 @@ Line.bind = (o, p, gen) => {
   const [x1, y1, x2, y2] = p || ['x1', 'y1', 'x2', 'y2'];
   if(!gen) gen = (k) => (v) => (v === undefined ? o[k] : (o[k] = v));
 
-  let proxy = { a: Point.bind(o, [x1, y1], gen), b: Point.bind(o, [x2, y2], gen) };
+  let proxy = { a: Point.bind(o, [x1, y1]), b: Point.bind(o, [x2, y2]) };
+  Util.bindProperties(proxy, o, { x1, y1, x2, y2 }, gen);
   return Object.setPrototypeOf(proxy, Line.prototype);
 };
 

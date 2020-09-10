@@ -242,13 +242,13 @@ Util.updater = (target, get, set, fn) => {
 
   return (k, f, i) => doUpdate(k, f || fn, i);
   function doUpdate(key, func, i) {
-    value = get(key);
+    value = get.call(target, key);
     let tmp = func(value, i, key);
 
     if(tmp !== undefined && tmp != value) {
-      set(key, tmp);
+      set.call(target, key, tmp);
 
-      value = get(key);
+      value = get.call(target, key);
     }
     return value;
   }
@@ -258,7 +258,7 @@ Util.getOrCreate = (target, create = () => ({}), set) => {
     has = Util.hasFn(target);
   set = set || Util.setter(target);
   let value;
-  return (key) => (value = has(key) ? get(key) : ((value = create(key, target)), set(key, value), value));
+  return (key) => (value = has.call(target, key) ? get.call(target, key) : ((value = create(key, target)), set.call(target, key, value), value));
 };
 
 Util.memoize = (fn, storage = new Map()) => {
@@ -1937,32 +1937,33 @@ Util.histogram = (arr, t, out = false ? {} : new Map(), initVal = () => 0 /* new
   let tmp;
   const defKeyFunc = (it) => it;
   t = t || defKeyFunc;
-  const upd = Util.updater(out, get, set);
+
   if(Util.isObject(arr, (o) => typeof o.entries == 'function')) arr = arr.entries();
   arr = [...arr];
   let entries = arr.map((it, i) => [i, it]);
-  //let adder = add();
   let x = {};
   let iv = initVal();
   const add = Util.adder(iv);
-  //console.debug('add:', add.fn + '', { iv });
-  //console.debug('arr:', arr);
+  const upd = Util.updater(out, get, set);
+
   let r = arr.map((item, i) => {
     let arg;
     let key;
     tmp = t(item, i);
     if(tmp) {
       key = tmp;
-      //  console.log('tmp:', tmp);
       if(Util.isArray(tmp) && tmp.length >= 2) [key, arg] = tmp.slice(-2);
       else arg = tmp;
-
-      // console.log('tmp:', { key, i, arg });
     }
     [key, arg] = [key].concat(setVal(arg, i)).slice(-2);
-    //console.log('upd(', { key, i, arg }, ')');
-    return [key, upd(key, (entry, idx, key) => add(entry, arg))];
+    return [
+      key,
+      upd(key, (entry, idx, key) => {
+        return add(entry, typeof(entry) == 'number' ? 1 : item);
+      })
+    ];
   });
+  return out;
   //console.debug('r:', r);
   if(ctor) {
     let entries = r;
@@ -2558,6 +2559,30 @@ Util.inserter = (dest, next = (k, v) => {}) => {
   fn.dest = dest;
   fn.insert = insert;
   return fn;
+};
+
+Util.keyIterator = (obj) => {
+  let it;
+  if(typeof obj.keys == 'function' && Util.isIterator((it = obj.keys()))) {
+    return it;
+  } else if(Util.isArray(obj)) {
+    return Array.prototype.keys.call(obj);
+  } else if('length' in obj) {
+    return Array.prototype[Symbol.iterator].call(obj);
+  }
+};
+
+Util.entryIterator = (obj) => {
+  let it;
+  if(typeof obj.entries == 'function' && Util.isIterator((it = obj.entries()))) {
+    return it;
+  } else if(Util.isArray(obj)) {
+    return Array.prototype.entries.call(obj);
+  } else if('length' in obj) {
+    return (function* () {
+      for(let key of Array.prototype[Symbol.iterator].call(obj)) yield [key, obj[key]];
+    })();
+  }
 };
 
 Util.mapAdapter = (getSetFunction) => {

@@ -432,10 +432,9 @@ else */ if(text) svg.innerHTML = innerHTML;
   }
 
   static splitPath(path, tfn) {
-    if(isElement(path)) {
-      path = path.getAttribute('d');
-    }
-    let ret = [...path.matchAll(/[A-Za-z][^A-Za-z]*/g)].map((command) => [...command][0].trim().split(/\s+/g));
+    if(isElement(path) && typeof path.getAttribute == 'function') path = path.getAttribute('d');
+    else if(Util.isObject(path) && 'd' in path) path = path.d;
+    let ret = [...(path + '').matchAll(/[A-Za-z][^A-Za-z]*/g)].map((command) => [...command][0].trim().split(/[,\s+]/g));
     if(tfn) ret = ret.map(tfn);
     return ret;
   }
