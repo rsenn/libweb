@@ -214,6 +214,13 @@ export class Statement extends ESNode {
   }
 }
 
+export class LabelledStatement extends Statement {
+  constructor(label, statement) {
+    super('LabelledStatement');
+    this.label = label;
+    this.statement = statement;
+  }
+}
 export class BlockStatement extends Statement {
   constructor(statements) {
     super('BlockStatement');
@@ -249,14 +256,16 @@ export class ReturnStatement extends Statement {
 }
 
 export class ContinueStatement extends Statement {
-  constructor() {
+  constructor(label) {
     super('ContinueStatement');
+    if(label) this.label = label;
   }
 }
 
 export class BreakStatement extends Statement {
-  constructor() {
+  constructor(label) {
     super('BreakStatement');
+    if(label) this.label = label;
   }
 }
 
@@ -552,6 +561,7 @@ export const CTORS = {
   BinaryExpression,
   BindingPattern,
   BindingProperty,
+  LabelledStatement,
   BlockStatement,
   BreakStatement,
   CallExpression,

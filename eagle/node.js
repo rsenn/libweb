@@ -123,7 +123,7 @@ export class EagleNode {
     let protos = Util.getPrototypeChain(this);
     if(Util.fnName(protos[0].constructor) == 'EagleDocument') protos.shift();
     let ctor = protos[0].constructor;
-    console.log('childConstructor:', this, ctor);
+    //console.log('childConstructor:', this, ctor);
     return ctor;
   }
 
@@ -300,7 +300,7 @@ export class EagleNode {
 
   inspect() {
     let attrs = [''];
-    console.log('Inspect:', this.path);
+    //console.log('Inspect:', this.path);
 
     let r = this; //'tagName' in this ? this : this.raw; // this.ref ? this.ref.dereference()  : this;
     let a = r.attrMap ? r.attrMap : r.attributes;
@@ -380,7 +380,7 @@ export class EagleNode {
 
   xpath() {
     const { ref, owner } = this;
-    console.log('Node.xpath', ref.path, ref.root);
+    //console.log('Node.xpath', ref.path, ref.root);
     let x;
     try {
       x = ImmutableXPath.from(ref.path.filter((p) => p != 'children'),

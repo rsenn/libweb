@@ -147,16 +147,19 @@ export class BoardRenderer extends EagleSVGRenderer {
     for(let item of coll) {
       if(item.tagName === 'wire') {
         const layerId = item.attributes.layer || tPlace.number;
-        layers[layerId] = item.layer || tPlace;
 
-        if(item.layer) item.layer.elements.add(item);
+        /*           if(layerId != 21) */ {
+          layers[layerId] = item.layer || tPlace;
 
-        if('width' in item) widths[layerId] = item.width;
-        if(wireMap.has(layerId)) wireMap.get(layerId).push(item);
-        else wireMap.set(layerId, [item]);
-      } else {
-        other.push(item);
+          if(item.layer) item.layer.elements.add(item);
+
+          if('width' in item) widths[layerId] = item.width;
+          if(wireMap.has(layerId)) wireMap.get(layerId).push(item);
+          else wireMap.set(layerId, [item]);
+          continue;
+        }
       }
+      other.push(item);
     }
 
     for(let item of other) if(predicate(item) && item.tagName == 'pad') this.renderItem(item, parent, { ...opts });

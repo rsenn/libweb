@@ -428,7 +428,8 @@ export class Element extends Node {
 
   static moveRelative(element, to, edges = ['left', 'top'], callback) {
     let e = typeof element == 'string' ? Element.find(element) : element;
-    let origin = to ? new Point(to) : Element.position(e, edges);
+    let origin = to ? new Point(to) : Object.fromEntries(Object.entries(Element.getCSS(element, edges)).map(([k, v]) => ['xy'[edges.indexOf(k)] || k, v ? +v.replace(/[a-z]*$/, '') : 0]));
+
     const f = [edges[0] == 'left' ? 1 : -1, edges[1] == 'top' ? 1 : -1];
 
     //console.log('moveRelative', { e, to, edges, f, origin });
@@ -467,10 +468,10 @@ export class Element extends Node {
     // console.log('resizeRelative', { e, to, origin, f });
     function resize(width, height, rel = true) {
       let size = new Size(width, height);
-      if(rel) size = origin.sum(size.prod(f));
+      if(rel) size = origin.sum(size.prod(f, f));
       let css = size.toCSS(1, ['px', 'px']);
       resize.css = css;
-      // console.log('resizeRelative', { size, css });
+      console.log('resizeRelative', { width, height, size, css });
       if(typeof callback == 'function') callback(size, resize.last);
 
       resize.last = size;

@@ -1959,7 +1959,7 @@ Util.histogram = (arr, t, out = false ? {} : new Map(), initVal = () => 0 /* new
     return [
       key,
       upd(key, (entry, idx, key) => {
-        return add(entry, typeof(entry) == 'number' ? 1 : item);
+        return add(entry, typeof entry == 'number' ? 1 : item);
       })
     ];
   });
@@ -3808,11 +3808,14 @@ Util.bindProperties = (proxy, target, props, gen) => {
   if(props instanceof Array) props = Object.fromEntries(props.map((name) => [name, name]));
   const [propMap, propNames] = Util.isArray(props) ? [props.reduce((acc, name) => ({ ...acc, [name]: name }), {}), props] : [props, Object.keys(props)];
 
-  if(!gen) gen = (p) => (v) => (v === undefined ? target[p] : (target[p] = v));
-  const propGetSet = propNames.map((k) => [k, propMap[k]]).reduce((a, [k, v]) => ({ ...a, [k]: Util.isFunction(v) ? (...args) => v.call(target, k, ...args) : (gen && gen(k)) || ((...args) => (args.length > 0 ? (target[k] = args[0]) : target[k])) }), {});
+  if(!gen) gen = (p) => (v) => (v === undefined ? target[propMap[p]] : (target[propMap[p]] = v));
+  const propGetSet = propNames
+    .map((k) => [k, propMap[k]])
 
-  /*  console.log(`Util.bindProperties`, { proxy, target, props, gen });
-  console.log(`Util.bindProperties`, { propMap, propNames, propGetSet });*/
+    .reduce((a, [k, v]) => ({ ...a, [k]: Util.isFunction(v) ? (...args) => v.call(target, k, ...args) : (gen && gen(k)) || ((...args) => (args.length > 0 ? (target[k] = args[0]) : target[k])) }), {});
+
+  /*  console.log(`Util.bindProperties`, { proxy, target, props, gen });*/
+  //console.log(`Util.bindProperties`, { propMap, propNames, propGetSet });
   Object.defineProperties(proxy,
     propNames.reduce(
       (a, k) => {
@@ -4284,4 +4287,13 @@ Util.replaceAll = (needles, haystack) => {
     .reduce((acc, [match, replacement]) => acc.replace(match, replacement), haystack);
 };
 
+Util.unescape = (str) => {
+  let s = '';
+  for(let i = 0; i < str.length; i++) {
+    let code = str.codePointAt(i);
+    if(code <= 128) s += str[i];
+    else s += `\\u${('0000' + code.toString(16)).slice(-4)}`;
+  }
+  return s;
+};
 export default Util;

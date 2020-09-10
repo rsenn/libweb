@@ -32,6 +32,7 @@ import {
   BlockStatement,
   StatementList,
   EmptyStatement,
+  LabelledStatement,
   ExpressionStatement,
   ReturnStatement,
   ContinueStatement,
@@ -1816,14 +1817,20 @@ export class ECMAScriptParser extends Parser {
 
   parseContinueStatement() {
     this.expectKeywords('continue');
+    let id;
+    if(this.matchIdentifier()) id = this.expectIdentifier();
+
     this.expectPunctuators(';');
-    return new ContinueStatement();
+    return new ContinueStatement(id);
   }
 
   parseBreakStatement() {
     this.expectKeywords('break');
+    let id;
+    if(this.matchIdentifier()) id = this.expectIdentifier();
+
     this.expectPunctuators(';');
-    return new BreakStatement();
+    return new BreakStatement(id);
   }
 
   parseReturnStatement() {
@@ -1914,6 +1921,13 @@ export class ECMAScriptParser extends Parser {
     } /*if(this.matchAssignmentExpression())*/ //Parse Expression Statement
     else {
       let stmt = this.parseExpressionStatement();
+      if(stmt instanceof Identifier && this.matchPunctuators(':')) {
+        this.expectPunctuators(':');
+        stmt = new LabelledStatement(stmt, this.parseStatement(insideIteration, insideFunction, exported));
+
+        console.debug('ExpressionStatement:', stmt);
+      }
+      if(!stmt) throw this.error('No expression statement');
 
       if(defaultExport) {
         stmt = new ExportStatement('default', stmt);

@@ -1,4 +1,4 @@
-import { Point, TransformationList } from '../geom.js';
+import { Point, TransformationList, LineList } from '../geom.js';
 import Util from '../util.js';
 import { Component, useEffect, useState } from '../dom/preactComponent.js';
 import { classNames } from '../classNames.js';
@@ -167,7 +167,7 @@ export const LinesToPath = (lines, lineFn) => {
     lineFn ||
     ((point, curve) => {
       lineFn = (point, curve) => {
-        if(curve !== undefined) {
+        if(false && curve !== undefined) {
           const r = CalculateArcRadius(prevPoint, point, curve).toFixed(4);
 
           if(r == Number.POSITIVE_INFINITY || r == Number.NEGATIVE_INFINITY) console.log('lineTo', { prevPoint, point, curve });
@@ -179,11 +179,11 @@ export const LinesToPath = (lines, lineFn) => {
         } else if(Point.equals(start, point)) {
           return `Z`;
         } else {
-          return `L ${point.x} ${point.y}`;
+          return `L ${point.x},${point.y}`;
         }
         prevPoint = new Point(point.x, point.y);
       };
-      return `M ${point.x} ${point.y}`;
+      return `M ${point.x},${point.y}`;
       prevPoint = new Point(point.x, point.y);
     });
 
@@ -213,7 +213,7 @@ export const LinesToPath = (lines, lineFn) => {
       l = m;
     } else if(lines.length > 0) {
       l = lines.shift();
-      ret.push(`M ${l.a.x} ${l.a.y}`);
+      ret.push(`M ${l.a.x},${l.a.y}`);
       prevPoint = new Point(l.a.x, l.a.y);
       lineTo(l.b, l.curve);
     }

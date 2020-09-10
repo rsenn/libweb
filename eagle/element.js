@@ -260,7 +260,10 @@ export class EagleElement extends EagleNode {
       }
     }
     let childList = null;
-    lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.down('children')));
+
+    if(tagName == 'element') lazyProperty(this, 'children', () => EagleNodeList.create(this.package, this.package.path.down('children')));
+    else lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.down('children')));
+
     if(tagName == 'pad') {
       trkl.bind(this, 'layer', () => {
         return doc.layers['Pads'];

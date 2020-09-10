@@ -247,6 +247,18 @@ export class Printer {
     return output;
   }
 
+  printLabelledStatement(labelledStatement) {
+    const { label, statement } = labelledStatement;
+
+    let s = '';
+
+    s += this.printNode(label);
+    s += this.colorText.punctuators(':');
+    s += '\n';
+    s += this.printNode(statement);
+    return s;
+  }
+
   //printStatement(statement) {}
   printBlockStatement(block_statement) {
     const { body } = block_statement;
@@ -309,10 +321,25 @@ export class Printer {
   }
 
   printContinueStatement(continue_statement) {
-    return this.colorText.keywords('continue');
+    const { label } = continue_statement;
+
+    let s = this.colorText.keywords('continue');
+
+    if(label) {
+      s += ' ';
+      s += this.printNode(label);
+    }
+    return s;
   }
   printBreakStatement(break_statement) {
-    return this.colorText.keywords('break');
+    const { label } = break_statement;
+    let s = this.colorText.keywords('break');
+
+    if(label) {
+      s += ' ';
+      s += this.printNode(label);
+    }
+    return s;
   }
 
   printIfStatement(if_statement) {
