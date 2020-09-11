@@ -7,6 +7,7 @@ export const ArrayWriter = (arr) =>
       //console.log('ArrayWriter error:', err);
     }
   });
+
 export function readStream(stream, arr) {
   const reader = stream.getReader();
   let count = 0;
@@ -25,17 +26,7 @@ export function readStream(stream, arr) {
 
 export const WriteToRepeater = async () => {
   const repeater = new Repeater(async (push, stop) => {
-    await push({
-      write(chunk) {
-        push(chunk);
-      },
-      close() {
-        stop();
-      },
-      abort(err) {
-        stop(new Error('WriteRepeater error:' + err));
-      }
-    });
+    await push({ write(chunk) { push(chunk); }, close() { stop(); }, abort(err) { stop(new Error('WriteRepeater error:' + err)); } });
   });
   const stream = new WritableStream((await repeater.next()).value);
   return [repeater, stream];
@@ -73,7 +64,6 @@ export const RepeaterSink = async (start = (sink) => {}) =>
 export const StringReader = function (str, chunk = (pos, str) => [pos, str.length]) {
   let pos = 0;
   return new ReadableStream({
-    //  type: 'bytes',
     queuingStrategy: new ByteLengthQueuingStrategy({
       highWaterMark: 512,
       size(chunk) {
@@ -82,14 +72,13 @@ export const StringReader = function (str, chunk = (pos, str) => [pos, str.lengt
       }
     }),
     start(controller) {
-      for(;;) {
+      for(;;) 
         this.read(controller);
-      }
     }
   });
+
   function read(controller) {
     let s;
-
     if(pos < str.length) {
       let [start, end] = chunk(pos, str);
       s = str.substring(start, end || str.length);
@@ -101,8 +90,8 @@ export const StringReader = function (str, chunk = (pos, str) => [pos, str.lengt
     console.log('pull()', { desiredSize: n }, { pos, end: pos + s.length, s });
   }
 };
-export //const LineReader = (str) => new StringReader(str, (pos, str) => [pos, 1 + str.indexOf('\n', pos)]);
-const LineReader = (str, chunkEnd = (pos, str) => 1 + str.indexOf('\n', pos) || str.length) => {
+
+export const LineReader = (str, chunkEnd = (pos, str) => 1 + str.indexOf('\n', pos) || str.length) => {
   let pos = 0;
   let len = str.length;
   return new ReadableStream({
@@ -120,7 +109,9 @@ const LineReader = (str, chunkEnd = (pos, str) => 1 + str.indexOf('\n', pos) || 
     }
   });
 };
+
 export const ChunkReader = (str, chunkSize) => new StringReader(str, (pos, str) => [pos, pos + chunkSize]);
+
 export const ByteReader = (str) => ChunkReader(str, 1);
 
 export const PipeToRepeater = async (stream) => RepeaterSink((writable) => stream.pipeTo(writable));
