@@ -1,3 +1,6 @@
+import { ArrayWriter, readStream, LineReader } from '../streamUtils.js';
+
+
 // function to determine filetype from a chunk
 function determine(chunk, start, LIMIT) {
   let limit = Math.min(LIMIT - start, chunk.length);
@@ -952,50 +955,6 @@ function warning(message, line) {
 // generic file parser for gerber and drill files
 let LIMIT = 65535;
 
-const ArrayWriter = (arr) =>
-  new WritableStream({
-    write(chunk) {
-      arr.push(chunk);
-    },
-    abort(err) {
-      //console.log('ArrayWriter error:', err);
-    }
-  });
-
-const LineReader = (str, chunkEnd = (pos, str) => 1 + str.indexOf('\n', pos) || str.length) => {
-  let pos = 0;
-  let len = str.length;
-  return new ReadableStream({
-    start(controller) {
-      for(;;) {
-        if(pos < str.length) {
-          let end = chunkEnd(pos, str);
-          controller.enqueue(str.substring(pos, end));
-          pos = end;
-        } else {
-          controller.close();
-          break;
-        }
-      }
-    }
-  });
-};
-
-function readStream(stream, arr) {
-  const reader = stream.getReader();
-  let count = 0;
-  return new Promise((resolve, reject) => {
-    reader.read().then(function processData(res) {
-      if(res.done) {
-        resolve();
-        return;
-      }
-      count++;
-      arr.push(res.value);
-      return reader.read().then(processData);
-    });
-  });
-}
 
 export class Parser {
   constructor(places, zero, filetype) {

@@ -639,7 +639,7 @@ export class EagleElement extends EagleNode {
 
   toString(entity = this) {
     const { document } = entity;
-    return EagleNode.inspect(entity, document);
+    return EagleNode.toString(entity);
   }
 
   *getAll(pred, transform) {
