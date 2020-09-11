@@ -1,5 +1,6 @@
 import { Line } from './line.js';
 import { BBox } from './bbox.js';
+import { Element, isElement } from '../dom/element.js';
 import { PointList } from './pointList.js';
 import Util from '../util.js';
 
@@ -27,19 +28,29 @@ export class LineList extends Array {
   }
 
   toSVG(factory, makeGroup) {
-    makeGroup = makeGroup || (() => factory('g', { stroke: 'black', fill: 'none', 'stroke-width': 0.1 }));
+    if(isElement(makeGroup)) {
+      let parentElem = makeGroup;
+      makeGroup = () => parentElem;
+    }
 
+    makeGroup = makeGroup || (() => factory('g', { stroke: 'black', fill: 'none', 'stroke-width': 0.1 }));
     let group = makeGroup(),
       lines = this;
-
     lines = [...lines].map(({ x1, y1, x2, y2 }) => ['line', { x1, y1, x2, y2 }]);
     if(typeof factory == 'function') {
       lines = lines.map(([tag, attrs]) => factory(tag, attrs, group));
     } else {
       group = ['g', {}, lines];
     }
-
     return group || lines;
+  }
+
+  [Symbol.for('nodejs.util.inspect.custom')](n, opts = {}) {
+    let c = Util.coloring(false && opts.colors);
+    let toString = [Symbol.toStringTag, 'toString', Symbol.for('nodejs.util.inspect.custom')].reduce((a, p) => (this[0][p] ? p : a));
+    console.log('inspectFn:', toString);
+    //   return Util.toString(this, { ...opts, toString });
+    return `${c.text('LineList', 1, 31)}${c.text('(', 1, 36)}${c.text(this.length, 1, 35) + c.code(1, 36)}) [\n  ${this.map((line) => line[toString].call(line, n, { ...opts, color: false }) /*({ x1, y1,x2,y2 }) => Util.toString({ x1,y1,x2, y2  }, { multiline: false, spacing: ' ' })*/).join(',\n  ')}\n${c.text(']', 1, 36)}`;
   }
 }
 
@@ -107,14 +118,14 @@ LineList.toPolygons = (lines, createfn = (points) => Object.setPrototypeOf(point
   }
   return polygons.map((points) => createfn(points));
 };
-
+/*
 if(!Util.isBrowser()) {
   let c = Util.coloring();
   const sym = Symbol.for('nodejs.util.inspect.custom');
   LineList.prototype[sym] = function() {
-    return `${c.text('LineList', 1, 31)}${c.text('(', 1, 36)}${c.text(this.length, 1, 35) + c.code(1, 36)}) [\n  ${this.map((line) => line[sym]() /*({ x1, y1,x2,y2 }) => Util.toString({ x1,y1,x2, y2  }, { multiline: false, spacing: ' ' })*/).join(',\n  ')}\n${c.text(']', 1, 36)}`;
+    return `${c.text('LineList', 1, 31)}${c.text('(', 1, 36)}${c.text(this.length, 1, 35) + c.code(1, 36)}) [\n  ${this.map((line) => line[sym]()  ).join(',\n  ')}\n${c.text(']', 1, 36)}`;
   };
-}
+}*/
 
 Util.defineGetter(LineList, Symbol.species, function() {
   return this;

@@ -221,10 +221,17 @@ Util.defineGetter(Point.prototype, Symbol.iterator, function() {
   return x | (y << shl);
 };
 */ Point.prototype.toString = function(opts = {}) {
-  const { precision = 0.001, unit = '', separator = ',', left = '', right = '' } = opts;
-  const x = Util.roundTo(this.x, precision);
-  const y = Util.roundTo(this.y, precision);
-  return `${left}${x}${unit}${separator}${y}${unit}${right}`;
+  const { precision = 0.001, unit = '', separator = ',', left = '', right = '', pad = 0 } = opts;
+  let x = Util.roundTo(this.x, precision);
+  let y = Util.roundTo(this.y, precision);
+  if(pad > 0) {
+    x = x + '';
+    y = y + '';
+    if(y[0] != '-') y = ' ' + y;
+    if(x[0] != '-') x = ' ' + x;
+  }
+  //console.debug("toString", {x,y}, {pad});
+  return `${left}${(x + '').padStart(pad, ' ')}${unit}${separator}${(y + '').padEnd(pad, ' ')}${unit}${right}`;
 };
 Util.defineGetterSetter(Point.prototype,
   Symbol.toStringTag,

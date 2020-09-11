@@ -1,4 +1,4 @@
-import { Point, TransformationList, LineList } from '../geom.js';
+import { Point, Line, TransformationList, LineList } from '../geom.js';
 import Util from '../util.js';
 import { Component, useEffect, useState } from '../dom/preactComponent.js';
 import { classNames } from '../classNames.js';
@@ -137,7 +137,91 @@ export const Arc = (x, y, radius, startAngle, endAngle) => {
   let d = ['M', start.x, start.y, 'A', radius, radius, 0, arcSweep, 0, end.x, end.y].join(' ');
   return d;
 };
+/*
+ *  Chord Length
+ *     c = 2R sin( ½ × θ )
+ *
+ *     L = R *  θ ÷  (2*Math.PI)
+ *     L ÷ C =  θ ÷  (2*Math.PI)
+ *
+ *
+ * Arc length s for an angle θ
+ *
+ *  L =  R  x θ
+ *    =  θ × R
+ *
+ *  L / R =   θ
+ *
+ *  𝛂 = 𝛃 = (Math.PI - θ) / 2
+ *                                     B
+ *                                 ..
+ *           𝛑                      .N
+ *                                 ..........
+ *                           ..77I7I........+ZZZ,.
+ *                        .:77....~I7        ....:ZZ.
+ *                    . .77..   ..I.I             ..:Z,.
+ *                   ..I7.       I..7                ..Z=.
+ *                  .77..      .7.  ~.                 ..Z..
+ *                ..I..        ~?.  .~.                 ..IZ.
+ *               ..I.        ..7.   .7.                   ..Z
+ *               ,I..        .7.  𝛃 .7.   R                 .Z..
+ *             ..7.         .I.     .7.                     ..Z..
+ *             .I.   c   . ~:?.      ..                      .:Z.
+ *            .7..         .7.       .I.                       Z.
+ *           ..I.         .7.     ..?.7.                       .Z.
+ *           .7..       ..I..   ..~...7..                      .Z.
+ *           .I..        =+.    .Z.  .=..                      .,+
+ *           .I       ...7.    .O.   ..=.                       .Z
+ *           .7       =.I.     ..  Θ  .7.=+                     .Z
+ *           .7      ..7.      ..    .7:.$    C                  Z
+ *           .I      .+=.      ....$7..                         .Z
+ *           .7..    .7..      ..I..                            .Z
+ *           .I..   .I.      .7+.                              .$.
+ *           .:I.   7. 𝛂  .I7..                                .Z.
+ *           ..I. .?~   .I..    R                              ~I.
+ *             ,7..   7I.                                    ..Z.
+ *             .7,7~I..                                      .Z..
+ *           A  .I,..                                       .Z,
+ *              ..Z..                                     ..Z~.
+ *              ...Z=..                                  ..Z.
+ *                  ,Z...                              ..,Z.
+ *                   .Z7..                           ...Z~.
+ *                     .Z$..                        ..Z+.
+ *                       .IZ:....              ....ZZ..
+ *                          .7ZZ...............~ZZ,.
+ *                              ..IZZZZZZZZZZ~.
+ *
+ *   ⌀
+ */
 
+const CalculateArc = (theta) => {
+  const M_2_PI = Math.PI * 2;
+
+  return {
+    'θ': theta, 
+    'c/R': 2 * Math.sin(theta / 2),
+    'L/C': theta / M_2_PI,
+    'L/R': theta,
+
+    radius(chordLength) {
+      let radius = chordLength / this['c/R'];;
+      this['c'] = this['c/R']*radius; delete this['c/R'];
+      this['L'] = this['L/R']*radius;delete this['L/R'];
+      this['𝛑R'] =radius * Math.PI ; delete this['L/𝛑R'];
+this['R'] = radius;
+      return radius;
+    }
+  };
+};
+/**
+ * Calculates the arc radius.
+ *
+ * @class      CalculateArcRadius (name)
+ * @param      {<type>}           p1      The p 1
+ * @param      {<type>}           p2      The p 2
+ * @param      {(number|string)}  angle   The angle
+ * @return     {<type>}           The arc radius.
+ */
 export const CalculateArcRadius = (p1, p2, angle) => {
   const d = Point.distance(p1, p2);
   const c = Math.cos((angle * Math.PI) / 180);
@@ -156,6 +240,13 @@ export const CalculateArcRadius = (p1, p2, angle) => {
 };
 
 export const LinesToPath = (lines, lineFn) => {
+  if(!(lines[0] instanceof Line)) {
+    lines = [...lines].map((l) => {
+      let o = new Line(l);
+      if(l.curve !== undefined) o.curve = +l.curve;
+      return o;
+    });
+  }
   let l = lines.shift(),
     m;
   let start = l.a;
@@ -167,7 +258,7 @@ export const LinesToPath = (lines, lineFn) => {
     lineFn ||
     ((point, curve) => {
       lineFn = (point, curve) => {
-        if(false && curve !== undefined) {
+        if(curve !== undefined && typeof curve == 'number' && !isNaN(curve)) {
           const r = CalculateArcRadius(prevPoint, point, curve).toFixed(4);
 
           if(r == Number.POSITIVE_INFINITY || r == Number.NEGATIVE_INFINITY) console.log('lineTo', { prevPoint, point, curve });

@@ -310,9 +310,11 @@ Line.prototype.inspect = function() {
   const { x1, y1, x2, y2 } = this;
   return 'Line{ ' + inspect({ x1, y1, x2, y2 }) + ' }';
 };
-Line.prototype.toString = function() {
+Line.prototype.toString = function(opts = {}) {
+  const { separator = ', ', brackets = (s) => `[ ${s} ]`, pad = 6 } = opts;
+
   const { x1, y1, x2, y2 } = this;
-  return Point.toString(this.a || Point(x1, y1)) + ' -> ' + Point.toString(this.b || Point(x2, y2));
+  return brackets(Point.toString(this.a || Point(x1, y1), { ...opts, separator, pad })) + separator + brackets(Point.toString(this.b || Point(x2, y2), { ...opts, separator, pad }));
 };
 Line.prototype.toSource = function() {
   let { a, b } = this;
