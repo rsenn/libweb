@@ -55,41 +55,37 @@ export function AcquireWriter(stream, fn) {
     (async (writer) => {
       await writer.write('TEST');
     });
-  let writer, ret;
-  let acquire = async () => {
-    writer = await stream.getWriter();
-    ret = await fn(writer);
+  let acquire = async (writer) => {
+    writer = await writer;
+     let   ret = await fn(writer);
     await writer.releaseLock();
     return ret;
   };
-  return acquire();
+  return acquire(stream.getWriter());
 }
+
 export function PipeTo(input, output) {
-  AcquireWriter(output, async (writer) => {
+ return AcquireWriter(output, async (writer) => {
     await AcquireReader(input, async (reader) => {
-      let result,
-        data = '';
+      let result;
       while((result = await reader.read())) {
-        console.log('result:', result);
         if(typeof result.value == 'string') await writer.write(result.value);
         if(result.done) break;
       }
     });
   });
 }
+
 export function ReadIterator(stream) {
-  let reader, ret;
-  return (async function* () {
-    let result,
-      data = '';
-    reader = await stream.getReader();
+  return (async function* (reader) {
+    let result;
+    reader = await reader;
     while((result = await reader.read())) {
-      console.log('result:', result);
-      if(typeof result.value == 'string') yield result.value;
+       if(typeof result.value == 'string') yield result.value;
       if(result.done) break;
     }
     await reader.releaseLock();
-  })();
+  })(stream.getReader());
 }
 
 export const WriteToRepeater = async () => {
