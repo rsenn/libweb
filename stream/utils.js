@@ -27,6 +27,71 @@ export async function readStream(stream, arg) {
   return arg;
 }
 
+export function AcquireReader(stream, fn) {
+  fn =
+    fn ||
+    (async (reader) => {
+      let result,
+        data = '';
+      while((result = await reader.read())) {
+        console.log('result:', result);
+        if(typeof result.value == 'string') data += result.value;
+        if(result.done) break;
+      }
+      return data;
+    });
+  let reader, ret;
+  let acquire = async () => {
+    reader = await stream.getReader();
+    ret = await fn(reader);
+    await reader.releaseLock();
+    return ret;
+  };
+  return acquire();
+}
+export function AcquireWriter(stream, fn) {
+  fn =
+    fn ||
+    (async (writer) => {
+      await writer.write('TEST');
+    });
+  let writer, ret;
+  let acquire = async () => {
+    writer = await stream.getWriter();
+    ret = await fn(writer);
+    await writer.releaseLock();
+    return ret;
+  };
+  return acquire();
+}
+export function PipeTo(input, output) {
+  AcquireWriter(output, async (writer) => {
+    await AcquireReader(input, async (reader) => {
+      let result,
+        data = '';
+      while((result = await reader.read())) {
+        console.log('result:', result);
+        if(typeof result.value == 'string') await writer.write(result.value);
+        if(result.done) break;
+      }
+    });
+  });
+}
+export function ReadIterator(stream) {
+  let reader, ret;
+  return (async function* () {
+    let result,
+      data = '';
+    reader = await stream.getReader();
+    while((result = await reader.read())) {
+      console.log('result:', result);
+      if(typeof result.value == 'string') yield result.value;
+      if(result.done) break;
+    }
+    await reader.releaseLock();
+  })();
+}
+
 export const WriteToRepeater = async () => {
   const repeater = new Repeater(async (push, stop) => {
     await push({
@@ -104,7 +169,7 @@ export const StringReader = function (str, chunk = (pos, str) => [pos, str.lengt
       controller.close();
       return true;
     }
-    // console.log('pull()', { desiredSize  }, { pos, end: pos + s.length, s });
+    console.log('pull()', { desiredSize }, { pos, end: pos + s.length, s });
   }
 };
 
@@ -127,10 +192,53 @@ export const LineReader = (str, chunkEnd = (pos, str) => 1 + str.indexOf('\n', p
   });
 };
 
+class DebugTransformer {
+  constructor(callback) {
+    callback = callback || ((...args) => console.log(...args));
+    this._callback = callback;
+  }
+
+  transform(chunk, controller) {
+    this._callback(Util.className(this) + '.transform', chunk);
+    if(chunk != '') {
+      controller.enqueue(chunk);
+    }
+  }
+
+  flush(controller) {
+    if(typeof controller.flush == 'function') controller.flush();
+    if(typeof controller.close == 'function') controller.close();
+    this._callback(Util.className(this) + '.end');
+  }
+}
+
+export class DebugTransformStream {
+  constructor(callback) {
+    let handler = new DebugTransformer(callback);
+
+    let transformer = new TransformStream(handler);
+    transformer.handler = handler;
+    return transformer;
+  }
+}
+
 export const ChunkReader = (str, chunkSize) => new StringReader(str, (pos, str) => [pos, pos + chunkSize]);
 
 export const ByteReader = (str) => ChunkReader(str, 1);
 
 export const PipeToRepeater = async (stream) => RepeaterSink((writable) => stream.pipeTo(writable));
 
-export default { ArrayWriter, readStream, WriteToRepeater, LogSink, RepeaterSink, StringReader, LineReader, ChunkReader, ByteReader, PipeToRepeater };
+export default { PipeTo, AcquireReader, AcquireWriter, ReadIterator, ArrayWriter, readStream, WriteToRepeater, LogSink, RepeaterSink, StringReader, LineReader, ChunkReader, ByteReader, PipeToRepeater };
+
+const blah =
+  false &&
+  (function testTransform(str = 'BLAAAAAAAAAAAAAAAAAAAAAAAAAAAAH\nTEST\nXXX\n...\n\n') {
+    let ts = new DebugTransformStream();
+    let rs = LineReader(str).pipeThrough(ts);
+    let [loop, read] = rs.tee();
+
+    (async () => {
+      for await (let item of await PipeToRepeater(loop)) console.log('Item:', item);
+    })();
+    return readStream(read, []);
+  })();

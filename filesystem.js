@@ -1,4 +1,5 @@
 import Util from './util.js';
+import { StringReader, ChunkReader, DebugTransformStream } from './stream/utils.js';
 
 export function QuickJSFileSystem(std, os) {
   return {
@@ -297,7 +298,7 @@ export function NodeJSFileSystem(fs) {
   };
 }
 
-export function BrowserFileSystem(TextDecoderStream, WritableStream) {
+export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableStream) {
   return {
     buffer(bytes) {
       return CreateArrayBuffer(bytes);
@@ -311,24 +312,51 @@ export function BrowserFileSystem(TextDecoderStream, WritableStream) {
     },
 
     open(filename, flags = 'r', mode = 0o644) {
-      console.log('WritableStream:', WritableStream);
+      console.log('TransformStream:', TransformStream);
+      console.log('fetch:', fetch);
       let error;
-      let writable = /w/.test(flags);
-      let ws = writable ? new WritableStream() : null;
+      let send = /w/.test(flags);
+      let { writable, readable } = new TransformStream();
+      console.log(' writable, readable:', writable, readable);
+      function wait(milliseconds) {
+        return new Promise((resolve) => setTimeout(resolve, milliseconds));
+      }
 
-      let promise = fetch(writable ? '/save' : filename, {
-        method: writable ? 'POST' : 'GET',
-        headers: writable
+      const stream = ChunkReader(`this\n\n...\n\n...\nis\n\n...\n\n...\na\n\n...\n\n...\ntest\n\n...\n\n...\n!`, 4).pipeThrough(new DebugTransformStream());
+      /*ew ReadableStream({
+        async start(controller) {
+          await wait(1000);
+          controller.enqueue('This ');
+          await wait(1000);
+          controller.enqueue('is ');
+          await wait(1000);
+          controller.enqueue('a ');
+          await wait(1000);
+          controller.enqueue('slow ');
+          await wait(1000);
+          controller.enqueue('request.');
+          controller.close();
+        }
+      })*/
+      console.log(' stream:', stream);
+      let promise = fetch(send ? '/save' : filename,
+        send
           ? {
-              'Content-Disposition': `attachment; filename="${filename}"`,
-              'Content-Type': 'application/octet-stream'
+              method: 'POST',
+              headers: send
+                ? {
+                    'http2-duplex-single': 'true',
+                    'content-disposition': `attachment; filename="${filename}"`,
+                    'content-type': 'text/plain;charset=UTF-8'
+                  }
+                : {},
+              body: stream
             }
-          : {},
-        body: ws
-      })
+          : {}
+      )
         .then((response) => (writable ? response.json() : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())))
         .catch((err) => (error = err));
-      return writable ? ws : promise;
+      return send ? writable : promise;
     },
     async close(fd) {
       await fd.cancel();
@@ -412,7 +440,12 @@ export async function GetPortableFileSystem() {
   if(fs && !err) return fs;
   err = null;
   try {
-    fs = await CreatePortableFileSystem(BrowserFileSystem, (await import('./stream/textDecodeStream.js')).TextDecoderStream, (await import('./stream/writableStream.js')).WritableStream);
+    fs = await CreatePortableFileSystem(BrowserFileSystem,
+
+      (await import('./stream/textDecodeStream.js')).TextDecoderStream,
+      (await import('./stream/transformStream.js')).TransformStream,
+      (await import('./stream/writableStream.js')).WritableStream
+    );
   } catch(error) {
     err = error;
   }
