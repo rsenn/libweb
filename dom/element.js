@@ -471,7 +471,7 @@ export class Element extends Node {
       if(rel) size = origin.sum(size.prod(f, f));
       let css = size.toCSS(1, ['px', 'px']);
       resize.css = css;
-      console.log('resizeRelative', { width, height, size, css });
+      //      console.log('resizeRelative', { width, height, size, css });
       if(typeof callback == 'function') callback(size, resize.last);
 
       resize.last = size;

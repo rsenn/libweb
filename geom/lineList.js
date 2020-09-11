@@ -1,5 +1,6 @@
 import { Line } from './line.js';
 import { BBox } from './bbox.js';
+import { PointList } from './pointList.js';
 import Util from '../util.js';
 
 export class LineList extends Array {
@@ -20,8 +21,25 @@ export class LineList extends Array {
     return bb;
   }
 
-  toPolygons() {
-    return LineList.toPolygons(this);
+  toPolygons(createfn = (points) => new PointList(points)) {
+    let lines = this;
+    return LineList.toPolygons([...lines], createfn);
+  }
+
+  toSVG(factory, makeGroup) {
+    makeGroup = makeGroup || (() => factory('g', { stroke: 'black', fill: 'none', 'stroke-width': 0.1 }));
+
+    let group = makeGroup(),
+      lines = this;
+
+    lines = [...lines].map(({ x1, y1, x2, y2 }) => ['line', { x1, y1, x2, y2 }]);
+    if(typeof factory == 'function') {
+      lines = lines.map(([tag, attrs]) => factory(tag, attrs, group));
+    } else {
+      group = ['g', {}, lines];
+    }
+
+    return group || lines;
   }
 }
 
@@ -29,7 +47,7 @@ export class LineList extends Array {
  *
  * @param [[[x, y], [x, y]], ...] lines
  */
-LineList.toPolygons = (lines) => {
+LineList.toPolygons = (lines, createfn = (points) => Object.setPrototypeOf(points, PointList.prototype)) => {
   const polygons = [];
   for(var i = 0; i < lines.length; i++) {
     // Récupération et suppression du tableau du premier élément
@@ -87,7 +105,7 @@ LineList.toPolygons = (lines) => {
       }
     }
   }
-  return polygons;
+  return polygons.map((points) => createfn(points));
 };
 
 if(!Util.isBrowser()) {

@@ -336,7 +336,7 @@ Point.bind = (...args) => {
   const keys = ['x', 'y'];
   const [o, p = keys] = args;
   const { x, y } = (Util.isArray(p) && p.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {})) || p;
-  console.debug('Point.bind', { o, x, y });
+  //  console.debug('Point.bind', { o, x, y });
   return Object.setPrototypeOf(Util.bindProperties({}, o, { x, y }), Point.prototype);
 };
 export default Point;
