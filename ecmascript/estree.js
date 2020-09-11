@@ -1,4 +1,5 @@
 import Util from '../util.js';
+const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
 export class ESNode {
   //position = null;
@@ -58,8 +59,17 @@ export class Identifier extends Expression {
     return node.value;
   }
 
-  [Symbol.for('nodejs.util.inspect.custom')]() {
-    return `Identifier ` + Util.ansi.text(this.value, 1, 33);
+  toString(n, opts = {}) {
+    return this.value;
+  }
+  [Symbol.toStringTag](...args) {
+    return this[inspectSymbol](...args);
+  }
+
+  [inspectSymbol](n, opts = {}) {
+    const { colors } = opts;
+    let c = Util.coloring(colors);
+    return c.text(`Identifier `, 1, 31) + c.text(this.value, 1, 33);
   }
 }
 
@@ -87,8 +97,17 @@ export class Literal extends Expression {
     Util.define(this, { species });
   }
 
+  toString() {
+    return this.value;
+  }
+
   static string(node) {
     return node.value.replace(/^['"`](.*)['"`]$/, '$1').replace(/\\n/g, '\n');
+  }
+  [inspectSymbol](n, opts = {}) {
+    const { colors } = opts;
+    let c = Util.coloring(colors);
+    return c.text(`Literal `, 1, 31) + c.text(this.value, 1, 36);
   }
 }
 

@@ -111,8 +111,15 @@ Position.prototype.clone = function (freeze = false, withFilename = true) {
 
   return new Position(line, column, pos, withFilename ? file : null, freeze);
 };
-Position.prototype[Symbol.toStringTag] = function () {
-  return this.toString();
+Position.prototype[Symbol.toStringTag] = function (n, opts) {
+  const { showFilename = true, colors = false } = opts || {};
+  let c = Util.coloring(colors);
+
+  let v = [...Position.prototype[Symbol.iterator].call(this)];
+  if(!showFilename && v.length >= 3) v.shift();
+  //  v = v.map((f, i) => t(f, i));
+  v = v.map((f, i) => c.code(1, i == 0 ? 33 : 35) + f);
+  return v.join(c.code(1, 36) + ':') + c.code(0);
 };
 
 Position.prototype[Symbol.iterator] = function* () {
@@ -120,18 +127,11 @@ Position.prototype[Symbol.iterator] = function* () {
   let v = file ? [file, line, column] : [line, column];
   yield* v;
 };
-Position.prototype.toString = function (opts = {}, t = (p) => p) {
-  const { showFilename = true, colors = false } = opts;
-  const c = Util.coloring(colors);
-  let v = [...Position.prototype[Symbol.iterator].call(this)];
-  if(!showFilename && v.length >= 3) v.shift();
-  v = v.map((f, i) => t(f, i));
-  v = v.map((f, i) => c.code(1, i == 0 ? 33 : 35) + f);
-  return v.join(c.code(1, 36) + ':') + c.code(0);
+Position.prototype.toString = function () {
+  return this[Symbol.toStringTag](0, { colors: false });
 };
 Position.prototype[Symbol.for('nodejs.util.inspect.custom')] = function (n, opts) {
-  //  console.debug("args:",args);
-  return this.toString({ colors: true, ...opts });
+  return Util.toString(this, { colors: true, ...opts, toString: Symbol.toStringTag });
 };
 /*
 Position.prototype.valueOf = function() {
@@ -170,14 +170,24 @@ Range.prototype = { ...Position.prototype, constructor: Range };
 //new Position(0, 0, 0, undefined, false);
 //Range.prototype.constructor = Range;
 
-Position.prototype[Symbol.toStringTag] = function () {
-  return Range.prototype.toString.call(this);
+Range.prototype[Symbol.toStringTag] = function (n, opts = {}) {
+  const { showFile = true, colors = false } = opts;
+
+  const { file, line, column, pos, length } = this;
+  const f = typeof file == 'string' && showFile ? `${file}:` : '';
+  return `${f || ''}${line}:${column} - ${f || ''}${line}:${column + length}`;
 };
 
 Range.prototype.toString = function (showFile = true) {
   const { file, line, column, pos, length } = this;
   const f = file && showFile ? `${file}:` : '';
   return `${f}${line}:${column} - ${f}${line}:${column + length}`;
+};
+Range.prototype.toString = function () {
+  return this[Symbol.toStringTag](0, { colors: false });
+};
+Range.prototype[Symbol.for('nodejs.util.inspect.custom')] = function (n, opts = {}) {
+  return Util.toString(this, { ...opts, toString: Symbol.toStringTag });
 };
 
 Range.prototype.in = function (other) {

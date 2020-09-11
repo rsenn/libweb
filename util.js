@@ -382,32 +382,47 @@ Util.generalLog = function (n, x) {
 };
 Util.toSource = function (arg, opts = {}) {
   const { quote = "'", colors = false, multiline = false } = opts;
-  const c = Util.coloring(colors);
+  const { c = Util.coloring(colors) } = opts;
+  let o;
+  const { print = (...args) => (o = c.concat(o, c.text(...args))) } = opts;
   if(Util.isArray(arg)) {
-    let o = '';
+    print('[', 1, 36);
     for(let item of arg) {
-      if(o.length > 0) o += ', ';
-      o += Util.toSource(item, opts);
+      if(o.length > 0) print(', ');
+      Util.toSource(item, { ...opts, c, print });
     }
-    return `[${o}]`;
-  }
-  if(typeof arg == 'string') return c.text(`${quote}${arg}${quote}`, 1, 36);
-  if(arg && arg.x !== undefined && arg.y !== undefined) return `[${c.text(arg.x, 1, 32)},${c.text(arg.y, 1, 32)}]`;
-  //if(arg && arg.toSource) return arg.toSource();
-  if(typeof arg == 'object') {
-    let o = '';
-    for(const prop in arg) {
-      //if(!Object.hasOwnProperty(arg,prop)) continue;
-      let s = Util.toSource(arg[prop], opts);
-      let m = new RegExp(`^\\*?${prop}\\s*\\(`).test(s);
-      if(o != '') o += m && multiline ? '\n  ' : ', ';
-      if(m) o += s;
-      else o += prop + ': ' + s;
+    print(']', 1, 36);
+  } else if(typeof arg == 'number' || arg === undefined || arg === null) print(arg, 1, 35);
+  else if(typeof arg == 'string') print(`${quote}${arg}${quote}`, 1, 36);
+  else if(arg && arg.x !== undefined && arg.y !== undefined) {
+    print('[', 1, 36);
+    print(arg.x, 1, 32);
+    print(',', 1, 36);
+    print(arg.y, 1, 32);
+    print(']', 1, 36);
+  } else if(typeof arg == 'object') {
+    let i = 0;
+    let m = arg instanceof Map;
+    if(m) {
+      print('new ', 1, 31);
+      print('Map', 1, 33);
     }
-    return multiline ? `{\n  ${o}\n}` : `{ ${o} }`;
+    print((m ? '([[' : '{') + (multiline ? '\n  ' : ' '), 1, 36);
+    for(const [prop, value] of Util.entries(arg)) {
+      if(i > 0) {
+        let s = multiline ? ',\n  ' : ', ';
+        if(m) s = ' ]' + s + '[ ';
+        print(s, 1, 36);
+      }
+      if(!m) print(prop, 1, 33);
+      else Util.toSource(prop, { ...opts, c, print });
+      print(m ? ', ' : ': ', 1, 36);
+      Util.toSource(value, { ...opts, c, print });
+      i++;
+    }
+    print(multiline ? '\n' : ' ' + (m ? ']])' : '}'), 1, 36);
   }
-  let cls = arg && arg.constructor && Util.fnName(arg.constructor);
-  return arg + '';
+  return o;
 };
 Util.debug = function (message) {
   const args = [...arguments];
@@ -579,13 +594,33 @@ Util.set = function (obj, prop, value) {
   if(arguments.length == 2) return (value) => set(prop, value);
   return set(prop, value);
 };
-Util.get = Util.curry((obj, prop) => (obj instanceof Map ? obj.get(prop) : obj[prop]));
 
-Util.inspect = (obj, opts = {}) => {
+Util.get = Util.curry((obj, prop) => (obj instanceof Map ? obj.get(prop) : obj[prop]));
+Util.symbols = (() => {
+  const { asyncIterator, hasInstance, isConcatSpreadable, iterator, match, matchAll, replace, search, species, split, toPrimitive, toStringTag, unscopables } = Symbol;
+  return {
+    inspect: Symbol.for('nodejs.util.inspect.custom'),
+    asyncIterator,
+    hasInstance,
+    isConcatSpreadable,
+    iterator,
+    match,
+    matchAll,
+    replace,
+    search,
+    species,
+    split,
+    toPrimitive,
+    toStringTag,
+    unscopables
+  };
+})();
+Util.inspect = (obj, opts = {}) => Util.toString(obj, { toString: Util.symbols.inspect, colors: true, ...opts, multiline: true, newline: '\n' });
+/*
   const { indent = '  ', newline = '\n', depth = 2, spacing = ' ' } = typeof opts == 'object' ? opts : { indent: '', newline: '', depth: typeof opts == 'number' ? opts : 10, spacing: ' ' };
 
   return Util.formatAnnotatedObject(obj, { indent, newline, depth, spacing });
-};
+};*/
 Util.bitArrayToNumbers = function (arr) {
   let numbers = [];
   for(let i = 0; i < arr.length; i++) {
@@ -1160,58 +1195,85 @@ Util.leastCommonMultiple = (n1, n2) => {
   //then calculate the lcm
   return (n1 * n2) / gcd;
 };
+const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
+
 Util.toString = (obj, opts = {}) => {
-  const { quote = '"', multiline = true, stringFn = (str) => str /*.replace(/\n/g, "\\n")*/, indent = '', colors = true, stringColor = [1, 36], spacing = '', newline = '\n', padding = '', separator = ',', colon = ': ', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
-  if(depth < 0) {
+  const { quote = '"', multiline = true, toString = Symbol.toStringTag || 'toString' /*Util.symbols.toStringTag*/, stringFn = (str) => str, indent = '', colors = false, stringColor = [1, 36], spacing = '', newline = '\n', padding = ' ', separator = ',', colon = ': ', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
+  /* if(depth < 0) {
     if(Util.isArray(obj)) return `[...${obj.length}...]`;
     if(Util.isObject(obj)) return `{ ..${Object.keys(obj).length}.. }`;
     return '' + obj;
-  }
+  }*/
+  let out;
   const { c = Util.coloring(colors) } = opts;
+  const { print = (...args) => (out = c.concat(out, c.text(...args))) } = opts;
   const sep = multiline && depth > 0 ? (space = false) => newline + indent + (space ? '  ' : '') : (space = false) => (space ? spacing : '');
   if(typeof obj == 'number') {
-    return c.text(obj + '', 1, 36);
-  } else if(Util.isArray(obj)) {
-    let i,
-      s = c.text(`[`, 1, 36);
-    for(i = 0; i < obj.length; i++) {
-      s += i > 0 ? c.text(separator, 1, 36) : padding;
-      s += sep(true);
-      s += Util.toString(obj[i], { ...opts, c, depth: depth - 1 }, indent + (multiline ? '  ' : ''));
-    }
-    return s + (i > 0 ? sep() + padding : '') + `]`;
-  } else if(Util.isObject(obj)) {
-    let isMap = obj instanceof Map;
-    let keys = isMap ? [...obj.keys()] : Object.keys(obj);
-    let s = '';
-    s = '[object ' + Util.className(obj) + ']';
-    s = c.text(Util.className(obj), 1, 31) + ' ';
-
-    s += isMap ? `Map(${keys.length}) {${newline}  ` : c.text('{' + padding, 1, 36);
-    let i = 0;
-    let getFn = isMap ? (key) => obj.get(key) : (key) => obj[key];
-    let propSep = isMap ? c.text(' => ', 0) : c.text(colon /*+ spacing*/, 1, 36);
-    for(let key of keys) {
-      const value = getFn(key);
-      s += i > 0 ? c.text(separator + sep(true), 36) : '';
-      s += c.text(typeof key == 'symbol' ? key.toString() : key, 1, 33) + propSep;
-      if(Util.isObject(value) || typeof value == 'number') s += Util.toString(value, { ...opts, c, depth: depth - 1 }, multiline ? '  ' : '');
-      else if(typeof value == 'string') s += c.text(`'${value}'`, 1, 32);
-      else s += value;
-      i++;
-    }
-    return s + sep(false) + c.text(`${multiline ? '' : padding}}`, 1, 36);
+    print(obj + '', 1, 36);
+  } else if(typeof obj == 'undefined' || obj === null) {
+    print(obj + '', 1, 35);
   } else if(typeof obj == 'function' /*|| obj instanceof Function || Util.className(obj) == 'Function'*/) {
     obj = '' + obj;
-    if(!multiline) obj = obj.replace(/(\n|\ anonymous)/g, '');
-    return obj;
+    //  if(!multiline)
+    obj = obj.split(/\n/g)[0].replace(/{\s*$/, '{}');
+    print(obj);
   } else if(typeof obj == 'string') {
-    return c.text(`'${stringFn(obj)}'`, 1, 36);
-  } else if(!Util.isObject(obj)) {
-    return '' + obj;
+    print(`'${stringFn(obj)}'`, 1, 36);
   } else if(obj instanceof Date) {
-    return c.text(`new `, 1, 31) + c.text(`Date`, 1, 33) + c.text(`(`, 1, 36) + c.text(obj.getTime() + obj.getMilliseconds() / 1000, 1, 36) + c.text(`)`, 1, 36);
+    print(`new `, 1, 31);
+
+    print(`Date`, 1, 33);
+    print(`(`, 1, 36);
+    print(obj.getTime() + obj.getMilliseconds() / 1000, 1, 36);
+    print(`)`, 1, 36);
+  } else if(Object.getPrototypeOf(obj) == Array.prototype) {
+    let i;
+    print(`[`, 1, 36);
+    for(i = 0; i < obj.length; i++) {
+      if(i > 0) print(separator, 1, 36);
+      else print(padding);
+      print(sep(i > 0));
+      Util.toString(obj[i], { ...opts, c, print, newline: newline + '  ', depth: depth - 1 });
+    }
+    print((padding || '') + `]`, 1, 36);
+  } else if(Util.isObject(obj)) {
+    const inspect = toString ? obj[toString] : null;
+    if(typeof inspect == 'function' && !Util.isNativeFunction(inspect) && !/Util.toString/.test(inspect + '')) {
+      //   if(Util.className(obj) != 'Range') console.debug('inspect:', Util.className(obj), inspect + '');
+      let s = inspect.call(obj, depth, { ...opts });
+      //  if(Util.className(obj) != 'Range')
+      console.debug('s:', s);
+      console.debug('inspect:', inspect + '');
+
+      out += s;
+    } else {
+      let isMap = obj instanceof Map;
+      let keys = isMap ? obj.keys() : Object.keys(obj);
+      //let entries = isMap ? [...obj.entries()] : Object.entries(obj);
+      // print('[object ' + Util.className(obj) + ']');
+      if(Object.getPrototypeOf(obj) !== Object.prototype) print(Util.className(obj) + ' ', 1, 31);
+      isMap ? print(`(${obj.size}) {${sep(true)}`, 1, 36) : print('{' + sep(true), 1, 36);
+      let i = 0;
+      let getFn = isMap ? (key) => obj.get(key) : (key) => obj[key];
+      let propSep = isMap ? [' => ', 0] : [': ', 1, 36];
+      for(let key of keys) {
+        const value = getFn(key);
+        if(i > 0) print(sep(true), 36);
+        if(typeof key == 'symbol') print(key.toString(), 1, 32);
+        else if(Util.isObject(key) && typeof key[toString] == 'function') print(isMap ? `'${key[toString]()}'` : key[toString](), 1, isMap ? 36 : 33);
+        else if(typeof key == 'string' || (!isMap && Util.isObject(key) && typeof key.toString == 'function')) print(isMap ? `'${key}'` : key, 1, isMap ? 36 : 33);
+        else Util.toString(key, { ...opts, c, print, newline: newline + '  ', newline: '', multiline: false, toString: 'toString', depth: depth - 1 });
+        print(...propSep);
+        if(typeof value == 'number') print(`${value}`, 1, 36);
+        else if(typeof value == 'string' || value instanceof String) print(`'${value}'`, 1, 36);
+        else if(typeof value == 'object') Util.toString(value, { ...opts, print, multiline: isMap && !(value instanceof Map) ? false : multiline, newline: newline + '  ', depth: depth - 1 });
+        else print(value);
+        i++;
+      }
+      print(`${multiline ? newline : padding}}`, 1, 36);
+    }
   }
+  return out;
 };
 
 Util.toString.defaultOpts = {
@@ -3689,7 +3751,13 @@ Util.coloring = (useColor = true) =>
           return text;
         },
         concat(...args) {
-          return args.join('');
+          let out = args.shift() || [''];
+          for(let arg of args) {
+            if(Util.isArray(arg)) {
+              for(let subarg of arg) out[0] += subarg;
+            } else out[0] += arg;
+          }
+          return out;
         }
       }
     : Util.isBrowser()
@@ -3719,7 +3787,7 @@ Util.coloring = (useColor = true) =>
           return [`%c${text}`, this.code(...color)];
         },
         concat(...args) {
-          let out = args.shift();
+          let out = args.shift() || [''];
           for(let arg of args) {
             if(Util.isArray(arg) && typeof arg[0] == 'string') out[0] += arg.shift();
             else if(Util.isObject(arg)) {
