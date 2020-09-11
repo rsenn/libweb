@@ -19,7 +19,7 @@ let source = async function* () {
 /* --- */
 //Return a new async iterator that applies a
 //transform to the values from another async generator
-export const map = async function* (stream, transform) {
+export const map = async function* (stream, transform = (a) => a) {
   for await (let n of stream) {
     yield transform(n);
   }
@@ -27,6 +27,10 @@ export const map = async function* (stream, transform) {
 
 export const consume = async function (stream, fn = (a) => console.log(`async consume =`, a)) {
   for await (let n of stream) await fn(n);
+};
+
+export const accumulate = async function (stream, accu) {
+  return await consume(stream, (a) => accu.push(a)), accu;
 };
 
 /* --- */
@@ -113,4 +117,4 @@ export const subscribe = async (stream, callback) => {
   });
 };*/
 
-export default { timer, map, consume, oncePromise, streamify, filter, distinct, throttle, subscribe };
+export default { timer, map, consume, oncePromise, streamify, filter, distinct, throttle, subscribe, accumulate };

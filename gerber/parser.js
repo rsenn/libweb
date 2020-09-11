@@ -1,6 +1,5 @@
 import { ArrayWriter, readStream, LineReader } from '../streamUtils.js';
 
-
 // function to determine filetype from a chunk
 function determine(chunk, start, LIMIT) {
   let limit = Math.min(LIMIT - start, chunk.length);
@@ -954,7 +953,6 @@ function warning(message, line) {
 
 // generic file parser for gerber and drill files
 let LIMIT = 65535;
-
 
 export class Parser {
   constructor(places, zero, filetype) {

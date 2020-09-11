@@ -1,3 +1,5 @@
+import { Repeater } from './repeater/repeater.js';
+
 export const ArrayWriter = (arr) =>
   new WritableStream({
     write(chunk) {
@@ -8,31 +10,42 @@ export const ArrayWriter = (arr) =>
     }
   });
 
-export function readStream(stream, arr) {
-  const reader = stream.getReader();
-  let count = 0;
-  return new Promise((resolve, reject) => {
-    reader.read().then(function processData(res) {
-      if(res.done) {
-        resolve();
-        return;
-      }
-      count++;
-      arr.push(res.value);
-      return reader.read().then(processData);
-    });
-  });
+export async function readStream(stream, arg) {
+  let repeater = await PipeToRepeater(stream);
+  let fn;
+
+  if(arg === undefined)
+    return await (async function* () {
+      for await (let item of repeater) yield await item;
+    })();
+
+  if(arg instanceof Array) fn = (item) => arg.push(item);
+  else if(typeof arg == 'function') fn = (item) => arg(item);
+  else if(typeof arg == 'string') fn = (item) => (arg += item);
+  for await (let item of repeater) fn(item);
+  if(typeof arg == 'function') arg(undefined);
+  return arg;
 }
 
 export const WriteToRepeater = async () => {
   const repeater = new Repeater(async (push, stop) => {
-    await push({ write(chunk) { push(chunk); }, close() { stop(); }, abort(err) { stop(new Error('WriteRepeater error:' + err)); } });
+    await push({
+      write(chunk) {
+        push(chunk);
+      },
+      close() {
+        stop();
+      },
+      abort(err) {
+        stop(new Error('WriteRepeater error:' + err));
+      }
+    });
   });
   const stream = new WritableStream((await repeater.next()).value);
   return [repeater, stream];
 };
 
-export const LogSink = (fn = console.log) =>
+export const LogSink = (fn = (...args) => console.log('LogSink.fn', ...args)) =>
   new WritableStream({
     write(chunk) {
       fn(chunk);
@@ -49,6 +62,7 @@ export const RepeaterSink = async (start = (sink) => {}) =>
   new Repeater(async (push, stop) => {
     await start(new WritableStream({
         write(chunk) {
+          //  console.debug("RepeaterSink.write", {chunk});
           push(chunk);
         },
         close() {
@@ -72,13 +86,15 @@ export const StringReader = function (str, chunk = (pos, str) => [pos, str.lengt
       }
     }),
     start(controller) {
-      for(;;) 
-        this.read(controller);
+      for(;;) {
+        if(read(controller)) break;
+      }
     }
   });
 
   function read(controller) {
-    let s;
+    let s = '';
+    const { desiredSize } = controller;
     if(pos < str.length) {
       let [start, end] = chunk(pos, str);
       s = str.substring(start, end || str.length);
@@ -86,8 +102,9 @@ export const StringReader = function (str, chunk = (pos, str) => [pos, str.lengt
       pos = end;
     } else {
       controller.close();
+      return true;
     }
-    console.log('pull()', { desiredSize: n }, { pos, end: pos + s.length, s });
+    // console.log('pull()', { desiredSize  }, { pos, end: pos + s.length, s });
   }
 };
 
@@ -116,4 +133,4 @@ export const ByteReader = (str) => ChunkReader(str, 1);
 
 export const PipeToRepeater = async (stream) => RepeaterSink((writable) => stream.pipeTo(writable));
 
-export default {  ArrayWriter, readStream, WriteToRepeater, LogSink, RepeaterSink, StringReader, LineReader, ChunkReader, ByteReader, PipeToRepeater };
+export default { ArrayWriter, readStream, WriteToRepeater, LogSink, RepeaterSink, StringReader, LineReader, ChunkReader, ByteReader, PipeToRepeater };

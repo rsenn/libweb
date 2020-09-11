@@ -5,6 +5,11 @@ import fs from 'fs';
 import timers from 'timers';
 import stream from 'stream';
 */
+import { EventEmitter } from '../eventEmitter.js';
+import { PipeToRepeater } from '../streamUtils.js';
+import transformStream from '../stream/transformStream.js';
+import Util from '../util.js';
+
 export const noop = () => {};
 
 const streamify = (text) => {
@@ -158,27 +163,32 @@ const parseLine = (() => {
 // @param {object} stream The G-code line stream
 // @param {options} options The options object
 // @param {function} callback The callback function
-export const parseStream = (stream, options, callback = noop) => {
+export const parseStream = (strm, options, callback = noop) => {
   if(typeof options === 'function') {
     callback = options;
     options = {};
   }
 
-  const emitter = new events.EventEmitter();
+  const emitter = new EventEmitter();
 
   try {
     const results = [];
-    stream
-      .pipe(new GCodeLineStream(options))
-      .on('data', (data) => {
+
+    (async (s) => {
+      console.debug('waitFor 50');
+      await Util.waitFor(500);
+      console.debug('pipe GCodeLineStream');
+      s = s.pipeThrough(new GCodeLineStream(options));
+
+      for await (let data of await PipeToRepeater(s)) {
         emitter.emit('data', data);
         results.push(data);
-      })
-      .on('end', () => {
-        emitter.emit('end', results);
-        callback && callback(null, results);
-      })
-      .on('error', callback);
+      }
+      emitter.emit('end', results);
+      callback && callback(null, results);
+
+      //console.log("stream:", Util.className(s), Util.getMethodNames(s, Infinity, 0));
+    })(strm);
   } catch(err) {
     callback(err);
   }
@@ -233,10 +243,12 @@ export const parseStringSync = (str, options) => {
   return results;
 };
 
+let TransformStream = Util.getGlobalObject().TransformStream || transformStream.TransformStream;
+
 // @param {string} str The G-code text string
 // @param {options} options The options object
 
-class GCodeLineStream extends TransformStream {
+export class GCodeLineStream extends TransformStream {
   state = {
     lineCount: 0,
     lastChunkEndedWithCR: false
@@ -248,7 +260,7 @@ class GCodeLineStream extends TransformStream {
   };
 
   lineBuffer = '';
-
+  queue = [];
   re = new RegExp(/.*(?:\r\n|\r|\n)|.+$/g);
 
   // @param {object} [options] The options object
@@ -256,7 +268,30 @@ class GCodeLineStream extends TransformStream {
   // @param {boolean} [options.flatten] True to flatten the array, false otherwise.
   // @param {boolean} [options.noParseLine] True to not parse line, false otherwise.
   constructor(options = {}) {
-    super({ objectMode: true });
+    let tObj;
+
+    super((tObj = {
+        objectMode: true,
+
+        transform(chunk, controller) {
+          const { instance } = this;
+          instance._transform(chunk, 'utf8', () => {
+            while(instance.queue.length) controller.enqueue(instance.queue.shift());
+          });
+          //console.debug('transform', instance._transform, { instance, chunk, controller });
+        },
+
+        flush(controller) {
+          const { instance } = this;
+          instance._flush(() => {
+            while(instance.queue.length) controller.enqueue(instance.queue.shift());
+          });
+          // console.debug('flush', instance._flush, { instance, controller });
+        }
+      })
+    );
+
+    tObj.instance = this;
 
     this.options = {
       ...this.options,
@@ -268,12 +303,12 @@ class GCodeLineStream extends TransformStream {
     // decode binary chunks as UTF-8
     encoding = encoding || 'utf8';
 
-    if(Buffer.isBuffer(chunk)) {
+    /*   if(Buffer.isBuffer(chunk)) {
       if(encoding === 'buffer') {
         encoding = 'utf8';
       }
       chunk = chunk.toString(encoding);
-    }
+    }*/
 
     this.lineBuffer += chunk;
 
@@ -315,6 +350,20 @@ class GCodeLineStream extends TransformStream {
       },
       next
     );
+  }
+
+  push({ line, words }) {
+    let obj = words.length > 0 ? words : [[line.substring(0, 1), line.substring(1, line.length - 1), line.substring(line.length - 1)]];
+    let a = line.split(/\s+/g).slice(0, obj.length);
+    obj = obj.map((it, i) => {
+      if(typeof it.join == 'function') it.word = a[i];
+      return it;
+    });
+
+    obj.line = line;
+    obj.words = a;
+
+    this.queue.push(obj);
   }
 
   _flush(done) {

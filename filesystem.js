@@ -1,3 +1,5 @@
+import Util from './util.js';
+
 export function QuickJSFileSystem(std, os) {
   const CharWidth = {
     1: Uint8Array,
@@ -6,7 +8,7 @@ export function QuickJSFileSystem(std, os) {
   };
 
   function ArrayBufToString(buf, bytes = 1) {
-    return String.fromCharCode.apply(null, new CharWidth[bytes](buf));
+    return String.fromCharCode(...new CharWidth[bytes](buf));
   }
 
   function StringToArrayBuf(str, bytes = 1) {
@@ -15,11 +17,16 @@ export function QuickJSFileSystem(std, os) {
     for(let i = 0, strLen = str.length; i < strLen; i++) view[i] = str.charCodeAt(i);
     return buf;
   }
-
+  function CreateBuffer(bytes) {
+    return new ArrayBuffer(bytes);
+  }
   return {
     Stats: class Stats {
       constructor(st) {
         this.mode = st.mode;
+
+        //  if(Object.hasOwnProperty(st, prop))
+        for(let prop in st) this[prop] = st[prop];
       }
       isDirectory() {
         return !!(this.mode & os.S_IFDIR);
@@ -43,6 +50,54 @@ export function QuickJSFileSystem(std, os) {
         return !!(this.mode & os.S_IFSOCK);
       }
     },
+    buffer(bytes) {
+      return CreateBuffer(bytes);
+    },
+    bufferFrom(chunk, encoding = 'utf-8') {
+      return StringToArrayBuf(chunk, 1);
+    }, 
+
+      bufferToString(buf, n = 1) {
+      return ArrayBufToString(buf, n);
+    },
+    open(filename, flags = 'r', mode = 0o644) {
+      let res = { errno: 0 };
+      let fd = std.open(filename, flags, res);
+      if(!res.errno) return fd;
+
+      return -res.errno;
+    },
+    close(fd) {
+      return fd.close();
+    },
+
+    read(fd, buf, offset, length) {
+      let ret, err;
+      let retFn = (r) => err || r;
+      length = length || 1024;
+      offset = offset || 0;
+      if(!buf) {
+        buf = CreateBuffer(length);
+        retFn = (r) => {
+          if(r > 0) {
+            let b = r < buf.byteLength ? buf.slice(0, r) : buf;
+            /* b[Symbol.toStringTag] = */ b.toString = () => ArrayBufToString(b);
+            return b;
+          }
+          return err || r;
+        };
+      }
+      ret = fd.read(buf, offset, length);
+      err = ret > 0 ? undefined : -1;
+      return retFn(ret);
+    },
+    write(fd, data, offset, length) {
+      if(!(data instanceof ArrayBuffer)) data = StringToArrayBuf(data);
+      let ret = fd.write(data, offset || 0, length || data.byteLength);
+      let err = ret > 0 ? undefined : (std.clearerr(), -1);
+      return err || ret;
+    },
+
     readFile(filename) {
       let buf,
         size,
@@ -58,7 +113,7 @@ export function QuickJSFileSystem(std, os) {
         file.close();
         return ArrayBufToString(buf);
       }
-      return res.errno;
+      return -res.errno;
     },
     writeFile(filename, data, overwrite = true) {
       let buf,
@@ -98,25 +153,25 @@ export function QuickJSFileSystem(std, os) {
     stat(path, cb) {
       let [st, err] = os.stat(path);
       st = err ? null : new this.Stats(st);
-      return (cb && cb(err, st)) || err ? err : st;
+      return typeof cb == 'function' ? cb(err, st) : err ? err : st;
     },
     lstat(path, cb) {
       let [st, err] = os.lstat(path);
       st = err ? null : new this.Stats(st);
-      return (cb && cb(err, st)) || err ? err : st;
+      return typeof cb == 'function' ? cb(err, st) : err ? err : st;
     },
 
     realpath(path, cb) {
       let [str, err] = os.realpath(path);
-      return (cb && cb(err, str)) || err ? err : str;
+      return typeof cb == 'function' ? cb(err, st) : err ? err : str;
     },
     readdir(dir, cb) {
       let [arr, err] = os.readdir(dir);
-      return (cb && cb(err, arr)) || err ? err : arr;
+      return typeof cb == 'function' ? cb(err, st) : err ? err : arr;
     },
     getcwd(cb) {
       let [wd, err] = os.getcwd();
-      return (cb && cb(err, wd)) || err ? err : wd;
+      return typeof cb == 'function' ? cb(err, st) : err ? err : wd;
     },
     chdir(path) {
       let err = os.chdir(path);
@@ -126,15 +181,100 @@ export function QuickJSFileSystem(std, os) {
 }
 
 export function NodeJSFileSystem(fs) {
+  function CreateBuffer(bytes = 1) {
+    const buf = Buffer.alloc(bytes);
+    return buf;
+  }
+  function StringToArrayBuf(chunk, encoding = 'utf-8') {
+    return Buffer.from(chunk+'', encoding);
+  }
+
   return {
+    buffer(bytes) {
+      return CreateBuffer(bytes);
+    },
+    bufferFrom(chunk, encoding = 'utf-8') {
+      return StringToArrayBuf(chunk, encoding);
+    },
+    bufferToString(buf, encoding = 'utf-8') {
+      return Buffer.from(buf).toString(encoding);
+    },
+
+     open(filename, flags = 'r', mode = 0o644) {
+      let ret = -1;
+      try {
+        ret = fs.openSync(filename, flags, mode);
+      } catch(error) {
+        ret = new Number(-1);
+        ret.message = error.message;
+        ret.stack = error.stack;
+      }
+      return ret;
+    },
+    close(fd) {
+      let ret;
+      try {
+        fs.closeSync(fd);
+        ret = 0;
+      } catch(error) {
+        ret = new Number(-1);
+        ret.message = error.message;
+        ret.stack = error.stack;
+      }
+      return ret;
+    },
+    read(fd, buf, offset, length) {
+      let ret,
+        retFn = (r) => r;
+      try {
+        length = length || 1024;
+        offset = offset || 0;
+        if(!buf) {
+          buf = CreateBuffer(length);
+          retFn = (r) => (r > 0 ? buf.slice(0, r) : r);
+        }
+        ret = fs.readSync(fd, buf, offset, length, 0);
+      } catch(error) {
+        ret = new Number(-1);
+        ret.message = error.message;
+        ret.stack = error.stack;
+      }
+      return retFn(ret);
+    },
+    write(fd, data, offset, length) {
+      let ret;
+      try {
+        ret = fs.writeSync(fd, data, offset, length);
+      } catch(error) {
+        ret = new Number(-1);
+        ret.message = error.message;
+        ret.stack = error.stack;
+      }
+      return ret;
+    },
     readFile(filename) {
-      return fs.readFileSync(filename, { encoding: 'utf-8' });
+      let ret;
+      try {
+        ret = fs.readFileSync(filename, { encoding: 'utf-8' });
+      } catch(error) {
+        ret = new Number(-1);
+        ret.message = error.message;
+        ret.stack = error.stack;
+      }
+      return ret;
     },
     writeFile(filename, data, overwrite = true) {
-      let fd = fs.openSync(filename, overwrite ? 'w' : 'wx');
-      let r = fs.writeSync(fd, data);
-      fs.closeSync(fd);
-      return r;
+      let fd, ret;
+      try {
+        fd = fs.openSync(filename, overwrite ? 'w' : 'wx');
+        ret = fs.writeSync(fd, data);
+        fs.closeSync(fd);
+      } catch(error) {
+        ret = new Number(-1);
+        ret.message = error.message;
+        ret.stack = error.stack;
+      }
+      return ret;
     },
     exists(filename) {
       return fs.existsSync(filename);
@@ -196,25 +336,27 @@ export async function GetPortableFileSystem() {
   if(fs && !err) return fs;
 }
 
-export async function PortableFileSystem() {
-  const fs = await GetPortableFileSystem();
+export async function PortableFileSystem(fn = (fs) => true) {
+  return await Util.memoize(async function () {
+    const fs = await GetPortableFileSystem();
 
-  try {
-    return (globalThis.filesystem = fs);
-  } catch(error) {
     try {
-      return (global.filesystem = fs);
+      return (globalThis.filesystem = fs);
     } catch(error) {
       try {
-        return (window.filesystem = fs);
+        return (global.filesystem = fs);
       } catch(error) {
         try {
           return (window.filesystem = fs);
-        } catch(error) {}
+        } catch(error) {
+          try {
+            return (window.filesystem = fs);
+          } catch(error) {}
+        }
       }
     }
-  }
-  return fs;
+    return fs;
+  })().then((fs) => (fn(fs), fs));
 }
 
 export default PortableFileSystem;

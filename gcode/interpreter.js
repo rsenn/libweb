@@ -45,7 +45,7 @@ const partitionWordsByGroup = (words = []) => {
 };
 
 const interpret = (self, data) => {
-  const groups = partitionWordsByGroup(data.words);
+  const groups = partitionWordsByGroup(data);
 
   for(let i = 0; i < groups.length; ++i) {
     const words = groups[i];
@@ -106,11 +106,11 @@ const interpret = (self, data) => {
       func(args);
     } else if(typeof self.defaultHandler === 'function') {
       self.defaultHandler(cmd, args);
-    }
-
-    if(typeof self[cmd] === 'function') {
+    } else if(typeof self[cmd] === 'function') {
       const func = self[cmd].bind(self);
       func(args);
+    } else {
+      console.debug('not handler for', { cmd, args });
     }
   }
 };

@@ -1432,6 +1432,7 @@ Util.isString = function (v) {
  */
 Util.isNumeric = (v) => /^[-+]?(0x|0b|0o|)[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test(v + '');
 
+Util.isUndefined = (arg) => arg === undefined;
 Util.isObject = (obj, ...protoOrPropNames) => {
   let isObj = (arg) => ['object', 'function'].indexOf(typeof arg) != -1 && arg !== null;
 
