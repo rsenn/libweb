@@ -1,3 +1,7 @@
+import Util from '../util.js';
+
+import { WritableStream } from './writableStream.js';
+
 // Quick and dirty polyfill for TransformStream.
 // Based on the reference implementation:
 // https://github.com/whatwg/streams/blob/master/reference-implementation/lib/transform-stream.js
@@ -249,74 +253,76 @@ export class TransformStreamDefaultController {
   }
 }
 
-export class TransformStream {
-  constructor(transformer = {}) {
-    this._transformer = transformer;
-    const { readableStrategy, writableStrategy } = transformer;
+export const TransformStream =
+  Util.getGlobalObject().TransformStream ||
+  class TransformStream {
+    constructor(transformer = {}) {
+      this._transformer = transformer;
+      const { readableStrategy, writableStrategy } = transformer;
 
-    this._transforming = false;
-    this._errored = false;
-    this._storedError = undefined;
+      this._transforming = false;
+      this._errored = false;
+      this._storedError = undefined;
 
-    this._writableController = undefined;
-    this._readableController = undefined;
-    this._transformStreamController = undefined;
+      this._writableController = undefined;
+      this._readableController = undefined;
+      this._transformStreamController = undefined;
 
-    this._writableDone = false;
-    this._readableClosed = false;
+      this._writableDone = false;
+      this._readableClosed = false;
 
-    this._backpressure = undefined;
-    this._backpressureChangePromise = undefined;
-    this._backpressureChangePromise_resolve = undefined;
+      this._backpressure = undefined;
+      this._backpressureChangePromise = undefined;
+      this._backpressureChangePromise_resolve = undefined;
 
-    this._transformStreamController = new TransformStreamDefaultController(this);
+      this._transformStreamController = new TransformStreamDefaultController(this);
 
-    let startPromise_resolve;
-    const startPromise = new Promise((resolve) => {
-      startPromise_resolve = resolve;
-    });
+      let startPromise_resolve;
+      const startPromise = new Promise((resolve) => {
+        startPromise_resolve = resolve;
+      });
 
-    const source = new TransformStreamSource(this, startPromise);
+      const source = new TransformStreamSource(this, startPromise);
 
-    this._readable = new ReadableStream(source, readableStrategy);
+      this._readable = new ReadableStream(source, readableStrategy);
 
-    const sink = new TransformStreamSink(this, startPromise);
+      const sink = new TransformStreamSink(this, startPromise);
 
-    this._writable = new WritableStream(sink, writableStrategy);
+      this._writable = new WritableStream(sink, writableStrategy);
 
-    const desiredSize = ReadableStreamDefaultControllerGetDesiredSize(this._readableController);
-    // Set _backpressure based on desiredSize. As there is no read() at this point, we can just interpret
-    // desiredSize being non-positive as backpressure.
-    TransformStreamSetBackpressure(this, desiredSize <= 0);
+      const desiredSize = ReadableStreamDefaultControllerGetDesiredSize(this._readableController);
+      // Set _backpressure based on desiredSize. As there is no read() at this point, we can just interpret
+      // desiredSize being non-positive as backpressure.
+      TransformStreamSetBackpressure(this, desiredSize <= 0);
 
-    const transformStream = this;
-    const startResult = InvokeOrNoop(transformer, 'start', [transformStream._transformStreamController]);
-    startPromise_resolve(startResult);
-    startPromise.catch((e) => {
-      // The underlyingSink and underlyingSource will error the readable and writable ends on their own.
-      if(transformStream._errored === false) {
-        transformStream._errored = true;
-        transformStream._storedError = e;
+      const transformStream = this;
+      const startResult = InvokeOrNoop(transformer, 'start', [transformStream._transformStreamController]);
+      startPromise_resolve(startResult);
+      startPromise.catch((e) => {
+        // The underlyingSink and underlyingSource will error the readable and writable ends on their own.
+        if(transformStream._errored === false) {
+          transformStream._errored = true;
+          transformStream._storedError = e;
+        }
+      });
+    }
+
+    get readable() {
+      if(IsTransformStream(this) === false) {
+        throw streamBrandCheckException('readable');
       }
-    });
-  }
 
-  get readable() {
-    if(IsTransformStream(this) === false) {
-      throw streamBrandCheckException('readable');
+      return this._readable;
     }
 
-    return this._readable;
-  }
+    get writable() {
+      if(IsTransformStream(this) === false) {
+        throw streamBrandCheckException('writable');
+      }
 
-  get writable() {
-    if(IsTransformStream(this) === false) {
-      throw streamBrandCheckException('writable');
+      return this._writable;
     }
-
-    return this._writable;
-  }
-}
+  };
 
 // Helper functions for the TransformStreamDefaultController.
 

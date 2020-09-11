@@ -6,7 +6,7 @@ import timers from 'timers';
 import stream from 'stream';
 */
 import { EventEmitter } from '../eventEmitter.js';
-import { PipeToRepeater } from '../streamUtils.js';
+import { PipeToRepeater } from '../stream/utils.js';
 import transformStream from '../stream/transformStream.js';
 import Util from '../util.js';
 

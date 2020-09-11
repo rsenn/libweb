@@ -1,4 +1,4 @@
-import { Repeater } from './repeater/repeater.js';
+import { Repeater } from '../repeater/repeater.js';
 
 export const ArrayWriter = (arr) =>
   new WritableStream({

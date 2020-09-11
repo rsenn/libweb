@@ -1,25 +1,6 @@
 import Util from './util.js';
 
 export function QuickJSFileSystem(std, os) {
-  const CharWidth = {
-    1: Uint8Array,
-    2: Uint16Array,
-    4: Uint32Array
-  };
-
-  function ArrayBufToString(buf, bytes = 1) {
-    return String.fromCharCode(...new CharWidth[bytes](buf));
-  }
-
-  function StringToArrayBuf(str, bytes = 1) {
-    const buf = new ArrayBuffer(str.length * bytes);
-    const view = new CharWidth[bytes](buf);
-    for(let i = 0, strLen = str.length; i < strLen; i++) view[i] = str.charCodeAt(i);
-    return buf;
-  }
-  function CreateBuffer(bytes) {
-    return new ArrayBuffer(bytes);
-  }
   return {
     Stats: class Stats {
       constructor(st) {
@@ -51,14 +32,14 @@ export function QuickJSFileSystem(std, os) {
       }
     },
     buffer(bytes) {
-      return CreateBuffer(bytes);
+      return CreateArrayBuffer(bytes);
     },
     bufferFrom(chunk, encoding = 'utf-8') {
-      return StringToArrayBuf(chunk, 1);
-    }, 
+      return StringToArrayBuffer(chunk, 1);
+    },
 
-      bufferToString(buf, n = 1) {
-      return ArrayBufToString(buf, n);
+    bufferToString(buf, n = 1) {
+      return ArrayBufferToString(buf, n);
     },
     open(filename, flags = 'r', mode = 0o644) {
       let res = { errno: 0 };
@@ -77,11 +58,11 @@ export function QuickJSFileSystem(std, os) {
       length = length || 1024;
       offset = offset || 0;
       if(!buf) {
-        buf = CreateBuffer(length);
+        buf = CreateArrayBuffer(length);
         retFn = (r) => {
           if(r > 0) {
             let b = r < buf.byteLength ? buf.slice(0, r) : buf;
-            /* b[Symbol.toStringTag] = */ b.toString = () => ArrayBufToString(b);
+            /* b[Symbol.toStringTag] = */ b.toString = () => ArrayBufferToString(b);
             return b;
           }
           return err || r;
@@ -92,7 +73,7 @@ export function QuickJSFileSystem(std, os) {
       return retFn(ret);
     },
     write(fd, data, offset, length) {
-      if(!(data instanceof ArrayBuffer)) data = StringToArrayBuf(data);
+      if(!(data instanceof ArrayBuffer)) data = StringToArrayBuffer(data);
       let ret = fd.write(data, offset || 0, length || data.byteLength);
       let err = ret > 0 ? undefined : (std.clearerr(), -1);
       return err || ret;
@@ -111,7 +92,7 @@ export function QuickJSFileSystem(std, os) {
         file.read(buf, 0, size);
         //buf = file.readAsString(/*size*/);
         file.close();
-        return ArrayBufToString(buf);
+        return ArrayBufferToString(buf);
       }
       return -res.errno;
     },
@@ -122,7 +103,7 @@ export function QuickJSFileSystem(std, os) {
       let file = std.open(filename, overwrite ? 'w' : 'wx', res);
       // console.log('writeFile', filename, data.length, file, res.errno);
       if(!res.errno) {
-        buf = typeof data == 'string' ? StringToArrayBuf(data) : data;
+        buf = typeof data == 'string' ? StringToArrayBuffer(data) : data;
         bytes = file.write(buf, 0, buf.byteLength);
         file.flush();
         res = file.close();
@@ -181,26 +162,28 @@ export function QuickJSFileSystem(std, os) {
 }
 
 export function NodeJSFileSystem(fs) {
-  function CreateBuffer(bytes = 1) {
-    const buf = Buffer.alloc(bytes);
-    return buf;
+  function BufferAlloc(bytes = 1) {
+    return Buffer.alloc(bytes);
   }
-  function StringToArrayBuf(chunk, encoding = 'utf-8') {
-    return Buffer.from(chunk+'', encoding);
+  function BufferFromString(str, encoding = 'utf-8') {
+    return Buffer.from(str + '', encoding);
+  }
+  function BufferToString(buf, encoding = 'utf-8') {
+    buf = buf instanceof Buffer ? buf : Buffer.from(buf);
+    return buf.toString(encoding);
   }
 
   return {
     buffer(bytes) {
-      return CreateBuffer(bytes);
+      return BufferAlloc(bytes);
     },
     bufferFrom(chunk, encoding = 'utf-8') {
-      return StringToArrayBuf(chunk, encoding);
+      return BufferFromString(chunk, encoding);
     },
     bufferToString(buf, encoding = 'utf-8') {
-      return Buffer.from(buf).toString(encoding);
+      return BufferToString(buf, encoding);
     },
-
-     open(filename, flags = 'r', mode = 0o644) {
+    open(filename, flags = 'r', mode = 0o644) {
       let ret = -1;
       try {
         ret = fs.openSync(filename, flags, mode);
@@ -230,7 +213,7 @@ export function NodeJSFileSystem(fs) {
         length = length || 1024;
         offset = offset || 0;
         if(!buf) {
-          buf = CreateBuffer(length);
+          buf = BufferAlloc(length);
           retFn = (r) => (r > 0 ? buf.slice(0, r) : r);
         }
         ret = fs.readSync(fd, buf, offset, length, 0);
@@ -314,6 +297,99 @@ export function NodeJSFileSystem(fs) {
   };
 }
 
+export function BrowserFileSystem(TextDecoderStream, WritableStream) {
+  return {
+    buffer(bytes) {
+      return CreateArrayBuffer(bytes);
+    },
+    bufferFrom(chunk, encoding = 'utf-8') {
+      return StringToArrayBuffer(chunk, 1);
+    },
+
+    bufferToString(buf, n = 1) {
+      return ArrayBufferToString(buf, n);
+    },
+
+    open(filename, flags = 'r', mode = 0o644) {
+      console.log('WritableStream:', WritableStream);
+      let error;
+      let writable = /w/.test(flags);
+      let ws = writable ? new WritableStream() : null;
+
+      let promise = fetch(writable ? '/save' : filename, {
+        method: writable ? 'POST' : 'GET',
+        headers: writable
+          ? {
+              'Content-Disposition': `attachment; filename="${filename}"`,
+              'Content-Type': 'application/octet-stream'
+            }
+          : {},
+        body: ws
+      })
+        .then((response) => (writable ? response.json() : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())))
+        .catch((err) => (error = err));
+      return writable ? ws : promise;
+    },
+    async close(fd) {
+      await fd.cancel();
+    },
+    async read(fd, buf, offset, length) {
+      /* prettier-ignore */ let reader, chunk, ret = {}, retFn;
+      try {
+        length = length || 1024;
+        offset = offset || 0;
+        reader = await fd.getReader();
+        ret = await reader.read(buf);
+        await reader.releaseLock();
+      } catch(error) {
+        ret.error = error;
+      }
+      if(typeof ret == 'object' && ret !== null) {
+        const { value, done } = ret;
+        if(typeof value == 'string') return CopyToArrayBuffer(value, buf || CreateArrayBuffer(value.length + (offset || 0)), offset || 0);
+      }
+      return ret.done ? 0 : -1;
+    },
+    write(fd, data, offset, length) {},
+    readFile(filename) {},
+    writeFile(filename, data, overwrite = true) {},
+    exists(filename) {},
+    realpath(filename) {},
+    size(filename) {},
+    stat(filename, dereference = false) {},
+    readdir(dir) {},
+    getcwd(cb) {},
+    chdir(path) {},
+    rename(filename, to) {}
+  };
+}
+
+const CharWidth = {
+  1: Uint8Array,
+  2: Uint16Array,
+  4: Uint32Array
+};
+
+function ArrayBufferToString(buf, bytes = 1) {
+  return String.fromCharCode(...new CharWidth[bytes](buf));
+}
+
+function StringToArrayBuffer(str, bytes = 1) {
+  const buf = new ArrayBuffer(str.length * bytes);
+  const view = new CharWidth[bytes](buf);
+  for(let i = 0, strLen = str.length; i < strLen; i++) view[i] = str.codePointAt(i);
+  return buf;
+}
+function CopyToArrayBuffer(str, buf, offset, bytes = 1) {
+  // console.log("CopyToArrayBuffer",{str,buf,bytes});
+  const view = new CharWidth[bytes](buf);
+  for(let i = 0, end = Math.min(str.length, buf.byteLength); i < end; i++) view[i + offset] = str.codePointAt(i);
+  return buf;
+}
+function CreateArrayBuffer(bytes) {
+  return new ArrayBuffer(bytes);
+}
+
 export async function CreatePortableFileSystem(ctor, ...args) {
   return ctor(...(await Promise.all(args)));
 }
@@ -329,6 +405,14 @@ export async function GetPortableFileSystem() {
   err = null;
   try {
     fs = await CreatePortableFileSystem(NodeJSFileSystem, import('fs'));
+  } catch(error) {
+    err = error;
+  }
+
+  if(fs && !err) return fs;
+  err = null;
+  try {
+    fs = await CreatePortableFileSystem(BrowserFileSystem, (await import('./stream/textDecodeStream.js')).TextDecoderStream, (await import('./stream/writableStream.js')).WritableStream);
   } catch(error) {
     err = error;
   }

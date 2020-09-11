@@ -1,4 +1,4 @@
-import { ArrayWriter, readStream, LineReader } from '../streamUtils.js';
+import { ArrayWriter, readStream, LineReader } from '../stream/utils.js';
 
 // function to determine filetype from a chunk
 function determine(chunk, start, LIMIT) {
