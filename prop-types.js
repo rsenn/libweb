@@ -44,7 +44,7 @@ export const ReactPropTypes = {
 
 ReactPropTypes.PropTypes = ReactPropTypes;
 
-let printWarning = function () {};
+let printWarning = function() {};
 
 export function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
   if(process.env.NODE_ENV !== 'production') {
@@ -78,7 +78,7 @@ export function checkPropTypes(typeSpecs, values, location, componentName, getSt
   }
 }
 
-checkPropTypes.resetWarningCache = function () {
+checkPropTypes.resetWarningCache = function() {
   if(process.env.NODE_ENV !== 'production') {
     loggedTypeFailures = {};
   }

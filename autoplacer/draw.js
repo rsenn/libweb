@@ -1,5 +1,5 @@
 (function (global) {
-  global.Draw = function (ctx) {
+  global.Draw = function(ctx) {
     this.ctx = ctx;
   };
   let Draw = global.Draw;

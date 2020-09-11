@@ -12,11 +12,11 @@ const MSRGX = /\s{2,}/g,
   CRGX = /[a-z]/,
   ACRGX = /[.a-z]/;
 
-const Hyphenator = function (patterns, exceptions) {
+const Hyphenator = function(patterns, exceptions) {
   this.tree = {};
   this.exceptions = {};
 
-  this._insert_exception = function (ex) {
+  this._insert_exception = function(ex) {
     const a = [0];
     const x = ex.split(CRGX).forEach((h) => {
       a.push(h === '-' ? 1 : 0);
@@ -24,7 +24,7 @@ const Hyphenator = function (patterns, exceptions) {
     this.exceptions[ex.replace('-', '')] = a;
   };
 
-  this._insert_pattern = function (pat) {
+  this._insert_pattern = function(pat) {
     const chars = pat.replace(DRGX, '');
 
     const points = pat.split(ACRGX).map((h) => parseInt(h) || 0);
@@ -52,7 +52,7 @@ const Hyphenator = function (patterns, exceptions) {
    * @return string
    *   The word, hyphenated.
    */
-  this.hyphenate_word = function (word) {
+  this.hyphenate_word = function(word) {
     if(word.length <= 4) {
       return [word];
     }
@@ -481,7 +481,7 @@ patterns +=
 const exceptions = 'as-so-ciate as-so-ciates dec-li-na-tion oblig-a-tory phil-an-thropic present presents project projects reci-procity re-cog-ni-zance ref-or-ma-tion ret-ri-bu-tion ta-ble';
 const hyphenator = new Hyphenator(patterns, exceptions);
 
-const main = function () {
+const main = function() {
   const resp = process.argv[2]
     .split(' ')
     .map((word) => hyphenator.hyphenate_word(word).join('-'))

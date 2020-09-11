@@ -49,11 +49,11 @@ export function DeepProxy(rootTarget, traps, options) {
 
       if(typeof trap !== 'undefined') {
         if(typeof keyParamIdx !== 'undefined') {
-          realTraps[trapName] = function () {
+          realTraps[trapName] = function() {
             const key = arguments[keyParamIdx];
 
             //update context for this trap
-            context.nest = function (nestedTarget) {
+            context.nest = function(nestedTarget) {
               if(nestedTarget === undefined) nestedTarget = rootTarget;
               return createProxy(nestedTarget, push(path, key));
             };
@@ -61,9 +61,9 @@ export function DeepProxy(rootTarget, traps, options) {
             return trap.apply(context, arguments);
           };
         } else {
-          realTraps[trapName] = function () {
+          realTraps[trapName] = function() {
             //update context for this trap
-            context.nest = function (nestedTarget) {
+            context.nest = function(nestedTarget) {
               if(nestedTarget === undefined) nestedTarget = {};
               return createProxy(nestedTarget, path);
             };

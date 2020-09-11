@@ -8,7 +8,7 @@ export function trkl(initValue) {
   let value = initValue;
   let subscribers = [];
 
-  let self = function (writeValue) {
+  let self = function(writeValue) {
     if(arguments.length) {
       write(writeValue);
     } else {
@@ -40,7 +40,7 @@ export function trkl(initValue) {
     return this;
   }
 
-  self.unsubscribe = function (subscriber) {
+  self.unsubscribe = function(subscriber) {
     remove(subscribers, subscriber);
     return this;
   };
@@ -81,7 +81,7 @@ export function trkl(initValue) {
 trkl.prototype = Object.create({ ...Function.prototype, constructor: trkl });
 trkl.is = (arg) => typeof arg == 'function' && typeof arg.subscribe == 'function';
 
-trkl.getset = function (arg) {
+trkl.getset = function(arg) {
   let trkl = arg || new trkl(arg);
   return Object.create({
       get: () => trkl(),
@@ -91,7 +91,7 @@ trkl.getset = function (arg) {
   );
 };
 
-trkl.computed = function (fn) {
+trkl.computed = function(fn) {
   let self = trkl();
   let computationToken = {
     _subscriber: runComputed
@@ -117,13 +117,13 @@ trkl.computed = function (fn) {
   }
 };
 
-trkl.from = function (executor) {
+trkl.from = function(executor) {
   let self = trkl();
   executor(self);
   return self;
 };
 
-trkl.property = function (object, name, options = { enumerable: true, configurable: true, deletable: false }) {
+trkl.property = function(object, name, options = { enumerable: true, configurable: true, deletable: false }) {
   const { value, ...opts } = options;
   let self = trkl(value);
   Object.defineProperty(object, name, {
@@ -141,7 +141,7 @@ trkl.property = function (object, name, options = { enumerable: true, configurab
   return self;
 };
 
-trkl.bind = function (object, name, handler) {
+trkl.bind = function(object, name, handler) {
   let self = handler;
   if(typeof name == 'object')
     Object.defineProperties(object,
@@ -157,7 +157,7 @@ trkl.bind = function (object, name, handler) {
   return object;
 };
 
-trkl.object = function (handlers, ret = {}) {
+trkl.object = function(handlers, ret = {}) {
   for(let prop in handlers) {
     ret[prop] = handlers[prop]();
 

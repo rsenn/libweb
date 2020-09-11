@@ -101,7 +101,7 @@ export const iterate = function* (value, filter = (v) => true, path = []) {
   if(r !== -1) if (Util.isObject(value)) for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
 };
 
-export const flatten = function (iter, dst = {}, filter = (v, p) => typeof v != 'object' && v !== null, map = (p, v) => [p.join('.'), v]) {
+export const flatten = function(iter, dst = {}, filter = (v, p) => typeof v != 'object' && v !== null, map = (p, v) => [p.join('.'), v]) {
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 
@@ -145,11 +145,11 @@ export const delegate = (root, path) => {
   if(path) {
     const last = path.pop();
     const obj = get(root, path);
-    return function (value) {
+    return function(value) {
       return value !== undefined ? (obj[last] = value) : obj[last];
     };
   }
-  return function (path, value) {
+  return function(path, value) {
     return value !== undefined ? obj.set(root, path, value) : obj.get(root, path);
   };
 };

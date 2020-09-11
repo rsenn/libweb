@@ -279,7 +279,7 @@ let QRCode;
   };
   QRCodeModel.PAD0 = 0xec;
   QRCodeModel.PAD1 = 0x11;
-  QRCodeModel.createData = function (typeNumber, errorCorrectLevel, dataList) {
+  QRCodeModel.createData = function(typeNumber, errorCorrectLevel, dataList) {
     let rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectLevel);
     let buffer = new QRBitBuffer();
     for(var i = 0; i < dataList.length; i++) {
@@ -313,7 +313,7 @@ let QRCode;
     }
     return QRCodeModel.createBytes(buffer, rsBlocks);
   };
-  QRCodeModel.createBytes = function (buffer, rsBlocks) {
+  QRCodeModel.createBytes = function(buffer, rsBlocks) {
     let offset = 0;
     let maxDcCount = 0;
     let maxEcCount = 0;
@@ -822,7 +822,7 @@ let QRCode;
     [34, 54, 24, 34, 55, 25],
     [20, 45, 15, 61, 46, 16]
   ];
-  QRRSBlock.getRSBlocks = function (typeNumber, errorCorrectLevel) {
+  QRRSBlock.getRSBlocks = function(typeNumber, errorCorrectLevel) {
     let rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
     if(rsBlock == undefined) {
       throw new Error('bad rs block @ typeNumber:' + typeNumber + '/errorCorrectLevel:' + errorCorrectLevel);
@@ -839,7 +839,7 @@ let QRCode;
     }
     return list;
   };
-  QRRSBlock.getRsBlockTable = function (typeNumber, errorCorrectLevel) {
+  QRRSBlock.getRsBlockTable = function(typeNumber, errorCorrectLevel) {
     switch (errorCorrectLevel) {
       case QRErrorCorrectLevel.L:
         return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
@@ -946,12 +946,12 @@ let QRCode;
   }
 
   let svgDrawer = (function () {
-    let Drawing = function (el, htOption) {
+    let Drawing = function(el, htOption) {
       this._el = el;
       this._htOption = htOption;
     };
 
-    Drawing.prototype.draw = function (oQRCode) {
+    Drawing.prototype.draw = function(oQRCode) {
       let _htOption = this._htOption;
       let _el = this._el;
       let nCount = oQRCode.getModuleCount();
@@ -999,7 +999,7 @@ let QRCode;
         }
       }
     };
-    Drawing.prototype.clear = function () {
+    Drawing.prototype.clear = function() {
       while(this._el.hasChildNodes()) this._el.removeChild(this._el.lastChild);
     };
     return Drawing;
@@ -1012,7 +1012,7 @@ let QRCode;
     ? svgDrawer
     : !_isSupportCanvas()
     ? (function () {
-        let Drawing = function (el, htOption) {
+        let Drawing = function(el, htOption) {
           this._el = el;
           this._htOption = htOption;
         };
@@ -1022,7 +1022,7 @@ let QRCode;
          *
          * @param {QRCode} oQRCode
          */
-        Drawing.prototype.draw = function (oQRCode) {
+        Drawing.prototype.draw = function(oQRCode) {
           let _htOption = this._htOption;
           let _el = this._el;
           let nCount = oQRCode.getModuleCount();
@@ -1056,7 +1056,7 @@ let QRCode;
         /**
          * Clear the QRCode
          */
-        Drawing.prototype.clear = function () {
+        Drawing.prototype.clear = function() {
           this._el.innerHTML = '';
         };
 
@@ -1075,7 +1075,7 @@ let QRCode;
         if(this._android && this._android <= 2.1) {
           let factor = 1 / window.devicePixelRatio;
           let drawImage = CanvasRenderingContext2D.prototype.drawImage;
-          CanvasRenderingContext2D.prototype.drawImage = function (image, sx, sy, sw, sh, dx, dy, dw, dh) {
+          CanvasRenderingContext2D.prototype.drawImage = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
             if('nodeName' in image && /img/i.test(image.nodeName)) {
               for(let i = arguments.length - 1; i >= 1; i--) {
                 arguments[i] = arguments[i] * factor;
@@ -1106,14 +1106,14 @@ let QRCode;
           //Check it just once
           if(self._bSupportDataURI === null) {
             let el = document.createElement('img');
-            let fOnError = function () {
+            let fOnError = function() {
               self._bSupportDataURI = false;
 
               if(self._fFail) {
                 self._fFail.call(self);
               }
             };
-            let fOnSuccess = function () {
+            let fOnSuccess = function() {
               self._bSupportDataURI = true;
 
               if(self._fSuccess) {
@@ -1140,7 +1140,7 @@ let QRCode;
          * @param {HTMLElement} el
          * @param {Object} htOption QRCode Options
          */
-        let Drawing = function (el, htOption) {
+        let Drawing = function(el, htOption) {
           this._bIsPainted = false;
           this._android = _getAndroid();
 
@@ -1165,7 +1165,7 @@ let QRCode;
          *
          * @param {QRCode} oQRCode
          */
-        Drawing.prototype.draw = function (oQRCode) {
+        Drawing.prototype.draw = function(oQRCode) {
           let _elImage = this._elImage;
           let _oContext = this._oContext;
           let _htOption = this._htOption;
@@ -1202,7 +1202,7 @@ let QRCode;
         /**
          * Make the image from Canvas if the browser supports Data URI.
          */
-        Drawing.prototype.makeImage = function () {
+        Drawing.prototype.makeImage = function() {
           if(this._bIsPainted) {
             _safeSetDataURI.call(this, _onMakeImage);
           }
@@ -1213,14 +1213,14 @@ let QRCode;
          *
          * @return {Boolean}
          */
-        Drawing.prototype.isPainted = function () {
+        Drawing.prototype.isPainted = function() {
           return this._bIsPainted;
         };
 
         /**
          * Clear the QRCode
          */
-        Drawing.prototype.clear = function () {
+        Drawing.prototype.clear = function() {
           this._oContext.clearRect(0, 0, this._elCanvas.width, this._elCanvas.height);
           this._bIsPainted = false;
         };
@@ -1229,7 +1229,7 @@ let QRCode;
          * @private
          * @param {Number} nNumber
          */
-        Drawing.prototype.round = function (nNumber) {
+        Drawing.prototype.round = function(nNumber) {
           if(!nNumber) {
             return nNumber;
           }
@@ -1316,7 +1316,7 @@ let QRCode;
    * @param {String} [vOption.colorLight="#ffffff"]
    * @param {QRCode.CorrectLevel} [vOption.correctLevel=QRCode.CorrectLevel.H] [L|M|Q|H]
    */
-  QRCode = function (el, vOption) {
+  QRCode = function(el, vOption) {
     this._htOption = {
       width: 256,
       height: 256,
@@ -1362,7 +1362,7 @@ let QRCode;
    *
    * @param {String} sText link data
    */
-  QRCode.prototype.makeCode = function (sText) {
+  QRCode.prototype.makeCode = function(sText) {
     this._oQRCode = new QRCodeModel(_getTypeNumber(sText, this._htOption.correctLevel), this._htOption.correctLevel);
     this._oQRCode.addData(sText);
     this._oQRCode.make();
@@ -1378,7 +1378,7 @@ let QRCode;
    *
    * @private
    */
-  QRCode.prototype.makeImage = function () {
+  QRCode.prototype.makeImage = function() {
     if(typeof this._oDrawing.makeImage === 'function' && (!this._android || this._android >= 3)) {
       this._oDrawing.makeImage();
     }
@@ -1387,7 +1387,7 @@ let QRCode;
   /**
    * Clear the QRCode
    */
-  QRCode.prototype.clear = function () {
+  QRCode.prototype.clear = function() {
     this._oDrawing.clear();
   };
 

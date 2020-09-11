@@ -265,7 +265,7 @@ function orderIndependentDeepDiff(lhs, rhs, changes, prefilter, path, key, stack
 
 function accumulateDiff(lhs, rhs, prefilter, accum) {
   let observer = accum
-    ? function (difference) {
+    ? function(difference) {
         if(difference) {
           accum.push(difference);
         }
@@ -277,7 +277,7 @@ function accumulateDiff(lhs, rhs, prefilter, accum) {
 
 function accumulateOrderIndependentDiff(lhs, rhs, prefilter, accum) {
   let observer = accum
-    ? function (difference) {
+    ? function(difference) {
         if(difference) {
           accum.push(difference);
         }
@@ -435,7 +435,7 @@ function revertChange(target, source, change) {
 
 function applyDiff(target, source, filter) {
   if(target && source) {
-    let onChange = function (change) {
+    let onChange = function(change) {
       if(!filter || filter(target, source, change)) {
         applyChange(target, source, change);
       }

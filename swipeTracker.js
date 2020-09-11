@@ -66,7 +66,7 @@ export class SwipeTracker {
       });
     }
 
-    this.emitEvent = function (name) {
+    this.emitEvent = function(name) {
       const e = this.createSwipeEvent(name);
       this.handler(e);
       return e;

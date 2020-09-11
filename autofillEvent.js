@@ -4,7 +4,7 @@ export function autofillEvent(window, changeHandler) {
   //console.log("autofillEvent ", { window, rootElement });
 
   window.handleAutoFillEvent = changeHandler;
-  window.checkAndTriggerAutoFillEvent = function (els) {
+  window.checkAndTriggerAutoFillEvent = function(els) {
     els = this.nodeName === 'INPUT' ? [this] : els;
     let i, el;
     for(i = 0; i < els.length; i++) {

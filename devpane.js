@@ -248,7 +248,7 @@ export default class devpane {
         //rect.ns = ns;
         rect.tag = tag;
         rect.text = text;
-        rect.toString = function () {
+        rect.toString = function() {
           return `${this.ns}:${this.tag}`;
         };
         if(pred ? pred(elem) : Rect.area(rect) > 0) {
@@ -256,7 +256,7 @@ export default class devpane {
 
           rect.e = elem;
           rect.box = null;
-          rect.test = function (point, serial) {
+          rect.test = function(point, serial) {
             const inside = Point.inside(point, this);
             if(inside) this.serial = serial;
             return inside;
@@ -551,7 +551,7 @@ export default class devpane {
         style: { margin: '1em auto 0 auto' }
       });
 
-    t.save = function (event) {
+    t.save = function(event) {
       let en = this.inputs.en.value;
       let fa = this.inputs.fa.value;
       if(fa != '') {
@@ -567,7 +567,7 @@ export default class devpane {
     ['en', 'fa'].forEach((lang) => {
       t.inputs[lang] = createEditBox(lang,
         '',
-        function ({ currentTarget }) {
+        function({ currentTarget }) {
           this[lang] = currentTarget.value;
         }.bind(t)
       );

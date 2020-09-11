@@ -1,7 +1,7 @@
 import { Repeater } from '../repeater/repeater.js';
 
-export const ArrayWriter = (arr) =>
-  new WritableStream({
+export function ArrayWriter(arr) {
+  return new WritableStream({
     write(chunk) {
       arr.push(chunk);
     },
@@ -9,6 +9,7 @@ export const ArrayWriter = (arr) =>
       //console.log('ArrayWriter error:', err);
     }
   });
+}
 
 export async function readStream(stream, arg) {
   let repeater = await PipeToRepeater(stream);
@@ -41,31 +42,29 @@ export function AcquireReader(stream, fn) {
       return data;
     });
   let reader, ret;
-  let acquire = async () => {
+  return (async () => {
     reader = await stream.getReader();
     ret = await fn(reader);
     await reader.releaseLock();
     return ret;
-  };
-  return acquire();
+  })();
 }
-export function AcquireWriter(stream, fn) {
-  fn =
-    fn ||
-    (async (writer) => {
-      await writer.write('TEST');
-    });
-  let acquire = async (writer) => {
+
+export function AcquireWriter(stream,
+  fn = async (writer) => {
+    await writer.write('TEST');
+  }
+) {
+  return (async (writer) => {
     writer = await writer;
-     let   ret = await fn(writer);
+    let ret = await fn(writer);
     await writer.releaseLock();
     return ret;
-  };
-  return acquire(stream.getWriter());
+  })(stream.getWriter());
 }
 
 export function PipeTo(input, output) {
- return AcquireWriter(output, async (writer) => {
+  return AcquireWriter(output, async (writer) => {
     await AcquireReader(input, async (reader) => {
       let result;
       while((result = await reader.read())) {
@@ -76,19 +75,27 @@ export function PipeTo(input, output) {
   });
 }
 
-export function ReadIterator(stream) {
-  return (async function* (reader) {
-    let result;
-    reader = await reader;
-    while((result = await reader.read())) {
-       if(typeof result.value == 'string') yield result.value;
-      if(result.done) break;
-    }
-    await reader.releaseLock();
-  })(stream.getReader());
+export function AsyncWrite(iterator, writable) {
+  return AcquireWriter(writable, async (writer) => {
+    for await (let data of iterator) writer.write(await data);
+  });
 }
 
-export const WriteToRepeater = async () => {
+export function AsyncRead(readable) {
+  return new Repeater(async (push, stop) => {
+    AcquireReader(readable, async (reader) => {
+      let result;
+      while((result = await reader.read())) {
+        console.log('result:', result);
+        if(typeof result.value == 'string') await push(result.value);
+        if(result.done) break;
+      }
+      await stop();
+    });
+  });
+}
+
+export async function WriteToRepeater() {
   const repeater = new Repeater(async (push, stop) => {
     await push({
       write(chunk) {
@@ -104,10 +111,10 @@ export const WriteToRepeater = async () => {
   });
   const stream = new WritableStream((await repeater.next()).value);
   return [repeater, stream];
-};
+}
 
-export const LogSink = (fn = (...args) => console.log('LogSink.fn', ...args)) =>
-  new WritableStream({
+export function LogSink(fn = (...args) => console.log('LogSink.fn', ...args)) {
+  return new WritableStream({
     write(chunk) {
       fn(chunk);
     },
@@ -118,9 +125,10 @@ export const LogSink = (fn = (...args) => console.log('LogSink.fn', ...args)) =>
       throw new Error('LogSink error:' + err);
     }
   });
+}
 
-export const RepeaterSink = async (start = (sink) => {}) =>
-  new Repeater(async (push, stop) => {
+export async function RepeaterSink(start = async (sink) => {}) {
+  return new Repeater(async (push, stop) => {
     await start(new WritableStream({
         write(chunk) {
           //  console.debug("RepeaterSink.write", {chunk});
@@ -135,8 +143,9 @@ export const RepeaterSink = async (start = (sink) => {}) =>
       })
     );
   });
+}
 
-export const StringReader = function (str, chunk = (pos, str) => [pos, str.length]) {
+export function StringReader(str, chunk = (pos, str) => [pos, str.length]) {
   let pos = 0;
   return new ReadableStream({
     queuingStrategy: new ByteLengthQueuingStrategy({
@@ -167,9 +176,9 @@ export const StringReader = function (str, chunk = (pos, str) => [pos, str.lengt
     }
     console.log('pull()', { desiredSize }, { pos, end: pos + s.length, s });
   }
-};
+}
 
-export const LineReader = (str, chunkEnd = (pos, str) => 1 + str.indexOf('\n', pos) || str.length) => {
+export function LineReader(str, chunkEnd = (pos, str) => 1 + str.indexOf('\n', pos) || str.length) {
   let pos = 0;
   let len = str.length;
   return new ReadableStream({
@@ -186,7 +195,7 @@ export const LineReader = (str, chunkEnd = (pos, str) => 1 + str.indexOf('\n', p
       }
     }
   });
-};
+}
 
 class DebugTransformer {
   constructor(callback) {
@@ -218,13 +227,19 @@ export class DebugTransformStream {
   }
 }
 
-export const ChunkReader = (str, chunkSize) => new StringReader(str, (pos, str) => [pos, pos + chunkSize]);
+export function ChunkReader(str, chunkSize) {
+  return StringReader(str, (pos, str) => [pos, pos + chunkSize]);
+}
 
-export const ByteReader = (str) => ChunkReader(str, 1);
+export function ByteReader(str) {
+  return ChunkReader(str, 1);
+}
 
-export const PipeToRepeater = async (stream) => RepeaterSink((writable) => stream.pipeTo(writable));
+export function PipeToRepeater(stream) {
+  return RepeaterSink((writable) => stream.pipeTo(writable));
+}
 
-export default { PipeTo, AcquireReader, AcquireWriter, ReadIterator, ArrayWriter, readStream, WriteToRepeater, LogSink, RepeaterSink, StringReader, LineReader, ChunkReader, ByteReader, PipeToRepeater };
+export default { AsyncRead, AsyncWrite, ArrayWriter, readStream, AcquireReader, AcquireWriter, PipeTo, WriteToRepeater, LogSink, RepeaterSink, StringReader, LineReader, DebugTransformStream, ChunkReader, ByteReader, PipeToRepeater };
 
 const blah =
   false &&

@@ -1,7 +1,7 @@
 let viewport = (function () {
   let self = {};
 
-  let elementRect = function (element, result) {
+  let elementRect = function(element, result) {
     result = result || {};
 
     if(element === window) {
@@ -34,7 +34,7 @@ let viewport = (function () {
     return result;
   };
 
-  let intersects = function (rect, inset) {
+  let intersects = function(rect, inset) {
     let left = rect.x;
     let right = left + rect.width;
     let top = rect.y;
@@ -64,7 +64,7 @@ let viewport = (function () {
 
   let regions = [];
 
-  let update = function () {
+  let update = function() {
     let w = window;
     let d = document;
     let e = d.documentElement;
@@ -107,7 +107,7 @@ let viewport = (function () {
     this.visible = this.bounds.width > 0 && this.bounds.height > 0 && intersects(this.bounds, inset);
   }
 
-  Region.prototype.validate = function () {
+  Region.prototype.validate = function() {
     let bounds = this.bounds;
     let oldX = bounds.x;
     let oldY = bounds.y;
@@ -135,13 +135,13 @@ let viewport = (function () {
       delegate.regionHide(this);
     }
   };
-  Region.prototype.dispose = function () {
+  Region.prototype.dispose = function() {
     this.disposed = true;
   };
 
   self.intersects = intersects;
   self.elementRect = elementRect;
-  self.createRegion = function (delegate, element, inset) {
+  self.createRegion = function(delegate, element, inset) {
     let region = new Region(delegate, element, inset);
     regions.push(region);
     return region;

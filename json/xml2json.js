@@ -153,7 +153,7 @@ function xml2json_translator() {
       let s = '';
       if('innerHTML' in node) s = node.innerHTML;
       else {
-        var asXml = function (n) {
+        var asXml = function(n) {
           let s = '';
           if(n.nodeType == 1) {
             s += '<' + n.nodeName;

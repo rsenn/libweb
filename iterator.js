@@ -104,7 +104,7 @@ Iterator.map = function* (it, fn = (x, i, it) => x) {
   for(let item of it) yield fn(item, i++, it);
 };
 
-Iterator.reduce = function (it, fn = (acc, x, i, it) => x, acc) {
+Iterator.reduce = function(it, fn = (acc, x, i, it) => x, acc) {
   let i = 0;
   for(let item of it) acc = fn(acc, item, i++, it);
   return acc;

@@ -16,7 +16,7 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 
-var __assign = function () {
+var __assign = function() {
   __assign =
     Object.assign ||
     function __assign(t) {
@@ -72,13 +72,13 @@ function __generator(thisArg, body) {
     g;
   return ((g = { next: verb(0), throw: verb(1), return: verb(2) }),
     typeof Symbol === 'function' &&
-      (g[Symbol.iterator] = function () {
+      (g[Symbol.iterator] = function() {
         return this;
       }),
     g
   );
   function verb(n) {
-    return function (v) {
+    return function(v) {
       return step([n, v]);
     };
   }
@@ -169,7 +169,7 @@ function __asyncValues(o) {
   function verb(n) {
     i[n] =
       o[n] &&
-      function (v) {
+      function(v) {
         return new Promise((resolve, reject) => {
           (v = o[n](v)), settle(resolve, reject, v.done, v.value);
         });
@@ -212,7 +212,7 @@ function semaphore(limit) {
     }
   }, new FixedBuffer(limit));
   return new Repeater((push, stop) =>
-    __awaiter(_this, void 0, void 0, function () {
+    __awaiter(_this, void 0, void 0, function() {
       let stopped, _a, _b, token, e_1_1;
       let e_1, _c;
       return __generator(this, (_d) => {
@@ -282,9 +282,9 @@ function throttler(wait, options) {
     throw new RangeError('options.limit cannot be less than 1');
   }
   return new Repeater((push, stop) =>
-    __awaiter(_this, void 0, void 0, function () {
+    __awaiter(_this, void 0, void 0, function() {
       function leak() {
-        return __awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function() {
           let tokens_1, tokens_1_1, token;
           let e_3, _a;
           return __generator(this, (_b) => {

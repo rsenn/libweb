@@ -1229,7 +1229,7 @@ class Parser {
     for(let name of Util.getMethodNames(this)) {
       if(name.startsWith('parse_')) {
         let fn = this[name];
-        parser[name] = function () {
+        parser[name] = function() {
           const args = [...arguments];
           this.depth += 1;
           let indent = '  '.repeat(this.depth);

@@ -71,7 +71,7 @@ function emulateArray(obj, update, dotPath) {
 
       if(property in Array.prototype) {
         //TODO: what about non-fns?
-        return function () {
+        return function() {
           return Array.prototype[property].apply(obj, arguments);
         };
       }

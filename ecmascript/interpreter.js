@@ -154,7 +154,7 @@ export class ECMAScriptInterpreter {
     fn =
       this['eval' + name] ||
       //(() => '') ||
-      function (...args) {
+      function(...args) {
         args = args.map((a) => Util.className(a));
         if(node instanceof ESNode) {
           console.log('node:', ESNode.assoc(node).position.toString());

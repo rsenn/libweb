@@ -217,7 +217,7 @@ export class Lexer {
   static token(obj) {
     Object.setPrototypeOf(obj, Token.prototype);
 
-    let toString = function () {
+    let toString = function() {
       return Lexer.tokenName(this.tok) + ' ' + this.str;
     };
     Util.define(obj, { toString });

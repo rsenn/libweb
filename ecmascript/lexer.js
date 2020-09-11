@@ -56,12 +56,12 @@ export class SyntaxError extends Error {
   }
 }
 
-SyntaxError.prototype.toString = function () {
+SyntaxError.prototype.toString = function() {
   const { msg, pos, ctx } = this;
   return pos + ': ' + (ctx ? ctx + ' error: ' : '') + msg;
 };
 
-SyntaxError.prototype[Symbol.toStringTag] = function () {
+SyntaxError.prototype[Symbol.toStringTag] = function() {
   return this.toString();
 };
 
@@ -106,12 +106,12 @@ export function Position(line, column, pos, file, freeze = true) {
   return freeze && obj.constructor === Position ? Object.freeze(obj) : obj;
 }
 
-Position.prototype.clone = function (freeze = false, withFilename = true) {
+Position.prototype.clone = function(freeze = false, withFilename = true) {
   const { line, column, pos, file } = this;
 
   return new Position(line, column, pos, withFilename ? file : null, freeze);
 };
-Position.prototype[Symbol.toStringTag] = function (n, opts) {
+Position.prototype[Symbol.toStringTag] = function(n, opts) {
   const { showFilename = true, colors = false } = opts || {};
   let c = Util.coloring(colors);
 
@@ -127,10 +127,10 @@ Position.prototype[Symbol.iterator] = function* () {
   let v = file ? [file, line, column] : [line, column];
   yield* v;
 };
-Position.prototype.toString = function () {
+Position.prototype.toString = function() {
   return this[Symbol.toStringTag](0, { colors: false });
 };
-Position.prototype[Symbol.for('nodejs.util.inspect.custom')] = function (n, opts) {
+Position.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts) {
   return Util.toString(this, { colors: true, ...opts, toString: Symbol.toStringTag });
 };
 /*
@@ -170,7 +170,7 @@ Range.prototype = { ...Position.prototype, constructor: Range };
 //new Position(0, 0, 0, undefined, false);
 //Range.prototype.constructor = Range;
 
-Range.prototype[Symbol.toStringTag] = function (n, opts = {}) {
+Range.prototype[Symbol.toStringTag] = function(n, opts = {}) {
   const { showFile = true, colors = false } = opts;
 
   const { file, line, column, pos, length } = this;
@@ -178,19 +178,19 @@ Range.prototype[Symbol.toStringTag] = function (n, opts = {}) {
   return `${f || ''}${line}:${column} - ${f || ''}${line}:${column + length}`;
 };
 
-Range.prototype.toString = function (showFile = true) {
+Range.prototype.toString = function(showFile = true) {
   const { file, line, column, pos, length } = this;
   const f = file && showFile ? `${file}:` : '';
   return `${f}${line}:${column} - ${f}${line}:${column + length}`;
 };
-Range.prototype.toString = function () {
+Range.prototype.toString = function() {
   return this[Symbol.toStringTag](0, { colors: false });
 };
-Range.prototype[Symbol.for('nodejs.util.inspect.custom')] = function (n, opts = {}) {
+Range.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts = {}) {
   return Util.toString(this, { ...opts, toString: Symbol.toStringTag });
 };
 
-Range.prototype.in = function (other) {
+Range.prototype.in = function(other) {
   if(other instanceof Position) {
     let pos = other.valueOf();
     return this.start.valueOf() <= pos && pos <= this.end.valueOf();
@@ -216,7 +216,7 @@ Object.defineProperties(Range.prototype, {
   }
 });
 
-Range.prototype.valueOf = function () {
+Range.prototype.valueOf = function() {
   return [this.pos, this.pos + this.length];
 };
 
@@ -517,7 +517,7 @@ export class Lexer {
   lineRange(start, end) {
     let lines = this.source.split(/\n/g).entries();
     lines = lines.slice(start, end);
-    lines.print = function () {
+    lines.print = function() {
       for(let [lineno, str] of this) console.log(`${lineno.padStart(10)}: ${str}`);
     };
     return lines;
@@ -747,7 +747,7 @@ export class Lexer {
 
       return this.lexTemplate(this.inSubst);
     }
-    return function () {
+    return function() {
       let prevChar = '';
       let c = '';
       let escapeEncountered = false;

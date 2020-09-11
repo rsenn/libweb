@@ -43,7 +43,7 @@ export function TRBL(arg) {
   if(!this || this === TRBL) return Object.assign(ret, TRBL.prototype);
 }
 
-TRBL.prototype.null = function () {
+TRBL.prototype.null = function() {
   return this.top == 0 && this.right == 0 && this.bottom == 0 && this.left == 0;
 };
 TRBL.null = (trbl) => TRBL.prototype.null.call(trbl);
@@ -55,7 +55,7 @@ TRBL.neg = (trbl = this) => ({
   left: -trbl.left
 });
 
-TRBL.prototype.isNaN = function () {
+TRBL.prototype.isNaN = function() {
   return isNaN(this.top) || isNaN(this.right) || isNaN(this.bottom) || isNaN(this.left);
 };
 Object.defineProperty(TRBL.prototype, 'inset', {
@@ -74,21 +74,21 @@ Object.defineProperty(TRBL.prototype, 'outset', {
   return this.inset.call(TRBL.neg(this));
 };*/
 
-TRBL.prototype.add = function (other) {
+TRBL.prototype.add = function(other) {
   this.top += other.top;
   this.right += other.right;
   this.bottom += other.bottom;
   this.left += other.left;
 };
 
-TRBL.prototype.union = function (other) {
+TRBL.prototype.union = function(other) {
   this.top = other.top < this.top ? other.top : this.top;
   this.right = other.right > this.right ? other.right : this.right;
   this.bottom = other.bottom > this.bottom ? other.bottom : this.bottom;
   this.left = other.left < this.left ? other.left : this.left;
 };
 
-TRBL.prototype.toRect = function () {
+TRBL.prototype.toRect = function() {
   return new Rect({
     x: this.left,
     y: this.top,
@@ -96,7 +96,7 @@ TRBL.prototype.toRect = function () {
     height: this.bottom - this.top
   });
 };
-TRBL.prototype.toRect = function () {
+TRBL.prototype.toRect = function() {
   return new Rect({
     x: this.left,
     y: this.top,
@@ -114,10 +114,10 @@ TRBL.union = (trbl, other) => ({
 
 TRBL.toRect = (trbl) => new Rect(trbl.left, trbl.top, trbl.right - trbl.left, trbl.bottom - trbl.top);
 
-TRBL.prototype.toString = function (unit = 'px') {
+TRBL.prototype.toString = function(unit = 'px') {
   return '' + this.top + '' + unit + ' ' + this.right + '' + unit + ' ' + this.bottom + '' + unit + ' ' + this.left + unit;
 };
-TRBL.prototype.toSource = function () {
+TRBL.prototype.toSource = function() {
   return '{top:' + this.top + ',right:' + this.right + ',bottom:' + this.bottom + ',left:' + this.left + '}';
 };
 
@@ -129,7 +129,7 @@ export function isTRBL(obj) {
   return top in obj && right in obj && bottom in obj && left in obj;
 }
 
-Util.defineGetter(TRBL, Symbol.species, function () {
+Util.defineGetter(TRBL, Symbol.species, function() {
   return this;
 });
 export const ImmutableTRBL = Util.immutableClass(TRBL);

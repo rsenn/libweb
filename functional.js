@@ -53,22 +53,22 @@ export class Functional {
 
   static isplain = (() => {
     let iscons, isobject, isobjobj, isprot, isprotobj;
-    isobject = function (o) {
+    isobject = function(o) {
       return !!o && typeof o === 'object';
     };
-    isobjobj = function (o) {
+    isobjobj = function(o) {
       return this.isobject(o) && Object.prototype.toString.call(o) === '[object Object]';
     };
-    iscons = function (o) {
+    iscons = function(o) {
       return typeof o.constructor === 'function';
     };
-    isprot = function (o) {
+    isprot = function(o) {
       return this.isobjobj(o.constructor.prototype);
     };
-    isprotobj = function (o) {
+    isprotobj = function(o) {
       return o.constructor.prototype.hasOwnProperty('isPrototypeOf');
     };
-    return function (o) {
+    return function(o) {
       return this.isobjobj(o) && this.iscons(o) && this.isprot(o) && this.isprotobj(o);
     };
   })();
@@ -97,47 +97,47 @@ export class Functional {
     let ret = ((n) => {
       switch (n) {
         case 0:
-          return function () {
+          return function() {
             return fn.apply(null, arguments);
           };
         case 1:
-          return function (a) {
+          return function(a) {
             return fn.apply(null, arguments);
           };
         case 2:
-          return function (a, b) {
+          return function(a, b) {
             return fn.apply(null, arguments);
           };
         case 3:
-          return function (a, b, c) {
+          return function(a, b, c) {
             return fn.apply(null, arguments);
           };
         case 4:
-          return function (a, b, c, d) {
+          return function(a, b, c, d) {
             return fn.apply(null, arguments);
           };
         case 5:
-          return function (a, b, c, d, e) {
+          return function(a, b, c, d, e) {
             return fn.apply(null, arguments);
           };
         case 6:
-          return function (a, b, c, d, e, f) {
+          return function(a, b, c, d, e, f) {
             return fn.apply(null, arguments);
           };
         case 7:
-          return function (a, b, c, d, e, f, g) {
+          return function(a, b, c, d, e, f, g) {
             return fn.apply(null, arguments);
           };
         case 8:
-          return function (a, b, c, d, e, f, g, h) {
+          return function(a, b, c, d, e, f, g, h) {
             return fn.apply(null, arguments);
           };
         case 9:
-          return function (a, b, c, d, e, f, g, h, i) {
+          return function(a, b, c, d, e, f, g, h, i) {
             return fn.apply(null, arguments);
           };
         case 10:
-          return function (a, b, c, d, e, f, g, h, i, j) {
+          return function(a, b, c, d, e, f, g, h, i, j) {
             return fn.apply(null, arguments);
           };
       }
@@ -149,7 +149,7 @@ export class Functional {
   static arity(fn, n) {
     if(arguments.length === 1) {
       n = fn;
-      return function (fn) {
+      return function(fn) {
         return Functional._nary(n, fn);
       };
     }
@@ -164,17 +164,17 @@ export class Functional {
   };
 
   static unary = (fn) =>
-    function (a) {
+    function(a) {
       return fn.apply(null, arguments);
     };
 
   static binary = (fn) =>
-    function (a, b) {
+    function(a, b) {
       return fn.apply(null, arguments);
     };
 
   static ternary = (fn) =>
-    function (a, b, c) {
+    function(a, b, c) {
       return fn.apply(null, arguments);
     };
 
@@ -194,7 +194,7 @@ export class Functional {
       throw new Error('Bad ncurry ' + n);
     }
     l = n - as.length;
-    nf = this._nary(l, function () {
+    nf = this._nary(l, function() {
       let bs, cs;
       bs = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       cs = (bs.length <= l ? bs : v ? bs : bs.slice(0, l)).concat(as);
@@ -221,7 +221,7 @@ export class Functional {
           return f2;
         } else if(n === 1) {
           b = a;
-          return function (a) {
+          return function(a) {
             return f(a, b);
           };
         }
@@ -241,7 +241,7 @@ export class Functional {
           return f2;
         } else if(n === 1) {
           b = a;
-          return function (a) {
+          return function(a) {
             return f.apply(null, slice1.call(arguments).concat([b]));
           };
         }
@@ -265,7 +265,7 @@ export class Functional {
         } else if(n === 2) {
           c = b;
           b = a;
-          return function (a) {
+          return function(a) {
             return f(a, b, c);
           };
         }
@@ -291,7 +291,7 @@ export class Functional {
         } else if(n === 2) {
           c = b;
           b = a;
-          return function (a) {
+          return function(a) {
             return f.apply(null, slice1.call(arguments).concat([b], [c]));
           };
         }
@@ -328,7 +328,7 @@ export class Functional {
     (f = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []);
     f = this._uncurry(f);
     n = this.arityof(f) - as.length;
-    fn = function () {
+    fn = function() {
       let bs;
       bs = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       return f.apply(null, as.concat(bs));
@@ -344,7 +344,7 @@ export class Functional {
     (f = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []);
     f = this._uncurry(f);
     n = this.arityof(f) - as.length;
-    fn = function () {
+    fn = function() {
       let bs;
       bs = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       return f.apply(null, bs.slice(0, n).concat(as));
@@ -377,7 +377,7 @@ export class Functional {
       true,
       Functional.fold1(fs,
         (f, g) =>
-          function () {
+          function() {
             let as;
             as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
             return f(g.apply(null, as));
@@ -392,7 +392,7 @@ export class Functional {
     fs = this._pliftall(fs);
     fn = this.foldr1(fs,
       (f, g) =>
-        function () {
+        function() {
           let as;
           as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
           return f(g.apply(null, as));
@@ -411,7 +411,7 @@ export class Functional {
     fs = this._pliftall(fs);
     after = this.plift(after);
     ar = this.apply(Math.max)(this.map(fs, arityof));
-    fn = function () {
+    fn = function() {
       let args, context;
       args = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       context = this;
@@ -439,12 +439,12 @@ export class Functional {
   });
 
   static apply = (fn) =>
-    function (as) {
+    function(as) {
       return fn.apply(null, as);
     };
 
   static unapply = (fn) =>
-    function () {
+    function() {
       let as;
       as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       return fn(as);
@@ -488,7 +488,7 @@ export class Functional {
   static once = (fn) => {
     let ran, ret;
     ran = ret = null;
-    return function () {
+    return function() {
       let as;
       as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       if(ran) {
@@ -1009,7 +1009,7 @@ export class Functional {
   static zipobj = (() => {
     let fn;
     fn = (obj) => this.zipwith((k, v) => this.set(obj, k, v));
-    return function (ks, vs) {
+    return function(ks, vs) {
       let ret;
       fn((ret = {}))(ks, vs);
       return ret;
@@ -1018,10 +1018,10 @@ export class Functional {
 
   static eql = (() => {
     let eqarr, eqobj, eqplain, eqtype, sortstr;
-    eqtype = function (a, b) {
+    eqtype = function(a, b) {
       return Functional.type(a) === Functional.type(b);
     };
-    eqarr = function (a, b) {
+    eqarr = function(a, b) {
       let i, q, ref;
       if(a.length !== b.length) {
         return false;
@@ -1033,12 +1033,12 @@ export class Functional {
       }
       return true;
     };
-    eqplain = function (a, b) {
+    eqplain = function(a, b) {
       return Functional.isplain(a) && Functional.isplain(b);
     };
     sortstr = Functional.sort((s1, s2) => s1.localeCompare(s2));
 
-    eqobj = function (a, b) {
+    eqobj = function(a, b) {
       let k, ka, len1, q;
       ka = sortstr(this.keys(a));
       if(!eqarr(ka, sortstr(this.keys(b)))) {
@@ -1082,15 +1082,15 @@ export class Functional {
   static expose = (() => {
     let guard;
     guard = '__fnuc';
-    return function (exp) {
-      return function () {
+    return function(exp) {
+      return function() {
         let as, fns, ks, obj, ofexp, props, valid;
         (obj = arguments[0]), (as = 2 <= arguments.length ? slice1.call(arguments, 1) : []);
         if(obj[guard]) {
           return;
         }
         ofexp = Functional.partial(get, exp);
-        valid = function (as) {
+        valid = function(as) {
           return Functional.map(as, (a) => {
             if(ofexp(a)) {
               return a;

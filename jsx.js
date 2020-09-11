@@ -8,7 +8,7 @@ let specalTag = oneObject('xmp,style,script,noscript,textarea,template,#comment'
 
 let hiddenTag = oneObject('style,script,noscript,template');
 
-var JSXParser = function (a, f) {
+var JSXParser = function(a, f) {
   if(!(this instanceof JSXParser)) {
     return parse(a, f);
   }
@@ -45,7 +45,7 @@ function lexer(string, getOne) {
   let origString = string;
   let origLength = string.length;
 
-  stack.last = function () {
+  stack.last = function() {
     return stack[stack.length - 1];
   };
   let ret = [];

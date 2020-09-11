@@ -78,7 +78,7 @@ export class ReactComponent {
       root = root || render_to;
       render_to = (component) => require('react-dom').render(component, root || render_to);
     }
-    let ret = function (...args) {
+    let ret = function(...args) {
       let ret = ReactComponent.create(...args);
       return ret;
     };

@@ -5,7 +5,7 @@ export function SpatialHash(range, bucketSize) {
   this.init();
 }
 
-SpatialHash.prototype.init = function () {
+SpatialHash.prototype.init = function() {
   let b = getBounds(this.range),
     bucketSize = this.bucketSize;
 
@@ -32,7 +32,7 @@ SpatialHash.prototype.init = function () {
   this.nId = -9e15;
 };
 
-SpatialHash.prototype.insert = function (item) {
+SpatialHash.prototype.insert = function(item) {
   if(!item.range) return;
   let b = getBounds(item.range),
     bucketSize = this.bucketSize;
@@ -60,7 +60,7 @@ SpatialHash.prototype.insert = function (item) {
   else if(this.nId > 9e15 - 1) this.nId = -9e15;
 };
 
-SpatialHash.prototype.remove = function (item) {
+SpatialHash.prototype.remove = function(item) {
   if(!item.b) return;
 
   let x1 = item.b.x1;
@@ -82,12 +82,12 @@ SpatialHash.prototype.remove = function (item) {
   this.itemCount--;
 };
 
-SpatialHash.prototype.update = function (item) {
+SpatialHash.prototype.update = function(item) {
   this.remove(item);
   this.insert(item);
 };
 
-SpatialHash.prototype.srch = function (range, selector, callback, returnOnFirst) {
+SpatialHash.prototype.srch = function(range, selector, callback, returnOnFirst) {
   let b = getBounds(range),
     bucketSize = this.bucketSize;
 
@@ -124,15 +124,15 @@ SpatialHash.prototype.srch = function (range, selector, callback, returnOnFirst)
   return o;
 };
 
-SpatialHash.prototype.any = function (range) {
+SpatialHash.prototype.any = function(range) {
   return this.srch(range, null, null, true);
 };
 
-SpatialHash.prototype.query = function (range, selector) {
+SpatialHash.prototype.query = function(range, selector) {
   return this.srch(range, selector, null, false);
 };
 
-SpatialHash.prototype.find = function (range, callback) {
+SpatialHash.prototype.find = function(range, callback) {
   return this.srch(range, null, callback, false);
 };
 

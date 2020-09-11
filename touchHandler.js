@@ -27,7 +27,7 @@ export function MovementListener(handler, options) {
   options = { step: 1, round: false, angle: false, noscroll: true, ...options };
   //console.log("new MovementListener(", handler, ",", options, ")");
 
-  var self = function (event) {
+  var self = function(event) {
     const { nativeEvent, button, buttons } = event;
     let currentTarget = nativeEvent ? nativeEvent.currentTarget : event.currentTarget;
 
@@ -173,7 +173,7 @@ export function MultitouchListener(handler, options) {
     //console.log('MultitouchListener cancelled');
   });
 
-  var self = function (event) {
+  var self = function(event) {
     let type = event.type;
     let started = type.endsWith('start') || type.endsWith('down');
     let ends = type.endsWith('end') || type.endsWith('cancel') || type.endsWith('up');
@@ -327,7 +327,7 @@ export function SelectionListener(handler, options) {
     event.cancel();
     return;
   }
-  let callback = function (event) {
+  let callback = function(event) {
     const { start, x, y, type } = event;
     event.cancel.subscribe(cancel);
 
@@ -440,7 +440,7 @@ export const TouchHandler = (handle, options) => {
   let running = false;
   //console.log("new TouchHandler ", { handle, options });
 
-  let fn = function (event) {
+  let fn = function(event) {
     const { nativeEvent } = event;
     event = typeof event.type == 'string' && event.type.length >= 1 ? event : nativeEvent;
     const { type } = event;

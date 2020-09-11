@@ -15,7 +15,7 @@
 
 //Map array support
 if(![].map) {
-  Array.prototype.map = function (callback, self) {
+  Array.prototype.map = function(callback, self) {
     let array = this;
     let len = array.length;
     let newArray = new Array(len);
@@ -30,7 +30,7 @@ if(![].map) {
 
 //Filter array support
 if(![].filter) {
-  Array.prototype.filter = function (callback) {
+  Array.prototype.filter = function(callback) {
     if(this == null) throw new TypeError();
     let t = Object(this);
     let len = t.length >>> 0;
@@ -49,7 +49,7 @@ if(![].filter) {
 
 //Index of array support
 if(![].indexOf) {
-  Array.prototype.indexOf = function (searchElement) {
+  Array.prototype.indexOf = function(searchElement) {
     if(this == null) throw new TypeError();
     let t = Object(this);
     let len = t.length >>> 0;
@@ -80,7 +80,7 @@ if(![].indexOf) {
  */
 let nativeSplit = String.prototype.split;
 let compliantExecNpcg = /()??/.exec('')[1] === undefined;
-String.prototype.split = function (separator, limit) {
+String.prototype.split = function(separator, limit) {
   let str = this;
   if(Object.prototype.toString.call(separator) !== '[object RegExp]') {
     return nativeSplit.call(str, separator, limit);
@@ -103,7 +103,7 @@ String.prototype.split = function (separator, limit) {
     if(lastIndex > lastLastIndex) {
       output.push(str.slice(lastLastIndex, match.index));
       if(!compliantExecNpcg && match.length > 1) {
-        match[0].replace(separator2, function () {
+        match[0].replace(separator2, function() {
           for(let i = 1; i < arguments.length - 2; i++) {
             if(arguments[i] === undefined) {
               match[i] = undefined;

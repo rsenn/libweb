@@ -1,4 +1,4 @@
-window.onload = function () {
+window.onload = function() {
   //{ constants
   let MAX_BODIES = 15;
   let MAX_SIZE = [90, 90];
@@ -16,11 +16,11 @@ window.onload = function () {
   let bodies = [],
     body;
 
-  let rand = function (min, max) {
+  let rand = function(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
   };
 
-  draw.body = function (body) {
+  draw.body = function(body) {
     draw.color('blue');
     draw.circle(body.fix, 2);
     draw.color('green');
@@ -32,7 +32,7 @@ window.onload = function () {
     }
   };
 
-  draw.clear = function () {
+  draw.clear = function() {
     draw.ctx.clearRect(0, 0, SCENE_W, SCENE_H);
   };
 
@@ -46,7 +46,7 @@ window.onload = function () {
     draw.body(body);
   }
 
-  canvas.ondblclick = function () {
+  canvas.ondblclick = function() {
     for(let i = 0; i < MAX_BODIES; i++) {
       bodies[i].move = body.fix;
     }

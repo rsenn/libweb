@@ -454,7 +454,7 @@ export async function GetPortableFileSystem() {
 }
 
 export async function PortableFileSystem(fn = (fs) => true) {
-  return await Util.memoize(async function () {
+  return await Util.memoize(async function() {
     const fs = await GetPortableFileSystem();
 
     try {

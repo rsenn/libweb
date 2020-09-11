@@ -58,13 +58,13 @@ function __generator(thisArg, body) {
     g;
   return ((g = { next: verb(0), throw: verb(1), return: verb(2) }),
     typeof Symbol === 'function' &&
-      (g[Symbol.iterator] = function () {
+      (g[Symbol.iterator] = function() {
         return this;
       }),
     g
   );
   function verb(n) {
-    return function (v) {
+    return function(v) {
       return step([n, v]);
     };
   }
@@ -141,7 +141,7 @@ let InMemoryPubSub = /** @class */ (function () {
   function InMemoryPubSub() {
     this.publishers = {};
   }
-  InMemoryPubSub.prototype.publish = function (topic, value) {
+  InMemoryPubSub.prototype.publish = function(topic, value) {
     let e_1, _a;
     let publishers = this.publishers[topic];
     if(publishers != null) {
@@ -168,7 +168,7 @@ let InMemoryPubSub = /** @class */ (function () {
       }
     }
   };
-  InMemoryPubSub.prototype.unpublish = function (topic, reason) {
+  InMemoryPubSub.prototype.unpublish = function(topic, reason) {
     let e_2, _a;
     let publishers = this.publishers[topic];
     if(publishers == null) {
@@ -190,15 +190,15 @@ let InMemoryPubSub = /** @class */ (function () {
     }
     publishers.clear();
   };
-  InMemoryPubSub.prototype.subscribe = function (topic, buffer) {
+  InMemoryPubSub.prototype.subscribe = function(topic, buffer) {
     let _this = this;
     if(this.publishers[topic] == null) {
       this.publishers[topic] = new Set();
     }
     return new Repeater((push, stop) =>
-        __awaiter(_this, void 0, void 0, function () {
+        __awaiter(_this, void 0, void 0, function() {
           let publisher;
-          return __generator(this, function (_a) {
+          return __generator(this, function(_a) {
             switch (_a.label) {
               case 0:
                 publisher = { push, stop };
@@ -214,7 +214,7 @@ let InMemoryPubSub = /** @class */ (function () {
       buffer
     );
   };
-  InMemoryPubSub.prototype.close = function (reason) {
+  InMemoryPubSub.prototype.close = function(reason) {
     let e_3, _a;
     try {
       for(var _b = __values(Object.keys(this.publishers)), _c = _b.next(); !_c.done; _c = _b.next()) {

@@ -24,7 +24,7 @@ let appenders = {};
 
 //This is the method for logging.  It passes off to the
 //appenders to perform the actual logging.
-let log = function (type, message, url, lineNumber) {
+let log = function(type, message, url, lineNumber) {
   let now = new Date().getTime();
 
   if(message instanceof Error) {
@@ -61,21 +61,21 @@ win.onerror = function onErrorLogJS(message, url, lineNumber) {
 
 //--------------------------------------------------------------------------------------------------
 
-LogJS.error = function (message, url, lineNumber) {
+LogJS.error = function(message, url, lineNumber) {
   log(LogJS.ERROR, message, url, lineNumber);
 };
 
-LogJS.warn = function (message, url, lineNumber) {
+LogJS.warn = function(message, url, lineNumber) {
   log(LogJS.WARN, message, url, lineNumber);
 };
 
-LogJS.info = function (message, url, lineNumber) {
+LogJS.info = function(message, url, lineNumber) {
   log(LogJS.INFO, message, url, lineNumber);
 };
 
 //--------------------------------------------------------------------------------------------------
 
-LogJS.addAppender = function (appender) {
+LogJS.addAppender = function(appender) {
   if(appender !== undefined) {
     appender = new appender(LogJS.config);
     if(appender.LOGJSAPPENDER) {
@@ -84,11 +84,11 @@ LogJS.addAppender = function (appender) {
   }
 };
 
-LogJS.getAppender = function (appenderName) {
+LogJS.getAppender = function(appenderName) {
   return appenders[appenderName];
 };
 
-LogJS.getRegisteredAppenders = function () {
+LogJS.getRegisteredAppenders = function() {
   let registered = [];
   for(let appender in appenders) {
     if(appenders.hasOwnProperty(appender)) {
@@ -108,7 +108,7 @@ Object.defineProperty(LogJS, 'config', {
 //--------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-LogJS.BaseAppender = function () {};
+LogJS.BaseAppender = function() {};
 
 Object.defineProperty(LogJS.BaseAppender.prototype, 'LOGJSAPPENDER', {
   configurable: false,
@@ -117,9 +117,9 @@ Object.defineProperty(LogJS.BaseAppender.prototype, 'LOGJSAPPENDER', {
   enumerable: false
 });
 
-LogJS.BaseAppender.prototype.log = function (type, message, url, lineNumber) {};
+LogJS.BaseAppender.prototype.log = function(type, message, url, lineNumber) {};
 
-LogJS.BaseAppender.prototype.configOpt = function (key, config, optValue) {
+LogJS.BaseAppender.prototype.configOpt = function(key, config, optValue) {
   return (config[this.name] && config[this.name][key]) || optValue;
 };
 
@@ -140,7 +140,7 @@ if(typeof angular !== 'undefined') {
     this.config = LogJS.config;
     let self = this;
 
-    this.debugEnabled = function (flag) {
+    this.debugEnabled = function(flag) {
       if(typeof flag !== 'undefined') {
         this.config.global = {
           debug: flag
@@ -150,7 +150,7 @@ if(typeof angular !== 'undefined') {
       return this.config.global.debug;
     };
 
-    this.$get = function () {
+    this.$get = function() {
       let angularLogJS = {};
       ['error', 'info', 'debug', 'log', 'warn'].forEach((e) => {
         let method = LogJS.info;
@@ -158,7 +158,7 @@ if(typeof angular !== 'undefined') {
           method = LogJS[e];
         }
         angularLogJS[e] = (function (method, e) {
-          return function () {
+          return function() {
             if(e !== 'debug' || self.config.global.debug) {
               method.apply(LogJS, arguments);
             }

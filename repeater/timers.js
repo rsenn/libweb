@@ -16,14 +16,14 @@ and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
 
-var extendStatics = function (d, b) {
+var extendStatics = function(d, b) {
   extendStatics =
     Object.setPrototypeOf ||
     ({ __proto__: [] } instanceof Array &&
-      function (d, b) {
+      function(d, b) {
         d.__proto__ = b;
       }) ||
-    function (d, b) {
+    function(d, b) {
       for(let p in b) if(b.hasOwnProperty(p)) d[p] = b[p];
     };
   return extendStatics(d, b);
@@ -80,13 +80,13 @@ function __generator(thisArg, body) {
     g;
   return ((g = { next: verb(0), throw: verb(1), return: verb(2) }),
     typeof Symbol === 'function' &&
-      (g[Symbol.iterator] = function () {
+      (g[Symbol.iterator] = function() {
         return this;
       }),
     g
   );
   function verb(n) {
-    return function (v) {
+    return function(v) {
       return step([n, v]);
     };
   }
@@ -159,7 +159,7 @@ function __values(o) {
   };
 }
 
-let TimeoutError = /** @class */ (function (_super) {
+export const TimeoutError = /** @class */ (function (_super) {
   __extends(TimeoutError, _super);
   function TimeoutError(message) {
     let _newTarget = this.constructor;
@@ -180,7 +180,8 @@ let TimeoutError = /** @class */ (function (_super) {
   }
   return TimeoutError;
 })(Error);
-let Timer = /** @class */ (function () {
+
+export const Timer = /** @class */ (function () {
   function Timer(wait) {
     let _this = this;
     this.wait = wait;
@@ -189,7 +190,7 @@ let Timer = /** @class */ (function () {
       _this.reject = reject;
     });
   }
-  Timer.prototype.run = function (fn) {
+  Timer.prototype.run = function(fn) {
     let _this = this;
     if(this.timeout != null) {
       throw new Error('Cannot run a timer multiple times');
@@ -203,7 +204,7 @@ let Timer = /** @class */ (function () {
       }
     }, this.wait);
   };
-  Timer.prototype.clear = function () {
+  Timer.prototype.clear = function() {
     clearTimeout(this.timeout);
     // In code below, this method is only called after the repeater is
     // stopped. Because repeaters swallow rejections which settle after stop, we
@@ -216,7 +217,7 @@ let Timer = /** @class */ (function () {
 function delay(wait) {
   let _this = this;
   return new Repeater((push, stop) =>
-    __awaiter(_this, void 0, void 0, function () {
+    __awaiter(_this, void 0, void 0, function() {
       let timers, stopped, _loop_1, timers_1, timers_1_1, timer;
       let e_1, _a;
       return __generator(this, (_b) => {
@@ -228,7 +229,7 @@ function delay(wait) {
             _b.label = 1;
           case 1:
             _b.trys.push([1, , 5, 6]);
-            _loop_1 = function () {
+            _loop_1 = function() {
               let timer;
               return __generator(this, (_a) => {
                 switch (_a.label) {
@@ -284,7 +285,7 @@ function delay(wait) {
 function timeout(wait) {
   let _this = this;
   return new Repeater((push, stop) =>
-    __awaiter(_this, void 0, void 0, function () {
+    __awaiter(_this, void 0, void 0, function() {
       let timer, stopped;
       return __generator(this, (_a) => {
         switch (_a.label) {
@@ -328,7 +329,7 @@ function interval(wait, buffer) {
     buffer = new SlidingBuffer(1);
   }
   return new Repeater((push, stop) =>
-      __awaiter(_this, void 0, void 0, function () {
+      __awaiter(_this, void 0, void 0, function() {
         let timer;
         return __generator(this, (_a) => {
           switch (_a.label) {
@@ -346,6 +347,8 @@ function interval(wait, buffer) {
     buffer
   );
 }
+export const Timers = { delay, interval, timeout };
 
-export { TimeoutError, delay, interval, timeout };
+//export { TimeoutError, Timers };
+export default { TimeoutError, ...Timers };
 //# sourceMappingURL=timers.esm.js.map

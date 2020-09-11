@@ -13,7 +13,7 @@ if(typeof Map !== 'undefined') {
   mapCtor = Map;
 
   if(!Map.prototype.keys) {
-    Map.prototype.keys = function () {
+    Map.prototype.keys = function() {
       let keys = [];
       this.forEach((item, key) => {
         keys.push(key);
@@ -45,7 +45,7 @@ export function Multimap(iterable) {
  * @param {Object} key
  * @return {Array} An array of values, undefined if no such a key;
  */
-Multimap.prototype.get = function (key) {
+Multimap.prototype.get = function(key) {
   return this._map ? this._.get(key) : this._[key];
 };
 
@@ -53,7 +53,7 @@ Multimap.prototype.get = function (key) {
  * @param {Object} key
  * @param {Object} val...
  */
-Multimap.prototype.set = function (key, val) {
+Multimap.prototype.set = function(key, val) {
   let args = Array.prototype.slice.call(arguments);
 
   key = args.shift();
@@ -74,7 +74,7 @@ Multimap.prototype.set = function (key, val) {
  * @param {Object=} val
  * @return {boolean} true if any thing changed
  */
-Multimap.prototype.delete = function (key, val) {
+Multimap.prototype.delete = function(key, val) {
   if(!this.has(key)) return false;
 
   if(arguments.length == 1) {
@@ -96,7 +96,7 @@ Multimap.prototype.delete = function (key, val) {
  * @param {Object=} val
  * @return {boolean} whether the map contains 'key' or 'key=>val' pair
  */
-Multimap.prototype.has = function (key, val) {
+Multimap.prototype.has = function(key, val) {
   let hasKey = this._map ? this._.has(key) : this._.hasOwnProperty(key);
 
   if(arguments.length == 1 || !hasKey) return hasKey;
@@ -108,7 +108,7 @@ Multimap.prototype.has = function (key, val) {
 /**
  * @return {Array} all the keys in the map
  */
-Multimap.prototype.keys = function () {
+Multimap.prototype.keys = function() {
   if(this._map) return makeIterator(this._.keys());
 
   return makeIterator(Object.keys(this._));
@@ -117,7 +117,7 @@ Multimap.prototype.keys = function () {
 /**
  * @return {Array} all the values in the map
  */
-Multimap.prototype.values = function () {
+Multimap.prototype.values = function() {
   let vals = [];
   this.forEachEntry((entry) => {
     Array.prototype.push.apply(vals, entry);
@@ -129,11 +129,11 @@ Multimap.prototype.values = function () {
 /**
  *
  */
-Multimap.prototype.forEachEntry = function (iter) {
+Multimap.prototype.forEachEntry = function(iter) {
   mapEach(this, iter);
 };
 
-Multimap.prototype.forEach = function (iter) {
+Multimap.prototype.forEach = function(iter) {
   let self = this;
   self.forEachEntry((entry, key) => {
     entry.forEach((item) => {
@@ -142,7 +142,7 @@ Multimap.prototype.forEach = function (iter) {
   });
 };
 
-Multimap.prototype.clear = function () {
+Multimap.prototype.clear = function() {
   if(this._map) {
     this._.clear();
   } else {

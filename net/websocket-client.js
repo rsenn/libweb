@@ -122,8 +122,8 @@ export class WebSocketClient {
     let ws = this;
     let socket = this._socket;
     return new Promise((resolve, reject) => {
-      let handleMessage = function (event) {
-        let messageEvent = function (event) {
+      let handleMessage = function(event) {
+        let messageEvent = function(event) {
           return;
         };
         // The cast was necessary because Flow's libdef's don't contain
@@ -134,10 +134,10 @@ export class WebSocketClient {
         }
         ws._receiveDataQueue.push(messageEvent.data);
       };
-      let handleOpen = function (event) {
+      let handleOpen = function(event) {
         socket.addEventListener('message', handleMessage);
         socket.addEventListener('close', (event) => {
-          ws._closeEvent = function (event) {
+          ws._closeEvent = function(event) {
             return;
           };
           // Whenever a close event fires, the socket is effectively dead.

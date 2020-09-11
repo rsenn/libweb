@@ -1,7 +1,7 @@
 (function () {
   function EventEmitter() {}
 
-  EventEmitter.prototype.on = function (event, handler) {
+  EventEmitter.prototype.on = function(event, handler) {
     if(typeof event !== 'string') throw new TypeError('The 1st argument is not a string');
     if(typeof handler !== 'function') throw new TypeError('The 2nd argument is not a function');
 
@@ -16,11 +16,11 @@
     return this;
   };
 
-  EventEmitter.prototype.once = function (event, handler) {
+  EventEmitter.prototype.once = function(event, handler) {
     if(typeof event !== 'string') throw new TypeError('The 1st argument is not a string');
     if(typeof handler !== 'function') throw new TypeError('The 2nd argument is not a function');
 
-    var emitFn = function () {
+    var emitFn = function() {
       handler.apply(this, arguments);
       this.off(event, emitFn);
     };
@@ -28,7 +28,7 @@
     return this.on(event, emitFn);
   };
 
-  EventEmitter.prototype.bindEventEmitter = function (target, event) {
+  EventEmitter.prototype.bindEventEmitter = function(target, event) {
     if(event !== undefined && typeof event !== 'string') {
       throw new TypeError('The 2nd argument is not a string');
     }
@@ -39,7 +39,7 @@
     this._events = target._events;
   };
 
-  EventEmitter.prototype.off = function (event, handler) {
+  EventEmitter.prototype.off = function(event, handler) {
     if(event !== undefined && typeof event !== 'string') {
       throw new TypeError('The 1st argument is not a string');
     }
@@ -70,7 +70,7 @@
     return this;
   };
 
-  EventEmitter.prototype.emit = function (event, args) {
+  EventEmitter.prototype.emit = function(event, args) {
     if(event !== undefined && typeof event !== 'string') {
       throw new TypeError('The 1st argument is not a string');
     }
@@ -85,7 +85,7 @@
     });
     return this;
   };
-  EventEmitter.bindPrototype = function (ctor) {
+  EventEmitter.bindPrototype = function(ctor) {
     ctor.prototype = Object.create(EventEmitter.prototype);
   };
   this.EventEmitter = EventEmitter;

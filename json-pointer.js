@@ -263,7 +263,7 @@ function getValueAtPath(target, path) {
 function compilePointerDereference(path) {
   let body = `if (typeof(obj) !== 'undefined'`;
   if(path.length === 0) {
-    return function (root) {
+    return function(root) {
       return root;
     };
   }
@@ -349,7 +349,7 @@ function pickDecoder(ptr) {
   return looksLikeFragment(ptr) ? decodeUriFragmentIdentifier : decodePointer;
 }
 
-JsonReference.isReference = function (obj) {
+JsonReference.isReference = function(obj) {
   return (obj && obj instanceof JsonReference) || (typeof obj.$ref === 'string' && typeof obj.resolve === 'function');
 };
 
@@ -418,40 +418,40 @@ function visit(target, visitor, cycle) {
   }
 }
 
-JsonPointer.prototype.set = function (target, value, force) {
+JsonPointer.prototype.set = function(target, value, force) {
   return setValueAtPath(target, value, this.path, force);
 };
 
-JsonPointer.prototype.toString = function () {
+JsonPointer.prototype.toString = function() {
   return this.original;
 };
 
-JsonPointer.create = function (ptr) {
+JsonPointer.create = function(ptr) {
   return new JsonPointer(ptr);
 };
 
-JsonPointer.has = function (target, ptr) {
+JsonPointer.has = function(target, ptr) {
   return hasValueAtPath(target, pickDecoder(ptr)(ptr));
 };
 
-JsonPointer.get = function (target, ptr) {
+JsonPointer.get = function(target, ptr) {
   return getValueAtPath(target, pickDecoder(ptr)(ptr));
 };
 
-JsonPointer.set = function (target, ptr, val, force) {
+JsonPointer.set = function(target, ptr, val, force) {
   return setValueAtPath(target, val, pickDecoder(ptr)(ptr), force);
 };
 
-JsonPointer.list = function (target, fragmentId) {
+JsonPointer.list = function(target, fragmentId) {
   let res = [];
   let visitor = fragmentId
-    ? function (ptr, val) {
+    ? function(ptr, val) {
         res.push({
           fragmentId: encodeUriFragmentIdentifier(decodePointer(ptr)),
           value: val
         });
       }
-    : function (ptr, val) {
+    : function(ptr, val) {
         res.push({
           pointer: ptr,
           value: val
@@ -461,23 +461,23 @@ JsonPointer.list = function (target, fragmentId) {
   return res;
 };
 
-JsonPointer.flatten = function (target, fragmentId) {
+JsonPointer.flatten = function(target, fragmentId) {
   let res = {};
   let visitor = fragmentId
-    ? function (ptr, val) {
+    ? function(ptr, val) {
         res[encodeUriFragmentIdentifier(decodePointer(ptr))] = val;
       }
-    : function (ptr, val) {
+    : function(ptr, val) {
         res[ptr] = val;
       };
   visit(target, visitor);
   return res;
 };
 
-JsonPointer.map = function (target, fragmentId) {
+JsonPointer.map = function(target, fragmentId) {
   let res = new Map();
   let visitor = fragmentId
-    ? function (ptr, val) {
+    ? function(ptr, val) {
         res.set(encodeUriFragmentIdentifier(decodePointer(ptr)), val);
       }
     : res.set.bind(res);
@@ -487,7 +487,7 @@ JsonPointer.map = function (target, fragmentId) {
 
 JsonPointer.visit = visit;
 
-JsonPointer.decode = function (ptr) {
+JsonPointer.decode = function(ptr) {
   return pickDecoder(ptr)(ptr);
 };
 
@@ -499,7 +499,7 @@ JsonPointer.encodeUriFragmentIdentifier = encodeUriFragmentIdentifier;
 JsonPointer.JsonReference = JsonReference;
 JsonPointer.isReference = JsonReference.isReference;
 
-JsonPointer.noConflict = function () {
+JsonPointer.noConflict = function() {
   root.JsonPointer = savedJsonPointer;
   return JsonPointer;
 };

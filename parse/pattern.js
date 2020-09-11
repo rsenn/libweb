@@ -34,14 +34,14 @@ export function Pattern(patterns, shift, match) {
   return ret;
 }
 
-Pattern.prototype.toString = function () {
+Pattern.prototype.toString = function() {
   let { tok, str } = this;
   if(tok == Lexer.tokens.STRING) str = "'" + str + "'";
 
   return (this.invert ? '~' : '') + Util.colorText(str, 1, this.tok == Lexer.tokens.REGEXP ? 35 : this.tok == Lexer.tokens.IDENTIFIER ? 33 : 36) + (this.repeat ? Util.colorText(this.repeat, 1, 34) : '');
 };
 
-Pattern.prototype.match = function (parser) {
+Pattern.prototype.match = function(parser) {
   let y = parser.clone();
   let lexer = y.lexer;
 
@@ -62,6 +62,6 @@ Pattern.prototype.match = function (parser) {
   return null;
 };
 
-Pattern.prototype[Symbol.for('nodejs.util.inspect.custom')] = function () {
+Pattern.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
   return this.toString();
 };

@@ -68,138 +68,138 @@ Object.defineProperties(Point.prototype, {
   }
 });
 
-Point.prototype.move = function (x, y) {
+Point.prototype.move = function(x, y) {
   this.x += x;
   this.y += y;
   return this;
 };
-Point.prototype.moveTo = function (x, y) {
+Point.prototype.moveTo = function(x, y) {
   this.x = x;
   this.y = y;
   return this;
 };
-Point.prototype.clear = function (x, y) {
+Point.prototype.clear = function(x, y) {
   this.x = 0;
   this.y = 0;
   return this;
 };
-Point.prototype.set = function (fn) {
+Point.prototype.set = function(fn) {
   if(typeof fn != 'function') {
     Point.apply(this, [...arguments]);
     return this;
   }
   return fn(this.x, this.y);
 };
-Point.prototype.clone = function () {
+Point.prototype.clone = function() {
   const ctor = this[Symbol.species] || this.constructor[Symbol.species];
 
   return new ctor({ x: this.x, y: this.y });
 };
-Point.prototype.sum = function (...args) {
+Point.prototype.sum = function(...args) {
   const p = new Point(...args);
   let r = new Point(this.x, this.y);
   r.x += p.x;
   r.y += p.y;
   return r;
 };
-Point.prototype.add = function (...args) {
+Point.prototype.add = function(...args) {
   const other = new Point(...args);
   this.x += other.x;
   this.y += other.y;
   return this;
 };
-Point.prototype.diff = function (arg) {
+Point.prototype.diff = function(arg) {
   let { x, y } = this;
-  let fn = function (other) {
+  let fn = function(other) {
     let r = new Point(x, y);
     return r.sub(other);
   };
   if(arg) return fn(arg);
   return fn;
 };
-Point.prototype.sub = function (...args) {
+Point.prototype.sub = function(...args) {
   const other = new Point(...args);
   this.x -= other.x;
   this.y -= other.y;
   return this;
 };
-Point.prototype.prod = function (f) {
+Point.prototype.prod = function(f) {
   const o = isPoint(f) ? f : { x: f, y: f };
   return new Point(this.x * o.x, this.y * o.y);
 };
-Point.prototype.mul = function (f) {
+Point.prototype.mul = function(f) {
   const o = isPoint(f) ? f : { x: f, y: f };
   this.x *= o.x;
   this.y *= o.y;
   return this;
 };
-Point.prototype.quot = function (other) {
+Point.prototype.quot = function(other) {
   other = isPoint(other) ? other : { x: other, y: other };
   return new Point(this.x / other.x, this.y / other.y);
 };
-Point.prototype.div = function (other) {
+Point.prototype.div = function(other) {
   other = isPoint(other) ? other : { x: other, y: other };
   this.x /= other.x;
   this.y /= other.y;
   return this;
 };
-Point.prototype.comp = function () {
+Point.prototype.comp = function() {
   return new Point({ x: -this.x, y: -this.y });
 };
-Point.prototype.neg = function () {
+Point.prototype.neg = function() {
   this.x *= -1;
   this.y *= -1;
   return this;
 };
-Point.prototype.distanceSquared = function (other = { x: 0, y: 0 }) {
+Point.prototype.distanceSquared = function(other = { x: 0, y: 0 }) {
   return (other.y - this.y) * (other.y - this.y) + (other.x - this.x) * (other.x - this.x);
 };
-Point.prototype.distance = function (other = { x: 0, y: 0 }) {
+Point.prototype.distance = function(other = { x: 0, y: 0 }) {
   return Math.sqrt(Point.prototype.distanceSquared.call(this, other));
 };
-Point.prototype.equals = function (other) {
+Point.prototype.equals = function(other) {
   //console.warn(`Point.equals`, this, other);
   return +this.x == +other.x && +this.y == +other.y;
 };
-Point.prototype.round = function (precision = 0.001, digits = 3, type = 'round') {
+Point.prototype.round = function(precision = 0.001, digits = 3, type = 'round') {
   let { x, y } = this;
   this.x = Util.roundTo(x, precision, digits, type);
   this.y = Util.roundTo(y, precision, digits, type);
   return this;
 };
-Point.prototype.ceil = function () {
+Point.prototype.ceil = function() {
   let { x, y } = this;
   this.x = Math.ceil(x);
   this.y = Math.ceil(y);
   return this;
 };
-Point.prototype.floor = function () {
+Point.prototype.floor = function() {
   let { x, y } = this;
   this.x = Math.floor(x);
   this.y = Math.floor(y);
   return this;
 };
 
-Point.prototype.dot = function (other) {
+Point.prototype.dot = function(other) {
   return this.x * other.x + this.y * other.y;
 };
 
-Point.prototype.values = function () {
+Point.prototype.values = function() {
   return [this.x, this.y];
 };
-Point.prototype.fromAngle = function (angle, dist = 1.0) {
+Point.prototype.fromAngle = function(angle, dist = 1.0) {
   this.x = Math.cos(angle) * dist;
   this.y = Math.sin(angle) * dist;
   return this;
 };
-Point.prototype.toAngle = function (deg = false) {
+Point.prototype.toAngle = function(deg = false) {
   return Math.atan2(this.x, this.y) * (deg ? 180 / Math.PI : 1);
 };
-Point.prototype.angle = function (other, deg = false) {
+Point.prototype.angle = function(other, deg = false) {
   other = other || { x: 0, y: 0 };
   return Point.prototype.diff.call(this, other).toAngle(deg);
 };
-Point.prototype.rotate = function (angle, origin = { x: 0, y: 0 }) {
+Point.prototype.rotate = function(angle, origin = { x: 0, y: 0 }) {
   this.x -= origin.x;
   this.y -= origin.y;
   let c = Math.cos(angle),
@@ -210,7 +210,7 @@ Point.prototype.rotate = function (angle, origin = { x: 0, y: 0 }) {
   this.y = ynew;
   return this;
 };
-Util.defineGetter(Point.prototype, Symbol.iterator, function () {
+Util.defineGetter(Point.prototype, Symbol.iterator, function() {
   const { x, y } = this;
   let a = [x, y];
   return a[Symbol.iterator].bind(a);
@@ -220,7 +220,7 @@ Util.defineGetter(Point.prototype, Symbol.iterator, function () {
   const { x, y } = this;
   return x | (y << shl);
 };
-*/ Point.prototype.toString = function (opts = {}) {
+*/ Point.prototype.toString = function(opts = {}) {
   const { precision = 0.001, unit = '', separator = ',', left = '', right = '' } = opts;
   const x = Util.roundTo(this.x, precision);
   const y = Util.roundTo(this.y, precision);
@@ -228,14 +228,14 @@ Util.defineGetter(Point.prototype, Symbol.iterator, function () {
 };
 Util.defineGetterSetter(Point.prototype,
   Symbol.toStringTag,
-  function () {
+  function() {
     return `Point{ ${Point.prototype.toSource.call(this)}`;
   },
   () => {},
   false
 );
 
-Point.prototype.toSource = function (opts = {}) {
+Point.prototype.toSource = function(opts = {}) {
   const { asArray = false, plainObj = false, pad = (a) => a /*a.padStart(4, ' ')*/, showNew = true } = opts;
   let x = pad(this.x + '');
   let y = pad(this.y + '');
@@ -250,28 +250,28 @@ Point.prototype.toSource = function (opts = {}) {
 /*Point.prototype.toSource = function() {
   return '{x:' + this.x + ',y:' + this.y + '}';
 };*/
-Point.prototype.toObject = function (proto = Point.prototype) {
+Point.prototype.toObject = function(proto = Point.prototype) {
   const { x, y } = this;
   const obj = { x, y };
   Object.setPrototypeOf(obj, proto);
   return obj;
 };
-Point.prototype.toCSS = function (precision = 0.001, edges = ['left', 'top']) {
+Point.prototype.toCSS = function(precision = 0.001, edges = ['left', 'top']) {
   return {
     [edges[0]]: Util.roundTo(this.x, precision) + 'px',
     [edges[1]]: Util.roundTo(this.y, precision) + 'px'
   };
 };
-Point.prototype.toFixed = function (digits) {
+Point.prototype.toFixed = function(digits) {
   return new Point(+this.x.toFixed(digits), +this.y.toFixed(digits));
 };
-Point.prototype.isNull = function () {
+Point.prototype.isNull = function() {
   return this.x == 0 && this.y == 0;
 };
-Point.prototype.inside = function (rect) {
+Point.prototype.inside = function(rect) {
   return this.x >= rect.x && this.x < rect.x + rect.width && this.y >= rect.y && this.y < rect.y + rect.height;
 };
-Point.prototype.transform = function (m) {
+Point.prototype.transform = function(m) {
   if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
   if(Util.isObject(m) && typeof m.transform_point == 'function') return m.transform_point(this);
 
@@ -283,13 +283,13 @@ Point.prototype.transform = function (m) {
 
   return this;
 };
-Point.prototype.scaleTo = function (minmax) {
+Point.prototype.scaleTo = function(minmax) {
   return new Point({
     x: (this.x - minmax.x1) / (minmax.x2 - minmax.x1),
     y: (this.y - minmax.y1) / (minmax.y2 - minmax.y1)
   });
 };
-Point.prototype.normal = function () {
+Point.prototype.normal = function() {
   let d = Point.prototype.distance.call(this);
   return new Point({ x: this.x / d, y: this.y / d });
 };
@@ -341,7 +341,7 @@ Point.bind = (...args) => {
 };
 export default Point;
 
-Util.defineGetter(Point, Symbol.species, function () {
+Util.defineGetter(Point, Symbol.species, function() {
   return this;
 });
 

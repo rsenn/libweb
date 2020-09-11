@@ -259,7 +259,7 @@ function parseMacroExpression(parser, expr) {
   }
 
   // parse addition and subtraction tokens
-  parseExpression = function () {
+  parseExpression = function() {
     let exp = parseMultiplication();
     let t = tokens[0];
     while(t === '+' || t === '-') {
@@ -301,7 +301,7 @@ function parseMacroExpression(parser, expr) {
   }
 
   // return the evaluation function bound to the parsed expression tree
-  return function (mods) {
+  return function(mods) {
     return evaluate(tree, mods);
   };
 }

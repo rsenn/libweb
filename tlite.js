@@ -45,7 +45,7 @@ export function tlite(getTooltipOpts) {
   });
 }
 
-tlite.show = function (el, opts, isAuto) {
+tlite.show = function(el, opts, isAuto) {
   opts = opts || {};
   let fallbackAttrib = /*opts.attrib ||*/ 'data-tlite';
 
@@ -194,7 +194,7 @@ if(elem)
   }
 }.bind(tlite);
 
-tlite.hide = function (el, isAuto, opts) {
+tlite.hide = function(el, isAuto, opts) {
   let tooltipEl = this.mapper.get(el);
   //const     [attr,text,elem] = opts.getTitle(el);
   /*if(elem)

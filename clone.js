@@ -9,21 +9,21 @@ export const clone = (function () {
   } catch(_) {
     //maybe a reference error because no `Map`. Give it a dummy value that no
     //value will ever be an instanceof.
-    nativeMap = function () {};
+    nativeMap = function() {};
   }
 
   let nativeSet;
   try {
     nativeSet = Set;
   } catch(_) {
-    nativeSet = function () {};
+    nativeSet = function() {};
   }
 
   let nativePromise;
   try {
     nativePromise = Promise;
   } catch(_) {
-    nativePromise = function () {};
+    nativePromise = function() {};
   }
 
   /**
@@ -205,7 +205,7 @@ export const clone = (function () {
   clone.clonePrototype = function clonePrototype(parent) {
     if(parent === null) return null;
 
-    let c = function () {};
+    let c = function() {};
     c.prototype = parent;
     return new c();
   };

@@ -21,7 +21,7 @@ export const httpClient = (() => {
   );
 
   let request = (fn, name = 'call') =>
-    async function () {
+    async function() {
       let args = [...arguments];
 
       if(typeof args[0] == 'string' && args[0].startsWith('/')) {

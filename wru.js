@@ -58,7 +58,7 @@ if(typeof global != 'undefined') {
     }
     slice = cbs.slice;
     global.setTimeout = global.setInterval = setTimeout;
-    global.clearInterval = global.clearTimeout = function () {};
+    global.clearInterval = global.clearTimeout = function() {};
   })(this, 0, []);
 }
 
@@ -255,9 +255,9 @@ export const wru = (function (window) {
         // if no description provided, variables are shifted
         // these are all valid wru.async calls indeed, timeout is optional
         // wru.async(function () { ... })
-        // wru.async("test description", function () { ... })
+        // wru.async("test description", function() { ... })
         // wru.async(function () { ... }, timeout)
-        // wru.async("test description", function () { ... }, timeout)
+        // wru.async("test description", function() { ... }, timeout)
         if(typeof description == 'function') {
           delay = callback || wru.timeout;
           callback = description;
@@ -343,7 +343,7 @@ export const wru = (function (window) {
       // optionally a function setup and a function teardown too
       test: function test(list, after) {
         // in case you need to do something after
-        wru.after = after || function () {};
+        wru.after = after || function() {};
 
         // test may be called multiple times
         // queue should simply concatenate other calls
@@ -402,7 +402,7 @@ export const wru = (function (window) {
     tmp,
     called;
 
-  wru.log = function (obj, printOnly) {
+  wru.log = function(obj, printOnly) {
     try {
       if(printOnly) {
         throw new Error();
@@ -448,7 +448,7 @@ export const wru = (function (window) {
   }, TIMEOUT);
 
   //^ this is useful to test internals on non minified version
-  wru.debug = function (O_o) {
+  wru.debug = function(O_o) {
     return eval('(' + O_o + ')');
   };
   //$ and this block is removed at build time

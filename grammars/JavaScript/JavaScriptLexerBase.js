@@ -12,24 +12,24 @@ function JavaScriptLexerBase(input) {
 
 JavaScriptLexerBase.prototype = Object.create(antlr4.Lexer.prototype);
 
-JavaScriptLexerBase.prototype.getStrictDefault = function () {
+JavaScriptLexerBase.prototype.getStrictDefault = function() {
   return this.useStrictDefault;
 };
 
-JavaScriptLexerBase.prototype.setUseStrictDefault = function (value) {
+JavaScriptLexerBase.prototype.setUseStrictDefault = function(value) {
   this.useStrictDefault = value;
   this.useStrictCurrent = value;
 };
 
-JavaScriptLexerBase.prototype.IsStrictMode = function () {
+JavaScriptLexerBase.prototype.IsStrictMode = function() {
   return this.useStrictCurrent;
 };
 
-JavaScriptLexerBase.prototype.getCurrentToken = function () {
+JavaScriptLexerBase.prototype.getCurrentToken = function() {
   return antlr4.Lexer.prototype.nextToken.call(this);
 };
 
-JavaScriptLexerBase.prototype.nextToken = function () {
+JavaScriptLexerBase.prototype.nextToken = function() {
   let next = antlr4.Lexer.prototype.nextToken.call(this);
 
   if(next.channel === antlr4.Token.DEFAULT_CHANNEL) {
@@ -38,16 +38,16 @@ JavaScriptLexerBase.prototype.nextToken = function () {
   return next;
 };
 
-JavaScriptLexerBase.prototype.ProcessOpenBrace = function () {
+JavaScriptLexerBase.prototype.ProcessOpenBrace = function() {
   this.useStrictCurrent = this.scopeStrictModes.length > 0 && this.scopeStrictModes[0] ? true : this.useStrictDefault;
   this.scopeStrictModes.push(this.useStrictCurrent);
 };
 
-JavaScriptLexerBase.prototype.ProcessCloseBrace = function () {
+JavaScriptLexerBase.prototype.ProcessCloseBrace = function() {
   this.useStrictCurrent = this.scopeStrictModes.length > 0 ? this.scopeStrictModes.pop() : this.useStrictDefault;
 };
 
-JavaScriptLexerBase.prototype.ProcessStringLiteral = function () {
+JavaScriptLexerBase.prototype.ProcessStringLiteral = function() {
   if(this.lastToken !== undefined && (this.lastToken === null || this.lastToken.type === JavaScriptLexer.OpenBrace)) {
     const text = this._input.strdata.slice(0, 'use strict'.length);
     if(text === '"use strict"' || text === "'use strict'") {
@@ -60,7 +60,7 @@ JavaScriptLexerBase.prototype.ProcessStringLiteral = function () {
   }
 };
 
-JavaScriptLexerBase.prototype.IsRegexPossible = function () {
+JavaScriptLexerBase.prototype.IsRegexPossible = function() {
   if(this.lastToken === null) {
     return true;
   }
@@ -83,7 +83,7 @@ JavaScriptLexerBase.prototype.IsRegexPossible = function () {
   }
 };
 
-JavaScriptLexerBase.prototype.IsStartOfFile = function () {
+JavaScriptLexerBase.prototype.IsStartOfFile = function() {
   return this.lastToken === null;
 };
 

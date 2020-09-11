@@ -197,7 +197,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
     }
 
     const handler = this;
-    const get = function () {
+    const get = function() {
       //invoking the original getter with the original target
       return handler.wrapValue(originalGet.call(unwrap(this)));
     };
@@ -212,7 +212,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
       return wrappedSetter;
     }
 
-    const set = function (v) {
+    const set = function(v) {
       //invoking the original setter with the original target
       originalSet.call(unwrap(this), unwrap(v));
     };
@@ -246,7 +246,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
     }
 
     const handler = this;
-    const get = function () {
+    const get = function() {
       //invoking the red getter with the proxy of this
       return unwrap(redGet.call(handler.wrapValue(this)));
     };
@@ -262,7 +262,7 @@ class ReactiveProxyHandler extends BaseProxyHandler {
     }
 
     const handler = this;
-    const set = function (v) {
+    const set = function(v) {
       //invoking the red setter with the proxy of this
       redSet.call(handler.wrapValue(this), handler.wrapValue(v));
     };
@@ -368,7 +368,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
     }
 
     const handler = this;
-    const get = function () {
+    const get = function() {
       //invoking the original getter with the original target
       return handler.wrapValue(originalGet.call(unwrap(this)));
     };
@@ -383,7 +383,7 @@ class ReadOnlyHandler extends BaseProxyHandler {
     }
 
     const handler = this;
-    const set = function (v) {
+    const set = function(v) {
       if(Util.tryCatch(
           () => process,
           (process) => process.env.NODE_ENV !== 'production'

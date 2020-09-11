@@ -1,5 +1,5 @@
 //Create a Promise that resolves after ms time
-export const timer = function (ms) {
+export const timer = function(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
@@ -25,11 +25,11 @@ export const map = async function* (stream, transform = (a) => a) {
   }
 };
 
-export const consume = async function (stream, fn = (a) => console.log(`async consume =`, a)) {
+export const consume = async function(stream, fn = (a) => console.log(`async consume =`, a)) {
   for await (let n of stream) await fn(n);
 };
 
-export const accumulate = async function (stream, accu) {
+export const accumulate = async function(stream, accu) {
   return await consume(stream, (a) => accu.push(a)), accu;
 };
 

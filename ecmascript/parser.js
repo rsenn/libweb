@@ -96,7 +96,7 @@ export class Parser {
     let parser = this;
     this.estree = Util.propertyLookup(classes,
       (key) =>
-        function (...args) {
+        function(...args) {
           let node = /*new.target ||*/ classes[key](...args);
 
           parser.onNewNode(node);
@@ -250,7 +250,7 @@ export class Parser {
   state() {
     let n = this.processed.length;
     let parser = this;
-    return function () {
+    return function() {
       parser.tokens.unshift(...parser.processed.splice(n, parser.processed.length));
     };
   }
@@ -2142,11 +2142,11 @@ const quoteObj = (i) => (i instanceof Array ? quoteArg(i) : Util.className(i) ==
 const quoteArg = (a) => a.map((i) => (Util.isObject(i) && i.value !== undefined ? i.value : quoteObj(i)));
 const quoteStr = (s) => s.replace(/\n/g, '\\n');
 
-Parser.prototype.trace = function () {
+Parser.prototype.trace = function() {
   return this.stack.map((frame) => `${(frame.tokenIndex + '').padStart(5)} ${frame.position.toString().padStart(6)} ${(frame.methodName + '(' + quoteList(frame.args || [], ',') + ')').padEnd(50)} ${(frame.tokens || []).join(' ')}`).join('\n');
 };
 
-Parser.prototype.onToken = function (tok) {
+Parser.prototype.onToken = function(tok) {
   let i = 0;
   while(i < this.stack.length && !/parse/.test(this.stack[i].methodName)) i++;
   let frame = this.stack[0];
@@ -2160,7 +2160,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
 
   const printer = new Printer();
 
-  let esfactory = function (...args) {
+  let esfactory = function(...args) {
     let { lexer, stack } = this;
     let { tokenIndex } = lexer;
 

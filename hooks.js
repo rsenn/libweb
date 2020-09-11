@@ -22,7 +22,7 @@ let oldBeforeUnmount = options.unmount;
 let RAF_TIMEOUT = 100;
 let prevRaf;
 
-options.__r = function (vnode) {
+options.__r = function(vnode) {
   if(oldBeforeRender) {
     oldBeforeRender(vnode);
   }
@@ -39,7 +39,7 @@ options.__r = function (vnode) {
   }
 };
 
-options.diffed = function (vnode) {
+options.diffed = function(vnode) {
   if(oldAfterDiff) {
     oldAfterDiff(vnode);
   }
@@ -50,7 +50,7 @@ options.diffed = function (vnode) {
   }
 };
 
-options.__c = function (vnode, commitQueue) {
+options.__c = function(vnode, commitQueue) {
   commitQueue.some((component) => {
     try {
       component.__h.forEach(invokeCleanup);
@@ -72,7 +72,7 @@ options.__c = function (vnode, commitQueue) {
   }
 };
 
-options.unmount = function (vnode) {
+options.unmount = function(vnode) {
   if(oldBeforeUnmount) {
     oldBeforeUnmount(vnode);
   }
@@ -290,7 +290,7 @@ function useErrorBoundary(cb) {
   state.__ = cb;
 
   if(!currentComponent.componentDidCatch) {
-    currentComponent.componentDidCatch = function (err) {
+    currentComponent.componentDidCatch = function(err) {
       if(state.__) {
         state.__(err);
       }
@@ -300,7 +300,7 @@ function useErrorBoundary(cb) {
 
   return [
     errState[0],
-    function () {
+    function() {
       errState[1](undefined);
     }
   ];

@@ -7,11 +7,11 @@ function JavaScriptParserBase(input) {
 
 JavaScriptParserBase.prototype = Object.create(antlr4.Parser.prototype);
 
-JavaScriptParserBase.prototype.p = function (str) {
+JavaScriptParserBase.prototype.p = function(str) {
   return this.prev(str);
 };
 
-JavaScriptParserBase.prototype.prev = function (str) {
+JavaScriptParserBase.prototype.prev = function(str) {
   const source = this._input.LT(-1).source[1].strdata;
   const start = this._input.LT(-1).start;
   const stop = this._input.LT(-1).stop;
@@ -19,26 +19,26 @@ JavaScriptParserBase.prototype.prev = function (str) {
   return prev === str;
 };
 
-JavaScriptParserBase.prototype.notLineTerminator = function () {
+JavaScriptParserBase.prototype.notLineTerminator = function() {
   return !this.here(JavaScriptParser.LineTerminator);
 };
 
-JavaScriptParserBase.prototype.notOpenBraceAndNotFunction = function () {
+JavaScriptParserBase.prototype.notOpenBraceAndNotFunction = function() {
   const nextTokenType = this._input.LT(1).type;
   return nextTokenType !== JavaScriptParser.OpenBrace && nextTokenType !== JavaScriptParser.Function;
 };
 
-JavaScriptParserBase.prototype.closeBrace = function () {
+JavaScriptParserBase.prototype.closeBrace = function() {
   return this._input.LT(1).type === JavaScriptParser.CloseBrace;
 };
 
-JavaScriptParserBase.prototype.here = function (type) {
+JavaScriptParserBase.prototype.here = function(type) {
   const possibleIndexEosToken = this.getCurrentToken().tokenIndex - 1;
   const ahead = this._input.get(possibleIndexEosToken);
   return ahead.channel === antlr4.Lexer.HIDDEN && ahead.type === type;
 };
 
-JavaScriptParserBase.prototype.lineTerminatorAhead = function () {
+JavaScriptParserBase.prototype.lineTerminatorAhead = function() {
   let possibleIndexEosToken = this.getCurrentToken().tokenIndex - 1;
   let ahead = this._input.get(possibleIndexEosToken);
   if(ahead.channel !== antlr4.Lexer.HIDDEN) {

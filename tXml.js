@@ -272,7 +272,7 @@ tXml.simplify = function simplify(children) {
  * @params children{Array} the children of a node
  * @param f{function} the filter method
  */
-tXml.filter = function (children, f) {
+tXml.filter = function(children, f) {
   let out = [];
   children.forEach((child) => {
     if(typeof child === 'object' && f(child)) out.push(child);
@@ -344,7 +344,7 @@ tXml.toString = function TOMObjToXML(O) {
  * this text has some <b>big</b> text and a <a href=''>link</a>
  * @return {string}
  */
-tXml.toContentString = function (tDom) {
+tXml.toContentString = function(tDom) {
   if(Array.isArray(tDom)) {
     let out = '';
     tDom.forEach((e) => {
@@ -358,7 +358,7 @@ tXml.toContentString = function (tDom) {
   return ' ' + tDom;
 };
 
-tXml.getElementById = function (S, id, simplified) {
+tXml.getElementById = function(S, id, simplified) {
   let out = tXml(S, {
     attrValue: id
   });
@@ -370,7 +370,7 @@ tXml.getElementById = function (S, id, simplified) {
  * more: the class attribute contains XXX
  * @param
  */
-tXml.getElementsByClassName = function (S, classname, simplified) {
+tXml.getElementsByClassName = function(S, classname, simplified) {
   const out = tXml(S, {
     attrName: 'class',
     attrValue: '[a-zA-Z0-9-s ]*' + classname + '[a-zA-Z0-9-s ]*'
@@ -378,7 +378,7 @@ tXml.getElementsByClassName = function (S, classname, simplified) {
   return simplified ? tXml.simplify(out) : out;
 };
 
-tXml.parseStream = function (stream, offset) {
+tXml.parseStream = function(stream, offset) {
   if(typeof offset === 'string') {
     offset = offset.length + 2;
   }
@@ -423,7 +423,7 @@ tXml.parseStream = function (stream, offset) {
   return stream;
 };
 
-tXml.transformStream = function (offset) {
+tXml.transformStream = function(offset) {
   //require through here, so it will not get added to webpack/browserify
   const through2 = require('through2');
   if(typeof offset === 'string') {
@@ -432,7 +432,7 @@ tXml.transformStream = function (offset) {
 
   let position = offset || 0;
   let data = '';
-  const stream = through2({ readableObjectMode: true }, function (chunk, enc, callback) {
+  const stream = through2({ readableObjectMode: true }, function(chunk, enc, callback) {
     data += chunk;
     let lastPos = 0;
     do {

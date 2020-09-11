@@ -50,7 +50,7 @@ if(!Array.prototype.back) {
   try {
     Util.defineGetterSetter(Array.prototype,
       'back',
-      function () {
+      function() {
         return this.length > 0 ? this[this.length - 1] : undefined;
       },
       function (value) {
@@ -67,7 +67,7 @@ if(!Array.prototype.front) {
   try {
     Util.defineGetterSetter(Array.prototype,
       'front',
-      function () {
+      function() {
         return this.length > 0 ? this[0] : undefined;
       },
       function (value) {
@@ -176,7 +176,7 @@ export async function getStars() {
   r.circles = r.paths.map((e) => ({ position: getRect(e).center, radius: getRect(e).width / 2 }));
   r.points = new PointList(r.paths.map((e) => getRect(e).center));
   r.radii = r.paths.map((e) => getRect(e).width / 2);
-  r.putStars = function () {
+  r.putStars = function() {
     let gr = this.gradients[0].element;
     gr.getAttributeNames()
       .filter((name) => name != 'id')
@@ -501,11 +501,11 @@ export function ws(cmd = 'send', filename, data) {
     function decodeBase64(b) {
       return decodeURIComponent(escape(window.atob(b)));
     }
-    ws.onclose = function (event) {
+    ws.onclose = function(event) {
       ws.close();
       Util.log('ws: onclose ', { event });
     };
-    ws.onerror = function (event) {
+    ws.onerror = function(event) {
       reject(event);
       Util.log('ws: onerror');
     };
@@ -514,7 +514,7 @@ export function ws(cmd = 'send', filename, data) {
     if(!(typeof(msg.data) == 'object' && msg.data.cmd))
       Util.log(`ws.ondata '`, msg.data, "'");
   }ch*/
-    ws.onopen = function (event) {
+    ws.onopen = function(event) {
       Util.log('ws.onopen ', { event });
       if(cmd == 'send' || cmd == 'recv') {
         let json = { cmd, filename, data: data ? window.btoa(encodeURIComponent(data)) : null };
@@ -571,7 +571,7 @@ export async function img(name, arg = {}) {
   let list = root.images
     ? root.images
     : (root.images = new HashList((obj) => (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, '$1XX$2'),
-        function (arg) {
+        function(arg) {
           let e = Element.find(arg);
           let svg = Element.find('svg', e);
 
@@ -707,7 +707,7 @@ export function setpos(element) {
   let e = Element.find(element);
   //Util.log('e: ', Element.dump(e));
   if(e) {
-    window.onmousemove = function (event) {
+    window.onmousemove = function(event) {
       let rect = Element.rect(e);
       let pos = Point(event.clientX, event.clientY);
       //Util.log('mouse pos: ', pos);
@@ -715,7 +715,7 @@ export function setpos(element) {
       //Util.log('rect corners: ', Rect.corners(rect));
       Element.move(e, pos);
     };
-    window.onclick = function (event) {
+    window.onclick = function(event) {
       window.onmousemove(event);
       window.onmousemove = null;
     };
@@ -1003,10 +1003,10 @@ export function storage(name) {
     () => self(),
     (value) => self(value)
   );
-  self.get = function (key) {
+  self.get = function(key) {
     return key ? this.value[key] : this.value;
   };
-  self.set = function () {
+  self.set = function() {
     let args = [...arguments];
     let v = this.value;
     if(args.length >= 2) self.assign({ [args[0]]: args[1] });
@@ -1014,11 +1014,11 @@ export function storage(name) {
     self(v);
     return this;
   };
-  self.has = function (key) {
+  self.has = function(key) {
     return this.value[key] !== undefined;
   };
 
-  self.assign = function (props) {
+  self.assign = function(props) {
     let v = this.value;
     for(let key in props) v[key] = props[key];
     self(v);

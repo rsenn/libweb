@@ -36,7 +36,7 @@ export class Printer {
       fn =
         this['print' + name] ||
         (() => '') ||
-        function (...args) {
+        function(...args) {
           args = args.map((a) => Util.className(a));
           throw new Error(`Non-existent print${name}(${args})`);
         };

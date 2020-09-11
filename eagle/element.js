@@ -330,7 +330,7 @@ export class EagleElement extends EagleNode {
     }
 
     if(tagName == 'layer') {
-      this.getColor = function (element) {
+      this.getColor = function(element) {
         if(element) this.elements.add(element);
         return this.color;
       };
@@ -344,7 +344,7 @@ export class EagleElement extends EagleNode {
     }
     //    let layer  = this.tagName == 'pad' ? this.document.layers['Pads'] :  this.layer;
     if(this.layer || this.tagName == 'pad' || this.tagName == 'via') {
-      this.getColor = function () {
+      this.getColor = function() {
         let layer = this.layer || this.document.layers[Util.ucfirst(this.tagName) + 's'];
         layer.elements.add(this);
         return layer.color;
@@ -369,7 +369,7 @@ export class EagleElement extends EagleNode {
         await stop;
       });
       this.r.next().then(({ value, done }) =>
-          (value.pushEvent = function (...args) {
+          (value.pushEvent = function(...args) {
             const [e, k] = args;
             const v = e[k];
 

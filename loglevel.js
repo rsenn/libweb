@@ -14,7 +14,7 @@
   }
 })(this, () => {
   //Slightly dubious tricks to cut down minimized file size
-  let noop = function () {};
+  let noop = function() {};
   let undefinedType = 'undefined';
   let isIE = typeof window !== undefinedType && typeof window.navigator !== undefinedType && /Trident\/|MSIE /.test(window.navigator.userAgent);
 
@@ -30,7 +30,7 @@
       return Function.prototype.bind.call(method, obj);
     } catch(e) {
       //Missing bind shim or IE8 + Modernizr, fallback to wrapping
-      return function () {
+      return function() {
         return Function.prototype.apply.apply(method, [obj, arguments]);
       };
     }
@@ -84,7 +84,7 @@
   //In old IE versions, the console isn't present until you first open it.
   //We build realMethod() replacements here that regenerate logging methods
   function enableLoggingWhenConsoleArrives(methodName, level, loggerName) {
-    return function () {
+    return function() {
       if(typeof console !== undefinedType) {
         replaceLoggingMethods.call(this, level, loggerName);
         this[methodName].apply(this, arguments);
@@ -164,11 +164,11 @@
 
     self.methodFactory = factory || defaultMethodFactory;
 
-    self.getLevel = function () {
+    self.getLevel = function() {
       return currentLevel;
     };
 
-    self.setLevel = function (level, persist) {
+    self.setLevel = function(level, persist) {
       if(typeof level === 'string' && self.levels[level.toUpperCase()] !== undefined) {
         level = self.levels[level.toUpperCase()];
       }
@@ -187,17 +187,17 @@
       }
     };
 
-    self.setDefaultLevel = function (level) {
+    self.setDefaultLevel = function(level) {
       if(!getPersistedLevel()) {
         self.setLevel(level, false);
       }
     };
 
-    self.enableAll = function (persist) {
+    self.enableAll = function(persist) {
       self.setLevel(self.levels.TRACE, persist);
     };
 
-    self.disableAll = function (persist) {
+    self.disableAll = function(persist) {
       self.setLevel(self.levels.SILENT, persist);
     };
 
@@ -232,7 +232,7 @@
 
   //Grab the current global log variable in case of overwrite
   let _log = typeof window !== undefinedType ? window.log : undefined;
-  defaultLogger.noConflict = function () {
+  defaultLogger.noConflict = function() {
     if(typeof window !== undefinedType && window.log === defaultLogger) {
       window.log = _log;
     }

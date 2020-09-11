@@ -26,7 +26,7 @@ export class ReactComponent {
       root = root || render_to;
       render_to = (component) => require('react-dom').render(component, root || render_to);
     }
-    let ret = function () {
+    let ret = function() {
       let args = [...arguments];
       let ret = ReactComponent.create.apply(ReactComponent, args);
       return ret;

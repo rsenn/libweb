@@ -551,7 +551,7 @@ export class SpreadElement extends ESNode {
 ESNode.prototype.type = null;
 
 /*
-ESNode.prototype.toString = function () {
+ESNode.prototype.toString = function() {
   let s = '';
   ['alternate', 'argument', 'arguments', 'body', 'callee', 'computed', 'consequent', 'declarations', 'exported', 'expression', 'expressions', 'id', 'identifiers', 'init', 'kind', 'left', 'loc', 'members', 'object', 'operator', 'params', 'prefix', 'property', 'right', 'source', 'test', 'update', 'value'].forEach((field) => {
     if(this[field]) {

@@ -63,7 +63,7 @@ else */ if(text) svg.innerHTML = innerHTML;
 
     const { append_to } = delegate;
 
-    delegate.append_to = function (elem, p) {
+    delegate.append_to = function(elem, p) {
       let root = p || this.root;
 
       if(elem.tagName.indexOf('Gradient') != -1) root = root.querySelector('defs');
@@ -74,7 +74,7 @@ else */ if(text) svg.innerHTML = innerHTML;
       else root.appendChild(elem);*/
       //console.log('append_to ', elem, ', root=', root);
     };
-    let factory = function (tag, attr, children) {
+    let factory = function(tag, attr, children) {
       const create = (tag, attr, parent) => {
         let e = this.create(tag);
         for(let a in attr) this.setattr(e, a, attr[a]);
@@ -152,12 +152,12 @@ else */ if(text) svg.innerHTML = innerHTML;
   }
 
   static owner(elem) {
-    let ret = function (tag, props, parent) {
+    let ret = function(tag, props, parent) {
       if(tag === undefined) return this.element;
       return SVG.create.call(SVG, tag, props, parent || this.element);
     };
     ret.element = elem.ownerSVGElement;
-    Util.defineGetterSetter(ret, 'rect', function () {
+    Util.defineGetterSetter(ret, 'rect', function() {
       return Element.rect(this.element);
     });
     return ret;

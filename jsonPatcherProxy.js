@@ -276,7 +276,7 @@ const JSONPatcherProxy = (function () {
     this._patches;
   }
 
-  JSONPatcherProxy.prototype._generateProxyAtKey = function (parent, tree, key) {
+  JSONPatcherProxy.prototype._generateProxyAtKey = function(parent, tree, key) {
     if(!tree) {
       return tree;
     }
@@ -297,7 +297,7 @@ const JSONPatcherProxy = (function () {
     return treeMetadata.proxy;
   };
   //grab tree's leaves one by one, encapsulate them into a proxy and return
-  JSONPatcherProxy.prototype._proxifyTreeRecursively = function (parent, tree, key) {
+  JSONPatcherProxy.prototype._proxifyTreeRecursively = function(parent, tree, key) {
     for(let key in tree) {
       if(tree.hasOwnProperty(key)) {
         if(tree[key] instanceof Object) {
@@ -308,7 +308,7 @@ const JSONPatcherProxy = (function () {
     return this._generateProxyAtKey(parent, tree, key);
   };
   //this function is for aesthetic purposes
-  JSONPatcherProxy.prototype._proxifyRoot = function (root) {
+  JSONPatcherProxy.prototype._proxifyRoot = function(root) {
     /*
     while proxifying object tree,
     the proxifying operation itself is being
@@ -330,7 +330,7 @@ const JSONPatcherProxy = (function () {
    * Turns a proxified object into a forward-proxy object; doesn't emit any patches anymore, like a normal object
    * @param {Object} treeMetadata
    */
-  JSONPatcherProxy.prototype._disableTrapsForTreeMetadata = function (treeMetadata) {
+  JSONPatcherProxy.prototype._disableTrapsForTreeMetadata = function(treeMetadata) {
     if(this._showDetachedWarning) {
       const message = "You're accessing an object that is detached from the observedObject tree, see https://github.com/Palindrom/JSONPatcherProxy#detached-objects";
 
@@ -355,7 +355,7 @@ const JSONPatcherProxy = (function () {
    * @param {Boolean} [record] - whether to record object changes to a later-retrievable patches array.
    * @param {Function} [callback] - this will be synchronously called with every object change with a single `patch` as the only parameter.
    */
-  JSONPatcherProxy.prototype.observe = function (record, callback) {
+  JSONPatcherProxy.prototype.observe = function(record, callback) {
     if(!record && !callback) {
       throw new Error('You need to either record changes or pass a callback');
     }
@@ -376,7 +376,7 @@ const JSONPatcherProxy = (function () {
   /**
    * If the observed is set to record, it will synchronously return all the patches and empties patches array.
    */
-  JSONPatcherProxy.prototype.generate = function () {
+  JSONPatcherProxy.prototype.generate = function() {
     if(!this._isRecording) {
       throw new Error('You should set record to true to get patches later');
     }
@@ -386,7 +386,7 @@ const JSONPatcherProxy = (function () {
   /**
    * Revokes all proxies, rendering the observed object useless and good for garbage collection @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/revocable}
    */
-  JSONPatcherProxy.prototype.revoke = function () {
+  JSONPatcherProxy.prototype.revoke = function() {
     this._treeMetadataMap.forEach((el) => {
       el.revoke();
     });
@@ -395,14 +395,14 @@ const JSONPatcherProxy = (function () {
   /**
    * Disables all proxies' traps, turning the observed object into a forward-proxy object, like a normal object that you can modify silently.
    */
-  JSONPatcherProxy.prototype.disableTraps = function () {
+  JSONPatcherProxy.prototype.disableTraps = function() {
     this._treeMetadataMap.forEach(this._disableTrapsForTreeMetadata, this);
   };
 
   /**
    * Restores callback back to the original one provided to `observe`.
    */
-  JSONPatcherProxy.prototype.resume = function () {
+  JSONPatcherProxy.prototype.resume = function() {
     this._defaultCallback = (operation) => {
       this._isRecording && this._patches.push(operation);
       this._userCallback && this._userCallback(operation);
@@ -413,7 +413,7 @@ const JSONPatcherProxy = (function () {
   /**
    * Replaces callback with a noop function.
    */
-  JSONPatcherProxy.prototype.pause = function () {
+  JSONPatcherProxy.prototype.pause = function() {
     this._defaultCallback = () => {};
     this._isObserving = false;
   };

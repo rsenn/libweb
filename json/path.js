@@ -24,7 +24,7 @@ no member '${Util.inspect(member, { colors: false })}' in ${Util.toString(prev, 
   );
 }
 
-DereferenceError.prototype.toString = function () {
+DereferenceError.prototype.toString = function() {
   const { message, object, member, pos, locator, stack } = this;
   return `${message}\n${Util.inspect({ object, member, pos, locator, stack }, { depth: 2, colors: false })}`;
 };

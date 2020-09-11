@@ -25,20 +25,20 @@ function log(source, msg) {
 
 //Class ParseNode
 
-ParseNode.prototype.value = function () {
+ParseNode.prototype.value = function() {
   return buffer.substring(this.start, this.end);
 };
 
-ParseNode.prototype.nodeLength = function () {
+ParseNode.prototype.nodeLength = function() {
   return this.end - this.start;
 };
 
-ParseNode.prototype.addChild = function (child) {
+ParseNode.prototype.addChild = function(child) {
   child.parent = this;
   this.children.push(child);
 };
 
-ParseNode.prototype.print = function (indent) {
+ParseNode.prototype.print = function(indent) {
   let spaces = '';
   for(var i = 0; i < indent; i++) spaces = spaces + ' ';
 
@@ -65,11 +65,11 @@ function ParseNode(type, buffer, start, end) {
 
 //Class ParseState
 
-ParseState.prototype.charAt = function (offset) {
+ParseState.prototype.charAt = function(offset) {
   return buffer.charAt(this.offset + offset);
 };
 
-ParseState.prototype.advance = function (n) {
+ParseState.prototype.advance = function(n) {
   let msg = 'offset=' + this.offset + ' n=' + n;
   this.lineNumber += this.buffer.substring(this.offset, this.offset + n).split(/\r*\n/).length - 1;
   this.offset += n;
@@ -77,7 +77,7 @@ ParseState.prototype.advance = function (n) {
   log('advance', msg + ' new offset=' + this.offset);
 };
 
-ParseState.prototype.parseNode = function (type) {
+ParseState.prototype.parseNode = function(type) {
   if(this.ruleStart == this.offset) {
     console.log('parseNode: type=' + type + ' ruleStart=' + this.ruleStart + ' start=' + this.start + ' offset=' + this.offset);
     return null;
@@ -85,7 +85,7 @@ ParseState.prototype.parseNode = function (type) {
   return new ParseNode(type, this.buffer, this.ruleStart, this.offset);
 };
 
-ParseState.prototype.checkWhitespace = function () {
+ParseState.prototype.checkWhitespace = function() {
   let n = 0;
   let c = this.buffer.charAt(this.offset);
   log('checkWhitespace', 'offset=' + this.offset + ' c=' + c);
@@ -98,7 +98,7 @@ ParseState.prototype.checkWhitespace = function () {
   return n;
 };
 
-ParseState.prototype.checkComment = function () {
+ParseState.prototype.checkComment = function() {
   log('checkComment', 'offset=' + this.offset);
   let n = 0;
   let c1 = this.buffer.charAt(this.offset);
@@ -121,7 +121,7 @@ ParseState.prototype.checkComment = function () {
   return 0;
 };
 
-ParseState.prototype.nextToken = function () {
+ParseState.prototype.nextToken = function() {
   //skip any combination of comments and whitespace
   let n = 0,
     wn,
@@ -152,7 +152,7 @@ function ParseState(rule, buffer, offset, lineNumber) {
 
 //Class Parser
 
-Parser.prototype.pushFrame = function (rule) {
+Parser.prototype.pushFrame = function(rule) {
   let sstate = null;
   let recursion = 0;
 
@@ -176,7 +176,7 @@ Parser.prototype.pushFrame = function (rule) {
   return pstate;
 };
 
-Parser.prototype.popFrame = function (rule, pnode) {
+Parser.prototype.popFrame = function(rule, pnode) {
   log('stack', 'pop: rule: ' + rule + ' state: ' + this.state.rule + ' stack: ' + this.stack.length + ' pnode: ' + (pnode == null ? 'null' : pnode.type));
   this.stack.pop();
   this.state = this.stack[this.stack.length - 1];
@@ -190,25 +190,25 @@ Parser.prototype.popFrame = function (rule, pnode) {
 
 //single character parsing - return 0/1
 
-Parser.prototype.parseLetter = function () {
+Parser.prototype.parseLetter = function() {
   let c = this.state.current;
   if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) return 1;
   return 0;
 };
 
-Parser.prototype.parseDigit = function () {
+Parser.prototype.parseDigit = function() {
   let c = this.state.current;
   if(c >= '0' && c <= '9') return 1;
   return 0;
 };
 
-Parser.prototype.parseNonzero = function () {
+Parser.prototype.parseNonzero = function() {
   let c = this.state.current;
   if(c > '0' && c <= '9') return 1;
   return 0;
 };
 
-Parser.prototype.parseSymbol = function () {
+Parser.prototype.parseSymbol = function() {
   switch (this.state.current) {
     case '[':
     case ']':
@@ -230,7 +230,7 @@ Parser.prototype.parseSymbol = function () {
   }
 };
 
-Parser.prototype.parseCharacter = function () {
+Parser.prototype.parseCharacter = function() {
   if(this.parseLetter()) return 1;
   if(this.parseDigit()) return 1;
   if(this.parseSymbol()) return 1;
@@ -240,7 +240,7 @@ Parser.prototype.parseCharacter = function () {
 
 //multiple character parsing - return node or null
 
-Parser.prototype.parseIdentifier = function () {
+Parser.prototype.parseIdentifier = function() {
   let rule = 'identifier';
   let pstate = this.pushFrame(rule);
   if(pstate == null) return null;
@@ -259,7 +259,7 @@ Parser.prototype.parseIdentifier = function () {
   return identifier;
 };
 
-Parser.prototype.parseTerminal = function () {
+Parser.prototype.parseTerminal = function() {
   let rule = 'terminal';
   let pstate = this.pushFrame(rule);
   if(pstate == null) return null;
@@ -283,7 +283,7 @@ Parser.prototype.parseTerminal = function () {
   return terminal;
 };
 
-Parser.prototype.parseCount = function () {
+Parser.prototype.parseCount = function() {
   let rule = 'count';
   let pstate = this.pushFrame(rule);
   if(pstate == null) return null;
@@ -302,7 +302,7 @@ Parser.prototype.parseCount = function () {
   return count;
 };
 
-Parser.prototype.parseLhs = function () {
+Parser.prototype.parseLhs = function() {
   let rule = 'lhs';
   let pstate = this.pushFrame(rule);
   if(pstate == null) return null;
@@ -319,7 +319,7 @@ Parser.prototype.parseLhs = function () {
   return lhs;
 };
 
-Parser.prototype._parseBinary = function (rule, parseLeft, operator, parseRight) {
+Parser.prototype._parseBinary = function(rule, parseLeft, operator, parseRight) {
   let pstate = this.pushFrame(rule);
   if(pstate == null) return null;
 
@@ -349,7 +349,7 @@ Parser.prototype._parseBinary = function (rule, parseLeft, operator, parseRight)
   return binary;
 };
 
-Parser.prototype._parseEnclosure = function (rule, beginEnclosure, parseEnclosed, endEnclosure) {
+Parser.prototype._parseEnclosure = function(rule, beginEnclosure, parseEnclosed, endEnclosure) {
   let pstate = this.pushFrame(rule);
   if(pstate == null) return null;
 
@@ -373,35 +373,35 @@ Parser.prototype._parseEnclosure = function (rule, beginEnclosure, parseEnclosed
   return enclosure;
 };
 
-Parser.prototype.parseCounted = function () {
+Parser.prototype.parseCounted = function() {
   return this._parseBinary('counted', this.parseCount, '*', this.parseRhs);
 };
 
-Parser.prototype.parseException = function () {
+Parser.prototype.parseException = function() {
   return this._parseBinary('exception', this.parseRhs, '-', this.parseRhs);
 };
 
-Parser.prototype.parseOptional = function () {
+Parser.prototype.parseOptional = function() {
   return this._parseEnclosure('optional', '[', this.parseRhs, ']');
 };
 
-Parser.prototype.parseRepetition = function () {
+Parser.prototype.parseRepetition = function() {
   return this._parseEnclosure('repetition', '{', this.parseRhs, '}');
 };
 
-Parser.prototype.parseGrouping = function () {
+Parser.prototype.parseGrouping = function() {
   return this._parseEnclosure('grouping', '(', this.parseRhs, ')');
 };
 
-Parser.prototype.parseAlternation = function () {
+Parser.prototype.parseAlternation = function() {
   return this._parseBinary('alternation', this.parseRhs, '|', this.parseRhs);
 };
 
-Parser.prototype.parseConcatenation = function () {
+Parser.prototype.parseConcatenation = function() {
   return this._parseBinary('concatenation', this.parseRhs, ',', this.parseRhs);
 };
 
-Parser.prototype.parseRhs = function () {
+Parser.prototype.parseRhs = function() {
   let rule = 'rhs';
   let pstate = this.pushFrame(rule);
   if(pstate == null) return null;
@@ -446,7 +446,7 @@ Parser.prototype.parseRhs = function () {
   return rhs;
 };
 
-Parser.prototype.parseRule = function () {
+Parser.prototype.parseRule = function() {
   let rule = 'rule';
   let pstate = this.pushFrame('rule');
   if(pstate == null) return null;
@@ -478,7 +478,7 @@ Parser.prototype.parseRule = function () {
   return prule;
 };
 
-Parser.prototype.parseGrammar = function () {
+Parser.prototype.parseGrammar = function() {
   let rule = 'grammar';
   let pstate = this.pushFrame(rule);
   if(pstate == null) return null;

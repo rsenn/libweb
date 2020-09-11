@@ -21,7 +21,7 @@ function State(v, e, f, time, vrel, erel, fp, spindle, tool, program, arc) {
   //this.linenum = linenum;
 }
 
-State.prototype.clone = function () {
+State.prototype.clone = function() {
   //return Object.setPrototypeOf({ ...this }, Object.getPrototypeOf(this));
 
   const {

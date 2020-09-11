@@ -34,7 +34,7 @@ export class EagleSVGRenderer {
     const insertCtoP = Util.inserter(this.component2path);
     const insert = Util.inserter(this.path2component, (k, v) => insertCtoP(v, k));
     this.append = factory;
-    this.create = function (tag, attrs, children, parent, element) {
+    this.create = function(tag, attrs, children, parent, element) {
       let ret = factory(tag, attrs, children, parent, element);
       let path = attrs['data-path'];
       if(path && !element) element = EagleElement.get(doc, path);

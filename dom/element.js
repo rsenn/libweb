@@ -30,7 +30,7 @@ export class Element extends Node {
       if(typeof acc[name] != 'function') {
         try {
           delete acc[name];
-          acc[name] = function (...args) {
+          acc[name] = function(...args) {
             args.unshift(this);
             return Element[name].call(Element, ...args);
           };
@@ -687,7 +687,7 @@ export class Element extends Node {
   }
 
   static skipper(fn, pred = (a, b) => a.tagName == b.tagName) {
-    return function (elem) {
+    return function(elem) {
       let next = fn(elem);
       for(; next; next = fn(next)) if(pred(elem, next)) return next;
       return null;
@@ -748,7 +748,7 @@ export class Element extends Node {
     if(typeof root === 'string') root = Element.find(root);
     if(!delegate.root) delegate.root = root;
     if(!delegate.append_to) {
-      delegate.append_to = function (elem, parent) {
+      delegate.append_to = function(elem, parent) {
         if(!parent) parent = root;
         if(parent) parent.appendChild(elem);
         if(!this.root) this.root = elem;
@@ -880,12 +880,12 @@ export class Element extends Node {
 
     let cancel;
     let ret = new Promise((resolve, reject) => {
-      let trun = function (e) {
+      let trun = function(e) {
         this.event = e;
         //console.log("Element.transitionRun event", this);
         callback(this);
       };
-      let tend = function (e) {
+      let tend = function(e) {
         this.event = e;
         //console.log("Element.transitionEnd event", this);
         this.e.removeEventListener('transitionend', this);

@@ -24,7 +24,7 @@
         return child || ('render' in props && props.render);
       }
       let MAX_SIGNED_31_BIT_INT = 1073741823;
-      let defaultBitmaskFactory = function () {
+      let defaultBitmaskFactory = function() {
         return MAX_SIGNED_31_BIT_INT;
       };
       let ids = 0;
@@ -37,14 +37,14 @@
             _this._emitter = createEmitter(props.value, bitmaskFactory || defaultBitmaskFactory);
             return _this;
           }
-          Provider.prototype.getChildContext = function () {
+          Provider.prototype.getChildContext = function() {
             let _a;
             return (_a = {}), (_a[key] = this._emitter), _a;
           };
-          Provider.prototype.componentDidUpdate = function () {
+          Provider.prototype.componentDidUpdate = function() {
             this._emitter.val(this.props.value);
           };
-          Provider.prototype.render = function () {
+          Provider.prototype.render = function() {
             let _a = getOnlyChildAndChildren(this.props),
               child = _a.child,
               children = _a.children;
@@ -60,7 +60,7 @@
           __extends(Consumer, _super);
           function Consumer(props, ctx) {
             let _this = _super.call(this, props, ctx) || this;
-            _this._updateContext = function (value, bitmask) {
+            _this._updateContext = function(value, bitmask) {
               let unstable_observedBits = _this.props.unstable_observedBits;
               let observed = unstable_observedBits === undefined || unstable_observedBits === null ? MAX_SIGNED_31_BIT_INT : unstable_observedBits;
               observed = observed | 0;
@@ -72,16 +72,16 @@
             _this.state = { value: _this._getEmitter().val() || value };
             return _this;
           }
-          Consumer.prototype.componentDidMount = function () {
+          Consumer.prototype.componentDidMount = function() {
             this._getEmitter().register(this._updateContext);
           };
-          Consumer.prototype.shouldComponentUpdate = function (nextProps, nextState) {
+          Consumer.prototype.shouldComponentUpdate = function(nextProps, nextState) {
             return this.state.value !== nextState.value || getRenderer(this.props) !== getRenderer(nextProps);
           };
-          Consumer.prototype.componentWillUnmount = function () {
+          Consumer.prototype.componentWillUnmount = function() {
             this._getEmitter().unregister(this._updateContext);
           };
-          Consumer.prototype.componentDidUpdate = function (_, __, prevCtx) {
+          Consumer.prototype.componentDidUpdate = function(_, __, prevCtx) {
             let previousProvider = prevCtx[key];
             if(previousProvider === this.context[key]) {
               return;
@@ -89,7 +89,7 @@
             (previousProvider || noopEmitter).unregister(this._updateContext);
             this.componentDidMount();
           };
-          Consumer.prototype.render = function () {
+          Consumer.prototype.render = function() {
             let render = 'render' in this.props && this.props.render;
             let r = getRenderer(this.props);
             if(render && render !== r) {
@@ -100,7 +100,7 @@
             }
             console.warn("Consumer is expecting a function as one and only child but didn't find any");
           };
-          Consumer.prototype._getEmitter = function () {
+          Consumer.prototype._getEmitter = function() {
             return this.context[key] || noopEmitter;
           };
           return Consumer;
@@ -121,7 +121,7 @@
       function createEmitter(initialValue, bitmaskFactory) {
         let registeredUpdaters = [];
         let value = initialValue;
-        let diff = function (newValue) {
+        let diff = function(newValue) {
           return bitmaskFactory(value, newValue) | 0;
         };
         return {

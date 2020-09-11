@@ -76,7 +76,7 @@ Object.defineProperty(Circle.prototype, 'center', {
   }
 });
 
-Circle.prototype.bbox = function (width = 0) {
+Circle.prototype.bbox = function(width = 0) {
   const { x, y, radius } = this;
   let distance = radius + width;
 
@@ -87,7 +87,7 @@ Circle.prototype.bbox = function (width = 0) {
     y2: y + distance
   });
 };
-Circle.prototype.transform = function (m) {
+Circle.prototype.transform = function(m) {
   if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
   Matrix.prototype.transform_point.call(m, this);
   this.radius = Matrix.prototype.transform_wh.call(m, this.radius, this.radius)[0];

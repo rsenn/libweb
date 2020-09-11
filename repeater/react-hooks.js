@@ -59,13 +59,13 @@ function __generator(thisArg, body) {
     g;
   return ((g = { next: verb(0), throw: verb(1), return: verb(2) }),
     typeof Symbol === 'function' &&
-      (g[Symbol.iterator] = function () {
+      (g[Symbol.iterator] = function() {
         return this;
       }),
     g
   );
   function verb(n) {
-    return function (v) {
+    return function(v) {
       return step([n, v]);
     };
   }
@@ -190,7 +190,7 @@ function useAsyncIter(callback, deps) {
     push(deps);
   }, __spread([push], deps)); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() =>
-      function () {
+      function() {
         if(iter.return != null) {
           // TODO: handle return errors
           iter.return().catch();
@@ -208,7 +208,7 @@ function useResult(callback, deps) {
   useEffect(() => {
     let mounted = true;
     (function () {
-      return __awaiter(_this, void 0, void 0, function () {
+      return __awaiter(_this, void 0, void 0, function() {
         let result_1, err_1;
         return __generator(this, (_a) => {
           switch (_a.label) {
@@ -243,7 +243,7 @@ function useResult(callback, deps) {
         });
       });
     })();
-    return function () {
+    return function() {
       mounted = false;
     };
   }, [iter]);

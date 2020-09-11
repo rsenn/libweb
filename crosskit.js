@@ -148,7 +148,7 @@ function Transform(mat) {
 
 let STACK_DEPTH_LIMIT = 16;
 
-Transform.prototype.clearStack = function (init_mat) {
+Transform.prototype.clearStack = function(init_mat) {
   this.m_stack = [];
   this.m_cache = [];
   this.c_stack = 0;
@@ -166,18 +166,18 @@ Transform.prototype.clearStack = function (init_mat) {
   }
 }; //clearStack
 
-Transform.prototype.setIdentity = function () {
+Transform.prototype.setIdentity = function() {
   this.m_stack[this.c_stack] = this.getIdentity();
   if(this.valid === this.c_stack && this.c_stack) {
     this.valid--;
   }
 };
 
-Transform.prototype.getIdentity = function () {
+Transform.prototype.getIdentity = function() {
   return [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0];
 };
 
-Transform.prototype.getResult = function () {
+Transform.prototype.getResult = function() {
   if(!this.c_stack) {
     return this.m_stack[0];
   }
@@ -200,12 +200,12 @@ Transform.prototype.getResult = function () {
   return this.result;
 };
 
-Transform.prototype.pushMatrix = function () {
+Transform.prototype.pushMatrix = function() {
   this.c_stack++;
   this.m_stack[this.c_stack] = this.getIdentity();
 };
 
-Transform.prototype.popMatrix = function () {
+Transform.prototype.popMatrix = function() {
   if(this.c_stack === 0) {
     return;
   }
@@ -214,7 +214,7 @@ Transform.prototype.popMatrix = function () {
 
 let translateMatrix = Transform.prototype.getIdentity();
 
-Transform.prototype.translate = function (x, y) {
+Transform.prototype.translate = function(x, y) {
   translateMatrix[6] = x;
   translateMatrix[7] = y;
 
@@ -229,7 +229,7 @@ Transform.prototype.translate = function (x, y) {
 
 let scaleMatrix = Transform.prototype.getIdentity();
 
-Transform.prototype.scale = function (x, y) {
+Transform.prototype.scale = function(x, y) {
   scaleMatrix[0] = x;
   scaleMatrix[4] = y;
 
@@ -244,7 +244,7 @@ Transform.prototype.scale = function (x, y) {
 
 let rotateMatrix = Transform.prototype.getIdentity();
 
-Transform.prototype.rotate = function (ang) {
+Transform.prototype.rotate = function(ang) {
   let sAng, cAng;
 
   sAng = Math.sin(-ang);
@@ -283,7 +283,7 @@ let WebGL2D = /*this.WebGL2D =*/ function WebGL2D(canvas, options) {
 
   //Override getContext function with "webgl-2d" enabled version
   canvas.getContext = (function (gl2d) {
-    return function (context) {
+    return function(context) {
       if((gl2d.options.force || context === 'webgl-2d') && !(canvas.width === 0 || canvas.height === 0)) {
         if(gl2d.gl) {
           return gl2d.gl;
@@ -326,7 +326,7 @@ let WebGL2D = /*this.WebGL2D =*/ function WebGL2D(canvas, options) {
 };
 
 //Enables WebGL2D on your canvas
-WebGL2D.enable = function (canvas, options) {
+WebGL2D.enable = function(canvas, options) {
   return canvas.gl2d || new WebGL2D(canvas, options);
 };
 
@@ -501,7 +501,7 @@ WebGL2D.prototype.initBuffers = function initBuffers() {
 //Maintains an array of all WebGL2D instances
 WebGL2D.instances = [];
 
-WebGL2D.prototype.postInit = function () {
+WebGL2D.prototype.postInit = function() {
   WebGL2D.instances.push(this);
 };
 
@@ -1383,13 +1383,13 @@ let WEBGL = 'WEBGL',
   SVG = 'SVG',
   DOM = 'DOM'; //Simple
 
-window.update = function () {
+window.update = function() {
   return (window.requestAnimationFrame ||
     window.webkitRequestAnimationFrame ||
     window.mozRequestAnimationFrame ||
     window.msRequestAnimationFrame ||
     window.oRequestAnimationFrame ||
-    function (callback, fps) {
+    function(callback, fps) {
       window.setTimeout(callback, 1000 / fps);
     }
   );
@@ -2005,16 +2005,16 @@ export const crosskit = {
     if(!(v.interval == undefined) && (renderer == DOM || renderer == CANVAS || renderer == WEBGL)) window.clearInterval(v.interval);
   }
 };
-let rgb = function (v) {
+let rgb = function(v) {
   return 'rgb(' + v.r + ',' + v.g + ',' + v.b + ')';
 };
-let rgba = function (v) {
+let rgba = function(v) {
   return 'rgba(' + v.r + ',' + v.g + ',' + v.b + ',' + v.a + ')';
 };
-let hsl = function (v) {
+let hsl = function(v) {
   return 'hsl(' + v.h + ',' + v.s + ',' + v.l + ')';
 };
-let hsla = function (v) {
+let hsla = function(v) {
   return 'hsla(' + v.h + ',' + v.s + ',' + v.l + ',' + v.a + ')';
 };
 window.addEventListener('keypress', (e) => {

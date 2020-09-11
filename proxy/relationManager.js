@@ -22,11 +22,11 @@ function RelationManager(instance, subjectSpec, spec) {
 RelationManager.prototype = [];
 RelationManager.prototype.constructor = RelationManager;
 if(!RelationManager.prototype.includes) {
-  RelationManager.prototype.includes = function (subject) {
+  RelationManager.prototype.includes = function(subject) {
     return this.indexOf(subject) >= 0;
   };
 }
-RelationManager.prototype.add = function (subject, recursing) {
+RelationManager.prototype.add = function(subject, recursing) {
   let instance = this.instance,
     subjectSpec = this.subjectSpec,
     spec = this.spec;
@@ -50,7 +50,7 @@ RelationManager.prototype.add = function (subject, recursing) {
   }
   return false;
 };
-RelationManager.prototype.delete = function (subject, recursing) {
+RelationManager.prototype.delete = function(subject, recursing) {
   let instance = this.instance,
     spec = this.spec;
   let i = [].indexOf.call(this, subject);
@@ -173,7 +173,7 @@ function defineRelation(scope, name, sname, head, specs) {
   cons.instances = cons.prototype.instances;
   scope[name] = cons;
   if(specs.length === 2) {
-    scope[sname] = function () {
+    scope[sname] = function() {
       let args = [].slice.call(arguments).reverse();
       return new cons(...args);
     };
@@ -186,7 +186,7 @@ function defineRelation(scope, name, sname, head, specs) {
   }
   return cons;
 }
-Relation.define = function (scope) {
+Relation.define = function(scope) {
   let specs = [].slice.call(arguments, 1),
     subjectSpec = specs[0],
     name = '',
@@ -222,7 +222,7 @@ Relation.define = function (scope) {
       //save a version of the spec class in this closure scope
       let cls = spec.class;
       //add ability to restore from one side of relations using from JSON
-      cons.fromJSON = function (object) {
+      cons.fromJSON = function(object) {
         let instance = Object.create(cls);
         let proto = object;
         while(proto) {

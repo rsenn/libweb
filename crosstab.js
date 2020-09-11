@@ -100,19 +100,19 @@
 
     util.isArray =
       Array.isArray ||
-      function (arr) {
+      function(arr) {
         return arr instanceof Array;
       };
 
-    util.isNumber = function (num) {
+    util.isNumber = function(num) {
       return typeof num === 'number';
     };
 
-    util.isFunction = function (fn) {
+    util.isFunction = function(fn) {
       return typeof fn === 'function';
     };
 
-    util.forEachObj = function (obj, fn) {
+    util.forEachObj = function(obj, fn) {
       for(let key in obj) {
         if(obj.hasOwnProperty(key)) {
           fn.call(obj, obj[key], key, obj);
@@ -120,14 +120,14 @@
       }
     };
 
-    util.forEachArr = function (arr, fn) {
+    util.forEachArr = function(arr, fn) {
       let len = arr.length;
       for(let i = 0; i < len; i++) {
         fn.call(arr, arr[i], i, arr);
       }
     };
 
-    util.forEach = function (thing, fn) {
+    util.forEach = function(thing, fn) {
       if(util.isArray(thing)) {
         util.forEachArr(thing, fn);
       } else {
@@ -135,7 +135,7 @@
       }
     };
 
-    util.map = function (thing, fn) {
+    util.map = function(thing, fn) {
       let res = [];
       util.forEach(thing, (item, key, obj) => {
         res.push(fn(item, key, obj));
@@ -144,7 +144,7 @@
       return res;
     };
 
-    util.filter = function (thing, fn) {
+    util.filter = function(thing, fn) {
       let isArr = util.isArray(thing);
       let res = isArr ? [] : {};
 
@@ -165,7 +165,7 @@
       return res;
     };
 
-    util.reduce = function (thing, fn, accumulator) {
+    util.reduce = function(thing, fn, accumulator) {
       let first = arguments.length < 3;
 
       util.forEach(thing, (item, key, obj) => {
@@ -180,7 +180,7 @@
       return accumulator;
     };
 
-    util.now = function () {
+    util.now = function() {
       return new Date().getTime();
     };
 
@@ -205,11 +205,11 @@
     //--- Events ---
     //node.js style events, with the main difference being able
     //to add/remove events by key.
-    util.createEventHandler = function () {
+    util.createEventHandler = function() {
       let events = {};
       let subscribeKeyToListener = {};
 
-      let findHandlerByKey = function (event, key) {
+      let findHandlerByKey = function(event, key) {
         let handler;
         if(subscribeKeyToListener[event]) {
           handler = subscribeKeyToListener[event][key];
@@ -217,7 +217,7 @@
         return handler;
       };
 
-      let findHandlerIndex = function (event, listener) {
+      let findHandlerIndex = function(event, listener) {
         let listenerIndex = -1;
         let eventList = events[event];
         if(eventList && listener) {
@@ -232,7 +232,7 @@
         return listenerIndex;
       };
 
-      let addListener = function (event, listener, key) {
+      let addListener = function(event, listener, key) {
         let handlers = listeners(event);
 
         let storedHandler = findHandlerByKey(event, key);
@@ -257,7 +257,7 @@
         return key || listener;
       };
 
-      let removeListener = function (event, key) {
+      let removeListener = function(event, key) {
         let handler = util.isFunction(key) ? key : findHandlerByKey(event, key);
 
         let listenerIndex = findHandlerIndex(event, handler);
@@ -271,7 +271,7 @@
         return false;
       };
 
-      let removeAllListeners = function (event) {
+      let removeAllListeners = function(event) {
         let successful = false;
         if(event) {
           if(events[event]) {
@@ -290,18 +290,18 @@
         return successful;
       };
 
-      let emit = function (event) {
+      let emit = function(event) {
         let args = Array.prototype.slice.call(arguments, 1);
         let handlers = listeners(event);
 
-        util.forEach(handlers, function (listener) {
+        util.forEach(handlers, function(listener) {
           if(util.isFunction(listener)) {
             listener.apply(this, args);
           }
         });
       };
 
-      let once = function (event, listener, key) {
+      let once = function(event, listener, key) {
         //Generate a unique id for this listener
         while(!key || findHandlerByKey(event, key) !== undefined) {
           key = util.generateId();
@@ -319,12 +319,12 @@
         return key;
       };
 
-      var listeners = function (event) {
+      var listeners = function(event) {
         let handlers = (events[event] = events[event] || []);
         return handlers;
       };
 
-      let destructor = function () {
+      let destructor = function() {
         clearInterval(crosstab.keepAliveInterval);
         removeAllListeners();
       };
@@ -575,7 +575,7 @@
       return new Array(width - numStr.length + 1).join(padChar) + numStr;
     }
 
-    util.generateId = function () {
+    util.generateId = function() {
       /*jshint bitwise: false*/
       return util.now().toString() + pad((Math.random() * 0x7fffffff) | 0, 10);
     };
@@ -616,7 +616,7 @@
       setupComplete = true;
     });
 
-    var crosstab = function (fn) {
+    var crosstab = function(fn) {
       if(setupComplete) {
         fn();
       } else {
@@ -737,7 +737,7 @@
           //timeout, with iters "yields" to the event loop. So at least
           //iters number of blocks of javascript will be able to run
           //covering at least 100ms
-          var recursiveTimeout = function (iters) {
+          var recursiveTimeout = function(iters) {
             let diff = util.now() - start;
 
             if(!setupComplete) {
@@ -817,12 +817,12 @@
     ? define
     : (function (context) {
         return typeof module === 'object'
-          ? function (name, factory) {
+          ? function(name, factory) {
               factory(require, exports, module);
             }
-          : function (name, factory) {
+          : function(name, factory) {
               let module = { exports: {} };
-              let require = function (n) {
+              let require = function(n) {
                 if(n === 'jquery') {
                   n = 'jQuery';
                 }

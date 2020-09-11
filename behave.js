@@ -30,9 +30,9 @@ export const BehaveHooks = (function () {
   };
 })();
 
-export const Behave = function (userOpts) {
+export const Behave = function(userOpts) {
   if(typeof String.prototype.repeat !== 'function') {
-    String.prototype.repeat = function (times) {
+    String.prototype.repeat = function(times) {
       if(times < 1) {
         return '';
       }
@@ -45,7 +45,7 @@ export const Behave = function (userOpts) {
   }
 
   if(typeof Array.prototype.filter !== 'function') {
-    Array.prototype.filter = function (func /*, thisp */) {
+    Array.prototype.filter = function(func /*, thisp */) {
       if(this === null) {
         throw new TypeError();
       }
@@ -592,7 +592,7 @@ export const Behave = function (userOpts) {
       }
     };
 
-  this.destroy = function () {
+  this.destroy = function() {
     utils.removeEvent(defaults.textarea, 'keydown', intercept.tabKey);
     utils.removeEvent(defaults.textarea, 'keydown', intercept.enterKey);
     utils.removeEvent(defaults.textarea, 'keydown', intercept.deleteKey);

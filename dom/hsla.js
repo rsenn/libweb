@@ -60,41 +60,41 @@ HSLA.prototype.properties = ['h', 's', 'l', 'a'];
 
 //export const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(prop));
 
-HSLA.prototype.css = function () {
+HSLA.prototype.css = function() {
   const hsla = HSLA.clamp(HSLA.round(this));
   return HSLA.setcss(hsla)();
 };
-HSLA.prototype.toHSL = function () {
+HSLA.prototype.toHSL = function() {
   const { h, s, l } = this;
   return new HSLA(h, s, l, 1.0);
 };
 
-HSLA.prototype.clamp = function () {
+HSLA.prototype.clamp = function() {
   this.h = (this.h % 360) + (this.h < 0 ? 360 : 0);
   this.s = Math.min(Math.max(this.s, 0), 100);
   this.l = Math.min(Math.max(this.l, 0), 100);
   this.a = Math.min(Math.max(this.a, 0), 1);
   return this;
 };
-HSLA.prototype.round = function () {
+HSLA.prototype.round = function() {
   this.h = Math.round(this.h);
   this.s = Math.round(this.s);
   this.l = Math.round(this.l);
   this.a = Math.round(this.a);
   return this;
 };
-HSLA.prototype.add = function (h, s = 0, l = 0, a = 0) {
+HSLA.prototype.add = function(h, s = 0, l = 0, a = 0) {
   this.h += h;
   this.s += s;
   this.l += l;
   this.a += a;
   return this.clamp();
 };
-HSLA.prototype.hex = function () {
+HSLA.prototype.hex = function() {
   return RGBA.prototype.hex.call(HSLA.prototype.toRGBA.call(this));
 };
 
-HSLA.prototype.toRGBA = function () {
+HSLA.prototype.toRGBA = function() {
   let { h, s, l, a } = this;
 
   let r, g, b, m, c, x;
@@ -148,7 +148,7 @@ HSLA.prototype.toRGBA = function () {
   return new RGBA(r, g, b, a);
 };
 
-HSLA.prototype.toString = function () {
+HSLA.prototype.toString = function() {
   const h = Util.roundTo(this.h, 360 / 255, 0);
   const s = Util.roundTo(this.s, 100 / 255, 2);
   const l = Util.roundTo(this.l, 100 / 255, 2);
@@ -158,10 +158,10 @@ HSLA.prototype.toString = function () {
   return `hsla(${h},${s}%,${l}%,${a})`;
 };
 
-HSLA.random = function (h = [0, 360], s = [0, 100], l = [0, 100], a = [1, 1], rng = Math.random) {
+HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [1, 1], rng = Math.random) {
   return new HSLA(Util.randInt(h, rng), Util.randInt(s, rng), Util.randInt(l, rng), Util.randInt(a, rng));
 };
-HSLA.prototype.dump = function () {
+HSLA.prototype.dump = function() {
   console.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
   return this;
 };

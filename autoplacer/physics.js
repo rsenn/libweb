@@ -5,16 +5,16 @@
 
   let physics = (global.physics = {});
 
-  physics.layout = function (opts, bodies, drawscene) {
-    drawscene = drawscene || function () {};
+  physics.layout = function(opts, bodies, drawscene) {
+    drawscene = drawscene || function() {};
     opts = opts || {};
-    let attractForce = function (b) {
+    let attractForce = function(b) {
       let koef = opts.attractForce || 0.001;
       let dist = b.fix.minus(b.move);
       return dist.scaleto(koef * dist.veclength());
     };
 
-    let overlapArea = function (b1, b2) {
+    let overlapArea = function(b1, b2) {
       let x11 = b1.move.x() - b1.size.x() / 2,
         y11 = b1.move.y() - b1.size.y() / 2,
         x12 = b1.move.x() + b1.size.x() / 2;
@@ -24,7 +24,7 @@
       return x_overlap * y_overlap;
     };
 
-    let overlapPoint = function (b1, p) {
+    let overlapPoint = function(b1, p) {
       let x11 = b1.move.x() - b1.size.x() / 2,
         y11 = b1.move.y() - b1.size.y() / 2,
         x12 = b1.move.x() + b1.size.x() / 2,
@@ -34,7 +34,7 @@
       return x >= x11 && x <= x12 && y >= y11 && y <= y12;
     };
 
-    let pushForce = function (b) {
+    let pushForce = function(b) {
       if(!opts.pushCenter) {
         return [0, 0];
       }
@@ -43,7 +43,7 @@
       return dist.scaleto(koef * Math.pow(dist.veclength(), -1));
     };
 
-    let repulseForce = function (b, other) {
+    let repulseForce = function(b, other) {
       if(!opts.pushCenter) {
         return [0, 0];
       }
@@ -74,7 +74,7 @@
     let kin;
     let loop = 0;
     let recur;
-    recur = function () {
+    recur = function() {
       kin = 0;
       loop += 1;
       for(i = 0; i < total; i++) {

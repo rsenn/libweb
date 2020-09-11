@@ -1,6 +1,6 @@
 import Util from '../util.js';
 
-export const toXML = function (o, z = 10000, q = '"') {
+export const toXML = function(o, z = 10000, q = '"') {
   if(typeof o == 'object' && o !== null) {
     if('raw' in o) o = o.raw;
     if(Util.isArray(o)) return o.length === 1 ? toXML(o[0]) : o.map(toXML).join('\n');

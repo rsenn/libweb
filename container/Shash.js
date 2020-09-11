@@ -7,7 +7,7 @@ export function Shash(width, height, onNeighbour) {
   this.onNeighbour = onNeighbour || null;
 }
 
-Shash.prototype.add = function (object, width, height) {
+Shash.prototype.add = function(object, width, height) {
   if(this.gridSize.x < width) this.gridSize.x = width;
   if(this.gridSize.y < height) this.gridSize.y = height;
   this.objects.push({
@@ -15,12 +15,12 @@ Shash.prototype.add = function (object, width, height) {
   });
 };
 
-Shash.prototype.neighbour = function (object, ogrid) {
+Shash.prototype.neighbour = function(object, ogrid) {
   let ok = ogrid.length;
   while(ok--) this.onNeighbour(object, ogrid[ok].object);
 };
 
-Shash.prototype.check = function () {
+Shash.prototype.check = function() {
   if(!this.onNeighbour) return;
 
   //Clear grids

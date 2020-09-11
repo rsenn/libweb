@@ -14,14 +14,14 @@ and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
 
-var extendStatics = function (d, b) {
+var extendStatics = function(d, b) {
   extendStatics =
     Object.setPrototypeOf ||
     ({ __proto__: [] } instanceof Array &&
-      function (d, b) {
+      function(d, b) {
         d.__proto__ = b;
       }) ||
-    function (d, b) {
+    function(d, b) {
       for(let p in b) if(b.hasOwnProperty(p)) d[p] = b[p];
     };
   return extendStatics(d, b);
@@ -78,13 +78,13 @@ function __generator(thisArg, body) {
     g;
   return ((g = { next: verb(0), throw: verb(1), return: verb(2) }),
     typeof Symbol === 'function' &&
-      (g[Symbol.iterator] = function () {
+      (g[Symbol.iterator] = function() {
         return this;
       }),
     g
   );
   function verb(n) {
-    return function (v) {
+    return function(v) {
       return step([n, v]);
     };
   }
@@ -196,14 +196,14 @@ function __asyncGenerator(thisArg, _arguments, generator) {
     verb('next'),
     verb('throw'),
     verb('return'),
-    (i[Symbol.asyncIterator] = function () {
+    (i[Symbol.asyncIterator] = function() {
       return this;
     }),
     i
   );
   function verb(n) {
     if(g[n])
-      i[n] = function (v) {
+      i[n] = function(v) {
         return new Promise((a, b) => {
           q.push([n, v, a, b]) > 1 || resume(n, v);
         });
@@ -252,14 +252,14 @@ let FixedBuffer = /** @class */ (function () {
     enumerable: true,
     configurable: true
   });
-  FixedBuffer.prototype.add = function (value) {
+  FixedBuffer.prototype.add = function(value) {
     if(this.full) {
       throw new Error('Buffer full');
     } else {
       this.arr.push(value);
     }
   };
-  FixedBuffer.prototype.remove = function () {
+  FixedBuffer.prototype.remove = function() {
     if(this.empty) {
       throw new Error('Buffer empty');
     }
@@ -284,13 +284,13 @@ let SlidingBuffer = /** @class */ (function () {
     enumerable: true,
     configurable: true
   });
-  SlidingBuffer.prototype.add = function (value) {
+  SlidingBuffer.prototype.add = function(value) {
     while(this.arr.length >= this.capacity) {
       this.arr.shift();
     }
     this.arr.push(value);
   };
-  SlidingBuffer.prototype.remove = function () {
+  SlidingBuffer.prototype.remove = function() {
     if(this.empty) {
       throw new Error('Buffer empty');
     }
@@ -314,12 +314,12 @@ let DroppingBuffer = /** @class */ (function () {
     enumerable: true,
     configurable: true
   });
-  DroppingBuffer.prototype.add = function (value) {
+  DroppingBuffer.prototype.add = function(value) {
     if(this.arr.length < this.capacity) {
       this.arr.push(value);
     }
   };
-  DroppingBuffer.prototype.remove = function () {
+  DroppingBuffer.prototype.remove = function() {
     if(this.empty) {
       throw new Error('Buffer empty');
     }
@@ -329,7 +329,7 @@ let DroppingBuffer = /** @class */ (function () {
 })();
 
 let MAX_QUEUE_LENGTH = 1024;
-let NOOP = function () {};
+let NOOP = function() {};
 function isPromiseLike(value) {
   return value != null && typeof value.then === 'function';
 }
@@ -382,7 +382,7 @@ let RepeaterController = /** @class */ (function () {
    *
    * Advances state to RepeaterState.Started
    */
-  RepeaterController.prototype.execute = function () {
+  RepeaterController.prototype.execute = function() {
     let _this = this;
     if(this.state >= 1 /* Started */) {
       return;
@@ -413,7 +413,7 @@ let RepeaterController = /** @class */ (function () {
    * is a promise, and mimics the promise unwrapping behavior of async
    * generators, where yield is equivalent to yield await.
    */
-  RepeaterController.prototype.unwrap = function (value) {
+  RepeaterController.prototype.unwrap = function(value) {
     let _this = this;
     let done = this.state >= 3; /* Finished */
     return Promise.resolve(value).then((value) => {
@@ -429,7 +429,7 @@ let RepeaterController = /** @class */ (function () {
    * final result or any error are consumed, so that further calls to next,
    * return or throw return { value: undefined, done: true }.
    */
-  RepeaterController.prototype.consume = function () {
+  RepeaterController.prototype.consume = function() {
     let err = this.err;
     let execution = Promise.resolve(this.execution).then((value) => {
       if(err != null) {
@@ -453,7 +453,7 @@ let RepeaterController = /** @class */ (function () {
    *
    * Advances state to RepeaterState.Finished
    */
-  RepeaterController.prototype.finish = function () {
+  RepeaterController.prototype.finish = function() {
     if(this.state >= 3 /* Finished */) {
       return;
     }
@@ -471,7 +471,7 @@ let RepeaterController = /** @class */ (function () {
    *
    * Advances state to RepeaterState.Rejected
    */
-  RepeaterController.prototype.reject = function () {
+  RepeaterController.prototype.reject = function() {
     if(this.state >= 4 /* Rejected */) {
       return;
     }
@@ -484,7 +484,7 @@ let RepeaterController = /** @class */ (function () {
   /**
    * This method is bound and passed to the executor as the push argument.
    */
-  RepeaterController.prototype.push = function (value) {
+  RepeaterController.prototype.push = function(value) {
     let _this = this;
     swallow(value);
     if(this.pushQueue.length >= MAX_QUEUE_LENGTH) {
@@ -529,7 +529,7 @@ let RepeaterController = /** @class */ (function () {
       // Explicitly return undefined to avoid typescript’s horrible void type
       return undefined;
     });
-    next.then = function (onFulfilled, onRejected) {
+    next.then = function(onFulfilled, onRejected) {
       floating = false;
       return Promise.prototype.then.call(this, onFulfilled, onRejected);
     };
@@ -551,7 +551,7 @@ let RepeaterController = /** @class */ (function () {
    *
    * Advances state to RepeaterState.Stopped
    */
-  RepeaterController.prototype.stop = function (err) {
+  RepeaterController.prototype.stop = function(err) {
     let e_1, _a, e_2, _b;
     let _this = this;
     if(this.state >= 2 /* Stopped */) {
@@ -600,7 +600,7 @@ let RepeaterController = /** @class */ (function () {
     }
     this.pullQueue = [];
   };
-  RepeaterController.prototype.next = function (value) {
+  RepeaterController.prototype.next = function(value) {
     let _this = this;
     swallow(value);
     if(this.pullQueue.length >= MAX_QUEUE_LENGTH) {
@@ -628,13 +628,13 @@ let RepeaterController = /** @class */ (function () {
     }
     return new Promise((resolve) => _this.pullQueue.push({ resolve, value }));
   };
-  RepeaterController.prototype.return = function (value) {
+  RepeaterController.prototype.return = function(value) {
     swallow(value);
     this.finish();
     this.execution = Promise.resolve(this.execution).then(() => value);
     return this.unwrap(this.consume());
   };
-  RepeaterController.prototype.throw = function (err) {
+  RepeaterController.prototype.throw = function(err) {
     if(this.state <= 0 /* Initial */ || this.state >= 2 /* Stopped */ || !this.buffer.empty) {
       this.finish();
       if(this.err == null) {
@@ -644,7 +644,7 @@ let RepeaterController = /** @class */ (function () {
     }
     return this.next(Promise.reject(err));
   };
-  RepeaterController.prototype[Symbol.asyncIterator] = function () {
+  RepeaterController.prototype[Symbol.asyncIterator] = function() {
     return this;
   };
   return RepeaterController;
@@ -663,28 +663,28 @@ let Repeater = /** @class */ (function () {
     }
     controllers.set(this, new RepeaterController(executor, buffer));
   }
-  Repeater.prototype.next = function (value) {
+  Repeater.prototype.next = function(value) {
     let controller = controllers.get(this);
     if(controller === undefined) {
       throw new Error('RepeaterController missing from controllers WeakMap');
     }
     return controller.next(value);
   };
-  Repeater.prototype.return = function (value) {
+  Repeater.prototype.return = function(value) {
     let controller = controllers.get(this);
     if(controller === undefined) {
       throw new Error('RepeaterController missing from controllers WeakMap');
     }
     return controller.return(value);
   };
-  Repeater.prototype.throw = function (err) {
+  Repeater.prototype.throw = function(err) {
     let controller = controllers.get(this);
     if(controller === undefined) {
       throw new Error('RepeaterController missing from controllers WeakMap');
     }
     return controller.throw(err);
   };
-  Repeater.prototype[Symbol.asyncIterator] = function () {
+  Repeater.prototype[Symbol.asyncIterator] = function() {
     return this;
   };
   Repeater.race = race;
@@ -704,7 +704,7 @@ function asyncIterators(contenders, options) {
   let yieldValues = options.yieldValues,
     returnValues = options.returnValues;
   let iters = [];
-  let _loop_1 = function (contender) {
+  let _loop_1 = function(contender) {
     if(isAsyncIterable(contender)) {
       iters.push(contender[Symbol.asyncIterator]());
     } else if(isIterable(contender)) {
@@ -788,7 +788,7 @@ function race(contenders) {
   let _this = this;
   let iters = asyncIterators(contenders, { returnValues: true });
   return new Repeater((push, stop) =>
-    __awaiter(_this, void 0, void 0, function () {
+    __awaiter(_this, void 0, void 0, function() {
       let stopped, returned, results, results_1, results_1_1, result_1, result;
       let e_4, _a;
       return __generator(this, (_b) => {
@@ -858,7 +858,7 @@ function merge(contenders) {
   let _this = this;
   let iters = asyncIterators(contenders, { yieldValues: true });
   return new Repeater((push, stop) =>
-    __awaiter(_this, void 0, void 0, function () {
+    __awaiter(_this, void 0, void 0, function() {
       let stopped, returned;
       let _this = this;
       return __generator(this, (_a) => {
@@ -873,7 +873,7 @@ function merge(contenders) {
             return [
               4 /*yield*/,
               Promise.all(iters.map((iter) =>
-                  __awaiter(_this, void 0, void 0, function () {
+                  __awaiter(_this, void 0, void 0, function() {
                     let result, _a;
                     return __generator(this, (_b) => {
                       switch (_b.label) {
@@ -928,7 +928,7 @@ function zip(contenders) {
   let _this = this;
   let iters = asyncIterators(contenders, { returnValues: true });
   return new Repeater((push, stop) =>
-    __awaiter(_this, void 0, void 0, function () {
+    __awaiter(_this, void 0, void 0, function() {
       let stopped, resultsP, results, values;
       return __generator(this, (_a) => {
         switch (_a.label) {
@@ -982,7 +982,7 @@ function latest(contenders) {
     returnValues: true
   });
   return new Repeater((push, stop) =>
-    __awaiter(_this, void 0, void 0, function () {
+    __awaiter(_this, void 0, void 0, function() {
       let stopped, resultsP, results_2, values_1;
       let _this = this;
       return __generator(this, (_a) => {
@@ -1014,7 +1014,7 @@ function latest(contenders) {
             return [
               4 /*yield*/,
               Promise.all(iters.map((iter, i) =>
-                  __awaiter(_this, void 0, void 0, function () {
+                  __awaiter(_this, void 0, void 0, function() {
                     let result;
                     return __generator(this, (_a) => {
                       switch (_a.label) {

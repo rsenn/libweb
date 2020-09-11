@@ -79,7 +79,7 @@ function Arguments() {
   //TODO: add es3 'arguments.callee'?
 }
 
-Arguments.prototype.toString = function () {
+Arguments.prototype.toString = function() {
   return '[object Arguments]';
 };
 
@@ -194,7 +194,7 @@ export class Environment extends EventEmitter {
         BreakStatement: this.generateBreakStatement,
         SwitchStatement: this.generateSwitchStatement
       }[type] ||
-      function () {
+      function() {
         console.debug('node:', node);
 
         throw new NotImplemented(type, node);
@@ -204,7 +204,7 @@ export class Environment extends EventEmitter {
     ).call(this, node);
 
     if(this.DEBUG) {
-      return function () {
+      return function() {
         let info = 'closure for ' + type + ' called';
         let line = ((node.loc || {}).start || {}).line;
         if(line) {
@@ -277,7 +277,7 @@ console.debug("generateBinaryExpression", {u,v})
     //  let it = /*function*() {  yield 'test'; return 'blah'; }() ||*/ cmp();
     // console.debug("iter cmp():",  consume(function*() {  return yield *it; }()));
 
-    return function () {
+    return function() {
       // FIXME: Convert to yield*
       let iter = cmp();
       let res = iter.next();
@@ -291,7 +291,7 @@ console.debug("generateBinaryExpression", {u,v})
     const { identifiers, source } = node;
     log('ImportStatement:', node);
     let importFile = source.value;
-    return function () {
+    return function() {
       import(importFile).then((handle) => {
         log('handle:', handle);
       });
@@ -314,7 +314,7 @@ console.debug("generateBinaryExpression", {u,v})
       void() { return void a(); }
     }[node.operator];
 
-    return function () {
+    return function() {
       return op();
     };
   }
@@ -323,7 +323,7 @@ console.debug("generateBinaryExpression", {u,v})
     let obj = this.generateObject(node.argument);
     let attr = this.generateName(node.argument);
 
-    return function () {
+    return function() {
       return delete obj()[attr()];
     };
   }
@@ -345,7 +345,7 @@ console.debug("generateBinaryExpression", {u,v})
       });
     });
 
-    return function () {
+    return function() {
       let result = {};
       items.forEach((item) => {
         result[item.key] = item.getVal();
@@ -357,7 +357,7 @@ console.debug("generateBinaryExpression", {u,v})
   generateArrayLiteral(node) {
     let items = node.elements.map(this.boundGen);
 
-    return function () {
+    return function() {
       return items.map(execute);
     };
   }
@@ -372,7 +372,7 @@ console.debug("generateBinaryExpression", {u,v})
       key = this.generateClosure(node)();
     }
 
-    return function () {
+    return function() {
       return key;
     };
   }
@@ -383,7 +383,7 @@ console.debug("generateBinaryExpression", {u,v})
     if(node.callee.type === 'MemberExpression') {
       let obj = self.generateObject(node.callee);
       let name = self.generateName(node.callee);
-      callee = function () {
+      callee = function() {
         let theObj = obj();
         return theObj[name()].bind(theObj);
       };
@@ -449,7 +449,7 @@ console.debug("generateBinaryExpression", {u,v})
     let str = (s, v = 'node.value') => (s + '').replace(/\s+/g, ' ').replace(/(node\.value|key)/g, v);
 
     //log({obj: obj+'', member: member+'' }); //obj()      = ', obj() || str(obj,`'${node.object.value}'`), '\n  property() = ', property());
-    return function () {
+    return function() {
       self.emit('line', startLine(node));
       let r = obj();
       log('evalMemberExpression', { r }, obj + '');
@@ -463,14 +463,14 @@ console.debug("generateBinaryExpression", {u,v})
 
   generateThisExpression() {
     let self = this;
-    return function () {
+    return function() {
       return self.currentThis;
     };
   }
 
   generateSequenceExpression(node) {
     let exprs = node.expressions.map(this.boundGen);
-    return function () {
+    return function() {
       let result;
       exprs.forEach((expr) => {
         result = expr();
@@ -512,7 +512,7 @@ console.debug("generateBinaryExpression", {u,v})
     let type = node.type || Util.className(node);
 
     if(type === 'Identifier') {
-      return function () {
+      return function() {
         return node.value;
       };
     } else if(type === 'MemberExpression') {
@@ -540,7 +540,7 @@ console.debug("generateBinaryExpression", {u,v})
       default: throw new Error(`generateLiteral: no such species '${node.species}'`);
     }
     console.debug('generateLiteral', value);
-    return function () {
+    return function() {
       return value;
     };
   }
@@ -553,7 +553,7 @@ console.debug("generateBinaryExpression", {u,v})
 
     return new Function('env', `return ${func}`)(self);
 
-    return function () {
+    return function() {
       return self.getVariableStore(node.value)[node.value];
     };
   }
@@ -655,7 +655,7 @@ console.debug("generateBinaryExpression", {u,v})
     log({ body, declarations });
 
     // reset var store
-    return function () {
+    return function() {
       let parent = self.currentVariableStore;
       //log({ parent });
       return function* () {
@@ -736,7 +736,7 @@ console.debug("generateBinaryExpression", {u,v})
     //console.debug("generateReturnStatement", { assoc,position,tokens});
     const line = position.line;
     log(node);
-    return function () {
+    return function() {
       self.emit('line', line);
       return new Return(arg());
     };
@@ -744,7 +744,7 @@ console.debug("generateBinaryExpression", {u,v})
 
   generateIfStatement(node) {
     let self = this;
-    let test = function () {
+    let test = function() {
       self.emit('line', startLine(node));
       return self.generateClosure(node.test)();
     };
@@ -763,14 +763,14 @@ console.debug("generateBinaryExpression", {u,v})
 
   generateConditionalStatement(node) {
     let self = this;
-    let test = function () {
+    let test = function() {
       self.emit('line', startLine(node));
       return self.generateClosure(node.test)();
     };
     let consequent = this.generateClosure(node.consequent);
     let alternate = node.alternate ? this.generateClosure(node.alternate) : noop;
 
-    return function () {
+    return function() {
       return test() ? consequent() : alternate();
     };
   }
@@ -857,7 +857,7 @@ console.debug("generateBinaryExpression", {u,v})
   generateThrowStatement(node) {
     console.debug('generateThrowStatement:', node);
     let arg = this.generateClosure(node.expression);
-    return function () {
+    return function() {
       throw arg();
     };
   }
@@ -867,11 +867,11 @@ console.debug("generateBinaryExpression", {u,v})
     let handler = this.generateCatchHandler(node.handler);
     let finalizer = node.finalizer
       ? this.generateClosure(node.finalizer)
-      : function (x) {
+      : function(x) {
           return x;
         };
 
-    return function () {
+    return function() {
       try {
         return finalizer(block());
       } catch(err) {
@@ -886,7 +886,7 @@ console.debug("generateBinaryExpression", {u,v})
     }
     let self = this;
     let body = self.generateClosure(node.body);
-    return function (err) {
+    return function(err) {
       let old = self.currentVariableStore.vars[node.param.name];
       self.currentVariableStore.vars[node.param.name] = err;
       let resp = body();
@@ -897,13 +897,13 @@ console.debug("generateBinaryExpression", {u,v})
   }
 
   generateContinueStatement() {
-    return function () {
+    return function() {
       return Continue;
     };
   }
 
   generateBreakStatement() {
-    return function () {
+    return function() {
       return Break;
     };
   }

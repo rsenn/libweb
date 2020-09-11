@@ -1,13 +1,13 @@
 import { options, Fragment, createElement } from './preact.js';
 
 let IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|^--/i;
-let encodeEntities = function (s) {
+let encodeEntities = function(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 };
-let indent = function (s, char) {
+let indent = function(s, char) {
   return String(s).replace(/(\n+)/g, '$1' + (char || '\t'));
 };
-let isLargeString = function (s, length, ignoreLines) {
+let isLargeString = function(s, length, ignoreLines) {
   return String(s).length > (length || 40) || (!ignoreLines && String(s).indexOf('\n') !== -1) || String(s).indexOf('<') !== -1;
 };
 let JS_TO_CSS = {};
@@ -52,9 +52,9 @@ let SHALLOW = {
 };
 let UNNAMED = [];
 let VOID_ELEMENTS = /^(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/;
-let noop = function () {};
+let noop = function() {};
 renderToString.render = renderToString;
-let shallowRender = function (vnode, context) {
+let shallowRender = function(vnode, context) {
   return renderToString(vnode, context, SHALLOW);
 };
 function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {

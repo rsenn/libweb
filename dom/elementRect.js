@@ -60,7 +60,7 @@ const propSetter = (prop, proxy) => (value) => {
 };
 
 const computedSetter = (proxy, compute) =>
-  function (value) {
+  function(value) {
     let r = proxy.getRect();
     r = compute(value, r);
     if(r && r.x !== undefined) proxy.setRect((oldrect) => r);
@@ -70,7 +70,7 @@ const computedSetter = (proxy, compute) =>
 export const ElementXYProps = (element) => {
   Util.defineGetterSetter(element,
     'x',
-    function () {
+    function() {
       return Element.getRect(this).x;
     },
     function (val) {
@@ -79,7 +79,7 @@ export const ElementXYProps = (element) => {
   );
   Util.defineGetterSetter(element,
     'y',
-    function () {
+    function() {
       return Element.getRect(this).y;
     },
     function (val) {
@@ -91,7 +91,7 @@ export const ElementXYProps = (element) => {
 export const ElementWHProps = (element) => {
   Util.defineGetterSetter(element,
     'w',
-    function () {
+    function() {
       return Element.getRect(this).width;
     },
     function (val) {
@@ -100,7 +100,7 @@ export const ElementWHProps = (element) => {
   );
   Util.defineGetterSetter(element,
     'h',
-    function () {
+    function() {
       return Element.getRect(this).height;
     },
     function (val) {

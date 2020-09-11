@@ -26,7 +26,7 @@ function peg$SyntaxError(message, expected, found, location) {
 
 peg$subclass(peg$SyntaxError, Error);
 
-peg$SyntaxError.buildMessage = function (expected, found) {
+peg$SyntaxError.buildMessage = function(expected, found) {
   let DESCRIBE_EXPECTATION_FNS = {
     literal(expectation) {
       return '"' + literalEscape(expectation.text) + '"';
@@ -131,7 +131,7 @@ function peg$parse(input, options) {
   let peg$FAILED = {},
     peg$startRuleFunctions = { svg_path: peg$parsesvg_path },
     peg$startRuleFunction = peg$parsesvg_path,
-    peg$c0 = function (data) {
+    peg$c0 = function(data) {
       if(!data) return [];
       for(var cmds = [], i = 0; i < data.length; i++) cmds = cmds.concat.apply(cmds, data[i]);
       let first = cmds[0];
@@ -147,55 +147,55 @@ function peg$parse(input, options) {
     },
     peg$c2 = /^[Mm]/,
     peg$c3 = peg$classExpectation(['M', 'm'], false, false),
-    peg$c4 = function (c, first, more) {
+    peg$c4 = function(c, first, more) {
       let move = commands(c, [first]);
       if(more) move = move.concat(commands(c == 'M' ? 'L' : 'l', more[1]));
       return move;
     },
     peg$c5 = /^[Zz]/,
     peg$c6 = peg$classExpectation(['Z', 'z'], false, false),
-    peg$c7 = function () {
+    peg$c7 = function() {
       return commands('Z');
     },
     peg$c8 = /^[Ll]/,
     peg$c9 = peg$classExpectation(['L', 'l'], false, false),
-    peg$c10 = function (c, args) {
+    peg$c10 = function(c, args) {
       return commands(c, args);
     },
     peg$c11 = /^[Hh]/,
     peg$c12 = peg$classExpectation(['H', 'h'], false, false),
-    peg$c13 = function (c, args) {
+    peg$c13 = function(c, args) {
       return commands(c,
         args.map((x) => ({ x }))
       );
     },
     peg$c14 = /^[Vv]/,
     peg$c15 = peg$classExpectation(['V', 'v'], false, false),
-    peg$c16 = function (c, args) {
+    peg$c16 = function(c, args) {
       return commands(c,
         args.map((y) => ({ y }))
       );
     },
     peg$c17 = /^[Cc]/,
     peg$c18 = peg$classExpectation(['C', 'c'], false, false),
-    peg$c19 = function (a, b, c) {
+    peg$c19 = function(a, b, c) {
       return { x1: a.x, y1: a.y, x2: b.x, y2: b.y, x: c.x, y: c.y };
     },
     peg$c20 = /^[Ss]/,
     peg$c21 = peg$classExpectation(['S', 's'], false, false),
-    peg$c22 = function (b, c) {
+    peg$c22 = function(b, c) {
       return { x2: b.x, y2: b.y, x: c.x, y: c.y };
     },
     peg$c23 = /^[Qq]/,
     peg$c24 = peg$classExpectation(['Q', 'q'], false, false),
-    peg$c25 = function (a, b) {
+    peg$c25 = function(a, b) {
       return { x1: a.x, y1: a.y, x: b.x, y: b.y };
     },
     peg$c26 = /^[Tt]/,
     peg$c27 = peg$classExpectation(['T', 't'], false, false),
     peg$c28 = /^[Aa]/,
     peg$c29 = peg$classExpectation(['A', 'a'], false, false),
-    peg$c30 = function (rx, ry, xrot, large, sweep, xy) {
+    peg$c30 = function(rx, ry, xrot, large, sweep, xy) {
       return {
         rx,
         ry,
@@ -217,7 +217,7 @@ function peg$parse(input, options) {
     },
     peg$c34 = /^[01]/,
     peg$c35 = peg$classExpectation(['0', '1'], false, false),
-    peg$c36 = function (bit) {
+    peg$c36 = function(bit) {
       return bit == '1';
     },
     peg$c37 = function () {
@@ -225,7 +225,7 @@ function peg$parse(input, options) {
     },
     peg$c38 = ',',
     peg$c39 = peg$literalExpectation(',', false),
-    peg$c40 = function (parts) {
+    peg$c40 = function(parts) {
       return parts.join('');
     },
     peg$c41 = '.',
@@ -236,7 +236,7 @@ function peg$parse(input, options) {
     peg$c46 = peg$classExpectation(['+', '-'], false, false),
     peg$c47 = /^[0-9]/,
     peg$c48 = peg$classExpectation([['0', '9']], false, false),
-    peg$c49 = function (digits) {
+    peg$c49 = function(digits) {
       return digits.join('');
     },
     peg$c50 = /^[ \t\n\r]/,

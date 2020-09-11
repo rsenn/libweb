@@ -145,7 +145,7 @@ util.FLOAT_PRECISION = 0.001;
  * @param {number} inMm - If the feedrate is in millimeters.
  * Returns the feedrate in inches.
  */
-util.calculateFeedrate = function (feedrate, inMm) {
+util.calculateFeedrate = function(feedrate, inMm) {
   return inMm === false ? feedrate : feedrate * util.MILLIMETER_TO_INCH;
 };
 
@@ -160,7 +160,7 @@ util.calculateFeedrate = function (feedrate, inMm) {
  * of the comparaison.
  * @return {boolean} True if the two values are nearly equal.
  */
-util.nearlyEqual = function (a, b, precision) {
+util.nearlyEqual = function(a, b, precision) {
   let p = precision === undefined ? util.FLOAT_PRECISION : precision;
   return Math.abs(b - a) <= p;
 };
@@ -171,7 +171,7 @@ util.nearlyEqual = function (a, b, precision) {
  * @param {object} obj1 - The first object.
  * @param {object} obj2 - The second object.
  */
-util.swapObjects = function (obj1, obj2) {
+util.swapObjects = function(obj1, obj2) {
   function swapSingleField(objA, objB, key) {
     let temp;
     temp = objA[key];
@@ -196,7 +196,7 @@ util.swapObjects = function (obj1, obj2) {
  * @param {object} object - The object.
  * @return {object} The copy of the object.
  */
-util.copyObject = function (object) {
+util.copyObject = function(object) {
   let keys = Object.keys(object);
   let i = 0;
   let copy = {};
@@ -216,7 +216,7 @@ util.copyObject = function (object) {
  * @param {Point} point - The point to move.
  * @param {Point} vector - The vector.
  */
-util.movePoint = function (point, vector) {
+util.movePoint = function(point, vector) {
   let keys = Object.keys(vector);
   let i = 0;
   for(i = 0; i < keys.length; i++) {
@@ -233,7 +233,7 @@ util.movePoint = function (point, vector) {
  * @param {Point} v2 - The second vector.
  * @return {number} The result.
  */
-util.dotProduct2 = function (v1, v2) {
+util.dotProduct2 = function(v1, v2) {
   return v1.x * v2.x + v1.y * v2.y;
 };
 
@@ -244,7 +244,7 @@ util.dotProduct2 = function (v1, v2) {
  * @param {Point} v2 - The second vector.
  * @return {number} The result on the Z axis.
  */
-util.crossProduct2 = function (v1, v2) {
+util.crossProduct2 = function(v1, v2) {
   return v1.x * v2.y - v2.x * v1.y;
 };
 
@@ -254,7 +254,7 @@ util.crossProduct2 = function (v1, v2) {
  * @param {Point} v - The vector.
  * @return {number} The vector length.
  */
-util.lengthVector3 = function (v) {
+util.lengthVector3 = function(v) {
   return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 };
 
@@ -269,7 +269,7 @@ util.lengthVector3 = function (v) {
  * not "x" or "y".
  * @return {Axes} The object defining the real, imaginary and cross axis.
  */
-util.findAxes = function (crossAxe) {
+util.findAxes = function(crossAxe) {
   if(crossAxe.toLowerCase() === 'x') {
     return { re: 'y', im: 'z', cr: 'x' };
   }
@@ -291,7 +291,7 @@ util.findAxes = function (crossAxe) {
  * @param {string} re - The real axis.
  * @param {string} im - The imaginary axis.
  */
-util.scaleAndRotation = function (center, point, newPoint, angle, length, re, im) {
+util.scaleAndRotation = function(center, point, newPoint, angle, length, re, im) {
   let c = center,
     p = point,
     nP = newPoint;
@@ -314,7 +314,7 @@ util.scaleAndRotation = function (center, point, newPoint, angle, length, re, im
  * @param {Point} v2 - The second vector.
  * @return {number} The angle in radian.
  */
-util.findAngleVectors2 = function (v1, v2) {
+util.findAngleVectors2 = function(v1, v2) {
   let sign = util.crossProduct2(v1, v2) < 0 ? -1 : 1;
   let dot = util.dotProduct2(v1, v2);
   let lV1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
@@ -335,7 +335,7 @@ util.findAngleVectors2 = function (v1, v2) {
  * @param {boolean} positive - If the oriented angle goes counter-clockwise.
  * @return {number} The angle in radian.
  */
-util.findAngleOrientedVectors2 = function (v1, v2, positive) {
+util.findAngleOrientedVectors2 = function(v1, v2, positive) {
   let angle = util.findAngleVectors2(v1, v2);
 
   if(positive === false && angle > 0) {
@@ -357,7 +357,7 @@ util.findAngleOrientedVectors2 = function (v1, v2, positive) {
  * @param {number} b - The second boundary.
  * @return {boolean} The result.
  */
-util.isInclude = function (value, a, b) {
+util.isInclude = function(value, a, b) {
   return b < a ? b <= value && value <= a : a <= value && value <= b;
 };
 
@@ -383,7 +383,7 @@ for(i = 0; i < keys.length; i++) {
  * @param {Settings} settings - The modularity settings.
  * @return {StraightLine} An instance of the StraightLine class.
  */
-let StraightLine = function (index, start, end, parsedCommand, settings) {
+let StraightLine = function(index, start, end, parsedCommand, settings) {
   let that = this;
 
   /**
@@ -395,7 +395,7 @@ let StraightLine = function (index, start, end, parsedCommand, settings) {
    * @instance
    * @return {Line} The line object.
    */
-  that.returnLine = function () {
+  that.returnLine = function() {
     return {
       lineNumber: that.index,
       type: that.word,
@@ -413,7 +413,7 @@ let StraightLine = function (index, start, end, parsedCommand, settings) {
    * @instance
    * @return {Size} The size.
    */
-  that.getSize = function () {
+  that.getSize = function() {
     return {
       min: {
         x: Math.min(that.start.x, that.end.x),
@@ -456,7 +456,7 @@ let StraightLine = function (index, start, end, parsedCommand, settings) {
  * @param {Settings} settings - The modularity settings.
  * @return {CurvedLine} An instance of the CurvedLine class.
  */
-let CurvedLine = function (index, start, end, parsedCommand, settings) {
+let CurvedLine = function(index, start, end, parsedCommand, settings) {
   let that = this;
 
   // Will give 0 if start and end are the same
@@ -708,7 +708,7 @@ let CurvedLine = function (index, start, end, parsedCommand, settings) {
    * @instance
    * @return {Line|boolean} False if impossible line else the line object.
    */
-  that.returnLine = function () {
+  that.returnLine = function() {
     let bez = [];
     let axes = util.findAxes(that.crossAxe);
 
@@ -836,7 +836,7 @@ let CurvedLine = function (index, start, end, parsedCommand, settings) {
    * @instance
    * @return {Size} The size.
    */
-  that.getSize = function () {
+  that.getSize = function() {
     let axes = util.findAxes(that.crossAxe);
     let cs = {
       x: that.start[axes.re] - that.center[axes.re],
@@ -937,7 +937,7 @@ let GParser = (function () {
       peg$c0 = peg$FAILED,
       peg$c1 = null,
       peg$c2 = [],
-      peg$c3 = function (num, words) {
+      peg$c3 = function(num, words) {
         return { N: num, words };
       },
       peg$c4 = function (word, value) {
@@ -947,28 +947,28 @@ let GParser = (function () {
       peg$c6 = { type: 'literal', value: 'N', description: '"N"' },
       peg$c7 = /^[0-9]/,
       peg$c8 = { type: 'class', value: '[0-9]', description: '[0-9]' },
-      peg$c9 = function () {
+      peg$c9 = function() {
         return parseInt(text());
       },
       peg$c10 = /^[+\-]/,
       peg$c11 = { type: 'class', value: '[+\\-]', description: '[+\\-]' },
       peg$c12 = /^[.]/,
       peg$c13 = { type: 'class', value: '[.]', description: '[.]' },
-      peg$c14 = function () {
+      peg$c14 = function() {
         return parseFloat(text());
       },
       peg$c15 = '[',
       peg$c16 = { type: 'literal', value: '[', description: '"["' },
       peg$c17 = ']',
       peg$c18 = { type: 'literal', value: ']', description: '"]"' },
-      peg$c19 = function (expr) {
+      peg$c19 = function(expr) {
         return expr;
       },
       peg$c20 = 'ATAN',
       peg$c21 = { type: 'literal', value: 'ATAN', description: '"ATAN"' },
       peg$c22 = '/',
       peg$c23 = { type: 'literal', value: '/', description: '"/"' },
-      peg$c24 = function (left, right) {
+      peg$c24 = function(left, right) {
         return { op: 'ATAN', left, right };
       },
       peg$c25 = function (op, expr) {
@@ -976,7 +976,7 @@ let GParser = (function () {
       },
       peg$c26 = '#',
       peg$c27 = { type: 'literal', value: '#', description: '"#"' },
-      peg$c28 = function (expr) {
+      peg$c28 = function(expr) {
         return { op: '#', right: expr };
       },
       peg$c29 = function (first, rest) {

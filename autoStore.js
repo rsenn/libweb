@@ -73,7 +73,7 @@ export function getLocalStorage() {
 
 export const makeAutoStoreHandler = (name, store, runner /* = mobx.autorun */) => {
   if(!store) store = getLocalStorage();
-  var fn = function (_this, _member) {
+  var fn = function(_this, _member) {
     let firstRun = false; //true;
     //will run on change
     const disposer = runner(() => {
@@ -102,7 +102,7 @@ export const makeAutoStoreHandler = (name, store, runner /* = mobx.autorun */) =
     firstRun = false;
     return disposer;
   };
-  fn.update = function (updatedStore) {
+  fn.update = function(updatedStore) {
     try {
       store.set(name, updatedStore);
     } catch(err) {
