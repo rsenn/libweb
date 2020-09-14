@@ -12,7 +12,7 @@ import Util from '../util.js';
 
 export const noop = () => {};
 
-const streamify = (text) => {
+const streamify = text => {
   const s = new Blob(text.split(''));
   return s.stream();
 };
@@ -20,7 +20,7 @@ const streamify = (text) => {
 const containsLineEnd = (() => {
   const re = new RegExp(/.*(?:\r\n|\r|\n)/g);
 
-  return (s) => !!s.match(re);
+  return s => !!s.match(re);
 })();
 
 // @param {array} arr The array to iterate over.
@@ -54,7 +54,7 @@ const parseLine = (() => {
   // http://reprap.org/wiki/G-code#Special_fields
   // The checksum "cs" for a GCode string "cmd" (including its line number) is computed
   // by exor-ing the bytes in the string up to and not including the * character.
-  const computeChecksum = (s) => {
+  const computeChecksum = s => {
     s = s || '';
     if(s.lastIndexOf('*') >= 0) {
       s = s.substr(0, s.lastIndexOf('*'));
@@ -73,7 +73,7 @@ const parseLine = (() => {
     const re1 = new RegExp(/\s*\([^\)]*\)/g); // Remove anything inside the parentheses
     const re2 = new RegExp(/\s*;.*/g); // Remove anything after a semi-colon to the end of the line, including preceding spaces
     const re3 = new RegExp(/\s+/g);
-    return (line) => line.replace(re1, '').replace(re2, '').replace(re3, '');
+    return line => line.replace(re1, '').replace(re2, '').replace(re3, '');
   })();
   const re = /(%.*)|({.*)|((?:\$\$)|(?:\$[a-zA-Z0-9#]*))|([a-zA-Z][0-9\+\-\.]+)|(\*[0-9]+)/gim;
 
@@ -174,7 +174,7 @@ export const parseStream = (strm, options, callback = noop) => {
   try {
     const results = [];
 
-    (async (s) => {
+    (async s => {
       console.debug('waitFor 50');
       await Util.waitFor(500);
       console.debug('pipe GCodeLineStream');

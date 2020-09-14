@@ -68,7 +68,7 @@ export class Rule {
     }
 
     generate() {
-      return this.map((sym) => (!sym.generate ? Util.className(sym) : sym.generate())).join(', ');
+      return this.map(sym => (!sym.generate ? Util.className(sym) : sym.generate())).join(', ');
     }
 
     [Symbol.for('nodejs.util.inspect.custom')]() {
@@ -78,7 +78,7 @@ export class Rule {
     toString() {
       const { repeat = '', length, invert } = this;
       if(this.length == 1) return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
-      return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${invert ? '~' : ''}[ ${this.map((n) => /*Util.className(n) + ' ' +*/ n.toString()).join(Util.colorText(' ⏵ ', 1, 30))} ]${repeat}`;
+      return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${invert ? '~' : ''}[ ${this.map(n => /*Util.className(n) + ' ' +*/ n.toString()).join(Util.colorText(' ⏵ ', 1, 30))} ]${repeat}`;
     }
   };
   static Literal = class Literal extends Rule.Symbol {
@@ -99,7 +99,7 @@ export class Rule {
     }
 
     toString() {
-      return `${this.args.length > 1 ? '' : this.op}(` + this.args.map((n) => n.toString()).join(' ' + this.op + ' ') + `)`;
+      return `${this.args.length > 1 ? '' : this.op}(` + this.args.map(n => n.toString()).join(' ' + this.op + ' ') + `)`;
     }
   };
 
@@ -135,7 +135,7 @@ export class Rule {
       sep = ' ';
 
     if(multiline) (nl = '\n'), (sep = ' | ');
-    return `Rule ${this.fragment ? 'fragment ' : ''}${name ? Util.colorText(name, 1, 32) + ' ' : ''}${nl}: ${this.productions.map((l) => /* Util.className(l) + ' ' +*/ l.toString()).join(`${nl}${sep}`)}${nl};${nl}`;
+    return `Rule ${this.fragment ? 'fragment ' : ''}${name ? Util.colorText(name, 1, 32) + ' ' : ''}${nl}: ${this.productions.map(l => /* Util.className(l) + ' ' +*/ l.toString()).join(`${nl}${sep}`)}${nl};${nl}`;
   }
 
   match(parser) {
@@ -192,7 +192,7 @@ export class Rule {
         f = 'seq';
         sep = ', ';
       }
-      s = a.map((p) => Rule.generate(p, p instanceof Rule.Match && p.length > 1 ? 'seq' : null)).join(sep);
+      s = a.map(p => Rule.generate(p, p instanceof Rule.Match && p.length > 1 ? 'seq' : null)).join(sep);
 
       if(a.skip) skip = true;
 
@@ -203,7 +203,7 @@ export class Rule {
         f = 'seq';
         sep = ', ';
       }
-      s = a.map((p) => Rule.generate(p, null, sep)).join(sep);
+      s = a.map(p => Rule.generate(p, null, sep)).join(sep);
     } else if(cls == 'Symbol' || a instanceof Rule.Symbol) s = a.str;
     else s = `${Util.className(a)}(${a.str ? a.str : a})`;
 
@@ -411,7 +411,7 @@ export class Grammar {
       //rule.productions = rule.productions.reverse();
 
       if(rule.selfReferential) {
-        let a = [rule.productions.filter((p) => !p.selfReferential), rule.productions.filter((p) => p.selfReferential).map((m) => m.slice(1))];
+        let a = [rule.productions.filter(p => !p.selfReferential), rule.productions.filter(p => p.selfReferential).map(m => m.slice(1))];
 
         {
           let m = new Rule.Match(rule);

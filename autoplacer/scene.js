@@ -55,7 +55,7 @@ window.onload = function() {
         pushCenter: [SCENE_W / 2, SCENE_H / 2]
       },
       bodies,
-      (bb) => {
+      bb => {
         let i = 0;
         draw.clear();
         for(i = 0; i < MAX_BODIES; i++) {

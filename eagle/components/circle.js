@@ -25,7 +25,7 @@ export const Circle = ({ data, opts = {}, ...props }) => {
   //console.log('Circle.render ', { circle, opts });
   let { transform = new TransformationList() } = opts;
 
-  let coordFn = transform ? MakeCoordTransformer(transform) : (i) => i;
+  let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
   const { width, radius, layer } = circle;
   const { x, y } = coordFn(circle);

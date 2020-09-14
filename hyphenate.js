@@ -18,7 +18,7 @@ const Hyphenator = function(patterns, exceptions) {
 
   this._insert_exception = function(ex) {
     const a = [0];
-    const x = ex.split(CRGX).forEach((h) => {
+    const x = ex.split(CRGX).forEach(h => {
       a.push(h === '-' ? 1 : 0);
     });
     this.exceptions[ex.replace('-', '')] = a;
@@ -27,7 +27,7 @@ const Hyphenator = function(patterns, exceptions) {
   this._insert_pattern = function(pat) {
     const chars = pat.replace(DRGX, '');
 
-    const points = pat.split(ACRGX).map((h) => parseInt(h) || 0);
+    const points = pat.split(ACRGX).map(h => parseInt(h) || 0);
 
     let c = '';
     let t = this.tree;
@@ -484,7 +484,7 @@ const hyphenator = new Hyphenator(patterns, exceptions);
 const main = function() {
   const resp = process.argv[2]
     .split(' ')
-    .map((word) => hyphenator.hyphenate_word(word).join('-'))
+    .map(word => hyphenator.hyphenate_word(word).join('-'))
     .join(' ');
   console.log(resp);
 };

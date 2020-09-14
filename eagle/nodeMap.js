@@ -17,7 +17,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
 */
   static makePredicate(name, key) {
     const a = Util.isArray(key) ? key : [key];
-    return key == 'tagName' ? (item) => item.tagName == name : (item) => a.some((key) => item.attributes[key] == name);
+    return key == 'tagName' ? item => item.tagName == name : item => a.some(key => item.attributes[key] == name);
   }
 
   item(pos) {
@@ -57,7 +57,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
   }
 
   *[Symbol.iterator](keyAttr = this.key) {
-    const fn = keyAttr == 'tagName' ? (item) => item.tagName : (item) => item.attributes[keyAttr];
+    const fn = keyAttr == 'tagName' ? item => item.tagName : item => item.attributes[keyAttr];
     for(let item of this.list) yield [fn(item), item];
   }
 

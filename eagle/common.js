@@ -11,7 +11,7 @@ export const ansi = coloring.code.bind(coloring); //Util.isBrowser() ? () => '' 
 export const text = coloring.text.bind(coloring); //? (text, ...color) => (color.indexOf(1) != -1 ? `${text}` : text) : (text, ...color) => ansi(...color) + text + ansi(0);
 export const concat = coloring.concat.bind(coloring); //? (text, ...color) => (color.indexOf(1) != -1 ? `${text}` : text) : (text, ...color) => ansi(...color) + text + ansi(0);
 
-export const dingbatCode = (digit) => (digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1));
+export const dingbatCode = digit => (digit % 10 == 0 ? circles[0] : String.fromCharCode((digit % 10) + circles[1].charCodeAt(0) - 1));
 
 export const Palette = {
   board: (m = (r, g, b) => [r, g, b]) =>
@@ -33,7 +33,7 @@ export const Palette = {
       [75, 75, 75],
       [165, 165, 165],
       [0, 163, 255]
-    ].map((c) => m(...c)),
+    ].map(c => m(...c)),
   schematic: (m = (r, g, b) => [r, g, b]) =>
     [
       [255, 255, 255],
@@ -53,11 +53,11 @@ export const Palette = {
       [75, 75, 75],
       [165, 165, 165],
       [175, 175, 175]
-    ].map((c) => m(...c))
+    ].map(c => m(...c))
 };
 
 export const dump = (o, depth = 2, breakLength = 400) => {
-  const isElement = (o) => Util.isObject(o) && ['EagleElement', 'EagleNode', 'EagleDocument'].indexOf(Util.className(o)) != -1;
+  const isElement = o => Util.isObject(o) && ['EagleElement', 'EagleNode', 'EagleDocument'].indexOf(Util.className(o)) != -1;
   let s;
   if(o instanceof Array) {
     s = '';
@@ -78,7 +78,7 @@ export const dump = (o, depth = 2, breakLength = 400) => {
   return s;
 };
 
-export const parseArgs = (args) => {
+export const parseArgs = args => {
   let ret = { path: [] };
 
   while(args.length > 0) {
@@ -86,7 +86,7 @@ export const parseArgs = (args) => {
       ret.path = args.shift();
     } else if(args[0] instanceof RegExp) {
       let re = args.shift();
-      ret.predicate = (it) => re.test(it.tagName);
+      ret.predicate = it => re.test(it.tagName);
     } else if(args[0] instanceof Array) {
       ret.path = new ImmutablePath(args.shift());
     } else if(typeof args[0] == 'function') {
@@ -103,8 +103,8 @@ export const parseArgs = (args) => {
     }
   }
   if(typeof ret.predicate != 'function' && (ret.element || ret.name)) {
-    if(ret.name) ret.predicate = (v) => v.tagName == ret.element && v.attributes.name == ret.name;
-    else ret.predicate = (v) => v.tagName == ret.element;
+    if(ret.name) ret.predicate = v => v.tagName == ret.element && v.attributes.name == ret.name;
+    else ret.predicate = v => v.tagName == ret.element;
   }
   return ret;
 };

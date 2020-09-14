@@ -121,7 +121,7 @@ export class Environment extends EventEmitter {
       globalObjects = [globalObjects];
     }
     let parent;
-    globalObjects.forEach((vars) => {
+    globalObjects.forEach(vars => {
       parent = createVariableStore(parent, vars);
     });
 
@@ -292,7 +292,7 @@ console.debug("generateBinaryExpression", {u,v})
     log('ImportStatement:', node);
     let importFile = source.value;
     return function() {
-      import(importFile).then((handle) => {
+      import(importFile).then(handle => {
         log('handle:', handle);
       });
     };
@@ -334,7 +334,7 @@ console.debug("generateBinaryExpression", {u,v})
     let items = [];
     const { members } = node;
     log({ items, node });
-    node.members.forEach((property) => {
+    node.members.forEach(property => {
       // object expression keys are static so can be calculated
       // immediately
       log({ property });
@@ -347,7 +347,7 @@ console.debug("generateBinaryExpression", {u,v})
 
     return function() {
       let result = {};
-      items.forEach((item) => {
+      items.forEach(item => {
         result[item.key] = item.getVal();
       });
       return result;
@@ -472,7 +472,7 @@ console.debug("generateBinaryExpression", {u,v})
     let exprs = node.expressions.map(this.boundGen);
     return function() {
       let result;
-      exprs.forEach((expr) => {
+      exprs.forEach(expr => {
         result = expr();
       });
       return result;
@@ -698,7 +698,7 @@ console.debug("generateBinaryExpression", {u,v})
 
   generateProgram(node) {
     let self = this;
-    let stmtClosures = node.body.map((stmt) => self.generateClosure(stmt));
+    let stmtClosures = node.body.map(stmt => self.generateClosure(stmt));
     log({ stmtClosures });
     return function* () {
       let result;
@@ -912,7 +912,7 @@ console.debug("generateBinaryExpression", {u,v})
     let self = this;
 
     let discriminant = self.generateClosure(node.discriminant);
-    let cases = node.cases.map((currentCase) => ({
+    let cases = node.cases.map(currentCase => ({
       test: currentCase.test ? self.generateClosure(currentCase.test) : null,
       code: self.generateProgram({ body: currentCase.consequent })
     }));

@@ -1,6 +1,6 @@
 //Create a Promise that resolves after ms time
 export const timer = function(ms) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     setTimeout(resolve, ms);
   });
 };
@@ -19,18 +19,18 @@ let source = async function* () {
 /* --- */
 //Return a new async iterator that applies a
 //transform to the values from another async generator
-export const map = async function* (stream, transform = (a) => a) {
+export const map = async function* (stream, transform = a => a) {
   for await (let n of stream) {
     yield transform(n);
   }
 };
 
-export const consume = async function(stream, fn = (a) => console.log(`async consume =`, a)) {
+export const consume = async function(stream, fn = a => console.log(`async consume =`, a)) {
   for await (let n of stream) await fn(n);
 };
 
 export const accumulate = async function(stream, accu) {
-  return await consume(stream, (a) => accu.push(a)), accu;
+  return await consume(stream, a => accu.push(a)), accu;
 };
 
 /* --- */
@@ -44,7 +44,7 @@ WebSocket.prototype[Symbol.asyncIterator] = async function* () {
 /* --- */
 //Generate a Promise that listens only once for an event
 export const oncePromise = (emitter, event) =>
-  new Promise((resolve) => {
+  new Promise(resolve => {
     var handler = (...args) => {
       emitter.removeEventListener(event, handler);
       resolve(...args);
@@ -71,7 +71,7 @@ export const filter = async function* (stream, test) {
 };
 
 /* --- */
-let identity = (e) => e;
+let identity = e => e;
 
 //Only pass along events that differ from the last one
 export const distinct = async function* (stream, extract = identity) {

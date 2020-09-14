@@ -48,7 +48,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
     function step(result) {
       result.done
         ? resolve(result.value)
-        : new P((resolve) => {
+        : new P(resolve => {
             resolve(result.value);
           }).then(fulfilled, rejected);
     }
@@ -176,7 +176,7 @@ function __asyncValues(o) {
       };
   }
   function settle(resolve, reject, d, v) {
-    Promise.resolve(v).then((v) => {
+    Promise.resolve(v).then(v => {
       resolve({ value: v, done: d });
     }, reject);
   }
@@ -189,7 +189,7 @@ function semaphore(limit) {
   }
   let remaining = limit;
   let tokens = {};
-  let bucket = new Repeater((push) => {
+  let bucket = new Repeater(push => {
     let nextId = 0;
     function release(id) {
       if(tokens[id] != null) {
@@ -215,7 +215,7 @@ function semaphore(limit) {
     __awaiter(_this, void 0, void 0, function() {
       let stopped, _a, _b, token, e_1_1;
       let e_1, _c;
-      return __generator(this, (_d) => {
+      return __generator(this, _d => {
         switch (_d.label) {
           case 0:
             stopped = false;
@@ -287,7 +287,7 @@ function throttler(wait, options) {
         return __awaiter(this, void 0, void 0, function() {
           let tokens_1, tokens_1_1, token;
           let e_3, _a;
-          return __generator(this, (_b) => {
+          return __generator(this, _b => {
             switch (_b.label) {
               case 0:
                 if(leaking != null) {
@@ -321,7 +321,7 @@ function throttler(wait, options) {
       }
       let timer, tokens, start, leaking, stopped, _a, _b, token, token1, e_2_1;
       let e_2, _c;
-      return __generator(this, (_d) => {
+      return __generator(this, _d => {
         switch (_d.label) {
           case 0:
             timer = delay(wait);

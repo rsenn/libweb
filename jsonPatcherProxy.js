@@ -387,7 +387,7 @@ const JSONPatcherProxy = (function () {
    * Revokes all proxies, rendering the observed object useless and good for garbage collection @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/revocable}
    */
   JSONPatcherProxy.prototype.revoke = function() {
-    this._treeMetadataMap.forEach((el) => {
+    this._treeMetadataMap.forEach(el => {
       el.revoke();
     });
   };
@@ -403,7 +403,7 @@ const JSONPatcherProxy = (function () {
    * Restores callback back to the original one provided to `observe`.
    */
   JSONPatcherProxy.prototype.resume = function() {
-    this._defaultCallback = (operation) => {
+    this._defaultCallback = operation => {
       this._isRecording && this._patches.push(operation);
       this._userCallback && this._userCallback(operation);
     };

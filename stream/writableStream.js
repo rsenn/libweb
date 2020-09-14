@@ -4,7 +4,7 @@ import Util from '../util.js';
 
 let filesystem;
 
-PortableFileSystem((instance) => (filesystem = instance));
+PortableFileSystem(instance => (filesystem = instance));
 
 export const WritableStream =
   Util.getGlobalObject().WritableStream ||
@@ -48,7 +48,7 @@ export const WritableStream =
       this.length += chunk.byteLength;
       let result = this.length < this.highWaterMark;
       this.needDrain = !result;
-      cb = cb || ((r) => this.emit('data', r > 0 && r < chunk.byteLength ? chunk.slice(0, r) : chunk));
+      cb = cb || (r => this.emit('data', r > 0 && r < chunk.byteLength ? chunk.slice(0, r) : chunk));
       /* const { pos, length, writing } =this;
     console.log('write:',  { pos, length, writing });*/
 
@@ -56,7 +56,7 @@ export const WritableStream =
         this.buffers.push({ chunk, encoding, cb });
       } else {
         this.writing = true;
-        this._write(chunk, encoding, (r) => {
+        this._write(chunk, encoding, r => {
           cb && cb(r);
           this.clearBuffer();
         });

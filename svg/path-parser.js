@@ -64,8 +64,8 @@ peg$SyntaxError.buildMessage = function(expected, found) {
       .replace(/\t/g, '\\t')
       .replace(/\n/g, '\\n')
       .replace(/\r/g, '\\r')
-      .replace(/[\x00-\x0F]/g, (ch) => '\\x0' + hex(ch))
-      .replace(/[\x10-\x1F\x7F-\x9F]/g, (ch) => '\\x' + hex(ch));
+      .replace(/[\x00-\x0F]/g, ch => '\\x0' + hex(ch))
+      .replace(/[\x10-\x1F\x7F-\x9F]/g, ch => '\\x' + hex(ch));
   }
 
   function classEscape(s) {
@@ -78,8 +78,8 @@ peg$SyntaxError.buildMessage = function(expected, found) {
       .replace(/\t/g, '\\t')
       .replace(/\n/g, '\\n')
       .replace(/\r/g, '\\r')
-      .replace(/[\x00-\x0F]/g, (ch) => '\\x0' + hex(ch))
-      .replace(/[\x10-\x1F\x7F-\x9F]/g, (ch) => '\\x' + hex(ch));
+      .replace(/[\x00-\x0F]/g, ch => '\\x0' + hex(ch))
+      .replace(/[\x10-\x1F\x7F-\x9F]/g, ch => '\\x' + hex(ch));
   }
 
   function describeExpectation(expectation) {
@@ -166,14 +166,14 @@ function peg$parse(input, options) {
     peg$c12 = peg$classExpectation(['H', 'h'], false, false),
     peg$c13 = function(c, args) {
       return commands(c,
-        args.map((x) => ({ x }))
+        args.map(x => ({ x }))
       );
     },
     peg$c14 = /^[Vv]/,
     peg$c15 = peg$classExpectation(['V', 'v'], false, false),
     peg$c16 = function(c, args) {
       return commands(c,
-        args.map((y) => ({ y }))
+        args.map(y => ({ y }))
       );
     },
     peg$c17 = /^[Cc]/,
@@ -2140,7 +2140,7 @@ export const makeAbsolute = function makeSVGPathCommandsAbsolute(commands) {
   let subpathStart,
     prevCmd = { x: 0, y: 0 };
   let attr = { x: 'x0', y: 'y0', x1: 'x0', y1: 'y0', x2: 'x0', y2: 'y0' };
-  commands.forEach((cmd) => {
+  commands.forEach(cmd => {
     if(cmd.command === 'moveto') subpathStart = cmd;
     cmd.x0 = prevCmd.x;
     cmd.y0 = prevCmd.y;

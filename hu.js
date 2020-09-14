@@ -51,7 +51,7 @@ let hu = (function () {
 
   //reverse camel case : "strokeOpacity" -> "stroke-opacity"
   function rcc(n) {
-    return n.replace(/[A-Z]/g, (l) => '-' + l.toLowerCase());
+    return n.replace(/[A-Z]/g, l => '-' + l.toLowerCase());
   }
 
   fn.append = function(a) {
@@ -210,11 +210,11 @@ let hu = (function () {
       e = s + duration;
     (function step(n) {
       n = Date.now();
-      vars.forEach((v) => {
+      vars.forEach(v => {
         v.f.call(u, v.k, v.s + ((n - s) * (v.e - v.s)) / duration);
       });
       if(n < e) return setTimeout(step, 10);
-      vars.forEach((v) => {
+      vars.forEach(v => {
         v.f.call(u, v.k, v.e);
       });
       if(cb) cb.call(u);

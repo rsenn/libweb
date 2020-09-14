@@ -17,7 +17,7 @@ export function iterator() {
   return [read(), write, end];
 
   function defer() {
-    promise = new Promise((r) => (resolve = r));
+    promise = new Promise(r => (resolve = r));
   }
 
   async function* read() {
@@ -41,10 +41,10 @@ export function iterator() {
 export function eventIterator(element, ...events) {
   let [iter, push, end] = iterator();
 
-  events.forEach((name) => element.addEventListener(name, push));
+  events.forEach(name => element.addEventListener(name, push));
 
   iter.stop = () => {
-    events.forEach((name) => element.removeEventListener(name, push));
+    events.forEach(name => element.removeEventListener(name, push));
     end();
   };
 

@@ -11,7 +11,7 @@
  */
 
 let absCommands = ['M', 'Z', 'L', 'H', 'V', 'C', 'S', 'Q', 'T', 'A'];
-let relCommands = absCommands.map((letter) => letter.toLowerCase());
+let relCommands = absCommands.map(letter => letter.toLowerCase());
 let commands = absCommands.concat(relCommands);
 
 /**
@@ -179,11 +179,11 @@ SvgPath.prototype.cmd = function(...args) {
  * @returns {string}
  */
 SvgPath.prototype.str = function() {
-  return this.commands.map((command) => command.toString()).join(' ');
+  return this.commands.map(command => command.toString()).join(' ');
 };
 
 //setting letter commands
-commands.forEach((commandName) => {
+commands.forEach(commandName => {
   SvgPath.prototype[commandName] = function() {
     let args = Array.prototype.slice.call(arguments, 0);
     args.unshift(commandName);

@@ -1,6 +1,6 @@
 function oneObject(str) {
   let obj = {};
-  str.split(',').forEach((_) => (obj[_] = true));
+  str.split(',').forEach(_ => (obj[_] = true));
   return obj;
 }
 let voidTag = oneObject('area,base,basefont,br,col,frame,hr,img,input,link,meta,param,embed,command,keygen,source,track,wbr');
@@ -331,7 +331,7 @@ function getOpenTag(string) {
 
 function getText(node) {
   let ret = '';
-  node.children.forEach((el) => {
+  node.children.forEach(el => {
     if(el.type === '#text') {
       ret += el.nodeValue;
     } else if(el.children && !hiddenTag[el.type]) {

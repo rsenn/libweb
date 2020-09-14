@@ -34,18 +34,18 @@ export class ColorMap extends Map {
   toString(opts = {}) {
     const base = opts.base || this.base;
     let a = [];
-    for(let [key, color] of this) a.push(color.toString ? color.toString(',', (num) => num.toString(base)) : '' + color);
+    for(let [key, color] of this) a.push(color.toString ? color.toString(',', num => num.toString(base)) : '' + color);
     a.join(',');
   }
 
-  getChannel(name, t = (entries) => new Map(entries)) {
+  getChannel(name, t = entries => new Map(entries)) {
     return t([...this.entries()].map(([key, color]) => [key, color[name]]));
   }
 
   getMinMax() {
     let channels = this.type == RGBA ? ['r', 'g', 'b', 'a'] : this.type == HSLA ? ['h', 's', 'l', 'a'] : [];
-    const minmax = (a) => [Math.min(...a), Math.max(...a)];
-    return channels.reduce((acc, chan) => ({ ...acc, [chan]: minmax(this.getChannel(chan, (e) => e).map(([k, c]) => c)) }), {});
+    const minmax = a => [Math.min(...a), Math.max(...a)];
+    return channels.reduce((acc, chan) => ({ ...acc, [chan]: minmax(this.getChannel(chan, e => e).map(([k, c]) => c)) }), {});
   }
 
   remapChannel(chan, fn = (v, k) => v) {
@@ -69,7 +69,7 @@ export class ColorMap extends Map {
 
   *toScalar(ofpts = {}) {
     const base = opts.base || this.base;
-    const fmt = opts.fmt || this.fmt || ((n) => n.toFixed(3));
+    const fmt = opts.fmt || this.fmt || (n => n.toFixed(3));
     for(let [key, color] of this) {
       if(color instanceof HSLA) color = color.toRGBA();
       if(!(color instanceof RGBA)) color = RGBA.fromString(color);

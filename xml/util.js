@@ -30,7 +30,7 @@ class XMLAttribute {
   name = '';
   value = null;
 
-  static getAttributesFor = Util.weakMapper((obj) => {
+  static getAttributesFor = Util.weakMapper(obj => {
     let { length: l, 0: tagName, children, ...attributes } = obj;
     let keys = Object.keys(attributes);
     /* prettier-ignore */ let a = keys.reduce((acc, name, i) => ({ ...acc, get [i]() {return this[name]; } }), {} );

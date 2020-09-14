@@ -55,12 +55,12 @@ export function QuickJSFileSystem(std, os) {
 
     read(fd, buf, offset, length) {
       let ret, err;
-      let retFn = (r) => err || r;
+      let retFn = r => err || r;
       length = length || 1024;
       offset = offset || 0;
       if(!buf) {
         buf = CreateArrayBuffer(length);
-        retFn = (r) => {
+        retFn = r => {
           if(r > 0) {
             let b = r < buf.byteLength ? buf.slice(0, r) : buf;
             /* b[Symbol.toStringTag] = */ b.toString = () => ArrayBufferToString(b);
@@ -209,13 +209,13 @@ export function NodeJSFileSystem(fs) {
     },
     read(fd, buf, offset, length) {
       let ret,
-        retFn = (r) => r;
+        retFn = r => r;
       try {
         length = length || 1024;
         offset = offset || 0;
         if(!buf) {
           buf = BufferAlloc(length);
-          retFn = (r) => (r > 0 ? buf.slice(0, r) : r);
+          retFn = r => (r > 0 ? buf.slice(0, r) : r);
         }
         ret = fs.readSync(fd, buf, offset, length, 0);
       } catch(error) {
@@ -319,7 +319,7 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
       let { writable, readable } = new TransformStream();
       console.log(' writable, readable:', writable, readable);
       function wait(milliseconds) {
-        return new Promise((resolve) => setTimeout(resolve, milliseconds));
+        return new Promise(resolve => setTimeout(resolve, milliseconds));
       }
 
       const stream = ChunkReader(`this\n\n...\n\n...\nis\n\n...\n\n...\na\n\n...\n\n...\ntest\n\n...\n\n...\n!`, 4).pipeThrough(new DebugTransformStream());
@@ -354,8 +354,8 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
             }
           : {}
       )
-        .then((response) => (writable ? response.json() : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())))
-        .catch((err) => (error = err));
+        .then(response => (writable ? response.json() : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())))
+        .catch(err => (error = err));
       return send ? writable : promise;
     },
     async close(fd) {
@@ -453,7 +453,7 @@ export async function GetPortableFileSystem() {
   if(fs && !err) return fs;
 }
 
-export async function PortableFileSystem(fn = (fs) => true) {
+export async function PortableFileSystem(fn = fs => true) {
   return await Util.memoize(async function() {
     const fs = await GetPortableFileSystem();
 
@@ -473,7 +473,7 @@ export async function PortableFileSystem(fn = (fs) => true) {
       }
     }
     return fs;
-  })().then((fs) => (fn(fs), fs));
+  })().then(fs => (fn(fs), fs));
 }
 
 export default PortableFileSystem;

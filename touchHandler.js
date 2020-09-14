@@ -12,7 +12,7 @@ export function MovementListener(handler, options) {
   let points = new PointList();
   let prev;
 
-  const cancel = trkl((event) => {
+  const cancel = trkl(event => {
     start = null;
     move = {};
     end = {};
@@ -141,8 +141,8 @@ export function MovementListener(handler, options) {
     self.scrollDisabler = ScrollDisabler(self.isActive, options.element);
     self.handler.scrollDisabler = self.scrollDisabler;
 
-    self.handler.start.subscribe((event) => (event === null ? self.scrollDisabler.remove() : self.scrollDisabler.add()));
-    self.handler.end.subscribe((event) => self.scrollDisabler.remove());
+    self.handler.start.subscribe(event => (event === null ? self.scrollDisabler.remove() : self.scrollDisabler.add()));
+    self.handler.end.subscribe(event => self.scrollDisabler.remove());
   }
 
   return self;
@@ -229,7 +229,7 @@ export function MultitouchListener(handler, options) {
   };
 
   self.handler = trkl();
-  self.handler.subscribe((event) =>
+  self.handler.subscribe(event =>
     //console.debug('MultitouchListener handler(', event, ')');
 
     handler(event)
@@ -252,7 +252,7 @@ export function TurnListener(handler, options) {
     return this.cancel(event);
   }
 
-  return MultitouchListener(MovementListener((event) => {
+  return MultitouchListener(MovementListener(event => {
       const { points, x, y } = event;
       const type = event.type || '';
       let end = type.endsWith('up') || type.endsWith('cancel') || type.endsWith('end') || event.active === false;
@@ -383,14 +383,14 @@ export function SelectionRenderer() {
   };
 }
 
-export const TouchEvents = (listener) => ({
+export const TouchEvents = listener => ({
   onTouchStart: listener,
   onTouchEnd: listener,
   onTouchMove: listener,
   onTouchCancel: listener
 });
 
-export const MouseEvents = (listener) => ({
+export const MouseEvents = listener => ({
   onMouseDown: listener,
   onMouseMove: listener,
   onMouseUp: listener //e => {console.log("onMouseUp"); listener(e); }

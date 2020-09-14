@@ -30,7 +30,7 @@ export const Instance = ({ data, opts = {}, transformation, ...props }) => {
     opts: {
       ...opts,
       ...(deviceset.uservalue == 'yes' || true ? { name, value } : { name, value: '' }),
-      transformation: transformation.concat(transform.filter((t) => ['translate'].indexOf(t.type) == -1))
+      transformation: transformation.concat(transform.filter(t => ['translate'].indexOf(t.type) == -1))
     }
   });
 

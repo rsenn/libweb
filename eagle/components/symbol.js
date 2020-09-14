@@ -7,5 +7,5 @@ export const SchematicSymbol = ({ data, opts, ...props }) => {
 
   //children.map(data => console.log('data:', data.tagName));
 
-  return h(Fragment, {}, [...children.filter(({ tagName }) => tagName != 'text').map((data) => h(ElementToComponent(data), { data, opts })), ...children.filter(({ tagName }) => tagName == 'text').map((data) => h(ElementToComponent(data), { data, opts }))]);
+  return h(Fragment, {}, [...children.filter(({ tagName }) => tagName != 'text').map(data => h(ElementToComponent(data), { data, opts })), ...children.filter(({ tagName }) => tagName == 'text').map(data => h(ElementToComponent(data), { data, opts }))]);
 };

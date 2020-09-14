@@ -136,7 +136,7 @@ export class WebSocketClient {
       };
       let handleOpen = function(event) {
         socket.addEventListener('message', handleMessage);
-        socket.addEventListener('close', (event) => {
+        socket.addEventListener('close', event => {
           ws._closeEvent = function(event) {
             return;
           };

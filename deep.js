@@ -1,11 +1,11 @@
 import Util from './util.js';
 
-export const isPlainObject = (obj) => {
+export const isPlainObject = obj => {
   if((obj != null ? obj.constructor : void 0) == null) return false;
   return obj.constructor.name === 'Object';
 };
 
-export const clone = (obj) => {
+export const clone = obj => {
   let out, v, key;
   out = Array.isArray(obj) ? [] : {};
   for(key in obj) {
@@ -91,7 +91,7 @@ export const find = (node, filter, path, root) => {
   return ret;
 };
 
-export const iterate = function* (value, filter = (v) => true, path = []) {
+export const iterate = function* (value, filter = v => true, path = []) {
   //throw new Error();
   let root = arguments[3] || value,
     selected = [],

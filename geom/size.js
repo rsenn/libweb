@@ -47,7 +47,7 @@ export function Size(arg) {
   if(isNaN(obj.height)) obj.height = undefined;
   if(!(obj instanceof Size)) return obj;
 }
-const getArgs = (args) => (/*console.debug('getArgs', ...args), */ typeof args[0] == 'number' ? [{ width: args[0], height: args[1] }] : args);
+const getArgs = args => (/*console.debug('getArgs', ...args), */ typeof args[0] == 'number' ? [{ width: args[0], height: args[1] }] : args);
 
 Size.prototype.width = NaN;
 Size.prototype.height = NaN;
@@ -98,7 +98,10 @@ Size.prototype.resize = function(width, height) {
   this.height = height;
   return this;
 };
-
+Size.prototype.equals = function(other) {
+  let { width, height } = this;
+  return +width == +other.width && +height == +other.height;
+};
 Size.prototype.sum = function(other) {
   return new Size(this.width + other.width, this.height + other.height);
 };
@@ -197,15 +200,15 @@ Size.prototype.toString = function(opts = {}) {
     let [width,height]= this;
     return [width,height][Symbol.iterator]();
   }*/
-Size.area = (sz) => Size.prototype.area.call(sz);
-Size.aspect = (sz) => Size.prototype.aspect.call(sz);
+Size.area = sz => Size.prototype.area.call(sz);
+Size.aspect = sz => Size.prototype.aspect.call(sz);
 
 Size.bind = (...args) => {
   const o = args[0] instanceof Size ? args.shift() : new Size();
   const gen = Util.isFunction(args[args.length - 1]) && args.pop();
   const p = args.length > 1 ? args.pop() : ['width', 'height'];
   const t = args.pop();
-  gen = gen || ((k) => (v) => (v === undefined ? t[k] : (t[k] = v)));
+  gen = gen || (k => v => (v === undefined ? t[k] : (t[k] = v)));
 
   // const [  p = ['width', 'height']  ] = args[0] instanceof Size ? args : [new Size(), ...args];
   console.debug('Size.bind', { args, o, t, p, gen });
@@ -215,7 +218,7 @@ Size.bind = (...args) => {
 
 for(let method of Util.getMethodNames(Size.prototype)) Size[method] = (size, ...args) => Size.prototype[method].call(size || new Size(size), ...args);
 
-export const isSize = (o) => o && ((o.width !== undefined && o.height !== undefined) || (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) || (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
+export const isSize = o => o && ((o.width !== undefined && o.height !== undefined) || (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) || (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
 
 for(let name of ['toCSS', 'isSquare', 'round', 'sum', 'add', 'diff', 'sub', 'prod', 'mul', 'quot', 'div']) {
   Size[name] = (size, ...args) => Size.prototype[name].call(size || new Size(size), ...args);

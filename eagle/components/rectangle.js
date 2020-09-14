@@ -17,7 +17,7 @@ export const Rectangle = ({ data, opts = {}, ...props }) => {
   //console.log('Rectangle.render ', { rectangle, opts });
   let { transform = new TransformationList() } = opts;
 
-  let coordFn = transform ? MakeCoordTransformer(transform) : (i) => i;
+  let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
   const { x1, x2, y1, y2 } = coordFn(rectangle);
   const { layer } = rectangle;

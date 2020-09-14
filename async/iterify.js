@@ -5,7 +5,7 @@ const asynciterify = (emitter, event, options = {}) => {
   const pushQueue = [];
   let done = false;
 
-  const pushValue = async (args) => {
+  const pushValue = async args => {
     if(pullQueue.length !== 0) {
       const resolver = pullQueue.shift();
       resolver(...args);
@@ -15,7 +15,7 @@ const asynciterify = (emitter, event, options = {}) => {
   };
 
   const pullValue = () =>
-    new Promise((resolve) => {
+    new Promise(resolve => {
       if(pushQueue.length !== 0) {
         const args = pushQueue.shift();
         resolve(...args);
@@ -42,7 +42,7 @@ const asynciterify = (emitter, event, options = {}) => {
       emitter[offMethod](event, handler);
       return { done };
     },
-    throw: (error) => {
+    throw: error => {
       done = true;
       return {
         done,

@@ -1,10 +1,10 @@
 import ClipperLib from './clipper-lib.js';
 
 let errorCallback;
-export const setErrorCallback = (callback) => {
+export const setErrorCallback = callback => {
   errorCallback = callback;
 };
-ClipperLib.Error = (message) => {
+ClipperLib.Error = message => {
   if(errorCallback) errorCallback(message);
 };
 
@@ -125,7 +125,7 @@ export default class Shape {
   }
 
   perimeters() {
-    return this.paths.map((path) => ClipperLib.JS.PerimeterOfPath(path, this.closed, 1));
+    return this.paths.map(path => ClipperLib.JS.PerimeterOfPath(path, this.closed, 1));
   }
 
   totalPerimeter() {

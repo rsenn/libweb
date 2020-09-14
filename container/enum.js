@@ -6,8 +6,8 @@ let InvalidArgumentException = exceptions.InvalidArgumentException;
  * @returns {string}
  * @see See {@link http://ecma-international.org/ecma-262/5.1/#sec-7.6} for more info.
  */
-let getValidPropertyName = (name) => {
-  name = name.replace(/^[^A-Za-z$_]+/, (match) => new Array(match.length + 1).join('_'));
+let getValidPropertyName = name => {
+  name = name.replace(/^[^A-Za-z$_]+/, match => new Array(match.length + 1).join('_'));
 
   return name.replace(/[^a-z0-9$_]/gi, '_');
 };

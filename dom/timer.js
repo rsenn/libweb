@@ -28,11 +28,11 @@ Timer.until = (deadline, fn, props) => Timer.once(deadline - Date.now(), fn, pro
 
 Timer.std = {
   create: (fn, interval) => setTimeout(fn, interval),
-  destroy: (id) => clearTimeout(id)
+  destroy: id => clearTimeout(id)
 };
 
 Timer.debug = (impl = Timer.std) => ({
-  log: (msg) => console.log(msg),
+  log: msg => console.log(msg),
   create(fn, timeout) {
     let id, str;
     id = impl.create(() => {
@@ -56,7 +56,7 @@ Timer.promise = (timeout, impl = Timer.std /*Timer.debug(Timer.std)*/) =>
       {},
       {
         create: (fn, timeout) => impl.create(fn, timeout),
-        destroy: (id) => {
+        destroy: id => {
           impl.destroy(id);
           reject();
         }

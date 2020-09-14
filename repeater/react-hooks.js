@@ -35,7 +35,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
     function step(result) {
       result.done
         ? resolve(result.value)
-        : new P((resolve) => {
+        : new P(resolve => {
             resolve(result.value);
           }).then(fulfilled, rejected);
     }
@@ -210,7 +210,7 @@ function useResult(callback, deps) {
     (function () {
       return __awaiter(_this, void 0, void 0, function() {
         let result_1, err_1;
-        return __generator(this, (_a) => {
+        return __generator(this, _a => {
           switch (_a.label) {
             case 0:
               _a.trys.push([0, 4, , 5]);
@@ -255,4 +255,4 @@ function useValue(callback, deps) {
 }
 
 export { useAsyncIter, useRepeater, useResult, useValue };
-//# sourceMappingURL=react-hooks.esm.js.map
+//# sourceMappingURL=react-hooks.js.map

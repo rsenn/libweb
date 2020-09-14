@@ -1,14 +1,14 @@
-export const inspect = (o, pred = (v) => true) =>
+export const inspect = (o, pred = v => true) =>
   '{\n  ' +
   [
-    [(o) => o, Object.keys],
+    [o => o, Object.keys],
     [Object.getPrototypeOf, Object.keys],
-    [(o) => o, Object.getOwnPropertyNames],
+    [o => o, Object.getOwnPropertyNames],
     [Object.getPrototypeOf, Object.getOwnPropertyNames]
   ]
     .reduce((a, [proto, keys]) => (a.length ? a : [...a, ...keys(proto(o))]), [])
     .reduce((a, k) => (a.indexOf(k) == -1 ? [...a, k] : a), [])
-    .map((k) => [k, o[k]])
+    .map(k => [k, o[k]])
     .map(([k, v]) => {
       if(pred(v, k) == false) return '';
       let s = v;

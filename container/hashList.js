@@ -1,7 +1,7 @@
 export class HashList {
   constructor(keyfn, ctor) {
-    this.keyfn = keyfn ? keyfn : (item) => (item.toString !== undefined ? item.toString() : String(item));
-    this.ctor = ctor ? ctor : (item) => item;
+    this.keyfn = keyfn ? keyfn : item => (item.toString !== undefined ? item.toString() : String(item));
+    this.ctor = ctor ? ctor : item => item;
     this.width = 0;
     this.keys = [];
   }
@@ -25,7 +25,7 @@ export class HashList {
   }
 
   filter(fn) {
-    return this.toArray().filter((img) => fn(img));
+    return this.toArray().filter(img => fn(img));
   }
 
   reduce(fn, acc) {
@@ -73,8 +73,8 @@ export class HashList {
 
   remap(fn) {
     const arr = this.toArray();
-    let ret = new HashList((obj) => obj.key || obj.id,
-      (obj) => obj
+    let ret = new HashList(obj => obj.key || obj.id,
+      obj => obj
     );
     for(let i = 0; i < arr.length; i++) {
       ret.add(arr[i]);
@@ -84,7 +84,7 @@ export class HashList {
 
   toString() {
     return Util.distinct(this.keys)
-      .map((key) => key + '[' + this[key].length + ']')
+      .map(key => key + '[' + this[key].length + ']')
       .join(', ');
   }
 }

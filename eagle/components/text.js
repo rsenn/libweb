@@ -13,10 +13,10 @@ export const Text = ({ x, y, text, color, alignment, rot, transformation, visibl
 
   transform = transform.concat(transformation
       .slice(1)
-      .filter((t) => ['translate'].indexOf(t.type) == -1)
+      .filter(t => ['translate'].indexOf(t.type) == -1)
       .invert()
   );
-  let alignmentTransform = transform.filter((t) => ['translate'].indexOf(t.type) == -1).collapseAll();
+  let alignmentTransform = transform.filter(t => ['translate'].indexOf(t.type) == -1).collapseAll();
   alignment = Alignment(alignment);
   alignment.transform(alignmentTransform.toMatrix());
 

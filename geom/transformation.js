@@ -29,10 +29,10 @@ export class Transformation {
     return this.constructor === TransformationList || Object.getPrototypeOf(this) == TransformationList.prototype || Object.getPrototypeOf(this).constructor == TransformationList;
   }
   get axes() {
-    return this.axis !== undefined ? [this.axis] : ['x', 'y', 'z'].filter((axis) => axis in this);
+    return this.axis !== undefined ? [this.axis] : ['x', 'y', 'z'].filter(axis => axis in this);
   }
   get props() {
-    return this.axes.concat(['axis', 'angle'].filter((key) => key in this));
+    return this.axes.concat(['axis', 'angle'].filter(key => key in this));
   }
 
   has(axis) {
@@ -45,7 +45,7 @@ export class Transformation {
   }
 
   entries() {
-    return this.props.map((prop) => [prop, this[prop]]);
+    return this.props.map(prop => [prop, this[prop]]);
   }
 
   toJSON() {
@@ -54,7 +54,7 @@ export class Transformation {
 
   vector(unit) {
     unit = this.unit || unit;
-    return (this.is3D ? ['x', 'y', 'z'] : ['x', 'y']).map(unit ? (axis) => this[axis] + unit : (axis) => this[axis]);
+    return (this.is3D ? ['x', 'y', 'z'] : ['x', 'y']).map(unit ? axis => this[axis] + unit : axis => this[axis]);
   }
 
   toString(tUnit) {
@@ -82,8 +82,8 @@ export class Transformation {
     //console.log("fromString",{arg,argStr,args});
 
     args = args
-      .filter((arg) => /^[-+0-9.]+[a-z]*$/.test(arg))
-      .map((arg) => {
+      .filter(arg => /^[-+0-9.]+[a-z]*$/.test(arg))
+      .map(arg => {
         if(/[a-z]$/.test(arg)) {
           unit = arg.replace(/[-+0-9.]*/g, '');
           arg = arg.replace(/[a-z]*$/g, '');
@@ -151,7 +151,7 @@ export class Transformation {
 
 Object.defineProperty(Transformation, Symbol.hasInstance, {
   value(inst) {
-    return [Transformation, MatrixTransformation, Rotation, Translation, Scaling, TransformationList].some((ctor) => Object.getPrototypeOf(inst) == ctor.prototype);
+    return [Transformation, MatrixTransformation, Rotation, Translation, Scaling, TransformationList].some(ctor => Object.getPrototypeOf(inst) == ctor.prototype);
   }
 });
 
@@ -240,7 +240,7 @@ export class Translation extends Transformation {
       const axis = args.shift().toLowerCase();
       this[axis] = n;
     } else {
-      let numDim = [...args, '.'].findIndex((a) => isNaN(+a));
+      let numDim = [...args, '.'].findIndex(a => isNaN(+a));
       const [x = 0, y = 0, z] = args.splice(0, numDim);
       this.x = +x;
       this.y = +y;
@@ -501,7 +501,7 @@ export class TransformationList extends Array {
   }
 
   clone() {
-    return this.map((t) => t.clone()); // this.slice();
+    return this.map(t => t.clone()); // this.slice();
   }
 
   map(fn) {
@@ -548,7 +548,7 @@ export class TransformationList extends Array {
   }
 
   translate(x, y) {
-    let trans = this.filter((t) => !t.type.startsWith('translat'));
+    let trans = this.filter(t => !t.type.startsWith('translat'));
     let vec = new Point(x, y);
 
     //trans.toMatrix().transform_point(vec);
@@ -574,7 +574,7 @@ export class TransformationList extends Array {
   toString(tUnit, rUnit) {
     tUnit = tUnit || this.translationUnit;
     rUnit = rUnit || this.rotationUnit;
-    let r = this.map((t) => t.toString(t.type.startsWith('scal') ? '' : t.type.startsWith('rotat') ? rUnit : tUnit)).join(' ');
+    let r = this.map(t => t.toString(t.type.startsWith('scal') ? '' : t.type.startsWith('rotat') ? rUnit : tUnit)).join(' ');
 
     /*  if(tUnit === undefined || rUnit === undefined) {
       console.error(tUnit || 'no tUnit', rUnit || 'no rUnit', this, r);
@@ -589,12 +589,12 @@ export class TransformationList extends Array {
   toSource() {
     let s = Util.colorText('new ', 1, 31) + Util.colorText(Util.className(this), 1, 33) + Util.colorText('([', 1, 36);
 
-    s += this.map((t) => t.toSource()).join(', ');
+    s += this.map(t => t.toSource()).join(', ');
     return s + Util.colorText('])', 1, 36);
   }
 
   toMatrices() {
-    return Array.prototype.map.call(this, (t) => t.toMatrix());
+    return Array.prototype.map.call(this, t => t.toMatrix());
   }
 
   toMatrix() {
@@ -641,15 +641,15 @@ export class TransformationList extends Array {
   }
 
   get rotation() {
-    return this.findLast((item) => item.type.startsWith('rotat'));
+    return this.findLast(item => item.type.startsWith('rotat'));
   }
 
   get scaling() {
-    return this.findLast((item) => item.type.startsWith('scal'));
+    return this.findLast(item => item.type.startsWith('scal'));
   }
 
   get translation() {
-    return this.findLast((item) => item.type.startsWith('translat'));
+    return this.findLast(item => item.type.startsWith('translat'));
   }
 
   /*  map(...args) {

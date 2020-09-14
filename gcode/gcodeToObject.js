@@ -92,7 +92,7 @@ export function gcodeToObject(gcode) {
   // Parse each axis for a trailing floating number
   // If no float, treat the axis as a boolean flag
   const axes = 'abcdefghijklmnopqrstuvwxyz'.split('');
-  axes.forEach((axis) => {
+  axes.forEach(axis => {
     // In most cases we are looking for an axis followed by a number
     const axisAndFloatRegex = new RegExp(`${axis}\\s*([+-]?([0-9]*[.])?[0-9]+)`);
     const result = gcodeArgString.match(axisAndFloatRegex);

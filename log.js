@@ -14,7 +14,7 @@ export var LogJS = {
   version: 'LogJS v1.2.2',
   get window_() {
     return Util.tryCatch(() => global,
-      (g) => g.window,
+      g => g.window,
       () => globalThis
     );
   }
@@ -152,7 +152,7 @@ if(typeof angular !== 'undefined') {
 
     this.$get = function() {
       let angularLogJS = {};
-      ['error', 'info', 'debug', 'log', 'warn'].forEach((e) => {
+      ['error', 'info', 'debug', 'log', 'warn'].forEach(e => {
         let method = LogJS.info;
         if(LogJS[e]) {
           method = LogJS[e];

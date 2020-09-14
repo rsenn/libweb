@@ -9,7 +9,7 @@ export class EagleProject {
   filename = null;
   data = { sch: null, brd: null, lbr: {} };
 
-  constructor(file, fs = { readFile: (filename) => '', exists: (filename) => false }) {
+  constructor(file, fs = { readFile: filename => '', exists: filename => false }) {
     //super();
     this.filename = file.replace(/\.(brd|sch)$/, '');
     this.fs = fs;
@@ -67,7 +67,7 @@ export class EagleProject {
 
   static determineEaglePath(fs) {
     let path = Util.tryCatch(() => process.env.PATH,
-      (path) => path.split(/:/g),
+      path => path.split(/:/g),
       []
     );
     let bin;
@@ -117,11 +117,11 @@ export class EagleProject {
     return null;
   }
 
-  getDocumentDirectories = () => Util.unique(this.documents.map((doc) => doc.dirname));
+  getDocumentDirectories = () => Util.unique(this.documents.map(doc => doc.dirname));
 
   libraryPath() {
     let docDirs = this.getDocumentDirectories();
-    let path = [...docDirs, ...docDirs.map((dir) => `${dir}/lbr`)]; //.filter(fs.existsSync);
+    let path = [...docDirs, ...docDirs.map(dir => `${dir}/lbr`)]; //.filter(fs.existsSync);
     if(this.eaglePath) path.push(this.eaglePath + '/lbr');
     return path;
   }
@@ -130,10 +130,10 @@ export class EagleProject {
     let libraryNames = [];
 
     Util.tryCatch(() => this.schematic.libraries.keys(),
-      (names) => (libraryNames = libraryNames.concat(names))
+      names => (libraryNames = libraryNames.concat(names))
     );
     Util.tryCatch(() => this.board.libraries.keys(),
-      (names) => (libraryNames = libraryNames.concat(names))
+      names => (libraryNames = libraryNames.concat(names))
     );
 
     return Util.unique(libraryNames);
@@ -185,7 +185,7 @@ export class EagleProject {
       //console.log(`project[${k}].libraries:`, this[k].libraries);
       //console.log(`libraries[${k}]:`, libraries[k]);
       //console.log(`libraries[${k}].packages:`, libraries[k].packages);
-      const libProps = (lib) => lib;
+      const libProps = lib => lib;
 
       /*  const { packages, devicesets, symbols } = lib;
         return Object.fromEntries(['packages', 'symbols', 'devicesets'].map(k => [k, lib[k]]).filter(([k, v]) => v));
@@ -247,9 +247,9 @@ export class EagleProject {
 
   saveTo(dir = '.', overwrite = false) {
     return new Promise((resolve, reject) => {
-      let promises = this.documents.map((doc) => doc.saveTo([dir, doc.filename].join('/'), overwrite));
+      let promises = this.documents.map(doc => doc.saveTo([dir, doc.filename].join('/'), overwrite));
 
-      return Promise.all(promises).then((result) => {
+      return Promise.all(promises).then(result => {
         //console.log('result:', result);
         resolve(Object.fromEntries(result));
       });

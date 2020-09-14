@@ -84,10 +84,10 @@ export const clone = (function () {
         child = new nativeSet();
       } else if(_instanceof(parent, nativePromise)) {
         child = new nativePromise((resolve, reject) => {
-          parent.then((value) => {
+          parent.then(value => {
               resolve(_clone(value, depth - 1));
             },
-            (err) => {
+            err => {
               reject(_clone(err, depth - 1));
             }
           );
@@ -137,7 +137,7 @@ export const clone = (function () {
         });
       }
       if(_instanceof(parent, nativeSet)) {
-        parent.forEach((value) => {
+        parent.forEach(value => {
           let entryChild = _clone(value, depth - 1);
           child.add(entryChild);
         });

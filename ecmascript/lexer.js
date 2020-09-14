@@ -7,7 +7,7 @@ export function PathReplacer() {
   try {
     let pwd = process.cwd();
     re = new RegExp(`(file://)?${pwd}/`, 'g');
-    t = (s) => s.replace(re, '');
+    t = s => s.replace(re, '');
   } catch(err) {}
   return (path, to = '') => (re ? path.replace(re, to) : path);
 }
@@ -15,17 +15,17 @@ export function PathReplacer() {
 export function Stack() {
   let stack = Util.getCallers(4, 30);
   let re,
-    t = (s) => s;
+    t = s => s;
 
   try {
     let pwd = process.cwd();
     re = new RegExp(`(file://)?${pwd}/`, 'g');
-    t = (s) => s.replace(re, '');
+    t = s => s.replace(re, '');
   } catch(err) {}
 
   let maxLen = stack.reduce((acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc), 0);
 
-  return stack.filter((s) => s.functionName != 'esfactory').map(({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) => `  ${(functionName || '').padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`);
+  return stack.filter(s => s.functionName != 'esfactory').map(({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) => `  ${(functionName || '').padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`);
 
   /*
   stack = stack.filter(({ functionName }) => !/Parser.parser.</.test(functionName)g1);
@@ -69,7 +69,7 @@ const distTo = (s, pos, inc, fn) => {
   let i;
   if(typeof fn == 'string' && fn.length == 1) {
     let ch = fn;
-    fn = (c) => c === ch;
+    fn = c => c === ch;
   }
   for(i = pos; !fn(s[i], i); i += inc) {}
   return i - pos;
@@ -129,6 +129,13 @@ Position.prototype[Symbol.iterator] = function* () {
 };
 Position.prototype.toString = function() {
   return this[Symbol.toStringTag](0, { colors: false });
+};
+Position.prototype.valueOf = function() {
+  return this.pos;
+};
+Position.prototype[Symbol.toPrimitive] = function(hint) {
+  if(hint == 'number') return this.pos;
+  if(hint == 'string') return this.toString();
 };
 Position.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts) {
   return Util.toString(this, { colors: true, ...opts, toString: Symbol.toStringTag });
@@ -264,6 +271,7 @@ export class Lexer {
   }
 
   skipComment() {
+    const position = this.position();
     let c = this.peek();
 
     while(isWhitespace(c) || isLineTerminator(c)) {
@@ -274,7 +282,7 @@ export class Lexer {
     const comment = this.getRange(this.start, this.pos);
     const before = this.getRange(0, this.start);
     const column = before.length - before.lastIndexOf('\n');
-    const line = this.line - (comment.split(/\n/g).length - 1);
+    const line = this.line - (comment.split(/\n/g).length - 1) + 1;
 
     const start = new Position(line, column, this.start, this.fileName);
 
@@ -282,7 +290,7 @@ export class Lexer {
 
     this.ignore();
 
-    if(typeof this.onComment == 'function') this.onComment(comment, start, this.position());
+    if(typeof this.onComment == 'function') this.onComment(comment, start, position);
   }
 
   getRange(start = this.start, end = this.pos) {
@@ -369,7 +377,8 @@ export class Lexer {
   position(pos = this.pos) {
     let { line, column, fileName } = this;
 
-    let diff = pos - this.start;
+    //console.debug("pos:",typeof(pos), " start:", typeof this.start);
+    //let diff = pos.valueOf() - this.start;
 
     //if(diff < 0) column += diff;
 
@@ -587,7 +596,7 @@ export class Lexer {
       prev = '';
     let slashes = 1;
     let bracket = false;
-    let validator = (c) => {
+    let validator = c => {
       //let last = word.substring(word.length - 1);
       //console.log("i:" + i + " c:" + c + " prev: " + prev + " slashes: " + slashes);
       i++;
@@ -710,7 +719,7 @@ export class Lexer {
       let escapeEncountered = false;
       let n = 0;
       do {
-        if(this.acceptRun(not(or((c) => c === '$', oneOf('\\`{$'))))) {
+        if(this.acceptRun(not(or(c => c === '$', oneOf('\\`{$'))))) {
           escapeEncountered = false;
         }
         prevChar = c;
@@ -885,18 +894,18 @@ export class Lexer {
 }
 
 function not(fn) {
-  return (c) => {
+  return c => {
     const result = fn(c);
     return !result;
   };
 }
 
 function or(fn1, fn2) {
-  return (c) => fn1(c) || fn2(c);
+  return c => fn1(c) || fn2(c);
 }
 
 function oneOf(str) {
-  return (c) => str.indexOf(c) >= 0;
+  return c => str.indexOf(c) >= 0;
 }
 
 //Whitespace characters as specified by ES1

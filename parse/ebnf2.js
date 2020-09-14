@@ -420,7 +420,7 @@ Parser.prototype.parseRhs = function() {
     [this, this.parseConcatenation],
     [this, this.parseIdentifier],
     [this, this.parseTerminal]
-  ].forEach((parseRule) => {
+  ].forEach(parseRule => {
     child = parseRule[1].call(parseRule[0]);
     if(child != null) {
       best = best == null ? child : child.nodeLength() > best.nodeLength() ? child : best;

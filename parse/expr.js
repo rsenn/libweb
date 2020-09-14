@@ -10,7 +10,7 @@ export function literal(lit) {
 }
 
 export function optional(arg) {
-  return (arg) => {
+  return arg => {
     const result = arg(arg);
     if(result.error) {
       return arg; //as if nothing happened
@@ -20,7 +20,7 @@ export function optional(arg) {
 }
 
 export function seq(...args) {
-  return (arg) => {
+  return arg => {
     let nextArg = arg;
     for(let i = 0; i < args.length; i++) {
       const arg = args[i];
@@ -34,7 +34,7 @@ export function seq(...args) {
 }
 
 export function or(...args) {
-  return (arg) => {
+  return arg => {
     for(let i = 0; i < args.length; i++) {
       const arg = args[i];
       const res = arg(arg);
@@ -66,7 +66,7 @@ export function param(name, re = /^[a-z]+/, parse = String) {
 }
 
 export function exhaustive(arg) {
-  return (arg) => {
+  return arg => {
     const result = arg(arg);
     if(result.input.length > 0) {
       return { error: 'Was meant to be exhaustive, but look at this remainder: ' + result.input };

@@ -41,7 +41,7 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
     ret.l = c[2];
     ret.a = c[3] !== undefined ? c[3] : 1.0;
 
-    ['h', 's', 'l', 'a'].forEach((channel) => {
+    ['h', 's', 'l', 'a'].forEach(channel => {
       if(String(ret[channel]).endsWith('%')) ret[channel] = parseFloat(ret[channel].slice(0, -1));
       else ret[channel] = parseFloat(ret[channel]) * (channel == 'a' || channel == 'h' ? 1 : 100);
     });
@@ -167,7 +167,7 @@ HSLA.prototype.dump = function() {
 };
 
 for(let name of ['css', 'toHSL', 'clamp', 'round', 'hex', 'toRGBA', 'toString']) {
-  HSLA[name] = (hsla) => HSLA.prototype[name].call(hsla || new HSLA());
+  HSLA[name] = hsla => HSLA.prototype[name].call(hsla || new HSLA());
 }
 
-export const isHSLA = (obj) => HSLA.properties.every((prop) => obj.hasOwnProperty(prop));
+export const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(prop));

@@ -80,7 +80,7 @@
     }
     let extra_arguments = Array.prototype.slice.call(arguments, 1);
     let handlers = this._events[event].slice();
-    handlers.forEach((fn) => {
+    handlers.forEach(fn => {
       fn.apply(this, extra_arguments);
     });
     return this;

@@ -24,7 +24,7 @@ function subProxyObj(obj, update, dotPath) {
   let newPath = '';
   let isArray = Array.isArray(obj);
 
-  Object.keys(obj).forEach((property) => {
+  Object.keys(obj).forEach(property => {
     if(isArray) {
       newPath = computePath(path, property, '[]');
     } else {

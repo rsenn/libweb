@@ -14,7 +14,7 @@ export function Rect(arg) {
   if(typeof args[0] == 'number') arg = args;
   else if(Util.isObject(args[0]) && args[0].length !== undefined) arg = args.shift();
 
-  ['x', 'y', 'width', 'height'].forEach((field) => {
+  ['x', 'y', 'width', 'height'].forEach(field => {
     if(typeof obj[field] != 'number') obj[field] = 0;
   });
 
@@ -38,7 +38,7 @@ export function Rect(arg) {
     obj.width = parseFloat(arg.width);
     obj.height = parseFloat(arg.height);
     ret = 1;
-  } else if(arg && arg.length >= 4 && arg.slice(0, 4).every((arg) => !isNaN(parseFloat(arg)))) {
+  } else if(arg && arg.length >= 4 && arg.slice(0, 4).every(arg => !isNaN(parseFloat(arg)))) {
     let x = arg.shift();
     let y = arg.shift();
     let w = arg.shift();
@@ -48,7 +48,7 @@ export function Rect(arg) {
     obj.width = typeof w === 'number' ? w : parseFloat(w);
     obj.height = typeof h === 'number' ? h : parseFloat(h);
     ret = 4;
-  } else if(arg && arg.length >= 2 && arg.slice(0, 2).every((arg) => !isNaN(parseFloat(arg)))) {
+  } else if(arg && arg.length >= 2 && arg.slice(0, 2).every(arg => !isNaN(parseFloat(arg)))) {
     obj.x = 0;
     obj.y = 0;
     obj.width = typeof arg[0] === 'number' ? arg[0] : parseFloat(arg[0]);
@@ -166,16 +166,16 @@ Object.defineProperty(Rect.prototype, 'area', {
   }
 });
 
-const getSize = Util.memoize((rect) =>
-  Util.bindProperties(new Size(0, 0), rect, ['width', 'height'], (k) => {
+const getSize = Util.memoize(rect =>
+  Util.bindProperties(new Size(0, 0), rect, ['width', 'height'], k => {
     console.log('gen', { k });
-    return (v) => {
+    return v => {
       return v !== undefined ? (rect[k] = v) : rect[k];
     };
   })
 );
 
-const getPoint = Util.memoize((rect) => Util.bindProperties(new Point(0, 0), rect, ['x', 'y'], (k) => (v) => (v !== undefined ? (rect[k] = v) : rect[k])));
+const getPoint = Util.memoize(rect => Util.bindProperties(new Point(0, 0), rect, ['x', 'y'], k => v => (v !== undefined ? (rect[k] = v) : rect[k])));
 
 Object.defineProperty(Rect.prototype, 'center', {
   get() {
@@ -224,12 +224,14 @@ Object.defineProperty(Rect.prototype, 'point', {
     return size;
   }
 });*/
-Rect.prototype.points = function(ctor = (items) => Array.from(items)) {
+Rect.prototype.points = function(ctor = items => Array.from(items)) {
   const c = this.corners();
   return ctor(c);
 };
 Rect.prototype.toCSS = Rect.toCSS;
-
+Rect.prototype.equals = function(...args) {
+  return Point.prototype.equals.call(this, ...args) && Size.prototype.equals.call(this, ...args);
+};
 Rect.prototype.scale = function(factor) {
   let width = this.width * factor;
   let height = this.height * factor;
@@ -324,15 +326,15 @@ Rect.prototype.toPoints = function(...args) {
   let ctor = Util.isConstructor(args[0])
     ? (() => {
         let arg = args.shift();
-        return (points) => new arg(points);
+        return points => new arg(points);
       })()
-    : (points) => Array.from(points);
+    : points => Array.from(points);
   let num = typeof args[0] == 'number' ? args.shift() : 4;
   const { x, y, width, height } = this;
   let a = num == 2 ? [new Point(x, y), new Point(x + width, y + height)] : [new Point(x, y), new Point(x + width, y), new Point(x + width, y + height), new Point(x, y + height)];
   return ctor(a);
 };
-Rect.prototype.toLines = function(ctor = (lines) => Array.from(lines, (points) => new Line(...points))) {
+Rect.prototype.toLines = function(ctor = lines => Array.from(lines, points => new Line(...points))) {
   let [a, b, c, d] = Rect.prototype.toPoints.call(this);
   return ctor([
     [a, b],
@@ -406,14 +408,14 @@ Rect.prototype[Symbol.iterator] = function* () {
   for(let prop of [x, y, width, height]) yield prop;
 };
 
-Rect.round = (rect) => Rect.prototype.round.call(rect);
+Rect.round = rect => Rect.prototype.round.call(rect);
 Rect.align = (rect, align_to, a = 0) => Rect.prototype.align.call(rect, align_to, a);
-Rect.toCSS = (rect) => Rect.prototype.toCSS.call(rect);
+Rect.toCSS = rect => Rect.prototype.toCSS.call(rect);
 Rect.inset = (rect, trbl) => Rect.prototype.inset.call(rect, trbl);
 Rect.outset = (rect, trbl) => Rect.prototype.outset.call(rect, trbl);
 
-Rect.center = (rect) => new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
-Rect.bind = (rect) => {
+Rect.center = rect => new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
+Rect.bind = rect => {
   let obj = new Rect();
 };
 
@@ -447,7 +449,8 @@ for(let name of [
   'points',
   'toCSS',
   'toTRBL',
-  'toPoints'
+  'toPoints',
+  'equals'
 ]) {
   Rect[name] = (rect, ...args) => Rect.prototype[name].call(rect || new Rect(rect), ...args);
 }
@@ -460,7 +463,7 @@ Rect.toSource = (rect, opts = {}) => {
 };
 
 Rect.bind = (...args) => {
-  const [o, p, gen = (k) => (v) => (v === undefined ? o[k] : (o[k] = v))] = args[0] instanceof Rect ? [new Rect(), ...args] : args;
+  const [o, p, gen = k => v => (v === undefined ? o[k] : (o[k] = v))] = args[0] instanceof Rect ? [new Rect(), ...args] : args;
 
   const [x, y, width, height] = p || ['x', 'y', 'width', 'height'];
   let pt = Point.bind(o, ['x', 'y'], gen);
@@ -486,7 +489,7 @@ for(let f of ['scale', 'resize', 'translate']) {
 
 Util.defineInspect(Rect.prototype, 'x', 'y', 'width', 'height');
 
-export const isRect = (rect) => isPoint(rect) && isSize(rect);
+export const isRect = rect => isPoint(rect) && isSize(rect);
 
 Util.defineGetter(Rect, Symbol.species, function() {
   return this;
@@ -503,7 +506,7 @@ Rect.prototype.toString = function(opts = {}) {
   const { precision = 0.001, unit = '', separator = ' ', left = '', right = '' } = opts;
   let { x, y, width, height } = this;
   let props = [x, y, width, height];
-  return left + props.map((p) => p + unit).join(' ') + right;
+  return left + props.map(p => p + unit).join(' ') + right;
 
   //  return left + Point.prototype.toString.call(this, opts) + separator + Size.prototype.toString.call(this, opts) + right;
 };

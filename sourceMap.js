@@ -2,11 +2,11 @@ import Util from './util.js';
 
 //const { decode: decodeBase64, encode: encodeBase64 } = Util.base64;
 const [encodeBase64, decodeBase64] = [
-  (s) => {
+  s => {
     console.log(`encode('${s}')`);
     return Util.base64.encode(s);
   },
-  (s) => {
+  s => {
     console.log(`decode('${s}')`);
     return Util.base64.decode(s);
   }
@@ -69,18 +69,18 @@ export class SourceMap {
     }
   };
 
-  static fromObject = (obj) => new this.Converter(obj);
+  static fromObject = obj => new this.Converter(obj);
 
-  static fromJSON = (json) => new this.Converter(json, { isJSON: true });
+  static fromJSON = json => new this.Converter(json, { isJSON: true });
 
-  static fromBase64 = (base64) => new this.Converter(base64, { isEncoded: true });
+  static fromBase64 = base64 => new this.Converter(base64, { isEncoded: true });
 
-  static fromComment = (comment) => new this.Converter(comment.replace(/^\/\*/g, '//').replace(/\*\/$/g, ''), { isEncoded: true, hasComment: true });
+  static fromComment = comment => new this.Converter(comment.replace(/^\/\*/g, '//').replace(/\*\/$/g, ''), { isEncoded: true, hasComment: true });
 
   static fromMapFileComment = (comment, dir, filesystem) => new this.Converter(comment, { commentFileDir: dir, isFileComment: true, isJSON: true }, filesystem);
 
   // Finds last sourcemap comment in file or returns null if none was found
-  static fromSource = (content) => {
+  static fromSource = content => {
     let m = content.match(this.commentRegex);
     return m ? this.fromComment(m.pop()) : null;
   };
@@ -91,9 +91,9 @@ export class SourceMap {
     return m ? this.fromMapFileComment(m.pop(), dir) : null;
   };
 
-  static removeComments = (src) => src.replace(this.commentRegex, '');
+  static removeComments = src => src.replace(this.commentRegex, '');
 
-  static removeMapFileComments = (src) => src.replace(this.mapFileCommentRegex, '');
+  static removeMapFileComments = src => src.replace(this.mapFileCommentRegex, '');
 
   static generateMapFileComment = (file, options) => {
     let data = 'sourceMappingURL=' + file;

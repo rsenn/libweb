@@ -33,7 +33,7 @@ export class PathMapper {
     return obj;
   }
 
-  walk(obj, fn = (path) => path) {
+  walk(obj, fn = path => path) {
     const { map, ctor } = this;
 
     let path = map.get(obj);
@@ -45,25 +45,25 @@ export class PathMapper {
   }
 
   parent(obj) {
-    return this.walk(obj, (path) => path.parentNode);
+    return this.walk(obj, path => path.parentNode);
   }
   firstChild(obj) {
-    return this.walk(obj, (path) => path.firstChild);
+    return this.walk(obj, path => path.firstChild);
   }
   lastChild(obj) {
-    return this.walk(obj, (path) => path.lastChild);
+    return this.walk(obj, path => path.lastChild);
   }
   nextSibling(obj) {
-    return this.walk(obj, (path) => path.nextSibling);
+    return this.walk(obj, path => path.nextSibling);
   }
   previousSibling(obj) {
-    return this.walk(obj, (path) => path.previousSibling);
+    return this.walk(obj, path => path.previousSibling);
   }
 
   get path2obj() {
     return {
-      get: (path) => this.at(path),
-      has: (path) => this.has(path),
+      get: path => this.at(path),
+      has: path => this.has(path),
       set: (path, obj) => this.set(obj, path)
     };
   }

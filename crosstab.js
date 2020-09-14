@@ -475,7 +475,7 @@
 
     function masterTabElection() {
       let maxId = null;
-      util.forEach(util.tabs, (tab) => {
+      util.forEach(util.tabs, tab => {
         if(!maxId || tab.id < maxId) {
           maxId = tab.id;
         }
@@ -494,7 +494,7 @@
 
     //Handle other tabs closing by updating internal tab model, and promoting
     //self if we are the lowest tab id
-    eventHandler.addListener(util.eventTypes.tabClosed, (message) => {
+    eventHandler.addListener(util.eventTypes.tabClosed, message => {
       let id = message.data;
       if(id in util.tabs) {
         delete util.tabs[id];
@@ -514,7 +514,7 @@
       }
     });
 
-    eventHandler.addListener(util.eventTypes.tabUpdated, (message) => {
+    eventHandler.addListener(util.eventTypes.tabUpdated, message => {
       let tab = message.data;
       util.tabs[tab.id] = tab;
 
@@ -533,7 +533,7 @@
     });
 
     let bullying;
-    eventHandler.addListener(util.eventTypes.tabPromoted, (message) => {
+    eventHandler.addListener(util.eventTypes.tabPromoted, message => {
       let id = message.data;
       let lastUpdated = message.timestamp;
       let previousMaster = getMasterId();
@@ -709,7 +709,7 @@
       }
 
       let deadTabs = util.filter(util.tabs, notAlive);
-      util.forEach(deadTabs, (tab) => {
+      util.forEach(deadTabs, tab => {
         broadcast(util.eventTypes.tabClosed, tab.id);
       });
 
@@ -780,7 +780,7 @@
       //swap `beforeunload` to `unload` after DOM is loaded
       window.addEventListener('DOMContentLoaded', swapUnloadEvents, false);
 
-      util.events.on('PING', (message) => {
+      util.events.on('PING', message => {
         //only handle direct messages
         if(!message.destination || message.destination !== crosstab.id) {
           return;

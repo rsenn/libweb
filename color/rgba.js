@@ -43,7 +43,7 @@ export function RGBA(...args) {
           if(a !== 255) ret.a = a;
         }
       } else if(arg.toLowerCase().startsWith('rgb')) {
-        c = arg.match(/[\d.%]+/g).map((x) => (x.endsWith('%') ? parseFloat(x.slice(0, -1)) * 2.55 : +x));
+        c = arg.match(/[\d.%]+/g).map(x => (x.endsWith('%') ? parseFloat(x.slice(0, -1)) * 2.55 : +x));
 
         c = [...c].slice();
 
@@ -73,16 +73,16 @@ export function RGBA(...args) {
 }
 
 RGBA.properties = ['r', 'g', 'b', 'a'];
-export const isRGBA = (obj) => RGBA.properties.every((prop) => obj.hasOwnProperty(prop));
+export const isRGBA = obj => RGBA.properties.every(prop => obj.hasOwnProperty(prop));
 
-RGBA.fromString = (str) => {
+RGBA.fromString = str => {
   let c = Util.tryCatch(() => new HSLA(str),
-    (c) => c.toRGBA(),
+    c => c.toRGBA(),
     () => undefined
   );
   if(!c)
     c = Util.tryCatch(() => new RGBA(str),
-      (c) => c,
+      c => c,
       () => undefined
     );
   return c;
@@ -94,17 +94,12 @@ RGBA.order = {
   ABGR: 3
 };
 
-RGBA.decode = [
-  /*RGBA:*/ (n) => ({ r: (n >> 24) & 0xff, g: (n >> 16) & 0xff, b: (n >> 8) & 0xff, a: n & 0xff }),
-  /*BGRA:*/ (n) => ({ b: (n >> 24) & 0xff, g: (n >> 16) & 0xff, r: (n >> 8) & 0xff, a: n & 0xff }),
-  /*ARGB:*/ (n) => ({ a: (n >> 24) & 0xff, r: (n >> 16) & 0xff, g: (n >> 8) & 0xff, b: n & 0xff }),
-  /*ABGR:*/ (n) => ({ a: (n >> 24) & 0xff, b: (n >> 16) & 0xff, g: (n >> 8) & 0xff, r: n & 0xff })
-];
+RGBA.decode = [/*RGBA:*/ n => ({ r: (n >> 24) & 0xff, g: (n >> 16) & 0xff, b: (n >> 8) & 0xff, a: n & 0xff }), /*BGRA:*/ n => ({ b: (n >> 24) & 0xff, g: (n >> 16) & 0xff, r: (n >> 8) & 0xff, a: n & 0xff }), /*ARGB:*/ n => ({ a: (n >> 24) & 0xff, r: (n >> 16) & 0xff, g: (n >> 8) & 0xff, b: n & 0xff }), /*ABGR:*/ n => ({ a: (n >> 24) & 0xff, b: (n >> 16) & 0xff, g: (n >> 8) & 0xff, r: n & 0xff })];
 RGBA.encode = [
-  /*RGBA:*/ ({ r, g, b, a }) => [r, g, b, a].map((n) => ('00' + (n & 0xff).toString(16)).slice(-2)).join(''),
-  /*BGRA:*/ ({ r, g, b, a }) => [b, g, r, a].map((n) => ('00' + (n & 0xff).toString(16)).slice(-2)).join(''),
-  /*ARGB:*/ ({ r, g, b, a }) => [a, r, g, b].map((n) => ('00' + (n & 0xff).toString(16)).slice(-2)).join(''),
-  /*ABGR:*/ ({ r, g, b, a }) => [a, b, g, r].map((n) => ('00' + (n & 0xff).toString(16)).slice(-2)).join('')
+  /*RGBA:*/ ({ r, g, b, a }) => [r, g, b, a].map(n => ('00' + (n & 0xff).toString(16)).slice(-2)).join(''),
+  /*BGRA:*/ ({ r, g, b, a }) => [b, g, r, a].map(n => ('00' + (n & 0xff).toString(16)).slice(-2)).join(''),
+  /*ARGB:*/ ({ r, g, b, a }) => [a, r, g, b].map(n => ('00' + (n & 0xff).toString(16)).slice(-2)).join(''),
+  /*ABGR:*/ ({ r, g, b, a }) => [a, b, g, r].map(n => ('00' + (n & 0xff).toString(16)).slice(-2)).join('')
 ];
 RGBA.fmt = [({ r, g, b, a }) => [r, g, b, a], ({ b, g, r, a }) => [b, g, r, a], ({ a, r, g, b }) => [a, r, g, b], ({ a, b, g, r }) => [a, b, g, r]];
 
@@ -121,7 +116,7 @@ RGBA.prototype.binaryValue = function(order = 0) {
 };
 RGBA.prototype.valid = function() {
   const { r, g, b, a } = this;
-  return [r, g, b, a].every((n) => {
+  return [r, g, b, a].every(n => {
     n = +n;
     return !isNaN(n) && n >= 0 && n <= 255;
   });
@@ -136,7 +131,7 @@ RGBA.fromHex = (hex, alpha = 255) => {
   if(matches === null) return null;
   let mul = hex.length >= 7 ? 1 : 17;
 
-  const [r, g, b, a] = [...matches].slice(1).map((x) => parseInt(x, 16) * mul);
+  const [r, g, b, a] = [...matches].slice(1).map(x => parseInt(x, 16) * mul);
   //Util.log('RGBA.fromHex', { hex, matches, r, g, b, a });
   return new RGBA(r, g, b, matches.length > 3 && !isNaN(a) ? a : alpha);
 };
@@ -158,14 +153,14 @@ RGBA.prototype.toRGB = function() {
   return new RGBA(r, g, b, 255);
 };
 
-RGBA.toHex = (rgba) => RGBA.prototype.hex.call(rgba);
+RGBA.toHex = rgba => RGBA.prototype.hex.call(rgba);
 
-RGBA.clamp = (rgba) => RGBA(Math.min(Math.max(rgba.r, 0), 255), Math.min(Math.max(rgba.g, 0), 255), Math.min(Math.max(rgba.b, 0), 255), Math.min(Math.max(rgba.a, 0), 255));
-RGBA.round = (rgba) => RGBA.prototype.round.call(rgba);
+RGBA.clamp = rgba => RGBA(Math.min(Math.max(rgba.r, 0), 255), Math.min(Math.max(rgba.g, 0), 255), Math.min(Math.max(rgba.b, 0), 255), Math.min(Math.max(rgba.a, 0), 255));
+RGBA.round = rgba => RGBA.prototype.round.call(rgba);
 
 RGBA.prototype.round = function() {
   const { r, g, b, a } = this;
-  let x = [r, g, b, a].map((n) => Math.round(n));
+  let x = [r, g, b, a].map(n => Math.round(n));
   if(Object.isFrozen(this)) return new RGBA(...x);
   this.r = x[0];
   this.g = x[1];
@@ -176,9 +171,9 @@ RGBA.prototype.round = function() {
 RGBA.normalize = function(rgba, src = 255, dst = 1.0) {
   return new RGBA((rgba.r * dst) / src, (rgba.g * dst) / src, (rgba.b * dst) / src, (rgba.a * dst) / src);
 };
-RGBA.prototype.css = () => (prop) => (prop ? prop + ':' : '') + 'rgba(' + this.r + ', ' + this.g + ', ' + this.b + ', ' + (this.a / 255).toFixed(3) + ')';
+RGBA.prototype.css = () => prop => (prop ? prop + ':' : '') + 'rgba(' + this.r + ', ' + this.g + ', ' + this.b + ', ' + (this.a / 255).toFixed(3) + ')';
 
-RGBA.prototype.toString = function(sep = ',', fmt = (num) => +num.toFixed(3)) {
+RGBA.prototype.toString = function(sep = ',', fmt = num => +num.toFixed(3)) {
   const { r, g, b, a } = this;
   if(a === undefined) return 'rgb(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + ')';
   return 'rgba(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + sep + (a * 100) / 255 + '%)';
@@ -403,7 +398,7 @@ RGBA.prototype.distance = function(other) {
 };
 RGBA.prototype.luminanace = function() {
   const { r, g, b } = this;
-  let a = [r, g, b].map((v) => {
+  let a = [r, g, b].map(v => {
     v /= 255;
     return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
   });
@@ -449,7 +444,7 @@ RGBA.fromAnsi256 = function(n) {
     n >>= 1;
     b = n & 1;
     n >>= 1;
-    c = [r, g, b].map((v) => [n & 1 ? 85 : 0, n & 1 ? 255 : 170][v]);
+    c = [r, g, b].map(v => [n & 1 ? 85 : 0, n & 1 ? 255 : 170][v]);
   } else if(n >= 16 && n < 232) {
     n -= 16;
     b = n % 6;
@@ -457,7 +452,7 @@ RGBA.fromAnsi256 = function(n) {
     g = n % 6;
     n /= 6;
     r = n % 6;
-    c = [r, g, b].map((n) => (n * 255) / 5);
+    c = [r, g, b].map(n => (n * 255) / 5);
   } else if(n >= 232) {
     n -= 231;
     r = g = b = (n * 255) / (255 - 231);
@@ -465,7 +460,7 @@ RGBA.fromAnsi256 = function(n) {
   }
   if(c) {
     c = c.map(Math.round);
-    c = c.map((n) => Math.min(255, n));
+    c = c.map(n => Math.min(255, n));
     return new RGBA(...c);
   }
 };
@@ -537,7 +532,7 @@ RGBA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
   const l = this.toHSLA().l;
   let s = '';
 
-  s += arr.map((n) => `\x1b[0;33m${toHex(n)}\x1b[0m`).join('');
+  s += arr.map(n => `\x1b[0;33m${toHex(n)}\x1b[0m`).join('');
   s = color + s;
 
   return `\x1b[1;31mRGBA\x1b[1;36m` + `(${ret})`.padEnd(18, ' ') + ` ${color}    \x1b[0m`;
@@ -565,7 +560,7 @@ for(let name of ['hex', 'toRGB', 'round', 'toHSLA', 'toCMYK', 'toLAB', 'linear',
 }
 
 for(let name of ['fromLAB']) {
-  RGBA[name] = (arg) => {
+  RGBA[name] = arg => {
     let ret = new RGBA();
     return RGBA.prototype[name].call(ret, arg);
   };

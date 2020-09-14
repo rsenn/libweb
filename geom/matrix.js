@@ -24,7 +24,7 @@ export function Matrix(arg) {
   } else if(typeof arg === 'number') {
     Matrix.prototype.init.apply(ret, arguments);
   } else if(typeof arg === 'string' && /matrix\([^)]*\)/.test(arg)) {
-    let [xx, xy, x0, yx, yy, y0] = [...arg.matchAll(/[-.0-9]+/g)].map((m) => parseFloat(m[0]));
+    let [xx, xy, x0, yx, yy, y0] = [...arg.matchAll(/[-.0-9]+/g)].map(m => parseFloat(m[0]));
     ret[0] = xx;
     ret[1] = xy;
     ret[2] = x0;
@@ -221,7 +221,7 @@ Matrix.prototype.scalar_product = function(f) {
 Matrix.prototype.toSource = function(construct = false, multiline = true) {
   const nl = multiline ? '\n' : '';
   const rows = Matrix.prototype.rows.call(this);
-  const src = `${rows.map((row) => row.join(',')).join(multiline ? ',\n ' : ',')}`;
+  const src = `${rows.map(row => row.join(',')).join(multiline ? ',\n ' : ',')}`;
   return construct ? `new Matrix([${nl}${src}${nl}])` : `[${src}]`;
 };
 
@@ -230,14 +230,14 @@ Matrix.prototype.toString = function(separator = ' ') {
   let name = rows[0].length == 3 ? 'matrix' : 'matrix3d';
 
   if(rows[0].length == 3) {
-    rows = [['a', 'b', 'c', 'd', 'e', 'f'].map((k) => this[keyIndexes[k]])];
+    rows = [['a', 'b', 'c', 'd', 'e', 'f'].map(k => this[keyIndexes[k]])];
   }
 
-  return `${name}(` + rows.map((row) => row.join(',' + separator)).join(',' + separator) + ')';
+  return `${name}(` + rows.map(row => row.join(',' + separator)).join(',' + separator) + ')';
 };
 
 Matrix.prototype.toSVG = function() {
-  return 'matrix(' + ['a', 'b', 'c', 'd', 'e', 'f'].map((k) => this[keyIndexes[k]]).join(',') + ')';
+  return 'matrix(' + ['a', 'b', 'c', 'd', 'e', 'f'].map(k => this[keyIndexes[k]]).join(',') + ')';
 };
 
 Matrix.prototype.toDOM = function(ctor = DOMMatrix) {
@@ -252,8 +252,8 @@ Matrix.prototype.toJSON = function() {
   const [b, d, f] = rows[1];
   return { a, b, c, d, e, f };
 };
-Matrix.fromJSON = (obj) => new Matrix(obj);
-Matrix.fromDOM = (matrix) => {
+Matrix.fromJSON = obj => new Matrix(obj);
+Matrix.fromDOM = matrix => {
   const { a, b, c, d, e, f } = matrix;
   return new Matrix([a, c, e, b, d, f]);
 };
@@ -329,27 +329,27 @@ Matrix.prototype.transform_rect = function(rect) {
   let xrange = [x1, x2];
   let yrange = [y1, y2];
 
-  [x1, x2] = [Math.min, Math.max].map((fn) => fn(...xrange));
-  [y1, y2] = [Math.min, Math.max].map((fn) => fn(...yrange));
+  [x1, x2] = [Math.min, Math.max].map(fn => fn(...xrange));
+  [y1, y2] = [Math.min, Math.max].map(fn => fn(...yrange));
   Object.assign(rect, { x1, x2, y1, y2 });
   return rect;
 };
 
 Matrix.prototype.point_transformer = function() {
   const matrix = this;
-  return (point) => matrix.transform_point(point);
+  return point => matrix.transform_point(point);
 };
 
 Matrix.prototype.transformer = function() {
   const matrix = this;
   return {
-    point: (point) => matrix.transform_point(point),
+    point: point => matrix.transform_point(point),
     xy: (x, y) => matrix.transform_xy(x, y),
-    size: (s) => matrix.transform_size(s),
+    size: s => matrix.transform_size(s),
     wh: (w, h) => matrix.transform_wh(w, h),
-    rect: (rect) => matrix.transform_rect(rect),
-    points: (list) => matrix.transform_points(list),
-    distance: (d) => matrix.transform_distance(d)
+    rect: rect => matrix.transform_rect(rect),
+    points: list => matrix.transform_points(list),
+    distance: d => matrix.transform_distance(d)
   };
 };
 
@@ -471,8 +471,8 @@ Matrix.prototype.init_skew = function(x, y, deg = false) {
 Matrix.identity = () => new Matrix([1, 0, 0, 0, 1, 0, 0, 0, 1]);
 
 Matrix.IDENTITY = Object.freeze(Matrix.identity());
-Matrix.rad2deg = (radians) => (radians * 180) / Math.PI;
-Matrix.deg2rad = (degrees) => (degrees * Math.PI) / 180;
+Matrix.rad2deg = radians => (radians * 180) / Math.PI;
+Matrix.deg2rad = degrees => (degrees * Math.PI) / 180;
 
 for(let name of ['toObject', 'init', 'toArray', 'isIdentity', 'determinant', 'invert', 'multiply', 'scalar_product', 'toSource', 'toString', 'toSVG', 'equals', 'init_identity', 'is_identity', 'init_translate', 'init_scale', 'init_rotate', 'scale_sign', 'decompose', 'transformer']) {
   Matrix[name] = (matrix, ...args) => Matrix.prototype[name].call(matrix || new Matrix(matrix), ...args);
@@ -505,7 +505,7 @@ Util.defineGetter(Matrix, Symbol.species, function() {
   return this;
 });
 
-export const isMatrix = (m) => Util.isObject(m) && (m instanceof Matrix || (m.length !== undefined && (m.length == 6 || m.length == 9) && m.every((el) => typeof el == 'number')));
+export const isMatrix = m => Util.isObject(m) && (m instanceof Matrix || (m.length !== undefined && (m.length == 6 || m.length == 9) && m.every(el => typeof el == 'number')));
 
 export const ImmutableMatrix = Util.immutableClass(Matrix);
 Util.defineGetter(ImmutableMatrix, Symbol.species, () => ImmutableMatrix);

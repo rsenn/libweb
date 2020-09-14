@@ -7,12 +7,12 @@ export const VERTICAL = 1;
 export const HORIZONTAL = 2;
 export const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
 
-export const EscapeClassName = (name) =>
+export const EscapeClassName = name =>
   encodeURIComponent(name)
     .replace(/_/g, '%5f')
     .replace(/%([0-9A-Fa-f]{2})/g, '_0x$1_');
 
-export const UnescapeClassName = (name) => decodeURIComponent(name.replace(/_0?x?([0-9A-Fa-f]{2})_/g, '%$1'));
+export const UnescapeClassName = name => decodeURIComponent(name.replace(/_0?x?([0-9A-Fa-f]{2})_/g, '%$1'));
 
 export const ElementToClass = (element, layerName) => {
   layerName = layerName || (element.layer || {}).name || '';
@@ -41,7 +41,7 @@ export const ClampAngle = (a, mod = 360) => {
   a %= mod;
   return a > 180 ? a - 360 : a;
 };
-export const AlignmentAngle = (a) => {
+export const AlignmentAngle = a => {
   a %= 360;
   return Math.abs(a - (a % 180));
 };
@@ -106,14 +106,14 @@ export const RotateTransformation = (rot, f = 1) => {
   return r.toString();
 };
 
-export const LayerAttributes = (layer) =>
+export const LayerAttributes = layer =>
   layer
     ? {
         'data-layer': `${layer.number} ${layer.name} color: ${layer.color}`
       }
     : {};
 
-export const InvertY = (item) => {
+export const InvertY = item => {
   let ret = {};
   for(let prop in item.attributes) {
     if(prop.startsWith('y')) ret[prop] = -+item.attributes[prop];
@@ -194,24 +194,35 @@ export const Arc = (x, y, radius, startAngle, endAngle) => {
  *   ⌀
  */
 
-const CalculateArc = (theta) => {
+const CalculateArc = (p1, p2, theta) => {
   const M_2_PI = Math.PI * 2;
+  //  console.log('theta', theta);
+  const chordLen = Point.distance(p1, p2);
+  // console.log('chordLen', chordLen);
+  let radius = chordLen / (2 * Math.sin(theta / 2));
+  // console.log('radius', radius);
+  const sweepArc = theta > 0 ? '1' : '0';
 
-  return {
-    'θ': theta, 
-    'c/R': 2 * Math.sin(theta / 2),
-    'L/C': theta / M_2_PI,
-    'L/R': theta,
-
-    radius(chordLength) {
-      let radius = chordLength / this['c/R'];;
-      this['c'] = this['c/R']*radius; delete this['c/R'];
-      this['L'] = this['L/R']*radius;delete this['L/R'];
-      this['𝛑R'] =radius * Math.PI ; delete this['L/𝛑R'];
-this['R'] = radius;
-      return radius;
+  const largeArc = Math.abs(theta) > Math.PI ? '1' : '0';
+  let arc = {
+    theta,
+    chordLen,
+    radius,
+    get circumference() {
+      return this.radius * Math.PI;
+    },
+    get diameter() {
+      return this.radius * 2;
+    },
+    get arcLen() {
+      return this.radius * this.theta;
+    },
+    get pathData() {
+      return [`M ${p1.x} ${p1.y}`, `A ${this.radius} ${this.radius} 0 ${largeArc} ${sweepArc} ${p2.x},${p2.y}`];
     }
   };
+  console.debug(`CalculateArc`, arc);
+  return arc;
 };
 /**
  * Calculates the arc radius.
@@ -240,24 +251,18 @@ export const CalculateArcRadius = (p1, p2, angle) => {
 };
 
 export const LinesToPath = (lines, lineFn) => {
-  if(!(lines[0] instanceof Line)) {
-    lines = [...lines].map((l) => {
-      let o = new Line(l);
-      if(l.curve !== undefined) o.curve = +l.curve;
-      return o;
-    });
-  }
   let l = lines.shift(),
     m;
   let start = l.a;
   let ret = [];
-  let prevPoint = new Point((l.a && l.a.x) || l.x1, (l.a && l.a.y) || l.y1);
+  let prevPoint = new Point(l.x1, l.y1);
   //ret.push(`M ${prevPoint.x} ${prevPoint.y}`);
 
   lineFn =
     lineFn ||
     ((point, curve) => {
       lineFn = (point, curve) => {
+        let cmd;
         if(curve !== undefined && typeof curve == 'number' && !isNaN(curve)) {
           const r = CalculateArcRadius(prevPoint, point, curve).toFixed(4);
 
@@ -266,16 +271,17 @@ export const LinesToPath = (lines, lineFn) => {
           const largeArc = Math.abs(curve) > 180 ? '1' : '0';
           const sweepArc = curve > 0 ? '1' : '0';
 
-          return `A ${r} ${r} 0 ${largeArc} ${sweepArc} ${point.x} ${point.y}`;
+          cmd = `A ${r} ${r} 0 ${largeArc} ${sweepArc} ${point.x} ${point.y}`;
         } else if(Point.equals(start, point)) {
-          return `Z`;
+          cmd = `Z`;
         } else {
-          return `L ${point.x},${point.y}`;
+          cmd = `L ${point.x} ${point.y}`;
         }
-        prevPoint = new Point(point.x, point.y);
+        prevPoint = point;
+        return cmd;
       };
-      return `M ${point.x},${point.y}`;
-      prevPoint = new Point(point.x, point.y);
+      prevPoint = point;
+      return `M ${point.x} ${point.y}`;
     });
 
   const lineTo = (...args) => ret.push(lineFn(...args));
@@ -304,13 +310,13 @@ export const LinesToPath = (lines, lineFn) => {
       l = m;
     } else if(lines.length > 0) {
       l = lines.shift();
-      ret.push(`M ${l.a.x},${l.a.y}`);
-      prevPoint = new Point(l.a.x, l.a.y);
+      ret.push(`M ${l.x1} ${l.y1}`);
+      prevPoint = new Point(l.x1, l.y1);
       lineTo(l.b, l.curve);
     }
   } while(lines.length > 0);
 
-  return ret.every((p) => typeof p == 'string') ? ret.join(' ') : ret;
+  return ret.every(p => typeof p == 'string') ? ret.join(' ') : ret;
 };
 
 export function MakeCoordTransformer(matrix) {
@@ -318,13 +324,13 @@ export function MakeCoordTransformer(matrix) {
 
   if(matrix && matrix.toMatrix) matrix = matrix.toMatrix();
 
-  if(matrix.isIdentity()) return (obj) => obj;
+  if(matrix.isIdentity()) return obj => obj;
 
   //S if(matrix && matrix.clone) matrix = Object.freeze(matrix.clone());
 
   let tr = matrix.transformer();
 
-  return (obj) => {
+  return obj => {
     let coords = {};
     if('x' in obj && 'y' in obj) {
       const [x, y] = tr.xy(obj.x, obj.y);
@@ -348,12 +354,12 @@ export function MakeCoordTransformer(matrix) {
   };
 }
 
-export const useTrkl = (fn) => {
+export const useTrkl = fn => {
   const [value, setValue] = useState(fn());
   //console.debug('useTrkl fn =', fn, ' value =', value);
 
   useEffect(() => {
-    let updateValue = (v) => {
+    let updateValue = v => {
       if(v !== undefined) {
         /*  if(v === 'yes') v = true;
         else if(v === 'no') v = false;*/

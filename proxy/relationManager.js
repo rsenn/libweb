@@ -82,7 +82,7 @@ function Relation() {
     }
     //we must store values in an array
     me[key] = [subject];
-    objects.forEach((object) => {
+    objects.forEach(object => {
       me[key].push(object);
     });
   } else {
@@ -101,11 +101,11 @@ function Relation() {
   }
   //add the other side of the relations to the object
   if(subjectSpec.cardinality > 1) {
-    objects.forEach((object) => {
+    objects.forEach(object => {
       added = object[subjectSpec.property].add(subject);
     });
   } else {
-    objects.forEach((object) => {
+    objects.forEach(object => {
       if(object[subjectSpec.property] !== subject) {
         added = true;
         object[subjectSpec.property] = subject;
@@ -155,7 +155,7 @@ function addRelations(instance, specs) {
     }
   }
   if(specs) {
-    specs.forEach((spec) => {
+    specs.forEach(spec => {
       if(instance instanceof spec.object.class) {
         enhance(instance, spec.subject, spec.object);
         enhance(instance, spec.object, spec.subject);
@@ -229,11 +229,11 @@ Relation.define = function(scope) {
           addRelations(object, proto.relations);
           proto = Object.getPrototypeOf(proto);
         }
-        Object.keys(object).forEach((key) => {
+        Object.keys(object).forEach(key => {
           //if the property key is part of a relation spec and is an Array
           if(subjectSpec.property[key] && subjectSpec.class && Array.isArray(object[key])) {
             //loop through the items and restore them
-            object[key].forEach((item) => {
+            object[key].forEach(item => {
               instance[key].add(subjectSpec.class.prototype.fromJSON(item));
             });
           } else {

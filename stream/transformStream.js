@@ -81,10 +81,10 @@ function TransformStreamSetBackpressure(transformStream, backpressure) {
     // The fulfillment value is just for a sanity check.
     transformStream._backpressureChangePromise_resolve(backpressure);
   }
-  transformStream._backpressureChangePromise = new Promise((resolve) => {
+  transformStream._backpressureChangePromise = new Promise(resolve => {
     transformStream._backpressureChangePromise_resolve = resolve;
   });
-  transformStream._backpressureChangePromise.then((resolution) => {});
+  transformStream._backpressureChangePromise.then(resolution => {});
   transformStream._backpressure = backpressure;
 }
 
@@ -103,7 +103,7 @@ function TransformStreamTransform(transformStream, chunk) {
       transformStream._transforming = false;
       return TransformStreamReadableReadyPromise(transformStream);
     },
-    (e) => {
+    e => {
       TransformStreamErrorIfNeeded(transformStream, e);
       return Promise.reject(e);
     }
@@ -164,7 +164,7 @@ export class TransformStreamSink {
         }
         return Promise.resolve();
       })
-      .catch((r) => {
+      .catch(r => {
         TransformStreamErrorIfNeeded(transformStream, r);
         return Promise.reject(transformStream._storedError);
       });
@@ -278,7 +278,7 @@ export const TransformStream =
       this._transformStreamController = new TransformStreamDefaultController(this);
 
       let startPromise_resolve;
-      const startPromise = new Promise((resolve) => {
+      const startPromise = new Promise(resolve => {
         startPromise_resolve = resolve;
       });
 
@@ -298,7 +298,7 @@ export const TransformStream =
       const transformStream = this;
       const startResult = InvokeOrNoop(transformer, 'start', [transformStream._transformStreamController]);
       startPromise_resolve(startResult);
-      startPromise.catch((e) => {
+      startPromise.catch(e => {
         // The underlyingSink and underlyingSource will error the readable and writable ends on their own.
         if(transformStream._errored === false) {
           transformStream._errored = true;

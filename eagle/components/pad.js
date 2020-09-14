@@ -15,7 +15,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
       }
     }) || data;
 
-  let coordFn = opts.transform ? MakeCoordTransformer(opts.transform) : (i) => i;
+  let coordFn = opts.transform ? MakeCoordTransformer(opts.transform) : i => i;
   const { name, drill, diameter, shape, layer, rot } = pad;
   const { x, y } = coordFn(pad);
   const ro = +((diameter || 1.5) / 2.54).toFixed(3);
@@ -34,16 +34,16 @@ export const Pad = ({ data, opts = {}, ...props }) => {
     }
     case 'square': {
       d = [new Point(-1, -1), new Point(1, -1), new Point(1, 1), new Point(-1, 1)]
-        .map((p) => p.prod(ro * 1.27))
-        .map((p) => p.round())
+        .map(p => p.prod(ro * 1.27))
+        .map(p => p.round())
         .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
         .join(' ');
       break;
     }
     case 'octagon': {
       d = Util.range(0, 7)
-        .map((i) => Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.4))
-        .map((p) => p.round())
+        .map(i => Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.4))
+        .map(p => p.round())
         .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
         .join(' ');
       break;

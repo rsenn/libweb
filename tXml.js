@@ -246,7 +246,7 @@ tXml.simplify = function simplify(children) {
     return children[0];
   }
   //map each object
-  children.forEach((child) => {
+  children.forEach(child => {
     if(typeof child !== 'object') {
       return;
     }
@@ -274,7 +274,7 @@ tXml.simplify = function simplify(children) {
  */
 tXml.filter = function(children, f) {
   let out = [];
-  children.forEach((child) => {
+  children.forEach(child => {
     if(typeof child === 'object' && f(child)) out.push(child);
     if(child.children) {
       let kids = tXml.filter(child.children, f);
@@ -347,7 +347,7 @@ tXml.toString = function TOMObjToXML(O) {
 tXml.toContentString = function(tDom) {
   if(Array.isArray(tDom)) {
     let out = '';
-    tDom.forEach((e) => {
+    tDom.forEach(e => {
       out += ' ' + tXml.toContentString(e);
       out = out.trim();
     });
@@ -390,7 +390,7 @@ tXml.parseStream = function(stream, offset) {
 
   let position = offset;
   let data = '';
-  stream.on('data', (chunk) => {
+  stream.on('data', chunk => {
     data += chunk;
     let lastPos = 0;
     do {

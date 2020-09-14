@@ -51,13 +51,13 @@ options.diffed = function(vnode) {
 };
 
 options.__c = function(vnode, commitQueue) {
-  commitQueue.some((component) => {
+  commitQueue.some(component => {
     try {
       component.__h.forEach(invokeCleanup);
 
-      component.__h = component.__h.filter((cb) => (cb.__ ? invokeEffect(cb) : true));
+      component.__h = component.__h.filter(cb => (cb.__ ? invokeEffect(cb) : true));
     } catch(e) {
-      commitQueue.some((c) => {
+      commitQueue.some(c => {
         if(c.__h) {
           c.__h = [];
         }
@@ -311,7 +311,7 @@ function useErrorBoundary(cb) {
  */
 
 function flushAfterPaintEffects() {
-  afterPaintEffects.some((component) => {
+  afterPaintEffects.some(component => {
     if(component.__P) {
       try {
         component.__H.__h.forEach(invokeCleanup);

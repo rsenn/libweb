@@ -1,8 +1,8 @@
 import Util from '../util.js';
 const SymSpecies = Util.tryCatch(() => Symbol,
-  (sym) => sym.species
+  sym => sym.species
 );
-const CTOR = (obj) => {
+const CTOR = obj => {
   if(obj[SymSpecies]) return obj[SymSpecies];
   let p = Object.getPrototypeOf(obj);
   if(p[SymSpecies]) return p[SymSpecies];
@@ -53,7 +53,7 @@ export function Point(...args) {
     return p;
   }
 }
-const getArgs = (args) => (console.debug('getArgs', ...args), typeof args[0] == 'number' ? [{ x: args[0], y: args[1] }] : args);
+const getArgs = args => (console.debug('getArgs', ...args), typeof args[0] == 'number' ? [{ x: args[0], y: args[1] }] : args);
 
 Object.defineProperties(Point.prototype, {
   X: {
@@ -158,8 +158,8 @@ Point.prototype.distance = function(other = { x: 0, y: 0 }) {
   return Math.sqrt(Point.prototype.distanceSquared.call(this, other));
 };
 Point.prototype.equals = function(other) {
-  //console.warn(`Point.equals`, this, other);
-  return +this.x == +other.x && +this.y == +other.y;
+  let { x, y } = this;
+  return +x == +other.x && +y == +other.y;
 };
 Point.prototype.round = function(precision = 0.001, digits = 3, type = 'round') {
   let { x, y } = this;
@@ -243,10 +243,10 @@ Util.defineGetterSetter(Point.prototype,
 );
 
 Point.prototype.toSource = function(opts = {}) {
-  const { asArray = false, plainObj = false, pad = (a) => a /*a.padStart(4, ' ')*/, showNew = true } = opts;
+  const { asArray = false, plainObj = false, pad = a => a /*a.padStart(4, ' ')*/, showNew = true } = opts;
   let x = pad(this.x + '');
   let y = pad(this.y + '');
-  let c = (t) => t;
+  let c = t => t;
   if(typeof this != 'object' || this === null) return '';
   if(asArray) return `[${x},${y}]`;
   if(plainObj) return `{x:${x},y:${y}}`;
@@ -308,8 +308,8 @@ Point.sub = (point, other) => Point.prototype.sub.call(point, other);
 Point.prod = (a, b) => Point.prototype.prod.call(a, b);
 Point.quot = (a, b) => Point.prototype.quot.call(a, b);
 Point.equals = (a, b) => {
-  let ret = Point.prototype.equals.call(a, b);
-  return ret;
+  console.warn(`Point.equals`, a, b);
+  return Point.prototype.equals.call(a, b);
 };
 Point.round = (point, prec) => Point.prototype.round.call(point, prec);
 Point.fromAngle = (angle, f) => Point.prototype.fromAngle.call(new Point(0, 0), angle, f);
@@ -334,7 +334,7 @@ for(let name of [
 
 Point.toSource = (point, { space = ' ', padding = ' ', separator = ',' }) => `{${padding}x:${space}${point.x}${separator}y:${space}${point.y}${padding}}`;
 
-export const isPoint = (o) => o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)) || o instanceof Point || Object.getPrototypeOf(o).constructor === Point);
+export const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)) || o instanceof Point || Object.getPrototypeOf(o).constructor === Point);
 
 Point.isPoint = isPoint;
 Util.defineInspect(Point.prototype, 'x', 'y');

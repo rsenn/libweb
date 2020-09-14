@@ -41,9 +41,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     this.debug(`SchematicRenderer.renderCollection`, arr, opts);
 
-    for(let item of arr.filter((item) => item.tagName != 'text')) this.renderItem(item, parent, opts);
+    for(let item of arr.filter(item => item.tagName != 'text')) this.renderItem(item, parent, opts);
     this.debug(`SchematicRenderer.renderCollection`, arr, opts);
-    for(let item of arr.filter((item) => item.tagName == 'text')) this.renderItem(item, parent, opts);
+    for(let item of arr.filter(item => item.tagName == 'text')) this.renderItem(item, parent, opts);
   }
 
   /**
@@ -56,7 +56,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
   renderItem(item, parent, opts = {}) {
     const { transform = new TransformationList(), rot, pos, labelText } = opts;
 
-    let coordFn = transform ? MakeCoordTransformer(transform) : (i) => i;
+    let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
     /* if(rot)*/ this.debug(`SchematicRenderer.renderItem`, /* { labelText, pos, transform, rot }, */ item /*, item.xpath().toString()*/, item.raw);
 
@@ -164,7 +164,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     let netsGroup = this.create('g', { className: 'nets', transform }, parent);
     let instancesGroup = this.create('g', { className: 'instances', transform }, parent);
 
-    instancesGroup.props.children = [...instances.list].map((data) => h(Instance, { data, transformation: this.transform.filter((t) => ['translate'].indexOf(t.type) == -1) }));
+    instancesGroup.props.children = [...instances.list].map(data => h(Instance, { data, transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1) }));
 
     //    ReactComponent.append([...instances.list].map(data => h(Instance, { data })), instancesGroup);
 

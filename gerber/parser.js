@@ -538,7 +538,7 @@ function parseMacroDef(parser, block) {
     parser.warn('hyphens in macro name are illegal: ' + name);
   }
   let blockMatch = macroMatch[2].length ? macroMatch[2].split('*') : [];
-  let blocks = blockMatch.filter(Boolean).map((block) => parseMacroBlock(parser, block));
+  let blocks = blockMatch.filter(Boolean).map(block => parseMacroBlock(parser, block));
 
   return parser.push(commandMap.macro(name, blocks));
 }
@@ -886,7 +886,7 @@ function parseBlock(parser, block, line) {
 function flush(parser) {
   //console.debug('flush', { parser });
   if(parser.drillStash.length) {
-    parser.drillStash.forEach((data) => {
+    parser.drillStash.forEach(data => {
       if(!parser.format.zero && reCOORD$1.test(data.block)) {
         parser.format.zero = 'T';
         parser.warn('zero suppression missing and not detectable;' + ' assuming trailing suppression');
@@ -905,7 +905,7 @@ function parse$2(parser, block) {
     // check for kicad format hints
     let formatHints = parseCommentForFormatHints(parser, block, parser.line);
 
-    Object.keys(formatHints).forEach((key) => {
+    Object.keys(formatHints).forEach(key => {
       if(!parser.format[key]) {
         parser.format[key] = formatHints[key];
       }
@@ -992,7 +992,7 @@ export class Parser {
   transform(chunk, controller) {
     let filetype = this.format.filetype;
 
-    const done = controller ? (err) => (err ? controller.error(err) : controller.terminate()) : () => {};
+    const done = controller ? err => (err ? controller.error(err) : controller.terminate()) : () => {};
     // decode buffer to string
     //chunk = this.decoder.write(chunk);
     // determine filetype within 65535 characters

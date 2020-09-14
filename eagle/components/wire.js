@@ -19,7 +19,7 @@ export const Wire = ({ data, opts = {}, ...props }) => {
 
   let { labelText, transform = new TransformationList() } = opts;
 
-  let coordFn = transform ? MakeCoordTransformer(transform) : (i) => i;
+  let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
   const { width, curve = '', layer, x1, y1, x2, y2 } = coordFn(wire);
   const color = wire.getColor();

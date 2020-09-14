@@ -54,7 +54,7 @@ export class SvgOverlay extends React.Component {
     return svg;
   });
 
-  factory = lazyInitializer((root) => SVG.factory(root || this.svg()));
+  factory = lazyInitializer(root => SVG.factory(root || this.svg()));
   paths = [];
 
   constructor(props) {

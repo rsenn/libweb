@@ -18,7 +18,7 @@ export const PrimitiveComponents = { Wire, Rectangle, Pin, Circle, Cross, Arc, T
 
 let prevName;
 
-export const ElementNameToComponent = (name) => {
+export const ElementNameToComponent = name => {
   let comp = PrimitiveComponents[Util.ucfirst(name)];
 
   if(!comp && name != prevName) {
@@ -28,7 +28,7 @@ export const ElementNameToComponent = (name) => {
   return comp;
 };
 
-export const ElementToComponent = (element) => ElementNameToComponent(element.tagName);
+export const ElementToComponent = element => ElementNameToComponent(element.tagName);
 
 export { Wire } from './components/wire.js';
 export { Rectangle } from './components/rectangle.js';

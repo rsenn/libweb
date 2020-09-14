@@ -11,10 +11,10 @@ export const debounceIterator = function* (stream, interval) {
   let resolve; //resolve method for deferred promise
 
   //reset internal state - create new deferred/resolve
-  const reset = (isFirst) => {
+  const reset = isFirst => {
     first = isFirst;
     lastEvent = undefined;
-    deferred = new Promise((r) => (resolve = r));
+    deferred = new Promise(r => (resolve = r));
   };
 
   //handle event resolution
@@ -33,7 +33,7 @@ export const debounceIterator = function* (stream, interval) {
   };
 
   reset(true); //set initial state & deferred
-  destreamify(stream, (event) => {
+  destreamify(stream, event => {
     lastEvent = event; //reference event
     if(first) passEvent(); //if first run, pass it through
   });
@@ -60,7 +60,7 @@ export function debounceAsync(fn, wait = 0, options = {}) {
     const isCold = !lastCallAt || currentTime - lastCallAt > currentWait;
     console.debug(`debounceAsync handler`, { lastCallAt, currentWait, currentTime, isCold });
     lastCallAt = currentTime;
-    if(isCold && options.leading) return options.accumulate ? Promise.resolve(callFn(this, [args])).then((result) => result[0]) : Promise.resolve(callFn(this, args));
+    if(isCold && options.leading) return options.accumulate ? Promise.resolve(callFn(this, [args])).then(result => result[0]) : Promise.resolve(callFn(this, args));
 
     if(deferred) clearTimeout(timer);
     else deferred = defer();
@@ -69,7 +69,7 @@ export function debounceAsync(fn, wait = 0, options = {}) {
     timer = setTimeout(flush.bind(this), currentWait);
     if(options.accumulate) {
       const argsIndex = pendingArgs.length - 1;
-      return deferred.promise.then((results) => results[argsIndex]);
+      return deferred.promise.then(results => results[argsIndex]);
     }
     return deferred.promise;
   };

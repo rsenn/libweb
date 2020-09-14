@@ -9,7 +9,7 @@ const noop = () => {};
  *   fromPairs([['a', 1], ['b', 2]]);
  *   // => { 'a': 1, 'b': 2 }
  */
-const fromPairs = (pairs) => {
+const fromPairs = pairs => {
   let index = -1;
   const length = !pairs ? 0 : pairs.length;
   const result = {};
@@ -127,14 +127,14 @@ export class Interpreter {
   }
   loadFromStream(stream, callback = noop) {
     const s = parseStream(stream, callback);
-    s.on('data', (data) => {
+    s.on('data', data => {
       interpret(this, data);
     });
     return s;
   }
   loadFromFile(file, callback = noop) {
     const s = parseFile(file, callback);
-    s.on('data', (data) => {
+    s.on('data', data => {
       interpret(this, data);
     });
     return s;
@@ -149,7 +149,7 @@ export class Interpreter {
   }
   loadFromString(str, callback = noop) {
     const s = parseString(str, callback);
-    s.on('data', (data) => {
+    s.on('data', data => {
       interpret(this, data);
     });
     return s;

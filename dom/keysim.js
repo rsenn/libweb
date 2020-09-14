@@ -330,7 +330,7 @@ export class Keyboard {
     let parts = action.split('+');
     let lastPart = parts.pop();
 
-    parts.forEach((part) => {
+    parts.forEach(part => {
       switch (part.toUpperCase()) {
         case 'CTRL':
           modifiers |= CTRL;

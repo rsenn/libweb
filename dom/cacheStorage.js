@@ -2,8 +2,8 @@ const sep = '/';
 //const fs = require('fs-extra')
 import { Cache } from './cache.js';
 //const tmpDir = require('os').tmpdir() + sep + 'fetch-cache' + sep
-const strToBase64 = (str) => new Buffer(str).toString('base64');
-const base64ToStr = (hex) => new Buffer(hex, 'base64').toString();
+const strToBase64 = str => new Buffer(str).toString('base64');
+const base64ToStr = hex => new Buffer(hex, 'base64').toString();
 const requires = (i, args) => {
   if(args.length < i) throw new TypeError(`${i} argument required, but only ${args.length} present.`);
 };
@@ -22,7 +22,7 @@ export class CacheStorage {
         if(err) return resolve(false);
 
         if(stats.isDirectory()) {
-          fs.remove(tmpDir + cacheName, (err) => (err ? reject(err) : resolve(true)));
+          fs.remove(tmpDir + cacheName, err => (err ? reject(err) : resolve(true)));
         } else {
           resolve(false);
         }
@@ -35,7 +35,7 @@ export class CacheStorage {
    * @return {Boolean} [description]
    */
   has(cacheName) {
-    return this.keys().then((keys) => keys.includes(cacheName));
+    return this.keys().then(keys => keys.includes(cacheName));
   }
 
   /**
@@ -51,16 +51,16 @@ export class CacheStorage {
         err
           ? reject(err)
           : Promise.all(files.map(
-                (file) =>
-                  new Promise((resolve) =>
+                file =>
+                  new Promise(resolve =>
                     fs.stat(tmpDir + file, (_, stats) => {
                       resolve(stats.isDirectory() && file);
                     })
                   )
               )
-            ).then((keys) => resolve(keys.filter((a) => a)))
+            ).then(keys => resolve(keys.filter(a => a)))
       )
-    ).then((keys) => keys.map(base64ToStr));
+    ).then(keys => keys.map(base64ToStr));
   }
 
   /**
@@ -92,7 +92,7 @@ export class CacheStorage {
     let b64 = strToBase64(cacheName);
     let folder = tmpDir + b64;
 
-    return new Promise((resolve, reject) => fs.mkdirs(folder, (err) => (err ? reject(err) : resolve(new Cache(cacheName, folder + '/')))));
+    return new Promise((resolve, reject) => fs.mkdirs(folder, err => (err ? reject(err) : resolve(new Cache(cacheName, folder + '/')))));
   }
 
   /**

@@ -40,15 +40,15 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map((mat) => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
 const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = (x) => cos(deg2rad(x));
-const deg2rad = (x) => (x * PI) / 180;
-const rad2deg = (x) => (x * 180) / PI;
-const sind = (x) => sin(deg2rad(x));
+const cosd = x => cos(deg2rad(x));
+const deg2rad = x => (x * PI) / 180;
+const rad2deg = x => (x * 180) / PI;
+const sind = x => sin(deg2rad(x));
 const abs = Math.abs;
 const atan2 = Math.atan2;
 const cbrt = Math.cbrt;
@@ -127,15 +127,15 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map((mat) => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
 const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = (x) => cos(deg2rad(x));
-const deg2rad = (x) => (x * PI) / 180;
-const rad2deg = (x) => (x * 180) / PI;
-const sind = (x) => sin(deg2rad(x));
+const cosd = x => cos(deg2rad(x));
+const deg2rad = x => (x * PI) / 180;
+const rad2deg = x => (x * 180) / PI;
+const sind = x => sin(deg2rad(x));
 const abs = Math.abs;
 const atan2 = Math.atan2;
 const cbrt = Math.cbrt;
@@ -193,15 +193,15 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map((mat) => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
 const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = (x) => cos(deg2rad(x));
-const deg2rad = (x) => (x * PI) / 180;
-const rad2deg = (x) => (x * 180) / PI;
-const sind = (x) => sin(deg2rad(x));
+const cosd = x => cos(deg2rad(x));
+const deg2rad = x => (x * PI) / 180;
+const rad2deg = x => (x * 180) / PI;
+const sind = x => sin(deg2rad(x));
 const abs = Math.abs;
 const atan2 = Math.atan2;
 const cbrt = Math.cbrt;
@@ -251,7 +251,7 @@ export function rgb2hwb(rgbR, rgbG, rgbB, fallbackhue) {
 }
 
 export function hwb2rgb(hwbH, hwbW, hwbB, fallbackhue) {
-  const [rgbR, rgbG, rgbB] = hsl2rgb(hwbH, 100, 50, fallbackhue).map((v) => (v * (100 - hwbW - hwbB)) / 100 + hwbW);
+  const [rgbR, rgbG, rgbB] = hsl2rgb(hwbH, 100, 50, fallbackhue).map(v => (v * (100 - hwbW - hwbB)) / 100 + hwbW);
   return [rgbR, rgbG, rgbB];
 }
 
@@ -297,15 +297,15 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map((mat) => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
 const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = (x) => cos(deg2rad(x));
-const deg2rad = (x) => (x * PI) / 180;
-const rad2deg = (x) => (x * 180) / PI;
-const sind = (x) => sin(deg2rad(x));
+const cosd = x => cos(deg2rad(x));
+const deg2rad = x => (x * PI) / 180;
+const rad2deg = x => (x * 180) / PI;
+const sind = x => sin(deg2rad(x));
 const abs = Math.abs;
 const atan2 = Math.atan2;
 const cbrt = Math.cbrt;
@@ -385,15 +385,15 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map((mat) => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
 const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = (x) => cos(deg2rad(x));
-const deg2rad = (x) => (x * PI) / 180;
-const rad2deg = (x) => (x * 180) / PI;
-const sind = (x) => sin(deg2rad(x));
+const cosd = x => cos(deg2rad(x));
+const deg2rad = x => (x * PI) / 180;
+const rad2deg = x => (x * 180) / PI;
+const sind = x => sin(deg2rad(x));
 const abs = Math.abs;
 const atan2 = Math.atan2;
 const cbrt = Math.cbrt;
@@ -414,7 +414,7 @@ const kappa = pow(29, 3) / pow(3, 3);
  */
 
 export function rgb2xyz(rgbR, rgbG, rgbB) {
-  const [lrgbR, lrgbB, lrgbG] = [rgbR, rgbG, rgbB].map((v) => (v > 4.045 ? pow((v + 5.5) / 105.5, 2.4) * 100 : v / 12.92));
+  const [lrgbR, lrgbB, lrgbG] = [rgbR, rgbG, rgbB].map(v => (v > 4.045 ? pow((v + 5.5) / 105.5, 2.4) * 100 : v / 12.92));
   const [xyzX, xyzY, xyzZ] = matrix([lrgbR, lrgbB, lrgbG],
     [
       [0.4124564, 0.3575761, 0.1804375],
@@ -433,7 +433,7 @@ export function xyz2rgb(xyzX, xyzY, xyzZ) {
       [0.0556434, -0.2040259, 1.0572252]
     ]
   );
-  const [rgbR, rgbG, rgbB] = [lrgbR, lrgbB, lrgbG].map((v) => (v > 0.31308 ? 1.055 * pow(v / 100, 1 / 2.4) * 100 - 5.5 : 12.92 * v));
+  const [rgbR, rgbG, rgbB] = [lrgbR, lrgbB, lrgbG].map(v => (v > 0.31308 ? 1.055 * pow(v / 100, 1 / 2.4) * 100 - 5.5 : 12.92 * v));
   return [rgbR, rgbG, rgbB];
 }
 
@@ -510,15 +510,15 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map((mat) => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
 const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = (x) => cos(deg2rad(x));
-const deg2rad = (x) => (x * PI) / 180;
-const rad2deg = (x) => (x * 180) / PI;
-const sind = (x) => sin(deg2rad(x));
+const cosd = x => cos(deg2rad(x));
+const deg2rad = x => (x * PI) / 180;
+const rad2deg = x => (x * 180) / PI;
+const sind = x => sin(deg2rad(x));
 const abs = Math.abs;
 const atan2 = Math.atan2;
 const cbrt = Math.cbrt;
@@ -561,7 +561,7 @@ export function xyz2lab(xyzX, xyzY, xyzZ) {
       [-0.0092345, 0.0150436, 0.7521316]
     ]
   );
-  const [f1, f2, f3] = [d50X / wd50X, d50Y / wd50Y, d50Z / wd50Z].map((value) => (value > epsilon ? cbrt(value) : (kappa * value + 16) / 116));
+  const [f1, f2, f3] = [d50X / wd50X, d50Y / wd50Y, d50Z / wd50Z].map(value => (value > epsilon ? cbrt(value) : (kappa * value + 16) / 116));
   const [labL, labA, labB] = [116 * f2 - 16, 500 * (f1 - f2), 200 * (f2 - f3)];
   return [labL, labA, labB];
 }
@@ -608,15 +608,15 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map((mat) => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
 const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = (x) => cos(deg2rad(x));
-const deg2rad = (x) => (x * PI) / 180;
-const rad2deg = (x) => (x * 180) / PI;
-const sind = (x) => sin(deg2rad(x));
+const cosd = x => cos(deg2rad(x));
+const deg2rad = x => (x * PI) / 180;
+const rad2deg = x => (x * 180) / PI;
+const sind = x => sin(deg2rad(x));
 const abs = Math.abs;
 const atan2 = Math.atan2;
 const cbrt = Math.cbrt;
@@ -688,15 +688,15 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map((mat) => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
 const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = (x) => cos(deg2rad(x));
-const deg2rad = (x) => (x * PI) / 180;
-const rad2deg = (x) => (x * 180) / PI;
-const sind = (x) => sin(deg2rad(x));
+const cosd = x => cos(deg2rad(x));
+const deg2rad = x => (x * PI) / 180;
+const rad2deg = x => (x * 180) / PI;
+const sind = x => sin(deg2rad(x));
 const abs = Math.abs;
 const atan2 = Math.atan2;
 const cbrt = Math.cbrt;
@@ -725,8 +725,8 @@ export function rgb2contrast(rgb1, rgb2) {
 export function rgb2luminance(rgbR, rgbG, rgbB) {
   return (adjustChannel(rgbR) * coefficientR + adjustChannel(rgbG) * coefficientG + adjustChannel(rgbB) * coefficientB) / precision;
 }
-const adjustChannel = (x) => (x <= 3.928 ? x / lowc : adjustGamma(x));
-const adjustGamma = (x) => pow((x + 5.5) / 105.5, 2.4);
+const adjustChannel = x => (x <= 3.928 ? x / lowc : adjustGamma(x));
+const adjustGamma = x => pow((x + 5.5) / 105.5, 2.4);
 const lowc = 1292;
 const coefficientR = 0.2126 * precision;
 const coefficientG = 0.7152 * precision;
@@ -744,7 +744,7 @@ export function hex2rgb(hex) {
     const green = gg !== undefined ? parseInt(gg, 16) : parseInt(g + g, 16);
     const blue = bb !== undefined ? parseInt(bb, 16) : parseInt(b + b, 16);
     const alpha = aa !== undefined ? parseInt(aa, 16) : a !== undefined ? parseInt(a + a, 16) : 255;
-    return [red, green, blue, alpha].map((c) => (c * 100) / 255);
+    return [red, green, blue, alpha].map(c => (c * 100) / 255);
   }
 
   return undefined;
@@ -761,7 +761,7 @@ const hexColorMatch = /^#?(?:([a-f0-9])([a-f0-9])([a-f0-9])([a-f0-9])?|([a-f0-9]
 
 export function keyword2rgb(keyword) {
   const rgb255 = keywords[String(keyword).toLowerCase()];
-  return rgb255 ? rgb255.map((x) => (x * 100) / 255) : null;
+  return rgb255 ? rgb255.map(x => (x * 100) / 255) : null;
 }
 const keywords = {
   aliceblue: [240, 248, 255],
@@ -957,15 +957,15 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map((mat) => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
 const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = (x) => cos(deg2rad(x));
-const deg2rad = (x) => (x * PI) / 180;
-const rad2deg = (x) => (x * 180) / PI;
-const sind = (x) => sin(deg2rad(x));
+const cosd = x => cos(deg2rad(x));
+const deg2rad = x => (x * PI) / 180;
+const rad2deg = x => (x * 180) / PI;
+const sind = x => sin(deg2rad(x));
 const abs = Math.abs;
 const atan2 = Math.atan2;
 const cbrt = Math.cbrt;

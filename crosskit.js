@@ -2017,7 +2017,7 @@ let hsl = function(v) {
 let hsla = function(v) {
   return 'hsla(' + v.h + ',' + v.s + ',' + v.l + ',' + v.a + ')';
 };
-window.addEventListener('keypress', (e) => {
+window.addEventListener('keypress', e => {
   if(e.key == 'f' && !window.fullscreen) document.documentElement.requestFullscreen();
   if(e.key == 'f' && window.fullscreen) document.documentElement.exitFullscreen();
 });

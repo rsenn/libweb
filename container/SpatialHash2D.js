@@ -49,13 +49,13 @@ export default class SpatialHash2D {
     const hashes = this.evalHashes(rect);
     this.rect2hashes.set(rect, hashes);
     //for ( let hash of hashes ) {
-    hashes.forEach((hash) => {
+    hashes.forEach(hash => {
       if(!this.hash2rects.has(hash)) {
         this.hash2rects.set(hash, new Set([rect]));
       } else {
         const rects = this.hash2rects.get(hash);
         //for ( let r of rects ) {
-        rects.forEach((r) => {
+        rects.forEach(r => {
           if(this.areRectsOverlap(rect, r)) {
             if(this.overlaps.has(rect)) {
               this.overlaps.get(rect).add(r);
@@ -78,7 +78,7 @@ export default class SpatialHash2D {
   delete(rect) {
     if(this.has(rect)) {
       //for ( let hash of this.rect2hashes.get( rect ) ) {
-      this.rect2hashes.get(rect).forEach((hash) => {
+      this.rect2hashes.get(rect).forEach(hash => {
         const rectsSet = this.hash2rects.get(hash).delete(rect);
         if(rectsSet.size <= 0) {
           this.hash2rects.delete(hash);
@@ -86,7 +86,7 @@ export default class SpatialHash2D {
       });
       if(this.overlaps.has(rect)) {
         //for ( let r of this.overlaps.get( rect )) {
-        this.overlaps.get(rect).forEach((r) => {
+        this.overlaps.get(rect).forEach(r => {
           const rs = this.overlaps.get(r);
           if(rs && rs.size > 1) {
             rs.delete(rect);

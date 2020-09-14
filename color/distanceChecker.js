@@ -4,8 +4,8 @@
  * - https://en.wikipedia.org/wiki/Color_difference
  */
 
-const extractHashSign = (hex) => (hex.charAt(0) === '#' ? hex.substring(1, 7) : hex);
-const generateRGB = (color) => {
+const extractHashSign = hex => (hex.charAt(0) === '#' ? hex.substring(1, 7) : hex);
+const generateRGB = color => {
   if(typeof color == 'object' && color !== null && 'r' in color && 'g' in color && 'b' in color) return color;
   const hex = extractHashSign(color);
 
@@ -17,7 +17,7 @@ const generateRGB = (color) => {
     b: parseInt(rgb.substring(4, 6), 16)
   };
 };
-const rgbToLab = (rgbColor) => {
+const rgbToLab = rgbColor => {
   const RGB = Object.values(rgbColor).map((value, index) => {
     let part = value / 255;
 
@@ -33,7 +33,7 @@ const rgbToLab = (rgbColor) => {
   const Z = RGB[0] * 0.0193 + RGB[1] * 0.1192 + RGB[2] * 0.9505;
   const xyzColor = [parseFloat(X.toFixed(4)) / 95.047, parseFloat(Y.toFixed(4)) / 100, parseFloat(Z.toFixed(4)) / 108.883];
 
-  const XYZ = xyzColor.map((value) => {
+  const XYZ = xyzColor.map(value => {
     if(value / 0.008856) {
       return value ** (1 / 3);
     } else {

@@ -15,12 +15,12 @@ import Util from '../util.js';
 export class Element extends Node {
   static EDGES = { upperLeft: 0, upperCenter: 0.5, upperRight: 1, centerRight: 1.5, lowerRight: 2, lowerCenter: 2.5, lowerLeft: 3, centerLeft: 3.5 };
 
-  static edges = (arg) => Element.getEdgesXYWH(Element.rect(arg));
+  static edges = arg => Element.getEdgesXYWH(Element.rect(arg));
   static Axis = { H: 0, V: 2 };
 
-  static margin = (element) => Element.getTRBL(element, 'margin');
-  static padding = (element) => Element.getTRBL(element, 'padding');
-  static border = (element) => Element.getTRBL(element, 'border');
+  static margin = element => Element.getTRBL(element, 'margin');
+  static padding = element => Element.getTRBL(element, 'padding');
+  static border = element => Element.getTRBL(element, 'border');
 
   static wrap(e) {
     let names;
@@ -62,13 +62,13 @@ export class Element extends Node {
       else if(k.startsWith('on') || k.startsWith('inner')) e[k] = value;
       else e.setAttribute(k, value);
     }
-    if(children && children.length) children.forEach((obj) => Element.create(obj, e));
+    if(children && children.length) children.forEach(obj => Element.create(obj, e));
 
     if(parent && parent.appendChild) parent.appendChild(e);
     return e;
   }
 
-  static walkUp(elem, pred = (e) => true) {
+  static walkUp(elem, pred = e => true) {
     if(typeof elem == 'string') elem = Element.find(elem);
     let depth = 0;
     if(typeof pred == 'number') {
@@ -87,7 +87,7 @@ export class Element extends Node {
   static *skip(elem, fn = (e, next) => next(e.parentElement)) {
     elem = typeof elem == 'string' ? Element.find(elem) : elem;
     //let [iter,push] = new iterator();
-    let emit = (n) => (elem = n);
+    let emit = n => (elem = n);
 
     while(elem) {
       yield elem;
@@ -176,11 +176,11 @@ export class Element extends Node {
     let { tagName, ns, children, ...attributes } = o;
     let v = '';
     s = Object.keys(ns ? { ns, ...attributes } : attributes)
-      .map((k) => `${k}:${quote}${attributes[k]}${quote}`)
+      .map(k => `${k}:${quote}${attributes[k]}${quote}`)
       .join(', ');
     s = `${cmd}('${tagName}', {${s}}`;
     let c = elem.children;
-    if(c.length >= 1) s = `${s}, [\n  ${c.map((e) => Element.toCommand(e, opts).replace(/\n/g, '\n  ')).join(',\n  ')}\n]`;
+    if(c.length >= 1) s = `${s}, [\n  ${c.map(e => Element.toCommand(e, opts).replace(/\n/g, '\n  ')).join(',\n  ')}\n]`;
     s += parent ? ', ' + parent : '';
     if(elem.firstElementChild && varName) {
       v = parent ? String.fromCharCode(parent.charCodeAt(0) + 1) : varName;
@@ -195,7 +195,7 @@ export class Element extends Node {
       parent =
         globalObj.document ||
         Util.tryCatch(() => document,
-          (d) => d
+          d => d
         );
 
     if(typeof arg != 'string') throw new Error(arg + '');
@@ -386,7 +386,7 @@ export class Element extends Node {
     if(rect) {
       //if(typeof element == 'string') element = Element.find(element);
       const trbl = rect.toTRBL();
-      const [x, y] = edges.map((e) => (e == 'right' ? window.innerWidth - trbl[e] : e == 'bottom' ? window.innerHeight - trbl[e] : trbl[e]));
+      const [x, y] = edges.map(e => (e == 'right' ? window.innerWidth - trbl[e] : e == 'bottom' ? window.innerHeight - trbl[e] : trbl[e]));
       return new Point({ x, y });
     }
   }
@@ -398,7 +398,7 @@ export class Element extends Node {
     let position = rest.shift() || Element.getCSS(element, 'position') || 'relative';
     let off;
     //console.log('Element.move ', { element, to, position });
-    const getValue = (prop) => {
+    const getValue = prop => {
       const property = Element.getCSS(element, prop);
       if(property === undefined) return undefined;
       const matches = /([-0-9.]+)(.*)/.exec(property) || [];
@@ -526,10 +526,10 @@ export class Element extends Node {
   static getTRBL(element, prefix = '') {
     if(typeof element == 'string') element = Element.find(element);
 
-    const names = ['Top', 'Right', 'Bottom', 'Left'].map((pos) => prefix + (prefix == '' ? pos.toLowerCase() : pos + (prefix == 'border' ? 'Width' : '')));
+    const names = ['Top', 'Right', 'Bottom', 'Left'].map(pos => prefix + (prefix == '' ? pos.toLowerCase() : pos + (prefix == 'border' ? 'Width' : '')));
     const getCSS = prefix == '' ? () => ({}) : Util.memoize(() => Element.getCSS(element));
 
-    let entries = names.map((prop) => [Util.decamelize(prop).split('-'), element.style.getPropertyValue(prop) || getCSS()[prop]]);
+    let entries = names.map(prop => [Util.decamelize(prop).split('-'), element.style.getPropertyValue(prop) || getCSS()[prop]]);
     //console.log('getTRBL', { names, entries });
     entries = entries.map(([prop, value]) => [prop[1] || prop[0], typeof value == 'string' ? +value.replace(/px$/, '') : value]);
 
@@ -557,7 +557,7 @@ export class Element extends Node {
       const propName = Util.decamelize(key);
       if(typeof value == 'function') {
         if('subscribe' in value) {
-          value.subscribe = (newval) => element.style.setProperty(propName, newval);
+          value.subscribe = newval => element.style.setProperty(propName, newval);
           value = value();
         }
       }
@@ -587,13 +587,13 @@ export class Element extends Node {
     let style = Util.tryPredicate(() => Util.removeEqual(estyle, pstyle), null)();
 
     if(!style) return null;
-    let keys = Object.keys(style).filter((k) => !/^__/.test(k));
+    let keys = Object.keys(style).filter(k => !/^__/.test(k));
     //console.log("style: ", style);
     //console.log("Element.getCSS ", style);
 
     let ret = {};
     if(receiver == null) {
-      receiver = (result) => {
+      receiver = result => {
         if(typeof result == 'object') {
           try {
             Object.defineProperty(result, 'cssText', {
@@ -667,9 +667,9 @@ export class Element extends Node {
     function dumpElem(child, accu, root, depth) {
       const rect = Rect.round(Element.rect(child, elem));
       accu += '  '.repeat((depth > 0 ? depth : 0) + 1) + ' ' + Element.xpath(child, child);
-      [...child.attributes].forEach((attr) => (accu += ' ' + attr.name + "='" + attr.value + "'"));
+      [...child.attributes].forEach(attr => (accu += ' ' + attr.name + "='" + attr.value + "'"));
       if(Rect.area(rect) > 0) accu += ' ' + Rect.toString(rect);
-      ['margin', 'border', 'padding'].forEach((name) => {
+      ['margin', 'border', 'padding'].forEach(name => {
         let trbl = Element.getTRBL(elem, 'margin');
         if(!trbl.null()) accu += ' ' + name + ': ' + trbl + '';
       });
@@ -754,7 +754,7 @@ export class Element extends Node {
         if(!this.root) this.root = elem;
       };
     }
-    if(!delegate.create) delegate.create = (tag) => document.createElement(tag);
+    if(!delegate.create) delegate.create = tag => document.createElement(tag);
     if(!delegate.setattr) {
       delegate.setattr = (elem, attr, value) => {
         //console.log('setattr ', { attr, value });
@@ -830,7 +830,7 @@ export class Element extends Node {
     const w = global.window;
     const d = w.document;
     const s = o.all
-      ? (e) => {
+      ? e => {
           if(ret == null) ret = [];
           ret.push(e);
         }
@@ -920,18 +920,18 @@ export class Element extends Node {
       .map(([name, value]) => ` ${name}="${value}"`)
       .join('');
     s += children.length ? `>` : ` />`;
-    if(children.length) s += newline + children.map((e) => Element.toString(e, { ...opts, depth: depth + 1 })).join(newline) + i + `</${tagName}>`;
+    if(children.length) s += newline + children.map(e => Element.toString(e, { ...opts, depth: depth + 1 })).join(newline) + i + `</${tagName}>`;
     s += newline;
     return s;
   }
 
-  static clipboardCopy = (text) =>
+  static clipboardCopy = text =>
     new Promise((resolve, reject) => {
       if(navigator.clipboard) {
         return navigator.clipboard
           .writeText(text)
           .then(() => resolve(true))
-          .catch((err) => reject(err !== undefined ? err : new DOMException('The request is not allowed', 'NotAllowedError')));
+          .catch(err => reject(err !== undefined ? err : new DOMException('The request is not allowed', 'NotAllowedError')));
       }
       let ok = false;
       try {
@@ -958,12 +958,12 @@ export class Element extends Node {
       else reject(new DOMException('The request is not allowed', 'NotAllowedError'));
     });
 
-  static *children(elem, tfn = (e) => e) {
+  static *children(elem, tfn = e => e) {
     if(typeof elem == 'string') elem = Element.find(elem);
     for(let e = elem.firstElementChild; e; e = e.nextElementSibling) yield tfn(e);
   }
 
-  static *recurse(elem, tfn = (e) => e) {
+  static *recurse(elem, tfn = e => e) {
     if(typeof elem == 'string') elem = Element.find(elem);
     let root = elem;
     do {

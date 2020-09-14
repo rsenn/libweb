@@ -1,6 +1,6 @@
 //Generate a Promise that listens only once for an event
 let oncePromise = (emitter, event) =>
-  new Promise((resolve) => {
+  new Promise(resolve => {
     var handler = (...args) => {
       emitter.removeEventListener(event, handler);
       resolve(...args);

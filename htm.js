@@ -91,7 +91,7 @@ const build = function(statics) {
   let current = [0];
   let char, propName;
 
-  const commit = (field) => {
+  const commit = field => {
     if(mode === MODE_TEXT && (field || (buffer = buffer.replace(/^\s*\n\s*|\s*\n\s*$/g, '')))) {
       if(MINI) {
         current.push(field ? fields[field] : buffer);

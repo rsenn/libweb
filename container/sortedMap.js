@@ -88,7 +88,7 @@ export class SortedMap extends Map {
   }
 
   keyOf(value) {
-    return this.findKey((v) => value === v);
+    return this.findKey(v => value === v);
   }
 
   find(pred) {

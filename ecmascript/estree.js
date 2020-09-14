@@ -81,10 +81,10 @@ export class ComputedPropertyName extends ESNode {
 }
 
 export class BindingProperty extends Expression {
-  constructor(property, element, initializer) {
+  constructor(property, id, initializer) {
     super('BindingProperty');
-    this.id = property;
-    this.value = element;
+    this.property = property;
+    this.id = id;
 
     if(initializer) this.initializer = initializer;
   }
@@ -392,10 +392,11 @@ export class ImportStatement extends Statement {
 }
 
 export class ExportStatement extends Statement {
-  constructor(what, declarations) {
+  constructor(what, declarations, sourceFile) {
     super('ExportStatement');
     this.what = what;
     this.declarations = declarations;
+    if(sourceFile) this.source = sourceFile;
   }
 }
 
@@ -648,7 +649,7 @@ export function Factory() {
   self.nodes = nodeList;
   self.stack = [];
   self.loc = { pos: -1, column: -1, line: -1 };
-  self.callback = (node) => self.nodes.push(node);
+  self.callback = node => self.nodes.push(node);
   self.classes = Object.keys(CTORS).reduce((acc, nodeName) => ({
       ...acc,
       [nodeName](...args) {

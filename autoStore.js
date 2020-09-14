@@ -5,9 +5,9 @@ export const makeLocalStorage = () => {
 
   if(w && w.localStorage)
     return {
-      get: (name) => JSON.parse(w.localStorage.getItem(name)),
+      get: name => JSON.parse(w.localStorage.getItem(name)),
       set: (name, data) => w.localStorage.setItem(name, JSON.stringify(data)),
-      remove: (name) => w.localStorage.removeItem(name),
+      remove: name => w.localStorage.removeItem(name),
       keys: () => {
         let i = 0,
           key,
@@ -17,14 +17,14 @@ export const makeLocalStorage = () => {
       }
     };
   return {
-    get: (name) => ({}),
+    get: name => ({}),
     set: (name, data) => undefined,
-    remove: (name) => undefined,
+    remove: name => undefined,
     keys: () => []
   };
 };
 
-export const logStoreAdapter = (store) => ({
+export const logStoreAdapter = store => ({
   store,
   get(name) {
     return this.store.get(name);
@@ -37,7 +37,7 @@ export const logStoreAdapter = (store) => ({
   }
 });
 
-export const makeLocalStore = (name) => ({
+export const makeLocalStore = name => ({
   name,
   storage: makeLocalStorage(),
   get() {
@@ -57,9 +57,9 @@ export const makeLocalStore = (name) => ({
 });
 
 export const makeDummyStorage = () => ({
-  get: (name) => null,
+  get: name => null,
   set: (name, data) => {},
-  remove: (name) => {}
+  remove: name => {}
 });
 
 export function getLocalStorage() {

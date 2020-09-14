@@ -3,7 +3,7 @@ import { TransformationList } from '../../geom/transformation.js';
 import { useTrkl, useAttributes } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
 
-export const useGrid = (data) => {
+export const useGrid = data => {
   const factors = { inch: 25.4, mm: 1 };
   const calcDist = (value, unit) => {
     // console.debug('calcDist:', { value, unit });

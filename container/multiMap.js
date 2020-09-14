@@ -35,7 +35,7 @@ export function Multimap(iterable) {
   self._ = self._map ? new self._map() : {};
 
   if(iterable) {
-    iterable.forEach((i) => {
+    iterable.forEach(i => {
       self.set(i[0], i[1]);
     });
   }
@@ -119,7 +119,7 @@ Multimap.prototype.keys = function() {
  */
 Multimap.prototype.values = function() {
   let vals = [];
-  this.forEachEntry((entry) => {
+  this.forEachEntry(entry => {
     Array.prototype.push.apply(vals, entry);
   });
 
@@ -136,7 +136,7 @@ Multimap.prototype.forEachEntry = function(iter) {
 Multimap.prototype.forEach = function(iter) {
   let self = this;
   self.forEachEntry((entry, key) => {
-    entry.forEach((item) => {
+    entry.forEach(item => {
       iter(item, key, self);
     });
   });
@@ -156,7 +156,7 @@ Object.defineProperty(Multimap.prototype, 'size', {
   get() {
     let total = 0;
 
-    mapEach(this, (value) => {
+    mapEach(this, value => {
       total += value.length;
     });
 

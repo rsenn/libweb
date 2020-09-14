@@ -163,7 +163,7 @@ export class EagleDocument extends EagleNode {
     });
   }
 
-  index(path, transform = (arg) => arg) {
+  index(path, transform = arg => arg) {
     if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
     return transform(path.apply(this));
   }
@@ -189,7 +189,7 @@ export class EagleDocument extends EagleNode {
       const board = this.lookup(['eagle', 'drawing', 'board']);
       const plain = board.lookup(['plain']);
       //console.debug('plain:', plain);
-      const measures = plain.children.filter((e) => e.layer && e.layer.name == 'Measures');
+      const measures = plain.children.filter(e => e.layer && e.layer.name == 'Measures');
       let ret;
       if(measures.length >= 4) ret = bb.update(measures);
       else ret = board.getBounds();
@@ -218,35 +218,39 @@ export class EagleDocument extends EagleNode {
     return bb;
   }
 
-  getMeasures(bbox = false) {
+  getMeasures(options = {}) {
+    const { bbox, geometry, points } = typeof options == 'boolean' ? { bbox: true } : options;
     //console.log("this.type", this.type);
 
-    let measures = this.plain.filter((obj) => obj.layer && obj.layer.name == 'Measures');
-    measures = LinesToPath(measures.map((e) => new Line(e)),
-      (p) => p
-    );
-    /*  if(geometry) measures = measures.map((e) => e.geometry);
-    else */
+    let measures = this.plain.filter(obj => obj.layer && obj.layer.name == 'Measures');
+    if(bbox || geometry || points) measures = measures.map(e => e.geometry);
 
-    if(bbox) measures = new BBox().update(measures);
+    if(points)
+      measures = measures
+        .map(l => l.toPoints())
+        .flat()
+        .filter(Util.uniquePred(Point.equals));
+
+    if(bbox)
+      //) measures = measures.map(e=> new Line(e.attributes));
+      measures = new BBox().update(measures);
+
     return measures;
   }
 
   get measures() {
-    let bb = new BBox().update(this.getMeasures(true));
-    let rect = new Rect(bb.rect).round(0.00127, 3);
-    return rect;
+    return this.getMeasures({ points: true, bbox: true });
   }
 
   get dimensions() {
-    let size = this.measures.size;
+    let size = new Rect(this.measures).size;
     size.units.width = size.units.height = 'mm';
     return size;
   }
   signalMap() {
     return new Map([...this.signals].map(([name, signal]) => {
         let objects = [...signal.children]
-          .map((child) => [child, child.geometry])
+          .map(child => [child, child.geometry])
           .filter(([child, geometry]) => !!geometry || child.tagName == 'contactref')
           .map(([child, geometry]) => child);
 

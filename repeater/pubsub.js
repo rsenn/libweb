@@ -34,7 +34,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
     function step(result) {
       result.done
         ? resolve(result.value)
-        : new P((resolve) => {
+        : new P(resolve => {
             resolve(result.value);
           }).then(fulfilled, rejected);
     }

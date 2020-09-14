@@ -20,9 +20,9 @@ export async function readStream(stream, arg) {
       for await (let item of repeater) yield await item;
     })();
 
-  if(arg instanceof Array) fn = (item) => arg.push(item);
-  else if(typeof arg == 'function') fn = (item) => arg(item);
-  else if(typeof arg == 'string') fn = (item) => (arg += item);
+  if(arg instanceof Array) fn = item => arg.push(item);
+  else if(typeof arg == 'function') fn = item => arg(item);
+  else if(typeof arg == 'string') fn = item => (arg += item);
   for await (let item of repeater) fn(item);
   if(typeof arg == 'function') arg(undefined);
   return arg;
@@ -31,7 +31,7 @@ export async function readStream(stream, arg) {
 export function AcquireReader(stream, fn) {
   fn =
     fn ||
-    (async (reader) => {
+    (async reader => {
       let result,
         data = '';
       while((result = await reader.read())) {
@@ -51,11 +51,11 @@ export function AcquireReader(stream, fn) {
 }
 
 export function AcquireWriter(stream,
-  fn = async (writer) => {
+  fn = async writer => {
     await writer.write('TEST');
   }
 ) {
-  return (async (writer) => {
+  return (async writer => {
     writer = await writer;
     let ret = await fn(writer);
     await writer.releaseLock();
@@ -64,8 +64,8 @@ export function AcquireWriter(stream,
 }
 
 export function PipeTo(input, output) {
-  return AcquireWriter(output, async (writer) => {
-    await AcquireReader(input, async (reader) => {
+  return AcquireWriter(output, async writer => {
+    await AcquireReader(input, async reader => {
       let result;
       while((result = await reader.read())) {
         if(typeof result.value == 'string') await writer.write(result.value);
@@ -76,14 +76,14 @@ export function PipeTo(input, output) {
 }
 
 export function AsyncWrite(iterator, writable) {
-  return AcquireWriter(writable, async (writer) => {
+  return AcquireWriter(writable, async writer => {
     for await (let data of iterator) writer.write(await data);
   });
 }
 
 export function AsyncRead(readable) {
   return new Repeater(async (push, stop) => {
-    AcquireReader(readable, async (reader) => {
+    AcquireReader(readable, async reader => {
       let result;
       while((result = await reader.read())) {
         console.log('result:', result);
@@ -127,7 +127,7 @@ export function LogSink(fn = (...args) => console.log('LogSink.fn', ...args)) {
   });
 }
 
-export async function RepeaterSink(start = async (sink) => {}) {
+export async function RepeaterSink(start = async sink => {}) {
   return new Repeater(async (push, stop) => {
     await start(new WritableStream({
         write(chunk) {
@@ -236,7 +236,7 @@ export function ByteReader(str) {
 }
 
 export function PipeToRepeater(stream) {
-  return RepeaterSink((writable) => stream.pipeTo(writable));
+  return RepeaterSink(writable => stream.pipeTo(writable));
 }
 
 export default { AsyncRead, AsyncWrite, ArrayWriter, readStream, AcquireReader, AcquireWriter, PipeTo, WriteToRepeater, LogSink, RepeaterSink, StringReader, LineReader, DebugTransformStream, ChunkReader, ByteReader, PipeToRepeater };

@@ -4,7 +4,7 @@ import { trkl } from './trkl.js';
 export function Instance({ trackable = false, callback, initVal = null }) {
   let inst = trackable && trackable.subscribe !== undefined ? trackable : trkl(initVal);
 
-  if(callback) inst.subscribe((value) => callback(value, inst));
+  if(callback) inst.subscribe(value => callback(value, inst));
 
   /* inst.subscribe(newVal => {
     if(newVal) console.log('new instance: ', value);
@@ -19,7 +19,7 @@ export function Instance({ trackable = false, callback, initVal = null }) {
 }
 
 function TrackedInstance(initVal = null) {
-  const callback = (value) => {};
+  const callback = value => {};
   let inst = Instance({ trackable: true, callback, initVal });
 
   return inst;
@@ -74,7 +74,7 @@ export function lazyProperty(obj, name, fn) {
  * @param      {<type>}    prototyp                  The prototyp
  * @return     {Proxy}     { description_of_the_return_value }
  */
-export function lazyMap(arr, lookup = (item) => item.name, ctor = (arg) => arg, prototyp) {
+export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prototyp) {
   /*  let m = new Map();
 
   for(let [k,v] of entries)

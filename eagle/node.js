@@ -56,7 +56,7 @@ export class EagleNode {
 
           return p.up(2);
         }),
-        (path) => {
+        path => {
           let v = path.apply(owner.raw, true);
           return t(owner, path, v);
         }
@@ -158,7 +158,7 @@ export class EagleNode {
 
   initRelation(key, handler, fn) {
     let elem = this;
-    trkl.bind(this, key, (v) => {
+    trkl.bind(this, key, v => {
       if(v !== undefined) return handler(typeof v == 'string' ? v : v.name);
       let value = handler() || elem.attrMap[key] || elem.attributes[key];
       return fn(value, elem, elem.document);
@@ -222,7 +222,7 @@ export class EagleNode {
     return a[0] || null;
   }
 
-  find(name, transform = (a) => a) {
+  find(name, transform = a => a) {
     //console.log('find', this, name, Util.getCallers(0));
     //throw new Error("find");
     let pred = EagleNode.makePredicate(name);
@@ -237,12 +237,12 @@ export class EagleNode {
 
   getMap(entity) {
     let a = this.cache[entity + 's'];
-    if(a && a.children) return new Map([...a.children].map((e) => [e.name, e]));
+    if(a && a.children) return new Map([...a.children].map(e => [e.name, e]));
     return null;
   }
 
   getByName(element, name, attr = 'name', t = ([v, l, d]) => makeEagleNode(d, this.ref.concat([...l]), this.childConstructor)) {
-    for(let [v, l, d] of this.iterator([], (it) => it)) {
+    for(let [v, l, d] of this.iterator([], it => it)) {
       if(typeof v == 'object' && 'tagName' in v && 'attributes' in v && attr in v.attributes) {
         if(v.tagName == element && v.attributes[attr] == name) return t([v, l, d]);
       }
@@ -306,7 +306,7 @@ export class EagleNode {
     let a = r.attrMap ? r.attrMap : r.attributes;
     if(a) {
       attrs = Object.getOwnPropertyNames(a)
-        .filter((name) => typeof a[name] != 'function')
+        .filter(name => typeof a[name] != 'function')
         .reduce((attrs, attr) => concat(attrs, ' ', text(attr, 1, 33), text(':', 1, 36), text("'" + a[attr] + "'", 1, 32)), attrs);
 
       //console.log('Inspect:', a, a.keys ? a.keys() : Object.getOwnPropertyNames(a));
@@ -339,10 +339,10 @@ export class EagleNode {
     return ret;
   }
 
-  getBounds(pred = (e) => true) {
+  getBounds(pred = e => true) {
     let bb = new BBox();
     if(this.children && this.children.length) {
-      for(let element of this.getAll((e) => e.tagName !== undefined && pred(e))) {
+      for(let element of this.getAll(e => e.tagName !== undefined && pred(e))) {
         let g = element.geometry;
         if(g) {
           let bound = typeof g.bbox == 'function' ? g.bbox() : g;
@@ -358,13 +358,13 @@ export class EagleNode {
   get geometry() {
     const { attributes } = this.raw;
     const keys = Object.keys(attributes);
-    const makeGetterSetter = (k) => (v) => (v === undefined ? this[k] : (this[k] = v));
-    if(['x1', 'y1', 'x2', 'y2'].every((prop) => keys.includes(prop))) {
+    const makeGetterSetter = k => v => (v === undefined ? this[k] : (this[k] = v));
+    if(['x1', 'y1', 'x2', 'y2'].every(prop => keys.includes(prop))) {
       return Line.bind(this, null, makeGetterSetter);
-    } else if(['x', 'y'].every((prop) => keys.includes(prop))) {
+    } else if(['x', 'y'].every(prop => keys.includes(prop))) {
       const { x, y } = Point(this);
       if(keys.includes('radius')) return Circle.bind(this, null, makeGetterSetter);
-      if(['width', 'height'].every((prop) => keys.includes(prop))) return Rect.bind(this, null, makeGetterSetter);
+      if(['width', 'height'].every(prop => keys.includes(prop))) return Rect.bind(this, null, makeGetterSetter);
       return Point.bind(this, null, makeGetterSetter);
     }
   }
@@ -383,7 +383,7 @@ export class EagleNode {
     //console.log('Node.xpath', ref.path, ref.root);
     let x;
     try {
-      x = ImmutableXPath.from(ref.path.filter((p) => p != 'children'),
+      x = ImmutableXPath.from(ref.path.filter(p => p != 'children'),
         ref.root
       );
     } catch(err) {}
@@ -401,7 +401,7 @@ export class EagleNode {
   }
 
   *iterator(...args) {
-    let predicate = typeof args[0] == 'function' ? args.shift() : (arg) => true;
+    let predicate = typeof args[0] == 'function' ? args.shift() : arg => true;
     let path = (Util.isArray(args[0]) && args.shift()) || [];
     let t = typeof args[0] == 'function' ? args.shift() : ([v, l, d]) => [typeof v == 'object' && v !== null && 'tagName' in v ? new this.constructor[Symbol.species](d, l) : v, l, d];
     let owner = Util.isObject(this) && 'owner' in this ? this.owner : this;
@@ -415,23 +415,26 @@ export class EagleNode {
   }
 
   toXML(depth = 0) {
-    let attrNames = Object.keys(this.raw.attributes);
-    let s = `<${this.tagName}`;
+    return toXML(this.raw);
+
+    const { tagName, raw } = this;
+    let attrNames = Object.keys(raw.attributes);
+    let s = `<${tagName}`;
     for(let name of attrNames) {
       let value = this[name];
       if(Util.isObject(value)) {
         if(value.name) value = value.name;
-        else value = this.raw.attributes[name];
+        else value = raw.attributes[name];
       }
 
       s += ` ${name}="${value}"`;
     }
-    if(!this.children.length) {
+    if(!raw.children.length) {
       s += ' />';
     } else {
       s += '\n';
-      [...this.children].map((child) => '  '.repeat(depth + 1) + child.toXML(depth + 1)).join('\n');
-      s += `\n</${this.tagName}>`;
+      [...this.children].map(child => '  '.repeat(depth + 1) + child.toXML(depth + 1)).join('\n');
+      s += `\n</${tagName}>`;
     }
     return s;
 

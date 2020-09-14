@@ -12,11 +12,11 @@ export class PolygonFinder {
     //Then we filter for the segments that have more than one intersection
     let connectedSegments = [];
     let connectedIntersections = [];
-    segments.forEach((segment) => {
-      let intersectionsOnSegment = intersections.filter((intersection) => intersection.line1 === segment || intersection.line2 === segment);
+    segments.forEach(segment => {
+      let intersectionsOnSegment = intersections.filter(intersection => intersection.line1 === segment || intersection.line2 === segment);
 
       if(intersectionsOnSegment.length > 1) {
-        intersectionsOnSegment.forEach((intersection) => {
+        intersectionsOnSegment.forEach(intersection => {
           if(!connectedIntersections.includes(intersection)) {
             connectedIntersections.push(intersection);
           }
@@ -25,17 +25,17 @@ export class PolygonFinder {
       }
     });
 
-    connectedSegments.forEach((segment) => {
-      let intersectionsOnSegment = connectedIntersections.filter((intersection) => intersection.line1 === segment || intersection.line2 === segment);
+    connectedSegments.forEach(segment => {
+      let intersectionsOnSegment = connectedIntersections.filter(intersection => intersection.line1 === segment || intersection.line2 === segment);
 
       //For each intersection on a line, find the nearest neighbor in each direction.
       //TODO:  Investigate if this works/when it fails/if there is a better way.
       let nearestNeighborTrios = intersectionsOnSegment.map((intersection, index, intersections) => {
         let nearestNeighborPair = [null, null];
         let minimumDistancePair = [Infinity, Infinity];
-        let possibleNeighbors = intersections.filter((possibleNeighborIntersection) => intersection != possibleNeighborIntersection);
+        let possibleNeighbors = intersections.filter(possibleNeighborIntersection => intersection != possibleNeighborIntersection);
 
-        possibleNeighbors.forEach((possibleNeighbor) => {
+        possibleNeighbors.forEach(possibleNeighbor => {
           let comparisonProperty = '';
           let distanceBetween = dist(intersection.point.x, intersection.point.y, possibleNeighbor.point.x, possibleNeighbor.point.y);
 
@@ -70,15 +70,15 @@ export class PolygonFinder {
         return [intersection, nearestNeighborPair[0], nearestNeighborPair[1]];
       });
 
-      nearestNeighborTrios.forEach((trio) => {
+      nearestNeighborTrios.forEach(trio => {
         let nodes = [];
-        trio.forEach((intersection) => {
+        trio.forEach(intersection => {
           let newNode = new Graph.Node(intersection.point);
           nodes.push(newNode);
           graph.addNode(newNode);
         });
 
-        nodes.forEach((node) => {
+        nodes.forEach(node => {
           graph.addNode(node);
         });
 
@@ -93,8 +93,8 @@ export class PolygonFinder {
 
   static polygonsFromCycles(cycles, graph) {
     let polygons = [];
-    cycles.forEach((cycle) => {
-      let points = cycle.map((node) => graph.nodes[node].point);
+    cycles.forEach(cycle => {
+      let points = cycle.map(node => graph.nodes[node].point);
       polygons.push(points);
     });
     return polygons;

@@ -28,8 +28,8 @@ export class EagleSVGRenderer {
     this.doc = doc;
     let renderer = this;
     this.path2component = Util.mapWrapper(new Map(),
-      (path) => (Util.isObject(path) && path.path !== undefined ? path.path : path) + '',
-      (key) => new ImmutablePath(key)
+      path => (Util.isObject(path) && path.path !== undefined ? path.path : path) + '',
+      key => new ImmutablePath(key)
     );
     const insertCtoP = Util.inserter(this.component2path);
     const insert = Util.inserter(this.path2component, (k, v) => insertCtoP(v, k));
@@ -186,7 +186,7 @@ export class EagleSVGRenderer {
 
     const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, 'data-path': item.path.toString(' '), ...attr }, parent);
 
-    let coordFn = transform ? MakeCoordTransformer(transform) : (i) => i;
+    let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
     const { layer } = item;
     const color = typeof item.getColor == 'function' ? item.getColor() : this.constructor.palette[16];
 
@@ -199,7 +199,7 @@ export class EagleSVGRenderer {
           transform,
           opts: {
             ...opts,
-            transformation: this.transform.filter((t) => ['translate'].indexOf(t.type) == -1)
+            transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1)
           }
         },
         parent
@@ -390,9 +390,9 @@ export class EagleSVGRenderer {
   render(doc, props = {}, children = []) {
     doc = doc || this.doc;
 
-    let bounds = doc.getMeasures(true) || doc.getBounds();
+    let bounds = doc.measures || doc.getBounds();
     this.debug('EagleSVGRenderer.render', { bounds });
-    let rect = bounds.toRect(Rect.prototype);
+    let rect = new Rect(bounds.rect);
 
     rect.round(1.27);
     //   rect.outset(1.27);
@@ -403,7 +403,7 @@ export class EagleSVGRenderer {
 
     this.debug('bounds:', this.bounds.toString({ separator: ' ' }));
 
-    const { width, height } = new Size(bounds).toCSS('mm');
+    const { width, height } = rect.size.toCSS('mm');
 
     this.transform.clear();
     this.transform.translate(0, rect.height - rect.y);

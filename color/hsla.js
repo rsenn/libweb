@@ -41,7 +41,7 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
     ret.l = c[2];
     ret.a = c[3] !== undefined ? c[3] : 1.0;
 
-    ['h', 's', 'l', 'a'].forEach((channel) => {
+    ['h', 's', 'l', 'a'].forEach(channel => {
       if(String(ret[channel]).endsWith('%')) ret[channel] = parseFloat(ret[channel].slice(0, -1));
       else ret[channel] = parseFloat(ret[channel]) * (channel == 'a' || channel == 'h' ? 1 : 100);
     });
@@ -213,14 +213,14 @@ HSLA.prototype.toString = function(prec = 1 / 255) {
   return `hsla(${h},${s}%,${l}%,${a})`;
 };
 
-HSLA.fromString = (str) => {
+HSLA.fromString = str => {
   let c = Util.tryCatch(() => new RGBA(str),
-    (c) => (c.valid() ? c : null),
+    c => (c.valid() ? c : null),
     () => undefined
   );
   if(!c)
     c = Util.tryCatch(() => new HSLA(str),
-      (c) => (c.valid() ? c : null),
+      c => (c.valid() ? c : null),
       () => undefined
     );
   return c;
@@ -228,7 +228,7 @@ HSLA.fromString = (str) => {
 
 HSLA.prototype.valid = function() {
   const { h, s, l, a } = this;
-  return [h, s, l, a].every((n) => !isNaN(n) && typeof n == 'number');
+  return [h, s, l, a].every(n => !isNaN(n) && typeof n == 'number');
 };
 HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [0, 1], rng = Util.rng) {
   return new HSLA(Util.randInt(...[...h, 360].slice(0, 2), rng), Util.randInt(...[...s, 100].slice(0, 2), rng), Util.randInt(...[...l, 50].slice(0, 2), rng), Util.randFloat(...a, rng));
@@ -279,17 +279,17 @@ HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
   let ret = arr.map((n, i) => (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i == 0 ? 3 : i < 3 ? i + 3 : 1, ' ')).join(',');
   const color = this.toRGBA().toAnsi256(true);
   let o = '';
-  o += arr.map((n) => `\x1b[0;33m${n}\x1b[0m`).join('');
+  o += arr.map(n => `\x1b[0;33m${n}\x1b[0m`).join('');
   o = color + o;
 
   return `\x1b[1;31mHSLA\x1b[1;36m` + `(${ret})`.padEnd(24, ' ') + ` ${color}    \x1b[0m`;
 };
 
 for(let name of ['css', 'toHSL', 'clamp', 'round', 'hex', 'toRGBA', 'toString']) {
-  HSLA[name] = (hsla) => HSLA.prototype[name].call(hsla || new HSLA());
+  HSLA[name] = hsla => HSLA.prototype[name].call(hsla || new HSLA());
 }
 
-export const isHSLA = (obj) => HSLA.properties.every((prop) => obj.hasOwnProperty(prop));
+export const isHSLA = obj => HSLA.properties.every(prop => obj.hasOwnProperty(prop));
 
 Util.defineGetter(HSLA, Symbol.species, function() {
   return this;

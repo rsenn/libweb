@@ -12,7 +12,7 @@
   } else {
     window.SpatialHashMap = factory(window[hashmapUrl.browser]);
   }
-})((HashMap) => {
+})(HashMap => {
   /**
    * HashMap
    *
@@ -182,8 +182,8 @@
     let newCells = this.cellsForAABB(aabb);
 
     //Make a diff: which cells should the object be removed from, and to which should it be added?
-    let cellsToRemove = oldCells.map((cell) => newCells.indexOf(cell) === -1);
-    let cellsToAdd = newCells.map((cell) => oldCells.indexOf(cell) === -1);
+    let cellsToRemove = oldCells.map(cell => newCells.indexOf(cell) === -1);
+    let cellsToAdd = newCells.map(cell => oldCells.indexOf(cell) === -1);
 
     //Do that
     removeFromCells(this.grid, cellsToRemove, obj);

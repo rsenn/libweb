@@ -28,8 +28,8 @@ if(0 && ['development', 'test', 'local'].indexOf(env) != -1 && 'window' in globa
       .split(/\s+/g)
       .unique()
       .match(/bp3/);
-    dom.Element.findAll('*[class~=bp3]').forEach((e) => newClasses.concat(String(e.class).split(/ /g)));
-    newClasses = newClasses.filter((i) => classes.indexOf(i) == -1);
+    dom.Element.findAll('*[class~=bp3]').forEach(e => newClasses.concat(String(e.class).split(/ /g)));
+    newClasses = newClasses.filter(i => classes.indexOf(i) == -1);
     if(newClasses.length) {
       st.set('classes', (classes = Util.unique(classes.concat(newClasses))));
       Util.log('dev.classes ', newClasses);
@@ -84,7 +84,7 @@ export function stylesheets() {
   let r = Util.map(document.styleSheets, (s, i) => {
     Util.log('i: ', i, ' s: ', s);
 
-    [...s.cssRules].map((r) => r.cssText);
+    [...s.cssRules].map(r => r.cssText);
   });
   Util.log('Util.stylesheets() ', r);
   return r;
@@ -95,7 +95,7 @@ export const colors = (() => {
   let elements = [];
   return function colors(map, opts) {
     let args = Util.map(map);
-    args = args.map((arg) => new RGBA(arg));
+    args = args.map(arg => new RGBA(arg));
 
     opts = opts || { height: 322, width: 80 };
 
@@ -158,9 +158,9 @@ export async function getStars() {
   let r = {};
   r.bg_stars = dom.Element.find('#background-stars') || (await img('background-stars'));
   r.elements = dom.Element.findAll('defs > radialGradient > stop', r.bg_stars)
-    .map((s) => s.parentElement)
+    .map(s => s.parentElement)
     .unique();
-  r.gradients = r.elements.map((gr) => gradient(gr));
+  r.gradients = r.elements.map(gr => gradient(gr));
 
   r.svg = r.elements[0].parentNode.parentNode;
 
@@ -172,18 +172,18 @@ export async function getStars() {
     Util.log('getRect: ', { matrix, rect });
     return rect;
   }
-  r.paths = dom.Element.findAll('path', r.svg).filter((e) => getRect(e).isSquare());
-  r.circles = r.paths.map((e) => ({ position: getRect(e).center, radius: getRect(e).width / 2 }));
-  r.points = new PointList(r.paths.map((e) => getRect(e).center));
-  r.radii = r.paths.map((e) => getRect(e).width / 2);
+  r.paths = dom.Element.findAll('path', r.svg).filter(e => getRect(e).isSquare());
+  r.circles = r.paths.map(e => ({ position: getRect(e).center, radius: getRect(e).width / 2 }));
+  r.points = new PointList(r.paths.map(e => getRect(e).center));
+  r.radii = r.paths.map(e => getRect(e).width / 2);
   r.putStars = function() {
     let gr = this.gradients[0].element;
     gr.getAttributeNames()
-      .filter((name) => name != 'id')
-      .forEach((name) => gr.removeAttribute(name));
-    this.paths.forEach((e) => e.parentElement.removeChild(e));
+      .filter(name => name != 'id')
+      .forEach(name => gr.removeAttribute(name));
+    this.paths.forEach(e => e.parentElement.removeChild(e));
 
-    return (this.stars = this.circles.map((c) =>
+    return (this.stars = this.circles.map(c =>
       dom.SVG.create('circle', {
           cx: c.position.x.toFixed(3),
           cy: c.position.y.toFixed(3),
@@ -226,7 +226,7 @@ export function gradient(element) {
   let obj = {
     line,
     element,
-    steps: nodes.map((e) => {
+    steps: nodes.map(e => {
       const offset = Element.attr(e, 'offset');
       const color = RGBA.fromHex(e.getAttribute('stopColor') || e.getAttribute('stop-color') || '#00000000');
       return {
@@ -238,7 +238,7 @@ export function gradient(element) {
       };
     }),
     toString() {
-      return Util.decamelize(e.tagName) + '(0deg, ' + this.steps.map((s) => s.toString()).join(', ') + ');';
+      return Util.decamelize(e.tagName) + '(0deg, ' + this.steps.map(s => s.toString()).join(', ') + ');';
     }, [Symbol.iterator]: () =>
       new (class GradientIterator {
         index = 0;
@@ -277,7 +277,7 @@ export function starAnim() {
 Element.setCSS(c.root, { width: '100%', height: '100%' });
 */ let r = 100;
   const edges = 5 * 2;
-  const MakePointList = (r) => {
+  const MakePointList = r => {
     let ret = new PointList();
     for(let i = 0; i < edges; i++) {
       let angle = (Math.PI * 2 * i) / edges;
@@ -341,9 +341,9 @@ export function stores(stores) {
 
 export function gettext(elem, done) {
   if(!elem) {
-    return select().then((elem) => (elem ? gettext(elem) : null));
+    return select().then(elem => (elem ? gettext(elem) : null));
   }
-  const getNodeText = (node) => {
+  const getNodeText = node => {
     let txt = '';
     if(node.innerHTML && !node.innerHTML.match(/<.*>/)) txt = '"' + node.innerHTML + '": ""';
     else if(node.placeholder) txt = node.placeholder;
@@ -361,7 +361,7 @@ export function gettext(elem, done) {
         let parent = node && node.parentNode !== undefined ? node.parentNode : null;
         let path = Element.xpath(node, e);
         let txt = node.innerText || node.textContent;
-        if(txt && !['option', 'script', 'style', '#SL_'].some((tag) => path.indexOf(tag) != -1)) {
+        if(txt && !['option', 'script', 'style', '#SL_'].some(tag => path.indexOf(tag) != -1)) {
           if(parent != prevParent) {
             //text.push("Parent: "+Element.xpath(parent));
           }
@@ -393,14 +393,14 @@ export function select() {
         e.removeEventListener('click', click);
         e.removeEventListener('keypress', onkey);
       };
-      const click = (event) => {
+      const click = event => {
         event.preventDefault();
         Util.log('selected element ', event.target);
         select.element = event.target;
         resolve(event.target);
         abortsel();
       };
-      const onkey = (event) => {
+      const onkey = event => {
         if(event.keyCode == 27) abortsel();
       };
       e.addEventListener('click', click);
@@ -521,7 +521,7 @@ export function ws(cmd = 'send', filename, data) {
         ws.send(JSON.toString(json) + '\r\n');
         Util.log('ws.send ', json);
         if(cmd == 'recv') {
-          ws.onmessage = (msg) => {
+          ws.onmessage = msg => {
             Util.log('ws.msg ', msg);
             if(msg.data == '') return;
             let x = msg.data.charAt(0) != '{' ? decodeBase64(msg.data) : msg.data;
@@ -550,7 +550,7 @@ export function settext(en, fa) {
   }
   const filename = 'static/locales/fa-IR/common.json';
   const nl = '\r\n';
-  ws({ recv: filename }).then((x) => {
+  ws({ recv: filename }).then(x => {
     const d = x.data;
     Util.log('settext: ', obj);
     ws({
@@ -570,7 +570,7 @@ export async function img(name, arg = {}) {
 
   let list = root.images
     ? root.images
-    : (root.images = new HashList((obj) => (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, '$1XX$2'),
+    : (root.images = new HashList(obj => (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, '$1XX$2'),
         function(arg) {
           let e = Element.find(arg);
           let svg = Element.find('svg', e);
@@ -730,7 +730,7 @@ export function dump(element) {
 
 export function walk(element) {
   const args = [...arguments];
-  let elements = args.map((e) => {
+  let elements = args.map(e => {
     if(e && e.charAt && e.charAt(0) != '#') {
       e = img(`designs/${e.replace(/^#/, '')}`);
     } else {
@@ -739,7 +739,7 @@ export function walk(element) {
     return e;
   });
 
-  let texts = new HashList((obj) => {
+  let texts = new HashList(obj => {
       const xpath = Element.xpath(obj.e, obj.e.parentNode);
       //if(obj.name.indexOf("#") != -1) return obj.name;
 
@@ -753,7 +753,7 @@ export function walk(element) {
 
       return key.replace(/\//g, ' > ');
     },
-    (obj) => {
+    obj => {
       if(obj.id === undefined) Object.assign(obj, { id: Element.attr(obj.e, 'id') });
       if(obj.e) {
         let prev;
@@ -772,8 +772,8 @@ export function walk(element) {
       return obj;
     }
   );
-  elements.forEach((element) =>
-    Element.walk(element, (e) => {
+  elements.forEach(element =>
+    Element.walk(element, e => {
       const text = (e.innerHTML || '').trim();
       if(text != '' && !text.match(/<.*>/)) {
         const xpath = Element.xpath(e).replace(/.*#img-[^/]*\//, '');
@@ -802,17 +802,17 @@ export function walk(element) {
 
   texts
     .toArray()
-    .filter((txt) => txt.lang && txt.lang.startsWith('fa'))
-    .map((txt) => `${txt.id} ${txt.xpath}`)
+    .filter(txt => txt.lang && txt.lang.startsWith('fa'))
+    .map(txt => `${txt.id} ${txt.xpath}`)
     .join('\n');
 
-  texts.keys.forEach((key) => {
+  texts.keys.forEach(key => {
     let line = texts[key];
     line.sort((a, b) => a.lang.localeCompare(b.lang));
     if(line.length > 0) {
       let str;
-      line = line.filter((text) => text.text != '\n');
-      let strs = line.map((text) => `"${text.text}"`);
+      line = line.filter(text => text.text != '\n');
+      let strs = line.map(text => `"${text.text}"`);
       if(strs.length == 2) str = strs.join(': ');
       else str = strs.join('\n  ');
       let rect = texts.at(key).reduce((acc, it) => Rect.union(acc, Element.rect(it.e)), this[name][0].r);
@@ -846,7 +846,7 @@ export async function measure(element) {
 
 export function trackElements() {
   const elements = Element.findAll.apply(this, arguments);
-  const rects = elements.map((e) => rect(e, 'none', '#' + Util.hex(Math.round(Math.random() * 0xfff)), e));
+  const rects = elements.map(e => rect(e, 'none', '#' + Util.hex(Math.round(Math.random() * 0xfff)), e));
 
   window.trackingRects = rects;
 
@@ -992,7 +992,7 @@ export function storage(name) {
   } catch(err) {}
   let self = trkl(value);
 
-  self.subscribe((newValue) => {
+  self.subscribe(newValue => {
     //alert("store "+name+": ",newValue);
     store.set(name, newValue);
   });
@@ -1001,7 +1001,7 @@ export function storage(name) {
   Util.defineGetterSetter(self,
     'value',
     () => self(),
-    (value) => self(value)
+    value => self(value)
   );
   self.get = function(key) {
     return key ? this.value[key] : this.value;

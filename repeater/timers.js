@@ -56,7 +56,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
     function step(result) {
       result.done
         ? resolve(result.value)
-        : new P((resolve) => {
+        : new P(resolve => {
             resolve(result.value);
           }).then(fulfilled, rejected);
     }
@@ -220,7 +220,7 @@ function delay(wait) {
     __awaiter(_this, void 0, void 0, function() {
       let timers, stopped, _loop_1, timers_1, timers_1_1, timer;
       let e_1, _a;
-      return __generator(this, (_b) => {
+      return __generator(this, _b => {
         switch (_b.label) {
           case 0:
             timers = new Set();
@@ -231,7 +231,7 @@ function delay(wait) {
             _b.trys.push([1, , 5, 6]);
             _loop_1 = function() {
               let timer;
-              return __generator(this, (_a) => {
+              return __generator(this, _a => {
                 switch (_a.label) {
                   case 0:
                     timer = new Timer(wait);
@@ -287,7 +287,7 @@ function timeout(wait) {
   return new Repeater((push, stop) =>
     __awaiter(_this, void 0, void 0, function() {
       let timer, stopped;
-      return __generator(this, (_a) => {
+      return __generator(this, _a => {
         switch (_a.label) {
           case 0:
             stopped = false;
@@ -331,7 +331,7 @@ function interval(wait, buffer) {
   return new Repeater((push, stop) =>
       __awaiter(_this, void 0, void 0, function() {
         let timer;
-        return __generator(this, (_a) => {
+        return __generator(this, _a => {
           switch (_a.label) {
             case 0:
               push(Date.now());
@@ -351,4 +351,4 @@ export const Timers = { delay, interval, timeout };
 
 //export { TimeoutError, Timers };
 export default { TimeoutError, ...Timers };
-//# sourceMappingURL=timers.esm.js.map
+//# sourceMappingURL=timers.js.map

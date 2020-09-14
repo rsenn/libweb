@@ -50,7 +50,7 @@ function nextState(gcode, prevState, linenum, i) {
   //console.debug('tokens', tokens);
 
   const line = (gcode.line && gcode.line) || gcode;
-  let comment = tokens.findIndex((tok) => tok[0] == '(');
+  let comment = tokens.findIndex(tok => tok[0] == '(');
   if(comment == -1) comment = tokens.length;
 
   tokens.splice(comment, tokens.length - comment);

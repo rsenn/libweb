@@ -79,13 +79,13 @@ export function trkl(initValue) {
 }
 
 trkl.prototype = Object.create({ ...Function.prototype, constructor: trkl });
-trkl.is = (arg) => typeof arg == 'function' && typeof arg.subscribe == 'function';
+trkl.is = arg => typeof arg == 'function' && typeof arg.subscribe == 'function';
 
 trkl.getset = function(arg) {
   let trkl = arg || new trkl(arg);
   return Object.create({
       get: () => trkl(),
-      set: (value) => trkl(value)
+      set: value => trkl(value)
     },
     {}
   );
@@ -132,7 +132,7 @@ trkl.property = function(object, name, options = { enumerable: true, configurabl
     set: self
   });
   if(options.deletable) {
-    trkl.subscribe((value) => (value === undefined ? self.delete() : undefined));
+    trkl.subscribe(value => (value === undefined ? self.delete() : undefined));
     self.delete = () => {
       delete object[name];
       self(null);

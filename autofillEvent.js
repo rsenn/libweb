@@ -23,7 +23,7 @@ export function autofillEvent(window, changeHandler) {
   //Need to use blur and not change event
   //as Chrome does not fire change events in all cases an input is changed
   //(e.g. when starting to type and then finish the input by auto filling a username)
-  addGlobalEventListener('blur', (target) => {
+  addGlobalEventListener('blur', target => {
     //setTimeout needed for Chrome as it fills other
     //form fields a little later...
     window.setTimeout(() => {
@@ -39,7 +39,7 @@ export function autofillEvent(window, changeHandler) {
     //mark all values that are present when the DOM is ready.
     //We don't need to trigger a change event here,
     //as js libs start with those values already being set!
-    inputElements.forEach((el) => {
+    inputElements.forEach(el => {
       //markValue(el);
       el.checkAndTriggerAutoFillEvent = window.checkAndTriggerAutoFillEvent;
     });

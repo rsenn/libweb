@@ -22,7 +22,7 @@ export class LineList extends Array {
     return bb;
   }
 
-  toPolygons(createfn = (points) => new PointList(points)) {
+  toPolygons(createfn = points => new PointList(points)) {
     let lines = this;
     return LineList.toPolygons([...lines], createfn);
   }
@@ -50,7 +50,7 @@ export class LineList extends Array {
     let toString = [Symbol.toStringTag, 'toString', Symbol.for('nodejs.util.inspect.custom')].reduce((a, p) => (this[0][p] ? p : a));
     console.log('inspectFn:', toString);
     //   return Util.toString(this, { ...opts, toString });
-    return `${c.text('LineList', 1, 31)}${c.text('(', 1, 36)}${c.text(this.length, 1, 35) + c.code(1, 36)}) [\n  ${this.map((line) => line[toString].call(line, n, { ...opts, color: false }) /*({ x1, y1,x2,y2 }) => Util.toString({ x1,y1,x2, y2  }, { multiline: false, spacing: ' ' })*/).join(',\n  ')}\n${c.text(']', 1, 36)}`;
+    return `${c.text('LineList', 1, 31)}${c.text('(', 1, 36)}${c.text(this.length, 1, 35) + c.code(1, 36)}) [\n  ${this.map(line => line[toString].call(line, n, { ...opts, color: false }) /*({ x1, y1,x2,y2 }) => Util.toString({ x1,y1,x2, y2  }, { multiline: false, spacing: ' ' })*/).join(',\n  ')}\n${c.text(']', 1, 36)}`;
   }
 }
 
@@ -58,7 +58,7 @@ export class LineList extends Array {
  *
  * @param [[[x, y], [x, y]], ...] lines
  */
-LineList.toPolygons = (lines, createfn = (points) => Object.setPrototypeOf(points, PointList.prototype)) => {
+LineList.toPolygons = (lines, createfn = points => Object.setPrototypeOf(points, PointList.prototype)) => {
   const polygons = [];
   for(var i = 0; i < lines.length; i++) {
     // Récupération et suppression du tableau du premier élément
@@ -116,7 +116,7 @@ LineList.toPolygons = (lines, createfn = (points) => Object.setPrototypeOf(point
       }
     }
   }
-  return polygons.map((points) => createfn(points));
+  return polygons.map(points => createfn(points));
 };
 /*
 if(!Util.isBrowser()) {

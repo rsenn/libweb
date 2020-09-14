@@ -1,6 +1,6 @@
 import Util from '../util.js';
 
-const lexComment = (lexer) => {
+const lexComment = lexer => {
   let s = lexer.source.substring(lexer.start, lexer.pos + 2);
   if(s.startsWith('/*') || s.startsWith('//')) {
     lexer.pos += 2;
@@ -15,7 +15,7 @@ const lexComment = (lexer) => {
     return Lexer.tokens.COMMENT;
   }
 };
-const lexPreProc = (lexer) => {
+const lexPreProc = lexer => {
   let s = lexer.source.substring(lexer.start, lexer.pos + 1);
   if(/^\s*#/.test(s)) {
     lexer.start += s.indexOf('#');
@@ -26,7 +26,7 @@ const lexPreProc = (lexer) => {
   }
 };
 
-const lexString = (lexer) => {
+const lexString = lexer => {
   let c = lexer.peek();
   if(/^['"]/.test(c)) {
     lexer.get();
@@ -50,7 +50,7 @@ const lexString = (lexer) => {
   }
 };
 
-const lexRegExp = (lexer) => {
+const lexRegExp = lexer => {
   let s = lexer.source.substring(lexer.start, lexer.start + 2);
 
   if(/^\./.test(s)) {
@@ -73,7 +73,7 @@ const lexRegExp = (lexer) => {
   }
 };
 
-const lexNumber = (lexer) => {
+const lexNumber = lexer => {
   if(/^[0-9]/.test(lexer.peek())) {
     lexer.get();
     lexer.lexWhile(/[0-9.]$/);
@@ -81,7 +81,7 @@ const lexNumber = (lexer) => {
   }
 };
 
-const lexPunctuation = (lexer) => {
+const lexPunctuation = lexer => {
   let s = lexer.source.substring(lexer.start, lexer.pos + 1);
   let c = lexer.peek();
 
@@ -100,7 +100,7 @@ const lexPunctuation = (lexer) => {
   }
 };
 
-const lexIdentifier = (lexer) => {
+const lexIdentifier = lexer => {
   let c;
   let word = '';
   if(/^[A-Za-z]/.test(lexer.peek())) {
@@ -125,13 +125,13 @@ const lexIdentifier = (lexer) => {
   }
 };
 
-const lexCond = (cond) => {
+const lexCond = cond => {
   if(cond instanceof RegExp) {
     let re = cond;
-    cond = (ch) => re.test(ch);
+    cond = ch => re.test(ch);
   } else if(cond instanceof Array) {
     let arr = cond;
-    cond = (ch) => arr.indexOf(ch[ch.length - 1]) != -1;
+    cond = ch => arr.indexOf(ch[ch.length - 1]) != -1;
   }
   return cond;
 };
@@ -142,7 +142,7 @@ export const lexIsToken = Util.curry((id, result) => {
   if(typeof id == 'string') id = Lexer.tokens[id];
   if(typeof id != 'function') {
     let the_id = id;
-    id = (i) => i == the_id;
+    id = i => i == the_id;
   }
 
   ret = id(result.tok);
@@ -154,21 +154,21 @@ export const lexMatch = Util.curry((id, str, result) => {
   if(typeof id == 'string') id = Lexer.tokens[id];
   if(typeof id != 'function') {
     let the_id = id;
-    id = (i) => i == the_id;
+    id = i => i == the_id;
   }
 
   if(Util.isArray(str)) {
     let the_array = str;
-    str = (s) => the_array.indexOf(s) != -1;
+    str = s => the_array.indexOf(s) != -1;
   } else if(typeof str != 'function') {
     let the_str = str;
-    str = (s) => s == the_str;
+    str = s => s == the_str;
   }
   ret = id(result.tok) && str(result.str);
 
   return ret;
 });
-export const lexDump = (result) => {
+export const lexDump = result => {
   const { tok, str, unget } = result;
   return `Token ${Lexer.tokenName(tok)} '${str}'`;
 };
@@ -225,7 +225,7 @@ export class Lexer {
   }
 
   static matchers = [
-    (lexer) => {
+    lexer => {
       lexer.lexWhile(/[ \t]$/);
       lexer.start = lexer.pos;
       if(lexer.eof) return Lexer.EOF;
@@ -237,7 +237,7 @@ export class Lexer {
     lexPunctuation,
     lexIdentifier,
     lexPreProc,
-    (lexer) => {
+    lexer => {
       lexer.lexWhile(/[ \n\r\t]$/);
       if(lexer.start < lexer.pos) return Lexer.tokens.WHITESPACE;
       if(!(lexer.start < lexer.pos)) {
@@ -395,7 +395,7 @@ export class Lexer {
   lexUntil(cond) {
     let invCond;
     cond = lexCond(cond);
-    invCond = (ch) => !cond(ch);
+    invCond = ch => !cond(ch);
     return this.lexWhile(invCond);
   }
 }

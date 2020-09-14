@@ -24,7 +24,7 @@ export class ReactComponent {
     if(typeof render_to === 'string') render_to = Element.find(append_to);
     if(typeof render_to !== 'function') {
       root = root || render_to;
-      render_to = (component) => require('react-dom').render(component, root || render_to);
+      render_to = component => require('react-dom').render(component, root || render_to);
     }
     let ret = function() {
       let args = [...arguments];

@@ -7,7 +7,7 @@ export function Line(x1, y1, x2, y2) {
   let arg;
   let args = [...arguments];
   let ret;
-  if(args.length >= 4 && args.every((arg) => !isNaN(parseFloat(arg)))) {
+  if(args.length >= 4 && args.every(arg => !isNaN(parseFloat(arg)))) {
     arg = { x1, y1, x2, y2 };
   } else if(args.length == 1) {
     arg = args[0];
@@ -38,7 +38,7 @@ export function Line(x1, y1, x2, y2) {
     obj.x2 = parseFloat(args[1].x);
     obj.y2 = parseFloat(args[1].y);*/
     ret = 2;
-  } else if(arg && arg.length >= 4 && arg.slice(0, 4).every((arg) => !isNaN(parseFloat(arg)))) {
+  } else if(arg && arg.length >= 4 && arg.slice(0, 4).every(arg => !isNaN(parseFloat(arg)))) {
     obj.x1 = typeof x === 'number' ? x : parseFloat(x);
     obj.y1 = typeof y === 'number' ? y : parseFloat(y);
     obj.x2 = typeof w === 'number' ? w : parseFloat(w);
@@ -58,7 +58,7 @@ export function Line(x1, y1, x2, y2) {
   /*  if(this !== obj)*/ return obj;
 }
 
-export const isLine = (obj) => (Util.isObject(obj) && ['x1', 'y1', 'x2', 'y2'].every((prop) => obj[prop] !== undefined)) || ['a', 'b'].every((prop) => isPoint(obj[prop]));
+export const isLine = obj => (Util.isObject(obj) && ['x1', 'y1', 'x2', 'y2'].every(prop => obj[prop] !== undefined)) || ['a', 'b'].every(prop => isPoint(obj[prop]));
 
 /*
 Object.defineProperty(Line.prototype, 'a', { value: new Point(), enumerable: true });
@@ -75,16 +75,35 @@ Line.prototype.intersect = function(other) {
   });
 };
 
-/*Object.defineProperty(Line.prototype, 'a', { value: new Point(), enumerable: false });
-Object.defineProperty(Line.prototype, 'b', { value: new Point(), enumerable: false });*/
+Object.defineProperty(Line.prototype, 'a', {
+  get() {
+    return Line.a(this);
+  },
+  set(value) {
+    if(!(value instanceof Point)) value = Point(value);
+    this.x1 = value.x;
+    this.y1 = value.y;
+  },
+  enumerable: false
+});
+Object.defineProperty(Line.prototype, 'b', {
+  get() {
+    return Line.b(this);
+  },
+  set(value) {
+    if(!(value instanceof Point)) value = Point(value);
+    this.x2 = value.x;
+    this.y2 = value.y;
+  },
+  enumerable: false
+});
 
 Object.defineProperty(Line.prototype, 0, {
   get() {
     return this.a;
   },
   set(v) {
-    this.a.x = v.x;
-    this.a.y = v.y;
+    this.a = v;
   },
   enumerable: false
 });
@@ -93,68 +112,15 @@ Object.defineProperty(Line.prototype, 1, {
     return this.b;
   },
   set(v) {
-    this.b.x = v.x;
-    this.b.y = v.y;
+    this.b = v;
   },
   enumerable: false
 });
-Object.defineProperty(Line.prototype, 'x1', {
-  get() {
-    return this.a && this.a.x;
-  },
-  set(v) {
-    if(!this.a)
-      Object.defineProperty(this, 'a', {
-        value: new Point(),
-        enumerable: false
-      });
-    this.a.x = v;
-  },
-  enumerable: true
-});
-Object.defineProperty(Line.prototype, 'y1', {
-  get() {
-    return this.a && this.a.y;
-  },
-  set(v) {
-    if(!this.a)
-      Object.defineProperty(this, 'a', {
-        value: new Point(),
-        enumerable: false
-      });
-    this.a.y = v;
-  },
-  enumerable: true
-});
-Object.defineProperty(Line.prototype, 'x2', {
-  get() {
-    return this.b && this.b.x;
-  },
-  set(v) {
-    if(!this.b)
-      Object.defineProperty(this, 'b', {
-        value: new Point(),
-        enumerable: false
-      });
-    this.b.x = v;
-  },
-  enumerable: true
-});
-Object.defineProperty(Line.prototype, 'y2', {
-  get() {
-    return this.b && this.b.y;
-  },
-  set(v) {
-    if(!this.b)
-      Object.defineProperty(this, 'b', {
-        value: new Point(),
-        enumerable: false
-      });
-    this.b.y = v;
-  },
-  enumerable: true
-});
-
+/*Object.defineProperty(Line.prototype, 'x1', {get() {return this.a && this.a.x; }, set(v) {if(!this.a) Object.defineProperty(this, 'a', { value: new Point(), enumerable: false }); this.a.x = v; }, enumerable: true });
+Object.defineProperty(Line.prototype, 'y1', {get() {return this.a && this.a.y; }, set(v) {if(!this.a) Object.defineProperty(this, 'a', {value: new Point(), enumerable: false }); this.a.y = v; }, enumerable: true });
+Object.defineProperty(Line.prototype, 'x2', {get() {return this.b && this.b.x; }, set(v) {if(!this.b) Object.defineProperty(this, 'b', {value: new Point(), enumerable: false }); this.b.x = v; }, enumerable: true });
+Object.defineProperty(Line.prototype, 'y2', {get() {return this.b && this.b.y; }, set(v) {if(!this.b) Object.defineProperty(this, 'b', {value: new Point(), enumerable: false }); this.b.y = v; }, enumerable: true });
+*/
 Line.prototype.direction = function() {
   let dist = Point.prototype.distance.call(this.a, this.b);
   return Point.prototype.quot.call(Line.prototype.getSlope.call(this), dist);
@@ -216,14 +182,14 @@ Line.prototype.functions = function() {
   let fns = {};
   if((i = Line.prototype.yIntercept.call(this))) {
     let [y0, myx] = i;
-    fns.y = (x) => y0 + myx * x;
+    fns.y = x => y0 + myx * x;
   } else {
     let { y } = this.a;
     fns.y = new Function('x', `return ${y}`);
   }
   if((i = Line.prototype.xIntercept.call(this))) {
     let [x0, mxy] = i;
-    fns.x = (y) => x0 + mxy * y;
+    fns.x = y => x0 + mxy * y;
   } else {
     let { x } = this.a;
     fns.x = new Function('y', `return ${x}`); //y => x;
@@ -306,25 +272,27 @@ Line.prototype.diff = function(other) {
   other = Line(...arguments);
   return new Line(Point.diff(this.a, other.a), Point.diff(this.b, other.b));
 };
-Line.prototype.inspect = function() {
+Line.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, options = {}) {
   const { x1, y1, x2, y2 } = this;
-  return 'Line{ ' + inspect({ x1, y1, x2, y2 }) + ' }';
+  return 'Line ' + Util.inspect({ x1, y1, x2, y2 }, options) + ' }';
 };
 Line.prototype.toString = function(opts = {}) {
-  const { separator = ', ', brackets = (s) => `[ ${s} ]`, pad = 6 } = opts;
+  const { separator = ', ', brackets = s => `[ ${s} ]`, pad = 6 } = opts;
 
   const { x1, y1, x2, y2 } = this;
   return brackets(Point.toString(this.a || Point(x1, y1), { ...opts, separator, pad })) + separator + brackets(Point.toString(this.b || Point(x2, y2), { ...opts, separator, pad }));
 };
 Line.prototype.toSource = function() {
-  let { a, b } = this;
-  return `new Line(${a.x},${a.y},${b.x},${b.y})`;
+  const { x1, y1, x2, y2 } = this;
+  return `new Line(${[x1, y1, x2, y2].join(',')})`;
 };
 Line.prototype.reverse = function() {
   const { a, b } = this;
-  return new Line(b, a);
+  this.b = a;
+  this.a = b;
+  return this;
 };
-Line.prototype.toObject = function(t = (num) => num) {
+Line.prototype.toObject = function(t = num => num) {
   const { x1, y1, x2, y2 } = this;
   const obj = { x1: t(x1), y1: t(y1), x2: t(x2), y2: t(y2) };
   //Object.setPrototypeOf(obj, Line.prototype);
@@ -387,16 +355,11 @@ Line.prototype.map = function(fn) {
   return new Line(...r);
 };
 Line.prototype.swap = function(fn) {
-  return new Line(this.a, this.b).reverse();
+  return new Line(this.b, this.a);
 };
-Line.prototype.toPoints = function() {
+Line.prototype.toPoints = function(ctor = Array.of) {
   const { x1, y1, x2, y2 } = this;
-  let list = new PointList();
-  list.push(new Point(x1, y1));
-  list.push(new Point(x2, y1));
-  list.push(new Point(x2, y2));
-  list.push(new Point(x1, y2));
-  return list;
+  return ctor(new Point(x1, y1), new Point(x2, y2));
 };
 
 for(let name of ['direction', 'round', 'slope', 'angle', 'bbox', 'points', 'inspect', 'toString', 'toObject', 'toSource', 'distanceToPointSquared', 'distanceToPoint']) {
@@ -405,9 +368,12 @@ for(let name of ['direction', 'round', 'slope', 'angle', 'bbox', 'points', 'insp
 
 Util.defineInspect(Line.prototype, 'x1', 'y1', 'x2', 'y2');
 
+Line.a = Util.memoize(line => Point.bind(line, ['x1', 'y1']), new WeakMap());
+Line.b = Util.memoize(line => Point.bind(line, ['x2', 'y2']), new WeakMap());
+
 Line.bind = (o, p, gen) => {
   const [x1, y1, x2, y2] = p || ['x1', 'y1', 'x2', 'y2'];
-  if(!gen) gen = (k) => (v) => (v === undefined ? o[k] : (o[k] = v));
+  if(!gen) gen = k => v => (v === undefined ? o[k] : (o[k] = v));
 
   let proxy = { a: Point.bind(o, [x1, y1]), b: Point.bind(o, [x2, y2]) };
   Util.bindProperties(proxy, o, { x1, y1, x2, y2 }, gen);

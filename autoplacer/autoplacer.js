@@ -174,7 +174,7 @@ Autoplacer.prototype.next = function() {
     this.kin_ += s.mass * velmod * velmod;
   }
 
-  return this.states_.map((b) => b);
+  return this.states_.map(b => b);
 };
 
 /**

@@ -3,9 +3,9 @@ let run = async () => {
   let i = 0;
   let clicks = streamify('click', document.querySelector('body'));
 
-  clicks = filter(clicks, (e) => e.target.matches('a'));
-  clicks = distinct(clicks, (e) => e.target);
-  clicks = map(clicks, (e) => [i++, e]);
+  clicks = filter(clicks, e => e.target.matches('a'));
+  clicks = distinct(clicks, e => e.target);
+  clicks = map(clicks, e => [i++, e]);
   clicks = throttle(clicks, 500);
 
   subscribe(clicks, ([id, click]) => {
@@ -24,7 +24,7 @@ var streamify = async function* (event, element) {
 
 //Generate a Promise that listens only once for an event
 var oncePromise = (emitter, event) =>
-  new Promise((resolve) => {
+  new Promise(resolve => {
     var handler = (...args) => {
       emitter.removeEventListener(event, handler);
       resolve(...args);
@@ -61,7 +61,7 @@ var throttle = async function* (stream, delay) {
   }
 };
 
-let identity = (e) => e;
+let identity = e => e;
 
 //Only pass along events that differ from the last one
 var distinct = async function* (stream, extract = identity) {

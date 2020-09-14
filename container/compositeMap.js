@@ -332,11 +332,11 @@ function recurseForEach(callbackfn, lastKeyPart, map, keyPart, keyPos) {
 }
 function recurseForEachValue(callbackfn, lastKeyPart, map, keyPos) {
   if(keyPos === lastKeyPart) {
-    map.forEach((value) => {
+    map.forEach(value => {
       callbackfn(value);
     });
   } else {
-    map.forEach((value) => {
+    map.forEach(value => {
       recurseForEachValue(callbackfn, lastKeyPart, value, keyPos + 1);
     });
   }
@@ -357,11 +357,11 @@ function getRecursiveEntries(lastKeyPos, map, level) {
 function recursiveEntriesToRecursiveMap(lastKeyPos, entries, level) {
   const map = new Map();
   if(level >= lastKeyPos) {
-    entries.forEach((entry) => {
+    entries.forEach(entry => {
       map.set(entry[0], entry[1]);
     });
   } else {
-    entries.forEach((entry) => {
+    entries.forEach(entry => {
       map.set(entry[0], recursiveEntriesToRecursiveMap(lastKeyPos, entry[1], level + 1));
     });
   }

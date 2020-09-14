@@ -1,8 +1,8 @@
 import Util from './util.js';
 
-export const isIterator = (arg) => typeof arg == 'object' && arg !== null && typeof arg.next == 'function';
+export const isIterator = arg => typeof arg == 'object' && arg !== null && typeof arg.next == 'function';
 
-export const isIterable = (arg) => typeof arg == 'object' && arg !== null && arg[Symbol.iterator] !== undefined;
+export const isIterable = arg => typeof arg == 'object' && arg !== null && arg[Symbol.iterator] !== undefined;
 
 export class IterableInterface {
   [Symbol.iterator]() {

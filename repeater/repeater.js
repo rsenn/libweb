@@ -54,7 +54,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
     function step(result) {
       result.done
         ? resolve(result.value)
-        : new P((resolve) => {
+        : new P(resolve => {
             resolve(result.value);
           }).then(fulfilled, rejected);
     }
@@ -391,7 +391,7 @@ let RepeaterController = /** @class */ (function () {
     let push = this.push.bind(this);
     let stop = this.stop.bind(this);
     {
-      let stopP = new Promise((resolve) => (_this.onstop = resolve));
+      let stopP = new Promise(resolve => (_this.onstop = resolve));
       stop.then = stopP.then.bind(stopP);
       stop.catch = stopP.catch.bind(stopP);
       stop.finally = stopP.finally.bind(stopP);
@@ -416,9 +416,9 @@ let RepeaterController = /** @class */ (function () {
   RepeaterController.prototype.unwrap = function(value) {
     let _this = this;
     let done = this.state >= 3; /* Finished */
-    return Promise.resolve(value).then((value) => {
+    return Promise.resolve(value).then(value => {
       if(!done && _this.state >= 4 /* Rejected */) {
-        return _this.consume().then((value) => ({ value, done: true }));
+        return _this.consume().then(value => ({ value, done: true }));
       }
       return { value, done };
     });
@@ -431,7 +431,7 @@ let RepeaterController = /** @class */ (function () {
    */
   RepeaterController.prototype.consume = function() {
     let err = this.err;
-    let execution = Promise.resolve(this.execution).then((value) => {
+    let execution = Promise.resolve(this.execution).then(value => {
       if(err != null) {
         throw err;
       }
@@ -493,7 +493,7 @@ let RepeaterController = /** @class */ (function () {
       return Promise.resolve(undefined);
     }
     let valueP = this.pending === undefined ? Promise.resolve(value) : this.pending.then(() => value);
-    valueP = valueP.catch((err) => {
+    valueP = valueP.catch(err => {
       if(_this.state < 2 /* Stopped */) {
         _this.err = err;
       }
@@ -508,13 +508,13 @@ let RepeaterController = /** @class */ (function () {
       if(this.pullQueue.length) {
         next = Promise.resolve(this.pullQueue[0].value);
       } else {
-        next = new Promise((resolve) => (_this.onnext = resolve));
+        next = new Promise(resolve => (_this.onnext = resolve));
       }
     } else if(!this.buffer.full) {
       this.buffer.add(valueP);
       next = Promise.resolve(undefined);
     } else {
-      next = new Promise((resolve) => {
+      next = new Promise(resolve => {
         _this.pushQueue.push({ resolve, value: valueP });
       });
     }
@@ -522,7 +522,7 @@ let RepeaterController = /** @class */ (function () {
     // https://stackoverflow.com/a/57792542/1825413
     let floating = true;
     let err;
-    let unhandled = next.catch((err1) => {
+    let unhandled = next.catch(err1 => {
       if(floating) {
         err = err1;
       }
@@ -626,7 +626,7 @@ let RepeaterController = /** @class */ (function () {
       this.finish();
       return this.unwrap(this.consume());
     }
-    return new Promise((resolve) => _this.pullQueue.push({ resolve, value }));
+    return new Promise(resolve => _this.pullQueue.push({ resolve, value }));
   };
   RepeaterController.prototype.return = function(value) {
     swallow(value);
@@ -712,7 +712,7 @@ function asyncIterators(contenders, options) {
       iters.push((function syncToAsyncIterator() {
           return __asyncGenerator(this, arguments, function syncToAsyncIterator_1() {
             let result;
-            return __generator(this, (_a) => {
+            return __generator(this, _a => {
               switch (_a.label) {
                 case 0:
                   _a.trys.push([0, , 6, 7]);
@@ -744,7 +744,7 @@ function asyncIterators(contenders, options) {
     } else {
       iters.push((function valueToAsyncIterator() {
           return __asyncGenerator(this, arguments, function valueToAsyncIterator_1() {
-            return __generator(this, (_a) => {
+            return __generator(this, _a => {
               switch (_a.label) {
                 case 0:
                   if(!yieldValues) return [3 /*break*/, 3];
@@ -791,7 +791,7 @@ function race(contenders) {
     __awaiter(_this, void 0, void 0, function() {
       let stopped, returned, results, results_1, results_1_1, result_1, result;
       let e_4, _a;
-      return __generator(this, (_b) => {
+      return __generator(this, _b => {
         switch (_b.label) {
           case 0:
             if(!iters.length) {
@@ -806,18 +806,18 @@ function race(contenders) {
             _b.label = 2;
           case 2:
             if(stopped) return [3 /*break*/, 6];
-            results = iters.map((iter) => iter.next());
+            results = iters.map(iter => iter.next());
             try {
               for(results_1 = ((e_4 = void 0), __values(results)), results_1_1 = results_1.next(); !results_1_1.done; results_1_1 = results_1.next()) {
                 result_1 = results_1_1.value;
-                Promise.resolve(result_1).then((result) => {
+                Promise.resolve(result_1).then(result => {
                     if(result.done && !stopped) {
                       stop();
                       stopped = true;
                       returned = result.value;
                     }
                   },
-                  (err) => stop(err)
+                  err => stop(err)
                 );
               }
             } catch(e_4_1) {
@@ -843,7 +843,7 @@ function race(contenders) {
             return [2 /*return*/, returned];
           case 7:
             stop();
-            return [4 /*yield*/, Promise.race(iters.map((iter) => iter.return && iter.return()))];
+            return [4 /*yield*/, Promise.race(iters.map(iter => iter.return && iter.return()))];
           case 8:
             _b.sent();
             return [7 /*endfinally*/];
@@ -861,7 +861,7 @@ function merge(contenders) {
     __awaiter(_this, void 0, void 0, function() {
       let stopped, returned;
       let _this = this;
-      return __generator(this, (_a) => {
+      return __generator(this, _a => {
         switch (_a.label) {
           case 0:
             if(!iters.length) {
@@ -872,10 +872,10 @@ function merge(contenders) {
             stop.then(() => (stopped = true));
             return [
               4 /*yield*/,
-              Promise.all(iters.map((iter) =>
+              Promise.all(iters.map(iter =>
                   __awaiter(_this, void 0, void 0, function() {
                     let result, _a;
-                    return __generator(this, (_b) => {
+                    return __generator(this, _b => {
                       switch (_b.label) {
                         case 0:
                           _b.trys.push([0, , 6, 9]);
@@ -930,7 +930,7 @@ function zip(contenders) {
   return new Repeater((push, stop) =>
     __awaiter(_this, void 0, void 0, function() {
       let stopped, resultsP, results, values;
-      return __generator(this, (_a) => {
+      return __generator(this, _a => {
         switch (_a.label) {
           case 0:
             if(!iters.length) {
@@ -945,15 +945,15 @@ function zip(contenders) {
             _a.label = 2;
           case 2:
             if(stopped) return [3 /*break*/, 5];
-            resultsP = Promise.all(iters.map((iter) => iter.next()));
+            resultsP = Promise.all(iters.map(iter => iter.next()));
             return [4 /*yield*/, Promise.race([stop, resultsP])];
           case 3:
             results = _a.sent();
             if(results === undefined) {
               return [2 /*return*/];
             }
-            values = results.map((result) => result.value);
-            if(results.some((result) => result.done)) {
+            values = results.map(result => result.value);
+            if(results.some(result => result.done)) {
               return [2 /*return*/, values];
             }
             return [4 /*yield*/, push(values)];
@@ -964,7 +964,7 @@ function zip(contenders) {
             return [3 /*break*/, 8];
           case 6:
             stop();
-            return [4 /*yield*/, Promise.all(iters.map((iter) => iter.return && iter.return()))];
+            return [4 /*yield*/, Promise.all(iters.map(iter => iter.return && iter.return()))];
           case 7:
             _a.sent();
             return [7 /*endfinally*/];
@@ -985,7 +985,7 @@ function latest(contenders) {
     __awaiter(_this, void 0, void 0, function() {
       let stopped, resultsP, results_2, values_1;
       let _this = this;
-      return __generator(this, (_a) => {
+      return __generator(this, _a => {
         switch (_a.label) {
           case 0:
             if(!iters.length) {
@@ -997,15 +997,15 @@ function latest(contenders) {
             _a.label = 1;
           case 1:
             _a.trys.push([1, , 5, 7]);
-            resultsP = Promise.all(iters.map((iter) => iter.next()));
+            resultsP = Promise.all(iters.map(iter => iter.next()));
             return [4 /*yield*/, Promise.race([stop, resultsP])];
           case 2:
             results_2 = _a.sent();
             if(results_2 === undefined) {
               return [2 /*return*/];
             }
-            values_1 = results_2.map((result) => result.value);
-            if(results_2.every((result) => result.done)) {
+            values_1 = results_2.map(result => result.value);
+            if(results_2.every(result => result.done)) {
               return [2 /*return*/, values_1];
             }
             return [4 /*yield*/, push(values_1.slice())];
@@ -1016,7 +1016,7 @@ function latest(contenders) {
               Promise.all(iters.map((iter, i) =>
                   __awaiter(_this, void 0, void 0, function() {
                     let result;
-                    return __generator(this, (_a) => {
+                    return __generator(this, _a => {
                       switch (_a.label) {
                         case 0:
                           if(results_2[i].done) {
@@ -1051,7 +1051,7 @@ function latest(contenders) {
             return [2 /*return*/, _a.sent()];
           case 5:
             stop();
-            return [4 /*yield*/, Promise.all(iters.map((iter) => iter.return && iter.return()))];
+            return [4 /*yield*/, Promise.all(iters.map(iter => iter.return && iter.return()))];
           case 6:
             _a.sent();
             return [7 /*endfinally*/];

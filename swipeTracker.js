@@ -28,8 +28,8 @@ export class SwipeTracker {
     this.updateSwipeRectangle = this.updateSwipeRectangle.bind(this);
 
     if(global.window) {
-      const mouseObserver = trkl.from((observable) => {
-        window.addEventListener('mousemove', (e) => {
+      const mouseObserver = trkl.from(observable => {
+        window.addEventListener('mousemove', e => {
           const pos = {
             x: e.clientX + window.pageXOffset,
             y: e.clientY + window.pageYOffset
@@ -37,18 +37,18 @@ export class SwipeTracker {
           observable(pos);
         });
       });
-      mouseObserver.subscribe((pos) => {
+      mouseObserver.subscribe(pos => {
         if(this.mouse === null || !this.mouse || typeof this.mouse.move != 'function') this.mouse = new Point(pos);
         else this.mouse.move(pos.x, pos.y);
       });
-      const touchObserver = trkl.from((observable) => {
-        const handler = (event) => {
+      const touchObserver = trkl.from(observable => {
+        const handler = event => {
           let pos = {
             x: event.clientX + window.pageXOffset,
             y: event.clientY + window.pageYOffset
           };
           if(event.touches && event.touches.length !== undefined) {
-            [...event.touches].forEach((touch) => {
+            [...event.touches].forEach(touch => {
               pos.x = touch.clientX;
               pos.y = touch.clientY;
             });
@@ -58,9 +58,9 @@ export class SwipeTracker {
           }
           observable(pos);
         };
-        ['touchstart', 'touchmove', 'touchend'].forEach((name) => window.addEventListener(name, handler));
+        ['touchstart', 'touchmove', 'touchend'].forEach(name => window.addEventListener(name, handler));
       });
-      touchObserver.subscribe((pos) => {
+      touchObserver.subscribe(pos => {
         if(!this.touch || typeof this.touch.move !== 'function') this.touch = new Point(pos);
         else this.touch.move(pos.x, pos.y);
       });
@@ -139,7 +139,7 @@ export class SwipeTracker {
       },
       toSource() {
         return Object.keys(this)
-          .map((key) => {
+          .map(key => {
             let value = Util.toSource(this[key]);
             return `${key}:${value}`;
           })

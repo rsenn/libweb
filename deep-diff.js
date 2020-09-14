@@ -118,7 +118,7 @@ function getOrderIndependentHash(object) {
   let type = realTypeOf(object);
 
   if(type === 'array') {
-    object.forEach((item) => {
+    object.forEach(item => {
       //Addition is commutative so this is order indep
       accum += getOrderIndependentHash(item);
     });

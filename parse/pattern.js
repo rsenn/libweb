@@ -27,7 +27,7 @@ export function Pattern(patterns, shift, match) {
     //return re;
   }
   ret.type = tok;
-  if(patterns.length && lexMatch('PUNCTUATION', (ch) => ch === '+' || ch === '*' || ch === '?', patterns[0])) repeat = shift().str;
+  if(patterns.length && lexMatch('PUNCTUATION', ch => ch === '+' || ch === '*' || ch === '?', patterns[0])) repeat = shift().str;
   if(repeat) ret.repeat = repeat;
   //Util.log("Pattern.parse",patterns[0]);
   Object.assign(ret, repeat !== undefined ? { tok, str, repeat } : { tok, str });

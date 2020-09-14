@@ -34,7 +34,7 @@ export class LibraryRenderer extends EagleSVGRenderer {
   renderItem(item, parent, opts = {}) {
     const { transform = new TransformationList(), rot, pos, labelText } = opts;
 
-    let coordFn = transform ? MakeCoordTransformer(transform) : (i) => i;
+    let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
     /* if(rot)*/ this.debug(`LibraryRenderer.renderItem`, /* { labelText, pos, transform, rot }, */ item /*, item.xpath().toString()*/, item.raw);
 

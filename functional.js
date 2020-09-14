@@ -9,7 +9,7 @@ export class Functional {
 
   static _toString = this.builtin(Object.prototype.toString);
 
-  static shallow = (a) => {
+  static shallow = a => {
     let i, q, r, ref, ref1, t;
     if(!a) {
       return a;
@@ -32,7 +32,7 @@ export class Functional {
     return r;
   };
 
-  static clone = (a) => {
+  static clone = a => {
     let i, k, q, ref, s, v;
     if(!a) {
       return a;
@@ -77,7 +77,7 @@ export class Functional {
     return o != null;
   }
 
-  static type = (a) => this._toString(a).slice(8, -1).toLowerCase();
+  static type = a => this._toString(a).slice(8, -1).toLowerCase();
 
   static head(a) {
     return a[0];
@@ -94,7 +94,7 @@ export class Functional {
   static _nary = (n, fn) => {
     //console.log('_nary', { n, fn });
 
-    let ret = ((n) => {
+    let ret = (n => {
       switch (n) {
         case 0:
           return function() {
@@ -156,24 +156,24 @@ export class Functional {
     return this._nary(n, fn);
   }
 
-  static arityof = (f) => {
+  static arityof = f => {
     if(typeof f === 'function') {
       if(f.arity !== undefined) return f.arity;
       return f.length;
     }
   };
 
-  static unary = (fn) =>
+  static unary = fn =>
     function(a) {
       return fn.apply(null, arguments);
     };
 
-  static binary = (fn) =>
+  static binary = fn =>
     function(a, b) {
       return fn.apply(null, arguments);
     };
 
-  static ternary = (fn) =>
+  static ternary = fn =>
     function(a, b, c) {
       return fn.apply(null, arguments);
     };
@@ -212,7 +212,7 @@ export class Functional {
     });
   };
 
-  static curry2 = (f) => {
+  static curry2 = f => {
     let f2;
     return this._defprop((f2 = function (a, b) {
         let n;
@@ -232,7 +232,7 @@ export class Functional {
     );
   };
 
-  static curry2var = (f) => {
+  static curry2var = f => {
     let f2;
     return this._defprop((f2 = function (a, b) {
         let n;
@@ -252,7 +252,7 @@ export class Functional {
     );
   };
 
-  static curry3 = (f) => {
+  static curry3 = f => {
     let f2;
     return this._defprop((f2 = function (a, b, c) {
         let n;
@@ -276,7 +276,7 @@ export class Functional {
     );
   };
 
-  static curry3var = (f) => {
+  static curry3var = f => {
     let f2;
     return this._defprop((f2 = function (a, b, c) {
         let n;
@@ -302,7 +302,7 @@ export class Functional {
     );
   };
 
-  static curry = (f) => {
+  static curry = f => {
     let n;
     n = this.arityof(f);
     //console.log('curry', { f, n });
@@ -316,7 +316,7 @@ export class Functional {
     return this.ncurry(n, false, f);
   };
 
-  static _uncurry = (f) => {
+  static _uncurry = f => {
     if(f.__fnuc_curry) {
       return f.__fnuc_curry();
     }
@@ -355,7 +355,7 @@ export class Functional {
     return this.curry(this._nary(n, fn));
   }
 
-  static flip = (f) => {
+  static flip = f => {
     let g;
     if(f.__fnuc_flip) {
       return f.__fnuc_flip;
@@ -416,7 +416,7 @@ export class Functional {
       args = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
       context = this;
       return after.apply(context,
-        Functional.map(fs, (fn) => fn.apply(context, args))
+        Functional.map(fs, fn => fn.apply(context, args))
       );
     };
     if(ar >= 2) {
@@ -438,12 +438,12 @@ export class Functional {
     return fn.apply(null, as);
   });
 
-  static apply = (fn) =>
+  static apply = fn =>
     function(as) {
       return fn.apply(null, as);
     };
 
-  static unapply = (fn) =>
+  static unapply = fn =>
     function() {
       let as;
       as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
@@ -465,7 +465,7 @@ export class Functional {
     )
   );
 
-  static maybe = (fn) =>
+  static maybe = fn =>
     this.unary(this.plift(function () {
         let as;
         as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
@@ -475,9 +475,9 @@ export class Functional {
       })
     );
 
-  static always = (v) => this.plift(() => v);
+  static always = v => this.plift(() => v);
 
-  static nth = (n) =>
+  static nth = n =>
     this.curry(this._nary(n + 1, function () {
         let as;
         as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
@@ -485,7 +485,7 @@ export class Functional {
       })
     );
 
-  static once = (fn) => {
+  static once = fn => {
     let ran, ret;
     ran = ret = null;
     return function() {
@@ -501,7 +501,7 @@ export class Functional {
 
   static at = this.curry2((as, n) => as[n]);
 
-  static cond = (cs) =>
+  static cond = cs =>
     this.curry(this._nary(this.arityof(cs[0][0]), function () {
         let as, fn, len1, q, ref;
         as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
@@ -661,7 +661,7 @@ export class Functional {
     return this._filter(as, (v, i) => fned.indexOf(fned[i]) === i);
   });
 
-  static uniq = (as) => {
+  static uniq = as => {
     if(!as) {
       return as;
     }
@@ -688,7 +688,7 @@ export class Functional {
   });
 
   static plift = (() => {
-    const isthenable = (p) => {
+    const isthenable = p => {
       let ref;
       if(!p) {
         return false;
@@ -698,8 +698,8 @@ export class Functional {
       }
       return typeof p.then === 'function';
     };
-    const thenbind = (p) => p.then.bind(p);
-    const firstthen = (as) => {
+    const thenbind = p => p.then.bind(p);
+    const firstthen = as => {
       let t;
       t = this.firstfn(isthenable)(as);
       if(t) {
@@ -707,29 +707,29 @@ export class Functional {
       }
       return null;
     };
-    const promapply = (errfn) => (pfn, parg) => {
+    const promapply = errfn => (pfn, parg) => {
       let fn;
       fn = null;
-      const onacc = (arg) => {
+      const onacc = arg => {
         if(errfn) {
           return arg;
         }
         return fn(arg);
       };
-      const onrej = (err) => {
+      const onrej = err => {
         if(errfn) {
           return errfn(err);
         }
         throw err;
       };
       return pfn
-        .then((_fn) => {
+        .then(_fn => {
           fn = _fn;
           return parg;
         })
         .then(onacc, onrej);
     };
-    return (f) => {
+    return f => {
       let nf;
       if(f.__fnuc_plift) {
         return f;
@@ -756,7 +756,7 @@ export class Functional {
 
   static _pliftall = this.map(this.plift);
 
-  static pfail = (f) => this.plift(this._defprop(f, '__fnuc_fail', true));
+  static pfail = f => this.plift(this._defprop(f, '__fnuc_fail', true));
 
   static _ispfail(fn) {
     return !!(fn != null ? fn.__fnuc_fail : void 0);
@@ -765,7 +765,7 @@ export class Functional {
   static pall = (() => {
     let args;
     args = this.plift(this.unapply(this.I));
-    return (as) => args.apply(null, as);
+    return as => args.apply(null, as);
   })();
 
   static has = this.curry2((o, k) => o.hasOwnProperty(k));
@@ -774,9 +774,9 @@ export class Functional {
 
   //static set = this.curry3(function (o, k, v) { o[k] = v; f; return o; });
 
-  static keys = (o) => Object.keys(o);
+  static keys = o => Object.keys(o);
 
-  static values = (o) => this.map(this.keys(o), (k) => o[k]);
+  static values = o => this.map(this.keys(o), k => o[k]);
 
   static ofilter = this.curry2((o, f) => {
     let k, r, v;
@@ -971,7 +971,7 @@ export class Functional {
     });
   });
 
-  static comp = (f) =>
+  static comp = f =>
     this.unary(function () {
       let as;
       as = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
@@ -1008,7 +1008,7 @@ export class Functional {
 
   static zipobj = (() => {
     let fn;
-    fn = (obj) => this.zipwith((k, v) => this.set(obj, k, v));
+    fn = obj => this.zipwith((k, v) => this.set(obj, k, v));
     return function(ks, vs) {
       let ret;
       fn((ret = {}))(ks, vs);
@@ -1072,7 +1072,7 @@ export class Functional {
     });
   })();
 
-  static asprop = (fn) => ({
+  static asprop = fn => ({
     value: fn,
     enumerable: true,
     configurable: false,
@@ -1091,7 +1091,7 @@ export class Functional {
         }
         ofexp = Functional.partial(get, exp);
         valid = function(as) {
-          return Functional.map(as, (a) => {
+          return Functional.map(as, a => {
             if(ofexp(a)) {
               return a;
             }

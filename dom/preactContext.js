@@ -130,7 +130,7 @@
             updater(value, diff(value));
           },
           unregister(updater) {
-            registeredUpdaters = registeredUpdaters.filter((i) => i !== updater);
+            registeredUpdaters = registeredUpdaters.filter(i => i !== updater);
           },
           val(newValue) {
             if(newValue === undefined || newValue == value) {
@@ -138,7 +138,7 @@
             }
             let bitmask = diff(newValue);
             value = newValue;
-            registeredUpdaters.forEach((up) => up(newValue, bitmask));
+            registeredUpdaters.forEach(up => up(newValue, bitmask));
             return value;
           }
         };

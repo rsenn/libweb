@@ -124,7 +124,7 @@ export function seq(...parsers) {
  * @return {Function} parser
  */
 export function concat(...parsers) {
-  return map(seq(...parsers), (result) => result.filter((e) => e !== null));
+  return map(seq(...parsers), result => result.filter(e => e !== null));
 }
 
 /**
@@ -219,7 +219,7 @@ export function option(parser) {
  * @return {Function}
  */
 export function ignore(parser) {
-  return map(parser, (result) => null /*(result instanceof Array && result.length == 0) ? null : result*/);
+  return map(parser, result => null /*(result instanceof Array && result.length == 0) ? null : result*/);
 }
 
 /**
@@ -227,7 +227,7 @@ export function ignore(parser) {
  * @return {Function}
  */
 export function one(parser) {
-  return map(parser, (result) => (result instanceof Array && result.length == 1 ? result[0] : result));
+  return map(parser, result => (result instanceof Array && result.length == 1 ? result[0] : result));
 }
 
 /**
