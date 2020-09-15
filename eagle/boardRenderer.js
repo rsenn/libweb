@@ -132,8 +132,8 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(coll, parent, opts = {}) {
-    const { predicate = i => true, transform, pos, rot } = opts;
-    this.debug(`BoardRenderer.renderCollection`, { transform, pos, rot });
+    const { predicate = i => true, transform, pos, rot, name } = opts;
+    this.debug(`BoardRenderer.renderCollection`, { name, transform, pos, rot });
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
@@ -173,38 +173,50 @@ export class BoardRenderer extends EagleSVGRenderer {
       const lines = wires.map(wire => {
         let line = new Line(coordFn(wire));
         line.element = wire;
-        if('curve' in wire) line.curve = wire.curve;
+        if(wire.curve !== undefined) line.curve = wire.curve;
         return line;
       });
 
-      this.debug('Lines:', [...lines]);
+      this.debug('Lines:', name, [...lines]);
 
-      const path = LinesToPath(lines);
+      const cmds = LinesToPath(lines);
+      /*const cmdArr = cmds.map(cmd => cmd.split(/[^-.0-9A-Za-z]/g));
+      const positions = cmdArr.map(cmd => cmd.slice(-2).map(n => +n));
+      const path = cmdArr.slice(1).map((cmd, i) => [['M', ...positions[i]], cmd[0].toLowerCase() == 'z' ? ['L', ...positions[0]] : cmd]);
+      this.debug('wires.length:', wires.length, ' lines.length:', lines.length, ' cmds.length:', cmds.length);
+      this.debug('Lines:', { path, cmds, positions });
+*/
       const layer = layers[layerId] || this.layers.Bottom;
       const width = widths[layerId];
-      this.debug('Lines:', { path, layer, width });
 
       const color = layer.color;
       //this.debug('color:', color, layer.color);
 
-      const WirePath = ({ className, path, color, width, layer }) => {
+      const WirePath = ({ className, path, cmds, color, width, layer, ...props }) => {
         let visible = 'yes' == useTrkl(layer.handlers.visible);
         this.debug('Lines visible:', visible);
 
-        return h('path', {
-          className,
-          //...LayerAttributes(layer),
-          d: path,
-          stroke: color + '',
-          'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
-          fill: 'none',
-          'stroke-linecap': 'round',
-          'stroke-linejoin': 'round',
-          'data-layer': `${layer.number} ${layer.name}`,
-          style: visible ? undefined : { display: 'none' }
-        });
+        let attrs = { stroke: color + '', 'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3), fill: 'none', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'data-layer': `${layer.number} ${layer.name}`, style: visible ? undefined : { display: 'none' } };
+
+        this.debug('path:', path);
+        this.debug('cmds:', cmds);
+
+        return h(Util.isArray(path) ? 'g' : 'path',
+          {
+            className,
+            ...(Util.isArray(path) ? {} : { d: Util.isArray(cmds) ? cmds.join('\n') : cmds }),
+            ...attrs,
+            ...props
+          },
+          Util.isArray(path)
+            ? path.map(cmd => {
+                console.debug('cmd:', cmd);
+                return h('path', { d: cmd.flat().join(' ') });
+              })
+            : []
+        );
       };
-      this.create(WirePath, { class: ElementToClass(wires[0], layer.name), path, color, width, layer }, parent);
+      this.create(WirePath, { class: ElementToClass(wires[0], layer.name), cmds, color, width, layer }, parent);
     }
   }
 

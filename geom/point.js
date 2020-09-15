@@ -307,10 +307,7 @@ Point.inside = (point, rect) => Point.prototype.inside.call(point, rect);
 Point.sub = (point, other) => Point.prototype.sub.call(point, other);
 Point.prod = (a, b) => Point.prototype.prod.call(a, b);
 Point.quot = (a, b) => Point.prototype.quot.call(a, b);
-Point.equals = (a, b) => {
-  console.warn(`Point.equals`, a, b);
-  return Point.prototype.equals.call(a, b);
-};
+Point.equals = (a, b) => Point.prototype.equals.call(a, b);
 Point.round = (point, prec) => Point.prototype.round.call(point, prec);
 Point.fromAngle = (angle, f) => Point.prototype.fromAngle.call(new Point(0, 0), angle, f);
 

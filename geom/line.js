@@ -135,7 +135,9 @@ Line.prototype.getSlope = function() {
   return (this.y2 - this.y1) / (this.x2 - this.x1);
 };
 Object.defineProperty(Line.prototype, 'slope', {
-  get: Line.prototype.getSlope
+  get() {
+    return { x: this.x2 - this.x1, y: this.y2 - this.y1 };
+  }
 });
 Line.prototype.yIntercept = function() {
   let v = Line.prototype.getVector.call(this);
@@ -268,6 +270,7 @@ Line.prototype.points = function() {
   const { a, b } = this;
   return [a, b];
 };
+
 Line.prototype.diff = function(other) {
   other = Line(...arguments);
   return new Line(Point.diff(this.a, other.a), Point.diff(this.b, other.b));
@@ -359,7 +362,11 @@ Line.prototype.swap = function(fn) {
 };
 Line.prototype.toPoints = function(ctor = Array.of) {
   const { x1, y1, x2, y2 } = this;
-  return ctor(new Point(x1, y1), new Point(x2, y2));
+  return ctor({ x: x1, y: y1 }, { x: x2, y: y2 });
+};
+Line.prototype[Symbol.iterator] = function* () {
+  yield this.a;
+  yield this.b;
 };
 
 for(let name of ['direction', 'round', 'slope', 'angle', 'bbox', 'points', 'inspect', 'toString', 'toObject', 'toSource', 'distanceToPointSquared', 'distanceToPoint']) {

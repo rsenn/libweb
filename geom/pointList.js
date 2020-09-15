@@ -286,6 +286,12 @@ PointList.prototype.sort = function(pred) {
 PointList.prototype.toString = function(sep = ',', prec) {
   return Array.prototype.map.call(this, point => (Point.prototype.toString ? Point.prototype.toString.call(point, prec, sep) : point + '')).join(' ');
 };
+PointList.prototype[Symbol.toStringTag] = function(sep = ',', prec) {
+  return Array.prototype.map
+    .call(this, point => point.round(prec))
+    .map(point => `${point.x}${sep}${point.y}`)
+    .join(' ');
+};
 PointList.prototype.toPath = function() {
   return Array.prototype.map.call(this, (point, i) => `${i > 0 ? 'L' : 'M'}${point}`).join(' ');
   return Array.prototype.reduce.call(this, (acc, point, i) => (acc ? acc + ' ' : '') + `${acc ? 'L' : 'M'}${point}`);

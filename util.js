@@ -680,6 +680,10 @@ Util.pad = function(s, n, char = ' ') {
   return Util.padFn(n, char)(s);
 };
 Util.abbreviate = function(str, max = 40, suffix = '...') {
+  if(Util.isArray(str)) {
+    return Array.prototype.slice.call(str, 0, Math.min(str.length, max)).concat([suffix]);
+  }
+  if(typeof str != 'string') return str;
   str = '' + str;
   if(str.length > max) {
     return str.substring(0, max - suffix.length) + suffix;
@@ -762,11 +766,11 @@ Util.extend = (...args) => {
   for(let i = 0; i < len; i++) {
     let extender = extenders[i];
     for(let key in extender) {
-      if(extender.hasOwnProperty(key)) {
+      if(true || extender.hasOwnProperty(key)) {
         let value = extender[key];
         if(deep && Util.isCloneable(value)) {
           let base = Array.isArray(value) ? [] : {};
-          result[key] = extend(true, result.hasOwnProperty(key) && !Util.isUnextendable(result[key]) ? result[key] : base, value);
+          result[key] = Util.extend(true, result.hasOwnProperty(key) && !Util.isUnextendable(result[key]) ? result[key] : base, value);
         } else {
           result[key] = value;
         }
@@ -1193,6 +1197,13 @@ Util.leastCommonMultiple = (n1, n2) => {
   return (n1 * n2) / gcd;
 };
 const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
+Util.matchAll = Util.curry(function* (re, str) {
+  let match;
+  re = re instanceof RegExp ? re : new RegExp(Util.isArray(re) ? '(' + re.join('|') + ')' : re, 'g');
+  do {
+    if((match = re.exec(str))) yield match;
+  } while(match != null);
+});
 
 Util.toString = (obj, opts = {}) => {
   const { quote = '"', multiline = true, toString = Symbol.toStringTag || 'toString' /*Util.symbols.toStringTag*/, stringFn = str => str, indent = '', colors = false, stringColor = [1, 36], spacing = '', newline = '\n', padding = ' ', separator = ',', colon = ': ', depth = 10 } = { ...Util.toString.defaultOpts, ...opts };
@@ -2332,6 +2343,8 @@ Util.numberParts = (num, base) => {
   return { sign: sgn, mantissa: num, exponent: exp };
 };
 Util.roundTo = function(value, prec, digits, type = 'round') {
+  if(!isFinite(value)) return value;
+
   const fn = Math[type];
   if(prec == 1) return fn(value);
 
@@ -2462,11 +2475,11 @@ Util.increment = function(obj, key) {
   return obj[key];
 };
 Util.counter = function() {
-  this.i = 0;
-  this.incr = function() {
-    this.i++;
-    return this.i;
+  let i = 0;
+  let self = function() {
+    return i++;
   };
+  return self;
 };
 Util.filterKeys = function(obj, pred = k => true) {
   let ret = {};
@@ -2834,7 +2847,7 @@ Util.objectReducer = (filterFn, accFn = (a, m, o) => ({ ...a, [m]: o[m] }), accu
     ),
     accu
   );
-Util.counter = (incFn = (c, n, self) => (self.count = c + n)) => {
+Util.incrementer = (incFn = (c, n, self) => (self.count = c + n)) => {
   let self, incr;
   if(typeof incFn == 'number') {
     incr = incFn;
@@ -3554,11 +3567,11 @@ Util.splitLines = function(str, max_linelen = Number.MAX_SAFE_INTEGER) {
   if(line != '') lines.push(line);
   return lines;
 };
-Util.matchAll = Util.curry(function* (re, str) {
+/*Util.matchAll = Util.curry(function* (re, str) {
   re = new RegExp(re + '', 'g');
   let match;
   while((match = re.exec(str)) != null) yield match;
-});
+});*/
 Util.decodeEscapes = function(text) {
   let matches = [...Util.matchAll(/([^\\]*)(\\u[0-9a-f]{4}|\\)/gi, text)];
   if(matches.length) {
@@ -4350,4 +4363,126 @@ Util.unescape = str => {
   }
   return s;
 };
+
+Util.consolePrinter = function ConsolePrinter(log = console.log) {
+  let self;
+
+  self = function(...args) {
+    self.add(...args);
+    self.print();
+    self.clear();
+  };
+
+  delete self.length;
+
+  Object.setPrototypeOf(self, Util.extend(Util.consolePrinter.prototype, Util.getMethods(Object.getPrototypeOf(self), 1, 0)));
+  self.splice(0, self.length, '');
+  self.log = (...args) => log(...args);
+
+  return self;
+};
+Object.assign(Util.consolePrinter.prototype, Util.getMethods(Array.prototype));
+
+Util.consoleConcat = function(...args) {
+  let self;
+
+  self = function ConsoleConcat(...args) {
+    return self.add(...args);
+  };
+  self.add = function(...args) {
+    concat(this, args);
+    return this;
+  };
+  self.call = function(thisObj, ...args) {
+    return self(...args);
+  };
+  function concat(out, args) {
+    while(args.length) {
+      let arg = args.shift();
+      if(typeof arg == 'string') {
+        let matches = [...Util.matchAll(/%[cos]/g, arg)];
+        if(matches.length > 0 && args.length >= matches.length) {
+          out[0] += arg;
+          out.splice(out.length, 0, ...args.splice(0, matches.length));
+        } else {
+          out[0] += arg.replace(/%/g, '%%');
+        }
+      } else if(Util.isArray(arg) && typeof arg[0] == 'string' && /%[cos]/.test(arg[0])) {
+        concat(out, arg);
+      } else {
+        out[0] += ' %o';
+        out.push(arg);
+      }
+    }
+    return out;
+  }
+  delete self.length;
+  Object.setPrototypeOf(self, Util.extend(Util.consoleConcat.prototype, Object.getPrototypeOf(self)));
+  self.push('');
+  if(args.length) self(...args);
+  return self;
+};
+
+Util.consoleConcat.prototype = Object.assign(Util.consoleConcat.prototype, Util.getMethods(Array.prototype, 1, 0), {
+  [Symbol.for('nodejs.util.inspect.custom')]() {
+    return [this, [...this]];
+  }, [Symbol.iterator]() {
+    return Array.prototype[Symbol.iterator].call(this);
+  },
+  clear() {
+    return this.splice(0, this.length);
+  },
+  print(log = (...args) => console.info(...args)) {
+    log(...this);
+  }
+});
+Util.consolePrinter.prototype.length = 1;
+Util.consolePrinter.prototype[0] = '';
+Object.assign(Util.consolePrinter.prototype, Util.consoleConcat.prototype, {
+  print() {
+    const a = [...this];
+    const i = a.map(i => Util.toString(i));
+    console.debug('a: ' + i.shift(), ...i);
+
+    Util.consoleConcat.prototype.print.call(this, this.log);
+  },
+  output() {
+    const a = [...this];
+    this.clear();
+    return a;
+  },
+  add(...args) {
+    let { i = 0 } = this;
+
+    for(; args.length > 0; i++) {
+      let arg = args.shift();
+      //  console.debug('arg:', i, typeof(arg) == 'string'  ? Util.abbreviate(arg) : arg);
+
+      if(Util.isArray(arg) && /%c/.test(arg[0])) {
+        this.i = i;
+        this.add(...arg);
+        continue;
+      }
+      // console.debug('arg =', typeof arg, Util.className(arg), arg);
+      if(i > 0) this[0] += ' ';
+      if(typeof arg != 'string') {
+        this[0] += '%o';
+        this.push(arg);
+      } else {
+        this[0] += arg;
+        if(/color:/.test(this[0])) {
+          throw new Error(`this[0] is CSS: i=${i}\nthis[0] = "${this[0]}"\narg= ${typeof arg} "${(arg + '').replace(/\n/g, '\\n')}"`);
+        }
+
+        const matches = [...Util.matchAll(['%c', '%o'], arg)];
+        console.debug('matches.length:', matches.length, ' args.length:', args.length);
+
+        if(matches.length > 0) {
+          const styles = args.splice(0, matches.length);
+          this.splice(this.length, 0, ...styles);
+        }
+      }
+    }
+  }
+});
 export default Util;

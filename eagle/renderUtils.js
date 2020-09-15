@@ -2,9 +2,15 @@ import { Point, Line, TransformationList, LineList } from '../geom.js';
 import Util from '../util.js';
 import { Component, useEffect, useState } from '../dom/preactComponent.js';
 import { classNames } from '../classNames.js';
- 
-const π
- = 
+
+const PI = Math.PI;
+const RAD2DEG = 180 / Math.PI;
+const DEG2RAD = Math.PI / 180;
+const { mod, mul, roundTo } = Util;
+
+const rad2deg = mul(RAD2DEG);
+const deg2rad = mul(DEG2RAD);
+
 export const VERTICAL = 1;
 export const HORIZONTAL = 2;
 export const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
@@ -79,7 +85,7 @@ export const EagleAlignments = {
 export const Alignment = (align, def = 'bottom-left', rot = 0) => {
   let [y, x] = EagleAlignments[align] || EagleAlignments[def];
   let ret = new Point(x, y);
-  if(Math.abs(rot) > 0) ret.rotate((rot * Math.PI) / 180);
+  if(Math.abs(rot) > 0) ret.rotate((rot * PI) / 180);
   return ret;
 };
 
@@ -89,7 +95,7 @@ export const SVGAlignments = [
 ];
 
 export const AlignmentAttrs = (align, hv = HORIZONTAL_VERTICAL, rot = 0) => {
-  // if(Math.abs(rot) > 0) coord.rotate((rot * Math.PI) / 180);
+  // if(Math.abs(rot) > 0) coord.rotate((rot * PI) / 180);
   const def = { y: 1, x: -1 };
 
   const { x, y } = align || def;
@@ -125,7 +131,7 @@ export const InvertY = item => {
 };
 
 export const PolarToCartesian = (cx, cy, radius, angle) => {
-  let a = ((angle - 90) * Math.PI) / 180.0;
+  let a = (angle - 90) * DEG2RAD;
   return {
     x: cx + radius * Math.cos(a),
     y: cy + radius * Math.sin(a)
@@ -143,8 +149,8 @@ export const Arc = (x, y, radius, startAngle, endAngle) => {
  *  Chord Length
  *     c = 2R sin( ½ × θ )
  *
- *     L = R *  θ ÷  (2*Math.PI)
- *     L ÷ C =  θ ÷  (2*Math.PI)
+ *     L = R *  θ ÷  (2*PI)
+ *     L ÷ C =  θ ÷  (2*PI)
  *
  *
  * Arc length s for an angle θ
@@ -154,7 +160,7 @@ export const Arc = (x, y, radius, startAngle, endAngle) => {
  *
  *  L / R =   θ
  *
- *  𝛂 = 𝛃 = (Math.PI - θ) / 2
+ *  𝛂 = 𝛃 = (PI - θ) / 2
  *                                     B
  *                                 ..
  *           𝛑                      .N
@@ -197,17 +203,17 @@ export const Arc = (x, y, radius, startAngle, endAngle) => {
  */
 
 const CalculateArc = (p1, p2, theta) => {
-  const M_2_PI = Math.PI * 2;
+  const M_2_PI = PI * 2;
   const chordLen = Point.distance(p1, p2);
   let radius = chordLen / (2 * Math.sin(theta / 2));
   const sweepArc = theta > 0 ? 1 : 0;
-  const largeArc = Math.abs(theta) > Math.PI ? 1 : 0;
+  const largeArc = Math.abs(theta) > PI ? 1 : 0;
   let arc = {
     theta,
     chordLen,
     radius,
     get circumference() {
-      return this.radius * Math.PI;
+      return this.radius * PI;
     },
     get diameter() {
       return this.radius * 2;
@@ -224,30 +230,38 @@ const CalculateArc = (p1, p2, theta) => {
 };
 
 /**
- * { function_description }
+ * Render Arc to specific end point
  *
  * @class      RenderArcTo (name)
  * @param      {Number}    distance  Distance of straight line
  * @param      {Number}    radius    Radius
- * @param      {Number}    theta     Partial circumference ()
+ * @param      {Number}    theta     Partial circumference (radians)
  * @param      {Point}     to        End point
- * @return     SVG arc command
+ * @return     {String}  SVG arc command
  */
-const RenderArcTo = ( distance, radius,  theta, to) => {
+const RenderArcTo = (distance, radius, theta, sweep, to) => {
+  const large = Math.abs(theta) > PI ? 1 : 0;
 
-  const sweep = theta > 0 ? 1 : 0;
-  const large = Math.abs(theta) > Math.PI ? 1 : 0;
- 
-  return   `A ${radius} ${radius} 0 ${large} ${sweep} ${to.x} ${to.y}`];
-
+  return `A ${radius} ${radius} 0 ${large} ${sweep} ${to.x} ${to.y}`;
 };
 
-
-const RenderArcFromTo = ( start, radius, theta, end) => {
-
+/**
+ * Render move and arc command
+ *
+ * @class      RenderArcFromTo (name)
+ * @param      {Point}  start   The start
+ * @param      {Number}  radius  The radius
+ * @param      {Number}  theta  Partial circumference (radians)
+ * @param      {Number}  end     The end
+ * @return     {Array}   Move and arc command
+ */
+const RenderArcFromTo = (start, radius, theta, end) => {
   const distance = Point.distance(start, end);
+  const diff = Point.diff(end, start);
 
-  return [`M ${start.x} ${start.y}`, RenderArcTo(distance, radius, theta, end)];
+  const sweep = (diff.x < 0) ^ (diff.y < 0);
+
+  return [`M ${start.x} ${start.y}`, RenderArcTo(distance, radius, theta, sweep, end)];
 };
 
 /**
@@ -259,39 +273,47 @@ const RenderArcFromTo = ( start, radius, theta, end) => {
  * @param      {(number|string)}  angle   The angle
  * @return     {<type>}           The arc radius.
  */
-export const CalculateArcRadius = (p1, p2, angle) => 
-Point.distance(p1, p2)/ (2 * Math.sin(angle / 2));
+export const CalculateArcRadius = (p1, p2, angle) => {
+  if(!isFinite(+angle)) return Infinity;
+
+  const distance = Point.distance(p1, p2);
+  return distance / (2 * Math.sin(angle / 2));
+};
 
 export const LinesToPath = (lines, lineFn) => {
   let l = lines.shift(),
     m;
-  let start = l.a;
+  let [start, point] = l;
   let ret = [];
-  let prevPoint = new Point(l.x1, l.y1);
+  let prevPoint = start;
   //ret.push(`M ${prevPoint.x} ${prevPoint.y}`);
+  let debug = false; //Point.equals(start, { x: 0, y: -2 });
+
+  if(debug) {
+    console.debug(`LinesToPath`, { lines, lineFn }, Util.getCallerStack());
+  }
 
   lineFn =
     lineFn ||
     ((point, curve) => {
       lineFn = (point, curve) => {
+        const p = [prevPoint, point];
+        const dist = Point.distance(...p);
+        const slope = Point.diff(prevPoint, point).round(0.0001);
+
         let cmd;
-        const theta = curve *  Math.PI / 180;
-        const radius = CalculateArcRadius(prevPoint, point, theta);
-
-        if(!isNaN(radius) && isFinite(radius)) {
-          const r = radius.toFixed(4);
-return RenderArc(r, )
-          const largeArc = Math.abs(curve) > 180 ? '1' : '0';
-          const sweepArc = curve > 0 ? '1' : '0';
-
-          cmd = `A ${r} ${r} 0 ${largeArc} ${sweepArc} ${point.x} ${point.y}`;
-        } else if(Point.equals(start, point)) {
-          cmd = `Z`;
-        } else {
-          cmd = `L ${point.x} ${point.y}`;
-        }
+        const theta = deg2rad(curve);
+        const angle = roundTo(rad2deg(theta), 0.1) || undefined;
+        const radius = roundTo(CalculateArcRadius(p[0], p[1], theta), 0.0001);
         prevPoint = point;
-        return cmd;
+        const sweep = Math.abs(slope.toAngle()) < PI ? 1 : 0;
+
+        //if(isFinite(radius))
+        if(debug) Util.consoleConcat(`lineFn\n`, { curve, angle, slope, radius }, debug).print(console.log);
+
+        if(curve !== undefined && isFinite(radius)) return RenderArcTo(dist, radius.toFixed(4), theta, sweep, p[1]);
+        else if(Point.equals(start, p[1])) return `Z`;
+        else return `L ${p[1].x} ${p[1].y}`;
       };
       prevPoint = point;
       return `M ${point.x} ${point.y}`;
@@ -300,36 +322,38 @@ return RenderArc(r, )
   const lineTo = (...args) => ret.push(lineFn(...args));
 
   lineTo(prevPoint);
-  lineTo(l.b, l.curve);
+  lineTo(point, l.curve);
 
   do {
     m = null;
     for(let i = 0; i < lines.length; i++) {
-      const d = [i, Point.distance(l.b, lines[i].a), Point.distance(l.b, lines[i].b)];
+      const p = lines[i]; /*.toPoints()*/
 
-      if(Point.equals(l.b, lines[i].a)) {
+      const d = [i, Point.distance(l[1], p[0]), Point.distance(l[1], p[1])];
+
+      if(Point.equals(l[1], p[0])) {
         m = lines.splice(i, 1)[0];
         break;
-      } else if(Point.equals(l.b, lines[i].b)) {
-        const l = lines.splice(i, 1)[0];
-        m = l.swap();
-        if(l.curve !== undefined) m.curve = -l.curve;
+      } else if(Point.equals(l[1], p[1])) {
+        m = lines.splice(i, 1)[0].reverse();
+        if(l.curve !== undefined && isFinite(+l.curve) && Math.abs(+l.curve) > 0) m.curve = -m.curve;
         break;
       }
     }
     if(m) {
-      /*if(lines.length == 0 && Point.equals(m.b, start)) ret.push(`Z`);
-      else*/ lineTo(m.b, m.curve);
+      debug = Point.equals(m[1], { x: 0.635, y: 1.016 }) && m;
+      lineTo(m[1], m.curve);
       l = m;
     } else if(lines.length > 0) {
       l = lines.shift();
       ret.push(`M ${l.x1} ${l.y1}`);
-      prevPoint = new Point(l.x1, l.y1);
-      lineTo(l.b, l.curve);
+      prevPoint = l[0];
+      debug = Point.equals(l[1], { x: 0.635, y: 1.016 }) && l;
+      lineTo(l[1], l.curve);
     }
   } while(lines.length > 0);
 
-  return ret.every(p => typeof p == 'string') ? ret.join(' ') : ret;
+  return ret;
 };
 
 export function MakeCoordTransformer(matrix) {
@@ -360,7 +384,7 @@ export function MakeCoordTransformer(matrix) {
       coords = { ...coords, x1, y1, x2, y2 };
     }
     let oldCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: obj[k] }), {});
-    let newCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: Util.roundTo(coords[k], 0.254) }), {});
+    let newCoords = Object.keys(coords).reduce((acc, k) => ({ ...acc, [k]: Util.roundTo(coords[k], 0.000001) }), {});
 
     //console.log(`CoordTransform [${transformStr}]`, oldCoords, ' -> ', newCoords);
     return { ...newCoords };
