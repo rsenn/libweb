@@ -2,7 +2,9 @@ import { Point, Line, TransformationList, LineList } from '../geom.js';
 import Util from '../util.js';
 import { Component, useEffect, useState } from '../dom/preactComponent.js';
 import { classNames } from '../classNames.js';
-
+ 
+const π
+ = 
 export const VERTICAL = 1;
 export const HORIZONTAL = 2;
 export const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
@@ -196,14 +198,10 @@ export const Arc = (x, y, radius, startAngle, endAngle) => {
 
 const CalculateArc = (p1, p2, theta) => {
   const M_2_PI = Math.PI * 2;
-  //  console.log('theta', theta);
   const chordLen = Point.distance(p1, p2);
-  // console.log('chordLen', chordLen);
   let radius = chordLen / (2 * Math.sin(theta / 2));
-  // console.log('radius', radius);
-  const sweepArc = theta > 0 ? '1' : '0';
-
-  const largeArc = Math.abs(theta) > Math.PI ? '1' : '0';
+  const sweepArc = theta > 0 ? 1 : 0;
+  const largeArc = Math.abs(theta) > Math.PI ? 1 : 0;
   let arc = {
     theta,
     chordLen,
@@ -224,6 +222,34 @@ const CalculateArc = (p1, p2, theta) => {
   console.debug(`CalculateArc`, arc);
   return arc;
 };
+
+/**
+ * { function_description }
+ *
+ * @class      RenderArcTo (name)
+ * @param      {Number}    distance  Distance of straight line
+ * @param      {Number}    radius    Radius
+ * @param      {Number}    theta     Partial circumference ()
+ * @param      {Point}     to        End point
+ * @return     SVG arc command
+ */
+const RenderArcTo = ( distance, radius,  theta, to) => {
+
+  const sweep = theta > 0 ? 1 : 0;
+  const large = Math.abs(theta) > Math.PI ? 1 : 0;
+ 
+  return   `A ${radius} ${radius} 0 ${large} ${sweep} ${to.x} ${to.y}`];
+
+};
+
+
+const RenderArcFromTo = ( start, radius, theta, end) => {
+
+  const distance = Point.distance(start, end);
+
+  return [`M ${start.x} ${start.y}`, RenderArcTo(distance, radius, theta, end)];
+};
+
 /**
  * Calculates the arc radius.
  *
@@ -233,22 +259,8 @@ const CalculateArc = (p1, p2, theta) => {
  * @param      {(number|string)}  angle   The angle
  * @return     {<type>}           The arc radius.
  */
-export const CalculateArcRadius = (p1, p2, angle) => {
-  const d = Point.distance(p1, p2);
-  const c = Math.cos((angle * Math.PI) / 180);
-
-  const r2 = (d * d) / (2 - 2 * c);
-
-  let r = d / Math.sqrt(2 + 2 * c);
-
-  if(2 + 2 * c == 0) {
-    r = r2;
-    console.log('CalculateArcRadius', { d, c, r2, r });
-  }
-  if(isNaN(r)) throw new Error('Arc radius for angle: ' + angle);
-
-  return Math.abs(angle) > 90 ? r / 2 : Math.sqrt(r2);
-};
+export const CalculateArcRadius = (p1, p2, angle) => 
+Point.distance(p1, p2)/ (2 * Math.sin(angle / 2));
 
 export const LinesToPath = (lines, lineFn) => {
   let l = lines.shift(),
@@ -263,11 +275,12 @@ export const LinesToPath = (lines, lineFn) => {
     ((point, curve) => {
       lineFn = (point, curve) => {
         let cmd;
-        if(curve !== undefined && typeof curve == 'number' && !isNaN(curve)) {
-          const r = CalculateArcRadius(prevPoint, point, curve).toFixed(4);
+        const theta = curve *  Math.PI / 180;
+        const radius = CalculateArcRadius(prevPoint, point, theta);
 
-          if(r == Number.POSITIVE_INFINITY || r == Number.NEGATIVE_INFINITY) console.log('lineTo', { prevPoint, point, curve });
-
+        if(!isNaN(radius) && isFinite(radius)) {
+          const r = radius.toFixed(4);
+return RenderArc(r, )
           const largeArc = Math.abs(curve) > 180 ? '1' : '0';
           const sweepArc = curve > 0 ? '1' : '0';
 
