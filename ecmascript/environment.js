@@ -39,14 +39,14 @@ function log(...args) {
 
   //console.debug('callers\n', ...callers.map((c) => c.functionName || c.methodName || c.toString()).map((n) => `  ${n}\n`));
 
-  console.debug('callers[0]', callers[0]);
+  //console.debug('callers[0]', callers[0]);
 
   let node = args[0] instanceof ESNode && args[0];
 
   let pos = node && ESNode.assoc(node).position;
   if(pos) args.unshift(pos);
 
-  console.log(Util.ansi.text(callers[0].methodName, 1, 34), ...args);
+  //console.log(Util.ansi.text(callers[0].methodName, 1, 34), ...args);
 }
 function noop() {}
 
@@ -195,10 +195,10 @@ export class Environment extends EventEmitter {
         SwitchStatement: this.generateSwitchStatement
       }[type] ||
       function() {
-        console.debug('node:', node);
+        //console.debug('node:', node);
 
         throw new NotImplemented(type, node);
-        console.warn('Not implemented yet: ' + type);
+        //console.warn('Not implemented yet: ' + type);
         return noop;
       }
     ).call(this, node);
@@ -230,9 +230,9 @@ export class Environment extends EventEmitter {
       } else {
         result = expr();
       }
-      console.debug('expr:', expr + '');
-      console.debug('expr():', expr());
-      console.debug('result:', result);
+      //console.debug('expr:', expr + '');
+      //console.debug('expr():', expr());
+      //console.debug('result:', result);
       return result;
     }
 
@@ -254,9 +254,9 @@ export class Environment extends EventEmitter {
         const y =  callExpression(b);  
         const u =  yield *x;
         const v =  yield *y;
-console.debug("generateBinaryExpression", {a:a+'',b:b+''});
-console.debug("generateBinaryExpression", {x,y})
-console.debug("generateBinaryExpression", {u,v})
+//console.debug("generateBinaryExpression", {a:a+'',b:b+''});
+//console.debug("generateBinaryExpression", {x,y})
+//console.debug("generateBinaryExpression", {u,v})
         return u+v;
 
 
@@ -288,13 +288,23 @@ console.debug("generateBinaryExpression", {u,v})
   }
 
   generateImportStatement(node) {
+    let self = this;
     const { identifiers, source } = node;
-    log('ImportStatement:', node);
+    let ids = identifiers.declarations.map(identifier => identifier.id.value);
+    console.log('ImportStatement:', ids);
     let importFile = source.value;
     return function() {
-      import(importFile).then(handle => {
-        log('handle:', handle);
-      });
+      let ret = self.getVariableStore(node.value)[node.value];
+      console.log('Import:', importFile);
+
+      if(/*false &&*/ !ret)
+        ret = import(importFile)
+          .then(handle => {
+            console.log('handle:', handle);
+            return handle;
+          })
+          .catch(err => console.log('import error:', err));
+      return ret;
     };
   }
 
@@ -380,6 +390,7 @@ console.debug("generateBinaryExpression", {u,v})
   generateCallExpression(node) {
     let self = this;
     let callee;
+    //console.log('node.callee', node.callee);
     if(node.callee.type === 'MemberExpression') {
       let obj = self.generateObject(node.callee);
       let name = self.generateName(node.callee);
@@ -392,12 +403,13 @@ console.debug("generateBinaryExpression", {u,v})
     }
     let args = node.arguments.map(self.generateClosure.bind(self));
 
-    log({ callee: callee + '', args: args + '' });
+    //  log({ callee: callee + '', args: args + '' });
 
     return function* () {
+      // console.log('callee', callee + '');
       self.emit('line', startLine(node));
       let c = callee();
-      console.log('evalCallExpression', { callee: callee + '', c: c + '', args });
+      //    console.log('evalCallExpression', { callee: callee + '', c: c + '', args });
 
       if(c === undefined) {
         return c;
@@ -504,7 +516,7 @@ console.debug("generateBinaryExpression", {u,v})
     } else if(type === 'MemberExpression') {
       return this.generateClosure(node.object);
     }
-    console.warn('Unknown generateObject() type: ' + type);
+    //console.warn('Unknown generateObject() type: ' + type);
     return noop;
   }
 
@@ -518,7 +530,7 @@ console.debug("generateBinaryExpression", {u,v})
     } else if(type === 'MemberExpression') {
       return this.memberExpressionProperty(node);
     }
-    console.warn('Unknown generateName() type: ' + type);
+    //console.warn('Unknown generateName() type: ' + type);
     return noop;
   }
 
@@ -539,7 +551,7 @@ console.debug("generateBinaryExpression", {u,v})
         break;
       default: throw new Error(`generateLiteral: no such species '${node.species}'`);
     }
-    console.debug('generateLiteral', value);
+    // console.debug('generateLiteral', value);
     return function() {
       return value;
     };
@@ -549,7 +561,7 @@ console.debug("generateBinaryExpression", {u,v})
     let self = this;
     log(node);
     let func = node.value == 'this' ? `function thisObj() { return env.currentThis; }` : `function identifier() { return env.getVariableStore('${node.value}')['${node.value}']; }`;
-    console.debug('generateIdentifier', func);
+    // console.debug('generateIdentifier', func);
 
     return new Function('env', `return ${func}`)(self);
 
@@ -680,7 +692,7 @@ console.debug("generateBinaryExpression", {u,v})
           self.currentVariableStore.vars[param.name] = args[i];
         });
 
-        console.log('generateFunctionExpression', { currentVariableStore: self.currentVariableStore, currentThis: self.currentThis });
+        //console.log('generateFunctionExpression', { currentVariableStore: self.currentVariableStore, currentThis: self.currentThis });
 
         // run function body
         let result = yield* body();
@@ -855,7 +867,7 @@ console.debug("generateBinaryExpression", {u,v})
   }
 
   generateThrowStatement(node) {
-    console.debug('generateThrowStatement:', node);
+    //console.debug('generateThrowStatement:', node);
     let arg = this.generateClosure(node.expression);
     return function() {
       throw arg();

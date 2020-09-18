@@ -4325,7 +4325,7 @@ Util.safeFunction = (fn, trapExceptions, thisObj) => {
   }
   return exec;
 };
-Util.safeCall = async (fn, args) => await Util.safeFunction(fn, true)(args);
+Util.safeCall = async (fn, args = []) => await Util.safeFunction(fn, true)(...args);
 Util.callMain = async (fn, trapExceptions) => await Util.safeFunction(fn, trapExceptions)(...Util.getArgs());
 
 Util.printReturnValue = (fn, opts = {}) => {
