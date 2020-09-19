@@ -279,7 +279,7 @@ Util.memoize = (fn, storage = new Map()) => {
   return Object.freeze(self);
 };
 
-Util.once = function(fn, thisArg) {
+Util.once = function(fn, thisArg = this) {
   let ran = false;
   let ret;
 
@@ -1347,6 +1347,10 @@ Util.ifThenElse = function(pred = value => !!value, _then = () => {}, _else = ()
     return ret;
   };
 };
+Util.if = (value, _then, _else, pred) => Util.ifThenElse(pred || (v => !!v), _then || (() => value), _else || (() => value))(value);
+
+Util.ifElse = (value, _else, pred) => Util.ifThenElse(pred || (v => !!v), () => value, _else ? () => _else : () => value)(value);
+Util.ifThen = (value, _then, pred) => Util.ifThenElse(pred || (v => !!v), _then ? () => _then : () => value, () => value)(value);
 
 Util.transform = Util.curry(function* (fn, arr) {
   for(let item of arr) yield fn(item);
