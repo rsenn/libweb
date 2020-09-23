@@ -155,7 +155,8 @@ export function AsyncRead(readable) {
   });
 }
 
-export const ReadFromIterator =
+export const ReadFromIterator = null;
+/*
   (gotClassPrototype('ReadableStream', 'read') &&
     class ReadFromIterator extends (await import('stream')).Readable {
       constructor(iterator, options) {
@@ -186,6 +187,7 @@ export const ReadFromIterator =
     });
   };
 
+*/
 export async function WriteToRepeater() {
   const repeater = new Repeater(async (push, stop) => {
     await push({
