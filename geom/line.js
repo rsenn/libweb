@@ -364,10 +364,9 @@ Line.prototype.toPoints = function(ctor = Array.of) {
   const { x1, y1, x2, y2 } = this;
   return ctor({ x: x1, y: y1 }, { x: x2, y: y2 });
 };
-Line.prototype[Symbol.iterator] = function  () {
+Line.prototype[Symbol.iterator] = function() {
   return [this.a, this.b][Symbol.iterator]();
 };
-
 
 for(let name of ['direction', 'round', 'slope', 'angle', 'bbox', 'points', 'inspect', 'toString', 'toObject', 'toSource', 'distanceToPointSquared', 'distanceToPoint']) {
   Line[name] = (line, ...args) => Line.prototype[name].call(line || new Line(line), ...args);
