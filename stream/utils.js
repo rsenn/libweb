@@ -1,34 +1,6 @@
 import { Repeater } from '../repeater/repeater.js';
 import Util from '../util.js';
 
-export function ArrayWriter(arr) {
-  return new WritableStream({
-    write(chunk) {
-      arr.push(chunk);
-    },
-    abort(err) {
-      //console.log('ArrayWriter error:', err);
-    }
-  });
-}
-
-export async function readStream(stream, arg) {
-  let repeater = await PipeToRepeater(stream);
-  let fn;
-
-  if(arg === undefined)
-    return await (async function* () {
-      for await (let item of repeater) yield await item;
-    })();
-
-  if(arg instanceof Array) fn = item => arg.push(item);
-  else if(typeof arg == 'function') fn = item => arg(item);
-  else if(typeof arg == 'string') fn = item => (arg += item);
-  for await (let item of repeater) fn(item);
-  if(typeof arg == 'function') arg(undefined);
-  return arg;
-}
-
 function gotClassPrototype(name, protoFn) {
   let ctor = Util.getGlobalObject()[name];
   return Util.isConstructor(ctor) && ctor.prototype && typeof ctor.prototype[protoFn] == 'function';
@@ -71,6 +43,33 @@ export const AcquireWriter =
       return ret;
     })(stream.getWriter());
   });
+export function ArrayWriter(arr) {
+  return new WritableStream({
+    write(chunk) {
+      arr.push(chunk);
+    },
+    abort(err) {
+      //console.log('ArrayWriter error:', err);
+    }
+  });
+}
+
+export async function readStream(stream, arg) {
+  let repeater = await PipeToRepeater(stream);
+  let fn;
+
+  if(arg === undefined)
+    return await (async function* () {
+      for await (let item of repeater) yield await item;
+    })();
+
+  if(arg instanceof Array) fn = item => arg.push(item);
+  else if(typeof arg == 'function') fn = item => arg(item);
+  else if(typeof arg == 'string') fn = item => (arg += item);
+  for await (let item of repeater) fn(item);
+  if(typeof arg == 'function') arg(undefined);
+  return arg;
+}
 
 export function PipeTo(input, output) {
   if(typeof input.pipeTo == 'function') return input.pipeTo(output);
