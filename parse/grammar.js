@@ -392,7 +392,7 @@ export class Grammar {
   }
 
   generate() {
-    let s = `import { choice, seq, token, char, regex, option, any, many, eof,ignore, concat, invert } from '../parse/fn.js';\n\n`;
+    let s = `import { choice, seq, token, char, regex, option, any, many, eof, ignore, concat, invert } from '../parse/fn.js';\n\n`;
     let names = [];
 
     s += `function wrap(parser, name) {
