@@ -1,14 +1,22 @@
+const keysFn = fn => o => (o instanceof Map ? [...o.keys()] : fn(o));
+const getFn = (o, k) => (o instanceof Map ? o.get(k) : o[k]);
+
 export const inspect = (o, pred = v => true) =>
   '{\n  ' +
   [
-    [o => o, Object.keys],
-    [Object.getPrototypeOf, Object.keys],
-    [o => o, Object.getOwnPropertyNames],
-    [Object.getPrototypeOf, Object.getOwnPropertyNames]
+    [o => o, keysFn(Object.keys)],
+    [Object.getPrototypeOf, keysFn(Object.keys)],
+    [o => o, keysFn(Object.getOwnPropertyNames)],
+    [Object.getPrototypeOf, keysFn(Object.getOwnPropertyNames)]
   ]
     .reduce((a, [proto, keys]) => (a.length ? a : [...a, ...keys(proto(o))]), [])
     .reduce((a, k) => (a.indexOf(k) == -1 ? [...a, k] : a), [])
-    .map(k => [k, o[k]])
+    .map(k => {
+      console.log('k:', k);
+      console.log('o:', o);
+      console.log('v:', getFn(o, k));
+      return [k, getFn(o, k)];
+    })
     .map(([k, v]) => {
       if(pred(v, k) == false) return '';
       let s = v;
@@ -24,7 +32,7 @@ export const inspect = (o, pred = v => true) =>
         s = '"' + s + '"';
       }
       if(s.length > 200) s = s.substring(0, 200) + '...';
-      return k + ': ' + s.replace(/\n\s*/g, ' ');
+      return k + (o instanceof Map ? ' => ' : ': ') + s.replace(/\n\s*/g, ' ');
     })
     //   .filter((item) => item != '')
     .join(',\n  ') +

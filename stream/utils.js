@@ -5,44 +5,107 @@ function gotClassPrototype(name, protoFn) {
   let ctor = Util.getGlobalObject()[name];
   return Util.isConstructor(ctor) && ctor.prototype && typeof ctor.prototype[protoFn] == 'function';
 }
+
+export function isStream(obj) {
+  if(/Stream$/.test(Util.className(obj))) return true;
+
+  if(typeof obj.pipe == 'function' && typeof obj.cork == 'function') return true;
+  if(typeof obj.getReader == 'function' || typeof obj.getWriter == 'function') return true;
+
+  return false;
+}
 export const AcquireReader =
-  gotClassPrototype('ReadableStream', 'getReader') &&
-  ((stream, fn) => {
-    fn =
-      fn ||
-      (async reader => {
-        let result,
-          data = '';
-        while((result = await reader.read())) {
-          console.log('result:', result);
-          if(typeof result.value == 'string') data += result.value;
-          if(result.done) break;
-        }
-        return data;
-      });
-    let reader, ret;
+  (gotClassPrototype('ReadableStream', 'getReader') &&
+    ((stream, fn) => {
+      fn =
+        fn ||
+        (async reader => {
+          let result,
+            data = '';
+          while((result = await reader.read())) {
+            console.log('result:', result);
+            if(typeof result.value == 'string') data += result.value;
+            if(result.done) break;
+          }
+          return data;
+        });
+      let reader, ret;
+      return (async () => {
+        reader = await stream.getReader();
+        ret = await fn(reader);
+        await reader.releaseLock();
+        return ret;
+      })();
+    })) ||
+  ((stream,
+    fn = async reader => {
+      console.log('reader.read()', reader.read());
+    }
+  ) => {
     return (async () => {
-      reader = await stream.getReader();
-      ret = await fn(reader);
-      await reader.releaseLock();
+      let ret = await fn({
+        read() {
+          return new Promise((resolve, reject) => {
+            let listeners = {
+              data(value) {
+                removeListeners();
+                resolve({ value, done: false });
+              },
+              error(error) {
+                removeListeners();
+                reject({ error, done: true });
+              },
+              close() {
+                removeListeners();
+                resolve({ value: null, done: true });
+              }
+            };
+
+            function addListeners() {
+              for(let eventName in listeners) stream.addListener(eventName, listeners[eventName]);
+            }
+            function removeListeners() {
+              for(let eventName in listeners) stream.removeListener(eventName, listeners[eventName]);
+            }
+
+            addListeners();
+          });
+        }
+      });
       return ret;
     })();
   });
 
 export const AcquireWriter =
-  gotClassPrototype('WritableStream', 'getWriter') &&
+  (gotClassPrototype('WritableStream', 'getWriter') &&
+    ((stream,
+      fn = async writer => {
+        await writer.write('TEST');
+      }
+    ) => {
+      return (async writer => {
+        writer = await writer;
+        let ret = await fn(writer);
+        await writer.releaseLock();
+        return ret;
+      })(stream.getWriter());
+    })) ||
   ((stream,
     fn = async writer => {
       await writer.write('TEST');
     }
   ) => {
-    return (async writer => {
-      writer = await writer;
-      let ret = await fn(writer);
-      await writer.releaseLock();
+    return (async () => {
+      let ret = await fn({
+        write(chunk) {
+          return stream.write(chunk);
+          return new Promise((resolve, reject) => stream.write(chunk, 'utf-8', err => (err ? reject(err) : resolve(chunk.length))));
+        }
+      });
       return ret;
-    })(stream.getWriter());
+    })();
   });
+
 export function ArrayWriter(arr) {
   return new WritableStream({
     write(chunk) {
@@ -71,11 +134,11 @@ export async function readStream(stream, arg) {
   return arg;
 }
 
-export function PipeTo(input, output) {
+export async function PipeTo(input, output) {
   if(typeof input.pipeTo == 'function') return input.pipeTo(output);
   if(typeof input.pipe == 'function') return input.pipe(output);
 
-  return AcquireWriter(output, async writer => {
+  return await AcquireWriter(output, async writer => {
     await AcquireReader(input, async reader => {
       let result;
       while((result = await reader.read())) {
@@ -193,6 +256,7 @@ export async function WriteToRepeater() {
     await push({
       write(chunk) {
         push(chunk);
+        return true;
       },
       close() {
         stop();
@@ -217,24 +281,6 @@ export function LogSink(fn = (...args) => console.log('LogSink.fn', ...args)) {
     abort(err) {
       throw new Error('LogSink error:' + err);
     }
-  });
-}
-
-export async function RepeaterSink(start = async sink => {}) {
-  return new Repeater(async (push, stop) => {
-    await start(new WritableStream({
-        write(chunk) {
-          //  console.debug("RepeaterSink.write", {chunk});
-          push(chunk);
-        },
-        close() {
-          stop();
-        },
-        abort(err) {
-          stop(new Error('WriteRepeater error:' + err));
-        }
-      })
-    );
   });
 }
 
@@ -290,34 +336,214 @@ export function LineReader(str, chunkEnd = (pos, str) => 1 + str.indexOf('\n', p
   });
 }
 
-class DebugTransformer {
-  constructor(callback) {
-    callback = callback || ((...args) => console.log(...args));
-    this._callback = callback;
-  }
-
-  transform(chunk, controller) {
-    this._callback(Util.className(this) + '.transform', chunk);
-    if(chunk != '') {
-      controller.enqueue(chunk);
-    }
-  }
-
-  flush(controller) {
-    if(typeof controller.flush == 'function') controller.flush();
-    if(typeof controller.close == 'function') controller.close();
-    this._callback(Util.className(this) + '.end');
-  }
-}
-
 export class DebugTransformStream {
   constructor(callback) {
-    let handler = new DebugTransformer(callback);
+    callback = callback || ((...args) => console.log(...args));
+    let handler = {
+      callback,
+      transform(chunk, controller) {
+        this.callback(Util.className(this) + '.transform', chunk);
+        if(chunk != '') {
+          controller.enqueue(chunk);
+        }
+      },
+
+      flush(controller) {
+        if(typeof controller.flush == 'function') controller.flush();
+        if(typeof controller.close == 'function') controller.close();
+        this.callback(Util.className(this) + '.end');
+      }
+    };
 
     let transformer = new TransformStream(handler);
     transformer.handler = handler;
     return transformer;
   }
+}
+
+export async function CreateWritableStream(handler, options = { decodeStrings: false }) {
+  let ctor, browser, args;
+  if((ctor = Util.getGlobalObject('WritableStream'))) {
+    browser = true;
+    args = [handler, options];
+  } else {
+    ctor = (await import('stream')).Writable;
+    ctor = class extends ctor {
+      constructor(...args) {
+        super(...args);
+      }
+      _write(chunk, encoding, callback) {
+        if(options.decodeStrings === false && typeof chunk.toString == 'function') chunk = chunk.toString();
+        let ret = handler.write(chunk);
+
+        handleReturnValue(ret, callback);
+      }
+      _destroy(err, callback) {
+        let ret;
+        if(!err) {
+          if(typeof handler.close == 'function') ret = handler.close();
+        } else {
+          if(typeof handler.abort == 'function') ret = handler.abort(err);
+        }
+        handleReturnValue(ret, callback);
+      }
+      _final(callback) {
+        let ret;
+        if(typeof handler.close == 'function') ret = handler.close();
+        handleReturnValue(ret, callback);
+      }
+    };
+    args = [options];
+
+    function handleReturnValue(ret, callback) {
+      if(ret instanceof Promise) ret.then(() => callback()).catch(err => callback(err));
+      else if(ret === true) callback();
+    }
+  }
+  return new ctor(...args);
+}
+
+export async function CreateTransformStream(handler, options = { decodeStrings: false }) {
+  let ctor, browser, args;
+  if((ctor = Util.getGlobalObject('TransformStream'))) {
+    browser = true;
+    args = [handler, options];
+  } else {
+    ctor = (await import('stream')).Transform;
+    let controller = {
+      enqueue(chunk) {
+        const { instance, callback } = this;
+        return /*callback ? callback(null, chunk) :*/ instance.push(chunk);
+      },
+      close() {
+        const { instance } = this;
+        instance.cork();
+        return instance.destroy();
+      },
+      error(err) {
+        const { instance } = this;
+        return instance.destroy(err);
+      }
+    };
+    ctor = class extends ctor {
+      _transform(chunk, encoding, done) {
+        if(!('instance' in controller)) controller.instance = this;
+        controller.callback = done;
+        if(options.decodeStrings == false && typeof chunk.toString == 'function') chunk = chunk.toString();
+
+        handler.transform(chunk, controller);
+
+        delete controller.callback;
+        done();
+      }
+      _flush(done) {
+        if(!('instance' in controller)) controller.instance = this;
+        handler.flush(controller);
+        done();
+      }
+    };
+    args = [options];
+  }
+  return new ctor(...args);
+}
+
+export function RepeaterSource(stream) {
+  return new Repeater(async (push, stop) => {
+    let listeners = {
+      data(value) {
+        push(value);
+      },
+      error(error) {
+        removeListeners();
+        stop(error);
+      },
+      close() {
+        removeListeners();
+        stop();
+      },
+      end() {
+        removeListeners();
+        stop();
+      }
+    };
+    function addListeners() {
+      for(let eventName in listeners) stream.addListener(eventName, listeners[eventName]);
+    }
+    function removeListeners() {
+      for(let eventName in listeners) stream.removeListener(eventName, listeners[eventName]);
+    }
+    addListeners();
+  });
+}
+
+export async function RepeaterSink(start /*= async sink => {}*/) {
+  let ret = new Repeater(async (push, stop) => {
+    let wr = await CreateWritableStream({
+      write(chunk) {
+        //console.debug('RepeaterSink.write', { chunk }, this.write + '');
+        return push(chunk);
+      },
+      close() {
+        console.debug('RepeaterSink.close');
+        return stop();
+      },
+      abort(err) {
+        console.debug('RepeaterSink.abort', err);
+        return stop(new Error('WriteRepeater error:' + err));
+      }
+    });
+    if(typeof start == 'function') await start(wr);
+    else await push(wr);
+  });
+  if(typeof start != 'function') return [ret, (await ret.next()).value];
+
+  return ret;
+}
+
+export async function LineBufferStream(options = {}) {
+  let lines = [];
+
+  let stream = await CreateTransformStream({
+      queue(str) {
+        if(typeof str != 'string') if (typeof str.toString == 'function') str = str.toString();
+
+        if(lines.length > 0 && !lines[lines.length - 1].endsWith('\n')) lines[lines.length - 1] += str;
+        else lines.push(str);
+      },
+      transform(chunk, controller) {
+        let i, j;
+        // console.log('chunk:', typeof chunk, Util.className(chunk), chunk.length);
+        for(i = 0; i < chunk.length; i = j) {
+          j = chunk.indexOf('\n', i) + 1;
+          this.queue(j ? chunk.slice(i, j) : chunk.slice(i));
+          if(j == 0) break;
+        }
+        while(lines.length > 0 && !(lines.length == 1 && !lines[0].endsWith('\n'))) if(!controller.enqueue(lines.shift())) return false;
+      },
+      flush(controller) {
+        while(lines.length > 0) controller.enqueue(lines.shift());
+      }
+    },
+    { ...options, decodeStrings: true }
+  );
+  stream.lines = lines;
+  return stream;
+}
+
+export function TextTransformStream(tfn) {
+  tfn = tfn || (chunk => (typeof chunk.toString == 'function' ? chunk.toString() : chunk + ''));
+  return CreateTransformStream({
+    transform(chunk, controller) {
+      chunk = tfn(chunk);
+      console.log('chunk:', chunk);
+      controller.enqueue(chunk);
+    },
+
+    flush(controller) {
+      if(typeof controller.flush == 'function') controller.flush();
+      else if(typeof controller.close == 'function') controller.close();
+    }
+  });
 }
 
 export function ChunkReader(str, chunkSize) {

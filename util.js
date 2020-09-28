@@ -1822,16 +1822,22 @@ Util.searchObject = function(object, matchCallback, currentPath, result, searche
 Util.getURL = Util.memoize((req = {}) =>
   Util.tryCatch(() => process.argv[1],
     () => 'file://' + Util.scriptDir(),
-    () => {
-      let proto = Util.tryCatch(() => (process.env.NODE_ENV === 'production' ? 'https' : null)) || 'http';
-      let port = Util.tryCatch(() => (process.env.PORT ? parseInt(process.env.PORT) : process.env.NODE_ENV === 'production' ? 443 : null)) || 3000;
-      let host = Util.tryCatch(() => global.ip) || Util.tryCatch(() => global.host) || Util.tryCatch(() => window.location.host.replace(/:.*/g, '')) || 'localhost';
-      if(req && req.headers && req.headers.host !== undefined) host = req.headers.host.replace(/:.*/, '');
-      else Util.tryCatch(() => process.env.HOST !== undefined && (host = process.env.HOST));
-      if(req.url !== undefined) return req.url;
-      const url = `${proto}://${host}:${port}`;
-      return url;
-    }
+
+    Util.tryCatch(() => window.location.href,
+
+      url => url,
+
+      () => {
+        let proto = Util.tryCatch(() => (process.env.NODE_ENV === 'production' ? 'https' : null)) || 'http';
+        let port = Util.tryCatch(() => (process.env.PORT ? parseInt(process.env.PORT) : process.env.NODE_ENV === 'production' ? 443 : null)) || 3000;
+        let host = Util.tryCatch(() => global.ip) || Util.tryCatch(() => global.host) || Util.tryCatch(() => window.location.host.replace(/:.*/g, '')) || 'localhost';
+        if(req && req.headers && req.headers.host !== undefined) host = req.headers.host.replace(/:.*/, '');
+        else Util.tryCatch(() => process.env.HOST !== undefined && (host = process.env.HOST));
+        if(req.url !== undefined) return req.url;
+        const url = `${proto}://${host}:${port}`;
+        return url;
+      }
+    )
   )
 );
 Util.parseQuery = function(url = Util.getURL()) {
@@ -4358,11 +4364,20 @@ Util.replaceAll = (needles, haystack) => {
     .reduce((acc, [match, replacement]) => acc.replace(match, replacement), haystack);
 };
 
-Util.unescape = str => {
+Util.unescape = (str, pred = codePoint => codePoint < 32 || codePoint > 0xff) => {
   let s = '';
   for(let i = 0; i < str.length; i++) {
     let code = str.codePointAt(i);
-    if(code <= 128) s += str[i];
+    if(!pred(code)) {
+      s += str[i];
+      continue;
+    }
+
+    if(code == 0) s += `\\0`;
+    else if(code == 10) s += `\\n`;
+    else if(code == 13) s += `\\r`;
+    else if(code == 9) s += `\\t`;
+    else if(code <= 0xff) s += `\\x${('0' + code.toString(16)).slice(-2)}`;
     else s += `\\u${('0000' + code.toString(16)).slice(-4)}`;
   }
   return s;

@@ -954,7 +954,7 @@ function isPunctuator(word) {
 }
 
 function isAlphaChar(c) {
-  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c.codePointAt(0) > 0xff;
+  if(typeof c == 'string') return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c.codePointAt(0) > 0xff;
 }
 
 function isDecimalDigit(c) {
