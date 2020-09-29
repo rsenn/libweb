@@ -98,16 +98,13 @@ function rubberband(distance, dimension, constant) {
 }
 
 function rubberbandIfOutOfBounds(position, min, max, constant) {
-  if(constant === void 0)
-    constant = 0.15;
+  if(constant === void 0) constant = 0.15;
 
   if(constant === 0) return minMax(position, min, max);
 
-  if(position < min)
-    return -rubberband(min - position, max - min, constant) + min;
+  if(position < min) return -rubberband(min - position, max - min, constant) + min;
 
-  if(position > max)
-    return rubberband(position - max, max - min, constant) + max;
+  if(position > max) return rubberband(position - max, max - min, constant) + max;
 
   return position;
 }
@@ -136,8 +133,7 @@ function _extends() {
         let source = arguments[i];
 
         for(let key in source) {
-          if(Object.prototype.hasOwnProperty.call(source, key))
-            target[key] = source[key];
+          if(Object.prototype.hasOwnProperty.call(source, key)) target[key] = source[key];
         }
       }
 
@@ -169,8 +165,7 @@ function objectWithoutPropertiesLoose(source, excluded) {
 }
 
 function assertThisInitialized(self) {
-  if(self === void 0)
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  if(self === void 0) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
 
   return self;
 }
@@ -218,12 +213,10 @@ function createForOfIteratorHelperLoose(o) {
 function noop() {} // returns a function that chains all functions given as parameters
 
 let chainFns = function chainFns() {
-  for(var _len = arguments.length, fns = new Array(_len), _key = 0; _key < _len; _key++)
-    fns[_key] = arguments[_key];
+  for(var _len = arguments.length, fns = new Array(_len), _key = 0; _key < _len; _key++) fns[_key] = arguments[_key];
 
   return function() {
-    for(var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++)
-      args[_key2] = arguments[_key2];
+    for(var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) args[_key2] = arguments[_key2];
 
     return fns.forEach(fn => fn.apply(void 0, args));
   };
@@ -649,9 +642,8 @@ export function useRecognizers(handlers, classes, config, nativeHandlers) {
     function bind(...args) {
       current.resetBindings();
 
-      for(var _len = args.length, args = new Array(_len), _key = 0; _key < _len; _key++)
-        args[_key] = args[_key];
-  
+      for(var _len = args.length, args = new Array(_len), _key = 0; _key < _len; _key++) args[_key] = args[_key];
+
       for(var _iterator = createForOfIteratorHelperLoose(classes), _step; !(_step = _iterator()).done; ) {
         let RecognizerClass = _step.value;
         new RecognizerClass(current, args).addBindings();
@@ -666,7 +658,7 @@ export function useRecognizers(handlers, classes, config, nativeHandlers) {
       }
 
       return current.getBind();
-    };
+    }
 
     return {
       nativeRefs: nativeHandlers,
@@ -703,8 +695,7 @@ let Recognizer = /*#__PURE__*/ (function () {
   function Recognizer(stateKey, controller, args) {
     let _this = this;
 
-    if(args === void 0)
-      args = [];
+    if(args === void 0) args = [];
 
     this.stateKey = stateKey;
     this.controller = controller;
@@ -714,11 +705,9 @@ let Recognizer = /*#__PURE__*/ (function () {
     this.setTimeout = function(callback, ms) {
       let _window;
 
-      if(ms === void 0)
-        ms = 140;
+      if(ms === void 0) ms = 140;
 
-      for(var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++)
-        args[_key - 2] = arguments[_key];
+      for(var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) args[_key - 2] = arguments[_key];
 
       _this.controller.timeouts[_this.stateKey] = (_window = window).setTimeout.apply(_window, [callback, ms].concat(args));
     }; // Convenience method to clear a timeout for a given gesture
@@ -864,8 +853,7 @@ let Recognizer = /*#__PURE__*/ (function () {
    */
 
   _proto.getMovement = function getMovement(values, state) {
-    if(state === void 0)
-      state = this.state;
+    if(state === void 0) state = this.state;
 
     let _this$config = this.config,
       initial = _this$config.initial,
@@ -890,11 +878,9 @@ let Recognizer = /*#__PURE__*/ (function () {
      * For both dimensions of the gesture, check its intentionality on each frame.
      */
 
-    if(i0 === false)
-      i0 = getIntentionalDisplacement(_m0, t0);
+    if(i0 === false) i0 = getIntentionalDisplacement(_m0, t0);
 
-    if(i1 === false)
-      i1 = getIntentionalDisplacement(_m1, t1);
+    if(i1 === false) i1 = getIntentionalDisplacement(_m1, t1);
     // Get gesture specific state properties based on intentionality and movement.
 
     let intentionalityCheck = this.checkIntentionality([i0, i1], [_m0, _m1], state);
@@ -951,25 +937,25 @@ let Recognizer = /*#__PURE__*/ (function () {
   createClass(Recognizer, [
     {
       key: 'config',
-       get() {
+      get() {
         return this.controller.config[this.stateKey];
       } // Is the gesture enabled
     },
     {
       key: 'enabled',
-       get() {
+      get() {
         return this.controller.config.enabled && this.config.enabled;
       } // Returns the controller state for a given gesture
     },
     {
       key: 'state',
-     get() {
+      get() {
         return this.controller.state[this.stateKey];
       } // Returns the gesture handler
     },
     {
       key: 'handler',
-  get() {
+      get() {
         return this.controller.handlers[this.stateKey];
       }
     }
@@ -1237,7 +1223,8 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       if(elapsedTime < SWIPE_MAX_ELAPSED_TIME) {
         if(ix !== false && Math.abs(vx) > svx && Math.abs(mx) > sx) swipe[0] = Math.sign(vx);
         if(iy !== false && Math.abs(vy) > svy && Math.abs(my) > sy) swipe[1] = Math.sign(vy);
-      }      thisObj.updateGestureState(_extends(
+      }
+      thisObj.updateGestureState(_extends(
           {
             event
           },
@@ -1467,10 +1454,8 @@ function getInternalDragOptions(dragConfig) {
     axis = dragOptions.axis,
     lockDirection = dragOptions.lockDirection;
 
-  if(threshold === void 0)
-    threshold = Math.max(0, filterTaps ? 3 : 0, lockDirection || axis ? 1 : 0);
-  else
-    filterTaps = true;
+  if(threshold === void 0) threshold = Math.max(0, filterTaps ? 3 : 0, lockDirection || axis ? 1 : 0);
+  else filterTaps = true;
 
   let internalCoordinatesOptions = getInternalCoordinatesOptions(matchKeysFromObject(
       {
@@ -1504,8 +1489,7 @@ function getInternalDragOptions(dragConfig) {
  */
 
 export function useDrag(handler, config) {
-  if(config === void 0)
-    config = {};
+  if(config === void 0) config = {};
 
   let _config = config,
     domTarget = _config.domTarget,
@@ -2326,8 +2310,7 @@ let ScrollRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
  */
 
 export function useScroll(handler, config) {
-  if(config === void 0)
-    config = {};
+  if(config === void 0) config = {};
 
   let _config = config,
     domTarget = _config.domTarget,
