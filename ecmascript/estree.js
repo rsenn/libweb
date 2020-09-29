@@ -417,6 +417,13 @@ export class ClassDeclaration extends ESNode {
   }
 }
 
+export class FunctionArgument extends ESNode {
+  constructor(arg, defaultValue) {
+    super('FunctionArgument');
+    this.arg = arg;
+    if(defaultValue) this.defaultValue = defaultValue;
+  }
+}
 export class FunctionDeclaration extends FunctionLiteral {
   constructor(id, params, body, exported = false, is_async = false, generator = false) {
     super('FunctionDeclaration', id, params, body, is_async, generator);
@@ -452,6 +459,21 @@ export class VariableDeclarator extends ESNode {
     this.init = initialValue;
     //console.log('New VariableDeclarator: ', JSON.toString({ identifier:
     //identifier.value }));
+  }
+}
+
+export class AliasName extends ESNode {
+  constructor(name, as) {
+    super('AliasName');
+    this.name = name;
+    this.as = as;
+  }
+}
+
+export class ModuleItems extends ESNode {
+  constructor(items) {
+    super('ModuleItems');
+    this.items = items;
   }
 }
 
@@ -597,6 +619,7 @@ export const CTORS = {
   ForInStatement,
   ForStatement,
   FunctionLiteral,
+  FunctionArgument,
   FunctionDeclaration,
   Identifier,
   ComputedPropertyName,
@@ -614,6 +637,8 @@ export const CTORS = {
   NewExpression,
   ESNode,
   ObjectBindingPattern,
+  AliasName,
+  ModuleItems,
   ObjectLiteral,
   PropertyDefinition,
   MemberVariable,

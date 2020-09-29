@@ -15,6 +15,7 @@ export class Printer {
     comments: [1, 32],
     templates: [1, 35]
   };
+
   constructor(options = {}, comments) {
     const { indent = 2, color = false, format = 1 } = options;
     this.indent = indent || 2;
@@ -41,6 +42,8 @@ export class Printer {
           throw new Error(`Non-existent print${name}(${args})`);
         };
     } catch(err) {
+      console.log('err:', err);
+      throw err;
       process.exit(0);
     }
     let ret = '';
@@ -99,11 +102,21 @@ export class Printer {
 
   /*
   printExpression(expression) {
+  }*/
+
+  printFunctionArgument(function_argument) {
+    const { arg, defaultValue } = function_argument;
+
+    let output = '';
+    output += this.printNode(arg);
+
+    if(defaultValue) {
+      output += ' = ';
+      output += this.printNode(defaultValue);
+    }
+    return output;
   }
 
-  printFunction(function) {
-  }
-*/
   printIdentifier(identifier) {
     return this.colorText.identifiers(identifier.value);
   }
@@ -557,16 +570,11 @@ export class Printer {
     if(id) output += `${this.printNode(id)}`;
 
     output = output.replace(/ $/, '');
-    output +=
-      '(' +
-      (params.length !== undefined
-        ? Array.from(params)
-            .map(param => this.printNode(param))
-            .join(', ')
-        : this.printNode(params)) +
-      ') ';
-
-    //console.log("body: ",function_declaration);
+    output += '(' + (params.length !== undefined ? [...params].map(param => this.printNode(param)).join(', ') : this.printNode(params)) + ') ';
+    /*
+ console.log("body: ",body);
+ console.log("params: ",params);
+ console.log("output: ",output);*/
 
     output += this.printNode(body);
 
