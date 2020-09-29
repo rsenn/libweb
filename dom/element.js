@@ -279,15 +279,13 @@ export class Element extends Node {
    * lement  The element
    * @return     {Object}  The rectangle.
    */
-  static rect(elem, options = {}) {
-    let args = [...arguments];
-    let element = args.shift();
-    if(args.length > 0 && (isRect(args) || isRect(args[0]))) return Element.setRect.apply(Element, arguments);
-    let { round = true, relative_to = null, relative = false, scroll_offset = true } = options;
+  static rect(...args) {
+    let [element, options = {}] = args;
+    if(args.length > 0 && (isRect(args) || isRect(args[0]))) return Element.setRect(...args);
+    let { round = true, relative_to = null, relative = false, scroll_offset = true, border = true, margin = false } = options;
     const e = typeof element === 'string' ? Element.find(element) : element;
-    if(!e || !e.getBoundingClientRect) {
-      return null; //new Rect(0, 0, 0, 0);
-    }
+    if(!e || !e.getBoundingClientRect) return null; //new Rect(0, 0, 0, 0);
+
     const bb = e.getBoundingClientRect();
 
     let r = TRBL.toRect(bb);
@@ -298,15 +296,14 @@ export class Element extends Node {
       r.x -= off.x;
       r.y -= off.y;
     }
-
     //console.log("Element.rect(", r, ")");
 
-    if(options.border === false) {
+    if(!border) {
       const border = Element.border(e);
       Rect.inset(r, border);
 
       //console.log("Element.rect(", r, ") // with border = ", border);
-    } else if(options.margin) {
+    } else if(margin) {
       const margin = Element.margin(e);
       Rect.outset(r, margin);
 

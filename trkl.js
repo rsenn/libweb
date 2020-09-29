@@ -8,12 +8,8 @@ export function trkl(initValue) {
   let value = initValue;
   let subscribers = [];
 
-  let self = function(writeValue) {
-    if(arguments.length) {
-      write(writeValue);
-    } else {
-      return read();
-    }
+  let self = function(...args) {
+    return args.length ? write(args[0], this) : read();
   };
 
   //Using string keys tells Uglify that we intend to export these symbols
@@ -45,7 +41,7 @@ export function trkl(initValue) {
     return this;
   };
 
-  function write(newValue) {
+  function write(newValue, thisObj) {
     let oldValue = value;
 
     if(newValue === oldValue && (newValue === null || typeof newValue !== 'object')) {
@@ -62,7 +58,9 @@ export function trkl(initValue) {
     for(let i = 0; i < subCount; i++) {
       //If a sub throws an error, the effects array will just keep growing and growing.
       //It won't stop operating properly, but it might eat memory. We're okay with this, I guess?
-      effects.pop()(value, oldValue);
+      let fn = effects.pop();
+
+      fn.call(thisObj, value, oldValue);
     }
   }
 
