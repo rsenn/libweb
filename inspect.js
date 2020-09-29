@@ -2,6 +2,7 @@ const keysFn = fn => o => (o instanceof Map ? [...o.keys()] : fn(o));
 const getFn = (o, k) => (o instanceof Map ? o.get(k) : o[k]);
 
 export const inspect = (o, pred = v => true) =>
+  typeof(o) != 'object' ? o+'' : o instanceof Array ?  '[ '+o.map(item => inspect(item)).join(", ")+' ]' :
   '{\n  ' +
   [
     [o => o, keysFn(Object.keys)],
@@ -12,9 +13,9 @@ export const inspect = (o, pred = v => true) =>
     .reduce((a, [proto, keys]) => (a.length ? a : [...a, ...keys(proto(o))]), [])
     .reduce((a, k) => (a.indexOf(k) == -1 ? [...a, k] : a), [])
     .map(k => {
-      console.log('k:', k);
+      /*console.log('k:', k);
       console.log('o:', o);
-      console.log('v:', getFn(o, k));
+      console.log('v:', getFn(o, k));*/
       return [k, getFn(o, k)];
     })
     .map(([k, v]) => {

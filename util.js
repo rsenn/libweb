@@ -994,6 +994,9 @@ Util.splice = function(str, index, delcount, insert) {
   Array.prototype.splice.apply(chars, arguments);
   return chars.join('');
 };
+Util.identity =  arg => arg;
+Util.reverse = arr => arr.reverse();
+
 Util.keyOf = function(obj, prop) {
   const keys = Object.keys(obj);
   for(let k in keys) {
@@ -2010,6 +2013,7 @@ Util.isMobile = function() {
 };
 Util.uniquePred = (cmp = null) => (cmp === null ? (el, i, arr) => arr.indexOf(el) === i : (el, i, arr) => arr.findIndex(item => cmp(el, item)) === i);
 Util.unique = (arr, cmp) => arr.filter(Util.uniquePred(cmp));
+Util.zip = (a) => a.reduce((a, b) => (a.length > b.length ? a : b), []).map((_, i) => a.map(arr => arr[i]));
 
 Util.histogram = (arr, t, out = false ? {} : new Map(), initVal = () => 0 /* new Set()*/, setVal = v => v) => {
   const set = /*Util.isObject(out) && typeof out.set == 'function' ? (k, v) => out.set(k, v) :*/ Util.setter(out);
