@@ -1,4 +1,4 @@
-import { Component,   useEffect, useRef  } from '../dom/preactComponent.js';
+import { Component, useEffect, useRef } from '../dom/preactComponent.js';
 
 const defaultEvents = ['mousedown', 'touchstart'];
 
@@ -6,22 +6,22 @@ export const useClickout = (events = defaultEvents) => {
   const refWrap = useRef();
   const doEvent = useRef(() => {});
 
-  const bindClickout = (clickoutFn) => {
+  const bindClickout = clickoutFn => {
     doEvent.current = clickoutFn;
   };
 
   useEffect(() => {
-    const handler = (event) => {
+    const handler = event => {
       const isOut = !!refWrap.current && !refWrap.current.contains(event.target);
-      if (isOut) doEvent.current(event, refWrap);
+      if(isOut) doEvent.current(event, refWrap);
     };
 
-    events.forEach((event) => {
+    events.forEach(event => {
       document.addEventListener(event, handler);
     });
 
     return () => {
-      events.forEach((event) => {
+      events.forEach(event => {
         document.removeEventListener(event, handler);
       });
     };
