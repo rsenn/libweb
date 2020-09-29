@@ -1045,6 +1045,10 @@ Util.chunkArray = (a, size) =>
     acc[acc.length - 1].push(item);
     return acc;
   }, []);
+
+Util.partition = function* (a, size) {
+  for(let i = 0; i < a.length; i += size) yield a.slice(i, i + size);
+};
 Util.chances = function(numbers, matches) {
   const f = Util.factorial;
   return f(numbers) / (f(matches) * f(numbers - matches));
