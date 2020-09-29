@@ -665,7 +665,7 @@ export class ECMAScriptParser extends Parser {
           }
         }
 
-        console.debug(`${this.position()} args:`, expression);
+        //console.debug(`${this.position()} args:`, expression);
         expression = this.parseArrowFunction(args, is_async);
         expression = new SequenceExpression([expression]);
       } else if(!(expression instanceof SequenceExpression)) expression = new SequenceExpression([expression]);
@@ -954,7 +954,7 @@ export class ECMAScriptParser extends Parser {
     let ast = result.ast;
     let lhs = result.lhs;
     if(!ast) {
-      console.log('ast lhs:', { result, token: this.token.value, pos: [...this.position()].join(':') });
+      //console.log('ast lhs:', { result, token: this.token.value, pos: [...this.position()].join(':') });
       //console.log("lhs:", Util.className(lhs));
       //console.log("line:", this.lexer.currentLine());
       ast = new Identifier('undefined');
@@ -1311,7 +1311,7 @@ export class ECMAScriptParser extends Parser {
         //console.log('member:', util.inspect(member, { depth: 2, colors: true }));
 
         if(member == null && flags) {
-          console.log('Property:', { member, value, token: this.token });
+          //console.log('Property:', { member, value, token: this.token });
 
           member = new Identifier(flags & PropertyDefinition.GETTER ? 'get' : 'set');
 
@@ -1480,7 +1480,7 @@ export class ECMAScriptParser extends Parser {
         let obj;
         if(this.matchLiteral()) obj = this.expectLiteral();
         else obj = this.parseAssignmentExpression();
-        console.log('obj', obj);
+        //console.log('obj', obj);
         jsx.children.push(obj);
         this.expectPunctuators('}');
       }
@@ -1489,7 +1489,7 @@ export class ECMAScriptParser extends Parser {
         while(!this.matchPunctuators('<')) {
           let tok = this.consume();
           toks.push(tok.value);
-          console.log('tok:', tok);
+          //console.log('tok:', tok);
         }
         let text = toks.join(' ');
         if(text != '') jsx.children.push(new Literal(text));
@@ -1510,7 +1510,7 @@ export class ECMAScriptParser extends Parser {
         if(tok2.value == '/' && tok3.value == tag.tag) {
           this.tokens = [];
           this.expectPunctuators('>');
-          console.log('end tok:', { depth });
+          //console.log('end tok:', { depth });
           depth--;
           //break;
         }
@@ -1583,11 +1583,11 @@ export class ECMAScriptParser extends Parser {
 
       if(this.matchKeywords('from')) {
         this.expectKeywords('from');
-        console.log('export from!');
+        //console.log('export from!');
         source = this.expectLiteral();
       } else if(this.matchIdentifier('from')) {
         this.expectIdentifier('from');
-        console.log('export from!');
+        //console.log('export from!');
         source = this.expectLiteral();
       }
       stmt = new ExportStatement(null, stmt, source);
@@ -1962,7 +1962,7 @@ export class ECMAScriptParser extends Parser {
         this.expectPunctuators(':');
         stmt = new LabelledStatement(stmt, this.parseStatement(insideIteration, insideFunction, exported));
 
-        console.debug('ExpressionStatement:', stmt);
+        //console.debug('ExpressionStatement:', stmt);
       }
       if(!stmt) throw this.error('No expression statement');
 

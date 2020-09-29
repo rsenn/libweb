@@ -472,7 +472,7 @@ export class Printer {
 
         decl += this.printNode(property.id);
 
-        if(property.id.value != property.value.value) {
+        if(property.id && property.value && property.id.value != property.value.value) {
           decl += ' as ';
           decl += this.printNode(property.value);
         }

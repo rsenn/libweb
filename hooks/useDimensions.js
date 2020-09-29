@@ -1,4 +1,4 @@
-import { Component, useState, useLayoutEffect, useCallback } from './lib/dom/preactComponent.js';
+import { Component, useState, useLayoutEffect, useCallback } from '../dom/preactComponent.js';
 
 function getDimensionObject(element) {
   if(typeof element == 'object' && element != null && element.base) element = element.base;

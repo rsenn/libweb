@@ -1,4 +1,4 @@
-import { React } from './lib/dom/preactComponent.js';
+import { React } from '../dom/preactComponent.js';
 
 // vector add
 function addV(v1, v2) {
@@ -115,7 +115,7 @@ function rubberbandIfOutOfBounds(position, min, max, constant) {
   return position;
 }
 
-function _defineProperties(target, props) {
+function defineProperties(target, props) {
   for(let i = 0; i < props.length; i++) {
     let descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -125,9 +125,9 @@ function _defineProperties(target, props) {
   }
 }
 
-function _createClass(Constructor, protoProps, staticProps) {
-  if(protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if(staticProps) _defineProperties(Constructor, staticProps);
+function createClass(Constructor, protoProps, staticProps) {
+  if(protoProps) defineProperties(Constructor.prototype, protoProps);
+  if(staticProps) defineProperties(Constructor, staticProps);
   return Constructor;
 }
 
@@ -151,13 +151,13 @@ function _extends() {
   return _extends.apply(this, arguments);
 }
 
-function _inheritsLoose(subClass, superClass) {
+function inheritsLoose(subClass, superClass) {
   subClass.prototype = Object.create(superClass.prototype);
   subClass.prototype.constructor = subClass;
   subClass.__proto__ = superClass;
 }
 
-function _objectWithoutPropertiesLoose(source, excluded) {
+function objectWithoutPropertiesLoose(source, excluded) {
   if(source == null) return {};
   let target = {};
   let sourceKeys = Object.keys(source);
@@ -172,7 +172,7 @@ function _objectWithoutPropertiesLoose(source, excluded) {
   return target;
 }
 
-function _assertThisInitialized(self) {
+function assertThisInitialized(self) {
   if(self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
@@ -180,16 +180,16 @@ function _assertThisInitialized(self) {
   return self;
 }
 
-function _unsupportedIterableToArray(o, minLen) {
+function unsupportedIterableToArray(o, minLen) {
   if(!o) return;
-  if(typeof o === 'string') return _arrayLikeToArray(o, minLen);
+  if(typeof o === 'string') return arrayLikeToArray(o, minLen);
   let n = Object.prototype.toString.call(o).slice(8, -1);
   if(n === 'Object' && o.constructor) n = o.constructor.name;
   if(n === 'Map' || n === 'Set') return Array.from(n);
-  if(n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  if(n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
 }
 
-function _arrayLikeToArray(arr, len) {
+function arrayLikeToArray(arr, len) {
   if(len == null || len > arr.length) len = arr.length;
 
   for(var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
@@ -197,11 +197,11 @@ function _arrayLikeToArray(arr, len) {
   return arr2;
 }
 
-function _createForOfIteratorHelperLoose(o) {
+function createForOfIteratorHelperLoose(o) {
   let i = 0;
 
   if(typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
-    if(Array.isArray(o) || (o = _unsupportedIterableToArray(o)))
+    if(Array.isArray(o) || (o = unsupportedIterableToArray(o)))
       return function() {
         if(i >= o.length)
           return {
@@ -660,7 +660,7 @@ function useRecognizers(handlers, classes, config, nativeHandlers) {
         args[_key] = arguments[_key];
       }
 
-      for(var _iterator = _createForOfIteratorHelperLoose(classes), _step; !(_step = _iterator()).done; ) {
+      for(var _iterator = createForOfIteratorHelperLoose(classes), _step; !(_step = _iterator()).done; ) {
         let RecognizerClass = _step.value;
         new RecognizerClass(current, args).addBindings();
       } // we also add event bindings for native handlers
@@ -963,7 +963,7 @@ let Recognizer = /*#__PURE__*/ (function () {
     this.removeWindowListeners();
   };
 
-  _createClass(Recognizer, [
+  createClass(Recognizer, [
     {
       key: 'config',
       get: function get() {
@@ -1003,7 +1003,7 @@ let Recognizer = /*#__PURE__*/ (function () {
  */
 
 let CoordinatesRecognizer = /*#__PURE__*/ (function (_Recognizer) {
-  _inheritsLoose(CoordinatesRecognizer, _Recognizer);
+  inheritsLoose(CoordinatesRecognizer, _Recognizer);
 
   function CoordinatesRecognizer() {
     return _Recognizer.apply(this, arguments) || this;
@@ -1104,7 +1104,7 @@ let SWIPE_MAX_ELAPSED_TIME = 220;
 let FILTER_REPEATED_EVENTS_DELAY = 200;
 
 let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
-  _inheritsLoose(DragRecognizer, _CoordinatesRecognize);
+  inheritsLoose(DragRecognizer, _CoordinatesRecognize);
 
   function DragRecognizer(controller, args) {
     let _this;
@@ -1287,7 +1287,7 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
     };
 
     _this.clean = function() {
-      _CoordinatesRecognize.prototype.clean.call(_assertThisInitialized(_this));
+      _CoordinatesRecognize.prototype.clean.call(assertThisInitialized(_this));
 
       _this.state._delayedEvent = false;
       if(_this.controller.config.pointer) _this.removePointers();
@@ -1388,7 +1388,7 @@ function getInternalGenericOptions(config) {
     domTarget = _config$domTarget === void 0 ? undefined : _config$domTarget,
     _config$enabled = _config.enabled,
     enabled = _config$enabled === void 0 ? true : _config$enabled,
-    restConfig = _objectWithoutPropertiesLoose(_config, ['eventOptions', 'window', 'domTarget', 'enabled']);
+    restConfig = objectWithoutPropertiesLoose(_config, ['eventOptions', 'window', 'domTarget', 'enabled']);
 
   return _extends({}, restConfig, {
     enabled,
@@ -1431,7 +1431,7 @@ function getInternalCoordinatesOptions(coordinatesConfig) {
     lockDirection = _coordinatesConfig.lockDirection,
     _coordinatesConfig$bo = _coordinatesConfig.bounds,
     bounds = _coordinatesConfig$bo === void 0 ? {} : _coordinatesConfig$bo,
-    internalOptions = _objectWithoutPropertiesLoose(_coordinatesConfig, ['axis', 'lockDirection', 'bounds']);
+    internalOptions = objectWithoutPropertiesLoose(_coordinatesConfig, ['axis', 'lockDirection', 'bounds']);
 
   let boundsArray = [
     [def.withDefault(bounds.left, -Infinity), def.withDefault(bounds.right, Infinity)],
@@ -1463,7 +1463,7 @@ function getInternalDistanceAngleOptions(distanceAngleConfig) {
     distanceBounds = _distanceAngleConfig$ === void 0 ? {} : _distanceAngleConfig$,
     _distanceAngleConfig$2 = _distanceAngleConfig.angleBounds,
     angleBounds = _distanceAngleConfig$2 === void 0 ? {} : _distanceAngleConfig$2,
-    internalOptions = _objectWithoutPropertiesLoose(_distanceAngleConfig, ['distanceBounds', 'angleBounds']);
+    internalOptions = objectWithoutPropertiesLoose(_distanceAngleConfig, ['distanceBounds', 'angleBounds']);
 
   let boundsArray = [
     [def.withDefault(distanceBounds.min, -Infinity), def.withDefault(distanceBounds.max, Infinity)],
@@ -1484,7 +1484,7 @@ function getInternalDragOptions(dragConfig) {
     bounds = _dragConfig.bounds,
     rubberband = _dragConfig.rubberband,
     initial = _dragConfig.initial,
-    dragOptions = _objectWithoutPropertiesLoose(_dragConfig, ['enabled', 'threshold', 'bounds', 'rubberband', 'initial']);
+    dragOptions = objectWithoutPropertiesLoose(_dragConfig, ['enabled', 'threshold', 'bounds', 'rubberband', 'initial']);
 
   let _dragOptions$swipeVel = dragOptions.swipeVelocity,
     swipeVelocity = _dragOptions$swipeVel === void 0 ? DEFAULT_SWIPE_VELOCITY : _dragOptions$swipeVel,
@@ -1543,7 +1543,7 @@ function useDrag(handler, config) {
     domTarget = _config.domTarget,
     eventOptions = _config.eventOptions,
     window = _config.window,
-    drag = _objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
+    drag = objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
 
   /**
    * TODO: at the moment we recompute the config object at every render
@@ -1578,7 +1578,7 @@ function useDrag(handler, config) {
  */
 
 let DistanceAngleRecognizer = /*#__PURE__*/ (function (_Recognizer) {
-  _inheritsLoose(DistanceAngleRecognizer, _Recognizer);
+  inheritsLoose(DistanceAngleRecognizer, _Recognizer);
 
   function DistanceAngleRecognizer() {
     return _Recognizer.apply(this, arguments) || this;
@@ -1645,7 +1645,7 @@ let DistanceAngleRecognizer = /*#__PURE__*/ (function (_Recognizer) {
 })(Recognizer);
 
 let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
-  _inheritsLoose(PinchRecognizer, _DistanceAngleRecogni);
+  inheritsLoose(PinchRecognizer, _DistanceAngleRecogni);
 
   function PinchRecognizer(controller, args) {
     let _this;
@@ -1966,7 +1966,7 @@ function usePinch(handler, config) {
     domTarget = _config.domTarget,
     eventOptions = _config.eventOptions,
     window = _config.window,
-    pinch = _objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
+    pinch = objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
 
   /**
    * TODO: at the moment we recompute the config object at every render
@@ -1992,7 +1992,7 @@ function usePinch(handler, config) {
 }
 
 let WheelRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
-  _inheritsLoose(WheelRecognizer, _CoordinatesRecognize);
+  inheritsLoose(WheelRecognizer, _CoordinatesRecognize);
 
   function WheelRecognizer(controller, args) {
     let _this;
@@ -2109,7 +2109,7 @@ function useWheel(handler, config) {
     domTarget = _config.domTarget,
     eventOptions = _config.eventOptions,
     window = _config.window,
-    wheel = _objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
+    wheel = objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
 
   /**
    * TODO: at the moment we recompute the config object at every render
@@ -2135,7 +2135,7 @@ function useWheel(handler, config) {
 }
 
 let MoveRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
-  _inheritsLoose(MoveRecognizer, _CoordinatesRecognize);
+  inheritsLoose(MoveRecognizer, _CoordinatesRecognize);
 
   function MoveRecognizer(controller, args) {
     let _this;
@@ -2285,7 +2285,7 @@ function useMove(handler, config) {
     domTarget = _config.domTarget,
     eventOptions = _config.eventOptions,
     window = _config.window,
-    move = _objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
+    move = objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
 
   /**
    * TODO: at the moment we recompute the config object at every render
@@ -2329,7 +2329,7 @@ function useHover(handler, config) {
     domTarget = _config.domTarget,
     eventOptions = _config.eventOptions,
     window = _config.window,
-    hover = _objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
+    hover = objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
 
   /**
    * TODO: at the moment we recompute the config object at every render
@@ -2359,7 +2359,7 @@ function useHover(handler, config) {
 }
 
 let ScrollRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
-  _inheritsLoose(ScrollRecognizer, _CoordinatesRecognize);
+  inheritsLoose(ScrollRecognizer, _CoordinatesRecognize);
 
   function ScrollRecognizer(controller, args) {
     let _this;
@@ -2464,7 +2464,7 @@ function useScroll(handler, config) {
     domTarget = _config.domTarget,
     eventOptions = _config.eventOptions,
     window = _config.window,
-    scroll = _objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
+    scroll = objectWithoutPropertiesLoose(_config, ['domTarget', 'eventOptions', 'window']);
 
   /**
    * TODO: at the moment we recompute the config object at every render
@@ -2524,7 +2524,7 @@ function useGesture(handlers, config) {
     scroll = _config.scroll,
     pinch = _config.pinch,
     hover = _config.hover,
-    restConfig = _objectWithoutPropertiesLoose(_config, ['drag', 'wheel', 'move', 'scroll', 'pinch', 'hover']);
+    restConfig = objectWithoutPropertiesLoose(_config, ['drag', 'wheel', 'move', 'scroll', 'pinch', 'hover']);
 
   let mergedConfig = getInternalGenericOptions(restConfig);
   let classes = [];
