@@ -98,19 +98,16 @@ function rubberband(distance, dimension, constant) {
 }
 
 function rubberbandIfOutOfBounds(position, min, max, constant) {
-  if(constant === void 0) {
+  if(constant === void 0)
     constant = 0.15;
-  }
 
   if(constant === 0) return minMax(position, min, max);
 
-  if(position < min) {
+  if(position < min)
     return -rubberband(min - position, max - min, constant) + min;
-  }
 
-  if(position > max) {
+  if(position > max)
     return rubberband(position - max, max - min, constant) + max;
-  }
 
   return position;
 }
@@ -139,9 +136,8 @@ function _extends() {
         let source = arguments[i];
 
         for(let key in source) {
-          if(Object.prototype.hasOwnProperty.call(source, key)) {
+          if(Object.prototype.hasOwnProperty.call(source, key))
             target[key] = source[key];
-          }
         }
       }
 
@@ -173,9 +169,8 @@ function objectWithoutPropertiesLoose(source, excluded) {
 }
 
 function assertThisInitialized(self) {
-  if(self === void 0) {
+  if(self === void 0)
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
 
   return self;
 }
@@ -223,14 +218,12 @@ function createForOfIteratorHelperLoose(o) {
 function noop() {} // returns a function that chains all functions given as parameters
 
 let chainFns = function chainFns() {
-  for(var _len = arguments.length, fns = new Array(_len), _key = 0; _key < _len; _key++) {
+  for(var _len = arguments.length, fns = new Array(_len), _key = 0; _key < _len; _key++)
     fns[_key] = arguments[_key];
-  }
 
   return function() {
-    for(var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+    for(var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++)
       args[_key2] = arguments[_key2];
-    }
 
     return fns.forEach(fn => fn.apply(void 0, args));
   };
@@ -643,7 +636,7 @@ let Controller = function Controller() {
  * @returns {(...args: any[]) => HookReturnType<Config>}
  */
 
-function useRecognizers(handlers, classes, config, nativeHandlers) {
+export function useRecognizers(handlers, classes, config, nativeHandlers) {
   // The gesture controller keeping track of all gesture states
   var controller = React.useMemo(() => {
     let current = new Controller();
@@ -653,13 +646,12 @@ function useRecognizers(handlers, classes, config, nativeHandlers) {
      * bind object depending on whether `domTarget` was specified in the config object.
      */
 
-    let bind = function bind() {
+    function bind(...args) {
       current.resetBindings();
 
-      for(var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
+      for(var _len = args.length, args = new Array(_len), _key = 0; _key < _len; _key++)
+        args[_key] = args[_key];
+  
       for(var _iterator = createForOfIteratorHelperLoose(classes), _step; !(_step = _iterator()).done; ) {
         let RecognizerClass = _step.value;
         new RecognizerClass(current, args).addBindings();
@@ -711,9 +703,8 @@ let Recognizer = /*#__PURE__*/ (function () {
   function Recognizer(stateKey, controller, args) {
     let _this = this;
 
-    if(args === void 0) {
+    if(args === void 0)
       args = [];
-    }
 
     this.stateKey = stateKey;
     this.controller = controller;
@@ -723,13 +714,11 @@ let Recognizer = /*#__PURE__*/ (function () {
     this.setTimeout = function(callback, ms) {
       let _window;
 
-      if(ms === void 0) {
+      if(ms === void 0)
         ms = 140;
-      }
 
-      for(var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+      for(var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++)
         args[_key - 2] = arguments[_key];
-      }
 
       _this.controller.timeouts[_this.stateKey] = (_window = window).setTimeout.apply(_window, [callback, ms].concat(args));
     }; // Convenience method to clear a timeout for a given gesture
@@ -772,7 +761,6 @@ let Recognizer = /*#__PURE__*/ (function () {
       /**
        * [x, y]: [rubberband(x, min, max), rubberband(y, min, max)]
        */
-
       return vector.map((v, i) => rubberbandIfOutOfBounds(v, bounds[i][0], bounds[i][1], rubberband[i]));
     };
 
@@ -791,7 +779,6 @@ let Recognizer = /*#__PURE__*/ (function () {
         // we need debounced gestures to end by themselves
         if(!_this.debounced) {
           _this.state._active = false;
-
           _this.clean();
         }
 
@@ -877,9 +864,8 @@ let Recognizer = /*#__PURE__*/ (function () {
    */
 
   _proto.getMovement = function getMovement(values, state) {
-    if(state === void 0) {
+    if(state === void 0)
       state = this.state;
-    }
 
     let _this$config = this.config,
       initial = _this$config.initial,
@@ -904,13 +890,12 @@ let Recognizer = /*#__PURE__*/ (function () {
      * For both dimensions of the gesture, check its intentionality on each frame.
      */
 
-    if(i0 === false) {
+    if(i0 === false)
       i0 = getIntentionalDisplacement(_m0, t0);
-    }
 
-    if(i1 === false) {
+    if(i1 === false)
       i1 = getIntentionalDisplacement(_m1, t1);
-    } // Get gesture specific state properties based on intentionality and movement.
+    // Get gesture specific state properties based on intentionality and movement.
 
     let intentionalityCheck = this.checkIntentionality([i0, i1], [_m0, _m1], state);
     let _intentional = intentionalityCheck._intentional,
@@ -966,25 +951,25 @@ let Recognizer = /*#__PURE__*/ (function () {
   createClass(Recognizer, [
     {
       key: 'config',
-      get: function get() {
+       get() {
         return this.controller.config[this.stateKey];
       } // Is the gesture enabled
     },
     {
       key: 'enabled',
-      get: function get() {
+       get() {
         return this.controller.config.enabled && this.config.enabled;
       } // Returns the controller state for a given gesture
     },
     {
       key: 'state',
-      get: function get() {
+     get() {
         return this.controller.state[this.stateKey];
       } // Returns the gesture handler
     },
     {
       key: 'handler',
-      get: function get() {
+  get() {
         return this.controller.handlers[this.stateKey];
       }
     }
@@ -1005,8 +990,8 @@ let Recognizer = /*#__PURE__*/ (function () {
 let CoordinatesRecognizer = /*#__PURE__*/ (function (_Recognizer) {
   inheritsLoose(CoordinatesRecognizer, _Recognizer);
 
-  function CoordinatesRecognizer() {
-    return _Recognizer.apply(this, arguments) || this;
+  function CoordinatesRecognizer(...args) {
+    return _Recognizer.call(this, ...args) || this;
   }
 
   let _proto = CoordinatesRecognizer.prototype;
@@ -1107,21 +1092,21 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
   inheritsLoose(DragRecognizer, _CoordinatesRecognize);
 
   function DragRecognizer(controller, args) {
-    let _this;
+    let thisObj;
 
-    _this = _CoordinatesRecognize.call(this, 'drag', controller, args) || this;
-    _this.ingKey = 'dragging';
-    _this.wasTouch = false;
+    thisObj = _CoordinatesRecognize.call(this, 'drag', controller, args) || this;
+    thisObj.ingKey = 'dragging';
+    thisObj.wasTouch = false;
 
-    _this.isEventTypeTouch = function(type) {
+    thisObj.isEventTypeTouch = function(type) {
       return !!type && type.indexOf('touch') === 0;
     };
 
-    _this.dragShouldStart = function(event) {
+    thisObj.dragShouldStart = function(event) {
       let _getGenericEventData = getGenericEventData(event),
         touches = _getGenericEventData.touches;
 
-      let _lastEventType = _this.state._lastEventType;
+      let _lastEventType = thisObj.state._lastEventType;
 
       /**
        * This tries to filter out mouse events triggered by touch screens
@@ -1130,118 +1115,104 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       // this means that we might be dealing with mouse simulated events if they're close to
       // each other. We're only doing this check when we're not using pointer events.
 
-      if(!_this.controller.config.pointer && _this.isEventTypeTouch(_lastEventType) && !_this.isEventTypeTouch(event.type)) {
-        let delay = Math.abs(event.timeStamp - _this.state.startTime);
+      if(!thisObj.controller.config.pointer && thisObj.isEventTypeTouch(_lastEventType) && !thisObj.isEventTypeTouch(event.type)) {
+        let delay = Math.abs(event.timeStamp - thisObj.state.startTime);
         if(delay < FILTER_REPEATED_EVENTS_DELAY) return false;
       }
 
-      return _this.enabled && touches < 2;
+      return thisObj.enabled && touches < 2;
     };
 
-    _this.setPointers = function(event) {
+    thisObj.setPointers = function(event) {
       let currentTarget = event.currentTarget,
         pointerId = event.pointerId;
       if(currentTarget) currentTarget.setPointerCapture(pointerId);
 
-      _this.updateGestureState({
+      thisObj.updateGestureState({
         currentTarget,
         pointerId
       });
     };
 
-    _this.removePointers = function() {
-      let _this$state = _this.state,
+    thisObj.removePointers = function() {
+      let _this$state = thisObj.state,
         currentTarget = _this$state.currentTarget,
         pointerId = _this$state.pointerId;
       if(currentTarget && pointerId) currentTarget.releasePointerCapture(pointerId);
     };
 
-    _this.setListeners = function(isTouch) {
-      _this.removeWindowListeners();
+    thisObj.setListeners = function(isTouch) {
+      thisObj.removeWindowListeners();
 
       let dragListeners = isTouch
         ? [
-            ['touchmove', _this.onDragChange],
-            ['touchend', _this.onDragEnd],
-            ['touchcancel', _this.onDragEnd]
+            ['touchmove', thisObj.onDragChange],
+            ['touchend', thisObj.onDragEnd],
+            ['touchcancel', thisObj.onDragEnd]
           ]
         : [
-            ['mousemove', _this.onDragChange],
-            ['mouseup', _this.onDragEnd]
+            ['mousemove', thisObj.onDragChange],
+            ['mouseup', thisObj.onDragEnd]
           ];
 
-      _this.addWindowListeners(dragListeners);
+      thisObj.addWindowListeners(dragListeners);
     };
 
-    _this.onDragStart = function(event) {
-      if(!_this.dragShouldStart(event)) return; // if pointers events
+    thisObj.onDragStart = function(event) {
+      if(!thisObj.dragShouldStart(event)) return; // if pointers events
 
-      if(_this.controller.config.pointer) _this.setPointers(event);
-      else _this.setListeners(_this.isEventTypeTouch(event.type));
+      if(thisObj.controller.config.pointer) thisObj.setPointers(event);
+      else thisObj.setListeners(thisObj.isEventTypeTouch(event.type));
 
-      if(_this.config.delay > 0) {
-        _this.state._delayedEvent = true;
+      if(thisObj.config.delay > 0) {
+        thisObj.state._delayedEvent = true;
         if(typeof event.persist === 'function') event.persist();
 
-        _this.setTimeout(() => _this.startDrag(event), _this.config.delay);
+        thisObj.setTimeout(() => thisObj.startDrag(event), thisObj.config.delay);
       } else {
-        _this.startDrag(event);
+        thisObj.startDrag(event);
       }
     };
 
-    _this.onDragChange = function(event) {
-      let canceled = _this.state.canceled;
+    thisObj.onDragChange = function(event) {
+      let canceled = thisObj.state.canceled;
       if(canceled) return;
-
-      if(!_this.state._active) {
-        if(_this.state._delayedEvent) {
-          _this.clearTimeout();
-
-          _this.startDrag(event);
+      if(!thisObj.state._active) {
+        if(thisObj.state._delayedEvent) {
+          thisObj.clearTimeout();
+          thisObj.startDrag(event);
         }
-
         return;
       }
-
       let genericEventData = getGenericEventData(event);
-
       if(!genericEventData.down) {
-        _this.onDragEnd(event);
-
+        thisObj.onDragEnd(event);
         return;
       }
-
-      _this.updateSharedState(genericEventData);
-
+      thisObj.updateSharedState(genericEventData);
       let _getPointerEventValue = getPointerEventValues(event),
         values = _getPointerEventValue.values;
-
-      let kinematics = _this.getKinematics(values, event);
-
-      let _isTap = _this.state._isTap;
+      let kinematics = thisObj.getKinematics(values, event);
+      let _isTap = thisObj.state._isTap;
       if(_isTap && calculateDistance(kinematics._movement) >= TAP_DISTANCE_THRESHOLD) _isTap = false;
-
-      _this.updateGestureState(_extends({}, _this.getGenericPayload(event), {}, kinematics, {
+      thisObj.updateGestureState(_extends({}, thisObj.getGenericPayload(event), {}, kinematics, {
           _isTap,
           cancel: function cancel() {
-            return _this.onCancel();
+            return thisObj.onCancel();
           }
         })
       );
-
-      _this.fireGestureHandler();
+      thisObj.fireGestureHandler();
     };
 
-    _this.onDragEnd = function(event) {
-      _this.state._active = false;
-
-      _this.updateSharedState({
+    thisObj.onDragEnd = function(event) {
+      thisObj.state._active = false;
+      thisObj.updateSharedState({
         down: false,
         buttons: 0,
         touches: 0
       });
-
-      let _this$state2 = _this.state,
+      let _this$state2 = thisObj.state,
         _isTap = _this$state2._isTap,
         values = _this$state2.values,
         _this$state2$velociti = _this$state2.velocities,
@@ -1253,11 +1224,9 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
         _this$state2$_intenti = _this$state2._intentional,
         ix = _this$state2$_intenti[0],
         iy = _this$state2$_intenti[1];
-
-      let endState = _extends({}, _this.getGenericPayload(event), {}, _this.getMovement(values));
-
+      let endState = _extends({}, thisObj.getGenericPayload(event), {}, thisObj.getMovement(values));
       let elapsedTime = endState.elapsedTime;
-      let _this$config = _this.config,
+      let _this$config = thisObj.config,
         _this$config$swipeVel = _this$config.swipeVelocity,
         svx = _this$config$swipeVel[0],
         svy = _this$config$swipeVel[1],
@@ -1265,13 +1234,10 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
         sx = _this$config$swipeDis[0],
         sy = _this$config$swipeDis[1];
       let swipe = [0, 0];
-
       if(elapsedTime < SWIPE_MAX_ELAPSED_TIME) {
         if(ix !== false && Math.abs(vx) > svx && Math.abs(mx) > sx) swipe[0] = Math.sign(vx);
         if(iy !== false && Math.abs(vy) > svy && Math.abs(my) > sy) swipe[1] = Math.sign(vy);
-      }
-
-      _this.updateGestureState(_extends(
+      }      thisObj.updateGestureState(_extends(
           {
             event
           },
@@ -1283,34 +1249,34 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
         )
       );
 
-      _this.fireGestureHandler(_this.config.filterTaps && _this.state._isTap);
+      thisObj.fireGestureHandler(thisObj.config.filterTaps && thisObj.state._isTap);
     };
 
-    _this.clean = function() {
-      _CoordinatesRecognize.prototype.clean.call(assertThisInitialized(_this));
+    thisObj.clean = function() {
+      _CoordinatesRecognize.prototype.clean.call(assertThisInitialized(thisObj));
 
-      _this.state._delayedEvent = false;
-      if(_this.controller.config.pointer) _this.removePointers();
+      thisObj.state._delayedEvent = false;
+      if(thisObj.controller.config.pointer) thisObj.removePointers();
     };
 
-    _this.onCancel = function() {
-      _this.updateGestureState({
+    thisObj.onCancel = function() {
+      thisObj.updateGestureState({
         canceled: true,
         cancel: noop
       });
 
-      _this.state._active = false;
+      thisObj.state._active = false;
 
-      _this.updateSharedState({
+      thisObj.updateSharedState({
         down: false,
         buttons: 0,
         touches: 0
       });
 
-      requestAnimationFrame(() => _this.fireGestureHandler());
+      requestAnimationFrame(() => thisObj.fireGestureHandler());
     };
 
-    return _this;
+    return thisObj;
   }
 
   let _proto = DragRecognizer.prototype;
@@ -1403,6 +1369,7 @@ function getInternalGenericOptions(config) {
     pointer: !!pointer
   });
 }
+
 function getInternalGestureOptions(gestureConfig) {
   let _gestureConfig$thresh = gestureConfig.threshold,
     threshold = _gestureConfig$thresh === void 0 ? undefined : _gestureConfig$thresh,
@@ -1421,6 +1388,7 @@ function getInternalGestureOptions(gestureConfig) {
     rubberband: def.array(rubberband)
   };
 }
+
 function getInternalCoordinatesOptions(coordinatesConfig) {
   if(coordinatesConfig === void 0) {
     coordinatesConfig = {};
@@ -1453,6 +1421,7 @@ function getInternalCoordinatesOptions(coordinatesConfig) {
     }
   );
 }
+
 function getInternalDistanceAngleOptions(distanceAngleConfig) {
   if(distanceAngleConfig === void 0) {
     distanceAngleConfig = {};
@@ -1473,6 +1442,7 @@ function getInternalDistanceAngleOptions(distanceAngleConfig) {
     bounds: boundsArray
   });
 }
+
 function getInternalDragOptions(dragConfig) {
   if(dragConfig === void 0) {
     dragConfig = {};
@@ -1497,11 +1467,10 @@ function getInternalDragOptions(dragConfig) {
     axis = dragOptions.axis,
     lockDirection = dragOptions.lockDirection;
 
-  if(threshold === void 0) {
+  if(threshold === void 0)
     threshold = Math.max(0, filterTaps ? 3 : 0, lockDirection || axis ? 1 : 0);
-  } else {
+  else
     filterTaps = true;
-  }
 
   let internalCoordinatesOptions = getInternalCoordinatesOptions(matchKeysFromObject(
       {
@@ -1534,10 +1503,9 @@ function getInternalDragOptions(dragConfig) {
  * @returns {(...args: any[]) => HookReturnType<Config>}
  */
 
-function useDrag(handler, config) {
-  if(config === void 0) {
+export function useDrag(handler, config) {
+  if(config === void 0)
     config = {};
-  }
 
   let _config = config,
     domTarget = _config.domTarget,
@@ -1580,8 +1548,8 @@ function useDrag(handler, config) {
 let DistanceAngleRecognizer = /*#__PURE__*/ (function (_Recognizer) {
   inheritsLoose(DistanceAngleRecognizer, _Recognizer);
 
-  function DistanceAngleRecognizer() {
-    return _Recognizer.apply(this, arguments) || this;
+  function DistanceAngleRecognizer(...args) {
+    return _Recognizer.call(this, ...args) || this;
   }
 
   let _proto = DistanceAngleRecognizer.prototype;
@@ -1648,202 +1616,167 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
   inheritsLoose(PinchRecognizer, _DistanceAngleRecogni);
 
   function PinchRecognizer(controller, args) {
-    let _this;
-
-    _this = _DistanceAngleRecogni.call(this, 'pinch', controller, args) || this;
-    _this.ingKey = 'pinching';
-
-    _this.pinchShouldStart = function(event) {
+    let thisObj;
+    thisObj = _DistanceAngleRecogni.call(this, 'pinch', controller, args) || this;
+    thisObj.ingKey = 'pinching';
+    thisObj.pinchShouldStart = function(event) {
       let _getGenericEventData = getGenericEventData(event),
         touches = _getGenericEventData.touches;
-
-      return _this.enabled && touches === 2;
+      return thisObj.enabled && touches === 2;
     };
 
-    _this.onPinchStart = function(event) {
-      if(!_this.pinchShouldStart(event)) return;
-
+    thisObj.onPinchStart = function(event) {
+      if(!thisObj.pinchShouldStart(event)) return;
       let _getTwoTouchesEventDa = getTwoTouchesEventData(event),
         values = _getTwoTouchesEventDa.values,
         origin = _getTwoTouchesEventDa.origin;
-
-      _this.updateSharedState(getGenericEventData(event));
-
-      let startState = _extends({}, _this.getStartGestureState(values, event), {}, _this.getGenericPayload(event, true));
-
-      _this.updateGestureState(_extends({}, startState, {}, _this.getMovement(values, startState), {
+      thisObj.updateSharedState(getGenericEventData(event));
+      let startState = _extends({}, thisObj.getStartGestureState(values, event), {}, thisObj.getGenericPayload(event, true));
+      thisObj.updateGestureState(_extends({}, startState, {}, thisObj.getMovement(values, startState), {
           origin,
           cancel: function cancel() {
-            return _this.onCancel();
+            return thisObj.onCancel();
           }
         })
       );
-
-      _this.fireGestureHandler();
+      thisObj.fireGestureHandler();
     };
 
-    _this.onPinchChange = function(event) {
-      let _this$state = _this.state,
+    thisObj.onPinchChange = function(event) {
+      let _this$state = thisObj.state,
         canceled = _this$state.canceled,
         timeStamp = _this$state.timeStamp,
         _active = _this$state._active;
       if(canceled || !_active) return;
       let genericEventData = getGenericEventData(event);
       if(genericEventData.touches !== 2 || event.timeStamp === timeStamp) return;
-
-      _this.updateSharedState(genericEventData);
-
+      thisObj.updateSharedState(genericEventData);
       let _getTwoTouchesEventDa2 = getTwoTouchesEventData(event),
         values = _getTwoTouchesEventDa2.values,
         origin = _getTwoTouchesEventDa2.origin;
-
-      let kinematics = _this.getKinematics(values, event);
-
-      _this.updateGestureState(_extends({}, _this.getGenericPayload(event), {}, kinematics, {
+      let kinematics = thisObj.getKinematics(values, event);
+      thisObj.updateGestureState(_extends({}, thisObj.getGenericPayload(event), {}, kinematics, {
           origin,
           cancel: function cancel() {
-            return _this.onCancel();
+            return thisObj.onCancel();
           }
         })
       );
-
-      _this.fireGestureHandler();
+      thisObj.fireGestureHandler();
     };
 
-    _this.onPinchEnd = function(event) {
-      if(!_this.state.active) return;
-      _this.state._active = false;
-
-      _this.updateSharedState({
+    thisObj.onPinchEnd = function(event) {
+      if(!thisObj.state.active) return;
+      thisObj.state._active = false;
+      thisObj.updateSharedState({
         down: false,
         touches: 0
       });
-
-      _this.updateGestureState(_extends(
+      thisObj.updateGestureState(_extends(
           {
             event
           },
-          _this.getGenericPayload(event),
+          thisObj.getGenericPayload(event),
           {},
-          _this.getMovement(_this.state.values)
+          thisObj.getMovement(thisObj.state.values)
         )
       );
-
-      _this.fireGestureHandler();
+      thisObj.fireGestureHandler();
     };
 
-    _this.onCancel = function() {
-      _this.state._active = false;
-
-      _this.updateGestureState({
+    thisObj.onCancel = function() {
+      thisObj.state._active = false;
+      thisObj.updateGestureState({
         canceled: true,
         cancel: noop
       });
-
-      _this.updateSharedState({
+      thisObj.updateSharedState({
         down: false,
         touches: 0
       });
-
-      requestAnimationFrame(() => _this.fireGestureHandler());
+      requestAnimationFrame(() => thisObj.fireGestureHandler());
     };
 
     /**
      * PINCH WITH WEBKIT GESTURES
      */
 
-    _this.onGestureStart = function(event) {
-      if(!_this.enabled) return;
+    thisObj.onGestureStart = function(event) {
+      if(!thisObj.enabled) return;
       event.preventDefault();
-
       let _getWebkitGestureEven = getWebkitGestureEventValues(event),
         values = _getWebkitGestureEven.values;
-
-      _this.updateSharedState(getGenericEventData(event));
-
-      let startState = _extends({}, _this.getStartGestureState(values, event), {}, _this.getGenericPayload(event, true));
-
-      _this.updateGestureState(_extends({}, startState, {}, _this.getMovement(values, startState), {
+      thisObj.updateSharedState(getGenericEventData(event));
+      let startState = _extends({}, thisObj.getStartGestureState(values, event), {}, thisObj.getGenericPayload(event, true));
+      thisObj.updateGestureState(_extends({}, startState, {}, thisObj.getMovement(values, startState), {
           cancel: function cancel() {
-            return _this.onCancel();
+            return thisObj.onCancel();
           }
         })
       );
-
-      _this.fireGestureHandler();
+      thisObj.fireGestureHandler();
     };
 
-    _this.onGestureChange = function(event) {
-      let _this$state2 = _this.state,
+    thisObj.onGestureChange = function(event) {
+      let _this$state2 = thisObj.state,
         canceled = _this$state2.canceled,
         _active = _this$state2._active;
       if(canceled || !_active) return;
       event.preventDefault();
       let genericEventData = getGenericEventData(event);
-
-      _this.updateSharedState(genericEventData);
-
+      thisObj.updateSharedState(genericEventData);
       let _getWebkitGestureEven2 = getWebkitGestureEventValues(event),
         values = _getWebkitGestureEven2.values;
-
-      let kinematics = _this.getKinematics(values, event);
-
-      _this.updateGestureState(_extends({}, _this.getGenericPayload(event), {}, kinematics, {
+      let kinematics = thisObj.getKinematics(values, event);
+      thisObj.updateGestureState(_extends({}, thisObj.getGenericPayload(event), {}, kinematics, {
           cancel: function cancel() {
-            return _this.onCancel();
+            return thisObj.onCancel();
           }
         })
       );
-
-      _this.fireGestureHandler();
+      thisObj.fireGestureHandler();
     };
 
-    _this.onGestureEnd = function(event) {
+    thisObj.onGestureEnd = function(event) {
       event.preventDefault();
-      if(!_this.state.active) return;
-      _this.state._active = false;
-
-      _this.updateSharedState({
+      if(!thisObj.state.active) return;
+      thisObj.state._active = false;
+      thisObj.updateSharedState({
         down: false,
         touches: 0
       });
-
-      _this.updateGestureState(_extends(
+      thisObj.updateGestureState(_extends(
           {
             event
           },
-          _this.getGenericPayload(event),
+          thisObj.getGenericPayload(event),
           {},
-          _this.getMovement(_this.state.values)
+          thisObj.getMovement(thisObj.state.values)
         )
       );
-
-      _this.fireGestureHandler();
+      thisObj.fireGestureHandler();
     };
 
-    _this.updateTouchData = function(event) {
-      if(!_this.enabled || event.touches.length !== 2 || !_this.state._active) return;
-
+    thisObj.updateTouchData = function(event) {
+      if(!thisObj.enabled || event.touches.length !== 2 || !thisObj.state._active) return;
       let _getTwoTouchesEventDa3 = getTwoTouchesEventData(event),
         origin = _getTwoTouchesEventDa3.origin;
-
-      _this.state.origin = origin;
+      thisObj.state.origin = origin;
     };
 
     /**
      * PINCH WITH WHEEL
      */
 
-    _this.wheelShouldRun = function(event) {
-      return _this.enabled && event.ctrlKey;
+    thisObj.wheelShouldRun = function(event) {
+      return thisObj.enabled && event.ctrlKey;
     };
 
-    _this.getWheelValuesFromEvent = function(event) {
+    thisObj.getWheelValuesFromEvent = function(event) {
       let _getWheelEventValues = getWheelEventValues(event),
         _getWheelEventValues$ = _getWheelEventValues.values,
         delta_d = _getWheelEventValues$[1];
-
-      let _this$state$values = _this.state.values,
+      let _this$state$values = thisObj.state.values,
         prev_d = _this$state$values[0],
         prev_a = _this$state$values[1];
       let d = prev_d - delta_d;
@@ -1855,75 +1788,70 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
       };
     };
 
-    _this.onWheel = function(event) {
-      if(!_this.wheelShouldRun(event)) return;
-
-      _this.clearTimeout();
-
-      _this.setTimeout(_this.onWheelEnd);
-
-      if(!_this.state._active) _this.onWheelStart(event);
-      else _this.onWheelChange(event);
+    thisObj.onWheel = function(event) {
+      if(!thisObj.wheelShouldRun(event)) return;
+      thisObj.clearTimeout();
+      thisObj.setTimeout(thisObj.onWheelEnd);
+      if(!thisObj.state._active) thisObj.onWheelStart(event);
+      else thisObj.onWheelChange(event);
     };
 
-    _this.onWheelStart = function(event) {
-      let _this$getWheelValuesF = _this.getWheelValuesFromEvent(event),
+    thisObj.onWheelStart = function(event) {
+      let _this$getWheelValuesF = thisObj.getWheelValuesFromEvent(event),
         values = _this$getWheelValuesF.values,
         delta = _this$getWheelValuesF.delta,
         origin = _this$getWheelValuesF.origin;
-
-      if(!_this.controller.config.eventOptions.passive) {
+      if(!thisObj.controller.config.eventOptions.passive) {
         event.preventDefault();
       } else if(process.env.NODE_ENV === 'development') {
         console.warn('To support zoom on trackpads, try using the `domTarget` option and `config.event.passive` set to `false`. This message will only appear in development mode.');
       }
+      thisObj.updateSharedState(getGenericEventData(event));
 
-      _this.updateSharedState(getGenericEventData(event));
-
-      let startState = _extends({}, _this.getStartGestureState(values, event), {}, _this.getGenericPayload(event, true), {
-        initial: _this.state.values
+      let startState = _extends({}, thisObj.getStartGestureState(values, event), {}, thisObj.getGenericPayload(event, true), {
+        initial: thisObj.state.values
       });
 
-      _this.updateGestureState(_extends({}, startState, {}, _this.getMovement(values, startState), {
+      thisObj.updateGestureState(_extends({}, startState, {}, thisObj.getMovement(values, startState), {
           offset: values,
           delta,
           origin
         })
       );
 
-      _this.fireGestureHandler();
+      thisObj.fireGestureHandler();
     };
 
-    _this.onWheelChange = function(event) {
+    thisObj.onWheelChange = function(event) {
       let genericEventData = getGenericEventData(event);
 
-      _this.updateSharedState(genericEventData);
+      thisObj.updateSharedState(genericEventData);
 
-      let _this$getWheelValuesF2 = _this.getWheelValuesFromEvent(event),
+      let _this$getWheelValuesF2 = thisObj.getWheelValuesFromEvent(event),
         values = _this$getWheelValuesF2.values,
         origin = _this$getWheelValuesF2.origin,
         delta = _this$getWheelValuesF2.delta;
 
-      let kinematics = _this.getKinematics(values, event);
+      let kinematics = thisObj.getKinematics(values, event);
 
-      _this.updateGestureState(_extends({}, _this.getGenericPayload(event), {}, kinematics, {
+      thisObj.updateGestureState(_extends({}, thisObj.getGenericPayload(event), {}, kinematics, {
           origin,
           delta
         })
       );
 
-      _this.fireGestureHandler();
+      thisObj.fireGestureHandler();
     };
 
-    _this.onWheelEnd = function() {
-      _this.state._active = false;
+    thisObj.onWheelEnd = function() {
+      thisObj.state._active = false;
 
-      _this.updateGestureState(_this.getMovement(_this.state.values));
+      thisObj.updateGestureState(thisObj.getMovement(thisObj.state.values));
 
-      _this.fireGestureHandler();
+      thisObj.fireGestureHandler();
     };
 
-    return _this;
+    return thisObj;
   }
 
   let _proto = PinchRecognizer.prototype;
@@ -1957,7 +1885,7 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
  * @returns {(...args: any[]) => HookReturnType<Config>}
  */
 
-function usePinch(handler, config) {
+export function usePinch(handler, config) {
   if(config === void 0) {
     config = {};
   }
@@ -1995,90 +1923,70 @@ let WheelRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
   inheritsLoose(WheelRecognizer, _CoordinatesRecognize);
 
   function WheelRecognizer(controller, args) {
-    let _this;
-
-    _this = _CoordinatesRecognize.call(this, 'wheel', controller, args) || this;
-    _this.ingKey = 'wheeling';
-    _this.debounced = true;
-
-    _this.wheelShouldRun = function(event) {
-      if(event.ctrlKey && 'pinch' in _this.controller.handlers) return false;
-      return _this.enabled;
+    let thisObj;
+    thisObj = _CoordinatesRecognize.call(this, 'wheel', controller, args) || this;
+    thisObj.ingKey = 'wheeling';
+    thisObj.debounced = true;
+    thisObj.wheelShouldRun = function(event) {
+      if(event.ctrlKey && 'pinch' in thisObj.controller.handlers) return false;
+      return thisObj.enabled;
     };
 
-    _this.getValuesFromEvent = function(event) {
-      let prevValues = _this.state.values;
-
+    thisObj.getValuesFromEvent = function(event) {
+      let prevValues = thisObj.state.values;
       let _getWheelEventValues = getWheelEventValues(event),
         values = _getWheelEventValues.values;
-
       return {
         values: addV(values, prevValues)
       };
     };
 
-    _this.onWheel = function(event) {
-      if(!_this.wheelShouldRun(event)) return;
-
-      _this.clearTimeout();
-
-      _this.setTimeout(_this.onWheelEnd);
-
-      if(!_this.state._active) _this.onWheelStart(event);
-      else _this.onWheelChange(event);
+    thisObj.onWheel = function(event) {
+      if(!thisObj.wheelShouldRun(event)) return;
+      thisObj.clearTimeout();
+      thisObj.setTimeout(thisObj.onWheelEnd);
+      if(!thisObj.state._active) thisObj.onWheelStart(event);
+      else thisObj.onWheelChange(event);
     };
 
-    _this.onWheelStart = function(event) {
-      let _this$getValuesFromEv = _this.getValuesFromEvent(event),
+    thisObj.onWheelStart = function(event) {
+      let _this$getValuesFromEv = thisObj.getValuesFromEvent(event),
         values = _this$getValuesFromEv.values;
-
-      _this.updateSharedState(getGenericEventData(event));
-
-      let startState = _extends({}, _this.getStartGestureState(values, event), {}, _this.getGenericPayload(event, true), {
-        initial: _this.state.values
+      thisObj.updateSharedState(getGenericEventData(event));
+      let startState = _extends({}, thisObj.getStartGestureState(values, event), {}, thisObj.getGenericPayload(event, true), {
+        initial: thisObj.state.values
       });
-
-      let movementDetection = _this.getMovement(values, startState);
-
+      let movementDetection = thisObj.getMovement(values, startState);
       let delta = movementDetection.delta;
-
-      _this.updateGestureState(_extends({}, startState, {}, movementDetection, {
+      thisObj.updateGestureState(_extends({}, startState, {}, movementDetection, {
           distance: calculateDistance(delta),
           direction: calculateDirection(delta)
         })
       );
-
-      _this.fireGestureHandler();
+      thisObj.fireGestureHandler();
     };
 
-    _this.onWheelChange = function(event) {
+    thisObj.onWheelChange = function(event) {
       let genericEventData = getGenericEventData(event);
-
-      _this.updateSharedState(genericEventData);
-
-      let _this$getValuesFromEv2 = _this.getValuesFromEvent(event),
+      thisObj.updateSharedState(genericEventData);
+      let _this$getValuesFromEv2 = thisObj.getValuesFromEvent(event),
         values = _this$getValuesFromEv2.values;
-
-      let kinematics = _this.getKinematics(values, event);
-
-      _this.updateGestureState(_extends({}, _this.getGenericPayload(event), {}, kinematics));
-
-      _this.fireGestureHandler();
+      let kinematics = thisObj.getKinematics(values, event);
+      thisObj.updateGestureState(_extends({}, thisObj.getGenericPayload(event), {}, kinematics));
+      thisObj.fireGestureHandler();
     };
 
-    _this.onWheelEnd = function() {
-      _this.state._active = false;
-
-      _this.updateGestureState(_extends({}, _this.getMovement(_this.state.values), {
+    thisObj.onWheelEnd = function() {
+      thisObj.state._active = false;
+      thisObj.updateGestureState(_extends({}, thisObj.getMovement(thisObj.state.values), {
           velocities: [0, 0],
           velocity: 0
         })
       );
-
-      _this.fireGestureHandler();
+      thisObj.fireGestureHandler();
     };
 
-    return _this;
+    return thisObj;
   }
 
   let _proto = WheelRecognizer.prototype;
@@ -2100,7 +2008,7 @@ let WheelRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
  * @returns {(...args: any[]) => HookReturnType<Config>}
  */
 
-function useWheel(handler, config) {
+export function useWheel(handler, config) {
   if(config === void 0) {
     config = {};
   }
@@ -2138,105 +2046,83 @@ let MoveRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
   inheritsLoose(MoveRecognizer, _CoordinatesRecognize);
 
   function MoveRecognizer(controller, args) {
-    let _this;
-
-    _this = _CoordinatesRecognize.call(this, 'move', controller, args) || this;
-    _this.ingKey = 'moving';
-    _this.debounced = true;
-
-    _this.moveShouldRun = function() {
-      return _this.enabled;
+    let thisObj;
+    thisObj = _CoordinatesRecognize.call(this, 'move', controller, args) || this;
+    thisObj.ingKey = 'moving';
+    thisObj.debounced = true;
+    thisObj.moveShouldRun = function() {
+      return thisObj.enabled;
     };
 
-    _this.onMove = function(event) {
-      if(!_this.moveShouldRun()) return;
-
-      _this.clearTimeout();
-
-      _this.setTimeout(_this.onMoveEnd);
-
-      if(!_this.state._active) _this.onMoveStart(event);
-      else _this.onMoveChange(event);
+    thisObj.onMove = function(event) {
+      if(!thisObj.moveShouldRun()) return;
+      thisObj.clearTimeout();
+      thisObj.setTimeout(thisObj.onMoveEnd);
+      if(!thisObj.state._active) thisObj.onMoveStart(event);
+      else thisObj.onMoveChange(event);
     };
 
-    _this.onMoveStart = function(event) {
+    thisObj.onMoveStart = function(event) {
       let _getPointerEventValue = getPointerEventValues(event),
         values = _getPointerEventValue.values;
-
-      _this.updateSharedState(getGenericEventData(event));
-
-      let startState = _extends({}, _this.getStartGestureState(values, event), {}, _this.getGenericPayload(event, true));
-
-      _this.updateGestureState(_extends({}, startState, {}, _this.getMovement(values, startState)));
-
-      _this.fireGestureHandler();
+      thisObj.updateSharedState(getGenericEventData(event));
+      let startState = _extends({}, thisObj.getStartGestureState(values, event), {}, thisObj.getGenericPayload(event, true));
+      thisObj.updateGestureState(_extends({}, startState, {}, thisObj.getMovement(values, startState)));
+      thisObj.fireGestureHandler();
     };
 
-    _this.onMoveChange = function(event) {
+    thisObj.onMoveChange = function(event) {
       let genericEventData = getGenericEventData(event);
-
-      _this.updateSharedState(genericEventData);
-
+      thisObj.updateSharedState(genericEventData);
       let _getPointerEventValue2 = getPointerEventValues(event),
         values = _getPointerEventValue2.values;
-
-      let kinematics = _this.getKinematics(values, event);
-
-      _this.updateGestureState(_extends({}, _this.getGenericPayload(event), {}, kinematics));
-
-      _this.fireGestureHandler();
+      let kinematics = thisObj.getKinematics(values, event);
+      thisObj.updateGestureState(_extends({}, thisObj.getGenericPayload(event), {}, kinematics));
+      thisObj.fireGestureHandler();
     };
 
-    _this.onMoveEnd = function() {
-      _this.state._active = false;
-
-      _this.updateGestureState(_extends({}, _this.getMovement(_this.state.values), {
+    thisObj.onMoveEnd = function() {
+      thisObj.state._active = false;
+      thisObj.updateGestureState(_extends({}, thisObj.getMovement(thisObj.state.values), {
           velocities: [0, 0],
           velocity: 0
         })
       );
 
-      _this.fireGestureHandler();
+      thisObj.fireGestureHandler();
     };
 
-    _this.onPointerEnter = function(event) {
-      _this.controller.state.shared.hovering = true;
-      if(!_this.controller.config.enabled) return;
-
-      if(_this.controller.config.hover.enabled) {
+    thisObj.onPointerEnter = function(event) {
+      thisObj.controller.state.shared.hovering = true;
+      if(!thisObj.controller.config.enabled) return;
+      if(thisObj.controller.config.hover.enabled) {
         let _getPointerEventValue3 = getPointerEventValues(event),
           values = _getPointerEventValue3.values;
-
-        let state = _extends({}, _this.controller.state.shared, {}, _this.state, {}, _this.getGenericPayload(event, true), {
+        let state = _extends({}, thisObj.controller.state.shared, {}, thisObj.state, {}, thisObj.getGenericPayload(event, true), {
           values,
           active: true,
           hovering: true
         });
-
-        _this.controller.handlers.hover(_extends({}, state, {}, _this.mapStateValues(state)));
+        thisObj.controller.handlers.hover(_extends({}, state, {}, thisObj.mapStateValues(state)));
       }
-
-      if('move' in _this.controller.handlers) _this.onMoveStart(event);
+      if('move' in thisObj.controller.handlers) thisObj.onMoveStart(event);
     };
 
-    _this.onPointerLeave = function(event) {
-      _this.controller.state.shared.hovering = false;
-      if('move' in _this.controller.handlers) _this.onMoveEnd();
-
-      if(_this.controller.config.hover.enabled) {
+    thisObj.onPointerLeave = function(event) {
+      thisObj.controller.state.shared.hovering = false;
+      if('move' in thisObj.controller.handlers) thisObj.onMoveEnd();
+      if(thisObj.controller.config.hover.enabled) {
         let _getPointerEventValue4 = getPointerEventValues(event),
           values = _getPointerEventValue4.values;
-
-        let state = _extends({}, _this.controller.state.shared, {}, _this.state, {}, _this.getGenericPayload(event), {
+        let state = _extends({}, thisObj.controller.state.shared, {}, thisObj.state, {}, thisObj.getGenericPayload(event), {
           values,
           active: false
         });
-
-        _this.controller.handlers.hover(_extends({}, state, {}, _this.mapStateValues(state)));
+        thisObj.controller.handlers.hover(_extends({}, state, {}, thisObj.mapStateValues(state)));
       }
     };
 
-    return _this;
+    return thisObj;
   }
 
   let _proto = MoveRecognizer.prototype;
@@ -2276,7 +2162,7 @@ let MoveRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
  * @returns {(...args: any[]) => HookReturnType<Config>}
  */
 
-function useMove(handler, config) {
+export function useMove(handler, config) {
   if(config === void 0) {
     config = {};
   }
@@ -2320,7 +2206,7 @@ function useMove(handler, config) {
  * @returns {(...args: any[]) => HookReturnType<Config>}
  */
 
-function useHover(handler, config) {
+export function useHover(handler, config) {
   if(config === void 0) {
     config = {};
   }
@@ -2362,78 +2248,62 @@ let ScrollRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
   inheritsLoose(ScrollRecognizer, _CoordinatesRecognize);
 
   function ScrollRecognizer(controller, args) {
-    let _this;
+    let thisObj;
 
-    _this = _CoordinatesRecognize.call(this, 'scroll', controller, args) || this;
-    _this.ingKey = 'scrolling';
-    _this.debounced = true;
+    thisObj = _CoordinatesRecognize.call(this, 'scroll', controller, args) || this;
+    thisObj.ingKey = 'scrolling';
+    thisObj.debounced = true;
 
-    _this.scrollShouldRun = function() {
-      return _this.enabled;
+    thisObj.scrollShouldRun = function() {
+      return thisObj.enabled;
     };
 
-    _this.onScroll = function(event) {
-      if(!_this.scrollShouldRun()) return;
-
-      _this.clearTimeout();
-
-      _this.setTimeout(_this.onScrollEnd);
-
-      if(!_this.state._active) _this.onScrollStart(event);
-      else _this.onScrollChange(event);
+    thisObj.onScroll = function(event) {
+      if(!thisObj.scrollShouldRun()) return;
+      thisObj.clearTimeout();
+      thisObj.setTimeout(thisObj.onScrollEnd);
+      if(!thisObj.state._active) thisObj.onScrollStart(event);
+      else thisObj.onScrollChange(event);
     };
 
-    _this.onScrollStart = function(event) {
+    thisObj.onScrollStart = function(event) {
       let _getScrollEventValues = getScrollEventValues(event),
         values = _getScrollEventValues.values;
-
-      _this.updateSharedState(getGenericEventData(event));
-
-      let startState = _extends({}, _this.getStartGestureState(values, event), {}, _this.getGenericPayload(event, true), {
-        initial: _this.state.values
+      thisObj.updateSharedState(getGenericEventData(event));
+      let startState = _extends({}, thisObj.getStartGestureState(values, event), {}, thisObj.getGenericPayload(event, true), {
+        initial: thisObj.state.values
       });
-
-      let movementDetection = _this.getMovement(values, startState);
-
+      let movementDetection = thisObj.getMovement(values, startState);
       let delta = movementDetection.delta;
-
-      _this.updateGestureState(_extends({}, startState, {}, movementDetection, {
+      thisObj.updateGestureState(_extends({}, startState, {}, movementDetection, {
           distance: calculateDistance(delta),
           direction: calculateDirection(delta)
         })
       );
-
-      _this.fireGestureHandler();
+      thisObj.fireGestureHandler();
     };
 
-    _this.onScrollChange = function(event) {
+    thisObj.onScrollChange = function(event) {
       let genericEventData = getGenericEventData(event);
-
-      _this.updateSharedState(genericEventData);
-
+      thisObj.updateSharedState(genericEventData);
       let _getScrollEventValues2 = getScrollEventValues(event),
         values = _getScrollEventValues2.values;
-
-      let kinematics = _this.getKinematics(values, event);
-
-      _this.updateGestureState(_extends({}, _this.getGenericPayload(event), {}, kinematics));
-
-      _this.fireGestureHandler();
+      let kinematics = thisObj.getKinematics(values, event);
+      thisObj.updateGestureState(_extends({}, thisObj.getGenericPayload(event), {}, kinematics));
+      thisObj.fireGestureHandler();
     };
 
-    _this.onScrollEnd = function() {
-      _this.state._active = false;
-
-      _this.updateGestureState(_extends({}, _this.getMovement(_this.state.values), {
+    thisObj.onScrollEnd = function() {
+      thisObj.state._active = false;
+      thisObj.updateGestureState(_extends({}, thisObj.getMovement(thisObj.state.values), {
           velocities: [0, 0],
           velocity: 0
         })
       );
-
-      _this.fireGestureHandler();
+      thisObj.fireGestureHandler();
     };
 
-    return _this;
+    return thisObj;
   }
 
   let _proto = ScrollRecognizer.prototype;
@@ -2455,10 +2325,9 @@ let ScrollRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
  * @returns {(...args: any[]) => HookReturnType<Config>}
  */
 
-function useScroll(handler, config) {
-  if(config === void 0) {
+export function useScroll(handler, config) {
+  if(config === void 0)
     config = {};
-  }
 
   let _config = config,
     domTarget = _config.domTarget,
@@ -2499,7 +2368,7 @@ function useScroll(handler, config) {
  * @returns {(...args: any[]) => HookReturnType<Config>}
  */
 
-function useGesture(handlers, config) {
+export function useGesture(handlers, config) {
   if(config === void 0) {
     config = {};
   }
@@ -2605,5 +2474,4 @@ function includeStartEndHandlers(handlers, handlerKey, _nativeHandlers) {
   return fn;
 }
 
-export { addV, rubberbandIfOutOfBounds, subV, useDrag, useGesture, useHover, useMove, usePinch, useScroll, useWheel };
-//# sourceMappingURL=react-use-gesture.esm.js.map
+export default { useDrag, useGesture, useHover, useMove, usePinch, useScroll, useWheel };
