@@ -2157,15 +2157,17 @@ Util.isConstructor = x => {
 };
 
 Util.filter = function(a, pred) {
+  if(typeof pred != 'function') pred = Util.predicate(pred);
+  if(Util.isArray(a)) return a.filter(pred);
+  /*return (function* () {
+      for(let [k, v] of a.entries()) if(pred(v, k, a)) yield v;
+    })();*/
+
   if(Util.isGenerator(a))
     return (function* () {
       for(let item of a) if(pred(item)) yield item;
     })();
   let isa = Util.isArray(a);
-  if(isa)
-    return (function* () {
-      for(let [k, v] of a.entries()) if(pred(v, k, a)) yield v;
-    })();
   let ret = {};
   let fn = (k, v) => (ret[k] = v);
   for(let [k, v] of Util.entries(a)) if(pred(v, k, a)) fn(k, v);
@@ -2819,10 +2821,19 @@ Util.mapCombinator = (forward, backward) => {
 
 Util.predicate = fn_or_regex => {
   let fn;
-  if(fn_or_regex instanceof RegExp) fn = (...args) => fn_or_regex.test(args + '');
+  if(fn_or_regex instanceof RegExp) fn = arg => fn_or_regex.test(arg + '');
   else fn = fn_or_regex;
   return fn;
 };
+Util.some = predicates => {
+  predicates = predicates.map(Util.predicate);
+  return value => predicates.some(pred => pred(value));
+};
+Util.every = predicates => {
+  predicates = predicates.map(Util.predicate);
+  return value => predicates.every(pred => pred(value));
+};
+
 Util.iterateMembers = function* (obj, predicate = (name, depth, obj, proto) => true, depth = 0) {
   let names = [];
   let pred = Util.predicate(predicate);
@@ -2958,6 +2969,11 @@ Util.getPrototypeChain = function(obj, fn = p => p) {
   } while(obj);
 
   return ret;
+};
+Util.getObjectChain = (obj, fn = p => p) => [fn(obj)].concat(Util.getPrototypeChain(obj, fn));
+
+Util.getPropertyDescriptors = function(obj) {
+  return Util.getObjectChain(obj, p => Object.getOwnPropertyDescriptors(p));
 };
 
 Util.getConstructorChain = (ctor, fn = (c, p) => c) => Util.getPrototypeChain(ctor, (p, o) => fn(o, p));

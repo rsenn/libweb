@@ -227,6 +227,8 @@ export function NodeJSFileSystem(fs) {
     },
     write(fd, data, offset, length) {
       let ret;
+      if(length === undefined && data.length !== undefined) length = data.length;
+
       try {
         ret = fs.writeSync(fd, data, offset, length);
       } catch(error) {
@@ -271,7 +273,13 @@ export function NodeJSFileSystem(fs) {
       return st.size;
     },
     stat(filename, dereference = false) {
-      return dereference ? fs.statSync(filename) : fs.lstatSync(filename);
+      let st = dereference ? fs.statSync(filename) : fs.lstatSync(filename);
+      /* const { dev, ino, mode, nlink, uid, gid, rdev, size, blksize, blocks, atimeMs, mtimeMs, ctimeMs, birthtimeMs, atimeNs, mtimeNs, ctimeNs, birthtimeNs, atime, mtime, ctime, birthtime } = st;
+    return Object.assign(st, { dev, ino, mode, nlink, uid, gid, rdev, size, blksize, blocks, atimeMs, mtimeMs, ctimeMs, birthtimeMs,   atime, mtime, ctime, birthtime
+});*/
+      return Object.create(null, Util.weakAssign({}, ...Util.getPropertyDescriptors(st)));
+
+      return Object.getOwnPropertyDescriptors(Object.getPrototypeOf(st));
     },
     readdir(dir) {
       return fs.readdirSync(dir);
