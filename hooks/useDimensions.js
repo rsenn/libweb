@@ -1,4 +1,5 @@
-import { Component, useState, useLayoutEffect, useCallback } from '../dom/preactComponent.js';
+import { Component, useState, useMemo, useLayoutEffect, useCallback } from '../dom/preactComponent.js';
+import { useEvent, eventSubscriber } from './useEvent.js';
 
 function getDimensionObject(element) {
   if(typeof element == 'object' && element != null && element.base) element = element.base;
@@ -23,29 +24,25 @@ export function useDimensions(arg = {}) {
   let liveRef = arg._ref$liveMeasure;
   let _ref$liveMeasure = liveRef === undefined ? true : liveRef;
   const [dimensions, setDimensions] = useState({});
-  // const dimensions = trkl({});
-
   const [node, setNode] = useState(null);
 
-  let ref = useCallback(node => {
-    setNode(node);
-  }, []);
+  let ref = useCallback(node => setNode(node), []);
+  const [add, remove] = useMemo(() => eventSubscriber(['resize', 'scroll'], measure));
+
   useLayoutEffect(() => {
     if(node) {
-      let measure = function measure() {
-        return window.requestAnimationFrame(() => setDimensions(getDimensionObject(node)));
-      };
       measure();
       if(_ref$liveMeasure) {
-        window.addEventListener('resize', measure);
-        window.addEventListener('scroll', measure);
-        return function() {
-          window.removeEventListener('resize', measure);
-          window.removeEventListener('scroll', measure);
-        };
+        add(window);
+
+        return () => remove(window);
       }
     }
   }, [node]);
+
+  function measure() {
+    return window.requestAnimationFrame(() => setDimensions(getDimensionObject(node)));
+  }
   return [ref, dimensions, node];
 }
 export default useDimensions;

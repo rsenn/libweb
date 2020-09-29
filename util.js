@@ -2866,7 +2866,23 @@ Util.memberNameFilter = (depth = 1, start = 0) =>
     (name, depth, obj, proto) => obj != Object.prototype
   );
 
-Util.getMemberNames = (obj, depth = Number.Infinity, start = 0) => Util.members(Util.memberNameFilter(depth, start))(obj);
+Util.getMemberNames = (obj, ...args) => {
+  let filters = [];
+  let depth = 1,
+    start = 0;
+  while(args.length > 0) {
+    if(args.length >= 2 && typeof args[0] == 'number') {
+      const n = args.splice(0, 2);
+      depth = n[0];
+      start = n[1];
+      continue;
+    }
+    filters.push(args.shift());
+  }
+  filters.unshift(Util.memberNameFilter(depth, start));
+  return Util.members(Util.and(...filters))(obj);
+};
+Util.getMemberEntries = (obj, ...args) => Util.getMemberNames(obj, ...args).map(name => [name, obj[name]]);
 
 Util.objectReducer = (filterFn, accFn = (a, m, o) => ({ ...a, [m]: o[m] }), accu = {}) => (obj, ...args) =>
   Util.members(filterFn(...args), obj).reduce(Util.tryFunction(

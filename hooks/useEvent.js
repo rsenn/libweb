@@ -5,6 +5,7 @@ export function eventSubscriber(names, handler) {
   let func = action => element => names.forEach(name => element[action + 'EventListener'](name, handler));
   return ['add', 'remove'].map(func);
 }
+
 export function eventTracker(names, handler) {
   let element = trkl(null);
   let [add, remove] = eventSubscriber(names, handler);
