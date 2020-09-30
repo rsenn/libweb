@@ -4544,4 +4544,16 @@ Object.assign(Util.consolePrinter.prototype, Util.consoleConcat.prototype, {
     }
   }
 });
+
+Util.booleanAdapter = (getSetFn, trueValue = 1, falseValue = 0) =>
+  function(value) {
+    if(value !== undefined) {
+      getSetFn(value ? trueValue : falseValue);
+    } else {
+      let ret = getSetFn();
+      if(ret === trueValue) return true;
+      if(ret === falseValue) return false;
+    }
+  };
+
 export default Util;

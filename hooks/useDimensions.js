@@ -1,5 +1,10 @@
-import { Component, useState, useMemo, useLayoutEffect, useCallback } from '../dom/preactComponent.js';
-import { useEvent, eventSubscriber } from './useEvent.js';
+import { Component, useCallback, useLayoutEffect, useMemo, useState } from '../dom/preactComponent.js';
+
+function eventSubscriber(names, handler) {
+  if(typeof names == 'string') names = [names];
+  let func = action => element => names.forEach(name => element[action + 'EventListener'](name, handler));
+  return ['add', 'remove'].map(func);
+}
 
 function getDimensionObject(element) {
   if(typeof element == 'object' && element != null && element.base) element = element.base;
@@ -45,5 +50,3 @@ export function useDimensions(arg = {}) {
   }
   return [ref, dimensions, node];
 }
-export default useDimensions;
-//# sourceMappingURL=index.js.map
