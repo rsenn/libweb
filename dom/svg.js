@@ -436,7 +436,13 @@ else */ if(text) svg.innerHTML = innerHTML;
   static splitPath(path, tfn) {
     if(isElement(path) && typeof path.getAttribute == 'function') path = path.getAttribute('d');
     else if(Util.isObject(path) && 'd' in path) path = path.d;
-    let ret = [...(path + '').matchAll(/[A-Za-z][^A-Za-z]*/g)].map(command => [...command][0].trim().split(/[,\s+]/g));
+    let ret = [...(path + '').matchAll(/([A-Za-z])([^A-Za-z]*)/g)];
+    ret = ret.map(command => [...command].slice(1));
+    ret = ret.map(([command, args]) => [command, ...[...args.matchAll(/(0|-?([1-9][0-9]*|)(\.[0-9]*|))/g)].map(m => m[0]).filter(arg => arg !== '')]);
+
+    //ret = ret.map(command => [...command][0].trim());
+    //  ret = ret.map(command => command.split(/(,|\s+)/g));
+
     if(tfn) ret = ret.map(tfn);
     return ret;
   }
