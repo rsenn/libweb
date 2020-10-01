@@ -132,8 +132,8 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(coll, parent, opts = {}) {
-    const { predicate = i => true, transform, pos, rot, name } = opts;
-    this.debug(`BoardRenderer.renderCollection`, { name, transform, pos, rot });
+    const { predicate = i => true, transform, pos, rot, name, layer } = opts;
+    this.debug(`BoardRenderer.renderCollection`, { name, transform, pos, rot, layer });
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
@@ -159,7 +159,7 @@ export class BoardRenderer extends EagleSVGRenderer {
           continue;
         }
       }
-      other.push(item);
+      if(predicate(item)) other.push(item);
     }
 
     for(let item of other) if(predicate(item) && item.tagName == 'pad') this.renderItem(item, parent, { ...opts });
@@ -262,7 +262,7 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderSignal(signal, parent, options = {}) {
-    let signalGroup = this.create('g', { id: `signal-${EscapeClassName(signal.name)}`, class: ElementToClass(signal), 'data-path': signal.path.toString(' ') }, parent);
+    let signalGroup = this.create('g', { id: `signal-${EscapeClassName(signal.name)}-${options.layer.toLowerCase()}`, class: ElementToClass(signal), 'data-path': signal.path.toString(' ') }, parent);
 
     this.debug(`BoardRenderer.renderSignal`, signal.name);
 
@@ -285,14 +285,17 @@ export class BoardRenderer extends EagleSVGRenderer {
     this.debug('bounds: ', bounds);
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {
-        predicate: i => i.attributes.layer == '16'
+        layer: 'Bottom',
+        predicate: i => i.layer && i.layer.name == 'Bottom'
       });
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {
-        predicate: i => i.attributes.layer == '1'
+        layer: 'Top',
+        predicate: i => i.layer && i.layer.name == 'Top'
       });
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {
+        layer: 'None',
         predicate: i => i.attributes.layer === undefined
       });
     for(let element of this.elements.list) this.renderElement(element, elementsGroup);

@@ -79,13 +79,21 @@ export class Element extends Node {
       let value = elem;
       let finish = false;
       try {
-        if((pred(elem, depth, v => (value = v), stop => finish = true) && !finish) || value !== elem) ret.push(value);
-
+        if((pred(
+            elem,
+            depth,
+            v => (value = v),
+            stop => (finish = true)
+          ) &&
+            !finish) ||
+          value !== elem
+        )
+          ret.push(value);
       } catch(err) {
         return err;
       }
-if(finish)
-  break;      elem = elem.parentElement;
+      if(finish) break;
+      elem = elem.parentElement;
       depth++;
     }
     return ret.length ? ret : null;
@@ -645,8 +653,7 @@ if(finish)
     let doc = elt.ownerDocument || document;
     let ns = doc.lookupNamespaceURI('');
 
-    for(let e of this.skip(elt, (e, next) => next(e.parentElement !== relative_to && e.parentElement)))
-          path = '/' + (e.namespaceURI !=ns ? e.namespaceURI.replace(/.*\//g, '')+':' : '')+ Element.unique(e) + path;
+    for(let e of this.skip(elt, (e, next) => next(e.parentElement !== relative_to && e.parentElement))) path = '/' + (e.namespaceURI != ns ? e.namespaceURI.replace(/.*\//g, '') + ':' : '') + Element.unique(e) + path;
 
     return path;
   }
@@ -725,18 +732,17 @@ if(finish)
   }
 
   static unique(elem, opts = {}) {
-    const { idx = false, use_id = true } = opts;
+    const { idx = true, use_id = true } = opts;
     let name = elem.tagName.toLowerCase();
     if(use_id && elem.id && elem.id.length) return name + `[@id='${elem.id}']`;
 
     const classNames = [...elem.classList]; //String(elem.className).split(new RegExp("/[ \t]/"));
-if(classNames.length > 0)  
-  return name + `[@class='${elem.classList.value}']`;
-
+    if(classNames.length > 0) return name + `[@class='${elem.classList.value}']`;
+    /*
     for(let i = 0; i < classNames.length; i++) {
       let res = document.getElementsByClassName(classNames[i]);
       if(res && res.length === 1) return name + `[@class~='${classNames[i]}']`;
-    }
+    }*/
     if(idx) {
       if(elem.nextElementSibling || elem.previousElementSibling) {
         return name + '[' + Element.idx(elem) + ']';
