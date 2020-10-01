@@ -91,9 +91,7 @@ trkl.getset = function(arg) {
 
 trkl.computed = function(fn) {
   let self = trkl();
-  let computationToken = {
-    _subscriber: runComputed
-  };
+  let computationToken = { _subscriber: runComputed };
 
   runComputed();
   return self;

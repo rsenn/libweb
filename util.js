@@ -12,12 +12,7 @@ Util.formatAnnotatedObject = function(subject, o) {
   const { indent = '  ', spacing = ' ', separator = ',', newline = '\n', maxlen = 30, depth = 1, level = 0 } = o;
   const i = indent.repeat(o.level || 0);
   let nl = newline != '' ? newline + i : spacing;
-  const opts = {
-    ...o,
-    newline: depth >= 0 ? newline : '',
-    depth: depth - 1,
-    level: level + 1
-  };
+  const opts = { ...o, newline: depth >= 0 ? newline : '', depth: depth - 1, level: level + 1 };
   if(subject && subject.toSource !== undefined) return subject.toSource();
   if(subject instanceof Date) return `new Date('${new Date().toISOString()}')`;
   if(typeof subject == 'string') return `'${subject}'`;
@@ -3669,18 +3664,7 @@ Util.stripXML = text =>
     .replace(/(\n[\t\ ]*)+\n/g, '\n');
 Util.stripNonPrintable = text => text.replace(/[^\x20-\x7f\x0a\x0d\x09]/g, '');
 Util.decodeHTMLEntities = function(text) {
-  let entities = {
-    amp: '&',
-    apos: "'",
-    '#x27': "'",
-    '#x2F': '/',
-    '#39': "'",
-    '#47': '/',
-    lt: '<',
-    gt: '>',
-    nbsp: ' ',
-    quot: '"'
-  };
+  let entities = { amp: '&', apos: "'", '#x27': "'", '#x2F': '/', '#39': "'", '#47': '/', lt: '<', gt: '>', nbsp: ' ', quot: '"' };
   return text.replace(new RegExp('&([^;]+);', 'gm'), (match, entity) => entities[entity] || match);
 };
 Util.encodeHTMLEntities = (str, charset = '\u00A0-\u9999<>&') => str.replace(new RegExp(`[${charset}](?!#)`, 'gim'), i => '&#' + i.charCodeAt(0) + ';');

@@ -104,18 +104,7 @@ export const colors = (() => {
     const left = elements.length ? Element.rect(elements[0]).x2 + stepX : stepX;
 
     let dim = Element.rect('.item-box-size') || new Rect(opts);
-    let e = Element.create('div', {
-      parent: Element.find('body'),
-      class: 'colors-palette',
-      style: {
-        position: 'absolute',
-        left: left + 'px',
-        top: '134px',
-        width: `${opts.width}px`,
-        height: `${dim.height || opts.height}px`,
-        zIndex: 100000
-      }
-    });
+    let e = Element.create('div', { parent: Element.find('body'), class: 'colors-palette', style: { position: 'absolute', left: left + 'px', top: '134px', width: `${opts.width}px`, height: `${dim.height || opts.height}px`, zIndex: 100000 } });
     let f = Element.factory({}, e);
     let prev = 0;
     let entries = args.entries();
@@ -263,15 +252,7 @@ export function starAnim() {
   let rect = Element.rect(page);
   starAnim.f = Element.factory({}, page);
   let s = starAnim.f;
-  let c = s('div', {
-    style: {
-      zIndex: 99999,
-      ...Rect.toCSS(rect),
-      top: 0,
-      position: 'fixed',
-      backgroundColor: '#ff000000'
-    }
-  });
+  let c = s('div', { style: { zIndex: 99999, ...Rect.toCSS(rect), top: 0, position: 'fixed', backgroundColor: '#ff000000' } });
   let f = SVG.factory(c, Size(rect));
   /* Element.attr(c.root, { width: '100%', height: '100%' });
 Element.setCSS(c.root, { width: '100%', height: '100%' });
@@ -471,10 +452,9 @@ const b64toText = async (b64Data, contentType = 'application/octet-stream') => {
 
 export function arrayBuffer2String(b) {
   const arr = new Uint8Array(b);
-  let r = ''; /*
-for(let i = 0; i < b.length; i++)
-  r += String​.from​Char​Code(arr[i]);
-*/
+  let r = '';
+  /* for(let i = 0; i < b.length; i++) r += String​.from​Char​Code(arr[i]);
+   */
   return r;
 }
 
@@ -605,22 +585,7 @@ export async function img(name, arg = {}) {
     if(await res) {
       /*      .then(res => {
        */ Util.log('Loading image: ', { path, res });
-      let e = Element.create('div', {
-        path,
-        parent: body,
-        className: 'image',
-        style: {
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          zIndex: -1,
-          'z-index': -1,
-          opacity: 0.5,
-          border: '1px dotted black',
-          ...style
-        },
-        ...props
-      });
+      let e = Element.create('div', { path, parent: body, className: 'image', style: { position: 'absolute', left: 0, top: 0, zIndex: -1, 'z-index': -1, opacity: 0.5, border: '1px dotted black', ...style }, ...props });
       e.innerHTML = await res.data;
       const av = e && e.firstChild && e.firstChild.viewBox && e.firstChild.viewBox.animVal;
       let svg = e.firstChild;

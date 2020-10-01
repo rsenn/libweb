@@ -132,19 +132,24 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(coll, parent, opts = {}) {
-    const { predicate = i => true, transform, pos, rot, name, layer } = opts;
+    const { predicate = i => true, transform, pos, rot, name, layer, props = {} } = opts;
     this.debug(`BoardRenderer.renderCollection`, { name, transform, pos, rot, layer });
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
+    let { class: addClass, ...addProps } = props;
+
     let wireMap = new Map(),
-      other = [];
-    let layers = {},
+      other = [],
+      layers = {},
       widths = {};
 
     const { tPlace } = this.layers;
 
     for(let item of coll) {
+      /*   if( layer !== undefined && (item.layer && item.layer.name) == layer)
+        continue;
+*/
       if(item.tagName === 'wire') {
         const layerId = item.attributes.layer || tPlace.number;
 
@@ -216,7 +221,7 @@ export class BoardRenderer extends EagleSVGRenderer {
             : []
         );
       };
-      this.create(WirePath, { class: ElementToClass(wires[0], layer.name), cmds, color, width, layer }, parent);
+      this.create(WirePath, { class: classNames(ElementToClass(wires[0], layer.name), addClass), cmds, color, width, layer, ...addProps }, parent);
     }
   }
 
@@ -231,20 +236,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     transform.translate(x, y);
     let elementName = EscapeClassName(name);
 
-    const g = this.create('g',
-      {
-        id: `element-${elementName}`,
-        class: ElementToClass(element),
-        'data-name': name,
-        'data-value': value,
-        'data-library': library.name,
-        'data-package': element.package.name,
-        'data-path': element.path.toString(' '),
-        'data-rot': rot,
-        transform: transform.concat(rotation)
-      },
-      parent
-    );
+    const g = this.create('g', { id: `element-${elementName}`, class: ElementToClass(element), 'data-name': name, 'data-value': value, 'data-library': library.name, 'data-package': element.package.name, 'data-path': element.path.toString(' '), 'data-rot': rot, transform: transform.concat(rotation) }, parent);
     this.renderCollection(element.package.children, g, {
       name,
       value,
@@ -262,11 +254,22 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderSignal(signal, parent, options = {}) {
-    let signalGroup = this.create('g', { id: `signal-${EscapeClassName(signal.name)}-${options.layer.toLowerCase()}`, class: ElementToClass(signal), 'data-path': signal.path.toString(' ') }, parent);
-
     this.debug(`BoardRenderer.renderSignal`, signal.name);
+    let children = signal.children;
+    if('layer' in options) {
+      let layer = options.layer ? this.doc.layers[options.layer] : null;
+      children = children.filter(child => (options.layer ? child.layer : !child.layer));
+      if(layer) {
+        children = children.filter(child => child.layer.number == layer.number);
+        console.debug('Filtering', layer.number, layer.name, ...children.map(c => '\n' + c.toXML()));
+      }
+    }
+    if(children.length > 0) {
+      let props = { id: `signal-${EscapeClassName(signal.name)}${typeof options.layer == 'string' ? '-' + options.layer.toLowerCase() : ''}`, class: ElementToClass(signal), 'data-path': signal.path.toString(' ') };
 
-    return this.renderCollection(signal.children, signalGroup, options);
+      let signalGroup = this.create('g', props, parent);
+      return this.renderCollection(children, signalGroup, options);
+    }
   }
 
   render(doc = this.doc /*, parent, props = {}*/) {
@@ -295,7 +298,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       });
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {
-        layer: 'None',
+        layer: '',
         predicate: i => i.attributes.layer === undefined
       });
     for(let element of this.elements.list) this.renderElement(element, elementsGroup);

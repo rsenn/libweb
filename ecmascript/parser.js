@@ -132,8 +132,8 @@ export class Parser {
 
   handleConstruct(ctor, args, instance) {
     let assoc = ESNode.assoc(instance, {});
-    let pos = assoc && assoc.position; /* || this.position()*/
-    let position;
+    let pos = assoc && assoc.position;
+    /* || this.position()*/ let position;
     if(this && this.stack && this.stack[0]) {
       assoc.position = this.stack[0].position;
       this.lastPos = this.stack[0].position;
@@ -380,32 +380,7 @@ function toStr(a) {
 */
 const stackFunc = (name, fn) => fn;
 
-const operatorPrecedence = {
-  '||': 0,
-  '&&': 1,
-  '|': 2,
-  '^': 3,
-  '&': 4,
-  '==': 5,
-  '===': 5,
-  '!=': 5,
-  '!==': 5,
-  '<': 6,
-  '>': 6,
-  '<=': 6,
-  '>=': 6,
-  instanceof: 6,
-  in: 6,
-  '<<': 7,
-  '>>': 7,
-  '>>>': 7,
-  '-->>': 7,
-  '+': 8,
-  '-': 8,
-  '*': 9,
-  '/': 9,
-  '%': 9
-};
+const operatorPrecedence = { '||': 0, '&&': 1, '|': 2, '^': 3, '&': 4, '==': 5, '===': 5, '!=': 5, '!==': 5, '<': 6, '>': 6, '<=': 6, '>=': 6, instanceof: 6, in: 6, '<<': 7, '>>': 7, '>>>': 7, '-->>': 7, '+': 8, '-': 8, '*': 9, '/': 9, '%': 9 };
 
 export class ECMAScriptParser extends Parser {
   /*

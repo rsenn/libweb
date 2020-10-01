@@ -313,8 +313,7 @@ else */ if(text) svg.innerHTML = innerHTML;
   }
 
   static *pathIterator(e, opts, fn = p => p) {
-    opts = typeof opts == 'number' ? { numPoints: opts } : opts;
-    let { numPoints, step } = (opts = {});
+    let { numPoints, step } = typeof opts == 'number' ? { numPoints: opts } : opts || {};
     let len = e.getTotalLength();
 
     let pos = i => (i * len) / (numPoints - 1);
@@ -361,9 +360,9 @@ else */ if(text) svg.innerHTML = innerHTML;
       p = new Point(point);
       Object.assign(p, { slope: Point.diff(next, point), next, prev, i, isin });
       y = do_point(p);
-      if(y) {
-        yield y;
-      }
+      if(prev) prev.next = p;
+
+      if(y) yield y;
       prev = p;
     }
     p = new Point(e.getPointAtLength(len));

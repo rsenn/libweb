@@ -637,9 +637,10 @@ export class EagleElement extends EagleNode {
     return [tagName, attributes, children];
   }
 
-  toString(entity = this) {
-    const { document } = entity;
-    return EagleNode.toString(entity);
+  toString() {
+    if(this.tagName == 'layer') return `${this.number} ${this.name}`;
+
+    return super.toString();
   }
 
   *getAll(pred, transform) {

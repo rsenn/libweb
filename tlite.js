@@ -155,10 +155,7 @@ if(elem)
       let tooltipWidth = tooltipEl.offsetWidth;
       let centerEl = left + width / 2;
 
-      const pos = {
-        top: vertGrav === 's' ? top - tooltipHeight - arrowSize : vertGrav === 'n' ? top + height + arrowSize : top + height / 2 - tooltipHeight / 2,
-        left: horzGrav === 'w' ? left : horzGrav === 'e' ? left + width - tooltipWidth : vertGrav === 'w' ? left + width + arrowSize : vertGrav === 'e' ? left - tooltipWidth - arrowSize : centerEl - tooltipWidth / 2
-      };
+      const pos = { top: vertGrav === 's' ? top - tooltipHeight - arrowSize : vertGrav === 'n' ? top + height + arrowSize : top + height / 2 - tooltipHeight / 2, left: horzGrav === 'w' ? left : horzGrav === 'e' ? left + width - tooltipWidth : vertGrav === 'w' ? left + width + arrowSize : vertGrav === 'e' ? left - tooltipWidth - arrowSize : centerEl - tooltipWidth / 2 };
 
       if(pos.left < 0) pos.left = 0;
 
