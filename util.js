@@ -1049,6 +1049,20 @@ Util.chunkArray = (a, size) =>
 Util.partition = function* (a, size) {
   for(let i = 0; i < a.length; i += size) yield a.slice(i, i + size);
 };
+
+Util.intersect = (a, b) => a.filter(Set.prototype.has, new Set(b));
+Util.difference = (a, b, includes) => {
+  if(includes === undefined) [a.filter(x => !b.includes(x)), b.filter(x => !a.includes(x))];
+
+  return [a.filter(x => !includes(b, x)), b.filter(x => !includes(a, x))];
+};
+Util.symmetricDifference = (a, b) => [].concat(...Util.difference(a, b));
+Util.union = (a, b, equality) => {
+  if(equality === undefined) return [...new Set([...a, ...b])];
+
+  return Util.unique([...a, ...b], equality);
+};
+
 Util.chances = function(numbers, matches) {
   const f = Util.factorial;
   return f(numbers) / (f(matches) * f(numbers - matches));
@@ -1521,7 +1535,11 @@ Util.validatePassword = function(value) {
 };
 Util.clone = function(obj, proto) {
   if(Util.isArray(obj)) return obj.slice();
-  else if(typeof obj == 'object') return Object.create(proto || obj.constructor.prototype || Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
+  try {
+    let ret = new obj.constructor(obj);
+    return ret;
+  } catch(err) {}
+  if(typeof obj == 'object') return Object.create(proto || obj.constructor.prototype || Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
 };
 //deep copy
 Util.deepClone = function(data) {
@@ -2015,7 +2033,7 @@ Util.isServer = function() {
 Util.isMobile = function() {
   return true;
 };
-Util.uniquePred = (cmp = null) => (cmp === null ? (el, i, arr) => arr.indexOf(el) === i : (el, i, arr) => arr.findIndex(item => cmp(el, item)) === i);
+Util.uniquePred = (cmp = null) => (typeof cmp == 'function' ? (el, i, arr) => arr.findIndex(item => cmp(el, item)) === i : (el, i, arr) => arr.indexOf(el) === i);
 Util.unique = (arr, cmp) => arr.filter(Util.uniquePred(cmp));
 Util.zip = a => a.reduce((a, b) => (a.length > b.length ? a : b), []).map((_, i) => a.map(arr => arr[i]));
 
@@ -2558,7 +2576,7 @@ Util.keys = function(arg) {
       typeof arg.keys == 'function'
         ? arg.keys
         : function* () {
-            for(let key in arg) yield key;
+            for(let key in this) yield key;
           };
   }
   if(ret) return ret.call(arg);
@@ -2586,13 +2604,24 @@ Util.removeEqual = function(a, b) {
 
   return c;
 };
-Util.remove = function(arr, item) {
-  let idx,
-    count = 0;
-  for(count = 0; (idx = arr.findIndex(other => other === item)) != -1; count++) arr.splice(idx, idx + 1);
+Util.clear = obj => (typeof obj.splice == 'function' ? obj.splice(0, obj.length) : obj.clear());
+
+Util.remove = (arr, item) => Util.removeIf(arr, (other, i, arr) => item === other);
+Util.removeIf = function(arr, pred) {
+  let count = 0;
+  if(Util.isArray(arr)) {
+    let idx;
+    for(count = 0; (idx = arr.findIndex(pred)) != -1; count++) arr.splice(idx, idx + 1);
+  } else {
+    for(let [key, value] of arr) {
+      if(pred(value, key, arr)) {
+        arr.delete(key);
+        count++;
+      }
+    }
+  }
   return count;
 };
-
 Util.traverse = function(o, fn) {
   if(typeof fn == 'function')
     return Util.foreach(o, (v, k, a) => {
@@ -3065,6 +3094,7 @@ Stack:${Util.stack.prototype.toString.call(stack, color, stack.columnWidths)}`;
   true
 );
 Util.location = function Location(...args) {
+  console.debug('Util.location(', ...args, ')');
   let ret = this instanceof Util.location ? this : Object.setPrototypeOf({}, Util.location.prototype);
   if(args.length == 3) {
     const [fileName, lineNumber, columnNumber, functionName] = args;
@@ -3084,7 +3114,7 @@ Util.location.palettes = [[[128, 128, 0], [255, 0, 255], [0, 255, 255] ], [[9, 1
 Util.define(Util.location.prototype, {
   toString(color = false) {
     let { fileName, lineNumber, columnNumber, functionName } = this;
-    fileName = fileName.replace(new RegExp(Util.getURL() + '/', 'g'), '');
+    fileName = fileName.replace(Util.makeURL({ location: '' }), '');
     let text = /*color ? new this.colorCtor() : */ '';
     const c = /*color ? (t, color) => text.write(t, color) :*/ t => (text += t);
     const palette = Util.location.palettes[Util.isBrowser() ? 1 : 0];
@@ -3102,7 +3132,7 @@ Util.define(Util.location.prototype, {
     return Util.location.prototype.toString.call(this, !Util.isBrowser());
   },
   getFileName() {
-    return this.fileName.replace(/:.*/g, '');
+    return this.fileName;
   },
   getLineNumber() {
     return this.lineNumber;
@@ -3295,7 +3325,7 @@ Util.stack = function Stack(stack, offset) {
     stack = stack.map(({ methodName, functionName: func, fileName: file, columnNumber: column, lineNumber: line }) => ({
       functionName: func,
       methodName,
-      fileName: file.replace(new RegExp(Util.getURL() + '/', 'g'), '').replace(/:.*/g, ''),
+      fileName: file.replace(/.*:\/\/[^\/]*/g, ''),
       lineNumber: Util.ifThenElse(s => s != '',
         s => +s,
         () => undefined
@@ -4555,5 +4585,17 @@ Util.booleanAdapter = (getSetFn, trueValue = 1, falseValue = 0) =>
       if(ret === falseValue) return false;
     }
   };
+
+Util.getSet = (get, set = () => {}, thisObj) =>
+  function(...args) {
+    if(args.length > 0) return set.call(thisObj || this, ...args);
+    return get.call(thisObj || this);
+  };
+
+Util.deriveGetSet = (fn, get = v => v, set = v => v, thisObj) =>
+  Util.getSet(() => get(fn()),
+    v => fn(set(v)),
+    thisObj
+  );
 
 export default Util;

@@ -118,7 +118,7 @@ if(elem)
   function createTooltip(el, text, opts) {
     let tooltipEl = document.createElement('span');
     const { grav } = opts;
-    var [attr, text, elem] = opts.getTitle(el);
+    var [attr, text = '', elem] = opts.getTitle(el);
 
     if(elem) el = elem;
 

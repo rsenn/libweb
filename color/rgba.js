@@ -168,6 +168,10 @@ RGBA.prototype.round = function() {
   this.a = x[3];
   return this;
 };
+RGBA.prototype.setOpacity = function(a) {
+  this.a = Util.clamp(0, 255, a * 255);
+  return this;
+};
 RGBA.normalize = function(rgba, src = 255, dst = 1.0) {
   return new RGBA((rgba.r * dst) / src, (rgba.g * dst) / src, (rgba.b * dst) / src, (rgba.a * dst) / src);
 };

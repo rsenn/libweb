@@ -42,8 +42,7 @@ export class Element extends Node {
     return e;
   }
 
-  static create() {
-    let args = [...arguments];
+  static create(...args) {
     let { tagName, ns, children, ...props } = typeof args[0] == 'object' ? args.shift() : { tagName: args.shift(), ...args.shift() };
     let parent = args.shift();
     parent = typeof parent == 'string' ? Element.find(parent) : parent;
@@ -77,8 +76,16 @@ export class Element extends Node {
     }
     let ret = [];
     while(elem) {
-      if(pred(elem, depth)) ret.push(elem);
-      elem = elem.parentElement;
+      let value = elem;
+      let finish = false;
+      try {
+        if((pred(elem, depth, v => (value = v), stop => finish = true) && !finish) || value !== elem) ret.push(value);
+
+      } catch(err) {
+        return err;
+      }
+if(finish)
+  break;      elem = elem.parentElement;
       depth++;
     }
     return ret.length ? ret : null;
@@ -575,18 +582,26 @@ export class Element extends Node {
 
     let parent = Util.isObject(element) ? element.parentElement || element.parentNode : null;
 
-    let estyle = Util.tryPredicate(() => (Util.isObject(w) && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element)), null)();
-    let pstyle = Util.tryPredicate(() => (parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {}), null)();
+    let style;
 
-    if(!estyle || !pstyle) return null;
-    //let styles = [estyle,pstyle].map(s => Object.fromEntries([...Node.map(s)].slice(0,20)));
+    let estyle = Util.tryCatch(() => (Util.isObject(w) && w.getComputedStyle ? w.getComputedStyle(element) : d.getComputedStyle(element)));
+    if(property == undefined) {
+      let pstyle = Util.tryCatch(() => (parent && parent.tagName ? (/*Util.toHash*/ w && w.getComputedStyle ? w.getComputedStyle(parent) : d.getComputedStyle(parent)) : {}));
 
-    let style = Util.tryPredicate(() => Util.removeEqual(estyle, pstyle), null)();
+      if(!estyle || !pstyle) return null;
+      //let styles = [estyle,pstyle].map(s => Object.fromEntries([...Node.map(s)].slice(0,20)));
+
+      style = Util.removeEqual(estyle, pstyle);
+    } else {
+      style = estyle;
+    }
 
     if(!style) return null;
     let keys = Object.keys(style).filter(k => !/^__/.test(k));
     //console.log("style: ", style);
+    // console.log("style: ", style);
     //console.log("Element.getCSS ", style);
+    if(typeof property == 'string') property = Util.camelize(property);
 
     let ret = {};
     if(receiver == null) {
@@ -627,17 +642,12 @@ export class Element extends Node {
 
   static xpath(elt, relative_to = null) {
     let path = '';
-    for(let e of this.skip(elt, (e, next) => next(e.parentElement !== relative_to && e.parentElement))) path = '/' + Element.unique(e) + path;
+    let doc = elt.ownerDocument || document;
+    let ns = doc.lookupNamespaceURI('');
 
-    //console.log('relative_to: ', relative_to);
-    /*    for(; elt && elt.nodeType == 1; elt = elt.parentNode) {
-      const xname = Element.unique(elt);
-      path = xname + path;
-      if(elt == relative_to) {
-        break;
-      }
-      path = '/' + path;
-    }*/
+    for(let e of this.skip(elt, (e, next) => next(e.parentElement !== relative_to && e.parentElement)))
+          path = '/' + (e.namespaceURI !=ns ? e.namespaceURI.replace(/.*\//g, '')+':' : '')+ Element.unique(e) + path;
+
     return path;
   }
 
@@ -717,11 +727,15 @@ export class Element extends Node {
   static unique(elem, opts = {}) {
     const { idx = false, use_id = true } = opts;
     let name = elem.tagName.toLowerCase();
-    if(use_id && elem.id && elem.id.length) return name + '#' + elem.id;
+    if(use_id && elem.id && elem.id.length) return name + `[@id='${elem.id}']`;
+
     const classNames = [...elem.classList]; //String(elem.className).split(new RegExp("/[ \t]/"));
+if(classNames.length > 0)  
+  return name + `[@class='${elem.classList.value}']`;
+
     for(let i = 0; i < classNames.length; i++) {
       let res = document.getElementsByClassName(classNames[i]);
-      if(res && res.length === 1) return name + '.' + classNames[i];
+      if(res && res.length === 1) return name + `[@class~='${classNames[i]}']`;
     }
     if(idx) {
       if(elem.nextElementSibling || elem.previousElementSibling) {

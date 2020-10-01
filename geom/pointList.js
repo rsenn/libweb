@@ -26,8 +26,10 @@ export class PointList extends Array {
         ret.push(args[i] instanceof Point ? args[i] : tfn(args[i]));
       }
     }
-    let proto = PointList.prototype;
-    Object.setPrototypeOf(ret, proto);
+    if(!(ret instanceof PointList)) {
+      let proto = PointList.prototype;
+      Object.setPrototypeOf(ret, proto);
+    }
     if(!(this instanceof PointList)) return ret;
   }
 }
@@ -366,86 +368,7 @@ if(!Util.isBrowser()) {
 for(let name of ['push', 'splice', 'clone', 'area', 'centroid', 'avg', 'bbox', 'rect', 'xrange', 'yrange', 'boundingRect']) {
   PointList[name] = points => PointList.prototype[name].call(points);
 }
-export function Polyline(lines) {
-  let ret = this instanceof Polyline ? this : new PointList();
-  const addUnique = point => {
-    const ok = ret.length > 0 ? !Point.equals(ret[ret.length - 1], point) : true;
-    if(ok) Array.prototype.push.call(ret, Point.clone(point));
-    return ok;
-  };
-  let prev;
-  for(let i = 0; i < lines.length; i++) {
-    const line = lines.shift();
-    if(isPoint(line)) {
-      addUnique(line);
-      prev = line;
-    } else if(isLine(line)) {
-      if(i > 0) {
-        const eq = [Point.equals(prev, line.a)];
-        if(!eq[0] && !Point.equals(prev, line.b)) break;
-      } else {
-        addUnique(line.a);
-      }
-      addUnique(line.b);
-      prev = line.b;
-    }
-  }
-  return ret;
-}
-Polyline.prototype = new PointList();
-Polyline.prototype.toSVG = function(factory, attrs = {}, parent = null, prec) {
-  return factory('polyline', { points: PointList.prototype.toString.call(this), ...attrs }, parent, prec);
-};
-Polyline.prototype.push = function(...args) {
-  const last = this[this.length - 1];
-  for(let arg of args) {
-    if(last && Point.equals(arg, last)) continue;
-    PointList.prototype.push.call(this, arg);
-  }
-  return this;
-};
-Polyline.prototype.inside = function(point) {
-  let i,
-    j,
-    c = false,
-    nvert = this.length;
-  for(i = 0, j = nvert - 1; i < nvert; j = i++) {
-    if(this[i].y > point.y !== this[j].y > point.y && point.x < ((this[j].x - this[i].x) * (point.y - this[i].y)) / (this[j].y - this[i].y) + this[i].x) {
-      c = !c;
-    }
-  }
-  return c;
-};
-Polyline.inside = function(a, b) {
-  return a.every(point => b.inside(point));
-};
-Polyline.prototype.isClockwise = function() {
-  let sum = 0;
-  for(let i = 0; i < this.length - 1; i++) {
-    let cur = this[i],
-      next = this[i + 1];
-    sum += (next.x - cur.x) * (next.y + cur.y);
-  }
-  return sum > 0;
-};
-Util.defineGetter(Polyline.prototype, 'clockwise', function() {
-  let ret = new (this[Symbol.species] || this.constructor)().concat(this);
-  return Polyline.prototype.isClockwise.call(this) ? ret : ret.reverse();
-});
-Util.defineGetter(Polyline.prototype, 'counterClockwise', function() {
-  let ret = new (this[Symbol.species] || this.constructor)().concat(this);
-  return Polyline.prototype.isClockwise.call(this) ? ret.reverse() : ret;
-});
 
-Polyline.isClockwise = function isClockwise(poly) {
-  let sum = 0;
-  for(let i = 0; i < poly.length - 1; i++) {
-    let cur = poly[i],
-      next = poly[i + 1];
-    sum += (next.x - cur.x) * (next.y + cur.y);
-  }
-  return sum > 0;
-};
 Util.define(PointList, {
   get [Symbol.species]() {
     return PointList;

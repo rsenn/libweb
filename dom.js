@@ -5,7 +5,8 @@ import { Point, isPoint } from './geom/point.js';
 import { Size, isSize } from './geom/size.js';
 import { Line, isLine } from './geom/line.js';
 import { Rect, isRect } from './geom/rect.js';
-import { PointList, Polyline } from './geom/pointList.js';
+import { PointList } from './geom/pointList.js';
+import { Polyline } from './geom/polyline.js';
 import { Matrix, isMatrix } from './geom/matrix.js';
 import { BBox } from './geom/bbox.js';
 import { TRBL } from './geom/trbl.js';
@@ -13,6 +14,7 @@ import Timer from './dom/timer.js';
 import { Tree } from './dom/tree.js';
 import { Event } from './dom/event.js';
 import { Node } from './dom/node.js';
+import { XPath } from './dom/xpath.js';
 import { HSLA, RGBA } from './color.js';
 export { HSLA, RGBA } from './color.js';
 import { Element, isElement } from './dom/element.js';
@@ -171,13 +173,15 @@ export { Point, isPoint } from './geom/point.js';
 export { Size, isSize } from './geom/size.js';
 export { Line, isLine } from './geom/line.js';
 export { Rect, isRect } from './geom/rect.js';
-export { PointList, Polyline } from './geom/pointList.js';
+export { PointList } from './geom/pointList.js';
+export { Polyline } from './geom/polyline.js';
 export { Matrix, isMatrix } from './geom/matrix.js';
 export { BBox } from './geom/bbox.js';
 export { TRBL } from './geom/trbl.js';
 export { default as Timer } from './dom/timer.js';
 export { Tree } from './dom/tree.js';
 export { Node } from './dom/node.js';
+export { XPath } from './dom/xpath.js';
 export { Element, isElement } from './dom/element.js';
 export { CSS } from './dom/css.js';
 export { SVG } from './dom/svg.js';
@@ -228,5 +232,6 @@ export default Object.assign(dom, {
   TransitionList,
   TRBL,
   Tree,
-  Event
+  Event,
+  XPath
 });

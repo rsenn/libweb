@@ -1,14 +1,9 @@
 import { Component, useEffect } from '../dom/preactComponent.js';
+import { Event } from '../dom/event.js';
 
-export function eventSubscriber(names, handler) {
-  if(typeof names == 'string') names = [names];
-  let func = action => element => names.forEach(name => element[action + 'EventListener'](name, handler));
-  return ['add', 'remove'].map(func);
-}
-
-export function eventTracker(names, handler) {
+export function EventTracker(names, handler) {
   let element = trkl(null);
-  let [add, remove] = eventSubscriber(names, handler);
+  let [add, remove] = Event.subscriber(names, handler);
 
   element.subscribe((newValue, oldValue) => {
     if(oldValue) remove(oldValue);
@@ -22,7 +17,7 @@ export function useEvent(...args) {
 
   let element = index == 2 ? args.shift() : window;
   let [name, handler, parent = useEffect] = args;
-  let track = eventTracker(name, handler);
+  let track = EventTracker(name, handler);
 
   return parent(() => {
     track(element);

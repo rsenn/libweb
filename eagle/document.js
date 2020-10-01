@@ -258,4 +258,11 @@ export class EagleDocument extends EagleNode {
       })
     );
   }
+
+  getLayer(id) {
+    for(let name_or_id of (id + '').split(/\s+/g).map(n => (+n !== NaN ? +n : n))) {
+      const layer = this.layers[name_or_id];
+      if(layer) return layer;
+    }
+  }
 }

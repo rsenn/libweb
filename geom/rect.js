@@ -489,7 +489,7 @@ for(let f of ['scale', 'resize', 'translate']) {
 
 Util.defineInspect(Rect.prototype, 'x', 'y', 'width', 'height');
 
-export const isRect = rect => isPoint(rect) && isSize(rect);
+export const isRect = rect => Util.isObject(rect) && ['x', 'y', 'width', 'height'].every(prop => prop in rect);
 
 Util.defineGetter(Rect, Symbol.species, function() {
   return this;

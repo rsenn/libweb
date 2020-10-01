@@ -433,7 +433,7 @@ else */ if(text) svg.innerHTML = innerHTML;
     return new Rect(vbattr.split(/\s+/g).map(parseFloat));
   }
 
-  static splitPath(path, tfn) {
+  static splitPath(path) {
     if(isElement(path) && typeof path.getAttribute == 'function') path = path.getAttribute('d');
     else if(Util.isObject(path) && 'd' in path) path = path.d;
     let ret = [...(path + '').matchAll(/([A-Za-z])([^A-Za-z]*)/g)];
@@ -443,12 +443,11 @@ else */ if(text) svg.innerHTML = innerHTML;
     //ret = ret.map(command => [...command][0].trim());
     //  ret = ret.map(command => command.split(/(,|\s+)/g));
 
-    if(tfn) ret = ret.map(tfn);
     return ret;
   }
 
   static pathToPoints(path) {
-    return SVG.splitPath(path, cmd => new Point(...cmd.slice(-2).map(n => +n)));
+    return SVG.splitPath(path).map(cmd => new Point(...cmd.slice(-2).map(n => +n)));
   }
 }
 SVG.ns = 'http://www.w3.org/2000/svg';

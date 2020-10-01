@@ -896,19 +896,19 @@ export function circle(point, radius = 10) {
   SVG.create('circle', { cx: point.x, cy: point.y, r: radius, fill: 'none', stroke: 'red', strokeWidth: 1.5 }, window.svg);
 }
 
-export function rect(arg) {
+export function rect(...args) {
   let self = rect;
-  let args = [...arguments];
+  let arg = args[0];
   let e, r;
   let a = (rect.list = rect.list || []);
   let zIndex = maxZindex() + 1;
 
   while(args.length > 0) {
-    if(args[0] instanceof dom.Rect) r = args.shift();
+    if(args[0] instanceof Rect) r = args.shift();
     else if(isElement(args[0]) || (typeof args[0] == 'string' && (e = Element.find(args[0])))) r = Element.rect(args.shift());
     else r = new Rect(args);
 
-    Util.log('r:', r);
+    // console.log('r:', r);
 
     a.push(__rect({ r, args }));
   }
@@ -928,20 +928,20 @@ export function rect(arg) {
     if(typeof rect == 'string' || rect.tagName !== undefined) {
       parent = rect;
       rect = Element.rect(rect);
-      Util.log('rect:', rect);
+      //console.log('rect:', rect);
     }
 
     let color = args.shift() || RGBA.random([0, 255], [0, 255], [0, 255], [64, 64]);
-    color.a = 64;
-    let borderColor = args.shift() || '#0f0';
+    //  color.a = 64;
+    let borderColor = args.shift() || null;
     parent = parent || args.shift() || body;
     if(typeof parent == 'string') parent = Element.find(parent);
 
     if(parent != body && parent.style && !parent.style.position) parent.style.setProperty('position', 'relative');
 
-    let e = Element.create('div', { parent });
-    console.log('backgroundColor', color, color.toString());
-    Object.assign(e.style, { position: 'absolute', border: `${self.border || 1}px dashed ${typeof borderColor == 'string' ? borderColor : '#0f0'}`, borderRadius: '0px', backgroundColor: color.toString(), zIndex, pointerEvents: 'none' });
+    let e = Element.create('div', { class: 'devtools rectangle', parent });
+    //console.log('backgroundColor', color, color.toString());
+    Object.assign(e.style, { position: 'absolute', border: `${self.border || 1}px dashed ${borderColor || '#0f0'}`, borderRadius: '0px', backgroundColor: color, zIndex, pointerEvents: 'none' });
 
     //Util.log("__rect ", rect, color);
 

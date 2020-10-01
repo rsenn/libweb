@@ -1,10 +1,5 @@
 import { Component, useCallback, useLayoutEffect, useMemo, useState } from '../dom/preactComponent.js';
-
-function eventSubscriber(names, handler) {
-  if(typeof names == 'string') names = [names];
-  let func = action => element => names.forEach(name => element[action + 'EventListener'](name, handler));
-  return ['add', 'remove'].map(func);
-}
+import { Event } from '../dom/event.js';
 
 function getDimensionObject(element) {
   if(typeof element == 'object' && element != null && element.base) element = element.base;
@@ -32,7 +27,7 @@ export function useDimensions(arg = {}) {
   const [node, setNode] = useState(null);
 
   let ref = useCallback(node => setNode(node), []);
-  const [add, remove] = useMemo(() => eventSubscriber(['resize', 'scroll'], measure));
+  const [add, remove] = useMemo(() => Event.subscriber(['resize', 'scroll'], measure));
 
   useLayoutEffect(() => {
     if(node) {
