@@ -284,9 +284,10 @@ export const LinesToPath = (lines, lineFn) => {
   let l = lines.shift(),
     m;
   let [start, point] = l;
-  let ret = [];
+  let path,
+    ret = [];
   let prevPoint = start;
-  //ret.push(`M ${prevPoint.x} ${prevPoint.y}`);
+  //path.push(`M ${prevPoint.x} ${prevPoint.y}`);
   let debug = false; //Point.equals(start, { x: 0, y: -2 });
 
   if(debug) {
@@ -319,7 +320,9 @@ export const LinesToPath = (lines, lineFn) => {
       return `M ${point.x} ${point.y}`;
     });
 
-  const lineTo = (...args) => ret.push(lineFn(...args));
+  ret.push((path = []));
+
+  const lineTo = (...args) => path.push(lineFn(...args));
 
   lineTo(prevPoint);
   lineTo(point, l.curve);
@@ -346,7 +349,8 @@ export const LinesToPath = (lines, lineFn) => {
       l = m;
     } else if(lines.length > 0) {
       l = lines.shift();
-      ret.push(`M ${l.x1} ${l.y1}`);
+      ret.push((path = []));
+      path.push(`M ${l.x1} ${l.y1}`);
       prevPoint = l[0];
       debug = Point.equals(l[1], { x: 0.635, y: 1.016 }) && l;
       lineTo(l[1], l.curve);

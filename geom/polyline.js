@@ -4,6 +4,8 @@ import { Line, isLine } from './line.js';
 import { PointList } from './pointList.js';
 import Util from '../util.js';
 
+let createFactory = Util.memoize((...args) => SVG.factory(...args));
+
 export class Polyline extends PointList {
   constructor(lines = []) {
     super();
@@ -34,8 +36,11 @@ export class Polyline extends PointList {
     }
   }
 
-  toSVG(factory, attrs = {}, parent = null, prec) {
-    return factory('polyline', { points: PointList.prototype.toString.call(this), ...attrs }, parent, prec);
+  toSVG(factory, attrs = { stroke: '#000', fill: 'none' }, parent = null, prec) {
+    if(!factory) factory = createFactory(document.body);
+    console.log('Polyline.toSVG', factory);
+
+    return factory(this.closed ? 'polygon' : 'polyline', { points: PointList.prototype.toString.call(this), ...attrs }, parent, prec);
   }
 
   push(...args) {
@@ -94,8 +99,49 @@ export class Polyline extends PointList {
     return sum > 0;
   }
 
+  isClosed() {
+    let first = this[0];
+    let last = this[this.length - 1];
+
+    return Point.equals(first, last);
+  }
+
+  get closed() {
+    return this.isClosed();
+  }
+
+  close() {
+    if(!this.closed) this.push(this[0]);
+    return this;
+  }
+
   get [Symbol.species]() {
     return Polyline;
+  }
+
+  pointAt(pos) {
+    const { totalLength } = this;
+    return this.atIndex((pos * (this.length - 1)) / totalLength);
+  }
+
+  atIndex(i) {
+    i = Math.min(this.length - 1, i < 0 ? this.length + i : i);
+    let fract = i - Math.floor(i);
+    i = Math.floor(i);
+    let ret = new Point(this[i]);
+    if(fract > 0) {
+      let next = this[i + 1];
+      ret.x = ret.x * (1.0 - fract) + next.x * fract;
+      ret.y = ret.y * (1.0 - fract) + next.y * fract;
+    }
+    return ret;
+  }
+
+  getTotalLength() {
+    return this.slice(1).reduce((a, p, i) => a + Point.distance(this[i], p), 0);
+  }
+  get totalLength() {
+    return this.getTotalLength();
   }
 }
 

@@ -2155,7 +2155,8 @@ Util.isIterable = obj => {
   } catch(err) {}
   return false;
 };
-Util.isNativeFunction = x => typeof x == 'function' && /\[(native\ code|[^\n]*)\]/.test(x + '');
+Util.isNativeFunction = Util.tryFunction(x => typeof x == 'function' && /^[^\n]*\[(native\ code|[a-z\ ]*)\]/.test(x + ''));
+
 Util.isConstructor = x => {
   if(x !== undefined) {
     let ret,
@@ -2375,20 +2376,32 @@ Util.numberParts = (num, base) => {
   while(num < 1) (num *= base), exp--;
   return { sign: sgn, mantissa: num, exponent: exp };
 };
-Util.roundTo = function(value, prec, digits, type = 'round') {
-  if(!isFinite(value)) return value;
+Util.roundDigits = precision => -Util.clamp(-Infinity, 0, Math.floor(Math.log10(precision - Number.EPSILON)));
+Util.roundFunction = (prec, digits, type) => {
+  digits = digits || Util.roundDigits(prec);
+  type = type || 'round';
 
   const fn = Math[type];
+  if(prec == 1) return fn;
+
+  return function(value) {
+    let ret = fn(value / prec) * prec;
+    if(typeof digits == 'number' && digits >= 1 && digits <= 100) ret = +ret.toFixed(digits);
+    return ret;
+  };
+};
+Util.roundTo = function(value, prec, digits, type) {
+  if(!isFinite(value)) return value;
+  digits = digits || Util.roundDigits(prec);
+  type = type || 'round';
+  const fn = Math[type];
   if(prec == 1) return fn(value);
+  let ret = prec > Number.EPSILON ? fn(value / prec) * prec : value;
 
-  /*  const decimals = Math.log10(prec);
-  const digits = Math.ceil(-decimals);
-  console.log('digits:', digits);*/
-  let ret = fn(value / prec) * prec;
-  digits = digits || -Math.min(0, Math.floor(Math.log10(prec)));
-
+  digits = digits || Util.roundDigits(prec);
+  type = type || 'round';
   if(digits == 0) ret = Math[type](ret);
-  else if(typeof digits == 'number' && digits >= 1) ret = +ret.toFixed(digits);
+  else if(typeof digits == 'number' && digits >= 1 && digits <= 100) ret = +ret.toFixed(digits);
   return ret;
 };
 Util.base64 = (() => {

@@ -342,8 +342,8 @@ PointList.prototype.quot = function(pt) {
   let ret = PointList.prototype.clone.call(this);
   return PointList.prototype.div.apply(ret, arguments);
 };
-PointList.prototype.round = function(prec) {
-  PointList.prototype.forEach.call(this, it => Point.prototype.round.call(it, prec));
+PointList.prototype.round = function(prec, digits, type) {
+  PointList.prototype.forEach.call(this, it => Point.prototype.round.call(it, prec, digits, type));
   return this;
 };
 PointList.prototype.ceil = function(prec) {

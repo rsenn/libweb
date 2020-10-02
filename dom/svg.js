@@ -32,61 +32,72 @@ else */ if(text) svg.innerHTML = innerHTML;
   }
 
   static factory(...args) {
-    let arg = [...arguments];
-
     let delegate = Util.isObject(args[0]) && ('append_to' in args[0] || 'create' in args[0] || 'setattr' in args[0]) ? args.shift() : {};
-    let parent = Util.isObject(args[0]) ? ('tagName' in args[0] || 'appendChild' in args[0] ? args.shift() : null) : null;
+    let parent = Util.isObject(args[0]) ? (typeof args[0] == 'function' || 'tagName' in args[0] || 'appendChild' in args[0] ? args.shift() : null) : null;
     let size = isSize(args[0]) ? args.shift() : null;
 
     delegate = {
-      create: tag => document.createElementNS(SVG.ns, tag),
-      append_to: (elem, root = parent) => root && root.appendChild(elem),
-      setattr: (elem, name, value) => name != 'ns' && elem.setAttributeNS(document.namespaceURI, /*Util.decamelize*/ name, value),
-      setcss: (elem, css) => delegate.setattr(elem, 'style', css),
+      create(tag) {
+        return document.createElementNS(SVG.ns, tag);
+      },
+      append_to(elem, parent) {
+        parent = parent || this.root;
+        return parent.appendChild(elem);
+      },
+      setattr(elem, name, value) {
+        name != 'ns' && elem.setAttributeNS(document.namespaceURI, /*Util.decamelize*/ name, value);
+      },
+      setcss(elem, css) {
+        delegate.setattr(elem, 'style', css);
+      },
       ...delegate
     };
-    //if(size == null) size = new Size(Element.rect(parent));
 
     const { width, height } = size || {};
-    console.log('factory', { delegate, parent, size, arg });
-    if(parent && parent.tagName.toLowerCase() == 'svg') delegate.root = parent;
-    else if(this !== SVG && this && this.appendChild) delegate.root = this;
-    else
-      delegate.root = delegate.create('svg', {
-        ...size,
-        viewBox: `0 0 ${width || 0} ${height || 0}`
-      });
+    console.log('factory', { delegate, parent, size, args });
 
-    if(delegate.root && parent) delegate.append_to(delegate.root, parent);
+    if(typeof parent == 'function') {
+      const getRoot = Util.memoize(() => parent.call(delegate, delegate));
+      delegate = {
+        ...delegate,
+        get root() {
+          return getRoot();
+        }
+      };
+    } else if(parent && parent.tagName && parent.tagName.toLowerCase() == 'svg') {
+      delegate.root = parent;
+    } else if(this !== SVG && this && this.appendChild) {
+      delegate.root = this;
+    } else {
+      if(parent) size = Element.rect(parent);
+      delegate.root = delegate.create('svg');
+      delegate.setattr(delegate.root, 'width', size && size.width ? size.width : width || 0);
+      delegate.setattr(delegate.root, 'height', size && size.height ? size.height : height || 0);
 
-    if(delegate.root) delegate.append_to(delegate.create('defs'), delegate.root);
+      //delegate.setattr(delegate.root, 'viewBox',  `0 0 ${size && size.width  ? size.width : width || 0} ${size  && size.height ? size.height : height || 0}`);
+
+      if(parent) delegate.append_to(delegate.root, parent);
+      delegate.append_to(delegate.create('defs'), delegate.root);
+    }
 
     const { append_to } = delegate;
 
     delegate.append_to = function(elem, p) {
-      let root = p || this.root;
-
-      if(elem.tagName.indexOf('Gradient') != -1) root = root.querySelector('defs');
-
-      append_to(elem, root);
-
-      /*if(typeof root.append == "function") root.append(elem);
-      else root.appendChild(elem);*/
-      //console.log('append_to ', elem, ', root=', root);
+      p = p || this.root;
+      if(['style', 'gradient', 'pattern', 'filter', 'hatch', 'radialGradient', 'linearGradient', 'solidcolor'].indexOf(elem.tagName) != -1) p = p.querySelector('defs');
+      append_to(elem, p);
     };
-    let factory = function(tag, attr, children) {
+
+    let factory = function SVGFactory(tag, attr, children) {
       const create = (tag, attr, parent) => {
         let e = this.create(tag);
-        for(let a in attr) this.setattr(e, a, attr[a]);
-
+        //   console.debug("factory.create", e);
+        for(let a in attr) if(attr[a] !== undefined) this.setattr(e, a, attr[a]);
         if(parent) this.append_to(e, parent);
         return e;
       };
-
       let elem = create(tag, attr, this.root);
-
       children = children ? children : [];
-
       for(let child of children) {
         factory.apply({ ...delegate, root: elem }, child);
       }
@@ -314,8 +325,8 @@ else */ if(text) svg.innerHTML = innerHTML;
 
   static *pathIterator(e, opts, fn = p => p) {
     let { numPoints, step } = typeof opts == 'number' ? { numPoints: opts } : opts || {};
+    if(typeof e == 'string') e = Element.find(e);
     let len = e.getTotalLength();
-
     let pos = i => (i * len) / (numPoints - 1);
 
     if(step !== undefined) {
@@ -324,6 +335,9 @@ else */ if(text) svg.innerHTML = innerHTML;
       pos = i => (i == numPoints ? len : i * step);
     } else if(!numPoints) numPoints = Math.ceil(len / 2);
 
+    console.log(`len:`, len);
+    console.log(`numPoints:`, numPoints);
+    console.log(`step:`, step);
     let p,
       y,
       prev = {};
@@ -332,8 +346,8 @@ else */ if(text) svg.innerHTML = innerHTML;
       const { x, y, slope, next, prev, i, isin } = point;
       let d = (point.distance = slope ? Point.distance(slope) : Number.POSITIVE_INFINITY);
       point.angle = slope ? slope.toAngle(true) : NaN;
-      point.move = !(isin.stroke && isin.fill);
-      point.ok = !point.move && prev.angle != point.angle;
+      point.move = !isin.stroke || Math.abs(d - step) > step / 100;
+      point.ok = point.move || prev.angle != point.angle;
       const pad = Util.padFn(12, ' ', (str, pad) => `${pad}${str}`);
       if(point.ok) {
         //console.log(`pos: ${pad(i, 3)}, move: ${isin || point.move} point: ${pad(point )}, slope: ${pad(slope && slope.toFixed(3) )}, angle: ${point.angle.toFixed(3)}, d: ${d.toFixed(3)}` );
@@ -342,14 +356,19 @@ else */ if(text) svg.innerHTML = innerHTML;
         try {
           ret = fn(point);
         } catch(err) {}
+        //    console.log(`point:`, ret);
         return ret;
       }
     };
 
+    let point, next;
+
     for(let i = 0; i < numPoints; i++) {
-      const point = e.getPointAtLength(pos(i));
-      const next = e.getPointAtLength(pos(i + 1));
-      console.log('iterator', point, next);
+      let thisPos = pos(i),
+        nextPos = pos(i + 1);
+      point = e.getPointAtLength(thisPos);
+      next = e.getPointAtLength(nextPos);
+      //  console.log('iterator', {thisPos, nextPos, len, remain: len - nextPos, i, numPoints});
       const isin = {
         stroke: e.isPointInStroke(point),
         fill: e.isPointInFill(point),
@@ -358,22 +377,23 @@ else */ if(text) svg.innerHTML = innerHTML;
         }
       };
       p = new Point(point);
-      Object.assign(p, { slope: Point.diff(next, point), next, prev, i, isin });
+      Object.assign(p, { slope: prev ? Point.diff(prev, p) : null, prev, i, isin });
       y = do_point(p);
-      if(prev) prev.next = p;
+      if(prev) prev.next = y;
 
       if(y) yield y;
       prev = p;
     }
-    p = new Point(e.getPointAtLength(len));
+    p = new Point(next);
     p = Object.assign(p, {
-      slope: null,
+      slope: Point.diff(prev, p),
       next: null,
       prev,
       isin: { stroke: true, fill: true }
     });
 
     y = do_point(p);
+    if(prev) prev.next = y;
     if(y) yield y;
   }
   static pathCmd = {

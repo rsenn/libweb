@@ -151,10 +151,10 @@ Size.prototype.div = function(...args) {
   }
   return this;
 };
-Size.prototype.round = function(precision = 1, digits) {
+Size.prototype.round = function(precision = 1, digits, type) {
   let { width, height } = this;
-  this.width = Util.roundTo(width, precision, digits);
-  this.height = Util.roundTo(height, precision, digits);
+  this.width = Util.roundTo(width, precision, digits, type);
+  this.height = Util.roundTo(height, precision, digits, type);
   return this;
 };
 Size.prototype.bounds = function(other) {
@@ -216,7 +216,7 @@ Size.bind = (...args) => {
   return Util.bindProperties(new Size(0, 0), t, { width, height }, gen);
 };
 
-for(let method of Util.getMethodNames(Size.prototype)) Size[method] = (size, ...args) => Size.prototype[method].call(size || new Size(size), ...args);
+for(let method of Util.getMethodNames(Size.prototype)) if(method != 'toString') Size[method] = (size, ...args) => Size.prototype[method].call(size || new Size(size), ...args);
 
 export const isSize = o => o && ((o.width !== undefined && o.height !== undefined) || (o.x !== undefined && o.x2 !== undefined && o.y !== undefined && o.y2 !== undefined) || (o.left !== undefined && o.right !== undefined && o.top !== undefined && o.bottom !== undefined));
 

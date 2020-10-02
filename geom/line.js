@@ -307,12 +307,12 @@ Line.prototype.clone = function() {
   return new ctor(x1, y1, x2, y2);
 };
 
-Line.prototype.round = function(precision = 0.001, digits) {
+Line.prototype.round = function(precision = 0.001, digits, type) {
   let { x1, y1, x2, y2 } = this;
-  this.a.x = Util.roundTo(x1, precision, digits);
-  this.a.y = Util.roundTo(y1, precision, digits);
-  this.b.x = Util.roundTo(x2, precision, digits);
-  this.b.y = Util.roundTo(y2, precision, digits);
+  this.x1 = Util.roundTo(x1, precision, digits, type);
+  this.y1 = Util.roundTo(y1, precision, digits, type);
+  this.x2 = Util.roundTo(x2, precision, digits, type);
+  this.y2 = Util.roundTo(y2, precision, digits, type);
   return this;
 };
 
