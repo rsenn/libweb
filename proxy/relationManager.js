@@ -124,7 +124,8 @@ function addRelations(instance, specs) {
       //stopping set when value already in place prevents infinite recursion
       if(set.value !== subject) {
         if(subject && !(subject instanceof subjectSpec.class)) {
-          throw new TypeError(subjectSpec.property + '.add(object) ... object is not instanceof ' + subjectSpec.class.name);
+          throw new TypeError(subjectSpec.property + '.add(object) ... object is not instanceof ' + subjectSpec.class.name
+          );
         }
         let oldvalue = set.value;
         set.value = subject;
@@ -142,7 +143,12 @@ function addRelations(instance, specs) {
     set.value = null;
     //does class checking and sets reflecting relation for cardinality>1
     if(subjectSpec.cardinality > 1 && !Array.isArray(instance[subjectSpec.property])) {
-      Object.defineProperty(instance, subjectSpec.property, { enumerable: subjectSpec.enumerable, configurable: true, writable: false, value: new RelationManager(instance, subjectSpec, spec) });
+      Object.defineProperty(instance, subjectSpec.property, {
+        enumerable: subjectSpec.enumerable,
+        configurable: true,
+        writable: false,
+        value: new RelationManager(instance, subjectSpec, spec)
+      });
     } else if(!instance[subjectSpec.property]) {
       Object.defineProperty(instance, subjectSpec.property, {
         enumerable: subjectSpec.enumerable,

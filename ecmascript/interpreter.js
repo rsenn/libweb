@@ -109,7 +109,12 @@ class Scope {
     if(this.empty) return '';
     return inspect(this.declarations, { colors: true, depth: 2 });
 
-    return { depth: Scope.depth(this), declarations: Object.fromEntries([...this.declarations.entries()].map(([name, value]) => [name, Util.className(value)])) };
+    return {
+      depth: Scope.depth(this),
+      declarations: Object.fromEntries(
+        [...this.declarations.entries()].map(([name, value]) => [name, Util.className(value)])
+      )
+    };
   }
 }
 

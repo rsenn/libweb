@@ -158,6 +158,9 @@ export function QuickJSFileSystem(std, os) {
     chdir(path) {
       let err = os.chdir(path);
       return err;
+    },
+    unlink(path) {
+      return os.remove(path);
     }
   };
 }
@@ -301,7 +304,13 @@ export function NodeJSFileSystem(fs) {
       try {
         fs.renameSync(filename, to);
       } catch(err) {}
-      return !this.exists(filename) && this.exists(to);
+      return !this.exists(filename) && this.exists(to) ? 0 : -1;
+    },
+    unlink(filename) {
+      try {
+        fs.unlinkSync(filename);
+      } catch(err) {}
+      return this.exists(filename) ? -1 : 0;
     }
   };
 }
@@ -330,7 +339,9 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
         return new Promise(resolve => setTimeout(resolve, milliseconds));
       }
 
-      const stream = ChunkReader(`this\n\n...\n\n...\nis\n\n...\n\n...\na\n\n...\n\n...\ntest\n\n...\n\n...\n!`, 4).pipeThrough(new DebugTransformStream());
+      const stream = ChunkReader(`this\n\n...\n\n...\nis\n\n...\n\n...\na\n\n...\n\n...\ntest\n\n...\n\n...\n!`,
+        4
+      ).pipeThrough(new DebugTransformStream());
       /*ew ReadableStream({
         async start(controller) {
           await wait(1000);
@@ -362,7 +373,9 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
             }
           : {}
       )
-        .then(response => (writable ? response.json() : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())))
+        .then(response =>
+          writable ? response.json() : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())
+        )
         .catch(err => (error = err));
       return send ? writable : promise;
     },
@@ -382,7 +395,8 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
       }
       if(typeof ret == 'object' && ret !== null) {
         const { value, done } = ret;
-        if(typeof value == 'string') return CopyToArrayBuffer(value, buf || CreateArrayBuffer(value.length + (offset || 0)), offset || 0);
+        if(typeof value == 'string')
+          return CopyToArrayBuffer(value, buf || CreateArrayBuffer(value.length + (offset || 0)), offset || 0);
       }
       return ret.done ? 0 : -1;
     },

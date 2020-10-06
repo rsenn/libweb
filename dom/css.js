@@ -51,7 +51,10 @@ export class CSS {
     if(Util.isObject(stylesheet) && stylesheet.cssRules !== undefined) ret = getStyleSheet(stylesheet);
     else {
       ret = [...CSS.list()];
-      ret = typeof stylesheet == 'number' ? ret[stylesheet] : ret.find((item, i) => i === stylesheet || item.file === stylesheet);
+      ret =
+        typeof stylesheet == 'number'
+          ? ret[stylesheet]
+          : ret.find((item, i) => i === stylesheet || item.file === stylesheet);
 
       if(ret) ret = ret.stylesheet;
     }
@@ -82,6 +85,44 @@ export class CSS {
     }
     s += `}\n`;
     return s;
+  }
+
+  static parse(str) {
+    let css = new Map();
+    for(let [wholeRule, selectors, body] of Util.matchAll(/([^{]*)\s*{\s*([^}]*)}?/gm, str)) {
+      selectors = selectors.split(/,\s*/g).map(s => s.trim());
+      let rule = new Map();
+
+      for(let [wholeDeclaration, name, value] of Util.matchAll(/([^:]*)\s*:\s*([^;]*);?/gm, body)) {
+        rule.set(name.trim(), value.trim());
+      }
+      css.set(selectors, rule);
+    }
+    return css;
+  }
+
+  static match(stylesheet, selector) {
+    if(typeof selector == 'string') selector = selector.split(/\s+/g);
+    let ret = new Map();
+    for(let [selectors, rule] of stylesheet) {
+      if(typeof selectors == 'string') selectors = selectors.split(/,\s*/g).map(s => s.trim().split(/\s+/g));
+
+      if(selectors.some(s => Util.equals(s, selector))) ret = Util.merge(ret, rule);
+      //       ret.push([selectors,rule]);
+    }
+    return new Map(ret);
+  }
+
+  static format(css) {
+    let out = '';
+    for(let [selectors, rules] of css) {
+      out += selectors.join(', ');
+      out += ' {\n';
+
+      for(let [name, value] of rules) out += `  ${name}: ${value};\n`;
+      out += '}\n';
+    }
+    return out;
   }
 
   static create(parent = 'head') {

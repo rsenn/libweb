@@ -10,7 +10,17 @@
 //import util from 'util';
 import EventEmitter from '../eventEmitter.js';
 import Util from '../util.js';
-import { ESNode, BinaryExpression, Identifier, ImportStatement, Literal, MemberExpression, FunctionDeclaration, ArrowFunction, SequenceExpression } from './estree.js';
+import {
+  ESNode,
+  BinaryExpression,
+  Identifier,
+  ImportStatement,
+  Literal,
+  MemberExpression,
+  FunctionDeclaration,
+  ArrowFunction,
+  SequenceExpression
+} from './estree.js';
 
 class NotImplemented extends Error {
   constructor(type, node) {
@@ -35,7 +45,8 @@ function log(...args) {
 
   if(!callers[0].functionName) callers.shift();
 
-  while(callers[0].fileName == '<anonymous>' || callers[0].methodName == '<anonymous>' || callers[0].methodName == '') callers.shift();
+  while(callers[0].fileName == '<anonymous>' || callers[0].methodName == '<anonymous>' || callers[0].methodName == '')
+    callers.shift();
 
   //console.debug('callers\n', ...callers.map((c) => c.functionName || c.methodName || c.toString()).map((n) => `  ${n}\n`));
 
@@ -560,7 +571,10 @@ export class Environment extends EventEmitter {
   generateIdentifier(node) {
     let self = this;
     log(node);
-    let func = node.value == 'this' ? `function thisObj() { return env.currentThis; }` : `function identifier() { return env.getVariableStore('${node.value}')['${node.value}']; }`;
+    let func =
+      node.value == 'this'
+        ? `function thisObj() { return env.currentThis; }`
+        : `function identifier() { return env.getVariableStore('${node.value}')['${node.value}']; }`;
     // console.debug('generateIdentifier', func);
 
     return new Function('env', `return ${func}`)(self);

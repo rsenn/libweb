@@ -1,18 +1,33 @@
 import Util from '../util.js';
 
 export function Matrix(arg) {
-  let ret = this instanceof Matrix || new.target === Matrix ? this : [undefined, 0, 0, undefined, 0, 0, undefined, 0, 0];
+  let ret =
+    this instanceof Matrix || new.target === Matrix ? this : [undefined, 0, 0, undefined, 0, 0, undefined, 0, 0];
 
   const isObj = Util.isObject(arg);
 
-  if(isObj && arg.xx !== undefined && arg.yx !== undefined && arg.xy !== undefined && arg.yy !== undefined && arg.x0 !== undefined && arg.y0 !== undefined) {
+  if(isObj &&
+    arg.xx !== undefined &&
+    arg.yx !== undefined &&
+    arg.xy !== undefined &&
+    arg.yy !== undefined &&
+    arg.x0 !== undefined &&
+    arg.y0 !== undefined
+  ) {
     ret[0] = arg.xx;
     ret[1] = arg.xy;
     ret[2] = arg.x0;
     ret[3] = arg.yx;
     ret[4] = arg.yy;
     ret[5] = arg.y0;
-  } else if(isObj && arg.a !== undefined && arg.b !== undefined && arg.c !== undefined && arg.d !== undefined && arg.e !== undefined && arg.f !== undefined) {
+  } else if(isObj &&
+    arg.a !== undefined &&
+    arg.b !== undefined &&
+    arg.c !== undefined &&
+    arg.d !== undefined &&
+    arg.e !== undefined &&
+    arg.f !== undefined
+  ) {
     ret[0] = arg.a; //xx
     ret[1] = arg.c; //xy
     ret[2] = arg.e; //x0
@@ -147,7 +162,14 @@ Matrix.prototype.multiply = function(...args) {
 Matrix.prototype.multiplySelf = function(...args) {
   for(let arg of args) {
     if(!(arg instanceof Matrix)) throw new Error('Not a Matrix: ' + arg.constructor);
-    this.init([this[0] * arg[0] + this[1] * arg[3], this[0] * arg[1] + this[1] * arg[4], this[0] * arg[2] + this[1] * arg[5] + this[2], this[3] * arg[0] + this[4] * arg[3], this[3] * arg[1] + this[4] * arg[4], this[3] * arg[2] + this[4] * arg[5] + this[5]]);
+    this.init([
+      this[0] * arg[0] + this[1] * arg[3],
+      this[0] * arg[1] + this[1] * arg[4],
+      this[0] * arg[2] + this[1] * arg[5] + this[2],
+      this[3] * arg[0] + this[4] * arg[3],
+      this[3] * arg[1] + this[4] * arg[4],
+      this[3] * arg[2] + this[4] * arg[5] + this[5]
+    ]);
   }
   return this;
 };
@@ -155,7 +177,14 @@ Matrix.prototype.multiplySelf = function(...args) {
 Matrix.prototype.multiply_self = function(...args) {
   for(let m of args) {
     if(!(m instanceof Matrix)) m = new Matrix(m);
-    Matrix.prototype.init.call(this, this[0] * m[0] + this[1] * m[3], this[0] * m[1] + this[1] * m[4], this[0] * m[2] + this[1] * m[5] + this[2], this[3] * m[0] + this[4] * m[3], this[3] * m[1] + this[4] * m[4], this[3] * m[2] + this[4] * m[5] + this[5]);
+    Matrix.prototype.init.call(this,
+      this[0] * m[0] + this[1] * m[3],
+      this[0] * m[1] + this[1] * m[4],
+      this[0] * m[2] + this[1] * m[5] + this[2],
+      this[3] * m[0] + this[4] * m[3],
+      this[3] * m[1] + this[4] * m[4],
+      this[3] * m[2] + this[4] * m[5] + this[5]
+    );
   }
   return this;
 };
@@ -187,7 +216,10 @@ Matrix.prototype.isIdentity = function() {
 };
 
 Matrix.prototype.determinant = function() {
-  return this[0] * (this[4] * this[8] - this[5] * this[7]) + this[1] * (this[5] * this[6] - this[3] * this[8]) + this[2] * (this[3] * this[7] - this[4] * this[6]);
+  return (this[0] * (this[4] * this[8] - this[5] * this[7]) +
+    this[1] * (this[5] * this[6] - this[3] * this[8]) +
+    this[2] * (this[3] * this[7] - this[4] * this[6])
+  );
 };
 
 Matrix.prototype.invert = function() {
@@ -294,9 +326,11 @@ Matrix.prototype.transform_point = function(p) {
 Matrix.prototype.transformGenerator = function(what = 'point') {
   const matrix = Object.freeze(this.clone());
   return function* (list) {
-    const method = Matrix.prototype['transform_' + what] || (typeof what == 'function' && what) || Matrix.prototype.transform_xy;
+    const method =
+      Matrix.prototype['transform_' + what] || (typeof what == 'function' && what) || Matrix.prototype.transform_xy;
 
-    for(let item of list) yield item instanceof Array ? method.apply(matrix, [...item]) : method.call(matrix, { ...item });
+    for(let item of list)
+      yield item instanceof Array ? method.apply(matrix, [...item]) : method.call(matrix, { ...item });
   };
 };
 
@@ -319,7 +353,10 @@ Matrix.prototype.transform_size = function(s) {
 };
 
 Matrix.prototype.transform_xywh = function(x, y, width, height) {
-  return [...Matrix.prototype.transform_xy.call(this, x, y), ...Matrix.prototype.transform_wh.call(this, width, height)];
+  return [
+    ...Matrix.prototype.transform_xy.call(this, x, y),
+    ...Matrix.prototype.transform_wh.call(this, width, height)
+  ];
 };
 
 Matrix.prototype.transform_rect = function(rect) {
@@ -360,12 +397,34 @@ Matrix.prototype.affine_transform = function(a, b) {
   let xx, yx, xy, yy, tx, ty;
   if(typeof a == 'object' && a.toPoints !== undefined) a = a.toPoints();
   if(typeof b == 'object' && b.toPoints !== undefined) b = b.toPoints();
-  xx = (b[0].x * a[1].y + b[1].x * a[2].y + b[2].x * a[0].y - b[0].x * a[2].y - b[1].x * a[0].y - b[2].x * a[1].y) / (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
-  yx = (b[0].y * a[1].y + b[1].y * a[2].y + b[2].y * a[0].y - b[0].y * a[2].y - b[1].y * a[0].y - b[2].y * a[1].y) / (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
-  xy = (a[0].x * b[1].x + a[1].x * b[2].x + a[2].x * b[0].x - a[0].x * b[2].x - a[1].x * b[0].x - a[2].x * b[1].x) / (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
-  yy = (a[0].x * b[1].y + a[1].x * b[2].y + a[2].x * b[0].y - a[0].x * b[2].y - a[1].x * b[0].y - a[2].x * b[1].y) / (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
-  tx = (a[0].x * a[1].y * b[2].x + a[1].x * a[2].y * b[0].x + a[2].x * a[0].y * b[1].x - a[0].x * a[2].y * b[1].x - a[1].x * a[0].y * b[2].x - a[2].x * a[1].y * b[0].x) / (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
-  ty = (a[0].x * a[1].y * b[2].y + a[1].x * a[2].y * b[0].y + a[2].x * a[0].y * b[1].y - a[0].x * a[2].y * b[1].y - a[1].x * a[0].y * b[2].y - a[2].x * a[1].y * b[0].y) / (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
+  xx =
+    (b[0].x * a[1].y + b[1].x * a[2].y + b[2].x * a[0].y - b[0].x * a[2].y - b[1].x * a[0].y - b[2].x * a[1].y) /
+    (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
+  yx =
+    (b[0].y * a[1].y + b[1].y * a[2].y + b[2].y * a[0].y - b[0].y * a[2].y - b[1].y * a[0].y - b[2].y * a[1].y) /
+    (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
+  xy =
+    (a[0].x * b[1].x + a[1].x * b[2].x + a[2].x * b[0].x - a[0].x * b[2].x - a[1].x * b[0].x - a[2].x * b[1].x) /
+    (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
+  yy =
+    (a[0].x * b[1].y + a[1].x * b[2].y + a[2].x * b[0].y - a[0].x * b[2].y - a[1].x * b[0].y - a[2].x * b[1].y) /
+    (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
+  tx =
+    (a[0].x * a[1].y * b[2].x +
+      a[1].x * a[2].y * b[0].x +
+      a[2].x * a[0].y * b[1].x -
+      a[0].x * a[2].y * b[1].x -
+      a[1].x * a[0].y * b[2].x -
+      a[2].x * a[1].y * b[0].x) /
+    (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
+  ty =
+    (a[0].x * a[1].y * b[2].y +
+      a[1].x * a[2].y * b[0].y +
+      a[2].x * a[0].y * b[1].y -
+      a[0].x * a[2].y * b[1].y -
+      a[1].x * a[0].y * b[2].y -
+      a[2].x * a[1].y * b[0].y) /
+    (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
   this.set_row.call(this, 0, xx, xy, tx);
   this.set_row.call(this, 1, yx, yy, ty);
   this.set_row.call(this, 2, 0, 0, 1);
@@ -474,7 +533,28 @@ Matrix.IDENTITY = Object.freeze(Matrix.identity());
 Matrix.rad2deg = radians => (radians * 180) / Math.PI;
 Matrix.deg2rad = degrees => (degrees * Math.PI) / 180;
 
-for(let name of ['toObject', 'init', 'toArray', 'isIdentity', 'determinant', 'invert', 'multiply', 'scalar_product', 'toSource', 'toString', 'toSVG', 'equals', 'init_identity', 'is_identity', 'init_translate', 'init_scale', 'init_rotate', 'scale_sign', 'decompose', 'transformer']) {
+for(let name of [
+  'toObject',
+  'init',
+  'toArray',
+  'isIdentity',
+  'determinant',
+  'invert',
+  'multiply',
+  'scalar_product',
+  'toSource',
+  'toString',
+  'toSVG',
+  'equals',
+  'init_identity',
+  'is_identity',
+  'init_translate',
+  'init_scale',
+  'init_rotate',
+  'scale_sign',
+  'decompose',
+  'transformer'
+]) {
   Matrix[name] = (matrix, ...args) => Matrix.prototype[name].call(matrix || new Matrix(matrix), ...args);
 }
 
@@ -491,7 +571,16 @@ for(let name of ['translate', 'scale', 'rotate', 'skew']) {
   };
 }
 
-for(let name of ['transform_distance', 'transform_xy', 'transform_point', 'transform_points', 'transform_wh', 'transform_size', 'transform_rect', 'affine_transform']) {
+for(let name of [
+  'transform_distance',
+  'transform_xy',
+  'transform_point',
+  'transform_points',
+  'transform_wh',
+  'transform_size',
+  'transform_rect',
+  'affine_transform'
+]) {
   const method = Matrix.prototype[name];
 
   if(method.length == 2) {
@@ -505,7 +594,10 @@ Util.defineGetter(Matrix, Symbol.species, function() {
   return this;
 });
 
-export const isMatrix = m => Util.isObject(m) && (m instanceof Matrix || (m.length !== undefined && (m.length == 6 || m.length == 9) && m.every(el => typeof el == 'number')));
+export const isMatrix = m =>
+  Util.isObject(m) &&
+  (m instanceof Matrix ||
+    (m.length !== undefined && (m.length == 6 || m.length == 9) && m.every(el => typeof el == 'number')));
 
 export const ImmutableMatrix = Util.immutableClass(Matrix);
 Util.defineGetter(ImmutableMatrix, Symbol.species, () => ImmutableMatrix);

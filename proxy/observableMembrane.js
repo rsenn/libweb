@@ -5,7 +5,17 @@
 import Util from '../util.js';
 
 const { isArray } = Array;
-const { getPrototypeOf, create: ObjectCreate, /* defineProperty: ObjectDefineProperty,*/ defineProperties: ObjectDefineProperties, isExtensible, getOwnPropertyDescriptor, getOwnPropertyNames, getOwnPropertySymbols, preventExtensions, hasOwnProperty } = Object;
+const {
+  getPrototypeOf,
+  create: ObjectCreate,
+  /* defineProperty: ObjectDefineProperty,*/ defineProperties: ObjectDefineProperties,
+  isExtensible,
+  getOwnPropertyDescriptor,
+  getOwnPropertyNames,
+  getOwnPropertySymbols,
+  preventExtensions,
+  hasOwnProperty
+} = Object;
 const ObjectDefineProperty = Util.define;
 
 const { push: ArrayPush, concat: ArrayConcat, map: ArrayMap } = Array.prototype;
@@ -121,7 +131,8 @@ class BaseProxyHandler {
       membrane: { tagPropertyKey }
     } = this;
     //if the membrane tag key exists and it is not in the original target, we add it to the keys.
-    const keys = isUndefined(tagPropertyKey) || hasOwnProperty.call(originalTarget, tagPropertyKey) ? [] : [tagPropertyKey];
+    const keys =
+      isUndefined(tagPropertyKey) || hasOwnProperty.call(originalTarget, tagPropertyKey) ? [] : [tagPropertyKey];
     //small perf optimization using push instead of concat to avoid creating an extra array
     ArrayPush.apply(keys, getOwnPropertyNames(originalTarget));
     ArrayPush.apply(keys, getOwnPropertySymbols(originalTarget));
@@ -307,7 +318,10 @@ class ReactiveProxyHandler extends BaseProxyHandler {
         process => process.env.NODE_ENV !== 'production'
       )
     ) {
-      throw new Error(`Invalid setPrototypeOf invocation for reactive proxy ${toString(this.originalTarget)}. Prototype of reactive objects cannot be changed.`);
+      throw new Error(`Invalid setPrototypeOf invocation for reactive proxy ${toString(
+          this.originalTarget
+        )}. Prototype of reactive objects cannot be changed.`
+      );
     }
   }
 
@@ -390,7 +404,8 @@ class ReadOnlyHandler extends BaseProxyHandler {
         )
       ) {
         const { originalTarget } = handler;
-        throw new Error(`Invalid mutation: Cannot invoke a setter on "${originalTarget}". "${originalTarget}" is read-only.`);
+        throw new Error(`Invalid mutation: Cannot invoke a setter on "${originalTarget}". "${originalTarget}" is read-only.`
+        );
       }
     };
     setterMap$1.set(originalSet, set);
@@ -404,7 +419,8 @@ class ReadOnlyHandler extends BaseProxyHandler {
       )
     ) {
       const { originalTarget } = this;
-      throw new Error(`Invalid mutation: Cannot set "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`);
+      throw new Error(`Invalid mutation: Cannot set "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`
+      );
     }
 
     return false;
@@ -417,7 +433,8 @@ class ReadOnlyHandler extends BaseProxyHandler {
       )
     ) {
       const { originalTarget } = this;
-      throw new Error(`Invalid mutation: Cannot delete "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`);
+      throw new Error(`Invalid mutation: Cannot delete "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`
+      );
     }
 
     return false;
@@ -430,7 +447,8 @@ class ReadOnlyHandler extends BaseProxyHandler {
       )
     ) {
       const { originalTarget } = this;
-      throw new Error(`Invalid prototype mutation: Cannot set prototype on "${originalTarget}". "${originalTarget}" prototype is read-only.`);
+      throw new Error(`Invalid prototype mutation: Cannot set prototype on "${originalTarget}". "${originalTarget}" prototype is read-only.`
+      );
     }
   }
 
@@ -441,7 +459,8 @@ class ReadOnlyHandler extends BaseProxyHandler {
       )
     ) {
       const { originalTarget } = this;
-      throw new Error(`Invalid mutation: Cannot preventExtensions on ${originalTarget}". "${originalTarget} is read-only.`);
+      throw new Error(`Invalid mutation: Cannot preventExtensions on ${originalTarget}". "${originalTarget} is read-only.`
+      );
     }
 
     return false;
@@ -454,7 +473,8 @@ class ReadOnlyHandler extends BaseProxyHandler {
       )
     ) {
       const { originalTarget } = this;
-      throw new Error(`Invalid mutation: Cannot defineProperty "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`);
+      throw new Error(`Invalid mutation: Cannot defineProperty "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`
+      );
     }
 
     return false;

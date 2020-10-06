@@ -36,7 +36,10 @@ export class LibraryRenderer extends EagleSVGRenderer {
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-    /* if(rot)*/ this.debug(`LibraryRenderer.renderItem`, /* { labelText, pos, transform, rot }, */ item /*, item.xpath().toString()*/, item.raw);
+    /* if(rot)*/ this.debug(`LibraryRenderer.renderItem`,
+      /* { labelText, pos, transform, rot }, */ item /*, item.xpath().toString()*/,
+      item.raw
+    );
 
     const layer = item.layer;
     const color = (opts && opts.color) || (layer && this.getColor(layer.color));

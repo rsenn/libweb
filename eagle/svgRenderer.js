@@ -2,7 +2,16 @@ import { EagleElement } from './element.js';
 import Util from '../util.js';
 import { Size } from '../dom.js';
 import { Point, Rect, BBox, TransformationList } from '../geom.js';
-import { Rotation, VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
+import {
+  Rotation,
+  VERTICAL,
+  HORIZONTAL,
+  HORIZONTAL_VERTICAL,
+  ClampAngle,
+  AlignmentAngle,
+  LayerAttributes,
+  MakeCoordTransformer
+} from './renderUtils.js';
 import { ElementToComponent, Pattern, Grid, Background, Drawing } from './components.js';
 import trkl from '../trkl.js';
 import { h, Component } from '../dom/preactComponent.js';
@@ -132,7 +141,11 @@ export class EagleSVGRenderer {
   layerOf(element) {
     let layer;
     do {
-      layer = element.getAttribute('data-layer') || element.getAttribute('data-layer-id') || element.getAttribute('data-layer-name') || element.getAttribute('layer');
+      layer =
+        element.getAttribute('data-layer') ||
+        element.getAttribute('data-layer-id') ||
+        element.getAttribute('data-layer-name') ||
+        element.getAttribute('layer');
       if(layer) {
         const layerId = +(layer + '').replace(/\ .*/g, '');
         return this.layers[layerId];
@@ -184,7 +197,8 @@ export class EagleSVGRenderer {
     /*   this.debug(`EagleSVGRenderer.renderItem`, item);
     this.debug(`EagleSVGRenderer.renderItem`, item.xpath().toString());*/
 
-    const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, 'data-path': item.path.toString(' '), ...attr }, parent);
+    const svg = (elem, attr, parent) =>
+      this.create(elem, { className: item.tagName, 'data-path': item.path.toString(' '), ...attr }, parent);
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
     const { layer } = item;
@@ -416,7 +430,10 @@ export class EagleSVGRenderer {
     this.debug('viewBox rect:', rect, rect.toString(), rect.valueOf);
 
     let grid = doc.lookup('/eagle/drawing/grid');
-    let attrs = { bg: trkl({ color: '#ffffff', visible: true }), grid: trkl({ color: '#0000aa', width: 0.05, visible: true }) };
+    let attrs = {
+      bg: trkl({ color: '#ffffff', visible: true }),
+      grid: trkl({ color: '#0000aa', width: 0.05, visible: true })
+    };
     this.debug('grid:', grid.attributes);
 
     trkl.bind(this, attrs);

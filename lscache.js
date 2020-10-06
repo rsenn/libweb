@@ -69,7 +69,8 @@ function supportsStorage() {
 
 // Check to set if the error is us dealing with being out of space
 function isOutOfSpace(e) {
-  return e && (e.name === 'QUOTA_EXCEEDED_ERR' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED' || e.name === 'QuotaExceededError');
+  return (e && (e.name === 'QUOTA_EXCEEDED_ERR' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED' || e.name === 'QuotaExceededError')
+  );
 }
 
 // Determines if native JSON (de-)serialization is supported in the browser.
@@ -174,7 +175,13 @@ const Implementations = {
       }
       if(typeof response == 'string') response = new Blob([response], { type });*/
       //   console.log('setItem', { request, response });
-      if(!(response instanceof Response)) response = new Response(response, { url: request.url, status: 200, statusText: 'OK', headers: { 'Content-Type': type } });
+      if(!(response instanceof Response))
+        response = new Response(response, {
+          url: request.url,
+          status: 200,
+          statusText: 'OK',
+          headers: { 'Content-Type': type }
+        });
       if(typeof cache.put == 'function') return await cache.put(request, response);
     },
 

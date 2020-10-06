@@ -303,7 +303,8 @@ export const Behave = function(userOpts) {
         for(i = 0; i < charSettings.keyMap.length; i++) {
           if(charSettings.keyMap[i].canBreak) {
             for(j in quoteMap) {
-              toDecrement += left.split(quoteMap[j]).filter(utils.isEven).join('').split(charSettings.keyMap[i].open).length - 1;
+              toDecrement +=
+                left.split(quoteMap[j]).filter(utils.isEven).join('').split(charSettings.keyMap[i].open).length - 1;
             }
           }
         }
@@ -450,7 +451,8 @@ export const Behave = function(userOpts) {
             }
           }
 
-          let edited = left + newLine + ourIndent + closingBreak + ourIndent.substring(0, ourIndent.length - tab.length) + right;
+          let edited =
+            left + newLine + ourIndent + closingBreak + ourIndent.substring(0, ourIndent.length - tab.length) + right;
           utils.editor.set(edited);
           utils.cursor.set(pos + finalCursorPos);
           utils._callHook('enter:after');

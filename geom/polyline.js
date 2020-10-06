@@ -40,7 +40,11 @@ export class Polyline extends PointList {
     if(!factory) factory = createFactory(document.body);
     console.log('Polyline.toSVG', factory);
 
-    return factory(this.closed ? 'polygon' : 'polyline', { points: PointList.prototype.toString.call(this), ...attrs }, parent, prec);
+    return factory(this.closed ? 'polygon' : 'polyline',
+      { points: PointList.prototype.toString.call(this), ...attrs },
+      parent,
+      prec
+    );
   }
 
   push(...args) {
@@ -58,7 +62,9 @@ export class Polyline extends PointList {
       c = false,
       nvert = this.length;
     for(i = 0, j = nvert - 1; i < nvert; j = i++) {
-      if(this[i].y > point.y !== this[j].y > point.y && point.x < ((this[j].x - this[i].x) * (point.y - this[i].y)) / (this[j].y - this[i].y) + this[i].x) {
+      if(this[i].y > point.y !== this[j].y > point.y &&
+        point.x < ((this[j].x - this[i].x) * (point.y - this[i].y)) / (this[j].y - this[i].y) + this[i].x
+      ) {
         c = !c;
       }
     }

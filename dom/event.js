@@ -10,7 +10,21 @@ export const Event = {
 
     //var event = Object.assign(new window.Event('keydown'), {keyCode, key,code, ctrlKey,shiftKey,altKey,metaKey});
     //, srcElement: target, target: target, currentTarget: target, view: window });
-    let event = new KeyboardEvent('key' + type, { bubbles: true, isTrusted: true, keyCode, key, code, ctrlKey, shiftKey, altKey, metaKey, srcElement: target, target, currentTarget: target, view: window }); //document.createEvent("Event");
+    let event = new KeyboardEvent('key' + type, {
+      bubbles: true,
+      isTrusted: true,
+      keyCode,
+      key,
+      code,
+      ctrlKey,
+      shiftKey,
+      altKey,
+      metaKey,
+      srcElement: target,
+      target,
+      currentTarget: target,
+      view: window
+    }); //document.createEvent("Event");
 
     //event.initEvent(evtName, true, false);
 

@@ -101,7 +101,8 @@ export class MutableXPath extends MutablePath {
     return r;
   }
 
-  static matchObj = (tagName, attr_or_index = {}) => (typeof attr_or_index == 'number' ? [attr_or_index, tagName] : { tagName, attributes: attr_or_index });
+  static matchObj = (tagName, attr_or_index = {}) =>
+    typeof attr_or_index == 'number' ? [attr_or_index, tagName] : { tagName, attributes: attr_or_index };
   static strToPart(p) {
     let o = p;
     if(typeof p == 'string') {
@@ -256,7 +257,9 @@ export class MutableXPath extends MutablePath {
         part = `find(${ImmutableXPath.partMatcher(part)})`;
       } else if(part.tagName) {
         const cond = `tagName=='${part.tagName}'`;
-        const attrs = part.attributes ? Object.entries(part.attributes).map(([k, v]) => `attributes.${k} == '${v}'`) : [];
+        const attrs = part.attributes
+          ? Object.entries(part.attributes).map(([k, v]) => `attributes.${k} == '${v}'`)
+          : [];
         const pred = `({tagName${attrs.length ? ',attributes' : ''}}) => ${[cond, ...attrs].join(' & ')}`;
         part = `find(${pred})`;
       }

@@ -14,7 +14,20 @@ import { Drawing } from './components/drawing.js';
 import { Pad } from './components/pad.js';
 import { Origin } from './components/origin.js';
 
-export const PrimitiveComponents = { Wire, Rectangle, Pin, Circle, Cross, Arc, Text: TextElement, Grid, Pattern, Pad, Via: Pad, Origin };
+export const PrimitiveComponents = {
+  Wire,
+  Rectangle,
+  Pin,
+  Circle,
+  Cross,
+  Arc,
+  Text: TextElement,
+  Grid,
+  Pattern,
+  Pad,
+  Via: Pad,
+  Origin
+};
 
 let prevName;
 

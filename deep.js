@@ -101,7 +101,11 @@ export const iterate = function* (value, filter = v => true, path = []) {
   if(r !== -1) if (Util.isObject(value)) for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
 };
 
-export const flatten = function(iter, dst = {}, filter = (v, p) => typeof v != 'object' && v !== null, map = (p, v) => [p.join('.'), v]) {
+export const flatten = function(iter,
+  dst = {},
+  filter = (v, p) => typeof v != 'object' && v !== null,
+  map = (p, v) => [p.join('.'), v]
+) {
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 
@@ -185,7 +189,12 @@ export const unset = (object, path) => {
   if(object && typeof object === 'object') {
     let parts = typeof path == 'string' ? path.split('.') : path;
 
-    parts.length > 1 ? unset(object[parts.shift()], parts) : delete object[path];
+    if(parts.length > 1) {
+      unset(object[parts.shift()], parts);
+    } else {
+      if(Util.isArray(object) && Util.isNumeric(path)) object.splice(+path, 1);
+      else delete object[path];
+    }
   }
   return object;
 };

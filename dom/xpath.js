@@ -10,7 +10,9 @@ export class XPath {
       }
     });
 
-    let result = expression.evaluate(context, resultType || XPathResult.ORDERED_NODE_SNAPSHOT_TYPE || XPathResult.ORDERED_NODE_ITERATOR_TYPE);
+    let result = expression.evaluate(context,
+      resultType || XPathResult.ORDERED_NODE_SNAPSHOT_TYPE || XPathResult.ORDERED_NODE_ITERATOR_TYPE
+    );
     let ret;
     switch (result.resultType) {
       case XPathResult.NUMBER_TYPE:

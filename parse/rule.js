@@ -35,7 +35,9 @@ export class Rule {
       sep = ' ';
 
     if(multiline) (nl = '\n'), (sep = ' | ');
-    return `Rule ${this.fragment ? 'fragment ' : ''}${name ? Util.colorText(name, 1, 32) + ' ' : ''}${nl}: ${this.productions.map(l => l.toString()).join(`${nl}${sep}`)}${nl};${nl}`;
+    return `Rule ${this.fragment ? 'fragment ' : ''}${
+      name ? Util.colorText(name, 1, 32) + ' ' : ''
+    }${nl}: ${this.productions.map(l => l.toString()).join(`${nl}${sep}`)}${nl};${nl}`;
   }
 
   match(parser) {

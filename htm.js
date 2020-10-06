@@ -1,5 +1,16 @@
 import { Component, createContext, h, render } from './preact.js';
-import { useCallback, useContext, useDebugValue, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useReducer, useRef, useState } from './hooks.js';
+import {
+  useCallback,
+  useContext,
+  useDebugValue,
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState
+} from './hooks.js';
 
 const MINI = false;
 
@@ -120,7 +131,11 @@ const build = function(statics) {
     } else if(mode >= MODE_PROP_SET) {
       if(MINI) {
         if(mode === MODE_PROP_SET) {
-          (current[2] = current[2] || {})[propName] = field ? (buffer ? buffer + fields[field] : fields[field]) : buffer;
+          (current[2] = current[2] || {})[propName] = field
+            ? buffer
+              ? buffer + fields[field]
+              : fields[field]
+            : buffer;
           mode = MODE_PROP_APPEND;
         } else if(field || buffer) {
           current[2][propName] += field ? buffer + fields[field] : buffer;
@@ -265,4 +280,20 @@ let htm = MINI ? build : regular;
 
 const html = htm.bind(h);
 
-export { h, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue };
+export {
+  h,
+  html,
+  render,
+  Component,
+  createContext,
+  useState,
+  useReducer,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useImperativeHandle,
+  useMemo,
+  useCallback,
+  useContext,
+  useDebugValue
+};

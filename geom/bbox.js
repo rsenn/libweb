@@ -46,9 +46,12 @@ export class BBox {
       if(typeof arg.bbox == 'function') {
         arg = arg.bbox();
       } else {
-        if(arg.x2 !== undefined && arg.y2 != undefined) this.updateXY(arg.x2, arg.y2, 0, name => (this.objects[name] = obj || arg));
-        if(arg.x1 !== undefined && arg.y1 != undefined) this.updateXY(arg.x1, arg.y1, 0, name => (this.objects[name] = obj || arg));
-        if(arg.x !== undefined && arg.y != undefined) this.updateXY(arg.x, arg.y, offset, name => (this.objects[name] = obj || arg));
+        if(arg.x2 !== undefined && arg.y2 != undefined)
+          this.updateXY(arg.x2, arg.y2, 0, name => (this.objects[name] = obj || arg));
+        if(arg.x1 !== undefined && arg.y1 != undefined)
+          this.updateXY(arg.x1, arg.y1, 0, name => (this.objects[name] = obj || arg));
+        if(arg.x !== undefined && arg.y != undefined)
+          this.updateXY(arg.x, arg.y, offset, name => (this.objects[name] = obj || arg));
       }
     }
 

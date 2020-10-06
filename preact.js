@@ -284,7 +284,15 @@ function renderComponent(component) {
     const oldVNode = assign({}, vnode);
     oldVNode._original = oldVNode;
 
-    let newDom = diff(parentDom, vnode, oldVNode, component._globalContext, parentDom.ownerSVGElement !== undefined, null, commitQueue, oldDom == null ? getDomSibling(vnode) : oldDom);
+    let newDom = diff(parentDom,
+      vnode,
+      oldVNode,
+      component._globalContext,
+      parentDom.ownerSVGElement !== undefined,
+      null,
+      commitQueue,
+      oldDom == null ? getDomSibling(vnode) : oldDom
+    );
     commitRoot(commitQueue, vnode);
 
     if(newDom != oldDom) {
@@ -341,7 +349,9 @@ let prevDebounce;
  * @param {import('./internal').Component} c The component to rerender
  */
 function enqueueRender(c) {
-  if((!c._dirty && (c._dirty = true) && rerenderQueue.push(c) && !process._rerenderCount++) || prevDebounce !== options.debounceRendering) {
+  if((!c._dirty && (c._dirty = true) && rerenderQueue.push(c) && !process._rerenderCount++) ||
+    prevDebounce !== options.debounceRendering
+  ) {
     prevDebounce = options.debounceRendering;
     (prevDebounce || defer)(process);
   }
@@ -382,7 +392,17 @@ process._rerenderCount = 0;
  * Fragments that have siblings. In most cases, it starts out as `oldChildren[0]._dom`.
  * @param {boolean} isHydrating Whether or not we are in hydration
  */
-function diffChildren(parentDom, renderResult, newParentVNode, oldParentVNode, globalContext, isSvg, excessDomChildren, commitQueue, oldDom, isHydrating) {
+function diffChildren(parentDom,
+  renderResult,
+  newParentVNode,
+  oldParentVNode,
+  globalContext,
+  isSvg,
+  excessDomChildren,
+  commitQueue,
+  oldDom,
+  isHydrating
+) {
   let i, j, oldVNode, childVNode, newDom, firstChildDom, refs;
 
   //This is a compression of oldParentVNode!=null && oldParentVNode != EMPTY_OBJ && oldParentVNode._children || EMPTY_ARR
@@ -420,7 +440,12 @@ function diffChildren(parentDom, renderResult, newParentVNode, oldParentVNode, g
     } else if(Array.isArray(childVNode)) {
       childVNode = newParentVNode._children[i] = createVNode(Fragment, { children: childVNode }, null, null, null);
     } else if(childVNode._dom != null || childVNode._component != null) {
-      childVNode = newParentVNode._children[i] = createVNode(childVNode.type, childVNode.props, childVNode.key, null, childVNode._original);
+      childVNode = newParentVNode._children[i] = createVNode(childVNode.type,
+        childVNode.props,
+        childVNode.key,
+        null,
+        childVNode._original
+      );
     } else {
       childVNode = newParentVNode._children[i] = childVNode;
     }
@@ -460,7 +485,16 @@ function diffChildren(parentDom, renderResult, newParentVNode, oldParentVNode, g
     oldVNode = oldVNode || EMPTY_OBJ;
 
     //Morph the old element into the new one, but don't append it to the dom yet
-    newDom = diff(parentDom, childVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, oldDom, isHydrating);
+    newDom = diff(parentDom,
+      childVNode,
+      oldVNode,
+      globalContext,
+      isSvg,
+      excessDomChildren,
+      commitQueue,
+      oldDom,
+      isHydrating
+    );
 
     if((j = childVNode.ref) && oldVNode.ref != j) {
       if(!refs) refs = [];
@@ -606,7 +640,13 @@ function diffProps(dom, newProps, oldProps, isSvg, hydrate) {
   }
 
   for(i in newProps) {
-    if((!hydrate || typeof newProps[i] == 'function') && i !== 'children' && i !== 'key' && i !== 'value' && i !== 'checked' && oldProps[i] !== newProps[i]) {
+    if((!hydrate || typeof newProps[i] == 'function') &&
+      i !== 'children' &&
+      i !== 'key' &&
+      i !== 'value' &&
+      i !== 'checked' &&
+      oldProps[i] !== newProps[i]
+    ) {
       setProperty(dom, i, newProps[i], oldProps[i], isSvg);
     }
   }
@@ -764,7 +804,16 @@ function reorderChildren(newVNode, oldDom, parentDom) {
  * Fragments that have siblings. In most cases, it starts out as `oldChildren[0]._dom`.
  * @param {boolean} [isHydrating] Whether or not we are in hydration
  */
-function diff(parentDom, newVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, oldDom, isHydrating) {
+function diff(parentDom,
+  newVNode,
+  oldVNode,
+  globalContext,
+  isSvg,
+  excessDomChildren,
+  commitQueue,
+  oldDom,
+  isHydrating
+) {
   let tmp,
     newType = newVNode.type;
 
@@ -837,7 +886,11 @@ function diff(parentDom, newVNode, oldVNode, globalContext, isSvg, excessDomChil
           c.componentWillReceiveProps(newProps, componentContext);
         }
 
-        if((!c._force && c.shouldComponentUpdate != null && c.shouldComponentUpdate(newProps, c._nextState, componentContext) === false) || newVNode._original === oldVNode._original) {
+        if((!c._force &&
+            c.shouldComponentUpdate != null &&
+            c.shouldComponentUpdate(newProps, c._nextState, componentContext) === false) ||
+          newVNode._original === oldVNode._original
+        ) {
           c.props = newProps;
           c.state = c._nextState;
           //More info about this here: https://gist.github.com/JoviDeCroock/bec5f2ce93544d2e6070ef8e0036e4e8
@@ -890,7 +943,17 @@ function diff(parentDom, newVNode, oldVNode, globalContext, isSvg, excessDomChil
       let isTopLevelFragment = tmp != null && tmp.type == Fragment && tmp.key == null;
       let renderResult = isTopLevelFragment ? tmp.props.children : tmp;
 
-      diffChildren(parentDom, Array.isArray(renderResult) ? renderResult : [renderResult], newVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, oldDom, isHydrating);
+      diffChildren(parentDom,
+        Array.isArray(renderResult) ? renderResult : [renderResult],
+        newVNode,
+        oldVNode,
+        globalContext,
+        isSvg,
+        excessDomChildren,
+        commitQueue,
+        oldDom,
+        isHydrating
+      );
 
       c.base = newVNode._dom;
 
@@ -907,7 +970,15 @@ function diff(parentDom, newVNode, oldVNode, globalContext, isSvg, excessDomChil
       newVNode._children = oldVNode._children;
       newVNode._dom = oldVNode._dom;
     } else {
-      newVNode._dom = diffElementNodes(oldVNode._dom, newVNode, oldVNode, globalContext, isSvg, excessDomChildren, commitQueue, isHydrating);
+      newVNode._dom = diffElementNodes(oldVNode._dom,
+        newVNode,
+        oldVNode,
+        globalContext,
+        isSvg,
+        excessDomChildren,
+        commitQueue,
+        isHydrating
+      );
     }
 
     if((tmp = options.diffed)) tmp(newVNode);
@@ -969,7 +1040,9 @@ function diffElementNodes(dom, newVNode, oldVNode, globalContext, isSvg, excessD
       //if newVNode matches an element in excessDomChildren or the `dom`
       //argument matches an element in excessDomChildren, remove it from
       //excessDomChildren so it isn't later removed in diffChildren
-      if(child != null && ((newVNode.type === null ? child.nodeType === 3 : child.localName === newVNode.type) || dom == child)) {
+      if(child != null &&
+        ((newVNode.type === null ? child.nodeType === 3 : child.localName === newVNode.type) || dom == child)
+      ) {
         dom = child;
         excessDomChildren[i] = null;
         break;
@@ -982,7 +1055,9 @@ function diffElementNodes(dom, newVNode, oldVNode, globalContext, isSvg, excessD
       return document.createTextNode(newProps);
     }
 
-    dom = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', newVNode.type) : document.createElement(newVNode.type, newProps.is && { is: newProps.is });
+    dom = isSvg
+      ? document.createElementNS('http://www.w3.org/2000/svg', newVNode.type)
+      : document.createElement(newVNode.type, newProps.is && { is: newProps.is });
     //we created a new parent, so none of the previously attached children can be reused:
     excessDomChildren = null;
     //we are creating a new node, so we can assume this is a new subtree (in case we are hydrating), this deopts the hydrate
@@ -1030,7 +1105,17 @@ function diffElementNodes(dom, newVNode, oldVNode, globalContext, isSvg, excessD
       newVNode._children = [];
     } else {
       i = newVNode.props.children;
-      diffChildren(dom, Array.isArray(i) ? i : [i], newVNode, oldVNode, globalContext, newVNode.type === 'foreignObject' ? false : isSvg, excessDomChildren, commitQueue, EMPTY_OBJ, isHydrating);
+      diffChildren(dom,
+        Array.isArray(i) ? i : [i],
+        newVNode,
+        oldVNode,
+        globalContext,
+        newVNode.type === 'foreignObject' ? false : isSvg,
+        excessDomChildren,
+        commitQueue,
+        EMPTY_OBJ,
+        isHydrating
+      );
     }
 
     //(as above, don't diff props during hydration)
@@ -1148,7 +1233,13 @@ function render(vnode, parentDom, replaceNode) {
     oldVNode || EMPTY_OBJ,
     EMPTY_OBJ,
     parentDom.ownerSVGElement !== undefined,
-    replaceNode && !isHydrating ? [replaceNode] : oldVNode ? null : parentDom.childNodes.length ? EMPTY_ARR.slice.call(parentDom.childNodes) : null,
+    replaceNode && !isHydrating
+      ? [replaceNode]
+      : oldVNode
+      ? null
+      : parentDom.childNodes.length
+      ? EMPTY_ARR.slice.call(parentDom.childNodes)
+      : null,
     commitQueue,
     replaceNode || EMPTY_OBJ,
     isHydrating
@@ -1240,5 +1331,19 @@ function createContext(defaultValue) {
   return context;
 }
 
-export { Component, Fragment, unmount as __u, cloneElement, createContext, createElement, createRef, createElement as h, hydrate, isValidElement, options, render, toChildArray };
+export {
+  Component,
+  Fragment,
+  unmount as __u,
+  cloneElement,
+  createContext,
+  createElement,
+  createRef,
+  createElement as h,
+  hydrate,
+  isValidElement,
+  options,
+  render,
+  toChildArray
+};
 //# sourceMappingURL=react.js.map

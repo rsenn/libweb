@@ -99,7 +99,9 @@ export const AcquireWriter =
       let ret = await fn({
         write(chunk) {
           return stream.write(chunk);
-          return new Promise((resolve, reject) => stream.write(chunk, 'utf-8', err => (err ? reject(err) : resolve(chunk.length))));
+          return new Promise((resolve, reject) =>
+            stream.write(chunk, 'utf-8', err => (err ? reject(err) : resolve(chunk.length)))
+          );
         }
       });
       return ret;
@@ -518,7 +520,8 @@ export async function LineBufferStream(options = {}) {
           this.queue(j ? chunk.slice(i, j) : chunk.slice(i));
           if(j == 0) break;
         }
-        while(lines.length > 0 && !(lines.length == 1 && !lines[0].endsWith('\n'))) if(!controller.enqueue(lines.shift())) return false;
+        while(lines.length > 0 && !(lines.length == 1 && !lines[0].endsWith('\n')))
+          if(!controller.enqueue(lines.shift())) return false;
       },
       flush(controller) {
         while(lines.length > 0) controller.enqueue(lines.shift());
@@ -558,7 +561,24 @@ export function PipeToRepeater(stream) {
   return RepeaterSink(writable => PipeTo(stream, writable));
 }
 
-export default { AsyncRead, AsyncWrite, ArrayWriter, readStream, AcquireReader, AcquireWriter, PipeTo, WriteToRepeater, LogSink, RepeaterSink, StringReader, LineReader, DebugTransformStream, ChunkReader, ByteReader, PipeToRepeater };
+export default {
+  AsyncRead,
+  AsyncWrite,
+  ArrayWriter,
+  readStream,
+  AcquireReader,
+  AcquireWriter,
+  PipeTo,
+  WriteToRepeater,
+  LogSink,
+  RepeaterSink,
+  StringReader,
+  LineReader,
+  DebugTransformStream,
+  ChunkReader,
+  ByteReader,
+  PipeToRepeater
+};
 
 const blah =
   false &&

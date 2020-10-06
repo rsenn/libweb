@@ -130,7 +130,8 @@ function getOrderIndependentHash(object) {
   if(type === 'object') {
     for(let key in object) {
       if(object.hasOwnProperty(key)) {
-        let keyValueString = '[ type: object, key: ' + key + ', value hash: ' + getOrderIndependentHash(object[key]) + ']';
+        let keyValueString =
+          '[ type: object, key: ' + key + ', value hash: ' + getOrderIndependentHash(object[key]) + ']';
         accum += hashThisString(keyValueString);
       }
     }
@@ -178,8 +179,18 @@ function deepDiff(lhs, rhs, changes, prefilter, path, key, stack, orderIndepende
   let rtype = typeof rhs;
   let i, j, k, other;
 
-  let ldefined = ltype !== 'undefined' || (stack && stack.length > 0 && stack[stack.length - 1].lhs && Object.getOwnPropertyDescriptor(stack[stack.length - 1].lhs, key));
-  let rdefined = rtype !== 'undefined' || (stack && stack.length > 0 && stack[stack.length - 1].rhs && Object.getOwnPropertyDescriptor(stack[stack.length - 1].rhs, key));
+  let ldefined =
+    ltype !== 'undefined' ||
+    (stack &&
+      stack.length > 0 &&
+      stack[stack.length - 1].lhs &&
+      Object.getOwnPropertyDescriptor(stack[stack.length - 1].lhs, key));
+  let rdefined =
+    rtype !== 'undefined' ||
+    (stack &&
+      stack.length > 0 &&
+      stack[stack.length - 1].rhs &&
+      Object.getOwnPropertyDescriptor(stack[stack.length - 1].rhs, key));
 
   if(!ldefined && rdefined) {
     changes.push(new DiffNew(currentPath, rhs));
@@ -334,7 +345,8 @@ function applyChange(target, source, change) {
       last = change.path ? change.path.length - 1 : 0;
     while(++i < last) {
       if(typeof it[change.path[i]] === 'undefined') {
-        it[change.path[i]] = typeof change.path[i + 1] !== 'undefined' && typeof change.path[i + 1] === 'number' ? [] : {};
+        it[change.path[i]] =
+          typeof change.path[i + 1] !== 'undefined' && typeof change.path[i + 1] === 'number' ? [] : {};
       }
       it = it[change.path[i]];
     }

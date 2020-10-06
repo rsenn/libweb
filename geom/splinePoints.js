@@ -67,7 +67,9 @@ export function splinePoints(points, options) {
     prevPoint = p;
   }
 
-  if(!isClosedPath && distance(finalPoints[finalPoints.length - 1], subpoints[subpoints.length - 1]) > segmentLength / 2) {
+  if(!isClosedPath &&
+    distance(finalPoints[finalPoints.length - 1], subpoints[subpoints.length - 1]) > segmentLength / 2
+  ) {
     finalPoints.push(subpoints[subpoints.length - 1]);
   }
   return finalPoints;

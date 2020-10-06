@@ -58,7 +58,10 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-    /* if(rot)*/ this.debug(`SchematicRenderer.renderItem`, /* { labelText, pos, transform, rot }, */ item /*, item.xpath().toString()*/, item.raw);
+    /* if(rot)*/ this.debug(`SchematicRenderer.renderItem`,
+      /* { labelText, pos, transform, rot }, */ item /*, item.xpath().toString()*/,
+      item.raw
+    );
 
     const layer = item.layer;
     const color = typeof item.getColor == 'function' ? item.getColor() : SchematicRenderer.palette[16];
@@ -164,7 +167,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
     let netsGroup = this.create('g', { className: 'nets', transform }, parent);
     let instancesGroup = this.create('g', { className: 'instances', transform }, parent);
 
-    instancesGroup.props.children = [...instances.list].map(data => h(Instance, { data, transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1) }));
+    instancesGroup.props.children = [...instances.list].map(data =>
+      h(Instance, { data, transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1) })
+    );
 
     //    ReactComponent.append([...instances.list].map(data => h(Instance, { data })), instancesGroup);
 
@@ -189,7 +194,10 @@ export class SchematicRenderer extends EagleSVGRenderer {
     }
     this.debug(`SchematicRenderer.renderInstance`, { x, y, transform });
 
-    const g = this.create('g', { className: `part.${part.name}`, 'data-path': part.path.toString(' '), transform }, parent);
+    const g = this.create('g',
+      { className: `part.${part.name}`, 'data-path': part.path.toString(' '), transform },
+      parent
+    );
 
     if(!value) value = deviceset.name;
     opts = deviceset.uservalue == 'yes' || true ? { name, value } : { name, value: '' };
@@ -227,7 +235,15 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
       this.create('rect', { ...br.toObject(), 'data-part': instance.part.name }, g);
       t.rotate(45);
-      this.create('path', { d: `M 0,-1 L 0,1 M -1,0 L 1,0`, transform: t, stroke: new RGBA(255, 255, 0), 'stroke-linecap': 'round', 'stroke-width': 0.2 }, g);
+      this.create('path', {
+          d: `M 0,-1 L 0,1 M -1,0 L 1,0`,
+          transform: t,
+          stroke: new RGBA(255, 255, 0),
+          'stroke-linecap': 'round',
+          'stroke-width': 0.2
+        },
+        g
+      );
     }
 
     /*  b.outset(0.15);

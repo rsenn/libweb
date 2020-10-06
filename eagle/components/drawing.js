@@ -8,5 +8,11 @@ export const Drawing = ({ rect, bounds, attrs, grid, transform, children, ...pro
   let viewBox = new Rect(0, 0, rect.width, rect.height);
   //viewBox.y = bounds.y1;
 
-  return h(SVG, { viewBox, defs: h(Pattern, { data: grid, id: 'grid', attrs: attrs.grid }), ...props }, [h('g', { id: 'bg', transform }, [h(Background, { rect, attrs: attrs.bg }), h(Grid, { data: grid, rect, attrs: attrs.grid, transform })]), ...toChildArray(children)]);
+  return h(SVG, { viewBox, defs: h(Pattern, { data: grid, id: 'grid', attrs: attrs.grid }), ...props }, [
+    h('g', { id: 'bg', transform }, [
+      h(Background, { rect, attrs: attrs.bg }),
+      h(Grid, { data: grid, rect, attrs: attrs.grid, transform })
+    ]),
+    ...toChildArray(children)
+  ]);
 };

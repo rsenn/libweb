@@ -89,7 +89,10 @@ Rect.prototype = {
   ...Point.prototype,
   ...Rect.prototype
 };
-
+Rect.fromString = str => {
+  const matches = [...Util.matchAll(/[-.\d]+/g, str)];
+  return new Rect(...matches.map(m => +m[0]));
+};
 Rect.prototype.clone = function(fn) {
   const ctor = this.constructor[Symbol.species] || this.constructor;
   let ret = new ctor(this.x, this.y, this.width, this.height);
@@ -121,6 +124,17 @@ Rect.prototype.toSource = function(opts = {}) {
   const c = Util.coloring(color);
   const { x, y, width, height } = this;
   return c.concat(c.text('new', 1, 31), c.text('Rect', 1, 33), `(${x},${y},${width},${height})`);
+};
+Rect.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts = {}) {
+  const { color = true } = opts;
+  const c = Util.coloring(color);
+  const { x, y, width, height } = this;
+  return (c.text('Rect', 1, 31) +
+    ' ' +
+    c.text(`{ `, 1, 36) +
+    ['x', 'y', 'width', 'height'].map(prop => c.text(prop, 1, 33) + c.text(':', 1, 36) + ' ' + this[prop]).join(', ') +
+    ' }'
+  );
 };
 Object.defineProperty(Rect.prototype, 'x1', {
   get() {
@@ -175,7 +189,9 @@ const getSize = Util.memoize(rect =>
   })
 );
 
-const getPoint = Util.memoize(rect => Util.bindProperties(new Point(0, 0), rect, ['x', 'y'], k => v => (v !== undefined ? (rect[k] = v) : rect[k])));
+const getPoint = Util.memoize(rect =>
+  Util.bindProperties(new Point(0, 0), rect, ['x', 'y'], k => v => (v !== undefined ? (rect[k] = v) : rect[k]))
+);
 
 Object.defineProperty(Rect.prototype, 'center', {
   get() {
@@ -331,7 +347,10 @@ Rect.prototype.toPoints = function(...args) {
     : points => Array.from(points);
   let num = typeof args[0] == 'number' ? args.shift() : 4;
   const { x, y, width, height } = this;
-  let a = num == 2 ? [new Point(x, y), new Point(x + width, y + height)] : [new Point(x, y), new Point(x + width, y), new Point(x + width, y + height), new Point(x, y + height)];
+  let a =
+    num == 2
+      ? [new Point(x, y), new Point(x + width, y + height)]
+      : [new Point(x, y), new Point(x + width, y), new Point(x + width, y + height), new Point(x, y + height)];
   return ctor(a);
 };
 Rect.prototype.toLines = function(ctor = lines => Array.from(lines, points => new Line(...points))) {
@@ -419,7 +438,8 @@ Rect.bind = rect => {
   let obj = new Rect();
 };
 
-Rect.inside = (rect, point) => point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
+Rect.inside = (rect, point) =>
+  point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
 Rect.from = function(obj) {
   //const { x1,y1,x2,y2 } = obj;
   const fn = (v1, v2) => [Math.min(v1, v2), Math.max(v1, v2)];
@@ -444,7 +464,7 @@ for(let name of [
   'corners',
   'isSquare',
   'getArea',
-  'toString',
+  // 'toString',
   //'toSource',
   'points',
   'toCSS',
@@ -463,7 +483,8 @@ Rect.toSource = (rect, opts = {}) => {
 };
 
 Rect.bind = (...args) => {
-  const [o, p, gen = k => v => (v === undefined ? o[k] : (o[k] = v))] = args[0] instanceof Rect ? [new Rect(), ...args] : args;
+  const [o, p, gen = k => v => (v === undefined ? o[k] : (o[k] = v))] =
+    args[0] instanceof Rect ? [new Rect(), ...args] : args;
 
   const [x, y, width, height] = p || ['x', 'y', 'width', 'height'];
   let pt = Point.bind(o, ['x', 'y'], gen);
@@ -500,13 +521,12 @@ export const ImmutableRect = Util.immutableClass(Rect);
 delete ImmutableRect[Symbol.species];
 
 Util.defineGetter(ImmutableRect, Symbol.species, () => ImmutableRect);
-
+/*
 Rect.prototype.toString = function(opts = {}) {
   if(typeof opts == 'string') opts = { separator: opts };
   const { precision = 0.001, unit = '', separator = ' ', left = '', right = '' } = opts;
   let { x, y, width, height } = this;
   let props = [x, y, width, height];
   return left + props.map(p => p + unit).join(' ') + right;
-
-  //  return left + Point.prototype.toString.call(this, opts) + separator + Size.prototype.toString.call(this, opts) + right;
 };
+*/
