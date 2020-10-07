@@ -2,24 +2,28 @@ import { Point, isPoint } from './point.js';
 import { BBox } from './bbox.js';
 import Util from '../util.js';
 
-export function Line(x1, y1, x2, y2) {
+export function Line(...args) {
+
+  if(!new.target) if (args[0] instanceof Line) return args[0];
+
+  let [x1, y1, x2, y2] = args;
   let obj;
   let arg;
-  let args = [...arguments];
   let ret;
   if(args.length >= 4 && args.every(arg => !isNaN(parseFloat(arg)))) {
     arg = { x1, y1, x2, y2 };
   } else if(args.length == 1) {
     arg = args[0];
   }
-  obj = this || { ...arg };
+   obj = new.target ? this : null/* new Line()*/;
+
+  //obj = this || { ...arg };
 
   if(obj === null) obj = Object.create(Line.prototype);
 
   if(Object.getPrototypeOf(obj) !== Line.prototype) Object.setPrototypeOf(obj, Line.prototype);
 
   //if(!('a' in obj) || !('b' in obj)) throw new Error('no a/b prop');
-
   if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
     const { x1, y1, x2, y2 } = arg;
     obj.x1 = parseFloat(x1);
@@ -28,21 +32,19 @@ export function Line(x1, y1, x2, y2) {
     obj.y2 = parseFloat(y2);
     ret = 1;
   } else if(isPoint(args[0]) && isPoint(args[1])) {
+    args=args.map(a => Point(a));
+
     obj.x1 = args[0].x;
     obj.y1 = args[0].y;
     obj.x2 = args[1].x;
     obj.y2 = args[1].y;
-
-    /*    obj.x1 = parseFloat(args[0].x);
-    obj.y1 = parseFloat(args[0].y);
-    obj.x2 = parseFloat(args[1].x);
-    obj.y2 = parseFloat(args[1].y);*/
     ret = 2;
-  } else if(arg && arg.length >= 4 && arg.slice(0, 4).every(arg => !isNaN(parseFloat(arg)))) {
-    obj.x1 = typeof x === 'number' ? x : parseFloat(x);
-    obj.y1 = typeof y === 'number' ? y : parseFloat(y);
-    obj.x2 = typeof w === 'number' ? w : parseFloat(w);
-    obj.y2 = typeof h === 'number' ? h : parseFloat(h);
+  } else if(arg && arg.length >= 4 && arg.slice(0, 4).every(arg => !isNaN(+arg))) {
+    const [x1,y1,x2,y2] = arg.map(a => +a);
+    obj.x1 = x1;
+    obj.y1 = y1;
+    obj.x2 = x2;
+    obj.y2 = y2;
     ret = 4;
   } else {
     ret = 0;
@@ -256,7 +258,9 @@ Object.defineProperty(Line.prototype, 'dot', {
 });
 
 Line.prototype.pointAt = function(pos) {
-  return new Point(pos * (this.x2 - this.x1) + this.x1, pos * (this.y2 - this.y1) + this.y1);
+  return Point.interpolate(...this.toPoints(), pos);
+
+  //return new Point(pos * (this.x2 - this.x1) + this.x1, pos * (this.y2 - this.y1) + this.y1);
 };
 Line.prototype.transform = function(m) {
   this.a = this.a.transform(m);

@@ -275,7 +275,7 @@ const RenderArcFromTo = (start, radius, theta, end) => {
 export const CalculateArcRadius = (d, angle) => {
   if(!isFinite(+angle)) return Infinity;
 
-  const distance = Math.sqrt(d.x*d.x + d.y*d.y);
+  const distance = Math.sqrt(d.x * d.x + d.y * d.y);
   return distance / (2 * Math.sin(angle / 2));
 };
 
@@ -304,8 +304,8 @@ export const LinesToPath = (lines, lineFn) => {
         let cmd;
         const theta = deg2rad(curve);
         const angle = roundTo(rad2deg(theta), 0.1) || undefined;
-        const diff =Point.diff(p[0], p[1]);
-        const radius = roundTo(CalculateArcRadius(diff , theta), 0.0001);
+        const diff = Point.diff(p[0], p[1]);
+        const radius = roundTo(CalculateArcRadius(diff, theta), 0.0001);
         prevPoint = point;
         const sweep = Math.abs(slope.toAngle()) < PI ? 1 : 0;
 

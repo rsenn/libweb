@@ -4,6 +4,7 @@ import { Graph } from './geom/graph.js';
 import { Intersection } from './geom/intersection.js';
 import { isLine, Line, ImmutableLine } from './geom/line.js';
 import { LineList } from './geom/lineList.js';
+import { Arc } from './geom/arc.js';
 
 import { isMatrix, Matrix, ImmutableMatrix } from './geom/matrix.js';
 import { isPoint, Point, ImmutablePoint } from './geom/point.js';
@@ -31,12 +32,12 @@ import {
 } from './geom/transformation.js';
 import { isTRBL, TRBL, ImmutableTRBL } from './geom/trbl.js';
 import { Vector } from './geom/vector.js';
-
 export { Align, Anchor } from './geom/align.js';
 export { BBox } from './geom/bbox.js';
 export { Graph } from './geom/graph.js';
 export { Intersection } from './geom/intersection.js';
 export { isLine, Line } from './geom/line.js';
+export { Arc } from './geom/arc.js';
 export { LineList } from './geom/lineList.js';
 export { Polygon } from './geom/polygon.js';
 
@@ -72,6 +73,7 @@ export { simplifyRadialDist, simplifyDPStep, simplifyDouglasPeucker, simplify } 
 export default {
   Align,
   Anchor,
+  Arc,
   BBox,
   Graph,
   Intersection,

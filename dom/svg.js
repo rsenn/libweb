@@ -48,8 +48,7 @@ else */ if(text) svg.innerHTML = innerHTML;
         return document.createElementNS(SVG.ns, tag);
       },
       append_to(elem, parent) {
-        parent = parent || this.root;
-        return parent.appendChild(elem);
+        return (parent || this.root).appendChild(elem);
       },
       setattr(elem, name, value) {
         name != 'ns' && elem.setAttributeNS(document.namespaceURI, /*Util.decamelize*/ name, value);
@@ -75,18 +74,16 @@ else */ if(text) svg.innerHTML = innerHTML;
       delegate.root = parent;
     } else if(this !== SVG && this && this.appendChild) {
       delegate.root = this;
-    } else {
+    } /*else {
       if(parent) size = Element.rect(parent);
       delegate.root = delegate.create('svg');
       delegate.setattr(delegate.root, 'width', size && size.width ? size.width : width || 0);
       delegate.setattr(delegate.root, 'height', size && size.height ? size.height : height || 0);
 
-      //delegate.setattr(delegate.root, 'viewBox',  `0 0 ${size && size.width  ? size.width : width || 0} ${size  && size.height ? size.height : height || 0}`);
-
-      if(parent) delegate.append_to(delegate.root, parent);
+       if(parent) delegate.append_to(delegate.root, parent);
       delegate.append_to(delegate.create('defs'), delegate.root);
     }
-
+*/
     const { append_to } = delegate;
 
     delegate.append_to = function(elem, p) {
@@ -101,20 +98,45 @@ else */ if(text) svg.innerHTML = innerHTML;
 
     let factory = function SVGFactory(tag, attr, children) {
       const create = (tag, attr, parent) => {
-        let e = this.create(tag);
+        let e = delegate.create(tag);
         //   console.debug("factory.create", e);
-        for(let a in attr) if(attr[a] !== undefined) this.setattr(e, a, attr[a]);
-        if(parent) this.append_to(e, parent);
+        for(let a in attr) if(attr[a] !== undefined) delegate.setattr(e, a, attr[a]);
+        if(parent) delegate.append_to(e, parent);
         return e;
       };
-      let elem = create(tag, attr, this.root);
+      let elem = create(tag, attr, tag == 'svg' ? parent : delegate.root);
       children = children ? children : [];
       for(let child of children) {
         factory.apply({ ...delegate, root: elem }, child);
       }
+      if(tag == 'svg') delegate.root = elem;
       return elem;
     };
-    return (...args) => factory.apply(delegate, args);
+    factory.derive = function(override = {}, parent) {
+      return SVG.factory({ ...delegate, ...override }, parent);
+    };
+    factory.initialize = function(...args) {
+      this(...args);
+      return this;
+    };
+    factory.root = function(...args) {
+      let parent = this(...args);
+      return this.derive({
+          append_to(elem) {
+            parent.appendChild(elem);
+          }
+        },
+        parent
+      );
+    };
+    factory.clear = function() {
+      let p = parent || delegate.root;
+      window.p = p;
+      console.log('p:', p, ' p.firstChild:', p.firstChild, ' p.firstElementChild:', p.firstElementChild);
+      while(p.firstElementChild) p.removeChild(p.firstElementChild);
+      return this;
+    };
+    return factory; //(...args) => factory.apply(delegate, args);
   }
 
   static matrix(element, screen = false) {

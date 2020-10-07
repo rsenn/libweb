@@ -15,7 +15,7 @@ export function Point(...args) {
   let p = isNew ? this : new Point(...args);
   let arg = args.shift();
 
-  if(!isNew) if (arg instanceof Point) return arg;
+  if(!new.target) if (arg instanceof Point) return arg;
 
   if(typeof arg === 'undefined') {
     p.x = arg;
@@ -48,8 +48,8 @@ export function Point(...args) {
   if(isNaN(p.y)) p.y = undefined;
 
   if(!isNew) {
-    if(p.prototype == Object) p.prototype = Point.prototype;
-    else Object.assign(p, Point.prototype);
+   /* if(p.prototype == Object) p.prototype = Point.prototype;
+    else Object.assign(p, Point.prototype);*/
     return p;
   }
 }
@@ -156,7 +156,7 @@ Point.prototype.distanceSquared = function(other = { x: 0, y: 0 }) {
   return (other.y - this.y) * (other.y - this.y) + (other.x - this.x) * (other.x - this.x);
 };
 Point.prototype.distance = function(other = { x: 0, y: 0 }) {
-  return Math.sqrt(Point.prototype.distanceSquared.call(this, other));
+  return Math.sqrt(Point.prototype.distanceSquared.call(this, Point(other)));
 };
 Point.prototype.equals = function(other) {
   let { x, y } = this;
@@ -303,6 +303,10 @@ Point.prototype.scaleTo = function(minmax) {
     y: (this.y - minmax.y1) / (minmax.y2 - minmax.y1)
   });
 };
+Point.prototype.normalize = function() {
+  let d = Point.prototype.distance.call(this);
+  return Point.prototype.div.call(this, { x: d, y:d});
+};
 Point.prototype.normal = function() {
   let d = Point.prototype.distance.call(this);
   return new Point({ x: this.x / d, y: this.y / d });
@@ -333,8 +337,12 @@ for(let name of [
   'sum',
   'distance'
 ]) {
-  Point[name] = (point, ...args) => Point.prototype[name].call(point || new Point(point), ...args);
+  Point[name] = (point, ...args) => Point.prototype[name].call(  Point(point), ...args);
 }
+Point.interpolate = (p1,p2,a) => {
+  a=Util.clamp(0,1,a);
+  return new Point(p1.x * (1.0 -a) + p2.x * (a),p1.y * (1.0 -a) + p2.y * (a));
+};
 
 Point.toSource = (point, { space = ' ', padding = ' ', separator = ',' }) =>
   `{${padding}x:${space}${point.x}${separator}y:${space}${point.y}${padding}}`;

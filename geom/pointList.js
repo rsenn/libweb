@@ -4,12 +4,15 @@ import { Line, isLine } from './line.js';
 import Util from '../util.js';
 
 export class PointList extends Array {
-  constructor(points, tfn = (...args) => new Point(...args)) {
+  constructor(...args) {
+    let [points, tfn = (...args) => new Point(...args)] = args;
+
     super();
     const base = Array;
-    let args = [...arguments];
-    let ret = this instanceof PointList ? this : [];
+     let ret = new.target   ? this : [];
+
     if(Util.isArray(args[0]) || Util.isGenerator(args[0])) args = [...args[0]];
+    
     if(typeof points === 'string') {
       const matches = [...points.matchAll(/[-.0-9,]+/g)];
       //console.log("matches:",matches);
@@ -18,13 +21,15 @@ export class PointList extends Array {
         // console.log(`matches[${i}]:`,matches[i], coords);
         ret.push(tfn(...coords));
       }
-    } else if(args[0] && args[0].length == 2) {
-      for(let i = 0; i < args.length; i++) ret.push(this instanceof PointList ? new Point(args[i]) : Point(args[i]));
-    } else if(args.length !== undefined) {
+    } else if(args[0] && Point(args[0])) {
+      for(let i = 0; i < args.length; i++) 
+        ret.push(  Point(args[i]));
+    } else if(args.length !== undefined && typeof args[0] == 'number') {
       //&', args);
-      for(let i = 0; i < args.length; i++) {
-        ret.push(args[i] instanceof Point ? args[i] : tfn(args[i]));
-      }
+      while(args.length > 0) {
+        let coords = args.splice(0,2);
+        ret.push(  Point(coords));
+}
     }
     if(!(ret instanceof PointList)) {
       let proto = PointList.prototype;
