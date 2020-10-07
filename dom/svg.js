@@ -120,7 +120,7 @@ else */ if(text) svg.innerHTML = innerHTML;
       this(...args);
       return this;
     };
-    factory.root = function(...args) {
+    factory.setRoot = function(...args) {
       return this.parent(this(...args));
     };
     factory.parent = function(parent) {

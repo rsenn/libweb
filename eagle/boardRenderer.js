@@ -294,7 +294,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       children = children.filter(child => (options.layer ? child.layer : !child.layer));
       if(layer) {
         children = children.filter(child => child.layer.number == layer.number);
-        console.debug('Filtering', layer.number, layer.name, ...children.map(c => '\n' + c.toXML()));
+        this.debug('Filtering', layer.number, layer.name, ...children.map(c => '\n' + c.toXML()));
       }
     }
     if(children.length > 0) {
