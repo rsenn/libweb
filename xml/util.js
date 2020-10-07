@@ -9,7 +9,7 @@ export const Object2Array = (xmlObj, flat) => {
   ]);
 
   if(!flat)
-    entries = entries.reduce((acc, [k, v]) => (console.log('deep.set(', acc, k, Util.abbreviate(v, 10), ')'), deep.set(acc, k, v), acc),
+    entries = entries.reduce((acc, [k, v]) => (/*console.log('deep.set(', acc, k, Util.abbreviate(v, 10), ')'), */ deep.set(acc, k, v), acc),
       []
     );
   return entries;

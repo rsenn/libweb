@@ -47,8 +47,8 @@ else */ if(text) svg.innerHTML = innerHTML;
       create(tag) {
         return document.createElementNS(SVG.ns, tag);
       },
-      append_to(elem, parent) {
-        return (parent || this.root).appendChild(elem);
+      append_to(elem, to = this && this.root) {
+        return (to || parent).appendChild(elem);
       },
       setattr(elem, name, value) {
         name != 'ns' && elem.setAttributeNS(document.namespaceURI, /*Util.decamelize*/ name, value);
@@ -99,13 +99,14 @@ else */ if(text) svg.innerHTML = innerHTML;
     let factory = function SVGFactory(tag, attr, children) {
       const create = (tag, attr, parent) => {
         let e = delegate.create(tag);
-        //   console.debug("factory.create", e);
+        //    console.debug('SVG.factory create', tag, attr, parent);
         for(let a in attr) if(attr[a] !== undefined) delegate.setattr(e, a, attr[a]);
-        if(parent) delegate.append_to(e, parent);
+        delegate.append_to.call(delegate, e, parent);
         return e;
       };
       let elem = create(tag, attr, tag == 'svg' ? parent : delegate.root);
       children = children ? children : [];
+      //  console.log('SVG.factory children =', children);
       for(let child of children) {
         factory.apply({ ...delegate, root: elem }, child);
       }
@@ -120,7 +121,9 @@ else */ if(text) svg.innerHTML = innerHTML;
       return this;
     };
     factory.root = function(...args) {
-      let parent = this(...args);
+      return this.parent(this(...args));
+    };
+    factory.parent = function(parent) {
       return this.derive({
           append_to(elem) {
             parent.appendChild(elem);

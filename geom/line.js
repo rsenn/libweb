@@ -3,7 +3,6 @@ import { BBox } from './bbox.js';
 import Util from '../util.js';
 
 export function Line(...args) {
-
   if(!new.target) if (args[0] instanceof Line) return args[0];
 
   let [x1, y1, x2, y2] = args;
@@ -15,7 +14,7 @@ export function Line(...args) {
   } else if(args.length == 1) {
     arg = args[0];
   }
-   obj = new.target ? this : null/* new Line()*/;
+  obj = new.target ? this : null /* new Line()*/;
 
   //obj = this || { ...arg };
 
@@ -32,7 +31,7 @@ export function Line(...args) {
     obj.y2 = parseFloat(y2);
     ret = 1;
   } else if(isPoint(args[0]) && isPoint(args[1])) {
-    args=args.map(a => Point(a));
+    args = args.map(a => Point(a));
 
     obj.x1 = args[0].x;
     obj.y1 = args[0].y;
@@ -40,7 +39,7 @@ export function Line(...args) {
     obj.y2 = args[1].y;
     ret = 2;
   } else if(arg && arg.length >= 4 && arg.slice(0, 4).every(arg => !isNaN(+arg))) {
-    const [x1,y1,x2,y2] = arg.map(a => +a);
+    const [x1, y1, x2, y2] = arg.map(a => +a);
     obj.x1 = x1;
     obj.y1 = y1;
     obj.x2 = x2;

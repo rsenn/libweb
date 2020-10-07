@@ -9,10 +9,10 @@ export class PointList extends Array {
 
     super();
     const base = Array;
-     let ret = new.target   ? this : [];
+    let ret = new.target ? this : [];
 
     if(Util.isArray(args[0]) || Util.isGenerator(args[0])) args = [...args[0]];
-    
+
     if(typeof points === 'string') {
       const matches = [...points.matchAll(/[-.0-9,]+/g)];
       //console.log("matches:",matches);
@@ -22,14 +22,13 @@ export class PointList extends Array {
         ret.push(tfn(...coords));
       }
     } else if(args[0] && Point(args[0])) {
-      for(let i = 0; i < args.length; i++) 
-        ret.push(  Point(args[i]));
+      for(let i = 0; i < args.length; i++) ret.push(Point(args[i]));
     } else if(args.length !== undefined && typeof args[0] == 'number') {
       //&', args);
       while(args.length > 0) {
-        let coords = args.splice(0,2);
-        ret.push(  Point(coords));
-}
+        let coords = args.splice(0, 2);
+        ret.push(Point(coords));
+      }
     }
     if(!(ret instanceof PointList)) {
       let proto = PointList.prototype;

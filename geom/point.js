@@ -48,7 +48,7 @@ export function Point(...args) {
   if(isNaN(p.y)) p.y = undefined;
 
   if(!isNew) {
-   /* if(p.prototype == Object) p.prototype = Point.prototype;
+    /* if(p.prototype == Object) p.prototype = Point.prototype;
     else Object.assign(p, Point.prototype);*/
     return p;
   }
@@ -305,7 +305,7 @@ Point.prototype.scaleTo = function(minmax) {
 };
 Point.prototype.normalize = function() {
   let d = Point.prototype.distance.call(this);
-  return Point.prototype.div.call(this, { x: d, y:d});
+  return Point.prototype.div.call(this, { x: d, y: d });
 };
 Point.prototype.normal = function() {
   let d = Point.prototype.distance.call(this);
@@ -320,7 +320,7 @@ Point.prod = (a, b) => Point.prototype.prod.call(a, b);
 Point.quot = (a, b) => Point.prototype.quot.call(a, b);
 Point.equals = (a, b) => Point.prototype.equals.call(a, b);
 Point.round = (point, prec, digits, type) => Point.prototype.round.call(point, prec, digits, type);
-Point.fromAngle = (angle, f) => Point.prototype.fromAngle.call(new Point(0, 0), angle, f);
+Point.fromAngle = (angle, f) => new Point().fromAngle(angle, f);
 
 for(let name of [
   'clone',
@@ -337,11 +337,11 @@ for(let name of [
   'sum',
   'distance'
 ]) {
-  Point[name] = (point, ...args) => Point.prototype[name].call(  Point(point), ...args);
+  Point[name] = (point, ...args) => Point.prototype[name].call(Point(point), ...args);
 }
-Point.interpolate = (p1,p2,a) => {
-  a=Util.clamp(0,1,a);
-  return new Point(p1.x * (1.0 -a) + p2.x * (a),p1.y * (1.0 -a) + p2.y * (a));
+Point.interpolate = (p1, p2, a) => {
+  a = Util.clamp(0, 1, a);
+  return new Point(p1.x * (1.0 - a) + p2.x * a, p1.y * (1.0 - a) + p2.y * a);
 };
 
 Point.toSource = (point, { space = ' ', padding = ' ', separator = ',' }) =>

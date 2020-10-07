@@ -548,7 +548,7 @@ Util.bitMask = function(bits, start = 0) {
   return r;
 };
 
-Util.bitGroups = function(num, bpp) {
+Util.bitGroups = function(num, bpp, minLen) {
   let m = Util.bitMask(bpp, 0);
   let n = Math.floor(64 / bpp);
   let r = [];
@@ -557,6 +557,7 @@ Util.bitGroups = function(num, bpp) {
     num /= m + 1;
   }
   while(r.length > 0 && r[r.length - 1] == 0 /* && Util.mod(r.length *bpp, 8) > 0*/) r.pop();
+  while(r.length < minLen) r.push(0);
   return r;
 };
 
@@ -594,15 +595,22 @@ Util.clearBit = function(num, bit) {
   const n = Number(num);
   return Util.isSet(n, bit) ? n - Util.pow2(bit) : n;
 };
-Util.range = function(start, end) {
+Util.range = function(...args) {
+  let [start, end, step = 1] = args;
+  let ret;
+  start /= step;
+  end /= step;
   if(start > end) {
-    let ret = [];
+    ret = [];
     while(start >= end) ret.push(start--);
-    return ret;
+  } else {
+    ret = Array.from({ length: end - start + 1 }, (v, k) => k + start);
   }
-  const r = Array.from({ length: end - start + 1 }, (v, k) => k + start);
+  if(step != 1) {
+    ret = ret.map(n => n * step);
+  }
   //console.log("Util.range ", r);
-  return r;
+  return ret;
 };
 Util.set = function(obj, prop, value) {
   const set = obj instanceof Map ? (prop, value) => obj.set(prop, value) : (prop, value) => (obj[prop] = value);
@@ -1361,12 +1369,12 @@ Util.toString = (obj, opts = {}) => {
       let propSep = isMap ? [' => ', 0] : [': ', 1, 36];
       for(let key of keys) {
         const value = getFn(key);
-        if(i > 0) print(sep(true), 36);
+        if(i > 0) print(separator + sep(true), 36);
         if(typeof key == 'symbol') print(key.toString(), 1, 32);
         else if(Util.isObject(key) && typeof key[toString] == 'function')
           print(isMap ? `'${key[toString]()}'` : key[toString](), 1, isMap ? 36 : 33);
         else if(typeof key == 'string' || (!isMap && Util.isObject(key) && typeof key.toString == 'function'))
-          print(isMap ? `'${key}'` : key, 1, isMap ? 36 : 33);
+          print(isMap || /(-)/.test(key) ? `'${key}'` : key, 1, isMap ? 36 : 33);
         else
           Util.toString(key, {
             ...opts,
@@ -4879,5 +4887,18 @@ Util.deriveGetSet = (fn, get = v => v, set = v => v, thisObj) =>
     v => fn(set(v)),
     thisObj
   );
+Util.extendFunction = (handler = () => {}) =>
+  class ExFunc extends Function {
+    constructor() {
+      super('...args', 'return this.__self__.__call__(...args)');
+      var self = this.bind(this);
+      this.__self__ = self;
+      return self;
+    }
 
+    // Example `__call__` method.
+    __call__(...args) {
+      return handler(...args);
+    }
+  };
 export default Util;
