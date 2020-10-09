@@ -56,7 +56,7 @@ export class Transformation {
   }
 
   vector(unit) {
-    unit = this.unit || unit;
+    if(unit === undefined) unit = this.unit;
     return (this.is3D ? ['x', 'y', 'z'] : ['x', 'y']).map(unit ? axis => this[axis] + unit : axis => this[axis]);
   }
 
@@ -82,8 +82,6 @@ export class Transformation {
     let t;
     let unit;
 
-    //console.log("fromString",{arg,argStr,args});
-
     args = args
       .filter(arg => /^[-+0-9.]+[a-z]*$/.test(arg))
       .map(arg => {
@@ -94,17 +92,21 @@ export class Transformation {
 
         return +arg;
       });
+    console.log('fromString', { cmd, args });
+
+    const is3D = cmd.toLowerCase().endsWith('3d');
+    if(is3D) cmd = cmd.slice(0, -2);
 
     if(cmd.startsWith('rotat')) {
-      const axis = cmd.slice(6);
+      const axis = is3D ? '' : cmd.slice(6);
       args = axis != '' ? [args[0], axis] : args;
       t = new Rotation(...args);
     } else if(cmd.startsWith('translat')) {
-      const axis = cmd.slice(9);
+      const axis = is3D ? '' : cmd.slice(9);
       args = axis != '' ? [args[0], axis] : args;
       t = new Translation(...args);
     } else if(cmd.startsWith('scal')) {
-      const axis = cmd.slice(5);
+      const axis = is3D ? '' : cmd.slice(5);
       args = axis != '' ? [args[0], axis] : args;
       t = new Scaling(...args);
     } else if(cmd.startsWith('matrix')) {
@@ -325,6 +327,13 @@ export class Scaling extends Transformation {
   isZero() {
     const { x, y, z } = this;
     return 'z' in this ? x == 0 && y == 0 && z == 0 : x == 0 && y == 0;
+  }
+
+  toString() {
+    const vector = this.vector('');
+    const coords = Util.allEqual(vector) ? vector[0] : vector.join(', ');
+
+    return `${this.type}${this.is3D ? '3d' : ''}(${coords})`;
   }
 
   /*clone() {

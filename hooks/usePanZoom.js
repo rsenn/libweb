@@ -105,7 +105,7 @@ export const usePanZoom = ({
         const prevPointers = prev.current;
         prev.current = pointers;
 
-        setPan(({ x, y }) => {
+        let newVal = setPan(({ x, y }) => {
           let dx = 0,
             dy = 0;
           const l = Math.min(pointers.length, prevPointers.length);
@@ -121,7 +121,7 @@ export const usePanZoom = ({
           };
         });
 
-        onPan(pointers);
+        onPan({ ...newVal, pointers });
       }
     }, [isPanning, onPan, minX, maxX, minY, maxY]
   );
@@ -148,9 +148,9 @@ export const usePanZoom = ({
           const { pageX, pageY, deltaY } = event;
           const pointerPosition = _.getPositionOnElement(container.current)(pageX, pageY);
 
-          setZoom(zoom => zoom * Math.pow(1 - zoomSensitivity, deltaY), pointerPosition);
+          let newVal = setZoom(zoom => zoom * Math.pow(1 - zoomSensitivity, deltaY), pointerPosition);
 
-          onZoom();
+          onZoom(newVal);
         } else {
           const { deltaX, deltaY } = event;
           setPan(({ x, y }) => ({
@@ -173,9 +173,9 @@ export const usePanZoom = ({
     const { pageX, pageY, scale } = event;
     const pointerPosition = getPositionOnElement(container.current)(pageX, pageY);
 
-    setZoom(prevZoom.current * scale, pointerPosition);
+    let newVal = setZoom(prevZoom.current * scale, pointerPosition);
 
-    onZoom();
+    onZoom(newVal);
   }, []);
 
   const setContainer = useCallback(el => {
