@@ -272,9 +272,9 @@ export class BoardRenderer extends EagleSVGRenderer {
     );
     this.renderCollection(element.package.children, g, {
       name,
-      value,
+      value /*,
       rot,
-      transform: rotation.slice()
+      transform: rotation.slice()*/
     });
     this.create(Origin, { x, y, color: '#f0f', element, layer: this.layers['tOrigins'] }, g);
 

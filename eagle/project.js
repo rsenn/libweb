@@ -11,12 +11,13 @@ export class EagleProject {
 
   constructor(file, fs = { readFile: filename => '', exists: filename => false }) {
     //super();
-    this.filename = file.replace(/\.(brd|sch)$/, '');
-    this.fs = fs;
+    if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file)) this.filename = file.replace(/\.(brd|sch)$/, '');
+
+    Util.define(this, { fs });
 
     this.eaglePath = EagleProject.determineEaglePath(fs); //.then(path => this.eaglePath = path);
 
-    this.load();
+    if(!this.filename || !this.load()) this.open(file);
 
     if(!this.failed) console.log('Opened project:', this.filename, this.eaglePath);
   }
@@ -39,11 +40,14 @@ export class EagleProject {
    * @return     {EagleDocument}  The eagle ownerDocument.
    */
   open(file) {
+    console.debug('EagleProject.open(', file, ')');
     let str, doc, err;
     str = this.fs.readFile(file);
+    if(str == -1) return null;
     if(typeof str != 'string' && 'toString' in str) str = str.toString();
 
-    console.log('this.fs:', this.fs);
+    console.debug('str:', Util.abbreviate(str));
+    //console.log('this.fs:', this.fs);
 
     try {
       doc = new EagleDocument(str, this, file);
@@ -52,7 +56,7 @@ export class EagleProject {
       console.log('ERROR:', err);
     }
     if(doc) {
-      console.log('Opened document', file);
+      console.log('Opened document', file, doc);
 
       this.documents.push(doc);
     } else throw new Error(`EagleProject: error opening '${file}': ${err}`);
@@ -60,8 +64,10 @@ export class EagleProject {
 
     if(doc.type == 'lbr') {
       this.data[doc.type][doc.basename] = doc;
-      //console.log("Opened library:", doc.basename);
+      console.log('Opened library:', doc.basename);
     } else this.data[doc.type] = doc;
+    this.failed = !doc;
+
     return doc;
   }
 

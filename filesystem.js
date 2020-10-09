@@ -401,7 +401,9 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
       return ret.done ? 0 : -1;
     },
     write(fd, data, offset, length) {},
-    readFile(filename) {},
+    readFile(filename) {
+      return fetch(filename).then(async resp => await resp.text());
+    },
     writeFile(filename, data, overwrite = true) {},
     exists(filename) {},
     realpath(filename) {},

@@ -1,4 +1,5 @@
 import Util from '../util.js';
+import { isRect, Rect } from '../geom/rect.js';
 
 export class BBox {
   static fromPoints(pts) {
@@ -7,24 +8,41 @@ export class BBox {
     bb.update(pts);
     return bb;
   }
+
   static fromRect(rect) {
     return new BBox(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height);
   }
 
+  static create(arg) {
+    if(isRect(arg)) return new BBox(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height);
+
+    if(Util.isArray(arg) || Util.isIterable(arg)) return BBox.of(...arg);
+  }
+
+  static of(...args) {
+    return BBox.from(args);
+  }
+
   constructor(...args) {
-    if(args.length == 4) {
+    if(args.length == 4 && args.every(arg => Number.isFinite(arg))) {
       const [x1, y1, x2, y2] = args;
 
       this.x1 = Math.min(x1, x2);
       this.y1 = Math.min(y1, y2);
       this.x2 = Math.max(x1, x2);
       this.y2 = Math.max(y1, y2);
+    } else if(isBBox(args[0])) {
+      const { x1, y1, x2, y2 } = args[0];
+      this.x1 = x1;
+      this.y1 = y1;
+      this.x2 = x2;
+      this.y2 = y2;
     } else {
       this.x1 = undefined;
       this.y1 = undefined;
       this.x2 = undefined;
       this.y2 = undefined;
-      if(args.length > 0) this.updateList(args);
+      if(args.length > 0) this.updateList([...args]);
     }
 
     Util.define(this, 'objects', {});
@@ -204,3 +222,7 @@ export class BBox {
     for(let prop of [x1, x2, y1, y2]) yield prop;
   }
 }
+export const isBBox = (bbox, testFn = (prop, name, obj) => name in obj) =>
+  Util.isObject(bbox) && ['x1', 'y1', 'x2', 'y2'].every(n => testFn(bbox[n], n, bbox));
+
+export default BBox;

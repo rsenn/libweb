@@ -2353,7 +2353,7 @@ Util.mapFunctional = fn =>
     for(let item of arg) yield fn(item);
   };
 Util.map = (...args) => {
-  const [obj, fn] = args;
+  let [obj, fn] = args;
   let ret = a => a;
 
   if(Util.isIterator(obj)) {
@@ -2522,7 +2522,15 @@ Util.numberParts = (num, base) => {
   while(num < 1) (num *= base), exp--;
   return { sign: sgn, mantissa: num, exponent: exp };
 };
-Util.roundDigits = precision => -Util.clamp(-Infinity, 0, Math.floor(Math.log10(precision - Number.EPSILON)));
+Util.roundDigits = precision => {
+  precision = precision + '';
+  let index = precision.indexOf('.');
+  let frac = index == -1 ? '' : precision.slice(index + 1);
+  return frac.length;
+
+  return -Util.clamp(-Infinity, 0, Math.floor(Math.log10(precision - Number.EPSILON)));
+};
+
 Util.roundFunction = (prec, digits, type) => {
   digits = digits || Util.roundDigits(prec);
   type = type || 'round';
@@ -4067,6 +4075,7 @@ Util.coloring = (useColor = true) =>
         },
         concat(...args) {
           let out = args.shift() || [''];
+          if(typeof out == 'string') out = [out];
           for(let arg of args) {
             if(Util.isArray(arg)) {
               for(let subarg of arg) out[0] += subarg;

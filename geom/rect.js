@@ -510,7 +510,8 @@ for(let f of ['scale', 'resize', 'translate']) {
 
 Util.defineInspect(Rect.prototype, 'x', 'y', 'width', 'height');
 
-export const isRect = rect => Util.isObject(rect) && ['x', 'y', 'width', 'height'].every(prop => prop in rect);
+export const isRect = (rect, testFn = (prop, name, obj) => name in obj) =>
+  Util.isObject(rect) && ['x', 'y', 'width', 'height'].every(n => testFn(rect[n], n, rect));
 
 Util.defineGetter(Rect, Symbol.species, function() {
   return this;
@@ -521,7 +522,7 @@ export const ImmutableRect = Util.immutableClass(Rect);
 delete ImmutableRect[Symbol.species];
 
 Util.defineGetter(ImmutableRect, Symbol.species, () => ImmutableRect);
-/*
+
 Rect.prototype.toString = function(opts = {}) {
   if(typeof opts == 'string') opts = { separator: opts };
   const { precision = 0.001, unit = '', separator = ' ', left = '', right = '' } = opts;
@@ -529,4 +530,3 @@ Rect.prototype.toString = function(opts = {}) {
   let props = [x, y, width, height];
   return left + props.map(p => p + unit).join(' ') + right;
 };
-*/

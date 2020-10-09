@@ -10,7 +10,8 @@ import {
   ClampAngle,
   AlignmentAngle,
   LayerAttributes,
-  MakeCoordTransformer
+  MakeCoordTransformer,
+  LayerToClass
 } from './renderUtils.js';
 import { ElementToComponent, Pattern, Grid, Background, Drawing } from './components.js';
 import trkl from '../trkl.js';
@@ -404,7 +405,8 @@ export class EagleSVGRenderer {
   render(doc, props = {}, children = []) {
     doc = doc || this.doc;
 
-    let bounds = doc.measures || doc.getBounds();
+    let { bounds = doc.measures || doc.getBounds() } = props;
+
     this.debug('EagleSVGRenderer.render', { bounds });
     let rect = new Rect(bounds.rect);
 
@@ -439,7 +441,26 @@ export class EagleSVGRenderer {
     trkl.bind(this, attrs);
     this.debug('rect:', rect, bounds.rect);
 
-    let svgElem = h(Drawing, { rect, bounds, attrs, grid, transform }, children);
+    console.log('layers', layers);
+
+    let svgElem = h(Drawing,
+      {
+        rect,
+        bounds,
+        attrs,
+        grid,
+        styles: [
+          'text { font-size: 0.0875rem; }',
+          'text { stroke: none; }',
+          '.pad { fill: #4ba54b; }',
+          '.pad > text { fill: #ff33ff; }',
+          // ...this.doc.layers.map(layer => `.${LayerToClass(layer).join('.')} { stroke: ${layer.color.hex()}; }`),
+          'rect { stroke: none; }'
+        ]
+        /*, transform*/
+      },
+      children
+    );
 
     //     parent = this.create('svg', { viewBox: new Rect(rect).toString(), preserveAspectRatio: 'xMinYMin', ...props }, parent);
     //  let defs = h('defs', {},   h(Pattern, { id: 'grid', step: 2.54, color: '#0000aa', width: 0.05 }));

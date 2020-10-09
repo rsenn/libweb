@@ -55,7 +55,7 @@ export class EagleNodeList {
       let num = cond;
       cond = (child, i, list) => i === num;
     }
-
+    console.log('cond:', cond);
     for(let i = raw.length - 1; i >= 0; i--) if(pred(raw[i], i, this) && cond(raw[i], i, this)) raw.splice(i, 1);
 
     return this;
@@ -69,11 +69,11 @@ export class EagleNodeList {
     return this;
   }
 
-  toXML() {
+  toXML(depth = Infinity) {
     let s = '';
     for(let elem of this[Symbol.iterator]()) {
       if(s != '') s += '\n';
-      s += elem.toXML();
+      s += elem.toXML(Number.isFinite(depth) ? depth : Infinity);
     }
 
     return s;

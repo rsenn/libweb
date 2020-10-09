@@ -7,7 +7,7 @@ import { ImmutablePath } from '../json.js';
 import { EagleNode } from './node.js';
 import { EagleElement } from './element.js';
 import { LinesToPath } from './renderUtils.js';
-import { BBox, Rect, PointList, Line } from '../geom.js';
+import { isBBox, BBox, Rect, PointList, Line } from '../geom.js';
 import { RGBA } from '../color.js';
 import { EagleNodeList } from './nodeList.js';
 import { PathMapper } from '../json/pathMapper.js';
@@ -168,7 +168,7 @@ export class EagleDocument extends EagleNode {
 
     if(!file)
       file = this.file;
-    console.log('saveTo data: ',Util.abbreviate(data));
+    console.log('saveTo file:', file, 'data: ',Util.abbreviate(data));
 
     return new Promise((resolve,reject) => {
       fs.writeFile(file, data);
@@ -211,10 +211,11 @@ export class EagleDocument extends EagleNode {
 
     let sheet = this.sheets ? this.sheets[sheetNo] : null;
 
-    if(sheet) {
-      return sheet.getBounds();
-      let instances = sheet.instances;
-      for(let instance of instances.list) bb.update(instance.getBounds());
+    if(this.type == 'sch') {
+      // return this.find('schematic').getBounds();
+      return this.sheets[sheetNo].getBounds(v => /(instance|net)/.test(v.tagName));
+      /*    let instances = sheet.instances;
+      for(let instance of instances.list) bb.update(instance.getBounds());*/
     } else if(this.elements) {
       console.log('elements:', this.elements);
       for(let element of this.elements.list) {
@@ -234,21 +235,33 @@ export class EagleDocument extends EagleNode {
   getMeasures(options = {}) {
     const { bbox, geometry, points } = typeof options == 'boolean' ? { bbox: true } : options;
     //console.log("this.type", this.type);
+    let plain = this.plain;
 
-    let measures = this.plain.filter(obj => obj.layer && obj.layer.name == 'Measures');
-    if(bbox || geometry || points) measures = measures.map(e => e.geometry);
+    if(!plain && (plain = this.find('plain'))) plain = [...plain.children];
 
-    if(points)
-      measures = measures
-        .map(l => l.toPoints())
-        .flat()
-        .filter(Util.uniquePred(Point.equals));
+    if(plain) {
+      let measures = plain.filter(obj => obj.layer && ['Dimension', 'Measures'].indexOf(obj.layer.name) != -1);
 
-    if(bbox)
-      //) measures = measures.map(e=> new Line(e.attributes));
-      measures = new BBox().update(measures);
+      if(measures.length) {
+        if(bbox || geometry || points) measures = measures.map(e => e.geometry);
 
-    return measures;
+        if(points)
+          measures = measures
+            .map(l => l.toPoints())
+            .flat()
+            .filter(Util.uniquePred(Point.equals));
+
+        if(bbox) {
+          //) measures = measures.map(e=> new Line(e.attributes));
+          measures = BBox.from(measures);
+          console.log('measures bbox:', measures);
+
+          if(!isBBox(measures, v => Number.isFinite(v))) return undefined;
+        }
+
+        return measures;
+      }
+    }
   }
 
   get measures() {
@@ -260,6 +273,7 @@ export class EagleDocument extends EagleNode {
     size.units.width = size.units.height = 'mm';
     return size;
   }
+
   signalMap() {
     return new Map([...this.signals].map(([name, signal]) => {
         let objects = [...signal.children]

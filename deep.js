@@ -91,9 +91,10 @@ export const find = (node, filter, path, root) => {
   return ret;
 };
 
-export const iterate = function* (value, filter = v => true, path = []) {
+export const iterate = function* (...args) {
+  const [value, filter = v => true, path = []] = args;
   //throw new Error();
-  let root = arguments[3] || value,
+  let root = args[3] || value,
     selected = [],
     r;
 

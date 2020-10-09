@@ -51,16 +51,18 @@ let log = function(type, message, url, lineNumber) {
 let win = LogJS.window_;
 
 let gErrorHandler;
-if(win.onerror !== undefined) {
-  gErrorHandler = win.onerror;
-}
-
-win.onerror = function onErrorLogJS(message, url, lineNumber) {
-  log(LogJS.EXCEPTION, message, url, lineNumber);
-  if(gErrorHandler) {
-    gErrorHandler(message, url, lineNumber);
+if(win) {
+  if(win.onerror !== undefined) {
+    gErrorHandler = win.onerror;
   }
-};
+
+  win.onerror = function onErrorLogJS(message, url, lineNumber) {
+    log(LogJS.EXCEPTION, message, url, lineNumber);
+    if(gErrorHandler) {
+      gErrorHandler(message, url, lineNumber);
+    }
+  };
+}
 
 //--------------------------------------------------------------------------------------------------
 

@@ -479,14 +479,32 @@ export class EagleElement extends EagleNode {
     return r;
   }
 
-  getBounds(pred = e => true, opts = {}) {
-    let bb = new BBox(),
-      pos = this.geometry;
+  getBounds(pred, opts = {}) {
+    let bb = new BBox();
+    if(!pred && ['sheet', 'schematic'].indexOf(this.tagName) != -1) pred = 'instance';
+
+    if(pred) {
+      let ok;
+      for(let element of this.getAll(pred)) {
+        //console.log('element:', element);
+        Util.tryCatch(() => element.getBounds(),
+          bounds => (ok = bb.update(bounds) || true)
+        );
+      }
+      if(ok) return bb;
+    }
+
+    let pos = this.geometry;
 
     if(pos) {
       if(pos.toObject) pos = pos.toObject();
       else if(pos.clone) pos = pos.clone();
       else pos = Util.clone(pos);
+    }
+    if(this.tagName == 'schematic') {
+      let instances = [...this.getAll('instance')];
+
+      return BBox.of(...instances);
     }
 
     if(this.tagName == 'board') {
@@ -520,7 +538,7 @@ export class EagleElement extends EagleNode {
       const value = part.value || part.deviceset.name;
 
       let b = symbol.getBounds(e => true, { x, y, name, value });
-      //console.log("symbol.getBounds():", symbol.name, b);
+      console.log('symbol.getBounds():', symbol.name, b);
 
       let p = new Rect(b.rect).toPoints();
       let m = t.toMatrix();
@@ -697,12 +715,22 @@ export class EagleElement extends EagleNode {
     return super.toString();
   }
 
-  *getAll(pred, transform) {
-    yield* super.getAll(pred, transform || ((v, p, o) => EagleElement.get(o || this.owner, p, v)));
+  *getAll(pred, transform = a => a) {
+    const fn = Util.tryFunction((v, p, o) => typeof v == 'object' && v !== null && EagleElement.get(o || this.owner, p, v),
+      (r, v, p, o) => r && transform(r, p, o),
+      () => undefined
+    );
+
+    if(typeof pred != 'function') pred = EagleNode.makePredicate(pred);
+    yield* super.getAll((v, p, o) => typeof v == 'object' && v !== null && 'tagName' in v && pred(v, p, o), fn);
   }
 
-  find(pred, transform) {
-    return super.find(pred, transform || ((v, p, o) => EagleElement.get(o || this.owner, p, v)));
+  find(pred, transform = a => a) {
+    const fn = Util.tryFunction((v, p, o) => EagleElement.get(o || this.owner, p),
+      (r, v, p, o) => transform(r, p, o),
+      () => undefined
+    );
+    return super.find(pred, fn);
   }
 
   setAttribute(name, value) {

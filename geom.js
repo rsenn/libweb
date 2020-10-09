@@ -1,5 +1,5 @@
 import { Align, Anchor } from './geom/align.js';
-import { BBox } from './geom/bbox.js';
+import { isBBox, BBox } from './geom/bbox.js';
 import { Graph } from './geom/graph.js';
 import { Intersection } from './geom/intersection.js';
 import { isLine, Line, ImmutableLine } from './geom/line.js';
@@ -30,46 +30,6 @@ import {
   ImmutableTransformationList,
   ImmutableTranslation
 } from './geom/transformation.js';
-import { isTRBL, TRBL, ImmutableTRBL } from './geom/trbl.js';
-import { Vector } from './geom/vector.js';
-export { Align, Anchor } from './geom/align.js';
-export { BBox } from './geom/bbox.js';
-export { Graph } from './geom/graph.js';
-export { Intersection } from './geom/intersection.js';
-export { isLine, Line } from './geom/line.js';
-export { Arc } from './geom/arc.js';
-export { LineList } from './geom/lineList.js';
-export { Polygon } from './geom/polygon.js';
-
-export { isMatrix, Matrix } from './geom/matrix.js';
-export { isPoint, Point } from './geom/point.js';
-export { isCircle, Circle } from './geom/circle.js';
-
-export { PointList } from './geom/pointList.js';
-export { Polyline } from './geom/polyline.js';
-export { PolygonFinder } from './geom/polygonFinder.js';
-export { isRect, Rect } from './geom/rect.js';
-export { isSize, Size } from './geom/size.js';
-export { SweepLineClass } from './geom/sweepLine.js';
-export {
-  MatrixTransformation,
-  Rotation,
-  Scaling,
-  Transformation,
-  TransformationList,
-  Translation,
-  ImmutableMatrixTransformation,
-  ImmutableRotation,
-  ImmutableScaling,
-  ImmutableTransformation,
-  ImmutableTransformationList,
-  ImmutableTranslation
-} from './geom/transformation.js';
-export { isTRBL, TRBL } from './geom/trbl.js';
-export { Vector } from './geom/vector.js';
-export { Voronoi } from './geom/voronoi.js';
-import { simplifyRadialDist, simplifyDPStep, simplifyDouglasPeucker, simplify } from './geom/simplify.js';
-export { simplifyRadialDist, simplifyDPStep, simplifyDouglasPeucker, simplify } from './geom/simplify.js';
 export default {
   Align,
   Anchor,
@@ -77,6 +37,7 @@ export default {
   BBox,
   Graph,
   Intersection,
+  isBBox,
   isLine,
   isMatrix,
   isPoint,
@@ -121,3 +82,44 @@ export default {
   simplifyDouglasPeucker,
   simplify
 };
+
+import { isTRBL, TRBL, ImmutableTRBL } from './geom/trbl.js';
+import { Vector } from './geom/vector.js';
+export { Align, Anchor } from './geom/align.js';
+export { isBBox, BBox } from './geom/bbox.js';
+export { Graph } from './geom/graph.js';
+export { Intersection } from './geom/intersection.js';
+export { isLine, Line } from './geom/line.js';
+export { Arc } from './geom/arc.js';
+export { LineList } from './geom/lineList.js';
+export { Polygon } from './geom/polygon.js';
+
+export { isMatrix, Matrix } from './geom/matrix.js';
+export { isPoint, Point } from './geom/point.js';
+export { isCircle, Circle } from './geom/circle.js';
+
+export { PointList } from './geom/pointList.js';
+export { Polyline } from './geom/polyline.js';
+export { PolygonFinder } from './geom/polygonFinder.js';
+export { isRect, Rect } from './geom/rect.js';
+export { isSize, Size } from './geom/size.js';
+export { SweepLineClass } from './geom/sweepLine.js';
+export {
+  MatrixTransformation,
+  Rotation,
+  Scaling,
+  Transformation,
+  TransformationList,
+  Translation,
+  ImmutableMatrixTransformation,
+  ImmutableRotation,
+  ImmutableScaling,
+  ImmutableTransformation,
+  ImmutableTransformationList,
+  ImmutableTranslation
+} from './geom/transformation.js';
+export { isTRBL, TRBL } from './geom/trbl.js';
+export { Vector } from './geom/vector.js';
+export { Voronoi } from './geom/voronoi.js';
+import { simplifyRadialDist, simplifyDPStep, simplifyDouglasPeucker, simplify } from './geom/simplify.js';
+export { simplifyRadialDist, simplifyDPStep, simplifyDouglasPeucker, simplify } from './geom/simplify.js';

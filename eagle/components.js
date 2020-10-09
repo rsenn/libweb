@@ -12,6 +12,7 @@ import { SVG } from './components/svg.js';
 import { Background } from './components/background.js';
 import { Drawing } from './components/drawing.js';
 import { Pad } from './components/pad.js';
+import { Polygon } from './components/polygon.js';
 import { Origin } from './components/origin.js';
 
 export const PrimitiveComponents = {
@@ -26,7 +27,8 @@ export const PrimitiveComponents = {
   Pattern,
   Pad,
   Via: Pad,
-  Origin
+  Origin,
+  Polygon
 };
 
 let prevName;
@@ -49,9 +51,11 @@ export { Pin } from './components/pin.js';
 export { Circle } from './components/circle.js';
 export { Cross } from './components/cross.js';
 export { Arc } from './components/arc.js';
-export { TextElement } from './components/textElement.js';
 export { Grid, Pattern } from './components/grid.js';
+export { TextElement } from './components/textElement.js';
 export { SVG } from './components/svg.js';
 export { Background } from './components/background.js';
 export { Drawing } from './components/drawing.js';
+export { Pad } from './components/pad.js';
+export { Polygon } from './components/polygon.js';
 export { Origin } from './components/origin.js';

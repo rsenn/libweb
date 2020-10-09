@@ -337,7 +337,7 @@ export class EagleNode {
     }
 
     let children = r.children;
-    let numChildren = children.length;
+    let numChildren = children ? children.length : 0;
     let ret = ['']; //`${Util.className(this)} `;
     let tag = r.tagName || r.raw.tagName;
     //console.realLog("attrs:",attrs);
@@ -348,6 +348,7 @@ export class EagleNode {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
+    return this.raw;
     return EagleNode.inspect(this);
     return this.inspect();
   }
@@ -447,8 +448,8 @@ export class EagleNode {
     }
   }
 
-  toXML(depth = 0) {
-    return toXML(this.raw);
+  toXML(depth = Infinity) {
+    return toXML(this.raw, depth);
 
     const { tagName, raw } = this;
     let attrNames = Object.keys(raw.attributes);

@@ -26,7 +26,7 @@ export const Wire = ({ data, opts = {}, ...props }) => {
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
 
   return h('line', {
-    class: ElementToClass(wire, layer.name),
+    class: classNames(...ElementToClass(wire, layer.name)),
     stroke: color,
     x1,
     x2,
@@ -34,7 +34,7 @@ export const Wire = ({ data, opts = {}, ...props }) => {
     y2,
     'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
     'stroke-linecap': 'round',
-    'data-curve': curve,
+    ...(curve ? { 'data-curve': curve } : {}),
     'data-layer': `${layer.number} ${layer.name}`,
     transform,
     style: visible ? {} : { display: 'none' }

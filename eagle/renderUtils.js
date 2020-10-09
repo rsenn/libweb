@@ -22,9 +22,8 @@ export const EscapeClassName = name =>
 
 export const UnescapeClassName = name => decodeURIComponent(name.replace(/_0?x?([0-9A-Fa-f]{2})_/g, '%$1'));
 
-export const ElementToClass = (element, layerName) => {
-  layerName = layerName || (element.layer || {}).name || '';
-  //console.debug('ElementToClass', Util.className(element), element.tagName, { element, layerName });
+export const LayerToClass = layer => {
+  let layerName = typeof layer == 'string' ? layer : layer.name;
   let layerClass = layerName.toLowerCase();
   if(/^[tb][A-Z]/.test(layerName)) {
     layerClass = layerName
@@ -34,14 +33,21 @@ export const ElementToClass = (element, layerName) => {
   }
   if(/s$/.test(layerClass)) layerClass = layerClass.slice(0, -1);
 
+  return layerClass.split(' ');
+};
+export const ElementToClass = (element, layerName) => {
+  //console.debug('ElementToClass', Util.className(element), element.tagName, { element, layerName });
+  layerName = layerName || element.layer;
+  let layerClass = layerName ? LayerToClass(layerName) : [];
+
   let tagName, name;
   if(/*Util.isObject*/ element) {
     if(element.tagName) tagName = element.tagName;
     if(element.name) name = EscapeClassName(element.name);
   }
-  let classes = [tagName, name, layerClass];
+  let classes = [tagName, name, ...layerClass];
+  //console.debug('ElementToClass', {classes,layerClass});
   return classNames(...Util.unique(classes));
-  return classes;
 };
 
 export const ClampAngle = (a, mod = 360) => {
@@ -64,7 +70,7 @@ export const Rotation = (rot, f = 1) => {
     angle = +(rot || '').replace(/M?R/, '') || 0;
   }
   let transformations = new TransformationList([], '', '');
-  if(angle !== 0) transformations.rotate(-angle);
+  if(angle !== 0) transformations.rotate(angle);
   if(mirror !== 0) transformations.scale(-1, 1);
 
   return transformations;
@@ -242,7 +248,7 @@ const CalculateArc = (p1, p2, theta) => {
 const RenderArcTo = (distance, radius, theta, sweep, to) => {
   const large = Math.abs(theta) > PI ? 1 : 0;
 
-  return `A ${radius} ${radius} 0 ${large} ${sweep} ${to.x} ${to.y}`;
+  return `A ${radius} ${radius} 0 ${large} ${sweep ? 1 : 0} ${to.x} ${to.y}`;
 };
 
 /**
@@ -307,7 +313,7 @@ export const LinesToPath = (lines, lineFn) => {
         const diff = Point.diff(p[0], p[1]);
         const radius = roundTo(CalculateArcRadius(diff, theta), 0.0001);
         prevPoint = point;
-        const sweep = Math.abs(slope.toAngle()) < PI ? 1 : 0;
+        const sweep = (curve || 0) >= 0; //Math.abs(slope.toAngle()) < PI ? 1 : 0;
 
         //if(isFinite(radius))
         if(debug) Util.consoleConcat(`lineFn\n`, { curve, angle, slope, radius }, debug).print(console.log);
@@ -338,8 +344,9 @@ export const LinesToPath = (lines, lineFn) => {
         m = lines.splice(i, 1)[0];
         break;
       } else if(Point.equals(l[1], p[1])) {
-        m = lines.splice(i, 1)[0].reverse();
-        if(l.curve !== undefined && isFinite(+l.curve) && Math.abs(+l.curve) > 0) m.curve = -m.curve;
+        let tmp = lines.splice(i, 1)[0];
+        m = tmp.reverse();
+        if(tmp.curve !== undefined && isFinite(+tmp.curve) && Math.abs(+tmp.curve) > 0) m.curve = -tmp.curve;
         break;
       }
     }

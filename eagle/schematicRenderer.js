@@ -269,25 +269,26 @@ export class SchematicRenderer extends EagleSVGRenderer {
     let sheet = sheets[sheetNo];
     //console.log('sheet.getBounds', sheet.getBounds+'');
 
-    let bounds = new BBox();
-
-    //bounds = Util.tryFunction(() => sheet.getBounds());
-
-    let rect = new Rect(bounds.rect);
-
-    this.bounds = bounds;
-    this.rect = rect;
-    //this.plain = sheet.plain;
+    let bounds = doc.getBounds(sheetNo || 0);
+    console.log('bounds:', bounds);
+    let rect = bounds.toRect(Rect.prototype);
 
     rect.outset(1.27);
     rect.round(2.54);
 
-    let svgElem = super.render(doc);
+    bounds = new BBox(rect.x1, -rect.y2, rect.x2, -rect.y1);
+
+    this.debug(`SchematicRenderer.render`, { doc, sheetNo, bounds });
+
+    let svgElem = super.render(doc, { bounds });
+
+    this.transform.clear();
+    this.transform.scale(1, -1);
 
     this.debug('this.transform:', this.transform, 'this.rect:', this.rect, 'doc:', doc);
 
-    this.debug(`SchematicRenderer.render`, { doc, sheetNo, bounds });
     this.renderSheet(sheet, svgElem);
+    this.debug(`SchematicRenderer.render`, { sheet, svgElem });
 
     //this.renderInstances(parent, sheetNo, rect);
 
