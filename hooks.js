@@ -8,3 +8,4 @@ export { useFocus } from './hooks/useFocus.js';
 export { useRecognizers, useDrag, usePinch, useWheel, useMove, useScroll, useGesture } from './hooks/useGesture.js';
 export { useHover } from './hooks/useHover.js';
 export { useMousePosition } from './hooks/useMousePosition.js';
+export { usePanZoom } from './hooks/usePanZoom.js';

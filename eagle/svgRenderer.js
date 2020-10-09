@@ -449,6 +449,7 @@ export class EagleSVGRenderer {
         bounds,
         attrs,
         grid,
+        style: { width, height },
         styles: [
           'text { font-size: 0.0875rem; }',
           'text { stroke: none; }',
