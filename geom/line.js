@@ -141,7 +141,7 @@ Line.prototype.getSlope = function() {
 };
 Object.defineProperty(Line.prototype, 'slope', {
   get() {
-    return { x: this.x2 - this.x1, y: this.y2 - this.y1 };
+    return new Point(this.x2 - this.x1, this.y2 - this.y1);
   }
 });
 Line.prototype.yIntercept = function() {

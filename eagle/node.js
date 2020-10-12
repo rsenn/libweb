@@ -348,8 +348,8 @@ export class EagleNode {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    return this.raw;
-    return EagleNode.inspect(this);
+    //  return this.raw;
+    // return EagleNode.inspect(this);
     return this.inspect();
   }
 

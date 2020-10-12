@@ -23,6 +23,9 @@ export function Stack() {
     t = s => s.replace(re, '');
   } catch(err) {}
 
+  stack = [...stack];
+  console.log('stack: ', stack);
+
   let maxLen = stack.reduce((acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc), 0);
 
   return stack
@@ -56,6 +59,9 @@ export class SyntaxError extends Error {
     this.ctx = ctx;
     this.ast = ast;
     this.pos = pos;
+    this.stack = new Util.stack(null, 3);
+
+    Util.removeIf(this.stack, frame => frame.functionName == 'esfactory');
     //console.log("pos:", Util.inspect(pos, { depth: 10 }));
   }
 }
@@ -119,8 +125,8 @@ Position.prototype[Symbol.toStringTag] = function(n, opts) {
   const { showFilename = true, colors = false } = opts || {};
   let c = Util.coloring(colors);
 
-  let v = [...Position.prototype[Symbol.iterator].call(this)];
-  if(!showFilename && v.length >= 3) v.shift();
+  let v = [this.file, this.line, this.column];
+  if((!showFilename || v[0] == undefined) && v.length >= 3) v.shift();
   //  v = v.map((f, i) => t(f, i));
   v = v.map((f, i) => c.code(1, i == 0 ? 33 : 35) + f);
   return v.join(c.code(1, 36) + ':') + c.code(0);
@@ -131,8 +137,8 @@ Position.prototype[Symbol.iterator] = function* () {
   let v = file ? [file, line, column] : [line, column];
   yield* v;
 };
-Position.prototype.toString = function() {
-  return this[Symbol.toStringTag](0, { colors: false });
+Position.prototype.toString = function(opts = {}) {
+  return this[Symbol.toStringTag](0, { colors: false, ...opts });
 };
 Position.prototype.valueOf = function() {
   return this.pos;
@@ -142,6 +148,7 @@ Position.prototype[Symbol.toPrimitive] = function(hint) {
   if(hint == 'string') return this.toString();
 };
 Position.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts) {
+  return this.toString({ colors: true });
   return Util.toString(this, { colors: true, ...opts, toString: Symbol.toStringTag });
 };
 /*
@@ -601,6 +608,7 @@ export class Lexer {
   }
 
   lexRegExp() {
+    //console.log("lexRegExp", this.pos);
     let i = 0;
     let word = '',
       prev = '';
@@ -608,7 +616,7 @@ export class Lexer {
     let bracket = false;
     let validator = c => {
       //let last = word.substring(word.length - 1);
-      //console.log("i:" + i + " c:" + c + " prev: " + prev + " slashes: " + slashes);
+      // console.log("i=" + i + " c='" + c + "' prev='" + prev + "' slashes: " + slashes);
       i++;
       if(c == '[' && prev != '\\') if (!bracket) bracket = true;
       if(c == ']' && prev != '\\') if (bracket) bracket = false;
@@ -623,13 +631,18 @@ export class Lexer {
         word += '\n';
         prev = c;
         return true;
+      } else if(prev == '\\') {
+        word += prev;
+      } else if(slashes == 2 && 'gimsuy'.indexOf(c) != -1) {
+        /*  word += c;
+        prev = c;*/
       } else if(slashes == 2) {
-        return c == 'g' || c == 'i';
+        return false;
       } else if(c == '\\') {
         prev = c;
         return true;
       }
-      if(prev == ';') return false;
+      //    if(prev == ';') return false;
       word += c;
       prev = c;
       return true;

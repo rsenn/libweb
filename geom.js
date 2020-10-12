@@ -16,20 +16,7 @@ import { Polygon } from './geom/polygon.js';
 import { isRect, Rect, ImmutableRect } from './geom/rect.js';
 import { isSize, Size, ImmutableSize } from './geom/size.js';
 import { SweepLineClass } from './geom/sweepLine.js';
-import {
-  MatrixTransformation,
-  Rotation,
-  Scaling,
-  Transformation,
-  TransformationList,
-  Translation,
-  ImmutableMatrixTransformation,
-  ImmutableRotation,
-  ImmutableScaling,
-  ImmutableTransformation,
-  ImmutableTransformationList,
-  ImmutableTranslation
-} from './geom/transformation.js';
+import { MatrixTransformation, Rotation, Scaling, Transformation, TransformationList, Translation, ImmutableMatrixTransformation, ImmutableRotation, ImmutableScaling, ImmutableTransformation, ImmutableTransformationList, ImmutableTranslation } from './geom/transformation.js';
 export default {
   Align,
   Anchor,

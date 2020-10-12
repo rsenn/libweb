@@ -7,17 +7,7 @@ import { ImmutableXPath } from '../xml.js';
 import { ImmutablePath } from '../json.js';
 import { Rotation, Alignment } from './renderUtils.js';
 import { lazyProperty } from '../lazyInitializer.js';
-import {
-  BBox,
-  Point,
-  Circle,
-  Line,
-  Rect,
-  TransformationList,
-  Transformation,
-  PointList,
-  Translation
-} from '../geom.js';
+import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList, Translation } from '../geom.js';
 import { Repeater } from '../repeater/repeater.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];

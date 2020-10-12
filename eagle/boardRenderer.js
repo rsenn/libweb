@@ -5,15 +5,7 @@ import { EagleElement } from './element.js';
 import { Cross, Arc, Origin } from './components.js';
 import { RGBA } from '../color.js';
 import { Palette } from './common.js';
-import {
-  VERTICAL,
-  HORIZONTAL,
-  RotateTransformation,
-  LayerAttributes,
-  LinesToPath,
-  MakeCoordTransformer,
-  Rotation
-} from './renderUtils.js';
+import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, Rotation } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { Repeater } from '../repeater/repeater.js';
 import { useTrkl, ElementToClass, EscapeClassName, UnescapeClassName } from './renderUtils.js';
@@ -212,7 +204,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
         let attrs = {
           stroke: color + '',
-          'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
+          'stroke-width': +(width == 0 ? 0.1 : width * 0.8).toFixed(3),
           'data-layer': `${layer.number} ${layer.name}`,
           fill: 'none',
           style: visible ? undefined : { display: 'none' }

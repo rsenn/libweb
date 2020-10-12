@@ -147,4 +147,9 @@ Alea.importState = function(i) {
   return random;
 };
 
+Alea.uint32 = function(seed) {
+  let random = new Alea(seed);
+  return () => random.uint32();
+};
+
 export default Alea;

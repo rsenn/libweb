@@ -108,7 +108,8 @@ else */ if(text) svg.innerHTML = innerHTML;
       children = children ? children : [];
       //  console.log('SVG.factory children =', children);
       for(let child of children) {
-        factory.apply({ ...delegate, root: elem }, child);
+        if(typeof child == 'string') delegate.append_to(document.createTextNode(child), elem);
+        else factory.apply({ ...delegate, root: elem }, child);
       }
       if(tag == 'svg') delegate.root = elem;
       return elem;

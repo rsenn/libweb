@@ -1353,8 +1353,8 @@ Util.toString = (obj, opts = {}) => {
       //   if(Util.className(obj) != 'Range') console.debug('inspect:', Util.className(obj), inspect + '');
       let s = inspect.call(obj, depth, { ...opts });
       //  if(Util.className(obj) != 'Range')
-      console.debug('s:', s);
-      console.debug('inspect:', inspect + '');
+      //console.debug('s:', s);
+      //console.debug('inspect:', inspect + '');
 
       out += s;
     } else {
@@ -2118,7 +2118,7 @@ Util.putError = err => {
 Util.putStack = (stack = new Error().stack) => {
   // (console.error || console.log)('STACK TRACE:', Util.className(stack), Util.className(stack[1]));
   stack = stack instanceof Util.stack ? stack : Util.stack(stack);
-  (console.error || console.log)('STACK TRACE:', stack.toString());
+  (console.error || console.log)('STACK TRACE:\n' + stack.toString());
 };
 
 Util.trap = (() => {
@@ -2599,6 +2599,8 @@ Util.isArray = function(obj) {
     obj instanceof Array
   );
 };
+Util.isArrayLike = obj => typeof obj == 'object' && obj !== null && 'length' in obj;
+
 Util.equals = function(a, b) {
   if(Util.isArray(a) && Util.isArray(b)) {
     return a.length == b.length && a.every((e, i) => b[i] === e);
@@ -2796,7 +2798,7 @@ Util.clear = obj => (typeof obj.splice == 'function' ? obj.splice(0, obj.length)
 Util.remove = (arr, item) => Util.removeIf(arr, (other, i, arr) => item === other);
 Util.removeIf = function(arr, pred) {
   let count = 0;
-  if(Util.isArray(arr)) {
+  if(Util.isObject(arr) && typeof arr.splice == 'function') {
     let idx;
     for(count = 0; (idx = arr.findIndex(pred)) != -1; count++) arr.splice(idx, idx + 1);
   } else {
@@ -2899,6 +2901,58 @@ Util.entryIterator = obj => {
   }
 };
 
+/*Util.bitIterator = function BitIterator(source, inBits, outBits) {
+  const iterator = this instanceof BitIterator ? this : Object.create(BitIterator.prototype);
+
+  iterator.bits = [0];
+  iterator.size = 0;
+  iterator.next = function(bitsWanted = outBits) {
+    let output = { bits: [0], size: 0 };
+    for(;;) {
+      if(iterator.size == 0) fillBits(iterator);
+      //console.log("iterator.bits =",iterator.bits, " iterator.size =",iterator.size);
+      moveBits(iterator, output, bitsWanted);
+      if(output.size == bitsWanted) break;
+    }
+    return output.bits;
+  };
+  function readBits(buffer, n) {
+    n = Math.min(buffer.size, n);
+    let size = 0,
+      bits = [];
+    while(n >= 16) {
+      bits.push(buffer.bits.shift());
+      buffer.size -= 16; n -= 16;
+      size += 16;
+    }
+
+    if(n > 0) {
+      const mask = (1 << n) - 1;
+      bits.push(buffer.bits & mask);
+      size += n;
+      buffer.bits >>= n;
+      buffer.size -= n;
+    }
+    return [bits, size];
+  }
+  const pad = '00000000000000000000000000000000';
+  function writeBits(buffer, value, size) {
+    buffer.bits = [...Util.partition((pad + value.toString(2)).slice(-32), 16)].map(n => parseInt(n, 2)).reverse();
+
+    buffer.size = size;
+    console.log("buffer.bits:",buffer.bits,"buffer.size:",buffer.size);
+  }
+  function moveBits(input, output, len) {
+    let [bits, size] = readBits(input, len);
+    writeBits(output, bits, size);
+  }
+  function fillBits(buffer) {
+    const value = source();
+    writeBits(buffer, value, inBits);
+  }
+  return iterator;
+};
+*/
 Util.mapAdapter = getSetFunction => {
   let r = {
     get(key) {
@@ -3416,13 +3470,13 @@ Util.define(Util.stackFrame.prototype, {
         [0, 255, 255]
       ];
 
-      //const { functionName, fileName, columnNumber, lineNumber } = this;
-      let columns = fields.map(fn => this[fn]);
+      const { functionName, methodName, fileName, lineNumber, columnNumber } = this;
+      let columns = [functionName || methodName, fileName, lineNumber, columnNumber];
 
       columns = columns.map((f, i) => (f + '')[i >= 2 ? 'padStart' : 'padEnd'](columnWidths[i] || 0, ' '));
       // columns = columns.map((fn, i) => c(fn, colors[i]));
 
-      let [functionName, fileName, lineNumber, columnNumber] = columns;
+      // let [functionName, fileName, lineNumber, columnNumber] = columns;
       if(stripUrl) fileName = fileName.replace(/.*:\/\/[^\/]*\//, '');
       //console.log('stackFrame.toString', { color ,columnWidths, functionName, fileName, lineNumber, columnNumber});
       let colonList = [fileName, lineNumber, columnNumber]
@@ -3464,8 +3518,11 @@ Util.stack = function Stack(stack, offset) {
 
   if(typeof stack == 'number') return Object.setPrototypeOf(new Array(stack), Util.stack.prototype);
   if(!stack) {
+    if(offset === undefined) offset = 1;
     const oldPrepareStackTrace = Error.prepareStackTrace;
     Error.prepareStackTrace = (_, stack) => stack;
+    Error.stackTraceLimit = Infinity;
+
     stack = new Error().stack;
     Error.prepareStackTrace = oldPrepareStackTrace;
     const { propertyMap } = Util.stackFrame;

@@ -1,78 +1,11 @@
 import Util from '../util.js';
 //import util from 'util';
-import Lexer, { SyntaxError, Position, Range } from './lexer.js';
+import Lexer, { SyntaxError, Stack, Position, Range } from './lexer.js';
 import deep from '../deep.js';
 //import util from 'util';
 import { Token, TokenList } from './token.js';
 import { Printer } from './printer.js';
-import {
-  ESNode,
-  Program,
-  AliasName,
-  ModuleItems,
-  Expression,
-  FunctionLiteral,
-  Identifier,
-  ComputedPropertyName,
-  BindingProperty,
-  Literal,
-  TemplateLiteral,
-  ThisExpression,
-  UnaryExpression,
-  UpdateExpression,
-  BinaryExpression,
-  AssignmentExpression,
-  LogicalExpression,
-  MemberExpression,
-  InExpression,
-  ConditionalExpression,
-  CallExpression,
-  DecoratorExpression,
-  NewExpression,
-  SequenceExpression,
-  Statement,
-  BlockStatement,
-  StatementList,
-  EmptyStatement,
-  LabelledStatement,
-  ExpressionStatement,
-  ReturnStatement,
-  ContinueStatement,
-  BreakStatement,
-  IfStatement,
-  SwitchStatement,
-  CaseClause,
-  WhileStatement,
-  DoStatement,
-  ForStatement,
-  ForInStatement,
-  WithStatement,
-  TryStatement,
-  ThrowStatement,
-  YieldStatement,
-  ImportStatement,
-  ExportStatement,
-  Declaration,
-  ClassDeclaration,
-  FunctionArgument,
-  FunctionDeclaration,
-  ArrowFunction,
-  VariableDeclaration,
-  VariableDeclarator,
-  ObjectLiteral,
-  PropertyDefinition,
-  MemberVariable,
-  ArrayLiteral,
-  JSXLiteral,
-  BindingPattern,
-  ArrayBindingPattern,
-  ObjectBindingPattern,
-  AwaitExpression,
-  RestOfExpression,
-  SpreadElement,
-  CTORS,
-  Factory
-} from './estree.js';
+import { ESNode, Program, AliasName, ModuleItems, Expression, FunctionLiteral, Identifier, ComputedPropertyName, BindingProperty, Literal, TemplateLiteral, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, InExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabelledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, CaseClause, WhileStatement, DoStatement, ForStatement, ForInStatement, WithStatement, TryStatement, ThrowStatement, YieldStatement, ImportStatement, ExportStatement, Declaration, ClassDeclaration, FunctionArgument, FunctionDeclaration, ArrowFunction, VariableDeclaration, VariableDeclarator, ObjectLiteral, PropertyDefinition, MemberVariable, ArrayLiteral, JSXLiteral, BindingPattern, ArrayBindingPattern, ObjectBindingPattern, AwaitExpression, RestOfExpression, SpreadElement, CTORS, Factory } from './estree.js';
 import MultiMap from '../container/multiMap.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
@@ -239,6 +172,7 @@ export class Parser {
     }
     this.pos = this.position(token);
     this.token = this.tokens[0];
+    //console.debug("token:", this.token, "pos:", this.pos);
     return token;
   }
 
@@ -307,8 +241,8 @@ export class Parser {
   }
 
   position(tok = null) {
-    let obj = tok ? tok.pos : this.lexer;
-    return this.lexer.position.call(obj || this);
+    let pos = tok ? tok.pos : this.lexer.pos;
+    return this.lexer.position(pos || this.pos);
   }
 }
 
@@ -1178,7 +1112,7 @@ export class ECMAScriptParser extends Parser {
 
           this.expectPunctuators(']');
         } else {
-          if(this.matchIdentifier()) property = element = this.expectIdentifier();
+          if(this.matchIdentifier(true)) property = element = this.expectIdentifier(true);
         }
 
         if(rest) {
@@ -1197,7 +1131,7 @@ export class ECMAScriptParser extends Parser {
             initializer = this.parseAssignmentExpression();
           }
 
-          console.log('parseBindingPattern', { property, element, initializer });
+          // console.log('parseBindingPattern', { property, element, initializer });
           property = new BindingProperty(property, element, initializer);
         }
       }
@@ -2178,7 +2112,7 @@ export class ECMAScriptParser extends Parser {
       if(rest_of || !this.matchPunctuators(',')) break;
       this.expectPunctuators(',');
     }
-    console.log('parseParameters', params);
+    // console.log('parseParameters', params);
     if(parens) this.expectPunctuators(')', params);
     return params;
   }
@@ -2336,7 +2270,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
     this.stack.unshift(entry);
 
     let s =
-      ('' + position.toString(false)).padEnd(position.file.length + 6) +
+      ('' + position.toString(false)).padEnd((position.file || '').length + 6) +
       ` ${(depth + '').padStart(4)} ${this.stack[0].methodName}`;
     let msg = s + ` ${quoteList(this.stack[depth].tokens || [])}` + `  ${quoteArg(args)}`;
 
@@ -2379,7 +2313,7 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
 
     annotate.push(`returned: ${objectStr}`);
 
-    if(lexed.length) annotate.push(`lexed[${lexed.map(t => Util.abbreviate(quoteStr(t.value), 20)).join(', ')}]`);
+    if(lexed.length) annotate.push(`lexed[${lexed.map(t => Util.abbreviate(quoteStr(t.value), 40)).join(', ')}]`);
     if(nodes.length) annotate.push(`yielded: ` + quoteArray(newNodes));
     nodes.splice(0, nodes.length);
     depth--;

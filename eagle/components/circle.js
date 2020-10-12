@@ -38,7 +38,7 @@ export const Circle = ({ data, opts = {}, ...props }) => {
     cx: x,
     cy: y,
     r: radius,
-    'stroke-width': width * 0.8,
+    'stroke-width': Util.roundTo(width * 0.8, 0.0001),
     fill: 'none',
     ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),
     style: visible ? {} : { display: 'none' }
