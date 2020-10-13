@@ -53,10 +53,13 @@ export class Parser {
     //console.log("Identifier", Identifier);
     //console.log("parser: ", this.parser);
     //console.log("lexer: ", this.lexer.fileName);
+    //
+    if(debug) ECMAScriptParser.instrumentate();
   }
 
   error(errorMessage, astNode) {
-    const pos = this.lexer.position();
+    const pos = this.position();
+    console.log('error', { errorMessage, astNode, pos }, this.lexer.position());
 
     return new SyntaxError('parse', pos.toString() + ': ' + errorMessage, astNode, pos);
   }
@@ -241,8 +244,8 @@ export class Parser {
   }
 
   position(tok = null) {
-    let pos = tok ? tok.pos : this.lexer.pos;
-    return this.lexer.position(pos || this.pos);
+    let pos = tok ? tok.pos : this.pos;
+    return this.lexer.position(pos || this.lexer.pos);
   }
 }
 
@@ -663,7 +666,7 @@ export class ECMAScriptParser extends Parser {
 
         //console.debug(`${this.position()} args:`, expression);
         expression = this.parseArrowFunction(args, is_async);
-        expression = new SequenceExpression([expression]);
+        //expression = new SequenceExpression([expression]);
       } else if(!(expression instanceof SequenceExpression)) expression = new SequenceExpression([expression]);
 
       //    if(parentheses) this.expectPunctuators(')');
@@ -2203,6 +2206,8 @@ export class ECMAScriptParser extends Parser {
 
     return new Program(body);
   }
+
+  static instrumentate = Util.once(instrumentateParser);
 }
 
 let depth = 0;
@@ -2329,17 +2334,18 @@ const instrumentate = (methodName, fn = methods[methodName]) => {
   return esfactory;
 };
 
-Object.assign(ECMAScriptParser.prototype,
-  Util.getMethodNames(new ECMAScriptParser(), 2)
-    .filter(name => /^(expect|parse)/.test(name))
-    .reduce((acc, methodName) => {
-      let fn = ECMAScriptParser.prototype[methodName];
-      methods[methodName] = fn;
+function instrumentateParser() {
+  Object.assign(ECMAScriptParser.prototype,
+    Util.getMethodNames(new ECMAScriptParser(), 2)
+      .filter(name => /^(expect|parse)/.test(name))
+      .reduce((acc, methodName) => {
+        let fn = ECMAScriptParser.prototype[methodName];
+        methods[methodName] = fn;
 
-      return { ...acc, [methodName]: instrumentate(methodName, fn) };
-    }, {})
-);
-
+        return { ...acc, [methodName]: instrumentate(methodName, fn) };
+      }, {})
+  );
+}
 const timeout = ms =>
   new Promise((resolve, reject) => {
     setTimeout(() => resolve(), ms);

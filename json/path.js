@@ -404,6 +404,7 @@ export class MutablePath extends Array {
     r = (this.absolute && r != '' && sep == '/' ? sep : '') + r;
     return r.replace(/\//g, sep);
   }
+
   [Symbol.toStringTag]() {
     return MutablePath.prototype.toString.call('.', '\u220a' + CHILDREN_SPACE);
   }

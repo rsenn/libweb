@@ -1,18 +1,4 @@
-import {
-  ESNode,
-  Literal,
-  TemplateLiteral,
-  PropertyDefinition,
-  MemberVariable,
-  FunctionDeclaration,
-  ArrowFunction,
-  Identifier,
-  ClassDeclaration,
-  BindingProperty,
-  ObjectBindingPattern,
-  SpreadElement,
-  MemberExpression
-} from './estree.js';
+import { ESNode, Literal, TemplateLiteral, PropertyDefinition, MemberVariable, FunctionDeclaration, ArrowFunction, Identifier, ClassDeclaration, BindingProperty, ObjectBindingPattern, SpreadElement, MemberExpression } from './estree.js';
 import Util from '../util.js';
 import deep from '../deep.js';
 //import util from 'util';
@@ -31,18 +17,29 @@ export class Printer {
   };
 
   constructor(options = {}, comments) {
-    const { indent = 2, color = false, format = 1 } = options;
+    const { indent = 2, colors = false, format = 1 } = options;
     this.indent = indent || 2;
     this.comments = comments || [];
 
-    this.color = Util.coloring(color);
+    let color = Util.coloring(colors);
 
-    this.colorText = Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: text => this.color.text(text, ...codes) }),
-      {}
-    );
-    this.colorCode = Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: () => this.color.code(...codes) }),
-      {}
-    );
+    Util.define(this, {
+      color,
+      colorText: Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: text => color.text(text, ...codes) }),
+        {}
+      ),
+      colorCode: Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({
+          ...acc,
+          [key]: output => {
+            if(typeof output == 'string') {
+              if(Util.equals(Util.decodeAnsi(output).slice(0, -1), codes)) return '';
+            }
+            return color.code(...codes);
+          }
+        }),
+        {}
+      )
+    });
     this.format = format;
   }
 
@@ -80,6 +77,11 @@ export class Printer {
       }
     }
     ret += fn.call(this, node);
+
+    if(ret.indexOf('\x1b[') != -1) {
+      let ansi = Util.decodeAnsi(ret);
+      if(!Util.equals(ansi, [0, 'm'])) ret += '\x1b[0m';
+    }
     return ret;
   }
 
@@ -102,7 +104,9 @@ export class Printer {
 
     //console.log("adjacent: ", this.adjacent);
 
-    return this.printNode(tree);
+    let output = this.printNode(tree);
+
+    return output;
   }
 
   printProgram(program) {
@@ -112,10 +116,13 @@ export class Printer {
       if(line == '') continue;
       if(/\n/.test(line) && output != '') output += '\n';
       //console.log(`line:'${line.replace(/\n/g, "\\n")}'`);
-      output += line + (line.trim().endsWith(';') ? '\n' : ';\n');
+      output += line;
+
+      output += line.trim().endsWith(';') ? '\n' : this.colorCode.punctuators(output) + ';\n';
     }
     output = output.replace(/[;\n ]*$/, '');
-    return output != '' ? output + ';' : output;
+    if(output != '') output += this.colorCode.punctuators(output) + ';';
+    return output;
   }
 
   printString(str) {
@@ -192,13 +199,15 @@ export class Printer {
 
   printUnaryExpression(unary_expression) {
     const { operator, argument, prefix } = unary_expression;
+    let isAlpha = /[a-z]$/.test(operator);
+    let output = '';
     let arg = this.printNode(argument);
-
     //arg = '(' + arg + ')';
-
-    if(prefix && /[a-z]$/.test(operator)) arg = ' ' + arg;
-
-    return prefix ? operator + arg : arg + operator;
+    if(prefix && isAlpha) arg = ' ' + arg;
+    if(!prefix) output += arg;
+    output += this.colorCode[isAlpha ? 'keywords' : 'punctuators']() + operator;
+    if(prefix) output += arg;
+    return output;
   }
 
   printUpdateExpression(update_expression) {
@@ -210,37 +219,48 @@ export class Printer {
 
     let lhs = this.printNode(left).replace(/[\s\;]*$/g, '');
     let rhs = this.printNode(right);
+    let output = lhs + ' ';
+    output += this.colorCode[/^[a-z]/.test(operator) ? 'keywords' : 'punctuators'](output) + operator;
+    output += ' ' + rhs;
 
-    return `${lhs} ${operator} ${rhs}`;
+    return output;
   }
+
   printAssignmentExpression(assignment_expression) {
     const { operator, left, right } = assignment_expression;
-    let output = `${this.printNode(left)} ${operator} ${this.printNode(right)}`;
+    let output = this.printNode(left) + ' ';
+    output += this.colorCode.punctuators(output) + operator;
+    output += ' ' + this.printNode(right);
     return output;
   }
 
   printLogicalExpression(logical_expression) {
     const { operator, left, right } = logical_expression;
-
     //console.log('logical_expression', logical_expression);
-
-    return `${this.printNode(left)} ${operator} ${this.printNode(right)}`;
+    let output = '';
+    output += this.printNode(left) + ' ';
+    output += this.colorCode[/^[a-z]/.test(operator) ? 'keywords' : 'punctuators'](output) + operator;
+    output += ' ' + this.printNode(right);
+    return output;
   }
 
   printMemberExpression(member_expression) {
     const { object, property } = member_expression;
+    const { colorText, colorCode } = this;
     let left, right;
     //console.log("member_expression:", member_expression);
     left = this.printNode(object);
     right = this.printNode(property);
 
-    if(!(object instanceof Identifier) && !(object instanceof MemberExpression)) left = '(' + left + ')';
+    //console.log("printMemberExpression", {object,property});
+    if(!(object instanceof Identifier) && !(object instanceof Literal) && !(object instanceof MemberExpression))
+      left = '(' + left + ')';
 
     ///null.*{/.test(left) && console.log("object:", object);
 
     if(/^[0-9]+$/.test(right) || /[\.\']/.test(right) || !(property instanceof Identifier))
-      return left + '[' + right + ']';
-    return left + '.' + right;
+      return left + colorCode.punctuators(left) + '[' + right + colorCode.punctuators() + ']';
+    return left + colorText.punctuators('.') + right;
   }
 
   printConditionalExpression(conditional_expression) {
@@ -267,7 +287,7 @@ export class Printer {
     if(callee instanceof ArrowFunction) fn = `(${fn})`;
 
     return (fn +
-      this.colorCode.punctuators() +
+      this.colorCode.punctuators(fn) +
       '(' +
       args.map(arg => this.printNode(arg)).join(this.colorCode.punctuators() + ', ') +
       this.colorCode.punctuators() +
@@ -281,13 +301,13 @@ export class Printer {
   }*/
 
   printNewExpression(new_expression) {
-    return 'new ' + this.printCallExpression(new_expression);
+    return this.colorCode.keywords() + 'new ' + this.printCallExpression(new_expression);
   }
 
   printSequenceExpression(sequence_expression) {
     const { expressions } = sequence_expression;
 
-    let output = '(';
+    let output = this.colorCode.punctuators() + '(';
     //console.log('expressions: ', expressions);
 
     output += expressions
@@ -297,20 +317,20 @@ export class Printer {
         return node;
       })
       .join(', ');
-    output += ')';
+    output += this.colorCode.punctuators(output) + ')';
     return output;
   }
 
   printLabelledStatement(labelledStatement) {
     const { label, statement } = labelledStatement;
 
-    let s = '';
+    let output = '';
 
-    s += this.printNode(label);
-    s += this.colorText.punctuators(':');
-    s += '\n';
-    s += this.printNode(statement);
-    return s;
+    output += this.printNode(label);
+    output += this.colorCode.punctuators(output) + ':';
+    output += '\n';
+    output += this.printNode(statement);
+    return output;
   }
 
   //printStatement(statement) {}
@@ -359,11 +379,11 @@ export class Printer {
       let line = this.printNode(statement);
       let multiline = /\n/.test(line);
       s += multiline && s.length ? '\n\n' : '\n';
-      if(line != '')
-        s +=
-          line +
-          (new RegExp('(;|\\n|}|\\s)$').test(line.trimEnd()) ? '' : this.colorCode.punctuators() + ';') +
-          (multiline ? '\n' : '');
+      if(line != '') s += line;
+
+      s +=
+        (new RegExp('(;|\\n|}|\\s)$').test(line.trimEnd()) ? '' : this.colorCode.punctuators(s) + ';') +
+        (multiline ? '\n' : '');
     }
     return s;
   }
@@ -415,7 +435,7 @@ export class Printer {
     if(alternate) {
       let if_false = this.printNode(alternate);
       output +=
-        (new RegExp('[;}\\n]$').test(output) ? '' : this.colorCode.punctuators() + ';') +
+        (new RegExp('[;}\\n]$').test(output) ? '' : this.colorCode.punctuators(output) + ';') +
         this.colorCode.keywords() +
         ` else ${if_false}`;
     }
@@ -487,10 +507,16 @@ export class Printer {
 
     let key = this.printNode(left).replace(/;$/, '');
     let object = this.printNode(right);
+    const { colorText, colorCode } = this;
 
-    let output = `for${async ? ' await' : ''}(${key} ${operator} ${object})`;
+    let output = colorText.keywords(`for${async ? ' await' : ''}`);
+
+    output +=
+      colorText.punctuators('(') + `${key} ${colorText.keywords(operator)} ${object}` + colorText.punctuators(')');
+
     let code = this.printNode(body);
-    if(code[0] == '{' || !/\n./.test(code)) output += ' ';
+    if(code[0] != '{') output += '\n  ';
+    else if(!/\n./.test(code)) output += ' ';
     else output += '\n';
 
     output += code;
@@ -516,7 +542,8 @@ export class Printer {
 
   printImportStatement(import_statement) {
     const { identifiers, export: doExport } = import_statement;
-    let output = doExport ? 'export ' : 'import ';
+    console.log('printImportStatement', { doExport, identifiers });
+    let output = this.colorCode.keywords() + doExport ? 'export ' : 'import ';
     //console.log(identifiers);
 
     if(identifiers.declarations) output += identifiers.declarations.map(decl => this.printNode(decl)).join(', ');
@@ -532,9 +559,9 @@ export class Printer {
   printExportStatement(export_statement) {
     const { what, declarations } = export_statement;
 
-    //console.log('declarations:', declarations);
+    console.log('printExportStatement', { what, declarations });
 
-    let output = 'export ';
+    let output = this.colorCode.keywords() + 'export ';
 
     if(declarations instanceof ObjectBindingPattern) {
       let decl = '';
@@ -606,7 +633,7 @@ export class Printer {
 
       s = s.replace(/\n/g, '\n  ');
 
-      if(!s.endsWith('}')) s += ';';
+      if(!s.endsWith('}')) s += this.colorCode.punctuators(s) + ';';
 
       if(output.endsWith('}') || member instanceof FunctionDeclaration) output += '\n';
 
@@ -620,7 +647,8 @@ export class Printer {
 
   printFunctionDeclaration(function_declaration) {
     const { id, params, body, exported, generator, is_async } = function_declaration;
-    let output = exported ? 'export ' : '';
+    let output = this.colorCode.keywords();
+    output += exported ? 'export ' : '';
     output += is_async ? 'async ' : '';
     output += `function `;
     if(generator) output += '*';
@@ -629,11 +657,13 @@ export class Printer {
 
     output = output.replace(/ $/, '');
     output +=
+      this.colorCode.punctuators(output) +
       '(' +
       (params.length !== undefined
         ? [...params].map(param => this.printNode(param)).join(', ')
-        : this.printNode(params)) +
-      ') ';
+        : this.printNode(params));
+
+    output += this.colorCode.punctuators(output) + ') ';
     /*
  console.log("body: ",body);
  console.log("params: ",params);
@@ -659,14 +689,8 @@ export class Printer {
       ')';
     output += ' => ';
     let code;
-    /*if(typeof body.map == 'function') {
-      code = body.map(line => this.printNode(line)).join('\n  ');
-    } else */ {
+    {
       code = this.printNode(body);
-
-      /*  console.log('body:', Util.className(body));
-      //console.log('body:', body);*/
-
       if(Util.className(body).startsWith('Object')) code = '(' + code + ')';
     }
     output += code;
@@ -679,7 +703,8 @@ export class Printer {
 
     output += kind != '' ? this.colorText.keywords(kind) + ' ' : '';
     output += declarations.map(decl => this.printNode(decl)).join(', ');
-    return output + ';';
+    output += this.colorCode.punctuators(output) + ';';
+    return output;
   }
 
   printVariableDeclarator(variable_declarator) {
@@ -697,7 +722,7 @@ export class Printer {
     let a = [];
     let is_multiline = false,
       is_prototype = true;
-    if(members.length == 0) return '{}';
+    if(members.length == 0) return this.colorText.punctuators('{}');
     for(let property of members) {
       let line = '';
 
@@ -754,7 +779,10 @@ export class Printer {
 
     if(is_multiline) return `{\n  ${a.join(is_prototype ? '\n  ' : ',\n  ')}\n}`;
 
-    return `{ ${a.join(', ')} }`;
+    output += this.colorCode.punctuators() + '{ ';
+    output += a.join(this.colorCode.punctuators() + ', ');
+    output += this.colorCode.punctuators(output) + ' }';
+    return output;
   }
 
   printPropertyDefinition(property_definition) {
@@ -816,8 +844,12 @@ export class Printer {
 
   printArrayLiteral(array_literal) {
     const { elements } = array_literal;
-    let output = elements.map(elem => this.printNode(elem)).join(', ');
-    return output.length ? `[ ${output} ]` : '[]';
+    let output = this.colorCode.punctuators() + '[ ';
+
+    output += elements.map(elem => this.printNode(elem)).join(', ');
+    output += this.colorCode.punctuators(output) + ' ]';
+
+    return output;
   }
 
   printJSXLiteral(jsx_literal) {
@@ -870,12 +902,13 @@ export class Printer {
   }*/
   printArrayBindingPattern(array_binding_pattern) {
     const { elements } = array_binding_pattern;
+    const { colorText, colorCode } = this;
 
     //console.log('printArrayBindingPattern', { elements });
     let output = '';
 
     for(let element of elements) {
-      if(output != '') output += ', ';
+      if(output != '') output += colorCode.punctuators() + ', ';
 
       output += this.printNode(element);
     }
@@ -883,7 +916,7 @@ export class Printer {
     /*    let output = elements
       .map(({ element }) => element.value)
       .join(this.colorCode.punctuators() + ', ');*/
-    return `[ ${output} ]`;
+    return colorCode.punctuators() + `[ ${output} ${colorCode.punctuators()}]`;
   }
 
   printObjectBindingPattern(object_binding_pattern) {
@@ -921,7 +954,7 @@ export class Printer {
   printComments(comments) {
     let output = '';
     for(let comment of comments) {
-      output += comment.value;
+      output += this.colorCode.comments(output) + comment.value;
     }
     return output;
   }

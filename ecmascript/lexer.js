@@ -388,6 +388,11 @@ export class Lexer {
   position(pos = this.pos) {
     let { line, column, fileName } = this;
 
+    let lines = this.source.substring(0, pos).split(/\n/g);
+
+    line = lines.length - 1;
+    column = lines[line].length - 1;
+
     //console.debug("pos:",typeof(pos), " start:", typeof this.start);
     //let diff = pos.valueOf() - this.start;
 
@@ -625,7 +630,7 @@ export class Lexer {
         return false;
       } else if(c == '/' && prev != '\\' && !bracket) {
         slashes++;
-      } else if((c == ' ' || c == '\n') && prev != '\\') {
+      } else if(/*c == ' ' ||*/ c == '\n' && prev != '\\') {
         return false;
       } else if(c == 'n' && prev == '\\') {
         word += '\n';
@@ -633,10 +638,13 @@ export class Lexer {
         return true;
       } else if(prev == '\\') {
         word += prev;
+      } else if(slashes == 2 && ' \t'.indexOf(c) != -1) {
+        return true;
       } else if(slashes == 2 && 'gimsuy'.indexOf(c) != -1) {
         /*  word += c;
         prev = c;*/
       } else if(slashes == 2) {
+        if(/^[_0-9A-Za-z]/.test(c)) slashes = 1;
         return false;
       } else if(c == '\\') {
         prev = c;

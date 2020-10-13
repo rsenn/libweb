@@ -887,6 +887,10 @@ Util.defineGetterSetter = (obj, key, g, s, enumerable = false) =>
     set: s,
     enumerable
   });
+Util.defineGettersSetters = (obj, gettersSetters) => {
+  for(let name in gettersSetters) Util.defineGetterSetter(obj, name, gettersSetters[name], gettersSetters[name]);
+};
+
 Util.extendArray = function(arr = Array.prototype) {
   /*  Util.define(arr, 'tail', function() {
     return this[this.length - 1];
@@ -1217,15 +1221,16 @@ Util.find = function(arr, value, prop = 'id', acc = Util.array()) {
       return false;
     };
   } else pred = obj => obj[prop] == value;
+
+  if(!Util.isArray(arr) && typeof arr.entries == 'function') {
+    let entryPred = pred;
+    pred = ([key, value], arr) => entryPred(value, key, arr);
+    arr = arr.entries();
+  }
+  if(typeof arr.find == 'function') return arr.find(pred);
+
   for(let v of arr) {
-    //console.log("v: ", v, "k:", k);
-    /*if(Util.isArray(v)) {
-      for(let i = 0; i < v.length; i++)
-        if(pred(v[i]))
-          return v[i];
-    } else */ {
-      if(pred(v)) return v;
-    }
+    if(pred(v)) return v;
   }
   return null;
 };
@@ -2107,7 +2112,14 @@ Util.tryFunction = (fn, resolve = a => a, reject = () => null) => {
         return resolve(ret, ...args);
       };
 };
-Util.tryCatch = (fn, resolve = a => a, reject = () => null, ...args) => Util.tryFunction(fn, resolve, reject)(...args);
+Util.tryCatch = (fn, resolve = a => a, reject = () => null, ...args) => {
+  if(Util.isAsync(fn))
+    return fn(...args)
+      .then(resolve)
+      .catch(reject);
+
+  return Util.tryFunction(fn, resolve, reject)(...args);
+};
 Util.putError = err => {
   let s = Util.stack(err.stack);
 
@@ -2118,6 +2130,8 @@ Util.putError = err => {
 Util.putStack = (stack = new Error().stack) => {
   // (console.error || console.log)('STACK TRACE:', Util.className(stack), Util.className(stack[1]));
   stack = stack instanceof Util.stack ? stack : Util.stack(stack);
+  console.log('Util.putStack', Util.className(stack));
+
   (console.error || console.log)('STACK TRACE:\n' + stack.toString());
 };
 
@@ -3469,21 +3483,15 @@ Util.define(Util.stackFrame.prototype, {
         [0, 255, 255],
         [0, 255, 255]
       ];
-
-      const { functionName, methodName, fileName, lineNumber, columnNumber } = this;
-      let columns = [functionName || methodName, fileName, lineNumber, columnNumber];
-
-      columns = columns.map((f, i) => (f + '')[i >= 2 ? 'padStart' : 'padEnd'](columnWidths[i] || 0, ' '));
-      // columns = columns.map((fn, i) => c(fn, colors[i]));
-
-      // let [functionName, fileName, lineNumber, columnNumber] = columns;
-      if(stripUrl) fileName = fileName.replace(/.*:\/\/[^\/]*\//, '');
-      //console.log('stackFrame.toString', { color ,columnWidths, functionName, fileName, lineNumber, columnNumber});
+      let { functionName, methodName, fileName, lineNumber, columnNumber } = this;
+      if(stripUrl) fileName = fileName.replace(typeof stripUrl == 'string' ? stripUrl : /.*:\/\/[^\/]*\//, '');
       let colonList = [fileName, lineNumber, columnNumber]
         .map(p => ('' + p == 'undefined' ? undefined : p))
         .filter(p => p !== undefined && p != 'undefined' && ['number', 'string'].indexOf(typeof p) != -1)
         .join(':');
-      return `${functionName} ${colonList}` + c('', 0);
+      let columns = [functionName || methodName, colonList];
+      columns = columns.map((f, i) => (f + '')[i >= 2 ? 'padStart' : 'padEnd'](columnWidths[i] || 0, ' '));
+      return columns.join(' ') + c('', 0);
     },
     getLocation() {
       return new Util.location(this);
@@ -3563,8 +3571,7 @@ Util.stack = function Stack(stack, offset) {
   //console.debug('stack:', typeof stack, stack);
 
   if(typeof stack == 'string') {
-    stack = stack.split(/\n/g).slice(1);
-    //console.log('Util.stack (2)', [...stack] /*.toString(true)*/);
+    stack = stack.trim().split(/\n/g);
     const re = new RegExp('.* at ([^ ][^ ]*) \\(([^)]*)\\)');
     stack = stack.map(frame =>
       typeof frame == 'string'
@@ -3582,7 +3589,10 @@ Util.stack = function Stack(stack, offset) {
         .reverse()
         .map(n => (!isNaN(+n) ? +n : n))
     ]);
-    stack = stack.map(([func, file]) => [func, file.length >= 3 ? file : ['', '', ...file]]);
+    stack = stack.map(([func, file]) => [
+      func,
+      file.length >= 3 ? file : file.length >= 2 ? ['', ...file] : ['', '', ...file]
+    ]);
     stack = stack.map(([func, [columnNumber, lineNumber, ...file]]) => ({
       functionName: func.replace(/Function\.Util/, 'Util'),
       methodName: func.replace(/.*\./, ''),
@@ -3590,6 +3600,7 @@ Util.stack = function Stack(stack, offset) {
       lineNumber,
       columnNumber
     }));
+    //    console.log('Util.stack (2)', Util.toString(stack[0]  ));
 
     stack = stack.map(({ methodName, functionName: func, fileName: file, columnNumber: column, lineNumber: line }) => ({
       functionName: func,
@@ -3619,9 +3630,11 @@ Util.stack.prototype = Object.assign(Util.stack.prototype, Util.getMethods(new A
 Object.defineProperty(Util.stack, Symbol.species, { get: () => Util.stack });
 
 Util.stack.prototype = Object.assign(Util.stack.prototype, {
-  toString(color = false) {
+  toString(opts = {}) {
+    const { colors = false, stripUrl } = opts;
     const { columnWidths } = this;
-    let a = [...this].map(frame => Util.stackFrame.prototype.toString.call(frame, color, { columnWidths }));
+    // console.log('Stack.toString', columnWidths);
+    let a = [...this].map(frame => Util.stackFrame.prototype.toString.call(frame, colors, { columnWidths, stripUrl }));
     let s = a.join('\n');
     return s + '\n';
   }, [Symbol.toStringTag]() {
@@ -4219,6 +4232,34 @@ Util.colorText = (...args) => {
   if(!color) color = Util.coloring();
   return color.text(...args);
 };
+Util.decodeAnsi = (str, index) => {
+  let ret = [];
+  const len = str.length;
+  if(index === undefined) index = str.lastIndexOf('\x1b');
+  const isDigit = c => '0123456789'.indexOf(c) != -1;
+  const notDigit = c => !isDigit(c);
+  const findIndex = (pred, start) => {
+    let i;
+    for(i = start; i < len; i++) if(pred(str[i])) break;
+    return i;
+  };
+  if(str[++index] == '[') {
+    let newIndex;
+    for(++index; index < len; index = newIndex) {
+      let isNum = isDigit(str[index]);
+      newIndex = isNum ? findIndex(notDigit, index) : index + 1;
+      if(isNum) {
+        let num = parseInt(str.substring(index, newIndex));
+        ret.push(num);
+      } else {
+        ret.push(str[index]);
+        break;
+      }
+      if(str[newIndex] == ';') newIndex++;
+    }
+  }
+  return ret;
+};
 Util.stripAnsi = str => {
   let o = '';
   for(let i = 0; i < str.length; i++) {
@@ -4746,23 +4787,42 @@ Util.safeFunction = (fn, trapExceptions, thisObj) => {
         return fn.call(this || thisObj, ...args);
       };
   if(trapExceptions) {
+    const handleException = typeof trapExceptions == 'function' ? trapExceptions : Util.putError;
     Error.stackTraceLimit = Infinity;
     exec = Util.tryFunction(exec, //async (...args) => { Error.stackTraceLimit=Infinity;  return await exec(...args); },
       a => a,
-      err => {
-        let { message, stack } = err;
-        //console.debug('main stack:', [...err.stack].map((f) => f + ''));
-        console.log('main stack:', err.stack);
-        stack = Util.stack(err.stack);
-        // console.log("main Stack:", Util.className(stack), stack.toString+'', Util.className(stack[0]), stack[0].toString)
-        console.log('main Exception:', message, '\n' + stack.toString(true) + '');
+      error => {
+        if(error.stack !== undefined) error.stack = new Util.stack(error.stack);
+        handleException(error);
       }
     );
   }
   return exec;
 };
-Util.safeCall = async (fn, args = []) => await Util.safeFunction(fn, true)(...args);
-Util.callMain = async (fn, trapExceptions) => await Util.safeFunction(fn, trapExceptions)(...Util.getArgs());
+Util.safeCall = (fn, ...args) => Util.safeApply(fn, args);
+Util.safeApply = (fn, args = []) => Util.safeFunction(fn, true)(...args);
+Util.callMain = async (fn, trapExceptions) =>
+  await Util.safeFunction(fn,
+    trapExceptions && typeof trapExceptions == 'function'
+      ? trapExceptions
+      : err => {
+          let { message, stack } = err;
+          //console.debug('main stack:', [...err.stack].map((f) => f + ''));
+          // console.log('main stack:', err.stack);
+          stack = new Util.stack(err.stack);
+          // console.log("main Stack:", Util.className(stack), stack.toString+'', Util.className(stack[0]), stack[0].toString)
+          const scriptDir = Util.tryCatch(() => process.argv[1],
+            argv1 => argv1.replace(/\/[^\/]*$/g, '')
+          );
+
+          console.log('scriptDir', scriptDir);
+          console.log('main Exception:',
+            message,
+            '\nSTACK:' +
+              (stack.toString({ colors: true, stripUrl: `file://${scriptDir}/` }) + '').replace(/(^|\n)/g, '\n  ')
+          );
+        }
+  )(...Util.getArgs());
 
 Util.printReturnValue = (fn, opts = {}) => {
   const {
@@ -4970,4 +5030,16 @@ Util.extendFunction = (handler = () => {}) =>
       return handler(...args);
     }
   };
+Util.isatty = async fd => {
+  let ret;
+  for(let module of ['os', 'tty']) {
+    try {
+      ret = await import(module).then(mod => mod.isatty(fd));
+    } catch(err) {
+      ret = undefined;
+    }
+    if(ret !== undefined) break;
+  }
+  return ret;
+};
 export default Util;

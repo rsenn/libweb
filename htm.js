@@ -1,16 +1,5 @@
 import { Component, createContext, h, render } from './preact.js';
-import {
-  useCallback,
-  useContext,
-  useDebugValue,
-  useEffect,
-  useImperativeHandle,
-  useLayoutEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState
-} from './hooks.js';
+import { useCallback, useContext, useDebugValue, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useReducer, useRef, useState } from './hooks.js';
 
 const MINI = false;
 

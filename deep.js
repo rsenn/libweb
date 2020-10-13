@@ -102,11 +102,11 @@ export const iterate = function* (...args) {
   if(r !== -1) if (Util.isObject(value)) for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
 };
 
-export const flatten = function(iter,
+export const flatten = (iter,
   dst = {},
   filter = (v, p) => typeof v != 'object' && v !== null,
   map = (p, v) => [p.join('.'), v]
-) {
+) => {
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 

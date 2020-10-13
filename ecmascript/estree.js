@@ -104,10 +104,13 @@ export class Literal extends Expression {
   static string(node) {
     return node.value.replace(/^['"`](.*)['"`]$/, '$1').replace(/\\n/g, '\n');
   }
+
   [inspectSymbol](n, opts = {}) {
     const { colors } = opts;
+    const { value } = this;
     let c = Util.coloring(colors);
-    return c.text(`Literal `, 1, 31) + c.text(this.value, 1, 36);
+    //console.log("Literal.inspect", this.value);
+    return c.text(`Literal `, 1, 31) + c.text(value, 1, value.startsWith('/') ? 35 : 36);
   }
 }
 
@@ -198,8 +201,8 @@ export class ConditionalExpression extends Expression {
 export class CallExpression extends Expression {
   constructor(callee, args) {
     super('CallExpression');
-    this.arguments = args;
     this.callee = callee;
+    this.arguments = args;
   }
 }
 

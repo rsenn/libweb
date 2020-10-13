@@ -161,11 +161,14 @@ export function QuickJSFileSystem(std, os) {
     },
     unlink(path) {
       return os.remove(path);
+    },
+    isatty(fd) {
+      return os.isatty(fd);
     }
   };
 }
 
-export function NodeJSFileSystem(fs) {
+export function NodeJSFileSystem(fs, tty) {
   function BufferAlloc(bytes = 1) {
     return Buffer.alloc(bytes);
   }
@@ -311,6 +314,9 @@ export function NodeJSFileSystem(fs) {
         fs.unlinkSync(filename);
       } catch(err) {}
       return this.exists(filename) ? -1 : 0;
+    },
+    isatty(fd) {
+      return tty.isatty(fd);
     }
   };
 }
@@ -449,14 +455,14 @@ export async function CreatePortableFileSystem(ctor, ...args) {
 export async function GetPortableFileSystem() {
   let fs, err;
   try {
-    fs = await CreatePortableFileSystem(QuickJSFileSystem, import('std'), import('os'));
+    fs = await CreatePortableFileSystem(QuickJSFileSystem, await import('std'), await import('os'));
   } catch(error) {
     err = error;
   }
   if(fs && !err) return fs;
   err = null;
   try {
-    fs = await CreatePortableFileSystem(NodeJSFileSystem, import('fs'));
+    fs = await CreatePortableFileSystem(NodeJSFileSystem, await import('fs'), await import('tty'));
   } catch(error) {
     err = error;
   }
