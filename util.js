@@ -339,7 +339,9 @@ Util.debounce = (f, t, thisObj) => {
     lastCall = Date.now();
     if(previousCall && lastCall - previousCall <= t) clearTimeout(lastCallTimer);
 
-    lastCallTimer = setTimeout(() => f.call(...args, thisObj), t);
+    return new Promise((resolve, reject) => {
+      lastCallTimer = setTimeout(() => resolve(f.call(...args, thisObj)), t);
+    });
   };
 };
 Util.getGlobalObject = Util.memoize(arg => {
