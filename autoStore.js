@@ -11,20 +11,20 @@ LocalStore.prototype.entries = function* () {
 
 LocalStore.prototype.getSetFunction = function() {
   return Util.mapFunction(this);
-}
+};
 LocalStore.prototype.adapter = function() {
   return Util.mapAdapter(this.getSetFunction());
-}
+};
 
 LocalStore.prototype.toMap = function() {
   return new Map(this.entries());
-}
+};
 LocalStore.prototype.toObject = function() {
   return Object.fromEntries(this.entries());
-}
+};
 LocalStore.prototype.toJSON = function() {
   return JSON.stringify(this.toObject());
-}
+};
 
 export const makeLocalStorage = () => {
   let w = Util.tryCatch(() => window);

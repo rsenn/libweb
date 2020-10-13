@@ -321,6 +321,30 @@ Util.once = function(fn, thisArg = this) {
   };
 };
 
+Util.throttle = (f, t, thisObj) => {
+  let lastCall;
+  return function(...args) {
+    let previousCall = lastCall;
+    lastCall = Date.now();
+    if(previousCall === undefined || // function is being called for the first time
+      lastCall - previousCall > t
+    ) {
+      // throttle time has elapsed
+      f.call(thisObj, ...args);
+    }
+  };
+};
+
+Util.debounce = (f, t, thisObj) => {
+  let lastCall, lastCallTimer;
+  return function(...args) {
+    let previousCall = lastCall;
+    lastCall = Date.now();
+    if(previousCall && lastCall - previousCall <= t) clearTimeout(lastCallTimer);
+
+    lastCallTimer = setTimeout(() => f.call(...args, thisObj), t);
+  };
+};
 Util.getGlobalObject = Util.memoize(arg => {
   const retfn = typeof arg == 'function' ? arg : typeof arg == 'string' ? g => g[arg] : g => g;
 
@@ -2291,15 +2315,7 @@ Util.mergeLists = function(arr1, arr2, key = 'id') {
   }
   return ret;*/
 };
-Util.throttle = function(fn, wait) {
-  let time = Date.now();
-  return function() {
-    if(time + wait - Date.now() < 0) {
-      fn();
-      time = Date.now();
-    }
-  };
-};
+
 Util.foreach = function(o, fn) {
   for(let [k, v] of Util.entries(o)) {
     if(fn(v, k, o) === false) break;
