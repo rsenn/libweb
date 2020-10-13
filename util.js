@@ -307,7 +307,6 @@ Util.memoize = (fn, storage = new Map()) => {
   self.cache = storage;
   return Object.freeze(self);
 };
-
 Util.once = function(fn, thisArg = this) {
   let ran = false;
   let ret;
@@ -320,7 +319,6 @@ Util.once = function(fn, thisArg = this) {
     return ret;
   };
 };
-
 Util.throttle = (f, t, thisObj) => {
   let lastCall;
   return function(...args) {
@@ -334,7 +332,6 @@ Util.throttle = (f, t, thisObj) => {
     }
   };
 };
-
 Util.debounce = (f, t, thisObj) => {
   let lastCall, lastCallTimer;
   return function(...args) {
