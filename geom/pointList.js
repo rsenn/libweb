@@ -118,7 +118,7 @@ PointList.prototype.clone = function() {
   return new ctor(points);
 };
 PointList.prototype.toPolar = function(tfn) {
-  let ret = new PointList();
+  let ret = [];
   let t = typeof tfn == 'function' ? tfn : (x, y) => ({ x /*: (x * 180) / Math.PI*/, y });
   ret.splice.apply(ret, [
     0,

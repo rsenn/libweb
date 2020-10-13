@@ -8,6 +8,7 @@ import trkl from '../trkl.js';
 import { h, Component } from '../dom/preactComponent.js';
 import { ColorMap } from '../draw/colorMap.js';
 import { SVG } from './components/svg.js';
+const transformXPath = p => p.replace(/➟/g, 'children').replace(/ /g, '.').split(/\./g);
 
 export class EagleSVGRenderer {
   static rendererTypes = {};
@@ -37,11 +38,26 @@ export class EagleSVGRenderer {
     this.create = function(tag, attrs, children, parent, element) {
       let ret = factory(tag, attrs, children, parent, element);
       let path = attrs['data-path'];
-      if(path && !element) element = EagleElement.get(doc, path);
-
-      if(!element) element = EagleElement.currentElement;
-      if(!path && element) path = element.path;
-      if(path) insert(path, ret);
+      let pathStr = path;
+      //  let xpath;
+      if(typeof path == 'string') {
+        //         xpath =    new  ImmutablePath(transformXPath(path)) ;
+        path = new ImmutablePath(path);
+      }
+      if(path) {
+        let e = path.apply(doc, true);
+        let parent = e.parentNode;
+        console.log('PATHSTR: ',
+          pathStr,
+          `\nPATH: `,
+          e.xpath() + '',
+          `\nELEMENT:\n `,
+          e + '',
+          '\nRET:\n ',
+          ReactComponent.toObject(ret)
+        );
+        insert(path, ret);
+      }
       return ret;
     };
   }
@@ -189,7 +205,7 @@ export class EagleSVGRenderer {
     this.debug(`EagleSVGRenderer.renderItem`, item.xpath().toString());*/
 
     const svg = (elem, attr, parent) =>
-      this.create(elem, { className: item.tagName, 'data-path': item.path.toString(' '), ...attr }, parent);
+      this.create(elem, { className: item.tagName, /* 'data-path': item.path.toString(' '), */ ...attr }, parent);
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
     const { layer } = item;

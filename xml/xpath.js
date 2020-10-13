@@ -75,7 +75,7 @@ export class MutableXPath extends MutablePath {
         siblings = e.reduce((acc, sib, idx) => [...acc, [incr(counts, sib.tagName), sib.tagName]], []);
       } else if(Util.isObject(e) && e.tagName !== undefined) {
         const [number, tagName] = siblings[p] || [0, e.tagName];
-        let x = '';
+        console.log('MutableXPath.from', { e, tagName, number });
         if(tagName) x += tagName;
         if(Util.isObject(e.attributes) && e.attributes.name) {
           let name = e.attributes.name;

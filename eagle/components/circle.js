@@ -17,12 +17,12 @@ export const Circle = ({ data, opts = {}, ...props }) => {
   let circle =
     useValue(async function* () {
       for await (let change of data.repeater) {
-        //     console.log('change:', change);
+        console.log('Circle.change:', change);
         yield change;
       }
     }) || data;
 
-  //console.log('Circle.render ', { circle, opts });
+  console.log('Circle.render ', { circle, opts });
   let { transform = new TransformationList() } = opts;
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;

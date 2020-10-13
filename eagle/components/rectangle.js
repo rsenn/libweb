@@ -9,12 +9,12 @@ export const Rectangle = ({ data, opts = {}, ...props }) => {
   let rectangle =
     useValue(async function* () {
       for await (let change of data.repeater) {
-        //     console.log('change:', change);
+        console.log('Rectangle.change:', change);
         yield change;
       }
     }) || data;
 
-  //console.log('Rectangle.render ', { rectangle, opts });
+  console.log('Rectangle.render ', { rectangle, opts });
   let { transform = new TransformationList() } = opts;
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;

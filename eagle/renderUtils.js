@@ -16,6 +16,7 @@ export const HORIZONTAL = 2;
 export const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
 
 export const EscapeClassName = name =>
+  name ||
   encodeURIComponent(name)
     .replace(/_/g, '%5f')
     .replace(/%([0-9A-Fa-f]{2})/g, '_0x$1_');
@@ -136,12 +137,20 @@ export const InvertY = item => {
   return item;
 };
 
-export const PolarToCartesian = (cx, cy, radius, angle) => {
+export const PolarToCartesian = ([radius, angle], origin = { x: 0, y: 0 }) => {
   let a = (angle - 90) * DEG2RAD;
   return {
-    x: cx + radius * Math.cos(a),
-    y: cy + radius * Math.sin(a)
+    x: origin.x + radius * Math.cos(a),
+    y: origin.y + radius * Math.sin(a)
   };
+};
+export const CartesianToPolar = ({ x, y }, origin = { x: 0, y: 0 }) => {
+  x -= origin.x;
+  y -= origin.y;
+
+  let r = Math.sqrt(x * x + y * y);
+  let phi = Math.atan2(y, x);
+  return [r, phi];
 };
 
 export const Arc = (x, y, radius, startAngle, endAngle) => {
@@ -208,7 +217,7 @@ export const Arc = (x, y, radius, startAngle, endAngle) => {
  *   ⌀
  */
 
-const CalculateArc = (p1, p2, theta) => {
+/*const CalculateArc = (p1, p2, theta) => {
   const M_2_PI = PI * 2;
   const chordLen = Point.distance(p1, p2);
   let radius = chordLen / (2 * Math.sin(theta / 2));
@@ -234,7 +243,7 @@ const CalculateArc = (p1, p2, theta) => {
   console.debug(`CalculateArc`, arc);
   return arc;
 };
-
+*/
 /**
  * Render Arc to specific end point
  *

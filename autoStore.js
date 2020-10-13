@@ -1,10 +1,36 @@
 import Util from './util.js';
 
+function LocalStore(obj) {
+  Object.assign(this, obj);
+  return this;
+}
+
+LocalStore.prototype.entries = function* () {
+  for(let key of this.keys()) yield [key, this.get(key)];
+};
+
+LocalStore.prototype.getSetFunction = function() {
+  return Util.mapFunction(this);
+}
+LocalStore.prototype.adapter = function() {
+  return Util.mapAdapter(this.getSetFunction());
+}
+
+LocalStore.prototype.toMap = function() {
+  return new Map(this.entries());
+}
+LocalStore.prototype.toObject = function() {
+  return Object.fromEntries(this.entries());
+}
+LocalStore.prototype.toJSON = function() {
+  return JSON.stringify(this.toObject());
+}
+
 export const makeLocalStorage = () => {
   let w = Util.tryCatch(() => window);
 
   if(w && w.localStorage)
-    return {
+    return new LocalStore({
       get: name => JSON.parse(w.localStorage.getItem(name)),
       set: (name, data) => w.localStorage.setItem(name, JSON.stringify(data)),
       remove: name => w.localStorage.removeItem(name),
@@ -15,13 +41,13 @@ export const makeLocalStorage = () => {
         while((key = localStorage.key(i++))) r.push(key);
         return r;
       }
-    };
-  return {
+    });
+  return new LocalStore({
     get: name => ({}),
     set: (name, data) => undefined,
     remove: name => undefined,
     keys: () => []
-  };
+  });
 };
 
 export const logStoreAdapter = store => ({

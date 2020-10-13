@@ -397,17 +397,18 @@ export class EagleElement extends EagleNode {
         push(this);
         await stop;
       });
-      this.r.next().then(({ value, done }) =>
-          (value.pushEvent = function(...args) {
-            const [e, k] = args;
-            const v = e[k];
+      this.r.next().then(({ value, done }) => {
+        value.push = pushFn;
+        value.pushEvent = function(...args) {
+          const [e = this, k] = args;
+          const v = e[k];
 
-            //console.log(`pushEvent`, ...args);
-            //console.log(`pushEvent`, {e,k,v});
-            if(this.tagName == 'layer') this.elements.forEach(elem => elem.pushEvent(...args));
-            pushFn(this);
-          })
-      );
+          console.log(`pushEvent`, e);
+          //console.log(`pushEvent`, {e,k,v});
+          if(this.tagName == 'layer') this.elements.forEach(elem => elem.pushEvent(...args));
+          pushFn(this);
+        };
+      });
     }
 
     return this.r;

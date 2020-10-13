@@ -5,12 +5,13 @@ import { useValue } from '../../repeater/react-hooks.js';
 import { useTrkl } from '../renderUtils.js';
 
 export const Wire = ({ data, opts = {}, ...props }) => {
-  //console.info('Wire.render ', { data, opts });
+  console.info('Wire.render ', { data, opts });
 
   let wire =
     useValue(async function* () {
+      console.log('data.repeater:', data.repeater);
       for await (let change of data.repeater) {
-        //     console.log('change:', change);
+        console.log('change:', change);
         yield change;
       }
     }) || data;

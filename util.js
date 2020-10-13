@@ -216,6 +216,9 @@ Util.hasFn = target =>
 Util.adder = target => {
   let self;
 
+  if(target instanceof Set) return arg => target.add(arg);
+  if(target instanceof Array) return arg => (target.push(arg), target);
+
   self = function(obj, arg = 1) {
     if(!target) if (obj) target = obj;
 
@@ -277,7 +280,11 @@ Util.getOrCreate = (target, create = () => ({}), set) => {
       ? get.call(target, key)
       : ((value = create(key, target)), set.call(target, key, value), value));
 };
-
+Util.accumulate = (entries, dest = new Map()) => {
+  let get = Util.getOrCreate(dest, () => []);
+  for(let [key, value] of entries) Util.adder(get(key))(value);
+  return dest;
+};
 Util.memoize = (fn, storage = new Map()) => {
   let self;
   const getter =

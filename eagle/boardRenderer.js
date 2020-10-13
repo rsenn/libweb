@@ -290,16 +290,27 @@ export class BoardRenderer extends EagleSVGRenderer {
       }
     }
     if(children.length > 0) {
+      const className = ElementToClass(signal);
+      const id = `signal-${EscapeClassName(signal.name)}${
+        typeof options.layer == 'string' && options.layer != '' ? '-' + options.layer.toLowerCase() : ''
+      }`;
       let props = {
-        id: `signal-${EscapeClassName(signal.name)}${
-          typeof options.layer == 'string' ? '-' + options.layer.toLowerCase() : ''
-        }`,
-        class: ElementToClass(signal),
+        //id: ,
+        class: className,
         'data-path': signal.path.toString(' ')
       };
-
-      if(children.length > 1 && !(typeof options.layer == 'string')) {
-        let signalGroup = this.create('g', props, parent);
+      console.log('class:',
+        className,
+        'children.length:',
+        children.length,
+        ' options.layer:',
+        options.layer,
+        'cond:',
+        children.length > 1 && !(typeof options.layer == 'string')
+      );
+      if(children.length > 1 && options.layer != '') {
+        delete options.layer;
+        let signalGroup = this.create('g', { id, ...props }, parent);
         return this.renderCollection(children, signalGroup, options);
       }
 
