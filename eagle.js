@@ -2,7 +2,7 @@ export { EagleSVGRenderer, SchematicRenderer, BoardRenderer, LibraryRenderer } f
 
 export { EagleNodeList } from './eagle/nodeList.js';
 export {
-  Rotation,
+  MakeRotation,
   VERTICAL,
   HORIZONTAL,
   HORIZONTAL_VERTICAL,

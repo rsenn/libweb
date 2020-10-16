@@ -2,7 +2,7 @@ import Util from '../util.js';
 import { Point, Line } from '../geom.js';
 import { TransformationList } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
-import { Cross, Arc, Origin } from './components.js';
+import { Cross, Arc, Origin, WirePath } from './components.js';
 import { RGBA } from '../color.js';
 import { Palette } from './common.js';
 import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, MakeRotation } from './renderUtils.js';
@@ -11,7 +11,7 @@ import { Repeater } from '../repeater/repeater.js';
 import { useTrkl, ElementToClass, EscapeClassName, UnescapeClassName } from './renderUtils.js';
 import { h, Component, Fragment, useEffect } from '../dom/preactComponent.js';
 
-const WirePath = ({ className, path, cmds, color, width, layer, ...props }) => {
+const WirePath = ({ className, path, cmds, separator = '\n', color, width, layer, ...props }) => {
   let visible = 'yes' == useTrkl(layer.handlers.visible);
   console.debug('Lines visible:', visible);
 
@@ -29,7 +29,7 @@ const WirePath = ({ className, path, cmds, color, width, layer, ...props }) => {
   return h(Util.isArray(path) ? 'g' : 'path',
     {
       className,
-      ...(Util.isArray(path) ? {} : { d: Util.isArray(cmds) ? '\n' + cmds.join('\n') + '\n' : cmds }),
+      ...(Util.isArray(path) ? {} : { d: Util.isArray(cmds) ? (separator + cmds.join(separator) + separator) : cmds }),
       ...attrs,
       ...props
     },
@@ -226,18 +226,18 @@ export class BoardRenderer extends EagleSVGRenderer {
 
       const color = layer.color;
       //this.debug('color:', color, layer.color);
-      if(false) {
-        let paths = lines.connected().map(ll => ll.toPath());
-        let path = paths.length > 1 ? paths : paths[0];
+      if(true) {
+         let cmds =         LinesToPath(lines).flat();
 
-        console.log('path:', path);
 
-        this.create(WirePath, { class: classNames(addClass, ElementToClass(wires[0], layer.name)), path, color, width, layer, ...addProps },
+        console.log('cmds:', cmds);
+
+        this.create(WirePath, { class: classNames(addClass, ElementToClass(wires[0], layer.name)), cmds, color, width, layer, ...addProps },
           parent
         );
       } else {
         window.lines = lines.slice();
-   // lines.ordered();
+        // lines.ordered();
         LinesToPath(lines).map(cmds =>
           this.create(WirePath, {
               class: classNames(addClass, ElementToClass(wires[0], layer.name)),
@@ -281,7 +281,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     );
     this.renderCollection(element.package.children, g, {
       name,
-      value ,
+      value,
       transformation: rotation.slice()
     });
     this.create(Origin, { x, y, color: '#f0f', element, layer: this.layers['tOrigins'] }, g);

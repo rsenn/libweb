@@ -15,6 +15,7 @@ import { Pad } from './components/pad.js';
 import { Polygon } from './components/polygon.js';
 import { Origin } from './components/origin.js';
 import { Element } from './components/element.js';
+import { WirePath } from './components/wirePath.js';
 
 export const PrimitiveComponents = {
   Wire,

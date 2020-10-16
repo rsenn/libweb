@@ -108,7 +108,7 @@ export class LineList extends Array {
       ret.push(line);
     }
     if(list.length) {
-      throw new Error("list not empty)");
+      throw new Error('list not empty)');
     }
     return ret;
   }

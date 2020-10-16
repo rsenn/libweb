@@ -68,7 +68,7 @@ export const MakeRotation = (rot, f = 1) => {
     angle = 0;
   } else {
     mirror = /M/.test(rot) ? 1 : 0;
-    angle = +(rot  && rot + '' || '').replace(/M?R/, '') || 0;
+    angle = +((rot && rot + '') || '').replace(/M?R/, '') || 0;
   }
   let transformations = new TransformationList([], '', '');
   if(angle !== 0) transformations.rotate(angle);

@@ -379,11 +379,9 @@ Line.prototype.map = function(fn) {
 };
 Line.prototype.swap = function(fn) {
   let line = new Line(this.b, this.a);
-  if(this.curve !== undefined)
-    line.curve = -this.curve;
-  if(this.width !== undefined)
-    line.width = this.width;
-return line;
+  if(this.curve !== undefined) line.curve = -this.curve;
+  if(this.width !== undefined) line.width = this.width;
+  return line;
 };
 Line.prototype.toPoints = function(ctor = Array.of) {
   const { x1, y1, x2, y2 } = this;

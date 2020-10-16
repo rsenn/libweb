@@ -9,31 +9,29 @@ export const Text = ({ x, y, text, color, alignment, rot, transformation, visibl
   transform.translate(x, y);
   let rotation = MakeRotation(rot);
 
-
- 
   transform = transform.concat(transformation
-     // .slice(1)
+      // .slice(1)
       .filter(t => ['translate'].indexOf(t.type) == -1)
       .invert()
   );
-  
+
   let matrix = transformation.toMatrix();
-  let {rotate } = matrix.decompose();
-  console.log(`rotate ${text}`, rotate*180 / Math.PI);
+  let { rotate } = matrix.decompose();
+  console.log(`rotate ${text}`, (rotate * 180) / Math.PI);
 
   let alignmentTransform;
- let angle = Util.mod(Math.round(rotate*180/Math.PI), 360);
-  alignmentTransform=new Rotation(angle);
-    console.log(`alignmentTransform ${text}`, alignmentTransform);
- alignment = Alignment(alignment);
-   console.log(`alignment ${text}`, AlignmentAttrs(alignment));
-alignment =  alignment.transform(alignmentTransform);
-   console.log(`alignment.transform ${text}`, AlignmentAttrs(alignment));
+  let angle = Util.mod(Math.round((rotate * 180) / Math.PI), 360);
+  alignmentTransform = new Rotation(angle);
+  console.log(`alignmentTransform ${text}`, alignmentTransform);
+  alignment = Alignment(alignment);
+  console.log(`alignment ${text}`, AlignmentAttrs(alignment));
+  alignment = alignment.transform(alignmentTransform);
+  console.log(`alignment.transform ${text}`, AlignmentAttrs(alignment));
 
-   transform =  transform.concat(alignmentTransform);
+  transform = transform.concat(alignmentTransform);
 
-   console.log(`transform ${text}`, transform);
-   console.log(`transform ${text}`, transform+'');
+  console.log(`transform ${text}`, transform);
+  console.log(`transform ${text}`, transform + '');
 
   return h(Fragment, {}, [
     h('text', {
@@ -50,4 +48,3 @@ alignment =  alignment.transform(alignmentTransform);
     )
   ]);
 };
-
