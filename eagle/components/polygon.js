@@ -25,11 +25,12 @@ export const Polygon = ({ data, opts = {}, ...props }) => {
   const color = polygon.getColor();
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
 
+  const colorProps =
+    ['Top', 'Bottom'].indexOf(layer.name) != -1 ? { stroke: color, fill: 'none' } : { stroke: 'none', fill: color };
   return h('polygon', {
     points,
     class: ElementToClass(polygon),
-    //stroke: color,
-    fill: color,
+    ...colorProps,
 
     'stroke-width': width * 0.8,
     ...(layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {}),

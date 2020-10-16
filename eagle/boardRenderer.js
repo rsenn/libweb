@@ -5,12 +5,42 @@ import { EagleElement } from './element.js';
 import { Cross, Arc, Origin } from './components.js';
 import { RGBA } from '../color.js';
 import { Palette } from './common.js';
-import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, Rotation } from './renderUtils.js';
+import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, MakeRotation } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { Repeater } from '../repeater/repeater.js';
 import { useTrkl, ElementToClass, EscapeClassName, UnescapeClassName } from './renderUtils.js';
-
 import { h, Component, Fragment, useEffect } from '../dom/preactComponent.js';
+
+const WirePath = ({ className, path, cmds, color, width, layer, ...props }) => {
+  let visible = 'yes' == useTrkl(layer.handlers.visible);
+  console.debug('Lines visible:', visible);
+
+  let attrs = {
+    stroke: color + '',
+    'stroke-width': +(width == 0 ? 0.1 : width * 0.8).toFixed(3),
+    'data-layer': `${layer.number} ${layer.name}`,
+    fill: 'none',
+    style: visible ? undefined : { display: 'none' }
+  };
+
+  console.debug('path:', path);
+  console.debug('cmds:', cmds);
+
+  return h(Util.isArray(path) ? 'g' : 'path',
+    {
+      className,
+      ...(Util.isArray(path) ? {} : { d: Util.isArray(cmds) ? '\n' + cmds.join('\n') + '\n' : cmds }),
+      ...attrs,
+      ...props
+    },
+    Util.isArray(path)
+      ? path.map(cmd => {
+          console.debug('cmd:', cmd);
+          return h('path', { d: cmd.flat().join(' ') });
+        })
+      : []
+  );
+};
 
 export class BoardRenderer extends EagleSVGRenderer {
   static palette = Palette.board((r, g, b) => new RGBA(r, g, b));
@@ -99,6 +129,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
         this.debug('name:', name);
         if(name) {
+          let t = RotateTransformation(opts.rot, -1);
           svg('tspan', {
               children: name,
               ...EagleSVGRenderer.alignmentAttrs('center', HORIZONTAL)
@@ -117,7 +148,8 @@ export class BoardRenderer extends EagleSVGRenderer {
                 'font-size': 0.6,
                 'font-style': 'bold',
                 // 'font-family': 'Fixed Medium',
-                transform: `${transform} ${RotateTransformation(opts.rot, -1)} scale(1,-1)`
+                transformation: transform.concat([t]),
+                transform: `${transform} ${t} scale(1,-1)`
               },
               parent
             )
@@ -135,12 +167,10 @@ export class BoardRenderer extends EagleSVGRenderer {
 
   renderCollection(coll, parent, opts = {}) {
     const { predicate = i => true, transform, pos, rot, name, layer, props = {} } = opts;
-    this.debug(`BoardRenderer.renderCollection`, { name, transform, pos, rot, layer });
-
+    //  this.debug(`BoardRenderer.renderCollection`, { name, transform, pos, rot, layer },coll);
+    this.debug(`BoardRenderer.renderCollection`, coll);
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
-
     let { class: addClass, ...addProps } = props;
-
     let wireMap = new Map(),
       other = [],
       layers = {},
@@ -149,9 +179,6 @@ export class BoardRenderer extends EagleSVGRenderer {
     const { tPlace } = this.layers;
 
     for(let item of coll) {
-      /*   if( layer !== undefined && (item.layer && item.layer.name) == layer)
-        continue;
-*/
       if(item.tagName === 'wire') {
         const layerId = item.attributes.layer || tPlace.number;
 
@@ -177,12 +204,14 @@ export class BoardRenderer extends EagleSVGRenderer {
       let classList = (parent && parent.classList) || [];
       if([...classList].indexOf('plain') != -1) continue;
 
-      const lines = wires.map(wire => {
-        let line = new Line(coordFn(wire)).round(0.0127, 6);
-        line.element = wire;
-        if(wire.curve !== undefined) line.curve = wire.curve;
-        return line;
-      });
+      let lines = new LineList(wires.map(wire => {
+          let line = new Line(coordFn(wire)).round(0.0127, 6);
+          line.element = wire;
+          if(wire.curve !== undefined) line.curve = wire.curve;
+          line.width = wire.width;
+          return line;
+        })
+      );
 
       this.debug('Lines:', name, [...lines]);
 
@@ -197,43 +226,31 @@ export class BoardRenderer extends EagleSVGRenderer {
 
       const color = layer.color;
       //this.debug('color:', color, layer.color);
+      if(false) {
+        let paths = lines.connected().map(ll => ll.toPath());
+        let path = paths.length > 1 ? paths : paths[0];
 
-      const WirePath = ({ className, path, cmds, color, width, layer, ...props }) => {
-        let visible = 'yes' == useTrkl(layer.handlers.visible);
-        this.debug('Lines visible:', visible);
+        console.log('path:', path);
 
-        let attrs = {
-          stroke: color + '',
-          'stroke-width': +(width == 0 ? 0.1 : width * 0.8).toFixed(3),
-          'data-layer': `${layer.number} ${layer.name}`,
-          fill: 'none',
-          style: visible ? undefined : { display: 'none' }
-        };
-
-        this.debug('path:', path);
-        this.debug('cmds:', cmds);
-
-        return h(Util.isArray(path) ? 'g' : 'path',
-          {
-            className,
-            ...(Util.isArray(path) ? {} : { d: Util.isArray(cmds) ? '\n' + cmds.join('\n') + '\n' : cmds }),
-            ...attrs,
-            ...props
-          },
-          Util.isArray(path)
-            ? path.map(cmd => {
-                console.debug('cmd:', cmd);
-                return h('path', { d: cmd.flat().join(' ') });
-              })
-            : []
-        );
-      };
-
-      LinesToPath(lines).map(cmds =>
-        this.create(WirePath, { class: classNames(addClass, ElementToClass(wires[0], layer.name)), cmds, color, width, layer, ...addProps },
+        this.create(WirePath, { class: classNames(addClass, ElementToClass(wires[0], layer.name)), path, color, width, layer, ...addProps },
           parent
-        )
-      );
+        );
+      } else {
+        window.lines = lines.slice();
+   // lines.ordered();
+        LinesToPath(lines).map(cmds =>
+          this.create(WirePath, {
+              class: classNames(addClass, ElementToClass(wires[0], layer.name)),
+              cmds,
+              color,
+              width,
+              layer,
+              ...addProps
+            },
+            parent
+          )
+        );
+      }
     }
   }
 
@@ -243,7 +260,7 @@ export class BoardRenderer extends EagleSVGRenderer {
     this.debug(`BoardRenderer.renderElement`, { name, library, value, x, y, rot });
 
     let transform = new TransformationList();
-    let rotation = Rotation(rot);
+    let rotation = MakeRotation(rot);
 
     transform.translate(x, y);
     let elementName = EscapeClassName(name);
@@ -264,9 +281,8 @@ export class BoardRenderer extends EagleSVGRenderer {
     );
     this.renderCollection(element.package.children, g, {
       name,
-      value /*,
-      rot,
-      transform: rotation.slice()*/
+      value ,
+      transformation: rotation.slice()
     });
     this.create(Origin, { x, y, color: '#f0f', element, layer: this.layers['tOrigins'] }, g);
 

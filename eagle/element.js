@@ -5,7 +5,7 @@ import { EagleNodeList } from './nodeList.js';
 import { EagleReference } from './ref.js';
 import { ImmutableXPath } from '../xml.js';
 import { ImmutablePath } from '../json.js';
-import { Rotation, Alignment } from './renderUtils.js';
+import { MakeRotation, Alignment } from './renderUtils.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList, Translation } from '../geom.js';
 import { Repeater } from '../repeater/repeater.js';
@@ -104,6 +104,7 @@ export class EagleElement extends EagleNode {
     }
     if(raw === null || typeof raw != 'object')
       throw new Error('ref: ' + this.ref.inspect() + ' entity: ' + EagleNode.prototype.inspect.call(this));
+
     let { tagName, attributes, children = [] } = raw;
     this.tagName = tagName;
 
@@ -523,7 +524,7 @@ export class EagleElement extends EagleNode {
       //console.log('instance', { gate, symbol });
       let t = new TransformationList();
       t.translate(+this.x, +this.y);
-      t = t.concat(Rotation(rot));
+      t = t.concat(MakeRotation(rot));
 
       const name = part.name;
       const value = part.value || part.deviceset.name;
@@ -598,12 +599,36 @@ export class EagleElement extends EagleNode {
     if(['x', 'y', 'radius'].every(prop => keys.includes(prop))) {
       return Circle.bind(this, null, makeGetterSetter);
     } else if(['x1', 'y1', 'x2', 'y2'].every(prop => keys.includes(prop))) {
-      return Line.bind(this, null, makeGetterSetter);
+      let line = Line.bind(this, null, makeGetterSetter);
+      trkl.bind(line, 'curve', this.handlers['curve']);
+      trkl.bind(line, 'width', this.handlers['width']);
+      return line;
     } else if(['x', 'y'].every(prop => keys.includes(prop))) {
       const { x, y } = Point(this);
       if(keys.includes('radius')) return Circle.bind(this, null, makeGetterSetter);
       if(['width', 'height'].every(prop => keys.includes(prop))) return Rect.bind(this, null, makeGetterSetter);
       return Point.bind(this, ['x', 'y'], makeGetterSetter);
+    }
+
+    if(['package', 'symbol'].indexOf(this.tagName) == -1) return;
+
+    console.log('get geometry', this, this.children);
+
+    if(this.raw.children && this.raw.children.length) {
+      let ret = new Map();
+      let entry = Util.getOrCreate(ret, () => []);
+
+      for(let child of this.children) {
+        let geometry = child.geometry;
+        if(geometry && child.layer) {
+          entry(child.layer.name).push(geometry);
+        }
+      }
+
+      for(let [layer, geometry] of ret) {
+        if(geometry.every(g => isLine(g))) ret.set(layer, new LineList(geometry));
+      }
+      if(ret.size) return ret;
     }
   }
 

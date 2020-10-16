@@ -10,7 +10,6 @@ export class LineList extends Array {
     if(Util.isArray(lines) || Util.isGenerator(lines)) {
       for(let line of lines) {
         if(!(line instanceof Line)) line = Util.isArray(line) ? new Line(...line) : new Line(line);
-
         this.push(line);
       }
     }
@@ -32,7 +31,6 @@ export class LineList extends Array {
       let parentElem = makeGroup;
       makeGroup = () => parentElem;
     }
-
     makeGroup = makeGroup || (() => factory('g', { stroke: 'black', fill: 'none', 'stroke-width': 0.1 }));
     let group = makeGroup(),
       lines = this;
@@ -43,6 +41,127 @@ export class LineList extends Array {
       group = ['g', {}, lines];
     }
     return group || lines;
+  }
+
+  orderedPoints() {
+    let list = this.slice();
+    let ret = [];
+    while(list.length > 0) {
+      let pts = new PointList();
+      let line = list.pop();
+      let link = line[1];
+      pts.push(line[0]);
+      for(let ct = list.length; ct--; ) {
+        for(let i = list.length; i--; ) {
+          if(Point.equals(list[i].a, link)) {
+            line = list.splice(i, 1)[0];
+            pts.push(line.a);
+            link = line.b;
+            break;
+          } else if(Point.equals(list[i].b, link)) {
+            line = list.splice(i, 1)[0];
+            pts.push(line.b);
+            link = line.a;
+            break;
+          }
+        }
+      }
+      pts.push(link);
+      ret.push(pts);
+    }
+    return ret;
+  }
+
+  ordered() {
+    let list = this.slice();
+    let ret = list.splice(0, 1);
+    while(list.length > 0) {
+      const link = [ret[0].a, ret[ret.length - 1].b];
+      let line;
+      for(let i = 0; i < list.length; i++) {
+        if(Point.equals(list[i].a, link[1])) {
+          line = list.splice(i, 1)[0];
+          ret.push(line);
+          break;
+        }
+        if(Point.equals(list[i].b, link[0])) {
+          line = list.splice(i, 1)[0];
+          ret.unshift(line);
+          break;
+        }
+      }
+      if(line) continue;
+      for(let i = 0; i < list.length; i++) {
+        if(Point.equals(list[i].b, link[1])) {
+          line = list.splice(i, 1)[0];
+          ret.push(line.reverse());
+          break;
+        }
+        if(Point.equals(list[i].a, link[0])) {
+          line = list.splice(i, 1)[0];
+          ret.unshift(line.reverse());
+          break;
+        }
+      }
+      if(line) continue;
+      line = list.pop();
+      ret.push(line);
+    }
+    if(list.length) {
+      throw new Error("list not empty)");
+    }
+    return ret;
+  }
+
+  connected() {
+    let ordered = this.ordered();
+    let prevLine;
+    let i = 0;
+    let ret = [];
+
+    for(let line of ordered) {
+      if(i == 0 || !Point.equals(prevLine.b, line.a)) ret.push(new LineList());
+
+      ret[ret.length - 1].push(line);
+
+      prevLine = line;
+      i++;
+    }
+    return ret;
+  }
+
+  *toPoints() {
+    for(let line of this) yield* line;
+  }
+
+  coincidences() {
+    let entries = [...Util.accumulate([...this.toPoints()].map((p, i) => [p + '', [i >> 1, i & 1]]))];
+
+    //entries =    entries.filter(([p,indexes]) => indexes.length > 1);
+
+    entries = entries.map(([pointStr, indexes]) => [Point.fromString(pointStr), indexes]);
+    return new Map(entries);
+  }
+
+  toPath() {
+    let prevLine;
+    let cmds = [];
+    let i = 0;
+    for(let line of this) {
+      if(i == 0 || !Point.equals(prevLine.b, line.a)) cmds.push(`M ${line.a}`);
+      cmds.push(`L ${line.b}`);
+      prevLine = line;
+      i++;
+    }
+    return cmds.join(' ');
+  }
+
+  toString(opts = {}) {
+    const { separator = ' ', ...options } = typeof opts == 'string' ? { separator: opts } : opts;
+    return this.map(line => line.toString({ ...options, pad: 0, separator: '|' })).join(separator);
+  }
+  [Symbol.toStringTag]() {
+    return this.toString({ separator: '\n' });
   }
 
   [Symbol.for('nodejs.util.inspect.custom')](n, opts = {}) {
@@ -61,6 +180,19 @@ export class LineList extends Array {
         }) /*({ x1, y1,x2,y2 }) => Util.toString({ x1,y1,x2, y2  }, { multiline: false, spacing: ' ' })*/
     ).join(',\n  ')}\n${c.text(']', 1, 36)}`;
   }
+
+  isContinuous() {
+    let prevLine;
+    let i = 0;
+    for(let line of this) {
+      //if(i) console.log('isContinuous', i, prevLine.b + '', line.a + '');
+      if(i && !Point.equals(prevLine.b, line.a)) return false;
+
+      prevLine = line;
+      i++;
+    }
+    return true;
+  }
 }
 
 /**
@@ -75,10 +207,10 @@ LineList.toPolygons = (lines, createfn = points => Object.setPrototypeOf(points,
     // create a new polygon array
     const polygon = [];
     // init current start point and current end point
-    let currentStartPoint = firstLine.a;
-    let currentEndPoint = firstLine.b;
+    let startPoint = firstLine.a;
+    let endPoint = firstLine.b;
     // put the 2 points of the first line on the polygon array
-    polygon.push(currentStartPoint, currentEndPoint);
+    polygon.push(startPoint, endPoint);
 
     let j = 0;
     // init the linesLength
@@ -94,42 +226,42 @@ LineList.toPolygons = (lines, createfn = points => Object.setPrototypeOf(points,
       // min 3 lines to have a closed polygon
       // check if the polygon is closed (the nextLine start point is one of the current start or end point and the nextLine end point is one of the current start or end point)
       if(polygon.length >= 3 &&
-        ((currentEndPoint.x === nextLine.x1 &&
-          currentEndPoint.y === nextLine.y1 &&
-          currentStartPoint.x === nextLine.x2 &&
-          currentStartPoint.y === nextLine.y2) ||
-          (currentStartPoint.x === nextLine.x1 &&
-            currentStartPoint.y === nextLine.y1 &&
-            currentEndPoint.x === nextLine.x2 &&
-            currentEndPoint.y === nextLine.y2))
+        ((endPoint.x === nextLine.x1 &&
+          endPoint.y === nextLine.y1 &&
+          startPoint.x === nextLine.x2 &&
+          startPoint.y === nextLine.y2) ||
+          (startPoint.x === nextLine.x1 &&
+            startPoint.y === nextLine.y1 &&
+            endPoint.x === nextLine.x2 &&
+            endPoint.y === nextLine.y2))
       ) {
         polygons.push(polygon);
         break;
       }
-      if(currentEndPoint.x === nextLine.x1 && currentEndPoint.y === nextLine.y1) {
+      if(endPoint.x === nextLine.x1 && endPoint.y === nextLine.y1) {
         // end point of the current line equals to start point of the next line
         polygon.push(nextLine.b);
         // update current end point
-        currentEndPoint = nextLine.b;
+        endPoint = nextLine.b;
         // Suppression de la ligne dans le tableau
         lines.splice(--j, 1);
-      } else if(currentStartPoint.x === nextLine.x1 && currentStartPoint.y === nextLine.y1) {
+      } else if(startPoint.x === nextLine.x1 && startPoint.y === nextLine.y1) {
         // start point of the current line equals to start point of the next line
         polygon.unshift(nextLine.b);
         // update current start point
-        currentStartPoint = nextLine.b;
+        startPoint = nextLine.b;
         lines.splice(--j, 1);
-      } else if(currentEndPoint.x === nextLine.x2 && currentEndPoint.y === nextLine.y2) {
+      } else if(endPoint.x === nextLine.x2 && endPoint.y === nextLine.y2) {
         // end point of the current line equals to end point of the next line
         polygon.push(nextLine.a);
         // update current end point
-        currentEndPoint = nextLine.a;
+        endPoint = nextLine.a;
         lines.splice(--j, 1);
-      } else if(currentStartPoint.x == nextLine.x2 && currentStartPoint.y == nextLine.y2) {
+      } else if(startPoint.x == nextLine.x2 && startPoint.y == nextLine.y2) {
         // start point of the current line equals to end point of the next line
         polygon.unshift(nextLine.a);
         // update current start point
-        currentStartPoint = nextLine.a;
+        startPoint = nextLine.a;
         lines.splice(--j, 1);
       }
     }

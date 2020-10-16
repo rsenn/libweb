@@ -247,7 +247,7 @@ export class EagleDocument extends EagleNode {
 
         if(points)
           measures = measures
-            .map(l => l.toPoints())
+            .map(l => [...l])
             .flat()
             .filter(Util.uniquePred(Point.equals));
 

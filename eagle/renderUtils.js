@@ -61,14 +61,14 @@ export const AlignmentAngle = a => {
   return Math.abs(a - (a % 180));
 };
 
-export const Rotation = (rot, f = 1) => {
+export const MakeRotation = (rot, f = 1) => {
   let mirror, angle;
   if(!rot) {
     mirror = 0;
     angle = 0;
   } else {
     mirror = /M/.test(rot) ? 1 : 0;
-    angle = +(rot || '').replace(/M?R/, '') || 0;
+    angle = +(rot  && rot + '' || '').replace(/M?R/, '') || 0;
   }
   let transformations = new TransformationList([], '', '');
   if(angle !== 0) transformations.rotate(angle);
@@ -116,7 +116,7 @@ export const AlignmentAttrs = (align, hv = HORIZONTAL_VERTICAL, rot = 0) => {
 };
 
 export const RotateTransformation = (rot, f = 1) => {
-  const r = Rotation(rot, f);
+  const r = MakeRotation(rot, f);
 
   return r.toString();
 };

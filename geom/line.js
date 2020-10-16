@@ -293,12 +293,14 @@ Line.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, options =
   return 'Line ' + Util.inspect({ x1, y1, x2, y2 }, options) + ' }';
 };
 Line.prototype.toString = function(opts = {}) {
-  const { separator = ', ', brackets = s => `[ ${s} ]`, pad = 6 } = opts;
+  let { separator = ', ', brackets, pad = 6, ...options } = opts;
+
+  if(typeof brackets != 'function') brackets = brackets ? s => `[ ${s} ]` : s => s;
 
   const { x1, y1, x2, y2 } = this;
-  return (brackets(Point.toString(this.a || Point(x1, y1), { ...opts, separator, pad })) +
+  return (brackets(Point.toString(this.a || Point(x1, y1), { ...options, /*separator,*/ pad: 0 })) +
     separator +
-    brackets(Point.toString(this.b || Point(x2, y2), { ...opts, separator, pad }))
+    brackets(Point.toString(this.b || Point(x2, y2), { ...options, /*separator,*/ pad: 0 }))
   );
 };
 Line.prototype.toSource = function() {
@@ -309,6 +311,8 @@ Line.prototype.reverse = function() {
   const { a, b } = this;
   this.b = a;
   this.a = b;
+  if(this.curve !== undefined) this.curve = -this.curve;
+  if(this.width !== undefined) this.width = this.width;
   return this;
 };
 Line.prototype.toObject = function(t = num => num) {
@@ -374,7 +378,12 @@ Line.prototype.map = function(fn) {
   return new Line(...r);
 };
 Line.prototype.swap = function(fn) {
-  return new Line(this.b, this.a);
+  let line = new Line(this.b, this.a);
+  if(this.curve !== undefined)
+    line.curve = -this.curve;
+  if(this.width !== undefined)
+    line.width = this.width;
+return line;
 };
 Line.prototype.toPoints = function(ctor = Array.of) {
   const { x1, y1, x2, y2 } = this;

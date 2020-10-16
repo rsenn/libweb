@@ -2723,10 +2723,6 @@ Util.factor = function(start, end) {
 Util.factorial = function(n) {
   return Util.factor(1, n);
 };
-Util.lottoChances = function(numbers, draws) {
-  const f = Util.factorial;
-  return f(numbers) / (f(numbers - draws) * f(draws));
-};
 Util.increment = function(obj, key) {
   if(obj[key] >= 1) obj[key] == 0;
   obj[key]++;
@@ -4605,6 +4601,12 @@ Util.timer = msecs => {
   ret = start();
   return Util.define(ret, timer);
 };
+/**
+ * ???????????''
+ * new Promise(Util.thenableReject('ERROR').then)
+ *
+ * @param      {<type>}  error   The error
+ */
 Util.thenableReject = error => ({
   then: (resolve, reject) => reject(error)
 });

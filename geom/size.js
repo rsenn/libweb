@@ -195,7 +195,9 @@ Size.prototype.fitFactors = function(other) {
 Size.prototype.toString = function(opts = {}) {
   const { unit = '', separator = ' \u2715 ', left = '', right = '' } = opts;
   const { width, height, units = { width: unit, height: unit } } = this;
-  return `${left}${width}${unit || units.width || ''}${separator}${height}${unit || units.height || ''}${right}`;
+  return `${left}${width}${(Util.isObject(units) && units.width) || unit}${separator}${height}${
+    (Util.isObject(units) && units.height) || unit
+  }${right}`;
 };
 
 /*Size.prototype[Symbol.iterator] = function() {

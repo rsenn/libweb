@@ -2,7 +2,7 @@ import { EagleElement } from './element.js';
 import Util from '../util.js';
 import { Size } from '../dom.js';
 import { Point, Rect, BBox, TransformationList } from '../geom.js';
-import { Rotation, VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer, LayerToClass } from './renderUtils.js';
+import { MakeRotation, VERTICAL, HORIZONTAL, HORIZONTAL_VERTICAL, ClampAngle, AlignmentAngle, LayerAttributes, MakeCoordTransformer, LayerToClass } from './renderUtils.js';
 import { ElementToComponent, Pattern, Grid, Background, Drawing } from './components.js';
 import trkl from '../trkl.js';
 import { h, Component } from '../dom/preactComponent.js';
@@ -47,7 +47,7 @@ export class EagleSVGRenderer {
       if(path) {
         let e = path.apply(doc, true);
         let parent = e.parentNode;
-        console.log('PATHSTR: ',
+        /*    console.log('PATHSTR: ',
           pathStr,
           `\nPATH: `,
           e.xpath() + '',
@@ -55,7 +55,7 @@ export class EagleSVGRenderer {
           e + '',
           '\nRET:\n ',
           ReactComponent.toObject(ret)
-        );
+        );*/
         insert(path, ret);
       }
       return ret;
@@ -199,7 +199,7 @@ export class EagleSVGRenderer {
   }
 
   renderItem(item, parent, opts = {}) {
-    let { labelText, transform = new TransformationList() } = opts;
+    let { labelText, transformation: transform = new TransformationList() } = opts;
 
     /*   this.debug(`EagleSVGRenderer.renderItem`, item);
     this.debug(`EagleSVGRenderer.renderItem`, item.xpath().toString());*/
@@ -250,7 +250,7 @@ export class EagleSVGRenderer {
       /*case 'rectangle': {
         const { x1, x2, y1, y2 } = coordFn(item);
         let rect = Rect.from({ x1, x2, y1, y2 });
-        let rot = Rotation(item.rot);
+        let rot = MakeRotation(item.rot);
         let center = rect.center;
         svg('rect', {
             stroke: 'none',
@@ -295,9 +295,9 @@ export class EagleSVGRenderer {
         if(text == '') break;
         const translation = new TransformationList(`translate(${x},${y})`);
         this.debug('translation:', Util.className(translation));
-        const rotation = translation.concat(Rotation(rot));
+        const rotation = translation.concat(MakeRotation(rot));
         this.debug('rotation:', Util.className(rotation));
-        let wholeTransform = transform.concat(Rotation(rot));
+        let wholeTransform = transform.concat(MakeRotation(rot));
         let wholeAngle = ClampAngle(wholeTransform.decompose().rotate);
         let undoTransform = new TransformationList().scale(1, -1).rotate(wholeAngle);
         let undoAngle = ClampAngle(undoTransform.decompose().rotate);
@@ -425,7 +425,7 @@ export class EagleSVGRenderer {
 
     this.debug('bounds:', this.bounds.toString({ separator: ' ' }));
 
-    const { width, height } = rect.size.toCSS('mm');
+    const { width, height } = (this.size = rect.size.toCSS('mm'));
 
     this.transform.clear();
     this.transform.translate(0, rect.height - rect.y);

@@ -3,7 +3,7 @@ import { Size, isSize } from '../geom/size.js';
 import { Point } from '../geom/point.js';
 import { Rect } from '../geom/rect.js';
 import { Line } from '../geom/line.js';
-//import { parseSVG, makeAbsolute } from '../svg/path-parser.js';
+import { parseSVG, makeAbsolute } from '../svg/path-parser.js';
 import SvgPath from '../svg/path.js';
 import Util from '../util.js';
 import { RGBA } from '../color/rgba.js';
@@ -364,13 +364,15 @@ else */ if(text) svg.innerHTML = innerHTML;
     let { numPoints, step } = typeof opts == 'number' ? { numPoints: opts } : opts || {};
     if(typeof e == 'string') e = Element.find(e);
     let len = e.getTotalLength();
-    let pos = i => (i * len) / (numPoints - 1);
-
+    let pos;
     if(step !== undefined) {
       numPoints = Math.floor(len / step);
       //len = numPoints * step;
       pos = i => (i == numPoints ? len : i * step);
-    } else if(!numPoints) numPoints = Math.ceil(len / 2);
+    } else {
+      if(!numPoints) numPoints = Math.ceil(len / 2);
+    }
+    pos = i => (i * len) / (numPoints - 1);
 
     console.log(`len:`, len);
     console.log(`numPoints:`, numPoints);
@@ -400,7 +402,7 @@ else */ if(text) svg.innerHTML = innerHTML;
 
     let point, next;
 
-    for(let i = 0; i < numPoints; i++) {
+    for(let i = 0; i < numPoints - 1; i++) {
       let thisPos = pos(i),
         nextPos = pos(i + 1);
       point = e.getPointAtLength(thisPos);
@@ -474,7 +476,8 @@ else */ if(text) svg.innerHTML = innerHTML;
           data.cmd(...args);
           return;
         }
-        if(args.length < length[type]) throw new Error('malformed path data');
+        if(args.length < length[type])
+          throw new Error(`malformed path data (${args.length} < ${length[type]}): ${command} ${args}`);
         data.cmd(...[command].concat(args.splice(0, length[type])));
       }
     });

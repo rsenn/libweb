@@ -1,7 +1,7 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import { TransformationList } from '../../geom/transformation.js';
 import { SchematicSymbol } from './symbol.js';
-import { Rotation } from '../renderUtils.js';
+import { MakeRotation } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
 
 export const Instance = ({ data, opts = {}, transformation, ...props }) => {
@@ -19,7 +19,7 @@ export const Instance = ({ data, opts = {}, transformation, ...props }) => {
 
   transform.translate(x, y);
   if(rot) {
-    rot = Rotation(rot);
+    rot = MakeRotation(rot);
     transform = transform.concat(rot);
   }
 

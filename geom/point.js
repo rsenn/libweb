@@ -312,6 +312,7 @@ Point.prototype.normal = function() {
   return new Point({ x: this.x / d, y: this.y / d });
 };
 
+Point.fromString = str => new Point(...str.split(/[^-.0-9]+/g).map(n => +n));
 Point.move = (point, x, y) => Point.prototype.move.call(point, x, y);
 Point.angle = (point, other, deg = false) => Point.prototype.angle.call(point, other, deg);
 Point.inside = (point, rect) => Point.prototype.inside.call(point, rect);

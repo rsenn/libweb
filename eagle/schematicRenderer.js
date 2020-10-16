@@ -4,7 +4,7 @@ import { TransformationList } from '../geom/transformation.js';
 import { RGBA } from '../color/rgba.js';
 import { HSLA } from '../color/hsla.js';
 import { Palette } from './common.js';
-import { Rotation, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
+import { MakeRotation, LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { Instance } from './components/instance.js';
 import { h, ReactComponent } from '../dom/preactComponent.js';
@@ -189,7 +189,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     let { transform = new TransformationList() } = opts;
     transform.translate(x, y);
     if(rot) {
-      rot = Rotation(rot);
+      rot = MakeRotation(rot);
       transform = transform.concat(rot);
     }
     this.debug(`SchematicRenderer.renderInstance`, { x, y, transform });

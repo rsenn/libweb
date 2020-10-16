@@ -1,24 +1,39 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import { Rotation, Alignment, VERTICAL, HORIZONTAL } from '../renderUtils.js';
-import { TransformationList } from '../../geom.js';
+import { MakeRotation, Alignment, VERTICAL, HORIZONTAL } from '../renderUtils.js';
+import { TransformationList, Rotation } from '../../geom.js';
 
 export const Text = ({ x, y, text, color, alignment, rot, transformation, visible, className, ...props }) => {
-  //console.log(`Text.render`, { x, y, text, alignment, rot, transformation, ...props });
+  console.log(`Text.render`, { x, y, text, alignment, rot, transformation, ...props });
 
   let transform = new TransformationList();
   transform.translate(x, y);
-  transform = transform.concat(Rotation(rot));
+  let rotation = MakeRotation(rot);
 
-  if(transform.rotation) transform.rotation.angle %= 180;
 
+ 
   transform = transform.concat(transformation
-      .slice(1)
+     // .slice(1)
       .filter(t => ['translate'].indexOf(t.type) == -1)
       .invert()
   );
-  let alignmentTransform = transform.filter(t => ['translate'].indexOf(t.type) == -1).collapseAll();
-  alignment = Alignment(alignment);
-  alignment.transform(alignmentTransform.toMatrix());
+  
+  let matrix = transformation.toMatrix();
+  let {rotate } = matrix.decompose();
+  console.log(`rotate ${text}`, rotate*180 / Math.PI);
+
+  let alignmentTransform;
+ let angle = Util.mod(Math.round(rotate*180/Math.PI), 360);
+  alignmentTransform=new Rotation(angle);
+    console.log(`alignmentTransform ${text}`, alignmentTransform);
+ alignment = Alignment(alignment);
+   console.log(`alignment ${text}`, AlignmentAttrs(alignment));
+alignment =  alignment.transform(alignmentTransform);
+   console.log(`alignment.transform ${text}`, AlignmentAttrs(alignment));
+
+   transform =  transform.concat(alignmentTransform);
+
+   console.log(`transform ${text}`, transform);
+   console.log(`transform ${text}`, transform+'');
 
   return h(Fragment, {}, [
     h('text', {
@@ -29,9 +44,10 @@ export const Text = ({ x, y, text, color, alignment, rot, transformation, visibl
         style: visible ? {} : { display: 'none' },
         ...AlignmentAttrs(alignment, VERTICAL),
         ...props,
-        transform: transform.concat(transformation.slice(0, 1).invert())
+        transform
       },
       h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL), children: text })
     )
   ]);
 };
+
