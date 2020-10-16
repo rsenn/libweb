@@ -652,26 +652,45 @@ export class TransformationList extends Array {
     return ret;
   }
 
-  findLast(predicate) {
+  findLastIndex(predicate) {
     for(let i = this.length - 1; i >= 0; --i) {
       const x = this[i];
-      if(predicate(x)) return x;
+      if(predicate(x)) return i;
     }
     return null;
+  }
+
+  findLast(predicate) {
+    let index = this.findLastIndex(predicate);
+    return this[index];
   }
 
   get rotation() {
     return this.findLast(item => item.type.startsWith('rotat'));
   }
+  set rotation(value) {
+    let index = this.findLastIndex(item => item.type.startsWith('rotat'));
+    value = value instanceof Rotation ? value : new Rotation(value);
+    Array.prototype.splice.call(this, index, 1, value);
+  }
 
   get scaling() {
     return this.findLast(item => item.type.startsWith('scal'));
+  }
+  set scaling(value) {
+    let index = this.findLastIndex(item => item.type.startsWith('scal'));
+    value = value instanceof Scaling ? value : new Scaling(value);
+    Array.prototype.splice.call(this, index, 1, value);
   }
 
   get translation() {
     return this.findLast(item => item.type.startsWith('translat'));
   }
-
+  set translation(value) {
+    let index = this.findLastIndex(item => item.type.startsWith('transl'));
+    value = value instanceof Translation ? value : new Translation(value);
+    Array.prototype.splice.call(this, index, 1, value);
+  }
   /*  map(...args) {
     return Array.prototype.map.apply(Array.from(this), args);
   }*/

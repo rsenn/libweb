@@ -1,17 +1,8 @@
-import Util from '../util.js';
-import { Point, Line } from '../geom.js';
-import { TransformationList } from '../geom/transformation.js';
-import { EagleElement } from './element.js';
-import { Cross, Arc, Origin } from './components.js';
-import { RGBA } from '../color.js';
-import { Palette } from './common.js';
-import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, MakeRotation } from './renderUtils.js';
-import { EagleSVGRenderer } from './svgRenderer.js';
-import { Repeater } from '../repeater/repeater.js';
-import { useTrkl, ElementToClass, EscapeClassName, UnescapeClassName } from './renderUtils.js';
-import { h, Component, Fragment, useEffect } from '../dom/preactComponent.js';
+import Util from '../../util.js';
+import { useTrkl } from '../renderUtils.js';
+import { h, Component } from '../../dom/preactComponent.js';
 
-const WirePath = ({ className, path, cmds, separator = '\n', color, width, layer, ...props }) => {
+export const WirePath = ({ className, path, cmds, separator = '\n', color, width, layer, ...props }) => {
   let visible = 'yes' == useTrkl(layer.handlers.visible);
   console.debug('Lines visible:', visible);
 
@@ -23,13 +14,13 @@ const WirePath = ({ className, path, cmds, separator = '\n', color, width, layer
     style: visible ? undefined : { display: 'none' }
   };
 
-  console.debug('path:', path);
-  console.debug('cmds:', cmds);
+  console.info('WirePath path:', path);
+  console.info('WirePath cmds:', cmds);
 
   return h(Util.isArray(path) ? 'g' : 'path',
     {
       className,
-      ...(Util.isArray(path) ? {} : { d: Util.isArray(cmds) ? (separator + cmds.join(separator) + separator) : cmds }),
+      ...(Util.isArray(path) ? {} : { d: Util.isArray(cmds) ? separator + cmds.join(separator) + separator : cmds }),
       ...attrs,
       ...props
     },

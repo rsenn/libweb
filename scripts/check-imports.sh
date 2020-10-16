@@ -6,12 +6,12 @@ check_imports() {
   SCRIPT="${ARG##*/}.sed"
   (IFS="
 "
-  IMPORTS=$(grep -E "(^\s*${KEY}|=.*require[\s\(])" "$1" )
-  CODE=$(grep -v -E "(^\s*${KEY}|=.*require[\s\(])" "$1" )
+  IMPORTS=$(grep -E "(^\s*import|=.*require[\s\(])" "$1" )
+  CODE=$(grep -v -E "(^\s*import|=.*require[\s\(])" "$1" )
   IDENTIFIERS=$(for LINE in $IMPORTS; do
     case "$LINE" in
       --*) continue ;;
-      *${KEY:-import}*) LINE=${LINE#*${KEY:-import}} ;;
+      *import*) LINE=${LINE#*import} ;;
     esac
     LINE=${LINE##*\{}
     LINE=${LINE%%\}*}

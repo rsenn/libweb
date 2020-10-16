@@ -62,3 +62,4 @@ export { Drawing } from './components/drawing.js';
 export { Pad } from './components/pad.js';
 export { Polygon } from './components/polygon.js';
 export { Origin } from './components/origin.js';
+export { WirePath } from './components/wirePath.js';

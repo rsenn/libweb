@@ -15,7 +15,7 @@ export const Text = ({ x, y, text, color, alignment, rot, transformation, visibl
       .invert()
   );
 
-  let matrix = transformation.toMatrix();
+  let matrix = transform.toMatrix();
   let { rotate } = matrix.decompose();
   console.log(`rotate ${text}`, (rotate * 180) / Math.PI);
 
