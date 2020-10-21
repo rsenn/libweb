@@ -168,14 +168,14 @@ export class SchematicRenderer extends EagleSVGRenderer {
     let instancesGroup = this.create('g', { className: 'instances', transform }, parent);
 
     instancesGroup.props.children = [...instances.list].map(data =>
-      h(Instance, { data, transformation: this.transform/*.filter(t => ['translate'].indexOf(t.type) == -1)*/ })
+      h(Instance, { data, transformation: this.transform /*.filter(t => ['translate'].indexOf(t.type) == -1)*/ })
     );
 
     //    ReactComponent.append([...instances.list].map(data => h(Instance, { data })), instancesGroup);
 
     console.log('instancesGroup:', instancesGroup);
 
-      // for(let instance of instances.list) this.renderInstance(instance, instancesGroup);
+    // for(let instance of instances.list) this.renderInstance(instance, instancesGroup);
 
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
   }
@@ -193,7 +193,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
       rot = MakeRotation(rot);
       transform = transform.concat(rot);
     }
-    let transformStr = transform+'';
+    let transformStr = transform + '';
 
     this.debug(`SchematicRenderer.renderInstance`, { x, y, transform, transformStr });
 

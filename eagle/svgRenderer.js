@@ -48,7 +48,7 @@ export class EagleSVGRenderer {
       if(path) {
         let e = path.apply(doc, true);
         let parent = e.parentNode;
- 
+
         insert(path, ret);
       }
       return ret;
@@ -192,15 +192,14 @@ export class EagleSVGRenderer {
   }
 
   renderItem(item, parent, opts = {}) {
-    let { labelText, transformation: transform = new TransformationList() } = opts;
+    let { labelText, transformation = new TransformationList() } = opts;
 
-    /*   this.debug(`EagleSVGRenderer.renderItem`, item);
-    this.debug(`EagleSVGRenderer.renderItem`, item.xpath().toString());*/
+    this.debug(`EagleSVGRenderer.renderItem`, { item, transform });
 
     const svg = (elem, attr, parent) =>
       this.create(elem, { className: item.tagName, /* 'data-path': item.path.toString(' '), */ ...attr }, parent);
 
-    let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
+    let coordFn = /*transform ? MakeCoordTransformer(transform) :*/ i => i;
     const { layer } = item;
     const color = typeof item.getColor == 'function' ? item.getColor() : this.constructor.palette[16];
     let elem;
@@ -215,7 +214,7 @@ export class EagleSVGRenderer {
           transform,
           opts: {
             ...opts,
-            transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1)
+            transformation /*: this.transform.filter(t => ['translate'].indexOf(t.type) == -1)*/
           }
         },
         parent

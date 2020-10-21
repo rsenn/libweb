@@ -493,7 +493,8 @@ export class EagleElement extends EagleNode {
 
   getBounds(pred, opts = {}) {
     let bb = new BBox();
-    if(!pred && ['sheet', 'schematic'].indexOf(this.tagName) != -1) pred = e => ['wire','instance'].indexOf(e.tagName) != -1;
+    if(!pred && ['sheet', 'schematic'].indexOf(this.tagName) != -1)
+      pred = e => ['wire', 'instance'].indexOf(e.tagName) != -1;
 
     if(pred) {
       let ok = 0;

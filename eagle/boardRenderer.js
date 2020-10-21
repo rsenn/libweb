@@ -135,10 +135,19 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(coll, parent, opts = {}) {
-    const { predicate = i => i.tagName != 'description', transform, pos, rot, name, layer, props = {}, flat } = opts;
+    const {
+      predicate = i => i.tagName != 'description',
+      transformation,
+      pos,
+      rot,
+      name,
+      layer,
+      props = {},
+      flat
+    } = opts;
     //  this.debug(`BoardRenderer.renderCollection`, { name, transform, pos, rot, layer },coll);
-    this.debug(`BoardRenderer.renderCollection`, coll);
-    let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
+    this.debug(`BoardRenderer.renderCollection`, { coll, transformation });
+    let coordFn = i => i;
     let { class: addClass, ...addProps } = props;
     let wireMap = new Map(),
       other = [],
@@ -240,12 +249,13 @@ export class BoardRenderer extends EagleSVGRenderer {
     let transform = new TransformationList();
     let rotation = MakeRotation(rot);
 
-    transform.translate(x, y);
+    transform = transform.translate(x, y);
+    transform = transform.concat(rotation);
     let elementName = EscapeClassName(name);
 
     const g = this.create('g',
       {
-        id: `element-${elementName}`,
+        id: `element.${elementName}`,
         class: ElementToClass(element),
         'data-name': name,
         'data-value': value,
@@ -253,17 +263,17 @@ export class BoardRenderer extends EagleSVGRenderer {
         'data-package': element.package.name,
         'data-path': element.path.toString(' '),
         'data-rot': rot,
-        transform: transform.concat(rotation)
+        transform
       },
       parent
     );
     this.renderCollection(element.package.children, g, {
       name,
       value,
-      transformation: rotation.slice(),
+      transformation: this.transform.concat(transform),
       flat: true
     });
-    this.create(Origin, { x, y, color: '#f0f', element, layer: this.layers['tOrigins'] }, g);
+    this.create(Origin, { /* x, y,*/ color: '#fc0', element, layer: this.layers['tOrigins'] }, g);
 
     /*    let angle = Util.randInt(0, 360);
     let angles = [angle, angle + 120, angle + 240, angle + 360];

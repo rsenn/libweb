@@ -1,27 +1,28 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import { MakeRotation, Alignment, VERTICAL, HORIZONTAL, log } from '../renderUtils.js';
+import { MakeRotation, Alignment, VERTICAL, HORIZONTAL, log, RAD2DEG, DEG2RAD } from '../renderUtils.js';
 import { TransformationList, Rotation } from '../../geom.js';
 import { Cross } from './cross.js';
 
 export const Text = ({ x, y, text, color, alignment, rot, visible, className, opts = {}, ...props }) => {
   let { transformation = new TransformationList() } = opts;
-  log(`Text.render`, { text, transformation, x, y, alignment, rot });
+  let parentAngle = Math.round(transformation.slice(1).angle * RAD2DEG);
+  log(`Text.render`, { text, parentAngle, transformation, x, y, alignment, rot });
 
   let rotation = MakeRotation(rot);
-  let angle = (rotation.angle * 180) / Math.PI;
-  let realAngle = Util.mod(angle, 180);
+  let rotationAngle = Math.round(rotation.angle * RAD2DEG);
+  let totalAngle = Util.mod(-parentAngle + rotationAngle, 360);
+  let realAngle = Util.mod(parentAngle + Util.mod(rotationAngle, 180), 360);
+  let diffAngle = Util.mod(-rotationAngle - realAngle, 360);
 
   let transform = new TransformationList()
     .translate(x, y)
     .concat(transformation.scaling ? [transformation.scaling] : [])
-    .rotate(-realAngle);
-
-  let diffAngle = angle - realAngle;
+    .rotate(realAngle);
 
   let align = Alignment(alignment);
-  log(`Text.render`, { text, diffAngle, transform, align });
+  log(`Text.render`, { text, parentAngle, rotationAngle, totalAngle, realAngle, diffAngle, transform, align });
 
-  align = align.rotate(diffAngle);
+  align = align.rotate(diffAngle * DEG2RAD).round();
 
   return h(Fragment, {}, [
     h('text', {

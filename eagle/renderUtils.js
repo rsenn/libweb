@@ -4,8 +4,8 @@ import { Component, useEffect, useState } from '../dom/preactComponent.js';
 import { classNames } from '../classNames.js';
 
 const PI = Math.PI;
-const RAD2DEG = 180 / Math.PI;
-const DEG2RAD = Math.PI / 180;
+export const RAD2DEG = 180 / Math.PI;
+export const DEG2RAD = Math.PI / 180;
 const { mod, mul, roundTo } = Util;
 
 const rad2deg = mul(RAD2DEG);
