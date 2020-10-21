@@ -16,6 +16,8 @@ import { Polygon } from './components/polygon.js';
 import { Origin } from './components/origin.js';
 import { Element } from './components/element.js';
 import { WirePath } from './components/wirePath.js';
+import { Package } from './components/package.js';
+import { SchematicSymbol } from './components/symbol.js';
 
 export const PrimitiveComponents = {
   Wire,
@@ -30,7 +32,9 @@ export const PrimitiveComponents = {
   Pad,
   Via: Pad,
   Origin,
-  Polygon /*,
+  Polygon,
+  Symbol: SchematicSymbol,
+  Package /*,
   Element*/
 };
 
@@ -63,3 +67,5 @@ export { Pad } from './components/pad.js';
 export { Polygon } from './components/polygon.js';
 export { Origin } from './components/origin.js';
 export { WirePath } from './components/wirePath.js';
+export { Package } from './components/package.js';
+export { SchematicSymbol } from './components/symbol.js';

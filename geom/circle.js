@@ -93,7 +93,10 @@ Circle.prototype.transform = function(m) {
   this.radius = Matrix.prototype.transform_wh.call(m, this.radius, this.radius)[0];
   return this;
 };
-
+Circle.prototype.toObject = function(proto = Object.prototype) {
+  const { x, y, radius } = this;
+  return Object.setPrototypeOf({ x, y, radius }, proto);
+};
 Util.defineInspect(Circle.prototype, 'x', 'y', 'radius');
 
 Circle.bind = (o, p, gen) => {

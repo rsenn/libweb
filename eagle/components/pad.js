@@ -1,23 +1,25 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import { MakeCoordTransformer, AlignmentAttrs, ElementToClass } from '../renderUtils.js';
+import { MakeCoordTransformer, AlignmentAttrs, ElementToClass, useTrkl, log } from '../renderUtils.js';
 import { TransformationList, Point } from '../../geom.js';
 import { Palette } from '../common.js';
 import { Text } from './text.js';
 import { useValue } from '../../repeater/react-hooks.js';
-import { useTrkl } from '../renderUtils.js';
 
 export const Pad = ({ data, opts = {}, ...props }) => {
+  let { transformation = new TransformationList() } = opts;
+  log('Pad.render ', { transformation, data, opts });
   let pad =
     useValue(async function* () {
       for await (let change of data.repeater) {
-        //  console.log('Pad.render:', change);
+        //  log('Pad.render:', change);
         yield change;
       }
     }) || data;
 
   let coordFn = opts.transform ? MakeCoordTransformer(opts.transform) : i => i;
-  const { name, drill, diameter, shape, layer, rot } = pad;
+  const { name, drill, radius, shape, layer, rot } = pad;
   const { x, y } = coordFn(pad);
+  const diameter = radius * 2;
   const ro = +((diameter || 1.5) / 2.54).toFixed(3);
   const ri = +(drill / 3).toFixed(3);
   let d;
@@ -79,7 +81,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
         x: 0.04,
         y: 0.04,
         ...AlignmentAttrs(alignment, VERTICAL),
-        transform: RotateTransformation(opts.rot, -1) + ` scale(1,-1)`
+        transform: RotateTransformation(opts.rot, -1) + ' ' + transformation.invert().scaling
       },
       /* prettier-ignore */ h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL) }, name)
     );

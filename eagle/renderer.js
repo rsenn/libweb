@@ -25,5 +25,8 @@ export function Renderer(doc, factory, debug) {
   Renderer.debug = ret.debug = debug
     ? (...args) => console.log(Util.getCallers(2)[0].toString(false, { stripUrl: true }) + '\n', ...args)
     : () => {};
+  let fn = typeof console.debug == 'function' ? console.debug : console.log;
+
+  ret.debug = fn.bind(console);
   return ret;
 }

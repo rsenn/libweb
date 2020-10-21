@@ -1,7 +1,6 @@
 import { h, Component } from '../../dom/preactComponent.js';
-import { MakeCoordTransformer, ElementToClass } from '../renderUtils.js';
+import { MakeCoordTransformer, ElementToClass, useTrkl, log } from '../renderUtils.js';
 import { TransformationList, Point, PointList } from '../../geom.js';
-import { useTrkl } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
 
 export const Polygon = ({ data, opts = {}, ...props }) => {
@@ -10,12 +9,12 @@ export const Polygon = ({ data, opts = {}, ...props }) => {
   let polygon =
     useValue(async function* () {
       for await (let change of data.repeater) {
-        //     console.log('change:', change);
+        //     log('change:', change);
         yield change;
       }
     }) || data;
 
-  //console.log('Polygon.render ', { polygon, opts });
+  //log('Polygon.render ', { polygon, opts });
   let { transform = new TransformationList() } = opts;
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;

@@ -34,6 +34,7 @@ export class EagleSVGRenderer {
     );
     const insertCtoP = Util.inserter(this.component2path);
     const insert = Util.inserter(this.path2component, (k, v) => insertCtoP(v, k));
+    this.mirrorY = new TransformationList().scale(1, -1);
     this.append = factory;
     this.create = function(tag, attrs, children, parent, element) {
       let ret = factory(tag, attrs, children, parent, element);
@@ -210,11 +211,13 @@ export class EagleSVGRenderer {
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
     const { layer } = item;
     const color = typeof item.getColor == 'function' ? item.getColor() : this.constructor.palette[16];
-
+    let elem;
     const comp = ElementToComponent(item);
     if(comp) {
-      //this.debug('EagleSVGRenderer render component ', this.transform.filter(t => ['translate'].indexOf(t.type) == -1));
-      const elem = svg(comp,
+      this.debug('EagleSVGRenderer render component ',
+        this.transform.filter(t => ['translate'].indexOf(t.type) == -1)
+      );
+      elem = svg(comp,
         {
           data: item,
           transform,
@@ -225,7 +228,6 @@ export class EagleSVGRenderer {
         },
         parent
       );
-      return;
     }
 
     switch (item.tagName) {
@@ -267,7 +269,8 @@ export class EagleSVGRenderer {
         const { x, y } = coordFn(item);
         const transform = new TransformationList(`translate(${x},${y})`);
 
-        svg('text', {
+        elem = svg('text',
+          {
             fill: '#f0f',
             stroke: 'none',
             x,
@@ -358,11 +361,13 @@ export class EagleSVGRenderer {
         break;
       default: {
         const { x, y } = coordFn(item);
-        //  this.debug('EagleSVGRenderer.renderItem', { item, parent, opts });
+        this.debug('EagleSVGRenderer.renderItem', { item, parent, opts });
+        throw new Error(`No renderer for element '${item.tagName}'`);
         //super.renderItem(item,parent,opts);
         break;
       }
     }
+    return elem;
   }
 
   static alignment(align, def = [-1, 1], rot = 0) {
@@ -408,47 +413,36 @@ export class EagleSVGRenderer {
     return r;
   }
 
-  render(doc, props = {}, children = []) {
-    doc = doc || this.doc;
-
-    let { bounds = doc.measures || doc.getBounds() } = props;
-
-    this.debug('EagleSVGRenderer.render', { bounds });
+  render(obj, props = {}, children = []) {
+    let doc = obj.document || this.doc;
+    this.debug('EagleSVGRenderer.render', obj);
+    let { bounds = obj.getMeasures ? obj.measures : obj.getBounds(), transform } = props;
+    //let { bounds = doc.measures || doc.getBounds() } = props;
     let rect = new Rect(bounds.rect);
-
     rect.round(1.27);
-    //   rect.outset(1.27);
+    //rect.outset(1.27);
     rect.round(2.54);
     this.rect = rect;
     this.bounds = bounds; //BBox.fromRect(rect);
-    this.debug('EagleSVGRenderer.render', { bounds: this.bounds, rect });
-
-    this.debug('bounds:', this.bounds.toString({ separator: ' ' }));
-
+    //this.debug('EagleSVGRenderer.render', { bounds: this.bounds, rect });
+    //this.debug('bounds:', this.bounds.toString({ separator: ' ' }));
     const { width, height } = (this.size = rect.size.toCSS('mm'));
-
     this.transform.clear();
     this.transform.translate(0, rect.height - rect.y);
     this.transform.scale(1, -1);
-
-    const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;
-    this.debug('SVGRendererer transform=', transform, ' this.transform=', this.transform);
-    this.debug(bounds);
-
-    this.debug('viewBox rect:', rect, rect.toString(), rect.valueOf);
-
+   // const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;
+  this.debug('SVGRenderer.render', {transform});
+    //this.debug(bounds);
+    //this.debug('viewBox rect:', rect, rect.toString(), rect.valueOf);
     let grid = doc.lookup('/eagle/drawing/grid');
     let attrs = {
       bg: trkl({ color: '#ffffff', visible: true }),
       grid: trkl({ color: '#0000aa', width: 0.05, visible: true })
     };
-    this.debug('grid:', grid.attributes);
-
+    //this.debug('grid:', grid.attributes);
     trkl.bind(this, attrs);
-    this.debug('rect:', rect, bounds.rect);
-
+    //this.debug('rect:', rect, bounds.rect);
     console.log('layers', layers);
-
     let svgElem = h(Drawing,
       {
         rect,
@@ -464,15 +458,11 @@ export class EagleSVGRenderer {
           // ...this.doc.layers.map(layer => `.${LayerToClass(layer).join('.')} { stroke: ${layer.color.hex()}; }`),
           'rect { stroke: none; }'
         ]
-        /*, transform*/
+         , transform
       },
       children
     );
 
-    //     parent = this.create('svg', { viewBox: new Rect(rect).toString(), preserveAspectRatio: 'xMinYMin', ...props }, parent);
-    //  let defs = h('defs', {},   h(Pattern, { id: 'grid', step: 2.54, color: '#0000aa', width: 0.05 }));
-
-    this.debug(`EagleSVGRenderer.render`, { doc, svgElem, props });
     return svgElem;
   }
 }

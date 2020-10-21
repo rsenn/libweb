@@ -130,8 +130,13 @@ export class Transformation {
     return  this.toSource();
   }*/
 
+  [Symbol.toStringTag]() {
+    return this.toString();
+  }
+
   [Symbol.toPrimitive](hint) {
-    if(hint == 'string') return this.toString();
+    // console.log("hint:",hint);
+    if(hint == 'string' || hint == 'default') return this.toString();
 
     return this.toString() != '';
   }
@@ -266,7 +271,7 @@ export class Translation extends Transformation {
 
   isZero() {
     const { x, y, z } = this;
-    return 'z' in this ? x == 0 && y == 0 && z == 0 : x == 0 && y == 0;
+    return 'z' in this ? x == 1 && y == 1 && z == 1 : x == 1 && y == 1;
   }
 
   toMatrix(matrix = Matrix.IDENTITY) {
@@ -562,7 +567,9 @@ export class TransformationList extends Array {
   }
 
   rotate(...args) {
-    Array.prototype.push.call(this, new Rotation(...args));
+    let rotation = new Rotation(...args);
+    if(!rotation.isZero())
+    Array.prototype.push.call(this,rotation);
     return this;
   }
 
@@ -574,19 +581,25 @@ export class TransformationList extends Array {
 
     vec = vec.round(0.00001, 5);
     //console.log("from:", new Point(x,y), " to:", vec);
+let translation = new Translation(vec.x, vec.y);
 
-    if(Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) Array.prototype.push.call(this, new Translation(vec.x, vec.y));
+if(!translation.isZero())
+/*    if(Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) */Array.prototype.push.call(this, translation);
 
     return this;
   }
 
   scale(...args) {
-    Array.prototype.push.call(this, new Scaling(...args));
+    let scaling = new Scaling(...args);
+    if(!scaling.isZero())
+    Array.prototype.push.call(this, scaling);
     return this;
   }
 
   matrix(...args) {
-    Array.prototype.push.call(this, new MatrixTransformation(...args));
+    let matrixTransformation=new MatrixTransformation(...args);
+    if(!matrixTransformation.isZero())
+    Array.prototype.push.call(this, matrixTransformation);
     return this;
   }
 
@@ -642,14 +655,23 @@ export class TransformationList extends Array {
     return this;
   }
 
-  decompose(degrees = true) {
+  decompose(degrees = true, transformationList = true) {
     let matrix = this.toMatrix();
     const { translate, rotate, scale } = matrix.decompose(degrees);
-    let ret = { translate, rotate, scale };
-    ret.scale.toArray = ret.translate.toArray = function toArray() {
+    let decomposed = { translate, rotate, scale };
+
+if(transformationList) {
+    let ret = new TransformationList();
+    ret.translate(translate.x,translate.y,translate.z);
+    ret.rotate(rotate);
+    ret.scale(scale.x, scale.y, scale.z);
+    return ret;
+  }
+
+    decomposed.scale.toArray = decomposed.translate.toArray = function toArray() {
       return [this.x, this.y];
     };
-    return ret;
+    return decomposed;
   }
 
   findLastIndex(predicate) {
@@ -684,8 +706,9 @@ export class TransformationList extends Array {
   }
 
   get translation() {
-    return this.findLast(item => item.type.startsWith('translat'));
+    return this.findLast(item => item instanceof Translation || (typeof(item.type) == 'string' && item.type.startsWith('translat')));
   }
+
   set translation(value) {
     let index = this.findLastIndex(item => item.type.startsWith('transl'));
     value = value instanceof Translation ? value : new Translation(value);
@@ -725,6 +748,14 @@ export class TransformationList extends Array {
 
   collapseAll() {
     return TransformationList.fromMatrix(this.toMatrix());
+  }
+
+  get angle() {
+    let matrix = this.collapseAll();
+    let t = matrix.decompose();
+    let { rotate } = matrix.decompose();
+    console.log('ROTATION:', rotate);
+    return rotate;
   }
 
   invert() {

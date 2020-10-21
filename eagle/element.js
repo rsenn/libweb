@@ -150,7 +150,16 @@ export class EagleElement extends EagleNode {
               return v;
             }
           );
-        else
+        else if(key == 'diameter') {
+          const getDiameter = Util.ifThenElse(v => isNaN(+v),
+            () => 'auto',
+            v => +v
+          );
+          handler = Util.ifThenElse(v => v !== undefined,
+            v => prop(isNaN(+v) ? v : +v),
+            () => getDiameter(prop())
+          );
+        } else
           handler = Util.ifThenElse(v => v !== undefined,
             v => prop(v + ''),
             () => {
@@ -383,6 +392,17 @@ export class EagleElement extends EagleNode {
 
     if(tagName == 'layer') this.elements = new Set();
 
+    if(tagName == 'pad') {
+      trkl.bind(this, 'radius', value => {
+        let { diameter, drill } = this;
+
+        if(Util.isNumeric(diameter)) return +diameter / 2;
+
+        let radius = drill / 2 + 0.45 / 2;
+        return radius;
+      });
+    }
+
     /*
     if(this.layer)
       this.layer.elements.add(this);*/
@@ -581,6 +601,10 @@ export class EagleElement extends EagleNode {
     return bb;
   }
 
+  get bounds() {
+    return this.getBounds();
+  }
+
   transformation() {
     let ret = new TransformationList();
     let rot = this.rot || '';
@@ -598,6 +622,8 @@ export class EagleElement extends EagleNode {
 
     if(['x', 'y', 'radius'].every(prop => keys.includes(prop))) {
       return Circle.bind(this, null, makeGetterSetter);
+    } else if(['diameter', 'drill'].some(prop => keys.includes(prop))) {
+      return Circle.bind(this, null, makeGetterSetter);
     } else if(['x1', 'y1', 'x2', 'y2'].every(prop => keys.includes(prop))) {
       let line = Line.bind(this, null, makeGetterSetter);
       trkl.bind(line, 'curve', this.handlers['curve']);
@@ -612,7 +638,7 @@ export class EagleElement extends EagleNode {
 
     if(['package', 'symbol'].indexOf(this.tagName) == -1) return;
 
-    console.log('get geometry', this, this.children);
+    //    console.log('get geometry', this, this.children);
 
     if(this.raw.children && this.raw.children.length) {
       let ret = new Map();

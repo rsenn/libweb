@@ -1,20 +1,21 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import { TransformationList } from '../../geom/transformation.js';
-import { BoardPackage } from './package.js';
-import { MakeRotation } from '../renderUtils.js';
+import { Package } from './package.js';
+import { MakeRotation, log } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
 
-export const Element = ({ data, opts = {}, transformation, ...props }) => {
+export const Element = ({ data, opts = {}, ...props }) => {
+  let { transformation = new TransformationList() } = opts;
+  log('Element.render', { transformation, data });
   let element =
     useValue(async function* () {
       for await (let change of data.repeater) {
-        console.log('Element.change:', change);
+        log('Element.change:', change);
         yield change;
       }
     }) || data;
 
   let { x, y, rot, library, name, value } = element;
-  let { transform = new TransformationList() } = opts;
 
   transform.translate(x, y);
   if(rot) {
@@ -24,16 +25,14 @@ export const Element = ({ data, opts = {}, transformation, ...props }) => {
 
   if(!value && element.package) value = element.package.name;
 
-  const pkg = h(BoardPackage, {
+  const pkg = h(Package, {
     data: element.package,
     opts: {
       ...opts,
       ...{ name, value },
-      transformation: transformation.concat(transform.filter(t => ['translate'].indexOf(t.type) == -1))
+      transformation: transformation.concat(transform/*.filter(t => ['translate'].indexOf(t.type) == -1)*/)
     }
   });
-
-  console.log('Element.render', { name, value, library: library.name, rot, x, y });
 
   return h('g', { className: `element.${element.name}`, 'data-path': element.path.toString(' '), transform }, [pkg]);
 };

@@ -15,6 +15,12 @@ export const VERTICAL = 1;
 export const HORIZONTAL = 2;
 export const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
 
+let DEBUG = true;
+
+export let log = DEBUG
+  ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console)
+  : () => {};
+
 export const EscapeClassName = name =>
   name ||
   encodeURIComponent(name)

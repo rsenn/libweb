@@ -1,3 +1,4 @@
+import { log } from '../renderUtils.js';
 import { h, Component, toChildArray } from '../../dom/preactComponent.js';
 import { Rect } from '../../geom.js';
 import { Grid, Pattern } from './grid.js';
@@ -8,10 +9,10 @@ export const Drawing = ({ rect, bounds, attrs, grid, transform, styles, children
   let viewBox = new Rect(rect);
   //viewBox.y = bounds.y1;
 
-  return h(SVG, { viewBox, styles, style, defs: h(Pattern, { data: grid, id: 'grid', attrs: attrs.grid }), ...props }, [
+  return h(SVG, { viewBox, styles, style, defs: h(Pattern, { data: grid, id: 'grid', attrs: attrs.grid }), transform, ...props }, [
     h('g', { id: 'bg', transform }, [
       h(Background, { rect, attrs: attrs.bg }),
-      h(Grid, { data: grid, rect, attrs: attrs.grid, transform })
+      h(Grid, { data: grid, rect, attrs: attrs.grid })
     ]),
     ...toChildArray(children)
   ]);

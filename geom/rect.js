@@ -182,7 +182,7 @@ Object.defineProperty(Rect.prototype, 'area', {
 
 const getSize = Util.memoize(rect =>
   Util.bindProperties(new Size(0, 0), rect, ['width', 'height'], k => {
-    console.log('gen', { k });
+    // console.log('gen', { k });
     return v => {
       return v !== undefined ? (rect[k] = v) : rect[k];
     };
@@ -202,14 +202,14 @@ Rect.prototype.getSize = Util.memoize;
 Object.defineProperty(Rect.prototype, 'size', {
   get() {
     let ret = getSize(this);
-    console.log('getSize( ) =', ret);
+    //console.log('getSize( ) =', ret);
     return ret;
   }
 });
 Object.defineProperty(Rect.prototype, 'point', {
   get() {
     let ret = getPoint(this);
-    console.log('getPoint( ) =', ret);
+    //console.log('getPoint( ) =', ret);
     return ret;
   }
 });
@@ -427,11 +427,14 @@ Rect.prototype[Symbol.iterator] = function* () {
   for(let prop of [x, y, width, height]) yield prop;
 };
 
-Rect.round = rect => Rect.prototype.round.call(rect);
+Rect.isBBox = rect => !(rect instanceof Rect) && ['x1', 'x2', 'y1', 'y2'].every(prop => prop in rect);
+Rect.assign = (to, rect) => Object.assign(to, new Rect(rect).toObject(Rect.isBBox(to)));
 Rect.align = (rect, align_to, a = 0) => Rect.prototype.align.call(rect, align_to, a);
 Rect.toCSS = rect => Rect.prototype.toCSS.call(rect);
-Rect.inset = (rect, trbl) => Rect.prototype.inset.call(rect, trbl);
-Rect.outset = (rect, trbl) => Rect.prototype.outset.call(rect, trbl);
+
+Rect.round = (rect, ...args) => Rect.assign(rect, new Rect(rect).round(...args));
+Rect.inset = (rect, trbl) => Rect.assign(rect, new Rect(rect).inset(trbl));
+Rect.outset = (rect, trbl) => Rect.assign(rect, new Rect(rect).outset(trbl));
 
 Rect.center = rect => new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 Rect.bind = rect => {

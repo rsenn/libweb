@@ -60,6 +60,9 @@ export class EagleReference {
     return EagleRef(this.root, this.path.slice(0, -1));
   }
 
+  get prevSibling() {
+    return EagleRef(this.root, this.path.prevSibling);
+  }
   get nextSibling() {
     return EagleRef(this.root, this.path.nextSibling);
   }
@@ -67,12 +70,21 @@ export class EagleReference {
   get firstChild() {
     return EagleRef(this.root, this.path.firstChild);
   }
+  get lastChild() {
+    return EagleRef(this.root, this.path.lastChild);
+  }
 
   down(...args) {
     return new EagleReference(this.root, [...this.path, ...args]);
   }
   up(n = 1) {
     return new EagleReference(this.root, this.path.up(n));
+  }
+  left(n) {
+    return new EagleReference(this.root, this.path.left(n));
+  }
+  right(n) {
+    return new EagleReference(this.root, this.path.right(n));
   }
 
   shift(n = 1) {

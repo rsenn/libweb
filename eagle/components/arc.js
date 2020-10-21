@@ -1,3 +1,4 @@
+import { log } from '../renderUtils.js';
 import { h, Component } from '../../dom/preactComponent.js';
 
 export function polarToCartesian(x, y, r, deg) {

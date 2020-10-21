@@ -1,10 +1,10 @@
 import Util from '../../util.js';
-import { useTrkl } from '../renderUtils.js';
+import { useTrkl, log } from '../renderUtils.js';
 import { h, Component } from '../../dom/preactComponent.js';
 
 export const WirePath = ({ className, path, cmds, separator = '\n', color, width, layer, ...props }) => {
   let visible = 'yes' == useTrkl(layer.handlers.visible);
-  console.debug('Lines visible:', visible);
+  log('Lines visible:', visible);
 
   let attrs = {
     stroke: color + '',
@@ -14,8 +14,8 @@ export const WirePath = ({ className, path, cmds, separator = '\n', color, width
     style: visible ? undefined : { display: 'none' }
   };
 
-  console.info('WirePath path:', path);
-  console.info('WirePath cmds:', cmds);
+  log('WirePath path:', path);
+  log('WirePath cmds:', cmds);
 
   return h(Util.isArray(path) ? 'g' : 'path',
     {
@@ -26,7 +26,7 @@ export const WirePath = ({ className, path, cmds, separator = '\n', color, width
     },
     Util.isArray(path)
       ? path.map(cmd => {
-          console.debug('cmd:', cmd);
+          log('cmd:', cmd);
           return h('path', { d: cmd.flat().join(' ') });
         })
       : []

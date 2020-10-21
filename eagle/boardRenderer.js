@@ -15,16 +15,16 @@ export class BoardRenderer extends EagleSVGRenderer {
   static palette = Palette.board((r, g, b) => new RGBA(r, g, b));
 
   constructor(obj, factory) {
-    super(obj, factory);
+    super(obj.document, factory);
     const { layers, elements, signals, sheets } = obj;
 
-    let board = obj;
+    let board = obj.tagName == 'board' ? obj : obj.document.mainElement;
 
     this.elements = elements;
     this.signals = signals;
     //this.plain = board.plain; //get('plain', (v, l) => EagleElement.get(board, l));
     this.layers = layers;
-    this.sheets = sheets;
+    this.board = board;
 
     this.setPalette(BoardRenderer.palette);
   }
@@ -135,7 +135,7 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(coll, parent, opts = {}) {
-    const { predicate = i => true, transform, pos, rot, name, layer, props = {} } = opts;
+    const { predicate = i => true, transform, pos, rot, name, layer, props = {}, flat } = opts;
     //  this.debug(`BoardRenderer.renderCollection`, { name, transform, pos, rot, layer },coll);
     this.debug(`BoardRenderer.renderCollection`, coll);
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
@@ -196,11 +196,21 @@ export class BoardRenderer extends EagleSVGRenderer {
       const color = layer.color;
       //this.debug('color:', color, layer.color);
       if(true) {
-        let cmds = LinesToPath(lines).flat();
+        let cmds = LinesToPath(lines);
+
+        if(flat) cmds = cmds.flat();
 
         console.log('cmds:', cmds);
 
-        this.create(WirePath, { class: classNames(addClass, ElementToClass(wires[0], layer.name)), cmds, color, width, layer, ...addProps },
+        this.create(WirePath, {
+            class: classNames(addClass, ElementToClass(wires[0], layer.name)),
+            cmds,
+            color,
+            width,
+            layer,
+            separator: flat ? ' ' : '\n',
+            ...addProps
+          },
           parent
         );
       } else {
@@ -250,7 +260,8 @@ export class BoardRenderer extends EagleSVGRenderer {
     this.renderCollection(element.package.children, g, {
       name,
       value,
-      transformation: rotation.slice()
+      transformation: rotation.slice(),
+      flat: true
     });
     this.create(Origin, { x, y, color: '#f0f', element, layer: this.layers['tOrigins'] }, g);
 

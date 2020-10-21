@@ -1,3 +1,4 @@
+import { log } from '../renderUtils.js';
 import { h, Component } from '../../dom/preactComponent.js';
 
 export const SVG = ({ viewBox, preserveAspectRatio = 'xMinYMin', styles, children, defs, ...props }) => {
@@ -6,6 +7,6 @@ export const SVG = ({ viewBox, preserveAspectRatio = 'xMinYMin', styles, childre
       viewBox,
       preserveAspectRatio,
       ...props
-    }, [h('style', {}, styles), h('defs', {}, defs), ...children]
+    }, [h('defs', {}, defs), h('style', {}, styles), ...children]
   );
 };

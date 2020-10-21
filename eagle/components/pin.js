@@ -1,5 +1,5 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import { MakeCoordTransformer, ElementToClass } from '../renderUtils.js';
+import { MakeCoordTransformer, ElementToClass, log } from '../renderUtils.js';
 import { TransformationList, Point, Line } from '../../geom.js';
 import { RGBA } from '../../color.js';
 import { Palette } from '../common.js';
@@ -15,7 +15,7 @@ export const PinSizes = {
 export const Pin = ({ data, opts = {}, ...props }) => {
   data = data || props.item;
 
-  //console.log('Pin.render ', { data, opts });
+  //log('Pin.render ', { data, opts });
   let { transform = new TransformationList() } = opts;
 
   let { transformation } = opts;

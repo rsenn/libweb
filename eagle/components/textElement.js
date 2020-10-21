@@ -1,15 +1,14 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import Util from '../../util.js';
-import { MakeCoordTransformer } from '../renderUtils.js';
+import { MakeCoordTransformer, useTrkl, ElementToClass, log } from '../renderUtils.js';
 import { Text } from './text.js';
-import { useTrkl, ElementToClass } from '../renderUtils.js';
 import { toXML } from '../../json.js';
 import { classNames } from '../../classNames.js';
 
-export const TextElement = ({ data, opts = {}, ...props }) => {
+export const TextElement = ({ data, opts = {}, transform = new TransformationList(), ...props }) => {
   data = data || props.item;
 
-  let { transform = new TransformationList(), transformation } = opts;
+  let { transformation = new TransformationList() } = opts;
 
   if(!transformation) Util.putStack();
 
@@ -27,7 +26,7 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
     const prop = text.slice(1).toLowerCase();
     text = prop in opts ? opts[prop] : text;
   } else {
-    //console.log('TextElement', data.tagName, Util.isObject(data) && '\n' + toXML(data.raw), '\n' + text);
+    //log('TextElement', data.tagName, Util.isObject(data) && '\n' + toXML(data.raw), '\n' + text);
   }
   let attrs = {};
   if(align !== undefined) attrs['data-align'] = align;
@@ -45,8 +44,8 @@ export const TextElement = ({ data, opts = {}, ...props }) => {
     rot,
     alignment: align,
     text,
-    transformation,
     visible,
+    opts,
     ...attrs
   });
 };

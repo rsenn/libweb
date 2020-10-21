@@ -1,5 +1,5 @@
 import { h, Component } from '../../dom/preactComponent.js';
-import { useTrkl, useAttributes } from '../renderUtils.js';
+import { useTrkl, useAttributes, log } from '../renderUtils.js';
 
 export const Cross = ({
   x,

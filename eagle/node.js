@@ -285,12 +285,12 @@ export class EagleNode {
 
   get nextSibling() {
     const ref = this.ref.nextSibling;
-    return ref ? new this[Symbol.species](this, ref) : null;
+    return ref ? new this.constructor[Symbol.species](this, ref) : null;
   }
 
   get prevSibling() {
     const ref = this.ref.prevSibling;
-    return ref ? new this[Symbol.species](this, ref) : null;
+    return ref ? new this.constructor[Symbol.species](this, ref) : null;
   }
 
   get parentNode() {
@@ -304,12 +304,12 @@ export class EagleNode {
   }
 
   get firstChild() {
-    const ref = this.ref.firstChild;
+    const ref = this.ref.down('children', 0);
     return ref ? new this.constructor[Symbol.species](this, ref) : null;
   }
 
   get lastChild() {
-    const ref = this.ref.lastChild;
+    const ref = this.ref.down('children', -1);
     return ref ? new this.constructor[Symbol.species](this, ref) : null;
   }
 
@@ -405,19 +405,11 @@ export class EagleNode {
 
   xpath() {
     const { ref, owner } = this;
-    console.log('Node.xpath', ref.path, ref.root);
+    //console.log('Node.xpath', this, ref.path, ref.root);
     let x;
     try {
-      x = ImmutableXPath.from(ref.path.filter(p => p != 'children'),
-        ref.root
-      );
+      x = ImmutableXPath.from(ref.path, this.document);
     } catch(err) {}
-    if(x) return x;
-
-    try {
-      x = new ImmutableXPath(ref.path /*.filter(p => p != 'children')*/, ref.root);
-    } catch(err) {}
-
     return x;
   }
 

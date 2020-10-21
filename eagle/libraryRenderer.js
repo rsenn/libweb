@@ -4,6 +4,8 @@ import { RGBA } from '../color/rgba.js';
 import { Palette } from './common.js';
 import { LayerAttributes, MakeCoordTransformer } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
+import { ElementToComponent, Package } from './components.js';
+import { Frame } from './components/frame.js';
 
 export class LibraryRenderer extends EagleSVGRenderer {
   static pinSizes = {
@@ -18,10 +20,14 @@ export class LibraryRenderer extends EagleSVGRenderer {
     schematic: Palette.schematic((r, g, b) => new RGBA(r, g, b))
   };
 
-  constructor(doc, factory) {
-    super(doc, factory);
+  constructor(obj, factory) {
+    super(obj.document, factory);
+
+    let library = obj.tagName == 'library' ? obj : obj.document.mainElement;
+
     this.id = 0;
     this.palette = LibraryRenderer.palette;
+    this.library = library;
   }
 
   /**
@@ -31,47 +37,108 @@ export class LibraryRenderer extends EagleSVGRenderer {
    * @param      {<type>}  parent     The parent
    * @param      {<type>}  [opts={}]  The options
    */
-  renderItem(item, parent, opts = {}) {
-    const { transform = new TransformationList(), rot, pos, labelText } = opts;
-
+  renderItem(item, options = {}) {
+    const {
+      transform,
+      transformation = this.mirrorY,
+      viewRect,
+      viewSize,
+      svgElement = true,
+      create = this.create,
+      ...opts
+    } = options;
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
-
-    /* if(rot)*/ this.debug(`LibraryRenderer.renderItem`,
-      /* { labelText, pos, transform, rot }, */ item /*, item.xpath().toString()*/,
-      item.raw
-    );
-
+    this.debug(`LibraryRenderer.renderItem`, item, item.raw);
     const layer = item.layer;
-    const color = (opts && opts.color) || (layer && this.getColor(layer.color));
-    const svg = (elem, attr, parent) =>
-      this.create(elem, {
-          className: item.tagName, //...LayerAttributes(layer),
+    const color = (options && options.color) || (layer && this.getColor(layer.color));
+    const comp = ElementToComponent(item);
+    let component;
+    if(!comp) throw new Error(`No component for item '${item.tagName}'`);
+    this.debug('comp =', comp);
+    this.debug('item.tagName =', item.tagName);
+    const svg = (elem, attr, children) =>
+      create(elem, {
+          class: item.tagName,
           'data-path': item.path.toString(' '),
+          'data-xpath': item.xpath()+'',
           ...attr
         },
-        parent
+        children
       );
-    switch (item.tagName) {
-      default: {
-        super.renderItem(item, parent, opts);
-        break;
+    component = svg(comp, { data: item, transform, opts: { ...opts, transformation } });
+    if(svgElement) {
+      let bounds = viewRect ? new BBox(viewRect) : item.getBounds();
+      if(viewSize) {
+        let add = { h: viewSize.width - bounds.width, v: viewSize.height - bounds.height };
+        Rect.outset(bounds, { top: add.v / 2, bottom: add.v / 2, left: add.h / 2, right: add.h / 2 });
+      } else {
+        Rect.outset(bounds, 1.27);
+        Rect.round(bounds, 2.54);
       }
+      component = super.render(item, { ...options, transform: transformation, bounds }, [component]);
     }
+    return component;
   }
-  render(doc = this.doc, parent, props = {}, sheetNo = 0) {
-    const { packages, devicesets, symbols } = doc.library;
 
-    /*    let bounds = new BBox();
-    let rect = new Rect(bounds.rect);
-    this.bounds = bounds;
-    this.rect = rect;
-    rect.outset(1.27);
-    rect.round(2.54);
-    parent = super.render(doc, parent, props);
-    this.debug('this.transform:', this.transform, 'this.rect:', this.rect, 'doc:', doc);
-    this.debug(`LibraryRenderer.render`, { doc, sheetNo, bounds });
-    this.renderSheet(sheet, parent);*/
-    return parent;
+  renderCollection(collection, options = {}) {
+    if(collection instanceof EagleElement)
+      collection = [...collection.children];
+
+    this.debug("LibraryRenderer.renderCollection", {collection,options});
+    let items = collection.map(item => [[Util.ucfirst(item.tagName), item.name], this.renderItem(item, options)]);
+    return items;
+  }
+
+  render(options = {}) {
+    let {
+      component = Fragment,
+      props = {},
+      item = { component: Fragment, props: {} },
+      asEntries = false,
+      ...opts
+    } = options;
+    const { symbols, packages, devicesets } = this.doc.library;
+    let allItems = (window.allItems = [...symbols.children, ...packages.children /*, ...devicesets.list*/]);
+    //console.log("allItems:", allItems);
+    let bbox = allItems.reduce((a, it) => a.update(it.getBounds()), new BBox());
+    let size = bbox.toRect(Rect.prototype).size;
+
+    //console.log("size:", size);
+
+    let items = [symbols, packages /*, devicesets*/].reduce((a, collection) => [
+        ...a,
+        ...this.renderCollection(collection, {
+          ...opts,
+          viewSize: size /*, create: (...args) => [...args]*/
+          /*    viewRect: bbox || {
+            x1: -25.4,
+            x2: 25.4,
+            y1: -25.4,
+            y2: 25.4
+          }*/
+        })
+      ],
+      []
+    );
+    this.entries = items.map(([title, component]) => [title.join(' '), component]);
+    if(asEntries) return this.entries;
+    component = 'div';
+    props = {
+      style: {
+        display: 'flex',
+        width: '100vw',
+        flexFlow: 'row wrap',
+        transform: `translate(-50vw, -50vh)`
+      }
+    };
+    item.component = Frame;
+    item.props = {};
+    return h(component,
+      props,
+      items.map(([title, component]) =>
+        h(item.component, { class: title[0].toLowerCase(), title, ...item.props }, [component])
+      )
+    );
   }
 }
 

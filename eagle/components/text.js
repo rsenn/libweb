@@ -1,37 +1,23 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import { MakeRotation, Alignment, VERTICAL, HORIZONTAL } from '../renderUtils.js';
+import { MakeRotation, Alignment, VERTICAL, HORIZONTAL, log } from '../renderUtils.js';
 import { TransformationList, Rotation } from '../../geom.js';
 
-export const Text = ({ x, y, text, color, alignment, rot, transformation, visible, className, ...props }) => {
-  console.log(`Text.render`, { x, y, text, alignment, rot, transformation, ...props });
+export const Text = ({ x, y, text, color, alignment, rot, visible, className, opts = {}, ...props }) => {
+  let { transformation = new TransformationList() } = opts;
+  log(`Text.render`, { text, transformation, x, y, alignment, rot });
 
-  let transform = new TransformationList();
-  transform.translate(x, y);
-  let rotation = MakeRotation(rot);
+let rotation = MakeRotation(rot);
+let {angle = 0 } = rotation;
+let realAngle = Util.mod(angle, 180);
 
-  transform = transform.concat(transformation
-      // .slice(1)
-      .filter(t => ['translate'].indexOf(t.type) == -1)
-      .invert()
-  );
+  let transform = new TransformationList().translate(x,y).concat(transformation.scaling ? [transformation.scaling] : []).rotate(-realAngle);
+ 
+let diffAngle = angle - realAngle;
 
-  let matrix = transform.toMatrix();
-  let { rotate } = matrix.decompose();
-  console.log(`rotate ${text}`, (rotate * 180) / Math.PI);
+  let align = Alignment(alignment);
+    log(`Text.render`, { text,diffAngle, transform, align });
 
-  let alignmentTransform;
-  let angle = Util.mod(Math.round((rotate * 180) / Math.PI), 360);
-  alignmentTransform = new Rotation(angle);
-  console.log(`alignmentTransform ${text}`, alignmentTransform);
-  alignment = Alignment(alignment);
-  console.log(`alignment ${text}`, AlignmentAttrs(alignment));
-  alignment = alignment.transform(alignmentTransform);
-  console.log(`alignment.transform ${text}`, AlignmentAttrs(alignment));
-
-  transform = transform.concat(alignmentTransform);
-
-  console.log(`transform ${text}`, transform);
-  console.log(`transform ${text}`, transform + '');
+align = align.rotate(diffAngle);
 
   return h(Fragment, {}, [
     h('text', {
@@ -40,11 +26,12 @@ export const Text = ({ x, y, text, color, alignment, rot, transformation, visibl
         stroke: 'none',
         'stroke-width': 0.05,
         style: visible ? {} : { display: 'none' },
-        ...AlignmentAttrs(alignment, VERTICAL),
+        ...AlignmentAttrs(align, VERTICAL),
         ...props,
         transform
       },
-      h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL), children: text })
-    )
+      h('tspan', { ...AlignmentAttrs(align, HORIZONTAL), children: text })
+    ),
+    h('circle', {cx: x, cy: y, r: 0.2, stroke: 'red', 'stroke-width': 0.1, fill: 'none' })
   ]);
 };

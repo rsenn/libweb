@@ -90,14 +90,18 @@ export class MutablePath extends Array {
   }
 
   static matchObj(tagName, attr_or_index, tagField = 'tagName') {
-    return typeof attr_or_index == 'number'
-      ? [attr_or_index, tagName]
-      : Util.isObject(attr_or_index)
-      ? { tagName, attributes: attr_or_index }
-      : eval(`e => e.${tagField} === '${tagName}'`);
+    if(typeof attr_or_index == 'number')
+      return [attr_or_index, tagName];
+     if(Util.isObject(attr_or_index))
+      return { tagName, attributes: attr_or_index }
+    let cmd =`e => e.${tagField} === '${tagName}'`;
+    console.log("matchObj:",cmd);
+    console.log("typeof(tagName):",typeof(tagName));
+      return eval(cmd);
   }
 
   static partMatcher(obj, tagField = 'tagName') {
+//    console.log("obj:", obj);
     let fn = ImmutablePath.matchObj(obj[tagField], null, tagField);
     fn.object = obj;
     return fn;
@@ -131,6 +135,8 @@ export class MutablePath extends Array {
           if(/^\[.*\]$/.test(part + '')) {
             part = part.substring(1, part.length - 1);
           } else if(/^[A-Za-z]/.test(part)) {
+            console.log("part:", part);
+            console.log("part:", typeof part);
             if(!out.constructor.isMemberName(part, out))
               part = (out.constructor.partMatcher || MutablePath.partMatcher)({ [out.tagField || 'tagName']: part },
                 out.tagField || 'tagName'
@@ -204,10 +210,8 @@ export class MutablePath extends Array {
    * @return     {Path}
    */
   right(n = 1) {
-    if(this.last + n < this.length) {
-      const ctor = this.constructor[Symbol.species];
-      return new ctor(this.splice(-1, 1, Math.min(this.length, this.last + n)));
-    }
+    const ctor = this.constructor[Symbol.species];
+    return new ctor(this.splice(-1, 1, this.last + n));
   }
 
   /**
@@ -217,10 +221,8 @@ export class MutablePath extends Array {
    * @return     {Path}
    */
   left(n = 1) {
-    if(this.last >= n) {
-      const ctor = this.constructor[Symbol.species];
-      return new ctor(this.splice(-1, 1, Math.max(0, this.last - n)));
-    }
+    const ctor = this.constructor[Symbol.species];
+    return new ctor(this.splice(-1, 1, this.last - n));
   }
 
   /**

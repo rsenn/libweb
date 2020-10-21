@@ -292,4 +292,19 @@ export class EagleDocument extends EagleNode {
       if(layer) return layer;
     }
   }
+
+  getMainElement() {
+    switch (this.type) {
+      case 'brd':
+        return this.lookup('eagle/drawing/board');
+      case 'sch':
+        return this.lookup('eagle/drawing/schematic');
+      case 'lbr':
+        return this.lookup('eagle/drawing/library');
+    }
+  }
+
+  get mainElement() {
+    return this.getMainElement();
+  }
 }

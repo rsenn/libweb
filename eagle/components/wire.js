@@ -1,17 +1,16 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import Util from '../../util.js';
-import { MakeCoordTransformer, ElementToClass } from '../renderUtils.js';
+import { MakeCoordTransformer, ElementToClass, useTrkl, log } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
-import { useTrkl } from '../renderUtils.js';
 
 export const Wire = ({ data, opts = {}, ...props }) => {
-  console.info('Wire.render ', { data, opts });
+  //log('Wire.render ', { data, opts });
 
   let wire =
     useValue(async function* () {
-      console.log('data.repeater:', data.repeater);
+      // log('data.repeater:', data.repeater);
       for await (let change of data.repeater) {
-        console.log('change:', change);
+        // log('change:', change);
         yield change;
       }
     }) || data;
@@ -27,7 +26,7 @@ export const Wire = ({ data, opts = {}, ...props }) => {
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
 
   return h('line', {
-    class: classNames(...ElementToClass(wire, layer.name)),
+    class: ElementToClass(wire, layer.name),
     stroke: color,
     x1,
     x2,

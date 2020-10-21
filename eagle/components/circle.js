@@ -1,7 +1,6 @@
 import { h, Component } from '../../dom/preactComponent.js';
-import { MakeCoordTransformer, ElementToClass } from '../renderUtils.js';
+import { MakeCoordTransformer, ElementToClass, useTrkl, log } from '../renderUtils.js';
 import { TransformationList } from '../../geom/transformation.js';
-import { useTrkl } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
 
 export const PinSizes = {
@@ -17,12 +16,12 @@ export const Circle = ({ data, opts = {}, ...props }) => {
   let circle =
     useValue(async function* () {
       for await (let change of data.repeater) {
-        console.log('Circle.change:', change);
+        log('Circle.change:', change);
         yield change;
       }
     }) || data;
 
-  console.log('Circle.render ', { circle, opts });
+  log('Circle.render ', { circle, opts });
   let { transform = new TransformationList() } = opts;
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
