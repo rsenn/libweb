@@ -135,7 +135,7 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(coll, parent, opts = {}) {
-    const { predicate = i => true, transform, pos, rot, name, layer, props = {}, flat } = opts;
+    const { predicate = i => i.tagName != 'description', transform, pos, rot, name, layer, props = {}, flat } = opts;
     //  this.debug(`BoardRenderer.renderCollection`, { name, transform, pos, rot, layer },coll);
     this.debug(`BoardRenderer.renderCollection`, coll);
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
@@ -323,12 +323,12 @@ export class BoardRenderer extends EagleSVGRenderer {
     const { bounds, rect } = this;
     this.debug(`BoardRenderer.render`, { bounds, rect });
     //this.renderLayers(parent);
-    let plainGroup = this.create('g', { class: 'plain', transform }, parent);
+    let plainGroup = this.create('g', { class: 'plain' /*, transform */ }, parent);
     let signalsGroup = this.create('g',
-      { class: 'signals', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', transform },
+      { class: 'signals', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' /*, transform*/ },
       parent
     );
-    let elementsGroup = this.create('g', { class: 'elements', transform }, parent);
+    let elementsGroup = this.create('g', { class: 'elements' /*, transform */ }, parent);
     this.debug('bounds: ', bounds);
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {

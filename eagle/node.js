@@ -404,13 +404,10 @@ export class EagleNode {
   }
 
   xpath() {
-    const { ref, owner } = this;
-    //console.log('Node.xpath', this, ref.path, ref.root);
-    let x;
-    try {
-      x = ImmutableXPath.from(ref.path, this.document);
-    } catch(err) {}
-    return x;
+    return Util.tryCatch(() => ImmutableXPath.from(this.path, this.document),
+      xpath => xpath,
+      () => Object.setPrototypeOf([...this.path], ImmutableXPath.prototype)
+    );
   }
 
   entries(t = ([v, l, d]) => [l[l.length - 1], EagleElement.get(d, l)]) {

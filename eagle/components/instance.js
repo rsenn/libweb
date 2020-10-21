@@ -17,6 +17,7 @@ export const Instance = ({ data, opts = {}, ...props }) => {
 
   let { x, y, rot, part, symbol } = instance;
   let { deviceset, name, value } = part;
+let transform = new TransformationList();
 
   transform.translate(x, y);
   if(rot) {

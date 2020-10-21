@@ -60,7 +60,7 @@ export class LibraryRenderer extends EagleSVGRenderer {
       create(elem, {
           class: item.tagName,
           'data-path': item.path.toString(' '),
-          'data-xpath': item.xpath()+'',
+          'data-xpath': item.xpath() + '',
           ...attr
         },
         children
@@ -81,10 +81,9 @@ export class LibraryRenderer extends EagleSVGRenderer {
   }
 
   renderCollection(collection, options = {}) {
-    if(collection instanceof EagleElement)
-      collection = [...collection.children];
+    if(collection instanceof EagleElement) collection = [...collection.children];
 
-    this.debug("LibraryRenderer.renderCollection", {collection,options});
+    this.debug('LibraryRenderer.renderCollection', { collection, options });
     let items = collection.map(item => [[Util.ucfirst(item.tagName), item.name], this.renderItem(item, options)]);
     return items;
   }
@@ -128,6 +127,7 @@ export class LibraryRenderer extends EagleSVGRenderer {
         display: 'flex',
         width: '100vw',
         flexFlow: 'row wrap',
+        alignItems: 'flex-start',
         transform: `translate(-50vw, -50vh)`
       }
     };

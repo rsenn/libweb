@@ -18,7 +18,7 @@ export class EagleSVGRenderer {
   layers = {};
   colors = {};
   transformStack = [];
-  transform = new TransformationList();
+  transform = new TransformationList().scale(1, -1);
 
   itemMap = new Map();
   path2component = null;
@@ -48,15 +48,7 @@ export class EagleSVGRenderer {
       if(path) {
         let e = path.apply(doc, true);
         let parent = e.parentNode;
-        /*    console.log('PATHSTR: ',
-          pathStr,
-          `\nPATH: `,
-          e.xpath() + '',
-          `\nELEMENT:\n `,
-          e + '',
-          '\nRET:\n ',
-          ReactComponent.toObject(ret)
-        );*/
+ 
         insert(path, ret);
       }
       return ret;
@@ -228,6 +220,8 @@ export class EagleSVGRenderer {
         },
         parent
       );
+
+      return elem;
     }
 
     switch (item.tagName) {
@@ -357,6 +351,7 @@ export class EagleSVGRenderer {
         );
         break;
       }*/
+      case 'pinref':
       case 'contactref':
         break;
       default: {
@@ -427,11 +422,10 @@ export class EagleSVGRenderer {
     //this.debug('EagleSVGRenderer.render', { bounds: this.bounds, rect });
     //this.debug('bounds:', this.bounds.toString({ separator: ' ' }));
     const { width, height } = (this.size = rect.size.toCSS('mm'));
-    this.transform.clear();
-    this.transform.translate(0, rect.height - rect.y);
-    this.transform.scale(1, -1);
-   // const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;
-  this.debug('SVGRenderer.render', {transform});
+    //this.transform.translate(0, rect.height - rect.y);
+
+    // const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;
+    this.debug('SVGRenderer.render', { transform });
     //this.debug(bounds);
     //this.debug('viewBox rect:', rect, rect.toString(), rect.valueOf);
     let grid = doc.lookup('/eagle/drawing/grid');
@@ -457,8 +451,8 @@ export class EagleSVGRenderer {
           '.pad > text { fill: #ff33ff; }',
           // ...this.doc.layers.map(layer => `.${LayerToClass(layer).join('.')} { stroke: ${layer.color.hex()}; }`),
           'rect { stroke: none; }'
-        ]
-         , transform
+        ],
+        transform
       },
       children
     );

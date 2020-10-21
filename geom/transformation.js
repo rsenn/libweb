@@ -271,7 +271,7 @@ export class Translation extends Transformation {
 
   isZero() {
     const { x, y, z } = this;
-    return 'z' in this ? x == 1 && y == 1 && z == 1 : x == 1 && y == 1;
+    return 'z' in this ? x == 0 && y == 0 && z == 0 : x == 0 && y == 0;
   }
 
   toMatrix(matrix = Matrix.IDENTITY) {
@@ -331,7 +331,7 @@ export class Scaling extends Transformation {
 
   isZero() {
     const { x, y, z } = this;
-    return 'z' in this ? x == 0 && y == 0 && z == 0 : x == 0 && y == 0;
+    return 'z' in this ? x == 1 && y == 1 && z == 1 : x == 1 && y == 1;
   }
 
   toString() {
@@ -568,8 +568,7 @@ export class TransformationList extends Array {
 
   rotate(...args) {
     let rotation = new Rotation(...args);
-    if(!rotation.isZero())
-    Array.prototype.push.call(this,rotation);
+    if(!rotation.isZero()) Array.prototype.push.call(this, rotation);
     return this;
   }
 
@@ -581,38 +580,36 @@ export class TransformationList extends Array {
 
     vec = vec.round(0.00001, 5);
     //console.log("from:", new Point(x,y), " to:", vec);
-let translation = new Translation(vec.x, vec.y);
+    let translation = new Translation(vec.x, vec.y);
 
-if(!translation.isZero())
-/*    if(Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) */Array.prototype.push.call(this, translation);
+    if(!translation.isZero())
+      /*    if(Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) */ Array.prototype.push.call(this, translation);
 
     return this;
   }
 
   scale(...args) {
     let scaling = new Scaling(...args);
-    if(!scaling.isZero())
-    Array.prototype.push.call(this, scaling);
+    if(!scaling.isZero()) Array.prototype.push.call(this, scaling);
     return this;
   }
 
   matrix(...args) {
-    let matrixTransformation=new MatrixTransformation(...args);
-    if(!matrixTransformation.isZero())
-    Array.prototype.push.call(this, matrixTransformation);
+    let matrixTransformation = new MatrixTransformation(...args);
+    if(!matrixTransformation.isZero()) Array.prototype.push.call(this, matrixTransformation);
     return this;
   }
 
   toString(tUnit, rUnit) {
-    tUnit = tUnit || this.translationUnit;
-    rUnit = rUnit || this.rotationUnit;
-    let r = this.map(t => t.toString(t.type.startsWith('scal') ? '' : t.type.startsWith('rotat') ? rUnit : tUnit)).join(' '
-    );
-
-    /*  if(tUnit === undefined || rUnit === undefined) {
-      console.error(tUnit || 'no tUnit', rUnit || 'no rUnit', this, r);
-    }*/
-    return r;
+    if(this.length > 0) {
+      tUnit = tUnit || this.translationUnit;
+      rUnit = rUnit || this.rotationUnit;
+      let r = this.map(t =>
+        t.toString(t.type.startsWith('scal') ? '' : t.type.startsWith('rotat') ? rUnit : tUnit)
+      ).join(' ');
+      return r;
+    }
+    return '';
   }
 
   [Symbol.toStringTag]() {
@@ -627,7 +624,7 @@ if(!translation.isZero())
   }
 
   toMatrices() {
-    return Array.prototype.map.call(this, t => t.toMatrix());
+    return Array.prototype.map.call([...this], t => t.toMatrix());
   }
 
   toMatrix() {
@@ -660,13 +657,13 @@ if(!translation.isZero())
     const { translate, rotate, scale } = matrix.decompose(degrees);
     let decomposed = { translate, rotate, scale };
 
-if(transformationList) {
-    let ret = new TransformationList();
-    ret.translate(translate.x,translate.y,translate.z);
-    ret.rotate(rotate);
-    ret.scale(scale.x, scale.y, scale.z);
-    return ret;
-  }
+    if(transformationList) {
+      let ret = new TransformationList();
+      ret.translate(translate.x, translate.y, translate.z);
+      ret.rotate(rotate);
+      ret.scale(scale.x, scale.y, scale.z);
+      return ret;
+    }
 
     decomposed.scale.toArray = decomposed.translate.toArray = function toArray() {
       return [this.x, this.y];
@@ -706,7 +703,8 @@ if(transformationList) {
   }
 
   get translation() {
-    return this.findLast(item => item instanceof Translation || (typeof(item.type) == 'string' && item.type.startsWith('translat')));
+    return this.findLast(item => item instanceof Translation || (typeof item.type == 'string' && item.type.startsWith('translat'))
+    );
   }
 
   set translation(value) {
@@ -751,9 +749,9 @@ if(transformationList) {
   }
 
   get angle() {
-    let matrix = this.collapseAll();
+    let matrix = this.toMatrix();
     let t = matrix.decompose();
-    let { rotate } = matrix.decompose();
+    let { rotate } = t;
     console.log('ROTATION:', rotate);
     return rotate;
   }

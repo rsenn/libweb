@@ -53,8 +53,8 @@ export class SchematicRenderer extends EagleSVGRenderer {
    * @param      {<type>}  parent     The parent
    * @param      {<type>}  [opts={}]  The options
    */
-  renderItem(item, parent, opts = {}) {
-    const { transform = new TransformationList(), rot, pos, labelText } = opts;
+  renderItem(item, parent, options = {}) {
+    const { transform = new TransformationList(), rot, pos, labelText, ...opts } = options;
 
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
@@ -168,34 +168,37 @@ export class SchematicRenderer extends EagleSVGRenderer {
     let instancesGroup = this.create('g', { className: 'instances', transform }, parent);
 
     instancesGroup.props.children = [...instances.list].map(data =>
-      h(Instance, { data, transformation: this.transform.filter(t => ['translate'].indexOf(t.type) == -1) })
+      h(Instance, { data, transformation: this.transform/*.filter(t => ['translate'].indexOf(t.type) == -1)*/ })
     );
 
     //    ReactComponent.append([...instances.list].map(data => h(Instance, { data })), instancesGroup);
 
     console.log('instancesGroup:', instancesGroup);
 
-    //    for(let instance of instances.list) this.renderInstance(instance, instancesGroup);
+      // for(let instance of instances.list) this.renderInstance(instance, instancesGroup);
 
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
   }
 
   renderInstance(instance, parent, opts = {}) {
-    this.debug(`SchematicRenderer.renderInstance`, instance);
+    this.debug(`SchematicRenderer.renderInstances`, { instance, opts });
 
     let { x, y, rot, part, symbol } = instance;
     //let coordFn = MakeCoordTransformer(this.transform);
     let { deviceset, name, value } = part;
-    let { transform = new TransformationList() } = opts;
+    let transform = new TransformationList();
+
     transform.translate(x, y);
     if(rot) {
       rot = MakeRotation(rot);
       transform = transform.concat(rot);
     }
-    this.debug(`SchematicRenderer.renderInstance`, { x, y, transform });
+    let transformStr = transform+'';
+
+    this.debug(`SchematicRenderer.renderInstance`, { x, y, transform, transformStr });
 
     const g = this.create('g',
-      { className: `part.${part.name}`, 'data-path': part.path.toString(' '), transform },
+      { className: `part.${part.name}`, 'data-path': part.path.toString(' '), transform: transformStr },
       parent
     );
 
@@ -218,8 +221,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
         fill: new HSLA(220, 100, 50, 0.5),
         'stroke-width': 0.2,
         'stroke-dasharray': '0.25 0.25',
-        stroke: 'none',
-        transform
+        stroke: 'none'
       },
       parent
     );
@@ -279,11 +281,8 @@ export class SchematicRenderer extends EagleSVGRenderer {
     bounds = new BBox(rect.x1, -rect.y2, rect.x2, -rect.y1);
 
     this.debug(`SchematicRenderer.render`, { doc, sheetNo, bounds });
-
-    let svgElem = super.render(doc, { bounds });
-
-    this.transform.clear();
-    this.transform.scale(1, -1);
+    let { transform } = this;
+    let svgElem = super.render(sheet, { bounds });
 
     this.debug('this.transform:', this.transform, 'this.rect:', this.rect, 'doc:', doc);
 

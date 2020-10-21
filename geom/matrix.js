@@ -1,6 +1,25 @@
 import Util from '../util.js';
 
-export function Matrix(arg) {
+const rad2deg = radians => (radians * 180) / Math.PI;
+const deg2rad = degrees => (degrees * Math.PI) / 180;
+
+function matrixMultiply(a, b) {
+  var result = [];
+  for(let i = 0; i < a.length; i++) {
+    result[i] = [];
+    for(let j = 0; j < b[0].length; j++) {
+      var sum = 0;
+      for(let k = 0; k < a[0].length; k++) {
+        sum += a[i][k] * b[k][j];
+      }
+      result[i][j] = sum;
+    }
+  }
+  return result;
+}
+
+export function Matrix(...args) {
+  let arg = args[0];
   let ret =
     this instanceof Matrix || new.target === Matrix ? this : [undefined, 0, 0, undefined, 0, 0, undefined, 0, 0];
 
@@ -34,12 +53,12 @@ export function Matrix(arg) {
     ret[3] = arg.b; //yx
     ret[4] = arg.d; //yy
     ret[5] = arg.f; //y0
-  } else if(arg instanceof Array) {
-    Matrix.prototype.init.call(ret, arg);
-  } else if(typeof arg === 'number') {
-    Matrix.prototype.init.apply(ret, arguments);
+  } else if(args.length >= 6) {
+    Matrix.prototype.init.call(ret, ...args);
+    /*} else if(typeof arg === 'number') {
+    Matrix.prototype.init.call(ret, ...args);*/
   } else if(typeof arg === 'string' && /matrix\([^)]*\)/.test(arg)) {
-    let [xx, xy, x0, yx, yy, y0] = [...arg.matchAll(/[-.0-9]+/g)].map(m => parseFloat(m[0]));
+    let [xx, xy, x0, yy, yx, y0] = [...arg.matchAll(/[-.0-9]+/g)].map(m => parseFloat(m[0]));
     ret[0] = xx;
     ret[1] = xy;
     ret[2] = x0;
@@ -98,6 +117,8 @@ const keyIndexes = {
   ty: 5,
   f: 5
 };
+Matrix.keyIndexes = keyIndexes;
+Matrix.valueNames = ['a', 'c', 'e', 'b', 'd', 'f'];
 
 Matrix.prototype.at = function(col, row = 0) {
   return this[row * 3 + col];
@@ -142,9 +163,14 @@ Matrix.propDescriptors =MatrixProps;
 
 Matrix.prototype.init = function(...args) {
   if(args.length == 1) args = args[0];
-  if(args.length < 9) args = args.concat(Array.prototype.slice.call(Matrix.IDENTITY, args.length));
+  //if(args.length < 9) args = args.concat(Array.prototype.slice.call(Matrix.IDENTITY, args.length));
 
-  Array.prototype.splice.call(this, 0, this.length, ...args);
+  let a = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+  const abc = 'abcdef';
+
+  args.map((arg, i) => (a[keyIndexes[abc[i]]] = arg));
+
+  Array.prototype.splice.call(this, 0, this.length, ...a);
   return this;
 };
 
@@ -155,37 +181,12 @@ Matrix.prototype.set_row = function(...args) {
   return this;
 };
 
-Matrix.prototype.multiply = function(...args) {
-  return this.clone().multiplySelf(...args);
+Matrix.prototype.multiply = function(other) {
+  return Object.setPrototypeOf(matrixMultiply(this.rows(), other.rows()).flat(), Matrix.prototype);
 };
 
-Matrix.prototype.multiplySelf = function(...args) {
-  for(let arg of args) {
-    if(!(arg instanceof Matrix)) throw new Error('Not a Matrix: ' + arg.constructor);
-    this.init([
-      this[0] * arg[0] + this[1] * arg[3],
-      this[0] * arg[1] + this[1] * arg[4],
-      this[0] * arg[2] + this[1] * arg[5] + this[2],
-      this[3] * arg[0] + this[4] * arg[3],
-      this[3] * arg[1] + this[4] * arg[4],
-      this[3] * arg[2] + this[4] * arg[5] + this[5]
-    ]);
-  }
-  return this;
-};
-
-Matrix.prototype.multiply_self = function(...args) {
-  for(let m of args) {
-    if(!(m instanceof Matrix)) m = new Matrix(m);
-    Matrix.prototype.init.call(this,
-      this[0] * m[0] + this[1] * m[3],
-      this[0] * m[1] + this[1] * m[4],
-      this[0] * m[2] + this[1] * m[5] + this[2],
-      this[3] * m[0] + this[4] * m[3],
-      this[3] * m[1] + this[4] * m[4],
-      this[3] * m[2] + this[4] * m[5] + this[5]
-    );
-  }
+Matrix.prototype.multiplySelf = function(other) {
+  Array.prototype.splice.call(this, 0, 6, ...matrixMultiply(this.rows(), other.rows()).flat());
   return this;
 };
 Matrix.prototype.toObject = function() {
@@ -196,8 +197,7 @@ Matrix.prototype.entries = function() {
   return Object.entries(Matrix.prototype.toObject.call(this));
 };
 Matrix.prototype.clone = function() {
-  const ctor = this.constructor[Symbol.species];
-  return new ctor(Array.from(this));
+  return new this.constructor[Symbol.species](this);
 };
 Matrix.prototype.row = function(row) {
   let i = row * 3;
@@ -438,12 +438,9 @@ Matrix.getAffineTransform = (a, b) => {
 };
 
 Matrix.prototype.decompose = function(degrees = false, useLU = true) {
-  let a = this[0],
-    b = this[3],
-    c = this[1],
-    d = this[4];
+  let { a, b, c, d, e, f } = this;
 
-  let translate = { x: this[2], y: this[5] },
+  let translate = { x: e, y: f },
     rotation = 0,
     scale = { x: 1, y: 1 },
     skew = { x: 0, y: 0 };
@@ -460,23 +457,25 @@ Matrix.prototype.decompose = function(degrees = false, useLU = true) {
   };
 
   //if(useLU) {
-  let sign = Matrix.prototype.scale_sign.call(this);
+  let sign, cos, sin;
+  sign = Matrix.prototype.scale_sign.call(this);
   rotation = (Math.atan2(this[3], this[4]) + Math.atan2(-sign * this[1], sign * this[0])) / 2;
-  const cos = Math.cos(rotation),
-    sin = Math.sin(rotation);
+  cos = Math.cos(rotation);
+  sin = Math.sin(rotation);
   scale = {
     x: calcFromValues(this[0] / cos, cos, -this[1] / sin, sin),
     y: calcFromValues(this[4] / cos, cos, this[3] / sin, sin)
   };
 
-  /*  } else if(a) {
+  /*if(c || d) {
+    if(a) {
       skew = { x: Math.atan(c / a), y: Math.atan(b / a) };
       scale = { x: a, y: determ / a };
     } else {
       scale = { x: c, y: d };
       skew.x = Math.PI * 0.25;
-    }*/
-  /* } else {
+    }
+  } else {
     if(a || b) {
       r = Math.sqrt(a * a + b * b);
       rotation = b > 0 ? Math.acos(a / r) : -Math.acos(a / r);
@@ -494,44 +493,45 @@ Matrix.prototype.decompose = function(degrees = false, useLU = true) {
 
   return {
     translate,
-    rotate: degrees === true ? Util.roundTo(Matrix.rad2deg(rotation), 0.1) : rotation,
+    rotate: degrees === true ? Util.roundTo((rotation * 180) / Math.PI, 0.1) : rotation,
     scale,
-    skew
+    skew: degrees == true
+        ? { x: Util.roundTo((skew.x * 180) / Math.PI, 0.1), y: Util.roundTo((skew.y * 180) / Math.PI, 0.1) }
+        : skew
   };
 };
 
 Matrix.prototype.init_identity = function() {
-  return Matrix.prototype.init.call(this, 1, 0, 0, 0, 1, 0, 0, 0, 1);
+  return Matrix.prototype.init.call(this, 1, 0, 0, 1, 0, 0);
 };
 Matrix.prototype.is_identity = function() {
   return Matrix.prototype.equals.call(this, [1, 0, 0, 0, 1, 0, 0, 0, 1]);
 };
 Matrix.prototype.init_translate = function(tx, ty) {
-  return Matrix.prototype.init.call(this, 1, 0, tx, 0, 1, ty);
+  return Matrix.prototype.init.call(this, 1, 0, 0, 1, ty, tx);
 };
 
 Matrix.prototype.init_scale = function(sx, sy) {
   if(sy === undefined) sy = sx;
-  return Matrix.prototype.init.call(this, sx, 0, 0, 0, sy, 0);
+  return Matrix.prototype.init.call(this, sx, 0, 0, sy, 0, 0);
 };
 
 Matrix.prototype.init_rotate = function(angle, deg = false) {
-  const rad = deg ? Matrix.deg2rad(angle) : angle;
+  const rad = deg ? deg2rad(angle) : angle;
   const s = Math.sin(rad);
   const c = Math.cos(rad);
-  return Matrix.prototype.init.call(this, c, -s, 0, s, c, 0);
+  return Matrix.prototype.init.call(this, c, s, -s, c, 0, 0);
+  //return Matrix.prototype.init.call(this, c, -s,  s, c, 0, 0);
 };
 Matrix.prototype.init_skew = function(x, y, deg = false) {
-  const ax = Math.tan(deg ? Matrix.deg2rad(x) : x);
-  const ay = Math.tan(deg ? Matrix.deg2rad(y) : y);
-  return Matrix.prototype.init.call(this, 1, ax, 0, ay, 1, 0);
+  const ax = Math.tan(deg ? deg2rad(x) : x);
+  const ay = Math.tan(deg ? deg2rad(y) : y);
+  return Matrix.prototype.init.call(this, 1, ay, ax, 1, 0, 0);
 };
 
-Matrix.identity = () => new Matrix([1, 0, 0, 0, 1, 0, 0, 0, 1]);
+Matrix.identity = () => new Matrix();
 
 Matrix.IDENTITY = Object.freeze(Matrix.identity());
-Matrix.rad2deg = radians => (radians * 180) / Math.PI;
-Matrix.deg2rad = degrees => (degrees * Math.PI) / 180;
 
 for(let name of [
   'toObject',
@@ -567,7 +567,7 @@ for(let name of ['translate', 'scale', 'rotate', 'skew']) {
     return Matrix.prototype.multiply.call(this, new Matrix()['init_' + name](...args));
   };
   Matrix.prototype[name + '_self'] = function(...args) {
-    return Matrix.prototype.multiply_self.call(this, new Matrix()['init_' + name](...args));
+    return Matrix.prototype.multiplySelf.call(this, new Matrix()['init_' + name](...args));
   };
 }
 

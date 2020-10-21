@@ -1,23 +1,27 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
 import { MakeRotation, Alignment, VERTICAL, HORIZONTAL, log } from '../renderUtils.js';
 import { TransformationList, Rotation } from '../../geom.js';
+import { Cross } from './cross.js';
 
 export const Text = ({ x, y, text, color, alignment, rot, visible, className, opts = {}, ...props }) => {
   let { transformation = new TransformationList() } = opts;
   log(`Text.render`, { text, transformation, x, y, alignment, rot });
 
-let rotation = MakeRotation(rot);
-let {angle = 0 } = rotation;
-let realAngle = Util.mod(angle, 180);
+  let rotation = MakeRotation(rot);
+  let angle = (rotation.angle * 180) / Math.PI;
+  let realAngle = Util.mod(angle, 180);
 
-  let transform = new TransformationList().translate(x,y).concat(transformation.scaling ? [transformation.scaling] : []).rotate(-realAngle);
- 
-let diffAngle = angle - realAngle;
+  let transform = new TransformationList()
+    .translate(x, y)
+    .concat(transformation.scaling ? [transformation.scaling] : [])
+    .rotate(-realAngle);
+
+  let diffAngle = angle - realAngle;
 
   let align = Alignment(alignment);
-    log(`Text.render`, { text,diffAngle, transform, align });
+  log(`Text.render`, { text, diffAngle, transform, align });
 
-align = align.rotate(diffAngle);
+  align = align.rotate(diffAngle);
 
   return h(Fragment, {}, [
     h('text', {
@@ -32,6 +36,6 @@ align = align.rotate(diffAngle);
       },
       h('tspan', { ...AlignmentAttrs(align, HORIZONTAL), children: text })
     ),
-    h('circle', {cx: x, cy: y, r: 0.2, stroke: 'red', 'stroke-width': 0.1, fill: 'none' })
+    h(Cross, { x, y, radius: 1.27 / 4 })
   ]);
 };

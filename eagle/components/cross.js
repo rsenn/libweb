@@ -8,7 +8,7 @@ export const Cross = ({
   radius = 1.27 / 2,
   width = 0.127 / 2,
   color = '#f0f',
-  visible,
+  visible = true,
   ...props
 }) => {
   // let visible = typeof isVisible == 'function' ? useTrkl(isVisible) : true;
@@ -20,6 +20,7 @@ export const Cross = ({
     'stroke-width': width,
     fill: 'none',
     style: visible ? {} : { display: 'none' },
+    transform: `translate(${x},${y})`,
     ...props
   });
 };
