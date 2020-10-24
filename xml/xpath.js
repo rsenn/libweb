@@ -186,8 +186,8 @@ export class MutableXPath extends MutablePath {
     let r = super.slice(start, end);
     if(ctor == ImmutableXPath) r = Object.freeze(r);
     return r;
-  } 
-  
+  }
+
   static partToString(p, sep = '/', childrenSym, c = (text, c = 33, b = 0) => `\x1b[${b};${c}m${text}\x1b[0m`) {
     let ret = [];
     if(MutableXPath.isChildren(p[0])) {
