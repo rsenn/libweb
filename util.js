@@ -2074,7 +2074,7 @@ Util.parseURL = function(href = this.getURL()) {
   }, {});
   //console.log("PARAMS: ", { argstr, pmatches, params });
   return {
-    protocol: proto,
+    protocol: proto ? proto.replace('://', '') : 'http',
     host,
     port: typeof port === 'string' ? parseInt(port.substring(1)) : 443,
     location: location.replace(/\?.*/, ''),
@@ -2158,7 +2158,7 @@ Util.putError = err => {
   (console.info || console.log)('Util.putError ', e);
   (console.error || console.log)('ERROR:\n' + err.message + '\nstack:\n' + s.toString());
 };
-Util.putStack = (stack = new Error().stack) => {
+Util.putStack = (stack = new Util.stack().slice(1)) => {
   // (console.error || console.log)('STACK TRACE:', Util.className(stack), Util.className(stack[1]));
   stack = stack instanceof Util.stack ? stack : Util.stack(stack);
   console.log('Util.putStack', Util.className(stack));
@@ -3457,11 +3457,16 @@ Util.define(Util.stackFrame, {
 });
 Util.memoizedProperties(Util.stackFrame, {
   propertyMap() {
-    return this.methodNames.map(method => [method, Util.lcfirst(method.replace(/^[a-z]+/, ''))]);
+    return this.methodNames.map(method => [method, Util.lcfirst(method.replace(/^get/, ''))]);
   }
 });
 
 Util.define(Util.stackFrame.prototype, {
+    getFunction() {
+      if(this.isConstructor) return this.functionName + '.constructor';
+
+      return this.typeName ? `${this.typeName}.${this.methodName}` : this.functionName;
+    },
     getMethodName() {
       return this.methodName;
     },
@@ -3502,13 +3507,14 @@ Util.define(Util.stackFrame.prototype, {
         [0, 255, 255],
         [0, 255, 255]
       ];
-      let { functionName, methodName, fileName, lineNumber, columnNumber } = this;
-      if(stripUrl) fileName = fileName.replace(typeof stripUrl == 'string' ? stripUrl : /.*:\/\/[^\/]*\//, '');
+      let { functionName, methodName, typeName, fileName, lineNumber, columnNumber } = this;
+      if(stripUrl && typeof fileName == 'string')
+        fileName = fileName.replace(typeof stripUrl == 'string' ? stripUrl : /.*:\/\/[^\/]*\//, '');
       let colonList = [fileName, lineNumber, columnNumber]
         .map(p => ('' + p == 'undefined' ? undefined : p))
         .filter(p => p !== undefined && p != 'undefined' && ['number', 'string'].indexOf(typeof p) != -1)
         .join(':');
-      let columns = [functionName || methodName, colonList];
+      let columns = [this.getFunction(), colonList];
       columns = columns.map((f, i) => (f + '')[i >= 2 ? 'padStart' : 'padEnd'](columnWidths[i] || 0, ' '));
       return columns.join(' ') + c('', 0);
     },
@@ -3650,7 +3656,7 @@ Object.defineProperty(Util.stack, Symbol.species, { get: () => Util.stack });
 
 Util.stack.prototype = Object.assign(Util.stack.prototype, {
   toString(opts = {}) {
-    const { colors = false, stripUrl } = opts;
+    const { colors = false, stripUrl = Util.makeURL({ location: '/' }) } = opts;
     const { columnWidths } = this;
     // console.log('Stack.toString', columnWidths);
     let a = [...this].map(frame => Util.stackFrame.prototype.toString.call(frame, colors, { columnWidths, stripUrl }));
@@ -3667,7 +3673,7 @@ Util.stack.prototype = Object.assign(Util.stack.prototype, {
 Object.defineProperties(Util.stack.prototype, {
   columnWidths: {
     get() {
-      return this.reduce((a, f) => ['functionName'].map((fn, i) => Math.max(a[i], (f[fn] + '').length)), [0, 0, 0, 0]);
+      return this.reduce((a, f) => ['getFunction'].map((fn, i) => Math.max(a[i], (f[fn]() + '').length)), [0, 0, 0, 0]);
     }
   }
 });

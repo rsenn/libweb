@@ -260,4 +260,3 @@ function useValue(callback, deps) {
 }
 
 export { useAsyncIter, useRepeater, useResult, useValue };
-//# sourceMappingURL=react-hooks.js.map

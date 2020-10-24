@@ -42,11 +42,14 @@ export class EagleSVGRenderer {
       let pathStr = path;
       //  let xpath;
       if(typeof path == 'string') {
+        console.debug('pathStr:', pathStr);
         //         xpath =    new  ImmutablePath(transformXPath(path)) ;
-        path = new ImmutablePath(path);
+        path = new ImmutableXPath(path);
       }
       if(path) {
         let e = path.apply(doc, true);
+        console.debug('path:', path);
+        console.debug('e:', e);
         let parent = e.parentNode;
 
         insert(path, ret);

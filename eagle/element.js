@@ -499,7 +499,7 @@ export class EagleElement extends EagleNode {
     if(pred) {
       let ok = 0;
       for(let element of this.getAll(pred)) {
-        console.log('element:', element);
+        //console.log('element:', element);
         ok |= bb.update(element) || true;
         /*Util.tryCatch(() => element.getBounds(),
           bounds => (ok = bb.update(bounds) || true)

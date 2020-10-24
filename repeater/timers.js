@@ -358,6 +358,4 @@ function interval(wait, buffer) {
 }
 export const Timers = { delay, interval, timeout };
 
-//export { TimeoutError, Timers };
 export default { TimeoutError, ...Timers };
-//# sourceMappingURL=timers.js.map

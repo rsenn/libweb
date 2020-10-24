@@ -93,9 +93,10 @@ export class MutablePath extends Array {
     if(typeof attr_or_index == 'number') return [attr_or_index, tagName];
     if(Util.isObject(attr_or_index)) return { tagName, attributes: attr_or_index };
     let cmd = `e => e.${tagField} === '${tagName}'`;
-    //console.log('matchObj:', cmd);
-    //console.log('typeof(tagName):', typeof tagName);
-    return eval(cmd);
+    console.log('typeof(tagName):', typeof tagName);
+    let ret = eval(cmd);
+    console.log('matchObj:', cmd, ret);
+    return ret;
   }
 
   static partMatcher(obj, tagField = 'tagName') {
@@ -106,7 +107,7 @@ export class MutablePath extends Array {
   }
 
   static isMemberName(name, out = {}) {
-    return name == 'children' || Util.isNumeric(name);
+    //  return name == 'children' || Util.isNumeric(name);
     return true;
   }
 
@@ -133,8 +134,6 @@ export class MutablePath extends Array {
           if(/^\[.*\]$/.test(part + '')) {
             part = part.substring(1, part.length - 1);
           } else if(/^[A-Za-z]/.test(part)) {
-            //console.log('part:', part);
-            //console.log('part:', typeof part);
             if(!out.constructor.isMemberName(part, out))
               part = (out.constructor.partMatcher || MutablePath.partMatcher)({ [out.tagField || 'tagName']: part },
                 out.tagField || 'tagName'

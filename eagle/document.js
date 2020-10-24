@@ -293,7 +293,7 @@ export class EagleDocument extends EagleNode {
     }
   }
 
-  getMainElement() {
+  getMainElement = Util.memoize(() => {
     switch (this.type) {
       case 'brd':
         return this.lookup('eagle/drawing/board');
@@ -302,7 +302,7 @@ export class EagleDocument extends EagleNode {
       case 'lbr':
         return this.lookup('eagle/drawing/library');
     }
-  }
+  });
 
   get mainElement() {
     return this.getMainElement();

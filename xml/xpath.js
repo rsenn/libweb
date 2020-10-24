@@ -102,9 +102,20 @@ export class MutableXPath extends MutablePath {
     //console.log('MutableXPath.from = ', r);
     return r;
   }
-
+  /*
   static matchObj = (tagName, attr_or_index = {}) =>
     typeof attr_or_index == 'number' ? [attr_or_index, tagName] : { tagName, attributes: attr_or_index };
+*/
+  static matchObj(tagName, attr_or_index, tagField = 'tagName') {
+    if(typeof attr_or_index == 'number') return [attr_or_index, tagName];
+    if(Util.isObject(attr_or_index)) return { tagName, attributes: attr_or_index };
+    let cmd = `e => e.${tagField} === '${tagName}'`;
+    //console.log('typeof(tagName):', typeof tagName);
+    let ret = eval(cmd);
+    //console.log('matchObj:', cmd, ret);
+    return ret;
+  }
+
   static strToPart(p) {
     let o = p;
     if(typeof p == 'string') {
@@ -132,7 +143,10 @@ export class MutableXPath extends MutablePath {
   }
 
   static parse(l) {
-    l = Util.isArray(l) ? l : l.split(/[.\/]/g);
+    l = Util.isArray(l)
+      ? l
+      : l.split(new RegExp(`\\s?[.\\/${this.CHILDREN_GLYPH}]\\s?`, 'g')).map(p => (isNaN(+p) ? p : +p));
+    //console.log('MutableXPath.parse', { l });
     if(l[0] == '') l.shift();
     if(l.indexOf('children') != -1) {
       l = l.filter(p => !ImmutablePath.isChildren(p));
@@ -145,7 +159,7 @@ export class MutableXPath extends MutablePath {
   }
 
   constructor(a, absolute = false) {
-    //console.log("a:", a);
+    //console.log('ImmutableXPath.constructor:', a);
     if(!(a instanceof ImmutableXPath)) a = ImmutableXPath.parse(a);
     //console.log("a:", a);
     a = a.map(part => {
@@ -172,28 +186,8 @@ export class MutableXPath extends MutablePath {
     let r = super.slice(start, end);
     if(ctor == ImmutableXPath) r = Object.freeze(r);
     return r;
-  }
-
-  /*
-  slice(start, end) {
-    let { descendand, absolute } = this;
-    let i = this.offset();
-    let a = this.toArray();
-    let l = a.length;
-    if(start < 0) start = l + start;
-    if(start < 0) start = 0;
-    if(start === undefined || isNaN(start)) start = 0;
-    if(end === undefined || isNaN(end)) end = l;
-    else if(end < 0) end = l + end;
-    else if(end > l) end = l;
-    if(start > 0) descendand = true;
-    a = super.slice(start, end);
-    let prefix = [];
-    if(descendand) a = a.unshift('/');
-    else if(absolute) a = a.unshift('');
-    return a;
-  }*/
-
+  } 
+  
   static partToString(p, sep = '/', childrenSym, c = (text, c = 33, b = 0) => `\x1b[${b};${c}m${text}\x1b[0m`) {
     let ret = [];
     if(MutableXPath.isChildren(p[0])) {
@@ -236,15 +230,12 @@ export class MutableXPath extends MutablePath {
 
   toString(sep = '/', childrenSym = this.constructor.CHILDREN_GLYPH, tfn = text => text) {
     let ctor = this.constructor;
-
     let a = [...this];
     let r = [];
-
     while(a.length > 0) {
       let p = ctor.partToString([...a], sep, childrenSym, tfn);
       //console.log("p:", p);
       r = r.concat(p);
-
       a.splice(0, p.length);
       //console.log("r:", r);
     }
