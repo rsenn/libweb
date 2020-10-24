@@ -92,17 +92,18 @@ export class EagleNode {
     return node;
   }
 
-  get raw() {
+  getRaw = Util.memoize(() => {
     const { owner, ref, document } = this;
-    let r;
-    //console.log(`${Util.className(this)}.raw`,  {owner},ref);
-    if(this.xml && this.xml[0]) return this.xml[0];
-    r = ref.path.apply(owner.raw, true);
+    let r = ref.path.apply(owner.raw, true);
     if(!r) {
       r = ref.path.apply(ref.root) || ref.path.apply(owner);
       if(!r) r = document.mapper.at(ref.path);
     }
     return r;
+  });
+
+  get raw() {
+    return this.getRaw();
   }
 
   cacheFields() {

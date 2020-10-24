@@ -212,7 +212,7 @@ Matrix.prototype.toArray = function() {
   return Array.from(this);
 };
 Matrix.prototype.isIdentity = function() {
-  return Util.equals(this, Matrix.IDENTITY);
+  return this.equals(Matrix.IDENTITY);
 };
 
 Matrix.prototype.determinant = function() {
@@ -291,7 +291,7 @@ Matrix.fromDOM = matrix => {
 };
 
 Matrix.prototype.equals = function(other) {
-  return Array.prototype.every.call((n, i) => other[i] == n);
+  return this.length <= other.length && Array.prototype.every.call(this, (n, i) => other[i] == n);
 };
 
 Matrix.prototype.transform_distance = function(d) {

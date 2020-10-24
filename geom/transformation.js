@@ -92,7 +92,7 @@ export class Transformation {
 
         return +arg;
       });
-    console.log('fromString', { cmd, args });
+    //console.log('fromString', { cmd, args });
 
     const is3D = cmd.toLowerCase().endsWith('3d');
     if(is3D) cmd = cmd.slice(0, -2);
@@ -752,7 +752,7 @@ export class TransformationList extends Array {
     let matrix = this.toMatrix();
     let t = matrix.decompose();
     let { rotate } = t;
-    console.log('ROTATION:', rotate);
+    //console.log('ROTATION:', rotate);
     return rotate;
   }
 

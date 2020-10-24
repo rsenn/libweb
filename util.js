@@ -815,7 +815,7 @@ Util.memoizedProperties = (obj, methods) => {
         return memoize.call(this);
       },
       enumerable: true,
-      configurable: false
+      configurable: true
     };
   }
   return Object.defineProperties(obj, decls);
@@ -1243,7 +1243,7 @@ Util.findKey = function(obj, value) {
   let pred = typeof value == 'function' ? value : v => v === value;
   for(let k in obj) if(pred(obj[k], k)) return k;
 };
-Util.find = function(arr, value, prop = 'id', acc = Util.array()) {
+Util.find = function(arr, value, prop = 'id') {
   let pred;
   if(typeof value == 'function') pred = value;
   else if(prop && prop.length !== undefined) {
@@ -1252,14 +1252,12 @@ Util.find = function(arr, value, prop = 'id', acc = Util.array()) {
       return false;
     };
   } else pred = obj => obj[prop] == value;
-
-  if(!Util.isArray(arr) && typeof arr.entries == 'function') {
+  if(typeof arr.find == 'function') return arr.find(pred);
+  if(!arr[Symbol.iterator] && typeof arr.entries == 'function') {
     let entryPred = pred;
     pred = ([key, value], arr) => entryPred(value, key, arr);
     arr = arr.entries();
   }
-  if(typeof arr.find == 'function') return arr.find(pred);
-
   for(let v of arr) {
     if(pred(v)) return v;
   }
@@ -2625,17 +2623,20 @@ Util.formatRecord = function(obj) {
   }
   return ret;
 };
-Util.isArray = function(obj) {
-  return ((obj &&
-      !Util.isGetter(obj, 'length') &&
-      Util.isObject(obj) &&
-      'length' in obj &&
-      !(obj instanceof String) &&
-      !(obj instanceof Function) &&
-      typeof obj == 'function') ||
-    obj instanceof Array
-  );
-};
+Util.isArray =
+  Array.isArray ||
+  function(obj) {
+    if(obj.constructor === Array) return true;
+    return ((obj &&
+        !Util.isGetter(obj, 'length') &&
+        Util.isObject(obj) &&
+        'length' in obj &&
+        !(obj instanceof String) &&
+        !(obj instanceof Function) &&
+        typeof obj == 'function') ||
+      obj instanceof Array
+    );
+  };
 Util.isArrayLike = obj => typeof obj == 'object' && obj !== null && 'length' in obj;
 
 Util.equals = function(a, b) {
@@ -5073,4 +5074,75 @@ Util.isatty = async fd => {
   }
   return ret;
 };
+/**
+ * Measure the average execution time of a function
+ * @param {Function} fn A function for performance measurement
+ * @param {Array} args Function arguments
+ * @param {Object} options
+ * @returns {Number} Result in milliseconds
+ */
+Util.timeit = (fn, args = [], options = {}) => {
+  const valid = fn && typeof fn === 'function';
+  if(!valid) throw new Error('No function provided.');
+
+  const NS_PER_SEC = 1e9;
+  const { e, r, l, d } = { e: 1000, r: 1, l: true, d: 6, ...options };
+  const { hrtime } = Util;
+
+  let results = [];
+  for(let i = 0; i < r; i++) {
+    const start = hrtime();
+    for(let i = 1; i < e; i++) {
+      fn(args);
+    }
+    const diff = hrtime(start);
+    const elapsed = (diff[0] * NS_PER_SEC + diff[1]) * 0.000001;
+    const result = elapsed / e;
+    results.push(+(Math.round(result + `e+${6}`) + `e-${6}`));
+  }
+  const ms = results.reduce((p, c) => p + c, 0) / results.length;
+
+  if(l) {
+    console.log(`Function   : ${fn.name}()`);
+    console.log(`Average    : ${ms.toFixed(d)}ms`);
+    console.log(`Repetitions: ${r}`);
+    console.log(`Executions : ${e}`);
+  }
+
+  return ms;
+};
+
+Util.getHRTime = Util.memoize(() => {
+  // polyfil for window.performance.now
+  var performance = Util.getGlobalObject().performance || {};
+  var performanceNow =
+    performance.now ||
+    performance.mozNow ||
+    performance.msNow ||
+    performance.oNow ||
+    performance.webkitNow ||
+    function() {
+      return new Date().getTime();
+    };
+
+  // generate timestamp or delta
+  // see http://nodejs.org/api/process.html#process_process_hrtime
+  return function hrtime(previousTimestamp) {
+    var clocktime = performanceNow.call(performance) * 1e-3;
+    var seconds = Math.floor(clocktime);
+    var nanoseconds = Math.floor((clocktime % 1) * 1e9);
+    if(previousTimestamp) {
+      seconds = seconds - previousTimestamp[0];
+      nanoseconds = nanoseconds - previousTimestamp[1];
+      if(nanoseconds < 0) {
+        seconds--;
+        nanoseconds += 1e9;
+      }
+    }
+    return [seconds, nanoseconds];
+  };
+});
+
+Util.defineGetter(Util, 'hrtime', Util.getHRTime);
+
 export default Util;

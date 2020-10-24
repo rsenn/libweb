@@ -229,7 +229,7 @@ export class MutablePath extends Array {
    * @return     {Path}
    */
   up(n = 1) {
-    if(this.length >= n) return this.slice(0, this.length - n);
+    if(this.length >= n) return this.slice(0, -n);
   }
 
   down(...args) {

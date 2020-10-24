@@ -495,32 +495,23 @@ export class EagleElement extends EagleNode {
     let bb = new BBox();
     if(!pred && ['sheet', 'schematic'].indexOf(this.tagName) != -1)
       pred = e => ['wire', 'instance'].indexOf(e.tagName) != -1;
-
     if(pred) {
       let ok = 0;
       for(let element of this.getAll(pred)) {
-        //console.log('element:', element);
         ok |= bb.update(element) || true;
-        /*Util.tryCatch(() => element.getBounds(),
-          bounds => (ok = bb.update(bounds) || true)
-        );*/
       }
       if(ok) return bb;
     }
-
-    let pos = this.geometry;
-
+    /*  let pos = this.geometry;
     if(pos) {
       if(pos.toObject) pos = pos.toObject();
       else if(pos.clone) pos = pos.clone();
       else pos = Util.clone(pos);
-    }
+    }*/
     if(this.tagName == 'schematic') {
       let instances = [...this.getAll('instance')];
-
       return BBox.of(...instances);
     }
-
     if(this.tagName == 'board') {
       const measures = [...this.plain].filter(e => e.layer.name == 'Measures');
       if(measures.length >= 4) {
@@ -529,13 +520,10 @@ export class EagleElement extends EagleNode {
         return bb;
       }
     }
-
     if(this.tagName == 'element') {
       const { raw, ref, path, attributes, owner, document } = this;
       const libName = raw.attributes.library;
-      //console.log("document.libraries", document.libraries);
       let library = document.libraries[libName];
-
       let pkg = library.packages[raw.attributes.package];
       bb = pkg.getBounds();
       bb.move(pos.x, pos.y);
@@ -543,17 +531,13 @@ export class EagleElement extends EagleNode {
     } else if(this.tagName == 'instance') {
       const { part, gate, rot, x, y } = this;
       const { symbol } = gate;
-      //console.log('instance', { gate, symbol });
       let t = new TransformationList();
       t.translate(+this.x, +this.y);
       t = t.concat(MakeRotation(rot));
-
       const name = part.name;
       const value = part.value || part.deviceset.name;
-
       let b = symbol.getBounds(e => true, { x, y, name, value });
-      console.log('symbol.getBounds():', symbol.name, b);
-
+      //   console.log('symbol.getBounds():', symbol.name, b);
       let p = new Rect(b.rect).toPoints();
       let m = t.toMatrix();
       p = new PointList([...m.transform_points(p)]);
@@ -561,41 +545,27 @@ export class EagleElement extends EagleNode {
     } else if(this.tagName == 'sheet' || this.tagName == 'board') {
       const plain = this.find('plain');
       let list = [...plain.children].filter(e => e.tagName == 'wire' && e.attributes.layer == '47');
-
       if(list.length <= 0) list = this.tagName == 'sheet' ? this.instances.list : this.elements.list;
-
       for(let instance of list) {
         bb.update(instance.getBounds(), 0, instance);
       }
     } else if(['package', 'signal', 'polygon', 'symbol'].indexOf(this.tagName) != -1) {
       for(let child of this.children) bb.update(child.getBounds(e => true, opts));
-    } else if(pos) {
+      /*} else if(pos) {
       const { x = 0, y = 0 } = opts;
-
       if(Util.isObject(pos) && typeof pos.bbox == 'function') pos = new Rect(pos.bbox());
-
-      /*
-      let t = new Translation(x, y);
-      pos.transform(t);*/
-
       if(this.tagName == 'text') {
         let text = this.text;
         let align = this.align || 'bottom-left';
-
         if(opts.name) text = text.replace(/>NAME/, opts.name);
         if(opts.value) text = text.replace(/>VALUE/, opts.value);
-
         let width = text.length * 6;
         let height = 10;
-
         let rect = new Rect(pos.x, pos.y, width, height);
-        //console.log('getBounds()', /* this, text, align, Alignment(align), pos.toObject(),*/ rect);
         if(false) return rect.bbox();
       }
-
       if(Util.isObject(pos) && typeof pos.bbox == 'function') pos = pos.bbox();
-
-      bb.update(pos);
+      bb.update(pos);*/
     } else if(['description'].indexOf(this.tagName) != -1) {
     } else {
       bb.update(super.getBounds(pred));

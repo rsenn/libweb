@@ -42,14 +42,14 @@ export class EagleSVGRenderer {
       let pathStr = path;
       //  let xpath;
       if(typeof path == 'string') {
-        console.debug('pathStr:', pathStr);
+        //console.debug('pathStr:', pathStr);
         //         xpath =    new  ImmutablePath(transformXPath(path)) ;
         path = new ImmutableXPath(path);
       }
       if(path) {
         let e = path.apply(doc, true);
-        console.debug('path:', path);
-        console.debug('e:', e);
+        //console.debug('path:', path);
+        //console.debug('e:', e);
         let parent = e.parentNode;
 
         insert(path, ret);
@@ -438,7 +438,7 @@ export class EagleSVGRenderer {
     //this.debug('grid:', grid.attributes);
     trkl.bind(this, attrs);
     //this.debug('rect:', rect, bounds.rect);
-    console.log('layers', layers);
+    //console.log('layers', layers);
     let svgElem = h(Drawing,
       {
         rect,

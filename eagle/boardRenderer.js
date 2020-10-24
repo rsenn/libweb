@@ -209,7 +209,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
         if(flat) cmds = cmds.flat();
 
-        console.log('cmds:', cmds);
+        //console.log('cmds:', cmds);
 
         this.create(WirePath, {
             class: classNames(addClass, ElementToClass(wires[0], layer.name)),
@@ -304,15 +304,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         class: className,
         'data-path': signal.path.toString(' ')
       };
-      console.log('class:',
-        className,
-        'children.length:',
-        children.length,
-        ' options.layer:',
-        options.layer,
-        'cond:',
-        children.length > 1 && !(typeof options.layer == 'string')
-      );
+      //console.log('class:', className, 'children.length:', children.length, ' options.layer:', options.layer, 'cond:', children.length > 1 && !(typeof options.layer == 'string') );
       if(children.length > 1 && options.layer != '') {
         delete options.layer;
         let signalGroup = this.create('g', { id, ...props }, parent);

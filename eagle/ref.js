@@ -5,12 +5,12 @@ import { text, concat } from './common.js';
 export const ChildrenSym = Symbol('⊳');
 
 export class EagleReference {
-  constructor(root, path) {
+  constructor(root, path, check = true) {
     if(!(path instanceof ImmutablePath)) path = new ImmutablePath(path);
     this.path = path;
     this.root = root;
     //console.log('EagleReference', { root: Util.abbreviate(toXML(root), 10), path });
-    if(!this.dereference(false)) {
+    if(check && !this.dereference(false)) {
       //console.log('dereference:', { path, root: Util.abbreviate(toXML(root), 10) });
       throw new Error(this.path.join(','));
     }
@@ -75,16 +75,17 @@ export class EagleReference {
   }
 
   down(...args) {
-    return new EagleReference(this.root, [...this.path, ...args]);
+    // return Array.prototype.concat.call(this, args);
+    return new EagleReference(this.root, this.path.down(...args), false);
   }
   up(n = 1) {
-    return new EagleReference(this.root, this.path.up(n));
+    return new EagleReference(this.root, this.path.up(n), false);
   }
   left(n) {
-    return new EagleReference(this.root, this.path.left(n));
+    return new EagleReference(this.root, this.path.left(n), false);
   }
   right(n) {
-    return new EagleReference(this.root, this.path.right(n));
+    return new EagleReference(this.root, this.path.right(n), false);
   }
 
   shift(n = 1) {

@@ -173,7 +173,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     //    ReactComponent.append([...instances.list].map(data => h(Instance, { data })), instancesGroup);
 
-    console.log('instancesGroup:', instancesGroup);
+    //console.log('instancesGroup:', instancesGroup);
 
     // for(let instance of instances.list) this.renderInstance(instance, instancesGroup);
 
@@ -272,7 +272,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     //console.log('sheet.getBounds', sheet.getBounds+'');
 
     let bounds = doc.getBounds(sheetNo || 0);
-    console.log('bounds:', bounds);
+    //console.log('bounds:', bounds);
     let rect = bounds.toRect(Rect.prototype);
 
     rect.outset(1.27);
