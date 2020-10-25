@@ -1609,32 +1609,7 @@ Util.isString = function(v) {
 Util.isNumeric = v => /^[-+]?(0x|0b|0o|)[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test(v + '');
 
 Util.isUndefined = arg => arg === undefined;
-Util.isObject = (obj, ...protoOrPropNames) => {
-  let isObj = arg => ['object', 'function'].indexOf(typeof arg) != -1 && arg !== null;
-
-  do {
-    if(!isObj(obj)) return false;
-
-    if(protoOrPropNames.length == 0) break;
-
-    let p = protoOrPropNames.shift();
-    if(Util.isFunction(p) || Util.isArrowFunction(p)) {
-      obj = p(obj);
-      continue;
-    }
-
-    if(!isObj(p)) {
-      obj = obj[p];
-      continue;
-    }
-
-    if(Object.getPrototypeOf(obj) !== p) return false;
-  } while(true);
-
-  let r = obj || false;
-  if(!r) console.log('Util.isObject(', obj, ...protoOrPropNames, ')', ` = ${!!r}`);
-  return r;
-};
+Util.isObject = obj => obj !== null && { object: obj, function: obj }[typeof obj];
 Util.isFunction = arg => {
   if(arg !== undefined) return typeof arg == 'function' || !!(arg && arg.constructor && arg.call && arg.apply);
 
@@ -2227,7 +2202,7 @@ Util.histogram = (arr, t, out = false ? {} : new Map(), initVal = () => 0 /* new
   const defKeyFunc = it => it;
   t = t || defKeyFunc;
 
-  if(Util.isObject(arr, o => typeof o.entries == 'function')) arr = arr.entries();
+  if(Util.isObject(arr) && typeof arr.entries == 'function') arr = arr.entries();
   arr = [...arr];
   let entries = arr.map((it, i) => [i, it]);
   let x = {};
@@ -3225,7 +3200,7 @@ Util.mapReducer = (setFn, filterFn = (key, value) => true, mapObj = new Map()) =
   let next = Util.tryFunction(((acc, mem, idx) => (filterFn(mem, idx) ? (setFn(idx, mem), acc) : null), r => r, () => mapObj)
   );
   fn = function ReduceIntoMap(arg, acc = mapObj) {
-    if(Util.isObject(arg, o => typeof o.reduce == 'function'))
+    if(Util.isObject(arg) && typeof arg.reduce == 'function')
       return arg.reduce((acc, arg) => (Util.isArray(arg) ? arg : Util.members(arg)).reduce(reducer, acc), self.map);
     let c = Util.counter();
     for(let mem of arg) acc = next(acc, mem, c());
@@ -3816,7 +3791,7 @@ Util.flatTree = function(tree, addOutput) {
 };
 Util.traverseTree = function(tree, fn, depth = 0, parent = null) {
   fn(tree, depth, parent);
-  if(Util.isObject(tree, tree.childre) && tree.children.length > 0)
+  if(Util.isObject(tree.children) && tree.children.length > 0)
     for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);
 };
 
