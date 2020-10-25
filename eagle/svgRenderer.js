@@ -413,7 +413,7 @@ export class EagleSVGRenderer {
   render(obj, props = {}, children = []) {
     let doc = obj.document || this.doc;
     this.debug('EagleSVGRenderer.render', obj);
-    let { bounds = obj.getMeasures ? obj.measures : obj.getBounds(), transform } = props;
+    let { bounds = (obj.getMeasures && obj.measures) || obj.getBounds(), transform } = props;
     //let { bounds = doc.measures || doc.getBounds() } = props;
     let rect = new Rect(bounds.rect);
     rect.round(1.27);

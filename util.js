@@ -2972,6 +2972,9 @@ Util.mapAdapter = getSetFunction => {
       return this;
     }
   };
+  let tmp = getSetFunction();
+  if(Util.isIterable(tmp) || Util.isPromise(tmp)) r.keys = () => getSetFunction();
+
   if(getSetFunction[Symbol.iterator]) r.entries = getSetFunction[Symbol.iterator];
   else {
     let g = getSetFunction();
@@ -2990,9 +2993,16 @@ Util.mapAdapter = getSetFunction => {
  */
 Util.mapFunction = map => {
   let fn;
-  fn = function(key, value) {
-    if(value === undefined) return fn.get(key);
-    return fn.set(key, value);
+  fn = function(...args) {
+    const [key, value] = args;
+    switch (args.length) {
+      case 0:
+        return fn.keys();
+      case 1:
+        return fn.get(key);
+      case 2:
+        return fn.set(key, value);
+    }
   };
 
   fn.map = (m => {
@@ -3003,6 +3013,14 @@ Util.mapFunction = map => {
   if(map instanceof Map || (Util.isObject(map) && typeof map.get == 'function' && typeof map.set == 'function')) {
     fn.set = (key, value) => (map.set(key, value), (k, v) => fn(k, v));
     fn.get = key => map.get(key);
+  } else if(map instanceof Cache ||
+    (Util.isObject(map) && typeof map.match == 'function' && typeof map.put == 'function')
+  ) {
+    fn.set = (key, value) => (map.put(key, value), (k, v) => fn(k, v));
+    fn.get = key => map.match(key);
+  } else if(Util.isObject(map) && typeof map.getItem == 'function' && typeof map.setItem == 'function') {
+    fn.set = (key, value) => (map.setItem(key, value), (k, v) => fn(k, v));
+    fn.get = key => map.getItem(key);
   } else {
     fn.set = (key, value) => ((map[key] = value), (k, v) => fn(k, v));
     fn.get = key => map[key];
@@ -3032,7 +3050,34 @@ Util.mapFunction = map => {
     fn[Symbol.for('nodejs.util.inspect.custom')] = function() {
       return new Map(this.map(([key, value]) => [Util.isArray(key) ? key.join('.') : key, value]));
     };
+  } else if(typeof map.keys == 'function') {
+    if(Util.isAsync(map.keys) || Util.isPromise(map.keys())) {
+      fn.keys = async () => [...(await map.keys())];
+
+      fn.entries = async () => {
+        let r = [];
+        for(let key of await fn.keys()) r.push([key, await fn.get(key)]);
+        return r;
+      };
+      fn.values = async () => {
+        let r = [];
+        for(let key of await fn.keys()) r.push(await fn.get(key));
+        return r;
+      };
+    } else {
+      fn.keys = function* () {
+        for(let key of map.keys()) yield key;
+      };
+
+      fn.entries = function* () {
+        for(let key of fn.keys()) yield [key, fn(key)];
+      };
+      fn.values = function* () {
+        for(let key of fn.keys()) yield fn(key);
+      };
+    }
   }
+
   if(typeof fn.entries == 'function') {
     fn.filter = function(pred) {
       return Util.mapFunction(new Map(
@@ -3256,12 +3301,7 @@ Util.inherits =
           ctor.prototype.constructor = ctor;
         }
       };
-Util.bindMethods = function(methods, obj) {
-  for(let name in methods) {
-    methods[name] = methods[name].bind(obj);
-  }
-  return methods;
-};
+Util.bindMethods = (methods, obj) => Util.bindMethodsTo(obj, obj, methods);
 Util.bindMethodsTo = function(dest, obj, methods) {
   for(let name in methods) {
     dest[name] = methods[name].bind(obj);
@@ -4718,7 +4758,11 @@ Util.cachedFetch = (allOpts = {}) => {
       if(response == undefined) {
         response = await /*self.*/ fetch(request, { ...self.defaultOpts, ...opts });
 
-        if(response) storage.setItem(request, response.clone());
+        if(response) {
+          let item = response.clone();
+          item.time = new Date();
+          storage.setItem(request, item);
+        }
       } else {
         response.cached = true;
       }
