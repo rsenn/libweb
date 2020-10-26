@@ -2,6 +2,16 @@ import Util from './util.js';
 import { StringReader, ChunkReader, DebugTransformStream } from './stream/utils.js';
 
 export function QuickJSFileSystem(std, os) {
+  let errno;
+
+  function strerr(ret) {
+    const [str, err] = ret;
+    if(err) {
+      errno = err;
+      return null;
+    }
+    return str;
+  }
   return {
     Stats: class Stats {
       constructor(st) {
@@ -133,7 +143,7 @@ export function QuickJSFileSystem(std, os) {
       return -res.errno;
     },
     stat(path, cb) {
-      let [st, err] = os.stat(path);
+      return strerr(os.stat(path));
       st = err ? null : new this.Stats(st);
       return typeof cb == 'function' ? cb(err, st) : err ? err : st;
     },
@@ -142,22 +152,23 @@ export function QuickJSFileSystem(std, os) {
       st = err ? null : new this.Stats(st);
       return typeof cb == 'function' ? cb(err, st) : err ? err : st;
     },
-
-    realpath(path, cb) {
-      let [str, err] = os.realpath(path);
-      return typeof cb == 'function' ? cb(err, st) : err ? err : str;
+    realpath(path) {
+      return strerr(os.realpath(path));
     },
-    readdir(dir, cb) {
-      let [arr, err] = os.readdir(dir);
-      return typeof cb == 'function' ? cb(err, st) : err ? err : arr;
+    readlink(path) {
+      return strerr(os.readlink(path));
     },
-    getcwd(cb) {
-      let [wd, err] = os.getcwd();
-      return typeof cb == 'function' ? cb(err, st) : err ? err : wd;
+    readdir(path) {
+      return strerr(os.readdir(path));
+    },
+    getcwd() {
+      return strerr(os.getcwd());
     },
     chdir(path) {
-      let err = os.chdir(path);
-      return err;
+      return os.chdir(path);
+    },
+    mkdir(path, mode = 0o777) {
+      return os.mkdir(path, mode);
     },
     unlink(path) {
       return os.remove(path);
@@ -268,11 +279,14 @@ export function NodeJSFileSystem(fs, tty) {
       }
       return ret;
     },
-    exists(filename) {
-      return fs.existsSync(filename);
+    exists(path) {
+      return fs.existsSync(path);
     },
-    realpath(filename) {
-      return fs.realpathSync(filename);
+    realpath(path) {
+      return fs.realpathSync(path);
+    },
+    readlink(path) {
+      return fs.readlinkSync(path);
     },
     size(filename) {
       let st = fs.statSync(filename);
@@ -302,6 +316,9 @@ export function NodeJSFileSystem(fs, tty) {
         err = error;
       }
       return err || 0;
+    },
+    mkdir(path, mode = 0o777) {
+      return fs.mkdirSync(path, { mode });
     },
     rename(filename, to) {
       try {
