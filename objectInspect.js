@@ -23,8 +23,8 @@ const gOPS = Object.getOwnPropertySymbols;
 const symToString = typeof Symbol === 'function' ? Symbol.prototype.toString : null;
 const isEnumerable = Object.prototype.propertyIsEnumerable;
 
-//const inspectCustom = require('./util.inspect').custom;
-const inspectSymbol = /* inspectCustom && isSymbol(inspectCustom) ? inspectCustom :*/ null;
+const inspectCustom = Symbol.for('nodejs.util.inspect.custom');
+const inspectSymbol = inspectCustom && isSymbol(inspectCustom) ? inspectCustom : null;
 
 function inspect_(obj, options, depth, seen) {
   const opts = options || {};
@@ -276,7 +276,7 @@ const hasOwn =
     return key in this;
   };
 function has(obj, key) {
-  return hasOwn.call(obj, key);
+  return obj[key] !== undefined || hasOwn.call(obj, key);
 }
 
 function toStr(obj) {

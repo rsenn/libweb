@@ -33,31 +33,33 @@ export async function ConsoleSetup(opts = {}) {
       let c = Util.getGlobalObject().console;
 
       let log = c.log;
-      c.log('console.log');
       c.reallog = log;
-      c.log = function(...args) {
-        args = args.map(arg => {
-          if(typeof arg != 'string' || !Util.isPrimitive(arg)) {
-            arg = ObjectInspect(arg, { colors: true, depth: Infinity, indent: 2, ...opts });
-            console.log('arg:', arg);
+
+      return Object.create(Util.define(Object.create(console), {
+          reallog: log,
+          log(...args) {
+            return log.call(this,
+              ...args.map(arg =>
+                typeof arg != 'string' || !Util.isPrimitive(arg)
+                  ? ObjectInspect(arg, { colors: true, depth: Infinity, indent: 2, ...opts })
+                  : arg
+              )
+            );
           }
-          return arg;
-        });
-        return log.call(this, ...args);
-      };
-      return c;
+        })
+      );
     }
   );
 
   for(let method of ['error', 'warn', 'debug']) {
     if(!(method in ret)) ret[method] = ret.log;
   }
-  console.log('Util.getGlobalObject():', Util.getGlobalObject());
+  /*  console.log('Util.getGlobalObject():', Util.getGlobalObject());
   console.log('globalThis:', globalThis);
   console.log('globalThis === Util.getGlobalObject():', globalThis === Util.getGlobalObject());
   console.log('ret:', ret === console);
   console.log('globalThis.console', globalThis.console);
-  console.log('globalThis.console === console', globalThis.console === console);
+  console.log('globalThis.console === console', globalThis.console === console);*/
 
   Util.getGlobalObject().console = ret;
 }
