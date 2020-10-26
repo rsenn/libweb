@@ -1,6 +1,10 @@
 import Util from './util.js';
 import { StringReader, ChunkReader, DebugTransformStream } from './stream/utils.js';
 
+export const SEEK_SET = 0;
+export const SEEK_CUR = 1;
+export const SEEK_END = 2;
+
 export function QuickJSFileSystem(std, os) {
   let errno;
 
@@ -12,7 +16,20 @@ export function QuickJSFileSystem(std, os) {
     }
     return str;
   }
+  function numerr(ret) {
+    if(ret < 0) {
+      errno = -ret;
+      return -1;
+    }
+    return ret || 0;
+  }
   return {
+    get errno() {
+      return errno;
+    },
+    get errstr() {
+      return std.strerror(errno);
+    },
     Stats: class Stats {
       constructor(st) {
         this.mode = st.mode;
@@ -48,8 +65,11 @@ export function QuickJSFileSystem(std, os) {
     bufferFrom(chunk, encoding = 'utf-8') {
       return StringToArrayBuffer(chunk, 1);
     },
-
+    bufferSize(buf) {
+      return ArrayBufferSize(buf);
+    },
     bufferToString(buf, n = 1) {
+      if(typeof buf == 'string') return buf;
       return ArrayBufferToString(buf, n);
     },
     open(filename, flags = 'r', mode = 0o644) {
@@ -57,15 +77,14 @@ export function QuickJSFileSystem(std, os) {
       let fd = std.open(filename, flags, res);
       if(!res.errno) return fd;
 
-      return -res.errno;
+      return numerr(-res.errno);
     },
     close(fd) {
-      return fd.close();
+      return numerr(typeof fd == 'number' ? os.close(fd) : fd.close());
     },
 
     read(fd, buf, offset, length) {
-      let ret, err;
-      let retFn = r => err || r;
+      let ret;
       length = length || 1024;
       offset = offset || 0;
       if(!buf) {
@@ -79,19 +98,30 @@ export function QuickJSFileSystem(std, os) {
           return err || r;
         };
       }
-      ret = fd.read(buf, offset, length);
-      err = ret > 0 ? undefined : -1;
-      return retFn(ret);
+      switch (typeof fd) {
+        case 'number':
+          ret = os.read(fd, data, offset, length);
+          break;
+        default: ret = fd.read(buf, offset, length);
+          break;
+      }
+      return numerr(ret);
     },
     write(fd, data, offset, length) {
       if(!(data instanceof ArrayBuffer)) data = StringToArrayBuffer(data);
-      let ret = fd.write(data, offset || 0, length || data.byteLength);
-      let err = ret > 0 ? undefined : (std.clearerr(), -1);
-      return err || ret;
+      let ret;
+      switch (typeof fd) {
+        case 'number':
+          ret = os.write(fd, data, offset || 0, length || data.byteLength);
+          break;
+        default: ret = fd.write(data, offset || 0, length || data.byteLength);
+          break;
+      }
+      return numerr(ret);
     },
 
-    readFile(filename) {
-      let buf,
+    readFile(filename, encoding = 'utf-8') {
+      let data,
         size,
         res = { errno: 0 };
       let file = std.open(filename, 'r', res);
@@ -99,11 +129,12 @@ export function QuickJSFileSystem(std, os) {
         file.seek(0, std.SEEK_END);
         size = file.tell();
         file.seek(0, std.SEEK_SET);
-        buf = new ArrayBuffer(size);
-        file.read(buf, 0, size);
-        //buf = file.readAsString(/*size*/);
+        data = new ArrayBuffer(size);
+        file.read(data, 0, size);
+        //data = file.readAsString(/*size*/);
         file.close();
-        return ArrayBufferToString(buf);
+        if(encoding != null) data = ArrayBufferToString(data, encoding);
+        return data;
       }
       return -res.errno;
     },
@@ -129,6 +160,25 @@ export function QuickJSFileSystem(std, os) {
       if(file) file.close();
       return res;
     } /**/,
+    seek(fd, offset, whence) {
+      let ret;
+      switch (typeof file) {
+        case 'number':
+          ret = os.seek(file, offset, whence);
+          break;
+        default: ret = fd.seek(offset, whence);
+          break;
+      }
+      let err = ret >= 0 ? undefined : (std.clearerr(), -1);
+      return err || fd.tell();
+    },
+    tell(file) {
+      switch (typeof file) {
+        case 'number':
+          return numerr(os.seek(file, 0, os.SEEK_CUR));
+        default: return file.tell();
+      }
+    },
     size(filename) {
       let bytes,
         res = { errno: 0 };
@@ -143,20 +193,25 @@ export function QuickJSFileSystem(std, os) {
       return -res.errno;
     },
     stat(path, cb) {
-      return strerr(os.stat(path));
-      st = err ? null : new this.Stats(st);
-      return typeof cb == 'function' ? cb(err, st) : err ? err : st;
+      let [st, err] = os.stat(path);
+      return err ? strerr([st, err]) : new this.Stats(st);
     },
     lstat(path, cb) {
       let [st, err] = os.lstat(path);
-      st = err ? null : new this.Stats(st);
-      return typeof cb == 'function' ? cb(err, st) : err ? err : st;
+      return err ? strerr([st, err]) : new this.Stats(st);
     },
+
     realpath(path) {
       return strerr(os.realpath(path));
     },
     readlink(path) {
       return strerr(os.readlink(path));
+    },
+    symlink(target, path) {
+      return numerr(os.symlink(target, path));
+    },
+    rename(oldname, newname) {
+      return numerr(os.rename(oldname, newname));
     },
     readdir(path) {
       return strerr(os.readdir(path));
@@ -165,23 +220,47 @@ export function QuickJSFileSystem(std, os) {
       return strerr(os.getcwd());
     },
     chdir(path) {
-      return os.chdir(path);
+      return numerr(os.chdir(path));
     },
     mkdir(path, mode = 0o777) {
-      return os.mkdir(path, mode);
+      return numerr(os.mkdir(path, mode));
     },
     unlink(path) {
-      return os.remove(path);
+      return numerr(os.remove(path));
     },
-    isatty(fd) {
+    isatty(file) {
+      let fd = this.fileno(file);
       return os.isatty(fd);
+    },
+    mkdtemp(prefix) {
+      let name = prefix + Util.randStr(6);
+      if(!this.mkdir(name, 0o1777)) return name;
+    },
+    fileno(file) {
+      if(typeof file == 'object' && file != null && typeof file.fileno == 'function') return file.fileno();
+
+      if(typeof file == 'number') return file;
+    },
+    get stdin() {
+      return std.in;
+    },
+    get stdout() {
+      return std.out;
+    },
+    get stderr() {
+      return std.err;
     }
   };
 }
 
-export function NodeJSFileSystem(fs, tty) {
+export function NodeJSFileSystem(fs, tty, process) {
+  let errno = 0;
+
   function BufferAlloc(bytes = 1) {
     return Buffer.alloc(bytes);
+  }
+  function BufferSize(buf) {
+    return buf.length;
   }
   function BufferFromString(str, encoding = 'utf-8') {
     return Buffer.from(str + '', encoding);
@@ -191,12 +270,47 @@ export function NodeJSFileSystem(fs, tty) {
     return buf.toString(encoding);
   }
 
+  const seekMap = new Map();
+  const sizeMap = new Map();
+
+  function SeekSet(fd, pos) {
+    seekMap.set(fd, pos);
+  }
+  function SeekAdvance(fd, bytes) {
+    let pos = SeekGet(fd) || 0;
+
+    seekMap.set(fd, pos + bytes);
+  }
+  function SeekGet(fd) {
+    return seekMap.get(fd);
+  }
+
+  function CatchError(fn) {
+    let ret;
+    try {
+      ret = fn();
+    } catch(error) {
+      ret = new Number(-1);
+      ret.message = error.message;
+      ret.stack = error.stack;
+
+      if(error.errno != undefined) errno = error.errno;
+    }
+    return ret || 0;
+  }
+
   return {
+    get errno() {
+      return Number(errno);
+    },
     buffer(bytes) {
       return BufferAlloc(bytes);
     },
     bufferFrom(chunk, encoding = 'utf-8') {
       return BufferFromString(chunk, encoding);
+    },
+    bufferSize(buf) {
+      return BufferSize(buf);
     },
     bufferToString(buf, encoding = 'utf-8') {
       return BufferToString(buf, encoding);
@@ -213,127 +327,159 @@ export function NodeJSFileSystem(fs, tty) {
       return ret;
     },
     close(fd) {
-      let ret;
-      try {
+      return CatchError(() => {
         fs.closeSync(fd);
-        ret = 0;
-      } catch(error) {
-        ret = new Number(-1);
-        ret.message = error.message;
-        ret.stack = error.stack;
-      }
-      return ret;
+
+        seekMap.delete(fd);
+        sizeMap.delete(fd);
+
+        return 0;
+      });
     },
     read(fd, buf, offset, length) {
-      let ret,
-        retFn = r => r;
-      try {
+      let pos;
+
+      return CatchError(() => {
         length = length || 1024;
         offset = offset || 0;
         if(!buf) {
           buf = BufferAlloc(length);
           retFn = r => (r > 0 ? buf.slice(0, r) : r);
         }
-        ret = fs.readSync(fd, buf, offset, length, 0);
-      } catch(error) {
-        ret = new Number(-1);
-        ret.message = error.message;
-        ret.stack = error.stack;
-      }
-      return retFn(ret);
+        let ret = fs.readSync(fd, buf, offset, length, (pos = SeekGet(fd)));
+        SeekAdvance(fd, ret);
+        return ret;
+      });
     },
     write(fd, data, offset, length) {
       let ret;
       if(length === undefined && data.length !== undefined) length = data.length;
 
-      try {
-        ret = fs.writeSync(fd, data, offset, length);
-      } catch(error) {
-        ret = new Number(-1);
-        ret.message = error.message;
-        ret.stack = error.stack;
-      }
-      return ret;
+      return CatchError(() => fs.writeSync(fd, data, offset, length));
     },
-    readFile(filename) {
-      let ret;
-      try {
-        ret = fs.readFileSync(filename, { encoding: 'utf-8' });
-      } catch(error) {
-        ret = new Number(-1);
-        ret.message = error.message;
-        ret.stack = error.stack;
-      }
-      return ret;
+    readFile(filename, encoding = 'utf-8') {
+      return CatchError(() => fs.readFileSync(filename, { encoding }));
     },
     writeFile(filename, data, overwrite = true) {
-      let fd, ret;
-      try {
+      return CatchError(() => {
+        let fd, ret;
         fd = fs.openSync(filename, overwrite ? 'w' : 'wx');
         ret = fs.writeSync(fd, data);
         fs.closeSync(fd);
-      } catch(error) {
-        ret = new Number(-1);
-        ret.message = error.message;
-        ret.stack = error.stack;
-      }
+        return ret;
+      });
       return ret;
     },
     exists(path) {
-      return fs.existsSync(path);
+      return CatchError(() => fs.existsSync(path));
     },
     realpath(path) {
-      return fs.realpathSync(path);
+      return CatchError(() => fs.realpathSync(path));
+    },
+    symlink(target, path) {
+      return CatchError(() => fs.symlinkSync(target, path));
     },
     readlink(path) {
-      return fs.readlinkSync(path);
+      return CatchError(() => fs.readlinkSync(path));
     },
-    size(filename) {
-      let st = fs.statSync(filename);
-      return st.size;
+    seek(fd, offset, whence = SEEK_SET) {
+      let pos = SeekGet(fd) || 0;
+      let size = this.size(fd);
+      let newpos;
+      switch (whence) {
+        case SEEK_SET:
+          newpos = offset;
+          break;
+        case SEEK_CUR:
+          newpos = pos + offset;
+          break;
+        case SEEK_END:
+          newpos = size + offset;
+          break;
+      }
+      //  console.log('newpos:', newpos);
+      if(newpos >= 0 && newpos < size) {
+        SeekSet(fd, newpos);
+        return newpos;
+      }
+      return -1;
     },
-    stat(filename, dereference = false) {
-      let st = dereference ? fs.statSync(filename) : fs.lstatSync(filename);
-      /* const { dev, ino, mode, nlink, uid, gid, rdev, size, blksize, blocks, atimeMs, mtimeMs, ctimeMs, birthtimeMs, atimeNs, mtimeNs, ctimeNs, birthtimeNs, atime, mtime, ctime, birthtime } = st;
-    return Object.assign(st, { dev, ino, mode, nlink, uid, gid, rdev, size, blksize, blocks, atimeMs, mtimeMs, ctimeMs, birthtimeMs,   atime, mtime, ctime, birthtime
-});*/
-      return Object.create(null, Util.weakAssign({}, ...Util.getPropertyDescriptors(st)));
-
-      return Object.getOwnPropertyDescriptors(Object.getPrototypeOf(st));
+    tell(file) {
+      return seekMap.get(file);
+    },
+    size(file) {
+      return CatchError(() => {
+        let st;
+        switch (typeof file) {
+          case 'string':
+            st = fs.statSync(file);
+            break;
+          case 'number':
+            st = fs.fstatSync(file);
+            break;
+          default: st = sizeMap.get(file);
+            break;
+        }
+        return st.size;
+      });
+    },
+    stat(path) {
+      return CatchError(() => fs.statSync(path));
+    },
+    lstat(path) {
+      return CatchError(() => fs.lstatSync(path));
     },
     readdir(dir) {
-      return fs.readdirSync(dir);
+      return CatchError(() => ['.', '..', ...fs.readdirSync(dir)]);
     },
-    getcwd(cb) {
-      let [err, wd] = [undefined, process.cwd];
-      return (cb && cb(err, wd)) || err ? err : wd;
+    getcwd() {
+      return process.cwd();
     },
     chdir(path) {
-      let err;
-      try {
-        process.chdir(path);
-      } catch(error) {
-        err = error;
-      }
-      return err || 0;
+      return CatchError(() => process.chdir(path));
     },
     mkdir(path, mode = 0o777) {
-      return fs.mkdirSync(path, { mode });
+      return CatchError(() => fs.mkdirSync(path, { mode }));
     },
     rename(filename, to) {
-      try {
+      return CatchError(() => {
         fs.renameSync(filename, to);
-      } catch(err) {}
-      return !this.exists(filename) && this.exists(to) ? 0 : -1;
+
+        if(this.exists(filename)) throw new Error(`${filename} still exists`);
+        if(!this.exists(to)) throw new Error(`${to} doesn't exist`);
+      });
     },
-    unlink(filename) {
+    unlink(path) {
+      if(!this.exists(path)) return -1;
       try {
-        fs.unlinkSync(filename);
-      } catch(err) {}
-      return this.exists(filename) ? -1 : 0;
+        let st = this.lstat(path);
+        if(st.isDirectory()) fs.rmdirSync(path);
+        else fs.unlinkSync(path);
+      } catch(err) {
+        return err;
+      }
+      return this.exists(path) ? -1 : 0;
     },
     isatty(fd) {
-      return tty.isatty(fd);
+      if(typeof fd == 'object' && fd !== null && 'fd' in fd) fd = fd.fd;
+
+      if(typeof fd == 'number') return !!tty.isatty(fd);
+    },
+    mkdtemp(prefix) {
+      return CatchError(() => fs.mkdtempSync(prefix));
+    },
+    fileno(file) {
+      if(typeof file == 'object' && file !== null && 'fd' in file) return file.fd;
+      if(typeof file == 'number') return file;
+    },
+    get stdin() {
+      return process.stdin;
+    },
+    get stdout() {
+      return process.stdout;
+    },
+    get stderr() {
+      return process.stderr;
     }
   };
 }
@@ -445,8 +591,22 @@ const CharWidth = {
   4: Uint32Array
 };
 
+function Encoding2Bytes(encoding) {
+  switch (encoding.toLowerCase()) {
+    case 'utf-8':
+      return 1;
+    case 'utf-16':
+      return 2;
+    case 'utf-32':
+      return 4;
+  }
+}
 function ArrayBufferToString(buf, bytes = 1) {
+  if(typeof bytes == 'string') bytes = Encoding2Bytes(bytes);
   return String.fromCharCode(...new CharWidth[bytes](buf));
+}
+function ArrayBufferSize(buf) {
+  return buf.byteLength;
 }
 
 function StringToArrayBuffer(str, bytes = 1) {
@@ -479,7 +639,11 @@ export async function GetPortableFileSystem() {
   if(fs && !err) return fs;
   err = null;
   try {
-    fs = await CreatePortableFileSystem(NodeJSFileSystem, await import('fs'), await import('tty'));
+    fs = await CreatePortableFileSystem(NodeJSFileSystem,
+      await import('fs'),
+      await import('tty'),
+      await import('process')
+    );
   } catch(error) {
     err = error;
   }
