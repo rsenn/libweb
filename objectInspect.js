@@ -27,7 +27,7 @@ const isEnumerable = Object.prototype.propertyIsEnumerable;
 const inspectSymbol = /* inspectCustom && isSymbol(inspectCustom) ? inspectCustom :*/ null;
 
 function inspect_(obj, options, depth, seen) {
-  var opts = options || {};
+  let opts = options || {};
 
   if(has(opts, 'quoteStyle') && opts.quoteStyle !== 'single' && opts.quoteStyle !== 'double') {
     throw new TypeError('option "quoteStyle" must be "single" or "double"');
@@ -39,7 +39,7 @@ function inspect_(obj, options, depth, seen) {
   ) {
     throw new TypeError('option "maxStringLength", if provided, must be a positive integer, Infinity, or `null`');
   }
-  var customInspect = has(opts, 'customInspect') ? opts.customInspect : true;
+  let customInspect = has(opts, 'customInspect') ? opts.customInspect : true;
   if(typeof customInspect !== 'boolean') {
     throw new TypeError('option "customInspect", if provided, must be `true` or `false`');
   }
@@ -82,7 +82,7 @@ function inspect_(obj, options, depth, seen) {
     return String(obj) + 'n';
   }
 
-  var maxDepth = typeof opts.depth === 'undefined' ? 5 : opts.depth;
+  let maxDepth = typeof opts.depth === 'undefined' ? 5 : opts.depth;
   if(typeof depth === 'undefined') {
     depth = 0;
   }
@@ -93,7 +93,7 @@ function inspect_(obj, options, depth, seen) {
     return isArray(obj) ? '[Array]' : '[Object]';
   }
 
-  var indent = getIndent(opts, depth);
+  let indent = getIndent(opts, depth);
 
   if(typeof seen === 'undefined') {
     seen = [];
@@ -108,7 +108,7 @@ function inspect_(obj, options, depth, seen) {
       seen.push(from);
     }
     if(noIndent) {
-      var newOpts = {
+      let newOpts = {
         ...opts,
         depth: opts.depth
       };
@@ -122,8 +122,8 @@ function inspect_(obj, options, depth, seen) {
   // console.reallog("obj:", obj);
 
   if(typeof obj === 'function') {
-    var name = nameOf(obj);
-    var keys = arrObjKeys(obj, inspect);
+    let name = nameOf(obj);
+    let keys = arrObjKeys(obj, inspect);
     let s =
       '[Function' +
       (name ? ': ' + name : ' (anonymous)') +
@@ -134,13 +134,13 @@ function inspect_(obj, options, depth, seen) {
     return s;
   }
   if(isSymbol(obj)) {
-    var symString = symToString.call(obj);
+    let symString = symToString.call(obj);
     return typeof obj === 'object' ? markBoxed(symString) : symString;
   }
   if(isElement(obj)) {
-    var s = '<' + String(obj.nodeName).toLowerCase();
-    var attrs = obj.attributes || [];
-    for(var i = 0; i < attrs.length; i++) {
+    let s = '<' + String(obj.nodeName).toLowerCase();
+    let attrs = obj.attributes || [];
+    for(let i = 0; i < attrs.length; i++) {
       s += ' ' + attrs[i].name + '=' + wrapQuotes(quote(attrs[i].value), 'double', opts);
     }
     s += '>';
@@ -154,14 +154,14 @@ function inspect_(obj, options, depth, seen) {
     if(obj.length === 0) {
       return '[]';
     }
-    var xs = arrObjKeys(obj, inspect);
+    let xs = arrObjKeys(obj, inspect);
     if(indent && !singleLineValues(xs)) {
       return '[' + indentedJoin(xs, indent) + ']';
     }
     return '[ ' + xs.join(', ') + ' ]';
   }
   if(isError(obj)) {
-    var parts = arrObjKeys(obj, inspect);
+    let parts = arrObjKeys(obj, inspect);
     if(parts.length === 0) {
       return '[' + String(obj) + ']';
     }
@@ -176,14 +176,14 @@ function inspect_(obj, options, depth, seen) {
     }
   }
   if(isMap(obj)) {
-    var mapParts = [];
+    let mapParts = [];
     mapForEach.call(obj, function(value, key) {
       mapParts.push(inspect(key, obj, true) + ' => ' + inspect(value, obj));
     });
     return collectionOf('Map', mapSize.call(obj), mapParts, indent);
   }
   if(isSet(obj)) {
-    var setParts = [];
+    let setParts = [];
     setForEach.call(obj, function(value) {
       setParts.push(inspect(value, obj));
     });
@@ -208,7 +208,7 @@ function inspect_(obj, options, depth, seen) {
     return markBoxed(inspect(String(obj)));
   }
   if(!isDate(obj) && !isRegExp(obj)) {
-    var ys = arrObjKeys(obj, inspect, opts);
+    let ys = arrObjKeys(obj, inspect, opts);
     if(ys.length === 0) {
       return '{}';
     }
@@ -221,9 +221,10 @@ function inspect_(obj, options, depth, seen) {
 }
 
 function wrapQuotes(s, defaultStyle, opts) {
-  var quoteChar = (opts.quoteStyle || defaultStyle) === 'double' ? '"' : "'";
+  let quoteChar = (opts.quoteStyle || defaultStyle) === 'double' ? '"' : "'";
   return quoteChar + s + quoteChar;
 }
+
 function wrapColor(s, ...args) {
   s = `\x1b[${args.join(';')}m` + s + `\x1b[0m`;
   return s;
@@ -236,32 +237,40 @@ function quote(s) {
 function isArray(obj) {
   return toStr(obj) === '[object Array]';
 }
+
 function isDate(obj) {
   return toStr(obj) === '[object Date]';
 }
+
 function isRegExp(obj) {
   return toStr(obj) === '[object RegExp]';
 }
+
 function isError(obj) {
   return toStr(obj) === '[object Error]';
 }
+
 function isSymbol(obj) {
   return toStr(obj) === '[object Symbol]';
 }
+
 function isString(obj) {
   return toStr(obj) === '[object String]';
 }
+
 function isNumber(obj) {
   return toStr(obj) === '[object Number]';
 }
+
 function isBigInt(obj) {
   return toStr(obj) === '[object BigInt]';
 }
+
 function isBoolean(obj) {
   return toStr(obj) === '[object Boolean]';
 }
 
-var hasOwn =
+let hasOwn =
   Object.prototype.hasOwnProperty ||
   function(key) {
     return key in this;
@@ -278,7 +287,7 @@ function nameOf(f) {
   if(f.name) {
     return f.name;
   }
-  var m = match.call(functionToString.call(f), /^function\s*([\w$]+)/);
+  let m = match.call(functionToString.call(f), /^function\s*([\w$]+)/);
   if(m) {
     return m[1];
   }
@@ -289,7 +298,7 @@ function indexOf(xs, x) {
   if(xs.indexOf) {
     return xs.indexOf(x);
   }
-  for(var i = 0, l = xs.length; i < l; i++) {
+  for(let i = 0, l = xs.length; i < l; i++) {
     if(xs[i] === x) {
       return i;
     }
@@ -373,19 +382,19 @@ function isElement(x) {
 
 function inspectString(str, opts) {
   if(str.length > opts.maxStringLength) {
-    var remaining = str.length - opts.maxStringLength;
-    var trailer = '... ' + remaining + ' more character' + (remaining > 1 ? 's' : '');
+    let remaining = str.length - opts.maxStringLength;
+    let trailer = '... ' + remaining + ' more character' + (remaining > 1 ? 's' : '');
     return inspectString(str.slice(0, opts.maxStringLength), opts) + trailer;
   }
-  var s = str.replace(/(['\\])/g, '\\$1').replace(/[\x00-\x1f]/g, lowbyte);
+  let s = str.replace(/(['\\])/g, '\\$1').replace(/[\x00-\x1f]/g, lowbyte);
   s = wrapQuotes(s, 'single', opts);
   if(opts.colors) s = wrapColor(s, 1, 32);
   return s;
 }
 
 function lowbyte(c) {
-  var n = c.charCodeAt(0);
-  var x = {
+  let n = c.charCodeAt(0);
+  let x = {
     8: 'b',
     9: 't',
     10: 'n',
@@ -407,12 +416,12 @@ function weakCollectionOf(type) {
 }
 
 function collectionOf(type, size, entries, indent) {
-  var joinedEntries = indent ? indentedJoin(entries, indent) : entries.join(', ');
+  let joinedEntries = indent ? indentedJoin(entries, indent) : entries.join(', ');
   return type + ' (' + size + ') {' + joinedEntries + '}';
 }
 
 function singleLineValues(xs) {
-  for(var i = 0; i < xs.length; i++) {
+  for(let i = 0; i < xs.length; i++) {
     if(indexOf(xs[i], '\n') >= 0) {
       return false;
     }
@@ -421,7 +430,7 @@ function singleLineValues(xs) {
 }
 
 function getIndent(opts, depth) {
-  var baseIndent;
+  let baseIndent;
   if(opts.indent === '\t') {
     baseIndent = '\t';
   } else if(typeof opts.indent === 'number' && opts.indent > 0) {
@@ -439,20 +448,20 @@ function indentedJoin(xs, indent) {
   if(xs.length === 0) {
     return '';
   }
-  var lineJoiner = '\n' + indent.prev + indent.base;
+  let lineJoiner = '\n' + indent.prev + indent.base;
   return lineJoiner + xs.join(',' + lineJoiner) + '\n' + indent.prev;
 }
 
 function arrObjKeys(obj, inspect, opts) {
-  var isArr = isArray(obj);
-  var xs = [];
+  let isArr = isArray(obj);
+  let xs = [];
   if(isArr) {
     xs.length = obj.length;
-    for(var i = 0; i < obj.length; i++) {
+    for(let i = 0; i < obj.length; i++) {
       xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
     }
   }
-  for(var key in obj) {
+  for(let key in obj) {
     if(!has(obj, key)) {
       continue;
     }
@@ -472,8 +481,8 @@ function arrObjKeys(obj, inspect, opts) {
     }
   }
   if(typeof gOPS === 'function') {
-    var syms = gOPS(obj);
-    for(var j = 0; j < syms.length; j++) {
+    let syms = gOPS(obj);
+    for(let j = 0; j < syms.length; j++) {
       if(isEnumerable.call(obj, syms[j])) {
         xs.push('[' + inspect(syms[j]) + ']: ' + inspect(obj[syms[j]], obj));
       }
@@ -481,6 +490,7 @@ function arrObjKeys(obj, inspect, opts) {
   }
   return xs;
 }
+
 function isGetter(obj, propName) {
   while(obj) {
     let desc = Object.getOwnPropertyDescriptor(obj, propName);
@@ -489,4 +499,5 @@ function isGetter(obj, propName) {
   }
   return false;
 }
+
 export default inspect_;
