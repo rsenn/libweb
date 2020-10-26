@@ -4816,11 +4816,8 @@ Util.weakAssoc = (fn = (value, ...args) => Object.assign(value, ...args)) => {
 };
 Util.getArgs = Util.memoize(() =>
   Util.tryCatch(() => process.argv,
-    a => a.slice(2),
-    () =>
-      Util.tryCatch(() => scriptArgs,
-        a => a.slice(1)
-      )
+    a => a.slice(1),
+    () => Util.tryCatch(() => scriptArgs)
   )
 );
 Util.getEnv = async varName =>
@@ -4873,7 +4870,7 @@ Util.callMain = async (fn, trapExceptions) =>
               (stack.toString({ colors: true, stripUrl: `file://${scriptDir}/` }) + '').replace(/(^|\n)/g, '\n  ')
           );
         }
-  )(...Util.getArgs());
+  )(...Util.getArgs().slice(1));
 
 Util.printReturnValue = (fn, opts = {}) => {
   const {
