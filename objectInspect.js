@@ -79,7 +79,6 @@ function inspect_(obj, options, depth, seen) {
     return s;
   }
   if(typeof obj === 'bigint') {
-    // eslint-disable-line valid-typeof
     return String(obj) + 'n';
   }
 
@@ -87,9 +86,9 @@ function inspect_(obj, options, depth, seen) {
   if(typeof depth === 'undefined') {
     depth = 0;
   }
-  /* console.log("maxDepth:", maxDepth)
-  console.log("opts.depth:", opts.depth)
-  console.log("depth:", depth)*/
+  /* console.reallog("maxDepth:", maxDepth)
+  console.reallog("opts.depth:", opts.depth)
+  console.reallog("depth:", depth)*/
   if(depth >= maxDepth && maxDepth > 0 && typeof obj === 'object') {
     return isArray(obj) ? '[Array]' : '[Object]';
   }
@@ -120,7 +119,7 @@ function inspect_(obj, options, depth, seen) {
     }
     return inspect_(value, opts, depth + 1, seen);
   }
-  // console.log("obj:", obj);
+  // console.reallog("obj:", obj);
 
   if(typeof obj === 'function') {
     var name = nameOf(obj);
@@ -209,7 +208,7 @@ function inspect_(obj, options, depth, seen) {
     return markBoxed(inspect(String(obj)));
   }
   if(!isDate(obj) && !isRegExp(obj)) {
-    var ys = arrObjKeys(obj, inspect);
+    var ys = arrObjKeys(obj, inspect, opts);
     if(ys.length === 0) {
       return '{}';
     }
@@ -378,7 +377,6 @@ function inspectString(str, opts) {
     var trailer = '... ' + remaining + ' more character' + (remaining > 1 ? 's' : '');
     return inspectString(str.slice(0, opts.maxStringLength), opts) + trailer;
   }
-  // eslint-disable-next-line no-control-regex
   var s = str.replace(/(['\\])/g, '\\$1').replace(/[\x00-\x1f]/g, lowbyte);
   s = wrapQuotes(s, 'single', opts);
   if(opts.colors) s = wrapColor(s, 1, 32);
@@ -445,7 +443,7 @@ function indentedJoin(xs, indent) {
   return lineJoiner + xs.join(',' + lineJoiner) + '\n' + indent.prev;
 }
 
-function arrObjKeys(obj, inspect) {
+function arrObjKeys(obj, inspect, opts) {
   var isArr = isArray(obj);
   var xs = [];
   if(isArr) {
@@ -455,17 +453,22 @@ function arrObjKeys(obj, inspect) {
     }
   }
   for(var key in obj) {
-    // eslint-disable-line no-restricted-syntax
     if(!has(obj, key)) {
       continue;
-    } // eslint-disable-line no-restricted-syntax, no-continue
+    }
     if(isArr && String(Number(key)) === key && key < obj.length) {
       continue;
-    } // eslint-disable-line no-restricted-syntax, no-continue
+    }
+    let s = '';
+    if(isGetter(obj, key)) {
+      s = '[Getter]';
+      if(opts.colors) s = wrapColor(s, 0, 36) + ' ';
+    }
+    s += inspect(obj[key], obj);
     if(/[^\w$]/.test(key)) {
-      xs.push(inspect(key, obj) + ': ' + inspect(obj[key], obj));
+      xs.push(inspect(key, obj) + ': ' + s);
     } else {
-      xs.push(key + ': ' + inspect(obj[key], obj));
+      xs.push(key + ': ' + s);
     }
   }
   if(typeof gOPS === 'function') {
@@ -478,5 +481,12 @@ function arrObjKeys(obj, inspect) {
   }
   return xs;
 }
-
+function isGetter(obj, propName) {
+  while(obj) {
+    let desc = Object.getOwnPropertyDescriptor(obj, propName);
+    if(desc && 'get' in desc) return true;
+    obj = Object.getPrototypeOf(obj);
+  }
+  return false;
+}
 export default inspect_;

@@ -38,7 +38,7 @@ export async function ConsoleSetup(opts = {}) {
       c.log = function(...args) {
         args = args.map(arg => {
           if(typeof arg != 'string' || !Util.isPrimitive(arg)) {
-            arg = ObjectInspect(arg, { colors: true, depth: 15, indent: 2, ...opts });
+            arg = ObjectInspect(arg, { colors: true, depth: Infinity, indent: 2, ...opts });
             console.log('arg:', arg);
           }
           return arg;

@@ -6,7 +6,7 @@ export const SEEK_CUR = 1;
 export const SEEK_END = 2;
 
 export function QuickJSFileSystem(std, os) {
-  let errno;
+  let errno = 0;
 
   function strerr(ret) {
     const [str, err] = ret;
@@ -498,12 +498,12 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
     },
 
     open(filename, flags = 'r', mode = 0o644) {
-      console.log('TransformStream:', TransformStream);
-      console.log('fetch:', fetch);
+      //console.log('TransformStream:', TransformStream);
+      //console.log('fetch:', fetch);
       let error;
       let send = /w/.test(flags);
       let { writable, readable } = new TransformStream();
-      console.log(' writable, readable:', writable, readable);
+      //console.log(' writable, readable:', writable, readable);
       function wait(milliseconds) {
         return new Promise(resolve => setTimeout(resolve, milliseconds));
       }
@@ -526,7 +526,7 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
           controller.close();
         }
       })*/
-      console.log(' stream:', stream);
+      //console.log(' stream:', stream);
       let promise = fetch(send ? '/save' : filename,
         send
           ? {
