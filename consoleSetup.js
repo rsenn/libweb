@@ -1,5 +1,5 @@
-import Util from './lib/util.js';
-import ObjectInspect from './lib/objectInspect.js';
+import Util from './util.js';
+import ObjectInspect from './objectInspect.js';
 
 export async function ConsoleSetup(opts = {}) {
   let ret;
@@ -30,25 +30,36 @@ export async function ConsoleSetup(opts = {}) {
     },
     c => c,
     () => {
-      let log = console.log;
-      console.log = function(...args) {
+      let c = Util.getGlobalObject().console;
+
+      let log = c.log;
+      c.log('console.log');
+      c.reallog = log;
+      c.log = function(...args) {
         args = args.map(arg => {
-          if(arg instanceof Array) {
-            arg = ObjectInspect(arg);
+          if(typeof arg != 'string' || !Util.isPrimitive(arg)) {
+            arg = ObjectInspect(arg, { colors: true, depth: 15, indent: 2, ...opts });
+            console.log('arg:', arg);
           }
           return arg;
         });
         return log.call(this, ...args);
       };
-      return console;
+      return c;
     }
   );
 
   for(let method of ['error', 'warn', 'debug']) {
     if(!(method in ret)) ret[method] = ret.log;
   }
+  console.log('Util.getGlobalObject():', Util.getGlobalObject());
+  console.log('globalThis:', globalThis);
+  console.log('globalThis === Util.getGlobalObject():', globalThis === Util.getGlobalObject());
+  console.log('ret:', ret === console);
+  console.log('globalThis.console', globalThis.console);
+  console.log('globalThis.console === console', globalThis.console === console);
 
-  if(ret) return (Util.getGlobalObject().console = ret);
+  Util.getGlobalObject().console = ret;
 }
 
 export const ConsoleOnce = Util.once(opts => ConsoleSetup(opts));
