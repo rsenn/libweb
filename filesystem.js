@@ -85,22 +85,12 @@ export function QuickJSFileSystem(std, os) {
 
     read(fd, buf, offset, length) {
       let ret;
-      length = length || 1024;
       offset = offset || 0;
-      if(!buf) {
-        buf = CreateArrayBuffer(length);
-        retFn = r => {
-          if(r > 0) {
-            let b = r < buf.byteLength ? buf.slice(0, r) : buf;
-            /* b[Symbol.toStringTag] = */ b.toString = () => ArrayBufferToString(b);
-            return b;
-          }
-          return err || r;
-        };
-      }
+      length = length || buf.byteLength - offset;
+
       switch (typeof fd) {
         case 'number':
-          ret = os.read(fd, data, offset, length);
+          ret = os.read(fd, buf, offset, length);
           break;
         default: ret = fd.read(buf, offset, length);
           break;
