@@ -207,7 +207,7 @@ function inspect_(obj, options, depth, seen) {
   if(isString(obj)) {
     return markBoxed(inspect(String(obj)));
   }
-  if(!isDate(obj) && !isRegExp(obj)) {
+  if(!isDate(obj) && !isRegExp(obj) && !isPromise(obj)) {
     const ys = arrObjKeys(obj, inspect, opts);
     if(ys.length === 0) {
       return '{}';
@@ -236,6 +236,10 @@ function quote(s) {
 
 function isArray(obj) {
   return toStr(obj) === '[object Array]';
+}
+
+function isPromise(obj) {
+  return toStr(obj) === '[object Promise]';
 }
 
 function isDate(obj) {

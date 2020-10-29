@@ -5,6 +5,24 @@ export const SEEK_SET = 0;
 export const SEEK_CUR = 1;
 export const SEEK_END = 2;
 
+export const O_RDONLY = 0x00;
+export const O_WRONLY = 0x01;
+export const O_RDWR = 0x02;
+export const O_ACCMODE = 0x03;
+export const O_APPEND = 0x08;
+export const O_BLKSEEK = 0x40;
+export const O_CREAT = 0x00000100;
+export const O_TRUNC = 0x00000200;
+export const O_EXCL = 0x00000400;
+export const O_LARGEFILE = 0x00000800;
+export const O_ASYNC = 0x00002000;
+export const O_NONBLOCK = 0x00010004;
+export const O_NOCTTY = 0x00020000;
+export const O_DSYNC = 0x00040000;
+export const O_RSYNC = 0x00080000;
+export const O_NOATIME = 0x00100000;
+export const O_CLOEXEC = 0x00200000;
+
 export function QuickJSFileSystem(std, os) {
   let errno = 0;
 
@@ -227,9 +245,8 @@ export function QuickJSFileSystem(std, os) {
       if(!this.mkdir(name, 0o1777)) return name;
     },
     fileno(file) {
-      if(typeof file == 'object' && file != null && typeof file.fileno == 'function') return file.fileno();
-
       if(typeof file == 'number') return file;
+      if(typeof file == 'object' && file != null && typeof file.fileno == 'function') return file.fileno();
     },
     get stdin() {
       return std.in;
@@ -239,6 +256,28 @@ export function QuickJSFileSystem(std, os) {
     },
     get stderr() {
       return std.err;
+    },
+    pipe() {
+      let [rd, wr] = os.pipe();
+      return [rd, wr];
+    },
+    waitRead(file) {
+      let fd = this.fileno(file);
+      return new Promise((resolve, reject) => {
+        os.setReadHandler(fd, () => {
+          os.setReadHandler(fd, null);
+          resolve(file);
+        });
+      });
+    },
+    waitWrite(file) {
+      let fd = this.fileno(file);
+      return new Promise((resolve, reject) => {
+        os.setWriteHandler(fd, () => {
+          os.setWriteHandler(fd, null);
+          resolve(file);
+        });
+      });
     }
   };
 }
