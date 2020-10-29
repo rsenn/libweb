@@ -301,6 +301,7 @@ export function NodeJSFileSystem(fs, tty, process) {
 
   const seekMap = new Map();
   const sizeMap = new Map();
+  const dataMap = new WeakMap();
 
   function SeekSet(fd, pos) {
     seekMap.set(fd, pos);
@@ -328,6 +329,29 @@ export function NodeJSFileSystem(fs, tty, process) {
     return ret || 0;
   }
 
+  function AddData(file, data) {
+    let buf;
+    if((buf = dataMap.get(file))) buf = buf.concat(data);
+    else buf = Buffer.from(data);
+    dataMap.set(file, buf);
+    return buf.length;
+  }
+
+  function GetData(file, data, length) {
+    let buf, len;
+    if(!(buf = dataMap.get(file))) return 0;
+    buf.copy(data, 0, 0, (len = Math.min(buf.length, length)));
+    buf = Buffer.from(buf.slice(len));
+    dataMap.set(file, buf);
+    return len;
+  }
+
+  function HasData(file, data, length) {
+    let buf;
+    if(!(buf = dataMap.get(file))) return 0;
+    return buf.length;
+  }
+
   return {
     get errno() {
       return Number(errno);
@@ -344,18 +368,32 @@ export function NodeJSFileSystem(fs, tty, process) {
     bufferToString(buf, encoding = 'utf-8') {
       return BufferToString(buf, encoding);
     },
-    open(filename, flags = 'r', mode = 0o644) {
-      let ret = -1;
-      try {
-        ret = fs.openSync(filename, flags, mode);
-      } catch(error) {
-        ret = new Number(-1);
-        ret.message = error.message;
-        ret.stack = error.stack;
-      }
-      return ret;
+    fileno(file) {
+      if(typeof file == 'object' && file !== null && 'fd' in file) return file.fd;
+      if(typeof file == 'number') return file;
     },
-    close(fd) {
+
+    open(filename, flags = 'r', mode = 0o644) {
+      let fd = -1;
+      try {
+        fd = fs.openSync(filename, flags, mode);
+      } catch(error) {
+        fd = new Number(-1);
+        fd.message = error.message;
+        fd.stack = error.stack;
+        return fd;
+      }
+      let ret;
+      if(flags[0] == 'r') ret = fs.createReadStream(filename, { fd, flags, mode });
+      else if(flags[0] == 'w') ret = fs.createWriteStream(filename, { fd, flags, mode });
+      return Object.assign(ret, { fd, flags, mode });
+    },
+    close(file) {
+      let fd = this.fileno(file);
+if(typeof(file) == 'object')
+  dataMap.delete(file);
+
+
       return CatchError(() => {
         fs.closeSync(fd);
 
@@ -365,8 +403,10 @@ export function NodeJSFileSystem(fs, tty, process) {
         return 0;
       });
     },
-    read(fd, buf, offset, length) {
+    read(file, buf, offset, length) {
       let pos;
+
+      //     file = this.fileno(file);
 
       return CatchError(() => {
         length = length || 1024;
@@ -375,13 +415,28 @@ export function NodeJSFileSystem(fs, tty, process) {
           buf = BufferAlloc(length);
           retFn = r => (r > 0 ? buf.slice(0, r) : r);
         }
-        let ret = fs.readSync(fd, buf, offset, length, (pos = SeekGet(fd)));
-        SeekAdvance(fd, ret);
+        let ret;
+        if(typeof file == 'number') {
+          ret = fs.readSync(file, buf, offset, length, (pos = SeekGet(file)));
+        } else {
+          /*  ret = file.read(length);
+          if(typeof ret == 'object' && ret !== null) {
+            ret.copy(buf, offset, 0, ret.length);
+            ret = ret.length;
+          } else {
+            ret = 0;
+          }
+               console.log("file.read()", {ret,length});*/
+          ret = GetData(file, buf, length);
+        }
+        SeekAdvance(file, ret);
         return ret;
       });
     },
-    write(fd, data, offset, length) {
+    write(file, data, offset, length) {
       let ret;
+      let fd = this.fileno(file);
+
       if(length === undefined && data.length !== undefined) length = data.length;
 
       return CatchError(() => fs.writeSync(fd, data, offset, length));
@@ -411,7 +466,8 @@ export function NodeJSFileSystem(fs, tty, process) {
     readlink(path) {
       return CatchError(() => fs.readlinkSync(path));
     },
-    seek(fd, offset, whence = SEEK_SET) {
+    seek(file, offset, whence = SEEK_SET) {
+      let fd = this.fileno(file);
       let pos = SeekGet(fd) || 0;
       let size = this.size(fd);
       let newpos;
@@ -437,16 +493,17 @@ export function NodeJSFileSystem(fs, tty, process) {
       return seekMap.get(file);
     },
     size(file) {
+      let fd = this.fileno(file);
       return CatchError(() => {
         let st;
-        switch (typeof file) {
+        switch (typeof fd) {
           case 'string':
-            st = fs.statSync(file);
+            st = fs.statSync(fd);
             break;
           case 'number':
-            st = fs.fstatSync(file);
+            st = fs.fstatSync(fd);
             break;
-          default: st = sizeMap.get(file);
+          default: st = sizeMap.get(fd);
             break;
         }
         return st.size;
@@ -489,17 +546,13 @@ export function NodeJSFileSystem(fs, tty, process) {
       }
       return this.exists(path) ? -1 : 0;
     },
-    isatty(fd) {
-      if(typeof fd == 'object' && fd !== null && 'fd' in fd) fd = fd.fd;
+    isatty(file) {
+      let fd = this.fileno(file);
 
-      if(typeof fd == 'number') return !!tty.isatty(fd);
+      return !!tty.isatty(fd);
     },
     mkdtemp(prefix) {
       return CatchError(() => fs.mkdtempSync(prefix));
-    },
-    fileno(file) {
-      if(typeof file == 'object' && file !== null && 'fd' in file) return file.fd;
-      if(typeof file == 'number') return file;
     },
     get stdin() {
       return process.stdin;
@@ -509,6 +562,24 @@ export function NodeJSFileSystem(fs, tty, process) {
     },
     get stderr() {
       return process.stderr;
+    },
+    waitRead(file) {
+      file.resume();
+      return new Promise((resolve, reject) => {
+        let len;
+        if((len = HasData(file))) resolve(len);
+        else
+          file.once('data', chunk => {
+            console.log('data', chunk);
+            resolve(AddData(file, chunk));
+          });
+      });
+    },
+    waitWrite(file) {
+      return new Promise((resolve, reject) => {
+        if(file.writable) resolve(file);
+        else file.once('drain', () => resolve(file));
+      });
     }
   };
 }

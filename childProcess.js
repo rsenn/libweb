@@ -144,12 +144,23 @@ export function NodeJSChildProcess(fs, tty, child_process) {
   }
 
   return function(command, args = [], options = {}) {
+    let obj;
     let { file, ...opts } = options;
     if(file) {
       opts.argv0 = command;
       command = file;
     }
-    return child_process.spawn(command, args, opts);
+    obj = child_process.spawn(command, args, opts);
+
+    obj.wait = function(options = {}) {
+      return new Promise((resolve, reject) => {
+        this.on('exit', (code, signal) => {
+          if(code !== null) resolve(code);
+          else reject(signal);
+        });
+      });
+    };
+    return obj;
   };
 }
 
