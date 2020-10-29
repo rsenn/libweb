@@ -12,6 +12,7 @@ export const Cross = ({
   ...props
 }) => {
   // let visible = typeof isVisible == 'function' ? useTrkl(isVisible) : true;
+  log('Cross.render', { x, y, radius, width, color, visible });
 
   return h('path', {
     className,
@@ -20,7 +21,7 @@ export const Cross = ({
     'stroke-width': width,
     fill: 'none',
     style: visible ? {} : { display: 'none' },
-    transform: `translate(${x},${y})`,
+    ...(x !== undefined && y !== undefined ? { transform: `translate(${x},${y})` } : {}),
     ...props
   });
 };

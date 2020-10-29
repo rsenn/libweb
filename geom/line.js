@@ -324,7 +324,11 @@ Line.prototype.toObject = function(t = num => num) {
 Line.prototype.clone = function() {
   const ctor = this.constructor[Symbol.species];
   const { x1, y1, x2, y2 } = this;
-  return new ctor(x1, y1, x2, y2);
+  let ret = new ctor(x1, y1, x2, y2);
+
+  if(this.curve !== undefined) ret.curve = this.curve;
+
+  return ret;
 };
 
 Line.prototype.round = function(precision = 0.001, digits, type) {

@@ -159,10 +159,10 @@ RGBA.fromHex = (hex, alpha = 255) => {
 };
 
 RGBA.prototype.hex = function(opts = {}) {
-  const { bits, prefix = '#', order = RGBA.order.ARGB } = opts;
+  const { bits, prefix = '#', order = RGBA.order.RGBA } = opts;
   const { r, g, b, a } = RGBA.clamp(RGBA.round(this));
   const n = RGBA.encode[order]({ r, g, b, a });
-  return prefix + ('0000000000' + n.toString(16)).slice(a == 255 ? -6 : -8);
+  return prefix + ('0000000000' + n.toString(16)).slice(-8).slice(0, a == 255 ? 6 : 8);
 };
 
 RGBA.prototype.valueOf = function() {

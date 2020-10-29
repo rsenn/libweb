@@ -9,6 +9,7 @@ export const TextElement = ({ data, opts = {}, transform = new TransformationLis
   data = data || props.item;
 
   let { transformation = new TransformationList() } = opts;
+  log(`TextElement.render`, { data, transformation });
 
   if(!transformation) Util.putStack();
 
@@ -46,6 +47,7 @@ export const TextElement = ({ data, opts = {}, transform = new TransformationLis
     text,
     visible,
     opts,
+    style: { 'font-size': size * 1.5 },
     ...attrs
   });
 };

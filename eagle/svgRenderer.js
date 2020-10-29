@@ -197,7 +197,7 @@ export class EagleSVGRenderer {
   renderItem(item, parent, opts = {}) {
     let { labelText, transformation = new TransformationList() } = opts;
 
-    this.debug(`EagleSVGRenderer.renderItem`, { item, transform });
+    this.debug(`EagleSVGRenderer.renderItem`, { item, transformation });
 
     const svg = (elem, attr, parent) =>
       this.create(elem, { className: item.tagName, /* 'data-path': item.path.toString(' '), */ ...attr }, parent);
@@ -451,8 +451,10 @@ export class EagleSVGRenderer {
           'text { stroke: none; }',
           '.pad { fill: #4ba54b; }',
           '.pad > text { fill: #ff33ff; }',
+          '.pad > text { font-size: 0.04375rem; }',
           // ...this.doc.layers.map(layer => `.${LayerToClass(layer).join('.')} { stroke: ${layer.color.hex()}; }`),
-          'rect { stroke: none; }'
+          'rect { stroke: none; }',
+          'path { stroke-linejoin: round; stroke-linecap: round; }'
         ],
         transform
       },

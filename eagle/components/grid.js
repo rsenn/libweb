@@ -43,6 +43,7 @@ export const Pattern = ({ data, id = 'pattern', attrs = { color: '#0000aa', widt
       d: `M ${size},0 L 0,0 L 0,${size}`,
       fill: 'none',
       stroke: color || '#0000aa',
+      //  'vector-effect': 'non-scaling-stroke',
       'stroke-width': style == 'dots' ? width * 2 : width,
       'stroke-dasharray': style == 'dots' ? `${width}  ${size * 4}` : `${size * 2}`
     })

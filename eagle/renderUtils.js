@@ -15,7 +15,9 @@ export const VERTICAL = 1;
 export const HORIZONTAL = 2;
 export const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
 
-let DEBUG = false;
+export let DEBUG = true;
+
+export const setDebug = state => (DEBUG = state);
 
 export let log = DEBUG
   ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console)
@@ -361,12 +363,12 @@ export const LinesToPath = (lines, lineFn) => {
       } else if(Point.equals(l[1], p[1])) {
         let tmp = lines.splice(i, 1)[0];
         m = tmp.reverse();
-        if(tmp.curve !== undefined && isFinite(+tmp.curve) && Math.abs(+tmp.curve) > 0) m.curve = -tmp.curve;
+        //   if(tmp.curve !== undefined && isFinite(+tmp.curve) && Math.abs(+tmp.curve) > 0) m.curve = -tmp.curve;
         break;
       }
     }
     if(m) {
-      debug = Point.equals(m[1], { x: 0.635, y: 1.016 }) && m;
+      // debug = Point.equals(m[1], { x: 0.635, y: 1.016 }) && m;
       lineTo(m[1], m.curve);
       l = m;
     } else if(lines.length > 0) {
@@ -374,7 +376,7 @@ export const LinesToPath = (lines, lineFn) => {
       ret.push((path = []));
       path.push(`M ${l.x1} ${l.y1}`);
       prevPoint = l[0];
-      debug = Point.equals(l[1], { x: 0.635, y: 1.016 }) && l;
+      //   debug = Point.equals(l[1], { x: 0.635, y: 1.016 }) && l;
       lineTo(l[1], l.curve);
     }
   } while(lines.length > 0);

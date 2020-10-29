@@ -80,6 +80,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
       {
         x: 0.04,
         y: 0.04,
+        'font-size': '0.8em',
         ...AlignmentAttrs(alignment, VERTICAL),
         transform: RotateTransformation(opts.rot, -1) + ' ' + transformation.invert().scaling
       },

@@ -331,7 +331,7 @@ export function NodeJSFileSystem(fs, tty, process) {
 
   function AddData(file, data) {
     let buf;
-    if((buf = dataMap.get(file))) buf = buf.concat(data);
+    if(dataMap.has(file)) buf = dataMap.get(file).concat(data);
     else buf = Buffer.from(data);
     dataMap.set(file, buf);
     return buf.length;
@@ -372,7 +372,6 @@ export function NodeJSFileSystem(fs, tty, process) {
       if(typeof file == 'object' && file !== null && 'fd' in file) return file.fd;
       if(typeof file == 'number') return file;
     },
-
     open(filename, flags = 'r', mode = 0o644) {
       let fd = -1;
       try {
@@ -390,9 +389,7 @@ export function NodeJSFileSystem(fs, tty, process) {
     },
     close(file) {
       let fd = this.fileno(file);
-if(typeof(file) == 'object')
-  dataMap.delete(file);
-
+      if(typeof file == 'object') dataMap.delete(file);
 
       return CatchError(() => {
         fs.closeSync(fd);
@@ -570,7 +567,7 @@ if(typeof(file) == 'object')
         if((len = HasData(file))) resolve(len);
         else
           file.once('data', chunk => {
-            console.log('data', chunk);
+            //  console.log('data', chunk);
             resolve(AddData(file, chunk));
           });
       });

@@ -20,27 +20,14 @@ export class SchematicRenderer extends EagleSVGRenderer {
   static palette = Palette.schematic((r, g, b) => new RGBA(r, g, b));
 
   constructor(doc, factory) {
-    //const { sheets } = doc;
     super(doc, factory);
-
-    //this. sheets  = sheets;
     this.id = 0;
-
-    //this.setPalette(SchematicRenderer.palette);
     this.palette = SchematicRenderer.palette;
-    //console.log('found:', new ImmutablePath([...doc.path, 'children', { tagName: 'eagle' }, 'children', { tagName: 'drawing' }, 'children', { tagName: 'schematic' }]));
-
-    //console.log('SchematicRenderer.constructor(', doc, factory, ')');
   }
 
   renderCollection(collection, parent, opts) {
-    /*    if(pos !== undefined || rot !== undefined)
-      throw new Error();*/
-    //let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
     const arr = [...collection];
-
     this.debug(`SchematicRenderer.renderCollection`, arr, opts);
-
     for(let item of arr.filter(item => item.tagName != 'text')) this.renderItem(item, parent, opts);
     this.debug(`SchematicRenderer.renderCollection`, arr, opts);
     for(let item of arr.filter(item => item.tagName == 'text')) this.renderItem(item, parent, opts);
@@ -55,13 +42,10 @@ export class SchematicRenderer extends EagleSVGRenderer {
    */
   renderItem(item, parent, options = {}) {
     const { transform = new TransformationList(), rot, pos, labelText, ...opts } = options;
-
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
+    this.debug(`SchematicRenderer.renderItem`, { item, options });
 
-    /* if(rot)*/ this.debug(`SchematicRenderer.renderItem`,
-      /* { labelText, pos, transform, rot }, */ item /*, item.xpath().toString()*/,
-      item.raw
-    );
+    if(!('transformation' in opts)) opts.transformation = this.transform.concat(transform);
 
     const layer = item.layer;
     const color = typeof item.getColor == 'function' ? item.getColor() : SchematicRenderer.palette[16];
@@ -152,69 +136,51 @@ export class SchematicRenderer extends EagleSVGRenderer {
   renderNet(net, parent) {
     this.debug(`SchematicRenderer.renderNet`, { net, parent });
     let g = this.create('g', { className: `net ${net.name}` }, parent);
-    for(let segment of net.children) this.renderCollection(segment.children, g, { labelText: net.name });
+    for(let segment of net.children)
+      this.renderCollection(segment.children, g, { labelText: net.name, transformation: this.transform });
   }
 
   renderSheet(sheet, parent) {
     const { transform } = this;
-
     this.debug(`SchematicRenderer.renderSheet`, { sheet, parent, transform });
-
-    let instances = sheet.instances; //find('instances');
-
+    let instances = sheet.instances;
     this.debug(`SchematicRenderer.renderSheet`, sheet);
-
     let netsGroup = this.create('g', { className: 'nets', transform }, parent);
     let instancesGroup = this.create('g', { className: 'instances', transform }, parent);
-
     instancesGroup.props.children = [...instances.list].map(data =>
-      h(Instance, { data, transformation: this.transform /*.filter(t => ['translate'].indexOf(t.type) == -1)*/ })
+      h(Instance, { data, opts: { transformation: transform } })
     );
-
-    //    ReactComponent.append([...instances.list].map(data => h(Instance, { data })), instancesGroup);
-
-    //console.log('instancesGroup:', instancesGroup);
-
-    // for(let instance of instances.list) this.renderInstance(instance, instancesGroup);
-
     for(let net of sheet.nets.list) this.renderNet(net, netsGroup);
   }
 
-  renderInstance(instance, parent, opts = {}) {
-    this.debug(`SchematicRenderer.renderInstances`, { instance, opts });
-
+  /*renderInstance(instance, parent, opts = {}) {
+    this.debug(`SchematicRenderer.renderInstance`, { instance, opts });
     let { x, y, rot, part, symbol } = instance;
-    //let coordFn = MakeCoordTransformer(this.transform);
     let { deviceset, name, value } = part;
     let transform = new TransformationList();
-
     transform.translate(x, y);
     if(rot) {
       rot = MakeRotation(rot);
       transform = transform.concat(rot);
     }
     let transformStr = transform + '';
-
     this.debug(`SchematicRenderer.renderInstance`, { x, y, transform, transformStr });
-
     const g = this.create('g',
       { className: `part.${part.name}`, 'data-path': part.path.toString(' '), transform: transformStr },
       parent
     );
-
     if(!value) value = deviceset.name;
     opts = deviceset.uservalue == 'yes' || true ? { name, value } : { name, value: '' };
-
     this.renderCollection(symbol.children, g, {
-      ...opts /*pos: new Point(x, y), transform: t.slice()*/
+      ...opts,
+      transformation: this.transform.concat(transform)
     });
-
     return g;
-  }
+  }*/
 
-  renderInstances(parent, sheetNo = 0, b) {
+  /*renderInstances(parent, sheetNo = 0, b) {
     const { transform } = this;
-    this.debug('b:', b);
+    this.debug(`SchematicRenderer.renderInstances`, { transform });
     let g = this.create('g',
       {
         className: 'instances rects',
@@ -225,16 +191,12 @@ export class SchematicRenderer extends EagleSVGRenderer {
       },
       parent
     );
-
     for(let instance of this.sheets[sheetNo].instances.list) {
       let t = new TransformationList();
       t.translate(+instance.x, +instance.y);
       let b = instance.getBounds();
-      let br = new Rect(b.rect); /*.round(0.254, 5)*/
+      let br = new Rect(b.rect);
       br = br.round(0.254, 5);
-
-      //console.log("br:", br);
-
       this.create('rect', { ...br.toObject(), 'data-part': instance.part.name }, g);
       t.rotate(45);
       this.create('path', {
@@ -247,19 +209,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
         g
       );
     }
-
-    /*  b.outset(0.15);
-
-    this.create('rect', {
-        ...b.toObject(),
-        fill: new HSLA(290, 100, 50, 0.5),
-        'stroke-width': 0.1,
-        'stroke-dasharray': '0.9 0.6',
-        stroke: 'none'
-      },
-      parent
-    );*/
-  }
+  }*/
 
   render(doc = this.doc, parent, props = {}, sheetNo = 0) {
     //console.log('doc:', doc);

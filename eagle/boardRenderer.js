@@ -146,7 +146,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       flat
     } = opts;
     //  this.debug(`BoardRenderer.renderCollection`, { name, transform, pos, rot, layer },coll);
-    this.debug(`BoardRenderer.renderCollection`, { coll, transformation });
+    this.debug(`BoardRenderer.renderCollection`, { coll, transformation, name });
     let coordFn = i => i;
     let { class: addClass, ...addProps } = props;
     let wireMap = new Map(),
@@ -205,6 +205,8 @@ export class BoardRenderer extends EagleSVGRenderer {
       const color = layer.color;
       //this.debug('color:', color, layer.color);
       if(true) {
+        if(name == 'D2') window.lines = lines.map(l => l.clone());
+
         let cmds = LinesToPath(lines);
 
         if(flat) cmds = cmds.flat();
@@ -273,7 +275,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       transformation: this.transform.concat(transform),
       flat: true
     });
-    this.create(Origin, { /* x, y,*/ color: '#fc0', element, layer: this.layers['tOrigins'] }, g);
+    this.create(Origin, { /* x, y,*/ element, layer: this.layers['tOrigins'] }, g);
 
     /*    let angle = Util.randInt(0, 360);
     let angles = [angle, angle + 120, angle + 240, angle + 360];
