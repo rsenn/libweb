@@ -212,6 +212,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         if(flat) cmds = cmds.flat();
 
         //console.log('cmds:', cmds);
+        console.log('layerId:', layerId, 'width:', width);
 
         this.create(WirePath, {
             class: classNames(addClass, ElementToClass(wires[0], layer.name)),
@@ -322,11 +323,19 @@ export class BoardRenderer extends EagleSVGRenderer {
     /*if(!this.bounds)
     this.bounds = doc.getBounds();*/
     let transform = this.transform;
-    parent = super.render(doc, { transform });
+    let bounds = doc.measures;
+    let rect = new Rect(bounds).round(2.54);
+    let viewBox = new Rect(0, 0, rect.width, rect.height);
 
-    const { bounds, rect } = this;
+    parent = super.render(doc, { transform, rect, viewBox });
+
+    bounds = this.bounds;
+    //  const { bounds, rect } = this;
+    rect = this.rect;
 
     this.transform.unshift(new Translation(0, rect.height));
+
+    if(Math.abs(rect.x) > 0 || Math.abs(rect.y) > 0) this.transform.unshift(new Translation(-rect.x, rect.y));
 
     this.debug(`BoardRenderer.render`, { bounds, rect });
     //this.renderLayers(parent);

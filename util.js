@@ -3670,6 +3670,7 @@ Util.stack = function Stack(stack, offset) {
 
 Util.stack.prototype = Object.assign(Util.stack.prototype, Util.getMethods(new Array(), 1, 1));
 Object.defineProperty(Util.stack, Symbol.species, { get: () => Util.stack });
+Object.defineProperty(Util.stack.prototype, Symbol.species, { get: () => Util.stack });
 
 Util.stack.prototype = Object.assign(Util.stack.prototype, {
   toString(opts = {}) {

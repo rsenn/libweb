@@ -2,6 +2,8 @@ import { Point, Line, TransformationList, LineList } from '../geom.js';
 import Util from '../util.js';
 import { Component, useEffect, useState } from '../dom/preactComponent.js';
 import { classNames } from '../classNames.js';
+import { useTrkl } from '../hooks/useTrkl.js';
+export { useTrkl } from '../hooks/useTrkl.js';
 
 const PI = Math.PI;
 export const RAD2DEG = 180 / Math.PI;
@@ -17,11 +19,16 @@ export const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
 
 export let DEBUG = true;
 
-export const setDebug = state => (DEBUG = state);
-
 export let log = DEBUG
   ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console)
   : () => {};
+
+export const setDebug = state => {
+  DEBUG = state;
+  log = state
+    ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console)
+    : () => {};
+};
 
 export const EscapeClassName = name =>
   name ||
@@ -418,26 +425,6 @@ export function MakeCoordTransformer(matrix) {
     return { ...newCoords };
   };
 }
-
-export const useTrkl = fn => {
-  const [value, setValue] = useState(fn());
-  //console.debug('useTrkl fn =', fn, ' value =', value);
-
-  useEffect(() => {
-    let updateValue = v => {
-      if(v !== undefined) {
-        /*  if(v === 'yes') v = true;
-        else if(v === 'no') v = false;*/
-        //console.debug('useTrkl updateValue(', v, ')');
-        setValue(v);
-      }
-    };
-
-    fn.subscribe(updateValue);
-    return () => fn.unsubscribe(updateValue);
-  });
-  return value;
-};
 
 export const useAttributes = (element, attributeNames) => {
   attributeNames = attributeNames || Object.keys(element.attributes);

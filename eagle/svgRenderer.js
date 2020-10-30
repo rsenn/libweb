@@ -35,21 +35,21 @@ export class EagleSVGRenderer {
     const insertCtoP = Util.inserter(this.component2path);
     const insert = Util.inserter(this.path2component, (k, v) => insertCtoP(v, k));
     this.mirrorY = new TransformationList().scale(1, -1);
+    console.log('mirrorY:', this.mirrorY);
     this.append = factory;
     this.create = function(tag, attrs, children, parent, element) {
       let ret = factory(tag, attrs, children, parent, element);
       let path = attrs['data-path'];
       let pathStr = path;
       //  let xpath;
-      if(typeof path == 'string') {
-        //console.debug('pathStr:', pathStr);
-        //         xpath =    new  ImmutablePath(transformXPath(path)) ;
+      /*  if(typeof path == 'string') {
+       console.debug('pathStr:', pathStr);
         path = new ImmutableXPath(path);
-      }
+      }*/
       if(path) {
-        let e = path.apply(doc, true);
-        //console.debug('path:', path);
-        //console.debug('e:', e);
+        let e = doc.lookup(path);
+        console.debug('path:', path + '');
+        console.debug('e:', e);
         let parent = e.parentNode;
 
         insert(path, ret);
@@ -413,12 +413,17 @@ export class EagleSVGRenderer {
   render(obj, props = {}, children = []) {
     let doc = obj.document || this.doc;
     this.debug('EagleSVGRenderer.render', obj);
-    let { bounds = (obj.getMeasures && obj.measures) || obj.getBounds(), transform } = props;
+    let { bounds = (obj.getMeasures && obj.measures) || obj.getBounds(), transform = new TransformationList() } = props;
+
+    let { rect = new Rect(bounds.rect) } = props;
+
     //let { bounds = doc.measures || doc.getBounds() } = props;
-    let rect = new Rect(bounds.rect);
     rect.round(1.27);
     //rect.outset(1.27);
     rect.round(2.54);
+
+    let { viewBox = rect, index } = props;
+
     this.rect = rect;
     this.bounds = bounds; //BBox.fromRect(rect);
     //this.debug('EagleSVGRenderer.render', { bounds: this.bounds, rect });
@@ -427,26 +432,30 @@ export class EagleSVGRenderer {
     //this.transform.translate(0, rect.height - rect.y);
 
     // const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;
-    this.debug('SVGRenderer.render', { transform });
+    this.debug('SVGRenderer.render', { transform, index });
     //this.debug(bounds);
     //this.debug('viewBox rect:', rect, rect.toString(), rect.valueOf);
-    let grid = doc.lookup('/eagle/drawing/grid');
+    let gridElement = doc.lookup('/eagle/drawing/grid');
     let attrs = {
       bg: trkl({ color: '#ffffff', visible: true }),
       grid: trkl({ color: '#0000aa', width: 0.01, visible: true })
     };
+    const { bg, grid } = attrs;
+    this.attrs = attrs;
     //this.debug('grid:', grid.attributes);
-    trkl.bind(this, attrs);
+    trkl.bind(this, { bg, grid });
     //this.debug('rect:', rect, bounds.rect);
     //console.log('layers', layers);
     let svgElem = h(Drawing,
       {
-        rect,
+        rect: viewBox,
         bounds,
         attrs,
-        grid,
+        grid: gridElement,
+        nodefs: index > 0,
         width,
-        height
+        height,
+        transform: transform.slice(1)
         /*   styles: [
           'text { font-size: 0.0875rem; }',
           'text { stroke: none; }',

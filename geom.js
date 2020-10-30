@@ -1,4 +1,4 @@
-import { Align, Anchor } from './geom/align.js';
+import { Align, AlignToString, Anchor } from './geom/align.js';
 import { isBBox, BBox } from './geom/bbox.js';
 import { Graph } from './geom/graph.js';
 import { Intersection } from './geom/intersection.js';
@@ -19,6 +19,7 @@ import { SweepLineClass } from './geom/sweepLine.js';
 import { MatrixTransformation, Rotation, Scaling, Transformation, TransformationList, Translation, ImmutableMatrixTransformation, ImmutableRotation, ImmutableScaling, ImmutableTransformation, ImmutableTransformationList, ImmutableTranslation } from './geom/transformation.js';
 export default {
   Align,
+  AlignToString,
   Anchor,
   Arc,
   BBox,

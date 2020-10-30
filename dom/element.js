@@ -166,9 +166,9 @@ export class Element extends Node {
   }
 
   static *childIterator(elem, element = true) {
-    element = element ? "Element" : "";
-    if(elem['first'+element+'Child']) {
-      for(let c =elem['first'+element+'Child']; c; c = c['next'+element+'Sibling']) yield c;
+    element = element ? 'Element' : '';
+    if(elem['first' + element + 'Child']) {
+      for(let c = elem['first' + element + 'Child']; c; c = c['next' + element + 'Sibling']) yield c;
     } else {
       let children = [...elem.children];
       for(let i = 0; i < children.length; i++) yield children[i];
@@ -183,11 +183,11 @@ export class Element extends Node {
       l = [...this.childIterator(elem, false)];
       if(predicate) l = l.filter(predicate);
       l = l.reduce((l, c) => (
-          ((Util.isObject(c) && c.nodeType == 1)
-            ? l.push(Element.toObject(c,  opts))
-            : ((c.textContent + '').trim() != ''
+          Util.isObject(c) && c.nodeType == 1
+            ? l.push(Element.toObject(c, opts))
+            : (c.textContent + '').trim() != ''
             ? l.push(c.textContent)
-            : undefined)),
+            : undefined,
           l
         ),
         []
@@ -479,27 +479,27 @@ export class Element extends Node {
             v ? +v.replace(/[a-z]*$/, '') : 0
           ])
         );
-
     const f = [edges[0] == 'left' ? 1 : -1, edges[1] == 'top' ? 1 : -1];
-
     //console.log('moveRelative', { e, to, edges, f, origin });
-
     function move(x, y) {
       let pos = new Point(origin.x + x * f[0], origin.y + y * f[1]);
-      if(typeof callback == 'function') callback(pos, move.last);
+      if(move.first === undefined) move.first = pos;
+      if(typeof callback == 'function') {
+        callback.call(this, pos, move.last, move.first);
+        move.last = pos;
+        return;
+      }
       move.last = pos;
+
       let css = pos.toCSS(1, edges);
       //      console.log('move', { pos, css });
       Element.setCSS(e, css);
-
       return;
-      return Element.move(e, pos, 'absolute', edges);
     }
-
     move.origin = origin;
-    move.cancel = () => move(0, 0);
+    move.cancel = () => move.call(move, 0, 0);
     move.jump = () => Element.moveRelative(e, to, edges);
-
+    move.element = element;
     return move;
   }
 
@@ -619,8 +619,13 @@ export class Element extends Node {
         }
       }
       if(element.style) {
-        if(element.style.setProperty) element.style.setProperty(propName, value);
-        else element.style[Util.camelize(propName)] = value;
+        if(value !== undefined) {
+          if(element.style.setProperty) element.style.setProperty(propName, value);
+          else element.style[Util.camelize(propName)] = value;
+        } else {
+          if(element.style.removeProperty) element.style.removeProperty(propName);
+          else delete element.style[Util.camelize(propName)];
+        }
       }
     }
     return element;
@@ -986,7 +991,7 @@ export class Element extends Node {
     let o = e.__proto__ === Object.prototype ? e : Element.toObject(e);
     const { tagName, ns, children = [], ...a } = o;
     let i = newline != '' ? indent.repeat(depth) : '';
-    let s = i; 
+    let s = i;
 
     s += `<${tagName}`;
     s += Object.entries(a)
@@ -996,7 +1001,11 @@ export class Element extends Node {
     if(children.length)
       s +=
         newline +
-        children.map(e => typeof(e) == 'string' ? i+indent+e+newline : Element.toString(e, { ...opts, depth: depth + 1 })).join('') +
+        children
+          .map(e =>
+            typeof e == 'string' ? i + indent + e + newline : Element.toString(e, { ...opts, depth: depth + 1 })
+          )
+          .join('') +
         i +
         `</${tagName}>`;
     s += newline;

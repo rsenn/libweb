@@ -5,14 +5,20 @@ import { Grid, Pattern } from './grid.js';
 import { SVG } from './svg.js';
 import { Background } from './background.js';
 
-export const Drawing = ({ rect, bounds, attrs, grid, transform, styles, children, style, ...props }) => {
+export const Drawing = ({ rect, bounds, attrs, grid, nodefs, transform, styles, children, style, ...props }) => {
   let viewBox = new Rect(rect);
   //viewBox.y = bounds.y1;
+  //
+  const id = 'grid'; //grid-'+Util.randStr(8, '0123456789ABCDEF'.toLowerCase());
+  //
+  log('Drawing.render', { attrs, grid, nodefs });
 
-  return h(SVG, { viewBox, styles, style, defs: h(Pattern, { data: grid, id: 'grid', attrs: attrs.grid }), ...props }, [
+  const defs = nodefs ? {} : { defs: h(Pattern, { data: grid, id, attrs: attrs.grid }) };
+
+  return h(SVG, { viewBox, styles, style, ...defs, ...props }, [
     h('g', { id: 'bg', transform }, [
       h(Background, { rect, attrs: attrs.bg }),
-      h(Grid, { data: grid, rect, attrs: attrs.grid })
+      h(Grid, { data: grid, id, rect, attrs: attrs.grid })
     ]),
     ...toChildArray(children)
   ]);

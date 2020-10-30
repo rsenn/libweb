@@ -22,11 +22,11 @@ export const Text = ({ x, y, text, color, alignment, rot, visible, className, op
     .rotate(-realAngle);
 
   let align = Alignment(alignment);
-  log(`Text.render`, { text, parentAngle, rotationAngle, totalAngle, realAngle, diffAngle, transform, align });
+  //log(`Text.render`, { text, parentAngle, rotationAngle, totalAngle, realAngle, diffAngle, transform, align });
 
   align = align.rotate(diffAngle * DEG2RAD).round();
 
-  log('Text.render', align);
+  //log('Text.render', align);
 
   if(align.y == 0) transform = transform.concat(new Translation(0, +0.11));
 

@@ -336,7 +336,7 @@ export class Scaling extends Transformation {
 
   toString() {
     const vector = this.vector('');
-    const coords = Util.allEqual(vector) ? vector[0] : vector.join(', ');
+    const coords = /*Util.allEqual(vector) ? vector[0] : */ vector.join(', ');
 
     return `${this.type}${this.is3D ? '3d' : ''}(${coords})`;
   }
@@ -703,8 +703,7 @@ export class TransformationList extends Array {
   }
 
   get translation() {
-    return this.findLast(item => item instanceof Translation || (typeof item.type == 'string' && item.type.startsWith('translat'))
-    );
+    return this.findLast(item => typeof item.type == 'string' && item.type.startsWith('translat'));
   }
 
   set translation(value) {
@@ -766,7 +765,8 @@ export class TransformationList extends Array {
   }
 
   clear() {
-    return this.splice(0, this.length);
+    Array.prototype.splice.call(this, 0, this.length);
+    return this;
   }
 }
 

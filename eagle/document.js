@@ -239,6 +239,8 @@ export class EagleDocument extends EagleNode {
 
     if(!plain && (plain = this.find('plain'))) plain = [...plain.children];
 
+    plain = plain.filter(e => e.tagName == 'wire');
+
     if(plain) {
       let measures = plain.filter(obj => obj.layer && ['Dimension', 'Measures'].indexOf(obj.layer.name) != -1);
 

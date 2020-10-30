@@ -6,7 +6,7 @@ export { EagleSVGRenderer } from './svgRenderer.js';
 export { SchematicRenderer } from './schematicRenderer.js';
 export { LibraryRenderer } from './libraryRenderer.js';
 export { BoardRenderer } from './boardRenderer.js';
-import { setDebug } from './renderUtils.js';
+import { DEBUG, setDebug, log } from './renderUtils.js';
 
 export function Renderer(doc, factory, debug) {
   let ret;
@@ -23,12 +23,15 @@ export function Renderer(doc, factory, debug) {
       break;
     default: throw new Error('No such document type: ' + doc.type);
   }
+
   setDebug(debug);
+  console.log('DEBUG:', DEBUG);
+  console.log('log:', log);
   /*  Renderer.debug = ret.debug = debug
     ? (...args) => console.log(Util.getCallers(2)[0].toString(false, { stripUrl: true }) + '\n', ...args)
     : () => {};*/
-  let fn = typeof console.debug == 'function' ? console.debug : console.log;
+  // let fn = typeof console.debug == 'function' ? console.debug : console.log;
 
-  ret.debug = debug ? fn.bind(console) : () => undefined;
+  ret.debug = log;
   return ret;
 }

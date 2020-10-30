@@ -27,12 +27,9 @@ export function trkl(initValue) {
 
   //declaring as a private function means the minifier can scrub its name on internal references
   function subscribe(subscriber, immediate) {
-    if(!~subscribers.indexOf(subscriber)) {
-      subscribers.push(subscriber);
-    }
-    if(immediate) {
-      subscriber(value);
-    }
+    if(subscribers.indexOf(subscriber) == -1) subscribers.push(subscriber);
+    if(immediate) subscriber(value);
+
     return this;
   }
 
@@ -72,6 +69,7 @@ export function trkl(initValue) {
     return value;
   }
   Object.setPrototypeOf(self, trkl.prototype);
+  self.subscribers = subscribers;
 
   return self;
 }

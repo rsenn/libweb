@@ -44,7 +44,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
     }
     case 'octagon': {
       d = Util.range(0, 7)
-        .map(i => Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.4))
+        .map(i => Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.2))
         .map(p => p.round())
         .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
         .join(' ');
