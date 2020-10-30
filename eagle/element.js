@@ -292,6 +292,10 @@ export class EagleElement extends EagleNode {
       trkl.bind(this, 'layer', () => {
         return doc.layers['Vias'];
       });
+    } else if(tagName == 'hole') {
+      trkl.bind(this, 'layer', () => {
+        return doc.layers['Holes'];
+      });
     }
 
     if(tagName == 'gate') {
@@ -472,6 +476,7 @@ export class EagleElement extends EagleNode {
   getLayer() {
     if(this.raw.attributes.layer) return this.raw.attributes.layer;
     if(this.raw.tagName == 'pad') return 'Pads';
+    if(this.raw.tagName == 'hole') return 'Holes';
     if(this.raw.tagName == 'description') return 'Document';
   }
 

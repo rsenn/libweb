@@ -5,7 +5,8 @@ import { Cross } from './cross.js';
 
 export const Text = ({ x, y, text, color, alignment, rot, visible, className, opts = {}, style, ...props }) => {
   let { transformation = new TransformationList() } = opts;
-  let parentAngle = Math.round(transformation.slice(1).angle * RAD2DEG);
+  let parentAngle = Math.round(transformation.slice(transformation.indexOf(transformation.scaling) + 1).angle * RAD2DEG
+  );
   log(`Text.render`, { text, parentAngle, transformation, x, y, alignment, rot });
 
   let rotation = MakeRotation(rot);

@@ -22,7 +22,7 @@ export const useGrid = data => {
   return result;
 };
 
-export const Pattern = ({ data, id = 'pattern', attrs = { color: '#0000aa', width: 0.05 }, ...props }) => {
+export const Pattern = ({ data, id = 'pattern', attrs = { color: '#0000aa', width: 0.01 }, ...props }) => {
   data =
     useValue(async function* () {
       for await (let change of data.repeater) {
@@ -35,14 +35,14 @@ export const Pattern = ({ data, id = 'pattern', attrs = { color: '#0000aa', widt
   //log('Pattern.render:', { distance, style, multiple, display, altdistance });
   let pattern = typeof attrs == 'function' ? useTrkl(attrs) : attrs;
   log('Pattern.render ', { pattern, distance, multiple });
-  let { width = 0.05, color = '#0000aa' } = pattern;
+  let { width = 0.01, color = '#0000aa' } = pattern;
   const size = distance * multiple;
   return h('pattern',
     { id, width: size, height: size, patternUnits: 'userSpaceOnUse' },
     h('path', {
       d: `M ${size},0 L 0,0 L 0,${size}`,
       fill: 'none',
-      stroke: color || '#0000aa',
+      stroke: color,
       //  'vector-effect': 'non-scaling-stroke',
       'stroke-width': style == 'dots' ? width * 2 : width,
       'stroke-dasharray': style == 'dots' ? `${width}  ${size * 4}` : `${size * 2}`

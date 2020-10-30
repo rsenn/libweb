@@ -18,6 +18,8 @@ import { Element } from './components/element.js';
 import { WirePath } from './components/wirePath.js';
 import { Package } from './components/package.js';
 import { SchematicSymbol } from './components/symbol.js';
+import { Hole } from './components/hole.js';
+import { Dimension } from './components/dimension.js';
 
 export const PrimitiveComponents = {
   Wire,
@@ -34,8 +36,9 @@ export const PrimitiveComponents = {
   Origin,
   Polygon,
   Symbol: SchematicSymbol,
-  Package /*,
-  Element*/
+  Package,
+  Hole,
+  Dimension
 };
 
 let prevName;

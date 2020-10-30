@@ -20,8 +20,8 @@ export const Pad = ({ data, opts = {}, ...props }) => {
   const { name, drill, radius, shape, layer, rot } = pad;
   const { x, y } = coordFn(pad);
   const diameter = radius * 2;
-  const ro = +((diameter || 1.5) / 2.54).toFixed(3);
-  const ri = +(drill / 3).toFixed(3);
+  const ro = Util.roundTo(diameter / 2, 0.0001);
+  const ri = Util.roundTo(drill / 2, 0.0001);
   let d;
   let transform = `translate(${x},${y})`;
   let visible = 'yes' == useTrkl(layer.handlers.visible);
@@ -36,7 +36,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
     }
     case 'square': {
       d = [new Point(-1, -1), new Point(1, -1), new Point(1, 1), new Point(-1, 1)]
-        .map(p => p.prod(ro * 1.27))
+        .map(p => p.prod(ro))
         .map(p => p.round())
         .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
         .join(' ');
@@ -58,7 +58,9 @@ export const Pad = ({ data, opts = {}, ...props }) => {
 
   const layerProps = layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {};
   const pathProps = {
-    d: d + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`
+    d: d + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
+    stroke: 'none',
+    fill: layer.color
   };
   const baseProps = {
     class: ElementToClass(pad),
@@ -80,7 +82,8 @@ export const Pad = ({ data, opts = {}, ...props }) => {
       {
         x: 0.04,
         y: 0.04,
-        'font-size': '0.8em',
+        fill: '#f0f',
+        'font-size': '0.8px',
         ...AlignmentAttrs(alignment, VERTICAL),
         transform: RotateTransformation(opts.rot, -1) + ' ' + transformation.invert().scaling
       },

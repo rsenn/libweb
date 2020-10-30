@@ -335,7 +335,7 @@ export const LinesToPath = (lines, lineFn) => {
         //if(isFinite(radius))
         if(debug) Util.consoleConcat(`lineFn\n`, { curve, angle, slope, radius }, debug).print(console.log);
 
-        if(curve !== undefined && isFinite(radius)) return RenderArcTo(dist, radius.toFixed(4), theta, sweep, p[1]);
+        if(curve !== undefined && isFinite(radius)) return RenderArcTo(dist, Math.abs(radius), theta, sweep, p[1]);
         else if(Point.equals(start, p[1])) return `Z`;
         else return `L ${p[1].x} ${p[1].y}`;
       };

@@ -17,17 +17,22 @@ export const WirePath = ({ className, path, cmds, separator = '\n', color, width
   log('WirePath path:', path);
   log('WirePath cmds:', cmds);
 
-  return h(Util.isArray(path) ? 'g' : 'path',
+  let isArray = Util.isArray(cmds[0]) && cmds.length > 1;
+
+  if(Util.isArray(cmds[0]) && cmds.length == 1) cmds = cmds[0];
+  // if(Util.isArray(cmds)) cmds =  separator + cmds.join(separator) + separator;
+
+  return h(isArray ? 'g' : 'path',
     {
       className,
-      ...(Util.isArray(path) ? {} : { d: Util.isArray(cmds) ? separator + cmds.join(separator) + separator : cmds }),
+      ...(isArray ? {} : { d: cmds.join(' ') }),
       ...attrs,
       ...props
     },
-    Util.isArray(path)
-      ? path.map(cmd => {
+    isArray
+      ? cmds.map(cmd => {
           log('cmd:', cmd);
-          return h('path', { d: cmd.flat().join(' ') });
+          return h('path', { d: cmd.join(' ') });
         })
       : []
   );

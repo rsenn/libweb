@@ -433,7 +433,7 @@ export class EagleSVGRenderer {
     let grid = doc.lookup('/eagle/drawing/grid');
     let attrs = {
       bg: trkl({ color: '#ffffff', visible: true }),
-      grid: trkl({ color: '#0000aa', width: 0.05, visible: true })
+      grid: trkl({ color: '#0000aa', width: 0.01, visible: true })
     };
     //this.debug('grid:', grid.attributes);
     trkl.bind(this, attrs);
@@ -445,18 +445,17 @@ export class EagleSVGRenderer {
         bounds,
         attrs,
         grid,
-        style: { width, height },
-        styles: [
+        width,
+        height
+        /*   styles: [
           'text { font-size: 0.0875rem; }',
           'text { stroke: none; }',
           '.pad { fill: #4ba54b; }',
           '.pad > text { fill: #ff33ff; }',
           '.pad > text { font-size: 0.04375rem; }',
-          // ...this.doc.layers.map(layer => `.${LayerToClass(layer).join('.')} { stroke: ${layer.color.hex()}; }`),
-          'rect { stroke: none; }',
+           'rect { stroke: none; }',
           'path { stroke-linejoin: round; stroke-linecap: round; }'
-        ],
-        transform
+        ]*/
       },
       children
     );

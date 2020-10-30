@@ -1,6 +1,6 @@
 import Util from '../util.js';
 import { Point, Line } from '../geom.js';
-import { TransformationList } from '../geom/transformation.js';
+import { TransformationList, Translation } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
 import { Cross, Arc, Origin, WirePath } from './components.js';
 import { RGBA } from '../color.js';
@@ -325,14 +325,17 @@ export class BoardRenderer extends EagleSVGRenderer {
     parent = super.render(doc, { transform });
 
     const { bounds, rect } = this;
+
+    this.transform.unshift(new Translation(0, rect.height));
+
     this.debug(`BoardRenderer.render`, { bounds, rect });
     //this.renderLayers(parent);
-    let plainGroup = this.create('g', { class: 'plain' /*, transform */ }, parent);
+    let plainGroup = this.create('g', { id: 'plain', transform }, parent);
     let signalsGroup = this.create('g',
-      { class: 'signals', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' /*, transform*/ },
+      { id: 'signals', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', transform },
       parent
     );
-    let elementsGroup = this.create('g', { class: 'elements' /*, transform */ }, parent);
+    let elementsGroup = this.create('g', { id: 'elements', transform }, parent);
     this.debug('bounds: ', bounds);
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {

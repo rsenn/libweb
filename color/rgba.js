@@ -205,13 +205,17 @@ RGBA.normalize = function(rgba, src = 255, dst = 1.0) {
 RGBA.prototype.css = () => prop =>
   (prop ? prop + ':' : '') + 'rgba(' + this.r + ', ' + this.g + ', ' + this.b + ', ' + (this.a / 255).toFixed(3) + ')';
 
-RGBA.prototype.toString = function(sep = ',', fmt = num => +num.toFixed(3)) {
+RGBA.prototype.toCSS = function(fmt = num => +num.toFixed(3)) {
   const { r, g, b, a } = this;
+  const sep = ',';
   if(a === undefined) return 'rgb(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + ')';
   return 'rgba(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + sep + (a * 100) / 255 + '%)';
 };
+RGBA.prototype.toString = function() {
+  return RGBA.prototype.hex.call(this);
+};
 RGBA.prototype[Symbol.toStringTag] = function() {
-  return RGBA.prototype.toString.call(this);
+  return RGBA.prototype.hex.call(this);
 };
 RGBA.prototype[Symbol.toPrimitive] = function(hint) {
   if(hint == 'default') return RGBA.prototype.hex.call(this);

@@ -165,9 +165,10 @@ export class Element extends Node {
     }
   }
 
-  static *childIterator(elem) {
-    if(elem.firstElementChild) {
-      for(let c = elem.firstElementChild; c; c = c.nextElementSibling) yield c;
+  static *childIterator(elem, element = true) {
+    element = element ? "Element" : "";
+    if(elem['first'+element+'Child']) {
+      for(let c =elem['first'+element+'Child']; c; c = c['next'+element+'Sibling']) yield c;
     } else {
       let children = [...elem.children];
       for(let i = 0; i < children.length; i++) yield children[i];
@@ -179,14 +180,14 @@ export class Element extends Node {
     if(typeof elem == 'string') elem = Element.find(elem);
     let l = [];
     if(!no_children) {
-      l = [...this.childIterator(elem)];
+      l = [...this.childIterator(elem, false)];
       if(predicate) l = l.filter(predicate);
       l = l.reduce((l, c) => (
-          Util.isObject(c) && 'tagName' in c
-            ? l.push(Element.toObject(c, elem, opts))
-            : (c.textContent + '').trim() != ''
+          ((Util.isObject(c) && c.nodeType == 1)
+            ? l.push(Element.toObject(c,  opts))
+            : ((c.textContent + '').trim() != ''
             ? l.push(c.textContent)
-            : undefined,
+            : undefined)),
           l
         ),
         []
@@ -985,7 +986,9 @@ export class Element extends Node {
     let o = e.__proto__ === Object.prototype ? e : Element.toObject(e);
     const { tagName, ns, children = [], ...a } = o;
     let i = newline != '' ? indent.repeat(depth) : '';
-    let s = i + `<${tagName}`;
+    let s = i; 
+
+    s += `<${tagName}`;
     s += Object.entries(a)
       .map(([name, value]) => ` ${name}="${value}"`)
       .join('');
@@ -993,7 +996,7 @@ export class Element extends Node {
     if(children.length)
       s +=
         newline +
-        children.map(e => Element.toString(e, { ...opts, depth: depth + 1 })).join(newline) +
+        children.map(e => typeof(e) == 'string' ? i+indent+e+newline : Element.toString(e, { ...opts, depth: depth + 1 })).join('') +
         i +
         `</${tagName}>`;
     s += newline;
