@@ -230,7 +230,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
 
     bounds = new BBox(rect.x1, -rect.y2, rect.x2, -rect.y1);
 
-    this.debug(`SchematicRenderer.render`, { doc, sheetNo, bounds });
+    this.debug(`SchematicRenderer.render`, { doc, sheetNo, bounds, viewBox: rect });
     let { transform } = this;
     let svgElem = super.render(sheet, { bounds });
 

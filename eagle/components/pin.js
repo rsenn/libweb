@@ -42,13 +42,14 @@ export const Pin = ({ data, opts = {}, ...props }) => {
       })
     );
 
-  children.push(h('line', {
-      class: 'pin',
-      stroke: '#a54b4b',
-      ...l.toObject(),
-      'stroke-width': 0.15
-    })
-  );
+  if(l.getLength())
+    children.push(h('line', {
+        class: 'pin',
+        stroke: '#a54b4b',
+        ...l.toObject(),
+        'stroke-width': 0.15
+      })
+    );
   if(name != '' && visible != 'off')
     children.push(h(Text, {
         class: ElementToClass(data),

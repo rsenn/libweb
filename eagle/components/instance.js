@@ -36,5 +36,5 @@ export const Instance = ({ data, opts = {}, ...props }) => {
     }
   });
 
-  return h('g', { className: `part.${part.name}`, 'data-path': part.path.toString(' '), transform }, [sym]);
+  return h('g', { class: `part ${part.name}`, 'data-path': part.path.toString(' '), transform }, [sym]);
 };
