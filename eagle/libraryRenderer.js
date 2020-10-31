@@ -72,7 +72,6 @@ export class LibraryRenderer extends EagleSVGRenderer {
       .map(([e, deviceset]) => deviceset)
       .filter(deviceset => !!deviceset);
     let prefixes = Util.unique(devicesets.map(deviceset => deviceset && deviceset.prefix).filter(prefix => !!prefix));
-    console.log('prefixes:', prefixes);
     let suffix = '';
     if(item.tagName == 'symbol') {
       let symbolUsages = devicesets
@@ -94,9 +93,9 @@ export class LibraryRenderer extends EagleSVGRenderer {
         suffix = name;
         opts.value = deviceset.name;
 
-        console.log('LibraryRenderer.renderItem deviceset:', deviceset, 'gate:', { number, name, symbol });
+        //console.log('LibraryRenderer.renderItem deviceset:', deviceset, 'gate:', { number, name, symbol });
       }
-      console.log('LibraryRenderer.renderItem item.elementChain():', item.elementChain());
+      //   console.log('LibraryRenderer.renderItem item.elementChain():', item.elementChain());
     }
 
     if(prefixes[0]) opts.name = `${prefixes[0]}1${suffix}`;
@@ -195,7 +194,7 @@ if(translation) {
     return h(component,
       props,
       items.map(([title, component]) =>
-        h(item.component, { class: title[0].toLowerCase(), title, ...item.props }, [component])
+        h(item.component, { class: title[0].toLowerCase(), title, key: title.join('-'), ...item.props }, [component])
       )
     );
   }

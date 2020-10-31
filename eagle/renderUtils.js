@@ -30,6 +30,13 @@ export const setDebug = state => {
     : () => {};
 };
 
+export const PinSizes = {
+  long: 3,
+  middle: 2,
+  short: 1,
+  point: 0
+};
+
 export const EscapeClassName = name =>
   name ||
   encodeURIComponent(name)

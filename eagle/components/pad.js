@@ -20,17 +20,21 @@ export const Pad = ({ data, opts = {}, ...props }) => {
   const { name, drill, radius, shape, layer, rot } = pad;
   const { x, y } = coordFn(pad);
   const diameter = radius * 2;
-  const ro = Util.roundTo(diameter / 2, 0.0001);
-  const ri = Util.roundTo(drill / 2, 0.0001);
+  let ro = Util.roundTo(diameter / 2, 0.0001);
+  let ri = Util.roundTo(drill / 2, 0.0001);
   let d;
   let transform = `translate(${x},${y})`;
   let visible = 'yes' == useTrkl(layer.handlers.visible);
+  let rotation = MakeRotation(rot);
 
-  const padColor = layer.getColor(pad) || pad.getColor();
+  if(rot) transform = transform.concat(rotation);
+
+  const padColor = /*layer.getColor(pad) ||*/ pad.getColor();
 
   switch (shape) {
     case 'long': {
-      const w = ro * 0.75;
+      ro = ro * 1.2;
+      const w = ro;
       d = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${-w * 2} 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
       break;
     }
@@ -60,7 +64,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
   const pathProps = {
     d: d + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
     stroke: 'none',
-    fill: layer.color
+    fill: padColor
   };
   const baseProps = {
     class: ElementToClass(pad),
@@ -85,7 +89,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
         fill: '#f0f',
         'font-size': '0.8px',
         ...AlignmentAttrs(alignment, VERTICAL),
-        transform: RotateTransformation(opts.rot, -1) + ' ' + transformation.invert().scaling
+        transform: transformation.concat(rotation).invert().scaling
       },
       /* prettier-ignore */ h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL) }, name)
     );

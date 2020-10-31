@@ -78,14 +78,14 @@ Object.defineProperty(Circle.prototype, 'center', {
 
 Circle.prototype.bbox = function(width = 0) {
   const { x, y, radius } = this;
-  let distance = radius + width;
+  let distance = radius + width / 2;
 
-  return new Rect({
+  return {
     x1: x - distance,
     x2: x + distance,
     y1: y - distance,
     y2: y + distance
-  });
+  };
 };
 Circle.prototype.transform = function(m) {
   if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();

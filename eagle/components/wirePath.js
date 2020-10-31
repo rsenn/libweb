@@ -8,7 +8,7 @@ export const WirePath = ({ className, path, cmds, separator = '\n', color, width
 
   let attrs = {
     stroke: color + '',
-    'stroke-width': +(width == 0 ? 0.1 : width * 0.8).toFixed(3),
+    'stroke-width': +(width == 0 ? 0.1 : width * 1).toFixed(3),
     'data-layer': `${layer.number} ${layer.name}`,
     fill: 'none',
     style: visible ? undefined : { display: 'none' }

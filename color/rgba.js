@@ -236,11 +236,11 @@ RGBA.prototype.toSource = function(sep = ',') {
 };
 
 RGBA.prototype.normalize = function(src = 255, dst = 1.0) {
-  const mul = dst / src;
-  this.r *= mul;
-  this.g *= mul;
-  this.b *= mul;
-  this.a *= mul;
+  this.r = (this.r * dst) / src;
+  this.g = (this.g * dst) / src;
+  this.b = (this.b * dst) / src;
+  this.a = (this.a * dst) / src;
+
   return this;
 };
 
@@ -254,8 +254,9 @@ RGBA.blend = (a, b, o = 0.5) => {
   );
 };
 
-RGBA.prototype.toAlpha = function(color) {
-  let src = RGBA.normalize(this);
+RGBA.prototype.toAlpha = Util.curry(function (other) {
+  let color = RGBA.normalize(this);
+  let src = new RGBA(other).normalize();
   let alpha = {};
 
   alpha.a = src.a;
@@ -289,13 +290,10 @@ RGBA.prototype.toAlpha = function(color) {
     src.a *= alpha.a;
   }
 
-  let dst = RGBA.normalize(src, 1.0, 255);
-  //Util.log({ src, dst });
+  let dst = src.normalize(1, 255);
 
-  RGBA.round(dst);
-
-  return new RGBA(dst.r, dst.g, dst.b, dst.a);
-};
+  return dst.round();
+});
 
 RGBA.prototype.toHSLA = function() {
   let { r, g, b, a } = this;

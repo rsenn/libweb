@@ -112,26 +112,6 @@ export class EagleSVGRenderer {
     });
   }
 
-  /*
-  findLayer(id) {
-    if(id instanceof EagleElement) {
-      if('layer' in id) id = id.layer;
-      else if(id.tagName == 'pad') id = 'Pads';
-      else if(id.tagName == 'description') id = 'Document';
-    }
-    const { number, name } = Util.isObject(id) ? { number: id.number, name: id.name } : { number: +id, name: '' + id };
-    return this.getLayer(typeof number == 'number' ? number : name);
-  }
-
-  getLayer(id) {
-    if(this.layers[id]) return this.layers[id];
-
-    for(let layer of this.layers.list) {
-      if(layer.number === id) return layer;
-      if(layer.name === id) return layer;
-    }
-  }
-*/
   getColor(color) {
     let c = this.palette[color] || /*this.colors[color] || */ 'rgb(165,165,165)';
     //this.debug('getColor', color, c);

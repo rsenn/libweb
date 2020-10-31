@@ -3,9 +3,10 @@ import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
 import { EagleReference } from './ref.js';
+import { RGBA } from '../color.js';
 import { ImmutableXPath } from '../xml.js';
 import { ImmutablePath } from '../json.js';
-import { MakeRotation, Alignment } from './renderUtils.js';
+import { MakeRotation, Alignment, PinSizes } from './renderUtils.js';
 import { lazyProperty } from '../lazyInitializer.js';
 import { BBox, Point, Circle, Line, Rect, TransformationList, Transformation, PointList, Translation } from '../geom.js';
 import { Repeater } from '../repeater/repeater.js';
@@ -44,6 +45,8 @@ export class EagleElement extends EagleNode {
 
   static list = [];
   static currentElement = null;
+
+  static makeTransparent = new RGBA(255, 255, 255).toAlpha();
 
   //new WeakMap();
 
@@ -390,7 +393,10 @@ export class EagleElement extends EagleNode {
       this.getColor = function() {
         let layer = this.layer || this.document.layers[Util.ucfirst(this.tagName) + 's'];
         layer.elements.add(this);
-        return layer.color;
+        let color = layer.color;
+        if(['pad', 'via'].indexOf(this.tagName) != -1) color = EagleElement.makeTransparent(color);
+
+        return color;
       };
     }
 
@@ -525,7 +531,21 @@ export class EagleElement extends EagleNode {
         return bb;
       }
     }
-    if(this.tagName == 'element') {
+    if(this.tagName == 'pin') {
+      const { rot, length, func, x, y } = this;
+
+      const angle = +(rot || '0').replace(/R/, '');
+      let veclen = PinSizes[length] * 2.54;
+      if(func == 'dot') veclen -= 1.5;
+      const dir = Point.fromAngle((angle * Math.PI) / 180);
+      const vec = dir.prod(veclen);
+      const pivot = new Point(+x, +y);
+      const pp = dir.prod(veclen + 0.75).add(pivot);
+      const l = new Line(pivot, vec.add(pivot));
+      //const tp = pivot.diff(dir.prod(2.54));
+      //
+      bb.update(l.toPoints());
+    } else if(this.tagName == 'element') {
       const { raw, ref, path, attributes, owner, document } = this;
       const libName = raw.attributes.library;
       let library = document.libraries[libName];
@@ -537,23 +557,34 @@ export class EagleElement extends EagleNode {
       const { part, gate, rot, x, y } = this;
       const { symbol } = gate;
       let t = new TransformationList();
-      t.translate(+this.x, +this.y);
       t = t.concat(MakeRotation(rot));
       const name = part.name;
       const value = part.value || part.deviceset.name;
-      let b = symbol.getBounds(e => true, { x, y, name, value });
+      let b = symbol.getBounds(e => true, { name, value });
+      //b.move(x, y);
       //   console.log('symbol.getBounds():', symbol.name, b);
       let p = new Rect(b.rect).toPoints();
       let m = t.toMatrix();
       p = new PointList([...m.transform_points(p)]);
       bb.update(p);
+      bb.move(x, y);
     } else if(this.tagName == 'sheet' || this.tagName == 'board') {
       const plain = this.find('plain');
       let list = [...plain.children].filter(e => e.tagName == 'wire' && e.attributes.layer == '47');
-      if(list.length <= 0) list = this.tagName == 'sheet' ? this.instances.list : this.elements.list;
-      for(let instance of list) {
+      /*      if(list.length <= 0)*/ list = list.concat([
+        ...(this.tagName == 'sheet' ? this.instances.list : this.elements.list)
+      ]);
+
+      bb.updateList(list
+          .map(e => e.getBounds())
+          .map(b => new Rect(b))
+          .map(r => r.toPoints())
+          .flat()
+      );
+
+      /*  for(let instance of list) {
         bb.update(instance.getBounds(), 0, instance);
-      }
+      }*/
     } else if(['package', 'signal', 'polygon', 'symbol'].indexOf(this.tagName) != -1) {
       for(let child of this.children) bb.update(child.getBounds(e => true, opts));
       /*} else if(pos) {
@@ -571,9 +602,21 @@ export class EagleElement extends EagleNode {
       }
       if(Util.isObject(pos) && typeof pos.bbox == 'function') pos = pos.bbox();
       bb.update(pos);*/
+    } else if(this.tagName == 'wire') {
+      let line = this.geometry;
+      bb.updateList(line.toPoints());
+    } else if(this.tagName == 'circle') {
+      let circle = this.geometry;
+
+      bb.update(circle.bbox(this.width));
     } else if(['description'].indexOf(this.tagName) != -1) {
     } else {
+      /*    if(['wire','text','rectangle'].indexOf(this.tagName) == -1)
+      throw new Error(`No getBounds() for '${this.tagName}'`);*/
       bb.update(super.getBounds(pred));
+
+      if(['x1', 'y1', 'x2', 'y2'].some(n => bb[n] === undefined))
+        throw new Error(`No getBounds() for '${this.tagName}': ${bb}`);
     }
     return bb;
   }

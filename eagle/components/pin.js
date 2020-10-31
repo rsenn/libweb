@@ -1,16 +1,9 @@
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import { MakeCoordTransformer, ElementToClass, log } from '../renderUtils.js';
+import { MakeCoordTransformer, ElementToClass, log, PinSizes } from '../renderUtils.js';
 import { TransformationList, Point, Line } from '../../geom.js';
 import { RGBA } from '../../color.js';
 import { Palette } from '../common.js';
 import { Text } from './text.js';
-
-export const PinSizes = {
-  long: 3,
-  middle: 2,
-  short: 1,
-  point: 0
-};
 
 export const Pin = ({ data, opts = {}, ...props }) => {
   data = data || props.item;
@@ -37,7 +30,7 @@ export const Pin = ({ data, opts = {}, ...props }) => {
   let children = [];
   const tp = pivot.diff(dir.prod(2.54));
 
-  if(func == 'dot')
+  if(func == 'dot' && length != 'point')
     children.push(h('circle', {
         class: 'pin',
         stroke: '#a54b4b',
