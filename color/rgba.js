@@ -145,6 +145,8 @@ RGBA.prototype.compareTo = function(other) {
   return d < 0 ? -1 : d > 0 ? 1 : 0;
 };
 RGBA.fromHex = (hex, alpha = 255) => {
+  if(hex[0] != '#') hex = ('ffffffff' + hex).slice(-8);
+
   const matches =
     hex &&
     (hex.length >= 7
@@ -622,3 +624,5 @@ Util.defineGetter(RGBA, Symbol.species, function() {
 });
 export const ImmutableRGBA = Util.immutableClass(RGBA);
 Util.defineGetter(ImmutableRGBA, Symbol.species, () => ImmutableRGBA);
+
+export default RGBA;
