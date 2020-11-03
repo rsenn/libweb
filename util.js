@@ -3334,7 +3334,7 @@ Util.weakAssign = function(...args) {
   let obj = args.shift();
   args.forEach(other => {
     for(let key in other) {
-      if(obj[key] === undefined) obj[key] = other[key];
+      if(obj[key] === undefined && other[key] !== undefined) obj[key] = other[key];
     }
   });
   return obj;
@@ -4023,6 +4023,9 @@ Util.stripXML = text =>
     .replace(/<[^>]*>/g, '')
     .replace(/[\t\ ]+/g, ' ')
     .replace(/(\n[\t\ ]*)+\n/g, '\n');
+
+Util.stripHTML = html => html.replace(/\s*\n\s*/g, " ").replace(/<[^>]*>/g, "\n").split(/\n/g).map(p => p.trim()).filter(p => p != '');
+
 Util.stripNonPrintable = text => text.replace(/[^\x20-\x7f\x0a\x0d\x09]/g, '');
 Util.decodeHTMLEntities = function(text) {
   let entities = {
@@ -4751,10 +4754,16 @@ Util.cacheAdapter = (st, defaultOpts = {}) => {
 Util.cachedFetch = (allOpts = {}) => {
   let { cache = 'fetch', fetch = Util.getGlobalObject('fetch'), debug, print, ...opts } = allOpts;
   const storage = Util.cacheAdapter(cache);
+  const baseURL = Util.memoize(() => Util.makeURL({ location: '' }));
+
   let self = async function CachedFetch(request, opts = {}) {
     let response;
     try {
       if(typeof request == 'string') request = new Request(request, { ...self.defaultOpts, ...opts });
+
+      if(!request.url.startsWith(baseURL())) {
+        request = new Request(request.url, { ...request, mode: 'no-cors' });
+      }
       response = await storage.getItem(request, { ...self.defaultOpts, ...opts });
 
       if(response == undefined) {
