@@ -92,8 +92,15 @@ export function QuickJSFileSystem(std, os) {
     },
     open(filename, flags = 'r', mode = 0o644) {
       let res = { errno: 0 };
-      let fd = std.open(filename, flags, res);
-      if(!res.errno) return fd;
+      let file = std.open(filename, flags, res);
+      if(!res.errno) return file;
+
+      return numerr(-res.errno);
+    },
+    fdopen(fd, flags = 'r') {
+      let res = { errno: 0 };
+      let file = std.fdopen(fd, flags, res);
+      if(!res.errno) return file;
 
       return numerr(-res.errno);
     },

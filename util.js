@@ -4024,7 +4024,13 @@ Util.stripXML = text =>
     .replace(/[\t\ ]+/g, ' ')
     .replace(/(\n[\t\ ]*)+\n/g, '\n');
 
-Util.stripHTML = html => html.replace(/\s*\n\s*/g, " ").replace(/<[^>]*>/g, "\n").split(/\n/g).map(p => p.trim()).filter(p => p != '');
+Util.stripHTML = html =>
+  html
+    .replace(/\s*\n\s*/g, ' ')
+    .replace(/<[^>]*>/g, '\n')
+    .split(/\n/g)
+    .map(p => p.trim())
+    .filter(p => p != '');
 
 Util.stripNonPrintable = text => text.replace(/[^\x20-\x7f\x0a\x0d\x09]/g, '');
 Util.decodeHTMLEntities = function(text) {
@@ -4493,6 +4499,20 @@ Util.transformer = (a, ...l) =>
   );
 
 Util.copyTextToClipboard = (i, t) => {
+  if(!Util.isBrowser()) {
+    return import('./childProcess.js').then(async module => {
+      let fs,std;
+      let childProcess = await module.PortableChildProcess((a,b,c) => { fs = b; std = c; });
+      console.log('childProcess', { childProcess, fs, std});
+      let proc = childProcess('xclip', ['-in'], { block: false, stdio: ['pipe'], env: { DISPLAY: std.getenv('DISPLAY') } });
+      console.log('proc.stdin', proc.stdin);
+
+     console.log('write =',await fs.write(proc.stdin, i));
+     await fs.close(proc.stdin);
+     return await proc.wait();
+
+    });
+  }
   let doc = Util.tryCatch(() => document);
   if(!doc) return;
   if(!t) t = doc.body;

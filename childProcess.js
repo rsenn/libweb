@@ -64,10 +64,10 @@ export function QuickJSChildProcess(fs, std, os) {
     let [rd, wr] = os.pipe();
 
     if(name.endsWith('in')) {
-      obj[name] = wr;
+      obj[name] = fs.fdopen(wr, 'w');
       return rd;
     } else {
-      obj[name] = rd;
+      obj[name] = fs.fdopen(rd, 'r');
       return wr;
     }
   }
@@ -172,30 +172,31 @@ export async function CreatePortableChildProcess(ctor, ...args) {
   return ctor(...(await Promise.all(args)));
 }
 
-export async function GetPortableChildProcess() {
+export async function GetPortableChildProcess(set = (cp, fs, std, os) => true) {
   let fs, err;
+  let a = [];
   try {
-    fs = await CreatePortableChildProcess(QuickJSChildProcess,
-      await PortableFileSystem(),
-      await import('std'),
-      await import('os')
-    );
+    a = [await PortableFileSystem(), await import('std'), await import('os')];
+    fs = await CreatePortableChildProcess(QuickJSChildProcess, ...a);
   } catch(error) {
     err = error;
   }
-  if(fs && !err) return fs;
+  if(fs && !err) {
+    set(fs, ...a);
+    return fs;
+  }
   err = null;
   try {
-    fs = await CreatePortableChildProcess(NodeJSChildProcess,
-      await import('fs'),
-      await import('tty'),
-      await import('child_process')
-    );
+    a = [await import('fs'), await import('tty'), await import('child_process')];
+    fs = await CreatePortableChildProcess(NodeJSChildProcess, ...a);
   } catch(error) {
     err = error;
   }
 
-  if(fs && !err) return fs;
+  if(fs && !err) {
+    set(fs, ...a);
+    return fs;
+  }
   err = null;
   try {
     fs = await CreatePortableChildProcess(BrowserChildProcess);
@@ -203,12 +204,15 @@ export async function GetPortableChildProcess() {
     err = error;
   }
 
-  if(fs && !err) return fs;
+  if(fs && !err) {
+    set(fs, ...a);
+    return fs;
+  }
 }
 
 export async function PortableChildProcess(fn = fs => true) {
   return await Util.memoize(async function() {
-    const fs = await GetPortableChildProcess();
+    const fs = await GetPortableChildProcess(fn);
 
     try {
       return (globalThis.childProcess = fs);
@@ -226,7 +230,7 @@ export async function PortableChildProcess(fn = fs => true) {
       }
     }
     return fs;
-  })().then(fs => (fn(fs), fs));
+  })()/*.then(fs => (fn(fs), fs))*/;
 }
 
 export default PortableChildProcess;
