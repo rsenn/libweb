@@ -152,19 +152,17 @@ export function NodeJSChildProcess(fs, tty, child_process) {
     }
     obj = child_process.spawn(command, args, opts);
 
-    console.log("child", Util.getMethodNames(obj, 3, 0));
+    console.log('child', Util.getMethodNames(obj, 3, 0));
 
-  obj.stderr.on('data', data => 
-        console.log("child data", data.toString()));
+    obj.stderr.on('data', data => console.log('child data', data.toString()));
 
     obj.wait = function(options = {}) {
       return new Promise((resolve, reject) => {
         obj.on('exit', (code, signal) => {
-        console.log("child exit", {code,signal});
-      if(code !== null) resolve(code);
+          console.log('child exit', { code, signal });
+          if(code !== null) resolve(code);
           else reject(signal);
         });
-         
       });
     };
     return obj;
