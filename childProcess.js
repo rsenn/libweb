@@ -230,7 +230,7 @@ export async function PortableChildProcess(fn = fs => true) {
       }
     }
     return fs;
-  })()/*.then(fs => (fn(fs), fs))*/;
+  })() /*.then(fs => (fn(fs), fs))*/;
 }
 
 export default PortableChildProcess;

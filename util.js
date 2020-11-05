@@ -4501,16 +4501,22 @@ Util.transformer = (a, ...l) =>
 Util.copyTextToClipboard = (i, t) => {
   if(!Util.isBrowser()) {
     return import('./childProcess.js').then(async module => {
-      let fs,std;
-      let childProcess = await module.PortableChildProcess((a,b,c) => { fs = b; std = c; });
-      console.log('childProcess', { childProcess, fs, std});
-      let proc = childProcess('xclip', ['-in'], { block: false, stdio: ['pipe'], env: { DISPLAY: std.getenv('DISPLAY') } });
+      let fs, std;
+      let childProcess = await module.PortableChildProcess((a, b, c) => {
+        fs = b;
+        std = c;
+      });
+      console.log('childProcess', { childProcess, fs, std });
+      let proc = childProcess('xclip', ['-in'], {
+        block: false,
+        stdio: ['pipe'],
+        env: { DISPLAY: std.getenv('DISPLAY') }
+      });
       console.log('proc.stdin', proc.stdin);
 
-     console.log('write =',await fs.write(proc.stdin, i));
-     await fs.close(proc.stdin);
-     return await proc.wait();
-
+      console.log('write =', await fs.write(proc.stdin, i));
+      await fs.close(proc.stdin);
+      return await proc.wait();
     });
   }
   let doc = Util.tryCatch(() => document);
@@ -5191,5 +5197,13 @@ Util.getHRTime = Util.memoize(() => {
 });
 
 Util.defineGetter(Util, 'hrtime', Util.getHRTime);
+
+Util.formatColumns = a => {
+  let maxWidth = a.reduce((acc,row,i) => row.map((col,j) => Math.max(acc[j] || 0, (col+'').length)));
+
+  console.debug(maxWidth);
+
+  return a.map(row => row.map((col,j) => (col+'').padEnd(maxWidth[j])).join(' ')).join('\n');
+};
 
 export default Util;
