@@ -5199,11 +5199,11 @@ Util.getHRTime = Util.memoize(() => {
 Util.defineGetter(Util, 'hrtime', Util.getHRTime);
 
 Util.formatColumns = a => {
-  let maxWidth = a.reduce((acc,row,i) => row.map((col,j) => Math.max(acc[j] || 0, (col+'').length)));
+  let maxWidth = a.reduce((acc, row, i) => row.map((col, j) => Math.max(acc[j] || 0, (col + '').length)));
 
   console.debug(maxWidth);
 
-  return a.map(row => row.map((col,j) => (col+'').padEnd(maxWidth[j])).join(' ')).join('\n');
+  return a.map(row => row.map((col, j) => (col + '').padEnd(maxWidth[j])).join(' ')).join('\n');
 };
 
 export default Util;
