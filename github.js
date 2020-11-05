@@ -160,5 +160,5 @@ export default {
   ListRepositories: GithubListRepositories,
   Repositories: GithubRepositories,
   ListContents: GithubListContents,
-  RepoServer: GithubRepoServer
+  ListRepoServer: ListGithubRepoServer
 };
