@@ -95,8 +95,8 @@ export function QuickJSChildProcess(fs, std, os) {
           let exitCode = (status & 0xff00) >> 8;
           let termSig = status & 0x7f;
           numerr(ret);
-          if(termSig == 0) resolve(exitCode);
-          else reject(termSig);
+          /*if(termSig == 0) resolve(exitCode);
+          else*/ resolve(exitCode, termSig);
         });
       };
       obj.kill = function(signum = SIGTERM) {
@@ -152,9 +152,9 @@ export function NodeJSChildProcess(fs, tty, child_process) {
     }
     obj = child_process.spawn(command, args, opts);
 
-    console.log('child', Util.getMethodNames(obj, 3, 0));
+    //console.log('child', Util.getMethodNames(obj, 3, 0));
 
-    obj.stderr.on('data', data => console.log('child data', data.toString()));
+    // obj.stderr.on('data', data => console.log('child data', data.toString()));
 
     obj.wait = function(options = {}) {
       return new Promise((resolve, reject) => {

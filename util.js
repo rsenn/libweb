@@ -757,6 +757,7 @@ Util.pad = function(s, n, char = ' ') {
   return Util.padFn(n, char)(s);
 };
 Util.abbreviate = function(str, max = 40, suffix = '...') {
+  max = +max;
   if(Util.isArray(str)) {
     return Array.prototype.slice.call(str, 0, Math.min(str.length, max)).concat([suffix]);
   }
