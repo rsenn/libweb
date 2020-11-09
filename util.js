@@ -4852,8 +4852,25 @@ Util.weakAssoc = (fn = (value, ...args) => Object.assign(value, ...args)) => {
     return fn(value, ...args);
   };
 };
+Util.getArgv = Util.memoize(() =>
+  Util.tryCatch(() => {
+      let a = process.argv;
+      if(!Util.isArray(a)) throw new Error();
+      return a;
+    },
+    a => a,
+    () =>
+      Util.tryCatch(() => scriptArgs,
+        a => ['qjs', ...a]
+      )
+  )
+);
 Util.getArgs = Util.memoize(() =>
-  Util.tryCatch(() => process.argv,
+  Util.tryCatch(() => {
+      let a = process.argv;
+      if(!Util.isArray(a)) throw new Error();
+      return a;
+    },
     a => a.slice(1),
     () => Util.tryCatch(() => scriptArgs)
   )

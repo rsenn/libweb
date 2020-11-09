@@ -39,9 +39,13 @@ export async function ConsoleSetup(opts = {}) {
 
       class Console {}
 
-      return /*Object.create*/ Util.define(Object.create(Console.prototype), {
+      let newcons = Object.create(Console.prototype);
+
+      return /*Object.create*/ Util.define(newcons, {
         reallog: log,
-        inspect(obj, opts) {
+        inspect(...args) {
+          let [obj, opts] = args;
+          if(args.length == 0) obj = this;
           return ObjectInspect(obj, { ...options, ...opts });
         },
         log(...args) {

@@ -404,7 +404,7 @@ function markBoxed(str) {
 }
 
 function weakCollectionOf(type) {
-  return type + ' { '+wrapColor('<items unknown>',0,36)+' }';
+  return type + ' { ' + wrapColor('<items unknown>', 0, 36) + ' }';
 }
 
 function collectionOf(type, size, entries, indent) {
