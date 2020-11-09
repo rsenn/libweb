@@ -26,33 +26,40 @@ export async function ConsoleSetup(opts = {}) {
       });
       ret.colors = colors;
       ret.depth = depth;
+      ret.inspect = (await import('util')).inspect;
       return ret;
     },
     c => c,
     () => {
       let c = Util.getGlobalObject().console;
+      let options = { colors: true, depth: Infinity, indent: 2, ...opts };
 
       let log = c.log;
       c.reallog = log;
 
-      return Object.create(Util.define(Object.create(console), {
-          reallog: log,
-          log(...args) {
-            return log.call(this,
-              ...args.map(arg =>
-                typeof arg != 'string' || !Util.isPrimitive(arg)
-                  ? ObjectInspect(arg, { colors: true, depth: Infinity, indent: 2, ...opts })
-                  : arg
-              )
-            );
-          }
-        })
-      );
+      class Console {}
+
+      return /*Object.create*/ Util.define(Object.create(Console.prototype), {
+        reallog: log,
+        inspect(obj, opts) {
+          return ObjectInspect(obj, { ...options, ...opts });
+        },
+        log(...args) {
+          return log.call(this,
+            ...args.map(arg => (typeof arg != 'string' || !Util.isPrimitive(arg) ? ObjectInspect(arg, options) : arg))
+          );
+        }
+      });
     }
   );
 
-  for(let method of ['error', 'warn', 'debug']) {
-    if(!(method in ret)) ret[method] = ret.log;
+  function addMissingMethods(cons) {
+    let fns = {};
+
+    for(let method of ['error', 'warn', 'debug']) {
+      if(cons[method] === undefined) fns[method] = cons.log;
+    }
+    return Util.define(cons, fns);
   }
   /*  console.log('Util.getGlobalObject():', Util.getGlobalObject());
   console.log('globalThis:', globalThis);
@@ -61,7 +68,7 @@ export async function ConsoleSetup(opts = {}) {
   console.log('globalThis.console', globalThis.console);
   console.log('globalThis.console === console', globalThis.console === console);*/
 
-  Util.getGlobalObject().console = ret;
+  Util.getGlobalObject().console = addMissingMethods(ret);
 }
 
 export const ConsoleOnce = Util.once(opts => ConsoleSetup(opts));

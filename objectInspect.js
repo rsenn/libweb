@@ -52,6 +52,7 @@ function inspect_(obj, options, depth, seen) {
     throw new TypeError('options "indent" must be "\\t", an integer > 0, or `null`');
   }
   //console.reallog('opts.colors', opts.colors);
+  // console.reallog("obj:", obj, typeof obj);
 
   if(typeof obj === 'undefined') {
     let s = 'undefined';
@@ -119,26 +120,25 @@ function inspect_(obj, options, depth, seen) {
     }
     return inspect_(value, opts, depth + 1, seen);
   }
-  // console.reallog("obj:", obj);
+
+  let s = '';
 
   if(typeof obj === 'function') {
     const name = nameOf(obj);
     const keys = arrObjKeys(obj, inspect);
-    let s =
+    s +=
       '[Function' +
       (name ? ': ' + name : ' (anonymous)') +
-      ']' +
-      (keys.length > 0 ? ' { ' + keys.join(', ') + ' }' : '');
-    if(opts.colors) s = wrapColor(s, 0, 36);
+      ']';
 
-    return s;
-  }
-  if(isSymbol(obj)) {
+    if(opts.colors) s = wrapColor(s, 0, 36);
+      if(keys.length > 0)  s += ' { ' + keys.join(', ') + ' }' ;
+
+  } else if(isSymbol(obj)) {
     const symString = symToString.call(obj);
-    return typeof obj === 'object' ? markBoxed(symString) : symString;
-  }
-  if(isElement(obj)) {
-    let s = '<' + String(obj.nodeName).toLowerCase();
+    s += typeof obj === 'object' ? markBoxed(symString) : symString;
+  } else if(isElement(obj)) {
+    s += '<' + String(obj.nodeName).toLowerCase();
     const attrs = obj.attributes || [];
     for(let i = 0; i < attrs.length; i++) {
       s += ' ' + attrs[i].name + '=' + wrapQuotes(quote(attrs[i].value), 'double', opts);
@@ -149,75 +149,65 @@ function inspect_(obj, options, depth, seen) {
     }
     s += '</' + String(obj.nodeName).toLowerCase() + '>';
     return s;
-  }
-  if(isArray(obj)) {
+  } else if(isArray(obj)) {
     if(obj.length === 0) {
-      return '[]';
+      s += '[]';
+    } else {
+      const xs = arrObjKeys(obj, inspect);
+      if(indent && !singleLineValues(xs)) s += '[' + indentedJoin(xs, indent) + ']';
+      else s += '[ ' + xs.join(', ') + ' ]';
     }
-    const xs = arrObjKeys(obj, inspect);
-    if(indent && !singleLineValues(xs)) {
-      return '[' + indentedJoin(xs, indent) + ']';
-    }
-    return '[ ' + xs.join(', ') + ' ]';
-  }
-  if(isError(obj)) {
+  } else if(isError(obj)) {
     const parts = arrObjKeys(obj, inspect);
-    if(parts.length === 0) {
-      return '[' + String(obj) + ']';
-    }
-    return '{ [' + String(obj) + '] ' + parts.join(', ') + ' }';
-  }
-  if(typeof obj === 'object' && customInspect) {
-    if(inspectSymbol && typeof obj[inspectSymbol] === 'function') {
-      return obj[inspectSymbol]();
-    }
-    if(typeof obj.inspect === 'function') {
+    if(parts.length === 0) s += '[' + String(obj) + ']';
+    else s += '{ [' + String(obj) + '] ' + parts.join(', ') + ' }';
+  } else if(typeof obj === 'object' && customInspect && inspectSymbol && typeof obj[inspectSymbol] === 'function') {
+    s += obj[inspectSymbol]();
+    /*   if(typeof obj.inspect === 'function') {
       return obj.inspect();
-    }
-  }
-  if(isMap(obj)) {
+    }*/
+  } else if(isMap(obj)) {
     const mapParts = [];
     mapForEach.call(obj, function(value, key) {
       mapParts.push(inspect(key, obj, true) + ' => ' + inspect(value, obj));
     });
-    return collectionOf('Map', mapSize.call(obj), mapParts, indent);
-  }
-  if(isSet(obj)) {
+    s += collectionOf('Map', mapSize.call(obj), mapParts, indent);
+  } else if(isSet(obj)) {
     const setParts = [];
     setForEach.call(obj, function(value) {
       setParts.push(inspect(value, obj));
     });
-    return collectionOf('Set', setSize.call(obj), setParts, indent);
-  }
-  if(isWeakMap(obj)) {
-    return weakCollectionOf('WeakMap');
-  }
-  if(isWeakSet(obj)) {
-    return weakCollectionOf('WeakSet');
-  }
-  if(isNumber(obj)) {
-    return markBoxed(inspect(Number(obj)));
-  }
-  if(isBigInt(obj)) {
-    return markBoxed(inspect(bigIntValueOf.call(obj)));
-  }
-  if(isBoolean(obj)) {
-    return markBoxed(booleanValueOf.call(obj));
-  }
-  if(isString(obj)) {
-    return markBoxed(inspect(String(obj)));
-  }
-  if(!isDate(obj) && !isRegExp(obj) && !isPromise(obj)) {
+    s += collectionOf('Set', setSize.call(obj), setParts, indent);
+  } else if(isWeakMap(obj)) {
+    s += weakCollectionOf('WeakMap');
+  } else if(isWeakSet(obj)) {
+    s += weakCollectionOf('WeakSet');
+  } else if(isNumber(obj)) {
+    s += markBoxed(inspect(Number(obj)));
+  } else if(isBigInt(obj)) {
+    s += markBoxed(inspect(bigIntValueOf.call(obj)));
+  } else if(isBoolean(obj)) {
+    s += markBoxed(booleanValueOf.call(obj));
+  } else if(isString(obj)) {
+    s += markBoxed(inspect(String(obj)));
+  } else if(!isDate(obj) && !isRegExp(obj) && !isPromise(obj)) {
+    const proto = Object.getPrototypeOf(obj);
+    const className = proto === null ? `[Object: null prototype]` : nameOf(proto.constructor);
+
+    if(className) s += className + ' ';
+    s += '{';
     const ys = arrObjKeys(obj, inspect, opts);
-    if(ys.length === 0) {
-      return '{}';
+    if(ys.length == 0) {
+    } else if(indent) {
+      s += indentedJoin(ys, indent);
+    } else {
+      s += ' ' + ys.join(', ') + ' ';
     }
-    if(indent) {
-      return '{' + indentedJoin(ys, indent) + '}';
-    }
-    return '{ ' + ys.join(', ') + ' }';
+    s += '}';
+  } else {
+    s += String(obj);
   }
-  return String(obj);
+  return s;
 }
 
 function wrapQuotes(s, defaultStyle, opts) {
@@ -288,10 +278,10 @@ function toStr(obj) {
 }
 
 function nameOf(f) {
-  if(f.name) {
+  if(typeof f == 'function' && f.name) {
     return f.name;
   }
-  const m = match.call(functionToString.call(f), /^function\s*([\w$]+)/);
+  const m = match.call(f + '' /*functionToString.call(f)*/, /^function\s*([\w$]+)/);
   if(m) {
     return m[1];
   }
@@ -453,7 +443,7 @@ function indentedJoin(xs, indent) {
     return '';
   }
   const lineJoiner = '\n' + indent.prev + indent.base;
-  return lineJoiner + xs.join(',' + lineJoiner) + '\n' + indent.prev;
+  return lineJoiner + xs.join(wrapColor(',', 1, 36) + lineJoiner) + '\n' + indent.prev;
 }
 
 function arrObjKeys(obj, inspect, opts) {
@@ -479,7 +469,7 @@ function arrObjKeys(obj, inspect, opts) {
     }
     s += inspect(obj[key], obj);
     if(/[^\w$]/.test(key)) {
-      xs.push(inspect(key, obj) + ': ' + s);
+      xs.push(inspect(key, obj) + wrapColor(': ', 1, 36) + s);
     } else {
       xs.push(key + ': ' + s);
     }
@@ -488,7 +478,7 @@ function arrObjKeys(obj, inspect, opts) {
     const syms = gOPS(obj);
     for(let j = 0; j < syms.length; j++) {
       if(isEnumerable.call(obj, syms[j])) {
-        xs.push('[' + inspect(syms[j]) + ']: ' + inspect(obj[syms[j]], obj));
+        xs.push(wrapColor('[', 1, 36) + inspect(syms[j]) + wrapColor(']: ', 1, 36) + inspect(obj[syms[j]], obj));
       }
     }
   }
