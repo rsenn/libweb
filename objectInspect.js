@@ -126,14 +126,10 @@ function inspect_(obj, options, depth, seen) {
   if(typeof obj === 'function') {
     const name = nameOf(obj);
     const keys = arrObjKeys(obj, inspect);
-    s +=
-      '[Function' +
-      (name ? ': ' + name : ' (anonymous)') +
-      ']';
+    s += '[Function' + (name ? ': ' + name : ' (anonymous)') + ']';
 
     if(opts.colors) s = wrapColor(s, 0, 36);
-      if(keys.length > 0)  s += ' { ' + keys.join(', ') + ' }' ;
-
+    if(keys.length > 0) s += ' { ' + keys.join(', ') + ' }';
   } else if(isSymbol(obj)) {
     const symString = symToString.call(obj);
     s += typeof obj === 'object' ? markBoxed(symString) : symString;
@@ -192,9 +188,11 @@ function inspect_(obj, options, depth, seen) {
     s += markBoxed(inspect(String(obj)));
   } else if(!isDate(obj) && !isRegExp(obj) && !isPromise(obj)) {
     const proto = Object.getPrototypeOf(obj);
-    const className = proto === null ? `[Object: null prototype]` : nameOf(proto.constructor);
 
-    if(className) s += className + ' ';
+    if(proto !== Object.prototype) {
+      const className = proto === null ? `[Object: null prototype]` : nameOf(proto.constructor);
+      if(className) s += className + ' ';
+    }
     s += '{';
     const ys = arrObjKeys(obj, inspect, opts);
     if(ys.length == 0) {
