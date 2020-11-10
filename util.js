@@ -5184,24 +5184,46 @@ Util.timeit = (fn, args = [], options = {}) => {
 };
 
 Util.getHRTime = Util.memoize(() => {
+  const g = Util.getGlobalObject();
   // polyfil for window.performance.now
-  var performance = Util.getGlobalObject().performance || {};
+  var performance = g.performance || {};
   var performanceNow =
-    performance.now ||
-    performance.mozNow ||
-    performance.msNow ||
-    performance.oNow ||
-    performance.webkitNow ||
-    function() {
-      return new Date().getTime();
-    };
+    performance.now || performance.mozNow || performance.msNow || performance.oNow || performance.webkitNow;
+  if(!performanceNow && g.cv.getTickCount) {
+    const freq = g.cv.getTickFrequency() / 1000;
+    const mul = 1 / freq;
+    const getTicks = g.cv.getTickCount;
+    performanceNow = () => getTicks() * mul;
+  }
+  if(!performanceNow) {
+    const getTime = Date.now;
+    performanceNow = getTime;
+  }
 
-  // generate timestamp or delta
-  // see http://nodejs.org/api/process.html#process_process_hrtime
+class HighResolutionTime extends Array {
+  constructor(seconds, nanoseconds) {
+    super(2);
+    this[0] = seconds;
+    this[1] = nanoseconds;
+  }
+  
+  valueOf() { return this[0]*1000 + this[1]*1e-06; }
+
+  diff(other) {
+let secs = this[0]-other[0];
+let nano = this[1]-other[1];
+if(nano < 0) {
+  secs--;
+  nano += 1e9;
+}
+      return new HighResolutionTime(secs, nano);
+    } 
+}
+
   return function hrtime(previousTimestamp) {
-    var clocktime = performanceNow.call(performance) * 1e-3;
-    var seconds = Math.floor(clocktime);
-    var nanoseconds = Math.floor((clocktime % 1) * 1e9);
+    var clocktime = performanceNow.call(performance);
+    var seconds = Math.floor(clocktime/1000);
+    var nanoseconds = Math.floor((clocktime % 1000) * 1e6);
     if(previousTimestamp) {
       seconds = seconds - previousTimestamp[0];
       nanoseconds = nanoseconds - previousTimestamp[1];
@@ -5210,7 +5232,7 @@ Util.getHRTime = Util.memoize(() => {
         nanoseconds += 1e9;
       }
     }
-    return [seconds, nanoseconds];
+    return new HighResolutionTime(seconds, nanoseconds);
   };
 });
 
