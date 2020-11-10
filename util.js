@@ -5189,6 +5189,7 @@ Util.getHRTime = Util.memoize(() => {
   var performance = g.performance || {};
   var performanceNow =
     performance.now || performance.mozNow || performance.msNow || performance.oNow || performance.webkitNow;
+
   if(!performanceNow && g.cv.getTickCount) {
     const freq = g.cv.getTickFrequency() / 1000;
     const mul = 1 / freq;
@@ -5200,43 +5201,78 @@ Util.getHRTime = Util.memoize(() => {
     performanceNow = getTime;
   }
 
-class HighResolutionTime extends Array {
-  constructor(seconds, nanoseconds) {
-    super(2);
-    this[0] = seconds;
-    this[1] = nanoseconds;
+  class HighResolutionTime extends Array {
+    constructor(secs = 0, nano = 0) {
+      super(2);
+      this[0] = secs;
+      this[1] = nano;
+      return Object.freeze(this);
+    }
+    static create(s, n) {
+      const sign = Math.sign(s * 1e3 + n * 1e-6);
+      s *= sign;
+      n *= sign;
+      if(n < 0) {
+        s--;
+        n += 1e9;
+      }
+      if(n >= 1e9) {
+        s++;
+        n -= 1e9;
+      }
+      return new HighResolutionTime(s * sign, n * sign);
+    }
+    get seconds() {
+      const [s, n] = this;
+      return s + n * 1e-9;
+    }
+    get milliseconds() {
+      const [s, n] = this;
+      return s * 1e3 + n * 1e-6;
+    }
+    get nanoseconds() {
+      const [s, n] = this;
+      return s * 1e9 + n;
+    }
+    valueOf() {
+      return this.milliseconds;
+    }
+    diff(o) {
+      let s = o[0] - this[0];
+      let n = o[1] - this[1];
+      return HighResolutionTime.create(s, n);
+    }
+    sum(o) {
+      let s = o[0] + this[0];
+      let n = o[1] + this[1];
+      return HighResolutionTime.create(s, n);
+    }
+    since(o) {
+      let s = this[0] - o[0];
+      let n = this[1] - o[1];
+      return HighResolutionTime.create(s, n);
+    }
   }
-  
-  valueOf() { return this[0]*1000 + this[1]*1e-06; }
-
-  diff(other) {
-let secs = this[0]-other[0];
-let nano = this[1]-other[1];
-if(nano < 0) {
-  secs--;
-  nano += 1e9;
-}
-      return new HighResolutionTime(secs, nano);
-    } 
-}
+  g.HighResolutionTime = HighResolutionTime;
 
   return function hrtime(previousTimestamp) {
     var clocktime = performanceNow.call(performance);
-    var seconds = Math.floor(clocktime/1000);
-    var nanoseconds = Math.floor((clocktime % 1000) * 1e6);
+    var secs = Math.floor(clocktime / 1000);
+    var nano = Math.floor((clocktime % 1000) * 1e6);
     if(previousTimestamp) {
-      seconds = seconds - previousTimestamp[0];
-      nanoseconds = nanoseconds - previousTimestamp[1];
-      if(nanoseconds < 0) {
-        seconds--;
-        nanoseconds += 1e9;
+      secs = secs - previousTimestamp[0];
+      nano = nano - previousTimestamp[1];
+      if(nano < 0) {
+        secs--;
+        nano += 1e9;
       }
     }
-    return new HighResolutionTime(seconds, nanoseconds);
+    return new HighResolutionTime(secs, nano);
   };
 });
 
 Util.defineGetter(Util, 'hrtime', Util.getHRTime);
+//Util.startTime = Util.hrtime();
 
 Util.formatColumns = a => {
   let maxWidth = a.reduce((acc, row, i) => row.map((col, j) => Math.max(acc[j] || 0, (col + '').length)));
