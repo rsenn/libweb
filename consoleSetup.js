@@ -46,7 +46,7 @@ export async function ConsoleSetup(opts = {}) {
         inspect(...args) {
           let [obj, opts] = args;
           if(args.length == 0) obj = this;
-          return ObjectInspect(obj, { ...options, ...opts });
+          return ObjectInspect(obj, { customInspect: true, ...options, ...opts });
         },
         log(...args) {
           return log.call(this,

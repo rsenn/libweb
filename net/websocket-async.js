@@ -179,17 +179,18 @@ export class WebSocketClient {
   }
 
   async *[Symbol.asyncIterator]() {
-    while(this.readyState !== 3) yield (await oncePromise(this.socket, 'message')).data;
+    while(this.readyState !== 3) yield await oncePromise(this.socket, 'message', 'close', 'error');
+    //    yield (await oncePromise(this.socket, 'close', 'error'));
   }
 }
 //Generate a Promise that listens only once for an event
-function oncePromise(emitter, event) {
+function oncePromise(emitter, ...events) {
   return new Promise(resolve => {
     const handler = (...args) => {
-      emitter.removeEventListener(event, handler);
+      events.map(event => emitter.removeEventListener(event, handler));
       resolve(...args);
     };
-    emitter.addEventListener(event, handler);
+    events.map(event => emitter.addEventListener(event, handler));
   });
 }
 

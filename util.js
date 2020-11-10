@@ -3,6 +3,9 @@
  *
  * @class      Util (name)
  */
+
+const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
+
 export function Util(g) {
   Util.assignGlobal(g);
   //if(g) Util.globalObject = g;
@@ -379,7 +382,7 @@ Util.log = (...args) => {
     location = stack[0].getLocation();
   }
   let locationStr = location.toString(true);
-  let c = [(locationStr[Symbol.for('nodejs.util.inspect.custom')] || locationStr.toString).call(locationStr)];
+  let c = [(locationStr[inspectSymbol] || locationStr.toString).call(locationStr)];
   c.push(' ');
   let filters = Util.log.filters;
   let results = filters.map(f => f.test(locationStr));
@@ -388,8 +391,7 @@ Util.log = (...args) => {
   Util.putStack();
   args = args.reduce((a, p, i) => {
     if(Util.isObject(p) && p[Util.log.methodName]) p = p[Util.log.methodName]();
-    else if(Util.isObject(p) && p[Symbol.for('nodejs.util.inspect.custom')])
-      p = p[Symbol.for('nodejs.util.inspect.custom')]();
+    else if(Util.isObject(p) && p[inspectSymbol]) p = p[inspectSymbol]();
     else if(typeof p != 'string') {
       if(Util.isObject(p) && typeof p.toString == 'function' && !Util.isNativeFunction(p.toString)) p = p.toString();
       else p = Util.toString(p, { multiline: false });
@@ -672,7 +674,7 @@ Util.symbols = (() => {
     unscopables
   } = Symbol;
   return {
-    inspect: Symbol.for('nodejs.util.inspect.custom'),
+    inspect: inspectSymbol,
     asyncIterator,
     hasInstance,
     isConcatSpreadable,
@@ -1317,7 +1319,6 @@ Util.leastCommonMultiple = (n1, n2) => {
   //then calculate the lcm
   return (n1 * n2) / gcd;
 };
-const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 Util.matchAll = Util.curry(function* (re, str) {
   let match;
   re = re instanceof RegExp ? re : new RegExp(Util.isArray(re) ? '(' + re.join('|') + ')' : re, 'g');
@@ -3049,7 +3050,7 @@ Util.mapFunction = map => {
       for(let [key, value] of map.entries()) yield key;
     };
     fn[Symbol.iterator] = fn.entries;
-    fn[Symbol.for('nodejs.util.inspect.custom')] = function() {
+    fn[inspectSymbol] = function() {
       return new Map(this.map(([key, value]) => [Util.isArray(key) ? key.join('.') : key, value]));
     };
   } else if(typeof map.keys == 'function') {
@@ -3387,7 +3388,7 @@ Util.define(Util.exception.prototype, {
 Stack:${Util.stack.prototype.toString.call(stack, color, stack.columnWidths)}`;
     }, [Symbol.toStringTag]() {
       return this.toString(false);
-    }, [Symbol.for('nodejs.util.inspect.custom')]() {
+    }, [inspectSymbol]() {
       return Util.exception.prototype.toString.call(this, true);
     }
   },
@@ -3428,7 +3429,7 @@ Util.define(Util.location.prototype, {
     return text;
   }, [Symbol.toStringTag]() {
     return Util.location.prototype.toString.call(this, false);
-  }, [Symbol.for('nodejs.util.inspect.custom')]() {
+  }, [inspectSymbol]() {
     return Util.location.prototype.toString.call(this, !Util.isBrowser());
   },
   getFileName() {
@@ -3543,7 +3544,7 @@ Util.define(Util.stackFrame.prototype, {
       return this.getLocation();
     }, [Symbol.toStringTag]() {
       return this.toString(false);
-    }, [Symbol.for('nodejs.util.inspect.custom')](...args) {
+    }, [inspectSymbol](...args) {
       return Util.stackFrame.prototype.toString.call(this, true, this.columnWidths);
     }
   },
@@ -3683,7 +3684,7 @@ Util.stack.prototype = Object.assign(Util.stack.prototype, {
     return s + '\n';
   }, [Symbol.toStringTag]() {
     return Util.stack.prototype.toString.call(this);
-  }, [Symbol.for('nodejs.util.inspect.custom')](...args) {
+  }, [inspectSymbol](...args) {
     const { columnWidths } = this;
     return '\n' + this.map(f => f.toString(!Util.isBrowser(), { columnWidths })).join('\n');
   }
@@ -4352,7 +4353,7 @@ Util.multiParagraphWordWrap = (str, width, delimiter) => {
 Util.defineInspect = (proto, ...props) => {
   if(!Util.isBrowser()) {
     const c = Util.coloring();
-    proto[Symbol.for('nodejs.util.inspect.custom')] = function() {
+    proto[inspectSymbol] = function() {
       const obj = this;
       return (c.text(Util.fnName(proto.constructor) + ' ', 1, 31) +
         Util.toString(props.reduce((acc, key) => {
@@ -5034,7 +5035,7 @@ Util.consoleConcat = function(...args) {
 };
 
 Util.consoleConcat.prototype = Object.assign(Util.consoleConcat.prototype, Util.getMethods(Array.prototype, 1, 0), {
-  [Symbol.for('nodejs.util.inspect.custom')]() {
+  [inspectSymbol]() {
     return [this, [...this]];
   }, [Symbol.iterator]() {
     return Array.prototype[Symbol.iterator].call(this);
@@ -5252,6 +5253,13 @@ Util.getHRTime = Util.memoize(() => {
       let n = this[1] - o[1];
       return HighResolutionTime.create(s, n);
     }
+    [inspectSymbol]() {
+      let secs = this.seconds;
+      let msecs = (secs % 1) * 1e3;
+      let nsecs = (msecs % 1) * 1e6;
+      return `${Math.floor(secs)}s ${Util.roundTo(msecs, 0.001)}ms`;
+      return `${Math.floor(secs)}s ${Math.floor(msecs)}ms ${Math.floor(nsecs)}ns`;
+    }
   }
   g.HighResolutionTime = HighResolutionTime;
 
@@ -5259,15 +5267,9 @@ Util.getHRTime = Util.memoize(() => {
     var clocktime = performanceNow.call(performance);
     var secs = Math.floor(clocktime / 1000);
     var nano = Math.floor((clocktime % 1000) * 1e6);
-    if(previousTimestamp) {
-      secs = secs - previousTimestamp[0];
-      nano = nano - previousTimestamp[1];
-      if(nano < 0) {
-        secs--;
-        nano += 1e9;
-      }
-    }
-    return new HighResolutionTime(secs, nano);
+    let ts = new HighResolutionTime(secs, nano);
+    if(previousTimestamp) ts = ts.since(previousTimestamp);
+    return ts;
   };
 });
 

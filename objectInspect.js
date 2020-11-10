@@ -40,6 +40,9 @@ function inspect_(obj, options, depth, seen) {
     throw new TypeError('option "maxStringLength", if provided, must be a positive integer, Infinity, or `null`');
   }
   const customInspect = has(opts, 'customInspect') ? opts.customInspect : true;
+
+  //console.reallog("customInspect:",customInspect);
+
   if(typeof customInspect !== 'boolean') {
     throw new TypeError('option "customInspect", if provided, must be `true` or `false`');
   }
@@ -123,6 +126,15 @@ function inspect_(obj, options, depth, seen) {
 
   let s = '';
 
+  if(typeof obj === 'object' && customInspect && inspectCustom && typeof obj[inspectCustom] === 'function') {
+    s += obj[inspectCustom]();
+    //console.reallog("customInspect:",s);
+    return s;
+    /*   if(typeof obj.inspect === 'function') {
+      return obj.inspect();
+    }*/
+  }
+
   if(typeof obj === 'function') {
     const name = nameOf(obj);
     const keys = arrObjKeys(obj, inspect);
@@ -157,11 +169,6 @@ function inspect_(obj, options, depth, seen) {
     const parts = arrObjKeys(obj, inspect);
     if(parts.length === 0) s += '[' + String(obj) + ']';
     else s += '{ [' + String(obj) + '] ' + parts.join(', ') + ' }';
-  } else if(typeof obj === 'object' && customInspect && inspectSymbol && typeof obj[inspectSymbol] === 'function') {
-    s += obj[inspectSymbol]();
-    /*   if(typeof obj.inspect === 'function') {
-      return obj.inspect();
-    }*/
   } else if(isMap(obj)) {
     const mapParts = [];
     mapForEach.call(obj, function(value, key) {
