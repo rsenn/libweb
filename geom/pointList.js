@@ -40,7 +40,14 @@ export class PointList extends Array {
 PointList.prototype[Symbol.toStringTag] = function() {
   return PointList.prototype.toString.apply(this, arguments);
 };
-Util.defineGetter(PointList, Symbol.species, () => PointList);
+/*Util.defineGetter(PointList, Symbol.species, () => PointList);
+Util.defineGetter(PointList.prototype, Symbol.species, () => PointList);*/
+Util.define(PointList, {
+  get [Symbol.species]() {
+    return PointList;
+  }
+});
+
 PointList.prototype[Symbol.isConcatSpreadable] = true;
 PointList.prototype.rotateRight = function(n) {
   this.unshift(...this.splice(n % this.length, this.length));
@@ -118,8 +125,13 @@ PointList.prototype.clone = function() {
   return new ctor(points);
 };
 PointList.prototype.toPolar = function(tfn) {
-  let ret = [];
   let t = typeof tfn == 'function' ? tfn : (x, y) => ({ x /*: (x * 180) / Math.PI*/, y });
+  return PointList.prototype.map.call(this, p => {
+    const angle = Point.prototype.toAngle.call(p);
+    return new Point(t(angle, Point.prototype.distance.call(p)));
+  });
+
+  let ret = [];
   ret.splice.apply(ret, [
     0,
     ret.length,
@@ -131,8 +143,13 @@ PointList.prototype.toPolar = function(tfn) {
   return ret;
 };
 PointList.prototype.fromPolar = function(tfn) {
-  let ret = new PointList();
+  //  let ret = new PointList();
   let t = typeof tfn == 'function' ? tfn : (x, y) => ({ x /*: (x * Math.PI) / 180*/, y });
+  return PointList.prototype.map.call(this, p => {
+    let r = t(p.x, p.y);
+    return new Point().fromAngle(r.x, r.y);
+  });
+
   ret.splice.apply(ret, [
     0,
     ret.length,
@@ -405,11 +422,11 @@ for(let name of [
   PointList[name] = points => PointList.prototype[name].call(points);
 }
 
-Util.define(PointList, {
+/*Util.define(PointList, {
   get [Symbol.species]() {
     return PointList;
   }
-});
+});*/
 
 export const ImmutablePointList = Util.immutableClass(PointList);
-Util.defineGetter(ImmutablePointList, Symbol.species, () => ImmutablePointList);
+//Util.defineGetter(ImmutablePointList, Symbol.species, () => ImmutablePointList);
