@@ -35,21 +35,13 @@ export class EagleSVGRenderer {
     const insertCtoP = Util.inserter(this.component2path);
     const insert = Util.inserter(this.path2component, (k, v) => insertCtoP(v, k));
     this.mirrorY = new TransformationList().scale(1, -1);
-    this.debug('mirrorY:', this.mirrorY);
     this.append = factory;
     this.create = function(tag, attrs, children, parent, element) {
       let ret = factory(tag, attrs, children, parent, element);
       let path = attrs['data-path'];
       let pathStr = path;
-      //  let xpath;
-      /*  if(typeof path == 'string') {
-       this.debug('pathStr:', pathStr);
-        path = new ImmutableXPath(path);
-      }*/
       if(path) {
         let e = doc.lookup(path);
-        this.debug('path:', path + '');
-        this.debug('e:', e);
         let parent = e.parentNode;
 
         insert(path, ret);
