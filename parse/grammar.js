@@ -19,11 +19,7 @@ export class Rule {
       //return this;
     }
     toString() {
-      if(this.id !== undefined && this.str !== undefined)
-        return Util.colorText(this.str,
-          1,
-          this.id == Lexer.tokens.REGEXP ? 35 : this.id == Lexer.tokens.STRING ? 36 : 33
-        );
+      if(this.id !== undefined && this.str !== undefined) return Util.colorText(this.str, 1, this.id == Lexer.tokens.REGEXP ? 35 : this.id == Lexer.tokens.STRING ? 36 : 33);
 
       let str = Util.colorText(this.str, 1, /^['"`]/.test(this.str) ? 36 : 33);
       return `${Util.className(this)}(${str})`;
@@ -82,9 +78,7 @@ export class Rule {
     toString() {
       const { repeat = '', length, invert } = this;
       if(this.length == 1) return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
-      return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${invert ? '~' : ''}[ ${this.map(n =>
-        /*Util.className(n) + ' ' +*/ n.toString()
-      ).join(Util.colorText(' ⏵ ', 1, 30))} ]${repeat}`;
+      return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${invert ? '~' : ''}[ ${this.map(n => /*Util.className(n) + ' ' +*/ n.toString()).join(Util.colorText(' ⏵ ', 1, 30))} ]${repeat}`;
     }
   };
   static Literal = class Literal extends Rule.Symbol {
@@ -105,8 +99,7 @@ export class Rule {
     }
 
     toString() {
-      return (`${this.args.length > 1 ? '' : this.op}(` + this.args.map(n => n.toString()).join(' ' + this.op + ' ') + `)`
-      );
+      return `${this.args.length > 1 ? '' : this.op}(` + this.args.map(n => n.toString()).join(' ' + this.op + ' ') + `)`;
     }
   };
 
@@ -142,9 +135,7 @@ export class Rule {
       sep = ' ';
 
     if(multiline) (nl = '\n'), (sep = ' | ');
-    return `Rule ${this.fragment ? 'fragment ' : ''}${
-      name ? Util.colorText(name, 1, 32) + ' ' : ''
-    }${nl}: ${this.productions.map(l => /* Util.className(l) + ' ' +*/ l.toString()).join(`${nl}${sep}`)}${nl};${nl}`;
+    return `Rule ${this.fragment ? 'fragment ' : ''}${name ? Util.colorText(name, 1, 32) + ' ' : ''}${nl}: ${this.productions.map(l => /* Util.className(l) + ' ' +*/ l.toString()).join(`${nl}${sep}`)}${nl};${nl}`;
   }
 
   match(parser) {
@@ -420,10 +411,7 @@ export class Grammar {
       //rule.productions = rule.productions.reverse();
 
       if(rule.selfReferential) {
-        let a = [
-          rule.productions.filter(p => !p.selfReferential),
-          rule.productions.filter(p => p.selfReferential).map(m => m.slice(1))
-        ];
+        let a = [rule.productions.filter(p => !p.selfReferential), rule.productions.filter(p => p.selfReferential).map(m => m.slice(1))];
 
         {
           let m = new Rule.Match(rule);

@@ -1190,10 +1190,6 @@ export class ECMAScriptParser extends Parser {
     }
     let decl = new VariableDeclaration(declarations, kind, exported);
 
-    if(exported) {
-      decl = new ExportStatement(decl.id, decl);
-    }
-
     return decl;
   }
 
@@ -1561,10 +1557,17 @@ export class ECMAScriptParser extends Parser {
   parseVariableStatement(exported = false) {
     this.log(`parseVariableStatement()`);
     let keyw = this.expectKeywords(['var', 'let', 'const']);
-    const ast = this.parseVariableDeclarationList(keyw.value, exported);
+    let decl = this.parseVariableDeclarationList(keyw.value, exported);
     if(this.matchPunctuators(';')) this.expectPunctuators(';');
     //console.log("ast:",ast);
-    return ast;
+    
+
+    if(exported) {
+      decl = new ExportStatement(decl.id, decl);
+    }
+
+    //
+    return decl;
   }
 
   parseImportStatement(toplevel = false) {
@@ -1644,7 +1647,7 @@ export class ECMAScriptParser extends Parser {
     } else if(this.matchKeywords('function')) {
       stmt = this.parseFunction(true, is_async);
     } else if(this.matchKeywords(['var', 'let', 'const'])) {
-      stmt = this.parseVariableStatement();
+      stmt = this.parseVariableStatement(true);
     } else if(this.matchIdentifier(true)) {
       const id = this.expectIdentifier();
 

@@ -4660,8 +4660,10 @@ Util.safeFunction = (fn, trapExceptions, thisObj) => {
     exec = Util.tryFunction(exec, //async (...args) => { Error.stackTraceLimit=Infinity;  return await exec(...args); },
       a => a,
       error => {
-        if(error.stack !== undefined) error.stack = new Util.stack(error.stack);
-        handleException(error);
+        if(Util.isObject(error)) {
+          if(error.stack !== undefined) error.stack = new Util.stack(error.stack);
+          handleException(error);
+        }
       }
     );
   }

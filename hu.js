@@ -112,9 +112,7 @@ let hu = (function () {
   };
 
   fn.rgrad = function(cx, cy, r, c1, c2) {
-    return this.def('<radialGradient')
-      .attr({ cx, cy, r })
-      .stops({ offset: '0%', stopColor: c1 }, { offset: '100%', stopColor: c2 });
+    return this.def('<radialGradient').attr({ cx, cy, r }).stops({ offset: '0%', stopColor: c1 }, { offset: '100%', stopColor: c2 });
   };
 
   fn.width = function(v) {

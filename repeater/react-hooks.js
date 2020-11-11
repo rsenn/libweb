@@ -73,12 +73,7 @@ function __generator(thisArg, body) {
     if(f) throw new TypeError('Generator is already executing.');
     while(_)
       try {
-        if(((f = 1),
-          y &&
-            (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) &&
-            !(t = t.call(y, op[1])).done)
-        )
-          return t;
+        if(((f = 1), y && (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)) return t;
         if(((y = 0), t)) op = [op[0] & 2, t.value];
         switch (op[0]) {
           case 0:
@@ -218,7 +213,7 @@ function useResult(callback, deps) {
         return __generator(this, _a => {
           switch (_a.label) {
             case 0:
-              _a.trys.push([0, 4, , 5]);
+              _a.trys.push([0, 4, undefined, 5]);
               _a.label = 1;
             case 1:
               if(!mounted) return [3 /*break*/, 3];

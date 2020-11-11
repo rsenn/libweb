@@ -86,12 +86,7 @@ function __generator(thisArg, body) {
     if(f) throw new TypeError('Generator is already executing.');
     while(_)
       try {
-        if(((f = 1),
-          y &&
-            (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) &&
-            !(t = t.call(y, op[1])).done)
-        )
-          return t;
+        if(((f = 1), y && (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)) return t;
         if(((y = 0), t)) op = [op[0] & 2, t.value];
         switch (op[0]) {
           case 0:
@@ -254,7 +249,7 @@ function semaphore(limit) {
             e_1 = { error: e_1_1 };
             return [3 /*break*/, 13];
           case 8:
-            _d.trys.push([8, , 11, 12]);
+            _d.trys.push([8, undefined, 11, 12]);
             if(!(_b && !_b.done && (_c = _a.return))) return [3 /*break*/, 10];
             return [4 /*yield*/, _c.call(_a)];
           case 9:
@@ -303,10 +298,7 @@ function throttler(wait, options) {
               case 1:
                 _b.sent();
                 try {
-                  for(tokens_1 = __values(tokens), tokens_1_1 = tokens_1.next();
-                    !tokens_1_1.done;
-                    tokens_1_1 = tokens_1.next()
-                  ) {
+                  for(tokens_1 = __values(tokens), tokens_1_1 = tokens_1.next(); !tokens_1_1.done; tokens_1_1 = tokens_1.next()) {
                     token = tokens_1_1.value;
                     token.release();
                   }
@@ -373,7 +365,7 @@ function throttler(wait, options) {
             e_2 = { error: e_2_1 };
             return [3 /*break*/, 15];
           case 10:
-            _d.trys.push([10, , 13, 14]);
+            _d.trys.push([10, undefined, 13, 14]);
             if(!(_b && !_b.done && (_c = _a.return))) return [3 /*break*/, 12];
             return [4 /*yield*/, _c.call(_a)];
           case 11:

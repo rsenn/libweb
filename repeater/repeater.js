@@ -92,12 +92,7 @@ function __generator(thisArg, body) {
     if(f) throw new TypeError('Generator is already executing.');
     while(_)
       try {
-        if(((f = 1),
-          y &&
-            (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) &&
-            !(t = t.call(y, op[1])).done)
-        )
-          return t;
+        if(((f = 1), y && (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)) return t;
         if(((y = 0), t)) op = [op[0] & 2, t.value];
         switch (op[0]) {
           case 0:
@@ -493,8 +488,7 @@ let RepeaterController = /** @class */ (function () {
     let _this = this;
     swallow(value);
     if(this.pushQueue.length >= MAX_QUEUE_LENGTH) {
-      throw new RepeaterOverflowError('No more than ' + MAX_QUEUE_LENGTH + ' pending calls to push are allowed on a single repeater.'
-      );
+      throw new RepeaterOverflowError('No more than ' + MAX_QUEUE_LENGTH + ' pending calls to push are allowed on a single repeater.');
     } else if(this.state >= 2 /* Stopped */) {
       return Promise.resolve(undefined);
     }
@@ -610,10 +604,7 @@ let RepeaterController = /** @class */ (function () {
     let _this = this;
     swallow(value);
     if(this.pullQueue.length >= MAX_QUEUE_LENGTH) {
-      throw new RepeaterOverflowError('No more than ' +
-          MAX_QUEUE_LENGTH +
-          ' pending calls to Repeater.prototype.next are allowed on a single repeater.'
-      );
+      throw new RepeaterOverflowError('No more than ' + MAX_QUEUE_LENGTH + ' pending calls to Repeater.prototype.next are allowed on a single repeater.');
     }
     if(this.state <= 0 /* Initial */) {
       this.execute();
@@ -724,7 +715,7 @@ function asyncIterators(contenders, options) {
             return __generator(this, _a => {
               switch (_a.label) {
                 case 0:
-                  _a.trys.push([0, , 6, 7]);
+                  _a.trys.push([0, undefined, 6, 7]);
                   result = iter_1.next();
                   _a.label = 1;
                 case 1:
@@ -778,10 +769,7 @@ function asyncIterators(contenders, options) {
     }
   };
   try {
-    for(var contenders_1 = __values(contenders), contenders_1_1 = contenders_1.next();
-      !contenders_1_1.done;
-      contenders_1_1 = contenders_1.next()
-    ) {
+    for(var contenders_1 = __values(contenders), contenders_1_1 = contenders_1.next(); !contenders_1_1.done; contenders_1_1 = contenders_1.next()) {
       let contender = contenders_1_1.value;
       _loop_1(contender);
     }
@@ -814,16 +802,13 @@ function race(contenders) {
             stop.then(() => (stopped = true));
             _b.label = 1;
           case 1:
-            _b.trys.push([1, , 7, 9]);
+            _b.trys.push([1, undefined, 7, 9]);
             _b.label = 2;
           case 2:
             if(stopped) return [3 /*break*/, 6];
             results = iters.map(iter => iter.next());
             try {
-              for(results_1 = ((e_4 = void 0), __values(results)), results_1_1 = results_1.next();
-                !results_1_1.done;
-                results_1_1 = results_1.next()
-              ) {
+              for(results_1 = ((e_4 = void 0), __values(results)), results_1_1 = results_1.next(); !results_1_1.done; results_1_1 = results_1.next()) {
                 result_1 = results_1_1.value;
                 Promise.resolve(result_1).then(result => {
                     if(result.done && !stopped) {
@@ -893,7 +878,7 @@ function merge(contenders) {
                     return __generator(this, _b => {
                       switch (_b.label) {
                         case 0:
-                          _b.trys.push([0, , 6, 9]);
+                          _b.trys.push([0, undefined, 6, 9]);
                           _b.label = 1;
                         case 1:
                           if(stopped) return [3 /*break*/, 5];
@@ -956,7 +941,7 @@ function zip(contenders) {
             stop.then(() => (stopped = true));
             _a.label = 1;
           case 1:
-            _a.trys.push([1, , 6, 8]);
+            _a.trys.push([1, undefined, 6, 8]);
             _a.label = 2;
           case 2:
             if(stopped) return [3 /*break*/, 5];
@@ -1011,7 +996,7 @@ function latest(contenders) {
             stop.then(() => (stopped = true));
             _a.label = 1;
           case 1:
-            _a.trys.push([1, , 5, 7]);
+            _a.trys.push([1, undefined, 5, 7]);
             resultsP = Promise.all(iters.map(iter => iter.next()));
             return [4 /*yield*/, Promise.race([stop, resultsP])];
           case 2:
