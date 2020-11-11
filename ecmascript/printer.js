@@ -25,7 +25,9 @@ export class Printer {
 
     Util.define(this, {
       color,
-      colorText: Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: text => color.text(text, ...codes) }), {}),
+      colorText: Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({ ...acc, [key]: text => color.text(text, ...codes) }),
+        {}
+      ),
       colorCode: Object.entries(Printer.colors).reduce((acc, [key, codes]) => ({
           ...acc,
           [key]: output => {
@@ -84,7 +86,11 @@ export class Printer {
   }
 
   print(tree) {
-    this.nodes = [...deep.iterate(tree, node => Util.isObject(node) && 'position' in node)].map(([node, path]) => [node.position, path.join('.'), node]);
+    this.nodes = [...deep.iterate(tree, node => Util.isObject(node) && 'position' in node)].map(([node, path]) => [
+      node.position,
+      path.join('.'),
+      node
+    ]);
 
     //console.log("comments: ", this.comments);
 
@@ -247,11 +253,13 @@ export class Printer {
     right = this.printNode(property);
 
     //console.log("printMemberExpression", {object,property});
-    if(!(object instanceof Identifier) && !(object instanceof Literal) && !(object instanceof MemberExpression)) left = '(' + left + ')';
+    if(!(object instanceof Identifier) && !(object instanceof Literal) && !(object instanceof MemberExpression))
+      left = '(' + left + ')';
 
     ///null.*{/.test(left) && console.log("object:", object);
 
-    if(/^[0-9]+$/.test(right) || /[\.\']/.test(right) || !(property instanceof Identifier)) return left + colorCode.punctuators(left) + '[' + right + colorCode.punctuators() + ']';
+    if(/^[0-9]+$/.test(right) || /[\.\']/.test(right) || !(property instanceof Identifier))
+      return left + colorCode.punctuators(left) + '[' + right + colorCode.punctuators() + ']';
     return left + colorText.punctuators('.') + right;
   }
 
@@ -273,11 +281,18 @@ export class Printer {
     const { arguments: args, callee } = call_expression;
     //console.log("args:", util.inspect(args, { depth: Infinity, breakLength: 1000 }));
 
-    if(args instanceof TemplateLiteral) return this.printNode(callee) + this.colorCode.punctuators() + this.printNode(args);
+    if(args instanceof TemplateLiteral)
+      return this.printNode(callee) + this.colorCode.punctuators() + this.printNode(args);
     let fn = this.printNode(callee);
     if(callee instanceof ArrowFunction) fn = `(${fn})`;
 
-    return fn + this.colorCode.punctuators(fn) + '(' + args.map(arg => this.printNode(arg)).join(this.colorCode.punctuators() + ', ') + this.colorCode.punctuators() + ')';
+    return (fn +
+      this.colorCode.punctuators(fn) +
+      '(' +
+      args.map(arg => this.printNode(arg)).join(this.colorCode.punctuators() + ', ') +
+      this.colorCode.punctuators() +
+      ')'
+    );
   }
 
   /*
@@ -337,7 +352,9 @@ export class Printer {
 
         let multiline = /\n/.test(line);
         s += multiline && s.length ? '\n\n  ' : '\n  ';
-        let eol = (new RegExp('(;|\n|})$').test(line.trimEnd()) ? '' : this.colorCode.punctuators() + ';') + (multiline ? '\n' : '');
+        let eol =
+          (new RegExp('(;|\n|})$').test(line.trimEnd()) ? '' : this.colorCode.punctuators() + ';') +
+          (multiline ? '\n' : '');
         //console.log("line:", { line, eol });
 
         if(line != '') s += line.replace(/\n/g, '\n  ') + eol;
@@ -347,7 +364,12 @@ export class Printer {
     }
     s = s.trimEnd();
 
-    return this.colorCode.punctuators() + '{' + s + this.colorCode.punctuators() + (new RegExp('[};\\n ]$').test(s) ? '\n}' : ';\n}');
+    return (this.colorCode.punctuators() +
+      '{' +
+      s +
+      this.colorCode.punctuators() +
+      (new RegExp('[};\\n ]$').test(s) ? '\n}' : ';\n}')
+    );
   }
 
   printStatementList(statement_list) {
@@ -359,7 +381,9 @@ export class Printer {
       s += multiline && s.length ? '\n\n' : '\n';
       if(line != '') s += line;
 
-      s += (new RegExp('(;|\\n|}|\\s)$').test(line.trimEnd()) ? '' : this.colorCode.punctuators(s) + ';') + (multiline ? '\n' : '');
+      s +=
+        (new RegExp('(;|\\n|}|\\s)$').test(line.trimEnd()) ? '' : this.colorCode.punctuators(s) + ';') +
+        (multiline ? '\n' : '');
     }
     return s;
   }
@@ -410,7 +434,10 @@ export class Printer {
     let output = this.colorCode.keywords() + 'if' + this.colorCode.punctuators() + `(${condition}) ${if_true}`;
     if(alternate) {
       let if_false = this.printNode(alternate);
-      output += (new RegExp('[;}\\n]$').test(output) ? '' : this.colorCode.punctuators(output) + ';') + this.colorCode.keywords() + ` else ${if_false}`;
+      output +=
+        (new RegExp('[;}\\n]$').test(output) ? '' : this.colorCode.punctuators(output) + ';') +
+        this.colorCode.keywords() +
+        ` else ${if_false}`;
     }
     return output;
   }
@@ -432,7 +459,14 @@ export class Printer {
 
   printWhileStatement(while_statement) {
     const { body, test } = while_statement;
-    let output = this.colorCode.keywords() + 'while' + this.colorCode.punctuators() + `(` + this.printNode(test) + this.colorCode.punctuators() + ') ';
+    let output =
+      this.colorCode.keywords() +
+      'while' +
+      this.colorCode.punctuators() +
+      `(` +
+      this.printNode(test) +
+      this.colorCode.punctuators() +
+      ') ';
     output += this.printNode(body);
     return output;
   }
@@ -441,7 +475,14 @@ export class Printer {
     const { body, test } = do_statement;
     let output = `do `;
     output += this.printNode(body);
-    output += this.colorCode.keywords() + 'while' + this.colorCode.punctuators() + `(` + this.printNode(test) + this.colorCode.punctuators() + ')';
+    output +=
+      this.colorCode.keywords() +
+      'while' +
+      this.colorCode.punctuators() +
+      `(` +
+      this.printNode(test) +
+      this.colorCode.punctuators() +
+      ')';
     return output;
     //console.log(arguments[0]);
     //console.log(Object.keys(arguments[0]).join(", "));
@@ -470,7 +511,8 @@ export class Printer {
 
     let output = colorText.keywords(`for${async ? ' await' : ''}`);
 
-    output += colorText.punctuators('(') + `${key} ${colorText.keywords(operator)} ${object}` + colorText.punctuators(')');
+    output +=
+      colorText.punctuators('(') + `${key} ${colorText.keywords(operator)} ${object}` + colorText.punctuators(')');
 
     let code = this.printNode(body);
     if(code[0] != '{') output += '\n  ';
@@ -614,7 +656,12 @@ export class Printer {
     if(id) output += `${this.printNode(id)}`;
 
     output = output.replace(/ $/, '');
-    output += this.colorCode.punctuators(output) + '(' + (params.length !== undefined ? [...params].map(param => this.printNode(param)).join(', ') : this.printNode(params));
+    output +=
+      this.colorCode.punctuators(output) +
+      '(' +
+      (params.length !== undefined
+        ? [...params].map(param => this.printNode(param)).join(', ')
+        : this.printNode(params));
 
     output += this.colorCode.punctuators(output) + ') ';
     /*
@@ -714,7 +761,10 @@ export class Printer {
 
       line += value.replace(/\n/g, '\n  ');
 
-      if(property.flags && !(property instanceof BindingProperty) && !(object_literal instanceof ObjectBindingPattern)) {
+      if(property.flags &&
+        !(property instanceof BindingProperty) &&
+        !(object_literal instanceof ObjectBindingPattern)
+      ) {
         line = name + ' = ' + line;
       } else if(name && name != line) {
         line = name + ': ' + line;
@@ -804,7 +854,9 @@ export class Printer {
 
   printJSXLiteral(jsx_literal) {
     const { tag, attributes, closing, selfClosing, children } = jsx_literal;
-    let output = this.format ? `h(${tag[0].toUpperCase() == tag[0] ? tag : "'" + tag + "'"}, {` : `<${closing ? '/' : ''}${tag}`;
+    let output = this.format
+      ? `h(${tag[0].toUpperCase() == tag[0] ? tag : "'" + tag + "'"}, {`
+      : `<${closing ? '/' : ''}${tag}`;
     let i = 0;
 
     for(let attr in attributes) {
@@ -829,7 +881,13 @@ export class Printer {
       if(children.length == 1) {
         if(children[0] instanceof Literal) output += children[0].value.replace(/\\n/g, '\n');
         else output += this.printNode(children[0]);
-      } else output += `\n    ` + children.map(child => this.printNode(child).replace(/\n/g, '\n    ')).join(this.format ? ',\n    ' : '\n    ') + `\n  `;
+      } else
+        output +=
+          `\n    ` +
+          children
+            .map(child => this.printNode(child).replace(/\n/g, '\n    '))
+            .join(this.format ? ',\n    ' : '\n    ') +
+          `\n  `;
 
       if(!this.format) output += `</${tag}>`;
     }
@@ -886,7 +944,9 @@ export class Printer {
 
     //let output = properties.map(property => this.printNode(property)).join(', ');
 
-    if(/\n/.test(output)) return this.colorText.punctuators('{') + `\n  ${output.replace(/\n/g, '\n  ')}\n` + this.colorText.punctuators('}');
+    if(/\n/.test(output))
+      return (this.colorText.punctuators('{') + `\n  ${output.replace(/\n/g, '\n  ')}\n` + this.colorText.punctuators('}')
+      );
 
     return this.colorText.punctuators('{') + ` ${output} ` + this.colorText.punctuators('}');
   }

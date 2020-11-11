@@ -407,7 +407,8 @@ export class Functional {
 
   static converge = this.curry3var(function () {
     let after, ar, fn, fs, q;
-    (fs = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])), (after = arguments[q++]);
+    (fs = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])),
+      (after = arguments[q++]);
     fs = this._pliftall(fs);
     after = this.plift(after);
     ar = this.apply(Math.max)(this.map(fs, arityof));
@@ -980,7 +981,8 @@ export class Functional {
 
   static zipwith = this.curry3var(function () {
     let as, f, i, ml, n, q, ref, results, u;
-    (as = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])), (f = arguments[q++]);
+    (as = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])),
+      (f = arguments[q++]);
     ml = Functional.apply(min)(Functional.map(as, len));
     results = [];
     for(i = u = 0, ref = ml; u < ref; i = u += 1) {

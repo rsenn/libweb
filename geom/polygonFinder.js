@@ -13,7 +13,8 @@ export class PolygonFinder {
     let connectedSegments = [];
     let connectedIntersections = [];
     segments.forEach(segment => {
-      let intersectionsOnSegment = intersections.filter(intersection => intersection.line1 === segment || intersection.line2 === segment);
+      let intersectionsOnSegment = intersections.filter(intersection => intersection.line1 === segment || intersection.line2 === segment
+      );
 
       if(intersectionsOnSegment.length > 1) {
         intersectionsOnSegment.forEach(intersection => {
@@ -26,18 +27,24 @@ export class PolygonFinder {
     });
 
     connectedSegments.forEach(segment => {
-      let intersectionsOnSegment = connectedIntersections.filter(intersection => intersection.line1 === segment || intersection.line2 === segment);
+      let intersectionsOnSegment = connectedIntersections.filter(intersection => intersection.line1 === segment || intersection.line2 === segment
+      );
 
       //For each intersection on a line, find the nearest neighbor in each direction.
       //TODO:  Investigate if this works/when it fails/if there is a better way.
       let nearestNeighborTrios = intersectionsOnSegment.map((intersection, index, intersections) => {
         let nearestNeighborPair = [null, null];
         let minimumDistancePair = [Infinity, Infinity];
-        let possibleNeighbors = intersections.filter(possibleNeighborIntersection => intersection != possibleNeighborIntersection);
+        let possibleNeighbors = intersections.filter(possibleNeighborIntersection => intersection != possibleNeighborIntersection
+        );
 
         possibleNeighbors.forEach(possibleNeighbor => {
           let comparisonProperty = '';
-          let distanceBetween = dist(intersection.point.x, intersection.point.y, possibleNeighbor.point.x, possibleNeighbor.point.y);
+          let distanceBetween = dist(intersection.point.x,
+            intersection.point.y,
+            possibleNeighbor.point.x,
+            possibleNeighbor.point.y
+          );
 
           if(possibleNeighbor.point.x !== intersection.point.x) {
             comparisonProperty = 'x';

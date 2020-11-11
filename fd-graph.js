@@ -21,7 +21,20 @@ import Util from './util.js';
 
 export class Graph {
   constructor(options = {}) {
-    let { origin = new Point(0, 0), size = new Size(1000, 1000), prng = Math.random, gravitate_to_origin = true, charge = 100, mass = 240, spacing = 3, timestep = 150, damping = 0.000005, onUpdateNode = node => true, onUpdateEdge = edge => true, onRenderGraph = graph => true } = options;
+    let {
+      origin = new Point(0, 0),
+      size = new Size(1000, 1000),
+      prng = Math.random,
+      gravitate_to_origin = true,
+      charge = 100,
+      mass = 240,
+      spacing = 3,
+      timestep = 150,
+      damping = 0.000005,
+      onUpdateNode = node => true,
+      onUpdateEdge = edge => true,
+      onRenderGraph = graph => true
+    } = options;
 
     Util.log(`Graph(${origin},${gravitate_to_origin})`);
     this.nodes = [];

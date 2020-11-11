@@ -7,7 +7,12 @@ import { WritableStream } from './stream/writableStream.js';
 export { TextDecodeTransformer, TextDecoderStream } from './stream/textDecodeStream.js';
 export { TextEncodeTransformer, TextEncoderStream } from './stream/textEncodeStream.js';
 
-export { TransformStreamSink, TransformStreamSource, TransformStreamDefaultController, TransformStream } from './stream/transformStream.js';
+export {
+  TransformStreamSink,
+  TransformStreamSource,
+  TransformStreamDefaultController,
+  TransformStream
+} from './stream/transformStream.js';
 export {
   isStream,
   AcquireReader,
