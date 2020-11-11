@@ -124,11 +124,7 @@ export class EagleSVGRenderer {
   layerOf(element) {
     let layer;
     do {
-      layer =
-        element.getAttribute('data-layer') ||
-        element.getAttribute('data-layer-id') ||
-        element.getAttribute('data-layer-name') ||
-        element.getAttribute('layer');
+      layer = element.getAttribute('data-layer') || element.getAttribute('data-layer-id') || element.getAttribute('data-layer-name') || element.getAttribute('layer');
       if(layer) {
         const layerId = +(layer + '').replace(/\ .*/g, '');
         return this.layers[layerId];
@@ -179,8 +175,7 @@ export class EagleSVGRenderer {
 
     this.debug(`EagleSVGRenderer.renderItem`, { item, transformation });
 
-    const svg = (elem, attr, parent) =>
-      this.create(elem, { className: item.tagName, /* 'data-path': item.path.toString(' '), */ ...attr }, parent);
+    const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, /* 'data-path': item.path.toString(' '), */ ...attr }, parent);
 
     let coordFn = /*transform ? MakeCoordTransformer(transform) :*/ i => i;
     const { layer } = item;
