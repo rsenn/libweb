@@ -17,7 +17,7 @@ export const VERTICAL = 1;
 export const HORIZONTAL = 2;
 export const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
 
-export let DEBUG = true;
+export let DEBUG = false;
 
 export let log = DEBUG
   ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console)

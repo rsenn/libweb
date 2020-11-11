@@ -212,7 +212,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         if(flat) cmds = cmds.flat();
 
         //console.log('cmds:', cmds);
-        console.log('layerId:', layerId, 'width:', width);
+        this.debug('layerId:', layerId, 'width:', width);
 
         this.create(WirePath, {
             class: classNames(addClass, ElementToClass(wires[0], layer.name)),
