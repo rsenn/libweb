@@ -44,7 +44,7 @@ export class Rule {
 
   static Self = class Self extends Rule.Symbol {
     constructor(rule) {
-      super('arguments.callee', rule);
+      super('arguments.callee',   (rule && rule.name) || 'arguments.callee', rule);
     }
 
     clone() {
@@ -53,11 +53,15 @@ export class Rule {
     }
 
     toString() {
-      return 'arguments.callee';
+      return Util.colorText('Self', 0, 36) || 'arguments.callee';
     }
 
     toCowbird() {
       return ['<this>'];
+    }
+
+    [Symbol.for('nodejs.util.inspect.custom')]() {
+      return Util.colorText('Self', 0, 36);
     }
   };
 
@@ -109,7 +113,16 @@ export class Rule {
     }
 
     [Symbol.for('nodejs.util.inspect.custom')]() {
-      return this.toString();
+      const { repeat = '', length, invert } = this;
+      if(this.length == 1) return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
+      return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${invert ? '~' : ''}[ ${this.map(n => {
+        /*Util.className(n) + ' ' +*/
+
+        if(!n[Symbol.for('nodejs.util.inspect.custom')])
+          throw new Error(`Symbol.for('nodejs.util.inspect.custom') ${Util.className(n)} ${n}`);
+
+        return n[Symbol.for('nodejs.util.inspect.custom')]();
+      }).join(Util.colorText(' ⏵ ', 1, 30))} ]${repeat}`;
     }
 
     toString() {
@@ -170,7 +183,7 @@ export class Rule {
         return this.combinations().map(match => match.toCowbird(accu, false));
       }
       let matches = this.filter(m => m.str != 'eof()').map(rule => {
-        if(!rule.toCowbird) throw new Error(`toCowbird ${Util.className(rule)}`);
+        if(!rule.toCowbird) throw new Error(`toCowbird ${Util.className(rule)} ${Util.toString(rule)}`);
         return rule.toCowbird(accu, false);
       });
       console.log('matches:', matches);
@@ -488,10 +501,17 @@ export class Grammar {
         } else {
           n = new Rule.Operator('|', null, ...r);
         }
-      } else if(r.tok == Lexer.tokens.STRING) n = new Rule.Literal(r.str.substring(1, r.str.length - 1), null);
-      else if(r.tok == Lexer.tokens.REGEXP) n = new Rule.Symbol(r.str, r.tok, null);
-      else n = new Rule.Symbol(r.str, r.tok, null);
-
+      } else if(r.tok == Lexer.tokens.STRING) {
+        n = new Rule.Literal(r.str.substring(1, r.str.length - 1), null);
+      } else if(r.tok == Lexer.tokens.REGEXP) {
+        n = new Rule.Symbol(r.str, r.tok, null);
+      } else {
+        if(r.tok == Lexer.tokens.IDENTIFIER) {
+          if(/-/.test(r.str))
+            r.str = Util.camelize(r.str);
+        }
+        n = new Rule.Symbol(r.str, r.tok, null);
+      }
       if(parser.matchPunctuation(['*', '?', '+'])) {
         let op = parser.expectPunctuation();
         n = new Rule.Operator(op.str, null, n);
@@ -574,9 +594,12 @@ export class Grammar {
       parser.expectIdentifier('fragment');
     }
     let name = parser.getTok();
+
     if(parser.matchPunctuation(':')) {
-      let matches = this.parseRule(':', ';', name.str);
-      rule = this.addRule(name.str, matches, fragment);
+      let { str } = name;
+      if(/-/.test(str)) str = Util.camelize(str);
+      let matches = this.parseRule(':', ';', str);
+      rule = this.addRule(str, matches, fragment);
       matches.forEach(m => Util.define(m, { rule }));
     }
   }
@@ -601,7 +624,7 @@ export class Grammar {
     s += `function wrap(parser, name) {
   return (str,pos) => {
     let r = parser(str,pos);
-    if(r[0] || name.startsWith('direct')) console.log("matched ("+name+") "+pos+" - " +r[2]+": '", r[1] ,"'");
+    if(r[0] || name.startsWith('direct')) console.log("matched (" + name + ") " + pos + " - " + r[2] + ": '", r[1] , "'");
     return r;
   };
 }

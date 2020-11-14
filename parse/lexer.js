@@ -108,11 +108,11 @@ const lexIdentifier = lexer => {
     word += c;
 
     for(; (c = lexer.peek()); word += lexer.get()) {
-      if(!/[0-9A-Za-z_]/.test(c)) break;
+      if(!/[-0-9A-Za-z_]/.test(c)) break;
       //console.log("lexIdentifier: ", word);
     }
 
-    if(/[^0-9A-Za-z_]$/.test(word)) lexer.pos--;
+    if(/[^-0-9A-Za-z_]$/.test(word)) lexer.pos--;
 
     //console.log("lexIdentifier: ", lexer.source[lexer.pos-1]);
 
