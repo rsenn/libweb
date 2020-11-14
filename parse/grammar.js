@@ -154,14 +154,14 @@ export class Rule {
             match.push(part);
             continue;
           }
-          console.log(`part.args ${i&flag}:`, part.args);
+          console.log(`part.args ${i & flag}:`, part.args);
           match.splice(match.length, 0, ...part.args);
         }
-               console.log(`Match combinations [${i}]:`, match);
-   r.push(match);
+        console.log(`Match combinations [${i}]:`, match);
+        r.push(match);
       }
-          console.log('Match combinations:', r);
-  return r;
+      console.log('Match combinations:', r);
+      return r;
     }
 
     toCowbird(accu, combinations = true) {
@@ -171,7 +171,7 @@ export class Rule {
       }
       let matches = this.filter(m => m.str != 'eof()').map(rule => {
         if(!rule.toCowbird) throw new Error(`toCowbird ${Util.className(rule)}`);
-        return rule.toCowbird(accu, false); 
+        return rule.toCowbird(accu, false);
       });
       console.log('matches:', matches);
       return matches.join(' ');
@@ -236,7 +236,7 @@ export class Rule {
         let rule = Rule.from(args, grammar);
 
         accu.push(rule.toCowbird(accu, subname));
-        return [ `<${subname}>` ];
+        return [`<${subname}>`];
       } else if(args.length == 1) {
         if(!args[0].toCowbird) throw new Error(`toCowbird ${Util.className(args[0])} ${Util.toString(args[0])}`);
         ret = ret.concat(args[0].toCowbird(accu));
