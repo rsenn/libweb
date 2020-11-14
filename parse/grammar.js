@@ -87,6 +87,7 @@ export class Rule {
       ).join(Util.colorText(' ⏵ ', 1, 30))} ]${repeat}`;
     }
   };
+
   static Literal = class Literal extends Rule.Symbol {
     constructor(str) {
       super(str);
@@ -96,6 +97,7 @@ export class Rule {
       return `'${this.str}'`;
     }
   };
+  
   static Operator = class Operator extends Node {
     constructor(op, ...args) {
       super();
@@ -412,66 +414,38 @@ export class Grammar {
   };
 }
 `;
-
     for(let [name, rule] of this.rules) {
       let calls;
       let append;
-
-      //rule.productions = rule.productions.reverse();
-
       if(rule.selfReferential) {
         let a = [
           rule.productions.filter(p => !p.selfReferential),
           rule.productions.filter(p => p.selfReferential).map(m => m.slice(1))
         ];
-
         {
           let m = new Rule.Match(rule);
           let o = a[1];
-
           if(o.length > 1) {
-            //console.log('o:', o);
             o = new Rule.Operator('|', ...o);
             s;
           }
           o = new Rule.Operator('?', o);
-
           let e = a[0];
           if(e.length > 1) e = new Rule.Operator('|', ...e);
           m.splice(0, m.length, e, o);
           rule.productions = [m];
-          //console.log(':', o);
         }
-
-        /*
-{
-rule.productions = a[0];
-
- append = new Rule(this);
-
-append.productions = new Rule.Operator('*', new Rule.Operator('|', ...a[1]));
-
-}*/
-
-        //console.log('rule:', rule);
-        //console.log('a:', a);
       }
-
       calls = rule.generate().replace(/\n/g, '\n  ');
-
       if(append) calls = `seq(${calls}, ${rule.generate()})`;
-
       s += `function ${name}(...args) {
   return wrap( ${calls}, '${name}' )(...args);
 }`;
-      //console.log("rule:", rule);
-      //
-      //console.log("rule:", rule);
-      //s += `const ${name} = ` + rule.generate();
       s += `\n\n`;
       names.push(name);
     }
     s += `export default { ${names.join(', ')} };\n`;
     return s;
   }
+
 }
