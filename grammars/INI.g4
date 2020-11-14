@@ -15,7 +15,8 @@ section_header : LBRACK section_header_title RBRACK ;
 
 section_header_title : [A-Za-z0-9_]+;
 
-key_values : (key_value   WS?)*;
+//key_values : (key_value   WS?)*;
+key_values : key_value+;
 
 key_value : key EQUALS value WS?;
                

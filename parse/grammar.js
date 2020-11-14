@@ -157,7 +157,8 @@ export class Rule {
           console.log(`part.args ${i&flag}:`, part.args);
           match.splice(match.length, 0, ...part.args);
         }
-        r.push(match);
+               console.log(`Match combinations [${i}]:`, match);
+   r.push(match);
       }
           console.log('Match combinations:', r);
   return r;
@@ -168,12 +169,12 @@ export class Rule {
       if(combinations) {
         return this.combinations().map(match => match.toCowbird(accu, false));
       }
-      let matches = this.map(rule => {
+      let matches = this.filter(m => m.str != 'eof()').map(rule => {
         if(!rule.toCowbird) throw new Error(`toCowbird ${Util.className(rule)}`);
-        return rule.toCowbird(accu, true);
+        return rule.toCowbird(accu, false); 
       });
       console.log('matches:', matches);
-      return matches.filter(m => m != '<eof()>').join(' ');
+      return matches.join(' ');
     }
   };
 
@@ -231,11 +232,11 @@ export class Rule {
 
         args = args.map(arg => (arg instanceof Array && arg.length == 1 ? arg[0] : arg));
 
-        //console.log('args:', args, args.map(Util.toPlainObject));
+        console.log('args:', args, args.map(Util.toPlainObject));
         let rule = Rule.from(args, grammar);
 
         accu.push(rule.toCowbird(accu, subname));
-        ret.push(`<${subname}>`);
+        return [ `<${subname}>` ];
       } else if(args.length == 1) {
         if(!args[0].toCowbird) throw new Error(`toCowbird ${Util.className(args[0])} ${Util.toString(args[0])}`);
         ret = ret.concat(args[0].toCowbird(accu));
