@@ -54,21 +54,21 @@ export class Match extends Array {
     let keys = [...grammar.rules.keys()];
     let values = [...grammar.rules.values()];
     let ri = values.indexOf(rule);
-    Util.log('rule:', ri);
+    console.log('rule:', ri);
     let p = parser.clone();
     for(let pattern of this) {
       if(grammar.rules.has(pattern)) {
         let ruleName = pattern;
-        Util.log('rule:', ruleName);
+        console.log('rule:', ruleName);
         let stack = Util.getCallerStack();
-        Util.log('stack:', stack.length);
+        console.log('stack:', stack.length);
       }
       if(!pattern) continue;
       if(!pattern.match(p)) {
         ret = false;
         break;
       }
-      Util.log('Match.match: ', this, { pattern, p });
+      console.log('Match.match: ', this, { pattern, p });
       ret.push(pattern);
       p.copyTo(parser);
       p = parser.clone();

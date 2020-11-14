@@ -177,7 +177,7 @@ Parser.prototype.pushFrame = function(rule) {
 
   if(recursion > 1) {
     //allow one, deny more than one
-    log('recursion', 'infinte recursion detected at rule=' + rule + ' offset=' + sstate.offset);
+    log('recursion', 'infinite recursion detected at rule=' + rule + ' offset=' + sstate.offset);
     return null;
   }
 
