@@ -10,14 +10,22 @@ export class Rule {
   //grammar = null;
 
   static Symbol = class Symbol extends Node {
-    constructor(str, id) {
+    constructor(str, id, rule) {
       super();
       let terminal = !!str;
       /*if(this.str)*/ this.str = str;
       if(id !== undefined) this.id = id;
-      Util.define(this, { terminal });
+
+      Util.define(this, { terminal /*, rule*/ });
+      this.rule = rule;
       //return this;
     }
+
+    clone() {
+      const { str, id, rule } = this;
+      return new Rule.Symbol(str, id, rule);
+    }
+
     toString() {
       if(this.id !== undefined && this.str !== undefined)
         return Util.colorText(this.str,
@@ -28,23 +36,48 @@ export class Rule {
       let str = Util.colorText(this.str, 1, /^['"`]/.test(this.str) ? 36 : 33);
       return `${Util.className(this)}(${str})`;
     }
+
+    toCowbird() {
+      return [this.id == Lexer.tokens.REGEXP ? this.str : `<${this.str}>`];
+    }
   };
 
   static Self = class Self extends Rule.Symbol {
-    constructor() {
-      super('arguments.callee');
+    constructor(rule) {
+      super('arguments.callee', rule);
     }
+
+    clone() {
+      const { rule } = this;
+      return new Rule.Self(rule);
+    }
+
     toString() {
       return 'arguments.callee';
+    }
+
+    toCowbird() {
+      return ['<this>'];
     }
   };
 
   static Match = class Match extends Array {
-    constructor(rule) {
-      super();
-      if(rule) Util.define(this, { rule });
+    constructor(rule, ...args) {
+      super(...args);
+      /*if(rule)*/ Util.define(this, { rule });
+      if(args.constructor == Array && args.length == 1) return Util.define(args[0], { rule });
+
+      //      this.splice(0, this.length, ...args);
       return this;
     }
+
+    clone(pred = (p, i) => true) {
+      const { rule } = this;
+      let ret = new Rule.Match(rule);
+      ret.splice(0, ret.length, ...this.filter(pred));
+      return ret;
+    }
+
     get [Symbol.species]() {
       return Rule.Match;
     }
@@ -86,29 +119,129 @@ export class Rule {
         /*Util.className(n) + ' ' +*/ n.toString()
       ).join(Util.colorText(' ⏵ ', 1, 30))} ]${repeat}`;
     }
+
+    /*   *entries() {
+      for(let match of this) yield [Util.className(match), match];
+    }*/
+
+    combinations() {
+      let operators = new Map([...this].reduce(
+          (a, part, i) =>
+            part instanceof Rule.Operator && '?*'.indexOf(part.op) != -1 ? [...a, [i, 1 << a.length]] : a,
+          []
+        )
+      );
+      if(operators.size == 0) return [this];
+      console.log('Match operators:', operators, [...this]);
+      let n = Math.pow(2, operators.size);
+      let r = [];
+
+      for(let i = 0; i < n; i++) {
+        let match = new Rule.Match(this.rule);
+
+        for(let j = 0; j < this.length; j++) {
+          if(!operators.has(j)) {
+            match.push(this[j]);
+            continue;
+          }
+          let flag = operators.get(j);
+          if(!(i & flag)) continue;
+
+          let part = this[j].clone();
+
+          if(part.op == '*') {
+            part.op = '+';
+            match.push(part);
+            continue;
+          }
+          console.log(`part.args ${i&flag}:`, part.args);
+          match.splice(match.length, 0, ...part.args);
+        }
+        r.push(match);
+      }
+          console.log('Match combinations:', r);
+  return r;
+    }
+
+    toCowbird(accu, combinations = true) {
+      //      console.log('Match array:', [...this].map(Util.toPlainObject));
+      if(combinations) {
+        return this.combinations().map(match => match.toCowbird(accu, false));
+      }
+      let matches = this.map(rule => {
+        if(!rule.toCowbird) throw new Error(`toCowbird ${Util.className(rule)}`);
+        return rule.toCowbird(accu, true);
+      });
+      console.log('matches:', matches);
+      return matches.filter(m => m != '<eof()>').join(' ');
+    }
   };
 
   static Literal = class Literal extends Rule.Symbol {
-    constructor(str) {
-      super(str);
+    constructor(str, rule) {
+      super(str, undefined, rule);
+    }
+
+    clone() {
+      const { str, rule } = this;
+      return new Rule.Literal(str, rule);
     }
 
     toString() {
       return `'${this.str}'`;
     }
+
+    toCowbird(accu) {
+      return [Util.escapeRegex(this.str)];
+    }
   };
-  
+
   static Operator = class Operator extends Node {
-    constructor(op, ...args) {
+    constructor(op, rule, ...args) {
       super();
       this.op = op;
       this.args = args;
+      Util.define(this, { rule });
       //return this;
     }
 
     toString() {
       return (`${this.args.length > 1 ? '' : this.op}(` + this.args.map(n => n.toString()).join(' ' + this.op + ' ') + `)`
       );
+    }
+
+    clone() {
+      const { op, rule, args } = this;
+      return new Rule.Operator(op, rule, ...args);
+    }
+
+    toCowbird(accu, name) {
+      let { args } = this;
+      let { grammar } = this.rule || {};
+      let ret = [];
+
+      if(args.length == 1 && args[0].constructor === Array) args = args[0];
+
+      if(this.op == '|' && args.length > 1) {
+        //console.log("this.rule =", this.rule, Util.isObject(this.rule), !(this.rule === null)) ;
+        let subname =
+          (name || 'rule') +
+          '_' +
+          (Util.isObject(this.rule) ? (this.rule.n = (this.rule.n ? this.rule.n : 0) + 1) : Util.randStr(8));
+
+        args = args.map(arg => (arg instanceof Array && arg.length == 1 ? arg[0] : arg));
+
+        //console.log('args:', args, args.map(Util.toPlainObject));
+        let rule = Rule.from(args, grammar);
+
+        accu.push(rule.toCowbird(accu, subname));
+        ret.push(`<${subname}>`);
+      } else if(args.length == 1) {
+        if(!args[0].toCowbird) throw new Error(`toCowbird ${Util.className(args[0])} ${Util.toString(args[0])}`);
+        ret = ret.concat(args[0].toCowbird(accu));
+      }
+      let op = this.op == '+' ? '\\+' : this.op;
+      return ret.map(str => (typeof str == 'string' && str.startsWith('<') ? `${str} ${op}` : str + op[op.length - 1]));
     }
   };
 
@@ -120,13 +253,19 @@ export class Rule {
     return this;
   }
 
+  static from(array, grammar) {
+    let rule = new Rule(grammar);
+    rule.productions.splice(0, 0, ...array);
+    return rule;
+  }
+
   parse(productions) {
     let match, m;
     while(productions.length) {
       match = productions.shift();
 
       if(match && match[0] && match[0].length) {
-        m = new Rule.Operator('|', ...match[0]);
+        m = new Rule.Operator('|', this, ...match[0]);
         m.rule = this;
 
         m.parse(match[0]);
@@ -143,10 +282,24 @@ export class Rule {
     let nl = '',
       sep = ' ';
 
-    if(multiline) (nl = '\n'), (sep = ' | ');
+    if(multiline) (nl = '\n\t'), (sep = ' | ');
     return `Rule ${this.fragment ? 'fragment ' : ''}${
       name ? Util.colorText(name, 1, 32) + ' ' : ''
-    }${nl}: ${this.productions.map(l => /* Util.className(l) + ' ' +*/ l.toString()).join(`${nl}${sep}`)}${nl};${nl}`;
+    }${nl}: ${this.productions.map(l => l.toString()).join(`${nl}${sep}`)}${nl};${nl}`;
+  }
+
+  toCowbird(accu, name) {
+    let a = [];
+    for(let production of this) {
+      let p = production;
+      if(!p.toCowbird) throw new Error(`toCowbird ${Util.className(p)} ${Util.toString(p)}`);
+
+      let productions = /*!p.toCowbird ? p.toString() :*/ p.toCowbird(accu);
+
+      let c = Util.className(p);
+      a = a.concat(productions);
+    }
+    return [name, a.map(part => new RegExp(part))];
   }
 
   match(parser) {
@@ -232,6 +385,10 @@ export class Rule {
     let s = Rule.generate(this.productions, this.productions.length > 1 ? 'choice' : null, ',\n  ');
 
     return s;
+  }
+
+  [Symbol.iterator]() {
+    return this.productions[Symbol.iterator]();
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
@@ -323,20 +480,53 @@ export class Grammar {
         continue;
       }
 
-      if(r instanceof Array) n = new Rule.Operator('|', ...r);
-      else if(r.tok == Lexer.tokens.STRING) n = new Rule.Literal(r.str.substring(1, r.str.length - 1));
-      else if(r.tok == Lexer.tokens.REGEXP) n = new Rule.Symbol(r.str, r.tok);
-      else n = new Rule.Symbol(r.str, r.tok);
+      if(r instanceof Array) {
+        if(r.every(isCharMatch)) {
+          n = new Rule.Symbol(toRegExp(r, invert), Lexer.tokens.REGEXP, null);
+          invert = false;
+        } else {
+          n = new Rule.Operator('|', null, ...r);
+        }
+      } else if(r.tok == Lexer.tokens.STRING) n = new Rule.Literal(r.str.substring(1, r.str.length - 1), null);
+      else if(r.tok == Lexer.tokens.REGEXP) n = new Rule.Symbol(r.str, r.tok, null);
+      else n = new Rule.Symbol(r.str, r.tok, null);
 
       if(parser.matchPunctuation(['*', '?', '+'])) {
         let op = parser.expectPunctuation();
-        n = new Rule.Operator(op.str, n);
+        n = new Rule.Operator(op.str, null, n);
       }
 
-      if(invert) n = new Rule.Operator('~', n);
+      if(invert) n = new Rule.Operator('~', null, n);
 
       patterns.push(n);
     }
+
+    function isCharMatch(m) {
+      if(m instanceof Array) {
+        if(m.length == 3 && m[1].str == '..') return isCharMatch(m[0]) && isCharMatch(m[2]);
+        if(m.length == 1) return isCharMatch(m[0]);
+      } else if(typeof m == 'string') {
+        return m.length == 1 || (m.length == 2 && m[0] == '\\');
+      } else if(Util.isObject(m) && 'str' in m) {
+        return isCharMatch(m.str);
+      }
+      return false;
+    }
+
+    function toRegExp(a, invert = false) {
+      return ('[' +
+        (invert ? '^' : '') +
+        a
+          .map(m => {
+            m = m.map(tok => tok.str);
+            if(m.length == 3 && m[1] == '..') return `${Util.escapeRegex(m[0])}-${Util.escapeRegex(m[2])}`;
+            if(m.length == 1) return m[0].length == 1 ? Util.escapeRegex(m[0]) : m[0];
+          })
+          .join('') +
+        ']'
+      );
+    }
+
     return patterns;
   }
 
@@ -386,6 +576,7 @@ export class Grammar {
     if(parser.matchPunctuation(':')) {
       let matches = this.parseRule(':', ';', name.str);
       rule = this.addRule(name.str, matches, fragment);
+      matches.forEach(m => Util.define(m, { rule }));
     }
   }
 
@@ -402,8 +593,8 @@ export class Grammar {
     }
   }
 
-  generate() {
-    let s = `import { choice, seq, token, char, regex, option, any, many, eof, ignore, concat, invert } from '../parse/fn.js';\n\n`;
+  generate(dir = '../parse/') {
+    let s = `import { choice, seq, token, char, regex, option, any, many, eof, ignore, concat, invert } from '${dir}fn.js';\n\n`;
     let names = [];
 
     s += `function wrap(parser, name) {
@@ -448,4 +639,11 @@ export class Grammar {
     return s;
   }
 
+  toCowbird() {
+    let accu = [];
+    for(let [name, rule] of this.rules) {
+      accu.push(rule.toCowbird(accu, name));
+    }
+    return Object.fromEntries(accu);
+  }
 }

@@ -1611,8 +1611,8 @@ Util.isString = function(v) {
 Util.isNumeric = v => /^[-+]?(0x|0b|0o|)[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test(v + '');
 
 Util.isUndefined = arg => arg === undefined;
-Util.isObject = obj => obj !== null && { object: obj, function: obj }[typeof obj];
-Util.isPrimitive = obj => obj !== null && { number: obj, string: obj, boolean: obj, undefined: obj }[typeof obj];
+Util.isObject = obj => !(obj === null) && { object: obj, function: obj }[typeof obj];
+Util.isPrimitive = obj => !(obj === null) && { number: obj, string: obj, boolean: obj, undefined: obj }[typeof obj];
 Util.isFunction = arg => {
   if(arg !== undefined) return typeof arg == 'function' || !!(arg && arg.constructor && arg.call && arg.apply);
 
@@ -4562,7 +4562,9 @@ Util.copyTextToClipboard = (i, t) => {
   return isSuccess;
 };
 
-Util.toPlainObject = (obj, t = (v, n) => v) =>
+Util.toPlainObject = obj => Util.toPlainObjectT(obj, v => (Util.isObject(v) ? Util.toPlainObject(v) : v));
+
+Util.toPlainObjectT = (obj, t = (v, n) => v) =>
   [...Util.getMemberNames(obj)].reduce((acc, k) => ({ ...acc, [k]: t(obj[k], k) }), {});
 
 Util.timer = msecs => {
@@ -4915,25 +4917,26 @@ Util.safeCall = (fn, ...args) => Util.safeApply(fn, args);
 Util.safeApply = (fn, args = []) => Util.safeFunction(fn, true)(...args);
 Util.callMain = async (fn, trapExceptions) =>
   await Util.safeFunction(fn,
-    trapExceptions && typeof trapExceptions == 'function'
-      ? trapExceptions
-      : err => {
-          let { message, stack } = err;
-          //console.debug('main stack:', [...err.stack].map((f) => f + ''));
-          // console.log('main stack:', err.stack);
-          stack = new Util.stack(err.stack);
-          // console.log("main Stack:", Util.className(stack), stack.toString+'', Util.className(stack[0]), stack[0].toString)
-          const scriptDir = Util.tryCatch(() => process.argv[1],
-            argv1 => argv1.replace(/\/[^\/]*$/g, '')
-          );
+    trapExceptions &&
+      (typeof trapExceptions == 'function'
+        ? trapExceptions
+        : err => {
+            let { message, stack } = err;
+            //console.debug('main stack:', [...err.stack].map((f) => f + ''));
+            // console.log('main stack:', err.stack);
+            stack = new Util.stack(err.stack);
+            // console.log("main Stack:", Util.className(stack), stack.toString+'', Util.className(stack[0]), stack[0].toString)
+            const scriptDir = Util.tryCatch(() => process.argv[1],
+              argv1 => argv1.replace(/\/[^\/]*$/g, '')
+            );
 
-          console.log('scriptDir', scriptDir);
-          console.log('main Exception:',
-            message,
-            '\nSTACK:' +
-              (stack.toString({ colors: true, stripUrl: `file://${scriptDir}/` }) + '').replace(/(^|\n)/g, '\n  ')
-          );
-        }
+            console.log('scriptDir', scriptDir);
+            console.log('main Exception:',
+              message,
+              '\nSTACK:' +
+                (stack.toString({ colors: true, stripUrl: `file://${scriptDir}/` }) + '').replace(/(^|\n)/g, '\n  ')
+            );
+          })
   )(...Util.getArgs().slice(1));
 
 Util.printReturnValue = (fn, opts = {}) => {
@@ -4980,6 +4983,7 @@ Util.unescape = (str, pred = codePoint => codePoint < 32 || codePoint > 0xff) =>
   }
   return s;
 };
+Util.escapeRegex = string => string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 
 Util.consolePrinter = function ConsolePrinter(log = console.log) {
   let self;

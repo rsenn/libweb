@@ -8,7 +8,7 @@ let createFactory = Util.memoize((...args) => SVG.factory(...args));
 
 export class Polyline extends PointList {
   constructor(lines = []) {
-    super(typeof(lines) == 'string' ? lines : undefined);
+    super(typeof lines == 'string' ? lines : undefined);
 
     if(this.length > 0) return this;
 
@@ -17,8 +17,7 @@ export class Polyline extends PointList {
     }*/
 
     const addUnique = point => {
-      if(typeof(point) == 'string')
-        point = new Point(point);
+      if(typeof point == 'string') point = new Point(point);
 
       const ok = this.length > 0 ? !Point.equals(this[this.length - 1], point) : true;
       if(ok) Array.prototype.push.call(this, Point.clone(point));

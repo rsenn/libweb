@@ -41,5 +41,5 @@ RBRACK	: ']' -> skip  ;
 
 LINE_COMMENT : ';' ~('\n'|'\r')*  ->  channel(HIDDEN);
 
-WS  :  [\r\n\t\ ]+  -> skip
+WS  :  [\r\n\t\s]+  -> skip
 ;

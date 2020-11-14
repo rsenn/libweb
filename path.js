@@ -151,7 +151,7 @@ export const posix = {
     return ret;
   },
 
-  normalize: function normalize(path) {
+  normalize(path) {
     assertPath(path);
 
     if(path.length === 0) return '.';
@@ -169,12 +169,12 @@ export const posix = {
     return path;
   },
 
-  isAbsolute: function isAbsolute(path) {
+  isAbsolute(path) {
     assertPath(path);
     return path.length > 0 && path.charCodeAt(0) === 47 /*/*/;
   },
 
-  join: function join(...args) {
+  join(...args) {
     if(args.length === 0) return '.';
     let joined;
     for(let i = 0; i < args.length; ++i) {
@@ -279,7 +279,7 @@ export const posix = {
     return path;
   },
 
-  dirname: function dirname(path) {
+  dirname(path) {
     assertPath(path);
     if(path.length === 0) return '.';
     let code = path.charCodeAt(0);
@@ -304,7 +304,7 @@ export const posix = {
     return path.slice(0, end);
   },
 
-  basename: function basename(path, ext) {
+  basename(path, ext) {
     if(ext !== undefined && typeof ext !== 'string') throw new TypeError('"ext" argument must be a string');
     assertPath(path);
 
@@ -375,7 +375,7 @@ export const posix = {
     return path.slice(start, end);
   },
 
-  extname: function extname(path) {
+  extname(path) {
     assertPath(path);
     let startDot = -1;
     let startPart = 0;
@@ -424,14 +424,14 @@ export const posix = {
     return path.slice(startDot, end);
   },
 
-  format: function format(pathObject) {
+  format(pathObject) {
     if(pathObject === null || typeof pathObject !== 'object') {
       throw new TypeError('The "pathObject" argument must be of type Object. Received type ' + typeof pathObject);
     }
     return _format('/', pathObject);
   },
 
-  parse: function parse(path) {
+  parse(path) {
     assertPath(path);
 
     let ret = { root: '', dir: '', base: '', ext: '', name: '' };
