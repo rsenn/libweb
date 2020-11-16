@@ -388,7 +388,7 @@ export class MutablePath extends Array {
 
   toString(sep = ' ', partToStr = MutablePath.partToString, childrenStr = MutablePath.CHILDREN_GLYPH + CHILDREN_SPACE) {
     // console.log("MutablePath.toString",{sep,partToStr, childrenStr});
-    const color = Util.isBrowser() ? text => text : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
+    const color = true || Util.isBrowser() ? text => text : (text, ...c) => `\x1b[${c.join(';') || 0}m${text}`;
     let a = [...this];
     //   if(this[0] == 'children') sep = ' ';
     while(a.length > 0 && a[0] === '') a.shift();

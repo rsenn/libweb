@@ -79,7 +79,7 @@ export class EagleSVGRenderer {
     });
     //palette = new ColorMap(palette);
 
-    palette = window.palette = trkl.bind(Util.define({}, { handlers: palette }), palette);
+    palette = /*window.palette = */ trkl.bind(Util.define({}, { handlers: palette }), palette);
     Object.setPrototypeOf(palette,
       Object.defineProperties(
         {
@@ -186,7 +186,6 @@ export class EagleSVGRenderer {
       elem = svg(comp,
         {
           data: item,
-          transform,
           opts: {
             ...opts,
             transformation /*: this.transform.filter(t => ['translate'].indexOf(t.type) == -1)*/

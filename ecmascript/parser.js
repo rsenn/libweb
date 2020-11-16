@@ -732,7 +732,7 @@ export class ECMAScriptParser extends Parser {
 
         if(object === null) throw this.error('Object ' + object);
 
-        object = new MemberExpression(object, identifier, false);
+        object = new MemberExpression(object, new Literal(identifier.toString(), 'string'), false);
 
         //this.log('parseRemainingMemberExpression2(', object.toString(), ')', Util.fnName(this.parseRemainingMemberExpression));
       } else if(this.matchPunctuators('[')) {
@@ -777,7 +777,7 @@ export class ECMAScriptParser extends Parser {
       if(this.matchPunctuators('.')) {
         this.expectPunctuators('.');
         const identifier = this.expectIdentifier(true);
-        object = new MemberExpression(object, identifier, false);
+        object = new MemberExpression(object, new Literal(identifier.toString()), false);
       } else if(this.matchPunctuators('[')) {
         this.expectPunctuators('[');
         const expression = this.parseExpression();

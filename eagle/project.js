@@ -43,6 +43,8 @@ export class EagleProject {
     console.debug('EagleProject.open(', file, ')');
     let str, doc, err;
     str = this.fs.readFile(file);
+
+    console.debug('str:', str);
     if(str == -1) return null;
     if(typeof str != 'string' && 'toString' in str) str = str.toString();
 

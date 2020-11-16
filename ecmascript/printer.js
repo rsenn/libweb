@@ -252,15 +252,15 @@ export class Printer {
     left = this.printNode(object);
     right = this.printNode(property);
 
-    //console.log("printMemberExpression", {object,property});
+    console.log('printMemberExpression', { object, property });
     if(!(object instanceof Identifier) && !(object instanceof Literal) && !(object instanceof MemberExpression))
       left = '(' + left + ')';
 
     ///null.*{/.test(left) && console.log("object:", object);
 
-    if(/^[0-9]+$/.test(right) || /[\.\']/.test(right) || !(property instanceof Identifier))
-      return left + colorCode.punctuators(left) + '[' + right + colorCode.punctuators() + ']';
-    return left + colorText.punctuators('.') + right;
+    if(!/^[0-9]+$/.test(right) && !/[\.\']/.test(right) && property instanceof Literal)
+      return left + colorText.punctuators('.') + right;
+    return left + colorCode.punctuators(left) + '[' + right + colorCode.punctuators() + ']';
   }
 
   printConditionalExpression(conditional_expression) {
@@ -570,9 +570,11 @@ export class Printer {
 
         decl += this.printNode(property.id);
 
-        if(property.id && property.value && property.id.value != property.value.value) {
-          decl += ' as ';
-          decl += this.printNode(property.value);
+        const { id, property: value } = property;
+        //console.log('printExportStatement', { id, value });
+
+        if(id && value && id.toString() != value.toString()) {
+          decl = this.printNode(value) + ' as ' + decl;
         }
       }
       output += '{ ' + decl + ' }';

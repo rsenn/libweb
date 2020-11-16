@@ -62,6 +62,7 @@ export class Identifier extends Expression {
   toString(n, opts = {}) {
     return this.value;
   }
+
   [Symbol.toStringTag](...args) {
     return this[inspectSymbol](...args);
   }

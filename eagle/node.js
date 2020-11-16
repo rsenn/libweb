@@ -6,6 +6,7 @@ import { trkl } from '../trkl.js';
 import { text, concat } from './common.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { ImmutableXPath } from '../xml.js';
+import { BBox } from '../geom.js';
 import { ImmutablePath, toXML } from '../json.js';
 import tXml from '../tXml.js';
 
@@ -355,8 +356,8 @@ export class EagleNode {
   }
 
   lookup(xpath, t = (o, p, v) => [o, p]) {
-    //    console.log('EagleNode.lookup(', ...arguments, ')');
     if(!(xpath instanceof ImmutableXPath)) xpath = new ImmutableXPath(xpath);
+    console.log('EagleNode.lookup(', xpath, ')');
 
     let path = new ImmutablePath(xpath);
     //console.log('EagleNode.lookup  xpath:', xpath, ' path:', path);

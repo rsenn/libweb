@@ -44,7 +44,7 @@ export class Rule {
 
   static Self = class Self extends Rule.Symbol {
     constructor(rule) {
-      super('arguments.callee',   (rule && rule.name) || 'arguments.callee', rule);
+      super('arguments.callee', (rule && rule.name) || 'arguments.callee', rule);
     }
 
     clone() {
@@ -507,8 +507,7 @@ export class Grammar {
         n = new Rule.Symbol(r.str, r.tok, null);
       } else {
         if(r.tok == Lexer.tokens.IDENTIFIER) {
-          if(/-/.test(r.str))
-            r.str = Util.camelize(r.str);
+          if(/-/.test(r.str)) r.str = Util.camelize(r.str);
         }
         n = new Rule.Symbol(r.str, r.tok, null);
       }

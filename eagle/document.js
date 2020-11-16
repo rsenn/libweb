@@ -7,7 +7,7 @@ import { ImmutablePath } from '../json.js';
 import { EagleNode } from './node.js';
 import { EagleElement } from './element.js';
 import { LinesToPath } from './renderUtils.js';
-import { isBBox, BBox, Rect, PointList, Line } from '../geom.js';
+import { isBBox, BBox, Rect, Point, PointList, Line } from '../geom.js';
 import { RGBA } from '../color.js';
 import { EagleNodeList } from './nodeList.js';
 import { PathMapper } from '../json/pathMapper.js';
@@ -190,7 +190,7 @@ export class EagleDocument extends EagleNode {
   }
 
   lookup(xpath) {
-    //console.log("EagleDocument.lookup(",...arguments, ")");
+    console.log('EagleDocument.lookup(', xpath, Util.className(xpath), ')');
 
     let doc = this;
     return super.lookup(xpath, (o, p, v) => EagleElement.get(o, p, v));

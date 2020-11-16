@@ -1,5 +1,5 @@
 import Util from '../util.js';
-import { Point, Line } from '../geom.js';
+import { Point, Line, LineList, Rect } from '../geom.js';
 import { TransformationList, Translation } from '../geom/transformation.js';
 import { EagleElement } from './element.js';
 import { Cross, Arc, Origin, WirePath } from './components.js';
@@ -10,6 +10,7 @@ import { EagleSVGRenderer } from './svgRenderer.js';
 import { Repeater } from '../repeater/repeater.js';
 import { useTrkl, ElementToClass, EscapeClassName, UnescapeClassName } from './renderUtils.js';
 import { h, Component, Fragment, useEffect } from '../dom/preactComponent.js';
+import { classNames } from '../classNames.js';
 
 export class BoardRenderer extends EagleSVGRenderer {
   static palette = Palette.board((r, g, b) => new RGBA(r, g, b));
@@ -205,7 +206,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       const color = layer.color;
       //this.debug('color:', color, layer.color);
       if(true) {
-        if(name == 'D2') window.lines = lines.map(l => l.clone());
+        //  if(name == 'D2') window.lines = lines.map(l => l.clone());
 
         let cmds = LinesToPath(lines);
 
