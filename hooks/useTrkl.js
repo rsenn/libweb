@@ -2,9 +2,7 @@ import { Component, useState, useMemo, useCallback, useRef, useEffect } from '..
 import Util from '../util.js';
 
 export const useTrkl = fn => {
-
-  if(Util.platform != 'browser')
-    return fn();
+  if(Util.platform != 'browser') return fn();
 
   const [value, setValue] = useState(fn());
   //console.debug('useTrkl fn =', fn, ' value =', value);

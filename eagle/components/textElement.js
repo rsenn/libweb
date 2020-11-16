@@ -1,9 +1,10 @@
 import { h, Component } from '../../dom/preactComponent.js';
 import Util from '../../util.js';
-import { MakeCoordTransformer, useTrkl, ElementToClass, log } from '../renderUtils.js';
+import { MakeCoordTransformer, useTrkl, ElementToClass, log, Alignment } from '../renderUtils.js';
 import { Text } from './text.js';
 import { toXML } from '../../json.js';
 import { classNames } from '../../classNames.js';
+import { TransformationList } from '../../geom.js';
 
 export const TextElement = ({ data, opts = {}, transform = new TransformationList(), ...props }) => {
   data = data || props.item;

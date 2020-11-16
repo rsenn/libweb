@@ -1,6 +1,7 @@
-import { h, html,render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../preact.js';
+import { h, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../preact.js';
 export {
-  h,html,
+  h,
+  html,
   render,
   Component,
   createContext,
@@ -201,7 +202,10 @@ export class ReactComponent {
     let o = `h('${type}', {`;
     let nl = '\n' + ' '.repeat(depth * 2);
     let p = Object.entries(props)
-      .map(([name, value]) => `${nl}  ${name}: ${Util.toSource(value, { quote })}`)
+      .map(([name, value]) => {
+        if(/-/.test(name)) name = `'${name}'`;
+        return `${nl}  ${name}: ${Util.toSource(value, { quote })}`;
+      })
       .join(',');
     if(p != '') o += ` ${p}${nl}`;
     o += `}`;

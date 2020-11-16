@@ -1,3 +1,4 @@
+import Util from '../../util.js';
 import { h, Component } from '../../dom/preactComponent.js';
 import { MakeCoordTransformer, ElementToClass, useTrkl, log } from '../renderUtils.js';
 import { TransformationList } from '../../geom/transformation.js';

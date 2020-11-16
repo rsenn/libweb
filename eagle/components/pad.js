@@ -1,5 +1,6 @@
+import Util from '../../util.js';
 import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import { MakeCoordTransformer, AlignmentAttrs, ElementToClass, useTrkl, log } from '../renderUtils.js';
+import { MakeCoordTransformer, MakeRotation, Alignment, AlignmentAttrs, ElementToClass, useTrkl, log, VERTICAL, HORIZONTAL } from '../renderUtils.js';
 import { TransformationList, Point } from '../../geom.js';
 import { Palette } from '../common.js';
 import { Text } from './text.js';

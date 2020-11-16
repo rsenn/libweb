@@ -11,7 +11,7 @@ var TAG_SET = 3;
 var PROPS_ASSIGN = 4;
 var PROP_SET = MODE_PROP_SET;
 var PROP_APPEND = MODE_PROP_APPEND; // Turn a result of a build(...) call into a tree that is more
-var evaluate = function (h, built, fields, args) {
+var evaluate = function(h, built, fields, args) {
   var tmp; // `build()` used the first element of the operation list as
   // temporary workspace. Now that `build()` is done we can use
   // that space to track whether the current element is "dynamic"
@@ -19,27 +19,27 @@ var evaluate = function (h, built, fields, args) {
 
   built[0] = 0;
 
-  for (var i = 1; i < built.length; i++) {
+  for(var i = 1; i < built.length; i++) {
     var type = built[i++]; // Set `built[0]`'s appropriate bits if this element depends on a dynamic value.
 
-    var value = built[i] ? (built[0] |= type ? 1 : 2, fields[built[i++]]) : built[++i];
+    var value = built[i] ? ((built[0] |= type ? 1 : 2), fields[built[i++]]) : built[++i];
 
-    if (type === TAG_SET) {
+    if(type === TAG_SET) {
       args[0] = value;
-    } else if (type === PROPS_ASSIGN) {
+    } else if(type === PROPS_ASSIGN) {
       args[1] = Object.assign(args[1] || {}, value);
-    } else if (type === PROP_SET) {
+    } else if(type === PROP_SET) {
       (args[1] = args[1] || {})[built[++i]] = value;
-    } else if (type === PROP_APPEND) {
+    } else if(type === PROP_APPEND) {
       args[1][built[++i]] += value + '';
-    } else if (type) {
+    } else if(type) {
       // type === CHILD_RECURSE
       // Set the operation list (including the staticness bits) as
       // `this` for the `h` call.
       tmp = h.apply(value, evaluate(h, value, fields, ['', null]));
       args.push(tmp);
 
-      if (value[0]) {
+      if(value[0]) {
         // Set the 2nd lowest bit it the child element is dynamic.
         built[0] |= 2;
       } else {
@@ -59,40 +59,40 @@ var evaluate = function (h, built, fields, args) {
 
   return args;
 };
-var build = function (statics) {
+var build = function(statics) {
   var mode = MODE_TEXT;
   var buffer = '';
   var quote = '';
   var current = [0];
   var char, propName;
 
-  var commit = function (field) {
-    if (mode === MODE_TEXT && (field || (buffer = buffer.replace(/^\s*\n\s*|\s*\n\s*$/g, '')))) {
+  var commit = function(field) {
+    if(mode === MODE_TEXT && (field || (buffer = buffer.replace(/^\s*\n\s*|\s*\n\s*$/g, '')))) {
       {
         current.push(CHILD_APPEND, field, buffer);
       }
-    } else if (mode === MODE_TAGNAME && (field || buffer)) {
+    } else if(mode === MODE_TAGNAME && (field || buffer)) {
       {
         current.push(TAG_SET, field, buffer);
       }
 
       mode = MODE_WHITESPACE;
-    } else if (mode === MODE_WHITESPACE && buffer === '...' && field) {
+    } else if(mode === MODE_WHITESPACE && buffer === '...' && field) {
       {
         current.push(PROPS_ASSIGN, field, 0);
       }
-    } else if (mode === MODE_WHITESPACE && buffer && !field) {
+    } else if(mode === MODE_WHITESPACE && buffer && !field) {
       {
         current.push(PROP_SET, 0, true, buffer);
       }
-    } else if (mode >= MODE_PROP_SET) {
+    } else if(mode >= MODE_PROP_SET) {
       {
-        if (buffer || !field && mode === MODE_PROP_SET) {
+        if(buffer || (!field && mode === MODE_PROP_SET)) {
           current.push(mode, 0, buffer, propName);
           mode = MODE_PROP_APPEND;
         }
 
-        if (field) {
+        if(field) {
           current.push(mode, field, 0, propName);
           mode = MODE_PROP_APPEND;
         }
@@ -102,20 +102,20 @@ var build = function (statics) {
     buffer = '';
   };
 
-  for (var i = 0; i < statics.length; i++) {
-    if (i) {
-      if (mode === MODE_TEXT) {
+  for(var i = 0; i < statics.length; i++) {
+    if(i) {
+      if(mode === MODE_TEXT) {
         commit();
       }
 
       commit(i);
     }
 
-    for (var j = 0; j < statics[i].length; j++) {
+    for(var j = 0; j < statics[i].length; j++) {
       char = statics[i][j];
 
-      if (mode === MODE_TEXT) {
-        if (char === '<') {
+      if(mode === MODE_TEXT) {
+        if(char === '<') {
           // commit buffer
           commit();
 
@@ -127,33 +127,34 @@ var build = function (statics) {
         } else {
           buffer += char;
         }
-      } else if (mode === MODE_COMMENT) {
+      } else if(mode === MODE_COMMENT) {
         // Ignore everything until the last three characters are '-', '-' and '>'
-        if (buffer === '--' && char === '>') {
+        if(buffer === '--' && char === '>') {
           mode = MODE_TEXT;
           buffer = '';
         } else {
           buffer = char + buffer[0];
         }
-      } else if (quote) {
-        if (char === quote) {
+      } else if(quote) {
+        if(char === quote) {
           quote = '';
         } else {
           buffer += char;
         }
-      } else if (char === '"' || char === "'") {
+      } else if(char === '"' || char === "'") {
         quote = char;
-      } else if (char === '>') {
+      } else if(char === '>') {
         commit();
         mode = MODE_TEXT;
-      } else if (!mode) ; else if (char === '=') {
+      } else if(!mode);
+      else if(char === '=') {
         mode = MODE_PROP_SET;
         propName = buffer;
         buffer = '';
-      } else if (char === '/' && (mode < MODE_PROP_SET || statics[i][j + 1] === '>')) {
+      } else if(char === '/' && (mode < MODE_PROP_SET || statics[i][j + 1] === '>')) {
         commit();
 
-        if (mode === MODE_TAGNAME) {
+        if(mode === MODE_TAGNAME) {
           current = current[0];
         }
 
@@ -164,7 +165,7 @@ var build = function (statics) {
         }
 
         mode = MODE_SLASH;
-      } else if (char === ' ' || char === '\t' || char === '\n' || char === '\r') {
+      } else if(char === ' ' || char === '\t' || char === '\n' || char === '\r') {
         // <a disabled>
         commit();
         mode = MODE_WHITESPACE;
@@ -172,7 +173,7 @@ var build = function (statics) {
         buffer += char;
       }
 
-      if (mode === MODE_TAGNAME && buffer === '!--') {
+      if(mode === MODE_TAGNAME && buffer === '!--') {
         mode = MODE_COMMENT;
         current = current[0];
       }
@@ -198,15 +199,15 @@ var build = function (statics) {
  */
 var CACHES = new Map();
 
-var regular = function (statics) {
+var regular = function(statics) {
   var tmp = CACHES.get(this);
 
-  if (!tmp) {
+  if(!tmp) {
     tmp = new Map();
     CACHES.set(this, tmp);
   }
 
-  tmp = evaluate(this, tmp.get(statics) || (tmp.set(statics, tmp = build(statics)), tmp), arguments, []);
+  tmp = evaluate(this, tmp.get(statics) || (tmp.set(statics, (tmp = build(statics))), tmp), arguments, []);
   return tmp.length > 1 ? tmp : tmp[0];
 };
 

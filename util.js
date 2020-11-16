@@ -5296,10 +5296,18 @@ Util.formatColumns = a => {
   return a.map(row => row.map((col, j) => (col + '').padEnd(maxWidth[j])).join(' ')).join('\n');
 };
 
-Util.getPlatform = () => 
-  Util.tryCatch(() => process.versions.node, () => 'node', Util.tryCatch(() => globalThis.scriptArgs[0], () => 'quickjs', Util.tryCatch(() => window.navigator, () => 'browser', () => undefined)));
+Util.getPlatform = () =>
+  Util.tryCatch(() => process.versions.node,
+    () => 'node',
+    Util.tryCatch(() => globalThis.scriptArgs[0],
+      () => 'quickjs',
+      Util.tryCatch(() => window.navigator,
+        () => 'browser',
+        () => undefined
+      )
+    )
+  );
 
 Util.defineGetter(Util, 'platform', Util.memoize(Util.getPlatform));
-
 
 export default Util;
