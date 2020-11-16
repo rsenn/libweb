@@ -2022,10 +2022,11 @@ export class ECMAScriptParser extends Parser {
       }
       throw this.error(`continue; statement can only be inside an iteration`);
     } else if(this.matchKeywords('break')) {
-      if(insideIteration) {
-        return this.parseBreakStatement();
-      }
-      throw this.error(`break; statement can only be inside an iteration`, this.position());
+      let brk = this.parseBreakStatement();
+      console.log("brk:",brk);
+      if(!insideIteration && brk.label === undefined) 
+      throw this.error(`break; statement can only be inside an iteration or with a label`, this.position());
+    return brk;
     } else if(this.matchKeywords('return')) {
       if(insideFunction) {
         return this.parseReturnStatement();

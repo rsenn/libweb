@@ -1,7 +1,6 @@
-import { h, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../../node_modules/htm/preact/standalone.mjs';
+import { h, html,render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../preact.js';
 export {
-  h,
-  html,
+  h,html,
   render,
   Component,
   createContext,
@@ -15,16 +14,15 @@ export {
   useCallback,
   useContext,
   useDebugValue
-} from '../../node_modules/htm/preact/standalone.mjs';
+} from '../preact.js';
 
-/*import { h, html, render, Component, createContext } from '../htm.js';
-import { useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../hooks.js';
-export { h, html, render, Component, createContext } from '../htm.js';
-export { useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../hooks.js';
-*/
+//import html from '../htm.js';
+//export { default as html } from '../htm.js';
+
 /*import { Fragment } from '../preact.js';
 export { Fragment } from '../preact.js';*/
-export const Fragment = props => ReactComponent.toChildArray(props.children);
+//export const Fragment = props => ReactComponent.toChildArray(props.children);
+export const Fragment = props => props.children;
 
 import { Element } from './element.js';
 

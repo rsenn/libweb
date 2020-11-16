@@ -75,10 +75,10 @@ export const Grid = ({ data, rect, id, attrs = { visible: true }, opts = {}, ...
   log('Grid.render:', { data, rect, attrs, opts, props });
 
   let grid = typeof attrs == 'function' ? attrs() : attrs;
-  let ref = useRef();
-  log('Grid.render ', { grid }, ref ? ref.current : ref);
+  //let ref = useRef();
+  log('Grid.render ', { grid });
   return h('rect', {
-    ref,
+    //ref,
     stroke: 'none',
     fill: `url(#${id})`,
     style: grid.visible ? {} : { display: 'none' },
