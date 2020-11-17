@@ -190,7 +190,7 @@ export class EagleDocument extends EagleNode {
   }
 
   lookup(xpath) {
-    console.log('EagleDocument.lookup(', xpath, Util.className(xpath), ')');
+    //console.log('EagleDocument.lookup(', xpath, Util.className(xpath), ')');
 
     let doc = this;
     return super.lookup(xpath, (o, p, v) => EagleElement.get(o, p, v));
@@ -295,7 +295,8 @@ export class EagleDocument extends EagleNode {
     }
   }
 
-  getMainElement = Util.memoize(() => {
+  getMainElement = Util.memoize(function () {
+    console.log('this:', this);
     switch (this.type) {
       case 'brd':
         return this.lookup('eagle/drawing/board');
