@@ -207,12 +207,19 @@ export class BoardRenderer extends EagleSVGRenderer {
       //this.debug('color:', color, layer.color);
       if(true) {
         //  if(name == 'D2') window.lines = lines.map(l => l.clone());
+        let lines2 = lines.map(l => new Line(l));
 
-        let cmds = LinesToPath(lines);
+        let cmds = LinesToPath(lines.map(l => {
+            let ret = new Line(l);
+            if(l.curve !== undefined) ret.curve = l.curve;
+            if(l.element !== undefined) ret.element = l.element;
+            return ret;
+          })
+        );
+        console.log('cmds:', cmds, lines2.connected(), opts);
 
         if(flat) cmds = cmds.flat();
 
-        //console.log('cmds:', cmds);
         this.debug('layerId:', layerId, 'width:', width);
 
         this.create(WirePath, {
@@ -267,7 +274,8 @@ export class BoardRenderer extends EagleSVGRenderer {
         'data-package': element.package.name,
         'data-path': element.path.toString(' '),
         'data-rot': rot,
-        transform
+        transform,
+        'font-family': 'Fixed'
       },
       parent
     );
@@ -311,7 +319,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       //console.log('class:', className, 'children.length:', children.length, ' options.layer:', options.layer, 'cond:', children.length > 1 && !(typeof options.layer == 'string') );
       if(children.length > 1 && options.layer != '') {
         delete options.layer;
-        let signalGroup = this.create('g', { id, ...props }, parent);
+        let signalGroup = this.create('g', { id, ...props, 'font-family': 'Fixed' }, parent);
         return this.renderCollection(children, signalGroup, options);
       }
 
@@ -340,12 +348,12 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     this.debug(`BoardRenderer.render`, { bounds, rect });
     //this.renderLayers(parent);
-    let plainGroup = this.create('g', { id: 'plain', transform }, parent);
+    let plainGroup = this.create('g', { id: 'plain', transform, 'font-family': 'Fixed' }, parent);
     let signalsGroup = this.create('g',
-      { id: 'signals', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', transform },
+      { id: 'signals', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', transform, 'font-family': 'Fixed' },
       parent
     );
-    let elementsGroup = this.create('g', { id: 'elements', transform }, parent);
+    let elementsGroup = this.create('g', { id: 'elements', transform, 'font-family': 'Fixed' }, parent);
     this.debug('bounds: ', bounds);
     for(let signal of this.signals.list)
       this.renderSignal(signal, signalsGroup, {

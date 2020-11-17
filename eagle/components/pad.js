@@ -65,8 +65,11 @@ export const Pad = ({ data, opts = {}, ...props }) => {
   const pathProps = {
     d: d + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
     stroke: 'none',
-    fill: padColor
+    fill: padColor.toRGB(),
+    'fill-opacity': padColor.a / 255
   };
+  if(padColor.a < 255)
+    pathProps['fill-opacity'] = Util.roundTo(padColor.a / 255, 0.001);
   const baseProps = {
     class: ElementToClass(pad),
     //fill: padColor,

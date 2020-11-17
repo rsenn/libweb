@@ -31,6 +31,8 @@ export const Text = ({ x, y, text, color, alignment, rot, visible, className, op
 
   if(align.y == 0) transform = transform.concat(new Translation(0, +0.11));
 
+  text = text.replace(/Ω/g, '&#x2126;').replace(/μ/g, '&#xb5;');
+
   return h(Fragment, {}, [
     h('text', {
         className,

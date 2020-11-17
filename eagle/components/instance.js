@@ -27,7 +27,6 @@ export const Instance = ({ data, opts = {}, ...props }) => {
 
   if(!value && deviceset) value = deviceset.name;
 
-  value = value.replace(/Ω/g, '&#x2126;').replace(/μ/g, '&#xb5;');
   // value = value.replace(/Ω/g, "\u2126;").replace(/μ/g, "\u00b5;");
 
   const sym = h(SchematicSymbol, {

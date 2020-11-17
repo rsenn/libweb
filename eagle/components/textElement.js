@@ -48,7 +48,7 @@ export const TextElement = ({ data, opts = {}, transform = new TransformationLis
     text,
     visible,
     opts,
-    style: { 'font-size': size * 1.5 },
+    style: { 'font-size': Util.roundTo(size * 1.5, 0.001) },
     ...attrs
   });
 };

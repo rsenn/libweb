@@ -354,6 +354,7 @@ export const LinesToPath = (lines, lineFn) => {
         else return `L ${p[1].x} ${p[1].y}`;
       };
       prevPoint = point;
+      start = new Point(point.x, point.y);
       return `M ${point.x} ${point.y}`;
     });
 
