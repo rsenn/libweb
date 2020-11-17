@@ -42,7 +42,13 @@ export const Text = ({ x, y, text, color, alignment, rot, visible, className, op
         ...props,
         transform
       },
-      h('tspan', { ...AlignmentAttrs(align, HORIZONTAL), children: text })
+      h(
+        'tspan',
+        {
+          ...AlignmentAttrs(align, HORIZONTAL),
+          dangerouslySetInnerHTML: { __html: text }
+        } /*, h(Fragment, {}, [text])*/
+      )
     )
     //    h(Cross, { x, y, radius: 1.27 / 4 })
   ]);
