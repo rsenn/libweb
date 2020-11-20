@@ -27,7 +27,7 @@ export const Text = ({ x, y, text, color, alignment, rot, visible, className, op
 
   align = align.rotate(diffAngle * DEG2RAD).round();
 
-  console.log('Text.render', text);
+  //console.log('Text.render', text);
 
   if(align.y == 0) transform = transform.concat(new Translation(0, +0.11));
 

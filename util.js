@@ -3401,7 +3401,7 @@ Stack:${Util.stack.prototype.toString.call(stack, color, stack.columnWidths)}`;
   true
 );
 Util.location = function Location(...args) {
-  console.debug('Util.location(', ...args, ')');
+  console.log('Util.location(', ...args, ')');
   let ret = this instanceof Util.location ? this : Object.setPrototypeOf({}, Util.location.prototype);
   if(args.length == 3) {
     const [fileName, lineNumber, columnNumber, functionName] = args;
@@ -3421,6 +3421,7 @@ Util.location.palettes = [[[128, 128, 0], [255, 0, 255], [0, 255, 255] ], [[9, 1
 Util.define(Util.location.prototype, {
   toString(color = false) {
     let { fileName, lineNumber, columnNumber, functionName } = this;
+    console.log("this:", this, { fileName, lineNumber, columnNumber, functionName });
     fileName = fileName.replace(Util.makeURL({ location: '' }), '');
     let text = /*color ? new this.colorCtor() : */ '';
     const c = /*color ? (t, color) => text.write(t, color) :*/ t => (text += t);
@@ -3450,7 +3451,7 @@ Util.define(Util.location.prototype, {
 });
 
 Util.stackFrame = function StackFrame(frame) {
-  //console.debug('Util.stackFrame', frame);
+//   console.debug('Util.stackFrame', frame, frame.getFunctionName, frame.getFileName);
   ['methodName', 'functionName', 'fileName', 'lineNumber', 'columnNumber', 'typeName'].forEach(prop => {
     let fn = 'get' + Util.ucfirst(prop);
     if(frame[prop] === undefined && typeof frame[fn] == 'function') frame[prop] = frame[fn]();
@@ -3521,7 +3522,8 @@ Util.define(Util.stackFrame.prototype, {
       return fileName ? `${fileName}:${lineNumber}:${columnNumber}` : null;
     },
     toString(color, opts = {}) {
-      const { columnWidths = [0, 0, 0, 0], stripUrl } = opts;
+          console.log("toString:", this);
+ const { columnWidths = [0, 0, 0, 0], stripUrl } = opts;
 
       let text = color && this.colorCtor ? new this.colorCtor() : '';
       const c = color && this.colorCtor ? (t, color) => text.write(t, color) : t => (text += t);
@@ -3533,7 +3535,8 @@ Util.define(Util.stackFrame.prototype, {
         [0, 255, 255]
       ];
       let { functionName, methodName, typeName, fileName, lineNumber, columnNumber } = this;
-      if(stripUrl && typeof fileName == 'string')
+             console.log("toString:", { functionName, methodName, typeName, fileName, lineNumber, columnNumber });
+   if(stripUrl && typeof fileName == 'string')
         fileName = fileName.replace(typeof stripUrl == 'string' ? stripUrl : /.*:\/\/[^\/]*\//, '');
       let colonList = [fileName, lineNumber, columnNumber]
         .map(p => ('' + p == 'undefined' ? undefined : p))
@@ -3575,19 +3578,20 @@ Util.stack = function Stack(stack, offset) {
   //console.log('Util.stack (1)', stack);
 
   if(typeof stack == 'number') return Object.setPrototypeOf(new Array(stack), Util.stack.prototype);
-  if(!stack) {
-    if(offset === undefined) offset = 1;
-    const oldPrepareStackTrace = Error.prepareStackTrace;
-    Error.prepareStackTrace = (_, stack) => stack;
-    Error.stackTraceLimit = Infinity;
 
-    stack = new Error().stack;
-    Error.prepareStackTrace = oldPrepareStackTrace;
+  if(Util.platform == 'quickjs') {
+if(!stack)
+  stack = getStack();
+ if(!(typeof stack == 'string')) stack = stack+'';
+  } else if(!stack) {
+    if(offset === undefined) offset = 1;
+   stack = getStack();
     const { propertyMap } = Util.stackFrame;
-    //console.debug('stack methods', propertyMap);
+   console.log('stack methods', propertyMap);
+   console.log('stack', stack+'');
     stack = [...stack].map(frame =>
       propertyMap
-        .filter(([m, p]) => frame[m]() !== undefined)
+        .filter(([m, p]) => typeof(frame[m]) == 'function' && frame[m]() !== undefined)
         .reduce((acc, [method, property]) => ({
             ...acc,
             get [property]() {
@@ -3601,6 +3605,16 @@ Util.stack = function Stack(stack, offset) {
     //console.debug('stack ctor:', [...stack]);
     //console.debug('stack frame[0]:', [...stack][0]);
   } else if(!(typeof stack == 'string')) stack = stackToString(stack, 0);
+function getStack() {
+  let stack;
+     const oldPrepareStackTrace = Error.prepareStackTrace;
+    Error.prepareStackTrace = (_, stack) => stack;
+    Error.stackTraceLimit = Infinity;
+
+    stack = new Error().stack;
+    Error.prepareStackTrace = oldPrepareStackTrace;
+    return stack;
+}
 
   function stackToString(st, start = 0) {
     if(Util.isArray(st)) {
@@ -3666,13 +3680,16 @@ Util.stack = function Stack(stack, offset) {
       )(column)
     }));
   } else {
+    console.log("stack:",stack[0])
     stack = stack.map(frame => new Util.stackFrame(frame)); //Util.getCallers(1, Number.MAX_SAFE_INTEGER, () => true, stack);
   }
-  stack = stack.map(frame => Object.setPrototypeOf(frame, Util.stackFrame.prototype));
+//  stack = stack.map(frame => Object.setPrototypeOf(frame, Util.stackFrame.prototype));
+ // stack = stack.map(frame => new Util.stackFrame(frame)); 
 
   if(offset > 0) stack = stack.slice(offset);
   stack = Object.setPrototypeOf(stack, Util.stack.prototype);
   //stack.forEach(frame => console.log("stack frame:",frame));
+  //
   return stack;
 };
 
@@ -3809,7 +3826,7 @@ Util.getStackFrames = function(offset = 2) {
   return frames.slice(offset);
 };
 Util.getStackFrame = function(offset = 2) {
-  return Util.getStackFrames(offset)[0];
+    return Util.getStackFrames(offset)[0];
 };
 Util.rotateLeft = function(x, n) {
   n = n & 0x1f;
@@ -4923,7 +4940,7 @@ Util.callMain = async (fn, trapExceptions) =>
         : err => {
             let { message, stack } = err;
             //console.debug('main stack:', [...err.stack].map((f) => f + ''));
-            // console.log('main stack:', err.stack);
+           // console.log('main stack:', err.stack);
             stack = new Util.stack(err.stack);
             // console.log("main Stack:", Util.className(stack), stack.toString+'', Util.className(stack[0]), stack[0].toString)
             const scriptDir = Util.tryCatch(() => process.argv[1],
@@ -5291,7 +5308,7 @@ Util.defineGetter(Util, 'hrtime', Util.getHRTime);
 Util.formatColumns = a => {
   let maxWidth = a.reduce((acc, row, i) => row.map((col, j) => Math.max(acc[j] || 0, (col + '').length)));
 
-  console.debug(maxWidth);
+ // console.debug(maxWidth);
 
   return a.map(row => row.map((col, j) => (col + '').padEnd(maxWidth[j])).join(' ')).join('\n');
 };
