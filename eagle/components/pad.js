@@ -68,8 +68,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
     fill: padColor.toRGB(),
     'fill-opacity': padColor.a / 255
   };
-  if(padColor.a < 255)
-    pathProps['fill-opacity'] = Util.roundTo(padColor.a / 255, 0.001);
+  if(padColor.a < 255) pathProps['fill-opacity'] = Util.roundTo(padColor.a / 255, 0.001);
   const baseProps = {
     class: ElementToClass(pad),
     //fill: padColor,

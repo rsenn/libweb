@@ -297,8 +297,8 @@ RGBA.prototype.toAlpha = Util.curry(function (other) {
   return dst.round();
 });
 RGBA.prototype.toRGB = function() {
-   const ctor = this.constructor[Symbol.species];
-  const { r, g, b  } = this;
+  const ctor = this.constructor[Symbol.species];
+  const { r, g, b } = this;
   return new ctor(r, g, b, 255);
 };
 RGBA.prototype.toHSLA = function() {
