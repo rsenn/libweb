@@ -517,14 +517,12 @@ else */ if(text) svg.innerHTML = innerHTML;
     let prev;
     for(let point of SVG.pathToPoints(path)) {
       if(prev) {
-if(point.x === undefined && prev.x !== undefined)
-  point.x = prev.x;
-if(point.y === undefined && prev.y !== undefined)
-  point.y = prev.y;
-}
-yield point;
+        if(point.x === undefined && prev.x !== undefined) point.x = prev.x;
+        if(point.y === undefined && prev.y !== undefined) point.y = prev.y;
+      }
+      yield point;
 
-prev = point;
+      prev = point;
     }
   }
 }
