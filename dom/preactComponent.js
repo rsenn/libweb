@@ -16,6 +16,7 @@ export {
   useContext,
   useDebugValue
 } from '../preact.js';
+import { forwardRef } from '../preact/forwardRef.js';
 
 //import html from '../htm.js';
 //export { default as html } from '../htm.js';
@@ -43,7 +44,8 @@ export const React = {
   useMemo,
   useCallback,
   useContext,
-  useDebugValue
+  useDebugValue,
+  forwardRef
 };
 export default React;
 
