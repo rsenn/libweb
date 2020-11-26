@@ -512,5 +512,20 @@ else */ if(text) svg.innerHTML = innerHTML;
   static pathToPoints(path) {
     return SVG.splitPath(path).map(cmd => new Point(...cmd.slice(-2).map(n => +n)));
   }
+
+  static *pathToPointIterator(path) {
+    let prev;
+    for(let point of SVG.pathToPoints(path)) {
+      if(prev) {
+if(point.x === undefined && prev.x !== undefined)
+  point.x = prev.x;
+if(point.y === undefined && prev.y !== undefined)
+  point.y = prev.y;
+}
+yield point;
+
+prev = point;
+    }
+  }
 }
 SVG.ns = 'http://www.w3.org/2000/svg';
