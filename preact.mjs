@@ -385,6 +385,8 @@ function h$1(n$$1) {
 function s$1(n$$1, t, u) {
   o$1 = 6, l$1(function () {
     "function" == typeof n$$1 ? n$$1(t()) : n$$1 && (n$$1.current = t());
+          console.log("Ruler ref:", n$$1);
+
   }, null == u ? u : u.concat(n$$1));
 }
 

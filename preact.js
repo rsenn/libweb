@@ -1276,6 +1276,7 @@ function useImperativeHandle(ref, createHandle, args) {
       } else if(ref) {
         ref.current = createHandle();
       }
+      console.log('Ruler ref:', ref);
     },
     args == null ? args : args.concat(ref)
   );
