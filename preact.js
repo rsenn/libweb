@@ -55,6 +55,8 @@ function _catchError(error, vnode) {
 }
 var options = { __e: _catchError, __v: 0 };
 
+export { options };
+
 function createElement(type, props, children) {
   var arguments$1 = arguments;
   var normalizedProps = {},

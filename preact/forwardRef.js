@@ -1,4 +1,4 @@
-import { options } from  '../dom/preactComponent.js';
+import { options } from '../dom/preactComponent.js';
 import { assign } from './util.js';
 
 let oldDiffHook = options._diff;

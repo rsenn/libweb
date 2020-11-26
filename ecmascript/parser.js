@@ -1573,6 +1573,10 @@ export class ECMAScriptParser extends Parser {
     this.log('parseImportStatement()');
     this.expectKeywords('import');
     let items = [];
+
+    if(this.matchLiteral()) {
+      return new ImportStatement(null, this.expectLiteral());
+    }
     if(toplevel) {
       while(true) {
         let item;

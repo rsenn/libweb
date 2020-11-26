@@ -323,7 +323,10 @@ n = {
 
     throw n;
   }
-}, d.prototype.setState = function (n, l) {
+}
+
+
+d.prototype.setState = function (n, l) {
   var u;
   u = null != this.__s && this.__s !== this.state ? this.__s : this.__s = s({}, this.state), "function" == typeof n && (n = n(s({}, u), this.props)), n && s(u, n), null != n && this.__v && (l && this.__h.push(l), k(this));
 }, d.prototype.forceUpdate = function (n) {
@@ -703,4 +706,4 @@ var htm = MINI ? build : regular;
  */
 var html = htm.bind(h);
 
-export { h, html, O as render, d as Component, B as createContext, m$1 as useState, p$1 as useReducer, y$1 as useEffect, l$1 as useLayoutEffect, h$1 as useRef, s$1 as useImperativeHandle, _$1 as useMemo, A$1 as useCallback, F as useContext, T$1 as useDebugValue };
+export { h, html, O as render, n as options, d as Component, B as createContext, m$1 as useState, p$1 as useReducer, y$1 as useEffect, l$1 as useLayoutEffect, h$1 as useRef, s$1 as useImperativeHandle, _$1 as useMemo, A$1 as useCallback, F as useContext, T$1 as useDebugValue };

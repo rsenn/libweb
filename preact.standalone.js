@@ -54,6 +54,7 @@ function _catchError(error, vnode) {
   throw error;
 }
 var options = { __e: _catchError, __v: 0 };
+export { options };
 
 function createElement(type, props, children) {
   var arguments$1 = arguments;
@@ -1424,6 +1425,7 @@ function invokeOrReturn(arg, f) {
 const html = h.bind(h);
 export {
   createElement as h,
+  options,
   html,
   render,
   Component,

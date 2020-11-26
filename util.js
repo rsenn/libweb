@@ -2128,10 +2128,10 @@ Util.tryCatch = (fn, resolve = a => a, reject = () => null, ...args) => {
   return Util.tryFunction(fn, resolve, reject)(...args);
 };
 Util.putError = err => {
-  let s = Util.stack(err.stack);
-
   let e = Util.exception(err);
   (console.info || console.log)('Util.putError ', e);
+  let s = Util.stack(err.stack);
+
   (console.error || console.log)('ERROR:\n' + err.message + '\nstack:\n' + s.toString());
 };
 Util.putStack = (stack = new Util.stack().slice(1)) => {
@@ -3542,7 +3542,7 @@ Util.define(Util.stackFrame.prototype, {
         .map(p => ('' + p == 'undefined' ? undefined : p))
         .filter(p => p !== undefined && p != 'undefined' && ['number', 'string'].indexOf(typeof p) != -1)
         .join(':');
-      let columns = [this.getFunction(), colonList];
+      let columns = [typeof this.getFunction == 'function' ? this.getFunction() : this.function, colonList];
       columns = columns.map((f, i) => (f + '')[i >= 2 ? 'padStart' : 'padEnd'](columnWidths[i] || 0, ' '));
       return columns.join(' ') + c('', 0);
     },
@@ -3715,7 +3715,11 @@ Util.stack.prototype = Object.assign(Util.stack.prototype, {
 Object.defineProperties(Util.stack.prototype, {
   columnWidths: {
     get() {
-      return this.reduce((a, f) => ['getFunction'].map((fn, i) => Math.max(a[i], (f[fn]() + '').length)), [0, 0, 0, 0]);
+      console.log('this:', [...this]);
+      return this.reduce((a, f) =>
+          ['getFunction'].map((fn, i) => Math.max(a[i], ((typeof f[fn] == 'function' ? f[fn]() : '') + '').length)),
+        [0, 0, 0, 0]
+      );
     }
   }
 });

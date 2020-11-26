@@ -546,7 +546,8 @@ export class Printer {
     let output = this.colorCode.keywords() + doExport ? 'export ' : 'import ';
     //console.log(identifiers);
 
-    if(identifiers.declarations) output += identifiers.declarations.map(decl => this.printNode(decl)).join(', ');
+    if(identifiers && identifiers.declarations)
+      output += identifiers.declarations.map(decl => this.printNode(decl)).join(', ');
     else output += this.printNode(identifiers);
 
     output += ' from ';
