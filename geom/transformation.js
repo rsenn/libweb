@@ -172,10 +172,14 @@ export class Rotation extends Transformation {
   angle = 0;
   //axis = undefined;
 
-  constructor(angle, axis) {
+  constructor(angle, x, y) {
     super('rotate');
 
-    if(typeof axis == 'string' && ['x', 'y', 'z'].indexOf(axis.toLowerCase()) != -1) this.axis = axis.toLowerCase();
+    if(typeof x == 'string' && ['x', 'y', 'z'].indexOf(x.toLowerCase()) != -1) {
+      this.axis = x.toLowerCase();
+    } else if(!isNaN(+x) && !isNaN(+y)) {
+      this.center = [+x, +y];
+    }
     //else this.axis = 'z';
     this.angle = angle;
   }
@@ -205,7 +209,9 @@ export class Rotation extends Transformation {
     rUnit = rUnit || this.unit || '';
     const axis = this.axis !== undefined ? this.axis.toUpperCase() : '';
     const angle = this.constructor.convertAngle(this.angle, rUnit);
-    return `rotate${this.is3D ? axis : ''}(${angle}${rUnit})`;
+    return `rotate${this.is3D ? axis : ''}(${angle}${rUnit}${
+      this.center ? this.center.map(coord => `, ${coord}`).join('') : ''
+    })`;
   }
 
   toSource() {
@@ -217,8 +223,12 @@ export class Rotation extends Transformation {
     return o;
   }
 
-  toMatrix() {
-    return Matrix.rotate(DEG2RAD * this.angle);
+  toMatrix(ctor = Matrix) {
+    let matrix = new ctor();
+    if(this.center) matrix.translateSelf(...this.center.map(coord => -coord));
+    matrix.rotateSelf(DEG2RAD * this.angle);
+    if(this.center) matrix.translateSelf(...this.center);
+    return matrix;
   }
 
   accumulate(other) {

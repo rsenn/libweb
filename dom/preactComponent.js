@@ -149,6 +149,17 @@ export class ReactComponent {
     return elem;
   }
 
+  static fromObject(obj) {
+    const { tagName, attributes = {}, children = [] } = obj;
+
+    let component = h(tagName,
+      attributes,
+      children.map(child => (typeof child == 'object' ? ReactComponent.fromObject(child) : child + ''))
+    );
+
+    return component;
+  }
+
   static toObject(...args) {
     let ret = [];
     for(let arg of args) {

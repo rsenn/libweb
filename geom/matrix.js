@@ -566,7 +566,7 @@ for(let name of ['translate', 'scale', 'rotate', 'skew']) {
   Matrix.prototype[name] = function(...args) {
     return Matrix.prototype.multiply.call(this, new Matrix()['init_' + name](...args));
   };
-  Matrix.prototype[name + '_self'] = function(...args) {
+  Matrix.prototype[name + 'Self'] = Matrix.prototype[name + '_self'] = function(...args) {
     return Matrix.prototype.multiplySelf.call(this, new Matrix()['init_' + name](...args));
   };
 }

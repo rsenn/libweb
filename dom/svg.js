@@ -510,7 +510,11 @@ else */ if(text) svg.innerHTML = innerHTML;
   }
 
   static pathToPoints(path) {
-    return SVG.splitPath(path).map(cmd => new Point(...cmd.slice(-2).map(n => +n)));
+    return SVG.splitPath(path).map(cmd => {
+      if(cmd[0].toLowerCase() == 'v') return new Point(undefined, +cmd[1]);
+      if(cmd[0].toLowerCase() == 'h') return new Point(+cmd[1], undefined);
+      return new Point(...cmd.slice(-2).map(n => +n));
+    });
   }
 
   static *pathToPointIterator(path) {

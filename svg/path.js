@@ -168,8 +168,7 @@ SvgPath.prototype.arc = function(rx, ry, rotation, large, sweep, x, y) {
   return this._cmd('A')(rx, ry, rotation, large ? 1 : 0, sweep ? 1 : 0, point.x, point.y);
 };
 
-SvgPath.prototype.cmd = function(...args) {
-  let command = args.shift();
+SvgPath.prototype.cmd = function(command, ...args) {
   let fn = this[command];
   return fn.apply(this, args);
 };
@@ -178,16 +177,18 @@ SvgPath.prototype.cmd = function(...args) {
  * String representation of command chain
  * @returns {string}
  */
-SvgPath.prototype.str = function() {
-  return this.commands.map(command => command.toString()).join(' ');
+SvgPath.prototype.str = function(digits, lineSep = ' ') {
+  return this.commands.map(command => command.toString(digits)).join(lineSep);
 };
+
+SvgPath.prototype.toString = SvgPath.prototype.str;
 
 //setting letter commands
 commands.forEach(commandName => {
   SvgPath.prototype[commandName] = function() {
     let args = Array.prototype.slice.call(arguments, 0);
     args.unshift(commandName);
-    let command = new Command(args);
+    let command = new Command(...args);
     this.commands.push(command);
     return this;
   };
@@ -210,19 +211,332 @@ SvgPath.prototype._cmd = function(letter) {
  * @param name
  * @constructor
  */
-function Command(name) {
-  //TODO more robust array detection
-  let args = name.length > 0 && name.slice ? name : Array.prototype.slice.call(arguments, 0);
-  this.name = args[0];
-  this.args = args.slice(1);
+function Command(name, ...args) {
+  this.name = name;
+  this.args = args;
 }
 
 /**
  * String representation of a command
  * @returns {string}
  */
-Command.prototype.toString = function() {
-  return this.name + /*" " +*/ this.args.join(' ');
+Command.prototype.toString = function(digits) {
+  let { name, args = [] } = this;
+
+  if(digits !== undefined) args = args.map(a => +a.toFixed(digits));
+
+  return name + args.reduce((acc, arg) => acc + ` ${arg}`, '');
+};
+
+SvgPath.prototype.toRelative = function() {
+  let prevX = 0,
+    prevY = 0;
+  let cmds = [];
+  let start;
+
+  for(let cmd of this.commands) {
+    const { name, args } = cmd;
+
+    switch (name) {
+      case 'M': {
+        const [x, y] = args;
+        args[0] -= prevX;
+        args[1] -= prevY;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'Z': {
+        break;
+      }
+      case 'L': {
+        const [x, y] = args;
+        args[0] -= prevX;
+        args[1] -= prevY;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'H': {
+        const [x] = args;
+        args[0] -= prevX;
+
+        prevX = x;
+        break;
+      }
+      case 'V': {
+        const [y] = args;
+        args[0] -= prevY;
+        prevY = y;
+        break;
+      }
+      case 'C': {
+        const [x1, y1, x2, y2, x, y] = args;
+        args[0] -= prevX;
+        args[1] -= prevY;
+        args[2] -= prevX;
+        args[3] -= prevY;
+        args[4] -= prevX;
+        args[5] -= prevY;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'S': {
+        const [x2, y2, x, y] = args;
+        args[0] -= prevX;
+        args[1] -= prevY;
+        args[2] -= prevX;
+        args[3] -= prevY;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'Q': {
+        const [x1, y1, x, y] = args;
+        args[0] -= prevX;
+        args[1] -= prevY;
+        args[2] -= prevX;
+        args[3] -= prevY;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'T': {
+        const [x, y] = args;
+        args[0] -= prevX;
+        args[1] -= prevY;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'A': {
+        const [rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y] = args;
+        args[5] -= prevX;
+        args[6] -= prevY;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'm': {
+        const [x, y] = args;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'z': {
+        break;
+      }
+      case 'l': {
+        const [x, y] = args;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'h': {
+        const [x] = args;
+
+        prevX = x;
+        break;
+      }
+      case 'v': {
+        const [y] = args;
+        prevY = y;
+        break;
+      }
+      case 'c': {
+        const [x1, y1, x2, y2, x, y] = args;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 's': {
+        const [x2, y2, x, y] = args;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'q': {
+        const [x1, y1, x, y] = args;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 't': {
+        const [x, y] = args;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'a': {
+        const [rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y] = args;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+    }
+    if(!start) start = { x: prevX, y: prevY };
+
+    cmds.push(new Command(name.toLowerCase(), ...args));
+  }
+  let ret = new SvgPath();
+  ret.commands = cmds;
+  return ret;
+};
+
+SvgPath.prototype.toAbsolute = function() {
+  let prevX = 0,
+    prevY = 0;
+  let cmds = [];
+  let start;
+
+  for(let cmd of this.commands) {
+    const { name, args } = cmd;
+
+    switch (name) {
+      case 'm': {
+        const [x, y] = args;
+        args[0] += prevX;
+        args[1] += prevY;
+        prevX = args[0];
+        prevY = args[1];
+        break;
+      }
+      case 'z': {
+        break;
+      }
+      case 'l': {
+        const [x, y] = args;
+        args[0] += prevX;
+        args[1] += prevY;
+        prevX = args[0];
+        prevY = args[1];
+        break;
+      }
+      case 'h': {
+        const [x] = args;
+        args[0] += prevX;
+
+        prevX = args[0];
+        break;
+      }
+      case 'v': {
+        const [y] = args;
+        args[0] += prevY;
+        prevY = args[0];
+        break;
+      }
+      case 'c': {
+        const [x1, y1, x2, y2, x, y] = args;
+        args[0] += prevX;
+        args[1] += prevY;
+        args[2] += prevX;
+        args[3] += prevY;
+        args[4] += prevX;
+        args[5] += prevY;
+        prevX = args[0];
+        prevY = args[1];
+        break;
+      }
+      case 's': {
+        const [x2, y2, x, y] = args;
+        args[0] += prevX;
+        args[1] += prevY;
+        args[2] += prevX;
+        args[3] += prevY;
+        prevX = args[2];
+        prevY = args[3];
+        break;
+      }
+      case 'q': {
+        const [x1, y1, x, y] = args;
+        args[0] += prevX;
+        args[1] += prevY;
+        args[2] += prevX;
+        args[3] += prevY;
+        prevX = args[2];
+        prevY = args[3];
+        break;
+      }
+      case 't': {
+        const [x, y] = args;
+        args[0] += prevX;
+        args[1] += prevY;
+        prevX = args[0];
+        prevY = args[1];
+        break;
+      }
+      case 'a': {
+        const [rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y] = args;
+        args[5] += prevX;
+        args[6] += prevY;
+        prevX = args[5];
+        prevY = args[6];
+        break;
+      }
+      case 'M': {
+        const [x, y] = args;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'Z': {
+        break;
+      }
+      case 'L': {
+        const [x, y] = args;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'H': {
+        const [x] = args;
+        prevX = x;
+        break;
+      }
+      case 'V': {
+        const [y] = args;
+        prevY = y;
+        break;
+      }
+      case 'C': {
+        const [x1, y1, x2, y2, x, y] = args;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'S': {
+        const [x2, y2, x, y] = args;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'Q': {
+        const [x1, y1, x, y] = args;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'T': {
+        const [x, y] = args;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+      case 'A': {
+        const [rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y] = args;
+        prevX = x;
+        prevY = y;
+        break;
+      }
+    }
+    if(!start) start = { x: prevX, y: prevY };
+
+    cmds.push(new Command(name.toUpperCase(), ...args));
+  }
+  let ret = new SvgPath();
+  ret.commands = cmds;
+  return ret;
 };
 
 export default SvgPath;

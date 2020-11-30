@@ -57,7 +57,7 @@ export class Element extends Node {
     let parent = args.shift();
     parent = typeof parent == 'string' ? Element.find(parent) : parent;
 
-    //console.log('Element.create ', { tagName, props, parent });
+    console.log('Element.create ', { tagName, props, parent, ns });
 
     let d = document || window.document;
     let e = ns ? d.createElementNS(ns, tagName) : d.createElement(tagName);
@@ -69,7 +69,10 @@ export class Element extends Node {
       } else if(k == 'className') k = 'class';
       if(k == 'style' && typeof value === 'object') Element.setCSS(e, value);
       else if(k.startsWith('on') || k.startsWith('inner')) e[k] = value;
-      else e.setAttribute(k, value);
+      else {
+        //        ns ? e.setAttributeNS(ns || null, k, value) : e.setAttribute(k,value);
+        e.setAttribute(k, value);
+      }
     }
     if(children && children.length) children.forEach(obj => Element.create(obj, e));
 
@@ -173,6 +176,22 @@ export class Element extends Node {
       let children = [...elem.children];
       for(let i = 0; i < children.length; i++) yield children[i];
     }
+  }
+
+  static fromObject(obj, parent) {
+    const { tagName, attributes = {}, children = [] } = obj;
+
+    let element = Element.create(tagName, attributes, parent);
+
+    for(let child of children) {
+      if(typeof child != 'object') {
+        element.appendChild(document.createTextNode(child));
+      } else {
+        if(!child.tagName) console.log('child:', child);
+        Element.fromObject(child, element);
+      }
+    }
+    return element;
   }
 
   static toObject(elem, opts = {}) {
@@ -319,7 +338,7 @@ export class Element extends Node {
    */
   static rect(...args) {
     let [element, options = {}] = args;
-    if(args.length > 0 && (isRect(args) || isRect(args[0]))) return Element.setRect(...args);
+    if(args.length > 1 && (isRect(args.slice(1)) || isRect(args[1]))) return Element.setRect(...args);
     let {
       round = true,
       relative_to = null,
