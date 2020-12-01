@@ -3522,7 +3522,6 @@ Util.define(Util.stackFrame.prototype, {
       return fileName ? `${fileName}:${lineNumber}:${columnNumber}` : null;
     },
     toString(color, opts = {}) {
-      console.log('toString:', this);
       const { columnWidths = [0, 0, 0, 0], stripUrl } = opts;
 
       let text = color && this.colorCtor ? new this.colorCtor() : '';
@@ -3535,7 +3534,7 @@ Util.define(Util.stackFrame.prototype, {
         [0, 255, 255]
       ];
       let { functionName, methodName, typeName, fileName, lineNumber, columnNumber } = this;
-      console.log('toString:', { functionName, methodName, typeName, fileName, lineNumber, columnNumber });
+      //  console.log('toString:', { functionName, methodName, typeName, fileName, lineNumber, columnNumber });
       if(stripUrl && typeof fileName == 'string')
         fileName = fileName.replace(typeof stripUrl == 'string' ? stripUrl : /.*:\/\/[^\/]*\//, '');
       let colonList = [fileName, lineNumber, columnNumber]
@@ -3683,7 +3682,7 @@ Util.stack = function Stack(stack, offset) {
     stack = stack.map(frame => new Util.stackFrame(frame)); //Util.getCallers(1, Number.MAX_SAFE_INTEGER, () => true, stack);
   }
   //  stack = stack.map(frame => Object.setPrototypeOf(frame, Util.stackFrame.prototype));
-  // stack = stack.map(frame => new Util.stackFrame(frame));
+  stack = stack.map(frame => new Util.stackFrame(frame));
 
   if(offset > 0) stack = stack.slice(offset);
   stack = Object.setPrototypeOf(stack, Util.stack.prototype);
@@ -3709,13 +3708,25 @@ Util.stack.prototype = Object.assign(Util.stack.prototype, {
   }, [inspectSymbol](...args) {
     const { columnWidths } = this;
     return '\n' + this.map(f => f.toString(!Util.isBrowser(), { columnWidths })).join('\n');
+  },
+  getFunctionName() {
+    return this.functionName;
+  },
+  getMethodName() {
+    return this.methodName;
+  },
+  getFileName() {
+    return this.fileName;
+  },
+  getLineNumber() {
+    return this.lineNumber;
   }
 });
 
 Object.defineProperties(Util.stack.prototype, {
   columnWidths: {
     get() {
-      console.log('this:', [...this]);
+      // console.log('this:', [...this]);
       return this.reduce((a, f) =>
           ['getFunction'].map((fn, i) => Math.max(a[i], ((typeof f[fn] == 'function' ? f[fn]() : '') + '').length)),
         [0, 0, 0, 0]

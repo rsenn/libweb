@@ -120,6 +120,7 @@ export function QuickJSFileSystem(std, os) {
         default: ret = fd.read(buf, offset, length);
           break;
       }
+      //  console.log("ret:", ret);
       return numerr(ret);
     },
     write(fd, data, offset, length) {

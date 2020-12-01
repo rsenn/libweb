@@ -64,10 +64,10 @@ export function QuickJSChildProcess(fs, std, os) {
     let [rd, wr] = os.pipe();
 
     if(name.endsWith('in')) {
-      obj[name] = fs.fdopen(wr, 'w');
+      obj[name] = wr; //fs.fdopen(wr, 'w');
       return rd;
     } else {
-      obj[name] = fs.fdopen(rd, 'r');
+      obj[name] = rd; //fs.fdopen(rd, 'r');
       return wr;
     }
   }
@@ -78,9 +78,9 @@ export function QuickJSChildProcess(fs, std, os) {
     if(file) opts.file = file;
     if(stdio) {
       const [stdin, stdout, stderr] = stdio;
-      if(stdin) opts.stdin = typeof stdin == 'number' ? stdin : dopipe(obj, 'stdin');
-      if(stdout) opts.stdout = typeof stdout == 'number' ? stdout : dopipe(obj, 'stdout');
-      if(stderr) opts.stderr = typeof stderr == 'number' ? stderr : dopipe(obj, 'stderr');
+      if(stdin) opts.stdin = stdin != 'pipe' ? stdin : dopipe(obj, 'stdin');
+      if(stdout) opts.stdout = stdout != 'pipe' ? stdout : dopipe(obj, 'stdout');
+      if(stderr) opts.stderr = stderr != 'pipe' ? stderr : dopipe(obj, 'stderr');
     }
     let ret = os.exec([command, ...args], { ...opts, block, env });
     let exitCode, pid;
