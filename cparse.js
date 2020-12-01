@@ -464,50 +464,62 @@ export function cparse(src, options) {
       for(var i = 0; i < typeModifier.length; i++) {
         if(lookahead(typeModifier[i])) {
           def.modifier.push(typeModifier[i]);
-          read = true;
+          read = false;
+          break;
         }
       }
     } while(read);
 
+    console.log('def.modifier:', def.modifier);
+
     for(var i = 0; i < typeNames.length; i++) {
       if(lookahead(typeNames[i])) {
         def.name = typeNames[i];
-
-        while(lookahead('*')) {
-          //TODO allow 'const' in between
-          def = {
-            type: 'PointerType',
-            target: def,
-            pos: getPos()
-          };
-        }
-
-        if(!nameless) name = readIdentifier();
-
-        while(lookahead('[')) {
-          def = {
-            type: 'PointerType',
-            target: def,
-            pos: getPos()
-          };
-
-          if(!lookahead(']')) {
-            def.length = parseExpression();
-            consume(']');
-          }
-        }
-
-        if(name) {
-          def = {
-            type: 'Definition',
-            defType: def,
-            name: name,
-            pos: pos
-          };
-        }
-        return def;
+        break;
       }
     }
+
+    if(!def.name) {
+      if(typeNames.indexOf(def.modifier[def.modifier.length - 1]) != -1) def.name = def.modifier.pop();
+      else unexpected(typeNames.join(', '));
+    }
+
+    {
+      while(lookahead('*')) {
+        //TODO allow 'const' in between
+        def = {
+          type: 'PointerType',
+          target: def,
+          pos: getPos()
+        };
+      }
+
+      if(!nameless) name = readIdentifier();
+
+      while(lookahead('[')) {
+        def = {
+          type: 'PointerType',
+          target: def,
+          pos: getPos()
+        };
+
+        if(!lookahead(']')) {
+          def.length = parseExpression();
+          consume(']');
+        }
+      }
+
+      if(name) {
+        def = {
+          type: 'Definition',
+          defType: def,
+          name: name,
+          pos: pos
+        };
+      }
+      return def;
+    }
+
     unexpected(typeNames.join(', '));
   }
 
@@ -561,7 +573,7 @@ export function cparse(src, options) {
   function numberIncoming() {
     return curr && /[0-9]/.test(curr);
   }
-  
+
   function readNumber(keepBlanks) {
     var val = read(/[0-9\.]/, 'Number', /[0-9]/, keepBlanks);
     return parseFloat(val);
@@ -577,7 +589,7 @@ export function cparse(src, options) {
 
   function read(reg, expected, startreg, keepBlanks) {
     startreg = startreg || reg;
-      console.log("curr:", curr);
+    //  console.log("curr:", curr);
 
     if(!startreg.test(curr)) unexpected(expected);
 
@@ -585,13 +597,13 @@ export function cparse(src, options) {
     next(true);
 
     while(curr && reg.test(curr)) {
-      console.log("curr:", curr);
+      // console.log("curr:", curr);
       val.push(curr);
       next(true);
     }
 
     if(!keepBlanks) skipBlanks();
-      console.log("read done");
+    //console.log("read done");
 
     return val.join('');
   }
@@ -607,7 +619,16 @@ export function cparse(src, options) {
     var pos = getPos();
     var _curr = JSON.stringify(src.slice(index, index + 10) || 'EOF');
 
-    var msg = [pos.file, ':', pos.line, ': Expecting ', JSON.stringify(expected), ' got ', _curr, ` (src = '${src.slice(0,index)}', index = ${index})`].join('');
+    var msg = [
+      pos.file,
+      ':',
+      pos.line,
+      ': Expecting ',
+      JSON.stringify(expected),
+      ' got ',
+      _curr,
+      ` (src = '${src.slice(0, index)}', index = ${index})`
+    ].join('');
     throw new Error(msg);
   }
 
