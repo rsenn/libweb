@@ -226,7 +226,7 @@ Util.adder = target => {
     if(!target) if (obj) target = obj;
 
     if(!self.fn) ChooseFn(arg, obj);
-    console.debug('adder', self.fn + '');
+    //console.debug('adder', self.fn + '');
 
     // if(!self.fn) console.log('adder', { target, thisObj: this, fn: self.fn + '', arg });
     return self.fn(obj, arg);

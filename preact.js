@@ -1709,7 +1709,7 @@ export {
   html,
   hydrate,
   isValidElement,
-  options,
+  /*  options,*/
   render,
   toChildArray,
   unmount as __u,

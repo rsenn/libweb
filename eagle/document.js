@@ -296,7 +296,7 @@ export class EagleDocument extends EagleNode {
   }
 
   getMainElement = Util.memoize(function () {
-    console.log('this:', this);
+    //console.log('this:', this);
     switch (this.type) {
       case 'brd':
         return this.lookup('eagle/drawing/board');
