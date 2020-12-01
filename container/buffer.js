@@ -6,8 +6,6 @@
  */
 /* eslint-disable no-proto */
 
-'use strict';
-
 import base64 from 'base64-js';
 import ieee754 from 'ieee754';
 const { isArray } = Array;

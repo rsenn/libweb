@@ -252,7 +252,7 @@ export class Printer {
     left = this.printNode(object);
     right = this.printNode(property);
 
-    console.log('printMemberExpression', { object, property });
+    //console.log('printMemberExpression', { object, property });
     if(!(object instanceof Identifier) && !(object instanceof Literal) && !(object instanceof MemberExpression))
       left = '(' + left + ')';
 

@@ -103,7 +103,9 @@ export class Literal extends Expression {
   }
 
   static string(node) {
-    return node.value.replace(/^['"`](.*)['"`]$/, '$1').replace(/\\n/g, '\n');
+    return Util.isObject(node) && typeof node.value == 'string'
+      ? node.value.replace(/^['"`](.*)['"`]$/, '$1').replace(/\\n/g, '\n')
+      : undefined;
   }
 
   [inspectSymbol](n, opts = {}) {

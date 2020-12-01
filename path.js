@@ -519,5 +519,6 @@ export const posix = {
 };
 
 //posix.posix = posix;
+export default posix;
 
-export { posix as default, posix as path };
+export const path = posix; //{ path: posix };

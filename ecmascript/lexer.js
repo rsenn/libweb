@@ -568,6 +568,13 @@ export class Lexer {
         if(!this.accept(validator)) {
           throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
         }
+      } else if(this.accept(oneOf('oO'))) {
+        validator = isOctalDigit;
+
+        //The octal number needs to at least be followed by some digit.
+        if(!this.accept(validator)) {
+          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
+        }
       }
       //If number starts with 0 followed by an octal digit, then it's an
       //octal number.

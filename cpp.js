@@ -37,8 +37,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 export function cpp_js(settings) {
-  'use strict';
-
   function trim(str) {
     // http://blog.stevenlevithan.com/archives/faster-trim-javascript
     str = str.replace(/^\s+/, '');
