@@ -339,7 +339,8 @@ export function NodeJSFileSystem(fs, tty, process) {
 
   function AddData(file, data) {
     let buf;
-    if(dataMap.has(file)) buf = dataMap.get(file).concat(data);
+    if(data instanceof ArrayBuffer) data = new Uint8Array(data);
+    if(dataMap.has(file)) buf = Buffer.concat([dataMap.get(file), data]);
     else buf = Buffer.from(data);
     dataMap.set(file, buf);
     return buf.length;
@@ -347,6 +348,7 @@ export function NodeJSFileSystem(fs, tty, process) {
 
   function GetData(file, data, length) {
     let buf, len;
+    if(data instanceof ArrayBuffer) data = new Uint8Array(data);
     if(!(buf = dataMap.get(file))) return 0;
     buf.copy(data, 0, 0, (len = Math.min(buf.length, length)));
     buf = Buffer.from(buf.slice(len));

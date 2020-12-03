@@ -561,6 +561,22 @@ export function PipeToRepeater(stream) {
   return RepeaterSink(writable => PipeTo(stream, writable));
 }
 
+export async function* Reader(input) {
+  const buffer = new ArrayBuffer(1024);
+  let ret;
+  do {
+    await filesystem.waitRead(input);
+    ret = filesystem.read(input, buffer, 0, 1024);
+    yield buffer.slice(0, ret);
+  } while(ret == 1024);
+}
+
+export async function ReadAll(input) {
+  let data = '';
+  for await (let chunk of await Reader(input)) data += filesystem.bufferToString(chunk);
+  return data;
+}
+
 export default {
   AsyncRead,
   AsyncWrite,

@@ -77,4 +77,4 @@ export async function ConsoleSetup(opts = {}) {
 
 export const ConsoleOnce = Util.once(opts => ConsoleSetup(opts));
 
-export default ConsoleOnce;
+export default ConsoleSetup;
