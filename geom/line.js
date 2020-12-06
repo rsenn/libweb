@@ -419,15 +419,12 @@ Line.b = Util.memoize(line => Point.bind(line, ['x2', 'y2']), new WeakMap());
 Line.from = obj => {
   let l = new Line(obj);
 
-for(let extra of ['curve', 'width']) {
-  if(typeof(obj[extra]) == 'number')
-    l[extra] = obj[extra];
-  else if(typeof(obj[extra]) == 'string' && !isNaN(+obj[extra]))
-    l[extra] = +obj[extra];
-}
-return l;
-}
-
+  for(let extra of ['curve', 'width']) {
+    if(typeof obj[extra] == 'number') l[extra] = obj[extra];
+    else if(typeof obj[extra] == 'string' && !isNaN(+obj[extra])) l[extra] = +obj[extra];
+  }
+  return l;
+};
 
 Line.bind = (o, p, gen) => {
   const [x1, y1, x2, y2] = p || ['x1', 'y1', 'x2', 'y2'];

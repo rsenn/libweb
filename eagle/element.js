@@ -2,6 +2,7 @@ import Util from '../util.js';
 import trkl from '../trkl.js';
 import { EagleNode } from './node.js';
 import { EagleNodeList } from './nodeList.js';
+import { EagleElementProxy } from './elementProxy.js';
 import { EagleReference } from './ref.js';
 import { RGBA } from '../color.js';
 import { ImmutableXPath } from '../xml.js';
@@ -283,8 +284,10 @@ export class EagleElement extends EagleNode {
     let childList = null;
 
     if(tagName == 'element')
-      lazyProperty(this, 'children', () => EagleNodeList.create(this.package, this.package.path.down('children')));
-    else lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.down('children')));
+      lazyProperty(this, 'children', () =>
+        EagleNodeList.create(this.package, this.package.path.down('children'), null)
+      );
+    else lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.down('children'), null));
 
     if(tagName == 'pad') {
       trkl.bind(this, 'layer', () => {

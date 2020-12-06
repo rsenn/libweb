@@ -217,7 +217,7 @@ export class BoardRenderer extends EagleSVGRenderer {
             return ret;
           })
         );
-           console.log('cmds:', cmds, lines2.connected(), opts);
+        console.log('cmds:', cmds, lines2.connected(), opts);
 
         if(flat) cmds = cmds.flat();
 
