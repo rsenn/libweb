@@ -16,7 +16,6 @@ const add = (arr, ...items) => [...(arr || []), ...items];
 const TList = (child, elem, matrix) => {
   matrix = matrix || new Matrix().translate(elem.x, elem.y);
   let instance = { child, elem, matrix };
-
   let round = n => Util.roundTo(n, 0.0001, 4);
   return new Proxy(instance.child, {
     get(target, prop) {

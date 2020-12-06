@@ -11,6 +11,7 @@ import { Repeater } from '../repeater/repeater.js';
 import { useTrkl, ElementToClass, EscapeClassName, UnescapeClassName } from './renderUtils.js';
 import { h, Component, Fragment, useEffect } from '../dom/preactComponent.js';
 import { classNames } from '../classNames.js';
+import { digit2color, GetFactor, GetColorBands, ValueToNumber, NumberToValue, GetExponent, GetMantissa } from '../eda/colorCoding.js';
 
 export class BoardRenderer extends EagleSVGRenderer {
   static palette = Palette.board((r, g, b) => new RGBA(r, g, b));
@@ -216,7 +217,7 @@ export class BoardRenderer extends EagleSVGRenderer {
             return ret;
           })
         );
-        console.log('cmds:', cmds, lines2.connected(), opts);
+           console.log('cmds:', cmds, lines2.connected(), opts);
 
         if(flat) cmds = cmds.flat();
 
@@ -253,7 +254,7 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderElement(element, parent) {
-    const { name, library, value, x, y, rot } = element;
+    let { name, library, value, x, y, rot } = element;
 
     this.debug(`BoardRenderer.renderElement`, { name, library, value, x, y, rot });
 
@@ -279,6 +280,26 @@ export class BoardRenderer extends EagleSVGRenderer {
       },
       parent
     );
+
+    if(/^[RLC][0-9]/.test(name) && element.pads.length == 2) {
+      let re;
+      switch (name[0]) {
+        case 'R':
+          value = value.replace(/㏀$/, 'kΩ').replace(/㏁$/, 'MΩ');
+          re = /[ΩΩ㏀㏁]?$/;
+          break;
+        case 'L':
+          re = /[H]?$/;
+          break;
+        case 'C':
+          re = /[F]?$/;
+          break;
+      }
+
+      let number = ValueToNumber(value.replace(re, ''));
+
+      console.log('Element.render name:', name, ' number:', number, ' value:', value);
+    }
     this.renderCollection(element.package.children, g, {
       name,
       value,

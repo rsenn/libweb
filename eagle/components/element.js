@@ -3,6 +3,7 @@ import { TransformationList } from '../../geom/transformation.js';
 import { Package } from './package.js';
 import { MakeRotation, log } from '../renderUtils.js';
 import { useValue } from '../../repeater/react-hooks.js';
+import { digit2color, GetFactor, GetColorBands, ValueToNumber, NumberToValue, GetExponent, GetMantissa } from '../../eda/colorCoding.js';
 
 export const Element = ({ data, opts = {}, ...props }) => {
   let { transformation = new TransformationList() } = opts;
@@ -24,6 +25,12 @@ export const Element = ({ data, opts = {}, ...props }) => {
   }
 
   if(!value && element.package) value = element.package.name;
+
+  if(/^R[0-9]/.test(name)) {
+    let number = ValueToNumber(value);
+
+    log('name:', name, ' number:', number, ' value:', value);
+  }
 
   const pkg = h(Package, {
     data: element.package,
