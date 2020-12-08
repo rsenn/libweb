@@ -113,8 +113,8 @@ export function QuickJSChildProcess(fs, std, os) {
 
     os.signal(17, arg => {
       let [ret, status] = os.waitpid(pid, options);
-      console.log('SIGCHLD', { pid, arg, ret, status });
-      /*      if(typeof obj.stdin == 'number') os.close(obj.stdin);
+      //console.log('SIGCHLD', { pid, arg, ret, status });
+      /*if(typeof obj.stdin == 'number') os.close(obj.stdin);
       if(typeof obj.stdout == 'number') os.close(obj.stdout);
       if(typeof obj.stderr == 'number') os.close(obj.stderr);*/
     });
