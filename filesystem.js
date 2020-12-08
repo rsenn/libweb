@@ -246,10 +246,7 @@ export function QuickJSFileSystem(std, os) {
       let fd = this.fileno(file);
       return os.isatty(fd);
     },
-    mkdtemp(prefix) {
-      let name = prefix + Util.randStr(6);
-      if(!this.mkdir(name, 0o1777)) return name;
-    },
+
     fileno(file) {
       if(typeof file == 'number') return file;
       if(typeof file == 'object' && file != null && typeof file.fileno == 'function') return file.fileno();
@@ -284,6 +281,19 @@ export function QuickJSFileSystem(std, os) {
           resolve(file);
         });
       });
+    },
+    readAll(input, bufSize = 1024) {
+      const buffer = this.buffer(bufSize);
+      let output = '';
+      let ret;
+      do {
+        // await this.waitRead(input);
+        ret = this.read(input, buffer, 0, bufSize);
+        console.log('readAll', { ret, input: this.fileno(input), buffer });
+        let str = this.bufferToString(buffer.slice(0, ret));
+        output += str;
+      } while(ret > 0);
+      return output;
     }
   };
 }
@@ -337,6 +347,7 @@ export function NodeJSFileSystem(fs, tty, process) {
 
   function AddData(file, data) {
     let buf;
+    console.log(`AddData`, { file, data });
     if(data instanceof ArrayBuffer) data = new Uint8Array(data);
     if(dataMap.has(file)) buf = Buffer.concat([dataMap.get(file), data]);
     else buf = Buffer.from(data);
@@ -412,6 +423,7 @@ export function NodeJSFileSystem(fs, tty, process) {
       let pos;
 
       //     file = this.fileno(file);
+      console.log('file.read', file.read);
 
       return CatchError(() => {
         length = length || 1024;
@@ -424,14 +436,14 @@ export function NodeJSFileSystem(fs, tty, process) {
         if(typeof file == 'number') {
           ret = fs.readSync(file, buf, offset, length, (pos = SeekGet(file)));
         } else {
-          /*  ret = file.read(length);
+          ret = file.read(length);
+          console.log('file.read()', { ret, length });
           if(typeof ret == 'object' && ret !== null) {
             ret.copy(buf, offset, 0, ret.length);
             ret = ret.length;
           } else {
             ret = 0;
           }
-               console.log("file.read()", {ret,length});*/
           ret = GetData(file, buf, length);
         }
         SeekAdvance(file, ret);
@@ -573,17 +585,45 @@ export function NodeJSFileSystem(fs, tty, process) {
       return new Promise((resolve, reject) => {
         let len;
         if((len = HasData(file))) resolve(len);
-        else
+        else {
           file.once('data', chunk => {
             //  console.log('data', chunk);
             resolve(AddData(file, chunk));
           });
+          file.once('end', chunk => {
+            //  console.log('data', chunk);
+            resolve(0);
+          });
+        }
       });
     },
     waitWrite(file) {
       return new Promise((resolve, reject) => {
         if(file.writable) resolve(file);
         else file.once('drain', () => resolve(file));
+      });
+    },
+    async readAllAsync(readable) {
+      const chunks = [];
+      for await (let chunk of readable) {
+        chunks.push(chunk);
+      }
+      return Buffer.concat(chunks).toString();
+    },
+    readAll(file) {
+      return new Promise(async (resolve, reject) => {
+        let write = new (await import('concat-stream')).default({}, data => resolve(data));
+        //file.pipe(write);
+        let data = [];
+        file.resume();
+
+        //file.on('readable', () => data.push(file.read()));
+        file.on('data', chunk => data.push(chunk));
+        file.once('end', () => resolve(data));
+
+        // file.on('data', chunk => data += chunk.toString());
+        // file.once('end', () => resolve(data));
+        //file.pipe(write);
       });
     }
   };
@@ -773,7 +813,7 @@ export async function PortableFileSystem(fn = fs => true) {
   return await Util.memoize(async function() {
     const fs = await GetPortableFileSystem();
 
-    Util.extend(fs, FilesystemDecorator);
+    Util.weakAssign(fs, FilesystemDecorator);
 
     try {
       return (globalThis.filesystem = fs);
@@ -829,16 +869,20 @@ const FilesystemDecorator = {
     let data = await this.combiner(reader);
     return filesystem.bufferToString(data);
   },
-  readAll(input, bufSize = 1024) {
-    const buffer = this.buffer(bufSize);
-    let output = '';
-    let ret;
-    do {
-      ret = this.read(input, buffer, 0, bufSize);
-      let str = this.bufferToString(buffer.slice(0, ret));
-      output += str;
-    } while(ret > 0);
-    return output;
+  tempnam(prefix) {
+    if(!prefix)
+      prefix = Util.getArgv()[1]
+        .replace(/.*\//g, '')
+        .replace(/\.[a-z]+$/, '');
+    return prefix + Util.randStr(6);
+  },
+  mkdtemp(prefix) {
+    let name = this.tempnam(prefix);
+    if(!this.mkdir(name, 0o1777)) return name;
+  },
+  mktemp(prefix) {
+    let name = this.tempnam(prefix);
+    return this.open(name, 'w+');
   }
 };
 

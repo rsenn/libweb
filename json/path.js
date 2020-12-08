@@ -190,6 +190,9 @@ export class MutablePath extends Array {
   static get [Symbol.species]() {
     return this;
   }
+  get [Symbol.species]() {
+    return this.constructor;
+  }
 
   clone() {
     const ctor = this.constructor[Symbol.species];
@@ -569,7 +572,7 @@ export class MutablePath extends Array {
     return true;
   }
 
-  startsWith(other = []) {
+  /*  startsWith(other = []) {
     let a = this.slice(0, other.length);
     return MutablePath.prototype.equals.call(this, a);
   }
@@ -578,7 +581,7 @@ export class MutablePath extends Array {
     let n = this.length;
     let a = this.slice(n - other.length, n);
     return MutablePath.prototype.equals.call(this, a);
-  }
+  }*/
 
   get parent() {
     let r = this.slice(0, this.length - 1);

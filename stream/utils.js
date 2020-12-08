@@ -486,11 +486,11 @@ export async function RepeaterSink(start /*= async sink => {}*/) {
         return push(chunk);
       },
       close() {
-        console.debug('RepeaterSink.close');
+        // console.debug('RepeaterSink.close');
         return stop();
       },
       abort(err) {
-        console.debug('RepeaterSink.abort', err);
+        //SS{ position }console.debug('RepeaterSink.abort', err);
         return stop(new Error('WriteRepeater error:' + err));
       }
     });

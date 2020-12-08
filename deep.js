@@ -99,7 +99,10 @@ export const iterate = function* (...args) {
     r;
 
   if((r = filter(value, path, root))) yield [value, path, root];
-  if(r !== -1) if (Util.isObject(value)) for(let k in value) yield* iterate(value[k], filter, [...path, k], root);
+  if(r !== -1)
+    if(Util.isObject(value)) {
+      for(let k in value) yield* iterate(value[k], filter, [...path, isNaN(+k) ? k : +k], root);
+    }
 };
 
 export const flatten = (iter,

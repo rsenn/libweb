@@ -2189,8 +2189,8 @@ Util.isMobile = function() {
 };
 Util.uniquePred = (cmp = null) =>
   typeof cmp == 'function'
-    ? (el, i, arr) => arr.findIndex(item => cmp(el, item)) === i
-    : (el, i, arr) => arr.indexOf(el) === i;
+    ? (el, i, arr) => arr.findIndex(item => cmp(el, item)) == i
+    : (el, i, arr) => arr.indexOf(el) == i;
 
 Util.unique = (arr, cmp) => arr.filter(Util.uniquePred(cmp));
 Util.allEqual = (arr, cmp = (a, b) => a == b) => arr.every((e, i, a) => cmp(e, a[0]));
@@ -3585,8 +3585,7 @@ Util.stack = function Stack(stack, offset) {
     if(offset === undefined) offset = 1;
     stack = getStack();
     const { propertyMap } = Util.stackFrame;
-    console.log('stack methods', propertyMap);
-    console.log('stack', stack + '');
+    //console.log('stack', stack + '');
     stack = [...stack].map(frame =>
       propertyMap
         .filter(([m, p]) => typeof frame[m] == 'function' && frame[m]() !== undefined)
@@ -3678,7 +3677,7 @@ Util.stack = function Stack(stack, offset) {
       )(column)
     }));
   } else {
-    console.log('stack:', stack[0]);
+    //console.log('stack:', stack[0]);
     stack = stack.map(frame => new Util.stackFrame(frame)); //Util.getCallers(1, Number.MAX_SAFE_INTEGER, () => true, stack);
   }
   //  stack = stack.map(frame => Object.setPrototypeOf(frame, Util.stackFrame.prototype));

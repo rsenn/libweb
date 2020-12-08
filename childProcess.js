@@ -73,14 +73,21 @@ export function QuickJSChildProcess(fs, std, os) {
   }
 
   self = function ChildProcess(command, args = [], options = {}) {
+    console.log('ChildProcess', { command, args, options });
     let { file, stdio, env, block = false, ...opts } = options;
     let obj = {};
     if(file) opts.file = file;
     if(stdio) {
       const [stdin, stdout, stderr] = stdio;
-      if(stdin) opts.stdin = stdin != 'pipe' ? stdin : dopipe(obj, 'stdin');
-      if(stdout) opts.stdout = stdout != 'pipe' ? stdout : dopipe(obj, 'stdout');
-      if(stderr) opts.stderr = stderr != 'pipe' ? stderr : dopipe(obj, 'stderr');
+      if(stdin)
+        opts.stdin =
+          stdin != 'pipe' ? (typeof stdin.fileno == 'function' ? stdin.fileno() : stdin) : dopipe(obj, 'stdin');
+      if(stdout)
+        opts.stdout =
+          stdout != 'pipe' ? (typeof stdout.fileno == 'function' ? stdout.fileno() : stdout) : dopipe(obj, 'stdout');
+      if(stderr)
+        opts.stderr =
+          stderr != 'pipe' ? (typeof stderr.fileno == 'function' ? stderr.fileno() : stderr) : dopipe(obj, 'stderr');
     }
     opts = { ...opts, block };
     if(env) opts.env = env;
@@ -160,11 +167,18 @@ export function NodeJSChildProcess(fs, tty, child_process) {
 
   return function(command, args = [], options = {}) {
     let obj;
-    let { file, ...opts } = options;
+    let { file, stdio, ...opts } = options;
     if(file) {
       opts.argv0 = command;
       command = file;
     }
+
+    if(stdio) {
+      opts.stdio = stdio.map(strm =>
+        typeof strm == 'object' && strm != null && typeof strm.fd == 'number' ? strm.fd : strm
+      );
+    }
+    //console.log('child', { command, args, opts });
     obj = child_process.spawn(command, args, opts);
 
     //console.log('child', Util.getMethodNames(obj, 3, 0));

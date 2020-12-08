@@ -24,7 +24,7 @@ export function Stack() {
   } catch(err) {}
 
   stack = [...stack];
-  console.log('stack: ', stack);
+  //console.log('stack: ', stack);
 
   let maxLen = stack.reduce((acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc), 0);
 
@@ -620,7 +620,7 @@ export class Lexer {
   }
 
   lexRegExp() {
-    //console.log("lexRegExp", this.pos);
+    //console.log('lexRegExp', this.pos);
     let i = 0;
     let word = '',
       prev = '';
@@ -628,7 +628,7 @@ export class Lexer {
     let bracket = false;
     let validator = c => {
       //let last = word.substring(word.length - 1);
-      // console.log("i=" + i + " c='" + c + "' prev='" + prev + "' slashes: " + slashes);
+      //console.log('validator', { c, i, prev, slashes, word, bracket });
       i++;
       if(c == '[' && prev != '\\') if (!bracket) bracket = true;
       if(c == ']' && prev != '\\') if (bracket) bracket = false;
@@ -644,7 +644,10 @@ export class Lexer {
         prev = c;
         return true;
       } else if(prev == '\\') {
-        word += prev;
+        //word += c;
+        word += c;
+        prev = undefined;
+        return true;
       } else if(slashes == 2 && ' \t'.indexOf(c) != -1) {
         return true;
       } else if(slashes == 2 && 'gimsuy'.indexOf(c) != -1) {
@@ -654,8 +657,8 @@ export class Lexer {
         if(/^[_0-9A-Za-z]/.test(c)) slashes = 1;
         return false;
       } else if(c == '\\') {
-        prev = c;
-        return true;
+        //      prev = c;
+        //        return true;
       }
       //    if(prev == ';') return false;
       word += c;

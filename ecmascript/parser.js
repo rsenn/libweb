@@ -119,6 +119,10 @@ export class Parser {
     let comments = [];
     //let assoc = ESNode.assoc(node, { range: positions, tokenRange: range, tokens, comments });
     Object.assign(obj, { range: positions, tokenRange: range, tokens, comments });
+
+    /*    console.log("tokens:", tokens);
+    console.log("lexer.position:", this.lexer.position);*/
+
     if(tokens[0].position) {
       obj.position = tokens[0].position;
     }
@@ -2027,7 +2031,6 @@ export class ECMAScriptParser extends Parser {
       throw this.error(`continue; statement can only be inside an iteration`);
     } else if(this.matchKeywords('break')) {
       let brk = this.parseBreakStatement();
-      console.log('brk:', brk);
       if(!insideIteration && brk.label === undefined)
         throw this.error(`break; statement can only be inside an iteration or with a label`, this.position());
       return brk;
