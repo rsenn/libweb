@@ -178,7 +178,7 @@ export function NodeJSChildProcess(fs, tty, child_process) {
         typeof strm == 'object' && strm != null && typeof strm.fd == 'number' ? strm.fd : strm
       );
     }
-    //console.log('child', { command, args, opts });
+    //  console.log('child', { command, args, opts });
     obj = child_process.spawn(command, args, opts);
 
     //console.log('child', Util.getMethodNames(obj, 3, 0));
