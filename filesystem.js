@@ -178,14 +178,15 @@ export function QuickJSFileSystem(std, os) {
     } /**/,
     seek(fd, offset, whence) {
       let ret;
-      switch (typeof file) {
+      switch (typeof fd) {
         case 'number':
-          ret = os.seek(file, offset, whence);
+          ret = os.seek(fd, offset, whence);
           break;
         default: ret = fd.seek(offset, whence);
           break;
       }
-      let err = ret >= 0 ? undefined : (std.clearerr(), -1);
+      console.log('seek:', { offset, whence, ret });
+      let err = ret >= 0 ? undefined : (typeof std.clearerr == 'function' ? std.clearerr() : undefined, -1);
       return err || fd.tell();
     },
     tell(file) {
@@ -195,18 +196,15 @@ export function QuickJSFileSystem(std, os) {
         default: return file.tell();
       }
     },
-    size(filename) {
+    size(file) {
       let bytes,
         res = { errno: 0 };
-      let file = std.open(filename, 'r', res);
-      if(!res.errno) {
-        file.seek(0, std.SEEK_END);
-        bytes = file.tell();
-        res = file.close();
-        if(res < 0) return res;
-        return bytes;
-      }
-      return -res.errno;
+      if(typeof file == 'string') file = this.open(file, 'r');
+      this.seek(file, 0, std.SEEK_END);
+      bytes = this.tell(file);
+      res = this.close(file);
+      if(res < 0) return res;
+      return bytes;
     },
     stat(path, cb) {
       let [st, err] = os.stat(path);
@@ -775,6 +773,8 @@ export async function PortableFileSystem(fn = fs => true) {
   return await Util.memoize(async function() {
     const fs = await GetPortableFileSystem();
 
+    Util.extend(fs, FilesystemDecorator);
+
     try {
       return (globalThis.filesystem = fs);
     } catch(error) {
@@ -793,5 +793,53 @@ export async function PortableFileSystem(fn = fs => true) {
     return fs;
   })().then(fs => (fn(fs), fs));
 }
+
+const FilesystemDecorator = {
+  async *asyncReader(input, bufSize = 1024) {
+    const buffer = this.buffer(bufSize);
+    let ret;
+    do {
+      await this.waitRead(input);
+      ret = this.read(input, buffer, 0, bufSize);
+      yield buffer.slice(0, ret);
+    } while(ret == bufSize);
+  },
+  *reader(input, bufSize = 1024) {
+    const buffer = this.buffer(bufSize);
+    let ret;
+    do {
+      ret = this.read(input, buffer, 0, bufSize);
+      yield buffer.slice(0, ret);
+    } while(ret == bufSize);
+  },
+
+  async combiner(iter) {
+    let data;
+    for await (let part of iter) {
+      if(data === undefined) data = part;
+      else if(typeof data.concat == 'function') data = data.concat(part);
+      else if(typeof data == 'string') data += part;
+      else throw new Error(`No such data type '${typeof data}'`);
+    }
+    return data;
+  },
+
+  async input(input, bufSize = 1024) {
+    let reader = await this.asyncReader(input, bufSize);
+    let data = await this.combiner(reader);
+    return filesystem.bufferToString(data);
+  },
+  readAll(input, bufSize = 1024) {
+    const buffer = this.buffer(bufSize);
+    let output = '';
+    let ret;
+    do {
+      ret = this.read(input, buffer, 0, bufSize);
+      let str = this.bufferToString(buffer.slice(0, ret));
+      output += str;
+    } while(ret > 0);
+    return output;
+  }
+};
 
 export default PortableFileSystem;

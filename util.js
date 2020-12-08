@@ -4920,6 +4920,33 @@ Util.getEnv = async varName =>
     async e => e[varName],
     () => Util.tryCatch(async () => await import('std').then(std => std.getenv(varName)))
   );
+Util.getEnvVars = async () =>
+  Util.tryCatch(() => process.env,
+    async e => e,
+    () =>
+      Util.tryCatch(async () =>
+          await import('./childProcess.js').then(async ({ PortableChildProcess }) => {
+            let childProcess = await PortableChildProcess();
+            (await import('./filesystem.js')).default(fs => (Util.globalThis().filesystem = fs));
+            let proc = childProcess('env', [], { block: false, stdio: [null, 'pipe'] });
+            let data = '\n';
+            for await (let output of await filesystem.asyncReader(proc.stdout))
+              data += filesystem.bufferToString(output);
+            let matches = [...Util.matchAll(/(^|\n)[A-Za-z_][A-Za-z0-9_]*=.*/gm, data)];
+            let indexes = matches.map(match => match.index);
+            let ranges = indexes.reduce((acc, idx, i, a) => [...acc, [idx + 1, a[i + 1]]], []);
+            let vars = ranges
+              .map(r => data.substring(...r))
+              .map(line => {
+                let eqPos = line.indexOf('=');
+                return [line.substring(0, eqPos), line.substring(eqPos + 1)];
+              });
+            //for(let [name, value] of vars) console.log(`${name}=${value}`);
+            return Object.fromEntries(vars);
+          })
+      )
+  );
+
 Util.safeFunction = (fn, trapExceptions, thisObj) => {
   const isAsync = Util.isAsync(fn);
   let exec = isAsync
@@ -5340,5 +5367,13 @@ Util.getPlatform = () =>
   );
 
 Util.defineGetter(Util, 'platform', Util.memoize(Util.getPlatform));
+Util.defineGetter(Util,
+  'env',
+  Util.memoize(async () => {
+    let env = await Util.getEnvVars();
+    Util.define(Util, 'env', env);
+    return env;
+  })
+);
 
 export default Util;

@@ -73,7 +73,7 @@ export function QuickJSChildProcess(fs, std, os) {
   }
 
   self = function ChildProcess(command, args = [], options = {}) {
-    let { file, stdio, env = {}, block = false, ...opts } = options;
+    let { file, stdio, env, block = false, ...opts } = options;
     let obj = {};
     if(file) opts.file = file;
     if(stdio) {
@@ -82,7 +82,14 @@ export function QuickJSChildProcess(fs, std, os) {
       if(stdout) opts.stdout = stdout != 'pipe' ? stdout : dopipe(obj, 'stdout');
       if(stderr) opts.stderr = stderr != 'pipe' ? stderr : dopipe(obj, 'stderr');
     }
-    let ret = os.exec([command, ...args], { ...opts, block, env });
+    opts = { ...opts, block };
+    if(env) opts.env = env;
+
+    let ret = os.exec([command, ...args], opts);
+
+    for(let channel of ['stdin', 'stdout', 'stderr'])
+      if(opts[channel] != stdio[channel] && typeof opts[channel] == 'number') os.close(opts[channel]);
+
     let exitCode, pid;
     if(block) {
       exitCode = numerr(-ret);
@@ -96,13 +103,21 @@ export function QuickJSChildProcess(fs, std, os) {
           let termSig = status & 0x7f;
           numerr(ret);
           /*if(termSig == 0) resolve(exitCode);
-          else*/ resolve(exitCode, termSig);
+          else*/ resolve([exitCode, termSig]);
         });
       };
       obj.kill = function(signum = SIGTERM) {
         return numerr(os.kill(this.pid, signum));
       };
     }
+
+    os.signal(17, arg => {
+      let [ret, status] = os.waitpid(pid, options);
+      console.log('SIGCHLD', { pid, arg, ret, status });
+      /*      if(typeof obj.stdin == 'number') os.close(obj.stdin);
+      if(typeof obj.stdout == 'number') os.close(obj.stdout);
+      if(typeof obj.stderr == 'number') os.close(obj.stderr);*/
+    });
     return {
       ...obj,
       exitCode,
