@@ -461,10 +461,10 @@ function indentedJoin(xs, indent) {
 function arrObjKeys(obj, inspect, opts) {
   const isArr = isArray(obj);
   const xs = [];
-  if(isArr && obj.length > opts.maxArrayLength) {
+  if(isArr && typeof(opts) == 'object' && opts != null && obj.length > opts.maxArrayLength) {
     const remaining = obj.length - opts.maxArrayLength;
     const trailer = '... ' + remaining + ' more items' + (remaining > 1 ? 's' : '');
-    return arrObjKeys(obj.slice(0, opts.maxArrayLength), opts) + trailer;
+    return arrObjKeys(obj.slice(0, opts.maxArrayLength), inspect, opts) + trailer;
   }
 
   if(isArr) {
