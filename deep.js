@@ -203,6 +203,13 @@ export const unset = (object, path) => {
   return object;
 };
 
+export const unflatten = (map, obj = {}) => {
+  for(let [path, value] of map) {
+    set(obj, path, value);
+  }
+  return obj;
+};
+
 export default {
   isPlainObject,
   clone,
@@ -215,5 +222,6 @@ export default {
   transform,
   iterate,
   flatten,
+  unflatten,
   unset
 };

@@ -185,7 +185,7 @@ export function QuickJSFileSystem(std, os) {
         default: ret = fd.seek(offset, whence);
           break;
       }
-      console.log('seek:', { offset, whence, ret });
+      //console.log('seek:', { offset, whence, ret });
       let err = ret >= 0 ? undefined : (typeof std.clearerr == 'function' ? std.clearerr() : undefined, -1);
       return err || fd.tell();
     },
@@ -289,7 +289,7 @@ export function QuickJSFileSystem(std, os) {
       do {
         // await this.waitRead(input);
         ret = this.read(input, buffer, 0, bufSize);
-        console.log('readAll', { ret, input: this.fileno(input), buffer });
+        //console.log('readAll', { ret, input: this.fileno(input), buffer });
         let str = this.bufferToString(buffer.slice(0, ret));
         output += str;
       } while(ret > 0);
@@ -347,7 +347,7 @@ export function NodeJSFileSystem(fs, tty, process) {
 
   function AddData(file, data) {
     let buf;
-    console.log(`AddData`, { file, data });
+    //console.log(`AddData`, { file, data });
     if(data instanceof ArrayBuffer) data = new Uint8Array(data);
     if(dataMap.has(file)) buf = Buffer.concat([dataMap.get(file), data]);
     else buf = Buffer.from(data);
@@ -423,7 +423,7 @@ export function NodeJSFileSystem(fs, tty, process) {
       let pos;
 
       //     file = this.fileno(file);
-      console.log('file.read', file.read);
+      //console.log('file.read', file.read);
 
       return CatchError(() => {
         length = length || 1024;
@@ -437,7 +437,7 @@ export function NodeJSFileSystem(fs, tty, process) {
           ret = fs.readSync(file, buf, offset, length, (pos = SeekGet(file)));
         } else {
           ret = file.read(length);
-          console.log('file.read()', { ret, length });
+          //console.log('file.read()', { ret, length });
           if(typeof ret == 'object' && ret !== null) {
             ret.copy(buf, offset, 0, ret.length);
             ret = ret.length;

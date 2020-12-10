@@ -39,6 +39,13 @@ function inspect_(obj, options, depth, seen) {
   ) {
     throw new TypeError('option "maxStringLength", if provided, must be a positive integer, Infinity, or `null`');
   }
+  if(has(opts, 'maxArrayLength') &&
+    (typeof opts.maxArrayLength === 'number'
+      ? opts.maxArrayLength < 0 && opts.maxArrayLength !== Infinity
+      : opts.maxArrayLength !== null)
+  ) {
+    throw new TypeError('option "maxArrayLength", if provided, must be a positive integer, Infinity, or `null`');
+  }
   const customInspect = has(opts, 'customInspect') ? opts.customInspect : true;
 
   //console.reallog("customInspect:",customInspect);
@@ -454,12 +461,19 @@ function indentedJoin(xs, indent) {
 function arrObjKeys(obj, inspect, opts) {
   const isArr = isArray(obj);
   const xs = [];
+  if(isArr && obj.length > opts.maxArrayLength) {
+    const remaining = obj.length - opts.maxArrayLength;
+    const trailer = '... ' + remaining + ' more items' + (remaining > 1 ? 's' : '');
+    return arrObjKeys(obj.slice(0, opts.maxArrayLength), opts) + trailer;
+  }
+
   if(isArr) {
     xs.length = obj.length;
     for(let i = 0; i < obj.length; i++) {
       xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
     }
   }
+
   for(let key in obj) {
     if(!has(obj, key)) {
       continue;
