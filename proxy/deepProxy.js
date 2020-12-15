@@ -12,22 +12,7 @@ function push(arr, el) {
 }
 
 //names of the traps that can be registered with ES6's Proxy object
-const trapNames = [
-  'apply',
-  'construct',
-  'defineProperty',
-  'deleteProperty',
-  'enumerate',
-  'get',
-  'getOwnPropertyDescriptor',
-  'getPrototypeOf',
-  'has',
-  'isExtensible',
-  'ownKeys',
-  'preventExtensions',
-  'set',
-  'setPrototypeOf'
-];
+const trapNames = ['apply', 'construct', 'defineProperty', 'deleteProperty', 'enumerate', 'get', 'getOwnPropertyDescriptor', 'getPrototypeOf', 'has', 'isExtensible', 'ownKeys', 'preventExtensions', 'set', 'setPrototypeOf'];
 
 //a list of paramer indexes that indicate that the a recieves a key at that parameter
 //this information will be used to update the path accordingly

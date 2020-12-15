@@ -26,10 +26,7 @@ export class Transformation {
   }
 
   get [Symbol.isConcatSpreadable]() {
-    return (this.constructor === TransformationList ||
-      Object.getPrototypeOf(this) == TransformationList.prototype ||
-      Object.getPrototypeOf(this).constructor == TransformationList
-    );
+    return this.constructor === TransformationList || Object.getPrototypeOf(this) == TransformationList.prototype || Object.getPrototypeOf(this).constructor == TransformationList;
   }
   get axes() {
     return this.axis !== undefined ? [this.axis] : ['x', 'y', 'z'].filter(axis => axis in this);
@@ -161,8 +158,7 @@ export class Transformation {
 
 Object.defineProperty(Transformation, Symbol.hasInstance, {
   value(inst) {
-    return [Transformation, MatrixTransformation, Rotation, Translation, Scaling, TransformationList].some(ctor => Object.getPrototypeOf(inst) == ctor.prototype
-    );
+    return [Transformation, MatrixTransformation, Rotation, Translation, Scaling, TransformationList].some(ctor => Object.getPrototypeOf(inst) == ctor.prototype);
   }
 });
 
@@ -209,16 +205,11 @@ export class Rotation extends Transformation {
     rUnit = rUnit || this.unit || '';
     const axis = this.axis !== undefined ? this.axis.toUpperCase() : '';
     const angle = this.constructor.convertAngle(this.angle, rUnit);
-    return `rotate${this.is3D ? axis : ''}(${angle}${rUnit}${
-      this.center ? this.center.map(coord => `, ${coord}`).join('') : ''
-    })`;
+    return `rotate${this.is3D ? axis : ''}(${angle}${rUnit}${this.center ? this.center.map(coord => `, ${coord}`).join('') : ''})`;
   }
 
   toSource() {
-    let o =
-      Util.colorText('new ', 1, 31) +
-      Util.colorText(Util.className(this), 1, 33) +
-      Util.colorText('(' + this.angle + ')', 1, 36);
+    let o = Util.colorText('new ', 1, 31) + Util.colorText(Util.className(this), 1, 33) + Util.colorText('(' + this.angle + ')', 1, 36);
 
     return o;
   }
@@ -232,8 +223,7 @@ export class Rotation extends Transformation {
   }
 
   accumulate(other) {
-    if(this.type !== other.type && this.axis !== other.axis)
-      throw new Error(Util.className(this) + ': accumulate mismatch');
+    if(this.type !== other.type && this.axis !== other.axis) throw new Error(Util.className(this) + ': accumulate mismatch');
     return new Rotation(this.angle + other.angle, this.axis);
   }
 
@@ -295,9 +285,7 @@ export class Translation extends Transformation {
 
   invert() {
     const { x, y, z } = this;
-    return z !== undefined
-      ? new Translation(-x, -y, -z)
-      : new Translation(Math.abs(x) == 0 ? 0 : -x, Math.abs(y) == 0 ? 0 : -y);
+    return z !== undefined ? new Translation(-x, -y, -z) : new Translation(Math.abs(x) == 0 ? 0 : -x, Math.abs(y) == 0 ? 0 : -y);
   }
 
   accumulate(other) {
@@ -592,8 +580,7 @@ export class TransformationList extends Array {
     //console.log("from:", new Point(x,y), " to:", vec);
     let translation = new Translation(vec.x, vec.y);
 
-    if(!translation.isZero())
-      /*    if(Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) */ Array.prototype.push.call(this, translation);
+    if(!translation.isZero()) /*    if(Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) */ Array.prototype.push.call(this, translation);
 
     return this;
   }
@@ -614,9 +601,7 @@ export class TransformationList extends Array {
     if(this.length > 0) {
       tUnit = tUnit || this.translationUnit;
       rUnit = rUnit || this.rotationUnit;
-      let r = this.map(t =>
-        t.toString(t.type.startsWith('scal') ? '' : t.type.startsWith('rotat') ? rUnit : tUnit)
-      ).join(' ');
+      let r = this.map(t => t.toString(t.type.startsWith('scal') ? '' : t.type.startsWith('rotat') ? rUnit : tUnit)).join(' ');
       return r;
     }
     return '';
@@ -780,28 +765,7 @@ export class TransformationList extends Array {
   }
 }
 
-const {
-  concat,
-  copyWithin,
-  find,
-  findIndex,
-  lastIndexOf,
-  pop,
-  push,
-  shift,
-  unshift,
-  slice,
-  splice,
-  includes,
-  indexOf,
-  entries,
-  filter,
-  map,
-  every,
-  some,
-  reduce,
-  reduceRight
-} = Array.prototype;
+const { concat, copyWithin, find, findIndex, lastIndexOf, pop, push, shift, unshift, slice, splice, includes, indexOf, entries, filter, map, every, some, reduce, reduceRight } = Array.prototype;
 
 Util.inherit(TransformationList.prototype, {
     // concat,

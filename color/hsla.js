@@ -30,9 +30,7 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
   } else if(typeof args[0] == 'string') {
     const arg = args[0];
     if(typeof arg === 'string') {
-      let matches =
-        /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) ||
-        /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
+      let matches = /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) || /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
 
       if(matches != null) c = [...matches].slice(1);
     }
@@ -233,11 +231,7 @@ HSLA.prototype.valid = function() {
   return [h, s, l, a].every(n => !isNaN(n) && typeof n == 'number');
 };
 HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [0, 1], rng = Util.rng) {
-  return new HSLA(Util.randInt(...[...h, 360].slice(0, 2), rng),
-    Util.randInt(...[...s, 100].slice(0, 2), rng),
-    Util.randInt(...[...l, 50].slice(0, 2), rng),
-    Util.randFloat(...a, rng)
-  );
+  return new HSLA(Util.randInt(...[...h, 360].slice(0, 2), rng), Util.randInt(...[...s, 100].slice(0, 2), rng), Util.randInt(...[...l, 50].slice(0, 2), rng), Util.randFloat(...a, rng));
 };
 HSLA.prototype.dump = function() {
   //Util.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);
@@ -282,11 +276,7 @@ HSLA.prototype[Symbol.iterator] = function() {
 HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
   const { h, s, l, a } = this;
   let arr = !isNaN(a) ? [h, s, l, a] : [h, s, l];
-  let ret = arr
-    .map((n, i) =>
-      (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i == 0 ? 3 : i < 3 ? i + 3 : 1, ' ')
-    )
-    .join(',');
+  let ret = arr.map((n, i) => (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i == 0 ? 3 : i < 3 ? i + 3 : 1, ' ')).join(',');
   const color = this.toRGBA().toAnsi256(true);
   let o = '';
   o += arr.map(n => `\x1b[0;33m${n}\x1b[0m`).join('');

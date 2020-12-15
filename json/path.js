@@ -10,20 +10,13 @@ export function DereferenceError(object, member, pos, prev, locator) {
       if(method) method = (frame.getTypeName() || Util.className(frame.getThis())) + '.' + method;
       else method = frame.getFunctionName();
 
-      return `${('' + frame.getFileName()).replace(/.*plot-cv\//,
-        ''
-      )}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
+      return `${('' + frame.getFileName()).replace(/.*plot-cv\//, '')}:${frame.getLineNumber()}:${frame.getColumnNumber()} ${method}`;
     });
   //console.log('member:', member);
   return Object.assign(error,
     { object, member, pos, locator },
     {
-      message: `Error dereferencing ${Util.className(object)} @ ${MutablePath.prototype.toString.call(
-          locator,
-          '/',
-          MutablePath.partToString,
-          'children'
-        )}
+      message: `Error dereferencing ${Util.className(object)} @ ${MutablePath.prototype.toString.call(locator, '/', MutablePath.partToString, 'children')}
 xml: ${Util.abbreviate(toXML(locator.root || object))}
 no member '${Util.inspect(member, { colors: false })}' in ${Util.toString(prev, {
           depth: 2,
@@ -41,8 +34,7 @@ DereferenceError.prototype.toString = function() {
   return `${message}\n${Util.inspect({ object, member, pos, locator, stack }, { depth: 2, colors: false })}`;
 };
 
-export const IsChildren = a =>
-  a === MutablePath.CHILDREN_GLYPH || a === MutablePath.CHILDREN_STR || a === MutablePath.CHILDREN_SYM;
+export const IsChildren = a => a === MutablePath.CHILDREN_GLYPH || a === MutablePath.CHILDREN_STR || a === MutablePath.CHILDREN_SYM;
 
 const CHILDREN_SPACE = '';
 
@@ -124,9 +116,7 @@ export class MutablePath extends Array {
       for(let i = 0; i < len; i++) {
         let part = path[i];
 
-        if(typeof part == 'string' &&
-          ((part && part.codePointAt && part.codePointAt(0) >= 256) || part == 'children')
-        ) {
+        if(typeof part == 'string' && ((part && part.codePointAt && part.codePointAt(0) >= 256) || part == 'children')) {
           part = 'children';
         } else if(typeof part == 'number' || (typeof part == 'string' && !isNaN(part))) {
           part = +part;
@@ -134,10 +124,7 @@ export class MutablePath extends Array {
           if(/^\[.*\]$/.test(part + '')) {
             part = part.substring(1, part.length - 1);
           } else if(/^[A-Za-z]/.test(part)) {
-            if(!out.constructor.isMemberName(part, out))
-              part = (out.constructor.partMatcher || MutablePath.partMatcher)({ [out.tagField || 'tagName']: part },
-                out.tagField || 'tagName'
-              );
+            if(!out.constructor.isMemberName(part, out)) part = (out.constructor.partMatcher || MutablePath.partMatcher)({ [out.tagField || 'tagName']: part }, out.tagField || 'tagName');
           }
         }
 

@@ -167,14 +167,10 @@ export class LineList extends Array {
 
   [Symbol.for('nodejs.util.inspect.custom')](n, opts = {}) {
     let c = Util.coloring(false && opts.colors);
-    let toString = [Symbol.toStringTag, 'toString', Symbol.for('nodejs.util.inspect.custom')].reduce((a, p) =>
-      this[0][p] ? p : a
-    );
+    let toString = [Symbol.toStringTag, 'toString', Symbol.for('nodejs.util.inspect.custom')].reduce((a, p) => (this[0][p] ? p : a));
     console.log('inspectFn:', toString);
     //   return Util.toString(this, { ...opts, toString });
-    return `${c.text('LineList', 1, 31)}${c.text('(', 1, 36)}${
-      c.text(this.length, 1, 35) + c.code(1, 36)
-    }) [\n  ${this.map(line =>
+    return `${c.text('LineList', 1, 31)}${c.text('(', 1, 36)}${c.text(this.length, 1, 35) + c.code(1, 36)}) [\n  ${this.map(line =>
         line[toString].call(line, n, {
           ...opts,
           color: false
@@ -226,16 +222,7 @@ LineList.toPolygons = (lines, createfn = points => Object.setPrototypeOf(points,
       const nextLine = lines[j++];
       // min 3 lines to have a closed polygon
       // check if the polygon is closed (the nextLine start point is one of the current start or end point and the nextLine end point is one of the current start or end point)
-      if(polygon.length >= 3 &&
-        ((endPoint.x === nextLine.x1 &&
-          endPoint.y === nextLine.y1 &&
-          startPoint.x === nextLine.x2 &&
-          startPoint.y === nextLine.y2) ||
-          (startPoint.x === nextLine.x1 &&
-            startPoint.y === nextLine.y1 &&
-            endPoint.x === nextLine.x2 &&
-            endPoint.y === nextLine.y2))
-      ) {
+      if(polygon.length >= 3 && ((endPoint.x === nextLine.x1 && endPoint.y === nextLine.y1 && startPoint.x === nextLine.x2 && startPoint.y === nextLine.y2) || (startPoint.x === nextLine.x1 && startPoint.y === nextLine.y1 && endPoint.x === nextLine.x2 && endPoint.y === nextLine.y2))) {
         polygons.push(polygon);
         break;
       }

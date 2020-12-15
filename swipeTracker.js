@@ -146,16 +146,7 @@ export class SwipeTracker {
           .join(', ');
       },
       toString() {
-        return (`SwipeEvent ${this.name.toUpperCase()}(` +
-          (this.delta && this.delta.toString(false)) +
-          ') ' +
-          this.getAxis() +
-          ' ' +
-          this.dist +
-          ' [' +
-          (this.mouse && this.mouse.toSource(false)) +
-          ']'
-        );
+        return `SwipeEvent ${this.name.toUpperCase()}(` + (this.delta && this.delta.toString(false)) + ') ' + this.getAxis() + ' ' + this.dist + ' [' + (this.mouse && this.mouse.toSource(false)) + ']';
       }
     };
     Object.defineProperty(SwipeEvent.prototype, 'dist', {

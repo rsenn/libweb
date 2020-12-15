@@ -10,9 +10,7 @@ function QuickJSSpawn(os, ffi) {
       let { stdio, ...opts } = options;
       stdio = (stdio || []).concat(['pipe', 'pipe', 'pipe']).slice(0, 3);
 
-      let pipes = stdio.map((mode, chan) =>
-        mode != 'pipe' ? [chan, undefined] : [...os.pipe()][chan == 0 ? 'slice' : 'reverse']()
-      );
+      let pipes = stdio.map((mode, chan) => (mode != 'pipe' ? [chan, undefined] : [...os.pipe()][chan == 0 ? 'slice' : 'reverse']()));
 
       let [cfds, pfds] = Util.zip(pipes);
       console.log('pipes:', inspect(pipes));

@@ -18,11 +18,7 @@
       let x11 = b1.move.x() - b1.size.x() / 2,
         y11 = b1.move.y() - b1.size.y() / 2,
         x12 = b1.move.x() + b1.size.x() / 2;
-      (y12 = b1.move.y() + b1.size.y() / 2),
-        (x21 = b2.move.x() - b2.size.x() / 2),
-        (y21 = b2.move.y() - b2.size.y() / 2),
-        (x22 = b2.move.x() + b2.size.x() / 2),
-        (y22 = b2.move.y() + b2.size.y() / 2);
+      (y12 = b1.move.y() + b1.size.y() / 2), (x21 = b2.move.x() - b2.size.x() / 2), (y21 = b2.move.y() - b2.size.y() / 2), (x22 = b2.move.x() + b2.size.x() / 2), (y22 = b2.move.y() + b2.size.y() / 2);
       let x_overlap = Math.max(0, Math.min(x12, x22) - Math.max(x11, x21));
       let y_overlap = Math.max(0, Math.min(y12, y22) - Math.max(y11, y21));
       return x_overlap * y_overlap;

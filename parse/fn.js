@@ -19,12 +19,7 @@ export function string(str) {
 
 export function token(str) {
   let tok = str instanceof RegExp ? regex(str) : typeof str == 'string' ? string(str) : str;
-  return one(concat(
-      ignore(any(char(' \n\r\t'))),
-      str instanceof RegExp ? regex(str) : typeof str == 'function' ? str : string(str),
-      ignore(any(char(' \n\r\t')))
-    )
-  );
+  return one(concat(ignore(any(char(' \n\r\t'))), str instanceof RegExp ? regex(str) : typeof str == 'function' ? str : string(str), ignore(any(char(' \n\r\t')))));
   return one(concat(ignore(any(char(' \n\r\t'))), tok /*, ignore(any(char(' \n\r\t')))*/));
   return tok;
 }

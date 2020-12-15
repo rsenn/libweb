@@ -24,8 +24,7 @@ export class EagleNodeList {
     //  console.log('entries:', entries);
 
     if(pos < 0) pos += raw.length;
-    if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos])
-      return this.getOrCreate(owner.document, ref.down(pos) /*, raw[pos]*/);
+    if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) return this.getOrCreate(owner.document, ref.down(pos) /*, raw[pos]*/);
   }
 
   *[Symbol.iterator]() {

@@ -28,11 +28,7 @@ export function Stack() {
 
   let maxLen = stack.reduce((acc, entry) => (entry.functionName ? Math.max(acc, entry.functionName.length) : acc), 0);
 
-  return stack
-    .filter(s => s.functionName != 'esfactory')
-    .map(({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) =>
-        `  ${(functionName || '').padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`
-    );
+  return stack.filter(s => s.functionName != 'esfactory').map(({ fileName = '', columnNumber, lineNumber, functionName = '', methodName = '' }) => `  ${(functionName || '').padEnd(maxLen + 1)} ${t(fileName)}:${lineNumber}`);
 
   /*
   stack = stack.filter(({ functionName }) => !/Parser.parser.</.test(functionName)g1);
@@ -444,11 +440,7 @@ export class Lexer {
   addToken(type) {
     //if(type == Token.types.templateLiteral) console.log('addToken', this.token);
     const { start, pos, column, line, source } = this;
-    const token = new Token(type,
-      source.substring(start, pos),
-      new Range(this.position(this.start), this.pos - this.start),
-      this.start
-    );
+    const token = new Token(type, source.substring(start, pos), new Range(this.position(this.start), this.pos - this.start), this.start);
     this.tokens.push(token);
     this.ignore();
   }
@@ -540,9 +532,7 @@ export class Lexer {
 
     let indicator = indent + ` column ${column} ----`.padStart(columnIndex).slice(-columnIndex) + '╯';
 
-    return `\n${lineno}${this.getLine()}\n${indicator}\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${
-      this.accepted.length
-    }\n${indent + source.slice(this.pos, this.pos + 10)}`;
+    return `\n${lineno}${this.getLine()}\n${indicator}\n${indent}pos:${pos} column:${column} line:${line} accepted.length:${this.accepted.length}\n${indent + source.slice(this.pos, this.pos + 10)}`;
   }
 
   lineRange(start, end) {
@@ -820,9 +810,7 @@ export class Lexer {
               prevChar = c;
               c = this.next();
             }
-          } else */ if(isLineTerminator(c) &&
-            quoteChar !== '`'
-          ) {
+          } else */ if(isLineTerminator(c) && quoteChar !== '`') {
             //If we somehow reached EOL without encountering the
             //ending quote char then this string is incomplete.
             throw this.error(`Illegal token: ${this.errorRange()}`);

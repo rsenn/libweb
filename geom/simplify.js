@@ -89,10 +89,7 @@ export function simplifyDPStep(points, first, last, sqTolerance, simplified) {
     index;
 
   for(i; i < last; i += 2) {
-    sqDist = getSqSegDist([points[i], points[i + 1]],
-      [points[first], points[first + 1]],
-      [points[last], points[last + 1]]
-    );
+    sqDist = getSqSegDist([points[i], points[i + 1]], [points[first], points[first + 1]], [points[last], points[last + 1]]);
 
     if(sqDist > maxSqDist) {
       index = i;

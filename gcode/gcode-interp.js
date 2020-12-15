@@ -113,15 +113,7 @@ function M0(prevState, nextState, command, args) {
 }
 function M3(prevState, nextState, command, args, i) {
   if(prevState.spindle !== command) nextState.spindle = command;
-  console.log(`#${this.i}: cmd:`,
-    command,
-    ' args:',
-    args,
-    ' prevState.spindle:',
-    prevState.spindle,
-    ' nextState.spindle:',
-    nextState.spindle
-  );
+  console.log(`#${this.i}: cmd:`, command, ' args:', args, ' prevState.spindle:', prevState.spindle, ' nextState.spindle:', nextState.spindle);
 }
 function M9(prevState, nextState, command, args) {
   if(prevState.coolant !== command) nextState.coolant = command;

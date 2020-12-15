@@ -59,18 +59,7 @@ export const extend = (_value, _extension = nullObject) => {
   //https://stackoverflow.com/questions/36394479/proxies-on-regexps-and-boxed-primitives
   //https://stackoverflow.com/questions/47874488/proxy-on-a-date-object
   //https://stackoverflow.com/questions/43927933/why-is-set-incompatible-with-proxy
-  const usesInternalSlots =
-    target instanceof String ||
-    target instanceof Number ||
-    target instanceof Boolean ||
-    target instanceof Date ||
-    target instanceof RegExp ||
-    target instanceof Map ||
-    target instanceof WeakMap ||
-    target instanceof Set ||
-    target instanceof WeakSet ||
-    target instanceof ArrayBuffer ||
-    target instanceof TypedArray;
+  const usesInternalSlots = target instanceof String || target instanceof Number || target instanceof Boolean || target instanceof Date || target instanceof RegExp || target instanceof Map || target instanceof WeakMap || target instanceof Set || target instanceof WeakSet || target instanceof ArrayBuffer || target instanceof TypedArray;
 
   const handler = {
     has(target, propKey) {

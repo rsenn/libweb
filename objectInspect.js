@@ -1,14 +1,10 @@
 const hasMap = typeof Map === 'function' && Map.prototype;
-const mapSizeDescriptor =
-  Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, 'size') : null;
-const mapSize =
-  hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === 'function' ? mapSizeDescriptor.get : null;
+const mapSizeDescriptor = Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, 'size') : null;
+const mapSize = hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === 'function' ? mapSizeDescriptor.get : null;
 const mapForEach = hasMap && Map.prototype.forEach;
 const hasSet = typeof Set === 'function' && Set.prototype;
-const setSizeDescriptor =
-  Object.getOwnPropertyDescriptor && hasSet ? Object.getOwnPropertyDescriptor(Set.prototype, 'size') : null;
-const setSize =
-  hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function' ? setSizeDescriptor.get : null;
+const setSizeDescriptor = Object.getOwnPropertyDescriptor && hasSet ? Object.getOwnPropertyDescriptor(Set.prototype, 'size') : null;
+const setSize = hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function' ? setSizeDescriptor.get : null;
 const setForEach = hasSet && Set.prototype.forEach;
 const hasWeakMap = typeof WeakMap === 'function' && WeakMap.prototype;
 const weakMapHas = hasWeakMap ? WeakMap.prototype.has : null;
@@ -32,18 +28,10 @@ function inspect_(obj, options, depth, seen) {
   if(has(opts, 'quoteStyle') && opts.quoteStyle !== 'single' && opts.quoteStyle !== 'double') {
     throw new TypeError('option "quoteStyle" must be "single" or "double"');
   }
-  if(has(opts, 'maxStringLength') &&
-    (typeof opts.maxStringLength === 'number'
-      ? opts.maxStringLength < 0 && opts.maxStringLength !== Infinity
-      : opts.maxStringLength !== null)
-  ) {
+  if(has(opts, 'maxStringLength') && (typeof opts.maxStringLength === 'number' ? opts.maxStringLength < 0 && opts.maxStringLength !== Infinity : opts.maxStringLength !== null)) {
     throw new TypeError('option "maxStringLength", if provided, must be a positive integer, Infinity, or `null`');
   }
-  if(has(opts, 'maxArrayLength') &&
-    (typeof opts.maxArrayLength === 'number'
-      ? opts.maxArrayLength < 0 && opts.maxArrayLength !== Infinity
-      : opts.maxArrayLength !== null)
-  ) {
+  if(has(opts, 'maxArrayLength') && (typeof opts.maxArrayLength === 'number' ? opts.maxArrayLength < 0 && opts.maxArrayLength !== Infinity : opts.maxArrayLength !== null)) {
     throw new TypeError('option "maxArrayLength", if provided, must be a positive integer, Infinity, or `null`');
   }
   const customInspect = has(opts, 'customInspect') ? opts.customInspect : true;
@@ -54,11 +42,7 @@ function inspect_(obj, options, depth, seen) {
     throw new TypeError('option "customInspect", if provided, must be `true` or `false`');
   }
 
-  if(has(opts, 'indent') &&
-    opts.indent !== null &&
-    opts.indent !== '\t' &&
-    !(parseInt(opts.indent, 10) === opts.indent && opts.indent > 0)
-  ) {
+  if(has(opts, 'indent') && opts.indent !== null && opts.indent !== '\t' && !(parseInt(opts.indent, 10) === opts.indent && opts.indent > 0)) {
     throw new TypeError('options "indent" must be "\\t", an integer > 0, or `null`');
   }
   //console.reallog('opts.colors', opts.colors);
@@ -461,7 +445,7 @@ function indentedJoin(xs, indent) {
 function arrObjKeys(obj, inspect, opts) {
   const isArr = isArray(obj);
   const xs = [];
-  if(isArr && typeof(opts) == 'object' && opts != null && obj.length > opts.maxArrayLength) {
+  if(isArr && typeof opts == 'object' && opts != null && obj.length > opts.maxArrayLength) {
     const remaining = obj.length - opts.maxArrayLength;
     const trailer = '... ' + remaining + ' more items' + (remaining > 1 ? 's' : '');
     return arrObjKeys(obj.slice(0, opts.maxArrayLength), inspect, opts) + trailer;
