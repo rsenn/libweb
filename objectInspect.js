@@ -194,7 +194,7 @@ function inspect_(obj, options, depth, seen) {
     s += '{';
     const ys = arrObjKeys(obj, inspect, opts);
     if(ys.length == 0) {
-    } else if(indent) {
+    } else if(indent && opts.multiline !== false) {
       s += indentedJoin(ys, indent);
     } else {
       s += ' ' + ys.join(', ') + ' ';

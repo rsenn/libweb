@@ -5133,11 +5133,11 @@ Util.defineGetter(Util,
   })
 );
 
-Util.bitsToNames = flags => {
+Util.bitsToNames = (flags, map = (name, flag) => name) => {
   const entries = [...Util.entries(flags)];
 
   return function* (value) {
-    for(let [name, flag] of entries) if((value & flag) == flag) yield name;
+    for(let [name, flag] of entries) if((value & flag) == flag) yield map(name, flag);
   };
 };
 
