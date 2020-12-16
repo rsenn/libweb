@@ -5133,4 +5133,12 @@ Util.defineGetter(Util,
   })
 );
 
+Util.bitsToNames = flags => {
+  const entries = [...Util.entries(flags)];
+
+  return function* (value) {
+    for(let [name, flag] of entries) if((value & flag) == flag) yield name;
+  };
+};
+
 export default Util;
