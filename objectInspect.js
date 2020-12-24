@@ -28,11 +28,10 @@ function inspect_(obj, options, depth, seen) {
   if(has(opts, 'quoteStyle') && opts.quoteStyle !== 'single' && opts.quoteStyle !== 'double') {
     throw new TypeError('option "quoteStyle" must be "single" or "double"');
   }
-  if(has(opts, 'maxStringLength') && (typeof opts.maxStringLength === 'number' ? opts.maxStringLength < 0 && opts.maxStringLength !== Infinity : opts.maxStringLength !== null)) {
-    throw new TypeError('option "maxStringLength", if provided, must be a positive integer, Infinity, or `null`');
-  }
-  if(has(opts, 'maxArrayLength') && (typeof opts.maxArrayLength === 'number' ? opts.maxArrayLength < 0 && opts.maxArrayLength !== Infinity : opts.maxArrayLength !== null)) {
-    throw new TypeError('option "maxArrayLength", if provided, must be a positive integer, Infinity, or `null`');
+  for(let optName of ['maxStringLength', 'maxArrayLength', 'breakLength']) {
+    if(has(opts, optName) && (typeof opts[optName] === 'number' ? opts[optName] < 0 && opts[optName] !== Infinity : opts[optName] !== null)) {
+      throw new TypeError(`option "${optName}", if provided, must be a positive integer, Infinity, or 'null'`);
+    }
   }
   const customInspect = has(opts, 'customInspect') ? opts.customInspect : true;
 
@@ -152,8 +151,31 @@ function inspect_(obj, options, depth, seen) {
     if(obj.length === 0) {
       s += '[]';
     } else {
-      const xs = arrObjKeys(obj, inspect);
-      if(indent && !singleLineValues(xs)) s += '[' + indentedJoin(xs, indent) + ']';
+      let xs = arrObjKeys(obj, inspect);
+      let multiline = indent && !singleLineValues(xs);
+
+      if(Number.isFinite(opts.breakLength)) {
+        if(xs.join(', ').length > opts.breakLength) {
+          xs = xs.reduce((acc, item) => {
+              // console.log("acc:",acc);
+              let tail = acc[acc.length - 1];
+              let len = stripAnsi(tail).length;
+
+              if(len && len + stripAnsi(item).length > opts.breakLength) {
+                acc.push('');
+              }
+
+              if(acc[acc.length - 1] != '') acc[acc.length - 1] += ', ';
+
+              acc[acc.length - 1] += item;
+              return acc;
+            }, ['']
+          );
+          multiline = true;
+        }
+      }
+
+      if(multiline) s += '[' + indentedJoin(xs, indent) + ']';
       else s += '[ ' + xs.join(', ') + ' ]';
     }
   } else if(isError(obj)) {
@@ -453,18 +475,14 @@ function arrObjKeys(obj, inspect, opts) {
 
   if(isArr) {
     xs.length = obj.length;
-    for(let i = 0; i < obj.length; i++) {
-      xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
-    }
+    for(let i = 0; i < obj.length; i++) xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
   }
 
   for(let key in obj) {
-    if(!has(obj, key)) {
-      continue;
-    }
-    if(isArr && String(Number(key)) === key && key < obj.length) {
-      continue;
-    }
+    if(!has(obj, key)) continue;
+
+    if(isArr && String(Number(key)) === key && key < obj.length) continue;
+
     let s = '';
     if(isGetter(obj, key)) {
       s = '[Getter]';
@@ -495,6 +513,9 @@ function isGetter(obj, propName) {
     obj = Object.getPrototypeOf(obj);
   }
   return false;
+}
+function stripAnsi(str) {
+  return (str + '').replace(new RegExp('\x1b[[(?);]{0,2}(;?[0-9])*.', 'g'), '');
 }
 
 export default inspect_;
