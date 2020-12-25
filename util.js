@@ -5080,6 +5080,12 @@ Util.getHRTime = Util.memoize(() => {
       let n = this[1] - o[1];
       return HighResolutionTime.create(s, n);
     }
+   toString() {
+      let secs = this.seconds;
+      let msecs = (secs % 1) * 1e3;
+      let nsecs = (msecs % 1) * 1e6;
+      return `${Math.floor(secs)}s ${Util.roundTo(msecs, 0.001)}ms`;
+     } 
     [inspectSymbol]() {
       let secs = this.seconds;
       let msecs = (secs % 1) * 1e3;
