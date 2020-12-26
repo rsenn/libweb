@@ -204,10 +204,10 @@ export class BBox {
     let p;
     if(result.value) {
       p = tp(result.value);
-      r.x1 = p.x;
-      r.x2 = p.x;
-      r.y1 = p.y;
-      r.y2 = p.y;
+      r.x1 = p.x1 !== undefined ? p.x1 : p.x;
+      r.x2 = p.x2 !== undefined ? p.x2 : p.x;
+      r.y1 = p.y1 !== undefined ? p.y1 : p.y;
+      r.y2 = p.y2 !== undefined ? p.y2 : p.y;
     }
     while(true) {
       result = iter.next();

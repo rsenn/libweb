@@ -210,7 +210,15 @@ PointList.prototype.avg = function() {
   let ret = PointList.prototype.reduce.call(this, (acc, p) => acc.add(p), new Point());
   return ret.div(PointList.prototype.getLength.call(this));
 };
-PointList.prototype.bbox = function() {
+PointList.prototype.bbox = function BBox(proto = {
+    constructor: PointList.prototype.bbox,
+    toString() {
+      return `{x1:${(this.x1 + '').padStart(4, ' ')},x2:${(this.x2 + '').padStart(4, ' ')},y1:${(this.y1 + '').padStart(4,
+        ' '
+      )},y2:${(this.y2 + '').padStart(4, ' ')}}`;
+    }
+  }
+) {
   const len = PointList.prototype.getLength.call(this);
   if(!len) return {};
   const first = PointList.prototype.at.call(this, 0);
@@ -218,13 +226,9 @@ PointList.prototype.bbox = function() {
     x1: first.x,
     x2: first.x,
     y1: first.y,
-    y2: first.y,
-    toString() {
-      return `{x1:${(this.x1 + '').padStart(4, ' ')},x2:${(this.x2 + '').padStart(4, ' ')},y1:${(this.y1 + '').padStart(4,
-        ' '
-      )},y2:${(this.y2 + '').padStart(4, ' ')}}`;
-    }
+    y2: first.y
   };
+
   for(let i = 1; i < len; i++) {
     const { x, y } = PointList.prototype.at.call(this, i);
     if(x < ret.x1) ret.x1 = x;
@@ -232,7 +236,7 @@ PointList.prototype.bbox = function() {
     if(y < ret.y1) ret.y1 = y;
     if(y > ret.y2) ret.y2 = y;
   }
-  return ret;
+  return Object.setPrototypeOf(ret, proto);
 };
 PointList.prototype.rect = function() {
   return new Rect(PointList.prototype.bbox.call(this));

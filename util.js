@@ -436,7 +436,7 @@ Util.generalLog = function(n, x) {
 Util.toSource = function(arg, opts = {}) {
   const { quote = "'", colors = false, multiline = false } = opts;
   const { c = Util.coloring(colors) } = opts;
-  let o;
+  let o = [];
   const { print = (...args) => (o = c.concat(o, c.text(...args))) } = opts;
   if(Util.isArray(arg)) {
     print('[', 1, 36);

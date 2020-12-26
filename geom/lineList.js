@@ -2,6 +2,7 @@ import { Line } from './line.js';
 import { BBox } from './bbox.js';
 import { PointList } from './pointList.js';
 import { Point } from './point.js';
+import { Polyline } from './polyline.js';
 import { Element, isElement } from '../dom/element.js';
 import Util from '../util.js';
 

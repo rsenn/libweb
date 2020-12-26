@@ -353,7 +353,7 @@ else */ if(text) svg.innerHTML = innerHTML;
         //const swap = !Point.equals(prev, { x: x0, y: y0 });
 
         let line = new Line({ x: x0, y: y0 }, cmd);
-        console.log('lineIterator', { i, code, x, y, x0, y0 }, line.toString());
+        /// console.log('lineIterator', { i, code, x, y, x0, y0 }, line.toString());
         yield line;
       }
       prev = cmd;
