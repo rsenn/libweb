@@ -32,15 +32,8 @@ else */ if(text) svg.innerHTML = innerHTML;
   }
 
   static factory(...args) {
-    let delegate =
-      Util.isObject(args[0]) && ('append_to' in args[0] || 'create' in args[0] || 'setattr' in args[0])
-        ? args.shift()
-        : {};
-    let parent = Util.isObject(args[0])
-      ? typeof args[0] == 'function' || 'tagName' in args[0] || 'appendChild' in args[0]
-        ? args.shift()
-        : null
-      : null;
+    let delegate = Util.isObject(args[0]) && ('append_to' in args[0] || 'create' in args[0] || 'setattr' in args[0]) ? args.shift() : {};
+    let parent = Util.isObject(args[0]) ? (typeof args[0] == 'function' || 'tagName' in args[0] || 'appendChild' in args[0] ? args.shift() : null) : null;
     let size = isSize(args[0]) ? args.shift() : null;
 
     delegate = {
@@ -88,11 +81,7 @@ else */ if(text) svg.innerHTML = innerHTML;
 
     delegate.append_to = function(elem, p) {
       p = p || this.root;
-      if(['style', 'gradient', 'pattern', 'filter', 'hatch', 'radialGradient', 'linearGradient', 'solidcolor'].indexOf(
-          elem.tagName
-        ) != -1
-      )
-        p = p.querySelector('defs');
+      if(['style', 'gradient', 'pattern', 'filter', 'hatch', 'radialGradient', 'linearGradient', 'solidcolor'].indexOf(elem.tagName) != -1) p = p.querySelector('defs');
       append_to(elem, p);
     };
 
@@ -458,8 +447,7 @@ else */ if(text) svg.innerHTML = innerHTML;
     };
     let data = new SvgPath();
 
-    if(typeof path != 'string' && Util.isObject(path) && typeof path.getAttribute == 'function')
-      path = path.getAttribute('d');
+    if(typeof path != 'string' && Util.isObject(path) && typeof path.getAttribute == 'function') path = path.getAttribute('d');
 
     path.replace(segment, (_, command, args) => {
       let type = command.toLowerCase();
@@ -476,8 +464,7 @@ else */ if(text) svg.innerHTML = innerHTML;
           data.cmd(...args);
           return;
         }
-        if(args.length < length[type])
-          throw new Error(`malformed path data (${args.length} < ${length[type]}): ${command} ${args}`);
+        if(args.length < length[type]) throw new Error(`malformed path data (${args.length} < ${length[type]}): ${command} ${args}`);
         data.cmd(...[command].concat(args.splice(0, length[type])));
       }
     });
@@ -498,10 +485,7 @@ else */ if(text) svg.innerHTML = innerHTML;
     else if(Util.isObject(path) && 'd' in path) path = path.d;
     let ret = [...(path + '').matchAll(/([A-Za-z])([^A-Za-z]*)/g)];
     ret = ret.map(command => [...command].slice(1));
-    ret = ret.map(([command, args]) => [
-      command,
-      ...[...args.matchAll(/(0|-?([1-9][0-9]*|)(\.[0-9]*|))/g)].map(m => m[0]).filter(arg => arg !== '')
-    ]);
+    ret = ret.map(([command, args]) => [command, ...[...args.matchAll(/(0|-?([1-9][0-9]*|)(\.[0-9]*|))/g)].map(m => m[0]).filter(arg => arg !== '')]);
 
     //ret = ret.map(command => [...command][0].trim());
     //  ret = ret.map(command => command.split(/(,|\s+)/g));
