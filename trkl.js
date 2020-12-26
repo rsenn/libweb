@@ -139,7 +139,10 @@ trkl.bind = function(object, name, handler) {
   let self = handler;
   if(typeof name == 'object')
     Object.defineProperties(object,
-      Object.keys(name).reduce((acc, key) => ({ ...acc, [key]: { get: name[key], set: name[key], enumerable: true, configurable: true } }), {})
+      Object.keys(name).reduce(
+        (acc, key) => ({ ...acc, [key]: { get: name[key], set: name[key], enumerable: true, configurable: true } }),
+        {}
+      )
     );
   else
     Object.defineProperty(object, name, {

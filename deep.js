@@ -105,7 +105,11 @@ export const iterate = function* (...args) {
     }
 };
 
-export const flatten = (iter, dst = {}, filter = (v, p) => typeof v != 'object' && v != null, map = (p, v) => [p.join('.'), v]) => {
+export const flatten = (iter,
+  dst = {},
+  filter = (v, p) => typeof v != 'object' && v != null,
+  map = (p, v) => [p.join('.'), v]
+) => {
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 

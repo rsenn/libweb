@@ -41,6 +41,11 @@ export class Intersection {
   }
 
   static equals(intersection1, intersection2) {
-    return Point.equals(intersection1.point, intersection2.point) && ((Line.equals(intersection1.line1, intersection2.line1) && Line.equals(intersection1.line2, intersection2.line2)) || (Line.equals(intersection1.line1, intersection2.line2) && Line.equals(intersection1.line2, intersection2.line1)));
+    return (Point.equals(intersection1.point, intersection2.point) &&
+      ((Line.equals(intersection1.line1, intersection2.line1) &&
+        Line.equals(intersection1.line2, intersection2.line2)) ||
+        (Line.equals(intersection1.line1, intersection2.line2) &&
+          Line.equals(intersection1.line2, intersection2.line1)))
+    );
   }
 }

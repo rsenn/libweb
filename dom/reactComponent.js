@@ -92,7 +92,12 @@ export class ReactComponent {
     }
     for(let prop in props) {
       let value = props[prop];
-      s += fmt == 0 ? ` ${prop}="${value + ''}"` : fmt == 1 ? ` ${prop}={${Util.toString(value)}}` : (s == '' ? '' : `, `) + ` ${prop}: ${Util.toString(value)}`;
+      s +=
+        fmt == 0
+          ? ` ${prop}="${value + ''}"`
+          : fmt == 1
+          ? ` ${prop}={${Util.toString(value)}}`
+          : (s == '' ? '' : `, `) + ` ${prop}: ${Util.toString(value)}`;
     }
     if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
 

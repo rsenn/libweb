@@ -38,7 +38,16 @@ export class LibraryRenderer extends EagleSVGRenderer {
    * @param      {<type>}  [opts={}]  The options
    */
   renderItem(item, options = {}) {
-    let { transform, transformation = this.mirrorY, viewRect, viewSize, svgElement = true, create = this.create, index, ...opts } = options;
+    let {
+      transform,
+      transformation = this.mirrorY,
+      viewRect,
+      viewSize,
+      svgElement = true,
+      create = this.create,
+      index,
+      ...opts
+    } = options;
     let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
     //  this.debug(`LibraryRenderer.renderItem`, item, item.raw);
     const layer = item.layer;
@@ -65,7 +74,14 @@ export class LibraryRenderer extends EagleSVGRenderer {
     let prefixes = Util.unique(devicesets.map(deviceset => deviceset && deviceset.prefix).filter(prefix => !!prefix));
     let suffix = '';
     if(item.tagName == 'symbol') {
-      let symbolUsages = devicesets.map(set => [set, [...set.gates.list].map((g, i) => [i, g.name, g.symbol]).filter(([i, name, symbol]) => symbol.name == item.name)]).filter(([set, gates]) => gates.length > 0);
+      let symbolUsages = devicesets
+        .map(set => [
+          set,
+          [...set.gates.list]
+            .map((g, i) => [i, g.name, g.symbol])
+            .filter(([i, name, symbol]) => symbol.name == item.name)
+        ])
+        .filter(([set, gates]) => gates.length > 0);
 
       if(symbolUsages[0]) {
         let [deviceset, gates] = symbolUsages[0];
@@ -130,12 +146,21 @@ if(translation) {
     if(collection instanceof EagleElement) collection = [...collection.children];
 
     this.debug('LibraryRenderer.renderCollection', { collection, options });
-    let items = collection.map((item, index) => [[Util.ucfirst(item.tagName), item.name], this.renderItem(item, { ...options, index })]);
+    let items = collection.map((item, index) => [
+      [Util.ucfirst(item.tagName), item.name],
+      this.renderItem(item, { ...options, index })
+    ]);
     return items;
   }
 
   render(options = {}) {
-    let { component = Fragment, props = {}, item = { component: Fragment, props: {} }, asEntries = false, ...opts } = options;
+    let {
+      component = Fragment,
+      props = {},
+      item = { component: Fragment, props: {} },
+      asEntries = false,
+      ...opts
+    } = options;
     const { symbols, packages, devicesets } = this.doc.library;
     let allItems = (window.allItems = [...symbols.children, ...packages.children]);
     let bbox = allItems.reduce((a, it) => a.update(it.getBounds()), new BBox());
@@ -167,7 +192,9 @@ if(translation) {
     item.props = {};
     return h(component,
       props,
-      items.map(([title, component]) => h(item.component, { class: title[0].toLowerCase(), title, key: title.join('-'), ...item.props }, [component]))
+      items.map(([title, component]) =>
+        h(item.component, { class: title[0].toLowerCase(), title, key: title.join('-'), ...item.props }, [component])
+      )
     );
   }
 }

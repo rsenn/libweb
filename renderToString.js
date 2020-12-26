@@ -8,7 +8,10 @@ let indent = function(s, char) {
   return String(s).replace(/(\n+)/g, '$1' + (char || '\t'));
 };
 let isLargeString = function(s, length, ignoreLines) {
-  return String(s).length > (length || 40) || (!ignoreLines && String(s).indexOf('\n') !== -1) || String(s).indexOf('<') !== -1;
+  return (String(s).length > (length || 40) ||
+    (!ignoreLines && String(s).indexOf('\n') !== -1) ||
+    String(s).indexOf('<') !== -1
+  );
 };
 let JS_TO_CSS = {};
 function styleObjToCss(s) {
@@ -19,7 +22,8 @@ function styleObjToCss(s) {
       if(str) {
         str += ' ';
       }
-      str += prop[0] == '-' ? prop : JS_TO_CSS[prop] || (JS_TO_CSS[prop] = prop.replace(/([A-Z])/g, '-$1').toLowerCase());
+      str +=
+        prop[0] == '-' ? prop : JS_TO_CSS[prop] || (JS_TO_CSS[prop] = prop.replace(/([A-Z])/g, '-$1').toLowerCase());
       str += ': ';
       str += val;
       if(typeof val === 'number' && IS_NON_DIMENSIONAL.test(prop) === false) {
@@ -83,7 +87,9 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
       let children$1 = [];
       getChildren(children$1, vnode.props.children);
       for(let i = 0; i < children$1.length; i++) {
-        rendered += (i > 0 && pretty ? '\n' : '') + renderToString(children$1[i], context, opts, opts.shallowHighOrder !== false, isSvgMode, selectValue);
+        rendered +=
+          (i > 0 && pretty ? '\n' : '') +
+          renderToString(children$1[i], context, opts, opts.shallowHighOrder !== false, isSvgMode, selectValue);
       }
       return rendered;
     } else {
@@ -151,7 +157,9 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
       if(name.match(/[\s\n\\/='"\0<>]/)) {
         continue;
       }
-      if(!(opts && opts.allAttributes) && (name === 'key' || name === 'ref' || name === '__self' || name === '__source' || name === 'defaultValue')) {
+      if(!(opts && opts.allAttributes) &&
+        (name === 'key' || name === 'ref' || name === '__self' || name === '__source' || name === 'defaultValue')
+      ) {
         continue;
       }
       if(name === 'className') {
@@ -215,7 +223,8 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
   if(String(nodeName).match(/[\s\n\\/='"\0<>]/)) {
     throw new Error(nodeName + ' is not a valid HTML tag name in ' + s);
   }
-  let isVoid = String(nodeName).match(VOID_ELEMENTS) || (opts.voidElements && String(nodeName).match(opts.voidElements));
+  let isVoid =
+    String(nodeName).match(VOID_ELEMENTS) || (opts.voidElements && String(nodeName).match(opts.voidElements));
   if(isVoid) {
     s = s.replace(/>$/, ' />');
   }

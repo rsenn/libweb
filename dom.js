@@ -32,7 +32,10 @@ export function dom() {
   let ret = [];
 
   const extend = (e, functions) => {
-    const keys = [...Util.members(functions)].filter(key => ['callee', 'caller', 'arguments', 'call', 'bind', 'apply', 'prototype', 'constructor', 'length'].indexOf(key) == -1 && typeof functions[key] == 'function');
+    const keys = [...Util.members(functions)].filter(key =>
+        ['callee', 'caller', 'arguments', 'call', 'bind', 'apply', 'prototype', 'constructor', 'length'].indexOf(key) ==
+          -1 && typeof functions[key] == 'function'
+    );
     for(let key of keys) if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
   };
 
@@ -189,7 +192,14 @@ export { SVG } from './dom/svg.js';
 export { Container } from './dom/container.js';
 export { Layer, Renderer } from './dom/layer.js';
 export { Select } from './dom/select.js';
-export { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from './dom/elementRect.js';
+export {
+  ElementPosProps,
+  ElementRectProps,
+  ElementRectProxy,
+  ElementSizeProps,
+  ElementWHProps,
+  ElementXYProps
+} from './dom/elementRect.js';
 export { Align, Anchor } from './geom/align.js';
 
 export default Object.assign(dom, {

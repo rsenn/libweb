@@ -37,7 +37,8 @@ export const INSPECT_MAX_BYTES = 50;
  * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
  * get the Object implementation, which is slower but behaves correctly.
  */
-Buffer.TYPED_ARRAY_SUPPORT = globalThis.TYPED_ARRAY_SUPPORT !== undefined ? globalThis.TYPED_ARRAY_SUPPORT : typedArraySupport();
+Buffer.TYPED_ARRAY_SUPPORT =
+  globalThis.TYPED_ARRAY_SUPPORT !== undefined ? globalThis.TYPED_ARRAY_SUPPORT : typedArraySupport();
 
 /*
  * Export kMaxLength after typed array support is determined.
@@ -175,7 +176,9 @@ function alloc(that, size, fill, encoding) {
     // Only pay attention to encoding if it's a string. This
     // prevents accidentally sending in a number that would
     // be interpretted as a start offset.
-    return typeof encoding === 'string' ? createBuffer(that, size).fill(fill, encoding) : createBuffer(that, size).fill(fill);
+    return typeof encoding === 'string'
+      ? createBuffer(that, size).fill(fill, encoding)
+      : createBuffer(that, size).fill(fill);
   }
   return createBuffer(that, size);
 }
@@ -308,7 +311,8 @@ function checked(length) {
   // Note: cannot use `length < kMaxLength()` here because that fails when
   // length is NaN (which is otherwise coerced to zero.)
   if(length >= kMaxLength()) {
-    throw new RangeError('Attempt to allocate Buffer larger than maximum ' + 'size: 0x' + kMaxLength().toString(16) + ' bytes');
+    throw new RangeError('Attempt to allocate Buffer larger than maximum ' + 'size: 0x' + kMaxLength().toString(16) + ' bytes'
+    );
   }
   return length | 0;
 }
@@ -400,7 +404,10 @@ function byteLength(string, encoding) {
   if(Buffer.isBuffer(string)) {
     return string.length;
   }
-  if(typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' && (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
+  if(typeof ArrayBuffer !== 'undefined' &&
+    typeof ArrayBuffer.isView === 'function' &&
+    (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)
+  ) {
     return string.byteLength;
   }
   if(typeof string !== 'string') {
@@ -943,7 +950,11 @@ function utf8Slice(buf, start, end) {
           thirdByte = buf[i + 2];
           fourthByte = buf[i + 3];
           if((secondByte & 0xc0) === 0x80 && (thirdByte & 0xc0) === 0x80 && (fourthByte & 0xc0) === 0x80) {
-            tempCodePoint = ((firstByte & 0xf) << 0x12) | ((secondByte & 0x3f) << 0xc) | ((thirdByte & 0x3f) << 0x6) | (fourthByte & 0x3f);
+            tempCodePoint =
+              ((firstByte & 0xf) << 0x12) |
+              ((secondByte & 0x3f) << 0xc) |
+              ((thirdByte & 0x3f) << 0x6) |
+              (fourthByte & 0x3f);
             if(tempCodePoint > 0xffff && tempCodePoint < 0x110000) {
               codePoint = tempCodePoint;
             }
@@ -1685,7 +1696,11 @@ function utf8ToBytes(string, units) {
       bytes.push((codePoint >> 0xc) | 0xe0, ((codePoint >> 0x6) & 0x3f) | 0x80, (codePoint & 0x3f) | 0x80);
     } else if(codePoint < 0x110000) {
       if((units -= 4) < 0) break;
-      bytes.push((codePoint >> 0x12) | 0xf0, ((codePoint >> 0xc) & 0x3f) | 0x80, ((codePoint >> 0x6) & 0x3f) | 0x80, (codePoint & 0x3f) | 0x80);
+      bytes.push((codePoint >> 0x12) | 0xf0,
+        ((codePoint >> 0xc) & 0x3f) | 0x80,
+        ((codePoint >> 0x6) & 0x3f) | 0x80,
+        (codePoint & 0x3f) | 0x80
+      );
     } else {
       throw new Error('Invalid code point');
     }

@@ -202,7 +202,8 @@ function createForOfIteratorHelperLoose(o) {
           value: o[i++]
         };
       };
-    throw new TypeError('Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.');
+    throw new TypeError('Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
+    );
   }
 
   i = o[Symbol.iterator]();
@@ -216,7 +217,8 @@ let chainFns = function chainFns() {
   for(var _len = arguments.length, fns = new Array(_len), _key = 0; _key < _len; _key++) fns[_key] = arguments[_key];
 
   return function() {
-    for(var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) args[_key2] = arguments[_key2];
+    for(var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++)
+      args[_key2] = arguments[_key2];
 
     return fns.forEach(fn => fn.apply(void 0, args));
   };
@@ -707,9 +709,12 @@ let Recognizer = /*#__PURE__*/ (function () {
 
       if(ms === void 0) ms = 140;
 
-      for(var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) args[_key - 2] = arguments[_key];
+      for(var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++)
+        args[_key - 2] = arguments[_key];
 
-      _this.controller.timeouts[_this.stateKey] = (_window = window).setTimeout.apply(_window, [callback, ms].concat(args));
+      _this.controller.timeouts[_this.stateKey] = (_window = window).setTimeout.apply(_window,
+        [callback, ms].concat(args)
+      );
     }; // Convenience method to clear a timeout for a given gesture
 
     this.clearTimeout = function() {
@@ -1101,7 +1106,10 @@ let DragRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       // this means that we might be dealing with mouse simulated events if they're close to
       // each other. We're only doing this check when we're not using pointer events.
 
-      if(!thisObj.controller.config.pointer && thisObj.isEventTypeTouch(_lastEventType) && !thisObj.isEventTypeTouch(event.type)) {
+      if(!thisObj.controller.config.pointer &&
+        thisObj.isEventTypeTouch(_lastEventType) &&
+        !thisObj.isEventTypeTouch(event.type)
+      ) {
         let delay = Math.abs(event.timeStamp - thisObj.state.startTime);
         if(delay < FILTER_REPEATED_EVENTS_DELAY) return false;
       }
@@ -1441,7 +1449,13 @@ function getInternalDragOptions(dragConfig) {
     bounds = _dragConfig.bounds,
     rubberband = _dragConfig.rubberband,
     initial = _dragConfig.initial,
-    dragOptions = objectWithoutPropertiesLoose(_dragConfig, ['enabled', 'threshold', 'bounds', 'rubberband', 'initial']);
+    dragOptions = objectWithoutPropertiesLoose(_dragConfig, [
+      'enabled',
+      'threshold',
+      'bounds',
+      'rubberband',
+      'initial'
+    ]);
 
   let _dragOptions$swipeVel = dragOptions.swipeVelocity,
     swipeVelocity = _dragOptions$swipeVel === void 0 ? DEFAULT_SWIPE_VELOCITY : _dragOptions$swipeVel,
@@ -1615,7 +1629,11 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
         values = _getTwoTouchesEventDa.values,
         origin = _getTwoTouchesEventDa.origin;
       thisObj.updateSharedState(getGenericEventData(event));
-      let startState = _extends({}, thisObj.getStartGestureState(values, event), {}, thisObj.getGenericPayload(event, true));
+      let startState = _extends({},
+        thisObj.getStartGestureState(values, event),
+        {},
+        thisObj.getGenericPayload(event, true)
+      );
       thisObj.updateGestureState(_extends({}, startState, {}, thisObj.getMovement(values, startState), {
           origin,
           cancel: function cancel() {
@@ -1691,7 +1709,11 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
       let _getWebkitGestureEven = getWebkitGestureEventValues(event),
         values = _getWebkitGestureEven.values;
       thisObj.updateSharedState(getGenericEventData(event));
-      let startState = _extends({}, thisObj.getStartGestureState(values, event), {}, thisObj.getGenericPayload(event, true));
+      let startState = _extends({},
+        thisObj.getStartGestureState(values, event),
+        {},
+        thisObj.getGenericPayload(event, true)
+      );
       thisObj.updateGestureState(_extends({}, startState, {}, thisObj.getMovement(values, startState), {
           cancel: function cancel() {
             return thisObj.onCancel();
@@ -1788,13 +1810,19 @@ let PinchRecognizer = /*#__PURE__*/ (function (_DistanceAngleRecogni) {
       if(!thisObj.controller.config.eventOptions.passive) {
         event.preventDefault();
       } else if(process.env.NODE_ENV === 'development') {
-        console.warn('To support zoom on trackpads, try using the `domTarget` option and `config.event.passive` set to `false`. This message will only appear in development mode.');
+        console.warn('To support zoom on trackpads, try using the `domTarget` option and `config.event.passive` set to `false`. This message will only appear in development mode.'
+        );
       }
       thisObj.updateSharedState(getGenericEventData(event));
 
-      let startState = _extends({}, thisObj.getStartGestureState(values, event), {}, thisObj.getGenericPayload(event, true), {
-        initial: thisObj.state.values
-      });
+      let startState = _extends({},
+        thisObj.getStartGestureState(values, event),
+        {},
+        thisObj.getGenericPayload(event, true),
+        {
+          initial: thisObj.state.values
+        }
+      );
 
       thisObj.updateGestureState(_extends({}, startState, {}, thisObj.getMovement(values, startState), {
           offset: values,
@@ -1937,9 +1965,14 @@ let WheelRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       let _this$getValuesFromEv = thisObj.getValuesFromEvent(event),
         values = _this$getValuesFromEv.values;
       thisObj.updateSharedState(getGenericEventData(event));
-      let startState = _extends({}, thisObj.getStartGestureState(values, event), {}, thisObj.getGenericPayload(event, true), {
-        initial: thisObj.state.values
-      });
+      let startState = _extends({},
+        thisObj.getStartGestureState(values, event),
+        {},
+        thisObj.getGenericPayload(event, true),
+        {
+          initial: thisObj.state.values
+        }
+      );
       let movementDetection = thisObj.getMovement(values, startState);
       let delta = movementDetection.delta;
       thisObj.updateGestureState(_extends({}, startState, {}, movementDetection, {
@@ -2050,7 +2083,11 @@ let MoveRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       let _getPointerEventValue = getPointerEventValues(event),
         values = _getPointerEventValue.values;
       thisObj.updateSharedState(getGenericEventData(event));
-      let startState = _extends({}, thisObj.getStartGestureState(values, event), {}, thisObj.getGenericPayload(event, true));
+      let startState = _extends({},
+        thisObj.getStartGestureState(values, event),
+        {},
+        thisObj.getGenericPayload(event, true)
+      );
       thisObj.updateGestureState(_extends({}, startState, {}, thisObj.getMovement(values, startState)));
       thisObj.fireGestureHandler();
     };
@@ -2082,11 +2119,18 @@ let MoveRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       if(thisObj.controller.config.hover.enabled) {
         let _getPointerEventValue3 = getPointerEventValues(event),
           values = _getPointerEventValue3.values;
-        let state = _extends({}, thisObj.controller.state.shared, {}, thisObj.state, {}, thisObj.getGenericPayload(event, true), {
-          values,
-          active: true,
-          hovering: true
-        });
+        let state = _extends({},
+          thisObj.controller.state.shared,
+          {},
+          thisObj.state,
+          {},
+          thisObj.getGenericPayload(event, true),
+          {
+            values,
+            active: true,
+            hovering: true
+          }
+        );
         thisObj.controller.handlers.hover(_extends({}, state, {}, thisObj.mapStateValues(state)));
       }
       if('move' in thisObj.controller.handlers) thisObj.onMoveStart(event);
@@ -2098,10 +2142,16 @@ let MoveRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       if(thisObj.controller.config.hover.enabled) {
         let _getPointerEventValue4 = getPointerEventValues(event),
           values = _getPointerEventValue4.values;
-        let state = _extends({}, thisObj.controller.state.shared, {}, thisObj.state, {}, thisObj.getGenericPayload(event), {
-          values,
-          active: false
-        });
+        let state = _extends({},
+          thisObj.controller.state.shared,
+          {},
+          thisObj.state,
+          {},
+          thisObj.getGenericPayload(event), {
+            values,
+            active: false
+          }
+        );
         thisObj.controller.handlers.hover(_extends({}, state, {}, thisObj.mapStateValues(state)));
       }
     };
@@ -2254,9 +2304,14 @@ let ScrollRecognizer = /*#__PURE__*/ (function (_CoordinatesRecognize) {
       let _getScrollEventValues = getScrollEventValues(event),
         values = _getScrollEventValues.values;
       thisObj.updateSharedState(getGenericEventData(event));
-      let startState = _extends({}, thisObj.getStartGestureState(values, event), {}, thisObj.getGenericPayload(event, true), {
-        initial: thisObj.state.values
-      });
+      let startState = _extends({},
+        thisObj.getStartGestureState(values, event),
+        {},
+        thisObj.getGenericPayload(event, true),
+        {
+          initial: thisObj.state.values
+        }
+      );
       let movementDetection = thisObj.getMovement(values, startState);
       let delta = movementDetection.delta;
       thisObj.updateGestureState(_extends({}, startState, {}, movementDetection, {

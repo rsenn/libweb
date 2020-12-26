@@ -51,7 +51,10 @@ export class CSS {
     if(Util.isObject(stylesheet) && stylesheet.cssRules !== undefined) ret = getStyleSheet(stylesheet);
     else {
       ret = [...CSS.list()];
-      ret = typeof stylesheet == 'number' ? ret[stylesheet] : ret.find((item, i) => i === stylesheet || item.file === stylesheet);
+      ret =
+        typeof stylesheet == 'number'
+          ? ret[stylesheet]
+          : ret.find((item, i) => i === stylesheet || item.file === stylesheet);
 
       if(ret) ret = ret.stylesheet;
     }

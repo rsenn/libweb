@@ -8,8 +8,15 @@ export async function ConsoleSetup(opts = {}) {
     ({ stdout, env }) => ({ stdout, env }),
     () => ({ stdout: {}, env: {} })
   );
-  const defaultBreakLength = (proc && proc.stdout && proc.stdout.isTTY && proc.stdout.columns) || proc.env.COLUMNS || 80; // Infinity;
-  const { depth = 2, colors = await Util.isatty(1), breakLength = defaultBreakLength, maxArrayLength = Infinity, ...options } = opts;
+  const defaultBreakLength =
+    (proc && proc.stdout && proc.stdout.isTTY && proc.stdout.columns) || proc.env.COLUMNS || 80; // Infinity;
+  const {
+    depth = 2,
+    colors = await Util.isatty(1),
+    breakLength = defaultBreakLength,
+    maxArrayLength = Infinity,
+    ...options
+  } = opts;
   ret = await Util.tryCatch(async () => {
       const Console = await import('console').then(module => module.Console);
       ret = new Console({
@@ -42,7 +49,9 @@ export async function ConsoleSetup(opts = {}) {
           return ObjectInspect(obj, { customInspect: true, ...options, ...opts });
         },
         log(...args) {
-          return log.call(this, ...args.map(arg => (typeof arg != 'string' || !Util.isPrimitive(arg) ? ObjectInspect(arg, options) : arg)));
+          return log.call(this,
+            ...args.map(arg => (typeof arg != 'string' || !Util.isPrimitive(arg) ? ObjectInspect(arg, options) : arg))
+          );
         }
       });
     }

@@ -3,7 +3,8 @@ function oneObject(str) {
   str.split(',').forEach(_ => (obj[_] = true));
   return obj;
 }
-let voidTag = oneObject('area,base,basefont,br,col,frame,hr,img,input,link,meta,param,embed,command,keygen,source,track,wbr');
+let voidTag = oneObject('area,base,basefont,br,col,frame,hr,img,input,link,meta,param,embed,command,keygen,source,track,wbr'
+);
 let specalTag = oneObject('xmp,style,script,noscript,textarea,template,#comment');
 
 let hiddenTag = oneObject('style,script,noscript,template');

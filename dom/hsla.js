@@ -30,7 +30,9 @@ export function HSLA(h = 0, s = 0, l = 0, a = 1.0) {
   } else if(typeof args[0] == 'string') {
     const arg = args[0];
     if(typeof arg === 'string') {
-      let matches = /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) || /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
+      let matches =
+        /hsla\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?),\s*([0-9.]+)\s*\)/g.exec(arg) ||
+        /hsl\(\s*([0-9.]+)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)/g.exec(arg);
 
       if(matches != null) c = [...matches].slice(1);
     }

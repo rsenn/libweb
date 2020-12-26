@@ -19,11 +19,15 @@ export const HORIZONTAL_VERTICAL = VERTICAL | HORIZONTAL;
 
 export let DEBUG = false;
 
-export let log = DEBUG ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console) : () => {};
+export let log = DEBUG
+  ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console)
+  : () => {};
 
 export const setDebug = state => {
   DEBUG = state;
-  log = state ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console) : () => {};
+  log = state
+    ? (typeof console.debug == 'function' ? console.debug : console.info || console.log).bind(console)
+    : () => {};
 };
 
 export const PinSizes = {

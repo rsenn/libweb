@@ -12,7 +12,12 @@ const CLIPPER = new ClipperLib.Clipper();
 const CLIPPER_OFFSET = new ClipperLib.ClipperOffset();
 
 export default class Shape {
-  constructor(paths = [], closed = true, capitalConversion = false, integerConversion = false, removeDuplicates = false) {
+  constructor(paths = [],
+    closed = true,
+    capitalConversion = false,
+    integerConversion = false,
+    removeDuplicates = false
+  ) {
     this.paths = paths;
     if(capitalConversion) this.paths = this.paths.map(mapLowerToCapital);
     if(integerConversion) this.paths = this.paths.map(mapToRound);

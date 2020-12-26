@@ -23,4 +23,5 @@ export const getPositionOnElement = compose(({ left, top }) => (x, y) => ({
   getOffset
 );
 
-export const isChildOf = (child, parent) => !!(child && parent) && (child === parent || isChildOf(child.parentElement, parent));
+export const isChildOf = (child, parent) =>
+  !!(child && parent) && (child === parent || isChildOf(child.parentElement, parent));
