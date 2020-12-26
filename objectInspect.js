@@ -1,14 +1,10 @@
 const hasMap = typeof Map === 'function' && Map.prototype;
-const mapSizeDescriptor =
-  Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, 'size') : null;
-const mapSize =
-  hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === 'function' ? mapSizeDescriptor.get : null;
+const mapSizeDescriptor = Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, 'size') : null;
+const mapSize = hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === 'function' ? mapSizeDescriptor.get : null;
 const mapForEach = hasMap && Map.prototype.forEach;
 const hasSet = typeof Set === 'function' && Set.prototype;
-const setSizeDescriptor =
-  Object.getOwnPropertyDescriptor && hasSet ? Object.getOwnPropertyDescriptor(Set.prototype, 'size') : null;
-const setSize =
-  hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function' ? setSizeDescriptor.get : null;
+const setSizeDescriptor = Object.getOwnPropertyDescriptor && hasSet ? Object.getOwnPropertyDescriptor(Set.prototype, 'size') : null;
+const setSize = hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function' ? setSizeDescriptor.get : null;
 const setForEach = hasSet && Set.prototype.forEach;
 const hasWeakMap = typeof WeakMap === 'function' && WeakMap.prototype;
 const weakMapHas = hasWeakMap ? WeakMap.prototype.has : null;
@@ -33,9 +29,7 @@ function inspect_(obj, options, depth, seen) {
     throw new TypeError('option "quoteStyle" must be "single" or "double"');
   }
   for(let optName of ['maxStringLength', 'maxArrayLength', 'breakLength']) {
-    if(has(opts, optName) &&
-      (typeof opts[optName] === 'number' ? opts[optName] < 0 && opts[optName] !== Infinity : opts[optName] !== null)
-    ) {
+    if(has(opts, optName) && (typeof opts[optName] === 'number' ? opts[optName] < 0 && opts[optName] !== Infinity : opts[optName] !== null)) {
       throw new TypeError(`option "${optName}", if provided, must be a positive integer, Infinity, or 'null'`);
     }
   }
@@ -47,11 +41,7 @@ function inspect_(obj, options, depth, seen) {
     throw new TypeError('option "customInspect", if provided, must be `true` or `false`');
   }
 
-  if(has(opts, 'indent') &&
-    opts.indent !== null &&
-    opts.indent !== '\t' &&
-    !(parseInt(opts.indent, 10) === opts.indent && opts.indent > 0)
-  ) {
+  if(has(opts, 'indent') && opts.indent !== null && opts.indent !== '\t' && !(parseInt(opts.indent, 10) === opts.indent && opts.indent > 0)) {
     throw new TypeError('options "indent" must be "\\t", an integer > 0, or `null`');
   }
   //console.reallog('opts.colors', opts.colors);
@@ -111,9 +101,13 @@ function inspect_(obj, options, depth, seen) {
       seen = seen.slice();
       seen.push(from);
     }
+    let newOpts = {
+      ...opts,
+      multiline: opts.multiline ? (typeof opts.multiline == 'number' ? opts.multiline - 1 : true) : false
+    };
     if(noIndent) {
-      const newOpts = {
-        ...opts,
+      newOpts = {
+        ...newOpts,
         depth: opts.depth
       };
       if(has(opts, 'quoteStyle')) {
@@ -121,7 +115,7 @@ function inspect_(obj, options, depth, seen) {
       }
       return inspect_(value, newOpts, depth + 1, seen);
     }
-    return inspect_(value, opts, depth + 1, seen);
+    return inspect_(value, newOpts, depth + 1, seen);
   }
 
   let s = '';
@@ -193,9 +187,19 @@ function inspect_(obj, options, depth, seen) {
     if(parts.length === 0) s += '[' + String(obj) + ']';
     else s += '{ [' + String(obj) + '] ' + parts.join(', ') + ' }';
   } else if(isMap(obj)) {
-    const mapParts = [];
+    let mapKeys = [],
+      mapParts = [];
     mapForEach.call(obj, function(value, key) {
-      mapParts.push(inspect(key, obj, true) + ' => ' + inspect(value, obj));
+      mapKeys.push(inspect(key, obj, true));
+    });
+    let i = 0;
+    if(opts.alignMap) {
+      let maxKeyLen = mapKeys.reduce((a, k) => (k.length > a ? k.length : a), 0);
+      mapKeys = mapKeys.map(key => key.padEnd(maxKeyLen));
+    }
+
+    mapForEach.call(obj, function(value, key) {
+      mapParts.push(mapKeys[i++] + ' => ' + inspect(value, obj));
     });
     s += collectionOf('Map', mapSize.call(obj), mapParts, indent);
   } else if(isSet(obj)) {
@@ -224,9 +228,9 @@ function inspect_(obj, options, depth, seen) {
       if(className) s += className + ' ';
     }
     s += '{';
-    const ys = arrObjKeys(obj, inspect, opts);
+    const ys = arrObjKeys(obj, inspect, { ...opts });
     if(ys.length == 0) {
-    } else if(indent && opts.multiline !== false) {
+    } else if(indent && opts.multiline) {
       s += indentedJoin(ys, indent);
     } else {
       s += ' ' + ys.join(', ') + ' ';
