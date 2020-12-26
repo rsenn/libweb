@@ -40,8 +40,7 @@ function xml2json_translator() {
 
         if(xml.attributes.length)
           //element with attributes  ..
-          for(let i = 0; i < xml.attributes.length; i++)
-            parent[/*xml.nodeName + "@" +*/ xml.attributes[i].nodeName] = xml.attributes[i].nodeValue;
+          for(let i = 0; i < xml.attributes.length; i++) parent[/*xml.nodeName + "@" +*/ xml.attributes[i].nodeName] = xml.attributes[i].nodeValue;
 
         if(xml.firstChild) {
           //element has child nodes. Figure out some properties of it's structure, to guide us later.
@@ -158,8 +157,7 @@ function xml2json_translator() {
           let s = '';
           if(n.nodeType == 1) {
             s += '<' + n.nodeName;
-            for(let i = 0; i < n.attributes.length; i++)
-              s += ' ' + n.attributes[i].nodeName + '="' + (n.attributes[i].nodeValue || '').toString() + '"';
+            for(let i = 0; i < n.attributes.length; i++) s += ' ' + n.attributes[i].nodeName + '="' + (n.attributes[i].nodeValue || '').toString() + '"';
             if(n.firstChild) {
               s += '>';
               for(let c = n.firstChild; c; c = c.nextSibling) s += asXml(c);

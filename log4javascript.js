@@ -75,10 +75,7 @@
       for(var i = 0, len = arguments.length; i < len; i++) {
         argumentsArray[i] = arguments[i];
       }
-      let itemsToAppend =
-        argumentsArray.length > 2
-          ? (itemsAfterDeleted = argumentsArray.slice(2).concat(itemsAfterDeleted))
-          : itemsAfterDeleted;
+      let itemsToAppend = argumentsArray.length > 2 ? (itemsAfterDeleted = argumentsArray.slice(2).concat(itemsAfterDeleted)) : itemsAfterDeleted;
       for(i = 0, len = itemsToAppend.length; i < len; i++) {
         this.push(itemsToAppend[i]);
       }
@@ -115,8 +112,7 @@
     addEventListener(eventType, listener) {
       if(typeof listener == 'function') {
         if(!array_contains(this.eventTypes, eventType)) {
-          handleError('log4javascript.EventSupport [' + this + "]: addEventListener: no event called '" + eventType + "'"
-          );
+          handleError('log4javascript.EventSupport [' + this + "]: addEventListener: no event called '" + eventType + "'");
         }
         this.eventListeners[eventType].push(listener);
       } else {
@@ -127,8 +123,7 @@
     removeEventListener(eventType, listener) {
       if(typeof listener == 'function') {
         if(!array_contains(this.eventTypes, eventType)) {
-          handleError('log4javascript.EventSupport [' + this + "]: removeEventListener: no event called '" + eventType + "'"
-          );
+          handleError('log4javascript.EventSupport [' + this + "]: removeEventListener: no event called '" + eventType + "'");
         }
         array_remove(this.eventListeners[eventType], listener);
       } else {
@@ -231,12 +226,7 @@
           return encodeURIComponent(str);
         }
       : function(str) {
-          return escape(str)
-            .replace(/\+/g, '%2B')
-            .replace(/"/g, '%22')
-            .replace(/'/g, '%27')
-            .replace(/\//g, '%2F')
-            .replace(/=/g, '%3D');
+          return escape(str).replace(/\+/g, '%2B').replace(/"/g, '%22').replace(/'/g, '%27').replace(/\//g, '%2F').replace(/=/g, '%3D');
         };
 
   function array_remove(arr, val) {
@@ -588,8 +578,7 @@
       } else if(level instanceof Level) {
         loggerLevel = level;
       } else {
-        handleError('Logger.setLevel: level supplied to logger ' + this.name + ' is not an instance of log4javascript.Level'
-        );
+        handleError('Logger.setLevel: level supplied to logger ' + this.name + ' is not an instance of log4javascript.Level');
       }
     };
 
@@ -751,10 +740,7 @@
     //Use default logger if loggerName is not specified or invalid
     if(typeof loggerName != 'string') {
       loggerName = anonymousLoggerName;
-      logLog.warn('log4javascript.getLogger: non-string logger name ' +
-          toStr(loggerName) +
-          ' supplied, returning anonymous logger'
-      );
+      logLog.warn('log4javascript.getLogger: non-string logger name ' + toStr(loggerName) + ' supplied, returning anonymous logger');
     }
 
     //Do not allow retrieval of the root logger by name
@@ -1106,12 +1092,7 @@
       return '<log4javascript:message><![CDATA[' + layout.escapeCdata(message) + ']]></log4javascript:message>';
     }
 
-    let str =
-      '<log4javascript:event logger="' +
-      loggingEvent.logger.name +
-      '" timestamp="' +
-      this.getTimeStampValue(loggingEvent) +
-      '"';
+    let str = '<log4javascript:event logger="' + loggingEvent.logger.name + '" timestamp="' + this.getTimeStampValue(loggingEvent) + '"';
     if(!this.isTimeStampsInMilliseconds()) {
       str += ' milliseconds="' + loggingEvent.milliseconds + '"';
     }
@@ -1127,21 +1108,11 @@
     }
     if(this.hasCustomFields()) {
       for(i = 0, len = this.customFields.length; i < len; i++) {
-        str +=
-          '<log4javascript:customfield name="' +
-          this.customFields[i].name +
-          '"><![CDATA[' +
-          this.customFields[i].value.toString() +
-          ']]></log4javascript:customfield>' +
-          newLine;
+        str += '<log4javascript:customfield name="' + this.customFields[i].name + '"><![CDATA[' + this.customFields[i].value.toString() + ']]></log4javascript:customfield>' + newLine;
       }
     }
     if(loggingEvent.exception) {
-      str +=
-        '<log4javascript:exception><![CDATA[' +
-        getExceptionStringRep(loggingEvent.exception) +
-        ']]></log4javascript:exception>' +
-        newLine;
+      str += '<log4javascript:exception><![CDATA[' + getExceptionStringRep(loggingEvent.exception) + ']]></log4javascript:exception>' + newLine;
     }
     str += '</log4javascript:event>' + newLine + newLine;
     return str;
@@ -1329,8 +1300,7 @@
             childExpansion = doFormat(obj[i], childDepth, childIndentation);
             childLines.push(childIndentation + childExpansion);
           } catch(ex) {
-            childLines.push(childIndentation + 'Error formatting array member. Details: ' + getExceptionStringRep(ex) + ''
-            );
+            childLines.push(childIndentation + 'Error formatting array member. Details: ' + getExceptionStringRep(ex) + '');
           }
         }
         expansion += childLines.join(',' + newLine) + newLine + indentation + ']';
@@ -1348,8 +1318,7 @@
             childExpansion = doFormat(obj[i], childDepth, childIndentation);
             childLines.push(childIndentation + i + ': ' + childExpansion);
           } catch(ex) {
-            childLines.push(childIndentation + i + ': Error formatting property. Details: ' + getExceptionStringRep(ex)
-            );
+            childLines.push(childIndentation + i + ': Error formatting property. Details: ' + getExceptionStringRep(ex));
           }
         }
         expansion += childLines.join(',' + newLine) + newLine + indentation + '}';
@@ -1367,20 +1336,7 @@
 
   (function () {
     let regex = /('[^']*')|(G+|y+|M+|w+|W+|D+|d+|F+|E+|a+|H+|k+|K+|h+|m+|s+|S+|Z+)|([a-zA-Z]+)|([^a-zA-Z']+)/;
-    let monthNames = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ];
+    let monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     let dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     let TEXT2 = 0,
       TEXT3 = 1,
@@ -1427,14 +1383,7 @@
     };
 
     Date.prototype.getUTCTime = function() {
-      return Date.UTC(this.getFullYear(),
-        this.getMonth(),
-        this.getDate(),
-        this.getHours(),
-        this.getMinutes(),
-        this.getSeconds(),
-        this.getMilliseconds()
-      );
+      return Date.UTC(this.getFullYear(), this.getMonth(), this.getDate(), this.getHours(), this.getMinutes(), this.getSeconds(), this.getMilliseconds());
     };
 
     Date.prototype.getTimeSince = function(d) {
@@ -1454,9 +1403,7 @@
       }
       let previousSunday = this.getPreviousSunday();
       let startOfYear = newDateAtMidnight(this.getFullYear(), 0, 1);
-      let numberOfSundays = previousSunday.isBefore(startOfYear)
-        ? 0
-        : 1 + Math.floor(previousSunday.getTimeSince(startOfYear) / ONE_WEEK);
+      let numberOfSundays = previousSunday.isBefore(startOfYear) ? 0 : 1 + Math.floor(previousSunday.getTimeSince(startOfYear) / ONE_WEEK);
       let numberOfDaysInFirstWeek = 7 - startOfYear.getDay();
       let weekInYear = numberOfSundays;
       if(numberOfDaysInFirstWeek < minimalDaysInFirstWeek) {
@@ -1471,9 +1418,7 @@
       }
       let previousSunday = this.getPreviousSunday();
       let startOfMonth = newDateAtMidnight(this.getFullYear(), this.getMonth(), 1);
-      let numberOfSundays = previousSunday.isBefore(startOfMonth)
-        ? 0
-        : 1 + Math.floor(previousSunday.getTimeSince(startOfMonth) / ONE_WEEK);
+      let numberOfSundays = previousSunday.isBefore(startOfMonth) ? 0 : 1 + Math.floor(previousSunday.getTimeSince(startOfMonth) / ONE_WEEK);
       let numberOfDaysInFirstWeek = 7 - startOfMonth.getDay();
       let weekInMonth = numberOfSundays;
       if(numberOfDaysInFirstWeek >= minimalDaysInFirstWeek) {
@@ -1502,9 +1447,7 @@
     };
 
     SimpleDateFormat.prototype.getMinimalDaysInFirstWeek = function() {
-      return isUndefined(this.minimalDaysInFirstWeek)
-        ? DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK
-        : this.minimalDaysInFirstWeek;
+      return isUndefined(this.minimalDaysInFirstWeek) ? DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK : this.minimalDaysInFirstWeek;
     };
 
     let padWithZeroes = function(str, len) {
@@ -1710,12 +1653,7 @@
             if(specifier) {
               depth = parseInt(specifier, 10);
               if(isNaN(depth)) {
-                handleError("PatternLayout.format: invalid specifier '" +
-                    specifier +
-                    "' for conversion character '" +
-                    conversionCharacter +
-                    "' - should be a number"
-                );
+                handleError("PatternLayout.format: invalid specifier '" + specifier + "' for conversion character '" + conversionCharacter + "' - should be a number");
                 depth = 0;
               }
             }
@@ -1767,20 +1705,11 @@
               if(specifier) {
                 fieldIndex = parseInt(specifier, 10);
                 if(isNaN(fieldIndex)) {
-                  handleError("PatternLayout.format: invalid specifier '" +
-                      specifier +
-                      "' for conversion character 'f' - should be a number"
-                  );
+                  handleError("PatternLayout.format: invalid specifier '" + specifier + "' for conversion character 'f' - should be a number");
                 } else if(fieldIndex === 0) {
-                  handleError("PatternLayout.format: invalid specifier '" +
-                      specifier +
-                      "' for conversion character 'f' - must be greater than zero"
-                  );
+                  handleError("PatternLayout.format: invalid specifier '" + specifier + "' for conversion character 'f' - must be greater than zero");
                 } else if(fieldIndex > this.customFields.length) {
-                  handleError("PatternLayout.format: invalid specifier '" +
-                      specifier +
-                      "' for conversion character 'f' - there aren't that many custom fields"
-                  );
+                  handleError("PatternLayout.format: invalid specifier '" + specifier + "' for conversion character 'f' - there aren't that many custom fields");
                 } else {
                   fieldIndex = fieldIndex - 1;
                 }
@@ -1886,13 +1815,7 @@
 
     let getFormattedMessage = function(concatenate) {
       let formattedMessage = appender.getLayout().formatWithException(loggingEvent);
-      return typeof formattedMessage == 'string'
-        ? concatenate
-          ? formattedMessage
-          : [formattedMessage]
-        : concatenate
-        ? formattedMessage.join(' ')
-        : formattedMessage;
+      return typeof formattedMessage == 'string' ? (concatenate ? formattedMessage : [formattedMessage]) : concatenate ? formattedMessage.join(' ') : formattedMessage;
     };
 
     let console = window.console;
@@ -1983,11 +1906,7 @@
   };
 
   function isHttpRequestSuccessful(xmlHttp) {
-    return (isUndefined(xmlHttp.status) ||
-      xmlHttp.status === 0 ||
-      (xmlHttp.status >= 200 && xmlHttp.status < 300) ||
-      xmlHttp.status == 1223 /* Fix for IE */
-    );
+    return isUndefined(xmlHttp.status) || xmlHttp.status === 0 || (xmlHttp.status >= 200 && xmlHttp.status < 300) || xmlHttp.status == 1223 /* Fix for IE */;
   }
 
   /* ---------------------------------------------------------------------- */
@@ -2022,10 +1941,7 @@
     //direct alteration to the appender configuration properties.
     function checkCanConfigure(configOptionName) {
       if(initialized) {
-        handleError("AjaxAppender: configuration option '" +
-            configOptionName +
-            "' may not be set after the appender has been initialized"
-        );
+        handleError("AjaxAppender: configuration option '" + configOptionName + "' may not be set after the appender has been initialized");
         return false;
       }
       return true;
@@ -2198,10 +2114,7 @@
       if(batchedLoggingEvents.length == 1) {
         postData = formattedMessages.join('');
       } else {
-        postData =
-          appender.getLayout().batchHeader +
-          formattedMessages.join(appender.getLayout().batchSeparator) +
-          appender.getLayout().batchFooter;
+        postData = appender.getLayout().batchHeader + formattedMessages.join(appender.getLayout().batchSeparator) + appender.getLayout().batchFooter;
       }
       if(contentType == appender.defaults.contentType) {
         postData = appender.getLayout().returnsPostData ? postData : urlEncode(postVarName) + '=' + urlEncode(postData);
@@ -2241,11 +2154,7 @@
                   successCallback(xmlHttp);
                 }
               } else {
-                let msg =
-                  'AjaxAppender.append: XMLHttpRequest request to URL ' +
-                  url +
-                  ' returned status code ' +
-                  xmlHttp.status;
+                let msg = 'AjaxAppender.append: XMLHttpRequest request to URL ' + url + ' returned status code ' + xmlHttp.status;
                 handleError(msg);
                 if(failCallback) {
                   failCallback(msg);
@@ -2266,9 +2175,7 @@
             }
             xmlHttp.setRequestHeader('Content-Type', contentType);
           } catch(headerEx) {
-            let msg =
-              "AjaxAppender.append: your browser's XMLHttpRequest implementation" +
-              ' does not support setRequestHeader, therefore cannot post data. AjaxAppender disabled';
+            let msg = "AjaxAppender.append: your browser's XMLHttpRequest implementation" + ' does not support setRequestHeader, therefore cannot post data. AjaxAppender disabled';
             handleError(msg);
             isSupported = false;
             if(failCallback) {
@@ -4706,15 +4613,7 @@
     let consoleAppenderIdCounter = 1;
     ConsoleAppender.prototype = new Appender();
 
-    ConsoleAppender.prototype.create = function(inPage,
-      container,
-      lazyInit,
-      initiallyMinimized,
-      useDocumentWrite,
-      width,
-      height,
-      focusConsoleWindow
-    ) {
+    ConsoleAppender.prototype.create = function(inPage, container, lazyInit, initiallyMinimized, useDocumentWrite, width, height, focusConsoleWindow) {
       let appender = this;
 
       //Common properties
@@ -4751,11 +4650,7 @@
       let appenderName = inPage ? 'InPageAppender' : 'PopUpAppender';
       let checkCanConfigure = function(configOptionName) {
         if(consoleWindowCreated) {
-          handleError(appenderName +
-              ": configuration option '" +
-              configOptionName +
-              "' may not be set after the appender has been initialized"
-          );
+          handleError(appenderName + ": configuration option '" + configOptionName + "' may not be set after the appender has been initialized");
           return false;
         }
         return true;
@@ -4847,9 +4742,7 @@
         return commandLineObjectExpansionDepth;
       };
       this.setCommandLineObjectExpansionDepth = function(commandLineObjectExpansionDepthParam) {
-        commandLineObjectExpansionDepth = extractIntFromParam(commandLineObjectExpansionDepthParam,
-          commandLineObjectExpansionDepth
-        );
+        commandLineObjectExpansionDepth = extractIntFromParam(commandLineObjectExpansionDepthParam, commandLineObjectExpansionDepth);
       };
 
       let minimized = initiallyMinimized;
@@ -5157,11 +5050,7 @@
 
       let getConsoleUrl = function() {
         let documentDomainSet = document.domain != location.hostname;
-        return useDocumentWrite
-          ? ''
-          : getBaseUrl() +
-              'console_uncompressed.html' +
-              (documentDomainSet ? '?log4javascript_domain=' + escape(document.domain) : '');
+        return useDocumentWrite ? '' : getBaseUrl() + 'console_uncompressed.html' + (documentDomainSet ? '?log4javascript_domain=' + escape(document.domain) : '');
       };
 
       //Define methods and properties that vary between subclasses
@@ -5211,11 +5100,7 @@
         };
 
         this.close = function(fromButton) {
-          if(!consoleClosed &&
-            (!fromButton ||
-              confirm('This will permanently remove the console from the page. No more messages will be logged. Do you wish to continue?'
-              ))
-          ) {
+          if(!consoleClosed && (!fromButton || confirm('This will permanently remove the console from the page. No more messages will be logged. Do you wish to continue?'))) {
             iframeContainerDiv.parentNode.removeChild(iframeContainerDiv);
             this.unload();
           }
@@ -5275,14 +5160,7 @@
           //in IE5 on Windows, or in Konqueror prior to version 3.5 - in Konqueror
           //it creates the iframe fine but I haven't been able to find a way to obtain
           //the iframe's window object
-          iframeContainerDiv.innerHTML =
-            "<iframe id='" +
-            iframeId +
-            "' name='" +
-            iframeId +
-            "' width='100%' height='100%' frameborder='0'" +
-            iframeSrc +
-            " scrolling='no'></iframe>";
+          iframeContainerDiv.innerHTML = "<iframe id='" + iframeId + "' name='" + iframeId + "' width='100%' height='100%' frameborder='0'" + iframeSrc + " scrolling='no'></iframe>";
           consoleClosed = false;
 
           //Write the console HTML to the iframe
@@ -5477,11 +5355,7 @@
             consoleWindowLoadHandler();
             consoleWindowLoaded = true;
             appendQueuedLoggingEvents();
-            pollConsoleWindow(checkPopUpClosed,
-              500,
-              popUpClosedCallback,
-              'PopUpAppender.checkPopUpClosed: error checking pop-up window'
-            );
+            pollConsoleWindow(checkPopUpClosed, 500, popUpClosedCallback, 'PopUpAppender.checkPopUpClosed: error checking pop-up window');
           }
 
           try {
@@ -5503,19 +5377,14 @@
                 if(isLoaded(popUp)) {
                   finalInit();
                 } else {
-                  pollConsoleWindow(popUpLoadedTest,
-                    100,
-                    finalInit,
-                    'PopUpAppender.init: unable to create console window'
-                  );
+                  pollConsoleWindow(popUpLoadedTest, 100, finalInit, 'PopUpAppender.init: unable to create console window');
                 }
               }
             } else {
               isSupported = false;
               logLog.warn('PopUpAppender.init: pop-ups blocked, please unblock to use PopUpAppender');
               if(complainAboutPopUpBlocking) {
-                handleError('log4javascript: pop-up windows appear to be blocked. Please unblock them to use pop-up logging.'
-                );
+                handleError('log4javascript: pop-up windows appear to be blocked. Please unblock them to use pop-up logging.');
               }
             }
           } catch(ex) {
@@ -5753,12 +5622,7 @@
             for(i = 0, len = rootNode.attributes.length; i < len; i++) {
               let currentAttr = rootNode.attributes[i];
               //Check the attribute is valid.
-              if(!currentAttr.specified ||
-                currentAttr.nodeValue === null ||
-                currentAttr.nodeName.toLowerCase() === 'style' ||
-                typeof currentAttr.nodeValue !== 'string' ||
-                currentAttr.nodeName.indexOf('_moz') === 0
-              ) {
+              if(!currentAttr.specified || currentAttr.nodeValue === null || currentAttr.nodeName.toLowerCase() === 'style' || typeof currentAttr.nodeValue !== 'string' || currentAttr.nodeName.indexOf('_moz') === 0) {
                 continue;
               }
               xhtml += ' ' + currentAttr.nodeName.toLowerCase() + '="';
@@ -5778,16 +5642,10 @@
             } else {
               xhtml += gt;
               //Add output for childNodes collection (which doesn't include attribute nodes)
-              let childStartNewLine = !(rootNode.childNodes.length === 1 && rootNode.childNodes[0].nodeType === nodeTypes.TEXT_NODE
-              );
+              let childStartNewLine = !(rootNode.childNodes.length === 1 && rootNode.childNodes[0].nodeType === nodeTypes.TEXT_NODE);
               let childPreformatted = array_contains(preFormattedElements, tagName);
               for(i = 0, len = rootNode.childNodes.length; i < len; i++) {
-                xhtml += getXhtml(rootNode.childNodes[i],
-                  true,
-                  indentation + indentationUnit,
-                  childStartNewLine,
-                  childPreformatted
-                );
+                xhtml += getXhtml(rootNode.childNodes[i], true, indentation + indentationUnit, childStartNewLine, childPreformatted);
               }
               //Add the end tag
               let endTag = lt + '/' + tagName + gt;
@@ -5836,9 +5694,7 @@
     }
 
     function createCommandLineFunctions() {
-      ConsoleAppender.addGlobalCommandLineFunction('$', (appender, args, returnValue) =>
-        document.getElementById(args[0])
-      );
+      ConsoleAppender.addGlobalCommandLineFunction('$', (appender, args, returnValue) => document.getElementById(args[0]));
 
       ConsoleAppender.addGlobalCommandLineFunction('dir', (appender, args, returnValue) => {
         let lines = [];

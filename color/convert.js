@@ -8,8 +8,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
   const delta = value - whiteness;
 
   if(delta) {
-    const segment =
-      value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
+    const segment = value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
     const shift = value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
     const hue = (segment + shift) * 60;
     return hue;
@@ -20,14 +19,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
 
 export function hue2rgb(t1, t2, hue) {
   const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
+  const rgb = rhue * 6 < 360 ? t1 + ((t2 - t1) * rhue) / 60 : rhue * 2 < 360 ? t2 : rhue * 3 < 720 ? t1 + ((t2 - t1) * (240 - rhue)) / 60 : t1;
   return rgb;
 }
 
@@ -48,9 +40,7 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0)
-  );
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
@@ -105,8 +95,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
   const delta = value - whiteness;
 
   if(delta) {
-    const segment =
-      value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
+    const segment = value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
     const shift = value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
     const hue = (segment + shift) * 60;
     return hue;
@@ -117,14 +106,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
 
 export function hue2rgb(t1, t2, hue) {
   const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
+  const rgb = rhue * 6 < 360 ? t1 + ((t2 - t1) * rhue) / 60 : rhue * 2 < 360 ? t2 : rhue * 3 < 720 ? t1 + ((t2 - t1) * (240 - rhue)) / 60 : t1;
   return rgb;
 }
 
@@ -145,9 +127,7 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0)
-  );
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
@@ -181,8 +161,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
   const delta = value - whiteness;
 
   if(delta) {
-    const segment =
-      value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
+    const segment = value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
     const shift = value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
     const hue = (segment + shift) * 60;
     return hue;
@@ -193,14 +172,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
 
 export function hue2rgb(t1, t2, hue) {
   const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
+  const rgb = rhue * 6 < 360 ? t1 + ((t2 - t1) * rhue) / 60 : rhue * 2 < 360 ? t2 : rhue * 3 < 720 ? t1 + ((t2 - t1) * (240 - rhue)) / 60 : t1;
   return rgb;
 }
 
@@ -221,9 +193,7 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0)
-  );
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
@@ -295,8 +265,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
   const delta = value - whiteness;
 
   if(delta) {
-    const segment =
-      value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
+    const segment = value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
     const shift = value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
     const hue = (segment + shift) * 60;
     return hue;
@@ -307,14 +276,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
 
 export function hue2rgb(t1, t2, hue) {
   const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
+  const rgb = rhue * 6 < 360 ? t1 + ((t2 - t1) * rhue) / 60 : rhue * 2 < 360 ? t2 : rhue * 3 < 720 ? t1 + ((t2 - t1) * (240 - rhue)) / 60 : t1;
   return rgb;
 }
 
@@ -335,9 +297,7 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0)
-  );
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
@@ -379,18 +339,7 @@ export function hsv2rgb(hsvH, hsvS, hsvV) {
   const rgbM = (hsvV * (100 - hsvS)) / 100;
   const rgbN = (hsvV * (100 - hsvS * rgbF)) / 100;
   const rgbT = (hsvV * (100 - ((100 - rgbF) * hsvS) / 100)) / 100;
-  const [rgbR, rgbG, rgbB] =
-    rgbI === 5
-      ? [hsvV, rgbM, rgbN]
-      : rgbI === 4
-      ? [rgbT, rgbM, hsvV]
-      : rgbI === 3
-      ? [rgbM, rgbN, hsvV]
-      : rgbI === 2
-      ? [rgbM, hsvV, rgbT]
-      : rgbI === 1
-      ? [rgbN, hsvV, rgbM]
-      : [hsvV, rgbT, rgbM];
+  const [rgbR, rgbG, rgbB] = rgbI === 5 ? [hsvV, rgbM, rgbN] : rgbI === 4 ? [rgbT, rgbM, hsvV] : rgbI === 3 ? [rgbM, rgbN, hsvV] : rgbI === 2 ? [rgbM, hsvV, rgbT] : rgbI === 1 ? [rgbN, hsvV, rgbM] : [hsvV, rgbT, rgbM];
   return [rgbR, rgbG, rgbB];
 }
 
@@ -404,8 +353,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
   const delta = value - whiteness;
 
   if(delta) {
-    const segment =
-      value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
+    const segment = value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
     const shift = value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
     const hue = (segment + shift) * 60;
     return hue;
@@ -416,14 +364,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
 
 export function hue2rgb(t1, t2, hue) {
   const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
+  const rgb = rhue * 6 < 360 ? t1 + ((t2 - t1) * rhue) / 60 : rhue * 2 < 360 ? t2 : rhue * 3 < 720 ? t1 + ((t2 - t1) * (240 - rhue)) / 60 : t1;
   return rgb;
 }
 
@@ -444,9 +385,7 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0)
-  );
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
@@ -475,9 +414,7 @@ const kappa = pow(29, 3) / pow(3, 3);
  */
 
 export function rgb2xyz(rgbR, rgbG, rgbB) {
-  const [lrgbR, lrgbB, lrgbG] = [rgbR, rgbG, rgbB].map(v =>
-    v > 4.045 ? pow((v + 5.5) / 105.5, 2.4) * 100 : v / 12.92
-  );
+  const [lrgbR, lrgbB, lrgbG] = [rgbR, rgbG, rgbB].map(v => (v > 4.045 ? pow((v + 5.5) / 105.5, 2.4) * 100 : v / 12.92));
   const [xyzX, xyzY, xyzZ] = matrix([lrgbR, lrgbB, lrgbG],
     [
       [0.4124564, 0.3575761, 0.1804375],
@@ -496,9 +433,7 @@ export function xyz2rgb(xyzX, xyzY, xyzZ) {
       [0.0556434, -0.2040259, 1.0572252]
     ]
   );
-  const [rgbR, rgbG, rgbB] = [lrgbR, lrgbB, lrgbG].map(v =>
-    v > 0.31308 ? 1.055 * pow(v / 100, 1 / 2.4) * 100 - 5.5 : 12.92 * v
-  );
+  const [rgbR, rgbG, rgbB] = [lrgbR, lrgbB, lrgbG].map(v => (v > 0.31308 ? 1.055 * pow(v / 100, 1 / 2.4) * 100 - 5.5 : 12.92 * v));
   return [rgbR, rgbG, rgbB];
 }
 
@@ -515,10 +450,7 @@ export function hsl2hsv(hslH, hslS, hslL) {
 
 export function hsv2hsl(hsvH, hsvS, hsvV) {
   const hslL = ((200 - hsvS) * hsvV) / 100;
-  const [hslS, hslV] = [
-    hslL === 0 || hslL === 200 ? 0 : ((hsvS * hsvV) / 100 / (hslL <= 100 ? hslL : 200 - hslL)) * 100,
-    (hslL * 5) / 10
-  ];
+  const [hslS, hslV] = [hslL === 0 || hslL === 200 ? 0 : ((hsvS * hsvV) / 100 / (hslL <= 100 ? hslL : 200 - hslL)) * 100, (hslL * 5) / 10];
   return [hsvH, hslS, hslV];
 }
 
@@ -546,8 +478,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
   const delta = value - whiteness;
 
   if(delta) {
-    const segment =
-      value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
+    const segment = value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
     const shift = value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
     const hue = (segment + shift) * 60;
     return hue;
@@ -558,14 +489,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
 
 export function hue2rgb(t1, t2, hue) {
   const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
+  const rgb = rhue * 6 < 360 ? t1 + ((t2 - t1) * rhue) / 60 : rhue * 2 < 360 ? t2 : rhue * 3 < 720 ? t1 + ((t2 - t1) * (240 - rhue)) / 60 : t1;
   return rgb;
 }
 
@@ -586,9 +510,7 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0)
-  );
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
@@ -620,11 +542,7 @@ export function lab2xyz(labL, labA, labB) {
   const f2 = (labL + 16) / 116;
   const f1 = labA / 500 + f2;
   const f3 = f2 - labB / 200;
-  const [initX, initY, initZ] = [
-    pow(f1, 3) > epsilon ? pow(f1, 3) : (116 * f1 - 16) / kappa,
-    labL > kappa * epsilon ? pow((labL + 16) / 116, 3) : labL / kappa,
-    pow(f3, 3) > epsilon ? pow(f3, 3) : (116 * f3 - 16) / kappa
-  ];
+  const [initX, initY, initZ] = [pow(f1, 3) > epsilon ? pow(f1, 3) : (116 * f1 - 16) / kappa, labL > kappa * epsilon ? pow((labL + 16) / 116, 3) : labL / kappa, pow(f3, 3) > epsilon ? pow(f3, 3) : (116 * f3 - 16) / kappa];
   const [xyzX, xyzY, xyzZ] = matrix([initX * wd50X, initY * wd50Y, initZ * wd50Z],
     [
       [0.9555766, -0.0230393, 0.0631636],
@@ -643,9 +561,7 @@ export function xyz2lab(xyzX, xyzY, xyzZ) {
       [-0.0092345, 0.0150436, 0.7521316]
     ]
   );
-  const [f1, f2, f3] = [d50X / wd50X, d50Y / wd50Y, d50Z / wd50Z].map(value =>
-    value > epsilon ? cbrt(value) : (kappa * value + 16) / 116
-  );
+  const [f1, f2, f3] = [d50X / wd50X, d50Y / wd50Y, d50Z / wd50Z].map(value => (value > epsilon ? cbrt(value) : (kappa * value + 16) / 116));
   const [labL, labA, labB] = [116 * f2 - 16, 500 * (f1 - f2), 200 * (f2 - f3)];
   return [labL, labA, labB];
 }
@@ -660,8 +576,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
   const delta = value - whiteness;
 
   if(delta) {
-    const segment =
-      value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
+    const segment = value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
     const shift = value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
     const hue = (segment + shift) * 60;
     return hue;
@@ -672,14 +587,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
 
 export function hue2rgb(t1, t2, hue) {
   const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
+  const rgb = rhue * 6 < 360 ? t1 + ((t2 - t1) * rhue) / 60 : rhue * 2 < 360 ? t2 : rhue * 3 < 720 ? t1 + ((t2 - t1) * (240 - rhue)) / 60 : t1;
   return rgb;
 }
 
@@ -700,9 +608,7 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0)
-  );
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
@@ -750,8 +656,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
   const delta = value - whiteness;
 
   if(delta) {
-    const segment =
-      value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
+    const segment = value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
     const shift = value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
     const hue = (segment + shift) * 60;
     return hue;
@@ -762,14 +667,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
 
 export function hue2rgb(t1, t2, hue) {
   const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
+  const rgb = rhue * 6 < 360 ? t1 + ((t2 - t1) * rhue) / 60 : rhue * 2 < 360 ? t2 : rhue * 3 < 720 ? t1 + ((t2 - t1) * (240 - rhue)) / 60 : t1;
   return rgb;
 }
 
@@ -790,9 +688,7 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0)
-  );
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
@@ -827,9 +723,7 @@ export function rgb2contrast(rgb1, rgb2) {
 }
 
 export function rgb2luminance(rgbR, rgbG, rgbB) {
-  return ((adjustChannel(rgbR) * coefficientR + adjustChannel(rgbG) * coefficientG + adjustChannel(rgbB) * coefficientB) /
-    precision
-  );
+  return (adjustChannel(rgbR) * coefficientR + adjustChannel(rgbG) * coefficientG + adjustChannel(rgbB) * coefficientB) / precision;
 }
 const adjustChannel = x => (x <= 3.928 ? x / lowc : adjustGamma(x));
 const adjustGamma = x => pow((x + 5.5) / 105.5, 2.4);
@@ -857,13 +751,7 @@ export function hex2rgb(hex) {
 }
 
 export function rgb2hex(rgbR, rgbG, rgbB) {
-  return `#${((1 << 24) +
-    (Math.round((rgbR * 255) / 100) << 16) +
-    (Math.round((rgbG * 255) / 100) << 8) +
-    Math.round((rgbB * 255) / 100)
-  )
-    .toString(16)
-    .slice(1)}`;
+  return `#${((1 << 24) + (Math.round((rgbR * 255) / 100) << 16) + (Math.round((rgbG * 255) / 100) << 8) + Math.round((rgbB * 255) / 100)).toString(16).slice(1)}`;
 }
 const hexColorMatch = /^#?(?:([a-f0-9])([a-f0-9])([a-f0-9])([a-f0-9])?|([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})?)$/i;
 
@@ -1037,8 +925,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
   const delta = value - whiteness;
 
   if(delta) {
-    const segment =
-      value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
+    const segment = value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
     const shift = value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
     const hue = (segment + shift) * 60;
     return hue;
@@ -1049,14 +936,7 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
 
 export function hue2rgb(t1, t2, hue) {
   const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
+  const rgb = rhue * 6 < 360 ? t1 + ((t2 - t1) * rhue) / 60 : rhue * 2 < 360 ? t2 : rhue * 3 < 720 ? t1 + ((t2 - t1) * (240 - rhue)) / 60 : t1;
   return rgb;
 }
 
@@ -1077,9 +957,7 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 }
 
 export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0)
-  );
+  return mats.map(mat => mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0));
 }
 const precision = 100000000;
 const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
@@ -1132,27 +1010,12 @@ export function lab2ciede([L1, a1, b1], [L2, a2, b2]) {
     deltaBigHPrime = 0;
     hBarPrime = h1Prime + h2Prime;
   } else {
-    deltaSmallHPrime =
-      abs(h1Prime - h2Prime) <= 180
-        ? h2Prime - h1Prime
-        : h2Prime <= h1Prime
-        ? h2Prime - h1Prime + 360
-        : h2Prime - h1Prime - 360;
+    deltaSmallHPrime = abs(h1Prime - h2Prime) <= 180 ? h2Prime - h1Prime : h2Prime <= h1Prime ? h2Prime - h1Prime + 360 : h2Prime - h1Prime - 360;
     deltaBigHPrime = 2 * sqrt(c1Prime * c2Prime) * sind(deltaSmallHPrime / 2);
-    hBarPrime =
-      abs(h1Prime - h2Prime) <= 180
-        ? (h1Prime + h2Prime) / 2
-        : h1Prime + h2Prime < 360
-        ? (h1Prime + h2Prime + 360) / 2
-        : (h1Prime + h2Prime - 360) / 2;
+    hBarPrime = abs(h1Prime - h2Prime) <= 180 ? (h1Prime + h2Prime) / 2 : h1Prime + h2Prime < 360 ? (h1Prime + h2Prime + 360) / 2 : (h1Prime + h2Prime - 360) / 2;
   }
 
-  const T =
-    1 -
-    0.17 * precision * cosd(hBarPrime - 30) +
-    0.24 * precision * cosd(2 * hBarPrime) +
-    0.32 * precision * cosd(3 * hBarPrime + 6) -
-    (0.2 * precision * cosd(4 * hBarPrime - 63)) / precision / precision;
+  const T = 1 - 0.17 * precision * cosd(hBarPrime - 30) + 0.24 * precision * cosd(2 * hBarPrime) + 0.32 * precision * cosd(3 * hBarPrime + 6) - (0.2 * precision * cosd(4 * hBarPrime - 63)) / precision / precision;
   const slCoeff = (lBar - 50) * (lBar - 50);
   const sl = 1 + (0.015 * precision * slCoeff) / sqrt(20 + slCoeff) / precision;
   const sc = 1 + (0.045 * precision * cBarPrime) / precision;

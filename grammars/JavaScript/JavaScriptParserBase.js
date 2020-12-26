@@ -57,9 +57,7 @@ JavaScriptParserBase.prototype.lineTerminatorAhead = function() {
   const text = ahead.type;
   const type = ahead.type;
 
-  return ((type === JavaScriptParser.MultiLineComment && (text.includes('\r') || text.includes('\n'))) ||
-    type === JavaScriptParser.LineTerminator
-  );
+  return (type === JavaScriptParser.MultiLineComment && (text.includes('\r') || text.includes('\n'))) || type === JavaScriptParser.LineTerminator;
 };
 
 module.exports.JavaScriptParserBase = JavaScriptParserBase;

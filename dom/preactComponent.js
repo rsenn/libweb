@@ -1,22 +1,5 @@
 import { h, options, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../preact.js';
-export {
-  h,
-  options,
-  html,
-  render,
-  Component,
-  createContext,
-  useState,
-  useReducer,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useImperativeHandle,
-  useMemo,
-  useCallback,
-  useContext,
-  useDebugValue
-} from '../preact.js';
+export { h, options, html, render, Component, createContext, useState, useReducer, useEffect, useLayoutEffect, useRef, useImperativeHandle, useMemo, useCallback, useContext, useDebugValue } from '../preact.js';
 import { forwardRef } from '../preact/forwardRef.js';
 export { forwardRef } from '../preact/forwardRef.js';
 
@@ -97,10 +80,7 @@ export class ReactComponent {
     function flatten(obj, path) {
       insert(path, obj);
       if(obj.props) {
-        let children = ReactComponent.toChildArray(obj.props.children).map((child, i) => [
-          child,
-          [...path, 'props', 'children', i++]
-        ]);
+        let children = ReactComponent.toChildArray(obj.props.children).map((child, i) => [child, [...path, 'props', 'children', i++]]);
         children.forEach(args => flatten(...args));
       }
     }
@@ -226,11 +206,7 @@ export class ReactComponent {
     if(p != '') o += ` ${p}${nl}`;
     o += `}`;
     let s = ReactComponent.toSource;
-    let c = Util.isArray(children)
-      ? `[${children.map(obj => nl + '  ' + s(obj, opts, depth + 1)).join(',')}]`
-      : children
-      ? '  ' + s(children, opts, depth + 1)
-      : '';
+    let c = Util.isArray(children) ? `[${children.map(obj => nl + '  ' + s(obj, opts, depth + 1)).join(',')}]` : children ? '  ' + s(children, opts, depth + 1) : '';
     if(c != '') o += `,${nl}${c}`;
     o += (c != '' ? nl : '') + ')';
     return o;
@@ -258,13 +234,7 @@ export class ReactComponent {
       let value = props[prop];
       if(value === false) continue;
       if(value === true) s += ` ${prop}`;
-      else
-        s +=
-          fmt == 0
-            ? ` ${prop}="${value + ''}"`
-            : fmt == 1
-            ? ` ${prop}={${Util.toString(value)}}`
-            : (s == '' ? '' : `, `) + ` ${prop}: ${Util.toString(value)}`;
+      else s += fmt == 0 ? ` ${prop}="${value + ''}"` : fmt == 1 ? ` ${prop}={${Util.toString(value)}}` : (s == '' ? '' : `, `) + ` ${prop}: ${Util.toString(value)}`;
     }
     if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
 
@@ -337,10 +307,7 @@ export class Portal extends Component {
       this.into = this.findNode(this.props.into);
     }
 
-    this.remote = render((h(PortalProxy, { context: this.context }), (show && this.props.children) || null),
-      this.into,
-      this.remote
-    );
+    this.remote = render((h(PortalProxy, { context: this.context }), (show && this.props.children) || null), this.into, this.remote);
   }
 
   render() {

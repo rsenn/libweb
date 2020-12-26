@@ -15,11 +15,5 @@ export const Drawing = ({ rect, bounds, attrs, grid, nodefs, transform, styles, 
 
   const defs = nodefs ? {} : { defs: h(Pattern, { data: grid, id, attrs: attrs.grid }) };
 
-  return h(SVG, { viewBox, styles, style, ...defs, ...props }, [
-    h('g', { id: 'bg', transform }, [
-      h(Background, { rect, attrs: attrs.bg }),
-      h(Grid, { data: grid, id, rect, attrs: attrs.grid })
-    ]),
-    ...toChildArray(children)
-  ]);
+  return h(SVG, { viewBox, styles, style, ...defs, ...props }, [h('g', { id: 'bg', transform }, [h(Background, { rect, attrs: attrs.bg }), h(Grid, { data: grid, id, rect, attrs: attrs.grid })]), ...toChildArray(children)]);
 };

@@ -586,10 +586,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
     }
 
     if(num90 > 0) {
-      angle = util.findAngleOrientedVectors2({ x: bez90.p0[axes.re], y: bez90.p0[axes.im] },
-        cs,
-        that.clockwise === false
-      );
+      angle = util.findAngleOrientedVectors2({ x: bez90.p0[axes.re], y: bez90.p0[axes.im] }, cs, that.clockwise === false);
 
       for(i = 0; i < num90; i++) {
         arcs.push(util.copyObject(bez90));
@@ -601,10 +598,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
     }
 
     if(numSmall > 0) {
-      angle = util.findAngleOrientedVectors2({ x: bezSmall.p0[axes.re], y: bezSmall.p0[axes.im] },
-        cs,
-        that.clockwise === false
-      );
+      angle = util.findAngleOrientedVectors2({ x: bezSmall.p0[axes.re], y: bezSmall.p0[axes.im] }, cs, that.clockwise === false);
 
       if(num90 !== 0) {
         angle += num90 * 1.570796326794897 * sign;
@@ -764,9 +758,7 @@ let CurvedLine = function(index, start, end, parsedCommand, settings) {
     angle = Math.acos(lSE / (2 * r));
     l = r / lSE;
     util.scaleAndRotation(start, end, center, angle, l, axes.re, axes.im);
-    aCSCE = util.findAngleVectors2({ x: start[axes.re] - center[axes.re], y: start[axes.im] - center[axes.im] },
-      { x: end[axes.re] - center[axes.re], y: end[axes.im] - center[axes.im] }
-    );
+    aCSCE = util.findAngleVectors2({ x: start[axes.re] - center[axes.re], y: start[axes.im] - center[axes.im] }, { x: end[axes.re] - center[axes.re], y: end[axes.im] - center[axes.im] });
 
     if(clockwise === true) {
       if(radius > 0 && -Math.PI <= aCSCE && aCSCE <= 0) {
@@ -1216,10 +1208,7 @@ let GParser = (function () {
           expectedDescs[i] = expected[i].description;
         }
 
-        expectedDesc =
-          expected.length > 1
-            ? expectedDescs.slice(0, -1).join(', ') + ' or ' + expectedDescs[expected.length - 1]
-            : expectedDescs[0];
+        expectedDesc = expected.length > 1 ? expectedDescs.slice(0, -1).join(', ') + ' or ' + expectedDescs[expected.length - 1] : expectedDescs[0];
 
         foundDesc = found ? '"' + stringEscape(found) + '"' : 'end of input';
 
@@ -1233,13 +1222,7 @@ let GParser = (function () {
         cleanupExpected(expected);
       }
 
-      return new SyntaxError(message !== null ? message : buildMessage(expected, found),
-        expected,
-        found,
-        pos,
-        posDetails.line,
-        posDetails.column
-      );
+      return new SyntaxError(message !== null ? message : buildMessage(expected, found), expected, found, pos, posDetails.line, posDetails.column);
     }
 
     function peg$parsestart() {
@@ -2482,8 +2465,7 @@ export default function parse(code) {
     }
 
     if(consideredFeedrate < 0) {
-      errorList.push(createError(line, '(warning) Cannot use a negative feed rate ' + '(the absolute value is used).', false)
-      );
+      errorList.push(createError(line, '(warning) Cannot use a negative feed rate ' + '(the absolute value is used).', false));
       c.f = Math.abs(consideredFeedrate);
       return false;
     }
@@ -2692,9 +2674,7 @@ export default function parse(code) {
       manageG0G1(command, settings, lineNumber, lines, totalSize);
     } else if(command.type === 'G1' && checkG1(command, errorList, lineNumber, settings) === true) {
       manageG0G1(command, settings, lineNumber, lines, totalSize);
-    } else if((command.type === 'G2' || command.type === 'G3') &&
-      checkG2G3(command, errorList, lineNumber, settings) === true
-    ) {
+    } else if((command.type === 'G2' || command.type === 'G3') && checkG2G3(command, errorList, lineNumber, settings) === true) {
       manageG2G3(command, settings, lineNumber, lines, totalSize, errorList);
     } else if(command.type === 'G17') {
       settings.crossAxe = 'z';

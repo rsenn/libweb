@@ -96,10 +96,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
       },
       /* prettier-ignore */ h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL) }, name)
     );
-    return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [
-      h('path', { ...pathProps, ...visibleProps }),
-      textElem
-    ]);
+    return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [h('path', { ...pathProps, ...visibleProps }), textElem]);
   }
   return h('path', { ...baseProps, ...dataProps, ...pathProps, ...visibleProps });
 };

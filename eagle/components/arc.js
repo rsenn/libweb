@@ -29,23 +29,10 @@ export function describeArc(x, y, r, s, e) {
   return d;
 }
 
-export const Arc = ({
-  x,
-  y,
-  radius = 1,
-  width = 0.127 / 2,
-  startAngle,
-  endAngle,
-  color = '#f0f',
-  visible = true,
-  ...props
-}) => {
+export const Arc = ({ x, y, radius = 1, width = 0.127 / 2, startAngle, endAngle, color = '#f0f', visible = true, ...props }) => {
   let d = describeArc(x, y, radius, startAngle, endAngle);
 
-  if(Math.abs(endAngle - startAngle) >= 360)
-    d =
-      describeArc(x, y, radius, startAngle, startAngle + 180) +
-      describeArc(x, y, radius, startAngle + 180, startAngle + 360);
+  if(Math.abs(endAngle - startAngle) >= 360) d = describeArc(x, y, radius, startAngle, startAngle + 180) + describeArc(x, y, radius, startAngle + 180, startAngle + 360);
 
   return h('path', {
     className: 'arc',

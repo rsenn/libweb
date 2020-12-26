@@ -40,9 +40,7 @@ function mix(...args) {
     mixins: { value: args, writable: false }
   });
   const Class = mixin(superclass);
-  const constructor = Class.hasOwnProperty('constructor')
-    ? Class.constructor.bind(Class)
-    : (...args) => new Class(...args);
+  const constructor = Class.hasOwnProperty('constructor') ? Class.constructor.bind(Class) : (...args) => new Class(...args);
   Object.getOwnPropertyNames(Class).forEach(k => Object.defineProperty(constructor, k, { value: Class[k] }));
   return Object.defineProperties(constructor, {
     mixin: { value: mixin, writable: false },
@@ -101,11 +99,7 @@ function like(x, type) {
   if(is(x, type)) return true;
   const itf = type.interface || (typeof type == 'function' && getInterface(type.prototype));
   const subject = typeof x == 'function' ? x.interface || getInterface(x.prototype) : x;
-  return (itf &&
-    Object.keys(itf).reduce((f, k) => f && (typeof itf[k] == 'function' ? typeof subject[k] == 'function' : k in subject),
-      true
-    )
-  );
+  return itf && Object.keys(itf).reduce((f, k) => f && (typeof itf[k] == 'function' ? typeof subject[k] == 'function' : k in subject), true);
 }
 
 /**
