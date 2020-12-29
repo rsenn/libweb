@@ -15,6 +15,10 @@ export class ESNode {
 
     ESNode.lastNode = this;
   }
+
+  static get assocMap() {
+  return this.assoc.mapper.map;
+  }
 }
 
 Object.defineProperty(ESNode.prototype, 'position', {
@@ -174,11 +178,11 @@ export class LogicalExpression extends Expression {
 }
 
 export class MemberExpression extends Expression {
-  constructor(obj, prop /*, comp = false*/) {
+  constructor(obj, prop, optional) {
     super('MemberExpression');
     this.object = obj;
     this.property = prop;
-    //this.computed = comp;
+    this.optional = optional;
   }
 }
 

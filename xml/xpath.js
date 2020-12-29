@@ -1,4 +1,4 @@
-import { MutablePath } from '../json/path.js';
+import { MutablePath, ImmutablePath } from '../json/path.js';
 import Util from '../util.js';
 
 const incr = (o, p, i = 1) => (o[p] = (o[p] || 0) + i);

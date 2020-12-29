@@ -55,8 +55,9 @@ export class Token {
     return this.start + this.length || this.position.end.valueOf();
   }
 
-  [Symbol.toStringTag]() {
-    return this.toString();
+  [Symbol.toPrimitive](hint) {
+    if(hint == 'string' || hint == 'default')
+      return this.value;
   }
 
   toString() {

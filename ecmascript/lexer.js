@@ -286,14 +286,15 @@ export class Lexer {
       c = this.peek();
     }
 
-    const comment = this.getRange(this.start, this.pos);
+    let comment = this.getRange(this.start, this.pos);
     const before = this.getRange(0, this.start);
     const column = before.length - before.lastIndexOf('\n');
     const line = this.line - (comment.split(/\n/g).length - 1) + 1;
 
     const start = new Position(line, column, this.start, this.fileName);
 
-    //console.log("comment:", this.get(-comment.length));
+    if(comment.startsWith('//'))
+      comment = comment.trimEnd();
 
     this.ignore();
 
@@ -766,7 +767,7 @@ export class Lexer {
             this.ignore();
             this.inSubst = true;
             return done(true, this.lexText);
-          } else if(c === '`') {
+          } else if(!this.inSubst && c === '`') {
             this.addToken(Token.types.templateLiteral);
             return this.lexText.bind(this);
           } else if(c === '\\') {
@@ -910,7 +911,7 @@ export class Lexer {
       this.stateFn = this.stateFn();
     } while(this.stateFn !== null && this.tokenIndex >= this.tokens.length);
     let tok = this.nextToken();
-    //console.log("lex: ",this.tokenIndex , tok, this.stateFn);
+     console.log("lex: ",this.tokenIndex , tok, this.stateFn);
     return tok;
   }
 
@@ -972,7 +973,7 @@ function isPunctuator(word) {
     case 1:
       /* prettier-ignore */ return '=.-%}>,*[<!/]~&(;?|):+^{@'.indexOf(word) >= 0;
     case 2:
-      /* prettier-ignore */ return ['!=', '*=', '&&', '<<', '/=', '||', '>>', '&=', '==', '++', '|=', '<=', '--', '+=', '^=', '>=', '-=', '%=', '=>', '${'].indexOf(word) >= 0;
+      /* prettier-ignore */ return ['!=', '*=', '&&', '<<', '/=', '||', '>>', '&=', '==', '++', '|=', '<=', '--', '+=', '^=', '>=', '-=', '%=', '=>', '${', '?.'].indexOf(word) >= 0;
 
     case 3:
       return ['!==', '===', '>>>', '>>=', '-->>', '<<=', '...'].indexOf(word) >= 0;

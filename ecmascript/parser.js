@@ -54,7 +54,7 @@ export class Parser {
 
   error(errorMessage, astNode) {
     const pos = this.position();
-    console.log('error', { errorMessage, astNode, pos }, this.lexer.position());
+    console.error('error: ' + errorMessage);
 
     return new SyntaxError('parse', pos.toString() + ': ' + errorMessage, astNode, pos);
   }
@@ -66,7 +66,8 @@ export class Parser {
     this.comments = add(this.comments, token);
   }
 
-  handleConstruct(ctor, args, instance) {
+  handleConstruct = (() => {
+return function(ctor, args, instance) {
     let assoc = ESNode.assoc(instance, {});
     let pos = assoc && assoc.position;
     /* || this.position()*/ let position;
@@ -78,6 +79,7 @@ export class Parser {
     this.nodes = add(this.nodes, instance);
     let index = this.nodes.indexOf(instance);
   }
+})();
 
   onNewNode(node) {
     const range = [this.lastTok, this.processed.length];
@@ -639,7 +641,7 @@ export class ECMAScriptParser extends Parser {
     } else if(is_async) {
       expr = new Identifier('async');
     } else {
-      this.error('Unexpected token `${this.token}`');
+      this.error(`${this.token.position}: Unexpected token '${this.token}'`);
     }
     if(rest_of) {
       expr = new RestOfExpression(expr);
@@ -676,9 +678,11 @@ export class ECMAScriptParser extends Parser {
   }
 
   parseRemainingMemberExpression(object) {
-    while(this.matchPunctuators(['.', '['])) {
-      if(this.matchPunctuators('.')) {
-        this.expectPunctuators('.');
+    while(this.matchPunctuators(['.', '[', '?.'])) {
+      if(this.matchPunctuators(['.', '?.'])) {
+        const optional = this.matchPunctuators('?.');
+
+        this.expectPunctuators(['.', '?.']);
         const identifier = this.expectIdentifier(true);
 
         /* console.log('object:', object);
@@ -686,7 +690,7 @@ export class ECMAScriptParser extends Parser {
 
         if(object === null) throw this.error('Object ' + object);
 
-        object = new MemberExpression(object, new Literal(identifier.toString(), 'string'), false);
+        object = new MemberExpression(object, new Literal(identifier.toString(), 'string'), optional);
 
         //this.log('parseRemainingMemberExpression2(', object.toString(), ')', Util.fnName(this.parseRemainingMemberExpression));
       } else if(this.matchPunctuators('[')) {
@@ -1046,7 +1050,11 @@ export class ECMAScriptParser extends Parser {
         } else {
           if(this.matchPunctuators(':')) {
             this.expectPunctuators(':');
-            element = this.expectIdentifier();
+
+            if(this.matchPunctuators(['{','[']))
+              element = this.parseBindingPattern();
+            else
+              element = this.expectIdentifier();
           } else if(this.matchKeywords('as')) {
             this.expectKeywords('as');
             element = this.expectIdentifier();
@@ -1782,7 +1790,7 @@ export class ECMAScriptParser extends Parser {
 
   parseTryStatement(insideIteration, insideFunction) {
     let body,
-      parameters = [],
+      parameters = null,
       catch_block,
       finally_block;
     this.expectKeywords('try');
@@ -1791,16 +1799,20 @@ export class ECMAScriptParser extends Parser {
 
     if(this.matchKeywords('catch')) {
       this.expectKeywords('catch');
-      this.expectPunctuators('(');
-      //Parse optional parameter list
-      if(this.matchIdentifier()) {
-        parameters.push(this.expectIdentifier());
-        while(this.matchPunctuators(',')) {
-          this.expectPunctuators(',');
+      parameters = [];
+
+      if(this.matchPunctuators('(')) {
+        this.expectPunctuators('(');
+        //Parse optional parameter list
+        if(this.matchIdentifier()) {
           parameters.push(this.expectIdentifier());
+          while(this.matchPunctuators(',')) {
+            this.expectPunctuators(',');
+            parameters.push(this.expectIdentifier());
+          }
         }
+        this.expectPunctuators(')');
       }
-      this.expectPunctuators(')');
 
       //Parse function body
       catch_block = this.parseStatement(insideIteration, insideFunction);

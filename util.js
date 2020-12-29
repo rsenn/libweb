@@ -1917,7 +1917,7 @@ Util.parseQuery = function(url = Util.getURL()) {
 };
 Util.encodeQuery = function(data) {
   const ret = [];
-  for(let d in data) ret.push(`${encodeURIComponent(d)}=${encodeURIComponent(data[d])}`);
+  for(let d in data) if(data[d] !== undefined) ret.push(`${encodeURIComponent(d)}=${encodeURIComponent(data[d])}`);
   return ret.join('&');
 };
 Util.parseURL = function(href = this.getURL()) {
@@ -1960,6 +1960,8 @@ Util.makeURL = function(...args) {
   let href = typeof args[0] == 'string' ? args.shift() : Util.getURL();
   let url = Util.parseURL(href);
   let obj = typeof args[0] == 'object' ? args.shift() : {};
+  if('host' in obj /*|| 'protocol' in obj*/)
+    url = Util.filterOutKeys(url, [/*'protocol',*/'host','port']);
   Object.assign(url, obj);
   return url.href();
 
@@ -4653,10 +4655,13 @@ Util.weakAssoc = (fn = (value, ...args) => Object.assign(value, ...args)) => {
     map => Util.weakMapper((obj, ...args) => Util.merge(...args), map),
     () => (obj, ...args) => Util.define(obj, ...args)
   );
-  return (obj, ...args) => {
+  let self = (obj, ...args) => {
     let value = mapper(obj, ...args);
     return fn(value, ...args);
   };
+  self.mapper = mapper;
+
+  return self;
 };
 Util.getArgv = Util.memoize(() =>
   Util.tryCatch(() => {

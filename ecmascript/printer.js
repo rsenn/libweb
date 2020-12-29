@@ -239,7 +239,7 @@ export class Printer {
   }
 
   printMemberExpression(member_expression) {
-    const { object, property } = member_expression;
+    const { object, property, optional } = member_expression;
     const { colorText, colorCode } = this;
     let left, right;
     //console.log("member_expression:", member_expression);
@@ -250,8 +250,9 @@ export class Printer {
     if(!(object instanceof Identifier) && !(object instanceof Literal) && !(object instanceof MemberExpression)) left = '(' + left + ')';
 
     ///null.*{/.test(left) && console.log("object:", object);
+    const punctuator = optional ? '?.' : '.';
 
-    if(!/^[0-9]+$/.test(right) && !/[\.\']/.test(right) && property instanceof Literal) return left + colorText.punctuators('.') + right;
+    if(!/^[0-9]+$/.test(right) && !/[\.\']/.test(right) && property instanceof Literal) return left + colorText.punctuators(punctuator) + right;
     return left + colorCode.punctuators(left) + '[' + right + colorCode.punctuators() + ']';
   }
 
