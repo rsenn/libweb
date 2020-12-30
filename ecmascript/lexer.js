@@ -293,8 +293,7 @@ export class Lexer {
 
     const start = new Position(line, column, this.start, this.fileName);
 
-    if(comment.startsWith('//'))
-      comment = comment.trimEnd();
+    if(comment.startsWith('//')) comment = comment.trimEnd();
 
     this.ignore();
 
@@ -438,10 +437,11 @@ export class Lexer {
     return this.pos > startedAt;
   }
 
-  addToken(type) {
+  addToken(type, props = {}) {
     //if(type == Token.types.templateLiteral) console.log('addToken', this.token);
     const { start, pos, column, line, source } = this;
     const token = new Token(type, source.substring(start, pos), new Range(this.position(this.start), this.pos - this.start), this.start);
+    Object.assign(token, props);
     this.tokens.push(token);
     this.ignore();
   }
@@ -705,58 +705,46 @@ export class Lexer {
   }
 
   lexTemplate(cont = false) {
-    const done = (doSubst, defaultFn = null) => {
+    const done = (doSubst, defaultFn = null, level) => {
       let self = () => {
         let c = this.peek();
         let { start, pos } = this;
         const position = this.position();
         const { stateFn } = this;
-        let doSubst = template.inSubst;
-        if(c == ';') {
-          throw new Error(`${this.position()}`);
-        }
+        if(c == ';') throw new Error(`${this.position()}`);
+        //console.debug("done", { c, doSubst });
         if(!doSubst && c == '`') {
           this.template = null;
-          this.addToken(Token.types.stringLiteral);
+          this.addToken(Token.types.templateLiteral /*, {head: true, tail: true}*/);
           return this.lexText();
         }
-        let fn = doSubst ? this.lexText : defaultFn;
+        let fn = doSubst == this.inSubst ? this.lexText : defaultFn;
         let ret;
         if(doSubst && c == '}') {
           c = this.peek();
-          this.addToken(Token.types.punctuator);
-          template.inSubst = false;
+          // this.addToken(Token.types.punctuator);
+          this.inSubst--;
           return fn;
         }
         if(fn === null) throw new Error();
         return fn;
       };
-      template.inSubst = doSubst;
       return self;
     };
+    let prevChar = this.peek();
     let c;
-    let inSubst = (this.template && this.template.inSubst) || template.inSubst;
-    if(cont) {
-      c = this.peek();
-      if(c != '`') {
-        c = this.next();
-        c = this.peek();
-      }
-      return template;
-    }
+    //console.debug("lexTemplate", { cont, inSubst: this.inSubst, prevChar, c });
+
     let startToken = this.tokenIndex;
     function template() {
-      let prevChar = '';
-      let c = '';
       let escapeEncountered = false;
       let n = 0;
       do {
-        if(this.acceptRun(not(or(c => c === '$', oneOf('\\`{$'))))) {
-          escapeEncountered = false;
-        }
+        if(this.acceptRun(not(or(c => c === '$', oneOf('\\`{$'))))) escapeEncountered = false;
         prevChar = c;
         c = this.next();
         ++n;
+        //console.debug("template", { prevChar,c,escapeEncountered,n});
         if(c === null) {
           throw this.error(`Illegal template token (${n})  '${this.source[this.start]}': ${this.errorRange()}`);
         } else if(!escapeEncountered) {
@@ -765,9 +753,11 @@ export class Lexer {
             this.addToken(Token.types.templateLiteral);
             this.skip(2);
             this.ignore();
-            this.inSubst = true;
-            return done(true, this.lexText);
-          } else if(!this.inSubst && c === '`') {
+            this.inSubst = (this.inSubst || 0) + 1;
+
+            return done(this.inSubst, this.lexTemplate);
+          } else if((cont || !this.inSubst) && c === '`') {
+            this.inSubst = cont - 1;
             this.addToken(Token.types.templateLiteral);
             return this.lexText.bind(this);
           } else if(c === '\\') {
@@ -783,10 +773,11 @@ export class Lexer {
 
   lexQuote(quoteChar) {
     if(quoteChar === '`') {
+      const { inSubst } = this;
       //this.ignore();
-      //console.log("inSubst", this.inSubst);
+      //console.log('lexQuote', { inSubst });
 
-      return this.lexTemplate(this.inSubst);
+      return this.lexTemplate(inSubst);
     }
     return function() {
       let prevChar = '';
@@ -795,9 +786,7 @@ export class Lexer {
       do {
         //Keep consuming characters unless we encounter line
         //terminator, \, or the quote char.
-        if(this.acceptRun(not(or(isLineTerminator, oneOf(`\\${quoteChar}`))))) {
-          escapeEncountered = false;
-        }
+        if(this.acceptRun(not(or(isLineTerminator, oneOf(`\\${quoteChar}`))))) escapeEncountered = false;
         prevChar = c;
         c = this.next();
         if(c === null) {
@@ -911,7 +900,7 @@ export class Lexer {
       this.stateFn = this.stateFn();
     } while(this.stateFn !== null && this.tokenIndex >= this.tokens.length);
     let tok = this.nextToken();
-     console.log("lex: ",this.tokenIndex , tok, this.stateFn);
+    console.log('lex: ', this.tokenIndex, tok, this.stateFn);
     return tok;
   }
 

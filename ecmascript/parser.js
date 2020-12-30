@@ -5,7 +5,7 @@ import deep from '../deep.js';
 //import util from 'util';
 import { Token, TokenList } from './token.js';
 import { Printer } from './printer.js';
-import { ESNode, Program, AliasName, ModuleItems, Expression, FunctionLiteral, Identifier, ComputedPropertyName, BindingProperty, Literal, TemplateLiteral, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, InExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabelledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, CaseClause, WhileStatement, DoStatement, ForStatement, ForInStatement, WithStatement, TryStatement, ThrowStatement, YieldStatement, ImportStatement, ExportStatement, Declaration, ClassDeclaration, FunctionArgument, FunctionDeclaration, ArrowFunction, VariableDeclaration, VariableDeclarator, ObjectLiteral, PropertyDefinition, MemberVariable, ArrayLiteral, JSXLiteral, BindingPattern, ArrayBindingPattern, ObjectBindingPattern, AwaitExpression, RestOfExpression, SpreadElement, CTORS, Factory } from './estree.js';
+import { ESNode, Program, AliasName, ModuleItems, Expression, FunctionLiteral, Identifier, ComputedPropertyName, BindingProperty, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, InExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabelledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, CaseClause, WhileStatement, DoStatement, ForStatement, ForInStatement, WithStatement, TryStatement, ThrowStatement, YieldStatement, ImportStatement, ExportStatement, Declaration, ClassDeclaration, FunctionArgument, FunctionDeclaration, ArrowFunction, VariableDeclaration, VariableDeclarator, ObjectLiteral, PropertyDefinition, MemberVariable, ArrayLiteral, JSXLiteral, BindingPattern, ArrayBindingPattern, ObjectBindingPattern, AwaitExpression, RestOfExpression, SpreadElement, CTORS, Factory } from './estree.js';
 import MultiMap from '../container/multiMap.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
@@ -67,19 +67,19 @@ export class Parser {
   }
 
   handleConstruct = (() => {
-return function(ctor, args, instance) {
-    let assoc = ESNode.assoc(instance, {});
-    let pos = assoc && assoc.position;
-    /* || this.position()*/ let position;
-    if(this && this.stack && this.stack[0]) {
-      assoc.position = this.stack[0].position;
-      this.lastPos = this.stack[0].position;
-    }
-    //this.lastTok = this.processed.length;
-    this.nodes = add(this.nodes, instance);
-    let index = this.nodes.indexOf(instance);
-  }
-})();
+    return function(ctor, args, instance) {
+      let assoc = ESNode.assoc(instance, {});
+      let pos = assoc && assoc.position;
+      /* || this.position()*/ let position;
+      if(this && this.stack && this.stack[0]) {
+        assoc.position = this.stack[0].position;
+        this.lastPos = this.stack[0].position;
+      }
+      //this.lastTok = this.processed.length;
+      this.nodes = add(this.nodes, instance);
+      let index = this.nodes.indexOf(instance);
+    };
+  })();
 
   onNewNode(node) {
     const range = [this.lastTok, this.processed.length];
@@ -404,12 +404,13 @@ export class ECMAScriptParser extends Parser {
 
   expectLiteral() {
     this.log('expectLiteral() ');
+    if(this.matchTemplateLiteral()) return this.parseTemplateLiteral();
+
     let token = this.consume();
     if(!isLiteral(token)) {
       throw this.error(`Expecting Literal, but got ${token.type} with value '${token.value}'`);
     }
 
-    // if(token.type == 'regexpLiteral') console.log(`New regexpLiteral ${token.position}:`,  token.value );
     let value = token.value;
     //if(token.type != 'regexpLiteral') value = value.replace(/\n/g, '\\n');
 
@@ -427,58 +428,29 @@ export class ECMAScriptParser extends Parser {
 
   parseTemplateLiteral() {
     let i = 0,
-      token,
-      part,
-      parts = [];
+      expressions = [],
+      quasis = [];
 
     this.templateLevel = this.templateLevel || 0;
     this.templateLevel++;
-
-    //let punct = this.matchLiteral();
-
     while(true) {
-      //console.log('token:', this.token.toString());
-
-      if(!this.matchLiteral()) break;
-      part = this.expectLiteral();
-
-      /* if(i == 0)
-        part.value = part.value.substring(1);*/
-      //console.log('part:', part);
-
-      parts.push(part);
-
-      if((i > 0 || part.value.length > 1) && /*this.token.value.endsWith('`') ||*/ part.value.endsWith('`')) break;
-
-      /*  if(this.matchPunctuators("${")) {
-        this.expectPunctuators("${");
-*/
-      part = this.parseAssignmentExpression();
-      parts.push(part);
-      //console.log('assignment expression', part);
-
-      //this.matchLiteral();
-      //console.log('parseTemplateLiteral', this.token.toString());
-
-      /* if(this.matchPunctuators("}"))*/ {
-        const { lexer } = this;
-        let { stateFn } = lexer;
-        let { inSubst } = stateFn;
-
-        this.lexer.stateFn = this.lexer.lexTemplate(true);
-        this.lexer.stateFn.inSubst = false;
-
-        let literal = (this.matchLiteral() ? this.expectLiteral() : this.expectPunctuators('}')).value;
-        //console.log('parseTemplateLiteral', { inSubst, literal });
-
-        //console.log('token:', this.token.toString());
-      }
+      let token = this.consume();
+      //console.log('token:', token);
+      //const head = i == 0 && token.value.startsWith('`');
+      const tail = (i > 0 || token.value.length > 1) && token.value.endsWith('`');
+      quasis.push(new TemplateElement(tail, token.value));
+      if(tail) break;
+      expressions.push(this.parseAssignmentExpression());
+      const { lexer } = this;
+      let { stateFn, inSubst } = lexer;
+      lexer.stateFn = this.lexer.lexTemplate(true);
+      let literal = (this.matchLiteral() ? this.expectLiteral() : this.expectPunctuators('}')).value;
       i++;
     }
     this.templateLevel--;
 
-    let node = new TemplateLiteral(parts);
-    //console.log('node:', node);
+    let node = new TemplateLiteral(quasis, expressions);
+    console.log('node:', node);
     return node;
   }
 
@@ -515,8 +487,9 @@ export class ECMAScriptParser extends Parser {
     //console.log(`matchLiteral() token='${token.value}'`);
     return isLiteral(token);
   }
+
   matchTemplateLiteral() {
-    if(this.templateLevel > 0) return false;
+    //if(this.templateLevel > 0) return false;
     const token = this.next();
     return isTemplateLiteral(token);
   }
@@ -1051,10 +1024,8 @@ export class ECMAScriptParser extends Parser {
           if(this.matchPunctuators(':')) {
             this.expectPunctuators(':');
 
-            if(this.matchPunctuators(['{','[']))
-              element = this.parseBindingPattern();
-            else
-              element = this.expectIdentifier();
+            if(this.matchPunctuators(['{', '['])) element = this.parseBindingPattern();
+            else element = this.expectIdentifier();
           } else if(this.matchKeywords('as')) {
             this.expectKeywords('as');
             element = this.expectIdentifier();

@@ -17,7 +17,7 @@ export class ESNode {
   }
 
   static get assocMap() {
-  return this.assoc.mapper.map;
+    return this.assoc.mapper.map;
   }
 }
 
@@ -120,9 +120,26 @@ export class Literal extends Expression {
 }
 
 export class TemplateLiteral extends Expression {
-  constructor(parts) {
+  constructor(quasis, expressions) {
     super('TemplateLiteral');
-    this.parts = parts;
+    this.quasis = quasis;
+    this.expressions = expressions;
+  }
+}
+
+export class TaggedTemplateExpression extends Expression {
+  constructor(tag, quasi) {
+    super('TaggedTemplateExpression');
+    this.tag = tag;
+    this.quasi = quasi;
+  }
+}
+
+export class TemplateElement extends ESNode {
+  constructor(tail, value) {
+    super('TemplateElement');
+    this.tail = tail;
+    this.value = value;
   }
 }
 
@@ -639,6 +656,8 @@ export const CTORS = {
   JSXLiteral,
   Literal,
   TemplateLiteral,
+  TaggedTemplateExpression,
+  TemplateElement,
   LogicalExpression,
   MemberExpression,
   InExpression,

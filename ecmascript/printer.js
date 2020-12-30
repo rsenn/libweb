@@ -172,12 +172,15 @@ export class Printer {
   }
 
   printTemplateLiteral(template_literal) {
+    const { quasis, expressions } = template_literal;
     let s = '';
     //console.log("template_literal:", template_literal);
 
-    for(let part of template_literal.parts) {
-      if(part instanceof Literal) s += part.value.replace(/\\n/g, '\n');
-      else s += '${' + this.printNode(part) + '}';
+    for(let i = 0; i < quasis.length; i++) {
+      const { value } = quasis[i];
+      s += value.replace(/\\n/g, '\n');
+
+      if(expressions[i]) s += '${' + this.printNode(expressions[i]) + '}';
     }
     return this.colorText.templates(s);
   }
