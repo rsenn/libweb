@@ -56,8 +56,7 @@ export class Token {
   }
 
   [Symbol.toPrimitive](hint) {
-    if(hint == 'string' || hint == 'default')
-      return this.value;
+    if(hint == 'string' || hint == 'default') return this.value;
   }
 
   toString() {
