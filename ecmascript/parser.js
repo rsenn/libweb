@@ -5,7 +5,7 @@ import deep from '../deep.js';
 //import util from 'util';
 import { Token, TokenList } from './token.js';
 import { Printer } from './printer.js';
-import { ESNode, Program, AliasName, ModuleItems, Expression, FunctionLiteral, Identifier, ComputedPropertyName, BindingProperty, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, InExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabelledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, CaseClause, WhileStatement, DoStatement, ForStatement, ForInStatement, WithStatement, TryStatement, ThrowStatement, YieldStatement, ImportStatement, ExportStatement, Declaration, ClassDeclaration, FunctionArgument, FunctionDeclaration, ArrowFunction, VariableDeclaration, VariableDeclarator, ObjectLiteral, PropertyDefinition, MemberVariable, ArrayLiteral, JSXLiteral, BindingPattern, ArrayBindingPattern, ObjectBindingPattern, AwaitExpression, RestOfExpression, SpreadElement, CTORS, Factory } from './estree.js';
+import { ESNode, Program, AliasName, ModuleItems, Expression, FunctionLiteral, Identifier, ComputedPropertyName, BindingProperty, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, InExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabelledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, CaseClause, WhileStatement, DoStatement, ForStatement, ForInStatement, WithStatement, TryStatement, ThrowStatement, YieldStatement, ImportStatement, ExportStatement, Declaration, ClassDeclaration, FunctionArgument, FunctionDeclaration, ArrowFunction, VariableDeclaration, VariableDeclarator, ObjectExpression, PropertyDefinition, MemberVariable, ArrayExpression, JSXLiteral, BindingPattern, ArrayBindingPattern, ObjectBindingPattern, AwaitExpression, RestOfExpression, SpreadElement, CTORS, Factory } from './estree.js';
 import MultiMap from '../container/multiMap.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
@@ -60,9 +60,9 @@ export class Parser {
   }
 
   handleComment(comment, start, end) {
+    //console.log('handleComment:', { comment, start, end });
     if(comment.startsWith('//')) comment += '\n';
     let token = new Token('comment', comment, new Range(start, comment.length), start.valueOf());
-    //console.log('commentToken: ', token);
     this.comments = add(this.comments, token);
   }
 
@@ -1125,8 +1125,8 @@ export class ECMAScriptParser extends Parser {
   }
 
   parseObject(isClass = false, args = []) {
-    //let ctor = ObjectLiteral;
-    let ctor = isClass ? ClassDeclaration : ObjectLiteral;
+    //let ctor = ObjectExpression;
+    let ctor = isClass ? ClassDeclaration : ObjectExpression;
 
     //console.log('parseObject', ctor, isClass);
 
@@ -1232,7 +1232,7 @@ export class ECMAScriptParser extends Parser {
           this.expectPunctuators(':');
           if(!this.matchAssignmentExpression()) break;
           value = this.parseAssignmentExpression();
-          if(!isClass) ctor = ObjectLiteral;
+          if(!isClass) ctor = ObjectExpression;
         } else if(typeof member == 'object' && member !== null && 'value' in member) {
           //console.log("member:", member);
           //ctor = ObjectBindingPattern;
@@ -1315,7 +1315,7 @@ export class ECMAScriptParser extends Parser {
       if(this.matchPunctuators(',')) this.expectPunctuators(',');
     }
     this.expectPunctuators(']');
-    object = new ArrayLiteral(members);
+    object = new ArrayExpression(members);
 
     /*
     if(this.matchPunctuators(".")) {
@@ -1605,7 +1605,7 @@ export class ECMAScriptParser extends Parser {
     const expression = this.parseExpression();
 
     if(this.matchPunctuators(';')) this.expectPunctuators(';');
-    return /*new ExpressionStatement*/ expression;
+    return new ExpressionStatement(expression);
   }
 
   parseIfStatement(insideIteration, insideFunction) {

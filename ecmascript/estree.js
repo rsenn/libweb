@@ -34,6 +34,68 @@ export class Program extends ESNode {
   }
 }
 
+/** A module `import` or `export` declaration. */
+export class ModuleDeclaration extends ESNode {
+  constructor(type = 'ModuleDeclaration') {
+    super(type);
+  }
+}
+
+/** A specifier in an import or export declaration. */
+export class ModuleSpecifier extends ESNode {
+  constructor(type = 'ModuleSpecifier', local) {
+    super('ModuleSpecifier');
+    this.local = local;
+  }
+}
+
+/** An import declaration, e.g., `import foo from "mod";`. */
+export class ImportDeclaration extends ModuleDeclaration {
+  constructor(specifiers, source) {
+    super('ImportDeclaration');
+    this.specifiers = specifiers;
+    this.source = source;
+  }
+}
+
+/**
+ * An imported variable binding, e.g., `{foo}` in `import {foo} from "mod"` or
+ * `{foo as bar}` in `import {foo as bar} from "mod"`. The `imported` field refers
+ * to the name of the export imported from the module. The `local` field refers to
+ * the binding imported into the local module scope. If it is a basic named import,
+ * such as in `import {foo} from "mod"`, both `imported` and `local` are equivalent
+ * `Identifier` nodes; in this case an `Identifier` node representing `foo`. If it
+ * is an aliased import, such as in `import {foo as bar} from "mod"`, the
+ * `imported` field is an `Identifier` node representing `foo`, and the `local`
+ * field is an `Identifier` node representing `bar`.
+ */
+export class ImportSpecifier extends ModuleSpecifier {
+  constructor(imported, local) {
+    super('ImportSpecifier', local);
+    this.imported = imported;
+  }
+}
+
+/** A default import specifier, e.g., `foo` in `import foo from "mod.js"`. */
+export class ImportDefaultSpecifier extends ModuleSpecifier {
+  constructor(local) {
+    super('ImportDefaultSpecifier', local);
+  }
+}
+
+/** A namespace import specifier, e.g., `* as foo` in `import * as foo from "mod.js"`. */
+export class ImportNamespaceSpecifier extends ModuleSpecifier {
+  constructor(local) {
+    super('ImportDefaultSpecifier', local);
+  }
+}
+
+export class Super extends ESNode {
+  constructor() {
+    super('Super');
+  }
+}
+
 export class Expression extends ESNode {
   constructor(type = 'Expression') {
     super(type);
@@ -41,15 +103,15 @@ export class Expression extends ESNode {
 }
 
 export class FunctionLiteral extends ESNode {
-  constructor(type, id, params, body, is_async, generator) {
+  constructor(type, id, params, body, is_async = false, generator = false) {
     super(type);
 
     this.id = id;
     this.params = params;
     this.body = body;
     //this.exported = exported;
-    if(is_async) this.is_async = is_async;
-    if(generator) this.generator = generator;
+    if(is_async !== undefined) this.is_async = is_async;
+    if(generator !== undefined) this.generator = generator;
   }
 }
 
@@ -382,12 +444,13 @@ export class WithStatement extends Statement {
   }
 }
 
+/** A `try` statement. If `handler` is `null` then `finalizer` must be a `BlockStatement`. */
 export class TryStatement extends Statement {
-  constructor(body, parameters, catch_block, finally_bock) {
+  constructor(block, parameters, handler, finally_bock) {
     super('TryStatement');
-    this.body = body;
+    this.block = block;
     this.parameters = parameters;
-    this.catch_block = catch_block;
+    this.handler = handler;
     this.finally_bock = finally_bock;
   }
 }
@@ -449,6 +512,7 @@ export class FunctionArgument extends ESNode {
     if(defaultValue) this.defaultValue = defaultValue;
   }
 }
+
 export class FunctionDeclaration extends FunctionLiteral {
   constructor(id, params, body, exported = false, is_async = false, generator = false) {
     super('FunctionDeclaration', id, params, body, is_async, generator);
@@ -502,11 +566,11 @@ export class ModuleItems extends ESNode {
   }
 }
 
-export class ObjectLiteral extends ESNode {
+export class ObjectExpression extends ESNode {
   constructor(members) {
-    super('ObjectLiteral');
+    super('ObjectExpression');
     this.members = members;
-    //console.log('New ObjectLiteral: ', Object.keys(members));
+    //console.log('New ObjectExpression: ', Object.keys(members));
   }
 }
 
@@ -534,11 +598,11 @@ export class MemberVariable extends ESNode {
   }
 }
 
-export class ArrayLiteral extends ESNode {
+export class ArrayExpression extends ESNode {
   constructor(elements) {
-    super('ArrayLiteral');
+    super('ArrayExpression');
     this.elements = elements;
-    //console.log('New ArrayLiteral: ', Object.keys(members));
+    //console.log('New ArrayExpression: ', Object.keys(members));
   }
 }
 
@@ -590,9 +654,9 @@ export class RestOfExpression extends ESNode {
   }
 }
 export class SpreadElement extends ESNode {
-  constructor(expr) {
+  constructor(argument) {
     super('SpreadElement');
-    this.expr = expr;
+    this.argument = argument;
   }
 }
 
@@ -621,7 +685,7 @@ ESNode.prototype.toString = function() {
 */
 export const CTORS = {
   ArrayBindingPattern,
-  ArrayLiteral,
+  ArrayExpression,
   ArrowFunction,
   AssignmentExpression,
   AwaitExpression,
@@ -666,7 +730,7 @@ export const CTORS = {
   ObjectBindingPattern,
   AliasName,
   ModuleItems,
-  ObjectLiteral,
+  ObjectExpression,
   PropertyDefinition,
   MemberVariable,
   Program,

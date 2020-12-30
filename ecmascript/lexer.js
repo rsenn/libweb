@@ -270,14 +270,15 @@ export class Lexer {
 
   //Skips over the pending input before this point
   ignore() {
-    //const { line, column } = this;
-
-    //countLinesCols(this.source, this.start, this.pos, this);
-
+    if(this.ignoreStart === undefined) this.ignoreStart = this.start;
     this.start = this.pos;
   }
 
   skipComment() {
+    while(this.start > 0 && isWhitespace(this.source[this.start - 1])) this.start--;
+
+    //console.log('skipComment', Util.escape(this.getRange(this.start, this.pos)));
+
     const position = this.position();
     let c = this.peek();
 
@@ -297,6 +298,8 @@ export class Lexer {
 
     this.ignore();
 
+    delete this.ignoreStart;
+
     if(typeof this.onComment == 'function') this.onComment(comment, start, position);
   }
 
@@ -314,16 +317,6 @@ export class Lexer {
     start -= left;
     end -= left;
 
-    /*
-   if(range.length > 80) {
-    range = "..."+range.substring(range.length-80, range.length);
-    start -= range.length-80;
-    start += 3;
-     end -= range.length-80;
-    end += 3;
-  }*/
-    //console.log("start: ", { start, end });
-
     range = range
       .split('')
       .map((char, i) => (i >= start && i < end ? Util.ansi.text(char, 0, 41, 1, 33) : char))
@@ -337,10 +330,9 @@ export class Lexer {
 
   //Returns the next character in the source code
   peek(offset = 0) {
-    if(this.pos + offset >= this.source.length) {
+    if(this.pos + offset >= this.source.length)
       //null represents EOF
       return null;
-    }
 
     const c = this.source[this.pos + offset];
     this.c = c;
@@ -389,24 +381,9 @@ export class Lexer {
     line = lines.length - 1;
     column = lines[line].length - 1;
 
-    //console.debug("pos:",typeof(pos), " start:", typeof this.start);
-    //let diff = pos.valueOf() - this.start;
-
-    //if(diff < 0) column += diff;
-
-    //column -= 1;
-    //console.log("pos:", this.source.substring(pos, this.pos));
-    //
-
     return new Position(line + 1, column + 1, pos, fileName);
   }
 
-  /*
-  positionString() {
-    const { line, column } = this;
-    return `${line}:${column}`;
-  }
-*/
   accept(validator) {
     const c = this.peek();
     if(c !== null && validator(c)) {
@@ -429,9 +406,7 @@ export class Lexer {
     let startedAt = this.pos;
     do {
       c = this.peek();
-      if(c === null) {
-        break;
-      }
+      if(c === null) break;
     } while(validator(c) && ++this.pos);
 
     return this.pos > startedAt;
@@ -461,9 +436,7 @@ export class Lexer {
 
     //Make sure identifier didn't start with a decimal digit
     const firstChar = this.source[this.start];
-    if(isDecimalDigit(firstChar)) {
-      throw this.error(`Invalid identifier: ${this.errorRange()}\n${this.currentLine()}`);
-    }
+    if(isDecimalDigit(firstChar)) throw this.error(`Invalid identifier: ${this.errorRange()}\n${this.currentLine()}`);
 
     const c = this.peek();
 
@@ -477,28 +450,20 @@ export class Lexer {
       return this.lexText;
     }
 
-    if(isQuoteChar(c)) {
-      throw this.error(`Invalid identifier: ${this.errorRange(this.start, this.pos + 1)}${this.currentLine()}`);
-    }
+    if(isQuoteChar(c)) throw this.error(`Invalid identifier: ${this.errorRange(this.start, this.pos + 1)}${this.currentLine()}`);
 
     const word = this.getRange(this.start, this.pos);
-    if(word === 'true' || word === 'false') {
-      this.addToken(Token.types.booleanLiteral);
-    } else if(word === 'null') {
-      this.addToken(Token.types.nullLiteral);
-    } else if(isKeyword(word)) {
-      this.addToken(Token.types.keyword);
-    } else {
-      this.addToken(Token.types.identifier);
-    }
+    if(word === 'true' || word === 'false') this.addToken(Token.types.booleanLiteral);
+    else if(word === 'null') this.addToken(Token.types.nullLiteral);
+    else if(isKeyword(word)) this.addToken(Token.types.keyword);
+    else this.addToken(Token.types.identifier);
+
     return this.lexText;
   }
 
   get columnIndex() {
     let p;
-    for(p = this.pos; p > 0; p--) {
-      if(this.source[p - 1] == '\n') break;
-    }
+    for(p = this.pos; p > 0; p--) if(this.source[p - 1] == '\n') break;
     return this.pos - p;
   }
 
@@ -556,26 +521,18 @@ export class Lexer {
         validator = isHexDigit;
 
         //The hex number needs to at least be followed by some digit.
-        if(!this.accept(validator)) {
-          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
-        }
+        if(!this.accept(validator)) throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
       } else if(this.accept(oneOf('oO'))) {
         validator = isOctalDigit;
 
         //The octal number needs to at least be followed by some digit.
-        if(!this.accept(validator)) {
-          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
-        }
+        if(!this.accept(validator)) throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
       }
       //If number starts with 0 followed by an octal digit, then it's an
       //octal number.
-      else if(this.accept(isOctalDigit)) {
-        validator = isOctalDigit;
-      }
+      else if(this.accept(isOctalDigit)) validator = isOctalDigit;
       //If a 0 isn't a hex nor an octal number, then it's invalid.
-      else if(this.accept(isDecimalDigit)) {
-        throw this.error(`Invalid number: ${this.errorRange()}`);
-      }
+      else if(this.accept(isDecimalDigit)) throw this.error(`Invalid number: ${this.errorRange()}`);
     }
 
     //Keep on consuming valid digits until it runs out
@@ -584,15 +541,12 @@ export class Lexer {
     if(validator == isDecimalDigit) {
       //A number could have a decimal in it, followed by a sequence of valid
       //digits again.
-      if(this.accept(oneOf('.'))) {
-        this.acceptRun(validator);
-      }
+      if(this.accept(oneOf('.'))) this.acceptRun(validator);
 
       if(this.accept(oneOf('eE'))) {
         this.accept(oneOf('+-'));
-        if(!this.accept(validator)) {
-          throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
-        }
+        if(!this.accept(validator)) throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
+
         this.acceptRun(validator);
       }
     }
@@ -601,9 +555,7 @@ export class Lexer {
     //for identifiers or keywords. It also cannot be immediately followed by
     //a string.
     const c = this.peek();
-    if(isIdentifierChar(c) || isQuoteChar(c) || oneOf('.eE')(c)) {
-      throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
-    }
+    if(isIdentifierChar(c) || isQuoteChar(c) || oneOf('.eE')(c)) throw this.error(`Invalid number: ${this.errorRange(this.start, this.pos + 1)}`);
 
     this.addToken(Token.types.numericLiteral);
 
@@ -774,9 +726,6 @@ export class Lexer {
   lexQuote(quoteChar) {
     if(quoteChar === '`') {
       const { inSubst } = this;
-      //this.ignore();
-      //console.log('lexQuote', { inSubst });
-
       return this.lexTemplate(inSubst);
     }
     return function() {
@@ -794,13 +743,7 @@ export class Lexer {
           //incomplete.
           throw this.error(`Illegal token: ${this.errorRange()}`);
         } else if(!escapeEncountered) {
-          /*   if(quoteChar === "`") {
-            return this.lexTemplate;
-            while(c != "}") {
-              prevChar = c;
-              c = this.next();
-            }
-          } else */ if(isLineTerminator(c) && quoteChar !== '`') {
+          if(isLineTerminator(c) && quoteChar !== '`') {
             //If we somehow reached EOL without encountering the
             //ending quote char then this string is incomplete.
             throw this.error(`Illegal token: ${this.errorRange()}`);
@@ -818,6 +761,7 @@ export class Lexer {
   }
 
   lexSingleLineComment() {
+    console.log('lexSingleLineComment', this.getRange(this.start, this.pos));
     //Single line comment is only terminated by a line terminator
     //character and nothing else
     this.acceptRun(not(isLineTerminator));
@@ -831,11 +775,9 @@ export class Lexer {
       const nextTwo = this.getRange(this.pos, this.pos + 2);
       if(nextTwo === '*/') {
         this.skip(2);
-
         this.skipComment();
         return this.lexText;
       }
-
       this.next();
     } while(true);
   }
@@ -881,10 +823,7 @@ export class Lexer {
   }
 
   nextToken() {
-    if(this.tokenIndex >= this.tokens.length) {
-      return new Token(Token.types.eof, null, new Range(this.position(this.pos), 0), this.source.length);
-    }
-
+    if(this.tokenIndex >= this.tokens.length) return new Token(Token.types.eof, null, new Range(this.position(this.pos), 0), this.source.length);
     const token = this.tokens[this.tokenIndex];
     this.tokenIndex++;
     return token;
@@ -892,25 +831,17 @@ export class Lexer {
 
   lex() {
     if(!this.stateFn) return null;
-
     let idx = this.tokenIndex;
     do {
-      //console.log("lex: ",this.tokenIndex ,  this.stateFn);
-
       this.stateFn = this.stateFn();
     } while(this.stateFn !== null && this.tokenIndex >= this.tokens.length);
     let tok = this.nextToken();
-    console.log('lex: ', this.tokenIndex, tok, this.stateFn);
+    //console.log('lex: ', this.tokenIndex, tok, this.stateFn);
     return tok;
   }
 
   setInput(sourceText, fileName) {
     this.reset(sourceText, fileName);
-
-    /*
-  do {
-    this.stateFn = this.stateFn();
-  } while(this.stateFn !== null);*/
   }
 }
 
@@ -931,9 +862,7 @@ function oneOf(str) {
 
 //Whitespace characters as specified by ES1
 function isWhitespace(c) {
-  if(c === '\u0009' || c === '\u000B' || c === '\u000C' || c === '\u0020') {
-    return true;
-  }
+  if(c === '\u0009' || c === '\u000B' || c === '\u000C' || c === '\u0020') return true;
   return false;
 }
 

@@ -361,13 +361,13 @@ export class ECMAScriptInterpreter {
   }
 
   evalArrayLiteral(array_literal) {
-    //console.log('eval: ArrayLiteral:', array_literal);
+    //console.log('eval: ArrayExpression:', array_literal);
     const { elements } = array_literal;
     let arr = new ECMAScriptObject();
     let r = [];
     for(let element of elements) {
       let prop = this.evalNode(element);
-      console.log('eval: ArrayLiteral:', { prop, arr, r });
+      console.log('eval: ArrayExpression:', { prop, arr, r });
       r.push(prop);
     }
     arr.data = r;

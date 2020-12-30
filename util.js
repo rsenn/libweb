@@ -1960,8 +1960,7 @@ Util.makeURL = function(...args) {
   let href = typeof args[0] == 'string' ? args.shift() : Util.getURL();
   let url = Util.parseURL(href);
   let obj = typeof args[0] == 'object' ? args.shift() : {};
-  if('host' in obj /*|| 'protocol' in obj*/)
-    url = Util.filterOutKeys(url, [/*'protocol',*/'host','port']);
+  if('host' in obj /*|| 'protocol' in obj*/) url = Util.filterOutKeys(url, [/*'protocol',*/ 'host', 'port']);
   Object.assign(url, obj);
   return url.href();
 
@@ -4789,7 +4788,7 @@ Util.replaceAll = (needles, haystack) => {
     .reduce((acc, [match, replacement]) => acc.replace(match, replacement), haystack);
 };
 
-Util.unescape = (str, pred = codePoint => codePoint < 32 || codePoint > 0xff) => {
+Util.escape = (str, pred = codePoint => codePoint < 32 || codePoint > 0xff) => {
   let s = '';
   for(let i = 0; i < str.length; i++) {
     let code = str.codePointAt(i);
