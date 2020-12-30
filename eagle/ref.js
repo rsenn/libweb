@@ -34,7 +34,9 @@ export class EagleReference {
     const { path, root } = this;
     let r;
     try {
-      r = (Util.isObject(root) && 'owner' in root && path.apply(root.owner, true)) || path.apply(root);
+      r =
+        (Util.isObject(root) && 'owner' in root && path.apply(root.owner, true)) ||
+        path.apply(root);
     } catch(err) {
       if(!noThrow) throw err;
       //console.log('err:', err.message, err.stack);
@@ -99,7 +101,11 @@ export class EagleReference {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    return text(Util.className(this), 38, 5, 219) + ' { ' + this.path[Symbol.for('nodejs.util.inspect.custom')]() + ` , root:${Util.abbreviate(toXML(this.root, 0), 40)}  }`;
+    return (text(Util.className(this), 38, 5, 219) +
+      ' { ' +
+      this.path[Symbol.for('nodejs.util.inspect.custom')]() +
+      ` , root:${Util.abbreviate(toXML(this.root, 0), 40)}  }`
+    );
   }
   inspect() {
     return this[Symbol.for('nodejs.util.inspect.custom')](...arguments);

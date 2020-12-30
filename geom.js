@@ -92,9 +92,27 @@ export { PolygonFinder } from './geom/polygonFinder.js';
 export { isRect, Rect } from './geom/rect.js';
 export { isSize, Size } from './geom/size.js';
 export { SweepLineClass } from './geom/sweepLine.js';
-export { MatrixTransformation, Rotation, Scaling, Transformation, TransformationList, Translation, ImmutableMatrixTransformation, ImmutableRotation, ImmutableScaling, ImmutableTransformation, ImmutableTransformationList, ImmutableTranslation } from './geom/transformation.js';
+export {
+  MatrixTransformation,
+  Rotation,
+  Scaling,
+  Transformation,
+  TransformationList,
+  Translation,
+  ImmutableMatrixTransformation,
+  ImmutableRotation,
+  ImmutableScaling,
+  ImmutableTransformation,
+  ImmutableTransformationList,
+  ImmutableTranslation
+} from './geom/transformation.js';
 export { isTRBL, TRBL } from './geom/trbl.js';
 export { Vector } from './geom/vector.js';
 export { Voronoi } from './geom/voronoi.js';
 import { simplifyRadialDist, simplifyDPStep, simplifyDouglasPeucker, simplify } from './geom/simplify.js';
-export { simplifyRadialDist, simplifyDPStep, simplifyDouglasPeucker, simplify } from './geom/simplify.js';
+export {
+  simplifyRadialDist,
+  simplifyDPStep,
+  simplifyDouglasPeucker,
+  simplify
+} from './geom/simplify.js';

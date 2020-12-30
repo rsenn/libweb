@@ -6,7 +6,8 @@
 
 const extractHashSign = hex => (hex.charAt(0) === '#' ? hex.substring(1, 7) : hex);
 const generateRGB = color => {
-  if(typeof color == 'object' && color !== null && 'r' in color && 'g' in color && 'b' in color) return color;
+  if(typeof color == 'object' && color !== null && 'r' in color && 'g' in color && 'b' in color)
+    return color;
   const hex = extractHashSign(color);
 
   const rgb = hex.length === 3 ? [...hex].reduce((total, char) => `${total}${char}${char}`) : hex;
@@ -31,7 +32,11 @@ const rgbToLab = rgbColor => {
   const X = RGB[0] * 0.4124 + RGB[1] * 0.3576 + RGB[2] * 0.1805;
   const Y = RGB[0] * 0.2126 + RGB[1] * 0.7152 + RGB[2] * 0.0722;
   const Z = RGB[0] * 0.0193 + RGB[1] * 0.1192 + RGB[2] * 0.9505;
-  const xyzColor = [parseFloat(X.toFixed(4)) / 95.047, parseFloat(Y.toFixed(4)) / 100, parseFloat(Z.toFixed(4)) / 108.883];
+  const xyzColor = [
+    parseFloat(X.toFixed(4)) / 95.047,
+    parseFloat(Y.toFixed(4)) / 100,
+    parseFloat(Z.toFixed(4)) / 108.883
+  ];
 
   const XYZ = xyzColor.map(value => {
     if(value / 0.008856) {
@@ -57,7 +62,8 @@ const rgbToLab = rgbColor => {
  * @param {Array} a Lab color definition
  * @param {Array} b Lab color definition
  */
-const getLabDistance = (a, b) => Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2);
+const getLabDistance = (a, b) =>
+  Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2);
 
 export const distanceChecker = (a, b) => {
   if(!a && !b) {

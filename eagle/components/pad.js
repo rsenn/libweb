@@ -36,7 +36,9 @@ export const Pad = ({ data, opts = {}, ...props }) => {
     case 'long': {
       ro = ro * 1.2;
       const w = ro;
-      d = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${-w * 2} 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
+      d = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${
+        -w * 2
+      } 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
       break;
     }
     case 'square': {
@@ -96,7 +98,10 @@ export const Pad = ({ data, opts = {}, ...props }) => {
       },
       /* prettier-ignore */ h('tspan', { ...AlignmentAttrs(alignment, HORIZONTAL) }, name)
     );
-    return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [h('path', { ...pathProps, ...visibleProps }), textElem]);
+    return h('g', { ...baseProps, ...dataProps, ...visibleProps, ...layerProps }, [
+      h('path', { ...pathProps, ...visibleProps }),
+      textElem
+    ]);
   }
   return h('path', { ...baseProps, ...dataProps, ...pathProps, ...visibleProps });
 };

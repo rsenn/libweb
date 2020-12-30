@@ -33,7 +33,10 @@ export default class devpane {
   });
   svg = lazyInitializer(() => {
     const rect = Element.rect(document.body);
-    const svg = this.createSVGElement('svg', { width: rect.width, height: rect.height, viewBox: `0 0 ${rect.width} ${rect.height}` }, this.root());
+    const svg = this.createSVGElement('svg',
+      { width: rect.width, height: rect.height, viewBox: `0 0 ${rect.width} ${rect.height}` },
+      this.root()
+    );
     this.createSVGElement('defs', {}, svg);
     this.createSVGElement('rect', { x: 100, y: 100, w: 100, h: 100, fill: '#f0f' }, svg);
     return svg;
@@ -173,7 +176,8 @@ export default class devpane {
     if(this.log) {
       let log = this.log();
       if(log) {
-        if(log.parentNode !== this.pane()) this.pane().insertBefore(log, this.pane().firstElementChild);
+        if(log.parentNode !== this.pane())
+          this.pane().insertBefore(log, this.pane().firstElementChild);
         log.insertAdjacentText('beforeend', `${str.trim()}\n`);
         log.scrollTop = log.scrollHeight;
         log.style.height = '4em';
@@ -214,7 +218,10 @@ export default class devpane {
       );
     }
     if(!(svgcircle && svgpath.tagName == 'path')) {
-      svgcircle = SVG.create('path', { id: 'touch-pos', stroke: '#80ff00', fill: 'none', strokeWidth: 2 }, this.svg());
+      svgcircle = SVG.create('path',
+        { id: 'touch-pos', stroke: '#80ff00', fill: 'none', strokeWidth: 2 },
+        this.svg()
+      );
     }
     if(svgcircle) {
       let str = Polygon.toPath(polygon);
@@ -314,7 +321,9 @@ export default class devpane {
 
   handleKeypress(e) {
     const { key, keyCode, charCode } = e;
-    const modifiers = ['alt', 'shift', 'ctrl', 'meta'].reduce((mod, key) => (e[`${key}Key`] === true ? [...mod, key] : mod), []).toString();
+    const modifiers = ['alt', 'shift', 'ctrl', 'meta']
+      .reduce((mod, key) => (e[`${key}Key`] === true ? [...mod, key] : mod), [])
+      .toString();
     //Util.log('keypress: ', { key, keyCode, charCode, modifiers });
 
     if(e.key == 'D' && (e.metaKey || e.ctrlKey || e.altKey) && e.shiftKey) {
@@ -323,7 +332,9 @@ export default class devpane {
       select().then(e => Util.log('select() = ', e));
     } /* if(e.key == 'g') {
       gettext().then(r => Util.log("gettext() = ", r));
-    } else*/ else if(e.key == 't' && e.ctrlKey) {
+    } else*/ else if(e.key == 't' &&
+      e.ctrlKey
+    ) {
       Util.log('devpane ', this);
       this.renderTranslateLayer();
 
@@ -399,7 +410,8 @@ export default class devpane {
     const fn = `${what}EventListener`;
 
     Util.log(`devpane.handleToggle ${fn}`);
-    const mouseEvents = elem => ['mouseenter', 'mouseleave'].forEach(listener => elem[fn](listener, this.mouseEvent));
+    const mouseEvents = elem =>
+      ['mouseenter', 'mouseleave'].forEach(listener => elem[fn](listener, this.mouseEvent));
 
     window[`${what}EventListener`]('mousemove', this.mouseMove);
 
@@ -446,7 +458,9 @@ export default class devpane {
       return parent;
     };
     createRow(table, 'th', header, { backgroundColor: '#000000', color: '#ffffff' });
-    rows.forEach((columns, i) => createRow(table, 'td', columns, { backgroundColor: i % 2 == 0 ? '#ffffff' : '#c0c0c0' }));
+    rows.forEach((columns, i) =>
+      createRow(table, 'td', columns, { backgroundColor: i % 2 == 0 ? '#ffffff' : '#c0c0c0' })
+    );
     return table;
   }
 
@@ -468,7 +482,10 @@ export default class devpane {
     t.layer = this.createLayer({ id: 'devpane-layer' });
     t.factory = Element.factory({ append_to: e => t.layer.appendChild(e) });
     t.renderer = new Renderer(t.chooser, t.factory('div'));
-    t.form = t.factory('form', {}, { display: 'flex', flexFlow: 'row nowrap', alignItems: 'flex-end', padding: '4px' });
+    t.form = t.factory('form',
+      {},
+      { display: 'flex', flexFlow: 'row nowrap', alignItems: 'flex-end', padding: '4px' }
+    );
     t.form.addEventListener('submit', e => false);
     t.select = t.renderer.refresh();
 
@@ -710,7 +727,15 @@ export default class devpane {
         <input type='checkbox' onChange={this.handleToggle} />
         Bounding boxes
         <br />
-        <pre id={'bbox'}>{[`x: ${rect.x || 0}`, `y: ${rect.y || 0}`, `width: ${rect.w || 0}`, `height: ${rect.h || 0}`, `font-size: ${fontSize || 0}`].join(',\n')}</pre>
+        <pre id={'bbox'}>
+          {[
+            `x: ${rect.x || 0}`,
+            `y: ${rect.y || 0}`,
+            `width: ${rect.w || 0}`,
+            `height: ${rect.h || 0}`,
+            `font-size: ${fontSize || 0}`
+          ].join(',\n')}
+        </pre>
       </form>
     );
   }

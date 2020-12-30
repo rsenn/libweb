@@ -13,5 +13,12 @@ export const Package = ({ data, component = Fragment, id, class: className, ...p
   //
   let i = 0;
 
-  return h(component, { id, class: className }, [...children.filter(({ tagName }) => tagName != 'text').map(data => h(ElementToComponent(data), { data, key: `package-${name}-${i++}`, ...props })), ...children.filter(({ tagName }) => tagName == 'text').map(data => h(ElementToComponent(data), { data, key: `package-${name}-${i++}`, ...props }))]);
+  return h(component, { id, class: className }, [
+    ...children
+      .filter(({ tagName }) => tagName != 'text')
+      .map(data => h(ElementToComponent(data), { data, key: `package-${name}-${i++}`, ...props })),
+    ...children
+      .filter(({ tagName }) => tagName == 'text')
+      .map(data => h(ElementToComponent(data), { data, key: `package-${name}-${i++}`, ...props }))
+  ]);
 };

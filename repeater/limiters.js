@@ -86,7 +86,17 @@ function __generator(thisArg, body) {
     if(f) throw new TypeError('Generator is already executing.');
     while(_)
       try {
-        if(((f = 1), y && (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)) return t;
+        if(((f = 1),
+          y &&
+            (t =
+              op[0] & 2
+                ? y.return
+                : op[0]
+                ? y.throw || ((t = y.return) && t.call(y), 0)
+                : y.next) &&
+            !(t = t.call(y, op[1])).done)
+        )
+          return t;
         if(((y = 0), t)) op = [op[0] & 2, t.value];
         switch (op[0]) {
           case 0:
@@ -105,7 +115,10 @@ function __generator(thisArg, body) {
             op = _.ops.pop();
             _.trys.pop();
             continue;
-          default: if (!((t = _.trys), (t = t.length > 0 && t[t.length - 1])) && (op[0] === 6 || op[0] === 2)) {
+          default: if (
+              !((t = _.trys), (t = t.length > 0 && t[t.length - 1])) &&
+              (op[0] === 6 || op[0] === 2)
+            ) {
               _ = 0;
               continue;
             }
@@ -194,7 +207,10 @@ function semaphore(limit) {
     function release(id) {
       if(tokens[id] != null) {
         let id1 = nextId++;
-        let token = __assign(__assign({}, tokens[id]), { id: id1, release: release.bind(null, id1) });
+        let token = __assign(__assign({}, tokens[id]), {
+          id: id1,
+          release: release.bind(null, id1)
+        });
         push(token);
         delete tokens[id];
         remaining++;
@@ -298,7 +314,10 @@ function throttler(wait, options) {
               case 1:
                 _b.sent();
                 try {
-                  for(tokens_1 = __values(tokens), tokens_1_1 = tokens_1.next(); !tokens_1_1.done; tokens_1_1 = tokens_1.next()) {
+                  for(tokens_1 = __values(tokens), tokens_1_1 = tokens_1.next();
+                    !tokens_1_1.done;
+                    tokens_1_1 = tokens_1.next()
+                  ) {
                     token = tokens_1_1.value;
                     token.release();
                   }

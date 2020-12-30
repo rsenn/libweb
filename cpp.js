@@ -114,7 +114,9 @@ export function cpp_js(settings) {
   }
 
   function is_string_boundary(text, idx) {
-    return (text[idx] == '"' || text[idx] == "'") && (!idx || text[idx - 1] != '\\' || (idx > 1 && text[idx - 2] == '\\'));
+    return ((text[idx] == '"' || text[idx] == "'") &&
+      (!idx || text[idx - 1] != '\\' || (idx > 1 && text[idx - 2] == '\\'))
+    );
   }
 
   // dictionary of default settings, including default error handlers
@@ -149,7 +151,8 @@ export function cpp_js(settings) {
     settings = default_settings;
   }
 
-  if(settings.include_func && !settings.completion_func) settings.error_func('include_func but not completion_func specified');
+  if(settings.include_func && !settings.completion_func)
+    settings.error_func('include_func but not completion_func specified');
 
   // make sure that execution never continues when an error occurs.
   var user_err = settings.error_func;
@@ -385,7 +388,9 @@ export function cpp_js(settings) {
             for(var j = 0; j < elem.length; ++j) {
               if(elem[j] == '(') {
                 par_count = (par_count || 0) + 1;
-              } else if((elem[j] == ')' && --par_count === 0) || (elem[j].match(/\s/) && par_count === undefined)) {
+              } else if((elem[j] == ')' && --par_count === 0) ||
+                (elem[j].match(/\s/) && par_count === undefined)
+              ) {
                 if(elem[j] == ')') ++j;
 
                 head = elem.slice(0, j);
@@ -400,7 +405,8 @@ export function cpp_js(settings) {
 
             if(self.defined(head)) warn(head + ' redefined');
 
-            if(!self._is_identifier(head) && !self._is_macro(head)) error("not a valid preprocessor identifier: '" + head + "'");
+            if(!self._is_identifier(head) && !self._is_macro(head))
+              error("not a valid preprocessor identifier: '" + head + "'");
 
             self.define(head, tail);
             break;
@@ -416,7 +422,8 @@ export function cpp_js(settings) {
 
             var file = (parts[2] || '') + (parts[3] || '');
 
-            if(!settings.include_func) error('include directive not supported, ' + 'no handler specified');
+            if(!settings.include_func)
+              error('include directive not supported, ' + 'no handler specified');
 
             settings.include_func(file, parts[1] === '<', function(contents) {
               if(contents === null) error('failed to access include file: ' + file);
@@ -505,7 +512,10 @@ export function cpp_js(settings) {
                   if(command == 'else' && elem.length) warn('ignoring tokens after else');
                 }
 
-                if(ifs_failed > 0 || not_reached || (command != 'else' && !self._eval(elem, error, warn))) {
+                if(ifs_failed > 0 ||
+                  not_reached ||
+                  (command != 'else' && !self._eval(elem, error, warn))
+                ) {
                   ++ifs_failed;
                 } else {
                   // we run self branch, so skip any further else/
@@ -605,7 +615,8 @@ export function cpp_js(settings) {
             }
 
             var sub;
-            if(this._is_macro(k)) sub = this._subs_macro(new_text, k, {}, error, warn, nest_sub, idx);
+            if(this._is_macro(k))
+              sub = this._subs_macro(new_text, k, {}, error, warn, nest_sub, idx);
             else sub = this._subs_simple(new_text, k, {}, error, warn, nest_sub, idx);
 
             if(sub === null) continue;
@@ -624,7 +635,8 @@ export function cpp_js(settings) {
             // adjust blacklist indices
             for(var kk in blacklist) {
               if(blacklist[kk] != TOTALLY_BLACK) {
-                if(blacklist[kk] > idx) blacklist[kk] = sub[0].length - sub[1] + (blacklist[kk] - idx);
+                if(blacklist[kk] > idx)
+                  blacklist[kk] = sub[0].length - sub[1] + (blacklist[kk] - idx);
                 else delete blacklist[kk];
               }
             }
@@ -894,7 +906,11 @@ export function cpp_js(settings) {
           // if both sides are *not* preprocessing special tokens,
           // the concatenation is always ok. Otherwise the result
           // must be a valid preprocessing special token as well.
-          if((this._is_pp_special_token(left) || this._is_pp_special_token(right)) && !this._is_pp_special_token(left + right)) error('pasting "' + left + '" and "' + right + '" does not give a valid preprocessing token');
+          if((this._is_pp_special_token(left) || this._is_pp_special_token(right)) &&
+            !this._is_pp_special_token(left + right)
+          )
+            error('pasting "' + left + '" and "' + right + '" does not give a valid preprocessing token'
+            );
 
           // the result of the concatenation is another token, but
           // we must take care that the '##' token is not treated
@@ -932,7 +948,9 @@ export function cpp_js(settings) {
     // in the original string.
     _subs_simple(text, macro_name, blacklist_in, error, warn, nest_sub, start_idx) {
       // no macro but just a parameterless substitution
-      var rex = new RegExp(macro_name + '(\\b|' + pseudo_token_space + '|' + pseudo_token_empty + ')', 'g');
+      var rex = new RegExp(macro_name + '(\\b|' + pseudo_token_space + '|' + pseudo_token_empty + ')',
+        'g'
+      );
 
       rex.lastIndex = start_idx || 0;
       var m_found = rex.exec(text);
@@ -991,7 +1009,13 @@ export function cpp_js(settings) {
         // special case: if no arguments are expected and none passed either,
         // we will still get one empty argument from the previous logic.
         if(info.params.length || params_found.length > 1 || params_found[0]) {
-          error('illegal invocation of macro ' + macro_name + ', expected ' + info.params.length + ' parameters but got ' + params_found.length);
+          error('illegal invocation of macro ' +
+              macro_name +
+              ', expected ' +
+              info.params.length +
+              ' parameters but got ' +
+              params_found.length
+          );
         } else {
           params_found = [];
         }
@@ -1125,7 +1149,8 @@ export function cpp_js(settings) {
       if(val.match(is_string_re)) error('string literal not allowed in if expression');
 
       // neither are assignment or compound assignment ops
-      if(val.replace(/[=!<>]=/g, '').match(is_assignment_re)) error('assignment operator not allowed in if expression');
+      if(val.replace(/[=!<>]=/g, '').match(is_assignment_re))
+        error('assignment operator not allowed in if expression');
 
       // same for increment/decrement - we need to catch these
       // cases because they might be used to exploit eval().

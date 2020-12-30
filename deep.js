@@ -68,7 +68,8 @@ export const select = (root, filter, path) => {
   path = typeof path == 'string' ? path.split(/\.\//) : path;
   if(!path) path = [];
   if(filter(root, path)) selected.push({ path, value: root });
-  else if(Util.isObject(root)) for(k in root) selected = selected.concat(select(root[k], filter, [...path, k]));
+  else if(Util.isObject(root))
+    for(k in root) selected = selected.concat(select(root[k], filter, [...path, k]));
   return selected;
 };
 
@@ -105,7 +106,11 @@ export const iterate = function* (...args) {
     }
 };
 
-export const flatten = (iter, dst = {}, filter = (v, p) => typeof v != 'object' && v != null, map = (p, v) => [p.join('.'), v]) => {
+export const flatten = (iter,
+  dst = {},
+  filter = (v, p) => typeof v != 'object' && v != null,
+  map = (p, v) => [p.join('.'), v]
+) => {
   let insert;
   if(!iter.next) iter = iterate(iter, filter);
 

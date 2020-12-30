@@ -116,7 +116,8 @@ export function MovementListener(handler, options) {
       //devp.logEntry(`EVENT: ${index} ${Math.round(angle)} ${move.x} ${move.y}`);
       move.prev = prev;
 
-      (move.time = Date.now() - starttime), (move.timediff = prev && prev.time !== undefined ? move.time - prev.time : 0);
+      (move.time = Date.now() - starttime),
+        (move.timediff = prev && prev.time !== undefined ? move.time - prev.time : 0);
 
       if(/*prev && prev.time === 0 &&*/ Math.abs(90 - Math.abs(angle)) < 45) {
         if(self.handler.start() === null) self.handler.start(move);
@@ -141,7 +142,9 @@ export function MovementListener(handler, options) {
     self.scrollDisabler = ScrollDisabler(self.isActive, options.element);
     self.handler.scrollDisabler = self.scrollDisabler;
 
-    self.handler.start.subscribe(event => (event === null ? self.scrollDisabler.remove() : self.scrollDisabler.add()));
+    self.handler.start.subscribe(event =>
+      event === null ? self.scrollDisabler.remove() : self.scrollDisabler.add()
+    );
     self.handler.end.subscribe(event => self.scrollDisabler.remove());
   }
 
@@ -255,7 +258,11 @@ export function TurnListener(handler, options) {
   return MultitouchListener(MovementListener(event => {
       const { points, x, y } = event;
       const type = event.type || '';
-      let end = type.endsWith('up') || type.endsWith('cancel') || type.endsWith('end') || event.active === false;
+      let end =
+        type.endsWith('up') ||
+        type.endsWith('cancel') ||
+        type.endsWith('end') ||
+        event.active === false;
       //if(type != 'touchmove') console.log('type = ', type);
       if(points.length >= 2) {
         center = points.avg();
@@ -363,7 +370,10 @@ export function SelectionRenderer() {
     element: null,
     create(rect) {
       //console.log("SelectionListener.create(", rect, ")");
-      this.element = Element.create('div', { id: `selection-rect` }, global.window ? window.document.body : null);
+      this.element = Element.create('div',
+        { id: `selection-rect` },
+        global.window ? window.document.body : null
+      );
       Element.setCSS(this.element, {
         position: 'fixed',
         border: '3px dashed white',

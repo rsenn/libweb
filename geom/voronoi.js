@@ -335,7 +335,13 @@ export class Voronoi {
     let hl = lfocx - rfocx,
       aby2 = 1 / pby2 - 1 / plby2,
       b = hl / plby2;
-    if(aby2) return (-b + this.sqrt(b * b - 2 * aby2 * ((hl * hl) / (-2 * plby2) - lfocy + plby2 / 2 + rfocy - pby2 / 2))) / aby2 + rfocx;
+    if(aby2)
+      return ((-b +
+          this.sqrt(b * b - 2 * aby2 * ((hl * hl) / (-2 * plby2) - lfocy + plby2 / 2 + rfocy - pby2 / 2)
+          )) /
+          aby2 +
+        rfocx
+      );
 
     //both parabolas have same distance to directrix, thus break point is midway
     return (rfocx + lfocx) / 2;
@@ -381,7 +387,10 @@ export class Voronoi {
 
     //look left
     let lArc = previous;
-    while(lArc.circleEvent && abs_fn(x - lArc.circleEvent.x) < 1e-9 && abs_fn(y - lArc.circleEvent.ycenter) < 1e-9) {
+    while(lArc.circleEvent &&
+      abs_fn(x - lArc.circleEvent.x) < 1e-9 &&
+      abs_fn(y - lArc.circleEvent.ycenter) < 1e-9
+    ) {
       previous = lArc.rbPrevious;
       disappearingTransitions.unshift(lArc);
       this.detachBeachsection(lArc); //mark for reuse
@@ -396,7 +405,10 @@ export class Voronoi {
 
     //look right
     let rArc = next;
-    while(rArc.circleEvent && abs_fn(x - rArc.circleEvent.x) < 1e-9 && abs_fn(y - rArc.circleEvent.ycenter) < 1e-9) {
+    while(rArc.circleEvent &&
+      abs_fn(x - rArc.circleEvent.x) < 1e-9 &&
+      abs_fn(y - rArc.circleEvent.ycenter) < 1e-9
+    ) {
       next = rArc.rbNext;
       disappearingTransitions.push(rArc);
       this.detachBeachsection(rArc); //mark for reuse
@@ -1015,7 +1027,10 @@ export class Voronoi {
       //edge is removed if:
       //it is wholly outside the bounding box
       //it is looking more like a point than a line
-      if(!this.connectEdge(edge, bbox) || !this.clipEdge(edge, bbox) || (abs_fn(edge.va.x - edge.vb.x) < 1e-9 && abs_fn(edge.va.y - edge.vb.y) < 1e-9)) {
+      if(!this.connectEdge(edge, bbox) ||
+        !this.clipEdge(edge, bbox) ||
+        (abs_fn(edge.va.x - edge.vb.x) < 1e-9 && abs_fn(edge.va.y - edge.vb.y) < 1e-9)
+      ) {
         edge.va = edge.vb = null;
         edges.splice(iEdge, 1);
       }
@@ -1188,7 +1203,11 @@ export class Voronoi {
     } else {
       let bs = this.beachline.getFirst(this.beachline.root);
       while(bs) {
-        console.log('  site %d: xl: %f, xr: %f', bs.site.voronoiId, this.leftBreakPoint(bs, y), this.rightBreakPoint(bs, y));
+        console.log('  site %d: xl: %f, xr: %f',
+          bs.site.voronoiId,
+          this.leftBreakPoint(bs, y),
+          this.rightBreakPoint(bs, y)
+        );
         bs = bs.rbNext;
       }
     }
@@ -1528,7 +1547,9 @@ export class RBTree {
           this.rbRotateLeft(parent);
           sibling = parent.rbRight;
         }
-        if((sibling.rbLeft && sibling.rbLeft.rbRed) || (sibling.rbRight && sibling.rbRight.rbRed)) {
+        if((sibling.rbLeft && sibling.rbLeft.rbRed) ||
+          (sibling.rbRight && sibling.rbRight.rbRed)
+        ) {
           if(!sibling.rbRight || !sibling.rbRight.rbRed) {
             sibling.rbLeft.rbRed = false;
             sibling.rbRed = true;
@@ -1549,7 +1570,9 @@ export class RBTree {
           this.rbRotateRight(parent);
           sibling = parent.rbLeft;
         }
-        if((sibling.rbLeft && sibling.rbLeft.rbRed) || (sibling.rbRight && sibling.rbRight.rbRed)) {
+        if((sibling.rbLeft && sibling.rbLeft.rbRed) ||
+          (sibling.rbRight && sibling.rbRight.rbRed)
+        ) {
           if(!sibling.rbLeft || !sibling.rbLeft.rbRed) {
             sibling.rbRight.rbRed = false;
             sibling.rbRed = true;
@@ -1794,7 +1817,10 @@ export class Halfedge {
         vb = edge.vb;
       //rhill 2011-05-31: used to call getStartpoint()/getEndpoint(),
       //but for performance purpose, these are expanded in place here.
-      this.angle = edge.lSite === lSite ? Math.atan2(vb.x - va.x, va.y - vb.y) : Math.atan2(va.x - vb.x, vb.y - va.y);
+      this.angle =
+        edge.lSite === lSite
+          ? Math.atan2(vb.x - va.x, va.y - vb.y)
+          : Math.atan2(va.x - vb.x, vb.y - va.y);
     }
   }
 

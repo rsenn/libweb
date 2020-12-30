@@ -31,7 +31,8 @@ if(typeof global != 'undefined') {
         return schedule(fn, delay, slice.call(arguments, 2));
       };
 
-      clearInterval = global.clearInterval = clearTimeout = global.clearTimeout = function clearInterval(id) {
+      clearInterval = global.clearInterval = clearTimeout = global.clearTimeout = function clearInterval(id
+      ) {
         ids[id].cancel();
         timer.purge();
         delete ids[id];
@@ -93,7 +94,10 @@ export const wru = (function (window) {
         current = { name: current[NAME] || 'anonymous', test: current };
       }
       log(OUTPUT_SEPARATOR);
-      log((iHasIt(current, NAME) && current[NAME]) || (iHasIt(current, DESCRIPTION) && current[DESCRIPTION]) || UNKNOWN);
+      log((iHasIt(current, NAME) && current[NAME]) ||
+          (iHasIt(current, DESCRIPTION) && current[DESCRIPTION]) ||
+          UNKNOWN
+      );
       pass = [];
       fail = [];
       fatal = [];
@@ -188,7 +192,14 @@ export const wru = (function (window) {
     } else {
       prefix = OK;
     }
-    log(prefix + ' passes: ' + pass[LENGTH] + ', fails: ' + fail[LENGTH] + ', errors: ' + fatal[LENGTH]);
+    log(prefix +
+        ' passes: ' +
+        pass[LENGTH] +
+        ', fails: ' +
+        fail[LENGTH] +
+        ', errors: ' +
+        fatal[LENGTH]
+    );
     ci = 0;
     prefix = EMPTY;
     isGonnaBeLegen();

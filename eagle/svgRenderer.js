@@ -88,7 +88,12 @@ export class EagleSVGRenderer {
           }
         },
         {
-          constructor: { value: class Palette {}, enumerable: false, writable: false, configurable: false },
+          constructor: {
+            value: class Palette {},
+            enumerable: false,
+            writable: false,
+            configurable: false
+          },
           handlers: { value: null, enumerable: false, writable: true },
           length: { value: 0, enumerable: false, configurable: true, writable: true }
         }
@@ -116,7 +121,11 @@ export class EagleSVGRenderer {
   layerOf(element) {
     let layer;
     do {
-      layer = element.getAttribute('data-layer') || element.getAttribute('data-layer-id') || element.getAttribute('data-layer-name') || element.getAttribute('layer');
+      layer =
+        element.getAttribute('data-layer') ||
+        element.getAttribute('data-layer-id') ||
+        element.getAttribute('data-layer-name') ||
+        element.getAttribute('layer');
       if(layer) {
         const layerId = +(layer + '').replace(/\ .*/g, '');
         return this.layers[layerId];
@@ -167,11 +176,15 @@ export class EagleSVGRenderer {
 
     this.debug(`EagleSVGRenderer.renderItem`, { item, transformation });
 
-    const svg = (elem, attr, parent) => this.create(elem, { className: item.tagName, /* 'data-path': item.path.toString(' '), */ ...attr }, parent);
+    const svg = (elem, attr, parent) =>
+      this.create(elem, { className: item.tagName, /* 'data-path': item.path.toString(' '), */ ...attr },
+        parent
+      );
 
     let coordFn = /*transform ? MakeCoordTransformer(transform) :*/ i => i;
     const { layer } = item;
-    const color = typeof item.getColor == 'function' ? item.getColor() : this.constructor.palette[16];
+    const color =
+      typeof item.getColor == 'function' ? item.getColor() : this.constructor.palette[16];
     let elem;
     const comp = ElementToComponent(item);
     if(comp) {
@@ -337,7 +350,8 @@ export class EagleSVGRenderer {
     let h, v;
     const { horizontalAlignment, verticalAlignment } = EagleSVGRenderer;
 
-    for(let tok of (align || horizontalAlignment[def[0] + 1] + '-' + verticalAlignment[def[1] + 1]).split(/-/g)) {
+    for(let tok of (align || horizontalAlignment[def[0] + 1] + '-' + verticalAlignment[def[1] + 1]
+    ).split(/-/g)) {
       switch (tok) {
         case 'center': {
           if(h === undefined) h = 0;
@@ -370,16 +384,23 @@ export class EagleSVGRenderer {
     const { x, y } = coord;
     const { verticalAlignment, horizontalAlignment } = EagleSVGRenderer;
     let r = {};
-    if(hv & VERTICAL) r['dominant-baseline'] = verticalAlignment[Math.round(y) + 1] || verticalAlignment[defaultY + 1];
+    if(hv & VERTICAL)
+      r['dominant-baseline'] =
+        verticalAlignment[Math.round(y) + 1] || verticalAlignment[defaultY + 1];
 
-    if(hv & HORIZONTAL) r['text-anchor'] = horizontalAlignment[Math.round(x) + 1] || horizontalAlignment[defaultX + 1];
+    if(hv & HORIZONTAL)
+      r['text-anchor'] =
+        horizontalAlignment[Math.round(x) + 1] || horizontalAlignment[defaultX + 1];
     return r;
   }
 
   render(obj, props = {}, children = []) {
     let doc = obj.document || this.doc;
     this.debug('EagleSVGRenderer.render', obj);
-    let { bounds = (obj.getMeasures && obj.measures) || obj.getBounds(), transform = new TransformationList() } = props;
+    let {
+      bounds = (obj.getMeasures && obj.measures) || obj.getBounds(),
+      transform = new TransformationList()
+    } = props;
 
     let { rect = new Rect(bounds.rect) } = props;
 

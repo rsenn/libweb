@@ -10,14 +10,16 @@ import { WritableStream } from './writableStream.js';
 
 function TransformStreamCloseReadable(transformStream) {
   if(transformStream._errored === true) throw new TypeError('TransformStream is already errored');
-  if(transformStream._readableClosed === true) throw new TypeError('Readable side is already closed');
+  if(transformStream._readableClosed === true)
+    throw new TypeError('Readable side is already closed');
   TransformStreamCloseReadableInternal(transformStream);
 }
 
 function TransformStreamEnqueueToReadable(transformStream, chunk) {
   if(transformStream._errored === true) throw new TypeError('TransformStream is already errored');
 
-  if(transformStream._readableClosed === true) throw new TypeError('Readable side is already closed');
+  if(transformStream._readableClosed === true)
+    throw new TypeError('Readable side is already closed');
 
   // We throttle transformer.transform invocation based on the backpressure of the ReadableStream, but we still
   // accept TransformStreamEnqueueToReadable() calls.
@@ -63,9 +65,11 @@ function TransformStreamErrorIfNeeded(transformStream, e) {
 function TransformStreamErrorInternal(transformStream, e) {
   transformStream._errored = true;
   transformStream._storedError = e;
-  if(transformStream._writableDone === false) WritableStreamDefaultControllerError(transformStream._writableController, e);
+  if(transformStream._writableDone === false)
+    WritableStreamDefaultControllerError(transformStream._writableController, e);
 
-  if(transformStream._readableClosed === false) ReadableStreamDefaultControllerError(transformStream._readableController, e);
+  if(transformStream._readableClosed === false)
+    ReadableStreamDefaultControllerError(transformStream._readableController, e);
 }
 
 // Used for preventing the next write() call on TransformStreamSink until there
@@ -98,7 +102,12 @@ function TransformStreamTransform(transformStream, chunk) {
   transformStream._transforming = true;
   const transformer = transformStream._transformer;
   const controller = transformStream._transformStreamController;
-  const transformPromise = PromiseInvokeOrPerformFallback(transformer, 'transform', [chunk, controller], TransformStreamDefaultTransform, [chunk, controller]);
+  const transformPromise = PromiseInvokeOrPerformFallback(transformer,
+    'transform',
+    [chunk, controller],
+    TransformStreamDefaultTransform,
+    [chunk, controller]
+  );
   return transformPromise.then(() => {
       transformStream._transforming = false;
       return TransformStreamReadableReadyPromise(transformStream);
@@ -152,7 +161,9 @@ export class TransformStreamSink {
   close() {
     const transformStream = this._transformStream;
     transformStream._writableDone = true;
-    const flushPromise = PromiseInvokeOrNoop(transformStream._transformer, 'flush', [transformStream._transformStreamController]);
+    const flushPromise = PromiseInvokeOrNoop(transformStream._transformer, 'flush', [
+      transformStream._transformStreamController
+    ]);
     // Return a promise that is fulfilled with undefined on success.
     return flushPromise
       .then(() => {
@@ -207,11 +218,15 @@ export class TransformStreamSource {
 export class TransformStreamDefaultController {
   constructor(transformStream) {
     if(IsTransformStream(transformStream) === false) {
-      throw new TypeError('TransformStreamDefaultController can only be ' + 'constructed with a TransformStream instance');
+      throw new TypeError('TransformStreamDefaultController can only be ' +
+          'constructed with a TransformStream instance'
+      );
     }
 
     if(transformStream._transformStreamController !== undefined) {
-      throw new TypeError('TransformStreamDefaultController instances can ' + 'only be created by the TransformStream constructor');
+      throw new TypeError('TransformStreamDefaultController instances can ' +
+          'only be created by the TransformStream constructor'
+      );
     }
 
     this._controlledTransformStream = transformStream;
@@ -296,7 +311,9 @@ export const TransformStream =
       TransformStreamSetBackpressure(this, desiredSize <= 0);
 
       const transformStream = this;
-      const startResult = InvokeOrNoop(transformer, 'start', [transformStream._transformStreamController]);
+      const startResult = InvokeOrNoop(transformer, 'start', [
+        transformStream._transformStreamController
+      ]);
       startPromise_resolve(startResult);
       startPromise.catch(e => {
         // The underlyingSink and underlyingSource will error the readable and writable ends on their own.
@@ -327,7 +344,8 @@ export const TransformStream =
 // Helper functions for the TransformStreamDefaultController.
 
 function defaultControllerBrandCheckException(name) {
-  return new TypeError(`TransformStreamDefaultController.prototype.${name} can only be used on a TransformStreamDefaultController`);
+  return new TypeError(`TransformStreamDefaultController.prototype.${name} can only be used on a TransformStreamDefaultController`
+  );
 }
 
 // Stubs for abstract operations used from ReadableStream and WritableStream.
@@ -424,4 +442,9 @@ function assert(predicate, s) {
   }
 }
 
-export default { TransformStreamSink, TransformStreamSource, TransformStreamDefaultController, TransformStream };
+export default {
+  TransformStreamSink,
+  TransformStreamSource,
+  TransformStreamDefaultController,
+  TransformStream
+};
