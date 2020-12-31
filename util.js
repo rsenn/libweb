@@ -5060,6 +5060,11 @@ Util.getArgs = Util.memoize(() =>
     () => Util.tryCatch(() => scriptArgs)
   )
 );
+Util.exit = async exitCode =>
+  Util.tryCatch(() => [process, process.exit],
+    ([obj, exit]) => exit.call(obj, exitCode),
+    () => Util.tryCatch(async () => await import('std').then(std => std.exit(exitCode)))
+  );
 Util.getEnv = async varName =>
   Util.tryCatch(() => process.env,
     async e => e[varName],
@@ -5119,7 +5124,11 @@ Util.safeFunction = (fn, trapExceptions, thisObj) => {
 Util.safeCall = (fn, ...args) => Util.safeApply(fn, args);
 Util.safeApply = (fn, args = []) => Util.safeFunction(fn, true)(...args);
 Util.callMain = async (fn, trapExceptions) =>
-  await Util.safeFunction(fn,
+  await Util.safeFunction(async (...args) => {
+    let ret = await fn(...args);
+    if(typeof(ret) == 'number')
+      Util.exit(ret);
+  },
     trapExceptions &&
       (typeof trapExceptions == 'function'
         ? trapExceptions

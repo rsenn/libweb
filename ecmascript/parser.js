@@ -479,7 +479,7 @@ export class ECMAScriptParser extends Parser {
     this.templateLevel--;
 
     let node = new TemplateLiteral(quasis, expressions);
-    console.log('node:', node);
+    //console.log('node:', node);
     return node;
   }
 
