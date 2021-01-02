@@ -1,4 +1,4 @@
-import { ESNode, Literal, FunctionLiteral, TemplateLiteral, Property, MethodDefinition, FunctionDeclaration, ArrowFunctionExpression, Identifier, ClassDeclaration, BindingProperty, ObjectPattern, SpreadElement, MemberExpression, Statement, ImportDeclaration, ImportSpecifier, BlockStatement, IfStatement } from './estree.js';
+import { ESNode, Literal, FunctionLiteral, TemplateLiteral, Property, MethodDefinition, FunctionDeclaration, ArrowFunctionExpression, Identifier, ClassDeclaration, ObjectPattern, SpreadElement, MemberExpression, Statement, ImportDeclaration, ImportSpecifier, BlockStatement, IfStatement } from './estree.js';
 import Util from '../util.js';
 import deep from '../deep.js';
 //import util from 'util';
@@ -170,7 +170,7 @@ export class Printer {
     return output;
   }*/
 
-  printBindingProperty(binding_property) {
+  /*printBindingProperty(binding_property) {
     const { property, id, initializer } = binding_property;
 
     let output = '';
@@ -182,7 +182,7 @@ export class Printer {
       output += ': ' + this.printNode(id);
     if(initializer) output += ' = ' + this.printNode(initializer);
     return output;
-  }
+  }*/
 
   printLiteral(literal) {
     let { value, species } = literal;
@@ -812,16 +812,13 @@ export class Printer {
         //name =  this.printNode(property.id);
         value = this.printNode(property).replace(/function /, '');
         isFunction = true;
-      } else if(property instanceof Property ||
-        property instanceof BindingProperty ||
-        !property.id
-      ) {
+      } else if(property instanceof Property || !property.key) {
         value = this.printNode(property);
         //console.debug('printObjectLiteral:', { value });
         a.push(value);
         continue;
       } else {
-        name = this.printNode(property.id);
+        name = this.printNode(property.key);
         value = this.printNode(property.value);
       }
 
@@ -830,7 +827,7 @@ export class Printer {
         let functionName = property.value.id ? this.printNode(property.value.id) : '';
         if(functionName != '') {
           name = functionName;
-          delete property.id;
+          // delete property.key;
         } else if(functionName) {
           name = '';
         }
@@ -1017,20 +1014,17 @@ export class Printer {
     for(let binding_property of properties) {
       if(output != '') output += ', ';
 
-      console.log('binding_property:', binding_property);
+      //console.log('binding_property:', binding_property);
 
-      if(!(binding_property instanceof Property)) {
-        output += this.printNode(binding_property);
-        continue;
-      }
+      output += this.printNode(binding_property);
 
-      if(binding_property.comments) output += this.printComments(binding_property.comments);
+      /*      if(binding_property.comments) output += this.printComments(binding_property.comments);
 
       let id = this.printNode(binding_property.key);
       let value = binding_property.value ? this.printNode(binding_property.value) : id;
 
       if(id == value) output += id;
-      else output += `${id} = ${value}`;
+      else output += `${id} = ${value}`;*/
     }
 
     //let output = properties.map(property => this.printNode(property)).join(', ');

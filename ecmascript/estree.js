@@ -143,16 +143,6 @@ export class Identifier extends Pattern {
   }
 }
 
-export class BindingProperty extends Expression {
-  constructor(property, id, initializer) {
-    super('BindingProperty');
-    this.property = property;
-    this.id = id;
-
-    if(initializer) this.initializer = initializer;
-  }
-}
-
 export class Literal extends Expression {
   constructor(value, species) {
     super('Literal');
@@ -264,14 +254,6 @@ export class MemberExpression extends Expression {
   }
 }
 
-export class InExpression extends Expression {
-  constructor(object, property) {
-    super('InExpression');
-    this.object = object;
-    this.property = property;
-  }
-}
-
 export class ConditionalExpression extends Expression {
   constructor(test, consequent, alternate) {
     super('ConditionalExpression');
@@ -331,9 +313,9 @@ export class DebuggerStatement extends Statement {
   }
 }
 
-export class LabelledStatement extends Statement {
+export class LabeledStatement extends Statement {
   constructor(label, body) {
-    super('LabelledStatement');
+    super('LabeledStatement');
     this.label = label;
     this.body = body;
   }
@@ -760,7 +742,6 @@ export const CTORS = {
   FunctionLiteral,
   Pattern,
   Identifier,
-  BindingProperty,
   Literal,
   TemplateLiteral,
   TaggedTemplateExpression,
@@ -772,7 +753,6 @@ export const CTORS = {
   AssignmentExpression,
   LogicalExpression,
   MemberExpression,
-  InExpression,
   ConditionalExpression,
   CallExpression,
   DecoratorExpression,
@@ -781,7 +761,7 @@ export const CTORS = {
   Statement,
   EmptyStatement,
   DebuggerStatement,
-  LabelledStatement,
+  LabeledStatement,
   BlockStatement,
   FunctionBody,
   StatementList,
