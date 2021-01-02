@@ -658,9 +658,9 @@ export class Printer {
   }
 
   printExportNamedDeclaration(export_named_declaration) {
-    const { declaration, specifiers } = export_named_declaration;
+    const { declaration, specifiers, source } = export_named_declaration;
 
-    //console.log('printExportNamedDeclaration', { declaration, specifiers });
+    //console.log('printExportNamedDeclaration', { declaration, specifiers, source });
 
     let output = this.colorCode.keywords() + 'export ';
 
@@ -669,17 +669,26 @@ export class Printer {
     } else {
       output +=
         '{ ' +
-        specifiers.map(spec => this.printNode(spec)).join(this.colorCode.punctuators() + ', ');
-      +' }';
+        specifiers.map(spec => this.printNode(spec)).join(this.colorCode.punctuators() + ', ') +
+        ' }';
 
       //.replace(/:\ /g, ' as ');
-      if(export_named_declaration.source) {
+      if(source) {
         output += ' from ';
         output += this.printNode(source);
       }
     }
 
     return output.replace(/[\;\n ]*$/, '');
+  }
+
+  printExportDefaultDeclaration(export_default_declaration) {
+    const { declaration } = export_default_declaration;
+    console.log('printExportDefaultDeclaration', { declaration });
+    let output = this.colorText.keywords('export default ');
+
+    output += this.printNode(declaration);
+    return output;
   }
 
   printThrowStatement(throw_statement) {

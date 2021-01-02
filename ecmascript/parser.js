@@ -1337,8 +1337,14 @@ export class ECMAScriptParser extends Parser {
           kind = member.name;
           member = null;
         }
-        let memberCtor = (id, value, _, kind, method = false, shorthand = false) =>
-          new Property(id, value, kind, method, shorthand, computed);
+        let memberCtor = (id, value, _, kind) =>
+          new Property(id,
+            value,
+            kind,
+            value instanceof FunctionLiteral,
+            id === value,
+            !(id instanceof Identifier)
+          );
         if(ctor === ObjectPattern)
           memberCtor = (id, value, element) => new BindingProperty(id, element, value);
         else if(/*!(value instanceof FunctionDeclaration) && */ isClass)
@@ -1601,12 +1607,12 @@ export class ECMAScriptParser extends Parser {
     return new ImportSpecifier(name, decl);
   }
 
-  parseModuleItems() {
+  parseModuleItems(method = 'parseImportSpecifier') {
     this.expectPunctuators('{');
     let items = [];
     while(true) {
       let item;
-      item = this.parseImportSpecifier();
+      item = this[method]();
       items.push(item);
       if(this.matchPunctuators(',')) {
         this.expectPunctuators(',');
@@ -1618,10 +1624,25 @@ export class ECMAScriptParser extends Parser {
     return items;
   }
 
-  parseExportStatement() {
+  parseExportSpecifier() {
+    let name;
+    let decl;
+
+    name = this.expectIdentifier();
+
+    if(this.matchKeywords('as')) {
+      this.expectKeywords('as');
+      decl = this.expectIdentifier();
+    } else {
+      decl = name;
+    }
+    return new ExportSpecifier(name, decl);
+  }
+
+  parseExportDeclaration() {
     let stmt,
       is_async = false;
-    this.log('parseExportStatement()');
+    this.log('parseExportDeclaration()');
     if(this.matchKeywords('export')) this.expectKeywords('export');
     if(this.matchKeywords('async')) {
       this.expectKeywords('async');
@@ -1645,8 +1666,7 @@ export class ECMAScriptParser extends Parser {
 
       stmt = new ExportNamedDeclaration(this.parseAssignmentExpression(), null);
     } else if(this.matchPunctuators('{')) {
-      //this.expectPunctuators('{');
-      stmt = this.parseBindingPattern();
+      let items = this.parseModuleItems('parseExportSpecifier');
 
       let source;
 
@@ -1659,14 +1679,14 @@ export class ECMAScriptParser extends Parser {
         //console.log('export from!');
         source = this.expectLiteral();
       }
-      stmt = new ExportNamedDeclaration(null, stmt, source);
+      stmt = new ExportNamedDeclaration(null, items, source);
 
       //this.expectPunctuators('}');
     }
 
     if(this.matchPunctuators(';')) this.expectPunctuators(';');
 
-    //console.log('parseExportStatement', { stmt, token: this.token.value });
+    //console.log('parseExportDeclaration', { stmt, token: this.token.value });
 
     return stmt;
     //return this.parseVariableStatement(true);
@@ -2196,7 +2216,7 @@ export class ECMAScriptParser extends Parser {
       /*      this.expectKeywords('export');
       exported = true;
 
-      if(this.matchKeywords('default')) */ return this.parseExportStatement();
+      if(this.matchKeywords('default')) */ return this.parseExportDeclaration();
     } else if(this.matchKeywords('class')) {
       return this.parseClass(exported);
     } else if(this.matchKeywords('function')) {
