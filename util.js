@@ -5125,10 +5125,9 @@ Util.safeCall = (fn, ...args) => Util.safeApply(fn, args);
 Util.safeApply = (fn, args = []) => Util.safeFunction(fn, true)(...args);
 Util.callMain = async (fn, trapExceptions) =>
   await Util.safeFunction(async (...args) => {
-    let ret = await fn(...args);
-    if(typeof(ret) == 'number')
-      Util.exit(ret);
-  },
+      let ret = await fn(...args);
+      if(typeof ret == 'number') Util.exit(ret);
+    },
     trapExceptions &&
       (typeof trapExceptions == 'function'
         ? trapExceptions

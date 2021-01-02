@@ -34,9 +34,12 @@ export const Instance = ({ data, opts = {}, ...props }) => {
     opts: {
       ...opts,
       ...(deviceset.uservalue == 'yes' || true ? { name, value } : { name, value: '' }),
-      transformation: transformation.concat(transform.filter(t => ['translate'].indexOf(t.type) == -1))
+      transformation: transformation.concat(transform.filter(t => ['translate'].indexOf(t.type) == -1)
+      )
     }
   });
 
-  return h('g', { class: `part ${part.name}`, 'data-path': part.path.toString(' '), transform }, [sym]);
+  return h('g', { class: `part ${part.name}`, 'data-path': part.path.toString(' '), transform }, [
+    sym
+  ]);
 };

@@ -7,11 +7,8 @@ export class ESNode {
   static lastNode = null;
   static assoc = Util.weakAssoc();
 
-  constructor(type) {
-    //this.type = type;
-    //this.loc = null; // TODO: For now avoid dealing with location information.
-    //Fix it later.
-    //Object.defineProperty(this, 'position', { value: null, enumerable: false, writable: true });
+  constructor(type = 'Node') {
+    Util.define(this, { type });
 
     ESNode.lastNode = this;
   }
@@ -28,7 +25,7 @@ Object.defineProperty(ESNode.prototype, 'position', {
 });
 
 export class Program extends ESNode {
-  constructor(body) {
+  constructor(body = []) {
     super('Program');
     this.body = body;
   }
@@ -103,30 +100,34 @@ export class Expression extends ESNode {
 }
 
 export class FunctionLiteral extends ESNode {
-  constructor(type, id, params, body, is_async = false, generator = false) {
-    super(type);
-
+  constructor( id, params, body,  _async = false, generator = false) {
+    super('Function');
     this.id = id;
     this.params = params;
     this.body = body;
-    //this.exported = exported;
-    if(is_async !== undefined) this.is_async = is_async;
-    if(generator !== undefined) this.generator = generator;
+     this.generator = generator;
+   this.async = _async;
+ }
+}
+
+export class Pattern extends ESNode {
+  constructor(type = 'Pattern') {
+    super(type);
   }
 }
 
-export class Identifier extends Expression {
-  constructor(value) {
+export class Identifier extends Pattern {
+  constructor(name) {
     super('Identifier');
-    this.value = value;
+    this.name = name;
   }
 
   static string(node) {
-    return node.value;
+    return node.name;
   }
 
   toString(n, opts = {}) {
-    return this.value;
+    return this.name;
   }
 
   [Symbol.toStringTag](...args) {
@@ -136,7 +137,7 @@ export class Identifier extends Expression {
   [inspectSymbol](n, opts = {}) {
     const { colors } = opts;
     let c = Util.coloring(colors);
-    return c.text(`Identifier `, 1, 31) + c.text(this.value, 1, 33);
+    return c.text(`Identifier `, 1, 31) + c.text(this.name, 1, 33);
   }
 }
 
@@ -174,13 +175,13 @@ export class Literal extends Expression {
       : undefined;
   }
 
-  [inspectSymbol](n, opts = {}) {
-    const { colors } = opts;
+  /* [inspectSymbol](n, opts = {}) {
+  console.log("Literal.inspect", this.value);
+  const { colors } = opts;
     const { value } = this;
     let c = Util.coloring(colors);
-    //console.log("Literal.inspect", this.value);
     return c.text(`Literal `, 1, 31) + c.text(value, 1, value.startsWith('/') ? 35 : 36);
-  }
+  }*/
 }
 
 export class TemplateLiteral extends Expression {
@@ -317,8 +318,20 @@ export class SequenceExpression extends Expression {
 }
 
 export class Statement extends ESNode {
-  constructor(type) {
+  constructor(type = 'Statement') {
     super(type);
+  }
+}
+
+export class EmptyStatement extends Statement {
+  constructor() {
+    super('EmptyStatement');
+  }
+}
+
+export class DebuggerStatement extends Statement {
+  constructor() {
+    super('DebuggerStatement');
   }
 }
 
@@ -329,10 +342,17 @@ export class LabelledStatement extends Statement {
     this.statement = statement;
   }
 }
+
 export class BlockStatement extends Statement {
-  constructor(statements) {
+  constructor(body) {
     super('BlockStatement');
-    this.body = statements;
+    this.body = body;
+  }
+}
+export class FunctionBody extends BlockStatement {
+  constructor(body) {
+    super(body);
+    this.type = 'FunctionBody';
   }
 }
 
@@ -343,16 +363,18 @@ export class StatementList extends Statement {
   }
 }
 
-export class EmptyStatement extends Statement {
-  constructor() {
-    super('EmptyStatement');
-  }
-}
-
 export class ExpressionStatement extends Statement {
   constructor(expression) {
     super('ExpressionStatement');
     this.expression = expression;
+  }
+}
+
+export class Directive extends ExpressionStatement {
+  constructor(expression) {
+    super(expression);
+    this.type = 'Directive';
+    this.directive = Literal.string(this.expression);
   }
 }
 
@@ -428,13 +450,13 @@ export class ForStatement extends Statement {
 }
 
 export class ForInStatement extends Statement {
-  constructor(left, right, body, operator = 'in', async = false) {
+  constructor(left, right, body, operator = 'in', isAsync = false) {
     super('ForInStatement');
     this.left = left;
     this.right = right;
     this.body = body;
     this.operator = operator;
-    if(async) this.async = true;
+    this['async'] = isAsync;
   }
 }
 
@@ -472,15 +494,6 @@ export class YieldStatement extends Statement {
   }
 }
 
-export class ImportStatement extends Statement {
-  constructor(identifiers, sourceFile, doExport = false) {
-    super('ImportStatement');
-    this.identifiers = identifiers;
-    this.source = sourceFile;
-    if(doExport) this.export = true;
-  }
-}
-
 export class ExportStatement extends Statement {
   constructor(what, declarations, sourceFile) {
     super('ExportStatement');
@@ -497,13 +510,30 @@ export class Declaration extends Statement {
 }
 
 export class ClassDeclaration extends ESNode {
-  constructor(id, extending, members) {
-    super('ClassDeclaration');
+  constructor(id, superClass, body) {
+    super('Class');
     this.id = id;
-    this.extending = extending;
-    this.members = members;
-    //this.exported = exported;
-    //console.log('New ClassDeclaration: ', JSON.toString({ id, extending, // exported }));
+    this.superClass = superClass;
+    this.body = body;
+  }
+}
+
+export class ClassBody extends ESNode {
+  constructor(body) {
+    super('ClassBody');
+
+    this.body = body;
+  }
+}
+
+export class MethodDefinition extends ESNode {
+  constructor(key, value, kind = 'method', computed = false, _static = false) {
+    super('MethodDefinition');
+    this.key = key;
+    this.value = value;
+    this.kind = kind;
+    this.computed = computed;
+    this.static = _static;
   }
 }
 
@@ -516,10 +546,10 @@ export class FunctionArgument extends ESNode {
 }
 
 export class FunctionDeclaration extends FunctionLiteral {
-  constructor(id, params, body, exported = false, is_async = false, generator = false) {
-    super('FunctionDeclaration', id, params, body, is_async, generator);
-    if(exported) this.exported = exported;
-  }
+  constructor(id, params, body,   is_async = false, generator = false) {
+    super(id, params, body, is_async, generator);
+    this.type = 'FunctionDeclaration';
+   }
 }
 
 export class ArrowFunction extends ESNode {
@@ -552,21 +582,15 @@ export class VariableDeclarator extends ESNode {
     //identifier.value }));
   }
 }
-
-export class AliasName extends ESNode {
+/*
+export class ImportSpecifier extends ESNode {
   constructor(name, as) {
-    super('AliasName');
+    super('ImportSpecifier');
     this.name = name;
     this.as = as;
   }
 }
-
-export class ModuleItems extends ESNode {
-  constructor(items) {
-    super('ModuleItems');
-    this.items = items;
-  }
-}
+*/
 
 export class ObjectExpression extends ESNode {
   constructor(members) {
@@ -577,19 +601,18 @@ export class ObjectExpression extends ESNode {
 }
 
 export class PropertyDefinition extends ESNode {
-  static GETTER = 1;
-  static SETTER = 2;
-  static STATIC = 4;
-
-  constructor(id, value, flags) {
-    super('PropertyDefinition');
-    this.id = id;
+  constructor(key, value, kind = 'init', method = false, shorthand = false, computed = false) {
+    super('Property');
+    this.key = key;
     this.value = value;
-    this.flags = flags;
+    this.kind = kind;
+    this.method = method;
+    this.shorthand = shorthand;
+    this.computed = computed;
   }
 }
 
-export class MemberVariable extends ESNode {
+/*export class MemberVariable extends ESNode {
   static STATIC = 4;
 
   constructor(id, value, flags) {
@@ -598,7 +621,7 @@ export class MemberVariable extends ESNode {
     this.value = value;
     this.flags = flags;
   }
-}
+}*/
 
 export class ArrayExpression extends ESNode {
   constructor(elements) {
@@ -717,7 +740,7 @@ export const CTORS = {
   IfStatement,
   SwitchStatement,
   CaseClause,
-  ImportStatement,
+  ImportDeclaration,
   ExportStatement,
   JSXLiteral,
   Literal,
@@ -730,11 +753,10 @@ export const CTORS = {
   NewExpression,
   ESNode,
   ObjectBindingPattern,
-  AliasName,
-  ModuleItems,
+  ImportSpecifier,
   ObjectExpression,
   PropertyDefinition,
-  MemberVariable,
+  MethodDefinition,
   Program,
   RestOfExpression,
   ReturnStatement,

@@ -10,7 +10,7 @@
 //import util from 'util';
 import EventEmitter from '../eventEmitter.js';
 import Util from '../util.js';
-import { ESNode, BinaryExpression, Identifier, ImportStatement, Literal, MemberExpression, FunctionDeclaration, ArrowFunction, SequenceExpression } from './estree.js';
+import { ESNode, BinaryExpression, Identifier, ImportDeclaration, Literal, MemberExpression, FunctionDeclaration, ArrowFunction, SequenceExpression } from './estree.js';
 
 class NotImplemented extends Error {
   constructor(type, node) {
@@ -162,7 +162,7 @@ export class Environment extends EventEmitter {
     let type = node.type || Util.className(node);
     let closure = ({
         BinaryExpression: this.generateBinaryExpression,
-        ImportStatement: this.generateImportStatement,
+        ImportDeclaration: this.generateImportDeclaration,
         LogicalExpression: this.generateBinaryExpression,
         UnaryExpression: this.generateUnaryExpression,
         UpdateExpression: this.generateUpdateExpression,
@@ -291,11 +291,11 @@ export class Environment extends EventEmitter {
     };
   }
 
-  generateImportStatement(node) {
+  generateImportDeclaration(node) {
     let self = this;
     const { identifiers, source } = node;
     let ids = identifiers.declarations.map(identifier => identifier.id.value);
-    console.log('ImportStatement:', ids);
+    console.log('ImportDeclaration:', ids);
     let importFile = source.value;
     return function() {
       let ret = self.getVariableStore(node.value)[node.value];

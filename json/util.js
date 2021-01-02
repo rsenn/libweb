@@ -17,7 +17,13 @@ export const toXML = function(o, z = 10000, q = '"') {
   if(a && a.length > 0) {
     s += tagName[0] != '?' ? '>' : '?>';
     const textChildren = typeof a[0] == 'string';
-    let nl = textChildren ? '' : tagName == 'text' && a.length == 1 ? '' : tagName[0] != '?' ? '\n  ' : '\n';
+    let nl = textChildren
+      ? ''
+      : tagName == 'text' && a.length == 1
+      ? ''
+      : tagName[0] != '?'
+      ? '\n  '
+      : '\n';
     if(textChildren) s += a.join('\n') + `</${tagName}>`;
     else if(z > 0) {
       for(let child of a) s += nl + toXML(child, z > 0 ? z - 1 : z).replace(/>\n/g, '>' + nl);

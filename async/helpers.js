@@ -103,4 +103,15 @@ export const subscribe = async (stream, callback) => {
     yield e;
   });
 };*/
-export default { timer, map, consume, oncePromise, streamify, filter, distinct, throttle, subscribe, accumulate };
+export default {
+  timer,
+  map,
+  consume,
+  oncePromise,
+  streamify,
+  filter,
+  distinct,
+  throttle,
+  subscribe,
+  accumulate
+};

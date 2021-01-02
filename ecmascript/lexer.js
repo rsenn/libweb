@@ -786,7 +786,8 @@ export class Lexer {
   }
 
   lexSingleLineComment() {
-    console.log('lexSingleLineComment', this.getRange(this.start, this.pos));
+    //console.log('lexSingleLineComment', this.getRange(this.start, this.pos));
+   
     //Single line comment is only terminated by a line terminator
     //character and nothing else
     this.acceptRun(not(isLineTerminator));

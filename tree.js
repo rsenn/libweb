@@ -47,10 +47,13 @@ Tree.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
 };
 
 Tree.prototype.at = function(path) {
-  let node = this.root;
-  if(typeof path == 'string') path = path.split(Tree.PATH_SEPARATOR);
-  for(let key of path) node = node[key];
-  return node;
+  try {
+    let node = this.root;
+    if(typeof path == 'string') path = path.split(Tree.PATH_SEPARATOR);
+    for(let key of path) node = node[key];
+    return node;
+  } finally {
+  }
 };
 
 Tree.prototype.pathOf = function(obj) {
@@ -64,7 +67,7 @@ Tree.prototype.pathOf = function(obj) {
   p.toString = function() {
     return Array.prototype.join.call(this, Tree.PATH_SEPARATOR);
   };
-  return p;
+  return parent === null ? p : undefined;
 };
 
 Tree.prototype.depth = function(obj) {
@@ -155,7 +158,11 @@ Tree.prototype.flat = function(t = ([path, node]) => [path.join('.'), node]) {
 };
 
 Tree.prototype[Symbol.iterator] = function() {
-  return map(Tree.prototype.entries.call(this),  ([path, node]) => [path.join('.'), node]);
+  return map(Tree.prototype.entries.call(this), ([path, node]) => [path.join('.'), node]);
+};
+
+Tree.prototype.filter = function(pred) {
+  return filter(Tree.prototype.entries.call(this), ([path, node]) => pred(node, path, this));
 };
 
 function isObject(o) {
@@ -235,6 +242,10 @@ function* recurse(path = [], node) {
 
 function* map(iter, fn) {
   for(let item of iter) yield fn(item);
+}
+
+function* filter(iter, pred) {
+  for(let item of iter) if(pred(item)) yield item;
 }
 
 function mapRecurse(callback, node, ...children) {

@@ -76,7 +76,8 @@ export class ReconnectingWebSocket {
    * @param {Function} callback The event callback.
    */
   unsubscribe(eventType, callback) {
-    const index = this.callbacks.findIndex(cb => cb.event === eventType && cb.callback === callback);
+    const index = this.callbacks.findIndex(cb => cb.event === eventType && cb.callback === callback
+    );
     if(index > 0) {
       const registeredCallback = this.callbacks[index].callback;
 

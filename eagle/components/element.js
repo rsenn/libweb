@@ -37,9 +37,13 @@ export const Element = ({ data, opts = {}, ...props }) => {
     opts: {
       ...opts,
       ...{ name, value },
-      transformation: transformation.concat(transform /*.filter(t => ['translate'].indexOf(t.type) == -1)*/)
+      transformation: transformation.concat(transform /*.filter(t => ['translate'].indexOf(t.type) == -1)*/
+      )
     }
   });
 
-  return h('g', { className: `element.${element.name}`, 'data-path': element.path.toString(' '), transform }, [pkg]);
+  return h('g',
+    { className: `element.${element.name}`, 'data-path': element.path.toString(' '), transform },
+    [pkg]
+  );
 };

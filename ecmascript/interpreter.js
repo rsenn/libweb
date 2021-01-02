@@ -270,7 +270,7 @@ export class ECMAScriptInterpreter {
     return [id, fn, fl];
   }
 
-  evalImportStatement(import_statement) {
+  evalImportDeclaration(import_statement) {
     console.log('import_statement:', import_statement);
   }
 

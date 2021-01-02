@@ -5,7 +5,7 @@ import deep from '../deep.js';
 //import util from 'util';
 import { Token, TokenList } from './token.js';
 import { Printer } from './printer.js';
-import { ESNode, Program, AliasName, ModuleItems, Expression, FunctionLiteral, Identifier, ComputedPropertyName, BindingProperty, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, InExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabelledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, CaseClause, WhileStatement, DoStatement, ForStatement, ForInStatement, WithStatement, TryStatement, ThrowStatement, YieldStatement, ImportStatement, ExportStatement, Declaration, ClassDeclaration, FunctionArgument, FunctionDeclaration, ArrowFunction, VariableDeclaration, VariableDeclarator, ObjectExpression, PropertyDefinition, MemberVariable, ArrayExpression, JSXLiteral, BindingPattern, ArrayBindingPattern, ObjectBindingPattern, AwaitExpression, RestOfExpression, SpreadElement, CTORS, Factory } from './estree.js';
+import { ESNode, Program, Expression, FunctionLiteral, FunctionBody, Identifier, ComputedPropertyName, BindingProperty, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, InExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabelledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, CaseClause, WhileStatement, DoStatement, ForStatement, ForInStatement, WithStatement, TryStatement, ThrowStatement, YieldStatement, ImportDeclaration, ImportSpecifier, ImportNamespaceSpecifier, ExportStatement, Declaration, ClassDeclaration, ClassBody, FunctionArgument, FunctionDeclaration, ArrowFunction, VariableDeclaration, VariableDeclarator, ObjectExpression, PropertyDefinition, MethodDefinition, ArrayExpression, JSXLiteral, BindingPattern, ArrayBindingPattern, ObjectBindingPattern, AwaitExpression, RestOfExpression, SpreadElement, CTORS, Factory } from './estree.js';
 import MultiMap from '../container/multiMap.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
@@ -394,7 +394,7 @@ export class ECMAScriptParser extends Parser {
 
     return new Identifier(token.value);
   }
-  9;
+
   expectKeywords(keywords) {
     this.log(`expectKeywords(${keywords}) `);
     const token = this.consume();
@@ -629,7 +629,7 @@ export class ECMAScriptParser extends Parser {
       this.expectKeywords('super');
       expr = new Identifier('super');
     } else if(this.matchKeywords('import')) {
-      expr = this.parseImportStatement(false);
+      expr = this.parseImportDeclaration(false);
     } else if(this.matchPunctuators('(')) {
       this.expectPunctuators('(');
 
@@ -726,10 +726,7 @@ export class ECMAScriptParser extends Parser {
 
         if(object === null) throw this.error('Object ' + object);
 
-        object = new MemberExpression(object,
-          new Literal(identifier.toString(), 'string'),
-          optional
-        );
+        object = new MemberExpression(object, new Literal(identifier.name, 'string'), optional);
 
         //this.log('parseRemainingMemberExpression2(', object.toString(), ')', Util.fnName(this.parseRemainingMemberExpression));
       } else if(this.matchPunctuators('[')) {
@@ -1211,7 +1208,7 @@ export class ECMAScriptParser extends Parser {
     return decl;
   }
 
-  parseBlock(insideIteration, insideFunction) {
+  parseBlock(insideIteration, insideFunction, ctor = BlockStatement) {
     this.log(`parseBlock()`);
     const statements = [];
     this.expectPunctuators('{');
@@ -1226,7 +1223,7 @@ export class ECMAScriptParser extends Parser {
     this.expectPunctuators('}');
     //console.log("statements:", statements);
 
-    return new BlockStatement(statements);
+    return new ctor(statements);
   }
 
   parseList(insideIteration = false, insideFunction = false, check = p => false) {
@@ -1243,33 +1240,27 @@ export class ECMAScriptParser extends Parser {
   parseObject(isClass = false, args = []) {
     //let ctor = ObjectExpression;
     let ctor = isClass ? ClassDeclaration : ObjectExpression;
-
     //console.log('parseObject', ctor, isClass);
-
     this.log(`parseObject()`);
     let properties = [];
     this.expectPunctuators('{');
-
     while(!this.matchPunctuators('}')) {
-      let flags = 0;
+      let kind = 'method';
+      let _static = false;
       let spread = false;
       let member = null,
         value = null;
       let is_async = false,
         is_generator = false;
       //let isGenerator = false;
-
       if(this.matchPunctuators('...')) {
         this.expectPunctuators('...');
         spread = true;
       }
-
       if(spread) {
         value = this.parseAssignmentExpression();
-
         value = new SpreadElement(value);
         //console.log('value:', value);
-
         properties.push(value);
       } else {
         if(this.matchKeywords('async')) {
@@ -1278,34 +1269,20 @@ export class ECMAScriptParser extends Parser {
         }
         if(isClass && this.matchKeywords('static')) {
           this.expectKeywords('static');
-          flags |= PropertyDefinition.STATIC;
+          _static = true;
         }
-
-        if(this.matchIdentifier() && this.token.value == 'get') {
+        if(this.matchIdentifier() && ['get','set'].indexOf(this.token.value) != -1) {
+          let getOrSet = this.token.value;
           member = this.expectIdentifier();
-
           if(!this.matchPunctuators('(')) {
             member = null;
-            flags |= PropertyDefinition.GETTER;
+            kind = getOrSet;
           }
         }
-
         if(this.matchPunctuators('*')) {
           this.expectPunctuators('*');
           is_generator = true;
-          /*   if(this.matchPunctuators('[')) {
-            this.expectPunctuators('[');
-            member = new ComputedPropertyName(this.parseAssignmentExpression());
-            this.expectPunctuators(']');
-          } else {
-            member = this.expectIdentifier(true);
-          }
-
-          value = this.parseFunction(false, is_async);
-          value.generator = true;*/
-          //member = value.id;
         }
-
         if(!member) {
           if(this.matchIdentifier(true)) {
             member = this.expectIdentifier(true);
@@ -1314,35 +1291,23 @@ export class ECMAScriptParser extends Parser {
             member = new ComputedPropertyName(this.parseAssignmentExpression());
             this.expectPunctuators(']');
           } else if(this.matchPunctuators([':'])) {
-            if(flags & PropertyDefinition.GETTER) {
+            if(kind == 'get') {
               member = new Identifier('get');
-              flags &= ~PropertyDefinition.GETTER;
+              kind = 'method';
             }
           } else if(this.matchLiteral()) {
             member = this.expectLiteral();
-          }
-
-          //console.log('member:', member);
+          } 
         }
-
         if(this.matchPunctuators([',', '}'])) {
           value = member;
         } else if(this.matchPunctuators('(')) {
           value = this.parseFunctionParametersAndBody(member, is_async, is_generator);
-
-          /*        console.log("member:",member, getter);
-        members[member.value] = fn;
-
-        if(!fn.id) fn.id = member;
-*/
           if(value.id) member = value.id;
         } else if(this.matchPunctuators('=')) {
-          //console.log('parseObject =');
-          this.expectPunctuators('=');
+           this.expectPunctuators('=');
           value = this.parseAssignmentExpression();
-
           if(this.matchPunctuators(';')) this.expectPunctuators(';');
-
           if(!isClass) ctor = ObjectBindingPattern;
         } else if(this.matchPunctuators(':')) {
           this.expectPunctuators(':');
@@ -1350,48 +1315,31 @@ export class ECMAScriptParser extends Parser {
           value = this.parseAssignmentExpression();
           if(!isClass) ctor = ObjectExpression;
         } else if(typeof member == 'object' && member !== null && 'value' in member) {
-          //console.log("member:", member);
-          //ctor = ObjectBindingPattern;
+           //ctor = ObjectBindingPattern;
         }
-        //console.log('member:', util.inspect(member, { depth: 2, colors: true }));
-
-        if(member == null && flags) {
-          //console.log('Property:', { member, value, token: this.token });
-
-          member = new Identifier(flags & PropertyDefinition.GETTER ? 'get' : 'set');
-
-          flags &= ~(PropertyDefinition.GETTER | PropertyDefinition.SETTER);
-
-          //  throw this.error(`No member ${member}`);
-          /*   throw new Error(`${this.position()}`);*/
+        if(member == null && (kind == 'get' || kind == 'set')) {
+                  member = new Identifier(kind);
+          kind = 'method';
         }
-
-        /*
-        if(value instanceof FunctionDeclaration && flags == 0) {
-          if(member.value) value.id = member;
-          member = value;
-          value = null;
-        }*/
-        let memberCtor = (id, value, _, flags) => new PropertyDefinition(id, value, flags);
-
+        if(member instanceof Identifier && member.name == 'constructor') {
+          kind = member.name;
+          member = null;
+        }
+        let memberCtor = (id, value, _, kind) => new PropertyDefinition(id, value, kind);
         if(ctor === ObjectBindingPattern)
           memberCtor = (id, value, element) => new BindingProperty(id, element, value);
-        else if(!(value instanceof FunctionDeclaration) && isClass)
-          memberCtor = (id, value, _, flags) => new MemberVariable(id, value, flags);
-
+        else if(/*!(value instanceof FunctionDeclaration) && */ isClass)
+          memberCtor = (id, value, _, kind) =>
+            new MethodDefinition(id, value, kind, false, _static);
         if(spread) member = new SpreadElement(value);
-        else if((value !== null && member.id === undefined) || flags)
-          member = memberCtor(member, value, null, flags);
-
+        else if((value !== null && member != null && member.id === undefined) || kind != 'method')
+          member = memberCtor(member, value, null, kind);
         properties.push(member);
       }
       if(this.matchPunctuators('}')) break;
-
       if(this.matchPunctuators(',')) this.expectPunctuators(',');
     }
-
     this.expectPunctuators('}');
-
     if(ctor === ObjectBindingPattern) {
       if(!(properties instanceof Array))
         properties = Object.entries(properties).map(([key, value]) =>
@@ -1400,13 +1348,10 @@ export class ECMAScriptParser extends Parser {
             )
         );
     }
-    let ret = new ctor(...[...args, properties]);
-    //console.log('ret:', util.inspect(ret, { depth: 3, colors: true }));
-
-    if(this.matchPunctuators('.')) {
+    let ret = new ctor(...[...args, ctor === ClassDeclaration ? new ClassBody(properties) : properties]
+    );
+    if(this.matchPunctuators('.')) 
       ret = this.parseRemainingMemberExpression(ret);
-    }
-
     return ret;
   }
 
@@ -1591,20 +1536,23 @@ export class ECMAScriptParser extends Parser {
     return decl;
   }
 
-  parseImportStatement(toplevel = false) {
-    this.log('parseImportStatement()');
+  parseImportDeclaration(toplevel = false) {
+    this.log('parseImportDeclaration()');
     this.expectKeywords('import');
     let items = [];
 
-    if(this.matchLiteral()) {
-      return new ImportStatement(null, this.expectLiteral());
-    }
     if(toplevel) {
+      let item;
+      if(this.matchLiteral()) {
+        return new ImportDeclaration(null, this.expectLiteral());
+      }
       while(true) {
-        let item;
-        if(this.matchPunctuators('{')) item = this.parseModuleItems();
-        else if(this.matchPunctuators('*') || this.matchIdentifier()) item = this.parseAliasName();
-        items.push(item);
+        if(this.matchPunctuators('{')) {
+          items = items.concat(this.parseModuleItems());
+        } else if(this.matchIdentifier() || this.matchPunctuators('*')) {
+          item = this.parseImportSpecifier();
+          items.push(item);
+        }
         if(this.matchPunctuators(',')) {
           this.expectPunctuators(',');
           continue;
@@ -1614,24 +1562,31 @@ export class ECMAScriptParser extends Parser {
       this.expectIdentifier('from');
       const sourceFile = this.parseExpression(false, false);
       this.expectPunctuators(';');
-      return new ImportStatement(items, sourceFile);
+      return new ImportDeclaration(items, sourceFile);
     }
     let object = new Identifier('import');
     return this.parseRemainingCallExpression(object);
   }
 
-  parseAliasName() {
+  parseImportSpecifier() {
     let name;
     let decl;
-    if(this.matchPunctuators('*')) name = this.expectPunctuators('*');
-    else name = this.expectIdentifier();
+    if(this.matchPunctuators('*')) {
+      this.expectPunctuators('*');
+      this.expectKeywords('as');
+      name = this.expectIdentifier();
+
+      return new ImportNamespaceSpecifier(name);
+    }
+    name = this.expectIdentifier();
+
     if(this.matchKeywords('as')) {
       this.expectKeywords('as');
       decl = this.expectIdentifier();
     } else {
       decl = name;
     }
-    return new AliasName(name, decl);
+    return new ImportSpecifier(name, decl);
   }
 
   parseModuleItems() {
@@ -1639,7 +1594,7 @@ export class ECMAScriptParser extends Parser {
     let items = [];
     while(true) {
       let item;
-      item = this.parseAliasName();
+      item = this.parseImportSpecifier();
       items.push(item);
       if(this.matchPunctuators(',')) {
         this.expectPunctuators(',');
@@ -1648,7 +1603,7 @@ export class ECMAScriptParser extends Parser {
       break;
     }
     this.expectPunctuators('}');
-    return new ModuleItems(items);
+    return items;
   }
 
   parseExportStatement() {
@@ -2017,7 +1972,7 @@ export class ECMAScriptParser extends Parser {
       return stmt;
     } else if(this.matchKeywords('import')) {
       //this.log(`parseStatement()`, Util.inspect(this.token));
-      return this.parseImportStatement(!insideIteration && !insideFunction);
+      return this.parseImportDeclaration(!insideIteration && !insideFunction);
       //Parse Empty Statement
     } else if(this.matchKeywords('class')) {
       return this.parseClass();
@@ -2102,10 +2057,10 @@ export class ECMAScriptParser extends Parser {
 
     if(this.matchKeywords('extends')) {
       this.expectKeywords('extends');
-      extending = this.parseNewOrCallOrMemberExpression();
+      extending = this.parseExpression();
     }
 
-    //Parse function body
+    //Parse class body
     let decl = this.parseObject(true, [identifier, extending]);
 
     //console.log("parseClass decl=", decl);
@@ -2200,9 +2155,9 @@ export class ECMAScriptParser extends Parser {
     let parameters = this.parseParameters();
 
     //Parse function body
-    const body = this.parseBlock(false, true, identifier);
+    const body = this.parseBlock(false, true, FunctionBody);
 
-    let func = new FunctionDeclaration(identifier, parameters, body, false, isAsync, isGenerator);
+    let func = new FunctionDeclaration(identifier, parameters, body,  isAsync, isGenerator);
 
     if(this.matchPunctuators('(')) return this.parseRemainingCallExpression(func);
 
