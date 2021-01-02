@@ -8,7 +8,8 @@ export class ESNode {
   static assoc = Util.weakAssoc();
 
   constructor(type = 'Node') {
-    Util.define(this, { type });
+    //Util.define(this, { type });
+    this.type = type;
 
     ESNode.lastNode = this;
   }
@@ -25,8 +26,9 @@ Object.defineProperty(ESNode.prototype, 'position', {
 });
 
 export class Program extends ESNode {
-  constructor(body = []) {
+  constructor(sourceType, body = []) {
     super('Program');
+    this.sourceType = sourceType;
     this.body = body;
   }
 }
@@ -100,14 +102,14 @@ export class Expression extends ESNode {
 }
 
 export class FunctionLiteral extends ESNode {
-  constructor( id, params, body,  _async = false, generator = false) {
+  constructor(id, params, body, _async = false, generator = false) {
     super('Function');
     this.id = id;
     this.params = params;
     this.body = body;
-     this.generator = generator;
-   this.async = _async;
- }
+    this.generator = generator;
+    this.async = _async;
+  }
 }
 
 export class Pattern extends ESNode {
@@ -138,13 +140,6 @@ export class Identifier extends Pattern {
     const { colors } = opts;
     let c = Util.coloring(colors);
     return c.text(`Identifier `, 1, 31) + c.text(this.name, 1, 33);
-  }
-}
-
-export class ComputedPropertyName extends ESNode {
-  constructor(expr) {
-    super('ComputedPropertyName');
-    this.expr = expr;
   }
 }
 
@@ -218,8 +213,8 @@ export class UnaryExpression extends Expression {
   constructor(operator, argument, prefix) {
     super('UnaryExpression');
     this.operator = operator;
-    this.argument = argument;
     this.prefix = prefix;
+    this.argument = argument;
   }
 }
 
@@ -227,8 +222,8 @@ export class UpdateExpression extends Expression {
   constructor(operator, argument, prefix) {
     super('UpdateExpression');
     this.operator = operator;
-    this.argument = argument;
     this.prefix = prefix;
+    this.argument = argument;
   }
 }
 
@@ -260,19 +255,20 @@ export class LogicalExpression extends Expression {
 }
 
 export class MemberExpression extends Expression {
-  constructor(obj, prop, optional) {
+  constructor(object, property, computed = false, optional = false) {
     super('MemberExpression');
-    this.object = obj;
-    this.property = prop;
+    this.object = object;
+    this.property = property;
+    this.computed = computed;
     this.optional = optional;
   }
 }
 
 export class InExpression extends Expression {
-  constructor(obj, prop) {
+  constructor(object, property) {
     super('InExpression');
-    this.object = obj;
-    this.property = prop;
+    this.object = object;
+    this.property = property;
   }
 }
 
@@ -336,10 +332,10 @@ export class DebuggerStatement extends Statement {
 }
 
 export class LabelledStatement extends Statement {
-  constructor(label, statement) {
+  constructor(label, body) {
     super('LabelledStatement');
     this.label = label;
-    this.statement = statement;
+    this.body = body;
   }
 }
 
@@ -386,16 +382,16 @@ export class ReturnStatement extends Statement {
 }
 
 export class ContinueStatement extends Statement {
-  constructor(label) {
+  constructor(label = null) {
     super('ContinueStatement');
-    if(label) this.label = label;
+    this.label = label;
   }
 }
 
 export class BreakStatement extends Statement {
-  constructor(label) {
+  constructor(label = null) {
     super('BreakStatement');
-    if(label) this.label = label;
+    this.label = label;
   }
 }
 
@@ -409,17 +405,18 @@ export class IfStatement extends Statement {
 }
 
 export class SwitchStatement extends Statement {
-  constructor(test, cases) {
+  constructor(discriminant, cases) {
     super('SwitchStatement');
-    this.test = test;
+    this.discriminant = discriminant;
     this.cases = cases;
   }
 }
-export class CaseClause extends Statement {
-  constructor(value, body) {
-    super('CaseClause');
-    this.value = value;
-    this.body = body;
+
+export class SwitchCase extends ESNode {
+  constructor(test, consequent) {
+    super('SwitchCase');
+    this.test = test;
+    this.consequent = consequent;
   }
 }
 
@@ -431,11 +428,11 @@ export class WhileStatement extends Statement {
   }
 }
 
-export class DoStatement extends Statement {
+export class DoWhileStatement extends Statement {
   constructor(test, body) {
-    super('DoStatement');
-    this.test = test;
+    super('DoWhileStatement');
     this.body = body;
+    this.test = test;
   }
 }
 
@@ -450,32 +447,45 @@ export class ForStatement extends Statement {
 }
 
 export class ForInStatement extends Statement {
-  constructor(left, right, body, operator = 'in', isAsync = false) {
+  constructor(left, right, body) {
     super('ForInStatement');
     this.left = left;
     this.right = right;
     this.body = body;
-    this.operator = operator;
-    this['async'] = isAsync;
+  }
+}
+
+export class ForOfStatement extends ForInStatement {
+  constructor(left, right, body, _await = false) {
+    super(left, right, body);
+    this.type = 'ForOfStatement';
+    this.await = _await;
   }
 }
 
 export class WithStatement extends Statement {
-  constructor(test, body) {
+  constructor(object, body) {
     super('WithStatement');
-    this.test = test;
+    this.object = object;
     this.body = body;
   }
 }
 
 /** A `try` statement. If `handler` is `null` then `finalizer` must be a `BlockStatement`. */
 export class TryStatement extends Statement {
-  constructor(block, parameters, handler, finally_bock) {
+  constructor(block, handler, finally_bock) {
     super('TryStatement');
     this.block = block;
-    this.parameters = parameters;
     this.handler = handler;
     this.finally_bock = finally_bock;
+  }
+}
+
+export class CatchClause extends ESNode {
+  constructor(param, body) {
+    super('CatchClause');
+    this.param = param;
+    this.body = body;
   }
 }
 
@@ -486,30 +496,13 @@ export class ThrowStatement extends Statement {
   }
 }
 
-export class YieldStatement extends Statement {
-  constructor(expression, generator = false) {
-    super('YieldStatement');
-    this.expression = expression;
-    this.generator = generator;
-  }
-}
-
-export class ExportStatement extends Statement {
-  constructor(what, declarations, sourceFile) {
-    super('ExportStatement');
-    this.what = what;
-    this.declarations = declarations;
-    if(sourceFile) this.source = sourceFile;
-  }
-}
-
 export class Declaration extends Statement {
   constructor(type = 'Declaration') {
     super(type);
   }
 }
 
-export class ClassDeclaration extends ESNode {
+export class ClassDeclaration extends Declaration {
   constructor(id, superClass, body) {
     super('Class');
     this.id = id;
@@ -537,6 +530,22 @@ export class MethodDefinition extends ESNode {
   }
 }
 
+export class MetaProperty extends Expression {
+  constructor(meta, identifier) {
+    super('MetaProperty');
+    this.meta = meta;
+    this.identifier = identifier;
+  }
+}
+
+export class YieldExpression extends Expression {
+  constructor(argument, delegate = false) {
+    super('YieldExpression');
+    this.argument = argument;
+    this.delegate = delegate;
+  }
+}
+
 export class FunctionArgument extends ESNode {
   constructor(arg, defaultValue) {
     super('FunctionArgument');
@@ -546,15 +555,15 @@ export class FunctionArgument extends ESNode {
 }
 
 export class FunctionDeclaration extends FunctionLiteral {
-  constructor(id, params, body,   is_async = false, generator = false) {
+  constructor(id, params, body, is_async = false, generator = false) {
     super(id, params, body, is_async, generator);
     this.type = 'FunctionDeclaration';
-   }
+  }
 }
 
-export class ArrowFunction extends ESNode {
+export class ArrowFunctionExpression extends ESNode {
   constructor(params, body, is_async) {
-    super('ArrowFunction');
+    super('ArrowFunctionExpression');
     if(is_async) this.is_async = is_async;
     this.params = params;
     this.body = body;
@@ -563,44 +572,29 @@ export class ArrowFunction extends ESNode {
 }
 
 export class VariableDeclaration extends Declaration {
-  constructor(declarations, kind = 'var' /*, exported = false*/) {
+  constructor(declarations, kind = 'var') {
     super('VariableDeclaration');
-    this.kind = kind;
-    //this.exported = exported;
     this.declarations = declarations;
-    //console.log('New VariableDeclaration: ', JSON.toString({ kind, exported
-    //}));
+    this.kind = kind;
   }
 }
 
 export class VariableDeclarator extends ESNode {
-  constructor(identifier, initialValue) {
+  constructor(id, init) {
     super('VariableDeclarator');
-    this.id = identifier;
-    this.init = initialValue;
-    //console.log('New VariableDeclarator: ', JSON.toString({ identifier:
-    //identifier.value }));
+    this.id = id;
+    this.init = init;
   }
 }
-/*
-export class ImportSpecifier extends ESNode {
-  constructor(name, as) {
-    super('ImportSpecifier');
-    this.name = name;
-    this.as = as;
-  }
-}
-*/
 
 export class ObjectExpression extends ESNode {
-  constructor(members) {
+  constructor(properties) {
     super('ObjectExpression');
-    this.members = members;
-    //console.log('New ObjectExpression: ', Object.keys(members));
+    this.properties = properties;
   }
 }
 
-export class PropertyDefinition extends ESNode {
+export class Property extends ESNode {
   constructor(key, value, kind = 'init', method = false, shorthand = false, computed = false) {
     super('Property');
     this.key = key;
@@ -611,7 +605,6 @@ export class PropertyDefinition extends ESNode {
     this.computed = computed;
   }
 }
-
 /*export class MemberVariable extends ESNode {
   static STATIC = 4;
 
@@ -627,7 +620,6 @@ export class ArrayExpression extends ESNode {
   constructor(elements) {
     super('ArrayExpression');
     this.elements = elements;
-    //console.log('New ArrayExpression: ', Object.keys(members));
   }
 }
 
@@ -644,44 +636,90 @@ export class JSXLiteral extends ESNode {
   }
 }
 
-export class BindingPattern extends Expression {
+export class AssignmentProperty extends Property {
+  constructor(key, value, shorthand = false, computed = false) {
+    super(key, value, 'init', false, shorthand, computed);
+    this.type = 'Property';
+  }
+}
+
+export class ObjectPattern extends Pattern {
   constructor(properties) {
-    super('BindingPattern');
+    super('ObjectPattern');
     this.properties = properties;
   }
 }
 
-export class ArrayBindingPattern extends Expression {
+export class ArrayPattern extends Pattern {
   constructor(elements) {
-    super('ArrayBindingPattern');
+    super('ArrayPattern');
     this.elements = elements;
   }
 }
 
-export class ObjectBindingPattern extends Expression {
-  constructor(properties) {
-    super('ObjectBindingPattern');
-    this.properties = properties;
+export class RestElement extends Pattern {
+  constructor(argument) {
+    super('RestElement');
+    this.argument = argument;
+  }
+}
+
+export class AssignmentPattern extends Pattern {
+  constructor(left, right) {
+    super('AssignmentPattern');
+    this.left = left;
+    this.right = right;
   }
 }
 
 export class AwaitExpression extends Expression {
-  constructor(value) {
+  constructor(argument) {
     super('AwaitExpression');
-    this.value = value;
+    this.argument = argument;
   }
 }
 
-export class RestOfExpression extends ESNode {
-  constructor(value) {
-    super('RestOfExpression');
-    this.value = value;
-  }
-}
 export class SpreadElement extends ESNode {
   constructor(argument) {
     super('SpreadElement');
     this.argument = argument;
+  }
+}
+
+export class ExportNamedDeclaration extends Statement {
+  constructor(declaration, specifiers, source) {
+    super('ExportNamedDeclaration');
+    this.declaration = declaration;
+    this.specifiers = specifiers;
+    this.source = source;
+  }
+}
+
+export class ExportSpecifier extends ModuleSpecifier {
+  constructor(exported, local) {
+    super('ExportSpecifier', local);
+    this.exported = exported;
+  }
+}
+
+export class AnonymousDefaultExportedFunctionDeclaration extends FunctionLiteral {
+  constructor(id, params, body, _async = false, generator = false) {
+    super(id, params, body, _async, generator);
+    this.type = 'FunctionDeclaration';
+  }
+}
+
+export class AnonymousDefaultExportedClassDeclaration extends ClassDeclaration {
+  constructor(id, superClass, body) {
+    super(id, superClass, body);
+    this.type = 'ClassDeclaration';
+  }
+}
+
+export class ExportDefaultDeclaration extends ModuleDeclaration {
+  constructor(declaration) {
+    super('ExportDefaultDeclaration');
+    this.declaration = declaration;
   }
 }
 
@@ -709,71 +747,84 @@ ESNode.prototype.toString = function() {
 };
 */
 export const CTORS = {
-  ArrayBindingPattern,
-  ArrayExpression,
-  ArrowFunction,
-  AssignmentExpression,
-  AwaitExpression,
-  BinaryExpression,
-  BindingPattern,
-  BindingProperty,
-  LabelledStatement,
-  BlockStatement,
-  BreakStatement,
-  CallExpression,
-  ClassDeclaration,
-  ConditionalExpression,
-  ContinueStatement,
-  Declaration,
-  DecoratorExpression,
-  DoStatement,
-  EmptyStatement,
-  Expression,
-  ExpressionStatement,
-  ForInStatement,
-  ForStatement,
-  FunctionLiteral,
-  FunctionArgument,
-  FunctionDeclaration,
-  Identifier,
-  ComputedPropertyName,
-  IfStatement,
-  SwitchStatement,
-  CaseClause,
+  ESNode,
+  Program,
+  ModuleDeclaration,
+  ModuleSpecifier,
   ImportDeclaration,
-  ExportStatement,
-  JSXLiteral,
+  ImportSpecifier,
+  ImportDefaultSpecifier,
+  ImportNamespaceSpecifier,
+  Super,
+  Expression,
+  FunctionLiteral,
+  Pattern,
+  Identifier,
+  BindingProperty,
   Literal,
   TemplateLiteral,
   TaggedTemplateExpression,
   TemplateElement,
+  ThisExpression,
+  UnaryExpression,
+  UpdateExpression,
+  BinaryExpression,
+  AssignmentExpression,
   LogicalExpression,
   MemberExpression,
   InExpression,
+  ConditionalExpression,
+  CallExpression,
+  DecoratorExpression,
   NewExpression,
-  ESNode,
-  ObjectBindingPattern,
-  ImportSpecifier,
-  ObjectExpression,
-  PropertyDefinition,
-  MethodDefinition,
-  Program,
-  RestOfExpression,
-  ReturnStatement,
   SequenceExpression,
-  SpreadElement,
   Statement,
+  EmptyStatement,
+  DebuggerStatement,
+  LabelledStatement,
+  BlockStatement,
+  FunctionBody,
   StatementList,
-  ThisExpression,
-  ThrowStatement,
-  YieldStatement,
+  ExpressionStatement,
+  Directive,
+  ReturnStatement,
+  ContinueStatement,
+  BreakStatement,
+  IfStatement,
+  SwitchStatement,
+  SwitchCase,
+  WhileStatement,
+  DoWhileStatement,
+  ForStatement,
+  ForInStatement,
+  ForOfStatement,
+  WithStatement,
   TryStatement,
-  UnaryExpression,
-  UpdateExpression,
+  CatchClause,
+  ThrowStatement,
+  YieldExpression,
+  ExportNamedDeclaration,
+  Declaration,
+  ClassDeclaration,
+  ClassBody,
+  MethodDefinition,
+  MetaProperty,
+  FunctionArgument,
+  FunctionDeclaration,
+  ArrowFunctionExpression,
   VariableDeclaration,
   VariableDeclarator,
-  WhileStatement,
-  WithStatement
+  ObjectExpression,
+  Property,
+  ArrayExpression,
+  JSXLiteral,
+  AssignmentProperty,
+  ObjectPattern,
+  ArrayPattern,
+  RestElement,
+  AssignmentPattern,
+  AwaitExpression,
+  SpreadElement
 };
 
 export function Factory() {

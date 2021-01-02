@@ -71,7 +71,7 @@ class AST {
     return this.visitor({ body, type: 'Chunk' });
   }
   do_stat(body) {
-    return this.visitor({ body, type: 'DoStatement' });
+    return this.visitor({ body, type: 'DoWhileStatement' });
   }
   break_stat() {
     return this.visitor({ type: 'BreakStatement' });
@@ -417,7 +417,7 @@ ${other}`;
           return js_binary_expression(node);
         case 'UnaryExpression':
           return js_unary_expression(node);
-        case 'DoStatement':
+        case 'DoWhileStatement':
           return js_do_statement(node);
         case 'BreakStatement':
           return js_break_statement(node);
@@ -740,7 +740,7 @@ ${other}`;
         case 'UnaryExpression':
           ret = moonscript_unary_expression(node);
           break;
-        case 'DoStatement':
+        case 'DoWhileStatement':
           ret = moonscript_do_statement(node);
           break;
         case 'BreakStatement':
@@ -2207,7 +2207,7 @@ class Interpreter {
         return this.evaluate_unary_expression(node, env);
       case 'BinaryExpression':
         return this.evaluate_binary_expression(node, env);
-      case 'DoStatement':
+      case 'DoWhileStatement':
         return this.evaluate_do_statment(node, env);
       case 'BreakStatement':
         return this.evaluate_break_statment(node, env);

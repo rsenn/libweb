@@ -10,7 +10,7 @@
 //import util from 'util';
 import EventEmitter from '../eventEmitter.js';
 import Util from '../util.js';
-import { ESNode, BinaryExpression, Identifier, ImportDeclaration, Literal, MemberExpression, FunctionDeclaration, ArrowFunction, SequenceExpression } from './estree.js';
+import { ESNode, BinaryExpression, Identifier, ImportDeclaration, Literal, MemberExpression, FunctionDeclaration, ArrowFunctionExpression, SequenceExpression } from './estree.js';
 
 class NotImplemented extends Error {
   constructor(type, node) {
@@ -177,7 +177,7 @@ export class Environment extends EventEmitter {
         Identifier: this.generateIdentifier,
         AssignmentExpression: this.generateAssignExpression,
         FunctionDeclaration: this.generateFunctionDeclaration,
-        ArrowFunction: this.generateFunctionDeclaration,
+        ArrowFunctionExpression: this.generateFunctionDeclaration,
         VariableDeclaration: this.generateVariableDeclaration,
         BlockStatement: this.generateProgram,
         Program: this.generateProgram,
@@ -189,7 +189,7 @@ export class Environment extends EventEmitter {
         ConditionalExpression: this.generateConditionalStatement,
         ForStatement: this.generateLoopStatement,
         WhileStatement: this.generateLoopStatement,
-        DoStatement: this.generateDoWhileStatement,
+        DoWhileStatement: this.generateDoWhileStatement,
         ForInStatement: this.generateForInStatement,
         WithStatement: this.generateWithStatement,
         ThrowStatement: this.generateThrowStatement,

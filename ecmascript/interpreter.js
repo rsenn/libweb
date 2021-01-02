@@ -1,4 +1,4 @@
-import { ESNode, PropertyDefinition, MemberExpression } from './estree.js';
+import { ESNode, Property, MemberExpression } from './estree.js';
 import Util from '../util.js';
 //import { inspect } from 'util';
 
@@ -221,7 +221,7 @@ export class ECMAScriptInterpreter {
 
   evalExportStatement(export_statement) {
     let { what, declarations } = export_statement;
-    //console.log('eval: ExportStatement', { what, declarations });
+    //console.log('eval: ExportNamedDeclaration', { what, declarations });
 
     let decls;
 
@@ -231,7 +231,7 @@ export class ECMAScriptInterpreter {
 
     if(what.value) what = what.value;
 
-    //console.log('eval: ExportStatement', { what, export_statement });
+    //console.log('eval: ExportNamedDeclaration', { what, export_statement });
     return [what.value ? what.value : what, decls];
   }
 
@@ -296,9 +296,9 @@ export class ECMAScriptInterpreter {
   evalPropertyDefinition(property_definition) {
     const { id, value, flags } = property_definition;
     let fl = [];
-    if(flags & PropertyDefinition.STATIC) fl.push('static');
-    if(flags & PropertyDefinition.GET) fl.push('get');
-    if(flags & PropertyDefinition.SET) fl.push('set');
+    if(flags & Property.STATIC) fl.push('static');
+    if(flags & Property.GET) fl.push('get');
+    if(flags & Property.SET) fl.push('set');
     let member = this.evalNode(value);
     if(member instanceof Array && !member[0]) {
       fl = fl.concat(member[2]);

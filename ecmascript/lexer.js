@@ -787,7 +787,7 @@ export class Lexer {
 
   lexSingleLineComment() {
     //console.log('lexSingleLineComment', this.getRange(this.start, this.pos));
-   
+
     //Single line comment is only terminated by a line terminator
     //character and nothing else
     this.acceptRun(not(isLineTerminator));
@@ -922,10 +922,13 @@ function isPunctuator(word) {
     case 1:
       /* prettier-ignore */ return '=.-%}>,*[<!/]~&(;?|):+^{@'.indexOf(word) >= 0;
     case 2:
-      /* prettier-ignore */ return ['!=', '*=', '&&', '<<', '/=', '||', '>>', '&=', '==', '++', '|=', '<=', '--', '+=', '^=', '>=', '-=', '%=', '=>', '${', '?.'].indexOf(word) >= 0;
+      /* prettier-ignore */ return ['!=', '*=', '&&', '<<', '/=', '||', '>>', '&=', '==', '++', '|=', '<=', '--', '+=', '^=', '>=', '-=', '%=', '=>', '${', '?.', '**', '??'].indexOf(word) >= 0;
 
     case 3:
-      return ['!==', '===', '>>>', '>>=', '-->>', '<<=', '...'].indexOf(word) >= 0;
+      return (['!==', '===', '>>>', '>>=', '-->>', '<<=', '...', '**=', '||=', '&&=', '??='].indexOf(
+          word
+        ) >= 0
+      );
 
     case 4:
       return ['>>>=', '-->>='].indexOf(word) >= 0;
@@ -999,7 +1002,7 @@ function isKeyword(word) {
         case 'catch':
         case 'class':
         case 'const':
-        //case "super":
+        case 'super':
         case 'throw':
         case 'await':
         case 'yield':
