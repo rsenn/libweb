@@ -38,7 +38,6 @@ export {
   TemplateLiteral,
   LogicalExpression,
   MemberExpression,
-  InExpression,
   NewExpression,
   ObjectPattern,
   ObjectExpression,

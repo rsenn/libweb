@@ -5,7 +5,7 @@ import deep from '../deep.js';
 //import util from 'util';
 import { Token, TokenList } from './token.js';
 import { Printer } from './printer.js';
-import { ESNode, Program, Expression, FunctionLiteral, FunctionBody, Identifier, Super, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, InExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabeledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, SwitchCase, WhileStatement, DoWhileStatement, ForStatement, ForInStatement, ForOfStatement, WithStatement, TryStatement, CatchClause, ThrowStatement, YieldExpression, ImportDeclaration, ImportSpecifier, ImportNamespaceSpecifier, ExportNamedDeclaration, ExportSpecifier, AnonymousDefaultExportedFunctionDeclaration, AnonymousDefaultExportedClassDeclaration, ExportDefaultDeclaration, Declaration, ClassDeclaration, ClassBody, MetaProperty, FunctionArgument, FunctionDeclaration, ArrowFunctionExpression, VariableDeclaration, VariableDeclarator, ObjectExpression, Property, MethodDefinition, ArrayExpression, JSXLiteral, Pattern, ArrayPattern, ObjectPattern, AssignmentProperty, AssignmentPattern, AwaitExpression, RestElement, SpreadElement, CTORS, Factory } from './estree.js';
+import { ESNode, Program, Expression, FunctionLiteral, FunctionBody, Identifier, Super, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabeledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, SwitchCase, WhileStatement, DoWhileStatement, ForStatement, ForInStatement, ForOfStatement, WithStatement, TryStatement, CatchClause, ThrowStatement, YieldExpression, ImportDeclaration, ImportSpecifier, ImportNamespaceSpecifier, ExportNamedDeclaration, ExportSpecifier, AnonymousDefaultExportedFunctionDeclaration, AnonymousDefaultExportedClassDeclaration, ExportDefaultDeclaration, Declaration, ClassDeclaration, ClassBody, MetaProperty, FunctionArgument, FunctionDeclaration, ArrowFunctionExpression, VariableDeclaration, VariableDeclarator, ObjectExpression, Property, MethodDefinition, ArrayExpression, JSXLiteral, Pattern, ArrayPattern, ObjectPattern, AssignmentProperty, AssignmentPattern, AwaitExpression, RestElement, SpreadElement, CTORS, Factory } from './estree.js';
 import MultiMap from '../container/multiMap.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
@@ -344,30 +344,33 @@ function toStr(a) {
 const stackFunc = (name, fn) => fn;
 
 const operatorPrecedence = {
-  '||': 0,
-  '&&': 1,
-  '|': 2,
-  '^': 3,
-  '&': 4,
-  '==': 5,
-  '===': 5,
-  '!=': 5,
-  '!==': 5,
-  '<': 6,
-  '>': 6,
-  '<=': 6,
-  '>=': 6,
-  instanceof: 6,
-  in: 6,
-  '<<': 7,
-  '>>': 7,
-  '>>>': 7,
-  '-->>': 7,
-  '+': 8,
-  '-': 8,
-  '*': 9,
-  '/': 9,
-  '%': 9
+  '??': 0,
+  '||': 1,
+  '&&': 2,
+  '|': 3,
+  '^': 4,
+  '&': 5,
+  '==': 6,
+  '!=': 6,
+  '===': 6,
+  '!==': 6,
+  is: 6,
+  isnt: 6,
+  '<': 7,
+  '>': 7,
+  '<=': 7,
+  '>=': 7,
+  in: 7,
+  instanceof: 7,
+  '<<': 8,
+  '>>': 8,
+  '>>>': 8,
+  '+': 9,
+  '-': 9,
+  '*': 10,
+  '%': 10,
+  '/': 10,
+  '**': 11
 };
 
 export class ECMAScriptParser extends Parser {
