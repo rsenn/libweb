@@ -809,7 +809,8 @@ export const CTORS = {
 
 export function Factory() {
   const nodeList = [];
-  var self = function estree(ctor, ...args) { ctor = typeof ctor == 'string' ? CTORS[ctor] : ctor;
+  var self = function estree(ctor, ...args) {
+    ctor = typeof ctor == 'string' ? CTORS[ctor] : ctor;
     let instance = new ctor(...args);
     self.callback(ctor, args, instance);
 
