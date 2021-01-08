@@ -8,8 +8,15 @@ export async function ConsoleSetup(opts = {}) {
     ({ stdout, env }) => ({ stdout, env }),
     () => ({ stdout: {}, env: {} })
   );
+  const consoleWidth = async (fd = 1) => {
+    const size = await Util.ttyGetWinSize(fd);
+    return Array.isArray(size) ? size[0] : undefined;
+  };
   const defaultBreakLength =
-    (proc && proc.stdout && proc.stdout.isTTY && proc.stdout.columns) || proc.env.COLUMNS || 80; // Infinity;
+    (proc && proc.stdout && proc.stdout.isTTY && proc.stdout.columns) ||
+    proc.env.COLUMNS ||
+    consoleWidth() ||
+    80; // Infinity;
   const {
     depth = 2,
     colors = await Util.isatty(1),

@@ -5382,6 +5382,18 @@ Util.isatty = async fd => {
   }
   return ret;
 };
+Util.ttyGetWinSize = async fd => {
+  let ret;
+  for(let module of ['os', 'tty']) {
+    try {
+      ret = await import(module).then(mod => mod.ttyGetWinSize(fd));
+    } catch(err) {
+      ret = undefined;
+    }
+    if(ret !== undefined) break;
+  }
+  return ret;
+};
 /**
  * Measure the average execution time of a function
  * @param {Function} fn A function for performance measurement
@@ -5603,7 +5615,8 @@ Util.bitsToNames = (flags, map = (name, flag) => name) => {
   const entries = [...Util.entries(flags)];
 
   return function* (value) {
-    for(let [name, flag] of entries) if((value & flag) == flag) yield map(name, flag);
+    for(let [name, flag] of entries)
+      if(value & flag && (value & flag) == flag) yield map(name, flag);
   };
 };
 
