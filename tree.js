@@ -153,8 +153,13 @@ Tree.prototype.values = function* (node = this.root) {
   for(let iter of Tree.prototype.entries.call(this, node)) yield iter[1];
 };
 
-Tree.prototype.flat = function(t = ([path, node]) => [path.join('.'), node]) {
-  return new Map(map(Tree.prototype.entries.call(this), t));
+Tree.prototype.flat = function(transform, pred) {
+  let iter = Tree.prototype.entries.call(this);
+  if(!transform) transform = ([path, node]) => [path.join('.'), node];
+  if(transform) iter = map(iter, transform);
+
+  if(pred) iter = filter(iter, pred);
+  return new Map(iter);
 };
 
 Tree.prototype[Symbol.iterator] = function() {
@@ -211,8 +216,7 @@ function indexOf(obj, prop) {
 }
 
 function splice(obj, start, deleteCount, ...addItems) {
-  if(obj instanceof Array)
-    return Array.prototype.splice.call(obj, start, deleteCount, ...addItems);
+  if(obj instanceof Array) return Array.prototype.splice.call(obj, start, deleteCount, ...addItems);
   //console.log('splice', { obj, start, deleteCount, addItems });
   let remove = [...entries(obj)].slice(start, start + deleteCount);
   //console.log('splice', { remove });
@@ -250,8 +254,7 @@ function* filter(iter, pred) {
 
 function mapRecurse(callback, node, ...children) {
   for(let child of children) {
-    if(typeof item == 'object' && item !== null)
-      for(let args of walk(item, node)) callback(...args);
+    if(typeof item == 'object' && item !== null) for(let args of walk(item, node)) callback(...args);
   }
   return children;
 }

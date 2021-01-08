@@ -1657,7 +1657,7 @@ Util.isNumeric = v => /^[-+]?(0x|0b|0o|)[0-9]*\.?[0-9]+(|[Ee][-+]?[0-9]+)$/.test
 Util.isUndefined = arg => arg === undefined;
 Util.isObject = obj => !(obj === null) && { object: obj, function: obj }[typeof obj];
 Util.isPrimitive = obj =>
-  !(obj === null) && { number: obj, string: obj, boolean: obj, undefined: obj }[typeof obj];
+  (!(obj === null)) &&(obj !== false && obj !== true)&& { number: obj, string: obj, boolean: obj, undefined: obj }[typeof obj];
 Util.isFunction = arg => {
   if(arg !== undefined)
     return typeof arg == 'function' || !!(arg && arg.constructor && arg.call && arg.apply);

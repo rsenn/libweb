@@ -582,9 +582,9 @@ export class Property extends ESNode {
     this.key = key;
     this.value = value;
     this.kind = kind;
-    this.method = method;
-    this.shorthand = shorthand;
-    this.computed = computed;
+    if(this.method) this.method = method;
+    if(this.shorthand) this.shorthand = shorthand;
+    if(this.computed) this.computed = computed;
   }
 }
 /*export class MemberVariable extends ESNode {
@@ -809,8 +809,7 @@ export const CTORS = {
 
 export function Factory() {
   const nodeList = [];
-  var self = function estree(ctor, ...args) {
-    ctor = typeof ctor == 'string' ? CTORS[ctor] : ctor;
+  var self = function estree(ctor, ...args) { ctor = typeof ctor == 'string' ? CTORS[ctor] : ctor;
     let instance = new ctor(...args);
     self.callback(ctor, args, instance);
 
