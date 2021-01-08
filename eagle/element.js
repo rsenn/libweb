@@ -452,7 +452,7 @@ export class EagleElement extends EagleNode {
           const [e = this, k] = args;
           const v = e[k];
 
-          console.log(`pushEvent`, e);
+         // console.log(`pushEvent`, e);
           //console.log(`pushEvent`, {e,k,v});
           if(this.tagName == 'layer') this.elements.forEach(elem => elem.pushEvent(...args));
           pushFn(this);

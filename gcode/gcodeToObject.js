@@ -115,6 +115,7 @@ export function gcodeToObject(gcode) {
 }
 
 export function* parseGcode(data) {
+console.debug("parseGcode", { data});
   if(typeof data == 'string') data = data.split(/\n/g);
 
   for(let line of data) {
