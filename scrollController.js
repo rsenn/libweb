@@ -8,11 +8,11 @@ export class ScrollController {
     e.returnValue = false;
 
     //Util.log('preventDefault ', Util.className(e));
-    if(e.preventDefault) e.preventDefault();
+    if (e.preventDefault) e.preventDefault();
   }
 
   static preventDefaultForScrollKeys(e) {
-    if(ScrollController.keys[e.keyCode]) {
+    if (ScrollController.keys[e.keyCode]) {
       ScrollController.preventDefault(e);
       return false;
     }
@@ -29,13 +29,11 @@ export class ScrollController {
   }
 
   disable() {
-    if(this.element.addEventListener) {
+    if (this.element.addEventListener) {
       //older FF
       this.element.addEventListener('DOMMouseScroll', this.constructor.preventDefault, false);
     }
-    ['wheel', 'mousemove', /*'touchstart','touchcancel','touchend',*/ 'touchmove'].forEach(name =>
-      this.element.addEventListener(name, this.constructor.preventDefault, { passive: false })
-    );
+    ['wheel', 'mousemove', /*'touchstart','touchcancel','touchend',*/ 'touchmove'].forEach((name) => this.element.addEventListener(name, this.constructor.preventDefault, { passive: false }));
     this.element.addEventListener('keydown', this.constructor.preventDefaultForScrollKeys, {
       passive: true
     });
@@ -45,12 +43,10 @@ export class ScrollController {
   }
 
   enable() {
-    if(this.element.removeEventListener) {
+    if (this.element.removeEventListener) {
       this.element.removeEventListener('DOMMouseScroll', this.constructor.preventDefault, false);
     }
-    ['wheel', 'mousemove', /*'touchstart','touchcancel','touchend',*/ 'touchmove'].forEach(name =>
-      removeEventListener(name, this.constructor.preventDefault, { passive: false })
-    );
+    ['wheel', 'mousemove', /*'touchstart','touchcancel','touchend',*/ 'touchmove'].forEach((name) => removeEventListener(name, this.constructor.preventDefault, { passive: false }));
     this.element.removeEventListener('keydown', this.constructor.preventDefaultForScrollKeys);
     this.element.document.onkeydown = null;
     //Util.log("Scrolling enabled");
@@ -60,7 +56,7 @@ export class ScrollController {
 
   set(enable) {
     const enabled = !this.disabled;
-    if(enable == enabled) return;
+    if (enable == enabled) return;
     return enable ? this.enable() : this.disable();
   }
 }

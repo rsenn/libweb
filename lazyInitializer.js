@@ -4,7 +4,7 @@ import { trkl } from './trkl.js';
 export function Instance({ trackable = false, callback, initVal = null }) {
   let inst = trackable && trackable.subscribe !== undefined ? trackable : trkl(initVal);
 
-  if(callback) inst.subscribe(value => callback(value, inst));
+  if (callback) inst.subscribe((value) => callback(value, inst));
 
   /* inst.subscribe(newVal => {
     if(newVal) console.log('new instance: ', value);
@@ -19,7 +19,7 @@ export function Instance({ trackable = false, callback, initVal = null }) {
 }
 
 function TrackedInstance(initVal = null) {
-  const callback = value => {};
+  const callback = (value) => {};
   let inst = Instance({ trackable: true, callback, initVal });
 
   return inst;
@@ -28,8 +28,8 @@ function TrackedInstance(initVal = null) {
 export function lazyInitializer(fn, opts = {}) {
   let instance = trkl();
   let ret = (value = null) => {
-    if(value === null) {
-      if(!instance()) {
+    if (value === null) {
+      if (!instance()) {
         const initVal = fn(instance);
         instance(initVal);
         //console.log("initialized to: ", initVal);
@@ -45,7 +45,7 @@ export function lazyInitializer(fn, opts = {}) {
 export function lazyMembers(obj, members) {
   let initializers = {};
 
-  for(let name in members) {
+  for (let name in members) {
     initializers[name] = lazyInitializer(members[name]);
 
     Object.defineProperty(obj, name, {
@@ -74,7 +74,7 @@ export function lazyProperty(obj, name, fn) {
  * @param      {<type>}    prototyp                  The prototyp
  * @return     {Proxy}     { description_of_the_return_value }
  */
-export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prototyp) {
+export function lazyMap(arr, lookup = (item) => item.name, ctor = (arg) => arg, prototyp) {
   /*  let m = new Map();
 
   for(let [k,v] of entries)
@@ -100,20 +100,19 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
       get(target, key, receiver) {
         //console.log("key:", key);
         let index = typeof key == 'string' && /^[0-9]+$/.test(key) ? parseInt(key) : key;
-        if(cache[key]) return cache[key];
-        if(key == 'length') {
+        if (cache[key]) return cache[key];
+        if (key == 'length') {
           index = key;
-        } else if(typeof index == 'string') {
+        } else if (typeof index == 'string') {
           index = Util.findKey(target, (v, k) => lookup(v) === key);
-          if(typeof index == 'string' && /^[0-9]+$/.test(index)) index = parseInt(index);
+          if (typeof index == 'string' && /^[0-9]+$/.test(index)) index = parseInt(index);
 
-          if(typeof index != 'number' || typeof index != 'string') index = key;
+          if (typeof index != 'number' || typeof index != 'string') index = key;
         }
 
-        let ret =
-          typeof proto[key] == 'function' ? proto[key] : Reflect.get(target, index, receiver);
+        let ret = typeof proto[key] == 'function' ? proto[key] : Reflect.get(target, index, receiver);
 
-        if(typeof ret == 'object' && typeof index == 'number') {
+        if (typeof ret == 'object' && typeof index == 'number') {
           key = lookup(ret);
           cache[key] = ctor(ret, index);
           ret = cache[key];
@@ -131,11 +130,11 @@ export function lazyMap(arr, lookup = item => item.name, ctor = arg => arg, prot
         return true;
       },
       has(target, key) {
-        if(Reflect.has(target, key)) return true;
+        if (Reflect.has(target, key)) return true;
         const len = target.length;
-        if(typeof key == 'number') return key >= 0 && key < len;
+        if (typeof key == 'number') return key >= 0 && key < len;
 
-        for(let i = 0; i < len; i++) if(lookup(target[i]) === key) return true;
+        for (let i = 0; i < len; i++) if (lookup(target[i]) === key) return true;
         return false;
       },
       getPrototypeOf(target) {
@@ -160,7 +159,7 @@ export function lazyArray(elements) {
   let arr = new Array(elements.length);
   let props = {};
 
-  for(let fn of elements) {
+  for (let fn of elements) {
     let lazy = lazyInitializer(fn);
     props[i] = {
       get() {

@@ -1,22 +1,22 @@
 export function classNames(...args) {
   let classes = [];
 
-  for(let i = 0; i < args.length; i++) {
+  for (let i = 0; i < args.length; i++) {
     let arg = args[i];
-    if(!arg) continue;
+    if (!arg) continue;
 
     let argType = typeof arg;
 
-    if(argType === 'string' || argType === 'number') {
+    if (argType === 'string' || argType === 'number') {
       classes.push(arg);
-    } else if(Array.isArray(arg) && arg.length) {
+    } else if (Array.isArray(arg) && arg.length) {
       let inner = classNames.apply(null, arg);
-      if(inner) {
+      if (inner) {
         classes.push(inner);
       }
-    } else if(argType === 'object') {
-      for(let key in arg) {
-        if(hasOwn.call(arg, key) && arg[key]) {
+    } else if (argType === 'object') {
+      for (let key in arg) {
+        if (hasOwn.call(arg, key) && arg[key]) {
           classes.push(key);
         }
       }

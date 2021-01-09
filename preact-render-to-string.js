@@ -3,10 +3,10 @@ import { options, h as createElement, Fragment } from './dom/preactComponent.js'
 // DOM properties that should NOT have "px" added when numeric
 var IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|^--/i;
 function encodeEntities(s) {
-  if(typeof s !== 'string') s = String(s);
+  if (typeof s !== 'string') s = String(s);
   var out = '';
 
-  for(var i = 0; i < s.length; i++) {
+  for (var i = 0; i < s.length; i++) {
     var ch = s[i]; // prettier-ignore
 
     switch (ch) {
@@ -26,7 +26,8 @@ function encodeEntities(s) {
         out += '&amp;';
         break;
 
-      default: out += ch;
+      default:
+        out += ch;
     }
   }
 
@@ -36,30 +37,24 @@ var indent = function indent(s, _char) {
   return String(s).replace(/(\n+)/g, '$1' + (_char || '\t'));
 };
 var isLargeString = function isLargeString(s, length, ignoreLines) {
-  return (String(s).length > (length || 40) ||
-    (!ignoreLines && String(s).indexOf('\n') !== -1) ||
-    String(s).indexOf('<') !== -1
-  );
+  return String(s).length > (length || 40) || (!ignoreLines && String(s).indexOf('\n') !== -1) || String(s).indexOf('<') !== -1;
 };
 var JS_TO_CSS = {}; // Convert an Object style to a CSSText string
 
 function styleObjToCss(s) {
   var str = '';
 
-  for(var prop in s) {
+  for (var prop in s) {
     var val = s[prop];
 
-    if(val != null) {
-      if(str) str += ' '; // str += jsToCss(prop);
+    if (val != null) {
+      if (str) str += ' '; // str += jsToCss(prop);
 
-      str +=
-        prop[0] == '-'
-          ? prop
-          : JS_TO_CSS[prop] || (JS_TO_CSS[prop] = prop.replace(/([A-Z])/g, '-$1').toLowerCase());
+      str += prop[0] == '-' ? prop : JS_TO_CSS[prop] || (JS_TO_CSS[prop] = prop.replace(/([A-Z])/g, '-$1').toLowerCase());
       str += ': ';
       str += val;
 
-      if(typeof val === 'number' && IS_NON_DIMENSIONAL.test(prop) === false) {
+      if (typeof val === 'number' && IS_NON_DIMENSIONAL.test(prop) === false) {
         str += 'px';
       }
 
@@ -78,7 +73,7 @@ function styleObjToCss(s) {
  */
 
 function assign(obj, props) {
-  for(var i in props) {
+  for (var i in props) {
     obj[i] = props[i];
   }
 
@@ -93,9 +88,9 @@ function assign(obj, props) {
  */
 
 function getChildren(accumulator, children) {
-  if(Array.isArray(children)) {
+  if (Array.isArray(children)) {
     children.reduce(getChildren, accumulator);
-  } else if(children != null && children !== false) {
+  } else if (children != null && children !== false) {
     accumulator.push(children);
   }
 
@@ -141,17 +136,17 @@ function renderToString(vnode, context, opts) {
   var res = _renderToString(vnode, context, opts); // options._commit, we don't schedule any effects in this library right now,
   // so we can pass an empty queue to this hook.
 
-  if(options.__c) options.__c(vnode, EMPTY_ARR);
+  if (options.__c) options.__c(vnode, EMPTY_ARR);
   return res;
 }
 /** The default export is an alias of `render()`. */
 
 function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
-  if(vnode == null || typeof vnode === 'boolean') {
+  if (vnode == null || typeof vnode === 'boolean') {
     return '';
   } // wrap array nodes in Fragment
 
-  if(Array.isArray(vnode)) {
+  if (Array.isArray(vnode)) {
     vnode = createElement(Fragment, null, vnode);
   }
 
@@ -163,30 +158,22 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
   var pretty = opts.pretty,
     indentChar = pretty && typeof pretty === 'string' ? pretty : '\t'; // #text nodes
 
-  if(typeof vnode !== 'object' && !nodeName) {
+  if (typeof vnode !== 'object' && !nodeName) {
     return encodeEntities(vnode);
   } // components
 
-  if(typeof nodeName === 'function') {
+  if (typeof nodeName === 'function') {
     isComponent = true;
 
-    if(opts.shallow && (inner || opts.renderRootComponent === false)) {
+    if (opts.shallow && (inner || opts.renderRootComponent === false)) {
       nodeName = getComponentName(nodeName);
-    } else if(nodeName === Fragment) {
+    } else if (nodeName === Fragment) {
       var rendered = '';
       var _children = [];
       getChildren(_children, vnode.props.children);
 
-      for(var i = 0; i < _children.length; i++) {
-        rendered +=
-          (i > 0 && pretty ? '\n' : '') +
-          _renderToString(_children[i],
-            context,
-            opts,
-            opts.shallowHighOrder !== false,
-            isSvgMode,
-            selectValue
-          );
+      for (var i = 0; i < _children.length; i++) {
+        rendered += (i > 0 && pretty ? '\n' : '') + _renderToString(_children[i], context, opts, opts.shallowHighOrder !== false, isSvgMode, selectValue);
       }
 
       return rendered;
@@ -204,11 +191,11 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
         __h: []
       }); // options._diff
 
-      if(options.__b) options.__b(vnode); // options._render
+      if (options.__b) options.__b(vnode); // options._render
 
-      if(options.__r) options.__r(vnode);
+      if (options.__r) options.__r(vnode);
 
-      if(!nodeName.prototype || typeof nodeName.prototype.render !== 'function') {
+      if (!nodeName.prototype || typeof nodeName.prototype.render !== 'function') {
         // Necessary for createContext api. Setting this property will pass
         // the context value as `this.context` just for this component.
         var cxType = nodeName.contextType;
@@ -229,18 +216,15 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
 
         c._dirty = c.__d = true;
         c.props = props;
-        if(c.state == null) c.state = {};
+        if (c.state == null) c.state = {};
 
-        if(c._nextState == null && c.__s == null) {
+        if (c._nextState == null && c.__s == null) {
           c._nextState = c.__s = c.state;
         }
 
         c.context = _cctx;
-        if(nodeName.getDerivedStateFromProps)
-          c.state = assign(assign({}, c.state),
-            nodeName.getDerivedStateFromProps(c.props, c.state)
-          );
-        else if(c.componentWillMount) {
+        if (nodeName.getDerivedStateFromProps) c.state = assign(assign({}, c.state), nodeName.getDerivedStateFromProps(c.props, c.state));
+        else if (c.componentWillMount) {
           c.componentWillMount(); // If the user called setState in cWM we need to flush pending,
           // state updates. This is the same behaviour in React.
 
@@ -249,18 +233,12 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
         _rendered = c.render(c.props, c.state, c.context);
       }
 
-      if(c.getChildContext) {
+      if (c.getChildContext) {
         context = assign(assign({}, context), c.getChildContext());
       }
 
-      if(options.diffed) options.diffed(vnode);
-      return _renderToString(_rendered,
-        context,
-        opts,
-        opts.shallowHighOrder !== false,
-        isSvgMode,
-        selectValue
-      );
+      if (options.diffed) options.diffed(vnode);
+      return _renderToString(_rendered, context, opts, opts.shallowHighOrder !== false, isSvgMode, selectValue);
     }
   } // render JSX to HTML
 
@@ -268,78 +246,71 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
     propChildren,
     html;
 
-  if(props) {
+  if (props) {
     var attrs = Object.keys(props); // allow sorting lexicographically for more determinism (useful for tests, such as via preact-jsx-chai)
 
-    if(opts && opts.sortAttributes === true) attrs.sort();
+    if (opts && opts.sortAttributes === true) attrs.sort();
 
-    for(var _i = 0; _i < attrs.length; _i++) {
+    for (var _i = 0; _i < attrs.length; _i++) {
       var name = attrs[_i],
         v = props[name];
 
-      if(name === 'children') {
+      if (name === 'children') {
         propChildren = v;
         continue;
       }
 
-      if(name.match(/[\s\n\\/='"\0<>]/)) continue;
-      if(!(opts && opts.allAttributes) &&
-        (name === 'key' ||
-          name === 'ref' ||
-          name === '__self' ||
-          name === '__source' ||
-          name === 'defaultValue')
-      )
-        continue;
+      if (name.match(/[\s\n\\/='"\0<>]/)) continue;
+      if (!(opts && opts.allAttributes) && (name === 'key' || name === 'ref' || name === '__self' || name === '__source' || name === 'defaultValue')) continue;
 
-      if(name === 'className') {
-        if(props['class']) continue;
+      if (name === 'className') {
+        if (props['class']) continue;
         name = 'class';
-      } else if(isSvgMode && name.match(/^xlink:?./)) {
+      } else if (isSvgMode && name.match(/^xlink:?./)) {
         name = name.toLowerCase().replace(/^xlink:?/, 'xlink:');
       }
 
-      if(name === 'htmlFor') {
-        if(props['for']) continue;
+      if (name === 'htmlFor') {
+        if (props['for']) continue;
         name = 'for';
       }
 
-      if(name === 'style' && v && typeof v === 'object') {
+      if (name === 'style' && v && typeof v === 'object') {
         v = styleObjToCss(v);
       } // always use string values instead of booleans for aria attributes
       // also see https://github.com/preactjs/preact/pull/2347/files
 
-      if(name[0] === 'a' && name['1'] === 'r' && typeof v === 'boolean') {
+      if (name[0] === 'a' && name['1'] === 'r' && typeof v === 'boolean') {
         v = String(v);
       }
 
       var hooked = opts.attributeHook && opts.attributeHook(name, v, context, opts, isComponent);
 
-      if(hooked || hooked === '') {
+      if (hooked || hooked === '') {
         s += hooked;
         continue;
       }
 
-      if(name === 'dangerouslySetInnerHTML') {
+      if (name === 'dangerouslySetInnerHTML') {
         html = v && v.__html;
-      } else if(nodeName === 'textarea' && name === 'value') {
+      } else if (nodeName === 'textarea' && name === 'value') {
         // <textarea value="a&b"> --> <textarea>a&amp;b</textarea>
         propChildren = v;
-      } else if((v || v === 0 || v === '') && typeof v !== 'function') {
-        if(v === true || v === '') {
+      } else if ((v || v === 0 || v === '') && typeof v !== 'function') {
+        if (v === true || v === '') {
           v = name; // in non-xml mode, allow boolean attributes
 
-          if(!opts || !opts.xml) {
+          if (!opts || !opts.xml) {
             s += ' ' + name;
             continue;
           }
         }
 
-        if(name === 'value') {
-          if(nodeName === 'select') {
+        if (name === 'value') {
+          if (nodeName === 'select') {
             selectValue = v;
             continue;
-          } else if(nodeName === 'option' && selectValue == v) {
+          } else if (nodeName === 'option' && selectValue == v) {
             s += ' selected';
           }
         }
@@ -349,48 +320,44 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
     }
   } // account for >1 multiline attribute
 
-  if(pretty) {
+  if (pretty) {
     var sub = s.replace(/^\n\s*/, ' ');
-    if(sub !== s && !~sub.indexOf('\n')) s = sub;
-    else if(pretty && ~s.indexOf('\n')) s += '\n';
+    if (sub !== s && !~sub.indexOf('\n')) s = sub;
+    else if (pretty && ~s.indexOf('\n')) s += '\n';
   }
 
   s = '<' + nodeName + s + '>';
-  if(String(nodeName).match(/[\s\n\\/='"\0<>]/))
-    throw new Error(nodeName + ' is not a valid HTML tag name in ' + s);
-  var isVoid =
-    String(nodeName).match(VOID_ELEMENTS) ||
-    (opts.voidElements && String(nodeName).match(opts.voidElements));
+  if (String(nodeName).match(/[\s\n\\/='"\0<>]/)) throw new Error(nodeName + ' is not a valid HTML tag name in ' + s);
+  var isVoid = String(nodeName).match(VOID_ELEMENTS) || (opts.voidElements && String(nodeName).match(opts.voidElements));
   var pieces = [];
   var children;
 
-  if(html) {
+  if (html) {
     // if multiline, indent.
-    if(pretty && isLargeString(html)) {
+    if (pretty && isLargeString(html)) {
       html = '\n' + indentChar + indent(html, indentChar);
     }
 
     s += html;
-  } else if(propChildren != null && getChildren((children = []), propChildren).length) {
+  } else if (propChildren != null && getChildren((children = []), propChildren).length) {
     var hasLarge = pretty && ~s.indexOf('\n');
     var lastWasText = false;
 
-    for(var _i2 = 0; _i2 < children.length; _i2++) {
+    for (var _i2 = 0; _i2 < children.length; _i2++) {
       var child = children[_i2];
 
-      if(child != null && child !== false) {
-        var childSvgMode =
-            nodeName === 'svg' ? true : nodeName === 'foreignObject' ? false : isSvgMode,
+      if (child != null && child !== false) {
+        var childSvgMode = nodeName === 'svg' ? true : nodeName === 'foreignObject' ? false : isSvgMode,
           ret = _renderToString(child, context, opts, true, childSvgMode, selectValue);
 
-        if(pretty && !hasLarge && isLargeString(ret)) hasLarge = true; // Skip if we received an empty string
+        if (pretty && !hasLarge && isLargeString(ret)) hasLarge = true; // Skip if we received an empty string
 
-        if(ret) {
-          if(pretty) {
+        if (ret) {
+          if (pretty) {
             var isText = ret.length > 0 && ret[0] != '<'; // We merge adjacent text nodes, otherwise each piece would be printed
             // on a new line.
 
-            if(lastWasText && isText) {
+            if (lastWasText && isText) {
               pieces[pieces.length - 1] += ret;
             } else {
               pieces.push(ret);
@@ -404,23 +371,23 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
       }
     }
 
-    if(pretty && hasLarge) {
-      for(var _i3 = pieces.length; _i3--; ) {
+    if (pretty && hasLarge) {
+      for (var _i3 = pieces.length; _i3--; ) {
         pieces[_i3] = '\n' + indentChar + indent(pieces[_i3], indentChar);
       }
     }
   }
 
-  if(pieces.length || html) {
+  if (pieces.length || html) {
     s += pieces.join('');
-  } else if(opts && opts.xml) {
+  } else if (opts && opts.xml) {
     return s.substring(0, s.length - 1) + ' />';
   }
 
-  if(isVoid && !children && !html) {
+  if (isVoid && !children && !html) {
     s = s.replace(/>$/, ' />');
   } else {
-    if(pretty && ~s.indexOf('\n')) s += '\n';
+    if (pretty && ~s.indexOf('\n')) s += '\n';
     s += '</' + nodeName + '>';
   }
 
@@ -428,28 +395,25 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
 }
 
 function getComponentName(component) {
-  return (component.displayName ||
-    (component !== Function && component.name) ||
-    getFallbackComponentName(component)
-  );
+  return component.displayName || (component !== Function && component.name) || getFallbackComponentName(component);
 }
 
 function getFallbackComponentName(component) {
   var str = Function.prototype.toString.call(component),
     name = (str.match(/^\s*function\s+([^( ]+)/) || '')[1];
 
-  if(!name) {
+  if (!name) {
     // search for an existing indexed name for the given component:
     var index = -1;
 
-    for(var i = UNNAMED.length; i--; ) {
-      if(UNNAMED[i] === component) {
+    for (var i = UNNAMED.length; i--; ) {
+      if (UNNAMED[i] === component) {
         index = i;
         break;
       }
     } // not found, create a new indexed name:
 
-    if(index < 0) {
+    if (index < 0) {
       index = UNNAMED.push(component) - 1;
     }
 
@@ -462,9 +426,4 @@ function getFallbackComponentName(component) {
 renderToString.shallowRender = shallowRender;
 
 export default renderToString;
-export {
-  renderToString as render,
-  renderToString as renderToStaticMarkup,
-  renderToString,
-  shallowRender
-};
+export { renderToString as render, renderToString as renderToStaticMarkup, renderToString, shallowRender };

@@ -9,13 +9,13 @@ DOMinate = function dom(a, b, c, x) {
     return document.createElement(a);
   }
 
-  if(a[0].big) a[0] = d(a[0]);
+  if (a[0].big) a[0] = d(a[0]);
 
-  for(c = 1; c < a.length; c++) {
+  for (c = 1; c < a.length; c++) {
     x = a[c];
 
-    if(x.big) a[0].innerHTML = x;
-    else if(x.pop) dom(x), a[0].appendChild(x[0]);
-    else for(b in x) a[0].setAttribute(b, x[b]);
+    if (x.big) a[0].innerHTML = x;
+    else if (x.pop) dom(x), a[0].appendChild(x[0]);
+    else for (b in x) a[0].setAttribute(b, x[b]);
   }
 };

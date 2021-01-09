@@ -6,13 +6,14 @@ import Util from './util.js';
 export const httpClient = (() => {
   const client = axios.create({ withCredentials: true });
 
-  client.interceptors.response.use(res => {
+  client.interceptors.response.use(
+    (res) => {
       const { data, status, statusText, headers, config, request } = res;
       //console.error("axios SUCCESS:", { status, statusText, data });
 
       return res;
     },
-    async err => {
+    async (err) => {
       const { code, config, request } = await err;
       const { url, method, data } = (await config) || {};
       console.error('axios ERROR:', { code, url, method, data });
@@ -21,10 +22,10 @@ export const httpClient = (() => {
   );
 
   let request = (fn, name = 'call') =>
-    async function() {
+    async function () {
       let args = [...arguments];
 
-      if(typeof args[0] == 'string' && args[0].startsWith('/')) {
+      if (typeof args[0] == 'string' && args[0].startsWith('/')) {
         args[0] = Util.makeURL({ location: args[0] });
       }
       //console.error(`axios ${name}:`, args);
@@ -41,7 +42,7 @@ export const httpClient = (() => {
   return ret;
 })();
 
-if(global.window) window.axios = httpClient;
+if (global.window) window.axios = httpClient;
 
 export default httpClient;
 export { httpClient as axios };

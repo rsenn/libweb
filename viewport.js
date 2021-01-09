@@ -1,10 +1,10 @@
 let viewport = (function () {
   let self = {};
 
-  let elementRect = function(element, result) {
+  let elementRect = function (element, result) {
     result = result || {};
 
-    if(element === window) {
+    if (element === window) {
       result.x = 0;
       result.y = 0;
       result.w = self.width;
@@ -12,11 +12,11 @@ let viewport = (function () {
       return result;
     }
 
-    if(element === document) {
+    if (element === document) {
       element = document.body;
     }
 
-    if(element === document.body) {
+    if (element === document.body) {
       result.x = -self.x;
       result.y = -self.y;
       result.width = element.scrollWidth;
@@ -34,29 +34,29 @@ let viewport = (function () {
     return result;
   };
 
-  let intersects = function(rect, inset) {
+  let intersects = function (rect, inset) {
     let left = rect.x;
     let right = left + rect.width;
     let top = rect.y;
     let bottom = top + rect.height;
 
-    if(inset) {
+    if (inset) {
       left += inset.left || 0;
       right -= inset.right || 0;
       top += inset.top || 0;
       bottom -= inset.bottom || 0;
     }
 
-    if(left >= self.width) {
+    if (left >= self.width) {
       return false;
     }
-    if(right <= 0) {
+    if (right <= 0) {
       return false;
     }
-    if(top >= self.height) {
+    if (top >= self.height) {
       return false;
     }
-    if(bottom <= 0) {
+    if (bottom <= 0) {
       return false;
     }
     return true;
@@ -64,7 +64,7 @@ let viewport = (function () {
 
   let regions = [];
 
-  let update = function() {
+  let update = function () {
     let w = window;
     let d = document;
     let e = d.documentElement;
@@ -77,9 +77,9 @@ let viewport = (function () {
     let length = regions.length;
     let i = 0;
     let region;
-    while(i < length) {
+    while (i < length) {
       region = regions[i];
-      if(region.disposed) {
+      if (region.disposed) {
         regions.splice(i, 1);
         length--;
       } else {
@@ -89,10 +89,10 @@ let viewport = (function () {
     }
   };
 
-  if(window.addEventListener) {
+  if (window.addEventListener) {
     window.addEventListener('scroll', update);
     window.addEventListener('resize', update);
-  } else if(window.attachEvent) {
+  } else if (window.attachEvent) {
     window.attachEvent('onscroll', update);
     window.attachEvent('onresize', update);
   }
@@ -104,11 +104,10 @@ let viewport = (function () {
     this.element = element;
     this.inset = inset;
     this.bounds = elementRect(this.element);
-    this.visible =
-      this.bounds.width > 0 && this.bounds.height > 0 && intersects(this.bounds, inset);
+    this.visible = this.bounds.width > 0 && this.bounds.height > 0 && intersects(this.bounds, inset);
   }
 
-  Region.prototype.validate = function() {
+  Region.prototype.validate = function () {
     let bounds = this.bounds;
     let oldX = bounds.x;
     let oldY = bounds.y;
@@ -122,27 +121,27 @@ let viewport = (function () {
 
     let delegate = this.delegate;
 
-    if(newVisible) {
-      if(delegate.regionShow && !oldVisible) {
+    if (newVisible) {
+      if (delegate.regionShow && !oldVisible) {
         delegate.regionShow(this);
       }
-      if(delegate.regionScroll && (bounds.x !== oldX || bounds.y !== oldY)) {
+      if (delegate.regionScroll && (bounds.x !== oldX || bounds.y !== oldY)) {
         delegate.regionScroll(this);
       }
-      if(delegate.regionResize && (bounds.width !== oldWidth || bounds.height !== oldHeight)) {
+      if (delegate.regionResize && (bounds.width !== oldWidth || bounds.height !== oldHeight)) {
         delegate.regionResize(this);
       }
-    } else if(delegate.regionHide && oldVisible) {
+    } else if (delegate.regionHide && oldVisible) {
       delegate.regionHide(this);
     }
   };
-  Region.prototype.dispose = function() {
+  Region.prototype.dispose = function () {
     this.disposed = true;
   };
 
   self.intersects = intersects;
   self.elementRect = elementRect;
-  self.createRegion = function(delegate, element, inset) {
+  self.createRegion = function (delegate, element, inset) {
     let region = new Region(delegate, element, inset);
     regions.push(region);
     return region;
@@ -151,6 +150,6 @@ let viewport = (function () {
   return self;
 })();
 
-if(typeof module !== 'undefined') {
+if (typeof module !== 'undefined') {
   module.exports = viewport;
 }

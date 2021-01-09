@@ -6,54 +6,55 @@ function LocalStore(obj) {
 }
 
 LocalStore.prototype.entries = function* () {
-  for(let key of this.keys()) yield [key, this.get(key)];
+  for (let key of this.keys()) yield [key, this.get(key)];
 };
 
-LocalStore.prototype.getSetFunction = function() {
+LocalStore.prototype.getSetFunction = function () {
   return Util.mapFunction(this);
 };
-LocalStore.prototype.adapter = function() {
+LocalStore.prototype.adapter = function () {
   return Util.mapAdapter(this.getSetFunction());
 };
 
-LocalStore.prototype.toMap = function() {
+LocalStore.prototype.toMap = function () {
   return new Map(this.entries());
 };
-LocalStore.prototype.toObject = function() {
+LocalStore.prototype.toObject = function () {
   return Object.fromEntries(this.entries());
 };
-LocalStore.prototype.toJSON = function() {
+LocalStore.prototype.toJSON = function () {
   return JSON.stringify(this.toObject());
 };
 
 export const makeLocalStorage = () => {
   let w = Util.tryCatch(() => window);
 
-  if(w && w.localStorage)
+  if (w && w.localStorage)
     return new LocalStore({
-      get: Util.tryFunction(name => JSON.parse(w.localStorage.getItem(name)),
-        v => v,
+      get: Util.tryFunction(
+        (name) => JSON.parse(w.localStorage.getItem(name)),
+        (v) => v,
         (err, name) => (w.localStorage.removeItem(name), undefined)
       ),
       set: (name, data) => w.localStorage.setItem(name, JSON.stringify(data)),
-      remove: name => w.localStorage.removeItem(name),
+      remove: (name) => w.localStorage.removeItem(name),
       keys: () => {
         let i = 0,
           key,
           r = [];
-        while((key = localStorage.key(i++))) r.push(key);
+        while ((key = localStorage.key(i++))) r.push(key);
         return r;
       }
     });
   return new LocalStore({
-    get: name => ({}),
+    get: (name) => ({}),
     set: (name, data) => undefined,
-    remove: name => undefined,
+    remove: (name) => undefined,
     keys: () => []
   });
 };
 
-export const logStoreAdapter = store => ({
+export const logStoreAdapter = (store) => ({
   store,
   get(name) {
     return this.store.get(name);
@@ -66,7 +67,7 @@ export const logStoreAdapter = store => ({
   }
 });
 
-export const makeLocalStore = name => ({
+export const makeLocalStore = (name) => ({
   name,
   storage: makeLocalStorage(),
   get() {
@@ -86,30 +87,30 @@ export const makeLocalStore = name => ({
 });
 
 export const makeDummyStorage = () => ({
-  get: name => null,
+  get: (name) => null,
   set: (name, data) => {},
-  remove: name => {}
+  remove: (name) => {}
 });
 
 export function getLocalStorage() {
   let w = Util.tryCatch(() => global.window);
 
-  if(getLocalStorage.store === undefined) {
+  if (getLocalStorage.store === undefined) {
     getLocalStorage.store = w && w.localStorage ? makeLocalStorage() : makeDummyStorage();
   }
   return getLocalStorage.store;
 }
 
 export const makeAutoStoreHandler = (name, store, runner /* = mobx.autorun */) => {
-  if(!store) store = getLocalStorage();
-  var fn = function(_this, _member) {
+  if (!store) store = getLocalStorage();
+  var fn = function (_this, _member) {
     let firstRun = false; //true;
     //will run on change
     const disposer = runner(() => {
       //on load check if there's an existing store on localStorage and extend the store
-      if(firstRun) {
+      if (firstRun) {
         const existingStore = store.get(name);
-        if(existingStore) {
+        if (existingStore) {
           _this[_member] = existingStore;
         }
       }
@@ -122,7 +123,7 @@ export const makeAutoStoreHandler = (name, store, runner /* = mobx.autorun */) =
         value: toJS(updatedStore)
       });*/
 
-      if(updatedStore) {
+      if (updatedStore) {
         fn.update ? fn.update(updatedStore) : store.set(name, updatedStore);
       } else {
         store.remove(name);
@@ -131,10 +132,10 @@ export const makeAutoStoreHandler = (name, store, runner /* = mobx.autorun */) =
     firstRun = false;
     return disposer;
   };
-  fn.update = function(updatedStore) {
+  fn.update = function (updatedStore) {
     try {
       store.set(name, updatedStore);
-    } catch(err) {
+    } catch (err) {
       //Util.log("ERROR: ", err);
     }
   };

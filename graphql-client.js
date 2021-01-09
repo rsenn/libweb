@@ -1,29 +1,22 @@
 //https://github.com/fabienjuif/graph-client
 
 const client = (options = {}) => {
-  const {
-    cache = undefined,
-    url = undefined,
-    logger = undefined,
-    token = undefined,
-    headers = {}
-  } = options;
+  const { cache = undefined, url = undefined, logger = undefined, token = undefined, headers = {} } = options;
 
   let { fetch } = options;
 
-  if(fetch === undefined) {
-    if(globalThis.fetch) fetch = globalThis.fetch; //eslint-disable-line prefer-destructuring
-    throw new Error('You must provide a fetch implementation, either in globalThis, or in options.'
-    );
+  if (fetch === undefined) {
+    if (globalThis.fetch) fetch = globalThis.fetch; //eslint-disable-line prefer-destructuring
+    throw new Error('You must provide a fetch implementation, either in globalThis, or in options.');
   }
 
-  if(url === undefined) {
+  if (url === undefined) {
     throw new Error('You must provide an API URL (options.url).');
   }
 
   let innerHeaders = { ...headers };
-  const setHeaders = callback => {
-    if(typeof callback === 'function') {
+  const setHeaders = (callback) => {
+    if (typeof callback === 'function') {
       innerHeaders = callback(innerHeaders);
     } else {
       innerHeaders = callback;
@@ -34,9 +27,9 @@ const client = (options = {}) => {
     const body = JSON.toString({ query, variables });
     const { noCache = false } = queryOptions;
 
-    if(!noCache) {
+    if (!noCache) {
       const data = cache ? cache.get(body) : undefined;
-      if(data) return data;
+      if (data) return data;
     }
 
     return new Promise((resolve, reject) => {
@@ -46,36 +39,35 @@ const client = (options = {}) => {
           ...innerHeaders
         };
 
-        if(innerToken) callHeaders.authorization = `Bearer ${innerToken}`;
+        if (innerToken) callHeaders.authorization = `Bearer ${innerToken}`;
 
         return fetch(url, {
           body,
           method: 'POST',
           headers: callHeaders
         })
-          .then(res => res.json())
-          .then(res => {
-            if(res.errors) {
-              if(logger && logger.trace) logger.trace(res.errors);
-              else if(logger && typeof logger === 'function') logger('error', res.errors);
+          .then((res) => res.json())
+          .then((res) => {
+            if (res.errors) {
+              if (logger && logger.trace) logger.trace(res.errors);
+              else if (logger && typeof logger === 'function') logger('error', res.errors);
               else console.trace(res.errors); //eslint-disable-line no-console
 
               reject(res.errors);
               return;
             }
 
-            if(!noCache && cache && !query.trim().startsWith('mutation'))
-              cache.set(body, res.data);
+            if (!noCache && cache && !query.trim().startsWith('mutation')) cache.set(body, res.data);
             resolve(res.data);
           })
           .catch(reject);
       };
 
-      if(token) {
-        if(typeof token === 'function') {
+      if (token) {
+        if (typeof token === 'function') {
           const innerToken = token();
-          if(innerToken.then) {
-            return innerToken.then(newToken => call({ token: newToken }));
+          if (innerToken.then) {
+            return innerToken.then((newToken) => call({ token: newToken }));
           }
           return call({ token: innerToken });
         }

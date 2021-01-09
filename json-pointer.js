@@ -18,14 +18,14 @@ export class JsonPointer {
   }
 
   get pointer() {
-    if(!this[$pointer]) {
+    if (!this[$pointer]) {
       this[$pointer] = encodePointer(this.path);
     }
     return this[$pointer];
   }
 
   get uriFragmentIdentifier() {
-    if(!this[$fragmentId]) {
+    if (!this[$fragmentId]) {
       this[$fragmentId] = encodeUriFragmentIdentifier(this.path);
     }
     return this[$fragmentId];
@@ -64,12 +64,12 @@ function replace(str, find, repl) {
   let rem = orig;
   let beg = 0;
   let end = -1;
-  while((end = rem.indexOf(find)) > -1) {
+  while ((end = rem.indexOf(find)) > -1) {
     res += orig.substring(beg, beg + end) + repl;
     rem = rem.substring(end + find.length, rem.length);
     beg += end + find.length;
   }
-  if(rem.length > 0) {
+  if (rem.length > 0) {
     res += orig.substring(orig.length - rem.length, orig.length);
   }
   return res;
@@ -79,7 +79,7 @@ function decodeFragmentSegments(segments) {
   let i = -1;
   let len = segments.length;
   let res = new Array(len);
-  while(++i < len) {
+  while (++i < len) {
     res[i] = replace(replace(decodeURIComponent('' + segments[i]), '~1', '/'), '~0', '~');
   }
   return res;
@@ -89,8 +89,8 @@ function encodeFragmentSegments(segments) {
   let i = -1;
   let len = segments.length;
   let res = new Array(len);
-  while(++i < len) {
-    if(typeof segments[i] === 'string') {
+  while (++i < len) {
+    if (typeof segments[i] === 'string') {
       res[i] = encodeURIComponent(replace(replace(segments[i], '~', '~0'), '/', '~1'));
     } else {
       res[i] = segments[i];
@@ -103,7 +103,7 @@ function decodePointerSegments(segments) {
   let i = -1;
   let len = segments.length;
   let res = new Array(len);
-  while(++i < len) {
+  while (++i < len) {
     res[i] = replace(replace(segments[i], '~1', '/'), '~0', '~');
   }
   return res;
@@ -113,8 +113,8 @@ function encodePointerSegments(segments) {
   let i = -1;
   let len = segments.length;
   let res = new Array(len);
-  while(++i < len) {
-    if(typeof segments[i] === 'string') {
+  while (++i < len) {
+    if (typeof segments[i] === 'string') {
       res[i] = replace(replace(segments[i], '~', '~0'), '/', '~1');
     } else {
       res[i] = segments[i];
@@ -124,51 +124,49 @@ function encodePointerSegments(segments) {
 }
 
 function decodePointer(ptr) {
-  if(typeof ptr !== 'string') {
+  if (typeof ptr !== 'string') {
     throw new TypeError('Invalid type: JSON Pointers are represented as strings.');
   }
-  if(ptr.length === 0) {
+  if (ptr.length === 0) {
     return [];
   }
-  if(ptr[0] !== '/') {
-    throw new ReferenceError('Invalid JSON Pointer syntax. Non-empty pointer must begin with a solidus `/`.'
-    );
+  if (ptr[0] !== '/') {
+    throw new ReferenceError('Invalid JSON Pointer syntax. Non-empty pointer must begin with a solidus `/`.');
   }
   return decodePointerSegments(ptr.substring(1).split('/'));
 }
 
 function encodePointer(path) {
-  if(path && !Array.isArray(path)) {
+  if (path && !Array.isArray(path)) {
     throw new TypeError('Invalid type: path must be an array of segments.');
   }
-  if(path.length === 0) {
+  if (path.length === 0) {
     return '';
   }
   return '/'.concat(encodePointerSegments(path).join('/'));
 }
 
 function decodeUriFragmentIdentifier(ptr) {
-  if(typeof ptr !== 'string') {
+  if (typeof ptr !== 'string') {
     throw new TypeError('Invalid type: JSON Pointers are represented as strings.');
   }
-  if(ptr.length === 0 || ptr[0] !== '#') {
-    throw new ReferenceError('Invalid JSON Pointer syntax; URI fragment idetifiers must begin with a hash.'
-    );
+  if (ptr.length === 0 || ptr[0] !== '#') {
+    throw new ReferenceError('Invalid JSON Pointer syntax; URI fragment idetifiers must begin with a hash.');
   }
-  if(ptr.length === 1) {
+  if (ptr.length === 1) {
     return [];
   }
-  if(ptr[1] !== '/') {
+  if (ptr[1] !== '/') {
     throw new ReferenceError('Invalid JSON Pointer syntax.');
   }
   return decodeFragmentSegments(ptr.substring(2).split('/'));
 }
 
 function encodeUriFragmentIdentifier(path) {
-  if(path && !Array.isArray(path)) {
+  if (path && !Array.isArray(path)) {
     throw new TypeError('Invalid type: path must be an array of segments.');
   }
-  if(path.length === 0) {
+  if (path.length === 0) {
     return '#';
   }
   return '#/'.concat(encodeFragmentSegments(path).join('/'));
@@ -177,18 +175,18 @@ function encodeUriFragmentIdentifier(path) {
 function toArrayIndexReference(arr, idx) {
   let len = idx.length;
   let cursor = 0;
-  if(len === 1 && idx[0] === '-') {
-    if(!Array.isArray(arr)) {
+  if (len === 1 && idx[0] === '-') {
+    if (!Array.isArray(arr)) {
       return 0;
     }
     return arr.length;
   }
-  if(len === 0 || (len > 1 && idx[0] === '0') || !isFinite(idx)) {
+  if (len === 0 || (len > 1 && idx[0] === '0') || !isFinite(idx)) {
     return -1;
   }
 
-  while(++cursor < len) {
-    if(idx[cursor] < '0' || idx[cursor] > '9') {
+  while (++cursor < len) {
+    if (idx[cursor] < '0' || idx[cursor] > '9') {
       return -1;
     }
   }
@@ -201,19 +199,19 @@ function hasValueAtPath(target, path) {
   let cursor;
   let step;
   let p;
-  if(typeof target !== 'undefined') {
+  if (typeof target !== 'undefined') {
     it = target;
     len = path.length;
     cursor = -1;
-    if(len) {
-      while(++cursor < len && it) {
+    if (len) {
+      while (++cursor < len && it) {
         step = path[cursor];
-        if(Array.isArray(it)) {
-          if(isNaN(step) || !isFinite(step)) {
+        if (Array.isArray(it)) {
+          if (isNaN(step) || !isFinite(step)) {
             break;
           }
           p = toArrayIndexReference(it, step);
-          if(it.length > p) {
+          if (it.length > p) {
             it = it[p];
           } else {
             break;
@@ -235,19 +233,19 @@ function getValueAtPath(target, path) {
   let step;
   let p;
   let nonexistent;
-  if(typeof target !== 'undefined') {
+  if (typeof target !== 'undefined') {
     it = target;
     len = path.length;
     cursor = -1;
-    if(len) {
-      while(++cursor < len && it) {
+    if (len) {
+      while (++cursor < len && it) {
         step = path[cursor];
-        if(Array.isArray(it)) {
-          if(isNaN(step) || !isFinite(step)) {
+        if (Array.isArray(it)) {
+          if (isNaN(step) || !isFinite(step)) {
             return nonexistent;
           }
           p = toArrayIndexReference(it, step);
-          if(it.length > p) {
+          if (it.length > p) {
             it = it[p];
           } else {
             return nonexistent;
@@ -264,12 +262,13 @@ function getValueAtPath(target, path) {
 
 function compilePointerDereference(path) {
   let body = `if (typeof(obj) !== 'undefined'`;
-  if(path.length === 0) {
-    return function(root) {
+  if (path.length === 0) {
+    return function (root) {
       return root;
     };
   }
-  body = path.reduce((body, p, i) => `${body} &&
+  body = path.reduce(
+    (body, p, i) => `${body} &&
     typeof((obj = obj['${replace(path[i], '\\', '\\\\')}'])) !== 'undefined'`,
     `if (typeof(obj) !== 'undefined'`
   );
@@ -288,41 +287,41 @@ function setValueAtPath(target, val, path, force) {
   let p;
   let rem;
   let nonexistent;
-  if(path.length === 0) {
+  if (path.length === 0) {
     throw new Error('Cannot set the root object; assign it directly.');
   }
-  if(typeof target === 'undefined') {
+  if (typeof target === 'undefined') {
     throw TypeError('Cannot set values on undefined');
   }
   it = target;
   len = path.length;
   end = path.length - 1;
   cursor = -1;
-  if(len) {
-    while(++cursor < len) {
+  if (len) {
+    while (++cursor < len) {
       step = path[cursor];
-      if(Array.isArray(it)) {
+      if (Array.isArray(it)) {
         p = toArrayIndexReference(it, step);
-        if(it.length > p) {
-          if(cursor === end) {
+        if (it.length > p) {
+          if (cursor === end) {
             rem = it[p];
             it[p] = val;
             return rem;
           }
           it = it[p];
-        } else if(it.length === p) {
+        } else if (it.length === p) {
           it.push(val);
           return nonexistent;
         }
       } else {
-        if(typeof it[step] === 'undefined') {
-          if(force) {
-            if(cursor === end) {
+        if (typeof it[step] === 'undefined') {
+          if (force) {
+            if (cursor === end) {
               it[step] = val;
               return nonexistent;
             }
             //if the next step is an array index, this step should be an array.
-            if(toArrayIndexReference(it[step], path[cursor + 1]) !== -1) {
+            if (toArrayIndexReference(it[step], path[cursor + 1]) !== -1) {
               it = it[step] = [];
               continue;
             }
@@ -331,7 +330,7 @@ function setValueAtPath(target, val, path, force) {
           }
           return nonexistent;
         }
-        if(cursor === end) {
+        if (cursor === end) {
           rem = it[step];
           it[step] = val;
           return rem;
@@ -351,10 +350,8 @@ function pickDecoder(ptr) {
   return looksLikeFragment(ptr) ? decodeUriFragmentIdentifier : decodePointer;
 }
 
-JsonReference.isReference = function(obj) {
-  return ((obj && obj instanceof JsonReference) ||
-    (typeof obj.$ref === 'string' && typeof obj.resolve === 'function')
-  );
+JsonReference.isReference = function (obj) {
+  return (obj && obj instanceof JsonReference) || (typeof obj.$ref === 'string' && typeof obj.resolve === 'function');
 };
 
 function visit(target, visitor, cycle) {
@@ -366,22 +363,22 @@ function visit(target, visitor, cycle) {
     obj: target,
     path: []
   });
-  if(cycle) {
+  if (cycle) {
     distinctObjects = new Map();
   }
   visitor(encodePointer([]), target);
-  while(qcursor < q.length) {
+  while (qcursor < q.length) {
     cursor = q[qcursor++];
     typeT = typeof cursor.obj;
-    if(typeT === 'object' && cursor.obj !== null) {
-      if(Array.isArray(cursor.obj)) {
+    if (typeT === 'object' && cursor.obj !== null) {
+      if (Array.isArray(cursor.obj)) {
         j = -1;
         jlen = cursor.obj.length;
-        while(++j < jlen) {
+        while (++j < jlen) {
           it = cursor.obj[j];
           path = cursor.path.concat(j);
-          if(typeof it === 'object' && it !== null) {
-            if(cycle && distinctObjects.has(it)) {
+          if (typeof it === 'object' && it !== null) {
+            if (cycle && distinctObjects.has(it)) {
               visitor(encodePointer(path), new JsonReference(distinctObjects.get(it)));
               continue;
             }
@@ -389,7 +386,7 @@ function visit(target, visitor, cycle) {
               obj: it,
               path
             });
-            if(cycle) {
+            if (cycle) {
               distinctObjects.set(it, new JsonPointer(encodeUriFragmentIdentifier(path)));
             }
           }
@@ -399,11 +396,11 @@ function visit(target, visitor, cycle) {
         items = Object.keys(cursor.obj);
         ilen = items.length;
         i = -1;
-        while(++i < ilen) {
+        while (++i < ilen) {
           it = cursor.obj[items[i]];
           path = cursor.path.concat(items[i]);
-          if(typeof it === 'object' && it !== null) {
-            if(cycle && distinctObjects.has(it)) {
+          if (typeof it === 'object' && it !== null) {
+            if (cycle && distinctObjects.has(it)) {
               visitor(encodePointer(path), new JsonReference(distinctObjects.get(it)));
               continue;
             }
@@ -411,7 +408,7 @@ function visit(target, visitor, cycle) {
               obj: it,
               path
             });
-            if(cycle) {
+            if (cycle) {
               distinctObjects.set(it, new JsonPointer(encodeUriFragmentIdentifier(path)));
             }
           }
@@ -422,40 +419,40 @@ function visit(target, visitor, cycle) {
   }
 }
 
-JsonPointer.prototype.set = function(target, value, force) {
+JsonPointer.prototype.set = function (target, value, force) {
   return setValueAtPath(target, value, this.path, force);
 };
 
-JsonPointer.prototype.toString = function() {
+JsonPointer.prototype.toString = function () {
   return this.original;
 };
 
-JsonPointer.create = function(ptr) {
+JsonPointer.create = function (ptr) {
   return new JsonPointer(ptr);
 };
 
-JsonPointer.has = function(target, ptr) {
+JsonPointer.has = function (target, ptr) {
   return hasValueAtPath(target, pickDecoder(ptr)(ptr));
 };
 
-JsonPointer.get = function(target, ptr) {
+JsonPointer.get = function (target, ptr) {
   return getValueAtPath(target, pickDecoder(ptr)(ptr));
 };
 
-JsonPointer.set = function(target, ptr, val, force) {
+JsonPointer.set = function (target, ptr, val, force) {
   return setValueAtPath(target, val, pickDecoder(ptr)(ptr), force);
 };
 
-JsonPointer.list = function(target, fragmentId) {
+JsonPointer.list = function (target, fragmentId) {
   let res = [];
   let visitor = fragmentId
-    ? function(ptr, val) {
+    ? function (ptr, val) {
         res.push({
           fragmentId: encodeUriFragmentIdentifier(decodePointer(ptr)),
           value: val
         });
       }
-    : function(ptr, val) {
+    : function (ptr, val) {
         res.push({
           pointer: ptr,
           value: val
@@ -465,23 +462,23 @@ JsonPointer.list = function(target, fragmentId) {
   return res;
 };
 
-JsonPointer.flatten = function(target, fragmentId) {
+JsonPointer.flatten = function (target, fragmentId) {
   let res = {};
   let visitor = fragmentId
-    ? function(ptr, val) {
+    ? function (ptr, val) {
         res[encodeUriFragmentIdentifier(decodePointer(ptr))] = val;
       }
-    : function(ptr, val) {
+    : function (ptr, val) {
         res[ptr] = val;
       };
   visit(target, visitor);
   return res;
 };
 
-JsonPointer.map = function(target, fragmentId) {
+JsonPointer.map = function (target, fragmentId) {
   let res = new Map();
   let visitor = fragmentId
-    ? function(ptr, val) {
+    ? function (ptr, val) {
         res.set(encodeUriFragmentIdentifier(decodePointer(ptr)), val);
       }
     : res.set.bind(res);
@@ -491,7 +488,7 @@ JsonPointer.map = function(target, fragmentId) {
 
 JsonPointer.visit = visit;
 
-JsonPointer.decode = function(ptr) {
+JsonPointer.decode = function (ptr) {
   return pickDecoder(ptr)(ptr);
 };
 
@@ -503,7 +500,7 @@ JsonPointer.encodeUriFragmentIdentifier = encodeUriFragmentIdentifier;
 JsonPointer.JsonReference = JsonReference;
 JsonPointer.isReference = JsonReference.isReference;
 
-JsonPointer.noConflict = function() {
+JsonPointer.noConflict = function () {
   root.JsonPointer = savedJsonPointer;
   return JsonPointer;
 };

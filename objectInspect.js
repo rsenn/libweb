@@ -1,22 +1,10 @@
 const hasMap = typeof Map === 'function' && Map.prototype;
-const mapSizeDescriptor =
-  Object.getOwnPropertyDescriptor && hasMap
-    ? Object.getOwnPropertyDescriptor(Map.prototype, 'size')
-    : null;
-const mapSize =
-  hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === 'function'
-    ? mapSizeDescriptor.get
-    : null;
+const mapSizeDescriptor = Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, 'size') : null;
+const mapSize = hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === 'function' ? mapSizeDescriptor.get : null;
 const mapForEach = hasMap && Map.prototype.forEach;
 const hasSet = typeof Set === 'function' && Set.prototype;
-const setSizeDescriptor =
-  Object.getOwnPropertyDescriptor && hasSet
-    ? Object.getOwnPropertyDescriptor(Set.prototype, 'size')
-    : null;
-const setSize =
-  hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function'
-    ? setSizeDescriptor.get
-    : null;
+const setSizeDescriptor = Object.getOwnPropertyDescriptor && hasSet ? Object.getOwnPropertyDescriptor(Set.prototype, 'size') : null;
+const setSize = hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function' ? setSizeDescriptor.get : null;
 const setForEach = hasSet && Set.prototype.forEach;
 const hasWeakMap = typeof WeakMap === 'function' && WeakMap.prototype;
 const weakMapHas = hasWeakMap ? WeakMap.prototype.has : null;
@@ -37,105 +25,92 @@ const inspectSymbol = inspectCustom && isSymbol(inspectCustom) ? inspectCustom :
 function inspect_(obj, options, depth, seen) {
   const opts = options || {};
 
-  if(has(opts, 'quoteStyle') && opts.quoteStyle !== 'single' && opts.quoteStyle !== 'double') {
+  if (has(opts, 'quoteStyle') && opts.quoteStyle !== 'single' && opts.quoteStyle !== 'double') {
     throw new TypeError('option "quoteStyle" must be "single" or "double"');
   }
-  for(let optName of ['maxStringLength', 'maxArrayLength', 'breakLength']) {
-    if(has(opts, optName) &&
-      (typeof opts[optName] === 'number'
-        ? opts[optName] < 0 && opts[optName] !== Infinity
-        : opts[optName] !== null)
-    ) {
-      throw new TypeError(`option "${optName}", if provided, must be a positive integer, Infinity, or 'null'`
-      );
+  for (let optName of ['maxStringLength', 'maxArrayLength', 'breakLength']) {
+    if (has(opts, optName) && (typeof opts[optName] === 'number' ? opts[optName] < 0 && opts[optName] !== Infinity : opts[optName] !== null)) {
+      throw new TypeError(`option "${optName}", if provided, must be a positive integer, Infinity, or 'null'`);
     }
   }
   const customInspect = has(opts, 'customInspect') ? opts.customInspect : true;
 
   //console.reallog("customInspect:",customInspect);
 
-  if(typeof customInspect !== 'boolean') {
+  if (typeof customInspect !== 'boolean') {
     throw new TypeError('option "customInspect", if provided, must be `true` or `false`');
   }
 
-  if(has(opts, 'indent') &&
-    opts.indent !== null &&
-    opts.indent !== '\t' &&
-    !(parseInt(opts.indent, 10) === opts.indent && opts.indent > 0)
-  ) {
+  if (has(opts, 'indent') && opts.indent !== null && opts.indent !== '\t' && !(parseInt(opts.indent, 10) === opts.indent && opts.indent > 0)) {
     throw new TypeError('options "indent" must be "\\t", an integer > 0, or `null`');
   }
   //console.reallog('opts.colors', opts.colors);
   // console.reallog("obj:", obj, typeof obj);
 
-  if(typeof obj === 'undefined') {
+  if (typeof obj === 'undefined') {
     let s = 'undefined';
-    if(opts.colors) s = wrapColor(s, 1, 30);
+    if (opts.colors) s = wrapColor(s, 1, 30);
 
     return s;
   }
-  if(obj === null) {
+  if (obj === null) {
     return 'null';
   }
-  if(typeof obj === 'boolean') {
+  if (typeof obj === 'boolean') {
     let s = obj ? 'true' : 'false';
-    if(opts.colors) s = wrapColor(s, 0, 33);
+    if (opts.colors) s = wrapColor(s, 0, 33);
     return s;
   }
 
-  if(typeof obj === 'string') {
+  if (typeof obj === 'string') {
     return inspectString(obj, opts);
   }
-  if(typeof obj === 'number') {
+  if (typeof obj === 'number') {
     let s;
-    if(obj === 0) s = Infinity / obj > 0 ? '0' : '-0';
+    if (obj === 0) s = Infinity / obj > 0 ? '0' : '-0';
     else s = String(obj);
-    if(opts.colors) s = wrapColor(s, 0, 33);
+    if (opts.colors) s = wrapColor(s, 0, 33);
     return s;
   }
-  if(typeof obj === 'bigint') {
+  if (typeof obj === 'bigint') {
     return String(obj) + 'n';
   }
 
   const maxDepth = typeof opts.depth === 'undefined' ? 5 : opts.depth;
-  if(typeof depth === 'undefined') {
+  if (typeof depth === 'undefined') {
     depth = 0;
   }
   /* console.reallog("maxDepth:", maxDepth)
   console.reallog("opts.depth:", opts.depth)
   console.reallog("depth:", depth)*/
-  if(depth >= maxDepth && maxDepth > 0 && typeof obj === 'object') {
+  if (depth >= maxDepth && maxDepth > 0 && typeof obj === 'object') {
     return isArray(obj) ? '[Array]' : '[Object]';
   }
 
   const indent = getIndent(opts, depth);
 
-  if(typeof seen === 'undefined') {
+  if (typeof seen === 'undefined') {
     seen = [];
   }
-  if(indexOf(seen, obj) >= 0) {
+  if (indexOf(seen, obj) >= 0) {
     return '[Circular]';
   }
 
   function inspect(value, from, noIndent) {
-    if(from) {
+    if (from) {
       seen = seen.slice();
       seen.push(from);
     }
     let newOpts = {
       ...opts,
-      multiline: opts.multiline
-        ? typeof opts.multiline == 'number'
-          ? opts.multiline - 1
-          : true
-        : false
+      multiline: opts.multiline ? (typeof opts.multiline == 'number' ? opts.multiline - 1 : true) : false
     };
-    if(noIndent) {
+    if (noIndent) {
       newOpts = {
         ...newOpts,
         depth: opts.depth
       };
-      if(has(opts, 'quoteStyle')) {
+      if (has(opts, 'quoteStyle')) {
         newOpts.quoteStyle = opts.quoteStyle;
       }
       return inspect_(value, newOpts, depth + 1, seen);
@@ -145,11 +120,7 @@ function inspect_(obj, options, depth, seen) {
 
   let s = '';
 
-  if(typeof obj === 'object' &&
-    customInspect &&
-    inspectCustom &&
-    typeof obj[inspectCustom] === 'function'
-  ) {
+  if (typeof obj === 'object' && customInspect && inspectCustom && typeof obj[inspectCustom] === 'function') {
     s += obj[inspectCustom]();
     //console.reallog("customInspect:",s);
     return s;
@@ -158,108 +129,110 @@ function inspect_(obj, options, depth, seen) {
     }*/
   }
 
-  if(typeof obj === 'function') {
+  if (typeof obj === 'function') {
     const name = nameOf(obj);
     const keys = arrObjKeys(obj, inspect);
     s += '[Function' + (name ? ': ' + name : ' (anonymous)') + ']';
 
-    if(opts.colors) s = wrapColor(s, 0, 36);
-    if(keys.length > 0) s += ' { ' + keys.join(', ') + ' }';
-  } else if(isSymbol(obj)) {
+    if (opts.colors) s = wrapColor(s, 0, 36);
+    if (keys.length > 0) s += ' { ' + keys.join(', ') + ' }';
+  } else if (isSymbol(obj)) {
     const symString = symToString.call(obj);
     s += typeof obj === 'object' ? markBoxed(symString) : symString;
-  } else if(isElement(obj)) {
+  } else if (isElement(obj)) {
     s += '<' + String(obj.nodeName).toLowerCase();
     const attrs = obj.attributes || [];
-    for(let i = 0; i < attrs.length; i++) {
+    for (let i = 0; i < attrs.length; i++) {
       s += ' ' + attrs[i].name + '=' + wrapQuotes(quote(attrs[i].value), 'double', opts);
     }
     s += '>';
-    if(obj.childNodes && obj.childNodes.length) {
+    if (obj.childNodes && obj.childNodes.length) {
       s += '...';
     }
     s += '</' + String(obj.nodeName).toLowerCase() + '>';
     return s;
-  } else if(isArray(obj)) {
-    if(obj.length === 0) {
+  } else if (isArray(obj)) {
+    if (obj.length === 0) {
       s += '[]';
     } else {
       let xs = arrObjKeys(obj, inspect);
       let multiline = indent && !singleLineValues(xs);
 
-      if(Number.isFinite(opts.breakLength)) {
-        if(xs.join(', ').length > opts.breakLength) {
-          xs = xs.reduce((acc, item) => {
+      if (Number.isFinite(opts.breakLength)) {
+        if (xs.join(', ').length > opts.breakLength) {
+          xs = xs.reduce(
+            (acc, item) => {
               // console.log("acc:",acc);
               let tail = acc[acc.length - 1];
               let len = stripAnsi(tail).length;
 
-              if(len && len + stripAnsi(item).length > opts.breakLength) {
+              if (len && len + stripAnsi(item).length > opts.breakLength) {
                 acc.push('');
               }
 
-              if(acc[acc.length - 1] != '') acc[acc.length - 1] += ', ';
+              if (acc[acc.length - 1] != '') acc[acc.length - 1] += ', ';
 
               acc[acc.length - 1] += item;
               return acc;
-            }, ['']
+            },
+            ['']
           );
           multiline = true;
         }
       }
 
-      if(multiline) s += '[' + indentedJoin(xs, indent) + ']';
+      if (multiline) s += '[' + indentedJoin(xs, indent) + ']';
       else s += '[ ' + xs.join(', ') + ' ]';
     }
-  } else if(isError(obj)) {
+  } else if (isError(obj)) {
     const parts = arrObjKeys(obj, inspect);
-    if(parts.length === 0) s += '[' + String(obj) + ']';
+    if (parts.length === 0) s += '[' + String(obj) + ']';
     else s += '{ [' + String(obj) + '] ' + parts.join(', ') + ' }';
-  } else if(isMap(obj)) {
+  } else if (isMap(obj)) {
     let mapKeys = [],
       mapParts = [];
-    mapForEach.call(obj, function(value, key) {
+    mapForEach.call(obj, function (value, key) {
       mapKeys.push(inspect(key, obj, true));
     });
     let i = 0;
-    if(opts.alignMap) {
+    if (opts.alignMap) {
       let maxKeyLen = mapKeys.reduce((a, k) => (k.length > a ? k.length : a), 0);
-      mapKeys = mapKeys.map(key => key.padEnd(maxKeyLen));
+      mapKeys = mapKeys.map((key) => key.padEnd(maxKeyLen));
     }
 
-    mapForEach.call(obj, function(value, key) {
+    mapForEach.call(obj, function (value, key) {
       mapParts.push(mapKeys[i++] + ' => ' + inspect(value, obj));
     });
     s += collectionOf('Map', mapSize.call(obj), mapParts, indent);
-  } else if(isSet(obj)) {
+  } else if (isSet(obj)) {
     const setParts = [];
-    setForEach.call(obj, function(value) {
+    setForEach.call(obj, function (value) {
       setParts.push(inspect(value, obj));
     });
     s += collectionOf('Set', setSize.call(obj), setParts, indent);
-  } else if(isWeakMap(obj)) {
+  } else if (isWeakMap(obj)) {
     s += weakCollectionOf('WeakMap');
-  } else if(isWeakSet(obj)) {
+  } else if (isWeakSet(obj)) {
     s += weakCollectionOf('WeakSet');
-  } else if(isNumber(obj)) {
+  } else if (isNumber(obj)) {
     s += markBoxed(inspect(Number(obj)));
-  } else if(isBigInt(obj)) {
+  } else if (isBigInt(obj)) {
     s += markBoxed(inspect(bigIntValueOf.call(obj)));
-  } else if(isBoolean(obj)) {
+  } else if (isBoolean(obj)) {
     s += markBoxed(booleanValueOf.call(obj));
-  } else if(isString(obj)) {
+  } else if (isString(obj)) {
     s += markBoxed(inspect(String(obj)));
-  } else if(!isDate(obj) && !isRegExp(obj) && !isPromise(obj)) {
+  } else if (!isDate(obj) && !isRegExp(obj) && !isPromise(obj)) {
     const proto = Object.getPrototypeOf(obj);
 
-    if(proto !== Object.prototype) {
+    if (proto !== Object.prototype) {
       const className = proto === null ? `[Object: null prototype]` : nameOf(proto.constructor);
-      if(className) s += className + ' ';
+      if (className) s += className + ' ';
     }
     s += '{';
     const ys = arrObjKeys(obj, inspect, { ...opts });
-    if(ys.length == 0) {
-    } else if(indent && opts.multiline) {
+    if (ys.length == 0) {
+    } else if (indent && opts.multiline) {
       s += indentedJoin(ys, indent);
     } else {
       s += ' ' + ys.join(', ') + ' ';
@@ -327,7 +300,7 @@ function isBoolean(obj) {
 
 const hasOwn =
   Object.prototype.hasOwnProperty ||
-  function(key) {
+  function (key) {
     return key in this;
   };
 function has(obj, key) {
@@ -339,22 +312,22 @@ function toStr(obj) {
 }
 
 function nameOf(f) {
-  if(typeof f == 'function' && f.name) {
+  if (typeof f == 'function' && f.name) {
     return f.name;
   }
   const m = match.call(f + '' /*functionToString.call(f)*/, /^function\s*([\w$]+)/);
-  if(m) {
+  if (m) {
     return m[1];
   }
   return null;
 }
 
 function indexOf(xs, x) {
-  if(xs.indexOf) {
+  if (xs.indexOf) {
     return xs.indexOf(x);
   }
-  for(let i = 0, l = xs.length; i < l; i++) {
-    if(xs[i] === x) {
+  for (let i = 0, l = xs.length; i < l; i++) {
+    if (xs[i] === x) {
       return i;
     }
   }
@@ -362,88 +335,88 @@ function indexOf(xs, x) {
 }
 
 function isMap(x) {
-  if(!mapSize || !x || typeof x !== 'object') {
+  if (!mapSize || !x || typeof x !== 'object') {
     return false;
   }
   try {
     mapSize.call(x);
     try {
       setSize.call(x);
-    } catch(s) {
+    } catch (s) {
       return true;
     }
     return x instanceof Map; // core-js workaround, pre-v2.5.0
-  } catch(e) {}
+  } catch (e) {}
   return false;
 }
 
 function isWeakMap(x) {
-  if(!weakMapHas || !x || typeof x !== 'object') {
+  if (!weakMapHas || !x || typeof x !== 'object') {
     return false;
   }
   try {
     weakMapHas.call(x, weakMapHas);
     try {
       weakSetHas.call(x, weakSetHas);
-    } catch(s) {
+    } catch (s) {
       return true;
     }
     return x instanceof WeakMap; // core-js workaround, pre-v2.5.0
-  } catch(e) {}
+  } catch (e) {}
   return false;
 }
 
 function isSet(x) {
-  if(!setSize || !x || typeof x !== 'object') {
+  if (!setSize || !x || typeof x !== 'object') {
     return false;
   }
   try {
     setSize.call(x);
     try {
       mapSize.call(x);
-    } catch(m) {
+    } catch (m) {
       return true;
     }
     return x instanceof Set; // core-js workaround, pre-v2.5.0
-  } catch(e) {}
+  } catch (e) {}
   return false;
 }
 
 function isWeakSet(x) {
-  if(!weakSetHas || !x || typeof x !== 'object') {
+  if (!weakSetHas || !x || typeof x !== 'object') {
     return false;
   }
   try {
     weakSetHas.call(x, weakSetHas);
     try {
       weakMapHas.call(x, weakMapHas);
-    } catch(s) {
+    } catch (s) {
       return true;
     }
     return x instanceof WeakSet; // core-js workaround, pre-v2.5.0
-  } catch(e) {}
+  } catch (e) {}
   return false;
 }
 
 function isElement(x) {
-  if(!x || typeof x !== 'object') {
+  if (!x || typeof x !== 'object') {
     return false;
   }
-  if(typeof HTMLElement !== 'undefined' && x instanceof HTMLElement) {
+  if (typeof HTMLElement !== 'undefined' && x instanceof HTMLElement) {
     return true;
   }
   return typeof x.nodeName === 'string' && typeof x.getAttribute === 'function';
 }
 
 function inspectString(str, opts) {
-  if(str.length > opts.maxStringLength) {
+  if (str.length > opts.maxStringLength) {
     const remaining = str.length - opts.maxStringLength;
     const trailer = '... ' + remaining + ' more character' + (remaining > 1 ? 's' : '');
     return inspectString(str.slice(0, opts.maxStringLength), opts) + trailer;
   }
   let s = str.replace(/(['\\])/g, '\\$1').replace(/[\x00-\x1f]/g, lowbyte);
   s = wrapQuotes(s, 'single', opts);
-  if(opts.colors) s = wrapColor(s, 1, 32);
+  if (opts.colors) s = wrapColor(s, 1, 32);
   return s;
 }
 
@@ -456,7 +429,7 @@ function lowbyte(c) {
     12: 'f',
     13: 'r'
   }[n];
-  if(x) {
+  if (x) {
     return '\\' + x;
   }
   return '\\x' + (n < 0x10 ? '0' : '') + n.toString(16).toUpperCase();
@@ -476,8 +449,8 @@ function collectionOf(type, size, entries, indent) {
 }
 
 function singleLineValues(xs) {
-  for(let i = 0; i < xs.length; i++) {
-    if(indexOf(xs[i], '\n') >= 0) {
+  for (let i = 0; i < xs.length; i++) {
+    if (indexOf(xs[i], '\n') >= 0) {
       return false;
     }
   }
@@ -486,9 +459,9 @@ function singleLineValues(xs) {
 
 function getIndent(opts, depth) {
   let baseIndent;
-  if(opts.indent === '\t') {
+  if (opts.indent === '\t') {
     baseIndent = '\t';
-  } else if(typeof opts.indent === 'number' && opts.indent > 0) {
+  } else if (typeof opts.indent === 'number' && opts.indent > 0) {
     baseIndent = Array(opts.indent + 1).join(' ');
   } else {
     return null;
@@ -500,7 +473,7 @@ function getIndent(opts, depth) {
 }
 
 function indentedJoin(xs, indent) {
-  if(xs.length === 0) {
+  if (xs.length === 0) {
     return '';
   }
   const lineJoiner = '\n' + indent.prev + indent.base;
@@ -510,43 +483,39 @@ function indentedJoin(xs, indent) {
 function arrObjKeys(obj, inspect, opts) {
   const isArr = isArray(obj);
   const xs = [];
-  if(isArr && typeof opts == 'object' && opts != null && obj.length > opts.maxArrayLength) {
+  if (isArr && typeof opts == 'object' && opts != null && obj.length > opts.maxArrayLength) {
     const remaining = obj.length - opts.maxArrayLength;
     const trailer = '... ' + remaining + ' more items' + (remaining > 1 ? 's' : '');
     return arrObjKeys(obj.slice(0, opts.maxArrayLength), inspect, opts) + trailer;
   }
 
-  if(isArr) {
+  if (isArr) {
     xs.length = obj.length;
-    for(let i = 0; i < obj.length; i++) xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
+    for (let i = 0; i < obj.length; i++) xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
   }
 
-  for(let key in obj) {
-    if(!has(obj, key)) continue;
+  for (let key in obj) {
+    if (!has(obj, key)) continue;
 
-    if(isArr && String(Number(key)) === key && key < obj.length) continue;
+    if (isArr && String(Number(key)) === key && key < obj.length) continue;
 
     let s = '';
-    if(isGetter(obj, key)) {
+    if (isGetter(obj, key)) {
       s = '[Getter]';
-      if(opts.colors) s = wrapColor(s, 0, 36) + ' ';
+      if (opts.colors) s = wrapColor(s, 0, 36) + ' ';
     }
     s += inspect(obj[key], obj);
-    if(/[^\w$]/.test(key)) {
+    if (/[^\w$]/.test(key)) {
       xs.push(inspect(key, obj) + wrapColor(': ', 1, 36) + s);
     } else {
       xs.push(key + ': ' + s);
     }
   }
-  if(typeof gOPS === 'function') {
+  if (typeof gOPS === 'function') {
     const syms = gOPS(obj);
-    for(let j = 0; j < syms.length; j++) {
-      if(isEnumerable.call(obj, syms[j])) {
-        xs.push(wrapColor('[', 1, 36) +
-            inspect(syms[j]) +
-            wrapColor(']: ', 1, 36) +
-            inspect(obj[syms[j]], obj)
-        );
+    for (let j = 0; j < syms.length; j++) {
+      if (isEnumerable.call(obj, syms[j])) {
+        xs.push(wrapColor('[', 1, 36) + inspect(syms[j]) + wrapColor(']: ', 1, 36) + inspect(obj[syms[j]], obj));
       }
     }
   }
@@ -554,9 +523,9 @@ function arrObjKeys(obj, inspect, opts) {
 }
 
 function isGetter(obj, propName) {
-  while(obj) {
+  while (obj) {
     const desc = Object.getOwnPropertyDescriptor(obj, propName);
-    if(desc && 'get' in desc) return true;
+    if (desc && 'get' in desc) return true;
     obj = Object.getPrototypeOf(obj);
   }
   return false;

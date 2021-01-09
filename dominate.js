@@ -4,7 +4,8 @@
  * @format
  */
 
-DOMinate = function dom(array, //Array containing the DOM fragment in JsonML
+DOMinate = function dom(
+  array, //Array containing the DOM fragment in JsonML
   namespace, //Namespace
   returnObject
 ) {
@@ -28,7 +29,7 @@ DOMinate = function dom(array, //Array containing the DOM fragment in JsonML
     let classNames;
 
     //Assign id if is set
-    if((id = sugarString.match(/#([\w-]+)/))) {
+    if ((id = sugarString.match(/#([\w-]+)/))) {
       element.id = id[1];
 
       //Add element to the return object
@@ -36,10 +37,10 @@ DOMinate = function dom(array, //Array containing the DOM fragment in JsonML
     }
 
     //Create reference to the element and add it to the return object
-    if((ref = sugarString.match(/\$([\w-]+)/))) returnObject[ref[1]] = element;
+    if ((ref = sugarString.match(/\$([\w-]+)/))) returnObject[ref[1]] = element;
 
     //Assign class if is set
-    if((classNames = sugarString.match(/\.[\w-]+/g))) {
+    if ((classNames = sugarString.match(/\.[\w-]+/g))) {
       element.setAttribute('class', classNames.join(' ').replace(/\./g, ''));
     }
 
@@ -48,14 +49,14 @@ DOMinate = function dom(array, //Array containing the DOM fragment in JsonML
   }
 
   //If is string create DOM element else is already a DOM element
-  if(array[0].big) array[0] = createElement(array[0]);
+  if (array[0].big) array[0] = createElement(array[0]);
 
   //For each in the element array (except the first)
-  for(i = 1; i < array.length; i++) {
+  for (i = 1; i < array.length; i++) {
     //If is string has to be content so set it
-    if(array[i].big) array[0].appendChild(doc.createTextNode(array[i]));
+    if (array[i].big) array[0].appendChild(doc.createTextNode(array[i]));
     //If is array has to be child element
-    else if(array[i].pop) {
+    else if (array[i].pop) {
       //Use DOMinate recursively for all child elements
       dom(array[i], namespace, returnObject);
 
@@ -64,12 +65,12 @@ DOMinate = function dom(array, //Array containing the DOM fragment in JsonML
     }
 
     //If is function call with current element as first argument
-    else if(array[i].call) array[i](array[0]);
+    else if (array[i].call) array[i](array[0]);
     //If is element append it
-    else if(array[i] instanceof Element) array[0].appendChild(array[i]);
+    else if (array[i] instanceof Element) array[0].appendChild(array[i]);
     //Else must be object with attributes
     //For each attribute
-    else for(b in array[i]) array[0].setAttribute(b, array[i][b]);
+    else for (b in array[i]) array[0].setAttribute(b, array[i][b]);
   }
 
   //Return root element on index 0

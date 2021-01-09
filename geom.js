@@ -16,7 +16,20 @@ import { Polygon } from './geom/polygon.js';
 import { isRect, Rect, ImmutableRect } from './geom/rect.js';
 import { isSize, Size, ImmutableSize } from './geom/size.js';
 import { SweepLineClass } from './geom/sweepLine.js';
-import { MatrixTransformation, Rotation, Scaling, Transformation, TransformationList, Translation, ImmutableMatrixTransformation, ImmutableRotation, ImmutableScaling, ImmutableTransformation, ImmutableTransformationList, ImmutableTranslation } from './geom/transformation.js';
+import {
+  MatrixTransformation,
+  Rotation,
+  Scaling,
+  Transformation,
+  TransformationList,
+  Translation,
+  ImmutableMatrixTransformation,
+  ImmutableRotation,
+  ImmutableScaling,
+  ImmutableTransformation,
+  ImmutableTransformationList,
+  ImmutableTranslation
+} from './geom/transformation.js';
 export default {
   Align,
   AlignToString,
@@ -110,9 +123,4 @@ export { isTRBL, TRBL } from './geom/trbl.js';
 export { Vector } from './geom/vector.js';
 export { Voronoi } from './geom/voronoi.js';
 import { simplifyRadialDist, simplifyDPStep, simplifyDouglasPeucker, simplify } from './geom/simplify.js';
-export {
-  simplifyRadialDist,
-  simplifyDPStep,
-  simplifyDouglasPeucker,
-  simplify
-} from './geom/simplify.js';
+export { simplifyRadialDist, simplifyDPStep, simplifyDouglasPeucker, simplify } from './geom/simplify.js';

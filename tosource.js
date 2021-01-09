@@ -1,9 +1,9 @@
 /* toSource by Marcello Bastea-Forte - zlib license */
-export default function toSource(object, replacer = a => a, indent = '  ', startingIndent = '') {
+export default function toSource(object, replacer = (a) => a, indent = '  ', startingIndent = '') {
   const seen = [];
   return walk(object, replacer, indent === false ? '' : indent, startingIndent, seen);
 
-  function walk(object, replacer = a => a, indent, currentIndent, seen) {
+  function walk(object, replacer = (a) => a, indent, currentIndent, seen) {
     const nextIndent = currentIndent + indent;
     object = replacer ? replacer(object) : object;
 
@@ -11,7 +11,7 @@ export default function toSource(object, replacer = a => a, indent = '  ', start
       case 'string':
         return JSON.stringify(object);
       case 'number':
-        if(object === -0) {
+        if (object === -0) {
           return '-0';
         }
         return String(object);
@@ -22,45 +22,37 @@ export default function toSource(object, replacer = a => a, indent = '  ', start
         return object.toString();
     }
 
-    if(object === null) {
+    if (object === null) {
       return 'null';
     }
-    if(object instanceof RegExp) {
+    if (object instanceof RegExp) {
       return object.toString();
     }
-    if(object instanceof Date) {
+    if (object instanceof Date) {
       return `new Date(${object.getTime()})`;
     }
-    if(object instanceof Set) {
+    if (object instanceof Set) {
       return `new Set(${walk(Array.from(object.values()), replacer, indent, nextIndent, seen)})`;
     }
-    if(object instanceof Map) {
+    if (object instanceof Map) {
       return `new Map(${walk(Array.from(object.entries()), replacer, indent, nextIndent, seen)})`;
     }
 
-    if(seen.indexOf(object) >= 0) {
+    if (seen.indexOf(object) >= 0) {
       return '{$circularReference:1}';
     }
     seen.push(object);
 
     function join(elements) {
-      return (indent.slice(1) + elements.join(',' + (indent && '\n') + nextIndent) + (indent ? ' ' : '')
-      );
+      return indent.slice(1) + elements.join(',' + (indent && '\n') + nextIndent) + (indent ? ' ' : '');
     }
 
-    if(Array.isArray(object)) {
-      return `[${join(object.map(element => walk(element, replacer, indent, nextIndent, seen.slice()))
-      )}]`;
+    if (Array.isArray(object)) {
+      return `[${join(object.map((element) => walk(element, replacer, indent, nextIndent, seen.slice())))}]`;
     }
     const keys = Object.keys(object);
-    if(keys.length) {
-      return `{${join(keys.map(
-          key =>
-            (legalKey(key) ? key : JSON.stringify(key)) +
-            ':' +
-            walk(object[key], replacer, indent, nextIndent, seen.slice())
-        )
-      )}}`;
+    if (keys.length) {
+      return `{${join(keys.map((key) => (legalKey(key) ? key : JSON.stringify(key)) + ':' + walk(object[key], replacer, indent, nextIndent, seen.slice())))}}`;
     }
     return '{}';
   }

@@ -25,7 +25,7 @@ export class CubicSpline {
     pts.push(p0, [p0[0] + t0[0], p0[1] + t0[1], p[0] - t[0], p[1] - t[1], p[0], p[1]]);
 
     //Add 'S' points
-    for(let i = 2, n = tgts.length; i < n; i++) {
+    for (let i = 2, n = tgts.length; i < n; i++) {
       const p = points[i];
       const t = tgts[i];
 
@@ -45,13 +45,12 @@ export class CubicSpline {
   static slice(points, start, end) {
     const pts = points.slice(start, end);
 
-    if(start) {
+    if (start) {
       //Add additional 'C' points
-      if(pts[1].length < 6) {
+      if (pts[1].length < 6) {
         const n = pts[0].length;
 
-        pts[1] = [pts[0][n - 2] * 2 - pts[0][n - 4], pts[0][n - 1] * 2 - pts[0][n - 3]].concat(pts[1]
-        );
+        pts[1] = [pts[0][n - 2] * 2 - pts[0][n - 4], pts[0][n - 1] * 2 - pts[0][n - 3]].concat(pts[1]);
       }
       //Remove control points for 'M'
       pts[0] = pts[0].slice(-2);
@@ -71,9 +70,9 @@ export class CubicSpline {
     points.forEach((point, i) => {
       const n = point.length;
 
-      if(!i) {
+      if (!i) {
         p += `M${point[n - 2]} ${point[n - 1]}`;
-      } else if(n > 4) {
+      } else if (n > 4) {
         p += `C${point[0]}, ${point[1]}`;
         p += `, ${point[2]}, ${point[3]}`;
         p += `, ${point[4]}, ${point[5]}`;
@@ -101,16 +100,16 @@ function tangents(points) {
   const tgts = [];
   let a, b, d, s;
 
-  for(let i = 0; i < n; i++) {
+  for (let i = 0; i < n; i++) {
     d = slope(points[i], points[i + 1]);
 
-    if(Math.abs(d) < CubicSpline.ε) {
+    if (Math.abs(d) < CubicSpline.ε) {
       m[i] = m[i + 1] = 0;
     } else {
       a = m[i] / d;
       b = m[i + 1] / d;
       s = a * a + b * b;
-      if(s > 9) {
+      if (s > 9) {
         s = (d * 3) / Math.sqrt(s);
         m[i] = s * a;
         m[i + 1] = s * b;
@@ -118,7 +117,7 @@ function tangents(points) {
     }
   }
 
-  for(let i = 0; i <= n; i++) {
+  for (let i = 0; i <= n; i++) {
     s = (points[Math.min(n, i + 1)][0] - points[Math.max(0, i - 1)][0]) / (6 * (1 + m[i] * m[i]));
     tgts.push([s || 0, m[i] * s || 0]);
   }
@@ -148,7 +147,7 @@ function finiteDifferences(points) {
   let d = (m[0] = slope(p0, p1));
   let i = 1;
 
-  for(let n = points.length - 1; i < n; i++) {
+  for (let n = points.length - 1; i < n; i++) {
     p0 = p1;
     p1 = points[i + 1];
     m[i] = (d + (d = slope(p0, p1))) * 0.5;

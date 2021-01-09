@@ -9,7 +9,8 @@ export async function ConsoleSetup(opts = {}) {
   //console.log("opts.breakLength:",opts.breakLength, Util.stack());
   let ret;
   Util.tryCatch(() => (Error.stackTraceLimit = 1000));
-  const proc = await Util.tryCatch(async () => await import('process'),
+  const proc = await Util.tryCatch(
+    async () => await import('process'),
     ({ stdout, env }) => ({ stdout, env }),
     () => ({ stdout: {}, env: {} })
   );
@@ -17,21 +18,12 @@ export async function ConsoleSetup(opts = {}) {
     const size = await Util.ttyGetWinSize(fd);
     return Array.isArray(size) ? size[0] : undefined;
   };
-  const defaultBreakLength =
-    (proc && proc.stdout && proc.stdout.isTTY && proc.stdout.columns) ||
-    proc.env.COLUMNS ||
-    (await consoleWidth()) ||
-    80; // Infinity;
-  const {
-    depth = 2,
-    colors = await Util.isatty(1),
-    breakLength = defaultBreakLength,
-    maxArrayLength = Infinity,
-    ...options
-  } = opts;
-  ret = await Util.tryCatch(async () => {
+  const defaultBreakLength = (proc && proc.stdout && proc.stdout.isTTY && proc.stdout.columns) || proc.env.COLUMNS || (await consoleWidth()) || 80; // Infinity;
+  const { depth = 2, colors = await Util.isatty(1), breakLength = defaultBreakLength, maxArrayLength = Infinity, ...options } = opts;
+  ret = await Util.tryCatch(
+    async () => {
       const inspectOptions = { depth, colors, breakLength, maxArrayLength, ...options };
-      const Console = await import('console').then(module => module.Console);
+      const Console = await import('console').then((module) => module.Console);
       ret = new Console({
         stdout: proc.stdout,
         stderr: proc.stderr,
@@ -42,7 +34,7 @@ export async function ConsoleSetup(opts = {}) {
       ret.inspect = (await import('util')).inspect;
       return ret;
     },
-    c => c,
+    (c) => c,
     () => {
       let c = Util.getGlobalObject().console;
       let options = { colors: true, depth: Infinity, indent: 2, ...opts };
@@ -58,13 +50,11 @@ export async function ConsoleSetup(opts = {}) {
         reallog: log,
         inspect(...args) {
           let [obj, opts] = args;
-          if(args.length == 0) obj = this;
+          if (args.length == 0) obj = this;
           return ObjectInspect(obj, { customInspect: true, ...options, ...opts });
         },
         log(...args) {
-          return log.call(this,
-            ...args.map(arg => (typeof arg != 'string' || !Util.isPrimitive(arg) ? ObjectInspect(arg, options) : arg))
-          );
+          return log.call(this, ...args.map((arg) => (typeof arg != 'string' || !Util.isPrimitive(arg) ? ObjectInspect(arg, options) : arg)));
         }
       });
     }
@@ -73,8 +63,8 @@ export async function ConsoleSetup(opts = {}) {
   function addMissingMethods(cons) {
     let fns = {};
 
-    for(let method of ['error', 'warn', 'debug']) {
-      if(cons[method] === undefined) fns[method] = cons.log;
+    for (let method of ['error', 'warn', 'debug']) {
+      if (cons[method] === undefined) fns[method] = cons.log;
     }
     return Util.define(cons, fns);
   }
@@ -88,6 +78,6 @@ export async function ConsoleSetup(opts = {}) {
   Util.getGlobalObject().console = addMissingMethods(ret);
 }
 
-export const ConsoleOnce = Util.once(opts => ConsoleSetup(opts));
+export const ConsoleOnce = Util.once((opts) => ConsoleSetup(opts));
 
 export default ConsoleSetup;

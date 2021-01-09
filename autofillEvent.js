@@ -4,12 +4,12 @@ export function autofillEvent(window, changeHandler) {
   //console.log("autofillEvent ", { window, rootElement });
 
   window.handleAutoFillEvent = changeHandler;
-  window.checkAndTriggerAutoFillEvent = function(els) {
+  window.checkAndTriggerAutoFillEvent = function (els) {
     els = this.nodeName === 'INPUT' ? [this] : els;
     let i, el;
-    for(i = 0; i < els.length; i++) {
+    for (i = 0; i < els.length; i++) {
       el = els[i];
-      if(!valueMarked(el)) {
+      if (!valueMarked(el)) {
         markValue(el);
         triggerChangeEvent(el);
       }
@@ -23,25 +23,23 @@ export function autofillEvent(window, changeHandler) {
   //Need to use blur and not change event
   //as Chrome does not fire change events in all cases an input is changed
   //(e.g. when starting to type and then finish the input by auto filling a username)
-  addGlobalEventListener('blur', target => {
+  addGlobalEventListener('blur', (target) => {
     //setTimeout needed for Chrome as it fills other
     //form fields a little later...
     window.setTimeout(() => {
       let parentForm = findParentForm(target);
-      if(!parentForm) return;
+      if (!parentForm) return;
       window.checkAndTriggerAutoFillEvent(parentForm.querySelectorAll('input'));
     }, 20);
   });
 
   function initAutoFillListeners() {
-    const inputElements = [
-      ...(document.getElementsByTagName('input') || document.querySelectorAll('input'))
-    ];
+    const inputElements = [...(document.getElementsByTagName('input') || document.querySelectorAll('input'))];
 
     //mark all values that are present when the DOM is ready.
     //We don't need to trigger a change event here,
     //as js libs start with those values already being set!
-    inputElements.forEach(el => {
+    inputElements.forEach((el) => {
       //markValue(el);
       el.checkAndTriggerAutoFillEvent = window.checkAndTriggerAutoFillEvent;
     });
@@ -56,7 +54,7 @@ export function autofillEvent(window, changeHandler) {
 
   initAutoFillListeners();
   //IE8 compatibility issue
-  if(!window.document.addEventListener) {
+  if (!window.document.addEventListener) {
     window.document.attachEvent('DOMContentLoaded', initAutoFillListeners);
   } else {
     window.document.addEventListener('DOMContentLoaded', initAutoFillListeners, false);
@@ -65,7 +63,7 @@ export function autofillEvent(window, changeHandler) {
   //----------
 
   function valueMarked(el) {
-    if(!('$$currentValue' in el)) {
+    if (!('$$currentValue' in el)) {
       //First time we see an element we take it's value attribute
       //as real value. This might have been filled in the backend,
       //...
@@ -105,7 +103,7 @@ export function autofillEvent(window, changeHandler) {
     //Use a capturing event listener so that
     //we also get the event when it's stopped!
     //Also, the blur event does not bubble.
-    if(!rootElement.addEventListener) {
+    if (!rootElement.addEventListener) {
       rootElement.attachEvent(eventName, onEvent);
     } else {
       rootElement.addEventListener(eventName, onEvent, true);
@@ -118,8 +116,8 @@ export function autofillEvent(window, changeHandler) {
   }
 
   function findParentForm(el) {
-    while(el) {
-      if(el.nodeName === 'FORM') {
+    while (el) {
+      if (el.nodeName === 'FORM') {
         return el;
       }
       el = el.parentNode;
@@ -146,7 +144,7 @@ export function autofillEvent(window, changeHandler) {
 
     //console.log("triggerChangeEvent ", { element, doc, event });
 
-    if(handler) {
+    if (handler) {
       handler(event);
     } else {
       element.dispatchEvent(event);

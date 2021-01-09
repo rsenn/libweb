@@ -38,7 +38,7 @@ export function QuickJSChildProcess(fs, std, os) {
 
   function strerr(ret) {
     const [str, err] = ret;
-    if(err) {
+    if (err) {
       errno = err;
       return null;
     }
@@ -46,7 +46,7 @@ export function QuickJSChildProcess(fs, std, os) {
   }
 
   function numerr(ret) {
-    if(ret < 0) {
+    if (ret < 0) {
       switch (ret) {
         case -127:
           ret = -2;
@@ -63,7 +63,7 @@ export function QuickJSChildProcess(fs, std, os) {
   function dopipe(obj, name) {
     let [rd, wr] = os.pipe();
 
-    if(name.endsWith('in')) {
+    if (name.endsWith('in')) {
       obj[name] = wr; //fs.fdopen(wr, 'w');
       return rd;
     } else {
@@ -76,47 +76,27 @@ export function QuickJSChildProcess(fs, std, os) {
     console.log('ChildProcess', { command, args, options });
     let { file, stdio, env, block = false, ...opts } = options;
     let obj = {};
-    if(file) opts.file = file;
-    if(stdio) {
+    if (file) opts.file = file;
+    if (stdio) {
       const [stdin, stdout, stderr] = stdio;
-      if(stdin)
-        opts.stdin =
-          stdin != 'pipe'
-            ? typeof stdin.fileno == 'function'
-              ? stdin.fileno()
-              : stdin
-            : dopipe(obj, 'stdin');
-      if(stdout)
-        opts.stdout =
-          stdout != 'pipe'
-            ? typeof stdout.fileno == 'function'
-              ? stdout.fileno()
-              : stdout
-            : dopipe(obj, 'stdout');
-      if(stderr)
-        opts.stderr =
-          stderr != 'pipe'
-            ? typeof stderr.fileno == 'function'
-              ? stderr.fileno()
-              : stderr
-            : dopipe(obj, 'stderr');
+      if (stdin) opts.stdin = stdin != 'pipe' ? (typeof stdin.fileno == 'function' ? stdin.fileno() : stdin) : dopipe(obj, 'stdin');
+      if (stdout) opts.stdout = stdout != 'pipe' ? (typeof stdout.fileno == 'function' ? stdout.fileno() : stdout) : dopipe(obj, 'stdout');
+      if (stderr) opts.stderr = stderr != 'pipe' ? (typeof stderr.fileno == 'function' ? stderr.fileno() : stderr) : dopipe(obj, 'stderr');
     }
     opts = { ...opts, block };
-    if(env) opts.env = env;
+    if (env) opts.env = env;
 
     let ret = os.exec([command, ...args], opts);
 
-    for(let channel of ['stdin', 'stdout', 'stderr'])
-      if(opts[channel] != stdio[channel] && typeof opts[channel] == 'number')
-        os.close(opts[channel]);
+    for (let channel of ['stdin', 'stdout', 'stderr']) if (opts[channel] != stdio[channel] && typeof opts[channel] == 'number') os.close(opts[channel]);
 
     let exitCode, pid;
-    if(block) {
+    if (block) {
       exitCode = numerr(-ret);
     } else {
-      if(ret >= 0) pid = ret;
+      if (ret >= 0) pid = ret;
       exitCode = numerr(ret);
-      obj.wait = function(options) {
+      obj.wait = function (options) {
         return new Promise((resolve, reject) => {
           let [ret, status] = os.waitpid(pid, options);
           let exitCode = (status & 0xff00) >> 8;
@@ -126,12 +106,12 @@ export function QuickJSChildProcess(fs, std, os) {
           else*/ resolve([exitCode, termSig]);
         });
       };
-      obj.kill = function(signum = SIGTERM) {
+      obj.kill = function (signum = SIGTERM) {
         return numerr(os.kill(this.pid, signum));
       };
     }
 
-    os.signal(17, arg => {
+    os.signal(17, (arg) => {
       let [ret, status] = os.waitpid(pid, options);
       //console.log('SIGCHLD', { pid, arg, ret, status });
       /*if(typeof obj.stdin == 'number') os.close(obj.stdin);
@@ -168,28 +148,26 @@ export function NodeJSChildProcess(fs, tty, child_process) {
     let ret;
     try {
       ret = fn();
-    } catch(error) {
+    } catch (error) {
       ret = new Number(-1);
       ret.message = error.message;
       ret.stack = error.stack;
 
-      if(error.errno != undefined) errno = error.errno;
+      if (error.errno != undefined) errno = error.errno;
     }
     return ret || 0;
   }
 
-  return function(command, args = [], options = {}) {
+  return function (command, args = [], options = {}) {
     let obj;
     let { file, stdio, ...opts } = options;
-    if(file) {
+    if (file) {
       opts.argv0 = command;
       command = file;
     }
 
-    if(stdio) {
-      opts.stdio = stdio.map(strm =>
-        typeof strm == 'object' && strm != null && typeof strm.fd == 'number' ? strm.fd : strm
-      );
+    if (stdio) {
+      opts.stdio = stdio.map((strm) => (typeof strm == 'object' && strm != null && typeof strm.fd == 'number' ? strm.fd : strm));
     }
     //  console.log('child', { command, args, opts });
     obj = child_process.spawn(command, args, opts);
@@ -198,11 +176,11 @@ export function NodeJSChildProcess(fs, tty, child_process) {
 
     // obj.stderr.on('data', data => console.log('child data', data.toString()));
 
-    obj.wait = function(options = {}) {
+    obj.wait = function (options = {}) {
       return new Promise((resolve, reject) => {
         obj.on('exit', (code, signal) => {
           // console.log('child exit', { code, signal });
-          if(code !== null) resolve(code);
+          if (code !== null) resolve(code);
           else reject(signal);
         });
       });
@@ -212,7 +190,7 @@ export function NodeJSChildProcess(fs, tty, child_process) {
 }
 
 export function BrowserChildProcess(TextDecoderStream, TransformStream, WritableStream) {
-  return function(command, args = [], options = {}) {};
+  return function (command, args = [], options = {}) {};
 }
 
 export async function CreatePortableChildProcess(ctor, ...args) {
@@ -225,10 +203,10 @@ export async function GetPortableChildProcess(set = (cp, fs, std, os) => true) {
   try {
     a = [await PortableFileSystem(), await import('std'), await import('os')];
     fs = await CreatePortableChildProcess(QuickJSChildProcess, ...a);
-  } catch(error) {
+  } catch (error) {
     err = error;
   }
-  if(fs && !err) {
+  if (fs && !err) {
     set(fs, ...a);
     return fs;
   }
@@ -236,43 +214,43 @@ export async function GetPortableChildProcess(set = (cp, fs, std, os) => true) {
   try {
     a = [await import('fs'), await import('tty'), await import('child_process')];
     fs = await CreatePortableChildProcess(NodeJSChildProcess, ...a);
-  } catch(error) {
+  } catch (error) {
     err = error;
   }
 
-  if(fs && !err) {
+  if (fs && !err) {
     set(fs, ...a);
     return fs;
   }
   err = null;
   try {
     fs = await CreatePortableChildProcess(BrowserChildProcess);
-  } catch(error) {
+  } catch (error) {
     err = error;
   }
 
-  if(fs && !err) {
+  if (fs && !err) {
     set(fs, ...a);
     return fs;
   }
 }
 
-export async function PortableChildProcess(fn = fs => true) {
-  return await Util.memoize(async function() {
+export async function PortableChildProcess(fn = (fs) => true) {
+  return await Util.memoize(async function () {
     const fs = await GetPortableChildProcess(fn);
 
     try {
       return (globalThis.childProcess = fs);
-    } catch(error) {
+    } catch (error) {
       try {
         return (global.childProcess = fs);
-      } catch(error) {
+      } catch (error) {
         try {
           return (window.childProcess = fs);
-        } catch(error) {
+        } catch (error) {
           try {
             return (window.childProcess = fs);
-          } catch(error) {}
+          } catch (error) {}
         }
       }
     }

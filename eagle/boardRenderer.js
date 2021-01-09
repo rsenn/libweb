@@ -226,7 +226,7 @@ export class BoardRenderer extends EagleSVGRenderer {
             return ret;
           })
         );
-        console.log('cmds:', cmds, lines2.connected(), opts);
+        //console.log('cmds:', cmds, lines2.connected(), opts);
 
         if(flat) cmds = cmds.flat();
 
@@ -307,7 +307,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
       let number = ValueToNumber(value.replace(re, ''));
 
-      console.log('Element.render name:', name, ' number:', number, ' value:', value);
+//      console.log('Element.render name:', name, ' number:', number, ' value:', value);
     }
     this.renderCollection(element.package.children, g, {
       name,

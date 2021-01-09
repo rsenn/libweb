@@ -35,11 +35,10 @@ class Node {
     str += node.type;
     str += `${indent}{\n`;
 
-    for(let prop in node) {
-      if(prop == 'type') continue;
+    for (let prop in node) {
+      if (prop == 'type') continue;
       let value = node[prop];
-      if(value instanceof Array || (value && value.map !== undefined))
-        value = value.map(v => `${indent}  ${v.toString ? v.toString() : v}`).join('\n');
+      if (value instanceof Array || (value && value.map !== undefined)) value = value.map((v) => `${indent}  ${v.toString ? v.toString() : v}`).join('\n');
       else value = node[prop] && node[prop].toString ? node[prop].toString() : node[prop];
       str += indent + `  ${prop}:${value}\n`;
     }
@@ -55,9 +54,9 @@ class Node {
 
 class AST {
   constructor(visitor) {
-    this.visitor = node => {
+    this.visitor = (node) => {
       node = new Node(node);
-      if(visitor) {
+      if (visitor) {
         visitor(node);
       }
       return node;
@@ -158,8 +157,8 @@ class Env {
 
   lookup(name) {
     let scope = this;
-    while(scope) {
-      if(scope.vars.hasOwnProperty(name)) {
+    while (scope) {
+      if (scope.vars.hasOwnProperty(name)) {
         return scope;
       }
       scope = scope.parent;
@@ -169,7 +168,7 @@ class Env {
 
   get(name) {
     let scope = this.lookup(name);
-    if(scope) {
+    if (scope) {
       return scope.vars[name];
     }
 
@@ -178,7 +177,7 @@ class Env {
 
   set(name, value) {
     let scope = this.lookup(name);
-    if(!scope) {
+    if (!scope) {
       throw new Error(`Undefined variable ${name}`);
     }
 
@@ -271,7 +270,7 @@ ${js(body)}
 
     function js_call_expression(node) {
       const callee = js(node.callee);
-      const params = node.params.map(param => js(param)).join(', ');
+      const params = node.params.map((param) => js(param)).join(', ');
       return `${callee}(${params})`;
     }
 
@@ -287,7 +286,8 @@ ${js(body)}
       switch (value) {
         case '#-':
           return '-';
-        default: return value;
+        default:
+          return value;
       }
     }
 
@@ -301,11 +301,7 @@ ${js(body)}
 
     function js_table_expression(node) {
       let list = 0;
-      const fields = node.fields
-        .map(({ type, key, value }) =>
-          type == 'Recfield' ? `"${js(key)}": ${js(value)}` : `"${list++}": ${js(value)}`
-        )
-        .join(', ');
+      const fields = node.fields.map(({ type, key, value }) => (type == 'Recfield' ? `"${js(key)}": ${js(value)}` : `"${list++}": ${js(value)}`)).join(', ');
       return `{${fields}}`;
     }
 
@@ -318,14 +314,11 @@ ${js(body)}
     }
 
     function js_assign_expression(node) {
-      return node.left
-        .map((variable, i) => `${js(variable)}${node.op}${js(node.right[i])}`)
-        .join('\n');
+      return node.left.map((variable, i) => `${js(variable)}${node.op}${js(node.right[i])}`).join('\n');
     }
 
     function js_fornum_statement(node) {
-      return `for ${js(node.id)} = ${js(node.begin)}, ${js(node.end)}; ${js(node.id)} += ${js(node.step
-      )}) {
+      return `for ${js(node.id)} = ${js(node.begin)}, ${js(node.end)}; ${js(node.id)} += ${js(node.step)}) {
                 ${js(node.body)}
             }
 `;
@@ -362,7 +355,7 @@ for(;;) {
     }
 
     function js_function_declaration(node) {
-      const params = node.params.map(param => js(param)).join(', ');
+      const params = node.params.map((param) => js(param)).join(', ');
 
       return `function ${js(node.id)}(${params}) {
                 ${js(node.body)}
@@ -370,20 +363,21 @@ for(;;) {
     }
 
     function js_return_statement(node) {
-      const params = node.params.map(param => js(param)).join(', ');
+      const params = node.params.map((param) => js(param)).join(', ');
       return `return ${params}`;
     }
 
     function js_if_statement(node) {
       const elseif = node.elseif
-        .map(({ cond, body }) => `else if(${js(cond)}) {
+        .map(
+          ({ cond, body }) => `else if(${js(cond)}) {
                 ${js(body)}
             }`
         )
         .join('\n');
 
       let other = '';
-      if(node.else) {
+      if (node.else) {
         other = `else {
                     ${js(node.else)}
                 }`;
@@ -443,7 +437,8 @@ ${other}`;
           return js_function_declaration(node);
         case 'ReturnStatement':
           return js_return_statement(node);
-        default: throw new Error(`Dunno how to generate for ${Util.inspect(node, { newline: ' ' })}`);
+        default:
+          throw new Error(`Dunno how to generate for ${Util.inspect(node, { newline: ' ' })}`);
       }
     }
   }
@@ -455,17 +450,17 @@ class MoonScriptGenerator {
   indent = "";*/
 
   constructor(ast, multiline = true, indent = '') {
-    if(ast !== undefined) {
+    if (ast !== undefined) {
       this.ast = ast;
-      if(multiline !== undefined) this.multiline = multiline;
-      if(indent !== undefined) this.indent = indent;
+      if (multiline !== undefined) this.multiline = multiline;
+      if (indent !== undefined) this.indent = indent;
     }
     this.stack = [];
   }
 
   clone(multiline, ast) {
-    if(multiline === undefined) multiline = this.multiline;
-    if(ast === undefined) ast = this.ast;
+    if (multiline === undefined) multiline = this.multiline;
+    if (ast === undefined) ast = this.ast;
     return new MoonScriptGenerator(ast, multiline, this.indent);
   }
 
@@ -479,24 +474,23 @@ class MoonScriptGenerator {
   }
 
   str(node) {
-    if(node === undefined) node = this.ast;
+    if (node === undefined) node = this.ast;
     return this.to_moonscript(node);
   }
 
   subtree(node, multiline = false) {
-    const subtree =
-      node && node.length !== undefined ? new Node({ type: 'Chunk', body: node }) : node; //new Node({ type: 'Program', body: node });
+    const subtree = node && node.length !== undefined ? new Node({ type: 'Chunk', body: node }) : node; //new Node({ type: 'Program', body: node });
     const gen = MoonScriptGenerator.create(subtree, multiline);
     return gen.to_moonscript(node);
   }
 
   to_moonscript(tree) {
-    if(tree === undefined) tree = this.ast;
+    if (tree === undefined) tree = this.ast;
     return MoonScriptGenerator.to_moonscript(tree, this);
   }
 
   static to_moonscript(tree, generator) {
-    if(generator === undefined) generator = new MoonScriptGenerator();
+    if (generator === undefined) generator = new MoonScriptGenerator();
 
     return moonscript(tree);
 
@@ -545,14 +539,11 @@ class MoonScriptGenerator {
 
     function moonscript_call_expression(node) {
       let paren = false;
-      if(generator.stack[1].type == 'MemberExpression') paren = true;
+      if (generator.stack[1].type == 'MemberExpression') paren = true;
 
       ////console.error('node: ', generator.stack[1].type);
       const callee = moonscript(node.callee);
-      const params =
-        node.params && node.params.map
-          ? node.params.map(param => moonscript(param)).join(', ')
-          : '';
+      const params = node.params && node.params.map ? node.params.map((param) => moonscript(param)).join(', ') : '';
       return paren ? `${callee}(${params})` : `${callee} ${params}`;
     }
 
@@ -571,7 +562,8 @@ class MoonScriptGenerator {
           return '-';
         case '!':
           return 'not';
-        default: return value;
+        default:
+          return value;
       }
     }
 
@@ -589,18 +581,14 @@ class MoonScriptGenerator {
       const indent = `${generator.indent}  `;
       //console.error('TYPES: ', types);
 
-      const fields = node.fields.map(field => {
+      const fields = node.fields.map((field) => {
         let key = generator.subtree(field.key, false);
         let num = parseInt(key);
-        if(!isNaN(num)) key = num;
-        if(field.type == 'Recfield')
-          return (`['${key}']: ` +
-            generator.subtree(field.value, false, `${indent}  `).replace(/\n/g, `\n${indent}`)
-          );
+        if (!isNaN(num)) key = num;
+        if (field.type == 'Recfield') return `['${key}']: ` + generator.subtree(field.value, false, `${indent}  `).replace(/\n/g, `\n${indent}`);
         return generator.str(field.value, node.multiline, indent);
       });
-      return `{${generator.multiline ? '\n' + indent : ' '}${fields.join(generator.multiline ? '\n' + indent : ', '
-      )}${generator.multiline ? '\n' + generator.indent : ' '}}`;
+      return `{${generator.multiline ? '\n' + indent : ' '}${fields.join(generator.multiline ? '\n' + indent : ', ')}${generator.multiline ? '\n' + generator.indent : ' '}}`;
     }
 
     function moonscript_member_expression({ object, property }) {
@@ -614,17 +602,13 @@ class MoonScriptGenerator {
     function moonscript_assign_expression(node) {
       console.error('ASSIGN_EXPRESSION ', node);
 
-      if(node.left && node.left.length >= 2)
-        return `${moonscript(node.left)} = ${moonscript(node.right)}`;
+      if (node.left && node.left.length >= 2) return `${moonscript(node.left)} = ${moonscript(node.right)}`;
 
       return node.left
         .map((variable, i) => {
           let r = node.right[i];
           console.error(`variable.name=${variable.name}, r=`, r);
-          if(r.left &&
-            variable.name == r.left.name &&
-            ['*', '%', '/', '+', '-'].indexOf(r.op) != -1
-          ) {
+          if (r.left && variable.name == r.left.name && ['*', '%', '/', '+', '-'].indexOf(r.op) != -1) {
             return `${moonscript(variable)} ${r.op}${node.op} ${moonscript(node.right[i].right)}`;
           }
 
@@ -634,8 +618,7 @@ class MoonScriptGenerator {
     }
 
     function moonscript_fornum_statement(node) {
-      return `for ${moonscript(node.id)} = ${moonscript(node.begin)}, ${moonscript(node.end
-      )}, ${moonscript(node.step)}
+      return `for ${moonscript(node.id)} = ${moonscript(node.begin)}, ${moonscript(node.end)}, ${moonscript(node.step)}
   ${moonscript_body(node.body)}`;
     }
 
@@ -657,7 +640,7 @@ until ${moonscript(cond)}`;
     }
 
     function moonscript_function_declaration(node) {
-      const params = node.params.map(param => moonscript(param)).join(', ');
+      const params = node.params.map((param) => moonscript(param)).join(', ');
       const name = moonscript(node.id);
       const assignment = name == '' ? '' : `${name} = `;
 
@@ -667,7 +650,7 @@ until ${moonscript(cond)}`;
     }
 
     function moonscript_return_statement(node) {
-      const params = node.params.map(param => moonscript(param)).join(', ');
+      const params = node.params.map((param) => moonscript(param)).join(', ');
       return `return ${params}`;
     }
     function moonscript_comment(node) {
@@ -677,7 +660,8 @@ until ${moonscript(cond)}`;
 
     function moonscript_if_statement(node) {
       const elseif = node.elseif
-        .map(({ cond, body }) => `elseif ${moonscript(cond)}
+        .map(
+          ({ cond, body }) => `elseif ${moonscript(cond)}
   ${moonscript_body(body)}`
         )
         .join('\n');
@@ -685,7 +669,7 @@ until ${moonscript(cond)}`;
       let other = '';
       let thenBody = moonscript_body(node.body);
       let elseBody = node.else ? moonscript_body(node.else) : '';
-      if(elseBody != '') {
+      if (elseBody != '') {
         other = `else
   ${moonscript_body(node.else)}`;
       }
@@ -699,14 +683,13 @@ ${other}`;
 
     function moonscript(node) {
       let ret = '';
-      if(node === undefined) return '';
+      if (node === undefined) return '';
 
       generator.stack.unshift(node);
 
-      if(node.length !== undefined && node.type === undefined && node.map)
-        return node.map(moonscript);
+      if (node.length !== undefined && node.type === undefined && node.map) return node.map(moonscript);
 
-      if(node.type == undefined) {
+      if (node.type == undefined) {
         console.error('node = ', node);
         //throw { message: "node.type == undefined",  node };
         return '';
@@ -785,7 +768,8 @@ ${other}`;
         case 'Undefined':
           ret = '';
           break;
-        default: throw { message: `Dunno how to generate for ${node.type}` }; //Util.inspect(node, { newline: ' ' }));
+        default:
+          throw { message: `Dunno how to generate for ${node.type}` }; //Util.inspect(node, { newline: ' ' }));
           break;
       }
       //ret = typeof(ret) == 'string' ? ret.trim() : ret;
@@ -922,7 +906,7 @@ class Lexer {
   }
 
   lookahead(n, eat = false) {
-    if(eat) {
+    if (eat) {
       this.eat(n);
       return this.source[this.pos];
     }
@@ -932,7 +916,7 @@ class Lexer {
 
   eat(n = 1) {
     const newpos = this.pos + n;
-    while(this.pos < newpos) {
+    while (this.pos < newpos) {
       /*    if(this.source[this.pos] == '\n') {
         this.line++;
         this.column = 0;
@@ -958,13 +942,13 @@ class Lexer {
     let peek;
 
     peek = this.lookahead(0);
-    if(!is_digit(peek)) {
+    if (!is_digit(peek)) {
       return this.croak('not digit');
     }
 
     let sum = 0;
-    for(;;) {
-      if(is_digit(peek)) {
+    for (;;) {
+      if (is_digit(peek)) {
         sum = sum * 10 + parseInt(peek, 10);
       } else {
         return sum;
@@ -976,54 +960,54 @@ class Lexer {
 
   scan_longstring() {
     let comment = [];
-    if(this.lookahead(0) != '[') {
+    if (this.lookahead(0) != '[') {
       this.croak('not [');
     }
     let peek = this.lookahead(1, true);
     let term = 0;
-    if(peek == '=') {
+    if (peek == '=') {
       term++;
-      for(;;) {
+      for (;;) {
         peek = this.lookahead(1, true);
-        if(peek == '=') {
+        if (peek == '=') {
           term++;
           continue;
-        } else if((peek = '[')) {
+        } else if ((peek = '[')) {
           break;
         } else {
           return this.croak();
         }
       }
-    } else if(peek != '[') {
+    } else if (peek != '[') {
       return this.croak();
     }
-    for(;;) {
+    for (;;) {
       peek = this.lookahead(1, true);
 
       /*
        * try to find ]=*]
        */
-      if(peek == ']') {
+      if (peek == ']') {
         let i;
         this.eat(1);
-        for(i = 0; i < term; i++) {
+        for (i = 0; i < term; i++) {
           peek = this.lookahead(i);
-          if(peek == '=') {
+          if (peek == '=') {
             continue;
-          } else if(peek == undefined) {
+          } else if (peek == undefined) {
             return this.croak(peek);
           }
         }
-        if(i == term) {
+        if (i == term) {
           peek = this.lookahead(term);
-          if(peek == ']') {
+          if (peek == ']') {
             this.lookahead(2 + term, true);
             return comment.join('');
-          } else if(peek == undefined) {
+          } else if (peek == undefined) {
             return this.croak(peek);
           }
         }
-      } else if(peek == undefined) {
+      } else if (peek == undefined) {
         return this.croak(peek);
       }
       comment.push(peek);
@@ -1033,7 +1017,7 @@ class Lexer {
   scan() {
     let identifier, base, string, comment, baes, c, peek, peekpeek;
 
-    for(;;) {
+    for (;;) {
       c = this.lookahead(0);
       peek = this.lookahead(1);
       peekpeek = this.lookahead(2);
@@ -1061,13 +1045,13 @@ class Lexer {
         case '+':
           return this.token(1, Token.PLUS, '+');
         case '-':
-          if(peek == '-') {
-            if(peekpeek != '[') {
+          if (peek == '-') {
+            if (peekpeek != '[') {
               peek = this.lookahead(1, true);
               comment = [];
-              for(;;) {
+              for (;;) {
                 peek = this.lookahead(1, true);
-                if(peek == '\n' /*|| peek == undefined*/) {
+                if (peek == '\n' /*|| peek == undefined*/) {
                   return this.token(0, Token.COMMENT, comment.join(''));
                 }
                 comment.push(peek);
@@ -1096,7 +1080,7 @@ class Lexer {
         case ')':
           return this.token(1, Token.RPAREN, ')');
         case '[':
-          if(peek == '[' || peek == '=') {
+          if (peek == '[' || peek == '=') {
             string = this.scan_longstring();
             return this.token(0, Token.STRING, string);
           }
@@ -1109,22 +1093,22 @@ class Lexer {
         case '}':
           return this.token(1, Token.RBRACE, '}');
         case '=':
-          if(peek == '=') return this.token(2, Token.EQ, '==');
+          if (peek == '=') return this.token(2, Token.EQ, '==');
 
           return this.token(1, Token.ASSIGN, '=');
 
         case '>':
-          if(peek == '=') return this.token(2, Token.GE, '>=');
+          if (peek == '=') return this.token(2, Token.GE, '>=');
 
           return this.token(1, Token.GT, '>');
 
         case '<':
-          if(peek == '=') return this.token(2, Token.LE, '<=');
+          if (peek == '=') return this.token(2, Token.LE, '<=');
 
           return this.token(1, Token.LT, '<');
 
         case '~':
-          if(peek == '=') return this.token(2, Token.NE, '~=');
+          if (peek == '=') return this.token(2, Token.NE, '~=');
 
           return this.croak();
 
@@ -1132,8 +1116,8 @@ class Lexer {
           return this.token(1, Token.COLON, ':');
 
         case '.':
-          if(peek == '.') {
-            if(peekpeek == '.') return this.token(3, Token.ELLIPSES, '...');
+          if (peek == '.') {
+            if (peekpeek == '.') return this.token(3, Token.ELLIPSES, '...');
             return this.token(2, Token.CONCAT, '..');
           }
 
@@ -1141,11 +1125,11 @@ class Lexer {
 
         case "'":
           string = [];
-          for(;;) {
+          for (;;) {
             peek = this.lookahead(1, true);
-            if(peek == c) {
+            if (peek == c) {
               return this.token(1, Token.STRING, string.join(''));
-            } else if(peek == undefined) {
+            } else if (peek == undefined) {
               return this.croak();
             }
             string.push(peek);
@@ -1158,39 +1142,40 @@ class Lexer {
         case "'":
           this.quote = c;
           string = [];
-          for(;;) {
+          for (;;) {
             peek = this.lookahead(1, true);
-            if(peek == c) {
+            if (peek == c) {
               return this.token(1, Token.STRING, string.join(''));
-            } else if(peek == undefined) {
+            } else if (peek == undefined) {
               return this.croak();
             }
             string.push(peek);
           }
 
-        default: if (this.is_digit(c)) {
+        default:
+          if (this.is_digit(c)) {
             let num = 0;
-            if(peek == 'x' || peek == 'X') {
+            if (peek == 'x' || peek == 'X') {
               this.eat(1);
               peek = this.lookahead(1);
-              if(!this.is_hex(peek)) return this.croak();
-              for(;;) {
+              if (!this.is_hex(peek)) return this.croak();
+              for (;;) {
                 peek = this.lookahead(1, true);
-                if(this.is_hex(peek)) num = 16 * num + parseInt(peek, 16);
+                if (this.is_hex(peek)) num = 16 * num + parseInt(peek, 16);
                 else return this.token(0, Token.NUMBER, num);
               }
             }
-            for(peek = c; ; ) {
+            for (peek = c; ; ) {
               num = 10 * num + parseInt(peek, 10);
               peek = this.lookahead(1, true);
-              if(this.is_digit(peek)) continue;
+              if (this.is_digit(peek)) continue;
               else break;
             }
-            if(peek == '.') {
+            if (peek == '.') {
               base = 1;
-              for(;;) {
+              for (;;) {
                 peek = this.lookahead(1, true);
-                if(this.is_digit(peek)) {
+                if (this.is_digit(peek)) {
                   base = base * 0.1;
                   num = base * parseInt(peek, 10) + num;
                 } else {
@@ -1198,12 +1183,12 @@ class Lexer {
                 }
               }
             }
-            if(peek == 'E' || peek == 'e') {
+            if (peek == 'E' || peek == 'e') {
               peek = this.lookahead(1, true);
-              if(peek == '-') {
+              if (peek == '-') {
                 this.eat(1);
                 base = -1;
-              } else if(peek == '+') {
+              } else if (peek == '+') {
                 this.eat(1);
                 base = +1;
               } else {
@@ -1214,15 +1199,15 @@ class Lexer {
             }
             return this.token(0, Token.NUMBER, num);
           }
-          if(this.is_letter(c) || c == '_') {
+          if (this.is_letter(c) || c == '_') {
             identifier = [c];
-            for(;;) {
+            for (;;) {
               peek = this.lookahead(1, true);
-              if(!this.is_digit_or_letter(peek) && peek != '_') {
+              if (!this.is_digit_or_letter(peek) && peek != '_') {
                 identifier = identifier.join('');
-                if(this.keywords[identifier]) return this.token(0, Token.KEYWORD, identifier);
+                if (this.keywords[identifier]) return this.token(0, Token.KEYWORD, identifier);
                 return this.token(0, Token.IDENTIFIER, identifier);
-              } else if(peek == undefined) {
+              } else if (peek == undefined) {
                 return this.croak();
               }
               identifier.push(peek);
@@ -1239,8 +1224,8 @@ class Parser {
     this.depth = 0;
     this.lexer = lexer;
     this.cur_token = null;
-    this.ast = new AST(node => {
-      if(visitor) {
+    this.ast = new AST((node) => {
+      if (visitor) {
         visitor(node);
       }
       return node;
@@ -1248,16 +1233,16 @@ class Parser {
     this.location = [];
     let parser = this;
 
-    for(let name of Util.getMethodNames(this)) {
-      if(name.startsWith('parse_')) {
+    for (let name of Util.getMethodNames(this)) {
+      if (name.startsWith('parse_')) {
         let fn = this[name];
-        parser[name] = function() {
+        parser[name] = function () {
           const args = [...arguments];
           this.depth += 1;
           let indent = '  '.repeat(this.depth);
           this.log('position: ', this.cur_token.position, ' args: ', args);
           let ret = fn.apply(this, args);
-          if(ret && ret !== null) {
+          if (ret && ret !== null) {
             this.log('ret: ', ret.toString ? ret.toString().replace(/\n/g, `\n${indent}`) : ret);
             this.node = ret;
           }
@@ -1275,13 +1260,8 @@ class Parser {
     let args = [...arguments];
     let stack = Util.getCallers(0, 10);
 
-    stack = stack.filter(({ typeName, methodName, functionName }) =>
-        (typeName == 'Parser' || (methodName || functionName || '').indexOf('parse') != -1) &&
-        methodName != 'log'
-    );
-    const names = stack
-      .filter(({ functionName }) => !functionName.startsWith('Parser.'))
-      .map(({ functionName }) => functionName);
+    stack = stack.filter(({ typeName, methodName, functionName }) => (typeName == 'Parser' || (methodName || functionName || '').indexOf('parse') != -1) && methodName != 'log');
+    const names = stack.filter(({ functionName }) => !functionName.startsWith('Parser.')).map(({ functionName }) => functionName);
 
     stack = stack.map(({ methodName, functionName, position }) => ({
       method: methodName || functionName,
@@ -1320,41 +1300,39 @@ class Parser {
       const names = caller.map(c => c.methodName);
 */
       ////console.error("cur_token: ", this.cur_token.toString(), "xy:", this.xy, "callers["+names.length+"]:", names.join(','));
-    } while(0); //this.cur_token.type == 'COMMENT');
+    } while (0); //this.cur_token.type == 'COMMENT');
 
     return token;
   }
 
   match(t, v) {
-    if(t) {
-      if(v) {
-        if(this.cur_token.type == t && this.cur_token.val == v) {
+    if (t) {
+      if (v) {
+        if (this.cur_token.type == t && this.cur_token.val == v) {
           let cur_token = this.cur_token;
           this.next();
           return cur_token;
         }
       }
-      if(this.cur_token.type == t) {
+      if (this.cur_token.type == t) {
         let cur_token = this.cur_token;
         this.next();
         return cur_token;
       }
     }
-    this.yield_error(`match(${t}, ${v || this.cur_token.value}) ${this.cur_token.toString()}`,
-      this.cur_token
-    );
+    this.yield_error(`match(${t}, ${v || this.cur_token.value}) ${this.cur_token.toString()}`, this.cur_token);
   }
 
   consume(t, v) {
-    if(t) {
-      if(v) {
-        if(this.cur_token.type == t && this.cur_token.value == v) {
+    if (t) {
+      if (v) {
+        if (this.cur_token.type == t && this.cur_token.value == v) {
           let cur_token = this.cur_token;
           this.next();
           return cur_token;
         }
       }
-      if(this.cur_token.type == t) {
+      if (this.cur_token.type == t) {
         let cur_token = this.cur_token;
         this.next();
         return cur_token;
@@ -1375,7 +1353,7 @@ class Parser {
       this.next();
       this.anchor();
       return this.ast.program(this.parse_chunk());
-    } catch(err) {
+    } catch (err) {
       err.token = this.cur_token;
       console.error('ERROR:', err);
       Util.log('ERROR:', err);
@@ -1387,14 +1365,14 @@ class Parser {
     //console.error('parse_chunk');
     /* chunk       ::=   {<stat> [`;`]} */
     let stats = [];
-    while(!this.is_block_follow()) {
-      if(this.cur_token.value == 'return') {
+    while (!this.is_block_follow()) {
+      if (this.cur_token.value == 'return') {
         stats.push(this.parse_stat());
         this.consume(Token.SEMICOLON);
         break;
       }
 
-      if(this.cur_token.type == 'COMMENT') {
+      if (this.cur_token.type == 'COMMENT') {
         stats.push(this.ast.comment(this.cur_token.value));
         this.next();
         continue;
@@ -1444,7 +1422,8 @@ class Parser {
         return this.parse_while_stat();
       case 'repeat':
         return this.parse_repeat_stat();
-      default: return this.parse_expr_stat();
+      default:
+        return this.parse_expr_stat();
     }
   }
 
@@ -1481,7 +1460,7 @@ class Parser {
     this.match(Token.KEYWORD, 'function');
 
     console.error('parse_func_stat ', this.cur_token);
-    if(this.cur_token.type == 'LPAREN') id = '';
+    if (this.cur_token.type == 'LPAREN') id = '';
     else id = this.parse_funcname();
 
     this.match(Token.LPAREN);
@@ -1498,10 +1477,10 @@ class Parser {
 
     let parlist = [];
 
-    if(this.is_param()) {
+    if (this.is_param()) {
       parlist.push(this.parse_param());
 
-      while(this.cur_token.value == ',') {
+      while (this.cur_token.value == ',') {
         this.next();
         parlist.push(this.parse_param());
       }
@@ -1520,14 +1499,14 @@ class Parser {
 
     let funcname = this.parse_name();
 
-    if(members) {
-      while(this.cur_token.value == '.') {
+    if (members) {
+      while (this.cur_token.value == '.') {
         this.next();
         funcname = this.ast.member_expr(funcname, '.', this.parse_name());
       }
     }
 
-    if(this.cur_token.value == ':') {
+    if (this.cur_token.value == ':') {
       this.next();
       funcname = this.ast.member_expr(funcname, ':', this.parse_name());
     }
@@ -1542,11 +1521,11 @@ class Parser {
 
     this.match(Token.KEYWORD, 'local');
 
-    if(this.cur_token.value == 'function') {
+    if (this.cur_token.value == 'function') {
       this.next();
 
       let id = '';
-      if(this.cur_token.type != 'LPAREN') id = this.parse_name();
+      if (this.cur_token.type != 'LPAREN') id = this.parse_name();
       this.match(Token.LPAREN);
       let params = this.parse_parlist();
       this.match(Token.RPAREN);
@@ -1559,12 +1538,12 @@ class Parser {
     let init = [];
     variables.push(this.parse_name());
 
-    while(this.cur_token.value == ',') {
+    while (this.cur_token.value == ',') {
       this.next();
       variables.push(this.parse_name());
     }
 
-    if(this.cur_token.value == '=') {
+    if (this.cur_token.value == '=') {
       this.next();
       init = this.parse_explist1();
     }
@@ -1585,7 +1564,7 @@ class Parser {
     let elseif = [];
     let _else = null;
 
-    while(this.cur_token.value == 'elseif') {
+    while (this.cur_token.value == 'elseif') {
       this.next();
       let elsecond = this.parse_cond();
       this.match(Token.KEYWORD, 'then');
@@ -1594,7 +1573,7 @@ class Parser {
       elseif.push(this.ast.if_stat(elsecond, elseblock, []));
     }
 
-    if(this.cur_token.value == 'else') {
+    if (this.cur_token.value == 'else') {
       this.next();
       _else = this.parse_block();
     }
@@ -1622,13 +1601,13 @@ class Parser {
     this.match(Token.KEYWORD, 'for');
 
     let name = this.parse_name();
-    if(this.cur_token.value == '=') {
+    if (this.cur_token.value == '=') {
       this.next();
       let begin = this.parse_exp1();
       this.match(Token.COMMA, ',');
       let end = this.parse_exp1();
       let step = this.ast.literal(1);
-      if(this.cur_token.value == ',') {
+      if (this.cur_token.value == ',') {
         this.next();
         step = this.parse_exp1();
       }
@@ -1638,7 +1617,7 @@ class Parser {
       return this.ast.fornum_stat(name, begin, end, step, body);
     }
     let left = [name];
-    while(this.cur_token.value == ',') {
+    while (this.cur_token.value == ',') {
       this.next();
       left.push(this.parse_name());
     }
@@ -1698,7 +1677,7 @@ class Parser {
 
     //console.error('EXPR_STAT ', this.cur_token);
 
-    if(primaryexp.type == 'CallExpression') {
+    if (primaryexp.type == 'CallExpression') {
       return this.ast.expr_stat(primaryexp);
     }
     let assignment = this.parse_assignment([primaryexp]);
@@ -1706,15 +1685,15 @@ class Parser {
   }
 
   parse_assignment(primaryexp) {
-    if(this.cur_token.value == ',') {
-      if(!(primaryexp instanceof Array)) primaryexp = [primaryexp];
+    if (this.cur_token.value == ',') {
+      if (!(primaryexp instanceof Array)) primaryexp = [primaryexp];
 
       do {
         this.match(Token.COMMA);
 
         const node = this.parse_primaryexp();
         primaryexp.push(node);
-      } while(this.cur_token.value == ',');
+      } while (this.cur_token.value == ',');
     }
 
     /*
@@ -1722,7 +1701,7 @@ class Parser {
                           | '=' <explist1>
          */
 
-    if(this.cur_token.value == '=') {
+    if (this.cur_token.value == '=') {
       this.next();
       let right = this.parse_explist1();
       return this.ast.assign_expr('=', primaryexp, right);
@@ -1739,7 +1718,7 @@ class Parser {
 
     let exps = [this.parse_expr()];
 
-    while(this.cur_token.value == ',') {
+    while (this.cur_token.value == ',') {
       this.next();
       exps.push(this.parse_expr());
     }
@@ -1766,7 +1745,7 @@ class Parser {
 
     let expr;
 
-    if(this.is_unary()) {
+    if (this.is_unary()) {
       let unary = this.parse_unary();
       let argument = this.parse_subexpr();
       expr = this.ast.unary_expr(unary, argument);
@@ -1774,12 +1753,12 @@ class Parser {
       expr = this.parse_simpleexp();
     }
 
-    while(this.is_binary() && Parser.OP[this.cur_token.value].prec >= min_prec) {
+    while (this.is_binary() && Parser.OP[this.cur_token.value].prec >= min_prec) {
       let token = this.next();
       let op = Parser.OP[token.value];
       let next_prec;
 
-      if(op.left) {
+      if (op.left) {
         next_prec = op.prec + 1;
       } else {
         next_prec = op.prec;
@@ -1805,17 +1784,17 @@ class Parser {
                           | <primaryexp>
          */
 
-    if(this.cur_token.type == Token.COMMENT) {
+    if (this.cur_token.type == Token.COMMENT) {
       let text = this.cur_token.value;
       this.next();
       return this.ast.comment(text);
     }
-    if(this.cur_token.type == Token.NUMBER || this.cur_token.type == Token.STRING) {
+    if (this.cur_token.type == Token.NUMBER || this.cur_token.type == Token.STRING) {
       //console.error("this.cur_token: ", this.lexer.quote, this.cur_token);
       let q = this.lexer.quote;
       let cur_token = this.next();
       return this.ast.literal(cur_token.value, false, q);
-    } else if(this.cur_token.type == Token.KEYWORD) {
+    } else if (this.cur_token.type == Token.KEYWORD) {
       switch (this.cur_token.value) {
         case 'nil':
           this.next();
@@ -1843,9 +1822,10 @@ class Parser {
 
         case 'local':
           return this.parse_local_stat();
-        default: this.yield_error(`parse_simpleexp ${this.cur_token.value}`);
+        default:
+          this.yield_error(`parse_simpleexp ${this.cur_token.value}`);
       }
-    } else if(this.cur_token.value == '{') {
+    } else if (this.cur_token.value == '{') {
       return this.parse_constructor();
     } else {
       return this.parse_primaryexp();
@@ -1857,14 +1837,14 @@ class Parser {
             primaryexp  ::= <prefixexp> {'.' <NAME> | '[' <expr> ']'  | ':' <NAME> <funcargs> | <funcargs> }
          */
 
-    if(this.cur_token.line >= 138) {
+    if (this.cur_token.line >= 138) {
       //console.error('\nTOKEN: ', this.cur_token, '\n');
     }
 
     let node = this.parse_prefixexp(true);
     let property;
 
-    while(true) {
+    while (true) {
       switch (this.cur_token.value) {
         case '.':
           this.next();
@@ -1874,7 +1854,7 @@ class Parser {
         case '[':
           this.next();
 
-          if(this.cur_token.line >= 138) {
+          if (this.cur_token.line >= 138) {
             //console.error('\nTOKEN: ', this.cur_token, '\n');
             //console.error('\nNODE: ', node.toString(), '\n');
           }
@@ -1891,16 +1871,14 @@ class Parser {
           let params = this.parse_funcargs();
           node = this.ast.call_expr(node, params);
           break;
-        default: break;
+        default:
+          break;
       }
 
-      if(this.cur_token.value == '.') continue;
-      if(this.cur_token.value == '[') continue;
+      if (this.cur_token.value == '.') continue;
+      if (this.cur_token.value == '[') continue;
 
-      if(this.cur_token.value == '(' ||
-        this.cur_token.value == '{' ||
-        this.cur_token.type == Token.STRING
-      ) {
+      if (this.cur_token.value == '(' || this.cur_token.value == '{' || this.cur_token.type == Token.STRING) {
         let params = this.parse_funcargs();
         node = this.ast.call_expr(node, params);
         continue;
@@ -1919,15 +1897,15 @@ class Parser {
 
     let params = [];
 
-    if(this.cur_token.value == '(') {
+    if (this.cur_token.value == '(') {
       this.next();
-      if(this.cur_token.value != ')') {
+      if (this.cur_token.value != ')') {
         params = this.parse_explist1();
       }
       this.match(Token.RPAREN);
 
       return params;
-    } else if(this.cur_token.type == Token.STRING) {
+    } else if (this.cur_token.type == Token.STRING) {
       return this.ast.literal(this.cur_token.value);
     }
     return this.parse_constructor();
@@ -1943,12 +1921,12 @@ class Parser {
 
     this.match(Token.LBRACE);
 
-    while(true) {
+    while (true) {
       let node;
 
-      while(this.cur_token.type == 'COMMENT') this.next();
+      while (this.cur_token.type == 'COMMENT') this.next();
 
-      if(this.cur_token.type == 'RIGHT BRACE') break;
+      if (this.cur_token.type == 'RIGHT BRACE') break;
 
       lines.push(this.cur_token.line);
 
@@ -1956,7 +1934,7 @@ class Parser {
 
       fields.push(node);
 
-      if(this.is_fieldsep()) this.parse_fieldsep();
+      if (this.is_fieldsep()) this.parse_fieldsep();
     }
 
     this.match(Token.RBRACE);
@@ -1973,7 +1951,7 @@ class Parser {
                           | ';'
          */
 
-    if(this.cur_token.value == ',' || this.cur_token.value == ';') {
+    if (this.cur_token.value == ',' || this.cur_token.value == ';') {
       let cur_token = this.next();
       return this.ast.literal(cur_token.value);
     }
@@ -1989,7 +1967,7 @@ class Parser {
                           | <listfield>
          */
 
-    if(this.cur_token.value == '[' /* || this.cur_token.type == Token.IDENTIFIER*/) {
+    if (this.cur_token.value == '[' /* || this.cur_token.type == Token.IDENTIFIER*/) {
       return this.parse_recfield();
     }
     return this.parse_listfield();
@@ -2002,7 +1980,7 @@ class Parser {
 
     let key, value;
 
-    if(this.cur_token.value == '[') {
+    if (this.cur_token.value == '[') {
       this.next();
       key = this.parse_exp1();
       this.match(Token.RBRACKET);
@@ -2034,7 +2012,7 @@ class Parser {
 
     console.error('EXPR: ', node);
 
-    if(this.cur_token.type == 'ASSIGN') {
+    if (this.cur_token.type == 'ASSIGN') {
       this.next();
       console.error('TOKEN2: ', this.cur_token);
       index = node;
@@ -2052,7 +2030,7 @@ class Parser {
                      | '(' <expr> ')'
      */
 
-    if(this.cur_token.value == '(') {
+    if (this.cur_token.value == '(') {
       this.match(Token.LPAREN);
       let expr = this.parse_expr();
       this.match(Token.RPAREN);
@@ -2081,16 +2059,17 @@ class Parser {
     switch (token.value) {
       case '-':
         return '#-';
-      default: return token.value;
+      default:
+        return token.value;
     }
   }
 
   parse_name() {
-    if(this.cur_token.line >= 138) {
+    if (this.cur_token.line >= 138) {
       //console.error('\nTOKEN: ', this.cur_token, '\n');
     }
 
-    if(this.cur_token.type == 'ELLIPSES' || this.cur_token.value == '...') {
+    if (this.cur_token.type == 'ELLIPSES' || this.cur_token.value == '...') {
       const value = this.cur_token.value;
       this.next();
       return this.ast.literal(value);
@@ -2109,7 +2088,8 @@ class Parser {
       case 'HASH':
       case 'MINUS':
         return true;
-      default: if (this.cur_token.value == 'not' || this.cur_token.value == '#') return true;
+      default:
+        if (this.cur_token.value == 'not' || this.cur_token.value == '#') return true;
         return false;
     }
   }
@@ -2119,19 +2099,20 @@ class Parser {
       case ',':
       case ';':
         return true;
-      default: return false;
+      default:
+        return false;
     }
   }
 
   is_binary() {
-    if(Parser.OP[this.cur_token.value] && Parser.OP[this.cur_token.value].binary) {
+    if (Parser.OP[this.cur_token.value] && Parser.OP[this.cur_token.value].binary) {
       return true;
     }
     return false;
   }
 
   is_param() {
-    if(this.cur_token.type == Token.IDENTIFIER) {
+    if (this.cur_token.type == Token.IDENTIFIER) {
       return true;
     }
 
@@ -2229,7 +2210,8 @@ class Interpreter {
         return this.evaluate_while_statement(node, env);
       case 'RepeatStatement':
         return this.evaluate_repeat_statement(node, env);
-      default: throw new Error(`unknow ast node with ${node.type}`);
+      default:
+        throw new Error(`unknow ast node with ${node.type}`);
     }
   }
 
@@ -2239,7 +2221,7 @@ class Interpreter {
 
   evaluate_chunk({ body }, env) {
     let rv;
-    for(let i = 0; i < body.length; i++) {
+    for (let i = 0; i < body.length; i++) {
       rv = this.evaluate(body[i], env);
     }
 
@@ -2251,8 +2233,8 @@ class Interpreter {
     const self = this;
     let i = 1;
 
-    fields.map(field => {
-      if(field.type == 'Recfield') {
+    fields.map((field) => {
+      if (field.type == 'Recfield') {
         //identifier
         let key = field.key.name;
         let value = self.evaluate(field.value, env);
@@ -2272,9 +2254,9 @@ class Interpreter {
 
   evaluate_assign_expression(node, env) {
     node.left.forEach(({ type, name, object, property }, i) => {
-      if(type == 'Identifier') {
+      if (type == 'Identifier') {
         env.set(name, this.evaluate(node.right[i], env));
-      } else if(type == 'MemberExpression') {
+      } else if (type == 'MemberExpression') {
         const obj = env.get(object.name);
         obj[property.name] = this.evaluate(node.right[i], env);
       }
@@ -2289,7 +2271,7 @@ class Interpreter {
 
   evaluate_return_statment({ params }, env) {
     const self = this;
-    let results = params.map(param => self.evaluate(param, env));
+    let results = params.map((param) => self.evaluate(param, env));
     return results[results.length - 1];
   }
 
@@ -2315,7 +2297,7 @@ class Interpreter {
 
     scope.def(node.id.name, begin);
 
-    for(let i = begin; i < end; i += step) {
+    for (let i = begin; i < end; i += step) {
       scope.set(node.id.name, i);
       this.evaluate(node.body, scope);
     }
@@ -2325,18 +2307,18 @@ class Interpreter {
     const scope = env.extend();
     const left = node.left;
     const right = this.evaluate(node.right, scope);
-    for(let i = 0; i < left.length; i++) {
+    for (let i = 0; i < left.length; i++) {
       scope.def(left[i].name, null);
     }
 
     let j = 0;
 
-    while(true) {
+    while (true) {
       const iterator = right();
-      if(iterator.done) {
+      if (iterator.done) {
         break;
       } else {
-        for(let i = 0; i < left.length; i++) {
+        for (let i = 0; i < left.length; i++) {
           scope.set(left[i].name, iterator.value[i]);
         }
         this.evaluate(node.body, scope);
@@ -2346,9 +2328,9 @@ class Interpreter {
 
   evaluate_while_statement(node, env) {
     const scope = env.extend();
-    while(true) {
+    while (true) {
       const cond = this.evaluate(node.cond, scope);
-      if(cond) {
+      if (cond) {
         this.evaluate(node.body, scope);
       } else {
         break;
@@ -2358,10 +2340,10 @@ class Interpreter {
 
   evaluate_repeat_statement(node, env) {
     const scope = env.extend();
-    while(true) {
+    while (true) {
       this.evaluate(node.body, scope);
       const cond = this.evaluate(node.cond, scope);
-      if(cond == true) {
+      if (cond == true) {
         break;
       }
     }
@@ -2375,22 +2357,22 @@ class Interpreter {
     const callee = this.evaluate(node.callee, env);
     const self = this;
 
-    return callee(...node.params.map(arg => self.evaluate(arg, env)));
+    return callee(...node.params.map((arg) => self.evaluate(arg, env)));
   }
 
   evaluate_if_statement(node, env) {
     let cond = this.evaluate(node.cond, env);
-    if(cond) {
+    if (cond) {
       this.evaluate(node.body, env);
       return true;
     }
-    for(let elseif of node.elseif) {
-      if(this.evaluate(elseif, env)) {
+    for (let elseif of node.elseif) {
+      if (this.evaluate(elseif, env)) {
         return true;
       }
     }
 
-    if(node.else) {
+    if (node.else) {
       this.evaluate(node.else, env);
     }
     return false;
@@ -2398,7 +2380,7 @@ class Interpreter {
 
   evaluate_member_expression({ sep, object, property }, env) {
     let table, value;
-    if(sep == '.') {
+    if (sep == '.') {
       table = env.get(object.name);
       value = property.name;
     }
@@ -2414,7 +2396,7 @@ class Interpreter {
     let variables = node.variables;
     let init = node.init;
 
-    for(let i = 0; i < variables.length; i++) {
+    for (let i = 0; i < variables.length; i++) {
       let variable = variables[i];
       let value = init[i];
 
@@ -2428,7 +2410,7 @@ class Interpreter {
     function lambda(...args) {
       let params = node.params;
       let scope = env.extend();
-      for(let i = 0; i < params.length; ++i) {
+      for (let i = 0; i < params.length; ++i) {
         scope.def(params[i].name, args[i]);
       }
 
@@ -2436,7 +2418,7 @@ class Interpreter {
     }
 
     let name;
-    if(node.id.type == 'Identifier') {
+    if (node.id.type == 'Identifier') {
       name = node.id.name;
     }
     env.def(name, lambda);
@@ -2496,7 +2478,7 @@ Object.assign(Interpreter, {
       return !right;
     },
     '#'(right) {
-      if(typeof right !== 'string') {
+      if (typeof right !== 'string') {
         throw new Error('attempt to get length of a nonstring value');
       }
 

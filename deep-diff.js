@@ -18,7 +18,7 @@ function Diff(kind, path) {
     value: kind,
     enumerable: true
   });
-  if(path && path.length) {
+  if (path && path.length) {
     Object.defineProperty(this, 'path', {
       value: path,
       enumerable: true
@@ -79,19 +79,19 @@ function arrayRemove(arr, from, to) {
 
 function realTypeOf(subject) {
   let type = typeof subject;
-  if(type !== 'object') {
+  if (type !== 'object') {
     return type;
   }
 
-  if(subject === Math) {
+  if (subject === Math) {
     return 'math';
-  } else if(subject === null) {
+  } else if (subject === null) {
     return 'null';
-  } else if(Array.isArray(subject)) {
+  } else if (Array.isArray(subject)) {
     return 'array';
-  } else if(Object.prototype.toString.call(subject) === '[object Date]') {
+  } else if (Object.prototype.toString.call(subject) === '[object Date]') {
     return 'date';
-  } else if(typeof subject.toString === 'function' && /^\/.*\//.test(subject.toString())) {
+  } else if (typeof subject.toString === 'function' && /^\/.*\//.test(subject.toString())) {
     return 'regexp';
   }
   return 'object';
@@ -100,10 +100,10 @@ function realTypeOf(subject) {
 //http://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/
 function hashThisString(string) {
   let hash = 0;
-  if(string.length === 0) {
+  if (string.length === 0) {
     return hash;
   }
-  for(let i = 0; i < string.length; i++) {
+  for (let i = 0; i < string.length; i++) {
     let char = string.charCodeAt(i);
     hash = (hash << 5) - hash + char;
     hash = hash & hash; //Convert to 32bit integer
@@ -117,8 +117,8 @@ function getOrderIndependentHash(object) {
   let accum = 0;
   let type = realTypeOf(object);
 
-  if(type === 'array') {
-    object.forEach(item => {
+  if (type === 'array') {
+    object.forEach((item) => {
       //Addition is commutative so this is order indep
       accum += getOrderIndependentHash(item);
     });
@@ -127,15 +127,10 @@ function getOrderIndependentHash(object) {
     return accum + hashThisString(arrayString);
   }
 
-  if(type === 'object') {
-    for(let key in object) {
-      if(object.hasOwnProperty(key)) {
-        let keyValueString =
-          '[ type: object, key: ' +
-          key +
-          ', value hash: ' +
-          getOrderIndependentHash(object[key]) +
-          ']';
+  if (type === 'object') {
+    for (let key in object) {
+      if (object.hasOwnProperty(key)) {
+        let keyValueString = '[ type: object, key: ' + key + ', value hash: ' + getOrderIndependentHash(object[key]) + ']';
         accum += hashThisString(keyValueString);
       }
     }
@@ -153,17 +148,17 @@ function deepDiff(lhs, rhs, changes, prefilter, path, key, stack, orderIndepende
   path = path || [];
   stack = stack || [];
   let currentPath = path.slice(0);
-  if(typeof key !== 'undefined' && key !== null) {
-    if(prefilter) {
-      if(typeof prefilter === 'function' && prefilter(currentPath, key)) {
+  if (typeof key !== 'undefined' && key !== null) {
+    if (prefilter) {
+      if (typeof prefilter === 'function' && prefilter(currentPath, key)) {
         return;
-      } else if(typeof prefilter === 'object') {
-        if(prefilter.prefilter && prefilter.prefilter(currentPath, key)) {
+      } else if (typeof prefilter === 'object') {
+        if (prefilter.prefilter && prefilter.prefilter(currentPath, key)) {
           return;
         }
-        if(prefilter.normalize) {
+        if (prefilter.normalize) {
           let alt = prefilter.normalize(currentPath, key, lhs, rhs);
-          if(alt) {
+          if (alt) {
             lhs = alt[0];
             rhs = alt[1];
           }
@@ -174,7 +169,7 @@ function deepDiff(lhs, rhs, changes, prefilter, path, key, stack, orderIndepende
   }
 
   //Use string comparison for regexes
-  if(realTypeOf(lhs) === 'regexp' && realTypeOf(rhs) === 'regexp') {
+  if (realTypeOf(lhs) === 'regexp' && realTypeOf(rhs) === 'regexp') {
     lhs = lhs.toString();
     rhs = rhs.toString();
   }
@@ -183,97 +178,71 @@ function deepDiff(lhs, rhs, changes, prefilter, path, key, stack, orderIndepende
   let rtype = typeof rhs;
   let i, j, k, other;
 
-  let ldefined =
-    ltype !== 'undefined' ||
-    (stack &&
-      stack.length > 0 &&
-      stack[stack.length - 1].lhs &&
-      Object.getOwnPropertyDescriptor(stack[stack.length - 1].lhs, key));
-  let rdefined =
-    rtype !== 'undefined' ||
-    (stack &&
-      stack.length > 0 &&
-      stack[stack.length - 1].rhs &&
-      Object.getOwnPropertyDescriptor(stack[stack.length - 1].rhs, key));
+  let ldefined = ltype !== 'undefined' || (stack && stack.length > 0 && stack[stack.length - 1].lhs && Object.getOwnPropertyDescriptor(stack[stack.length - 1].lhs, key));
+  let rdefined = rtype !== 'undefined' || (stack && stack.length > 0 && stack[stack.length - 1].rhs && Object.getOwnPropertyDescriptor(stack[stack.length - 1].rhs, key));
 
-  if(!ldefined && rdefined) {
+  if (!ldefined && rdefined) {
     changes.push(new DiffNew(currentPath, rhs));
-  } else if(!rdefined && ldefined) {
+  } else if (!rdefined && ldefined) {
     changes.push(new DiffDeleted(currentPath, lhs));
-  } else if(realTypeOf(lhs) !== realTypeOf(rhs)) {
+  } else if (realTypeOf(lhs) !== realTypeOf(rhs)) {
     changes.push(new DiffEdit(currentPath, lhs, rhs));
-  } else if(realTypeOf(lhs) === 'date' && lhs - rhs !== 0) {
+  } else if (realTypeOf(lhs) === 'date' && lhs - rhs !== 0) {
     changes.push(new DiffEdit(currentPath, lhs, rhs));
-  } else if(ltype === 'object' && lhs !== null && rhs !== null) {
-    for(i = stack.length - 1; i > -1; --i) {
-      if(stack[i].lhs === lhs) {
+  } else if (ltype === 'object' && lhs !== null && rhs !== null) {
+    for (i = stack.length - 1; i > -1; --i) {
+      if (stack[i].lhs === lhs) {
         other = true;
         break;
       }
     }
-    if(!other) {
+    if (!other) {
       stack.push({ lhs, rhs });
-      if(Array.isArray(lhs)) {
+      if (Array.isArray(lhs)) {
         //If order doesn't matter, we need to sort our arrays
-        if(orderIndependent) {
+        if (orderIndependent) {
           lhs.sort((a, b) => getOrderIndependentHash(a) - getOrderIndependentHash(b));
 
           rhs.sort((a, b) => getOrderIndependentHash(a) - getOrderIndependentHash(b));
         }
         i = rhs.length - 1;
         j = lhs.length - 1;
-        while(i > j) {
+        while (i > j) {
           changes.push(new DiffArray(currentPath, i, new DiffNew(undefined, rhs[i--])));
         }
-        while(j > i) {
+        while (j > i) {
           changes.push(new DiffArray(currentPath, j, new DiffDeleted(undefined, lhs[j--])));
         }
-        for(; i >= 0; --i) {
+        for (; i >= 0; --i) {
           deepDiff(lhs[i], rhs[i], changes, prefilter, currentPath, i, stack, orderIndependent);
         }
       } else {
         let akeys = Object.keys(lhs);
         let pkeys = Object.keys(rhs);
-        for(i = 0; i < akeys.length; ++i) {
+        for (i = 0; i < akeys.length; ++i) {
           k = akeys[i];
           other = pkeys.indexOf(k);
-          if(other >= 0) {
+          if (other >= 0) {
             deepDiff(lhs[k], rhs[k], changes, prefilter, currentPath, k, stack, orderIndependent);
             pkeys[other] = null;
           } else {
-            deepDiff(lhs[k],
-              undefined,
-              changes,
-              prefilter,
-              currentPath,
-              k,
-              stack,
-              orderIndependent
-            );
+            deepDiff(lhs[k], undefined, changes, prefilter, currentPath, k, stack, orderIndependent);
           }
         }
-        for(i = 0; i < pkeys.length; ++i) {
+        for (i = 0; i < pkeys.length; ++i) {
           k = pkeys[i];
-          if(k) {
-            deepDiff(undefined,
-              rhs[k],
-              changes,
-              prefilter,
-              currentPath,
-              k,
-              stack,
-              orderIndependent
-            );
+          if (k) {
+            deepDiff(undefined, rhs[k], changes, prefilter, currentPath, k, stack, orderIndependent);
           }
         }
       }
       stack.length = stack.length - 1;
-    } else if(lhs !== rhs) {
+    } else if (lhs !== rhs) {
       //lhs is contains a cycle at this element and it differs from rhs
       changes.push(new DiffEdit(currentPath, lhs, rhs));
     }
-  } else if(lhs !== rhs) {
-    if(!(ltype === 'number' && isNaN(lhs) && isNaN(rhs))) {
+  } else if (lhs !== rhs) {
+    if (!(ltype === 'number' && isNaN(lhs) && isNaN(rhs))) {
       changes.push(new DiffEdit(currentPath, lhs, rhs));
     }
   }
@@ -282,8 +251,8 @@ function deepDiff(lhs, rhs, changes, prefilter, path, key, stack, orderIndepende
 function observableDiff(lhs, rhs, observer, prefilter, orderIndependent) {
   let changes = [];
   deepDiff(lhs, rhs, changes, prefilter, null, null, null, orderIndependent);
-  if(observer) {
-    for(let i = 0; i < changes.length; ++i) {
+  if (observer) {
+    for (let i = 0; i < changes.length; ++i) {
       observer(changes[i]);
     }
   }
@@ -296,8 +265,8 @@ function orderIndependentDeepDiff(lhs, rhs, changes, prefilter, path, key, stack
 
 function accumulateDiff(lhs, rhs, prefilter, accum) {
   let observer = accum
-    ? function(difference) {
-        if(difference) {
+    ? function (difference) {
+        if (difference) {
           accum.push(difference);
         }
       }
@@ -308,8 +277,8 @@ function accumulateDiff(lhs, rhs, prefilter, accum) {
 
 function accumulateOrderIndependentDiff(lhs, rhs, prefilter, accum) {
   let observer = accum
-    ? function(difference) {
-        if(difference) {
+    ? function (difference) {
+        if (difference) {
           accum.push(difference);
         }
       }
@@ -319,11 +288,11 @@ function accumulateOrderIndependentDiff(lhs, rhs, prefilter, accum) {
 }
 
 function applyArrayChange(arr, index, change) {
-  if(change.path && change.path.length) {
+  if (change.path && change.path.length) {
     let it = arr[index],
       i,
       u = change.path.length - 1;
-    for(i = 0; i < u; i++) {
+    for (i = 0; i < u; i++) {
       it = it[change.path[i]];
     }
     switch (change.kind) {
@@ -356,25 +325,22 @@ function applyArrayChange(arr, index, change) {
 }
 
 function applyChange(target, source, change) {
-  if(typeof change === 'undefined' && source && ~validKinds.indexOf(source.kind)) {
+  if (typeof change === 'undefined' && source && ~validKinds.indexOf(source.kind)) {
     change = source;
   }
-  if(target && change && change.kind) {
+  if (target && change && change.kind) {
     let it = target,
       i = -1,
       last = change.path ? change.path.length - 1 : 0;
-    while(++i < last) {
-      if(typeof it[change.path[i]] === 'undefined') {
-        it[change.path[i]] =
-          typeof change.path[i + 1] !== 'undefined' && typeof change.path[i + 1] === 'number'
-            ? []
-            : {};
+    while (++i < last) {
+      if (typeof it[change.path[i]] === 'undefined') {
+        it[change.path[i]] = typeof change.path[i + 1] !== 'undefined' && typeof change.path[i + 1] === 'number' ? [] : {};
       }
       it = it[change.path[i]];
     }
     switch (change.kind) {
       case 'A':
-        if(change.path && typeof it[change.path[i]] === 'undefined') {
+        if (change.path && typeof it[change.path[i]] === 'undefined') {
           it[change.path[i]] = [];
         }
         applyArrayChange(change.path ? it[change.path[i]] : it, change.index, change.item);
@@ -391,12 +357,12 @@ function applyChange(target, source, change) {
 }
 
 function revertArrayChange(arr, index, change) {
-  if(change.path && change.path.length) {
+  if (change.path && change.path.length) {
     //the structure of the object at the index has changed...
     let it = arr[index],
       i,
       u = change.path.length - 1;
-    for(i = 0; i < u; i++) {
+    for (i = 0; i < u; i++) {
       it = it[change.path[i]];
     }
     switch (change.kind) {
@@ -434,13 +400,13 @@ function revertArrayChange(arr, index, change) {
 }
 
 function revertChange(target, source, change) {
-  if(target && source && change && change.kind) {
+  if (target && source && change && change.kind) {
     let it = target,
       i,
       u;
     u = change.path.length - 1;
-    for(i = 0; i < u; i++) {
-      if(typeof it[change.path[i]] === 'undefined') {
+    for (i = 0; i < u; i++) {
+      if (typeof it[change.path[i]] === 'undefined') {
         it[change.path[i]] = {};
       }
       it = it[change.path[i]];
@@ -468,9 +434,9 @@ function revertChange(target, source, change) {
 }
 
 function applyDiff(target, source, filter) {
-  if(target && source) {
-    let onChange = function(change) {
-      if(!filter || filter(target, source, change)) {
+  if (target && source) {
+    let onChange = function (change) {
+      if (!filter || filter(target, source, change)) {
         applyChange(target, source, change);
       }
     };

@@ -32,27 +32,17 @@ export function dom() {
   let ret = [];
 
   const extend = (e, functions) => {
-    const keys = [...Util.members(functions)].filter(key =>
-        [
-          'callee',
-          'caller',
-          'arguments',
-          'call',
-          'bind',
-          'apply',
-          'prototype',
-          'constructor',
-          'length'
-        ].indexOf(key) == -1 && typeof functions[key] == 'function'
+    const keys = [...Util.members(functions)].filter(
+      (key) => ['callee', 'caller', 'arguments', 'call', 'bind', 'apply', 'prototype', 'constructor', 'length'].indexOf(key) == -1 && typeof functions[key] == 'function'
     );
-    for(let key of keys) if(e[key] === undefined) e[key] = functions[key].bind(functions, e);
+    for (let key of keys) if (e[key] === undefined) e[key] = functions[key].bind(functions, e);
   };
 
-  args = args.map(arg => (typeof arg == 'string' ? Element.findAll(arg) : arg));
+  args = args.map((arg) => (typeof arg == 'string' ? Element.findAll(arg) : arg));
 
-  for(let e of args) {
-    if(e instanceof SVGSVGElement) extend(e, SVG);
-    if(isElement(e)) {
+  for (let e of args) {
+    if (e instanceof SVGSVGElement) extend(e, SVG);
+    if (isElement(e)) {
       extend(e, Element);
       ElementPosProps(e);
       ElementSizeProps(e);
@@ -61,11 +51,11 @@ export function dom() {
 
     ret.push(e);
   }
-  if(ret.length == 1) ret = ret[0];
+  if (ret.length == 1) ret = ret[0];
   return ret;
 }
 
-export const isNumber = a => String(a).replace(/^[0-9]*$/, '') == '';
+export const isNumber = (a) => String(a).replace(/^[0-9]*$/, '') == '';
 
 export function Unit(str) {
   let u =
@@ -94,7 +84,7 @@ export const ElementTransformation = () => ({
   }
 });
 
-export const CSSTransformSetters = element => ({
+export const CSSTransformSetters = (element) => ({
   transformation: ElementTransformation(),
   get rotate() {
     return this.transformation.rotate;
@@ -146,11 +136,11 @@ export class TransitionList extends Array {
   constructor() {
     const args = [...arguments];
 
-    args.forEach(arg => this.push(arg));
+    args.forEach((arg) => this.push(arg));
   }
 
   propertyList(name) {
-    return this.map(transition => transition[name]);
+    return this.map((transition) => transition[name]);
   }
 
   get css() {
@@ -201,14 +191,7 @@ export { SVG } from './dom/svg.js';
 export { Container } from './dom/container.js';
 export { Layer, Renderer } from './dom/layer.js';
 export { Select } from './dom/select.js';
-export {
-  ElementPosProps,
-  ElementRectProps,
-  ElementRectProxy,
-  ElementSizeProps,
-  ElementWHProps,
-  ElementXYProps
-} from './dom/elementRect.js';
+export { ElementPosProps, ElementRectProps, ElementRectProxy, ElementSizeProps, ElementWHProps, ElementXYProps } from './dom/elementRect.js';
 export { Align, Anchor } from './geom/align.js';
 
 export default Object.assign(dom, {

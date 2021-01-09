@@ -15,7 +15,7 @@ function isArray(value) {
 const INFINITY = 1 / 0;
 function baseToString(value) {
   // Exit early for strings to avoid a performance hit in some environments.
-  if(typeof value == 'string') {
+  if (typeof value == 'string') {
     return value;
   }
   let result = value + '';
@@ -36,10 +36,7 @@ function isNumber(value) {
 
 // Adapted from: https://github.com/lodash/lodash/blob/master/isBoolean.js
 function isBoolean(value) {
-  return (value === true ||
-    value === false ||
-    (isObjectLike(value) && getTag(value) == '[object Boolean]')
-  );
+  return value === true || value === false || (isObjectLike(value) && getTag(value) == '[object Boolean]');
 }
 
 function isObject(value) {
@@ -62,25 +59,20 @@ function isBlank(value) {
 // Gets the `toStringTag` of `value`.
 // Adapted from: https://github.com/lodash/lodash/blob/master/.internal/getTag.js
 function getTag(value) {
-  return value == null
-    ? value === undefined
-      ? '[object Undefined]'
-      : '[object Null]'
-    : Object.prototype.toString.call(value);
+  return value == null ? (value === undefined ? '[object Undefined]' : '[object Null]') : Object.prototype.toString.call(value);
 }
 
 const EXTENDED_SEARCH_UNAVAILABLE = 'Extended search is not available';
 
 const INCORRECT_INDEX_TYPE = "Incorrect 'index' type";
 
-const LOGICAL_SEARCH_INVALID_QUERY_FOR_KEY = key => `Invalid value for key ${key}`;
+const LOGICAL_SEARCH_INVALID_QUERY_FOR_KEY = (key) => `Invalid value for key ${key}`;
 
-const PATTERN_LENGTH_TOO_LARGE = max => `Pattern length exceeds max of ${max}.`;
+const PATTERN_LENGTH_TOO_LARGE = (max) => `Pattern length exceeds max of ${max}.`;
 
-const MISSING_KEY_PROPERTY = name => `Missing ${name} property in key`;
+const MISSING_KEY_PROPERTY = (name) => `Missing ${name} property in key`;
 
-const INVALID_KEY_WEIGHT_VALUE = key =>
-  `Property 'weight' in key '${key}' must be a positive integer`;
+const INVALID_KEY_WEIGHT_VALUE = (key) => `Property 'weight' in key '${key}' must be a positive integer`;
 
 const hasOwn = Object.prototype.hasOwnProperty;
 
@@ -91,7 +83,7 @@ class KeyStore {
 
     let totalWeight = 0;
 
-    keys.forEach(key => {
+    keys.forEach((key) => {
       let obj = createKey(key);
 
       totalWeight += obj.weight;
@@ -103,7 +95,7 @@ class KeyStore {
     });
 
     // Normalize weights so that their sum is equal to 1
-    this._keys.forEach(key => {
+    this._keys.forEach((key) => {
       key.weight /= totalWeight;
     });
   }
@@ -124,22 +116,22 @@ function createKey(key) {
   let src = null;
   let weight = 1;
 
-  if(isString(key) || isArray(key)) {
+  if (isString(key) || isArray(key)) {
     src = key;
     path = createKeyPath(key);
     id = createKeyId(key);
   } else {
-    if(!hasOwn.call(key, 'name')) {
+    if (!hasOwn.call(key, 'name')) {
       throw new Error(MISSING_KEY_PROPERTY('name'));
     }
 
     const name = key.name;
     src = name;
 
-    if(hasOwn.call(key, 'weight')) {
+    if (hasOwn.call(key, 'weight')) {
       weight = key.weight;
 
-      if(weight <= 0) {
+      if (weight <= 0) {
         throw new Error(INVALID_KEY_WEIGHT_VALUE(name));
       }
     }
@@ -164,7 +156,7 @@ function get(obj, path) {
   let arr = false;
 
   const deepGet = (obj, path, index) => {
-    if(!path[index]) {
+    if (!path[index]) {
       // If there's no path left, we've arrived at the object we care about.
       list.push(obj);
     } else {
@@ -172,21 +164,21 @@ function get(obj, path) {
 
       const value = obj[key];
 
-      if(!isDefined(value)) {
+      if (!isDefined(value)) {
         return;
       }
 
       // If we're at the last value in the path, and if it's a string/number/bool,
       // add it to the list
-      if(index === path.length - 1 && (isString(value) || isNumber(value) || isBoolean(value))) {
+      if (index === path.length - 1 && (isString(value) || isNumber(value) || isBoolean(value))) {
         list.push(toString(value));
-      } else if(isArray(value)) {
+      } else if (isArray(value)) {
         arr = true;
         // Search each item in the array.
-        for(let i = 0, len = value.length; i < len; i += 1) {
+        for (let i = 0, len = value.length; i < len; i += 1) {
           deepGet(value[i], path, index + 1);
         }
-      } else if(path.length) {
+      } else if (path.length) {
         // An object. Recurse further.
         deepGet(value, path, index + 1);
       }
@@ -273,7 +265,7 @@ function norm(mantissa = 3) {
     get(value) {
       const numTokens = value.match(SPACE).length;
 
-      if(cache.has(numTokens)) {
+      if (cache.has(numTokens)) {
         return cache.get(numTokens);
       }
 
@@ -311,14 +303,14 @@ class FuseIndex {
     });
   }
   create() {
-    if(this.isCreated || !this.docs.length) {
+    if (this.isCreated || !this.docs.length) {
       return;
     }
 
     this.isCreated = true;
 
     // List is Array<String>
-    if(isString(this.docs[0])) {
+    if (isString(this.docs[0])) {
       this.docs.forEach((doc, docIndex) => {
         this._addString(doc, docIndex);
       });
@@ -335,7 +327,7 @@ class FuseIndex {
   add(doc) {
     const idx = this.size();
 
-    if(isString(doc)) {
+    if (isString(doc)) {
       this._addString(doc, idx);
     } else {
       this._addObject(doc, idx);
@@ -346,7 +338,7 @@ class FuseIndex {
     this.records.splice(idx, 1);
 
     // Change ref index of every subsquent doc
-    for(let i = idx, len = this.size(); i < len; i += 1) {
+    for (let i = idx, len = this.size(); i < len; i += 1) {
       this.records[i].i -= 1;
     }
   }
@@ -357,7 +349,7 @@ class FuseIndex {
     return this.records.length;
   }
   _addString(doc, docIndex) {
-    if(!isDefined(doc) || isBlank(doc)) {
+    if (!isDefined(doc) || isBlank(doc)) {
       return;
     }
 
@@ -377,22 +369,22 @@ class FuseIndex {
       // console.log(key)
       let value = this.getFn(doc, key.path);
 
-      if(!isDefined(value)) {
+      if (!isDefined(value)) {
         return;
       }
 
-      if(isArray(value)) {
+      if (isArray(value)) {
         let subRecords = [];
         const stack = [{ nestedArrIndex: -1, value }];
 
-        while(stack.length) {
+        while (stack.length) {
           const { nestedArrIndex, value } = stack.pop();
 
-          if(!isDefined(value)) {
+          if (!isDefined(value)) {
             continue;
           }
 
-          if(isString(value) && !isBlank(value)) {
+          if (isString(value) && !isBlank(value)) {
             let subRecord = {
               v: value,
               i: nestedArrIndex,
@@ -400,7 +392,7 @@ class FuseIndex {
             };
 
             subRecords.push(subRecord);
-          } else if(isArray(value)) {
+          } else if (isArray(value)) {
             value.forEach((item, k) => {
               stack.push({
                 nestedArrIndex: k,
@@ -410,7 +402,7 @@ class FuseIndex {
           }
         }
         record.$[keyIndex] = subRecords;
-      } else if(!isBlank(value)) {
+      } else if (!isBlank(value)) {
         let subRecord = {
           v: value,
           n: this.norm.get(value)
@@ -450,12 +442,12 @@ function transformMatches(result, data) {
   const matches = result.matches;
   data.matches = [];
 
-  if(!isDefined(matches)) {
+  if (!isDefined(matches)) {
     return;
   }
 
-  matches.forEach(match => {
-    if(!isDefined(match.indices) || !match.indices.length) {
+  matches.forEach((match) => {
+    if (!isDefined(match.indices) || !match.indices.length) {
       return;
     }
 
@@ -466,11 +458,11 @@ function transformMatches(result, data) {
       value
     };
 
-    if(match.key) {
+    if (match.key) {
       obj.key = match.key.src;
     }
 
-    if(match.idx > -1) {
+    if (match.idx > -1) {
       obj.refIndex = match.idx;
     }
 
@@ -482,24 +474,16 @@ function transformScore(result, data) {
   data.score = result.score;
 }
 
-function computeScore(pattern,
-  {
-    errors = 0,
-    currentLocation = 0,
-    expectedLocation = 0,
-    distance = Config.distance,
-    ignoreLocation = Config.ignoreLocation
-  } = {}
-) {
+function computeScore(pattern, { errors = 0, currentLocation = 0, expectedLocation = 0, distance = Config.distance, ignoreLocation = Config.ignoreLocation } = {}) {
   const accuracy = errors / pattern.length;
 
-  if(ignoreLocation) {
+  if (ignoreLocation) {
     return accuracy;
   }
 
   const proximity = Math.abs(expectedLocation - currentLocation);
 
-  if(!distance) {
+  if (!distance) {
     // Dodge divide by zero error.
     return proximity ? 1.0 : accuracy;
   }
@@ -513,13 +497,13 @@ function convertMaskToIndices(matchmask = [], minMatchCharLength = Config.minMat
   let end = -1;
   let i = 0;
 
-  for(let len = matchmask.length; i < len; i += 1) {
+  for (let len = matchmask.length; i < len; i += 1) {
     let match = matchmask[i];
-    if(match && start === -1) {
+    if (match && start === -1) {
       start = i;
-    } else if(!match && start !== -1) {
+    } else if (!match && start !== -1) {
       end = i - 1;
-      if(end - start + 1 >= minMatchCharLength) {
+      if (end - start + 1 >= minMatchCharLength) {
         indices.push([start, end]);
       }
       start = -1;
@@ -527,7 +511,7 @@ function convertMaskToIndices(matchmask = [], minMatchCharLength = Config.minMat
   }
 
   // (i-1 - start) + 1 => i - start
-  if(matchmask[i - 1] && i - start >= minMatchCharLength) {
+  if (matchmask[i - 1] && i - start >= minMatchCharLength) {
     indices.push([start, i - 1]);
   }
 
@@ -537,7 +521,8 @@ function convertMaskToIndices(matchmask = [], minMatchCharLength = Config.minMat
 // Machine word size
 const MAX_BITS = 32;
 
-function search(text,
+function search(
+  text,
   pattern,
   patternAlphabet,
   {
@@ -550,7 +535,7 @@ function search(text,
     ignoreLocation = Config.ignoreLocation
   } = {}
 ) {
-  if(pattern.length > MAX_BITS) {
+  if (pattern.length > MAX_BITS) {
     throw new Error(PATTERN_LENGTH_TOO_LARGE(MAX_BITS));
   }
 
@@ -573,7 +558,7 @@ function search(text,
   let index;
 
   // Get all exact matches, here for speed up
-  while((index = text.indexOf(pattern, bestLocation)) > -1) {
+  while ((index = text.indexOf(pattern, bestLocation)) > -1) {
     let score = computeScore(pattern, {
       currentLocation: index,
       expectedLocation,
@@ -584,9 +569,9 @@ function search(text,
     currentThreshold = Math.min(score, currentThreshold);
     bestLocation = index + patternLen;
 
-    if(computeMatches) {
+    if (computeMatches) {
       let i = 0;
-      while(i < patternLen) {
+      while (i < patternLen) {
         matchMask[index + i] = 1;
         i += 1;
       }
@@ -602,14 +587,14 @@ function search(text,
 
   const mask = 1 << (patternLen - 1);
 
-  for(let i = 0; i < patternLen; i += 1) {
+  for (let i = 0; i < patternLen; i += 1) {
     // Scan for the best match; each iteration allows for one more error.
     // Run a binary search to determine how far from the match location we can stray
     // at this error level.
     let binMin = 0;
     let binMid = binMax;
 
-    while(binMin < binMid) {
+    while (binMin < binMid) {
       const score = computeScore(pattern, {
         errors: i,
         currentLocation: expectedLocation + binMid,
@@ -618,7 +603,7 @@ function search(text,
         ignoreLocation
       });
 
-      if(score <= currentThreshold) {
+      if (score <= currentThreshold) {
         binMin = binMid;
       } else {
         binMax = binMid;
@@ -631,20 +616,18 @@ function search(text,
     binMax = binMid;
 
     let start = Math.max(1, expectedLocation - binMid + 1);
-    let finish = findAllMatches
-      ? textLen
-      : Math.min(expectedLocation + binMid, textLen) + patternLen;
+    let finish = findAllMatches ? textLen : Math.min(expectedLocation + binMid, textLen) + patternLen;
 
     // Initialize the bit array
     let bitArr = Array(finish + 2);
 
     bitArr[finish + 1] = (1 << i) - 1;
 
-    for(let j = finish; j >= start; j -= 1) {
+    for (let j = finish; j >= start; j -= 1) {
       let currentLocation = j - 1;
       let charMatch = patternAlphabet[text.charAt(currentLocation)];
 
-      if(computeMatches) {
+      if (computeMatches) {
         // Speed up: quick bool to int conversion (i.e, `charMatch ? 1 : 0`)
         matchMask[currentLocation] = +!!charMatch;
       }
@@ -653,11 +636,11 @@ function search(text,
       bitArr[j] = ((bitArr[j + 1] << 1) | 1) & charMatch;
 
       // Subsequent passes: fuzzy match
-      if(i) {
+      if (i) {
         bitArr[j] |= ((lastBitArr[j + 1] | lastBitArr[j]) << 1) | 1 | lastBitArr[j + 1];
       }
 
-      if(bitArr[j] & mask) {
+      if (bitArr[j] & mask) {
         finalScore = computeScore(pattern, {
           errors: i,
           currentLocation,
@@ -668,13 +651,13 @@ function search(text,
 
         // This match will almost certainly be better than any existing match.
         // But check anyway.
-        if(finalScore <= currentThreshold) {
+        if (finalScore <= currentThreshold) {
           // Indeed it is
           currentThreshold = finalScore;
           bestLocation = currentLocation;
 
           // Already passed `loc`, downhill from here on in.
-          if(bestLocation <= expectedLocation) {
+          if (bestLocation <= expectedLocation) {
             break;
           }
 
@@ -693,7 +676,7 @@ function search(text,
       ignoreLocation
     });
 
-    if(score > currentThreshold) {
+    if (score > currentThreshold) {
       break;
     }
 
@@ -706,11 +689,11 @@ function search(text,
     score: Math.max(0.001, finalScore)
   };
 
-  if(computeMatches) {
+  if (computeMatches) {
     const indices = convertMaskToIndices(matchMask, minMatchCharLength);
-    if(!indices.length) {
+    if (!indices.length) {
       result.isMatch = false;
-    } else if(includeMatches) {
+    } else if (includeMatches) {
       result.indices = indices;
     }
   }
@@ -721,7 +704,7 @@ function search(text,
 function createPatternAlphabet(pattern) {
   let mask = {};
 
-  for(let i = 0, len = pattern.length; i < len; i += 1) {
+  for (let i = 0, len = pattern.length; i < len; i += 1) {
     const char = pattern.charAt(i);
     mask[char] = (mask[char] || 0) | (1 << (len - i - 1));
   }
@@ -730,7 +713,9 @@ function createPatternAlphabet(pattern) {
 }
 
 class BitapSearch {
-  constructor(pattern, {
+  constructor(
+    pattern,
+    {
       location = Config.location,
       threshold = Config.threshold,
       distance = Config.distance,
@@ -756,7 +741,7 @@ class BitapSearch {
 
     this.chunks = [];
 
-    if(!this.pattern.length) {
+    if (!this.pattern.length) {
       return;
     }
 
@@ -770,17 +755,17 @@ class BitapSearch {
 
     const len = this.pattern.length;
 
-    if(len > MAX_BITS) {
+    if (len > MAX_BITS) {
       let i = 0;
       const remainder = len % MAX_BITS;
       const end = len - remainder;
 
-      while(i < end) {
+      while (i < end) {
         addChunk(this.pattern.substr(i, MAX_BITS), i);
         i += MAX_BITS;
       }
 
-      if(remainder) {
+      if (remainder) {
         const startIndex = len - MAX_BITS;
         addChunk(this.pattern.substr(startIndex), startIndex);
       }
@@ -792,18 +777,18 @@ class BitapSearch {
   searchIn(text) {
     const { isCaseSensitive, includeMatches } = this.options;
 
-    if(!isCaseSensitive) {
+    if (!isCaseSensitive) {
       text = text.toLowerCase();
     }
 
     // Exact match
-    if(this.pattern === text) {
+    if (this.pattern === text) {
       let result = {
         isMatch: true,
         score: 0
       };
 
-      if(includeMatches) {
+      if (includeMatches) {
         result.indices = [[0, text.length - 1]];
       }
 
@@ -811,14 +796,7 @@ class BitapSearch {
     }
 
     // Otherwise, use Bitap algorithm
-    const {
-      location,
-      distance,
-      threshold,
-      findAllMatches,
-      minMatchCharLength,
-      ignoreLocation
-    } = this.options;
+    const { location, distance, threshold, findAllMatches, minMatchCharLength, ignoreLocation } = this.options;
 
     let allIndices = [];
     let totalScore = 0;
@@ -835,13 +813,13 @@ class BitapSearch {
         ignoreLocation
       });
 
-      if(isMatch) {
+      if (isMatch) {
         hasMatches = true;
       }
 
       totalScore += score;
 
-      if(isMatch && indices) {
+      if (isMatch && indices) {
         allIndices = [...allIndices, ...indices];
       }
     });
@@ -851,7 +829,7 @@ class BitapSearch {
       score: hasMatches ? totalScore / this.chunks.length : 1
     };
 
-    if(hasMatches && includeMatches) {
+    if (hasMatches && includeMatches) {
       result.indices = allIndices;
     }
 
@@ -1034,7 +1012,9 @@ class InverseSuffixExactMatch extends BaseMatch {
 }
 
 class FuzzyMatch extends BaseMatch {
-  constructor(pattern, {
+  constructor(
+    pattern,
+    {
       location = Config.location,
       threshold = Config.threshold,
       distance = Config.distance,
@@ -1092,7 +1072,7 @@ class IncludeMatch extends BaseMatch {
     const patternLen = this.pattern.length;
 
     // Get all exact matches
-    while((index = text.indexOf(this.pattern, location)) > -1) {
+    while ((index = text.indexOf(this.pattern, location)) > -1) {
       location = index + patternLen;
       indices.push([index, location - 1]);
     }
@@ -1108,16 +1088,7 @@ class IncludeMatch extends BaseMatch {
 }
 
 // ❗Order is important. DO NOT CHANGE.
-const searchers = [
-  ExactMatch,
-  IncludeMatch,
-  PrefixExactMatch,
-  InversePrefixExactMatch,
-  InverseSuffixExactMatch,
-  SuffixExactMatch,
-  InverseExactMatch,
-  FuzzyMatch
-];
+const searchers = [ExactMatch, IncludeMatch, PrefixExactMatch, InversePrefixExactMatch, InverseSuffixExactMatch, SuffixExactMatch, InverseExactMatch, FuzzyMatch];
 
 const searchersLen = searchers.length;
 
@@ -1129,38 +1100,38 @@ const OR_TOKEN = '|';
 // Example:
 // "^core go$ | rb$ | py$ xy$" => [["^core", "go$"], ["rb$"], ["py$", "xy$"]]
 function parseQuery(pattern, options = {}) {
-  return pattern.split(OR_TOKEN).map(item => {
+  return pattern.split(OR_TOKEN).map((item) => {
     let query = item
       .trim()
       .split(SPACE_RE)
-      .filter(item => item && !!item.trim());
+      .filter((item) => item && !!item.trim());
 
     let results = [];
-    for(let i = 0, len = query.length; i < len; i += 1) {
+    for (let i = 0, len = query.length; i < len; i += 1) {
       const queryItem = query[i];
 
       // 1. Handle multiple query match (i.e, once that are quoted, like `"hello world"`)
       let found = false;
       let idx = -1;
-      while(!found && ++idx < searchersLen) {
+      while (!found && ++idx < searchersLen) {
         const searcher = searchers[idx];
         let token = searcher.isMultiMatch(queryItem);
-        if(token) {
+        if (token) {
           results.push(new searcher(token, options));
           found = true;
         }
       }
 
-      if(found) {
+      if (found) {
         continue;
       }
 
       // 2. Handle single query matches (i.e, once that are *not* quoted)
       idx = -1;
-      while(++idx < searchersLen) {
+      while (++idx < searchersLen) {
         const searcher = searchers[idx];
         let token = searcher.isSingleMatch(queryItem);
-        if(token) {
+        if (token) {
           results.push(new searcher(token, options));
           break;
         }
@@ -1204,7 +1175,9 @@ const MultiMatchSet = new Set([FuzzyMatch.type, IncludeMatch.type]);
  * ```
  */
 class ExtendedSearch {
-  constructor(pattern, {
+  constructor(
+    pattern,
+    {
       isCaseSensitive = Config.isCaseSensitive,
       includeMatches = Config.includeMatches,
       minMatchCharLength = Config.minMatchCharLength,
@@ -1236,7 +1209,7 @@ class ExtendedSearch {
   searchIn(text) {
     const query = this.query;
 
-    if(!query) {
+    if (!query) {
       return {
         isMatch: false,
         score: 1
@@ -1252,7 +1225,7 @@ class ExtendedSearch {
     let totalScore = 0;
 
     // ORs
-    for(let i = 0, qLen = query.length; i < qLen; i += 1) {
+    for (let i = 0, qLen = query.length; i < qLen; i += 1) {
       const searchers = query[i];
 
       // Reset indices
@@ -1260,16 +1233,16 @@ class ExtendedSearch {
       numMatches = 0;
 
       // ANDs
-      for(let j = 0, pLen = searchers.length; j < pLen; j += 1) {
+      for (let j = 0, pLen = searchers.length; j < pLen; j += 1) {
         const searcher = searchers[j];
         const { isMatch, indices, score } = searcher.search(text);
 
-        if(isMatch) {
+        if (isMatch) {
           numMatches += 1;
           totalScore += score;
-          if(includeMatches) {
+          if (includeMatches) {
             const type = searcher.constructor.type;
-            if(MultiMatchSet.has(type)) {
+            if (MultiMatchSet.has(type)) {
               allIndices = [...allIndices, ...indices];
             } else {
               allIndices.push(indices);
@@ -1284,13 +1257,13 @@ class ExtendedSearch {
       }
 
       // OR condition, so if TRUE, return
-      if(numMatches) {
+      if (numMatches) {
         let result = {
           isMatch: true,
           score: totalScore / numMatches
         };
 
-        if(includeMatches) {
+        if (includeMatches) {
           result.indices = allIndices;
         }
 
@@ -1313,9 +1286,9 @@ function register(...args) {
 }
 
 function createSearcher(pattern, options) {
-  for(let i = 0, len = registeredSearchers.length; i < len; i += 1) {
+  for (let i = 0, len = registeredSearchers.length; i < len; i += 1) {
     let searcherClass = registeredSearchers[i];
-    if(searcherClass.condition(pattern, options)) {
+    if (searcherClass.condition(pattern, options)) {
       return new searcherClass(pattern, options);
     }
   }
@@ -1333,14 +1306,14 @@ const KeyType = {
   PATTERN: '$val'
 };
 
-const isExpression = query => !!(query[LogicalOperator.AND] || query[LogicalOperator.OR]);
+const isExpression = (query) => !!(query[LogicalOperator.AND] || query[LogicalOperator.OR]);
 
-const isPath = query => !!query[KeyType.PATH];
+const isPath = (query) => !!query[KeyType.PATH];
 
-const isLeaf = query => !isArray(query) && isObject(query) && !isExpression(query);
+const isLeaf = (query) => !isArray(query) && isObject(query) && !isExpression(query);
 
-const convertToExplicit = query => ({
-  [LogicalOperator.AND]: Object.keys(query).map(key => ({
+const convertToExplicit = (query) => ({
+  [LogicalOperator.AND]: Object.keys(query).map((key) => ({
     [key]: query[key]
   }))
 });
@@ -1348,21 +1321,21 @@ const convertToExplicit = query => ({
 // When `auto` is `true`, the parse function will infer and initialize and add
 // the appropriate `Searcher` instance
 function parse(query, options, { auto = true } = {}) {
-  const next = query => {
+  const next = (query) => {
     let keys = Object.keys(query);
 
     const isQueryPath = isPath(query);
 
-    if(!isQueryPath && keys.length > 1 && !isExpression(query)) {
+    if (!isQueryPath && keys.length > 1 && !isExpression(query)) {
       return next(convertToExplicit(query));
     }
 
-    if(isLeaf(query)) {
+    if (isLeaf(query)) {
       const key = isQueryPath ? query[KeyType.PATH] : keys[0];
 
       const pattern = isQueryPath ? query[KeyType.PATTERN] : query[key];
 
-      if(!isString(pattern)) {
+      if (!isString(pattern)) {
         throw new Error(LOGICAL_SEARCH_INVALID_QUERY_FOR_KEY(key));
       }
 
@@ -1371,7 +1344,7 @@ function parse(query, options, { auto = true } = {}) {
         pattern
       };
 
-      if(auto) {
+      if (auto) {
         obj.searcher = createSearcher(pattern, options);
       }
 
@@ -1383,11 +1356,11 @@ function parse(query, options, { auto = true } = {}) {
       operator: keys[0]
     };
 
-    keys.forEach(key => {
+    keys.forEach((key) => {
       const value = query[key];
 
-      if(isArray(value)) {
-        value.forEach(item => {
+      if (isArray(value)) {
+        value.forEach((item) => {
           node.children.push(next(item));
         });
       }
@@ -1396,7 +1369,7 @@ function parse(query, options, { auto = true } = {}) {
     return node;
   };
 
-  if(!isExpression(query)) {
+  if (!isExpression(query)) {
     query = convertToExplicit(query);
   }
 
@@ -1407,7 +1380,7 @@ class Fuse {
   constructor(docs, options = {}, index) {
     this.options = { ...Config, ...options };
 
-    if(this.options.useExtendedSearch && !true) {
+    if (this.options.useExtendedSearch && !true) {
       throw new Error(EXTENDED_SEARCH_UNAVAILABLE);
     }
 
@@ -1419,7 +1392,7 @@ class Fuse {
   setCollection(docs, index) {
     this._docs = docs;
 
-    if(index && !(index instanceof FuseIndex)) {
+    if (index && !(index instanceof FuseIndex)) {
       throw new Error(INCORRECT_INDEX_TYPE);
     }
 
@@ -1431,7 +1404,7 @@ class Fuse {
   }
 
   add(doc) {
-    if(!isDefined(doc)) {
+    if (!isDefined(doc)) {
       return;
     }
 
@@ -1442,9 +1415,9 @@ class Fuse {
   remove(predicate = (/* doc, idx */) => false) {
     const results = [];
 
-    for(let i = 0, len = this._docs.length; i < len; i += 1) {
+    for (let i = 0, len = this._docs.length; i < len; i += 1) {
       const doc = this._docs[i];
-      if(predicate(doc, i)) {
+      if (predicate(doc, i)) {
         this.removeAt(i);
         i -= 1;
 
@@ -1467,19 +1440,15 @@ class Fuse {
   search(query, { limit = -1 } = {}) {
     const { includeMatches, includeScore, shouldSort, sortFn, ignoreFieldNorm } = this.options;
 
-    let results = isString(query)
-      ? isString(this._docs[0])
-        ? this._searchStringList(query)
-        : this._searchObjectList(query)
-      : this._searchLogical(query);
+    let results = isString(query) ? (isString(this._docs[0]) ? this._searchStringList(query) : this._searchObjectList(query)) : this._searchLogical(query);
 
     computeScore$1(results, { ignoreFieldNorm });
 
-    if(shouldSort) {
+    if (shouldSort) {
       results.sort(sortFn);
     }
 
-    if(isNumber(limit) && limit > -1) {
+    if (isNumber(limit) && limit > -1) {
       results = results.slice(0, limit);
     }
 
@@ -1496,13 +1465,13 @@ class Fuse {
 
     // Iterate over every string in the index
     records.forEach(({ v: text, i: idx, n: norm }) => {
-      if(!isDefined(text)) {
+      if (!isDefined(text)) {
         return;
       }
 
       const { isMatch, score, indices } = searcher.searchIn(text);
 
-      if(isMatch) {
+      if (isMatch) {
         results.push({
           item: text,
           idx,
@@ -1518,7 +1487,7 @@ class Fuse {
     const expression = parse(query, this.options);
 
     const evaluate = (node, item, idx) => {
-      if(!node.children) {
+      if (!node.children) {
         const { keyId, searcher } = node;
 
         const matches = this._findMatches({
@@ -1527,7 +1496,7 @@ class Fuse {
           searcher
         });
 
-        if(matches && matches.length) {
+        if (matches && matches.length) {
           return [
             {
               idx,
@@ -1544,10 +1513,10 @@ class Fuse {
       switch (node.operator) {
         case LogicalOperator.AND: {
           const res = [];
-          for(let i = 0, len = node.children.length; i < len; i += 1) {
+          for (let i = 0, len = node.children.length; i < len; i += 1) {
             const child = node.children[i];
             const result = evaluate(child, item, idx);
-            if(result.length) {
+            if (result.length) {
               res.push(...result);
             } else {
               return [];
@@ -1557,10 +1526,10 @@ class Fuse {
         }
         case LogicalOperator.OR: {
           const res = [];
-          for(let i = 0, len = node.children.length; i < len; i += 1) {
+          for (let i = 0, len = node.children.length; i < len; i += 1) {
             const child = node.children[i];
             const result = evaluate(child, item, idx);
-            if(result.length) {
+            if (result.length) {
               res.push(...result);
               break;
             }
@@ -1575,12 +1544,12 @@ class Fuse {
     const results = [];
 
     records.forEach(({ $: item, i: idx }) => {
-      if(isDefined(item)) {
+      if (isDefined(item)) {
         let expResults = evaluate(expression, item, idx);
 
-        if(expResults.length) {
+        if (expResults.length) {
           // Dedupe when adding
-          if(!resultMap[idx]) {
+          if (!resultMap[idx]) {
             resultMap[idx] = { idx, item, matches: [] };
             results.push(resultMap[idx]);
           }
@@ -1601,7 +1570,7 @@ class Fuse {
 
     // List is Array<Object>
     records.forEach(({ $: item, i: idx }) => {
-      if(!isDefined(item)) {
+      if (!isDefined(item)) {
         return;
       }
 
@@ -1609,7 +1578,8 @@ class Fuse {
 
       // Iterate over every key (i.e, path), and fetch the value at that key
       keys.forEach((key, keyIndex) => {
-        matches.push(...this._findMatches({
+        matches.push(
+          ...this._findMatches({
             key,
             value: item[keyIndex],
             searcher
@@ -1617,7 +1587,7 @@ class Fuse {
         );
       });
 
-      if(matches.length) {
+      if (matches.length) {
         results.push({
           idx,
           item,
@@ -1629,21 +1599,21 @@ class Fuse {
     return results;
   }
   _findMatches({ key, value, searcher }) {
-    if(!isDefined(value)) {
+    if (!isDefined(value)) {
       return [];
     }
 
     let matches = [];
 
-    if(isArray(value)) {
+    if (isArray(value)) {
       value.forEach(({ v: text, i: idx, n: norm }) => {
-        if(!isDefined(text)) {
+        if (!isDefined(text)) {
           return;
         }
 
         const { isMatch, score, indices } = searcher.searchIn(text);
 
-        if(isMatch) {
+        if (isMatch) {
           matches.push({
             score,
             key,
@@ -1659,7 +1629,7 @@ class Fuse {
 
       const { isMatch, score, indices } = searcher.searchIn(text);
 
-      if(isMatch) {
+      if (isMatch) {
         matches.push({ score, key, value: text, norm, indices });
       }
     }
@@ -1670,31 +1640,26 @@ class Fuse {
 
 // Practical scoring function
 function computeScore$1(results, { ignoreFieldNorm = Config.ignoreFieldNorm }) {
-  results.forEach(result => {
+  results.forEach((result) => {
     let totalScore = 1;
 
     result.matches.forEach(({ key, norm, score }) => {
       const weight = key ? key.weight : null;
 
-      totalScore *= Math.pow(score === 0 && weight ? Number.EPSILON : score,
-        (weight || 1) * (ignoreFieldNorm ? 1 : norm)
-      );
+      totalScore *= Math.pow(score === 0 && weight ? Number.EPSILON : score, (weight || 1) * (ignoreFieldNorm ? 1 : norm));
     });
 
     result.score = totalScore;
   });
 }
 
-function format(results,
-  docs,
-  { includeMatches = Config.includeMatches, includeScore = Config.includeScore } = {}
-) {
+function format(results, docs, { includeMatches = Config.includeMatches, includeScore = Config.includeScore } = {}) {
   const transformers = [];
 
-  if(includeMatches) transformers.push(transformMatches);
-  if(includeScore) transformers.push(transformScore);
+  if (includeMatches) transformers.push(transformMatches);
+  if (includeScore) transformers.push(transformScore);
 
-  return results.map(result => {
+  return results.map((result) => {
     const { idx } = result;
 
     const data = {
@@ -1702,8 +1667,8 @@ function format(results,
       refIndex: idx
     };
 
-    if(transformers.length) {
-      transformers.forEach(transformer => {
+    if (transformers.length) {
+      transformers.forEach((transformer) => {
         transformer(result, data);
       });
     }
