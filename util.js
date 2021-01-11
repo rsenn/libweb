@@ -1499,9 +1499,9 @@ Util.toString = (obj, opts = {}) => {
       out += s;
     } else {
       let isMap = obj instanceof Map;
-      let keys = isMap ? obj.keys() : Object.keys(obj);
-      //let entries = isMap ? [...obj.entries()] : Object.entries(obj);
-      // print('[object ' + Util.className(obj) + ']');
+      let keys = isMap ? obj.keys() : Object.getOwnPropertyNames(obj);
+      //console.debug("keys:", keys);
+
       if(Object.getPrototypeOf(obj) !== Object.prototype) print(Util.className(obj) + ' ', 1, 31);
       isMap ? print(`(${obj.size}) {${sep(true)}`, 1, 36) : print('{' + sep(true), 1, 36);
       let i = 0;
@@ -5194,9 +5194,9 @@ Util.printReturnValue = (fn, opts = {}) => {
     print = (returnValue, fn, ...args) => {
       let stack = Util.getCallerStack();
 
-      (console.debug || console.log)('RETURN VAL:', /*Util.toString(*/returnValue/*, { colors: false })*/, {
+      (console.debug || console.log)('RETURN VAL:', /*Util.toString(*/ returnValue /*, { colors: false })*/, {
         /*fn,
-        */args/*,
+         */ args /*,
         stack*/
       });
     }

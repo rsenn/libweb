@@ -388,12 +388,12 @@ RGBA.prototype.toLAB = function() {
   y = y > 0.008856 ? Math.pow(y, 1 / 3) : 7.787 * y + 16 / 116;
   z = z > 0.008856 ? Math.pow(z, 1 / 3) : 7.787 * z + 16 / 116;
 
-  return { l: 116 * y - 16, a: 500 * (x - y), b: 200 * (y - z), a: this.a };
+  return { l: 116 * y - 16, A: 500 * (x - y), B: 200 * (y - z), a: this.a };
 };
-RGBA.prototype.fromLAB = function(lab) {
+RGBA.fromLAB = function(lab) {
   let y = (lab.l + 16) / 116,
-    x = lab.a / 500 + y,
-    z = y - lab.b / 200,
+    x = lab.A / 500 + y,
+    z = y - lab.B / 200,
     r,
     g,
     b;
@@ -410,10 +410,11 @@ RGBA.prototype.fromLAB = function(lab) {
   g = g > 0.0031308 ? 1.055 * Math.pow(g, 1 / 2.4) - 0.055 : 12.92 * g;
   b = b > 0.0031308 ? 1.055 * Math.pow(b, 1 / 2.4) - 0.055 : 12.92 * b;
 
-  this.r = Math.round(Math.max(0, Math.min(1, r)) * 255);
-  this.g = Math.round(Math.max(0, Math.min(1, g)) * 255);
-  this.b = Math.round(Math.max(0, Math.min(1, b)) * 255);
-  this.a = lab.alpha || 255;
+  return new this(Math.round(Math.max(0, Math.min(1, r)) * 255),
+    Math.round(Math.max(0, Math.min(1, g)) * 255),
+    Math.round(Math.max(0, Math.min(1, b)) * 255),
+    lab.a || 255
+  );
   return this;
 };
 
@@ -620,13 +621,13 @@ RGBA.random = function(r = [0, 255], g = [0, 255], b = [0, 255], a = [255, 255],
 for(let name of ['hex', 'toRGB', 'round', 'toHSLA', 'toCMYK', 'toLAB', 'linear', 'luminance', 'distance']) {
   RGBA[name] = (...args) => RGBA.prototype[name].call(...args);
 }
-
+/*
 for(let name of ['fromLAB']) {
   RGBA[name] = arg => {
     let ret = new RGBA();
     return RGBA.prototype[name].call(ret, arg);
   };
-}
+}*/
 
 Util.defineGetter(RGBA, Symbol.species, function() {
   return this;

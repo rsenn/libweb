@@ -147,10 +147,8 @@ export class Literal extends Expression {
   constructor(value, species) {
     super('Literal');
 
-    if(value !== undefined)
-      this.value = value;
-    if(species !== undefined)
-      Util.define(this, { species });
+    if(value !== undefined) this.value = value;
+    if(species !== undefined) Util.define(this, { species });
   }
 
   toString() {
@@ -177,7 +175,8 @@ export class RegExpLiteral extends Literal {
     super();
     this.type = 'RegExpLiteral';
     this.regex = {
-      pattern, flags
+      pattern,
+      flags
     };
   }
 }
@@ -681,7 +680,7 @@ export class SpreadElement extends ESNode {
   }
 }
 
-export class ExportNamedDeclaration extends Statement {
+export class ExportNamedDeclaration extends ModuleDeclaration {
   constructor(declaration, specifiers, source) {
     super('ExportNamedDeclaration');
     this.declaration = declaration;
@@ -715,6 +714,13 @@ export class ExportDefaultDeclaration extends ModuleDeclaration {
   constructor(declaration) {
     super('ExportDefaultDeclaration');
     this.declaration = declaration;
+  }
+}
+
+export class ExportAllDeclaration extends ModuleDeclaration {
+  constructor(source) {
+    super('ExportAllDeclaration');
+    this.source = source;
   }
 }
 
@@ -796,13 +802,12 @@ export const CTORS = {
   TryStatement,
   CatchClause,
   ThrowStatement,
-  YieldExpression,
-  ExportNamedDeclaration,
   Declaration,
   ClassDeclaration,
   ClassBody,
   MethodDefinition,
   MetaProperty,
+  YieldExpression,
   FunctionArgument,
   FunctionDeclaration,
   ArrowFunctionExpression,
@@ -818,7 +823,13 @@ export const CTORS = {
   RestElement,
   AssignmentPattern,
   AwaitExpression,
-  SpreadElement
+  SpreadElement,
+  ExportNamedDeclaration,
+  ExportSpecifier,
+  AnonymousDefaultExportedFunctionDeclaration,
+  AnonymousDefaultExportedClassDeclaration,
+  ExportDefaultDeclaration,
+  ExportAllDeclaration
 };
 
 export function Factory() {
