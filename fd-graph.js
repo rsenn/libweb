@@ -45,7 +45,8 @@ export class Graph {
     this.damping = damping;
     this.timestep = timestep;
 
-    this.gravitate_to_origin = typeof gravitate_to_origin == 'undefined' ? false : gravitate_to_origin;
+    this.gravitate_to_origin =
+      typeof gravitate_to_origin == 'undefined' ? false : gravitate_to_origin;
     this.done_rendering = false;
     this.prng = prng;
 
@@ -71,7 +72,8 @@ export class Graph {
   }
 
   addNode(n, charge = this.config.charge, mass = this.config.mass) {
-    if (!(n instanceof Node)) n = new Node(n, charge, mass, this.config.size ? () => 0 : this.prng);
+    if (!(n instanceof Node))
+      n = new Node(n, charge, mass, this.config.size ? () => 0 : this.prng);
     n.index = this.nodes.length;
     this.nodes.push(n);
 
@@ -197,7 +199,10 @@ export class Graph {
         node.netforce.x = Math.abs(node.netforce.x) < 1 ? 0 : node.netforce.x;
         node.netforce.y = Math.abs(node.netforce.y) < 1 ? 0 : node.netforce.y;
 
-        let newVel = node.netforce.prod(this.timestep).sum(node.velocity).prod(this.damping);
+        let newVel = node.netforce
+          .prod(this.timestep)
+          .sum(node.velocity)
+          .prod(this.damping);
 
         node.velocity.x = node.netforce.x == 0 ? 0 : newVel.x;
         node.velocity.y = node.netforce.y == 0 ? 0 : newVel.y;
@@ -285,8 +290,10 @@ export class Graph {
   }
 
   updateAll() {
-    for (var j = 0; j < this.edges.length; j++) this.update.edge(this.edges[j], j);
-    for (var j = 0; j < this.nodes.length; j++) this.update.node(this.nodes[j], j);
+    for (var j = 0; j < this.edges.length; j++)
+      this.update.edge(this.edges[j], j);
+    for (var j = 0; j < this.nodes.length; j++)
+      this.update.node(this.nodes[j], j);
   }
 
   roundAll(prec) {
@@ -382,7 +389,10 @@ export class Node extends Point {
     let distance = this.distance(n);
     let force = scale * Math.max(distance + 200, 1);
 
-    this.netforce.move(force * Math.sin((n.x - this.x) / distance), force * Math.sin((n.y - this.y) / distance));
+    this.netforce.move(
+      force * Math.sin((n.x - this.x) / distance),
+      force * Math.sin((n.y - this.y) / distance)
+    );
   }
 
   applyRepulsiveForce(n, scale = 1) {
@@ -390,11 +400,18 @@ export class Node extends Point {
 
     let f = -1 * scale * ((this.charge * n.charge) / (d * d));
 
-    this.netforce.move(f * Math.sin((n.x - this.x) / d), f * Math.sin((n.y - this.y) / d));
+    this.netforce.move(
+      f * Math.sin((n.x - this.x) / d),
+      f * Math.sin((n.y - this.y) / d)
+    );
   }
 
   toJS() {
-    let ret = Util.filterKeys(this, (key) => ['charge', 'mass', 'label', 'x', 'y', 'id', 'color'].indexOf(key) != -1);
+    let ret = Util.filterKeys(
+      this,
+      (key) =>
+        ['charge', 'mass', 'label', 'x', 'y', 'id', 'color'].indexOf(key) != -1
+    );
     if (this.node && this.node.id !== undefined) ret.id = this.node.id;
     Point.round(ret, 0.001);
     return ret;

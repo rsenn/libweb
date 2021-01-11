@@ -83,8 +83,24 @@ const stringEscapes = {
   '?': '?'
 };
 
-const defaultTypeNames = ['void', 'char', 'short', 'int', 'long', 'float', 'double'];
-const defaultTypeModifier = ['signed', 'unsigned', 'short', 'long', 'const', 'struct', 'enum'];
+const defaultTypeNames = [
+  'void',
+  'char',
+  'short',
+  'int',
+  'long',
+  'float',
+  'double'
+];
+const defaultTypeModifier = [
+  'signed',
+  'unsigned',
+  'short',
+  'long',
+  'const',
+  'struct',
+  'enum'
+];
 
 export function cparse(src, options) {
   var curr;
@@ -184,7 +200,9 @@ export function cparse(src, options) {
           stmts.push(def);
         }
       } else {
-        unexpected('struct, enum, typdef, extern, FunctionDeclaration or VariableDeclaration');
+        unexpected(
+          'struct, enum, typdef, extern, FunctionDeclaration or VariableDeclaration'
+        );
       }
     }
 
@@ -480,7 +498,8 @@ export function cparse(src, options) {
     }
 
     if (!def.name) {
-      if (typeNames.indexOf(def.modifier[def.modifier.length - 1]) != -1) def.name = def.modifier.pop();
+      if (typeNames.indexOf(def.modifier[def.modifier.length - 1]) != -1)
+        def.name = def.modifier.pop();
       else unexpected(typeNames.join(', '));
     }
 
@@ -619,7 +638,16 @@ export function cparse(src, options) {
     var pos = getPos();
     var _curr = JSON.stringify(src.slice(index, index + 10) || 'EOF');
 
-    var msg = [pos.file, ':', pos.line, ': Expecting ', JSON.stringify(expected), ' got ', _curr, ` (src = '${src.slice(0, index)}', index = ${index})`].join('');
+    var msg = [
+      pos.file,
+      ':',
+      pos.line,
+      ': Expecting ',
+      JSON.stringify(expected),
+      ' got ',
+      _curr,
+      ` (src = '${src.slice(0, index)}', index = ${index})`
+    ].join('');
     throw new Error(msg);
   }
 
@@ -665,7 +693,11 @@ export function cparse(src, options) {
     do {
       var skipped = skipComments() || skipSpaces();
 
-      if (!includeSpaces && (index == 0 || src[index - 1] == '\n') && curr == '#') {
+      if (
+        !includeSpaces &&
+        (index == 0 || src[index - 1] == '\n') &&
+        curr == '#'
+      ) {
         consume('#');
         var line = (position.line = readNumber(true) - 1);
         consume(' ');

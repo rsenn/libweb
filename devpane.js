@@ -33,9 +33,21 @@ export default class devpane {
   });
   svg = lazyInitializer(() => {
     const rect = Element.rect(document.body);
-    const svg = this.createSVGElement('svg', { width: rect.width, height: rect.height, viewBox: `0 0 ${rect.width} ${rect.height}` }, this.root());
+    const svg = this.createSVGElement(
+      'svg',
+      {
+        width: rect.width,
+        height: rect.height,
+        viewBox: `0 0 ${rect.width} ${rect.height}`
+      },
+      this.root()
+    );
     this.createSVGElement('defs', {}, svg);
-    this.createSVGElement('rect', { x: 100, y: 100, w: 100, h: 100, fill: '#f0f' }, svg);
+    this.createSVGElement(
+      'rect',
+      { x: 100, y: 100, w: 100, h: 100, fill: '#f0f' },
+      svg
+    );
     return svg;
   });
   log = lazyInitializer(() =>
@@ -95,7 +107,8 @@ export default class devpane {
           padding: '0px',
           opacity: 1,
           textAlign: 'left',
-          fontFamily: 'MiscFixedSC613,MiscFixed,Monospace,fixed-width,fixed,"Courier New"',
+          fontFamily:
+            'MiscFixedSC613,MiscFixed,Monospace,fixed-width,fixed,"Courier New"',
           fontSize: '11px'
         }
       );
@@ -129,7 +142,8 @@ export default class devpane {
     this.open = !this.open;
     //Util.log("devpane.toggleOpenClose open=" + this.open);
     this.config.assign({ open: this.open });
-    if (this.pane()) this.pane().style.display = this.open ? 'inline-block' : 'none';
+    if (this.pane())
+      this.pane().style.display = this.open ? 'inline-block' : 'none';
     if (this.open) {
       //this.pane.style.display = 'inline-block';
       //if(global.window)  this.rectList = this.buildRectList(document.body);
@@ -164,7 +178,10 @@ export default class devpane {
         }
       });
       let pane = this.pane();
-      while (pane.lastElementChild && pane.lastElementChild.tagName.toLowerCase() == 'table') {
+      while (
+        pane.lastElementChild &&
+        pane.lastElementChild.tagName.toLowerCase() == 'table'
+      ) {
         pane.removeChild(pane.lastElementChild);
       }
       pane.appendChild(table);
@@ -175,7 +192,8 @@ export default class devpane {
     if (this.log) {
       let log = this.log();
       if (log) {
-        if (log.parentNode !== this.pane()) this.pane().insertBefore(log, this.pane().firstElementChild);
+        if (log.parentNode !== this.pane())
+          this.pane().insertBefore(log, this.pane().firstElementChild);
         log.insertAdjacentText('beforeend', `${str.trim()}\n`);
         log.scrollTop = log.scrollHeight;
         log.style.height = '4em';
@@ -217,7 +235,11 @@ export default class devpane {
       );
     }
     if (!(svgcircle && svgpath.tagName == 'path')) {
-      svgcircle = SVG.create('path', { id: 'touch-pos', stroke: '#80ff00', fill: 'none', strokeWidth: 2 }, this.svg());
+      svgcircle = SVG.create(
+        'path',
+        { id: 'touch-pos', stroke: '#80ff00', fill: 'none', strokeWidth: 2 },
+        this.svg()
+      );
     }
     if (svgcircle) {
       let str = Polygon.toPath(polygon);
@@ -241,7 +263,9 @@ export default class devpane {
 
         if (rect.x == 0 && rect.y == 0) {
           const { offsetParent } = elem;
-          const offsetRect = offsetParent ? Element.getRect(offsetParent) : null;
+          const offsetRect = offsetParent
+            ? Element.getRect(offsetParent)
+            : null;
           //Util.log("Zero ", { elem, rect, offsetParent, offsetRect });
         }
 
@@ -305,22 +329,27 @@ export default class devpane {
     if (!innerHTML.match(/<.*>/)) {
       ret.push(innerHTML);
     } else {
-      Element.walk(firstElementChild, ({ innerHTML, textContent, innerText }, accu) => {
-        let text = '';
-        if (!innerHTML.match(/<.*>/)) {
-          text = innerHTML.replace(/&nbsp;/g, '');
-        } else {
-          text = textContent || innerText || '';
+      Element.walk(
+        firstElementChild,
+        ({ innerHTML, textContent, innerText }, accu) => {
+          let text = '';
+          if (!innerHTML.match(/<.*>/)) {
+            text = innerHTML.replace(/&nbsp;/g, '');
+          } else {
+            text = textContent || innerText || '';
+          }
+          if (text.length > 0) ret.push(text);
         }
-        if (text.length > 0) ret.push(text);
-      });
+      );
     }
     return ret;
   }
 
   handleKeypress(e) {
     const { key, keyCode, charCode } = e;
-    const modifiers = ['alt', 'shift', 'ctrl', 'meta'].reduce((mod, key) => (e[`${key}Key`] === true ? [...mod, key] : mod), []).toString();
+    const modifiers = ['alt', 'shift', 'ctrl', 'meta']
+      .reduce((mod, key) => (e[`${key}Key`] === true ? [...mod, key] : mod), [])
+      .toString();
     //Util.log('keypress: ', { key, keyCode, charCode, modifiers });
 
     if (e.key == 'D' && (e.metaKey || e.ctrlKey || e.altKey) && e.shiftKey) {
@@ -329,7 +358,10 @@ export default class devpane {
       select().then((e) => Util.log('select() = ', e));
     } /* if(e.key == 'g') {
       gettext().then(r => Util.log("gettext() = ", r));
-    } else*/ else if (e.key == 't' && e.ctrlKey) {
+    } else*/ else if (
+      e.key == 't' &&
+      e.ctrlKey
+    ) {
       Util.log('devpane ', this);
       this.renderTranslateLayer();
 
@@ -405,7 +437,10 @@ export default class devpane {
     const fn = `${what}EventListener`;
 
     Util.log(`devpane.handleToggle ${fn}`);
-    const mouseEvents = (elem) => ['mouseenter', 'mouseleave'].forEach((listener) => elem[fn](listener, this.mouseEvent));
+    const mouseEvents = (elem) =>
+      ['mouseenter', 'mouseleave'].forEach((listener) =>
+        elem[fn](listener, this.mouseEvent)
+      );
 
     window[`${what}EventListener`]('mousemove', this.mouseMove);
 
@@ -451,8 +486,15 @@ export default class devpane {
       );
       return parent;
     };
-    createRow(table, 'th', header, { backgroundColor: '#000000', color: '#ffffff' });
-    rows.forEach((columns, i) => createRow(table, 'td', columns, { backgroundColor: i % 2 == 0 ? '#ffffff' : '#c0c0c0' }));
+    createRow(table, 'th', header, {
+      backgroundColor: '#000000',
+      color: '#ffffff'
+    });
+    rows.forEach((columns, i) =>
+      createRow(table, 'td', columns, {
+        backgroundColor: i % 2 == 0 ? '#ffffff' : '#c0c0c0'
+      })
+    );
     return table;
   }
 
@@ -474,7 +516,16 @@ export default class devpane {
     t.layer = this.createLayer({ id: 'devpane-layer' });
     t.factory = Element.factory({ append_to: (e) => t.layer.appendChild(e) });
     t.renderer = new Renderer(t.chooser, t.factory('div'));
-    t.form = t.factory('form', {}, { display: 'flex', flexFlow: 'row nowrap', alignItems: 'flex-end', padding: '4px' });
+    t.form = t.factory(
+      'form',
+      {},
+      {
+        display: 'flex',
+        flexFlow: 'row nowrap',
+        alignItems: 'flex-end',
+        padding: '4px'
+      }
+    );
     t.form.addEventListener('submit', (e) => false);
     t.select = t.renderer.refresh();
 
@@ -521,7 +572,13 @@ export default class devpane {
       Util.log('language store: ', res);
     });
 
-    const createTable = ({ rows, spacing = 0, padding = 0, border = 0, ...props }) => {
+    const createTable = ({
+      rows,
+      spacing = 0,
+      padding = 0,
+      border = 0,
+      ...props
+    }) => {
       let tbl = Element.create('table', {
         cellpadding: padding,
         cellspacing: spacing,
@@ -586,32 +643,34 @@ export default class devpane {
       save: createButton('Save', (e) => t.save(e)),
       new: createButton('New', () => this.renderTranslateBox()),
       load: createButton('Load', () => {
-        axios.get('/api/read/static/locales/fa-IR/common.json').then(({ data }) => {
-          const elem = t.factory('textarea', {
-            cols: 80,
-            rows: 25,
-            style: {
-              fontFamily: "monospace,fixed,'Courier New'",
-              fontSize: '12px'
-            }
+        axios
+          .get('/api/read/static/locales/fa-IR/common.json')
+          .then(({ data }) => {
+            const elem = t.factory('textarea', {
+              cols: 80,
+              rows: 25,
+              style: {
+                fontFamily: "monospace,fixed,'Courier New'",
+                fontSize: '12px'
+              }
+            });
+
+            const json = Util.base64.decode(data.data);
+            const obj = JSON.parse(json);
+            //const data = atob(cmd.data);
+
+            let rows = [];
+            Util.foreach(obj, (v, k) => rows.push([k, v]));
+            let tbl = createTable({ rows, spacing: 3, padding: 2 });
+            Element.setCSS(tbl, { fontFamily: 'Arial', fontSize: '13px' });
+
+            t.layer.insertBefore(tbl, t.layer.firstElementChild);
+
+            Util.log('Load ', { json, obj });
+            elem.innerHTML = json;
+
+            t.trans = json;
           });
-
-          const json = Util.base64.decode(data.data);
-          const obj = JSON.parse(json);
-          //const data = atob(cmd.data);
-
-          let rows = [];
-          Util.foreach(obj, (v, k) => rows.push([k, v]));
-          let tbl = createTable({ rows, spacing: 3, padding: 2 });
-          Element.setCSS(tbl, { fontFamily: 'Arial', fontSize: '13px' });
-
-          t.layer.insertBefore(tbl, t.layer.firstElementChild);
-
-          Util.log('Load ', { json, obj });
-          elem.innerHTML = json;
-
-          t.trans = json;
-        });
       })
     };
     t.set = t.set.bind(t);
@@ -645,7 +704,9 @@ export default class devpane {
               let bbox = Element.rect(res);
               let css = Element.getCSS(res);
 
-              bbText.innerHTML = `${Rect.toSource(bbox)}\nfont-size: ${css.fontSize}`; //`x: ${bbox.x}\ny: ${bbox.y}\nw: ${bbox.width}\nh: ${bbox.height}`;
+              bbText.innerHTML = `${Rect.toSource(bbox)}\nfont-size: ${
+                css.fontSize
+              }`; //`x: ${bbox.x}\ny: ${bbox.y}\nw: ${bbox.width}\nh: ${bbox.height}`;
             }
             Util.log('selectElement (resolved) = ', res);
 
@@ -719,7 +780,15 @@ export default class devpane {
         <input type="checkbox" onChange={this.handleToggle} />
         Bounding boxes
         <br />
-        <pre id={'bbox'}>{[`x: ${rect.x || 0}`, `y: ${rect.y || 0}`, `width: ${rect.w || 0}`, `height: ${rect.h || 0}`, `font-size: ${fontSize || 0}`].join(',\n')}</pre>
+        <pre id={'bbox'}>
+          {[
+            `x: ${rect.x || 0}`,
+            `y: ${rect.y || 0}`,
+            `width: ${rect.w || 0}`,
+            `height: ${rect.h || 0}`,
+            `font-size: ${fontSize || 0}`
+          ].join(',\n')}
+        </pre>
       </form>
     );
   }
@@ -765,7 +834,10 @@ export default class devpane {
             Util.log('selectElement selected: ', this.selected);
             elm.innerHTML = this.selected.map(({ e }) => `#${e.id}`).join(',');
             this.fontSize = Element.getCSS(this.selected[0].e, 'font-size');
-            Util.log(`${Element.xpath(this.selected[0].e)} font-size: `, this.fontSize);
+            Util.log(
+              `${Element.xpath(this.selected[0].e)} font-size: `,
+              this.fontSize
+            );
           } else {
             elm.innerHTML = '';
           }
@@ -809,7 +881,8 @@ export default class devpane {
         );
       } else if (!inside && rect.boxes) {
         //Util.log('parent: ', rect.boxes.parentNode, ' boxes: ', rect.boxes);
-        while (rect.boxes.firstChild) rect.boxes.removeChild(rect.boxes.firstChild);
+        while (rect.boxes.firstChild)
+          rect.boxes.removeChild(rect.boxes.firstChild);
         rect.boxes.parentNode.removeChild(rect.boxes);
         rect.boxes = null;
         rect.serial = serial;
@@ -827,7 +900,9 @@ export default class devpane {
 
     //if(rects.length) Util.log("rects: ", rects);
     let svg = this.svg();
-    [...svg.querySelectorAll('rect')].forEach((e) => e.parentElement.removeChild(e));
+    [...svg.querySelectorAll('rect')].forEach((e) =>
+      e.parentElement.removeChild(e)
+    );
     let f = SVG.factory(svg);
 
     this.svgRects = rects;

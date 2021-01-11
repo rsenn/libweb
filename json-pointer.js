@@ -80,7 +80,11 @@ function decodeFragmentSegments(segments) {
   let len = segments.length;
   let res = new Array(len);
   while (++i < len) {
-    res[i] = replace(replace(decodeURIComponent('' + segments[i]), '~1', '/'), '~0', '~');
+    res[i] = replace(
+      replace(decodeURIComponent('' + segments[i]), '~1', '/'),
+      '~0',
+      '~'
+    );
   }
   return res;
 }
@@ -91,7 +95,9 @@ function encodeFragmentSegments(segments) {
   let res = new Array(len);
   while (++i < len) {
     if (typeof segments[i] === 'string') {
-      res[i] = encodeURIComponent(replace(replace(segments[i], '~', '~0'), '/', '~1'));
+      res[i] = encodeURIComponent(
+        replace(replace(segments[i], '~', '~0'), '/', '~1')
+      );
     } else {
       res[i] = segments[i];
     }
@@ -125,13 +131,17 @@ function encodePointerSegments(segments) {
 
 function decodePointer(ptr) {
   if (typeof ptr !== 'string') {
-    throw new TypeError('Invalid type: JSON Pointers are represented as strings.');
+    throw new TypeError(
+      'Invalid type: JSON Pointers are represented as strings.'
+    );
   }
   if (ptr.length === 0) {
     return [];
   }
   if (ptr[0] !== '/') {
-    throw new ReferenceError('Invalid JSON Pointer syntax. Non-empty pointer must begin with a solidus `/`.');
+    throw new ReferenceError(
+      'Invalid JSON Pointer syntax. Non-empty pointer must begin with a solidus `/`.'
+    );
   }
   return decodePointerSegments(ptr.substring(1).split('/'));
 }
@@ -148,10 +158,14 @@ function encodePointer(path) {
 
 function decodeUriFragmentIdentifier(ptr) {
   if (typeof ptr !== 'string') {
-    throw new TypeError('Invalid type: JSON Pointers are represented as strings.');
+    throw new TypeError(
+      'Invalid type: JSON Pointers are represented as strings.'
+    );
   }
   if (ptr.length === 0 || ptr[0] !== '#') {
-    throw new ReferenceError('Invalid JSON Pointer syntax; URI fragment idetifiers must begin with a hash.');
+    throw new ReferenceError(
+      'Invalid JSON Pointer syntax; URI fragment idetifiers must begin with a hash.'
+    );
   }
   if (ptr.length === 1) {
     return [];
@@ -351,7 +365,10 @@ function pickDecoder(ptr) {
 }
 
 JsonReference.isReference = function (obj) {
-  return (obj && obj instanceof JsonReference) || (typeof obj.$ref === 'string' && typeof obj.resolve === 'function');
+  return (
+    (obj && obj instanceof JsonReference) ||
+    (typeof obj.$ref === 'string' && typeof obj.resolve === 'function')
+  );
 };
 
 function visit(target, visitor, cycle) {
@@ -379,7 +396,10 @@ function visit(target, visitor, cycle) {
           path = cursor.path.concat(j);
           if (typeof it === 'object' && it !== null) {
             if (cycle && distinctObjects.has(it)) {
-              visitor(encodePointer(path), new JsonReference(distinctObjects.get(it)));
+              visitor(
+                encodePointer(path),
+                new JsonReference(distinctObjects.get(it))
+              );
               continue;
             }
             q.push({
@@ -387,7 +407,10 @@ function visit(target, visitor, cycle) {
               path
             });
             if (cycle) {
-              distinctObjects.set(it, new JsonPointer(encodeUriFragmentIdentifier(path)));
+              distinctObjects.set(
+                it,
+                new JsonPointer(encodeUriFragmentIdentifier(path))
+              );
             }
           }
           visitor(encodePointer(path), it);
@@ -401,7 +424,10 @@ function visit(target, visitor, cycle) {
           path = cursor.path.concat(items[i]);
           if (typeof it === 'object' && it !== null) {
             if (cycle && distinctObjects.has(it)) {
-              visitor(encodePointer(path), new JsonReference(distinctObjects.get(it)));
+              visitor(
+                encodePointer(path),
+                new JsonReference(distinctObjects.get(it))
+              );
               continue;
             }
             q.push({
@@ -409,7 +435,10 @@ function visit(target, visitor, cycle) {
               path
             });
             if (cycle) {
-              distinctObjects.set(it, new JsonPointer(encodeUriFragmentIdentifier(path)));
+              distinctObjects.set(
+                it,
+                new JsonPointer(encodeUriFragmentIdentifier(path))
+              );
             }
           }
           visitor(encodePointer(path), it);

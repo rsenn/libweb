@@ -10,7 +10,10 @@ export function Tree(root) {
   tree = function (arg) {
     let path, node;
 
-    if ((typeof arg == 'string' || Array.isArray(arg)) && (node = tree.at(arg))) {
+    if (
+      (typeof arg == 'string' || Array.isArray(arg)) &&
+      (node = tree.at(arg))
+    ) {
     } else if (isObject(arg) && parents.has(arg)) {
       node = arg;
     } else if (Array.isArray(arg) && arg.length == 2) {
@@ -85,6 +88,11 @@ Tree.prototype.parentNode = function (obj) {
   return parents.get(obj);
 };
 
+Tree.prototype.anchestors = function* (obj, t = (node) => node) {
+  const { parents } = this;
+  while ((obj = parents.get(obj))) yield t(obj);
+};
+
 Tree.prototype.keyOf = function (obj, prop) {
   if (prop === undefined) {
     prop = obj;
@@ -128,7 +136,11 @@ Tree.prototype.pop = function (node) {
 };
 
 Tree.prototype.push = function (node, ...children) {
-  mapRecurse((child, parent) => this.parents.set(child, parent), node, ...children);
+  mapRecurse(
+    (child, parent) => this.parents.set(child, parent),
+    node,
+    ...children
+  );
   splice(node, sizeOf(node), 0, ...children);
   return sizeOf(node);
 };
@@ -164,11 +176,16 @@ Tree.prototype.flat = function (transform, pred) {
 };
 
 Tree.prototype[Symbol.iterator] = function () {
-  return map(Tree.prototype.entries.call(this), ([path, node]) => [path.join('.'), node]);
+  return map(Tree.prototype.entries.call(this), ([path, node]) => [
+    path.join('.'),
+    node
+  ]);
 };
 
 Tree.prototype.filter = function (pred) {
-  return filter(Tree.prototype.entries.call(this), ([path, node]) => pred(node, path, this));
+  return filter(Tree.prototype.entries.call(this), ([path, node]) =>
+    pred(node, path, this)
+  );
 };
 
 function isObject(o) {
@@ -194,11 +211,16 @@ function keyAt(obj, index) {
 }
 
 function entries(obj) {
-  return obj instanceof Array ? Array.prototype.entries.call(obj) : Object.getOwnPropertyNames(obj).map((prop) => [prop, obj[prop]]);
+  return obj instanceof Array
+    ? Array.prototype.entries.call(obj)
+    : Object.getOwnPropertyNames(obj).map((prop) => [prop, obj[prop]]);
 }
 
 function keys(obj) {
-  if (typeof obj == 'object' && obj != null) return obj instanceof Array ? Array.prototype.keys.call(obj) : Object.getOwnPropertyNames(obj);
+  if (typeof obj == 'object' && obj != null)
+    return obj instanceof Array
+      ? Array.prototype.keys.call(obj)
+      : Object.getOwnPropertyNames(obj);
   return [];
 }
 
@@ -214,7 +236,8 @@ function indexOf(obj, prop) {
 }
 
 function splice(obj, start, deleteCount, ...addItems) {
-  if (obj instanceof Array) return Array.prototype.splice.call(obj, start, deleteCount, ...addItems);
+  if (obj instanceof Array)
+    return Array.prototype.splice.call(obj, start, deleteCount, ...addItems);
   //console.log('splice', { obj, start, deleteCount, addItems });
   let remove = [...entries(obj)].slice(start, start + deleteCount);
   //console.log('splice', { remove });
@@ -223,7 +246,10 @@ function splice(obj, start, deleteCount, ...addItems) {
     delete obj[name];
     removed.push(value);
   }
-  let add = addItems.reduce((a, i) => (i instanceof Array ? [...a, i] : [...a, ...entries(i)]), []);
+  let add = addItems.reduce(
+    (a, i) => (i instanceof Array ? [...a, i] : [...a, ...entries(i)]),
+    []
+  );
   for (let [name, value] of add) {
     obj[name] = value;
   }
@@ -233,7 +259,8 @@ function splice(obj, start, deleteCount, ...addItems) {
 function* walk(node, parent = null) {
   yield [node, parent];
   for (let key in node) {
-    if (typeof node[key] == 'object' && node[key] !== null) yield* walk(node[key], node);
+    if (typeof node[key] == 'object' && node[key] !== null)
+      yield* walk(node[key], node);
   }
 }
 
@@ -252,7 +279,8 @@ function* filter(iter, pred) {
 
 function mapRecurse(callback, node, ...children) {
   for (let child of children) {
-    if (typeof item == 'object' && item !== null) for (let args of walk(item, node)) callback(...args);
+    if (typeof item == 'object' && item !== null)
+      for (let args of walk(item, node)) callback(...args);
   }
   return children;
 }

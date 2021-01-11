@@ -23,7 +23,11 @@ export const equals = (a, b) => {
     if (!(Util.isArray(b) && a.length === b.length)) {
       return false;
     }
-    for (i = j = 0, ref = a.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+    for (
+      i = j = 0, ref = a.length;
+      0 <= ref ? j < ref : j > ref;
+      i = 0 <= ref ? ++j : --j
+    ) {
       if (!equals(a[i], b[i])) {
         return false;
       }
@@ -46,7 +50,8 @@ export const equals = (a, b) => {
 
 export const extend = (...args) => {
   let destination, k, source, sources, j, len;
-  (destination = args[0]), (sources = 2 <= args.length ? Array.prototype.slice.call(args, 1) : []);
+  (destination = args[0]),
+    (sources = 2 <= args.length ? Array.prototype.slice.call(args, 1) : []);
   for (j = 0, len = sources.length; j < len; j++) {
     source = sources[j];
     for (k in source) {
@@ -68,7 +73,9 @@ export const select = (root, filter, path) => {
   path = typeof path == 'string' ? path.split(/\.\//) : path;
   if (!path) path = [];
   if (filter(root, path)) selected.push({ path, value: root });
-  else if (Util.isObject(root)) for (k in root) selected = selected.concat(select(root[k], filter, [...path, k]));
+  else if (Util.isObject(root))
+    for (k in root)
+      selected = selected.concat(select(root[k], filter, [...path, k]));
   return selected;
 };
 
@@ -101,16 +108,24 @@ export const iterate = function* (...args) {
   if ((r = filter(value, path, root))) yield [value, path, root];
   if (r !== -1)
     if (Util.isObject(value)) {
-      for (let k in value) yield* iterate(value[k], filter, [...path, isNaN(+k) ? k : +k], root);
+      for (let k in value)
+        yield* iterate(value[k], filter, [...path, isNaN(+k) ? k : +k], root);
     }
 };
 
-export const flatten = (iter, dst = {}, filter = (v, p) => typeof v != 'object' && v != null, map = (p, v) => [p.join('.'), v]) => {
+export const flatten = (
+  iter,
+  dst = {},
+  filter = (v, p) => typeof v != 'object' && v != null,
+  map = (p, v) => [p.join('.'), v]
+) => {
   let insert;
   if (!iter.next) iter = iterate(iter, filter);
 
-  if (typeof dst.set == 'function') insert = (name, value) => dst.set(name, value);
-  else if (typeof dst.push == 'function') insert = (name, value) => dst.push([name, value]);
+  if (typeof dst.set == 'function')
+    insert = (name, value) => dst.set(name, value);
+  else if (typeof dst.push == 'function')
+    insert = (name, value) => dst.push([name, value]);
   else insert = (name, value) => (dst[name] = value);
 
   for (let [value, path] of iter) insert(...map(path, value));
@@ -136,7 +151,8 @@ export const set = (root, path, value) => {
 
   for (let j = 0, len = path.length; j + 1 < len; j++) {
     let pathElement = isNaN(+path[j]) ? path[j] : +path[j];
-    if (!(pathElement in root)) root[pathElement] = /^[0-9]+$/.test(path[j + 1]) ? [] : {};
+    if (!(pathElement in root))
+      root[pathElement] = /^[0-9]+$/.test(path[j + 1]) ? [] : {};
     root = root[pathElement];
   }
   let lastPath = path.pop();
@@ -154,7 +170,9 @@ export const delegate = (root, path) => {
     };
   }
   return function (path, value) {
-    return value !== undefined ? obj.set(root, path, value) : obj.get(root, path);
+    return value !== undefined
+      ? obj.set(root, path, value)
+      : obj.get(root, path);
   };
 };
 

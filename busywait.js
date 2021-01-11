@@ -1,6 +1,8 @@
 export const busywait = (checkFn, _options) => {
   const options = Object.assign({}, _options);
-  return checkArgs(checkFn, options).then(() => eventLoop(wrapSyncMethod(checkFn), options));
+  return checkArgs(checkFn, options).then(() =>
+    eventLoop(wrapSyncMethod(checkFn), options)
+  );
 };
 
 const checkArgs = (checkFn, options) => {
@@ -39,7 +41,9 @@ const eventLoop = (checkFn, options) =>
         )
         .catch(() => {
           if (iteration === options.maxChecks) {
-            return reject(options.failMsg || 'Exceeded number of iterations to wait');
+            return reject(
+              options.failMsg || 'Exceeded number of iterations to wait'
+            );
           }
           setTimeout(iterationCheck, options.sleepTime);
         });

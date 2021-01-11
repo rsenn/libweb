@@ -18,11 +18,27 @@ export async function ConsoleSetup(opts = {}) {
     const size = await Util.ttyGetWinSize(fd);
     return Array.isArray(size) ? size[0] : undefined;
   };
-  const defaultBreakLength = (proc && proc.stdout && proc.stdout.isTTY && proc.stdout.columns) || proc.env.COLUMNS || (await consoleWidth()) || 80; // Infinity;
-  const { depth = 2, colors = await Util.isatty(1), breakLength = defaultBreakLength, maxArrayLength = Infinity, ...options } = opts;
+  const defaultBreakLength =
+    (proc && proc.stdout && proc.stdout.isTTY && proc.stdout.columns) ||
+    proc.env.COLUMNS ||
+    (await consoleWidth()) ||
+    80; // Infinity;
+  const {
+    depth = 2,
+    colors = await Util.isatty(1),
+    breakLength = defaultBreakLength,
+    maxArrayLength = Infinity,
+    ...options
+  } = opts;
   ret = await Util.tryCatch(
     async () => {
-      const inspectOptions = { depth, colors, breakLength, maxArrayLength, ...options };
+      const inspectOptions = {
+        depth,
+        colors,
+        breakLength,
+        maxArrayLength,
+        ...options
+      };
       const Console = await import('console').then((module) => module.Console);
       ret = new Console({
         stdout: proc.stdout,
@@ -51,10 +67,21 @@ export async function ConsoleSetup(opts = {}) {
         inspect(...args) {
           let [obj, opts] = args;
           if (args.length == 0) obj = this;
-          return ObjectInspect(obj, { customInspect: true, ...options, ...opts });
+          return ObjectInspect(obj, {
+            customInspect: true,
+            ...options,
+            ...opts
+          });
         },
         log(...args) {
-          return log.call(this, ...args.map((arg) => (typeof arg != 'string' || !Util.isPrimitive(arg) ? ObjectInspect(arg, options) : arg)));
+          return log.call(
+            this,
+            ...args.map((arg) =>
+              typeof arg != 'string' || !Util.isPrimitive(arg)
+                ? ObjectInspect(arg, options)
+                : arg
+            )
+          );
         }
       });
     }

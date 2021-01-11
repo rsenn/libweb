@@ -1,13 +1,21 @@
 //https://github.com/fabienjuif/graph-client
 
 const client = (options = {}) => {
-  const { cache = undefined, url = undefined, logger = undefined, token = undefined, headers = {} } = options;
+  const {
+    cache = undefined,
+    url = undefined,
+    logger = undefined,
+    token = undefined,
+    headers = {}
+  } = options;
 
   let { fetch } = options;
 
   if (fetch === undefined) {
     if (globalThis.fetch) fetch = globalThis.fetch; //eslint-disable-line prefer-destructuring
-    throw new Error('You must provide a fetch implementation, either in globalThis, or in options.');
+    throw new Error(
+      'You must provide a fetch implementation, either in globalThis, or in options.'
+    );
   }
 
   if (url === undefined) {
@@ -50,14 +58,16 @@ const client = (options = {}) => {
           .then((res) => {
             if (res.errors) {
               if (logger && logger.trace) logger.trace(res.errors);
-              else if (logger && typeof logger === 'function') logger('error', res.errors);
+              else if (logger && typeof logger === 'function')
+                logger('error', res.errors);
               else console.trace(res.errors); //eslint-disable-line no-console
 
               reject(res.errors);
               return;
             }
 
-            if (!noCache && cache && !query.trim().startsWith('mutation')) cache.set(body, res.data);
+            if (!noCache && cache && !query.trim().startsWith('mutation'))
+              cache.set(body, res.data);
             resolve(res.data);
           })
           .catch(reject);

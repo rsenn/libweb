@@ -179,7 +179,10 @@ export const clone = (function () {
         let allPropertyNames = Object.getOwnPropertyNames(parent);
         for (var i = 0; i < allPropertyNames.length; i++) {
           let propertyName = allPropertyNames[i];
-          var descriptor = Object.getOwnPropertyDescriptor(parent, propertyName);
+          var descriptor = Object.getOwnPropertyDescriptor(
+            parent,
+            propertyName
+          );
           if (descriptor && descriptor.enumerable) {
             continue;
           }

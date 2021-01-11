@@ -31,7 +31,9 @@ if (typeof global != 'undefined') {
         return schedule(fn, delay, slice.call(arguments, 2));
       };
 
-      clearInterval = global.clearInterval = clearTimeout = global.clearTimeout = function clearInterval(id) {
+      clearInterval = global.clearInterval = clearTimeout = global.clearTimeout = function clearInterval(
+        id
+      ) {
         ids[id].cancel();
         timer.purge();
         delete ids[id];
@@ -44,7 +46,9 @@ if (typeof global != 'undefined') {
             fn.apply(null, args);
           }
         });
-        interval ? timer.schedule(ids[id], delay, delay) : timer.schedule(ids[id], delay);
+        interval
+          ? timer.schedule(ids[id], delay, delay)
+          : timer.schedule(ids[id], delay);
         return id;
       }
     })(new java.util.Timer(), {}, [].slice, 0);
@@ -93,7 +97,11 @@ export const wru = (function (window) {
         current = { name: current[NAME] || 'anonymous', test: current };
       }
       log(OUTPUT_SEPARATOR);
-      log((iHasIt(current, NAME) && current[NAME]) || (iHasIt(current, DESCRIPTION) && current[DESCRIPTION]) || UNKNOWN);
+      log(
+        (iHasIt(current, NAME) && current[NAME]) ||
+          (iHasIt(current, DESCRIPTION) && current[DESCRIPTION]) ||
+          UNKNOWN
+      );
       pass = [];
       fail = [];
       fatal = [];
@@ -172,7 +180,11 @@ export const wru = (function (window) {
   }
 
   function writeItOrdered(fail) {
-    for (let i = 0, length = fail[LENGTH]; i < length; log('    ' + ++i + '. ' + fail[i - 1]));
+    for (
+      let i = 0, length = fail[LENGTH];
+      i < length;
+      log('    ' + ++i + '. ' + fail[i - 1])
+    );
   }
 
   function Dary() {
@@ -189,7 +201,15 @@ export const wru = (function (window) {
     } else {
       prefix = OK;
     }
-    log(prefix + ' passes: ' + pass[LENGTH] + ', fails: ' + fail[LENGTH] + ', errors: ' + fatal[LENGTH]);
+    log(
+      prefix +
+        ' passes: ' +
+        pass[LENGTH] +
+        ', fails: ' +
+        fail[LENGTH] +
+        ', errors: ' +
+        fatal[LENGTH]
+    );
     ci = 0;
     prefix = EMPTY;
     isGonnaBeLegen();

@@ -41,7 +41,10 @@ export function trkl(initValue) {
   function write(newValue, thisObj) {
     let oldValue = value;
 
-    if (newValue === oldValue && (newValue === null || typeof newValue !== 'object')) {
+    if (
+      newValue === oldValue &&
+      (newValue === null || typeof newValue !== 'object')
+    ) {
       return; //bail out
     }
 
@@ -75,7 +78,8 @@ export function trkl(initValue) {
 }
 
 trkl.prototype = Object.create({ ...Function.prototype, constructor: trkl });
-trkl.is = (arg) => typeof arg == 'function' && typeof arg.subscribe == 'function';
+trkl.is = (arg) =>
+  typeof arg == 'function' && typeof arg.subscribe == 'function';
 
 trkl.getset = function (arg) {
   let trkl = arg || new trkl(arg);
@@ -118,7 +122,11 @@ trkl.from = function (executor) {
   return self;
 };
 
-trkl.property = function (object, name, options = { enumerable: true, configurable: true, deletable: false }) {
+trkl.property = function (
+  object,
+  name,
+  options = { enumerable: true, configurable: true, deletable: false }
+) {
   const { value, ...opts } = options;
   let self = trkl(value);
   Object.defineProperty(object, name, {
@@ -127,7 +135,9 @@ trkl.property = function (object, name, options = { enumerable: true, configurab
     set: self
   });
   if (options.deletable) {
-    trkl.subscribe((value) => (value === undefined ? self.delete() : undefined));
+    trkl.subscribe((value) =>
+      value === undefined ? self.delete() : undefined
+    );
     self.delete = () => {
       delete object[name];
       self(null);
@@ -144,7 +154,12 @@ trkl.bind = function (object, name, handler) {
       Object.keys(name).reduce(
         (acc, key) => ({
           ...acc,
-          [key]: { get: name[key], set: name[key], enumerable: true, configurable: true }
+          [key]: {
+            get: name[key],
+            set: name[key],
+            enumerable: true,
+            configurable: true
+          }
         }),
         {}
       )

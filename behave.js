@@ -155,7 +155,10 @@ export const Behave = function (userOpts) {
           return textVal.substring(0, pos).split('\n').length;
         },
         get() {
-          if (typeof document.createElement('textarea').selectionStart === 'number') {
+          if (
+            typeof document.createElement('textarea').selectionStart ===
+            'number'
+          ) {
             return defaults.textarea.selectionStart;
           } else if (document.selection) {
             let caretPos = 0,
@@ -195,7 +198,10 @@ export const Behave = function (userOpts) {
             len,
             endRange;
 
-          if (typeof textAreaElement.selectionStart == 'number' && typeof textAreaElement.selectionEnd == 'number') {
+          if (
+            typeof textAreaElement.selectionStart == 'number' &&
+            typeof textAreaElement.selectionEnd == 'number'
+          ) {
             start = textAreaElement.selectionStart;
             end = textAreaElement.selectionEnd;
           } else {
@@ -211,17 +217,23 @@ export const Behave = function (userOpts) {
               endRange = textAreaElement.createTextRange();
               endRange.collapse(false);
 
-              if (textInputRange.compareEndPoints('StartToEnd', endRange) > -1) {
+              if (
+                textInputRange.compareEndPoints('StartToEnd', endRange) > -1
+              ) {
                 start = end = len;
               } else {
                 start = -textInputRange.moveStart('character', -len);
-                start += normalizedValue.slice(0, start).split(newLine).length - 1;
+                start +=
+                  normalizedValue.slice(0, start).split(newLine).length - 1;
 
-                if (textInputRange.compareEndPoints('EndToEnd', endRange) > -1) {
+                if (
+                  textInputRange.compareEndPoints('EndToEnd', endRange) > -1
+                ) {
                   end = len;
                 } else {
                   end = -textInputRange.moveEnd('character', -len);
-                  end += normalizedValue.slice(0, end).split(newLine).length - 1;
+                  end +=
+                    normalizedValue.slice(0, end).split(newLine).length - 1;
                 }
               }
             }
@@ -265,7 +277,11 @@ export const Behave = function (userOpts) {
             matchedFence = data.indexOf(defaults.fence);
           }
 
-          if (hacked < pos && matchedFence + hacked > pos && matchCase % 2 === 0) {
+          if (
+            hacked < pos &&
+            matchedFence + hacked > pos &&
+            matchCase % 2 === 0
+          ) {
             return true;
           }
           return false;
@@ -303,7 +319,12 @@ export const Behave = function (userOpts) {
         for (i = 0; i < charSettings.keyMap.length; i++) {
           if (charSettings.keyMap[i].canBreak) {
             for (j in quoteMap) {
-              toDecrement += left.split(quoteMap[j]).filter(utils.isEven).join('').split(charSettings.keyMap[i].open).length - 1;
+              toDecrement +=
+                left
+                  .split(quoteMap[j])
+                  .filter(utils.isEven)
+                  .join('')
+                  .split(charSettings.keyMap[i].open).length - 1;
             }
           }
         }
@@ -314,7 +335,11 @@ export const Behave = function (userOpts) {
       },
       deepExtend(destination, source) {
         for (let property in source) {
-          if (source[property] && source[property].constructor && source[property].constructor === Object) {
+          if (
+            source[property] &&
+            source[property].constructor &&
+            source[property].constructor === Object
+          ) {
             destination[property] = destination[property] || {};
             utils.deepExtend(destination[property], source[property]);
           } else {
@@ -382,16 +407,30 @@ export const Behave = function (userOpts) {
               }
               toIndent = lines.join('\n');
 
-              utils.editor.set(val.substring(0, selection.start) + toIndent + val.substring(selection.end));
-              utils.cursor.set(selection.start, selection.start + toIndent.length);
+              utils.editor.set(
+                val.substring(0, selection.start) +
+                  toIndent +
+                  val.substring(selection.end)
+              );
+              utils.cursor.set(
+                selection.start,
+                selection.start + toIndent.length
+              );
             } else {
               for (i in lines) {
                 lines[i] = tab + lines[i];
               }
               toIndent = lines.join('\n');
 
-              utils.editor.set(val.substring(0, selection.start) + toIndent + val.substring(selection.end));
-              utils.cursor.set(selection.start, selection.start + toIndent.length);
+              utils.editor.set(
+                val.substring(0, selection.start) +
+                  toIndent +
+                  val.substring(selection.end)
+              );
+              utils.cursor.set(
+                selection.start,
+                selection.start + toIndent.length
+              );
             }
           } else {
             let left = val.substring(0, pos),
@@ -444,13 +483,22 @@ export const Behave = function (userOpts) {
             finalCursorPos = ourIndent.length + 1;
 
             for (i = 0; i < charSettings.keyMap.length; i++) {
-              if (charSettings.keyMap[i].open == leftChar && charSettings.keyMap[i].close == rightChar) {
+              if (
+                charSettings.keyMap[i].open == leftChar &&
+                charSettings.keyMap[i].close == rightChar
+              ) {
                 closingBreak = newLine;
               }
             }
           }
 
-          let edited = left + newLine + ourIndent + closingBreak + ourIndent.substring(0, ourIndent.length - tab.length) + right;
+          let edited =
+            left +
+            newLine +
+            ourIndent +
+            closingBreak +
+            ourIndent.substring(0, ourIndent.length - tab.length) +
+            right;
           utils.editor.set(edited);
           utils.cursor.set(pos + finalCursorPos);
           utils._callHook('enter:after');
@@ -476,7 +524,10 @@ export const Behave = function (userOpts) {
 
           if (utils.cursor.selection() === false) {
             for (i = 0; i < charSettings.keyMap.length; i++) {
-              if (charSettings.keyMap[i].open == leftChar && charSettings.keyMap[i].close == rightChar) {
+              if (
+                charSettings.keyMap[i].open == leftChar &&
+                charSettings.keyMap[i].close == rightChar
+              ) {
                 var edited = val.substring(0, pos - 1) + val.substring(pos + 1);
                 utils.editor.set(edited);
                 utils.cursor.set(pos - 1);
@@ -542,12 +593,21 @@ export const Behave = function (userOpts) {
 
         for (i = 0; i < charSettings.keyMap.length; i++) {
           if (charSettings.keyMap[i].close == _char) {
-            let didClose = defaults.overwrite && charFuncs.closedChar(charSettings.keyMap[i], e);
+            let didClose =
+              defaults.overwrite &&
+              charFuncs.closedChar(charSettings.keyMap[i], e);
 
-            if (!didClose && charSettings.keyMap[i].open == _char && defaults.autoOpen) {
+            if (
+              !didClose &&
+              charSettings.keyMap[i].open == _char &&
+              defaults.autoOpen
+            ) {
               charFuncs.openedChar(charSettings.keyMap[i], e);
             }
-          } else if (charSettings.keyMap[i].open == _char && defaults.autoOpen) {
+          } else if (
+            charSettings.keyMap[i].open == _char &&
+            defaults.autoOpen
+          ) {
             charFuncs.openedChar(charSettings.keyMap[i], e);
           }
         }

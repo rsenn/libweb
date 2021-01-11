@@ -48,7 +48,10 @@ function binarySubdivide(aX, aA, aB, mX1, mX2) {
     } else {
       aA = currentT;
     }
-  } while (Math.abs(currentX) > SUBDIVISION_PRECISION && ++i < SUBDIVISION_MAX_ITERATIONS);
+  } while (
+    Math.abs(currentX) > SUBDIVISION_PRECISION &&
+    ++i < SUBDIVISION_MAX_ITERATIONS
+  );
   return currentT;
 }
 
@@ -78,7 +81,9 @@ module.exports = function bezier(mX1, mY1, mX2, mY2) {
   }
 
   //Precompute samples table
-  let sampleValues = float32ArraySupported ? new Float32Array(kSplineTableSize) : new Array(kSplineTableSize);
+  let sampleValues = float32ArraySupported
+    ? new Float32Array(kSplineTableSize)
+    : new Array(kSplineTableSize);
   for (let i = 0; i < kSplineTableSize; ++i) {
     sampleValues[i] = calcBezier(i * kSampleStepSize, mX1, mX2);
   }
@@ -88,13 +93,19 @@ module.exports = function bezier(mX1, mY1, mX2, mY2) {
     let currentSample = 1;
     let lastSample = kSplineTableSize - 1;
 
-    for (; currentSample !== lastSample && sampleValues[currentSample] <= aX; ++currentSample) {
+    for (
+      ;
+      currentSample !== lastSample && sampleValues[currentSample] <= aX;
+      ++currentSample
+    ) {
       intervalStart += kSampleStepSize;
     }
     --currentSample;
 
     //Interpolate to provide an initial guess for t
-    let dist = (aX - sampleValues[currentSample]) / (sampleValues[currentSample + 1] - sampleValues[currentSample]);
+    let dist =
+      (aX - sampleValues[currentSample]) /
+      (sampleValues[currentSample + 1] - sampleValues[currentSample]);
     let guessForT = intervalStart + dist * kSampleStepSize;
 
     let initialSlope = getSlope(guessForT, mX1, mX2);
@@ -103,7 +114,13 @@ module.exports = function bezier(mX1, mY1, mX2, mY2) {
     } else if (initialSlope === 0.0) {
       return guessForT;
     }
-    return binarySubdivide(aX, intervalStart, intervalStart + kSampleStepSize, mX1, mX2);
+    return binarySubdivide(
+      aX,
+      intervalStart,
+      intervalStart + kSampleStepSize,
+      mX1,
+      mX2
+    );
   }
 
   return function BezierEasing(x) {

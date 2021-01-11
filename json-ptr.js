@@ -15,7 +15,14 @@ const compile = (pointer) => {
 export const get = (pointer, value = undefined) => {
   const ptr = compile(pointer);
 
-  const fn = (value) => ptr.reduce(([value, pointer], segment) => [applySegment(value, segment, pointer), append(segment, pointer)], [value, ''])[0];
+  const fn = (value) =>
+    ptr.reduce(
+      ([value, pointer], segment) => [
+        applySegment(value, segment, pointer),
+        append(segment, pointer)
+      ],
+      [value, '']
+    )[0];
 
   return value === undefined ? fn : fn(value);
 };
@@ -33,7 +40,12 @@ const _set = (pointer, subject, value, cursor) => {
     const segment = pointer.shift();
     return {
       ...subject,
-      [segment]: _set(pointer, applySegment(subject, segment, cursor), value, append(segment, cursor))
+      [segment]: _set(
+        pointer,
+        applySegment(subject, segment, cursor),
+        value,
+        append(segment, cursor)
+      )
     };
   } else if (Array.isArray(subject)) {
     const clonedSubject = [...subject];
@@ -60,7 +72,12 @@ const _assign = (pointer, subject, value, cursor) => {
     subject[segment] = value;
   } else {
     const segment = pointer.shift();
-    _assign(pointer, applySegment(subject, segment, cursor), value, append(segment, cursor));
+    _assign(
+      pointer,
+      applySegment(subject, segment, cursor),
+      value,
+      append(segment, cursor)
+    );
   }
 };
 
@@ -76,7 +93,10 @@ const _unset = (pointer, subject, cursor) => {
   } else if (pointer.length > 1) {
     const segment = pointer.shift();
     const value = applySegment(subject, segment, cursor);
-    return { ...subject, [segment]: _unset(pointer, value, append(segment, cursor)) };
+    return {
+      ...subject,
+      [segment]: _unset(pointer, value, append(segment, cursor))
+    };
   } else if (Array.isArray(subject)) {
     return subject.filter((_, ndx) => ndx != pointer[0]);
   } else if (typeof subject === 'object' && subject !== null) {
@@ -111,11 +131,17 @@ const _remove = (pointer, subject, cursor) => {
   }
 };
 
-export const append = curry((pointer, ...segments) => pointer + segments.map((segment) => '/' + escape(segment)).join(''));
+export const append = curry(
+  (pointer, ...segments) =>
+    pointer + segments.map((segment) => '/' + escape(segment)).join('')
+);
 
-const escape = (segment) => segment.toString().replace(/~/g, '~0').replace(/\//g, '~1');
-const unescape = (segment) => segment.toString().replace(/~1/g, '/').replace(/~0/g, '~');
-const computeSegment = (value, segment) => (Array.isArray(value) && segment === '-' ? value.length : segment);
+const escape = (segment) =>
+  segment.toString().replace(/~/g, '~0').replace(/\//g, '~1');
+const unescape = (segment) =>
+  segment.toString().replace(/~1/g, '/').replace(/~0/g, '~');
+const computeSegment = (value, segment) =>
+  Array.isArray(value) && segment === '-' ? value.length : segment;
 
 const applySegment = (value, segment, cursor = '') => {
   if (isScalar(value)) {
@@ -124,7 +150,9 @@ const applySegment = (value, segment, cursor = '') => {
 
   const computedSegment = computeSegment(value, segment);
   if (!(computedSegment in value)) {
-    throw Error(`Value at '${cursor}' does not have index '${computedSegment}'`);
+    throw Error(
+      `Value at '${cursor}' does not have index '${computedSegment}'`
+    );
   }
 
   return value[computedSegment];

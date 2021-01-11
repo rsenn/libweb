@@ -8,7 +8,9 @@
  */
 
 function isArray(value) {
-  return !Array.isArray ? getTag(value) === '[object Array]' : Array.isArray(value);
+  return !Array.isArray
+    ? getTag(value) === '[object Array]'
+    : Array.isArray(value);
 }
 
 // Adapted from: https://github.com/lodash/lodash/blob/master/.internal/baseToString.js
@@ -36,7 +38,11 @@ function isNumber(value) {
 
 // Adapted from: https://github.com/lodash/lodash/blob/master/isBoolean.js
 function isBoolean(value) {
-  return value === true || value === false || (isObjectLike(value) && getTag(value) == '[object Boolean]');
+  return (
+    value === true ||
+    value === false ||
+    (isObjectLike(value) && getTag(value) == '[object Boolean]')
+  );
 }
 
 function isObject(value) {
@@ -59,20 +65,27 @@ function isBlank(value) {
 // Gets the `toStringTag` of `value`.
 // Adapted from: https://github.com/lodash/lodash/blob/master/.internal/getTag.js
 function getTag(value) {
-  return value == null ? (value === undefined ? '[object Undefined]' : '[object Null]') : Object.prototype.toString.call(value);
+  return value == null
+    ? value === undefined
+      ? '[object Undefined]'
+      : '[object Null]'
+    : Object.prototype.toString.call(value);
 }
 
 const EXTENDED_SEARCH_UNAVAILABLE = 'Extended search is not available';
 
 const INCORRECT_INDEX_TYPE = "Incorrect 'index' type";
 
-const LOGICAL_SEARCH_INVALID_QUERY_FOR_KEY = (key) => `Invalid value for key ${key}`;
+const LOGICAL_SEARCH_INVALID_QUERY_FOR_KEY = (key) =>
+  `Invalid value for key ${key}`;
 
-const PATTERN_LENGTH_TOO_LARGE = (max) => `Pattern length exceeds max of ${max}.`;
+const PATTERN_LENGTH_TOO_LARGE = (max) =>
+  `Pattern length exceeds max of ${max}.`;
 
 const MISSING_KEY_PROPERTY = (name) => `Missing ${name} property in key`;
 
-const INVALID_KEY_WEIGHT_VALUE = (key) => `Property 'weight' in key '${key}' must be a positive integer`;
+const INVALID_KEY_WEIGHT_VALUE = (key) =>
+  `Property 'weight' in key '${key}' must be a positive integer`;
 
 const hasOwn = Object.prototype.hasOwnProperty;
 
@@ -170,7 +183,10 @@ function get(obj, path) {
 
       // If we're at the last value in the path, and if it's a string/number/bool,
       // add it to the list
-      if (index === path.length - 1 && (isString(value) || isNumber(value) || isBoolean(value))) {
+      if (
+        index === path.length - 1 &&
+        (isString(value) || isNumber(value) || isBoolean(value))
+      ) {
         list.push(toString(value));
       } else if (isArray(value)) {
         arr = true;
@@ -214,7 +230,8 @@ const BasicOptions = {
   // Whether to sort the result list, by score
   shouldSort: true,
   // Default sort function: sort by ascending score, ascending index
-  sortFn: (a, b) => (a.score === b.score ? (a.idx < b.idx ? -1 : 1) : a.score < b.score ? -1 : 1)
+  sortFn: (a, b) =>
+    a.score === b.score ? (a.idx < b.idx ? -1 : 1) : a.score < b.score ? -1 : 1
 };
 
 const FuzzyOptions = {
@@ -474,7 +491,16 @@ function transformScore(result, data) {
   data.score = result.score;
 }
 
-function computeScore(pattern, { errors = 0, currentLocation = 0, expectedLocation = 0, distance = Config.distance, ignoreLocation = Config.ignoreLocation } = {}) {
+function computeScore(
+  pattern,
+  {
+    errors = 0,
+    currentLocation = 0,
+    expectedLocation = 0,
+    distance = Config.distance,
+    ignoreLocation = Config.ignoreLocation
+  } = {}
+) {
   const accuracy = errors / pattern.length;
 
   if (ignoreLocation) {
@@ -491,7 +517,10 @@ function computeScore(pattern, { errors = 0, currentLocation = 0, expectedLocati
   return accuracy + proximity / distance;
 }
 
-function convertMaskToIndices(matchmask = [], minMatchCharLength = Config.minMatchCharLength) {
+function convertMaskToIndices(
+  matchmask = [],
+  minMatchCharLength = Config.minMatchCharLength
+) {
   let indices = [];
   let start = -1;
   let end = -1;
@@ -616,7 +645,9 @@ function search(
     binMax = binMid;
 
     let start = Math.max(1, expectedLocation - binMid + 1);
-    let finish = findAllMatches ? textLen : Math.min(expectedLocation + binMid, textLen) + patternLen;
+    let finish = findAllMatches
+      ? textLen
+      : Math.min(expectedLocation + binMid, textLen) + patternLen;
 
     // Initialize the bit array
     let bitArr = Array(finish + 2);
@@ -637,7 +668,8 @@ function search(
 
       // Subsequent passes: fuzzy match
       if (i) {
-        bitArr[j] |= ((lastBitArr[j + 1] | lastBitArr[j]) << 1) | 1 | lastBitArr[j + 1];
+        bitArr[j] |=
+          ((lastBitArr[j + 1] | lastBitArr[j]) << 1) | 1 | lastBitArr[j + 1];
       }
 
       if (bitArr[j] & mask) {
@@ -796,7 +828,14 @@ class BitapSearch {
     }
 
     // Otherwise, use Bitap algorithm
-    const { location, distance, threshold, findAllMatches, minMatchCharLength, ignoreLocation } = this.options;
+    const {
+      location,
+      distance,
+      threshold,
+      findAllMatches,
+      minMatchCharLength,
+      ignoreLocation
+    } = this.options;
 
     let allIndices = [];
     let totalScore = 0;
@@ -1088,7 +1127,16 @@ class IncludeMatch extends BaseMatch {
 }
 
 // ❗Order is important. DO NOT CHANGE.
-const searchers = [ExactMatch, IncludeMatch, PrefixExactMatch, InversePrefixExactMatch, InverseSuffixExactMatch, SuffixExactMatch, InverseExactMatch, FuzzyMatch];
+const searchers = [
+  ExactMatch,
+  IncludeMatch,
+  PrefixExactMatch,
+  InversePrefixExactMatch,
+  InverseSuffixExactMatch,
+  SuffixExactMatch,
+  InverseExactMatch,
+  FuzzyMatch
+];
 
 const searchersLen = searchers.length;
 
@@ -1306,11 +1354,13 @@ const KeyType = {
   PATTERN: '$val'
 };
 
-const isExpression = (query) => !!(query[LogicalOperator.AND] || query[LogicalOperator.OR]);
+const isExpression = (query) =>
+  !!(query[LogicalOperator.AND] || query[LogicalOperator.OR]);
 
 const isPath = (query) => !!query[KeyType.PATH];
 
-const isLeaf = (query) => !isArray(query) && isObject(query) && !isExpression(query);
+const isLeaf = (query) =>
+  !isArray(query) && isObject(query) && !isExpression(query);
 
 const convertToExplicit = (query) => ({
   [LogicalOperator.AND]: Object.keys(query).map((key) => ({
@@ -1438,9 +1488,19 @@ class Fuse {
   }
 
   search(query, { limit = -1 } = {}) {
-    const { includeMatches, includeScore, shouldSort, sortFn, ignoreFieldNorm } = this.options;
+    const {
+      includeMatches,
+      includeScore,
+      shouldSort,
+      sortFn,
+      ignoreFieldNorm
+    } = this.options;
 
-    let results = isString(query) ? (isString(this._docs[0]) ? this._searchStringList(query) : this._searchObjectList(query)) : this._searchLogical(query);
+    let results = isString(query)
+      ? isString(this._docs[0])
+        ? this._searchStringList(query)
+        : this._searchObjectList(query)
+      : this._searchLogical(query);
 
     computeScore$1(results, { ignoreFieldNorm });
 
@@ -1646,14 +1706,24 @@ function computeScore$1(results, { ignoreFieldNorm = Config.ignoreFieldNorm }) {
     result.matches.forEach(({ key, norm, score }) => {
       const weight = key ? key.weight : null;
 
-      totalScore *= Math.pow(score === 0 && weight ? Number.EPSILON : score, (weight || 1) * (ignoreFieldNorm ? 1 : norm));
+      totalScore *= Math.pow(
+        score === 0 && weight ? Number.EPSILON : score,
+        (weight || 1) * (ignoreFieldNorm ? 1 : norm)
+      );
     });
 
     result.score = totalScore;
   });
 }
 
-function format(results, docs, { includeMatches = Config.includeMatches, includeScore = Config.includeScore } = {}) {
+function format(
+  results,
+  docs,
+  {
+    includeMatches = Config.includeMatches,
+    includeScore = Config.includeScore
+  } = {}
+) {
   const transformers = [];
 
   if (includeMatches) transformers.push(transformMatches);

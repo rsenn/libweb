@@ -55,7 +55,9 @@ export const TinyTest = {
 
   assertStrictEquals(expected, actual) {
     if (expected !== actual) {
-      throw new Error('assertStrictEquals() "' + expected + '" !== "' + actual + '"');
+      throw new Error(
+        'assertStrictEquals() "' + expected + '" !== "' + actual + '"'
+      );
     }
   }
 };

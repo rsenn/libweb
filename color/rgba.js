@@ -22,7 +22,7 @@ export function RGBA(...args) {
     ret.r = r;
     ret.g = g;
     ret.b = b;
-    if(!isNaN(+a) && +a !== 255) ret.a = a;
+    if(!isNaN(+a)/* && +a !== 255*/) ret.a = a;
   } else if(args.length <= 2) {
     const arg = args[0];
     if(typeof arg === 'number') {
@@ -43,7 +43,7 @@ export function RGBA(...args) {
         ret.b = parseInt(c[3], 16) * mul;
         if(c.length > 3) {
           let a = parseInt(c[4], 16) * mul;
-          if(a !== 255) ret.a = a;
+          /*if(a !== 255)*/ ret.a = a;
         }
       } else if(arg.toLowerCase().startsWith('rgb')) {
         c = arg
@@ -170,7 +170,7 @@ RGBA.prototype.hex = function(opts = {}) {
   const { bits, prefix = '#', order = RGBA.order.RGBA } = opts;
   const { r, g, b, a } = RGBA.clamp(RGBA.round(this));
   const n = RGBA.encode[order]({ r, g, b, a });
-  return prefix + ('0000000000' + n.toString(16)).slice(-8).slice(0, a == 255 ? 6 : 8);
+  return prefix + ('0000000000' + n.toString(16)).slice(-8).slice(0, a == undefined ? 6 : 8);
 };
 
 RGBA.prototype.valueOf = function() {
@@ -229,7 +229,7 @@ RGBA.prototype.css = () => prop =>
 RGBA.prototype.toCSS = function(fmt = num => +num.toFixed(3)) {
   const { r, g, b, a } = this;
   const sep = ',';
-  if(a === undefined) return 'rgb(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + ')';
+  if(a === undefined || a == 255) return 'rgb(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + ')';
   return 'rgba(' + fmt(r) + sep + fmt(g) + sep + fmt(b) + sep + (a * 100) / 255 + '%)';
 };
 RGBA.prototype.toString = function() {

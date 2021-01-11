@@ -13,7 +13,10 @@ export const inspect = (o, pred = (v) => true) =>
         [(o) => o, keysFn(Object.getOwnPropertyNames)],
         [Object.getPrototypeOf, keysFn(Object.getOwnPropertyNames)]
       ]
-        .reduce((a, [proto, keys]) => (a.length ? a : [...a, ...keys(proto(o))]), [])
+        .reduce(
+          (a, [proto, keys]) => (a.length ? a : [...a, ...keys(proto(o))]),
+          []
+        )
         .reduce((a, k) => (a.indexOf(k) == -1 ? [...a, k] : a), [])
         .map((k) => {
           /*console.log('k:', k);
@@ -31,12 +34,15 @@ export const inspect = (o, pred = (v) => true) =>
             } catch (err) {
               s = typeof s;
             }
-            if (typeof v == 'function') s = s.substring(0, s.indexOf('{')).trim();
+            if (typeof v == 'function')
+              s = s.substring(0, s.indexOf('{')).trim();
           } else {
             s = '"' + s + '"';
           }
           if (s.length > 200) s = s.substring(0, 200) + '...';
-          return k + (o instanceof Map ? ' => ' : ': ') + s.replace(/\n\s*/g, ' ');
+          return (
+            k + (o instanceof Map ? ' => ' : ': ') + s.replace(/\n\s*/g, ' ')
+          );
         })
         //   .filter((item) => item != '')
         .join(',\n  ') +

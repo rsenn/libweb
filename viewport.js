@@ -72,7 +72,8 @@ let viewport = (function () {
     self.x = w.pageXOffset || (e && e.scrollLeft) || (b && b.scrollLeft) || 0;
     self.y = w.pageYOffset || (e && e.scrollTop) || (b && b.scrollTop) || 0;
     self.width = w.innerWidth || (e && e.clientWidth) || (b && b.clientWidth);
-    self.height = w.innerHeight || (e && e.clientHeight) || (b && b.clientHeight);
+    self.height =
+      w.innerHeight || (e && e.clientHeight) || (b && b.clientHeight);
 
     let length = regions.length;
     let i = 0;
@@ -104,7 +105,10 @@ let viewport = (function () {
     this.element = element;
     this.inset = inset;
     this.bounds = elementRect(this.element);
-    this.visible = this.bounds.width > 0 && this.bounds.height > 0 && intersects(this.bounds, inset);
+    this.visible =
+      this.bounds.width > 0 &&
+      this.bounds.height > 0 &&
+      intersects(this.bounds, inset);
   }
 
   Region.prototype.validate = function () {
@@ -116,7 +120,8 @@ let viewport = (function () {
     elementRect(this.element, bounds);
 
     let oldVisible = this.visible;
-    let newVisible = bounds.width > 0 && bounds.height > 0 && intersects(bounds, this.inset);
+    let newVisible =
+      bounds.width > 0 && bounds.height > 0 && intersects(bounds, this.inset);
     this.visible = newVisible;
 
     let delegate = this.delegate;
@@ -128,7 +133,10 @@ let viewport = (function () {
       if (delegate.regionScroll && (bounds.x !== oldX || bounds.y !== oldY)) {
         delegate.regionScroll(this);
       }
-      if (delegate.regionResize && (bounds.width !== oldWidth || bounds.height !== oldHeight)) {
+      if (
+        delegate.regionResize &&
+        (bounds.width !== oldWidth || bounds.height !== oldHeight)
+      ) {
         delegate.regionResize(this);
       }
     } else if (delegate.regionHide && oldVisible) {

@@ -14,7 +14,11 @@ import { makeLocalStorage } from './autoStore.js';
 
 const env = 'development';
 
-if (0 && ['development', 'test', 'local'].indexOf(env) != -1 && 'window' in global) {
+if (
+  0 &&
+  ['development', 'test', 'local'].indexOf(env) != -1 &&
+  'window' in global
+) {
   window.accumulateClasses = () => {
     let st = storage('dev');
     let classes = st.get('classes') || [];
@@ -30,7 +34,9 @@ if (0 && ['development', 'test', 'local'].indexOf(env) != -1 && 'window' in glob
       .split(/\s+/g)
       .unique()
       .match(/bp3/);
-    dom.Element.findAll('*[class~=bp3]').forEach((e) => newClasses.concat(String(e.class).split(/ /g)));
+    dom.Element.findAll('*[class~=bp3]').forEach((e) =>
+      newClasses.concat(String(e.class).split(/ /g))
+    );
     newClasses = newClasses.filter((i) => classes.indexOf(i) == -1);
     if (newClasses.length) {
       st.set('classes', (classes = Util.unique(classes.concat(newClasses))));
@@ -133,7 +139,11 @@ export const colors = (() => {
       //Util.log("%c colors ", `background-color: ${c.toString()}`, { key, c });
 
       f('div', {
-        innerHTML: `<div class="colors-text" style="opacity:0;">${((typeof key == 'number' ? key.toFixed(2) : key) + ': ' + c.toString()).replace(/ /g, '&nbsp;')}</div>`,
+        innerHTML: `<div class="colors-text" style="opacity:0;">${(
+          (typeof key == 'number' ? key.toFixed(2) : key) +
+          ': ' +
+          c.toString()
+        ).replace(/ /g, '&nbsp;')}</div>`,
         class: 'colors-item',
         style: {
           margin: 'auto',
@@ -160,7 +170,8 @@ export const colors = (() => {
 
 export async function getStars() {
   let r = {};
-  r.bg_stars = dom.Element.find('#background-stars') || (await img('background-stars'));
+  r.bg_stars =
+    dom.Element.find('#background-stars') || (await img('background-stars'));
   r.elements = dom.Element.findAll('defs > radialGradient > stop', r.bg_stars)
     .map((s) => s.parentElement)
     .unique();
@@ -176,8 +187,13 @@ export async function getStars() {
     Util.log('getRect: ', { matrix, rect });
     return rect;
   }
-  r.paths = dom.Element.findAll('path', r.svg).filter((e) => getRect(e).isSquare());
-  r.circles = r.paths.map((e) => ({ position: getRect(e).center, radius: getRect(e).width / 2 }));
+  r.paths = dom.Element.findAll('path', r.svg).filter((e) =>
+    getRect(e).isSquare()
+  );
+  r.circles = r.paths.map((e) => ({
+    position: getRect(e).center,
+    radius: getRect(e).width / 2
+  }));
   r.points = new PointList(r.paths.map((e) => getRect(e).center));
   r.radii = r.paths.map((e) => getRect(e).width / 2);
   r.putStars = function () {
@@ -234,7 +250,11 @@ export function gradient(element) {
     element,
     steps: nodes.map((e) => {
       const offset = Element.attr(e, 'offset');
-      const color = RGBA.fromHex(e.getAttribute('stopColor') || e.getAttribute('stop-color') || '#00000000');
+      const color = RGBA.fromHex(
+        e.getAttribute('stopColor') ||
+          e.getAttribute('stop-color') ||
+          '#00000000'
+      );
       return {
         color,
         offset,
@@ -244,18 +264,29 @@ export function gradient(element) {
       };
     }),
     toString() {
-      return Util.decamelize(e.tagName) + '(0deg, ' + this.steps.map((s) => s.toString()).join(', ') + ');';
+      return (
+        Util.decamelize(e.tagName) +
+        '(0deg, ' +
+        this.steps.map((s) => s.toString()).join(', ') +
+        ');'
+      );
     },
     [Symbol.iterator]: () =>
       new (class GradientIterator {
         index = 0;
         next() {
           const { offset, color } = obj.steps[this.index] || {};
-          return { value: [offset, color], done: this.index++ >= obj.steps.length };
+          return {
+            value: [offset, color],
+            done: this.index++ >= obj.steps.length
+          };
         }
       })(),
     getColors() {
-      return Util.reduce(this.steps, (acc, step) => ({ ...acc, [step.offset]: step.color }));
+      return Util.reduce(this.steps, (acc, step) => ({
+        ...acc,
+        [step.offset]: step.color
+      }));
     }
   };
   Util.log('obj: ', obj);
@@ -352,9 +383,11 @@ export function gettext(elem, done) {
   }
   const getNodeText = (node) => {
     let txt = '';
-    if (node.innerHTML && !node.innerHTML.match(/<.*>/)) txt = '"' + node.innerHTML + '": ""';
+    if (node.innerHTML && !node.innerHTML.match(/<.*>/))
+      txt = '"' + node.innerHTML + '": ""';
     else if (node.placeholder) txt = node.placeholder;
-    else if (node.nodeType == Node.TEXT_NODE && node.textContent) txt = node.textContent;
+    else if (node.nodeType == Node.TEXT_NODE && node.textContent)
+      txt = node.textContent;
     else txt = '';
     return txt;
   };
@@ -365,10 +398,16 @@ export function gettext(elem, done) {
     let prevParent;
     Element.walk(e, (node, root) => {
       if (node) {
-        let parent = node && node.parentNode !== undefined ? node.parentNode : null;
+        let parent =
+          node && node.parentNode !== undefined ? node.parentNode : null;
         let path = Element.xpath(node, e);
         let txt = node.innerText || node.textContent;
-        if (txt && !['option', 'script', 'style', '#SL_'].some((tag) => path.indexOf(tag) != -1)) {
+        if (
+          txt &&
+          !['option', 'script', 'style', '#SL_'].some(
+            (tag) => path.indexOf(tag) != -1
+          )
+        ) {
           if (parent != prevParent) {
             //text.push("Parent: "+Element.xpath(parent));
           }
@@ -523,14 +562,19 @@ export function ws(cmd = 'send', filename, data) {
     ws.onopen = function (event) {
       Util.log('ws.onopen ', { event });
       if (cmd == 'send' || cmd == 'recv') {
-        let json = { cmd, filename, data: data ? window.btoa(encodeURIComponent(data)) : null };
+        let json = {
+          cmd,
+          filename,
+          data: data ? window.btoa(encodeURIComponent(data)) : null
+        };
         ws.send(JSON.toString(json) + '\r\n');
         Util.log('ws.send ', json);
         if (cmd == 'recv') {
           ws.onmessage = (msg) => {
             Util.log('ws.msg ', msg);
             if (msg.data == '') return;
-            let x = msg.data.charAt(0) != '{' ? decodeBase64(msg.data) : msg.data;
+            let x =
+              msg.data.charAt(0) != '{' ? decodeBase64(msg.data) : msg.data;
             if (x.charAt(0) == '{') {
               x = JSON.parse(x);
               if (x.cmd == 'recv') return;
@@ -577,7 +621,11 @@ export async function img(name, arg = {}) {
   let list = root.images
     ? root.images
     : (root.images = new HashList(
-        (obj) => (obj.firstElementChild.id || obj.xpath).replace(/(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/, '$1XX$2'),
+        (obj) =>
+          (obj.firstElementChild.id || obj.xpath).replace(
+            /(^|[^A-Za-z0-9])[FfEe][NnAa]([^A-Za-z0-9]|$)/,
+            '$1XX$2'
+          ),
         function (arg) {
           let e = Element.find(arg);
           let svg = Element.find('svg', e);
@@ -585,7 +633,12 @@ export async function img(name, arg = {}) {
           /*let xpath = arg.xpath || Element.xpath(svg);
       if(xpath && xpath.replace) xpath = xpath.replace(/.*\//, '');*/
           Element.attr(svg, { 'data-name': svg.id });
-          let r = new Rect(0, 0, svg.getAttribute('width'), svg.getAttribute('height'));
+          let r = new Rect(
+            0,
+            0,
+            svg.getAttribute('width'),
+            svg.getAttribute('height')
+          );
           r = Rect.round(r);
           let width = this.width + r.width;
 
@@ -604,7 +657,8 @@ export async function img(name, arg = {}) {
 
     const page = Element.find('.page');
     const body = Element.find('body');
-    const getID = () => (window.img_id = window.img_id > 0 ? window.img_id + 1 : 1);
+    const getID = () =>
+      (window.img_id = window.img_id > 0 ? window.img_id + 1 : 1);
     const img_id = getID();
     const img_name = path.replace(/.*\/(.*)\.[^.]*$/g, '$1');
     const res = await axios.get(path);
@@ -629,11 +683,20 @@ export async function img(name, arg = {}) {
         ...props
       });
       e.innerHTML = await res.data;
-      const av = e && e.firstChild && e.firstChild.viewBox && e.firstChild.viewBox.animVal;
+      const av =
+        e &&
+        e.firstChild &&
+        e.firstChild.viewBox &&
+        e.firstChild.viewBox.animVal;
       let svg = e.firstChild;
       Element.attr(svg, { id: img_name });
       while (svg.viewBox === undefined) svg = svg.nextElementSibling;
-      const bbox = new Rect(0, 0, svg.getAttribute('width'), svg.getAttribute('height'));
+      const bbox = new Rect(
+        0,
+        0,
+        svg.getAttribute('width'),
+        svg.getAttribute('height')
+      );
       let r = Rect(av ? av : bbox);
       Util.log('r = ', r, ' bbox = ', bbox);
       let pr = Element.rect('.page');
@@ -689,7 +752,9 @@ export function createsvg(wh, fixed = false) {
     return e;
   }
   let body = Element.find('body');
-  let rect = fixed ? Size(window.innerWidth, window.innerHeight) : Element.rect(body);
+  let rect = fixed
+    ? Size(window.innerWidth, window.innerHeight)
+    : Element.rect(body);
   const size = Size(args) || new Size(rect);
   Util.log('svg size: ', size);
   createsvg.factory = SVG.factory(body, Size.convertUnits(size));
@@ -762,7 +827,8 @@ export function walk(element) {
       return key.replace(/\//g, ' > ');
     },
     (obj) => {
-      if (obj.id === undefined) Object.assign(obj, { id: Element.attr(obj.e, 'id') });
+      if (obj.id === undefined)
+        Object.assign(obj, { id: Element.attr(obj.e, 'id') });
       if (obj.e) {
         let prev;
         obj.div = obj.e.parentNode;
@@ -776,7 +842,8 @@ export function walk(element) {
       obj.r = Element.rect(obj.e);
       obj.y = Rect.y2(svgr) - Rect.y2(obj.r);
       obj.x = obj.r.x - svgr.x;
-      if (obj.name === undefined) obj.name = Element.xpath(obj.e).replace(/.*\//, '');
+      if (obj.name === undefined)
+        obj.name = Element.xpath(obj.e).replace(/.*\//, '');
       return obj;
     }
   );
@@ -798,7 +865,10 @@ export function walk(element) {
         //id.match(/_fa/i)
         if (text.charCodeAt(0) > 255) lang = 'fa-IR';
 
-        if (text.length > 0 && !(key.startsWith('style') || key.startsWith('script'))) {
+        if (
+          text.length > 0 &&
+          !(key.startsWith('style') || key.startsWith('script'))
+        ) {
           const ch = text.charCodeAt(0);
           let line = texts.add({ e, id, lang, key, text, rect });
           Util.log('Text ', line[line.length - 1]);
@@ -823,17 +893,28 @@ export function walk(element) {
       let strs = line.map((text) => `"${text.text}"`);
       if (strs.length == 2) str = strs.join(': ');
       else str = strs.join('\n  ');
-      let rect = texts.at(key).reduce((acc, it) => Rect.union(acc, Element.rect(it.e)), this[name][0].r);
+      let rect = texts
+        .at(key)
+        .reduce(
+          (acc, it) => Rect.union(acc, Element.rect(it.e)),
+          this[name][0].r
+        );
       let rstr = Rect.toString(rect);
 
       if (strs.length != 2 && strs.length > 0 && str.length) {
-        global.lines[1].push('  ' + str + ' '.repeat(Math.max(0, 80 - str.length)) + `/* ${key} */`);
+        global.lines[1].push(
+          '  ' + str + ' '.repeat(Math.max(0, 80 - str.length)) + `/* ${key} */`
+        );
       }
       //str = (line.length != 2 ? `/* ${key} */\n/* ${rstr} */\n` : "") + str;
       else if (Rect.area(rect)) global.lines[0].push(str);
     }
   });
-  let out = '\n' + Util.distinct(lines[0]).join('\n') + '\n\n' + Util.distinct(lines[1]).join('\n');
+  let out =
+    '\n' +
+    Util.distinct(lines[0]).join('\n') +
+    '\n\n' +
+    Util.distinct(lines[1]).join('\n');
 
   ws({ send: 'extract.txt', data: out });
 
@@ -854,7 +935,9 @@ export async function measure(element) {
 
 export function trackElements() {
   const elements = Element.findAll.apply(this, arguments);
-  const rects = elements.map((e) => rect(e, 'none', '#' + Util.hex(Math.round(Math.random() * 0xfff)), e));
+  const rects = elements.map((e) =>
+    rect(e, 'none', '#' + Util.hex(Math.round(Math.random() * 0xfff)), e)
+  );
 
   window.trackingRects = rects;
 
@@ -885,7 +968,16 @@ export function polyline(points, closed = false) {
       },
       document.body
     );
-  SVG.create(closed ? 'polygon' : 'polyline', { points: points.toString(3), fill: 'none', stroke: 'red', strokeWidth: 1.5 }, window.svg);
+  SVG.create(
+    closed ? 'polygon' : 'polyline',
+    {
+      points: points.toString(3),
+      fill: 'none',
+      stroke: 'red',
+      strokeWidth: 1.5
+    },
+    window.svg
+  );
 }
 
 export function circle(point, radius = 10) {
@@ -903,7 +995,18 @@ export function circle(point, radius = 10) {
       },
       document.body
     );
-  SVG.create('circle', { cx: point.x, cy: point.y, r: radius, fill: 'none', stroke: 'red', strokeWidth: 1.5 }, window.svg);
+  SVG.create(
+    'circle',
+    {
+      cx: point.x,
+      cy: point.y,
+      r: radius,
+      fill: 'none',
+      stroke: 'red',
+      strokeWidth: 1.5
+    },
+    window.svg
+  );
 }
 
 export function rect(...args) {
@@ -915,7 +1018,11 @@ export function rect(...args) {
 
   while (args.length > 0) {
     if (args[0] instanceof Rect) r = args.shift();
-    else if (isElement(args[0]) || (typeof args[0] == 'string' && (e = Element.find(args[0])))) r = Element.rect(args.shift());
+    else if (
+      isElement(args[0]) ||
+      (typeof args[0] == 'string' && (e = Element.find(args[0])))
+    )
+      r = Element.rect(args.shift());
     else r = new Rect(args);
 
     // console.log('r:', r);
@@ -941,13 +1048,15 @@ export function rect(...args) {
       //console.log('rect:', rect);
     }
 
-    let color = args.shift() || RGBA.random([0, 255], [0, 255], [0, 255], [64, 64]);
+    let color =
+      args.shift() || RGBA.random([0, 255], [0, 255], [0, 255], [64, 64]);
     //  color.a = 64;
     let borderColor = args.shift() || null;
     parent = parent || args.shift() || body;
     if (typeof parent == 'string') parent = Element.find(parent);
 
-    if (parent != body && parent.style && !parent.style.position) parent.style.setProperty('position', 'relative');
+    if (parent != body && parent.style && !parent.style.position)
+      parent.style.setProperty('position', 'relative');
 
     let e = Element.create('div', { class: 'devtools rectangle', parent });
     //console.log('backgroundColor', color, color.toString());
@@ -987,7 +1096,9 @@ export function borders(element) {
   let rects = {};
 
   rects.border = b.border.null() ? Rect.clone(r) : b.border.outset(r);
-  rects.margin = b.margin.null() ? Rect.clone(rects.border) : b.margin.outset(rects.border);
+  rects.margin = b.margin.null()
+    ? Rect.clone(rects.border)
+    : b.margin.outset(rects.border);
   rects.padding = b.padding.null() ? Rect.clone(r) : b.padding.inset(r);
 
   if (!b.border.null()) rect(rects.border, 'rgba(255,0,0,0.5)', 'red');

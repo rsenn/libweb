@@ -96,12 +96,17 @@ export function getLocalStorage() {
   let w = Util.tryCatch(() => global.window);
 
   if (getLocalStorage.store === undefined) {
-    getLocalStorage.store = w && w.localStorage ? makeLocalStorage() : makeDummyStorage();
+    getLocalStorage.store =
+      w && w.localStorage ? makeLocalStorage() : makeDummyStorage();
   }
   return getLocalStorage.store;
 }
 
-export const makeAutoStoreHandler = (name, store, runner /* = mobx.autorun */) => {
+export const makeAutoStoreHandler = (
+  name,
+  store,
+  runner /* = mobx.autorun */
+) => {
   if (!store) store = getLocalStorage();
   var fn = function (_this, _member) {
     let firstRun = false; //true;

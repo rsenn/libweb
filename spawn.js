@@ -10,7 +10,11 @@ function QuickJSSpawn(os, ffi) {
       let { stdio, ...opts } = options;
       stdio = (stdio || []).concat(['pipe', 'pipe', 'pipe']).slice(0, 3);
 
-      let pipes = stdio.map((mode, chan) => (mode != 'pipe' ? [chan, undefined] : [...os.pipe()][chan == 0 ? 'slice' : 'reverse']()));
+      let pipes = stdio.map((mode, chan) =>
+        mode != 'pipe'
+          ? [chan, undefined]
+          : [...os.pipe()][chan == 0 ? 'slice' : 'reverse']()
+      );
 
       let [cfds, pfds] = Util.zip(pipes);
       console.log('pipes:', inspect(pipes));
@@ -99,7 +103,9 @@ function NodeJSSpawn(child_process) {
     return (args, options = {}) => {
       const { stdin, stdout, stderr, ...restOfOptions } = options;
       let command = args.shift();
-      let ret = child_process.spawn(command, args, { stdio: [stdin, stdout, stderr] });
+      let ret = child_process.spawn(command, args, {
+        stdio: [stdin, stdout, stderr]
+      });
 
       ret.wait = function () {
         const pid = this.pid;
@@ -118,7 +124,11 @@ export async function CreatePortableSpawn(ctor, ...args) {
 export async function GetPortableSpawn() {
   let spawnFn, err;
   try {
-    spawnFn = await CreatePortableSpawn(QuickJSSpawn, import('os'), import('ffi'));
+    spawnFn = await CreatePortableSpawn(
+      QuickJSSpawn,
+      import('os'),
+      import('ffi')
+    );
   } catch (error) {
     err = error;
   }

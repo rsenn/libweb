@@ -26,7 +26,8 @@ export class SourceMap {
     constructor(sm, opts, filesystem = {}) {
       opts = opts || {};
 
-      if (opts.isFileComment) sm = readFromFileMap(sm, opts.commentFileDir, filesystem);
+      if (opts.isFileComment)
+        sm = readFromFileMap(sm, opts.commentFileDir, filesystem);
       if (opts.hasComment) sm = stripComment(sm);
       if (opts.isEncoded) sm = decodeBase64(sm);
       if (opts.isJSON || opts.isEncoded) sm = JSON.parse(sm);
@@ -45,8 +46,11 @@ export class SourceMap {
 
     toComment(options) {
       let base64 = this.toBase64();
-      let data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-      return options && options.multiline ? '/*# ' + data + ' */' : '//# ' + data;
+      let data =
+        'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+      return options && options.multiline
+        ? '/*# ' + data + ' */'
+        : '//# ' + data;
     }
 
     // returns copy instead of original
@@ -55,7 +59,12 @@ export class SourceMap {
     }
 
     addProperty(key, value) {
-      if (this.sourcemap.hasOwnProperty(key)) throw new Error('property "' + key + '" already exists on the sourcemap, use set property instead');
+      if (this.sourcemap.hasOwnProperty(key))
+        throw new Error(
+          'property "' +
+            key +
+            '" already exists on the sourcemap, use set property instead'
+        );
       return this.setProperty(key, value);
     }
 
@@ -73,7 +82,8 @@ export class SourceMap {
 
   static fromJSON = (json) => new this.Converter(json, { isJSON: true });
 
-  static fromBase64 = (base64) => new this.Converter(base64, { isEncoded: true });
+  static fromBase64 = (base64) =>
+    new this.Converter(base64, { isEncoded: true });
 
   static fromComment = (comment) =>
     new this.Converter(comment.replace(/^\/\*/g, '//').replace(/\*\/$/g, ''), {
@@ -81,7 +91,12 @@ export class SourceMap {
       hasComment: true
     });
 
-  static fromMapFileComment = (comment, dir, filesystem) => new this.Converter(comment, { commentFileDir: dir, isFileComment: true, isJSON: true }, filesystem);
+  static fromMapFileComment = (comment, dir, filesystem) =>
+    new this.Converter(
+      comment,
+      { commentFileDir: dir, isFileComment: true, isJSON: true },
+      filesystem
+    );
 
   // Finds last sourcemap comment in file or returns null if none was found
   static fromSource = (content) => {
@@ -97,7 +112,8 @@ export class SourceMap {
 
   static removeComments = (src) => src.replace(this.commentRegex, '');
 
-  static removeMapFileComments = (src) => src.replace(this.mapFileCommentRegex, '');
+  static removeMapFileComments = (src) =>
+    src.replace(this.mapFileCommentRegex, '');
 
   static generateMapFileComment = (file, options) => {
     let data = 'sourceMappingURL=' + file;
@@ -126,6 +142,11 @@ function readFromFileMap(sm, dir, filesystem) {
   try {
     return filesystem.readFile(filepath, 'utf8');
   } catch (e) {
-    throw new Error('An error occurred while trying to read the map file at ' + filepath + '\n' + e);
+    throw new Error(
+      'An error occurred while trying to read the map file at ' +
+        filepath +
+        '\n' +
+        e
+    );
   }
 }

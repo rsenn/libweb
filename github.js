@@ -6,7 +6,9 @@ export async function* GithubListRepositories(user, f = fetch) {
     let response = await f(url, { mode: 'no-cors' });
     let text = await response.clone().text();
     let matches = [...text.matchAll(/([^<"]*after=[^">]*)/g)].map((m) => m[1]);
-    matches = matches.map((m) => decodeURIComponent(Util.decodeHTMLEntities(m)));
+    matches = matches.map((m) =>
+      decodeURIComponent(Util.decodeHTMLEntities(m))
+    );
     matches = matches.filter((m) => m[0] != '{' && fetched.indexOf(m) == -1);
     //console.log('matches:', matches);
     url = matches[matches.length - 1] + '';
@@ -27,8 +29,12 @@ export async function GithubRepositories(user, f = fetch) {
     // console.debug(`url #${i}:`, url);
     let html = await f(url).then(ResponseData);
     fetched.push(url);
-    let indexes = [...html.matchAll(/<li[^>]*itemtype[^>]*>/g)].map((i) => i.index);
-    let hrefs = Util.unique([...html.matchAll(/href="([^"]*)"/g)].map((m) => m[1]))
+    let indexes = [...html.matchAll(/<li[^>]*itemtype[^>]*>/g)].map(
+      (i) => i.index
+    );
+    let hrefs = Util.unique(
+      [...html.matchAll(/href="([^"]*)"/g)].map((m) => m[1])
+    )
       .map(Util.decodeHTMLEntities)
       .map(decodeURIComponent)
       .filter((h) => !/(return_to=|before=)/.test(h))
@@ -38,17 +44,51 @@ export async function GithubRepositories(user, f = fetch) {
       .filter((url) => fetched.indexOf(url) == -1 && !/page=1/.test(url));
     url = hrefs[hrefs.length - 1];
     //console.debug('hrefs:', hrefs);
-    let tags = indexes.map((index) => [index, html.indexOf('</li>', index)]).map(([s, e]) => html.substring(s, e));
+    let tags = indexes
+      .map((index) => [index, html.indexOf('</li>', index)])
+      .map(([s, e]) => html.substring(s, e));
     let data = tags.map(Util.stripHTML);
-    ret = ret.concat(data.map((a) => a.slice(0, 2).map((p) => (['0', 'Forked from', 'Updated'].indexOf(p) != -1 || Util.isNumeric(p) ? '' : p))));
+    ret = ret.concat(
+      data.map((a) =>
+        a
+          .slice(0, 2)
+          .map((p) =>
+            ['0', 'Forked from', 'Updated'].indexOf(p) != -1 ||
+            Util.isNumeric(p)
+              ? ''
+              : p
+          )
+      )
+    );
     i++;
   } while (url);
-  return new Map(ret.map(([name, description]) => [`https://github.com/${user}/${name}`, description]));
-  return new Map(ret.map(([name, description]) => [name, { url: `https://github.com/${user}/${name}`, description }]));
-  return new Map(ret.map(([name, ...rest]) => [name, [`https://github.com/${user}/${name}`, ...rest]]));
+  return new Map(
+    ret.map(([name, description]) => [
+      `https://github.com/${user}/${name}`,
+      description
+    ])
+  );
+  return new Map(
+    ret.map(([name, description]) => [
+      name,
+      { url: `https://github.com/${user}/${name}`, description }
+    ])
+  );
+  return new Map(
+    ret.map(([name, ...rest]) => [
+      name,
+      [`https://github.com/${user}/${name}`, ...rest]
+    ])
+  );
 }
 
-export const GithubListContents = async (owner, repo, dir, filter, opts = {}) => {
+export const GithubListContents = async (
+  owner,
+  repo,
+  dir,
+  filter,
+  opts = {}
+) => {
   const { username, password, fetch = FetchURL } = opts;
   let host, path;
   if (new RegExp('://').test(owner) || (repo == null && dir == null)) {
@@ -78,15 +118,19 @@ export const GithubListContents = async (owner, repo, dir, filter, opts = {}) =>
   }
   console.log('result:', result);
   const firstFile = result.find((r) => !!r.download_url);
-  const base_url = firstFile ? firstFile.download_url.replace(/\/[^\/]*$/, '') : '';
-  const files = result.map(({ download_url = '', html_url, name, type, size, path, sha }) => ({
-    url: (download_url || html_url || '').replace(base_url + '/', ''),
-    name,
-    type,
-    size,
-    path,
-    sha
-  }));
+  const base_url = firstFile
+    ? firstFile.download_url.replace(/\/[^\/]*$/, '')
+    : '';
+  const files = result.map(
+    ({ download_url = '', html_url, name, type, size, path, sha }) => ({
+      url: (download_url || html_url || '').replace(base_url + '/', ''),
+      name,
+      type,
+      size,
+      path,
+      sha
+    })
+  );
   const at = (i) => {
     let url = files[i].url;
     if (!/:\/\//.test(url)) url = base_url + '/' + url;
@@ -95,7 +139,9 @@ export const GithubListContents = async (owner, repo, dir, filter, opts = {}) =>
   return Object.assign(
     files.map((file, i) => {
       file.toString = () => at(i);
-      if (file.type == 'dir') file.list = async (f = filter) => await GithubListContents(at(i), null, null, f, {});
+      if (file.type == 'dir')
+        file.list = async (f = filter) =>
+          await GithubListContents(at(i), null, null, f, {});
       else {
         let getter = async function () {
           let data = await fetch(at(i), {});
@@ -103,11 +149,17 @@ export const GithubListContents = async (owner, repo, dir, filter, opts = {}) =>
           return this.buf;
         };
         let text = function () {
-          return typeof this.buf == 'string' && this.buf.length > 0 ? this.buf : this.get();
+          return typeof this.buf == 'string' && this.buf.length > 0
+            ? this.buf
+            : this.get();
         };
         file.get = getter;
         file.getText = text;
-        Object.defineProperty(file, 'text', { get: text, enumerable: true, configurable: true });
+        Object.defineProperty(file, 'text', {
+          get: text,
+          enumerable: true,
+          configurable: true
+        });
       }
       return file;
     }),
@@ -129,7 +181,13 @@ export const GithubListContents = async (owner, repo, dir, filter, opts = {}) =>
   );
 };
 
-export async function ListGithubRepoServer(owner, repo, dir, filter, f = fetch) {
+export async function ListGithubRepoServer(
+  owner,
+  repo,
+  dir,
+  filter,
+  f = fetch
+) {
   let response;
   let request = { owner, repo, dir, filter };
   try {

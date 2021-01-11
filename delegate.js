@@ -3,7 +3,9 @@ export const proxyDelegate = (target, origin) =>
     get(target, key, receiver) {
       if (key in target) return Reflect.get(target, key, receiver);
       const value = origin[key];
-      return typeof value === 'function' ? (...args) => value.apply(origin, args) : value;
+      return typeof value === 'function'
+        ? (...args) => value.apply(origin, args)
+        : value;
     },
     set(target, key, value, receiver) {
       if (key in target) return Reflect.set(target, key, value, receiver);

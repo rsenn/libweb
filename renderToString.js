@@ -2,13 +2,21 @@ import { options, Fragment, createElement } from './preact.js';
 
 let IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|^--/i;
 let encodeEntities = function (s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 };
 let indent = function (s, char) {
   return String(s).replace(/(\n+)/g, '$1' + (char || '\t'));
 };
 let isLargeString = function (s, length, ignoreLines) {
-  return String(s).length > (length || 40) || (!ignoreLines && String(s).indexOf('\n') !== -1) || String(s).indexOf('<') !== -1;
+  return (
+    String(s).length > (length || 40) ||
+    (!ignoreLines && String(s).indexOf('\n') !== -1) ||
+    String(s).indexOf('<') !== -1
+  );
 };
 let JS_TO_CSS = {};
 function styleObjToCss(s) {
@@ -19,7 +27,11 @@ function styleObjToCss(s) {
       if (str) {
         str += ' ';
       }
-      str += prop[0] == '-' ? prop : JS_TO_CSS[prop] || (JS_TO_CSS[prop] = prop.replace(/([A-Z])/g, '-$1').toLowerCase());
+      str +=
+        prop[0] == '-'
+          ? prop
+          : JS_TO_CSS[prop] ||
+            (JS_TO_CSS[prop] = prop.replace(/([A-Z])/g, '-$1').toLowerCase());
       str += ': ';
       str += val;
       if (typeof val === 'number' && IS_NON_DIMENSIONAL.test(prop) === false) {
@@ -83,7 +95,16 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
       let children$1 = [];
       getChildren(children$1, vnode.props.children);
       for (let i = 0; i < children$1.length; i++) {
-        rendered += (i > 0 && pretty ? '\n' : '') + renderToString(children$1[i], context, opts, opts.shallowHighOrder !== false, isSvgMode, selectValue);
+        rendered +=
+          (i > 0 && pretty ? '\n' : '') +
+          renderToString(
+            children$1[i],
+            context,
+            opts,
+            opts.shallowHighOrder !== false,
+            isSvgMode,
+            selectValue
+          );
       }
       return rendered;
     } else {
@@ -99,15 +120,28 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
       if (options.__r) {
         options.__r(vnode);
       }
-      if (!nodeName.prototype || typeof nodeName.prototype.render !== 'function') {
+      if (
+        !nodeName.prototype ||
+        typeof nodeName.prototype.render !== 'function'
+      ) {
         let cxType = nodeName.contextType;
         let provider = cxType && context[cxType.__c];
-        let cctx = cxType != null ? (provider ? provider.props.value : cxType.__) : context;
+        let cctx =
+          cxType != null
+            ? provider
+              ? provider.props.value
+              : cxType.__
+            : context;
         rendered$1 = nodeName.call(vnode.__c, props, cctx);
       } else {
         let cxType$1 = nodeName.contextType;
         let provider$1 = cxType$1 && context[cxType$1.__c];
-        let cctx$1 = cxType$1 != null ? (provider$1 ? provider$1.props.value : cxType$1.__) : context;
+        let cctx$1 =
+          cxType$1 != null
+            ? provider$1
+              ? provider$1.props.value
+              : cxType$1.__
+            : context;
         c = vnode.__c = new nodeName(props, cctx$1);
         c.__v = vnode;
         c._dirty = c.__d = true;
@@ -120,17 +154,32 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
         }
         c.context = cctx$1;
         if (nodeName.getDerivedStateFromProps) {
-          c.state = assign(assign({}, c.state), nodeName.getDerivedStateFromProps(c.props, c.state));
+          c.state = assign(
+            assign({}, c.state),
+            nodeName.getDerivedStateFromProps(c.props, c.state)
+          );
         } else if (c.componentWillMount) {
           c.componentWillMount();
-          c.state = c._nextState !== c.state ? c._nextState : c.__s !== c.state ? c.__s : c.state;
+          c.state =
+            c._nextState !== c.state
+              ? c._nextState
+              : c.__s !== c.state
+              ? c.__s
+              : c.state;
         }
         rendered$1 = c.render(c.props, c.state, c.context);
       }
       if (c.getChildContext) {
         context = assign(assign({}, context), c.getChildContext());
       }
-      return renderToString(rendered$1, context, opts, opts.shallowHighOrder !== false, isSvgMode, selectValue);
+      return renderToString(
+        rendered$1,
+        context,
+        opts,
+        opts.shallowHighOrder !== false,
+        isSvgMode,
+        selectValue
+      );
     }
   }
   let s = '',
@@ -151,7 +200,14 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
       if (name.match(/[\s\n\\/='"\0<>]/)) {
         continue;
       }
-      if (!(opts && opts.allAttributes) && (name === 'key' || name === 'ref' || name === '__self' || name === '__source' || name === 'defaultValue')) {
+      if (
+        !(opts && opts.allAttributes) &&
+        (name === 'key' ||
+          name === 'ref' ||
+          name === '__self' ||
+          name === '__source' ||
+          name === 'defaultValue')
+      ) {
         continue;
       }
       if (name === 'className') {
@@ -174,7 +230,9 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
       if (name[0] === 'a' && name['1'] === 'r' && typeof v === 'boolean') {
         v = String(v);
       }
-      let hooked = opts.attributeHook && opts.attributeHook(name, v, context, opts, isComponent);
+      let hooked =
+        opts.attributeHook &&
+        opts.attributeHook(name, v, context, opts, isComponent);
       if (hooked || hooked === '') {
         s += hooked;
         continue;
@@ -215,7 +273,9 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
   if (String(nodeName).match(/[\s\n\\/='"\0<>]/)) {
     throw new Error(nodeName + ' is not a valid HTML tag name in ' + s);
   }
-  let isVoid = String(nodeName).match(VOID_ELEMENTS) || (opts.voidElements && String(nodeName).match(opts.voidElements));
+  let isVoid =
+    String(nodeName).match(VOID_ELEMENTS) ||
+    (opts.voidElements && String(nodeName).match(opts.voidElements));
   if (isVoid) {
     s = s.replace(/>$/, ' />');
   }
@@ -226,14 +286,29 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
       html = '\n' + indentChar + indent(html, indentChar);
     }
     s += html;
-  } else if (propChildren != null && getChildren((children = []), propChildren).length) {
+  } else if (
+    propChildren != null &&
+    getChildren((children = []), propChildren).length
+  ) {
     let hasLarge = pretty && ~s.indexOf('\n');
     let lastWasText = false;
     for (let i$2 = 0; i$2 < children.length; i$2++) {
       let child = children[i$2];
       if (child != null && child !== false) {
-        let childSvgMode = nodeName === 'svg' ? true : nodeName === 'foreignObject' ? false : isSvgMode,
-          ret = renderToString(child, context, opts, true, childSvgMode, selectValue);
+        let childSvgMode =
+            nodeName === 'svg'
+              ? true
+              : nodeName === 'foreignObject'
+              ? false
+              : isSvgMode,
+          ret = renderToString(
+            child,
+            context,
+            opts,
+            true,
+            childSvgMode,
+            selectValue
+          );
         if (pretty && !hasLarge && isLargeString(ret)) {
           hasLarge = true;
         }
@@ -273,7 +348,11 @@ function renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
 }
 
 function getComponentName(component) {
-  return component.displayName || (component !== Function && component.name) || getFallbackComponentName(component);
+  return (
+    component.displayName ||
+    (component !== Function && component.name) ||
+    getFallbackComponentName(component)
+  );
 }
 
 function getFallbackComponentName(component) {
@@ -298,5 +377,10 @@ function getFallbackComponentName(component) {
 renderToString.shallowRender = shallowRender;
 
 export default renderToString;
-export { renderToString as render, renderToString as renderToStaticMarkup, renderToString, shallowRender };
+export {
+  renderToString as render,
+  renderToString as renderToStaticMarkup,
+  renderToString,
+  shallowRender
+};
 //# sourceMappingURL=index.module.js.map

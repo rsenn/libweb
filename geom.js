@@ -122,5 +122,15 @@ export {
 export { isTRBL, TRBL } from './geom/trbl.js';
 export { Vector } from './geom/vector.js';
 export { Voronoi } from './geom/voronoi.js';
-import { simplifyRadialDist, simplifyDPStep, simplifyDouglasPeucker, simplify } from './geom/simplify.js';
-export { simplifyRadialDist, simplifyDPStep, simplifyDouglasPeucker, simplify } from './geom/simplify.js';
+import {
+  simplifyRadialDist,
+  simplifyDPStep,
+  simplifyDouglasPeucker,
+  simplify
+} from './geom/simplify.js';
+export {
+  simplifyRadialDist,
+  simplifyDPStep,
+  simplifyDouglasPeucker,
+  simplify
+} from './geom/simplify.js';
