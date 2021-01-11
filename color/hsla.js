@@ -206,15 +206,12 @@ HSLA.prototype.toRGBA = function() {
 };
 
 HSLA.prototype.toString = function(prec = 1 / 255) {
-  const h = Util.roundTo(this.h, 360 * prec, 0);
+  const h = Util.roundTo(this.h, 360 * prec, 3);
   const s = Util.roundTo(this.s, 100 * prec, 2);
   const l = Util.roundTo(this.l, 100 * prec, 2);
   const a = Util.roundTo(this.a, 1 * prec, 4);
 
-  if(this.a == 1)
-    return `hsl(${(h + '').padStart(3, ' ')},${(s + '%').padStart(4, ' ')},${(l + '%').padEnd(6,
-      ' '
-    )})`;
+  if(this.a == 1) return `hsl(${(h + '').padStart(3, ' ')},${(s + '%').padStart(4, ' ')},${(l + '%').padEnd(6, ' ')})`;
   return `hsla(${h},${s}%,${l}%,${a})`;
 };
 
@@ -277,6 +274,15 @@ HSLA.prototype.toAnsi256 = function() {
   const rgba = HSLA.prototype.toRGBA.call(this);
   return RGBA.prototype.toAnsi256.call(rgba);
 };
+HSLA.prototype.toConsole = function(fn = 'toString') {
+  const textColor = this.toRGBA().invert().blackwhite();
+  const bgColor = this;
+  return [
+    `%c${this[fn]()}%c`,
+    `text-shadow: 1px 1px 1px ${bgColor.toString()}; border: 1px solid black; padding: 2px; background-color: ${this.toString()}; color: ${textColor};`,
+    `background-color: none;`
+  ];
+};
 HSLA.prototype[Symbol.iterator] = function() {
   const { h, s, l, a } = this;
   return [h, s, l, a][Symbol.iterator]();
@@ -287,9 +293,7 @@ HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
   let arr = !isNaN(a) ? [h, s, l, a] : [h, s, l];
   let ret = arr
     .map((n, i) =>
-      (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i == 0 ? 3 : i < 3 ? i + 3 : 1,
-        ' '
-      )
+      (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i == 0 ? 3 : i < 3 ? i + 3 : 1, ' ')
     )
     .join(',');
   const color = this.toRGBA().toAnsi256(true);
@@ -298,6 +302,16 @@ HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
   o = color + o;
 
   return `\x1b[1;31mHSLA\x1b[1;36m` + `(${ret})`.padEnd(24, ' ') + ` ${color}    \x1b[0m`;
+};
+
+HSLA.blend = (a, b, o = 0.5) => {
+  a = new HSLA(a);
+  b = new HSLA(b);
+  return new HSLA(Math.round(a.h * (1 - o) + b.h * o),
+    Math.round(a.s * (1 - o) + b.s * o),
+    Math.round(a.l * (1 - o) + b.l * o),
+    Math.round(a.a * (1 - o) + b.a * o)
+  );
 };
 
 for(let name of ['css', 'toHSL', 'clamp', 'round', 'hex', 'toRGBA', 'toString']) {

@@ -593,18 +593,17 @@ export class Lexer {
     let slashes = 1;
     let bracket = false;
     let validator = c => {
-      //let last = word.substring(word.length - 1);
-      //console.log('validator', { c, i, prev, slashes, word, bracket });
+      //console.log('validator', { c, i, prev, slashes, word, bracket, ws: isWhitespace(c) });
       i++;
       if(c == '[' && prev != '\\') if (!bracket) bracket = true;
       if(c == ']' && prev != '\\') if (bracket) bracket = false;
 
-      if(slashes == 1 && c == ' ' && prev == '/') {
+      if(((i == 1 && isWhitespace(c)) || c == '\n') && prev != '\\') {
+        return false;
+      } else if(slashes == 1 && c == ' ' && prev == '/') {
         return false;
       } else if(c == '/' && prev != '\\' && !bracket) {
         slashes++;
-      } else if(/*c == ' ' ||*/ c == '\n' && prev != '\\') {
-        return false;
       } else if(c == 'n' && prev == '\\') {
         word += '\n';
         prev = c;
@@ -644,9 +643,10 @@ export class Lexer {
       this.addToken(Token.types.regexpLiteral);
       return this.lexText;
     }
+console.log('lexRegExp', this.getRange(this.start, this.pos));
 
     this.backup(this.pos - this.start - 1);
-    //console.log('this.getRange()', this.getRange(this.start, this.pos));
+    //console.log('this.getRange()', );
 
     return this.lexPunctuator();
   }

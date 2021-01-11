@@ -1,3 +1,26 @@
+
+const precision = 100000000;
+const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
+const atan2d = (y, x) => rad2deg(atan2(y, x));
+const cosd = x => cos(deg2rad(x));
+const deg2rad = x => (x * PI) / 180;
+const rad2deg = x => (x * 180) / PI;
+const sind = x => sin(deg2rad(x));
+const abs = Math.abs;
+const atan2 = Math.atan2;
+const cbrt = Math.cbrt;
+const cos = Math.cos;
+const exp = Math.exp;
+const floor = Math.floor;
+const max = Math.max;
+const min = Math.min;
+const PI = Math.PI;
+const pow = Math.pow;
+const sin = Math.sin;
+const sqrt = Math.sqrt;
+const epsilon = pow(6, 3) / pow(29, 3);
+const kappa = pow(29, 3) / pow(3, 3);
+
 /*
  * from convert-colors/src/util.js
  */
@@ -55,32 +78,11 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 export function matrix(params, mats) {
   return mats.map(mat =>
     mat.reduce((acc, value, index) =>
-        acc + (params.index * precision * (value * precision)) / precision / precision,
+        acc + (params[index] * precision * (value * precision)) / precision / precision,
       0
     )
   );
 }
-const precision = 100000000;
-const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
-const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = x => cos(deg2rad(x));
-const deg2rad = x => (x * PI) / 180;
-const rad2deg = x => (x * 180) / PI;
-const sind = x => sin(deg2rad(x));
-const abs = Math.abs;
-const atan2 = Math.atan2;
-const cbrt = Math.cbrt;
-const cos = Math.cos;
-const exp = Math.exp;
-const floor = Math.floor;
-const max = Math.max;
-const min = Math.min;
-const PI = Math.PI;
-const pow = Math.pow;
-const sin = Math.sin;
-const sqrt = Math.sqrt;
-const epsilon = pow(6, 3) / pow(29, 3);
-const kappa = pow(29, 3) / pow(3, 3);
 
 /*
  * from convert-colors/src/rgb-hsl.js
@@ -107,198 +109,7 @@ export function hsl2rgb(hslH, hslS, hslL) {
   return [rgbR, rgbG, rgbB];
 }
 
-/*
- * from convert-colors/src/util.js
- */
-
-export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
-  const value = rgb2value(rgbR, rgbG, rgbB);
-  const whiteness = rgb2whiteness(rgbR, rgbG, rgbB);
-  const delta = value - whiteness;
-
-  if(delta) {
-    const segment =
-      value === rgbR
-        ? (rgbG - rgbB) / delta
-        : value === rgbG
-        ? (rgbB - rgbR) / delta
-        : (rgbR - rgbG) / delta;
-    const shift =
-      value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
-    const hue = (segment + shift) * 60;
-    return hue;
-  } else {
-    return fallbackhue;
-  }
-}
-
-export function hue2rgb(t1, t2, hue) {
-  const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
-  return rgb;
-}
-
-export function luminance2contrast(relativeLuminance1, relativeLuminance2) {
-  const l1 = max(relativeLuminance1, relativeLuminance2);
-  const l2 = min(relativeLuminance1, relativeLuminance2);
-  return (l1 * precision + 0.05 * precision) / (l2 * precision + 0.05 * precision);
-}
-
-export function rgb2value(rgbR, rgbG, rgbB) {
-  const value = max(rgbR, rgbG, rgbB);
-  return value;
-}
-
-export function rgb2whiteness(rgbR, rgbG, rgbB) {
-  const whiteness = min(rgbR, rgbG, rgbB);
-  return whiteness;
-}
-
-export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) =>
-        acc + (params.index * precision * (value * precision)) / precision / precision,
-      0
-    )
-  );
-}
-const precision = 100000000;
-const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
-const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = x => cos(deg2rad(x));
-const deg2rad = x => (x * PI) / 180;
-const rad2deg = x => (x * 180) / PI;
-const sind = x => sin(deg2rad(x));
-const abs = Math.abs;
-const atan2 = Math.atan2;
-const cbrt = Math.cbrt;
-const cos = Math.cos;
-const exp = Math.exp;
-const floor = Math.floor;
-const max = Math.max;
-const min = Math.min;
-const PI = Math.PI;
-const pow = Math.pow;
-const sin = Math.sin;
-const sqrt = Math.sqrt;
-const epsilon = pow(6, 3) / pow(29, 3);
-const kappa = pow(29, 3) / pow(3, 3);
-
-/*
- * from convert-colors/src/util.js
- */
-
-export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
-  const value = rgb2value(rgbR, rgbG, rgbB);
-  const whiteness = rgb2whiteness(rgbR, rgbG, rgbB);
-  const delta = value - whiteness;
-
-  if(delta) {
-    const segment =
-      value === rgbR
-        ? (rgbG - rgbB) / delta
-        : value === rgbG
-        ? (rgbB - rgbR) / delta
-        : (rgbR - rgbG) / delta;
-    const shift =
-      value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
-    const hue = (segment + shift) * 60;
-    return hue;
-  } else {
-    return fallbackhue;
-  }
-}
-
-export function hue2rgb(t1, t2, hue) {
-  const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
-  return rgb;
-}
-
-export function luminance2contrast(relativeLuminance1, relativeLuminance2) {
-  const l1 = max(relativeLuminance1, relativeLuminance2);
-  const l2 = min(relativeLuminance1, relativeLuminance2);
-  return (l1 * precision + 0.05 * precision) / (l2 * precision + 0.05 * precision);
-}
-
-export function rgb2value(rgbR, rgbG, rgbB) {
-  const value = max(rgbR, rgbG, rgbB);
-  return value;
-}
-
-export function rgb2whiteness(rgbR, rgbG, rgbB) {
-  const whiteness = min(rgbR, rgbG, rgbB);
-  return whiteness;
-}
-
-export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) =>
-        acc + (params.index * precision * (value * precision)) / precision / precision,
-      0
-    )
-  );
-}
-const precision = 100000000;
-const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
-const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = x => cos(deg2rad(x));
-const deg2rad = x => (x * PI) / 180;
-const rad2deg = x => (x * 180) / PI;
-const sind = x => sin(deg2rad(x));
-const abs = Math.abs;
-const atan2 = Math.atan2;
-const cbrt = Math.cbrt;
-const cos = Math.cos;
-const exp = Math.exp;
-const floor = Math.floor;
-const max = Math.max;
-const min = Math.min;
-const PI = Math.PI;
-const pow = Math.pow;
-const sin = Math.sin;
-const sqrt = Math.sqrt;
-const epsilon = pow(6, 3) / pow(29, 3);
-const kappa = pow(29, 3) / pow(3, 3);
-
-/*
- * from convert-colors/src/rgb-hsl.js
- */
-
-export function rgb2hsl(rgbR, rgbG, rgbB, fallbackhue) {
-  const hslH = rgb2hue(rgbR, rgbG, rgbB, fallbackhue);
-  const hslV = rgb2value(rgbR, rgbG, rgbB);
-  const hslW = rgb2whiteness(rgbR, rgbG, rgbB);
-  const hslD = hslV - hslW;
-  const hslL = (hslV + hslW) / 2;
-  const hslS = hslD === 0 ? 0 : (hslD / (100 - abs(2 * hslL - 100))) * 100;
-  return [hslH, hslS, hslL];
-}
-
-export function hsl2rgb(hslH, hslS, hslL) {
-  const t2 = hslL <= 50 ? (hslL * (hslS + 100)) / 100 : hslL + hslS - (hslL * hslS) / 100;
-  const t1 = hslL * 2 - t2;
-  const [rgbR, rgbG, rgbB] = [
-    hue2rgb(t1, t2, hslH + 120),
-    hue2rgb(t1, t2, hslH),
-    hue2rgb(t1, t2, hslH - 120)
-  ];
-  return [rgbR, rgbG, rgbB];
-}
+ 
 
 /*
  * from convert-colors/src/rgb-hwb.js
@@ -317,90 +128,6 @@ export function hwb2rgb(hwbH, hwbW, hwbB, fallbackhue) {
   );
   return [rgbR, rgbG, rgbB];
 }
-
-/*
- * from convert-colors/src/util.js
- */
-
-export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
-  const value = rgb2value(rgbR, rgbG, rgbB);
-  const whiteness = rgb2whiteness(rgbR, rgbG, rgbB);
-  const delta = value - whiteness;
-
-  if(delta) {
-    const segment =
-      value === rgbR
-        ? (rgbG - rgbB) / delta
-        : value === rgbG
-        ? (rgbB - rgbR) / delta
-        : (rgbR - rgbG) / delta;
-    const shift =
-      value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
-    const hue = (segment + shift) * 60;
-    return hue;
-  } else {
-    return fallbackhue;
-  }
-}
-
-export function hue2rgb(t1, t2, hue) {
-  const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
-  return rgb;
-}
-
-export function luminance2contrast(relativeLuminance1, relativeLuminance2) {
-  const l1 = max(relativeLuminance1, relativeLuminance2);
-  const l2 = min(relativeLuminance1, relativeLuminance2);
-  return (l1 * precision + 0.05 * precision) / (l2 * precision + 0.05 * precision);
-}
-
-export function rgb2value(rgbR, rgbG, rgbB) {
-  const value = max(rgbR, rgbG, rgbB);
-  return value;
-}
-
-export function rgb2whiteness(rgbR, rgbG, rgbB) {
-  const whiteness = min(rgbR, rgbG, rgbB);
-  return whiteness;
-}
-
-export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) =>
-        acc + (params.index * precision * (value * precision)) / precision / precision,
-      0
-    )
-  );
-}
-const precision = 100000000;
-const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
-const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = x => cos(deg2rad(x));
-const deg2rad = x => (x * PI) / 180;
-const rad2deg = x => (x * 180) / PI;
-const sind = x => sin(deg2rad(x));
-const abs = Math.abs;
-const atan2 = Math.atan2;
-const cbrt = Math.cbrt;
-const cos = Math.cos;
-const exp = Math.exp;
-const floor = Math.floor;
-const max = Math.max;
-const min = Math.min;
-const PI = Math.PI;
-const pow = Math.pow;
-const sin = Math.sin;
-const sqrt = Math.sqrt;
-const epsilon = pow(6, 3) / pow(29, 3);
-const kappa = pow(29, 3) / pow(3, 3);
 
 /*
  * from convert-colors/src/rgb-hsv.js
@@ -436,96 +163,12 @@ export function hsv2rgb(hsvH, hsvS, hsvV) {
 }
 
 /*
- * from convert-colors/src/util.js
- */
-
-export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
-  const value = rgb2value(rgbR, rgbG, rgbB);
-  const whiteness = rgb2whiteness(rgbR, rgbG, rgbB);
-  const delta = value - whiteness;
-
-  if(delta) {
-    const segment =
-      value === rgbR
-        ? (rgbG - rgbB) / delta
-        : value === rgbG
-        ? (rgbB - rgbR) / delta
-        : (rgbR - rgbG) / delta;
-    const shift =
-      value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
-    const hue = (segment + shift) * 60;
-    return hue;
-  } else {
-    return fallbackhue;
-  }
-}
-
-export function hue2rgb(t1, t2, hue) {
-  const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
-  return rgb;
-}
-
-export function luminance2contrast(relativeLuminance1, relativeLuminance2) {
-  const l1 = max(relativeLuminance1, relativeLuminance2);
-  const l2 = min(relativeLuminance1, relativeLuminance2);
-  return (l1 * precision + 0.05 * precision) / (l2 * precision + 0.05 * precision);
-}
-
-export function rgb2value(rgbR, rgbG, rgbB) {
-  const value = max(rgbR, rgbG, rgbB);
-  return value;
-}
-
-export function rgb2whiteness(rgbR, rgbG, rgbB) {
-  const whiteness = min(rgbR, rgbG, rgbB);
-  return whiteness;
-}
-
-export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) =>
-        acc + (params.index * precision * (value * precision)) / precision / precision,
-      0
-    )
-  );
-}
-const precision = 100000000;
-const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
-const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = x => cos(deg2rad(x));
-const deg2rad = x => (x * PI) / 180;
-const rad2deg = x => (x * 180) / PI;
-const sind = x => sin(deg2rad(x));
-const abs = Math.abs;
-const atan2 = Math.atan2;
-const cbrt = Math.cbrt;
-const cos = Math.cos;
-const exp = Math.exp;
-const floor = Math.floor;
-const max = Math.max;
-const min = Math.min;
-const PI = Math.PI;
-const pow = Math.pow;
-const sin = Math.sin;
-const sqrt = Math.sqrt;
-const epsilon = pow(6, 3) / pow(29, 3);
-const kappa = pow(29, 3) / pow(3, 3);
-
-/*
  * from convert-colors/src/rgb-xyz.js
  */
 
 export function rgb2xyz(rgbR, rgbG, rgbB) {
   const [lrgbR, lrgbB, lrgbG] = [rgbR, rgbG, rgbB].map(v =>
-    v > 4.045 ? pow((v + 5.5) / 105.5, 2.4) * 100 : v / 12.92
+    v > 4.045 ? Math.pow((v + 5.5) / 105.5, 2.4) * 100 : v / 12.92
   );
   const [xyzX, xyzY, xyzZ] = matrix([lrgbR, lrgbB, lrgbG],
     [
@@ -590,91 +233,7 @@ export function hsv2hwb(hsvH, hsvS, hsvV) {
   const [hwbH, hwbW, hwbB] = [hsvH, ((100 - hsvS) * hsvV) / 100, 100 - hsvV];
   return [hwbH, hwbW, hwbB];
 }
-
-/*
- * from convert-colors/src/util.js
- */
-
-export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
-  const value = rgb2value(rgbR, rgbG, rgbB);
-  const whiteness = rgb2whiteness(rgbR, rgbG, rgbB);
-  const delta = value - whiteness;
-
-  if(delta) {
-    const segment =
-      value === rgbR
-        ? (rgbG - rgbB) / delta
-        : value === rgbG
-        ? (rgbB - rgbR) / delta
-        : (rgbR - rgbG) / delta;
-    const shift =
-      value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
-    const hue = (segment + shift) * 60;
-    return hue;
-  } else {
-    return fallbackhue;
-  }
-}
-
-export function hue2rgb(t1, t2, hue) {
-  const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
-  return rgb;
-}
-
-export function luminance2contrast(relativeLuminance1, relativeLuminance2) {
-  const l1 = max(relativeLuminance1, relativeLuminance2);
-  const l2 = min(relativeLuminance1, relativeLuminance2);
-  return (l1 * precision + 0.05 * precision) / (l2 * precision + 0.05 * precision);
-}
-
-export function rgb2value(rgbR, rgbG, rgbB) {
-  const value = max(rgbR, rgbG, rgbB);
-  return value;
-}
-
-export function rgb2whiteness(rgbR, rgbG, rgbB) {
-  const whiteness = min(rgbR, rgbG, rgbB);
-  return whiteness;
-}
-
-export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) =>
-        acc + (params.index * precision * (value * precision)) / precision / precision,
-      0
-    )
-  );
-}
-const precision = 100000000;
-const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
-const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = x => cos(deg2rad(x));
-const deg2rad = x => (x * PI) / 180;
-const rad2deg = x => (x * 180) / PI;
-const sind = x => sin(deg2rad(x));
-const abs = Math.abs;
-const atan2 = Math.atan2;
-const cbrt = Math.cbrt;
-const cos = Math.cos;
-const exp = Math.exp;
-const floor = Math.floor;
-const max = Math.max;
-const min = Math.min;
-const PI = Math.PI;
-const pow = Math.pow;
-const sin = Math.sin;
-const sqrt = Math.sqrt;
-const epsilon = pow(6, 3) / pow(29, 3);
-const kappa = pow(29, 3) / pow(3, 3);
-
+ 
 /*
  * from convert-colors/src/lab-xyz.js
  */
@@ -713,89 +272,6 @@ export function xyz2lab(xyzX, xyzY, xyzZ) {
   return [labL, labA, labB];
 }
 
-/*
- * from convert-colors/src/util.js
- */
-
-export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
-  const value = rgb2value(rgbR, rgbG, rgbB);
-  const whiteness = rgb2whiteness(rgbR, rgbG, rgbB);
-  const delta = value - whiteness;
-
-  if(delta) {
-    const segment =
-      value === rgbR
-        ? (rgbG - rgbB) / delta
-        : value === rgbG
-        ? (rgbB - rgbR) / delta
-        : (rgbR - rgbG) / delta;
-    const shift =
-      value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
-    const hue = (segment + shift) * 60;
-    return hue;
-  } else {
-    return fallbackhue;
-  }
-}
-
-export function hue2rgb(t1, t2, hue) {
-  const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
-  return rgb;
-}
-
-export function luminance2contrast(relativeLuminance1, relativeLuminance2) {
-  const l1 = max(relativeLuminance1, relativeLuminance2);
-  const l2 = min(relativeLuminance1, relativeLuminance2);
-  return (l1 * precision + 0.05 * precision) / (l2 * precision + 0.05 * precision);
-}
-
-export function rgb2value(rgbR, rgbG, rgbB) {
-  const value = max(rgbR, rgbG, rgbB);
-  return value;
-}
-
-export function rgb2whiteness(rgbR, rgbG, rgbB) {
-  const whiteness = min(rgbR, rgbG, rgbB);
-  return whiteness;
-}
-
-export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) =>
-        acc + (params.index * precision * (value * precision)) / precision / precision,
-      0
-    )
-  );
-}
-const precision = 100000000;
-const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
-const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = x => cos(deg2rad(x));
-const deg2rad = x => (x * PI) / 180;
-const rad2deg = x => (x * 180) / PI;
-const sind = x => sin(deg2rad(x));
-const abs = Math.abs;
-const atan2 = Math.atan2;
-const cbrt = Math.cbrt;
-const cos = Math.cos;
-const exp = Math.exp;
-const floor = Math.floor;
-const max = Math.max;
-const min = Math.min;
-const PI = Math.PI;
-const pow = Math.pow;
-const sin = Math.sin;
-const sqrt = Math.sqrt;
-const epsilon = pow(6, 3) / pow(29, 3);
-const kappa = pow(29, 3) / pow(3, 3);
 
 /*
  * from convert-colors/src/lab-lch.js
@@ -811,90 +287,7 @@ export function lch2lab(lchL, lchC, lchH) {
   return [lchL, labA, labB];
 }
 
-/*
- * from convert-colors/src/util.js
- */
-
-export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
-  const value = rgb2value(rgbR, rgbG, rgbB);
-  const whiteness = rgb2whiteness(rgbR, rgbG, rgbB);
-  const delta = value - whiteness;
-
-  if(delta) {
-    const segment =
-      value === rgbR
-        ? (rgbG - rgbB) / delta
-        : value === rgbG
-        ? (rgbB - rgbR) / delta
-        : (rgbR - rgbG) / delta;
-    const shift =
-      value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
-    const hue = (segment + shift) * 60;
-    return hue;
-  } else {
-    return fallbackhue;
-  }
-}
-
-export function hue2rgb(t1, t2, hue) {
-  const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
-  return rgb;
-}
-
-export function luminance2contrast(relativeLuminance1, relativeLuminance2) {
-  const l1 = max(relativeLuminance1, relativeLuminance2);
-  const l2 = min(relativeLuminance1, relativeLuminance2);
-  return (l1 * precision + 0.05 * precision) / (l2 * precision + 0.05 * precision);
-}
-
-export function rgb2value(rgbR, rgbG, rgbB) {
-  const value = max(rgbR, rgbG, rgbB);
-  return value;
-}
-
-export function rgb2whiteness(rgbR, rgbG, rgbB) {
-  const whiteness = min(rgbR, rgbG, rgbB);
-  return whiteness;
-}
-
-export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) =>
-        acc + (params.index * precision * (value * precision)) / precision / precision,
-      0
-    )
-  );
-}
-const precision = 100000000;
-const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
-const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = x => cos(deg2rad(x));
-const deg2rad = x => (x * PI) / 180;
-const rad2deg = x => (x * 180) / PI;
-const sind = x => sin(deg2rad(x));
-const abs = Math.abs;
-const atan2 = Math.atan2;
-const cbrt = Math.cbrt;
-const cos = Math.cos;
-const exp = Math.exp;
-const floor = Math.floor;
-const max = Math.max;
-const min = Math.min;
-const PI = Math.PI;
-const pow = Math.pow;
-const sin = Math.sin;
-const sqrt = Math.sqrt;
-const epsilon = pow(6, 3) / pow(29, 3);
-const kappa = pow(29, 3) / pow(3, 3);
-
+ 
 /*
  * from convert-colors/src/rgb-contrast.js
  */
@@ -1107,90 +500,6 @@ const keywords = {
   yellow: [255, 255, 0],
   yellowgreen: [154, 205, 50]
 };
-
-/*
- * from convert-colors/src/util.js
- */
-
-export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
-  const value = rgb2value(rgbR, rgbG, rgbB);
-  const whiteness = rgb2whiteness(rgbR, rgbG, rgbB);
-  const delta = value - whiteness;
-
-  if(delta) {
-    const segment =
-      value === rgbR
-        ? (rgbG - rgbB) / delta
-        : value === rgbG
-        ? (rgbB - rgbR) / delta
-        : (rgbR - rgbG) / delta;
-    const shift =
-      value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
-    const hue = (segment + shift) * 60;
-    return hue;
-  } else {
-    return fallbackhue;
-  }
-}
-
-export function hue2rgb(t1, t2, hue) {
-  const rhue = hue < 0 ? hue + 360 : hue > 360 ? hue - 360 : hue;
-  const rgb =
-    rhue * 6 < 360
-      ? t1 + ((t2 - t1) * rhue) / 60
-      : rhue * 2 < 360
-      ? t2
-      : rhue * 3 < 720
-      ? t1 + ((t2 - t1) * (240 - rhue)) / 60
-      : t1;
-  return rgb;
-}
-
-export function luminance2contrast(relativeLuminance1, relativeLuminance2) {
-  const l1 = max(relativeLuminance1, relativeLuminance2);
-  const l2 = min(relativeLuminance1, relativeLuminance2);
-  return (l1 * precision + 0.05 * precision) / (l2 * precision + 0.05 * precision);
-}
-
-export function rgb2value(rgbR, rgbG, rgbB) {
-  const value = max(rgbR, rgbG, rgbB);
-  return value;
-}
-
-export function rgb2whiteness(rgbR, rgbG, rgbB) {
-  const whiteness = min(rgbR, rgbG, rgbB);
-  return whiteness;
-}
-
-export function matrix(params, mats) {
-  return mats.map(mat =>
-    mat.reduce((acc, value, index) =>
-        acc + (params.index * precision * (value * precision)) / precision / precision,
-      0
-    )
-  );
-}
-const precision = 100000000;
-const [wd50X, wd50Y, wd50Z] = [96.42, 100, 82.49];
-const atan2d = (y, x) => rad2deg(atan2(y, x));
-const cosd = x => cos(deg2rad(x));
-const deg2rad = x => (x * PI) / 180;
-const rad2deg = x => (x * 180) / PI;
-const sind = x => sin(deg2rad(x));
-const abs = Math.abs;
-const atan2 = Math.atan2;
-const cbrt = Math.cbrt;
-const cos = Math.cos;
-const exp = Math.exp;
-const floor = Math.floor;
-const max = Math.max;
-const min = Math.min;
-const PI = Math.PI;
-const pow = Math.pow;
-const sin = Math.sin;
-const sqrt = Math.sqrt;
-const epsilon = pow(6, 3) / pow(29, 3);
-const kappa = pow(29, 3) / pow(3, 3);
 
 /*
  * from convert-colors/src/lab-ciede.js
@@ -1585,35 +894,27 @@ export {
   hex2hwb,
   hex2lab,
   hex2lch,
-  hex2rgb,
   hex2xyz,
   hsl2ciede,
   hsl2contrast,
   hsl2hex,
-  hsl2hsv,
   hsl2hwb,
   hsl2lab,
   hsl2lch,
-  hsl2rgb,
   hsl2xyz,
   hsv2ciede,
   hsv2contrast,
   hsv2hex,
-  hsv2hsl,
-  hsv2hwb,
   hsv2lab,
   hsv2lch,
-  hsv2rgb,
   hsv2xyz,
   hwb2ciede,
   hwb2contrast,
   hwb2hex,
   hwb2hsl,
-  hwb2hsv,
   hwb2lab,
   hwb2lch,
-  hwb2rgb,
-  hwb2xyz,
+    hwb2xyz,
   keyword2ciede,
   keyword2contrast,
   keyword2hex,
@@ -1622,42 +923,29 @@ export {
   keyword2hwb,
   keyword2lab,
   keyword2lch,
-  keyword2rgb,
   keyword2xyz,
-  lab2ciede,
   lab2contrast,
   lab2hex,
   lab2hsl,
   lab2hsv,
   lab2hwb,
-  lab2lch,
   lab2rgb,
-  lab2xyz,
   lch2ciede,
   lch2contrast,
   lch2hex,
   lch2hsl,
   lch2hsv,
   lch2hwb,
-  lch2lab,
   lch2rgb,
   lch2xyz,
   rgb2ciede,
-  rgb2contrast,
-  rgb2hex,
-  rgb2hsl,
-  rgb2hsv,
-  rgb2hwb,
   rgb2lab,
   rgb2lch,
-  rgb2xyz,
   xyz2ciede,
   xyz2contrast,
   xyz2hex,
   xyz2hsl,
   xyz2hsv,
   xyz2hwb,
-  xyz2lab,
-  xyz2lch,
-  xyz2rgb
+  xyz2lch 
 };

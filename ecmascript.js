@@ -61,13 +61,7 @@ export {
   WhileStatement,
   WithStatement
 } from './ecmascript/estree.js';
-export {
-  Lexer,
-  Stack,
-  PathReplacer,
-  Position,
-  Range
-} from './ecmascript/lexer.js';
+export { Lexer, Stack, PathReplacer, Position, Range } from './ecmascript/lexer.js';
 export { Parser, ECMAScriptParser } from './ecmascript/parser.js';
 export { Printer } from './ecmascript/printer.js';
 export { Token } from './ecmascript/token.js';

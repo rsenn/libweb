@@ -146,8 +146,11 @@ export class Identifier extends Pattern {
 export class Literal extends Expression {
   constructor(value, species) {
     super('Literal');
-    this.value = value;
-    Util.define(this, { species });
+
+    if(value !== undefined)
+      this.value = value;
+    if(species !== undefined)
+      Util.define(this, { species });
   }
 
   toString() {
@@ -167,6 +170,16 @@ export class Literal extends Expression {
     let c = Util.coloring(colors);
     return c.text(`Literal `, 1, 31) + c.text(value, 1, value.startsWith('/') ? 35 : 36);
   }*/
+}
+
+export class RegExpLiteral extends Literal {
+  constructor(pattern, flags) {
+    super();
+    this.type = 'RegExpLiteral';
+    this.regex = {
+      pattern, flags
+    };
+  }
 }
 
 export class TemplateLiteral extends Expression {
@@ -743,6 +756,7 @@ export const CTORS = {
   Pattern,
   Identifier,
   Literal,
+  RegExpLiteral,
   TemplateLiteral,
   TaggedTemplateExpression,
   TemplateElement,

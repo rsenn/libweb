@@ -62,7 +62,7 @@ let vec3 = {
   },
   normalize(pt) {
     let d = Math.sqrt(pt[0] * pt[0] + pt[1] * pt[1] + pt[2] * pt[2]);
-    if (d === 0) {
+    if(d === 0) {
       return [0, 0, 0];
     }
     return [pt[0] / d, pt[1] / d, pt[2] / d];
@@ -71,8 +71,7 @@ let vec3 = {
     return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
   },
   angle(v1, v2) {
-    return Math.acos(
-      (v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]) /
+    return Math.acos((v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]) /
         (Math.sqrt(v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]) *
           Math.sqrt(v2[0] * v2[0] + v2[1] * v2[1] + v2[2] * v2[2]))
     );
@@ -95,17 +94,13 @@ let vec3 = {
   },
   equal(a, b) {
     let epsilon = 0.0000001;
-    if (a === undefined && b === undefined) {
+    if(a === undefined && b === undefined) {
       return true;
     }
-    if (a === undefined || b === undefined) {
+    if(a === undefined || b === undefined) {
       return false;
     }
-    return (
-      Math.abs(a[0] - b[0]) < epsilon &&
-      Math.abs(a[1] - b[1]) < epsilon &&
-      Math.abs(a[2] - b[2]) < epsilon
-    );
+    return Math.abs(a[0] - b[0]) < epsilon && Math.abs(a[1] - b[1]) < epsilon && Math.abs(a[2] - b[2]) < epsilon;
   }
 };
 
@@ -160,47 +155,47 @@ function Transform(mat) {
 
 let STACK_DEPTH_LIMIT = 16;
 
-Transform.prototype.clearStack = function (init_mat) {
+Transform.prototype.clearStack = function(init_mat) {
   this.m_stack = [];
   this.m_cache = [];
   this.c_stack = 0;
   this.valid = 0;
   this.result = null;
 
-  for (let i = 0; i < STACK_DEPTH_LIMIT; i++) {
+  for(let i = 0; i < STACK_DEPTH_LIMIT; i++) {
     this.m_stack[i] = this.getIdentity();
   }
 
-  if (init_mat !== undefined) {
+  if(init_mat !== undefined) {
     this.m_stack[0] = init_mat;
   } else {
     this.setIdentity();
   }
 }; //clearStack
 
-Transform.prototype.setIdentity = function () {
+Transform.prototype.setIdentity = function() {
   this.m_stack[this.c_stack] = this.getIdentity();
-  if (this.valid === this.c_stack && this.c_stack) {
+  if(this.valid === this.c_stack && this.c_stack) {
     this.valid--;
   }
 };
 
-Transform.prototype.getIdentity = function () {
+Transform.prototype.getIdentity = function() {
   return [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0];
 };
 
-Transform.prototype.getResult = function () {
-  if (!this.c_stack) {
+Transform.prototype.getResult = function() {
+  if(!this.c_stack) {
     return this.m_stack[0];
   }
 
   let m = mat3.identity;
 
-  if (this.valid > this.c_stack - 1) {
+  if(this.valid > this.c_stack - 1) {
     this.valid = this.c_stack - 1;
   }
 
-  for (let i = this.valid; i < this.c_stack + 1; i++) {
+  for(let i = this.valid; i < this.c_stack + 1; i++) {
     m = mat3.multiply(this.m_stack[i], m);
     this.m_cache[i] = m;
   }
@@ -212,13 +207,13 @@ Transform.prototype.getResult = function () {
   return this.result;
 };
 
-Transform.prototype.pushMatrix = function () {
+Transform.prototype.pushMatrix = function() {
   this.c_stack++;
   this.m_stack[this.c_stack] = this.getIdentity();
 };
 
-Transform.prototype.popMatrix = function () {
-  if (this.c_stack === 0) {
+Transform.prototype.popMatrix = function() {
+  if(this.c_stack === 0) {
     return;
   }
   this.c_stack--;
@@ -226,7 +221,7 @@ Transform.prototype.popMatrix = function () {
 
 let translateMatrix = Transform.prototype.getIdentity();
 
-Transform.prototype.translate = function (x, y) {
+Transform.prototype.translate = function(x, y) {
   translateMatrix[6] = x;
   translateMatrix[7] = y;
 
@@ -241,7 +236,7 @@ Transform.prototype.translate = function (x, y) {
 
 let scaleMatrix = Transform.prototype.getIdentity();
 
-Transform.prototype.scale = function (x, y) {
+Transform.prototype.scale = function(x, y) {
   scaleMatrix[0] = x;
   scaleMatrix[4] = y;
 
@@ -256,7 +251,7 @@ Transform.prototype.scale = function (x, y) {
 
 let rotateMatrix = Transform.prototype.getIdentity();
 
-Transform.prototype.rotate = function (ang) {
+Transform.prototype.rotate = function(ang) {
   let sAng, cAng;
 
   sAng = Math.sin(-ang);
@@ -295,12 +290,9 @@ let WebGL2D = /*this.WebGL2D =*/ function WebGL2D(canvas, options) {
 
   //Override getContext function with "webgl-2d" enabled version
   canvas.getContext = (function (gl2d) {
-    return function (context) {
-      if (
-        (gl2d.options.force || context === 'webgl-2d') &&
-        !(canvas.width === 0 || canvas.height === 0)
-      ) {
-        if (gl2d.gl) {
+    return function(context) {
+      if((gl2d.options.force || context === 'webgl-2d') && !(canvas.width === 0 || canvas.height === 0)) {
+        if(gl2d.gl) {
           return gl2d.gl;
         }
 
@@ -341,7 +333,7 @@ let WebGL2D = /*this.WebGL2D =*/ function WebGL2D(canvas, options) {
 };
 
 //Enables WebGL2D on your canvas
-WebGL2D.enable = function (canvas, options) {
+WebGL2D.enable = function(canvas, options) {
   return canvas.gl2d || new WebGL2D(canvas, options);
 };
 
@@ -353,9 +345,7 @@ let shaderMask = {
 };
 
 //Fragment shader source
-WebGL2D.prototype.getFragmentShaderSource = function getFragmentShaderSource(
-  sMask
-) {
+WebGL2D.prototype.getFragmentShaderSource = function getFragmentShaderSource(sMask) {
   let fsSource = [
     '#ifdef GL_ES',
     'precision highp float;',
@@ -390,10 +380,7 @@ WebGL2D.prototype.getFragmentShaderSource = function getFragmentShaderSource(
   return fsSource;
 };
 
-WebGL2D.prototype.getVertexShaderSource = function getVertexShaderSource(
-  stackDepth,
-  sMask
-) {
+WebGL2D.prototype.getVertexShaderSource = function getVertexShaderSource(stackDepth, sMask) {
   let w = 2 / this.canvas.width,
     h = -2 / this.canvas.height;
 
@@ -412,11 +399,7 @@ WebGL2D.prototype.getVertexShaderSource = function getVertexShaderSource(
 
     'varying vec4 vColor;',
 
-    'const mat4 pMatrix = mat4(' +
-      w +
-      ',0,0,0, 0,' +
-      h +
-      ',0,0, 0,0,1.0,1.0, -1.0,1.0,0,0);',
+    'const mat4 pMatrix = mat4(' + w + ',0,0,0, 0,' + h + ',0,0, 0,0,1.0,1.0, -1.0,1.0,0,0);',
 
     'mat3 crunchStack(void) {',
     'mat3 result = uTransforms[0];',
@@ -439,22 +422,19 @@ WebGL2D.prototype.getVertexShaderSource = function getVertexShaderSource(
 };
 
 //Initialize fragment and vertex shaders
-WebGL2D.prototype.initShaders = function initShaders(
-  transformStackDepth,
-  sMask
-) {
+WebGL2D.prototype.initShaders = function initShaders(transformStackDepth, sMask) {
   let gl = this.gl;
 
   transformStackDepth = transformStackDepth || 1;
   sMask = sMask || 0;
   let storedShader = this.shaderPool[transformStackDepth];
 
-  if (!storedShader) {
+  if(!storedShader) {
     storedShader = this.shaderPool[transformStackDepth] = [];
   }
   storedShader = storedShader[sMask];
 
-  if (storedShader) {
+  if(storedShader) {
     gl.useProgram(storedShader);
     this.shaderProgram = storedShader;
     return storedShader;
@@ -463,18 +443,15 @@ WebGL2D.prototype.initShaders = function initShaders(
   gl.shaderSource(this.fs, this.getFragmentShaderSource(sMask));
   gl.compileShader(this.fs);
 
-  if (!gl.getShaderParameter(this.fs, gl.COMPILE_STATUS)) {
+  if(!gl.getShaderParameter(this.fs, gl.COMPILE_STATUS)) {
     throw 'fragment shader error: ' + gl.getShaderInfoLog(this.fs);
   }
 
   let vs = (this.vs = gl.createShader(gl.VERTEX_SHADER));
-  gl.shaderSource(
-    this.vs,
-    this.getVertexShaderSource(transformStackDepth, sMask)
-  );
+  gl.shaderSource(this.vs, this.getVertexShaderSource(transformStackDepth, sMask));
   gl.compileShader(this.vs);
 
-  if (!gl.getShaderParameter(this.vs, gl.COMPILE_STATUS)) {
+  if(!gl.getShaderParameter(this.vs, gl.COMPILE_STATUS)) {
     throw 'vertex shader error: ' + gl.getShaderInfoLog(this.vs);
   }
 
@@ -484,31 +461,22 @@ WebGL2D.prototype.initShaders = function initShaders(
   gl.attachShader(shaderProgram, vs);
   gl.linkProgram(shaderProgram);
 
-  if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+  if(!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
     throw 'Could not initialise shaders.';
   }
 
   gl.useProgram(shaderProgram);
 
-  shaderProgram.vertexPositionAttribute = gl.getAttribLocation(
-    shaderProgram,
-    'aVertexPosition'
-  );
+  shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
   gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
   shaderProgram.uColor = gl.getUniformLocation(shaderProgram, 'uColor');
   shaderProgram.uSampler = gl.getUniformLocation(shaderProgram, 'uSampler');
-  shaderProgram.uCropSource = gl.getUniformLocation(
-    shaderProgram,
-    'uCropSource'
-  );
+  shaderProgram.uCropSource = gl.getUniformLocation(shaderProgram, 'uCropSource');
 
   shaderProgram.uTransforms = [];
-  for (let i = 0; i < transformStackDepth; ++i) {
-    shaderProgram.uTransforms[i] = gl.getUniformLocation(
-      shaderProgram,
-      'uTransforms[' + i + ']'
-    );
+  for(let i = 0; i < transformStackDepth; ++i) {
+    shaderProgram.uTransforms[i] = gl.getUniformLocation(shaderProgram, 'uTransforms[' + i + ']');
   } //for
   this.shaderPool[transformStackDepth][sMask] = shaderProgram;
   return shaderProgram;
@@ -522,24 +490,7 @@ let pathVertexPositionBuffer;
 let pathVertexColorBuffer;
 
 //2D Vertices and Texture UV coords
-let rectVerts = new Float32Array([
-  0,
-  0,
-  0,
-  0,
-  0,
-  1,
-  0,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  0,
-  1,
-  0
-]);
+let rectVerts = new Float32Array([0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0]);
 
 WebGL2D.prototype.initBuffers = function initBuffers() {
   let gl = this.gl;
@@ -557,7 +508,7 @@ WebGL2D.prototype.initBuffers = function initBuffers() {
 //Maintains an array of all WebGL2D instances
 WebGL2D.instances = [];
 
-WebGL2D.prototype.postInit = function () {
+WebGL2D.prototype.postInit = function() {
   WebGL2D.instances.push(this);
 };
 
@@ -593,11 +544,11 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     function getHue(value) {
       let hue;
 
-      if (value * 6 < 1) {
+      if(value * 6 < 1) {
         hue = m1 + (m2 - m1) * value * 6;
-      } else if (value * 2 < 1) {
+      } else if(value * 2 < 1) {
         hue = m2;
-      } else if (value * 3 < 2) {
+      } else if(value * 3 < 2) {
         hue = m1 + (m2 - m1) * (2 / 3 - value) * 6;
       } else {
         hue = m1;
@@ -623,27 +574,24 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
       alphaChannel,
       sameType;
 
-    if ((match = reRGBAColor.exec(value))) {
+    if((match = reRGBAColor.exec(value))) {
       (hasAlpha = match[1]), (alphaChannel = parseFloat(match[8]));
 
-      if (
-        (hasAlpha && isNaN(alphaChannel)) ||
-        (!hasAlpha && !isNaN(alphaChannel))
-      ) {
+      if((hasAlpha && isNaN(alphaChannel)) || (!hasAlpha && !isNaN(alphaChannel))) {
         return false;
       }
 
       sameType = match[3];
 
-      for (let i = 2; i < 8; i += 2) {
+      for(let i = 2; i < 8; i += 2) {
         (channel = match[i]), (isPercent = match[i + 1]);
 
-        if (isPercent !== sameType) {
+        if(isPercent !== sameType) {
           return false;
         }
 
         //Clamp and normalize values
-        if (isPercent) {
+        if(isPercent) {
           channel = channel > 100 ? 1 : channel / 100;
           channel = channel < 0 ? 0 : channel;
         } else {
@@ -655,15 +603,10 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
       }
 
       result.push(hasAlpha ? alphaChannel : 1.0);
-    } else if ((match = reHSLAColor.exec(value))) {
+    } else if((match = reHSLAColor.exec(value))) {
       (hasAlpha = match[1]), (alphaChannel = parseFloat(match[5]));
-      result = HSLAToRGBA(
-        match[2],
-        match[3],
-        match[4],
-        parseFloat(hasAlpha && alphaChannel ? alphaChannel : 1.0)
-      );
-    } else if ((match = reHex6Color.exec(value))) {
+      result = HSLAToRGBA(match[2], match[3], match[4], parseFloat(hasAlpha && alphaChannel ? alphaChannel : 1.0));
+    } else if((match = reHex6Color.exec(value))) {
       let colorInt = parseInt(match[1], 16);
       result = [
         ((colorInt & 0xff0000) >> 16) / 255,
@@ -671,14 +614,12 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
         (colorInt & 0x0000ff) / 255,
         1.0
       ];
-    } else if ((match = reHex3Color.exec(value))) {
-      let hexString =
-        '#' +
-        [match[1], match[1], match[2], match[2], match[3], match[3]].join('');
+    } else if((match = reHex3Color.exec(value))) {
+      let hexString = '#' + [match[1], match[1], match[2], match[2], match[3], match[3]].join('');
       result = colorStringToVec4(hexString);
-    } else if (value.toLowerCase() in colorKeywords) {
+    } else if(value.toLowerCase() in colorKeywords) {
       result = colorStringToVec4(colorKeywords[value.toLowerCase()]);
-    } else if (value.toLowerCase() === 'transparent') {
+    } else if(value.toLowerCase() === 'transparent') {
       result = [0, 0, 0, 0];
     } else {
       //Color keywords not yet implemented, ie "orange", return hot pink
@@ -689,17 +630,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   }
 
   function colorVecToString(vec4) {
-    return (
-      'rgba(' +
-      vec4[0] * 255 +
-      ', ' +
-      vec4[1] * 255 +
-      ', ' +
-      vec4[2] * 255 +
-      ', ' +
-      parseFloat(vec4[3]) +
-      ')'
-    );
+    return 'rgba(' + vec4[0] * 255 + ', ' + vec4[1] * 255 + ', ' + vec4[2] * 255 + ', ' + parseFloat(vec4[3]) + ')';
   }
 
   var colorKeywords = {
@@ -853,8 +784,8 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   //A fast simple shallow clone
   function cloneObject(obj) {
     let target = {};
-    for (let i in obj) {
-      if (obj.hasOwnProperty(i)) {
+    for(let i in obj) {
+      if(obj.hasOwnProperty(i)) {
         target[i] = obj[i];
       }
     }
@@ -863,12 +794,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
   function saveDrawState() {
     let bakedDrawState = {
-      fillStyle: [
-        drawState.fillStyle[0],
-        drawState.fillStyle[1],
-        drawState.fillStyle[2],
-        drawState.fillStyle[3]
-      ],
+      fillStyle: [drawState.fillStyle[0], drawState.fillStyle[1], drawState.fillStyle[2], drawState.fillStyle[3]],
       strokeStyle: [
         drawState.strokeStyle[0],
         drawState.strokeStyle[1],
@@ -894,7 +820,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   }
 
   function restoreDrawState() {
-    if (drawStateStack.length) {
+    if(drawStateStack.length) {
       drawState = drawStateStack.pop();
     }
   }
@@ -1124,8 +1050,8 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
     let w = width * 4,
       h = height;
-    for (let i = 0, maxI = h / 2; i < maxI; ++i) {
-      for (let j = 0, maxJ = w; j < maxJ; ++j) {
+    for(let i = 0, maxI = h / 2; i < maxI; ++i) {
+      for(let j = 0, maxJ = w; j < maxJ; ++j) {
         let index1 = i * w + j;
         let index2 = (h - i - 1) * w + j;
         data.data[index1] = buffer[index2];
@@ -1155,7 +1081,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
   function sendTransformStack(sp) {
     let stack = gl2d.transform.m_stack;
-    for (let i = 0, maxI = gl2d.transform.c_stack + 1; i < maxI; ++i) {
+    for(let i = 0, maxI = gl2d.transform.c_stack + 1; i < maxI; ++i) {
       gl.uniformMatrix3fv(sp.uTransforms[i], false, stack[maxI - 1 - i]);
     } //for
   }
@@ -1170,14 +1096,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     let shaderProgram = gl2d.initShaders(transform.c_stack + 2, 0);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, rectVertexPositionBuffer);
-    gl.vertexAttribPointer(
-      shaderProgram.vertexPositionAttribute,
-      4,
-      gl.FLOAT,
-      false,
-      0,
-      0
-    );
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
 
     transform.pushMatrix();
 
@@ -1186,8 +1105,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(
-      shaderProgram.uColor,
+    gl.uniform4f(shaderProgram.uColor,
       drawState.fillStyle[0],
       drawState.fillStyle[1],
       drawState.fillStyle[2],
@@ -1204,14 +1122,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     let shaderProgram = gl2d.initShaders(transform.c_stack + 2, 0);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, rectVertexPositionBuffer);
-    gl.vertexAttribPointer(
-      shaderProgram.vertexPositionAttribute,
-      4,
-      gl.FLOAT,
-      false,
-      0,
-      0
-    );
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
 
     transform.pushMatrix();
 
@@ -1220,8 +1131,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(
-      shaderProgram.uColor,
+    gl.uniform4f(shaderProgram.uColor,
       drawState.strokeStyle[0],
       drawState.strokeStyle[1],
       drawState.strokeStyle[2],
@@ -1249,7 +1159,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
   //Mark last subpath as closed and create a new subpath with the same starting point as the previous subpath
   gl.closePath = function closePath() {
-    if (subPaths.length) {
+    if(subPaths.length) {
       //Mark last subpath closed.
       let prevPath = subPaths[subPaths.length - 1],
         startX = prevPath.verts[0],
@@ -1268,7 +1178,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   };
 
   gl.lineTo = function lineTo(x, y) {
-    if (subPaths.length) {
+    if(subPaths.length) {
       subPaths[subPaths.length - 1].verts.push(x, y, 0, 0);
     } else {
       //Create a new subpath if none currently exist
@@ -1303,21 +1213,13 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     gl.bindBuffer(gl.ARRAY_BUFFER, pathVertexPositionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
 
-    gl.vertexAttribPointer(
-      shaderProgram.vertexPositionAttribute,
-      4,
-      gl.FLOAT,
-      false,
-      0,
-      0
-    );
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
 
     transform.pushMatrix();
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(
-      shaderProgram.uColor,
+    gl.uniform4f(shaderProgram.uColor,
       drawState.fillStyle[0],
       drawState.fillStyle[1],
       drawState.fillStyle[2],
@@ -1330,7 +1232,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   }
 
   gl.fill = function fill() {
-    for (let i = 0; i < subPaths.length; i++) {
+    for(let i = 0; i < subPaths.length; i++) {
       fillSubPath(i);
     }
   };
@@ -1345,28 +1247,20 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     gl.bindBuffer(gl.ARRAY_BUFFER, pathVertexPositionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
 
-    gl.vertexAttribPointer(
-      shaderProgram.vertexPositionAttribute,
-      4,
-      gl.FLOAT,
-      false,
-      0,
-      0
-    );
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
 
     transform.pushMatrix();
 
     sendTransformStack(shaderProgram);
 
-    gl.uniform4f(
-      shaderProgram.uColor,
+    gl.uniform4f(shaderProgram.uColor,
       drawState.strokeStyle[0],
       drawState.strokeStyle[1],
       drawState.strokeStyle[2],
       drawState.strokeStyle[3]
     );
 
-    if (subPath.closed) {
+    if(subPath.closed) {
       gl.drawArrays(gl.LINE_LOOP, 0, verts.length / 4);
     } else {
       gl.drawArrays(gl.LINE_STRIP, 0, verts.length / 4);
@@ -1376,7 +1270,7 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
   }
 
   gl.stroke = function stroke() {
-    for (let i = 0; i < subPaths.length; i++) {
+    for(let i = 0; i < subPaths.length; i++) {
       strokeSubPath(i);
     }
   };
@@ -1398,30 +1292,15 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
 
     //we may wish to consider tiling large images like this instead of scaling and
     //adjust appropriately (flip to next texture source and tile offset) when drawing
-    if (
-      image.width > gl2d.maxTextureSize ||
-      image.height > gl2d.maxTextureSize
-    ) {
+    if(image.width > gl2d.maxTextureSize || image.height > gl2d.maxTextureSize) {
       let canvas = document.createElement('canvas');
 
-      canvas.width =
-        image.width > gl2d.maxTextureSize ? gl2d.maxTextureSize : image.width;
-      canvas.height =
-        image.height > gl2d.maxTextureSize ? gl2d.maxTextureSize : image.height;
+      canvas.width = image.width > gl2d.maxTextureSize ? gl2d.maxTextureSize : image.width;
+      canvas.height = image.height > gl2d.maxTextureSize ? gl2d.maxTextureSize : image.height;
 
       let ctx = canvas.getContext('2d');
 
-      ctx.drawImage(
-        image,
-        0,
-        0,
-        image.width,
-        image.height,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
+      ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height);
 
       image = canvas;
     }
@@ -1433,12 +1312,8 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
     //Enable Mip mapping on power-of-2 textures
-    if (isPOT(image.width) && isPOT(image.height)) {
-      gl.texParameteri(
-        gl.TEXTURE_2D,
-        gl.TEXTURE_MIN_FILTER,
-        gl.LINEAR_MIPMAP_LINEAR
-      );
+    if(isPOT(image.width) && isPOT(image.height)) {
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
       gl.generateMipmap(gl.TEXTURE_2D);
     } else {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -1457,19 +1332,19 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     let doCrop = false;
 
     //drawImage(image, dx, dy)
-    if (arguments.length === 3) {
+    if(arguments.length === 3) {
       transform.translate(a, b);
       transform.scale(image.width, image.height);
     }
 
     //drawImage(image, dx, dy, dw, dh)
-    else if (arguments.length === 5) {
+    else if(arguments.length === 5) {
       transform.translate(a, b);
       transform.scale(c, d);
     }
 
     //drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh)
-    else if (arguments.length === 9) {
+    else if(arguments.length === 9) {
       transform.translate(e, f);
       transform.scale(g, h);
       sMask = sMask | shaderMask.crop;
@@ -1481,31 +1356,18 @@ WebGL2D.prototype.initCanvas2DAPI = function initCanvas2DAPI() {
     let texture,
       cacheIndex = imageCache.indexOf(image);
 
-    if (cacheIndex !== -1) {
+    if(cacheIndex !== -1) {
       texture = textureCache[cacheIndex];
     } else {
       texture = new Texture(image);
     }
 
-    if (doCrop) {
-      gl.uniform4f(
-        shaderProgram.uCropSource,
-        a / image.width,
-        b / image.height,
-        c / image.width,
-        d / image.height
-      );
+    if(doCrop) {
+      gl.uniform4f(shaderProgram.uCropSource, a / image.width, b / image.height, c / image.width, d / image.height);
     }
 
     gl.bindBuffer(gl.ARRAY_BUFFER, rectVertexPositionBuffer);
-    gl.vertexAttribPointer(
-      shaderProgram.vertexPositionAttribute,
-      4,
-      gl.FLOAT,
-      false,
-      0,
-      0
-    );
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
 
     gl.bindTexture(gl.TEXTURE_2D, texture.obj);
     gl.activeTexture(gl.TEXTURE0);
@@ -1558,14 +1420,13 @@ export const WEBGL = 'WEBGL',
   SVG = 'SVG',
   DOM = 'DOM'; //Simple
 
-window.update = function () {
-  return (
-    window.requestAnimationFrame ||
+window.update = function() {
+  return (window.requestAnimationFrame ||
     window.webkitRequestAnimationFrame ||
     window.mozRequestAnimationFrame ||
     window.msRequestAnimationFrame ||
     window.oRequestAnimationFrame ||
-    function (callback, fps) {
+    function(callback, fps) {
       window.setTimeout(callback, 1000 / fps);
     }
   );
@@ -1577,7 +1438,7 @@ export const crosskit = {
   version: '0.8.8',
   init(v) {
     renderer = v.renderer.toString();
-    if (renderer == CANVAS) {
+    if(renderer == CANVAS) {
       canvas = document.createElement('canvas');
       canvas.width = v.w;
       canvas.height = v.h;
@@ -1585,20 +1446,17 @@ export const crosskit = {
       canvas.style.left = '8px';
       body.parentNode.appendChild(canvas);
       cakecanvas = document.getElementsByTagName('canvas')[index];
-      cakepen = cakecanvas.getContext('2d');
+      cakepen = this.context = cakecanvas.getContext('2d', v);
     }
 
-    if (renderer == SVG) {
-      cakecanvas = document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'svg'
-      );
+    if(renderer == SVG) {
+      cakecanvas = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       cakecanvas.setAttribute('width', v.w);
       cakecanvas.setAttribute('height', v.h);
       body.appendChild(cakecanvas);
     }
 
-    if (renderer == WEBGL) {
+    if(renderer == WEBGL) {
       canvas = document.createElement('canvas');
       canvas.width = v.w;
       canvas.height = v.h;
@@ -1610,7 +1468,7 @@ export const crosskit = {
       cakepen = cakecanvas.getContext('webgl-2d');
     }
 
-    if (renderer == DOM) {
+    if(renderer == DOM) {
       board = document.createElement('div');
       board.id = 'board';
       board.style.width = v.w;
@@ -1626,13 +1484,12 @@ export const crosskit = {
       board.appendChild(svg_board);
     }
     index++; //Increase Index Of Elements Creation
-    console.info(
-      '%cCROSSKIT ' + crosskit.version + '\nRendering Mode: ' + renderer,
+    console.info('%cCROSSKIT ' + crosskit.version + '\nRendering Mode: ' + renderer,
       'background-color: purple; color: white;'
     );
   },
   line(v) {
-    if (renderer == CANVAS || renderer == WEBGL) {
+    if(renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
       cakepen.strokeStyle = v.stroke;
       cakepen.lineWidth = v.line_width;
@@ -1646,93 +1503,54 @@ export const crosskit = {
       cakepen.globalAlpha = 1;
       cakepen.rotate(-v.angle);
     }
-    if (renderer == DOM) {
-      if (v.pos1[0] > biggest_x) biggest_x = v.pos1[0];
-      if (v.pos1[1] > biggest_y) biggest_y = v.pos1[1];
-      if (v.pos2[0] > biggest_x) biggest_x = v.pos2[0];
-      if (v.pos2[1] > biggest_y) biggest_y = v.pos2[1];
-      dom_svgs_shapes.push(
-        document.createElementNS('http://www.w3.org/2000/svg', 'line')
-      );
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute(
-        'x1',
-        v.pos1[0].toString()
-      );
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute(
-        'y1',
-        v.pos1[1].toString()
-      );
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute(
-        'x2',
-        v.pos2[0].toString()
-      );
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute(
-        'y2',
-        v.pos2[1].toString()
-      );
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute(
-        'stroke',
-        v.stroke
-      );
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.strokeWidth =
-        v.line_width;
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+    if(renderer == DOM) {
+      if(v.pos1[0] > biggest_x) biggest_x = v.pos1[0];
+      if(v.pos1[1] > biggest_y) biggest_y = v.pos1[1];
+      if(v.pos2[0] > biggest_x) biggest_x = v.pos2[0];
+      if(v.pos2[1] > biggest_y) biggest_y = v.pos2[1];
+      dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'line'));
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('x1', v.pos1[0].toString());
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('y1', v.pos1[1].toString());
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('x2', v.pos2[0].toString());
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('y2', v.pos2[1].toString());
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke', v.stroke);
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.strokeWidth = v.line_width;
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       dom_svgs_shapes[dom_svgs_shapes.length - 1].style.opacity = v.a;
       svg_board.appendChild(dom_svgs_shapes[dom_svgs_shapes.length - 1]);
     }
     //And Sorry,Drawing Lines And Anything Related-To Polygons
     //Including Triangles And Polygons Are Not Supported In DOM
-    if (renderer == SVG) {
-      svg_shapes.push(
-        document.createElementNS('http://www.w3.org/2000/svg', 'line')
-      );
-      svg_shapes[svg_shapes.length - 1].setAttribute(
-        'x1',
-        v.pos1[0].toString()
-      );
-      svg_shapes[svg_shapes.length - 1].setAttribute(
-        'y1',
-        v.pos1[1].toString()
-      );
-      svg_shapes[svg_shapes.length - 1].setAttribute(
-        'x2',
-        v.pos2[0].toString()
-      );
-      svg_shapes[svg_shapes.length - 1].setAttribute(
-        'y2',
-        v.pos2[1].toString()
-      );
+    if(renderer == SVG) {
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'line'));
+      svg_shapes[svg_shapes.length - 1].setAttribute('x1', v.pos1[0].toString());
+      svg_shapes[svg_shapes.length - 1].setAttribute('y1', v.pos1[1].toString());
+      svg_shapes[svg_shapes.length - 1].setAttribute('x2', v.pos2[0].toString());
+      svg_shapes[svg_shapes.length - 1].setAttribute('y2', v.pos2[1].toString());
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
       svg_shapes[svg_shapes.length - 1].style.strokeWidth = v.line_width;
-      svg_shapes[svg_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
   }, //And When Drawing Shapes In SVG Or DOM We Get The Last Array Element Which Is The Shape We Pushed To Draw
   rect(v) {
-    if (renderer == CANVAS || renderer == WEBGL) {
+    if(renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
       cakepen.fillStyle = v.fill;
       cakepen.strokeStyle = v.stroke;
       cakepen.rotate(v.angle / 50);
-      if (v.r == undefined || v.r == null || v.r == 0) {
+      if(v.r == undefined || v.r == null || v.r == 0) {
         cakepen.fillRect(v.x, v.y, v.w, v.h);
         cakepen.strokeRect(v.x, v.y, v.w, v.h);
       }
-      if (v.r > 0) {
+      if(v.r > 0) {
         cakepen.beginPath();
         cakepen.moveTo(v.x + v.r, v.y);
         cakepen.lineTo(v.x + v.w - v.r, v.y);
         cakepen.quadraticCurveTo(v.x + v.w, v.y, v.x + v.w, v.y + v.r);
         cakepen.lineTo(v.x + v.w, v.y + v.h - v.r);
-        cakepen.quadraticCurveTo(
-          v.x + v.w,
-          v.y + v.h,
-          v.x + v.w - v.r,
-          v.y + v.h
-        );
+        cakepen.quadraticCurveTo(v.x + v.w, v.y + v.h, v.x + v.w - v.r, v.y + v.h);
         cakepen.lineTo(v.x + v.r, v.y + v.h);
         cakepen.quadraticCurveTo(v.x, v.y + v.h, v.x, v.y + v.h - v.r);
         cakepen.lineTo(v.x, v.y + v.r);
@@ -1745,11 +1563,10 @@ export const crosskit = {
       cakepen.globalAlpha = 1;
     }
 
-    if (renderer == DOM) {
+    if(renderer == DOM) {
       dom_shapes.push(document.createElement('div'));
       dom_shapes[dom_shapes.length - 1].style.backgroundColor = v.fill;
-      dom_shapes[dom_shapes.length - 1].style.border =
-        '2px ' + v.stroke + ' solid';
+      dom_shapes[dom_shapes.length - 1].style.border = '2px ' + v.stroke + ' solid';
       dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
       dom_shapes[dom_shapes.length - 1].style.width = v.w + 'px';
       dom_shapes[dom_shapes.length - 1].style.height = v.h + 'px';
@@ -1757,15 +1574,12 @@ export const crosskit = {
       dom_shapes[dom_shapes.length - 1].style.left = v.x + 'px';
       dom_shapes[dom_shapes.length - 1].style.borderRadius = v.r + 'px';
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
-      dom_shapes[dom_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
-    if (renderer == SVG) {
-      svg_shapes.push(
-        document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-      );
+    if(renderer == SVG) {
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
       svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
       svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
       svg_shapes[svg_shapes.length - 1].setAttribute('width', v.w);
@@ -1774,14 +1588,13 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].setAttribute('ry', v.r);
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
-      svg_shapes[svg_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
   },
   square(v) {
-    if (renderer == CANVAS || renderer == WEBGL) {
+    if(renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
       cakepen.fillStyle = v.fill;
       cakepen.strokeStyle = v.stroke;
@@ -1791,40 +1604,35 @@ export const crosskit = {
       cakepen.globalAlpha = 1;
     }
 
-    if (renderer == DOM) {
+    if(renderer == DOM) {
       dom_shapes.push(document.createElement('div'));
       dom_shapes[dom_shapes.length - 1].style.backgroundColor = v.fill;
-      dom_shapes[dom_shapes.length - 1].style.border =
-        '2px ' + v.stroke + ' solid';
+      dom_shapes[dom_shapes.length - 1].style.border = '2px ' + v.stroke + ' solid';
       dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
       dom_shapes[dom_shapes.length - 1].style.width = v.size / 2 + 'px';
       dom_shapes[dom_shapes.length - 1].style.height = v.size / 2 + 'px';
       dom_shapes[dom_shapes.length - 1].style.top = v.y - v.size * 2 + 'px';
       dom_shapes[dom_shapes.length - 1].style.left = v.x - v.size * 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
-    if (renderer == SVG) {
-      svg_shapes.push(
-        document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-      );
+    if(renderer == SVG) {
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
       svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
       svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
       svg_shapes[svg_shapes.length - 1].setAttribute('width', v.size);
       svg_shapes[svg_shapes.length - 1].setAttribute('height', v.size);
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
-      svg_shapes[svg_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
   },
   pixel(v) {
-    if (renderer == CANVAS || renderer == WEBGL) {
+    if(renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
       cakepen.fillStyle = v.color;
       cakepen.rotate(v.angle / 50);
@@ -1833,7 +1641,7 @@ export const crosskit = {
       cakepen.globalAlpha = 1;
     }
 
-    if (renderer == DOM) {
+    if(renderer == DOM) {
       dom_shapes.push(document.createElement('div'));
       dom_shapes[dom_shapes.length - 1].style.backgroundColor = v.color;
       dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
@@ -1841,29 +1649,25 @@ export const crosskit = {
       dom_shapes[dom_shapes.length - 1].style.height = '1px';
       dom_shapes[dom_shapes.length - 1].style.top = v.y + '1px';
       dom_shapes[dom_shapes.length - 1].style.left = v.x + '1px';
-      dom_shapes[dom_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
-    if (renderer == SVG) {
-      svg_shapes.push(
-        document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-      );
+    if(renderer == SVG) {
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
       svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
       svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
       svg_shapes[svg_shapes.length - 1].setAttribute('width', 1);
       svg_shapes[svg_shapes.length - 1].setAttribute('height', 1);
       svg_shapes[svg_shapes.length - 1].setAttribute('color', v.color);
-      svg_shapes[svg_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
   },
   roundedrect(v) {
-    if (renderer == CANVAS) {
+    if(renderer == CANVAS) {
       cakepen.globalAlpha = v.a;
       cakepen.fillStyle = v.fill;
       cakepen.strokeStyle = v.stroke;
@@ -1873,12 +1677,7 @@ export const crosskit = {
       cakepen.lineTo(v.x + v.w - v.r, v.y);
       cakepen.quadraticCurveTo(v.x + v.w, v.y, v.x + v.w, v.y + v.r);
       cakepen.lineTo(v.x + v.w, v.y + v.h - v.r);
-      cakepen.quadraticCurveTo(
-        v.x + v.w,
-        v.y + v.h,
-        v.x + v.w - v.r,
-        v.y + v.h
-      );
+      cakepen.quadraticCurveTo(v.x + v.w, v.y + v.h, v.x + v.w - v.r, v.y + v.h);
       cakepen.lineTo(v.x + v.r, v.y + v.h);
       cakepen.quadraticCurveTo(v.x, v.y + v.h, v.x, v.y + v.h - v.r);
       cakepen.lineTo(v.x, v.y + v.r);
@@ -1890,27 +1689,23 @@ export const crosskit = {
       cakepen.globalAlpha = 1;
     }
 
-    if (renderer == DOM) {
+    if(renderer == DOM) {
       dom_shapes.push(document.createElement('div'));
       dom_shapes[dom_shapes.length - 1].style.backgroundColor = v.fill;
-      dom_shapes[dom_shapes.length - 1].style.border =
-        '2px ' + v.stroke + ' solid';
+      dom_shapes[dom_shapes.length - 1].style.border = '2px ' + v.stroke + ' solid';
       dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
       dom_shapes[dom_shapes.length - 1].style.width = v.w / 2 + 'px';
       dom_shapes[dom_shapes.length - 1].style.height = v.h / 2 + 'px';
       dom_shapes[dom_shapes.length - 1].style.borderRadius = v.r + 'px';
       dom_shapes[dom_shapes.length - 1].style.top = v.y - v.h * 2 + 'px';
       dom_shapes[dom_shapes.length - 1].style.left = v.x - v.w * 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
-    if (renderer == SVG) {
-      svg_shapes.push(
-        document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-      );
+    if(renderer == SVG) {
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
       svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
       svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
       svg_shapes[svg_shapes.length - 1].setAttribute('width', v.w);
@@ -1919,37 +1714,31 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].setAttribute('ry', v.r);
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
-      svg_shapes[svg_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
 
-    if (renderer == WEBGL) {
-      if (v.angle == undefined) v.angle = 0;
+    if(renderer == WEBGL) {
+      if(v.angle == undefined) v.angle = 0;
       cakepen.globalAlpha = v.a;
       cakepen.fillStyle = v.fill;
       cakepen.strokeStyle = v.fill;
       cakepen.rotate(v.angle / 50);
       let i, angle, x1, y1;
-      for (i = 0; i < 360; i += 0.1) {
+      for(i = 0; i < 360; i += 0.1) {
         angle = i;
         x1 = v.r * Math.cos((angle * Math.PI) / 180);
         y1 = v.r * Math.sin((angle * Math.PI) / 180);
         cakepen.fillRect(v.x + x1 + v.r, v.y + y1 + v.r, v.r * 1.5, v.r * 1.5);
-        cakepen.strokeRect(
-          v.x + x1 + v.r,
-          v.y + y1 + v.r,
-          v.r * 1.5,
-          v.r * 1.5
-        );
+        cakepen.strokeRect(v.x + x1 + v.r, v.y + y1 + v.r, v.r * 1.5, v.r * 1.5);
       }
       cakepen.rotate(-v.angle);
       cakepen.globalAlpha = 1;
     }
   },
   circle(v) {
-    if (renderer == CANVAS) {
+    if(renderer == CANVAS) {
       cakepen.globalAlpha = v.a;
       cakepen.fillStyle = v.fill;
       cakepen.strokeStyle = v.stroke;
@@ -1963,47 +1752,42 @@ export const crosskit = {
       cakepen.globalAlpha = 1;
     }
 
-    if (renderer == DOM) {
+    if(renderer == DOM) {
       dom_shapes.push(document.createElement('div'));
       dom_shapes[dom_shapes.length - 1].style.backgroundColor = v.fill;
-      dom_shapes[dom_shapes.length - 1].style.border =
-        '2px ' + v.stroke + ' solid';
+      dom_shapes[dom_shapes.length - 1].style.border = '2px ' + v.stroke + ' solid';
       dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
       dom_shapes[dom_shapes.length - 1].style.width = v.r * 1.85 + 'px';
       dom_shapes[dom_shapes.length - 1].style.height = v.r * 1.85 + 'px';
       dom_shapes[dom_shapes.length - 1].style.borderRadius = '50%';
       dom_shapes[dom_shapes.length - 1].style.top = v.y - v.r + 'px';
       dom_shapes[dom_shapes.length - 1].style.left = v.x - v.r + 'px';
-      dom_shapes[dom_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
-    if (renderer == SVG) {
-      svg_shapes.push(
-        document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-      );
+    if(renderer == SVG) {
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'circle'));
       svg_shapes[svg_shapes.length - 1].setAttribute('cx', v.x);
       svg_shapes[svg_shapes.length - 1].setAttribute('cy', v.y);
       svg_shapes[svg_shapes.length - 1].setAttribute('r', v.r);
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
-      svg_shapes[svg_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
 
-    if (renderer == WEBGL) {
+    if(renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
       cakepen.fillStyle = v.stroke;
       cakepen.strokeStyle = v.fill;
-      if (v.angle == undefined) v.angle = 0;
+      if(v.angle == undefined) v.angle = 0;
       cakepen.rotate(v.angle / 50);
       var i, angle, x1, y1;
       cakepen.beginPath();
-      for (i = 0; i < 360; i += 0.1) {
+      for(i = 0; i < 360; i += 0.1) {
         angle = i;
         x1 = v.r * Math.cos((angle * Math.PI) / 180);
         y1 = v.r * Math.sin((angle * Math.PI) / 180);
@@ -2015,7 +1799,7 @@ export const crosskit = {
       cakepen.fill();
       cakepen.stroke();
       var i, angle, x1, y1;
-      for (i = 0; i < 360; i += 0.1) {
+      for(i = 0; i < 360; i += 0.1) {
         angle = i;
         x1 = v.r * Math.cos((angle * Math.PI) / 180);
         y1 = v.r * Math.sin((angle * Math.PI) / 180);
@@ -2026,17 +1810,16 @@ export const crosskit = {
     }
   },
   img(v) {
-    if (renderer == CANVAS || renderer == WEBGL) {
+    if(renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
       cakepen.rotate(v.angle / 50);
       images.push(new Image(v.w, v.h));
       images[images.length - 1].src = v.img;
-      images[images.length - 1].onload = () =>
-        cakepen.drawImage(images[images.length - 1], v.x, v.y, v.w, v.h);
+      images[images.length - 1].onload = () => cakepen.drawImage(images[images.length - 1], v.x, v.y, v.w, v.h);
       cakepen.rotate(-v.angle);
       cakepen.globalAlpha = 1;
     }
-    if (renderer == DOM) {
+    if(renderer == DOM) {
       dom_shapes.push(new Image());
       dom_shapes[dom_shapes.length - 1].src = v.img;
       dom_shapes[dom_shapes.length - 1].style.position = 'absolute';
@@ -2045,15 +1828,12 @@ export const crosskit = {
       dom_shapes[dom_shapes.length - 1].style.borderRadius = v.r + 'px';
       dom_shapes[dom_shapes.length - 1].style.top = v.y - v.h / 60 + 'px';
       dom_shapes[dom_shapes.length - 1].style.left = v.x - v.w / 60 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
-    if (renderer == SVG) {
-      svg_shapes.push(
-        document.createElementNS('http://www.w3.org/2000/svg', 'image')
-      );
+    if(renderer == SVG) {
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'image'));
       svg_shapes[svg_shapes.length - 1].setAttribute('href', v.img);
       svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
       svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
@@ -2061,15 +1841,14 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].setAttribute('ry', v.r);
       svg_shapes[svg_shapes.length - 1].setAttribute('width', v.w);
       svg_shapes[svg_shapes.length - 1].setAttribute('height', v.h);
-      svg_shapes[svg_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
   }, //NOTES: If Parameter To Use With DOM Or SVG,Set It To 0 Or "none" In Case Of That
   //NOTES: v.size Parameter Only For SVG And DOM,Font Size Setted In CANVAS Mode With font
   text(v) {
-    if (renderer == CANVAS || renderer == WEBGL) {
+    if(renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
       cakepen.font = v.size + 'px ' + v.font;
       cakepen.fillStyle = v.fill;
@@ -2081,7 +1860,7 @@ export const crosskit = {
       cakepen.globalAlpha = 1;
     }
 
-    if (renderer == DOM) {
+    if(renderer == DOM) {
       dom_shapes.push(document.createElement('strong'));
       dom_shapes[dom_shapes.length - 1].innerHTML = v.txt;
       dom_shapes[dom_shapes.length - 1].style.fontFamily = v.font;
@@ -2090,31 +1869,27 @@ export const crosskit = {
       dom_shapes[dom_shapes.length - 1].style.color = v.fill;
       dom_shapes[dom_shapes.length - 1].style.top = v.y - v.size / 2 + 'px';
       dom_shapes[dom_shapes.length - 1].style.left = v.x - v.size / 2 + 'px';
-      dom_shapes[dom_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      dom_shapes[dom_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       dom_shapes[dom_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(dom_shapes[dom_shapes.length - 1]);
     }
 
-    if (renderer == SVG) {
-      svg_shapes.push(
-        document.createElementNS('http://www.w3.org/2000/svg', 'text')
-      );
+    if(renderer == SVG) {
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'text'));
       svg_shapes[svg_shapes.length - 1].setAttribute('x', v.x);
       svg_shapes[svg_shapes.length - 1].setAttribute('y', v.y);
       svg_shapes[svg_shapes.length - 1].innerHTML = v.txt;
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
       svg_shapes[svg_shapes.length - 1].style.fontFamily = v.font;
-      svg_shapes[svg_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       svg_shapes[svg_shapes.length - 1].style.fontSize = v.size + 'px';
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
   },
   triangle(v) {
-    if (renderer == CANVAS || renderer == WEBGL) {
+    if(renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
       cakepen.strokeStyle = v.stroke;
       cakepen.fillStyle = v.fill;
@@ -2131,18 +1906,15 @@ export const crosskit = {
       cakepen.rotate(-v.angle);
       cakepen.globalAlpha = 1;
     }
-    if (renderer == DOM) {
-      if (v.pos1[0] > biggest_x) biggest_x = v.pos1[0];
-      if (v.pos1[1] > biggest_y) biggest_y = v.pos1[1];
-      if (v.pos2[0] > biggest_x) biggest_x = v.pos2[0];
-      if (v.pos2[1] > biggest_y) biggest_y = v.pos2[1];
-      if (v.pos3[0] > biggest_x) biggest_x = v.pos3[0];
-      if (v.pos3[1] > biggest_y) biggest_y = v.pos3[1];
-      dom_svgs_shapes.push(
-        document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
-      );
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute(
-        'points',
+    if(renderer == DOM) {
+      if(v.pos1[0] > biggest_x) biggest_x = v.pos1[0];
+      if(v.pos1[1] > biggest_y) biggest_y = v.pos1[1];
+      if(v.pos2[0] > biggest_x) biggest_x = v.pos2[0];
+      if(v.pos2[1] > biggest_y) biggest_y = v.pos2[1];
+      if(v.pos3[0] > biggest_x) biggest_x = v.pos3[0];
+      if(v.pos3[1] > biggest_y) biggest_y = v.pos3[1];
+      dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('points',
         (
           v.pos1[0] +
           ',' +
@@ -2162,23 +1934,15 @@ export const crosskit = {
         ).toString()
       );
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('fill', v.fill);
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute(
-        'stroke',
-        v.stroke
-      );
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.strokeWidth =
-        v.line_width;
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke', v.stroke);
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.strokeWidth = v.line_width;
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       dom_svgs_shapes[dom_svgs_shapes.length - 1].style.opacity = v.a;
       svg_board.appendChild(dom_svgs_shapes[dom_svgs_shapes.length - 1]);
     }
-    if (renderer == SVG) {
-      svg_shapes.push(
-        document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
-      );
-      svg_shapes[svg_shapes.length - 1].setAttribute(
-        'points',
+    if(renderer == SVG) {
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
+      svg_shapes[svg_shapes.length - 1].setAttribute('points',
         (
           v.pos1[0] +
           ',' +
@@ -2200,75 +1964,57 @@ export const crosskit = {
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
       svg_shapes[svg_shapes.length - 1].style.strokeWidth = v.line_width;
-      svg_shapes[svg_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
   },
   polygon(v) {
-    if (renderer == CANVAS || renderer == WEBGL) {
+    if(renderer == CANVAS || renderer == WEBGL) {
       cakepen.globalAlpha = v.a;
       cakepen.fillStyle = v.fill;
       cakepen.strokeStyle = v.stroke;
       cakepen.rotate(v.angle / 50);
       cakepen.beginPath();
       cakepen.moveTo(v.points[0][0], v.points[0][1]);
-      for (var i = 0; i < v.points.length; i++)
-        cakepen.lineTo(v.points[i][0], v.points[i][1]);
+      for(var i = 0; i < v.points.length; i++) cakepen.lineTo(v.points[i][0], v.points[i][1]);
       cakepen.closePath();
       cakepen.fill();
       cakepen.stroke();
       cakepen.rotate(-v.angle);
       cakepen.globalAlpha = 1;
     }
-    if (renderer == DOM) {
+    if(renderer == DOM) {
       domvg_polygon_points = '';
       domvg_polygon_points += v.points[0][0] + ',' + v.points[0][1] + ' ';
-      for (var i = 0; i < v.points.length; i++) {
-        if (v.points[i][0] > biggest_x) biggest_x = v.points[i][0];
-        if (v.points[i][1] > biggest_y) biggest_y = v.points[i][1];
+      for(var i = 0; i < v.points.length; i++) {
+        if(v.points[i][0] > biggest_x) biggest_x = v.points[i][0];
+        if(v.points[i][1] > biggest_y) biggest_y = v.points[i][1];
         domvg_polygon_points += v.points[i][0] + ',' + v.points[i][1] + ' ';
       }
-      dom_svgs_shapes.push(
-        document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
-      );
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute(
-        'points',
-        domvg_polygon_points.toString()
-      );
+      dom_svgs_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('points', domvg_polygon_points.toString());
       dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('fill', v.fill);
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute(
-        'stroke',
-        v.stroke
-      );
-      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].setAttribute('stroke', v.stroke);
+      dom_svgs_shapes[dom_svgs_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       dom_svgs_shapes[dom_svgs_shapes.length - 1].style.opacity = v.a;
       svg_board.appendChild(dom_svgs_shapes[dom_svgs_shapes.length - 1]);
     }
-    if (renderer == SVG) {
-      svg_shapes.push(
-        document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
-      );
+    if(renderer == SVG) {
+      svg_shapes.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'));
       domvg_polygon_points = '';
       domvg_polygon_points += v.points[0][0] + ',' + v.points[0][1] + ' ';
-      for (var i = 0; i < v.points.length; i++)
-        domvg_polygon_points += v.points[i][0] + ',' + v.points[i][1] + ' ';
-      svg_shapes[svg_shapes.length - 1].setAttribute(
-        'points',
-        domvg_polygon_points.toString()
-      );
+      for(var i = 0; i < v.points.length; i++) domvg_polygon_points += v.points[i][0] + ',' + v.points[i][1] + ' ';
+      svg_shapes[svg_shapes.length - 1].setAttribute('points', domvg_polygon_points.toString());
       svg_shapes[svg_shapes.length - 1].setAttribute('fill', v.fill);
       svg_shapes[svg_shapes.length - 1].setAttribute('stroke', v.stroke);
-      svg_shapes[svg_shapes.length - 1].style.transform =
-        'rotate(' + v.angle + 'deg)';
+      svg_shapes[svg_shapes.length - 1].style.transform = 'rotate(' + v.angle + 'deg)';
       svg_shapes[svg_shapes.length - 1].style.opacity = v.a;
       cakecanvas.appendChild(svg_shapes[svg_shapes.length - 1]);
     }
   },
   clear() {
-    if (renderer == CANVAS || renderer == WEBGL) {
+    if(renderer == CANVAS || renderer == WEBGL) {
       cakepen.fillStyle = 'transparent';
       cakepen.fillRect(0, 0, cakepen.canvas.width, cakepen.canvas.height);
       cakepen.clearRect(0, 0, cakepen.canvas.width, cakepen.canvas.height);
@@ -2276,44 +2022,36 @@ export const crosskit = {
     //The Technology Used Here Is Somehow Weird
     //It Removes Every Shape Drawn From document
     //Then Remove All Elements From Array Using [].slice(0,array_length)
-    if (renderer == DOM) {
-      for (doms = 0; doms < dom_shapes.length; doms++) {
+    if(renderer == DOM) {
+      for(doms = 0; doms < dom_shapes.length; doms++) {
         dom_shapes.slice(0, dom_shapes.length);
         cakecanvas.removeChild(dom_shapes[doms]);
       }
-      for (svid = 0; svid < dom_svgs_shapes.length; svid++) {
+      for(svid = 0; svid < dom_svgs_shapes.length; svid++) {
         dom_svgs_shapes.slice(0, dom_svgs_shapes.length);
         svg_board.removeChild(dom_svgs_shapes[svid]);
       }
     }
-    if (renderer == SVG) {
-      for (svgos = 0; svgos < dom_shapes.length; svgos++) {
+    if(renderer == SVG) {
+      for(svgos = 0; svgos < dom_shapes.length; svgos++) {
         svg_shapes.slice(0, svg_shapes.length);
         cakecanvas.removeChild(svg_shapes[svgos]);
       }
     }
   },
   bgcolor(c) {
-    if (
-      renderer == CANVAS ||
-      renderer == WEBGL ||
-      renderer == SVG ||
-      renderer == DOM
-    )
+    if(renderer == CANVAS || renderer == WEBGL || renderer == SVG || renderer == DOM)
       cakecanvas.style.backgroundColor = c;
-    if (renderer == DOM) svg_board.style.backgroundColor = c;
+    if(renderer == DOM) svg_board.style.backgroundColor = c;
   },
   bgimg(v) {
     cakecanvas.style.backgroundImage = 'url(' + v.src + ')';
     cakecanvas.style.opacity = v.a;
   },
   animate(v) {
-    if (renderer == CANVAS || renderer == WEBGL || renderer == DOM)
-      window.requestAnimationFrame(v.frame);
-    if (renderer == SVG) {
-      svg_anims.push(
-        document.createElementNS('http://www.w3.org/2000/svg', 'animate')
-      );
+    if(renderer == CANVAS || renderer == WEBGL || renderer == DOM) window.requestAnimationFrame(v.frame);
+    if(renderer == SVG) {
+      svg_anims.push(document.createElementNS('http://www.w3.org/2000/svg', 'animate'));
       svg_anims[svg_anims.length - 1].setAttribute('attributeType', 'XML');
       svg_anims[svg_anims.length - 1].setAttribute('attributeName', v.attr);
       svg_anims[svg_anims.length - 1].setAttribute('dur', v.dur + 's');
@@ -2321,17 +2059,11 @@ export const crosskit = {
       svg_anims[svg_anims.length - 1].setAttribute('from', v.from);
       svg_anims[svg_anims.length - 1].setAttribute('repeatCount', v.loop_num);
       svg_anims[svg_anims.length - 1].setAttribute('repeatDur', v.loop_dur);
-      svg_anims[svg_anims.length - 1].anim_id =
-        'animation-' + svg_anims[svg_anims.length - 1];
-      svg_anims[svg_anims.length - 1].setAttribute(
-        'id',
-        svg_anims[svg_anims.length - 1].anim_id
-      );
+      svg_anims[svg_anims.length - 1].anim_id = 'animation-' + svg_anims[svg_anims.length - 1];
+      svg_anims[svg_anims.length - 1].setAttribute('id', svg_anims[svg_anims.length - 1].anim_id);
       let svg_obj = svg_shapes[v.index];
-      let prev_anim = document.getElementById(
-        svg_anims[svg_anims.length - 1].anim_id
-      );
-      if (prev_anim != null) svg_obj.removeChild(prev_anim);
+      let prev_anim = document.getElementById(svg_anims[svg_anims.length - 1].anim_id);
+      if(prev_anim != null) svg_obj.removeChild(prev_anim);
       svg_obj.appendChild(svg_anims[svg_anims.length - 1]);
     }
   },
@@ -2345,33 +2077,25 @@ export const crosskit = {
     return window.update(f, t);
   },
   pause(v) {
-    if (
-      v.interval == undefined &&
-      (renderer == DOM || renderer == CANVAS || renderer == WEBGL)
-    )
+    if(v.interval == undefined && (renderer == DOM || renderer == CANVAS || renderer == WEBGL))
       window.cancelAnimationFrame(v.frame);
-    if (
-      !(v.interval == undefined) &&
-      (renderer == DOM || renderer == CANVAS || renderer == WEBGL)
-    )
+    if(!(v.interval == undefined) && (renderer == DOM || renderer == CANVAS || renderer == WEBGL))
       window.clearInterval(v.interval);
   }
 };
-let rgb = function (v) {
+let rgb = function(v) {
   return 'rgb(' + v.r + ',' + v.g + ',' + v.b + ')';
 };
-let rgba = function (v) {
+let rgba = function(v) {
   return 'rgba(' + v.r + ',' + v.g + ',' + v.b + ',' + v.a + ')';
 };
-let hsl = function (v) {
+let hsl = function(v) {
   return 'hsl(' + v.h + ',' + v.s + ',' + v.l + ')';
 };
-let hsla = function (v) {
+let hsla = function(v) {
   return 'hsla(' + v.h + ',' + v.s + ',' + v.l + ',' + v.a + ')';
 };
-window.addEventListener('keypress', (e) => {
-  if (e.key == 'f' && !window.fullscreen)
-    document.documentElement.requestFullscreen();
-  if (e.key == 'f' && window.fullscreen)
-    document.documentElement.exitFullscreen();
+window.addEventListener('keypress', e => {
+  if(e.key == 'f' && !window.fullscreen) document.documentElement.requestFullscreen();
+  if(e.key == 'f' && window.fullscreen) document.documentElement.exitFullscreen();
 });

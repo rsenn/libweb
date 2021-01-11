@@ -1,88 +1,67 @@
-//Tie everything together
-/*
- let run = async () => {
-  let i = 0;
-  let clicks = streamify('click', document.querySelector('body'));
-
-  clicks = filter(clicks, e => e.target.matches('a'));
-  clicks = distinct(clicks, e => e.target);
-  clicks = map(clicks, e => [i++, e]);
-  clicks = throttle(clicks, 500);
-
-  subscribe(clicks, ([id, click]) => {
-    console.log(id);
-    console.log(click);
-    click.preventDefault();
-  });
-};
-*/
-
-//Turn any event emitter into a stream
-export const streamify = async function* (event, element) {
-  while(true) {
-    yield await oncePromise(element, event);
-  }
-};
-
-//Generate a Promise that listens only once for an event
-export const oncePromise = (emitter, event) =>
-  new Promise(resolve => {
-    var handler = (...args) => {
-      emitter.removeEventListener(event, handler);
-      resolve(...args);
-    };
-    emitter.addEventListener(event, handler);
-  });
-
-//Only pass along events that meet a condition
-export const filter = async function* (stream, test) {
-  for await (let event of stream) {
-    if(test(event)) {
-      yield event;
+// Generate a Promise that listens only once for an event
+export function once(emitter, ...events) {
+  return new Promise(resolve => {
+    events.forEach(type => emitter.addEventListener(type, handler));
+    function handler(event) {
+      events.forEach(type => emitter.removeEventListener(type, handler));
+      resolve(event);
     }
-  }
-};
+  });
+}
 
-//Transform every event of the stream
-export const map = async function* (stream, transform) {
-  for await (let event of stream) {
+// Turn any event emitter into a stream
+export async function* streamify(event, element) {
+  let events = Array.isArray(event) ? event : [event];
+  while(true) {
+    yield await once(element, ...events);
+  }
+}
+
+// Only pass along events that meet a condition
+export async function* filter(stream, test) {
+  for await(let event of stream) {
+    if(test(event)) yield event;
+  }
+}
+
+// Transform every event of the stream
+export async function* map(stream, transform) {
+  for await(let event of stream) {
     yield transform(event);
   }
-};
+}
 
-//Only pass along event if some time has passed since the last one
-export const throttle = async function* (stream, delay) {
+// Only pass along event if some time has passed since the last one
+export async function* throttle(stream, delay) {
   let lastTime;
   let thisTime;
-  for await (let event of stream) {
+  for await(let event of stream) {
     thisTime = new Date().getTime();
     if(!lastTime || thisTime - lastTime > delay) {
       lastTime = thisTime;
       yield event;
     }
   }
-};
+}
 
 let identity = e => e;
 
-//Only pass along events that differ from the last one
-export const distinct = async function* (stream, extract = identity) {
-  let lastVal;
-  let thisVal;
-  for await (let event of stream) {
-    thisVal = extract(event);
-    if(thisVal !== lastVal) {
-      lastVal = thisVal;
+// Only pass along events that differ from the last one
+export async function* distinct(stream, extract = identity) {
+  let previous;
+  let current;
+  for await(let event of stream) {
+    current = extract(event);
+    if(current !== previous) {
+      previous = current;
       yield event;
     }
   }
-};
+}
 
-//Invoke a callback every time an event arrives
-export const subscribe = async (stream, callback) => {
-  for await (let event of stream) {
-    callback(event);
-  }
-};
+// Invoke a callback every time an event arrives
+export async function subscribe(stream, callback) {
+  for await(let event of stream) callback(event);
+}
 
-//run();
+// run();

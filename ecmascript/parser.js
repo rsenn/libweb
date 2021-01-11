@@ -5,7 +5,7 @@ import deep from '../deep.js';
 //import util from 'util';
 import { Token, TokenList } from './token.js';
 import { Printer } from './printer.js';
-import { ESNode, Program, Expression, FunctionLiteral, FunctionBody, Identifier, Super, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabeledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, SwitchCase, WhileStatement, DoWhileStatement, ForStatement, ForInStatement, ForOfStatement, WithStatement, TryStatement, CatchClause, ThrowStatement, YieldExpression, ImportDeclaration, ImportSpecifier, ImportNamespaceSpecifier, ExportNamedDeclaration, ExportSpecifier, AnonymousDefaultExportedFunctionDeclaration, AnonymousDefaultExportedClassDeclaration, ExportDefaultDeclaration, Declaration, ClassDeclaration, ClassBody, MetaProperty, FunctionArgument, FunctionDeclaration, ArrowFunctionExpression, VariableDeclaration, VariableDeclarator, ObjectExpression, Property, MethodDefinition, ArrayExpression, JSXLiteral, Pattern, ArrayPattern, ObjectPattern, AssignmentProperty, AssignmentPattern, AwaitExpression, RestElement, SpreadElement, CTORS, Factory } from './estree.js';
+import { ESNode, Program, Expression, FunctionLiteral,RegExpLiteral, FunctionBody, Identifier, Super, Literal, TemplateLiteral, TaggedTemplateExpression, TemplateElement, ThisExpression, UnaryExpression, UpdateExpression, BinaryExpression, AssignmentExpression, LogicalExpression, MemberExpression, ConditionalExpression, CallExpression, DecoratorExpression, NewExpression, SequenceExpression, Statement, BlockStatement, StatementList, EmptyStatement, LabeledStatement, ExpressionStatement, ReturnStatement, ContinueStatement, BreakStatement, IfStatement, SwitchStatement, SwitchCase, WhileStatement, DoWhileStatement, ForStatement, ForInStatement, ForOfStatement, WithStatement, TryStatement, CatchClause, ThrowStatement, YieldExpression, ImportDeclaration, ImportSpecifier, ImportNamespaceSpecifier, ExportNamedDeclaration, ExportSpecifier, AnonymousDefaultExportedFunctionDeclaration, AnonymousDefaultExportedClassDeclaration, ExportDefaultDeclaration, Declaration, ClassDeclaration, ClassBody, MetaProperty, FunctionArgument, FunctionDeclaration, ArrowFunctionExpression, VariableDeclaration, VariableDeclarator, ObjectExpression, Property, MethodDefinition, ArrayExpression, JSXLiteral, Pattern, ArrayPattern, ObjectPattern, AssignmentProperty, AssignmentPattern, AwaitExpression, RestElement, SpreadElement, CTORS, Factory } from './estree.js';
 import MultiMap from '../container/multiMap.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
@@ -441,7 +441,10 @@ export class ECMAScriptParser extends Parser {
     }
 
     let value = token.value;
-    //if(token.type != 'regexpLiteral') value = value.replace(/\n/g, '\\n');
+   if(token.type == 'regexpLiteral') {
+const [match,pattern,flags] = /^\/(.*)\/([a-z]*)$/.exec(token.value);
+     return new RegExpLiteral(pattern,flags);
+}
 
     return new Literal(value,
       {
@@ -1156,8 +1159,11 @@ export class ECMAScriptParser extends Parser {
             element = new AssignmentPattern(element, this.parseAssignmentExpression());
           }
 
-          if(property.name == (element instanceof AssignmentPattern ? element.left : element).name)
-            shorthand = true;
+          //console.log("element:", element, this.token.position);
+
+          if(element)
+            if(property.name == (element instanceof AssignmentPattern ? element.left : element).name)
+              shorthand = true;
 
           // console.log('parseBindingPattern', { property, element, initializer });
           property = new AssignmentProperty(property, element, shorthand, computed);
@@ -1562,7 +1568,7 @@ export class ECMAScriptParser extends Parser {
   }
 
   parseImportDeclaration(toplevel = false) {
-    this.log('parseImportDeclaration()');
+    //this.log('parseImportDeclaration()');
     this.expectKeywords('import');
     let items = [];
 
@@ -1615,9 +1621,10 @@ export class ECMAScriptParser extends Parser {
   }
 
   parseModuleItems(method = 'parseImportSpecifier') {
+   // console.debug("parseModuleItems",{method});
     this.expectPunctuators('{');
-    let items = [];
-    while(true) {
+    let items = [];1
+    while(!this.matchPunctuators('}')) {
       let item;
       item = this[method]();
       items.push(item);

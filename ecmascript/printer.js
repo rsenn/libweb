@@ -192,6 +192,13 @@ export class Printer {
     return this.colorText.numberLiterals(value);
   }
 
+ printRegExpLiteral(regexp_literal) {
+   console.log("printRegExpLiteral", regexp_literal)
+    let { pattern, flags } = regexp_literal.regex;
+
+    return this.colorText.regexpLiterals(`/${pattern}/${flags || ''}`);
+  }
+
   printTemplateLiteral(template_literal) {
     const { quasis, expressions } = template_literal;
     let s = '';
@@ -865,17 +872,19 @@ export class Printer {
   }
 
   printProperty(property_definition) {
+console.debug('printProperty', property_definition, ESNode.assoc(property_definition));
+
     const { key, value, kind, shorthand } = property_definition;
     let comments = property_definition.comments || (key && key.comments);
     let s = ['init', 'method'].indexOf(kind) != -1 ? '' : this.colorText.keywords(kind) + ' ';
 
     if(comments) s = this.printComments(comments) + s;
 
-    let name = this.printNode(key);
+    let name = key ? this.printNode(key) : '';
     let prop,
       isFunction = false;
 
-    prop = this.printNode(value);
+    prop = value ? this.printNode(value) : '';
     if(value instanceof FunctionDeclaration)
       if(/function[\s\(]/.test(prop)) {
         prop = prop.replace(/function\s*/, '');
@@ -891,7 +900,7 @@ export class Printer {
 
     //console.log('printPropertyDefinition:', { s, name, id, value, prop });
 
-    if(shorthand || !(key instanceof Identifier) || (value && value.value != key.name)) {
+    if( !(shorthand || name == prop)) {
       if(!shorthand && !isFunction) s += this.colorText.punctuators(': ');
 
       s += prop;
