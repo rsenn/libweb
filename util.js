@@ -5077,8 +5077,12 @@ Util.getArgv = Util.memoize(() =>
     },
     a => a,
     () =>
-      Util.tryCatch(() => scriptArgs,
-        a => ['qjs', ...a]
+      Util.tryCatch(() => thisFilename(),
+        fn => [fn],
+        () =>
+          Util.tryCatch(() => scriptArgs,
+            a => ['qjs', ...a]
+          )
       )
   )
 );

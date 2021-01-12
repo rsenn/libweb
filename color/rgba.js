@@ -224,7 +224,7 @@ RGBA.prototype[Symbol.toPrimitive] = function(hint) {
   //console.log("RGBA.toPrimitive", {hint});
   if(hint == 'number') return +RGBA.prototype.hex.call(this, { prefix: '0x' });
   if(hint == 'string') return RGBA.prototype.toString.call(this);
-  if(hint == 'default') return RGBA.prototype.hex.call(this, { prefix: '0x' });
+  if(hint == 'default') return RGBA.prototype.hex.call(this, { prefix: '#' });
 };
 function toHex(n) {
   return '0x' + ('00' + (+n).toString(16)).slice(-2);

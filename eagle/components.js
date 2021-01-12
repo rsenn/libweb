@@ -20,6 +20,7 @@ import { Package } from './components/package.js';
 import { SchematicSymbol } from './components/symbol.js';
 import { Hole } from './components/hole.js';
 import { Dimension } from './components/dimension.js';
+import { SMD } from './components/smd.js';
 
 export const PrimitiveComponents = {
   Wire,
@@ -38,13 +39,14 @@ export const PrimitiveComponents = {
   Symbol: SchematicSymbol,
   Package,
   Hole,
-  Dimension
+  Dimension,
+  Smd: SMD
 };
 
 let prevName;
 
 export const ElementNameToComponent = name => {
-  let comp = PrimitiveComponents[Util.ucfirst(name)];
+   let comp = PrimitiveComponents[Util.ucfirst(name)];
 
   if(!comp && name != prevName) {
     console.debug(`Not rendering component '${name}'`);
