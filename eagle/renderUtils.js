@@ -166,6 +166,7 @@ export const PolarToCartesian = ([radius, angle], origin = { x: 0, y: 0 }) => {
     y: origin.y + radius * Math.sin(a)
   };
 };
+
 export const CartesianToPolar = ({ x, y }, origin = { x: 0, y: 0 }) => {
   x -= origin.x;
   y -= origin.y;
