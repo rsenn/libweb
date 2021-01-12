@@ -8,7 +8,7 @@ export function trkl(initValue) {
   let value = initValue;
   let subscribers = [];
 
-  let self = function (...args) {
+  let self = function(...args) {
     return args.length ? write(args[0], this) : read();
   };
 
@@ -27,13 +27,13 @@ export function trkl(initValue) {
 
   //declaring as a private function means the minifier can scrub its name on internal references
   function subscribe(subscriber, immediate) {
-    if (subscribers.indexOf(subscriber) == -1) subscribers.push(subscriber);
-    if (immediate) subscriber(value);
+    if(subscribers.indexOf(subscriber) == -1) subscribers.push(subscriber);
+    if(immediate) subscriber(value);
 
     return this;
   }
 
-  self.unsubscribe = function (subscriber) {
+  self.unsubscribe = function(subscriber) {
     remove(subscribers, subscriber);
     return this;
   };
@@ -41,10 +41,7 @@ export function trkl(initValue) {
   function write(newValue, thisObj) {
     let oldValue = value;
 
-    if (
-      newValue === oldValue &&
-      (newValue === null || typeof newValue !== 'object')
-    ) {
+    if(newValue === oldValue && (newValue === null || typeof newValue !== 'object')) {
       return; //bail out
     }
 
@@ -55,7 +52,7 @@ export function trkl(initValue) {
     //We don't recheck the length during the loop, as subscribers may be mutated
     //(e.g. when a subscribers unsubs itself)
     let subCount = subscribers.length;
-    for (let i = 0; i < subCount; i++) {
+    for(let i = 0; i < subCount; i++) {
       //If a sub throws an error, the effects array will just keep growing and growing.
       //It won't stop operating properly, but it might eat memory. We're okay with this, I guess?
       let fn = effects.pop();
@@ -66,7 +63,7 @@ export function trkl(initValue) {
 
   function read() {
     let runningComputation = computedTracker[computedTracker.length - 1];
-    if (runningComputation) {
+    if(runningComputation) {
       subscribe(runningComputation._subscriber);
     }
     return value;
@@ -78,21 +75,19 @@ export function trkl(initValue) {
 }
 
 trkl.prototype = Object.create({ ...Function.prototype, constructor: trkl });
-trkl.is = (arg) =>
-  typeof arg == 'function' && typeof arg.subscribe == 'function';
+trkl.is = arg => typeof arg == 'function' && typeof arg.subscribe == 'function';
 
-trkl.getset = function (arg) {
+trkl.getset = function(arg) {
   let trkl = arg || new trkl(arg);
-  return Object.create(
-    {
+  return Object.create({
       get: () => trkl(),
-      set: (value) => trkl(value)
+      set: value => trkl(value)
     },
     {}
   );
 };
 
-trkl.computed = function (fn) {
+trkl.computed = function(fn) {
   let self = trkl();
   let computationToken = { _subscriber: runComputed };
 
@@ -105,28 +100,24 @@ trkl.computed = function (fn) {
     let errors, result;
     try {
       result = fn();
-    } catch (e) {
+    } catch(e) {
       errors = e;
     }
     computedTracker.pop();
-    if (errors) {
+    if(errors) {
       throw errors;
     }
     self(result);
   }
 };
 
-trkl.from = function (executor) {
+trkl.from = function(executor) {
   let self = trkl();
   executor(self);
   return self;
 };
 
-trkl.property = function (
-  object,
-  name,
-  options = { enumerable: true, configurable: true, deletable: false }
-) {
+trkl.property = function(object, name, options = { enumerable: true, configurable: true, deletable: false }) {
   const { value, ...opts } = options;
   let self = trkl(value);
   Object.defineProperty(object, name, {
@@ -134,10 +125,8 @@ trkl.property = function (
     get: self,
     set: self
   });
-  if (options.deletable) {
-    trkl.subscribe((value) =>
-      value === undefined ? self.delete() : undefined
-    );
+  if(options.deletable) {
+    trkl.subscribe(value => (value === undefined ? self.delete() : undefined));
     self.delete = () => {
       delete object[name];
       self(null);
@@ -146,11 +135,10 @@ trkl.property = function (
   return self;
 };
 
-trkl.bind = function (object, name, handler) {
+trkl.bind = function(object, name, handler) {
   let self = handler;
-  if (typeof name == 'object')
-    Object.defineProperties(
-      object,
+  if(typeof name == 'object')
+    Object.defineProperties(object,
       Object.keys(name).reduce(
         (acc, key) => ({
           ...acc,
@@ -174,8 +162,8 @@ trkl.bind = function (object, name, handler) {
   return object;
 };
 
-trkl.object = function (handlers, ret = {}) {
-  for (let prop in handlers) {
+trkl.object = function(handlers, ret = {}) {
+  for(let prop in handlers) {
     ret[prop] = handlers[prop]();
 
     trkl.bind(ret, prop, handlers[prop]);
@@ -185,14 +173,14 @@ trkl.object = function (handlers, ret = {}) {
 };
 
 function detectCircularity(token) {
-  if (computedTracker.indexOf(token) !== -1) {
+  if(computedTracker.indexOf(token) !== -1) {
     throw Error('Circular computation detected');
   }
 }
 
 function remove(array, item) {
   let position = array.indexOf(item);
-  if (position !== -1) {
+  if(position !== -1) {
     array.splice(position, 1);
   }
 }

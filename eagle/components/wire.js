@@ -10,7 +10,7 @@ export const Wire = ({ data, opts = {}, ...props }) => {
   let wire =
     useValue(async function* () {
       // log('data.repeater:', data.repeater);
-      for await (let change of data.repeater) {
+      for await(let change of data.repeater) {
         // log('change:', change);
         yield change;
       }

@@ -88,12 +88,7 @@ function __generator(thisArg, body) {
       try {
         if(((f = 1),
           y &&
-            (t =
-              op[0] & 2
-                ? y.return
-                : op[0]
-                ? y.throw || ((t = y.return) && t.call(y), 0)
-                : y.next) &&
+            (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) &&
             !(t = t.call(y, op[1])).done)
         )
           return t;
@@ -115,10 +110,7 @@ function __generator(thisArg, body) {
             op = _.ops.pop();
             _.trys.pop();
             continue;
-          default: if (
-              !((t = _.trys), (t = t.length > 0 && t[t.length - 1])) &&
-              (op[0] === 6 || op[0] === 2)
-            ) {
+          default: if (!((t = _.trys), (t = t.length > 0 && t[t.length - 1])) && (op[0] === 6 || op[0] === 2)) {
               _ = 0;
               continue;
             }

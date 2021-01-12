@@ -5,18 +5,7 @@ import { Grid, Pattern } from './grid.js';
 import { SVG } from './svg.js';
 import { Background } from './background.js';
 
-export const Drawing = ({
-  rect,
-  bounds,
-  attrs,
-  grid,
-  nodefs,
-  transform,
-  styles,
-  children,
-  style,
-  ...props
-}) => {
+export const Drawing = ({ rect, bounds, attrs, grid, nodefs, transform, styles, children, style, ...props }) => {
   let viewBox = new Rect(rect);
   //viewBox.y = bounds.y1;
   //

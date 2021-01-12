@@ -1,12 +1,12 @@
 export const TinyTest = {
   run(tests) {
     let failures = 0;
-    for (let testName in tests) {
+    for(let testName in tests) {
       let testAction = tests[testName];
       try {
         testAction();
         console.log('Test:', testName, '\x1b[1;32mOK\x1b[0m');
-      } catch (e) {
+      } catch(e) {
         failures++;
         console.log('Test:', testName, '\x1b[1;31mFAILED\x1b[0m', e);
         console.log(e.stack);
@@ -25,7 +25,7 @@ export const TinyTest = {
   },
 
   assert(value, msg) {
-    if (msg === undefined) {
+    if(msg === undefined) {
       switch (typeof value) {
         case 'boolean':
           msg = `${value} != false`;
@@ -42,22 +42,20 @@ export const TinyTest = {
       }
     }
 
-    if (!value) {
+    if(!value) {
       throw new Error('assert(): ' + msg);
     }
   },
 
   assertEquals(expected, actual) {
-    if (expected != actual) {
+    if(expected != actual) {
       throw new Error('assertEquals() "' + expected + '" != "' + actual + '"');
     }
   },
 
   assertStrictEquals(expected, actual) {
-    if (expected !== actual) {
-      throw new Error(
-        'assertStrictEquals() "' + expected + '" !== "' + actual + '"'
-      );
+    if(expected !== actual) {
+      throw new Error('assertStrictEquals() "' + expected + '" !== "' + actual + '"');
     }
   }
 };

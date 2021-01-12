@@ -24,7 +24,7 @@ export class PubSub {
    * @returns {function} Input callback
    */
   on(e, fn) {
-    if (e in this.fns === false) {
+    if(e in this.fns === false) {
       this.fns[e] = [];
     }
     this.fns[e].push(fn);
@@ -40,9 +40,7 @@ export class PubSub {
    * @returns {object} Observable
    */
   fire(e, value, prev) {
-    this.fns.any
-      .concat(e in this.fns ? this.fns[e] : [])
-      .forEach((fn) => fn(value, prev, e));
+    this.fns.any.concat(e in this.fns ? this.fns[e] : []).forEach(fn => fn(value, prev, e));
     return this;
   }
 
@@ -53,10 +51,10 @@ export class PubSub {
    * @returns {boolean} true if successfully unsubscribed
    */
   off(fn) {
-    for (const e in this.fns) {
+    for(const e in this.fns) {
       const fns = this.fns[e];
-      for (let i = 0; i < fns.length; i++) {
-        if (fns[i] === fn) {
+      for(let i = 0; i < fns.length; i++) {
+        if(fns[i] === fn) {
           fns.splice(i, 1);
           return true;
         }

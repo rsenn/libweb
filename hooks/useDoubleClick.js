@@ -20,13 +20,9 @@ export const useDoubleClick = (doubleClick, click, options) => {
   return useCallback(event => {
       clearClickTimeout();
       if(click && event.detail === 1) {
-        clickTimeout.current = setTimeout(() =>  
-          void(click(event))
-        , options.timeout);
+        clickTimeout.current = setTimeout(() => void click(event), options.timeout);
       }
-      if(event.detail % 2 === 0) 
-        doubleClick.call(options.thisObj||this, event);
-    
+      if(event.detail % 2 === 0) doubleClick.call(options.thisObj || this, event);
     }, [click, doubleClick, options.timeout]
   );
 };

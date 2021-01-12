@@ -7,26 +7,24 @@ export class ColorScheme {
 
   static toObject(xml = global.window.nt) {
     let nodes = [...xml.querySelectorAll('string')]
-      .filter((e) => /#[0-9A-Fa-f]/.test(e.innerHTML))
-      .map((e) => ({ element: e.parentElement, cnode: e }));
+      .filter(e => /#[0-9A-Fa-f]/.test(e.innerHTML))
+      .map(e => ({ element: e.parentElement, cnode: e }));
     function getPath(node, path = []) {
       let p = null;
-      if (node.tagName == 'string') {
+      if(node.tagName == 'string') {
         p = node.previousElementSibling;
-      } else if (node.tagName == 'dict') {
+      } else if(node.tagName == 'dict') {
         {
-          let parent = node.parentElement
-            ? node.parentElement.firstElementChild
-            : null;
-          if (parent.innerHTML == 'name') p = parent.nextElementSibling;
+          let parent = node.parentElement ? node.parentElement.firstElementChild : null;
+          if(parent.innerHTML == 'name') p = parent.nextElementSibling;
         }
       }
-      if (p == null) return path;
+      if(p == null) return path;
       path.unshift(p.innerHTML);
       return getPath(p.parentElement, path);
     }
     let ret = {};
-    nodes.forEach((node) => {
+    nodes.forEach(node => {
       const path = getPath(node.cnode).join('/');
       ret[path] = node.cnode.innerHTML;
     });
@@ -35,37 +33,33 @@ export class ColorScheme {
 
   static randomize(xml = global.window.nt) {
     let nodes = [...xml.querySelectorAll('string')]
-      .filter((e) => /#[0-9A-Fa-f]/.test(e.innerHTML))
-      .map((e) => ({ element: e.parentElement, cnode: e }));
+      .filter(e => /#[0-9A-Fa-f]/.test(e.innerHTML))
+      .map(e => ({ element: e.parentElement, cnode: e }));
     function getPath(node, path = []) {
       let p = null;
-      if (node.tagName == 'string') {
+      if(node.tagName == 'string') {
         p = node.previousElementSibling;
-      } else if (node.tagName == 'dict') {
+      } else if(node.tagName == 'dict') {
         {
-          let parent = node.parentElement
-            ? node.parentElement.firstElementChild
-            : null;
-          if (parent.innerHTML == 'name') p = parent.nextElementSibling;
+          let parent = node.parentElement ? node.parentElement.firstElementChild : null;
+          if(parent.innerHTML == 'name') p = parent.nextElementSibling;
         }
       }
 
       /* if(p == null)
     console.log("node: ", node.parentElement);
 */
-      if (p == null) return path;
+      if(p == null) return path;
       path.unshift(p.innerHTML);
       return getPath(p.parentElement, path);
     }
-    nodes.forEach((node) => {
+    nodes.forEach(node => {
       let color = new RGBA(node.cnode.innerHTML);
       let knode = node.cnode.previousSibling;
       let hsla = new HSLA(Util.randInt(0, 360, rng), 100, 50, 1.0);
       let rgba = hsla.toRGBA(); //new RGBA(Util.randInt(0, 1) * 255, Util.randInt(0, // 1) * 255, Util.randInt(0, 1) * 255, 255);
       const path = getPath(node.cnode).join('/');
-      const newColor = /background|gutter/i.test(path)
-        ? '#000'
-        : RGBA.toHex(hsla.toRGBA()); /*.slice(0, 7)*/
+      const newColor = /background|gutter/i.test(path) ? '#000' : RGBA.toHex(hsla.toRGBA()); /*.slice(0, 7)*/
       node.cnode.innerHTML = newColor;
       //console.log(knode);
       console.log(path + ': ', rgba, hsla);
@@ -83,8 +77,8 @@ export class ColorScheme {
         filename: `static/New-${rng.uint32() % 10000}.tmTheme`,
         data: btoa(text)
       })
-      .then((res) => console.log('result: ', res))
-      .catch((err) => console.error('error: ', err));
+      .then(res => console.log('result: ', res))
+      .catch(err => console.error('error: ', err));
     //clipboardCopy(text);
     return { xml, text };
   }

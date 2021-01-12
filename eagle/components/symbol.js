@@ -9,11 +9,7 @@ export const SchematicSymbol = ({ data, component = Fragment, id, class: classNa
   //children.map(data => log('data:', data.tagName));
 
   return h(component, { id, class: className }, [
-    ...children
-      .filter(({ tagName }) => tagName != 'text')
-      .map(data => h(ElementToComponent(data), { data, ...props })),
-    ...children
-      .filter(({ tagName }) => tagName == 'text')
-      .map(data => h(ElementToComponent(data), { data, ...props }))
+    ...children.filter(({ tagName }) => tagName != 'text').map(data => h(ElementToComponent(data), { data, ...props })),
+    ...children.filter(({ tagName }) => tagName == 'text').map(data => h(ElementToComponent(data), { data, ...props }))
   ]);
 };

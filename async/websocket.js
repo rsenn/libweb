@@ -18,7 +18,7 @@ WebSocket.prototype[Symbol.asyncIterator] = async function* () {
 //Tie everything together
 let run = async () => {
   let ws = new WebSocket('ws://localhost:3000/');
-  for await (let message of ws) {
+  for await(let message of ws) {
     console.log(message);
   }
 };

@@ -23,12 +23,7 @@ export function Line(...args) {
   if(Object.getPrototypeOf(obj) !== Line.prototype) Object.setPrototypeOf(obj, Line.prototype);
 
   //if(!('a' in obj) || !('b' in obj)) throw new Error('no a/b prop');
-  if(arg &&
-    arg.x1 !== undefined &&
-    arg.y1 !== undefined &&
-    arg.x2 !== undefined &&
-    arg.y2 !== undefined
-  ) {
+  if(arg && arg.x1 !== undefined && arg.y1 !== undefined && arg.x2 !== undefined && arg.y2 !== undefined) {
     const { x1, y1, x2, y2 } = arg;
     obj.x1 = parseFloat(x1);
     obj.y1 = parseFloat(y1);
@@ -239,9 +234,7 @@ Line.prototype.distanceToPointSquared = function(p) {
   if(l2 === 0) return Point.prototype.distanceSquared.call(p, a);
   let t = ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / l2;
   t = Math.max(0, Math.min(1, t));
-  return Point.prototype.distanceSquared.call(p,
-    new Point(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y))
-  );
+  return Point.prototype.distanceSquared.call(p, new Point(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y)));
 };
 Line.prototype.distanceToPoint = function(p) {
   return Math.sqrt(Line.prototype.distanceToPointSquared.call(this, p));

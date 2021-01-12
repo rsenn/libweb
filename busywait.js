@@ -1,28 +1,26 @@
 export const busywait = (checkFn, _options) => {
   const options = Object.assign({}, _options);
-  return checkArgs(checkFn, options).then(() =>
-    eventLoop(wrapSyncMethod(checkFn), options)
-  );
+  return checkArgs(checkFn, options).then(() => eventLoop(wrapSyncMethod(checkFn), options));
 };
 
 const checkArgs = (checkFn, options) => {
-  if (isNaN(options.maxChecks) || options.maxChecks < 1) {
+  if(isNaN(options.maxChecks) || options.maxChecks < 1) {
     return Promise.reject('maxChecks must be a valid integer greater than 0');
   }
-  if (isNaN(options.sleepTime) || options.sleepTime < 1) {
+  if(isNaN(options.sleepTime) || options.sleepTime < 1) {
     return Promise.reject('sleepTime must be a valid integer greater than 0');
   }
-  if (!checkFn || !isFunction(checkFn)) {
+  if(!checkFn || !isFunction(checkFn)) {
     return Promise.reject('checkFn must be a function');
   }
   return Promise.resolve();
 };
 
-const wrapSyncMethod = (checkFn) => (iteration) =>
+const wrapSyncMethod = checkFn => iteration =>
   new Promise((resolve, reject) => {
     try {
       resolve(checkFn(iteration));
-    } catch (err) {
+    } catch(err) {
       reject(err);
     }
   });
@@ -33,17 +31,15 @@ const eventLoop = (checkFn, options) =>
     const iterationCheck = () => {
       iteration++;
       checkFn(iteration)
-        .then((result) =>
+        .then(result =>
           resolve({
             iterations: iteration,
             result
           })
         )
         .catch(() => {
-          if (iteration === options.maxChecks) {
-            return reject(
-              options.failMsg || 'Exceeded number of iterations to wait'
-            );
+          if(iteration === options.maxChecks) {
+            return reject(options.failMsg || 'Exceeded number of iterations to wait');
           }
           setTimeout(iterationCheck, options.sleepTime);
         });
@@ -51,6 +47,6 @@ const eventLoop = (checkFn, options) =>
     setTimeout(iterationCheck, options.waitFirst ? options.sleepTime : 0);
   });
 
-const isFunction = (obj) => toString.call(obj) === '[object Function]';
+const isFunction = obj => toString.call(obj) === '[object Function]';
 
 export default busywait;

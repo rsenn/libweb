@@ -11,17 +11,7 @@ export const useGrid = data => {
     const f = factors[unit];
     return value * f;
   };
-  const {
-    distance,
-    unitdist,
-    unit,
-    style,
-    multiple,
-    display,
-    altdistance,
-    altunitdist,
-    altunit
-  } = useAttributes(data);
+  const { distance, unitdist, unit, style, multiple, display, altdistance, altunitdist, altunit } = useAttributes(data);
   //log('useGrid:', { distance, unitdist, unit });
   let result = {
     distance: calcDist(+distance, unitdist || unit),
@@ -33,16 +23,11 @@ export const useGrid = data => {
   return result;
 };
 
-export const Pattern = ({
-  data,
-  id = 'pattern',
-  attrs = { color: '#0000aa', width: 0.01 },
-  ...props
-}) => {
+export const Pattern = ({ data, id = 'pattern', attrs = { color: '#0000aa', width: 0.01 }, ...props }) => {
   log('Pattern.render ', { data, id, attrs, props });
   data =
     useValue(async function* () {
-      for await (let change of data.repeater) {
+      for await(let change of data.repeater) {
         //log('change:', change);
         yield change;
       }

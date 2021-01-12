@@ -7,7 +7,7 @@ import { useValue } from '../../repeater/react-hooks.js';
 export const Rectangle = ({ data, opts = {}, ...props }) => {
   let rectangle =
     useValue(async function* () {
-      for await (let change of data.repeater) {
+      for await(let change of data.repeater) {
         log('Rectangle.change:', change);
         yield change;
       }

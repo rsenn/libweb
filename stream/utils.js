@@ -65,8 +65,7 @@ export const AcquireReader =
               for(let eventName in listeners) stream.addListener(eventName, listeners[eventName]);
             }
             function removeListeners() {
-              for(let eventName in listeners)
-                stream.removeListener(eventName, listeners[eventName]);
+              for(let eventName in listeners) stream.removeListener(eventName, listeners[eventName]);
             }
 
             addListeners();
@@ -126,13 +125,13 @@ export async function readStream(stream, arg) {
 
   if(arg === undefined)
     return await (async function* () {
-      for await (let item of repeater) yield await item;
+      for await(let item of repeater) yield await item;
     })();
 
   if(arg instanceof Array) fn = item => arg.push(item);
   else if(typeof arg == 'function') fn = item => arg(item);
   else if(typeof arg == 'string') fn = item => (arg += item);
-  for await (let item of repeater) fn(item);
+  for await(let item of repeater) fn(item);
   if(typeof arg == 'function') arg(undefined);
   return arg;
 }
@@ -174,7 +173,7 @@ export function WritableRepeater(writable) {
 export async function WriteIterator(iterator, writable) {
   if(Util.isGenerator(iterator)) iterator = iterator();
 
-  for await (let write of await WritableRepeater(writable)) {
+  for await(let write of await WritableRepeater(writable)) {
     let data = await iterator.next();
     if(data.done) break;
     console.debug('value:', data.value);
@@ -185,7 +184,7 @@ export async function WriteIterator(iterator, writable) {
 export function AsyncWrite(iterator, writable) {
   if(AcquireWriter)
     return AcquireWriter(writable, async writer => {
-      for await (let data of iterator) writer.write(await data);
+      for await(let data of iterator) writer.write(await data);
     });
 }
 
@@ -376,8 +375,7 @@ export async function CreateWritableStream(handler, options = { decodeStrings: f
         super(...args);
       }
       _write(chunk, encoding, callback) {
-        if(options.decodeStrings === false && typeof chunk.toString == 'function')
-          chunk = chunk.toString();
+        if(options.decodeStrings === false && typeof chunk.toString == 'function') chunk = chunk.toString();
         let ret = handler.write(chunk);
 
         handleReturnValue(ret, callback);
@@ -433,8 +431,7 @@ export async function CreateTransformStream(handler, options = { decodeStrings: 
       _transform(chunk, encoding, done) {
         if(!('instance' in controller)) controller.instance = this;
         controller.callback = done;
-        if(options.decodeStrings == false && typeof chunk.toString == 'function')
-          chunk = chunk.toString();
+        if(options.decodeStrings == false && typeof chunk.toString == 'function') chunk = chunk.toString();
 
         handler.transform(chunk, controller);
 
@@ -512,8 +509,7 @@ export async function LineBufferStream(options = {}) {
       queue(str) {
         if(typeof str != 'string') if (typeof str.toString == 'function') str = str.toString();
 
-        if(lines.length > 0 && !lines[lines.length - 1].endsWith('\n'))
-          lines[lines.length - 1] += str;
+        if(lines.length > 0 && !lines[lines.length - 1].endsWith('\n')) lines[lines.length - 1] += str;
         else lines.push(str);
       },
       transform(chunk, controller) {
@@ -577,7 +573,7 @@ export async function* Reader(input) {
 
 export async function ReadAll(input) {
   let data = '';
-  for await (let chunk of await Reader(input)) data += filesystem.bufferToString(chunk);
+  for await(let chunk of await Reader(input)) data += filesystem.bufferToString(chunk);
   return data;
 }
 
@@ -608,7 +604,7 @@ const blah =
     let [loop, read] = rs.tee();
 
     (async () => {
-      for await (let item of await PipeToRepeater(loop)) console.log('Item:', item);
+      for await(let item of await PipeToRepeater(loop)) console.log('Item:', item);
     })();
     return readStream(read, []);
   })();

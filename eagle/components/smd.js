@@ -5,12 +5,12 @@ import { useValue } from '../../repeater/react-hooks.js';
 import { TransformationList } from '../../geom.js';
 
 export const SMD = ({ data, opts = {}, ...props }) => {
-  //log('Wire.render ', { data, opts });
+  log('SMD.render ', { data, opts });
 
   let smd =
     useValue(async function* () {
       // log('data.repeater:', data.repeater);
-      for await (let change of data.repeater) {
+      for await(let change of data.repeater) {
         // log('change:', change);
         yield change;
       }

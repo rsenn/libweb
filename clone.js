@@ -6,24 +6,24 @@ export const clone = (function () {
   let nativeMap;
   try {
     nativeMap = Map;
-  } catch (_) {
+  } catch(_) {
     //maybe a reference error because no `Map`. Give it a dummy value that no
     //value will ever be an instanceof.
-    nativeMap = function () {};
+    nativeMap = function() {};
   }
 
   let nativeSet;
   try {
     nativeSet = Set;
-  } catch (_) {
-    nativeSet = function () {};
+  } catch(_) {
+    nativeSet = function() {};
   }
 
   let nativePromise;
   try {
     nativePromise = Promise;
-  } catch (_) {
-    nativePromise = function () {};
+  } catch(_) {
+    nativePromise = function() {};
   }
 
   /**
@@ -48,7 +48,7 @@ export const clone = (function () {
    *    chain will be ignored. (optional - false by default)
    */
   function clone(parent, circular, depth, prototype, includeNonEnumerable) {
-    if (typeof circular === 'object') {
+    if(typeof circular === 'object') {
       depth = circular.depth;
       prototype = circular.prototype;
       includeNonEnumerable = circular.includeNonEnumerable;
@@ -61,47 +61,46 @@ export const clone = (function () {
 
     let useBuffer = typeof Buffer != 'undefined';
 
-    if (typeof circular == 'undefined') circular = true;
+    if(typeof circular == 'undefined') circular = true;
 
-    if (typeof depth == 'undefined') depth = Infinity;
+    if(typeof depth == 'undefined') depth = Infinity;
 
     //recurse this function so we don't reset allParents and allChildren
     function _clone(parent, depth) {
       //cloning null always returns null
-      if (parent === null) return null;
+      if(parent === null) return null;
 
-      if (depth === 0) return parent;
+      if(depth === 0) return parent;
 
       let child;
       let proto;
-      if (typeof parent != 'object') {
+      if(typeof parent != 'object') {
         return parent;
       }
 
-      if (_instanceof(parent, nativeMap)) {
+      if(_instanceof(parent, nativeMap)) {
         child = new nativeMap();
-      } else if (_instanceof(parent, nativeSet)) {
+      } else if(_instanceof(parent, nativeSet)) {
         child = new nativeSet();
-      } else if (_instanceof(parent, nativePromise)) {
+      } else if(_instanceof(parent, nativePromise)) {
         child = new nativePromise((resolve, reject) => {
-          parent.then(
-            (value) => {
+          parent.then(value => {
               resolve(_clone(value, depth - 1));
             },
-            (err) => {
+            err => {
               reject(_clone(err, depth - 1));
             }
           );
         });
-      } else if (clone.__isArray(parent)) {
+      } else if(clone.__isArray(parent)) {
         child = [];
-      } else if (clone.__isRegExp(parent)) {
+      } else if(clone.__isRegExp(parent)) {
         child = new RegExp(parent.source, __getRegExpFlags(parent));
-        if (parent.lastIndex) child.lastIndex = parent.lastIndex;
-      } else if (clone.__isDate(parent)) {
+        if(parent.lastIndex) child.lastIndex = parent.lastIndex;
+      } else if(clone.__isDate(parent)) {
         child = new Date(parent.getTime());
-      } else if (useBuffer && Buffer.isBuffer(parent)) {
-        if (Buffer.allocUnsafe) {
+      } else if(useBuffer && Buffer.isBuffer(parent)) {
+        if(Buffer.allocUnsafe) {
           //Node.js >= 4.5.0
           child = Buffer.allocUnsafe(parent.length);
         } else {
@@ -110,9 +109,9 @@ export const clone = (function () {
         }
         parent.copy(child);
         return child;
-      } else if (_instanceof(parent, Error)) {
+      } else if(_instanceof(parent, Error)) {
         child = Object.create(parent);
-      } else if (typeof prototype == 'undefined') {
+      } else if(typeof prototype == 'undefined') {
         proto = Object.getPrototypeOf(parent);
         child = Object.create(proto);
       } else {
@@ -120,54 +119,54 @@ export const clone = (function () {
         proto = prototype;
       }
 
-      if (circular) {
+      if(circular) {
         let index = allParents.indexOf(parent);
 
-        if (index != -1) {
+        if(index != -1) {
           return allChildren[index];
         }
         allParents.push(parent);
         allChildren.push(child);
       }
 
-      if (_instanceof(parent, nativeMap)) {
+      if(_instanceof(parent, nativeMap)) {
         parent.forEach((value, key) => {
           let keyChild = _clone(key, depth - 1);
           let valueChild = _clone(value, depth - 1);
           child.set(keyChild, valueChild);
         });
       }
-      if (_instanceof(parent, nativeSet)) {
-        parent.forEach((value) => {
+      if(_instanceof(parent, nativeSet)) {
+        parent.forEach(value => {
           let entryChild = _clone(value, depth - 1);
           child.add(entryChild);
         });
       }
 
-      for (var i in parent) {
+      for(var i in parent) {
         var attrs;
-        if (proto) {
+        if(proto) {
           attrs = Object.getOwnPropertyDescriptor(proto, i);
         }
 
-        if (attrs && attrs.set == null) {
+        if(attrs && attrs.set == null) {
           continue;
         }
         child[i] = _clone(parent[i], depth - 1);
       }
 
-      if (Object.getOwnPropertySymbols) {
+      if(Object.getOwnPropertySymbols) {
         let symbols = Object.getOwnPropertySymbols(parent);
-        for (var i = 0; i < symbols.length; i++) {
+        for(var i = 0; i < symbols.length; i++) {
           //Don't need to worry about cloning a symbol because it is a primitive,
           //like a number or string.
           let symbol = symbols[i];
           var descriptor = Object.getOwnPropertyDescriptor(parent, symbol);
-          if (descriptor && !descriptor.enumerable && !includeNonEnumerable) {
+          if(descriptor && !descriptor.enumerable && !includeNonEnumerable) {
             continue;
           }
           child[symbol] = _clone(parent[symbol], depth - 1);
-          if (!descriptor.enumerable) {
+          if(!descriptor.enumerable) {
             Object.defineProperty(child, symbol, {
               enumerable: false
             });
@@ -175,15 +174,12 @@ export const clone = (function () {
         }
       }
 
-      if (includeNonEnumerable) {
+      if(includeNonEnumerable) {
         let allPropertyNames = Object.getOwnPropertyNames(parent);
-        for (var i = 0; i < allPropertyNames.length; i++) {
+        for(var i = 0; i < allPropertyNames.length; i++) {
           let propertyName = allPropertyNames[i];
-          var descriptor = Object.getOwnPropertyDescriptor(
-            parent,
-            propertyName
-          );
-          if (descriptor && descriptor.enumerable) {
+          var descriptor = Object.getOwnPropertyDescriptor(parent, propertyName);
+          if(descriptor && descriptor.enumerable) {
             continue;
           }
           child[propertyName] = _clone(parent[propertyName], depth - 1);
@@ -207,9 +203,9 @@ export const clone = (function () {
    * works.
    */
   clone.clonePrototype = function clonePrototype(parent) {
-    if (parent === null) return null;
+    if(parent === null) return null;
 
-    let c = function () {};
+    let c = function() {};
     c.prototype = parent;
     return new c();
   };
@@ -238,9 +234,9 @@ export const clone = (function () {
 
   function __getRegExpFlags(re) {
     let flags = '';
-    if (re.global) flags += 'g';
-    if (re.ignoreCase) flags += 'i';
-    if (re.multiline) flags += 'm';
+    if(re.global) flags += 'g';
+    if(re.ignoreCase) flags += 'i';
+    if(re.multiline) flags += 'm';
     return flags;
   }
   clone.__getRegExpFlags = __getRegExpFlags;

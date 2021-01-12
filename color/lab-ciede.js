@@ -9,13 +9,8 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
 
   if(delta) {
     const segment =
-      value === rgbR
-        ? (rgbG - rgbB) / delta
-        : value === rgbG
-        ? (rgbB - rgbR) / delta
-        : (rgbR - rgbG) / delta;
-    const shift =
-      value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
+      value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
+    const shift = value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
     const hue = (segment + shift) * 60;
     return hue;
   } else {
@@ -54,10 +49,7 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 
 export function matrix(params, mats) {
   return mats.map(mat =>
-    mat.reduce((acc, value, index) =>
-        acc + (params.index * precision * (value * precision)) / precision / precision,
-      0
-    )
+    mat.reduce((acc, value, index) => acc + (params.index * precision * (value * precision)) / precision / precision, 0)
   );
 }
 const precision = 100000000;

@@ -12,30 +12,30 @@ const MSRGX = /\s{2,}/g,
   CRGX = /[a-z]/,
   ACRGX = /[.a-z]/;
 
-const Hyphenator = function (patterns, exceptions) {
+const Hyphenator = function(patterns, exceptions) {
   this.tree = {};
   this.exceptions = {};
 
-  this._insert_exception = function (ex) {
+  this._insert_exception = function(ex) {
     const a = [0];
-    const x = ex.split(CRGX).forEach((h) => {
+    const x = ex.split(CRGX).forEach(h => {
       a.push(h === '-' ? 1 : 0);
     });
     this.exceptions[ex.replace('-', '')] = a;
   };
 
-  this._insert_pattern = function (pat) {
+  this._insert_pattern = function(pat) {
     const chars = pat.replace(DRGX, '');
 
-    const points = pat.split(ACRGX).map((h) => parseInt(h) || 0);
+    const points = pat.split(ACRGX).map(h => parseInt(h) || 0);
 
     let c = '';
     let t = this.tree;
 
-    for (let i = 0; i < chars.length; i++) {
+    for(let i = 0; i < chars.length; i++) {
       c = chars.charAt(i);
 
-      if (!(c in t)) {
+      if(!(c in t)) {
         t[c] = {};
       }
       t = t[c];
@@ -52,15 +52,15 @@ const Hyphenator = function (patterns, exceptions) {
    * @return string
    *   The word, hyphenated.
    */
-  this.hyphenate_word = function (word) {
-    if (word.length <= 4) {
+  this.hyphenate_word = function(word) {
+    if(word.length <= 4) {
       return [word];
     }
 
     let points = [];
     const lword = word.toLowerCase();
 
-    if (lword in this.exceptions) {
+    if(lword in this.exceptions) {
       points = this.exceptions[lword];
     } else {
       const work = `.${lword}.`;
@@ -68,26 +68,24 @@ const Hyphenator = function (patterns, exceptions) {
       //Initialize array with 0s.
       points = Array(...Array(work.length + 1)).map(() => 0);
 
-      for (let i = 0; i < work.length; i++) {
+      for(let i = 0; i < work.length; i++) {
         let t = this.tree;
         const sub_work = work.substring(i);
 
-        for (let n = 0; n < sub_work.length; n++) {
+        for(let n = 0; n < sub_work.length; n++) {
           c = sub_work[n];
-          if (!(c in t)) break;
+          if(!(c in t)) break;
 
           t = t[c];
-          if (!(null in t)) continue;
+          if(!(null in t)) continue;
 
           const p = t.null;
-          for (let j = 0; j < p.length; j++) {
+          for(let j = 0; j < p.length; j++) {
             points[i + j] = Math.max(points[i + j], p[j]);
           }
         }
       }
-      points[1] = points[2] = points[points.length - 2] = points[
-        points.length - 3
-      ] = 0;
+      points[1] = points[2] = points[points.length - 2] = points[points.length - 3] = 0;
     }
 
     const pieces = [''];
@@ -97,7 +95,7 @@ const Hyphenator = function (patterns, exceptions) {
       let c = word[i];
 
       pieces[pieces.length - 1] += c;
-      if (p % 2) {
+      if(p % 2) {
         pieces.push('');
       }
     });
@@ -105,14 +103,8 @@ const Hyphenator = function (patterns, exceptions) {
     return pieces;
   };
 
-  patterns
-    .replace(MSRGX, ' ')
-    .split(' ')
-    .forEach(this._insert_pattern.bind(this));
-  exceptions
-    .replace(MSRGX, ' ')
-    .split(' ')
-    .forEach(this._insert_exception.bind(this));
+  patterns.replace(MSRGX, ' ').split(' ').forEach(this._insert_pattern.bind(this));
+  exceptions.replace(MSRGX, ' ').split(' ').forEach(this._insert_exception.bind(this));
 };
 
 /**
@@ -490,15 +482,15 @@ const exceptions =
   'as-so-ciate as-so-ciates dec-li-na-tion oblig-a-tory phil-an-thropic present presents project projects reci-procity re-cog-ni-zance ref-or-ma-tion ret-ri-bu-tion ta-ble';
 const hyphenator = new Hyphenator(patterns, exceptions);
 
-const main = function () {
+const main = function() {
   const resp = process.argv[2]
     .split(' ')
-    .map((word) => hyphenator.hyphenate_word(word).join('-'))
+    .map(word => hyphenator.hyphenate_word(word).join('-'))
     .join(' ');
   console.log(resp);
 };
 
-if (require.main === module) {
+if(require.main === module) {
   main();
 }
 

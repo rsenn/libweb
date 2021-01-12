@@ -121,8 +121,7 @@ export class TreeObserver extends ObservableMembrane {
     return { proxy, path, type };
   });
 
-  getField = field =>
-    Util.transformer(this.entry, ret => (Util.isObject(ret) && field in ret ? ret[field] : ret));
+  getField = field => Util.transformer(this.entry, ret => (Util.isObject(ret) && field in ret ? ret[field] : ret));
 
   proxy = this.getField('proxy');
   type = this.getField('type');

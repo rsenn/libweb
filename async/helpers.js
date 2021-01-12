@@ -18,12 +18,12 @@ let source = async function* () {
 // Return a new async iterator that applies a
 // transform to the values from another async generator
 export const map = async function* (stream, transform = a => a) {
-  for await (let n of stream) {
+  for await(let n of stream) {
     yield transform(n);
   }
 };
 export const consume = async function(stream, fn = a => console.log(`async consume =`, a)) {
-  for await (let n of stream) await fn(n);
+  for await(let n of stream) await fn(n);
 };
 export const accumulate = async function(stream, accu) {
   return await consume(stream, a => accu.push(a)), accu;
@@ -55,7 +55,7 @@ export const streamify = async function* (event, element) {
 
 // Only pass along events that meet a condition
 export const filter = async function* (stream, test) {
-  for await (let event of stream) {
+  for await(let event of stream) {
     if(test(event)) {
       yield event;
     }
@@ -67,7 +67,7 @@ let identity = e => e;
 export const distinct = async function* (stream, extract = identity) {
   let lastVal;
   let thisVal;
-  for await (let event of stream) {
+  for await(let event of stream) {
     thisVal = extract(event);
     if(thisVal !== lastVal) {
       lastVal = thisVal;
@@ -80,7 +80,7 @@ export const distinct = async function* (stream, extract = identity) {
 export const throttle = async function* (stream, delay) {
   let lastTime;
   let thisTime;
-  for await (let event of stream) {
+  for await(let event of stream) {
     thisTime = new Date().getTime();
     if(!lastTime || thisTime - lastTime > delay) {
       lastTime = thisTime;
@@ -91,7 +91,7 @@ export const throttle = async function* (stream, delay) {
 
 // Invoke a callback every time an event arrives
 export const subscribe = async (stream, callback) => {
-  for await (let event of stream) {
+  for await(let event of stream) {
     callback(event);
   }
 };

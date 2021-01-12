@@ -28,11 +28,9 @@ export class SchematicRenderer extends EagleSVGRenderer {
   renderCollection(collection, parent, opts) {
     const arr = [...collection];
     this.debug(`SchematicRenderer.renderCollection`, arr, opts);
-    for(let item of arr.filter(item => item.tagName != 'text'))
-      this.renderItem(item, parent, opts);
+    for(let item of arr.filter(item => item.tagName != 'text')) this.renderItem(item, parent, opts);
     this.debug(`SchematicRenderer.renderCollection`, arr, opts);
-    for(let item of arr.filter(item => item.tagName == 'text'))
-      this.renderItem(item, parent, opts);
+    for(let item of arr.filter(item => item.tagName == 'text')) this.renderItem(item, parent, opts);
   }
 
   /**
@@ -50,8 +48,7 @@ export class SchematicRenderer extends EagleSVGRenderer {
     if(!('transformation' in opts)) opts.transformation = this.transform.concat(transform);
 
     const layer = item.layer;
-    const color =
-      typeof item.getColor == 'function' ? item.getColor() : SchematicRenderer.palette[16];
+    const color = typeof item.getColor == 'function' ? item.getColor() : SchematicRenderer.palette[16];
     const svg = (elem, attr, parent) =>
       this.create(elem, {
           className: item.tagName, //...LayerAttributes(layer),
@@ -151,14 +148,8 @@ export class SchematicRenderer extends EagleSVGRenderer {
     this.debug(`SchematicRenderer.renderSheet`, { sheet, parent, transform });
     let instances = sheet.instances;
     this.debug(`SchematicRenderer.renderSheet`, sheet);
-    let netsGroup = this.create('g',
-      { className: 'nets', transform, 'font-family': 'Fixed' },
-      parent
-    );
-    let instancesGroup = this.create('g',
-      { className: 'instances', transform, 'font-family': 'Fixed' },
-      parent
-    );
+    let netsGroup = this.create('g', { className: 'nets', transform, 'font-family': 'Fixed' }, parent);
+    let instancesGroup = this.create('g', { className: 'instances', transform, 'font-family': 'Fixed' }, parent);
     instancesGroup.props.children = [...instances.list].map(data =>
       h(Instance, { data, opts: { transformation: transform } })
     );

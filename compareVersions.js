@@ -17,7 +17,7 @@ function tryParse(v) {
 }
 
 function validate(version) {
-  if (typeof version !== 'string') {
+  if(typeof version !== 'string') {
     throw new TypeError('Invalid argument expected string');
   }
 
@@ -32,37 +32,29 @@ export function compareVersions(v1, v2) {
   let s1 = split(v1);
   let s2 = split(v2);
 
-  for (var i = 0; i < Math.max(s1.length - 1, s2.length - 1); i++) {
+  for(var i = 0; i < Math.max(s1.length - 1, s2.length - 1); i++) {
     let n1 = parseInt(s1[i] || 0, 10);
     let n2 = parseInt(s2[i] || 0, 10);
 
-    if (n1 > n2) return 1;
-    if (n2 > n1) return -1;
+    if(n1 > n2) return 1;
+    if(n2 > n1) return -1;
   }
 
   let sp1 = s1[s1.length - 1];
   let sp2 = s2[s2.length - 1];
 
-  if (sp1 && sp2) {
+  if(sp1 && sp2) {
     let p1 = sp1.split('.').map(tryParse);
     let p2 = sp2.split('.').map(tryParse);
 
-    for (i = 0; i < Math.max(p1.length, p2.length); i++) {
-      if (
-        p1[i] === undefined ||
-        (typeof p2[i] === 'string' && typeof p1[i] === 'number')
-      )
-        return -1;
-      if (
-        p2[i] === undefined ||
-        (typeof p1[i] === 'string' && typeof p2[i] === 'number')
-      )
-        return 1;
+    for(i = 0; i < Math.max(p1.length, p2.length); i++) {
+      if(p1[i] === undefined || (typeof p2[i] === 'string' && typeof p1[i] === 'number')) return -1;
+      if(p2[i] === undefined || (typeof p1[i] === 'string' && typeof p2[i] === 'number')) return 1;
 
-      if (p1[i] > p2[i]) return 1;
-      if (p2[i] > p1[i]) return -1;
+      if(p1[i] > p2[i]) return 1;
+      if(p2[i] > p1[i]) return -1;
     }
-  } else if (sp1 || sp2) {
+  } else if(sp1 || sp2) {
     return sp1 ? -1 : 1;
   }
 
@@ -80,23 +72,19 @@ let operatorResMap = {
 };
 
 function validateOperator(op) {
-  if (typeof op !== 'string') {
-    throw new TypeError(
-      'Invalid operator type, expected string but got ' + typeof op
-    );
+  if(typeof op !== 'string') {
+    throw new TypeError('Invalid operator type, expected string but got ' + typeof op);
   }
-  if (allowedOperators.indexOf(op) === -1) {
-    throw new TypeError(
-      'Invalid operator, expected one of ' + allowedOperators.join('|')
-    );
+  if(allowedOperators.indexOf(op) === -1) {
+    throw new TypeError('Invalid operator, expected one of ' + allowedOperators.join('|'));
   }
 }
 
-compareVersions.validate = function (version) {
+compareVersions.validate = function(version) {
   return typeof version === 'string' && semver.test(version);
 };
 
-compareVersions.compare = function (v1, v2, operator) {
+compareVersions.compare = function(v1, v2, operator) {
   //Validate operator
   validateOperator(operator);
 

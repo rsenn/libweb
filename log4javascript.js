@@ -31,10 +31,10 @@
  */
 
 (function (factory, root) {
-  if (typeof define == 'function' && define.amd) {
+  if(typeof define == 'function' && define.amd) {
     //AMD. Register as an anonymous module.
     define(factory);
-  } else if (typeof module != 'undefined' && typeof exports == 'object') {
+  } else if(typeof module != 'undefined' && typeof exports == 'object') {
     //Node/CommonJS style
     module.exports = factory();
   } else {
@@ -43,20 +43,20 @@
   }
 })(() => {
   //Array-related stuff. Next three methods are solely for IE5, which is missing them
-  if (!Array.prototype.push) {
-    Array.prototype.push = function () {
-      for (let i = 0, len = arguments.length; i < len; i++) {
+  if(!Array.prototype.push) {
+    Array.prototype.push = function() {
+      for(let i = 0, len = arguments.length; i < len; i++) {
         this[this.length] = arguments[i];
       }
       return this.length;
     };
   }
 
-  if (!Array.prototype.shift) {
-    Array.prototype.shift = function () {
-      if (this.length > 0) {
+  if(!Array.prototype.shift) {
+    Array.prototype.shift = function() {
+      if(this.length > 0) {
         let firstItem = this[0];
-        for (let i = 0, len = this.length - 1; i < len; i++) {
+        for(let i = 0, len = this.length - 1; i < len; i++) {
           this[i] = this[i + 1];
         }
         this.length = this.length - 1;
@@ -65,23 +65,21 @@
     };
   }
 
-  if (!Array.prototype.splice) {
-    Array.prototype.splice = function (startIndex, deleteCount) {
+  if(!Array.prototype.splice) {
+    Array.prototype.splice = function(startIndex, deleteCount) {
       let itemsAfterDeleted = this.slice(startIndex + deleteCount);
       let itemsDeleted = this.slice(startIndex, startIndex + deleteCount);
       this.length = startIndex;
       //Copy the arguments into a proper Array object
       let argumentsArray = [];
-      for (var i = 0, len = arguments.length; i < len; i++) {
+      for(var i = 0, len = arguments.length; i < len; i++) {
         argumentsArray[i] = arguments[i];
       }
       let itemsToAppend =
         argumentsArray.length > 2
-          ? (itemsAfterDeleted = argumentsArray
-              .slice(2)
-              .concat(itemsAfterDeleted))
+          ? (itemsAfterDeleted = argumentsArray.slice(2).concat(itemsAfterDeleted))
           : itemsAfterDeleted;
-      for (i = 0, len = itemsToAppend.length; i < len; i++) {
+      for(i = 0, len = itemsToAppend.length; i < len; i++) {
         this.push(itemsToAppend[i]);
       }
       return itemsDeleted;
@@ -103,77 +101,49 @@
     eventTypes: [],
     eventListeners: {},
     setEventTypes(eventTypesParam) {
-      if (eventTypesParam instanceof Array) {
+      if(eventTypesParam instanceof Array) {
         this.eventTypes = eventTypesParam;
         this.eventListeners = {};
-        for (let i = 0, len = this.eventTypes.length; i < len; i++) {
+        for(let i = 0, len = this.eventTypes.length; i < len; i++) {
           this.eventListeners[this.eventTypes[i]] = [];
         }
       } else {
-        handleError(
-          'log4javascript.EventSupport [' +
-            this +
-            ']: setEventTypes: eventTypes parameter must be an Array'
-        );
+        handleError('log4javascript.EventSupport [' + this + ']: setEventTypes: eventTypes parameter must be an Array');
       }
     },
 
     addEventListener(eventType, listener) {
-      if (typeof listener == 'function') {
-        if (!array_contains(this.eventTypes, eventType)) {
-          handleError(
-            'log4javascript.EventSupport [' +
-              this +
-              "]: addEventListener: no event called '" +
-              eventType +
-              "'"
+      if(typeof listener == 'function') {
+        if(!array_contains(this.eventTypes, eventType)) {
+          handleError('log4javascript.EventSupport [' + this + "]: addEventListener: no event called '" + eventType + "'"
           );
         }
         this.eventListeners[eventType].push(listener);
       } else {
-        handleError(
-          'log4javascript.EventSupport [' +
-            this +
-            ']: addEventListener: listener must be a function'
-        );
+        handleError('log4javascript.EventSupport [' + this + ']: addEventListener: listener must be a function');
       }
     },
 
     removeEventListener(eventType, listener) {
-      if (typeof listener == 'function') {
-        if (!array_contains(this.eventTypes, eventType)) {
-          handleError(
-            'log4javascript.EventSupport [' +
-              this +
-              "]: removeEventListener: no event called '" +
-              eventType +
-              "'"
+      if(typeof listener == 'function') {
+        if(!array_contains(this.eventTypes, eventType)) {
+          handleError('log4javascript.EventSupport [' + this + "]: removeEventListener: no event called '" + eventType + "'"
           );
         }
         array_remove(this.eventListeners[eventType], listener);
       } else {
-        handleError(
-          'log4javascript.EventSupport [' +
-            this +
-            ']: removeEventListener: listener must be a function'
-        );
+        handleError('log4javascript.EventSupport [' + this + ']: removeEventListener: listener must be a function');
       }
     },
 
     dispatchEvent(eventType, eventArgs) {
-      if (array_contains(this.eventTypes, eventType)) {
+      if(array_contains(this.eventTypes, eventType)) {
         let listeners = this.eventListeners[eventType];
-        for (let i = 0, len = listeners.length; i < len; i++) {
+        for(let i = 0, len = listeners.length; i < len; i++) {
           listeners[i](this, eventType, eventArgs);
         }
       } else {
-        handleError(
-          'log4javascript.EventSupport [' +
-            this +
-            "]: dispatchEvent: no event called '" +
-            eventType +
-            "'"
-        );
+        handleError('log4javascript.EventSupport [' + this + "]: dispatchEvent: no event called '" + eventType + "'");
       }
     }
   };
@@ -181,12 +151,8 @@
   /* -------------------------------------------------------------------------- */
 
   let applicationStartDate = new Date();
-  let uniqueId =
-    'log4javascript_' +
-    applicationStartDate.getTime() +
-    '_' +
-    Math.floor(Math.random() * 100000000);
-  let emptyFunction = function () {};
+  let uniqueId = 'log4javascript_' + applicationStartDate.getTime() + '_' + Math.floor(Math.random() * 100000000);
+  let emptyFunction = function() {};
   let newLine = '\r\n';
   let pageLoaded = false;
 
@@ -202,16 +168,16 @@
   //Utility functions
 
   function toStr(obj) {
-    if (obj && obj.toString) {
+    if(obj && obj.toString) {
       return obj.toString();
     }
     return String(obj);
   }
 
   function getExceptionMessage(ex) {
-    if (ex.message) {
+    if(ex.message) {
       return ex.message;
-    } else if (ex.description) {
+    } else if(ex.description) {
       return ex.description;
     }
     return toStr(ex);
@@ -225,19 +191,19 @@
 
   //Returns a nicely formatted representation of an error
   function getExceptionStringRep(ex) {
-    if (ex) {
+    if(ex) {
       let exStr = 'Exception: ' + getExceptionMessage(ex);
       try {
-        if (ex.lineNumber) {
+        if(ex.lineNumber) {
           exStr += ' on line number ' + ex.lineNumber;
         }
-        if (ex.fileName) {
+        if(ex.fileName) {
           exStr += ' in file ' + getUrlFileName(ex.fileName);
         }
-      } catch (localEx) {
+      } catch(localEx) {
         logLog.warn('Unable to obtain file and line information for error');
       }
-      if (showStackTraces && ex.stack) {
+      if(showStackTraces && ex.stack) {
         exStr += newLine + 'Stack trace:' + newLine + ex.stack;
       }
       return exStr;
@@ -261,10 +227,10 @@
 
   let urlEncode =
     typeof window.encodeURIComponent != 'undefined'
-      ? function (str) {
+      ? function(str) {
           return encodeURIComponent(str);
         }
-      : function (str) {
+      : function(str) {
           return escape(str)
             .replace(/\+/g, '%2B')
             .replace(/"/g, '%22')
@@ -275,13 +241,13 @@
 
   function array_remove(arr, val) {
     let index = -1;
-    for (let i = 0, len = arr.length; i < len; i++) {
-      if (arr[i] === val) {
+    for(let i = 0, len = arr.length; i < len; i++) {
+      if(arr[i] === val) {
         index = i;
         break;
       }
     }
-    if (index >= 0) {
+    if(index >= 0) {
       arr.splice(index, 1);
       return true;
     }
@@ -289,8 +255,8 @@
   }
 
   function array_contains(arr, val) {
-    for (let i = 0, len = arr.length; i < len; i++) {
-      if (arr[i] == val) {
+    for(let i = 0, len = arr.length; i < len; i++) {
+      if(arr[i] == val) {
         return true;
       }
     }
@@ -298,34 +264,34 @@
   }
 
   function extractBooleanFromParam(param, defaultValue) {
-    if (isUndefined(param)) {
+    if(isUndefined(param)) {
       return defaultValue;
     }
     return bool(param);
   }
 
   function extractStringFromParam(param, defaultValue) {
-    if (isUndefined(param)) {
+    if(isUndefined(param)) {
       return defaultValue;
     }
     return String(param);
   }
 
   function extractIntFromParam(param, defaultValue) {
-    if (isUndefined(param)) {
+    if(isUndefined(param)) {
       return defaultValue;
     }
     try {
       let value = parseInt(param, 10);
       return isNaN(value) ? defaultValue : value;
-    } catch (ex) {
+    } catch(ex) {
       logLog.warn('Invalid int param ' + param, ex);
       return defaultValue;
     }
   }
 
   function extractFunctionFromParam(param, defaultValue) {
-    if (typeof param == 'function') {
+    if(typeof param == 'function') {
       return param;
     }
     return defaultValue;
@@ -335,16 +301,16 @@
     return err instanceof Error;
   }
 
-  if (!Function.prototype.apply) {
-    Function.prototype.apply = function (obj, args) {
+  if(!Function.prototype.apply) {
+    Function.prototype.apply = function(obj, args) {
       let methodName = '__apply__';
-      if (typeof obj[methodName] != 'undefined') {
+      if(typeof obj[methodName] != 'undefined') {
         methodName += String(Math.random()).substr(2);
       }
       obj[methodName] = this;
 
       let argsStrings = [];
-      for (let i = 0, len = args.length; i < len; i++) {
+      for(let i = 0, len = args.length; i < len; i++) {
         argsStrings[i] = 'args[' + i + ']';
       }
       let script = 'obj.' + methodName + '(' + argsStrings.join(',') + ')';
@@ -354,10 +320,10 @@
     };
   }
 
-  if (!Function.prototype.call) {
-    Function.prototype.call = function (obj) {
+  if(!Function.prototype.call) {
+    Function.prototype.call = function(obj) {
       let args = [];
-      for (let i = 1, len = arguments.length; i < len; i++) {
+      for(let i = 1, len = arguments.length; i < len; i++) {
         args[i - 1] = arguments[i];
       }
       return this.apply(obj, args);
@@ -395,15 +361,11 @@
     warn(message, exception) {},
 
     error(message, exception) {
-      if (++this.numberOfErrors == 1 || this.alertAllErrors) {
-        if (!this.quietMode) {
+      if(++this.numberOfErrors == 1 || this.alertAllErrors) {
+        if(!this.quietMode) {
           let alertMessage = 'log4javascript error: ' + message;
-          if (exception) {
-            alertMessage +=
-              newLine +
-              newLine +
-              'Original error: ' +
-              getExceptionStringRep(exception);
+          if(exception) {
+            alertMessage += newLine + newLine + 'Original error: ' + getExceptionStringRep(exception);
           }
           alert(alertMessage);
         }
@@ -423,46 +385,42 @@
 
   /* ---------------------------------------------------------------------- */
 
-  let enabled = !(
-    typeof log4javascript_disabled != 'undefined' && log4javascript_disabled
-  );
+  let enabled = !(typeof log4javascript_disabled != 'undefined' && log4javascript_disabled);
 
-  log4javascript.setEnabled = function (enable) {
+  log4javascript.setEnabled = function(enable) {
     enabled = bool(enable);
   };
 
-  log4javascript.isEnabled = function () {
+  log4javascript.isEnabled = function() {
     return enabled;
   };
 
   let useTimeStampsInMilliseconds = true;
 
-  log4javascript.setTimeStampsInMilliseconds = function (
-    timeStampsInMilliseconds
-  ) {
+  log4javascript.setTimeStampsInMilliseconds = function(timeStampsInMilliseconds) {
     useTimeStampsInMilliseconds = bool(timeStampsInMilliseconds);
   };
 
-  log4javascript.isTimeStampsInMilliseconds = function () {
+  log4javascript.isTimeStampsInMilliseconds = function() {
     return useTimeStampsInMilliseconds;
   };
 
   //This evaluates the given expression in the current scope, thus allowing
   //scripts to access private variables. Particularly useful for testing
-  log4javascript.evalInScope = function (expr) {
+  log4javascript.evalInScope = function(expr) {
     return eval(expr);
   };
 
   var showStackTraces = false;
 
-  log4javascript.setShowStackTraces = function (show) {
+  log4javascript.setShowStackTraces = function(show) {
     showStackTraces = bool(show);
   };
 
   /* ---------------------------------------------------------------------- */
   //Levels
 
-  let Level = function (level, name) {
+  let Level = function(level, name) {
     this.level = level;
     this.name = name;
   };
@@ -499,7 +457,7 @@
     this.start = new Date();
   }
 
-  Timer.prototype.getElapsedTime = function () {
+  Timer.prototype.getElapsedTime = function() {
     return new Date().getTime() - this.start.getTime();
   };
 
@@ -524,7 +482,7 @@
     let appenderCache = null;
     let appenderCacheInvalidated = false;
 
-    this.addChild = function (childLogger) {
+    this.addChild = function(childLogger) {
       this.children.push(childLogger);
       childLogger.parent = this;
       childLogger.invalidateAppenderCache();
@@ -532,49 +490,43 @@
 
     //Additivity
     let additive = true;
-    this.getAdditivity = function () {
+    this.getAdditivity = function() {
       return additive;
     };
 
-    this.setAdditivity = function (additivity) {
+    this.setAdditivity = function(additivity) {
       let valueChanged = additive != additivity;
       additive = additivity;
-      if (valueChanged) {
+      if(valueChanged) {
         this.invalidateAppenderCache();
       }
     };
 
     //Create methods that use the appenders variable in this scope
-    this.addAppender = function (appender) {
-      if (isNull) {
-        handleError(
-          'Logger.addAppender: you may not add an appender to the null logger'
-        );
-      } else if (appender instanceof log4javascript.Appender) {
-        if (!array_contains(appenders, appender)) {
+    this.addAppender = function(appender) {
+      if(isNull) {
+        handleError('Logger.addAppender: you may not add an appender to the null logger');
+      } else if(appender instanceof log4javascript.Appender) {
+        if(!array_contains(appenders, appender)) {
           appenders.push(appender);
           appender.setAddedToLogger(this);
           this.invalidateAppenderCache();
         }
       } else {
-        handleError(
-          "Logger.addAppender: appender supplied ('" +
-            toStr(appender) +
-            "') is not a subclass of Appender"
-        );
+        handleError("Logger.addAppender: appender supplied ('" + toStr(appender) + "') is not a subclass of Appender");
       }
     };
 
-    this.removeAppender = function (appender) {
+    this.removeAppender = function(appender) {
       array_remove(appenders, appender);
       appender.setRemovedFromLogger(this);
       this.invalidateAppenderCache();
     };
 
-    this.removeAllAppenders = function () {
+    this.removeAllAppenders = function() {
       let appenderCount = appenders.length;
-      if (appenderCount > 0) {
-        for (let i = 0; i < appenderCount; i++) {
+      if(appenderCount > 0) {
+        for(let i = 0; i < appenderCount; i++) {
           appenders[i].setRemovedFromLogger(this);
         }
         appenders.length = 0;
@@ -582,105 +534,91 @@
       }
     };
 
-    this.getEffectiveAppenders = function () {
-      if (appenderCache === null || appenderCacheInvalidated) {
+    this.getEffectiveAppenders = function() {
+      if(appenderCache === null || appenderCacheInvalidated) {
         //Build appender cache
-        let parentEffectiveAppenders =
-          isRoot || !this.getAdditivity()
-            ? []
-            : this.parent.getEffectiveAppenders();
+        let parentEffectiveAppenders = isRoot || !this.getAdditivity() ? [] : this.parent.getEffectiveAppenders();
         appenderCache = parentEffectiveAppenders.concat(appenders);
         appenderCacheInvalidated = false;
       }
       return appenderCache;
     };
 
-    this.invalidateAppenderCache = function () {
+    this.invalidateAppenderCache = function() {
       appenderCacheInvalidated = true;
-      for (let i = 0, len = this.children.length; i < len; i++) {
+      for(let i = 0, len = this.children.length; i < len; i++) {
         this.children[i].invalidateAppenderCache();
       }
     };
 
-    this.log = function (level, params) {
-      if (enabled && level.isGreaterOrEqual(this.getEffectiveLevel())) {
+    this.log = function(level, params) {
+      if(enabled && level.isGreaterOrEqual(this.getEffectiveLevel())) {
         //Check whether last param is an exception
         let exception;
         let finalParamIndex = params.length - 1;
         let lastParam = params[finalParamIndex];
-        if (params.length > 1 && isError(lastParam)) {
+        if(params.length > 1 && isError(lastParam)) {
           exception = lastParam;
           finalParamIndex--;
         }
 
         //Construct genuine array for the params
         let messages = [];
-        for (let i = 0; i <= finalParamIndex; i++) {
+        for(let i = 0; i <= finalParamIndex; i++) {
           messages[i] = params[i];
         }
 
-        let loggingEvent = new LoggingEvent(
-          this,
-          new Date(),
-          level,
-          messages,
-          exception
-        );
+        let loggingEvent = new LoggingEvent(this, new Date(), level, messages, exception);
 
         this.callAppenders(loggingEvent);
       }
     };
 
-    this.callAppenders = function (loggingEvent) {
+    this.callAppenders = function(loggingEvent) {
       let effectiveAppenders = this.getEffectiveAppenders();
-      for (let i = 0, len = effectiveAppenders.length; i < len; i++) {
+      for(let i = 0, len = effectiveAppenders.length; i < len; i++) {
         effectiveAppenders[i].doAppend(loggingEvent);
       }
     };
 
-    this.setLevel = function (level) {
+    this.setLevel = function(level) {
       //Having a level of null on the root logger would be very bad.
-      if (isRoot && level === null) {
-        handleError(
-          'Logger.setLevel: you cannot set the level of the root logger to null'
-        );
-      } else if (level instanceof Level) {
+      if(isRoot && level === null) {
+        handleError('Logger.setLevel: you cannot set the level of the root logger to null');
+      } else if(level instanceof Level) {
         loggerLevel = level;
       } else {
-        handleError(
-          'Logger.setLevel: level supplied to logger ' +
-            this.name +
-            ' is not an instance of log4javascript.Level'
+        handleError('Logger.setLevel: level supplied to logger ' + this.name + ' is not an instance of log4javascript.Level'
         );
       }
     };
 
-    this.getLevel = function () {
+    this.getLevel = function() {
       return loggerLevel;
     };
 
-    this.getEffectiveLevel = function () {
-      for (let logger = this; logger !== null; logger = logger.parent) {
+    this.getEffectiveLevel = function() {
+      for(let logger = this; logger !== null; logger = logger.parent) {
         let level = logger.getLevel();
-        if (level !== null) {
+        if(level !== null) {
           return level;
         }
       }
     };
 
-    this.group = function (name, initiallyExpanded) {
-      if (enabled) {
+    this.group = function(name, initiallyExpanded) {
+      if(enabled) {
         let effectiveAppenders = this.getEffectiveAppenders();
-        for (let i = 0, len = effectiveAppenders.length; i < len; i++) {
+        for(let i = 0, len = effectiveAppenders.length; i < len; i++) {
           effectiveAppenders[i].group(name, initiallyExpanded);
         }
       }
     };
 
-    this.groupEnd = function () {
-      if (enabled) {
+    this.groupEnd = function() {
+      if(enabled) {
         let effectiveAppenders = this.getEffectiveAppenders();
-        for (let i = 0, len = effectiveAppenders.length; i < len; i++) {
+        for(let i = 0, len = effectiveAppenders.length; i < len; i++) {
           effectiveAppenders[i].groupEnd();
         }
       }
@@ -688,32 +626,26 @@
 
     let timers = {};
 
-    this.time = function (name, level) {
-      if (enabled) {
-        if (isUndefined(name)) {
+    this.time = function(name, level) {
+      if(enabled) {
+        if(isUndefined(name)) {
           handleError('Logger.time: a name for the timer must be supplied');
-        } else if (level && !(level instanceof Level)) {
-          handleError(
-            'Logger.time: level supplied to timer ' +
-              name +
-              ' is not an instance of log4javascript.Level'
-          );
+        } else if(level && !(level instanceof Level)) {
+          handleError('Logger.time: level supplied to timer ' + name + ' is not an instance of log4javascript.Level');
         } else {
           timers[name] = new Timer(name, level);
         }
       }
     };
 
-    this.timeEnd = function (name) {
-      if (enabled) {
-        if (isUndefined(name)) {
+    this.timeEnd = function(name) {
+      if(enabled) {
+        if(isUndefined(name)) {
           handleError('Logger.timeEnd: a name for the timer must be supplied');
-        } else if (timers[name]) {
+        } else if(timers[name]) {
           let timer = timers[name];
           let milliseconds = timer.getElapsedTime();
-          this.log(timer.level, [
-            'Timer ' + toStr(name) + ' completed in ' + milliseconds + 'ms'
-          ]);
+          this.log(timer.level, ['Timer ' + toStr(name) + ' completed in ' + milliseconds + 'ms']);
           delete timers[name];
         } else {
           logLog.warn('Logger.timeEnd: no timer found with name ' + name);
@@ -721,10 +653,10 @@
       }
     };
 
-    this.assert = function (expr) {
-      if (enabled && !expr) {
+    this.assert = function(expr) {
+      if(enabled && !expr) {
         let args = [];
-        for (let i = 1, len = arguments.length; i < len; i++) {
+        for(let i = 1, len = arguments.length; i < len; i++) {
           args.push(arguments[i]);
         }
         args = args.length > 0 ? args : ['Assertion Failure'];
@@ -734,7 +666,7 @@
       }
     };
 
-    this.toString = function () {
+    this.toString = function() {
       return 'Logger[' + this.name + ']';
     };
   }
@@ -811,30 +743,27 @@
   let rootLogger = new Logger(rootLoggerName);
   rootLogger.setLevel(ROOT_LOGGER_DEFAULT_LEVEL);
 
-  log4javascript.getRootLogger = function () {
+  log4javascript.getRootLogger = function() {
     return rootLogger;
   };
 
-  log4javascript.getLogger = function (loggerName) {
+  log4javascript.getLogger = function(loggerName) {
     //Use default logger if loggerName is not specified or invalid
-    if (typeof loggerName != 'string') {
+    if(typeof loggerName != 'string') {
       loggerName = anonymousLoggerName;
-      logLog.warn(
-        'log4javascript.getLogger: non-string logger name ' +
+      logLog.warn('log4javascript.getLogger: non-string logger name ' +
           toStr(loggerName) +
           ' supplied, returning anonymous logger'
       );
     }
 
     //Do not allow retrieval of the root logger by name
-    if (loggerName == rootLoggerName) {
-      handleError(
-        'log4javascript.getLogger: root logger may not be obtained by name'
-      );
+    if(loggerName == rootLoggerName) {
+      handleError('log4javascript.getLogger: root logger may not be obtained by name');
     }
 
     //Create the logger for this name if it doesn't already exist
-    if (!loggers[loggerName]) {
+    if(!loggers[loggerName]) {
       let logger = new Logger(loggerName);
       loggers[loggerName] = logger;
       loggerNames.push(loggerName);
@@ -842,7 +771,7 @@
       //Set up parent logger, if it doesn't exist
       let lastDotIndex = loggerName.lastIndexOf('.');
       let parentLogger;
-      if (lastDotIndex > -1) {
+      if(lastDotIndex > -1) {
         let parentLoggerName = loggerName.substring(0, lastDotIndex);
         parentLogger = log4javascript.getLogger(parentLoggerName); //Recursively sets up grandparents etc.
       } else {
@@ -854,16 +783,16 @@
   };
 
   let defaultLogger = null;
-  log4javascript.getDefaultLogger = function () {
-    if (!defaultLogger) {
+  log4javascript.getDefaultLogger = function() {
+    if(!defaultLogger) {
       defaultLogger = createDefaultLogger();
     }
     return defaultLogger;
   };
 
   let nullLogger = null;
-  log4javascript.getNullLogger = function () {
-    if (!nullLogger) {
+  log4javascript.getNullLogger = function() {
+    if(!nullLogger) {
       nullLogger = new Logger(nullLoggerName);
       nullLogger.setLevel(Level.OFF);
     }
@@ -871,7 +800,7 @@
   };
 
   //Destroys all loggers
-  log4javascript.resetConfiguration = function () {
+  log4javascript.resetConfiguration = function() {
     rootLogger.setLevel(ROOT_LOGGER_DEFAULT_LEVEL);
     loggers = {};
   };
@@ -879,7 +808,7 @@
   /* ---------------------------------------------------------------------- */
   //Logging events
 
-  var LoggingEvent = function (logger, timeStamp, level, messages, exception) {
+  var LoggingEvent = function(logger, timeStamp, level, messages, exception) {
     this.logger = logger;
     this.timeStamp = timeStamp;
     this.timeStampInMilliseconds = timeStamp.getTime();
@@ -895,9 +824,7 @@
       return this.exception ? getExceptionStringRep(this.exception) : '';
     },
     getCombinedMessages() {
-      return this.messages.length == 1
-        ? this.messages[0]
-        : this.messages.join(newLine);
+      return this.messages.length == 1 ? this.messages[0] : this.messages.join(newLine);
     },
     toString() {
       return 'LoggingEvent[' + this.level + ']';
@@ -909,7 +836,7 @@
   /* ---------------------------------------------------------------------- */
   //Layout prototype
 
-  let Layout = function () {};
+  let Layout = function() {};
 
   Layout.prototype = {
     defaults: {
@@ -940,9 +867,7 @@
     },
 
     ignoresThrowable() {
-      handleError(
-        'Layout.ignoresThrowable: layout supplied has no ignoresThrowable() method'
-      );
+      handleError('Layout.ignoresThrowable: layout supplied has no ignoresThrowable() method');
     },
 
     getContentType() {
@@ -959,15 +884,11 @@
     },
 
     isTimeStampsInMilliseconds() {
-      return this.overrideTimeStampsSetting
-        ? this.useTimeStampsInMilliseconds
-        : useTimeStampsInMilliseconds;
+      return this.overrideTimeStampsSetting ? this.useTimeStampsInMilliseconds : useTimeStampsInMilliseconds;
     },
 
     getTimeStampValue(loggingEvent) {
-      return this.isTimeStampsInMilliseconds()
-        ? loggingEvent.timeStampInMilliseconds
-        : loggingEvent.timeStampInSeconds;
+      return this.isTimeStampsInMilliseconds() ? loggingEvent.timeStampInMilliseconds : loggingEvent.timeStampInSeconds;
     },
 
     getDataValues(loggingEvent, combineMessages) {
@@ -976,29 +897,21 @@
         [this.timeStampKey, this.getTimeStampValue(loggingEvent)],
         [this.levelKey, loggingEvent.level.name],
         [this.urlKey, window.location.href],
-        [
-          this.messageKey,
-          combineMessages
-            ? loggingEvent.getCombinedMessages()
-            : loggingEvent.messages
-        ]
+        [this.messageKey, combineMessages ? loggingEvent.getCombinedMessages() : loggingEvent.messages]
       ];
-      if (!this.isTimeStampsInMilliseconds()) {
+      if(!this.isTimeStampsInMilliseconds()) {
         dataValues.push([this.millisecondsKey, loggingEvent.milliseconds]);
       }
-      if (loggingEvent.exception) {
-        dataValues.push([
-          this.exceptionKey,
-          getExceptionStringRep(loggingEvent.exception)
-        ]);
+      if(loggingEvent.exception) {
+        dataValues.push([this.exceptionKey, getExceptionStringRep(loggingEvent.exception)]);
       }
-      if (this.hasCustomFields()) {
-        for (let i = 0, len = this.customFields.length; i < len; i++) {
+      if(this.hasCustomFields()) {
+        for(let i = 0, len = this.customFields.length; i < len; i++) {
           let val = this.customFields[i].value;
 
           //Check if the value is a function. If so, execute it, passing it the
           //current layout and the logging event
-          if (typeof val === 'function') {
+          if(typeof val === 'function') {
             val = val(this, loggingEvent);
           }
           dataValues.push([this.customFields[i].name, val]);
@@ -1007,48 +920,25 @@
       return dataValues;
     },
 
-    setKeys(
-      loggerKey,
-      timeStampKey,
-      levelKey,
-      messageKey,
-      exceptionKey,
-      urlKey,
-      millisecondsKey
-    ) {
-      this.loggerKey = extractStringFromParam(
-        loggerKey,
-        this.defaults.loggerKey
-      );
-      this.timeStampKey = extractStringFromParam(
-        timeStampKey,
-        this.defaults.timeStampKey
-      );
+    setKeys(loggerKey, timeStampKey, levelKey, messageKey, exceptionKey, urlKey, millisecondsKey) {
+      this.loggerKey = extractStringFromParam(loggerKey, this.defaults.loggerKey);
+      this.timeStampKey = extractStringFromParam(timeStampKey, this.defaults.timeStampKey);
       this.levelKey = extractStringFromParam(levelKey, this.defaults.levelKey);
-      this.messageKey = extractStringFromParam(
-        messageKey,
-        this.defaults.messageKey
-      );
-      this.exceptionKey = extractStringFromParam(
-        exceptionKey,
-        this.defaults.exceptionKey
-      );
+      this.messageKey = extractStringFromParam(messageKey, this.defaults.messageKey);
+      this.exceptionKey = extractStringFromParam(exceptionKey, this.defaults.exceptionKey);
       this.urlKey = extractStringFromParam(urlKey, this.defaults.urlKey);
-      this.millisecondsKey = extractStringFromParam(
-        millisecondsKey,
-        this.defaults.millisecondsKey
-      );
+      this.millisecondsKey = extractStringFromParam(millisecondsKey, this.defaults.millisecondsKey);
     },
 
     setCustomField(name, value) {
       let fieldUpdated = false;
-      for (let i = 0, len = this.customFields.length; i < len; i++) {
-        if (this.customFields[i].name === name) {
+      for(let i = 0, len = this.customFields.length; i < len; i++) {
+        if(this.customFields[i].name === name) {
           this.customFields[i].value = value;
           fieldUpdated = true;
         }
       }
-      if (!fieldUpdated) {
+      if(!fieldUpdated) {
         this.customFields.push({ name, value });
       }
     },
@@ -1059,7 +949,7 @@
 
     formatWithException(loggingEvent) {
       let formatted = this.format(loggingEvent);
-      if (loggingEvent.exception && this.ignoresThrowable()) {
+      if(loggingEvent.exception && this.ignoresThrowable()) {
         formatted += loggingEvent.getThrowableStrRep();
       }
       return formatted;
@@ -1075,7 +965,7 @@
   /* ---------------------------------------------------------------------- */
   //Appender prototype
 
-  let Appender = function () {};
+  let Appender = function() {};
 
   Appender.prototype = new EventSupport();
 
@@ -1085,58 +975,50 @@
 
   //Performs threshold checks before delegating actual logging to the
   //subclass's specific append method.
-  Appender.prototype.doAppend = function (loggingEvent) {
-    if (enabled && loggingEvent.level.level >= this.threshold.level) {
+  Appender.prototype.doAppend = function(loggingEvent) {
+    if(enabled && loggingEvent.level.level >= this.threshold.level) {
       this.append(loggingEvent);
     }
   };
 
-  Appender.prototype.append = function (loggingEvent) {};
+  Appender.prototype.append = function(loggingEvent) {};
 
-  Appender.prototype.setLayout = function (layout) {
-    if (layout instanceof Layout) {
+  Appender.prototype.setLayout = function(layout) {
+    if(layout instanceof Layout) {
       this.layout = layout;
     } else {
-      handleError(
-        'Appender.setLayout: layout supplied to ' +
-          this.toString() +
-          ' is not a subclass of Layout'
-      );
+      handleError('Appender.setLayout: layout supplied to ' + this.toString() + ' is not a subclass of Layout');
     }
   };
 
-  Appender.prototype.getLayout = function () {
+  Appender.prototype.getLayout = function() {
     return this.layout;
   };
 
-  Appender.prototype.setThreshold = function (threshold) {
-    if (threshold instanceof Level) {
+  Appender.prototype.setThreshold = function(threshold) {
+    if(threshold instanceof Level) {
       this.threshold = threshold;
     } else {
-      handleError(
-        'Appender.setThreshold: threshold supplied to ' +
-          this.toString() +
-          ' is not a subclass of Level'
-      );
+      handleError('Appender.setThreshold: threshold supplied to ' + this.toString() + ' is not a subclass of Level');
     }
   };
 
-  Appender.prototype.getThreshold = function () {
+  Appender.prototype.getThreshold = function() {
     return this.threshold;
   };
 
-  Appender.prototype.setAddedToLogger = function (logger) {
+  Appender.prototype.setAddedToLogger = function(logger) {
     this.loggers.push(logger);
   };
 
-  Appender.prototype.setRemovedFromLogger = function (logger) {
+  Appender.prototype.setRemovedFromLogger = function(logger) {
     array_remove(this.loggers, logger);
   };
 
   Appender.prototype.group = emptyFunction;
   Appender.prototype.groupEnd = emptyFunction;
 
-  Appender.prototype.toString = function () {
+  Appender.prototype.toString = function() {
     handleError('Appender.toString: all appenders must override this method');
   };
 
@@ -1151,15 +1033,15 @@
 
   SimpleLayout.prototype = new Layout();
 
-  SimpleLayout.prototype.format = function (loggingEvent) {
+  SimpleLayout.prototype.format = function(loggingEvent) {
     return loggingEvent.level.name + ' - ' + loggingEvent.getCombinedMessages();
   };
 
-  SimpleLayout.prototype.ignoresThrowable = function () {
+  SimpleLayout.prototype.ignoresThrowable = function() {
     return true;
   };
 
-  SimpleLayout.prototype.toString = function () {
+  SimpleLayout.prototype.toString = function() {
     return 'SimpleLayout';
   };
 
@@ -1174,21 +1056,21 @@
 
   NullLayout.prototype = new Layout();
 
-  NullLayout.prototype.format = function (loggingEvent) {
+  NullLayout.prototype.format = function(loggingEvent) {
     return loggingEvent.messages;
   };
 
-  NullLayout.prototype.ignoresThrowable = function () {
+  NullLayout.prototype.ignoresThrowable = function() {
     return true;
   };
 
-  NullLayout.prototype.formatWithException = function (loggingEvent) {
+  NullLayout.prototype.formatWithException = function(loggingEvent) {
     let messages = loggingEvent.messages,
       ex = loggingEvent.exception;
     return ex ? messages.concat([ex]) : messages;
   };
 
-  NullLayout.prototype.toString = function () {
+  NullLayout.prototype.toString = function() {
     return 'NullLayout';
   };
 
@@ -1204,28 +1086,24 @@
 
   XmlLayout.prototype = new Layout();
 
-  XmlLayout.prototype.isCombinedMessages = function () {
+  XmlLayout.prototype.isCombinedMessages = function() {
     return this.combineMessages;
   };
 
-  XmlLayout.prototype.getContentType = function () {
+  XmlLayout.prototype.getContentType = function() {
     return 'text/xml';
   };
 
-  XmlLayout.prototype.escapeCdata = function (str) {
+  XmlLayout.prototype.escapeCdata = function(str) {
     return str.replace(/\]\]>/, ']]>]]&gt;<![CDATA[');
   };
 
-  XmlLayout.prototype.format = function (loggingEvent) {
+  XmlLayout.prototype.format = function(loggingEvent) {
     let layout = this;
     let i, len;
     function formatMessage(message) {
       message = typeof message === 'string' ? message : toStr(message);
-      return (
-        '<log4javascript:message><![CDATA[' +
-        layout.escapeCdata(message) +
-        ']]></log4javascript:message>'
-      );
+      return '<log4javascript:message><![CDATA[' + layout.escapeCdata(message) + ']]></log4javascript:message>';
     }
 
     let str =
@@ -1234,21 +1112,21 @@
       '" timestamp="' +
       this.getTimeStampValue(loggingEvent) +
       '"';
-    if (!this.isTimeStampsInMilliseconds()) {
+    if(!this.isTimeStampsInMilliseconds()) {
       str += ' milliseconds="' + loggingEvent.milliseconds + '"';
     }
     str += ' level="' + loggingEvent.level.name + '">' + newLine;
-    if (this.combineMessages) {
+    if(this.combineMessages) {
       str += formatMessage(loggingEvent.getCombinedMessages());
     } else {
       str += '<log4javascript:messages>' + newLine;
-      for (i = 0, len = loggingEvent.messages.length; i < len; i++) {
+      for(i = 0, len = loggingEvent.messages.length; i < len; i++) {
         str += formatMessage(loggingEvent.messages[i]) + newLine;
       }
       str += '</log4javascript:messages>' + newLine;
     }
-    if (this.hasCustomFields()) {
-      for (i = 0, len = this.customFields.length; i < len; i++) {
+    if(this.hasCustomFields()) {
+      for(i = 0, len = this.customFields.length; i < len; i++) {
         str +=
           '<log4javascript:customfield name="' +
           this.customFields[i].name +
@@ -1258,7 +1136,7 @@
           newLine;
       }
     }
-    if (loggingEvent.exception) {
+    if(loggingEvent.exception) {
       str +=
         '<log4javascript:exception><![CDATA[' +
         getExceptionStringRep(loggingEvent.exception) +
@@ -1269,11 +1147,11 @@
     return str;
   };
 
-  XmlLayout.prototype.ignoresThrowable = function () {
+  XmlLayout.prototype.ignoresThrowable = function() {
     return false;
   };
 
-  XmlLayout.prototype.toString = function () {
+  XmlLayout.prototype.toString = function() {
     return 'XmlLayout';
   };
 
@@ -1304,15 +1182,15 @@
 
   JsonLayout.prototype = new Layout();
 
-  JsonLayout.prototype.isReadable = function () {
+  JsonLayout.prototype.isReadable = function() {
     return this.readable;
   };
 
-  JsonLayout.prototype.isCombinedMessages = function () {
+  JsonLayout.prototype.isCombinedMessages = function() {
     return this.combineMessages;
   };
 
-  JsonLayout.prototype.format = function (loggingEvent) {
+  JsonLayout.prototype.format = function(loggingEvent) {
     let layout = this;
     let dataValues = this.getDataValues(loggingEvent, this.combineMessages);
     let str = '{' + this.lineBreak;
@@ -1323,38 +1201,30 @@
       //or expansion are required
       let formattedValue;
       let valType = typeof val;
-      if (val instanceof Date) {
+      if(val instanceof Date) {
         formattedValue = String(val.getTime());
-      } else if (expand && val instanceof Array) {
+      } else if(expand && val instanceof Array) {
         formattedValue = '[' + layout.lineBreak;
-        for (let i = 0, len = val.length; i < len; i++) {
+        for(let i = 0, len = val.length; i < len; i++) {
           let childPrefix = prefix + layout.tab;
-          formattedValue +=
-            childPrefix + formatValue(val[i], childPrefix, false);
-          if (i < val.length - 1) {
+          formattedValue += childPrefix + formatValue(val[i], childPrefix, false);
+          if(i < val.length - 1) {
             formattedValue += ',';
           }
           formattedValue += layout.lineBreak;
         }
         formattedValue += prefix + ']';
-      } else if (valType !== 'number' && valType !== 'boolean') {
-        formattedValue =
-          '"' + escapeNewLines(toStr(val).replace(/\"/g, '\\"')) + '"';
+      } else if(valType !== 'number' && valType !== 'boolean') {
+        formattedValue = '"' + escapeNewLines(toStr(val).replace(/\"/g, '\\"')) + '"';
       } else {
         formattedValue = val;
       }
       return formattedValue;
     }
 
-    for (i = 0, len = dataValues.length - 1; i <= len; i++) {
-      str +=
-        this.tab +
-        '"' +
-        dataValues[i][0] +
-        '"' +
-        this.colon +
-        formatValue(dataValues[i][1], this.tab, true);
-      if (i < len) {
+    for(i = 0, len = dataValues.length - 1; i <= len; i++) {
+      str += this.tab + '"' + dataValues[i][0] + '"' + this.colon + formatValue(dataValues[i][1], this.tab, true);
+      if(i < len) {
         str += ',';
       }
       str += this.lineBreak;
@@ -1364,15 +1234,15 @@
     return str;
   };
 
-  JsonLayout.prototype.ignoresThrowable = function () {
+  JsonLayout.prototype.ignoresThrowable = function() {
     return false;
   };
 
-  JsonLayout.prototype.toString = function () {
+  JsonLayout.prototype.toString = function() {
     return 'JsonLayout';
   };
 
-  JsonLayout.prototype.getContentType = function () {
+  JsonLayout.prototype.getContentType = function() {
     return 'application/json';
   };
 
@@ -1390,28 +1260,25 @@
   HttpPostDataLayout.prototype = new Layout();
 
   //Disable batching
-  HttpPostDataLayout.prototype.allowBatching = function () {
+  HttpPostDataLayout.prototype.allowBatching = function() {
     return false;
   };
 
-  HttpPostDataLayout.prototype.format = function (loggingEvent) {
+  HttpPostDataLayout.prototype.format = function(loggingEvent) {
     let dataValues = this.getDataValues(loggingEvent);
     let queryBits = [];
-    for (let i = 0, len = dataValues.length; i < len; i++) {
-      let val =
-        dataValues[i][1] instanceof Date
-          ? String(dataValues[i][1].getTime())
-          : dataValues[i][1];
+    for(let i = 0, len = dataValues.length; i < len; i++) {
+      let val = dataValues[i][1] instanceof Date ? String(dataValues[i][1].getTime()) : dataValues[i][1];
       queryBits.push(urlEncode(dataValues[i][0]) + '=' + urlEncode(val));
     }
     return queryBits.join('&');
   };
 
-  HttpPostDataLayout.prototype.ignoresThrowable = function (loggingEvent) {
+  HttpPostDataLayout.prototype.ignoresThrowable = function(loggingEvent) {
     return false;
   };
 
-  HttpPostDataLayout.prototype.toString = function () {
+  HttpPostDataLayout.prototype.toString = function() {
     return 'HttpPostDataLayout';
   };
 
@@ -1424,88 +1291,68 @@
     let objectsExpanded = [];
 
     function doFormat(obj, depth, indentation) {
-      let i,
-        len,
-        childDepth,
-        childIndentation,
-        childLines,
-        expansion,
-        childExpansion;
+      let i, len, childDepth, childIndentation, childLines, expansion, childExpansion;
 
-      if (!indentation) {
+      if(!indentation) {
         indentation = '';
       }
 
       function formatString(text) {
         let lines = splitIntoLines(text);
-        for (let j = 1, jLen = lines.length; j < jLen; j++) {
+        for(let j = 1, jLen = lines.length; j < jLen; j++) {
           lines[j] = indentation + lines[j];
         }
         return lines.join(newLine);
       }
 
-      if (obj === null) {
+      if(obj === null) {
         return 'null';
-      } else if (typeof obj == 'undefined') {
+      } else if(typeof obj == 'undefined') {
         return 'undefined';
-      } else if (typeof obj == 'string') {
+      } else if(typeof obj == 'string') {
         return formatString(obj);
-      } else if (
-        typeof obj == 'object' &&
-        array_contains(objectsExpanded, obj)
-      ) {
+      } else if(typeof obj == 'object' && array_contains(objectsExpanded, obj)) {
         try {
           expansion = toStr(obj);
-        } catch (ex) {
-          expansion =
-            'Error formatting property. Details: ' + getExceptionStringRep(ex);
+        } catch(ex) {
+          expansion = 'Error formatting property. Details: ' + getExceptionStringRep(ex);
         }
         return expansion + ' [already expanded]';
-      } else if (obj instanceof Array && depth > 0) {
+      } else if(obj instanceof Array && depth > 0) {
         objectsExpanded.push(obj);
         expansion = '[' + newLine;
         childDepth = depth - 1;
         childIndentation = indentation + '  ';
         childLines = [];
-        for (i = 0, len = obj.length; i < len; i++) {
+        for(i = 0, len = obj.length; i < len; i++) {
           try {
             childExpansion = doFormat(obj[i], childDepth, childIndentation);
             childLines.push(childIndentation + childExpansion);
-          } catch (ex) {
-            childLines.push(
-              childIndentation +
-                'Error formatting array member. Details: ' +
-                getExceptionStringRep(ex) +
-                ''
+          } catch(ex) {
+            childLines.push(childIndentation + 'Error formatting array member. Details: ' + getExceptionStringRep(ex) + ''
             );
           }
         }
-        expansion +=
-          childLines.join(',' + newLine) + newLine + indentation + ']';
+        expansion += childLines.join(',' + newLine) + newLine + indentation + ']';
         return expansion;
-      } else if (Object.prototype.toString.call(obj) == '[object Date]') {
+      } else if(Object.prototype.toString.call(obj) == '[object Date]') {
         return obj.toString();
-      } else if (typeof obj == 'object' && depth > 0) {
+      } else if(typeof obj == 'object' && depth > 0) {
         objectsExpanded.push(obj);
         expansion = '{' + newLine;
         childDepth = depth - 1;
         childIndentation = indentation + '  ';
         childLines = [];
-        for (i in obj) {
+        for(i in obj) {
           try {
             childExpansion = doFormat(obj[i], childDepth, childIndentation);
             childLines.push(childIndentation + i + ': ' + childExpansion);
-          } catch (ex) {
-            childLines.push(
-              childIndentation +
-                i +
-                ': Error formatting property. Details: ' +
-                getExceptionStringRep(ex)
+          } catch(ex) {
+            childLines.push(childIndentation + i + ': Error formatting property. Details: ' + getExceptionStringRep(ex)
             );
           }
         }
-        expansion +=
-          childLines.join(',' + newLine) + newLine + indentation + '}';
+        expansion += childLines.join(',' + newLine) + newLine + indentation + '}';
         return expansion;
       }
       return formatString(toStr(obj));
@@ -1534,15 +1381,7 @@
       'November',
       'December'
     ];
-    let dayNames = [
-      'Sunday',
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday'
-    ];
+    let dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     let TEXT2 = 0,
       TEXT3 = 1,
       NUMBER = 2,
@@ -1573,23 +1412,22 @@
     let ONE_WEEK = 7 * ONE_DAY;
     let DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK = 1;
 
-    let newDateAtMidnight = function (year, month, day) {
+    let newDateAtMidnight = function(year, month, day) {
       let d = new Date(year, month, day, 0, 0, 0);
       d.setMilliseconds(0);
       return d;
     };
 
-    Date.prototype.getDifference = function (date) {
+    Date.prototype.getDifference = function(date) {
       return this.getTime() - date.getTime();
     };
 
-    Date.prototype.isBefore = function (d) {
+    Date.prototype.isBefore = function(d) {
       return this.getTime() < d.getTime();
     };
 
-    Date.prototype.getUTCTime = function () {
-      return Date.UTC(
-        this.getFullYear(),
+    Date.prototype.getUTCTime = function() {
+      return Date.UTC(this.getFullYear(),
         this.getMonth(),
         this.getDate(),
         this.getHours(),
@@ -1599,30 +1437,19 @@
       );
     };
 
-    Date.prototype.getTimeSince = function (d) {
+    Date.prototype.getTimeSince = function(d) {
       return this.getUTCTime() - d.getUTCTime();
     };
 
-    Date.prototype.getPreviousSunday = function () {
+    Date.prototype.getPreviousSunday = function() {
       //Using midday avoids any possibility of DST messing things up
-      let midday = new Date(
-        this.getFullYear(),
-        this.getMonth(),
-        this.getDate(),
-        12,
-        0,
-        0
-      );
+      let midday = new Date(this.getFullYear(), this.getMonth(), this.getDate(), 12, 0, 0);
       let previousSunday = new Date(midday.getTime() - this.getDay() * ONE_DAY);
-      return newDateAtMidnight(
-        previousSunday.getFullYear(),
-        previousSunday.getMonth(),
-        previousSunday.getDate()
-      );
+      return newDateAtMidnight(previousSunday.getFullYear(), previousSunday.getMonth(), previousSunday.getDate());
     };
 
-    Date.prototype.getWeekInYear = function (minimalDaysInFirstWeek) {
-      if (isUndefined(this.minimalDaysInFirstWeek)) {
+    Date.prototype.getWeekInYear = function(minimalDaysInFirstWeek) {
+      if(isUndefined(this.minimalDaysInFirstWeek)) {
         minimalDaysInFirstWeek = DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK;
       }
       let previousSunday = this.getPreviousSunday();
@@ -1632,41 +1459,37 @@
         : 1 + Math.floor(previousSunday.getTimeSince(startOfYear) / ONE_WEEK);
       let numberOfDaysInFirstWeek = 7 - startOfYear.getDay();
       let weekInYear = numberOfSundays;
-      if (numberOfDaysInFirstWeek < minimalDaysInFirstWeek) {
+      if(numberOfDaysInFirstWeek < minimalDaysInFirstWeek) {
         weekInYear--;
       }
       return weekInYear;
     };
 
-    Date.prototype.getWeekInMonth = function (minimalDaysInFirstWeek) {
-      if (isUndefined(this.minimalDaysInFirstWeek)) {
+    Date.prototype.getWeekInMonth = function(minimalDaysInFirstWeek) {
+      if(isUndefined(this.minimalDaysInFirstWeek)) {
         minimalDaysInFirstWeek = DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK;
       }
       let previousSunday = this.getPreviousSunday();
-      let startOfMonth = newDateAtMidnight(
-        this.getFullYear(),
-        this.getMonth(),
-        1
-      );
+      let startOfMonth = newDateAtMidnight(this.getFullYear(), this.getMonth(), 1);
       let numberOfSundays = previousSunday.isBefore(startOfMonth)
         ? 0
         : 1 + Math.floor(previousSunday.getTimeSince(startOfMonth) / ONE_WEEK);
       let numberOfDaysInFirstWeek = 7 - startOfMonth.getDay();
       let weekInMonth = numberOfSundays;
-      if (numberOfDaysInFirstWeek >= minimalDaysInFirstWeek) {
+      if(numberOfDaysInFirstWeek >= minimalDaysInFirstWeek) {
         weekInMonth++;
       }
       return weekInMonth;
     };
 
-    Date.prototype.getDayInYear = function () {
+    Date.prototype.getDayInYear = function() {
       let startOfYear = newDateAtMidnight(this.getFullYear(), 0, 1);
       return 1 + Math.floor(this.getTimeSince(startOfYear) / ONE_DAY);
     };
 
     /* ------------------------------------------------------------------ */
 
-    SimpleDateFormat = function (formatString) {
+    SimpleDateFormat = function(formatString) {
       this.formatString = formatString;
     };
 
@@ -1674,61 +1497,56 @@
      * Sets the minimum number of days in a week in order for that week to
      * be considered as belonging to a particular month or year
      */
-    SimpleDateFormat.prototype.setMinimalDaysInFirstWeek = function (days) {
+    SimpleDateFormat.prototype.setMinimalDaysInFirstWeek = function(days) {
       this.minimalDaysInFirstWeek = days;
     };
 
-    SimpleDateFormat.prototype.getMinimalDaysInFirstWeek = function () {
+    SimpleDateFormat.prototype.getMinimalDaysInFirstWeek = function() {
       return isUndefined(this.minimalDaysInFirstWeek)
         ? DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK
         : this.minimalDaysInFirstWeek;
     };
 
-    let padWithZeroes = function (str, len) {
-      while (str.length < len) {
+    let padWithZeroes = function(str, len) {
+      while(str.length < len) {
         str = '0' + str;
       }
       return str;
     };
 
-    let formatText = function (data, numberOfLetters, minLength) {
-      return numberOfLetters >= 4
-        ? data
-        : data.substr(0, Math.max(minLength, numberOfLetters));
+    let formatText = function(data, numberOfLetters, minLength) {
+      return numberOfLetters >= 4 ? data : data.substr(0, Math.max(minLength, numberOfLetters));
     };
 
-    let formatNumber = function (data, numberOfLetters) {
+    let formatNumber = function(data, numberOfLetters) {
       let dataString = '' + data;
       //Pad with 0s as necessary
       return padWithZeroes(dataString, numberOfLetters);
     };
 
-    SimpleDateFormat.prototype.format = function (date) {
+    SimpleDateFormat.prototype.format = function(date) {
       let formattedString = '';
       let result;
       let searchString = this.formatString;
-      while ((result = regex.exec(searchString))) {
+      while((result = regex.exec(searchString))) {
         let quotedString = result[1];
         let patternLetters = result[2];
         let otherLetters = result[3];
         let otherCharacters = result[4];
 
         //If the pattern matched is quoted string, output the text between the quotes
-        if (quotedString) {
-          if (quotedString == "''") {
+        if(quotedString) {
+          if(quotedString == "''") {
             formattedString += "'";
           } else {
-            formattedString += quotedString.substring(
-              1,
-              quotedString.length - 1
-            );
+            formattedString += quotedString.substring(1, quotedString.length - 1);
           }
-        } else if (otherLetters) {
+        } else if(otherLetters) {
           //Swallow non-pattern letters by doing nothing here
-        } else if (otherCharacters) {
+        } else if(otherCharacters) {
           //Simply output other characters
           formattedString += otherCharacters;
-        } else if (patternLetters) {
+        } else if(patternLetters) {
           //Replace pattern letters
           let patternLetter = patternLetters.charAt(0);
           let numberOfLetters = patternLetters.length;
@@ -1801,7 +1619,7 @@
               formattedString += formatNumber(rawData, numberOfLetters);
               break;
             case YEAR:
-              if (numberOfLetters <= 3) {
+              if(numberOfLetters <= 3) {
                 //Output a 2-digit year
                 let dataString = '' + rawData;
                 formattedString += dataString.substr(2, 2);
@@ -1810,12 +1628,8 @@
               }
               break;
             case MONTH:
-              if (numberOfLetters >= 3) {
-                formattedString += formatText(
-                  monthNames[rawData],
-                  numberOfLetters,
-                  numberOfLetters
-                );
+              if(numberOfLetters >= 3) {
+                formattedString += formatText(monthNames[rawData], numberOfLetters, numberOfLetters);
               } else {
                 //NB. Months returned by getMonth are zero-based
                 formattedString += formatNumber(rawData + 1, numberOfLetters);
@@ -1851,7 +1665,7 @@
   //PatternLayout
 
   function PatternLayout(pattern) {
-    if (pattern) {
+    if(pattern) {
       this.pattern = pattern;
     } else {
       this.pattern = PatternLayout.DEFAULT_CONVERSION_PATTERN;
@@ -1867,14 +1681,14 @@
 
   PatternLayout.prototype = new Layout();
 
-  PatternLayout.prototype.format = function (loggingEvent) {
+  PatternLayout.prototype.format = function(loggingEvent) {
     let regex = /%(-?[0-9]+)?(\.?[0-9]+)?([acdfmMnpr%])(\{([^\}]+)\})?|([^%]+)/;
     let formattedString = '';
     let result;
     let searchString = this.pattern;
 
     //Cannot use regex global flag since it doesn't work with exec in IE5
-    while ((result = regex.exec(searchString))) {
+    while((result = regex.exec(searchString))) {
       let matchedString = result[0];
       let padding = result[1];
       let truncation = result[2];
@@ -1883,7 +1697,7 @@
       let text = result[6];
 
       //Check if the pattern matched was just normal text
-      if (text) {
+      if(text) {
         formattedString += '' + text;
       } else {
         //Create a raw replacement string based on the conversion
@@ -1893,11 +1707,10 @@
           case 'a': //Array of messages
           case 'm': //Message
             var depth = 0;
-            if (specifier) {
+            if(specifier) {
               depth = parseInt(specifier, 10);
-              if (isNaN(depth)) {
-                handleError(
-                  "PatternLayout.format: invalid specifier '" +
+              if(isNaN(depth)) {
+                handleError("PatternLayout.format: invalid specifier '" +
                     specifier +
                     "' for conversion character '" +
                     conversionCharacter +
@@ -1906,15 +1719,12 @@
                 depth = 0;
               }
             }
-            var messages =
-              conversionCharacter === 'a'
-                ? loggingEvent.messages[0]
-                : loggingEvent.messages;
-            for (let i = 0, len = messages.length; i < len; i++) {
-              if (i > 0 && replacement.charAt(replacement.length - 1) !== ' ') {
+            var messages = conversionCharacter === 'a' ? loggingEvent.messages[0] : loggingEvent.messages;
+            for(let i = 0, len = messages.length; i < len; i++) {
+              if(i > 0 && replacement.charAt(replacement.length - 1) !== ' ') {
                 replacement += ' ';
               }
-              if (depth === 0) {
+              if(depth === 0) {
                 replacement += messages[i];
               } else {
                 replacement += formatObjectExpansion(messages[i], depth);
@@ -1923,15 +1733,13 @@
             break;
           case 'c': //Logger name
             var loggerName = loggingEvent.logger.name;
-            if (specifier) {
+            if(specifier) {
               let precision = parseInt(specifier, 10);
               let loggerNameBits = loggingEvent.logger.name.split('.');
-              if (precision >= loggerNameBits.length) {
+              if(precision >= loggerNameBits.length) {
                 replacement = loggerName;
               } else {
-                replacement = loggerNameBits
-                  .slice(loggerNameBits.length - precision)
-                  .join('.');
+                replacement = loggerNameBits.slice(loggerNameBits.length - precision).join('.');
               }
             } else {
               replacement = loggerName;
@@ -1939,42 +1747,37 @@
             break;
           case 'd': //Date
             var dateFormat = PatternLayout.ISO8601_DATEFORMAT;
-            if (specifier) {
+            if(specifier) {
               dateFormat = specifier;
               //Pick up special cases
-              if (dateFormat == 'ISO8601') {
+              if(dateFormat == 'ISO8601') {
                 dateFormat = PatternLayout.ISO8601_DATEFORMAT;
-              } else if (dateFormat == 'ABSOLUTE') {
+              } else if(dateFormat == 'ABSOLUTE') {
                 dateFormat = PatternLayout.ABSOLUTETIME_DATEFORMAT;
-              } else if (dateFormat == 'DATE') {
+              } else if(dateFormat == 'DATE') {
                 dateFormat = PatternLayout.DATETIME_DATEFORMAT;
               }
             }
             //Format the date
-            replacement = new SimpleDateFormat(dateFormat).format(
-              loggingEvent.timeStamp
-            );
+            replacement = new SimpleDateFormat(dateFormat).format(loggingEvent.timeStamp);
             break;
           case 'f': //Custom field
-            if (this.hasCustomFields()) {
+            if(this.hasCustomFields()) {
               let fieldIndex = 0;
-              if (specifier) {
+              if(specifier) {
                 fieldIndex = parseInt(specifier, 10);
-                if (isNaN(fieldIndex)) {
-                  handleError(
-                    "PatternLayout.format: invalid specifier '" +
+                if(isNaN(fieldIndex)) {
+                  handleError("PatternLayout.format: invalid specifier '" +
                       specifier +
                       "' for conversion character 'f' - should be a number"
                   );
-                } else if (fieldIndex === 0) {
-                  handleError(
-                    "PatternLayout.format: invalid specifier '" +
+                } else if(fieldIndex === 0) {
+                  handleError("PatternLayout.format: invalid specifier '" +
                       specifier +
                       "' for conversion character 'f' - must be greater than zero"
                   );
-                } else if (fieldIndex > this.customFields.length) {
-                  handleError(
-                    "PatternLayout.format: invalid specifier '" +
+                } else if(fieldIndex > this.customFields.length) {
+                  handleError("PatternLayout.format: invalid specifier '" +
                       specifier +
                       "' for conversion character 'f' - there aren't that many custom fields"
                   );
@@ -1983,7 +1786,7 @@
                 }
               }
               let val = this.customFields[fieldIndex].value;
-              if (typeof val == 'function') {
+              if(typeof val == 'function') {
                 val = val(this, loggingEvent);
               }
               replacement = val;
@@ -1996,14 +1799,12 @@
             replacement = loggingEvent.level.name;
             break;
           case 'r': //Milliseconds since log4javascript startup
-            replacement =
-              '' + loggingEvent.timeStamp.getDifference(applicationStartDate);
+            replacement = '' + loggingEvent.timeStamp.getDifference(applicationStartDate);
             break;
           case '%': //Literal % sign
             replacement = '%';
             break;
-          default:
-            replacement = matchedString;
+          default: replacement = matchedString;
             break;
         }
         //Format the replacement according to any padding or
@@ -2011,25 +1812,25 @@
         var l;
 
         //First, truncation
-        if (truncation) {
+        if(truncation) {
           l = parseInt(truncation.substr(1), 10);
           let strLen = replacement.length;
-          if (l < strLen) {
+          if(l < strLen) {
             replacement = replacement.substring(strLen - l, strLen);
           }
         }
         //Next, padding
-        if (padding) {
-          if (padding.charAt(0) == '-') {
+        if(padding) {
+          if(padding.charAt(0) == '-') {
             l = parseInt(padding.substr(1), 10);
             //Right pad with spaces
-            while (replacement.length < l) {
+            while(replacement.length < l) {
               replacement += ' ';
             }
           } else {
             l = parseInt(padding, 10);
             //Left pad with spaces
-            while (replacement.length < l) {
+            while(replacement.length < l) {
               replacement = ' ' + replacement;
             }
           }
@@ -2041,11 +1842,11 @@
     return formattedString;
   };
 
-  PatternLayout.prototype.ignoresThrowable = function () {
+  PatternLayout.prototype.ignoresThrowable = function() {
     return true;
   };
 
-  PatternLayout.prototype.toString = function () {
+  PatternLayout.prototype.toString = function() {
     return 'PatternLayout';
   };
 
@@ -2060,11 +1861,11 @@
 
   AlertAppender.prototype.layout = new SimpleLayout();
 
-  AlertAppender.prototype.append = function (loggingEvent) {
+  AlertAppender.prototype.append = function(loggingEvent) {
     alert(this.getLayout().formatWithException(loggingEvent));
   };
 
-  AlertAppender.prototype.toString = function () {
+  AlertAppender.prototype.toString = function() {
     return 'AlertAppender';
   };
 
@@ -2080,13 +1881,11 @@
   BrowserConsoleAppender.prototype.layout = new NullLayout();
   BrowserConsoleAppender.prototype.threshold = Level.DEBUG;
 
-  BrowserConsoleAppender.prototype.append = function (loggingEvent) {
+  BrowserConsoleAppender.prototype.append = function(loggingEvent) {
     let appender = this;
 
-    let getFormattedMessage = function (concatenate) {
-      let formattedMessage = appender
-        .getLayout()
-        .formatWithException(loggingEvent);
+    let getFormattedMessage = function(concatenate) {
+      let formattedMessage = appender.getLayout().formatWithException(loggingEvent);
       return typeof formattedMessage == 'string'
         ? concatenate
           ? formattedMessage
@@ -2098,50 +1897,47 @@
 
     let console = window.console;
 
-    if (console && console.log) {
+    if(console && console.log) {
       //Log to Firebug or the browser console using specific logging
       //methods or revert to console.log otherwise
       let consoleMethodName;
 
-      if (console.debug && Level.DEBUG.isGreaterOrEqual(loggingEvent.level)) {
+      if(console.debug && Level.DEBUG.isGreaterOrEqual(loggingEvent.level)) {
         consoleMethodName = 'debug';
-      } else if (console.info && Level.INFO.equals(loggingEvent.level)) {
+      } else if(console.info && Level.INFO.equals(loggingEvent.level)) {
         consoleMethodName = 'info';
-      } else if (console.warn && Level.WARN.equals(loggingEvent.level)) {
+      } else if(console.warn && Level.WARN.equals(loggingEvent.level)) {
         consoleMethodName = 'warn';
-      } else if (
-        console.error &&
-        loggingEvent.level.isGreaterOrEqual(Level.ERROR)
-      ) {
+      } else if(console.error && loggingEvent.level.isGreaterOrEqual(Level.ERROR)) {
         consoleMethodName = 'error';
       } else {
         consoleMethodName = 'log';
       }
 
-      if (typeof console[consoleMethodName].apply == 'function') {
+      if(typeof console[consoleMethodName].apply == 'function') {
         console[consoleMethodName].apply(console, getFormattedMessage(false));
       } else {
         console[consoleMethodName](getFormattedMessage(true));
       }
-    } else if (typeof opera != 'undefined' && opera.postError) {
+    } else if(typeof opera != 'undefined' && opera.postError) {
       //Opera
       opera.postError(getFormattedMessage(true));
     }
   };
 
-  BrowserConsoleAppender.prototype.group = function (name) {
-    if (window.console && window.console.group) {
+  BrowserConsoleAppender.prototype.group = function(name) {
+    if(window.console && window.console.group) {
       window.console.group(name);
     }
   };
 
-  BrowserConsoleAppender.prototype.groupEnd = function () {
-    if (window.console && window.console.groupEnd) {
+  BrowserConsoleAppender.prototype.groupEnd = function() {
+    if(window.console && window.console.groupEnd) {
       window.console.groupEnd();
     }
   };
 
-  BrowserConsoleAppender.prototype.toString = function () {
+  BrowserConsoleAppender.prototype.toString = function() {
     return 'BrowserConsoleAppender';
   };
 
@@ -2150,12 +1946,12 @@
   /* ---------------------------------------------------------------------- */
   //AjaxAppender related
 
-  let xhrFactory = function () {
+  let xhrFactory = function() {
     return new XMLHttpRequest();
   };
   let xmlHttpFactories = [
     xhrFactory,
-    function () {
+    function() {
       return new ActiveXObject('Msxml2.XMLHTTP');
     },
     function () {
@@ -2164,23 +1960,22 @@
   ];
 
   let withCredentialsSupported = false;
-  var getXmlHttp = function (errorHandler) {
+  var getXmlHttp = function(errorHandler) {
     //This is only run the first time; the value of getXmlHttp gets
     //replaced with the factory that succeeds on the first run
     let xmlHttp = null,
       factory;
-    for (let i = 0, len = xmlHttpFactories.length; i < len; i++) {
+    for(let i = 0, len = xmlHttpFactories.length; i < len; i++) {
       factory = xmlHttpFactories[i];
       try {
         xmlHttp = factory();
-        withCredentialsSupported =
-          factory == xhrFactory && 'withCredentials' in xmlHttp;
+        withCredentialsSupported = factory == xhrFactory && 'withCredentials' in xmlHttp;
         getXmlHttp = factory;
         return xmlHttp;
-      } catch (e) {}
+      } catch(e) {}
     }
     //If we're here, all factories have failed, so throw an error
-    if (errorHandler) {
+    if(errorHandler) {
       errorHandler();
     } else {
       handleError('getXmlHttp: unable to obtain XMLHttpRequest object');
@@ -2188,8 +1983,7 @@
   };
 
   function isHttpRequestSuccessful(xmlHttp) {
-    return (
-      isUndefined(xmlHttp.status) ||
+    return (isUndefined(xmlHttp.status) ||
       xmlHttp.status === 0 ||
       (xmlHttp.status >= 200 && xmlHttp.status < 300) ||
       xmlHttp.status == 1223 /* Fix for IE */
@@ -2202,7 +1996,7 @@
   function AjaxAppender(url, withCredentials) {
     let appender = this;
     let isSupported = true;
-    if (!url) {
+    if(!url) {
       handleError('AjaxAppender: URL must be specified in constructor');
       isSupported = false;
     }
@@ -2227,9 +2021,8 @@
     //Configuration methods. The function scope is used to prevent
     //direct alteration to the appender configuration properties.
     function checkCanConfigure(configOptionName) {
-      if (initialized) {
-        handleError(
-          "AjaxAppender: configuration option '" +
+      if(initialized) {
+        handleError("AjaxAppender: configuration option '" +
             configOptionName +
             "' may not be set after the appender has been initialized"
         );
@@ -2238,97 +2031,91 @@
       return true;
     }
 
-    this.getSessionId = function () {
+    this.getSessionId = function() {
       return sessionId;
     };
-    this.setSessionId = function (sessionIdParam) {
+    this.setSessionId = function(sessionIdParam) {
       sessionId = extractStringFromParam(sessionIdParam, null);
       this.layout.setCustomField('sessionid', sessionId);
     };
 
-    this.setLayout = function (layoutParam) {
-      if (checkCanConfigure('layout')) {
+    this.setLayout = function(layoutParam) {
+      if(checkCanConfigure('layout')) {
         this.layout = layoutParam;
         //Set the session id as a custom field on the layout, if not already present
-        if (sessionId !== null) {
+        if(sessionId !== null) {
           this.setSessionId(sessionId);
         }
       }
     };
 
-    this.isTimed = function () {
+    this.isTimed = function() {
       return timed;
     };
-    this.setTimed = function (timedParam) {
-      if (checkCanConfigure('timed')) {
+    this.setTimed = function(timedParam) {
+      if(checkCanConfigure('timed')) {
         timed = bool(timedParam);
       }
     };
 
-    this.getTimerInterval = function () {
+    this.getTimerInterval = function() {
       return timerInterval;
     };
-    this.setTimerInterval = function (timerIntervalParam) {
-      if (checkCanConfigure('timerInterval')) {
+    this.setTimerInterval = function(timerIntervalParam) {
+      if(checkCanConfigure('timerInterval')) {
         timerInterval = extractIntFromParam(timerIntervalParam, timerInterval);
       }
     };
 
-    this.isWaitForResponse = function () {
+    this.isWaitForResponse = function() {
       return waitForResponse;
     };
-    this.setWaitForResponse = function (waitForResponseParam) {
-      if (checkCanConfigure('waitForResponse')) {
+    this.setWaitForResponse = function(waitForResponseParam) {
+      if(checkCanConfigure('waitForResponse')) {
         waitForResponse = bool(waitForResponseParam);
       }
     };
 
-    this.getBatchSize = function () {
+    this.getBatchSize = function() {
       return batchSize;
     };
-    this.setBatchSize = function (batchSizeParam) {
-      if (checkCanConfigure('batchSize')) {
+    this.setBatchSize = function(batchSizeParam) {
+      if(checkCanConfigure('batchSize')) {
         batchSize = extractIntFromParam(batchSizeParam, batchSize);
       }
     };
 
-    this.isSendAllOnUnload = function () {
+    this.isSendAllOnUnload = function() {
       return sendAllOnUnload;
     };
-    this.setSendAllOnUnload = function (sendAllOnUnloadParam) {
-      if (checkCanConfigure('sendAllOnUnload')) {
-        sendAllOnUnload = extractBooleanFromParam(
-          sendAllOnUnloadParam,
-          sendAllOnUnload
-        );
+    this.setSendAllOnUnload = function(sendAllOnUnloadParam) {
+      if(checkCanConfigure('sendAllOnUnload')) {
+        sendAllOnUnload = extractBooleanFromParam(sendAllOnUnloadParam, sendAllOnUnload);
       }
     };
 
-    this.setRequestSuccessCallback = function (requestSuccessCallbackParam) {
-      requestSuccessCallback = extractFunctionFromParam(
-        requestSuccessCallbackParam,
-        requestSuccessCallback
-      );
+    this.setRequestSuccessCallback = function(requestSuccessCallbackParam) {
+      requestSuccessCallback = extractFunctionFromParam(requestSuccessCallbackParam, requestSuccessCallback);
     };
 
-    this.setFailCallback = function (failCallbackParam) {
+    this.setFailCallback = function(failCallbackParam) {
       failCallback = extractFunctionFromParam(failCallbackParam, failCallback);
     };
 
-    this.getPostVarName = function () {
+    this.getPostVarName = function() {
       return postVarName;
     };
-    this.setPostVarName = function (postVarNameParam) {
-      if (checkCanConfigure('postVarName')) {
+    this.setPostVarName = function(postVarNameParam) {
+      if(checkCanConfigure('postVarName')) {
         postVarName = extractStringFromParam(postVarNameParam, postVarName);
       }
     };
 
-    this.getHeaders = function () {
+    this.getHeaders = function() {
       return headers;
     };
-    this.addHeader = function (name, value) {
-      if (name.toLowerCase() == 'content-type') {
+    this.addHeader = function(name, value) {
+      if(name.toLowerCase() == 'content-type') {
         contentType = value;
       } else {
         headers.push({ name, value });
@@ -2337,28 +2124,28 @@
 
     //Internal functions
     function sendAll() {
-      if (isSupported && enabled) {
+      if(isSupported && enabled) {
         sending = true;
         let currentRequestBatch;
-        if (waitForResponse) {
+        if(waitForResponse) {
           //Send the first request then use this function as the callback once
           //the response comes back
-          if (queuedRequests.length > 0) {
+          if(queuedRequests.length > 0) {
             currentRequestBatch = queuedRequests.shift();
             sendRequest(preparePostData(currentRequestBatch), sendAll);
           } else {
             sending = false;
-            if (timed) {
+            if(timed) {
               scheduleSending();
             }
           }
         } else {
           //Rattle off all the requests without waiting to see the response
-          while ((currentRequestBatch = queuedRequests.shift())) {
+          while((currentRequestBatch = queuedRequests.shift())) {
             sendRequest(preparePostData(currentRequestBatch));
           }
           sending = false;
-          if (timed) {
+          if(timed) {
             scheduleSending();
           }
         }
@@ -2372,23 +2159,21 @@
     //must go, now
     function sendAllRemaining() {
       let sendingAnything = false;
-      if (isSupported && enabled) {
+      if(isSupported && enabled) {
         //Create requests for everything left over, batched as normal
-        let actualBatchSize = appender.getLayout().allowBatching()
-          ? batchSize
-          : 1;
+        let actualBatchSize = appender.getLayout().allowBatching() ? batchSize : 1;
         let currentLoggingEvent;
         let batchedLoggingEvents = [];
-        while ((currentLoggingEvent = queuedLoggingEvents.shift())) {
+        while((currentLoggingEvent = queuedLoggingEvents.shift())) {
           batchedLoggingEvents.push(currentLoggingEvent);
-          if (queuedLoggingEvents.length >= actualBatchSize) {
+          if(queuedLoggingEvents.length >= actualBatchSize) {
             //Queue this batch of log entries
             queuedRequests.push(batchedLoggingEvents);
             batchedLoggingEvents = [];
           }
         }
         //If there's a partially completed batch, add it
-        if (batchedLoggingEvents.length > 0) {
+        if(batchedLoggingEvents.length > 0) {
           queuedRequests.push(batchedLoggingEvents);
         }
         sendingAnything = queuedRequests.length > 0;
@@ -2406,13 +2191,11 @@
       let formattedMessages = [];
       let currentLoggingEvent;
       let postData = '';
-      while ((currentLoggingEvent = batchedLoggingEvents.shift())) {
-        formattedMessages.push(
-          appender.getLayout().formatWithException(currentLoggingEvent)
-        );
+      while((currentLoggingEvent = batchedLoggingEvents.shift())) {
+        formattedMessages.push(appender.getLayout().formatWithException(currentLoggingEvent));
       }
       //Create the post data string
-      if (batchedLoggingEvents.length == 1) {
+      if(batchedLoggingEvents.length == 1) {
         postData = formattedMessages.join('');
       } else {
         postData =
@@ -2420,12 +2203,10 @@
           formattedMessages.join(appender.getLayout().batchSeparator) +
           appender.getLayout().batchFooter;
       }
-      if (contentType == appender.defaults.contentType) {
-        postData = appender.getLayout().returnsPostData
-          ? postData
-          : urlEncode(postVarName) + '=' + urlEncode(postData);
+      if(contentType == appender.defaults.contentType) {
+        postData = appender.getLayout().returnsPostData ? postData : urlEncode(postVarName) + '=' + urlEncode(postData);
         //Add the layout name to the post data
-        if (postData.length > 0) {
+        if(postData.length > 0) {
           postData += '&';
         }
         postData += 'layout=' + urlEncode(appender.getLayout().toString());
@@ -2438,11 +2219,10 @@
     }
 
     function xmlHttpErrorHandler() {
-      let msg =
-        'AjaxAppender: could not create XMLHttpRequest object. AjaxAppender disabled';
+      let msg = 'AjaxAppender: could not create XMLHttpRequest object. AjaxAppender disabled';
       handleError(msg);
       isSupported = false;
-      if (failCallback) {
+      if(failCallback) {
         failCallback(msg);
       }
     }
@@ -2450,14 +2230,14 @@
     function sendRequest(postData, successCallback) {
       try {
         let xmlHttp = getXmlHttp(xmlHttpErrorHandler);
-        if (isSupported) {
-          xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState == 4) {
-              if (isHttpRequestSuccessful(xmlHttp)) {
-                if (requestSuccessCallback) {
+        if(isSupported) {
+          xmlHttp.onreadystatechange = function() {
+            if(xmlHttp.readyState == 4) {
+              if(isHttpRequestSuccessful(xmlHttp)) {
+                if(requestSuccessCallback) {
                   requestSuccessCallback(xmlHttp);
                 }
-                if (successCallback) {
+                if(successCallback) {
                   successCallback(xmlHttp);
                 }
               } else {
@@ -2467,7 +2247,7 @@
                   ' returned status code ' +
                   xmlHttp.status;
                 handleError(msg);
-                if (failCallback) {
+                if(failCallback) {
                   failCallback(msg);
                 }
               }
@@ -2477,49 +2257,49 @@
           };
           xmlHttp.open('POST', url, true);
           //Add withCredentials to facilitate CORS requests with cookies
-          if (withCredentials && withCredentialsSupported) {
+          if(withCredentials && withCredentialsSupported) {
             xmlHttp.withCredentials = true;
           }
           try {
-            for (var i = 0, header; (header = headers[i++]); ) {
+            for(var i = 0, header; (header = headers[i++]); ) {
               xmlHttp.setRequestHeader(header.name, header.value);
             }
             xmlHttp.setRequestHeader('Content-Type', contentType);
-          } catch (headerEx) {
+          } catch(headerEx) {
             let msg =
               "AjaxAppender.append: your browser's XMLHttpRequest implementation" +
               ' does not support setRequestHeader, therefore cannot post data. AjaxAppender disabled';
             handleError(msg);
             isSupported = false;
-            if (failCallback) {
+            if(failCallback) {
               failCallback(msg);
             }
             return;
           }
           xmlHttp.send(postData);
         }
-      } catch (ex) {
+      } catch(ex) {
         let errMsg = 'AjaxAppender.append: error sending log message to ' + url;
         handleError(errMsg, ex);
         isSupported = false;
-        if (failCallback) {
+        if(failCallback) {
           failCallback(errMsg + '. Details: ' + getExceptionStringRep(ex));
         }
       }
     }
 
-    this.append = function (loggingEvent) {
-      if (isSupported) {
-        if (!initialized) {
+    this.append = function(loggingEvent) {
+      if(isSupported) {
+        if(!initialized) {
           init();
         }
         queuedLoggingEvents.push(loggingEvent);
         let actualBatchSize = this.getLayout().allowBatching() ? batchSize : 1;
 
-        if (queuedLoggingEvents.length >= actualBatchSize) {
+        if(queuedLoggingEvents.length >= actualBatchSize) {
           let currentLoggingEvent;
           let batchedLoggingEvents = [];
-          while ((currentLoggingEvent = queuedLoggingEvents.shift())) {
+          while((currentLoggingEvent = queuedLoggingEvents.shift())) {
             batchedLoggingEvents.push(currentLoggingEvent);
           }
           //Queue this batch of log entries
@@ -2527,7 +2307,7 @@
 
           //If using a timer, the queue of requests will be processed by the
           //timer function, so nothing needs to be done here.
-          if (!timed && (!waitForResponse || (waitForResponse && !sending))) {
+          if(!timed && (!waitForResponse || (waitForResponse && !sending))) {
             sendAll();
           }
         }
@@ -2537,17 +2317,17 @@
     function init() {
       initialized = true;
       //Add unload event to send outstanding messages
-      if (sendAllOnUnload) {
+      if(sendAllOnUnload) {
         let oldBeforeUnload = window.onbeforeunload;
-        window.onbeforeunload = function () {
-          if (oldBeforeUnload) {
+        window.onbeforeunload = function() {
+          if(oldBeforeUnload) {
             oldBeforeUnload();
           }
           sendAllRemaining();
         };
       }
       //Start timer
-      if (timed) {
+      if(timed) {
         scheduleSending();
       }
     }
@@ -2569,7 +2349,7 @@
 
   AjaxAppender.prototype.layout = new HttpPostDataLayout();
 
-  AjaxAppender.prototype.toString = function () {
+  AjaxAppender.prototype.toString = function() {
     return 'AjaxAppender';
   };
 
@@ -2581,7 +2361,7 @@
   function setCookie(name, value, days, path) {
     let expires;
     path = path ? '; path=' + path : '';
-    if (days) {
+    if(days) {
       let date = new Date();
       date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
       expires = '; expires=' + date.toGMTString();
@@ -2594,12 +2374,12 @@
   function getCookie(name) {
     let nameEquals = escape(name) + '=';
     let ca = document.cookie.split(';');
-    for (let i = 0, len = ca.length; i < len; i++) {
+    for(let i = 0, len = ca.length; i < len; i++) {
       let c = ca[i];
-      while (c.charAt(0) === ' ') {
+      while(c.charAt(0) === ' ') {
         c = c.substring(1, c.length);
       }
-      if (c.indexOf(nameEquals) === 0) {
+      if(c.indexOf(nameEquals) === 0) {
         return unescape(c.substring(nameEquals.length, c.length));
       }
     }
@@ -2610,8 +2390,8 @@
   //This is far from infallible.
   function getBaseUrl() {
     let scripts = document.getElementsByTagName('script');
-    for (let i = 0, len = scripts.length; i < len; ++i) {
-      if (scripts[i].src.indexOf('log4javascript') != -1) {
+    for(let i = 0, len = scripts.length; i < len; ++i) {
+      if(scripts[i].src.indexOf('log4javascript') != -1) {
         let lastSlash = scripts[i].src.lastIndexOf('/');
         return lastSlash == -1 ? '' : scripts[i].src.substr(0, lastSlash + 1);
       }
@@ -2622,7 +2402,7 @@
   function isLoaded(win) {
     try {
       return bool(win.loaded);
-    } catch (ex) {
+    } catch(ex) {
       return false;
     }
   }
@@ -2634,7 +2414,7 @@
 
   //Create an anonymous function to protect base console methods
   (function () {
-    let getConsoleHtmlLines = function () {
+    let getConsoleHtmlLines = function() {
       return [
         '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
         '<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">',
@@ -4921,13 +4701,12 @@
 
     let defaultCommandLineFunctions = [];
 
-    ConsoleAppender = function () {};
+    ConsoleAppender = function() {};
 
     let consoleAppenderIdCounter = 1;
     ConsoleAppender.prototype = new Appender();
 
-    ConsoleAppender.prototype.create = function (
-      inPage,
+    ConsoleAppender.prototype.create = function(inPage,
       container,
       lazyInit,
       initiallyMinimized,
@@ -4949,23 +4728,16 @@
       let consoleAppenderId = consoleAppenderIdCounter++;
 
       //Local variables
-      initiallyMinimized = extractBooleanFromParam(
-        initiallyMinimized,
-        this.defaults.initiallyMinimized
-      );
+      initiallyMinimized = extractBooleanFromParam(initiallyMinimized, this.defaults.initiallyMinimized);
       lazyInit = extractBooleanFromParam(lazyInit, this.defaults.lazyInit);
-      useDocumentWrite = extractBooleanFromParam(
-        useDocumentWrite,
-        this.defaults.useDocumentWrite
-      );
+      useDocumentWrite = extractBooleanFromParam(useDocumentWrite, this.defaults.useDocumentWrite);
       let newestMessageAtTop = this.defaults.newestMessageAtTop;
       let scrollToLatestMessage = this.defaults.scrollToLatestMessage;
       width = width ? width : this.defaults.width;
       height = height ? height : this.defaults.height;
       let maxMessages = this.defaults.maxMessages;
       let showCommandLine = this.defaults.showCommandLine;
-      let commandLineObjectExpansionDepth = this.defaults
-        .commandLineObjectExpansionDepth;
+      let commandLineObjectExpansionDepth = this.defaults.commandLineObjectExpansionDepth;
       let showHideButton = this.defaults.showHideButton;
       let showCloseButton = this.defaults.showCloseButton;
 
@@ -4977,10 +4749,9 @@
       //Configuration methods. The function scope is used to prevent
       //direct alteration to the appender configuration properties.
       let appenderName = inPage ? 'InPageAppender' : 'PopUpAppender';
-      let checkCanConfigure = function (configOptionName) {
-        if (consoleWindowCreated) {
-          handleError(
-            appenderName +
+      let checkCanConfigure = function(configOptionName) {
+        if(consoleWindowCreated) {
+          handleError(appenderName +
               ": configuration option '" +
               configOptionName +
               "' may not be set after the appender has been initialized"
@@ -4990,116 +4761,113 @@
         return true;
       };
 
-      let consoleWindowExists = function () {
+      let consoleWindowExists = function() {
         return consoleWindowLoaded && isSupported && !consoleClosed;
       };
 
-      this.isNewestMessageAtTop = function () {
+      this.isNewestMessageAtTop = function() {
         return newestMessageAtTop;
       };
-      this.setNewestMessageAtTop = function (newestMessageAtTopParam) {
+      this.setNewestMessageAtTop = function(newestMessageAtTopParam) {
         newestMessageAtTop = bool(newestMessageAtTopParam);
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().setNewestAtTop(newestMessageAtTop);
         }
       };
 
-      this.isScrollToLatestMessage = function () {
+      this.isScrollToLatestMessage = function() {
         return scrollToLatestMessage;
       };
-      this.setScrollToLatestMessage = function (scrollToLatestMessageParam) {
+      this.setScrollToLatestMessage = function(scrollToLatestMessageParam) {
         scrollToLatestMessage = bool(scrollToLatestMessageParam);
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().setScrollToLatest(scrollToLatestMessage);
         }
       };
 
-      this.getWidth = function () {
+      this.getWidth = function() {
         return width;
       };
-      this.setWidth = function (widthParam) {
-        if (checkCanConfigure('width')) {
+      this.setWidth = function(widthParam) {
+        if(checkCanConfigure('width')) {
           width = extractStringFromParam(widthParam, width);
         }
       };
 
-      this.getHeight = function () {
+      this.getHeight = function() {
         return height;
       };
-      this.setHeight = function (heightParam) {
-        if (checkCanConfigure('height')) {
+      this.setHeight = function(heightParam) {
+        if(checkCanConfigure('height')) {
           height = extractStringFromParam(heightParam, height);
         }
       };
 
-      this.getMaxMessages = function () {
+      this.getMaxMessages = function() {
         return maxMessages;
       };
-      this.setMaxMessages = function (maxMessagesParam) {
+      this.setMaxMessages = function(maxMessagesParam) {
         maxMessages = extractIntFromParam(maxMessagesParam, maxMessages);
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().setMaxMessages(maxMessages);
         }
       };
 
-      this.isShowCommandLine = function () {
+      this.isShowCommandLine = function() {
         return showCommandLine;
       };
-      this.setShowCommandLine = function (showCommandLineParam) {
+      this.setShowCommandLine = function(showCommandLineParam) {
         showCommandLine = bool(showCommandLineParam);
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().setShowCommandLine(showCommandLine);
         }
       };
 
-      this.isShowHideButton = function () {
+      this.isShowHideButton = function() {
         return showHideButton;
       };
-      this.setShowHideButton = function (showHideButtonParam) {
+      this.setShowHideButton = function(showHideButtonParam) {
         showHideButton = bool(showHideButtonParam);
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().setShowHideButton(showHideButton);
         }
       };
 
-      this.isShowCloseButton = function () {
+      this.isShowCloseButton = function() {
         return showCloseButton;
       };
-      this.setShowCloseButton = function (showCloseButtonParam) {
+      this.setShowCloseButton = function(showCloseButtonParam) {
         showCloseButton = bool(showCloseButtonParam);
-        if (consoleWindowExists()) {
+        if(consoleWindowExists()) {
           getConsoleWindow().setShowCloseButton(showCloseButton);
         }
       };
 
-      this.getCommandLineObjectExpansionDepth = function () {
+      this.getCommandLineObjectExpansionDepth = function() {
         return commandLineObjectExpansionDepth;
       };
-      this.setCommandLineObjectExpansionDepth = function (
-        commandLineObjectExpansionDepthParam
-      ) {
-        commandLineObjectExpansionDepth = extractIntFromParam(
-          commandLineObjectExpansionDepthParam,
+      this.setCommandLineObjectExpansionDepth = function(commandLineObjectExpansionDepthParam) {
+        commandLineObjectExpansionDepth = extractIntFromParam(commandLineObjectExpansionDepthParam,
           commandLineObjectExpansionDepth
         );
       };
 
       let minimized = initiallyMinimized;
-      this.isInitiallyMinimized = function () {
+      this.isInitiallyMinimized = function() {
         return initiallyMinimized;
       };
-      this.setInitiallyMinimized = function (initiallyMinimizedParam) {
-        if (checkCanConfigure('initiallyMinimized')) {
+      this.setInitiallyMinimized = function(initiallyMinimizedParam) {
+        if(checkCanConfigure('initiallyMinimized')) {
           initiallyMinimized = bool(initiallyMinimizedParam);
           minimized = initiallyMinimized;
         }
       };
 
-      this.isUseDocumentWrite = function () {
+      this.isUseDocumentWrite = function() {
         return useDocumentWrite;
       };
-      this.setUseDocumentWrite = function (useDocumentWriteParam) {
-        if (checkCanConfigure('useDocumentWrite')) {
+      this.setUseDocumentWrite = function(useDocumentWriteParam) {
+        if(checkCanConfigure('useDocumentWrite')) {
           useDocumentWrite = bool(useDocumentWriteParam);
         }
       };
@@ -5111,7 +4879,7 @@
         this.formattedMessage = formattedMessage;
       }
 
-      QueuedLoggingEvent.prototype.append = function () {
+      QueuedLoggingEvent.prototype.append = function() {
         getConsoleWindow().log(this.levelName, this.formattedMessage);
       };
 
@@ -5120,121 +4888,117 @@
         this.initiallyExpanded = initiallyExpanded;
       }
 
-      QueuedGroup.prototype.append = function () {
+      QueuedGroup.prototype.append = function() {
         getConsoleWindow().group(this.name, this.initiallyExpanded);
       };
 
       function QueuedGroupEnd() {}
 
-      QueuedGroupEnd.prototype.append = function () {
+      QueuedGroupEnd.prototype.append = function() {
         getConsoleWindow().groupEnd();
       };
 
-      let checkAndAppend = function () {
+      let checkAndAppend = function() {
         //Next line forces a check of whether the window has been closed
         safeToAppend();
-        if (!initialized) {
+        if(!initialized) {
           init();
-        } else if (consoleClosed && reopenWhenClosed) {
+        } else if(consoleClosed && reopenWhenClosed) {
           createWindow();
         }
-        if (safeToAppend()) {
+        if(safeToAppend()) {
           appendQueuedLoggingEvents();
         }
       };
 
-      this.append = function (loggingEvent) {
-        if (isSupported) {
+      this.append = function(loggingEvent) {
+        if(isSupported) {
           //Format the message
-          let formattedMessage = appender
-            .getLayout()
-            .formatWithException(loggingEvent);
-          queuedLoggingEvents.push(
-            new QueuedLoggingEvent(loggingEvent, formattedMessage)
-          );
+          let formattedMessage = appender.getLayout().formatWithException(loggingEvent);
+          queuedLoggingEvents.push(new QueuedLoggingEvent(loggingEvent, formattedMessage));
           checkAndAppend();
         }
       };
 
-      this.group = function (name, initiallyExpanded) {
-        if (isSupported) {
+      this.group = function(name, initiallyExpanded) {
+        if(isSupported) {
           queuedLoggingEvents.push(new QueuedGroup(name, initiallyExpanded));
           checkAndAppend();
         }
       };
 
-      this.groupEnd = function () {
-        if (isSupported) {
+      this.groupEnd = function() {
+        if(isSupported) {
           queuedLoggingEvents.push(new QueuedGroupEnd());
           checkAndAppend();
         }
       };
 
-      var appendQueuedLoggingEvents = function () {
-        while (queuedLoggingEvents.length > 0) {
+      var appendQueuedLoggingEvents = function() {
+        while(queuedLoggingEvents.length > 0) {
           queuedLoggingEvents.shift().append();
         }
-        if (focusConsoleWindow) {
+        if(focusConsoleWindow) {
           getConsoleWindow().focus();
         }
       };
 
-      this.setAddedToLogger = function (logger) {
+      this.setAddedToLogger = function(logger) {
         this.loggers.push(logger);
-        if (enabled && !lazyInit) {
+        if(enabled && !lazyInit) {
           init();
         }
       };
 
-      this.clear = function () {
-        if (consoleWindowExists()) {
+      this.clear = function() {
+        if(consoleWindowExists()) {
           getConsoleWindow().clearLog();
         }
         queuedLoggingEvents.length = 0;
       };
 
-      this.focus = function () {
-        if (consoleWindowExists()) {
+      this.focus = function() {
+        if(consoleWindowExists()) {
           getConsoleWindow().focus();
         }
       };
 
-      this.focusCommandLine = function () {
-        if (consoleWindowExists()) {
+      this.focusCommandLine = function() {
+        if(consoleWindowExists()) {
           getConsoleWindow().focusCommandLine();
         }
       };
 
-      this.focusSearch = function () {
-        if (consoleWindowExists()) {
+      this.focusSearch = function() {
+        if(consoleWindowExists()) {
           getConsoleWindow().focusSearch();
         }
       };
 
       let commandWindow = window;
 
-      this.getCommandWindow = function () {
+      this.getCommandWindow = function() {
         return commandWindow;
       };
-      this.setCommandWindow = function (commandWindowParam) {
+      this.setCommandWindow = function(commandWindowParam) {
         commandWindow = commandWindowParam;
       };
 
-      this.executeLastCommand = function () {
-        if (consoleWindowExists()) {
+      this.executeLastCommand = function() {
+        if(consoleWindowExists()) {
           getConsoleWindow().evalLastCommand();
         }
       };
 
       let commandLayout = new PatternLayout('%m');
-      this.getCommandLayout = function () {
+      this.getCommandLayout = function() {
         return commandLayout;
       };
-      this.setCommandLayout = function (commandLayoutParam) {
+      this.setCommandLayout = function(commandLayoutParam) {
         commandLayout = commandLayoutParam;
       };
 
-      this.evalCommandAndAppend = function (expr) {
+      this.evalCommandAndAppend = function(expr) {
         let commandReturnValue = { appendResult: true, isError: false };
         let commandOutput = '';
         //Evaluate the command
@@ -5243,20 +5007,19 @@
           //The next three lines constitute a workaround for IE. Bizarrely, iframes seem to have no
           //eval method on the window object initially, but once execScript has been called on
           //it once then the eval method magically appears. See http://www.thismuchiknow.co.uk/?p=25
-          if (!commandWindow.eval && commandWindow.execScript) {
+          if(!commandWindow.eval && commandWindow.execScript) {
             commandWindow.execScript('null');
           }
 
           let commandLineFunctionsHash = {};
-          for (i = 0, len = commandLineFunctions.length; i < len; i++) {
-            commandLineFunctionsHash[commandLineFunctions[i][0]] =
-              commandLineFunctions[i][1];
+          for(i = 0, len = commandLineFunctions.length; i < len; i++) {
+            commandLineFunctionsHash[commandLineFunctions[i][0]] = commandLineFunctions[i][1];
           }
 
           //Keep an array of variables that are being changed in the command window so that they
           //can be restored to their original values afterwards
           let objectsToRestore = [];
-          let addObjectToRestore = function (name) {
+          let addObjectToRestore = function(name) {
             objectsToRestore.push([name, commandWindow[name]]);
           };
 
@@ -5269,23 +5032,19 @@
           addObjectToRestore('commandLineFunctionsHash');
           commandWindow.commandLineFunctionsHash = commandLineFunctionsHash;
 
-          let addFunctionToWindow = function (name) {
+          let addFunctionToWindow = function(name) {
             addObjectToRestore(name);
-            commandWindow[name] = function () {
-              return this.commandLineFunctionsHash[name](
-                appender,
-                arguments,
-                commandReturnValue
-              );
+            commandWindow[name] = function() {
+              return this.commandLineFunctionsHash[name](appender, arguments, commandReturnValue);
             };
           };
 
-          for (i = 0, len = commandLineFunctions.length; i < len; i++) {
+          for(i = 0, len = commandLineFunctions.length; i < len; i++) {
             addFunctionToWindow(commandLineFunctions[i][0]);
           }
 
           //Another bizarre workaround to get IE to eval in the global scope
-          if (commandWindow === window && commandWindow.execScript) {
+          if(commandWindow === window && commandWindow.execScript) {
             addObjectToRestore('evalExpr');
             addObjectToRestore('result');
             window.evalExpr = expr;
@@ -5294,33 +5053,24 @@
           } else {
             result = commandWindow.eval(expr);
           }
-          commandOutput = isUndefined(result)
-            ? result
-            : formatObjectExpansion(result, commandLineObjectExpansionDepth);
+          commandOutput = isUndefined(result) ? result : formatObjectExpansion(result, commandLineObjectExpansionDepth);
 
           //Restore variables in the command window to their original state
-          for (i = 0, len = objectsToRestore.length; i < len; i++) {
+          for(i = 0, len = objectsToRestore.length; i < len; i++) {
             commandWindow[objectsToRestore[i][0]] = objectsToRestore[i][1];
           }
-        } catch (ex) {
-          commandOutput =
-            'Error evaluating command: ' + getExceptionStringRep(ex);
+        } catch(ex) {
+          commandOutput = 'Error evaluating command: ' + getExceptionStringRep(ex);
           commandReturnValue.isError = true;
         }
         //Append command output
-        if (commandReturnValue.appendResult) {
+        if(commandReturnValue.appendResult) {
           let message = '>>> ' + expr;
-          if (!isUndefined(commandOutput)) {
+          if(!isUndefined(commandOutput)) {
             message += newLine + commandOutput;
           }
           let level = commandReturnValue.isError ? Level.ERROR : Level.INFO;
-          let loggingEvent = new LoggingEvent(
-            null,
-            new Date(),
-            level,
-            [message],
-            null
-          );
+          let loggingEvent = new LoggingEvent(null, new Date(), level, [message], null);
           let mainLayout = this.getLayout();
           this.setLayout(commandLayout);
           this.append(loggingEvent);
@@ -5330,22 +5080,19 @@
 
       var commandLineFunctions = defaultCommandLineFunctions.concat([]);
 
-      this.addCommandLineFunction = function (
-        functionName,
-        commandLineFunction
-      ) {
+      this.addCommandLineFunction = function(functionName, commandLineFunction) {
         commandLineFunctions.push([functionName, commandLineFunction]);
       };
 
       let commandHistoryCookieName = 'log4javascriptCommandHistory';
-      this.storeCommandHistory = function (commandHistory) {
+      this.storeCommandHistory = function(commandHistory) {
         setCookie(commandHistoryCookieName, commandHistory.join(','));
       };
 
-      let writeHtml = function (doc) {
+      let writeHtml = function(doc) {
         let lines = getConsoleHtmlLines();
         doc.open();
-        for (let i = 0, len = lines.length; i < len; i++) {
+        for(let i = 0, len = lines.length; i < len; i++) {
           doc.writeln(lines[i]);
         }
         doc.close();
@@ -5354,7 +5101,7 @@
       //Set up event listeners
       this.setEventTypes(['load', 'unload']);
 
-      let consoleWindowLoadHandler = function () {
+      let consoleWindowLoadHandler = function() {
         let win = getConsoleWindow();
         win.setAppender(appender);
         win.setNewestAtTop(newestMessageAtTop);
@@ -5367,7 +5114,7 @@
 
         //Restore command history stored in cookie
         let storedValue = getCookie(commandHistoryCookieName);
-        if (storedValue) {
+        if(storedValue) {
           win.commandHistory = storedValue.split(',');
           win.currentCommandIndex = win.commandHistory.length;
         }
@@ -5375,9 +5122,9 @@
         appender.dispatchEvent('load', { win });
       };
 
-      this.unload = function () {
+      this.unload = function() {
         logLog.debug('unload ' + this + ', caller: ' + this.unload.caller);
-        if (!consoleClosed) {
+        if(!consoleClosed) {
           logLog.debug('really doing unload ' + this);
           consoleClosed = true;
           consoleWindowLoaded = false;
@@ -5386,23 +5133,18 @@
         }
       };
 
-      let pollConsoleWindow = function (
-        windowTest,
-        interval,
-        successCallback,
-        errorMessage
-      ) {
+      let pollConsoleWindow = function(windowTest, interval, successCallback, errorMessage) {
         function doPoll() {
           try {
             //Test if the console has been closed while polling
-            if (consoleClosed) {
+            if(consoleClosed) {
               clearInterval(poll);
             }
-            if (windowTest(getConsoleWindow())) {
+            if(windowTest(getConsoleWindow())) {
               clearInterval(poll);
               successCallback();
             }
-          } catch (ex) {
+          } catch(ex) {
             clearInterval(poll);
             isSupported = false;
             handleError(errorMessage, ex);
@@ -5413,19 +5155,17 @@
         var poll = setInterval(doPoll, interval);
       };
 
-      let getConsoleUrl = function () {
+      let getConsoleUrl = function() {
         let documentDomainSet = document.domain != location.hostname;
         return useDocumentWrite
           ? ''
           : getBaseUrl() +
               'console_uncompressed.html' +
-              (documentDomainSet
-                ? '?log4javascript_domain=' + escape(document.domain)
-                : '');
+              (documentDomainSet ? '?log4javascript_domain=' + escape(document.domain) : '');
       };
 
       //Define methods and properties that vary between subclasses
-      if (inPage) {
+      if(inPage) {
         //InPageAppender
 
         let containerElement = null;
@@ -5433,8 +5173,8 @@
         //Configuration methods. The function scope is used to prevent
         //direct alteration to the appender configuration properties.
         let cssProperties = [];
-        this.addCssProperty = function (name, value) {
-          if (checkCanConfigure('cssProperties')) {
+        this.addCssProperty = function(name, value) {
+          if(checkCanConfigure('cssProperties')) {
             cssProperties.push([name, value]);
           }
         };
@@ -5444,9 +5184,9 @@
         let iframeContainerDiv;
         let iframeId = uniqueId + '_InPageAppender_' + consoleAppenderId;
 
-        this.hide = function () {
-          if (initialized && consoleWindowCreated) {
-            if (consoleWindowExists()) {
+        this.hide = function() {
+          if(initialized && consoleWindowCreated) {
+            if(consoleWindowExists()) {
               getConsoleWindow().$('command').blur();
             }
             iframeContainerDiv.style.display = 'none';
@@ -5454,28 +5194,26 @@
           }
         };
 
-        this.show = function () {
-          if (initialized) {
-            if (consoleWindowCreated) {
+        this.show = function() {
+          if(initialized) {
+            if(consoleWindowCreated) {
               iframeContainerDiv.style.display = 'block';
               this.setShowCommandLine(showCommandLine); //Force IE to update
               minimized = false;
-            } else if (!windowCreationStarted) {
+            } else if(!windowCreationStarted) {
               createWindow(true);
             }
           }
         };
 
-        this.isVisible = function () {
+        this.isVisible = function() {
           return !minimized && !consoleClosed;
         };
 
-        this.close = function (fromButton) {
-          if (
-            !consoleClosed &&
+        this.close = function(fromButton) {
+          if(!consoleClosed &&
             (!fromButton ||
-              confirm(
-                'This will permanently remove the console from the page. No more messages will be logged. Do you wish to continue?'
+              confirm('This will permanently remove the console from the page. No more messages will be logged. Do you wish to continue?'
               ))
           ) {
             iframeContainerDiv.parentNode.removeChild(iframeContainerDiv);
@@ -5484,19 +5222,18 @@
         };
 
         //Create open, init, getConsoleWindow and safeToAppend functions
-        open = function () {
-          let initErrorMessage =
-            'InPageAppender.open: unable to create console iframe';
+        open = function() {
+          let initErrorMessage = 'InPageAppender.open: unable to create console iframe';
 
           function finalInit() {
             try {
-              if (!initiallyMinimized) {
+              if(!initiallyMinimized) {
                 appender.show();
               }
               consoleWindowLoadHandler();
               consoleWindowLoaded = true;
               appendQueuedLoggingEvents();
-            } catch (ex) {
+            } catch(ex) {
               isSupported = false;
               handleError(initErrorMessage, ex);
             }
@@ -5504,39 +5241,35 @@
 
           function writeToDocument() {
             try {
-              let windowTest = function (win) {
+              let windowTest = function(win) {
                 return isLoaded(win);
               };
-              if (useDocumentWrite) {
+              if(useDocumentWrite) {
                 writeHtml(getConsoleWindow().document);
               }
-              if (windowTest(getConsoleWindow())) {
+              if(windowTest(getConsoleWindow())) {
                 finalInit();
               } else {
                 pollConsoleWindow(windowTest, 100, finalInit, initErrorMessage);
               }
-            } catch (ex) {
+            } catch(ex) {
               isSupported = false;
               handleError(initErrorMessage, ex);
             }
           }
 
           minimized = false;
-          iframeContainerDiv = containerElement.appendChild(
-            document.createElement('div')
-          );
+          iframeContainerDiv = containerElement.appendChild(document.createElement('div'));
 
           iframeContainerDiv.style.width = width;
           iframeContainerDiv.style.height = height;
           iframeContainerDiv.style.border = 'solid gray 1px';
 
-          for (let i = 0, len = cssProperties.length; i < len; i++) {
+          for(let i = 0, len = cssProperties.length; i < len; i++) {
             iframeContainerDiv.style[cssProperties[i][0]] = cssProperties[i][1];
           }
 
-          let iframeSrc = useDocumentWrite
-            ? ''
-            : " src='" + getConsoleUrl() + "'";
+          let iframeSrc = useDocumentWrite ? '' : " src='" + getConsoleUrl() + "'";
 
           //Adding an iframe using the DOM would be preferable, but it doesn't work
           //in IE5 on Windows, or in Konqueror prior to version 3.5 - in Konqueror
@@ -5553,30 +5286,25 @@
           consoleClosed = false;
 
           //Write the console HTML to the iframe
-          let iframeDocumentExistsTest = function (win) {
+          let iframeDocumentExistsTest = function(win) {
             try {
               return bool(win) && bool(win.document);
-            } catch (ex) {
+            } catch(ex) {
               return false;
             }
           };
-          if (iframeDocumentExistsTest(getConsoleWindow())) {
+          if(iframeDocumentExistsTest(getConsoleWindow())) {
             writeToDocument();
           } else {
-            pollConsoleWindow(
-              iframeDocumentExistsTest,
-              100,
-              writeToDocument,
-              initErrorMessage
-            );
+            pollConsoleWindow(iframeDocumentExistsTest, 100, writeToDocument, initErrorMessage);
           }
           consoleWindowCreated = true;
         };
 
-        createWindow = function (show) {
-          if (show || !initiallyMinimized) {
-            let pageLoadHandler = function () {
-              if (!container) {
+        createWindow = function(show) {
+          if(show || !initiallyMinimized) {
+            let pageLoadHandler = function() {
+              if(!container) {
                 //Set up default container element
                 containerElement = document.createElement('div');
                 containerElement.style.position = 'fixed';
@@ -5590,26 +5318,21 @@
               } else {
                 try {
                   let el = document.getElementById(container);
-                  if (el.nodeType == 1) {
+                  if(el.nodeType == 1) {
                     containerElement = el;
                   }
                   open();
-                } catch (ex) {
-                  handleError(
-                    "InPageAppender.init: invalid container element '" +
-                      container +
-                      "' supplied",
-                    ex
-                  );
+                } catch(ex) {
+                  handleError("InPageAppender.init: invalid container element '" + container + "' supplied", ex);
                 }
               }
             };
 
             //Test the type of the container supplied. First, check if it's an element
-            if (pageLoaded && container && container.appendChild) {
+            if(pageLoaded && container && container.appendChild) {
               containerElement = container;
               open();
-            } else if (pageLoaded) {
+            } else if(pageLoaded) {
               pageLoadHandler();
             } else {
               log4javascript.addEventListener('load', pageLoadHandler);
@@ -5618,26 +5341,21 @@
           }
         };
 
-        init = function () {
+        init = function() {
           createWindow();
           initialized = true;
         };
 
-        getConsoleWindow = function () {
+        getConsoleWindow = function() {
           let iframe = window.frames[iframeId];
-          if (iframe) {
+          if(iframe) {
             return iframe;
           }
         };
 
-        safeToAppend = function () {
-          if (isSupported && !consoleClosed) {
-            if (
-              consoleWindowCreated &&
-              !consoleWindowLoaded &&
-              getConsoleWindow() &&
-              isLoaded(getConsoleWindow())
-            ) {
+        safeToAppend = function() {
+          if(isSupported && !consoleClosed) {
+            if(consoleWindowCreated && !consoleWindowLoaded && getConsoleWindow() && isLoaded(getConsoleWindow())) {
               consoleWindowLoaded = true;
             }
             return consoleWindowLoaded;
@@ -5649,73 +5367,70 @@
 
         //Extract params
         let useOldPopUp = appender.defaults.useOldPopUp;
-        let complainAboutPopUpBlocking =
-          appender.defaults.complainAboutPopUpBlocking;
+        let complainAboutPopUpBlocking = appender.defaults.complainAboutPopUpBlocking;
         var reopenWhenClosed = this.defaults.reopenWhenClosed;
 
         //Configuration methods. The function scope is used to prevent
         //direct alteration to the appender configuration properties.
-        this.isUseOldPopUp = function () {
+        this.isUseOldPopUp = function() {
           return useOldPopUp;
         };
-        this.setUseOldPopUp = function (useOldPopUpParam) {
-          if (checkCanConfigure('useOldPopUp')) {
+        this.setUseOldPopUp = function(useOldPopUpParam) {
+          if(checkCanConfigure('useOldPopUp')) {
             useOldPopUp = bool(useOldPopUpParam);
           }
         };
 
-        this.isComplainAboutPopUpBlocking = function () {
+        this.isComplainAboutPopUpBlocking = function() {
           return complainAboutPopUpBlocking;
         };
-        this.setComplainAboutPopUpBlocking = function (
-          complainAboutPopUpBlockingParam
-        ) {
-          if (checkCanConfigure('complainAboutPopUpBlocking')) {
+        this.setComplainAboutPopUpBlocking = function(complainAboutPopUpBlockingParam) {
+          if(checkCanConfigure('complainAboutPopUpBlocking')) {
             complainAboutPopUpBlocking = bool(complainAboutPopUpBlockingParam);
           }
         };
 
-        this.isFocusPopUp = function () {
+        this.isFocusPopUp = function() {
           return focusConsoleWindow;
         };
-        this.setFocusPopUp = function (focusPopUpParam) {
+        this.setFocusPopUp = function(focusPopUpParam) {
           //This property can be safely altered after logging has started
           focusConsoleWindow = bool(focusPopUpParam);
         };
 
-        this.isReopenWhenClosed = function () {
+        this.isReopenWhenClosed = function() {
           return reopenWhenClosed;
         };
-        this.setReopenWhenClosed = function (reopenWhenClosedParam) {
+        this.setReopenWhenClosed = function(reopenWhenClosedParam) {
           //This property can be safely altered after logging has started
           reopenWhenClosed = bool(reopenWhenClosedParam);
         };
 
-        this.close = function () {
+        this.close = function() {
           logLog.debug('close ' + this);
           try {
             popUp.close();
             this.unload();
-          } catch (ex) {
+          } catch(ex) {
             //Do nothing
           }
         };
 
-        this.hide = function () {
+        this.hide = function() {
           logLog.debug('hide ' + this);
-          if (consoleWindowExists()) {
+          if(consoleWindowExists()) {
             this.close();
           }
         };
 
-        this.show = function () {
+        this.show = function() {
           logLog.debug('show ' + this);
-          if (!consoleWindowCreated) {
+          if(!consoleWindowCreated) {
             open();
           }
         };
 
-        this.isVisible = function () {
+        this.isVisible = function() {
           return safeToAppend();
         };
 
@@ -5723,59 +5438,46 @@
         let popUp;
 
         //Create open, init, getConsoleWindow and safeToAppend functions
-        open = function () {
-          let windowProperties =
-            'width=' + width + ',height=' + height + ',status,resizable';
+        open = function() {
+          let windowProperties = 'width=' + width + ',height=' + height + ',status,resizable';
           let frameInfo = '';
           try {
             let frameEl = window.frameElement;
-            if (frameEl) {
-              frameInfo =
-                '_' +
-                frameEl.tagName +
-                '_' +
-                (frameEl.name || frameEl.id || '');
+            if(frameEl) {
+              frameInfo = '_' + frameEl.tagName + '_' + (frameEl.name || frameEl.id || '');
             }
-          } catch (e) {
+          } catch(e) {
             frameInfo = '_inaccessibleParentFrame';
           }
-          let windowName =
-            'PopUp_' +
-            location.host.replace(/[^a-z0-9]/gi, '_') +
-            '_' +
-            consoleAppenderId +
-            frameInfo;
-          if (!useOldPopUp || !useDocumentWrite) {
+          let windowName = 'PopUp_' + location.host.replace(/[^a-z0-9]/gi, '_') + '_' + consoleAppenderId + frameInfo;
+          if(!useOldPopUp || !useDocumentWrite) {
             //Ensure a previous window isn't used by using a unique name
             windowName = windowName + '_' + uniqueId;
           }
 
-          let checkPopUpClosed = function (win) {
-            if (consoleClosed) {
+          let checkPopUpClosed = function(win) {
+            if(consoleClosed) {
               return true;
             }
             try {
               return bool(win) && win.closed;
-            } catch (ex) {}
+            } catch(ex) {}
 
             return false;
           };
 
-          let popUpClosedCallback = function () {
-            if (!consoleClosed) {
+          let popUpClosedCallback = function() {
+            if(!consoleClosed) {
               appender.unload();
             }
           };
 
           function finalInit() {
-            getConsoleWindow().setCloseIfOpenerCloses(
-              !useOldPopUp || !useDocumentWrite
-            );
+            getConsoleWindow().setCloseIfOpenerCloses(!useOldPopUp || !useDocumentWrite);
             consoleWindowLoadHandler();
             consoleWindowLoaded = true;
             appendQueuedLoggingEvents();
-            pollConsoleWindow(
-              checkPopUpClosed,
+            pollConsoleWindow(checkPopUpClosed,
               500,
               popUpClosedCallback,
               'PopUpAppender.checkPopUpClosed: error checking pop-up window'
@@ -5786,23 +5488,22 @@
             popUp = window.open(getConsoleUrl(), windowName, windowProperties);
             consoleClosed = false;
             consoleWindowCreated = true;
-            if (popUp && popUp.document) {
-              if (useDocumentWrite && useOldPopUp && isLoaded(popUp)) {
+            if(popUp && popUp.document) {
+              if(useDocumentWrite && useOldPopUp && isLoaded(popUp)) {
                 popUp.mainPageReloaded();
                 finalInit();
               } else {
-                if (useDocumentWrite) {
+                if(useDocumentWrite) {
                   writeHtml(popUp.document);
                 }
                 //Check if the pop-up window object is available
-                let popUpLoadedTest = function (win) {
+                let popUpLoadedTest = function(win) {
                   return bool(win) && isLoaded(win);
                 };
-                if (isLoaded(popUp)) {
+                if(isLoaded(popUp)) {
                   finalInit();
                 } else {
-                  pollConsoleWindow(
-                    popUpLoadedTest,
+                  pollConsoleWindow(popUpLoadedTest,
                     100,
                     finalInit,
                     'PopUpAppender.init: unable to create console window'
@@ -5811,47 +5512,41 @@
               }
             } else {
               isSupported = false;
-              logLog.warn(
-                'PopUpAppender.init: pop-ups blocked, please unblock to use PopUpAppender'
-              );
-              if (complainAboutPopUpBlocking) {
-                handleError(
-                  'log4javascript: pop-up windows appear to be blocked. Please unblock them to use pop-up logging.'
+              logLog.warn('PopUpAppender.init: pop-ups blocked, please unblock to use PopUpAppender');
+              if(complainAboutPopUpBlocking) {
+                handleError('log4javascript: pop-up windows appear to be blocked. Please unblock them to use pop-up logging.'
                 );
               }
             }
-          } catch (ex) {
+          } catch(ex) {
             handleError('PopUpAppender.init: error creating pop-up', ex);
           }
         };
 
-        createWindow = function () {
-          if (!initiallyMinimized) {
+        createWindow = function() {
+          if(!initiallyMinimized) {
             open();
           }
         };
 
-        init = function () {
+        init = function() {
           createWindow();
           initialized = true;
         };
 
-        getConsoleWindow = function () {
+        getConsoleWindow = function() {
           return popUp;
         };
 
-        safeToAppend = function () {
-          if (isSupported && !isUndefined(popUp) && !consoleClosed) {
-            if (
-              popUp.closed ||
-              (consoleWindowLoaded && isUndefined(popUp.closed))
-            ) {
+        safeToAppend = function() {
+          if(isSupported && !isUndefined(popUp) && !consoleClosed) {
+            if(popUp.closed || (consoleWindowLoaded && isUndefined(popUp.closed))) {
               //Extra check for Opera
               appender.unload();
               logLog.debug('PopUpAppender: pop-up closed');
               return false;
             }
-            if (!consoleWindowLoaded && isLoaded(popUp)) {
+            if(!consoleWindowLoaded && isLoaded(popUp)) {
               consoleWindowLoaded = true;
             }
           }
@@ -5863,32 +5558,14 @@
       this.getConsoleWindow = getConsoleWindow;
     };
 
-    ConsoleAppender.addGlobalCommandLineFunction = function (
-      functionName,
-      commandLineFunction
-    ) {
+    ConsoleAppender.addGlobalCommandLineFunction = function(functionName, commandLineFunction) {
       defaultCommandLineFunctions.push([functionName, commandLineFunction]);
     };
 
     /* ------------------------------------------------------------------ */
 
-    function PopUpAppender(
-      lazyInit,
-      initiallyMinimized,
-      useDocumentWrite,
-      width,
-      height
-    ) {
-      this.create(
-        false,
-        null,
-        lazyInit,
-        initiallyMinimized,
-        useDocumentWrite,
-        width,
-        height,
-        this.defaults.focusPopUp
-      );
+    function PopUpAppender(lazyInit, initiallyMinimized, useDocumentWrite, width, height) {
+      this.create(false, null, lazyInit, initiallyMinimized, useDocumentWrite, width, height, this.defaults.focusPopUp);
     }
 
     PopUpAppender.prototype = new ConsoleAppender();
@@ -5913,7 +5590,7 @@
       useDocumentWrite: true
     };
 
-    PopUpAppender.prototype.toString = function () {
+    PopUpAppender.prototype.toString = function() {
       return 'PopUpAppender';
     };
 
@@ -5921,24 +5598,8 @@
 
     /* ------------------------------------------------------------------ */
 
-    function InPageAppender(
-      container,
-      lazyInit,
-      initiallyMinimized,
-      useDocumentWrite,
-      width,
-      height
-    ) {
-      this.create(
-        true,
-        container,
-        lazyInit,
-        initiallyMinimized,
-        useDocumentWrite,
-        width,
-        height,
-        false
-      );
+    function InPageAppender(container, lazyInit, initiallyMinimized, useDocumentWrite, width, height) {
+      this.create(true, container, lazyInit, initiallyMinimized, useDocumentWrite, width, height, false);
     }
 
     InPageAppender.prototype = new ConsoleAppender();
@@ -5960,7 +5621,7 @@
       useDocumentWrite: true
     };
 
-    InPageAppender.prototype.toString = function () {
+    InPageAppender.prototype.toString = function() {
       return 'InPageAppender';
     };
 
@@ -5974,10 +5635,10 @@
   //Console extension functions
 
   function padWithSpaces(str, len) {
-    if (str.length < len) {
+    if(str.length < len) {
       let spaces = [];
       let numberOfSpaces = Math.max(0, len - str.length);
-      for (let i = 0; i < numberOfSpaces; i++) {
+      for(let i = 0; i < numberOfSpaces; i++) {
         spaces[i] = ' ';
       }
       str += spaces.join('');
@@ -5989,23 +5650,18 @@
     function dir(obj) {
       let maxLen = 0;
       //Obtain the length of the longest property name
-      for (var p in obj) {
+      for(var p in obj) {
         maxLen = Math.max(toStr(p).length, maxLen);
       }
       //Create the nicely formatted property list
       let propList = [];
-      for (p in obj) {
+      for(p in obj) {
         let propNameStr = '  ' + padWithSpaces(toStr(p), maxLen + 2);
         var propVal;
         try {
-          propVal = splitIntoLines(toStr(obj[p])).join(
-            padWithSpaces(newLine, maxLen + 6)
-          );
-        } catch (ex) {
-          propVal =
-            '[Error obtaining property. Details: ' +
-            getExceptionMessage(ex) +
-            ']';
+          propVal = splitIntoLines(toStr(obj[p])).join(padWithSpaces(newLine, maxLen + 6));
+        } catch(ex) {
+          propVal = '[Error obtaining property. Details: ' + getExceptionMessage(ex) + ']';
         }
         propList.push(propNameStr + propVal);
       }
@@ -6030,31 +5686,13 @@
     let preFormattedElements = ['script', 'pre'];
 
     //This should be the definitive list, as specified by the XHTML 1.0 Transitional DTD
-    let emptyElements = [
-      'br',
-      'img',
-      'hr',
-      'param',
-      'link',
-      'area',
-      'input',
-      'col',
-      'base',
-      'meta'
-    ];
+    let emptyElements = ['br', 'img', 'hr', 'param', 'link', 'area', 'input', 'col', 'base', 'meta'];
     let indentationUnit = '  ';
 
     //Create and return an XHTML string from the node specified
-    function getXhtml(
-      rootNode,
-      includeRootNode,
-      indentation,
-      startNewLine,
-      preformatted
-    ) {
-      includeRootNode =
-        typeof includeRootNode == 'undefined' ? true : !!includeRootNode;
-      if (typeof indentation != 'string') {
+    function getXhtml(rootNode, includeRootNode, indentation, startNewLine, preformatted) {
+      includeRootNode = typeof includeRootNode == 'undefined' ? true : !!includeRootNode;
+      if(typeof indentation != 'string') {
         indentation = '';
       }
       startNewLine = !!startNewLine;
@@ -6062,32 +5700,21 @@
       let xhtml;
 
       function isWhitespace(node) {
-        return (
-          node.nodeType == nodeTypes.TEXT_NODE &&
-          /^[ \t\r\n]*$/.test(node.nodeValue)
-        );
+        return node.nodeType == nodeTypes.TEXT_NODE && /^[ \t\r\n]*$/.test(node.nodeValue);
       }
 
       function fixAttributeValue(attrValue) {
-        return attrValue
-          .toString()
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/"/g, '&quot;');
+        return attrValue.toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
       }
 
       function getStyleAttributeValue(el) {
         let stylePairs = el.style.cssText.split(';');
         let styleValue = '';
-        for (let j = 0, len = stylePairs.length; j < len; j++) {
+        for(let j = 0, len = stylePairs.length; j < len; j++) {
           let nameValueBits = stylePairs[j].split(':');
           let props = [];
-          if (!/^\s*$/.test(nameValueBits[0])) {
-            props.push(
-              trim(nameValueBits[0]).toLowerCase() +
-                ':' +
-                trim(nameValueBits[1])
-            );
+          if(!/^\s*$/.test(nameValueBits[0])) {
+            props.push(trim(nameValueBits[0]).toLowerCase() + ':' + trim(nameValueBits[1]));
           }
           styleValue = props.join(';');
         }
@@ -6095,11 +5722,11 @@
       }
 
       function getNamespace(el) {
-        if (el.prefix) {
+        if(el.prefix) {
           return el.prefix;
-        } else if (el.outerHTML) {
+        } else if(el.outerHTML) {
           let regex = new RegExp('<([^:]+):' + el.tagName + '[^>]*>', 'i');
-          if (regex.test(el.outerHTML)) {
+          if(regex.test(el.outerHTML)) {
             return RegExp.$1.toLowerCase();
           }
         }
@@ -6110,10 +5737,7 @@
       let gt = '>';
       let i, len;
 
-      if (
-        includeRootNode &&
-        rootNode.nodeType != nodeTypes.DOCUMENT_FRAGMENT_NODE
-      ) {
+      if(includeRootNode && rootNode.nodeType != nodeTypes.DOCUMENT_FRAGMENT_NODE) {
         switch (rootNode.nodeType) {
           case nodeTypes.ELEMENT_NODE:
             var tagName = rootNode.tagName.toLowerCase();
@@ -6122,15 +5746,14 @@
             //Allow for namespaces, where present
             var prefix = getNamespace(rootNode);
             var hasPrefix = !!prefix;
-            if (hasPrefix) {
+            if(hasPrefix) {
               xhtml += prefix + ':';
             }
             xhtml += tagName;
-            for (i = 0, len = rootNode.attributes.length; i < len; i++) {
+            for(i = 0, len = rootNode.attributes.length; i < len; i++) {
               let currentAttr = rootNode.attributes[i];
               //Check the attribute is valid.
-              if (
-                !currentAttr.specified ||
+              if(!currentAttr.specified ||
                 currentAttr.nodeValue === null ||
                 currentAttr.nodeName.toLowerCase() === 'style' ||
                 typeof currentAttr.nodeValue !== 'string' ||
@@ -6144,31 +5767,22 @@
             }
             //Style needs to be done separately as it is not reported as an
             //attribute in IE
-            if (rootNode.style.cssText) {
+            if(rootNode.style.cssText) {
               let styleValue = getStyleAttributeValue(rootNode);
-              if (styleValue !== '') {
+              if(styleValue !== '') {
                 xhtml += ' style="' + getStyleAttributeValue(rootNode) + '"';
               }
             }
-            if (
-              array_contains(emptyElements, tagName) ||
-              (hasPrefix && !rootNode.hasChildNodes())
-            ) {
+            if(array_contains(emptyElements, tagName) || (hasPrefix && !rootNode.hasChildNodes())) {
               xhtml += '/' + gt;
             } else {
               xhtml += gt;
               //Add output for childNodes collection (which doesn't include attribute nodes)
-              let childStartNewLine = !(
-                rootNode.childNodes.length === 1 &&
-                rootNode.childNodes[0].nodeType === nodeTypes.TEXT_NODE
+              let childStartNewLine = !(rootNode.childNodes.length === 1 && rootNode.childNodes[0].nodeType === nodeTypes.TEXT_NODE
               );
-              let childPreformatted = array_contains(
-                preFormattedElements,
-                tagName
-              );
-              for (i = 0, len = rootNode.childNodes.length; i < len; i++) {
-                xhtml += getXhtml(
-                  rootNode.childNodes[i],
+              let childPreformatted = array_contains(preFormattedElements, tagName);
+              for(i = 0, len = rootNode.childNodes.length; i < len; i++) {
+                xhtml += getXhtml(rootNode.childNodes[i],
                   true,
                   indentation + indentationUnit,
                   childStartNewLine,
@@ -6177,27 +5791,25 @@
               }
               //Add the end tag
               let endTag = lt + '/' + tagName + gt;
-              xhtml += childStartNewLine
-                ? newLine + indentation + endTag
-                : endTag;
+              xhtml += childStartNewLine ? newLine + indentation + endTag : endTag;
             }
             return xhtml;
           case nodeTypes.TEXT_NODE:
-            if (isWhitespace(rootNode)) {
+            if(isWhitespace(rootNode)) {
               xhtml = '';
             } else {
-              if (preformatted) {
+              if(preformatted) {
                 xhtml = rootNode.nodeValue;
               } else {
                 //Trim whitespace from each line of the text node
                 let lines = splitIntoLines(trim(rootNode.nodeValue));
                 let trimmedLines = [];
-                for (i = 0, len = lines.length; i < len; i++) {
+                for(i = 0, len = lines.length; i < len; i++) {
                   trimmedLines[i] = trim(lines[i]);
                 }
                 xhtml = trimmedLines.join(newLine + indentation);
               }
-              if (startNewLine) {
+              if(startNewLine) {
                 xhtml = newLine + indentation + xhtml;
               }
             }
@@ -6207,132 +5819,100 @@
           case nodeTypes.DOCUMENT_NODE:
             xhtml = '';
             //Add output for childNodes collection (which doesn't include attribute nodes)
-            for (i = 0, len = rootNode.childNodes.length; i < len; i++) {
+            for(i = 0, len = rootNode.childNodes.length; i < len; i++) {
               xhtml += getXhtml(rootNode.childNodes[i], true, indentation);
             }
             return xhtml;
-          default:
-            return '';
+          default: return '';
         }
       } else {
         xhtml = '';
         //Add output for childNodes collection (which doesn't include attribute nodes)
-        for (i = 0, len = rootNode.childNodes.length; i < len; i++) {
-          xhtml += getXhtml(
-            rootNode.childNodes[i],
-            true,
-            indentation + indentationUnit
-          );
+        for(i = 0, len = rootNode.childNodes.length; i < len; i++) {
+          xhtml += getXhtml(rootNode.childNodes[i], true, indentation + indentationUnit);
         }
         return xhtml;
       }
     }
 
     function createCommandLineFunctions() {
-      ConsoleAppender.addGlobalCommandLineFunction(
-        '$',
-        (appender, args, returnValue) => document.getElementById(args[0])
+      ConsoleAppender.addGlobalCommandLineFunction('$', (appender, args, returnValue) =>
+        document.getElementById(args[0])
       );
 
-      ConsoleAppender.addGlobalCommandLineFunction(
-        'dir',
-        (appender, args, returnValue) => {
-          let lines = [];
-          for (let i = 0, len = args.length; i < len; i++) {
-            lines[i] = dir(args[i]);
-          }
-          return lines.join(newLine + newLine);
+      ConsoleAppender.addGlobalCommandLineFunction('dir', (appender, args, returnValue) => {
+        let lines = [];
+        for(let i = 0, len = args.length; i < len; i++) {
+          lines[i] = dir(args[i]);
         }
-      );
+        return lines.join(newLine + newLine);
+      });
 
-      ConsoleAppender.addGlobalCommandLineFunction(
-        'dirxml',
-        (appender, args, returnValue) => {
-          let lines = [];
-          for (let i = 0, len = args.length; i < len; i++) {
-            lines[i] = getXhtml(args[i]);
-          }
-          return lines.join(newLine + newLine);
+      ConsoleAppender.addGlobalCommandLineFunction('dirxml', (appender, args, returnValue) => {
+        let lines = [];
+        for(let i = 0, len = args.length; i < len; i++) {
+          lines[i] = getXhtml(args[i]);
         }
-      );
+        return lines.join(newLine + newLine);
+      });
 
-      ConsoleAppender.addGlobalCommandLineFunction(
-        'cd',
-        (appender, args, returnValue) => {
-          let win, message;
-          if (args.length === 0 || args[0] === '') {
-            win = window;
-            message = 'Command line set to run in main window';
-          } else if (args[0].window == args[0]) {
-            win = args[0];
-            message = "Command line set to run in frame '" + args[0].name + "'";
+      ConsoleAppender.addGlobalCommandLineFunction('cd', (appender, args, returnValue) => {
+        let win, message;
+        if(args.length === 0 || args[0] === '') {
+          win = window;
+          message = 'Command line set to run in main window';
+        } else if(args[0].window == args[0]) {
+          win = args[0];
+          message = "Command line set to run in frame '" + args[0].name + "'";
+        } else {
+          win = window.frames[args[0]];
+          if(win) {
+            message = "Command line set to run in frame '" + args[0] + "'";
           } else {
-            win = window.frames[args[0]];
-            if (win) {
-              message = "Command line set to run in frame '" + args[0] + "'";
-            } else {
-              returnValue.isError = true;
-              message = "Frame '" + args[0] + "' does not exist";
-              win = appender.getCommandWindow();
-            }
-          }
-          appender.setCommandWindow(win);
-          return message;
-        }
-      );
-
-      ConsoleAppender.addGlobalCommandLineFunction(
-        'clear',
-        (appender, args, returnValue) => {
-          returnValue.appendResult = false;
-          appender.clear();
-        }
-      );
-
-      ConsoleAppender.addGlobalCommandLineFunction(
-        'keys',
-        (appender, args, returnValue) => {
-          let keys = [];
-          for (let k in args[0]) {
-            keys.push(k);
-          }
-          return keys;
-        }
-      );
-
-      ConsoleAppender.addGlobalCommandLineFunction(
-        'values',
-        (appender, args, returnValue) => {
-          let values = [];
-          for (let k in args[0]) {
-            try {
-              values.push(args[0][k]);
-            } catch (ex) {
-              logLog.warn(
-                'values(): Unable to obtain value for key ' +
-                  k +
-                  '. Details: ' +
-                  getExceptionMessage(ex)
-              );
-            }
-          }
-          return values;
-        }
-      );
-
-      ConsoleAppender.addGlobalCommandLineFunction(
-        'expansionDepth',
-        (appender, args, returnValue) => {
-          let expansionDepth = parseInt(args[0], 10);
-          if (isNaN(expansionDepth) || expansionDepth < 0) {
             returnValue.isError = true;
-            return '' + args[0] + ' is not a valid expansion depth';
+            message = "Frame '" + args[0] + "' does not exist";
+            win = appender.getCommandWindow();
           }
-
-          appender.setCommandLineObjectExpansionDepth(expansionDepth);
-          return 'Object expansion depth set to ' + expansionDepth;
         }
-      );
+        appender.setCommandWindow(win);
+        return message;
+      });
+
+      ConsoleAppender.addGlobalCommandLineFunction('clear', (appender, args, returnValue) => {
+        returnValue.appendResult = false;
+        appender.clear();
+      });
+
+      ConsoleAppender.addGlobalCommandLineFunction('keys', (appender, args, returnValue) => {
+        let keys = [];
+        for(let k in args[0]) {
+          keys.push(k);
+        }
+        return keys;
+      });
+
+      ConsoleAppender.addGlobalCommandLineFunction('values', (appender, args, returnValue) => {
+        let values = [];
+        for(let k in args[0]) {
+          try {
+            values.push(args[0][k]);
+          } catch(ex) {
+            logLog.warn('values(): Unable to obtain value for key ' + k + '. Details: ' + getExceptionMessage(ex));
+          }
+        }
+        return values;
+      });
+
+      ConsoleAppender.addGlobalCommandLineFunction('expansionDepth', (appender, args, returnValue) => {
+        let expansionDepth = parseInt(args[0], 10);
+        if(isNaN(expansionDepth) || expansionDepth < 0) {
+          returnValue.isError = true;
+          return '' + args[0] + ' is not a valid expansion depth';
+        }
+
+        appender.setCommandLineObjectExpansionDepth(expansionDepth);
+        return 'Object expansion depth set to ' + expansionDepth;
+      });
     }
 
     function init() {
@@ -6357,22 +5937,22 @@
   /* ---------------------------------------------------------------------- */
   //Main load
 
-  log4javascript.setDocumentReady = function () {
+  log4javascript.setDocumentReady = function() {
     pageLoaded = true;
     log4javascript.dispatchEvent('load', {});
   };
 
-  if (window.addEventListener) {
+  if(window.addEventListener) {
     window.addEventListener('load', log4javascript.setDocumentReady, false);
-  } else if (window.attachEvent) {
+  } else if(window.attachEvent) {
     window.attachEvent('onload', log4javascript.setDocumentReady);
   } else {
     let oldOnload = window.onload;
-    if (typeof window.onload != 'function') {
+    if(typeof window.onload != 'function') {
       window.onload = log4javascript.setDocumentReady;
     } else {
-      window.onload = function (evt) {
-        if (oldOnload) {
+      window.onload = function(evt) {
+        if(oldOnload) {
           oldOnload(evt);
         }
         log4javascript.setDocumentReady();

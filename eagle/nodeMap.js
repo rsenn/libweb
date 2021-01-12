@@ -17,9 +17,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
 */
   static makePredicate(name, key) {
     const a = Util.isArray(key) ? key : [key];
-    return key == 'tagName'
-      ? item => item.tagName == name
-      : item => a.some(key => item.attributes[key] == name);
+    return key == 'tagName' ? item => item.tagName == name : item => a.some(key => item.attributes[key] == name);
   }
 
   item(pos) {
@@ -100,8 +98,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
         //        if((index = [...instance.keys()].indexOf(prop)) != -1) return instance.list[index];
         if(typeof instance[prop] == 'function') return instance[prop] /*.bind(instance)*/;
 
-        if(typeof instance.list[prop] == 'function')
-          return instance.list[prop].bind(instance.list);
+        if(typeof instance.list[prop] == 'function') return instance.list[prop].bind(instance.list);
 
         return Reflect.get(target, prop, receiver);
       },

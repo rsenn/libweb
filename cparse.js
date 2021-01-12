@@ -83,24 +83,8 @@ const stringEscapes = {
   '?': '?'
 };
 
-const defaultTypeNames = [
-  'void',
-  'char',
-  'short',
-  'int',
-  'long',
-  'float',
-  'double'
-];
-const defaultTypeModifier = [
-  'signed',
-  'unsigned',
-  'short',
-  'long',
-  'const',
-  'struct',
-  'enum'
-];
+const defaultTypeNames = ['void', 'char', 'short', 'int', 'long', 'float', 'double'];
+const defaultTypeModifier = ['signed', 'unsigned', 'short', 'long', 'const', 'struct', 'enum'];
 
 export function cparse(src, options) {
   var curr;
@@ -128,17 +112,17 @@ export function cparse(src, options) {
   function parseRoot() {
     var stmts = [];
 
-    while (curr) {
+    while(curr) {
       var pos = getPos();
 
       skipBlanks();
-      if (lookahead('struct')) {
+      if(lookahead('struct')) {
         var stmt = { type: 'StructDefinition', member: [], pos: pos };
         stmt.name = readIdentifier();
 
         consume('{');
 
-        while (definitionIncoming()) {
+        while(definitionIncoming()) {
           var def = readDefinition();
           stmt.member.push(def);
           consume(';');
@@ -149,16 +133,16 @@ export function cparse(src, options) {
         typeNames.push(stmt.name);
         sortTypeStrings();
         stmts.push(stmt);
-      } else if (lookahead('enum')) {
+      } else if(lookahead('enum')) {
         var stmt = { type: 'EnumDefinition', member: [], pos: pos };
         stmt.name = readIdentifier();
 
         consume('{');
 
-        while (identifierIncoming()) {
+        while(identifierIncoming()) {
           stmt.member.push(readIdentifier());
 
-          if (!lookahead(',')) break;
+          if(!lookahead(',')) break;
         }
 
         consume('}');
@@ -166,7 +150,7 @@ export function cparse(src, options) {
         typeNames.push(stmt.name);
         sortTypeStrings();
         stmts.push(stmt);
-      } else if (lookahead('typedef')) {
+      } else if(lookahead('typedef')) {
         var def = readDefinition();
         def.type = 'TypeDefStatement';
         def.pos = pos;
@@ -176,15 +160,15 @@ export function cparse(src, options) {
         consume(';');
 
         stmts.push(def);
-      } else if (definitionIncoming()) {
+      } else if(definitionIncoming()) {
         var def = readDefinition();
         def.pos = pos;
 
-        if (lookahead('(')) {
+        if(lookahead('(')) {
           //function definition
           def.arguments = parseArgumentDefinition();
 
-          if (lookahead(';')) {
+          if(lookahead(';')) {
             def.type = 'FunctionDefinition';
           } else {
             def.type = 'FunctionDeclaration';
@@ -193,16 +177,14 @@ export function cparse(src, options) {
           stmts.push(def);
         } // global variable definition
         else {
-          if (lookahead('=')) def.value = parseExpression(';');
+          if(lookahead('=')) def.value = parseExpression(';');
           else consume(';');
 
           def.type = 'GlobalVariableDeclaration';
           stmts.push(def);
         }
       } else {
-        unexpected(
-          'struct, enum, typdef, extern, FunctionDeclaration or VariableDeclaration'
-        );
+        unexpected('struct, enum, typdef, extern, FunctionDeclaration or VariableDeclaration');
       }
     }
 
@@ -211,10 +193,10 @@ export function cparse(src, options) {
 
   function parseArgumentDefinition() {
     var args = [];
-    while (definitionIncoming()) {
+    while(definitionIncoming()) {
       args.push(readDefinition());
 
-      if (lookahead(')')) return args;
+      if(lookahead(')')) return args;
       consume(',');
     }
     consume(')');
@@ -225,7 +207,7 @@ export function cparse(src, options) {
     var stmts = [];
     consume('{');
 
-    while (!(curr == '}' || !curr)) {
+    while(!(curr == '}' || !curr)) {
       var pos = getPos();
       var stmt = parseStatement();
       stmts.push(stmt);
@@ -237,22 +219,22 @@ export function cparse(src, options) {
 
   function parseStatement() {
     var pos = getPos();
-    if (lookahead('return')) {
+    if(lookahead('return')) {
       return {
         type: 'ReturnStatement',
         value: parseExpression(';'),
         pos: pos
       };
-    } else if (lookahead('if')) {
+    } else if(lookahead('if')) {
       consume('(');
       var stmt = { type: 'IfStatement', pos: pos };
       stmt.condition = parseExpression(')');
       stmt.body = parseBody();
 
-      if (lookahead('else')) stmt.else = parseBody();
+      if(lookahead('else')) stmt.else = parseBody();
 
       return stmt;
-    } else if (lookahead('while')) {
+    } else if(lookahead('while')) {
       consume('(');
       return {
         type: 'WhileStatement',
@@ -260,7 +242,7 @@ export function cparse(src, options) {
         body: parseBody(),
         pos: pos
       };
-    } else if (lookahead('do')) {
+    } else if(lookahead('do')) {
       var stmt = { type: 'DoWhileStatement', pos: pos };
       stmt.body = parseBody();
       consume('while');
@@ -269,7 +251,7 @@ export function cparse(src, options) {
       consume(';');
 
       return stmt;
-    } else if (lookahead('for')) {
+    } else if(lookahead('for')) {
       var stmt = { type: 'ForStatement', pos: pos };
 
       consume('(');
@@ -279,9 +261,9 @@ export function cparse(src, options) {
       stmt.body = parseBody();
 
       return stmt;
-    } else if (definitionIncoming()) {
+    } else if(definitionIncoming()) {
       var def = readDefinition();
-      if (lookahead('=')) def.value = parseExpression(';');
+      if(lookahead('=')) def.value = parseExpression(';');
       else consume(';');
 
       def.type = 'VariableDeclaration';
@@ -298,14 +280,14 @@ export function cparse(src, options) {
 
   function parseExpression(end) {
     var expr = parseBinary(parseUnary(), 0);
-    if (end) consume(end);
+    if(end) consume(end);
     return expr;
   }
 
   function peekBinaryOp() {
     var _index = index;
-    for (var i = 0; i < sortedOps.length; i++) {
-      if (lookahead(sortedOps[i])) {
+    for(var i = 0; i < sortedOps.length; i++) {
+      if(lookahead(sortedOps[i])) {
         index = _index;
         curr = src[index];
         return sortedOps[i];
@@ -315,14 +297,14 @@ export function cparse(src, options) {
 
   function parseBinary(left, minPrec) {
     var ahead = peekBinaryOp();
-    while (ahead && ops[ahead] >= minPrec) {
+    while(ahead && ops[ahead] >= minPrec) {
       var op = ahead;
       var pos = getPos();
       consume(op);
       var right = parseUnary();
       ahead = peekBinaryOp();
 
-      while (ahead && ops[ahead] > ops[op]) {
+      while(ahead && ops[ahead] > ops[op]) {
         right = parseBinary(right, ops[ahead]);
         ahead = peekBinaryOp();
       }
@@ -342,8 +324,8 @@ export function cparse(src, options) {
     var expr;
     var pos = getPos();
 
-    for (var op in prefixedOps) {
-      if (lookahead(op)) {
+    for(var op in prefixedOps) {
+      if(lookahead(op)) {
         return {
           type: 'PrefixExpression',
           operator: op,
@@ -353,8 +335,8 @@ export function cparse(src, options) {
       }
     }
 
-    if (lookahead('(')) {
-      if (definitionIncoming()) {
+    if(lookahead('(')) {
+      if(definitionIncoming()) {
         expr = {
           type: 'CastExpression',
           targetType: readDefinition(true)
@@ -364,13 +346,13 @@ export function cparse(src, options) {
       } else {
         expr = parseExpression(')');
       }
-    } else if (lookahead('{')) {
+    } else if(lookahead('{')) {
       var entries = [];
 
-      while (curr) {
+      while(curr) {
         entries.push(parseExpression());
 
-        if (!lookahead(',')) break;
+        if(!lookahead(',')) break;
       }
       consume('}');
 
@@ -378,9 +360,9 @@ export function cparse(src, options) {
         type: 'Literal',
         value: entries
       };
-    } else if (lookahead("'")) {
+    } else if(lookahead("'")) {
       var val = curr.charCodeAt(0);
-      if (curr == '\\') val = readEscapeSequence().charCodeAt(0);
+      if(curr == '\\') val = readEscapeSequence().charCodeAt(0);
       else next(true, true);
       consume("'");
 
@@ -389,17 +371,17 @@ export function cparse(src, options) {
         source: 'CharCode',
         value: val
       };
-    } else if (stringIncoming()) {
+    } else if(stringIncoming()) {
       expr = {
         type: 'Literal',
         value: readString()
       };
-    } else if (numberIncoming()) {
+    } else if(numberIncoming()) {
       expr = {
         type: 'Literal',
         value: readNumber()
       };
-    } else if (identifierIncoming()) {
+    } else if(identifierIncoming()) {
       var val = readIdentifier();
       expr = {
         type: 'Identifier',
@@ -409,7 +391,7 @@ export function cparse(src, options) {
       return;
     }
 
-    if (lookahead('[')) {
+    if(lookahead('[')) {
       var index = parseExpression();
       consume(']');
 
@@ -418,13 +400,13 @@ export function cparse(src, options) {
         value: expr,
         index: index
       };
-    } else if (lookahead('(')) {
+    } else if(lookahead('(')) {
       var args = [];
 
-      while (curr) {
+      while(curr) {
         args.push(parseExpression());
 
-        if (!lookahead(',')) break;
+        if(!lookahead(',')) break;
       }
       consume(')');
 
@@ -437,8 +419,8 @@ export function cparse(src, options) {
     expr.pos = pos;
 
     var suffixPos = getPos();
-    for (var op in suffixedOps) {
-      if (lookahead(op)) {
+    for(var op in suffixedOps) {
+      if(lookahead(op)) {
         return {
           type: 'SuffixExpression',
           operator: op,
@@ -453,15 +435,15 @@ export function cparse(src, options) {
 
   function definitionIncoming() {
     var _index = index;
-    for (var i = 0; i < typeModifier.length; i++) {
-      if (lookahead(typeModifier[i])) {
+    for(var i = 0; i < typeModifier.length; i++) {
+      if(lookahead(typeModifier[i])) {
         index = _index;
         curr = src[index];
         return true;
       }
     }
-    for (var i = 0; i < typeNames.length; i++) {
-      if (lookahead(typeNames[i])) {
+    for(var i = 0; i < typeNames.length; i++) {
+      if(lookahead(typeNames[i])) {
         index = _index;
         curr = src[index];
         return true;
@@ -479,32 +461,31 @@ export function cparse(src, options) {
 
     do {
       var read = false;
-      for (var i = 0; i < typeModifier.length; i++) {
-        if (lookahead(typeModifier[i])) {
+      for(var i = 0; i < typeModifier.length; i++) {
+        if(lookahead(typeModifier[i])) {
           def.modifier.push(typeModifier[i]);
           read = false;
           break;
         }
       }
-    } while (read);
+    } while(read);
 
     console.log('def.modifier:', def.modifier);
 
-    for (var i = 0; i < typeNames.length; i++) {
-      if (lookahead(typeNames[i])) {
+    for(var i = 0; i < typeNames.length; i++) {
+      if(lookahead(typeNames[i])) {
         def.name = typeNames[i];
         break;
       }
     }
 
-    if (!def.name) {
-      if (typeNames.indexOf(def.modifier[def.modifier.length - 1]) != -1)
-        def.name = def.modifier.pop();
+    if(!def.name) {
+      if(typeNames.indexOf(def.modifier[def.modifier.length - 1]) != -1) def.name = def.modifier.pop();
       else unexpected(typeNames.join(', '));
     }
 
     {
-      while (lookahead('*')) {
+      while(lookahead('*')) {
         //TODO allow 'const' in between
         def = {
           type: 'PointerType',
@@ -513,22 +494,22 @@ export function cparse(src, options) {
         };
       }
 
-      if (!nameless) name = readIdentifier();
+      if(!nameless) name = readIdentifier();
 
-      while (lookahead('[')) {
+      while(lookahead('[')) {
         def = {
           type: 'PointerType',
           target: def,
           pos: getPos()
         };
 
-        if (!lookahead(']')) {
+        if(!lookahead(']')) {
           def.length = parseExpression();
           consume(']');
         }
       }
 
-      if (name) {
+      if(name) {
         def = {
           type: 'Definition',
           defType: def,
@@ -548,8 +529,8 @@ export function cparse(src, options) {
   function readString(keepBlanks) {
     var val = [];
     next(true, true);
-    while (curr && curr != '"') {
-      if (curr == '\\') {
+    while(curr && curr != '"') {
+      if(curr == '\\') {
         next(true, true);
         val.push(readEscapeSequence());
       } else {
@@ -558,29 +539,29 @@ export function cparse(src, options) {
       }
     }
 
-    if (!lookahead('"', keepBlanks)) unexpected('"');
+    if(!lookahead('"', keepBlanks)) unexpected('"');
 
     return val.join('');
   }
   function readEscapeSequence() {
-    if (curr == 'x') {
+    if(curr == 'x') {
       next(true, true);
       var val = 0;
-      while (/[0-9A-Fa-f]/.test(curr)) {
+      while(/[0-9A-Fa-f]/.test(curr)) {
         val = (val << 4) + parseInt(curr, 16);
         next(true, true);
       }
 
       return String.fromCharCode(val);
-    } else if (/[0-7]/.test(curr)) {
+    } else if(/[0-7]/.test(curr)) {
       var val = 0;
-      while (/[0-7]/.test(curr)) {
+      while(/[0-7]/.test(curr)) {
         val = (val << 3) + parseInt(curr, 16);
         next(true, true);
       }
 
       return String.fromCharCode(val);
-    } else if (stringEscapes[curr]) {
+    } else if(stringEscapes[curr]) {
       var escape = stringEscapes[curr];
       next(true, true);
       return escape;
@@ -610,18 +591,18 @@ export function cparse(src, options) {
     startreg = startreg || reg;
     //  console.log("curr:", curr);
 
-    if (!startreg.test(curr)) unexpected(expected);
+    if(!startreg.test(curr)) unexpected(expected);
 
     var val = [curr];
     next(true);
 
-    while (curr && reg.test(curr)) {
+    while(curr && reg.test(curr)) {
       // console.log("curr:", curr);
       val.push(curr);
       next(true);
     }
 
-    if (!keepBlanks) skipBlanks();
+    if(!keepBlanks) skipBlanks();
     //console.log("read done");
 
     return val.join('');
@@ -653,8 +634,8 @@ export function cparse(src, options) {
 
   function lookahead(str, keepBlanks) {
     var _index = index;
-    for (var i = 0; i < str.length; i++) {
-      if (curr != str[i]) {
+    for(var i = 0; i < str.length; i++) {
+      if(curr != str[i]) {
         index = _index;
         curr = src[index];
         return false;
@@ -662,61 +643,57 @@ export function cparse(src, options) {
       next(true);
     }
 
-    if (/^[_a-zA-Z][_a-zA-Z0-9]*$/.test(str) && /[_a-zA-Z0-9]/.test(curr)) {
+    if(/^[_a-zA-Z][_a-zA-Z0-9]*$/.test(str) && /[_a-zA-Z0-9]/.test(curr)) {
       index = _index;
       curr = src[index];
       return false;
     }
 
-    if (!keepBlanks) skipBlanks();
+    if(!keepBlanks) skipBlanks();
     return true;
   }
 
   function consume(str) {
-    for (var i = 0; i < str.length; i++) {
-      if (curr != str[i]) unexpected(str);
+    for(var i = 0; i < str.length; i++) {
+      if(curr != str[i]) unexpected(str);
       next();
     }
   }
 
   function skipBlanks() {
-    if (/[\s\n]/.test(curr)) next();
+    if(/[\s\n]/.test(curr)) next();
   }
 
   function next(includeSpaces, includeComments) {
     includeSpaces = includeSpaces || false;
 
-    if (curr == '\n') position.line++;
+    if(curr == '\n') position.line++;
     index++;
     curr = src[index];
 
     do {
       var skipped = skipComments() || skipSpaces();
 
-      if (
-        !includeSpaces &&
-        (index == 0 || src[index - 1] == '\n') &&
-        curr == '#'
-      ) {
+      if(!includeSpaces && (index == 0 || src[index - 1] == '\n') && curr == '#') {
         consume('#');
         var line = (position.line = readNumber(true) - 1);
         consume(' ');
         position.file = readString(true);
 
-        while (curr != '\n') {
+        while(curr != '\n') {
           index++;
           curr = src[index];
         }
         skipped = true;
       }
-    } while (skipped);
+    } while(skipped);
 
     function skipSpaces() {
-      if (includeSpaces) return;
+      if(includeSpaces) return;
 
-      if (/[\s\n]/.test(curr)) {
-        while (curr && /[\s\n]/.test(curr)) {
-          if (curr == '\n') position.line++;
+      if(/[\s\n]/.test(curr)) {
+        while(curr && /[\s\n]/.test(curr)) {
+          if(curr == '\n') position.line++;
           index++;
           curr = src[index];
         }
@@ -725,17 +702,17 @@ export function cparse(src, options) {
     }
 
     function skipComments() {
-      if (includeComments) return;
-      if (curr && curr == '/' && src[index + 1] == '/') {
-        while (curr != '\n') {
+      if(includeComments) return;
+      if(curr && curr == '/' && src[index + 1] == '/') {
+        while(curr != '\n') {
           index++;
           curr = src[index];
         }
         return true;
       }
-      if (curr && curr == '/' && src[index + 1] == '*') {
-        while (curr != '*' || src[index + 1] != '/') {
-          if (curr == '\n') position.line++;
+      if(curr && curr == '/' && src[index + 1] == '*') {
+        while(curr != '*' || src[index + 1] != '/') {
+          if(curr == '\n') position.line++;
           index++;
           curr = src[index];
         }

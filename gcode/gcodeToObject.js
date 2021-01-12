@@ -87,9 +87,7 @@ export function gcodeToObject(gcode) {
   const commandRegex = /[GM]\d+/;
   const commandResult = gcodeWithoutComment.toUpperCase().match(commandRegex);
   gcodeObject.command =
-    (commandResult !== undefined || commandResult !== null) &&
-    Array.isArray(commandResult) &&
-    commandResult.length > 0
+    (commandResult !== undefined || commandResult !== null) && Array.isArray(commandResult) && commandResult.length > 0
       ? commandResult[0]
       : undefined;
 
@@ -115,7 +113,7 @@ export function gcodeToObject(gcode) {
 }
 
 export function* parseGcode(data) {
-console.debug("parseGcode", { data});
+  console.debug('parseGcode', { data });
   if(typeof data == 'string') data = data.split(/\n/g);
 
   for(let line of data) {

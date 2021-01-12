@@ -77,15 +77,7 @@ function G90(prevState, nextState, command, args) {
   // Milling: Absolute programming
   // else: Fixed cycle, simple cycle, for roughing (Z-axis emphasis)
   console.info('Absolute programming /  Fixed cycle, simple cycle, for roughing (Z-axis emphasis)');
-  console.log(`#${this.i}: cmd:`,
-    command,
-    ' args:',
-    args,
-    ' prevState:',
-    prevState,
-    ' nextState:',
-    nextState
-  );
+  console.log(`#${this.i}: cmd:`, command, ' args:', args, ' prevState:', prevState, ' nextState:', nextState);
 }
 
 function G91(prevState, nextState, command, args) {

@@ -8,8 +8,8 @@ export default function createMixin(propertyDescriptors) {
   }
 
   function checkInstance(obj) {
-    for (let o = obj; o; o = Object.getPrototypeOf(o)) {
-      if (mixed.has(o)) {
+    for(let o = obj; o; o = Object.getPrototypeOf(o)) {
+      if(mixed.has(o)) {
         return true;
       }
     }

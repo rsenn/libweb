@@ -57,8 +57,7 @@ export class Transformation {
 
   vector(unit) {
     if(unit === undefined) unit = this.unit;
-    return (this.is3D ? ['x', 'y', 'z'] : ['x', 'y']).map(unit ? axis => this[axis] + unit : axis => this[axis]
-    );
+    return (this.is3D ? ['x', 'y', 'z'] : ['x', 'y']).map(unit ? axis => this[axis] + unit : axis => this[axis]);
   }
 
   toString(tUnit) {
@@ -162,14 +161,8 @@ export class Transformation {
 
 Object.defineProperty(Transformation, Symbol.hasInstance, {
   value(inst) {
-    return [
-      Transformation,
-      MatrixTransformation,
-      Rotation,
-      Translation,
-      Scaling,
-      TransformationList
-    ].some(ctor => Object.getPrototypeOf(inst) == ctor.prototype);
+    return [Transformation, MatrixTransformation, Rotation, Translation, Scaling, TransformationList].some(ctor => Object.getPrototypeOf(inst) == ctor.prototype
+    );
   }
 });
 
@@ -600,9 +593,7 @@ export class TransformationList extends Array {
     let translation = new Translation(vec.x, vec.y);
 
     if(!translation.isZero())
-      /*    if(Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) */ Array.prototype.push.call(this,
-        translation
-      );
+      /*    if(Math.abs(vec.x) != 0 || Math.abs(vec.y) != 0) */ Array.prototype.push.call(this, translation);
 
     return this;
   }
@@ -636,10 +627,7 @@ export class TransformationList extends Array {
   }
 
   toSource() {
-    let s =
-      Util.colorText('new ', 1, 31) +
-      Util.colorText(Util.className(this), 1, 33) +
-      Util.colorText('([', 1, 36);
+    let s = Util.colorText('new ', 1, 31) + Util.colorText(Util.className(this), 1, 33) + Util.colorText('([', 1, 36);
 
     s += this.map(t => t.toSource()).join(', ');
     return s + Util.colorText('])', 1, 36);

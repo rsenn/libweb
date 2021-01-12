@@ -31,9 +31,9 @@ export class Graph {
       spacing = 3,
       timestep = 150,
       damping = 0.000005,
-      onUpdateNode = (node) => true,
-      onUpdateEdge = (edge) => true,
-      onRenderGraph = (graph) => true
+      onUpdateNode = node => true,
+      onUpdateEdge = edge => true,
+      onRenderGraph = graph => true
     } = options;
 
     Util.log(`Graph(${origin},${gravitate_to_origin})`);
@@ -45,8 +45,7 @@ export class Graph {
     this.damping = damping;
     this.timestep = timestep;
 
-    this.gravitate_to_origin =
-      typeof gravitate_to_origin == 'undefined' ? false : gravitate_to_origin;
+    this.gravitate_to_origin = typeof gravitate_to_origin == 'undefined' ? false : gravitate_to_origin;
     this.done_rendering = false;
     this.prng = prng;
 
@@ -60,10 +59,10 @@ export class Graph {
     g.done_rendering = false;
 
     this.timer = Timer.interval(5, () => {
-      if (!g.done_rendering) {
+      if(!g.done_rendering) {
         g.checkRedraw();
       }
-      if (g.done_rendering) {
+      if(g.done_rendering) {
         g.updateAll();
         g.timer.stop();
       }
@@ -72,12 +71,11 @@ export class Graph {
   }
 
   addNode(n, charge = this.config.charge, mass = this.config.mass) {
-    if (!(n instanceof Node))
-      n = new Node(n, charge, mass, this.config.size ? () => 0 : this.prng);
+    if(!(n instanceof Node)) n = new Node(n, charge, mass, this.config.size ? () => 0 : this.prng);
     n.index = this.nodes.length;
     this.nodes.push(n);
 
-    if (this.config.size) {
+    if(this.config.size) {
       const { width, height } = this.config.size;
       n.x = this.prng() * width - width / 2;
       n.y = this.prng() * height - height / 2;
@@ -93,7 +91,7 @@ export class Graph {
   randomize() {
     const { width = 1000, height = 1000 } = this.config.size;
 
-    for (let node of this.nodes) {
+    for(let node of this.nodes) {
       node.x = this.prng() * width - width / 2;
       node.y = this.prng() * height - height / 2;
     }
@@ -102,7 +100,7 @@ export class Graph {
   addEdge(e) {
     let args = [...arguments];
     let ids = [];
-    if (!(e instanceof Edge)) {
+    if(!(e instanceof Edge)) {
       e = new Edge(args[0], args[1]);
       ids = [this.nodes.indexOf(args[0]), this.nodes.indexOf(args[1])];
     }
@@ -113,8 +111,8 @@ export class Graph {
   }
 
   add(o) {
-    if (o instanceof Node) this.nodes.push(o);
-    if (o instanceof Edge) this.edges.push(o);
+    if(o instanceof Node) this.nodes.push(o);
+    if(o instanceof Edge) this.edges.push(o);
   }
 
   push() {
@@ -122,22 +120,22 @@ export class Graph {
   }
 
   resetNodes() {
-    for (let i = 0; i < this.nodes.length; i++) {
+    for(let i = 0; i < this.nodes.length; i++) {
       let n = this.nodes[i];
       n.reset();
     }
   }
 
   *getConnections(node, exclude = null) {
-    for (let i = 0; i < this.edges.length; i++) {
+    for(let i = 0; i < this.edges.length; i++) {
       let edge = this.edges[i];
       let r = null;
 
-      if (edge.a && Point.equals(edge.a, node)) r = edge.b;
-      if (edge.b && Point.equals(edge.b, node)) r = edge.a;
+      if(edge.a && Point.equals(edge.a, node)) r = edge.b;
+      if(edge.b && Point.equals(edge.b, node)) r = edge.a;
 
-      if (r !== null) {
-        if (exclude !== null && Point.equals(exclude, r)) continue;
+      if(r !== null) {
+        if(exclude !== null && Point.equals(exclude, r)) continue;
         yield r;
       }
     }
@@ -149,8 +147,8 @@ export class Graph {
   }
 
   *branchNodes() {
-    for (let i = 0; i < this.nodes.length; i++) {
-      if (!this.isLeafNode(this.nodes[i])) yield this.nodes[i];
+    for(let i = 0; i < this.nodes.length; i++) {
+      if(!this.isLeafNode(this.nodes[i])) yield this.nodes[i];
     }
   }
 
@@ -162,7 +160,7 @@ export class Graph {
     this.kineticenergy = 0;
     this.total_node_velocity = 0;
 
-    for (let i = 0; i < this.nodes.length; i++) {
+    for(let i = 0; i < this.nodes.length; i++) {
       let node = this.nodes[i];
 
       let isLeaf = this.isLeafNode(node);
@@ -170,8 +168,8 @@ export class Graph {
       node.netforce = new Point(0, 0);
       node.velocity = new Point(0, 0);
 
-      if (1 /*!isLeaf*/) {
-        if (this.gravitate_to_origin) {
+      if(1 /*!isLeaf*/) {
+        if(this.gravitate_to_origin) {
           const { origin } = this.config;
 
           let d = node.distance(origin);
@@ -183,15 +181,15 @@ export class Graph {
           let rf = -1 * (node.charge / (d * d));
           node.netforce.move(rf * Math.sin(od.x / d), rf * Math.sin(od.y / d));
         }
-        for (let j = 0; j < this.edges.length; j++) {
+        for(let j = 0; j < this.edges.length; j++) {
           let con = this.edges[j];
-          if (con.a == node || con.b == node) {
+          if(con.a == node || con.b == node) {
             let other_node = con.a == node ? con.b : con.a;
             node.applyAttractiveForce(other_node);
           }
         }
 
-        for (let k = 0; k < this.nodes.length; k++) {
+        for(let k = 0; k < this.nodes.length; k++) {
           let rep_node = this.nodes[k];
           node.applyRepulsiveForce(rep_node, this.config.spacing || 1);
         }
@@ -199,10 +197,7 @@ export class Graph {
         node.netforce.x = Math.abs(node.netforce.x) < 1 ? 0 : node.netforce.x;
         node.netforce.y = Math.abs(node.netforce.y) < 1 ? 0 : node.netforce.y;
 
-        let newVel = node.netforce
-          .prod(this.timestep)
-          .sum(node.velocity)
-          .prod(this.damping);
+        let newVel = node.netforce.prod(this.timestep).sum(node.velocity).prod(this.damping);
 
         node.velocity.x = node.netforce.x == 0 ? 0 : newVel.x;
         node.velocity.y = node.netforce.y == 0 ? 0 : newVel.y;
@@ -219,13 +214,13 @@ export class Graph {
     function findBiggestGap(angles) {
       let ret = [];
       let bdiff = 0;
-      for (let i = 0; i < angles.length; i++) {
+      for(let i = 0; i < angles.length; i++) {
         let a = angles[i];
         let b = angles[(i + 1) % angles.length];
 
         let diff = Math.abs(b - a);
 
-        if (diff > bdiff) {
+        if(diff > bdiff) {
           bdiff = diff;
           ret = [a, b];
         }
@@ -235,32 +230,32 @@ export class Graph {
     let newPositions = [];
 
     const distributeLeafNodes = () => {
-      for (let node of this.branchNodes()) {
+      for(let node of this.branchNodes()) {
         let connections = [...this.getConnections(node)];
-        let nonLeafNodes = connections.filter((c) => !this.isLeafNode(c));
-        let leafNodes = connections.filter((c) => this.isLeafNode(c));
+        let nonLeafNodes = connections.filter(c => !this.isLeafNode(c));
+        let leafNodes = connections.filter(c => this.isLeafNode(c));
 
-        let lines = nonLeafNodes.map((c) => new Line(node, c));
-        let angles = lines.map((l) => l.angle());
+        let lines = nonLeafNodes.map(c => new Line(node, c));
+        let angles = lines.map(l => l.angle());
         let middleAngle;
         let gapLen;
 
-        if (leafNodes.length) {
-          if (angles.length >= 2) {
+        if(leafNodes.length) {
+          if(angles.length >= 2) {
             let gap = findBiggestGap(angles);
             middleAngle = (gap[1] + gap[0]) / 2;
             gapLen = gap[1] - gap[0];
-          } else if (angles.length == 1) {
+          } else if(angles.length == 1) {
             middleAngle = angles[0] + Math.PI;
-            if (middleAngle > Math.PI) middleAngle -= Math.PI;
+            if(middleAngle > Math.PI) middleAngle -= Math.PI;
             gapLen = Math.PI;
           }
 
-          if (Math.abs(middleAngle) > 0) {
+          if(Math.abs(middleAngle) > 0) {
             let gapStep = gapLen / leafNodes.length;
             let gapPos = middleAngle - gapLen / 2;
 
-            for (let j = 0; j < leafNodes.length; j++) {
+            for(let j = 0; j < leafNodes.length; j++) {
               let leaf = leafNodes[j];
               let index = leaf.index;
               let l = new Line(node, leaf);
@@ -281,7 +276,7 @@ export class Graph {
       }
     };
 
-    if (this.total_node_velocity < 0.0001) {
+    if(this.total_node_velocity < 0.0001) {
       this.done_rendering = true;
     } else {
       this.done_rendering = false;
@@ -290,14 +285,12 @@ export class Graph {
   }
 
   updateAll() {
-    for (var j = 0; j < this.edges.length; j++)
-      this.update.edge(this.edges[j], j);
-    for (var j = 0; j < this.nodes.length; j++)
-      this.update.node(this.nodes[j], j);
+    for(var j = 0; j < this.edges.length; j++) this.update.edge(this.edges[j], j);
+    for(var j = 0; j < this.nodes.length; j++) this.update.node(this.nodes[j], j);
   }
 
   roundAll(prec) {
-    for (let j = 0; j < this.nodes.length; j++) {
+    for(let j = 0; j < this.nodes.length; j++) {
       Point.round(this.nodes[j], prec);
       Point.round(this.nodes[j].velocity, prec);
       Point.round(this.nodes[j].netforce, prec);
@@ -306,8 +299,8 @@ export class Graph {
 
   serialize() {
     return {
-      nodes: this.nodes.map((node) => Node.prototype.toJS.call(node)),
-      edges: this.edges.map((edge) => Edge.prototype.toIdx.call(edge, this)),
+      nodes: this.nodes.map(node => Node.prototype.toJS.call(node)),
+      edges: this.edges.map(edge => Edge.prototype.toIdx.call(edge, this)),
       bbox: this.bbox,
       config: this.config
     };
@@ -316,16 +309,16 @@ export class Graph {
   deserialize(nodes, edges, config) {
     this.nodes = [];
     this.edges = [];
-    for (let n of nodes) {
+    for(let n of nodes) {
       let node = this.addNode(n.label, n.charge, n.mass);
       node.x = n.x;
       node.y = n.y;
       node.label = n.label;
       node.id = n.id;
-      if (n.color !== undefined) node.color = n.color;
+      if(n.color !== undefined) node.color = n.color;
       //Util.log("node:", node);
     }
-    for (let e of edges) {
+    for(let e of edges) {
       let edge = this.addEdge(this.nodes[e[0]], this.nodes[e[1]]);
     }
     this.config = config;
@@ -342,7 +335,7 @@ export class Graph {
 
   translate(x, y) {
     let p = typeof y == 'number' ? new Point(x, y) : x;
-    for (let i = 0; i < this.nodes.length; i++) {
+    for(let i = 0; i < this.nodes.length; i++) {
       Point.move(this.nodes[i], p.x, p.y);
     }
   }
@@ -389,10 +382,7 @@ export class Node extends Point {
     let distance = this.distance(n);
     let force = scale * Math.max(distance + 200, 1);
 
-    this.netforce.move(
-      force * Math.sin((n.x - this.x) / distance),
-      force * Math.sin((n.y - this.y) / distance)
-    );
+    this.netforce.move(force * Math.sin((n.x - this.x) / distance), force * Math.sin((n.y - this.y) / distance));
   }
 
   applyRepulsiveForce(n, scale = 1) {
@@ -400,19 +390,12 @@ export class Node extends Point {
 
     let f = -1 * scale * ((this.charge * n.charge) / (d * d));
 
-    this.netforce.move(
-      f * Math.sin((n.x - this.x) / d),
-      f * Math.sin((n.y - this.y) / d)
-    );
+    this.netforce.move(f * Math.sin((n.x - this.x) / d), f * Math.sin((n.y - this.y) / d));
   }
 
   toJS() {
-    let ret = Util.filterKeys(
-      this,
-      (key) =>
-        ['charge', 'mass', 'label', 'x', 'y', 'id', 'color'].indexOf(key) != -1
-    );
-    if (this.node && this.node.id !== undefined) ret.id = this.node.id;
+    let ret = Util.filterKeys(this, key => ['charge', 'mass', 'label', 'x', 'y', 'id', 'color'].indexOf(key) != -1);
+    if(this.node && this.node.id !== undefined) ret.id = this.node.id;
     Point.round(ret, 0.001);
     return ret;
   }
@@ -424,10 +407,10 @@ export class Edge extends Line {
 
   constructor(node_a, node_b) {
     super();
-    if (node_a) this.a = node_a instanceof Node ? node_a : Node.clone(node_a);
-    if (node_b) this.b = node_b instanceof Node ? node_b : Node.clone(node_b);
+    if(node_a) this.a = node_a instanceof Node ? node_a : Node.clone(node_a);
+    if(node_b) this.b = node_b instanceof Node ? node_b : Node.clone(node_b);
 
-    if (!(node_a && node_b)) {
+    if(!(node_a && node_b)) {
       throw new Error('Edge requires 2 nodes');
     }
 
@@ -447,16 +430,16 @@ export class Edge extends Line {
     return this.b ? this.b.y : 0;
   }
   set x1(v) {
-    if (this.a) this.a.x = v;
+    if(this.a) this.a.x = v;
   }
   set y1(v) {
-    if (this.a) this.a.y = v;
+    if(this.a) this.a.y = v;
   }
   set x2(v) {
-    if (this.b) this.b.x = v;
+    if(this.b) this.b.x = v;
   }
   set y2(v) {
-    if (this.b) this.b.y = v;
+    if(this.b) this.b.y = v;
   }
 
   toJS() {

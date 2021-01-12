@@ -37,8 +37,7 @@ export const Event = {
 
   subscriber(names, handler) {
     if(typeof names == 'string') names = [names];
-    let func = action => target =>
-      names.forEach(name => target[action + 'EventListener'](name, handler));
+    let func = action => target => names.forEach(name => target[action + 'EventListener'](name, handler));
     return ['add', 'remove'].map(func);
   }
 };

@@ -38,9 +38,7 @@ export const INSPECT_MAX_BYTES = 50;
  * get the Object implementation, which is slower but behaves correctly.
  */
 Buffer.TYPED_ARRAY_SUPPORT =
-  globalThis.TYPED_ARRAY_SUPPORT !== undefined
-    ? globalThis.TYPED_ARRAY_SUPPORT
-    : typedArraySupport();
+  globalThis.TYPED_ARRAY_SUPPORT !== undefined ? globalThis.TYPED_ARRAY_SUPPORT : typedArraySupport();
 
 /*
  * Export kMaxLength after typed array support is determined.
@@ -294,9 +292,7 @@ function fromObject(that, obj) {
   }
 
   if(obj) {
-    if((typeof ArrayBuffer !== 'undefined' && obj.buffer instanceof ArrayBuffer) ||
-      'length' in obj
-    ) {
+    if((typeof ArrayBuffer !== 'undefined' && obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
       if(typeof obj.length !== 'number' || isnan(obj.length)) {
         return createBuffer(that, 0);
       }
@@ -308,18 +304,14 @@ function fromObject(that, obj) {
     }
   }
 
-  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.'
-  );
+  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.');
 }
 
 function checked(length) {
   // Note: cannot use `length < kMaxLength()` here because that fails when
   // length is NaN (which is otherwise coerced to zero.)
   if(length >= kMaxLength()) {
-    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
-        'size: 0x' +
-        kMaxLength().toString(16) +
-        ' bytes'
+    throw new RangeError('Attempt to allocate Buffer larger than maximum ' + 'size: 0x' + kMaxLength().toString(16) + ' bytes'
     );
   }
   return length | 0;
@@ -724,11 +716,7 @@ function arrayIndexOf(arr, val, byteOffset, encoding, dir) {
 
   if(encoding !== undefined) {
     encoding = String(encoding).toLowerCase();
-    if(encoding === 'ucs2' ||
-      encoding === 'ucs-2' ||
-      encoding === 'utf16le' ||
-      encoding === 'utf-16le'
-    ) {
+    if(encoding === 'ucs2' || encoding === 'ucs-2' || encoding === 'utf16le' || encoding === 'utf-16le') {
       if(arr.length < 2 || val.length < 2) {
         return -1;
       }
@@ -951,8 +939,7 @@ function utf8Slice(buf, start, end) {
           secondByte = buf[i + 1];
           thirdByte = buf[i + 2];
           if((secondByte & 0xc0) === 0x80 && (thirdByte & 0xc0) === 0x80) {
-            tempCodePoint =
-              ((firstByte & 0xf) << 0xc) | ((secondByte & 0x3f) << 0x6) | (thirdByte & 0x3f);
+            tempCodePoint = ((firstByte & 0xf) << 0xc) | ((secondByte & 0x3f) << 0x6) | (thirdByte & 0x3f);
             if(tempCodePoint > 0x7ff && (tempCodePoint < 0xd800 || tempCodePoint > 0xdfff)) {
               codePoint = tempCodePoint;
             }
@@ -962,10 +949,7 @@ function utf8Slice(buf, start, end) {
           secondByte = buf[i + 1];
           thirdByte = buf[i + 2];
           fourthByte = buf[i + 3];
-          if((secondByte & 0xc0) === 0x80 &&
-            (thirdByte & 0xc0) === 0x80 &&
-            (fourthByte & 0xc0) === 0x80
-          ) {
+          if((secondByte & 0xc0) === 0x80 && (thirdByte & 0xc0) === 0x80 && (fourthByte & 0xc0) === 0x80) {
             tempCodePoint =
               ((firstByte & 0xf) << 0x12) |
               ((secondByte & 0x3f) << 0xc) |
@@ -1152,17 +1136,13 @@ Buffer.prototype.readUInt16BE = function readUInt16BE(offset, noAssert) {
 Buffer.prototype.readUInt32LE = function readUInt32LE(offset, noAssert) {
   if(!noAssert) checkOffset(offset, 4, this.length);
 
-  return ((this[offset] | (this[offset + 1] << 8) | (this[offset + 2] << 16)) +
-    this[offset + 3] * 0x1000000
-  );
+  return (this[offset] | (this[offset + 1] << 8) | (this[offset + 2] << 16)) + this[offset + 3] * 0x1000000;
 };
 
 Buffer.prototype.readUInt32BE = function readUInt32BE(offset, noAssert) {
   if(!noAssert) checkOffset(offset, 4, this.length);
 
-  return (this[offset] * 0x1000000 +
-    ((this[offset + 1] << 16) | (this[offset + 2] << 8) | this[offset + 3])
-  );
+  return this[offset] * 0x1000000 + ((this[offset + 1] << 16) | (this[offset + 2] << 8) | this[offset + 3]);
 };
 
 Buffer.prototype.readIntLE = function readIntLE(offset, byteLength, noAssert) {
@@ -1222,15 +1202,13 @@ Buffer.prototype.readInt16BE = function readInt16BE(offset, noAssert) {
 Buffer.prototype.readInt32LE = function readInt32LE(offset, noAssert) {
   if(!noAssert) checkOffset(offset, 4, this.length);
 
-  return (this[offset] | (this[offset + 1] << 8) | (this[offset + 2] << 16) | (this[offset + 3] << 24)
-  );
+  return this[offset] | (this[offset + 1] << 8) | (this[offset + 2] << 16) | (this[offset + 3] << 24);
 };
 
 Buffer.prototype.readInt32BE = function readInt32BE(offset, noAssert) {
   if(!noAssert) checkOffset(offset, 4, this.length);
 
-  return ((this[offset] << 24) | (this[offset + 1] << 16) | (this[offset + 2] << 8) | this[offset + 3]
-  );
+  return (this[offset] << 24) | (this[offset + 1] << 16) | (this[offset + 2] << 8) | this[offset + 3];
 };
 
 Buffer.prototype.readFloatLE = function readFloatLE(offset, noAssert) {
@@ -1309,8 +1287,7 @@ Buffer.prototype.writeUInt8 = function writeUInt8(value, offset, noAssert) {
 function objectWriteUInt16(buf, value, offset, littleEndian) {
   if(value < 0) value = 0xffff + value + 1;
   for(var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
-    buf[offset + i] =
-      (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>> ((littleEndian ? i : 1 - i) * 8);
+    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>> ((littleEndian ? i : 1 - i) * 8);
   }
 }
 
@@ -1716,10 +1693,7 @@ function utf8ToBytes(string, units) {
       bytes.push((codePoint >> 0x6) | 0xc0, (codePoint & 0x3f) | 0x80);
     } else if(codePoint < 0x10000) {
       if((units -= 3) < 0) break;
-      bytes.push((codePoint >> 0xc) | 0xe0,
-        ((codePoint >> 0x6) & 0x3f) | 0x80,
-        (codePoint & 0x3f) | 0x80
-      );
+      bytes.push((codePoint >> 0xc) | 0xe0, ((codePoint >> 0x6) & 0x3f) | 0x80, (codePoint & 0x3f) | 0x80);
     } else if(codePoint < 0x110000) {
       if((units -= 4) < 0) break;
       bytes.push((codePoint >> 0x12) | 0xf0,

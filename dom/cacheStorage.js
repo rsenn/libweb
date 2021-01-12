@@ -5,8 +5,7 @@ import { Cache } from './cache.js';
 const strToBase64 = str => new Buffer(str).toString('base64');
 const base64ToStr = hex => new Buffer(hex, 'base64').toString();
 const requires = (i, args) => {
-  if(args.length < i)
-    throw new TypeError(`${i} argument required, but only ${args.length} present.`);
+  if(args.length < i) throw new TypeError(`${i} argument required, but only ${args.length} present.`);
 };
 
 export class CacheStorage {

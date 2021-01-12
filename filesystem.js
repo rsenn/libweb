@@ -1,9 +1,5 @@
 import Util from './util.js';
-import {
-  StringReader,
-  ChunkReader,
-  DebugTransformStream
-} from './stream/utils.js';
+import { StringReader, ChunkReader, DebugTransformStream } from './stream/utils.js';
 
 export const SEEK_SET = 0;
 export const SEEK_CUR = 1;
@@ -32,14 +28,14 @@ export function QuickJSFileSystem(std, os) {
 
   function strerr(ret) {
     const [str, err] = ret;
-    if (err) {
+    if(err) {
       errno = err;
       return null;
     }
     return str;
   }
   function numerr(ret) {
-    if (ret < 0) {
+    if(ret < 0) {
       errno = -ret;
       return -1;
     }
@@ -57,7 +53,7 @@ export function QuickJSFileSystem(std, os) {
         this.mode = st.mode;
 
         //  if(Object.hasOwnProperty(st, prop))
-        for (let prop in st) this[prop] = st[prop];
+        for(let prop in st) this[prop] = st[prop];
       }
       isDirectory() {
         return !!(this.mode & os.S_IFDIR);
@@ -91,20 +87,20 @@ export function QuickJSFileSystem(std, os) {
       return ArrayBufferSize(buf);
     },
     bufferToString(buf, n = 1) {
-      if (typeof buf == 'string') return buf;
+      if(typeof buf == 'string') return buf;
       return ArrayBufferToString(buf, n);
     },
     open(filename, flags = 'r', mode = 0o644) {
       let res = { errno: 0 };
       let file = std.open(filename, flags, res);
-      if (!res.errno) return file;
+      if(!res.errno) return file;
 
       return numerr(-res.errno);
     },
     fdopen(fd, flags = 'r') {
       let res = { errno: 0 };
       let file = std.fdopen(fd, flags, res);
-      if (!res.errno) return file;
+      if(!res.errno) return file;
 
       return numerr(-res.errno);
     },
@@ -121,22 +117,20 @@ export function QuickJSFileSystem(std, os) {
         case 'number':
           ret = os.read(fd, buf, offset, length);
           break;
-        default:
-          ret = fd.read(buf, offset, length);
+        default: ret = fd.read(buf, offset, length);
           break;
       }
       //  console.log("ret:", ret);
       return numerr(ret);
     },
     write(fd, data, offset, length) {
-      if (!(data instanceof ArrayBuffer)) data = StringToArrayBuffer(data);
+      if(!(data instanceof ArrayBuffer)) data = StringToArrayBuffer(data);
       let ret;
       switch (typeof fd) {
         case 'number':
           ret = os.write(fd, data, offset || 0, length || data.byteLength);
           break;
-        default:
-          ret = fd.write(data, offset || 0, length || data.byteLength);
+        default: ret = fd.write(data, offset || 0, length || data.byteLength);
           break;
       }
       return numerr(ret);
@@ -147,7 +141,7 @@ export function QuickJSFileSystem(std, os) {
         size,
         res = { errno: 0 };
       let file = std.open(filename, 'r', res);
-      if (!res.errno) {
+      if(!res.errno) {
         file.seek(0, std.SEEK_END);
         size = file.tell();
         file.seek(0, std.SEEK_SET);
@@ -155,7 +149,7 @@ export function QuickJSFileSystem(std, os) {
         file.read(data, 0, size);
         //data = file.readAsString(/*size*/);
         file.close();
-        if (encoding != null) data = ArrayBufferToString(data, encoding);
+        if(encoding != null) data = ArrayBufferToString(data, encoding);
         return data;
       }
       return -res.errno;
@@ -166,12 +160,12 @@ export function QuickJSFileSystem(std, os) {
         res = { errno: 0 };
       let file = std.open(filename, overwrite ? 'w' : 'wx', res);
       // console.log('writeFile', filename, data.length, file, res.errno);
-      if (!res.errno) {
+      if(!res.errno) {
         buf = typeof data == 'string' ? StringToArrayBuffer(data) : data;
         bytes = file.write(buf, 0, buf.byteLength);
         file.flush();
         res = file.close();
-        if (res < 0) return res;
+        if(res < 0) return res;
         return bytes;
       }
       return -res.errno;
@@ -179,7 +173,7 @@ export function QuickJSFileSystem(std, os) {
     exists(path) {
       let file = std.open(path, 'r');
       let res = file != null;
-      if (file) file.close();
+      if(file) file.close();
       return res;
     } /**/,
     seek(fd, offset, whence) {
@@ -188,34 +182,28 @@ export function QuickJSFileSystem(std, os) {
         case 'number':
           ret = os.seek(fd, offset, whence);
           break;
-        default:
-          ret = fd.seek(offset, whence);
+        default: ret = fd.seek(offset, whence);
           break;
       }
       //console.log('seek:', { offset, whence, ret });
-      let err =
-        ret >= 0
-          ? undefined
-          : (typeof std.clearerr == 'function' ? std.clearerr() : undefined,
-            -1);
+      let err = ret >= 0 ? undefined : (typeof std.clearerr == 'function' ? std.clearerr() : undefined, -1);
       return err || fd.tell();
     },
     tell(file) {
       switch (typeof file) {
         case 'number':
           return numerr(os.seek(file, 0, os.SEEK_CUR));
-        default:
-          return file.tell();
+        default: return file.tell();
       }
     },
     size(file) {
       let bytes,
         res = { errno: 0 };
-      if (typeof file == 'string') file = this.open(file, 'r');
+      if(typeof file == 'string') file = this.open(file, 'r');
       this.seek(file, 0, std.SEEK_END);
       bytes = this.tell(file);
       res = this.close(file);
-      if (res < 0) return res;
+      if(res < 0) return res;
       return bytes;
     },
     stat(path, cb) {
@@ -260,13 +248,8 @@ export function QuickJSFileSystem(std, os) {
     },
 
     fileno(file) {
-      if (typeof file == 'number') return file;
-      if (
-        typeof file == 'object' &&
-        file != null &&
-        typeof file.fileno == 'function'
-      )
-        return file.fileno();
+      if(typeof file == 'number') return file;
+      if(typeof file == 'object' && file != null && typeof file.fileno == 'function') return file.fileno();
     },
     get stdin() {
       return std.in;
@@ -309,7 +292,7 @@ export function QuickJSFileSystem(std, os) {
         //console.log('readAll', { ret, input: this.fileno(input), buffer });
         let str = this.bufferToString(buffer.slice(0, ret));
         output += str;
-      } while (ret > 0);
+      } while(ret > 0);
       return output;
     }
   };
@@ -352,12 +335,12 @@ export function NodeJSFileSystem(fs, tty, process) {
     let ret;
     try {
       ret = fn();
-    } catch (error) {
+    } catch(error) {
       ret = new Number(-1);
       ret.message = error.message;
       ret.stack = error.stack;
 
-      if (error.errno != undefined) errno = error.errno;
+      if(error.errno != undefined) errno = error.errno;
     }
     return ret || 0;
   }
@@ -365,8 +348,8 @@ export function NodeJSFileSystem(fs, tty, process) {
   function AddData(file, data) {
     let buf;
     //console.log(`AddData`, { file, data });
-    if (data instanceof ArrayBuffer) data = new Uint8Array(data);
-    if (dataMap.has(file)) buf = Buffer.concat([dataMap.get(file), data]);
+    if(data instanceof ArrayBuffer) data = new Uint8Array(data);
+    if(dataMap.has(file)) buf = Buffer.concat([dataMap.get(file), data]);
     else buf = Buffer.from(data);
     dataMap.set(file, buf);
     return buf.length;
@@ -374,8 +357,8 @@ export function NodeJSFileSystem(fs, tty, process) {
 
   function GetData(file, data, length) {
     let buf, len;
-    if (data instanceof ArrayBuffer) data = new Uint8Array(data);
-    if (!(buf = dataMap.get(file))) return 0;
+    if(data instanceof ArrayBuffer) data = new Uint8Array(data);
+    if(!(buf = dataMap.get(file))) return 0;
     buf.copy(data, 0, 0, (len = Math.min(buf.length, length)));
     buf = Buffer.from(buf.slice(len));
     dataMap.set(file, buf);
@@ -384,7 +367,7 @@ export function NodeJSFileSystem(fs, tty, process) {
 
   function HasData(file, data, length) {
     let buf;
-    if (!(buf = dataMap.get(file))) return 0;
+    if(!(buf = dataMap.get(file))) return 0;
     return buf.length;
   }
 
@@ -405,30 +388,27 @@ export function NodeJSFileSystem(fs, tty, process) {
       return BufferToString(buf, encoding);
     },
     fileno(file) {
-      if (typeof file == 'object' && file !== null && 'fd' in file)
-        return file.fd;
-      if (typeof file == 'number') return file;
+      if(typeof file == 'object' && file !== null && 'fd' in file) return file.fd;
+      if(typeof file == 'number') return file;
     },
     open(filename, flags = 'r', mode = 0o644) {
       let fd = -1;
       try {
         fd = fs.openSync(filename, flags, mode);
-      } catch (error) {
+      } catch(error) {
         fd = new Number(-1);
         fd.message = error.message;
         fd.stack = error.stack;
         return fd;
       }
       let ret;
-      if (flags[0] == 'r')
-        ret = fs.createReadStream(filename, { fd, flags, mode });
-      else if (flags[0] == 'w')
-        ret = fs.createWriteStream(filename, { fd, flags, mode });
+      if(flags[0] == 'r') ret = fs.createReadStream(filename, { fd, flags, mode });
+      else if(flags[0] == 'w') ret = fs.createWriteStream(filename, { fd, flags, mode });
       return Object.assign(ret, { fd, flags, mode });
     },
     close(file) {
       let fd = this.fileno(file);
-      if (typeof file == 'object') dataMap.delete(file);
+      if(typeof file == 'object') dataMap.delete(file);
 
       return CatchError(() => {
         fs.closeSync(fd);
@@ -448,17 +428,17 @@ export function NodeJSFileSystem(fs, tty, process) {
       return CatchError(() => {
         length = length || 1024;
         offset = offset || 0;
-        if (!buf) {
+        if(!buf) {
           buf = BufferAlloc(length);
-          retFn = (r) => (r > 0 ? buf.slice(0, r) : r);
+          retFn = r => (r > 0 ? buf.slice(0, r) : r);
         }
         let ret;
-        if (typeof file == 'number') {
+        if(typeof file == 'number') {
           ret = fs.readSync(file, buf, offset, length, (pos = SeekGet(file)));
         } else {
           ret = file.read(length);
           //console.log('file.read()', { ret, length });
-          if (typeof ret == 'object' && ret !== null) {
+          if(typeof ret == 'object' && ret !== null) {
             ret.copy(buf, offset, 0, ret.length);
             ret = ret.length;
           } else {
@@ -474,8 +454,7 @@ export function NodeJSFileSystem(fs, tty, process) {
       let ret;
       let fd = this.fileno(file);
 
-      if (length === undefined && data.length !== undefined)
-        length = data.length;
+      if(length === undefined && data.length !== undefined) length = data.length;
 
       return CatchError(() => fs.writeSync(fd, data, offset, length));
     },
@@ -521,7 +500,7 @@ export function NodeJSFileSystem(fs, tty, process) {
           break;
       }
       //  console.log('newpos:', newpos);
-      if (newpos >= 0 && newpos < size) {
+      if(newpos >= 0 && newpos < size) {
         SeekSet(fd, newpos);
         return newpos;
       }
@@ -541,8 +520,7 @@ export function NodeJSFileSystem(fs, tty, process) {
           case 'number':
             st = fs.fstatSync(fd);
             break;
-          default:
-            st = sizeMap.get(fd);
+          default: st = sizeMap.get(fd);
             break;
         }
         return st.size;
@@ -570,17 +548,17 @@ export function NodeJSFileSystem(fs, tty, process) {
       return CatchError(() => {
         fs.renameSync(filename, to);
 
-        if (this.exists(filename)) throw new Error(`${filename} still exists`);
-        if (!this.exists(to)) throw new Error(`${to} doesn't exist`);
+        if(this.exists(filename)) throw new Error(`${filename} still exists`);
+        if(!this.exists(to)) throw new Error(`${to} doesn't exist`);
       });
     },
     unlink(path) {
-      if (!this.exists(path)) return -1;
+      if(!this.exists(path)) return -1;
       try {
         let st = this.lstat(path);
-        if (st.isDirectory()) fs.rmdirSync(path);
+        if(st.isDirectory()) fs.rmdirSync(path);
         else fs.unlinkSync(path);
-      } catch (err) {
+      } catch(err) {
         return err;
       }
       return this.exists(path) ? -1 : 0;
@@ -606,13 +584,13 @@ export function NodeJSFileSystem(fs, tty, process) {
       file.resume();
       return new Promise((resolve, reject) => {
         let len;
-        if ((len = HasData(file))) resolve(len);
+        if((len = HasData(file))) resolve(len);
         else {
-          file.once('data', (chunk) => {
+          file.once('data', chunk => {
             //  console.log('data', chunk);
             resolve(AddData(file, chunk));
           });
-          file.once('end', (chunk) => {
+          file.once('end', chunk => {
             //  console.log('data', chunk);
             resolve(0);
           });
@@ -621,28 +599,26 @@ export function NodeJSFileSystem(fs, tty, process) {
     },
     waitWrite(file) {
       return new Promise((resolve, reject) => {
-        if (file.writable) resolve(file);
+        if(file.writable) resolve(file);
         else file.once('drain', () => resolve(file));
       });
     },
     async readAllAsync(readable) {
       const chunks = [];
-      for await (let chunk of readable) {
+      for await(let chunk of readable) {
         chunks.push(chunk);
       }
       return Buffer.concat(chunks).toString();
     },
     readAll(file) {
       return new Promise(async (resolve, reject) => {
-        let write = new (await import('concat-stream')).default({}, (data) =>
-          resolve(data)
-        );
+        let write = new (await import('concat-stream')).default({}, data => resolve(data));
         //file.pipe(write);
         let data = [];
         file.resume();
 
         //file.on('readable', () => data.push(file.read()));
-        file.on('data', (chunk) => data.push(chunk));
+        file.on('data', chunk => data.push(chunk));
         file.once('end', () => resolve(data));
 
         // file.on('data', chunk => data += chunk.toString());
@@ -653,11 +629,7 @@ export function NodeJSFileSystem(fs, tty, process) {
   };
 }
 
-export function BrowserFileSystem(
-  TextDecoderStream,
-  TransformStream,
-  WritableStream
-) {
+export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableStream) {
   return {
     buffer(bytes) {
       return CreateArrayBuffer(bytes);
@@ -678,11 +650,10 @@ export function BrowserFileSystem(
       let { writable, readable } = new TransformStream();
       //console.log(' writable, readable:', writable, readable);
       function wait(milliseconds) {
-        return new Promise((resolve) => setTimeout(resolve, milliseconds));
+        return new Promise(resolve => setTimeout(resolve, milliseconds));
       }
 
-      const stream = ChunkReader(
-        `this\n\n...\n\n...\nis\n\n...\n\n...\na\n\n...\n\n...\ntest\n\n...\n\n...\n!`,
+      const stream = ChunkReader(`this\n\n...\n\n...\nis\n\n...\n\n...\na\n\n...\n\n...\ntest\n\n...\n\n...\n!`,
         4
       ).pipeThrough(new DebugTransformStream());
       /*ew ReadableStream({
@@ -701,8 +672,7 @@ export function BrowserFileSystem(
         }
       })*/
       //console.log(' stream:', stream);
-      let promise = fetch(
-        send ? '/save' : filename,
+      let promise = fetch(send ? '/save' : filename,
         send
           ? {
               method: 'POST',
@@ -717,13 +687,10 @@ export function BrowserFileSystem(
             }
           : {}
       )
-        .then((response) =>
-          writable
-            ? response.json()
-            : response.body &&
-              (stream = response.body).pipeThrough(new TextDecoderStream())
+        .then(response =>
+          writable ? response.json() : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())
         )
-        .catch((err) => (error = err));
+        .catch(err => (error = err));
       return send ? writable : promise;
     },
     async close(fd) {
@@ -737,23 +704,19 @@ export function BrowserFileSystem(
         reader = await fd.getReader();
         ret = await reader.read(buf);
         await reader.releaseLock();
-      } catch (error) {
+      } catch(error) {
         ret.error = error;
       }
-      if (typeof ret == 'object' && ret !== null) {
+      if(typeof ret == 'object' && ret !== null) {
         const { value, done } = ret;
-        if (typeof value == 'string')
-          return CopyToArrayBuffer(
-            value,
-            buf || CreateArrayBuffer(value.length + (offset || 0)),
-            offset || 0
-          );
+        if(typeof value == 'string')
+          return CopyToArrayBuffer(value, buf || CreateArrayBuffer(value.length + (offset || 0)), offset || 0);
       }
       return ret.done ? 0 : -1;
     },
     write(fd, data, offset, length) {},
     readFile(filename) {
-      return fetch(filename).then(async (resp) => await resp.text());
+      return fetch(filename).then(async resp => await resp.text());
     },
     writeFile(filename, data, overwrite = true) {},
     exists(filename) {},
@@ -784,7 +747,7 @@ function Encoding2Bytes(encoding) {
   }
 }
 function ArrayBufferToString(buf, bytes = 1) {
-  if (typeof bytes == 'string') bytes = Encoding2Bytes(bytes);
+  if(typeof bytes == 'string') bytes = Encoding2Bytes(bytes);
   return String.fromCharCode(...new CharWidth[bytes](buf));
 }
 function ArrayBufferSize(buf) {
@@ -794,15 +757,13 @@ function ArrayBufferSize(buf) {
 function StringToArrayBuffer(str, bytes = 1) {
   const buf = new ArrayBuffer(str.length * bytes);
   const view = new CharWidth[bytes](buf);
-  for (let i = 0, strLen = str.length; i < strLen; i++)
-    view[i] = str.codePointAt(i);
+  for(let i = 0, strLen = str.length; i < strLen; i++) view[i] = str.codePointAt(i);
   return buf;
 }
 function CopyToArrayBuffer(str, buf, offset, bytes = 1) {
   // console.log("CopyToArrayBuffer",{str,buf,bytes});
   const view = new CharWidth[bytes](buf);
-  for (let i = 0, end = Math.min(str.length, buf.byteLength); i < end; i++)
-    view[i + offset] = str.codePointAt(i);
+  for(let i = 0, end = Math.min(str.length, buf.byteLength); i < end; i++) view[i + offset] = str.codePointAt(i);
   return buf;
 }
 function CreateArrayBuffer(bytes) {
@@ -816,67 +777,61 @@ export async function CreatePortableFileSystem(ctor, ...args) {
 export async function GetPortableFileSystem() {
   let fs, err;
   try {
-    fs = await CreatePortableFileSystem(
-      QuickJSFileSystem,
-      await import('std'),
-      await import('os')
-    );
-  } catch (error) {
+    fs = await CreatePortableFileSystem(QuickJSFileSystem, await import('std'), await import('os'));
+  } catch(error) {
     err = error;
   }
-  if (fs && !err) return fs;
+  if(fs && !err) return fs;
   err = null;
   try {
-    fs = await CreatePortableFileSystem(
-      NodeJSFileSystem,
+    fs = await CreatePortableFileSystem(NodeJSFileSystem,
       await import('fs'),
       await import('tty'),
       await import('process')
     );
-  } catch (error) {
+  } catch(error) {
     err = error;
   }
 
-  if (fs && !err) return fs;
+  if(fs && !err) return fs;
   err = null;
   try {
-    fs = await CreatePortableFileSystem(
-      BrowserFileSystem,
+    fs = await CreatePortableFileSystem(BrowserFileSystem,
 
       (await import('./stream/textDecodeStream.js')).TextDecoderStream,
       (await import('./stream/transformStream.js')).TransformStream,
       (await import('./stream/writableStream.js')).WritableStream
     );
-  } catch (error) {
+  } catch(error) {
     err = error;
   }
 
-  if (fs && !err) return fs;
+  if(fs && !err) return fs;
 }
 
-export async function PortableFileSystem(fn = (fs) => true) {
-  return await Util.memoize(async function () {
+export async function PortableFileSystem(fn = fs => true) {
+  return await Util.memoize(async function() {
     const fs = await GetPortableFileSystem();
 
     Util.weakAssign(fs, FilesystemDecorator);
 
     try {
       return (globalThis.filesystem = fs);
-    } catch (error) {
+    } catch(error) {
       try {
         return (global.filesystem = fs);
-      } catch (error) {
+      } catch(error) {
         try {
           return (window.filesystem = fs);
-        } catch (error) {
+        } catch(error) {
           try {
             return (window.filesystem = fs);
-          } catch (error) {}
+          } catch(error) {}
         }
       }
     }
     return fs;
-  })().then((fs) => (fn(fs), fs));
+  })().then(fs => (fn(fs), fs));
 }
 
 const FilesystemDecorator = {
@@ -887,7 +842,7 @@ const FilesystemDecorator = {
       await this.waitRead(input);
       ret = this.read(input, buffer, 0, bufSize);
       yield buffer.slice(0, ret);
-    } while (ret == bufSize);
+    } while(ret == bufSize);
   },
   *reader(input, bufSize = 1024) {
     const buffer = this.buffer(bufSize);
@@ -895,15 +850,15 @@ const FilesystemDecorator = {
     do {
       ret = this.read(input, buffer, 0, bufSize);
       yield buffer.slice(0, ret);
-    } while (ret == bufSize);
+    } while(ret == bufSize);
   },
 
   async combiner(iter) {
     let data;
-    for await (let part of iter) {
-      if (data === undefined) data = part;
-      else if (typeof data.concat == 'function') data = data.concat(part);
-      else if (typeof data == 'string') data += part;
+    for await(let part of iter) {
+      if(data === undefined) data = part;
+      else if(typeof data.concat == 'function') data = data.concat(part);
+      else if(typeof data == 'string') data += part;
       else throw new Error(`No such data type '${typeof data}'`);
     }
     return data;
@@ -915,7 +870,7 @@ const FilesystemDecorator = {
     return filesystem.bufferToString(data);
   },
   tempnam(prefix) {
-    if (!prefix)
+    if(!prefix)
       prefix = Util.getArgv()[1]
         .replace(/.*\//g, '')
         .replace(/\.[a-z]+$/, '');
@@ -923,7 +878,7 @@ const FilesystemDecorator = {
   },
   mkdtemp(prefix) {
     let name = this.tempnam(prefix);
-    if (!this.mkdir(name, 0o1777)) return name;
+    if(!this.mkdir(name, 0o1777)) return name;
   },
   mktemp(prefix) {
     let name = this.tempnam(prefix);

@@ -74,12 +74,7 @@ function __generator(thisArg, body) {
       try {
         if(((f = 1),
           y &&
-            (t =
-              op[0] & 2
-                ? y.return
-                : op[0]
-                ? y.throw || ((t = y.return) && t.call(y), 0)
-                : y.next) &&
+            (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) &&
             !(t = t.call(y, op[1])).done)
         )
           return t;
@@ -101,10 +96,7 @@ function __generator(thisArg, body) {
             op = _.ops.pop();
             _.trys.pop();
             continue;
-          default: if (
-              !((t = _.trys), (t = t.length > 0 && t[t.length - 1])) &&
-              (op[0] === 6 || op[0] === 2)
-            ) {
+          default: if (!((t = _.trys), (t = t.length > 0 && t[t.length - 1])) && (op[0] === 6 || op[0] === 2)) {
               _ = 0;
               continue;
             }
@@ -177,8 +169,7 @@ let InMemoryPubSub = /** @class */ (function () {
         e_1 = { error: e_1_1 };
       } finally {
         try {
-          if(publishers_1_1 && !publishers_1_1.done && (_a = publishers_1.return))
-            _a.call(publishers_1);
+          if(publishers_1_1 && !publishers_1_1.done && (_a = publishers_1.return)) _a.call(publishers_1);
         } finally {
           if(e_1) throw e_1.error;
         }
@@ -203,8 +194,7 @@ let InMemoryPubSub = /** @class */ (function () {
       e_2 = { error: e_2_1 };
     } finally {
       try {
-        if(publishers_2_1 && !publishers_2_1.done && (_a = publishers_2.return))
-          _a.call(publishers_2);
+        if(publishers_2_1 && !publishers_2_1.done && (_a = publishers_2.return)) _a.call(publishers_2);
       } finally {
         if(e_2) throw e_2.error;
       }
@@ -238,10 +228,7 @@ let InMemoryPubSub = /** @class */ (function () {
   InMemoryPubSub.prototype.close = function(reason) {
     let e_3, _a;
     try {
-      for(var _b = __values(Object.keys(this.publishers)), _c = _b.next();
-        !_c.done;
-        _c = _b.next()
-      ) {
+      for(var _b = __values(Object.keys(this.publishers)), _c = _b.next(); !_c.done; _c = _b.next()) {
         let topic = _c.value;
         this.unpublish(topic, reason);
       }

@@ -29,23 +29,18 @@
     //--- Handle Support ---
     //See: http://detectmobilebrowsers.com/about
     let useragent =
-      (window.navigator &&
-        (window.navigator.userAgent || window.navigator.vendor)) ||
-      window.opera ||
-      'none';
+      (window.navigator && (window.navigator.userAgent || window.navigator.vendor)) || window.opera || 'none';
     let isMobile =
-      /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(
-        useragent
+      /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(useragent
       ) ||
-      /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(
-        useragent.substr(0, 4)
+      /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(useragent.substr(0, 4)
       );
 
     let localStorage;
     try {
       localStorage = window.localStorage;
       localStorage = window['ie8-eventlistener/storage'] || window.localStorage;
-    } catch (e) {
+    } catch(e) {
       //New versions of Firefox throw a Security exception
       //if cookies are disabled. See
       //https://bugzilla.mozilla.org/show_bug.cgi?id=1028153
@@ -60,7 +55,7 @@
     try {
       localStorage.setItem('__crosstab', '');
       localStorage.removeItem('__crosstab');
-    } catch (e) {
+    } catch(e) {
       setItemAllowed = false;
     }
 
@@ -68,26 +63,26 @@
     let frozenTabEnvironment = false;
 
     function notSupported() {
-      if (crosstab.supported) return;
+      if(crosstab.supported) return;
       let errorMsg = 'crosstab not supported';
       let reasons = [];
-      if (!localStorage) {
+      if(!localStorage) {
         reasons.push('localStorage not availabe');
       }
-      if (!window.addEventListener) {
+      if(!window.addEventListener) {
         reasons.push('addEventListener not available');
       }
-      if (isMobile) {
+      if(isMobile) {
         reasons.push('mobile browser');
       }
-      if (frozenTabEnvironment) {
+      if(frozenTabEnvironment) {
         reasons.push('frozen tab environment detected');
       }
-      if (!setItemAllowed) {
+      if(!setItemAllowed) {
         reasons.push('localStorage.setItem not allowed');
       }
 
-      if (reasons.length > 0) {
+      if(reasons.length > 0) {
         errorMsg += ': ' + reasons.join(', ');
       }
 
@@ -107,42 +102,42 @@
 
     util.isArray =
       Array.isArray ||
-      function (arr) {
+      function(arr) {
         return arr instanceof Array;
       };
 
-    util.isNumber = function (num) {
+    util.isNumber = function(num) {
       return typeof num === 'number';
     };
 
-    util.isFunction = function (fn) {
+    util.isFunction = function(fn) {
       return typeof fn === 'function';
     };
 
-    util.forEachObj = function (obj, fn) {
-      for (let key in obj) {
-        if (obj.hasOwnProperty(key)) {
+    util.forEachObj = function(obj, fn) {
+      for(let key in obj) {
+        if(obj.hasOwnProperty(key)) {
           fn.call(obj, obj[key], key, obj);
         }
       }
     };
 
-    util.forEachArr = function (arr, fn) {
+    util.forEachArr = function(arr, fn) {
       let len = arr.length;
-      for (let i = 0; i < len; i++) {
+      for(let i = 0; i < len; i++) {
         fn.call(arr, arr[i], i, arr);
       }
     };
 
-    util.forEach = function (thing, fn) {
-      if (util.isArray(thing)) {
+    util.forEach = function(thing, fn) {
+      if(util.isArray(thing)) {
         util.forEachArr(thing, fn);
       } else {
         util.forEachObj(thing, fn);
       }
     };
 
-    util.map = function (thing, fn) {
+    util.map = function(thing, fn) {
       let res = [];
       util.forEach(thing, (item, key, obj) => {
         res.push(fn(item, key, obj));
@@ -151,19 +146,19 @@
       return res;
     };
 
-    util.filter = function (thing, fn) {
+    util.filter = function(thing, fn) {
       let isArr = util.isArray(thing);
       let res = isArr ? [] : {};
 
-      if (isArr) {
+      if(isArr) {
         util.forEachArr(thing, (value, key) => {
-          if (fn(value, key)) {
+          if(fn(value, key)) {
             res.push(value);
           }
         });
       } else {
         util.forEachObj(thing, (value, key) => {
-          if (fn(value, key)) {
+          if(fn(value, key)) {
             res[key] = value;
           }
         });
@@ -172,11 +167,11 @@
       return res;
     };
 
-    util.reduce = function (thing, fn, accumulator) {
+    util.reduce = function(thing, fn, accumulator) {
       let first = arguments.length < 3;
 
       util.forEach(thing, (item, key, obj) => {
-        if (first) {
+        if(first) {
           accumulator = item;
           first = false;
         } else {
@@ -187,7 +182,7 @@
       return accumulator;
     };
 
-    util.now = function () {
+    util.now = function() {
       return new Date().getTime();
     };
 
@@ -201,8 +196,7 @@
       tabPromoted: 'tabPromoted'
     };
 
-    util.storageEventKeys = util.reduce(
-      util.keys,
+    util.storageEventKeys = util.reduce(util.keys,
       (keys, val) => {
         keys[val] = 1;
         return keys;
@@ -213,25 +207,25 @@
     //--- Events ---
     //node.js style events, with the main difference being able
     //to add/remove events by key.
-    util.createEventHandler = function () {
+    util.createEventHandler = function() {
       let events = {};
       let subscribeKeyToListener = {};
 
-      let findHandlerByKey = function (event, key) {
+      let findHandlerByKey = function(event, key) {
         let handler;
-        if (subscribeKeyToListener[event]) {
+        if(subscribeKeyToListener[event]) {
           handler = subscribeKeyToListener[event][key];
         }
         return handler;
       };
 
-      let findHandlerIndex = function (event, listener) {
+      let findHandlerIndex = function(event, listener) {
         let listenerIndex = -1;
         let eventList = events[event];
-        if (eventList && listener) {
+        if(eventList && listener) {
           let len = eventList.length || 0;
-          for (let i = 0; i < len; i++) {
-            if (eventList[i] === listener) {
+          for(let i = 0; i < len; i++) {
+            if(eventList[i] === listener) {
               listenerIndex = i;
               break;
             }
@@ -240,21 +234,21 @@
         return listenerIndex;
       };
 
-      let addListener = function (event, listener, key) {
+      let addListener = function(event, listener, key) {
         let handlers = listeners(event);
 
         let storedHandler = findHandlerByKey(event, key);
         let listenerIndex;
 
-        if (storedHandler === undefined) {
+        if(storedHandler === undefined) {
           listenerIndex = handlers.length;
           handlers[listenerIndex] = listener;
 
-          if (!subscribeKeyToListener[event]) {
+          if(!subscribeKeyToListener[event]) {
             subscribeKeyToListener[event] = {};
           }
 
-          if (key) {
+          if(key) {
             subscribeKeyToListener[event][key] = listener;
           }
         } else {
@@ -265,13 +259,13 @@
         return key || listener;
       };
 
-      let removeListener = function (event, key) {
+      let removeListener = function(event, key) {
         let handler = util.isFunction(key) ? key : findHandlerByKey(event, key);
 
         let listenerIndex = findHandlerIndex(event, handler);
-        if (listenerIndex === -1) return false;
+        if(listenerIndex === -1) return false;
 
-        if (events[event] && events[event][listenerIndex]) {
+        if(events[event] && events[event][listenerIndex]) {
           events[event].splice(listenerIndex, 1);
           delete subscribeKeyToListener[event][key];
           return true;
@@ -279,14 +273,14 @@
         return false;
       };
 
-      let removeAllListeners = function (event) {
+      let removeAllListeners = function(event) {
         let successful = false;
-        if (event) {
-          if (events[event]) {
+        if(event) {
+          if(events[event]) {
             delete events[event];
             successful = true;
           }
-          if (subscribeKeyToListener[event]) {
+          if(subscribeKeyToListener[event]) {
             delete subscribeKeyToListener[event];
             successful = successful && true;
           }
@@ -298,25 +292,24 @@
         return successful;
       };
 
-      let emit = function (event) {
+      let emit = function(event) {
         let args = Array.prototype.slice.call(arguments, 1);
         let handlers = listeners(event);
 
-        util.forEach(handlers, function (listener) {
-          if (util.isFunction(listener)) {
+        util.forEach(handlers, function(listener) {
+          if(util.isFunction(listener)) {
             listener.apply(this, args);
           }
         });
       };
 
-      let once = function (event, listener, key) {
+      let once = function(event, listener, key) {
         //Generate a unique id for this listener
-        while (!key || findHandlerByKey(event, key) !== undefined) {
+        while(!key || findHandlerByKey(event, key) !== undefined) {
           key = util.generateId();
         }
 
-        addListener(
-          event,
+        addListener(event,
           function () {
             removeListener(event, key);
             let args = Array.prototype.slice.call(arguments);
@@ -328,12 +321,12 @@
         return key;
       };
 
-      var listeners = function (event) {
+      var listeners = function(event) {
         let handlers = (events[event] = events[event] || []);
         return handlers;
       };
 
-      let destructor = function () {
+      let destructor = function() {
         clearInterval(crosstab.keepAliveInterval);
         removeAllListeners();
       };
@@ -344,9 +337,9 @@
         on: addListener,
         off(event, key) {
           let argsLen = arguments.length;
-          if (!argsLen) {
+          if(!argsLen) {
             return removeAllListeners();
-          } else if (argsLen === 1) {
+          } else if(argsLen === 1) {
             return removeAllListeners(event);
           }
           return removeListener(event, key);
@@ -380,36 +373,36 @@
     let lastOldValue;
     function onStorageEvent(event) {
       //Only handle crosstab events
-      if (!event || !(event.key in util.storageEventKeys)) {
+      if(!event || !(event.key in util.storageEventKeys)) {
         return;
       }
 
       let eventValue;
       try {
         eventValue = event.newValue ? JSON.parse(event.newValue) : {};
-      } catch (e) {
+      } catch(e) {
         eventValue = {};
       }
-      if (!eventValue || !eventValue.id || eventValue.id === crosstab.id) {
+      if(!eventValue || !eventValue.id || eventValue.id === crosstab.id) {
         //This is to force IE to behave properly
         return;
       }
-      if (event.newValue === lastNewValue && event.oldValue === lastOldValue) {
+      if(event.newValue === lastNewValue && event.oldValue === lastOldValue) {
         //Fix bug in IE11 where StorageEvents in iframes are sent twice.
         return;
       }
       lastNewValue = event.newValue;
       lastOldValue = event.oldValue;
-      if (event.key === util.keys.MESSAGE_KEY) {
+      if(event.key === util.keys.MESSAGE_KEY) {
         let message = eventValue.data;
         //only handle if this message was meant for this tab.
-        if (!message.destination || message.destination === crosstab.id) {
+        if(!message.destination || message.destination === crosstab.id) {
           eventHandler.emit(message.event, message);
         }
-      } else if (event.key === util.keys.FROZEN_TAB_ENVIRONMENT) {
+      } else if(event.key === util.keys.FROZEN_TAB_ENVIRONMENT) {
         frozenTabEnvironment = eventValue.data;
         crosstab.supported = crosstab.supported && !eventValue.data;
-      } else if (event.key === util.keys.SUPPORTED_KEY) {
+      } else if(event.key === util.keys.SUPPORTED_KEY) {
         crosstab.supported = crosstab.supported && eventValue.data;
       }
     }
@@ -435,12 +428,12 @@
       crosstab.stopKeepalive = true;
       let numTabs = 0;
       util.forEach(util.tabs, (tab, key) => {
-        if (key !== util.keys.MASTER_TAB) {
+        if(key !== util.keys.MASTER_TAB) {
           numTabs++;
         }
       });
 
-      if (numTabs === 1) {
+      if(numTabs === 1) {
         util.tabs = {};
         setStoredTabs();
       } else {
@@ -484,14 +477,14 @@
 
     function masterTabElection() {
       let maxId = null;
-      util.forEach(util.tabs, (tab) => {
-        if (!maxId || tab.id < maxId) {
+      util.forEach(util.tabs, tab => {
+        if(!maxId || tab.id < maxId) {
           maxId = tab.id;
         }
       });
 
       //only broadcast the promotion if I am the new master
-      if (maxId === crosstab.id) {
+      if(maxId === crosstab.id) {
         broadcast(util.eventTypes.tabPromoted, crosstab.id);
       } else {
         //this is done so that in the case where multiple tabs are being
@@ -503,53 +496,53 @@
 
     //Handle other tabs closing by updating internal tab model, and promoting
     //self if we are the lowest tab id
-    eventHandler.addListener(util.eventTypes.tabClosed, (message) => {
+    eventHandler.addListener(util.eventTypes.tabClosed, message => {
       let id = message.data;
-      if (id in util.tabs) {
+      if(id in util.tabs) {
         delete util.tabs[id];
       }
 
       let master = getMaster();
-      if (!master || master.id === id) {
+      if(!master || master.id === id) {
         //If the master was the closed tab, delete it and the highest
         //tab ID becomes the new master, which will save the tabs
-        if (master) {
+        if(master) {
           deleteMaster();
         }
         masterTabElection();
-      } else if (master.id === crosstab.id) {
+      } else if(master.id === crosstab.id) {
         //If I am master, save the new tabs out
         setStoredTabs();
       }
     });
 
-    eventHandler.addListener(util.eventTypes.tabUpdated, (message) => {
+    eventHandler.addListener(util.eventTypes.tabUpdated, message => {
       let tab = message.data;
       util.tabs[tab.id] = tab;
 
       //If there is no master, hold an election
-      if (!getMaster()) {
+      if(!getMaster()) {
         masterTabElection();
       }
 
-      if (getMasterId() === tab.id) {
+      if(getMasterId() === tab.id) {
         setMaster(tab);
       }
-      if (isMaster()) {
+      if(isMaster()) {
         //If I am master, save the new tabs out
         setStoredTabs();
       }
     });
 
     let bullying;
-    eventHandler.addListener(util.eventTypes.tabPromoted, (message) => {
+    eventHandler.addListener(util.eventTypes.tabPromoted, message => {
       let id = message.data;
       let lastUpdated = message.timestamp;
       let previousMaster = getMasterId();
 
       //Bully out competing broadcasts if our id is lower
-      if (crosstab.id < id) {
-        if (!bullying) {
+      if(crosstab.id < id) {
+        if(!bullying) {
           bullying = setTimeout(() => {
             bullying = 0;
             broadcast(util.eventTypes.tabPromoted, crosstab.id);
@@ -560,14 +553,14 @@
 
       setMaster({ id, lastUpdated });
 
-      if (isMaster()) {
+      if(isMaster()) {
         //set the tabs in localStorage
         setStoredTabs();
       }
-      if (isMaster() && previousMaster !== crosstab.id) {
+      if(isMaster() && previousMaster !== crosstab.id) {
         //emit the become master event so we can handle it accordingly
         util.events.emit(util.eventTypes.becomeMaster);
-      } else if (!isMaster() && previousMaster === crosstab.id) {
+      } else if(!isMaster() && previousMaster === crosstab.id) {
         //emit the demoted from master event so we can clean up resources
         util.events.emit(util.eventTypes.demoteFromMaster);
       }
@@ -577,21 +570,21 @@
       padChar = padChar || '0';
       let numStr = num.toString();
 
-      if (numStr.length >= width) {
+      if(numStr.length >= width) {
         return numStr;
       }
 
       return new Array(width - numStr.length + 1).join(padChar) + numStr;
     }
 
-    util.generateId = function () {
+    util.generateId = function() {
       /*jshint bitwise: false*/
       return util.now().toString() + pad((Math.random() * 0x7fffffff) | 0, 10);
     };
 
     //--- Setup message sending and handling ---
     function broadcast(event, data, destination) {
-      if (!crosstab.supported) {
+      if(!crosstab.supported) {
         notSupported();
       }
 
@@ -606,11 +599,11 @@
 
       //If the destination differs from the origin send it out, otherwise
       //handle it locally
-      if (message.destination !== message.origin) {
+      if(message.destination !== message.origin) {
         setLocalStorageItem(util.keys.MESSAGE_KEY, message);
       }
 
-      if (!message.destination || message.destination === message.origin) {
+      if(!message.destination || message.destination === message.origin) {
         eventHandler.emit(event, message);
       }
     }
@@ -625,8 +618,8 @@
       setupComplete = true;
     });
 
-    var crosstab = function (fn) {
-      if (setupComplete) {
+    var crosstab = function(fn) {
+      if(setupComplete) {
         fn();
       } else {
         util.events.once('setupComplete', fn);
@@ -634,8 +627,7 @@
     };
 
     crosstab.id = util.generateId();
-    crosstab.supported =
-      !!localStorage && window.addEventListener && !isMobile && setItemAllowed;
+    crosstab.supported = !!localStorage && window.addEventListener && !isMobile && setItemAllowed;
     crosstab.util = util;
     crosstab.broadcast = broadcast;
     crosstab.broadcastMaster = broadcastMaster;
@@ -649,26 +641,26 @@
     //--- Crosstab supported ---
     //Check to see if the global frozen tab environment key or supported key has
     //been set.
-    if (!setupComplete && crosstab.supported) {
+    if(!setupComplete && crosstab.supported) {
       let frozenTabsRaw = getLocalStorageRaw(util.keys.FROZEN_TAB_ENVIRONMENT);
 
-      if (frozenTabsRaw.timestamp) {
+      if(frozenTabsRaw.timestamp) {
         let frozenTabs = frozenTabsRaw.data;
-        if (util.now() - frozenTabsRaw.timestamp > CACHE_TIMEOUT) {
+        if(util.now() - frozenTabsRaw.timestamp > CACHE_TIMEOUT) {
           localStorage.removeItem(util.keys.FROZEN_TAB_ENVIRONMENT);
-        } else if (frozenTabs === true) {
+        } else if(frozenTabs === true) {
           frozenTabEnvironmentDetected();
         }
       }
 
       let supportedRaw = getLocalStorageRaw(util.keys.SUPPORTED_KEY);
 
-      if (supportedRaw.timestamp) {
+      if(supportedRaw.timestamp) {
         let supported = supportedRaw.data;
 
-        if (util.now() - supportedRaw.timestamp > CACHE_TIMEOUT) {
+        if(util.now() - supportedRaw.timestamp > CACHE_TIMEOUT) {
           localStorage.removeItem(util.keys.SUPPORTED_KEY);
-        } else if (supported === false || supported === true) {
+        } else if(supported === false || supported === true) {
           //As long as it is explicitely set, use the value
           crosstab.supported = supported;
           util.events.emit('setupComplete');
@@ -719,20 +711,20 @@
       }
 
       let deadTabs = util.filter(util.tabs, notAlive);
-      util.forEach(deadTabs, (tab) => {
+      util.forEach(deadTabs, tab => {
         broadcast(util.eventTypes.tabClosed, tab.id);
       });
 
       //check to see if setup is complete
-      if (!setupComplete) {
+      if(!setupComplete) {
         let master = getMaster();
         //ping master
-        if (master && master.id !== myTab.id) {
+        if(master && master.id !== myTab.id) {
           let timeout;
           let start;
 
           crosstab.util.events.once('PONG', () => {
-            if (!setupComplete) {
+            if(!setupComplete) {
               clearTimeout(timeout);
               //set supported to true / frozen to false
               setLocalStorageItem(util.keys.SUPPORTED_KEY, true);
@@ -747,11 +739,11 @@
           //timeout, with iters "yields" to the event loop. So at least
           //iters number of blocks of javascript will be able to run
           //covering at least 100ms
-          var recursiveTimeout = function (iters) {
+          var recursiveTimeout = function(iters) {
             let diff = util.now() - start;
 
-            if (!setupComplete) {
-              if (iters <= 0 && diff > PING_TIMEOUT) {
+            if(!setupComplete) {
+              if(iters <= 0 && diff > PING_TIMEOUT) {
                 frozenTabEnvironmentDetected();
                 util.events.emit('setupComplete');
               } else {
@@ -767,20 +759,20 @@
             recursiveTimeout(5);
           }, PING_TIMEOUT - 5 * iterations);
           crosstab.broadcastMaster('PING');
-        } else if (master && master.id === myTab.id) {
+        } else if(master && master.id === myTab.id) {
           util.events.emit('setupComplete');
         }
       }
     }
 
     function keepaliveLoop() {
-      if (crosstab.supported && !crosstab.stopKeepalive) {
+      if(crosstab.supported && !crosstab.stopKeepalive) {
         keepalive();
       }
     }
 
     //--- Check if crosstab is supported ---
-    if (!crosstab.supported) {
+    if(!crosstab.supported) {
       crosstab.broadcast = notSupported;
     } else {
       //---- Setup Storage Listener
@@ -790,13 +782,13 @@
       //swap `beforeunload` to `unload` after DOM is loaded
       window.addEventListener('DOMContentLoaded', swapUnloadEvents, false);
 
-      util.events.on('PING', (message) => {
+      util.events.on('PING', message => {
         //only handle direct messages
-        if (!message.destination || message.destination !== crosstab.id) {
+        if(!message.destination || message.destination !== crosstab.id) {
           return;
         }
 
-        if (util.now() - message.timestamp < PING_TIMEOUT) {
+        if(util.now() - message.timestamp < PING_TIMEOUT) {
           crosstab.broadcast('PONG', null, message.origin);
         }
       });
@@ -820,21 +812,20 @@
      *    - module.exports in node and browserify
      */
   });
-})(
-  //First arg -- the global object in the browser or node
+})(//First arg -- the global object in the browser or node
   typeof window === 'object' ? window : global,
   //Second arg -- the define object
   typeof define === 'function' && define.amd
     ? define
     : (function (context) {
         return typeof module === 'object'
-          ? function (name, factory) {
+          ? function(name, factory) {
               factory(require, exports, module);
             }
-          : function (name, factory) {
+          : function(name, factory) {
               let module = { exports: {} };
-              let require = function (n) {
-                if (n === 'jquery') {
+              let require = function(n) {
+                if(n === 'jquery') {
                   n = 'jQuery';
                 }
                 return context[n];

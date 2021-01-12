@@ -10,16 +10,14 @@ import { WritableStream } from './writableStream.js';
 
 function TransformStreamCloseReadable(transformStream) {
   if(transformStream._errored === true) throw new TypeError('TransformStream is already errored');
-  if(transformStream._readableClosed === true)
-    throw new TypeError('Readable side is already closed');
+  if(transformStream._readableClosed === true) throw new TypeError('Readable side is already closed');
   TransformStreamCloseReadableInternal(transformStream);
 }
 
 function TransformStreamEnqueueToReadable(transformStream, chunk) {
   if(transformStream._errored === true) throw new TypeError('TransformStream is already errored');
 
-  if(transformStream._readableClosed === true)
-    throw new TypeError('Readable side is already closed');
+  if(transformStream._readableClosed === true) throw new TypeError('Readable side is already closed');
 
   // We throttle transformer.transform invocation based on the backpressure of the ReadableStream, but we still
   // accept TransformStreamEnqueueToReadable() calls.
@@ -218,14 +216,12 @@ export class TransformStreamSource {
 export class TransformStreamDefaultController {
   constructor(transformStream) {
     if(IsTransformStream(transformStream) === false) {
-      throw new TypeError('TransformStreamDefaultController can only be ' +
-          'constructed with a TransformStream instance'
+      throw new TypeError('TransformStreamDefaultController can only be ' + 'constructed with a TransformStream instance'
       );
     }
 
     if(transformStream._transformStreamController !== undefined) {
-      throw new TypeError('TransformStreamDefaultController instances can ' +
-          'only be created by the TransformStream constructor'
+      throw new TypeError('TransformStreamDefaultController instances can ' + 'only be created by the TransformStream constructor'
       );
     }
 
@@ -311,9 +307,7 @@ export const TransformStream =
       TransformStreamSetBackpressure(this, desiredSize <= 0);
 
       const transformStream = this;
-      const startResult = InvokeOrNoop(transformer, 'start', [
-        transformStream._transformStreamController
-      ]);
+      const startResult = InvokeOrNoop(transformer, 'start', [transformStream._transformStreamController]);
       startPromise_resolve(startResult);
       startPromise.catch(e => {
         // The underlyingSink and underlyingSource will error the readable and writable ends on their own.

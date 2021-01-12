@@ -11,8 +11,7 @@ export class EagleProject {
 
   constructor(file, fs = { readFile: filename => '', exists: filename => false }) {
     //super();
-    if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file))
-      this.filename = file.replace(/\.(brd|sch)$/, '');
+    if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file)) this.filename = file.replace(/\.(brd|sch)$/, '');
 
     Util.define(this, { fs });
 
@@ -97,12 +96,12 @@ export class EagleProject {
     }
   }
 
-  /* prettier-ignore */ get schematic() {return this.documents.find(doc => doc.type == 'sch'); }
-  /* prettier-ignore */ get board() {return this.documents.find(doc => doc.type == 'brd'); }
-  /* prettier-ignore */ get libraries() {return this.documents.filter(doc => doc.type == 'lbr'); }
-  /* prettier-ignore */ get root() { let children = this.documents; return { children }; }
-  /* prettier-ignore */ get children() { let children = this.documents; return children; }
-  /* prettier-ignore */ get library() { return this.data.lbr; }
+  get schematic() {return this.documents.find(doc => doc.type == 'sch'); }
+  get board() {return this.documents.find(doc => doc.type == 'brd'); }
+  get libraries() {return this.documents.filter(doc => doc.type == 'lbr'); }
+  get root() { let children = this.documents; return { children }; }
+  get children() { let children = this.documents; return children; }
+  get library() { return this.data.lbr; }
 
   *iterator(t = ([v, l, d]) => [typeof v == 'object' ? EagleElement.get(d, l, v) : v, l, d]) {
     const project = this;
@@ -161,8 +160,7 @@ export class EagleProject {
     //console.log('loadLibraries:', dirs, names);
     for(let name of names) {
       let lib = this.findLibrary(name, dirs);
-      if(!lib)
-        throw new Error(`EagleProject library '${name}' not found in:  \n${dirs.join('\n  ')}`);
+      if(!lib) throw new Error(`EagleProject library '${name}' not found in:  \n${dirs.join('\n  ')}`);
       this.open(lib);
     }
   }
@@ -257,9 +255,7 @@ export class EagleProject {
 
   saveTo(dir = '.', overwrite = false) {
     return new Promise((resolve, reject) => {
-      let promises = this.documents.map(doc =>
-        doc.saveTo([dir, doc.filename].join('/'), overwrite)
-      );
+      let promises = this.documents.map(doc => doc.saveTo([dir, doc.filename].join('/'), overwrite));
 
       return Promise.all(promises).then(result => {
         //console.log('result:', result);

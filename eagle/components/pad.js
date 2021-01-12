@@ -11,7 +11,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
   log('Pad.render ', { transformation, data, opts });
   let pad =
     useValue(async function* () {
-      for await (let change of data.repeater) {
+      for await(let change of data.repeater) {
         //  log('Pad.render:', change);
         yield change;
       }
@@ -36,9 +36,7 @@ export const Pad = ({ data, opts = {}, ...props }) => {
     case 'long': {
       ro = ro * 1.2;
       const w = ro;
-      d = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${
-        -w * 2
-      } 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
+      d = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${-w * 2} 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
       break;
     }
     case 'square': {

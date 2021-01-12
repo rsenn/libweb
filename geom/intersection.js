@@ -14,8 +14,7 @@ export class Intersection {
 
     //https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
 
-    denominator =
-      (line2.y2 - line2.y1) * (line1.x2 - line1.x1) - (line2.x2 - line2.x1) * (line1.y2 - line1.y1);
+    denominator = (line2.y2 - line2.y1) * (line1.x2 - line1.x1) - (line2.x2 - line2.x1) * (line1.y2 - line1.y1);
 
     if(denominator == 0) return null;
 

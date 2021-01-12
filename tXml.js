@@ -50,19 +50,17 @@ function tXml(S, options) {
    */
   function parseChildren() {
     let children = [];
-    while (S[pos]) {
-      if (S.charCodeAt(pos) == openBracketCC) {
-        if (S.charCodeAt(pos + 1) === slashCC) {
+    while(S[pos]) {
+      if(S.charCodeAt(pos) == openBracketCC) {
+        if(S.charCodeAt(pos + 1) === slashCC) {
           pos = S.indexOf(closeBracket, pos);
-          if (pos + 1) pos += 1;
+          if(pos + 1) pos += 1;
           return children;
-        } else if (S.charCodeAt(pos + 1) === exclamationCC) {
-          if (S.charCodeAt(pos + 2) == minusCC) {
+        } else if(S.charCodeAt(pos + 1) === exclamationCC) {
+          if(S.charCodeAt(pos + 2) == minusCC) {
             //comment support
-            while (
-              pos !== -1 &&
-              !(
-                S.charCodeAt(pos) === closeBracketCC &&
+            while(pos !== -1 &&
+              !(S.charCodeAt(pos) === closeBracketCC &&
                 S.charCodeAt(pos - 1) == minusCC &&
                 S.charCodeAt(pos - 2) == minusCC &&
                 pos != -1
@@ -70,13 +68,13 @@ function tXml(S, options) {
             ) {
               pos = S.indexOf(closeBracket, pos + 1);
             }
-            if (pos === -1) {
+            if(pos === -1) {
               pos = S.length;
             }
           } else {
             //doctypesupport
             pos += 2;
-            while (S.charCodeAt(pos) !== closeBracketCC && S[pos]) {
+            while(S.charCodeAt(pos) !== closeBracketCC && S[pos]) {
               pos++;
             }
           }
@@ -87,7 +85,7 @@ function tXml(S, options) {
         children.push(node);
       } else {
         let text = parseText();
-        if (text.trim().length > 0) children.push(text);
+        if(text.trim().length > 0) children.push(text);
         pos++;
       }
     }
@@ -100,7 +98,7 @@ function tXml(S, options) {
   function parseText() {
     let start = pos;
     pos = S.indexOf(openBracket, pos) - 1;
-    if (pos === -2) pos = S.length;
+    if(pos === -2) pos = S.length;
     return S.slice(start, pos + 1);
   }
 
@@ -111,7 +109,7 @@ function tXml(S, options) {
 
   function parseName() {
     let start = pos;
-    while (nameSpacer.indexOf(S[pos]) === -1 && S[pos]) {
+    while(nameSpacer.indexOf(S[pos]) === -1 && S[pos]) {
       pos++;
     }
     return S.slice(start, pos);
@@ -121,13 +119,7 @@ function tXml(S, options) {
    *    is parsing a node, including tagName, Attributes and its children,
    * to parse children it uses the parseChildren again, that makes the parsing recursive
    */
-  let NoChildNodes = options.noChildNodes || [
-    'img',
-    'br',
-    'input',
-    'meta',
-    'link'
-  ];
+  let NoChildNodes = options.noChildNodes || ['img', 'br', 'input', 'meta', 'link'];
 
   function parseNode() {
     pos++;
@@ -136,15 +128,14 @@ function tXml(S, options) {
     let children = [];
 
     //parsing attributes
-    while (S.charCodeAt(pos) !== closeBracketCC && S[pos]) {
+    while(S.charCodeAt(pos) !== closeBracketCC && S[pos]) {
       let c = S.charCodeAt(pos);
-      if ((c > 64 && c < 91) || (c > 96 && c < 123)) {
+      if((c > 64 && c < 91) || (c > 96 && c < 123)) {
         //if('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(S[pos])!==-1 ){
         var name = parseName();
         //search beginning of the string
         let code = S.charCodeAt(pos);
-        while (
-          code &&
+        while(code &&
           code !== singleQuoteCC &&
           code !== doubleQuoteCC &&
           !((code > 64 && code < 91) || (code > 96 && code < 123)) &&
@@ -153,9 +144,9 @@ function tXml(S, options) {
           pos++;
           code = S.charCodeAt(pos);
         }
-        if (code === singleQuoteCC || code === doubleQuoteCC) {
+        if(code === singleQuoteCC || code === doubleQuoteCC) {
           var value = parseString();
-          if (pos === -1) {
+          if(pos === -1) {
             return {
               tagName,
               attributes,
@@ -171,18 +162,18 @@ function tXml(S, options) {
       pos++;
     }
     //optional parsing of children
-    if (S.charCodeAt(pos - 1) !== slashCC) {
-      if (tagName == 'script') {
+    if(S.charCodeAt(pos - 1) !== slashCC) {
+      if(tagName == 'script') {
         var start = pos + 1;
         pos = S.indexOf('</script>', pos);
         children = [S.slice(start, pos - 1)];
         pos += 9;
-      } else if (tagName == 'style') {
+      } else if(tagName == 'style') {
         var start = pos + 1;
         pos = S.indexOf('</style>', pos);
         children = [S.slice(start, pos - 1)];
         pos += 8;
-      } else if (NoChildNodes.indexOf(tagName) == -1) {
+      } else if(NoChildNodes.indexOf(tagName) == -1) {
         pos++;
         children = parseChildren(name);
       }
@@ -211,39 +202,37 @@ function tXml(S, options) {
    *
    */
   function findElements() {
-    let r = new RegExp(
-      '\\s' + options.attrName + '\\s*=[\'"]' + options.attrValue + '[\'"]'
-    ).exec(S);
-    if (r) {
+    let r = new RegExp('\\s' + options.attrName + '\\s*=[\'"]' + options.attrValue + '[\'"]').exec(S);
+    if(r) {
       return r.index;
     }
     return -1;
   }
 
   var out = null;
-  if (options.attrValue !== undefined) {
+  if(options.attrValue !== undefined) {
     options.attrName = options.attrName || 'id';
     var out = [];
 
-    while ((pos = findElements()) !== -1) {
+    while((pos = findElements()) !== -1) {
       pos = S.lastIndexOf('<', pos);
-      if (pos !== -1) {
+      if(pos !== -1) {
         out.push(parseNode());
       }
       S = S.substr(pos);
       pos = 0;
     }
-  } else if (options.parseNode) {
+  } else if(options.parseNode) {
     out = parseNode();
   } else {
     out = parseChildren();
   }
 
-  if (options.filter) {
+  if(options.filter) {
     out = tXml.filter(out, options.filter);
   }
 
-  if (options.setPos) {
+  if(options.setPos) {
     out.pos = pos;
   }
 
@@ -260,28 +249,28 @@ function tXml(S, options) {
  */
 tXml.simplify = function simplify(children) {
   let out = {};
-  if (!children.length) {
+  if(!children.length) {
     return '';
   }
 
-  if (children.length === 1 && typeof children[0] == 'string') {
+  if(children.length === 1 && typeof children[0] == 'string') {
     return children[0];
   }
   //map each object
-  children.forEach((child) => {
-    if (typeof child !== 'object') {
+  children.forEach(child => {
+    if(typeof child !== 'object') {
       return;
     }
-    if (!out[child.tagName]) out[child.tagName] = [];
+    if(!out[child.tagName]) out[child.tagName] = [];
     let kids = tXml.simplify(child.children || []);
     out[child.tagName].push(kids);
-    if (child.attributes) {
+    if(child.attributes) {
       kids._attributes = child.attributes;
     }
   });
 
-  for (let i in out) {
-    if (out[i].length == 1) {
+  for(let i in out) {
+    if(out[i].length == 1) {
       out[i] = out[i][0];
     }
   }
@@ -294,11 +283,11 @@ tXml.simplify = function simplify(children) {
  * @params children{Array} the children of a node
  * @param f{function} the filter method
  */
-tXml.filter = function (children, f) {
+tXml.filter = function(children, f) {
   let out = [];
-  children.forEach((child) => {
-    if (typeof child === 'object' && f(child)) out.push(child);
-    if (child.children) {
+  children.forEach(child => {
+    if(typeof child === 'object' && f(child)) out.push(child);
+    if(child.children) {
       let kids = tXml.filter(child.children, f);
       out = out.concat(kids);
     }
@@ -317,13 +306,13 @@ tXml.toString = function TOMObjToXML(O) {
   let out = '';
 
   function writeChildren(O, indent = '') {
-    if (O && O.length) {
+    if(O && O.length) {
       let ret = false;
-      for (let i = 0; i < O.length; i++) {
-        if (typeof O[i] == 'string') {
+      for(let i = 0; i < O.length; i++) {
+        if(typeof O[i] == 'string') {
           out += O[i].trim();
         } else {
-          if (indent !== null) {
+          if(indent !== null) {
             out += '\n' + indent;
             ret = true;
           }
@@ -337,21 +326,20 @@ tXml.toString = function TOMObjToXML(O) {
 
   function writeNode(N, indent = '') {
     out += '<' + N.tagName;
-    for (let i in N.attributes) {
-      if (N.attributes[i] === null) {
+    for(let i in N.attributes) {
+      if(N.attributes[i] === null) {
         out += ' ' + i;
-      } else if (N.attributes[i].indexOf('"') === -1) {
+      } else if(N.attributes[i].indexOf('"') === -1) {
         out += ' ' + i + '="' + N.attributes[i].trim() + '"';
       } else {
         out += ' ' + i + "='" + N.attributes[i].trim() + "'";
       }
     }
 
-    if (N.children && N.children.length > 0) {
+    if(N.children && N.children.length > 0) {
       out += '>';
-      if (writeChildren(N.children, N.tagName[0] == '?' ? '' : indent + '  '))
-        out += '\n' + indent;
-      if (N.tagName[0] != '?') out += '</' + N.tagName + '>';
+      if(writeChildren(N.children, N.tagName[0] == '?' ? '' : indent + '  ')) out += '\n' + indent;
+      if(N.tagName[0] != '?') out += '</' + N.tagName + '>';
     } else {
       out += ' />';
     }
@@ -367,21 +355,21 @@ tXml.toString = function TOMObjToXML(O) {
  * this text has some <b>big</b> text and a <a href=''>link</a>
  * @return {string}
  */
-tXml.toContentString = function (tDom) {
-  if (Array.isArray(tDom)) {
+tXml.toContentString = function(tDom) {
+  if(Array.isArray(tDom)) {
     let out = '';
-    tDom.forEach((e) => {
+    tDom.forEach(e => {
       out += ' ' + tXml.toContentString(e);
       out = out.trim();
     });
     return out;
-  } else if (typeof tDom === 'object') {
+  } else if(typeof tDom === 'object') {
     return tXml.toContentString(tDom.children);
   }
   return ' ' + tDom;
 };
 
-tXml.getElementById = function (S, id, simplified) {
+tXml.getElementById = function(S, id, simplified) {
   let out = tXml(S, {
     attrValue: id
   });
@@ -393,7 +381,7 @@ tXml.getElementById = function (S, id, simplified) {
  * more: the class attribute contains XXX
  * @param
  */
-tXml.getElementsByClassName = function (S, classname, simplified) {
+tXml.getElementsByClassName = function(S, classname, simplified) {
   const out = tXml(S, {
     attrName: 'class',
     attrValue: '[a-zA-Z0-9-s ]*' + classname + '[a-zA-Z0-9-s ]*'
@@ -401,11 +389,11 @@ tXml.getElementsByClassName = function (S, classname, simplified) {
   return simplified ? tXml.simplify(out) : out;
 };
 
-tXml.parseStream = function (stream, offset) {
-  if (typeof offset === 'string') {
+tXml.parseStream = function(stream, offset) {
+  if(typeof offset === 'string') {
     offset = offset.length + 2;
   }
-  if (typeof stream === 'string') {
+  if(typeof stream === 'string') {
     let fs = require('fs');
     stream = fs.createReadStream(stream, { start: offset });
     offset = 0;
@@ -413,16 +401,16 @@ tXml.parseStream = function (stream, offset) {
 
   let position = offset;
   let data = '';
-  stream.on('data', (chunk) => {
+  stream.on('data', chunk => {
     data += chunk;
     let lastPos = 0;
     do {
       position = data.indexOf('<', position) + 1;
-      if (!position) {
+      if(!position) {
         position = lastPos;
         return;
       }
-      if (data[position + 1] === '/') {
+      if(data[position + 1] === '/') {
         position = position + 1;
         lastPos = pos;
         continue;
@@ -433,7 +421,7 @@ tXml.parseStream = function (stream, offset) {
         setPos: true
       });
       position = res.pos;
-      if (position > data.length - 1 || position < lastPos) {
+      if(position > data.length - 1 || position < lastPos) {
         data = data.slice(lastPos);
         position = 0;
         lastPos = 0;
@@ -442,7 +430,7 @@ tXml.parseStream = function (stream, offset) {
 
       stream.emit('xml', res);
       lastPos = position;
-    } while (1);
+    } while(1);
   });
   stream.on('end', () => {
     console.log('end');
@@ -450,49 +438,46 @@ tXml.parseStream = function (stream, offset) {
   return stream;
 };
 
-tXml.transformStream = function (offset) {
+tXml.transformStream = function(offset) {
   //require through here, so it will not get added to webpack/browserify
   const through2 = require('through2');
-  if (typeof offset === 'string') {
+  if(typeof offset === 'string') {
     offset = offset.length + 2;
   }
 
   let position = offset || 0;
   let data = '';
-  const stream = through2(
-    { readableObjectMode: true },
-    function (chunk, enc, callback) {
-      data += chunk;
-      let lastPos = 0;
-      do {
-        position = data.indexOf('<', position) + 1;
-        if (!position) {
-          position = lastPos;
-          return callback();
-        }
-        if (data[position + 1] === '/') {
-          position = position + 1;
-          lastPos = pos;
-          continue;
-        }
-        let res = tXml(data, {
-          pos: position - 1,
-          parseNode: true,
-          setPos: true
-        });
-        position = res.pos;
-        if (position > data.length - 1 || position < lastPos) {
-          data = data.slice(lastPos);
-          position = 0;
-          lastPos = 0;
-          return callback();
-        }
-        this.push(res);
-        lastPos = position;
-      } while (1);
-      callback();
-    }
-  );
+  const stream = through2({ readableObjectMode: true }, function(chunk, enc, callback) {
+    data += chunk;
+    let lastPos = 0;
+    do {
+      position = data.indexOf('<', position) + 1;
+      if(!position) {
+        position = lastPos;
+        return callback();
+      }
+      if(data[position + 1] === '/') {
+        position = position + 1;
+        lastPos = pos;
+        continue;
+      }
+      let res = tXml(data, {
+        pos: position - 1,
+        parseNode: true,
+        setPos: true
+      });
+      position = res.pos;
+      if(position > data.length - 1 || position < lastPos) {
+        data = data.slice(lastPos);
+        position = 0;
+        lastPos = 0;
+        return callback();
+      }
+      this.push(res);
+      lastPos = position;
+    } while(1);
+    callback();
+  });
 
   return stream;
 };

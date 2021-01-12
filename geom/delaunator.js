@@ -18,8 +18,7 @@ export default class Delaunator {
 
   constructor(coords) {
     const n = coords.length >> 1;
-    if(n > 0 && typeof coords[0] !== 'number')
-      throw new Error('Expected coords to contain numbers.');
+    if(n > 0 && typeof coords[0] !== 'number') throw new Error('Expected coords to contain numbers.');
 
     this.coords = coords;
 
@@ -43,13 +42,7 @@ export default class Delaunator {
   }
 
   update() {
-    const {
-      coords,
-      _hullPrev: hullPrev,
-      _hullNext: hullNext,
-      _hullTri: hullTri,
-      _hullHash: hullHash
-    } = this;
+    const { coords, _hullPrev: hullPrev, _hullNext: hullNext, _hullTri: hullTri, _hullHash: hullHash } = this;
     const n = coords.length >> 1;
 
     //populate an array of point indices; calculate input data bbox
@@ -201,9 +194,7 @@ export default class Delaunator {
       start = hullPrev[start];
       let e = start,
         q;
-      while(((q = hullNext[e]),
-        !orient(x, y, coords[2 * e], coords[2 * e + 1], coords[2 * q], coords[2 * q + 1]))
-      ) {
+      while(((q = hullNext[e]), !orient(x, y, coords[2 * e], coords[2 * e + 1], coords[2 * q], coords[2 * q + 1]))) {
         e = q;
         if(e === start) {
           e = -1;
@@ -222,9 +213,7 @@ export default class Delaunator {
 
       //walk forward through the hull, adding more triangles and flipping recursively
       let n = hullNext[e];
-      while(((q = hullNext[n]),
-        orient(x, y, coords[2 * n], coords[2 * n + 1], coords[2 * q], coords[2 * q + 1]))
-      ) {
+      while(((q = hullNext[n]), orient(x, y, coords[2 * n], coords[2 * n + 1], coords[2 * q], coords[2 * q + 1]))) {
         t = this._addTriangle(n, i, q, hullTri[i], -1, hullTri[n]);
         hullTri[i] = this._legalize(t + 2);
         hullNext[n] = n; //mark as removed
@@ -234,9 +223,7 @@ export default class Delaunator {
 
       //walk backward from the other side, adding more triangles and flipping
       if(e === start) {
-        while(((q = hullPrev[e]),
-          orient(x, y, coords[2 * q], coords[2 * q + 1], coords[2 * e], coords[2 * e + 1]))
-        ) {
+        while(((q = hullPrev[e]), orient(x, y, coords[2 * q], coords[2 * q + 1], coords[2 * e], coords[2 * e + 1]))) {
           t = this._addTriangle(q, i, e, -1, hullTri[e], hullTri[q]);
           this._legalize(t + 2);
           hullTri[q] = t;

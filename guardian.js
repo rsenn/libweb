@@ -11,8 +11,8 @@ function failures(tests) {
     })
     .map(function (test) {
       var r = {};
-      for (var k in test) {
-        if (typeof test[k] !== 'function') r[k] = test[k];
+      for(var k in test) {
+        if(typeof test[k] !== 'function') r[k] = test[k];
       }
       return r;
     });
@@ -31,9 +31,8 @@ export function guardian(overrides) {
     assert = o.assert || d.assert,
     complete = o.complete || d.complete;
 
-  var guard = Object.freeze(
-    Object.create({
-      assert: function (pass) {
+  var guard = Object.freeze(Object.create({
+      assert: function(pass) {
         var result = assert.bind(this)(pass);
         complete.bind(this)(result);
         return result;
@@ -46,15 +45,14 @@ export function guardian(overrides) {
   return guard;
 }
 
-guardian.defaults = function (tests) {
+guardian.defaults = function(tests) {
   return {
     tests: tests,
-    complete: function (result) {
+    complete: function(result) {
       tests.push(result);
     },
     assert: function (pass) {
-      return Object.freeze(
-        Object.create(this, {
+      return Object.freeze(Object.create(this, {
           pass: {
             value: pass,
             enumerable: true

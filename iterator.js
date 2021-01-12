@@ -1,14 +1,12 @@
 import Util from './util.js';
 
-export const isIterator = (arg) =>
-  typeof arg == 'object' && arg !== null && typeof arg.next == 'function';
+export const isIterator = arg => typeof arg == 'object' && arg !== null && typeof arg.next == 'function';
 
-export const isIterable = (arg) =>
-  typeof arg == 'object' && arg !== null && arg[Symbol.iterator] !== undefined;
+export const isIterable = arg => typeof arg == 'object' && arg !== null && arg[Symbol.iterator] !== undefined;
 
 export class IterableInterface {
   [Symbol.iterator]() {
-    if (typeof this.next == 'function') return this;
+    if(typeof this.next == 'function') return this;
   }
 }
 
@@ -26,7 +24,7 @@ export class IteratorInterface extends IterableInterface {
       //Util.log("Iterator.map next", args);
       let { value, done } = it.next(...args);
 
-      if (done) return { done };
+      if(done) return { done };
       value = fn(value, i++, it);
       return { value, done };
     });
@@ -54,7 +52,7 @@ export class Iterator extends IterableInterface {
     super();
     //if(isIterable(arg)) arg = arg[Symbol.iterator]();
 
-    if (isIterator(arg)) {
+    if(isIterator(arg)) {
       ret = this;
       //ret.next = arg.next.bind(arg); // ((...args) => arg.next(...args));
       ret.next = (...args) => {
@@ -63,29 +61,23 @@ export class Iterator extends IterableInterface {
 
         return ret;
       };
-    } else if (typeof arg == 'function') {
+    } else if(typeof arg == 'function') {
       ret = this;
       ret.next = arg;
-    } else if (
-      ((typeof arg == 'object' && arg !== null) || typeof arg == 'string') &&
-      arg.length !== undefined
-    ) {
+    } else if(((typeof arg == 'object' && arg !== null) || typeof arg == 'string') && arg.length !== undefined) {
       ret = (function* () {
-        for (let i = 0; i < arg.length; i++) yield arg[i];
+        for(let i = 0; i < arg.length; i++) yield arg[i];
       })();
-    } else if (typeof arg == 'number') {
+    } else if(typeof arg == 'number') {
       ret = (function* () {
-        for (let i = 0; i < arg; i++) yield i;
+        for(let i = 0; i < arg; i++) yield i;
       })();
     } else {
-      throw new Error(
-        'Not iterable? ' + typeof arg + ' ' + Util.className(arg)
-      );
+      throw new Error('Not iterable? ' + typeof arg + ' ' + Util.className(arg));
     }
 
-    if (!(ret instanceof Iterator))
-      if (Object.hasOwnProperty(ret, 'next'))
-        Object.setPrototypeOf(ret, Iterator.prototype);
+    if(!(ret instanceof Iterator))
+      if(Object.hasOwnProperty(ret, 'next')) Object.setPrototypeOf(ret, Iterator.prototype);
       else Util.extend(ret, Util.getMethods(Iterator.prototype));
 
     //Util.log("ret.next = ",ret.next+'');
@@ -109,35 +101,35 @@ export class Iterator extends IterableInterface {
 }*/
 Iterator.map = function* (it, fn = (x, i, it) => x) {
   let i = 0;
-  for (let item of it) yield fn(item, i++, it);
+  for(let item of it) yield fn(item, i++, it);
 };
 
-Iterator.reduce = function (it, fn = (acc, x, i, it) => x, acc) {
+Iterator.reduce = function(it, fn = (acc, x, i, it) => x, acc) {
   let i = 0;
-  for (let item of it) acc = fn(acc, item, i++, it);
+  for(let item of it) acc = fn(acc, item, i++, it);
   return acc;
 };
 
 Iterator.filter = function* (it, fn = (x, i, it) => true) {
   let i = 0;
-  for (let item of it) if (fn(item, i++, it)) yield item;
+  for(let item of it) if(fn(item, i++, it)) yield item;
 };
 
 Iterator.some = function* (it, fn = (x, i, it) => false) {
   let i = 0;
-  for (let item of it) if (fn(item, i++, it)) return true;
+  for(let item of it) if(fn(item, i++, it)) return true;
   return false;
 };
 
 Iterator.every = function* (it, fn = (x, i, it) => false) {
   let i = 0;
-  for (let item of it) if (!fn(item, i++, it)) return false;
+  for(let item of it) if(!fn(item, i++, it)) return false;
   return true;
 };
 
 Iterator.forEach = function* (it, fn = (x, i, it) => true) {
   let i = 0;
-  for (let item of it) fn(item, i++, it);
+  for(let item of it) fn(item, i++, it);
 };
 
 Object.assign(Iterator, { isIterable, isIterator });

@@ -117,9 +117,7 @@ peg$SyntaxError.buildMessage = function(expected, found) {
       case 2:
         return descriptions[0] + ' or ' + descriptions[1];
 
-      default: return (
-          descriptions.slice(0, -1).join(', ') + ', or ' + descriptions[descriptions.length - 1]
-        );
+      default: return descriptions.slice(0, -1).join(', ') + ', or ' + descriptions[descriptions.length - 1];
     }
   }
 
@@ -379,11 +377,7 @@ function peg$parse(input, options) {
   }
 
   function peg$buildStructuredError(expected, found, location) {
-    return new peg$SyntaxError(peg$SyntaxError.buildMessage(expected, found),
-      expected,
-      found,
-      location
-    );
+    return new peg$SyntaxError(peg$SyntaxError.buildMessage(expected, found), expected, found, location);
   }
 
   function peg$parsesvg_path() {

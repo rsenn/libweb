@@ -110,12 +110,7 @@ export class EagleNode {
   cacheFields() {
     switch (this.tagName) {
       case 'schematic':
-        return [
-          /*['settings'], ['layers'],*/ ['libraries'],
-          ['classes'],
-          ['parts'],
-          ['sheets'] /*, ['modules']*/
-        ];
+        return [/*['settings'], ['layers'],*/ ['libraries'], ['classes'], ['parts'], ['sheets'] /*, ['modules']*/];
       case 'board':
         return [['plain'], ['libraries'], ['classes'], ['elements'], ['signals']];
       case 'module':
@@ -220,9 +215,7 @@ export class EagleNode {
       let values = keys.reduce((acc, key) => [...acc, pred[key]], []);
 
       pred = (v, p, o) =>
-        keys.every((key, i) =>
-          key == 'tagName' ? v[key] == values[i] : v.attributes[key] == values[i]
-        );
+        keys.every((key, i) => (key == 'tagName' ? v[key] == values[i] : v.attributes[key] == values[i]));
     }
     return pred;
   }
@@ -338,13 +331,7 @@ export class EagleNode {
     if(a) {
       attrs = Object.getOwnPropertyNames(a)
         .filter(name => typeof a[name] != 'function')
-        .reduce((attrs, attr) =>
-            concat(attrs,
-              ' ',
-              text(attr, 1, 33),
-              text(':', 1, 36),
-              text("'" + a[attr] + "'", 1, 32)
-            ),
+        .reduce((attrs, attr) => concat(attrs, ' ', text(attr, 1, 33), text(':', 1, 36), text("'" + a[attr] + "'", 1, 32)),
           attrs
         );
 
@@ -356,13 +343,7 @@ export class EagleNode {
     let ret = ['']; //`${Util.className(this)} `;
     let tag = r.tagName || r.raw.tagName;
     //console.realLog("attrs:",attrs);
-    if(tag)
-      ret = concat(ret,
-        text('<', 1, 36),
-        text(tag, 1, 31),
-        attrs,
-        text(numChildren == 0 ? ' />' : '>', 1, 36)
-      );
+    if(tag) ret = concat(ret, text('<', 1, 36), text(tag, 1, 31), attrs, text(numChildren == 0 ? ' />' : '>', 1, 36));
     if(this.filename) ret = concat(ret, ` filename="${this.filename}"`);
     if(numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${tag}>`);
     return (ret = concat(text(Util.className(r) + ' ', 0), ret));
@@ -444,9 +425,7 @@ export class EagleNode {
       typeof args[0] == 'function'
         ? args.shift()
         : ([v, l, d]) => [
-            typeof v == 'object' && v !== null && 'tagName' in v
-              ? new this.constructor[Symbol.species](d, l)
-              : v,
+            typeof v == 'object' && v !== null && 'tagName' in v ? new this.constructor[Symbol.species](d, l) : v,
             l,
             d
           ];
@@ -458,8 +437,7 @@ export class EagleNode {
       predicate(v, p) ? -1 : p.length > 1 ? p[p.length - 2] == 'children' : true
     )) {
       if(!(l instanceof ImmutablePath)) l = new ImmutablePath(l);
-      if(typeof v == 'object' && v !== null && 'tagName' in v)
-        if(predicate(v, l, owner)) yield t([v, l, owner]);
+      if(typeof v == 'object' && v !== null && 'tagName' in v) if (predicate(v, l, owner)) yield t([v, l, owner]);
     }
   }
 

@@ -1,5 +1,5 @@
 const destreamify = async (stream, callback) => {
-  for await (let event of stream) {
+  for await(let event of stream) {
     callback(event);
   }
 };
@@ -79,9 +79,7 @@ export function debounceAsync(fn, wait = 0, options = {}) {
   function flush() {
     const thisDeferred = deferred;
     clearTimeout(timer);
-    Promise.resolve(options.accumulate
-        ? callFn(this, [pendingArgs])
-        : callFn(this, pendingArgs[pendingArgs.length - 1])
+    Promise.resolve(options.accumulate ? callFn(this, [pendingArgs]) : callFn(this, pendingArgs[pendingArgs.length - 1])
     ).then(thisDeferred.resolve, thisDeferred.reject);
     pendingArgs = [];
     deferred = null;

@@ -31,12 +31,10 @@ RelationManager.prototype.add = function(subject, recursing) {
     subjectSpec = this.subjectSpec,
     spec = this.spec;
   if(!(subject instanceof subjectSpec.class)) {
-    throw new TypeError(subjectSpec.property + '.add(object) ... object is not instanceof ' + subjectSpec.class.name
-    );
+    throw new TypeError(subjectSpec.property + '.add(object) ... object is not instanceof ' + subjectSpec.class.name);
   }
   if(instance[subjectSpec.property].length === subjectSpec.cardinality) {
-    throw new RangeError(subjectSpec.property + '.add(object) ... exceeds maximum of ' + subjectSpec.cardinality
-    );
+    throw new RangeError(subjectSpec.property + '.add(object) ... exceeds maximum of ' + subjectSpec.cardinality);
   }
   let i = [].indexOf.call(instance[subjectSpec.property], subject);
   if(!subjectSpec.unique || i === -1) {
@@ -126,9 +124,7 @@ function addRelations(instance, specs) {
       //stopping set when value already in place prevents infinite recursion
       if(set.value !== subject) {
         if(subject && !(subject instanceof subjectSpec.class)) {
-          throw new TypeError(subjectSpec.property +
-              '.add(object) ... object is not instanceof ' +
-              subjectSpec.class.name
+          throw new TypeError(subjectSpec.property + '.add(object) ... object is not instanceof ' + subjectSpec.class.name
           );
         }
         let oldvalue = set.value;
@@ -174,8 +170,7 @@ function addRelations(instance, specs) {
   }
 }
 function defineRelation(scope, name, sname, head, specs) {
-  let cons = new Function('return function ' + name + '(' + head + ') { return Relation.apply(this,arguments); }'
-  )();
+  let cons = new Function('return function ' + name + '(' + head + ') { return Relation.apply(this,arguments); }')();
   cons.prototype = Object.create(Relation.prototype);
   cons.prototype.constructor = cons;
   cons.prototype.specs = specs;
@@ -258,9 +253,7 @@ Relation.define = function(scope) {
       //make the Proxy be the object exposed to the scope
       scope[spec.class.name] = cons;
     }
-    spec.class.prototype.relations = spec.class.prototype.relations
-      ? spec.class.prototype.relations
-      : [];
+    spec.class.prototype.relations = spec.class.prototype.relations ? spec.class.prototype.relations : [];
     if(i > 0) {
       spec.class.prototype.relations.push({ subject: subjectSpec, object: spec });
     }

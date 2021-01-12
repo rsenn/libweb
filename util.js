@@ -1247,7 +1247,7 @@ Util.partition = function* (a, size) {
 
 Util.intersect = (a, b) => a.filter(Set.prototype.has, new Set(b));
 Util.difference = (a, b, includes) => {
-  console.log('Util.difference', { a, b, includes });
+  //console.log('Util.difference', { a, b, includes });
   if(typeof includes != 'function') return [a.filter(x => !b.includes(x)), b.filter(x => !a.includes(x))];
 
   return [a.filter(x => !includes(b, x)), b.filter(x => !includes(a, x))];

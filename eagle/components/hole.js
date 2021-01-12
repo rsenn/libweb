@@ -10,7 +10,7 @@ export const Hole = ({ data, opts = {}, ...props }) => {
   log('Hole.render ', { transformation, data, opts });
   let hole =
     useValue(async function* () {
-      for await (let change of data.repeater) {
+      for await(let change of data.repeater) {
         //  log('Hole.render:', change);
         yield change;
       }

@@ -8,7 +8,7 @@ export const Polygon = ({ data, opts = {}, ...props }) => {
 
   let polygon =
     useValue(async function* () {
-      for await (let change of data.repeater) {
+      for await(let change of data.repeater) {
         //     log('change:', change);
         yield change;
       }
@@ -25,9 +25,7 @@ export const Polygon = ({ data, opts = {}, ...props }) => {
   let visible = !layer || 'yes' == useTrkl(layer.handlers.visible);
 
   const colorProps =
-    ['Top', 'Bottom'].indexOf(layer.name) != -1
-      ? { stroke: color, fill: 'none' }
-      : { stroke: 'none', fill: color };
+    ['Top', 'Bottom'].indexOf(layer.name) != -1 ? { stroke: color, fill: 'none' } : { stroke: 'none', fill: color };
   return h('polygon', {
     points,
     class: ElementToClass(polygon),

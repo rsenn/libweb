@@ -125,9 +125,7 @@ wru.test([
     name: 'Point.comp()',
     test: () => {
       let point = new Point(50, 50);
-      wru.assert('point.comp().equals(new Point(-50,-50))',
-        point.comp().equals(new Point(-50, -50))
-      );
+      wru.assert('point.comp().equals(new Point(-50,-50))', point.comp().equals(new Point(-50, -50)));
     }
   },
   {
@@ -221,9 +219,7 @@ wru.test([
       let point = new Point(50, 50);
       let obj = point.toObject();
 
-      wru.assert('Object.getPrototypeOf(obj) == Point.prototype',
-        Object.getPrototypeOf(obj) == Point.prototype
-      );
+      wru.assert('Object.getPrototypeOf(obj) == Point.prototype', Object.getPrototypeOf(obj) == Point.prototype);
     }
   },
   {
@@ -261,17 +257,7 @@ wru.test([
     name: 'Point.transform()',
     test: () => {
       let point = new Point(50, 50);
-      let matrix = [
-        1.4142135623730951,
-        -1.414213562373095,
-        10,
-        1.414213562373095,
-        1.4142135623730951,
-        10,
-        0,
-        0,
-        1
-      ];
+      let matrix = [1.4142135623730951, -1.414213562373095, 10, 1.414213562373095, 1.4142135623730951, 10, 0, 0, 1];
       point.transform(matrix);
       wru.assert('transform', point.round(0.1).equals({ x: 10, y: 151.4 }));
     }

@@ -1,27 +1,40 @@
-export {
-  EagleSVGRenderer,
-  SchematicRenderer,
-  BoardRenderer,
-  LibraryRenderer
-} from './eagle/renderer.js';
+export { EagleSVGRenderer, SchematicRenderer, BoardRenderer, LibraryRenderer } from './eagle/renderer.js';
 
 export { EagleNodeList } from './eagle/nodeList.js';
 export {
-  MakeRotation,
+  useTrkl,
+  RAD2DEG,
+  DEG2RAD,
   VERTICAL,
   HORIZONTAL,
   HORIZONTAL_VERTICAL,
+  DEBUG,
+  log,
+  setDebug,
+  PinSizes,
+  EscapeClassName,
+  UnescapeClassName,
+  LayerToClass,
+  ElementToClass,
   ClampAngle,
   AlignmentAngle,
+  MakeRotation,
+  EagleAlignments,
+  Alignment,
+  SVGAlignments,
+  AlignmentAttrs,
   RotateTransformation,
   LayerAttributes,
   InvertY,
   PolarToCartesian,
-  Arc,
+  CartesianToPolar,
+  RenderArc,
   CalculateArcRadius,
   LinesToPath,
-  MakeCoordTransformer
+  MakeCoordTransformer,
+  useAttributes
 } from './eagle/renderUtils.js';
+
 export { EagleDocument } from './eagle/document.js';
 export { EagleReference, EagleRef } from './eagle/ref.js';
 export { makeEagleNode, EagleNode } from './eagle/node.js';

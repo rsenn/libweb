@@ -63,10 +63,7 @@ export class ReactComponent {
   /*
    */
   dummy() {
-    x = h(React.Fragment, { id: 'test' }, [
-      h('blah', { className: 'test' }),
-      h('p', { style: { width: '100%' } })
-    ]);
+    x = h(React.Fragment, { id: 'test' }, [h('blah', { className: 'test' }), h('p', { style: { width: '100%' } })]);
   }
 
   static formats = {
@@ -102,8 +99,7 @@ export class ReactComponent {
           ? ` ${prop}={${Util.toString(value)}}`
           : (s == '' ? '' : `, `) + ` ${prop}: ${Util.toString(value)}`;
     }
-    if(typeof tagName == 'function')
-      tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
+    if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
 
     //console.log('tagName:', tagName);
 
