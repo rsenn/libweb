@@ -85,8 +85,12 @@ Size.prototype.toCSS = function(units) {
   return ret;
 };
 Size.prototype.transform = function(m) {
-  this.width = m.xx * this.width + m.yx * this.height;
-  this.height = m.xy * this.width + m.yy * this.height;
+  const [xx, xy, , yx, yy] = m;
+  const { width, height } = this;
+
+  //console.log("Size.transform", { width, height, xx, xy, yx, yy});
+  this.width = xx * width + xy * height;
+  this.height = yx * width + yy * height;
   return this;
 };
 Size.prototype.isSquare = function() {

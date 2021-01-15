@@ -28,7 +28,7 @@ export function Tree(root) {
 
   Object.defineProperties(tree, {
     parents: { value: parents, enumerable: false },
-    root: { value: root, enumerable: false }
+    root: { value: root, enumerable: false, writable: true }
   });
 
   Object.setPrototypeOf(tree, Tree.prototype);
@@ -84,9 +84,22 @@ Tree.prototype.parentNode = function(obj) {
   return parents.get(obj);
 };
 
-Tree.prototype.anchestors = function* (obj, t = node => node) {
+Tree.prototype.anchestors = function* (obj, path, t) {
   const { parents } = this;
-  while((obj = parents.get(obj))) yield t(obj);
+  let next = () => {};
+  if(!t) t = node => node;
+
+  //if(!Array.isArray(path)) path = Path(path);
+  if(isPath(path)) {
+    path = new Path([...path]);
+    //console.log("path:", path);
+    t = (node, path) => [path, node];
+    next = () => (path = path.slice(0, -1)); // path.splice(path.length-1, 1);
+  }
+
+  while((obj = parents.get(obj))) {
+    yield t(obj, next());
+  }
 };
 
 Tree.prototype.keyOf = function(obj, prop) {
@@ -137,19 +150,39 @@ Tree.prototype.push = function(node, ...children) {
   return sizeOf(node);
 };
 
+Tree.prototype.set = function(path, node) {
+  deep.set(this, ['root', ...path], node);
+  let parent = deep.get(this, ['root', ...path].slice(0, -1));
+
+  mapRecurse((child, parent) => this.parents.set(child, parent), parent, node);
+};
+
 Tree.prototype.remove = function(node) {
   let parent = Tree.prototype.parentNode.call(this, node);
   let index = Tree.prototype.indexOf.call(this, parent, node);
+  console.log('Tree.remove', { node, parent, index });
 
   let [removed] = splice(parent, index, 1);
   mapRecurse(child => this.parents.delete(child), node, removed);
   return removed;
 };
+Tree.prototype.removeAt = function(path) {
+  if(typeof path == 'string') path = Path(path);
+  let parent = Tree.prototype.at.call(this, path.slice(0, -1));
+  let index = path[path.length - 1];
+  let removed;
+  if(Array.isArray(parent)) [removed] = parent.splice(+index, 1);
+  else [removed] = splice(parent, index, 1);
+
+  mapRecurse(child => this.parents.delete(child), parent, removed);
+  return removed;
+};
 Tree.prototype.replace = function(node, replacement) {
   let parent = Tree.prototype.parentNode.call(this, node);
   let index = Tree.prototype.indexOf.call(this, parent, node);
-
+  //console.log('Tree.replace', { path: this.pathOf(node), index });
   let [removed] = splice(parent, index, 1, replacement);
+
   mapRecurse(child => this.parents.delete(child), node, removed);
   mapRecurse((child, parent) => parents.set(child, parent), node, replacement);
 
@@ -171,19 +204,150 @@ Tree.prototype.values = function* (node = this.root) {
 Tree.prototype.flat = function(transform, pred) {
   let iter = Tree.prototype.entries.call(this);
   if(!transform) transform = ([path, node]) => [path.join('.'), node];
+  if(!pred) pred = ([path, node]) => typeof node != 'object' || node == null;
   if(transform) iter = map(iter, transform);
 
   if(pred) iter = filter(iter, pred);
   return new Map(iter);
 };
+Tree.prototype.create = function(path) {
+  if(!Array.isArray(path)) path = Path(path);
 
+  if(path.length <= 1 && !this.root) {
+    this.root = {};
+  }
+
+  let parent =
+    path.length < 1 ? this : path.length < 2 ? this.root : Tree.prototype.create.call(this, path.slice(0, -1));
+  let current = path.length < 1 ? 'root' : path[path.length - 1];
+
+  if(parent[current] === undefined) {
+    parent[current] = {};
+
+    const obj = parent[current];
+    console.log('Tree.create', { current, path: path.join('.'), parent: parent + '' });
+  }
+  /*
+  if(typeof key == 'number') {
+    if(!(current in parent)) parent[current] = [];
+  } else if(parent[current] === undefined) parent[current] = {};*/
+  // console.log('Tree.prototype.create', {  current, name: obj && obj.constructor.name });
+
+  return parent;
+};
+Tree.prototype.build = function(iterable) {
+  this.root = {};
+  for(let [path, node] of iterable) {
+    let p = Path(path);
+    let parent = Tree.prototype.create.call(this, p);
+    let key = p[p.length - 1];
+    // console.log('build', { p, parent, key });
+    parent[key] = node;
+  }
+  return this.root;
+};
+
+Tree.prototype.each = function* (node, reduce = (acc, node) => [...acc, node], acc = []) {
+  if(!node) node = this.root;
+
+  yield [node, (acc = reduce(acc, node))];
+  for(let key in node) {
+    if(typeof node[key] == 'object' && node[key] !== null)
+      yield* Tree.prototype.each.call(this, node[key], reduce, acc);
+  }
+};
 Tree.prototype[Symbol.iterator] = function() {
-  return map(Tree.prototype.entries.call(this), ([path, node]) => [path.join('.'), node]);
+  return map(Tree.prototype.entries.call(this), ([path, node]) => [node, path]);
 };
 
 Tree.prototype.filter = function(pred) {
   return filter(Tree.prototype.entries.call(this), ([path, node]) => pred(node, path, this));
 };
+
+function Path(a) {
+  if(this) {
+    //if(!Array.isArray(a))
+    //a = Path(a);
+    //Fconsole.log('Path(', a, ')');
+    Array.prototype.splice.call(this, 0, 0, ...a);
+    return this;
+  }
+  if(typeof a == 'object' && a != null && a instanceof Path) return a;
+
+  if(typeof a == 'string') a = a.split('.');
+
+  if(!Array.isArray(a)) a = Array.from(a, key => (isNaN(+key) ? key : +key));
+
+  return new Path(a); //Object.setPrototypeOf(a, Path.prototype);
+}
+
+function isPath(arg) {
+  return typeof arg == 'string' || (typeof arg == 'object' && arg != null && typeof arg.length == 'number');
+}
+Object.defineProperty(Array, Symbol.hasInstance, {
+  value(instance) {
+    return (typeof instance == 'object' &&
+      instance != null &&
+      (instance.constructor === Array || instance.constructor === Path)
+    );
+    return Array.isArray(instance);
+  }
+});
+Path.prototype = Object.entries(Object.getOwnPropertyDescriptors(Array.prototype))
+  .filter(([n]) => typeof n != 'symbol')
+  .reduce((a, [n, desc]) => Object.defineProperty(a, n, desc), Path.prototype);
+Path.prototype.constructor = Path;
+Object.defineProperties(Path, {
+  [Symbol.species]: {
+    get() {
+      return Path;
+    },
+    enumerable: true
+  }
+});
+Object.defineProperties(Path.prototype, {
+  [Symbol.species]: {
+    value: Path,
+    enumerable: false,
+    writable: false,
+    configurable: false
+  },
+  length: {
+    value: 0,
+    writable: true,
+    configurable: false
+  },
+  at: {
+    value(index) {
+      if(Math.abs(index) >= this.length) {
+        index %= this.length;
+        if(index < 0) index += this.length;
+        return this[index];
+      }
+    },
+    enumerable: false
+  },
+  tail: {
+    get() {
+      return this[this.length - 1];
+    },
+    enumerable: false
+  },
+  head: {
+    get() {
+      return this[0];
+    },
+    enumerable: false
+  },
+  parent: {
+    get() {
+      return Array.prototype.slice.call(this, 0, this.length - 1);
+    },
+    enumerable: false
+  }, [Symbol.isConcatSpreadable]: { value: false }
+});
+
+//Object.assign(Path.prototype, { ...Object.getPrototypeOf(new Array()), constructor: Path });
 
 function isObject(o) {
   return typeof o == 'object' && o != null;
@@ -208,6 +372,7 @@ function keyAt(obj, index) {
 }
 
 function entries(obj) {
+  //console.log('obj:', obj);
   return obj instanceof Array
     ? Array.prototype.entries.call(obj)
     : Object.getOwnPropertyNames(obj).map(prop => [prop, obj[prop]]);
@@ -232,7 +397,7 @@ function indexOf(obj, prop) {
 
 function splice(obj, start, deleteCount, ...addItems) {
   if(obj instanceof Array) return Array.prototype.splice.call(obj, start, deleteCount, ...addItems);
-  //console.log('splice', { obj, start, deleteCount, addItems });
+  // console.log('splice', { obj, start, deleteCount, addItems });
   let remove = [...entries(obj)].slice(start, start + deleteCount);
   //console.log('splice', { remove });
   let removed = [];
@@ -261,6 +426,12 @@ function* recurse(path = [], node) {
 
 function* map(iter, fn) {
   for(let item of iter) yield fn(item);
+}
+
+function* anchestors(path) {
+  let a = [...path];
+  let i = a.length;
+  while(--i >= 0) yield a.slice(0, i);
 }
 
 function* filter(iter, pred) {

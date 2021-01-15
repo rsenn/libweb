@@ -9,3 +9,4 @@ export { useRecognizers, useDrag, usePinch, useWheel, useMove, useScroll, useGes
 export { useHover } from './hooks/useHover.js';
 export { useMousePosition } from './hooks/useMousePosition.js';
 export { usePanZoom } from './hooks/usePanZoom.js';
+export { useToggleButtonGroupState } from './hooks/useToggleButtonGroupState.js';

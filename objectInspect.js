@@ -90,6 +90,9 @@ function inspect_(obj, options, depth, seen) {
   if(typeof depth === 'undefined') {
     depth = 0;
   }
+  if(!Number.isFinite(depth)) {
+    depth = Number.MAX_SAFE_INTEGER;
+  }
   /* console.reallog("maxDepth:", maxDepth)
   console.reallog("opts.depth:", opts.depth)
   console.reallog("depth:", depth)*/
@@ -161,11 +164,11 @@ function inspect_(obj, options, depth, seen) {
     }
     s += '</' + String(obj.nodeName).toLowerCase() + '>';
     return s;
-  } else if(isArray(obj)) {
+  } else if(isArrayLike(obj)) {
     if(obj.length === 0) {
       s += '[]';
     } else {
-      let xs = arrObjKeys(obj, inspect);
+      let xs = arrObjKeys(obj, inspect, opts);
       let multiline = indent && !singleLineValues(xs);
 
       if(Number.isFinite(opts.breakLength)) {
@@ -241,7 +244,7 @@ function inspect_(obj, options, depth, seen) {
     const ys = arrObjKeys(obj, inspect, { ...opts });
     if(ys.length == 0) {
     } else if(indent && opts.multiline) {
-      s += indentedJoin(ys, indent);
+      s += indentedJoin(ys, indent, opts);
     } else {
       s += ' ' + ys.join(', ') + ' ';
     }
@@ -264,6 +267,10 @@ function wrapColor(s, ...args) {
 
 function quote(s) {
   return String(s).replace(/"/g, '&quot;');
+}
+
+function isArrayLike(obj) {
+  return typeof obj == 'object' && obj != null && 'length' in obj;
 }
 
 function isArray(obj) {
@@ -448,7 +455,8 @@ function markBoxed(str) {
 }
 
 function weakCollectionOf(type) {
-  return type + ' { ' + wrapColor('<items unknown>', 0, 36) + ' }';
+  const c = opts.colors ? wrapColor : s => s;
+  return type + ' { ' + c('<items unknown>', 0, 36) + ' }';
 }
 
 function collectionOf(type, size, entries, indent) {
@@ -480,16 +488,19 @@ function getIndent(opts, depth) {
   };
 }
 
-function indentedJoin(xs, indent) {
+function indentedJoin(xs, indent, opts = {}) {
   if(xs.length === 0) {
     return '';
   }
+  if(!(typeof indent == 'object' && indent != null)) indent = { prev: '', base: '' };
+  const c = opts.colors ? wrapColor : s => s;
+
   const lineJoiner = '\n' + indent.prev + indent.base;
-  return lineJoiner + xs.join(wrapColor(',', 1, 36) + lineJoiner) + '\n' + indent.prev;
+  return lineJoiner + xs.join(c(',', 1, 36) + lineJoiner) + '\n' + indent.prev;
 }
 
-function arrObjKeys(obj, inspect, opts) {
-  const isArr = isArray(obj);
+function arrObjKeys(obj, inspect, opts = {}) {
+  const isArr = isArray(obj) || isArrayLike(obj);
   const xs = [];
   if(isArr && typeof opts == 'object' && opts != null && obj.length > opts.maxArrayLength) {
     const remaining = obj.length - opts.maxArrayLength;
@@ -501,6 +512,7 @@ function arrObjKeys(obj, inspect, opts) {
     xs.length = obj.length;
     for(let i = 0; i < obj.length; i++) xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
   }
+  let c = opts.colors ? wrapColor : s => s;
 
   for(let key in obj) {
     if(!has(obj, key)) continue;
@@ -508,13 +520,14 @@ function arrObjKeys(obj, inspect, opts) {
     if(isArr && String(Number(key)) === key && key < obj.length) continue;
 
     let s = '';
+
     if(isGetter(obj, key)) {
       s = '[Getter]';
-      if(opts.colors) s = wrapColor(s, 0, 36) + ' ';
+      if(opts.colors) s = c(s, 0, 36) + ' ';
     }
     s += inspect(obj[key], obj);
     if(/[^\w$]/.test(key)) {
-      xs.push(inspect(key, obj) + wrapColor(': ', 1, 36) + s);
+      xs.push(inspect(key, obj) + c(': ', 1, 36) + s);
     } else {
       xs.push(key + ': ' + s);
     }
@@ -523,7 +536,7 @@ function arrObjKeys(obj, inspect, opts) {
     const syms = gOPS(obj);
     for(let j = 0; j < syms.length; j++) {
       if(isEnumerable.call(obj, syms[j])) {
-        xs.push(wrapColor('[', 1, 36) + inspect(syms[j]) + wrapColor(']: ', 1, 36) + inspect(obj[syms[j]], obj));
+        xs.push(c('[', 1, 36) + inspect(syms[j]) + c(']: ', 1, 36) + inspect(obj[syms[j]], obj));
       }
     }
   }

@@ -80,7 +80,7 @@ Matrix.prototype.splice = Array.prototype.splice;
 Matrix.prototype.slice = Array.prototype.slice;
 */
 
-Object.assign(Matrix.prototype, Util.getMethods(Array.prototype));
+Object.assign(Matrix.prototype, new Array() || Util.getMethods(Array.prototype));
 
 Matrix.prototype.constructor = Matrix;
 
@@ -91,7 +91,7 @@ Object.defineProperty(Matrix, Symbol.species, {
 });
 
 Util.defineGetter(Matrix.prototype, Symbol.toStringTag, function() {
-  return `[object Matrix ${Matrix.prototype.toString.apply(this, arguments)}]`;
+  return `[object ${Matrix.prototype.toString.apply(this, arguments).replace(/^[^(]*/g, '')}]`;
 });
 Matrix.prototype[Symbol.isConcatSpreadable] = false;
 
@@ -167,14 +167,16 @@ Matrix.propDescriptors =MatrixProps;
 
 Matrix.prototype.init = function(...args) {
   if(args.length == 1) args = args[0];
-  //if(args.length < 9) args = args.concat(Array.prototype.slice.call(Matrix.IDENTITY, args.length));
 
-  let a = [1, 0, 0, 0, 1, 0, 0, 0, 1];
-  const abc = 'abcdef';
+  if(Array.isArray(args[0])) {
+    const [row0 = [0, 0, 0], row1 = [0, 0, 0], row2 = [0, 0, 0]] = args;
 
-  args.map((arg, i) => (a[keyIndexes[abc[i]]] = arg));
-
-  Array.prototype.splice.call(this, 0, this.length, ...a);
+    Array.prototype.splice.call(this, 0, row0.length, ...row0);
+    Array.prototype.splice.call(this, 3, row1.length, ...row1);
+    Array.prototype.splice.call(this, 6, row2.length, ...row2);
+  } else {
+    Array.prototype.splice.call(this, 0, Math.min(this.length, args.length), ...args);
+  }
   return this;
 };
 
@@ -308,20 +310,17 @@ Matrix.prototype.transform_distance = function(d) {
 };
 
 Matrix.prototype.transform_xy = function(x, y) {
-  const m0 = this.row(0);
-  const m1 = this.row(1);
-
-  return [m0[0] * x + m0[1] * y + m0[2], m1[0] * x + m1[1] * y + m0[2]];
+  const { a, b, c, d, e, f } = this;
+  return [a * x + c * y + e, b * x + d * y + f];
 };
 
 Matrix.prototype.transform_point = function(p) {
+  const { a, b, c, d, e, f } = this;
+  const m0 = [a, c, e],
+    m1 = [b, d, f];
   const k = 'x' in p && 'y' in p ? ['x', 'y'] : [0, 1];
-  const m0 = this.row(0);
-  const m1 = this.row(1);
-
   const x = m0[0] * p[k[0]] + m0[1] * p[k[1]] + m0[2];
   const y = m1[0] * p[k[0]] + m1[1] * p[k[1]] + m1[2];
-
   p[k[0]] = x;
   p[k[1]] = y;
   return p;
@@ -349,8 +348,10 @@ Matrix.prototype.transform_wh = function(width, height) {
 };
 
 Matrix.prototype.transform_size = function(s) {
-  const w = this[0] * s.width + this[1] * s.height;
-  const h = this[3] * s.width + this[4] * s.height;
+  const [a, c, e, b, d, f] = this;
+
+  const w = a * s.width + c * s.height;
+  const h = b * s.width + d * s.height;
   s.width = w;
   s.height = h;
   return s;
@@ -509,13 +510,22 @@ Matrix.prototype.decompose = function(degrees = false, useLU = true) {
 };
 
 Matrix.prototype.init_identity = function() {
-  return Matrix.prototype.init.call(this, 1, 0, 0, 1, 0, 0);
+  return Matrix.prototype.init.call(this, [
+    [1, 0, 0],
+    [0, 1, 0]
+  ]);
 };
 Matrix.prototype.is_identity = function() {
-  return Matrix.prototype.equals.call(this, [1, 0, 0, 0, 1, 0, 0, 0, 1]);
+  return Matrix.prototype.equals.call(this,
+    [
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1]
+    ].flat()
+  );
 };
 Matrix.prototype.init_translate = function(tx, ty) {
-  return Matrix.prototype.init.call(this, 1, 0, 0, 1, ty, tx);
+  return Matrix.prototype.init.call(this, 1, 0, tx, 0, 1, ty);
 };
 
 Matrix.prototype.init_scale = function(sx, sy) {
@@ -535,9 +545,8 @@ Matrix.prototype.init_skew = function(x, y, deg = false) {
   const ay = Math.tan(deg ? deg2rad(y) : y);
   return Matrix.prototype.init.call(this, 1, ay, ax, 1, 0, 0);
 };
-Matrix.prototype[Symbol.iterator] = function() {
-  const { a, b, c, d, e, f } = this;
-  return [a, b, c, d, e, f][Symbol.iterator]();
+Matrix.prototype[Symbol.iterator] = function* () {
+  for(let i = 0; i < 27; i++) yield this[i];
 };
 
 Matrix.identity = () => new Matrix();

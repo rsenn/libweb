@@ -10,8 +10,7 @@ export function useToggleButtonGroupState(arg) {
   const [currentSelectedId, setCurrentSelectedId] = useState(selectedId);
 
   function handleSelect(callback) {
-    if(callback === void 0) 
-        callback = function() {};
+    if(callback === void 0) callback = function() {};
 
     return function(event) {
       const nextSelectedId = event.currentTarget[attributeId];
@@ -20,11 +19,11 @@ export function useToggleButtonGroupState(arg) {
         callback(event);
       }
     };
-  } 
+  }
 
   return {
     currentSelectedId,
     handleSelect: useCallback(handleSelect, [currentSelectedId]),
-    reset: useCallback(() => setCurrentSelectedId(undefined)), [])
+    reset: useCallback(() => setCurrentSelectedId(undefined), [])
   };
 }

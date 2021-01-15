@@ -3286,10 +3286,16 @@ Util.mapCombinator = (forward, backward) => {
   }
 };
 
-Util.predicate = fn_or_regex => {
-  let fn;
-  if(fn_or_regex instanceof RegExp) fn = arg => fn_or_regex.test(arg + '');
-  else fn = fn_or_regex;
+Util.predicate = (fn_or_regex, pred) => {
+  let fn = fn_or_regex;
+  if(typeof fn_or_regex == 'string') fn_or_regex = new RegExp(`^${fn_or_regex}$`);
+  if(fn_or_regex instanceof RegExp) {
+    fn = arg => fn_or_regex.test(arg + '');
+    fn.valueOf = function() {
+      return fn_or_regex;
+    };
+  }
+  if(typeof pred == 'function') return arg => pred(arg, fn);
   return fn;
 };
 Util.some = predicates => {
@@ -5096,6 +5102,76 @@ Util.getArgs = Util.memoize(() =>
     () => Util.tryCatch(() => scriptArgs)
   )
 );
+/*  options Object/Map
+
+    option Array [has_arg,callback,val]
+
+*/
+Util.getOpt = (options = {}, args) => {
+  let short, long;
+  let result = {};
+  let positional = (result['@'] = []);
+
+  if(!(options instanceof Array)) options = Object.entries(options);
+
+  const findOpt = arg =>
+    options.find(([optname, option]) => (Array.isArray(option) ? option.indexOf(arg) != -1 : false) || arg == optname);
+
+  let [, params] = options.find(opt => opt[0] == '@') || [];
+  if(typeof params == 'string') params = params.split(',');
+
+  console.log('Util.getOpt options', options);
+  console.log('Util.getOpt params', params);
+
+  for(let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    let opt;
+    if(arg[0] == '-') {
+      let name, value, start, end;
+      if(arg[1] == '-') long = true;
+      else short = true;
+      //console.log('Util.getOpt', { arg, short, long });
+      start = short ? 1 : 2;
+      if(short) end = 2;
+      else if((end = arg.indexOf('=')) == -1) end = arg.length;
+
+      name = arg.substring(start, end);
+      //console.log('Util.getOpt', { start, end, name });
+
+      if((opt = findOpt(name))) {
+        //console.log('Util.getOpt', { opt });
+        const [has_arg, handler] = opt[1];
+        if(has_arg) {
+          if(arg.length > end) value = arg.substring(end + (arg[end] == '='));
+          else value = args[++i];
+        } else {
+          value = true;
+        }
+
+        Util.tryCatch(() => handler(value, result[opt[0]], options),
+          v => (value = v)
+        );
+
+        console.log('Util.getOpt', { name, value, fn: typeof opt[1] + ' ' + opt[1] + '' });
+
+        result[opt[0]] = value;
+        continue;
+      }
+    }
+
+    if(params.length) {
+      const param = params.shift();
+      // console.log('Util.getOpt', { positional, param });
+      if((opt = findOpt(param))) {
+        result[opt[0]] = arg;
+        continue;
+      }
+    }
+    positional.push(arg);
+  }
+  console.log('Util.getOpt', { result });
+  return result;
+};
 Util.exit = async exitCode =>
   Util.tryCatch(() => [process, process.exit],
     ([obj, exit]) => exit.call(obj, exitCode),

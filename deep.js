@@ -134,12 +134,14 @@ export const get = (root, path) => {
 };
 
 export const set = (root, path, value) => {
+  //console.log("deep.set", { root,path,value });
   path = typeof path == 'string' ? path.split(/[\.\/]/) : [...path];
 
   if(path.length == 0) return Object.assign(root, value);
 
   for(let j = 0, len = path.length; j + 1 < len; j++) {
     let pathElement = isNaN(+path[j]) ? path[j] : +path[j];
+    //console.log("path element:",pathElement);
     if(!(pathElement in root)) root[pathElement] = /^[0-9]+$/.test(path[j + 1]) ? [] : {};
     root = root[pathElement];
   }

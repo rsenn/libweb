@@ -110,7 +110,8 @@ export class Transformation {
       args = axis != '' ? [args[0], axis] : args;
       t = new Scaling(...args);
     } else if(cmd.startsWith('matrix')) {
-      t = new MatrixTransformation(...args);
+      const [a, b, c, d, e, f] = args;
+      t = new MatrixTransformation(a, c, e, b, d, f);
     }
     if(unit) t.unit = unit;
     return t;
@@ -285,7 +286,7 @@ export class Translation extends Transformation {
   }
 
   toMatrix(matrix = Matrix.IDENTITY) {
-    return matrix.translate(this.x, this.y, this.z);
+    return new Matrix().init_translate(this.x, this.y, this.z);
   }
 
   /*clone() {

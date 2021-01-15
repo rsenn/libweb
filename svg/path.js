@@ -178,7 +178,13 @@ SvgPath.prototype.cmd = function(command, ...args) {
  * @returns {string}
  */
 SvgPath.prototype.str = function(digits, lineSep = ' ') {
-  return this.commands.map(command => command.toString(digits)).join(lineSep);
+  return this.commands
+    .map(command => {
+      let str = Command.prototype.toString.call(command, digits) || command + '';
+
+      return str;
+    })
+    .join(lineSep);
 };
 
 SvgPath.prototype.toString = SvgPath.prototype.str;
