@@ -287,11 +287,12 @@ export function QuickJSFileSystem(std, os) {
       let output = '';
       let ret;
       do {
-        // await this.waitRead(input);
+        //await this.waitRead(input);
         ret = this.read(input, buffer, 0, bufSize);
         //console.log('readAll', { ret, input: this.fileno(input), buffer });
         let str = this.bufferToString(buffer.slice(0, ret));
         output += str;
+        if(ret < bufSize) break;
       } while(ret > 0);
       return output;
     }
