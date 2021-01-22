@@ -1,6 +1,6 @@
 // from: https://github.com/juhl/html5-audio-fft-equalizer
 
-function FFT(size) {
+export function FFT(size) {
   var half_size = size / 2;
   this.size = size;
   this.bit_reverse_table = new Uint32Array(size);
@@ -139,3 +139,5 @@ FFT.prototype.inverse = function(re, im, data, stride, stride_offset) {
     data[i * stride + stride_offset] = this.re[i];
   }
 };
+
+export default FFT;
