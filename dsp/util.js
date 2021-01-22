@@ -1,0 +1,47 @@
+// from: https://github.com/juhl/html5-audio-fft-equalizer
+
+function triangular_window(x) {
+  return 1 - Math.abs(1 - 2 * x);
+}
+
+function cosine_window(x) {
+  return Math.cos(Math.PI * x - Math.PI / 2);
+}
+
+function hamming_window(x) {
+  return 0.54 - 0.46 * Math.cos(2 * Math.PI * x);
+}
+
+function hann_window(x) {
+  return 0.5 * (1 - Math.cos(2 * Math.PI * x));
+}
+
+function window(buffer, size, stride, stride_offset) {
+  for(var i = 0; i < size; i++) {
+    buffer[i * stride + stride_offset] *= hamming_window(i / (size - 1));
+    //buffer[i * stride + stride_offset] *= triangular_window(i / (size - 1));
+    //buffer[i * stride + stride_offset] *= cosine_window(i / (size - 1));
+    //buffer[i * stride + stride_offset] *= hann_window(i / (size - 1));
+  }
+}
+
+function butterworth_filter(x, n, d0) {
+  return 1 / (1 + Math.pow(Math.abs(x) / d0, 2 * n));
+}
+
+function eq_filter(x) {
+  var seq = eq[selected_eq];
+  var sum = 1;
+  for(var i = 0; i < EQ_BAND_COUNT; i++) {
+    sum += seq[EQ_BAND_COUNT - 1 - i] * butterworth_filter(x * (2 << i) - 1, 2, 0.4);
+  }
+  return sum;
+}
+
+function db_to_mag(db) {
+  return Math.pow(10, db / 10);
+}
+
+function mag_to_db(mag) {
+  return 10 * (Math.log(mag) / Math.log(10));
+}

@@ -2,7 +2,7 @@ import Util from './util.js';
 import inspect from './inspect.js';
 
 function QuickJSSpawn(os, ffi) {
- /* console.log('os:', os);
+  /* console.log('os:', os);
   console.log('ffi:', ffi);*/
 
   if(typeof os.exec == 'function')
