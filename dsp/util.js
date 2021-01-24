@@ -16,9 +16,9 @@ export function hann_window(x) {
   return 0.5 * (1 - Math.cos(2 * Math.PI * x));
 }
 
-export function window(buffer, size, stride, stride_offset) {
+export function window(buffer, size, stride, stride_offset, win = hamming_window) {
   for(var i = 0; i < size; i++) {
-    buffer[i * stride + stride_offset] *= hamming_window(i / (size - 1));
+    buffer[i * stride + stride_offset] *= win(i / (size - 1));
     //buffer[i * stride + stride_offset] *= triangular_window(i / (size - 1));
     //buffer[i * stride + stride_offset] *= cosine_window(i / (size - 1));
     //buffer[i * stride + stride_offset] *= hann_window(i / (size - 1));
