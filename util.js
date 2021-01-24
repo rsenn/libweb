@@ -7,7 +7,12 @@
 const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
 export function Util(g) {
-  Util.assignGlobal(g);
+  const globalObject = g || Util.getGlobalObject();
+  console.log('Util', { globalObject });
+  Util.assignGlobal(globalObject);
+  globalObject.Util = Object.assign({}, Util);
+
+  return Util;
   //if(g) Util.globalObject = g;
 }
 
@@ -5807,4 +5812,4 @@ Util.bind = function(f, ...args) {
   return ret;
 };
 
-export default Util;
+export default Util();
