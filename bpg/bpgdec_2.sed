@@ -1,0 +1,14 @@
+s|\["asm"\]\["f"|\["asm"\]\["___wasm_call_ctors"|
+s|\["asm"\]\["g"|\["asm"\]\["_malloc"|
+s|\["asm"\]\["h"|\["asm"\]\["_free"|
+s|\["asm"\]\["i"|\["asm"\]\["_bpg_decoder_get_info"|
+s|\["asm"\]\["j"|\["asm"\]\["_bpg_decoder_start"|
+s|\["asm"\]\["k"|\["asm"\]\["_bpg_decoder_get_frame_duration"|
+s|\["asm"\]\["l"|\["asm"\]\["_bpg_decoder_get_line"|
+s|\["asm"\]\["m"|\["asm"\]\["_bpg_decoder_open"|
+s|\["asm"\]\["n"|\["asm"\]\["_bpg_decoder_decode"|
+s|\["asm"\]\["o"|\["asm"\]\["_bpg_decoder_close"|
+s|\["asm"\]\["p"|\["asm"\]\["stackSave"|
+s|\["asm"\]\["q"|\["asm"\]\["stackRestore"|
+s|\["asm"\]\["r"|\["asm"\]\["stackAlloc"|
+s|\["asm"\]\["img"|\["asm"\]\["imageData"|

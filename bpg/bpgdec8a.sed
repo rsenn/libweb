@@ -1,0 +1,14 @@
+s|export "f"|export "___wasm_call_ctors"|
+s|export "g"|export "_malloc"|
+s|export "h"|export "_free"|
+s|export "i"|export "_bpg_decoder_get_info"|
+s|export "j"|export "_bpg_decoder_start"|
+s|export "k"|export "_bpg_decoder_get_frame_duration"|
+s|export "l"|export "_bpg_decoder_get_line"|
+s|export "m"|export "_bpg_decoder_open"|
+s|export "n"|export "_bpg_decoder_decode"|
+s|export "o"|export "_bpg_decoder_close"|
+s|export "p"|export "stackSave"|
+s|export "q"|export "stackRestore"|
+s|export "r"|export "stackAlloc"|
+s|export "img"|export "imageData"|

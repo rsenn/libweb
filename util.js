@@ -321,14 +321,16 @@ Util.memoize = (fn, storage = new Map()) => {
   self.cache = storage;
   return Object.freeze(self);
 };
-Util.once = function(fn, thisArg = this) {
+Util.once = (fn, thisArg, memoFn) => {
   let ran = false;
   let ret;
 
   return function(...args) {
     if(!ran) {
-      ret = fn.call(thisArg, ...args);
+      ret = fn.call(thisArg || this, ...args);
       ran = true;
+    } else if(typeof memoFn == 'function') {
+      ret = memoFn(ret);
     }
     return ret;
   };
@@ -2645,9 +2647,11 @@ Util.randStr = (len, charset, rnd = Util.rng) => {
   return o;
 };
 
-Util.hex = function(num, numDigits = 0) {
-  let n = typeof num == 'number' ? num : parseInt(num);
-  return ('0'.repeat(numDigits) + n.toString(16)).slice(-numDigits);
+Util.hex = function(num, numDigits) {
+  let v = typeof num == 'number' ? num : parseInt(num);
+  let s = v.toString(16);
+  numDigits ??= Math.floor((s.length + 1) / 2) * 2;
+  return ('0'.repeat(numDigits) + s).slice(-numDigits);
 };
 Util.numberParts = (num, base) => {
   let exp = 0;
@@ -4652,11 +4656,12 @@ Util.assert = function Assert(act, message) {
 
 Util.assignGlobal = () => Util.weakAssign(Util.getGlobalObject(), Util);
 
-Util.weakMapper = function(createFn, map = new WeakMap()) {
+Util.weakMapper = function(createFn, map = new WeakMap(), hitFn) {
   let self = function(obj, ...args) {
     let ret;
     if(map.has(obj)) {
       ret = map.get(obj);
+      if(typeof hitFn == 'function') hitFn(obj, ret);
     } else {
       ret = createFn(obj, ...args);
       //if(ret !== undefined)
@@ -5177,11 +5182,16 @@ Util.getOpt = (options = {}, args) => {
   console.log('Util.getOpt', { result });
   return result;
 };
-Util.exit = async exitCode =>
-  Util.tryCatch(() => [process, process.exit],
+Util.exit = async exitCode => {
+  let gcEd = await import('std')
+    .then(std => (std.gc(), true))
+    .catch(() => false);
+  console.log('gcEd:', gcEd);
+  return Util.tryCatch(() => [process, process.exit],
     ([obj, exit]) => exit.call(obj, exitCode),
     () => Util.tryCatch(async () => await import('std').then(std => std.exit(exitCode)))
   );
+};
 Util.getEnv = async varName =>
   Util.tryCatch(() => process.env,
     async e => e[varName],
