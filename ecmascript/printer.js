@@ -591,7 +591,7 @@ export class Printer {
 
   printTryStatement(try_statement) {
     const { block, handler, finalizer } = try_statement;
-    console.log('printTryStatement', { block, handler, finalizer });
+    //console.log('printTryStatement', { block, handler, finalizer });
     let output = 'try ';
     output += this.printNode(block);
     if(handler) {
@@ -1002,6 +1002,7 @@ export class Printer {
   printObjectPattern(object_binding_pattern) {
     const { value, properties } = object_binding_pattern;
     //console.log('printObjectPattern:', { value, properties });
+
     let output = '';
     for(let binding_property of properties) {
       if(output != '') output += ', ';

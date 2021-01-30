@@ -208,11 +208,12 @@ RGBA.prototype.setOpacity = function(a) {
   return this;
 };
 RGBA.normalize = function(rgba, src = 255, dst = 1.0) {
-  return new RGBA((rgba.r * dst) / src,
-    (rgba.g * dst) / src,
-    (rgba.b * dst) / src,
-    (rgba.a * dst) / src
-  );
+  return {
+    r: (rgba.r * dst) / src,
+    g: (rgba.g * dst) / src,
+    b: (rgba.b * dst) / src,
+    a: (rgba.a * dst) / src
+  };
 };
 RGBA.prototype.css = () => prop =>
   (prop ? prop + ':' : '') +
@@ -260,12 +261,12 @@ RGBA.prototype.toSource = function(sep = ',') {
 };
 
 RGBA.prototype.normalize = function(src = 255, dst = 1.0) {
-  this.r = (this.r * dst) / src;
-  this.g = (this.g * dst) / src;
-  this.b = (this.b * dst) / src;
-  this.a = (this.a * dst) / src;
-
-  return this;
+  return {
+    r: (this.r * dst) / src,
+    g: (this.g * dst) / src,
+    b: (this.b * dst) / src,
+    a: (this.a * dst) / src
+  };
 };
 
 RGBA.blend = (a, b, o = 0.5) => {
@@ -368,10 +369,7 @@ RGBA.prototype.toHSLA = function() {
 
 RGBA.prototype.toCMYK = function() {
   let res = {};
-
-  let r = this.r / 255;
-  let g = this.g / 255;
-  let b = this.b / 255;
+  let { r, g, b } = RGBA.prototype.normalize.call(this, 255);
 
   res.k = Math.min(1 - r, 1 - g, 1 - b);
   res.c = (1 - r - res.k) / (1 - res.k);
@@ -388,12 +386,8 @@ RGBA.prototype.toCMYK = function() {
 };
 
 RGBA.prototype.toLAB = function() {
-  let r = this.r / 255,
-    g = this.g / 255,
-    b = this.b / 255,
-    x,
-    y,
-    z;
+  let { r, g, b } = RGBA.prototype.normalize.call(this, 255);
+  let x, y, z;
 
   r = r > 0.04045 ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
   g = g > 0.04045 ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
@@ -438,10 +432,8 @@ RGBA.fromLAB = function(lab) {
 };
 
 RGBA.prototype.linear = function() {
-  //make it decimal
-  let r = this.r / 255.0; //red channel decimal
-  let g = this.g / 255.0; //green channel decimal
-  let b = this.b / 255.0; //blue channel decimal
+  let { r, g, b } = RGBA.prototype.normalize.call(this, 255);
+
   //apply gamma
   let gamma = 2.2;
   r = Math.pow(r, gamma); //linearize red
@@ -471,11 +463,8 @@ RGBA.prototype.distance = function(other) {
   );
 };
 RGBA.prototype.luminanace = function() {
-  const { r, g, b } = this;
-  let a = [r, g, b].map(v => {
-    v /= 255;
-    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-  });
+  const { r, g, b } = RGBA.prototype.normalize.call(this, 255);
+  let a = [r, g, b].map(v => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
   return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
 };
 RGBA.prototype.contrast = function contrast(other) {
@@ -485,16 +474,30 @@ RGBA.prototype.contrast = function contrast(other) {
   let darkest = Math.min(lum1, lum2);
   return (brightest + 0.05) / (darkest + 0.05);
 };
-RGBA.prototype.toConsole = function(fn = 'toString') {
+RGBA.prototype.toConsole = function(fn = 'toString', css = []) {
   const textColor = this.invert().blackwhite();
-  /* console.log("this:",this.hex());
- console.log("luminanance:",this.invert().luminanace());*/
   const bgColor = textColor.invert();
-  return [
-    `%c${this[fn]()}%c`,
-    `text-shadow: 1px 1px 1px ${bgColor.hex()}; border: 1px solid black; padding: 2px; background-color: ${this.toString()}; color: ${textColor};`,
-    `background-color: none;`
+  if(typeof fn == 'string' && fn in this) {
+    let method = fn;
+    fn = () => this[method]();
+  } else if(typeof fn == 'function') {
+    let method = fn;
+    fn = () => method.call(this, this);
+  }
+  let text = fn();
+  let style = [
+    `text-shadow: 1px 1px 1px ${bgColor.hex()}`,
+    `border: 1px solid black`,
+    `padding: 2px`,
+    `background-color: ${this.hex()}`,
+    `color: ${textColor}`,
+    `background-color: none`,
+    ...css
   ];
+  return [`%c${text}%c`, style.join(';'), `color: inherit; background-color: inherit;`];
+};
+RGBA.prototype.dump = function(...args) {
+  console.log(...this.toConsole(...args));
 };
 
 RGBA.prototype.equals = function(other) {

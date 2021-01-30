@@ -1788,14 +1788,21 @@ Util.isArrowFunction = fn =>
 
 Util.isEmptyString = v => Util.isString(v) && (v == '' || v.length == 0);
 
-Util.isEmpty = function(v) {
-  if(typeof v == 'object' && !!v && v.constructor == Object && Object.keys(v).length == 0)
-    return true;
-  if(!v || v === null) return true;
-  if(typeof v == 'object' && v.length !== undefined && v.length === 0) return true;
-  return false;
+Util.isEmpty = (...args) => {
+  function empty(v) {
+    if(typeof v == 'object' && !!v && v.constructor == Object && Object.keys(v).length == 0)
+      return true;
+    if(!v || v === null) return true;
+    if(typeof v == 'object' && v.length !== undefined && v.length === 0) return true;
+    return false;
+  }
+  return args.length ? empty(args[0]) : empty;
 };
-Util.isNonEmpty = v => !Util.isEmpty(v);
+Util.isNonEmpty = (...args) => {
+  const empty = Util.isEmpty();
+  const nonEmpty = v => !empty(v);
+  return args.length ? nonEmpty(args[0]) : nonEmpty;
+};
 Util.isIpAddress = v => {
   const n = (v + '').split('.').map(i => +i);
   return n.length == 4 && n.every(i => !isNaN(i) && i >= 0 && i <= 255);
@@ -2837,12 +2844,16 @@ Util.isGetter = (obj, propName) => {
   return false;
 };
 Util.isBool = value => value === true || value === false;
-Util.size = function(obj) {
-  if(Util.isObject(obj)) {
-    if('length' in obj) return obj.length;
-    return Object.keys(obj).length;
+Util.size = (...args) => {
+  function size(obj) {
+    if(Util.isObject(obj)) {
+      if(obj instanceof Map) return obj.size;
+      else if('length' in obj) return obj.length;
+      else return Object.keys(obj).length;
+    }
   }
-  return undefined;
+  if(args.length == 0) return size;
+  return size(args[0]);
 };
 Util.isMap = function(obj) {
   return (obj && obj.get !== undefined && obj.keys !== undefined) || obj instanceof Map;
@@ -2927,7 +2938,7 @@ Util.filterMembers = function(obj, fn) {
   return Util.filterKeys(obj, pred);
 };
 Util.filterOutMembers = function(obj, fn) {
-  const pred = (v, k, o) => !fn(v, k, o);
+  const pred = (v, k, o) => !fn(vp, k, o);
   return Util.filterMembers(obj, pred);
 };
 Util.dumpMembers = obj => Util.filterOutMembers(obj, Util.isFunction);
@@ -2939,7 +2950,9 @@ Util.filterOutKeys = function(obj, arr) {
       ? (v, k, o) => arr(k, v, o)
       : arr instanceof RegExp
       ? (k, v) => arr.test(k) /*|| arr.test(v)*/
-      : key => arr.indexOf(key) != -1;
+      : Array.isArray(arr)
+      ? key => arr.indexOf(key) != -1
+      : () => ({});
   return Util.filterOutMembers(obj, (v, k, o) => pred(k, v, o));
 };
 Util.removeKeys = function(obj, arr) {
@@ -4583,7 +4596,7 @@ Util.coloring = (useColor = true) =>
       }
     : {
         code(...args) {
-          return `\u001b[${[...args].join(';')}m`;
+          return `\x1b[${[...args].join(';')}m`;
         },
         text(text, ...color) {
           return this.code(...color) + text + this.code(0);
@@ -5490,24 +5503,38 @@ Util.consolePrinter = function ConsolePrinter(log = console.log) {
 };
 Object.assign(Util.consolePrinter.prototype, Util.getMethods(Array.prototype));
 
+Util.consoleJoin = function(...args) {
+  let out = 'push' in this ? this : [];
+  if(out.length == 0) out.push('');
+  let match = Util.matchAll(/%(?:o|O|d|i|s|f|s|d|c)/g);
+  for(let [fmt, ...styles] of args) {
+    console.log('Util.consoleJoin', { fmt, styles, out });
+    let substs = [...match(fmt)];
+    if(substs.length != styles.length) {
+      const code = [substs.length, styles.length];
+      //console.log("substs:",substs);
+      throw new Error(`${code.join(' != ')} ${code.join(', ')}`);
+    }
+    if(out[0]) out[0] += ' ';
+    out[0] += fmt;
+
+    for(let style of styles) Array.prototype.push.call(out, style);
+    // Array.prototype.splice.call(out, out.length, 0, ...styles);
+    //console.log('Util.consoleJoin', [...out]);
+  }
+  return out;
+};
+
 Util.consoleConcat = function(...args) {
   let self;
-
   self = function ConsoleConcat(...args) {
     if(args.length == 1 && Array.isArray(args[0])) args = args[0];
-    console.log('Util.consoleConcat', { args });
-
     return self.add(...args);
   };
-  self.add = function(...args) {
-    concat(this, [...args]);
-    return this;
-  };
-  /* self.call = function(thisObj, ...args) {
-    return self(...args);
-  };*/
-  function concat(out, args) {
-    while(args.length) {
+  self.add = Util.consoleJoin;
+  /*  function concat(out, args) {
+ console.log('concat', { out: [...out], args: [...args] });
+   while(args.length) {
       let arg = args.shift();
       if(typeof arg == 'string') {
         let matches = [...Util.matchAll(/%[cos]/g, arg)];
@@ -5526,12 +5553,12 @@ Util.consoleConcat = function(...args) {
     }
     return out;
   }
-  delete self.length;
+*/ delete self.length;
   Object.setPrototypeOf(self,
     Util.extend(Util.consoleConcat.prototype, Object.getPrototypeOf(self))
   );
-  self.push('');
-  if(args.length) self(...args);
+  //self.push('');
+  if(args.length) self.add(...args);
   return self;
 };
 

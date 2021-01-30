@@ -73,7 +73,9 @@ export async function ConsoleSetup(opts = {}) {
         },
         log(...args) {
           return log.call(this,
-            ...args.map(arg => (typeof arg != 'string' || !Util.isPrimitive(arg) ? ObjectInspect(arg, options) : arg))
+            ...args.map(arg =>
+              typeof arg != 'string' || !Util.isPrimitive(arg) ? ObjectInspect(arg, options) : arg
+            )
           );
         }
       });

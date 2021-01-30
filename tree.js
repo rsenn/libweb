@@ -408,7 +408,7 @@ function keyAt(obj, index) {
 }
 
 function entries(obj) {
-  console.log('entries obj:', obj);
+  //console.log('entries obj:', obj);
   return obj instanceof Array
     ? Array.prototype.entries.call(obj)
     : Object.getOwnPropertyNames(obj).map(prop => [prop, obj[prop]]);

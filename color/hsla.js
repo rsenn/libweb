@@ -211,7 +211,10 @@ HSLA.prototype.toString = function(prec = 1 / 255) {
   const l = Util.roundTo(this.l, 100 * prec, 2);
   const a = Util.roundTo(this.a, 1 * prec, 4);
 
-  if(this.a == 1) return `hsl(${(h + '').padStart(3, ' ')},${(s + '%').padStart(4, ' ')},${(l + '%').padEnd(6, ' ')})`;
+  if(this.a == 1)
+    return `hsl(${(h + '').padStart(3, ' ')},${(s + '%').padStart(4, ' ')},${(l + '%').padEnd(6,
+      ' '
+    )})`;
   return `hsla(${h},${s}%,${l}%,${a})`;
 };
 
@@ -293,7 +296,9 @@ HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
   let arr = !isNaN(a) ? [h, s, l, a] : [h, s, l];
   let ret = arr
     .map((n, i) =>
-      (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i == 0 ? 3 : i < 3 ? i + 3 : 1, ' ')
+      (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i == 0 ? 3 : i < 3 ? i + 3 : 1,
+        ' '
+      )
     )
     .join(',');
   const color = this.toRGBA().toAnsi256(true);

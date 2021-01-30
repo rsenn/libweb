@@ -25,10 +25,15 @@ export function rgb2hue(rgbR, rgbG, rgbB, fallbackhue = 0) {
   if(delta) {
     // calculate segment
     const segment =
-      value === rgbR ? (rgbG - rgbB) / delta : value === rgbG ? (rgbB - rgbR) / delta : (rgbR - rgbG) / delta;
+      value === rgbR
+        ? (rgbG - rgbB) / delta
+        : value === rgbG
+        ? (rgbB - rgbR) / delta
+        : (rgbR - rgbG) / delta;
 
     // calculate shift
-    const shift = value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
+    const shift =
+      value === rgbR ? (segment < 0 ? 360 / 60 : 0 / 60) : value === rgbG ? 120 / 60 : 240 / 60;
 
     // calculate hue
     const hue = (segment + shift) * 60;
@@ -106,7 +111,8 @@ export function rgb2whiteness(rgbR, rgbG, rgbB) {
 export function matrix(params, mats) {
   return mats.map(mat =>
     mat.reduce(// (acc, value, index) => acc + params[index] * value,
-      (acc, value, index) => acc + (params[index] * precision * (value * precision)) / precision / precision,
+      (acc, value, index) =>
+        acc + (params[index] * precision * (value * precision)) / precision / precision,
       0
     )
   );
@@ -207,7 +213,11 @@ export function hsl2rgb(hslH, hslS, hslL) {
   const t1 = hslL * 2 - t2;
 
   // calculate rgb
-  const [rgbR, rgbG, rgbB] = [hue2rgb(t1, t2, hslH + 120), hue2rgb(t1, t2, hslH), hue2rgb(t1, t2, hslH - 120)];
+  const [rgbR, rgbG, rgbB] = [
+    hue2rgb(t1, t2, hslH + 120),
+    hue2rgb(t1, t2, hslH),
+    hue2rgb(t1, t2, hslH - 120)
+  ];
 
   return [rgbR, rgbG, rgbB];
 }
@@ -251,7 +261,8 @@ export function rgb2hwb(rgbR, rgbG, rgbB, fallbackhue) {
  */
 
 export function hwb2rgb(hwbH, hwbW, hwbB, fallbackhue) {
-  const [rgbR, rgbG, rgbB] = hsl2rgb(hwbH, 100, 50, fallbackhue).map(v => (v * (100 - hwbW - hwbB)) / 100 + hwbW);
+  const [rgbR, rgbG, rgbB] = hsl2rgb(hwbH, 100, 50, fallbackhue).map(v => (v * (100 - hwbW - hwbB)) / 100 + hwbW
+  );
   return [rgbR, rgbG, rgbB];
 }
 
@@ -412,7 +423,9 @@ export function hsl2hsv(hslH, hslS, hslL) {
 export function hsv2hsl(hsvH, hsvS, hsvV) {
   const hslL = ((200 - hsvS) * hsvV) / 100;
   const [hslS, hslV] = [
-    hslL === 0 || hslL === 200 ? 0 : ((hsvS * hsvV) / 100 / (hslL <= 100 ? hslL : 200 - hslL)) * 100,
+    hslL === 0 || hslL === 200
+      ? 0
+      : ((hsvS * hsvV) / 100 / (hslL <= 100 ? hslL : 200 - hslL)) * 100,
     (hslL * 5) / 10
   ];
   return [hsvH, hslS, hslV];
@@ -435,7 +448,11 @@ export function hsv2hsl(hsvH, hsvS, hsvV) {
  */
 
 export function hwb2hsv(hwbH, hwbW, hwbB) {
-  const [hsvH, hsvS, hsvV] = [hwbH, hwbB === 100 ? 0 : 100 - (hwbW / (100 - hwbB)) * 100, 100 - hwbB];
+  const [hsvH, hsvS, hsvV] = [
+    hwbH,
+    hwbB === 100 ? 0 : 100 - (hwbW / (100 - hwbB)) * 100,
+    100 - hwbB
+  ];
   return [hsvH, hsvS, hsvV];
 }
 /**
@@ -600,7 +617,9 @@ function rgb2contrast(rgb1, rgb2) {
  */
 
 export function rgb2luminance(rgbR, rgbG, rgbB) {
-  return ((adjustChannel(rgbR) * coefficientR + adjustChannel(rgbG) * coefficientG + adjustChannel(rgbB) * coefficientB) /
+  return ((adjustChannel(rgbR) * coefficientR +
+      adjustChannel(rgbG) * coefficientG +
+      adjustChannel(rgbB) * coefficientB) /
     precision
   );
 }

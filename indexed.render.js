@@ -79,7 +79,10 @@ Indexed.Renderer = function(canvas_id, width, height, scale, forcecanvas) {
     this.context.imageSmoothingEnabled = false;
   } else {
     this.gl = twgl.getWebGLContext(this.canvas);
-    this.programInfo = twgl.createProgramInfo(this.gl, [Indexed.indexed_vert, Indexed.indexed_frag]);
+    this.programInfo = twgl.createProgramInfo(this.gl, [
+      Indexed.indexed_vert,
+      Indexed.indexed_frag
+    ]);
 
     //2 triangles
     this.bufferInfo = twgl.createBufferInfoFromArrays(this.gl, {
