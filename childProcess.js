@@ -81,13 +81,25 @@ export function QuickJSChildProcess(fs, std, os) {
       const [stdin, stdout, stderr] = stdio;
       if(stdin)
         opts.stdin =
-          stdin != 'pipe' ? (typeof stdin.fileno == 'function' ? stdin.fileno() : stdin) : dopipe(obj, 'stdin');
+          stdin != 'pipe'
+            ? typeof stdin.fileno == 'function'
+              ? stdin.fileno()
+              : stdin
+            : dopipe(obj, 'stdin');
       if(stdout)
         opts.stdout =
-          stdout != 'pipe' ? (typeof stdout.fileno == 'function' ? stdout.fileno() : stdout) : dopipe(obj, 'stdout');
+          stdout != 'pipe'
+            ? typeof stdout.fileno == 'function'
+              ? stdout.fileno()
+              : stdout
+            : dopipe(obj, 'stdout');
       if(stderr)
         opts.stderr =
-          stderr != 'pipe' ? (typeof stderr.fileno == 'function' ? stderr.fileno() : stderr) : dopipe(obj, 'stderr');
+          stderr != 'pipe'
+            ? typeof stderr.fileno == 'function'
+              ? stderr.fileno()
+              : stderr
+            : dopipe(obj, 'stderr');
     }
     opts = { ...opts, block };
     if(env) opts.env = env;
@@ -95,7 +107,8 @@ export function QuickJSChildProcess(fs, std, os) {
     let ret = os.exec([command, ...args], opts);
 
     for(let channel of ['stdin', 'stdout', 'stderr'])
-      if(opts[channel] != stdio[channel] && typeof opts[channel] == 'number') os.close(opts[channel]);
+      if(opts[channel] != stdio[channel] && typeof opts[channel] == 'number')
+        os.close(opts[channel]);
 
     let exitCode, pid;
     if(block) {
@@ -103,7 +116,7 @@ export function QuickJSChildProcess(fs, std, os) {
     } else {
       if(ret >= 0) pid = ret;
       exitCode = numerr(ret);
-      obj.wait = function(options) {
+      obj.wait = function(options = os.WNOHANG) {
         return new Promise((resolve, reject) => {
           let [ret, status] = os.waitpid(pid, options);
           let exitCode = (status & 0xff00) >> 8;

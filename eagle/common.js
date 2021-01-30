@@ -67,7 +67,8 @@ export const Palette = {
 
 export const dump = (o, depth = 2, breakLength = 400) => {
   const isElement = o =>
-    Util.isObject(o) && ['EagleElement', 'EagleNode', 'EagleDocument'].indexOf(Util.className(o)) != -1;
+    Util.isObject(o) &&
+    ['EagleElement', 'EagleNode', 'EagleDocument'].indexOf(Util.className(o)) != -1;
   let s;
   if(o instanceof Array) {
     s = '';
@@ -126,7 +127,8 @@ export const traverse = function* (obj, path = [], doc) {
     if(Util.isArray(obj)) {
       for(let i = 0; i < obj.length; i++) yield* traverse(obj[i], path.concat([i]), doc);
     } else if('children' in obj && Util.isArray(obj.children)) {
-      for(let i = 0; i < obj.children.length; i++) yield* traverse(obj.children[i], path.concat(['children', i]), doc);
+      for(let i = 0; i < obj.children.length; i++)
+        yield* traverse(obj.children[i], path.concat(['children', i]), doc);
     }
   }
 };

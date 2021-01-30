@@ -82,7 +82,9 @@ export class WebSocketClient {
 
     if(!this.connected) return Promise.reject(this.closeEvent || new Error('Not connected.'));
 
-    const receivePromise = new Promise((resolve, reject) => this.receiveCallbacksQueue.push({ resolve, reject }));
+    const receivePromise = new Promise((resolve, reject) =>
+      this.receiveCallbacksQueue.push({ resolve, reject })
+    );
 
     return receivePromise;
   }

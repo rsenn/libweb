@@ -67,11 +67,14 @@ export class LibraryRenderer extends EagleSVGRenderer {
         children
       );
 
-    let devicesets = [...this.doc.getAll(e => e.attributes && e.attributes[item.tagName] == item.name)]
+    let devicesets = [
+      ...this.doc.getAll(e => e.attributes && e.attributes[item.tagName] == item.name)
+    ]
       .map(e => [e, e.elementChain().deviceset])
       .map(([e, deviceset]) => deviceset)
       .filter(deviceset => !!deviceset);
-    let prefixes = Util.unique(devicesets.map(deviceset => deviceset && deviceset.prefix).filter(prefix => !!prefix));
+    let prefixes = Util.unique(devicesets.map(deviceset => deviceset && deviceset.prefix).filter(prefix => !!prefix)
+    );
     let suffix = '';
     if(item.tagName == 'symbol') {
       let symbolUsages = devicesets
@@ -127,7 +130,8 @@ export class LibraryRenderer extends EagleSVGRenderer {
       let matrix = new Matrix().affine_transform(measure.toPoints(), new Rect(bounds).toPoints());
       //  console.debug("LibraryRenderer.renderItem ", {matrix});
 
-      let { scaling, translation } = (transformation = transformation.concat(TransformationList.fromMatrix(matrix)));
+      let { scaling, translation } = (transformation = transformation.concat(TransformationList.fromMatrix(matrix)
+      ));
 
       let factor = Math.min(scaling.x, scaling.y);
       scaling.x = factor;
@@ -142,7 +146,9 @@ if(translation) {
 
       window.matrix = matrix;
 
-      component = super.render(item, { ...options, index, transform: transformation, bounds }, [group]);
+      component = super.render(item, { ...options, index, transform: transformation, bounds }, [
+        group
+      ]);
     }
     return component;
   }
@@ -198,7 +204,9 @@ if(translation) {
     return h(component,
       props,
       items.map(([title, component]) =>
-        h(item.component, { class: title[0].toLowerCase(), title, key: title.join('-'), ...item.props }, [component])
+        h(item.component, { class: title[0].toLowerCase(), title, key: title.join('-'), ...item.props },
+          [component]
+        )
       )
     );
   }

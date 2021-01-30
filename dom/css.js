@@ -14,7 +14,9 @@ const getStyleMap = (obj, key) => {
   );
 };
 const getStyleSheet = (obj, key) => {
-  let sheet = obj.cssRules ? obj : Util.find(obj, entry => entry.href == key || entry.ownerNode.id == key) || obj[key];
+  let sheet = obj.cssRules
+    ? obj
+    : Util.find(obj, entry => entry.href == key || entry.ownerNode.id == key) || obj[key];
 
   return Util.adapter(sheet.rules,
     obj => (obj && obj.length !== undefined ? obj.length : 0),
@@ -48,7 +50,8 @@ export class CSS {
   static styles(stylesheet) {
     let ret;
 
-    if(Util.isObject(stylesheet) && stylesheet.cssRules !== undefined) ret = getStyleSheet(stylesheet);
+    if(Util.isObject(stylesheet) && stylesheet.cssRules !== undefined)
+      ret = getStyleSheet(stylesheet);
     else {
       ret = [...CSS.list()];
       ret =
@@ -93,7 +96,9 @@ export class CSS {
       selectors = selectors.split(/,\s*/g).map(s => s.trim());
       let rule = new Map();
 
-      for(let [wholeDeclaration, name, value] of Util.matchAll(/([^:]*)\s*:\s*([^;]*);?/gm, body)) {
+      for(let [wholeDeclaration, name, value] of Util.matchAll(/([^:]*)\s*:\s*([^;]*);?/gm,
+        body
+      )) {
         rule.set(name.trim(), value.trim());
       }
       css.set(selectors, rule);
@@ -105,7 +110,8 @@ export class CSS {
     if(typeof selector == 'string') selector = selector.split(/\s+/g);
     let ret = new Map();
     for(let [selectors, rule] of stylesheet) {
-      if(typeof selectors == 'string') selectors = selectors.split(/,\s*/g).map(s => s.trim().split(/\s+/g));
+      if(typeof selectors == 'string')
+        selectors = selectors.split(/,\s*/g).map(s => s.trim().split(/\s+/g));
 
       if(selectors.some(s => Util.equals(s, selector))) ret = Util.merge(ret, rule);
       //       ret.push([selectors,rule]);

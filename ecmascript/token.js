@@ -69,7 +69,8 @@ export class Token {
     if(type == 'identifier') value = Util.colorText(value, 1, 33);
     else if(type == 'keyword') value = Util.colorText(value, 1, 31);
     else if(type == 'comment') value = Util.colorText(value, 1, 32);
-    else if(type == 'templateLiteral' || type.startsWith('regex')) value = Util.colorText(value, 1, 35);
+    else if(type == 'templateLiteral' || type.startsWith('regex'))
+      value = Util.colorText(value, 1, 35);
     else value = Util.colorText(value, 1, 36);
 
     return `${position} ${type} ${value}`;
@@ -115,7 +116,9 @@ export class TokenList extends Array {
 
   toString() {
     return this.map(tok =>
-      /(literal|identifier)/i.test(tok.type) && /^[^'"]/.test(tok.value) ? '‹' + tok.value + '›' : tok.value
+      /(literal|identifier)/i.test(tok.type) && /^[^'"]/.test(tok.value)
+        ? '‹' + tok.value + '›'
+        : tok.value
     ).join(' ');
   }
 }

@@ -60,7 +60,9 @@ function ParseNode(type, buffer, start, end) {
   this.start = start;
   this.end = end;
 
-  log('ParseNode', this.type + ' start=' + this.start + ' end=' + this.end + ' value=.' + this.value() + '.');
+  log('ParseNode',
+    this.type + ' start=' + this.start + ' end=' + this.end + ' value=.' + this.value() + '.'
+  );
 }
 
 //Class ParseState
@@ -79,7 +81,14 @@ ParseState.prototype.advance = function(n) {
 
 ParseState.prototype.parseNode = function(type) {
   if(this.ruleStart == this.offset) {
-    console.log('parseNode: type=' + type + ' ruleStart=' + this.ruleStart + ' start=' + this.start + ' offset=' + this.offset
+    console.log('parseNode: type=' +
+        type +
+        ' ruleStart=' +
+        this.ruleStart +
+        ' start=' +
+        this.start +
+        ' offset=' +
+        this.offset
     );
     return null;
   }
@@ -514,7 +523,13 @@ Parser.prototype.parseGrammar = function() {
       rules.push(prule);
       pstate.advance(prule.nodeLength());
       pstate.nextToken();
-      console.log('pstate: ruleStart=' + pstate.ruleStart + ' start=' + pstate.start + ' offset=' + pstate.offset);
+      console.log('pstate: ruleStart=' +
+          pstate.ruleStart +
+          ' start=' +
+          pstate.start +
+          ' offset=' +
+          pstate.offset
+      );
     }
   } while(prule != null);
 

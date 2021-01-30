@@ -36,7 +36,9 @@ export const Pad = ({ data, opts = {}, ...props }) => {
     case 'long': {
       ro = ro * 1.2;
       const w = ro;
-      d = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${-w * 2} 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
+      d = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${
+        -w * 2
+      } 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
       break;
     }
     case 'square': {

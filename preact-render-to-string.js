@@ -53,7 +53,9 @@ function styleObjToCss(s) {
       if(str) str += ' '; // str += jsToCss(prop);
 
       str +=
-        prop[0] == '-' ? prop : JS_TO_CSS[prop] || (JS_TO_CSS[prop] = prop.replace(/([A-Z])/g, '-$1').toLowerCase());
+        prop[0] == '-'
+          ? prop
+          : JS_TO_CSS[prop] || (JS_TO_CSS[prop] = prop.replace(/([A-Z])/g, '-$1').toLowerCase());
       str += ': ';
       str += val;
 
@@ -178,7 +180,13 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
       for(var i = 0; i < _children.length; i++) {
         rendered +=
           (i > 0 && pretty ? '\n' : '') +
-          _renderToString(_children[i], context, opts, opts.shallowHighOrder !== false, isSvgMode, selectValue);
+          _renderToString(_children[i],
+            context,
+            opts,
+            opts.shallowHighOrder !== false,
+            isSvgMode,
+            selectValue
+          );
       }
 
       return rendered;
@@ -229,7 +237,9 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
 
         c.context = _cctx;
         if(nodeName.getDerivedStateFromProps)
-          c.state = assign(assign({}, c.state), nodeName.getDerivedStateFromProps(c.props, c.state));
+          c.state = assign(assign({}, c.state),
+            nodeName.getDerivedStateFromProps(c.props, c.state)
+          );
         else if(c.componentWillMount) {
           c.componentWillMount(); // If the user called setState in cWM we need to flush pending,
           // state updates. This is the same behaviour in React.
@@ -244,7 +254,13 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
       }
 
       if(options.diffed) options.diffed(vnode);
-      return _renderToString(_rendered, context, opts, opts.shallowHighOrder !== false, isSvgMode, selectValue);
+      return _renderToString(_rendered,
+        context,
+        opts,
+        opts.shallowHighOrder !== false,
+        isSvgMode,
+        selectValue
+      );
     }
   } // render JSX to HTML
 
@@ -268,7 +284,11 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
 
       if(name.match(/[\s\n\\/='"\0<>]/)) continue;
       if(!(opts && opts.allAttributes) &&
-        (name === 'key' || name === 'ref' || name === '__self' || name === '__source' || name === 'defaultValue')
+        (name === 'key' ||
+          name === 'ref' ||
+          name === '__self' ||
+          name === '__source' ||
+          name === 'defaultValue')
       )
         continue;
 
@@ -336,9 +356,11 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
   }
 
   s = '<' + nodeName + s + '>';
-  if(String(nodeName).match(/[\s\n\\/='"\0<>]/)) throw new Error(nodeName + ' is not a valid HTML tag name in ' + s);
+  if(String(nodeName).match(/[\s\n\\/='"\0<>]/))
+    throw new Error(nodeName + ' is not a valid HTML tag name in ' + s);
   var isVoid =
-    String(nodeName).match(VOID_ELEMENTS) || (opts.voidElements && String(nodeName).match(opts.voidElements));
+    String(nodeName).match(VOID_ELEMENTS) ||
+    (opts.voidElements && String(nodeName).match(opts.voidElements));
   var pieces = [];
   var children;
 
@@ -357,7 +379,8 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
       var child = children[_i2];
 
       if(child != null && child !== false) {
-        var childSvgMode = nodeName === 'svg' ? true : nodeName === 'foreignObject' ? false : isSvgMode,
+        var childSvgMode =
+            nodeName === 'svg' ? true : nodeName === 'foreignObject' ? false : isSvgMode,
           ret = _renderToString(child, context, opts, true, childSvgMode, selectValue);
 
         if(pretty && !hasLarge && isLargeString(ret)) hasLarge = true; // Skip if we received an empty string
@@ -405,7 +428,10 @@ function _renderToString(vnode, context, opts, inner, isSvgMode, selectValue) {
 }
 
 function getComponentName(component) {
-  return component.displayName || (component !== Function && component.name) || getFallbackComponentName(component);
+  return (component.displayName ||
+    (component !== Function && component.name) ||
+    getFallbackComponentName(component)
+  );
 }
 
 function getFallbackComponentName(component) {
@@ -436,4 +462,9 @@ function getFallbackComponentName(component) {
 renderToString.shallowRender = shallowRender;
 
 export default renderToString;
-export { renderToString as render, renderToString as renderToStaticMarkup, renderToString, shallowRender };
+export {
+  renderToString as render,
+  renderToString as renderToStaticMarkup,
+  renderToString,
+  shallowRender
+};

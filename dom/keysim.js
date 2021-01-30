@@ -135,7 +135,8 @@ export class Keyboard {
         event.altKey = keystroke.altKey;
         event.metaKey = keystroke.metaKey;
         event.ctrlKey = keystroke.ctrlKey;
-        event.keyCode = type === 'keypress' ? this.charCodeForKeystroke(keystroke) : keystroke.keyCode;
+        event.keyCode =
+          type === 'keypress' ? this.charCodeForKeystroke(keystroke) : keystroke.keyCode;
         event.charCode = type === 'keypress' ? event.keyCode : 0;
         event.which = event.keyCode;
         break;
@@ -207,7 +208,11 @@ export class Keyboard {
    * @param {boolean=} transitionModifiers
    * @param {number} events
    */
-  dispatchEventsForKeystroke(keystroke, target, transitionModifiers = true, events = KeyEvents.ALL) {
+  dispatchEventsForKeystroke(keystroke,
+    target,
+    transitionModifiers = true,
+    events = KeyEvents.ALL
+  ) {
     if(transitionModifiers) {
       this.dispatchModifierStateTransition(target, 0, keystroke.modifiers, events);
     }
@@ -217,7 +222,10 @@ export class Keyboard {
       keydownEvent = this.createEventFromKeystroke('keydown', keystroke, target);
     }
 
-    if(keydownEvent && target.dispatchEvent(keydownEvent) && this.targetCanReceiveTextInput(target)) {
+    if(keydownEvent &&
+      target.dispatchEvent(keydownEvent) &&
+      this.targetCanReceiveTextInput(target)
+    ) {
       let keypressEvent;
       if(events & KeyEvents.PRESS) {
         keypressEvent = this.createEventFromKeystroke('keypress', keystroke, target);
@@ -252,7 +260,11 @@ export class Keyboard {
    * @param {number} events
    * @private
    */
-  dispatchModifierStateTransition(target, fromModifierState, toModifierState, events = KeyEvents.ALL) {
+  dispatchModifierStateTransition(target,
+    fromModifierState,
+    toModifierState,
+    events = KeyEvents.ALL
+  ) {
     let currentModifierState = fromModifierState;
     let didHaveMeta = (fromModifierState & META) === META;
     let willHaveMeta = (toModifierState & META) === META;
@@ -269,14 +281,22 @@ export class Keyboard {
     if(includeKeyUp && didHaveMeta === true && willHaveMeta === false) {
       //Release the meta key.
       currentModifierState &= ~META;
-      target.dispatchEvent(this.createEventFromKeystroke('keyup', new Keystroke(currentModifierState, this._actionKeyCodeMap.META), target)
+      target.dispatchEvent(this.createEventFromKeystroke(
+          'keyup',
+          new Keystroke(currentModifierState, this._actionKeyCodeMap.META),
+          target
+        )
       );
     }
 
     if(includeKeyUp && didHaveCtrl === true && willHaveCtrl === false) {
       //Release the ctrl key.
       currentModifierState &= ~CTRL;
-      target.dispatchEvent(this.createEventFromKeystroke('keyup', new Keystroke(currentModifierState, this._actionKeyCodeMap.CTRL), target)
+      target.dispatchEvent(this.createEventFromKeystroke(
+          'keyup',
+          new Keystroke(currentModifierState, this._actionKeyCodeMap.CTRL),
+          target
+        )
       );
     }
 
@@ -294,7 +314,11 @@ export class Keyboard {
     if(includeKeyUp && didHaveAlt === true && willHaveAlt === false) {
       //Release the alt key.
       currentModifierState &= ~ALT;
-      target.dispatchEvent(this.createEventFromKeystroke('keyup', new Keystroke(currentModifierState, this._actionKeyCodeMap.ALT), target)
+      target.dispatchEvent(this.createEventFromKeystroke(
+          'keyup',
+          new Keystroke(currentModifierState, this._actionKeyCodeMap.ALT),
+          target
+        )
       );
     }
 
@@ -343,7 +367,9 @@ export class Keyboard {
     }
 
     if(currentModifierState !== toModifierState) {
-      throw new Error(`internal error, expected modifier state: ${toModifierState}` + `, got: ${currentModifierState}`);
+      throw new Error(`internal error, expected modifier state: ${toModifierState}` +
+          `, got: ${currentModifierState}`
+      );
     }
   }
 

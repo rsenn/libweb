@@ -161,7 +161,11 @@ HSLA.prototype.toString = function() {
 };
 
 HSLA.random = function(h = [0, 360], s = [0, 100], l = [0, 100], a = [1, 1], rng = Math.random) {
-  return new HSLA(Util.randInt(h, rng), Util.randInt(s, rng), Util.randInt(l, rng), Util.randInt(a, rng));
+  return new HSLA(Util.randInt(h, rng),
+    Util.randInt(s, rng),
+    Util.randInt(l, rng),
+    Util.randInt(a, rng)
+  );
 };
 HSLA.prototype.dump = function() {
   console.log(`[%c    %c]`, `background: ${this.toString()};`, `background: none`, this);

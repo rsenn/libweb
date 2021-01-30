@@ -1,14 +1,22 @@
 const hasMap = typeof Map === 'function' && Map.prototype;
 const mapSizeDescriptor =
-  Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, 'size') : null;
+  Object.getOwnPropertyDescriptor && hasMap
+    ? Object.getOwnPropertyDescriptor(Map.prototype, 'size')
+    : null;
 const mapSize =
-  hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === 'function' ? mapSizeDescriptor.get : null;
+  hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === 'function'
+    ? mapSizeDescriptor.get
+    : null;
 const mapForEach = hasMap && Map.prototype.forEach;
 const hasSet = typeof Set === 'function' && Set.prototype;
 const setSizeDescriptor =
-  Object.getOwnPropertyDescriptor && hasSet ? Object.getOwnPropertyDescriptor(Set.prototype, 'size') : null;
+  Object.getOwnPropertyDescriptor && hasSet
+    ? Object.getOwnPropertyDescriptor(Set.prototype, 'size')
+    : null;
 const setSize =
-  hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function' ? setSizeDescriptor.get : null;
+  hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function'
+    ? setSizeDescriptor.get
+    : null;
 const setForEach = hasSet && Set.prototype.forEach;
 const hasWeakMap = typeof WeakMap === 'function' && WeakMap.prototype;
 const weakMapHas = hasWeakMap ? WeakMap.prototype.has : null;
@@ -23,8 +31,8 @@ const gOPS = Object.getOwnPropertySymbols;
 const symToString = typeof Symbol === 'function' ? Symbol.prototype.toString : null;
 const isEnumerable = Object.prototype.propertyIsEnumerable;
 
-const inspectCustom = Symbol.for('nodejs.util.inspect.custom');
-const inspectSymbol = inspectCustom && isSymbol(inspectCustom) ? inspectCustom : null;
+const inspectCustom = ['inspect', Symbol.for('nodejs.util.inspect.custom')];
+const inspectSymbol = inspectCustom && inspectCustom.every(s => isSymbol(s)) ? inspectCustom : null;
 
 function inspect_(obj, options, depth, seen) {
   const opts = options || {};
@@ -34,9 +42,12 @@ function inspect_(obj, options, depth, seen) {
   }
   for(let optName of ['maxStringLength', 'maxArrayLength', 'breakLength']) {
     if(has(opts, optName) &&
-      (typeof opts[optName] === 'number' ? opts[optName] < 0 && opts[optName] !== Infinity : opts[optName] !== null)
+      (typeof opts[optName] === 'number'
+        ? opts[optName] < 0 && opts[optName] !== Infinity
+        : opts[optName] !== null)
     ) {
-      throw new TypeError(`option "${optName}", if provided, must be a positive integer, Infinity, or 'null'`);
+      throw new TypeError(`option "${optName}", if provided, must be a positive integer, Infinity, or 'null'`
+      );
     }
   }
   const customInspect = has(opts, 'customInspect') ? opts.customInspect : true;
@@ -116,7 +127,11 @@ function inspect_(obj, options, depth, seen) {
     }
     let newOpts = {
       ...opts,
-      multiline: opts.multiline ? (typeof opts.multiline == 'number' ? opts.multiline - 1 : true) : false
+      multiline: opts.multiline
+        ? typeof opts.multiline == 'number'
+          ? opts.multiline - 1
+          : true
+        : false
     };
     if(noIndent) {
       newOpts = {
@@ -132,14 +147,19 @@ function inspect_(obj, options, depth, seen) {
   }
 
   let s = '';
+  let inspectName;
 
-  if(typeof obj === 'object' && customInspect && inspectCustom && typeof obj[inspectCustom] === 'function') {
-    s += obj[inspectCustom]();
-    //console.reallog("customInspect:",s);
-    return s;
-    /*   if(typeof obj.inspect === 'function') {
+  if(typeof obj === 'object' && customInspect && inspectCustom) {
+    inspectName = inspectCustom.find(n => typeof obj[n] === 'function');
+
+    if(inspectName) {
+      s += obj[inspectName]();
+      //console.reallog("customInspect:",s);
+      return s;
+      /*   if(typeof obj.inspect === 'function') {
       return obj.inspect();
     }*/
+    }
   }
 
   if(typeof obj === 'function') {

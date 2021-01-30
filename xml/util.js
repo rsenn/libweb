@@ -9,7 +9,9 @@ export const Object2Array = (xmlObj, flat) => {
   ]);
 
   if(!flat)
-    entries = entries.reduce((acc, [k, v]) => (/*console.log('deep.set(', acc, k, Util.abbreviate(v, 10), ')'), */ deep.set(acc, k, v), acc),
+    entries = entries.reduce((acc, [k, v]) => (
+        /*console.log('deep.set(', acc, k, Util.abbreviate(v, 10), ')'), */ deep.set(acc, k, v), acc
+      ),
       []
     );
   return entries;
@@ -78,7 +80,8 @@ class XMLObject {
   constructor({ attributes, children, tagName }) {
     Array.prototype.push.call(this, tagName);
     /* prettier-ignore */ Object.assign(this, Object.keys(attributes).reduce((acc, key) => ({ ...acc, [key]: attributes[key] }), {}) );
-    if(Util.isObject(children) && children.length !== undefined) this.children = [].concat(children);
+    if(Util.isObject(children) && children.length !== undefined)
+      this.children = [].concat(children);
   }
 
   static toArray(...args) {

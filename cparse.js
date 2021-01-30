@@ -480,7 +480,8 @@ export function cparse(src, options) {
     }
 
     if(!def.name) {
-      if(typeNames.indexOf(def.modifier[def.modifier.length - 1]) != -1) def.name = def.modifier.pop();
+      if(typeNames.indexOf(def.modifier[def.modifier.length - 1]) != -1)
+        def.name = def.modifier.pop();
       else unexpected(typeNames.join(', '));
     }
 

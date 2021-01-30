@@ -219,7 +219,8 @@ export function normalizePath(d) {
           x = args[a + 5];
           y = args[a + 6];
         }
-        normalized += 'A ' + rx + ' ' + ry + ' ' + xrot + ' ' + lflag + ' ' + sweep + ' ' + x + ' ' + y + ' ';
+        normalized +=
+          'A ' + rx + ' ' + ry + ' ' + xrot + ' ' + lflag + ' ' + sweep + ' ' + x + ' ' + y + ' ';
       }
     } else if(lop === 'z') {
       normalized += 'Z ';

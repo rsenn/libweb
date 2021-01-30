@@ -37,7 +37,8 @@ export class ECMAScriptValue {
   [Symbol.for('nodejs.util.inspect.custom')]() {
     let obj = Util.filterOutKeys({ ...this }, [Symbol.for('nodejs.util.inspect.custom'), 'types']);
     let t = Object.entries(ECMAScriptValue.types).find(([name, number], i) => number == this.type);
-    if(obj.type === undefined || this.constructor.prototype !== ECMAScriptValue.prototype) delete obj.type;
+    if(obj.type === undefined || this.constructor.prototype !== ECMAScriptValue.prototype)
+      delete obj.type;
     else if(t) obj.type = t[0];
     Object.setPrototypeOf(obj, { constructor: this.constructor });
     return ECMAScriptValue.util.inspect(obj, { colors: true, depth: 1 });
@@ -224,7 +225,8 @@ export class ECMAScriptInterpreter {
 
     let decls;
 
-    if(declarations instanceof Array) decls = declarations.map(({ id, init }) => [id.value, this.evalNode(init)]);
+    if(declarations instanceof Array)
+      decls = declarations.map(({ id, init }) => [id.value, this.evalNode(init)]);
     else decls = this.evalNode(declarations);
 
     if(what.value) what = what.value;

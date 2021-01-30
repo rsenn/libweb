@@ -36,7 +36,10 @@ function isNumber(value) {
 
 // Adapted from: https://github.com/lodash/lodash/blob/master/isBoolean.js
 function isBoolean(value) {
-  return value === true || value === false || (isObjectLike(value) && getTag(value) == '[object Boolean]');
+  return (value === true ||
+    value === false ||
+    (isObjectLike(value) && getTag(value) == '[object Boolean]')
+  );
 }
 
 function isObject(value) {
@@ -76,7 +79,8 @@ const PATTERN_LENGTH_TOO_LARGE = max => `Pattern length exceeds max of ${max}.`;
 
 const MISSING_KEY_PROPERTY = name => `Missing ${name} property in key`;
 
-const INVALID_KEY_WEIGHT_VALUE = key => `Property 'weight' in key '${key}' must be a positive integer`;
+const INVALID_KEY_WEIGHT_VALUE = key =>
+  `Property 'weight' in key '${key}' must be a positive integer`;
 
 const hasOwn = Object.prototype.hasOwnProperty;
 
@@ -627,7 +631,9 @@ function search(text,
     binMax = binMid;
 
     let start = Math.max(1, expectedLocation - binMid + 1);
-    let finish = findAllMatches ? textLen : Math.min(expectedLocation + binMid, textLen) + patternLen;
+    let finish = findAllMatches
+      ? textLen
+      : Math.min(expectedLocation + binMid, textLen) + patternLen;
 
     // Initialize the bit array
     let bitArr = Array(finish + 2);
@@ -805,7 +811,14 @@ class BitapSearch {
     }
 
     // Otherwise, use Bitap algorithm
-    const { location, distance, threshold, findAllMatches, minMatchCharLength, ignoreLocation } = this.options;
+    const {
+      location,
+      distance,
+      threshold,
+      findAllMatches,
+      minMatchCharLength,
+      ignoreLocation
+    } = this.options;
 
     let allIndices = [];
     let totalScore = 0;
@@ -1672,7 +1685,10 @@ function computeScore$1(results, { ignoreFieldNorm = Config.ignoreFieldNorm }) {
   });
 }
 
-function format(results, docs, { includeMatches = Config.includeMatches, includeScore = Config.includeScore } = {}) {
+function format(results,
+  docs,
+  { includeMatches = Config.includeMatches, includeScore = Config.includeScore } = {}
+) {
   const transformers = [];
 
   if(includeMatches) transformers.push(transformMatches);

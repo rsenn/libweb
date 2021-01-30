@@ -71,7 +71,8 @@ export class Polyline extends PointList {
       nvert = this.length;
     for(i = 0, j = nvert - 1; i < nvert; j = i++) {
       if(this[i].y > point.y !== this[j].y > point.y &&
-        point.x < ((this[j].x - this[i].x) * (point.y - this[i].y)) / (this[j].y - this[i].y) + this[i].x
+        point.x <
+          ((this[j].x - this[i].x) * (point.y - this[i].y)) / (this[j].y - this[i].y) + this[i].x
       ) {
         c = !c;
       }

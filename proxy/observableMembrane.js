@@ -82,7 +82,9 @@ class BaseProxyHandler {
 
   lockShadowTarget(shadowTarget) {
     const { originalTarget } = this;
-    const targetKeys = ArrayConcat.call(getOwnPropertyNames(originalTarget), getOwnPropertySymbols(originalTarget));
+    const targetKeys = ArrayConcat.call(getOwnPropertyNames(originalTarget),
+      getOwnPropertySymbols(originalTarget)
+    );
     targetKeys.forEach(key => {
       this.copyDescriptorIntoShadowTarget(shadowTarget, key);
     });
@@ -132,7 +134,9 @@ class BaseProxyHandler {
     } = this;
     //if the membrane tag key exists and it is not in the original target, we add it to the keys.
     const keys =
-      isUndefined(tagPropertyKey) || hasOwnProperty.call(originalTarget, tagPropertyKey) ? [] : [tagPropertyKey];
+      isUndefined(tagPropertyKey) || hasOwnProperty.call(originalTarget, tagPropertyKey)
+        ? []
+        : [tagPropertyKey];
     //small perf optimization using push instead of concat to avoid creating an extra array
     ArrayPush.apply(keys, getOwnPropertyNames(originalTarget));
     ArrayPush.apply(keys, getOwnPropertySymbols(originalTarget));
@@ -617,11 +621,19 @@ class ReactiveMembrane {
     this.valueIsObservable = defaultValueIsObservable;
     this.objectGraph = new WeakMap();
     if(!isUndefined(options)) {
-      const { valueDistortion, valueMutated, valueObserved, valueIsObservable, tagPropertyKey } = options;
+      const {
+        valueDistortion,
+        valueMutated,
+        valueObserved,
+        valueIsObservable,
+        tagPropertyKey
+      } = options;
       this.valueDistortion = isFunction(valueDistortion) ? valueDistortion : defaultValueDistortion;
       this.valueMutated = isFunction(valueMutated) ? valueMutated : defaultValueMutated;
       this.valueObserved = isFunction(valueObserved) ? valueObserved : defaultValueObserved;
-      this.valueIsObservable = isFunction(valueIsObservable) ? valueIsObservable : defaultValueIsObservable;
+      this.valueIsObservable = isFunction(valueIsObservable)
+        ? valueIsObservable
+        : defaultValueIsObservable;
       this.tagPropertyKey = tagPropertyKey;
     }
   }

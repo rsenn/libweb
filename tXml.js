@@ -202,7 +202,8 @@ function tXml(S, options) {
    *
    */
   function findElements() {
-    let r = new RegExp('\\s' + options.attrName + '\\s*=[\'"]' + options.attrValue + '[\'"]').exec(S);
+    let r = new RegExp('\\s' + options.attrName + '\\s*=[\'"]' + options.attrValue + '[\'"]').exec(S
+    );
     if(r) {
       return r.index;
     }

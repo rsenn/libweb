@@ -33,7 +33,8 @@ export class LineList extends Array {
       let parentElem = makeGroup;
       makeGroup = () => parentElem;
     }
-    makeGroup = makeGroup || (() => factory('g', { stroke: 'black', fill: 'none', 'stroke-width': 0.1 }));
+    makeGroup =
+      makeGroup || (() => factory('g', { stroke: 'black', fill: 'none', 'stroke-width': 0.1 }));
     let group = makeGroup(),
       lines = this;
     lines = [...lines].map(({ x1, y1, x2, y2 }) => ['line', { x1, y1, x2, y2 }]);
@@ -137,7 +138,9 @@ export class LineList extends Array {
   }
 
   coincidences() {
-    let entries = [...Util.accumulate([...this.toPoints()].map((p, i) => [p + '', [i >> 1, i & 1]]))];
+    let entries = [
+      ...Util.accumulate([...this.toPoints()].map((p, i) => [p + '', [i >> 1, i & 1]]))
+    ];
 
     //entries =    entries.filter(([p,indexes]) => indexes.length > 1);
 
@@ -168,9 +171,11 @@ export class LineList extends Array {
 
   [Symbol.for('nodejs.util.inspect.custom')](n, opts = {}) {
     let c = Util.coloring(false && opts.colors);
-    let toString = [Symbol.toStringTag, 'toString', Symbol.for('nodejs.util.inspect.custom')].reduce((a, p) =>
-      this[0][p] ? p : a
-    );
+    let toString = [
+      Symbol.toStringTag,
+      'toString',
+      Symbol.for('nodejs.util.inspect.custom')
+    ].reduce((a, p) => (this[0][p] ? p : a));
     console.log('inspectFn:', toString);
     //   return Util.toString(this, { ...opts, toString });
     return `${c.text('LineList', 1, 31)}${c.text('(', 1, 36)}${
@@ -201,7 +206,9 @@ export class LineList extends Array {
  *
  * @param [[[x, y], [x, y]], ...] lines
  */
-LineList.toPolygons = (lines, createfn = points => Object.setPrototypeOf(points, PointList.prototype)) => {
+LineList.toPolygons = (lines,
+  createfn = points => Object.setPrototypeOf(points, PointList.prototype)
+) => {
   const polygons = [];
   for(var i = 0; i < lines.length; i++) {
     // Récupération et suppression du tableau du premier élément

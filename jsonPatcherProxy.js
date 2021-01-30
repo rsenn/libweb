@@ -132,7 +132,9 @@ const JSONPatcherProxy = (function () {
         //`undefined` is being set to an already undefined value, keep silent
         return reflectionResult;
       }
-      if(wasKeyInTreeBeforeReflection && !isSignificantChange(valueBeforeReflection, newValue, isTreeAnArray)) {
+      if(wasKeyInTreeBeforeReflection &&
+        !isSignificantChange(valueBeforeReflection, newValue, isTreeAnArray)
+      ) {
         return reflectionResult; //Value wasn't actually changed with respect to its JSON projection
       }
       //when array element is set to `undefined`, should generate replace to `null`

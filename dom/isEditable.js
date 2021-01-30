@@ -21,7 +21,10 @@ function isContentEditable(element) {
   if(element.contentEditable && element.contentEditable.toLowerCase() === 'true') {
     return true;
   }
-  if(element.contentEditable && element.contentEditable.toLowerCase() === 'inherit' && element.parentNode) {
+  if(element.contentEditable &&
+    element.contentEditable.toLowerCase() === 'inherit' &&
+    element.parentNode
+  ) {
     return isContentEditable(element.parentNode);
   }
   return false;

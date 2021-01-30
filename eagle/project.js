@@ -11,7 +11,8 @@ export class EagleProject {
 
   constructor(file, fs = { readFile: filename => '', exists: filename => false }) {
     //super();
-    if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file)) this.filename = file.replace(/\.(brd|sch)$/, '');
+    if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file))
+      this.filename = file.replace(/\.(brd|sch)$/, '');
 
     Util.define(this, { fs });
 
@@ -160,7 +161,8 @@ export class EagleProject {
     //console.log('loadLibraries:', dirs, names);
     for(let name of names) {
       let lib = this.findLibrary(name, dirs);
-      if(!lib) throw new Error(`EagleProject library '${name}' not found in:  \n${dirs.join('\n  ')}`);
+      if(!lib)
+        throw new Error(`EagleProject library '${name}' not found in:  \n${dirs.join('\n  ')}`);
       this.open(lib);
     }
   }
@@ -255,7 +257,9 @@ export class EagleProject {
 
   saveTo(dir = '.', overwrite = false) {
     return new Promise((resolve, reject) => {
-      let promises = this.documents.map(doc => doc.saveTo([dir, doc.filename].join('/'), overwrite));
+      let promises = this.documents.map(doc =>
+        doc.saveTo([dir, doc.filename].join('/'), overwrite)
+      );
 
       return Promise.all(promises).then(result => {
         //console.log('result:', result);

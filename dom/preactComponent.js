@@ -109,7 +109,9 @@ export class ReactComponent {
   }
 
   static isComponent(obj) {
-    return Util.isObject(obj) && ['__', '__v', 'ref', 'props', 'key'].every(prop => obj[prop] !== undefined);
+    return (Util.isObject(obj) &&
+      ['__', '__v', 'ref', 'props', 'key'].every(prop => obj[prop] !== undefined)
+    );
   }
 
   static factory(render_to, root) {
@@ -154,7 +156,9 @@ export class ReactComponent {
 
     let component = h(tagName,
       attributes,
-      children.map(child => (typeof child == 'object' ? ReactComponent.fromObject(child) : child + ''))
+      children.map(child =>
+        typeof child == 'object' ? ReactComponent.fromObject(child) : child + ''
+      )
     );
 
     return component;
@@ -266,7 +270,8 @@ export class ReactComponent {
             ? ` ${prop}={${Util.toString(value)}}`
             : (s == '' ? '' : `, `) + ` ${prop}: ${Util.toString(value)}`;
     }
-    if(typeof tagName == 'function') tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
+    if(typeof tagName == 'function')
+      tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);
 
     //console.log('tagName:', tagName);
 

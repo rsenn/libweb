@@ -15,7 +15,11 @@ export class Functional {
       return a;
     }
     r = null;
-    if((ref = t = this.type(a)) === 'string' || ref === 'number' || ref === 'boolean' || ref === 'symbol') {
+    if((ref = t = this.type(a)) === 'string' ||
+      ref === 'number' ||
+      ref === 'boolean' ||
+      ref === 'symbol'
+    ) {
       r = a;
     } else if(t === 'array') {
       r = [];
@@ -407,7 +411,10 @@ export class Functional {
 
   static converge = this.curry3var(function () {
     let after, ar, fn, fs, q;
-    (fs = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])),
+    (fs =
+      2 <= arguments.length
+        ? slice1.call(arguments, 0, (q = arguments.length - 1))
+        : ((q = 0), [])),
       (after = arguments[q++]);
     fs = this._pliftall(fs);
     after = this.plift(after);
@@ -981,7 +988,10 @@ export class Functional {
 
   static zipwith = this.curry3var(function () {
     let as, f, i, ml, n, q, ref, results, u;
-    (as = 2 <= arguments.length ? slice1.call(arguments, 0, (q = arguments.length - 1)) : ((q = 0), [])),
+    (as =
+      2 <= arguments.length
+        ? slice1.call(arguments, 0, (q = arguments.length - 1))
+        : ((q = 0), [])),
       (f = arguments[q++]);
     ml = Functional.apply(min)(Functional.map(as, len));
     results = [];

@@ -1,4 +1,9 @@
-export { EagleSVGRenderer, SchematicRenderer, BoardRenderer, LibraryRenderer } from './eagle/renderer.js';
+export {
+  EagleSVGRenderer,
+  SchematicRenderer,
+  BoardRenderer,
+  LibraryRenderer
+} from './eagle/renderer.js';
 
 export { EagleNodeList } from './eagle/nodeList.js';
 export {

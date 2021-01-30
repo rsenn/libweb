@@ -6,7 +6,8 @@
 
 const extractHashSign = hex => (hex.charAt(0) === '#' ? hex.substring(1, 7) : hex);
 const generateRGB = color => {
-  if(typeof color == 'object' && color !== null && 'r' in color && 'g' in color && 'b' in color) return color;
+  if(typeof color == 'object' && color !== null && 'r' in color && 'g' in color && 'b' in color)
+    return color;
   const hex = extractHashSign(color);
 
   const rgb = hex.length === 3 ? [...hex].reduce((total, char) => `${total}${char}${char}`) : hex;
@@ -61,7 +62,8 @@ const rgbToLab = rgbColor => {
  * @param {Array} a Lab color definition
  * @param {Array} b Lab color definition
  */
-const getLabDistance = (a, b) => Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2);
+const getLabDistance = (a, b) =>
+  Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2);
 
 export const distanceChecker = (a, b) => {
   if(!a && !b) {

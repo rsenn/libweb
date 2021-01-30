@@ -11,7 +11,10 @@ export default class WasmHelper {
   }
 
   canUseWebAssembly() {
-    return window.WebAssembly !== undefined && !this.isIgnoreBrowser() && WasmHelper.validateSafariWebAssemblyBug();
+    return (window.WebAssembly !== undefined &&
+      !this.isIgnoreBrowser() &&
+      WasmHelper.validateSafariWebAssemblyBug()
+    );
   }
 
   // FYI : https://github.com/brion/min-wasm-fail

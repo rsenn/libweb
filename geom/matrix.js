@@ -21,7 +21,9 @@ function matrixMultiply(a, b) {
 export function Matrix(...args) {
   let arg = args[0];
   let ret =
-    this instanceof Matrix || new.target === Matrix ? this : [undefined, 0, 0, undefined, 0, 0, undefined, 0, 0];
+    this instanceof Matrix || new.target === Matrix
+      ? this
+      : [undefined, 0, 0, undefined, 0, 0, undefined, 0, 0];
 
   const isObj = Util.isObject(arg);
 
@@ -301,7 +303,12 @@ Matrix.prototype.equals = function(other) {
 };
 
 Matrix.prototype.transform_distance = function(d) {
-  const k = 'x' in d && 'y' in d ? ['x', 'y'] : 'width' in d && 'height' in d ? ['width', 'height'] : [0, 1];
+  const k =
+    'x' in d && 'y' in d
+      ? ['x', 'y']
+      : 'width' in d && 'height' in d
+      ? ['width', 'height']
+      : [0, 1];
   const x = this[0] * d[k[0]] + this[2] * d[k[1]];
   const y = this[1] * d[k[0]] + this[3] * d[k[1]];
   d[k[0]] = x;
@@ -330,15 +337,20 @@ Matrix.prototype.transformGenerator = function(what = 'point') {
   const matrix = Object.freeze(this.clone());
   return function* (list) {
     const method =
-      Matrix.prototype['transform_' + what] || (typeof what == 'function' && what) || Matrix.prototype.transform_xy;
+      Matrix.prototype['transform_' + what] ||
+      (typeof what == 'function' && what) ||
+      Matrix.prototype.transform_xy;
 
     for(let item of list)
-      yield item instanceof Array ? method.apply(matrix, [...item]) : method.call(matrix, { ...item });
+      yield item instanceof Array
+        ? method.apply(matrix, [...item])
+        : method.call(matrix, { ...item });
   };
 };
 
 Matrix.prototype.transform_points = function* (list) {
-  for(let i = 0; i < list.length; i++) yield Matrix.prototype.transform_point.call(this, { ...list[i] });
+  for(let i = 0; i < list.length; i++)
+    yield Matrix.prototype.transform_point.call(this, { ...list[i] });
 };
 
 Matrix.prototype.transform_wh = function(width, height) {
@@ -403,17 +415,57 @@ Matrix.prototype.affine_transform = function(a, b) {
   if(typeof a == 'object' && a.toPoints !== undefined) a = a.toPoints();
   if(typeof b == 'object' && b.toPoints !== undefined) b = b.toPoints();
   xx =
-    (b[0].x * a[1].y + b[1].x * a[2].y + b[2].x * a[0].y - b[0].x * a[2].y - b[1].x * a[0].y - b[2].x * a[1].y) /
-    (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
+    (b[0].x * a[1].y +
+      b[1].x * a[2].y +
+      b[2].x * a[0].y -
+      b[0].x * a[2].y -
+      b[1].x * a[0].y -
+      b[2].x * a[1].y) /
+    (a[0].x * a[1].y +
+      a[1].x * a[2].y +
+      a[2].x * a[0].y -
+      a[0].x * a[2].y -
+      a[1].x * a[0].y -
+      a[2].x * a[1].y);
   yx =
-    (b[0].y * a[1].y + b[1].y * a[2].y + b[2].y * a[0].y - b[0].y * a[2].y - b[1].y * a[0].y - b[2].y * a[1].y) /
-    (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
+    (b[0].y * a[1].y +
+      b[1].y * a[2].y +
+      b[2].y * a[0].y -
+      b[0].y * a[2].y -
+      b[1].y * a[0].y -
+      b[2].y * a[1].y) /
+    (a[0].x * a[1].y +
+      a[1].x * a[2].y +
+      a[2].x * a[0].y -
+      a[0].x * a[2].y -
+      a[1].x * a[0].y -
+      a[2].x * a[1].y);
   xy =
-    (a[0].x * b[1].x + a[1].x * b[2].x + a[2].x * b[0].x - a[0].x * b[2].x - a[1].x * b[0].x - a[2].x * b[1].x) /
-    (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
+    (a[0].x * b[1].x +
+      a[1].x * b[2].x +
+      a[2].x * b[0].x -
+      a[0].x * b[2].x -
+      a[1].x * b[0].x -
+      a[2].x * b[1].x) /
+    (a[0].x * a[1].y +
+      a[1].x * a[2].y +
+      a[2].x * a[0].y -
+      a[0].x * a[2].y -
+      a[1].x * a[0].y -
+      a[2].x * a[1].y);
   yy =
-    (a[0].x * b[1].y + a[1].x * b[2].y + a[2].x * b[0].y - a[0].x * b[2].y - a[1].x * b[0].y - a[2].x * b[1].y) /
-    (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
+    (a[0].x * b[1].y +
+      a[1].x * b[2].y +
+      a[2].x * b[0].y -
+      a[0].x * b[2].y -
+      a[1].x * b[0].y -
+      a[2].x * b[1].y) /
+    (a[0].x * a[1].y +
+      a[1].x * a[2].y +
+      a[2].x * a[0].y -
+      a[0].x * a[2].y -
+      a[1].x * a[0].y -
+      a[2].x * a[1].y);
   tx =
     (a[0].x * a[1].y * b[2].x +
       a[1].x * a[2].y * b[0].x +
@@ -421,7 +473,12 @@ Matrix.prototype.affine_transform = function(a, b) {
       a[0].x * a[2].y * b[1].x -
       a[1].x * a[0].y * b[2].x -
       a[2].x * a[1].y * b[0].x) /
-    (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
+    (a[0].x * a[1].y +
+      a[1].x * a[2].y +
+      a[2].x * a[0].y -
+      a[0].x * a[2].y -
+      a[1].x * a[0].y -
+      a[2].x * a[1].y);
   ty =
     (a[0].x * a[1].y * b[2].y +
       a[1].x * a[2].y * b[0].y +
@@ -429,7 +486,12 @@ Matrix.prototype.affine_transform = function(a, b) {
       a[0].x * a[2].y * b[1].y -
       a[1].x * a[0].y * b[2].y -
       a[2].x * a[1].y * b[0].y) /
-    (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
+    (a[0].x * a[1].y +
+      a[1].x * a[2].y +
+      a[2].x * a[0].y -
+      a[0].x * a[2].y -
+      a[1].x * a[0].y -
+      a[2].x * a[1].y);
   this.set_row.call(this, 0, xx, xy, tx);
   this.set_row.call(this, 1, yx, yy, ty);
   this.set_row.call(this, 2, 0, 0, 1);
@@ -575,7 +637,8 @@ for(let name of [
   'decompose',
   'transformer'
 ]) {
-  Matrix[name] = (matrix, ...args) => Matrix.prototype[name].call(matrix || new Matrix(matrix), ...args);
+  Matrix[name] = (matrix, ...args) =>
+    Matrix.prototype[name].call(matrix || new Matrix(matrix), ...args);
 }
 
 for(let name of ['translate', 'scale', 'rotate', 'skew']) {
@@ -617,7 +680,9 @@ Util.defineGetter(Matrix, Symbol.species, function() {
 export const isMatrix = m =>
   Util.isObject(m) &&
   (m instanceof Matrix ||
-    (m.length !== undefined && (m.length == 6 || m.length == 9) && m.every(el => typeof el == 'number')));
+    (m.length !== undefined &&
+      (m.length == 6 || m.length == 9) &&
+      m.every(el => typeof el == 'number')));
 
 export const ImmutableMatrix = Util.immutableClass(Matrix);
 Util.defineGetter(ImmutableMatrix, Symbol.species, () => ImmutableMatrix);

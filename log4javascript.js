@@ -108,31 +108,48 @@
           this.eventListeners[this.eventTypes[i]] = [];
         }
       } else {
-        handleError('log4javascript.EventSupport [' + this + ']: setEventTypes: eventTypes parameter must be an Array');
+        handleError('log4javascript.EventSupport [' +
+            this +
+            ']: setEventTypes: eventTypes parameter must be an Array'
+        );
       }
     },
 
     addEventListener(eventType, listener) {
       if(typeof listener == 'function') {
         if(!array_contains(this.eventTypes, eventType)) {
-          handleError('log4javascript.EventSupport [' + this + "]: addEventListener: no event called '" + eventType + "'"
+          handleError('log4javascript.EventSupport [' +
+              this +
+              "]: addEventListener: no event called '" +
+              eventType +
+              "'"
           );
         }
         this.eventListeners[eventType].push(listener);
       } else {
-        handleError('log4javascript.EventSupport [' + this + ']: addEventListener: listener must be a function');
+        handleError('log4javascript.EventSupport [' +
+            this +
+            ']: addEventListener: listener must be a function'
+        );
       }
     },
 
     removeEventListener(eventType, listener) {
       if(typeof listener == 'function') {
         if(!array_contains(this.eventTypes, eventType)) {
-          handleError('log4javascript.EventSupport [' + this + "]: removeEventListener: no event called '" + eventType + "'"
+          handleError('log4javascript.EventSupport [' +
+              this +
+              "]: removeEventListener: no event called '" +
+              eventType +
+              "'"
           );
         }
         array_remove(this.eventListeners[eventType], listener);
       } else {
-        handleError('log4javascript.EventSupport [' + this + ']: removeEventListener: listener must be a function');
+        handleError('log4javascript.EventSupport [' +
+            this +
+            ']: removeEventListener: listener must be a function'
+        );
       }
     },
 
@@ -143,7 +160,12 @@
           listeners[i](this, eventType, eventArgs);
         }
       } else {
-        handleError('log4javascript.EventSupport [' + this + "]: dispatchEvent: no event called '" + eventType + "'");
+        handleError('log4javascript.EventSupport [' +
+            this +
+            "]: dispatchEvent: no event called '" +
+            eventType +
+            "'"
+        );
       }
     }
   };
@@ -151,7 +173,11 @@
   /* -------------------------------------------------------------------------- */
 
   let applicationStartDate = new Date();
-  let uniqueId = 'log4javascript_' + applicationStartDate.getTime() + '_' + Math.floor(Math.random() * 100000000);
+  let uniqueId =
+    'log4javascript_' +
+    applicationStartDate.getTime() +
+    '_' +
+    Math.floor(Math.random() * 100000000);
   let emptyFunction = function() {};
   let newLine = '\r\n';
   let pageLoaded = false;
@@ -365,7 +391,8 @@
         if(!this.quietMode) {
           let alertMessage = 'log4javascript error: ' + message;
           if(exception) {
-            alertMessage += newLine + newLine + 'Original error: ' + getExceptionStringRep(exception);
+            alertMessage +=
+              newLine + newLine + 'Original error: ' + getExceptionStringRep(exception);
           }
           alert(alertMessage);
         }
@@ -513,7 +540,10 @@
           this.invalidateAppenderCache();
         }
       } else {
-        handleError("Logger.addAppender: appender supplied ('" + toStr(appender) + "') is not a subclass of Appender");
+        handleError("Logger.addAppender: appender supplied ('" +
+            toStr(appender) +
+            "') is not a subclass of Appender"
+        );
       }
     };
 
@@ -537,7 +567,8 @@
     this.getEffectiveAppenders = function() {
       if(appenderCache === null || appenderCacheInvalidated) {
         //Build appender cache
-        let parentEffectiveAppenders = isRoot || !this.getAdditivity() ? [] : this.parent.getEffectiveAppenders();
+        let parentEffectiveAppenders =
+          isRoot || !this.getAdditivity() ? [] : this.parent.getEffectiveAppenders();
         appenderCache = parentEffectiveAppenders.concat(appenders);
         appenderCacheInvalidated = false;
       }
@@ -588,7 +619,9 @@
       } else if(level instanceof Level) {
         loggerLevel = level;
       } else {
-        handleError('Logger.setLevel: level supplied to logger ' + this.name + ' is not an instance of log4javascript.Level'
+        handleError('Logger.setLevel: level supplied to logger ' +
+            this.name +
+            ' is not an instance of log4javascript.Level'
         );
       }
     };
@@ -631,7 +664,10 @@
         if(isUndefined(name)) {
           handleError('Logger.time: a name for the timer must be supplied');
         } else if(level && !(level instanceof Level)) {
-          handleError('Logger.time: level supplied to timer ' + name + ' is not an instance of log4javascript.Level');
+          handleError('Logger.time: level supplied to timer ' +
+              name +
+              ' is not an instance of log4javascript.Level'
+          );
         } else {
           timers[name] = new Timer(name, level);
         }
@@ -884,11 +920,15 @@
     },
 
     isTimeStampsInMilliseconds() {
-      return this.overrideTimeStampsSetting ? this.useTimeStampsInMilliseconds : useTimeStampsInMilliseconds;
+      return this.overrideTimeStampsSetting
+        ? this.useTimeStampsInMilliseconds
+        : useTimeStampsInMilliseconds;
     },
 
     getTimeStampValue(loggingEvent) {
-      return this.isTimeStampsInMilliseconds() ? loggingEvent.timeStampInMilliseconds : loggingEvent.timeStampInSeconds;
+      return this.isTimeStampsInMilliseconds()
+        ? loggingEvent.timeStampInMilliseconds
+        : loggingEvent.timeStampInSeconds;
     },
 
     getDataValues(loggingEvent, combineMessages) {
@@ -897,7 +937,10 @@
         [this.timeStampKey, this.getTimeStampValue(loggingEvent)],
         [this.levelKey, loggingEvent.level.name],
         [this.urlKey, window.location.href],
-        [this.messageKey, combineMessages ? loggingEvent.getCombinedMessages() : loggingEvent.messages]
+        [
+          this.messageKey,
+          combineMessages ? loggingEvent.getCombinedMessages() : loggingEvent.messages
+        ]
       ];
       if(!this.isTimeStampsInMilliseconds()) {
         dataValues.push([this.millisecondsKey, loggingEvent.milliseconds]);
@@ -987,7 +1030,8 @@
     if(layout instanceof Layout) {
       this.layout = layout;
     } else {
-      handleError('Appender.setLayout: layout supplied to ' + this.toString() + ' is not a subclass of Layout');
+      handleError('Appender.setLayout: layout supplied to ' + this.toString() + ' is not a subclass of Layout'
+      );
     }
   };
 
@@ -999,7 +1043,10 @@
     if(threshold instanceof Level) {
       this.threshold = threshold;
     } else {
-      handleError('Appender.setThreshold: threshold supplied to ' + this.toString() + ' is not a subclass of Level');
+      handleError('Appender.setThreshold: threshold supplied to ' +
+          this.toString() +
+          ' is not a subclass of Level'
+      );
     }
   };
 
@@ -1103,7 +1150,10 @@
     let i, len;
     function formatMessage(message) {
       message = typeof message === 'string' ? message : toStr(message);
-      return '<log4javascript:message><![CDATA[' + layout.escapeCdata(message) + ']]></log4javascript:message>';
+      return ('<log4javascript:message><![CDATA[' +
+        layout.escapeCdata(message) +
+        ']]></log4javascript:message>'
+      );
     }
 
     let str =
@@ -1223,7 +1273,13 @@
     }
 
     for(i = 0, len = dataValues.length - 1; i <= len; i++) {
-      str += this.tab + '"' + dataValues[i][0] + '"' + this.colon + formatValue(dataValues[i][1], this.tab, true);
+      str +=
+        this.tab +
+        '"' +
+        dataValues[i][0] +
+        '"' +
+        this.colon +
+        formatValue(dataValues[i][1], this.tab, true);
       if(i < len) {
         str += ',';
       }
@@ -1268,7 +1324,8 @@
     let dataValues = this.getDataValues(loggingEvent);
     let queryBits = [];
     for(let i = 0, len = dataValues.length; i < len; i++) {
-      let val = dataValues[i][1] instanceof Date ? String(dataValues[i][1].getTime()) : dataValues[i][1];
+      let val =
+        dataValues[i][1] instanceof Date ? String(dataValues[i][1].getTime()) : dataValues[i][1];
       queryBits.push(urlEncode(dataValues[i][0]) + '=' + urlEncode(val));
     }
     return queryBits.join('&');
@@ -1329,7 +1386,10 @@
             childExpansion = doFormat(obj[i], childDepth, childIndentation);
             childLines.push(childIndentation + childExpansion);
           } catch(ex) {
-            childLines.push(childIndentation + 'Error formatting array member. Details: ' + getExceptionStringRep(ex) + ''
+            childLines.push(childIndentation +
+                'Error formatting array member. Details: ' +
+                getExceptionStringRep(ex) +
+                ''
             );
           }
         }
@@ -1348,7 +1408,10 @@
             childExpansion = doFormat(obj[i], childDepth, childIndentation);
             childLines.push(childIndentation + i + ': ' + childExpansion);
           } catch(ex) {
-            childLines.push(childIndentation + i + ': Error formatting property. Details: ' + getExceptionStringRep(ex)
+            childLines.push(childIndentation +
+                i +
+                ': Error formatting property. Details: ' +
+                getExceptionStringRep(ex)
             );
           }
         }
@@ -1445,7 +1508,10 @@
       //Using midday avoids any possibility of DST messing things up
       let midday = new Date(this.getFullYear(), this.getMonth(), this.getDate(), 12, 0, 0);
       let previousSunday = new Date(midday.getTime() - this.getDay() * ONE_DAY);
-      return newDateAtMidnight(previousSunday.getFullYear(), previousSunday.getMonth(), previousSunday.getDate());
+      return newDateAtMidnight(previousSunday.getFullYear(),
+        previousSunday.getMonth(),
+        previousSunday.getDate()
+      );
     };
 
     Date.prototype.getWeekInYear = function(minimalDaysInFirstWeek) {
@@ -1629,7 +1695,10 @@
               break;
             case MONTH:
               if(numberOfLetters >= 3) {
-                formattedString += formatText(monthNames[rawData], numberOfLetters, numberOfLetters);
+                formattedString += formatText(monthNames[rawData],
+                  numberOfLetters,
+                  numberOfLetters
+                );
               } else {
                 //NB. Months returned by getMonth are zero-based
                 formattedString += formatNumber(rawData + 1, numberOfLetters);
@@ -1719,7 +1788,8 @@
                 depth = 0;
               }
             }
-            var messages = conversionCharacter === 'a' ? loggingEvent.messages[0] : loggingEvent.messages;
+            var messages =
+              conversionCharacter === 'a' ? loggingEvent.messages[0] : loggingEvent.messages;
             for(let i = 0, len = messages.length; i < len; i++) {
               if(i > 0 && replacement.charAt(replacement.length - 1) !== ' ') {
                 replacement += ' ';
@@ -2095,7 +2165,9 @@
     };
 
     this.setRequestSuccessCallback = function(requestSuccessCallbackParam) {
-      requestSuccessCallback = extractFunctionFromParam(requestSuccessCallbackParam, requestSuccessCallback);
+      requestSuccessCallback = extractFunctionFromParam(requestSuccessCallbackParam,
+        requestSuccessCallback
+      );
     };
 
     this.setFailCallback = function(failCallbackParam) {
@@ -2204,7 +2276,9 @@
           appender.getLayout().batchFooter;
       }
       if(contentType == appender.defaults.contentType) {
-        postData = appender.getLayout().returnsPostData ? postData : urlEncode(postVarName) + '=' + urlEncode(postData);
+        postData = appender.getLayout().returnsPostData
+          ? postData
+          : urlEncode(postVarName) + '=' + urlEncode(postData);
         //Add the layout name to the post data
         if(postData.length > 0) {
           postData += '&';
@@ -4728,7 +4802,9 @@
       let consoleAppenderId = consoleAppenderIdCounter++;
 
       //Local variables
-      initiallyMinimized = extractBooleanFromParam(initiallyMinimized, this.defaults.initiallyMinimized);
+      initiallyMinimized = extractBooleanFromParam(initiallyMinimized,
+        this.defaults.initiallyMinimized
+      );
       lazyInit = extractBooleanFromParam(lazyInit, this.defaults.lazyInit);
       useDocumentWrite = extractBooleanFromParam(useDocumentWrite, this.defaults.useDocumentWrite);
       let newestMessageAtTop = this.defaults.newestMessageAtTop;
@@ -5053,7 +5129,9 @@
           } else {
             result = commandWindow.eval(expr);
           }
-          commandOutput = isUndefined(result) ? result : formatObjectExpansion(result, commandLineObjectExpansionDepth);
+          commandOutput = isUndefined(result)
+            ? result
+            : formatObjectExpansion(result, commandLineObjectExpansionDepth);
 
           //Restore variables in the command window to their original state
           for(i = 0, len = objectsToRestore.length; i < len; i++) {
@@ -5323,7 +5401,9 @@
                   }
                   open();
                 } catch(ex) {
-                  handleError("InPageAppender.init: invalid container element '" + container + "' supplied", ex);
+                  handleError("InPageAppender.init: invalid container element '" + container + "' supplied",
+                    ex
+                  );
                 }
               }
             };
@@ -5355,7 +5435,11 @@
 
         safeToAppend = function() {
           if(isSupported && !consoleClosed) {
-            if(consoleWindowCreated && !consoleWindowLoaded && getConsoleWindow() && isLoaded(getConsoleWindow())) {
+            if(consoleWindowCreated &&
+              !consoleWindowLoaded &&
+              getConsoleWindow() &&
+              isLoaded(getConsoleWindow())
+            ) {
               consoleWindowLoaded = true;
             }
             return consoleWindowLoaded;
@@ -5449,7 +5533,12 @@
           } catch(e) {
             frameInfo = '_inaccessibleParentFrame';
           }
-          let windowName = 'PopUp_' + location.host.replace(/[^a-z0-9]/gi, '_') + '_' + consoleAppenderId + frameInfo;
+          let windowName =
+            'PopUp_' +
+            location.host.replace(/[^a-z0-9]/gi, '_') +
+            '_' +
+            consoleAppenderId +
+            frameInfo;
           if(!useOldPopUp || !useDocumentWrite) {
             //Ensure a previous window isn't used by using a unique name
             windowName = windowName + '_' + uniqueId;
@@ -5512,7 +5601,8 @@
               }
             } else {
               isSupported = false;
-              logLog.warn('PopUpAppender.init: pop-ups blocked, please unblock to use PopUpAppender');
+              logLog.warn('PopUpAppender.init: pop-ups blocked, please unblock to use PopUpAppender'
+              );
               if(complainAboutPopUpBlocking) {
                 handleError('log4javascript: pop-up windows appear to be blocked. Please unblock them to use pop-up logging.'
                 );
@@ -5565,7 +5655,15 @@
     /* ------------------------------------------------------------------ */
 
     function PopUpAppender(lazyInit, initiallyMinimized, useDocumentWrite, width, height) {
-      this.create(false, null, lazyInit, initiallyMinimized, useDocumentWrite, width, height, this.defaults.focusPopUp);
+      this.create(false,
+        null,
+        lazyInit,
+        initiallyMinimized,
+        useDocumentWrite,
+        width,
+        height,
+        this.defaults.focusPopUp
+      );
     }
 
     PopUpAppender.prototype = new ConsoleAppender();
@@ -5598,8 +5696,22 @@
 
     /* ------------------------------------------------------------------ */
 
-    function InPageAppender(container, lazyInit, initiallyMinimized, useDocumentWrite, width, height) {
-      this.create(true, container, lazyInit, initiallyMinimized, useDocumentWrite, width, height, false);
+    function InPageAppender(container,
+      lazyInit,
+      initiallyMinimized,
+      useDocumentWrite,
+      width,
+      height
+    ) {
+      this.create(true,
+        container,
+        lazyInit,
+        initiallyMinimized,
+        useDocumentWrite,
+        width,
+        height,
+        false
+      );
     }
 
     InPageAppender.prototype = new ConsoleAppender();
@@ -5686,7 +5798,18 @@
     let preFormattedElements = ['script', 'pre'];
 
     //This should be the definitive list, as specified by the XHTML 1.0 Transitional DTD
-    let emptyElements = ['br', 'img', 'hr', 'param', 'link', 'area', 'input', 'col', 'base', 'meta'];
+    let emptyElements = [
+      'br',
+      'img',
+      'hr',
+      'param',
+      'link',
+      'area',
+      'input',
+      'col',
+      'base',
+      'meta'
+    ];
     let indentationUnit = '  ';
 
     //Create and return an XHTML string from the node specified
@@ -5704,7 +5827,11 @@
       }
 
       function fixAttributeValue(attrValue) {
-        return attrValue.toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+        return attrValue
+          .toString()
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/"/g, '&quot;');
       }
 
       function getStyleAttributeValue(el) {
@@ -5773,12 +5900,15 @@
                 xhtml += ' style="' + getStyleAttributeValue(rootNode) + '"';
               }
             }
-            if(array_contains(emptyElements, tagName) || (hasPrefix && !rootNode.hasChildNodes())) {
+            if(array_contains(emptyElements, tagName) ||
+              (hasPrefix && !rootNode.hasChildNodes())
+            ) {
               xhtml += '/' + gt;
             } else {
               xhtml += gt;
               //Add output for childNodes collection (which doesn't include attribute nodes)
-              let childStartNewLine = !(rootNode.childNodes.length === 1 && rootNode.childNodes[0].nodeType === nodeTypes.TEXT_NODE
+              let childStartNewLine = !(rootNode.childNodes.length === 1 &&
+                rootNode.childNodes[0].nodeType === nodeTypes.TEXT_NODE
               );
               let childPreformatted = array_contains(preFormattedElements, tagName);
               for(i = 0, len = rootNode.childNodes.length; i < len; i++) {
@@ -5897,22 +6027,28 @@
           try {
             values.push(args[0][k]);
           } catch(ex) {
-            logLog.warn('values(): Unable to obtain value for key ' + k + '. Details: ' + getExceptionMessage(ex));
+            logLog.warn('values(): Unable to obtain value for key ' +
+                k +
+                '. Details: ' +
+                getExceptionMessage(ex)
+            );
           }
         }
         return values;
       });
 
-      ConsoleAppender.addGlobalCommandLineFunction('expansionDepth', (appender, args, returnValue) => {
-        let expansionDepth = parseInt(args[0], 10);
-        if(isNaN(expansionDepth) || expansionDepth < 0) {
-          returnValue.isError = true;
-          return '' + args[0] + ' is not a valid expansion depth';
-        }
+      ConsoleAppender.addGlobalCommandLineFunction('expansionDepth',
+        (appender, args, returnValue) => {
+          let expansionDepth = parseInt(args[0], 10);
+          if(isNaN(expansionDepth) || expansionDepth < 0) {
+            returnValue.isError = true;
+            return '' + args[0] + ' is not a valid expansion depth';
+          }
 
-        appender.setCommandLineObjectExpansionDepth(expansionDepth);
-        return 'Object expansion depth set to ' + expansionDepth;
-      });
+          appender.setCommandLineObjectExpansionDepth(expansionDepth);
+          return 'Object expansion depth set to ' + expansionDepth;
+        }
+      );
     }
 
     function init() {

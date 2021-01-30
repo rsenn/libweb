@@ -16,10 +16,12 @@ export const get = (pointer, value = undefined) => {
   const ptr = compile(pointer);
 
   const fn = value =>
-    ptr.reduce(([value, pointer], segment) => [applySegment(value, segment, pointer), append(segment, pointer)], [
-      value,
-      ''
-    ])[0];
+    ptr.reduce(([value, pointer], segment) => [
+        applySegment(value, segment, pointer),
+        append(segment, pointer)
+      ],
+      [value, '']
+    )[0];
 
   return value === undefined ? fn : fn(value);
 };
@@ -37,7 +39,11 @@ const _set = (pointer, subject, value, cursor) => {
     const segment = pointer.shift();
     return {
       ...subject,
-      [segment]: _set(pointer, applySegment(subject, segment, cursor), value, append(segment, cursor))
+      [segment]: _set(pointer,
+        applySegment(subject, segment, cursor),
+        value,
+        append(segment, cursor)
+      )
     };
   } else if(Array.isArray(subject)) {
     const clonedSubject = [...subject];
@@ -123,7 +129,8 @@ export const append = curry((pointer, ...segments) => pointer + segments.map(seg
 
 const escape = segment => segment.toString().replace(/~/g, '~0').replace(/\//g, '~1');
 const unescape = segment => segment.toString().replace(/~1/g, '/').replace(/~0/g, '~');
-const computeSegment = (value, segment) => (Array.isArray(value) && segment === '-' ? value.length : segment);
+const computeSegment = (value, segment) =>
+  Array.isArray(value) && segment === '-' ? value.length : segment;
 
 const applySegment = (value, segment, cursor = '') => {
   if(isScalar(value)) {

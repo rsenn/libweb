@@ -4,7 +4,19 @@ import { MakeRotation, Alignment, AlignmentAttrs, VERTICAL, HORIZONTAL, log, RAD
 import { TransformationList, Rotation, Translation } from '../../geom.js';
 import { Cross } from './cross.js';
 
-export const Text = ({ x, y, text, color, alignment, rot, visible, className, opts = {}, style, ...props }) => {
+export const Text = ({
+  x,
+  y,
+  text,
+  color,
+  alignment,
+  rot,
+  visible,
+  className,
+  opts = {},
+  style,
+  ...props
+}) => {
   let { transformation = new TransformationList() } = opts;
   let parentAngle = Math.round(transformation.slice(transformation.indexOf(transformation.scaling) + 1).angle * RAD2DEG
   );

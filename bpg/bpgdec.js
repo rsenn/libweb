@@ -21,7 +21,9 @@ var Module = typeof Module !== 'undefined' ? Module : {};
   ENVIRONMENT_IS_WEB = typeof window === 'object';
   ENVIRONMENT_IS_WORKER = typeof importScripts === 'function';
   ENVIRONMENT_IS_NODE =
-    typeof process === 'object' && typeof process.versions === 'object' && typeof process.versions.node === 'string';
+    typeof process === 'object' &&
+    typeof process.versions === 'object' &&
+    typeof process.versions.node === 'string';
   ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIRONMENT_IS_WORKER;
   var scriptDirectory = '';
   function locateFile(path) {
@@ -429,7 +431,9 @@ var Module = typeof Module !== 'undefined' ? Module : {};
   };
   var asm = createWasm();
   var ___wasm_call_ctors = (Module['___wasm_call_ctors'] = function() {
-    return (___wasm_call_ctors = Module['___wasm_call_ctors'] = Module['asm']['f']).apply(null, arguments);
+    return (___wasm_call_ctors = Module['___wasm_call_ctors'] = Module['asm']['f']).apply(null,
+      arguments
+    );
   });
   var _malloc = (Module['_malloc'] = function() {
     return (_malloc = Module['_malloc'] = Module['asm']['g']).apply(null, arguments);
@@ -438,27 +442,38 @@ var Module = typeof Module !== 'undefined' ? Module : {};
     return (_free = Module['_free'] = Module['asm']['h']).apply(null, arguments);
   });
   var _bpg_decoder_get_info = (Module['_bpg_decoder_get_info'] = function() {
-    return (_bpg_decoder_get_info = Module['_bpg_decoder_get_info'] = Module['asm']['i']).apply(null, arguments);
-  });
-  var _bpg_decoder_start = (Module['_bpg_decoder_start'] = function() {
-    return (_bpg_decoder_start = Module['_bpg_decoder_start'] = Module['asm']['j']).apply(null, arguments);
-  });
-  var _bpg_decoder_get_frame_duration = (Module['_bpg_decoder_get_frame_duration'] = function() {
-    return (_bpg_decoder_get_frame_duration = Module['_bpg_decoder_get_frame_duration'] = Module['asm']['k']).apply(null,
+    return (_bpg_decoder_get_info = Module['_bpg_decoder_get_info'] = Module['asm']['i']).apply(null,
       arguments
     );
   });
+  var _bpg_decoder_start = (Module['_bpg_decoder_start'] = function() {
+    return (_bpg_decoder_start = Module['_bpg_decoder_start'] = Module['asm']['j']).apply(null,
+      arguments
+    );
+  });
+  var _bpg_decoder_get_frame_duration = (Module['_bpg_decoder_get_frame_duration'] = function() {
+    return (_bpg_decoder_get_frame_duration = Module['_bpg_decoder_get_frame_duration'] =
+      Module['asm']['k']).apply(null, arguments);
+  });
   var _bpg_decoder_get_line = (Module['_bpg_decoder_get_line'] = function() {
-    return (_bpg_decoder_get_line = Module['_bpg_decoder_get_line'] = Module['asm']['l']).apply(null, arguments);
+    return (_bpg_decoder_get_line = Module['_bpg_decoder_get_line'] = Module['asm']['l']).apply(null,
+      arguments
+    );
   });
   var _bpg_decoder_open = (Module['_bpg_decoder_open'] = function() {
-    return (_bpg_decoder_open = Module['_bpg_decoder_open'] = Module['asm']['m']).apply(null, arguments);
+    return (_bpg_decoder_open = Module['_bpg_decoder_open'] = Module['asm']['m']).apply(null,
+      arguments
+    );
   });
   var _bpg_decoder_decode = (Module['_bpg_decoder_decode'] = function() {
-    return (_bpg_decoder_decode = Module['_bpg_decoder_decode'] = Module['asm']['n']).apply(null, arguments);
+    return (_bpg_decoder_decode = Module['_bpg_decoder_decode'] = Module['asm']['n']).apply(null,
+      arguments
+    );
   });
   var _bpg_decoder_close = (Module['_bpg_decoder_close'] = function() {
-    return (_bpg_decoder_close = Module['_bpg_decoder_close'] = Module['asm']['o']).apply(null, arguments);
+    return (_bpg_decoder_close = Module['_bpg_decoder_close'] = Module['asm']['o']).apply(null,
+      arguments
+    );
   });
   var calledRun;
   function ExitStatus(status) {
@@ -519,7 +534,11 @@ var Module = typeof Module !== 'undefined' ? Module : {};
     malloc: Module['cwrap']('malloc', 'number', ['number']),
     free: Module['cwrap']('free', 'void', ['number']),
     bpg_decoder_open: Module['cwrap']('bpg_decoder_open', 'number', []),
-    bpg_decoder_decode: Module['cwrap']('bpg_decoder_decode', 'number', ['number', 'array', 'number']),
+    bpg_decoder_decode: Module['cwrap']('bpg_decoder_decode', 'number', [
+      'number',
+      'array',
+      'number'
+    ]),
     bpg_decoder_get_info: Module['cwrap']('bpg_decoder_get_info', 'number', ['number', 'number']),
     bpg_decoder_start: Module['cwrap']('bpg_decoder_start', 'number', ['number', 'number']),
     bpg_decoder_get_frame_duration: Module['cwrap']('bpg_decoder_get_frame_duration', 'void', [

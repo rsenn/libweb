@@ -115,7 +115,9 @@ export class Rule {
     [Symbol.for('nodejs.util.inspect.custom')]() {
       const { repeat = '', length, invert } = this;
       if(this.length == 1) return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
-      return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${invert ? '~' : ''}[ ${this.map(n => {
+      return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${
+        invert ? '~' : ''
+      }[ ${this.map(n => {
         /*Util.className(n) + ' ' +*/
 
         if(!n[Symbol.for('nodejs.util.inspect.custom')])
@@ -128,9 +130,10 @@ export class Rule {
     toString() {
       const { repeat = '', length, invert } = this;
       if(this.length == 1) return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
-      return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${invert ? '~' : ''}[ ${this.map(n =>
-        /*Util.className(n) + ' ' +*/ n.toString()
-      ).join(Util.colorText(' ⏵ ', 1, 30))} ]${repeat}`;
+      return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${
+        invert ? '~' : ''
+      }[ ${this.map(n => /*Util.className(n) + ' ' +*/ n.toString()).join(Util.colorText(' ⏵ ', 1, 30)
+      )} ]${repeat}`;
     }
 
     /*   *entries() {
@@ -140,7 +143,9 @@ export class Rule {
     combinations() {
       let operators = new Map([...this].reduce(
           (a, part, i) =>
-            part instanceof Rule.Operator && '?*'.indexOf(part.op) != -1 ? [...a, [i, 1 << a.length]] : a,
+            part instanceof Rule.Operator && '?*'.indexOf(part.op) != -1
+              ? [...a, [i, 1 << a.length]]
+              : a,
           []
         )
       );
@@ -183,7 +188,8 @@ export class Rule {
         return this.combinations().map(match => match.toCowbird(accu, false));
       }
       let matches = this.filter(m => m.str != 'eof()').map(rule => {
-        if(!rule.toCowbird) throw new Error(`toCowbird ${Util.className(rule)} ${Util.toString(rule)}`);
+        if(!rule.toCowbird)
+          throw new Error(`toCowbird ${Util.className(rule)} ${Util.toString(rule)}`);
         return rule.toCowbird(accu, false);
       });
       console.log('matches:', matches);
@@ -220,7 +226,9 @@ export class Rule {
     }
 
     toString() {
-      return (`${this.args.length > 1 ? '' : this.op}(` + this.args.map(n => n.toString()).join(' ' + this.op + ' ') + `)`
+      return (`${this.args.length > 1 ? '' : this.op}(` +
+        this.args.map(n => n.toString()).join(' ' + this.op + ' ') +
+        `)`
       );
     }
 
@@ -241,7 +249,9 @@ export class Rule {
         let subname =
           (name || 'rule') +
           '_' +
-          (Util.isObject(this.rule) ? (this.rule.n = (this.rule.n ? this.rule.n : 0) + 1) : Util.randStr(8));
+          (Util.isObject(this.rule)
+            ? (this.rule.n = (this.rule.n ? this.rule.n : 0) + 1)
+            : Util.randStr(8));
 
         args = args.map(arg => (arg instanceof Array && arg.length == 1 ? arg[0] : arg));
 
@@ -251,11 +261,14 @@ export class Rule {
         accu.push(rule.toCowbird(accu, subname));
         return [`<${subname}>`];
       } else if(args.length == 1) {
-        if(!args[0].toCowbird) throw new Error(`toCowbird ${Util.className(args[0])} ${Util.toString(args[0])}`);
+        if(!args[0].toCowbird)
+          throw new Error(`toCowbird ${Util.className(args[0])} ${Util.toString(args[0])}`);
         ret = ret.concat(args[0].toCowbird(accu));
       }
       let op = this.op == '+' ? '\\+' : this.op;
-      return ret.map(str => (typeof str == 'string' && str.startsWith('<') ? `${str} ${op}` : str + op[op.length - 1]));
+      return ret.map(str =>
+        typeof str == 'string' && str.startsWith('<') ? `${str} ${op}` : str + op[op.length - 1]
+      );
     }
   };
 
@@ -370,7 +383,9 @@ export class Rule {
         f = 'seq';
         sep = ', ';
       }
-      s = a.map(p => Rule.generate(p, p instanceof Rule.Match && p.length > 1 ? 'seq' : null)).join(sep);
+      s = a
+        .map(p => Rule.generate(p, p instanceof Rule.Match && p.length > 1 ? 'seq' : null))
+        .join(sep);
 
       if(a.skip) skip = true;
 
@@ -539,7 +554,8 @@ export class Grammar {
         a
           .map(m => {
             m = m.map(tok => tok.str);
-            if(m.length == 3 && m[1] == '..') return `${Util.escapeRegex(m[0])}-${Util.escapeRegex(m[2])}`;
+            if(m.length == 3 && m[1] == '..')
+              return `${Util.escapeRegex(m[0])}-${Util.escapeRegex(m[2])}`;
             if(m.length == 1) return m[0].length == 1 ? Util.escapeRegex(m[0]) : m[0];
           })
           .join('') +
