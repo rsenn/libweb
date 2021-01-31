@@ -315,7 +315,7 @@ RGBA.prototype.toAlpha = Util.curry(function (other) {
     src.a *= alpha.a;
   }
 
-  let dst = src.normalize(1, 255);
+  let dst = new RGBA(src.r * 255, src.g * 255, src.b * 255, src.a * 255);
 
   return dst.round();
 });

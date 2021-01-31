@@ -1781,7 +1781,7 @@ Util.not = fn =>
     return !fn(...args);
   };
 Util.isAsync = fn =>
-  typeof fn == 'function' && /async/.test(fn + '') /*|| fn() instanceof Promise*/;
+  typeof fn == 'function' && /^[\n]*async/.test(fn + '') /*|| fn() instanceof Promise*/;
 
 Util.isArrowFunction = fn =>
   (Util.isFunction(fn) && !('prototype' in fn)) || /\ =>\ /.test(('' + fn).replace(/\n.*/g, ''));
@@ -5735,11 +5735,28 @@ Util.lazyProperty = (obj, name, getter, opts = {}) => {
     obj[name] = value;
     return value;
   };
+  const isAsync = Util.isAsync(getter);
+  //console.log(`Util.lazyProperty name=${name} isAsync=${isAsync} getter=${getter}`);
 
   return Object.defineProperty(obj, name, {
-    get() {
-      return replaceProperty(getter.call(obj, name));
-    },
+    get: isAsync
+      ? async function() {
+          return replaceProperty(await getter.call(obj, name));
+        }
+      : function() {
+          const value = getter.call(obj, name);
+          let isPromise = Util.isObject(value) && value instanceof Promise;
+          //console.log(`Util.lazyProperty`, name, value, isPromise);
+          if(isPromise) {
+            value.then(v => {
+              replaceProperty(v);
+              //console.log(`Util.lazyProperty resolved `, obj[name]);
+              return v;
+            });
+            return value;
+          }
+          return replaceProperty(value);
+        },
     configurable: true,
     ...opts
   });
@@ -5827,7 +5844,14 @@ Util.getHRTime = Util.memoize(() => {
   }
   Util.getGlobalObject().HighResolutionTime = HighResolutionTime;
 
-  return function hrtime(previousTimestamp) {
+  return isAsync(now) ? async function hrtime(previousTimestamp) {
+    var clocktime = await now();
+    var secs = Math.floor(clocktime / 1000);
+    var nano = Math.floor((clocktime % 1000) * 1e6);
+    let ts = new HighResolutionTime(secs, nano);
+    if(previousTimestamp) ts = ts.since(previousTimestamp);
+    return ts;
+  } : function hrtime(previousTimestamp) {
     var clocktime = now();
     var secs = Math.floor(clocktime / 1000);
     var nano = Math.floor((clocktime % 1000) * 1e6);
@@ -5876,12 +5900,35 @@ Util.lazyProperty(Util,
       performanceNow = performanceNow.bind(performance); //Util.bind(performanceNow, performance);
     }
 
-    if(!performanceNow && g.cv.getTickCount) {
+    if(!performanceNow && g.cv?.getTickCount) {
       const freq = g.cv.getTickFrequency() / 1000;
       const mul = 1 / freq;
       const getTicks = g.cv.getTickCount;
       performanceNow = () => getTicks() * mul;
     }
+    if(!performanceNow && Util.getPlatform() == 'quickjs') {
+      let gettime;
+        const CLOCK_REALTIME = 0;
+        const CLOCK_MONOTONIC = 1;
+const CLOCK_MONOTONIC_RAW = 4;
+const CLOCK_BOOTTIME = 7;
+
+      performanceNow = async function(clock = CLOCK_MONOTONIC_RAW) {
+        if(!gettime) {
+          const { dlsym, RTLD_DEFAULT, define, call } = await import('ffi');
+          const clock_gettime = dlsym(RTLD_DEFAULT, 'clock_gettime');
+          define('clock_gettime', clock_gettime, null, 'int', 'int', 'void *');
+          gettime = (clk_id, tp) => call('clock_gettime', clk_id, tp);
+        }
+        let data = new ArrayBuffer(16);
+
+        gettime(clock, data);
+        let [secs, nsecs] = new BigUint64Array(data, 0, 2);
+
+        return Number(secs)*10e3 + Number(nsecs) * 10e-6;
+      };
+    }
+
     if(!performanceNow) {
       const getTime = Date.now;
       performanceNow = getTime;
@@ -5936,25 +5983,42 @@ Util.bitsToNames = (flags, map = (name, flag) => name) => {
 Util.instrument = (fn,
   log = (duration, name, args, ret) =>
     console.log(`function '${name}'` +
-        (args.length ? ` [${args.join(', ')}]` : '') +
+        (args.length ? ` [${args.map(arg => typeof(arg) == 'string' ? `'${Util.escape(Util.abbreviate(arg))}'` : arg).join(', ')}]` : '') +
         (ret !== undefined ? ` {= ${ret}}` : '') +
         ` timing: ${duration.toFixed(3)}ms`
     ),
-  logInterval = 1000
+  logInterval = 0 //1000
 ) => {
   const { now, hrtime, functionName } = Util;
   let last = now();
   let duration = 0,
     times = 0;
   const name = functionName(fn) || '<anonymous>';
-  return Util.isAsync(fn)
-    ? async function(...args) {
-        const start = now();
-        let ret = await fn.apply(this, args);
-        duration += now() - start;
-        times++;
+  const isAsync = Util.isAsync(fn) || Util.isAsync(now);
+      const doLog = isAsync ?   async(args, ret)=> {
+    let t = await now();
+      if(t - await last >= logInterval) {
+      log(duration / times, name, args, ret);
+      duration = times = 0;
+      last = t;
+    }
+  } : (args, ret) => {
+    let t = now();
+    console.log("doLog",{passed:t-last,logInterval});
+    if(t - last >= logInterval) {
+      log(duration / times, name, args, ret);
+      duration = times = 0;
+      last = t;
+    }
+  }
 
-        doLog(args, ret);
+  return isAsync
+    ? async function(...args) {
+        const start = await now();
+        let ret = await fn.apply(this, args);
+        duration += await now() - start;
+        times++;
+         await   doLog(args, ret);
         return ret;
       }
     : function(...args) {
@@ -5965,14 +6029,6 @@ Util.instrument = (fn,
         doLog(args, ret);
         return ret;
       };
-  function doLog(args, ret) {
-    let t = now();
-    if(t - last >= logInterval) {
-      log(duration / times, name, args, ret);
-      duration = times = 0;
-      last = t;
-    }
-  }
 };
 
 Util.bind = function(f, ...args) {
