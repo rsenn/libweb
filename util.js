@@ -2938,7 +2938,7 @@ Util.filterMembers = function(obj, fn) {
   return Util.filterKeys(obj, pred);
 };
 Util.filterOutMembers = function(obj, fn) {
-  const pred = (v, k, o) => !fn(vp, k, o);
+  const pred = (v, k, o) => !fn(v, k, o);
   return Util.filterMembers(obj, pred);
 };
 Util.dumpMembers = obj => Util.filterOutMembers(obj, Util.isFunction);
