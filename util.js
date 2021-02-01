@@ -5422,6 +5422,7 @@ Util.callMain = async (fn, trapExceptions) =>
                   }) + ''
                 ).replace(/(^|\n)/g, '\n  ')
             );
+            Util.exit(1);
           })
   )(...Util.getArgs().slice(1));
 
@@ -5844,21 +5845,23 @@ Util.getHRTime = Util.memoize(() => {
   }
   Util.getGlobalObject().HighResolutionTime = HighResolutionTime;
 
-  return isAsync(now) ? async function hrtime(previousTimestamp) {
-    var clocktime = await now();
-    var secs = Math.floor(clocktime / 1000);
-    var nano = Math.floor((clocktime % 1000) * 1e6);
-    let ts = new HighResolutionTime(secs, nano);
-    if(previousTimestamp) ts = ts.since(previousTimestamp);
-    return ts;
-  } : function hrtime(previousTimestamp) {
-    var clocktime = now();
-    var secs = Math.floor(clocktime / 1000);
-    var nano = Math.floor((clocktime % 1000) * 1e6);
-    let ts = new HighResolutionTime(secs, nano);
-    if(previousTimestamp) ts = ts.since(previousTimestamp);
-    return ts;
-  };
+  return isAsync(now)
+    ? async function hrtime(previousTimestamp) {
+        var clocktime = await now();
+        var secs = Math.floor(clocktime / 1000);
+        var nano = Math.floor((clocktime % 1000) * 1e6);
+        let ts = new HighResolutionTime(secs, nano);
+        if(previousTimestamp) ts = ts.since(previousTimestamp);
+        return ts;
+      }
+    : function hrtime(previousTimestamp) {
+        var clocktime = now();
+        var secs = Math.floor(clocktime / 1000);
+        var nano = Math.floor((clocktime % 1000) * 1e6);
+        let ts = new HighResolutionTime(secs, nano);
+        if(previousTimestamp) ts = ts.since(previousTimestamp);
+        return ts;
+      };
 });
 
 Util.lazyProperty(Util, 'animationFrame', () => {
@@ -5908,10 +5911,10 @@ Util.lazyProperty(Util,
     }
     if(!performanceNow && Util.getPlatform() == 'quickjs') {
       let gettime;
-        const CLOCK_REALTIME = 0;
-        const CLOCK_MONOTONIC = 1;
-const CLOCK_MONOTONIC_RAW = 4;
-const CLOCK_BOOTTIME = 7;
+      const CLOCK_REALTIME = 0;
+      const CLOCK_MONOTONIC = 1;
+      const CLOCK_MONOTONIC_RAW = 4;
+      const CLOCK_BOOTTIME = 7;
 
       performanceNow = async function(clock = CLOCK_MONOTONIC_RAW) {
         if(!gettime) {
@@ -5925,7 +5928,7 @@ const CLOCK_BOOTTIME = 7;
         gettime(clock, data);
         let [secs, nsecs] = new BigUint64Array(data, 0, 2);
 
-        return Number(secs)*10e3 + Number(nsecs) * 10e-6;
+        return Number(secs) * 10e3 + Number(nsecs) * 10e-6;
       };
     }
 
@@ -5983,7 +5986,11 @@ Util.bitsToNames = (flags, map = (name, flag) => name) => {
 Util.instrument = (fn,
   log = (duration, name, args, ret) =>
     console.log(`function '${name}'` +
-        (args.length ? ` [${args.map(arg => typeof(arg) == 'string' ? `'${Util.escape(Util.abbreviate(arg))}'` : arg).join(', ')}]` : '') +
+        (args.length
+          ? ` [${args
+              .map(arg => (typeof arg == 'string' ? `'${Util.escape(Util.abbreviate(arg))}'` : arg))
+              .join(', ')}]`
+          : '') +
         (ret !== undefined ? ` {= ${ret}}` : '') +
         ` timing: ${duration.toFixed(3)}ms`
     ),
@@ -5995,30 +6002,32 @@ Util.instrument = (fn,
     times = 0;
   const name = functionName(fn) || '<anonymous>';
   const isAsync = Util.isAsync(fn) || Util.isAsync(now);
-      const doLog = isAsync ?   async(args, ret)=> {
-    let t = await now();
-      if(t - await last >= logInterval) {
-      log(duration / times, name, args, ret);
-      duration = times = 0;
-      last = t;
-    }
-  } : (args, ret) => {
-    let t = now();
-    console.log("doLog",{passed:t-last,logInterval});
-    if(t - last >= logInterval) {
-      log(duration / times, name, args, ret);
-      duration = times = 0;
-      last = t;
-    }
-  }
+  const doLog = isAsync
+    ? async (args, ret) => {
+        let t = await now();
+        if(t - (await last) >= logInterval) {
+          log(duration / times, name, args, ret);
+          duration = times = 0;
+          last = t;
+        }
+      }
+    : (args, ret) => {
+        let t = now();
+        console.log('doLog', { passed: t - last, logInterval });
+        if(t - last >= logInterval) {
+          log(duration / times, name, args, ret);
+          duration = times = 0;
+          last = t;
+        }
+      };
 
   return isAsync
     ? async function(...args) {
         const start = await now();
         let ret = await fn.apply(this, args);
-        duration += await now() - start;
+        duration += (await now()) - start;
         times++;
-         await   doLog(args, ret);
+        await doLog(args, ret);
         return ret;
       }
     : function(...args) {

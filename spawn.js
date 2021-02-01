@@ -2,27 +2,24 @@ import Util from './util.js';
 import inspect from './inspect.js';
 
 function QuickJSSpawn(os, ffi) {
-  /* console.log('os:', os);
-  console.log('ffi:', ffi);*/
-
   if(typeof os.exec == 'function')
     return (args, options = { block: false }) => {
       let { stdio, ...opts } = options;
       stdio = (stdio || []).concat(['pipe', 'pipe', 'pipe']).slice(0, 3);
-      console.log('stdio:', stdio);
+      //console.log('stdio:', stdio);
 
       let pipes = stdio.map((mode, chan) =>
         mode != 'pipe' ? [chan, undefined] : [...os.pipe()][chan == 0 ? 'slice' : 'reverse']()
       );
 
       let [cfds, pfds] = Util.zip(pipes);
-      console.log('pipes:', inspect(pipes));
-      console.log('spawn:', inspect({ pipes, cfds, pfds }));
+      //console.log('pipes:', inspect(pipes));
+      //console.log('spawn:', inspect({ pipes, cfds, pfds }));
 
       opts.stdio = cfds[0];
       opts.stdout = cfds[1];
       opts.stderr = cfds[2];
-      console.log('exec()', { args, opts });
+      //console.log('exec()', { args, opts });
 
       let ret = os.exec(args, opts);
       ret = opts.block
