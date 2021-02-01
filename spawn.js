@@ -122,7 +122,7 @@ export async function CreatePortableSpawn(ctor, ...args) {
 export async function GetPortableSpawn() {
   let spawnFn, err;
   try {
-    spawnFn = await CreatePortableSpawn(QuickJSSpawn, import('os'), import('ffi'));
+    spawnFn = await CreatePortableSpawn(QuickJSSpawn, import('os'), import('ffi.so'));
   } catch(error) {
     err = error;
   }

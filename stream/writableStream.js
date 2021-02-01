@@ -2,9 +2,7 @@ import PortableFileSystem from '../filesystem.js';
 import { EventEmitter } from '../eventEmitter.js';
 import Util from '../util.js';
 
-let filesystem;
-
-PortableFileSystem(instance => (filesystem = instance));
+if(!globalThis.filesystem) PortableFileSystem(/*instance => (filesystem = instance)*/);
 
 export const WritableStream =
   Util.getGlobalObject().WritableStream ||

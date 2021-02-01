@@ -2353,8 +2353,16 @@ Util.isBrowser = function() {
   return ret;
   //return !!(global.window && global.window.document);
 };
-Util.waitFor = msecs => {
+
+Util.waitFor = async function waitFor(msecs) {
   if(msecs <= 0) return;
+  if(!globalThis.setTimeout) {
+    await import('os').then(({ setTimeout, clearTimeout, setInterval, clearInterval }) => {
+      console.log('', { setTimeout, clearTimeout, setInterval, clearInterval });
+      Object.assign(globalThis, { setTimeout, clearTimeout, setInterval, clearInterval });
+    });
+  }
+
   let promise, clear, timerId;
   promise = new Promise(async (resolve, reject) => {
     timerId = setTimeout(() => resolve(), msecs);
@@ -2366,6 +2374,7 @@ Util.waitFor = msecs => {
   promise.clear = clear;
   return promise;
 };
+
 Util.timeout = async (msecs, promises, promiseClass = Promise) =>
   await promiseClass.race([Util.waitFor(msecs)].concat(Util.isArray(promises) ? promises : [promises])
   );
@@ -5918,7 +5927,7 @@ Util.lazyProperty(Util,
 
       performanceNow = async function(clock = CLOCK_MONOTONIC_RAW) {
         if(!gettime) {
-          const { dlsym, RTLD_DEFAULT, define, call } = await import('ffi');
+          const { dlsym, RTLD_DEFAULT, define, call } = await import('ffi.so');
           const clock_gettime = dlsym(RTLD_DEFAULT, 'clock_gettime');
           define('clock_gettime', clock_gettime, null, 'int', 'int', 'void *');
           gettime = (clk_id, tp) => call('clock_gettime', clk_id, tp);

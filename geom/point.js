@@ -61,7 +61,7 @@ export function Point(...args) {
     return p;
   }
 }
-const getArgs = args => (console.debug('getArgs', ...args),
+const getOther = args => (console.debug('getOther', ...args),
   typeof args[0] == 'number' ? [{ x: args[0], y: args[1] }] : args
 );
 
