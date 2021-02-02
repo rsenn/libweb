@@ -83,7 +83,8 @@ export class EagleNodeList {
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    return this.entries().map(([k, v]) => v);
+//    console.log("this.entries", this.entries);
+    return [...this.entries()].map(([k, v]) => v);
   }
 
   static create(owner, ref, pred, getOrCreate) {
