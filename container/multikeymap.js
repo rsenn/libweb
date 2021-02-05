@@ -235,4 +235,4 @@ class MultiKeyMap {
   }
 }
 
-export default  MultiKeyMap;
+export default MultiKeyMap;
