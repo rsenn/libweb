@@ -326,7 +326,8 @@ export class EagleNode {
     return EagleNode.inspect(this);
   }
   toString() {
-    return tXml.toString([this.raw]);
+    return toXML(this.raw);
+    //    return tXml.toString([this.raw]);
   }
 
   inspect() {

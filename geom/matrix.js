@@ -275,6 +275,16 @@ Matrix.prototype.toString = function(separator = ' ') {
 
   return `${name}(` + rows.map(row => row.join(',' + separator)).join(',' + separator) + ')';
 };
+Matrix.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
+  const rows = Matrix.prototype.rows.call(this);
+let values = [...this].map(n => typeof(n) == 'number' ? Util.roundTo(n, 1e-14, 15) : undefined);
+let count = values.findIndex(v => v === undefined);
+if(count != -1)
+values = values.slice(0, count);
+let pad = Math.max(...values.map(n => (n+'').length));
+return '\n  [ '+values.reduce((acc,n,i) => (i > 0 ? acc + (i % 3 == 0 ? ' ],\n  [ ' : ', '): '')+(n+'').padStart(pad,' '), '')+' ]';
+// map(row => row.map(col => (Util.roundTo(col, 1E-14, 15)+'').padStart(pad, ' ')).join(', ')).join(' ],\n  [ ');
+};
 
 Matrix.prototype.toSVG = function() {
   return 'matrix(' + ['a', 'b', 'c', 'd', 'e', 'f'].map(k => this[keyIndexes[k]]).join(',') + ')';

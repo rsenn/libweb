@@ -52,12 +52,14 @@ export class EagleDocument extends EagleNode {
   }
 
   static open(filename, fs) {
-    return new EagleDocument((fs || filesystem).readFile(filename), null, filename);
+    let xml = (fs || filesystem).readFile(filename, null);
+    return new EagleDocument(xml, null, filename);
   }
 
   constructor(xmlStr, project, filename, type, fs) {
     // console.debug('EagleDocument.constructor', { data: Util.abbreviate(xmlStr), project, filename, type });
     const xml = parseXML(xmlStr);
+    console.log('xml:', xml);
     let xmlObj = deep.clone(xml[0]);
     super(project, EagleRef(xmlObj, []), xmlObj);
     this.pathMapper = new PathMapper(xmlObj, ImmutablePath);

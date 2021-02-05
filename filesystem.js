@@ -25,8 +25,8 @@ export const O_CLOEXEC = 0x00200000;
 
 export function QuickJSFileSystem(std, os) {
   let errno = 0;
-  const {O_RDONLY, O_WRONLY, O_RDWR, O_APPEND, O_CREAT, O_EXCL, O_TRUNC, O_TEXT}=os;
-  const {EINVAL, EIO, EACCES, EEXIST, ENOSPC, ENOSYS, EBUSY, ENOENT, EPERM} = std.Error;
+  const { O_RDONLY, O_WRONLY, O_RDWR, O_APPEND, O_CREAT, O_EXCL, O_TRUNC, O_TEXT } = os;
+  const { EINVAL, EIO, EACCES, EEXIST, ENOSPC, ENOSYS, EBUSY, ENOENT, EPERM } = std.Error;
 
   function strerr(ret) {
     const [str, err] = ret;
@@ -44,7 +44,14 @@ export function QuickJSFileSystem(std, os) {
     return ret || 0;
   }
   return {
-    O_RDONLY, O_WRONLY, O_RDWR, O_APPEND, O_CREAT, O_EXCL, O_TRUNC, O_TEXT,
+    O_RDONLY,
+    O_WRONLY,
+    O_RDWR,
+    O_APPEND,
+    O_CREAT,
+    O_EXCL,
+    O_TRUNC,
+    O_TEXT,
     get errno() {
       return errno;
     },
@@ -99,9 +106,10 @@ export function QuickJSFileSystem(std, os) {
       if(!res.errno) return file;
 
       return numerr(-res.errno);
-    }, open(filename, flags = O_RDONLY, mode = 0x1a4) {
+    },
+    open(filename, flags = O_RDONLY, mode = 0x1a4) {
       return numerr(os.open(filename, flags, mode));
-    /*  if(fd => 0) return fd;
+      /*  if(fd => 0) return fd;
 
       return fd;*/
     },
@@ -133,24 +141,25 @@ export function QuickJSFileSystem(std, os) {
     },
     write(fd, data, offset, length) {
       if(!(data instanceof ArrayBuffer)) data = StringToArrayBuffer(data);
- 
-offset ??= 0;
-length ??= data.byteLength;
 
- //console.log("filesystem.write", { data: this.bufferToString(data), offset, length });
+      offset ??= 0;
+      length ??= data.byteLength;
 
- let ret;
+      //console.log("filesystem.write", { data: this.bufferToString(data), offset, length });
+
+      let ret;
       switch (typeof fd) {
         case 'number':
           ret = os.write(fd, data, offset, length);
           break;
-        default: ret = fd.write(data, offset , length );
+        default: ret = fd.write(data, offset, length);
           break;
       }
       return numerr(ret);
     },
-
     readFile(filename, encoding = 'utf-8') {
+      if(encoding == 'utf-8') return std.loadFile(filename);
+
       let data,
         size,
         res = { errno: 0 };
@@ -166,19 +175,32 @@ length ??= data.byteLength;
         if(encoding != null) data = ArrayBufferToString(data, encoding);
         return data;
       }
-      return -res.errno;
+      return numerr(-res.errno);
     },
     writeFile(filename, data, overwrite = true) {
       let buf,
         bytes,
         res = { errno: 0 };
-      let fd = this.open(filename, O_WRONLY|O_CREAT|(overwrite ? O_TRUNC : O_EXCL) );
-      // console.log('writeFile', filename, data.length, file, res.errno);
-      if(fd >= 0) {
-        buf = typeof data == 'string' ? StringToArrayBuffer(data) : data;
-        bytes = this.write(fd, buf, 0, buf.byteLength);
- this.close(fd);
-        return bytes;
+
+      if(typeof data == 'string') {
+        let file = std.open(filename, 'w+b', res);
+        if(!res.errno) {
+          file.puts(data);
+          file.flush();
+          bytes = file.tell();
+          file.close();
+          return bytes;
+        }
+        return numerr(-res.errno);
+      } else {
+        let fd = this.open(filename, O_WRONLY | O_CREAT | (overwrite ? O_TRUNC : O_EXCL));
+        // console.log('writeFile', filename, data.length, file, res.errno);
+        if(fd >= 0) {
+          buf = typeof data == 'string' ? StringToArrayBuffer(data) : data;
+          bytes = this.write(fd, buf, 0, buf.byteLength);
+          this.close(fd);
+          return bytes;
+        }
       }
       return fd;
     },

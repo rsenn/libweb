@@ -277,12 +277,12 @@ Line.prototype.bbox = function() {
   const { x1, y1, x2, y2 } = this;
   return new BBox(x1, y1, x2, y2);
 };
-Line.prototype.add = function(other) {
-  const { x1, y1, x2, y2 } = Line(...arguments);
-  this.x1 += x1;
-  this.y1 += y1;
-  this.x2 += x2;
-  this.y2 += y2;
+Line.prototype.add = function(...args) {
+  const { x, y } = Point(...args);
+  this.x1 += x;
+  this.y1 += y;
+  this.x2 += x;
+  this.y2 += y;
   return this;
 };
 
