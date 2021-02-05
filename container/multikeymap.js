@@ -66,7 +66,8 @@ export class MultiKeyMap {
   }
 
   _assertCallback(callback) {
-    if(typeof callback !== 'function') throw new TypeError('Argument "calback" must be a function');
+    if(typeof callback !== 'function')
+      throw new TypeError('Argument "calback" must be a function');
   }
 
   clear() {

@@ -17,18 +17,35 @@ function matrixMultiply(a, b) {
 
 export function Matrix(...args) {
   let arg = args[0];
-  let ret = this instanceof Matrix || new.target === Matrix ? this : [undefined, 0, 0, undefined, 0, 0, undefined, 0, 0];
+  let ret =
+    this instanceof Matrix || new.target === Matrix
+      ? this
+      : [undefined, 0, 0, undefined, 0, 0, undefined, 0, 0];
 
   const isObj = Util.isObject(arg);
 
-  if(isObj && arg.xx !== undefined && arg.yx !== undefined && arg.xy !== undefined && arg.yy !== undefined && arg.x0 !== undefined && arg.y0 !== undefined) {
+  if(isObj &&
+    arg.xx !== undefined &&
+    arg.yx !== undefined &&
+    arg.xy !== undefined &&
+    arg.yy !== undefined &&
+    arg.x0 !== undefined &&
+    arg.y0 !== undefined
+  ) {
     ret[0] = arg.xx;
     ret[1] = arg.xy;
     ret[2] = arg.x0;
     ret[3] = arg.yx;
     ret[4] = arg.yy;
     ret[5] = arg.y0;
-  } else if(isObj && arg.a !== undefined && arg.b !== undefined && arg.c !== undefined && arg.d !== undefined && arg.e !== undefined && arg.f !== undefined) {
+  } else if(isObj &&
+    arg.a !== undefined &&
+    arg.b !== undefined &&
+    arg.c !== undefined &&
+    arg.d !== undefined &&
+    arg.e !== undefined &&
+    arg.f !== undefined
+  ) {
     ret[0] = arg.a; //xx
     ret[1] = arg.c; //xy
     ret[2] = arg.e; //x0
@@ -196,7 +213,9 @@ Matrix.prototype.round = function(prec = 1e-12, digits = 12) {
   return m;
 };
 Matrix.prototype.roundSelf = function(prec = 1e-12, digits = 12) {
-  Matrix.prototype.init.call(this, ...[...this].slice(0, 9).map(n => Util.roundTo(n, prec, digits)));
+  Matrix.prototype.init.call(this,
+    ...[...this].slice(0, 9).map(n => Util.roundTo(n, prec, digits))
+  );
   return this;
 };
 
@@ -228,12 +247,25 @@ Matrix.prototype.isIdentity = function() {
 };
 
 Matrix.prototype.determinant = function() {
-  return this[0] * (this[4] * this[8] - this[5] * this[7]) + this[1] * (this[5] * this[6] - this[3] * this[8]) + this[2] * (this[3] * this[7] - this[4] * this[6]);
+  return (this[0] * (this[4] * this[8] - this[5] * this[7]) +
+    this[1] * (this[5] * this[6] - this[3] * this[8]) +
+    this[2] * (this[3] * this[7] - this[4] * this[6])
+  );
 };
 
 Matrix.prototype.invert = function() {
   const det = Matrix.prototype.determinant.call(this);
-  return new Matrix([(this[4] * this[8] - this[5] * this[7]) / det, (this[2] * this[7] - this[1] * this[8]) / det, (this[1] * this[5] - this[2] * this[4]) / det, (this[5] * this[6] - this[3] * this[8]) / det, (this[0] * this[8] - this[2] * this[6]) / det, (this[2] * this[3] - this[0] * this[5]) / det, (this[3] * this[7] - this[4] * this[6]) / det, (this[6] * this[1] - this[0] * this[7]) / det, (this[0] * this[4] - this[1] * this[3]) / det]);
+  return new Matrix([
+    (this[4] * this[8] - this[5] * this[7]) / det,
+    (this[2] * this[7] - this[1] * this[8]) / det,
+    (this[1] * this[5] - this[2] * this[4]) / det,
+    (this[5] * this[6] - this[3] * this[8]) / det,
+    (this[0] * this[8] - this[2] * this[6]) / det,
+    (this[2] * this[3] - this[0] * this[5]) / det,
+    (this[3] * this[7] - this[4] * this[6]) / det,
+    (this[6] * this[1] - this[0] * this[7]) / det,
+    (this[0] * this[4] - this[1] * this[3]) / det
+  ]);
 };
 
 Matrix.prototype.scalar_product = function(f) {
@@ -269,7 +301,9 @@ Matrix.prototype[inspectSym] = function() {
   let columns = Matrix.prototype.columns.call(this);
   let numRows = Math.max(...columns.map(col => col.length));
   let numCols = columns.length;
-  columns = columns.map(column => column.map(n => (typeof n == 'number' ? Util.roundTo(n, 1e-12, 12) : undefined)));
+  columns = columns.map(column =>
+    column.map(n => (typeof n == 'number' ? Util.roundTo(n, 1e-12, 12) : undefined))
+  );
   let pad = columns.map(column => Math.max(...column.map(n => (n + '').length)));
   let s = '│ ';
   for(let row = 0; row < numRows; row++) {
@@ -314,7 +348,12 @@ Matrix.prototype.equals = function(other) {
 };
 
 Matrix.prototype.transform_distance = function(d) {
-  const k = 'x' in d && 'y' in d ? ['x', 'y'] : 'width' in d && 'height' in d ? ['width', 'height'] : [0, 1];
+  const k =
+    'x' in d && 'y' in d
+      ? ['x', 'y']
+      : 'width' in d && 'height' in d
+      ? ['width', 'height']
+      : [0, 1];
   const x = this[0] * d[k[0]] + this[2] * d[k[1]];
   const y = this[1] * d[k[0]] + this[3] * d[k[1]];
   d[k[0]] = x;
@@ -342,14 +381,21 @@ Matrix.prototype.transform_point = function(p) {
 Matrix.prototype.transformGenerator = function(what = 'point') {
   const matrix = Object.freeze(this.clone());
   return function* (list) {
-    const method = Matrix.prototype['transform_' + what] || (typeof what == 'function' && what) || Matrix.prototype.transform_xy;
+    const method =
+      Matrix.prototype['transform_' + what] ||
+      (typeof what == 'function' && what) ||
+      Matrix.prototype.transform_xy;
 
-    for(let item of list) yield item instanceof Array ? method.apply(matrix, [...item]) : method.call(matrix, { ...item });
+    for(let item of list)
+      yield item instanceof Array
+        ? method.apply(matrix, [...item])
+        : method.call(matrix, { ...item });
   };
 };
 
 Matrix.prototype.transform_points = function* (list) {
-  for(let i = 0; i < list.length; i++) yield Matrix.prototype.transform_point.call(this, { ...list[i] });
+  for(let i = 0; i < list.length; i++)
+    yield Matrix.prototype.transform_point.call(this, { ...list[i] });
 };
 
 Matrix.prototype.transform_wh = function(width, height) {
@@ -369,7 +415,10 @@ Matrix.prototype.transform_size = function(s) {
 };
 
 Matrix.prototype.transform_xywh = function(x, y, width, height) {
-  return [...Matrix.prototype.transform_xy.call(this, x, y), ...Matrix.prototype.transform_wh.call(this, width, height)];
+  return [
+    ...Matrix.prototype.transform_xy.call(this, x, y),
+    ...Matrix.prototype.transform_wh.call(this, width, height)
+  ];
 };
 
 Matrix.prototype.transform_rect = function(rect) {
@@ -410,12 +459,84 @@ Matrix.prototype.affine_transform = function(a, b) {
   let xx, yx, xy, yy, tx, ty;
   if(typeof a == 'object' && a.toPoints !== undefined) a = a.toPoints();
   if(typeof b == 'object' && b.toPoints !== undefined) b = b.toPoints();
-  xx = (b[0].x * a[1].y + b[1].x * a[2].y + b[2].x * a[0].y - b[0].x * a[2].y - b[1].x * a[0].y - b[2].x * a[1].y) / (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
-  yx = (b[0].y * a[1].y + b[1].y * a[2].y + b[2].y * a[0].y - b[0].y * a[2].y - b[1].y * a[0].y - b[2].y * a[1].y) / (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
-  xy = (a[0].x * b[1].x + a[1].x * b[2].x + a[2].x * b[0].x - a[0].x * b[2].x - a[1].x * b[0].x - a[2].x * b[1].x) / (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
-  yy = (a[0].x * b[1].y + a[1].x * b[2].y + a[2].x * b[0].y - a[0].x * b[2].y - a[1].x * b[0].y - a[2].x * b[1].y) / (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
-  tx = (a[0].x * a[1].y * b[2].x + a[1].x * a[2].y * b[0].x + a[2].x * a[0].y * b[1].x - a[0].x * a[2].y * b[1].x - a[1].x * a[0].y * b[2].x - a[2].x * a[1].y * b[0].x) / (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
-  ty = (a[0].x * a[1].y * b[2].y + a[1].x * a[2].y * b[0].y + a[2].x * a[0].y * b[1].y - a[0].x * a[2].y * b[1].y - a[1].x * a[0].y * b[2].y - a[2].x * a[1].y * b[0].y) / (a[0].x * a[1].y + a[1].x * a[2].y + a[2].x * a[0].y - a[0].x * a[2].y - a[1].x * a[0].y - a[2].x * a[1].y);
+  xx =
+    (b[0].x * a[1].y +
+      b[1].x * a[2].y +
+      b[2].x * a[0].y -
+      b[0].x * a[2].y -
+      b[1].x * a[0].y -
+      b[2].x * a[1].y) /
+    (a[0].x * a[1].y +
+      a[1].x * a[2].y +
+      a[2].x * a[0].y -
+      a[0].x * a[2].y -
+      a[1].x * a[0].y -
+      a[2].x * a[1].y);
+  yx =
+    (b[0].y * a[1].y +
+      b[1].y * a[2].y +
+      b[2].y * a[0].y -
+      b[0].y * a[2].y -
+      b[1].y * a[0].y -
+      b[2].y * a[1].y) /
+    (a[0].x * a[1].y +
+      a[1].x * a[2].y +
+      a[2].x * a[0].y -
+      a[0].x * a[2].y -
+      a[1].x * a[0].y -
+      a[2].x * a[1].y);
+  xy =
+    (a[0].x * b[1].x +
+      a[1].x * b[2].x +
+      a[2].x * b[0].x -
+      a[0].x * b[2].x -
+      a[1].x * b[0].x -
+      a[2].x * b[1].x) /
+    (a[0].x * a[1].y +
+      a[1].x * a[2].y +
+      a[2].x * a[0].y -
+      a[0].x * a[2].y -
+      a[1].x * a[0].y -
+      a[2].x * a[1].y);
+  yy =
+    (a[0].x * b[1].y +
+      a[1].x * b[2].y +
+      a[2].x * b[0].y -
+      a[0].x * b[2].y -
+      a[1].x * b[0].y -
+      a[2].x * b[1].y) /
+    (a[0].x * a[1].y +
+      a[1].x * a[2].y +
+      a[2].x * a[0].y -
+      a[0].x * a[2].y -
+      a[1].x * a[0].y -
+      a[2].x * a[1].y);
+  tx =
+    (a[0].x * a[1].y * b[2].x +
+      a[1].x * a[2].y * b[0].x +
+      a[2].x * a[0].y * b[1].x -
+      a[0].x * a[2].y * b[1].x -
+      a[1].x * a[0].y * b[2].x -
+      a[2].x * a[1].y * b[0].x) /
+    (a[0].x * a[1].y +
+      a[1].x * a[2].y +
+      a[2].x * a[0].y -
+      a[0].x * a[2].y -
+      a[1].x * a[0].y -
+      a[2].x * a[1].y);
+  ty =
+    (a[0].x * a[1].y * b[2].y +
+      a[1].x * a[2].y * b[0].y +
+      a[2].x * a[0].y * b[1].y -
+      a[0].x * a[2].y * b[1].y -
+      a[1].x * a[0].y * b[2].y -
+      a[2].x * a[1].y * b[0].y) /
+    (a[0].x * a[1].y +
+      a[1].x * a[2].y +
+      a[2].x * a[0].y -
+      a[0].x * a[2].y -
+      a[1].x * a[0].y -
+      a[2].x * a[1].y);
   this.set_row.call(this, 0, xx, xy, tx);
   this.set_row.call(this, 1, yx, yy, ty);
   this.set_row.call(this, 2, 0, 0, 1);
@@ -572,7 +693,8 @@ for(let name of [
   'decompose',
   'transformer'
 ]) {
-  Matrix[name] = (matrix, ...args) => Matrix.prototype[name].call(matrix || new Matrix(matrix), ...args);
+  Matrix[name] = (matrix, ...args) =>
+    Matrix.prototype[name].call(matrix || new Matrix(matrix), ...args);
 }
 
 for(let name of ['translate', 'scale', 'rotate', 'skew']) {
@@ -588,7 +710,16 @@ for(let name of ['translate', 'scale', 'rotate', 'skew']) {
   };
 }
 
-for(let name of ['transform_distance', 'transform_xy', 'transform_point', 'transform_points', 'transform_wh', 'transform_size', 'transform_rect', 'affine_transform']) {
+for(let name of [
+  'transform_distance',
+  'transform_xy',
+  'transform_point',
+  'transform_points',
+  'transform_wh',
+  'transform_size',
+  'transform_rect',
+  'affine_transform'
+]) {
   const method = Matrix.prototype[name];
 
   if(method.length == 2) {
@@ -602,7 +733,12 @@ Util.defineGetter(Matrix, Symbol.species, function() {
   return this;
 });
 
-export const isMatrix = m => Util.isObject(m) && (m instanceof Matrix || (m.length !== undefined && (m.length == 6 || m.length == 9) && m.every(el => typeof el == 'number')));
+export const isMatrix = m =>
+  Util.isObject(m) &&
+  (m instanceof Matrix ||
+    (m.length !== undefined &&
+      (m.length == 6 || m.length == 9) &&
+      m.every(el => typeof el == 'number')));
 
 export const ImmutableMatrix = Util.immutableClass(Matrix);
 Util.defineGetter(ImmutableMatrix, Symbol.species, () => ImmutableMatrix);
