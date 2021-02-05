@@ -33,6 +33,18 @@ class _Map {
       this.map.get(k).delete(v);
     }
   }
+
+  keys() {
+    return this.map.keys();
+  }
+
+  values() {
+    return this.map.values();
+  }
+
+  [Symbol.iterator]() {
+    return this.map[Symbol.iterator]();
+  }
 }
 
 export default class MultiBiMap {
@@ -104,6 +116,21 @@ export default class MultiBiMap {
 
   deleteVal(v) {
     deleteAll(v, this._byVal, this._byKey);
+  }
+
+  *[Symbol.iterator]() {
+    const { _byKey, _byVal } = this;
+    for(let entry of _byKey) yield entry;
+    for(let entry of _byVal) yield entry;
+  }
+
+  keys() {
+    const { _byKey, _byVal } = this;
+    return [..._byKey.keys(), ..._byVal.keys()];
+  }
+  values() {
+    const { _byKey, _byVal } = this;
+    return [..._byKey.values(), ..._byVal.values()];
   }
 }
 
