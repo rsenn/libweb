@@ -1,6 +1,7 @@
 import { EagleRef } from './ref.js';
 import { EagleElement } from './element.js';
 import Util from '../util.js';
+import { text, concat, inspectSymbol } from './common.js';
 
 export class EagleNodeList {
   constructor(owner, ref, pred, getOrCreate = EagleElement.get) {
@@ -82,9 +83,15 @@ export class EagleNodeList {
     return s;
   }
 
-  [Symbol.for('nodejs.util.inspect.custom')]() {
-//    console.log("this.entries", this.entries);
-    return [...this.entries()].map(([k, v]) => v);
+  [inspectSymbol]() {
+    //    console.log("this.entries", this.entries);
+    return (text(Util.className(this), 0) +
+      ` [\n  ` +
+      [...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + v[inspectSymbol](),
+        ''
+      ) +
+      `\n]`
+    );
   }
 
   static create(owner, ref, pred, getOrCreate) {

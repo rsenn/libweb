@@ -153,12 +153,14 @@ function inspect_(obj, options, depth, seen) {
     inspectName = inspectCustom.find(n => typeof obj[n] === 'function');
 
     if(inspectName) {
-      s += obj[inspectName]();
-      //console.reallog("customInspect:",s);
-      return s;
-      /*   if(typeof obj.inspect === 'function') {
-      return obj.inspect();
-    }*/
+      let r = obj[inspectName]();
+      /*  if(typeof r == 'string')*/ {
+        s += r;
+        return s;
+      }
+
+      obj = r;
+      console.reallog('objectInspect', { obj });
     }
   }
 
@@ -190,7 +192,7 @@ function inspect_(obj, options, depth, seen) {
     } else {
       let xs = arrObjKeys(obj, inspect, opts);
       let multiline = indent && !singleLineValues(xs);
-
+      console.reallog('xs:', xs);
       if(Number.isFinite(opts.breakLength)) {
         if(xs.join(', ').length > opts.breakLength) {
           xs = xs.reduce((acc, item) => {
@@ -449,7 +451,11 @@ function inspectString(str, opts) {
     const trailer = '... ' + remaining + ' more character' + (remaining > 1 ? 's' : '');
     return inspectString(str.slice(0, opts.maxStringLength), opts) + trailer;
   }
-  let s = str.replace(/(['\\])/g, '\\$1').replace(/[\x00-\x1f]/g, lowbyte);
+  //  let s = str.replace(/(['\\])/g, '\\$1').replace(/[\x00-\x1f]/g, lowbyte);
+  let s = str
+    .replace('\\', '\\\\')
+    .replace("'", "\\'")
+    .replace(/[\x00-\x1f]/g, lowbyte);
   s = wrapQuotes(s, 'single', opts);
   if(opts.colors) s = wrapColor(s, 1, 32);
   return s;

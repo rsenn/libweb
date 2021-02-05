@@ -3,6 +3,7 @@ import { ImmutablePath } from '../json.js';
 import Util from '../util.js';
 
 const pathPadding = Util.isBrowser() ? 0 : 40;
+export const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
 export const coloring = Util.coloring(!Util.isBrowser());
 //console.log('coloring: ', coloring);

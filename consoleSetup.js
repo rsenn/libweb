@@ -29,14 +29,14 @@ export async function ConsoleSetup(opts = {}) {
     maxArrayLength = Infinity,
     ...options
   } = opts;
+  const inspectOptions = {
+    depth,
+    colors,
+    breakLength,
+    maxArrayLength,
+    ...options
+  };
   ret = await Util.tryCatch(async () => {
-      const inspectOptions = {
-        depth,
-        colors,
-        breakLength,
-        maxArrayLength,
-        ...options
-      };
       const Console = await import('console').then(module => module.Console);
       ret = new Console({
         stdout: proc.stdout,
@@ -51,7 +51,7 @@ export async function ConsoleSetup(opts = {}) {
     c => c,
     () => {
       let c = Util.getGlobalObject().console;
-      let options = { colors: true, depth: Infinity, indent: 2, ...opts };
+      let options = { colors: true, depth: Infinity, indent: 2, ...inspectOptions };
 
       let log = c.log;
       c.reallog = log;
@@ -59,6 +59,8 @@ export async function ConsoleSetup(opts = {}) {
       class Console {}
 
       let newcons = Object.create(Console.prototype);
+
+      Util.getGlobalObject().ObjectInspect = ObjectInspect;
 
       return /*Object.create*/ Util.define(newcons, {
         reallog: log,

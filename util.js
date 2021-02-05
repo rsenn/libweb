@@ -350,8 +350,8 @@ Util.once = (fn, thisArg, memoFn) => {
 
   return function(...args) {
     if(!ran) {
-      ret = fn.call(thisArg || this, ...args);
       ran = true;
+      ret = fn.call(thisArg || this, ...args);
     } else if(typeof memoFn == 'function') {
       ret = memoFn(ret);
     }
@@ -1546,7 +1546,9 @@ Util.toString = (obj, opts = {}) => {
       //console.debug("keys:", keys);
 
       if(Object.getPrototypeOf(obj) !== Object.prototype) print(Util.className(obj) + ' ', 1, 31);
-      isMap ? print(`(${obj.size}) {${sep(true)}`, 1, 36) : print('{' + sep(true), 1, 36);
+      isMap
+        ? print(`(${obj.size}) {${sep(true)}`, 1, 36)
+        : print('{' + (sep(true) || padding), 1, 36);
       let i = 0;
       let getFn = isMap ? key => obj.get(key) : key => obj[key];
       let propSep = isMap ? [' => ', 0] : [': ', 1, 36];
@@ -4697,6 +4699,7 @@ Util.defineInspect = (proto, ...props) => {
           }, {}),
           {
             multiline: false,
+            colors: true,
             colon: ':',
             spacing: '',
             separator: ', ',
@@ -5332,16 +5335,6 @@ Util.getOpt = (options = {}, args) => {
   //console.log('Util.getOpt', { result });
   return result;
 };
-Util.exit = async exitCode => {
-  let gcEd = await import('std')
-    .then(std => (std.gc(), true))
-    .catch(() => false);
-  console.log('gcEd:', gcEd);
-  return Util.tryCatch(() => [process, process.exit],
-    ([obj, exit]) => exit.call(obj, exitCode),
-    () => Util.tryCatch(async () => await import('std').then(std => std.exit(exitCode)))
-  );
-};
 Util.getEnv = async varName =>
   Util.tryCatch(() => process.env,
     async e => e[varName],
@@ -5403,10 +5396,42 @@ Util.safeFunction = (fn, trapExceptions, thisObj) => {
 };
 Util.safeCall = (fn, ...args) => Util.safeApply(fn, args);
 Util.safeApply = (fn, args = []) => Util.safeFunction(fn, true)(...args);
+Util.signal = (sig, fn) => {
+  if(typeof globalThis.os?.signal == 'function') return globalThis.os.signal(sig, fn);
+  if(Util.getPlatform() == 'quickjs') return import('os').then(({ signal }) => signal(sig.fn));
+};
+Util.exit = async exitCode => {
+  const { callExitHandlers } = Util;
+  console.log('Util.exit', { exitCode, callExitHandlers });
+  if(callExitHandlers) callExitHandlers(exitCode);
+  let gcEd = await import('std')
+    .then(std => (std.gc(), true))
+    .catch(() => false);
+  //console.log('gcEd:', gcEd);
+  return Util.tryCatch(() => [process, process.exit],
+    ([obj, exit]) => exit.call(obj, exitCode),
+    () => Util.tryCatch(async () => await import('std').then(std => std.exit(exitCode)))
+  );
+};
+Util.atexit = handler => {
+  const { handlers } = Util.callMain;
+  Util.pushUnique(handlers, handler);
+  if(typeof Util.trapExit == 'function') Util.trapExit();
+};
 Util.callMain = async (fn, trapExceptions) =>
   await Util.safeFunction(async (...args) => {
+      const callExitHandlers = (Util.callExitHandlers = Util.once(ret => {
+        const { handlers } = Util.callMain;
+
+        if(handlers) for(const handler of handlers) handler(ret);
+        /*if(typeof ret == 'number')*/ Util.exit(ret);
+      }));
+      Util.trapExit = Util.once(() => {
+        Util.signal(15, callExitHandlers);
+      });
+
       let ret = await fn(...args);
-      if(typeof ret == 'number') Util.exit(ret);
+      callExitHandlers(ret);
     },
     trapExceptions &&
       (typeof trapExceptions == 'function'
@@ -5466,6 +5491,8 @@ Util.printReturnValue = (fn, opts = {}) => {
   Util.define(self, { fn, opts });
   return self;
 };
+Util.callMain.handlers = [];
+
 Util.replaceAll = (needles, haystack) => {
   return Util.entries(needles)
     .map(([re, str]) => [typeof re == 'string' ? new RegExp(re, 'g') : re, str])

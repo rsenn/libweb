@@ -31,8 +31,8 @@ export function GetExponent(value) {
 
 export function GetMantissa(value) {
   let mantissa = value.replace(/([-+]?[0-9.]+).*/g, '$1');
-    console.log('GetMantissa', { value,mantissa });
-if(isNaN(+mantissa)) throw new Error(`GetMantissa '${mantissa}' not a valid number`);
+  console.log('GetMantissa', { value, mantissa });
+  if(isNaN(+mantissa)) throw new Error(`GetMantissa '${mantissa}' not a valid number`);
   return +mantissa;
 }
 

@@ -1,5 +1,6 @@
 import Util from '../util.js';
 import { EagleElement } from './element.js';
+import { text, concat, inspectSymbol } from './common.js';
 
 export class EagleNodeMap {
   constructor(list, key) {
@@ -70,6 +71,17 @@ Object.defineProperties(EagleNodeMap.prototype, {
     return Object.fromEntries(this.entries(key));
   }
 
+  [inspectSymbol]() {
+    //    console.log("this.entries", this.entries);
+    return (text(Util.className(this), 0) +
+      ` {\n  ` +
+      [...this.entries()].reduce((acc, [k, v]) =>
+          (acc ? acc + ',\n  ' : acc) + `'${text(k, 1, 32)}' => ` + v[inspectSymbol](),
+        ''
+      ) +
+      `\n}`
+    );
+  }
   static create(list, key = 'name', filter) {
     const Ctor = EagleNodeMap;
     //console.log('EagleNodeMap.create', { list, key });
@@ -100,13 +112,16 @@ Object.defineProperties(EagleNodeMap.prototype, {
         //        if((index = [...instance.keys()].indexOf(prop)) != -1) return instance.list[index];
         if(typeof instance[prop] == 'function') return instance[prop] /*.bind(instance)*/;
 
-        if(typeof instance.list[prop] == 'function')
+        if(typeof instance.list[prop] == 'function') {
+          if(typeof prop == 'symbol') return instance.list[prop];
+
           return instance.list[prop].bind(instance.list);
+        }
 
         return Reflect.get(target, prop, receiver);
       },
       getPrototypeOf(target) {
-        return Reflect.getPrototypeOf(instance);
+        return EagleNodeMap.prototype;
       }
     });
   }

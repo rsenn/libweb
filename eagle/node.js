@@ -174,9 +174,9 @@ export class EagleNode {
                     : 'name'
                 );
       }
-      lazyMembers(this.lists, lists);
-      lazyMembers(this.cache, lazy);
-      lazyMembers(this, maps);
+      Util.defineGettersSetters(this.lists, lists);
+      Util.defineGettersSetters(this.cache, lazy);
+      Util.defineGettersSetters(this, maps);
     }
   }
 
@@ -337,13 +337,16 @@ export class EagleNode {
     let a = r.attrMap ? r.attrMap : r.attributes;
     if(a) {
       attrs = Object.getOwnPropertyNames(a)
-        .filter(name => typeof a[name] != 'function')
+        .filter(name => typeof a[name] != 'function' && a[name] !== undefined)
         .reduce((attrs, attr) =>
             concat(attrs,
               ' ',
               text(attr, 1, 33),
               text(':', 1, 36),
-              text("'" + a[attr] + "'", 1, 32)
+              /^(altdistance|class|color|curve|diameter|distance|drill|fill|layer|multiple|number|radius|ratio|size|width|x[1-3]?|y[1-3]?)$/.test(attr
+              )
+                ? text(a[attr], 1, 36)
+                : text("'" + a[attr] + "'", 1, 32)
             ),
           attrs
         );
