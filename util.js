@@ -549,7 +549,7 @@ Util.generalLog = function(n, x) {
   return Math.log(x) / Math.log(n);
 };
 Util.toSource = function(arg, opts = {}) {
-  const { quote = "'", colors = false, multiline = false } = opts;
+  const { quote = "'", colors = false, multiline = false, json = false } = opts;
   const { c = Util.coloring(colors) } = opts;
   let o = [];
   const { print = (...args) => (o = c.concat(o, c.text(...args))) } = opts;
@@ -582,7 +582,7 @@ Util.toSource = function(arg, opts = {}) {
         if(m) s = ' ]' + s + '[ ';
         print(s, 1, 36);
       }
-      if(!m) print(prop, 1, 33);
+      if(!m) print(json ? `"${prop}"` : prop, 1, 33);
       else Util.toSource(prop, { ...opts, c, print });
       print(m ? ', ' : ': ', 1, 36);
       Util.toSource(value, { ...opts, c, print });
@@ -1478,13 +1478,11 @@ Util.toString = (obj, opts = {}) => {
     padding = ' ',
     separator = ',',
     colon = ': ',
-    depth = 10
+    depth = 10,
+    json = false
   } = { ...Util.toString.defaultOpts, ...opts };
-  /* if(depth < 0) {
-    if(Util.isArray(obj)) return `[...${obj.length}...]`;
-    if(Util.isObject(obj)) return `{ ..${Object.keys(obj).length}.. }`;
-    return '' + obj;
-  }*/
+ //console.log("Util.toString", {quote,colors,multiline,json})
+  
   let out;
   const { c = Util.coloring(colors) } = opts;
   const { print = (...args) => (out = c.concat(out, c.text(...args))) } = opts;
@@ -1503,7 +1501,7 @@ Util.toString = (obj, opts = {}) => {
     obj = obj.split(/\n/g)[0].replace(/{\s*$/, '{}');
     print(obj);
   } else if(typeof obj == 'string') {
-    print(`'${stringFn(obj)}'`, 1, 36);
+    print(`${quote}${stringFn(obj)}${quote}`, 1, 36);
   } else if(obj instanceof Date) {
     print(`new `, 1, 31);
 
@@ -1557,11 +1555,11 @@ Util.toString = (obj, opts = {}) => {
         if(i > 0) print(separator + sep(true), 36);
         if(typeof key == 'symbol') print(key.toString(), 1, 32);
         else if(Util.isObject(key) && typeof key[toString] == 'function')
-          print(isMap ? `'${key[toString]()}'` : key[toString](), 1, isMap ? 36 : 33);
+          print(isMap ? `'${key[toString]()}'` : json ? `"${key.toString()}"` : key[toString](), 1, isMap ? 36 : 33);
         else if(typeof key == 'string' ||
           (!isMap && Util.isObject(key) && typeof key.toString == 'function')
         )
-          print(isMap || /(-)/.test(key) ? `'${key}'` : key, 1, isMap ? 36 : 33);
+          print( json ? `"${key.toString()}"` :  isMap || /(-)/.test(key) ? `'${key}'` : key, 1, isMap ? 36 : 33);
         else
           Util.toString(key, {
             ...opts,
@@ -1575,7 +1573,7 @@ Util.toString = (obj, opts = {}) => {
           });
         print(...propSep);
         if(typeof value == 'number') print(`${value}`, 1, 36);
-        else if(typeof value == 'string' || value instanceof String) print(`'${value}'`, 1, 36);
+        else if(typeof value == 'string' || value instanceof String) print(`${quote}${value}${quote}`, 1, 36);
         else if(typeof value == 'object')
           Util.toString(value, {
             ...opts,

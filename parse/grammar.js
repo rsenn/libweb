@@ -112,7 +112,7 @@ export class Rule {
       return this.map(sym => (!sym.generate ? Util.className(sym) : sym.generate())).join(', ');
     }
 
-   /* [Symbol.for('nodejs.util.inspect.custom')]() {
+    /* [Symbol.for('nodejs.util.inspect.custom')]() {
       const { repeat = '', length, invert } = this;
       if(this.length == 1) return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
       return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${

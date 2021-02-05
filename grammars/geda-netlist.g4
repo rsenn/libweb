@@ -11,6 +11,7 @@ geda_netlist : components nets  EOF;
 
 
 value : [^\r\n()\x5b\x5d]*;
+//value : [^()\x5b\x5d]*;
 
 values : (value   NL)*;
  
