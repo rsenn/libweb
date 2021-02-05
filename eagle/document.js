@@ -179,7 +179,7 @@ export class EagleDocument extends EagleNode {
   /* prettier-ignore */
   saveTo(file, overwrite = false) {
     let  fs  = this.project && this.project.fs ? this.project.fs  : globalThis.filesystem;
-    const data = this.toXML();
+    const data = this.toXML('  ');
 
     if(!file)
       file = this.file;
