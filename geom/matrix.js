@@ -211,11 +211,22 @@ Matrix.prototype.row = function(row) {
   let i = row * 3;
   return Array.prototype.slice.call(this, i, i + 3);
 };
+Matrix.prototype.column = function(col) {
+  let column = [];
+  for(let row of Matrix.prototype.rows.call(this)) column.push(row[col]);
+  return column;
+};
+Matrix.prototype.columns = function() {
+  let ret = [];
+  for(let i = 0; i < 3; i++) ret.push(Matrix.prototype.column.call(this, i));
+  return ret;
+};
 Matrix.prototype.rows = function() {
   let ret = [];
   for(let i = 0; i < 9; i += 3) ret.push([this[i + 0], this[i + 1], this[i + 2]]);
   return ret;
 };
+
 Matrix.prototype.toArray = function() {
   return Array.from(this);
 };
@@ -276,14 +287,23 @@ Matrix.prototype.toString = function(separator = ' ') {
   return `${name}(` + rows.map(row => row.join(',' + separator)).join(',' + separator) + ')';
 };
 Matrix.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
-  const rows = Matrix.prototype.rows.call(this);
-let values = [...this].map(n => typeof(n) == 'number' ? Util.roundTo(n, 1e-14, 15) : undefined);
-let count = values.findIndex(v => v === undefined);
-if(count != -1)
-values = values.slice(0, count);
-let pad = Math.max(...values.map(n => (n+'').length));
-return '\n  [ '+values.reduce((acc,n,i) => (i > 0 ? acc + (i % 3 == 0 ? ' ],\n  [ ' : ', '): '')+(n+'').padStart(pad,' '), '')+' ]';
-// map(row => row.map(col => (Util.roundTo(col, 1E-14, 15)+'').padStart(pad, ' ')).join(', ')).join(' ],\n  [ ');
+  let columns = Matrix.prototype.columns.call(this);
+  let numRows = Math.max(...columns.map(col => col.length));
+  let numCols = columns.length;
+  columns = columns.map(column =>
+    column.map(n => (typeof n == 'number' ? Util.roundTo(n, 1e-14, 15) : undefined))
+  );
+  let pad = columns.map(column => Math.max(...column.map(n => (n + '').length)));
+  let s = '\n  [ ';
+  for(let row = 0; row < numRows; row++) {
+    if(row > 0) s += ' ]\n  [ ';
+    for(let col = 0; col < numCols; col++) {
+      if(col > 0) s += ', ';
+      s += (columns[col][row] + '').padStart(pad[col]);
+    }
+  }
+  s += ' ]\n';
+  return s;
 };
 
 Matrix.prototype.toSVG = function() {
