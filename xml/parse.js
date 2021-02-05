@@ -57,12 +57,26 @@ export function parse(s) {
           skipSpace();
           //console.log('#2', { i, name }, `'${s[i]}'`, `"${s.substring(i, i + 10)}..."`);
           if(s[i] == '>' || s[i] == '/') break;
-          for(j = i; s[j] != '='; j++);
+          j = skip(c =>
+              c != '=' &&
+              c != ' ' &&
+              c != '\t' &&
+              c != '\r' &&
+              c != '\n' &&
+              c != '?' &&
+              c != '!' &&
+              c != '>'
+          );
+          //          for(j = i; s[j] != '='; j++);
+
+          if(j == i) break;
+
           let attr = s.substring(i, j);
           let value = true;
-          i = j + 1;
-          if(s[i] == '"') {
-            i++;
+
+          i = j;
+          if(s[i] == '=' && s[i + 1] == '"') {
+            i += 2;
             for(j = i; s[j] != '"'; j++) if(s[j] == '\\') j++;
             value = s.substring(i, j);
             if(s[j] == '"') j++;
@@ -74,19 +88,30 @@ export function parse(s) {
       } else {
         endElem(name);
       }
-      if(s[i] == '/') {
+
+      if(name[0] == '!') {
+        //console.log('!', { i, j }, `'${s[i]}'`, `"${s.substring(i, i + 10)}..."`);
+
+        endElem(name);
+      }
+      if(name[0] == '?' && s[i] == '?') {
+        i++;
+      } else if(s[i] == '/') {
         i++;
         endElem(name);
       }
       skipSpace();
 
-      if(s[i] == '>') i++;
+      if(s[i] == '>') {
+        i++;
+      }
       skipSpace();
 
       //console.log('#3', { i,  n }, `'${s[i]}'`, `"${s.substring(i, i + 10)}..."`);
     }
   }
   //console.log('#5', { i,  n } , r);
+  return r;
 }
 
 export default parse;

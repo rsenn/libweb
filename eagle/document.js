@@ -1,3 +1,4 @@
+import parseXML from '../xml/parse.js';
 import tXml from '../tXml.js';
 import Util from '../util.js';
 import deep from '../deep.js';
@@ -56,7 +57,7 @@ export class EagleDocument extends EagleNode {
 
   constructor(xmlStr, project, filename, type, fs) {
     // console.debug('EagleDocument.constructor', { data: Util.abbreviate(xmlStr), project, filename, type });
-    const xml = tXml(xmlStr);
+    const xml = parseXML(xmlStr);
     let xmlObj = deep.clone(xml[0]);
     super(project, EagleRef(xmlObj, []), xmlObj);
     this.pathMapper = new PathMapper(xmlObj, ImmutablePath);

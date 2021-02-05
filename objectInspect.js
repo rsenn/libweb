@@ -192,7 +192,7 @@ function inspect_(obj, options, depth, seen) {
     } else {
       let xs = arrObjKeys(obj, inspect, opts);
       let multiline = indent && !singleLineValues(xs);
-      console.reallog('xs:', xs);
+      //console.reallog('xs:', xs);
       if(Number.isFinite(opts.breakLength)) {
         if(xs.join(', ').length > opts.breakLength) {
           xs = xs.reduce((acc, item) => {
