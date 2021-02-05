@@ -197,7 +197,7 @@ export function QuickJSFileSystem(std, os) {
         return numerr(-res.errno);
       } else {
         let fd = this.open(filename, O_WRONLY | O_CREAT | (overwrite ? O_TRUNC : O_EXCL));
-        // console.log('writeFile', filename, data.length, file, res.errno);
+        console.log('writeFile', filename, data, fd, res.errno);
         if(fd >= 0) {
           buf = typeof data == 'string' ? StringToArrayBuffer(data) : data;
           bytes = this.write(fd, buf, 0, buf.byteLength);
@@ -223,7 +223,8 @@ export function QuickJSFileSystem(std, os) {
           break;
       }
       //console.log('seek:', { offset, whence, ret });
-      let err = ret >= 0 ? undefined : (typeof std.clearerr == 'function' ? std.clearerr() : undefined, -1);
+      let err =
+        ret >= 0 ? undefined : (typeof std.clearerr == 'function' ? std.clearerr() : undefined, -1);
       return err || fd.tell();
     },
     tell(file) {
@@ -286,7 +287,8 @@ export function QuickJSFileSystem(std, os) {
 
     fileno(file) {
       if(typeof file == 'number') return file;
-      if(typeof file == 'object' && file != null && typeof file.fileno == 'function') return file.fileno();
+      if(typeof file == 'object' && file != null && typeof file.fileno == 'function')
+        return file.fileno();
     },
     get stdin() {
       return std.in;
@@ -691,7 +693,9 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
         return new Promise(resolve => setTimeout(resolve, milliseconds));
       }
 
-      const stream = ChunkReader(`this\n\n...\n\n...\nis\n\n...\n\n...\na\n\n...\n\n...\ntest\n\n...\n\n...\n!`, 4).pipeThrough(new DebugTransformStream());
+      const stream = ChunkReader(`this\n\n...\n\n...\nis\n\n...\n\n...\na\n\n...\n\n...\ntest\n\n...\n\n...\n!`,
+        4
+      ).pipeThrough(new DebugTransformStream());
       /*ew ReadableStream({
         async start(controller) {
           await wait(1000);
@@ -723,7 +727,11 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
             }
           : {}
       )
-        .then(response => (writable ? response.json() : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())))
+        .then(response =>
+          writable
+            ? response.json()
+            : response.body && (stream = response.body).pipeThrough(new TextDecoderStream())
+        )
         .catch(err => (error = err));
       return send ? writable : promise;
     },
@@ -743,7 +751,11 @@ export function BrowserFileSystem(TextDecoderStream, TransformStream, WritableSt
       }
       if(typeof ret == 'object' && ret !== null) {
         const { value, done } = ret;
-        if(typeof value == 'string') return CopyToArrayBuffer(value, buf || CreateArrayBuffer(value.length + (offset || 0)), offset || 0);
+        if(typeof value == 'string')
+          return CopyToArrayBuffer(value,
+            buf || CreateArrayBuffer(value.length + (offset || 0)),
+            offset || 0
+          );
       }
       return ret.done ? 0 : -1;
     },
@@ -796,7 +808,8 @@ function StringToArrayBuffer(str, bytes = 1) {
 function CopyToArrayBuffer(str, buf, offset, bytes = 1) {
   // console.log("CopyToArrayBuffer",{str,buf,bytes});
   const view = new CharWidth[bytes](buf);
-  for(let i = 0, end = Math.min(str.length, buf.byteLength); i < end; i++) view[i + offset] = str.codePointAt(i);
+  for(let i = 0, end = Math.min(str.length, buf.byteLength); i < end; i++)
+    view[i + offset] = str.codePointAt(i);
   return buf;
 }
 function CreateArrayBuffer(bytes) {
@@ -817,7 +830,11 @@ export async function GetPortableFileSystem() {
   if(fs && !err) return fs;
   err = null;
   try {
-    fs = await CreatePortableFileSystem(NodeJSFileSystem, await import('fs'), await import('tty'), await import('process'));
+    fs = await CreatePortableFileSystem(NodeJSFileSystem,
+      await import('fs'),
+      await import('tty'),
+      await import('process')
+    );
   } catch(error) {
     err = error;
   }

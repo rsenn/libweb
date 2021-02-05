@@ -28,10 +28,18 @@ export function Point(...args) {
 
     p.x = parseFloat(matches[0]);
     p.y = parseFloat(matches[1]);
-  } else if(typeof arg == 'object' && arg !== null && (arg.x !== undefined || arg.y !== undefined)) {
+  } else if(typeof arg == 'object' &&
+    arg !== null &&
+    (arg.x !== undefined || arg.y !== undefined)
+  ) {
     p.x = arg.x;
     p.y = arg.y;
-  } else if(typeof arg == 'object' && arg !== null && arg.length > 0 && x !== undefined && y !== undefined) {
+  } else if(typeof arg == 'object' &&
+    arg !== null &&
+    arg.length > 0 &&
+    x !== undefined &&
+    y !== undefined
+  ) {
     p.x = parseFloat(arg.shift());
     p.y = parseFloat(arg.shift());
   } else if(typeof args[0] === 'number' && typeof args[1] === 'number') {
@@ -53,7 +61,9 @@ export function Point(...args) {
     return p;
   }
 }
-const getOther = args => (console.debug('getOther', ...args), typeof args[0] == 'number' ? [{ x: args[0], y: args[1] }] : args);
+const getOther = args => (console.debug('getOther', ...args),
+  typeof args[0] == 'number' ? [{ x: args[0], y: args[1] }] : args
+);
 
 Object.defineProperties(Point.prototype, {
   X: {
@@ -222,7 +232,8 @@ Util.defineGetter(Point.prototype, Symbol.iterator, function() {
   const { x, y } = this;
   return x | (y << shl);
 };
-*/ Point.prototype.toString = function(opts = {}) {
+*/ Point.prototype.toString = function(opts = {}
+) {
   const { precision = 0.001, unit = '', separator = ',', left = '', right = '', pad = 0 } = opts;
   let x = Util.roundTo(this.x, precision);
   let y = Util.roundTo(this.y, precision);
@@ -233,7 +244,9 @@ Util.defineGetter(Point.prototype, Symbol.iterator, function() {
     if(x[0] != '-') x = ' ' + x;
   }
   //console.debug("toString", {x,y}, {pad});
-  return `${left}${(x + '').padStart(pad, ' ')}${unit}${separator}${(y + '').padEnd(pad, ' ')}${unit}${right}`;
+  return `${left}${(x + '').padStart(pad, ' ')}${unit}${separator}${(y + '').padEnd(pad,
+    ' '
+  )}${unit}${right}`;
 };
 Util.defineGetterSetter(Point.prototype,
   Symbol.toStringTag,
@@ -245,7 +258,12 @@ Util.defineGetterSetter(Point.prototype,
 );
 
 Point.prototype.toSource = function(opts = {}) {
-  const { asArray = false, plainObj = false, pad = a => a /*a.padStart(4, ' ')*/, showNew = true } = opts;
+  const {
+    asArray = false,
+    plainObj = false,
+    pad = a => a /*a.padStart(4, ' ')*/,
+    showNew = true
+  } = opts;
   let x = pad(this.x + '');
   let y = pad(this.y + '');
   let c = t => t;
@@ -253,7 +271,10 @@ Point.prototype.toSource = function(opts = {}) {
   if(asArray) return `[${x},${y}]`;
   if(plainObj) return `{x:${x},y:${y}}`;
 
-  return `${c(showNew ? 'new ' : '', 1, 31)}${c('Point', 1, 33)}${c('(', 1, 36)}${c(x, 1, 32)}${c(',', 1, 36)}${c(y, 1, 32)}${c(')', 1, 36)}`;
+  return `${c(showNew ? 'new ' : '', 1, 31)}${c('Point', 1, 33)}${c('(', 1, 36)}${c(x, 1, 32)}${c(',',
+    1,
+    36
+  )}${c(y, 1, 32)}${c(')', 1, 36)}`;
 };
 
 /*Point.prototype.toSource = function() {
@@ -278,7 +299,11 @@ Point.prototype.isNull = function() {
   return this.x == 0 && this.y == 0;
 };
 Point.prototype.inside = function(rect) {
-  return this.x >= rect.x && this.x < rect.x + rect.width && this.y >= rect.y && this.y < rect.y + rect.height;
+  return (this.x >= rect.x &&
+    this.x < rect.x + rect.width &&
+    this.y >= rect.y &&
+    this.y < rect.y + rect.height
+  );
 };
 Point.prototype.transform = function(m) {
   if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
@@ -341,9 +366,16 @@ Point.interpolate = (p1, p2, a) => {
   return new Point(p1.x * (1.0 - a) + p2.x * a, p1.y * (1.0 - a) + p2.y * a);
 };
 
-Point.toSource = (point, { space = ' ', padding = ' ', separator = ',' }) => `{${padding}x:${space}${point.x}${separator}y:${space}${point.y}${padding}}`;
+Point.toSource = (point, { space = ' ', padding = ' ', separator = ',' }) =>
+  `{${padding}x:${space}${point.x}${separator}y:${space}${point.y}${padding}}`;
 
-export const isPoint = o => o && ((o.x !== undefined && o.y !== undefined) || ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)) || o instanceof Point || Object.getPrototypeOf(o).constructor === Point);
+export const isPoint = o =>
+  o &&
+  ((o.x !== undefined && o.y !== undefined) ||
+    ((o.left !== undefined || o.right !== undefined) &&
+      (o.top !== undefined || o.bottom !== undefined)) ||
+    o instanceof Point ||
+    Object.getPrototypeOf(o).constructor === Point);
 
 Point.isPoint = isPoint;
 Util.defineInspect(Point.prototype, 'x', 'y');
@@ -353,7 +385,8 @@ Point.bind = (...args) => {
   let [o, p] = args;
   if(p == null) p = keys;
   //console.debug('Point.bind', { keys, o, p });
-  const { x, y } = (Util.isArray(p) && p.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {})) || p;
+  const { x, y } =
+    (Util.isArray(p) && p.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {})) || p;
   return Object.setPrototypeOf(Util.bindProperties({}, o, { x, y }), Point.prototype);
 };
 export default Point;
