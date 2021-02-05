@@ -255,6 +255,8 @@ function inspect_(obj, options, depth, seen) {
     s += markBoxed(booleanValueOf.call(obj));
   } else if(isString(obj)) {
     s += markBoxed(inspect(String(obj)));
+  } else if(isGenerator(obj)) {
+    s += `[object Generator]`;
   } else if(!isDate(obj) && !isRegExp(obj) && !isPromise(obj)) {
     const proto = Object.getPrototypeOf(obj);
 
@@ -333,6 +335,12 @@ function isBigInt(obj) {
 
 function isBoolean(obj) {
   return toStr(obj) === '[object Boolean]';
+}
+
+function isGenerator(obj) {
+  if(toStr(obj) === '[object Generator]') return true;
+
+  if(typeof obj == 'object' && obj != null && typeof obj.next == 'function') return true;
 }
 
 const hasOwn =
@@ -527,15 +535,17 @@ function indentedJoin(xs, indent, opts = {}) {
 
 function arrObjKeys(obj, inspect, opts = {}) {
   const isArr = isArray(obj) || isArrayLike(obj);
-  const xs = [];
   if(isArr && typeof opts == 'object' && opts != null && obj.length > opts.maxArrayLength) {
     const remaining = obj.length - opts.maxArrayLength;
     const trailer = '... ' + remaining + ' more items' + (remaining > 1 ? 's' : '');
     return arrObjKeys(obj.slice(0, opts.maxArrayLength), inspect, opts) + trailer;
   }
+  let xs = [];
 
   if(isArr) {
-    xs.length = obj.length;
+    xs = new Array(obj.length);
+
+    //xs.length = obj.length;
     for(let i = 0; i < obj.length; i++) xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
   }
   let c = opts.colors ? wrapColor : s => s;

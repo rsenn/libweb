@@ -118,20 +118,6 @@ export class Transformation {
     return t;
   }
 
-  /*
-
-  static rad2deg(radians) {
-    return radians * RAD2DEG;
-  }
-
-  static deg2rad(degrees) {
-    return degrees * DEG2RAD;
-  }*/
-  /*
-  [Symbol.toStringTag]() {
-    return  this.toSource();
-  }*/
-
   [Symbol.toStringTag]() {
     return this.toString();
   }
@@ -192,11 +178,6 @@ export class Rotation extends Transformation {
     this.angle = angle;
   }
 
-  /*
-  clone() {
-    return new this.constructor[Symbol.species](angle, axis);
-  }*/
-
   invert() {
     return new Rotation(-this.angle, this.axis);
   }
@@ -231,12 +212,12 @@ export class Rotation extends Transformation {
     return o;
   }
 
-  toMatrix(ctor = Matrix) {
-    let matrix = new ctor();
-    if(this.center) matrix.translateSelf(...this.center.map(coord => -coord));
-    matrix.rotateSelf(DEG2RAD * this.angle);
-    if(this.center) matrix.translateSelf(...this.center);
-    return matrix;
+  toMatrix(matrix = Matrix.identity()) {
+    const { center, angle } = this;
+    if(center) matrix.translateSelf(...[...center].map(coord => -coord));
+    matrix.rotateSelf(DEG2RAD * angle);
+    if(center) matrix.translateSelf(...center);
+    return matrix.roundSelf();
   }
 
   accumulate(other) {
@@ -292,8 +273,9 @@ export class Translation extends Transformation {
     return 'z' in this ? x == 0 && y == 0 && z == 0 : x == 0 && y == 0;
   }
 
-  toMatrix(matrix = Matrix.IDENTITY) {
-    return new Matrix().init_translate(this.x, this.y, this.z);
+  toMatrix(matrix = Matrix.identity()) {
+    const { x, y } = this;
+    return matrix.translateSelf(x, y);
   }
 
   /*clone() {
@@ -343,8 +325,9 @@ export class Scaling extends Transformation {
     return 'z' in this ? { x, y, z } : { x, y };
   }
 
-  toMatrix(matrix = Matrix.IDENTITY) {
-    return matrix.scale(this.x, this.y, this.z);
+  toMatrix(matrix = Matrix.identity()) {
+    const { x, y } = this;
+    return matrix.scaleSelf(x, y);
   }
 
   isZero() {
@@ -394,8 +377,8 @@ export class MatrixTransformation extends Transformation {
     return this.matrix.values();
   }
 
-  toMatrix() {
-    return this.matrix.clone();
+  toMatrix(matrix = Matrix.identity()) {
+    return matrix.multiplySelf(this.matrix);
   }
 
   toString() {
@@ -650,12 +633,10 @@ export class TransformationList extends Array {
     return Array.prototype.map.call([...this], t => t.toMatrix());
   }
 
-  toMatrix() {
-    let matrix = Matrix.IDENTITY;
+  toMatrix(matrix = Matrix.identity()) {
+    for(let other of this.toMatrices()) matrix.multiplySelf(other);
 
-    for(let other of this.toMatrices()) matrix = matrix.multiply(other);
-
-    return matrix;
+    return matrix.roundSelf();
   }
 
   undo() {
@@ -790,6 +771,13 @@ export class TransformationList extends Array {
   clear() {
     Array.prototype.splice.call(this, 0, this.length);
     return this;
+  }
+
+  apply(obj) {
+    if(typeof obj.transform == 'function') {
+      const matrix = this.toMatrix();
+      return obj.transform(matrix);
+    }
   }
 }
 

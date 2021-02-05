@@ -207,6 +207,18 @@ Matrix.prototype.entries = function() {
 Matrix.prototype.clone = function() {
   return new this.constructor[Symbol.species](this);
 };
+Matrix.prototype.round = function(prec = 1e-15, digits = 15) {
+  let m = new Matrix();
+  m.init(...[...this].slice(0, 9).map(n => Util.roundTo(n, prec, digits)));
+  return m;
+};
+Matrix.prototype.roundSelf = function(prec = 1e-15, digits = 15) {
+  Matrix.prototype.init.call(this,
+    ...[...this].slice(0, 9).map(n => Util.roundTo(n, prec, digits))
+  );
+  return this;
+};
+
 Matrix.prototype.row = function(row) {
   let i = row * 3;
   return Array.prototype.slice.call(this, i, i + 3);

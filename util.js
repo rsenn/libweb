@@ -5400,18 +5400,23 @@ Util.signal = (sig, fn) => {
   if(typeof globalThis.os?.signal == 'function') return globalThis.os.signal(sig, fn);
   if(Util.getPlatform() == 'quickjs') return import('os').then(({ signal }) => signal(sig.fn));
 };
-Util.exit = async exitCode => {
+Util.exit = exitCode => {
   const { callExitHandlers } = Util;
-  console.log('Util.exit', { exitCode, callExitHandlers });
+  //console.log('Util.exit', { exitCode, callExitHandlers });
   if(callExitHandlers) callExitHandlers(exitCode);
-  let gcEd = await import('std')
-    .then(std => (std.gc(), true))
-    .catch(() => false);
-  //console.log('gcEd:', gcEd);
-  return Util.tryCatch(() => [process, process.exit],
-    ([obj, exit]) => exit.call(obj, exitCode),
-    () => Util.tryCatch(async () => await import('std').then(std => std.exit(exitCode)))
-  );
+  const stdExit = std => {
+    std.gc();
+    std.exit(exitCode);
+  };
+  if(globalThis.std) return stdExit(globalThis.std);
+  return import('std')
+    .then(stdExit)
+    .catch(() =>
+      Util.tryCatch(() => [process, process.exit],
+        ([obj, exit]) => exit.call(obj, exitCode),
+        () => false
+      )
+    );
 };
 Util.atexit = handler => {
   const { handlers } = Util.callMain;
@@ -5438,15 +5443,11 @@ Util.callMain = async (fn, trapExceptions) =>
         ? trapExceptions
         : err => {
             let { message, stack } = err;
-            //console.debug('main stack:', [...err.stack].map((f) => f + ''));
-            // console.log('main stack:', err.stack);
             stack = new Util.stack(err.stack);
-            // console.log("main Stack:", Util.className(stack), stack.toString+'', Util.className(stack[0]), stack[0].toString)
             const scriptDir = Util.tryCatch(() => process.argv[1],
               argv1 => argv1.replace(/\/[^\/]*$/g, '')
             );
 
-            console.log('scriptDir', scriptDir);
             console.log('main Exception:',
               message,
               '\nSTACK:' +
@@ -6108,5 +6109,30 @@ Util.bind = function(f, ...args) {
   ret.prototype = f.prototype;
   return ret;
 };
+
+Util.bytesToUTF8 = function* (bytes) {
+  if(bytes instanceof ArrayBuffer) bytes = new Uint8Array(bytes);
+  let state = 0,
+    val = 0;
+  for(const c of bytes) {
+    if(state !== 0 && c >= 0x80 && c < 0xc0) {
+      val = (val << 6) | (c & 0x3f);
+      state--;
+      if(state === 0) yield val;
+    } else if(c >= 0xc0 && c < 0xf8) {
+      state = 1 + (c >= 0xe0) + (c >= 0xf0);
+      val = c & ((1 << (6 - state)) - 1);
+    } else {
+      state = 0;
+      yield c;
+    }
+  }
+};
+Util.codePointsToString = codePoints => {
+  let s = '';
+  for(let c of codePoints) s += String.fromCodePoint(c);
+  return s;
+};
+Util.bufferToString = b => Util.codePointsToString(Util.bytesToUTF8(b));
 
 export default Util();

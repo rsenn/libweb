@@ -1,3 +1,5 @@
+import Util from '../util.js';
+
 const WS = 0x01;
 const START = 0x02;
 const END = 0x04;
@@ -135,4 +137,115 @@ export function parse(s) {
   return r;
 }
 
-export default parse;
+export function parse2(g) {
+  let s = g;
+  if(!g[Symbol.iterator]) g = new Uint8Array(g);
+  if(!Util.isIterator(g)) g = g[Symbol.iterator]();
+
+  let r = [];
+  let st = [r];
+  let e;
+  const m = typeof s == 'string' ? CharacterClasses : CharCodeClasses;
+  const codeAt = typeof s == 'string' ? i => s.codePointAt(i) : i => g[i];
+  let c;
+  let done;
+  let data = typeof s == 'string' ? '' : [];
+
+  const start = tagName => {
+    e = { tagName, attributes: {}, children: [] };
+    st[0].push(e);
+    st.unshift(e.children);
+  };
+  const end = tagName => {
+    st.shift();
+    e = null;
+  };
+  const add =
+    /*c => data.push(c); //*/ typeof s == 'string'
+      ? c => {
+          data += c;
+        }
+      : c => {
+          data.push(c);
+        };
+  const next = () => {
+    let it = g.next();
+    if(!(done = it.done)) c = it.value;
+    return !done;
+  };
+  const str = typeof s == 'string' ? s => s : Util.bufferToString;
+  const skip = pred => {
+    data = [];
+    while(!done) {
+      if(m[c] & BACKSLASH) {
+        add(c);
+        next();
+      } else if(!pred(c)) {
+        break;
+      }
+      add(c);
+      next();
+    }
+    return data;
+  };
+  const skipws = () => {
+    while(m[c] & WS) next();
+  };
+  next();
+  while(!done) {
+    let text = skip(c => (m[c] & START) == 0);
+    if(text.length) {
+      let s = str(text);
+      if(s.trim() != '') st[0].push(s);
+    }
+    //console.log("ST", {c}, String.fromCodePoint(c));
+    if(m[c] & START) {
+      let closing = false;
+      next();
+      if(m[c] & SLASH) {
+        closing = true;
+        next();
+      }
+      //console.log("BN", {c}, String.fromCodePoint(c), m[c]);
+      let name = skip(c => (m[c] & (WS | END)) == 0);
+      //console.log("AN", {name,closing});
+      if(!closing) {
+        start(str(name));
+        while(!done) {
+          skipws();
+          //console.log("NC",  {c}, String.fromCodePoint(c), m[c] & END);
+          if(m[c] & END) break;
+          let attr = skip(c => (m[c] & (EQUAL | WS | SPECIAL | CLOSE)) == 0);
+          //console.log("AT",  {c,attr: str(attr)}, String.fromCodePoint(c), m[c] & END);
+          if(attr.length == 0) break;
+          let value = true;
+          if(m[c] & EQUAL && next() && m[c] & QUOTE) {
+            next();
+            //
+            value = skip(c => (m[c] & QUOTE) == 0);
+            if(m[c] & QUOTE) next();
+          }
+          e.attributes[str(attr)] = str(value);
+        }
+      } else {
+        end(str(name));
+      }
+      if(!closing) {
+        if(m[name[0]] & EXCLAM) {
+          end(str(name));
+        } else if(m[name[0]] & QUESTION && m[c] & QUESTION) {
+          next();
+        } else if(m[c] & SLASH) {
+          next();
+          end(str(name));
+        }
+      }
+      skipws();
+      //console.log("CL", {c}, String.fromCodePoint(c), m[c]& CLOSE, done);
+      if(m[c] & CLOSE) next();
+      //console.log("END", {c}, Util.escape(String.fromCodePoint(c)),  done);
+    }
+  }
+  return r;
+}
+export default parse2;

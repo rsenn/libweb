@@ -467,8 +467,8 @@ export class EagleNode {
     }
   }
 
-  toXML(depth = Infinity) {
-    return toXML(this.raw, depth);
+  toXML(depth = Infinity, indent = '') {
+    return toXML(this.raw, depth, '"', indent);
 
     const { tagName, raw } = this;
     let attrNames = Object.keys(raw.attributes);
@@ -491,8 +491,8 @@ export class EagleNode {
     }
     return s;
 
-    return toXML(this);
-    return tXml.toString([this.raw], depth);
+    return toXML(this, depth, '"', indent);
+   // return tXml.toString([this.raw], depth);
   }
 
   static inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {

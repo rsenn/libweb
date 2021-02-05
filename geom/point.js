@@ -381,10 +381,11 @@ Util.defineInspect(Point.prototype, 'x', 'y');
 
 Point.bind = (...args) => {
   const keys = ['x', 'y'];
-  const [o, p = keys] = args;
+  let [o, p] = args;
+  if(p == null) p = keys;
+  //console.debug('Point.bind', { keys, o, p });
   const { x, y } =
     (Util.isArray(p) && p.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {})) || p;
-  //  console.debug('Point.bind', { o, x, y });
   return Object.setPrototypeOf(Util.bindProperties({}, o, { x, y }), Point.prototype);
 };
 export default Point;

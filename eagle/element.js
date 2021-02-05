@@ -422,12 +422,17 @@ export class EagleElement extends EagleNode {
 
     if(tagName == 'pad') {
       trkl.bind(this, 'radius', value => {
-        let { diameter, drill } = this;
+        let prop = ['diameter', 'drill'].find(n => typeof this[n] == 'number');
 
-        if(Util.isNumeric(diameter)) return +diameter / 2;
+        if(value === undefined) {
+          let n = this[prop];
+          if(prop == 'diameter' && Util.isNumeric(n)) return +n / 2;
 
-        let radius = drill / 2 + 0.45 / 2;
-        return radius;
+          let radius = n / 2 + 0.45 / 2;
+          return radius;
+        } else {
+          this.diameter = value * 2;
+        }
       });
     }
 
@@ -659,10 +664,11 @@ export class EagleElement extends EagleNode {
     const makeGetterSetter = k => v =>
       v === undefined ? +raw.attributes[k] : (raw.attributes[k] = v + '');
 
-    if(['x', 'y', 'radius'].every(prop => keys.includes(prop))) {
-      return Circle.bind(this, null, makeGetterSetter);
-    } else if(['diameter', 'drill'].some(prop => keys.includes(prop))) {
-      return Circle.bind(this, null, makeGetterSetter);
+    if(['x', 'y', 'radius'].every(prop => Util.isNumeric(this[prop]))) {
+      return Circle.bind(this, null, k => v =>
+      v === undefined ? +this[k] : (this[k] = +v));
+  /*  } else if(['diameter', 'drill'].find(prop => keys.includes(prop))) {
+      return Circle.bind(this, null, makeGetterSetter);*/
     } else if(['x1', 'y1', 'x2', 'y2'].every(prop => keys.includes(prop))) {
       let line = Line.bind(this, null, makeGetterSetter);
       trkl.bind(line, 'curve', this.handlers['curve']);

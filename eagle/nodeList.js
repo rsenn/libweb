@@ -15,18 +15,17 @@ export class EagleNodeList {
 
   item(pos) {
     let { owner, ref, raw, pred } = this;
-
     let entries = [...raw.entries()];
     if(typeof pred == 'function') {
       entries = entries.filter(([i, v]) => pred(v, i, raw));
-
       if(entries[pos]) pos = entries[pos][0];
     }
-    //  console.log('entries:', entries);
-
     if(pos < 0) pos += raw.length;
-    if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos])
-      return this.getOrCreate(owner.document, ref.down(pos) /*, raw[pos]*/);
+    //console.log('EagleNodeList', { pos, pred});
+    if(raw && Util.isObject(raw[pos]) && 'tagName' in raw[pos]) {
+      let element = this.getOrCreate(owner.document, ref.down(pos) /*, raw[pos]*/);
+      if(pred(element)) return element;
+    }
   }
 
   *[Symbol.iterator]() {

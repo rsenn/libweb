@@ -90,7 +90,7 @@ Circle.prototype.bbox = function(width = 0) {
 Circle.prototype.transform = function(m) {
   if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
   Matrix.prototype.transform_point.call(m, this);
-  this.radius = Matrix.prototype.transform_wh.call(m, this.radius, this.radius)[0];
+  this.radius = Matrix.prototype.transform_wh.call(m, this.radius, this.radius)[1];
   return this;
 };
 Circle.prototype.toObject = function(proto = Object.prototype) {
