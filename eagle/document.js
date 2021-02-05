@@ -181,11 +181,13 @@ export class EagleDocument extends EagleNode {
 
     if(!file)
       file = this.file;
-    console.log('saveTo file:', file, 'data: ',Util.abbreviate(data));
 
-    return /*new Promise((resolve,reject) => {*/ fs.writeFile(file, data);
-/*      resolve([file,data.length]);
-    });*/
+    console.log('saveTo file:', file, 'data: ',Util.abbreviate(data));
+    let ret = fs.writeFile(file, data, overwrite);
+
+if(ret < 0)
+  throw new Error(`Writing file '${file}' failed: ${fs.errstr}`);
+    return ret;
   }
 
   index(path, transform = arg => arg) {
