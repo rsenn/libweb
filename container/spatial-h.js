@@ -13,7 +13,7 @@
  * }
  * @constructor
  */
-export function SpatialHash(config) {
+export function SpatialH(config) {
   config = config || {};
   this.cell_size = config.cell_size || 50;
   //optimization to replace division by multiplication
@@ -25,7 +25,7 @@ export function SpatialHash(config) {
  * Point object must have "id" option if object removing is implied
  * @param point {x, y}
  */
-SpatialHash.prototype.insert = function(point) {
+SpatialH.prototype.insert = function(point) {
   let hash = this.hash(point);
   let buckets = this.buckets;
   if(!buckets[hash]) {
@@ -42,7 +42,7 @@ SpatialHash.prototype.insert = function(point) {
  *  }
  *  Retrieves buckets for the given point or for all 4 points of bounding box if width/heights are set
  */
-SpatialHash.prototype.retrieve = function(point) {
+SpatialH.prototype.retrieve = function(point) {
   let x = point.x,
     y = point.y,
     w = point.w || 0,
@@ -89,18 +89,18 @@ SpatialHash.prototype.retrieve = function(point) {
 };
 
 /** @param point {x, y} */
-SpatialHash.prototype.hash = function(point) {
+SpatialH.prototype.hash = function(point) {
   let cell = this.reverse_cell_size;
   let hash = '' + parseInt(point.x * cell, 10);
   hash += parseInt(point.y * cell, 10);
   return hash;
 };
 
-SpatialHash.prototype.clear = function() {
+SpatialH.prototype.clear = function() {
   this.buckets = {};
 };
 
-SpatialHash.prototype.remove = function(id) {
+SpatialH.prototype.remove = function(id) {
   let list = [];
   for(let bucket in this.buckets) {
     if(this.buckets.hasOwnProperty(bucket)) {
@@ -118,4 +118,5 @@ SpatialHash.prototype.remove = function(id) {
 function int(value) {
   return parseInt(value, 10);
 }
-w.SpatialHash = SpatialHash;
+
+export default SpatialH;

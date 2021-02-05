@@ -87,7 +87,7 @@ export class BucketMap {
   }
 }
 
-export default class ComponentMap extends BucketMap {
+export class ComponentMap extends BucketMap {
   constructor(options = {}) {
     super(Object.assign({}, options, {
         getBucketName: options.getBucketName || (key => key.displayName || key.name || 'Unknown')
@@ -95,3 +95,5 @@ export default class ComponentMap extends BucketMap {
     );
   }
 }
+
+export default ComponentMap;

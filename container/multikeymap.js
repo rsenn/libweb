@@ -47,7 +47,7 @@ class Traversor {
   }
 }
 
-class MultiKeyMap {
+export class MultiKeyMap {
   constructor() {
     this._keys = [];
     this._root = { neighbors: new Map() };

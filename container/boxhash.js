@@ -5,11 +5,11 @@
  */
 
 /**
- * 2D Spatial Hash
+ * 2D Box Hash
  * example:
  *
  *  //the trick is to pick the right size for your hash based on your usage (i.e., the expected size of your objects)
- * var hash = new SpatialHash(100);
+ * var hash = new BoxHash(100);
  *
  *  //use your own 2D graphics libraries--I like PIXI.js
  * var circle = new Circle(10, 10, 5);
@@ -29,7 +29,7 @@
  *  }
  * );
  */
-export class SpatialHash {
+export class BoxHash {
   /**
    * @param {number} cellSize used to create hash
    */

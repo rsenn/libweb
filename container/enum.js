@@ -1,5 +1,11 @@
-let exceptions = require('node-exceptions');
-let InvalidArgumentException = exceptions.InvalidArgumentException;
+//let exceptions = require('node-exceptions');
+//(let InvalidArgumentException = exceptions.InvalidArgumentException;
+
+class InvalidArgumentException extends Error {
+  constructor(message) {
+    super(message, 'InvalidArgumentException');
+  }
+}
 
 /**
  * @param {string} name
@@ -19,7 +25,7 @@ export class Enum {
    * @param {*} extra any extra parameter(s)
    */
   constructor(name, value, extra) {
-    /**
+    /**1
      * @var {string}
      */
     this._name = name;

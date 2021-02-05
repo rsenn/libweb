@@ -1,6 +1,6 @@
 const X_BIT = 25;
 
-export default class SpatialHash2D {
+export class SpatialHash2D {
   constructor(cellSizePow2 = 5) {
     this.cellSizePow2 = cellSizePow2 | 0;
     this.cellSize = 1 << this.cellSizePow2;
@@ -105,3 +105,4 @@ export default class SpatialHash2D {
     return x0 < x1 + w1 && x1 < x0 + w0 && y0 < y1 + h1 && y1 < y0 + h0;
   }
 }
+export default SpatialHash2D;

@@ -47,7 +47,7 @@ class _Map {
   }
 }
 
-export default class MultiBiMap {
+export class MultiBiMap {
   constructor(opts = {}) {
     this.opts = Object.assign({
         iterableKey: false,
@@ -150,3 +150,5 @@ function deleteOnly(a, b, aMap) {
     }
   }
 }
+
+export default MultiBiMap;

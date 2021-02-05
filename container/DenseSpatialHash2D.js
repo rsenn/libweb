@@ -1,4 +1,4 @@
-export default class DenseSpatialHash2D {
+export class DenseSpatialHash2D {
   constructor(width, height, bucketSizePow2 = 6) {
     this.bucketSize = 1 << bucketSizePow2;
     this.bucketSizePow2 = bucketSizePow2;
@@ -163,3 +163,4 @@ export default class DenseSpatialHash2D {
     return false;
   }
 }
+export default DenseSpatialHash2D;

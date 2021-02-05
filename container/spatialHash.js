@@ -159,3 +159,5 @@ function getBounds(a) {
     bottom: a.y + a.h
   };
 }
+
+export default SpatialHash;

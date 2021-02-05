@@ -288,7 +288,8 @@ export class CompositeMap {
     return prevMap;
   }
 }
-exports.CompositeMap = CompositeMap;
+
+/*exports.CompositeMap = CompositeMap;
 //tslint:disable:variable-name
 exports.CompositeMap1 = CompositeMap;
 exports.CompositeMap2 = CompositeMap;
@@ -298,7 +299,7 @@ exports.CompositeMap5 = CompositeMap;
 exports.CompositeMap6 = CompositeMap;
 exports.CompositeMap7 = CompositeMap;
 exports.CompositeMap8 = CompositeMap;
-exports.CompositeMap9 = CompositeMap;
+exports.CompositeMap9 = CompositeMap;*/
 //tslint:enable:variable-name
 function copyMap(map) {
   const newMap = new Map();

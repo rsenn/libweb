@@ -28,11 +28,11 @@ if(Array.prototype.remove === undefined || Array.prototype.removeIndex) {
   });
 }
 
-var HashMultimap = function() {
+export function HashMultimap() {
   this._keys = [];
   this._values = [];
   this.length = 0;
-};
+}
 
 HashMultimap.prototype.clear = function() {
   this._keys = [];
