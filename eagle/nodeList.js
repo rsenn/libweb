@@ -10,7 +10,7 @@ export class EagleNodeList {
     //console.log('EagleNodeList.constructor', { owner, ref, pred, raw });
     let species = Util.getConstructor(owner);
     Util.define(this, { ref, owner, raw, getOrCreate });
-    if(pred) this.pred = pred;
+    this.pred = typeof pred == 'function' ? pred : () => true;
   }
 
   item(pos) {

@@ -45,8 +45,6 @@ export class EagleDocument extends EagleNode {
     return this.typeName(filename.replace(/.*\./g, '').toLowerCase());
   }
 
-  elementMapper = Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw));
-
   static get [Symbol.species]() {
     return EagleElement;
   }
@@ -65,11 +63,15 @@ export class EagleDocument extends EagleNode {
     this.pathMapper = new PathMapper(xmlObj, ImmutablePath);
     this.data = xmlStr;
 
-    const { pathMapper, elementMapper } = this;
+    Util.define(this, {
+      raw2element: Util.weakMapper((raw, owner, ref) => new EagleElement(owner, ref, raw))
+    });
+
+    const { pathMapper, raw2element } = this;
 
     const [obj2path, path2obj] = pathMapper.maps.map(Util.mapFunction);
     const [obj2eagle, path2eagle] = [
-      Util.mapFunction(elementMapper),
+      Util.mapFunction(raw2element),
       Util.mapAdapter((key, value) =>
         value === undefined && key !== undefined ? this.lookup(key) : undefined
       )

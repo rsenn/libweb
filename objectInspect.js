@@ -489,7 +489,7 @@ function markBoxed(str) {
 }
 
 function weakCollectionOf(type) {
-  const c = opts.colors ? wrapColor : s => s;
+  const c = /*opts.colors ? wrapColor :*/ s => s;
   return type + ' { ' + c('<items unknown>', 0, 36) + ' }';
 }
 

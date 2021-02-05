@@ -47,7 +47,7 @@ export class EagleNode {
     return this.getDocument();
   }
 
-  elementChain(t = (o, p, v) => [v.tagName, v]) {
+  scope(t = (o, p, v) => [v.tagName, v]) {
     const { owner, path, document } = this;
     let chain = Object.fromEntries(Util.map(
         path.walk((p, i, abort, ignore) => {
@@ -332,13 +332,18 @@ export class EagleNode {
 
   inspect() {
     let attrs = [''];
-    //console.log('Inspect:', this.path);
 
-    let r = this; //'tagName' in this ? this : this.raw; // this.ref ? this.ref.dereference()  : this;
-    let a = r.attrMap ? r.attrMap : r.attributes;
-    if(a) {
-      attrs = Object.getOwnPropertyNames(a)
-        .filter(name => typeof a[name] != 'function' && a[name] !== undefined)
+    const { raw } = this;
+    const { children, tagName, attributes } = raw;
+    const { attributeLists } = EagleElement;
+    const attributeList = attributeLists[tagName] || Object.keys(raw.attributes);
+    // console.log('EagleNode.inspect',  { tagName, attributeList });
+    const getAttr = name => {
+      for(let attrMap of [attributes, this, raw]) if(name in attrMap) return attrMap[name];
+    };
+    if(true) {
+      attrs = attributeList
+        .filter(name => getAttr(name) !== undefined)
         .reduce((attrs, attr) =>
             concat(attrs,
               ' ',
@@ -346,20 +351,15 @@ export class EagleNode {
               text(':', 1, 36),
               /^(altdistance|class|color|curve|diameter|distance|drill|fill|layer|multiple|number|radius|ratio|size|width|x[1-3]?|y[1-3]?)$/.test(attr
               )
-                ? text(a[attr], 1, 36)
-                : text("'" + a[attr] + "'", 1, 32)
+                ? text(getAttr(attr), 1, 36)
+                : text("'" + getAttr(attr) + "'", 1, 32)
             ),
           attrs
         );
-
-      //console.log('Inspect:', a, a.keys ? a.keys() : Object.getOwnPropertyNames(a));
     }
-
-    let children = r.children;
     let numChildren = children ? children.length : 0;
-    let ret = ['']; //`${Util.className(this)} `;
-    let tag = r.tagName || r.raw.tagName;
-    //console.realLog("attrs:",attrs);
+    let ret = [''];
+    let tag = this.tagName || raw.tagName;
     if(tag)
       ret = concat(ret,
         text('<', 1, 36),
@@ -369,12 +369,10 @@ export class EagleNode {
       );
     if(this.filename) ret = concat(ret, ` filename="${this.filename}"`);
     if(numChildren > 0) ret = concat(ret, `{...${numChildren} children...}</${tag}>`);
-    return (ret = concat(text(Util.className(r) + ' ', 0), ret));
+    return (ret = concat(text(Util.className(this) + ' ', 0), ret));
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
-    //  return this.raw;
-    // return EagleNode.inspect(this);
     return this.inspect();
   }
 

@@ -1,6 +1,6 @@
 import Util from '../util.js';
 
-export const toXML =  (o, ...opts) => {
+export const toXML = (o, ...opts) => {
   let [depth, quote, indent] =
     typeof opts[0] == 'object' ? [opts.depth, opts.quote, opts.indent] : opts;
   depth ??= 10000;
@@ -11,9 +11,7 @@ export const toXML =  (o, ...opts) => {
   if(typeof o == 'object' && o !== null) {
     if('raw' in o) o = o.raw;
     if(Util.isArray(o))
-      return o.length === 1
-        ? toString(o[0], depth)
-        : o.map(it => toString(it, depth)).join('\n');
+      return o.length === 1 ? toString(o[0], depth) : o.map(it => toString(it, depth)).join('\n');
     return toString(o, depth);
   }
 
@@ -24,10 +22,10 @@ export const toXML =  (o, ...opts) => {
     let { tagName, attributes, children, ...obj } = o;
     let s = `<${tagName}`;
     let attrs = attributes || obj;
-     for(let k in attrs) {
-       let v = attrs[k];
-      s += ' '+k;
-      if(v !== true) s += '='+quote+v+quote;
+    for(let k in attrs) {
+      let v = attrs[k];
+      s += ' ' + k;
+      if(v !== true) s += '=' + quote + v + quote;
     }
     const a = children && children.length !== undefined ? children : [];
     if(a && a.length > 0) {
@@ -43,9 +41,7 @@ export const toXML =  (o, ...opts) => {
       if(textChildren) s += a.join('\n') + `</${tagName}>`;
       else if(depth > 0) {
         for(let child of a)
-          s +=
-            nl +
-            toString(child, depth > 0 ? depth - 1 : depth).replace(/>\n/g, '>' + nl);
+          s += nl + toString(child, depth > 0 ? depth - 1 : depth).replace(/>\n/g, '>' + nl);
         if(tagName[0] != '?') s += `${nl.replace(/ /g, '')}</${tagName}>`;
       }
     } else {

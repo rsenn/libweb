@@ -63,6 +63,8 @@ export function Line(...args) {
     //Util.log('ERROR: is not a line: ', Util.toString(arg), Util.toString(obj));
   }
 
+  if(!['x1', 'y1', 'x2', 'y2'].every(prop => !isNaN(+obj[prop]))) return null;
+
   /*  if(this !== obj)*/ return obj;
 }
 
@@ -277,24 +279,12 @@ Line.prototype.bbox = function() {
   const { x1, y1, x2, y2 } = this;
   return new BBox(x1, y1, x2, y2);
 };
-Line.prototype.add = function(...args) {
-  const { x, y } = Point(...args);
-  this.x1 += x;
-  this.y1 += y;
-  this.x2 += x;
-  this.y2 += y;
-  return this;
-};
 
 Line.prototype.points = function() {
   const { a, b } = this;
   return [a, b];
 };
 
-Line.prototype.diff = function(other) {
-  other = Line(...arguments);
-  return new Line(Point.diff(this.a, other.a), Point.diff(this.b, other.b));
-};
 Line.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, options = {}) {
   const { x1, y1, x2, y2 } = this;
   return 'Line ' + Util.inspect({ x1, y1, x2, y2 }, options) + ' }';
@@ -346,7 +336,74 @@ Line.prototype.round = function(precision = 0.001, digits, type) {
   this.y2 = Util.roundTo(y2, precision, digits, type);
   return this;
 };
-
+Line.prototype.sum = function(...args) {
+  let r = new Line(...this);
+  return Line.prototype.add.call(r, ...args);
+};
+Line.prototype.add = function(...args) {
+  let other;
+  if((other = Line(...args))) {
+    this.x1 += other.x1;
+    this.y1 += other.y1;
+    this.x2 += other.x2;
+    this.y2 += other.y2;
+  } else if((other = Point(...args))) {
+    this.x1 += other.x;
+    this.y1 += other.y;
+    this.x2 += other.x;
+    this.y2 += other.y;
+  }
+  return this;
+};
+Line.prototype.diff = function(...args) {
+  let r = new Line(...this);
+  return Line.prototype.sub.call(r, ...args);
+};
+Line.prototype.sub = function(...args) {
+  let other;
+  if((other = Line(...args))) {
+    this.x1 -= other.x1;
+    this.y1 -= other.y1;
+    this.x2 -= other.x2;
+    this.y2 -= other.y2;
+  } else if((other = Point(...args))) {
+    this.x1 -= other.x;
+    this.y1 -= other.y;
+    this.x2 -= other.x;
+    this.y2 -= other.y;
+  }
+  return this;
+};
+Line.prototype.prod = function(...args) {
+  let r = new Line(...this);
+  return Line.prototype.mul.call(r, ...args);
+};
+Line.prototype.mul = function(...args) {
+  const o =
+    args.length == 1 && typeof args[0] == 'number'
+      ? { x: args[0], y: args[0] }
+      : new Point(...args);
+  this.x1 *= o.x;
+  this.y1 *= o.y;
+  this.x2 *= o.x;
+  this.y2 *= o.y;
+  return this;
+};
+Line.prototype.quot = function(...args) {
+  let r = new Line(...this);
+  return Line.prototype.div.call(r, ...args);
+};
+Line.prototype.div = function(...args) {
+  const o =
+    args.length == 1 && typeof args[0] == 'number'
+      ? { x: args[0], y: args[0] }
+      : new Point(...args);
+  this.x1 /= o.x;
+  this.y1 /= o.y;
+  this.x2 /= o.x;
+  this.y2 /= o.y;
+  return this;
+};
 Line.prototype.some = function(pred) {
   return pred(this.a) || pred(this.b);
 };
@@ -356,12 +413,11 @@ Line.prototype.every = function(pred) {
 Line.prototype.includes = function(point) {
   return Point.prototype.equals.call(this.a, point) || Point.prototype.equals.call(this.b, point);
 };
-Line.prototype.equals = function(other) {
-  //Util.log('Line.equals', this, other);
-  other = Line(other);
+Line.prototype.equals = function(...args) {
+  let other = Line(...args);
   if(Point.equals(this.a, other.a) && Point.equals(this.b, other.b)) return 1;
   if(Point.equals(this.a, other.b) && Point.equals(this.b, other.a)) return -1;
-  return false;
+  return 0;
 };
 Line.prototype.indexOf = function(point) {
   let i = 0;
@@ -399,7 +455,8 @@ Line.prototype.toPoints = function(ctor = Array.of) {
   return ctor({ x: x1, y: y1 }, { x: x2, y: y2 });
 };
 Line.prototype[Symbol.iterator] = function() {
-  return [this.a, this.b][Symbol.iterator]();
+  const { x1, y1, x2, y2 } = this;
+  return [x1, y1, x2, y2][Symbol.iterator]();
 };
 
 for(let name of [

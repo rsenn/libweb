@@ -55,7 +55,7 @@ export class EagleElement extends EagleNode {
 
     let doc = owner.document;
 
-    const { pathMapper, elementMapper } = doc;
+    const { pathMapper, raw2element } = doc;
 
     let insert = Util.inserter(pathMapper); //doc.maps.obj2path);
     //console.log('mapper:', mapper);
@@ -67,7 +67,7 @@ export class EagleElement extends EagleNode {
     if(!raw) raw = ref.path.apply(root, true);
     if(!raw) raw = ref.dereference();
     //console.log('EagleElement.get', { owner, ref, raw });
-    let inst = doc.elementMapper(raw, owner, ref);
+    let inst = doc.raw2element(raw, owner, ref);
 
     insert(inst, ref.path);
     //console.log("EagleElement.get =",inst);
@@ -124,12 +124,14 @@ export class EagleElement extends EagleNode {
         return doc.elements[element];
       });
       lazyProperty(this, 'pad', () => {
-        const padName = elem.raw.attributes.pad;
+        /*const padName = elem.raw.attributes.pad;
         const elementName = elem.raw.attributes.element;
         let element = elem.element;
-        let pkg = element.package;
+        let pkg = element.package;*/
 
-        console.log("lazyProperty 'pad'", element, pkg);
+        const { element, pad } = attributes;
+        return doc.elements[element].pads[pad];
+        //        console.log("lazyProperty 'pad'", { elementName, padName }, pkg);
 
         /*
         let pads = pkg.pads;
@@ -222,6 +224,8 @@ export class EagleElement extends EagleNode {
               const libName = elem.handlers.library();
               const pkgName = elem.handlers.package();
               const library = doc.libraries[libName]; //(e => e.tagName == 'library' && e.attributes['name'] == libName);
+              //   console.log(this.tagName, { libName, pkgName, library, key });
+
               return library.packages[pkgName]; //({ tagName: 'package', name: pkgName });
             };
           } else if(tagName == 'part') {
@@ -313,7 +317,7 @@ export class EagleElement extends EagleNode {
 
     if(tagName == 'gate') {
       trkl.bind(this, 'symbol', () => {
-        let chain = this.elementChain(/*(o, p, v) => [v.tagName, EagleElement.get(o, p, v)]*/);
+        let chain = this.scope(/*(o, p, v) => [v.tagName, EagleElement.get(o, p, v)]*/);
 
         let library = chain.library;
         return library.symbols[attributes.symbol];
@@ -380,9 +384,10 @@ export class EagleElement extends EagleNode {
       lazyProperty(this, 'vias', () =>
         EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'via')
       );
-      lazyProperty(this, 'pads', () =>
-        EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'pad')
-      );
+      lazyProperty(this, 'pads', () => {
+        let list = EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'pad');
+        return EagleNodeMap.create(list, 'name');
+      });
       lazyProperty(this, 'wires', () =>
         EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'wire')
       );
@@ -735,14 +740,12 @@ export class EagleElement extends EagleNode {
     return relationNames.indexOf(name) != -1;
   }
 
-  elementChain(t = (o, p, v) => [v.tagName, EagleElement.get(o, p, v)],
-    r = e => Object.fromEntries(e)
-  ) {
-    return super.elementChain(t, r);
+  scope(t = (o, p, v) => [v.tagName, EagleElement.get(o, p, v)], r = e => Object.fromEntries(e)) {
+    return super.scope(t, r);
   }
 
   get chain() {
-    return this.elementChain();
+    return this.scope();
   }
 
   getParent(tagName) {
@@ -761,7 +764,7 @@ export class EagleElement extends EagleNode {
   }
 
   names() {
-    return Object.entries(this.elementChain()).reduce((acc, entry) => ({ ...acc, [entry[0]]: entry[1].attributes.name }),
+    return Object.entries(this.scope()).reduce((acc, entry) => ({ ...acc, [entry[0]]: entry[1].attributes.name }),
       {}
     );
   }

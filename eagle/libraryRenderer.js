@@ -70,7 +70,7 @@ export class LibraryRenderer extends EagleSVGRenderer {
     let devicesets = [
       ...this.doc.getAll(e => e.attributes && e.attributes[item.tagName] == item.name)
     ]
-      .map(e => [e, e.elementChain().deviceset])
+      .map(e => [e, e.scope().deviceset])
       .map(([e, deviceset]) => deviceset)
       .filter(deviceset => !!deviceset);
     let prefixes = Util.unique(devicesets.map(deviceset => deviceset && deviceset.prefix).filter(prefix => !!prefix)
@@ -97,7 +97,7 @@ export class LibraryRenderer extends EagleSVGRenderer {
 
         //console.log('LibraryRenderer.renderItem deviceset:', deviceset, 'gate:', { number, name, symbol });
       }
-      //   console.log('LibraryRenderer.renderItem item.elementChain():', item.elementChain());
+      //   console.log('LibraryRenderer.renderItem item.scope():', item.scope());
     }
 
     if(prefixes[0]) opts.name = `${prefixes[0]}1${suffix}`;
