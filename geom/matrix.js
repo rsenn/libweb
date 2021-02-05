@@ -1,8 +1,5 @@
 import Util from '../util.js';
 
-const rad2deg = radians => (radians * 180) / Math.PI;
-const deg2rad = degrees => (degrees * Math.PI) / 180;
-
 function matrixMultiply(a, b) {
   var result = [];
   for(let i = 0; i < a.length; i++) {
@@ -74,6 +71,9 @@ export function Matrix(...args) {
 
   if(!(this instanceof Matrix)) return ret;
 }
+
+Matrix.DEG2RAD = Math.PI / 180;
+Matrix.RAD2DEG = 180 / Math.PI;
 
 /*
 Object.assign(Matrix.prototype, Array.prototype);
@@ -286,7 +286,8 @@ Matrix.prototype.toString = function(separator = ' ') {
 
   return `${name}(` + rows.map(row => row.join(',' + separator)).join(',' + separator) + ')';
 };
-Matrix.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
+const inspectSym = 'inspect' || Symbol.for('nodejs.util.inspect.custom');
+Matrix.prototype[inspectSym] = function() {
   let columns = Matrix.prototype.columns.call(this);
   let numRows = Math.max(...columns.map(col => col.length));
   let numCols = columns.length;
@@ -294,16 +295,20 @@ Matrix.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
     column.map(n => (typeof n == 'number' ? Util.roundTo(n, 1e-14, 15) : undefined))
   );
   let pad = columns.map(column => Math.max(...column.map(n => (n + '').length)));
-  let s = '\n  [ ';
+  let s = '│ ';
   for(let row = 0; row < numRows; row++) {
-    if(row > 0) s += ' ]\n  [ ';
+    if(row > 0) s += ` │\n│ `;
     for(let col = 0; col < numCols; col++) {
       if(col > 0) s += ', ';
       s += (columns[col][row] + '').padStart(pad[col]);
     }
   }
-  s += ' ]\n';
-  return s;
+  s += ' │';
+  let l = s.indexOf('\n');
+  s = '\u250c' + ' '.repeat(l - 2) + '\u2510\n' + s;
+  s = s + '\n\u2514' + ' '.repeat(l - 2) + '\u2518\n';
+
+  return '\n' + s;
 };
 
 Matrix.prototype.toSVG = function() {
@@ -325,7 +330,7 @@ Matrix.prototype.toJSON = function() {
 Matrix.fromJSON = obj => new Matrix(obj);
 Matrix.fromDOM = matrix => {
   const { a, b, c, d, e, f } = matrix;
-  return new Matrix([a, c, e, b, d, f]);
+  return new Matrix(a, c, e, b, d, f);
 };
 
 Matrix.prototype.equals = function(other) {
@@ -626,15 +631,23 @@ Matrix.prototype.init_scale = function(sx, sy) {
 };
 
 Matrix.prototype.init_rotate = function(angle, deg = false) {
-  const rad = deg ? deg2rad(angle) : angle;
+  const rad = deg ? DEG2RAD * angle : angle;
   const s = Math.sin(rad);
   const c = Math.cos(rad);
-  return Matrix.prototype.init.call(this, c, s, -s, c, 0, 0);
-  //return Matrix.prototype.init.call(this, c, -s,  s, c, 0, 0);
+
+  /*  Matrix.prototype.set_row.call(this, 0, c, s, 0);
+  Matrix.prototype.set_row.call(this, 1, -s, c, 0);
+  Matrix.prototype.set_row.call(this, 2, 0,0,1);*/
+
+  Matrix.prototype.set_row.call(this, 0, c, -s, 0);
+  Matrix.prototype.set_row.call(this, 1, s, c, 0);
+  Matrix.prototype.set_row.call(this, 2, 0, 0, 1);
+
+  return this;
 };
 Matrix.prototype.init_skew = function(x, y, deg = false) {
-  const ax = Math.tan(deg ? deg2rad(x) : x);
-  const ay = Math.tan(deg ? deg2rad(y) : y);
+  const ax = Math.tan(deg ? DEG2RAD * x : x);
+  const ay = Math.tan(deg ? DEG2RAD * y : y);
   return Matrix.prototype.init.call(this, 1, ay, ax, 1, 0, 0);
 };
 Matrix.prototype[Symbol.iterator] = function* () {
