@@ -21,8 +21,13 @@ export const TextElement = ({
 
   let coordFn = transform ? MakeCoordTransformer(transform) : i => i;
 
-  let { children = [], text: innerText, align = 'bottom-left', size, font, rot, layer } = data;
-  let text = innerText || labelText || children.join('\n');
+  let { children, text: innerText, align = 'bottom-left', size, font, rot, layer } = data;
+  let text =
+    innerText ||
+    /* labelText || */ Util.tryCatch(() => children.join('\n'),
+      t => t,
+      () => ''
+    );
   let { x, y } = coordFn(data);
   const color = data.getColor();
   let className = ElementToClass(data);

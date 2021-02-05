@@ -1,5 +1,6 @@
 import Util from '../util.js';
 import { isRect, Rect } from '../geom/rect.js';
+import { isSize, Size } from '../geom/size.js';
 
 export class BBox {
   static fromPoints(pts) {
@@ -114,31 +115,39 @@ export class BBox {
   get x() {
     return this.x1;
   }
+
   get width() {
     return /*Math.abs*/ this.x2 - this.x1;
   }
+
   get y() {
     return this.y1 < this.y2 ? this.y1 : this.y2;
   }
+
   get height() {
     return /*Math.abs*/ this.y2 - this.y1;
   }
+
   set x(x) {
     let ix = x - this.x1;
     this.x1 += ix;
     this.x2 += ix;
   }
+
   set width(w) {
     this.x2 = this.x1 + w;
   }
+
   set y(y) {
     let iy = y - this.y1;
     this.y1 += iy;
     this.y2 += iy;
   }
+
   set height(h) {
     this.y2 = this.y1 + h;
   }
+
   get rect() {
     const { x1, y1, x2, y2 } = this;
     return {
@@ -147,6 +156,11 @@ export class BBox {
       width: x2 - x1,
       height: y2 - y1
     };
+  }
+
+  get size() {
+    const { x1, y1, x2, y2 } = this;
+    return new Size(x2-x1, y2-y1);
   }
 
   toRect(proto) {

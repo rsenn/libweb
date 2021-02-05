@@ -398,30 +398,30 @@ export class EagleSVGRenderer {
     let doc = obj.document || this.doc;
     this.debug('EagleSVGRenderer.render', obj);
     let {
-      bounds = (obj.getMeasures && obj.measures) || obj.getBounds(),
+      bounds = obj.getMeasures && obj.getMeasures({ bbox: true }),
       transform = new TransformationList()
     } = props;
 
-    let { rect = new Rect(bounds.rect) } = props;
+    if(!bounds || bounds.size.area() == 0) bounds = obj.getBounds({ bbox: true });
+
+    let rect = new Rect(bounds.rect);
+    //    let { rect = new Rect(bounds.rect) } = props;
 
     //let { bounds = doc.measures || doc.getBounds() } = props;
     rect.round(1.27);
     //rect.outset(1.27);
     rect.round(2.54);
-
-    let { viewBox = rect, index } = props;
+    let viewBox = rect;
+    let { index } = props;
 
     this.rect = rect;
-    this.bounds = bounds; //BBox.fromRect(rect);
-    //this.debug('EagleSVGRenderer.render', { bounds: this.bounds, rect });
-    //this.debug('bounds:', this.bounds.toString({ separator: ' ' }));
-    const { width, height } = (this.size = rect.size.toCSS('mm'));
-    //this.transform.translate(0, rect.height - rect.y);
+    this.bounds = bounds;
 
-    // const transform = this.transform + ''; //` translate(0,${(bounds.height+bounds.y)}) scale(1,-1) `;
+    const { width, height } = (this.size = rect.size.toCSS('mm'));
+    console.log('EagleSVGRenderer', { bounds, width, height });
+
     this.debug('SVGRenderer.render', { transform, index });
-    //this.debug(bounds);
-    //this.debug('viewBox rect:', rect, rect.toString(), rect.valueOf);
+
     let gridElement = doc.lookup('/eagle/drawing/grid');
     let attrs = {
       bg: trkl({ color: '#ffffff', visible: true }),
@@ -429,13 +429,13 @@ export class EagleSVGRenderer {
     };
     const { bg, grid } = attrs;
     this.attrs = attrs;
-    //this.debug('grid:', grid.attributes);
+
     trkl.bind(this, { bg, grid });
-    //this.debug('rect:', rect, bounds.rect);
-    //console.log('layers', layers);
+
     let svgElem = h(Drawing,
       {
         rect: viewBox,
+
         bounds,
         attrs,
         grid: gridElement,

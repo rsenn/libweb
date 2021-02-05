@@ -264,6 +264,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
   renderElement(element, parent) {
     let { name, library, value, x, y, rot } = element;
+    if(typeof value != 'string') value = value + '';
 
     this.debug(`BoardRenderer.renderElement`, { name, library, value, x, y, rot });
 
@@ -292,6 +293,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     if(/^[RLC][0-9]/.test(name) && element.pads.length == 2) {
       let re;
+      console.log('BoardRenderer.renderElement', { name, value });
       switch (name[0]) {
         case 'R':
           value = value.replace(/㏀$/, 'kΩ').replace(/㏁$/, 'MΩ');

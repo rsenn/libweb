@@ -101,6 +101,9 @@ Size.prototype.transform = function(m) {
 Size.prototype.isSquare = function() {
   return Math.abs(this.width - this.height) < 1;
 };
+Size.prototype.isNull = function() {
+  return this.width == 0 && this.height == 0;
+};
 Size.prototype.area = function() {
   return this.width * this.height;
 };

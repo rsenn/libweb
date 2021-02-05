@@ -322,7 +322,7 @@ export const CalculateArcRadius = (d, angle) => {
 export const LinesToPath = (lines, lineFn) => {
   let l = lines.shift(),
     m;
-  let [start, point] = l;
+  let [start, point] = l.toPoints();
   let path,
     ret = [];
   let prevPoint = start;
@@ -339,6 +339,7 @@ export const LinesToPath = (lines, lineFn) => {
       lineFn = (point, curve) => {
         const p = [prevPoint, point];
         const dist = Point.distance(...p);
+        //  console.log("p", {prevPoint,point})
         const slope = Point.diff(prevPoint, point).round(0.0001);
 
         let cmd;
@@ -365,7 +366,12 @@ export const LinesToPath = (lines, lineFn) => {
 
   ret.push((path = []));
 
-  const lineTo = (...args) => path.push(lineFn(...args));
+  const lineTo = (...args) => {
+    if(typeof args[0] == 'number') throw new Error('num');
+    let l = lineFn(...args);
+    //console.log("lineTo(",...args, ")", {l});
+    path.push(l);
+  };
 
   lineTo(prevPoint);
   lineTo(point, l.curve);
