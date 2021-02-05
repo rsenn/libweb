@@ -12,7 +12,7 @@ let mapCtor;
 if(typeof Map !== 'undefined') {
   mapCtor = Map;
 
-  if(!Map.prototype.keys) {
+  /*  if(!Map.prototype.keys) {
     Map.prototype.keys = function() {
       let keys = [];
       this.forEach((item, key) => {
@@ -20,7 +20,7 @@ if(typeof Map !== 'undefined') {
       });
       return keys;
     };
-  }
+  }*/
 }
 
 export function Multimap(iterable) {
@@ -175,10 +175,7 @@ Object.defineProperty(Multimap.prototype, 'count', {
 let safariNext;
 
 try {
-  safariNext = new Function('iterator',
-    'makeIterator',
-    'var keysArray = []; for(var key of iterator){keysArray.push(key);} return makeIterator(keysArray).next;'
-  );
+  safariNext = new Function('iterator', 'makeIterator', 'var keysArray = []; for(var key of iterator){keysArray.push(key);} return makeIterator(keysArray).next;');
 } catch(error) {
   //for of not implemented;
 }
@@ -189,9 +186,7 @@ function makeIterator(iterator) {
 
     return {
       next() {
-        return nextIndex < iterator.length
-          ? { value: iterator[nextIndex++], done: false }
-          : { done: true };
+        return nextIndex < iterator.length ? { value: iterator[nextIndex++], done: false } : { done: true };
       }
     };
   }

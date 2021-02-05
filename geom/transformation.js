@@ -773,10 +773,10 @@ export class TransformationList extends Array {
     return this;
   }
 
-  apply(obj) {
+  apply(obj, round = true) {
     if(typeof obj.transform == 'function') {
       const matrix = this.toMatrix();
-      return obj.transform(matrix);
+      return obj.transform(matrix, round);
     }
   }
 }

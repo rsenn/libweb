@@ -87,16 +87,37 @@ Circle.prototype.bbox = function(width = 0) {
     y2: y + distance
   };
 };
-Circle.prototype.transform = function(m) {
+Circle.prototype.clone = function() {
+  const ctor = this[Symbol.species] || this.constructor[Symbol.species];
+  //console.log("ctor:", ctor);
+  return new (ctor || Circle)({ x: this.x, y: this.y, radius: this.radius });
+};
+
+Circle.prototype.transform = function(m, round = true) {
   if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
   Matrix.prototype.transform_point.call(m, this);
   this.radius = Matrix.prototype.transform_wh.call(m, this.radius, this.radius)[1];
+  if(round) Circle.prototype.round.call(this, 1e-13, 13);
   return this;
 };
 Circle.prototype.toObject = function(proto = Object.prototype) {
   const { x, y, radius } = this;
   return Object.setPrototypeOf({ x, y, radius }, proto);
 };
+Circle.prototype.round = function(precision = 0.001, digits, type) {
+  let { x, y, radius } = this;
+  digits = digits || Util.roundDigits(precision);
+  type = type || 'round';
+  this.x = Util.roundTo(x, precision, digits, type);
+  this.y = Util.roundTo(y, precision, digits, type);
+  this.radius = Util.roundTo(radius, precision, digits, type);
+  return this;
+};
+
+Util.defineGetter(Point, Symbol.species, function() {
+  return this;
+});
+
 Util.defineInspect(Circle.prototype, 'x', 'y', 'radius');
 
 Circle.bind = (o, p, gen) => {
