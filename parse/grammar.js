@@ -112,20 +112,18 @@ export class Rule {
       return this.map(sym => (!sym.generate ? Util.className(sym) : sym.generate())).join(', ');
     }
 
-    [Symbol.for('nodejs.util.inspect.custom')]() {
+   /* [Symbol.for('nodejs.util.inspect.custom')]() {
       const { repeat = '', length, invert } = this;
       if(this.length == 1) return `${invert ? '~' : ''}${Util.colorText(this[0], 1, 36)}`;
       return `${Util.colorText(Util.className(this), 1, 31)}(${this.length}) ${
         invert ? '~' : ''
       }[ ${this.map(n => {
-        /*Util.className(n) + ' ' +*/
-
-        if(!n[Symbol.for('nodejs.util.inspect.custom')])
-          throw new Error(`Symbol.for('nodejs.util.inspect.custom') ${Util.className(n)} ${n}`);
-
+       console.log("n:", n);
+         
+return [...n];
         return n[Symbol.for('nodejs.util.inspect.custom')]();
       }).join(Util.colorText(' ⏵ ', 1, 30))} ]${repeat}`;
-    }
+    }*/
 
     toString() {
       const { repeat = '', length, invert } = this;
