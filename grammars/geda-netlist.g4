@@ -9,17 +9,15 @@ grammar GedaNetlistGrammar;
 
 geda_netlist : components nets  EOF;
 
-
 value : [^\r\n()\x5b\x5d]*;
-//value : [^()\x5b\x5d]*;
-
-values : (value   NL)*;
+ 
+values : (value  NL)*;
  
 components : (LINE_COMMENT | component)*;
 nets : (LINE_COMMENT | net)*;
 
-component : LBRACK  values RBRACK;
-net : LPAREN  values RPAREN;
+component : LBRACK values RBRACK;
+net : LPAREN values RPAREN;
 
 DELIM : ( '\n' | '\r' | '(' | ')' | '[' | ']' ) ;
 TEXT : ~( '\n' | '\r' | '(' | ')' | '[' | ']' ) ;

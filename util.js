@@ -1481,8 +1481,8 @@ Util.toString = (obj, opts = {}) => {
     depth = 10,
     json = false
   } = { ...Util.toString.defaultOpts, ...opts };
- //console.log("Util.toString", {quote,colors,multiline,json})
-  
+  //console.log("Util.toString", {quote,colors,multiline,json})
+
   let out;
   const { c = Util.coloring(colors) } = opts;
   const { print = (...args) => (out = c.concat(out, c.text(...args))) } = opts;
@@ -1555,11 +1555,17 @@ Util.toString = (obj, opts = {}) => {
         if(i > 0) print(separator + sep(true), 36);
         if(typeof key == 'symbol') print(key.toString(), 1, 32);
         else if(Util.isObject(key) && typeof key[toString] == 'function')
-          print(isMap ? `'${key[toString]()}'` : json ? `"${key.toString()}"` : key[toString](), 1, isMap ? 36 : 33);
+          print(isMap ? `'${key[toString]()}'` : json ? `"${key.toString()}"` : key[toString](),
+            1,
+            isMap ? 36 : 33
+          );
         else if(typeof key == 'string' ||
           (!isMap && Util.isObject(key) && typeof key.toString == 'function')
         )
-          print( json ? `"${key.toString()}"` :  isMap || /(-)/.test(key) ? `'${key}'` : key, 1, isMap ? 36 : 33);
+          print(json ? `"${key.toString()}"` : isMap || /(-)/.test(key) ? `'${key}'` : key,
+            1,
+            isMap ? 36 : 33
+          );
         else
           Util.toString(key, {
             ...opts,
@@ -1573,7 +1579,8 @@ Util.toString = (obj, opts = {}) => {
           });
         print(...propSep);
         if(typeof value == 'number') print(`${value}`, 1, 36);
-        else if(typeof value == 'string' || value instanceof String) print(`${quote}${value}${quote}`, 1, 36);
+        else if(typeof value == 'string' || value instanceof String)
+          print(`${quote}${value}${quote}`, 1, 36);
         else if(typeof value == 'object')
           Util.toString(value, {
             ...opts,
