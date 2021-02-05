@@ -24,7 +24,7 @@ HashMap.prototype.Get = function(key) {
 
 function Key(cell) {
   return cell.x + ':' + cell.y;
-};
+}
 
 function Keys(cells) {
   let result = [];
@@ -33,7 +33,7 @@ function Keys(cells) {
   }
 
   return result;
-};
+}
 
 function cellInArray(arr, item) {
   for(let i = 0, len = arr.length; i < len; i++) {
@@ -43,7 +43,7 @@ function cellInArray(arr, item) {
   }
 
   return false;
-};
+}
 
 function removeFromCell(grid, cell, obj) {
   let key = Key(cell);
@@ -53,7 +53,7 @@ function removeFromCell(grid, cell, obj) {
   if(index > -1) {
     grid[key] = objectsInCell.splice(index, 1);
   }
-};
+}
 
 function addToCell(grid, cell, obj) {
   let key = Key(cell);
@@ -62,23 +62,23 @@ function addToCell(grid, cell, obj) {
     objectsInCell = grid[key] = [];
   }
   objectsInCell.push(obj);
-};
+}
 
 function removeFromCells(grid, cells, obj) {
   for(let i = 0, len = cells.length; i < len; i++) {
     removeFromCell(grid, cells[i], obj);
   }
-};
+}
 
 function addToCells(grid, cells, obj) {
   for(let i = 0, len = cells.length; i < len; i++) {
     addToCell(grid, cells[i], obj);
   }
-};
+}
 
 function concat(orig, other) {
   Array.prototype.push.call(orig, other);
-};
+}
 
 //Remove duplicates and specific items from an array
 function sanitize(arr, exclude) {
@@ -94,7 +94,7 @@ function sanitize(arr, exclude) {
   }
 
   return result;
-};
+}
 
 //Same as sanitize, but without exclusions
 //This saves quite some (slow) indexOf() calls
@@ -106,7 +106,7 @@ function removeDuplicates(arr) {
       result.push(item);
     }
   }
-};
+}
 
 //Same as removeDuplicates, but for cells
 //Cell objects may be unequal (checked by ===),
@@ -120,7 +120,7 @@ function removeDuplicateCells(arr) {
       result.push(item);
     }
   }
-};
+}
 
 /**
  * SpatialHashMap

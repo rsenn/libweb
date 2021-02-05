@@ -16,3 +16,4 @@ export { HashMap } from './container/hashmap.js';
 export { SpatialH } from './container/spatial-h.js';
 export { SpatialHash } from './container/spatial-hash.js';
 export { SpatialHashMap } from './container/spatial-hashmap.js';
+export { BoxHash } from './container/boxhash.js';
