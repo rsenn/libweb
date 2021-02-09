@@ -51,9 +51,9 @@ export class EagleDocument extends EagleNode {
 
   static open(filename, fs) {
     //console.log('EagleDocument.open', filename, Util.getCallers(1, Infinity));
-    let xml = (fs || filesystem).readFile(filename, null);
+    let xml = (fs || filesystem).readFile(filename, 'utf-8');
 
-    return new EagleDocument(Util.bufferToString(xml), null, filename);
+    return new EagleDocument(/*Util.bufferToString*/ xml, null, filename);
   }
 
   constructor(xmlStr, project, filename, type, fs) {
