@@ -14,9 +14,9 @@ import { Repeater } from '../repeater/repeater.js';
 
 const add = (arr, ...items) => [...(arr || []), ...items];
 
-const TList = (child, elem, matrix) => {
-  matrix = matrix || new Matrix().translate(elem.x, elem.y);
-  let instance = { child, elem, matrix };
+const TList = (child, elem) => {
+  let transformation = elem.transformation();
+  let instance = { child, elem };
   let round = n => Util.roundTo(n, 0.0001, 4);
   return new Proxy(instance.child, {
     get(target, prop) {
@@ -24,15 +24,13 @@ const TList = (child, elem, matrix) => {
       if(['x', 'y'].indexOf(prop) != -1) {
         v = instance.elem[prop] + target[prop];
         v = round(v);
-
-        /*                } else if(prop == 'raw') {
-                       let { attributes, ...raw } = target[prop];
-                       attributes = {...attributes, x: round(instance.child.x + elem.x)+'', y: round(instance.child.y+elem.y)+'' };
-                     v = {...raw, attributes };*/
+      } else if(prop == elem.tagName) {
+        v = elem;
       } else if(prop == 'geometry') {
         v = target[prop];
         v = v.clone();
-        v = v.transform(matrix);
+        //console.log(`TList get(${prop})`, { elem, transformation, target });
+        transformation.apply(v);
       }
       return v;
     }
@@ -373,6 +371,19 @@ export class EagleElement extends EagleNode {
           if(key != 'pad') return list;
           return EagleNodeMap.create(list, 'name');
         });
+
+      trkl.bind(this, 'contacts', () =>
+        Object.fromEntries([
+            ...doc.board.signals.getAll({ tagName: 'contactref', element: attributes.name })
+          ].map(cref => [cref.pad.name, cref.parentNode])
+        )
+      );
+      trkl.bind(this, 'contactrefs', () =>
+        Object.fromEntries([
+            ...doc.board.signals.getAll({ tagName: 'contactref', element: attributes.name })
+          ].map(cref => [cref.pad.name, cref])
+        )
+      );
     }
     if(tagName == 'signal') {
       for(let prop of ['via', 'wire', 'contactref'])

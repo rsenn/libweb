@@ -305,7 +305,7 @@ Point.prototype.inside = function(rect) {
     this.y < rect.y + rect.height
   );
 };
-Point.prototype.transform = function(m) {
+Point.prototype.transform = function(m, round = true) {
   if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
   //if(Util.isObject(m) && typeof m.transform_point == 'function') return m.transform_point(this);
 

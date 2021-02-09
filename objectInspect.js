@@ -153,7 +153,7 @@ function inspect_(obj, options, depth, seen) {
     inspectName = inspectCustom.find(n => typeof obj[n] === 'function');
 
     if(inspectName) {
-      let r = obj[inspectName]();
+      let r = obj[inspectName]({ ...opts, depth: depth > 0 ? depth - 1 : depth });
       /*  if(typeof r == 'string')*/ {
         s += r;
         return s;
@@ -546,7 +546,7 @@ function arrObjKeys(obj, inspect, opts = {}) {
     xs = new Array(obj.length);
 
     //xs.length = obj.length;
-    for(let i = 0; i < obj.length; i++) xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
+    for(let i = 0; i < obj.length; i++) xs[i] = /*has(obj, i) ?*/ inspect(obj[i], obj) /* : ''*/;
   }
   let c = opts.colors ? wrapColor : s => s;
 

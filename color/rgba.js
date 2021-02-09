@@ -170,7 +170,9 @@ RGBA.prototype.hex = function(opts = {}) {
   const { bits, prefix = '#', order = RGBA.order.RGBA } = opts;
   const { r, g, b, a } = RGBA.clamp(RGBA.round(this));
   const n = RGBA.encode[order]({ r, g, b, a });
-  return prefix + ('0000000000' + n.toString(16)).slice(-8).slice(0, a == undefined ? 6 : 8);
+  return (prefix +
+    ('0000000000' + n.toString(16)).slice(-8).slice(0, a === 255 || a === undefined ? 6 : 8)
+  );
 };
 
 /*RGBA.prototype.valueOf = function() {
@@ -511,7 +513,6 @@ RGBA.prototype.toObject = function() {
 RGBA.prototype.toArray = function() {
   return Uint8Array.from(this);
 };
-
 RGBA.prototype.toAnsi = function(background = false) {
   const { r, g, b } = this;
 
@@ -619,7 +620,7 @@ RGBA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
   let ret = arr
     .map(toHex) /*.map(n => (n + '').padStart(3, ' '))*/
     .join(',');
-  const color = this.toAnsi256(true);
+  const color = this.toAnsi(/*256*/ true);
   const l = this.toHSLA().l;
   let s = '';
 

@@ -15,7 +15,7 @@ export const toXML = (o, ...opts) => {
     return toString(o, depth);
   }
 
-  function toString(o, depth) {
+  function toString(o, depth, newline = '\n') {
     if(typeof o == 'string') return o;
     else if(typeof o != 'object') return o + '';
     else if(o.tagName === undefined) return o + '';
@@ -28,21 +28,27 @@ export const toXML = (o, ...opts) => {
       if(v !== true) s += '=' + quote + v + quote;
     }
     const a = children && children.length !== undefined ? children : [];
-    if(a && a.length > 0) {
-      s += tagName[0] != '?' ? '>' : '?>';
+    if(tagName == '!--') {
+      //console.log('o:', o);
+      s += children.join('\n');
+      s += '-->';
+    } else if(a && a.length > 0) {
+      s += tagName[0] == '?' ? '?>' : '>';
       const textChildren = typeof a[0] == 'string';
-      let nl = textChildren
-        ? ''
-        : tagName == 'text' && a.length == 1
-        ? ''
-        : tagName[0] != '?'
-        ? '\n' + indent
-        : '\n';
-      if(textChildren) s += a.join('\n') + `</${tagName}>`;
-      else if(depth > 0) {
+      let nl =
+        /*textChildren
+        ? '\n' :*/
+        /* : tagName == 'text' && a.length == 1
+        ? ''*/
+        tagName[0] != '?' ? newline + indent : newline;
+      if(textChildren) {
+        let t = a.join('\n').replace(/\n[ \t]*$/, '');
+        s += t + `${/\n/.test(t) ? newline : ''}</${tagName}>`;
+      } else if(depth > 0) {
         for(let child of a)
-          s += nl + toString(child, depth > 0 ? depth - 1 : depth).replace(/>\n/g, '>' + nl);
-        if(tagName[0] != '?') s += `${nl.replace(/ /g, '')}</${tagName}>`;
+          s +=
+            nl + toString(child, depth > 0 ? depth - 1 : depth, nl) /*.replace(/>\n/g, '>' + nl)*/;
+        if(tagName[0] != '?') s += `${newline}</${tagName}>`;
       }
     } else {
       if(tagName[0] != '!') s += ' /';

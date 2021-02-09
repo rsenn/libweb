@@ -614,7 +614,8 @@ Util.type = function({ type }) {
   return (type && String(type).split(new RegExp('[ ()]', 'g'))[1]) || '';
 };
 Util.functionName = function(fn) {
-  const matches = /function\s*([^(]*)\(.*/g.exec(String(fn));
+  if(typeof fn == 'function' && typeof fn.name == 'string') return fn.name;
+  const matches = /function\s*([^(]*)\(.*/g.exec(fn + '');
   if(matches && matches[1]) return matches[1];
   return null;
 };
@@ -628,7 +629,7 @@ Util.className = function(obj) {
       proto = obj.prototype;
     } catch(err) {}
   }
-  if(Util.isObject(proto) && 'constructor' in proto) return Util.fnName(proto.constructor);
+  if(Util.isObject(proto) && 'constructor' in proto) return Util.functionName(proto.constructor);
 };
 Util.unwrapComponent = function(c) {
   for(;;) {
@@ -1531,9 +1532,7 @@ Util.toString = (obj, opts = {}) => {
       !Util.isNativeFunction(inspect) &&
       !/Util.toString/.test(inspect + '')
     ) {
-      //   if(Util.className(obj) != 'Range') console.debug('inspect:', Util.className(obj), inspect + '');
       let s = inspect.call(obj, depth, { ...opts });
-      //  if(Util.className(obj) != 'Range')
       //console.debug('s:', s);
       //console.debug('inspect:', inspect + '');
 
@@ -1622,16 +1621,19 @@ Util.dump = function(name, props) {
   }
 };
 Util.ucfirst = function(str) {
-  if(typeof str != 'string') str = String(str);
+  if(typeof str != 'string') str = str + '';
   return str.substring(0, 1).toUpperCase() + str.substring(1);
 };
 Util.lcfirst = function(str) {
+  if(typeof str != 'string') str = str + '';
   return str.substring(0, 1).toLowerCase() + str.substring(1);
 };
-Util.typeOf = function(v) {
-  if(Util.isObject(v) && Object.getPrototypeOf(v) != Object.prototype)
-    return `${Util.className(v)}`;
-  return Util.ucfirst(typeof v);
+Util.typeOf = v => {
+  let type = typeof v;
+  if(type == 'object' && v != null && Object.getPrototypeOf(v) != Object.prototype)
+    type = Util.className(v);
+  else type = Util.ucfirst(type);
+  return type;
 };
 
 /**
@@ -2328,7 +2330,6 @@ Util.putError = err => {
   (console.error || console.log)('ERROR:\n' + err.message + '\nstack:\n' + s.toString());
 };
 Util.putStack = (stack = new Util.stack().slice(1)) => {
-  // (console.error || console.log)('STACK TRACE:', Util.className(stack), Util.className(stack[1]));
   stack = stack instanceof Util.stack ? stack : Util.stack(stack);
   console.log('Util.putStack', Util.className(stack));
 
@@ -2775,14 +2776,12 @@ Util.roundFunction = (prec, digits, type) => {
 };
 Util.roundTo = function(value, prec, digits, type) {
   if(!isFinite(value)) return value;
-  digits = digits || Util.roundDigits(prec);
+  digits = digits ?? Util.roundDigits(prec);
   type = type || 'round';
   const fn = Math[type];
   if(prec == 1) return fn(value);
   let ret = prec > Number.EPSILON ? fn(value / prec) * prec : value;
 
-  digits = digits || Util.roundDigits(prec);
-  type = type || 'round';
   if(digits == 0) ret = Math[type](ret);
   else if(typeof digits == 'number' && digits >= 1 && digits <= 100) ret = +ret.toFixed(digits);
   return ret;
@@ -5648,7 +5647,6 @@ Object.assign(Util.consolePrinter.prototype, Util.consoleConcat.prototype, {
         this.add(...arg);
         continue;
       }
-      // console.debug('arg =', typeof arg, Util.className(arg), arg);
       if(i > 0) this[0] += ' ';
       if(typeof arg != 'string') {
         this[0] += '%o';

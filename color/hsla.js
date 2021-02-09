@@ -217,6 +217,14 @@ HSLA.prototype.toString = function(prec = 1 / 255) {
     )})`;
   return `hsla(${h},${s}%,${l}%,${a})`;
 };
+HSLA.prototype.toSource = function(prec = 1 / 255) {
+  const h = Util.roundTo(this.h, 360 * prec, 0);
+  const s = Util.roundTo(this.s, 100 * prec, 2);
+  const l = Util.roundTo(this.l, 100 * prec, 2);
+  const a = Util.roundTo(this.a, 1 * prec, 4);
+
+  return `new HSLA(${(this.a == 1 ? [h, s, l] : [h, s, l, a]).join(', ')})`;
+};
 
 HSLA.fromString = str => {
   let c = Util.tryCatch(() => new RGBA(str),
@@ -291,22 +299,27 @@ HSLA.prototype[Symbol.iterator] = function() {
   return [h, s, l, a][Symbol.iterator]();
 };
 
-HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = function() {
+HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = HSLA.prototype.inspect = function(options = {}
+) {
+  const { colors = true } = options;
   const { h, s, l, a } = this;
-  let arr = !isNaN(a) ? [h, s, l, a] : [h, s, l];
+  const haveAlpha = !isNaN(a) && a !== 1;
+  let arr = haveAlpha ? [h, s, l, a] : [h, s, l];
   let ret = arr
     .map((n, i) =>
-      (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i == 0 ? 3 : i < 3 ? i + 3 : 1,
+      (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i < 3 ? 3 : 2,
         ' '
       )
     )
-    .join(',');
-  const color = this.toRGBA().toAnsi256(true);
+    .join(', ');
+  const color = this.toRGBA().toAnsi(/*256*/ true);
   let o = '';
-  o += arr.map(n => `\x1b[0;33m${n}\x1b[0m`).join('');
+  let c = colors ? (str, ...a) => `\x1b[${a.join(';')}m${str}\x1b[0m` : str => str;
+
+  o += arr.map(n => c(n, 0, 33)).join('');
   o = color + o;
 
-  return `\x1b[1;31mHSLA\x1b[1;36m` + `(${ret})`.padEnd(24, ' ') + ` ${color}    \x1b[0m`;
+  return c('HSLA', 1, 31) + c(`(${ret})`.padEnd(24, ' '), 1, 36) + ` ${color}    \x1b[0m`;
 };
 
 HSLA.blend = (a, b, o = 0.5) => {

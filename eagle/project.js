@@ -3,74 +3,88 @@ import { EagleDocument } from './document.js';
 import { EagleElement } from './element.js';
 import { EagleNodeMap } from './nodeMap.js';
 import { dump } from './common.js';
+import path from '../path.js';
 
 export class EagleProject {
-  documents = [];
-  filename = null;
-  data = { sch: null, brd: null, lbr: {} };
+  //basename = null;
 
-  constructor(file, fs = { readFile: filename => '', exists: filename => false }) {
+  constructor(file, fs = { readFile: basename => '', exists: basename => false }) {
     //super();
     if(/\.(brd|sch)$/.test(file) || !/\.lbr$/.test(file))
-      this.filename = file.replace(/\.(brd|sch)$/, '');
+      this.basename = file.replace(/\.(brd|sch|lbr)$/i, '');
 
-    Util.define(this, { fs });
+    this.filenames = [];
 
+    Util.define(this, {
+      file,
+      dir: path.dirname(file),
+      fs: globalThis.filesystem || fs,
+      documents: {},
+      list: [],
+      data: { sch: null, brd: null, lbr: {} }
+    });
+
+    let libraryPath = [this.dir];
+    let dir = path.join(this.dir, 'lbr');
+    if(this.fs.exists(dir)) libraryPath.push(dir);
+    this.libraryPath = libraryPath;
     this.eaglePath = EagleProject.determineEaglePath(fs); //.then(path => this.eaglePath = path);
-
-    if(!this.filename || !this.load()) this.open(file);
-
-    if(!this.failed) console.log('Opened project:', this.filename, this.eaglePath);
+    if(this.fs.exists(file)) this.lazyOpen(file);
+    else this.load();
+    //    if(!this.basename || !this.load()) this.open(file);
+    if(!this.failed) console.log('Opened project:', this.basename, this.eaglePath);
+  }
+  load() {
+    this.lazyOpen(this.basename + '.sch');
+    this.lazyOpen(this.basename + '.brd');
+    // this.loadLibraries() ;
+    // if(!this.schematic || !this.board) this.failed = true;
+    return !this.failed;
   }
 
-  load() {
-    Util.tryCatch(() => this.open(this.filename + '.sch'));
-    Util.tryCatch(() => this.open(this.filename + '.brd'));
-    Util.tryCatch(() => this.loadLibraries(),
-      () => {},
-      () => (this.failed = true)
+  lazyOpen(file) {
+    let index = this.filenames.length;
+    this.filenames.push(file);
+    /*   Util.defineGetter(this.documents,
+      file,
+      Util.memoize(() => EagleDocument.open(file, this.fs))
+    );*/
+    Util.lazyProperty(this.documents,
+      path.basename(file),
+      () => (this.list[index] = EagleDocument.open(file, this.fs)),
+      { enumerable: true, configurable: true }
     );
-    if(!this.schematic || !this.board) this.failed = true;
-    return !this.failed;
+    //console.log(`EagleProject.lazyOpen(${file})`, Object.getOwnPropertyNames(this.documents));
   }
 
   /**
    * @brief  Opens a ownerDocument
    *
-   * @param      {string}         filename  Document filename
+   * @param      {string}         basename  Document basename
    * @return     {EagleDocument}  The eagle ownerDocument.
    */
   open(file) {
-    console.debug('EagleProject.open(', file, ')');
-    let str, doc, err;
-    str = this.fs.readFile(file);
+    console.log('EagleProject.open', file);
+    let doc, err;
 
-    console.debug('str:', str);
-    if(str == -1) return null;
-    if(typeof str != 'string' && 'toString' in str) str = str.toString();
-
-    console.debug('str:', Util.abbreviate(str));
-    //console.log('this.fs:', this.fs);
+    Util.tryCatch();
 
     try {
-      doc = new EagleDocument(str, this, file);
+      doc = EagleDocument.open(file, this.fs);
     } catch(error) {
       err = error;
       console.log('ERROR:', err);
     }
     if(doc) {
       console.log('Opened document', file, doc);
-
-      this.documents.push(doc);
+      this.filenames.push(file);
+      this.list[path.basename(file)] = doc;
     } else throw new Error(`EagleProject: error opening '${file}': ${err}`);
-    //console.log("Opened:", file);
-
     if(doc.type == 'lbr') {
       this.data[doc.type][doc.basename] = doc;
       console.log('Opened library:', doc.basename);
     } else this.data[doc.type] = doc;
     this.failed = !doc;
-
     return doc;
   }
 
@@ -97,22 +111,28 @@ export class EagleProject {
     }
   }
 
-  get schematic() {return this.documents.find(doc => doc.type == 'sch'); }
-  get board() {return this.documents.find(doc => doc.type == 'brd'); }
-  get libraries() {return this.documents.filter(doc => doc.type == 'lbr'); }
-  get root() { let children = this.documents; return { children }; }
-  get children() { let children = this.documents; return children; }
+  findDocument(pred) {
+    let names = Object.getOwnPropertyNames(this.documents);
+    return this.documents[names.find(pred)];
+  }
+
+  get schematic() {return this.findDocument(name => /\.sch$/i.test(name)); }
+  get board() {return this.findDocument(name => /\.brd$/i.test(name)); }
+  //    get board() {return this.list.find(doc => doc.type == 'brd'); }
+  get libraries() {return this.list.filter(doc => doc.type == 'lbr'); }
+  get root() { let children = this.list; return { children }; }
+  get children() { let children = this.list; return children; }
   get library() { return this.data.lbr; }
 
   *iterator(t = ([v, l, d]) => [typeof v == 'object' ? EagleElement.get(d, l, v) : v, l, d]) {
     const project = this;
-    for(let doc of this.documents) {
+    for(let doc of this.list) {
       let prefix = EagleProject.documentKey(doc);
       yield* doc.iterator(t);
     }
   }
 
-  /* prettier-ignore */ static documentLocation(d) { return d.type == 'lbr' ? ['lbr',d.filename] : [d.type]; }
+  /* prettier-ignore */ static documentLocation(d) { return d.type == 'lbr' ? ['lbr',d.basename] : [d.type]; }
 
   static documentKey(d) {
     switch (d.type) {
@@ -126,9 +146,11 @@ export class EagleProject {
     return null;
   }
 
-  getDocumentDirectories = () => Util.unique(this.documents.map(doc => doc.dirname));
+  getDocumentDirectories() {
+    return Util.unique(this.filenames.map(file => path.dirname(file)));
+  }
 
-  libraryPath() {
+  getLibraryPath() {
     let docDirs = this.getDocumentDirectories();
     let path = [...docDirs, ...docDirs.map(dir => `${dir}/lbr`)]; //.filter(fs.existsSync);
     if(this.eaglePath) path.push(this.eaglePath + '/lbr');
@@ -148,7 +170,7 @@ export class EagleProject {
     return Util.unique(libraryNames);
   }
 
-  findLibrary(name, dirs = this.libraryPath()) {
+  findLibrary(name, dirs = this.libraryPath) {
     for(let dir of dirs) {
       const file = `${dir}/${name}.lbr`;
       if(this.fs.exists(file)) return file;
@@ -156,14 +178,14 @@ export class EagleProject {
     return null;
   }
 
-  loadLibraries(dirs = this.libraryPath()) {
+  loadLibraries(dirs = this.libraryPath) {
     const names = this.getLibraryNames();
     //console.log('loadLibraries:', dirs, names);
     for(let name of names) {
       let lib = this.findLibrary(name, dirs);
       if(!lib)
         throw new Error(`EagleProject library '${name}' not found in:  \n${dirs.join('\n  ')}`);
-      this.open(lib);
+      this.lazyOpen(lib);
     }
   }
 
@@ -171,7 +193,7 @@ export class EagleProject {
     const l = this.library;
     //console.log('name:', name);
     //console.log('library:', l);
-    //console.log('documents:', this.documents);
+    //console.log('list:', this.list);
 
     const { schematic, board } = this;
 
@@ -257,9 +279,7 @@ export class EagleProject {
 
   saveTo(dir = '.', overwrite = false) {
     return new Promise((resolve, reject) => {
-      let promises = this.documents.map(doc =>
-        doc.saveTo([dir, doc.filename].join('/'), overwrite)
-      );
+      let promises = this.list.map(doc => doc.saveTo([dir, doc.basename].join('/'), overwrite));
 
       return Promise.all(promises).then(result => {
         //console.log('result:', result);

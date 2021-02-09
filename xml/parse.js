@@ -11,6 +11,7 @@ const SLASH = 0x80;
 const BACKSLASH = 0x100;
 const QUESTION = 0x200;
 const EXCLAM = 0x400;
+const HYPHEN = 0x800;
 
 const CharacterClasses = {
   ' ': WS,
@@ -24,7 +25,8 @@ const CharacterClasses = {
   '=': EQUAL,
   '>': END | CLOSE,
   '?': SPECIAL | QUESTION,
-  '\\': BACKSLASH
+  '\\': BACKSLASH,
+  '-': HYPHEN
 };
 const CharCodeClasses = {
   0x20: WS,
@@ -38,7 +40,8 @@ const CharCodeClasses = {
   0x3d: EQUAL,
   0x3e: END | CLOSE,
   0x3f: SPECIAL | QUESTION,
-  0x5c: BACKSLASH
+  0x5c: BACKSLASH,
+  0x2d: HYPHEN
 };
 
 export function parse(s) {
@@ -173,6 +176,7 @@ export function parse2(g) {
     if(!(done = it.done)) c = it.value;
     return !done;
   };
+  const is = (ch, cl) => m[ch] & cl;
   const str = typeof s == 'string' ? s => s : Util.bufferToString;
   const skip = pred => {
     data = [];
@@ -208,41 +212,59 @@ export function parse2(g) {
       }
       //console.log("BN", {c}, String.fromCodePoint(c), m[c]);
       let name = skip(c => (m[c] & (WS | END)) == 0);
+      add(c);
       //console.log("AN", {name,closing});
-      if(!closing) {
-        start(str(name));
-        while(!done) {
-          skipws();
-          //console.log("NC",  {c}, String.fromCodePoint(c), m[c] & END);
-          if(m[c] & END) break;
-          let attr = skip(c => (m[c] & (EQUAL | WS | SPECIAL | CLOSE)) == 0);
-          //console.log("AT",  {c,attr: str(attr)}, String.fromCodePoint(c), m[c] & END);
-          if(attr.length == 0) break;
-          let value = true;
-          if(m[c] & EQUAL && next() && m[c] & QUOTE) {
-            next();
-            //
-            value = skip(c => (m[c] & QUOTE) == 0);
-            if(m[c] & QUOTE) next();
-          }
-          e.attributes[str(attr)] = str(value);
+      if(m[name[0]] & EXCLAM && m[name[1]] & HYPHEN && m[name[2]] & HYPHEN) {
+        while(next()) {
+          add(c);
+
+          if(is(data[data.length - 3], HYPHEN) &&
+            is(data[data.length - 2], HYPHEN) &&
+            is(data[data.length - 1], CLOSE)
+          )
+            break;
         }
+        //console.log("data:", data);
+        start(str(data.slice(0, 3)));
+        e.children = [data.slice(3, -3)];
+        end();
+        next();
       } else {
-        end(str(name));
-      }
-      if(!closing) {
-        if(m[name[0]] & EXCLAM) {
-          end(str(name));
-        } else if(m[name[0]] & QUESTION && m[c] & QUESTION) {
-          next();
-        } else if(m[c] & SLASH) {
-          next();
-          end(str(name));
+        if(!closing) {
+          start(str(name));
+          while(!done) {
+            skipws();
+            //console.log("NC",  {c}, String.fromCodePoint(c), m[c] & END);
+            if(m[c] & END) break;
+            let attr = skip(c => (m[c] & (EQUAL | WS | SPECIAL | CLOSE)) == 0);
+            //console.log("AT",  {c,attr: str(attr)}, String.fromCodePoint(c), m[c] & END);
+            if(attr.length == 0) break;
+            let value = true;
+            if(m[c] & EQUAL && next() && m[c] & QUOTE) {
+              next();
+              //
+              value = skip(c => (m[c] & QUOTE) == 0);
+              if(m[c] & QUOTE) next();
+            }
+            e.attributes[str(attr)] = str(value);
+          }
+        } else {
+          end();
         }
+        if(!closing) {
+          if(m[name[0]] & EXCLAM) {
+            end(str(name));
+          } else if(m[name[0]] & QUESTION && m[c] & QUESTION) {
+            next();
+          } else if(m[c] & SLASH) {
+            next();
+            end();
+          }
+        }
+        skipws();
+        //console.log("CL", {c}, String.fromCodePoint(c), m[c]& CLOSE, done);
+        if(m[c] & CLOSE) next();
       }
-      skipws();
-      //console.log("CL", {c}, String.fromCodePoint(c), m[c]& CLOSE, done);
-      if(m[c] & CLOSE) next();
       //console.log("END", {c}, Util.escape(String.fromCodePoint(c)),  done);
     }
   }

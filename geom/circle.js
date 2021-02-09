@@ -96,7 +96,8 @@ Circle.prototype.clone = function() {
 Circle.prototype.transform = function(m, round = true) {
   if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
   Matrix.prototype.transform_point.call(m, this);
-  this.radius = Matrix.prototype.transform_wh.call(m, this.radius, this.radius)[1];
+  const [w, h] = Matrix.prototype.transform_wh.call(m, this.radius, this.radius);
+  this.radius = Math.abs(Math.max(w, h));
   if(round) Circle.prototype.round.call(this, 1e-13, 13);
   return this;
 };
@@ -113,7 +114,15 @@ Circle.prototype.round = function(precision = 0.001, digits, type) {
   this.radius = Util.roundTo(radius, precision, digits, type);
   return this;
 };
+Circle.prototype.toString = function(opts = {}) {
+  const { precision = 0.001, unit = '', separator = ' \u2300 ' } = opts;
 
+  let s = Point.prototype.toString.call(this, opts);
+  let r = Util.roundTo(this.radius, precision);
+
+  s += separator + r + unit;
+  return s;
+};
 Util.defineGetter(Point, Symbol.species, function() {
   return this;
 });

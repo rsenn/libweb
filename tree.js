@@ -225,7 +225,8 @@ Tree.prototype.values = function* (node = this.root) {
   for(let iter of Tree.prototype.entries.call(this, node)) yield iter[1];
 };
 
-Tree.prototype.flat = function(transform, pred) {
+Tree.prototype.flat = function(...args) {
+  let [transform, pred] = args.length == 1 ? [null, ...args] : args;
   let iter = Tree.prototype.entries.call(this);
   if(!transform) transform = ([path, node]) => [path.join('.'), node];
   if(!pred) pred = ([path, node]) => typeof node != 'object' || node == null;
@@ -297,6 +298,13 @@ Tree.prototype.filter = function* (root, pred) {
 
   ///return  filter(this, pred);
   // return filter(Tree.prototype.entries.call(this), ([path, node]) => pred(node, path, this));
+};
+
+Tree.prototype.find = function(...args) {
+  const [root, pred] = args.length == 1 ? [this.root, ...args] : args;
+
+  let result = find(recurse(root), (p, n) => pred(n, p, this));
+  if(result) return result[1];
 };
 
 function Path(a) {
@@ -473,6 +481,10 @@ function* anchestors(path) {
 
 function* filter(iter, pred) {
   for(let item of iter) if(pred(item)) yield item;
+}
+
+function find(iter, pred) {
+  for(let item of iter) if(pred(...item)) return item;
 }
 
 function mapRecurse(callback, node, ...children) {

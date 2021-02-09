@@ -441,6 +441,10 @@ export class TransformationList extends Array {
     return TransformationList;
   }
 
+  get [Symbol.species]() {
+    return TransformationList;
+  }
+
   fromString(str) {
     let n,
       a = [];
