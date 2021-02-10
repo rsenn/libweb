@@ -9,7 +9,7 @@ const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 export function Util(g) {
   const globalObject = g || Util.getGlobalObject();
   //console.log('Util', { globalObject });
-  Util.assignGlobal(globalObject);
+  //Util.assignGlobal(globalObject);
   globalObject.Util = Object.assign({}, Util);
 
   return Util;
@@ -856,6 +856,9 @@ Util.is = function(what, ...pred) {
   //console.debug('fnlist:', fnlist);
   return fnlist.every(fn => fn(what));
 };
+
+Util.instanceOf = (value, ctor) =>
+  Util.isObject(value) && Util.isConstructor(ctor) && value instanceof ctor;
 
 Util.onoff = function(val) {
   if(Util.is.on(val)) return true;

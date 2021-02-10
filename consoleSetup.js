@@ -56,7 +56,18 @@ export async function ConsoleSetup(opts = {}) {
       let log = c.log;
       c.reallog = log;
 
-      class Console {}
+      class Console {
+        config(obj = {}) {
+          return new Console.Options(obj);
+        }
+      }
+
+      Console.Options = function ConsoleOptions(obj = {}) {
+        Object.assign(this, obj);
+      };
+      Console.Options.prototype.merge = function(...args) {
+        return Object.assign(this, ...args);
+      };
 
       let newcons = Object.create(Console.prototype);
 
@@ -74,10 +85,15 @@ export async function ConsoleSetup(opts = {}) {
           });
         },
         log(...args) {
+          let tempOpts = new Console.Options(options);
           return log.call(this,
-            ...args.map(arg =>
-              typeof arg != 'string' || !Util.isPrimitive(arg) ? ObjectInspect(arg, options) : arg
-            )
+            ...args.reduce((acc, arg) => {
+              if(Util.instanceOf(arg, Console.Options)) tempOpts.merge(arg);
+              else if(typeof arg != 'string' || !Util.isPrimitive(arg))
+                acc.push(ObjectInspect(arg, tempOpts));
+              else acc.push(arg);
+              return acc;
+            }, [])
           );
         }
       });

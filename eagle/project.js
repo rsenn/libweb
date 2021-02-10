@@ -51,20 +51,18 @@ export class EagleProject {
       () => {
         let doc = EagleDocument.open(file, this.fs);
         this.list[index] = doc;
-if(doc.libraries)
-        this.addLibraries(doc.libraries.list.map(l => l.name));
+        if(doc.libraries) this.addLibraries(doc.libraries.list.map(l => l.name));
         return doc;
       },
       { enumerable: true, configurable: true }
     );
-   }
+  }
 
   addLibraries(libs) {
     //console.log('EagleProject.addLibraries', libs);
     for(let lib of libs) {
       let file = this.findLibrary(lib);
-      if(file &&this.filenames.indexOf(file) == -1) 
-          this.lazyOpen(file);
+      if(file && this.filenames.indexOf(file) == -1) this.lazyOpen(file);
     }
   }
 
@@ -123,27 +121,26 @@ if(doc.libraries)
   }
 
   findDocument(pred) {
-    if(typeof(pred) == 'string') {
+    if(typeof pred == 'string') {
       let name = pred;
-      if(name.indexOf('/') == -1)
-        name = '(^|/)'+name;
+      if(name.indexOf('/') == -1) name = '(^|/)' + name;
 
-      let re = new RegExp(name+'$');
+      let re = new RegExp(name + '$');
       pred = name => re.test(name);
     }
     let names = Object.getOwnPropertyNames(this.documents);
     return this.documents[names.find(pred)];
   }
   getLibrary(name) {
-    return this.findDocument(name+'.lbr');
+    return this.findDocument(name + '.lbr');
   }
 
   get schematic() {return this.findDocument(name => /\.sch$/i.test(name)); }
   get board() {return this.findDocument(name => /\.brd$/i.test(name)); }
-   get libraries() {return this.list.filter(doc => doc.type == 'lbr'); }
+  get libraries() {return this.list.filter(doc => doc.type == 'lbr'); }
   get root() { let children = this.list; return { children }; }
   get children() { let children = this.list; return children; }
- 
+
   *iterator(t = ([v, l, d]) => [typeof v == 'object' ? EagleElement.get(d, l, v) : v, l, d]) {
     const project = this;
     for(let doc of this.list) {
@@ -210,7 +207,7 @@ if(doc.libraries)
 
   updateLibrary(name) {
     const l = this.library;
- 
+
     const { schematic, board } = this;
 
     let libraries = {
@@ -253,15 +250,15 @@ if(doc.libraries)
         let m = new Map(ent);
         //console.log(`dstMap:`, dstMap);
         //console.log(`dstMap:`, Util.className(dstMap));
-   let numUpdated = 0;
+        let numUpdated = 0;
         for(let value of srcLib[entity].values()) {
           const key = value.name;
- //         console.log("set",{key,value});
+          //         console.log("set",{key,value});
           dstMap.set(key, value);
           numUpdated++;
         }
-    console.log('update', {destDoc,destLib,entity, numUpdated});
-    //console.log('dstMap.ref:', dump(dstMap.ref, 2));
+        console.log('update', { destDoc, destLib, entity, numUpdated });
+        //console.log('dstMap.ref:', dump(dstMap.ref, 2));
         //console.log('dstMap.raw:', dump(dstMap.raw, 2));
         //console.log('dstMap.keys:', dump(dstMap.raw.map(item => item.attributes.name).sort(), 2));
         //console.log('dstMap.keys:', dump(dstMap.keys().length, 2));

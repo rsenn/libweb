@@ -1,25 +1,38 @@
-import Util from './util.js';
-import inspect from './inspect.js';
+//import Util from './util.js';
+//import inspect from './inspect.js';
+
+const zip = a =>
+  a.reduce((a, b) => (a.length > b.length ? a : b), []).map((_, i) => a.map(arr => arr[i]));
+const once = (fn, thisObj) => {
+  let ran, ret;
+  return async function(...args) {
+    return ran ? ret : ((ran = true), (ret = await fn.call(thisObj || this, ...args)));
+  };
+};
 
 function QuickJSSpawn(os, ffi) {
+  console.log('QuickJSSpawn', { os, ffi });
+  console.log('os:', os);
+  console.log('ffi:', ffi);
+
   if(typeof os.exec == 'function')
     return (args, options = { block: false }) => {
       let { stdio, ...opts } = options;
       stdio = (stdio || []).concat(['pipe', 'pipe', 'pipe']).slice(0, 3);
-      //console.log('stdio:', stdio);
+      console.log('stdio:', stdio);
 
       let pipes = stdio.map((mode, chan) =>
         mode != 'pipe' ? [chan, undefined] : [...os.pipe()][chan == 0 ? 'slice' : 'reverse']()
       );
 
-      let [cfds, pfds] = Util.zip(pipes);
-      //console.log('pipes:', inspect(pipes));
-      //console.log('spawn:', inspect({ pipes, cfds, pfds }));
+      let [cfds, pfds] = zip(pipes);
+      /*console.log('pipes:', inspect(pipes));
+      console.log('spawn:', inspect({ pipes, cfds, pfds }));*/
 
       opts.stdio = cfds[0];
       opts.stdout = cfds[1];
       opts.stderr = cfds[2];
-      //console.log('exec()', { args, opts });
+      console.log('exec()', { args, opts });
 
       let ret = os.exec(args, opts);
       ret = opts.block
@@ -116,13 +129,18 @@ function NodeJSSpawn(child_process) {
 }
 
 export async function CreatePortableSpawn(ctor, ...args) {
-  return ctor(...(await Promise.all(args)));
+  console.log('CreatePortableSpawn', ctor, ...args);
+  const imports = await Promise.all(args);
+  console.log('CreatePortableSpawn', ...imports);
+
+  return ctor(...imports);
 }
 
 export async function GetPortableSpawn() {
   let spawnFn, err;
+  console.log('GetPortableSpawn');
   try {
-    spawnFn = await CreatePortableSpawn(QuickJSSpawn, import('os'), import('ffi.so'));
+    spawnFn = await QuickJSSpawn(await import('os'), await import('ffi'));
   } catch(error) {
     err = error;
   }
@@ -136,19 +154,24 @@ export async function GetPortableSpawn() {
   if(spawnFn && !err) return spawnFn;
 }
 
-export async function PortableSpawn(fn = spawnFn => true) {
-  return await Util.memoize(async function() {
-    const spawnFn = await GetPortableSpawn();
+const InitPortableSpawn = once(PortableSpawn);
 
+export async function PortableSpawn(fn = spawnFn => true) {
+  console.log('PortableSpawn', { fn: fn + '' });
+  const spawnFn = await GetPortableSpawn(); //InitPortableSpawn();
+  console.log('PortableSpawn', { spawnFn });
+  try {
+    fn(spawnFn);
+  } catch(error) {}
+
+  try {
+    return (globalThis.spawn = spawnFn);
+  } catch(error) {
     try {
-      return (globalThis.spawn = spawnFn);
-    } catch(error) {
-      try {
-        return (global.spawn = spawnFn);
-      } catch(error) {}
-    }
-    return spawnFn;
-  })().then(spawnFn => (fn(spawnFn), spawnFn));
+      return (global.spawn = spawnFn);
+    } catch(error) {}
+  }
+  return spawnFn;
 }
 
 export default PortableSpawn;

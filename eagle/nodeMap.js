@@ -45,7 +45,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
     const idx = list.findIndex(fn);
 
     if('raw' in value) value = value.raw;
-  console.log("write map property:", idx, value);
+    console.log('write map property:', idx, value);
 
     if(idx != -1) list[idx] = value;
     else list.push(value);
@@ -118,8 +118,7 @@ Object.defineProperties(EagleNodeMap.prototype, {
           return instance.list[prop].bind(instance.list);
         }
 
-        if(instance.list[prop])
-          return instance.list[prop];
+        if(instance.list[prop]) return instance.list[prop];
 
         return Reflect.get(target, prop, receiver);
       },
