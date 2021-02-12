@@ -11,9 +11,9 @@ const once = (fn, thisObj) => {
 };
 
 function QuickJSSpawn(os, ffi) {
-  console.log('QuickJSSpawn', { os, ffi });
-  console.log('os:', os);
-  console.log('ffi:', ffi);
+  //console.log('QuickJSSpawn', { os, ffi });
+  //console.log('os:', os);
+  //console.log('ffi:', ffi);
 
   if(typeof os.exec == 'function')
     return (args, options = { block: false }) => {
@@ -26,8 +26,8 @@ function QuickJSSpawn(os, ffi) {
       );
 
       let [cfds, pfds] = zip(pipes);
-      /*console.log('pipes:', inspect(pipes));
-      console.log('spawn:', inspect({ pipes, cfds, pfds }));*/
+      console.log('pipes:', pipes);
+      //console.log('spawn:', inspect({ pipes, cfds, pfds }));*/
 
       opts.stdio = cfds[0];
       opts.stdout = cfds[1];
@@ -41,9 +41,9 @@ function QuickJSSpawn(os, ffi) {
             pid: ret,
             wait() {
               return new Promise((resolve, reject) => {
-                console.log('wait()');
+                //console.log('wait()');
                 let ret = os.waitpid(this.pid, 0);
-                console.log('waitpid() =', ret);
+                //console.log('waitpid() =', ret);
                 if(ret[1] !== undefined) this.exitCode = (ret[1] & 0xff0) >> 8;
                 resolve([ret[0], this.exitCode]);
               });
@@ -94,11 +94,11 @@ function QuickJSSpawn(os, ffi) {
     function setupHandlers(ok, timeout, msecs) {
       if(msecs !== undefined)
         timerId = os.setTimeout(() => {
-          console.log('timeout', msecs);
+          //console.log('timeout', msecs);
           timeout();
         }, msecs);
       (write ? os.setWriteHandler : os.setReadHandler)(fd, () => {
-        console.log('ok');
+        //console.log('ok');
         ok();
       });
     }
@@ -129,18 +129,18 @@ function NodeJSSpawn(child_process) {
 }
 
 export async function CreatePortableSpawn(ctor, ...args) {
-  console.log('CreatePortableSpawn', ctor, ...args);
+  //console.log('CreatePortableSpawn', ctor, ...args);
   const imports = await Promise.all(args);
-  console.log('CreatePortableSpawn', ...imports);
+  //console.log('CreatePortableSpawn', ...imports);
 
   return ctor(...imports);
 }
 
 export async function GetPortableSpawn() {
   let spawnFn, err;
-  console.log('GetPortableSpawn');
+  //console.log('GetPortableSpawn');
   try {
-    spawnFn = await QuickJSSpawn(await import('os'), await import('ffi'));
+    spawnFn = await QuickJSSpawn(await import('os'), await import('ffi.so'));
   } catch(error) {
     err = error;
   }
@@ -157,9 +157,9 @@ export async function GetPortableSpawn() {
 const InitPortableSpawn = once(PortableSpawn);
 
 export async function PortableSpawn(fn = spawnFn => true) {
-  console.log('PortableSpawn', { fn: fn + '' });
+  //console.log('PortableSpawn', { fn: fn + '' });
   const spawnFn = await GetPortableSpawn(); //InitPortableSpawn();
-  console.log('PortableSpawn', { spawnFn });
+  //console.log('PortableSpawn', { spawnFn });
   try {
     fn(spawnFn);
   } catch(error) {}

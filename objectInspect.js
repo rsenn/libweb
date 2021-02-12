@@ -34,7 +34,7 @@ const isEnumerable = Object.prototype.propertyIsEnumerable;
 const inspectCustom = ['inspect', Symbol.for('nodejs.util.inspect.custom')];
 const inspectSymbol = inspectCustom && inspectCustom.every(s => isSymbol(s)) ? inspectCustom : null;
 
-function inspect_(obj, options, depth, seen) {
+export function ObjectInspect(obj, options, depth, seen) {
   const opts = options || {};
 
   if(has(opts, 'quoteStyle') && opts.quoteStyle !== 'single' && opts.quoteStyle !== 'double') {
@@ -141,9 +141,9 @@ function inspect_(obj, options, depth, seen) {
       if(has(opts, 'quoteStyle')) {
         newOpts.quoteStyle = opts.quoteStyle;
       }
-      return inspect_(value, newOpts, depth + 1, seen);
+      return ObjectInspect(value, newOpts, depth + 1, seen);
     }
-    return inspect_(value, newOpts, depth + 1, seen);
+    return ObjectInspect(value, newOpts, depth + 1, seen);
   }
 
   let s = '';
@@ -199,13 +199,10 @@ function inspect_(obj, options, depth, seen) {
               // console.log("acc:",acc);
               let tail = acc[acc.length - 1];
               let len = stripAnsi(tail).length;
-
               if(len && len + stripAnsi(item).length > opts.breakLength) {
                 acc.push('');
               }
-
               if(acc[acc.length - 1] != '') acc[acc.length - 1] += ', ';
-
               acc[acc.length - 1] += item;
               return acc;
             }, ['']
@@ -348,8 +345,10 @@ const hasOwn =
   function(key) {
     return key in this;
   };
-function has(obj, key) {
-  return obj[key] !== undefined || hasOwn.call(obj, key);
+function has(obj, key, opts = {}) {
+  const { hideKeys } = opts;
+  return ((obj[key] !== undefined || hasOwn.call(obj, key)) && (!hideKeys || hideKeys.indexOf(key) == -1)
+  );
 }
 
 function toStr(obj) {
@@ -551,7 +550,7 @@ function arrObjKeys(obj, inspect, opts = {}) {
   let c = opts.colors ? wrapColor : s => s;
 
   for(let key in obj) {
-    if(!has(obj, key)) continue;
+    if(!has(obj, key, opts)) continue;
 
     if(isArr && String(Number(key)) === key && key < obj.length) continue;
 
@@ -591,4 +590,4 @@ function stripAnsi(str) {
   return (str + '').replace(new RegExp('\x1b[[(?);]{0,2}(;?[0-9])*.', 'g'), '');
 }
 
-export default inspect_;
+export default ObjectInspect;

@@ -219,29 +219,26 @@ export function QuickJSFileSystem(std, os) {
         case 'number':
           ret = os.seek(fd, offset, whence);
           break;
-        default: ret = fd.seek(offset, whence);
+        default: if (numerr(fd.seek(offset, whence)) == 0)
+            ret = typeof offset == 'bigint' ? fd.tello() : fd.tell();
           break;
       }
-      //console.log('seek:', { offset, whence, ret });
-      let err =
-        ret >= 0 ? undefined : (typeof std.clearerr == 'function' ? std.clearerr() : undefined, -1);
-      return err || fd.tell();
+      console.log('seek:', { offset, whence, ret });
+      return ret;
     },
     tell(file) {
       switch (typeof file) {
         case 'number':
-          return numerr(os.seek(file, 0, os.SEEK_CUR));
+          return numerr(os.seek(file, 0, std.SEEK_CUR));
         default: return file.tell();
       }
     },
     size(file) {
-      let bytes,
-        res = { errno: 0 };
-      if(typeof file == 'string') file = this.open(file, 'r');
-      this.seek(file, 0, std.SEEK_END);
-      bytes = this.tell(file);
-      res = this.close(file);
-      if(res < 0) return res;
+      let bytes, pos;
+      let fd = typeof file == 'number' ? file : this.open(file, 'r');
+      pos = this.tell(fd);
+      bytes = this.seek(fd, 0, std.SEEK_END);
+      if(file !== fd) this.close(fd);
       return bytes;
     },
     stat(path, cb) {

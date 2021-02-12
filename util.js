@@ -5723,17 +5723,11 @@ Util.isatty = async fd => {
   }
   return ret;
 };
-Util.ttyGetWinSize = async fd => {
+Util.ttyGetWinSize = (fd = 0) => {
   let ret;
-  for(let module of ['os', 'tty']) {
-    try {
-      ret = await import(module).then(mod => mod.ttyGetWinSize(fd));
-    } catch(err) {
-      ret = undefined;
-    }
-    if(ret !== undefined) break;
-  }
-  return ret;
+  if(Util.getPlatform() == 'quickjs') return import('os').then(m => m.ttyGetWinSize(fd));
+  const stream = process[['stdin', 'stdout', 'stderr'][fd] ?? 'stdout'];
+  return stream?.getWindowSize();
 };
 /**
  * Measure the average execution time of a function
@@ -5776,7 +5770,8 @@ Util.timeit = (fn, args = [], options = {}) => {
 Util.lazyProperty = (obj, name, getter, opts = {}) => {
   const replaceProperty = value => {
     delete obj[name];
-    obj[name] = value;
+    Object.defineProperty(obj, name, { value, ...opts });
+    //    obj[name] = value;
     return value;
   };
   const isAsync = Util.isAsync(getter);
@@ -5804,6 +5799,15 @@ Util.lazyProperty = (obj, name, getter, opts = {}) => {
     configurable: true,
     ...opts
   });
+};
+
+Util.lazyProperties = (obj, gettersObj, opts = {}) => {
+  opts = { enumerable: false, ...opts };
+  for(let prop in gettersObj) {
+    // console.log('Util.lazyProperties', { prop });
+    Util.lazyProperty(obj, prop, gettersObj[prop], opts);
+  }
+  return obj;
 };
 
 Util.calcHRTime = (f = (a, b) => a + b) =>
@@ -5888,7 +5892,7 @@ Util.getHRTime = Util.memoize(() => {
   }
   Util.getGlobalObject().HighResolutionTime = HighResolutionTime;
 
-  return isAsync(now)
+  return Util.isAsync(now)
     ? async function hrtime(previousTimestamp) {
         var clocktime = await now();
         var secs = Math.floor(clocktime / 1000);

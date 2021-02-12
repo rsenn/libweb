@@ -1,5 +1,5 @@
 import Util from './util.js';
-import ObjectInspect from './objectInspect.js';
+//import ObjectInspect from './objectInspect.js';
 
 let savedOpts = {};
 
@@ -49,7 +49,7 @@ export async function ConsoleSetup(opts = {}) {
       return ret;
     },
     c => c,
-    () => {
+    async () => {
       let c = Util.getGlobalObject().console;
       let options = { colors: true, depth: Infinity, indent: 2, ...inspectOptions };
 
@@ -58,37 +58,44 @@ export async function ConsoleSetup(opts = {}) {
 
       class Console {
         config(obj = {}) {
-          return new Console.Options(obj);
+          return new ConsoleOptions(obj);
         }
       }
 
-      Console.Options = function ConsoleOptions(obj = {}) {
+      /*    Console.Options = */ function ConsoleOptions(obj = {}) {
         Object.assign(this, obj);
-      };
-      Console.Options.prototype.merge = function(...args) {
+      }
+      ConsoleOptions.prototype.merge = function(...args) {
         return Object.assign(this, ...args);
       };
 
       let newcons = Object.create(Console.prototype);
 
-      Util.getGlobalObject().ObjectInspect = ObjectInspect;
+      await import('inspect.so')
+        .then(module => (globalThis.ObjectInspect = module.inspect))
+        .catch(() =>
+          import('./objectInspect.js').then(module => (globalThis.ObjectInspect = module.ObjectInspect)
+          )
+        );
+      //      Util.getGlobalObject().ObjectInspect = ObjectInspect;
 
       return /*Object.create*/ Util.define(newcons, {
+        options,
         reallog: log,
         inspect(...args) {
           let [obj, opts] = args;
           if(args.length == 0) obj = this;
           return ObjectInspect(obj, {
             customInspect: true,
-            ...options,
+            ...this.options,
             ...opts
           });
         },
         log(...args) {
-          let tempOpts = new Console.Options(options);
+          let tempOpts = new ConsoleOptions(this.options);
           return log.call(this,
             ...args.reduce((acc, arg) => {
-              if(Util.instanceOf(arg, Console.Options)) tempOpts.merge(arg);
+              if(Util.className(arg) == 'ConsoleOptions') tempOpts.merge(arg);
               else if(typeof arg != 'string' || !Util.isPrimitive(arg))
                 acc.push(ObjectInspect(arg, tempOpts));
               else acc.push(arg);
