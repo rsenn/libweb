@@ -8,13 +8,12 @@ const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
 export function Util(g) {
   const globalObject = g || Util.getGlobalObject();
-  //console.log('Util', { globalObject });
-  //Util.assignGlobal(globalObject);
-  globalObject.Util = Object.assign({}, Util);
-
+  globalObject.Util = Util;
   return Util;
-  //if(g) Util.globalObject = g;
 }
+
+Util.toString = undefined;
+//export const Util = {};
 
 Util.formatAnnotatedObject = function(subject, o) {
   const {
@@ -509,7 +508,7 @@ Util.log = (...args) => {
     else if(typeof p != 'string') {
       if(Util.isObject(p) && typeof p.toString == 'function' && !Util.isNativeFunction(p.toString))
         p = p.toString();
-      else p = Util.toString(p, { multiline: false });
+      else p = Util.inspect(p, { multiline: false });
     }
 
     //  if(i > 0) a.push(',');
@@ -809,14 +808,7 @@ Util.symbols = (() => {
     unscopables
   };
 })();
-Util.inspect = (obj, opts = {}) =>
-  Util.toString(obj, {
-    toString: Util.symbols.inspect,
-    colors: true,
-    ...opts,
-    multiline: true,
-    newline: '\n'
-  });
+
 /*
   const { indent = '  ', newline = '\n', depth = 2, spacing = ' ' } = typeof opts == 'object' ? opts : { indent: '', newline: '', depth: typeof opts == 'number' ? opts : 10, spacing: ' ' };
 
@@ -1468,7 +1460,7 @@ Util.matchAll = Util.curry(function* (re, str) {
   } while(match != null);
 });
 
-Util.toString = (obj, opts = {}) => {
+Util.inspect = function(obj, opts = {})  {
   const {
     quote = '"',
     multiline = true,
@@ -1484,8 +1476,18 @@ Util.toString = (obj, opts = {}) => {
     colon = ': ',
     depth = 10,
     json = false
-  } = { ...Util.toString.defaultOpts, ...opts };
-  //console.log("Util.toString", {quote,colors,multiline,json})
+  } = {
+    ...Util.inspect.defaultOpts,
+    toString: Util.symbols.inspect,
+    colors: true,
+    multiline: true,
+    newline: '\n',
+    ...opts
+  };
+
+if(Util == obj)
+  return Util;
+  //console.log("Util.inspect", {quote,colors,multiline,json})
 
   let out;
   const { c = Util.coloring(colors) } = opts;
@@ -1520,7 +1522,7 @@ Util.toString = (obj, opts = {}) => {
       if(i > 0) print(separator, 1, 36);
       else print(padding);
       print(sep(i > 0));
-      Util.toString(obj[i], {
+      Util.inspect(obj[i], {
         ...opts,
         c,
         print,
@@ -1533,7 +1535,7 @@ Util.toString = (obj, opts = {}) => {
     const inspect = toString ? obj[toString] : null;
     if(typeof inspect == 'function' &&
       !Util.isNativeFunction(inspect) &&
-      !/Util.toString/.test(inspect + '')
+      !/Util.inspect/.test(inspect + '')
     ) {
       let s = inspect.call(obj, depth, { ...opts });
       //console.debug('s:', s);
@@ -1569,7 +1571,7 @@ Util.toString = (obj, opts = {}) => {
             isMap ? 36 : 33
           );
         else
-          Util.toString(key, {
+          Util.inspect(key, {
             ...opts,
             c,
             print,
@@ -1584,7 +1586,7 @@ Util.toString = (obj, opts = {}) => {
         else if(typeof value == 'string' || value instanceof String)
           print(`${quote}${value}${quote}`, 1, 36);
         else if(typeof value == 'object')
-          Util.toString(value, {
+          Util.inspect(value, {
             ...opts,
             print,
             multiline: isMap && !(value instanceof Map) ? false : multiline,
@@ -1600,7 +1602,7 @@ Util.toString = (obj, opts = {}) => {
   return out;
 };
 
-Util.toString.defaultOpts = {
+Util.inspect.defaultOpts = {
   spacing: ' ',
   padding: ' '
 };
@@ -3944,7 +3946,7 @@ Util.stack = function Stack(stack, offset) {
       lineNumber,
       columnNumber
     }));
-    //    console.log('Util.stack (2)', Util.toString(stack[0]  ));
+    //    console.log('Util.stack (2)', Util.inspect(stack[0]  ));
 
     stack = stack.map(({
         methodName,
@@ -4700,7 +4702,7 @@ Util.defineInspect = (proto, ...props) => {
     proto[inspectSymbol] = function() {
       const obj = this;
       return (c.text(Util.fnName(proto.constructor) + ' ', 1, 31) +
-        Util.toString(props.reduce((acc, key) => {
+        Util.inspect(props.reduce((acc, key) => {
             acc[key] = obj[key];
             return acc;
           }, {}),
@@ -5432,18 +5434,21 @@ Util.atexit = handler => {
 };
 Util.callMain = async (fn, trapExceptions) =>
   await Util.safeFunction(async (...args) => {
-      const callExitHandlers = (Util.callExitHandlers = Util.once(ret => {
-        const { handlers } = Util.callMain;
+      Util.callMain.handlers = [];
+      const { handlers } = Util.callMain;
 
-        if(handlers) for(const handler of handlers) handler(ret);
-        /*if(typeof ret == 'number')*/ Util.exit(ret);
+      const callExitHandlers = (Util.callExitHandlers = Util.once(async ret => {
+        if(handlers) for(const handler of handlers) await handler(ret);
+        // Util.exit(ret);
       }));
       Util.trapExit = Util.once(() => {
         Util.signal(15, callExitHandlers);
       });
 
+      if(Util.getPlatform() == 'quickjs') await import('std').then(module => module.gc());
+
       let ret = await fn(...args);
-      callExitHandlers(ret);
+      await callExitHandlers(ret);
     },
     trapExceptions &&
       (typeof trapExceptions == 'function'
@@ -5474,7 +5479,7 @@ Util.printReturnValue = (fn, opts = {}) => {
       let stack = Util.getCallerStack();
 
       (console.debug || console.log)('RETURN VAL:',
-        /*Util.toString(*/ returnValue /*, { colors: false })*/,
+        /*Util.inspect(*/ returnValue /*, { colors: false })*/,
         {
           /*fn,
            */ args /*,
@@ -5628,7 +5633,7 @@ Util.consolePrinter.prototype[0] = '';
 Object.assign(Util.consolePrinter.prototype, Util.consoleConcat.prototype, {
   print() {
     const a = [...this];
-    const i = a.map(i => Util.toString(i));
+    const i = a.map(i => Util.inspect(i));
     console.debug('a: ' + i.shift(), ...i);
 
     Util.consoleConcat.prototype.print.call(this, this.log);
@@ -6033,12 +6038,12 @@ Util.bitsToNames = (flags, map = (name, flag) => name) => {
 Util.instrument = (fn,
   log = (duration, name, args, ret) =>
     console.log(`function '${name}'` +
-        (args.length
+        /* (args.length
           ? ` [${args
               .map(arg => (typeof arg == 'string' ? `'${Util.escape(Util.abbreviate(arg))}'` : arg))
               .join(', ')}]`
-          : '') +
-        (ret !== undefined ? ` {= ${ret}}` : '') +
+          : '') +*/
+        (ret !== undefined ? ` {= ${Util.abbreviate(Util.escape(ret + ''))}}` : '') +
         ` timing: ${duration.toFixed(3)}ms`
     ),
   logInterval = 0 //1000
@@ -6048,7 +6053,7 @@ Util.instrument = (fn,
   let duration = 0,
     times = 0;
   const name = functionName(fn) || '<anonymous>';
-  const isAsync = Util.isAsync(fn) || Util.isAsync(now);
+  const isAsync = Util.isAsync(fn); /*|| Util.isAsync(now)*/
   const doLog = isAsync
     ? async (args, ret) => {
         let t = await now();

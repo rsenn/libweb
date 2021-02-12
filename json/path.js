@@ -25,7 +25,7 @@ export function DereferenceError(object, member, pos, prev, locator) {
           'children'
         )}
 xml: ${Util.abbreviate(toXML(locator.root || object))}
-no member '${Util.inspect(member, { colors: false })}' in ${Util.toString(prev, {
+no member '${Util.inspect(member, { colors: false })}' in ${Util.inspect(prev, {
           depth: 2,
           multiline: true,
           indent: '  ',

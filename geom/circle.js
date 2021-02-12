@@ -53,7 +53,7 @@ export function Circle(x, y, radius) {
   }
 
   if(!isCircle(obj)) {
-    //Util.log('ERROR: is not a circle: ', Util.className(obj), Util.toString(arg), Util.toString(obj));
+    //Util.log('ERROR: is not a circle: ', Util.className(obj), Util.inspect(arg), Util.inspect(obj));
   }
 
   /*  if(this !== obj)*/ return obj;

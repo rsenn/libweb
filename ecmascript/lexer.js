@@ -151,7 +151,7 @@ Position.prototype[Symbol.toPrimitive] = function(hint) {
 };
 Position.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts) {
   return this.toString({ colors: true });
-  return Util.toString(this, { colors: true, ...opts, toString: Symbol.toStringTag });
+  return Util.inspect(this, { colors: true, ...opts, toString: Symbol.toStringTag });
 };
 /*
 Position.prototype.valueOf = function() {
@@ -206,7 +206,7 @@ Range.prototype.toString = function() {
   return this[Symbol.toStringTag](0, { colors: false });
 };
 Range.prototype[Symbol.for('nodejs.util.inspect.custom')] = function(n, opts = {}) {
-  return Util.toString(this, { ...opts, toString: Symbol.toStringTag });
+  return Util.inspect(this, { ...opts, toString: Symbol.toStringTag });
 };
 
 Range.prototype.in = function(other) {

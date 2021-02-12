@@ -60,7 +60,7 @@ export function Line(...args) {
     Object.defineProperty(obj, 'b', { value: new Point(obj.x2, obj.y2), enumerable: false });
 
   if(!isLine(obj)) {
-    //Util.log('ERROR: is not a line: ', Util.toString(arg), Util.toString(obj));
+    //Util.log('ERROR: is not a line: ', Util.inspect(arg), Util.inspect(obj));
   }
 
   if(!['x1', 'y1', 'x2', 'y2'].every(prop => !isNaN(+obj[prop]))) return null;

@@ -99,8 +99,8 @@ export class ReactComponent {
         fmt == 0
           ? ` ${prop}="${value + ''}"`
           : fmt == 1
-          ? ` ${prop}={${Util.toString(value)}}`
-          : (s == '' ? '' : `, `) + ` ${prop}: ${Util.toString(value)}`;
+          ? ` ${prop}={${Util.inspect(value)}}`
+          : (s == '' ? '' : `, `) + ` ${prop}: ${Util.inspect(value)}`;
     }
     if(typeof tagName == 'function')
       tagName = tagName === Fragment ? 'React.Fragment' : Util.fnName(tagName);

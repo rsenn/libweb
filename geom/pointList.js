@@ -410,7 +410,7 @@ if(!Util.isBrowser()) {
     return `${c.text('PointList', 1, 31)}${c.text('(', 1, 36)}${
       c.text(this.getLength(), 1, 35) + c.code(1, 36)
     }) [\n  ${this.map(({ x, y } ///*Point.prototype.toSource.call(point, { plainObj: true, colors: true })  ||*/ Util.toSource(point, {colors: true }) || point[sym]() ||
-    ) => Util.toString({ x, y }, { multiline: false, spacing: ' ' })).join(',\n  ')}\n${c.text(']',
+    ) => Util.inspect({ x, y }, { multiline: false, spacing: ' ' })).join(',\n  ')}\n${c.text(']',
       1,
       36
     )}`;

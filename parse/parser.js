@@ -105,10 +105,10 @@ export class Parser {
     //console.log('token:', token);
 
     if(!r)
-      throw new Error(`Parser.expect ${this.position} (${Lexer.tokenName(id)}, ${Util.toString(s, {
+      throw new Error(`Parser.expect ${this.position} (${Lexer.tokenName(id)}, ${Util.inspect(s, {
           multiline: false,
           colors: false
-        })})  ${Lexer.tokenName(token.tok)}, ${Util.toString(token.str)}`
+        })})  ${Lexer.tokenName(token.tok)}, ${Util.inspect(token.str)}`
       );
     return this.getTok();
   }

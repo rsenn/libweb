@@ -27,6 +27,7 @@ export async function ConsoleSetup(opts = {}) {
     colors = await Util.isatty(1),
     breakLength = defaultBreakLength,
     maxArrayLength = Infinity,
+    compact = false,
     ...options
   } = opts;
   const inspectOptions = {

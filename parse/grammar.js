@@ -187,7 +187,7 @@ return [...n];
       }
       let matches = this.filter(m => m.str != 'eof()').map(rule => {
         if(!rule.toCowbird)
-          throw new Error(`toCowbird ${Util.className(rule)} ${Util.toString(rule)}`);
+          throw new Error(`toCowbird ${Util.className(rule)} ${Util.inspect(rule)}`);
         return rule.toCowbird(accu, false);
       });
       console.log('matches:', matches);
@@ -260,7 +260,7 @@ return [...n];
         return [`<${subname}>`];
       } else if(args.length == 1) {
         if(!args[0].toCowbird)
-          throw new Error(`toCowbird ${Util.className(args[0])} ${Util.toString(args[0])}`);
+          throw new Error(`toCowbird ${Util.className(args[0])} ${Util.inspect(args[0])}`);
         ret = ret.concat(args[0].toCowbird(accu));
       }
       let op = this.op == '+' ? '\\+' : this.op;
@@ -317,7 +317,7 @@ return [...n];
     let a = [];
     for(let production of this) {
       let p = production;
-      if(!p.toCowbird) throw new Error(`toCowbird ${Util.className(p)} ${Util.toString(p)}`);
+      if(!p.toCowbird) throw new Error(`toCowbird ${Util.className(p)} ${Util.inspect(p)}`);
 
       let productions = /*!p.toCowbird ? p.toString() :*/ p.toCowbird(accu);
 
