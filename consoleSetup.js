@@ -1,5 +1,4 @@
 import Util from './util.js';
-//import ObjectInspect from './objectInspect.js';
 
 let savedOpts = {};
 
@@ -63,7 +62,7 @@ export async function ConsoleSetup(opts = {}) {
         }
       }
 
-      /*    Console.Options = */ function ConsoleOptions(obj = {}) {
+      function ConsoleOptions(obj = {}) {
         Object.assign(this, obj);
       }
       ConsoleOptions.prototype.merge = function(...args) {
@@ -78,9 +77,8 @@ export async function ConsoleSetup(opts = {}) {
           import('./objectInspect.js').then(module => (globalThis.ObjectInspect = module.ObjectInspect)
           )
         );
-      //      Util.getGlobalObject().ObjectInspect = ObjectInspect;
 
-      return /*Object.create*/ Util.define(newcons, {
+      return Util.define(newcons, {
         options,
         reallog: log,
         inspect(...args) {

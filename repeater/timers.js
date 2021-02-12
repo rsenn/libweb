@@ -367,5 +367,6 @@ function interval(wait, buffer) {
   );
 }
 export const Timers = { delay, interval, timeout };
+export { delay, interval, timeout };
 
 export default { TimeoutError, delay, interval, timeout };

@@ -1460,7 +1460,7 @@ Util.matchAll = Util.curry(function* (re, str) {
   } while(match != null);
 });
 
-Util.inspect = function(obj, opts = {})  {
+Util.inspect = function(obj, opts = {}) {
   const {
     quote = '"',
     multiline = true,
@@ -1485,8 +1485,7 @@ Util.inspect = function(obj, opts = {})  {
     ...opts
   };
 
-if(Util == obj)
-  return Util;
+  if(Util == obj) return Util;
   //console.log("Util.inspect", {quote,colors,multiline,json})
 
   let out;
@@ -2368,13 +2367,13 @@ Util.isBrowser = function() {
 };
 
 Util.waitFor = async function waitFor(msecs) {
-  if(msecs <= 0) return;
   if(!globalThis.setTimeout) {
     await import('os').then(({ setTimeout, clearTimeout, setInterval, clearInterval }) => {
-      console.log('', { setTimeout, clearTimeout, setInterval, clearInterval });
+      //console.log('', { setTimeout, clearTimeout, setInterval, clearInterval });
       Object.assign(globalThis, { setTimeout, clearTimeout, setInterval, clearInterval });
     });
   }
+  if(msecs <= 0) return;
 
   let promise, clear, timerId;
   promise = new Promise(async (resolve, reject) => {

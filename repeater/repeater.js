@@ -362,11 +362,9 @@ let RepeaterOverflowError = /** @class */ (function (_super) {
       value: 'RepeaterOverflowError',
       enumerable: false
     });
-    if(typeof Object.setPrototypeOf === 'function') {
+    if(typeof Object.setPrototypeOf === 'function')
       Object.setPrototypeOf(_this, _newTarget.prototype);
-    } else {
-      _this.__proto__ = _newTarget.prototype;
-    }
+    else _this.__proto__ = _newTarget.prototype;
     if(typeof Error.captureStackTrace === 'function') {
       Error.captureStackTrace(_this, _this.constructor);
     }
@@ -398,15 +396,12 @@ let RepeaterController = /** @class */ (function () {
    * Advances state to RepeaterState.Started
    */
   RepeaterController.prototype.execute = function() {
-    let _this = this;
-    if(this.state >= 1 /* Started */) {
-      return;
-    }
+    if(this.state >= 1 /* Started */) return;
     this.state = 1 /* Started */;
     let push = this.push.bind(this);
     let stop = this.stop.bind(this);
     {
-      let stopP = new Promise(resolve => (_this.onstop = resolve));
+      let stopP = new Promise(resolve => (this.onstop = resolve));
       stop.then = stopP.then.bind(stopP);
       stop.catch = stopP.catch.bind(stopP);
       stop.finally = stopP.finally.bind(stopP);
@@ -419,7 +414,7 @@ let RepeaterController = /** @class */ (function () {
     }
     // We don’t have to call this.stop with the error because all that does is
     // reassign this.execution with the rejection.
-    this.execution.catch(() => _this.stop());
+    this.execution.catch(() => this.stop());
   };
 
   /**
@@ -429,11 +424,10 @@ let RepeaterController = /** @class */ (function () {
    * generators, where yield is equivalent to yield await.
    */
   RepeaterController.prototype.unwrap = function(value) {
-    let _this = this;
     let done = this.state >= 3; /* Finished */
     return Promise.resolve(value).then(value => {
-      if(!done && _this.state >= 4 /* Rejected */) {
-        return _this.consume().then(value => ({ value, done: true }));
+      if(!done && this.state >= 4 /* Rejected */) {
+        return this.consume().then(value => ({ value, done: true }));
       }
       return { value, done };
     });
@@ -487,12 +481,8 @@ let RepeaterController = /** @class */ (function () {
    * Advances state to RepeaterState.Rejected
    */
   RepeaterController.prototype.reject = function() {
-    if(this.state >= 4 /* Rejected */) {
-      return;
-    }
-    if(this.state < 3 /* Finished */) {
-      this.finish();
-    }
+    if(this.state >= 4 /* Rejected */) return;
+    if(this.state < 3 /* Finished */) this.finish();
     this.state = 4 /* Rejected */;
   };
 
@@ -500,7 +490,6 @@ let RepeaterController = /** @class */ (function () {
    * This method is bound and passed to the executor as the push argument.
    */
   RepeaterController.prototype.push = function(value) {
-    let _this = this;
     swallow(value);
     if(this.pushQueue.length >= MAX_QUEUE_LENGTH) {
       throw new RepeaterOverflowError('No more than ' +
@@ -513,10 +502,10 @@ let RepeaterController = /** @class */ (function () {
     let valueP =
       this.pending === undefined ? Promise.resolve(value) : this.pending.then(() => value);
     valueP = valueP.catch(err => {
-      if(_this.state < 2 /* Stopped */) {
-        _this.err = err;
+      if(this.state < 2 /* Stopped */) {
+        this.err = err;
       }
-      _this.reject();
+      this.reject();
       // Explicitly return undefined to avoid typescript’s horrible void type
       return undefined;
     });
@@ -527,14 +516,14 @@ let RepeaterController = /** @class */ (function () {
       if(this.pullQueue.length) {
         next = Promise.resolve(this.pullQueue[0].value);
       } else {
-        next = new Promise(resolve => (_this.onnext = resolve));
+        next = new Promise(resolve => (this.onnext = resolve));
       }
     } else if(!this.buffer.full) {
       this.buffer.add(valueP);
       next = Promise.resolve(undefined);
     } else {
       next = new Promise(resolve => {
-        _this.pushQueue.push({ resolve, value: valueP });
+        this.pushQueue.push({ resolve, value: valueP });
       });
     }
     // This method of catching unhandled rejections is adapted from
@@ -556,8 +545,8 @@ let RepeaterController = /** @class */ (function () {
       .then(() => unhandled)
       .then(() => {
         if(err != null) {
-          _this.err = err;
-          _this.reject();
+          this.err = err;
+          this.reject();
         }
         // Explicitly return undefined to avoid typescript’s horrible void type
         return undefined;
@@ -572,16 +561,11 @@ let RepeaterController = /** @class */ (function () {
    */
   RepeaterController.prototype.stop = function(err) {
     let e_1, _a, e_2, _b;
-    let _this = this;
-    if(this.state >= 2 /* Stopped */) {
-      return;
-    }
+    if(this.state >= 2 /* Stopped */) return;
     this.state = 2 /* Stopped */;
     this.onnext();
     this.onstop();
-    if(this.err == null) {
-      this.err = err;
-    }
+    if(this.err == null) this.err = err;
     try {
       for(var _c = __values(this.pushQueue), _d = _c.next(); !_d.done; _d = _c.next()) {
         let push = _d.value;
@@ -605,7 +589,7 @@ let RepeaterController = /** @class */ (function () {
         for(var _e = __values(this.pullQueue), _f = _e.next(); !_f.done; _f = _e.next()) {
           let pull = _f.value;
           let execution =
-            this.pending === undefined ? this.consume() : this.pending.then(() => _this.consume());
+            this.pending === undefined ? this.consume() : this.pending.then(() => this.consume());
           pull.resolve(this.unwrap(execution));
         }
       } catch(e_2_1) {
@@ -620,8 +604,8 @@ let RepeaterController = /** @class */ (function () {
     }
     this.pullQueue = [];
   };
+
   RepeaterController.prototype.next = function(value) {
-    let _this = this;
     swallow(value);
     if(this.pullQueue.length >= MAX_QUEUE_LENGTH) {
       throw new RepeaterOverflowError('No more than ' +
@@ -629,9 +613,7 @@ let RepeaterController = /** @class */ (function () {
           ' pending calls to Repeater.prototype.next are allowed on a single repeater.'
       );
     }
-    if(this.state <= 0 /* Initial */) {
-      this.execute();
-    }
+    if(this.state <= 0 /* Initial */) this.execute();
     this.onnext(value);
     if(!this.buffer.empty) {
       let result = this.unwrap(this.buffer.remove());
@@ -649,14 +631,16 @@ let RepeaterController = /** @class */ (function () {
       this.finish();
       return this.unwrap(this.consume());
     }
-    return new Promise(resolve => _this.pullQueue.push({ resolve, value }));
+    return new Promise(resolve => this.pullQueue.push({ resolve, value }));
   };
+
   RepeaterController.prototype.return = function(value) {
     swallow(value);
     this.finish();
     this.execution = Promise.resolve(this.execution).then(() => value);
     return this.unwrap(this.consume());
   };
+
   RepeaterController.prototype.throw = function(err) {
     if(this.state <= 0 /* Initial */ || this.state >= 2 /* Stopped */ || !this.buffer.empty) {
       this.finish();
@@ -688,23 +672,21 @@ let Repeater = /** @class */ (function () {
   }
   Repeater.prototype.next = function(value) {
     let controller = controllers.get(this);
-    if(controller === undefined) {
+    if(controller === undefined)
       throw new Error('RepeaterController missing from controllers WeakMap');
-    }
     return controller.next(value);
   };
   Repeater.prototype.return = function(value) {
     let controller = controllers.get(this);
-    if(controller === undefined) {
+    if(controller === undefined)
       throw new Error('RepeaterController missing from controllers WeakMap');
-    }
     return controller.return(value);
   };
   Repeater.prototype.throw = function(err) {
     let controller = controllers.get(this);
-    if(controller === undefined) {
+    if(controller === undefined)
       throw new Error('RepeaterController missing from controllers WeakMap');
-    }
+
     return controller.throw(err);
   };
   Repeater.prototype[Symbol.asyncIterator] = function() {
@@ -812,10 +794,9 @@ function asyncIterators(contenders, options) {
   return iters;
 }
 function race(contenders) {
-  let _this = this;
   let iters = asyncIterators(contenders, { returnValues: true });
   return new Repeater((push, stop) =>
-    __awaiter(_this, void 0, void 0, function() {
+    __awaiter(this, void 0, void 0, function() {
       let stopped, returned, results, results_1, results_1_1, result_1, result;
       let e_4, _a;
       return __generator(this, _b => {
@@ -884,13 +865,12 @@ function race(contenders) {
     })
   );
 }
+
 function merge(contenders) {
-  let _this = this;
   let iters = asyncIterators(contenders, { yieldValues: true });
   return new Repeater((push, stop) =>
-    __awaiter(_this, void 0, void 0, function() {
+    __awaiter(this, void 0, void 0, function() {
       let stopped, returned;
-      let _this = this;
       return __generator(this, _a => {
         switch (_a.label) {
           case 0:
@@ -903,7 +883,7 @@ function merge(contenders) {
             return [
               4 /*yield*/,
               Promise.all(iters.map(iter =>
-                  __awaiter(_this, void 0, void 0, function() {
+                  __awaiter(this, void 0, void 0, function() {
                     let result, _a;
                     return __generator(this, _b => {
                       switch (_b.label) {
@@ -954,11 +934,11 @@ function merge(contenders) {
     })
   );
 }
+
 function zip(contenders) {
-  let _this = this;
   let iters = asyncIterators(contenders, { returnValues: true });
   return new Repeater((push, stop) =>
-    __awaiter(_this, void 0, void 0, function() {
+    __awaiter(this, void 0, void 0, function() {
       let stopped, resultsP, results, values;
       return __generator(this, _a => {
         switch (_a.label) {
@@ -1005,6 +985,7 @@ function zip(contenders) {
     })
   );
 }
+
 function latest(contenders) {
   let _this = this;
   let iters = asyncIterators(contenders, {
