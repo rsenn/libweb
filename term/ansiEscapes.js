@@ -132,10 +132,7 @@ ansiEscapes.iTerm = {
     ret += options.isHidden ? 'AddHiddenAnnotation=' : 'AddAnnotation=';
 
     if(options.length > 0) {
-      ret += (hasX
-        ? [message, options.length, options.x, options.y]
-        : [options.length, message]
-      ).join('|');
+      ret += (hasX ? [message, options.length, options.x, options.y] : [options.length, message]).join('|');
     } else {
       ret += message;
     }

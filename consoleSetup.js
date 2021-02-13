@@ -73,10 +73,7 @@ export async function ConsoleSetup(opts = {}) {
 
       await import('inspect.so')
         .then(module => (globalThis.ObjectInspect = module.inspect))
-        .catch(() =>
-          import('./objectInspect.js').then(module => (globalThis.ObjectInspect = module.ObjectInspect)
-          )
-        );
+        .catch(() => import('./objectInspect.js').then(module => (globalThis.ObjectInspect = module.ObjectInspect)));
 
       return Util.define(newcons, {
         options,
@@ -95,8 +92,7 @@ export async function ConsoleSetup(opts = {}) {
           return log.call(this,
             ...args.reduce((acc, arg) => {
               if(Util.className(arg) == 'ConsoleOptions') tempOpts.merge(arg);
-              else if(typeof arg != 'string' || !Util.isPrimitive(arg))
-                acc.push(ObjectInspect(arg, tempOpts));
+              else if(typeof arg != 'string' || !Util.isPrimitive(arg)) acc.push(ObjectInspect(arg, tempOpts));
               else acc.push(arg);
               return acc;
             }, [])

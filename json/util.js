@@ -1,8 +1,7 @@
 import Util from '../util.js';
 
 export const toXML = (o, ...opts) => {
-  let [depth, quote, indent] =
-    typeof opts[0] == 'object' ? [opts.depth, opts.quote, opts.indent] : opts;
+  let [depth, quote, indent] = typeof opts[0] == 'object' ? [opts.depth, opts.quote, opts.indent] : opts;
   depth ??= 10000;
   quote ??= '"';
   indent = typeof indent == 'string' ? indent : '  ';
@@ -10,8 +9,7 @@ export const toXML = (o, ...opts) => {
   // console.log("toXML", { o,opts,depth,quote,indent});
   if(typeof o == 'object' && o !== null) {
     if('raw' in o) o = o.raw;
-    if(Util.isArray(o))
-      return o.length === 1 ? toString(o[0], depth) : o.map(it => toString(it, depth)).join('\n');
+    if(Util.isArray(o)) return o.length === 1 ? toString(o[0], depth) : o.map(it => toString(it, depth)).join('\n');
     return toString(o, depth);
   }
 
@@ -46,8 +44,7 @@ export const toXML = (o, ...opts) => {
         s += t + `${/\n/.test(t) ? newline : ''}</${tagName}>`;
       } else if(depth > 0) {
         for(let child of a)
-          s +=
-            nl + toString(child, depth > 0 ? depth - 1 : depth, nl) /*.replace(/>\n/g, '>' + nl)*/;
+          s += nl + toString(child, depth > 0 ? depth - 1 : depth, nl) /*.replace(/>\n/g, '>' + nl)*/;
         if(tagName[0] != '?') s += `${newline}</${tagName}>`;
       }
     } else {
