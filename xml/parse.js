@@ -240,7 +240,7 @@ export function parse2(g) {
             //console.log("AT",  {c,attr: str(attr)}, String.fromCodePoint(c), m[c] & END);
             if(attr.length == 0) break;
             let value = true;
-            if((m[c] & EQUAL) && next() && m[c] & QUOTE) {
+            if(m[c] & EQUAL && next() && m[c] & QUOTE) {
               next();
               //
               value = skip(c => (m[c] & QUOTE) == 0);
