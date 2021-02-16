@@ -70,10 +70,13 @@ export async function ConsoleSetup(opts = {}) {
       };
 
       let newcons = Object.create(Console.prototype);
+      let ObjectInspect;
 
       await import('inspect.so')
-        .then(module => (globalThis.ObjectInspect = module.inspect))
-        .catch(() => import('./objectInspect.js').then(module => (globalThis.ObjectInspect = module.ObjectInspect)));
+        .then(module => (globalThis.inspect = ObjectInspect = module.inspect))
+        .catch(() =>
+          import('./objectInspect.js').then(module => (globalThis.inspect = ObjectInspect = module.ObjectInspect))
+        );
 
       return Util.define(newcons, {
         options,
