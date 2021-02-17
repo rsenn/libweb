@@ -73,11 +73,17 @@ export class EagleDocument extends EagleNode {
     const [obj2path, path2obj] = pathMapper.maps.map(Util.mapFunction);
     const [obj2eagle, path2eagle] = [
       Util.mapFunction(raw2element),
-      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? this.lookup(key) : undefined))
+      Util.mapAdapter((key, value) =>
+        value === undefined && key !== undefined ? this.lookup(key) : undefined
+      )
     ];
     const [eagle2path, eagle2obj] = [
-      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.path : undefined)),
-      Util.mapAdapter((key, value) => (value === undefined && key !== undefined ? key.raw : undefined))
+      Util.mapAdapter((key, value) =>
+        value === undefined && key !== undefined ? key.path : undefined
+      ),
+      Util.mapAdapter((key, value) =>
+        value === undefined && key !== undefined ? key.raw : undefined
+      )
     ];
 
     // prettier-ignore
@@ -113,7 +119,9 @@ export class EagleDocument extends EagleNode {
     //console.log("EagleDocument.constructor", {xmlStr,project,filename,type});
     this.initCache(EagleElement, EagleNodeList.create);
 
-    lazyProperty(this, 'children', () => EagleNodeList.create(this, ['children'] /*, this.raw.children*/));
+    lazyProperty(this, 'children', () =>
+      EagleNodeList.create(this, ['children'] /*, this.raw.children*/)
+    );
   }
 
   get raw() {
@@ -253,7 +261,8 @@ if(ret < 0)
     plain = plain.filter(e => e.tagName == 'wire');
 
     if(plain) {
-      let measures = plain.filter(obj => obj.layer && ['Dimension', 'Measures'].indexOf(obj.layer.name) != -1);
+      let measures = plain.filter(obj => obj.layer && ['Dimension', 'Measures'].indexOf(obj.layer.name) != -1
+      );
 
       if(measures.length) {
         if(bbox || geometry || points) measures = measures.map(e => e.geometry);

@@ -537,4 +537,4 @@ export const posix = {
 //posix.posix = posix;
 export default posix;
 
-export const path = posix; //{ path: posix };
+export const path = (globalThis.path = posix); //{ path: posix };

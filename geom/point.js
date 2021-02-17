@@ -28,10 +28,18 @@ export function Point(...args) {
 
     p.x = parseFloat(matches[0]);
     p.y = parseFloat(matches[1]);
-  } else if(typeof arg == 'object' && arg !== null && (arg.x !== undefined || arg.y !== undefined)) {
+  } else if(typeof arg == 'object' &&
+    arg !== null &&
+    (arg.x !== undefined || arg.y !== undefined)
+  ) {
     p.x = arg.x;
     p.y = arg.y;
-  } else if(typeof arg == 'object' && arg !== null && arg.length > 0 && x !== undefined && y !== undefined) {
+  } else if(typeof arg == 'object' &&
+    arg !== null &&
+    arg.length > 0 &&
+    x !== undefined &&
+    y !== undefined
+  ) {
     p.x = parseFloat(arg.shift());
     p.y = parseFloat(arg.shift());
   } else if(typeof args[0] === 'number' && typeof args[1] === 'number') {
@@ -53,7 +61,8 @@ export function Point(...args) {
     return p;
   }
 }
-const getOther = args => (console.debug('getOther', ...args), typeof args[0] == 'number' ? [{ x: args[0], y: args[1] }] : args
+const getOther = args => (console.debug('getOther', ...args),
+  typeof args[0] == 'number' ? [{ x: args[0], y: args[1] }] : args
 );
 
 Object.defineProperties(Point.prototype, {
@@ -235,7 +244,9 @@ Util.defineGetter(Point.prototype, Symbol.iterator, function() {
     if(x[0] != '-') x = ' ' + x;
   }
   //console.debug("toString", {x,y}, {pad});
-  return `${left}${(x + '').padStart(pad, ' ')}${unit}${separator}${(y + '').padEnd(pad, ' ')}${unit}${right}`;
+  return `${left}${(x + '').padStart(pad, ' ')}${unit}${separator}${(y + '').padEnd(pad,
+    ' '
+  )}${unit}${right}`;
 };
 Util.defineGetterSetter(Point.prototype,
   Symbol.toStringTag,
@@ -247,7 +258,12 @@ Util.defineGetterSetter(Point.prototype,
 );
 
 Point.prototype.toSource = function(opts = {}) {
-  const { asArray = false, plainObj = false, pad = a => a /*a.padStart(4, ' ')*/, showNew = true } = opts;
+  const {
+    asArray = false,
+    plainObj = false,
+    pad = a => a /*a.padStart(4, ' ')*/,
+    showNew = true
+  } = opts;
   let x = pad(this.x + '');
   let y = pad(this.y + '');
   let c = t => t;
@@ -255,10 +271,10 @@ Point.prototype.toSource = function(opts = {}) {
   if(asArray) return `[${x},${y}]`;
   if(plainObj) return `{x:${x},y:${y}}`;
 
-  return `${c(showNew ? 'new ' : '', 1, 31)}${c('Point', 1, 33)}${c('(', 1, 36)}${c(x, 1, 32)}${c(',', 1, 36)}${c(y,
+  return `${c(showNew ? 'new ' : '', 1, 31)}${c('Point', 1, 33)}${c('(', 1, 36)}${c(x, 1, 32)}${c(',',
     1,
-    32
-  )}${c(')', 1, 36)}`;
+    36
+  )}${c(y, 1, 32)}${c(')', 1, 36)}`;
 };
 
 /*Point.prototype.toSource = function() {
@@ -283,7 +299,11 @@ Point.prototype.isNull = function() {
   return this.x == 0 && this.y == 0;
 };
 Point.prototype.inside = function(rect) {
-  return this.x >= rect.x && this.x < rect.x + rect.width && this.y >= rect.y && this.y < rect.y + rect.height;
+  return (this.x >= rect.x &&
+    this.x < rect.x + rect.width &&
+    this.y >= rect.y &&
+    this.y < rect.y + rect.height
+  );
 };
 Point.prototype.transform = function(m, round = true) {
   if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
@@ -352,7 +372,8 @@ Point.toSource = (point, { space = ' ', padding = ' ', separator = ',' }) =>
 export const isPoint = o =>
   o &&
   ((o.x !== undefined && o.y !== undefined) ||
-    ((o.left !== undefined || o.right !== undefined) && (o.top !== undefined || o.bottom !== undefined)) ||
+    ((o.left !== undefined || o.right !== undefined) &&
+      (o.top !== undefined || o.bottom !== undefined)) ||
     o instanceof Point ||
     Object.getPrototypeOf(o).constructor === Point);
 
@@ -364,7 +385,8 @@ Point.bind = (...args) => {
   let [o, p] = args;
   if(p == null) p = keys;
   //console.debug('Point.bind', { keys, o, p });
-  const { x, y } = (Util.isArray(p) && p.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {})) || p;
+  const { x, y } =
+    (Util.isArray(p) && p.reduce((acc, name, i) => ({ ...acc, [keys[i]]: name }), {})) || p;
   return Object.setPrototypeOf(Util.bindProperties({}, o, { x, y }), Point.prototype);
 };
 export default Point;

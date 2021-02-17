@@ -104,7 +104,8 @@ export class EagleElement extends EagleNode {
       } catch(error) {}
     }
     if(raw === null || typeof raw != 'object')
-      throw new Error('ref: ' + this.ref.inspect() + ' entity: ' + EagleNode.prototype.inspect.call(this));
+      throw new Error('ref: ' + this.ref.inspect() + ' entity: ' + EagleNode.prototype.inspect.call(this)
+      );
 
     let { tagName, attributes, children = [] } = raw;
     this.tagName = tagName;
@@ -184,7 +185,9 @@ export class EagleElement extends EagleNode {
         ) {
           msg`key=${key} names=${names}`;
           trkl.bind(this, key, v =>
-            v ? v.names.forEach(name => this.handlers[name](v.names[name])) : this.library[key + 's'][this.attrMap[key]]
+            v
+              ? v.names.forEach(name => this.handlers[name](v.names[name]))
+              : this.library[key + 's'][this.attrMap[key]]
           );
         } else if(key == 'device') {
           const fn = v => {
@@ -210,7 +213,9 @@ export class EagleElement extends EagleNode {
             //console.log('colorIndex', colorIndex, color);
             return color;
           });
-        } else if(EagleElement.isRelation(key) || ['package', 'library', 'layer'].indexOf(key) != -1) {
+        } else if(EagleElement.isRelation(key) ||
+          ['package', 'library', 'layer'].indexOf(key) != -1
+        ) {
           let fn;
           if(key == 'package') {
             fn = value => {
@@ -289,7 +294,10 @@ export class EagleElement extends EagleNode {
       lazyProperty(this, 'children', () =>
         EagleNodeList.create(this.package, this.package.path.down('children'), null)
       );
-    else lazyProperty(this, 'children', () => EagleNodeList.create(this, this.path.down('children'), null));
+    else
+      lazyProperty(this, 'children', () =>
+        EagleNodeList.create(this, this.path.down('children'), null)
+      );
 
     if(tagName == 'pad') {
       trkl.bind(this, 'layer', () => {
@@ -365,17 +373,15 @@ export class EagleElement extends EagleNode {
         });
 
       trkl.bind(this, 'contacts', () =>
-        Object.fromEntries([...doc.board.signals.getAll({ tagName: 'contactref', element: attributes.name })].map(cref => [
-            cref.pad.name,
-            cref.parentNode
-          ])
+        Object.fromEntries([
+            ...doc.board.signals.getAll({ tagName: 'contactref', element: attributes.name })
+          ].map(cref => [cref.pad.name, cref.parentNode])
         )
       );
       trkl.bind(this, 'contactrefs', () =>
-        Object.fromEntries([...doc.board.signals.getAll({ tagName: 'contactref', element: attributes.name })].map(cref => [
-            cref.pad.name,
-            cref
-          ])
+        Object.fromEntries([
+            ...doc.board.signals.getAll({ tagName: 'contactref', element: attributes.name })
+          ].map(cref => [cref.pad.name, cref])
         )
       );
     }
@@ -386,7 +392,9 @@ export class EagleElement extends EagleNode {
         );
     }
     if(tagName == 'package') {
-      lazyProperty(this, 'vias', () => EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'via'));
+      lazyProperty(this, 'vias', () =>
+        EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'via')
+      );
       lazyProperty(this, 'pads', () => {
         let list = EagleNodeList.create(this, this.path.down('children'), e => e.tagName == 'pad');
         return EagleNodeMap.create(list, 'name');
@@ -406,9 +414,13 @@ export class EagleElement extends EagleNode {
         return this.visible;
       };
       this.setVisible = value =>
-        value === undefined ? this.handlers.visible() == 'yes' : this.handlers.visible(value ? 'yes' : 'no');
-      this.setVisible.subscribe = fn => this.handlers.visible.subscribe(value => fn(value == 'yes'));
-      this.setVisible.subscribe = fn => this.handlers.visible.subscribe(value => fn(value == 'yes'));
+        value === undefined
+          ? this.handlers.visible() == 'yes'
+          : this.handlers.visible(value ? 'yes' : 'no');
+      this.setVisible.subscribe = fn =>
+        this.handlers.visible.subscribe(value => fn(value == 'yes'));
+      this.setVisible.subscribe = fn =>
+        this.handlers.visible.subscribe(value => fn(value == 'yes'));
     }
     //    let layer  = this.tagName == 'pad' ? this.document.layers['Pads'] :  this.layer;
     if(this.layer || this.tagName == 'pad' || this.tagName == 'via') {
@@ -710,10 +722,13 @@ export class EagleElement extends EagleNode {
 
   position(offset = null) {
     const keys = Object.keys(this.attributes);
-    const makeGetterSetter = k => v => (v === undefined ? +this.handlers[k]() : this.handlers[k](+v));
+    const makeGetterSetter = k => v =>
+      v === undefined ? +this.handlers[k]() : this.handlers[k](+v);
 
     if(['x', 'y'].every(prop => keys.includes(prop))) {
-      let pos = offset ? new Point(this.x, this.y).sum(offset) : Point.bind(this, null, makeGetterSetter);
+      let pos = offset
+        ? new Point(this.x, this.y).sum(offset)
+        : Point.bind(this, null, makeGetterSetter);
       return pos;
     }
   }
@@ -760,7 +775,9 @@ export class EagleElement extends EagleNode {
   }
 
   names() {
-    return Object.entries(this.scope()).reduce((acc, entry) => ({ ...acc, [entry[0]]: entry[1].attributes.name }), {});
+    return Object.entries(this.scope()).reduce((acc, entry) => ({ ...acc, [entry[0]]: entry[1].attributes.name }),
+      {}
+    );
   }
 
   static keys(entity) {
@@ -781,7 +798,11 @@ export class EagleElement extends EagleNode {
     }
 
     if(typeof e == 'object' && e !== null && 'tagName' in e) o = { tagName, ...o };
-    if(typeof children == 'object' && children !== null && 'length' in children && children.length > 0) {
+    if(typeof children == 'object' &&
+      children !== null &&
+      'length' in children &&
+      children.length > 0
+    ) {
       let a = children.filter(child => typeof child == 'string');
       children = children.filter(child => typeof child != 'string').map(EagleElement.toObject);
       text = a.join('\n');
@@ -812,7 +833,9 @@ export class EagleElement extends EagleNode {
     );
 
     if(typeof pred != 'function') pred = EagleNode.makePredicate(pred);
-    yield* super.getAll((v, p, o) => typeof v == 'object' && v !== null && 'tagName' in v && pred(v, p, o), fn);
+    yield* super.getAll((v, p, o) => typeof v == 'object' && v !== null && 'tagName' in v && pred(v, p, o),
+      fn
+    );
   }
 
   find(pred, transform = a => a) {
@@ -845,7 +868,20 @@ export class EagleElement extends EagleNode {
 
   static attributeLists = {
     approved: ['hash'],
-    attribute: ['name', 'x', 'y', 'size', 'layer', 'rot', 'align', 'ratio', 'font', 'value', 'constant', 'display'],
+    attribute: [
+      'name',
+      'x',
+      'y',
+      'size',
+      'layer',
+      'rot',
+      'align',
+      'ratio',
+      'font',
+      'value',
+      'constant',
+      'display'
+    ],
     bus: ['name'],
     circle: ['x', 'y', 'radius', 'width', 'layer'],
     class: ['number', 'name', 'width', 'drill'],
@@ -875,7 +911,17 @@ export class EagleElement extends EagleNode {
     element: ['name', 'library', 'package', 'value', 'x', 'y', 'rot', 'smashed'],
     frame: ['x1', 'y1', 'x2', 'y2', 'columns', 'rows', 'layer'],
     gate: ['name', 'symbol', 'x', 'y', 'swaplevel', 'addlevel'],
-    grid: ['distance', 'unitdist', 'unit', 'style', 'multiple', 'display', 'altdistance', 'altunitdist', 'altunit'],
+    grid: [
+      'distance',
+      'unitdist',
+      'unit',
+      'style',
+      'multiple',
+      'display',
+      'altdistance',
+      'altunitdist',
+      'altunit'
+    ],
     hole: ['x', 'y', 'drill'],
     instance: ['part', 'gate', 'x', 'y', 'rot', 'smashed'],
     junction: ['x', 'y'],

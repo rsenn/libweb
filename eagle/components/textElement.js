@@ -6,7 +6,12 @@ import { toXML } from '../../json.js';
 import { classNames } from '../../classNames.js';
 import { TransformationList } from '../../geom.js';
 
-export const TextElement = ({ data, opts = {}, transform = new TransformationList(), ...props }) => {
+export const TextElement = ({
+  data,
+  opts = {},
+  transform = new TransformationList(),
+  ...props
+}) => {
   data = data || props.item;
 
   let { transformation = new TransformationList() } = opts;

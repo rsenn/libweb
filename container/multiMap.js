@@ -189,7 +189,9 @@ function makeIterator(iterator) {
 
     return {
       next() {
-        return nextIndex < iterator.length ? { value: iterator[nextIndex++], done: false } : { done: true };
+        return nextIndex < iterator.length
+          ? { value: iterator[nextIndex++], done: false }
+          : { done: true };
       }
     };
   }

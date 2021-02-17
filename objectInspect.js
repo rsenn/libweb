@@ -1,14 +1,22 @@
 const hasMap = typeof Map === 'function' && Map.prototype;
 const mapSizeDescriptor =
-  Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, 'size') : null;
+  Object.getOwnPropertyDescriptor && hasMap
+    ? Object.getOwnPropertyDescriptor(Map.prototype, 'size')
+    : null;
 const mapSize =
-  hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === 'function' ? mapSizeDescriptor.get : null;
+  hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === 'function'
+    ? mapSizeDescriptor.get
+    : null;
 const mapForEach = hasMap && Map.prototype.forEach;
 const hasSet = typeof Set === 'function' && Set.prototype;
 const setSizeDescriptor =
-  Object.getOwnPropertyDescriptor && hasSet ? Object.getOwnPropertyDescriptor(Set.prototype, 'size') : null;
+  Object.getOwnPropertyDescriptor && hasSet
+    ? Object.getOwnPropertyDescriptor(Set.prototype, 'size')
+    : null;
 const setSize =
-  hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function' ? setSizeDescriptor.get : null;
+  hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function'
+    ? setSizeDescriptor.get
+    : null;
 const setForEach = hasSet && Set.prototype.forEach;
 const hasWeakMap = typeof WeakMap === 'function' && WeakMap.prototype;
 const weakMapHas = hasWeakMap ? WeakMap.prototype.has : null;
@@ -34,9 +42,12 @@ export function ObjectInspect(obj, options, depth, seen) {
   }
   for(let optName of ['maxStringLength', 'maxArrayLength', 'breakLength']) {
     if(has(opts, optName) &&
-      (typeof opts[optName] === 'number' ? opts[optName] < 0 && opts[optName] !== Infinity : opts[optName] !== null)
+      (typeof opts[optName] === 'number'
+        ? opts[optName] < 0 && opts[optName] !== Infinity
+        : opts[optName] !== null)
     ) {
-      throw new TypeError(`option "${optName}", if provided, must be a positive integer, Infinity, or 'null'`);
+      throw new TypeError(`option "${optName}", if provided, must be a positive integer, Infinity, or 'null'`
+      );
     }
   }
   const customInspect = has(opts, 'customInspect') ? opts.customInspect : true;
@@ -116,7 +127,11 @@ export function ObjectInspect(obj, options, depth, seen) {
     }
     let newOpts = {
       ...opts,
-      multiline: opts.multiline ? (typeof opts.multiline == 'number' ? opts.multiline - 1 : true) : false
+      multiline: opts.multiline
+        ? typeof opts.multiline == 'number'
+          ? opts.multiline - 1
+          : true
+        : false
     };
     if(noIndent) {
       newOpts = {
@@ -332,7 +347,8 @@ const hasOwn =
   };
 function has(obj, key, opts = {}) {
   const { hideKeys } = opts;
-  return (obj[key] !== undefined || hasOwn.call(obj, key)) && (!hideKeys || hideKeys.indexOf(key) == -1);
+  return ((obj[key] !== undefined || hasOwn.call(obj, key)) && (!hideKeys || hideKeys.indexOf(key) == -1)
+  );
 }
 
 function toStr(obj) {

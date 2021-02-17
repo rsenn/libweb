@@ -211,7 +211,10 @@ HSLA.prototype.toString = function(prec = 1 / 255) {
   const l = Util.roundTo(this.l, 100 * prec, 2);
   const a = Util.roundTo(this.a, 1 * prec, 4);
 
-  if(this.a == 1) return `hsl(${(h + '').padStart(3, ' ')},${(s + '%').padStart(4, ' ')},${(l + '%').padEnd(6, ' ')})`;
+  if(this.a == 1)
+    return `hsl(${(h + '').padStart(3, ' ')},${(s + '%').padStart(4, ' ')},${(l + '%').padEnd(6,
+      ' '
+    )})`;
   return `hsla(${h},${s}%,${l}%,${a})`;
 };
 HSLA.prototype.toSource = function(prec = 1 / 255) {
@@ -296,13 +299,18 @@ HSLA.prototype[Symbol.iterator] = function() {
   return [h, s, l, a][Symbol.iterator]();
 };
 
-HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = HSLA.prototype.inspect = function(options = {}) {
+HSLA.prototype[Symbol.for('nodejs.util.inspect.custom')] = HSLA.prototype.inspect = function(options = {}
+) {
   const { colors = true } = options;
   const { h, s, l, a } = this;
   const haveAlpha = !isNaN(a) && a !== 1;
   let arr = haveAlpha ? [h, s, l, a] : [h, s, l];
   let ret = arr
-    .map((n, i) => (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i < 3 ? 3 : 2, ' '))
+    .map((n, i) =>
+      (Util.roundTo(n, i == 3 ? 1 / 255 : i == 0 ? 1 : 100 / 255, 2) + '').padStart(i < 3 ? 3 : 2,
+        ' '
+      )
+    )
     .join(', ');
   const color = this.toRGBA().toAnsi(/*256*/ true);
   let o = '';

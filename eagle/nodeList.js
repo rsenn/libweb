@@ -56,7 +56,8 @@ export class EagleNodeList {
       cond = (child, i, list) => i === num;
     }
     console.log('cond:', cond);
-    for(let i = raw.length - 1; i >= 0; i--) if(pred(raw[i], i, this) && cond(raw[i], i, this)) raw.splice(i, 1);
+    for(let i = raw.length - 1; i >= 0; i--)
+      if(pred(raw[i], i, this) && cond(raw[i], i, this)) raw.splice(i, 1);
 
     return this;
   }
@@ -64,7 +65,9 @@ export class EagleNodeList {
   append(...args) {
     let { raw, ref } = this;
     let parent = ref.parent.dereference();
-    args = args.map(({ tagName, attributes, children }) => EagleElement.create(tagName, attributes, children));
+    args = args.map(({ tagName, attributes, children }) =>
+      EagleElement.create(tagName, attributes, children)
+    );
     parent.children.splice(parent.children.length, parent.children.length, ...args);
     return this;
   }
@@ -83,7 +86,9 @@ export class EagleNodeList {
     //    console.log("this.entries", this.entries);
     return (text(Util.className(this), 0) +
       ` [\n  ` +
-      [...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + v[inspectSymbol](), '') +
+      [...this.entries()].reduce((acc, [k, v]) => (acc ? acc + ',\n  ' : acc) + v[inspectSymbol](),
+        ''
+      ) +
       `\n]`
     );
   }
@@ -121,7 +126,8 @@ export class EagleNodeList {
         }
 
         if(prop == 'instance') return instance;
-        if(typeof EagleNodeList.prototype[prop] == 'function') return EagleNodeList.prototype[prop];
+        if(typeof EagleNodeList.prototype[prop] == 'function')
+          return EagleNodeList.prototype[prop];
         if(prop == 'path') return instance.ref.path;
         if(typeof instance[prop] == 'function') return instance[prop].bind(instance);
         if(instance[prop] !== undefined) return instance[prop];
@@ -133,7 +139,9 @@ export class EagleNodeList {
           };
         //      if(prop == 'entries') return () => list.map((item, i) => [item.attributes.name, item]);
 
-        if((list && !is_symbol && /^([0-9]+|length)$/.test('' + prop)) || ['findIndex'].indexOf(prop) !== -1) {
+        if((list && !is_symbol && /^([0-9]+|length)$/.test('' + prop)) ||
+          ['findIndex'].indexOf(prop) !== -1
+        ) {
           if(prop in list) return list[prop];
         }
 

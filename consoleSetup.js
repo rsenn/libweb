@@ -29,13 +29,14 @@ export async function ConsoleSetup(opts = {}) {
     compact = false,
     ...options
   } = opts;
-  const inspectOptions = {
+  let inspectOptions = {
     depth,
     colors,
     breakLength,
     maxArrayLength,
     ...options
   };
+  if(globalThis.inspect) globalThis.inspect.options = inspectOptions;
   ret = await Util.tryCatch(async () => {
       const Console = await import('console').then(module => module.Console);
       ret = new Console({
@@ -75,7 +76,8 @@ export async function ConsoleSetup(opts = {}) {
       await import('inspect.so')
         .then(module => (globalThis.inspect = ObjectInspect = module.inspect))
         .catch(() =>
-          import('./objectInspect.js').then(module => (globalThis.inspect = ObjectInspect = module.ObjectInspect))
+          import('./objectInspect.js').then(module => (globalThis.inspect = ObjectInspect = module.ObjectInspect)
+          )
         );
 
       return Util.define(newcons, {
@@ -95,7 +97,8 @@ export async function ConsoleSetup(opts = {}) {
           return log.call(this,
             ...args.reduce((acc, arg) => {
               if(Util.className(arg) == 'ConsoleOptions') tempOpts.merge(arg);
-              else if(typeof arg != 'string' || !Util.isPrimitive(arg)) acc.push(ObjectInspect(arg, tempOpts));
+              else if(typeof arg != 'string' || !Util.isPrimitive(arg))
+                acc.push(ObjectInspect(arg, tempOpts));
               else acc.push(arg);
               return acc;
             }, [])

@@ -1,7 +1,8 @@
 //import Util from './util.js';
 //import inspect from './inspect.js';
 
-const zip = a => a.reduce((a, b) => (a.length > b.length ? a : b), []).map((_, i) => a.map(arr => arr[i]));
+const zip = a =>
+  a.reduce((a, b) => (a.length > b.length ? a : b), []).map((_, i) => a.map(arr => arr[i]));
 const once = (fn, thisObj) => {
   let ran, ret;
   return async function(...args) {
@@ -25,13 +26,13 @@ function QuickJSSpawn(os, ffi) {
       );
 
       let [cfds, pfds] = zip(pipes);
-      console.log('pipes:', pipes);
+      console.log('pipes:', console.config({ compact: -1 }), pipes);
       //console.log('spawn:', inspect({ pipes, cfds, pfds }));*/
 
       opts.stdio = cfds[0];
       opts.stdout = cfds[1];
       opts.stderr = cfds[2];
-      console.log('exec()', { args, opts });
+      console.log('exec()', console.config({ compact: 1 }), { args, opts });
 
       let ret = os.exec(args, opts);
       ret = opts.block
