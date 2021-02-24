@@ -17,6 +17,28 @@ export class ESNode {
   static get assocMap() {
     return this.assoc.mapper.map;
   }
+
+  [inspectSymbol](depth, opts = {}) {
+    const text = Util.coloring(opts.colors);
+    const { type, ...props } = Util.getMembers(this);
+
+    console.log(`ESNode[${inspectSymbol}]`, depth, opts, type);
+
+    return ((type ? text(type, 1, 31) : text(Util.className(this), 1, 35)) +
+      ' ' +
+      inspect(props, depth, opts)
+    );
+  }
+
+  /* toJSON() {
+    let members = Util.getMembers();
+    for(let prop in members) {
+      let value = members[prop];
+      if(Util.isObject(value) && value instanceof ESNode)
+        members[prop] = value.toJSON();
+    }
+    return members;
+  }*/
 }
 
 Object.defineProperty(ESNode.prototype, 'position', {
@@ -144,8 +166,8 @@ export class Identifier extends Pattern {
 }
 
 export class Literal extends Expression {
-  constructor(value, species) {
-    super('Literal');
+  constructor(value, species, type) {
+    super(type ?? 'Literal');
 
     if(value !== undefined) this.value = value;
     if(species !== undefined) Util.define(this, { species });
@@ -161,13 +183,12 @@ export class Literal extends Expression {
       : undefined;
   }
 
-  /* [inspectSymbol](n, opts = {}) {
-  console.log("Literal.inspect", this.value);
-  const { colors } = opts;
-    const { value } = this;
-    let c = Util.coloring(colors);
-    return c.text(`Literal `, 1, 31) + c.text(value, 1, value.startsWith('/') ? 35 : 36);
-  }*/
+  [inspectSymbol](n, opts = {}) {
+    const { type, value } = this;
+    let c = Util.coloring(opts.colors);
+    let q = !Util.isNumeric(value) && !value.startsWith('/') ? "'" : '';
+    return c.text(type, 1, 31) + ' ' + c.text(q + value + q, 1, value.startsWith('/') ? 35 : 36);
+  }
 }
 
 export class RegExpLiteral extends Literal {
@@ -186,6 +207,12 @@ export class TemplateLiteral extends Expression {
     super('TemplateLiteral');
     this.quasis = quasis;
     this.expressions = expressions;
+  }
+}
+
+export class BigIntLiteral extends Literal {
+  constructor(value) {
+    super(value, undefined, 'BigIntLiteral');
   }
 }
 
@@ -764,6 +791,7 @@ export const CTORS = {
   Literal,
   RegExpLiteral,
   TemplateLiteral,
+  BigIntLiteral,
   TaggedTemplateExpression,
   TemplateElement,
   ThisExpression,

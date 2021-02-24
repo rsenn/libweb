@@ -69,7 +69,8 @@ export const select = (root, filter, path) => {
   if(!path) path = [];
   if(filter(root, path)) selected.push({ path, value: root });
   else if(Util.isObject(root))
-    for(k in root) selected = selected.concat(select(root[k], filter, [...path, k]));
+    for(k in root)
+      selected = selected.concat(select(root[k], filter, path.concat([isNaN(+k) ? k : +k])));
   return selected;
 };
 
@@ -92,17 +93,26 @@ export const find = (node, filter, path, root) => {
   return ret;
 };
 
+export const forEach = function(...args) {
+  const [value, fn, path = []] = args;
+  let root = args[3] ?? value;
+
+  fn(value, path, root);
+
+  if(Util.isObject(value))
+    for(let k in value) forEach(value[k], fn, path.concat([isNaN(+k) ? k : +k]), root);
+};
+
 export const iterate = function* (...args) {
   const [value, filter = v => true, path = []] = args;
-  //throw new Error();
-  let root = args[3] || value,
-    selected = [],
+  let root = args[3] ?? value,
     r;
 
   if((r = filter(value, path, root))) yield [value, path, root];
   if(r !== -1)
     if(Util.isObject(value)) {
-      for(let k in value) yield* iterate(value[k], filter, [...path, isNaN(+k) ? k : +k], root);
+      for(let k in value)
+        yield* iterate(value[k], filter, path.concat([isNaN(+k) ? k : +k]), root);
     }
 };
 
@@ -219,6 +229,7 @@ export default {
   equals,
   extend,
   select,
+  forEach,
   find,
   get,
   set,

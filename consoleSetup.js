@@ -27,6 +27,7 @@ export async function ConsoleSetup(opts = {}) {
     breakLength = defaultBreakLength,
     maxArrayLength = Infinity,
     compact = false,
+    customInspect = true,
     ...options
   } = opts;
   let inspectOptions = {
@@ -52,7 +53,13 @@ export async function ConsoleSetup(opts = {}) {
     c => c,
     async () => {
       let c = Util.getGlobalObject().console;
-      let options = { colors: true, depth: Infinity, indent: 2, ...inspectOptions };
+      let options = {
+        colors: true,
+        depth: Infinity,
+        customInspect: true,
+        indent: 2,
+        ...inspectOptions
+      };
 
       let log = c.log;
       c.reallog = log;
@@ -68,6 +75,9 @@ export async function ConsoleSetup(opts = {}) {
       }
       ConsoleOptions.prototype.merge = function(...args) {
         return Object.assign(this, ...args);
+      };
+      ConsoleOptions.merge = function(opts, ...args) {
+        return new ConsoleOptions(opts).merge(...args);
       };
 
       let newcons = Object.create(Console.prototype);
@@ -86,11 +96,7 @@ export async function ConsoleSetup(opts = {}) {
         inspect(...args) {
           let [obj, opts] = args;
           if(args.length == 0) obj = this;
-          return ObjectInspect(obj, {
-            customInspect: true,
-            ...this.options,
-            ...opts
-          });
+          return ObjectInspect(obj, ConsoleOptions.merge(this.options, opts));
         },
         log(...args) {
           let tempOpts = new ConsoleOptions(this.options);

@@ -2335,11 +2335,11 @@ Util.putError = err => {
 
   (console.error || console.log)('ERROR:\n' + err.message + '\nstack:\n' + s.toString());
 };
-Util.putStack = (stack = new Util.stack().slice(1)) => {
+Util.putStack = (stack = new Util.stack().slice(3)) => {
   stack = stack instanceof Util.stack ? stack : Util.stack(stack);
   console.log('Util.putStack', Util.className(stack));
 
-  (console.error || console.log)('STACK TRACE:\n' + stack.toString());
+  console.log('STACK TRACE:\n' + stack.toString());
 };
 
 Util.trap = (() => {
@@ -4349,11 +4349,16 @@ Util.splitLines = function(str, max_linelen = Number.MAX_SAFE_INTEGER) {
   if(line != '') lines.push(line);
   return lines;
 };
-/*Util.matchAll = Util.curry(function* (re, str) {
-  re = new RegExp(re + '', 'g');
-  let match;
-  while((match = re.exec(str)) != null) yield match;
-});*/
+Util.splitAt = function* (str, ...indexes) {
+  let prev = 0;
+  for(let index of indexes.sort((a, b) => a - b).concat([str.length])) {
+    if(index >= prev) {
+      yield str.substring(prev, index);
+      if(index >= str.length) break;
+      prev = index;
+    }
+  }
+};
 Util.decodeEscapes = function(text) {
   let matches = [...Util.matchAll(/([^\\]*)(\\u[0-9a-f]{4}|\\)/gi, text)];
   if(matches.length) {
@@ -4803,8 +4808,26 @@ Object.assign(Util.is, {
   false: val => val === 'false' || val === false
 });
 
-Util.assert = function Assert(act, message) {
-  if(!act) throw new Error(format('ASSERTION_S', message));
+class AssertionFailed extends Error {
+  constructor(stack, message) {
+    let location = stack[0];
+    super('@ ' + location + ': ' + message);
+    this.location = location;
+    this.stack = stack;
+    this.type = 'Assertion failed';
+  }
+}
+
+Util.assert = function assert(val, message) {
+  if(typeof val == 'function') {
+    message ??= val + '';
+    val = val();
+  }
+  if(!val) throw new AssertionFailed(Util.getCallerStack(4), message ?? `val == ${val}`);
+};
+Util.assertEqual = function assertEqual(val1, val2, message) {
+  if(val1 != val2)
+    throw new AssertionFailed(Util.getCallerStack(4), message ?? `${val1} != ${val2}`);
 };
 
 Util.assignGlobal = () => Util.weakAssign(Util.getGlobalObject(), Util);
@@ -5733,7 +5756,7 @@ Util.ttyGetWinSize = (fd = 0) => {
   let ret;
   if(Util.getPlatform() == 'quickjs') return import('os').then(m => m.ttyGetWinSize(fd));
   const stream = process[['stdin', 'stdout', 'stderr'][fd] ?? 'stdout'];
-  return stream?.getWindowSize();
+  return stream?.getWindowSize?.();
 };
 /**
  * Measure the average execution time of a function
@@ -6054,7 +6077,7 @@ Util.instrument = (fn,
   let duration = 0,
     times = 0;
   const name = functionName(fn) || '<anonymous>';
-  const isAsync = Util.isAsync(fn); /*|| Util.isAsync(now)*/
+  const isAsync = Util.isAsync(fn) || Util.isAsync(now);
   const doLog = isAsync
     ? async (args, ret) => {
         let t = await now();

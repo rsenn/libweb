@@ -19,22 +19,23 @@ function QuickJSSpawn(os, ffi) {
     return (args, options = { block: false }) => {
       let { stdio, ...opts } = options;
       stdio = (stdio || []).concat(['pipe', 'pipe', 'pipe']).slice(0, 3);
-      console.log('stdio:', stdio);
 
       let pipes = stdio.map((mode, chan) =>
         mode != 'pipe' ? [chan, undefined] : [...os.pipe()][chan == 0 ? 'slice' : 'reverse']()
       );
 
       let [cfds, pfds] = zip(pipes);
-      console.log('pipes:', console.config({ compact: -1 }), pipes);
-      //console.log('spawn:', inspect({ pipes, cfds, pfds }));*/
+      //console.log('pipes:', console.config({ compact: -1 }), pipes);
 
       opts.stdio = cfds[0];
       opts.stdout = cfds[1];
       opts.stderr = cfds[2];
-      console.log('exec()', console.config({ compact: 1 }), { args, opts });
+      //console.log('exec()', console.config({ compact: 1 }), { args, opts });
 
       let ret = os.exec(args, opts);
+
+      cfds.forEach((fd, i) => stdio[i] == 'pipe' && os.close(fd));
+
       ret = opts.block
         ? { exitCode: ret }
         : {
