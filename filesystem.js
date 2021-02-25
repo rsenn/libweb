@@ -795,7 +795,7 @@ function Encoding2Bytes(encoding) {
 function ArrayBufferToString(buf, bytes = 1) {
   if(typeof bytes == 'string') bytes = Encoding2Bytes(bytes);
   let ctor = CharWidth[bytes];
-  console.log('ArrayBufferToString', { buf, bytes, ctor });
+  //  console.log('ArrayBufferToString', { buf, bytes, ctor });
   return String.fromCharCode(...new ctor(buf));
 }
 function ArrayBufferSize(buf) {

@@ -6049,6 +6049,23 @@ Util.defineGetter(Util,
   })
 );
 
+Util.colIndexes = line =>
+  [...line].reduce(([prev, cols], char, i) => [char, [...cols, ...(/\s/.test(prev) && /[^\s]/.test(char) ? [i] : [])]],
+    [' ', []]
+  )[1];
+
+Util.colSplit = (line, indexes) => {
+  indexes ??= Util.colIndexes(line);
+  let ret = [];
+  for(let i = 0; i < indexes.length; i++) {
+    let col = indexes[i];
+    let next = indexes[i + 1] ?? line.length;
+
+    ret.push(line.substring(col, next));
+  }
+  return ret;
+};
+
 Util.bitsToNames = (flags, map = (name, flag) => name) => {
   const entries = [...Util.entries(flags)];
 
