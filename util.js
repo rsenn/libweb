@@ -6050,7 +6050,10 @@ Util.defineGetter(Util,
 );
 
 Util.colIndexes = line =>
-  [...line].reduce(([prev, cols], char, i) => [char, [...cols, ...(/\s/.test(prev) && /[^\s]/.test(char) ? [i] : [])]],
+  [...line].reduce(([prev, cols], char, i) => [
+      char,
+      [...cols, ...(/\s/.test(prev) && /[^\s]/.test(char) ? [i] : [])]
+    ],
     [' ', []]
   )[1];
 
