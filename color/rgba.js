@@ -263,12 +263,11 @@ RGBA.prototype.toSource = function(sep = ',') {
 };
 
 RGBA.prototype.normalize = function(src = 255, dst = 1.0) {
-  return {
-    r: (this.r * dst) / src,
-    g: (this.g * dst) / src,
-    b: (this.b * dst) / src,
-    a: (this.a * dst) / src
-  };
+  return new RGBA((this.r * dst) / src,
+    (this.g * dst) / src,
+    (this.b * dst) / src,
+    (this.a * dst) / src
+  );
 };
 
 RGBA.blend = (a, b, o = 0.5) => {

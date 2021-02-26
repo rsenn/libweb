@@ -774,10 +774,11 @@ export class ECMAScriptParser extends Parser {
 
 */
     while(this.matchTemplateLiteral() || this.matchPunctuators(['.', '[', '('])) {
-      if(this.matchPunctuators('.')) {
-        this.expectPunctuators('.');
+      if(this.matchPunctuators(['.', '?.'])) {
+        this.expectPunctuators(['.', '?.']);
         const identifier = this.expectIdentifier(true);
-        object = new MemberExpression(object, new Literal(identifier.toString()), false);
+        const optional = this.matchPunctuators('?.');
+        object = new MemberExpression(object, new Literal(identifier.toString()), false, optional);
       } else if(this.matchPunctuators('[')) {
         this.expectPunctuators('[');
         const expression = this.parseExpression();
@@ -1377,7 +1378,7 @@ export class ECMAScriptParser extends Parser {
     }
     let ret = new ctor(...[...args, ctor === ClassDeclaration ? new ClassBody(properties) : properties]
     );
-    if(this.matchPunctuators('.')) ret = this.parseRemainingMemberExpression(ret);
+    if(this.matchPunctuators(['?.', '.'])) ret = this.parseRemainingMemberExpression(ret);
 
     function BindingProperty(property, id, initializer) {
       let shorthand = id === property;

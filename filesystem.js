@@ -305,7 +305,7 @@ export function QuickJSFileSystem(std, os) {
       return [rd, wr];
     },
     waitRead(file) {
-      let fd = this.fileno(file);
+      let fd = typeof file == 'number' ? file : file.fileno();
       return new Promise((resolve, reject) => {
         os.setReadHandler(fd, () => {
           os.setReadHandler(fd, null);
@@ -314,7 +314,7 @@ export function QuickJSFileSystem(std, os) {
       });
     },
     waitWrite(file) {
-      let fd = this.fileno(file);
+      let fd = typeof file == 'number' ? file : file.fileno();
       return new Promise((resolve, reject) => {
         os.setWriteHandler(fd, () => {
           os.setWriteHandler(fd, null);
