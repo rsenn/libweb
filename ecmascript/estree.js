@@ -1,4 +1,6 @@
 import Util from '../util.js';
+import '../inspect.js';
+
 const inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
 export class ESNode {
@@ -19,12 +21,12 @@ export class ESNode {
   }
 
   [inspectSymbol](depth, opts = {}) {
-    const text = Util.coloring(opts.colors);
+    const color = Util.coloring(opts.colors);
     const { type, ...props } = Util.getMembers(this);
 
-    console.log(`ESNode[${inspectSymbol}]`, depth, opts, type);
+    //  console.log(`ESNode `, text+'');
 
-    return ((type ? text(type, 1, 31) : text(Util.className(this), 1, 35)) +
+    return ((type ? color.text(type, 1, 31) : color.text(Util.className(this), 1, 35)) +
       ' ' +
       inspect(props, depth, opts)
     );

@@ -1376,19 +1376,22 @@ Util.objName = function(o) {
   const s = `${o.type}`;
   return s;
 };
-Util.findKey = function(obj, value) {
-  let pred = typeof value == 'function' ? value : v => v === value;
-  for(let k in obj) if(pred(obj[k], k)) return k;
+Util.findKey = function(obj, pred, thisVal) {
+  let fn = typeof pred == 'function' ? value : v => v === pred;
+  for(let k in obj) if(fn.call(thisVal, obj[k], k)) return k;
 };
 Util.find = function(arr, value, prop = 'id') {
   let pred;
-  if(typeof value == 'function') pred = value;
-  else if(prop && prop.length !== undefined) {
+  if(typeof value == 'function') {
+    pred = value;
+  } else if(prop && prop.length !== undefined) {
     pred = function(obj) {
       if(obj[prop] == value) return true;
       return false;
     };
-  } else pred = obj => obj[prop] == value;
+  } else {
+    pred = typeof prop == 'function' ? obj => prop(value, obj) : obj => obj[prop] == value;
+  }
   if(typeof arr.find == 'function') return arr.find(pred);
   if(!arr[Symbol.iterator] && typeof arr.entries == 'function') {
     let entryPred = pred;
@@ -1400,6 +1403,12 @@ Util.find = function(arr, value, prop = 'id') {
   }
   return null;
 };
+
+Util.findIndex = function(obj, pred, thisArg) {
+  if(typeof obj.findIndex == 'function') return obj.findIndex(pred, thisArg);
+  return Util.findKey(obj, pred, thisArg);
+};
+
 Util.match = function(arg, pred) {
   let match = pred;
   if(pred instanceof RegExp) {
@@ -3096,6 +3105,7 @@ Util.indexByPath = function(o, p) {
   for(let key of p) o = o[key];
   return o;
 };
+
 Util.pushUnique = (arr, ...args) =>
   args.reduce((acc, item) => (arr.indexOf(item) == -1 ? (arr.push(item), acc + 1) : acc), 0);
 
@@ -5752,12 +5762,33 @@ Util.isatty = async fd => {
   }
   return ret;
 };
-Util.ttyGetWinSize = (fd = 0) => {
+Util.ttyGetWinSize = (fd = 1) => {
   let ret;
   if(Util.getPlatform() == 'quickjs') return import('os').then(m => m.ttyGetWinSize(fd));
   const stream = process[['stdin', 'stdout', 'stderr'][fd] ?? 'stdout'];
   return stream?.getWindowSize?.();
 };
+Util.ttySetRaw = (fd = 0, mode = true) => {
+  let ret;
+  if(Util.getPlatform() == 'quickjs') return import('os').then(m => m.ttySetRaw(fd));
+  const stream = process[['stdin', 'stdout', 'stderr'][fd] ?? 'stdin'];
+  return stream?.setRawMode?.(mode);
+};
+
+Util.signal = (num, act) => {
+  let ret;
+  if(Util.getPlatform() == 'quickjs') 
+    return globalThis.os ? os.signal(typeof num == 'string' && num in os ? os[num] : num,act) : import('os').then(m => {
+     
+if(typeof num == 'string' && num in m)
+  num = m[num];
+
+      m.signal(num, act);
+    });
+
+process.on(num, act);
+};
+
 /**
  * Measure the average execution time of a function
  * @param {Function} fn A function for performance measurement

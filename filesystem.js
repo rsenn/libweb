@@ -211,6 +211,17 @@ export function QuickJSFileSystem(std, os) {
       }
       return fd;
     },
+    puts(fd, str) {
+      if(typeof fd == 'number') {
+        let data = StringToArrayBuffer(str);
+        return this.write(fd, data, 0, data.byteLength);
+      } else {
+        return fd.puts(str);
+      }
+    },
+    flush(file) {
+      if(typeof file != 'number') return file.flush();
+    },
     exists(path) {
       let file = std.open(path, 'r');
       let res = file != null;
@@ -304,6 +315,14 @@ export function QuickJSFileSystem(std, os) {
       let [rd, wr] = os.pipe();
       return [rd, wr];
     },
+    setReadHandler(file, handler) {
+      let fd = typeof file == 'number' ? file : file.fileno();
+      return os.setReadHandler(fd, handler);
+    },
+    setWriteHandler(file, handler) {
+      let fd = typeof file == 'number' ? file : file.fileno();
+      return os.setWriteHandler(fd, handler);
+    },
     waitRead(file) {
       let fd = typeof file == 'number' ? file : file.fileno();
       return new Promise((resolve, reject) => {
@@ -341,6 +360,9 @@ export function QuickJSFileSystem(std, os) {
 
 export function NodeJSFileSystem(fs, tty, process) {
   let errno = 0;
+
+  const readHandlers = new Map(),
+    writeHandlers = new Map();
 
   function BufferAlloc(bytes = 1) {
     return Buffer.alloc(bytes);
@@ -512,6 +534,11 @@ export function NodeJSFileSystem(fs, tty, process) {
       });
       return ret;
     },
+    puts(file, str) {
+      return this.write(file, str, 0);
+    },  flush(file) {
+      return file.uncork();
+        },
     exists(path) {
       return CatchError(() => fs.existsSync(path));
     },
@@ -620,6 +647,28 @@ export function NodeJSFileSystem(fs, tty, process) {
     },
     get stderr() {
       return process.stderr;
+    },
+    setReadHandler(st, handler) {
+          if(handler) {
+        let fn = () => handler(st);
+        readHandlers.set(st, fn);
+        st.on('readable', fn);
+      } else {
+        let fn = readHandlers.get(st);
+        readHandlers.delete(st, fn);
+        st.off('readable', fn);
+      }
+    },
+    setWriteHandler(st, handler) {
+      if(handler) {
+        let fn = () => handler(st);
+        writeHandlers.set(st, fn);
+        st.on('drain', fn);
+      } else {
+        let fn = writeHandlers.get(st);
+        writeHandlers.delete(st, fn);
+        st.off('drain', fn);
+      }
     },
     waitRead(file) {
       file.resume();
