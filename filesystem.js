@@ -216,7 +216,7 @@ export function QuickJSFileSystem(std, os) {
         let data = StringToArrayBuffer(str);
         return this.write(fd, data, 0, data.byteLength);
       } else {
-        return fd.puts(str);
+        fd.puts(str);
       }
     },
     flush(file) {

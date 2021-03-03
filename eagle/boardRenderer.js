@@ -260,7 +260,7 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     if(/^[RLC][0-9]/.test(name) && element.pads.length == 2) {
       let re;
-      console.log('BoardRenderer.renderElement', { name, value });
+      this.debug('BoardRenderer.renderElement', { name, value });
       switch (name[0]) {
         case 'R':
           value = value.replace(/㏀$/, 'kΩ').replace(/㏁$/, 'MΩ');
@@ -295,7 +295,7 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderSignal(signal, parent, options = {}) {
-    console.debug(`BoardRenderer.renderSignal`, signal.name, options);
+    this.debug(`BoardRenderer.renderSignal`, signal.name, options);
     let children = signal.children;
     let props = {};
     if('layer' in options) {
@@ -308,7 +308,7 @@ export class BoardRenderer extends EagleSVGRenderer {
       } else {
       }
     }
-    console.debug(`BoardRenderer.renderSignal`, children);
+    this.debug(`BoardRenderer.renderSignal`, children);
 
     if(children.length > 0) {
       const className = ElementToClass(signal);

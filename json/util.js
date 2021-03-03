@@ -1,6 +1,6 @@
 import Util from '../util.js';
 
-export const toXML = (o, ...opts) => {
+export let toXML = (o, ...opts) => {
   let [depth, quote, indent] =
     typeof opts[0] == 'object' ? [opts.depth, opts.quote, opts.indent] : opts;
   depth ??= 10000;
@@ -71,4 +71,11 @@ export class IteratorAdapter extends Iterator {
     super();
     if(gen) Util.define(this, { gen });
   }
+}
+
+if(Util.getPlatform() == 'quickjs') {
+  import('xml.so').then(module => {
+    toXML = module.write;
+    if(!globalThis.xml) globalThis.xml = module;
+  });
 }

@@ -443,7 +443,8 @@ Rect.prototype.bbox = function() {
 Rect.prototype.transform = function(m) {
   if(Util.isObject(m) && typeof m.toMatrix == 'function') m = m.toMatrix();
   Matrix.prototype.transform_rect.call(m, this);
-  if(round) Rect.prototype.round.call(this, 1e-13, 13);
+
+  // if(round) Rect.prototype.round.call(this, 1e-13, 13);
   return this;
 };
 

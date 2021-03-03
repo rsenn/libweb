@@ -8,7 +8,6 @@ import { EagleNodeMap } from './nodeMap.js';
 import { ImmutableXPath } from '../xml.js';
 import { BBox } from '../geom.js';
 import { ImmutablePath, toXML } from '../json.js';
-import tXml from '../tXml.js';
 
 export const makeEagleNode = (owner, ref, ctor) => {
   if(!ctor) ctor = owner.constructor[Symbol.species];
@@ -467,30 +466,6 @@ export class EagleNode {
 
   toXML(indent = '') {
     return toXML(this.raw, 10000, '"', indent);
-
-    const { tagName, raw } = this;
-    let attrNames = Object.keys(raw.attributes);
-    let s = `<${tagName}`;
-    for(let name of attrNames) {
-      let value = this[name];
-      if(Util.isObject(value)) {
-        if(value.name) value = value.name;
-        else value = raw.attributes[name];
-      }
-
-      s += ` ${name}="${value}"`;
-    }
-    if(!raw.children.length) {
-      s += ' />';
-    } else {
-      s += '\n';
-      [...this.children].map(child => '  '.repeat(depth + 1) + child.toXML(depth + 1)).join('\n');
-      s += `\n</${tagName}>`;
-    }
-    return s;
-
-    return toXML(this, depth, '"', indent);
-    // return tXml.toString([this.raw], depth);
   }
 
   static inspect = (e, d, c = { depth: 0, breakLength: 400, path: true }) => {

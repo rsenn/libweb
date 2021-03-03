@@ -187,7 +187,7 @@ export class EagleDocument extends EagleNode {
     if(!file)
       file = this.file;
 
-    console.log('saveTo file:', file, 'data: ',Util.abbreviate(data));
+  console.log('saveTo file:', file, 'data: ',Util.abbreviate(data));
     let ret = fs.writeFile(file, data, overwrite);
 
 if(ret < 0)
@@ -217,7 +217,7 @@ if(ret < 0)
 
   getBounds(sheetNo = 0) {
     let bb = new BBox();
-    if(this.type == 'brd') {
+    /*    if(this.type == 'brd') {
       const board = this.lookup(['eagle', 'drawing', 'board']);
       const plain = board.lookup(['plain']);
       //console.debug('plain:', plain);
@@ -226,26 +226,31 @@ if(ret < 0)
       if(measures.length >= 4) ret = bb.update(measures);
       else ret = board.getBounds();
       return ret;
-    }
+    }*/
 
     let sheet = this.sheets ? this.sheets[sheetNo] : null;
 
     if(this.type == 'sch') {
-      // return this.find('schematic').getBounds();
       return this.sheets[sheetNo].getBounds(v => /(instance|net)/.test(v.tagName));
-      /*    let instances = sheet.instances;
-      for(let instance of instances.list) bb.update(instance.getBounds());*/
     } else if(this.elements) {
-      console.log('elements:', this.elements);
       for(let element of this.elements.list) {
         let bbrect = element.getBounds();
         bb.update(bbrect);
       }
     } else if(this.signals) {
-      for(let signal of this.signals.list) {
-        let bbrect = signal.getBounds();
-        bb.update(bbrect);
-      }
+      /*for(let signal of this.signals.list) {
+        let bbrect = signal.getBounds();*/
+      bb.update([...project.doc.signals.list]
+          .map(sig => [...sig.children])
+          .flat()
+          .filter(c => !!c.geometry)
+      );
+      bb.update([...project.doc.elements.list].map(e =>
+          e.package.getBounds().toRect(Rect.prototype).transform(e.transformation())
+        )
+      );
+
+      /*      }*/
     }
 
     return bb;
@@ -276,7 +281,7 @@ if(ret < 0)
         if(bbox) {
           //) measures = measures.map(e=> new Line(e.attributes));
           measures = BBox.from(measures);
-          console.log('measures bbox:', measures);
+          //console.log('measures bbox:', measures);
 
           if(!isBBox(measures, v => Number.isFinite(v))) return undefined;
         }

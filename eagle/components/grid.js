@@ -58,14 +58,14 @@ export const Pattern = ({
     (() => {
       let current;
       let ret = function(value) {
-        console.log('Pattern.render value =', value);
+        log('Pattern.render value =', value);
         current = value;
       };
       Util.defineGetterSetter(ret, 'current', () => current, ret);
       return ret;
     })();
 
-  if(ref.current) console.log('Pattern.render ref.current =', ref.current);
+  if(ref.current) log('Pattern.render ref.current =', ref.current);
 
   const size = distance * multiple;
   log('Pattern.render ', { width, color, size });
