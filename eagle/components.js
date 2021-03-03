@@ -21,6 +21,7 @@ import { SchematicSymbol } from './components/symbol.js';
 import { Hole } from './components/hole.js';
 import { Dimension } from './components/dimension.js';
 import { SMD } from './components/smd.js';
+import { Via } from './components/via.js';
 
 export const PrimitiveComponents = {
   Wire,
@@ -40,7 +41,8 @@ export const PrimitiveComponents = {
   Package,
   Hole,
   Dimension,
-  Smd: SMD
+  Smd: SMD,
+  Via
 };
 
 let prevName;

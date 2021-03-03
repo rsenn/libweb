@@ -536,9 +536,10 @@ export function NodeJSFileSystem(fs, tty, process) {
     },
     puts(file, str) {
       return this.write(file, str, 0);
-    },  flush(file) {
+    },
+    flush(file) {
       return file.uncork();
-        },
+    },
     exists(path) {
       return CatchError(() => fs.existsSync(path));
     },
@@ -649,7 +650,7 @@ export function NodeJSFileSystem(fs, tty, process) {
       return process.stderr;
     },
     setReadHandler(st, handler) {
-          if(handler) {
+      if(handler) {
         let fn = () => handler(st);
         readHandlers.set(st, fn);
         st.on('readable', fn);

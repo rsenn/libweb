@@ -281,6 +281,7 @@ export class BoardRenderer extends EagleSVGRenderer {
         class: ElementToClass(element),
         'data-name': name,
         'data-value': value,
+        'data-type': element.tagName,
         'data-library': library.name,
         'data-package': element.package.name,
         'data-path': element.path.toString(' '),
@@ -330,6 +331,7 @@ export class BoardRenderer extends EagleSVGRenderer {
   renderSignal(signal, parent, options = {}) {
     this.debug(`BoardRenderer.renderSignal`, signal.name);
     let children = signal.children;
+    let props = {};
     if('layer' in options) {
       let layer = options.layer ? this.doc.layers[options.layer] : null;
       children = children.filter(child => (options.layer ? child.layer : !child.layer));
@@ -345,9 +347,11 @@ export class BoardRenderer extends EagleSVGRenderer {
           ? '-' + options.layer.toLowerCase()
           : ''
       }`;
-      let props = {
-        //id: ,
+      props = {
+        ...props,
         class: className,
+        'data-type': signal.tagName,
+        'data-name': signal.name,
         'data-path': signal.path.toString(' ')
       };
       //console.log('class:', className, 'children.length:', children.length, ' options.layer:', options.layer, 'cond:', children.length > 1 && !(typeof options.layer == 'string') );
@@ -356,12 +360,11 @@ export class BoardRenderer extends EagleSVGRenderer {
         let signalGroup = this.create('g', { id, ...props, 'font-family': 'Fixed' }, parent);
         return this.renderCollection(children, signalGroup, options);
       }
-
-      return this.renderCollection(children, this.create(Fragment, {}, parent), {
-        ...options,
-        props
-      });
     }
+    return this.renderCollection(children, this.create(Fragment, {}, parent), {
+      ...options,
+      props
+    });
   }
 
   render(doc = this.doc /*, parent, props = {}*/) {

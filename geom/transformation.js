@@ -619,6 +619,10 @@ export class TransformationList extends Array {
     return '';
   }
 
+  toDOM() {
+    return this.toString('px', 'deg');
+  }
+
   [Symbol.toStringTag]() {
     return this.toString();
   }

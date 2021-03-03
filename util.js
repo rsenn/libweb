@@ -5777,16 +5777,16 @@ Util.ttySetRaw = (fd = 0, mode = true) => {
 
 Util.signal = (num, act) => {
   let ret;
-  if(Util.getPlatform() == 'quickjs') 
-    return globalThis.os ? os.signal(typeof num == 'string' && num in os ? os[num] : num,act) : import('os').then(m => {
-     
-if(typeof num == 'string' && num in m)
-  num = m[num];
+  if(Util.getPlatform() == 'quickjs')
+    return globalThis.os
+      ? os.signal(typeof num == 'string' && num in os ? os[num] : num, act)
+      : import('os').then(m => {
+          if(typeof num == 'string' && num in m) num = m[num];
 
-      m.signal(num, act);
-    });
+          m.signal(num, act);
+        });
 
-process.on(num, act);
+  process.on(num, act);
 };
 
 /**
