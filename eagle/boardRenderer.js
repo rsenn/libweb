@@ -8,7 +8,7 @@ import { Palette } from './common.js';
 import { VERTICAL, HORIZONTAL, RotateTransformation, LayerAttributes, LinesToPath, MakeCoordTransformer, MakeRotation } from './renderUtils.js';
 import { EagleSVGRenderer } from './svgRenderer.js';
 import { Repeater } from '../repeater/repeater.js';
-import { useTrkl, ElementToClass, EscapeClassName, UnescapeClassName } from './renderUtils.js';
+import { useTrkl, ElementToClass, EscapeClassName, UnescapeClassName, RenderShape } from './renderUtils.js';
 import { h, Component, Fragment, useEffect } from '../dom/preactComponent.js';
 import { classNames } from '../classNames.js';
 import { digit2color, GetFactor, GetColorBands, ValueToNumber, NumberToValue, GetExponent, GetMantissa } from '../eda/colorCoding.js';
@@ -56,47 +56,13 @@ export class BoardRenderer extends EagleSVGRenderer {
 
         const ro = +((diameter || 1.5) / 2.54).toFixed(3);
         const ri = +(drill / 3).toFixed(3);
-        let data = '';
         const transform = `translate(${x},${y})`;
         const layer = this.layers.Pads;
 
         //  console.log('item:', item);
         const padColor = item.getColor() || this.palette[2];
 
-        switch (shape) {
-          case 'long': {
-            const w = ro * 0.75;
-            data = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${
-              -w * 2
-            } 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
-            break;
-          }
-          case 'square': {
-            const points = [
-              new Point(-1, -1),
-              new Point(1, -1),
-              new Point(1, 1),
-              new Point(-1, 1)
-            ].map(p => p.prod(ro * 1.27));
-
-            data = points.map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-
-            break;
-          }
-          case 'octagon': {
-            const points = Util.range(0, 7).map(i =>
-              Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.4)
-            );
-
-            data = points.map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-            break;
-          }
-          default: {
-            data = `M 0 ${-ro} A ${ro} ${ro} 0 0 1 0 ${ro} A ${ro} ${ro} 0 0 1 0 ${-ro}`;
-            break;
-          }
-        }
-
+        let data = RenderShape(shape, ro, ri);
         svg('path', {
             fill: padColor,
             d: data + ` M 0 ${ri} A ${ri} ${ri} 180 0 0 0 ${-ri} A ${ri} ${ri} 180 0 0 0 ${ri}`,
@@ -277,11 +243,11 @@ export class BoardRenderer extends EagleSVGRenderer {
 
     const g = this.create('g',
       {
-        id: `element.${elementName}`,
+        //&id: `element.${elementName}`,
         class: ElementToClass(element),
+        'data-type': element.tagName,
         'data-name': name,
         'data-value': value,
-        'data-type': element.tagName,
         'data-library': library.name,
         'data-package': element.package.name,
         'data-path': element.path.toString(' '),
@@ -329,17 +295,21 @@ export class BoardRenderer extends EagleSVGRenderer {
   }
 
   renderSignal(signal, parent, options = {}) {
-    this.debug(`BoardRenderer.renderSignal`, signal.name);
+    console.debug(`BoardRenderer.renderSignal`, signal.name, options);
     let children = signal.children;
     let props = {};
     if('layer' in options) {
       let layer = options.layer ? this.doc.layers[options.layer] : null;
-      children = children.filter(child => (options.layer ? child.layer : !child.layer));
+      children = children.filter(child => (options.layer ? child.layer : !child.layer) || child.tagName == 'via'
+      );
       if(layer) {
         children = children.filter(child => child.layer.number == layer.number);
         this.debug('Filtering', layer.number, layer.name, ...children.map(c => '\n' + c.toXML()));
+      } else {
       }
     }
+    console.debug(`BoardRenderer.renderSignal`, children);
+
     if(children.length > 0) {
       const className = ElementToClass(signal);
       const id = `signal-${EscapeClassName(signal.name)}${
@@ -357,13 +327,13 @@ export class BoardRenderer extends EagleSVGRenderer {
       //console.log('class:', className, 'children.length:', children.length, ' options.layer:', options.layer, 'cond:', children.length > 1 && !(typeof options.layer == 'string') );
       if(children.length > 1 && options.layer != '') {
         delete options.layer;
-        let signalGroup = this.create('g', { id, ...props, 'font-family': 'Fixed' }, parent);
+        let signalGroup = this.create('g', { /*id, */ ...props, 'font-family': 'Fixed' }, parent);
         return this.renderCollection(children, signalGroup, options);
       }
     }
     return this.renderCollection(children, this.create(Fragment, {}, parent), {
-      ...options,
-      props
+      ...options /*,
+      props*/
     });
   }
 

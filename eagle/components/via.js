@@ -1,15 +1,13 @@
 import Util from '../../util.js';
-import { h, Fragment, Component } from '../../dom/preactComponent.js';
-import { MakeCoordTransformer, MakeRotation, Alignment, AlignmentAttrs, ElementToClass, useTrkl, log, VERTICAL, HORIZONTAL } from '../renderUtils.js';
-import { TransformationList, Point } from '../../geom.js';
-import { Palette } from '../common.js';
-import { Text } from './text.js';
+import { h, Component } from '../../dom/preactComponent.js';
+import { MakeCoordTransformer, Alignment, AlignmentAttrs, ElementToClass, RenderShape, useTrkl, log, VERTICAL, HORIZONTAL } from '../renderUtils.js';
+import { TransformationList } from '../../geom.js';
 import { useValue } from '../../repeater/react-hooks.js';
 
 export const Via = ({ data, opts = {}, ...props }) => {
   let { transformation = new TransformationList() } = opts;
   log('Via.render ', { transformation, data, opts });
-  let pad =
+  let via =
     useValue(async function* () {
       for await(let change of data.repeater) {
         //  log('Via.render:', change);
@@ -18,50 +16,21 @@ export const Via = ({ data, opts = {}, ...props }) => {
     }) || data;
 
   let coordFn = opts.transform ? MakeCoordTransformer(opts.transform) : i => i;
-  const { name, drill, radius, shape, layer, rot } = pad;
-  const { x, y } = coordFn(pad);
-  const diameter = radius * 2;
+  let { name, drill, diameter, shape } = via;
+  const layer = via.document.layers.Vias;
+
+  if(diameter === 'auto') diameter = drill * 2;
+
+  const { x, y } = coordFn(via);
   let ro = Util.roundTo(diameter / 2, 0.0001);
   let ri = Util.roundTo(drill / 2, 0.0001);
-  let d;
   let transform = `translate(${x},${y})`;
   let visible = 'yes' == useTrkl(layer.handlers.visible);
-  let rotation = MakeRotation(rot);
 
-  if(rot) transform = transform.concat(rotation);
+  log('Via.render ', { drill, diameter, x, y, ro, ri, transform, visible });
 
-  const viaColor = /*layer.getColor(pad) ||*/ pad.getColor();
-
-  switch (shape) {
-    case 'long': {
-      ro = ro * 1.2;
-      const w = ro;
-      d = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${
-        -w * 2
-      } 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
-      break;
-    }
-    case 'square': {
-      d = [new Point(-1, -1), new Point(1, -1), new Point(1, 1), new Point(-1, 1)]
-        .map(p => p.prod(ro))
-        .map(p => p.round())
-        .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
-        .join(' ');
-      break;
-    }
-    case 'octagon': {
-      d = Util.range(0, 7)
-        .map(i => Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.2))
-        .map(p => p.round())
-        .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
-        .join(' ');
-      break;
-    }
-    default: {
-      d = `M 0 ${-ro} A ${ro} ${ro} 0 0 1 0 ${ro} A ${ro} ${ro} 0 0 1 0 ${-ro}`;
-      break;
-    }
-  }
+  const viaColor = /*layer.getColor(via) ||*/ via.getColor();
+  let d = RenderShape(shape, ro, ri);
 
   const layerProps = layer ? { 'data-layer': `${layer.number} ${layer.name}` } : {};
   const pathProps = {
@@ -72,16 +41,15 @@ export const Via = ({ data, opts = {}, ...props }) => {
   };
   if(viaColor.a < 255) pathProps['fill-opacity'] = Util.roundTo(viaColor.a / 255, 0.001);
   const baseProps = {
-    class: ElementToClass(pad),
+    //  class: ElementToClass(via),
     //fill: viaColor,
     transform
   };
   const dataProps = {
-    'data-name': pad.name,
-    'data-shape': pad.shape,
-    'data-drill': pad.drill,
-    'data-diameter': pad.diameter,
-    'data-rot': pad.rot,
+    'data-type': via.tagName,
+    'data-shape': via.shape,
+    'data-drill': via.drill,
+    'data-diameter': via.diameter,
     'data-layer': `${layer.number} ${layer.name}`
   };
   const visibleProps = visible ? {} : { style: { display: 'none' } };

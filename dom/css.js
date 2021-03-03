@@ -189,3 +189,5 @@ export class CSS {
     }
   }
 }
+
+Object.assign(CSS, globalThis.CSS);

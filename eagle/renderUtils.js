@@ -456,3 +456,40 @@ export const useAttributes = (element, attributeNames) => {
 
   return ret;
 };
+
+export const RenderShape = (shape, ro, ri) => {
+  let d;
+  log('RenderShape ', { shape, ro, ri });
+
+  switch (shape) {
+    case 'long': {
+      ro = ro * 1.2;
+      const w = ro;
+      d = `M 0 ${-ro} l ${w} 0 A ${ro} ${ro} 0 0 1 ${w} ${ro} l ${
+        -w * 2
+      } 0 A ${ro} ${ro} 0 0 1 ${-w} ${-ro}`;
+      break;
+    }
+    case 'square': {
+      d = [new Point(-1, -1), new Point(1, -1), new Point(1, 1), new Point(-1, 1)]
+        .map(p => p.prod(ro))
+        .map(p => p.round())
+        .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+        .join(' ');
+      break;
+    }
+    case 'octagon': {
+      d = Util.range(0, 7)
+        .map(i => Point.fromAngle((Math.PI * i) / 4 + Math.PI / 8, ro * 1.2))
+        .map(p => p.round())
+        .map((p, i) => `${i == 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+        .join(' ');
+      break;
+    }
+    default: {
+      d = `M 0 ${-ro} A ${ro} ${ro} 0 0 1 0 ${ro} A ${ro} ${ro} 0 0 1 0 ${-ro}`;
+      break;
+    }
+  }
+  return d;
+};
