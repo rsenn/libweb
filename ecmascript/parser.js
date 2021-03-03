@@ -1645,7 +1645,7 @@ export class ECMAScriptParser extends Parser {
     let name;
     let decl;
 
-    name = this.expectIdentifier();
+    name = this.expectIdentifier(true);
 
     if(this.matchKeywords('as')) {
       this.expectKeywords('as');
