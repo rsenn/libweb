@@ -83,7 +83,7 @@ export const find = (node, filter, path, root) => {
     ret = { path: null, value: null };
   }
   if(filter(node, path, root)) {
-    ret = { path, value: node, root };
+    ret = { path, value: node };
   } else if(Util.isObject(node)) {
     for(k in node) {
       ret = find(node[k], filter, [...path, k], root);
@@ -193,6 +193,7 @@ export const transform = (obj, filter, t) => {
     return transformed;
   } else if(isPlainObject(obj)) {
     transformed = {};
+    q;
     for(k in obj) {
       v = obj[k];
       transformed[k] = transform(v, filter, [...path, k]);

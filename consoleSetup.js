@@ -99,8 +99,9 @@ export async function ConsoleSetup(opts = {}) {
           return ObjectInspect(obj, ConsoleOptions.merge(this.options, opts));
         },
         log(...args) {
-          let tempOpts = new ConsoleOptions(this.options);
-          return log.call(this,
+          let { reallog, options } = this;
+          let tempOpts = new ConsoleOptions(options);
+          return reallog.call(this,
             ...args.reduce((acc, arg) => {
               if(typeof arg == 'object' &&
                 arg != null &&
@@ -108,7 +109,7 @@ export async function ConsoleSetup(opts = {}) {
                 /* Util.className(arg) == 'ConsoleOptions'*/
               )
                 tempOpts.merge(arg);
-              else if(typeof arg != 'string' || !Util.isPrimitive(arg))
+              else if(typeof arg == 'object' && arg != null)
                 acc.push(ObjectInspect(arg, tempOpts));
               else acc.push(arg);
               return acc;
