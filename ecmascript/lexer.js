@@ -912,7 +912,7 @@ function isPunctuatorChar(c) {
 function isPunctuator(word) {
   switch (word.length) {
     case 1:
-      /* prettier-ignore */ return '=.-%}>,*[<!/]~&(;?|):+^{@'.indexOf(word) >= 0;
+      /* prettier-ignore */ return ['=', '.', '-', '%', '}', '>', ',', '*', '[', '<', '!', '/', ']', '~', '&', '(', ';', '?', '|', ')', ':', '+', '^', '{', '@'].indexOf(word) >= 0;
     case 2:
       /* prettier-ignore */ return ['!=', '*=', '&&', '<<', '/=', '||', '>>', '&=', '==', '++', '|=', '<=', '--', '+=', '^=', '>=', '-=', '%=', '=>', '${', '?.', '**', '??'].indexOf(word) >= 0;
 
