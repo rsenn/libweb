@@ -37,7 +37,8 @@ export async function ConsoleSetup(opts = {}) {
     maxArrayLength,
     ...options
   };
-  if(globalThis.inspect) globalThis.inspect.options = inspectOptions;
+  if(typeof globalThis.inspect == 'function' || typeof globalThis.inspect == 'ôbject')
+    globalThis.inspect.options = inspectOptions;
   ret = await Util.tryCatch(async () => {
       const Console = await import('console').then(module => module.Console);
       ret = new Console({

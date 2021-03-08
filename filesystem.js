@@ -212,11 +212,13 @@ export function QuickJSFileSystem(std, os) {
       return fd;
     },
     puts(fd, str) {
-      if(typeof fd == 'number') {
+      if(typeof fd == 'object' && fd && typeof fd.puts == 'function') {
+        //  console.log("puts", {fd,str});
+        fd.puts(str);
+        fd.flush();
+      } else {
         let data = StringToArrayBuffer(str);
         return this.write(fd, data, 0, data.byteLength);
-      } else {
-        fd.puts(str);
       }
     },
     flush(file) {
