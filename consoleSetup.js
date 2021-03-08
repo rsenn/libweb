@@ -82,13 +82,24 @@ export async function ConsoleSetup(opts = {}) {
 
       let newcons = Object.create(Console.prototype);
       let ObjectInspect;
+      let platform = Util.getPlatform();
 
-      await import('inspect.so')
-        .then(module => (globalThis.inspect = ObjectInspect = module.inspect))
-        .catch(() =>
-          import('./objectInspect.js').then(module => (globalThis.inspect = ObjectInspect = module.ObjectInspect)
-          )
-        );
+      console.log('Platform:', platform);
+      switch (platform) {
+        case 'quickjs':
+          await import('inspect.so').then(module => (globalThis.inspect = ObjectInspect = module.inspect)
+          );
+          break;
+
+        case 'node':
+          await import('util').then(module => (globalThis.inspect = ObjectInspect = module.inspect)
+          );
+          break;
+        default: await import('./objectInspect.js').then(
+            module => (globalThis.inspect = ObjectInspect = module.ObjectInspect)
+          );
+          break;
+      }
 
       return Util.define(newcons, {
         options,

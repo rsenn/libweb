@@ -454,7 +454,7 @@ export function NodeJSFileSystem(fs, tty, process) {
       if(typeof file == 'object' && file !== null && 'fd' in file) return file.fd;
       if(typeof file == 'number') return file;
     },
-    open(filename, flags = 'r', mode = 0o644) {
+    fopen(filename, flags = 'r', mode = 0o644) {
       let fd = -1;
       try {
         fd = fs.openSync(filename, flags, mode);
@@ -465,8 +465,10 @@ export function NodeJSFileSystem(fs, tty, process) {
         return fd;
       }
       let ret;
+      console.log('fopen', { fd, flags });
       if(flags[0] == 'r') ret = fs.createReadStream(filename, { fd, flags, mode });
-      else if(flags[0] == 'w') ret = fs.createWriteStream(filename, { fd, flags, mode });
+      else if('wa'.indexOf(flags[0]) != -1)
+        ret = fs.createWriteStream(filename, { fd, flags, mode });
       return Object.assign(ret, { fd, flags, mode });
     },
     close(file) {
@@ -522,6 +524,7 @@ export function NodeJSFileSystem(fs, tty, process) {
       return CatchError(() => fs.writeSync(fd, data, offset, length));
     },
     readFile(filename, encoding = 'utf-8') {
+      console.log('readFile', { filename, encoding });
       return CatchError(() => fs.readFileSync(filename, { encoding }));
     },
     writeFile(filename, data, overwrite = true) {
@@ -535,7 +538,7 @@ export function NodeJSFileSystem(fs, tty, process) {
       return ret;
     },
     puts(file, str) {
-      return this.write(file, str, 0);
+      return file.write(str);
     },
     flush(file) {
       return file.uncork();
@@ -657,7 +660,7 @@ export function NodeJSFileSystem(fs, tty, process) {
       } else {
         let fn = readHandlers.get(st);
         readHandlers.delete(st, fn);
-        st.off('readable', fn);
+        if(typeof fn == 'function') st.off('readable', fn);
       }
     },
     setWriteHandler(st, handler) {
@@ -667,8 +670,10 @@ export function NodeJSFileSystem(fs, tty, process) {
         st.on('drain', fn);
       } else {
         let fn = writeHandlers.get(st);
-        writeHandlers.delete(st, fn);
-        st.off('drain', fn);
+        if(typeof fn == 'function') {
+          writeHandlers.delete(st, fn);
+          st.off('drain', fn);
+        }
       }
     },
     waitRead(file) {
