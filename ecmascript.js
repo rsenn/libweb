@@ -33,6 +33,7 @@ export {
   SwitchCase,
   ImportDeclaration,
   ExportNamedDeclaration,
+  ExportDefaultDeclaration,
   JSXLiteral,
   Literal,
   TemplateLiteral,

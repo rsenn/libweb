@@ -347,7 +347,7 @@ export class Lexer {
   }
 
   //Returns the next character in the source code and advance position
-  next() {
+  getc() {
     const c = this.peek();
     if(c !== null) {
       if(c == '\n') {
@@ -367,7 +367,7 @@ export class Lexer {
   skip(n = 1) {
     let c;
     while(n-- > 0) {
-      c = this.next();
+      c = this.getc();
       //console.log(`skipped char '${c}'`);
     }
     return c;
@@ -411,11 +411,10 @@ export class Lexer {
   acceptRun(validator) {
     let c;
     let startedAt = this.pos;
-    do {
+    while(this.accept(validator)) {
       c = this.peek();
       if(c === null) break;
-    } while(validator(c) && ++this.pos);
-
+    }
     return this.pos > startedAt;
   }
 
@@ -709,7 +708,7 @@ export class Lexer {
       do {
         if(this.acceptRun(not(or(c => c === '$', oneOf('\\`{$'))))) escapeEncountered = false;
         prevChar = c;
-        c = this.next();
+        c = this.getc();
         ++n;
         //console.debug("template", { prevChar,c,escapeEncountered,n});
         if(c === null) {
@@ -754,7 +753,7 @@ export class Lexer {
         if(this.acceptRun(not(or(isLineTerminator, oneOf(`\\${quoteChar}`)))))
           escapeEncountered = false;
         prevChar = c;
-        c = this.next();
+        c = this.getc();
         if(c === null) {
           //If we reached EOF without the closing quote char, then this string is
           //incomplete.
@@ -796,7 +795,7 @@ export class Lexer {
         this.skipComment();
         return this.lexText;
       }
-      this.next();
+      this.getc();
     } while(true);
   }
 
@@ -813,7 +812,7 @@ export class Lexer {
       }
 
       //Consume the next character and decide what to do
-      const c = this.next();
+      const c = this.getc();
       if(c === null) {
         //EOF
         return null;

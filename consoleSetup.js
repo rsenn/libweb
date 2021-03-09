@@ -2,6 +2,16 @@ import Util from './util.js';
 
 let savedOpts = {};
 
+export function ConsoleOptions(obj = {}) {
+  Object.assign(this, obj);
+}
+ConsoleOptions.prototype.merge = function(...args) {
+  return Object.assign(this, ...args);
+};
+ConsoleOptions.merge = function(opts, ...args) {
+  return new ConsoleOptions(opts).merge(...args);
+};
+
 export async function ConsoleSetup(opts = {}) {
   opts = { ...savedOpts, ...opts };
   savedOpts = opts;
@@ -30,107 +40,114 @@ export async function ConsoleSetup(opts = {}) {
     customInspect = true,
     ...options
   } = opts;
-  let inspectOptions = {
+
+  let inspectOptions = new ConsoleOptions({
     depth,
     colors,
     breakLength,
     maxArrayLength,
     ...options
-  };
+  });
+
   if(typeof globalThis.inspect == 'function' || typeof globalThis.inspect == 'ôbject')
     globalThis.inspect.options = inspectOptions;
   ret = await Util.tryCatch(async () => {
-      const Console = await import('console').then(module => module.Console);
+      const Console = await import('console').then(module => (globalThis.Console = module.Console));
+
       ret = new Console({
         stdout: proc.stdout,
         stderr: proc.stderr,
         inspectOptions
       });
+
+      Console.prototype.config = function config(obj = {}) {
+        return new ConsoleOptions(obj);
+      };
+
       ret.colors = colors;
       ret.depth = depth;
-      ret.inspect = (await import('util')).inspect;
-      return ret;
+
+      const inspectFunction = await import('util').then(module => (globalThis.inspect = module.inspect)
+      );
+
+      return extendWithOptionsHandler(ret, inspectFunction, inspectOptions);
     },
     c => c,
     async () => {
-      let c = Util.getGlobalObject().console;
-      let options = {
+      let c = globalThis.console;
+      /* let options = {
         colors: true,
         depth: Infinity,
         customInspect: true,
         indent: 2,
         ...inspectOptions
-      };
-
-      let log = c.log;
-      c.reallog = log;
+      };*/
 
       class Console {
         config(obj = {}) {
           return new ConsoleOptions(obj);
         }
+
+        valueOf() {
+          return this;
+        }
       }
 
-      function ConsoleOptions(obj = {}) {
-        Object.assign(this, obj);
-      }
-      ConsoleOptions.prototype.merge = function(...args) {
-        return Object.assign(this, ...args);
-      };
-      ConsoleOptions.merge = function(opts, ...args) {
-        return new ConsoleOptions(opts).merge(...args);
-      };
+      globalThis.Console = Console;
 
-      let newcons = Object.create(Console.prototype);
-      let ObjectInspect;
+      let newcons = new Console();
+      let inspectFunction;
       let platform = Util.getPlatform();
 
       console.log('Platform:', platform);
       switch (platform) {
         case 'quickjs':
-          await import('inspect.so').then(module => (globalThis.inspect = ObjectInspect = module.inspect)
+          await import('inspect.so').then(module => (globalThis.inspect = inspectFunction = module.inspect)
           );
           break;
 
         case 'node':
-          await import('util').then(module => (globalThis.inspect = ObjectInspect = module.inspect)
+          await import('util').then(module => (globalThis.inspect = inspectFunction = module.inspect)
           );
           break;
         default: await import('./objectInspect.js').then(
-            module => (globalThis.inspect = ObjectInspect = module.ObjectInspect)
+            module => (globalThis.inspect = inspectFunction = module.inspectFunction)
           );
           break;
       }
 
-      return Util.define(newcons, {
-        options,
-        reallog: log,
-        inspect(...args) {
-          let [obj, opts] = args;
-          if(args.length == 0) obj = this;
-          return ObjectInspect(obj, ConsoleOptions.merge(this.options, opts));
-        },
-        log(...args) {
-          let { reallog, options } = this;
-          let tempOpts = new ConsoleOptions(options);
-          return reallog.call(this,
-            ...args.reduce((acc, arg) => {
-              if(typeof arg == 'object' &&
-                arg != null &&
-                arg instanceof ConsoleOptions
-                /* Util.className(arg) == 'ConsoleOptions'*/
-              )
-                tempOpts.merge(arg);
-              else if(typeof arg == 'object' && arg != null)
-                acc.push(ObjectInspect(arg, tempOpts));
-              else acc.push(arg);
-              return acc;
-            }, [])
-          );
-        }
-      });
+      return extendWithOptionsHandler(newcons, inspectFunction, inspectOptions, c.log);
     }
   );
+
+  function extendWithOptionsHandler(newcons, inspect, options, reallog) {
+    return Util.define(newcons, {
+      reallog: newcons.log ?? reallog,
+      /*inspect(...args) {
+        let [obj, opts] = args;
+        if(args.length == 0) obj = this;
+        return inspect(obj, ConsoleOptions.merge(this.options, opts));
+      },*/
+      log(...args) {
+        let { reallog, options } = this;
+        let tempOpts = new ConsoleOptions(options);
+        return reallog.call(this,
+          ...args.reduce((acc, arg) => {
+            if(typeof arg == 'object' &&
+              arg != null &&
+              arg instanceof ConsoleOptions
+              /* Util.className(arg) == 'ConsoleOptions'*/
+            )
+              tempOpts.merge(arg);
+            else if(typeof arg == 'object' && arg != null) acc.push(inspect(arg, tempOpts));
+            else acc.push(arg);
+            // this.reallog("acc:", acc);
+            return acc;
+          }, [])
+        );
+      }
+    });
+  }
 
   function addMissingMethods(cons) {
     let fns = {};
