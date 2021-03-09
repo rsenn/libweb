@@ -120,43 +120,6 @@ export async function ConsoleSetup(opts = {}) {
     }
   );
 
-  function extendWithOptionsHandler(newcons, inspect, options, reallog) {
-    return Util.define(newcons, {
-      reallog: newcons.log ?? reallog,
-      /*inspect(...args) {
-        let [obj, opts] = args;
-        if(args.length == 0) obj = this;
-        return inspect(obj, ConsoleOptions.merge(this.options, opts));
-      },*/
-      log(...args) {
-        let { reallog, options } = this;
-        let tempOpts = new ConsoleOptions(options);
-        return reallog.call(this,
-          ...args.reduce((acc, arg) => {
-            if(typeof arg == 'object' &&
-              arg != null &&
-              arg instanceof ConsoleOptions
-              /* Util.className(arg) == 'ConsoleOptions'*/
-            )
-              tempOpts.merge(arg);
-            else if(typeof arg == 'object' && arg != null) acc.push(inspect(arg, tempOpts));
-            else acc.push(arg);
-            // this.reallog("acc:", acc);
-            return acc;
-          }, [])
-        );
-      }
-    });
-  }
-
-  function addMissingMethods(cons) {
-    let fns = {};
-
-    for(let method of ['error', 'warn', 'debug']) {
-      if(cons[method] === undefined) fns[method] = cons.log;
-    }
-    return Util.define(cons, fns);
-  }
   /*  console.log('Util.getGlobalObject():', Util.getGlobalObject());
   console.log('globalThis:', globalThis);
   console.log('globalThis === Util.getGlobalObject():', globalThis === Util.getGlobalObject());
@@ -165,6 +128,50 @@ export async function ConsoleSetup(opts = {}) {
   console.log('globalThis.console === console', globalThis.console === console);*/
 
   Util.getGlobalObject().console = addMissingMethods(ret);
+}
+
+function extendWithOptionsHandler(newcons, inspect, options, reallog) {
+  return Util.define(newcons, {
+    reallog: newcons.log ?? reallog,
+    /*inspect(...args) {
+        let [obj, opts] = args;
+        if(args.length == 0) obj = this;
+        return inspect(obj, ConsoleOptions.merge(this.options, opts));
+      },*/
+    log(...args) {
+      let { reallog, options } = this;
+      let tempOpts = new ConsoleOptions(options);
+      //this.reallog("inspect:", inspect);
+      return reallog.call(this,
+        ...args.reduce((acc, arg) => {
+          if(typeof arg == 'object' && arg != null && arg instanceof ConsoleOptions) {
+            tempOpts.merge(arg);
+          } else if(typeof arg == 'object' && arg != null) {
+            let s;
+            try {
+              s = inspect(arg, tempOpts);
+            } catch(error) {
+              s = error;
+            }
+            acc.push(s);
+          } else {
+            acc.push(arg);
+          }
+          // this.reallog("acc:", acc);
+          return acc;
+        }, [])
+      );
+    }
+  });
+}
+
+function addMissingMethods(cons) {
+  let fns = {};
+
+  for(let method of ['error', 'warn', 'debug']) {
+    if(cons[method] === undefined) fns[method] = cons.log;
+  }
+  return Util.define(cons, fns);
 }
 
 export const ConsoleOnce = Util.once(opts => ConsoleSetup(opts));
