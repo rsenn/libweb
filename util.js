@@ -3442,11 +3442,11 @@ Util.iterateMembers = function* (obj, predicate = (name, depth, obj, proto) => t
   let pred = Util.predicate(predicate);
   const proto = Object.getPrototypeOf(obj);
 
- /* for(let name in obj) if(pred(name, depth, obj)) yield name;
+  /* for(let name in obj) if(pred(name, depth, obj)) yield name;
    */
- let descriptors = Object.getOwnPropertyDescriptors(obj);
+  let descriptors = Object.getOwnPropertyDescriptors(obj);
   for(let name in descriptors) {
-    const {value,get,set,enumerable,configurable,writable} = descriptors[name];
+    const { value, get, set, enumerable, configurable, writable } = descriptors[name];
 
     if(typeof get == 'function') continue;
 
