@@ -76,21 +76,24 @@ export const select = (root, filter, path) => {
 
 export const find = (node, filter, path, root) => {
   let k,
-    ret = null;
+    ret,
+    result = null;
   path = (typeof path == 'string' ? path.split(/[\.\/]/) : path) || [];
   if(!root) {
     root = node;
-    ret = { path: null, value: null };
+    result = { path: null, value: null };
   }
-  if(filter(node, path, root)) {
-    ret = { path, value: node };
-  } else if(Util.isObject(node)) {
+  ret = filter(node, path, root);
+
+  if(ret === -1) return -1;
+  else if(ret) result = { path, value: node };
+else if(typeof node == 'object' && node != null) {
     for(k in node) {
-      ret = find(node[k], filter, [...path, k], root);
-      if(ret) break;
+      result = find(node[k], filter, [...path, k], root);
+      if(result) break;
     }
   }
-  return ret;
+  return result;
 };
 
 export const forEach = function(...args) {

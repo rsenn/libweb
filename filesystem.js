@@ -185,7 +185,7 @@ export function QuickJSFileSystem(std, os) {
         bytes,
         res = { errno: 0 };
 
-      if(0 && typeof data == 'string') {
+      if(typeof data == 'string') {
         let file = std.open(filename, 'w+b', res);
         if(!res.errno) {
           file.puts(data);
@@ -989,6 +989,11 @@ const FilesystemDecorator = {
   mktemp(prefix) {
     let name = this.tempnam(prefix);
     return this.open(name, 'w+');
+  },
+  getchar(file) {
+    let arr = new Uint8Array(1);
+    if(this.read(file, arr.buffer, 0, 1) > 0) return arr[0];
+    return -1;
   }
 };
 
