@@ -733,6 +733,13 @@ Util.isSet = function(v, n) {
 Util.bitCount = function(n) {
   return Util.count(Util.toBinary(n), '1');
 };
+Util.bitNo = function(n) {
+  for(let i = 0; n; i++) {
+    if(n & 1) return i;
+    n >>= 1;
+  }
+};
+
 Util.toggleBit = function(num, bit) {
   const n = Number(num);
   return Util.isSet(n, bit) ? n - Util.pow2(bit) : n + Util.pow2(bit);
@@ -5550,6 +5557,10 @@ Util.replaceAll = (needles, haystack) => {
   return Util.entries(needles)
     .map(([re, str]) => [typeof re == 'string' ? new RegExp(re, 'g') : re, str])
     .reduce((acc, [match, replacement]) => acc.replace(match, replacement), haystack);
+};
+
+Util.quote = (str, q = '"') => {
+  return q + str.replace(new RegExp(q, 'g'), '\\' + q) + q;
 };
 
 Util.escape = (str, pred = codePoint => codePoint < 32 || codePoint > 0xff) => {

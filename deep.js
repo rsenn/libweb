@@ -87,7 +87,7 @@ export const find = (node, filter, path, root) => {
 
   if(ret === -1) return -1;
   else if(ret) result = { path, value: node };
-else if(typeof node == 'object' && node != null) {
+  else if(typeof node == 'object' && node != null) {
     for(k in node) {
       result = find(node[k], filter, [...path, k], root);
       if(result) break;
