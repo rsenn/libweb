@@ -157,7 +157,7 @@ export async function GetPortableSpawn() {
 
 const InitPortableSpawn = once(PortableSpawn);
 
-export async function PortableSpawn(fn = spawnFn => true) {
+export async function PortableSpawn(fn = spawn => (globalThis.spawn = spawn)) {
   //console.log('PortableSpawn', { fn: fn + '' });
   const spawnFn = await GetPortableSpawn(); //InitPortableSpawn();
   //console.log('PortableSpawn', { spawnFn });
