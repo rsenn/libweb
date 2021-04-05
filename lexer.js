@@ -1,4 +1,3 @@
- 
 Lexer.defunct = function(chr) {
   throw new Error('Unexpected character at index ' + (this.index - 1) + ': ' + chr);
 };
