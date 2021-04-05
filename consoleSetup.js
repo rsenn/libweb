@@ -99,7 +99,7 @@ export async function ConsoleSetup(opts = {}) {
       let inspectFunction;
       let platform = Util.getPlatform();
 
-      console.log('Platform:', platform);
+      //console.log('Platform:', platform);
       switch (platform) {
         case 'quickjs':
           await import('inspect.so').then(module => (globalThis.inspect = inspectFunction = module.inspect)

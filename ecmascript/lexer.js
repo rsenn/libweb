@@ -776,28 +776,28 @@ export class Lexer {
     };
   }
 
-  lexSingleLineComment() {
-    //console.log('lexSingleLineComment', this.getRange(this.start, this.pos));
+    lexSingleLineComment() {
+      //console.log('lexSingleLineComment', this.getRange(this.start, this.pos));
 
-    //Single line comment is only terminated by a line terminator
-    //character and nothing else
-    this.acceptRun(not(isLineTerminator));
-    this.skipComment();
-    return this.lexText;
-  }
+      //Single line comment is only terminated by a line terminator
+      //character and nothing else
+      this.acceptRun(not(isLineTerminator));
+      this.skipComment();
+      return this.lexText;
+    }
 
-  lexMultiLineComment() {
-    do {
-      //Multi-line comment is terminated if we see * followed by /
-      const nextTwo = this.getRange(this.pos, this.pos + 2);
-      if(nextTwo === '*/') {
-        this.skip(2);
-        this.skipComment();
-        return this.lexText;
-      }
-      this.getc();
-    } while(true);
-  }
+    lexMultiLineComment() {
+      do {
+        //Multi-line comment is terminated if we see * followed by /
+        const nextTwo = this.getRange(this.pos, this.pos + 2);
+        if(nextTwo === '*/') {
+          this.skip(2);
+          this.skipComment();
+          return this.lexText;
+        }
+        this.getc();
+      } while(true);
+    }
 
   lexText() {
     do {

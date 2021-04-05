@@ -4450,6 +4450,30 @@ Util.propertyLookup = (obj = {}, handler = key => null) =>
     }
   });
 
+Util.traceProxy = (obj, handler) => {
+  let proxy;
+  handler = /*handler || */ function(name, args) {
+    console.log(`Calling method '${name}':`, ...args);
+  };
+  console.log('handler', { handler }, handler + '');
+  proxy = new Proxy(obj, {
+    get(target, key, receiver) {
+      let member = Reflect.get(obj, key, receiver);
+      if(0 && typeof member == 'function') {
+        let method = member; // member.bind(obj);
+        member = function() {
+          //          handler.call(receiver, key, arguments);
+          return method.apply(obj, arguments);
+        };
+        member = method.bind(obj);
+        console.log('Util.traceProxy', key, (member + '').replace(/\n\s+/g, ' ').split(/\n/g)[0]);
+      }
+      return member;
+    }
+  });
+  return proxy;
+};
+
 Util.proxyTree = function proxyTree(...callbacks) {
   const [setCallback, applyCallback = () => {}] = callbacks;
   const handler = {
@@ -4832,12 +4856,14 @@ Object.assign(Util.is, {
 });
 
 class AssertionFailed extends Error {
-  constructor(stack, message) {
-    let location = stack[0];
-    super('@ ' + location + ': ' + message);
-    this.location = location;
-    this.stack = stack;
+  constructor(message, stack) {
+    super(/*'@ ' + location + ': ' +*/ message);
+    //this.location = location;
     this.type = 'Assertion failed';
+
+    stack ??= this.stack;
+
+    this.stack = stack;
   }
 }
 
@@ -4846,11 +4872,10 @@ Util.assert = function assert(val, message) {
     message ??= val + '';
     val = val();
   }
-  if(!val) throw new AssertionFailed(Util.getCallerStack(4), message ?? `val == ${val}`);
+  if(!val) throw new AssertionFailed(message ?? `val == ${val}`);
 };
 Util.assertEqual = function assertEqual(val1, val2, message) {
-  if(val1 != val2)
-    throw new AssertionFailed(Util.getCallerStack(4), message ?? `${val1} != ${val2}`);
+  if(val1 != val2) throw new AssertionFailed(message ?? `${val1} != ${val2}`);
 };
 
 Util.assignGlobal = () => Util.weakAssign(Util.getGlobalObject(), Util);
