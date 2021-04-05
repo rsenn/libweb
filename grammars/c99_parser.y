@@ -1,3 +1,4 @@
+/* from https://github.com/alekseyburger/c99parser */
 %{
 #include <stdio.h>
 #include <string.h>
